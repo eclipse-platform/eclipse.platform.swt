@@ -94,7 +94,7 @@ public final class TextLayout {
 	int textPtr;
 	StyleItem[] styles;
 	int layout;
-	int spacing;	
+	int spacing, ascent, descent;	
 	int[] tabs;
 	int[] segments;
 	int tabsPtr;
@@ -119,6 +119,7 @@ public TextLayout (Device device) {
 	OS.ATSUSetLayoutControls(layout, tags.length, tags, sizes, values);
 	OS.DisposePtr(ptr);	
 	OS.ATSUSetHighlightingMethod(layout, 1, new ATSUUnhighlightData());
+	ascent = descent = -1;
 	text = "";
 	styles = new StyleItem[2];
 	styles[0] = new StyleItem();
@@ -140,6 +141,28 @@ void computeRuns() {
 			OS.ATSUSetRunStyle(layout, run.atsuStyle, run.start, runLength);
 		}
 		int[] buffer = new int[1];
+		if (ascent != -1) {
+			OS.ATSUGetLayoutControl(layout, OS.kATSULineAscentTag, 4, buffer, null);
+			int ptr = OS.NewPtr(4);
+			buffer[0] = OS.Long2Fix(Math.max(ascent, OS.Fix2Long(buffer[0])));
+			OS.memcpy(ptr, buffer, 4);
+			int[] tags = new int[]{OS.kATSULineAscentTag};
+			int[] sizes = new int[]{4};
+			int[] values = new int[]{ptr};
+			OS.ATSUSetLineControls(layout, 0, tags.length, tags, sizes, values);
+			OS.DisposePtr(ptr);
+		}
+		if (descent != -1) {
+			OS.ATSUGetLayoutControl(layout, OS.kATSULineDescentTag, 4, buffer, null);
+			int ptr = OS.NewPtr(4);
+			buffer[0] = OS.Long2Fix(Math.max(descent, OS.Fix2Long(buffer[0])));
+			OS.memcpy(ptr, buffer, 4);
+			int[] tags = new int[]{OS.kATSULineDescentTag};
+			int[] sizes = new int[]{4};
+			int[] values = new int[]{ptr};
+			OS.ATSUSetLineControls(layout, 0, tags.length, tags, sizes, values);
+			OS.DisposePtr(ptr);
+		}
 		OS.ATSUGetLayoutControl(layout, OS.kATSULineWidthTag, 4, buffer, null);
 		int wrapWidth = OS.Fix2Long(buffer[0]);
 		int width = wrapWidth == 0 ? 0x7fff : wrapWidth;
@@ -303,6 +326,11 @@ public int getAlignment() {
 	return SWT.LEFT;
 }
 
+public int getAscent () {
+	checkLayout();	
+	return ascent;
+}
+
 public Rectangle getBounds() {
 	checkLayout();
 	computeRuns();
@@ -349,6 +377,11 @@ public Rectangle getBounds(int start, int end) {
 	}
 	OS.DisposeRgn(rgn);
 	return new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+}
+
+public int getDescent () {
+	checkLayout();	
+	return descent;
 }
 
 public Font getFont () {
@@ -583,6 +616,22 @@ public void setAlignment (int alignment) {
 		case SWT.RIGHT: align = OS.kATSUEndAlignment; break;
 	}
 	setLayoutControl(OS.kATSULineFlushFactorTag, align, 4);
+}
+
+public void setAscent (int ascent) {
+	checkLayout ();
+	if (ascent < -1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (this.ascent == ascent) return;
+	freeRuns();
+	this.ascent = ascent;
+}
+
+public void setDescent (int descent) {
+	checkLayout ();
+	if (descent < -1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (this.descent == descent) return;
+	freeRuns();
+	this.descent = descent;
 }
 
 void setLayoutControl(int tag, int value, int size) {

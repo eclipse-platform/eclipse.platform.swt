@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 731;
-int OS_nativeFunctionCallCount[731];
+int OS_nativeFunctionCount = 736;
+int OS_nativeFunctionCallCount[736];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems", 
 	"AEGetNthPtr", 
@@ -33,6 +33,7 @@ char * OS_nativeFunctionNames[] = {
 	"ATSUGetGlyphBounds__IIIIISII_3I", 
 	"ATSUGetGlyphBounds__IIIIISILorg_eclipse_swt_internal_carbon_ATSTrapezoid_2_3I", 
 	"ATSUGetLayoutControl", 
+	"ATSUGetLineControl", 
 	"ATSUGetSoftLineBreaks", 
 	"ATSUGetTextHighlight", 
 	"ATSUGetUnjustifiedBounds", 
@@ -45,6 +46,7 @@ char * OS_nativeFunctionNames[] = {
 	"ATSUSetFontFeatures", 
 	"ATSUSetHighlightingMethod", 
 	"ATSUSetLayoutControls", 
+	"ATSUSetLineControls", 
 	"ATSUSetRunStyle", 
 	"ATSUSetSoftLineBreak", 
 	"ATSUSetTabArray", 
@@ -327,6 +329,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetGWorld", 
 	"GetGlobalMouse", 
 	"GetHandleSize", 
+	"GetIconFamilyData", 
 	"GetIconRef", 
 	"GetIndMenuItemWithCommandID", 
 	"GetIndexedSubControl", 
@@ -427,6 +430,7 @@ char * OS_nativeFunctionNames[] = {
 	"HiWord", 
 	"HideWindow", 
 	"HiliteMenu", 
+	"IconRefToIconFamily", 
 	"InitContextualMenus", 
 	"InitCursor", 
 	"InitDataBrowserCallbacks", 
@@ -555,6 +559,7 @@ char * OS_nativeFunctionNames[] = {
 	"RectRgn", 
 	"RegisterAppearanceClient", 
 	"ReleaseEvent", 
+	"ReleaseIconRef", 
 	"ReleaseMenu", 
 	"ReleaseWindow", 
 	"ReleaseWindowGroup", 

@@ -278,6 +278,24 @@ JNIEXPORT jint JNICALL OS_NATIVE(ATSUGetLayoutControl)
 }
 #endif
 
+#ifndef NO_ATSUGetLineControl
+JNIEXPORT jint JNICALL OS_NATIVE(ATSUGetLineControl)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jintArray arg4, jintArray arg5)
+{
+	jint *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, ATSUGetLineControl_FUNC);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	rc = (jint)ATSUGetLineControl((ATSUTextLayout)arg0, (UniCharArrayOffset)arg1, (ATSUAttributeTag)arg2, (ByteCount)arg3, (ATSUAttributeValuePtr)lparg4, (ByteCount *)lparg5);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	OS_NATIVE_EXIT(env, that, ATSUGetLineControl_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_ATSUGetSoftLineBreaks
 JNIEXPORT jint JNICALL OS_NATIVE(ATSUGetSoftLineBreaks)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jintArray arg4, jintArray arg5)
@@ -487,6 +505,27 @@ JNIEXPORT jint JNICALL OS_NATIVE(ATSUSetLayoutControls)
 	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	OS_NATIVE_EXIT(env, that, ATSUSetLayoutControls_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ATSUSetLineControls
+JNIEXPORT jint JNICALL OS_NATIVE(ATSUSetLineControls)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jintArray arg4, jintArray arg5)
+{
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, ATSUSetLineControls_FUNC);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	rc = (jint)ATSUSetLineControls((ATSUTextLayout)arg0, (UniCharArrayOffset)arg1, (ItemCount)arg2, (const ATSUAttributeTag *)lparg3, (const ByteCount *)lparg4, (const ATSUAttributeValuePtr *)lparg5);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	OS_NATIVE_EXIT(env, that, ATSUSetLineControls_FUNC);
 	return rc;
 }
 #endif
@@ -4347,6 +4386,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetHandleSize)
 }
 #endif
 
+#ifndef NO_GetIconFamilyData
+JNIEXPORT jint JNICALL OS_NATIVE(GetIconFamilyData)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, GetIconFamilyData_FUNC);
+	rc = (jint)GetIconFamilyData((IconFamilyHandle)arg0, (OSType)arg1, (Handle)arg2);
+	OS_NATIVE_EXIT(env, that, GetIconFamilyData_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetIconRef
 JNIEXPORT jint JNICALL OS_NATIVE(GetIconRef)
 	(JNIEnv *env, jclass that, jshort arg0, jint arg1, jint arg2, jintArray arg3)
@@ -5714,6 +5765,21 @@ JNIEXPORT void JNICALL OS_NATIVE(HiliteMenu)
 	OS_NATIVE_ENTER(env, that, HiliteMenu_FUNC);
 	HiliteMenu((MenuID)arg0);
 	OS_NATIVE_EXIT(env, that, HiliteMenu_FUNC);
+}
+#endif
+
+#ifndef NO_IconRefToIconFamily
+JNIEXPORT jint JNICALL OS_NATIVE(IconRefToIconFamily)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, IconRefToIconFamily_FUNC);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)IconRefToIconFamily((IconRef)arg0, (IconSelectorValue)arg1, (IconFamilyHandle *)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, IconRefToIconFamily_FUNC);
+	return rc;
 }
 #endif
 
@@ -7410,6 +7476,16 @@ JNIEXPORT void JNICALL OS_NATIVE(ReleaseEvent)
 	OS_NATIVE_ENTER(env, that, ReleaseEvent_FUNC);
 	ReleaseEvent((EventRef)arg0);
 	OS_NATIVE_EXIT(env, that, ReleaseEvent_FUNC);
+}
+#endif
+
+#ifndef NO_ReleaseIconRef
+JNIEXPORT void JNICALL OS_NATIVE(ReleaseIconRef)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, ReleaseIconRef_FUNC);
+	ReleaseIconRef((IconRef)arg0);
+	OS_NATIVE_EXIT(env, that, ReleaseIconRef_FUNC);
 }
 #endif
 
