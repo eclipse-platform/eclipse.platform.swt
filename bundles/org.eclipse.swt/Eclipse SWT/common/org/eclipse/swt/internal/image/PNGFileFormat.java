@@ -171,7 +171,13 @@ void setPixelData(byte[] data, ImageData imageData) {
 			int width = imageData.width;
 			int height = imageData.height;
 			int destBytesPerLine = imageData.bytesPerLine;
-			int srcBytesPerLine = width * 2;
+			/*
+			* If the image uses 16-bit depth, it is converted
+			* to an 8-bit depth image.
+			*/
+			int srcBytesPerLine = getAlignedBytesPerRow();
+			if (headerChunk.getBitDepth() > 8) srcBytesPerLine /= 2;
+
 			byte[] rgbData = new byte[destBytesPerLine * height];
 			byte[] alphaData = new byte[width * height];
 			for (int y = 0; y < height; y++) {
@@ -200,6 +206,12 @@ void setPixelData(byte[] data, ImageData imageData) {
 			int height = imageData.height;
 			int destBytesPerLine = imageData.bytesPerLine;
 			int srcBytesPerLine = getAlignedBytesPerRow();
+			/*
+			* If the image uses 16-bit depth, it is converted
+			* to an 8-bit depth image.
+			*/
+			if (headerChunk.getBitDepth() > 8) srcBytesPerLine /= 2;
+
 			byte[] rgbData = new byte[destBytesPerLine * height];
 			byte[] alphaData = new byte[width * height];
 			for (int y = 0; y < height; y++) {
