@@ -606,7 +606,7 @@ private static int createMaskImage(ImageData image) {
 
 	ImageData.blit(ImageData.BLIT_SRC,
 		image.data, 1, image.bytesPerLine, image.getByteOrder(), 0, 0, w, h, null, null, null,
-		ImageData.ALPHA_OPAQUE, null, 0,
+		ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
 		data, 1, rowBytes, ImageData.MSB_FIRST, 0, 0, w, h, null, null, null,
 		false, false);
 	
@@ -1160,13 +1160,13 @@ static int putImage(ImageData image, int screenDepth, int[] transparentPixel, in
 		if (screenDirect) {
 			ImageData.blit(ImageData.BLIT_SRC,
 				image.data, image.depth, image.bytesPerLine, srcOrder, srcX, srcY, srcWidth, srcHeight, palette.redMask, palette.greenMask, palette.blueMask,
-				ImageData.ALPHA_OPAQUE, null, 0,
+				ImageData.ALPHA_OPAQUE, null, 0, srcX, srcY, 
 				buf, destBitsPerPixel, destRowBytes, ImageData.MSB_FIRST, 0, 0, destWidth, destHeight, dest_red_mask, dest_green_mask, dest_blue_mask,
 				flipX, flipY);
 		} else {
 			ImageData.blit(ImageData.BLIT_SRC,
 				image.data, image.depth, image.bytesPerLine, srcOrder, srcX, srcY, srcWidth, srcHeight, palette.redMask, palette.greenMask, palette.blueMask,
-				ImageData.ALPHA_OPAQUE, null, 0,
+				ImageData.ALPHA_OPAQUE, null, 0, srcX, srcY,
 				buf, destBitsPerPixel, destRowBytes, ImageData.MSB_FIRST, 0, 0, destWidth, destHeight, destReds, destGreens, destBlues,
 				flipX, flipY);
 		}
@@ -1174,13 +1174,13 @@ static int putImage(ImageData image, int screenDepth, int[] transparentPixel, in
 		if (screenDirect) {
 			ImageData.blit(ImageData.BLIT_SRC,
 				image.data, image.depth, image.bytesPerLine, srcOrder, srcX, srcY, srcWidth, srcHeight, srcReds, srcGreens, srcBlues,
-				ImageData.ALPHA_OPAQUE, null, 0,
+				ImageData.ALPHA_OPAQUE, null, 0, srcX, srcY,
 				buf, destBitsPerPixel, destRowBytes, ImageData.MSB_FIRST, 0, 0, destWidth, destHeight, dest_red_mask, dest_green_mask, dest_blue_mask,
 				flipX, flipY);
 		} else {
 			ImageData.blit(ImageData.BLIT_SRC,
 				image.data, image.depth, image.bytesPerLine, srcOrder, srcX, srcY, srcWidth, srcHeight, srcReds, srcGreens, srcBlues,
-				ImageData.ALPHA_OPAQUE, null, 0,
+				ImageData.ALPHA_OPAQUE, null, 0, srcX, srcY,
 				buf, destBitsPerPixel, destRowBytes, ImageData.MSB_FIRST, 0, 0, destWidth, destHeight, destReds, destGreens, destBlues,
 				flipX, flipY);
 		}
