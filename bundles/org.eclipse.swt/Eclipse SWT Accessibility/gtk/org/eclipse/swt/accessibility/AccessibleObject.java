@@ -304,7 +304,7 @@ public class AccessibleObject {
 			event.result = new String (Converter.mbcsToWcs (null, buffer));
 		}
 		for (int i = 0; i < listeners.length; i++) {
-			listeners [i].getDescription (event);				
+			listeners [i].getDescription (event);
 		} 
 		if (event.result == null) return parentResult;
 		if (descriptionPtr != -1) OS.g_free (descriptionPtr);
@@ -1146,8 +1146,9 @@ public class AccessibleObject {
 	void setParent (AccessibleObject parent) {
 		this.parent = parent;
 	}
-	
+
 	void updateChildren () {
+		if (isLightweight) return;
 		AccessibleControlListener[] listeners = accessible.getControlListeners ();
 		if (listeners.length == 0) return;
 
@@ -1163,7 +1164,7 @@ public class AccessibleObject {
 				for (int i = 0; i < event.children.length; i++) {
 					AccessibleObject object = getChildByIndex (i);
 					if (object == null) {
-						object = new AccessibleObject (childType.handle, 0, accessible, parentType, true);
+						object = new AccessibleObject (childType.handle, 0, accessible, childType.parentType, true);
 						AccessibleType.addInstance (object);
 						addChild (object);
 						object.index = i;

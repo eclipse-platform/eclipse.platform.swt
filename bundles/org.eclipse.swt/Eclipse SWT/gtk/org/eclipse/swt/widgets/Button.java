@@ -333,6 +333,7 @@ public boolean getSelection () {
  */
 public String getText () {
 	checkWidget();
+	if ((style & SWT.ARROW) != 0) return "";
 	return text;
 }
 
@@ -646,8 +647,8 @@ public void setSelection (boolean selected) {
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	text = string;
 	if ((style & SWT.ARROW) != 0) return;
+	text = string;
 	char [] chars = fixMnemonic (string);
 	byte [] buffer = Converter.wcsToMbcs (null, chars, false);
 	OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
