@@ -99,17 +99,18 @@ public TableTreeEditor (TableTree tableTree) {
 			public void run() {
 				if (TableTreeEditor.this.tableTree.isDisposed() || editor == null) return;
 				resize();
+				if (editor == null || editor.isDisposed()) return;
 				editor.setVisible(true);
 			}
 		};
 		public void treeCollapsed(TreeEvent e) {
-			if (editor == null) return;
+			if (editor == null || editor.isDisposed ()) return;
 			editor.setVisible(false);
 			Display display = TableTreeEditor.this.tableTree.getDisplay();
 			display.asyncExec(runnable);
 		}
 		public void treeExpanded(TreeEvent e) {
-			if (editor == null) return;
+			if (editor == null || editor.isDisposed ()) return;
 			editor.setVisible(false);
 			Display display = TableTreeEditor.this.tableTree.getDisplay();
 			display.asyncExec(runnable);

@@ -74,17 +74,18 @@ public TreeEditor (Tree tree) {
 			public void run() {
 				if (TreeEditor.this.tree.isDisposed() || editor == null) return;
 				resize();
+				if (editor == null || editor.isDisposed ()) return;
 				editor.setVisible(true);
 			}
 		};
 		public void treeCollapsed(TreeEvent e) {
-			if (editor == null) return;
+			if (editor == null || editor.isDisposed ()) return;
 			editor.setVisible(false);
 			Display display = TreeEditor.this.tree.getDisplay();
 			display.asyncExec(runnable);
 		}
 		public void treeExpanded(TreeEvent e) {
-			if (editor == null) return;
+			if (editor == null || editor.isDisposed ()) return;
 			editor.setVisible(false);
 			Display display = TreeEditor.this.tree.getDisplay();
 			display.asyncExec(runnable);
