@@ -1143,6 +1143,15 @@ public void setBounds (int x, int y, int width, int height) {
 	OS.SetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
 }
 
+public void setEnabled (boolean enabled) {
+	checkWidget();
+	if (((state & DISABLED) == 0) == enabled) return;
+	super.setEnabled (enabled);
+	if (enabled && OS.IsWindowActive (shellHandle)) {
+		if (!restoreFocus ()) traverseGroup (false);
+	}
+}
+
 public void setMenuBar (Menu menu) {
 	checkWidget();
 	super.setMenuBar (menu);

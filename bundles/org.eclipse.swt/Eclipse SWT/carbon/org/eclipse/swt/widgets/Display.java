@@ -1282,7 +1282,7 @@ Control getFocusControl (int window) {
 		Widget widget = getWidget (theControl [0]);
 		if (widget != null && widget instanceof Control) {
 			Control control = (Control) widget;
-			if (control.getEnabled ()) return control;
+			return control.isEnabled () ? control : null;
 		}
 		OS.GetSuperControl (theControl [0], theControl);
 	} while (theControl [0] != 0);
@@ -2008,9 +2008,6 @@ int keyboardProc (int nextHandler, int theEvent, int userData) {
 		if (theWindow == 0) return OS.eventNotHandledErr;
 		int [] theControl = new int [1];
 		OS.GetKeyboardFocus (theWindow, theControl);
-		if (theControl [0] == 0) {
-			OS.GetRootControl (theWindow, theControl);
-		}
 		widget = getWidget (theControl [0]);
 	}
 	if (widget != null) return widget.keyboardProc (nextHandler, theEvent, userData);
@@ -3302,9 +3299,6 @@ int textInputProc (int nextHandler, int theEvent, int userData) {
 		if (theWindow == 0) return OS.eventNotHandledErr;
 		int [] theControl = new int [1];
 		OS.GetKeyboardFocus (theWindow, theControl);
-		if (theControl [0] == 0) {
-			OS.GetRootControl (theWindow, theControl);
-		}
 		widget = getWidget (theControl [0]);
 	}
 	if (widget != null) return widget.textInputProc (nextHandler, theEvent, userData);

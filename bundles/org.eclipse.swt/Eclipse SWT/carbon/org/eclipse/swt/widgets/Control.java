@@ -562,12 +562,14 @@ Cursor findCursor () {
 	return parent.findCursor ();
 }
 
-void fixFocus () {
+void fixFocus (Control focusControl) {
 	Shell shell = getShell ();
 	Control control = this;
 	while ((control = control.parent) != null) {
-		if (control.setFocus () || control == shell) return;
+		if (control.setFocus ()) return;
+		if (control == shell) break;
 	}
+	shell.setSavedFocus (focusControl);
 	int window = OS.GetControlOwner (handle);
 	OS.ClearKeyboardFocus (window);
 }
@@ -1229,8 +1231,7 @@ boolean isEnabledModal () {
 	return true;
 }
 
-boolean isFocusAncestor () {
-	Control control = display.getFocusControl ();
+boolean isFocusAncestor (Control control) {
 	while (control != null && control != this) {
 		control = control.parent;
 	}
@@ -2229,14 +2230,19 @@ void setDefaultFont () {
 public void setEnabled (boolean enabled) {
 	checkWidget();
 	if (((state & DISABLED) == 0) == enabled) return;
-	boolean fixFocus = !enabled && isFocusAncestor ();
+	Control control = null;
+	boolean fixFocus = false;
+	if (!enabled) {
+		control = display.getFocusControl ();
+		fixFocus = isFocusAncestor (control);
+	}
 	if (enabled) {
 		state &= ~DISABLED;
 	} else {
 		state |= DISABLED;
 	}
 	enableWidget (enabled);
-	if (fixFocus) fixFocus ();
+	if (fixFocus) fixFocus (control);
 }
 
 /**
@@ -2601,8 +2607,12 @@ public void setVisible (boolean visible) {
 	* control that takes focus.  If no control will take focus, clear
 	* the focus control.
 	*/
+	Control control = null;
 	boolean fixFocus = false;
-	if (!visible) fixFocus = isFocusAncestor ();
+	if (!visible) {
+		control = display.getFocusControl ();
+		fixFocus = isFocusAncestor (control);
+	}
 	setVisible (topHandle (), visible);
 	if (!visible) {
 		/*
@@ -2613,7 +2623,7 @@ public void setVisible (boolean visible) {
 		sendEvent (SWT.Hide);
 		if (isDisposed ()) return;
 	}
-	if (fixFocus) fixFocus ();
+	if (fixFocus) fixFocus (control);
 }
 
 void setZOrder () {
