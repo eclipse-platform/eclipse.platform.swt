@@ -11,6 +11,67 @@
 <h1>
 Eclipse Platform Build Notes<br>
 SWT</h1>
+SWT Build 2.0 003 - Friday Sept 07, 2001
+
+<h2>
+<a NAME="New APIs"></a>New APIs</h2>
+
+<blockquote>
+FontData.setLocale(java.util.Locale) added
+<br>Caret.getImage() added
+<br>Caret.setImage(Image) added
+<br>GC.fillGradientRectangle(int, int, int, int, boolean) added
+</blockquote>
+
+<h2>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+
+<blockquote>
+1GJM7KM: SWT:Linux - Table and Tree return a different size for every second call to computeSize
+<br>1GJLKHE: SWT:SPARC - GP on "Installed JREs" preference page
+<br>1GJLK63: SWT:ALL - StyledText - bidi - keyboard switching
+<br>1GJLE36: SWT:WINNT - Alpha data redrawing improperly after occlusion
+<br>1GJA2L7: SWT:WIN - Different behavior for GC.drawString() args on Win vs. Photon
+<br>1GIZ0P6: SWT:WINNT - GC.drawImage() problem with transparent pixels
+<br>1GIXELI: SWT:ALL - Need Caret to allow bitmaps so bidi caret can be created
+<br>1GI7FQF: SWT:ALL - Can't set focus to Tasks View by Keyboard
+<br>1GI7EBL: SWT:Linux - api typo: ToolItem>>getDisabledmage()
+<br>1GI3P86: SWT:ALL - Semantic differences between emulated Table and Tree codebase on Motif and Photon
+<br>1GI1WEA: SWT:Neutrino - Text selection code not working correctly
+<br>1GHWED2: SWT:WINNT - GC.stringExtent() not correct for Windows Arial font
+<br>1GHWB7G: SWT:Linux - Linux font dialog doesn't open with given values.
+<br>1GHVRFY: SWT:Neutrino - Text#ClearSelection changes the CaretPosition in a SINGLE-line widget
+<br>1GHVLV6: SWT:Neutrino - Text#SetTopIndex and getTopIndex inconsistent
+<br>1GHOJ6T: SWT:Neutrino - Text#setSelection inconsistent between SINGLE and MULTI
+<br>1GHBLRA: SWT:Neutrino - Display.getBounds() returns incorrect info
+<br>1GH48UQ: SWT:Neutrino - Enter key does not insert new line with Text.MULTI widget
+<br>1GGT0TM: SWT:Neutrino - GC#drawArc inconsistent between NT and NTO
+<br>1GG1DBT: SWT:SPARC - Solaris loses input characters
+<br>1GG07HW: SWT:Linux - Tree.getItem() modifies its argument on Motif
+<br>1GG0069: SWT:Linux - Weird layout issues seen in Control Example
+<br>1GFZZLK: SWT:Linux - ToolItems not disabled when containing ToolBar is disabled
+<br>1GFZU3X: SWT:ALL - ImageLoader.load(String) not closing file input stream
+<br>1GFZPDP: SWT:Linux - Combo box with SWT.SIMPLE style does not respect Disabled flag (visually)
+<br>1GFW85H: SWT:ALL - Printer.getPrinterData() has stale comment
+<br>1GFW6MQ: SWT:ALL - DCR: Program class needs .equals() and .hashCode()
+<br>1GFW4YN: SWT:ALL - Help KevinH add printing to Eclipse
+<br>1GFQKDT: SWT:ALL - Image.setBackground() / getBackground() asymmetry
+<br>1GFONVW: SWT:Linux - Empty Combo should not fire Selection event
+<br>1GFL0HP: SWT:Linux - Remaining items in SWT comments to fix
+<br>1GET90D: SWT:Linux - SWTExceptions bring down Eclipse
+<br>1GESQBK: ITPJUI:WINNT - How to get access to pop-up menus of the Java editor ?
+<br>1GELX4A: ITPUI:ALL - Hover help is not visible if pane is dragged out of workbench
+<br>1GEHWAF: ITPUI:WIN2000 - Can't enter text in a Swing TextField or TextArea
+<br>1GE5ECJ: ITPUI:WIN2000 - Hover help for title bar buttons appears behind detached view
+<br>1GDX7R8: ITPUI:ALL - SWT setText() does NOT have any way to avoid making mnemonics.
+<br>1GD5UHA: SWT:WIN2000 - Double-clicking on toolbar item gives double-click event on toolbar
+<br>1GBXIEO: SWT:ALL - DCR: Include cursor pos in Tracker move event
+<br>1G4IMQ3: SWT:WINNT - Table images incorrect after rapid removal and creation
+</blockquote>
+
+<h1>
+Eclipse Platform Build Notes<br>
+SWT</h1>
 SWT Build 2.0 002 - Wednesday July 18, 2001
 
 <h2>
