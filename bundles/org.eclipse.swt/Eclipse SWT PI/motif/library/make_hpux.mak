@@ -66,5 +66,5 @@ $(CDE_DLL): $(CDE_OBJ)
 	ld -b -z -o $@ $(CDE_OBJ) $(CDE_LIB)
 
 clean:
-	rm -f *.so *.o
+	rm -f *.sl *.o
 
