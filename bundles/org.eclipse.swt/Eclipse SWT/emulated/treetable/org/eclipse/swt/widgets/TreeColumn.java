@@ -184,14 +184,14 @@ void computeDisplayText (GC gc) {
 		availableWidth -= Tree.MARGIN_IMAGE;
 	}
 	String text = this.text;
-	int textWidth = gc.textExtent (text).x;
+	int textWidth = gc.textExtent (text, SWT.DRAW_MNEMONIC).x;
 	if (textWidth <= availableWidth) {
 		displayText = text;
 		return;
 	}
 	
 	/* Ellipsis will be needed, so subtract their width from the available text width */
-	int ellipsisWidth = gc.textExtent (Tree.ELLIPSIS).x;
+	int ellipsisWidth = gc.stringExtent (Tree.ELLIPSIS).x;
 	availableWidth -= ellipsisWidth;
 	if (availableWidth <= 0) {
 		displayText = Tree.ELLIPSIS;
@@ -200,7 +200,7 @@ void computeDisplayText (GC gc) {
 	
 	/* Make initial guess. */
 	int index = availableWidth / gc.getFontMetrics ().getAverageCharWidth ();
-	textWidth = gc.textExtent (text.substring (0, index)).x;
+	textWidth = gc.textExtent (text.substring (0, index), SWT.DRAW_MNEMONIC).x;
 
 	/* Initial guess is correct. */
 	if (availableWidth == textWidth) {
@@ -217,7 +217,7 @@ void computeDisplayText (GC gc) {
 				return;
 			}
 			text = text.substring (0, index);
-			textWidth = gc.textExtent (text).x;
+			textWidth = gc.textExtent (text, SWT.DRAW_MNEMONIC).x;
 		} while (availableWidth < textWidth);
 		displayText = text + Tree.ELLIPSIS;
 		return;
@@ -226,7 +226,7 @@ void computeDisplayText (GC gc) {
 	/* Initial guess is too low, so increase until overrun is found. */
 	while (textWidth < availableWidth) {
 		index++;
-		textWidth = gc.textExtent (text.substring (0, index)).x;
+		textWidth = gc.textExtent (text.substring (0, index), SWT.DRAW_MNEMONIC).x;
 	}
 	displayText = text.substring (0, index - 1) + Tree.ELLIPSIS;
 }

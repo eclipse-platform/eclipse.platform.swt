@@ -429,14 +429,14 @@ void computeDisplayText (int columnIndex, GC gc) {
 		}
 	}
 	String text = getText (columnIndex);
-	int textWidth = gc.textExtent (text).x;
+	int textWidth = gc.stringExtent (text).x;
 	if (textWidth <= availableWidth) {
 		displayTexts [columnIndex] = text;
 		return;
 	}
 	
 	/* Ellipsis will be needed, so subtract their width from the available text width */
-	int ellipsisWidth = gc.textExtent (Tree.ELLIPSIS).x;
+	int ellipsisWidth = gc.stringExtent (Tree.ELLIPSIS).x;
 	availableWidth -= ellipsisWidth;
 	if (availableWidth <= 0) {
 		displayTexts [columnIndex] = Tree.ELLIPSIS;
@@ -445,7 +445,7 @@ void computeDisplayText (int columnIndex, GC gc) {
 	
 	/* Make initial guess. */
 	int index = availableWidth / gc.getFontMetrics ().getAverageCharWidth ();
-	textWidth = gc.textExtent (text.substring (0, index)).x;
+	textWidth = gc.stringExtent (text.substring (0, index)).x;
 
 	/* Initial guess is correct. */
 	if (availableWidth == textWidth) {
@@ -462,7 +462,7 @@ void computeDisplayText (int columnIndex, GC gc) {
 				return;
 			}
 			text = text.substring (0, index);
-			textWidth = gc.textExtent (text).x;
+			textWidth = gc.stringExtent (text).x;
 		} while (availableWidth < textWidth);
 		displayTexts [columnIndex] = text + Tree.ELLIPSIS;
 		return;
@@ -471,7 +471,7 @@ void computeDisplayText (int columnIndex, GC gc) {
 	/* Initial guess is too low, so increase until overrun is found. */
 	while (textWidth < availableWidth) {
 		index++;
-		textWidth = gc.textExtent (text.substring (0, index)).x;
+		textWidth = gc.stringExtent (text.substring (0, index)).x;
 	}
 	displayTexts [columnIndex] = text.substring (0, index - 1) + Tree.ELLIPSIS;
 }
@@ -1132,7 +1132,7 @@ public TreeItem getParentItem () {
 int getPreferredWidth (int columnIndex) {
 	GC gc = new GC (parent);
 	gc.setFont (getFont (columnIndex));
-	int textPaintWidth = gc.textExtent (getText (columnIndex)).x + 2 * MARGIN_TEXT;
+	int textPaintWidth = gc.stringExtent (getText (columnIndex)).x + 2 * MARGIN_TEXT;
 	gc.dispose ();
 	int result = getTextX (columnIndex) + textPaintWidth + parent.getCellPadding ();	/* right side cell pad */
 	result -= parent.columns [columnIndex].getX ();
@@ -1431,7 +1431,7 @@ void recomputeTextWidths (GC gc) {
 				gc.setFont (font);
 				fontChanged = true;
 			}
-			textWidths [i] = gc.textExtent (value).x;
+			textWidths [i] = gc.stringExtent (value).x;
 			if (fontChanged) gc.setFont (oldFont);
 		}
 	}
@@ -1860,7 +1860,7 @@ public void setFont (int columnIndex, Font value) {
 	if (fontHeights == null) fontHeights = new int [validColumnCount];
 	fontHeights [columnIndex] = gc.getFontMetrics ().getHeight ();
 	computeDisplayText (columnIndex, gc);
-	textWidths [columnIndex] = gc.textExtent (getDisplayText (columnIndex)).x;
+	textWidths [columnIndex] = gc.stringExtent (getDisplayText (columnIndex)).x;
 	gc.dispose ();
 
 	if (availableIndex == -1) return;
@@ -2026,7 +2026,7 @@ public void setImage (int columnIndex, Image value) {
 		GC gc = new GC (parent);
 		gc.setFont (getFont (columnIndex));
 		computeDisplayText (columnIndex, gc);
-		textWidths [columnIndex] = gc.textExtent (getDisplayText (columnIndex)).x;
+		textWidths [columnIndex] = gc.stringExtent (getDisplayText (columnIndex)).x;
 		gc.dispose ();
 	}
 	
@@ -2168,7 +2168,7 @@ public void setText (int columnIndex, String value) {
 	GC gc = new GC (parent);
 	gc.setFont (getFont (columnIndex));
 	computeDisplayText (columnIndex, gc);
-	textWidths [columnIndex] = gc.textExtent (getDisplayText (columnIndex)).x;
+	textWidths [columnIndex] = gc.stringExtent (getDisplayText (columnIndex)).x;
 	gc.dispose ();
 	if (availableIndex == -1) return;
 	if (parent.columns.length == 0) {
@@ -2193,7 +2193,7 @@ void updateColumnWidth (TreeColumn column, GC gc) {
 		fontChanged = true;
 	}
 	computeDisplayText (columnIndex, gc);
-	textWidths [columnIndex] = gc.textExtent (getDisplayText (columnIndex)).x;
+	textWidths [columnIndex] = gc.stringExtent (getDisplayText (columnIndex)).x;
 	if (fontChanged) gc.setFont (oldFont);
 	for (int i = 0; i < items.length; i++) {
 		items [i].updateColumnWidth (column, gc);
