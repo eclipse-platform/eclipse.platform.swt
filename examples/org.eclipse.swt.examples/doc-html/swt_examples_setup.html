@@ -1,0 +1,116 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <title>How to Setup SWT Examples</title>
+</head>
+<body>
+
+<h2>
+<b>Examples - Simple Widget Toolkit (SWT)</b></h2>
+
+<h3>
+Setup</h3>
+There are several steps required before the SWT standalone examples can
+be run.
+<ul>
+<li>
+Copy the <b>swt runtime library</b> on the system path [System.getProperty("java.library.path:)].&nbsp;
+On Linux, this is LD_LIBRARY_PATH.&nbsp; (Is&nbsp; LD_LIBRARY_PATH applicable
+to all shells?).</li>
+
+<ul>The <b>swt runtime library</b> can be found in the following directory,
+depending one which Operating System you are using to run Eclipse:
+<ul>
+<li>
+Windows - &lt;install-dir>\eclipse\plugins\org.eclipse.swt\ws\win32\</li>
+
+<li>
+Motif - &lt;install-dir>/eclipse/plugins/org.eclipse.swt/ws/motif/</li>
+</ul>
+</ul>
+
+<li>
+Create a Java Project to contain the examples.&nbsp; Call it "SWT Examples".</li>
+
+<li>
+Make sure the <b>swt.jar</b> file is on the java classpath.</li>
+
+<br>Select the SWT Examples project and bring up the Properties dialog.&nbsp;
+On the Java Build path page, select the Libraries tab, click on the Add
+External JARs button and find <b>swt.jar</b>.&nbsp; The <b>swt.jar</b>
+file can be found in the following directory, depending one which Operating
+System you are using to run Eclipse:
+<ul>
+<li>
+Windows - &lt;install-dir>\eclipse\plugins\org.eclipse.swt\</li>
+
+<br>Motif - &lt;install-dir>/eclipse/plugins/org.eclipse.swt/</ul>
+
+<li>
+Make sure the <b>swtexamples.jar</b> is on the java classpath.</li>
+
+<br>Select the SWT Examples project and bring up the Properties dialog.&nbsp;
+On the Java Build path page, select the Libraries tab, click on the Add
+External JARs button and find <b>swtexamples.jar</b>.&nbsp; The <b>swtexamples.jar</b>
+file can be found in the following directory, depending one which Operating
+System you are using to run Eclipse:
+<ul>
+<li>
+Windows - &lt;install-dir>\eclipse\plugins\org.eclipse.swt.examples</li>
+
+<br>Motif - &lt;install-dir>/eclipse/plugins/org.eclipse.swt.examples/</ul>
+</ul>
+
+<h3>
+<a NAME="Run"></a>Running the Examples</h3>
+In the Packages view of the Java Perspective, expand <b>swtexamples.jar</b>.&nbsp;
+You will see all of the packages and other resource files present in the
+jar file.
+<p>All of the standalone SWT examples are intended to be run as a Java
+Application.&nbsp; No parameters need be passed to any of these examples
+in order to run the example.&nbsp; To run one of the example classes, simply
+expand the containing package of the runnable class, select the runnable
+class, then click on the Run button on the toolbar.
+<p>The runnable classes in the <b>swtexamples.jar</b> are:
+<ul>
+<li>
+&nbsp;org.eclipse.swt.examples.adressbook.AddressBook</li>
+
+<li>
+&nbsp;org.eclipse.swt.examples.controlexample.ControlExamples</li>
+
+<li>
+&nbsp;org.eclipse.swt.examples.explorer.Explorer</li>
+
+<li>
+&nbsp;org.eclipse.swt.examples.helloworld.HelloWorld1</li>
+
+<li>
+&nbsp;org.eclipse.swt.examples.helloworld.HelloWorld2</li>
+
+<li>
+&nbsp;org.eclipse.swt.examples.helloworld.HelloWorld3</li>
+
+<li>
+&nbsp;org.eclipse.swt.examples.helloworld.HelloWorld4</li>
+
+<li>
+&nbsp;org.eclipse.swt.examples.helloworld.HelloWorld5</li>
+
+<li>
+&nbsp;org.eclipse.swt.examples.hover.HoverHelpExample</li>
+
+<li>
+&nbsp;org.eclipse.swt.examples.imageexample.ImageAnalyzer</li>
+
+<li>
+&nbsp;org.eclipse.swt.examples.javaviewer.JavaViewer</li>
+
+<li>
+&nbsp;org.eclipse.swt.examples.texteditor.ColorTextEditor</li>
+</ul>
+
+<p><br><a href="hglegal.htm"><img SRC="ngibmcpy.gif" ALT="Copyright IBM Corporation 2000" BORDER=0 height=12 width=195></a>
+</body>
+</html>
