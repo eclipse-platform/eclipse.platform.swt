@@ -1,5 +1,8 @@
 package org.eclipse.swt.internal;
-
+/*
+ * (c) Copyright IBM Corp. 2001, 2002.
+ * All Rights Reserved
+ */
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
