@@ -3,9 +3,9 @@
     <classpathentry kind="src" path="src"/>
     <classpathentry kind="var" path="JRE_LIB"/>
     <classpathentry kind="var"
-        path="ECLIPSE_HOME/plugins/org.eclipse.core.runtime_1.9.0/runtime.jar" sourcepath="ECLIPSE_HOME/plugins/org.eclipse.core.runtime_1.9.0/runtimesrc.zip"/>
+        path="ECLIPSE_HOME/plugins/org.eclipse.core.runtime_2.0.0/runtime.jar" sourcepath="ECLIPSE_HOME/plugins/org.eclipse.core.runtime_2.0.0/runtimesrc.zip"/>
     <classpathentry kind="var"
-        path="ECLIPSE_HOME/plugins/org.eclipse.ui_1.9.0/workbench.jar" sourcepath="ECLIPSE_HOME/plugins/org.eclipse.ui_1.9.0/workbenchsrc.zip"/>
+        path="ECLIPSE_HOME/plugins/org.eclipse.ui_2.0.0/workbench.jar" sourcepath="ECLIPSE_HOME/plugins/org.eclipse.ui_2.0.0/workbenchsrc.zip"/>
     <classpathentry kind="src" path="/org.eclipse.swt"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
