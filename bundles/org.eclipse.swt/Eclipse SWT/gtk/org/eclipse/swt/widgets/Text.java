@@ -741,7 +741,7 @@ public String getText () {
  */
 public String getText (int start, int end) {
 	checkWidget ();
-	if (start > end) return "";
+	if (!(start <= end && 0 <= end)) return "";
 	start = Math.max (0, start);
 	int address;
 	if ((style & SWT.SINGLE) != 0) {
