@@ -1171,12 +1171,6 @@ public void setVisible (boolean visible) {
 			display.update ();
 		} while (!isVisible ());
 		adjustTrim ();
-
-		/* Set the saved focus widget */
-		if (savedFocus != null && !savedFocus.isDisposed ()) {
-			savedFocus.setFocus ();
-		}
-		savedFocus = null;
 		
 		sendEvent (SWT.Show);
 		return;
