@@ -37,8 +37,15 @@ public final class Cursor {
 	 * (Warning: This field is platform dependent)
 	 */
 	public int handle;
+
+	/**
+	 * The device where this image was created.
+	 */
+	Device device;
+
 Cursor () {
 }
+
 /**	 
  * Constructs a new cursor given a device and a style
  * constant describing the desired cursor appearance.
@@ -125,10 +132,12 @@ public Cursor(Device display, int style) {
 			osFlag = OS.GDK_X_CURSOR;
 			break;
 		default:
-			error(SWT.ERROR_INVALID_ARGUMENT);
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
+	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	this.handle = OS.gdk_cursor_new(osFlag);
 }
+
 /**	 
  * Constructs a new cursor given a device, image and mask
  * data describing the desired cursor appearance, and the x
@@ -160,22 +169,22 @@ public Cursor(Device display, int style) {
  * </ul>
  */
 public Cursor(Device display, ImageData source, ImageData mask, int hotspotX, int hotspotY) {
-	if (source == null) error(SWT.ERROR_NULL_ARGUMENT);
+	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (mask == null) {
-		if (!(source.getTransparencyType() == SWT.TRANSPARENCY_MASK)) error(SWT.ERROR_NULL_ARGUMENT);
+		if (!(source.getTransparencyType() == SWT.TRANSPARENCY_MASK)) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		mask = source.getTransparencyMask();
 	}
 	/* Check the bounds. Mask must be the same size as source */
 	if (mask.width != source.width || mask.height != source.height) {
-		error(SWT.ERROR_INVALID_ARGUMENT);
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	/* Check depths */
-	if (mask.depth != 1) error(SWT.ERROR_INVALID_ARGUMENT);
-	if (source.depth != 1) error(SWT.ERROR_INVALID_ARGUMENT);
+	if (mask.depth != 1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (source.depth != 1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	/* Check the hotspots */
 	if (hotspotX >= source.width || hotspotX < 0 ||
 		hotspotY >= source.height || hotspotY < 0) {
-		error(SWT.ERROR_INVALID_ARGUMENT);
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 
 	/* Swap the bits if necessary */
@@ -228,10 +237,11 @@ public Cursor(Device display, ImageData source, ImageData mask, int hotspotX, in
 	/* For some reason, mask and source take reverse roles, both here and on Motif */
 	handle = OS.gdk_cursor_new_from_pixmap (maskPixmap, sourcePixmap, foreground, background, hotspotX, hotspotY);
 	/* Dispose the pixmaps */
-	OS.gdk_pixmap_unref (sourcePixmap);
-	OS.gdk_pixmap_unref (maskPixmap);
-	if (handle == 0) error(SWT.ERROR_NO_HANDLES);
+	OS.g_object_unref (sourcePixmap);
+	OS.g_object_unref (maskPixmap);
+	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 }
+
 /**
  * Disposes of the operating system resources associated with
  * the cursor. Applications must dispose of all cursors which
@@ -240,7 +250,9 @@ public Cursor(Device display, ImageData source, ImageData mask, int hotspotX, in
 public void dispose() {
 	if (handle != 0) OS.gdk_cursor_destroy(handle);
 	handle = 0;
+	device = null;
 }
+
 /**
  * Compares the argument to the receiver, and returns true
  * if they represent the <em>same</em> object using a class
@@ -252,16 +264,35 @@ public void dispose() {
  * @see #hashCode
  */
 public boolean equals(Object object) {
-	return (object == this) || ((object instanceof Cursor) && (handle == ((Cursor)object).handle));
+	if (object == this) return true;
+	if (!(object instanceof Cursor)) return false;
+	Cursor cursor = (Cursor) object;
+	return device == cursor.device && handle == cursor.handle;
 }
-void error(int code) {
-	throw new SWTError(code);
-}
-public static Cursor gtk_new(int handle) {
+
+/**	 
+ * Invokes platform specific functionality to allocate a new cursor.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Cursor</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param device the device on which to allocate the color
+ * @param handle the handle for the cursor
+ * 
+ * @private
+ */
+public static Cursor gtk_new(Device device, int handle) {
+	if (device == null) device = Device.getDevice();
 	Cursor cursor = new Cursor();
 	cursor.handle = handle;
+	cursor.device = device;
 	return cursor;
 }
+
 /**
  * Returns an integer hash code for the receiver. Any two 
  * objects which return <code>true</code> when passed to 
@@ -275,6 +306,7 @@ public static Cursor gtk_new(int handle) {
 public int hashCode() {
 	return handle;
 }
+
 /**
  * Returns <code>true</code> if the cursor has been disposed,
  * and <code>false</code> otherwise.
@@ -299,4 +331,5 @@ public String toString () {
 	if (isDisposed()) return "Cursor {*DISPOSED*}";
 	return "Cursor {" + handle + "}";
 }
+
 }

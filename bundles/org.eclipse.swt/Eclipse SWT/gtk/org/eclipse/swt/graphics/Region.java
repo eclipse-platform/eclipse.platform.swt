@@ -24,15 +24,18 @@ public final class Region {
 	 * (Warning: This field is platform dependent)
 	 */
 	public int handle;
+
 /**
  * Constructs a new empty region.
  */
 public Region() {
 	handle = OS.gdk_region_new();
 }
+
 Region(int handle) {
 	this.handle = handle;
 }
+
 /**
  * Adds the given rectangle to the collection of rectangles
  * the receiver maintains to describe its area.
@@ -48,21 +51,17 @@ Region(int handle) {
  * </ul>
  */
 public void add(Rectangle rect) {
-	if (rect == null) error(SWT.ERROR_NULL_ARGUMENT);
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (rect.width < 0 || rect.height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	GdkRectangle gdkRect = new GdkRectangle();
-	gdkRect.x = (short)rect.x;
-	gdkRect.y = (short)rect.y;
-	gdkRect.width = (short)rect.width;
-	gdkRect.height = (short)rect.height;
-	int hOld = handle;
-	/**
-	 * Feature in GDK. Due to the way the GDK region calls work,
-	 * we have to reassign the handle and destroy the old one.
-	 */
-	handle = OS.gdk_region_union_with_rect(handle, gdkRect);
-	OS.gdk_region_destroy(hOld);
+	gdkRect.x = rect.x;
+	gdkRect.y = rect.y;
+	gdkRect.width = rect.width;
+	gdkRect.height = rect.height;
+	OS.gdk_region_union_with_rect(handle, gdkRect);
 }
+
 /**
  * Adds all of the rectangles which make up the area covered
  * by the argument to the collection of rectangles the receiver
@@ -79,15 +78,12 @@ public void add(Rectangle rect) {
  * </ul>
  */
 public void add(Region region) {
-	if (region == null) error(SWT.ERROR_NULL_ARGUMENT);
-	/**
-	 * Feature in GDK. Due to the way the GDK region calls work,
-	 * we have to reassign the handle and destroy the old one.
-	 */
-	int hOld = handle;
-	handle = OS.gdk_regions_union(handle, region.handle);
-	OS.gdk_region_destroy(hOld);
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	OS.gdk_region_union(handle, region.handle);
 }
+
 /**
  * Returns <code>true</code> if the point specified by the
  * arguments is inside the area specified by the receiver,
@@ -102,8 +98,10 @@ public void add(Region region) {
  * </ul>
  */
 public boolean contains(int x, int y) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return OS.gdk_region_point_in(handle, x, y);
 }
+
 /**
  * Returns <code>true</code> if the given point is inside the
  * area specified by the receiver, and <code>false</code>
@@ -120,7 +118,7 @@ public boolean contains(int x, int y) {
  * </ul>
  */
 public boolean contains(Point pt) {
-	if (pt == null) error(SWT.ERROR_NULL_ARGUMENT);
+	if (pt == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	return contains(pt.x, pt.y);
 }
 /**
@@ -132,6 +130,7 @@ public void dispose() {
 	if (handle != 0) OS.gdk_region_destroy(handle);
 	handle = 0;
 }
+
 /**
  * Compares the argument to the receiver, and returns true
  * if they represent the <em>same</em> object using a class
@@ -145,14 +144,10 @@ public void dispose() {
 public boolean equals(Object object) {
 	if (this == object) return true;
 	if (!(object instanceof Region)) return false;
-	int xRegion = ((Region)object).handle;
-	if (handle == xRegion) return true;
-	if (xRegion == 0) return false;
-	return OS.gdk_region_equal(handle, xRegion);
+	Region region = (Region)object;
+	return handle == region.handle;
 }
-void error(int code) {
-	throw new SWTError(code);
-}
+
 /**
  * Returns a rectangle which represents the rectangular
  * union of the collection of rectangles the receiver
@@ -167,13 +162,16 @@ void error(int code) {
  * @see Rectangle#union
  */
 public Rectangle getBounds() {
-	GdkRectangle rect = new GdkRectangle();
-	OS.gdk_region_get_clipbox(handle, rect);
-	return new Rectangle(rect.x, rect.y, rect.width, rect.height);
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	GdkRectangle gdkRect = new GdkRectangle();
+	OS.gdk_region_get_clipbox(handle, gdkRect);
+	return new Rectangle(gdkRect.x, gdkRect.y, gdkRect.width, gdkRect.height);
 }
+
 public static Region gtk_new(int handle) {
 	return new Region(handle);
 }
+
 /**
  * Returns an integer hash code for the receiver. Any two 
  * objects which return <code>true</code> when passed to 
@@ -187,6 +185,7 @@ public static Region gtk_new(int handle) {
 public int hashCode() {
 	return handle;
 }
+
 /**
  * Returns <code>true</code> if the rectangle described by the
  * arguments intersects with any of the rectangles the receiver
@@ -205,12 +204,13 @@ public int hashCode() {
  * @see Rectangle#intersects
  */
 public boolean intersects (int x, int y, int width, int height) {
-	GdkRectangle osRect = new GdkRectangle();
-	osRect.x = (short)x;
-	osRect.y = (short)y;
-	osRect.width = (short)width;
-	osRect.height = (short)height;
-	return OS.gdk_region_rect_in(handle, osRect) != OS.GDK_OVERLAP_RECTANGLE_OUT;
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	GdkRectangle gdkRect = new GdkRectangle();
+	gdkRect.x = x;
+	gdkRect.y = y;
+	gdkRect.width = width;
+	gdkRect.height = height;
+	return OS.gdk_region_rect_in(handle, gdkRect) != OS.GDK_OVERLAP_RECTANGLE_OUT;
 }
 /**
  * Returns <code>true</code> if the given rectangle intersects
@@ -230,9 +230,10 @@ public boolean intersects (int x, int y, int width, int height) {
  * @see Rectangle#intersects
  */
 public boolean intersects(Rectangle rect) {
-	if (rect == null) error(SWT.ERROR_NULL_ARGUMENT);
+	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	return intersects(rect.x, rect.y, rect.width, rect.height);
 }
+
 /**
  * Returns <code>true</code> if the region has been disposed,
  * and <code>false</code> otherwise.
@@ -246,6 +247,7 @@ public boolean intersects(Rectangle rect) {
 public boolean isDisposed() {
 	return handle == 0;
 }
+
 /**
  * Returns <code>true</code> if the receiver does not cover any
  * area in the (x, y) coordinate plane, and <code>false</code> if
@@ -258,8 +260,10 @@ public boolean isDisposed() {
  * </ul>
  */
 public boolean isEmpty() {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return OS.gdk_region_empty(handle);
 }
+
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.

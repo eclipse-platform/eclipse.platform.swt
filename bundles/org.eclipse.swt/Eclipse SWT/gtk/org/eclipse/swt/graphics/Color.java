@@ -5,9 +5,8 @@ package org.eclipse.swt.graphics;
  * All Rights Reserved
  */
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.*;
 
 /**
  * Instances of this class manage the operating system resources that
@@ -28,9 +27,15 @@ public final class Color {
 	 * (Warning: This field is platform dependent)
 	 */
 	public GdkColor handle;
-	Device display;
+
+	/**
+	 * The device where this image was created.
+	 */
+	Device device;
+
 Color() {
 }
+
 /**	 
  * Constructs a new instance of this class given a device and the
  * desired red, green and blue values expressed as ints in the range
@@ -54,9 +59,10 @@ Color() {
  *
  * @see #dispose
  */
-public Color(Device display, int red, int green, int blue) {
-	init(display, red, green, blue);
+public Color(Device device, int red, int green, int blue) {
+	init(device, red, green, blue);
 }
+
 /**	 
  * Constructs a new instance of this class given a device and an
  * <code>RGB</code> describing the desired red, green and blue values.
@@ -78,32 +84,32 @@ public Color(Device display, int red, int green, int blue) {
  *
  * @see #dispose
  */
-public Color(Device display, RGB rgb) {
-	if (rgb == null) error(SWT.ERROR_NULL_ARGUMENT);
-	init(display, rgb.red, rgb.green, rgb.blue);
+public Color(Device device, RGB rgb) {
+	if (rgb == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	init(device, rgb.red, rgb.green, rgb.blue);
 }
+
 /**
  * Disposes of the operating system resources associated with
  * the color. Applications must dispose of all colors which
  * they allocate.
  */
 public void dispose() {
-	/**
-	 * If this is a palette-based display,
-	 * Decrease the reference count for this color.
-	 * If the reference count reaches 0, the slot may
-	 * be reused when another color is allocated.
-	 */
-	if (display.colorRefCount != null) {
-		if (--display.colorRefCount[handle.pixel] == 0) {
-			display.gdkColors[handle.pixel] = null;
+	if (handle == null) return;
+	if (device.isDisposed()) return;
+	int pixel = handle.pixel;
+	if (device.colorRefCount != null) {
+		/* If this was the last reference, remove the color from the list */
+		if (--device.colorRefCount[pixel] == 0) {
+			device.gdkColors[pixel] = null;
 		}
 	}
 	int colormap = OS.gdk_colormap_get_system();
-	OS.gdk_colors_free(colormap, new int[] { handle.pixel }, 1, 0);
-	this.display = null;
-	this.handle = null;
+	OS.gdk_colormap_free_colors(colormap, handle, 1);
+	device = null;
+	handle = null;
 }
+
 /**
  * Compares the argument to the receiver, and returns true
  * if they represent the <em>same</em> object using a class
@@ -118,12 +124,12 @@ public boolean equals(Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Color)) return false;
 	Color color = (Color)object;
-	GdkColor xColor = color.handle;
-	return (handle.pixel == xColor.pixel)&&(handle.red == xColor.red) && (handle.green == xColor.green) && (handle.blue == xColor.blue) && (this.display == color.display);
+	GdkColor gdkColor = color.handle;
+	if (handle == gdkColor) return true;
+	return device == color.device && handle.red == gdkColor.red &&
+		handle.green == gdkColor.green && handle.blue == gdkColor.blue;
 }
-void error(int code) {
-	throw new SWTError(code);
-}
+
 /**
  * Returns the amount of blue in the color, from 0 to 255.
  *
@@ -134,8 +140,10 @@ void error(int code) {
  * </ul>
  */
 public int getBlue() {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return (handle.blue >> 8) & 0xFF;
 }
+
 /**
  * Returns the amount of green in the color, from 0 to 255.
  *
@@ -146,8 +154,10 @@ public int getBlue() {
  * </ul>
  */
 public int getGreen() {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return (handle.green >> 8) & 0xFF;
 }
+
 /**
  * Returns the amount of red in the color, from 0 to 255.
  *
@@ -158,6 +168,7 @@ public int getGreen() {
  * </ul>
  */
 public int getRed() {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return (handle.red >> 8) & 0xFF;
 }
 
@@ -172,8 +183,10 @@ public int getRed() {
  * @see #equals
  */
 public int hashCode() {
+	if (isDisposed()) return 0;
 	return handle.red ^ handle.green ^ handle.blue;
 }
+
 /**
  * Returns an <code>RGB</code> representing the receiver.
  *
@@ -182,29 +195,65 @@ public int hashCode() {
  * </ul>
  */
 public RGB getRGB () {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return new RGB(getRed(), getGreen(), getBlue());
 }
 
-void init(Device display, int red, int green, int blue) {
-	if (display == null) display = Display.getDefault();
-	this.display = display;
-	handle = new GdkColor();
-	handle.red = (short)((red & 0xFF) | ((red & 0xFF) << 8));
-	handle.green = (short)((green & 0xFF) | ((green & 0xFF) << 8));
-	handle.blue = (short)((blue & 0xFF) | ((blue & 0xFF) << 8));
+/**	 
+ * Invokes platform specific functionality to allocate a new color.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Color</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param device the device on which to allocate the color
+ * @param handle the handle for the color
+ * 
+ * @private
+ */
+public static Color gtk_new(Device device, GdkColor gdkColor) {
+	if (device == null) device = Device.getDevice();
+	Color color = new Color();
+	color.handle = gdkColor;
+	color.device = device;
+	return color;
+}
+
+void init(Device device, int red, int green, int blue) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	this.device = device;
+	if ((red > 255) || (red < 0) ||
+		(green > 255) || (green < 0) ||
+		(blue > 255) || (blue < 0)) {
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	GdkColor gdkColor = new GdkColor();
+	gdkColor.red = (short)((red & 0xFF) | ((red & 0xFF) << 8));
+	gdkColor.green = (short)((green & 0xFF) | ((green & 0xFF) << 8));
+	gdkColor.blue = (short)((blue & 0xFF) | ((blue & 0xFF) << 8));
 	int colormap = OS.gdk_colormap_get_system();
-	OS.gdk_color_alloc(colormap, handle);
-	if (display.colorRefCount != null) {
-		// Make a copy of the color to put in the colors array
+	if (!OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true)) {
+		/* Allocate black. */
+		gdkColor = new GdkColor();
+		OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true);
+	}
+	handle = gdkColor;
+	if (device.colorRefCount != null) {
+		/* Make a copy of the color to put in the colors array */
 		GdkColor colorCopy = new GdkColor();
 		colorCopy.red = handle.red;
 		colorCopy.green = handle.green;
 		colorCopy.blue = handle.blue;
 		colorCopy.pixel = handle.pixel;
-		display.gdkColors[colorCopy.pixel] = colorCopy;
-		display.colorRefCount[colorCopy.pixel]++;
+		device.gdkColors[colorCopy.pixel] = colorCopy;
+		device.colorRefCount[colorCopy.pixel]++;
 	}
 }
+
 /**
  * Returns <code>true</code> if the color has been disposed,
  * and <code>false</code> otherwise.
@@ -218,6 +267,7 @@ void init(Device display, int red, int green, int blue) {
 public boolean isDisposed() {
 	return handle == null;
 }
+
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.
@@ -225,31 +275,8 @@ public boolean isDisposed() {
  * @return a string representation of the receiver
  */
 public String toString () {
+	if (isDisposed()) return "Color {*DISPOSED*}";
 	return "Color {" + getRed() + ", " + getGreen() + ", " + getBlue() + "}";
-}
-
-public static Color gtk_new(GdkColor gdkColor) {
-	Color color = new Color(null, gtk_getRGBIntensities(gdkColor));
-	return color;
-}
-
-static RGB gtk_getRGBIntensities(GdkColor gdkColor) {
-	boolean intensitiesAreZero = (gdkColor.red==0) && (gdkColor.green==0) && (gdkColor.blue==0);
-	if (!intensitiesAreZero) return new RGB ((gdkColor.red&0xFF00)>>8,
-	                                        (gdkColor.green&0xFF00)>>8,
-	                                        (gdkColor.blue&0xFF00)>>8 );
-	GdkVisual visual = new GdkVisual(OS.gdk_visual_get_system());
-	int r = (gdkColor.pixel&visual.red_mask) >> visual.red_shift;
-	if (visual.red_prec<8) r = r << (8 - visual.red_prec);
-		else r = r >> (visual.red_prec - 8);
-	int g = (gdkColor.pixel&visual.green_mask) >> visual.green_shift;
-		if (visual.green_prec<8) g = g << (8 - visual.green_prec);
-	else g = g >> (visual.green_prec - 8);
-		int b = (gdkColor.pixel&visual.blue_mask) >> visual.blue_shift;
-	if (visual.blue_prec<8) b = b << (8 - visual.blue_prec);
-		else b = b >> (visual.blue_prec - 8);
-
-	return new RGB(r, g, b);
 }
 
 }

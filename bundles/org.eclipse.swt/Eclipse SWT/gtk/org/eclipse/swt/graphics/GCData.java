@@ -5,6 +5,7 @@ package org.eclipse.swt.graphics;
  * All Rights Reserved
  */
 
+import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.*;
 
 /**
@@ -20,9 +21,11 @@ import org.eclipse.swt.*;
  * @private
  */
 public final class GCData {
+	public Device device;
 	public Image image;
 	public int drawable;
+	public GdkColor foreground;
+	public GdkColor background;
 	public int clipRgn;
 	public int lineStyle = SWT.LINE_SOLID;
-	public int renderTable;
 }
