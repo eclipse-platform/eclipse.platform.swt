@@ -70,23 +70,18 @@ public final class CCombo extends Composite {
  * @see Widget#getStyle
  */
 public CCombo (Composite parent, int style) {
-	super (parent, checkStyle (style));
-	
-	style = getStyle();
+	super (parent, style = checkStyle (style));
 	
 	int textStyle = SWT.SINGLE;
 	if ((style & SWT.READ_ONLY) != 0) textStyle |= SWT.READ_ONLY;
 	if ((style & SWT.FLAT) != 0) textStyle |= SWT.FLAT;
 	text = new Text (this, textStyle);
-	
 	popup = new Shell (getShell (), SWT.NO_TRIM);
-	
 	int listStyle = SWT.SINGLE | SWT.V_SCROLL;
 	if ((style & SWT.FLAT) != 0) listStyle |= SWT.FLAT;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) listStyle |= SWT.RIGHT_TO_LEFT;
 	if ((style & SWT.LEFT_TO_RIGHT) != 0) listStyle |= SWT.LEFT_TO_RIGHT;
 	list = new List (popup, listStyle);
-	
 	int arrowStyle = SWT.ARROW | SWT.DOWN;
 	if ((style & SWT.FLAT) != 0) arrowStyle |= SWT.FLAT;
 	arrow = new Button (this, arrowStyle);
@@ -199,7 +194,7 @@ public void add (String string, int index) {
 * @exception SWTError(ERROR_NULL_ARGUMENT)
 *	when listener is null
 */
-public void addModifyListener (ModifyListener listener) {;
+public void addModifyListener (ModifyListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
@@ -363,8 +358,20 @@ public Control [] getChildren () {
 	checkWidget();
 	return new Control [0];
 }
-boolean getEditable () {
-	return text.getEditable ();
+/**
+ * Gets the editable state.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.0
+ *
+ */
+public boolean getEditable () {
+	checkWidget ();
+	return text.getEditable();
 }
 /**
 * Gets an item at an index.
@@ -476,6 +483,12 @@ public Point getSelection () {
 public int getSelectionIndex () {
 	checkWidget();
 	return list.getSelectionIndex ();
+}
+public int getStyle () {
+	int style = super.getStyle();
+	style &= ~SWT.READ_ONLY;
+	if (!text.getEditable()) style |= SWT.READ_ONLY; 
+	return style;
 }
 /**
 * Gets the widget text.
@@ -931,7 +944,23 @@ public void setBackground (Color color) {
 	if (list != null) list.setBackground(color);
 	if (arrow != null) arrow.setBackground(color);
 }
-
+/**
+ * Sets the editable state.
+ *
+ * @param editable the new editable state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.0
+ *
+ */
+public void setEditable (boolean editable) {
+	checkWidget ();
+	text.setEditable(editable);
+}
 public void setEnabled (boolean enabled) {
 	super.setEnabled(enabled);
 	if (popup != null) popup.setVisible (false);
@@ -995,8 +1024,7 @@ public void setItem (int index, String string) {
 public void setItems (String [] items) {
 	checkWidget();
 	if (items == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	int style = getStyle();
-	if ((style & SWT.READ_ONLY) != 0) text.setText (""); //$NON-NLS-1$
+	if (!text.getEditable()) text.setText (""); //$NON-NLS-1$
 	list.setItems (items);
 }
 /**
