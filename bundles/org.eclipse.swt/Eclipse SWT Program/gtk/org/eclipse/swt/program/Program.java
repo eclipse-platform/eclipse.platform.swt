@@ -30,7 +30,6 @@ import java.util.Vector;
  */
 public final class Program {	
 	String name;
-	String extension;
 	String command;
 	ImageData imageData;
 	Display display;
@@ -410,8 +409,8 @@ public boolean equals(Object other) {
 	if (this == other) return true;
 	if (other instanceof Program) {
 		final Program program = (Program)other;
-		return display == program.display && extension.equals(program.extension) &&
-			name.equals(program.name) && command.equals(program.command);
+		return display == program.display && name.equals(program.name) &&
+			command.equals(program.command);
 	}
 	return false;
 }
@@ -501,7 +500,7 @@ public String getName () {
  * @return a hash code
  */
 public int hashCode() {
-	return extension.hashCode() ^ name.hashCode() ^ command.hashCode() ^ display.hashCode();
+	return name.hashCode() ^ command.hashCode() ^ display.hashCode();
 }
 
 public String toString() {
