@@ -11,7 +11,8 @@
 package org.eclipse.swt.custom;
 
 
-import org.eclipse.swt.events.TypedEvent;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 public class CTabFolderEvent extends TypedEvent {
@@ -25,7 +26,13 @@ public class CTabFolderEvent extends TypedEvent {
 	 * Setting this field to <code>false</code> will cancel the operation.
 	 */
  	public boolean doit;
- 	
+
+	/**
+	* DO NOT USE FIELD RECT - UNDER CONSTRUCTION
+	* @ since 3.0
+	*/
+ 	public Rectangle rect;
+
 /**
  * Constructs a new instance of this class.
  *

@@ -10,7 +10,14 @@
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
-public interface CTabFolderListener extends CTabFolderCloseListener {
+import org.eclipse.swt.internal.*;
+
+/**
+* DO NOT USE - UNDER CONSTRUCTION
+*
+* @ since 3.0
+*/
+public interface CTabFolderCloseListener extends SWTEventListener {
 	
 /**
  * Sent when the user clicks on the close button of an item in the CTabFolder.  The item being closed is specified
@@ -18,9 +25,7 @@ public interface CTabFolderListener extends CTabFolderCloseListener {
  * When the CTabItem is closed, it is disposed.  The contents of the CTabItem (see CTabItem#setControl) will be 
  * made not visible when the CTabItem is closed.
  * 
- * @param e an event indicating the item being closed
+ * @param event an event indicating the item being closed
  */
-// INTENTIONALLY COMMENTED
-// This method is now inherited from  CTabFolderCloseListener
-//public void itemClosed(CTabFolderEvent event);
+public void itemClosed(CTabFolderEvent event);
 }
