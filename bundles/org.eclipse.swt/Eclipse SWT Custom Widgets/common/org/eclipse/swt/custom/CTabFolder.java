@@ -626,16 +626,13 @@ private void drawBorder(GC gc) {
 public Rectangle getClientArea() {
 	checkWidget();
 	Point size = getSize();
-	if (items.length == 0) {
-		if (!showBorders) return super.getClientArea();
-		int width = size.x - borderRight - 2;
-		int height = size.y - borderBottom - 2;
-		return new Rectangle(borderRight + 1, borderBottom + 1, width, height);	
-	} else {
-		int width = size.x - 2*marginWidth - borderLeft - borderRight;
-		int height = size.y - 2*marginHeight - borderTop - borderBottom - tabHeight - 1;
-		return new Rectangle(xClient, yClient, width, height);
+	int width = size.x  - borderLeft - borderRight - 2*marginWidth;
+	int height = size.y - borderTop - borderBottom - 2*marginHeight;
+	if (items.length == 0) {		
+		return new Rectangle(borderLeft + marginWidth, borderTop + marginHeight, width, height);	
 	}
+	height -= tabHeight + 1; //+1 for line under tabs
+	return new Rectangle(xClient, yClient, width, height);
 }
 /**
  * Returns the height of the tab
