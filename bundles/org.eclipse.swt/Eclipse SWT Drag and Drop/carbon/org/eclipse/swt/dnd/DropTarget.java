@@ -61,7 +61,7 @@ import org.eclipse.swt.widgets.*;
  *                             DND.DropAccept, DND.Drop </dd>
  * </dl>
  */
-public final class DropTarget extends Widget {
+public class DropTarget extends Widget {
 	
 	// info for registering as a droptarget	
 	private Control control;

@@ -89,7 +89,7 @@ import org.eclipse.swt.internal.gtk.*;
  *	<dt><b>Events</b></dt> <dd>DND.DragStart, DND.DragSetData, DND.DragEnd</dd>
  * </dl>
  */
-public final class DragSource extends Widget {
+public class DragSource extends Widget {
 	
 	static Callback DragGetData;
 	static Callback DragEnd;

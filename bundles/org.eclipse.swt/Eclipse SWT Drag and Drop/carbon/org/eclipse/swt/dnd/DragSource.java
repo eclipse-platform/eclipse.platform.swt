@@ -86,7 +86,7 @@ import org.eclipse.swt.widgets.*;
  *	<dt><b>Events</b></dt> <dd>DND.DragStart, DND.DragSetData, DND.DragEnd</dd>
  * </dl>
  */
-public final class DragSource extends Widget {
+public class DragSource extends Widget {
 	
 	// info for registering as a drag source
 	private Control control;

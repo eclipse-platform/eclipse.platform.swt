@@ -64,7 +64,7 @@ import org.eclipse.swt.internal.gtk.*;
  *                             DND.DropAccept, DND.Drop </dd>
  * </dl>
  */
-public final class DropTarget extends Widget {
+public class DropTarget extends Widget {
 
 	static Callback DragMotion;
 	static Callback DragLeave;
