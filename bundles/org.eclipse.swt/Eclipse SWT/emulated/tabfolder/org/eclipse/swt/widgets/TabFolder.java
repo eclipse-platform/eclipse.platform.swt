@@ -86,6 +86,9 @@ public TabFolder(Composite parent, int style) {
 	addListener (SWT.Paint, listener);
 	addListener (SWT.Resize, listener);
 	addListener (SWT.Traverse, listener);
+	addListener (SWT.KeyDown, listener);
+	addListener (SWT.FocusIn, listener);
+	addListener (SWT.FocusOut, listener);
 }
 /**
  * Adds the listener to the collection of listeners who will
@@ -439,13 +442,27 @@ void ensureRightFreeSpaceUsed() {
  */ 
 void ensureVisible(int tabIndex) {
 	if (items == null || tabIndex < 0 || tabIndex >= items.length) return;
-
+	if (!isTabScrolling()) return;
+	if (tabIndex < topTabIndex) {
+		topTabIndex = tabIndex;
+		layoutItems();
+		redrawTabs();
+		return;
+	}
+	int rightEdge = getScrollButtonArea().x;
 	TabItem tabItem = items[tabIndex];
-	int tabStopX = tabItem.x + tabItem.width;
-	if (isTabScrolling() && tabStopX >= getScrollButtonArea().x && tabIndex != topTabIndex) {
-		scrollRight();
+	while (tabItem.x + tabItem.width > rightEdge && tabIndex != topTabIndex) {
+		topTabIndex++;
+		layoutItems();
+		redrawTabs();
 	}
 }
+void focus (Event e) {
+	if (selectedIndex == -1) return;
+	TabItem tab = items[selectedIndex];
+	redraw(tab.x, tab.y, tab.width, tab.height);
+}
+
 public Rectangle getClientArea() {
 	checkWidget();
 	Rectangle clientArea = super.getClientArea();
@@ -592,6 +609,13 @@ void handleEvents (Event event){
 		case SWT.Traverse:
 			traversal(event); 
 			break;
+		case SWT.FocusIn:
+		case SWT.FocusOut:
+			focus(event);
+			break;
+		case SWT.KeyDown:
+			keyDown(event);
+			break;
 		default:
 			break;
 	}
@@ -681,6 +705,20 @@ void itemChanged(TabItem item) {
 		redrawScrollButtons();
 	}	
 }
+void keyDown(Event e) {
+//	if (e.keyCode == SWT.ARROW_LEFT) {
+//		if (selectedIndex > 0) {
+//			forceFocus();
+//			setSelection(selectedIndex - 1, true);
+//		}
+//	}
+//	if (e.keyCode == SWT.ARROW_RIGHT) {
+//		if (selectedIndex < items.length - 1) {
+//			forceFocus();
+//			setSelection(selectedIndex + 1, true);
+//		}
+//	}
+}
 /**
  * Layout the items and store the client area size.
  */
@@ -740,6 +778,7 @@ void mouseDown(Event event) {
 	else {
 		for (int i=0; i<items.length; i++) {
 			if (items[i].getBounds().contains(new Point(event.x, event.y))) {
+				forceFocus();
 				setSelection(i, true);
 				return;
 			}

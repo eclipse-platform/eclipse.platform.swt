@@ -245,6 +245,11 @@ void paint(GC gc, boolean isSelected) {
 	gc.setForeground(parent.getDisplay().getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW));
 	gc.drawLine(x + width - 2, y + 2, x + width - 2, y + height - 1);
 
+	if (parent.isFocusControl() && isSelected) {
+		// draw a focus rectangle
+		gc.drawFocus(x + 3, y + 3, width - 6, height - 3);
+	}
+		
 	// icon and bitmap.  Should probably be checking style bits to determine
 	// exactly what to paint.  Do we just draw the icon when the icon/text combination
 	// is too wide to fit all tabs?
