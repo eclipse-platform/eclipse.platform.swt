@@ -9,7 +9,6 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of this class provide a surface for drawing
