@@ -398,10 +398,13 @@ void setBackgroundPixel (int pixel) {
 		}
 	}
 }
-public void setBounds (int x, int y, int width, int height) {
-	super.setBounds (x, y, width, height);
-	Rectangle rect = getClientArea ();
-	relayout (rect.width, rect.height);
+boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	boolean changed = super.setBounds (x, y, width, height, move, resize);
+	if (changed && resize) {
+		Rectangle rect = getClientArea ();
+		relayout (rect.width, rect.height);
+	}
+	return changed;
 }
 public void setFont (Font font) {
 	checkWidget();
@@ -430,11 +433,6 @@ public void setRedraw (boolean redraw) {
 	} else {
 		drawCount++;
 	}
-}
-public void setSize (int width, int height) {
-	super.setSize (width, height);
-	Rectangle rect = getClientArea ();
-	relayout (rect.width, rect.height);
 }
 boolean setTabItemFocus () {
 	int index = 0;
