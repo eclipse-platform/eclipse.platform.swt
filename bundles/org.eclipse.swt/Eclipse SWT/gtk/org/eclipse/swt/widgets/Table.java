@@ -1618,8 +1618,16 @@ public void showItem (TableItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
-	int path = OS.gtk_tree_model_get_path (modelHandle, item.handle);
-	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, false, 0, 0);
+	showItem (item.handle);
+}
+
+void showItem (int iter) {
+	GdkRectangle rect = new GdkRectangle ();
+	int path = OS.gtk_tree_model_get_path (modelHandle, iter);
+	OS.gtk_tree_view_get_cell_area (handle, path, 0, rect);
+	if (rect.y == 0 && rect.height == 0) {
+		OS.gtk_tree_view_scroll_to_cell (handle, path, 0, false, 0, 0);
+	}
 	OS.gtk_tree_path_free (path);
 }
 
@@ -1643,9 +1651,7 @@ public void showSelection () {
 	TableItem [] selection = getSelection ();
 	if (selection.length == 0) return;
 	TableItem item = selection [0];
-	int path = OS.gtk_tree_model_get_path (modelHandle, item.handle);
-	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, false, 0, 0);
-	OS.gtk_tree_path_free (path);
+	showItem (item.handle);
 }
 
 int treeSelectionProc (int model, int path, int iter, int[] selection, int length) {
