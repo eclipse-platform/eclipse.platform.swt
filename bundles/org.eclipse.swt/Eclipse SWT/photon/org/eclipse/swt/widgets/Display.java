@@ -1029,6 +1029,11 @@ public Font getSystemFont () {
 	return Font.photon_new (this, font);
 }
 
+public Image getSystemImage (int id) {
+	checkDevice ();
+	return null;
+}
+
 public Tray getSystemTray () {
 	checkDevice ();
 	if (tray != null) return tray;
