@@ -1847,15 +1847,15 @@ int /*long*/ gtk_map_event (int /*long*/ widget, int /*long*/ event) {
 	* order after the window  is mapped.
 	*/
 	int index = 0;
-	Control [] children = parent.getChildren ();
+	Control [] children = parent._getChildren ();
 	while (index < children.length) {
 		if (children [index] == this) break;
 		index++;
 	}
-	if (index == 0) {
-		setZOrder (null, true);
+	if (index + 1== children.length) {
+		setZOrder (null, false);
 	} else {
-		setZOrder (children [index - 1], false);
+		setZOrder (children [index + 1], true);
 	}
 	return 0;
 }
