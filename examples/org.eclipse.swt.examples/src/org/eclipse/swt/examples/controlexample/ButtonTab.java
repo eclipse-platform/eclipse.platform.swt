@@ -22,7 +22,7 @@ class ButtonTab extends AlignableTab {
 	Button button1, button2, button3, button4, button5, button6;
 	Group textButtonGroup, imageButtonGroup;
 
-	/* Allignment widgets added to the "Control" group */
+	/* Alignment widgets added to the "Control" group */
 	Button upButton, downButton;
 
 	/* Style widgets added to the "Style" group */
@@ -42,9 +42,9 @@ class ButtonTab extends AlignableTab {
 		super.createControlGroup ();
 	
 		/* Create the controls */
-		upButton = new Button (allignmentGroup, SWT.RADIO);
+		upButton = new Button (alignmentGroup, SWT.RADIO);
 		upButton.setText (ControlExample.getResourceString("Up"));
-		downButton = new Button (allignmentGroup, SWT.RADIO);
+		downButton = new Button (alignmentGroup, SWT.RADIO);
 		downButton.setText (ControlExample.getResourceString("Down"));
 	
 		/* Add the listeners */
