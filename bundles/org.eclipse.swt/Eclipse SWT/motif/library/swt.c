@@ -15,6 +15,7 @@
 
 #include <stdio.h>
 #include <assert.h>
+#include <unistd.h>
 
 JNIEXPORT int JNICALL Java_org_eclipse_swt_internal_motif_OS_getSharedLibraryMajorVersionNumber
   (JNIEnv *env, jclass that)
@@ -4987,7 +4988,7 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTextPaste
 #ifdef DEBUG_CALL_PRINTS
 	fprintf(stderr, "XmTextPaste\n");
 #endif
-	(jboolean) XmTextPaste((Widget)widget);
+	return (jboolean) XmTextPaste((Widget)widget);
 }
 
 /*
@@ -5001,7 +5002,7 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTextFieldPas
 #ifdef DEBUG_CALL_PRINTS
 	fprintf(stderr, "XmTextFieldPaste\n");
 #endif
-	(jboolean) XmTextFieldPaste((Widget)widget);
+	return (jboolean) XmTextFieldPaste((Widget)widget);
 }
 
 /*
@@ -7541,7 +7542,7 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XtToolkitThrea
    * WARNING: When running under VA/Java, XtToolkitThreadInitialize
    * is not called because this hangs VA/Java and SWT.
    */
-   if (pGlob->vajava) return;
+   if (pGlob->vajava) return (jboolean)1;
 #ifdef DEBUG_CALL_PRINTS
 	fprintf(stderr, "XtToolkitThreadInitialize\n");
 #endif
