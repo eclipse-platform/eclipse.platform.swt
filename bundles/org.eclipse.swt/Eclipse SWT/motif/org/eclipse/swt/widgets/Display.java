@@ -100,8 +100,6 @@ public class Display extends Device {
 	/* Windows, Events and Callbacks */
 	Callback windowCallback;
 	int windowProc, shellHandle;
-	static boolean XtInitialized;
-	static Object XInitLock = new Object ();
 	static String APP_NAME = "SWT";
 	byte [] displayName, appName, appClass;
 	Event [] eventQueue;
@@ -601,20 +599,6 @@ protected void create (DeviceData data) {
 	if (Default == null) Default = this;
 }
 void createDisplay (DeviceData data) {
-	
-	/* Initialize X and Xt */
-	synchronized (XInitLock) {
-		if (!XtInitialized) {
-			/*
-			* This code is intentionally commented.
-			*/
-//			OS.XInitThreads ();
-//			OS.XtToolkitThreadInitialize ();
-			OS.XtToolkitInitialize ();
-		}
-		XtInitialized = true;
-	}
-
 	/* Create the AppContext */
 	int [] argc = new int [] {0};
 	int xtContext = OS.XtCreateApplicationContext ();
