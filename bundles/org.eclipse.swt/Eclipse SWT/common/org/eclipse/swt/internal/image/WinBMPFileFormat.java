@@ -18,7 +18,6 @@ import java.io.*;
 final class WinBMPFileFormat extends FileFormat {
 	static final int BMPFileHeaderSize = 14;
 	static final int BMPHeaderFixedSize = 40;
-	int width, height, bitCount;
 	int importantColors;
 	Point pelsPerMeter = new Point(0, 0);
 
@@ -333,6 +332,9 @@ boolean isFileFormat(LEDataInputStream stream) {
 	}
 }
 byte[] loadData(byte[] infoHeader) {
+	int width = (infoHeader[4] & 0xFF) | ((infoHeader[5] & 0xFF) << 8) | ((infoHeader[6] & 0xFF) << 16) | ((infoHeader[7] & 0xFF) << 24);
+	int height = (infoHeader[8] & 0xFF) | ((infoHeader[9] & 0xFF) << 8) | ((infoHeader[10] & 0xFF) << 16) | ((infoHeader[11] & 0xFF) << 24);
+	int bitCount = (infoHeader[14] & 0xFF) | ((infoHeader[15] & 0xFF) << 8);
 	int stride = (width * bitCount + 7) / 8;
 	stride = (stride + 3) / 4 * 4; // Round up to 4 byte multiple
 	byte[] data = loadData(infoHeader, stride);
@@ -340,6 +342,7 @@ byte[] loadData(byte[] infoHeader) {
 	return data;
 }
 byte[] loadData(byte[] infoHeader, int stride) {
+	int height = (infoHeader[8] & 0xFF) | ((infoHeader[9] & 0xFF) << 8) | ((infoHeader[10] & 0xFF) << 16) | ((infoHeader[11] & 0xFF) << 24);
 	int dataSize = height * stride;
 	byte[] data = new byte[dataSize];
 	int cmp = (infoHeader[16] & 0xFF) | ((infoHeader[17] & 0xFF) << 8) | ((infoHeader[18] & 0xFF) << 16) | ((infoHeader[19] & 0xFF) << 24);
@@ -386,9 +389,9 @@ ImageData[] loadFromByteStream() {
 	} catch (Exception e) {
 		SWT.error(SWT.ERROR_IO, e);
 	}
-	width = (infoHeader[4] & 0xFF) | ((infoHeader[5] & 0xFF) << 8) | ((infoHeader[6] & 0xFF) << 16) | ((infoHeader[7] & 0xFF) << 24);
-	height = (infoHeader[8] & 0xFF) | ((infoHeader[9] & 0xFF) << 8) | ((infoHeader[10] & 0xFF) << 16) | ((infoHeader[11] & 0xFF) << 24);
-	bitCount = (infoHeader[14] & 0xFF) | ((infoHeader[15] & 0xFF) << 8);
+	int width = (infoHeader[4] & 0xFF) | ((infoHeader[5] & 0xFF) << 8) | ((infoHeader[6] & 0xFF) << 16) | ((infoHeader[7] & 0xFF) << 24);
+	int height = (infoHeader[8] & 0xFF) | ((infoHeader[9] & 0xFF) << 8) | ((infoHeader[10] & 0xFF) << 16) | ((infoHeader[11] & 0xFF) << 24);
+	int bitCount = (infoHeader[14] & 0xFF) | ((infoHeader[15] & 0xFF) << 8);
 	PaletteData palette = loadPalette(infoHeader);
 	if (inputStream.getPosition() < fileHeader[4]) {
 		// Seek to the specified offset
@@ -426,10 +429,11 @@ ImageData[] loadFromByteStream() {
 	};
 }
 PaletteData loadPalette(byte[] infoHeader) {
-	if (bitCount <= 8) {
+	int depth = (infoHeader[14] & 0xFF) | ((infoHeader[15] & 0xFF) << 8);
+	if (depth <= 8) {
 		int numColors = (infoHeader[32] & 0xFF) | ((infoHeader[33] & 0xFF) << 8) | ((infoHeader[34] & 0xFF) << 16) | ((infoHeader[35] & 0xFF) << 24);
 		if (numColors == 0) {
-			numColors = 1 << bitCount;
+			numColors = 1 << depth;
 		} else {
 			if (numColors > 256)
 				numColors = 256;
@@ -443,8 +447,8 @@ PaletteData loadPalette(byte[] infoHeader) {
 		}
 		return paletteFromBytes(buf, numColors);
 	}
-	if (bitCount == 16) return new PaletteData(0x7C00, 0x3E0, 0x1F);
-	if (bitCount == 24) return new PaletteData(0xFF, 0xFF00, 0xFF0000);
+	if (depth == 16) return new PaletteData(0x7C00, 0x3E0, 0x1F);
+	if (depth == 24) return new PaletteData(0xFF, 0xFF00, 0xFF0000);
 	return new PaletteData(0xFF00, 0xFF0000, 0xFF000000);
 }
 PaletteData paletteFromBytes(byte[] bytes, int numColors) {
