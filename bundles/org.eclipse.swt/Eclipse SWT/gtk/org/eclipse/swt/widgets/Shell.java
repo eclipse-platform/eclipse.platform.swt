@@ -423,25 +423,16 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 void createHandle (int index) {
 	state |= HANDLE | CANVAS;
 	int type = OS.GTK_WINDOW_TOPLEVEL;
-	if ((style & (SWT.ON_TOP | SWT.NO_TRIM)) != 0) type = OS.GTK_WINDOW_POPUP;
+	if ((style & SWT.ON_TOP) != 0) type = OS.GTK_WINDOW_POPUP;
 	shellHandle = OS.gtk_window_new (type);
 	if (shellHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	if (parent != null) {
 		OS.gtk_window_set_transient_for (shellHandle, parent.topHandle ());
-		OS.gtk_window_set_destroy_with_parent(shellHandle, true);
+		OS.gtk_window_set_destroy_with_parent (shellHandle, true);
 	}
-	// The following line represents the approach we used in 1.2.
-	// The set_policy call is deprecated, and we achieve the same effect
-	// with the two lines that follow.
-	// OS.gtk_window_set_policy (shellHandle, 1, 1, 0);
-	OS.gtk_widget_set_size_request(shellHandle, 0, 0);
-	OS.gtk_window_set_resizable(shellHandle, true);
+	OS.gtk_widget_set_size_request (shellHandle, 0, 0);
+	OS.gtk_window_set_resizable (shellHandle, true);
 	createScrolledHandle (shellHandle);
-	/*
-	* High level GTK helpers, like gtk_window_set_decorated, simply
-	* use gdk_window_set_decorations() with specific values.
-	* Therefore we use that function manually.
-	*/
 	OS.gtk_widget_realize (shellHandle);
 	int window = OS.GTK_WIDGET_WINDOW (shellHandle);
 	int decorations = 0;
