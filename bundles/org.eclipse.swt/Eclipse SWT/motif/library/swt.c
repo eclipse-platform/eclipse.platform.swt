@@ -1863,6 +1863,35 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XGrabPointer
 
 /*
  * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    XInternAtom
+ * Signature: (I[BZ)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XInternAtom
+  (JNIEnv *env, jclass that, jint display, jbyteArray name, jboolean ifExists)
+{
+    jbyte *name1 = NULL;
+    jint rc;
+
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "XInternAtom\n");
+#endif
+    if (name)    
+        name1 = (*env)->GetByteArrayElements(env, name, NULL);
+    
+    rc = (jint) XInternAtom((Display *)display, (char *)name1, ifExists);
+
+#ifdef PRINT_FAILED_RCODES
+    if (rc == 0)
+        fprintf(stderr, "XInternAtom: call failed rc = %d\n", rc);
+#endif
+
+    if (name)
+        (*env)->ReleaseByteArrayElements(env, name, name1, 0);
+    return rc;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
  * Method:    XKeysymToString
  * Signature: (I)I
  */
@@ -1911,6 +1940,35 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XListFonts
 
 /*
  * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    XListProperties
+ * Signature: (II[I)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XListProperties
+  (JNIEnv *env, jclass that, jint display, jint window, jintArray num_prop_return)
+{
+    jint *num_prop_return1=NULL;
+    jint  rc;
+
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "XListProperties\n");
+#endif
+    if (num_prop_return)    
+        num_prop_return1 = (*env)->GetIntArrayElements(env, num_prop_return, NULL);
+    
+    rc = (jint) XListProperties((Display *)display, (Window)window, (int *)num_prop_return1);
+
+#ifdef PRINT_FAILED_RCODES
+    if (rc == 0)
+        fprintf(stderr, "XListProperties: call failed rc = %d\n", rc);
+#endif
+
+    if (num_prop_return)
+        (*env)->ReleaseIntArrayElements(env, num_prop_return, num_prop_return1, 0);
+    return rc;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
  * Method:    XLookupString
  * Signature: (Lorg/eclipse/swt/internal/motif/XKeyEvent;[BI[I[I)I
  */
@@ -1939,7 +1997,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XLookupString
     if (status)
         status1 = (*env)->GetIntArrayElements(env, status, NULL);    
     rc  = (jint) XLookupString((XKeyEvent *)lpxEvent, (char *)string1, size, (KeySym *)keysym1, (XComposeStatus *)status1);
-
+	
 #ifdef PRINT_FAILED_RCODES
     if (rc < 0)
         fprintf(stderr, "XLookupString: call failed rc = %d\n", rc);
@@ -4058,6 +4116,27 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmGetFocusWidget
 	fprintf(stderr, "XmGetFocusWidget\n");
 #endif
     return (jint) XmGetFocusWidget((Widget)widget);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    XmGetPixmap
+ * Signature: (I[BII)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmGetPixmap
+  (JNIEnv *env, jclass that, jint screen, jbyteArray name, jint fgPixel, jint bgPixel)
+{
+    jbyte* name1 = NULL;
+ 	jint   pixmap;
+ 	
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "XmGetPixmap\n");
+#endif
+
+    if (name) name1 = (*env)->GetByteArrayElements(env, name, NULL); 
+    pixmap = (jint) XmGetPixmap((Screen*)screen, (char*)name1, (Pixel)fgPixel, (Pixel)bgPixel);
+    if (name) (*env)->ReleaseByteArrayElements(env, name, name1, 0);
+    return pixmap;
 }
 
 /*
@@ -6514,43 +6593,6 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmClipboardEndRetr
 
 /*
  * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XpmReadFileToPixmap
- * Signature: (II[B[I[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XpmReadFileToPixmap
-  (JNIEnv *env, jclass that, jint display, jint drawable, jbyteArray fileName, jintArray pixmap_return, jintArray shapemask_return, jint attributes)
-{
-#ifdef XPM
-	jint rc;
-	jbyte *fileName1 = NULL;
-	jint *pixmap_return1 = NULL;
-	jint *shapemask_return1 = NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XpmReadFileToPixmap\n");
-#endif
-	if (fileName) fileName1 = (*env)->GetByteArrayElements(env, fileName, NULL);
-	if (pixmap_return) pixmap_return1 = (*env)->GetIntArrayElements(env, pixmap_return, NULL);
-	if (shapemask_return) shapemask_return1 = (*env)->GetIntArrayElements(env, shapemask_return, NULL);
-	
-	rc = (jint) XpmReadFileToPixmap((Display *)display, 
-		drawable, 
-		fileName1, 
-		(Pixmap*) pixmap_return1, 
-		(Pixmap*) shapemask_return1, 
-		attributes);
-	
-  	if (fileName) (*env)->ReleaseByteArrayElements(env, fileName, fileName1, 0);
-	if (pixmap_return) (*env)->ReleaseIntArrayElements(env, pixmap_return, pixmap_return1, 0);
-	if (shapemask_return) (*env)->ReleaseIntArrayElements(env, shapemask_return, shapemask_return1, 0);
-  	return rc;
-#endif
-#ifndef XPM
-	return -1;
-#endif
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
  * Method:    XmCreateDrawnButton
  * Signature: (I[B[II)I
  */
@@ -6988,7 +7030,7 @@ JNIEXPORT int JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTabListInsertTabs
  * Method:    XmDestroyPixmap
  * Signature: (II)Z
  */
-/* JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XmDestroyPixmap
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XmDestroyPixmap
   (JNIEnv *env, jclass that, jint screen, jint pixmap)
 {
 #ifdef DEBUG_CALL_PRINTS
@@ -6996,14 +7038,13 @@ JNIEXPORT int JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTabListInsertTabs
 #endif
 	return (jboolean) XmDestroyPixmap((Screen *)screen, pixmap);
 }
-*/
 
 /*
  * Class:     org_eclipse_swt_internal_motif_OS
  * Method:    XmGetPixmapByDepth
  * Signature: (I[BIII)I
  */
-/* JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmGetPixmapByDepth
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmGetPixmapByDepth
   (JNIEnv *env, jclass that, jint screen, jbyteArray image_name, jint foreground, jint background, jint depth)
 {
     jbyte *image_name1=NULL;
@@ -7026,7 +7067,7 @@ JNIEXPORT int JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTabListInsertTabs
         (*env)->ReleaseByteArrayElements(env, image_name, image_name1, 0);
 	return rc;
 }
-*/
+
 
 /*
  * Class:     org_eclipse_swt_internal_motif_OS

@@ -11,11 +11,13 @@
 #define NDEBUG 
 
 #include <stdio.h>
+#include <signal.h>
 #include "jni.h"
 
 #include <kapp.h>
 #include <kservice.h>
 #include <kmimetype.h>
+#include <krun.h>
 #include <kuserprofile.h>
 #include <kurl.h>
 #include <qstring.h>
@@ -30,13 +32,37 @@ extern "C" {
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_KApplication_1new
   (JNIEnv *env, jclass that, int appName)
 {
-	int myArgc = 0;
-	char* myArgv[1];
+	int myArgc = 1;
+	char* myArgv[2] = { "SWT", 0 };  // KApplication requires a NULL terminated list
 #ifdef DEBUG_CALL_PRINTS
 	fprintf(stderr, "KApplication_1new\n");
 #endif
 	QCString qcString = *((QCString*) appName);
+	
+	// NOTE: When a KDE application is initialized, it installs its own
+	// SIGSEGV signal handler so that it can pop up a dialogue box and
+	// display an error message should SIGSEGV occur. After the dialogue
+	// box is closed, it terminates the program. The Hursley Java VM (on Linux)
+	// happens to catch SIGSEGV signals so that it can throw a null pointer
+	// exception. Thus when KDE is initialized, the Java try ... catch 
+	// mechanism for null pointers does not work. Eclipse code relies upon
+	// this try ... catch feature.
+	//
+	// The solution is to obtain the Java VM's signal handler before initializing
+	// KDE and to reinstall that handler after the initialization. The method
+	// sigaction() must be used instead of signal() because it returns more
+	// information on how to handle the signal.
+	
+	// Obtain the current signal handling logic for SIGSEGV.
+	struct sigaction prev;
+	sigaction( SIGSEGV, NULL, &prev );
+	
+	// Initialize KDE, which installs its own signal handler.
 	KApplication* app = new KApplication(myArgc, myArgv, qcString);
+	
+	// Replace the Java VM signal handler.
+	sigaction( SIGSEGV, &prev, NULL );
+	
 	return (jint) app;
 }
 
@@ -60,12 +86,12 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_KGlobal_1iconLoad
  * Signature: (IIII)I
  */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_KIconLoader_1iconPath
-  (JNIEnv *env, jclass that, jint receiver, jint iconQString, jint iconType, jint canReturnNull)
+  (JNIEnv *env, jclass that, jint kloader, jint iconQString, jint iconType, jint canReturnNull)
 {
 #ifdef DEBUG_CALL_PRINTS
 	fprintf(stderr, "KIconLoader_1iconPath\n");
 #endif
-	KIconLoader* loader = (KIconLoader*) receiver;
+	KIconLoader* loader = (KIconLoader*) kloader;
 	QString iconName = *((QString*) iconQString);
 	QString iconPath = loader->iconPath(iconName, iconType, canReturnNull);
 	if (iconPath == 0) return 0;
@@ -76,18 +102,18 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_KIconLoader_1icon
 
 /*
  * Class:     org_eclipse_swt_internal_motif_KDE
- * Method:    KMimeType_1findByURL
+ * Method:    KMimeType_1mimeType
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_KMimeType_1findByURL
-  (JNIEnv *env, jclass that, jint kurl)
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_KMimeType_1mimeType
+  (JNIEnv *env, jclass that, jint mimeTypeName)
 {
 #ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "KMimeType_1findByURL\n");
+	fprintf(stderr, "KMimeType_1mimeType\n");
 #endif
-	KURL url = *((KURL*) kurl);
   	KSharedPtr<KMimeType>* mimeType = new KSharedPtr<KMimeType>();
-  	*mimeType = KMimeType::findByURL(url);
+  	QString qMimeType = *((QString*) mimeTypeName);
+  	*mimeType = KMimeType::mimeType( qMimeType );
   	return (jint) mimeType;
 }
 
@@ -97,12 +123,12 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_KMimeType_1findBy
  * Signature: (III)I
  */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_KMimeType_1icon
-  (JNIEnv *env, jclass that, jint receiver, jint unused1, jint unused2)
+  (JNIEnv *env, jclass that, jint mimeTypePtr, jint unused1, jint unused2)
 {
 #ifdef DEBUG_CALL_PRINTS
 	fprintf(stderr, "KMimeType_1icon\n");
 #endif
-	KSharedPtr<KMimeType> mimeType = *((KSharedPtr<KMimeType>*) receiver);
+	KSharedPtr<KMimeType> mimeType = *((KSharedPtr<KMimeType>*) mimeTypePtr);
 	QString* answer = new QString();
 	*answer = mimeType->icon((const QString&) NULL, 0);
 	return (jint) answer;
@@ -114,151 +140,279 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_KMimeType_1icon
  * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_KMimeType_1name
-  (JNIEnv *env, jclass that, jint receiver)
+  (JNIEnv *env, jclass that, jint mimeTypePtr)
 {
 #ifdef DEBUG_CALL_PRINTS
 	fprintf(stderr, "KMimeType_1name\n");
 #endif
-	KSharedPtr<KMimeType> mimeType = *((KSharedPtr<KMimeType>*) receiver);
-	QString* answer = new QString();
-	*answer = mimeType->name(); 
-	return (jint) answer;
+	KSharedPtr<KMimeType> mimeType = *((KSharedPtr<KMimeType>*) mimeTypePtr);
+	QString* name = new QString();
+	*name = mimeType->name(); 
+	return (jint) name;
 }
 
 /*
  * Class:     org_eclipse_swt_internal_motif_KDE
- * Method:    KService_1allServices
+ * Method:    KMimeType_1patterns
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_KMimeType_1patterns
+  (JNIEnv *env, jclass that, jint mimeTypePtr)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "KMimeType_1patterns\n");
+#endif
+	KSharedPtr<KMimeType> mimeType = *((KSharedPtr<KMimeType>*) mimeTypePtr);
+	QStringList* patternList = new QStringList();
+	*patternList = mimeType->patterns(); 
+	return (jint) patternList;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_KDE
+ * Method:    KMimeType_1offers
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_KMimeType_1offers
+  (JNIEnv *env, jclass that, jint mimeTypeName)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "KMimeType_1offers\n");
+#endif
+	QString qMimeType = *((QString*) mimeTypeName);
+	KService::List* serviceList = new KService::List();
+	*serviceList = KMimeType::offers( qMimeType ); 
+	return (jint) serviceList;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_KDE
+ * Method:    KMimeType_1allMimeTypes
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_KService_1allServices
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_KMimeType_1allMimeTypes
   (JNIEnv *env, jclass that)
 {
 #ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "KService_1allServices\n");
+	fprintf(stderr, "KMimeType_1allMimeTypes\n");
 #endif
-	KService::List* pointer = new KService::List();
-	*pointer = KService::allServices();
-	return (jint) pointer;
+ 	KMimeType::List* mimeTypeList = new KMimeType::List();
+	*mimeTypeList = KMimeType::allMimeTypes();
+  	return (jint) mimeTypeList;
 }
 
 /*
  * Class:     org_eclipse_swt_internal_motif_KDE
- * Method:    KService_1exec
+ * Method:    KMimeTypeList_1begin
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_KService_1exec
-  (JNIEnv *env, jclass that, jint receiver)
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_KMimeTypeList_1begin
+  (JNIEnv *env, jclass that, jint mimeTypeList)
 {
 #ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "KService_1exec\n");
+	fprintf(stderr, "KMimeTypeList_1begin\n");
 #endif
-	KSharedPtr<KService> service = *((KSharedPtr<KService>*) receiver);
-	QString* answer = new QString();
-	*answer = service->exec();
-	return (jint) answer;
+	KMimeType::List *list= (KMimeType::List*) mimeTypeList;
+	QValueListIterator<KMimeType::Ptr>* iterator = new QValueListIterator<KMimeType::Ptr>();
+  	*iterator = list->begin();
+	return (jint) iterator;
 }
 
 /*
  * Class:     org_eclipse_swt_internal_motif_KDE
- * Method:    KService_1icon
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_KService_1icon
-  (JNIEnv *env, jclass that, jint receiver)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "KService_1icon\n");
-#endif
-	KSharedPtr<KService> service = *((KSharedPtr<KService>*) receiver);
-	QString* answer = new QString();
-	*answer = service->icon();
-	return (jint) answer;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_KDE
- * Method:    KService_1name
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_KService_1name
-  (JNIEnv *env, jclass that, jint receiver)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "KService_1name\n");
-#endif
-	KSharedPtr<KService> service = *((KSharedPtr<KService>*) receiver);
-	QString* answer = new QString();
-	*answer = service->name();
-	return (jint) answer;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_KDE
- * Method:    KService_1serviceByName
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_KService_1serviceByName
-  (JNIEnv *env, jclass that, jint serviceName)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "KService_1serviceByName\n");
-#endif
-	QString* name = (QString*) serviceName;
-	KSharedPtr<KService> service = KService::serviceByName(*name);
-	if (service == 0) return 0;
-	KSharedPtr<KService>* pointer = new KSharedPtr<KService>();
-	*pointer = service;
-	return (jint) pointer;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_KDE
- * Method:    KService_1type
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_KService_1type
-  (JNIEnv *env, jclass that, jint receiver)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "KService_1type\n");
-#endif
-	KSharedPtr<KService> service = *((KSharedPtr<KService>*) receiver);
-	QString* answer = new QString();
-	*answer = service->type();
-	return (jint) answer;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_KDE
- * Method:    KServiceTypeProfile_1preferredService
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_KServiceTypeProfile_1preferredService
-  (JNIEnv *env, jclass that, jint mimeTypeQString, jint needApp)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "KServiceTypeProfile_1preferredService\n");
-#endif
-	QString mimeTypeName = *((QString*) mimeTypeQString);
-	KSharedPtr<KService> service = KServiceTypeProfile::preferredService(mimeTypeName, needApp);
-	if (service == 0) return 0;
-	KSharedPtr<KService>* pointer = new KSharedPtr<KService>();
-	*pointer = service;
-	return (jint) pointer;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_KDE
- * Method:    KURL_1delete
+ * Method:    KMimeTypeList_1delete
  * Signature: (I)V
  */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_KDE_KURL_1delete
-  (JNIEnv *env, jclass that, jint receiver)
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_KDE_KMimeTypeList_1delete
+  (JNIEnv *env, jclass that, jint mimeTypeList)
 {
 #ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "KURL_1delete\n");
+	fprintf(stderr, "KMimeTypeList_1delete\n");
 #endif
-	delete (KURL*) receiver;
+	delete (KMimeType::List*) mimeTypeList;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_KDE
+ * Method:    KMimeTypeList_1end
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_KMimeTypeList_1end
+  (JNIEnv *env, jclass that, jint mimeTypeList)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "KMimeTypeList_1end\n");
+#endif
+	KMimeType::List *list = (KMimeType::List*) mimeTypeList;
+	QValueListIterator<KMimeType::Ptr>* iterator = new QValueListIterator<KMimeType::Ptr>();
+  	*iterator = list->end();
+	return (jint) iterator;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_KDE
+ * Method:    KMimeTypeListIterator_1delete
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_KDE_KMimeTypeListIterator_1delete
+  (JNIEnv *env, jclass that, jint iterator)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "KMimeTypeListIterator_1delete\n");
+#endif
+	delete (QValueListIterator<KMimeType::Ptr>*) iterator;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_KDE
+ * Method:    KMimeTypeListIterator_1dereference
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_KMimeTypeListIterator_1dereference
+  (JNIEnv *env, jclass that, jint iterator)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "KMimeTypeListIterator_1dereference\n");
+#endif
+	KSharedPtr<KMimeType>* mimeType = new KSharedPtr<KMimeType>();
+	*mimeType = *(*((QValueListIterator<KMimeType::Ptr>*) iterator));
+	return (jint) mimeType;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_KDE
+ * Method:    KMimeTypeListIterator_1equals
+ * Signature: (II)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_KMimeTypeListIterator_1equals
+  (JNIEnv *env, jclass that, jint iterator, jint iterator2)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "KMimeTypeListIterator_1equals\n");
+#endif
+	return *((QValueListIterator<KMimeType::Ptr>*) iterator) == 
+		   *((QValueListIterator<KMimeType::Ptr>*) iterator2);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_KDE
+ * Method:    KMimeTypeListIterator_1increment
+ * Signature: (I)I
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_KDE_KMimeTypeListIterator_1increment
+  (JNIEnv *env, jclass that, jint iterator)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "KMimeTypeListIterator_1increment\n");
+#endif
+	++(*((QValueListIterator<KMimeType::Ptr>*) iterator));
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_KDE
+ * Method:    QStringList_1begin
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_QStringList_1begin
+  (JNIEnv *env, jclass that, jint qstringList)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "QStringList_1begin\n");
+#endif
+	QStringList *list= (QStringList*) qstringList;
+	QValueListIterator<QString>* iterator = new QValueListIterator<QString>();
+  	*iterator = list->begin();
+	return (jint) iterator;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_KDE
+ * Method:    QStringList_1delete
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_KDE_QStringList_1delete
+  (JNIEnv *env, jclass that, jint qstringList)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "QStringList_1delete\n");
+#endif
+	delete (QStringList*) qstringList;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_KDE
+ * Method:    QStringList_1end
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_QStringList_1end
+  (JNIEnv *env, jclass that, jint qstringList)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "QStringList_1end\n");
+#endif
+	QStringList *list = (QStringList*) qstringList;
+	QValueListIterator<QString>* iterator = new QValueListIterator<QString>();
+  	*iterator = list->end();
+	return (jint) iterator;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_KDE
+ * Method:    QStringListIterator_1delete
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_KDE_QStringListIterator_1delete
+  (JNIEnv *env, jclass that, jint iterator)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "QStringListIterator_1delete\n");
+#endif
+	delete (QValueListIterator<QString>*) iterator;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_KDE
+ * Method:    QStringListIterator_1dereference
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_QStringListIterator_1dereference
+  (JNIEnv *env, jclass that, jint iterator)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "QStringListIterator_1dereference\n");
+#endif
+	QString* qstring = new QString();
+	*qstring = *(*((QValueListIterator<QString>*) iterator));
+	return (jint) qstring;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_KDE
+ * Method:    QStringListIterator_1equals
+ * Signature: (II)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_QStringListIterator_1equals
+  (JNIEnv *env, jclass that, jint iterator, jint iterator2)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "QStringListIterator_1equals\n");
+#endif
+	return *((QValueListIterator<QString>*) iterator) == 
+		   *((QValueListIterator<QString>*) iterator2);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_KDE
+ * Method:    QStringListIterator_1increment
+ * Signature: (I)I
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_KDE_QStringListIterator_1increment
+  (JNIEnv *env, jclass that, jint iterator)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "QStringListIterator_1increment\n");
+#endif
+	++(*((QValueListIterator<QString>*) iterator));
 }
 
 /*
@@ -267,30 +421,43 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_KDE_KURL_1delete
  * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_KURL_1new
-  (JNIEnv *env, jclass that, jint qString)
+  (JNIEnv *env, jclass that, jint qURLString)
 {
 #ifdef DEBUG_CALL_PRINTS
 	fprintf(stderr, "KURL_1new\n");
 #endif
-	QString urlString = *((QString*) qString);
+	QString urlString = *((QString*) qURLString);
 	return (jint) new KURL(urlString);
 }
 
 /*
  * Class:     org_eclipse_swt_internal_motif_KDE
- * Method:    KServiceList_1begin
- * Signature: (I)I
+ * Method:    KURL_1delete
+ * Signature: (I)V
  */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_KServiceList_1begin
-  (JNIEnv *env, jclass that, jint receiver)
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_KDE_KURL_1delete
+  (JNIEnv *env, jclass that, jint url)
 {
 #ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "KServiceList_1begin\n");
+	fprintf(stderr, "KURL_1delete\n");
 #endif
-	KService::List *list= (KService::List*) receiver;
-	QValueListConstIterator<KService::Ptr>* beginning = new QValueListConstIterator<KService::Ptr>();
-  	*beginning = list->begin();
-	return (jint) beginning;
+	delete (KURL*) url;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_KDE
+ * Method:    KRun_1runURL
+ * Signature: (II)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_KRun_1runURL
+  (JNIEnv *env, jclass that, jint kurl, jint mimeTypeName)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "KRun_1runURL\n");
+#endif
+	KURL url = *((KURL*) kurl);
+  	QString qMimeType = *((QString*) mimeTypeName);
+	return (jint) KRun::runURL( url, qMimeType );
 }
 
 /*
@@ -299,29 +466,12 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_KServiceList_1beg
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_KDE_KServiceList_1delete
-  (JNIEnv *env, jclass that, jint receiver)
+  (JNIEnv *env, jclass that, jint serviceList)
 {
 #ifdef DEBUG_CALL_PRINTS
 	fprintf(stderr, "KServiceList_1delete\n");
 #endif
-	delete (KService::List*) receiver;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_KDE
- * Method:    KServiceList_1end
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_KServiceList_1end
-  (JNIEnv *env, jclass that, jint receiver)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "KServiceList_1end\n");
-#endif
-	KService::List *list = (KService::List*) receiver;
-	QValueListConstIterator<KService::Ptr>* end = new QValueListConstIterator<KService::Ptr>();
-  	*end = list->end();
-	return (jint) end;
+	delete (KService::List*) serviceList;
 }
 
 /*
@@ -330,12 +480,12 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_KServiceList_1end
  * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_QCString_1data
-  (JNIEnv *env, jclass that, jint receiver)
+  (JNIEnv *env, jclass that, jint qcString)
 {
 #ifdef DEBUG_CALL_PRINTS
 	fprintf(stderr, "QCString_1data\n");
 #endif
-	return (jint) ((QCString*) receiver)->data();
+	return (jint) ((QCString*) qcString)->data();
 }
 
 /*
@@ -344,12 +494,12 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_QCString_1data
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_KDE_QCString_1delete
-  (JNIEnv *env, jclass that, jint receiver)
+  (JNIEnv *env, jclass that, jint qcString)
 {
 #ifdef DEBUG_CALL_PRINTS
 	fprintf(stderr, "QCString_1delete\n");
 #endif
-	delete (QCString*) receiver;
+	delete (QCString*) qcString;
 }
 
 /*
@@ -376,12 +526,12 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_QCString_1new
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_KDE_QString_1delete
-  (JNIEnv *env, jclass that, jint receiver)
+  (JNIEnv *env, jclass that, jint qString)
 {
 #ifdef DEBUG_CALL_PRINTS
 	fprintf(stderr, "QString_1delete\n");
 #endif
-	delete (QString*) receiver;
+	delete (QString*) qString;
 }
 
 /*
@@ -390,12 +540,12 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_KDE_QString_1delete
  * Signature: (I[B)I
  */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_QString_1equals
-  (JNIEnv *env, jclass that, jint receiver, jint object)
+  (JNIEnv *env, jclass that, jint qString, jint qString2)
 {
 #ifdef DEBUG_CALL_PRINTS
 	fprintf(stderr, "QString_1equals\n");
 #endif
-	return *((QString*) receiver) == *((QString*) object);
+	return *((QString*) qString) == *((QString*) qString2);
 }
 
 /*
@@ -422,92 +572,15 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_QString_1new
  * Signature: (I)I
  */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_QString_1utf8
-  (JNIEnv *env, jclass that, jint receiver)
+  (JNIEnv *env, jclass that, jint qString)
 {
 #ifdef DEBUG_CALL_PRINTS
 	fprintf(stderr, "QString_1utf8\n");
 #endif
-	QString string = *((QString*) receiver);
+	QString string = *((QString*) qString);
 	QCString* qcString = new QCString();
 	*qcString = string.utf8();
 	return (jint) qcString;
-}
-
-
-/*
- * Class:     org_eclipse_swt_internal_motif_KDE
- * Method:    KServiceListIterator_1delete
- * Signature: (I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_KDE_KServiceListIterator_1delete
-  (JNIEnv *env, jclass that, jint receiver)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "KServiceListIterator_1delete\n");
-#endif
-	delete (QValueListIterator<KService::Ptr>*) receiver;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_KDE
- * Method:    KServiceListIterator_1dereference
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_KServiceListIterator_1dereference
-  (JNIEnv *env, jclass that, jint receiver)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "KServiceListIterator_1dereference\n");
-#endif
-	KSharedPtr<KService>* service = new KSharedPtr<KService>();
-	*service = *(*((QValueListIterator<KService::Ptr>*) receiver));
-	return (jint) service;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_KDE
- * Method:    KServiceListIterator_1increment
- * Signature: (I)I
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_KDE_KServiceListIterator_1increment
-  (JNIEnv *env, jclass that, jint receiver)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "KServiceListIterator_1increment\n");
-#endif
-	++(*((QValueListIterator<KService::Ptr>*) receiver));
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_KDE
- * Method:    KServiceListIterator_1new
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_KServiceListIterator_1new
-  (JNIEnv *env, jclass that, jint listBeginning)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "KServiceListIterator_1new\n");
-#endif
-	const QValueListIterator<KService::Ptr> *iterator =
-		(const QValueListIterator<KService::Ptr> *) listBeginning;
-
-	return (jint) new QValueListIterator<KService::Ptr>(*iterator);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_KDE
- * Method:    KServiceListIterator_1equals
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_KDE_KServiceListIterator_1equals
-  (JNIEnv *env, jclass that, jint receiver, jint object)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "KServiceListIterator_1equals\n");
-#endif
-	return *((QValueListIterator<KService::Ptr>*) receiver) == 
-		*((QValueListIterator<KService::Ptr>*) object);
 }
 
 

@@ -820,9 +820,7 @@ public class OS {
 	public static final native int XmCreateDrawnButton (int parent, byte [] name, int [] arglist, int argcount);
 	public static final native int XmCreateRowColumn (int parent, byte [] name, int [] arglist, int argcount);
 	public static final native int XmCreateScrolledWindow (int parent, byte [] name, int [] arglist, int argcount);
-	public static final native boolean XmDestroyPixmap (int screen, int pixmap);
 	public static final native int XmGetFocusWidget (int widget);
-	public static final native int XmGetPixmapByDepth (int screen, byte [] image_name, int foreground, int background, int depth);
 	public static final native void XmListAddItemsUnselected (int list, int xmStringTable, int item_count, int position);
 	public static final native void XmListDeleteItem (int list, int item);
 	public static final native void XmListDeselectItem (int list, int xmString);
@@ -913,8 +911,10 @@ public static final native int XGrabPointer (
 	int cursor,
 	int time);
 public static final native int XInitThreads ();	
+public static final native int XInternAtom( int display, byte [] name, boolean ifExists );
 public static final native int XKeysymToString (int keysym);
 public static final native int XListFonts(int display, byte[] pattern, int maxnames, int[] actual_count_return);
+public static final native int XListProperties(int display, int window, int[] num_prop_return);
 public static final native int XLookupString (XKeyEvent event, byte [] string, int size, int [] keysym, int [] status);
 public static final native int XLowerWindow (int display, int window);
 public static final native boolean XPointInRegion (int region, int x, int y);
@@ -1006,6 +1006,7 @@ public static final native int XmCreateTextField (int parent, byte [] name, int 
 public static final native int XmCreateToggleButton (int parent, byte [] name, int [] arglist, int argcount);
 public static final native int XmCreateToggleButtonGadget (int parent, byte [] name, int [] arglist, int argcount);
 public static final native int XmCreateWarningDialog (int parent, byte [] name, int [] arglist, int argcount);
+public static final native boolean XmDestroyPixmap (int screen, int pixmap);
 public static final native void XmDragCancel(int dragcontext);
 public static final native int XmDragStart(int widget, XAnyEvent event, int[] arglist, int argcount);
 public static final native void XmDropSiteRegister(int widget, int [] arglist, int argcount);
@@ -1026,6 +1027,8 @@ public static final native int XmFontListNextEntry (int context);
 public static final native int XmGetAtomName (int display, int atom);
 public static final native int XmGetDragContext (int widget, int timestamp);
 public static final native int XmGetFocusWidget (int widget);
+public static final native int XmGetPixmap( int screen, byte [] name, int fgPixel, int bgPixel );
+public static final native int XmGetPixmapByDepth (int screen, byte [] image_name, int foreground, int background, int depth);
 public static final native int XmGetXmDisplay (int display);
 public static final native int XmImMbLookupString (int widget, XKeyEvent event, byte [] string, int size, int [] keysym, int [] status);
 public static final native int XmInternAtom (int display, byte [] name, boolean only_if_exists);
@@ -1212,7 +1215,6 @@ public static final native void memmove (XmTextVerifyCallbackStruct dest, int sr
 public static final native void memmove (byte [] dest, int src, int count);
 public static final native void memmove (int [] dest, int src, int count);
 public static final native int strlen (int string);
-public static final native int XpmReadFileToPixmap(int display, int drawable, byte[] fileName, int[] pixmap_return, int[] shapemask_return, int attributes);
 public static final native int XmCreateDrawnButton (int parent, byte [] name, int [] arglist, int argcount);
 public static final native int XCheckIfEvent (int display, XAnyEvent event_return, int predicate, int arg);
 public static final native boolean XtToolkitThreadInitialize ();

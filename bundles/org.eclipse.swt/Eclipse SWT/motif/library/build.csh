@@ -38,13 +38,22 @@ switch ($OS )
 	    make -f make_linux.mak make_swt make_gnome
 	    
 	    set build_kde = `rpm -q kdebase | grep "not installed"`
-	    set build_kde = "not ported" # KDE porting not complete yet (KJC)
 	    if ( "$build_kde" == "" ) then
 	    	echo "Building Linux version of KDE DLL."
 	    	make -f make_linux.mak make_kde
 	    endif
 	endif
 	breaksw
+	
+    case SunOS:
+        if ( "$1" == "clean" ) then
+            make -f make_solaris.mak clean
+        else
+            echo "Building Solaris version of SWT and CDE DLLs."
+            make -f make_solaris.mak make_swt
+            make -f make_solaris.mak make_cde
+        endif
+        breaksw
 
     default:
        echo "Unknown"

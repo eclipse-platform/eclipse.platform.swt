@@ -18,7 +18,7 @@ DLL_VERSION=$(MAJOR_VER)$(MINOR_VER)
 #    QT_HOME    - identifier namespace package (used by KDE)
 IVE_HOME   = /bluebird/teamswt/swt-builddir/ive/bin
 MOTIF_HOME = /bluebird/teamswt/swt-builddir/motif21
-QT_HOME    = /usr/lib/qt-2.2.0
+QT_HOME    = /usr/lib/qt-2.2.4
 
 
 # Define the various DLL (shared) libraries to be made.
@@ -27,19 +27,19 @@ SWT_PREFIX   = swt
 SWT_DLL      = lib$(SWT_PREFIX)$(DLL_VERSION).so
 SWT_OBJ      = callback.o globals.o library.o structs.o swt.o
 SWT_LIB      = -L$(MOTIF_HOME)/lib -lXm -L/usr/lib -L/usr/X11R6/lib \
-	       -x -shared -lX11 -lm -lXext -lXt -lXp -lXpm -ldl
+	           -x -shared -lX11 -lm -lXext -lXt -lXp -ldl
 
 GNOME_PREFIX = swt-gnome
 GNOME_DLL    = lib$(GNOME_PREFIX)$(DLL_VERSION).so
 GNOME_OBJ    = gnome.o 
 GNOME_LIB    = -x -shared \
-	       `gnome-config --libs gnome`
+	           `gnome-config --libs gnome`
 
 KDE_PREFIX   = swt-kde
 KDE_DLL      = lib$(KDE_PREFIX)$(DLL_VERSION).so
 KDE_OBJ      = kde.o
 KDE_LIB      = -L/usr/lib  -L$(QT_HOME)/lib \
-	       -shared -lksycoca -lkdecore -lq
+	           -shared -lksycoca -lkdecore -lqt
 
 #
 # The following CFLAGS are for compiling both the SWT library and the GNOME
@@ -48,7 +48,7 @@ KDE_LIB      = -L/usr/lib  -L$(QT_HOME)/lib \
 CFLAGS = -O -s \
 	-DSWT_LIBRARY_MAJOR_VERSION=$(MAJOR_VER) \
 	-DSWT_LIBRARY_MINOR_VERSION=$(MINOR_VER) \
-	-DLINUX -DMOTIF -DGNOME -DXPM \
+	-DLINUX -DMOTIF -DGNOME \
 	-fpic \
 	-I./ \
 	-I$(IVE_HOME)/include \
