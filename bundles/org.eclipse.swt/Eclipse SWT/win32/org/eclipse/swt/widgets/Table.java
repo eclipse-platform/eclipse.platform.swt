@@ -2121,7 +2121,7 @@ void setBackgroundPixel (int pixel) {
  * in terms of the zero-relative ordering of when the items
  * were added.
  *
- * @param itemOrder the new order to display the items
+ * @param order the new order to display the items
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

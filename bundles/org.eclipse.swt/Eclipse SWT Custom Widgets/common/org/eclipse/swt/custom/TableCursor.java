@@ -327,11 +327,18 @@ void keyDown(Event event) {
         	{	
         		int columnCount = table.getColumnCount();
         		if (columnCount == 0) break;
+        		int[] order = table.getColumnOrder();
+        		int index = 0;
+        		while (index < order.length) {
+        			if (order[index] == columnIndex) break;
+        			index++;
+				}
+				if (index == order.length) index = 0;
 		        int leadKey = (getStyle() & SWT.RIGHT_TO_LEFT) != 0 ? SWT.ARROW_RIGHT : SWT.ARROW_LEFT;
 		        if (event.keyCode == leadKey) {
-		           setRowColumn(rowIndex, Math.max(0, columnIndex - 1), true);
+		           setRowColumn(rowIndex, order[Math.max(0, index - 1)], true);
 		        } else {
-		           setRowColumn(rowIndex, Math.min(columnCount - 1, columnIndex + 1), true);
+		           setRowColumn(rowIndex, order[Math.min(columnCount - 1, index + 1)], true);
 		        }
 		        break;
         	}
