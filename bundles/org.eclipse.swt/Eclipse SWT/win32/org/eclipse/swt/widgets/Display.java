@@ -1254,7 +1254,7 @@ protected void init () {
 	if (!OS.IsWinCE) {
 		msgFilterCallback = new Callback (this, "msgFilterProc", 3);
 		msgFilterProc = msgFilterCallback.getAddress ();
-		if (messageProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+		if (msgFilterProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 		hHook = OS.SetWindowsHookEx (OS.WH_MSGFILTER, msgFilterProc, 0, threadId);
 	}
 }
