@@ -139,6 +139,7 @@ void createHandle (int index) {
 		int [] args = {
 			OS.Pt_ARG_HORIZONTAL_ALIGNMENT, alignment, 0,
 			OS.Pt_ARG_INDICATOR_TYPE, (style & SWT.CHECK) != 0 ? OS.Pt_N_OF_MANY : OS.Pt_ONE_OF_MANY, 0,
+			OS.Pt_ARG_FILL_COLOR, display.WIDGET_BACKGROUND, 0,
 			OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 		};	
 
