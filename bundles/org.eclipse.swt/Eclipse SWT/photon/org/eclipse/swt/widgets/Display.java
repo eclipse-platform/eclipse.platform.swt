@@ -426,7 +426,11 @@ protected void create (DeviceData data) {
 void createDisplay (DeviceData data) {
 	OS.PtInit (null);
 	OS.PgSetDrawBufferSize (DrawBufferSize);
-	app_context = OS.PtCreateAppContext ();
+	/*
+	* This is intentionally commented. Only the default application context
+	* is supported.
+	*/
+//	app_context = OS.PtCreateAppContext ();
 }
 
 synchronized void deregister () {
