@@ -357,8 +357,16 @@ public boolean open () {
 		if (parent != null && parent.isDisposed ()) break;
 		OS.XtAppNextEvent (xtContext, xEvent);
 		switch (xEvent.type) {
-			case OS.ButtonRelease:
 			case OS.MotionNotify:
+				if (cursor != 0) {
+					OS.XChangeActivePointerGrab (
+						xDisplay,
+						OS.ButtonPressMask | OS.ButtonReleaseMask | OS.PointerMotionMask,
+						cursor,
+						OS.CurrentTime);
+				}
+				// fall through
+			case OS.ButtonRelease:
 				OS.XQueryPointer (xDisplay, xWindow, unused, unused, newX, newY, unused, unused, unused);
 				if (oldX [0] != newX [0] || oldY [0] != newY [0]) {
 					drawRectangles ();
@@ -446,6 +454,12 @@ public boolean open () {
 					}
 				}
 				break;
+				case OS.EnterNotify:
+				case OS.LeaveNotify:
+					/*
+					 * Do not dispatch these
+					 */
+					break;
 			default:
 				OS.XtDispatchEvent (xEvent);
 		}
@@ -522,6 +536,7 @@ void resizeRectangles (int xChange, int yChange) {
 }
 
 public void setCursor (Cursor value) {
+	cursor = value.handle;
 }
 /**
  * Specify the rectangles that should be drawn.

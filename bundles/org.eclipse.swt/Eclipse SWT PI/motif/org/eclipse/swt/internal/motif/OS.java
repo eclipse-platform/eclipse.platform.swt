@@ -119,7 +119,7 @@ public class OS {
 //	public static final int CWY = 0x2;
 //	public static final int DestroyNotify = 17;
 //	public static final int EastGravity = 6;
-//	public static final int EnterNotify = 7;
+	public static final int EnterNotify = 7;
 	public static final int EnterWindowMask = 1 << 4;
 //	public static final int EvenOddRule = 0x0;
 	public static final int Expose = 12;
@@ -194,7 +194,7 @@ public class OS {
 	public static final int KeyPressMask = 1 << 0;
 	public static final int KeyRelease = 3;
 	public static final int KeyReleaseMask = 1 << 1;
-//	public static final int LeaveNotify = 8;
+	public static final int LeaveNotify = 8;
 	public static final int LeaveWindowMask	= 1 << 5;
 	public static final int LineDoubleDash = 0x2;
 	public static final int LineOnOffDash = 0x1;
