@@ -634,6 +634,17 @@ public void setSelection (int position) {
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] args = {OS.Pt_ARG_CURSOR_POSITION, position, 0};
 	OS.PtSetResources (handle, args.length / 3, args);
+
+	/*
+	* Feature in Photon. On a single-line text, the selection is
+	* not cleared when setting the cursor position. The fix is to
+	* set the selection start and end values to the specified
+	* position.
+	*/
+	if ((style & SWT.SINGLE) != 0) {
+		int [] selection = {position};
+		OS.PtTextSetSelection (handle, selection, selection);
+	}
 }
 
 public void setSelection (Point selection) {
