@@ -88,8 +88,6 @@ public static void addLanguageListener (int hwnd, Runnable runnable) {
  * @param renderDx the width of each glyph in renderBuffer
  * @param x x position to start rendering
  * @param y y position to start rendering
- * @param runnable the code that should be executed when a keyboard language change
- *  occurs
  */
 public static void drawGlyphs(GC gc, char[] renderBuffer, int[] renderDx, int x, int y) {
 	RECT rect = null;
@@ -100,7 +98,7 @@ public static void drawGlyphs(GC gc, char[] renderBuffer, int[] renderDx, int x,
  * and GetCharacterPlacement functions.
  * <p>
  * 
- * @param gc the GC to use for rendering and measuring of this line, input parameter
+ * @param gc the GC to use for measuring of this line, input parameter
  * @param text text that bidi data should be calculated for, input parameter
  * @param order an array of integers representing the visual position of each character in
  *  the text array, output parameter
@@ -110,7 +108,7 @@ public static void drawGlyphs(GC gc, char[] renderBuffer, int[] renderDx, int x,
  *  glyph buffer, output paramteter
  * @param flags an integer representing rendering flag information, input parameter
  * @param offsets text segments that should be measured and reordered separately, input 
- *  parameter
+ *  parameter. See org.eclipse.swt.custom.BidiSegmentEvent for details.
  * @return buffer with the glyphs that should be rendered for the given text
  */
 public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] classBuffer, int[] dx, int flags, int [] offsets) {
@@ -223,12 +221,12 @@ public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] class
 }
 /**
  * Return bidi ordering information for the given text.  Does not return rendering 
- * information (e.g., glyphs, x values).  Use this method when you only need ordering 
- * information.  Doing so ill improve performance.  Wraps the GetFontLanguageInfo
- * and GetCharacterPlacement functions.
+ * information (e.g., glyphs, glyph distances).  Use this method when you only need 
+ * ordering information.  Doing so will improve performance.  Wraps the 
+ * GetFontLanguageInfo and GetCharacterPlacement functions.
  * <p>
  * 
- * @param gc the GC to use for rendering and measuring of this line, input parameter
+ * @param gc the GC to use for measuring of this line, input parameter
  * @param text text that bidi data should be calculated for, input parameter
  * @param order an array of integers representing the visual position of each character in
  *  the text array, output parameter
@@ -236,7 +234,7 @@ public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] class
  *  LOCALNUMBER) of each character in the text array, input/output parameter
  * @param flags an integer representing rendering flag information, input parameter
  * @param offsets text segments that should be measured and reordered separately, input 
- *  parameter
+ *  parameter. See org.eclipse.swt.custom.BidiSegmentEvent for details.
  */
 public static void getOrderInfo(GC gc, String text, int[] order, byte[] classBuffer, int flags, int [] offsets) {
 	int fontLanguageInfo = OS.GetFontLanguageInfo(gc.handle);
@@ -332,7 +330,8 @@ public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] class
  * <p>
  *
  * @param gc the gc to query
- * @return an integer representing the font information
+ * @return bitwise OR of the REORDER, LIGATE and GLYPHSHAPE flags
+ * 	defined by this class.
  */
 public static int getFontBidiAttributes(GC gc) {
 	int fontStyle = 0;
@@ -384,7 +383,8 @@ static int[] getKeyboardLanguageList() {
  * by looking at the languages that are installed for the keyboard.  
  * <p>
  *
- * @return true if bidi is supported, false otherwise
+ * @return true if bidi is supported, false otherwise. Always 
+ * 	false on Windows CE.
  */
 public static boolean isBidiPlatform() {
 	if (OS.IsWinCE) return false;
@@ -412,7 +412,8 @@ public static void removeLanguageListener (int hwnd) {
  * Switch the keyboard language to the specified language. 
  * <p>
  *
- * @param language integer representing language
+ * @param language integer representing language. One of 
+ * 	KEYBOARD_HEBREW, KEYBOARD_ARABIC, KEYBOARD_LATIN.
  */
 public static void setKeyboardLanguage(int language) {
 	// don't switch the keyboard if it doesn't need to be
