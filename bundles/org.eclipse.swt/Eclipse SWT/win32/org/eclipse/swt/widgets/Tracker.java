@@ -16,7 +16,7 @@ import org.eclipse.swt.events.*;
  *  
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>(none)</dd>
+ * <dd>LEFT, RIGHT, UP, DOWN</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Move</dd>
  * </dl>
