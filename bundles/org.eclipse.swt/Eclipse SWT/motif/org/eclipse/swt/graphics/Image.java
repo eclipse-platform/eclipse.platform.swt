@@ -664,6 +664,14 @@ void createMask() {
 	OS.XFreeGC(xDisplay, gc);
 	this.mask = maskPixmap;
 }
+void createSurface() {
+	if (surface != 0) return;
+	int xDisplay = device.xDisplay;
+	int xDrawable = pixmap;
+	int xVisual = OS.XDefaultVisual(xDisplay, OS.XDefaultScreen(xDisplay));
+	int xColormap = OS.XDefaultColormap(xDisplay, OS.XDefaultScreen (xDisplay));
+	surface = Cairo.cairo_xlib_surface_create(xDisplay, xDrawable, xVisual, 0, xColormap);
+}
 /**
  * Disposes of the operating system resources associated with
  * the image. Applications must dispose of all images which
