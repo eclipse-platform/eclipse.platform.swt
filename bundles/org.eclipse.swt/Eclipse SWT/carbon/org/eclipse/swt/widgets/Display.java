@@ -410,7 +410,7 @@ protected void create (DeviceData data) {
 }
 void createDisplay (DeviceData data) {
 	
-	/* Initialize X and Xt */
+	/* Initialize Carbon */
 	synchronized (Display.class) {
 		if (!fgCarbonInitialized) {
 			OS.RegisterAppearanceClient();
@@ -423,12 +423,7 @@ void createDisplay (DeviceData data) {
 		fgCarbonInitialized = true;
 	}
 	
-	/* Create the XDisplay */
-	/* AW
-	xDisplay = OS.XtOpenDisplay (xtContext, displayName, appName, appClass, 0, 0, argc, 0);
-	*/
-	// Mac
-	xDisplay= 1;
+	fGDeviceHandle= OS.GetMainDevice();
 }
 synchronized static void deregister (Display display) {
 	for (int i=0; i<Displays.length; i++) {
@@ -951,7 +946,7 @@ protected void init () {
 	dialogBackground= 0xffffff;
 	
 	labelForeground = 0x000000;
-	labelBackground = 0xffffff; 
+	labelBackground = -1; 
 	labelFont = Font.carbon_new (this, getThemeFont(OS.kThemeSmallSystemFont));
 	
 	listForeground = 0x000000;
@@ -967,17 +962,17 @@ protected void init () {
 	textHighlightThickness = 1; // ???
 	textFont= Font.carbon_new (this, new MacFont((short)1));	// Mac Appl Font
 
-	COLOR_WIDGET_DARK_SHADOW = new Color (this, 0x33, 0x33, 0x33);	
-	COLOR_WIDGET_NORMAL_SHADOW = new Color (this, 0x66, 0x66, 0x66);	
-	COLOR_WIDGET_LIGHT_SHADOW = new Color (this, 0x99, 0x99, 0x99);
-	COLOR_WIDGET_HIGHLIGHT_SHADOW = new Color (this, 0xCC, 0xCC, 0xCC);	
-	COLOR_WIDGET_BACKGROUND = new Color (this, 0xFF, 0xFF, 0xFF);	
-	COLOR_WIDGET_BORDER = new Color (this, 0x00, 0x00, 0x00);	
-	COLOR_LIST_FOREGROUND = new Color (this, 0x00, 0x00, 0x00);	
-	COLOR_LIST_BACKGROUND = new Color (this, 0xFF, 0xFF, 0xFF);	
-	COLOR_LIST_SELECTION = new Color (this, 0x66, 0x66, 0xCC);
-	COLOR_LIST_SELECTION_TEXT = new Color (this, 0xFF, 0xFF, 0xFF);
-	COLOR_INFO_BACKGROUND = new Color (this, 0xFF, 0xFF, 0xE1);
+	COLOR_WIDGET_DARK_SHADOW = 		Color.carbon_new(this, 0x333333, true);	
+	COLOR_WIDGET_NORMAL_SHADOW = 	Color.carbon_new(this, 0x666666, true);	
+	COLOR_WIDGET_LIGHT_SHADOW = 	Color.carbon_new(this, 0x999999, true);
+	COLOR_WIDGET_HIGHLIGHT_SHADOW = Color.carbon_new(this, 0xCCCCCC, true);	
+	COLOR_WIDGET_BACKGROUND = 		Color.carbon_new(this, 0xFFFFFF, true);	
+	COLOR_WIDGET_BORDER = 			Color.carbon_new(this, 0x000000, true);	
+	COLOR_LIST_FOREGROUND = 		Color.carbon_new(this, 0x000000, true);	
+	COLOR_LIST_BACKGROUND = 		Color.carbon_new(this, 0xFFFFFF, true);	
+	COLOR_LIST_SELECTION = 			Color.carbon_new(this, 0x6666CC, true);
+	COLOR_LIST_SELECTION_TEXT = 	Color.carbon_new(this, 0xFFFFFF, true);
+	COLOR_INFO_BACKGROUND = 		Color.carbon_new(this, 0xFFFFE1, true);
 	
 	fHoverThemeFont= OS.kThemeSmallSystemFont;
 

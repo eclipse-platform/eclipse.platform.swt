@@ -998,7 +998,7 @@ int processPaint (Object callData) {
 		gc.fillRectangle(0, 0, width, height);
 		
 		if ((parent.style & SWT.FLAT) != 0 && set) {
-			gc.setBackground(Color.carbon_new(display, 0xE0E0E0));
+			gc.setBackground(Color.carbon_new(display, 0xE0E0E0, false));
 			gc.fillRoundRectangle(1, 1, width-2, height-2, 8, 8);
 			gc.setForeground(display.getSystemColor (SWT.COLOR_GRAY));
 			gc.drawRoundRectangle(1, 1, width-3, height-3, 8, 8);

@@ -544,7 +544,7 @@ public Color getBackground () {
     /* AW
 	return Color.motif_new (getDisplay (), getXColor (getBackgroundPixel ()));
     */
-	return Color.carbon_new (getDisplay (), getBackgroundPixel ());
+	return Color.carbon_new (getDisplay (), getBackgroundPixel (), false);
 }
 int getBackgroundPixel () {
 /* AW
@@ -709,7 +709,7 @@ public Color getForeground () {
     /* AW
 	return Color.motif_new (getDisplay (), getXColor (getForegroundPixel ()));
     */
-	return Color.carbon_new (getDisplay (), getForegroundPixel ());
+	return Color.carbon_new (getDisplay (), getForegroundPixel (), false);
 }
 int getForegroundPixel () {
 	/* AW
