@@ -186,11 +186,11 @@ public static Frame new_Frame (final Composite parent) {
 					} else {
 						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_LOST_FOCUS));
 						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEACTIVATED));
-						if (menuSelectionManager != null && clearSelectionPath != null) {
-							try {
-								clearSelectionPath.invoke(menuSelectionManager, new Object[0]);
-							} catch (Throwable e) {}
-						}
+					}
+					if (menuSelectionManager != null && clearSelectionPath != null) {
+						try {
+							clearSelectionPath.invoke(menuSelectionManager, new Object[0]);
+						} catch (Throwable e) {}
 					}
 				}
 			});
