@@ -694,6 +694,9 @@ void onDispose() {
 	webBrowser.Release();
 	
 	GTK.gtk_widget_destroy(gtkHandle);
+	while (GTK.gtk_events_pending() != 0) {
+		GTK.gtk_main_iteration();
+	}
 	gtkHandle = 0;
 	
 	BrowserCount--;

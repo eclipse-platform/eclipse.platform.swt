@@ -588,6 +588,15 @@ void releaseWidget () {
 		Shell shell = getShell ();
 		int focusProc = display.focusProc;
 		OS.XtRemoveEventHandler (shell.shellHandle, OS.FocusChangeMask, false, focusProc, handle);
+		if (clientWindow != 0) {
+			boolean warnings = display.getWarnings ();
+			display.setWarnings (false);
+			int xDisplay = OS.XtDisplay (handle);
+			OS.XUnmapWindow (xDisplay, clientWindow);
+			OS.XReparentWindow (xDisplay, clientWindow, OS.XDefaultRootWindow (xDisplay), 0, 0);
+			OS.XSync (xDisplay, false);
+			display.setWarnings (warnings);
+		}
 		setClientWindow (0);
 	}
 	releaseChildren ();
