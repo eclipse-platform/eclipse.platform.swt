@@ -11,7 +11,31 @@
 <h1>
 Eclipse Platform Release Notes<br>
 SWT</h1>
-SWT Build 117 - Friday June 1, 2001
+SWT Build 118 - Saturday June 2, 2001
+
+<h2><a NAME="API Changes"></a>API Changes</h2>
+
+<h3><a NAME="SWT Examples are now a plugin"></a>SWT Examples are now a plugin</h3>
+
+<p> SWT examples run as a plugin in the Eclipse desktop.
+
+<p> To run the examples, follow these steps:
+
+<ol>
+	<li>Perspective -> Show View -> Other...
+	<li>In the Show View dialog, expand the topmost SWT Examples category.
+	<li>Select "Launcher" and click OK to get the SWT Launcher view.
+	<li>From this view, you can launch all of the SWT Examples, including both stand-alone examples (10 of them) and plugin examples (3 of them: Controls, Paint, & OLE).
+</ol>
+
+<b>Notes:</b>
+<ul>
+	<li>Select an example in the launcher list to see a description of the example.
+	<li>Press the Run button or double-click the example to launch it.
+	<li>If the example has a source jar (i.e. the plugin examples have source jars), then press Add to Workspace to add the source to a project in your workspace.
+	<li>An alternate way to launch the Controls, Paint, & OLE examples, since they are plugins, is to select them from Perspective -> Show View -> Other...
+ </ul>
+    
 <h2><a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
 <blockquote>
 1GEPBX8: SWT:Linux - Adding a new entry to a tool bar overwrites the first entry
@@ -25,7 +49,7 @@ SWT Build 117 - Friday June 1, 2001
 1GD0L49: SWT:Linux - Popup menus do not work in Toolbar
 1G95PJ6: ITPUI:WIN2000 - Changing task priority loses task selection
 </blockquote>
-
+   
 <h1>
 Eclipse Platform Release Notes<br>
 SWT</h1>
