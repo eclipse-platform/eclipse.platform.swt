@@ -608,6 +608,7 @@ public class OS {
 	public static final byte XmDROP_MOVE = (1 << 0);
 	public static final byte XmDROP_NOOP = 0;
 	public static final int XmDROP_SITE_ACTIVE = 0;
+	public static final int XmDROP_SITE_INACTIVE = 1;
 	public static final int XmDROP_SITE_INVALID = 2;
 	public static final int XmDROP_SITE_VALID = 3;
 	public static final int XmDROP_SITE_COMPOSITE = 1;
