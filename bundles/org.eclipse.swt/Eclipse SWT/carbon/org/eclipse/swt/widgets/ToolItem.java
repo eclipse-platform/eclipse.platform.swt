@@ -37,12 +37,8 @@ public class ToolItem extends Item {
 	String toolTipText;
 	Control control;
 	boolean set;
-	
-	// AW
-	private boolean fPressed;
-	private int fBackground;
-	// AW
-	
+	boolean pressed;
+		
 	static final int DEFAULT_WIDTH = 24;
 	static final int DEFAULT_HEIGHT = 22;
 	static final int DEFAULT_SEPARATOR_WIDTH = 8;
@@ -760,13 +756,8 @@ public void setWidth (int width) {
 	}
 }
 void setDrawPressed (boolean value) {
-	/* AW
-	int shadowType = value ? OS.XmSHADOW_IN : OS.XmSHADOW_OUT;
-	int [] argList = {OS.XmNshadowType, shadowType};
-	OS.XtSetValues(handle, argList, argList.length / 2);
-	*/
-	if (fPressed != value) {
-		fPressed= value;
+	if (pressed != value) {
+		pressed= value;
 		redraw();
 	}
 }
