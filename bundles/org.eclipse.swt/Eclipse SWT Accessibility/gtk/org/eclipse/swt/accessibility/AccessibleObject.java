@@ -115,7 +115,7 @@ public class AccessibleObject {
 			AtkComponentIface componentIface = new AtkComponentIface ();
 			ATK.memmove (componentIface, superType);
 			if (componentIface.get_extents != 0) {
-				parentResult = ATK.call (componentIface.get_extents, x, y, width, height, coord_type);
+				parentResult = ATK.call (componentIface.get_extents, handle, x, y, width, height, coord_type);
 			}
 		}
 		AccessibleControlListener[] listeners = accessible.getControlListeners ();
@@ -172,7 +172,7 @@ public class AccessibleObject {
 			AtkComponentIface componentIface = new AtkComponentIface ();
 			ATK.memmove (componentIface, superType);
 			if (componentIface.get_extents != 0) {
-				parentResult = ATK.call (componentIface.get_position, x, y, coord_type);
+				parentResult = ATK.call (componentIface.get_position, handle, x, y, coord_type);
 			}
 		}
 		AccessibleControlListener[] listeners = accessible.getControlListeners ();
@@ -223,7 +223,7 @@ public class AccessibleObject {
 			AtkComponentIface componentIface = new AtkComponentIface ();
 			ATK.memmove (componentIface, superType);
 			if (componentIface.get_extents != 0) {
-				parentResult = ATK.call (componentIface.get_size, width, height, coord_type);
+				parentResult = ATK.call (componentIface.get_size, handle, width, height, coord_type);
 			}
 		}
 		AccessibleControlListener[] listeners = accessible.getControlListeners ();

@@ -228,6 +228,17 @@ JNIEXPORT jint JNICALL OS_NATIVE(call__IIIIIII)
 }
 #endif
 
+#ifndef NO_call__IIIIIIII
+typedef jint (*call_P7) (jint, jint, jint, jint, jint, jint, jint);
+JNIEXPORT jint JNICALL OS_NATIVE(call__IIIIIIII)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7)
+{
+	NATIVE_ENTER(env, that, "call__IIIIIIII\n")
+	return ((call_P7)arg0)(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+	NATIVE_EXIT(env, that, "call__IIIIIIII\n")
+}
+#endif
+
 #ifndef NO_memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GObjectClass_2I
 JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_accessibility_gtk_GObjectClass_2I)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1)
