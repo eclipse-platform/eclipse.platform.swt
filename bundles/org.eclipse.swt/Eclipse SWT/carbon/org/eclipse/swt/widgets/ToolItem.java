@@ -622,10 +622,8 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 			postEvent (SWT.Selection, event);
 		}
 	}
-	
 	/*
-	* Feature in the Macintosh.  When some controls get kEventControlClick
-	* (which gets sent from kEventMouseDown), they call TrackControl() or
+	* Feature in the Macintosh.  Some controls call TrackControl() or
 	* HandleControlClick() to track the mouse.  Unfortunately, mouse move
 	* events and the mouse up events are consumed.  The fix is to call the
 	* default handler and send a fake mouse up when tracking is finished.
@@ -645,9 +643,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
 		int x = outPt.h - rect.left;
 		int y = outPt.v - rect.top;
-		int [] theControl = new int [1];
-		OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
-		OS.GetControlBounds (theControl [0], rect);
+		OS.GetControlBounds (parent.handle, rect);
 		x -= rect.left;
 		y -=  rect.top;
 		short [] button = new short [1];
