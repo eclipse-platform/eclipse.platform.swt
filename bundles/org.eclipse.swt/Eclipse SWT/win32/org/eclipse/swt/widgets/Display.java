@@ -1528,21 +1528,6 @@ boolean isValidThread () {
 	return thread == Thread.currentThread ();
 }
 
-boolean isVirtualKey (int key) {
-	switch (key) {
-		case OS.VK_TAB:
-		case OS.VK_RETURN:
-		case OS.VK_BACK:
-		case OS.VK_ESCAPE:
-//		case OS.VK_DELETE:
-		case OS.VK_SPACE:
-		case OS.VK_MENU:
-		case OS.VK_SHIFT:
-		case OS.VK_CONTROL: return true;
-	}
-	return false;
-}
-
 /**
  * Maps a point from one coordinate system to another.
  * When the control is null, coordinates are mapped to

@@ -1007,8 +1007,9 @@ boolean setInputState (Event event, int type) {
 }
 
 boolean setKeyState (Event event, int type) {
-	if (display.lastAscii != 0) {
+	if (display.lastAscii != 0 || display.lastNull) {
 		event.character = mbcsToWcs ((char) display.lastAscii);
+		event.keyCode = display.lastKey;
 	}
 	if (display.lastVirtual) {
 		event.keyCode = Display.translateKey (display.lastKey);
