@@ -403,9 +403,10 @@ public void setAlignment(int align) {
 	}
 }
 /**
- * Specify a gradiant of colours to be draw in the background of the CLabel.
- * For example to draw a gradiant that varies from dark blue to blue and then to
- * white, use the following call to setBackground:
+ * Specify a gradient of colours to be drawn in the background of the CLabel.
+ * <p>For example, to draw a gradient that varies from dark blue to blue and then to
+ * white and stays white for the right hald of the label, use the following call 
+ * to setBackground:</p>
  * <pre>
  *	clabel.setBackground(new Color[]{display.getSystemColor(SWT.COLOR_DARK_BLUE), 
  *		                           display.getSystemColor(SWT.COLOR_BLUE),
@@ -414,13 +415,13 @@ public void setAlignment(int align) {
  *		               new int[] {25, 50, 100});
  * </pre>
  *
- * @param colors an array of Color that specifies the colors to appear in the gradiant 
- *               in order of appearance left to right.  The value <code>null</code> clears the
- *               background gradiant. The value <code>null</code> can be used inside the array of 
- *               Color to specify the background color.
+ * @param colors an array of Color that specifies the colors to appear in the gradient 
+ *               in order of appearance from left to right;  The value <code>null</code> 
+ *               clears the background gradient; the value <code>null</code> can be used 
+ *               inside the array of Color to specify the background color.
  * @param percents an array of integers between 0 and 100 specifying the percent of the width 
- *                 of the widget at which the color should change.  The size of the percents array must be one 
- *                 less than the size of the colors array.
+ *                 of the widget at which the color should change; the size of the percents 
+ *                 array must be one less than the size of the colors array.
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
