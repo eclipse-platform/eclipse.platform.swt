@@ -1209,7 +1209,6 @@ public void setItems (String [] items) {
 	int cp = getCodePage ();
 	while (index < length) {
 		String string = items [index];
-		if (string == null) break;
 		TCHAR buffer = new TCHAR (cp, string, true);
 		int result = OS.SendMessage (handle, OS.LB_ADDSTRING, 0, buffer);
 		if (result == OS.LB_ERR || result == OS.LB_ERRSPACE) break;
