@@ -108,7 +108,7 @@ class GroupTab extends Tab {
 			public void widgetSelected(SelectionEvent event) {
 				if (!((Button) event.widget).getSelection ()) return;
 				recreateExampleWidgets ();
-			};
+			}
 		};
 		shadowEtchedInButton.addSelectionListener (selectionListener);
 		shadowEtchedOutButton.addSelectionListener (selectionListener);

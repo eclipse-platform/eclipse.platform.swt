@@ -114,7 +114,7 @@ class SliderTab extends RangeTab {
 		incrementScale.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent e) {		
 				setWidgetIncrement ();
-			};
+			}
 		});
 	}
 	
@@ -176,7 +176,7 @@ class SliderTab extends RangeTab {
 		thumbScale.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {
 				setWidgetThumb ();
-			};
+			}
 		});
 	}
 	

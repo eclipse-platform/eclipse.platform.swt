@@ -68,7 +68,7 @@ abstract class RangeTab extends Tab {
 		maximumScale.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {
 				setWidgetMaximum ();
-			};
+			}
 		});
 	}
 	
@@ -99,7 +99,7 @@ abstract class RangeTab extends Tab {
 		minimumScale.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {
 				setWidgetMinimum ();
-			};
+			}
 		});
 	
 	}
@@ -132,7 +132,7 @@ abstract class RangeTab extends Tab {
 		selectionScale.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
 				setWidgetSelection ();
-			};
+			}
 		});
 		
 	}

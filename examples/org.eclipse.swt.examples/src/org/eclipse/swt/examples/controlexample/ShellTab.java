@@ -208,17 +208,17 @@ class ShellTab extends Tab {
 		createButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				createButtonSelected(e);
-			};
+			}
 		});
 		closeAllButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				closeAllShells ();
-			};
+			}
 		});
 		SelectionListener decorationButtonListener = new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
 				decorationButtonSelected(event);
-			};
+			}
 		};
 		noTrimButton.addSelectionListener (decorationButtonListener);
 		closeButton.addSelectionListener (decorationButtonListener);

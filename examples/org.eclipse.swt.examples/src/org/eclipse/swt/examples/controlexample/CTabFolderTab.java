@@ -363,7 +363,7 @@ class CTabFolderTab extends Tab {
 					if (!((Button) event.widget).getSelection ()) return;
 				}
 				recreateExampleWidgets ();
-			};
+			}
 		};
 		topButton.addSelectionListener (selectionListener);
 		bottomButton.addSelectionListener (selectionListener);

@@ -56,7 +56,7 @@ class ButtonTab extends AlignableTab {
 			public void widgetSelected(SelectionEvent event) {
 				if (!((Button) event.widget).getSelection()) return;
 				setExampleWidgetAlignment ();
-			};
+			}
 		};
 		upButton.addSelectionListener(selectionListener);
 		downButton.addSelectionListener(selectionListener);

@@ -160,7 +160,7 @@ class StyledTextTab extends ScrollableTab {
 				for (int i = sel.x; i<sel.x+sel.y; i++) {
 					StyleRange range = styledText.getStyleRangeAtOffset(i);
 					if (range == null) {style = new StyleRange(i, 1, null, null, SWT.BOLD);}
-					else {style = new StyleRange(i, 1, range.foreground, range.background, range.fontStyle | SWT.BOLD);};
+					else {style = new StyleRange(i, 1, range.foreground, range.background, range.fontStyle | SWT.BOLD);}
 					styledText.setStyleRange(style);
 				}
 				styledText.setSelectionRange(sel.x + sel.y, 0);
@@ -181,7 +181,7 @@ class StyledTextTab extends ScrollableTab {
 				for (int i = sel.x; i<sel.x+sel.y; i++) {
 					StyleRange range = styledText.getStyleRangeAtOffset(i);
 					if (range == null) {style = new StyleRange(i, 1, null, null, SWT.ITALIC);}
-					else {style = new StyleRange(i, 1, range.foreground, range.background, range.fontStyle | SWT.ITALIC);};
+					else {style = new StyleRange(i, 1, range.foreground, range.background, range.fontStyle | SWT.ITALIC);}
 					styledText.setStyleRange(style);
 				}
 				styledText.setSelectionRange(sel.x + sel.y, 0);
@@ -215,11 +215,11 @@ class StyledTextTab extends ScrollableTab {
 						if (range.foreground != null) fg = range.foreground;
 						if (range.background != null) bg = range.background;
 						style = new StyleRange(i, 1, fg, bg, range.fontStyle);
-					};
+					}
 					styledText.setStyleRange(style);
 				}
 				styledText.setSelectionRange(sel.x + sel.y, 0);
-			};
+			}
 		};
 		redButton.addSelectionListener(colorListener);
 		yellowButton.addSelectionListener(colorListener);

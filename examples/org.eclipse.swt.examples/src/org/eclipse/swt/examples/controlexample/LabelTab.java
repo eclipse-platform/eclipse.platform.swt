@@ -125,7 +125,7 @@ class LabelTab extends AlignableTab {
 					if (!((Button) event.widget).getSelection ()) return;
 				}
 				recreateExampleWidgets ();
-			};
+			}
 		};
 		shadowInButton.addSelectionListener (selectionListener);
 		shadowOutButton.addSelectionListener (selectionListener);

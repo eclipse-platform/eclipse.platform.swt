@@ -143,7 +143,7 @@ abstract class Tab {
 					if (!((Button) event.widget).getSelection ()) return;
 				}
 				recreateExampleWidgets ();
-			};
+			}
 		};
 		Control [] children = styleGroup.getChildren ();
 		for (int i=0; i<children.length; i++) {
@@ -746,7 +746,7 @@ abstract class Tab {
 			public void widgetSelected (SelectionEvent event) {
 				if (!((Button) event.widget).getSelection ()) return;
 				setExampleWidgetSize ();
-			};
+			}
 		};
 		preferredButton.addSelectionListener(selectionListener);
 		tooSmallButton.addSelectionListener(selectionListener);

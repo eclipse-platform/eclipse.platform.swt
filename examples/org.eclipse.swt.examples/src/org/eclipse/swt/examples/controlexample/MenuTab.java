@@ -206,17 +206,17 @@ class MenuTab extends Tab {
 		createButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				createButtonSelected(e);
-			};
+			}
 		});
 		closeAllButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				closeAllShells ();
-			};
+			}
 		});
 		subMenuButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				subSubMenuButton.setEnabled (subMenuButton.getSelection ());
-			};
+			}
 		});
 	
 		/* Set the default state */

@@ -118,7 +118,7 @@ class SpinnerTab extends RangeTab {
 		incrementScale.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent e) {		
 				setWidgetIncrement ();
-			};
+			}
 		});
 	}
 	
