@@ -392,7 +392,15 @@ public void cut () {
 			}
 		}
 	}
-	if (cut) OS.TXNCut (txnObject);
+	if (cut) {
+		OS.TXNCut (txnObject);
+
+		/*
+		* Feature in the Macintosh.  When an empty string is set in the TXNObject,
+		* the font attributes are cleared.  The fix is to reset them.
+		*/
+		if (OS.TXNDataSize (txnObject) / 2 == 0) setFontStyle (font);
+	}
 	Point newSelection = getSelection ();
 	if (!cut || !oldSelection.equals (newSelection)) sendEvent (SWT.Modify);
 }
@@ -1496,6 +1504,12 @@ void setTXNText (int iStartOffset, int iEndOffset, String string) {
 	if (readOnly) OS.TXNSetTXNObjectControls (txnObject, false, 1, tag, new int [] {0});
 	OS.TXNSetData (txnObject, OS.kTXNUnicodeTextData, buffer, buffer.length * 2, iStartOffset, iEndOffset);
 	if (readOnly) OS.TXNSetTXNObjectControls (txnObject, false, 1, tag, new int [] {1});
+
+	/*
+	* Feature in the Macintosh.  When an empty string is set in the TXNObject,
+	* the font attributes are cleared.  The fix is to reset them.
+	*/
+	if (OS.TXNDataSize (txnObject) / 2 == 0) setFontStyle (font);
 }
 
 /**
