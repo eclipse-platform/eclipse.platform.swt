@@ -918,60 +918,20 @@ public boolean isVisible () {
 }
 
 void redraw () {
-	if (OS.IsPPC || OS.IsSP) return;
-	if (OS.IsHPC) {
-		/*
-		* Each time a menu has been modified, the command menu bar
-		* must be redrawn or it won't update properly.  For example,
-		* a submenu will not drop down.
-		*/
-		Menu menuBar = parent.menuBar;
-		if (menuBar != null) {
-			Menu menu = this;
-			while (menu != null && menu != menuBar) {
-				menu = menu.getParentMenu ();
-			}
-			if (menu == menuBar) {
-				OS.CommandBar_DrawMenuBar (menuBar.hwndCB, 0);
-				OS.CommandBar_Show (menuBar.hwndCB, true);
-			}
-		}
-		return;
-	}
 	if ((style & SWT.BAR) != 0) {
-		OS.DrawMenuBar (parent.handle);
-		return;
-	}
-	if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) {
-		return;
-	}
-	boolean hasCheck = false, hasImage = false;
-	MenuItem [] items = getItems ();
-	for (int i=0; i<items.length; i++) {
-		MenuItem item = items [i];
-		if (item.getImage () != null) {
-			if ((hasImage = true) && hasCheck) break;
-		}
-		if ((item.getStyle () & (SWT.CHECK | SWT.RADIO)) != 0) {
-			if ((hasCheck = true) && hasImage) break;
-		}
-	}
-	MENUINFO lpcmi = new MENUINFO ();
-	lpcmi.cbSize = MENUINFO.sizeof;
-	lpcmi.fMask = OS.MIM_STYLE;
-	OS.GetMenuInfo (handle, lpcmi);
-	if (hasImage && !hasCheck) {
-		lpcmi.dwStyle |= OS.MNS_CHECKORBMP;
+		Display display = getDisplay ();
+		display.addBar (this);
 	} else {
-		lpcmi.dwStyle &= ~OS.MNS_CHECKORBMP;
+		update ();
 	}
-	OS.SetMenuInfo (handle, lpcmi);
 }
 
 void releaseChild () {
 	super.releaseChild ();
 	if (cascade != null) cascade.releaseMenu ();
 	if ((style & SWT.BAR) != 0) {
+		Display display = getDisplay ();
+		display.removeBar (this);
 		if (this == parent.menuBar) {
 			parent.setMenuBar (null);
 		}
@@ -1179,6 +1139,57 @@ public void setVisible (boolean visible) {
 		display.removePopup (this);
 		_setVisible (false);
 	}
+}
+
+void update () {
+	if (OS.IsPPC || OS.IsSP) return;
+	if (OS.IsHPC) {
+		/*
+		* Each time a menu has been modified, the command menu bar
+		* must be redrawn or it won't update properly.  For example,
+		* a submenu will not drop down.
+		*/
+		Menu menuBar = parent.menuBar;
+		if (menuBar != null) {
+			Menu menu = this;
+			while (menu != null && menu != menuBar) {
+				menu = menu.getParentMenu ();
+			}
+			if (menu == menuBar) {
+				OS.CommandBar_DrawMenuBar (menuBar.hwndCB, 0);
+				OS.CommandBar_Show (menuBar.hwndCB, true);
+			}
+		}
+		return;
+	}
+	if ((style & SWT.BAR) != 0) {
+		if (this == parent.menuBar) OS.DrawMenuBar (parent.handle);
+		return;
+	}
+	if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) {
+		return;
+	}
+	boolean hasCheck = false, hasImage = false;
+	MenuItem [] items = getItems ();
+	for (int i=0; i<items.length; i++) {
+		MenuItem item = items [i];
+		if (item.getImage () != null) {
+			if ((hasImage = true) && hasCheck) break;
+		}
+		if ((item.getStyle () & (SWT.CHECK | SWT.RADIO)) != 0) {
+			if ((hasCheck = true) && hasImage) break;
+		}
+	}
+	MENUINFO lpcmi = new MENUINFO ();
+	lpcmi.cbSize = MENUINFO.sizeof;
+	lpcmi.fMask = OS.MIM_STYLE;
+	OS.GetMenuInfo (handle, lpcmi);
+	if (hasImage && !hasCheck) {
+		lpcmi.dwStyle |= OS.MNS_CHECKORBMP;
+	} else {
+		lpcmi.dwStyle &= ~OS.MNS_CHECKORBMP;
+	}
+	OS.SetMenuInfo (handle, lpcmi);
 }
 
 }

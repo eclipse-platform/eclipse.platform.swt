@@ -145,8 +145,8 @@ public class Display extends Device {
 	String [] keys;
 	Object [] values;
 
-	/* Popup Menus */
-	Menu [] popups;
+	/* Bar and Popup Menus */
+	Menu [] bars, popups;
 	
 	/* Key Mappings */
 	static final int [] [] KeyTable = {
@@ -360,6 +360,25 @@ public void addListener (int eventType, Listener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) eventTable = new EventTable ();
 	eventTable.hook (eventType, listener);
+}
+
+void addBar (Menu menu) {
+	if (bars == null) bars = new Menu [4];
+	int length = bars.length;
+	for (int i=0; i<length; i++) {
+		if (bars [i] == menu) return;
+	}
+	int index = 0;
+	while (index < length) {
+		if (bars [index] == null) break;
+		index++;
+	}
+	if (index == length) {
+		Menu [] newBars = new Menu [length + 4];
+		System.arraycopy (bars, 0, newBars, 0, length);
+		bars = newBars;
+	}
+	bars [index] = menu;
 }
 
 void addPopup (Menu menu) {
@@ -681,6 +700,28 @@ public Rectangle getBounds () {
 	int height = OS.GetSystemMetrics (OS.SM_CYVIRTUALSCREEN);
 	return new Rectangle (x, y, width, height);
 }
+
+/**
+ * Returns the button dismissal ordering, one of <code>LEFT</code> or <code>RIGHT</code>.
+ * The button dismissal ordering is the alignment that should be used
+ * when positioning the default dismissal button for a dialog.  For example,
+ * in a dialog that contains an OK and CANCEL button, on platforms where
+ * the button dismissal order is <code>LEFT</code>, the button ordering should be
+ * OK/CANCEL.  When button dismissal order is <code>RIGHT</code>, the button ordering
+ * should be CANCEL/OK.
+ *
+ * @return the button dismissal order
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.1
+ */
+//public int getButtonOrder () {
+//	checkDevice ();
+//	return SWT.LEFT;
+//}
 
 /**
  * Returns the display which the currently running thread is
@@ -1400,6 +1441,7 @@ void postEvent (Event event) {
  */
 public boolean readAndDispatch () {
 	checkDevice ();
+	updateMenuBars ();
 	runPopups ();
 	if (OS.PeekMessage (msg, 0, 0, 0, OS.PM_REMOVE)) {
 		if (!isWakeMessage (msg)) {
@@ -1653,6 +1695,16 @@ public void removeListener (int eventType, Listener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (eventType, listener);
+}
+
+void removeBar (Menu menu) {
+	if (bars == null) return;
+	for (int i=0; i<bars.length; i++) {
+		if (bars [i] == menu) {
+			bars [i] = null;
+			return;
+		}
+	}
 }
 
 void removePopup (Menu menu) {
@@ -2173,6 +2225,15 @@ void updateFont () {
 			shell.updateFont (oldFont, newFont);
 		}
 	}
+}
+
+void updateMenuBars () {
+	if (bars == null) return;
+	for (int i=0; i<bars.length; i++) {
+		Menu menu = bars [i];
+		if (menu != null && !menu.isDisposed ()) menu.update ();
+	}
+	bars = null;
 }
 
 /**

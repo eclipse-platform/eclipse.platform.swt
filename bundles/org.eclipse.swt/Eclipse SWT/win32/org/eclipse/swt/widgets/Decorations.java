@@ -939,9 +939,12 @@ public void setMenuBar (Menu menu) {
 			}
 		} 
 	} else {
+		if (menu != null) {
+			Display display = getDisplay ();
+			display.removeBar (menu);
+		}
 		menuBar = menu;
-		int hMenu = 0;
-		if (menuBar != null) hMenu = menuBar.handle;
+		int hMenu = menuBar != null ? menuBar.handle: 0;
 		OS.SetMenu (handle, hMenu);
 	}
 	destroyAccelerators ();
@@ -1114,7 +1117,11 @@ public void setVisible (boolean visible) {
 		if (OS.IsWinCE) {
 			OS.ShowWindow (handle, OS.SW_SHOW);
 		} else {
-			OS.DrawMenuBar (handle);
+			if (menuBar != null) {
+				Display display = getDisplay ();
+				display.removeBar (menuBar);
+				OS.DrawMenuBar (handle);
+			}
 			OS.ShowWindow (handle, swFlags);
 		}
 		OS.UpdateWindow (handle);
