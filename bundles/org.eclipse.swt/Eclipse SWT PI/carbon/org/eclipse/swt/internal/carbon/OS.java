@@ -506,6 +506,7 @@ public class OS {
 	public static final int kThemeStateInactive = 0;
 	public static final int kThemeStatePressed = 2;
 	public static final int kThemeSystemFont = 0;
+	public static final int kThemeTextColorDialogActive = 1;
 	public static final int kThemeTextColorDocumentWindowTitleActive = 23;
 	public static final int kThemeTextColorDocumentWindowTitleInactive = 24;
 	public static final int kThemeTextColorListView = 22;
@@ -1131,6 +1132,7 @@ public static final native int SetRootMenu(int mHandle);
 public static final native int SetThemeBackground(short inBrush, short depth, boolean isColorDevice);
 public static final native int SetThemeCursor(int themeCursor);
 public static final native int SetThemeDrawingState(int state, boolean disposeNow);
+public static final native int SetThemeTextColor(short inBrush, short depth, boolean isColorDevice);
 public static final native int SetThemeWindowBackground(int wHandle, short brush, boolean update);
 public static final native int SetUpControlBackground(int cHandle, short depth, boolean isColorDevice);
 public static final native void SetWRefCon(int wHandle, int data);

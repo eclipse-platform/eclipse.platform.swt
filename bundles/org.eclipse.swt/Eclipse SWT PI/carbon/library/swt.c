@@ -7251,6 +7251,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetThemeDrawingSt
 }
 #endif /* NO_SetThemeDrawingState */
 
+#ifndef NO_SetThemeTextColor
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetThemeTextColor
+	(JNIEnv *env, jclass that, jshort arg0, jshort arg1, jboolean arg2)
+{
+	DEBUG_CALL("SetThemeTextColor\n")
+
+	return (jint)SetThemeTextColor((ThemeBrush)arg0, (SInt16)arg1, (Boolean)arg2);
+}
+#endif
+
 #ifndef NO_SetThemeWindowBackground
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetThemeWindowBackground
 	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jboolean arg2)

@@ -343,7 +343,9 @@ int colorProc (int inControl, int inMessage, int inDrawDepth, int inDrawInColor)
 		case OS.kControlMsgApplyTextColor: {
 			if (foreground != null) {
 				OS.RGBForeColor (toRGBColor (foreground));
-			} 
+			} else {
+				OS.SetThemeTextColor ((short) OS.kThemeTextColorDialogActive, (short) inDrawDepth, inDrawInColor != 0);
+			}
 			return OS.noErr;
 		}
 		case OS.kControlMsgSetUpBackground: {
