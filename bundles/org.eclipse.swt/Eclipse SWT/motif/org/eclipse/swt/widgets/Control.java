@@ -1330,14 +1330,14 @@ int processIMEFocusIn () {
 	* XmImSetFocusValues.
 	*/
 	int[] argList = {
-        OS.XmNforeground, getForegroundPixel(),
-        OS.XmNbackground, getBackgroundPixel(),
-        OS.XmNspotLocation, ptr,
-        OS.XmNfontList, font.handle,
+		OS.XmNforeground, getForegroundPixel(),
+		OS.XmNbackground, getBackgroundPixel(),
+		OS.XmNspotLocation, ptr,
+		OS.XmNfontList, font.handle,
 	};
 	OS.XmImSetValues(handle, argList, argList.length / 2);
 	OS.XmImSetFocusValues (handle, null, 0);
-	
+
 	if (ptr != 0) OS.XtFree (ptr);
 	return 0;
 }
