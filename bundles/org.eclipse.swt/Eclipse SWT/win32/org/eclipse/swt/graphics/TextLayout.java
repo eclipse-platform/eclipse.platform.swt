@@ -176,12 +176,6 @@ void computeRuns (GC gc) {
 		shape(srcHdc, run);
 	}
 	SCRIPT_LOGATTR logAttr = new SCRIPT_LOGATTR();
-	int[] ppSp = new int[1];
-	int[] piNumScripts = new int[1];
-	OS.ScriptGetProperties(ppSp, piNumScripts);
-	int[] scripts = new int[piNumScripts[0]];
-	OS.MoveMemory(scripts, ppSp[0], scripts.length * 4);
-	if (device.logFontsCache == null) 	device.logFontsCache = new LOGFONT[piNumScripts[0]];
 	SCRIPT_PROPERTIES properties = new SCRIPT_PROPERTIES();
 	int lineWidth = 0, lineStart = 0, lineCount = 1;
 	for (int i=0; i<allRuns.length - 1; i++) {
@@ -250,10 +244,10 @@ void computeRuns (GC gc) {
 				*/
 				if (start == 0 && i != lineStart && !run.tab) {
 					if (logAttr.fSoftBreak && !logAttr.fWhiteSpace) {
-						OS.MoveMemory(properties, scripts[run.analysis.eScript], SCRIPT_PROPERTIES.sizeof);
+						OS.MoveMemory(properties, device.scripts[run.analysis.eScript], SCRIPT_PROPERTIES.sizeof);
 						int langID = properties.langid;
 						StyleItem pRun = allRuns[i - 1];
-						OS.MoveMemory(properties, scripts[pRun.analysis.eScript], SCRIPT_PROPERTIES.sizeof);
+						OS.MoveMemory(properties, device.scripts[pRun.analysis.eScript], SCRIPT_PROPERTIES.sizeof);
 						if (properties.langid == langID || langID == OS.LANG_NEUTRAL || properties.langid == OS.LANG_NEUTRAL) {
 							breakRun(pRun);
 							OS.MoveMemory(logAttr, pRun.psla + ((pRun.length - 1) * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof); 
@@ -1043,89 +1037,63 @@ public Point getLocation (int offset, boolean trailing) {
  */
 public int getNextOffset (int offset, int movement) {
 	checkLayout();
+	return _getOffset (offset, movement, true);
+}
+
+int _getOffset(int offset, int movement, boolean forward) {
 	computeRuns(null);
 	int length = text.length();
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
-	if (offset == length) return length;
-	if ((movement & SWT.MOVEMENT_CHAR) != 0) return offset + 1;
+	if (forward && offset == length) return length;
+	if (!forward && offset == 0) return 0;
+	int step = forward ? 1 : -1;
+	if ((movement & SWT.MOVEMENT_CHAR) != 0) return offset + step;
 	length = segmentsText.length();
 	offset = translateOffset(offset);
-	int[] ppSp = new int[1];
-	int[] piNumScripts = new int[1];
-	OS.ScriptGetProperties(ppSp, piNumScripts);
-	int[] scripts = new int[piNumScripts[0]];
-	OS.MoveMemory(scripts, ppSp[0], scripts.length * 4);
-	SCRIPT_PROPERTIES properties = new SCRIPT_PROPERTIES();
 	SCRIPT_LOGATTR logAttr = new SCRIPT_LOGATTR();
-	boolean previousWhitespace = false;
-	int i = 0;	
-	int lastLangID  = -1;
-	for (; i < allRuns.length; i++) {
+	SCRIPT_PROPERTIES properties = new  SCRIPT_PROPERTIES();
+	int i = forward ? 0 : allRuns.length - 1;
+	offset = validadeOffset(offset, step);
+	do {
 		StyleItem run = allRuns[i];
 		if (run.start <= offset && offset < run.start + run.length) {
-			if (run.lineBreak && !run.softBreak) return untranslateOffset(run.start + run.length);
+			if (run.lineBreak && !run.softBreak) return untranslateOffset(run.start);
+			if (run.tab) return untranslateOffset(run.start);
+			OS.MoveMemory(properties, device.scripts[run.analysis.eScript], SCRIPT_PROPERTIES.sizeof);
 			breakRun(run);
-			OS.MoveMemory(logAttr, run.psla + ((offset - run.start) * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof);	
-			previousWhitespace = run.tab ? true : logAttr.fWhiteSpace;
-			OS.MoveMemory(properties, scripts[run.analysis.eScript], SCRIPT_PROPERTIES.sizeof);
-			lastLangID = properties.langid;
-			break;
-		}
-	}
-	offset++;
-	if (segments != null && segments.length > 2) {
-		for (int j = 0; j < segments.length; j++) {
-			if (translateOffset(segments[j]) - 1 == offset) {
-				offset++;
-				break;
-			}
-		}
-	}
-	for (; i < allRuns.length && offset < length; i++) {
-		StyleItem run = allRuns[i];
-		if (run.start <= offset && offset < run.start + run.length) {
-			if (run.tab) return untranslateOffset(offset);
-			if (run.lineBreak && !run.softBreak) return untranslateOffset(offset);
-			OS.MoveMemory(properties, scripts[run.analysis.eScript], SCRIPT_PROPERTIES.sizeof);
-			if (((movement & SWT.MOVEMENT_CLUSTER) != 0) && !properties.fNeedsCaretInfo) {
-				return untranslateOffset(offset);
-			}
-			breakRun(run);
-			if ((movement & SWT.MOVEMENT_WORD) != 0) {
-				if (properties.langid != lastLangID) {
-					OS.MoveMemory(logAttr, run.psla + ((offset - run.start) * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof);
-					if (!logAttr.fWhiteSpace) return untranslateOffset(offset);
-				}
-				lastLangID = properties.langid;
-			}
 			while (run.start <= offset && offset < run.start + run.length) {
 				OS.MoveMemory(logAttr, run.psla + ((offset - run.start) * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof);
 				if (!logAttr.fInvalid) {
-					if ((movement & SWT.MOVEMENT_CLUSTER) != 0 && logAttr.fCharStop) return untranslateOffset(offset);
+					if ((movement & SWT.MOVEMENT_CLUSTER) != 0) {
+						if (properties.fNeedsCaretInfo) {
+							if (logAttr.fCharStop) return untranslateOffset(offset);
+						} else {
+							return untranslateOffset(offset);
+						}
+					}
 					if ((movement & SWT.MOVEMENT_WORD) != 0) {
 						if (properties.fNeedsWordBreaking) {
 							if (logAttr.fWordStop) return untranslateOffset(offset);
 						} else {
-							if (!logAttr.fWhiteSpace && previousWhitespace) return untranslateOffset(offset);
-						}
-					}
-					previousWhitespace = logAttr.fWhiteSpace;
-				}
-				offset++;
-				if (segments != null && segments.length > 2) {
-					for (int j = 0; j < segments.length; j++) {
-						if (translateOffset(segments[j]) - 1 == offset) {
-							offset++;
-							break;
+							if (offset > 0) {
+								boolean letterOrDigit = Compatibility.isLetterOrDigit(text.charAt(offset));
+								boolean previousLetterOrDigit = Compatibility.isLetterOrDigit(text.charAt(offset - 1));
+								if (letterOrDigit != previousLetterOrDigit || !letterOrDigit) {
+									if (!Compatibility.isWhitespace(text.charAt(offset))) {
+										return untranslateOffset(offset);
+									}
+								}
+							}
 						}
 					}
 				}
+				offset = validadeOffset(offset, step);
 			}
 		}
-	}
-	return text.length();
+		i += step;
+	} while (0 <= i && i < allRuns.length - 1 && 0 <= offset && offset < length);
+	return forward ? text.length() : 0;
 }
-
 /**
  * Returns the character offset for the specified point.  
  * For a typical character, the trailing argument will be filled in to 
@@ -1278,87 +1246,7 @@ public int getOrientation () {
  */
 public int getPreviousOffset (int offset, int movement) {
 	checkLayout();
-	computeRuns(null);
-	int length = text.length();
-	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
-	if (offset == 0) return 0;
-	if ((movement & SWT.MOVEMENT_CHAR) != 0) return offset - 1;
-	length = segmentsText.length();
-	offset = translateOffset(offset);
-	int[] ppSp = new int[1];
-	int[] piNumScripts = new int[1];
-	OS.ScriptGetProperties(ppSp, piNumScripts);
-	int[] scripts = new int[piNumScripts[0]];
-	OS.MoveMemory(scripts, ppSp[0], scripts.length * 4);
-	SCRIPT_PROPERTIES properties = new SCRIPT_PROPERTIES();
-	SCRIPT_LOGATTR logAttr = new SCRIPT_LOGATTR();
-	boolean previousWhitespace = false;
-	int i = allRuns.length - 1;
-	int lastLangID  = -1;
-	offset--;
-	if (segments != null && segments.length > 2) {
-		for (int j = 0; j < segments.length; j++) {
-			if (translateOffset(segments[j]) - 1 == offset) {
-				offset--;
-				break;
-			}
-		}
-	}
-	for (;  i >= 0; i--) {
-		StyleItem run = allRuns[i];
-		if (run.start <= offset && offset < run.start + run.length) {
-			if (run.lineBreak && !run.softBreak) return untranslateOffset(run.start);
-			breakRun(run);
-			OS.MoveMemory(logAttr, run.psla + ((offset - run.start) * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof);	
-			previousWhitespace = run.tab ? true : logAttr.fWhiteSpace;
-			OS.MoveMemory(properties, scripts[run.analysis.eScript], SCRIPT_PROPERTIES.sizeof);
-			lastLangID = properties.langid;
-			break;
-		}
-	}
-	for (; i >= 0 && offset >= 0; i--) {
-		StyleItem run = allRuns[i];
-		if (run.start <= offset && offset < run.start + run.length) {
-			if (run.lineBreak && !run.softBreak) return untranslateOffset(run.start + run.length);
-			OS.MoveMemory(properties, scripts[run.analysis.eScript], SCRIPT_PROPERTIES.sizeof);
-			if (((movement & SWT.MOVEMENT_CLUSTER) != 0) && !properties.fNeedsCaretInfo) {
-				return untranslateOffset(offset);
-			}
-			if ((movement & SWT.MOVEMENT_WORD) != 0) {
-				if (properties.langid != lastLangID) {
-					if (!previousWhitespace) return untranslateOffset(offset + 1);
-				}
-				lastLangID = properties.langid;
-			}
-			breakRun(run);
-			while (run.start <= offset && offset < run.start + run.length) {
-				OS.MoveMemory(logAttr, run.psla + ((offset - run.start) * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof);
-				if (!logAttr.fInvalid) {
-					if ((movement & SWT.MOVEMENT_CLUSTER) != 0 && logAttr.fCharStop) return untranslateOffset(offset);
-					if ((movement & SWT.MOVEMENT_WORD) != 0) {
-						if (properties.fNeedsWordBreaking) {
-							if (logAttr.fWordStop) return untranslateOffset(offset);
-						} else {
-							if (run.tab) logAttr.fWhiteSpace = true;
-							if (logAttr.fWhiteSpace && !previousWhitespace) return untranslateOffset(offset + 1);
-						}
-					}
-					previousWhitespace = logAttr.fWhiteSpace;
-				}
-				offset--;
-				if (segments != null && segments.length > 2) {
-					for (int j = 0; j < segments.length; j++) {
-						if (translateOffset(segments[j]) - 1 == offset) {
-							offset--;
-							break;
-						}
-					}
-				}
-			}
-			if (run.tab) return untranslateOffset(run.start);
-		}
-	}
-	return 0;
+	return _getOffset (offset, movement, false);
 }
 
 /**
@@ -1978,14 +1866,9 @@ void shape (final int hdc, final StyleItem run) {
 			run.fallbackFont = newFont;
 		} else {
 			final LOGFONT newLogFont = OS.IsUnicode ? (LOGFONT)new LOGFONTW () : new LOGFONTA ();
-			int[] ppSp = new int[1];
-			int[] piNumScripts = new int[1];
-			OS.ScriptGetProperties(ppSp, piNumScripts);
-			int[] scripts = new int[piNumScripts[0]];
-			OS.MoveMemory(scripts, ppSp[0], scripts.length * 4);
-			if (device.logFontsCache == null) 	device.logFontsCache = new LOGFONT[piNumScripts[0]];
+			if (device.logFontsCache == null) device.logFontsCache = new LOGFONT[device.scripts.length];
 			SCRIPT_PROPERTIES properties = new SCRIPT_PROPERTIES();
-			OS.MoveMemory(properties, scripts[script], SCRIPT_PROPERTIES.sizeof);
+			OS.MoveMemory(properties, device.scripts[script], SCRIPT_PROPERTIES.sizeof);
 			int charSet = properties.fAmbiguousCharSet ? OS.DEFAULT_CHARSET : properties.bCharSet;
 			Object object = new Object () {
 				public int EnumFontFamExProc(int lpelfe, int lpntme, int FontType, int lParam) {
@@ -2022,10 +1905,6 @@ void shape (final int hdc, final StyleItem run) {
 			}		
 		}
 	}
-
-	/* This code is intentionaly commented. */
-//	device.addScriptCache(run.psc);
-
 	int[] abc = new int[3];
 	run.advances = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, run.glyphCount * 4);
 	run.goffsets = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, run.glyphCount * GOFFSET_SIZEOF);
@@ -2035,6 +1914,19 @@ void shape (final int hdc, final StyleItem run) {
 	OS.GetTextMetrics(hdc, lptm);
 	run.ascent = lptm.tmAscent;
 	run.descent = lptm.tmDescent;
+}
+
+int validadeOffset(int offset, int step) {
+	offset += step;
+	if (segments != null && segments.length > 2) {
+		for (int i = 0; i < segments.length; i++) {
+			if (translateOffset(segments[i]) - 1 == offset) {
+				offset += step;
+				break;
+			}
+		}
+	}	
+	return offset;
 }
 
 int translateOffset(int offset) {

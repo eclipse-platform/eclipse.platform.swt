@@ -43,9 +43,9 @@ public abstract class Device implements Drawable {
 	int nFonts = 256;
 	LOGFONT [] logFonts;
 
-	/* SCRIPT_CACHE cache*/
-	int[] scriptCache = new int[32];
-	LOGFONT[] logFontsCache;
+	/* Scripts */
+	int [] scripts;
+	LOGFONT [] logFontsCache;
 
 	boolean disposed;
 	
@@ -105,17 +105,6 @@ public Device(DeviceData data) {
 	
 	/* Initialize the system font slot */
 	systemFont = getSystemFont().handle;
-}
-
-void addScriptCache(int cache) {
-	int lastCache = scriptCache[scriptCache.length - 1];
-	if (lastCache != 0) {
-		int hHeap = OS.GetProcessHeap();
-		OS.ScriptFreeCache (lastCache);
-		OS.HeapFree(hHeap, 0, lastCache);		
-	}
-	System.arraycopy(scriptCache, 0, scriptCache, 1, scriptCache.length - 1);
-	scriptCache[0] = cache;
 }
 
 /**
@@ -570,6 +559,13 @@ protected void init () {
 	if (debug) {
 		if (!OS.IsWinCE) OS.GdiSetBatchLimit(1);
 	}
+
+	/* Initialize scripts list */
+	int [] ppSp = new int [1];
+	int [] piNumScripts = new int [1];
+	OS.ScriptGetProperties (ppSp, piNumScripts);
+	scripts = new int [piNumScripts [0]];
+	OS.MoveMemory (scripts, ppSp [0], scripts.length * 4);
 	
 	/*
 	 * If we're not on a device which supports palettes,
@@ -720,17 +716,7 @@ void new_Object (Object object) {
  * @see #destroy
  */
 protected void release () {
-	if (scriptCache != null) {
-		int hHeap = OS.GetProcessHeap();
-		for (int i = 0; i < scriptCache.length; i++) {
-			int cache = scriptCache[i];
-			if (cache != 0) {
-				OS.ScriptFreeCache (cache);
-				OS.HeapFree(hHeap, 0, cache);
-			}
-		}
-	}
-	scriptCache = null;
+	scripts = null;
 	logFontsCache = null;
 	if (hPalette != 0) OS.DeleteObject (hPalette);
 	hPalette = 0;
