@@ -2232,6 +2232,7 @@ int setGC() {
 			OS.PgSetTextColor(foreColor);
 		}
 		if ((dirtyBits & DIRTY_FONT) != 0) {
+			OS.PfLoadMetrics(data.font);
 			OS.PgSetFont(data.font);
 		}
 		if ((dirtyBits & DIRTY_CLIPPING) != 0) {

@@ -6636,3 +6636,20 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhDCSetCurrent
 	return (jint)PhDCSetCurrent((PhDrawContext_t *)draw_context);
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PfLoadMetrics
+  (JNIEnv *env, jobject that, jbyteArray font)
+{
+    jbyte *font1=NULL;
+    jint result;
+
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "PfLoadMetrics\n");
+#endif
+
+    if (font) font1 = (*env)->GetByteArrayElements(env, font, NULL);
+    result = (jint)PfLoadMetrics(font1);
+    if (font) (*env)->ReleaseByteArrayElements(env, font, (char *)font1, 0);
+
+	return result;
+}
+

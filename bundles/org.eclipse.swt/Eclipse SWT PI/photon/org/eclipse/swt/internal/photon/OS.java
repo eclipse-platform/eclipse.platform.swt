@@ -2971,4 +2971,5 @@ public static final native int PtRelease ();
 public static final native void PhMoveCursorAbs (int input_group, int x, int y );
 public static final native int getenv(byte[] name);
 public static final native int PhDCSetCurrent(int draw_context);
+public static final native int PfLoadMetrics(byte[] font);
 }
