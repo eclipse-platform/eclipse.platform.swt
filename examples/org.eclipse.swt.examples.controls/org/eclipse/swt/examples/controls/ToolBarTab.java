@@ -14,52 +14,11 @@ import org.eclipse.swt.events.*;
 class ToolBarTab extends Tab {
 	/* Example widgets and groups that contain them */
 	ToolBar imageToolBar, textToolBar;
-	Menu dropDownMenu;
 	Group imageToolBarGroup, textToolBarGroup;
 	
 	/* Style widgets added to the "Style" group */
 	Button flatButton, wrapButton;
 
-	static String [] MenuData0 = {ControlPlugin.getResourceString("ListData0_0"),
-								  ControlPlugin.getResourceString("ListData0_1"),
-								  ControlPlugin.getResourceString("ListData0_2"),
-								  ControlPlugin.getResourceString("ListData0_3"),
-								  ControlPlugin.getResourceString("ListData0_4"),
-								  ControlPlugin.getResourceString("ListData0_5"),
-								  ControlPlugin.getResourceString("ListData0_6"),
-								  ControlPlugin.getResourceString("ListData0_7"),
-								  ControlPlugin.getResourceString("ListData0_8")};
-
-	/**
-	 * Create the drop down menu widget used by the 
-	 * drop down style tool bar item.
-	 */
-	void createDropDownMenu() {
-		/* Don't create more than one menu */
-		if (dropDownMenu != null) return;
-	
-		/* Create the menu */
-		Shell shell = tabFolderPage.getShell ();
-		dropDownMenu = new Menu(shell);
-		for (int i = 0; i < MenuData0.length; ++i) {
-			if (i != 5) {
-				MenuItem menuItem = new MenuItem(dropDownMenu, SWT.NONE);
-				menuItem.setText(MenuData0[i]);
-				/*
-				* Add a menu selection listener so that the menu is hidden
-				* when the user selects an item from the drop down menu.
-				*/
-				menuItem.addSelectionListener(new SelectionAdapter() {
-					public void widgetSelected(SelectionEvent e) {
-						disposeDropDownMenu ();
-					}
-				});
-			} else {
-				MenuItem menuItem = new MenuItem(dropDownMenu, SWT.SEPARATOR);
-			}
-		}
-	}
-	
 	/**
 	 * Creates the "Example" group.
 	 */
@@ -125,17 +84,7 @@ class ToolBarTab extends Tab {
 		item = new ToolItem (imageToolBar, SWT.DROP_DOWN);
 		item.setImage (ControlPlugin.images[ControlPlugin.ciTarget]);
 		item.setToolTipText (ControlPlugin.getResourceString("SWT_DROP_DOWN"));
-	
-		/*
-		* Add a selection listener to the drop down tool item
-		* so that we can show the menu when the drop down area
-		* is pressed.
-		*/
-		item.addSelectionListener (new SelectionAdapter () {
-			public void widgetSelected (SelectionEvent event) {
-				dropDownToolItemSelected (event);
-			}
-		});
+		item.addSelectionListener(new DropDownSelectionListener());
 	
 		/* Create the text tool bar */
 		textToolBar = new ToolBar (textToolBarGroup, style);
@@ -165,6 +114,7 @@ class ToolBarTab extends Tab {
 		item = new ToolItem (textToolBar, SWT.DROP_DOWN);
 		item.setText (ControlPlugin.getResourceString("Drop_Down"));
 		item.setToolTipText(ControlPlugin.getResourceString("SWT_DROP_DOWN"));
+		item.addSelectionListener(new DropDownSelectionListener());
 	
 		/*
 		* Do not add the selection event for this drop down
@@ -189,61 +139,8 @@ class ToolBarTab extends Tab {
 		borderButton.setText (ControlPlugin.getResourceString("SWT_BORDER"));
 	}
 	
-	void disposeDropDownMenu () {
-		if (dropDownMenu == null) return;
-		dropDownMenu.setVisible(false);
-		dropDownMenu.dispose();
-		dropDownMenu = null;
-	}
-	
 	void disposeExampleWidgets () {
-		disposeDropDownMenu ();
 		super.disposeExampleWidgets ();
-	}
-	
-	/**
-	 * Handle the drop down tool item selection event.
-	 *
-	 * @param event the selection event
-	 */
-	void dropDownToolItemSelected (SelectionEvent event) {
-	
-		/*
-		 * If menu was already dropped down then close it.
-		 * We would do this regardless of where the tool
-		 * item was selected.
-		 */
-		 if (dropDownMenu != null) {
-			disposeDropDownMenu ();
-			return;
-		}
-		createDropDownMenu ();
-		
-		/**
-		 * A selection event will be fired when a drop down tool
-		 * item is selected in the main area and in the drop
-		 * down arrow.  Examine the event detail to determine
-		 * where the widget was selected.
-		 */		
-		if (event.detail == SWT.ARROW) {
-			/*
-			 * The drop down arrow was selected.
-			 * Position the menu below and vertically 
-			 * alligned with the the drop down tool button.
-			 */
-			ToolItem item = (ToolItem) event.widget;
-			Rectangle toolItemBounds = item.getBounds ();
-			Point point1 = imageToolBar.toDisplay(new Point (toolItemBounds.x, toolItemBounds.y));
-			dropDownMenu.setLocation(point1.x, point1.y + toolItemBounds.height);
-			dropDownMenu.setVisible(true);
-		} else {
-			/*
-			 * Main area of drop down tool item selected.
-			 * An application would invoke the code was
-			 * required to perform the action for the tool
-			 * item.
-			 */
-		}
 	}
 	
 	/**
@@ -268,5 +165,75 @@ class ToolBarTab extends Tab {
 		flatButton.setSelection ((imageToolBar.getStyle () & SWT.FLAT) != 0);
 		wrapButton.setSelection ((imageToolBar.getStyle () & SWT.WRAP) != 0);
 		borderButton.setSelection ((imageToolBar.getStyle () & SWT.BORDER) != 0);
+	}
+	
+	/**
+	 * Listens to widgetSelected() events on SWT.DROP_DOWN type ToolItems
+	 * and opens/closes a menu when appropriate.
+	 */
+	class DropDownSelectionListener extends SelectionAdapter {
+		private Menu    menu = null;
+		private boolean visible = false;
+		
+		public void widgetSelected(SelectionEvent event) {
+			// Create the menu if it has not already been created
+			if (menu == null) {
+				// Lazy create the menu.
+				Shell shell = tabFolderPage.getShell();
+				menu = new Menu(shell);
+				for (int i = 0; i < 9; ++i) {
+					final String text = ControlPlugin.getResourceString("DropDownData_" + i);
+					if (text.length() != 0) {
+						MenuItem menuItem = new MenuItem(menu, SWT.NONE);
+						menuItem.setText(text);
+						/*
+						 * Add a menu selection listener so that the menu is hidden
+						 * when the user selects an item from the drop down menu.
+						 */
+						menuItem.addSelectionListener(new SelectionAdapter() {
+							public void widgetSelected(SelectionEvent e) {
+								setMenuVisible(false);
+							}
+						});
+					} else {
+						MenuItem menuItem = new MenuItem(menu, SWT.SEPARATOR);
+					}
+				}
+			}
+			
+			/**
+			 * A selection event will be fired when a drop down tool
+			 * item is selected in the main area and in the drop
+			 * down arrow.  Examine the event detail to determine
+			 * where the widget was selected.
+			 */		
+			if (event.detail == SWT.ARROW) {
+				/*
+				 * The drop down arrow was selected.
+				 */
+				if (visible) {
+					// Hide the menu to give the Arrow the appearance of being a toggle button.
+					setMenuVisible(false);
+				} else {	
+					// Position the menu below and vertically aligned with the the drop down tool button.
+					final ToolItem toolItem = (ToolItem) event.widget;
+					final ToolBar  toolBar = toolItem.getParent();
+					
+					Rectangle toolItemBounds = toolItem.getBounds();
+					Point point = toolBar.toDisplay(new Point(toolItemBounds.x, toolItemBounds.y));
+					menu.setLocation(point.x, point.y + toolItemBounds.height);
+					setMenuVisible(true);
+				}
+			} else {
+				/*
+				 * Main area of drop down tool item selected.
+				 * An application would invoke the code to perform the action for the tool item.
+				 */
+			}
+		}
+		private void setMenuVisible(boolean visible) {
+			menu.setVisible(visible);
+			this.visible = visible;
+		}
 	}
 }
