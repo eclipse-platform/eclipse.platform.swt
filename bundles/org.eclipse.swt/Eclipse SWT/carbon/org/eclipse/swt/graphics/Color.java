@@ -227,9 +227,9 @@ void init(Device device, int red, int green, int blue) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	float[] rgbColor = new float[4];
-	rgbColor[0] = red / 255;
-	rgbColor[1] = green / 255;
-	rgbColor[2] = blue / 255;
+	rgbColor[0] = red / 255f;
+	rgbColor[1] = green / 255f;
+	rgbColor[2] = blue / 255f;
 	rgbColor[3] = 1;
 	handle = rgbColor;
 }
