@@ -722,7 +722,7 @@ public String getUrl() {
 		if (rc != XPCOM.NS_OK) error(rc);
 		int length = XPCOM.nsCString_Length(aSpec);
 		int buffer = XPCOM.nsCString_get(aSpec);
-		dest = new byte[length + 1];
+		dest = new byte[length];
 		XPCOM.memmove(dest, buffer, length);
 		XPCOM.nsCString_delete(aSpec);
 		uri.Release();
@@ -1599,7 +1599,7 @@ int OnLocationChange(int aWebProgress, int aRequest, int aLocation) {
 	location.GetSpec(aSpec);
 	int length = XPCOM.nsCString_Length(aSpec);
 	int buffer = XPCOM.nsCString_get(aSpec);
-	byte[] dest = new byte[length + 1];
+	byte[] dest = new byte[length];
 	XPCOM.memmove(dest, buffer, length);
 	XPCOM.nsCString_delete(aSpec);
 
@@ -1809,7 +1809,7 @@ int OnStartURIOpen(int aURI, int retval) {
 	int length = XPCOM.nsCString_Length(aSpec);
 	int buffer = XPCOM.nsCString_get(aSpec);
 	buffer = XPCOM.nsCString_get(aSpec);
-	byte[] dest = new byte[length + 1];
+	byte[] dest = new byte[length];
 	XPCOM.memmove(dest, buffer, length);
 	XPCOM.nsCString_delete(aSpec);
 	
