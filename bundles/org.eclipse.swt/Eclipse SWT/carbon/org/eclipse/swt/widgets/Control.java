@@ -1941,8 +1941,7 @@ void sendFocusEvent (int type, boolean post) {
 		sendEvent (type);
 		display.focusEvent = SWT.None;
 		display.focusControl = null;
-	}
-	
+	}	
 	/*
 	* It is possible that the shell may be
 	* disposed at this point.  If this happens
@@ -1950,14 +1949,17 @@ void sendFocusEvent (int type, boolean post) {
 	* events.
 	*/
 	if (!shell.isDisposed ()) {
-		if (type == SWT.FocusIn) {
-			shell.setActiveControl (this);
-		} else {
-			Display display = shell.display;
-			Control control = display.getFocusControl ();
-			if (control == null || shell != control.getShell () ) {
-				shell.setActiveControl (null);
-			}
+		switch (type) {
+			case SWT.FocusIn:
+				shell.setActiveControl (this);
+				break;
+			case SWT.FocusOut:
+				Display display = shell.display;
+				Control control = display.getFocusControl ();
+				if (control == null || shell != control.getShell () ) {
+					shell.setActiveControl (null);
+				}
+				break;
 		}
 	}
 }
