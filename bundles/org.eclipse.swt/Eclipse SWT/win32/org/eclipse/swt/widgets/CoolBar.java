@@ -168,7 +168,6 @@ void createItem (CoolItem item, int index) {
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	rbBand.fMask = OS.RBBIM_TEXT | OS.RBBIM_STYLE | OS.RBBIM_ID;
 	rbBand.fStyle = OS.RBBS_VARIABLEHEIGHT | OS.RBBS_GRIPPERALWAYS;
-	
 	rbBand.lpText = lpText;
 	rbBand.wID = id;
 	if (OS.SendMessage (handle, OS.RB_INSERTBAND, index, rbBand) == 0) {

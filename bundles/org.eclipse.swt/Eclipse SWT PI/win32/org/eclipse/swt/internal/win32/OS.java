@@ -669,9 +669,11 @@ public class OS {
 	public static final int RBBIM_TEXT = 0x4;
 	public static final int RBBS_BREAK = 0x1;
 	public static final int RBBS_GRIPPERALWAYS = 0x80;
+	public static final int RBBS_NOGRIPPER = 0x00000100;
 	public static final int RBBS_VARIABLEHEIGHT = 0x40;
 	public static final int RBN_FIRST = 0xfffffcc1;
 	public static final int RBN_HEIGHTCHANGE = 0xfffffcc1;
+	public static final int RBS_DBLCLKTOGGLE = 0x8000;
 	public static final int RBS_BANDBORDERS = 0x400;
 	public static final int RBS_VARHEIGHT = 0x200;
 	public static final int RB_DELETEBAND = 0x402;
@@ -2131,6 +2133,7 @@ public static final native void MoveMemory (int Destination, NMLVCUSTOMDRAW Sour
 public static final native void MoveMemory (int Destination, NMTVCUSTOMDRAW Source, int Length);
 public static final native void MoveMemory (NMHEADER Destination, int Source, int Length);
 public static final native void MoveMemory (NMLISTVIEW Destination, int Source, int Length);
+public static final native void MoveMemory (NMREBARCHEVRON Destination, int Source, int Length);
 public static final native void MoveMemory (NMTOOLBAR Destination, int Source, int Length);
 public static final native void MoveMemoryW (NMTTDISPINFO Destination, int Source, int Length);
 public static final native void MoveMemoryA (NMTTDISPINFO Destination, int Source, int Length);
