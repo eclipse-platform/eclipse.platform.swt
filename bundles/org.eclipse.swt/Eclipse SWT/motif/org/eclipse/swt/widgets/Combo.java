@@ -689,6 +689,8 @@ void hookEvents () {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	OS.XtAddCallback (argList[1], OS.XmNactivateCallback, windowProc, SWT.DefaultSelection);
 	OS.XtAddCallback (argList[1], OS.XmNvalueChangedCallback, windowProc, SWT.Modify);
+	OS.XtAddEventHandler (argList[1], OS.KeyPressMask, false, windowProc, SWT.KeyDown);
+	OS.XtAddEventHandler (argList[1], OS.KeyReleaseMask, false, windowProc, SWT.KeyUp);
 }
 /**
  * Searches the receiver's list starting at the first item
