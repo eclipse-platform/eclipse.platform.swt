@@ -38,7 +38,6 @@ import org.eclipse.swt.events.*;
  * @see #checkSubclass
  */
 public abstract class Widget {
-
 	public int handle;
 	int style, state;
 	EventTable eventTable;
@@ -104,8 +103,8 @@ Widget () {
  * @see #getStyle
  */
 public Widget (Widget parent, int style) {
-	if (parent == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (!parent.isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	checkSubclass ();
+	checkParent (parent);
 	this.style = style;
 }
 /**
