@@ -2405,8 +2405,14 @@ boolean translateTraversal (MSG msg) {
 			all = true;
 			lastVirtual = true;
 			if (OS.GetKeyState (OS.VK_CONTROL) >= 0) return false;
-			int code = OS.SendMessage (hwnd, OS.WM_GETDLGCODE, 0, 0);
-			if ((code & OS.DLGC_WANTALLKEYS) != 0) doit = false;
+			/*
+			* NOTE: This code causes Ctrl+PgUp and Ctrl+PgDn to
+			* always attempt traversal which is not correct.
+			* The default should false, just like RETURN and ESC.
+			* This behavior is currently relied on by StyledText.
+			*/
+//			int code = OS.SendMessage (hwnd, OS.WM_GETDLGCODE, 0, 0);
+//			if ((code & OS.DLGC_WANTALLKEYS) != 0) doit = false;
 			detail = key == OS.VK_PRIOR ? SWT.TRAVERSE_PAGE_PREVIOUS : SWT.TRAVERSE_PAGE_NEXT;
 			break;
 		}
@@ -3000,7 +3006,6 @@ LRESULT WM_INITMENUPOPUP (int wParam, int lParam) {
 }
 
 LRESULT WM_KEYDOWN (int wParam, int lParam) {
-
 	/* Ignore repeating modifier keys by testing key down state */
 	switch (wParam) {
 		case OS.VK_SHIFT:
@@ -3097,9 +3102,9 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 		* treated as both a virtual key and an ASCII key by Windows.
 		* Therefore, we will not receive a WM_CHAR for this key.
 		* The fix is to treat VK_DELETE as a special case and map
-		* the ASCII value explictly (Delete is 127).
+		* the ASCII value explictly (Delete is 0x7F).
 		*/
-		if (display.lastKey == OS.VK_DELETE) display.lastAscii = 127;
+		if (display.lastKey == OS.VK_DELETE) display.lastAscii = 0x7F;
 		/*
 		* It is possible to get a WM_CHAR for a virtual key when
 		* Num Lock is on.  If the user types Home while Num Lock 
@@ -3936,8 +3941,6 @@ LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
 }
 
 LRESULT WM_SYSKEYDOWN (int wParam, int lParam) {
-	Display display = getDisplay ();
-
 	/*
 	* Feature in Windows.  WM_SYSKEYDOWN is sent when
 	* the user presses ALT-<aKey> or F10 without the ALT key.
@@ -3949,19 +3952,8 @@ LRESULT WM_SYSKEYDOWN (int wParam, int lParam) {
 		/* Make sure WM_SYSKEYDOWN was sent by ALT-<aKey>. */
 		if ((lParam & 0x20000000) == 0) return null;
 	}
-
-	/* If are going to get a WM_SYSCHAR, ignore this message. */
-	/*
-	* Bug on WinCE.  MapVirtualKey() returns incorrect values.
-	* The fix is to rely on a key mappings table to determine
-	* whether the key event must be sent now or if a WM_SYSCHAR
-	* event will follow.
-	*/
-	if (!OS.IsWinCE) {
-		if (OS.MapVirtualKey (wParam, 2) != 0) return null;
-	}
 	
-	/* Ignore repeating keys for modifiers by testing key down state. */
+	/* Ignore repeating modifier keys by testing key down state */
 	switch (wParam) {
 		case OS.VK_SHIFT:
 		case OS.VK_MENU:
@@ -3971,13 +3963,56 @@ LRESULT WM_SYSKEYDOWN (int wParam, int lParam) {
 		case OS.VK_SCROLL:
 			if ((lParam & 0x40000000) != 0) return null;
 	}
+	
+	/* Clear last key and last ascii because a new key has been typed */
+	Display display = getDisplay ();
+	display.lastAscii = display.lastKey = 0;
+	display.lastVirtual = display.lastNull = false;
 
-	/* Set last key and clear last ascii because a new key has been typed. */
-	display.lastAscii = 0;
+	/* If are going to get a WM_SYSCHAR, ignore this message. */
+	/*
+	* Bug on WinCE.  MapVirtualKey() returns incorrect values.
+	* The fix is to rely on a key mappings table to determine
+	* whether the key event must be sent now or if a WM_SYSCHAR
+	* event will follow.
+	*/
+	if (!OS.IsWinCE) {
+		if (OS.MapVirtualKey (wParam, 2) != 0) {
+			/*
+			* Feature in Windows.  MapVirtualKey() indicates that
+			* a WM_SYSCHAR message will occur for Alt+Enter but
+			* this message never happens.  The fix is to issue the
+			* event from WM_SYSKEYDOWN and map VK_RETURN to '\r'.
+			*/
+			if (wParam != OS.VK_RETURN) return null;
+			display.lastAscii = '\r';
+		}
+	}
 	display.lastKey = wParam;
 	display.lastVirtual = true;
-	display.lastNull = false;
-
+		
+	/*
+	* Feature in Windows.  The virtual key VK_DELETE is not
+	* treated as both a virtual key and an ASCII key by Windows.
+	* Therefore, we will not receive a WM_CHAR for this key.
+	* The fix is to treat VK_DELETE as a special case and map
+	* the ASCII value explictly (Delete is 0x7F).
+	*/
+	if (display.lastKey == OS.VK_DELETE) display.lastAscii = 0x7F;
+	
+	/*
+	* It is possible to get a WM_CHAR for a virtual key when
+	* Num Lock is on.  If the user types Home while Num Lock 
+	* is down, a WM_CHAR is issued with WPARM=55 (for the
+	* character 7).  If we are going to get a WM_CHAR we need
+	* to ensure that the last key has the correct value.  Note
+	* that Ctrl+Home does not issue a WM_CHAR when Num Lock is
+	* down.
+	*/
+	if (OS.VK_NUMPAD0 <= display.lastKey && display.lastKey <= OS.VK_DIVIDE) {
+		if (display.asciiKey (display.lastKey) != 0) return null;
+	}
+	
 	if (!sendKeyEvent (SWT.KeyDown, OS.WM_SYSKEYDOWN, wParam, lParam)) {
 		return LRESULT.ZERO;
 	}
