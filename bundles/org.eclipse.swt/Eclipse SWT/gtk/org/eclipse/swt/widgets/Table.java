@@ -1888,10 +1888,13 @@ public void setHeaderVisible (boolean show) {
 public void setItemCount (int count) {
 	checkWidget ();
 	count = Math.max (0, count);
+	if (count == itemCount) return;
 	setRedraw (false);
-	removeAll ();
-	items = new TableItem [(count + 3) / 4 * 4];
-	for (int i = 0; i<count; i++) {
+	remove (count, itemCount - 1);
+	TableItem [] newItems = new TableItem [(count + 3) / 4 * 4];
+	System.arraycopy (items, 0, newItems, 0, itemCount);
+	items = newItems;
+	for (int i = itemCount; i<count; i++) {
 		items [i] = new TableItem (this, SWT.NONE);
 	}
 	setRedraw (true);

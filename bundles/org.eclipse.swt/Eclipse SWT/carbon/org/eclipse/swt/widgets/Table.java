@@ -1830,27 +1830,38 @@ public void setHeaderVisible (boolean show) {
 
 public void setItemCount (int count) {
 	checkWidget ();
+	checkItems (true);
+	count = Math.max (0, count);
+	if (count == itemCount) return;
 	setRedraw (false);
-	removeAll ();
-	itemCount = Math.max (0, count);
-	items = new TableItem [(itemCount + 3) / 4 * 4];
-	if ((style & SWT.VIRTUAL) == 0) {
-		for (int i=0; i<itemCount; i++) {
-			items [i] = new TableItem (this, SWT.NONE, i, true);
-		}
-	}
-
-	/*
-	* Feature in the Mac. When AddDataBrowserItems() is used
-	* to add items, item notification callbacks are issued with
-	* the message kDataBrowserItemAdded.  When many items are
-	* added, this is slow.  The fix is to temporarily remove
-	* the item notification callback.
-	*/
-	DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
+    int[] top = new int [1], left = new int [1];
+    OS.GetDataBrowserScrollPosition (handle, top, left);
+    DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
 	OS.GetDataBrowserCallbacks (handle, callbacks);
 	callbacks.v1_itemNotificationCallback = 0;
 	OS.SetDataBrowserCallbacks (handle, callbacks);
+	if (count < itemCount) {
+		int index = count;
+		while (index < itemCount) {
+			int [] id = new int [] {index + 1};
+			if (OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, id.length, id, 0) != OS.noErr) {
+				break;
+			}
+			TableItem item = items [index];
+			if (item != null) item.releaseResources ();
+			index++;
+		}
+		if (index < itemCount) error (SWT.ERROR_ITEM_NOT_REMOVED);
+	}
+	TableItem [] newItems = new TableItem [(count + 3) / 4 * 4];
+	System.arraycopy (items, 0, newItems, 0, Math.min (count, itemCount));
+	items = newItems;
+	if ((style & SWT.VIRTUAL) == 0) {
+		for (int i=count; i<itemCount; i++) {
+			items [i] = new TableItem (this, SWT.NONE, i, false);
+		}
+	}
+	itemCount = count;
 	OS.AddDataBrowserItems (handle, 0, itemCount, null, OS.kDataBrowserItemNoProperty);
 	callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
 	OS.SetDataBrowserCallbacks (handle, callbacks);
