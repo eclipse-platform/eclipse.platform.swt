@@ -782,6 +782,37 @@ void releaseWidget () {
 }
 
 /**
+ * Removes all of the items from the receiver.
+ * <p>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.1
+ */
+public void removeAll () {
+	checkWidget ();
+	int hwnd = parent.handle;
+	int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+	if (hItem == 0) return; 
+
+	TVITEM tvItem = new TVITEM ();
+	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+	tvItem.hItem = hItem;
+	while (tvItem.hItem != 0) {
+		OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
+		TreeItem item = parent.items [tvItem.lParam];
+		tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, tvItem.hItem);
+		if (item != null) {
+			item.releaseChild ();
+			item.releaseWidget ();
+			item.destroyWidget ();
+		}
+	}
+}
+
+/**
  * Sets the receiver's background color to the color specified
  * by the argument, or to the default system color for the item
  * if the argument is null.

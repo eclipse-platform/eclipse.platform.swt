@@ -707,6 +707,20 @@ void releaseWidget () {
 	cellFont = null;
 }
 
+public void removeAll () {
+	checkWidget ();
+	TreeItem [] items = parent.items;
+	for (int i=0; i<items.length; i++) {
+		if (items [i] != null && items [i].parentItem == this) {
+			TreeItem item = items [i];
+			item.releaseChild ();
+			item.releaseWidget ();
+			item.destroyWidget ();
+		}
+	}
+	redraw (OS.kDataBrowserNoItem);
+}
+
 /**
  * Sets the receiver's background color to the color specified
  * by the argument, or to the default system color for the item
