@@ -110,6 +110,7 @@ public class CTabFolder2 extends Composite {
 	Image backgroundImage;
 	Color[] gradientColors;
 	int[] gradientPercents;
+	boolean gradientVertical;
 	Color selectionForeground;
 	Color selectionBackground;
 	static Color borderColor1;
@@ -1189,9 +1190,15 @@ void drawSelectionBackground(GC gc, int[] shape) {
 				lastColor = gradientColors[i + 1];
 				if (lastColor == null) lastColor = background;
 				gc.setBackground(lastColor);
-				int gradientWidth = (gradientPercents[i] * size.x / 100);
-				gc.fillGradientRectangle(0, 0, gradientWidth, size.y, false);
-				pos += gradientWidth;
+				if (gradientVertical) {
+					int gradientHeight = (gradientPercents[i] * size.y / 100) - pos;
+					gc.fillGradientRectangle(0, pos, size.x, gradientHeight, true);
+					pos += gradientHeight;
+				} else {
+					int gradientWidth = (gradientPercents[i] * size.x / 100) - pos;
+					gc.fillGradientRectangle(pos, 0, gradientWidth, size.y, false);
+					pos += gradientWidth;
+				}
 			}
 		}
 		gc.setClipping(clipping);
@@ -2755,8 +2762,39 @@ public void setSelectionBackground (Color color) {
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
  */
-
 public void setSelectionBackground(Color[] colors, int[] percents) {
+	setSelectionBackground(colors, percents, false);
+}
+/**
+ * Specify a gradient of colours to be draw in the background of the selected tab.
+ * For example to draw a vertical gradient that varies from dark blue to blue and then to
+ * white, use the following call to setBackground:
+ * <pre>
+ *	cfolder.setBackground(new Color[]{display.getSystemColor(SWT.COLOR_DARK_BLUE), 
+ *		                           display.getSystemColor(SWT.COLOR_BLUE),
+ *		                           display.getSystemColor(SWT.COLOR_WHITE), 
+ *		                           display.getSystemColor(SWT.COLOR_WHITE)},
+ *		                  new int[] {25, 50, 100}, true);
+ * </pre>
+ *
+ * @param colors an array of Color that specifies the colors to appear in the gradient 
+ *               in order of appearance left to right.  The value <code>null</code> clears the
+ *               background gradient. The value <code>null</code> can be used inside the array of 
+ *               Color to specify the background color.
+ * @param percents an array of integers between 0 and 100 specifying the percent of the width 
+ *                 of the widget at which the color should change.  The size of the percents array must be one 
+ *                 less than the size of the colors array.
+ * 
+ * @param vertical indicate the direction of the gradient.  True is vertical and false is horizontal. 
+ * 
+ * @exception SWTError <ul>
+ *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ *	</ul>
+ *
+ *@since 3.0
+ */
+public void setSelectionBackground(Color[] colors, int[] percents, boolean vertical) {
 	checkWidget();
 	if (colors != null) {
 		if (percents == null || percents.length != colors.length - 1) {
@@ -2796,7 +2834,7 @@ public void setSelectionBackground(Color[] colors, int[] percents) {
 					if (!same) break;
 				}
 			}
-			if (same) return;
+			if (same && this.gradientVertical == vertical) return;
 		}
 	} else {
 		backgroundImage = null;
@@ -2805,6 +2843,7 @@ public void setSelectionBackground(Color[] colors, int[] percents) {
 	if (colors == null) {
 		gradientColors = null;
 		gradientPercents = null;
+		gradientVertical = false;
 	} else {
 		gradientColors = new Color[colors.length];
 		for (int i = 0; i < colors.length; ++i) {
@@ -2814,6 +2853,7 @@ public void setSelectionBackground(Color[] colors, int[] percents) {
 		for (int i = 0; i < percents.length; ++i) {
 			gradientPercents[i] = percents[i];
 		}
+		gradientVertical = vertical;
 	}
 
 	// Refresh with the new settings

@@ -66,6 +66,7 @@ public class CLabel extends Canvas {
 	private Image backgroundImage;
 	private Color[] gradientColors;
 	private int[] gradientPercents;
+	private boolean gradientVertical;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -373,9 +374,15 @@ private void onPaint(PaintEvent event) {
 					lastColor = gradientColors[i + 1];
 					if (lastColor == null) lastColor = oldBackground;
 					gc.setBackground(lastColor);
-					final int gradientWidth = (gradientPercents[i] * rect.width / 100) - pos;
-					gc.fillGradientRectangle(pos, 0, gradientWidth, rect.height, false);
-					pos += gradientWidth;
+					if (gradientVertical) {
+						final int gradientHeight = (gradientPercents[i] * rect.height / 100) - pos;
+						gc.fillGradientRectangle(0, pos, rect.width, gradientHeight, true);
+						pos += gradientHeight;
+					} else {
+						final int gradientWidth = (gradientPercents[i] * rect.width / 100) - pos;
+						gc.fillGradientRectangle(pos, 0, gradientWidth, rect.height, false);
+						pos += gradientWidth;
+					}
 				}
 				gc.setForeground(oldForeground);
 			}
@@ -454,7 +461,7 @@ public void setBackground (Color color) {
 /**
  * Specify a gradient of colours to be drawn in the background of the CLabel.
  * <p>For example, to draw a gradient that varies from dark blue to blue and then to
- * white and stays white for the right hald of the label, use the following call 
+ * white and stays white for the right half of the label, use the following call 
  * to setBackground:</p>
  * <pre>
  *	clabel.setBackground(new Color[]{display.getSystemColor(SWT.COLOR_DARK_BLUE), 
@@ -478,7 +485,38 @@ public void setBackground (Color color) {
  *    <li>ERROR_INVALID_ARGUMENT - if the values of colors and percents are not consistant</li>
  * </ul>
  */
-public void setBackground(Color[] colors, int[] percents) {	
+public void setBackground(Color[] colors, int[] percents) {
+	setBackground(colors, percents, false);
+}
+/**
+ * Specify a gradient of colours to be drawn in the background of the CLabel.
+ * <p>For example, to draw a gradient that varies from dark blue to white in the vertical,
+ * direction use the following call 
+ * to setBackground:</p>
+ * <pre>
+ *	clabel.setBackground(new Color[]{display.getSystemColor(SWT.COLOR_DARK_BLUE), 
+ *		                           display.getSystemColor(SWT.COLOR_WHITE)},
+ *		                 new int[] {100}, true);
+ * </pre>
+ *
+ * @param colors an array of Color that specifies the colors to appear in the gradient 
+ *               in order of appearance from left/top to right/bottom;  The value <code>null</code> 
+ *               clears the background gradient; the value <code>null</code> can be used 
+ *               inside the array of Color to specify the background color.
+ * @param percents an array of integers between 0 and 100 specifying the percent of the width/height 
+ *                 of the widget at which the color should change; the size of the percents 
+ *                 array must be one less than the size of the colors array.
+ * @param vertical indicate the direction of the gradient.  True is vertical and false is horizontal.
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the values of colors and percents are not consistant</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public void setBackground(Color[] colors, int[] percents, boolean vertical) {	
 	checkWidget();
 	if (colors != null) {
 		if (percents == null || percents.length != colors.length - 1) {
@@ -517,7 +555,7 @@ public void setBackground(Color[] colors, int[] percents) {
 					if (!same) break;
 				}
 			}
-			if (same) return;
+			if (same && this.gradientVertical == vertical) return;
 		}
 	} else {
 		backgroundImage = null;
@@ -526,6 +564,7 @@ public void setBackground(Color[] colors, int[] percents) {
 	if (colors == null) {
 		gradientColors = null;
 		gradientPercents = null;
+		gradientVertical = false;
 	} else {
 		gradientColors = new Color[colors.length];
 		for (int i = 0; i < colors.length; ++i)
@@ -533,6 +572,7 @@ public void setBackground(Color[] colors, int[] percents) {
 		gradientPercents = new int[percents.length];
 		for (int i = 0; i < percents.length; ++i)
 			gradientPercents[i] = percents[i];
+		gradientVertical = vertical;
 	}
 	// Refresh with the new settings
 	redraw();
