@@ -86,7 +86,7 @@ LIBS = -shared -fpic -fPIC
 #  Target Rules
 #
 
-all: make_swt #make_awt make_atk make_gnome make_mozilla
+all: make_swt make_awt make_atk make_gnome make_mozilla
 
 #
 # SWT libs
