@@ -16,7 +16,6 @@ fi
 
 case $OS in
 	"Linux")
-		JAVA_HOME = /bluebird/teamswt/swt-builddir/ive/bin
 		makefile="make_linux.mak"
 		echo "Building Linux GTK version of SWT OpenGL"
 		;;

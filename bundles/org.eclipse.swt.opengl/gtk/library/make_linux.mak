@@ -12,6 +12,7 @@
 # Define the installation directories for various products.
 CC=gcc
 LD=gcc
+JAVA_HOME = /bluebird/teamswt/swt-builddir/ive/bin
 
 # Define the various shared libraries to be made.
 WS_PREFIX    = gtk
