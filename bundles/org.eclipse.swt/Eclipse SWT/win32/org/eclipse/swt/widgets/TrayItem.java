@@ -19,7 +19,10 @@ import org.eclipse.swt.internal.win32.*;
 /**
  * Instances of this class represent icons that can be placed on the
  * system tray or task bar status area.
- * 
+ *
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>(none)</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection, DefaultSelection</dd>
  * </dl>
@@ -38,7 +41,7 @@ public class TrayItem extends Item {
 	
 /**
  * Constructs a new instance of this class given its parent
- * (which must be a <code>ToolBar</code>) and a style value
+ * (which must be a <code>Tray</code>) and a style value
  * describing its behavior and appearance. The item is added
  * to the end of the items maintained by its parent.
  * <p>
@@ -62,11 +65,7 @@ public class TrayItem extends Item {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT#PUSH
- * @see SWT#CHECK
- * @see SWT#RADIO
- * @see SWT#SEPARATOR
- * @see SWT#DROP_DOWN
+ * @see SWT
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
