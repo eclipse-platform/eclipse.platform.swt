@@ -568,9 +568,9 @@ public static final native int gtk_event_box_new();
 public static final native int gtk_editable_get_selection_start(int editable);
 public static final native int gtk_editable_get_selection_end(int editable);
 public static final native int gtk_editable_get_editable(int editable);
-public static final native int gtk_editable_copy_clipboard(int editable);
-public static final native int gtk_editable_cut_clipboard(int editable);
-public static final native int gtk_editable_paste_clipboard(int editable);
+public static final native void gtk_editable_copy_clipboard(int editable);
+public static final native void gtk_editable_cut_clipboard(int editable);
+public static final native void gtk_editable_paste_clipboard(int editable);
 public static final native int gtk_editable_get_position(int editable);
 public static final native void gtk_editable_set_position(int editable, int position);
 public static final native void gtk_entry_set_editable(int entry, boolean editable);
@@ -856,7 +856,6 @@ static final native void memmove(GtkCTree dest, int src);
 
 /* Write memmoves */
 public static final native void memmove(int dest, GtkEditable src, int size);
-public static final native void memmove(int dest, GtkText src, int size);
 public static final native void memmove(int dest, GtkStyle src, int size);
 public static final native void memmove(int dest, GtkAdjustment src); // sure needed
 public static final native void memmove(int dest, GtkCListColumn src, int size);
