@@ -81,18 +81,9 @@ public class Accessible {
 			// method6 Clone - not implemented
 		};
 		AddRef();
-		
-		control.addDisposeListener(new DisposeListener() {
-			public void widgetDisposed(DisposeEvent e) {
-				if (iaccessible != null)
-					iaccessible.Release();
-				iaccessible = null;
-				Release();
-			}
-		});
 	}
 	
-	public static Accessible internal_new_accessible(Control control) {
+	public static Accessible internal_new_Accessible(Control control) {
 		return new Accessible(control);
 	}
 
@@ -114,6 +105,13 @@ public class Accessible {
 	public void removeAccessibleControlListener(AccessibleControlListener listener) {
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		accessibleControlListeners.removeElement(listener);
+	}
+	
+	public void internal_dispose_Accessible() {
+		if (iaccessible != null)
+			iaccessible.Release();
+		iaccessible = null;
+		Release();
 	}
 	
 	public int internal_WM_GETOBJECT (int wParam, int lParam) {
@@ -219,9 +217,12 @@ public class Accessible {
 			listener.hitTest(event);
 		}
 		int childID = event.childID;
+//		if (childID == ACC.CHILDID_NONE) {
+//			COM.MoveMemory(pvarChild, new short[] { COM.VT_EMPTY }, 2);
+//			return COM.S_FALSE;
+//		}
 		if (childID == ACC.CHILDID_NONE) {
-			COM.MoveMemory(pvarChild, new short[] { COM.VT_EMPTY }, 2);
-			return COM.S_FALSE;
+			return iaccessible.accHitTest(xLeft, yTop, pvarChild);
 		}
 		COM.MoveMemory(pvarChild, new short[] { COM.VT_I4 }, 2);
 		COM.MoveMemory(pvarChild + 8, new int[] { childID }, 4);
