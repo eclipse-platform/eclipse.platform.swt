@@ -320,13 +320,47 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_PANGO_1PIXELS
 }
 #endif
 
+#ifndef NO_g_1filename_1from_1utf8
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1filename_1from_1utf8
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3, jintArray arg4)
+{
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint rc;
+
+	DEBUG_CALL("g_1filename_1from_1utf8\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)g_filename_from_utf8((const gchar *)arg0, arg1, lparg2, lparg3, (GError **)lparg4);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	return rc;
+}
+#endif
+
 #ifndef NO_g_1filename_1to_1utf8
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1filename_1to_1utf8
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3, jintArray arg4)
 {
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint rc;
+
 	DEBUG_CALL("g_1filename_1to_1utf8\n")
 
-	return (jint)g_filename_to_utf8((const gchar *)arg0, (gssize)arg1, (gsize *)arg2, (gsize *)arg3, (GError **)arg4);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)g_filename_to_utf8((const gchar *)arg0, arg1, lparg2, lparg3, (GError **)lparg4);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	return rc;
 }
 #endif
 
@@ -717,8 +751,30 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1utf16_1to_1utf8
 }
 #endif
 
-#ifndef NO_g_1utf8_1to_1utf16
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1utf8_1to_1utf16
+#ifndef NO_g_1utf8_1to_1utf16__II_3I_3I_3I
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1utf8_1to_1utf16__II_3I_3I_3I
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3, jintArray arg4)
+{
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint rc;
+
+	DEBUG_CALL("g_1utf8_1to_1utf16__II_3I_3I_3I\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)g_utf8_to_utf16((const gchar *)arg0, (glong)arg1, (glong *)lparg2, (glong *)lparg3, (GError **)lparg4);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	return rc;
+}
+#endif
+
+#ifndef NO_g_1utf8_1to_1utf16___3BI_3I_3I_3I
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1utf8_1to_1utf16___3BI_3I_3I_3I
 	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jintArray arg2, jintArray arg3, jintArray arg4)
 {
 	jbyte *lparg0=NULL;
@@ -727,7 +783,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1utf8_1to_1utf16
 	jint *lparg4=NULL;
 	jint rc;
 
-	DEBUG_CALL("g_1utf8_1to_1utf16\n")
+	DEBUG_CALL("g_1utf8_1to_1utf16___3BI_3I_3I_3I\n")
 
 	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
 	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
@@ -2738,15 +2794,11 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1file_1selection
 
 #ifndef NO_gtk_1file_1selection_1set_1filename
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1file_1selection_1set_1filename
-	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	jbyte *lparg1=NULL;
-
 	DEBUG_CALL("gtk_1file_1selection_1set_1filename\n")
 
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
-	gtk_file_selection_set_filename((GtkFileSelection *)arg0, (const gchar *)lparg1);
-	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	gtk_file_selection_set_filename((GtkFileSelection *)arg0, (const gchar *)arg1);
 }
 #endif
 

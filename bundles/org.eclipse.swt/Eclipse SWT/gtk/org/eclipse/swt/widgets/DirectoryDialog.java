@@ -116,36 +116,47 @@ public String getMessage () {
 public String open () {
 	byte [] titleBytes = Converter.wcsToMbcs (null, title, true);
 	int handle = OS.gtk_file_selection_new (titleBytes);
-	if (parent!=null) {
-		OS.gtk_window_set_transient_for(handle, parent.topHandle());
+	if (parent != null) {
+		OS.gtk_window_set_transient_for (handle, parent.topHandle ());
 	}
 	String answer = null;
 	if (filterPath != null) {
-		byte [] filterBytes = Converter.wcsToMbcs (null, filterPath, true);
-		OS.gtk_file_selection_set_filename (handle, filterBytes);
+		int length = filterPath.length ();
+		char [] buffer = new char [length + 1];
+		filterPath.getChars (0, length, buffer, 0);
+		int utf8Ptr = OS.g_utf16_to_utf8 (buffer, -1, null, null, null);
+		int fileNamePtr = OS.g_filename_from_utf8 (utf8Ptr, -1, null, null, null);
+		OS.gtk_file_selection_set_filename (handle, fileNamePtr);
+		OS.g_free (utf8Ptr);
+		OS.g_free (fileNamePtr);		
 	}
-	GtkFileSelection selection = new GtkFileSelection();
-	OS.memmove(selection, handle);
+	GtkFileSelection selection = new GtkFileSelection ();
+	OS.memmove (selection, handle);
 	OS.gtk_file_selection_hide_fileop_buttons (handle);
-	int fileListParent = OS.gtk_widget_get_parent(selection.file_list);
-	OS.gtk_widget_hide(selection.file_list);
-	OS.gtk_widget_hide(fileListParent);
-	int response = OS.gtk_dialog_run(handle);
+	int fileListParent = OS.gtk_widget_get_parent (selection.file_list);
+	OS.gtk_widget_hide (selection.file_list);
+	OS.gtk_widget_hide (fileListParent);
+	int response = OS.gtk_dialog_run (handle);
 	if (response == OS.GTK_RESPONSE_OK) {
-		int lpFilename = OS.gtk_file_selection_get_filename (handle);
-		int filenameLength = OS.strlen (lpFilename);
-		byte [] filenameBytes = new byte [filenameLength];
-		OS.memmove (filenameBytes, lpFilename, filenameLength);
-		String osAnswer = new String( Converter.mbcsToWcs (null, filenameBytes) );
-		if (osAnswer!=null) {
+		int fileNamePtr = OS.gtk_file_selection_get_filename (handle);
+		int utf8Ptr = OS.g_filename_to_utf8 (fileNamePtr, -1, null, null, null);
+		int [] items_written = new int [1];
+		int utf16Ptr = OS.g_utf8_to_utf16 (utf8Ptr, -1, null, items_written, null);
+		int length = items_written [0];
+		char [] buffer = new char [length];
+		OS.memmove (buffer, utf16Ptr, length * 2);
+		String osAnswer = new String (buffer);
+		OS.g_free (utf16Ptr);
+		OS.g_free (utf8Ptr);
+		if (osAnswer != null) {
 			answer = osAnswer;
 			// add trailing separator if not already present
 			char separator = System.getProperty ("file.separator").charAt (0);
-			int separatorIndex = answer.lastIndexOf(separator);
-			if (separatorIndex != answer.length() - 1) answer += separator;
+			int separatorIndex = answer.lastIndexOf (separator);
+			if (separatorIndex != answer.length () - 1) answer += separator;
 		}
 	}
-	OS.gtk_widget_destroy(handle);
+	OS.gtk_widget_destroy (handle);
 	return answer;
 }
 /**
