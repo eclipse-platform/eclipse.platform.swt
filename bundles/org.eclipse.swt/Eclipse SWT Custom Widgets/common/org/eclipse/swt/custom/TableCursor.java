@@ -155,7 +155,7 @@ public class TableCursor extends Canvas {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#BORDER
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */

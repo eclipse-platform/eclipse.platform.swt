@@ -79,7 +79,10 @@ public class TableTree extends Composite {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#SINGLE
+ * @see SWT#MULTI
+ * @see SWT#CHECK
+ * @see SWT#FULL_SELECTION
  * @see #getStyle
  */
 public TableTree(Composite parent, int style) {

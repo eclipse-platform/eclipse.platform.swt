@@ -127,7 +127,8 @@ public class ScrolledComposite extends Composite {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#H_SCROLL
+ * @see SWT#V_SCROLL
  * @see #getStyle
  */	
 public ScrolledComposite(Composite parent, int style) {

@@ -10,6 +10,26 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 
+/**
+ * Instances of this class implement a Composite that lays out three
+ * children horizontally and allows programmatic control of layout and
+ * border parameters. ViewForm is used in the workbench to implement a
+ * view's label/menu/toolbar local bar.
+ * <p>
+ * Note that although this class is a subclass of <code>Composite</code>,
+ * it does not make sense to set a layout on it.
+ * </p><p>
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>BORDER, FLAT</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>(None)</dd>
+ * </dl>
+ * <p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
+ */
+
 public class ViewForm extends Composite {
 
 	/**
@@ -87,7 +107,8 @@ public class ViewForm extends Composite {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#BORDER
+ * @see SWT#FLAT
  * @see #getStyle
  */		
 public ViewForm(Composite parent, int style) {

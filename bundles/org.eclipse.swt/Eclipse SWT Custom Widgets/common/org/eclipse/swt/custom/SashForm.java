@@ -55,7 +55,8 @@ public class SashForm extends Composite {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#HORIZONTAL
+ * @see SWT#VERTICAL
  * @see #getStyle
  */
 public SashForm(Composite parent, int style) {

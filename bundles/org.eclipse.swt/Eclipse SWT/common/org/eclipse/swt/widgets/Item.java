@@ -10,20 +10,81 @@ import org.eclipse.swt.graphics.*;
 
 /**
  * This class is the abstract superclass of all non-windowed
- * user interface objects that occur within specific
- * controls.  For example, a tree will contain tree
- * items.
+ * user interface objects that occur within specific controls.
+ * For example, a tree will contain tree items.
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>(none)</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>(none)</dd>
+ * </dl>
  */
 
 public abstract class Item extends Widget {
 	String text;
 	Image image;
 
+/**
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * The item is added to the end of the items maintained by its parent.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a widget which will be the parent of the new instance (cannot be null)
+ * @param style the style of item to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see #getStyle
+ */
 public Item (Widget parent, int style) {
 	super (parent, style);
 	text = "";
 }
 
+/**
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance,
+ * and the index at which to place it in the items maintained
+ * by its parent.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a widget which will be the parent of the new instance (cannot be null)
+ * @param style the style of item to construct
+ * @param index the index at which to store the receiver in its parent
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see #getStyle
+ */
 public Item (Widget parent, int style, int index) {
 	this (parent, style);
 }

@@ -50,7 +50,9 @@ public class AnimatedProgress extends Canvas {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#VERTICAL
+ * @see SWT#HORIZONTAL
+ * @see SWT#BORDER
  * @see #getStyle
  */
 public AnimatedProgress(Composite parent, int style) {

@@ -21,7 +21,7 @@ import org.eclipse.swt.accessibility.*;
  * </p>
  * <dl>
  * <dt><b>Styles:</b>
- * <dd>BORDER, READ_ONLY</dd>
+ * <dd>BORDER, READ_ONLY, FLAT</dd>
  * <dt><b>Events:</b>
  * <dd>Selection</dd>
  * </dl>
@@ -36,6 +36,34 @@ public final class CCombo extends Composite {
 	Button arrow;
 	boolean hasFocus;
 	
+/**
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a widget which will be the parent of the new instance (cannot be null)
+ * @param style the style of widget to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ * </ul>
+ *
+ * @see SWT#BORDER
+ * @see SWT#READ_ONLY
+ * @see SWT#FLAT
+ * @see Widget#getStyle
+ */
 public CCombo (Composite parent, int style) {
 	super (parent, checkStyle (style));
 	

@@ -80,7 +80,12 @@ public class CLabel extends Canvas {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#LEFT
+ * @see SWT#RIGHT
+ * @see SWT#CENTER
+ * @see SWT#SHADOW_IN
+ * @see SWT#SHADOW_OUT
+ * @see SWT#SHADOW_NONE
  * @see #getStyle
  */
 public CLabel(Composite parent, int style) {

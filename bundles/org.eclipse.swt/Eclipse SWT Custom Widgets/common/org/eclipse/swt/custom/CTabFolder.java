@@ -161,7 +161,9 @@ public class CTabFolder extends Composite {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#TOP
+ * @see SWT#BOTTOM
+ * @see SWT#FLAT
  * @see #getStyle
  */
 public CTabFolder(Composite parent, int style) {
