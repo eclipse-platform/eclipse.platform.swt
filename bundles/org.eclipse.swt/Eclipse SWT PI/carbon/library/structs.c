@@ -762,6 +762,61 @@ void setFontInfoFields(JNIEnv *env, jobject lpObject, FontInfo *lpStruct)
 }
 #endif /* NO_FontInfo */
 
+#ifndef NO_FontSelectionQDStyle
+typedef struct FontSelectionQDStyle_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, instance_fontFamily, instance_fontStyle, size, hasColor, reserved, color_red, color_green, color_blue;
+} FontSelectionQDStyle_FID_CACHE;
+
+FontSelectionQDStyle_FID_CACHE FontSelectionQDStyleFc;
+
+void cacheFontSelectionQDStyleFids(JNIEnv *env, jobject lpObject)
+{
+	if (FontSelectionQDStyleFc.cached) return;
+	FontSelectionQDStyleFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	FontSelectionQDStyleFc.version = (*env)->GetFieldID(env, FontSelectionQDStyleFc.clazz, "version", "I");
+	FontSelectionQDStyleFc.instance_fontFamily = (*env)->GetFieldID(env, FontSelectionQDStyleFc.clazz, "instance_fontFamily", "S");
+	FontSelectionQDStyleFc.instance_fontStyle = (*env)->GetFieldID(env, FontSelectionQDStyleFc.clazz, "instance_fontStyle", "S");
+	FontSelectionQDStyleFc.size = (*env)->GetFieldID(env, FontSelectionQDStyleFc.clazz, "size", "S");
+	FontSelectionQDStyleFc.hasColor = (*env)->GetFieldID(env, FontSelectionQDStyleFc.clazz, "hasColor", "Z");
+	FontSelectionQDStyleFc.reserved = (*env)->GetFieldID(env, FontSelectionQDStyleFc.clazz, "reserved", "B");
+	FontSelectionQDStyleFc.color_red = (*env)->GetFieldID(env, FontSelectionQDStyleFc.clazz, "color_red", "S");
+	FontSelectionQDStyleFc.color_green = (*env)->GetFieldID(env, FontSelectionQDStyleFc.clazz, "color_green", "S");
+	FontSelectionQDStyleFc.color_blue = (*env)->GetFieldID(env, FontSelectionQDStyleFc.clazz, "color_blue", "S");
+	FontSelectionQDStyleFc.cached = 1;
+}
+
+FontSelectionQDStyle *getFontSelectionQDStyleFields(JNIEnv *env, jobject lpObject, FontSelectionQDStyle *lpStruct)
+{
+	if (!FontSelectionQDStyleFc.cached) cacheFontSelectionQDStyleFids(env, lpObject);
+	lpStruct->version = (UInt32)(*env)->GetIntField(env, lpObject, FontSelectionQDStyleFc.version);
+	lpStruct->instance.fontFamily = (FMFontFamily)(*env)->GetShortField(env, lpObject, FontSelectionQDStyleFc.instance_fontFamily);
+	lpStruct->instance.fontStyle = (FMFontStyle)(*env)->GetShortField(env, lpObject, FontSelectionQDStyleFc.instance_fontStyle);
+	lpStruct->size = (FMFontSize)(*env)->GetShortField(env, lpObject, FontSelectionQDStyleFc.size);
+	lpStruct->hasColor = (Boolean)(*env)->GetBooleanField(env, lpObject, FontSelectionQDStyleFc.hasColor);
+	lpStruct->reserved = (UInt8)(*env)->GetByteField(env, lpObject, FontSelectionQDStyleFc.reserved);
+	lpStruct->color.red = (*env)->GetShortField(env, lpObject, FontSelectionQDStyleFc.color_red);
+	lpStruct->color.green = (*env)->GetShortField(env, lpObject, FontSelectionQDStyleFc.color_green);
+	lpStruct->color.blue = (*env)->GetShortField(env, lpObject, FontSelectionQDStyleFc.color_blue);
+	return lpStruct;
+}
+
+void setFontSelectionQDStyleFields(JNIEnv *env, jobject lpObject, FontSelectionQDStyle *lpStruct)
+{
+	if (!FontSelectionQDStyleFc.cached) cacheFontSelectionQDStyleFids(env, lpObject);
+	(*env)->SetIntField(env, lpObject, FontSelectionQDStyleFc.version, (jint)lpStruct->version);
+	(*env)->SetShortField(env, lpObject, FontSelectionQDStyleFc.instance_fontFamily, (jshort)lpStruct->instance.fontFamily);
+	(*env)->SetShortField(env, lpObject, FontSelectionQDStyleFc.instance_fontStyle, (jshort)lpStruct->instance.fontStyle);
+	(*env)->SetShortField(env, lpObject, FontSelectionQDStyleFc.size, (jshort)lpStruct->size);
+	(*env)->SetBooleanField(env, lpObject, FontSelectionQDStyleFc.hasColor, (jboolean)lpStruct->hasColor);
+	(*env)->SetByteField(env, lpObject, FontSelectionQDStyleFc.reserved, (jbyte)lpStruct->reserved);
+	(*env)->SetShortField(env, lpObject, FontSelectionQDStyleFc.color_red, (jshort)lpStruct->color.red);
+	(*env)->SetShortField(env, lpObject, FontSelectionQDStyleFc.color_green, (jshort)lpStruct->color.green);
+	(*env)->SetShortField(env, lpObject, FontSelectionQDStyleFc.color_blue, (jshort)lpStruct->color.blue);
+}
+#endif /* NO_FontSelectionQDStyle */
+
 #ifndef NO_HICommand
 typedef struct HICommand_FID_CACHE {
 	int cached;

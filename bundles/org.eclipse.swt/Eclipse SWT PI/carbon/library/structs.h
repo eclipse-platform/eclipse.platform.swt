@@ -131,6 +131,14 @@ void setFontInfoFields(JNIEnv *env, jobject lpObject, FontInfo *lpStruct);
 #define setFontInfoFields(a,b,c)
 #endif /* NO_FontInfo */
 
+#ifndef NO_FontSelectionQDStyle
+FontSelectionQDStyle *getFontSelectionQDStyleFields(JNIEnv *env, jobject lpObject, FontSelectionQDStyle *lpStruct);
+void setFontSelectionQDStyleFields(JNIEnv *env, jobject lpObject, FontSelectionQDStyle *lpStruct);
+#else
+#define getFontSelectionQDStyleFields(a,b,c) NULL
+#define setFontSelectionQDStyleFields(a,b,c)
+#endif /* NO_FontSelectionQDStyle */
+
 #ifndef NO_HICommand
 HICommand *getHICommandFields(JNIEnv *env, jobject lpObject, HICommand *lpStruct);
 void setHICommandFields(JNIEnv *env, jobject lpObject, HICommand *lpStruct);

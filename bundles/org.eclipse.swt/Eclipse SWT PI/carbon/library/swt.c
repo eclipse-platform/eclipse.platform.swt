@@ -1913,6 +1913,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_EraseRgn
 }
 #endif /* NO_EraseRgn */
 
+#ifndef NO_FPIsFontPanelVisible
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_FPIsFontPanelVisible
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("FPIsFontPanelVisible\n")
+
+	return (jboolean)FPIsFontPanelVisible();
+}
+#endif
+
 #ifndef NO_FetchFontInfo
 JNIEXPORT jint JNICALL OS_NATIVE(FetchFontInfo)
 	(JNIEnv *env, jclass that, jshort arg0, jshort arg1, jshort arg2, jobject arg3)
@@ -1987,6 +1997,16 @@ JNIEXPORT jint JNICALL OS_NATIVE(FMGetFontFromFontFamilyInstance)
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg3) (*env)->ReleaseShortArrayElements(env, arg3, lparg3, 0);
 	return rc;
+}
+#endif
+
+#ifndef NO_FPShowHideFontPanel
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_FPShowHideFontPanel
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("FPShowHideFontPanel\n")
+
+	return (jint)FPShowHideFontPanel();
 }
 #endif
 
@@ -2776,6 +2796,28 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventParameter
 	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
 	if (arg6) setPointFields(env, arg6, lparg6);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_RGBColor_2
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_RGBColor_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jint arg4, jintArray arg5, jobject arg6)
+{
+	jint *lparg3=NULL;
+	jint *lparg5=NULL;
+	RGBColor _arg6, *lparg6=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_RGBColor_2\n")
+
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	if (arg6) lparg6 = getRGBColorFields(env, arg6, &_arg6);
+	rc = (jint)GetEventParameter((EventRef)arg0, (EventParamName)arg1, (EventParamType)arg2, (EventParamType *)lparg3, (UInt32)arg4, (UInt32 *)lparg5, (void *)lparg6);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg6) setRGBColorFields(env, arg6, lparg6);
 	return rc;
 }
 #endif
@@ -4930,6 +4972,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RemoveDataBrowser
 }
 #endif /* NO_RemoveDataBrowserItems */
 
+#ifndef NO_RemoveEventHandler
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RemoveEventHandler
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("RemoveEventHandler\n")
+
+	return (jint)RemoveEventHandler((EventHandlerRef)arg0);
+}
+#endif
+
 #ifndef NO_RemoveEventLoopTimer
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RemoveEventLoopTimer
 	(JNIEnv *env, jclass that, jint arg0)
@@ -5435,6 +5487,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetEventParameter
 	return rc;
 }
 #endif /* NO_SetEventParameter */
+
+#ifndef NO_SetFontInfoForSelection
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetFontInfoForSelection
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	DEBUG_CALL("SetFontInfoForSelection\n")
+
+	return (jint)SetFontInfoForSelection((OSType)arg0, (UInt32)arg1, (void *)arg2, (HIObjectRef)arg3);
+}
+#endif
 
 #ifndef NO_SetFrontProcess
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetFrontProcess
@@ -6548,6 +6610,33 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy__ILorg_ecl
 }
 #endif /* NO_memcpy__ILorg_eclipse_swt_internal_carbon_Rect_2I */
 
+#ifndef NO_memcpy__ILorg_eclipse_swt_internal_carbon_FontSelectionQDStyle_2I
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy__ILorg_eclipse_swt_internal_carbon_FontSelectionQDStyle_2I
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	FontSelectionQDStyle _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("memcpy__ILorg_eclipse_swt_internal_carbon_FontSelectionQDStyle_2I\n")
+
+	if (arg1) lparg1 = getFontSelectionQDStyleFields(env, arg1, &_arg1);
+	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	if (arg1) setFontSelectionQDStyleFields(env, arg1, lparg1);
+}
+#endif
+
+#ifndef NO_memcpy__Lorg_eclipse_swt_internal_carbon_FontSelectionQDStyle_2II
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy__Lorg_eclipse_swt_internal_carbon_FontSelectionQDStyle_2II
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	FontSelectionQDStyle _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("memcpy__Lorg_eclipse_swt_internal_carbon_FontSelectionQDStyle_2II\n")
+
+	if (arg0) lparg0 = getFontSelectionQDStyleFields(env, arg0, &_arg0);
+	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setFontSelectionQDStyleFields(env, arg0, lparg0);
+}
+#endif
 
 #ifndef NO_memset
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memset
