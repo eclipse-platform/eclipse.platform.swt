@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin
+   id="org.eclipse.swt.snippets"
+   name="%pluginName"
+   version="3.1.0"
+   provider-name="%providerName">
+
+   <requires>
+      <import plugin="org.eclipse.swt" export="true"/>
+   </requires>
+
+</plugin>
