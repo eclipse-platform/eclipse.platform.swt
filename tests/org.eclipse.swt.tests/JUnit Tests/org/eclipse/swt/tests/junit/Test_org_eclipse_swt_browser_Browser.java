@@ -52,6 +52,13 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 }
 
 public void test_addLocationListenerLorg_eclipse_swt_browser_LocationListener() {
+	try {
+		browser.addLocationListener(null);
+		fail("No exception thrown for listener == null");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	
 	LocationListener listener = new LocationListener() {
 		public void changed(LocationEvent event) {
 		}
@@ -63,6 +70,13 @@ public void test_addLocationListenerLorg_eclipse_swt_browser_LocationListener() 
 }
 
 public void test_addProgressListenerLorg_eclipse_swt_browser_ProgressListener() {
+	try {
+		browser.addProgressListener(null);
+		fail("No exception thrown for listener == null");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	
 	ProgressListener listener = new ProgressListener() {
 		public void changed(ProgressEvent event) {
 		}
@@ -74,6 +88,13 @@ public void test_addProgressListenerLorg_eclipse_swt_browser_ProgressListener() 
 }
 
 public void test_addStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener() {
+	try {
+		browser.addStatusTextListener(null);
+		fail("No exception thrown for listener == null");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	
 	StatusTextListener listener = new StatusTextListener() {
 		public void changed(StatusTextEvent event) {
 		}
@@ -110,18 +131,44 @@ public void test_refresh() {
 }
 
 public void test_removeLocationListenerLorg_eclipse_swt_browser_LocationListener() {
+	try {
+		browser.removeLocationListener(null);
+		fail("No exception thrown for listener == null");
+	}
+	catch (IllegalArgumentException e) {
+	}
 	// tested in addLocationListener
 }
 
 public void test_removeProgressListenerLorg_eclipse_swt_browser_ProgressListener() {
+	try {
+		browser.removeProgressListener(null);
+		fail("No exception thrown for listener == null");
+	}
+	catch (IllegalArgumentException e) {
+	}
 	// tested in addProgressListener
 }
 
 public void test_removeStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener() {
+	try {
+		browser.removeStatusTextListener(null);
+		fail("No exception thrown for listener == null");
+	}
+	catch (IllegalArgumentException e) {
+	}
 	// tested in addStatusTextListener
 }
 
 public void test_setUrlLjava_lang_String() {
+	try {
+		browser.setUrl(null);
+		fail("No exception thrown for url == null");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	
+	
 	/* THIS TEST REQUIRES WEB ACCESS! How else can we really test the http:// part of a browser widget? */
 	browser.setUrl("http://www.eclipse.org/swt");
 }
