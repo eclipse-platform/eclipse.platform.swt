@@ -2373,7 +2373,7 @@ void setBackground(Color[] colors, int[] percents, boolean vertical) {
  * UNDER CONSTRUCTION
  * @since 3.0
  */
-public void setBackground(Image image) {
+void setBackground(Image image) {
 	checkWidget();
 	if (image == bgImage) return;
 	if (image != null) {
