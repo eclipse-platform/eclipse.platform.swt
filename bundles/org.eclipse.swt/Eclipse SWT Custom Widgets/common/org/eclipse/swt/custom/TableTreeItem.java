@@ -201,8 +201,8 @@ void addCheck() {
 	tableItem.setGrayed(grayed);
 }
 void addItem(TableTreeItem item, int index) {
-	if (item == null) throw new SWTError(SWT.ERROR_NULL_ARGUMENT);
-	if (index < 0 || index > items.length) throw new SWTError(SWT.ERROR_INVALID_ARGUMENT);
+	if (item == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (index < 0 || index > items.length) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		
 	/* Now that item has a sub-node it must indicate that it can be expanded */
 	if (items.length == 0 && index == 0) {

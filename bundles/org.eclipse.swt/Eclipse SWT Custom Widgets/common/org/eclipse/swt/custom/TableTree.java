@@ -129,7 +129,7 @@ public TableTree(Composite parent, int style) {
 }
 
 int addItem(TableTreeItem item, int index) {
-	if (index < 0 || index > items.length) throw new SWTError(SWT.ERROR_INVALID_ARGUMENT);
+	if (index < 0 || index > items.length) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	TableTreeItem[] newItems = new TableTreeItem[items.length + 1];
 	System.arraycopy(items, 0, newItems, 0, index);
 	newItems[index] = item;
@@ -172,27 +172,34 @@ int addItem(TableTreeItem item, int index) {
  */
 public void addSelectionListener(SelectionListener listener) {
 	checkWidget();
-	if (listener == null) throw new SWTError (SWT.ERROR_NULL_ARGUMENT);
+	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Selection,typedListener);
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
-/**	 
- * Adds the listener to receive tree events.
- * <p>
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when an item in the receiver is expanded or collapsed
+ * by sending it one of the messages defined in the <code>TreeListener</code>
+ * interface.
  *
- * @param listener the tree listener
+ * @param listener the listener which should be notified
  *
- * @exception SWTError <ul>
- *	<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread
- *	<li>ERROR_WIDGET_DISPOSED when the widget has been disposed
- *	<li>ERROR_NULL_ARGUMENT when listener is null
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see TreeListener
+ * @see #removeTreeListener
  */
 public void addTreeListener(TreeListener listener) {
 	checkWidget();
-	if (listener == null) throw new SWTError (SWT.ERROR_NULL_ARGUMENT);
+	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Expand, typedListener);
 	addListener (SWT.Collapse, typedListener);
@@ -606,11 +613,11 @@ void removeItem(TableTreeItem item) {
 	items = newItems;
 }
 
-/**	 
- * Removes the listener.
- * <p>
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the receiver's selection changes.
  *
- * @param listener the listener
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -619,28 +626,37 @@ void removeItem(TableTreeItem item) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ *
+ * @see SelectionListener
+ * @see #addSelectionListener
  */
 public void removeSelectionListener (SelectionListener listener) {
 	checkWidget();
-	if (listener == null) throw new SWTError (SWT.ERROR_NULL_ARGUMENT);
+	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	removeListener(SWT.Selection, listener);
 	removeListener(SWT.DefaultSelection, listener);
 }
 
-/**	 
- * Removes the listener.
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when items in the receiver are expanded or collapsed..
  *
- * @param listener the listener
+ * @param listener the listener which should no longer be notified
  *
- * @exception SWTError <ul>
- *	<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread
- *	<li>ERROR_WIDGET_DISPOSED when the widget has been disposed
- *	<li>ERROR_NULL_ARGUMENT when listener is null
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see TreeListener
+ * @see #addTreeListener
  */
 public void removeTreeListener (TreeListener listener) {
 	checkWidget();
-	if (listener == null) throw new SWTError (SWT.ERROR_NULL_ARGUMENT);
+	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	removeListener(SWT.Expand, listener);
 	removeListener(SWT.Collapse, listener);
 }
@@ -689,21 +705,28 @@ public void setMenu (Menu menu) {
 }
 
 /**
- * Sets the selection.
- * <p>
- * @param items new selection
+ * Sets the receiver's selection to be the given array of items.
+ * The current selected is first cleared, then the new items are
+ * selected.
  *
- * @exception SWTError <ul>
- *	<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread
- *	<li>ERROR_WIDGET_DISPOSED when the widget has been disposed
- *	<li>ERROR_NULL_ARGUMENT when items is null
+ * @param items the array of items
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the array of items is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if one of the item has been disposed</li>
  * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see TableTree#deselectAll()
  */
 public void setSelection (TableTreeItem[] items) {
 	checkWidget();
 	TableItem[] tableItems = new TableItem[items.length];
 	for (int i = 0; i < items.length; i++) {
-		if (items[i] == null) throw new SWTError(SWT.ERROR_NULL_ARGUMENT);
+		if (items[i] == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		if (!items[i].getVisible()) expandItem (items[i]);
 		tableItems[i] = items[i].tableItem;
 	}
@@ -715,19 +738,26 @@ public void setToolTipText (String string) {
 }
 
 /**
- * Shows the item.
- * <p>
+ * Shows the item.  If the item is already showing in the receiver,
+ * this method simply returns.  Otherwise, the items are scrolled
+ * and expanded until the item is visible.
+ *
  * @param item the item to be shown
  *
- * @exception SWTError <ul>
- *	<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread
- *	<li>ERROR_WIDGET_DISPOSED when the widget has been disposed
- *	<li>ERROR_NULL_ARGUMENT when item is null
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the item has been disposed</li>
  * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see TableTree#showSelection()
  */
 public void showItem (TableTreeItem item) {
 	checkWidget();
-	if (item == null) throw new SWTError (SWT.ERROR_NULL_ARGUMENT);
+	if (item == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (!item.getVisible()) expandItem (item);
 	TableItem tableItem = item.tableItem;
 	table.showItem(tableItem);
