@@ -406,14 +406,19 @@ public boolean open () {
 					switch (keysym [0]) {
 						case OS.XK_Return:
 							tracking = false;
+							/*
+							 * Eat the subsequent KeyRelease event
+							 */
+							OS.XtAppNextEvent (xtContext, xEvent);
 							break;
 						case OS.XK_Escape:
-							tracking = false;
-							cancelled = true;
-							break;
 						case OS.XK_Cancel:
 							tracking = false;
 							cancelled = true;
+							/*
+							 * Eat the subsequent KeyRelease event
+							 */
+							OS.XtAppNextEvent (xtContext, xEvent);
 							break;
 						case OS.XK_Left:
 							xChange = -stepSize;
