@@ -3,7 +3,7 @@ package org.eclipse.swt.examples.paint;
  * (c) Copyright IBM Corp. 2000, 2001.
  * All Rights Reserved
  */
-public interface PaintTool extends PaintRenderer, PaintSession {
+public interface PaintTool extends PaintSession {
 	/**
 	 * Sets the tool's settings.
 	 * 

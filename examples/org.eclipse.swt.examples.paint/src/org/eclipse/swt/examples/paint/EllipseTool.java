@@ -8,13 +8,15 @@ package org.eclipse.swt.examples.paint;
 import org.eclipse.swt.graphics.*;
 
 /**
- * An ellipse drawing tool.
+ * A drawing tool.
  */
-public class EllipseTool extends DragInteractivePaintSession implements PaintTool {
-	private Color drawColor;
+public class EllipseTool extends DragPaintSession implements PaintTool {
+	private Color drawFGColor;
+	private Color drawBGColor;
+	private int   fillType;
 
 	/**
-	 * Constructs an EllipseTool.
+	 * Constructs a EllipseTool.
 	 * 
 	 * @param toolSettings the new tool settings
 	 * @param paintSurface the PaintSurface we will render on.
@@ -30,7 +32,9 @@ public class EllipseTool extends DragInteractivePaintSession implements PaintToo
 	 * @param toolSettings the new tool settings
 	 */
 	public void set(ToolSettings toolSettings) {
-		drawColor = toolSettings.commonForegroundColor;
+		drawFGColor = toolSettings.commonForegroundColor;
+		drawBGColor = toolSettings.commonBackgroundColor;
+		fillType = toolSettings.commonFillType;
 	}
 	
 	/**
@@ -46,6 +50,11 @@ public class EllipseTool extends DragInteractivePaintSession implements PaintToo
 	 * Template methods for drawing
 	 */
 	protected Figure createFigure(Point a, Point b) {
-		return new EllipseFigure(drawColor, a.x, a.y, b.x, b.y);
+		ContainerFigure container = new ContainerFigure();
+		if (fillType != ToolSettings.ftNone)
+			container.add(new SolidEllipseFigure(drawBGColor, a.x, a.y, b.x, b.y));
+		if (fillType != ToolSettings.ftSolid)
+			container.add(new EllipseFigure(drawFGColor, a.x, a.y, b.x, b.y));
+		return container;
 	}
 }

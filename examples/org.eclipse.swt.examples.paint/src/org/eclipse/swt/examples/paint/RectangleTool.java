@@ -8,11 +8,12 @@ package org.eclipse.swt.examples.paint;
 import org.eclipse.swt.graphics.*;
 
 /**
- * A rectangle drawing tool.
+ * A drawing tool.
  */
-public class RectangleTool extends DragInteractivePaintSession implements PaintTool {
-	private Color temporaryColor;
-	private Color drawColor;
+public class RectangleTool extends DragPaintSession implements PaintTool {
+	private Color drawFGColor;
+	private Color drawBGColor;
+	private int   fillType;
 
 	/**
 	 * Constructs a RectangleTool.
@@ -23,7 +24,6 @@ public class RectangleTool extends DragInteractivePaintSession implements PaintT
 	public RectangleTool(ToolSettings toolSettings, PaintSurface paintSurface) {
 		super(paintSurface);
 		set(toolSettings);
-		temporaryColor = new Color(null, 255, 255, 255);
 	}
 	
 	/**
@@ -32,11 +32,13 @@ public class RectangleTool extends DragInteractivePaintSession implements PaintT
 	 * @param toolSettings the new tool settings
 	 */
 	public void set(ToolSettings toolSettings) {
-		drawColor = toolSettings.commonForegroundColor;
+		drawFGColor = toolSettings.commonForegroundColor;
+		drawBGColor = toolSettings.commonBackgroundColor;
+		fillType = toolSettings.commonFillType;
 	}
 	
 	/**
-	 * Returns the name associated with this tool.
+	 * Returns name associated with this tool.
 	 * 
 	 * @return the localized name of this tool
 	 */
@@ -45,9 +47,23 @@ public class RectangleTool extends DragInteractivePaintSession implements PaintT
 	}
 
 	/*
-	 * Template methods for drawing
+	 * Template method for drawing
 	 */
 	protected Figure createFigure(Point a, Point b) {
-		return new RectangleFigure(drawColor, a.x, a.y, b.x, b.y);
+		switch (fillType) {
+			default:
+			case ToolSettings.ftNone:
+				return new RectangleFigure(drawFGColor, a.x, a.y, b.x, b.y);
+			case ToolSettings.ftSolid:
+				return new SolidRectangleFigure(drawBGColor, a.x, a.y, b.x, b.y);
+			case ToolSettings.ftOutline: {
+				ContainerFigure container = new ContainerFigure();
+				container.add(new RectangleFigure(drawFGColor, a.x, a.y, b.x, b.y));
+				container.add(new SolidRectangleFigure(drawBGColor,
+					Math.min(a.x, b.x) + 1, Math.min(a.y, b.y) + 1,
+					Math.max(a.x, b.x) - 1, Math.max(a.y, b.y) - 1));
+				return container;
+			}
+		}
 	}
 }

@@ -10,18 +10,19 @@ import org.eclipse.swt.graphics.*;
 /**
  * A drawing tool.
  */
-public class RectangleTool extends DragPaintSession implements PaintTool {
+public class RoundedRectangleTool extends DragPaintSession implements PaintTool {
 	private Color drawFGColor;
 	private Color drawBGColor;
 	private int   fillType;
+	private int   cornerDiameter;
 
 	/**
-	 * Constructs a RectangleTool.
+	 * Constructs a RoundedRectangleTool.
 	 * 
 	 * @param toolSettings the new tool settings
 	 * @param paintSurface the PaintSurface we will render on.
 	 */
-	public RectangleTool(ToolSettings toolSettings, PaintSurface paintSurface) {
+	public RoundedRectangleTool(ToolSettings toolSettings, PaintSurface paintSurface) {
 		super(paintSurface);
 		set(toolSettings);
 	}
@@ -35,6 +36,7 @@ public class RectangleTool extends DragPaintSession implements PaintTool {
 		drawFGColor = toolSettings.commonForegroundColor;
 		drawBGColor = toolSettings.commonBackgroundColor;
 		fillType = toolSettings.commonFillType;
+		cornerDiameter = toolSettings.roundedRectangleCornerDiameter;
 	}
 	
 	/**
@@ -43,27 +45,18 @@ public class RectangleTool extends DragPaintSession implements PaintTool {
 	 * @return the localized name of this tool
 	 */
 	public String getDisplayName() {
-		return PaintPlugin.getResourceString("tool.Rectangle.displayname");
+		return PaintPlugin.getResourceString("tool.RoundedRectangle.displayname");
 	}
 
 	/*
-	 * Template method for drawing
+	 * Template methods for drawing
 	 */
 	protected Figure createFigure(Point a, Point b) {
-		switch (fillType) {
-			default:
-			case ToolSettings.ftNone:
-				return new RectangleFigure(drawFGColor, a.x, a.y, b.x, b.y);
-			case ToolSettings.ftSolid:
-				return new SolidRectangleFigure(drawBGColor, a.x, a.y, b.x, b.y);
-			case ToolSettings.ftOutline: {
-				ContainerFigure container = new ContainerFigure();
-				container.add(new RectangleFigure(drawFGColor, a.x, a.y, b.x, b.y));
-				container.add(new SolidRectangleFigure(drawBGColor,
-					Math.min(a.x, b.x) + 1, Math.min(a.y, b.y) + 1,
-					Math.max(a.x, b.x) - 1, Math.max(a.y, b.y) - 1));
-				return container;
-			}
-		}
+		ContainerFigure container = new ContainerFigure();
+		if (fillType != ToolSettings.ftNone)
+			container.add(new SolidRoundedRectangleFigure(drawBGColor, a.x, a.y, b.x, b.y, cornerDiameter));
+		if (fillType != ToolSettings.ftSolid)
+			container.add(new RoundedRectangleFigure(drawFGColor, a.x, a.y, b.x, b.y, cornerDiameter));
+		return container;
 	}
 }

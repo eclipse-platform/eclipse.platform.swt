@@ -11,7 +11,7 @@ import org.eclipse.swt.events.*;import org.eclipse.swt.graphics.*;import org.e
  * The superclass for paint tools that draw continuously along the path
  * traced by the mouse's movement while the button is depressed
  */
-public abstract class ContinuousPaintSession extends BasicPaintSession implements PaintRenderer {
+public abstract class ContinuousPaintSession extends BasicPaintSession {
 	/**
 	 * True if a click-drag is in progress.
 	 */
@@ -20,7 +20,7 @@ public abstract class ContinuousPaintSession extends BasicPaintSession implement
 	/**
 	 * A cached Point array for drawing.
 	 */
-	private Point[] cachedPointArray = new Point[] { new Point(-1, -1), new Point(-1, -1) };
+	private Point[] points = new Point[] { new Point(-1, -1), new Point(-1, -1) };
 
 	/**
 	 * The time to wait between retriggers in milliseconds.
@@ -86,9 +86,9 @@ public abstract class ContinuousPaintSession extends BasicPaintSession implement
 		if (dragInProgress) return; // spurious event
 		dragInProgress = true;
 
-		cachedPointArray[0].x = event.x;
-		cachedPointArray[0].y = event.y;
-		render(cachedPointArray, 1);
+		points[0].x = event.x;
+		points[0].y = event.y;
+		render(points[0]);
 		prepareRetrigger();
 	}
 
@@ -131,25 +131,25 @@ public abstract class ContinuousPaintSession extends BasicPaintSession implement
 	 * @param event the mouse event detail information
 	 */
 	private final void mouseSegmentFinished(MouseEvent event) {
-		if (cachedPointArray[0].x == -1) return; // spurious event
-		if (cachedPointArray[0].x != event.x || cachedPointArray[0].y != event.y) {
+		if (points[0].x == -1) return; // spurious event
+		if (points[0].x != event.x || points[0].y != event.y) {
 			// draw new segment
-			cachedPointArray[1].x = event.x;
-			cachedPointArray[1].y = event.y;
+			points[1].x = event.x;
+			points[1].y = event.y;
 			renderContinuousSegment();
 		}
 	}
 
 	/**
-	 * Draws a continuous segment from cachedPointArray[0] to cachedPointArray[1].
-	 * Assumes cachedPointArray[0] has been drawn already.
+	 * Draws a continuous segment from points[0] to points[1].
+	 * Assumes points[0] has been drawn already.
 	 * 
-	 * @post cachedPointArray[0] will refer to the same point as cachedPointArray[1]
+	 * @post points[0] will refer to the same point as points[1]
 	 */
 	protected void renderContinuousSegment() {
 		/* A lazy but effective line drawing algorithm */
-		final int dX = cachedPointArray[1].x - cachedPointArray[0].x;
-		final int dY = cachedPointArray[1].y - cachedPointArray[0].y;
+		final int dX = points[1].x - points[0].x;
+		final int dY = points[1].y - points[0].y;
 		int absdX = Math.abs(dX);
 		int absdY = Math.abs(dY);
 
@@ -158,29 +158,29 @@ public abstract class ContinuousPaintSession extends BasicPaintSession implement
 		if (absdY > absdX) {
 			final int incfpX = (dX << 16) / absdY;
 			final int incY = (dY > 0) ? 1 : -1;
-			int fpX = cachedPointArray[0].x << 16; // X in fixedpoint format
+			int fpX = points[0].x << 16; // X in fixedpoint format
 
 			while (--absdY >= 0) {
-				cachedPointArray[0].y += incY;
-				cachedPointArray[0].x = (fpX += incfpX) >> 16;
-				render(cachedPointArray, 1);
+				points[0].y += incY;
+				points[0].x = (fpX += incfpX) >> 16;
+				render(points[0]);
 			}
-			if (cachedPointArray[0].x == cachedPointArray[1].x) return;
-			cachedPointArray[0].x = cachedPointArray[1].x;
+			if (points[0].x == points[1].x) return;
+			points[0].x = points[1].x;
 		} else {
 			final int incfpY = (dY << 16) / absdX;
 			final int incX = (dX > 0) ? 1 : -1;
-			int fpY = cachedPointArray[0].y << 16; // Y in fixedpoint format
+			int fpY = points[0].y << 16; // Y in fixedpoint format
 
 			while (--absdX >= 0) {
-				cachedPointArray[0].x += incX;
-				cachedPointArray[0].y = (fpY += incfpY) >> 16;
-				render(cachedPointArray, 1);
+				points[0].x += incX;
+				points[0].y = (fpY += incfpY) >> 16;
+				render(points[0]);
 			}
-			if (cachedPointArray[0].y == cachedPointArray[1].y) return;
-			cachedPointArray[0].y = cachedPointArray[1].y;
+			if (points[0].y == points[1].y) return;
+			points[0].y = points[1].y;
 		}
-		render(cachedPointArray, 1);
+		render(points[0]);
 	}		
 
 	/**
@@ -222,9 +222,15 @@ public abstract class ContinuousPaintSession extends BasicPaintSession implement
 			 * If the id's don't match, then we have cancelled the timed operation.
 			 */
 			if (retriggerId == id) {
-				render(cachedPointArray, 1);
+				render(points[0]);
 				prepareRetrigger();
 			}
 		}
 	}
+	
+	/**
+	 * Template method: Renders a point.
+	 * @param point, the point to render
+	 */
+	protected abstract void render(Point point);
 }

@@ -10,9 +10,10 @@ import org.eclipse.swt.graphics.*;
 /**
  * A polyline drawing tool.
  */
-public class PolyLineTool extends SegmentedInteractivePaintSession implements PaintTool {
-	private Color temporaryColor;
-	private Color drawColor;
+public class PolyLineTool extends SegmentedPaintSession implements PaintTool {
+	private Color drawFGColor;
+	private Color drawBGColor;
+	private int fillType;
 
 	/**
 	 * Constructs a PolyLineTool.
@@ -23,7 +24,6 @@ public class PolyLineTool extends SegmentedInteractivePaintSession implements Pa
 	public PolyLineTool(ToolSettings toolSettings, PaintSurface paintSurface) {
 		super(paintSurface);
 		set(toolSettings);
-		temporaryColor = new Color(null, 255, 255, 255);
 	}
 	
 	/**
@@ -32,7 +32,9 @@ public class PolyLineTool extends SegmentedInteractivePaintSession implements Pa
 	 * @param toolSettings the new tool settings
 	 */
 	public void set(ToolSettings toolSettings) {
-		drawColor = toolSettings.commonForegroundColor;
+		drawFGColor = toolSettings.commonForegroundColor;
+		drawBGColor = toolSettings.commonBackgroundColor;
+		fillType = toolSettings.commonFillType;
 	}
 
 	/**
@@ -47,7 +49,23 @@ public class PolyLineTool extends SegmentedInteractivePaintSession implements Pa
 	/*
 	 * Template methods for drawing
 	 */
-	protected Figure createFigure(Point a, Point b) {
-		return new LineFigure(drawColor, a.x, a.y, b.x, b.y);
+	protected Figure createFigure(Point[] points, int numPoints, boolean closed) {
+		ContainerFigure container = new ContainerFigure();
+		if (closed && fillType != ToolSettings.ftNone && numPoints >= 3) {
+			container.add(new SolidPolygonFigure(drawBGColor, points, numPoints));
+		}
+		if (! closed || fillType != ToolSettings.ftSolid || numPoints < 3) {
+			for (int i = 0; i < numPoints - 1; ++i) {
+				final Point a = points[i];
+				final Point b = points[i + 1];
+				container.add(new LineFigure(drawFGColor, a.x, a.y, b.x, b.y));
+			}
+			if (closed) {
+				final Point a = points[points.length - 1];
+				final Point b = points[0];
+				container.add(new LineFigure(drawFGColor, a.x, a.y, b.x, b.y));
+			}
+		}
+		return container;
 	}
 }

@@ -34,31 +34,26 @@ public class PencilTool extends ContinuousPaintSession implements PaintTool {
 	}
 
 	/**
-	 * Draws a point in the current foreground color.
-	 * 
-	 * @param points[0] the target point
- 	 * @param numPoints the number of valid points in the array (must be 1)
-	 */
-	public void render(final Point[] points, int numPoints) {
-		Assert.assert(numPoints == 1);
-		
-		final PaintSurface ps = getPaintSurface();
-		final GC    igc  = ps.getImageGC();
-		final Point ioff = ps.getImageOffset();
-		final GC    dgc  = ps.getDisplayGC();
-		final Point doff = ps.getDisplayOffset();
-		igc.setBackground(drawColor);
-		igc.fillRectangle(points[0].x + ioff.x, points[0].y + ioff.y, 1, 1);  
-		dgc.setBackground(drawColor);
-		dgc.fillRectangle(points[0].x + doff.x, points[0].y + doff.y, 1, 1);  
-	}
-	
-	/**
 	 * Returns the name associated with this tool.
 	 * 
 	 * @return the localized name of this tool
 	 */
 	public String getDisplayName() {
 		return PaintPlugin.getResourceString("tool.Pencil.displayname");
+	}
+
+	/*
+	 * Template method for drawing
+	 */
+	public void render(final Point point) {
+		final PaintSurface ps = getPaintSurface();
+		final GC    igc  = ps.getImageGC();
+		final Point ioff = ps.getImageOffset();
+		final GC    dgc  = ps.getDisplayGC();
+		final Point doff = ps.getDisplayOffset();
+		igc.setBackground(drawColor);
+		igc.fillRectangle(point.x + ioff.x, point.y + ioff.y, 1, 1);  
+		dgc.setBackground(drawColor);
+		dgc.fillRectangle(point.x + doff.x, point.y + doff.y, 1, 1);  
 	}
 }

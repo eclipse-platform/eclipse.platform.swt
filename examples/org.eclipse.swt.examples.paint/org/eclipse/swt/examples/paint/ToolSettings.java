@@ -6,7 +6,7 @@ package org.eclipse.swt.examples.paint;
 import org.eclipse.swt.graphics.Color;
 /** * Tool Settings objects group tool-related configuration information. */
 public class ToolSettings {
-	/**
+	public static final int ftNone = 0, ftOutline = 1, ftSolid = 2;	/**
 	 * Constructs a new ToolSettings.
 	 */
 	public ToolSettings() {
@@ -27,7 +27,7 @@ public class ToolSettings {
 	 * commonBackgroundColor: current tool background colour
 	 */
 	public Color commonBackgroundColor;
-	
+	/**	 * commonFillType: current fill type	 * <p>	 * One of ftNone, ftOutline, ftSolid.	 * </p>	 */	public int commonFillType = ftNone;	
 	/** Airbrush settings **/
 
 	/**
@@ -38,5 +38,5 @@ public class ToolSettings {
 	/**
 	 * airbrushIntensity: average surface area coverage in region defined by radius per "jot"
 	 */
-	public int airbrushIntensity = 30;
+	public int airbrushIntensity = 30;		/** RoundedRectangle settings **/		/**	 * roundedRectangleCornerDiameter: the diameter of curvature of corners in a rounded rectangle	 */	public int roundedRectangleCornerDiameter = 16;
 }

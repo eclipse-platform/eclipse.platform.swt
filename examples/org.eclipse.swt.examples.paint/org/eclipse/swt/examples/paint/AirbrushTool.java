@@ -47,18 +47,23 @@ public class AirbrushTool extends ContinuousPaintSession implements PaintTool {
 	}
 
 	/**
-	 * Draws a bunch (cachedNumPoints) of random pixels within a specified
-	 * circle (cachedRadiusSquared).
+	 * Returns the name associated with this tool.
 	 * 
-	 * @param points[0] the target point
- 	 * @param numPoints the number of valid points in the array (must be 1)
+	 * @return the localized name of this tool
 	 */
-	public void render(final Point[] points, int numPoints) {
-		Assert.assert(numPoints == 1);
+	public String getDisplayName() {
+		return PaintPlugin.getResourceString("tool.Airbrush.displayname");
+	}
+
+	/*
+	 * Template method for drawing
+	 */
+	protected void render(Point point) {
+		// Draws a bunch (cachedNumPoints) of random pixels within a specified circle (cachedRadiusSquared).
 		final PaintSurface ps = getPaintSurface();
 		final GC    igc  = ps.getImageGC();
 		final Point ioff = ps.getImageOffset();
-		final int x = points[0].x + ioff.x, y = points[0].y + ioff.y;
+		final int x = point.x + ioff.x, y = point.y + ioff.y;
 		
 		igc.setBackground(airbrushColor);
 		for (int i = 0; i < cachedNumPoints; ++i) {
@@ -70,16 +75,7 @@ public class AirbrushTool extends ContinuousPaintSession implements PaintTool {
 			
 			igc.fillRectangle(x + randX, y + randY, 1, 1);
 		}
-		ps.redrawArea(points[0].x - airbrushRadius, points[0].y - airbrushRadius,
+		ps.redrawArea(point.x - airbrushRadius, point.y - airbrushRadius,
 			airbrushRadius * 2, airbrushRadius * 2);
-	}
-	
-	/**
-	 * Returns the name associated with this tool.
-	 * 
-	 * @return the localized name of this tool
-	 */
-	public String getDisplayName() {
-		return PaintPlugin.getResourceString("tool.Airbrush.displayname");
 	}
 }

@@ -8,19 +8,21 @@ package org.eclipse.swt.examples.paint;
 import org.eclipse.swt.graphics.*;
 
 /**
- * A rectangle drawing tool.
+ * A drawing tool.
  */
-public class FilledRectangleTool extends DragInteractivePaintSession implements PaintTool {
+public class RoundedRectangleTool extends DragPaintSession implements PaintTool {
 	private Color drawFGColor;
 	private Color drawBGColor;
+	private int   fillType;
+	private int   cornerDiameter;
 
 	/**
-	 * Constructs a RectangleTool.
+	 * Constructs a RoundedRectangleTool.
 	 * 
 	 * @param toolSettings the new tool settings
 	 * @param paintSurface the PaintSurface we will render on.
 	 */
-	public FilledRectangleTool(ToolSettings toolSettings, PaintSurface paintSurface) {
+	public RoundedRectangleTool(ToolSettings toolSettings, PaintSurface paintSurface) {
 		super(paintSurface);
 		set(toolSettings);
 	}
@@ -33,6 +35,8 @@ public class FilledRectangleTool extends DragInteractivePaintSession implements 
 	public void set(ToolSettings toolSettings) {
 		drawFGColor = toolSettings.commonForegroundColor;
 		drawBGColor = toolSettings.commonBackgroundColor;
+		fillType = toolSettings.commonFillType;
+		cornerDiameter = toolSettings.roundedRectangleCornerDiameter;
 	}
 	
 	/**
@@ -41,7 +45,7 @@ public class FilledRectangleTool extends DragInteractivePaintSession implements 
 	 * @return the localized name of this tool
 	 */
 	public String getDisplayName() {
-		return PaintPlugin.getResourceString("tool.FilledRectangle.displayname");
+		return PaintPlugin.getResourceString("tool.RoundedRectangle.displayname");
 	}
 
 	/*
@@ -49,10 +53,10 @@ public class FilledRectangleTool extends DragInteractivePaintSession implements 
 	 */
 	protected Figure createFigure(Point a, Point b) {
 		ContainerFigure container = new ContainerFigure();
-		container.add(new RectangleFigure(drawFGColor, a.x, a.y, b.x, b.y));
-		container.add(new SolidRectangleFigure(drawBGColor,
-			Math.min(a.x, b.x) + 1, Math.min(a.y, b.y) + 1,
-			Math.max(a.x, b.x) - 1, Math.max(a.y, b.y) - 1));
+		if (fillType != ToolSettings.ftNone)
+			container.add(new SolidRoundedRectangleFigure(drawBGColor, a.x, a.y, b.x, b.y, cornerDiameter));
+		if (fillType != ToolSettings.ftSolid)
+			container.add(new RoundedRectangleFigure(drawFGColor, a.x, a.y, b.x, b.y, cornerDiameter));
 		return container;
 	}
 }

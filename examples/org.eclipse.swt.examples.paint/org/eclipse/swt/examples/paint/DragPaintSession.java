@@ -11,8 +11,7 @@ import org.eclipse.swt.events.MouseEvent;import org.eclipse.swt.graphics.*;
  * The superclass for paint tools that use click-drag-release motions to
  * draw objects.
  */
-public abstract class DragInteractivePaintSession extends BasicPaintSession 
-	implements PaintRenderer {
+public abstract class DragPaintSession extends BasicPaintSession {
 	/**
 	 * True if a click-drag is in progress
 	 */
@@ -29,11 +28,11 @@ public abstract class DragInteractivePaintSession extends BasicPaintSession
 	private Point tempPosition = new Point(-1, -1);
 	
 	/**
-	 * Constructs a DragInteractivePaintSession.
+	 * Constructs a PaintSession.
 	 * 
 	 * @param getPaintSurface() the drawing surface to use
 	 */
-	protected DragInteractivePaintSession(PaintSurface paintSurface) {
+	protected DragPaintSession(PaintSurface paintSurface) {
 		super(paintSurface);
 	}
 
@@ -118,17 +117,6 @@ public abstract class DragInteractivePaintSession extends BasicPaintSession
 		tempPosition.x = event.x;
 		tempPosition.y = event.y;
 		ps.addRubberbandSelection(createFigure(anchorPosition, tempPosition));
-	}
-	
-	/**
-	 * Draws a permanent entity given 2 points.
-	 * 
-	 * @param points[0] and points[1] are two points
-	 * @param numPoints the number of valid points in the array (must be 2)
-	 */
-	public void render(final Point[] points, int numPoints) {
-		Assert.assert(numPoints == 2);
-		getPaintSurface().drawFigure(createFigure(points[0], points[1]));
 	}
 	
 	/**

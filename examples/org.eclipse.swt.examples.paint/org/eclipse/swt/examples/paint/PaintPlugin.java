@@ -5,7 +5,11 @@ package org.eclipse.swt.examples.paint;
  * All Rights Reserved
  */
 
-import org.eclipse.core.runtime.IPluginDescriptor;import org.eclipse.ui.plugin.AbstractUIPlugin;import java.text.MessageFormat;import java.util.*;
+import org.eclipse.core.runtime.*;
+import org.eclipse.ui.plugin.*;
+
+import java.text.*;
+import java.util.*;
 
 /**
  * The main plugin class to be used in the desktop.
@@ -29,6 +33,17 @@ public class PaintPlugin extends AbstractUIPlugin {
 	 */
 	public static PaintPlugin getDefault() {
 		return plugin;
+	}
+
+	/**
+	 * Log an error to the ILog for this plugin
+	 * 
+	 * @param message the localized error message text
+	 * @param exception the associated exception, or null
+	 */
+	public static void logError(String message, Throwable exception) {
+		plugin.getLog().log(new Status(IStatus.ERROR, plugin.getDescriptor().getUniqueIdentifier(),
+			0, message, exception));
 	}
 
 	/**

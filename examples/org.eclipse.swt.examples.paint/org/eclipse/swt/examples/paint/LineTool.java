@@ -10,7 +10,7 @@ import org.eclipse.swt.graphics.*;
 /**
  * A line drawing tool
  */
-public class LineTool extends DragInteractivePaintSession implements PaintTool {
+public class LineTool extends DragPaintSession implements PaintTool {
 	private Color temporaryColor;
 	private Color drawColor;
 
