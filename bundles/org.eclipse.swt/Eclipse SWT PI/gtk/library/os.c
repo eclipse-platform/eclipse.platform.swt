@@ -3925,6 +3925,18 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1object_1sink)
 }
 #endif
 
+#ifndef NO_gtk_1plug_1new
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1plug_1new)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "gtk_1plug_1new\n")
+	rc = (jint)gtk_plug_new(arg0);
+	NATIVE_EXIT(env, that, "gtk_1plug_1new\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1progress_1bar_1new
 JNIEXPORT jint JNICALL OS_NATIVE(gtk_1progress_1bar_1new)
 	(JNIEnv *env, jclass that)
@@ -4202,6 +4214,30 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1set_1locale)
 	NATIVE_ENTER(env, that, "gtk_1set_1locale\n")
 	rc = (jint)gtk_set_locale();
 	NATIVE_EXIT(env, that, "gtk_1set_1locale\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1socket_1get_1id
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1socket_1get_1id)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "gtk_1socket_1get_1id\n")
+	rc = (jint)gtk_socket_get_id((GtkSocket *)arg0);
+	NATIVE_EXIT(env, that, "gtk_1socket_1get_1id\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1socket_1new
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1socket_1new)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "gtk_1socket_1new\n")
+	rc = (jint)gtk_socket_new();
+	NATIVE_EXIT(env, that, "gtk_1socket_1new\n")
 	return rc;
 }
 #endif

@@ -636,6 +636,7 @@ public static final synchronized native void gtk_notebook_set_current_page(int n
 public static final synchronized native void gtk_notebook_set_scrollable(int notebook, boolean scrollable);
 public static final synchronized native void gtk_notebook_set_show_tabs(int notebook, boolean show_tabs);
 public static final synchronized native void gtk_object_sink(int object);
+public static final synchronized native int gtk_plug_new(int socket_id);
 public static final synchronized native int gtk_progress_bar_new();
 public static final synchronized native void gtk_progress_bar_pulse(int pbar);
 public static final synchronized native void gtk_progress_bar_set_bar_style(int pbar, int style);
@@ -663,6 +664,8 @@ public static final synchronized native void gtk_selection_data_free(int selecti
 public static final synchronized native void gtk_selection_data_set(int selection_data, int type, int format, int data, int length);
 public static final synchronized native int gtk_separator_menu_item_new();
 public static final synchronized native int gtk_set_locale();
+public static final synchronized native int gtk_socket_get_id(int socket);
+public static final synchronized native int gtk_socket_new();
 public static final synchronized native int gtk_target_list_new(int targets, int ntargets);
 public static final synchronized native void gtk_target_list_unref(int list);
 public static final synchronized native void gtk_text_buffer_copy_clipboard(int buffer, int clipboard);
