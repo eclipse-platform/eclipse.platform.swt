@@ -2219,8 +2219,8 @@ static {
 	String platform = getPlatform ();
 	if ("carbon".equals (platform)) {
 		MOD1 = COMMAND;
-		MOD2 = ALT;
-		MOD3 = SHIFT;
+		MOD2 = SHIFT;
+		MOD3 = ALT;
 		MOD4 = CONTROL;
 	} else {
 		MOD1 = CONTROL;
