@@ -716,15 +716,10 @@ public void test_removeII() {
 	TableItem[] items = new TableItem[number];
 	for (int i = 0; i < number; i++)
 		items[i] = new TableItem(table, 0);
-	// should not cause a null pointer exception, bounds checks for table not implemented yet
-	if (fCheckOutOfRangeBehaviour) {
-		try {
-			table.remove(-number, number + 100);
-			fail("No exception thrown for illegal index range");
-		}
-		catch (IllegalArgumentException e) {
-		}
-	}
+	try {
+		table.remove(-number, number + 100);
+		fail("No exception thrown for illegal index range");
+	} catch (IllegalArgumentException e) {}
 	
 	makeCleanEnvironment(false);
 
@@ -739,32 +734,22 @@ public void test_removeII() {
 	items = new TableItem[number];
 	for (int i = 0; i < number; i++)
 		items[i] = new TableItem(table, 0);
-	//should not cause a null pointer exception, bounds checks for table not implemented yet
-	if (fCheckOutOfRangeBehaviour) {
-		try {
-			table.remove(2, 100);
-			fail("No exception thrown for illegal index range");
-		} 
-		catch (IllegalArgumentException e) {
-		}
-		assertEquals(new TableItem[] {items[0], items[1]}, table.getItems());
-	}
+	try {
+		table.remove(2, 100);
+		fail("No exception thrown for illegal index range");
+	} catch (IllegalArgumentException e) {}
+	assertEquals(items, table.getItems());
 	
 	makeCleanEnvironment(false);
 
 	items = new TableItem[number];
 	for (int i = 0; i < number; i++)
 		items[i] = new TableItem(table, 0);
-	// should not cause a null pointer exception, bounds checks for table not implemented yet
-	if (fCheckOutOfRangeBehaviour) {
-		try {
-			table.remove(2, number);
-			fail("No exception thrown for illegal index range");
-		}
-		catch (IllegalArgumentException e) {
-		}
-		assertEquals(new TableItem[] {items[0], items[1]}, table.getItems());
-	}
+	try {
+		table.remove(2, number);
+		fail("No exception thrown for illegal index range");
+	} catch (IllegalArgumentException e) {}
+	assertEquals(items, table.getItems());
 	
 	makeCleanEnvironment(false);
 	
@@ -800,41 +785,28 @@ public void test_removeII() {
 
 	for (int i = 0; i < number; i++)
 		items[i] = new TableItem(table, 0);
-	// should not cause a null pointer exception, bounds checks for table not implemented yet
-	if (fCheckOutOfRangeBehaviour) {
-		try {
-			table.remove(-20, -10);
-			fail("No exception thrown for illegal index range");
-		} 
-		catch (IllegalArgumentException e) {
-		}
-		assertEquals(items, table.getItems());
-	}
+	try {
+		table.remove(-20, -10);
+		fail("No exception thrown for illegal index range");
+	} catch (IllegalArgumentException e) {}
+	assertEquals(items, table.getItems());
 	
 	makeCleanEnvironment(false);
 	
 	for (int i = 0; i < number; i++)
 		items[i] = new TableItem(table, 0);
-	// should not cause a null pointer exception, bounds checks for table not implemented yet
-	if (fCheckOutOfRangeBehaviour) {
-		try {
-			table.remove(20, 40);
-			fail("No exception thrown for illegal index range");
-		}
-		catch (IllegalArgumentException e) {
-		}
-		assertEquals(items, table.getItems());
-	}
+	try {
+		table.remove(20, 40);
+		fail("No exception thrown for illegal index range");
+	} catch (IllegalArgumentException e) {}
+	assertEquals(items, table.getItems());
 	
 	makeCleanEnvironment(false);
 	
 	for (int i = 0; i < number; i++)
 		items[i] = new TableItem(table, 0);
-	// should not cause a null pointer exception, bounds checks for table not implemented yet
-	if (fCheckOutOfRangeBehaviour) {
-		table.remove(200, 40);
-		assertEquals(items, table.getItems());
-	}
+	table.remove(200, 40);
+	assertEquals(items, table.getItems());
 
 	makeCleanEnvironment(false);
 	
@@ -862,15 +834,10 @@ public void test_removeII() {
 	for (int i = 0; i < number; i++)
 		items[i] = new TableItem(table, 0);
 	assertEquals(number, table.getItemCount());
-	// should not cause a null pointer exception, bounds checks for table not implemented yet
-	if (fCheckOutOfRangeBehaviour) {
-		try {
-			table.remove(-10, 2);
-			fail("No exception thrown for illegal index range");
-		}
-		catch (IllegalArgumentException e) {
-		}
-	}
+	try {
+		table.remove(-10, 2);
+		fail("No exception thrown for illegal index range");
+	} catch (IllegalArgumentException e) {}
 	assertEquals(number, table.getItemCount());
 	if (fCheckSWTPolicy) {
 		table.remove(10, 2);
@@ -879,16 +846,12 @@ public void test_removeII() {
 	table.remove(0, 2);
 	assertEquals(number - 3, table.getItemCount());
 	assertEquals(new TableItem[] {items[3], items[4]}, table.getItems());
-	if (fCheckOutOfRangeBehaviour) {
-		try {
-			table.remove(1, 200);
-			fail("No exception thrown for illegal index range");
-		}
-		catch (IllegalArgumentException e) {
-		}
-		assertEquals(1, table.getItemCount());
-		assertEquals(new TableItem[] {items[3]}, table.getItems());
-	}
+	try {
+		table.remove(1, 200);
+		fail("No exception thrown for illegal index range");
+	} catch (IllegalArgumentException e) {}
+	assertEquals(number - 3, table.getItemCount());
+	assertEquals(new TableItem[] {items[3], items[4]}, table.getItems());
 	
 	makeCleanEnvironment(false);
 	
@@ -902,29 +865,19 @@ public void test_removeII() {
 	
 	for (int i = 0; i < number; i++)
 		items[i] = new TableItem(table, 0);
-	// should not cause a null pointer exception, bounds checks for table not implemented yet
-	if (fCheckOutOfRangeBehaviour) {
-		try {
-			table.remove(number, number);
-			fail("No exception thrown for illegal index range");
-		}
-		catch (IllegalArgumentException e) {
-		}
-	}
+	try {
+		table.remove(number, number);
+		fail("No exception thrown for illegal index range");
+	} catch (IllegalArgumentException e) {}
 
 	makeCleanEnvironment(false);
 	
 	for (int i = 0; i < number; i++)
 		items[i] = new TableItem(table, 0);
-	// should not cause a null pointer exception, bounds checks for table not implemented yet
-	if (fCheckOutOfRangeBehaviour) {
-		try {
-			table.remove(number, number + 100);
-			fail("No exception thrown for illegal index range");
-		}
-		catch (IllegalArgumentException e) {
-		}
-	}
+	try {
+		table.remove(number, number + 100);
+		fail("No exception thrown for illegal index range");
+	} catch (IllegalArgumentException e) {}
 	
 	makeCleanEnvironment(false);
 	
@@ -932,7 +885,6 @@ public void test_removeII() {
 	items = new TableItem[number];
 	for (int i = 0; i < number; i++)
 		items[i] = new TableItem(table, 0);
-
 
 	table.remove(new int[] {2, 1, 0, 5, 5});
 	assertEquals(number-4, table.getItemCount());
