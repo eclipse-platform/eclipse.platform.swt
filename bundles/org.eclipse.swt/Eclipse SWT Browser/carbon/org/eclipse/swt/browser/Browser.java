@@ -76,6 +76,16 @@ public String getUrl() {
 	return null;
 }
 
+public boolean isBackEnabled() {
+	checkWidget();
+	return false;
+}
+
+public boolean isForwardEnabled() {
+	checkWidget();
+	return false;
+}
+
 public void refresh() {
 	checkWidget();
 }

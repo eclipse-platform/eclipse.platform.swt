@@ -430,6 +430,16 @@ public String getUrl() {
 	return url;
 }
 
+public boolean isBackEnabled() {
+	checkWidget();
+	return true;
+}
+
+public boolean isForwardEnabled() {
+	checkWidget();
+	return true;
+}
+
 void onDispose() {
 	OS.PtDestroyWidget(webHandle);
 	webHandle = 0;
