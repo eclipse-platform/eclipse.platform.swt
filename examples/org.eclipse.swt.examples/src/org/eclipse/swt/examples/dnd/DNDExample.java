@@ -34,6 +34,7 @@ public class DNDExample {
 	private boolean dragEnabled = false;
 	
 	private int dropOperation = 0;
+	private int dropFeedback = 0;
 	private int dropDefaultOperation = 0;
 	private Transfer[] dropTypes = new Transfer[0];
 	private DropTarget dropTarget;
@@ -672,6 +673,7 @@ private void createDropTarget() {
 		}
 		public void dragOver(DropTargetEvent event) {
 			dropConsole.append(">>dragOver\n");
+			event.feedback = dropFeedback;
 			printEvent(event);
 		}
 		public void drop(DropTargetEvent event) {
@@ -745,8 +747,10 @@ private void createDropTarget() {
 				}
 				case TREE: {
 					Tree tree = (Tree)dropControl;
+					Point p = event.display.map(null, tree, event.x, event.y);
+					TreeItem parentItem = tree.getItem(p);
 					for(int i = 0; i < strings.length; i++) {
-						TreeItem item = new TreeItem(tree, SWT.NONE);
+						TreeItem item = parentItem != null ? new TreeItem(parentItem, SWT.NONE) : new TreeItem(tree, SWT.NONE);
 						item.setText(strings[i]);
 					}
 					break;
@@ -775,6 +779,75 @@ private void createDropTarget() {
 		public void dropAccept(DropTargetEvent event) {
 			dropConsole.append(">>dropAccept\n");
 			printEvent(event);
+		}
+	});
+}
+
+private void createFeedbackTypes(Group parent) {
+	parent.setLayout(new RowLayout(SWT.VERTICAL));
+	Button b = new Button(parent, SWT.CHECK);
+	b.setText("FEEDBACK_SELECT");
+	b.addSelectionListener(new SelectionAdapter() {
+		public void widgetSelected(SelectionEvent e) {
+			Button b = (Button)e.widget;
+			if (b.getSelection()) {
+				dropFeedback |= DND.FEEDBACK_SELECT;			
+			} else {
+				dropFeedback &= DND.FEEDBACK_SELECT;
+			}
+		}
+	});
+	
+	b = new Button(parent, SWT.CHECK);
+	b.setText("FEEDBACK_SCROLL");
+	b.addSelectionListener(new SelectionAdapter() {
+		public void widgetSelected(SelectionEvent e) {
+			Button b = (Button)e.widget;
+			if (b.getSelection()) {
+				dropFeedback |= DND.FEEDBACK_SCROLL;			
+			} else {
+				dropFeedback &= DND.FEEDBACK_SCROLL;
+			}
+		}
+	});
+	
+	
+	b = new Button(parent, SWT.CHECK);
+	b.setText("FEEDBACK_INSERT_BEFORE");
+	b.addSelectionListener(new SelectionAdapter() {
+		public void widgetSelected(SelectionEvent e) {
+			Button b = (Button)e.widget;
+			if (b.getSelection()) {
+				dropFeedback |= DND.FEEDBACK_INSERT_BEFORE;			
+			} else {
+				dropFeedback &= DND.FEEDBACK_INSERT_BEFORE;
+			}
+		}
+	});
+	
+	b = new Button(parent, SWT.CHECK);
+	b.setText("FEEDBACK_INSERT_AFTER");
+	b.addSelectionListener(new SelectionAdapter() {
+		public void widgetSelected(SelectionEvent e) {
+			Button b = (Button)e.widget;
+			if (b.getSelection()) {
+				dropFeedback |= DND.FEEDBACK_INSERT_AFTER;
+			} else {
+				dropFeedback &= DND.FEEDBACK_INSERT_AFTER;
+			}
+		}
+	});
+	
+	b = new Button(parent, SWT.CHECK);
+	b.setText("FEEDBACK_EXPAND");
+	b.addSelectionListener(new SelectionAdapter() {
+		public void widgetSelected(SelectionEvent e) {
+			Button b = (Button)e.widget;
+			if (b.getSelection()) {
+				dropFeedback |= DND.FEEDBACK_EXPAND;			
+			} else {
+				dropFeedback &= DND.FEEDBACK_EXPAND;
+			}
 		}
 	});
 }
@@ -1041,6 +1114,10 @@ public void open(Display display) {
 	dropTypesGroup.setText("Transfer Type(s):");
 	createDropTypes(dropTypesGroup);
 	
+	Group feedbackTypesGroup = new Group(parent, SWT.NONE);
+	feedbackTypesGroup.setText("Feedback Type(s):");
+	createFeedbackTypes(feedbackTypesGroup);
+	
 	dropConsole = new Text(parent, SWT.READ_ONLY | SWT.BORDER |SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
 	menu = new Menu (shell, SWT.POP_UP);
 	item = new MenuItem (menu, SWT.PUSH);
@@ -1077,7 +1154,6 @@ public void open(Display display) {
 	data.top = new FormAttachment(dragWidgetGroup, 10);
 	data.left = new FormAttachment(0, 10);
 	data.right = new FormAttachment(50, -10);
-	//data.bottom = new FormAttachment(dropTypesGroup, -10);
 	dragOperationsGroup.setLayoutData(data);
 	
 	data = new FormData();
@@ -1115,11 +1191,16 @@ public void open(Display display) {
 	data.top = new FormAttachment(dropOperationsGroup, 10);
 	data.left = new FormAttachment(dragTypesGroup, 10);
 	data.right = new FormAttachment(100, -10);
-	//data.bottom = new FormAttachment(dragConsole, -10);
 	dropTypesGroup.setLayoutData(data);
 	
 	data = new FormData();
 	data.top = new FormAttachment(dropTypesGroup, 10);
+	data.left = new FormAttachment(dragTypesGroup, 10);
+	data.right = new FormAttachment(100, -10);
+	feedbackTypesGroup.setLayoutData(data);
+	
+	data = new FormData();
+	data.top = new FormAttachment(feedbackTypesGroup, 10);
 	data.bottom = new FormAttachment(100, -10);
 	data.left = new FormAttachment(50, 10);
 	data.right = new FormAttachment(100, -10);
