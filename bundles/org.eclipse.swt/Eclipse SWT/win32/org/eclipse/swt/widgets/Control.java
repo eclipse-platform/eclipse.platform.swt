@@ -3470,22 +3470,7 @@ LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 }
 
 LRESULT WM_MOUSEWHEEL (int wParam, int lParam) {
-	if (hooks (SWT.MouseWheel) || filters (SWT.MouseWheel)) {
-		int delta = wParam >> 16;
-		Event event = new Event ();
-		int [] value = new int [1];
-		OS.SystemParametersInfo (OS.SPI_GETWHEELSCROLLLINES, 0, value, 0);
-		if (value [0] == OS.WHEEL_PAGESCROLL) {
-			event.detail = SWT.SCROLL_PAGE;
-			event.count = delta / OS.WHEEL_DELTA;
-		} else {
-			event.detail = SWT.SCROLL_LINE;
-			event.count = value [0] * delta / OS.WHEEL_DELTA;
-		}
-		sendEvent (SWT.MouseWheel, event);
-		if (!event.doit) return LRESULT.ZERO;
-	}
-	return null;
+	return wmMouseWheel (handle, wParam, lParam);
 }
 
 LRESULT WM_MOVE (int wParam, int lParam) {

@@ -849,31 +849,30 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam) {
 
 boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 	sendEvent (type, event);
-	// widget could be disposed at this point
-	
-	/*
-	* It is possible (but unlikely), that application
-	* code could have disposed the widget in the key
-	* events.  If this happens, end the processing of
-	* the key by returning false.
-	*/
 	if (isDisposed ()) return false;
 	return event.doit;
 }
 
 boolean sendMouseEvent (int type, int button, int hwnd, int msg, int wParam, int lParam) {
+	return sendMouseEvent (type, button, 0, 0, false, hwnd, msg, wParam, lParam);
+}
+
+boolean sendMouseEvent (int type, int button, int count, int detail, boolean send, int hwnd, int msg, int wParam, int lParam) {
 	Event event = new Event ();
 	event.button = button;
+	event.detail = detail;
+	event.count = count;
 	event.x = (short) (lParam & 0xFFFF);
 	event.y = (short) (lParam >> 16);
 	setInputState (event, type);
 	mapEvent (hwnd, event);
-	return sendMouseEvent (type, hwnd, msg, wParam, lParam, event);
-}
-
-boolean sendMouseEvent (int type, int hwnd, int msg, int wParam, int lParam, Event event) {
-	postEvent (type, event);
-	return true;
+	if (send) {
+		sendEvent (type, event);
+		if (isDisposed ()) return false;
+	} else {
+		postEvent (type, event);
+	}
+	return event.doit;
 }
 
 /**
@@ -1756,6 +1755,29 @@ LRESULT wmMouseMove (int hwnd, int wParam, int lParam) {
 		}
 		display.lastMouse = pos;
 		sendMouseEvent (SWT.MouseMove, 0, hwnd, OS.WM_MOUSEMOVE, wParam, lParam);
+	}
+	return null;
+}
+
+LRESULT wmMouseWheel (int hwnd, int wParam, int lParam) {
+	int delta = wParam >> 16;
+	int [] value = new int [1];
+	int count, detail;
+	OS.SystemParametersInfo (OS.SPI_GETWHEELSCROLLLINES, 0, value, 0);
+	if (value [0] == OS.WHEEL_PAGESCROLL) {
+		detail = SWT.SCROLL_PAGE;
+		count = delta / OS.WHEEL_DELTA;
+	} else {
+		detail = SWT.SCROLL_LINE;
+		count = value [0] * delta / OS.WHEEL_DELTA;
+	}
+	POINT pt = new POINT ();
+	pt.x = (short) (lParam & 0xFFFF);
+	pt.y = (short) (lParam >> 16); 
+	OS.ScreenToClient (hwnd, pt);
+	lParam = pt.x | (pt.y << 16);
+	if (!sendMouseEvent (SWT.MouseWheel, 0, count, detail, true, hwnd, OS.WM_MOUSEWHEEL, wParam, lParam)) {
+		return LRESULT.ZERO;
 	}
 	return null;
 }
