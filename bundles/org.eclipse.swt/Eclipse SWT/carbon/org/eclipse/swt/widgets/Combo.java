@@ -10,6 +10,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.dnd.*;
 import org.eclipse.swt.internal.carbon.*;
 
 /**
@@ -51,16 +52,13 @@ import org.eclipse.swt.internal.carbon.*;
 public /*final*/ class Combo extends Composite {
 
 	// AW
-	private int fMenuHandle;
-	private int fTextLimit= LIMIT;
-	private int fPopupButton;
-	private int fTX;
-	private int fFrameID;
-	private Rectangle fFrameRect;
+	private static final int FOCUS_BORDER= 3;
+	private static final int MARGIN= 2;
 	
 	private static int fgCommandID= 6000;
-	private static final int FOCUS_BORDER= 3;
-	private static final int BUTTON_WIDTH= 22;
+
+	private int fMenuHandle;
+	private int fTextLimit= LIMIT;
 	// AW
 	/**
 	 * the operating system limit for the number of characters
@@ -77,9 +75,6 @@ public /*final*/ class Combo extends Composite {
 		LIMIT = 0x7FFFFFFF;
 	}
 
-	/* AW
-	boolean ignoreSelect;
-	*/
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -134,12 +129,18 @@ public Combo (Composite parent, int style) {
 public void add (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	
 	int sHandle= 0;
 	try {
 		sHandle= OS.CFStringCreateWithCharacters(string);
-		if (OS.AppendMenuItemTextWithCFString(fMenuHandle, sHandle, 0, fgCommandID++, null) != OS.kNoErr)
-			error (SWT.ERROR_ITEM_NOT_ADDED);
-		OS.SetControl32BitMaximum(fPopupButton, OS.CountMenuItems(fMenuHandle));	
+		if (fMenuHandle != 0) {
+			if (OS.AppendMenuItemTextWithCFString(fMenuHandle, sHandle, 0, fgCommandID++, null) != OS.kNoErr)
+				error (SWT.ERROR_ITEM_NOT_ADDED);
+			OS.SetControl32BitMaximum(handle, OS.CountMenuItems(fMenuHandle));	
+		} else {
+			if (OS.HIComboBoxAppendTextItem(handle, sHandle) != OS.kNoErr)
+				error (SWT.ERROR_ITEM_NOT_ADDED);
+		}
 	} finally {
 		if (sHandle != 0)
 			OS.CFRelease(sHandle);
@@ -176,31 +177,16 @@ public void add (String string, int index) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (index == -1) error (SWT.ERROR_INVALID_RANGE);
 
-	/*
-	* Feature in Motif.  When an index is out of range,
-	* the list widget adds the item at the end.  This
-	* behavior is not wrong but it is unwanted.  The
-	* fix is to check the range before adding the item.
-	*/
-    /* AW
-	int [] argList = {OS.XmNitemCount, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	if (!(0 <= index && index <= argList [1])) {
-		error (SWT.ERROR_INVALID_RANGE);
-	}
-	byte [] buffer = Converter.wcsToMbcs (getCodePage (), encodeString(string), true);
-	int xmString = OS.XmStringCreateLocalized (buffer);
-	if (xmString == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
-	OS.XmComboBoxAddItem(handle, xmString, index + 1, false);
-	OS.XmStringFree (xmString);
-    */
-	
 	int sHandle= 0;
 	try {
 		sHandle= OS.CFStringCreateWithCharacters(string);
-		if (OS.InsertMenuItemTextWithCFString(fMenuHandle, sHandle, (short)index, 0, fgCommandID++) != OS.kNoErr)
-			error (SWT.ERROR_ITEM_NOT_ADDED);
-		OS.SetControl32BitMaximum(fPopupButton, OS.CountMenuItems(fMenuHandle));	
+		if (fMenuHandle != 0) {
+			if (OS.InsertMenuItemTextWithCFString(fMenuHandle, sHandle, (short)index, 0, fgCommandID++) != OS.kNoErr)
+				error (SWT.ERROR_ITEM_NOT_ADDED);
+			OS.SetControl32BitMaximum(handle, OS.CountMenuItems(fMenuHandle));	
+		} else {
+			OS.HIComboBoxInsertTextItemAtIndex(handle, index, sHandle);
+		}
 	} finally {
 		if (sHandle != 0)
 			OS.CFRelease(sHandle);
@@ -317,15 +303,8 @@ protected void checkSubclass () {
  */
 public void clearSelection () {
 	checkWidget();
-    /* AW
-	int xDisplay = OS.XtDisplay (handle);
-	if (xDisplay == 0) return;
-	int [] argList = {OS.XmNtextField, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	OS.XmTextClearSelection (argList[1], OS.XtLastTimestampProcessed (xDisplay));
-    */
-	if (fTX != 0)
-		OS.TXNSetSelection(fTX, OS.kTXNStartOffset, OS.kTXNStartOffset);	// AW: wrong
+	if (fMenuHandle == 0)
+		OS.SetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, new short[] { 0, 0 });
 }
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
@@ -362,22 +341,29 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (hHint != SWT.DEFAULT) height = hHint;
 	if (wHint != SWT.DEFAULT) width = wHint;
     */
+		
+	int width = wHint;
+	int height = hHint;
 	
-	Point e= MacUtil.computeSize(fPopupButton);
-	int width= e.x;
-	int height= e.y;
-	if ((style & SWT.READ_ONLY) == 0) {
-		int[] textBounds= new int[4];
-		OS.TXNGetRectBounds(fTX, null, null, textBounds);
-		height= textBounds[2]-textBounds[0];
+	if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
+		
+		Point e= MacUtil.computeSize(handle);
+		if (wHint == SWT.DEFAULT)
+			width= e.x;
+		if (hHint == SWT.DEFAULT)
+			height= e.y;
 	}
 	
-	width+= 2*FOCUS_BORDER;
-	height+= 2*FOCUS_BORDER;
+	width= 150;
+	height--;
 	
-	if (hHint != SWT.DEFAULT) height = hHint;
-	if (wHint != SWT.DEFAULT) width = wHint;
-
+//	width += 2*MARGIN;
+//	height += 2*MARGIN;
+//	if ((style & SWT.BORDER) != 0) {
+		width += 2*FOCUS_BORDER;
+		height += 2*FOCUS_BORDER;
+//	}
+	
 	return new Point (width, height);
 }
 /**
@@ -395,63 +381,25 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
  */
 public void copy () {
 	checkWidget ();
-	OS.TXNCopy(fTX);
+	selectionToClipboard();
 }
 void createHandle (int index) {
 	state |= HANDLE;
-
-	/*
-	* Feature in Motif.  When items are added or removed
-	* from a combo, it may request and be granted, a new
-	* preferred size.  This behavior is unwanted.  The fix
-	* is to create a parent for the list that will disallow
-	* geometry requests.
-	*/
-	int parentHandle = parent.handle;
-    /* AW
-	int [] argList1 = {OS.XmNancestorSensitive, 1};
-	formHandle = OS.XmCreateForm (parentHandle, null, argList1, argList1.length / 2);
-	if (formHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	int comboBoxType = OS.XmDROP_DOWN_COMBO_BOX;
-	if ((style & SWT.SIMPLE) != 0) {
-		comboBoxType = OS.XmCOMBO_BOX;
-	} else if ((style & SWT.READ_ONLY) != 0) {
-		comboBoxType = OS.XmDROP_DOWN_LIST;
-	}
-    */
-
-	handle= MacUtil.createDrawingArea(parentHandle, 0, 0, 0);		
-	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-
-	fPopupButton= MacUtil.newControl(handle, (short)0, (short)-12345, (short)-1, (short)(OS.kControlPopupButtonProc+1));
-	if (fPopupButton == 0) error (SWT.ERROR_NO_HANDLES);
-	
-	int[] menuRef= new int[1];
-	OS.CreateNewMenu(20000, 0, menuRef);
-	fMenuHandle= menuRef[0];
-	if (fMenuHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.SetControlPopupMenuHandle(fPopupButton, fMenuHandle);
-
-	if ((style & SWT.READ_ONLY) == 0) {
-		int frameOptions= OS.kTXNDontDrawCaretWhenInactiveMask;
-		frameOptions |= OS.kTXNSingleLineOnlyMask;
-		
-		int wHandle= OS.GetControlOwner(handle);
-		MacRect bounds= new MacRect();
-		OS.GetControlBounds(handle, bounds.getData());
-		int frameType= OS.kTXNTextEditStyleFrameType;
-		int iFileType= OS.kTXNUnicodeTextFile;
-		int iPermanentEncoding= OS.kTXNSystemDefaultEncoding;
-		int[] tnxObject= new int[1];
-		int[] frameID= new int[1];
-				
-		int status= OS.TXNNewObject(0, wHandle, bounds.getData(), frameOptions, frameType, iFileType, iPermanentEncoding,
-							tnxObject, frameID, 0);
-		if (status == 0) {		 
-			fTX= tnxObject[0];
-			fFrameID= frameID[0];
-			OS.TXNActivate(fTX, fFrameID, OS.kScrollBarsSyncWithFocus);
-		}
+	if ((style & SWT.READ_ONLY) != 0) {
+		handle= MacUtil.newControl(parent.handle, (short)0, (short)-12345, (short)-1, (short)(OS.kControlPopupButtonProc+1));
+		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+		int[] menuRef= new int[1];
+		OS.CreateNewMenu(20000, 0, menuRef);
+		fMenuHandle= menuRef[0];
+		if (fMenuHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		OS.SetControlPopupMenuHandle(handle, fMenuHandle);
+	} else {
+	    int[] outComboBox= new int[1];
+		OS.HIComboBoxCreate(outComboBox, OS.kHIComboBoxAutoSizeListAttribute);
+		handle= outComboBox[0];
+		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+		MacUtil.addControl(handle, parent.handle);
+		OS.HIViewSetVisible(handle, true);
 	}
 }
 /**
@@ -473,12 +421,21 @@ void createHandle (int index) {
  */
 public void cut () {
 	checkWidget ();
-	OS.TXNCut(fTX);
+	selectionToClipboard();
+	_replaceTextSelection("");
 }
-void deregister () {
-	super.deregister ();
-	if (fPopupButton != 0) WidgetTable.remove (fPopupButton);
-}	
+/* AW
+void enableWidget (boolean enabled) {
+	super.enableWidget (enabled);
+	int [] argList = {
+		OS.XmNlist, 0,
+		OS.XmNtextField, 0,
+	};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	enableHandle (enabled, argList [1]);
+	enableHandle (enabled, argList [3]);
+}
+*/
 /**
  * Deselects the item at the given zero-relative index in the receiver's 
  * list.  If the item at the index was already deselected, it remains
@@ -560,13 +517,7 @@ public void deselectAll () {
  */
 public String getItem (int index) {
 	checkWidget();
-	int itemCount= OS.CountMenuItems(fMenuHandle);
-	if (!(0 <= index && index < itemCount)) {
-		error (SWT.ERROR_INVALID_RANGE);
-	}
-	int[] sHandle= new int[1];
-	OS.CopyMenuItemTextAsCFString(fMenuHandle, (short)(index+1), sHandle);
-	return MacUtil.getStringAndRelease(sHandle[0]);
+	return _getItem(index);
 }
 /**
  * Returns the number of items contained in the receiver's list.
@@ -583,7 +534,7 @@ public String getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget();
-	return OS.CountMenuItems(fMenuHandle);
+	return _getItemCount();
 }
 /**
  * Returns the height of the area which would be used to
@@ -612,7 +563,7 @@ public int getItemHeight () {
     /* AW
 	return getFontHeight () + spacing + (2 * highlight);
     */
-    return MacUtil.computeSize(fPopupButton).y;
+    return MacUtil.computeSize(handle).y;
 }
 /**
  * Returns an array of <code>String</code>s which are the items
@@ -635,13 +586,10 @@ public int getItemHeight () {
  */
 public String [] getItems () {
 	checkWidget();
-	int itemCount= OS.CountMenuItems(fMenuHandle);
-	String [] result = new String [itemCount];
-	int[] sHandle= new int[1];
-	for (int i= 0; i < itemCount; i++) {
-		OS.CopyMenuItemTextAsCFString(fMenuHandle, (short)(i+1), sHandle);
-		result[i]= MacUtil.getStringAndRelease(sHandle[0]);
-	}
+	int itemCount= _getItemCount();
+	String[] result= new String [itemCount];
+	for (int i= 0; i < itemCount; i++)
+		result[i]= _getItem(i);
 	return result;
 }
 /**
@@ -660,17 +608,14 @@ public String [] getItems () {
  */
 public Point getSelection () {
 	checkWidget();
-	int [] start = new int [1], end = new int [1];
-    /* AW
-	int [] argList = {OS.XmNtextField, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	OS.XmTextGetSelectionPosition (argList[1], start, end);
-	if (start [0] == end [0]) {
-		start [0] = end [0] = OS.XmTextGetInsertionPosition (argList[1]);
+ 	Point selection= new Point(0, 0);
+	if (fMenuHandle == 0) {
+		short[] s= new short[2];
+		OS.GetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, s);
+		selection.x= (short) s[0];
+		selection.y= (short) s[1];
 	}
-    */
-	System.out.println("Combo.getSelection: nyi");
-	return new Point (start [0], end [0]);
+	return selection;
 }
 /**
  * Returns the zero-relative index of the item which is currently
@@ -685,7 +630,9 @@ public Point getSelection () {
  */
 public int getSelectionIndex () {
 	checkWidget();
-    return OS.GetControlValue(fPopupButton)-1;
+	if (fMenuHandle != 0)
+    	return OS.GetControlValue(handle)-1;
+    return indexOf(getText());
 }
 /**
  * Returns a string containing a copy of the contents of the
@@ -700,35 +647,15 @@ public int getSelectionIndex () {
  */
 public String getText () {
 	checkWidget();
-    /* AW
-	int [] argList = {OS.XmNtextField, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-
-	int ptr = OS.XmTextGetString (argList[1]);
-	if (ptr == 0) return "";
-	int length = OS.strlen (ptr);
-	byte [] buffer = new byte [length];
-	OS.memmove (buffer, ptr, length);
-	OS.XtFree (ptr);
-	return decodeString(new String (Converter.mbcsToWcs (getCodePage (), buffer)));
-    */
-	
-	String s= "";
-	if (fTX != 0) {
-		int[] dataHandle= new int[1];
-		OS.TXNGetData(fTX, OS.kTXNStartOffset, OS.kTXNEndOffset, dataHandle);
-		int length= OS.GetHandleSize(dataHandle[0]);
-		if (length <= 0)
-			return s;
-		char[] chars= new char[length/2];
-		OS.getHandleData(dataHandle[0], chars);
-		OS.DisposeHandle(dataHandle[0]);
-		return new String(chars);
-	}	
-	int index= getSelectionIndex();
-	if (index >= 0)
-		s= getItem(index);
-    return s;
+	if (fMenuHandle != 0) {
+		int index= getSelectionIndex();
+		if (index >= 0)
+			return _getItem(index);
+		return "";
+	}
+	int[] t= new int[1];
+	OS.GetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, t);
+	return MacUtil.getStringAndRelease(t[0]);
 }
 /**
  * Returns the height of the receivers's text field.
@@ -811,11 +738,6 @@ void hookEvents () {
 	OS.XtAddCallback (argList[1], OS.XmNactivateCallback, windowProc, SWT.DefaultSelection);
 	OS.XtAddCallback (argList[1], OS.XmNvalueChangedCallback, windowProc, SWT.Modify);
     */
-	Display display= getDisplay();		
-	if (fTX != 0) {
-		OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneDrawProcTag, display.fUserPaneDrawProc);
-		OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneHitTestProcTag, display.fUserPaneHitTestProc);
-	}
 }
 /**
  * Searches the receiver's list starting at the first item
@@ -837,11 +759,9 @@ void hookEvents () {
 public int indexOf (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int itemCount= OS.CountMenuItems(fMenuHandle);
-	int[] sHandle= new int[1];
+	int itemCount= _getItemCount();
 	for (int i= 0; i < itemCount; i++) {
-		OS.CopyMenuItemTextAsCFString(fMenuHandle, (short)(i+1), sHandle);
-		String s= MacUtil.getStringAndRelease(sHandle[0]);
+		String s= _getItem(i);
 		if (s != null && string.equals(s))
 			return i;
 	}
@@ -868,12 +788,10 @@ public int indexOf (String string) {
 public int indexOf (String string, int start) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int itemCount= OS.CountMenuItems(fMenuHandle);
+	int itemCount= _getItemCount();
 	if (!((0 <= start) && (start < itemCount))) return -1;
-	int[] sHandle= new int[1];
 	for (int i= start; i < itemCount; i++) {
-		OS.CopyMenuItemTextAsCFString(fMenuHandle, (short)(i+1), sHandle);
-		String s= MacUtil.getStringAndRelease(sHandle[0]);
+		String s= _getItem(i);
 		if (string.equals(s))
 			return i;
 	}
@@ -895,64 +813,14 @@ public int indexOf (String string, int start) {
  */
 public void paste () {
 	checkWidget ();
-	OS.TXNPaste(fTX);
-}
-int processFocusIn () {
-	super.processFocusIn ();
-	// widget could be disposed at this point
-	if (handle == 0) return 0;
-	if (fTX != 0) {
-		OS.TXNFocus(fTX, true);
-		//Text.fgTextInFocus= this;
-		drawFrame(null);
+	if (fMenuHandle == 0) {
+		Clipboard clipboard= new Clipboard(getDisplay());
+		TextTransfer textTransfer= TextTransfer.getInstance();
+		String clipBoard= (String)clipboard.getContents(textTransfer);
+		clipboard.dispose();
+		
+		_replaceTextSelection(clipBoard);
 	}
-	return 0;
-}
-int processFocusOut () {
-	super.processFocusOut ();
-	// widget could be disposed at this point
-	if (handle == 0) return 0;
-	if (fTX != 0) {
-		//Text.fgTextInFocus= null;
-		OS.TXNFocus(fTX, false);
-		drawFrame(null);
-	}
-	return 0;
-}
-int processMouseDown (Object callData) {
-	if (callData instanceof MacEvent) {
-		MacEvent me= (MacEvent) callData;
-		int macEvent[]= me.toOldMacEvent();	
-		if (macEvent != null)
-			OS.TXNClick(fTX, macEvent);
-	}
-	return 0;
-}
-int processPaint (Object callData) {
-	syncBounds(null);
-	drawFrame(callData);
-	return 0;
-}
-int processSelection (Object callData) {
-	int index= getSelectionIndex();
-	if (/* AW ignoreSelect || */ index == -1)
-		return 0;
-
-	if ((style & SWT.READ_ONLY) == 0) {
-		String string= getItem(index);
-		int l= string.length();
-		char[] chars= new char[l];
-		string.getChars(0, l, chars, 0); 
-		OS.TXNSetData(fTX, chars, OS.kTXNStartOffset, OS.kTXNEndOffset);
-		OS.TXNSetSelection(fTX, OS.kTXNStartOffset, OS.kTXNEndOffset);
-		//sendEvent(SWT.Modify);
-	}
-	
-	return super.processSelection(callData);
-}
-void register () {
-	super.register ();
-	if (fPopupButton != 0) WidgetTable.put (fPopupButton, this);
 }
 /**
  * Removes the item from the receiver's list at the given
@@ -974,25 +842,16 @@ void register () {
 public void remove (int index) {
 	checkWidget();
 	if (index == -1) error (SWT.ERROR_INVALID_RANGE);
-	/*
-	* Feature in Motif.  An index out of range handled
-	* correctly by the list widget but causes an unwanted
-	* Xm Warning.  The fix is to check the range before
-	* deleting an item.
-	*/
-    /* AW
-	int [] argList = {OS.XmNitemCount, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	*/
-	int itemCount= OS.CountMenuItems(fMenuHandle);
+	int itemCount= _getItemCount();
 	if (!(0 <= index && index < itemCount)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	/* AW
-	OS.XmComboBoxDeletePos (handle, index + 1);
-    */
-	OS.DeleteMenuItems(fMenuHandle, (short)(index+1), 1);
-	OS.SetControl32BitMaximum(fPopupButton, OS.CountMenuItems(fMenuHandle));	
+   	if (fMenuHandle != 0) {
+		OS.DeleteMenuItems(fMenuHandle, (short)(index+1), 1);
+		OS.SetControl32BitMaximum(handle, OS.CountMenuItems(fMenuHandle));
+   	} else {
+   		OS.HIComboBoxRemoveItemAtIndex(handle, index);
+   	}
 }
 /**
  * Removes the items from the receiver's list which are
@@ -1016,38 +875,19 @@ public void remove (int index) {
 public void remove (int start, int end) {
 	checkWidget();
 	if (start > end) return;
-	/*
-	* Feature in Motif.  An index out of range handled
-	* correctly by the list widget but causes an unwanted
-	* Xm Warning.  The fix is to check the range before
-	* deleting an item.
-	*/
-    /* AW
-	int [] argList = {OS.XmNitemCount, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	*/
-	int itemCount= OS.CountMenuItems(fMenuHandle);
+	int itemCount= _getItemCount();
 	if (!(0 <= start && start < itemCount)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
 	int newEnd = Math.min (end, itemCount - 1);
-	/* AW
-	for (int i = start; i <= newEnd; i++) {
-		OS.XmComboBoxDeletePos (handle, start + 1);
+	if (fMenuHandle != 0) {
+		OS.DeleteMenuItems(fMenuHandle, (short)(start+1), newEnd-start+1);
+		OS.SetControl32BitMaximum(handle, OS.CountMenuItems(fMenuHandle));
+	} else {
+		for (int i= end; i >= start; i--)
+  			OS.HIComboBoxRemoveItemAtIndex(handle, i);
 	}
-	if (end >= argList [1]) error (SWT.ERROR_INVALID_RANGE);
-    */
-	OS.DeleteMenuItems(fMenuHandle, (short)(start+1), newEnd-start+1);
-	OS.SetControl32BitMaximum(fPopupButton, OS.CountMenuItems(fMenuHandle));	
 }
-/* AW
-void register () {
-	super.register ();
-	int [] argList = {OS.XmNtextField, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	WidgetTable.put(argList[1], this);
-}
-*/
 /**
  * Searches the receiver's list starting at the first item
  * until an item is found that is equal to the argument, 
@@ -1070,28 +910,11 @@ void register () {
 public void remove (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-
-    /* AW
-	byte [] buffer = Converter.wcsToMbcs (getCodePage (), encodeString(string), true);
-	int xmString = OS.XmStringCreateLocalized (buffer);
-	if (xmString == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
-
-	int [] argList = {OS.XmNlist, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	int index = OS.XmListItemPos (argList[1], xmString);
-
-	OS.XmStringFree (xmString);
-	if (index == 0) error (SWT.ERROR_INVALID_ARGUMENT);
-	OS.XmComboBoxDeletePos (handle, index);
-    */
-	int itemCount= OS.CountMenuItems(fMenuHandle);
-	int[] sHandle= new int[1];
+	int itemCount= _getItemCount();
 	for (int i= 0; i < itemCount; i++) {
-		OS.CopyMenuItemTextAsCFString(fMenuHandle, (short)(i+1), sHandle);
-		String s= MacUtil.getStringAndRelease(sHandle[0]);
+		String s= _getItem(i);
 		if (s != null && string.equals(s)) {
-			OS.DeleteMenuItems(fMenuHandle, (short)(i+1), 1);
-			OS.SetControl32BitMaximum(fPopupButton, OS.CountMenuItems(fMenuHandle));	
+			remove(i);
 			return;
 		}
 	}
@@ -1107,26 +930,15 @@ public void remove (String string) {
  */
 public void removeAll () {
 	checkWidget();
-    /* AW
-	int [] argList = {OS.XmNtextField, 0, OS.XmNlist, 0, OS.XmNitemCount, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-
-	Display display = getDisplay ();
-	boolean warnings = display.getWarnings ();
-	display.setWarnings (false);
-	OS.XmTextSetString (argList[1], new byte[1]);
-	OS.XmTextSetInsertionPosition (argList[1], 0);
-	display.setWarnings(warnings);
-	OS.XmListDeselectAllItems (argList[3]);
-
-	for (int i = 0; i < argList[5]; i++) {
-		OS.XmComboBoxDeletePos(handle, 1);
-	}
-    */
-	int itemCount= OS.CountMenuItems(fMenuHandle);
+	int itemCount= _getItemCount();
 	if (itemCount > 0) {
-		OS.DeleteMenuItems(fMenuHandle, (short)1, itemCount);
-		OS.SetControl32BitMaximum(fPopupButton, OS.CountMenuItems(fMenuHandle));
+		if (fMenuHandle != 0) {
+			OS.DeleteMenuItems(fMenuHandle, (short)1, itemCount);
+			OS.SetControl32BitMaximum(handle, OS.CountMenuItems(fMenuHandle));
+		} else {
+			for (int i= itemCount-1; i >= 0; i--)
+  				OS.HIComboBoxRemoveItemAtIndex(handle, i);
+		}
 	}
 }
 /**
@@ -1190,45 +1002,18 @@ public void removeSelectionListener (SelectionListener listener) {
  */
 public void select (int index) {
 	checkWidget();
-    /* AW
-	if (index == -1) {
-		int [] argList = {OS.XmNtextField, 0, OS.XmNlist, 0};
-		OS.XtGetValues (handle, argList, argList.length / 2);
-		Display display = getDisplay ();
-		boolean warnings = display.getWarnings ();
-		display.setWarnings (false);
-		OS.XmTextSetString (argList[1], new byte[1]);
-		OS.XmTextSetInsertionPosition (argList[1], 0);
-		display.setWarnings (warnings);
-		OS.XmListDeselectAllItems (argList[3]);
-	} else {
-		int [] argList = {OS.XmNitemCount, 0};
-		OS.XtGetValues (handle, argList, argList.length / 2);
-		if (!(0 <= index && index < argList [1])) {
-			error (SWT.ERROR_INVALID_RANGE);
-		}
-		int [] argList2 = {OS.XmNselectedPosition, index};
-		ignoreSelect = true;
-		OS.XtSetValues(handle, argList2, argList2.length / 2);
-		ignoreSelect = false;
-	}
-    */
-	int itemCount= OS.CountMenuItems(fMenuHandle);
+	
+	int itemCount= _getItemCount();
 	if (!(0 <= index && index < itemCount)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
 	
-	OS.SetControl32BitValue(fPopupButton, index+1);
-	
-	if ((style & SWT.READ_ONLY) == 0) {
-		String string= getItem(index);
-		int l= string.length();
-		char[] chars= new char[l];
-		string.getChars(0, l, chars, 0); 
-		OS.TXNSetData(fTX, chars, OS.kTXNStartOffset, OS.kTXNEndOffset);
-		OS.TXNSetSelection(fTX, OS.kTXNStartOffset, OS.kTXNEndOffset);
-		OS.TXNShowSelection(fTX, false);
-		OS.TXNForceUpdate(fTX);
+	if (fMenuHandle != 0)
+		OS.SetControl32BitValue(handle, index+1);
+	else {
+		String string= _getItem(index);
+		_setText(string);
+		_selectAll();
 		//sendEvent(SWT.Modify);
 	}
 }
@@ -1282,8 +1067,13 @@ public void setItem (int index, String string) {
 	int sHandle= 0;
 	try {
 		sHandle= OS.CFStringCreateWithCharacters(string);
-		if (OS.SetMenuItemTextWithCFString(fMenuHandle, (short)(index+1), sHandle) != OS.kNoErr)
-			error (SWT.ERROR_ITEM_NOT_ADDED);
+		if (fMenuHandle != 0) {
+			if (OS.SetMenuItemTextWithCFString(fMenuHandle, (short)(index+1), sHandle) != OS.kNoErr)
+				error (SWT.ERROR_ITEM_NOT_ADDED);
+		} else {
+			OS.HIComboBoxInsertTextItemAtIndex(handle, index, sHandle);
+			OS.HIComboBoxRemoveItemAtIndex(handle, index+1);
+		}
 	} finally {
 		if (sHandle != 0)
 			OS.CFRelease(sHandle);
@@ -1332,21 +1122,39 @@ public void setItems (String [] items) {
 	if (index < items.length) error (SWT.ERROR_ITEM_NOT_ADDED);
     */
 	
-	for (int i= 0; i < items.length; i++) {
-		String string= items[i];
-		if (string == null)
-			break;
-		int sHandle= 0;
-		try {
-			sHandle= OS.CFStringCreateWithCharacters(string);
-			if (OS.AppendMenuItemTextWithCFString(fMenuHandle, sHandle, 0, fgCommandID++, null) != OS.kNoErr)
-				error (SWT.ERROR_ITEM_NOT_ADDED);
-		} finally {
-			if (sHandle != 0)
-				OS.CFRelease(sHandle);
+	if (fMenuHandle != 0) {
+		for (int i= 0; i < items.length; i++) {
+			String string= items[i];
+			if (string == null)
+				break;
+			int sHandle= 0;
+			try {
+				sHandle= OS.CFStringCreateWithCharacters(string);
+				if (OS.AppendMenuItemTextWithCFString(fMenuHandle, sHandle, 0, fgCommandID++, null) != OS.kNoErr)
+					error (SWT.ERROR_ITEM_NOT_ADDED);
+			} finally {
+				if (sHandle != 0)
+					OS.CFRelease(sHandle);
+			}
+		}
+		OS.SetControl32BitMaximum(handle, items.length);
+	} else {
+		removeAll();
+		for (int i= 0; i < items.length; i++) {
+			String string= items[i];
+			if (string == null)
+				break;
+			int sHandle= 0;
+			try {
+				sHandle= OS.CFStringCreateWithCharacters(string);
+				if (OS.HIComboBoxAppendTextItem(handle, sHandle) != OS.kNoErr)
+					error (SWT.ERROR_ITEM_NOT_ADDED);
+			} finally {
+				if (sHandle != 0)
+					OS.CFRelease(sHandle);
+			}
 		}
 	}
-	OS.SetControl32BitMaximum(fPopupButton, items.length);
 }
 /**
  * Sets the selection in the receiver's text field to the
@@ -1366,8 +1174,10 @@ public void setItems (String [] items) {
  */
 public void setSelection (Point selection) {
 	checkWidget();
-	if (fTX != 0)
-		OS.TXNSetSelection(fTX, selection.x, selection.y);
+	if (fMenuHandle == 0) {
+		short[] s= new short[] { (short)selection.x, (short)selection.y };
+		OS.SetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, s);
+	}
 }
 /**
 * Sets the widget size.
@@ -1407,10 +1217,14 @@ public void setText (String string) {
 		select(index);
 	} else {
 		if ((style & SWT.READ_ONLY) == 0) {
-			int l= string.length();
-			char[] chars= new char[l];
-			string.getChars(0, l, chars, 0); 
-			OS.TXNSetData(fTX, chars, OS.kTXNStartOffset, OS.kTXNEndOffset);
+			int sHandle= 0;
+			try {
+				sHandle= OS.CFStringCreateWithCharacters(string);
+				OS.SetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, sHandle);
+			} finally {
+				if (sHandle != 0)
+					OS.CFRelease(sHandle);
+			}
 			sendEvent(SWT.Modify);
 		}
 	}
@@ -1434,136 +1248,177 @@ public void setTextLimit (int limit) {
 	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
 	fTextLimit= limit;
 }
-/* AW
-void deregister () {
-	super.deregister ();
-	int [] argList = {OS.XmNtextField, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	WidgetTable.remove (argList[1]);
-}
-void enableWidget (boolean enabled) {
-	super.enableWidget (enabled);
-	int [] argList = {
-		OS.XmNlist, 0,
-		OS.XmNtextField, 0,
-	};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	enableHandle (enabled, argList [1]);
-	enableHandle (enabled, argList [3]);
-}
-*/
 
 ////////////////////////////////////////////////////////
 // Mac stuff
 ////////////////////////////////////////////////////////
 
+	private void _setText (String string) {
+		if ((style & SWT.READ_ONLY) == 0) {
+			int sHandle= 0;
+			try {
+				sHandle= OS.CFStringCreateWithCharacters(string);
+				OS.SetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, sHandle);
+			} finally {
+				if (sHandle != 0)
+					OS.CFRelease(sHandle);
+			}
+			sendEvent(SWT.Modify);
+		}
+	}
+
+	private int _getItemCount () {
+		if (fMenuHandle != 0)
+			return OS.CountMenuItems(fMenuHandle);
+		return OS.HIComboBoxGetItemCount(handle);
+	}
+	
+	private String _getItem (int index) {
+		int itemCount= _getItemCount();
+		if (!(0 <= index && index < itemCount)) {
+			error (SWT.ERROR_INVALID_RANGE);
+		}
+		int[] sHandle= new int[1];
+		int rc;
+		if (fMenuHandle != 0)
+			rc= OS.CopyMenuItemTextAsCFString(fMenuHandle, (short)(index+1), sHandle);
+		else
+			rc= OS.HIComboBoxCopyTextItemAtIndex(handle, index, sHandle);
+		if (rc != OS.kNoErr)
+			error(SWT.ERROR_CANNOT_GET_ITEM);
+		return MacUtil.getStringAndRelease(sHandle[0]);
+	}
+
 	/**
-	 * Overridden from Control. Takes care of shadow
+	 * Overridden from Control.
 	 * x and y are relative to window!
 	 */
 	void handleResize(int hndl, MacRect bounds) {
+		bounds.inset(FOCUS_BORDER, FOCUS_BORDER, FOCUS_BORDER, FOCUS_BORDER);
 		super.handleResize(hndl, bounds);
-		
-		// place the pulldown menu
-		int x= bounds.getX();
-		int y= bounds.getY();
-		int width= bounds.getWidth();
-		int height= bounds.getHeight();
-		if (fTX != 0) {
-			x= x+width-BUTTON_WIDTH;
-			y= y+(height-BUTTON_WIDTH)/2;
-			OS.SetControlBounds(fPopupButton, new MacRect(x, y, BUTTON_WIDTH, BUTTON_WIDTH).getData());
-		} else
-			OS.SetControlBounds(fPopupButton, new MacRect(x, y, width, height).getData());
-		
-		// place the text field
-		syncBounds(bounds);
+	}
+	
+	void internalGetControlBounds(int hndl, MacRect bounds) {
+		super.internalGetControlBounds(hndl, bounds);
+		bounds.inset(-FOCUS_BORDER, -FOCUS_BORDER, -FOCUS_BORDER, -FOCUS_BORDER);
 	}
 
-	private void syncBounds(MacRect b) {
+	private void _selectAll() {
+		String s= getText();
+		short[] selection= new short[] { 0, (short) s.length() };
+		OS.SetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, selection);
+	}
+	
+	int sendKeyEvent (int type, MacEvent mEvent, Event event) {
 		
-		if (fTX == 0)
-			return;
-	
-		if (b == null) {
-			b= new MacRect();
-			OS.GetControlBounds(handle, b.getData());
-		}
-	
-		int[] textBounds= new int[4];
-		OS.TXNGetRectBounds(fTX, null, null, textBounds);
-		int h= textBounds[2]-textBounds[0];
-		int x= b.getX() + FOCUS_BORDER + 1;
-		int y= b.getY() + (b.getHeight()-h)/2;
-		int w= b.getWidth() - BUTTON_WIDTH - 2*FOCUS_BORDER - 4;
-	
-		Rectangle oldRect= fFrameRect;
-		fFrameRect= new Rectangle(x, y, w, h);
-		if (oldRect == null || !oldRect.equals(fFrameRect)) {
-			OS.TXNSetFrameBounds(fTX, y, x, y+h, x+w, fFrameID);
-		}
-	
-		OS.TXNDraw(fTX, 0);
-	}
-	
-	private void drawFrame(Object callData) {
-		if (fFrameRect != null) {
+		/* AW: other platforms call super
+		LRESULT result = super.WM_CHAR (wParam, lParam);
+		if (result != null) return result;
+		*/
+		
+//		if (translateTraversal(mEvent))
+//			return 0;
 			
-			GC gc= new GC(this);
-			
-			int damageRegion= 0;
-			if (callData instanceof MacControlEvent)
-				damageRegion= ((MacControlEvent)callData).getDamageRegionHandle();
-				
-			try {
-				Rectangle r= gc.carbon_focus(damageRegion);
-				if (!r.isEmpty()) {
-					MacRect br= new MacRect();
-					OS.GetControlBounds(handle, br.getData());
-					
-					MacRect bounds= new MacRect(fFrameRect.x-br.getX(), fFrameRect.y-br.getY(),
-												fFrameRect.width, fFrameRect.height);
-					bounds.inset(-1, -1, -1, -1);
-					OS.DrawThemeEditTextFrame(bounds.getData(), OS.kThemeStateActive);
-					
-					OS.DrawThemeFocusRect(bounds.getData(), false);	// clear the background first
-					if (getDisplay().getFocusControl() == this)
-						OS.DrawThemeFocusRect(bounds.getData(), true);
-				}
-			} finally {
-				gc.carbon_unfocus();
-			}
-		}
-	}
-	
-	int sendKeyEvent(int type, int nextHandler, int eRefHandle) {
-
-		MacEvent mEvent= new MacEvent(eRefHandle);
 		int kind= mEvent.getKind();
-		if ((kind == OS.kEventRawKeyDown || kind == OS.kEventRawKeyRepeat) && (mEvent.getModifiers() & OS.cmdKey) != 0) {
-			int code= mEvent.getKeyCode();
-			switch (code) {
-			case 0:
-				OS.TXNSetSelection(fTX, OS.kTXNStartOffset, OS.kTXNEndOffset);
-				break;
-			case 7:
-				cut();
-				break;
-			case 8:
-				copy();
-				break;
-			case 9:
-				paste();
-				break;
-			default:
-				//System.out.println("key code: " + code);
-				break;
-			}
+		int mcc= mEvent.getMacCharCodes();
+		int code= mEvent.getKeyCode();
+
+		// return key -> DefaultSelection
+		if (mcc == SWT.CR) {
+			if (kind == OS.kEventRawKeyDown)
+				postEvent (SWT.DefaultSelection);
 			return OS.kNoErr;
 		}
+				
+		if ((mEvent.getModifiers() & OS.cmdKey) != 0) {
+			switch (code) {
+			case 0:	// select all
+				if (kind == OS.kEventRawKeyDown)
+					_selectAll();
+				return OS.kNoErr;
+			case 7:
+				if (kind == OS.kEventRawKeyDown)
+					cut();
+				return OS.kNoErr;
+			case 8:
+				if (kind == OS.kEventRawKeyDown)
+					copy();
+				return OS.kNoErr;
+			case 9:
+				if (kind == OS.kEventRawKeyDown || kind == OS.kEventRawKeyRepeat)
+					paste();
+				return OS.kNoErr;
+			default:
+				break;
+			}
+		}
 
-		int status= OS.CallNextEventHandler(nextHandler, eRefHandle);
-		sendEvent (SWT.Modify);
+		String oldText= getText();
+
+		int status= OS.CallNextEventHandler(mEvent.getNextHandler(), mEvent.getEventRef());
+		
+		if (kind == OS.kEventRawKeyDown) {
+			String newText= getText();
+			if (!oldText.equals(newText))
+				sendEvent (SWT.Modify);
+		}
+		
 		return status;
+	}
+	
+	private void selectionToClipboard() {
+		short[] s= new short[2];
+		OS.GetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, s);
+		if (s[0] != s[1]) {
+			int[] t= new int[1];
+			OS.GetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, t);
+			String txt= MacUtil.getStringAndRelease(t[0]);
+			txt= txt.substring(s[0], s[1]);
+	
+			Clipboard clipboard= new Clipboard(getDisplay());
+			clipboard.setContents(new Object[] { txt }, new Transfer[]{ TextTransfer.getInstance() });
+			clipboard.dispose();
+		}
+	}
+	
+	/**
+	 * Replace current text selection with given string.
+	 * If selection is empty, inserts string.
+	 * If string is empty, selection is deleted.
+	 */
+	private void _replaceTextSelection(String newText) {
+		
+		short[] s= new short[2];
+		OS.GetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, s);
+		
+		boolean selEmpty= s[0] == s[1];
+		if (newText.length() == 0 && selEmpty)
+			return;
+		
+		int[] t= new int[1];
+		OS.GetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, t);
+		String txt= MacUtil.getStringAndRelease(t[0]);
+		
+		String pre= "";
+		if (selEmpty)
+			pre= txt.substring(0, s[0]);
+		else if (s[0] > 0)
+			pre= txt.substring(0, s[0]-1);
+			
+		String post= txt.substring(s[1]);
+		
+		int sHandle= 0;
+		try {
+			sHandle= OS.CFStringCreateWithCharacters(pre + newText + post);
+			OS.SetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, sHandle);
+		} finally {
+			if (sHandle != 0)
+				OS.CFRelease(sHandle);
+		}
+		
+		s[0]= s[1]= (short)(pre.length() + newText.length());
+		OS.SetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, s);
+	
+		sendEvent(SWT.Modify);
 	}
 }

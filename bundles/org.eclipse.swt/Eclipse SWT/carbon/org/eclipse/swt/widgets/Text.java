@@ -1400,11 +1400,10 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		return new String(chars);
 	}
 	
-	int sendKeyEvent(int type, int nextHandler, int eRefHandle) {
+	int sendKeyEvent (int type, MacEvent mEvent, Event event) {
 	
 		int status= OS.kNoErr;	// we handled the event
 		
-		MacEvent mEvent= new MacEvent(eRefHandle);
 		int kind= mEvent.getKind();
 		if ((kind == OS.kEventRawKeyDown || kind == OS.kEventRawKeyRepeat) && (mEvent.getModifiers() & OS.cmdKey) != 0) {
 			int code= mEvent.getKeyCode();
@@ -1428,6 +1427,8 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 			return OS.kNoErr;
 		}
 		
+		int eRefHandle= mEvent.getEventRef();
+		int nextHandler= mEvent.getNextHandler();
 		if (hooks (SWT.Verify)) {
 
 			// extract characters from event

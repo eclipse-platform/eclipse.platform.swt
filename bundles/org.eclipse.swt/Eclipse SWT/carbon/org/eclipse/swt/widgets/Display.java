@@ -1861,9 +1861,11 @@ static String convertToLf(String text) {
 				}
 				// fall through!
 			case OS.kEventRawKeyRepeat:
-				return focus.sendKeyEvent(SWT.KeyDown, nextHandler, eRefHandle);
+				return focus.processEvent(SWT.KeyDown, new MacEvent(eRefHandle, nextHandler));
+				
 			case OS.kEventRawKeyUp:
-				return focus.sendKeyEvent(SWT.KeyUp, nextHandler, eRefHandle);
+				return focus.processEvent(SWT.KeyUp, new MacEvent(eRefHandle, nextHandler));
+				
 			default:
 				System.out.println("Display.handleTextCallback: kEventClassKeyboard: unexpected event kind");
 				break;

@@ -1140,24 +1140,32 @@ int processHelp (Object callData) {
 	return 0;
 }
 int processKeyDown (Object callData) {
+	
 	MacEvent macEvent = (MacEvent) callData;
+	
+	//if (translateTraversal (macEvent))
+	//	return OS.kNoErr;
+		
+	// widget could be disposed at this point
+	if (isDisposed ()) return 0;
+	
 	int keyCode= macEvent.getKeyCode();
 	if (Display.translateKey(keyCode) != 0) {
-		sendKeyEvent (SWT.KeyDown, macEvent);
+		return sendKeyEvent (SWT.KeyDown, macEvent);
 	} else {
-		sendIMEKeyEvent (SWT.KeyDown, macEvent);
+		return sendKeyEvent (SWT.KeyDown, macEvent);
+		//return sendIMEKeyEvent (SWT.KeyDown, macEvent);
 	}
-	return 0;
 }
 int processKeyUp (Object callData) {
 	MacEvent macEvent = (MacEvent) callData;
 	int keyCode= macEvent.getKeyCode();
 	if (Display.translateKey(keyCode) != 0) {
-		sendKeyEvent (SWT.KeyUp, macEvent);
+		return sendKeyEvent (SWT.KeyUp, macEvent);
 	} else {
-		sendIMEKeyEvent (SWT.KeyUp, macEvent);
+		return sendKeyEvent (SWT.KeyUp, macEvent);
+		//return sendIMEKeyEvent (SWT.KeyUp, macEvent);
 	}
-	return 0;
 }
 int processModify (Object callData) {
 	sendEvent (SWT.Modify);
@@ -1675,11 +1683,11 @@ private final byte [] sendIMEKeyEvent (int type, /* AW XKeyEvent */ MacEvent xEv
 	}
 	return buffer;
 }
-final void sendKeyEvent (int type, MacEvent xEvent) {
+final int sendKeyEvent (int type, MacEvent mEvent) {
 	Event event = new Event ();
-    event.time = xEvent.getWhen();
-	setKeyState (event, xEvent);
-	postEvent (type, event);
+    event.time = mEvent.getWhen();
+	setKeyState (event, mEvent);
+	return sendKeyEvent (type, mEvent, event);
 //	Control control = this;
 //	if ((state & CANVAS) != 0) {
 //		if ((style & SWT.NO_FOCUS) != 0) {
@@ -1690,6 +1698,10 @@ final void sendKeyEvent (int type, MacEvent xEvent) {
 //	if (control != null) {
 //		control.postEvent (type, event);
 //	}
+}
+int sendKeyEvent (int type, MacEvent mEvent, Event event) {
+	postEvent (type, event);
+	return 0;
 }
 void sendMouseEvent (int type, int button, MacEvent xEvent) {
 	Event event = new Event ();
@@ -2571,8 +2583,10 @@ public void update () {
 	/**
 	 * Hook (overwritten in Text and Combo)
 	 */
+	/*
 	int sendKeyEvent(int type, int nextHandler, int eRefHandle) {
 		processEvent (type, new MacEvent(eRefHandle));
 		return OS.kNoErr;
 	}
+	*/
 }

@@ -1122,11 +1122,11 @@ public void showSelection () {
 		return super.processSelection(callData);
 	}
 
-	int sendKeyEvent(int type, int nextHandler, int eRefHandle) {
+	int sendKeyEvent (int type, MacEvent mEvent, Event event) {
 		//processEvent (type, new MacEvent(eRefHandle));
 		return OS.eventNotHandledErr;
 	}
-	
+			
 	int handleItemCallback(int rowID, int colID, int item) {
 		
 		if (colID != COL_ID) {

@@ -1487,14 +1487,11 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 // Mac stuff
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
-	int sendKeyEvent(int type, int nextHandler, int eRefHandle) {
+	int sendKeyEvent(int type, MacEvent mEvent, Event event) {
 		//processEvent (type, new MacEvent(eRefHandle));
-		
-		selectAll ();
-		
 		return OS.eventNotHandledErr;
-	}
-	
+	}	
+
 	int handleItemCallback(int item, int property, int itemData, int setValue) {
 		
 		TreeItem2 ti= find(item);
