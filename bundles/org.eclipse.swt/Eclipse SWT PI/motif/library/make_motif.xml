@@ -8,6 +8,7 @@
     <property name="jar_destdir" value="${fragment_dir}/ws/linux" />
     <property name="dll_destdir" value="${fragment_dir}/os/linux/x86" />
 	<property name="log_dir" value="${basedir}"/>
+	<property name="lib_extension" value=".so"/>
 	
     <mkdir dir="${jar_destdir}" />
     <mkdir dir="${dll_destdir}" />
@@ -19,6 +20,7 @@
     <property name="jar_destdir" value="${fragment_dir}/ws/aix" />
     <property name="dll_destdir" value="${fragment_dir}/os/aix/ppc" />
 	<property name="log_dir" value="${basedir}"/>
+	<property name="lib_extension" value=".a"/>
 	
     <mkdir dir="${jar_destdir}" />
     <mkdir dir="${dll_destdir}" />
@@ -30,6 +32,7 @@
     <property name="jar_destdir" value="${fragment_dir}/ws/hpux" />
     <property name="dll_destdir" value="${fragment_dir}/os/hpux/PA_RISC" />
 	<property name="log_dir" value="${basedir}"/>
+	<property name="lib_extension" value=".sl"/>
 	
     <mkdir dir="${jar_destdir}" />
     <mkdir dir="${dll_destdir}" />
@@ -41,6 +44,7 @@
     <property name="jar_destdir" value="${fragment_dir}/ws/solaris" />
     <property name="dll_destdir" value="${fragment_dir}/os/solaris/sparc" />
 	<property name="log_dir" value="${basedir}"/>
+	<property name="lib_extension" value=".so"/>
 	
     <mkdir dir="${jar_destdir}" />
     <mkdir dir="${dll_destdir}" />
@@ -55,7 +59,7 @@
 		<arg line="${basedir}/bin/library/build.sh"/>
 	</exec>
 	<copy todir="${dll_destdir}">
-		<fileset dir="${basedir}/bin/library/" includes="*.so"/>
+		<fileset dir="${basedir}/bin/library/" includes="${lib_extension}"/>
 	</copy>
 </target>
 
