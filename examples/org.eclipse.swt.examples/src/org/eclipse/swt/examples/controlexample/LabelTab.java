@@ -64,6 +64,9 @@ class LabelTab extends AlignableTab {
 		if (shadowInButton.getSelection ()) style |= SWT.SHADOW_IN;
 		if (shadowOutButton.getSelection ()) style |= SWT.SHADOW_OUT;
 		if (borderButton.getSelection ()) style |= SWT.BORDER;
+		if (leftButton.getSelection ()) style |= SWT.LEFT;
+		if (centerButton.getSelection ()) style |= SWT.CENTER;
+		if (rightButton.getSelection ()) style |= SWT.RIGHT;
 	
 		/* Create the example widgets */
 		label1 = new Label (textLabelGroup, style);
