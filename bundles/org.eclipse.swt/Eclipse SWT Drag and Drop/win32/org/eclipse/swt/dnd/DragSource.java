@@ -191,6 +191,19 @@ private void onDispose () {
 	
 	transferAgents = null;
 }
+private int opToOs(int operation) {
+	int osOperation = 0;
+	if ((operation & DND.DROP_COPY) != 0){
+		osOperation |= COM.DROPEFFECT_COPY;
+	}
+	if ((operation & DND.DROP_LINK) != 0) {
+		osOperation |= COM.DROPEFFECT_LINK;
+	}
+	if ((operation & DND.DROP_MOVE) != 0) {
+		osOperation |= COM.DROPEFFECT_MOVE;
+	}
+	return osOperation;
+}
 private int osToOp(int osOperation){
 	int operation = 0;
 	if ((osOperation & COM.DROPEFFECT_COPY) != 0){
@@ -230,9 +243,10 @@ private void drag() {
 	
 	if (!event.doit) return;
 	
-	dataEffect = DND.DROP_NONE;
+	dataEffect = DND.DROP_NONE; //dataEffect will be updated in SetData callback
 	int[] pdwEffect = new int[1];
-	int result = COM.DoDragDrop(iDataObject.getAddress(), iDropSource.getAddress(), getStyle(), pdwEffect);
+	int operations = opToOs(getStyle());
+	int result = COM.DoDragDrop(iDataObject.getAddress(), iDropSource.getAddress(), operations, pdwEffect);
 	int operation = osToOp(pdwEffect[0]);
 	event = new DNDEvent();
 	event.widget = this;

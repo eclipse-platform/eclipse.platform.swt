@@ -24,17 +24,19 @@ public class DND {
 	/**
 	 * Drag and Drop Operation: a copy of the data in the drag source is added to the drop target
 	 */
-	public final static int DROP_COPY = 1;
+	public final static int DROP_COPY = 1 << 0;
 	/**
 	 * Drag and Drop Operation: the data is added to the drop target and removed from the drag source
 	 */
-	public final static int DROP_MOVE = 2;
+	public final static int DROP_MOVE = 1 << 1;
 	/**
 	 * Drag and Drop Operation: the drop target makes a link to the data in the drag source
 	 */
-	public final static int DROP_LINK = 4;
+	public final static int DROP_LINK = 1 << 2;
 	
-	public final static int DROP_TARGET_MOVE = 5;
+	public final static int DROP_TARGET_MOVE = 1 << 3;
+	
+	public final static int DROP_DEFAULT = 1 << 4;
 	/**
 	 * DragSource Event: the drop has successfully completed or has been terminated (such as hitting the ESC key);
 	 *                   perform cleanup such as removing data on a move operation

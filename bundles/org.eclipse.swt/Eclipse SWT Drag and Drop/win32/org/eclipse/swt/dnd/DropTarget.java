@@ -207,7 +207,6 @@ private int DragEnter(
 	selectedDataType = null;
 	dataTypes = new TransferData[0];
 	iDataObject = 0;
-	lastOperation = DND.DROP_NONE;
 	
 	// Are any types being dragged for which we have a matching transfer object?
 	// Get enumerator of dragged types
@@ -262,10 +261,14 @@ private int DragEnter(
 		event.dataType = dataTypes[0];
 		event.dataType.pIDataObject = pDataObject;
 	}
-	event.detail = DND.DROP_NONE;
 	// assign operation if it is allowed
-	keyState = osToOp(getOperationFromKeyState(grfKeyState));
-	if ((keyState & getStyle()) == keyState){
+	keyState = getOperationFromKeyState(grfKeyState);
+	int style = getStyle();
+	if (keyState == DND.DROP_DEFAULT && (style & DND.DROP_DEFAULT) == 0) {
+		keyState = DND.DROP_MOVE;
+	}
+	event.detail = DND.DROP_NONE;
+	if ((keyState & style) == keyState){
 		event.detail = keyState;
 	}
 	
@@ -276,18 +279,21 @@ private int DragEnter(
 		return COM.S_OK;
 	}
 	
+	if (event.detail == DND.DROP_DEFAULT) {
+		event.detail = DND.DROP_MOVE;
+	}
 	for (int i = 0; i < dataTypes.length; i++) {
 		if (dataTypes[i].equals(event.dataType)){
 			selectedDataType = event.dataType;
 			break;
 		}
 	}
+	lastOperation = DND.DROP_NONE;
 	if (selectedDataType != null && ((allowedEffects[0] & event.detail) == event.detail)) {
 		lastOperation = event.detail;
 	}
 
 	effect.show(event.feedback, event.x, event.y);
-	
 	OS.MoveMemory(pdwEffect, new int[] {opToOs(lastOperation)}, 4);
 	return COM.S_OK;
 }
@@ -328,24 +334,31 @@ private int DragOver(
 	if (event.dataType != null) {
 		event.dataType.pIDataObject = iDataObject;
 	}
-
-	try {	
-		int oldKeyState = keyState;
-		keyState = osToOp(getOperationFromKeyState(grfKeyState));
+	
+	int oldKeyState = keyState;
+	keyState = getOperationFromKeyState(grfKeyState);
+	int style = getStyle();
+	if (keyState == DND.DROP_DEFAULT && (style & DND.DROP_DEFAULT) == 0) {
+		keyState = DND.DROP_MOVE;
+	}
+	event.detail = DND.DROP_NONE;
+	if ((keyState & style) == keyState){
+		event.detail = keyState;
+	}
+	try {
 		if (keyState == oldKeyState) {
-			event.detail = lastOperation;
-			// update with new drag over info
 			notifyListeners(DND.DragOver,event);
 		} else {
-			event.detail = keyState;
-			// operation has changed
 			notifyListeners(DND.DragOperationChanged, event);
-		}
+		}	
 	} catch (Throwable e) {
 		OS.MoveMemory(pdwEffect, new int[] {COM.DROPEFFECT_NONE}, 4);
 		return COM.S_OK;
 	}
-
+	if (event.detail == DND.DROP_DEFAULT) {
+		event.detail = DND.DROP_MOVE;
+	}
+		
 	// update drop data and drag under effect based on response from event	
 	selectedDataType = null;
 	for (int i = 0; i < dataTypes.length; i++) {
@@ -361,7 +374,6 @@ private int DragOver(
 	}
 	
 	effect.show(event.feedback, event.x, event.y);
-	
 	OS.MoveMemory(pdwEffect, new int[] {opToOs(lastOperation)}, 4);
 	return COM.S_OK;
 }
@@ -448,8 +460,7 @@ private int Drop(
 
 		}
 	}			
-	
-	OS.MoveMemory(pdwEffect, new int[] {osToOp(lastOperation)}, 4);	
+	OS.MoveMemory(pdwEffect, new int[] {opToOs(lastOperation)}, 4);	
 	return COM.S_OK;
 }
 /**
@@ -472,14 +483,18 @@ private int getOperationFromKeyState(int grfKeyState) {
 	boolean shift = (grfKeyState & OS.MK_SHIFT) != 0;
 	if (ctrl && shift) { 
 		// CTRL + SHIFT == Link
-		return COM.DROPEFFECT_LINK;
+		return DND.DROP_LINK;
 	}
 	if (ctrl){
 		//CTRL == COPY
-		return COM.DROPEFFECT_COPY;
+		return DND.DROP_COPY;
+	}
+	if (shift){
+		//CTRL == MOVE
+		return DND.DROP_MOVE;
 	}
 
-	return COM.DROPEFFECT_MOVE; // default operation
+	return DND.DROP_DEFAULT; // default operation
 }
 /**
  * Returns the list of data types that can be transferred to this DropTarget.

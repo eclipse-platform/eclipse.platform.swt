@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="org.eclipse.swt" default="build.update.jar" basedir=".">
 
-	<target name="initTemplate" unless="template">
-		<initTemplate/>
-	</target>
-
-	<target name="init" depends="initTemplate,properties">
+	<target name="init">
+	      <property name="plugin" value="org.eclipse.swt"/>
+ 	      <property name="version" value="2.0.0"/>
 	</target>
 
 	<target name="build.update.jar" depends="init">
@@ -18,17 +16,15 @@
 		<delete>
 			<fileset dir="${base}" includes="**/*.bin.log"/>
 		</delete>
-		<zip zipfile="${basedir}/${plugin}_${version}.jar" basedir="${base}/plugins/${plugin}_${version}"/>
+		<zip zipfile="${basedir}/${plugin}_${version}.jar" basedir="${base}/${plugin}_${version}"/>
 		<delete dir="${base}"/>
 	</target>
 
 	<target name="gather.bin.parts" depends="init" if="destination">
-		<ant antfile="${template}" target="includesExcludesCopy">
-			<property name="srcdir" value="${basedir}"/>
-			<property name="dest" value="${destination}/plugins/${plugin}_${version}"/>
-			<property name="excludes" value="${bin.excludes}"/>
-			<property name="includes" value="${bin.includes}"/>
-		</ant>
+		<mkdir dir="${destination}/${plugin}_${version}"/>
+		<copy todir="${destination}/${plugin}_${version}">
+			<fileset dir="${basedir}" includes="plugin.properties,plugin.xml,about.html" />
+		</copy>
 	</target>
 
 	<target name="build.jars" />
@@ -39,10 +35,5 @@
 	<target name="clean" depends="init">
 	</target>
    
-    <target name="properties">
-       <property name="plugin" value="org.eclipse.swt"/>
-       <property name="version" value="2.0.0"/>
-       <property name="bin.includes" value="plugin.properties,plugin.xml,about.html"/>
-    </target>
-
+ 
 </project>
