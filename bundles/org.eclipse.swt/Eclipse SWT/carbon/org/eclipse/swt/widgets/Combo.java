@@ -1481,7 +1481,7 @@ void setText (String string, boolean notify) {
 	}
 	if ((style & SWT.READ_ONLY) != 0) {
 		int index = indexOf (string);
-		if (index != -1 && index == getSelectionIndex ()) {
+		if (index != -1 && index != getSelectionIndex ()) {
 			select (index);
 			if (notify) sendEvent (SWT.Modify);
 		}
