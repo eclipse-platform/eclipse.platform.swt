@@ -543,32 +543,32 @@ int processEvent (int eventNumber, int int0, int int1, int int2) {
 	*/
 	if (eventNumber < 0) return 1;
 	switch (eventNumber) {
-		case SWT.Activate:			return processActivate         	(int0, int1, int2);
+		case SWT.Activate:			return processActivate         (int0, int1, int2);
 		case SWT.Arm:				return processArm           	(int0, int1, int2);
 		case SWT.Collapse:			return processCollapse      	(int0, int1, int2);
 		case SWT.Expand:			return processExpand        	(int0, int1, int2);
 		case SWT.Dispose:			return processDispose        	(int0, int1, int2);
 		case SWT.DefaultSelection:	return processDoubleSelection	(int0, int1, int2);
-		case SWT.Deiconify:			return processDeiconify			(int0, int1, int2);
+		case SWT.Deiconify:		return processDeiconify		(int0, int1, int2);
 		case SWT.FocusIn:			return processFocusIn         	(int0, int1, int2);
 		case SWT.FocusOut:			return processFocusOut        	(int0, int1, int2);
 		case SWT.Help:				return processHelp            	(int0, int1, int2);
 		case SWT.Hide:				return processHide            	(int0, int1, int2);
-		case SWT.KeyDown:			return processKeyDown         	(int0, int1, int2);
-		case SWT.KeyUp:				return processKeyUp           	(int0, int1, int2);
+		case SWT.KeyDown:			if (!translateTraversal(int0)) return processKeyDown   (int0, int1, int2);
+		case SWT.KeyUp:			return processKeyUp        	(int0, int1, int2);
 		case SWT.Iconify:			return processIconify         	(int0, int1, int2);
 		case SWT.Modify:			return processModify          	(int0, int1, int2);
-		case SWT.MouseDown:			return processMouseDown       	(int0, int1, int2);
+		case SWT.MouseDown:		return processMouseDown       	(int0, int1, int2);
 		case SWT.MouseEnter:		return processMouseEnter      	(int0, int1, int2);
-		case SWT.MouseExit:			return processMouseExit       	(int0, int1, int2);
+		case SWT.MouseExit:		return processMouseExit       	(int0, int1, int2);
 		case SWT.MouseHover:		return processMouseHover      	(int0, int1, int2);
-		case SWT.MouseMove:			return processMouseMove       	(int0, int1, int2);
+		case SWT.MouseMove:		return processMouseMove       	(int0, int1, int2);
 		case SWT.MouseUp:			return processMouseUp         	(int0, int1, int2);
 		case SWT.Move:				return processMove		       	(int0, int1, int2);
-		case SWT.Paint:				return processPaint           	(int0, int1, int2);
+		case SWT.Paint:			return processPaint           	(int0, int1, int2);
 		case SWT.Resize:			return processResize          	(int0, int1, int2);
 		case SWT.Show:				return processShow            	(int0, int1, int2);
-		case SWT.Selection:			return processSelection       	(int0, int1, int2);
+		case SWT.Selection:		return processSelection       	(int0, int1, int2);
 		case SWT.Verify:			return processVerify          	(int0, int1, int2);
 	}
 	return 0;
@@ -897,6 +897,10 @@ public String toString () {
 
 int topHandle () {
 	return handle;
+}
+
+boolean translateTraversal (int event) {
+	return false;
 }
 
 char wcsToMbcs (char ch) {
