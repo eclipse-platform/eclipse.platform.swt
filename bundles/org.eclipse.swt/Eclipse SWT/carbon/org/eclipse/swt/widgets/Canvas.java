@@ -121,6 +121,20 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	return result;
 }
 
+void redrawWidget (int control, boolean children) {
+	boolean isFocus = caret != null && caret.isFocusCaret ();
+	if (isFocus) caret.killFocus ();
+	super.redrawWidget (control, children);
+	if (isFocus) caret.setFocus ();
+}
+
+void redrawWidget (int control, int x, int y, int width, int height, boolean all) {
+	boolean isFocus = caret != null && caret.isFocusCaret ();
+	if (isFocus) caret.killFocus ();
+	super.redrawWidget (control, x, y, width, height, all);
+	if (isFocus) caret.setFocus ();
+}
+
 void releaseWidget () {
 	if (caret != null) caret.releaseResources ();
 	caret = null;
