@@ -520,12 +520,12 @@ int kEventMouseUp (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
-int kEventRawKeyUp (int nextHandler, int theEvent, int userData) {
-	if (!sendKeyEvent (SWT.KeyUp, theEvent)) return OS.noErr;
-	return OS.eventNotHandledErr;
-}
-
-int kEventRawKeyRepeat (int nextHandler, int theEvent, int userData) {
+int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
+	int [] keyCode = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
+	if (keyCode [0] == 114) {
+		//HELP KEY
+	}
 	if (!sendKeyEvent (SWT.KeyDown, theEvent)) return OS.noErr;
 	return OS.eventNotHandledErr;
 }
@@ -545,13 +545,13 @@ int kEventRawKeyModifiersChanged (int nextHandler, int theEvent, int userData) {
 	return result ? OS.eventNotHandledErr : OS.noErr;
 }
 
-int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
-	int [] keyCode = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
-	if (keyCode [0] == 114) {
-		//HELP KEY
-	}
+int kEventRawKeyRepeat (int nextHandler, int theEvent, int userData) {
 	if (!sendKeyEvent (SWT.KeyDown, theEvent)) return OS.noErr;
+	return OS.eventNotHandledErr;
+}
+
+int kEventRawKeyUp (int nextHandler, int theEvent, int userData) {
+	if (!sendKeyEvent (SWT.KeyUp, theEvent)) return OS.noErr;
 	return OS.eventNotHandledErr;
 }
 
@@ -697,7 +697,6 @@ boolean sendKeyEvent (int type, int theEvent) {
 	Event event = new Event ();
 	event.type = type;
 	setKeyState (event, theEvent);
-	postEvent (type, event);
 	return sendKeyEvent (type, event);
 }
 

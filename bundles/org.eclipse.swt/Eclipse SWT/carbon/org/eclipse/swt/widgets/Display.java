@@ -737,6 +737,8 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 			OS.GetRootControl (theWindow [0], theRoot);
 			int [] theControl = new int [1];
 			OS.HIViewGetSubviewHit (theRoot [0], inPoint, true, theControl);
+			//TEMPOARY CODE
+			if (theControl [0] == 0) theControl [0] = theRoot [0];
 			Widget widget = WidgetTable.get (theControl [0]);
 //			if (control != null && control.handle == theControl [0]) {
 			if (widget != null) {
