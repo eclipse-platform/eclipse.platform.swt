@@ -181,6 +181,7 @@ public BrowserExample(Composite parent) {
 			}
 		});
 		
+		initialize(display, browser);
 		browser.setUrl(getResourceString("Startup"));
 	}
 }
@@ -213,6 +214,39 @@ static String getResourceString(String key, Object[] args) {
 	} catch (NullPointerException e) {
 		return "!" + key + "!";
 	}
+}
+
+static void initialize(final Display display, Browser browser) {
+	browser.addOpenWindowListener(new OpenWindowListener() {
+		public void open(WindowEvent event) {
+			Shell shell = new Shell(display);
+			shell.setLayout(new FillLayout());
+			Browser browser = new Browser(shell, SWT.NONE);
+			initialize(display, browser);
+			event.browser = browser;
+		}
+	});
+	browser.addVisibilityWindowListener(new VisibilityWindowListener() {
+		public void hide(WindowEvent event) {
+		}
+		public void show(WindowEvent event) {
+			Browser browser = (Browser)event.widget;
+			Shell shell = browser.getShell();
+			if (event.location != null) shell.setLocation(event.location);
+			if (event.size != null) {
+				Point size = event.size;
+				shell.setSize(shell.computeSize(size.x, size.y));
+			}
+			shell.open();
+		}
+	});
+	browser.addCloseWindowListener(new CloseWindowListener() {
+		public void close(WindowEvent event) {
+			Browser browser = (Browser)event.widget;
+			Shell shell = browser.getShell();
+			shell.close();
+		}
+	});
 }
 
 /**
