@@ -1777,16 +1777,19 @@ void claimRightFreeSpace() {
  * @param renderHeight height in pixel of the rendered lines
  */
 void clearMargin(GC gc, Color background, Rectangle clientArea, int renderHeight) {
+	if (renderHeight + topMargin <= 0) {
+		return;
+	}
 	// clear the margin background
 	gc.setBackground(background);
 	gc.fillRectangle(0, 0, clientArea.width, topMargin);
-	gc.fillRectangle(0, 0, leftMargin, renderHeight);	
+	gc.fillRectangle(0, 0, leftMargin, renderHeight + topMargin);	
 	gc.fillRectangle(
 		0, clientArea.height - bottomMargin, 
 		clientArea.width, bottomMargin);
 	gc.fillRectangle(
 		clientArea.width - rightMargin, 0, 
-		rightMargin, renderHeight);
+		rightMargin, renderHeight + topMargin);
 }
 /**
  * Removes the widget selection.
@@ -4866,7 +4869,7 @@ void handlePaint(Event event) {
 	int startLine = Math.max(0, (event.y - topMargin + verticalScrollOffset) / lineHeight);
 	int paintYFromTopLine = (startLine - topIndex) * lineHeight;
 	int topLineOffset = topIndex * lineHeight - verticalScrollOffset;
-	int startY = paintYFromTopLine + topLineOffset;	// adjust y position for pixel based scrolling
+	int startY = paintYFromTopLine + topLineOffset + topMargin;	// adjust y position for pixel based scrolling and top margin
 	int renderHeight = event.y + event.height - startY;
 	Rectangle clientArea = getClientArea();
 	
@@ -4876,58 +4879,8 @@ void handlePaint(Event event) {
 	if (clientArea.width == 0 || event.height == 0) {		
 		return;
 	}
-	performPaint(event.gc, startLine, startY, renderHeight);	
+	performPaint(event.gc, startLine, startY, renderHeight);
 }	
-/**
- * Render the specified area.  Broken out as its own method to support
- * direct drawing.
- * <p>
- *
- * @param gc GC to render on 
- * @param startLine first line to render
- * @param startY y pixel location to start rendering at
- * @param renderHeight renderHeight widget area that needs to be filled with lines
- */
-void performPaint(GC gc,int startLine,int startY, int renderHeight)	{
-	int lineCount = content.getLineCount();
-	int paintY = topMargin;	
-	Rectangle clientArea = getClientArea();
-	Color background = getBackground();
-	Color foreground = getForeground();
-	Font font = gc.getFont();
-	FontData fontData = font.getFontData()[0];
-	
-	// Check if there is work to do. We never want to try and create 
-	// an Image with 0 width or 0 height.
-	if (clientArea.width == 0 || renderHeight == 0) {		
-		return;
-	}
-	if (isSingleLine()) {
-		lineCount = 1;
-		if (startLine > 1) {
-			startLine = 1;
-		}
-	}
-	Image lineBuffer = new Image(getDisplay(), clientArea.width, renderHeight);
-	GC lineGC = new GC(lineBuffer);	
-
-	lineGC.setFont(font);
-	lineGC.setForeground(foreground);
-	lineGC.setBackground(background);
-	for (int i = startLine; paintY < renderHeight && i < lineCount; i++, paintY += lineHeight) {
-		String line = content.getLine(i);
-		renderer.drawLine(line, i, paintY, lineGC, background, foreground, fontData, true);
-	}
-	if (paintY < renderHeight) {
-		lineGC.setBackground(background);
-		lineGC.setForeground(background);
-		lineGC.fillRectangle(0, paintY, clientArea.width, renderHeight - paintY);
-	}
-	gc.drawImage(lineBuffer, 0, startY);
-	lineGC.dispose();
-	lineBuffer.dispose();
-	clearMargin(gc, background, clientArea, renderHeight);
-}
 /**
  * Recalculates the scroll bars. Rewraps all lines when in word 
  * wrap mode.
@@ -5003,7 +4956,8 @@ void handleTextChanged(TextChangedEvent event) {
 	// optimization and fixes bug 13999. see also handleTextChanging.
 	if (lastTextChangeNewLineCount == 0 && lastTextChangeReplaceLineCount == 0) {
 		int startLine = content.getLineAtOffset(lastTextChangeStart);
-		int startY = startLine * lineHeight - verticalScrollOffset;
+		int startY = startLine * lineHeight - verticalScrollOffset + topMargin;
+
 		GC gc = new GC(this);
 		Caret caret = getCaret();
 		boolean caretVisible = false;
@@ -5490,6 +5444,60 @@ public void paste(){
 		event.text = getModelDelimitedText(text);
 		sendKeyEvent(event);
 	}
+}
+/**
+ * Render the specified area.  Broken out as its own method to support
+ * direct drawing.
+ * <p>
+ *
+ * @param gc GC to render on 
+ * @param startLine first line to render
+ * @param startY y pixel location to start rendering at
+ * @param renderHeight renderHeight widget area that needs to be filled with lines
+ */
+void performPaint(GC gc,int startLine,int startY, int renderHeight)	{
+	Rectangle clientArea = getClientArea();
+	Color background = getBackground();
+	
+	// Check if there is work to do. We never want to try and create 
+	// an Image with 0 width or 0 height.
+	if (clientArea.width == 0) {
+		return;
+	}
+	if (renderHeight > 0) {
+		// renderHeight will be negative when only top margin needs redrawing
+		Font font = gc.getFont();
+		FontData fontData = font.getFontData()[0];
+		Color foreground = getForeground();
+		int lineCount = content.getLineCount();
+		int paintY = 0;
+		
+		if (isSingleLine()) {
+			lineCount = 1;
+			if (startLine > 1) {
+				startLine = 1;
+			}
+		}
+		Image lineBuffer = new Image(getDisplay(), clientArea.width, renderHeight);
+		GC lineGC = new GC(lineBuffer);	
+	
+		lineGC.setFont(font);
+		lineGC.setForeground(foreground);
+		lineGC.setBackground(background);
+		for (int i = startLine; paintY < renderHeight && i < lineCount; i++, paintY += lineHeight) {
+			String line = content.getLine(i);
+			renderer.drawLine(line, i, paintY, lineGC, background, foreground, fontData, true);
+		}
+		if (paintY < renderHeight) {
+			lineGC.setBackground(background);
+			lineGC.setForeground(background);
+			lineGC.fillRectangle(0, paintY, clientArea.width, renderHeight - paintY);
+		}
+		gc.drawImage(lineBuffer, 0, startY);
+		lineGC.dispose();
+		lineBuffer.dispose();
+	}
+	clearMargin(gc, background, clientArea, renderHeight);
 }
 /** 
  * Prints the widget's text to the default printer.
