@@ -2313,6 +2313,16 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1set_1override_1redirect)
 }
 #endif
 
+#ifndef NO_gdk_1window_1shape_1combine_1region
+JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1shape_1combine_1region)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	NATIVE_ENTER(env, that, "gdk_1window_1shape_1combine_1region\n")
+	gdk_window_shape_combine_region((GdkWindow *)arg0, (GdkRegion *)arg1, arg2, arg3);
+	NATIVE_EXIT(env, that, "gdk_1window_1shape_1combine_1region\n")
+}
+#endif
+
 #ifndef NO_gdk_1window_1show
 JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1show)
 	(JNIEnv *env, jclass that, jint arg0)

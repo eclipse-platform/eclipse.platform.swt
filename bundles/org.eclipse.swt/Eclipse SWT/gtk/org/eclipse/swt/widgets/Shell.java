@@ -965,29 +965,9 @@ public void setMinimized (boolean minimized) {
 public void setRegion (Region region) {
 	checkWidget ();
 	if ((style & SWT.NO_TRIM) == 0) return;
-	Image image = null;
-	if (region != null) {
-		Color black = display.getSystemColor (SWT.COLOR_BLACK);
-		Color white = display.getSystemColor (SWT.COLOR_WHITE);
-		PaletteData palette = new PaletteData (new RGB[] {white.getRGB(), black.getRGB()});
-		Rectangle rect = region.getBounds ();
-		if (rect.width == 0 || rect.height == 0) {
-			ImageData data = new ImageData (1, 1, 1, palette);
-			data.transparentPixel = 0;
-			image = new Image (display, data);
-		} else {
-		ImageData data = new ImageData (rect.x + rect.width, rect.y + rect.height, 1, palette);
-			data.transparentPixel = 0;
-			image = new Image (display, data);
-			GC gc = new GC (image);
-			gc.setClipping (region);
-			gc.setForeground (black);
-			gc.fillRectangle (0, 0, rect.x + rect.width, rect.y + rect.height);
-			gc.dispose ();
-		}
-	}
-	OS.gtk_widget_shape_combine_mask (shellHandle, image == null ? 0 : image.mask, 0, 0);
-	if (image != null) image.dispose ();
+	int window = OS.GTK_WIDGET_WINDOW (shellHandle);
+	int shape_region = (region == null) ? 0 : region.handle;
+	OS.gdk_window_shape_combine_region (window, shape_region, 0, 0);
 	this.region = region;
 }
 
