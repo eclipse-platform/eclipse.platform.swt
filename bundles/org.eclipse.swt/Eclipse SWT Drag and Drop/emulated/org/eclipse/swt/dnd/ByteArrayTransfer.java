@@ -120,4 +120,10 @@ public boolean isSupportedType(TransferData transferData){
 	return false;
 }
 
+protected void javaToNative (Object object, TransferData transferData) {
+}
+
+protected Object nativeToJava(TransferData transferData) {
+	return null;
+}
 }
