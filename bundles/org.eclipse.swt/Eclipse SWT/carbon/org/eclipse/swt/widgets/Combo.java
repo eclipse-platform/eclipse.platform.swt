@@ -57,6 +57,7 @@ import org.eclipse.swt.internal.carbon.Rect;
  * @see List
  */
 public class Combo extends Composite {
+	int menuHandle;
 
 	/**
 	 * the operating system limit for the number of characters
@@ -73,8 +74,6 @@ public class Combo extends Composite {
 		LIMIT = 0x7FFFFFFF;
 	}
 	
-	// NEEDS WORK - is this handle being leaked?
-	int menuHandle;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -1035,6 +1034,14 @@ public void paste () {
 		OS.CFRelease (ptr);
 		sendEvent (SWT.Modify);
 	}
+}
+
+void releaseWidget () {
+	if (menuHandle != 0) {
+		OS.DeleteMenu (OS.GetMenuID (menuHandle));
+		OS.DisposeMenu (menuHandle);
+	}
+	menuHandle = 0;
 }
 
 /**
