@@ -7062,7 +7062,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy__Lorg_ecli
 	DEBUG_CALL("memcpy__Lorg_eclipse_swt_internal_carbon_HMHelpContentRec_2II\n")
 
 	if (arg0) lparg0 = getHMHelpContentRecFields(env, arg0, &_arg0);
-	memcpy(lparg0, arg1, arg2);
+	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setHMHelpContentRecFields(env, arg0, lparg0);
 }
 #endif
@@ -7076,7 +7076,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy__ILorg_ecl
 	DEBUG_CALL("memcpy__ILorg_eclipse_swt_internal_carbon_HMHelpContentRec_2I\n")
 
 	if (arg1) lparg1 = getHMHelpContentRecFields(env, arg1, &_arg1);
-	memcpy(arg0, lparg1, arg2);
+	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
 	if (arg1) setHMHelpContentRecFields(env, arg1, lparg1);
 }
 #endif
