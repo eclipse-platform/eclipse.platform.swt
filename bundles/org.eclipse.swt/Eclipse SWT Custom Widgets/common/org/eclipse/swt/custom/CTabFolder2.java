@@ -1459,6 +1459,7 @@ void onMouseHover(Event event) {
 }
 void onMouseUp(Event event) {
 	int x = event.x, y = event.y;
+	if (event.button != 1) return;
 	if (closeRect.contains(x, y)) {
 		if (selectedIndex == -1) return;
 		CTabItem2 item = items[selectedIndex];
