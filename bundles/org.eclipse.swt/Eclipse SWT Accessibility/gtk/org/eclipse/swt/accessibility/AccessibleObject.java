@@ -1363,7 +1363,7 @@ class AccessibleObject {
 			listeners [i].getChildren (event);
 		}
 		if (event.children != null && event.children.length > 0) {
-			Hashtable childrenCopy = (Hashtable)children.clone ();
+			Vector idsToKeep = new Vector (children.size ());
 			if (event.children [0] instanceof Integer) {
 				//	an array of child id's (Integers) was answered
 				int childType = AccessibleFactory.getDefaultChildType ();
@@ -1381,7 +1381,7 @@ class AccessibleObject {
 					} catch (ClassCastException e) {
 						// a non-ID value was given so don't set the ID
 					}
-					childrenCopy.remove (new Integer (object.handle));
+					idsToKeep.addElement (new Integer (object.handle));
 				}
 			} else {
 				// an array of Accessible children was answered
@@ -1395,15 +1395,18 @@ class AccessibleObject {
 					}
 					if (object != null) {
 						object.index = childIndex++;
-						childrenCopy.remove (new Integer (object.handle));
+						idsToKeep.addElement (new Integer (object.handle));
 					}
 				}
 			}
-			// remove previous children of self which were not answered
-			Enumeration childrenToRemove = childrenCopy.elements ();
-			while (childrenToRemove.hasMoreElements ()) {
-				AccessibleObject object = (AccessibleObject) childrenToRemove.nextElement (); 
-				removeChild (object, true);
+			// remove old children that were not provided as children anymore
+			Enumeration ids = children.keys ();
+			while (ids.hasMoreElements ()) {
+				Integer id = (Integer)ids.nextElement ();
+				if (!idsToKeep.contains (id)) {
+					AccessibleObject object = (AccessibleObject) children.get (id);
+					removeChild (object, true);
+				}
 			}
 		}
 	}
