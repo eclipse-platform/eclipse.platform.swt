@@ -183,7 +183,7 @@ public Point computeSize (int wHint, int hHint) {
 	int hwnd = parent.handle;
 	RECT rect = new RECT ();
 	OS.SendMessage (hwnd, OS.RB_GETBANDBORDERS, index, rect);
-	width += rect.left + rect.right;
+	width += rect.left + rect.right + 2;
 	return new Point (width, height);
 }
 
@@ -352,7 +352,7 @@ public Point getPreferredSize () {
 	OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
 	RECT rect = new RECT ();
 	OS.SendMessage (hwnd, OS.RB_GETBANDBORDERS, index, rect);
-	int width = rbBand.cxIdeal + rect.left + rect.right;
+	int width = rbBand.cxIdeal + rect.left + rect.right + 2;
 	return new Point (width, rbBand.cyMinChild);
 }
 
@@ -384,7 +384,7 @@ public void setPreferredSize (int width, int height) {
 	
 	/* Set the size fields we are currently modifying. */
 	rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_IDEALSIZE;
-	rbBand.cxIdeal = width - rect.left - rect.right;
+	rbBand.cxIdeal = width - rect.left - rect.right - 2;
 	rbBand.cyMaxChild = height;
 	if (!minimum) rbBand.cyMinChild = height;
 	OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, rbBand);
@@ -478,11 +478,11 @@ public void setSize (int width, int height) {
 	OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
 	
 	/* Set the size fields we are currently modifying. */
-	rbBand.fMask = OS.RBBIM_CHILDSIZE| OS.RBBIM_IDEALSIZE;
+	rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_IDEALSIZE;
 	if (!ideal) {
 		RECT rect = new RECT ();
 		OS.SendMessage (hwnd, OS.RB_GETBANDBORDERS, index, rect);
-		rbBand.cxIdeal = width - rect.left - rect.right;
+		rbBand.cxIdeal = width - rect.left - rect.right - 2;
 	}
 	if (!minimum) rbBand.cyMinChild = height;
 	rbBand.cyChild = rbBand.cyMaxChild = height;

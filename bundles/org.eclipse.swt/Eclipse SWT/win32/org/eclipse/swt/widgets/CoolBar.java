@@ -116,10 +116,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			width = Math.max (width, rowWidth);
 			height += rowHeight;
 			rowWidth = rowHeight = 0;
-		} else if (i != 0) {
-			rowWidth += 2;
 		}
-		rowWidth += rbBand.cxIdeal + rect.left + rect.right;
+		rowWidth += rbBand.cxIdeal + rect.left + rect.right + 2;
 		rowHeight = Math.max (rowHeight, rbBand.cyMinChild + rect.top + rect.bottom);
 	}
 	width = Math.max (width, rowWidth);
@@ -183,21 +181,13 @@ void createItem (CoolItem item, int index) {
 	* item to the ideal size and resize the new items to the maximum
 	* size.
 	*/
-	int lastIndex = getLastIndexOfRow (index);
-	if (lastIndex != -1 && index == lastIndex + 1) {  	
-		REBARBANDINFO rbBand2 = new REBARBANDINFO ();
-		rbBand2.cbSize = REBARBANDINFO.sizeof;
-		rbBand2.fMask = OS.RBBIM_IDEALSIZE;
-		OS.SendMessage (handle, OS.RB_GETBANDINFO, lastIndex, rbBand2);
-		rbBand2.fMask = OS.RBBIM_SIZE;
-		RECT rect = new RECT ();
-		OS.SendMessage (handle, OS.RB_GETBANDBORDERS, lastIndex, rect);
-		rbBand2.cx = rbBand2.cxIdeal + rect.left + rect.right;
-		OS.SendMessage (handle, OS.RB_SETBANDINFO, lastIndex, rbBand2);
+	int lastIndex = getLastIndexOfRow (index - 1);
+	if (index == lastIndex + 1) {  	
+		resizeToPreferredWidth (lastIndex);
 		rbBand.fMask |= OS.RBBIM_SIZE;
 		rbBand.cx = MAX_WIDTH; 
 	}
-
+	
 	if (OS.SendMessage (handle, OS.RB_INSERTBAND, index, rbBand) == 0) {
 		error (SWT.ERROR_ITEM_NOT_ADDED);
 	}
@@ -219,22 +209,39 @@ void createWidget () {
 
 void destroyItem (CoolItem item) {
 	int index = OS.SendMessage (handle, OS.RB_IDTOINDEX, item.id, 0);
-	
-	/*
-	* Feature in Windows.  When the last item in a row is removed,
-	* Windows sometimes moves items to the right side of the cool
-	* bar.  The fix is to resize the next to last item to be the
-	* maximum size.
-	*/
 	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
 	if (count != 0) {
 		int lastIndex = getLastIndexOfRow (index);
 		if (index == lastIndex) {
+			/*
+			 * Feature in Windows.  If the last item in a row is given its ideal size, it will be 
+			 * placed at the far right hand edge of the coolbar.  It is preferred that the last item 
+			 * appear next to the second last item.  The fix is to size the last item of each row 
+			 * so that it occupies all the available space to the right in the row.
+			 */
+			resizeToMaximumWidth (lastIndex - 1);
+		} else if (index != 0) {
+			/*
+			* Feature in Windows.   Consider a coolbar with two rows; row A and row B.
+			* The last item of each row is sized so that it occupies all the space to the right.
+			* Thus, the last item in row A and the last item in row B will occupy all the space to the right.  
+			* When  the  first item in a row is removed all the remaining items on the same 
+			* row are moved to the previous row.  Thus if the first item in row B is removed, all 
+			* the remaining items in row B will move to row A.  However, the item that was previously
+			* the last item in row A is still occupying all the space to the right.  In order for the items from
+			* row B to be visible in row A, the item that was previously the last item in row A must 
+			* be resized to have its ideal size.
+			* 
+			* Note: this does not apply to the very first item in the very first row which is the 
+			* item with index 0.
+			*/
 			REBARBANDINFO rbBand = new REBARBANDINFO ();
 			rbBand.cbSize = REBARBANDINFO.sizeof;
-			rbBand.fMask = OS.RBBIM_SIZE;			
-			rbBand.cx = MAX_WIDTH;
-			OS.SendMessage (handle, OS.RB_SETBANDINFO, lastIndex - 1, rbBand);
+			rbBand.fMask = OS.RBBIM_STYLE;
+			OS.SendMessage (handle, OS.RB_GETBANDINFO, index, rbBand);
+			if ((rbBand.fStyle & OS.RBBS_BREAK) != 0) {
+				resizeToPreferredWidth (index - 1);
+			}			
 		}							
 	}	
 		
@@ -425,7 +432,7 @@ int getLastIndexOfRow (int index) {
 	REBARBANDINFO rbBand = new REBARBANDINFO ();	
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	rbBand.fMask = OS.RBBIM_STYLE;
-	for (int i=index; i<count; i++) {
+	for (int i=index + 1; i<count; i++) {
 		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
 		if ((rbBand.fStyle & OS.RBBS_BREAK) != 0) {
 			return i - 1;
@@ -506,6 +513,29 @@ public int indexOf (CoolItem item) {
 	if (item.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	return OS.SendMessage (handle, OS.RB_IDTOINDEX, item.id, 0);
 }
+
+void resizeToPreferredWidth (int index) {
+	//wrong index will cause GP
+	int count = OS.SendMessage(handle, OS.RB_GETBANDCOUNT, 0, 0);
+	if (index < 0 || index >= count) return;
+	REBARBANDINFO rbBand = new REBARBANDINFO();
+	rbBand.cbSize = REBARBANDINFO.sizeof;
+	rbBand.fMask = OS.RBBIM_IDEALSIZE;
+	OS.SendMessage(handle, OS.RB_GETBANDINFO, index, rbBand);
+	RECT rect = new RECT();
+	OS.SendMessage(handle, OS.RB_GETBANDBORDERS, index, rect);
+	rbBand.cx = rbBand.cxIdeal + rect.left + rect.right;
+	rbBand.fMask = OS.RBBIM_SIZE;
+	OS.SendMessage(handle, OS.RB_SETBANDINFO, index, rbBand);
+}
+
+void resizeToMaximumWidth (int index) {
+	REBARBANDINFO rbBand = new REBARBANDINFO();
+	rbBand.cbSize = REBARBANDINFO.sizeof;
+	rbBand.fMask = OS.RBBIM_SIZE;
+	rbBand.cx = MAX_WIDTH;
+	OS.SendMessage (handle, OS.RB_SETBANDINFO, index, rbBand);
+}	
 
 void releaseWidget () {
 	for (int i=0; i<items.length; i++) {
@@ -629,41 +659,23 @@ void setItemOrder (int [] itemOrder) {
 		int id = originalItems [itemOrder [i]].id;
 		int index = OS.SendMessage (handle, OS.RB_IDTOINDEX, id, 0);
 		if (index != i) {
-			/*
-			* If the item that is about to be moved is the last item
-			* on the row, resize it to the ideal size.  Force the next
-			* to last item on the same row to be the maximum size.
-			*/
 			int lastItemSrcRow = getLastIndexOfRow (index);
-			int lastItemDstRow = getLastIndexOfRow (i);			
+			int lastItemDstRow = getLastIndexOfRow (i);									
 			if (index == lastItemSrcRow) {
-				rbBand.fMask = OS.RBBIM_IDEALSIZE;
-				OS.SendMessage (handle, OS.RB_GETBANDINFO, index, rbBand);
-				//TEMPORARY CODE
-//				RECT rect = new RECT ();
-//				OS.SendMessage (handle, OS.RB_GETBANDBORDERS, index, rect);
-//				rbBand.cx = rbBand.cxIdeal + rect.left + rect.right;
-				rbBand.cx = rbBand.cxIdeal; 
-				rbBand.fMask = OS.RBBIM_SIZE;
-				OS.SendMessage (handle, OS.RB_SETBANDINFO, index, rbBand);
-				if (index - 1 >= 0) {
-					rbBand.cx = MAX_WIDTH;
-					rbBand.fMask = OS.RBBIM_SIZE;
-					OS.SendMessage (handle, OS.RB_SETBANDINFO, index - 1, rbBand);
-				}			
+				resizeToPreferredWidth (index);
 			} 
+			if (i == lastItemDstRow) {
+				resizeToPreferredWidth (i);
+			}	
 			
 			/* Move the item */
 			OS.SendMessage (handle, OS.RB_MOVEBAND, index, i);
-			
-			/*
-			* If the item that has just been moved now the last item
-			* on the row, resize it to the maximum size.
-			*/
+
+			if (index == lastItemSrcRow && index - 1 >= 0) {
+				resizeToMaximumWidth (index - 1);
+			}
 			if (i == lastItemDstRow) {
-				rbBand.cx = MAX_WIDTH;
-				rbBand.fMask = OS.RBBIM_SIZE;
-				OS.SendMessage (handle, OS.RB_SETBANDINFO, i, rbBand);
+				resizeToMaximumWidth (i);
 			}	
 		}	
 	}
@@ -759,15 +771,16 @@ public void setWrapIndices (int [] indices) {
 	rbBand.fMask = OS.RBBIM_STYLE;
 	for (int i=0; i<count; i++) {
 		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
-		rbBand.fStyle &= ~OS.RBBS_BREAK;
-		OS.SendMessage (handle, OS.RB_SETBANDINFO, i, rbBand);
+		if ((rbBand.fStyle & OS.RBBS_BREAK) != 0) {
+			resizeToPreferredWidth (i - 1);
+			rbBand.fStyle &= ~OS.RBBS_BREAK;
+			OS.SendMessage (handle, OS.RB_SETBANDINFO, i, rbBand);
+		}
 	}
 	/*
 	* Resize the last item in the row to the maximum size.
 	*/
-	rbBand.fMask = OS.RBBIM_SIZE;
-	rbBand.cx = MAX_WIDTH;
-	OS.SendMessage (handle, OS.RB_SETBANDINFO, count - 1, rbBand);
+	resizeToMaximumWidth (count - 1);
 
 	for (int i=0; i<indices.length; i++) {
 		rbBand.fMask = OS.RBBIM_STYLE;		
@@ -776,10 +789,8 @@ public void setWrapIndices (int [] indices) {
 		OS.SendMessage (handle, OS.RB_SETBANDINFO, indices [i], rbBand);
 		/*
 		* Ensure that the last item in the previous row is at the maximum size.
-		*/	
-		rbBand.fMask = OS.RBBIM_SIZE;
-		rbBand.cx = MAX_WIDTH;
-		OS.SendMessage (handle, OS.RB_SETBANDINFO, indices [i] - 1, rbBand);
+		*/
+		resizeToMaximumWidth (indices [i] - 1);
 	}
 }
 
@@ -881,5 +892,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 	}
 	return super.wmNotifyChild (wParam, lParam);
 }
+
+
 
 }
