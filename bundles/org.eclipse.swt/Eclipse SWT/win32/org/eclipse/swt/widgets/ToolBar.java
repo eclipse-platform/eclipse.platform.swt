@@ -878,6 +878,36 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	}
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	if (isDisposed ()) return result;
+	/*
+	* Bug in Windows.  The code in Windows that determines
+	* when tool items should wrap seems to use the window
+	* bounds rather than the client area.  Unfortunately,
+	* tool bars with the style TBSTYLE_EX_HIDECLIPPEDBUTTONS
+	* use the client area.  This means that buttons which
+	* overlap the border are hidden before they are wrapped.
+	* The fix is to compute TBSTYLE_EX_HIDECLIPPEDBUTTONS
+	* and set it each time the tool bar is resized.
+	*/
+	if ((style & SWT.BORDER) != 0 && (style & SWT.WRAP) != 0) {
+		RECT windowRect = new RECT ();
+		OS.GetWindowRect (handle, windowRect);
+		int index = 0, border = getBorderWidth () * 2; 
+		RECT rect = new RECT ();
+		int count = OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
+		while (index < count) {
+			OS.SendMessage (handle, OS.TB_GETITEMRECT, index, rect);
+			OS.MapWindowPoints (handle, 0, rect, 2);
+			if (rect.right > windowRect.right - border * 2) break;
+			index++;
+		}
+		int bits = OS.SendMessage (handle, OS.TB_GETEXTENDEDSTYLE, 0, 0);
+		if (index == count) {
+			bits |= OS.TBSTYLE_EX_HIDECLIPPEDBUTTONS;
+		} else {
+			bits &= ~OS.TBSTYLE_EX_HIDECLIPPEDBUTTONS;
+		}
+		OS.SendMessage (handle, OS.TB_SETEXTENDEDSTYLE, 0, bits);
+	}
 	layoutItems ();
 	return result;
 }

@@ -1025,6 +1025,7 @@ public class OS extends Platform {
 	public static final int TBIF_SIZE = 0x40;
 	public static final int TBIF_STYLE = 0x8;
 	public static final int TBIF_TEXT = 0x2;
+	public static final int TB_GETEXTENDEDSTYLE = 0x400 + 85;
 	public static final int TBM_GETLINESIZE = 0x418;
 	public static final int TBM_GETPAGESIZE = 0x416;
 	public static final int TBM_GETPOS = 0x400;
