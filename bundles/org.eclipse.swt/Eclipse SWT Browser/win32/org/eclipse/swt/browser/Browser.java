@@ -46,7 +46,6 @@ public class Browser extends Composite {
 	String html;
 
 	/* External Listener management */
-	CloseWindowListener[] closeWindowListeners = new CloseWindowListener[0];
 	LocationListener[] locationListeners = new LocationListener[0];
 	NewWindowListener[] newWindowListeners = new NewWindowListener[0];
 	ProgressListener[] progressListeners = new ProgressListener[0];
@@ -60,7 +59,6 @@ public class Browser extends Composite {
 	static final int OnVisible = 0xfe;
 	static final int ProgressChange = 0x6c;
 	static final int StatusTextChange = 0x66;
-	static final int WindowClosing = 0x107;
 	
 	static final short CSC_UPDATECOMMANDS = -1;
 	static final short CSC_NAVIGATEFORWARD = 1;
@@ -262,9 +260,6 @@ public Browser(Composite parent, int style) {
 						if (byref != 0) COM.MoveMemory(byref, new int[] {iDispatch.getAddress()}, 4);
 						iDispatch.Release();
 					}
-					Variant cancel = event.arguments[1];
-					int pCancel = cancel.getByRef();
-					COM.MoveMemory(pCancel, new short[]{doit ? COM.VARIANT_FALSE : COM.VARIANT_TRUE}, 2);
 					break;
 				}
 				case OnVisible : {
@@ -311,17 +306,6 @@ public Browser(Composite parent, int style) {
 					}
 					break;
 				}
-				case WindowClosing : {
-					CloseWindowEvent newEvent = new CloseWindowEvent(Browser.this);
-					newEvent.data = getDisplay();
-					newEvent.widget = Browser.this;
-					for (int i = 0; i < closeWindowListeners.length; i++)
-						closeWindowListeners[i].close(newEvent);
-					Variant cancel = event.arguments[1];
-					int pCancel = cancel.getByRef();
-					COM.MoveMemory(pCancel, new short[]{COM.VARIANT_TRUE}, 2);
-					break;
-				}
 			}
 			
 			/*
@@ -340,33 +324,6 @@ public Browser(Composite parent, int style) {
 	site.addEventListener(OnVisible, listener);
 	site.addEventListener(ProgressChange, listener);
 	site.addEventListener(StatusTextChange, listener);
-	site.addEventListener(WindowClosing, listener);
-}
-
-/**	 
- * Adds the listener to receive events.
- * <p>
- *
- * @param listener the listener
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * 
- * @exception SWTError <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- *
- * @since 3.0
- */
-public void addCloseWindowListener(CloseWindowListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);	
-	CloseWindowListener[] newCloseWindowListeners = new CloseWindowListener[closeWindowListeners.length + 1];
-	System.arraycopy(closeWindowListeners, 0, newCloseWindowListeners, 0, closeWindowListeners.length);
-	closeWindowListeners = newCloseWindowListeners;
-	closeWindowListeners[closeWindowListeners.length - 1] = listener;
 }
 
 /**	 
@@ -589,44 +546,6 @@ public void refresh() {
 	checkWidget();
 	int[] rgdispid = auto.getIDsOfNames(new String[] { "Refresh" }); //$NON-NLS-1$
 	auto.invoke(rgdispid[0]);
-}
-
-/**	 
- * Removes the listener.
- *
- * @param listener the listener
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * 
- * @exception SWTError <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * </ul>
- * 
- * @since 3.0
- */
-public void removeCloseWindowListener(CloseWindowListener listener) {
-	checkWidget();
-	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (closeWindowListeners.length == 0) return;
-	int index = -1;
-	for (int i = 0; i < closeWindowListeners.length; i++) {
-		if (listener == closeWindowListeners[i]){
-			index = i;
-			break;
-		}
-	}
-	if (index == -1) return;
-	if (closeWindowListeners.length == 1) {
-		closeWindowListeners = new CloseWindowListener[0];
-		return;
-	}
-	CloseWindowListener[] newCloseWindowListeners = new CloseWindowListener[closeWindowListeners.length - 1];
-	System.arraycopy(closeWindowListeners, 0, newCloseWindowListeners, 0, index);
-	System.arraycopy(closeWindowListeners, index + 1, newCloseWindowListeners, index, closeWindowListeners.length - index - 1);
-	closeWindowListeners = newCloseWindowListeners;
 }
 
 /**	 
