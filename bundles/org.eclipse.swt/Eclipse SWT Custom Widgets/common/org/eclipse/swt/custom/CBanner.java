@@ -60,6 +60,7 @@ public class CBanner extends Composite {
 	static final int BORDER_TOP = 3;
 	static final int BORDER_STRIPE = 1;
 	static final int CURVE_TAIL = 200;
+	static final int MIN_LEFT = 50;
 	
 	static RGB BORDER1 = null;
 	
@@ -141,7 +142,7 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 		rightSize = right.computeSize(rightWidth == SWT.DEFAULT ? SWT.DEFAULT : rightWidth - trim.x, rightWidth == SWT.DEFAULT ? SWT.DEFAULT : height);
 		if (width != SWT.DEFAULT) {
 			rightSize.x = Math.min(rightSize.x, width);
-			width = Math.max(CURVE_TAIL, width - rightSize.x - curveWidth + 2* curveIndent);
+			width = Math.max(MIN_LEFT, width - rightSize.x - curveWidth + 2* curveIndent);
 		}
 	}
 	Point leftSize = new Point(0, 0);
@@ -242,7 +243,7 @@ public void layout (boolean changed) {
 		rightSize = right.computeSize(rightWidth == SWT.DEFAULT ? SWT.DEFAULT : rightWidth - trim.x, rightWidth == SWT.DEFAULT ? SWT.DEFAULT : height);
 		rightSize.x = Math.min(rightSize.x, width);
 		width -= rightSize.x + curveWidth - 2* curveIndent;
-		width = Math.max(width, CURVE_TAIL); 
+		width = Math.max(width, MIN_LEFT); 
 	}
 
 	Point leftSize = new Point(0, 0);
