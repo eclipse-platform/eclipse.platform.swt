@@ -276,6 +276,7 @@ public class OS {
 	public static final int DLGC_WANTALLKEYS = 0x4;
 	public static final int DLGC_WANTARROWS = 0x1;
 	public static final int DLGC_WANTTAB = 0x2;
+	public static final int DM_SETDEFID = OS.WM_USER + 1;
 	public static final int DSS_DISABLED = 0x20;
 	public static final int DSTINVERT = 0x550009;
 	public static final int DST_BITMAP = 0x4;
@@ -346,6 +347,7 @@ public class OS {
 	public static final int GTL_PRECISE = 0x2;
 	public static final int GT_DEFAULT = 0x0;
 	public static final int GWL_EXSTYLE = 0xffffffec;
+	public static final int GWL_ID = -12;
 	public static final int GWL_STYLE = 0xfffffff0;
 	public static final int GWL_USERDATA = 0xffffffeb;
 	public static final int GWL_WNDPROC = 0xfffffffc;

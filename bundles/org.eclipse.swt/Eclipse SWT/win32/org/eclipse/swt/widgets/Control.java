@@ -453,6 +453,10 @@ void createHandle () {
 		OS.GetModuleHandle (null),
 		null);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	if ((bits & OS.WS_CHILD) != 0) {
+		OS.SetWindowLong (handle, OS.GWL_ID, handle);
+	}
 	if (OS.IsDBLocale && parent != null) {
 		int hIMC = OS.ImmGetContext (hwndParent);
 		OS.ImmAssociateContext (handle, hIMC);

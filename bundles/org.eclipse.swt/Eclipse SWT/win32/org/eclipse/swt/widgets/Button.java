@@ -437,9 +437,15 @@ public void setAlignment (int alignment) {
 
 void setDefault (boolean value) {
 	if ((style & SWT.PUSH) == 0) return;
+	int hwndShell = menuShell ().handle;
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	bits &= ~OS.BS_DEFPUSHBUTTON;
-	if (value) bits |= OS.BS_DEFPUSHBUTTON;
+	if (value) {
+		bits |= OS.BS_DEFPUSHBUTTON;
+		OS.SendMessage (hwndShell, OS.DM_SETDEFID, handle, 0);
+	} else {
+		bits &= ~OS.BS_DEFPUSHBUTTON;
+		OS.SendMessage (hwndShell, OS.DM_SETDEFID, 0, 0);
+	}
 	OS.SendMessage (handle, OS.BM_SETSTYLE, bits, 1);
 }
 
