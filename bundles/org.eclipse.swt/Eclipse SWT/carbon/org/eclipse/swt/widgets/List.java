@@ -137,30 +137,14 @@ public void add (String string, int index) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (index == -1) error (SWT.ERROR_INVALID_RANGE);
-	/*
-	* Feature in Motif.  When an index is out of range,
-	* the list widget adds the item at the end.  This
-	* behavior is not wrong but it is unwanted.  The
-	* fix is to check the range before adding the item.
-	*/
-    /* AW
-	int [] argList = {OS.XmNitemCount, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	*/
 	int size= fData.size();
 	if (!(0 <= index && index <= size)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	/* AW
-	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
-	int xmString = OS.XmStringCreateLocalized (buffer);
-	if (xmString == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
-	OS.XmListAddItemUnselected (handle, xmString, index + 1);
-	OS.XmStringFree (xmString);
-    */
     Pair p= new Pair(string);
 	fData.add(index, p);
-	OS.AddDataBrowserItems(handle, OS.kDataBrowserNoItem, 1, new int[] { p.fId }, 0);
+	if (OS.AddDataBrowserItems(handle, OS.kDataBrowserNoItem, 1, new int[] { p.fId }, 0) != OS.kNoErr)
+		error (SWT.ERROR_ITEM_NOT_ADDED);
 }
 /**
  * Adds the listener to the collection of listeners who will
@@ -230,40 +214,25 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
-	/* AW
 	int border = getBorderWidth ();
 	int trimX = x - border;
 	int trimY = y - border;
 	int trimWidth = width + (border * 2);
 	int trimHeight = height + (border * 2);
-	*/
+	Display display= getDisplay();
 	if (horizontalBar != null) {
-        /* AW
-		int [] argList = {OS.XmNheight, 0};
-		OS.XtGetValues (horizontalBar.handle, argList, argList.length / 2);
-        */
-		/**
-		 * Motif adds four pixels between the bottom of the
-		 * list and the horizontal scroll bar. Add those now.
-		 */
-        /* AW
-		trimHeight += argList [1] + 4;
+		trimHeight += 15;
 		trimY -= display.scrolledInsetY;
 		if (verticalBar != null) {
 			trimX -= display.scrolledInsetX;
 		}
-        */
-	}
+ 	}
 	if (verticalBar != null) {
-        /* AW
-		int [] argList = {OS.XmNwidth, 0};
-		OS.XtGetValues (verticalBar.handle, argList, argList.length / 2);
-		trimWidth += argList [1];
+ 		trimWidth += 15;
 		trimX -= display.scrolledInsetX;
 		if (horizontalBar != null) {
 			trimY -= display.scrolledInsetY;
 		}
-        */
 	}
     /* AW
 	int [] argList = {
@@ -278,64 +247,37 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	trimHeight += thickness + argList [7] + 1;
 	trimX -= argList [1] + argList [3] + argList [5];
 	trimY -= argList [1] + argList [3] + argList [7];
+	*/
 	return new Rectangle (trimX, trimY, trimWidth, trimHeight);
-    */
-	System.out.println("List.computeTrim: nyi");
-	return new Rectangle (x, y, width, height);
 }
 void createHandle (int index) {
 	state |= HANDLE;
 
-	/*
-	* Feature in Motif.  When items are added or removed
-	* from a list, it may request and be granted, a new
-	* preferred size.  This behavior is unwanted.  The fix
-	* is to create a parent for the list that will disallow
-	* geometry requests.
-	*/
 	int parentHandle = parent.handle;
-    /* AW
-	int [] argList1 = {OS.XmNancestorSensitive, 1};
-	formHandle = OS.XmCreateForm (parentHandle, null, argList1, argList1.length / 2);
-	if (formHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	int selectionPolicy = OS.XmBROWSE_SELECT, listSizePolicy = OS.XmCONSTANT;
-	if ((style & SWT.MULTI) != 0) {
-		selectionPolicy = OS.XmEXTENDED_SELECT;
-		if ((style & SWT.SIMPLE) != 0) selectionPolicy = OS.XmMULTIPLE_SELECT;
-	}
-	if ((style & SWT.H_SCROLL) == 0) listSizePolicy = OS.XmVARIABLE;
-	int [] argList2 = {
-		OS.XmNlistSizePolicy, listSizePolicy,
-		OS.XmNselectionPolicy, selectionPolicy,
-		OS.XmNtopAttachment, OS.XmATTACH_FORM,
-		OS.XmNbottomAttachment, OS.XmATTACH_FORM,
-		OS.XmNleftAttachment, OS.XmATTACH_FORM,
-		OS.XmNrightAttachment, OS.XmATTACH_FORM,
-		OS.XmNresizable, 0,
-//		OS.XmNmatchBehavior, OS.XmNONE,
-	};
-	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
-		handle = OS.XmCreateList (formHandle, null, argList2, argList2.length / 2);
-		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	} else {
-		handle = OS.XmCreateScrolledList (formHandle, null, argList2, argList2.length / 2);
-		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-		scrolledHandle = OS.XtParent (handle);
-	}
-    */
 	int windowHandle= OS.GetControlOwner(parentHandle);
 	handle= OS.createDataBrowserControl(windowHandle);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	MacUtil.embedControl(handle, parentHandle);
 	MacUtil.initLocation(handle);
 	
-	//OS.SetDataBrowserSelectionFlags(handle, OS.kDataBrowserSelectOnlyOne + OS.kDataBrowserDragSelect);
-	OS.SetDataBrowserHasScrollBars(handle, (style & SWT.H_SCROLL) != 0, (style & SWT.V_SCROLL) != 0);
+	/* Single or Multiple Selection */
+	int mode= OS.kDataBrowserSelectOnlyOne;
+	if ((style & SWT.MULTI) != 0)
+		mode= OS.kDataBrowserDragSelect | OS.kDataBrowserCmdTogglesSelection;
+	OS.SetDataBrowserSelectionFlags(handle, mode);
+	
+	/* hide the neader */
 	OS.SetDataBrowserListViewHeaderBtnHeight(handle, (short) 0);
+	
+	/* enable scrollbars */
+	OS.SetDataBrowserHasScrollBars(handle, (style & SWT.H_SCROLL) != 0, (style & SWT.V_SCROLL) != 0);
+	if ((style & SWT.H_SCROLL) == 0)
+		OS.AutoSizeDataBrowserListViewColumns(handle);
 		
-	int columnDesc= OS.newColumnDesc(COL_ID, OS.kDataBrowserTextType, OS.kDataBrowserListViewSelectionColumn, (short)30, (short)200);
+	int columnDesc= OS.newColumnDesc(COL_ID, OS.kDataBrowserTextType,
+					OS.kDataBrowserListViewSelectionColumn | OS.kDataBrowserDefaultPropertyFlags,
+					(short)0, (short)2000);
 	OS.AddDataBrowserListViewColumn(handle, columnDesc, 10000);
-	//OS.SetDataBrowserActiveItems(handle, true);
 }
 ScrollBar createScrollBar (int type) {
 	return createStandardBar (type);
@@ -365,14 +307,11 @@ int defaultForeground () {
  */
 public void deselect (int index) {
 	checkWidget();
-	/*
-	* Note:  We rely on the fact that XmListDeselectPos ()
-	* fails silently when the indices are out of range.
-	*/
-    /* AW
-	if (index != -1) OS.XmListDeselectPos (handle, index + 1);
-    */
-    System.out.println("List.deselect: nyi");
+    if (index >= 0 && index < fData.size()) {
+    	Pair p= (Pair) fData.get(index);
+    	if (p != null)
+			OS.SetDataBrowserSelectedItems(handle, 1, new int[] { p.fId }, OS.kDataBrowserItemsRemove);
+    }
 }
 /**
  * Deselects the items at the given zero-relative indices in the receiver.
@@ -392,17 +331,8 @@ public void deselect (int index) {
 public void deselect (int start, int end) {
 	checkWidget();
 	if (start > end) return;
-	/*
-	* Note:  We rely on the fact that XmListDeselectPos ()
-	* fails silently when the indices are out of range.
-	*/
-	/* AW
-	for (int i=start; i<=end; i++) {
-		int index = i + 1;
- 		if (index != 0) OS.XmListDeselectPos (handle, index);
-	}
-	*/
-    System.out.println("List.deselect(s,e): nyi");
+	int[] ids= getIds(start, end);
+	OS.SetDataBrowserSelectedItems(handle, ids.length, ids, OS.kDataBrowserItemsRemove);
 }
 /**
  * Deselects the items at the given zero-relative indices in the receiver.
@@ -424,18 +354,8 @@ public void deselect (int start, int end) {
 public void deselect (int [] indices) {
 	checkWidget();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
-	/*
-	* Note:  We rely on the fact that XmListDeselectPos ()
-	* fails silently when the indices are out of range.
-	*/
-	/* AW
-	for (int i=0; i<indices.length; i++) {
-		int index = indices [i] + 1;
- 		if (index != 0) OS.XmListDeselectPos (handle, index);
-	}
-	*/
-	getIds(indices);
-	System.out.println("List.deselect([]): nyi");
+	int[] ids= getIds(indices);
+	OS.SetDataBrowserSelectedItems(handle, ids.length, ids, OS.kDataBrowserItemsRemove);
 }
 /**
  * Deselects all selected items in the receiver.
@@ -447,10 +367,10 @@ public void deselect (int [] indices) {
  */
 public void deselectAll () {
 	checkWidget();
-    /* AW
-	OS.XmListDeselectAllItems (handle);
-    */
-	System.out.println("List.deselectAll: nyi");
+	int n= fData.size();
+	if (n <= 0) return;
+	int[] ids= getIds(0, n-1);
+	OS.SetDataBrowserSelectedItems(handle, ids.length, ids, OS.kDataBrowserItemsRemove);
 }
 /**
  * Returns the zero-relative index of the item which is currently
@@ -529,21 +449,7 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget();
-    /* AW
-	int [] argList = {
-		OS.XmNlistSpacing, 0,
-		OS.XmNhighlightThickness, 0,
-	};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	int spacing = argList [1], highlight = argList [3];
-    */
-
-	/* Result is from empirical analysis on Linux and AIX */
-    /* AW
-	return getFontHeight () + spacing + highlight + 1;
-    */
-	System.out.println("List.getItemHeight: nyi");
-    return 15;
+    return 15;	// AW FIXME
 }
 /**
  * Returns an array of <code>String</code>s which are the items
@@ -567,38 +473,10 @@ public int getItemHeight () {
  */
 public String [] getItems () {
 	checkWidget();
-    /* AW
-	int [] argList = {OS.XmNitems, 0, OS.XmNitemCount, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	int items = argList [1], itemCount = argList [3];
-	int [] buffer1 = new int [1];
-	String [] result = new String [itemCount];
-	String codePage = getCodePage ();
-	for (int i=0; i<itemCount; i++) {
-		OS.memmove (buffer1, items, 4);
-		int ptr = buffer1 [0];
-		int address = OS.XmStringUnparse (
-			ptr,
-			null,
-			OS.XmCHARSET_TEXT,
-			OS.XmCHARSET_TEXT,
-			null,
-			0,
-			OS.XmOUTPUT_ALL);
-		if (address == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
-		int length = OS.strlen (address);
-		byte [] buffer = new byte [length];
-		OS.memmove (buffer, address, length);
-		OS.XtFree (address);
-		result[i] = new String (Converter.mbcsToWcs (codePage, buffer));
-		items += 4;
-	}
-	return result;
-    */
-    int n= fData.size();
-    String[] result= new String[n];
-    for (int i= 0; i < n; i++) {
-    	Pair p= (Pair) fData.get(i);
+    String[] result= new String[fData.size()];
+    Iterator iter= fData.iterator();
+    for (int i= 0; iter.hasNext(); i++) {
+    	Pair p= (Pair) iter.next();
     	result[i]= p.fValue;
     }
 	return result;
@@ -625,35 +503,7 @@ public String [] getItems () {
  */
 public String [] getSelection () {
 	checkWidget();
-    /* AW
-	int [] argList = {OS.XmNselectedItems, 0, OS.XmNselectedItemCount, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	int items = argList [1], itemCount = argList [3];
-	int [] buffer1 = new int [1];
-	String [] result = new String [itemCount];
-	String codePage = getCodePage ();
-	for (int i=0; i<itemCount; i++) {
-		OS.memmove (buffer1, items, 4);
-		int ptr = buffer1 [0];
-		int address = OS.XmStringUnparse (
-			ptr,
-			null,
-			OS.XmCHARSET_TEXT,
-			OS.XmCHARSET_TEXT,
-			null,
-			0,
-			OS.XmOUTPUT_ALL);
-		if (address == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
-		int length = OS.strlen (address);
-		byte [] buffer = new byte [length];
-		OS.memmove (buffer, address, length);
-		OS.XtFree (address);
-		result[i] = new String (Converter.mbcsToWcs (codePage, buffer));
-		items += 4;
-	}
-	return result;
-    */
-    
+	    
     int resultHandle= OS.NewHandle(0);
 	if (OS.GetDataBrowserItems(handle, OS.kDataBrowserNoItem, false, OS.kDataBrowserItemIsSelected, resultHandle) != OS.kNoErr)
 		error (SWT.ERROR_CANNOT_GET_SELECTION);
@@ -684,10 +534,9 @@ public String [] getSelection () {
 public int getSelectionCount () {
 	checkWidget();
 	int[] result= new int[1];
-	if (OS.GetDataBrowserItemCount(handle, OS.kDataBrowserNoItem, false, OS.kDataBrowserItemIsSelected, result) == OS.kNoErr)
-		return result[0];
-	System.out.println("List.getSelectionCount: error in GetDataBrowserItemCount");
-    return 0;
+	if (OS.GetDataBrowserItemCount(handle, OS.kDataBrowserNoItem, false, OS.kDataBrowserItemIsSelected, result) != OS.kNoErr)
+		error (SWT.ERROR_CANNOT_GET_COUNT);
+	return result[0];
 }
 /**
  * Returns the zero-relative index of the item which is currently
@@ -705,18 +554,7 @@ public int getSelectionCount () {
  */
 public int getSelectionIndex () {
 	checkWidget();
-    /* AW
-	int index = OS.XmListGetKbdItemPos (handle);
-	if (OS.XmListPosSelected (handle, index)) return index - 1;
-	int [] count = new int [1], positions = new int [1];
-	if (!OS.XmListGetSelectedPos (handle, positions, count)) return -1;
-	if (count [0] == 0) return -1;
-	int address = positions [0];
-	int [] indices = new int [1];
-	OS.memmove (indices, address, 4);
-	OS.XtFree (address);
-	return indices [0] - 1;
-    */
+
     int resultHandle= OS.NewHandle(0);
 	if (OS.GetDataBrowserItems(handle, OS.kDataBrowserNoItem, false, OS.kDataBrowserItemIsSelected, resultHandle) != OS.kNoErr)
 		error (SWT.ERROR_CANNOT_GET_SELECTION);
@@ -749,15 +587,6 @@ public int getSelectionIndex () {
  */
 public int [] getSelectionIndices () {
 	checkWidget();
-    /*
-	int [] count = new int [1], positions = new int [1];
-	OS.XmListGetSelectedPos (handle, positions, count);
-	int [] result = new int [count [0]];
-	OS.memmove (result, positions [0], count [0] * 4);
-	if (positions [0] != 0) OS.XtFree (positions [0]);
-	for (int i=0; i<result.length; i++) --result [i];
-	return result;
-    */
     
     int resultHandle= OS.NewHandle(0);
 	if (OS.GetDataBrowserItems(handle, OS.kDataBrowserNoItem, false, OS.kDataBrowserItemIsSelected, resultHandle) != OS.kNoErr)
@@ -787,25 +616,16 @@ public int [] getSelectionIndices () {
  */
 public int getTopIndex () {
 	checkWidget();
-    /* AW
-	int [] argList = {OS.XmNtopItemPosition, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	return argList [1] - 1;
-    */
-	System.out.println("List.getTopIndex: nyi");
-    return 1;
+    int[] top= new int[1];
+    int[] left= new int[1];
+    OS.GetDataBrowserScrollPosition(handle, top, left);
+    return top[0] / getItemHeight();
 }
 void hookEvents () {
 	super.hookEvents ();
-    /* AW
-	int windowProc = getDisplay ().windowProc;
-	OS.XtAddCallback (handle, OS.XmNbrowseSelectionCallback, windowProc, SWT.Selection);
-	OS.XtAddCallback (handle, OS.XmNextendedSelectionCallback, windowProc, SWT.Selection);
-	OS.XtAddCallback (handle, OS.XmNdefaultActionCallback, windowProc, SWT.DefaultSelection);
-    */
 	Display display= getDisplay();
-	OS.setDataBrowserItemDataCallback(handle, display.fDataBrowserDataProc);
-	OS.setDataBrowserItemNotificationCallback(handle, display.fDataBrowserItemNotificationProc);
+	OS.setDataBrowserCallbacks(handle, display.fDataBrowserDataProc,
+				display.fDataBrowserCompareProc, display.fDataBrowserItemNotificationProc);
 }
 /**
  * Gets the index of an item.
@@ -828,13 +648,7 @@ void hookEvents () {
  */
 public int indexOf (String string) {
 	checkWidget();
-	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	for (int i= 0; i < fData.size(); i++) {
-		Pair p= (Pair) fData.get(i);
-		if (string.equals(p.fValue))
-			return i;
-	}
-    return -1;
+	return getIndex(string, 0);
 }
 /**
  * Searches the receiver's list starting at the given, 
@@ -860,13 +674,7 @@ public int indexOf (String string) {
  */
 public int indexOf (String string, int start) {
 	checkWidget();
-	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	for (int i= start; i < fData.size(); i++) {
-		Pair p= (Pair) fData.get(i);
-		if (string.equals(p.fValue))
-			return i;
-	}
-    return -1;
+	return getIndex(string, start);
 }
 /**
  * Returns <code>true</code> if the item is selected,
@@ -883,17 +691,12 @@ public int indexOf (String string, int start) {
  */
 public boolean isSelected (int index) {
 	checkWidget();
-	if (index == -1) return false;
-    /* AW
-	return OS.XmListPosSelected (handle, index + 1);
-    */
-	System.out.println("List.isSelected: nyi");
-    return true;
-}
-int processSelection (Object callData) {
-	System.out.println("List.processSelection: " + getSelectionIndex());
-	
-	return super.processSelection(callData);
+    if (index >= 0 && index < fData.size()) {
+		Pair p= (Pair) fData.get(index);
+		if (p != null)
+			return OS.IsDataBrowserItemSelected(handle, p.fId);
+    }
+    return false;
 }
 /**
  * Removes the item from the receiver at the given
@@ -915,26 +718,11 @@ int processSelection (Object callData) {
 public void remove (int index) {
 	checkWidget();
 	if (index == -1) error (SWT.ERROR_INVALID_RANGE);
-	/*
-	* Feature in Motif.  An index out of range handled
-	* correctly by the list widget but causes an unwanted
-	* Xm Warning.  The fix is to check the range before
-	* deleting an item.
-	*/
-    /* AW
-	int [] argList = {OS.XmNitemCount, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	*/
 	int size= fData.size();
 	if (!(0 <= index && index < size)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	/* AW
-	OS.XmListDeletePos (handle, index + 1);
-    */
-	
-	Pair p= (Pair) fData.get(index);
-	fData.remove(index);
+	Pair p= (Pair) fData.remove(index);
 	OS.RemoveDataBrowserItems(handle, OS.kDataBrowserNoItem, 1, new int[] { p.fId }, 0);
 }
 /**
@@ -959,31 +747,12 @@ public void remove (int index) {
 public void remove (int start, int end) {
 	checkWidget();
 	if (start > end) return;
-	int count = end - start + 1;
-	/*
-	* Feature in Motif.  An index out of range handled
-	* correctly by the list widget but causes an unwanted
-	* Xm Warning.  The fix is to check the range before
-	* deleting an item.
-	*/
-    /* AW
-	int [] argList = {OS.XmNitemCount, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	if (!(0 <= start && start < argList [1])) {
+	int n= fData.size();
+	if (start < 0 || start >= n || end < 0 || end >= n)
 		error (SWT.ERROR_INVALID_RANGE);
-	}
-	OS.XmListDeleteItemsPos (handle, count, start + 1);
-	if (end >= argList [1]) error (SWT.ERROR_INVALID_RANGE);
-    */
-	/*
-	OS.LDelRow((short)count, (short)start, OS.getListHandle(handle));
-	*/
-	int[] ids= new int[count];
-	for (int i= 0; i < count; i++) {
-		Pair p= (Pair) fData.get(start+i);
-		ids[i]= p.fId;
-	}
-	OS.RemoveDataBrowserItems(handle, OS.kDataBrowserNoItem, count, ids, 0);
+	int[] ids= getIds(start, end);
+	if (OS.RemoveDataBrowserItems(handle, OS.kDataBrowserNoItem, ids.length, ids, 0) != OS.kNoErr)
+		error (SWT.ERROR_ITEM_NOT_REMOVED);
 }
 /**
  * Searches the receiver's list starting at the first item
@@ -1007,15 +776,11 @@ public void remove (int start, int end) {
 public void remove (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	for (int i= 0; i < fData.size(); i++) {
-		Pair p= (Pair) fData.get(i);
-		if (string.equals(p.fValue)) {
-			if (OS.RemoveDataBrowserItems(handle, OS.kDataBrowserNoItem, 1, new int[] { p.fId }, 0) == OS.kNoErr)
-				return;
-			error (SWT.ERROR_ITEM_NOT_REMOVED);
-		}
-	}
-	error (SWT.ERROR_INVALID_ARGUMENT);
+	Pair p= getPair(string);
+	if (p == null) error (SWT.ERROR_INVALID_ARGUMENT);
+	fData.remove(p);
+	if (OS.RemoveDataBrowserItems(handle, OS.kDataBrowserNoItem, 1, new int[] { p.fId }, 0) != OS.kNoErr)
+		error (SWT.ERROR_ITEM_NOT_REMOVED);
 }
 /**
  * Removes the items from the receiver at the given
@@ -1037,25 +802,6 @@ public void remove (String string) {
 public void remove (int [] indices) {
 	checkWidget();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
-	/*
-	* Feature in Motif.  An index out of range handled
-	* correctly by the list widget but causes an unwanted
-	* Xm Warning.  The fix is to check the range before
-	* deleting an item.
-	*/
-    /* AW
-	int [] argList = {OS.XmNitemCount, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	int length = 0, count = argList [1];
-	int [] newIndices = new int [indices.length];
-	for (int i=0; i<indices.length; i++) {
-		int index = indices [i];
-		if (!(0 <= index && index < count)) break;
-		newIndices [length++] = index + 1;
-	}
-	OS.XmListDeletePositions (handle, newIndices, length);
-	if (length < indices.length) error (SWT.ERROR_INVALID_RANGE);
-    */
 	int[] ids= getIds(indices);
 	if (OS.RemoveDataBrowserItems(handle, OS.kDataBrowserNoItem, ids.length, ids, 0) != OS.kNoErr)
 		error (SWT.ERROR_ITEM_NOT_REMOVED);
@@ -1112,39 +858,9 @@ public void removeSelectionListener(SelectionListener listener) {
 public void select (int index) {
 	checkWidget();
 	if (index == -1) return;
-    /* AW
-	if (OS.XmListPosSelected (handle, index + 1)) return;
-    */
-	/*
-	* Feature in MOTIF.  The X/MOTIF 1.2 spec says that XmListSelectPos ()
-	* in a XmEXTENDED_SELECT list widget will add the index to the selected
-	* indices.  The observed behavior does not match the spec.  The fix is
-	* to temporarily switch the XmNselectionPolicy to XmMULTIPLE_SELECT
-	* and then switch it back because XmListSelectPost () works as specified
-	* for XmMULTIPLE_SELECT list widgets.
-	*/
-    /* AW
-	int [] argList = {OS.XmNselectionPolicy, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	int oldPolicy = argList [1];
-	if (oldPolicy == OS.XmEXTENDED_SELECT) {
-		argList [1] = OS.XmMULTIPLE_SELECT;
-		OS.XtSetValues (handle, argList, argList.length / 2);
-	}
-    */
-	/*
-	* Note:  We rely on the fact that XmListSelectPos ()
-	* fails silently when the indices are out of range.
-	*/
-    /* AW
-	OS.XmListSelectPos (handle, index + 1, false);
-	if (oldPolicy == OS.XmEXTENDED_SELECT) {
-		argList [1] = OS.XmEXTENDED_SELECT;
-		OS.XtSetValues (handle, argList, argList.length / 2);
-	}
-    */
     Pair p= (Pair) fData.get(index);
-	OS.SetDataBrowserSelectedItems(handle, 1, new int[] { p.fId }, OS.kDataBrowserItemsAssign);
+    if (p != null)
+		OS.SetDataBrowserSelectedItems(handle, 1, new int[] { p.fId }, OS.kDataBrowserItemsAssign);
 }
 /**
  * Selects the items at the given zero-relative indices in the receiver.
@@ -1172,47 +888,7 @@ public void select (int start, int end) {
         */
 		return;
 	}
-	/*
-	* Feature in MOTIF.  The X/MOTIF 1.2 spec says that XmListSelectPos ()
-	* in a XmEXTENDED_SELECT list widget will add the index to the selected
-	* indices.  The observed behavior does not match the spec.  The fix is
-	* to temporarily switch the XmNselectionPolicy to XmMULTIPLE_SELECT
-	* and then switch it back because XmListSelectPos () works as specified
-	* for XmMULTIPLE_SELECT list widgets.
-	*/
-    /* AW
-	int [] argList = {OS.XmNselectionPolicy, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	int oldPolicy = argList [1];
-	if (oldPolicy == OS.XmEXTENDED_SELECT) {
-		argList [1] = OS.XmMULTIPLE_SELECT;
-		OS.XtSetValues (handle, argList, argList.length / 2);
-	}
-    */
-	/*
-	* Note:  We rely on the fact that XmListSelectPos ()
-	* fails silently when the indices are out of range.
-	*/
-	/* AW
-	for (int i=start; i<=end; i++) {
-		int index = i + 1;
-		if ((index != 0) && !OS.XmListPosSelected (handle, index)) {
-			OS.XmListSelectPos (handle, index, false);
-		}
-	}
-	*/
-    /* AW
-	if (oldPolicy == OS.XmEXTENDED_SELECT) {
-		argList [1] = OS.XmEXTENDED_SELECT;
-		OS.XtSetValues (handle, argList, argList.length / 2);
-	}
-    */
-	int count= end-start+1;
-	int[] ids= new int[count];
-	for (int i= 0; i < count; i++) {
-		Pair p= (Pair) fData.get(start+i);
-		ids[i]= p.fId;
-	}
+    int[] ids= getIds(start, end);
 	OS.SetDataBrowserSelectedItems(handle, ids.length, ids, OS.kDataBrowserItemsAssign);
 }
 /**
@@ -1235,8 +911,8 @@ public void select (int start, int end) {
 public void select (int [] indices) {
 	checkWidget();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
-    /* AW
 	if ((style & SWT.SINGLE) != 0) {
+		/* AW
 		int [] argList = {OS.XmNitemCount, 0};
 		OS.XtGetValues (handle, argList, argList.length / 2);
 		int count = argList [1];
@@ -1247,42 +923,9 @@ public void select (int [] indices) {
 				return;
 			}
 		}
+		*/
 		return;
 	}
-    */
-	/*
-	* Feature in MOTIF.  The X/MOTIF 1.2 spec says that XmListSelectPos ()
-	* in a XmEXTENDED_SELECT list widget will add the index to the selected
-	* indices.  The observed behavior does not match the spec.  The fix is
-	* to temporarily switch the XmNselectionPolicy to XmMULTIPLE_SELECT
-	* and then switch it back because XmListSelectPos () works as specified
-	* for XmMULTIPLE_SELECT list widgets.
-	*/
-    /* AW
-	int [] argList = {OS.XmNselectionPolicy, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	int oldPolicy = argList [1];
-	if (oldPolicy == OS.XmEXTENDED_SELECT) {
-		argList [1] = OS.XmMULTIPLE_SELECT;
-		OS.XtSetValues (handle, argList, argList.length / 2);
-	}
-    */
-	/*
-	* Note:  We rely on the fact that XmListSelectPos ()
-	* fails silently when the indices are out of range.
-	*/
-    /* AW
-	for (int i=0; i<indices.length; i++) {
-		int index = indices [i] + 1;
-		if ((index != 0) && !OS.XmListPosSelected (handle, index)) {
-			OS.XmListSelectPos (handle, index, false);
-		}
-	}
-	if (oldPolicy == OS.XmEXTENDED_SELECT) {
-		argList [1] = OS.XmEXTENDED_SELECT;
-		OS.XtSetValues (handle, argList, argList.length / 2);
-	}
-    */
 	int[] ids= getIds(indices);
 	OS.SetDataBrowserSelectedItems(handle, ids.length, ids, OS.kDataBrowserItemsAssign);
 }
@@ -1302,39 +945,9 @@ void select (String [] items) {
 public void selectAll () {
 	checkWidget();
 	if ((style & SWT.SINGLE) != 0) return;
-	/*
-	* Feature in MOTIF.  The X/MOTIF 1.2 spec says that XmListSelectPos ()
-	* in a XmEXTENDED_SELECT list widget will add the index to the selected
-	* indices.  The observed behavior does not match the spec.  The fix is
-	* to temporarily switch the XmNselectionPolicy to XmMULTIPLE_SELECT
-	* and then switch it back because XmListSelectPos () works as specified
-	* for XmMULTIPLE_SELECT list widgets.
-	*/
-    /* AW
-	int [] argList = {OS.XmNselectionPolicy, 0, OS.XmNitemCount, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	int oldPolicy = argList [1];
-	if (oldPolicy == OS.XmEXTENDED_SELECT) {
-		argList [1] = OS.XmMULTIPLE_SELECT;
-		OS.XtSetValues (handle, argList, argList.length / 2);
-	}
-	for (int i=0; i<argList[3]; i++) {
-		int index = i + 1;
-		if (!OS.XmListPosSelected (handle, index)) {
-			OS.XmListSelectPos (handle, index, false);
-		}
-	}
-	if (oldPolicy == OS.XmEXTENDED_SELECT) {
-		argList [1] = OS.XmEXTENDED_SELECT;
-		OS.XtSetValues (handle, argList, argList.length / 2);
-	}
-    */
-	int count= fData.size();
-	int[] ids= new int[count];
-	for (int i= 0; i < count; i++) {
-		Pair p= (Pair) fData.get(i);
-		ids[i]= p.fId;
-	}
+	int n= fData.size();
+	if (n <= 0) return;
+	int[] ids= getIds(0, n-1);
 	OS.SetDataBrowserSelectedItems(handle, ids.length, ids, OS.kDataBrowserItemsAssign);
 }
 void setFocusIndex (int index) {
@@ -1368,23 +981,10 @@ public void setItem (int index, String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (index == -1) error (SWT.ERROR_INVALID_RANGE);
-    /* AW
-	int [] argList = {OS.XmNitemCount, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	*/
 	int size= fData.size();
 	if (!(0 <= index && index < size)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	/* AW
-	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
-	int xmString = OS.XmStringCreateLocalized (buffer);
-	if (xmString == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
-	boolean isSelected = OS.XmListPosSelected (handle, index + 1);
-	OS.XmListReplaceItemsPosUnselected (handle, new int [] {xmString}, 1, index + 1);
-	if (isSelected) OS.XmListSelectPos (handle, index + 1, false);
-	OS.XmStringFree (xmString);
-    */
     Pair p= (Pair) fData.get(index);
     p.fValue= string;
     OS.UpdateDataBrowserItems(handle, OS.kDataBrowserNoItem, 1, new int[] { p.fId }, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
@@ -1405,53 +1005,7 @@ public void setItem (int index, String string) {
 public void setItems (String [] items) {
 	checkWidget();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
-	/*
-	* Bug in AIX.  When all list items are replaced
-	* in a scrolled list that is currently showing a
-	* horizontal scroll bar, the horizontal scroll bar
-	* is hidden, but the list does not grow to take up
-	* the space once occupied by the bar.  The fix is
-	* of force the horizontal bar to be recomputed by
-	* removing all items and resizing the list.
-	*/
-    /* AW
-	OS.XmListSetPos (handle, 0);
-	OS.XmListDeselectAllItems (handle);
-	if ((style & SWT.H_SCROLL) != 0) {
-		OS.XmListDeleteAllItems (handle);
-	}
-	int index = 0;
-	int [] table = new int [items.length];
-	String codePage = getCodePage ();
-	while (index < items.length) {
-		String string = items [index];
-		if (string == null) break;
-		byte [] buffer = Converter.wcsToMbcs (codePage, string, true);
-		int xmString = OS.XmStringCreateLocalized (buffer);
-		if (xmString == 0) break;
-		table [index++] = xmString;
-	}
-	int ptr = OS.XtMalloc (index * 4);
-	OS.memmove (ptr, table, index * 4);
-	int [] argList = {OS.XmNitems, ptr, OS.XmNitemCount, index};
-	OS.XtSetValues (handle, argList, argList.length / 2);
-	for (int i=0; i<index; i++) OS.XmStringFree (table [i]);
-	OS.XtFree (ptr);
-    */
-	/*
-	* Bug in Motif.  Resize the list to work around
-	* the horizontal scroll bar display bug described
-	* above.
-	*/
-    /* AW
-	if ((style & SWT.H_SCROLL) != 0) {
-		OS.XtResizeWindow (handle);
-	}
-	if (index < items.length) error (SWT.ERROR_ITEM_NOT_ADDED);
-    */
-    /* AW
-	int oldSize= fData.size();
-	*/
+
 	fData.clear();
 	int count= items.length;
 	int[] ids= new int[count];
@@ -1460,7 +1014,8 @@ public void setItems (String [] items) {
 		fData.add(p);
 		ids[i]= p.fId;
 	}
-	OS.AddDataBrowserItems(handle, OS.kDataBrowserNoItem, ids.length, ids, 0);
+	if (OS.AddDataBrowserItems(handle, OS.kDataBrowserNoItem, ids.length, ids, 0) != OS.kNoErr)
+		error (SWT.ERROR_ITEM_NOT_ADDED);
 }
 /**
  * Selects the item at the given zero-relative index in the receiver. 
@@ -1541,53 +1096,8 @@ public void setSelection(int[] indices) {
  */
 public void setSelection (String [] items) {
 	checkWidget();
-    /* AW
-	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
-	String codePage = getCodePage ();
-	if ((style & SWT.SINGLE) != 0) {
-		for (int i=items.length-1; i>=0; --i) {
-			String string = items [i];
-			if (string != null) {
-				byte [] buffer = Converter.wcsToMbcs (codePage, string, true);
-				int xmString = OS.XmStringCreateLocalized (buffer);
-				if (xmString != 0) {
-					int index = OS.XmListItemPos (handle, xmString);
-					if (index != 0) OS.XmListSelectPos (handle, index, false);
-					OS.XmStringFree (xmString);
-					if ((index != 0) && OS.XmListPosSelected (handle, index)) return;
-				}
-			}
-		}
-		OS.XmListDeselectAllItems (handle);
-		return;
-	}
-	OS.XmListDeselectAllItems (handle);
-	int length = 0;
-	int [] table = new int [items.length];
-	for (int i=0; i<items.length; i++) {
-		String string = items [i];
-		if (string != null) {
-			byte [] buffer = Converter.wcsToMbcs (codePage, string, true);
-			int xmString = OS.XmStringCreateLocalized (buffer);
-			if (xmString != 0) table [length++] = xmString;
-		}
-	}
-	int ptr = OS.XtMalloc (length * 4);
-	OS.memmove (ptr, table, length * 4);
-	int [] argList = {OS.XmNselectedItems, ptr, OS.XmNselectedItemCount, length};
-	OS.XtSetValues (handle, argList, argList.length / 2);
-	for (int i=0; i<length; i++) OS.XmStringFree (table [i]);
-	OS.XtFree (ptr);
-	OS.XmListUpdateSelectedList (handle);
-    */
-	int count= items.length;
-	int[] ids= new int[count];
-	for (int i=0; i<count; i++) {
-		int id= get(items [i]);
-		ids[i]= id;
-	}
+	int[] ids= getIds(items);
 	OS.SetDataBrowserSelectedItems(handle, ids.length, ids, OS.kDataBrowserItemsAssign);
-
 }
 /**
  * Sets the zero-relative index of the item which is currently
@@ -1603,15 +1113,11 @@ public void setSelection (String [] items) {
  */
 public void setTopIndex (int index) {
 	checkWidget();
-    /* AW
-	int [] argList = {OS.XmNitemCount, 0, OS.XmNvisibleItemCount, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	int newIndex = Math.max (1, Math.min (index + 1, argList [1]));
-	int lastIndex = Math.max (1, argList [1] - argList [3] + 1);
-	if (newIndex > lastIndex) newIndex = lastIndex;
-	OS.XmListSetPos (handle, newIndex);
-    */
-	System.out.println("List.setTopIndex: nyi");
+    int[] top= new int[1];
+    int[] left= new int[1];
+    OS.GetDataBrowserScrollPosition(handle, top, left);
+    top[0]= index * getItemHeight() + 4;
+    OS.SetDataBrowserScrollPosition(handle, top[0], left[0]);
 }
 /**
  * Shows the selection.  If the selection is already showing in the receiver,
@@ -1628,88 +1134,124 @@ public void setTopIndex (int index) {
  */
 public void showSelection () {
 	checkWidget();
-    /* AW
-	int [] buffer = new int [1], positions = new int [1];
-	if (!OS.XmListGetSelectedPos (handle, positions, buffer)) return;
-	if (buffer [0] == 0) return;
-	int address = positions [0];
-	int [] indices = new int [1];
-	OS.memmove (indices, address, 4);
-	OS.XtFree (address);
-	int index = indices [0];
-	int [] argList = {
-		OS.XmNtopItemPosition, 0,
-		OS.XmNvisibleItemCount, 0,
-		OS.XmNitemCount, 0,
-	};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	int topIndex = argList [1], visibleCount = argList [3], count = argList [5];
-	int bottomIndex = Math.min (topIndex + visibleCount - 1, count);
-	if ((topIndex <= index) && (index <= bottomIndex)) return;
-	int lastIndex = Math.max (1, count - visibleCount + 1);
-	int newTop = Math.min (Math.max (index - (visibleCount / 2), 1), lastIndex);
-	OS.XmListSetPos (handle, newTop);
-    */
-	System.out.println("List.showSelection: nyi");
+	   
+	int resultHandle= OS.NewHandle(0);
+	if (OS.GetDataBrowserItems(handle, OS.kDataBrowserNoItem, false, OS.kDataBrowserItemIsSelected, resultHandle) != OS.kNoErr)
+		error (SWT.ERROR_CANNOT_GET_SELECTION);
+	
+	int itemCount= OS.GetHandleSize(resultHandle) / 4;	// sizeof(int)
+	if (itemCount > 0) {	
+		int resultIDs[]= new int[1];
+		OS.getHandleData(resultHandle, resultIDs);
+		if (resultIDs[0] != 0)
+			OS.RevealDataBrowserItem(handle, resultIDs[0], COL_ID, false);
+	}
 }
 
 ////////////////////////////////////
 // Mac stuff
 ////////////////////////////////////
 
+	int processSelection (Object callData) {
+		//System.out.println("List.processSelection: " + getSelectionIndex());
+		return super.processSelection(callData);
+	}
+
 	int sendKeyEvent(int type, int nextHandler, int eRefHandle) {
 		//processEvent (type, new MacEvent(eRefHandle));
 		return OS.eventNotHandledErr;
 	}
 	
-	int handleItemCallback(int cHandle, int colID, int rowID, int item) {
+	int handleItemCallback(int rowID, int colID, int item) {
+		
 		if (colID != COL_ID) {
-			System.out.println("List.handleItemCallback: wrong column ID: " + colID);
-			return 0;
+			//System.out.println("List.handleItemCallback: wrong column id: " + colID);
+			return OS.kNoErr;
 		}
 			
 		String s= get(rowID);
-		if (s != null) {
-			int sHandle= 0;
-			try {
-				sHandle= OS.CFStringCreateWithCharacters(s);
-				OS.SetDataBrowserItemDataText(item, sHandle);
-			} finally {
-				if (sHandle != 0)
-					OS.CFRelease(sHandle);
-			}
-		} else {
-			System.out.println("List.handleItemCallback: index out of range: " + rowID);
+		if (s == null) {
+			System.out.println("List.handleItemCallback: can't find row with id: " + rowID);
+			return -1;
 		}
-		return 0;
+			
+		int sHandle= 0;
+		try {
+			sHandle= OS.CFStringCreateWithCharacters(s);
+			OS.SetDataBrowserItemDataText(item, sHandle);
+		} finally {
+			if (sHandle != 0)
+				OS.CFRelease(sHandle);
+		}
+		return OS.kNoErr;
 	}
 
+	int handleCompareCallback(int item1ID, int item2ID, int item) {
+		if (getIndex(item1ID) < getIndex(item2ID))
+			return 1;
+		return 0;
+	}
+	
+	/**
+	 * Returns string value of row with the given ID
+	 */
 	private String get(int id) {
-		int n= fData.size();
-    	String[] result= new String[n];
-    	for (int i= 0; i < n; i++) {
-    		Pair p= (Pair) fData.get(i);
+		Iterator iter= fData.iterator();
+		while (iter.hasNext()) {
+			Pair p= (Pair) iter.next();
     		if (p.fId == id)
     			return p.fValue;
     	}
 		return null;
 	}
 
+	/**
+	 * Returns the index of row with the given ID
+	 */
 	private int getIndex(int id) {
-		int n= fData.size();
-    	String[] result= new String[n];
-    	for (int i= 0; i < n; i++) {
-    		Pair p= (Pair) fData.get(i);
+		Iterator iter= fData.iterator();
+		for (int i= 0; iter.hasNext(); i++) {
+			Pair p= (Pair) iter.next();
     		if (p.fId == id)
-    			return i;
-    	}
+    			return i;			
+		}
 		return -1;
 	}
 	
-	private int get(String s) {
+	/**
+	 * Returns the index of the first row that matches the given string
+	 */
+	private int getIndex(String s, int start) {
+		if (s == null) error (SWT.ERROR_NULL_ARGUMENT);
 		int n= fData.size();
-    	for (int i= 0; i < n; i++) {
-    		Pair p= (Pair) fData.get(i);
+		for (int i= start; i < n; i++) {
+			Pair p= (Pair) fData.get(i);
+			if (s.equals(p.fValue))
+				return i;
+		}
+		return -1;
+	}
+	
+	/**
+	 * Returns the ID of the first row that matches the given string
+	 */
+	private Pair getPair(String s) {
+		Iterator iter= fData.iterator();
+		while (iter.hasNext()) {
+			Pair p= (Pair) iter.next();
+    		if (s.equals(p.fValue))
+    			return p;
+    	}
+		return null;
+	}
+	
+	/**
+	 * Returns the ID of the first row that matches the given string
+	 */
+	private int getID(String s) {
+		Iterator iter= fData.iterator();
+		while (iter.hasNext()) {
+			Pair p= (Pair) iter.next();
     		if (s.equals(p.fValue))
     			return p.fId;
     	}
@@ -1732,8 +1274,23 @@ public void showSelection () {
 		int count= items.length;
 		int[] ids= new int[count];
 		for (int i=0; i<count; i++) {
-			int id= get(items[i]);
+			int id= getID(items[i]);
 			ids[i]= id;
+		}
+		return ids;
+	}
+	
+	private int[] getIds(int start, int end) {
+		int n= fData.size();
+		if (start < 0 && start >= n)
+			error (SWT.ERROR_INVALID_RANGE);
+		if (end >= n)
+			error (SWT.ERROR_INVALID_RANGE);
+		int count= end-start+1;
+		int[] ids= new int[count];
+		for (int i= 0; i < count; i++) {
+			Pair p= (Pair) fData.get(start+i);
+			ids[i]= p.fId;
 		}
 		return ids;
 	}
