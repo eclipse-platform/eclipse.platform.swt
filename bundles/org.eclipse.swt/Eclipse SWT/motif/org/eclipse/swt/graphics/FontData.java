@@ -532,8 +532,12 @@ void setXlfd(String xlfd) {
 	start = stop + 1;
 	stop = xlfd.indexOf ("-", start);
 	s = xlfd.substring(start, stop);
-	if (!s.equals("") && !s.equals("*"))
+	if (!s.equals("") && !s.equals("*")) {
+		if (s.startsWith ("~")) {
+			s = "-" + s.substring(1);
+		}
 		averageWidth = Integer.parseInt(s);
+	}
 	start = stop + 1;
 	stop = xlfd.indexOf ("-", start);
  	characterSetRegistry = xlfd.substring(start, stop);
