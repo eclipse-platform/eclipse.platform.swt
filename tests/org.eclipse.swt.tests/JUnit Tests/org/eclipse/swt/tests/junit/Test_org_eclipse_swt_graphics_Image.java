@@ -733,7 +733,7 @@ String getPath(String fileName) {
 	}
 	
 	if (File.separatorChar != '/') urlPath = urlPath.replace('/', File.separatorChar);	
-//	if (urlPath.indexOf(File.separatorChar) == 0) urlPath = urlPath.substring(1);
+	if (SwtJunit.isWindows && urlPath.indexOf(File.separatorChar) == 0) urlPath = urlPath.substring(1);
 	urlPath = urlPath.replaceAll("%20", " ");	
 	
 	System.out.println("Resolved file name for " + fileName + " = " + urlPath);
