@@ -218,7 +218,7 @@ public class Accessible {
 	public void removeAccessibleControlListener (AccessibleControlListener listener) {
 		checkWidget ();
 		if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-		controlListeners.remove (listener);
+		controlListeners.removeElement (listener);
 	}
 
 	/**
@@ -243,7 +243,7 @@ public class Accessible {
 	public void removeAccessibleListener (AccessibleListener listener) {
 		checkWidget ();
 		if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-		accessibleListeners.remove (listener);
+		accessibleListeners.removeElement (listener);
 	}
 
 	/**
@@ -270,7 +270,7 @@ public class Accessible {
 	public void removeAccessibleTextListener (AccessibleTextListener listener) {
 		checkWidget ();
 		if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-		textListeners.remove (listener);
+		textListeners.removeElement (listener);
 	}
 	
 	/**
