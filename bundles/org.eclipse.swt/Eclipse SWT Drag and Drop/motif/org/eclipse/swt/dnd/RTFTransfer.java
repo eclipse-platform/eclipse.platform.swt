@@ -66,7 +66,7 @@ public void javaToNative (Object object, TransferData transferData){
 	int pValue = OS.XtMalloc(buffer.length);
 	if (pValue == 0) return;
 	OS.memmove(pValue, buffer, buffer.length);
-	transferData.length = buffer.length;
+	transferData.length = buffer.length - 1;
 	transferData.format = 8;
 	transferData.pValue = pValue;
 	transferData.result = 1;

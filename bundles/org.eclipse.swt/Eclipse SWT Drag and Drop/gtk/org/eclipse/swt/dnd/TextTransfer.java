@@ -80,7 +80,7 @@ public void javaToNative (Object object, TransferData transferData) {
 		OS.memmove(pValue, buffer, buffer.length);
 		transferData.type = STRING_ID;
 		transferData.format = 8;
-		transferData.length = buffer.length;
+		transferData.length = buffer.length - 1;
 		transferData.pValue = pValue;
 		transferData.result = 1;
 	}
