@@ -366,11 +366,12 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 		return;
 
 	MacRect ib= new MacRect(srcX, srcY, srcWidth, srcHeight);
-	fRect.set(destX, destY, destWidth, destHeight);
 
  	try {
 		if (focus(true, null)) {
-			
+	
+			fRect.set(destX, destY, destWidth, destHeight);
+		
 			OS.RGBBackColor(0x00FFFFFF);
 			OS.RGBForeColor(0x00000000);
 
