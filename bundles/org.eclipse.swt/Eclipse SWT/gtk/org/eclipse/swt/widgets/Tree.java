@@ -910,9 +910,6 @@ public void showSelection () {
 }
 
 void showItem (int path, boolean scroll) {
-	GdkRectangle rect = new GdkRectangle ();
-	OS.gtk_tree_view_get_cell_area (handle, path, 0, rect);
-	if (rect.y != 0 || rect.height != 0) return;
 	int depth = OS.gtk_tree_path_get_depth (path);
 	if (depth > 1) {
 		int [] indices = new int [depth - 1];
@@ -926,7 +923,11 @@ void showItem (int path, boolean scroll) {
 		OS.gtk_tree_path_free (tempPath);		
 	}
 	if (scroll) {
-		OS.gtk_tree_view_scroll_to_cell (handle, path, 0, depth != 1, 0.5f, 0.5f);
+		GdkRectangle rect = new GdkRectangle ();
+		OS.gtk_tree_view_get_cell_area (handle, path, 0, rect);
+		if (rect.y == 0 && rect.height == 0) {
+			OS.gtk_tree_view_scroll_to_cell (handle, path, 0, depth != 1, 0.5f, 0.5f);
+		}
 	}
 }
 
