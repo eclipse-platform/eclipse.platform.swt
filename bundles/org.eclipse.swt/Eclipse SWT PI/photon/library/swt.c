@@ -6677,7 +6677,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_GetStringUTFLengt
     fprintf(stderr, "GetStringUTFLength\n");
 #endif
 	
-	return (*env)->GetStringUTFLength(string);
+	return (*env)->GetStringUTFLength(env, string);
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_GetStringUTFRegion

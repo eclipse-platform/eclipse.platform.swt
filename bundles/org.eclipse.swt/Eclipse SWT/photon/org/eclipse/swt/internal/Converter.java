@@ -34,7 +34,7 @@ public static String defaultCodePage () {
 public static char [] mbcsToWcs (String codePage, byte [] buffer) {
 	int length = buffer.length;
 	if (length == 0) return EmptyCharArray;
-	if (buffer [length] != 0) {
+	if (buffer [length - 1] != 0) {
 		byte [] newBuffer = new byte [length + 1];
 		System.arraycopy (buffer, 0, newBuffer, 0, length);
 		buffer = newBuffer; 	
