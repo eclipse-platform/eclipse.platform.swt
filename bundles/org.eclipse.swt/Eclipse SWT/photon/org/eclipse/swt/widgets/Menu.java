@@ -458,6 +458,13 @@ public Shell getShell () {
 	return parent.getShell ();
 }
 
+public Point getSize () {
+	checkWidget();
+	PhArea_t area = new PhArea_t ();
+	OS.PtWidgetArea (handle, area);
+	return new Point (area.size_w, area.size_h);
+}
+
 /**
  * Returns <code>true</code> if the receiver is visible, and
  * <code>false</code> otherwise.
