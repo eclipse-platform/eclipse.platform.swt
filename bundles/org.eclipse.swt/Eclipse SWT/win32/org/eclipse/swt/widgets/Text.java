@@ -34,7 +34,7 @@ import org.eclipse.swt.events.*;
  */
 public class Text extends Scrollable {
 	int tabs, oldStart, oldEnd;
-	boolean doubleClick, ignoreVerify, ignoreCharacter;
+	boolean doubleClick, ignoreModify, ignoreVerify, ignoreCharacter;
 	
 	/**
 	* The maximum number of characters that can be entered
@@ -534,12 +534,12 @@ public Point getCaretLocation () {
 			* from a WM_CHAR handler.  The fix is to ignore calling the
 			* handler from WM_CHAR.
 			*/
-			ignoreCharacter = true;
+			ignoreCharacter = ignoreModify = true;
 			OS.SendMessage (handle, OS.EM_REPLACESEL, 0, new TCHAR (cp, " ", true));
 			pos = OS.SendMessage (handle, OS.EM_POSFROMCHAR, start [0], 0);
 			OS.SendMessage (handle, OS.EM_SETSEL, start [0], start [0] + 1);
 			OS.SendMessage (handle, OS.EM_REPLACESEL, 0, new TCHAR (cp, "", true));
-			ignoreCharacter = false;
+			ignoreCharacter = ignoreModify = false;
 		}
 	}
 	return new Point ((short) (pos & 0xFFFF), (short) (pos >> 16));
@@ -2005,7 +2005,8 @@ LRESULT WM_UNDO (int wParam, int lParam) {
 LRESULT wmCommandChild (int wParam, int lParam) {
 	int code = wParam >> 16;
 	switch (code) {
-		case OS.EN_CHANGE: 
+		case OS.EN_CHANGE:
+			if (ignoreModify) break;
 			/*
 			* It is possible (but unlikely), that application
 			* code could have disposed the widget in the modify
