@@ -285,7 +285,7 @@ public boolean open () {
 					*/
 					event.x = newX;
 					event.y = newY;
-					if ((style | SWT.RESIZE) != 0) {
+					if ((style & SWT.RESIZE) != 0) {
 						sendEvent (SWT.Resize, event);
 					} else {
 						sendEvent (SWT.Move, event);
@@ -332,7 +332,7 @@ public boolean open () {
 					newY = oldY + yChange;
 					event.x = newX;
 					event.y = newY;
-					if ((style | SWT.RESIZE) != 0) {
+					if ((style & SWT.RESIZE) != 0) {
 						sendEvent (SWT.Resize, event);
 					} else {
 						sendEvent (SWT.Move, event);
@@ -345,12 +345,12 @@ public boolean open () {
 					*/
 					if (isDisposed ()) return false;
 					drawRectangles ();
-					Rectangle boundingRectangle = computeBounds();
-						newX = boundingRectangle.x + boundingRectangle.width / 2;
+					Rectangle bounds = computeBounds();
+						newX = bounds.x + bounds.width / 2;
 					if ((style & SWT.RESIZE) != 0) {
-						newY = boundingRectangle.y + boundingRectangle.height / 2;
+						newY = bounds.y + bounds.height / 2;
 					} else {
-						newY = boundingRectangle.y;
+						newY = bounds.y;
 					}
 					POINT pt = new POINT ();
 					pt.x = newX;  pt.y = newY;
@@ -406,10 +406,10 @@ public void removeControlListener (ControlListener listener) {
 }
 
 void resizeRectangles(int xChange, int yChange) {
-	Rectangle boundingRectangle = computeBounds();
+	Rectangle bounds = computeBounds();
 	for (int i = 0; i < rectangles.length; i++) {
-		rectangles [i].width += rectangles [i].width * xChange / Math.max(1,boundingRectangle.width);
-		rectangles [i].height += rectangles [i].height * yChange / Math.max(1,boundingRectangle.height);
+		rectangles [i].width += rectangles [i].width * xChange / Math.max(1,bounds.width);
+		rectangles [i].height += rectangles [i].height * yChange / Math.max(1,bounds.height);
 	}
 }
 
