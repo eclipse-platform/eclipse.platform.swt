@@ -235,9 +235,11 @@ void convert4BitRGBToYCbCr(ImageData image) {
 	byte[] dataCbComp = new byte[bSize];
 	byte[] dataCrComp = new byte[bSize];
 	byte[] origData = image.data;
+	int bytesPerLine = image.bytesPerLine;
+	int maxScanlineByte = srcWidth / 2;
 	for (int yPos = 0; yPos < srcHeight; yPos++) {
-		for (int xPos = 0; xPos < srcWidth / 2; xPos++) {
-			int srcIndex = yPos * (srcWidth / 2) + xPos;
+		for (int xPos = 0; xPos < maxScanlineByte; xPos++) {
+			int srcIndex = yPos * bytesPerLine + xPos;
 			int dstIndex = yPos * srcWidth + (xPos * 2);
 			int value2 = origData[srcIndex] & 0xFF;
 			int value1 = value2 / 16;
