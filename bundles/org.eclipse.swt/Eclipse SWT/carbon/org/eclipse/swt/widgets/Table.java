@@ -19,8 +19,8 @@ import org.eclipse.swt.internal.carbon.DataBrowserListViewHeaderDesc;
 import org.eclipse.swt.internal.carbon.Rect;
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 
 /** 
  * Instances of this class implement a selectable user interface
@@ -56,6 +56,7 @@ public class Table extends Composite {
 	Rectangle imageBounds;
 	int showIndex, lastHittest;
 	static final int CHECK_COLUMN_ID = 1024;
+	static final int COLUMN_ID = 1025;
 	static final int EXTRA_WIDTH = 24;
 	static final int CHECK_COLUMN_WIDTH = 25;
 
@@ -126,25 +127,13 @@ public void addSelectionListener (SelectionListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Selection,typedListener);
-	addListener (SWT.DefaultSelection,typedListener);
+	addListener (SWT.Selection, typedListener);
+	addListener (SWT.DefaultSelection, typedListener);
 }
 
 TableItem _getItem (int index) {
 	if (items [index] != null) return items [index];
 	return items [index] = new TableItem (this, SWT.NULL, -1, false);
-}
-
-static int checkStyle (int style) {
-	/*
-	* Feature in Windows.  It is not possible to create
-	* a table that does not have scroll bars.  Therefore,
-	* no matter what style bits are specified, set the
-	* H_SCROLL and V_SCROLL bits so that the SWT style
-	* will match the widget that Windows creates.
-	*/
-	style |= SWT.H_SCROLL | SWT.V_SCROLL;
-	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
 
 int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEvent, int nextHandler) {
@@ -217,6 +206,18 @@ void checkItems (boolean setScrollWidth) {
 		OS.SetDataBrowserCallbacks (handle, callbacks);
 	}
 	if (setScrollWidth) setScrollWidth (items, true);
+}
+
+static int checkStyle (int style) {
+	/*
+	* Feature in Windows.  It is not possible to create
+	* a table that does not have scroll bars.  Therefore,
+	* no matter what style bits are specified, set the
+	* H_SCROLL and V_SCROLL bits so that the SWT style
+	* will match the widget that Windows creates.
+	*/
+	style |= SWT.H_SCROLL | SWT.V_SCROLL;
+	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
 
 protected void checkSubclass () {
@@ -415,7 +416,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 }
 
 void createHandle () {
-	column_id = 1025;
+	column_id = COLUMN_ID;
 	int [] outControl = new int [1];
 	int window = OS.GetControlOwner (parent.handle);
 	OS.CreateDataBrowserControl (window, null, OS.kDataBrowserListView, outControl);
@@ -431,9 +432,6 @@ void createHandle () {
 	headerHeight = height [0];
 	OS.SetDataBrowserListViewHeaderBtnHeight (handle, (short) 0);
 	OS.SetDataBrowserHasScrollBars (handle, (style & SWT.H_SCROLL) != 0, (style & SWT.V_SCROLL) != 0);
-	if ((style & SWT.FULL_SELECTION) != 0) {
-		OS.SetDataBrowserTableViewHiliteStyle (handle, OS.kDataBrowserTableViewFillHilite);
-	}
 	int position = 0;
 	if ((style & SWT.CHECK) != 0) {
 		DataBrowserListViewColumnDesc checkColumn = new DataBrowserListViewColumnDesc ();
@@ -493,7 +491,7 @@ void createItem (TableColumn column, int index) {
 		desc.headerBtnDesc_version = OS.kDataBrowserListViewLatestHeaderDesc;
 		desc.propertyDesc_propertyID = column.id;
 		desc.propertyDesc_propertyType = OS.kDataBrowserCustomType;
-		desc.propertyDesc_propertyFlags = OS.kDataBrowserDefaultPropertyFlags;
+		desc.propertyDesc_propertyFlags = OS.kDataBrowserListViewSelectionColumn | OS.kDataBrowserDefaultPropertyFlags;
 		desc.headerBtnDesc_maximumWidth = 0x7fff;
 		desc.headerBtnDesc_initialOrder = OS.kDataBrowserOrderIncreasing;
 		desc.headerBtnDesc_btnFontStyle_just = OS.teFlushLeft;
@@ -2077,6 +2075,22 @@ public void setRedraw (boolean redraw) {
 	}
 }
 
+boolean setScrollWidth (TableItem item) {
+	if (ignoreRedraw || drawCount != 0) return false;
+	if (columnCount != 0) return false;
+	GC gc = new GC (this);
+	int newWidth = item.calculateWidth (0, gc);
+	gc.dispose ();
+	newWidth += EXTRA_WIDTH;
+	short [] width = new short [1];
+	OS.GetDataBrowserTableViewNamedColumnWidth (handle, column_id, width);
+	if (width [0] < newWidth) {
+		OS.SetDataBrowserTableViewNamedColumnWidth (handle, column_id, (short) newWidth);
+		return true;
+	}
+	return false;
+}
+
 boolean setScrollWidth (TableItem [] items, boolean set) {
 	if (ignoreRedraw || drawCount != 0) return false;
 	if (columnCount != 0) return false;
@@ -2097,22 +2111,6 @@ boolean setScrollWidth (TableItem [] items, boolean set) {
 	}
 	OS.SetDataBrowserTableViewNamedColumnWidth (handle, column_id, (short) newWidth);
 	return true;
-}
-
-boolean setScrollWidth (TableItem item) {
-	if (ignoreRedraw || drawCount != 0) return false;
-	if (columnCount != 0) return false;
-	GC gc = new GC (this);
-	int newWidth = item.calculateWidth (0, gc);
-	gc.dispose ();
-	newWidth += EXTRA_WIDTH;
-	short [] width = new short [1];
-	OS.GetDataBrowserTableViewNamedColumnWidth (handle, column_id, width);
-	if (width [0] < newWidth) {
-		OS.SetDataBrowserTableViewNamedColumnWidth (handle, column_id, (short) newWidth);
-		return true;
-	}
-	return false;
 }
 
 /**
