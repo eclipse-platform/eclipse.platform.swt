@@ -398,12 +398,12 @@ int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
 	switch (keyCode [0]) {
 		case 125: { /* Down */
 			int index = getSelectionIndex ();
-			setSelection (Math.min (itemCount - 1, index + 1));
+			setSelection (Math.min (itemCount - 1, index + 1), true);
 			return OS.noErr;
 		}
 		case 126: { /* Up*/
 			int index = getSelectionIndex ();
-			setSelection (Math.max (0, index - 1));
+			setSelection (Math.max (0, index - 1), true);
 			return OS.noErr;
 		}
 	}
@@ -656,11 +656,16 @@ public void setItems (String [] items) {
 
 public void setSelection (int index) {
 	checkWidget();
+	setSelection (index, false);
+}
+
+void setSelection (int index, boolean notify) {
+//	checkWidget();
 	if (0 <= index && index < itemCount) {
 		int [] id = new int [] {index + 1};
-		ignoreSelect = true;
+		if (!notify) ignoreSelect = true;
 		OS.SetDataBrowserSelectedItems (handle, id.length, id, OS.kDataBrowserItemsAssign);
-		ignoreSelect = false;
+		if (!notify) ignoreSelect = false;
 		showIndex (index);
 	}
 }
