@@ -166,21 +166,20 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	*/
 	Point result= MacUtil.computeSize(handle);
 	if ((style & SWT.PUSH) != 0) {
-		if (MacUtil.JAGUAR) {
-			
-		} else {
-			String s= getText();
-			if (s != null && s.length() > 0) {
-				GC gc= new GC(this);
-				result= gc.textExtent(s);
-				gc.dispose();
-			} else if (image != null) {
-				Rectangle bounds= image.getBounds();
-				result.x= bounds.width;
-				result.y= bounds.height;
-			}
-			result.x= SHADOW_WIDTH + 16 + result.x + 16 + SHADOW_WIDTH;
-			result.y= SHADOW_HEIGHT + 4 + result.y + 4 + SHADOW_HEIGHT;
+		String s= getText();
+		if (s != null && s.length() > 0) {
+			/*
+			GC gc= new GC(this);
+			result= gc.textExtent(s);
+			gc.dispose();
+			result.y= 16;
+			//result.x= SHADOW_WIDTH + 16 + result.x + 16 + SHADOW_WIDTH;
+			//result.y= SHADOW_HEIGHT + 4 + result.y + 4 + SHADOW_HEIGHT;
+			*/
+		} else if (image != null) {
+			Rectangle bounds= image.getBounds();
+			result.x= 4 + bounds.width + 4;
+			result.y= 4 + bounds.height + 4;
 		}
 	}
 	width += result.x;
@@ -250,7 +249,7 @@ void createHandle (int index) {
 		};
 		handle = OS.XmCreateArrowButton (parentHandle, null, argList, argList.length / 2);
         */
-        handle= MacUtil.newControl(parentHandle, (short)0, (short)0, (short)0, OS.kControlPopupArrowEastProc);
+        handle= MacUtil.newControl(parentHandle, OS.kControlPopupArrowEastProc);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
         /* AW
 		if ((style & SWT.FLAT) != 0) {
@@ -336,7 +335,7 @@ void createHandle (int index) {
 	short type= (style & SWT.FLAT) != 0
 					? OS.kControlBevelButtonNormalBevelProc
 					: OS.kControlPushButtonProc;
-    handle= MacUtil.newControl(parentHandle, (short)0, (short)0, (short)0, type);
+    handle= MacUtil.newControl(parentHandle, type);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	setFont(defaultFont());
 	/* AW
@@ -493,7 +492,7 @@ void releaseWidget () {
     if (fCIconHandle != 0) {
     	if (handle != 0)
     		OS.SetBevelButtonContentInfo(handle, (short)0, 0);
-		Image.DisposeCIcon(fCIconHandle);
+		Image.disposeCIcon(fCIconHandle);
 		fCIconHandle= 0;
     }
 	image = null;
@@ -590,7 +589,7 @@ public void setImage (Image image) {
 	this.image = image;
 	
 	if (fCIconHandle != 0) {
-		Image.DisposeCIcon(fCIconHandle);
+		Image.disposeCIcon(fCIconHandle);
 		fCIconHandle= 0;
 	}
 	
