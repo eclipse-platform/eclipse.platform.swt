@@ -534,6 +534,7 @@ public void setSelection (int index) {
 }
 
 void setSelection (int index, boolean notify) {
+	if (index >= OS.GetControl32BitMaximum (handle)) return;
 	int currentIndex = OS.GetControl32BitValue (handle) - 1;
 	if (currentIndex != -1) {
 		TabItem item = items [currentIndex];
