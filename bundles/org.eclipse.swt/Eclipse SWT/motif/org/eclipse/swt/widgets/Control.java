@@ -427,8 +427,8 @@ Control [] computeTabList () {
 
 void createWidget (int index) {
 	checkOrientation (parent);
-	checkBuffered ();
 	super.createWidget (index);
+	checkBuffered ();
 	setParentTraversal ();
 	overrideTranslations ();
 	
@@ -2945,27 +2945,22 @@ int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) 
 	OS.memmove (xEvent, call_data, XExposeEvent.sizeof);
 	int xDisplay = OS.XtDisplay (handle);
 	if (xDisplay == 0) return 0;
+	int damageRgn = OS.XCreateRegion ();
+	OS.XtAddExposureToRegion (call_data, damageRgn);
 	Event event = new Event ();
 	event.count = xEvent.count;
 	event.x = xEvent.x;
 	event.y = xEvent.y;
 	event.width = xEvent.width;
 	event.height = xEvent.height;
-	XRectangle rect = new XRectangle ();
-	rect.x = (short) xEvent.x;
-	rect.y = (short) xEvent.y;
-	rect.width = (short) xEvent.width;
-	rect.height = (short) xEvent.height;
-	int damageRgn = OS.XCreateRegion ();
-	OS.XUnionRectWithRegion (rect, damageRgn, damageRgn);
 	GCData data = new GCData();
 	data.damageRgn = damageRgn;
 	GC gc = event.gc = GC.motif_new(this, data);
 	OS.XSetRegion (xDisplay, gc.handle, damageRgn);
 	sendEvent (SWT.Paint, event);
+	event.gc = null;
 	gc.dispose ();
 	OS.XDestroyRegion(damageRgn);
-	event.gc = null;
 	return 0;
 }
 int XFocusChange (int w, int client_data, int call_data, int continue_to_dispatch) {

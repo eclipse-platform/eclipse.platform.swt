@@ -464,8 +464,8 @@ Control [] computeTabList () {
 
 void createWidget (int index) {
 	checkOrientation (parent);
-	checkBuffered ();
 	super.createWidget (index);
+	checkBuffered ();
 	setZOrder ();
 	realizeWidget ();
 	setDefaultFont ();

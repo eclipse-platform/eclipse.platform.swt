@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 638;
-int OS_nativeFunctionCallCount[638];
+int OS_nativeFunctionCount = 642;
+int OS_nativeFunctionCallCount[642];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateKeyboardLayout",
@@ -211,6 +211,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetMessagePos",
 	"GetMessageTime",
 	"GetMessageW",
+	"GetMetaRgn",
 	"GetModuleHandleA",
 	"GetModuleHandleW",
 	"GetMonitorInfoA",
@@ -269,6 +270,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetWindow",
 	"GetWindowLongA",
 	"GetWindowLongW",
+	"GetWindowOrgEx",
 	"GetWindowPlacement",
 	"GetWindowRect",
 	"GetWindowRgn",
@@ -435,6 +437,7 @@ char * OS_nativeFunctionNames[] = {
 	"MultiByteToWideChar__IIII_3CI",
 	"MultiByteToWideChar__II_3BI_3CI",
 	"NotifyWinEvent",
+	"OffsetRect",
 	"OffsetRgn",
 	"OleInitialize",
 	"OleUninitialize",
@@ -597,6 +600,7 @@ char * OS_nativeFunctionNames[] = {
 	"SetTimer",
 	"SetWindowLongA",
 	"SetWindowLongW",
+	"SetWindowOrgEx",
 	"SetWindowPlacement",
 	"SetWindowPos",
 	"SetWindowRgn",

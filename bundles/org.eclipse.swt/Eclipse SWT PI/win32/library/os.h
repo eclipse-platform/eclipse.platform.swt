@@ -211,6 +211,7 @@
 #define NO_GetMenuItemRect
 #define NO_GetMessageA
 #define NO_GetMessageTime
+#define NO_GetMetaRgn
 #define NO_GetModuleHandleA
 #define NO_GetMonitorInfoA
 #define NO_GetMonitorInfoW
@@ -236,6 +237,7 @@
 #define NO_GetTextMetricsA
 #define NO_GetVersionExA
 #define NO_GetWindowLongA
+#define NO_GetWindowOrgEx
 #define NO_GetWindowPlacement
 #define NO_GetWindowTextA
 #define NO_GetWindowTextLengthA
@@ -355,6 +357,7 @@
 #define NO_SetStretchBltMode
 #define NO_SetTextAlign
 #define NO_SetWindowLongA
+#define NO_SetWindowOrgEx
 #define NO_SetWindowPlacement
 #define NO_SetWindowTextA
 #define NO_SetWindowsHookExA

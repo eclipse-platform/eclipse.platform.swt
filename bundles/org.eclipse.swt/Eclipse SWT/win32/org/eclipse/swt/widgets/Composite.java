@@ -176,6 +176,12 @@ public void changed (Control[] changed) {
 	}
 }
 
+void checkBuffered () {
+	if (OS.IsWinCE || (state & CANVAS) == 0) {
+		super.checkBuffered ();
+	}
+}
+
 protected void checkSubclass () {
 	/* Do nothing - Subclassing is allowed */
 }
@@ -1047,15 +1053,19 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 		int [] lpRgnData = null;
 		boolean isComplex = false;
 		boolean exposeRegion = false;
-		if ((style & SWT.NO_MERGE_PAINTS) != 0) {
-			int rgn = OS.CreateRectRgn (0, 0, 0, 0);
+
+		int rgn = 0;
+		if ((style & (SWT.NO_MERGE_PAINTS | SWT.DOUBLE_BUFFERED)) != 0) {
+			rgn = OS.CreateRectRgn (0, 0, 0, 0);
 			isComplex = OS.GetUpdateRgn (handle, rgn, false) == OS.COMPLEXREGION;
+		}
+
+		if ((style & SWT.NO_MERGE_PAINTS) != 0) {
 			if (isComplex) {
 				int nBytes = OS.GetRegionData (rgn, 0, null);
 				lpRgnData = new int [nBytes / 4];
 				exposeRegion = OS.GetRegionData (rgn, nBytes, lpRgnData) != 0;
 			}
-			OS.DeleteObject (rgn);
 		}
 	
 		/* Create the paint GC */
@@ -1068,6 +1078,25 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 		int width = ps.right - ps.left;
 		int height = ps.bottom - ps.top;
 		if (width != 0 && height != 0) {
+			GC paintGC = null;
+			Image image = null;
+			if ((style & SWT.DOUBLE_BUFFERED) != 0) {
+				image = new Image (display, width, height);
+				paintGC = gc;
+				gc = new GC (image);
+				gc.setForeground (getForeground ());
+				gc.setBackground (getBackground ());
+				gc.setFont (getFont ());
+				if ((style & SWT.NO_BACKGROUND) != 0) {
+					paintGC.copyArea (image, ps.left, ps.top);
+				} else {
+					gc.fillRectangle (0, 0, width, height);
+				}
+				OS.OffsetRgn (rgn, -ps.left, -ps.top);
+				OS.SelectClipRgn (gc.handle, rgn);
+				OS.SetMetaRgn (gc.handle);
+				OS.SetWindowOrgEx (gc.handle, ps.left, ps.top, null);
+			}
 			Event event = new Event ();
 			event.gc = gc;
 			if (isComplex && exposeRegion) {
@@ -1079,7 +1108,7 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 						lpRgnData [8 + (i << 2) + 1],
 						lpRgnData [8 + (i << 2) + 2],
 						lpRgnData [8 + (i << 2) + 3]);
-					if ((style & SWT.NO_BACKGROUND) == 0) {
+					if ((style & (SWT.DOUBLE_BUFFERED | SWT.NO_BACKGROUND)) == 0) {
 						drawBackground (gc.handle, rect);
 					}
 					event.x = rect.left;
@@ -1098,7 +1127,7 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 					if (isDisposed ()) break;
 				}
 			} else {
-				if ((style & SWT.NO_BACKGROUND) == 0) {
+				if ((style & (SWT.DOUBLE_BUFFERED | SWT.NO_BACKGROUND)) == 0) {
 					RECT rect = new RECT ();
 					OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
 					drawBackground (gc.handle, rect);
@@ -1111,10 +1140,19 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 			}
 			// widget could be disposed at this point
 			event.gc = null;
+			if ((style & SWT.DOUBLE_BUFFERED) != 0) {
+				gc.dispose();
+				if (!isDisposed ()) {
+					paintGC.drawImage(image, ps.left, ps.top);
+				}
+				image.dispose();
+				gc = paintGC;
+			}
 		}
 		
 		/* Dispose the paint GC */
 		gc.dispose ();
+		if (rgn != 0) OS.DeleteObject (rgn);
 	} else {
 		int hDC = OS.BeginPaint (handle, ps);
 		if ((style & SWT.NO_BACKGROUND) == 0) {

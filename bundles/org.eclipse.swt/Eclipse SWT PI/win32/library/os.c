@@ -3147,6 +3147,18 @@ fail:
 }
 #endif
 
+#ifndef NO_GetMetaRgn
+JNIEXPORT jint JNICALL OS_NATIVE(GetMetaRgn)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetMetaRgn_FUNC);
+	rc = (jint)GetMetaRgn((HDC)arg0, (HRGN)arg1);
+	OS_NATIVE_EXIT(env, that, GetMetaRgn_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetModuleHandleA
 JNIEXPORT jint JNICALL OS_NATIVE(GetModuleHandleA)
 	(JNIEnv *env, jclass that, jbyteArray arg0)
@@ -4105,6 +4117,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetWindowLongW)
 	OS_NATIVE_ENTER(env, that, GetWindowLongW_FUNC);
 	rc = (jint)GetWindowLongW((HWND)arg0, arg1);
 	OS_NATIVE_EXIT(env, that, GetWindowLongW_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetWindowOrgEx
+JNIEXPORT jboolean JNICALL OS_NATIVE(GetWindowOrgEx)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	POINT _arg1, *lparg1=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, GetWindowOrgEx_FUNC);
+	if (arg1) if ((lparg1 = getPOINTFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jboolean)GetWindowOrgEx((HDC)arg0, lparg1);
+fail:
+	if (arg1 && lparg1) setPOINTFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, GetWindowOrgEx_FUNC);
 	return rc;
 }
 #endif
@@ -6671,6 +6699,22 @@ JNIEXPORT void JNICALL OS_NATIVE(NotifyWinEvent)
 		}
 	}
 	OS_NATIVE_EXIT(env, that, NotifyWinEvent_FUNC);
+}
+#endif
+
+#ifndef NO_OffsetRect
+JNIEXPORT jboolean JNICALL OS_NATIVE(OffsetRect)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	RECT _arg0, *lparg0=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, OffsetRect_FUNC);
+	if (arg0) if ((lparg0 = getRECTFields(env, arg0, &_arg0)) == NULL) goto fail;
+	rc = (jboolean)OffsetRect(lparg0, arg1, arg2);
+fail:
+	if (arg0 && lparg0) setRECTFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, OffsetRect_FUNC);
+	return rc;
 }
 #endif
 
@@ -9255,6 +9299,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetWindowLongW)
 	OS_NATIVE_ENTER(env, that, SetWindowLongW_FUNC);
 	rc = (jint)SetWindowLongW((HWND)arg0, arg1, arg2);
 	OS_NATIVE_EXIT(env, that, SetWindowLongW_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SetWindowOrgEx
+JNIEXPORT jboolean JNICALL OS_NATIVE(SetWindowOrgEx)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	POINT _arg3, *lparg3=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, SetWindowOrgEx_FUNC);
+	if (arg3) if ((lparg3 = getPOINTFields(env, arg3, &_arg3)) == NULL) goto fail;
+	rc = (jboolean)SetWindowOrgEx((HDC)arg0, arg1, arg2, lparg3);
+fail:
+	if (arg3 && lparg3) setPOINTFields(env, arg3, lparg3);
+	OS_NATIVE_EXIT(env, that, SetWindowOrgEx_FUNC);
 	return rc;
 }
 #endif

@@ -494,8 +494,8 @@ void createHandle () {
 void createWidget () {
 	foreground = background = -1;
 	checkOrientation (parent);
-	checkBuffered ();
 	createHandle ();
+	checkBuffered ();
 	register ();
 	subclass ();
 	setDefaultFont ();

@@ -2296,6 +2296,14 @@ public void getClipping (Region region) {
 		OS.SetRectRgn(region.handle, rect.left, rect.top, rect.right, rect.bottom);
 	}
 	if (!OS.IsWinCE) {
+		int metaRgn = OS.CreateRectRgn (0, 0, 0, 0);
+		if (OS.GetMetaRgn (handle, metaRgn) != 0) {
+			POINT pt = new POINT ();
+			OS.GetWindowOrgEx (handle, pt);
+			OS.OffsetRgn (metaRgn, pt.x, pt.y);
+			OS.CombineRgn (region.handle, metaRgn, region.handle, OS.RGN_AND);
+		}
+		OS.DeleteObject(metaRgn);
 		int flags = 0;
 		if (OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
 			flags =  OS.GetLayout(handle);

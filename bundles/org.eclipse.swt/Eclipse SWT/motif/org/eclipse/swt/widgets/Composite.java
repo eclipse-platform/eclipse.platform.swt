@@ -212,6 +212,11 @@ public void changed (Control[] changed) {
 		}
 	}
 }
+void checkBuffered () {
+	if ((state & CANVAS) == 0) {
+		super.checkBuffered ();
+	}
+}
 protected void checkSubclass () {
 	/* Do nothing - Subclassing is allowed */
 }
@@ -769,23 +774,24 @@ void realizeChildren () {
 	*/
 	if (focusHandle != 0) OS.XtUnmapWidget (focusHandle);
 	if ((state & CANVAS) != 0) {
-		if ((style & SWT.NO_BACKGROUND) == 0 && (style & SWT.NO_REDRAW_RESIZE) != 0) return;
-		int xDisplay = OS.XtDisplay (handle);
-		if (xDisplay == 0) return;
-		int xWindow = OS.XtWindow (handle);
-		if (xWindow == 0) return;
-		int flags = 0;
-		XSetWindowAttributes attributes = new XSetWindowAttributes ();
-		if ((style & SWT.NO_BACKGROUND) != 0) {
-			flags |= OS.CWBackPixmap;
-			attributes.background_pixmap = OS.None;
-		}
-		if ((style & SWT.NO_REDRAW_RESIZE) == 0) {
-			flags |= OS.CWBitGravity;
-			attributes.bit_gravity = OS.ForgetGravity;
-		}
-		if (flags != 0) {
-			OS.XChangeWindowAttributes (xDisplay, xWindow, flags, attributes);
+		if ((style & (SWT.DOUBLE_BUFFERED | SWT.NO_BACKGROUND)) != 0 || (style & SWT.NO_REDRAW_RESIZE) == 0) {
+			int xDisplay = OS.XtDisplay (handle);
+			if (xDisplay == 0) return;
+			int xWindow = OS.XtWindow (handle);
+			if (xWindow == 0) return;
+			int flags = 0;
+			XSetWindowAttributes attributes = new XSetWindowAttributes ();
+			if ((style & (SWT.NO_BACKGROUND | SWT.DOUBLE_BUFFERED)) != 0) {
+				flags |= OS.CWBackPixmap;
+				attributes.background_pixmap = OS.None;
+			}
+			if ((style & SWT.NO_REDRAW_RESIZE) == 0) {
+				flags |= OS.CWBitGravity;
+				attributes.bit_gravity = OS.ForgetGravity;
+			}
+			if (flags != 0) {
+				OS.XChangeWindowAttributes (xDisplay, xWindow, flags, attributes);
+			}
 		}
 	}
 }
@@ -875,7 +881,7 @@ void sendClientEvent (int time, int message, int detail, int data1, int data2) {
 void setBackgroundPixel (int pixel) {
 	super.setBackgroundPixel (pixel);
 	if ((state & CANVAS) != 0) {
-		if ((style & SWT.NO_BACKGROUND) != 0) {
+		if ((style & (SWT.NO_BACKGROUND | SWT.DOUBLE_BUFFERED)) != 0) {
 			int xDisplay = OS.XtDisplay (handle);
 			if (xDisplay == 0) return;
 			int xWindow = OS.XtWindow (handle);
@@ -1128,54 +1134,79 @@ int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) 
 		return super.XExposure (w, client_data, call_data, continue_to_dispatch);
 	}
 	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return 0;
-	if ((style & SWT.NO_MERGE_PAINTS) != 0) {
-		return super.XExposure (w, client_data, call_data, continue_to_dispatch);
-	}
-	XExposeEvent xEvent = new XExposeEvent ();
-	OS.memmove (xEvent, call_data, XExposeEvent.sizeof);
-	int exposeCount = xEvent.count;
-	if (exposeCount == 0) {
-		if (OS.XEventsQueued (xEvent.display, OS.QueuedAfterReading) != 0) {
-			int xEvent1 = OS.XtMalloc (XEvent.sizeof);
-			display.exposeCount = display.lastExpose = 0;
-			int checkExposeProc = display.checkExposeProc;
-			OS.XCheckIfEvent (xEvent.display, xEvent1, checkExposeProc, xEvent.window);
-			exposeCount = display.exposeCount;
-			int lastExpose = display.lastExpose;
-			if (exposeCount != 0 && lastExpose != 0) {
-				XExposeEvent xExposeEvent = display.xExposeEvent;
-				OS.memmove (xExposeEvent, lastExpose, XExposeEvent.sizeof);
-				xExposeEvent.count = 0;
-				OS.memmove (lastExpose, xExposeEvent, XExposeEvent.sizeof);
-			}
-			OS.XtFree (xEvent1);
-		}
-	}
-	if (exposeCount == 0 && damagedRegion == 0) {
-		return super.XExposure (w, client_data, call_data, continue_to_dispatch);
-	}
 	if (damagedRegion == 0) damagedRegion = OS.XCreateRegion ();
 	OS.XtAddExposureToRegion (call_data, damagedRegion);
-	if (exposeCount != 0) return 0;
+	if ((style & SWT.NO_MERGE_PAINTS) == 0) {
+		XExposeEvent xEvent = new XExposeEvent ();
+		OS.memmove (xEvent, call_data, XExposeEvent.sizeof);
+		int exposeCount = xEvent.count;
+		if (exposeCount == 0) {
+			if (OS.XEventsQueued (xEvent.display, OS.QueuedAfterReading) != 0) {
+				int xEvent1 = OS.XtMalloc (XEvent.sizeof);
+				display.exposeCount = display.lastExpose = 0;
+				int checkExposeProc = display.checkExposeProc;
+				OS.XCheckIfEvent (xEvent.display, xEvent1, checkExposeProc, xEvent.window);
+				exposeCount = display.exposeCount;
+				int lastExpose = display.lastExpose;
+				if (exposeCount != 0 && lastExpose != 0) {
+					XExposeEvent xExposeEvent = display.xExposeEvent;
+					OS.memmove (xExposeEvent, lastExpose, XExposeEvent.sizeof);
+					xExposeEvent.count = 0;
+					OS.memmove (lastExpose, xExposeEvent, XExposeEvent.sizeof);
+				}
+				OS.XtFree (xEvent1);
+			}
+		}
+		if (exposeCount != 0) return 0;
+	}
 	int xDisplay = OS.XtDisplay (handle);
 	if (xDisplay == 0) return 0;
-	Event event = new Event ();
-	GCData data = new GCData();
-	int rgn = damagedRegion;
+	int damageRgn = damagedRegion;
 	damagedRegion = 0;
-	data.damageRgn = rgn;
-	GC gc = event.gc = GC.motif_new(this, data);
-	OS.XSetRegion(xDisplay, gc.handle, rgn);
+	GCData data = new GCData ();
+	data.damageRgn = damageRgn;
+	GC gc = GC.motif_new (this, data);
+	OS.XSetRegion (xDisplay, gc.handle, damageRgn);
 	XRectangle rect = new XRectangle ();
-	OS.XClipBox (rgn, rect);
+	OS.XClipBox (damageRgn, rect);
+	GC paintGC = null;
+	Image image = null;
+	if ((style & SWT.DOUBLE_BUFFERED) != 0) {
+		Rectangle client = getClientArea ();
+		int width = Math.min (client.width, rect.x + rect.width);
+		int height = Math.min (client.height, rect.y + rect.height);
+		image = new Image (display, width, height);
+		paintGC = gc;
+		GCData imageGCData = new GCData ();
+		imageGCData.damageRgn = damageRgn; 
+		gc = GC.motif_new (image, imageGCData);
+		gc.setForeground (getForeground ());
+		gc.setBackground (getBackground ());
+		gc.setFont (getFont ());
+		if ((style & SWT.NO_BACKGROUND) != 0) {
+			paintGC.copyArea(image, 0, 0);
+		} else {
+			gc.fillRectangle(0, 0, width, height);
+		}
+	}
+	Event event = new Event ();
 	event.x = rect.x;
 	event.y = rect.y;
 	event.width = rect.width;
 	event.height = rect.height;
+	event.gc = gc;
 	sendEvent (SWT.Paint, event);
-	gc.dispose ();
-	OS.XDestroyRegion (rgn);
 	event.gc = null;
+	if ((style & SWT.DOUBLE_BUFFERED) != 0) {
+		gc.dispose ();
+		if (!isDisposed ()) {
+			paintGC.drawImage (image, 0, 0);
+		}
+		image.dispose ();
+		gc = paintGC;
+	}	
+	gc.dispose ();
+	OS.XDestroyRegion (damageRgn);
 	return 0;
 }
 int xFocusIn (XFocusChangeEvent xEvent) {

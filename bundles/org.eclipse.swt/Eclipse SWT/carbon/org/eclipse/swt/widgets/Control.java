@@ -478,8 +478,8 @@ Control computeTabRoot () {
 
 void createWidget () {
 	checkOrientation (parent);
-	checkBuffered ();
 	super.createWidget ();
+	checkBuffered ();
 	setDefaultFont ();
 	setZOrder ();
 }
