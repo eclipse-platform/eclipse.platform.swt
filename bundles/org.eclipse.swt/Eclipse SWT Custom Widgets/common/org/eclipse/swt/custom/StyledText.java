@@ -193,6 +193,11 @@ public class StyledText extends Canvas {
 		if (data.scope == PrinterData.PAGE_RANGE) {
 			startPage = data.startPage;
 			endPage = data.endPage;
+			if (endPage < startPage) {
+				int temp = endPage;
+				endPage = startPage;
+				startPage = temp;
+			}			
 		}	
 		displayFontData = getFont().getFontData()[0];
 		copyContent(parent.getContent());
