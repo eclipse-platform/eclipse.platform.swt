@@ -101,6 +101,13 @@ public final class Image implements Drawable {
 	int alpha = -1;
 	
 	/**
+	 * the image data used to create this image if it is a
+	 * icon. Used only in WinCE
+	 * (Warning: This field is platform dependent)
+	 */
+	ImageData data;
+	
+	/**
 	 * specifies the default scanline padding
 	 * (Warning: This field is platform dependent)
 	 */
@@ -208,9 +215,12 @@ public Image(Device device, Image srcImage, int flag) {
 					}
 					break;
 				case SWT.ICON:
-					if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
-					handle = OS.CopyImage(srcImage.handle, OS.IMAGE_ICON, r.width, r.height, 0);
-					if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);			
+					if (OS.IsWinCE) {
+						init(device, srcImage.data);
+					} else {
+						handle = OS.CopyImage(srcImage.handle, OS.IMAGE_ICON, r.width, r.height, 0);
+						if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+					}
 					break;
 				default:
 					SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
@@ -309,9 +319,12 @@ public Image(Device device, Image srcImage, int flag) {
 				case SWT.ICON:
 					/* Get icon information */
 					ICONINFO iconInfo = new ICONINFO();
-					if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
-					if (!OS.GetIconInfo(srcImage.handle, iconInfo))
-						SWT.error(SWT.ERROR_INVALID_IMAGE);
+					if (OS.IsWinCE) {
+						GetIconInfo(srcImage, iconInfo);
+					} else {
+						if (!OS.GetIconInfo(srcImage.handle, iconInfo))
+							SWT.error(SWT.ERROR_INVALID_IMAGE);
+					}
 					int hdcMask = OS.CreateCompatibleDC(hDC);
 					/* Create the destination bitmaps */
 					if (iconInfo.hbmColor == 0)
@@ -856,6 +869,7 @@ int createDIBFromDDB(int hDC, int hBitmap, int width, int height) {
 public void dispose () {
 	if (handle == 0) return;
 	if (type == SWT.ICON) {
+		if (OS.IsWinCE) data = null;
 		OS.DestroyIcon (handle);
 	} else {
 		OS.DeleteObject (handle);
@@ -985,9 +999,7 @@ public Rectangle getBounds() {
 			return new Rectangle(0, 0, bm.bmWidth, bm.bmHeight);
 		case SWT.ICON:
 			if (OS.IsWinCE) {
-				int width = OS.GetSystemMetrics (OS.SM_CXICON);
-				int height = OS.GetSystemMetrics (OS.SM_CYICON);
-				return new Rectangle(0, 0, width, height);
+				return new Rectangle(0, 0, data.width, data.height);
 			} else {
 				ICONINFO info = new ICONINFO();
 				OS.GetIconInfo(handle, info);
@@ -1026,6 +1038,7 @@ public ImageData getImageData() {
 	int depth, width, height;
 	switch (type) {
 		case SWT.ICON: {
+			if (OS.IsWinCE) return data;
 			ICONINFO info = new ICONINFO();	
 			if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 			OS.GetIconInfo(handle, info);
@@ -1480,9 +1493,26 @@ void init(Device device, int width, int height) {
 	device.internal_dispose_GC(hDC, null);
 }
 
-void init(Device device, ImageData i) {
-	if (i == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	this.device = device;
+/**
+ * Feature in WinCE.  GetIconInfo is not available in WinCE.
+ * The workaround is to cache the object ImageData for images
+ * of type SWT.ICON. The bitmaps hbmMask and hbmColor can then
+ * be reconstructed by using our version of getIconInfo.
+ * This function takes an ICONINFO object and sets the fields
+ * hbmMask and hbmColor with the corresponding bitmaps it has
+ * created.
+ * Note.  These bitmaps must be freed - as they would have to be
+ * if the regular GetIconInfo had been used.
+ */
+static void GetIconInfo(Image image, ICONINFO info) {
+	int[] result = init(image.device, null, image.data);
+	info.hbmColor = result[0];
+	info.hbmMask = result[1];
+}
+
+static int[] init(Device device, Image image, ImageData i) {
+	if (image != null) image.device = device;
+	
 	/*
 	 * BUG in Windows 98:
 	 * A monochrome DIBSection will display as solid black
@@ -1661,6 +1691,8 @@ void init(Device device, ImageData i) {
 		data = newData;
 	}
 	OS.MoveMemory(pBits[0], data, data.length);
+	
+	int[] result = null;
 	if (i.getTransparencyType() == SWT.TRANSPARENCY_MASK) {
 		/* Get the HDC for the device */
 		int hDC = device.internal_new_GC(null);
@@ -1696,31 +1728,49 @@ void init(Device device, ImageData i) {
 		OS.PatBlt(hdcSrc, 0, 0, i.width, i.height, OS.DSTINVERT);
 		OS.DeleteDC(hdcSrc);
 		OS.DeleteDC(hdcDest);
-		
-		/* Create the icon */
-		ICONINFO info = new ICONINFO();
-		info.fIcon = true;
-		info.hbmColor = hBitmap;
-		info.hbmMask = hMask;
-		int hIcon = OS.CreateIconIndirect(info);
-		if (hIcon == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		OS.DeleteObject(hBitmap);
-		OS.DeleteObject(hMask);
 		OS.DeleteObject(hDib);
-		this.handle = hIcon;
-		this.type = SWT.ICON;
+		
+		if (image == null) {
+			result = new int[]{hBitmap, hMask}; 
+		} else {
+			/* Create the icon */
+			ICONINFO info = new ICONINFO();
+			info.fIcon = true;
+			info.hbmColor = hBitmap;
+			info.hbmMask = hMask;
+			int hIcon = OS.CreateIconIndirect(info);
+			if (hIcon == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			OS.DeleteObject(hBitmap);
+			OS.DeleteObject(hMask);
+			if (image != null) {
+				image.handle = hIcon;
+				image.type = SWT.ICON;
+				if (OS.IsWinCE) image.data = i;
+			}
+		}
 	} else {
-		this.handle = hDib;
-		this.type = SWT.BITMAP;
-		this.transparentPixel = i.transparentPixel;
-		if (this.transparentPixel == -1) {
-			this.alpha = i.alpha;
-			if (i.alpha == -1 && i.alphaData != null) {
-				this.alphaData = new byte[i.alphaData.length];
-				System.arraycopy(i.alphaData, 0, this.alphaData, 0, alphaData.length);
+		if (image == null) {
+			result = new int[]{hDib};
+		} else {
+			image.handle = hDib;
+			image.type = SWT.BITMAP;
+			image.transparentPixel = i.transparentPixel;
+			if (image.transparentPixel == -1) {
+				image.alpha = i.alpha;
+				if (i.alpha == -1 && i.alphaData != null) {
+					int length = i.alphaData.length;
+					image.alphaData = new byte[length];
+					System.arraycopy(i.alphaData, 0, image.alphaData, 0, length);
+				}
 			}
 		}
 	}
+	return result;
+}
+
+void init(Device device, ImageData i) {
+	if (i == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	init(device, this, i);
 }
 
 /**	 

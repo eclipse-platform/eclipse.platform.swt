@@ -485,8 +485,11 @@ void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, i
 
 	/* Get the icon info */
 	ICONINFO srcIconInfo = new ICONINFO();
-	if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
-	OS.GetIconInfo(srcImage.handle, srcIconInfo);
+	if (OS.IsWinCE) {
+		Image.GetIconInfo(srcImage, srcIconInfo);
+	} else {
+		OS.GetIconInfo(srcImage.handle, srcIconInfo);
+	}
 
 	/* Get the icon width and height */
 	int hBitmap = srcIconInfo.hbmColor;
