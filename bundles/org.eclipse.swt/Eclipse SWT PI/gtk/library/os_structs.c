@@ -1213,3 +1213,52 @@ void setPangoAttributeFields(JNIEnv *env, jobject lpObject, PangoAttribute *lpSt
 }
 #endif
 
+#ifndef NO_XWindowChanges
+typedef struct XWindowChanges_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID x, y, width, height, border_width, sibling, stack_mode;
+} XWindowChanges_FID_CACHE;
+
+XWindowChanges_FID_CACHE XWindowChangesFc;
+
+void cacheXWindowChangesFields(JNIEnv *env, jobject lpObject)
+{
+	if (XWindowChangesFc.cached) return;
+	XWindowChangesFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XWindowChangesFc.x = (*env)->GetFieldID(env, XWindowChangesFc.clazz, "x", "I");
+	XWindowChangesFc.y = (*env)->GetFieldID(env, XWindowChangesFc.clazz, "y", "I");
+	XWindowChangesFc.width = (*env)->GetFieldID(env, XWindowChangesFc.clazz, "width", "I");
+	XWindowChangesFc.height = (*env)->GetFieldID(env, XWindowChangesFc.clazz, "height", "I");
+	XWindowChangesFc.border_width = (*env)->GetFieldID(env, XWindowChangesFc.clazz, "border_width", "I");
+	XWindowChangesFc.sibling = (*env)->GetFieldID(env, XWindowChangesFc.clazz, "sibling", "I");
+	XWindowChangesFc.stack_mode = (*env)->GetFieldID(env, XWindowChangesFc.clazz, "stack_mode", "I");
+	XWindowChangesFc.cached = 1;
+}
+
+XWindowChanges *getXWindowChangesFields(JNIEnv *env, jobject lpObject, XWindowChanges *lpStruct)
+{
+	if (!XWindowChangesFc.cached) cacheXWindowChangesFields(env, lpObject);
+	lpStruct->x = (*env)->GetIntField(env, lpObject, XWindowChangesFc.x);
+	lpStruct->y = (*env)->GetIntField(env, lpObject, XWindowChangesFc.y);
+	lpStruct->width = (*env)->GetIntField(env, lpObject, XWindowChangesFc.width);
+	lpStruct->height = (*env)->GetIntField(env, lpObject, XWindowChangesFc.height);
+	lpStruct->border_width = (*env)->GetIntField(env, lpObject, XWindowChangesFc.border_width);
+	lpStruct->sibling = (*env)->GetIntField(env, lpObject, XWindowChangesFc.sibling);
+	lpStruct->stack_mode = (*env)->GetIntField(env, lpObject, XWindowChangesFc.stack_mode);
+	return lpStruct;
+}
+
+void setXWindowChangesFields(JNIEnv *env, jobject lpObject, XWindowChanges *lpStruct)
+{
+	if (!XWindowChangesFc.cached) cacheXWindowChangesFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, XWindowChangesFc.x, (jint)lpStruct->x);
+	(*env)->SetIntField(env, lpObject, XWindowChangesFc.y, (jint)lpStruct->y);
+	(*env)->SetIntField(env, lpObject, XWindowChangesFc.width, (jint)lpStruct->width);
+	(*env)->SetIntField(env, lpObject, XWindowChangesFc.height, (jint)lpStruct->height);
+	(*env)->SetIntField(env, lpObject, XWindowChangesFc.border_width, (jint)lpStruct->border_width);
+	(*env)->SetIntField(env, lpObject, XWindowChangesFc.sibling, (jint)lpStruct->sibling);
+	(*env)->SetIntField(env, lpObject, XWindowChangesFc.stack_mode, (jint)lpStruct->stack_mode);
+}
+#endif
+

@@ -2630,13 +2630,45 @@ void setZOrder (Control sibling, boolean above, boolean fixChildren) {
 	int topHandle = topHandle ();
 	int siblingHandle = sibling != null ? sibling.topHandle () : 0;
 	int window = OS.GTK_WIDGET_WINDOW (topHandle);
-	if (above) {
-		if (window != 0) OS.gdk_window_raise (window);
-		if (fixChildren) parent.moveAbove (topHandle, siblingHandle);
-	} else {
-		if (window != 0) OS.gdk_window_lower (window);
-		if (fixChildren) parent.moveBelow (topHandle, siblingHandle);
+	if (window != 0) {
+		int siblingWindow = sibling != null ? OS.GTK_WIDGET_WINDOW (siblingHandle) : 0;
+		if (!OS.GDK_WINDOWING_X11 () || siblingWindow == 0) {
+				if (above) {
+					OS.gdk_window_raise (window);
+				} else {
+					OS.gdk_window_lower (window);
+				}
+		} else {
+			XWindowChanges changes = new XWindowChanges ();
+			changes.sibling = OS.gdk_x11_drawable_get_xid (siblingWindow);
+			changes.stack_mode = above ? OS.Above : OS.Below;
+			int xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
+			int xWindow = OS.gdk_x11_drawable_get_xid (window);
+			int xScreen = OS.XDefaultScreen (xDisplay);
+			int flags = OS.CWStackMode | OS.CWSibling;
+			/*
+			* Feature in X. If the receiver is a top level, XConfigureWindow ()
+			* will fail (with a BadMatch error) for top level shells because top
+			* level shells are reparented by the window manager and do not share
+			* the same X window parent.  This is the correct behavior but it is
+			* unexpected.  The fix is to use XReconfigureWMWindow () instead.
+			* When the receiver is not a top level shell, XReconfigureWMWindow ()
+			* behaves the same as XConfigureWindow ().
+			*/
+			OS.XReconfigureWMWindow (xDisplay, xWindow, xScreen, flags, changes);
+		}
 	}
+	if (fixChildren) {
+		if (above) {
+			parent.moveAbove (topHandle, siblingHandle);
+		} else {
+			parent.moveBelow (topHandle, siblingHandle);
+		}
+	}
+	/*
+	* Make sure that the parent handle is on the bottom of the stack
+	* when the parent children are siblings of the parent handle.
+	*/
 	if (!above && fixChildren && parent.parentingHandle () == parent.fixedHandle) {
 		window = OS.GTK_WIDGET_WINDOW (parent.handle);
 		if (window != 0) OS.gdk_window_lower (window);

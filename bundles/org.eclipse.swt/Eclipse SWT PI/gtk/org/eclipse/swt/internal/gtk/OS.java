@@ -334,8 +334,14 @@ public static final synchronized native int GTK_ENTRY_IM_CONTEXT(int widget);
 public static final synchronized native int GTK_TEXTVIEW_IM_CONTEXT(int widget);
 
 /** X11 Native methods and constants */
+public static final int Above = 0;
+public static final int Below = 1;
+public static final int CWSibling = 0x20;
+public static final int CWStackMode = 0x40;
 public static final int RevertToParent = 2;
 public static final native boolean GDK_WINDOWING_X11();
+public static final synchronized native int XDefaultScreen(int display);
+public static final synchronized native int XReconfigureWMWindow(int display, int window, int screen, int valueMask, XWindowChanges values);
 public static final synchronized native int XSetInputFocus(int display, int window, int revert, int time);
 public static final synchronized native int gdk_x11_drawable_get_xdisplay(int drawable);
 public static final synchronized native int gdk_x11_drawable_get_xid(int drawable);

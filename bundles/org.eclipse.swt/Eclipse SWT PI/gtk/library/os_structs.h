@@ -207,3 +207,11 @@ void setPangoAttributeFields(JNIEnv *env, jobject lpObject, PangoAttribute *lpSt
 #define setPangoAttributeFields(a,b,c)
 #endif
 
+#ifndef NO_XWindowChanges
+XWindowChanges *getXWindowChangesFields(JNIEnv *env, jobject lpObject, XWindowChanges *lpStruct);
+void setXWindowChangesFields(JNIEnv *env, jobject lpObject, XWindowChanges *lpStruct);
+#else
+#define getXWindowChangesFields(a,b,c) NULL
+#define setXWindowChangesFields(a,b,c)
+#endif
+

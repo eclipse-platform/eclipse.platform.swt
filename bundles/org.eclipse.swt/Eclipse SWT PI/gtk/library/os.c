@@ -230,6 +230,33 @@ JNIEXPORT jint JNICALL OS_NATIVE(PANGO_1PIXELS)
 }
 #endif
 
+#ifndef NO_XDefaultScreen
+JNIEXPORT jint JNICALL OS_NATIVE(XDefaultScreen)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XDefaultScreen\n")
+	rc = (jint)XDefaultScreen((Display *)arg0);
+	NATIVE_EXIT(env, that, "XDefaultScreen\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XReconfigureWMWindow
+JNIEXPORT jint JNICALL OS_NATIVE(XReconfigureWMWindow)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4)
+{
+	XWindowChanges _arg4, *lparg4=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XReconfigureWMWindow\n")
+	if (arg4) lparg4 = getXWindowChangesFields(env, arg4, &_arg4);
+	rc = (jint)XReconfigureWMWindow((Display *)arg0, (Window)arg1, arg2, arg3, lparg4);
+	if (arg4) setXWindowChangesFields(env, arg4, lparg4);
+	NATIVE_EXIT(env, that, "XReconfigureWMWindow\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_XSetInputFocus
 JNIEXPORT jint JNICALL OS_NATIVE(XSetInputFocus)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
