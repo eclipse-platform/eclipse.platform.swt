@@ -12,9 +12,9 @@ package org.eclipse.swt.dnd;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.internal.ole.win32.*;
-import org.eclipse.swt.widgets.*;
 
 /**
  * The <code>Clipboard</code> provides a mechanism for transferring data from one
@@ -24,10 +24,11 @@ import org.eclipse.swt.widgets.*;
  */
 public class Clipboard {
 
+	private Display display;
+	
 	// ole interfaces
 	private COMObject iDataObject;
 	private int refCount;
-	private Display display;
 
 	private final int MAX_RETRIES = 10;
 	private Transfer[] transferAgents = new Transfer[0];
@@ -67,6 +68,7 @@ public Clipboard(Display display) {
 	createCOMInterfaces();
 	this.AddRef();
 }
+
 /**
  * Checks that this class can be subclassed.
  * <p>
@@ -140,9 +142,9 @@ public void dispose () {
  * @return the data obtained from the clipboard or null if no data of this type is available
  */
 public Object getContents(Transfer transfer) {
-	if (display == null) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
-	if (display.isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
-	if (transfer == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (display == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
+	if (display.isDisposed()) DND.error(SWT.ERROR_DEVICE_DISPOSED);
+	if (transfer == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
 	int[] ppv = new int[1];
 	int retries = 0;
 	while ((COM.OleGetClipboard(ppv) != COM.S_OK) && retries < MAX_RETRIES) {
@@ -204,9 +206,9 @@ public Object getContents(Transfer transfer) {
  *         otherwise unavailable</li>
  * </ul>
  */
-public void setContents(Object[] data, Transfer[] dataTypes){
-	if (display == null) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
-	if (display.isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
+public void setContents(Object[] data, Transfer[] dataTypes) {
+	if (display == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
+	if (display.isDisposed()) DND.error(SWT.ERROR_DEVICE_DISPOSED);
 	if (data == null || dataTypes == null || data.length != dataTypes.length) {
 		DND.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
@@ -402,8 +404,8 @@ private int Release() {
  * system clipboard
  */
 public String[] getAvailableTypeNames() {
-	if (display == null) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
-	if (display.isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
+	if (display == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
+	if (display.isDisposed()) DND.error(SWT.ERROR_DEVICE_DISPOSED);
 	int[] ppv = new int[1];
 	int retrys = 0;
 	while ((COM.OleGetClipboard(ppv) != COM.S_OK) && retrys < MAX_RETRIES) {

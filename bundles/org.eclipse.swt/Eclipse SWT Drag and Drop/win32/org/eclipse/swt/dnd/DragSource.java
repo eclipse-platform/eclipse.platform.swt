@@ -12,8 +12,8 @@ package org.eclipse.swt.dnd;
 
  
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.internal.win32.*; 
 
 /**
@@ -101,13 +101,14 @@ public class DragSource extends Widget {
 
 	// info for registering as a drag source
 	private Control control;
-	private Transfer[] transferAgents = new Transfer[0];
-
 	private Listener controlListener;
+	private Transfer[] transferAgents = new Transfer[0];
 	
 	private int dataEffect;
 	
 	private static final String DRAGSOURCEID = "DragSource"; //$NON-NLS-1$
+	private static int CFSTR_PERFORMEDDROPEFFECT  = Transfer.registerType("Performed DropEffect");	 //$NON-NLS-1$
+
 /**
  * Creates a new <code>DragSource</code> to handle dragging from the specified <code>Control</code>.
  * Creating an instance of a DragSource may cause system resources to be allocated depending on the platform.  
@@ -132,8 +133,7 @@ public class DragSource extends Widget {
  * @see DND#DROP_LINK
  */
 public DragSource(Control control, int style) {
-
-	super (control, checkStyle (style));
+	super (control, checkStyle(style));
 	this.control = control;
 	if (control.getData(DRAGSOURCEID) != null)
 		DND.error(DND.ERROR_CANNOT_INIT_DRAG);
@@ -143,11 +143,15 @@ public DragSource(Control control, int style) {
 
 	controlListener = new Listener () {
 		public void handleEvent (Event event) {
-			if (event.type == SWT.Dispose){
-				DragSource.this.dispose();
+			if (event.type == SWT.Dispose) {
+				if (!DragSource.this.isDisposed()) {
+					DragSource.this.dispose();
+				}
 			}
 			if (event.type == SWT.DragDetect) {
-				DragSource.this.drag();
+				if (!DragSource.this.isDisposed()) {
+					DragSource.this.drag();
+				}
 			}
 		}
 	};
@@ -194,9 +198,8 @@ public void addDragListener(DragSourceListener listener) {
 	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
 	DNDListener typedListener = new DNDListener (listener);
 	addListener (DND.DragStart, typedListener);
-	addListener (DND.DragEnd, typedListener);
 	addListener (DND.DragSetData, typedListener);
-	
+	addListener (DND.DragEnd, typedListener);
 }
 private int AddRef() {
 	refCount++;
@@ -231,46 +234,15 @@ private void createCOMInterfaces() {
 		// method11 EnumDAdvise - not implemented
 	};
 }
-private void onDispose () {
-	this.Release();
-	
-	if (control != null && controlListener != null){
-		control.removeListener(SWT.Dispose, controlListener);
-		control.removeListener(SWT.DragDetect, controlListener);
-	}
-	controlListener = null;
-	control.setData(DRAGSOURCEID, null);	
-	control = null;
-	
-	transferAgents = null;
-}
-private int opToOs(int operation) {
-	int osOperation = 0;
-	if ((operation & DND.DROP_COPY) != 0){
-		osOperation |= COM.DROPEFFECT_COPY;
-	}
-	if ((operation & DND.DROP_LINK) != 0) {
-		osOperation |= COM.DROPEFFECT_LINK;
-	}
-	if ((operation & DND.DROP_MOVE) != 0) {
-		osOperation |= COM.DROPEFFECT_MOVE;
-	}
-	return osOperation;
-}
-private int osToOp(int osOperation){
-	int operation = 0;
-	if ((osOperation & COM.DROPEFFECT_COPY) != 0){
-		operation |= DND.DROP_COPY;
-	}
-	if ((osOperation & COM.DROPEFFECT_LINK) != 0) {
-		operation |= DND.DROP_LINK;
-	}
-	if ((osOperation & COM.DROPEFFECT_MOVE) != 0) {
-		operation |= DND.DROP_MOVE;
-	}
-	return operation;
 
+protected void checkSubclass () {
+	String name = getClass().getName ();
+	String validName = DragSource.class.getName();
+	if (!validName.equals(name)) {
+		DND.error (SWT.ERROR_INVALID_SUBCLASS);
+	}
 }
+
 private void disposeCOMInterfaces() {
 	if (iDropSource != null)
 		iDropSource.dispose();
@@ -281,8 +253,6 @@ private void disposeCOMInterfaces() {
 	iDataObject = null;
 }
 private void drag() {
-	if (transferAgents == null || getStyle() == 0) return;
-	
 	DNDEvent event = new DNDEvent();
 	event.widget = this;
 	event.time = OS.GetMessageTime();
@@ -295,6 +265,7 @@ private void drag() {
 	}
 	
 	if (!event.doit) return;
+	if (transferAgents == null || transferAgents.length == 0 ) return;
 	
 	dataEffect = DND.DROP_NONE; //dataEffect will be updated in SetData callback
 	int[] pdwEffect = new int[1];
@@ -404,7 +375,7 @@ public Display getDisplay () {
  * Returns the list of data types that can be transferred by this DragSource.
  *
  * @return the list of data types that can be transferred by this DragSource
- */ 
+ */
 public Transfer[] getTransfer(){
 	return transferAgents;
 }
@@ -418,6 +389,44 @@ private int QueryContinueDrag(int fEscapePressed, int grfKeyState) {
 		return COM.DRAGDROP_S_DROP;
 
 	return COM.S_OK;
+}
+private void onDispose() {
+	if (control == null) return;
+	this.Release();
+	if (controlListener != null){
+		control.removeListener(SWT.Dispose, controlListener);
+		control.removeListener(SWT.DragDetect, controlListener);
+	}
+	controlListener = null;
+	control.setData(DRAGSOURCEID, null);
+	control = null;
+	transferAgents = null;
+}
+private int opToOs(int operation) {
+	int osOperation = 0;
+	if ((operation & DND.DROP_COPY) != 0){
+		osOperation |= COM.DROPEFFECT_COPY;
+	}
+	if ((operation & DND.DROP_LINK) != 0) {
+		osOperation |= COM.DROPEFFECT_LINK;
+	}
+	if ((operation & DND.DROP_MOVE) != 0) {
+		osOperation |= COM.DROPEFFECT_MOVE;
+	}
+	return osOperation;
+}
+private int osToOp(int osOperation){
+	int operation = 0;
+	if ((osOperation & COM.DROPEFFECT_COPY) != 0){
+		operation |= DND.DROP_COPY;
+	}
+	if ((osOperation & COM.DROPEFFECT_LINK) != 0) {
+		operation |= DND.DROP_LINK;
+	}
+	if ((osOperation & COM.DROPEFFECT_MOVE) != 0) {
+		operation |= DND.DROP_MOVE;
+	}
+	return operation;
 }
 private int QueryGetData(int pFormatetc) {
 	if (transferAgents == null) return COM.E_FAIL;
@@ -483,10 +492,9 @@ private int Release() {
 public void removeDragListener(DragSourceListener listener) {
 	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
 	removeListener (DND.DragStart, listener);
-	removeListener (DND.DragEnd, listener);
 	removeListener (DND.DragSetData, listener);
+	removeListener (DND.DragEnd, listener);
 }
-private static int CFSTR_PERFORMEDDROPEFFECT  = Transfer.registerType("Performed DropEffect");	 //$NON-NLS-1$
 private int SetData(int pFormatetc, int pmedium, int fRelease) {
 	if (pFormatetc == 0 || pmedium == 0) return COM.E_INVALIDARG;
 	FORMATETC formatetc = new FORMATETC();
@@ -516,11 +524,5 @@ private int SetData(int pFormatetc, int pmedium, int fRelease) {
 public void setTransfer(Transfer[] transferAgents){
 	this.transferAgents = transferAgents;
 }
-protected void checkSubclass () {
-	String name = getClass().getName ();
-	String validName = DragSource.class.getName();
-	if (!validName.equals(name)) {
-		DND.error (SWT.ERROR_INVALID_SUBCLASS);
-	}
-}
+
 }

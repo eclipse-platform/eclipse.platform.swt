@@ -11,11 +11,11 @@
 package org.eclipse.swt.dnd;
 
 
-import org.eclipse.swt.SWT;
+import org.eclipse.swt.*;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.Callback;
 import org.eclipse.swt.internal.motif.*;
-import org.eclipse.swt.widgets.*;
 
 /**
  *
@@ -69,6 +69,14 @@ import org.eclipse.swt.widgets.*;
  * </dl>
  */
 public class DropTarget extends Widget {
+
+	// info for registering as a droptarget	
+	private Control control;
+	private Listener controlListener;
+	private Transfer[] transferAgents = new Transfer[0];
+	private DragUnderEffect effect;
+
+	private static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
 	
 	static private Callback DropProc;
 	static private Callback DragProc;
@@ -78,21 +86,13 @@ public class DropTarget extends Widget {
 		DragProc = new Callback(DropTarget.class, "DragProcCallback", 3);
 		TransferProc = new Callback(DropTarget.class, "TransferProcCallback", 7);
 	}
-	static final String DROPTARGETID = "DropTarget";
 	static int DELETE_TYPE = Transfer.registerType("DELETE\0");
-		
-	// info for registering as a droptarget	
-	private Control control;
-	private Listener controlListener;
-	private Transfer[] transferAgents = new Transfer[0];
 	
 	// info about data being dragged over site
 	private TransferData selectedDataType;
 	private TransferData[] dataTypes;
 	private int dropTransferObject;
 	private XmDropProcCallback droppedEventData;
-	
-	private DragUnderEffect effect;
 	
 	private static final int DRAGOVER_HYSTERESIS = 50;
 	private long dragOverStart;
@@ -133,10 +133,11 @@ public DropTarget(Control control, int style) {
 	super (control, checkStyle(style));
 	if (DropProc == null || DragProc == null || TransferProc == null)
 		DND.error(DND.ERROR_CANNOT_INIT_DROP);
-	if (control.getData(DROPTARGETID) != null) 
+	this.control = control;
+	if (control.getData(DROPTARGETID) != null)
 		DND.error(DND.ERROR_CANNOT_INIT_DROP);
 	control.setData(DROPTARGETID, this);
-	this.control = control;
+
 	controlListener = new Listener () {
 		public void handleEvent (Event event) {
 			switch (event.type) {
@@ -183,7 +184,7 @@ public DropTarget(Control control, int style) {
 		c = c.getParent();
 	}
 	
-	this.addListener (SWT.Dispose, new Listener () {
+	this.addListener(SWT.Dispose, new Listener () {
 		public void handleEvent (Event event) {
 			if (DropTarget.this.control == null || 
 				DropTarget.this.control.isDisposed()) return;
@@ -192,7 +193,7 @@ public DropTarget(Control control, int style) {
 			onDispose();
 		}
 	});
-	
+
 	if (control instanceof Tree) {
 		effect = new TreeDragUnderEffect((Tree)control);
 	} else if (control instanceof Table) {
@@ -200,7 +201,7 @@ public DropTarget(Control control, int style) {
 	} else {
 		effect = new NoDragUnderEffect(control);
 	}
-	
+
 	if (control.isVisible()) registerDropTarget();
 }
 
@@ -258,7 +259,7 @@ private static int TransferProcCallback(int widget, int client_data, int pSelect
  * @see #removeDropListener
  * @see DropTargetEvent
  */
-public void addDropListener(DropTargetListener listener) {	
+public void addDropListener(DropTargetListener listener) {
 	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
 	DNDListener typedListener = new DNDListener (listener);
 	addListener (DND.DragEnter, typedListener);
@@ -267,29 +268,21 @@ public void addDropListener(DropTargetListener listener) {
 	addListener (DND.DragOperationChanged, typedListener);
 	addListener (DND.Drop, typedListener);
 	addListener (DND.DropAccept, typedListener);
-
 }
 
 static int checkStyle (int style) {
 	if (style == SWT.NONE) return DND.DROP_MOVE;
 	return style;
 }
-private void updateDragOverHover(long delay, DNDEvent event) {
-	if (delay == 0) {
-		dragOverStart = 0;
-		dragOverEvent = null;
-		dragOverHeartbeat = null;
-		return;
+
+protected void checkSubclass () {
+	String name = getClass().getName ();
+	String validName = DropTarget.class.getName();
+	if (!validName.equals(name)) {
+		DND.error (SWT.ERROR_INVALID_SUBCLASS);
 	}
-	dragOverStart = System.currentTimeMillis() + delay;
-	if (dragOverEvent == null) dragOverEvent = new DNDEvent();
-	dragOverEvent.x = event.x;
-	dragOverEvent.y = event.y;
-	dragOverEvent.dataTypes  = event.dataTypes;
-	dragOverEvent.operations = event.operations;
-	dragOverEvent.dataType  = event.dataType;
-	dragOverEvent.detail  = event.detail;
 }
+
 private int dragProcCallback(int widget, int client_data, int call_data) {
 	XmDragProcCallback callbackData = new XmDragProcCallback();
 	OS.memmove(callbackData, call_data, XmDragProcCallback.sizeof);
@@ -553,7 +546,6 @@ public Control getControl () {
 }
 
 public Display getDisplay () {
-
 	if (control == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
 	return control.getDisplay ();
 }
@@ -563,7 +555,7 @@ public Display getDisplay () {
  *
  * @return a list of the data types that can be transferred to this DropTarget
  */
-public Transfer[] getTransfer(){
+public Transfer[] getTransfer() {
 	return transferAgents;
 }
 
@@ -580,7 +572,7 @@ public void notifyListeners (int eventType, Event event) {
 }
 
 private void onDispose() {
-	
+	if (control == null) return;
 	if (controlListener != null) {
 		Control c = control;
 		while (c != null) {
@@ -665,17 +657,35 @@ private void registerDropTarget() {
 	registered = true;
 }
 
-private void unregisterDropTarget() {
-	if (control == null || control.isDisposed() || !registered) return;
-	OS.XmDropSiteUnregister(control.handle);
-	registered = false;
-}
 private void releaseDropInfo(){
 	selectedDataType = null;
 	dataTypes = new TransferData[0];
 	droppedEventData = null;
 	dropTransferObject = 0;
 }
+
+private void unregisterDropTarget() {
+	if (control == null || control.isDisposed() || !registered) return;
+	OS.XmDropSiteUnregister(control.handle);
+	registered = false;
+}
+private void updateDragOverHover(long delay, DNDEvent event) {
+	if (delay == 0) {
+		dragOverStart = 0;
+		dragOverEvent = null;
+		dragOverHeartbeat = null;
+		return;
+	}
+	dragOverStart = System.currentTimeMillis() + delay;
+	if (dragOverEvent == null) dragOverEvent = new DNDEvent();
+	dragOverEvent.x = event.x;
+	dragOverEvent.y = event.y;
+	dragOverEvent.dataTypes  = event.dataTypes;
+	dragOverEvent.operations = event.operations;
+	dragOverEvent.dataType  = event.dataType;
+	dragOverEvent.detail  = event.detail;
+}
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when a drag and drop operation is in progress.
@@ -809,11 +819,4 @@ private int transferProcCallback(int widget, int client_data, int pSelection, in
 	return 0;
 }
 
-protected void checkSubclass () {
-	String name = getClass().getName ();
-	String validName = DropTarget.class.getName();
-	if (!validName.equals(name)) {
-		DND.error (SWT.ERROR_INVALID_SUBCLASS);
-	}
-}
 }

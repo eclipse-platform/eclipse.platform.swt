@@ -12,8 +12,8 @@ package org.eclipse.swt.dnd;
 
  
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 
@@ -80,7 +80,7 @@ public class DropTarget extends Widget {
 		DragDataReceived = new Callback(DropTarget.class, "DragDataReceived", 7);
 		DragDrop = new Callback(DropTarget.class, "DragDrop", 5);
 	}
-	static final String DROPTARGETID = "DropTarget";
+	private static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
 	
 	// Track key state changes
 	int lastOperation = -1;

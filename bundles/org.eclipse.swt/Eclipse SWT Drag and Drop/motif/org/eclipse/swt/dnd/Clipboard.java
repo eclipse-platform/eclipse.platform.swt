@@ -12,9 +12,9 @@ package org.eclipse.swt.dnd;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.motif.*;;
 
 /**
  * The <code>Clipboard</code> provides a mechanism for transferring data from one
@@ -23,11 +23,10 @@ import org.eclipse.swt.widgets.*;
  * <p>IMPORTANT: This class is <em>not</em> intended to be subclassed.</p>
  */
 public class Clipboard {
-	
+
 	private Display display;
 	private final int MAX_RETRIES = 10;
 	private int shellHandle;
-
 
 /**
  * Constructs a new instance of this class.  Creating an instance of a Clipboard
@@ -49,7 +48,7 @@ public Clipboard(Display display) {
 	if (display == null) {
 		display = Display.getCurrent();
 		if (display == null) {
-			display =  Display.getDefault();
+			display = Display.getDefault();
 		}
 	}
 	if (display.getThread() != Thread.currentThread()) {
@@ -136,9 +135,9 @@ public void dispose () {
  * @return the data obtained from the clipboard or null if no data of this type is available
  */
 public Object getContents(Transfer transfer) {
-	if (display == null) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
-	if (display.isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
-	if (transfer == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (display == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
+	if (display.isDisposed()) DND.error(SWT.ERROR_DEVICE_DISPOSED);
+	if (transfer == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
 	int xDisplay = OS.XtDisplay (shellHandle);
 	if (xDisplay == 0) return null;
 	int xWindow = OS.XtWindow (shellHandle);
@@ -234,9 +233,9 @@ public Object getContents(Transfer transfer) {
  *         otherwise unavailable</li>
  * </ul>
  */
-public void setContents(Object[] data, Transfer[] dataTypes){
-	if (display == null) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
-	if (display.isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
+public void setContents(Object[] data, Transfer[] dataTypes) {
+	if (display == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
+	if (display.isDisposed()) DND.error(SWT.ERROR_DEVICE_DISPOSED);
 	if (data == null || dataTypes == null || data.length != dataTypes.length) {
 		DND.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
@@ -303,8 +302,8 @@ public void setContents(Object[] data, Transfer[] dataTypes){
  * system clipboard
  */
 public String[] getAvailableTypeNames() {
-	if (display == null) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
-	if (display.isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
+	if (display == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
+	if (display.isDisposed()) DND.error(SWT.ERROR_DEVICE_DISPOSED);
 	int[] count = new int[1];
 	int[] max_length = new int[1];
 	int xDisplay = OS.XtDisplay (shellHandle);
