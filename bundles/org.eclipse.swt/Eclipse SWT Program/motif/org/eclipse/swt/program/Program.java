@@ -34,9 +34,9 @@ public final class Program {
 	static private final String   desktopData = "Program_DESKTOP";
 		
 	static final int DESKTOP_UNKNOWN = 0;
-	static final int DESKTOP_KDE = 1;
-	static final int DESKTOP_GNOME = 2;
-    static final int DESKTOP_CDE = 3;
+	static final int DESKTOP_KDE = 1;		// Linux
+	static final int DESKTOP_GNOME = 2;		// Linux
+    static final int DESKTOP_CDE = 3;		// Solaris
 	
 /**
  * Prevents uninitialized instances from being created outside the package.
