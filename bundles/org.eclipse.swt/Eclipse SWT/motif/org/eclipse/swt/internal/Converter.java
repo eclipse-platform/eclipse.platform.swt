@@ -151,7 +151,7 @@ public static char [] mbcsToWcs (String codePage, byte [] buffer) {
 				* convert to UCS-2. 
 				*/
 				String cp = codePage != null ? codePage : CodePage;
-				if (!cp.equals (LastMbcsToUCS2CodePage)) {
+				if (cp != LastMbcsToUCS2CodePage && !cp.equals (LastMbcsToUCS2CodePage)) {
 					if (LastMbcsToUCS2 != -1) OS.iconv_close (LastMbcsToUCS2);
 					if (LastMbcsToUTF8 != -1) OS.iconv_close (LastMbcsToUTF8);
 					LastMbcsToUCS2 = LastMbcsToUTF8 = -1;
@@ -287,7 +287,7 @@ public static byte [] wcsToMbcs (String codePage, char [] buffer, boolean termin
 				* convert to UCS-2. 
 				*/
 				String cp = codePage != null ? codePage : CodePage;
-				if (!cp.equals (LastUCS2ToMbcsCodePage)) {
+				if (cp != LastUCS2ToMbcsCodePage && !cp.equals (LastUCS2ToMbcsCodePage)) {
 					if (LastUCS2ToMbcs != -1) OS.iconv_close (LastUCS2ToMbcs);
 					if (LastUTF8ToMbcs != -1) OS.iconv_close (LastUTF8ToMbcs);
 					LastUCS2ToMbcs = LastUTF8ToMbcs = -1;
