@@ -1,6 +1,6 @@
 package org.eclipse.swt.internal;
 
-import java.io.UnsupportedEncodingException;
+import org.eclipse.swt.internal.photon.*;
 
 /*
  * Copyright (c) 2000, 2002 IBM Corp.  All rights reserved.
@@ -32,32 +32,18 @@ public static String defaultCodePage () {
 	return "UTF8";
 }
 public static char [] mbcsToWcs (String codePage, byte [] buffer) {
-	try {
-		return new String (buffer, defaultCodePage ()).toCharArray ();
-	} catch (UnsupportedEncodingException e) {
-		return EmptyCharArray;
-	}
+	String string = OS.NewStringUTF (buffer);
+	if (string != null) return string.toCharArray ();
+	return EmptyCharArray;
 }
 public static byte [] wcsToMbcs (String codePage, String string, boolean terminate) {
-	try {
-		if (!terminate) return string.getBytes (defaultCodePage ());
-		byte [] buffer1 = string.getBytes (defaultCodePage ());
-		byte [] buffer2 = new byte [buffer1.length + 1];
-		System.arraycopy (buffer1, 0, buffer2, 0, buffer1.length);
-		return buffer2;
-	} catch (UnsupportedEncodingException e) {
-		return terminate ? NullByteArray : EmptyByteArray;
-	}
+	int length = OS.GetStringUTFLength (string);
+	if (length == 0) return terminate ? NullByteArray : EmptyByteArray;
+	byte[] buffer = new byte [terminate ? length + 1 : length];
+	OS.GetStringUTFRegion (string, 0, string.length (), buffer);	
+	return buffer;
 }
 public static byte [] wcsToMbcs (String codePage, char [] buffer, boolean terminate) {
-	try {
-		if (!terminate) return new String (buffer).getBytes (defaultCodePage ());
-		byte [] buffer1 = new String (buffer).getBytes (defaultCodePage ());
-		byte [] buffer2 = new byte [buffer1.length + 1];
-		System.arraycopy (buffer1, 0, buffer2, 0, buffer1.length);
-		return buffer2;
-	} catch (UnsupportedEncodingException e) {
-		return terminate ? NullByteArray : EmptyByteArray;
-	}
+	return wcsToMbcs (codePage, new String (buffer), terminate);
 }
 }

@@ -6653,3 +6653,43 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PfLoadMetrics
 	return result;
 }
 
+JNIEXPORT jstring JNICALL Java_org_eclipse_swt_internal_photon_OS_NewStringUTF
+  (JNIEnv *env, jobject that, jbyteArray buffer)
+{
+    jbyte *buffer1=NULL;
+    jstring result;
+
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "NewStringUTF\n");
+#endif
+
+    if (buffer) buffer1 = (*env)->GetByteArrayElements(env, buffer, NULL);
+    result = (*env)->NewStringUTF(env, buffer1);
+    if (buffer) (*env)->ReleaseByteArrayElements(env, buffer, (char *)buffer1, 0);
+
+	return result;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_GetStringUTFLength
+  (JNIEnv *env, jobject that, jstring string)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "GetStringUTFLength\n");
+#endif
+	
+	return (*env)->GetStringUTFLength(string);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_GetStringUTFRegion
+  (JNIEnv *env, jobject that, jstring string, jint start, jint length, jbyteArray buffer)
+{
+    jbyte *buffer1=NULL;
+
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "GetStringUTFRegion\n");
+#endif
+
+    if (buffer) buffer1 = (*env)->GetByteArrayElements(env, buffer, NULL);
+    (*env)->GetStringUTFRegion(env, string, start, length, buffer1);
+    if (buffer) (*env)->ReleaseByteArrayElements(env, buffer, (char *)buffer1, 0);
+}

@@ -2972,4 +2972,9 @@ public static final native void PhMoveCursorAbs (int input_group, int x, int y )
 public static final native int getenv(byte[] name);
 public static final native int PhDCSetCurrent(int draw_context);
 public static final native int PfLoadMetrics(byte[] font);
+
+public static final native String NewStringUTF(byte[] buffer);
+public static final native int GetStringUTFLength(String string);
+public static final native void GetStringUTFRegion(String string, int start, int len, byte[] buffer); 
+
 }
