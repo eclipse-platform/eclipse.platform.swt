@@ -664,6 +664,7 @@ public void drawPolygon(int[] pointArray) {
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	OS.gdk_draw_polygon(data.drawable, handle, 0, pointArray, pointArray.length / 2);
 }
+
 /** 
  * Draws the polyline which is defined by the specified array
  * of integer coordinates, using the receiver's foreground color. The array 
@@ -1398,15 +1399,11 @@ public int getCharWidth(char ch) {
  */
 public Rectangle getClipping() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int /*long*/ clipRgn = data.clipRgn;
-	if (clipRgn == 0) {
-		int[] width = new int[1]; int[] height = new int[1];
-		OS.gdk_drawable_get_size(data.drawable, width, height);
-		return new Rectangle(0, 0, width[0], height[0]);
-	}
-	GdkRectangle rect = new GdkRectangle();
-	OS.gdk_region_get_clipbox(clipRgn, rect);
-	return new Rectangle(rect.x, rect.y, rect.width, rect.height);
+	Region region = new Region();
+	getClipping(region);
+	Rectangle rect = region.getBounds();
+	region.dispose();
+	return rect;
 }
 
 /** 
@@ -1417,6 +1414,7 @@ public Rectangle getClipping() {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the region is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the region is disposed</li>
  * </ul>	
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
@@ -1425,18 +1423,23 @@ public Rectangle getClipping() {
 public void getClipping(Region region) {	
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int /*long*/ hRegion = region.handle;
-	int /*long*/ clipRgn = data.clipRgn;
 	OS.gdk_region_subtract(hRegion, hRegion);
-	if (data.clipRgn == 0) {
-		int[] width = new int[1]; int[] height = new int[1];
+	int /*long*/ clipRgn = data.clipRgn;
+	if (clipRgn == 0) {
+		int[] width = new int[1], height = new int[1];
 		OS.gdk_drawable_get_size(data.drawable, width, height);
 		GdkRectangle rect = new GdkRectangle();
-		rect.x = 0; rect.y = 0;
-		rect.width = width[0]; rect.height = height[0];
+		rect.x = rect.y = 0;
+		rect.width = width[0];
+		rect.height = height[0];
 		OS.gdk_region_union_with_rect(hRegion, rect);
 	} else {
 		OS.gdk_region_union(hRegion, clipRgn);
+	}
+	if (data.damageRgn != 0) {
+		OS.gdk_region_intersect(hRegion, data.damageRgn);
 	}
 }
 /** 
@@ -1527,7 +1530,7 @@ public int getLineJoin() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	GdkGCValues values = new GdkGCValues();
 	OS.gdk_gc_get_values(handle, values);
-	int join = SWT.JOIN_ROUND;
+	int join = SWT.JOIN_MITER;
 	switch (values.join_style) {
 		case OS.GDK_JOIN_MITER: join = SWT.JOIN_MITER; break;
 		case OS.GDK_JOIN_ROUND: join = SWT.JOIN_ROUND; break;
@@ -1722,6 +1725,29 @@ public void setBackground(Color color) {
 	OS.gdk_gc_set_background(handle, color.handle);
 }
 
+void setClipping(int /*long*/ clipRgn) {
+	if (clipRgn == 0) {
+		if (data.clipRgn != 0) {
+			OS.gdk_region_destroy(data.clipRgn);
+			data.clipRgn = 0;
+		}
+		int /*long*/ clipping = data.damageRgn != 0 ? data.damageRgn : 0;
+		OS.gdk_gc_set_clip_region(handle, clipping);
+	} else {
+		if (data.clipRgn == 0) data.clipRgn = OS.gdk_region_new();
+		OS.gdk_region_subtract(data.clipRgn, data.clipRgn);
+		OS.gdk_region_union(data.clipRgn, clipRgn);
+		int /*long*/ clipping = clipRgn;
+		if (data.damageRgn != 0) {
+			clipping = OS.gdk_region_new();
+			OS.gdk_region_union(clipping, clipRgn);
+			OS.gdk_region_intersect(clipping, data.damageRgn);
+		}
+		OS.gdk_gc_set_clip_region(handle, clipping);
+		if (clipping != clipRgn) OS.gdk_region_destroy(clipping);
+	}
+}
+
 /**
  * Sets the area of the receiver which can be changed
  * by drawing operations to the rectangular area specified
@@ -1738,18 +1764,17 @@ public void setBackground(Color color) {
  */
 public void setClipping(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int /*long*/ clipRgn = data.clipRgn;
-	if (clipRgn == 0) {
-		data.clipRgn = clipRgn = OS.gdk_region_new();
-	} else {
-		OS.gdk_region_subtract(clipRgn, clipRgn);
-	}
 	GdkRectangle rect = new GdkRectangle();
-	rect.x = x;  rect.y = y;
-	rect.width = width;  rect.height = height;
-	OS.gdk_gc_set_clip_rectangle(handle, rect);
+	rect.x = x;
+	rect.y = y;
+	rect.width = width;
+	rect.height = height;
+	int /*long*/ clipRgn = OS.gdk_region_new();
 	OS.gdk_region_union_with_rect(clipRgn, rect);
+	setClipping(clipRgn);
+	OS.gdk_region_destroy(clipRgn);
 }
+
 /**
  * Sets the area of the receiver which can be changed
  * by drawing operations to the rectangular area specified
@@ -1763,16 +1788,11 @@ public void setClipping(int x, int y, int width, int height) {
  */
 public void setClipping(Rectangle rect) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int /*long*/ clipRgn = data.clipRgn;
 	if (rect == null) {
-		OS.gdk_gc_set_clip_region(handle, 0);
-		if (clipRgn != 0) {
-			OS.gdk_region_destroy(clipRgn);
-			data.clipRgn = clipRgn = 0;
-		}
-		return;
+		setClipping(0);
+	} else {
+		setClipping(rect.x, rect.y, rect.width, rect.height);
 	}
-	setClipping (rect.x, rect.y, rect.width, rect.height);
 }
 /**
  * Sets the area of the receiver which can be changed
@@ -1787,22 +1807,8 @@ public void setClipping(Rectangle rect) {
  */
 public void setClipping(Region region) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int /*long*/ clipRgn = data.clipRgn;
-	if (region == null) {
-		OS.gdk_gc_set_clip_region(handle, 0);
-		if (clipRgn != 0) {
-			OS.gdk_region_destroy(clipRgn);
-			data.clipRgn = clipRgn = 0;
-		}
-	} else {
-		if (clipRgn == 0) {
-			data.clipRgn = clipRgn = OS.gdk_region_new();
-		} else {
-			OS.gdk_region_subtract(clipRgn, clipRgn);
-		}
-		OS.gdk_region_union(clipRgn, region.handle);
-		OS.gdk_gc_set_clip_region(handle, clipRgn);
-	}
+	if (region != null && region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	setClipping(region != null ? region.handle : 0);
 }
 
 /** 

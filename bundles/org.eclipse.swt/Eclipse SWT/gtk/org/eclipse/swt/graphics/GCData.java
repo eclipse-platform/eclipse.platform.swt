@@ -34,7 +34,7 @@ public final class GCData {
 	public int /*long*/ font;
 	public int /*long*/ context;
 	public int /*long*/ layout;
-	public int /*long*/ clipRgn;
+	public int /*long*/ clipRgn, damageRgn;
 	public int lineStyle = SWT.LINE_SOLID;
 	public byte[] dashes;
 	public boolean xorMode;

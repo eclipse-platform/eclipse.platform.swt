@@ -508,10 +508,15 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
 		event.y = rect.y;
 		event.width = rect.width;
 		event.height = rect.height;
-		GC gc = event.gc = new GC (this);
-		gc.setClipping (event.x, event.y, event.width, event.height);
+		int /*long*/ damageRgn = OS.gdk_region_new ();
+		OS.gdk_region_union_with_rect (damageRgn, rect);
+		GCData data = new GCData ();
+		data.damageRgn = damageRgn;
+		GC gc = event.gc = GC.gtk_new (this, data);
+		OS.gdk_gc_set_clip_region (gc.handle, damageRgn);
 		sendEvent (SWT.Paint, event);
 		gc.dispose ();
+		OS.gdk_region_destroy (damageRgn);
 		event.gc = null;
 	}
 	OS.g_free (rectangles [0]);

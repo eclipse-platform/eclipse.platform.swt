@@ -1821,9 +1821,10 @@ int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
 	event.y = gdkEvent.area_y;
 	event.width = gdkEvent.area_width;
 	event.height = gdkEvent.area_height;
-	GC gc = event.gc = new GC (this);
-	Region region = Region.gtk_new (display, gdkEvent.region);
-	gc.setClipping (region);
+	GCData data = new GCData ();
+	data.damageRgn = gdkEvent.region;
+	GC gc = event.gc = GC.gtk_new (this, data);
+	OS.gdk_gc_set_clip_region (gc.handle, gdkEvent.region);
 	sendEvent (SWT.Paint, event);
 	gc.dispose ();
 	event.gc = null;
