@@ -109,6 +109,8 @@ public class StyledText extends Canvas {
 	int rightMargin = 2;
 	int bottomMargin = 2;
 	Cursor ibeamCursor;		
+	int caretX;							// keep track of the horizontal caret position
+										// when changing lines/pages. Fixes bug 5935
 	int caretOffset = 0;
 	int caretLine = 0;
 	Point selection = new Point(0, 0);	// x is character offset, y is length
@@ -2574,8 +2576,6 @@ void doLineDown() {
 	// allow line down action only if receiver is not in single line mode.
 	// fixes 4820.
 	if (caretLine < content.getLineCount() - 1) {
-		int caretX = getCaretX();
-		
 		caretLine++;
 		if (isBidi()) {
 			caretOffset = getBidiOffsetAtMouseLocation(caretX, caretLine);
@@ -2621,8 +2621,6 @@ void doLineStart() {
  */
 void doLineUp() {
 	if (caretLine > 0) {
-		int caretX = getCaretX();
-		
 		caretLine--;
 		if (isBidi()) {
 			caretOffset = getBidiOffsetAtMouseLocation(caretX, caretLine);
@@ -2692,6 +2690,7 @@ void doMouseSelection() {
  */
 void doPageDown(boolean select) {
 	int lineCount = content.getLineCount();
+	int oldCaretX = caretX;
 	
 	// do nothing if in single line mode. fixes 5673
 	if (isSingleLine()) {
@@ -2702,7 +2701,6 @@ void doPageDown(boolean select) {
 		int pageSize = getClientArea().height;
 		int scrollLines = Math.min(lineCount - caretLine - 1, getLineCountWhole());
 		int scrollOffset;
-		int caretX = getCaretX();
 		
 		// ensure that scrollLines never gets negative and at leat one 
 		// line is scrolled. fixes bug 5602.
@@ -2722,11 +2720,13 @@ void doPageDown(boolean select) {
 		if (scrollOffset + pageSize > verticalMaximum) {
 			scrollOffset = verticalMaximum - pageSize;
 		}
-		if (scrollOffset > verticalScrollOffset) {
+		if (scrollOffset > verticalScrollOffset) {		
 			setVerticalScrollOffset(scrollOffset, true);
 		}
 	}
 	showCaret();
+	// save the original horizontal caret position	
+	caretX = oldCaretX;
 }
 /**
  * Moves the cursor to the end of the last fully visible line.
@@ -2768,10 +2768,11 @@ void doPageStart() {
  * caret is moved in front of the first character.
  */
 void doPageUp() {
+	int oldCaretX = caretX;
+	
 	if (caretLine > 0) {	
 		int scrollLines = Math.max(1, Math.min(caretLine, getLineCountWhole()));
 		int scrollOffset;
-		int caretX = getCaretX();
 		
 		caretLine -= scrollLines;
 		if (isBidi()) {
@@ -2782,11 +2783,13 @@ void doPageUp() {
 		}	
 		// scroll one page up or to the top
 		scrollOffset = Math.max(0, verticalScrollOffset - scrollLines * getVerticalIncrement());
-		if (scrollOffset < verticalScrollOffset) {		
+		if (scrollOffset < verticalScrollOffset) {				
 			setVerticalScrollOffset(scrollOffset, true);
 		}
 	}
 	showCaret();
+	// save the original horizontal caret position	
+	caretX = oldCaretX;
 }
 /**
  * Updates the selection to extend to the current caret position.
@@ -2902,6 +2905,8 @@ void doSelectionCursorPrevious() {
  * direction.
  */
 void doSelectionLineDown() {
+	int oldCaretX = caretX;
+	
 	if (isSingleLine()) {
 		return;
 	}
@@ -2914,7 +2919,9 @@ void doSelectionLineDown() {
 	// select first and then scroll to reduce flash when key 
 	// repeat scrolls lots of lines
 	doSelection(SWT.RIGHT);
-	showCaret();	
+	showCaret();
+	// save the original horizontal caret position
+	caretX = oldCaretX;
 }
 /**
  * Moves the caret one line up and to the same character offset relative 
@@ -2927,6 +2934,8 @@ void doSelectionLineDown() {
  * direction.
  */
 void doSelectionLineUp() {
+	int oldCaretX = caretX;
+	
 	if (caretLine == 0) {
 		caretOffset = 0;
 	}
@@ -2935,6 +2944,8 @@ void doSelectionLineUp() {
 	}
 	showCaret();
 	doSelection(SWT.LEFT);
+	// save the original horizontal caret position	
+	caretX = oldCaretX;
 }
 /**
  * Moves the caret to the end of the next word .
@@ -3127,25 +3138,6 @@ int getBottomIndex() {
 		lineCount = (getClientArea().height - partialTopLineHeight) / lineHeight;
 	}
 	return Math.min(content.getLineCount() - 1, topIndex + Math.max(0, lineCount - 1));
-}
-/**
- * Returns the caret x position.
- * 
- * @return the caret x position
- */
-int getCaretX() {
-	Caret caret = getCaret();
-	int caretX;
-	
-	if (caret != null) {
-		caretX = caret.getLocation().x;
-	}
-	else {
-		String lineText = content.getLine(caretLine);
-		int offsetInLine = caretOffset - content.getOffsetAtLine(caretLine);
-		caretX = getXAtOffset(lineText, caretLine, offsetInLine);
-	}
-	return caretX;
 }
 /**
  * Returns the caret position relative to the start of the text.
@@ -4998,17 +4990,25 @@ void initializeRenderer() {
  * @param action one of the actions defined in ST.java
  */
 public void invokeAction(int action) {
+	int oldCaretX;
+	
 	checkWidget();	
 	switch (action) {
 		// Navigation
 		case ST.LINE_UP:
 			doLineUp();
+			oldCaretX = caretX;			
 			showCaret();
+			// save the original horizontal caret position
+			caretX = oldCaretX;
 			clearSelection(true);
 			break;
 		case ST.LINE_DOWN:
 			doLineDown();
+			oldCaretX = caretX;			
 			showCaret();
+			// save the original horizontal caret position
+			caretX = oldCaretX;
 			clearSelection(true);
 			break;
 		case ST.LINE_START:
@@ -6290,34 +6290,31 @@ void setBidiCaretDirection() {
  */
 void setBidiCaretLocation(StyledTextBidi bidi) {
 	Caret caret = getCaret();
+	String lineText = content.getLine(caretLine);
+	int lineStartOffset = content.getOffsetAtLine(caretLine);
+	int offsetInLine = caretOffset - lineStartOffset;
+	GC gc = null;
 	
+	setBidiCaretDirection();		
+	if (bidi == null) {
+		gc = new GC(this);
+		bidi = getStyledTextBidi(lineText, lineStartOffset, gc);
+	}		
+	if (lastCaretDirection == SWT.NULL) {
+		caretX = bidi.getTextPosition(offsetInLine) + leftMargin - horizontalScrollOffset;
+	} else {
+		caretX = bidi.getTextPosition(offsetInLine, lastCaretDirection) + leftMargin - horizontalScrollOffset;
+	}
+	if (StyledTextBidi.getKeyboardLanguageDirection() == SWT.RIGHT) {
+		caretX -= (getCaretWidth() - 1);
+	}
 	if (caret != null) {
-		String lineText = content.getLine(caretLine);
-		int lineStartOffset = content.getOffsetAtLine(caretLine);
-		int offsetInLine = caretOffset - lineStartOffset;
-		int caretX;
-		GC gc = null;
-		
-		setBidiCaretDirection();		
-		if (bidi == null) {
-			gc = new GC(this);
-			bidi = getStyledTextBidi(lineText, lineStartOffset, gc);
-		}		
-		if (lastCaretDirection == SWT.NULL) {
-			caretX = bidi.getTextPosition(offsetInLine) + leftMargin;
-		} else {
-			caretX = bidi.getTextPosition(offsetInLine, lastCaretDirection) + leftMargin;
-		}
-		caretX = caretX - horizontalScrollOffset;
-		if (StyledTextBidi.getKeyboardLanguageDirection() == SWT.RIGHT) {
-			caretX -= (getCaretWidth() - 1);
-		}
 		caret.setLocation(
 			caretX, 
 			caretLine * lineHeight - verticalScrollOffset + topMargin);
-		if (gc != null) {
-			gc.dispose();
-		}
+	}
+	if (gc != null) {
+		gc.dispose();
 	}
 }
 /**
@@ -6373,21 +6370,23 @@ void setBidiKeyboardLanguage() {
  * Moves the Caret to the current caret offset.
  * <p>
  * 
- * @param caretX the new x location of the caret.
+ * @param newCaretX the new x location of the caret.
  * 	passed in for better performance when it has already been 
  * 	calculated outside this method.
  * @param line index of the line the caret is on. Relative to 
  *	the first line in the document.
  */
-void setCaretLocation(int caretX, int line) {
+void setCaretLocation(int newCaretX, int line) {
 	if (isBidi()) {
 		setBidiCaretLocation(null);
 	}
 	else {	
-		Caret caret = getCaret();		
+		Caret caret = getCaret();
+		
+		caretX = newCaretX;
 		if (caret != null) {
 			caret.setLocation(
-				caretX, 
+				newCaretX, 
 				line * lineHeight - verticalScrollOffset + topMargin);
 		}
 	}
@@ -6400,12 +6399,12 @@ void setCaretLocation() {
 		setBidiCaretLocation(null);
 	}
 	else {	
-		Caret caret = getCaret();		
+		Caret caret = getCaret();
+		int lineStartOffset = content.getOffsetAtLine(caretLine);
+					
+		caretX = getXAtOffset(
+			content.getLine(caretLine), caretLine, caretOffset - lineStartOffset);
 		if (caret != null) {
-			int lineStartOffset = content.getOffsetAtLine(caretLine);
-			int caretX = getXAtOffset(
-				content.getLine(caretLine), 
-				caretLine, caretOffset - lineStartOffset);
 			caret.setLocation(
 				caretX, 
 				caretLine * lineHeight - verticalScrollOffset + topMargin);
