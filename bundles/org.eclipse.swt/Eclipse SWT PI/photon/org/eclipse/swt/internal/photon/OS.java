@@ -382,6 +382,7 @@ public class OS {
 	public static final int Pt_COLORSELECT_ACCEPT = 0x8000;
 	public static final int Pt_COLORSELECT_MODAL = 0x4;
 	public static final int Pt_COMBOBOX_STATIC = 0x20;
+	public static final int Pt_CONSUME = 0x2;
 	public static final int Pt_CONTINUE = 0x0;
 	public static final int Pt_DELAY_REALIZE = 0x40;
 	public static final int Pt_EDITABLE = 0x2;

@@ -1417,7 +1417,7 @@ int Ph_EV_KEY (int widget, int info) {
 					return OS.Pt_PROCESS;
 				}
 				// widget could be disposed at this point
-				if (isDisposed ()) return OS.Pt_PROCESS;
+				if (isDisposed ()) return OS.Pt_CONSUME;
 			}
 		}
 	}
