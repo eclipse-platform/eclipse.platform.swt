@@ -639,7 +639,6 @@ public class OS {
 	public static final int XmNarrowDirection = malloc ("arrowDirection", 1);
 	public static final int XmNblendModel = malloc ("blendModel", 1);
 	public static final int XmNbottomAttachment = malloc ("bottomAttachment", 1);
-	public static final int XmNchildType = malloc ("childType", 1);
 	public static final int XmNcomboBoxType = malloc ("comboBoxType", 1);
 	public static final int XmNdialogStyle = malloc ("dialogStyle", 1);
 	public static final int XmNcursorPositionVisible = malloc ("cursorPositionVisible", 1);
@@ -652,6 +651,7 @@ public class OS {
 	public static final int XmNdropSiteType = malloc ("dropSiteType", 1);
 	public static final int XmNeditable = malloc ("editable", 1);
 	public static final int XmNenableThinThickness = malloc ("enableThinThickness", 1);
+	public static final int XmNframeChildType = malloc ("frameChildType", 1);
 	public static final int XmNiconic = malloc ("iconic", 1);
 	public static final int XmNlabelType = malloc ("labelType", 1);
 	public static final int XmNleftAttachment = malloc ("leftAttachment", 1);
@@ -716,6 +716,7 @@ public class OS {
 	public static final int XmNcancelCallback = malloc ("cancelCallback", 4);
 	public static final int XmNcancelLabelString = malloc ("cancelLabelString", 4);
 	public static final int XmNcascadingCallback = malloc ("cascadingCallback", 4);
+	public static final int XmNchildHorizontalSpacing = malloc ("childHorizontalSpacing", 4);
 	public static final int XmNchildren = malloc ("children", 4);
 	public static final int XmNclientData = malloc ("clientData", 4);
 	public static final int XmNcolormap = malloc ("colormap", 4);

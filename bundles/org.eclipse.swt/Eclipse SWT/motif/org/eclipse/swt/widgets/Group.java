@@ -102,11 +102,15 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	trimWidth = width + ((marginWidth + thickness + borderWidth) * 2);
 	trimHeight = height + ((marginHeight + thickness + borderWidth) * 2);
 	if (OS.XtIsManaged (labelHandle)) {
-		int [] argList2 = {OS.XmNy, 0, OS.XmNheight, 0};
+		int [] argList2 = {OS.XmNy, 0, OS.XmNheight, 0, OS.XmNchildHorizontalSpacing, 0};
 		OS.XtGetValues (labelHandle, argList2, argList2.length / 2);
-		int labelHeight = ((short) argList2 [1]) + argList2 [3];
-		trimY = y - labelHeight;
-		trimHeight = height + labelHeight + (marginHeight + thickness);
+		int titleHeight = ((short) argList2 [1]) + argList2 [3];
+		trimY = y - titleHeight;
+		trimHeight = height + titleHeight + (marginHeight + thickness + borderWidth);
+		XtWidgetGeometry result = new XtWidgetGeometry ();
+		OS.XtQueryGeometry (labelHandle, null, result);
+		int titleWidth = result.width + 2 * (argList2 [5] + marginWidth + thickness + borderWidth);
+		trimWidth = Math.max (trimWidth, titleWidth);
 	}
 	return new Rectangle (trimX, trimY, trimWidth, trimHeight);
 }
@@ -137,7 +141,7 @@ void createHandle (int index) {
 	};
 	handle = OS.XmCreateFrame (formHandle, null, argList2, argList2.length / 2);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	int [] argList3 = {OS.XmNchildType, OS.XmFRAME_TITLE_CHILD};
+	int [] argList3 = {OS.XmNframeChildType, OS.XmFRAME_TITLE_CHILD};
 	labelHandle = OS.XmCreateLabel (handle, null, argList3, argList3.length / 2);
 	if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
 }
