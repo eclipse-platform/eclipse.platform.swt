@@ -40,7 +40,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclips
 	DECL_GLOB(pGlob)
 	if (dest) {
 		cacheGdkEventExposeFids(env, dest, &PGLOB(GdkEventExposeFc));
-		setGdkEventExposeFields(env, dest, (GdkEventExpose *)src, &PGLOB(GdkEventExposeFc));
+		setGdkEventExposeFields(env, dest, (GdkEvent *)src, &PGLOB(GdkEventExposeFc));
 	}
 }
 

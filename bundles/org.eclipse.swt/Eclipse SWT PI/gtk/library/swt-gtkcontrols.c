@@ -31,15 +31,12 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1label_1get_1typ
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1label_1new
   (JNIEnv *env, jclass that, jstring str)
 {
-  jint rc;
   const jbyte *str1 = NULL;
+  jint rc;
 
-  if (str!=NULL) {
-    str1 = (*env)->GetStringUTFChars(env, str, NULL);
-    if (str1==NULL) return 0;
-  }
+  if (str != NULL) str1 = (*env)->GetStringUTFChars(env, str, NULL);
   rc = (jint) gtk_label_new((gchar*)str1);
-  if (str!=NULL) (*env)->ReleaseStringUTFChars(env, str, str1);
+  if (str != NULL) (*env)->ReleaseStringUTFChars(env, str, str1);
   return rc;
 }
 

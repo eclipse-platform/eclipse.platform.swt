@@ -361,12 +361,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1draw_1string
 	}
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1draw_1pixmap
-  (JNIEnv *env, jclass that, jint drawable, jint gc, jint src, jint xsrc, jint ysrc, jint xdest, jint ydest, jint width, jint height)
-{
-	gdk_draw_pixmap((GdkDrawable*)drawable, (GdkGC*)gc, (GdkDrawable*)src, (gint)xsrc, (gint)ysrc, (gint)xdest, (gint)ydest, (gint)width, (gint)height);
-}
-
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1draw_1lines
   (JNIEnv *env, jclass that, jint drawable, jint gc, jintArray points, jint npoints)
 {

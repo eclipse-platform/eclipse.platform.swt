@@ -74,13 +74,13 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1font_1descrip
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1font_1description_1from_1string
   (JNIEnv *env, jclass that, jstring str)
 {
-   const jbyte *str1;
-   jint answer;
-   str1 = (*env)->GetStringUTFChars(env, str, NULL);
-   if (str1==NULL) return (jint)0;
-   answer = (jint)pango_font_description_from_string(str1);
-   (*env)->ReleaseStringUTFChars(env, str, str1);
-   return answer;
+   const jbyte *str1 = NULL;
+   jint rc;
+
+   if (str != NULL) str1 = (*env)->GetStringUTFChars(env, str, NULL);
+   rc = (jint)pango_font_description_from_string(str1);
+   if (str != NULL) (*env)->ReleaseStringUTFChars(env, str, str1);
+   return rc;
 }
 
 
@@ -88,11 +88,11 @@ JNIEXPORT jstring JNICALL
 Java_org_eclipse_swt_internal_gtk_OS_pango_1font_1description_1to_1string
   (JNIEnv *env, jclass that, jint descr)
 {
-   jstring answer;
+   jstring rc;
    char *canswer = pango_font_description_to_string((PangoFontDescription*)descr);
-   answer = (*env)->NewStringUTF(env, canswer);
+   rc = (*env)->NewStringUTF(env, canswer);
    g_free(canswer);
-   return answer;
+   return rc;
 }
 
 JNIEXPORT jboolean JNICALL
@@ -122,10 +122,11 @@ JNIEXPORT void JNICALL
 Java_org_eclipse_swt_internal_gtk_OS_pango_1font_1description_1set_1family
   (JNIEnv *env, jclass that, jint descr, jstring family)
 {
-   const jbyte *family1 = (*env)->GetStringUTFChars(env, family, NULL);
-   if (family1==NULL) return;
+   const jbyte *family1 = NULL;
+   
+   if (family != NULL) family1 = (*env)->GetStringUTFChars(env, family, NULL);
    pango_font_description_set_family((PangoFontDescription*)descr, family1);
-   (*env)->ReleaseStringUTFChars(env, family, family1);
+   if (family != NULL) (*env)->ReleaseStringUTFChars(env, family, family1);
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1font_1description_1get_1size

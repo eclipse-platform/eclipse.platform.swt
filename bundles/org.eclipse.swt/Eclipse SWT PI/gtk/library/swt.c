@@ -54,7 +54,7 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1init_1check
   static char *targv0 = "swt";
   static char *targv1 = (char*)0;
   targs[0] = targv0; targs[1] = targv1;
-  targv = &targs;
+  targv = (char **)&targs;
   return gtk_init_check(&targc, &targv);
 }
 
@@ -115,18 +115,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1main_1iteration
  */
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1signal_1connect
-  (JNIEnv *env, jclass that, jint instance, jstring signel, jint handler, jint data)
+  (JNIEnv *env, jclass that, jint instance, jstring sig, jint handler, jint data)
 {
-  jbyte *signal1;
-  signal1 = (*env)->GetStringUTFChars(env, signal, NULL);
-  g_signal_connect(instance, signal, handler, data);
-  (*env)->ReleaseStringUTFChars(env, signal, signal1);
+  const jbyte *sig1 = NULL;
+  
+  if (sig != NULL) sig1 = (jbyte *)(*env)->GetStringUTFChars(env, sig, NULL);
+  g_signal_connect((gpointer)instance, (const gchar *)sig1, (GCallback)handler, (gpointer)data);
+  if (sig != NULL) (*env)->ReleaseStringUTFChars(env, sig, sig1);
 }
-
-
-
-
-
 
 /*
  *  Others - FIXME: please classify

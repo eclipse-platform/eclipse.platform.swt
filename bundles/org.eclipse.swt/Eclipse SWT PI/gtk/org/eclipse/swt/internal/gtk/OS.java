@@ -412,7 +412,6 @@ public static final native void gdk_draw_line(int drawable, int gc, int x1, int 
 public static final native void gdk_draw_arc(int drawable, int gc, int filled, int x, int y, int width, int height, int angle1, int angle2);
 public static final native void gdk_draw_drawable(int drawable, int gc, int src, int xsrc, int ysrc, int xdest, int ydest, int width, int height);
 public static final native void gdk_draw_rectangle(int drawable, int gc, int filled, int x, int y, int width, int height);
-public static final native void gdk_draw_pixmap(int drawable, int gc, int src, int xsrc, int ysrc, int xdest, int ydest, int width, int height);
 public static final native void gdk_draw_lines(int drawable, int gc, int[] points, int npoints);
 public static final native void gdk_draw_polygon(int drawable, int gc, int filled, int[] points, int npoints);
 public static final native void gdk_draw_string(int drawable, int font, int gc, int x, int y, byte[] string);

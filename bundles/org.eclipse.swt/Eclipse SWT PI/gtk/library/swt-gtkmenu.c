@@ -24,7 +24,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1accel_1group_1u
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1accel_1groups_1activate
   (JNIEnv *env, jclass that, jint accel_group, jint accel_key, jint accel_mods)
 {
-	return (jboolean) gtk_accel_groups_activate(GTK_OBJECT((GtkWindow*)accel_group),
+	return (jboolean) gtk_accel_groups_activate((GObject *)GTK_OBJECT((GtkWindow*)accel_group),
 	                                            accel_key,
 						    accel_mods);
 }
