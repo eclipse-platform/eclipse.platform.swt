@@ -128,6 +128,7 @@ public class Display extends Device {
 	Runnable [] timerList;
 	Callback timerCallback;
 	int timerProc;
+	boolean allowTimers = true;
 		
 	/* Current caret */
 	Caret currentCaret;
@@ -450,8 +451,6 @@ public void beep () {
 }
 
 int caretProc (int id, int clientData) {
-	//TEMPORARY CODE
-//	if (!allowTimers) return 0;
 	if (currentCaret == null) return 0;
 	if (currentCaret.blinkCaret ()) {
 		int blinkRate = currentCaret.blinkRate;
@@ -1695,6 +1694,7 @@ int mouseHoverProc (int id, int handle) {
  */
 public boolean readAndDispatch () {
 	checkDevice ();
+	runTimers ();
 	runDisposeWidgets ();
 	runEnterExit ();
 	int [] outEvent  = new int [1];
@@ -2136,6 +2136,23 @@ boolean runPopups () {
 	return result;
 }
 
+boolean runTimers () {
+	if (timerList == null) return false;
+	boolean result = false;
+	for (int i=0; i<timerList.length; i++) {
+		if (timerIds [i] == -1) {
+			Runnable runnable = timerList [i];
+			timerList [i] = null;
+			timerIds [i] = 0;
+			if (runnable != null) {
+				result = true;
+				runnable.run ();
+			}
+		}
+	}
+	return result;
+}
+
 void sendEvent (int eventType, Event event) {
 	if (eventTable == null && filterTable == null) {
 		return;
@@ -2380,7 +2397,10 @@ void setMenuBar (Menu menu) {
  */
 public boolean sleep () {
 	checkDevice ();
-	return OS.ReceiveNextEvent (0, null, OS.kEventDurationForever, false, null) == OS.noErr;
+	allowTimers = false;
+	boolean result = OS.ReceiveNextEvent (0, null, OS.kEventDurationForever, false, null) == OS.noErr;
+	allowTimers = true;
+	return result;
 }
 
 /**
@@ -2469,15 +2489,15 @@ public void timerExec (int milliseconds, Runnable runnable) {
 int timerProc (int id, int index) {
 	if (timerList == null) return 0;
 	if (0 <= index && index < timerList.length) {
-//		if (allowTimers) {
+		if (allowTimers) {
 			Runnable runnable = timerList [index];
 			timerList [index] = null;
 			timerIds [index] = 0;
 			if (runnable != null) runnable.run ();
-//		} else {
-//			timerIds [index] = -1;
-//			wakeUp ();
-//		}
+		} else {
+			timerIds [index] = -1;
+			wakeUp ();
+		}
 	}
 	return 0;
 }
