@@ -1,6 +1,6 @@
 package org.eclipse.swt.custom;
 /*
- * Copyright (c) 2000, 2002 IBM Corp.  All rights reserved.
+ * Copyright (c) 2000, 2003 IBM Corp.  All rights reserved.
  * This file is made available under the terms of the Common Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/cpl-v10.html
@@ -86,7 +86,13 @@ public boolean equals(Object object) {
  * @return the receiver's hash
  */
 public int hashCode() {
-	return start + length + foreground.hashCode() + background.hashCode() + fontStyle;
+	int code = start + length;
+	
+	if (foreground != null)
+		code += foreground.hashCode();
+	if (background != null)
+		code += background.hashCode();
+	return code + fontStyle;
 }
 /**
  * Returns whether or not the receiver is unstyled (i.e., does not have any 
