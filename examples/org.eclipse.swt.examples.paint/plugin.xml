@@ -23,10 +23,6 @@
 <!-- Extensions -->
 <extension
       point="org.eclipse.ui.views">
-   <category
-         name="%category.SWTExamples.name"
-         id="org.eclipse.swt.examples.category">
-   </category>
    <view
          name="%view.PaintExample.name"
          category="org.eclipse.swt.examples.category"

@@ -5,7 +5,7 @@ package org.eclipse.swt.examples.launcher;
  * All Rights Reserved
  */
 
-import org.eclipse.core.runtime.*;import org.eclipse.ui.IViewPart;import java.io.*;import java.lang.reflect.*;import java.util.*;
+import org.eclipse.core.runtime.*;import org.eclipse.debug.core.*;import org.eclipse.debug.core.model.*;import org.eclipse.jdt.launching.*;import org.eclipse.ui.*;
 
 /**
  * A launch delegate for running a standalone program embedded inside a plugin package.
@@ -19,17 +19,12 @@ public class ProgramLaunchDelegate implements LaunchDelegate {
 		this.mainClassName = mainClassName;
 	}
 
-	public boolean launch(IViewPart hostView, PrintWriter logWriter) {
-		logWriter.println(LauncherPlugin.getResourceString("run.InvocationSummaryHeader"));
-		logWriter.println(LauncherPlugin.getResourceString("run.InvokingProgram",
-			new Object[] { pluginId, mainClassName }));
-		
-		boolean result = launchHelper(hostView, logWriter);
-		logWriter.println(LauncherPlugin.getResourceString("run.InvocationSummaryFooter"));
+	public boolean launch(IViewPart hostView) {
+		boolean result = launchHelper(hostView);
 		return result;
 	}
 
-	public boolean launchHelper(IViewPart hostView, PrintWriter logWriter) {
+	public boolean launchHelper(IViewPart hostView) {
 		// get the platform's public plugin registry
 		IPluginRegistry pluginRegistry = Platform.getPluginRegistry();
 		// retrieve plugin descriptors for all plugins matching pluginId
@@ -37,53 +32,48 @@ public class ProgramLaunchDelegate implements LaunchDelegate {
 		IPluginDescriptor[] pluginDescriptors = pluginRegistry.getPluginDescriptors(pluginId);
 		
 		if (pluginDescriptors == null || pluginDescriptors.length == 0) {
-			logWriter.println(LauncherPlugin.getResourceString("run.error.CouldNotFindPlugin",
-				new Object[] { pluginId }));
+			LauncherPlugin.logError(LauncherPlugin.getResourceString("run.error.CouldNotFindPlugin",
+				new Object[] { pluginId }), null);
 			return false;
 		}
 		
-		// sort list of plugins in decreasing order by version number
-		Arrays.sort(pluginDescriptors, new Comparator() {
-			public int compare(Object a, Object b) {
-				final PluginVersionIdentifier versionA = ((IPluginDescriptor) a).getVersionIdentifier();
-				final PluginVersionIdentifier versionB = ((IPluginDescriptor) b).getVersionIdentifier();
-				return versionA.isGreaterThan(versionB) ? -1 :
-					(versionA.equals(versionB) ? 0 : 1);
-			}
-		});
+		String[] appArgs = new String[] { "-appplugin", pluginId, "-appclass", mainClassName };
+		ApplicationRunner runner = new ApplicationRunner(LauncherApplication.APPLICATION_ID, appArgs);
+		runner.setPluginsPath(ApplicationRunner.getCurrentPluginsPath());
+		runner.setStatePath(LauncherPlugin.getDefault().getStateLocation().toFile().getAbsolutePath());
+		VMRunnerResult result = runner.run();
+		if (! ApplicationRunner.isResultOk(result)) return false;
 		
-		// attempt to load and run a program in decreasing order by version until we find one
-		// that works or we run out of them
-		Throwable exception = null;
-		for (int i = 0; i < pluginDescriptors.length; ++i) {
-			final IPluginDescriptor pd = pluginDescriptors[i];
-			final ClassLoader loader = pd.getPluginClassLoader();
-	
-			try {
-				Class programMainClass = Class.forName(mainClassName, true, loader);
-				
-				final Class[] parameterList = { String[].class };
-				Method programMainMethod = programMainClass.getMethod("main", parameterList);
-	
-				final Object[] parameters = { new String[0] };
-				programMainMethod.invoke(null, parameters);
-				break;
-			} catch (InvocationTargetException e) {
-				logWriter.println(LauncherPlugin.getResourceString("run.error.Execution"));
-				exception = e;
-				break;
-			} catch (Throwable e) {
-				logWriter.println(LauncherPlugin.getResourceString("run.error.Invocation"));
-				exception = e;
-			}
-		}
-		// log exceptions
-		if (exception != null) {
-			logWriter.println(exception.toString());
-			exception.printStackTrace(logWriter);
-			return false;
-		}
+		initWatch(result);
 		return true;
+	}
+
+	private void initWatch(VMRunnerResult result) {
+		final IProcess[] processes = result.getProcesses();
+		for (int i = 0; i < processes.length; ++i) {
+			final IProcess process = processes[i];
+			if (process == null) continue;
+			final IStreamsProxy streamsProxy = process.getStreamsProxy();
+			if (streamsProxy == null) continue;
+			
+			final IStreamMonitor outMonitor = streamsProxy.getOutputStreamMonitor();
+			if (outMonitor != null) {
+				outMonitor.addListener(new IStreamListener() {
+					public void streamAppended(String text, IStreamMonitor monitor) {
+						System.out.println(text);
+					}
+				});
+			}
+			
+			final IStreamMonitor errMonitor = streamsProxy.getErrorStreamMonitor();
+			if (errMonitor != null) {
+				errMonitor.addListener(new IStreamListener() {
+					public void streamAppended(String text, IStreamMonitor monitor) {
+						System.err.println(text);
+					}
+				});
+			}
+		}			
 	}
 }
 

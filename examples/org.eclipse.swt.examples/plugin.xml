@@ -35,9 +35,9 @@
    </programItem>
    <programItem
          pluginId="org.eclipse.swt.examples"
-         mainClass="org.eclipse.swt.examples.explorer.Explorer"
-         name="%launchitem.ExplorerExample.name"
-         description="%launchitem.ExplorerExample.description"
+         mainClass="org.eclipse.swt.examples.explorer.FileViewer"
+         name="%launchitem.FileViewerExample.name"
+         description="%launchitem.FileViewerExample.description"
          category="org.eclipse.swt.examples.launchcategory"
          id="org.eclipse.swt.examples.explorer.launcher">
    </programItem>

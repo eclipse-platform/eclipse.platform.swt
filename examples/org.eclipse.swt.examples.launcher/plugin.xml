@@ -12,6 +12,9 @@
    <import plugin="org.eclipse.core.resources"/>
    <import plugin="org.eclipse.ui"/>
    <import plugin="org.eclipse.swt"/>
+   <import plugin="org.eclipse.jdt.launching"/>
+   <import plugin="org.eclipse.debug.core"/>
+   <import plugin="org.eclipse.core.boot"/>
 </requires>
 
 <!-- Runtime -->
@@ -23,6 +26,16 @@
 <extension-point id="launchItems" name="%extension-point.launchItems.name" schema="schema/org.eclipse.swt.examples.launcher.launchItems.xsd"/>
 
 <!-- Extensions -->
+<extension
+      id="application"
+      point="org.eclipse.core.runtime.applications">
+   <application>
+      <run
+            name="%launchitem.LauncherApplication.name"
+            class="org.eclipse.swt.examples.launcher.LauncherApplication">
+      </run>
+   </application>
+</extension>
 <extension
       point="org.eclipse.ui.views">
    <category
