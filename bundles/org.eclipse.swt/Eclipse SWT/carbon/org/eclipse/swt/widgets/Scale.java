@@ -136,6 +136,9 @@ void createHandle () {
 	OS.CreateSliderControl (window, null, 0, 0, 100, OS.kControlSliderDoesNotPoint, (short)0, true, actionProc, outControl);
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];
+	if ((style & SWT.VERTICAL) != 0) {
+		OS.SetControl32BitValue (handle, 100);
+	}
 }
 
 /**
@@ -218,7 +221,7 @@ public int getSelection () {
 	if ((style & SWT.VERTICAL) != 0) {
 		int minimum = OS.GetControl32BitMinimum (handle);
 		int maximum = OS.GetControl32BitMaximum (handle);
-		value = value - minimum + maximum;
+		value = maximum - value + minimum;
 	}
 	return value;
 }
