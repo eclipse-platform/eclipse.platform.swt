@@ -81,8 +81,8 @@ public class DropTarget extends Widget {
 	private static Callback DragReceiveHandler;
 	private static DropTarget CurrentDropTarget = null;
 	static {
-		DragTrackingHandler = new Callback(DropTarget.class, "DragTrackingHandler", 4);
-		DragReceiveHandler = new Callback(DropTarget.class, "DragReceiveHandler", 3);
+		DragTrackingHandler = new Callback(DropTarget.class, "DragTrackingHandler", 4); //$NON-NLS-1$
+		DragReceiveHandler = new Callback(DropTarget.class, "DragReceiveHandler", 3); //$NON-NLS-1$
 		OS.InstallTrackingHandler(DragTrackingHandler.getAddress(), 0, null);
 		OS.InstallReceiveHandler(DragReceiveHandler.getAddress(), 0, null);
 	}
@@ -313,6 +313,10 @@ private int dragReceiveHandler(int theWindow, int handlerRefCon, int theDrag) {
 	DNDEvent event = new DNDEvent();
 	setEventData(theDrag, event);
 	
+	if (event.operations == 0 || event.dataTypes == null || event.dataTypes.length == 0) {
+		return OS.dragNotAcceptedErr;
+	}
+	
 	int allowedOperations = event.operations;
 	TransferData[] allowedTypes = event.dataTypes;
 	
@@ -420,6 +424,15 @@ private int dragTrackingHandler(int message, int theWindow, int handlerRefCon, i
 	DNDEvent event = new DNDEvent();
 	setEventData(theDrag, event);
 
+	if (event.operations == 0 || event.dataTypes == null || event.dataTypes.length == 0) {
+		if (message == OS.kDragTrackingLeaveWindow) {
+			OS.SetThemeCursor(OS.kThemeArrowCursor);
+		} else {
+			OS.SetThemeCursor(OS.kThemeNotAllowedCursor);
+		}
+		return OS.dragNotAcceptedErr;
+	}
+	
 	int allowedOperations = event.operations;
 	TransferData[] allowedTypes = event.dataTypes;
 	
