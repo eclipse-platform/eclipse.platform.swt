@@ -473,7 +473,8 @@ int getOffsetAtX(int x) {
 		return 0;
 	}
 	if (x > renderPositions[renderPositions.length - 1] + dx[dx.length - 1]) {
-		return lineLength;
+		// Return when x is past the end of the line. Fixes 1GLADBK.
+		return -1;
 	}
 	while (high - low > 1) {
 		int offset = (high + low) / 2;
