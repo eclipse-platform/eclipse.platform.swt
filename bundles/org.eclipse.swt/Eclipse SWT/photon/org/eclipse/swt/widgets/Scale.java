@@ -59,6 +59,7 @@ void createHandle (int index) {
 		OS.Pt_ARG_PAGE_INCREMENT, 10, 0,
 		OS.Pt_ARG_SLIDER_SIZE, 10, 0,
 		OS.Pt_ARG_ORIENTATION, (style & SWT.HORIZONTAL) != 0 ? OS.Pt_HORIZONTAL : OS.Pt_VERTICAL, 0,
+		OS.Pt_ARG_FILL_COLOR, display.WIDGET_BACKGROUND, 0,
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 	};
 	handle = OS.PtCreateWidget (clazz, parentHandle, args.length / 3, args);
