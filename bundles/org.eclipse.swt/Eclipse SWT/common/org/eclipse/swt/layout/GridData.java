@@ -409,14 +409,4 @@ public String toString () {
 	return string;
 }
 
-public int childIndex;
-public boolean isItemData = true;
-public int hSpan;
-public boolean isItemData() {
-	return isItemData;
-}
-public boolean isSpacerData() {
-	return !isItemData;
-}
-
 }
