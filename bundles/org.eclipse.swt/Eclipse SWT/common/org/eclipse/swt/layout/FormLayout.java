@@ -260,8 +260,8 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 					//reflect the desired height wrt "x2 - x1" rather than "width".  This
 					//means that the cache is wrong wrt "width" and should be cleared
 					//bug (x2 - x1) needs to get rid of trim
-					int border = child.getBorderWidth ();
-					data.computeCache (child, x2 - x1 - border * 2, data.height, flushCache);
+					//int border = child.getBorderWidth ();
+					//data.computeCache (child, x2 - x1 - border * 2, data.height, flushCache);
 				}
 			}
 			int y1 = data.getTopAttachment (child, spacing, flushCache).solveX (height);
