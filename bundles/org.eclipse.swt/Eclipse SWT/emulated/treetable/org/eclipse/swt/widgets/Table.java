@@ -137,6 +137,13 @@ void addColumn(TableColumn column) {
 				System.arraycopy (cellForeground, index, temp, index+1, columnCount - index - 1);
 				item.cellForeground = temp;
 			}
+			Font [] cellFont = item.cellFont;
+			if (cellFont != null) {
+				Font [] temp = new Font [columnCount];
+				System.arraycopy (cellFont, 0, temp, 0, index);
+				System.arraycopy (cellFont, index, temp, index+1, columnCount - index - 1);
+				item.cellFont = temp;
+			}
 		}
 	
 	}
@@ -1976,6 +1983,13 @@ void removeColumn(TableColumn column) {
 					System.arraycopy (cellForeground, 0, temp, 0, index);
 					System.arraycopy (cellForeground, index + 1, temp, index, columnCount - index);
 					item.cellForeground = temp;
+				}
+				Font [] cellFont = item.cellFont;
+				if (cellFont != null) {
+					Font [] temp = new Font [columnCount];
+					System.arraycopy (cellFont, 0, temp, 0, index);
+					System.arraycopy (cellFont, index + 1, temp, index, columnCount - index);
+					item.cellFont = temp;
 				}
 			}		
 		}

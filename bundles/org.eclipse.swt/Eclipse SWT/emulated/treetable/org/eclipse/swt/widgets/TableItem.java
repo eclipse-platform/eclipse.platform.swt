@@ -49,7 +49,9 @@ public class TableItem extends SelectableItem {
 
 	Color background = null;
 	Color foreground = null;
+	Font font = null;
 	Color [] cellBackground, cellForeground;
+	Font[] cellFont;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -235,6 +237,7 @@ void drawText(String label, GC gc, Point position, int index) {
 	int textOffset, alignmentOffset;
 
 	if (label != null) {
+		gc.setFont(getFont(index));
 		boolean drawSelection = (index == TableColumn.FIRST || (parent.getStyle() & SWT.FULL_SELECTION) != 0) &&
 			((parent.style & SWT.HIDE_SELECTION) == 0 || parent.isFocusControl());
 		if (isSelected() == true && drawSelection == true) {
@@ -289,8 +292,8 @@ int getAlignmentOffset(int columnIndex, int columnWidth, GC gc) {
 public Color getBackground(){
 	checkWidget ();
 	if (background != null) return background;
-	Table parent = getParent();
-	return parent.getBackground();
+	Table parent = getParent ();
+	return parent.getBackground ();
 }
 /**
  * Returns the background color at the given column index in the receiver.
@@ -307,7 +310,8 @@ public Color getBackground(){
  */
 public Color getBackground (int index) {
 	checkWidget ();
-	int count = Math.max (1, getParent ().getColumnCount ());
+	Table parent = getParent ();
+	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return getBackground ();
 	if (cellBackground == null || cellBackground [index] == null) return getBackground ();
 	return cellBackground [index];
@@ -443,7 +447,9 @@ int getDotStartX(int columnIndex, int columnWidth) {
  */
 public Font getFont () {
 	checkWidget ();
-	return getParent ().getFont ();
+	if (font != null) return font;
+	Table parent = getParent ();
+	return parent.getFont ();
 }
 
 /**
@@ -462,7 +468,11 @@ public Font getFont () {
  */
 public Font getFont (int index) {
 	checkWidget ();
-	return getParent ().getFont ();
+	Table parent = getParent ();
+	int count = Math.max (1, parent.getColumnCount ());
+	if (0 > index || index > count - 1) return getFont ();
+	if (cellFont == null || cellFont [index] == null) return getFont ();
+	return cellFont [index];
 }
 
 /**
@@ -481,8 +491,8 @@ public Font getFont (int index) {
 public Color getForeground(){
 	checkWidget ();
 	if (foreground != null) return foreground;
-	Table parent = getParent();
-	return parent.getForeground();
+	Table parent = getParent ();
+	return parent.getForeground ();
 }
 /**
  * 
@@ -500,7 +510,8 @@ public Color getForeground(){
  */
 public Color getForeground (int index) {
 	checkWidget ();
-	int count = Math.max (1, getParent ().getColumnCount ());
+	Table parent = getParent ();
+	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return getForeground ();
 	if (cellForeground == null || cellForeground [index] == null) return getForeground ();
 	return cellForeground [index];
@@ -1207,6 +1218,10 @@ public void setBackground (int index, Color color) {
  */
 public void setFont (Font font){
 	checkWidget ();
+	if (font != null && font.isDisposed ())
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	this.font = font;
+	redraw ();
 }
 
 /**
@@ -1230,6 +1245,17 @@ public void setFont (Font font){
  */
 public void setFont (int index, Font font) {
 	checkWidget ();
+	if (font != null && font.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	Table parent = getParent ();
+	int count = Math.max (1, parent.getColumnCount ());
+	if (0 > index || index > count - 1) return;
+	if (cellFont == null) {
+		cellFont = new Font [count];
+	}
+	cellFont [index] = font;
+	redraw ();
 }
 
 /**
