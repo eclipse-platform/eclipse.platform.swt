@@ -517,12 +517,14 @@ char findMnemonic (String string) {
 	} while (index < length);
  	return '\0';
 }
-void fixFocus () {
+void fixFocus (Control focusControl) {
 	Shell shell = getShell ();
 	Control control = this;
 	while ((control = control.parent) != null) {
-		if (control.setFocus () || control == shell) return;
+		if (control.setFocus ()) return;
+		if (control == shell) break;
 	}
+	shell.setSavedFocus (focusControl);
 }
 int focusHandle () {
 	return handle;
@@ -1156,8 +1158,7 @@ public boolean isEnabled () {
 	checkWidget();
 	return getEnabled () && parent.isEnabled ();
 }
-boolean isFocusAncestor () {
-	Control control = display.getFocusControl ();
+boolean isFocusAncestor (Control control) {
 	while (control != null && control != this) {
 		control = control.parent;
 	}
@@ -2063,9 +2064,14 @@ public void setCursor (Cursor cursor) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget();
-	boolean fixFocus = !enabled && isFocusAncestor ();
+	Control control = null;
+	boolean fixFocus = false;
+	if (!enabled) {
+		control = display.getFocusControl ();
+		fixFocus = isFocusAncestor (control);
+	}
 	enableWidget (enabled);
-	if (fixFocus) fixFocus ();
+	if (fixFocus) fixFocus (control);
 	if (!enabled || (isEnabled () && enabled)) {
 		propagateChildren (enabled);
 	}
@@ -2433,10 +2439,14 @@ public void setVisible (boolean visible) {
 	int [] argList = {OS.XmNmappedWhenManaged, 0};
 	OS.XtGetValues (topHandle, argList, argList.length / 2);
 	if ((argList [1] != 0) == visible) return;
+	Control control = null;
 	boolean fixFocus = false;
-	if (!visible) fixFocus = isFocusAncestor ();	
+	if (!visible) {
+		control = display.getFocusControl ();
+		fixFocus = isFocusAncestor (control);	
+	}
 	OS.XtSetMappedWhenManaged (topHandle, visible);	
-	if (fixFocus) fixFocus ();
+	if (fixFocus) fixFocus (control);
 	/*
 	* It is possible (but unlikely) that application code could
 	* have disposed the widget in the FocusOut event that is

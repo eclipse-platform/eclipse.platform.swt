@@ -961,11 +961,18 @@ void setCursor (int /*long*/ cursor) {
 public void setEnabled (boolean enabled) {
 	checkWidget();
 	if (((state & DISABLED) == 0) == enabled) return;
+	Control control = null;
+	boolean fixFocus = false;
+	if (!enabled) {
+		control = display.getFocusControl ();
+		fixFocus = isFocusAncestor (control);
+	}
 	if (enabled) {
 		state &= ~DISABLED;
 	} else {
 		state |= DISABLED;
 	}
+	enableWidget (enabled);
 	if (enabled) {
 		if (enableWindow != 0) {
 			OS.gdk_window_destroy (enableWindow);
@@ -992,6 +999,10 @@ public void setEnabled (boolean enabled) {
 			OS.gdk_window_raise (enableWindow);
 			OS.gdk_window_show (enableWindow);
 		}
+	}
+	if (fixFocus) fixFocus (control);
+	if (enabled && hasFocus) {
+		if (!restoreFocus ()) traverseGroup (false);
 	}
 }
 

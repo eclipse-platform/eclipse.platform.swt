@@ -1216,6 +1216,13 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	if (isFocus) caret.setFocus ();
 	return move || resize;
 }
+public void setEnabled (boolean enabled) {
+	checkWidget ();
+	super.setEnabled (enabled);
+	if (enabled && this == display.getActiveShell ()) {
+		if (!restoreFocus ()) traverseGroup (false);
+	}
+}
 public void setMaximized (boolean maximized) {
 	checkWidget();
 	super.setMaximized (maximized);

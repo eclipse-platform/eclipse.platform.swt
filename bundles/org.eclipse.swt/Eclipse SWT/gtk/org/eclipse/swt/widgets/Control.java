@@ -116,12 +116,18 @@ int /*long*/ eventHandle () {
 	return handle;
 }
 
-void fixFocus () {
+void fixFocus (Control focusControl) {
 	Shell shell = getShell ();
 	Control control = this;
 	while ((control = control.parent) != null) {
-		if (control.setFocus () || control == shell) return;
+		if (control.setFocus ()) return;
+		if (control == shell) break;
 	}
+	shell.setSavedFocus (focusControl);
+	int shellHandle = shell.shellHandle;
+	OS.GTK_WIDGET_SET_FLAGS (shellHandle, OS.GTK_CAN_FOCUS);
+	OS.gtk_widget_grab_focus (shellHandle);
+	OS.GTK_WIDGET_UNSET_FLAGS (shellHandle, OS.GTK_CAN_FOCUS);
 }
 
 int /*long*/ focusHandle () {
@@ -2055,8 +2061,7 @@ public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();
 }
 
-boolean isFocusAncestor () {
-	Control control = display.getFocusControl ();
+boolean isFocusAncestor (Control control) {
 	while (control != null && control != this) {
 		control = control.parent;
 	}
@@ -2489,7 +2494,12 @@ void setCursor (int /*long*/ cursor) {
 public void setEnabled (boolean enabled) {
 	checkWidget();
 	if (((state & DISABLED) == 0) == enabled) return;
-	boolean fixFocus = !enabled && isFocusAncestor ();
+	Control control = null;
+	boolean fixFocus = false;
+	if (!enabled) {
+		control = display.getFocusControl ();
+		fixFocus = isFocusAncestor (control);
+	}
 	if (enabled) {
 		state &= ~DISABLED;
 	} else {
@@ -2534,7 +2544,7 @@ public void setEnabled (boolean enabled) {
 			if (OS.GTK_WIDGET_VISIBLE (topHandle)) OS.gdk_window_show (enableWindow);
 		}
 	}
-	if (fixFocus) fixFocus ();
+	if (fixFocus) fixFocus (control);
 }
 
 /**
@@ -2838,11 +2848,17 @@ public void setVisible (boolean visible) {
 		* 
 		* NOTE: In order to stop the same widget from taking focus,
 		* temporarily clear and set the GTK_VISIBLE flag.
-		*/
-		if (!visible && isFocusAncestor ()) {
+		*/		
+		Control control = null;
+		boolean fixFocus = false;
+		if (!visible) {
+			control = display.getFocusControl ();
+			fixFocus = isFocusAncestor (control);
+		}
+		if (fixFocus) {
 			int flags = OS.GTK_WIDGET_FLAGS (topHandle);
 			OS.GTK_WIDGET_UNSET_FLAGS (topHandle, OS.GTK_VISIBLE);
-			fixFocus ();
+			fixFocus (control);
 			if (isDisposed ()) return;
 			if ((flags & OS.GTK_VISIBLE) != 0) {
 				OS.GTK_WIDGET_SET_FLAGS (topHandle, OS.GTK_VISIBLE);

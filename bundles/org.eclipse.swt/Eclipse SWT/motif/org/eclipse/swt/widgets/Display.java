@@ -1160,7 +1160,7 @@ public Control getCursorControl () {
 		Widget widget = getWidget (handle);
 		if (widget != null && widget instanceof Control) {
 			Control control = (Control) widget;
-			if (control.getEnabled ()) return control;
+			if (control.isEnabled ()) return control;
 		}
 	} while ((handle = OS.XtParent (handle)) != 0);
 	return null;
@@ -1340,8 +1340,8 @@ public Control getFocusControl () {
 	do {
 		Widget widget = getWidget (handle);
 		if (widget != null && widget instanceof Control) {
-			Control window = (Control) widget;
-			if (window.getEnabled ()) return window;
+			Control control = (Control) widget;
+			return control.isEnabled () ? control : null;
 		}
 	} while ((handle = OS.XtParent (handle)) != 0);
 	return null;
