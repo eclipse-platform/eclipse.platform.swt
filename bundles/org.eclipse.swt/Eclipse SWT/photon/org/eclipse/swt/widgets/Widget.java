@@ -867,7 +867,7 @@ void replaceMnemonic (int mnemonic, boolean normal, boolean alt) {
 				char key = Character.toLowerCase (accelText [0]);
 				if (normal) {
 					//TEMPORARY CODE
-//					OS.PtRemoveHotkeyHandler (handle, key, 0, (short)0, SWT.Activate, display.windowProc);
+//					OS.PtRemoveHotkeyHandler (handle, key, 0, (short)0, handle, display.hotkeyProc);
 				}
 				if (alt) {
 					OS.PtRemoveHotkeyHandler (handle, key, OS.Pk_KM_Alt, (short)0, handle, display.hotkeyProc);
