@@ -37,7 +37,7 @@ public SwtPerformanceTestCase(String name) {
 
 protected PerformanceMeter createMeter(String id) {
 	Performance performance = Performance.getDefault();
-	String scenarioId = "org.eclipse.swt." + id;
+	String scenarioId = "org.eclipse.swt " + id;
 	PerformanceMeter meter = performance.createPerformanceMeter(scenarioId);
 	performance.tagAsSummary(meter, id, Dimension.CPU_TIME);
 	return meter;
