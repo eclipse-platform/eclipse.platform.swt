@@ -327,7 +327,7 @@ public void setVisible (boolean visible) {
 		if ((state & HIDDEN) != 0) return;
 		state |= HIDDEN;
 	}
-	OS.HIViewSetVisible (handle, visible);
+	setVisible (handle, visible);
 	sendEvent (visible ? SWT.Show : SWT.Hide);
 	parent.layoutControl();
 }

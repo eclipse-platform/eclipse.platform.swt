@@ -1206,8 +1206,9 @@ public void setVisible (boolean visible) {
 	* control that takes focus.  If no control will take focus, clear
 	* the focus control.
 	*/
-	boolean fixFocus = !visible && isFocusAncestor ();
-	OS.HIViewSetVisible (topHandle (), visible);
+	boolean fixFocus = false;
+	if (!visible) fixFocus = isFocusAncestor ();
+	setVisible (topHandle (), visible);
 	if (!visible) {
 		/*
 		* It is possible (but unlikely), that application
