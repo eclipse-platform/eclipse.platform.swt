@@ -89,7 +89,7 @@ static synchronized void initializeSwing() {
  * IMPORTANT: As of JDK1.5, the embedded frame does not receive mouse events.
  * When a lightweight component is added as a child of the embedded frame,
  * the cursor does not change. In order to work around both these problems, it is
- * strongly recommended that a heightweight component such as <code>java.awt.Panel</code>
+ * strongly recommended that a heavyweight component such as <code>java.awt.Panel</code>
  * be added to the frame as the root of all components.
  * </p>
  * 
