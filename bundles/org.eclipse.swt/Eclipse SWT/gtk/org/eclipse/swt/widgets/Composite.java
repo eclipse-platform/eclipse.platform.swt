@@ -69,9 +69,9 @@ public Composite (Composite parent, int style) {
 
 Control [] _getChildren () {
 	int parentHandle = parentingHandle ();
-	int list = OS.gtk_container_children (parentHandle);
-	int count = (list != 0) ? OS.g_list_length (list) : 0;
-	if (count == 0) return new Control [0];
+	int list = OS.gtk_container_get_children (parentHandle);
+	if (list == 0) return new Control [0];
+	int count = OS.g_list_length (list);
 	Control [] children = new Control [count];
 	int i = 0, j = 0;
 	while (i < count) {
@@ -86,6 +86,7 @@ Control [] _getChildren () {
 		}
 		i++;
 	}
+	OS.g_list_free (list);
 	if (i == j) return children;
 	Control [] newChildren = new Control [j];
 	System.arraycopy (children, 0, newChildren, 0, j);
@@ -303,9 +304,12 @@ int processMouseDown (int callData, int arg1, int int2) {
 		//NOT DONE - only grab when not already grabbing
 		OS.gtk_grab_add (handle);
 		if ((style & SWT.NO_FOCUS) == 0) {
-			int list = OS.gtk_container_children (handle);
-			int count = list != 0 ? OS.g_list_length (list) : 0;
-			if (count == 0) OS.gtk_widget_grab_focus (handle);
+			int list = OS.gtk_container_get_children (handle);
+			if (list != 0) {
+				int count = OS.g_list_length (list);
+				if (count == 0) OS.gtk_widget_grab_focus (handle);
+				OS.g_list_free (list);
+			}
 		}
 	}
 	return result;

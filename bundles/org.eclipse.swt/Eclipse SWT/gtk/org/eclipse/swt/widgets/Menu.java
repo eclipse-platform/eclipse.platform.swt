@@ -195,9 +195,10 @@ public boolean getEnabled () {
  */
 public MenuItem getItem (int index) {
 	checkWidget();
-	int list = OS.gtk_container_children (handle);
+	int list = OS.gtk_container_get_children (handle);
 	if (list == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
 	int data = OS.g_list_nth_data (list, index);
+	OS.g_list_free (list);
 	if (data == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
 	return (MenuItem) WidgetTable.get (data);
 }
@@ -214,8 +215,11 @@ public MenuItem getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget();
-	int list = OS.gtk_container_children (handle);
-	return list != 0 ? OS.g_list_length (list) : 0;
+	int list = OS.gtk_container_get_children (handle);
+	if (list == 0) return 0;
+	int itemCount = OS.g_list_length (list);
+	OS.g_list_free (list);
+	return itemCount;
 }
 
 /**
@@ -236,13 +240,15 @@ public int getItemCount () {
  */
 public MenuItem [] getItems () {
 	checkWidget();
-	int list = OS.gtk_container_children (handle);
-	int count = list != 0 ? OS.g_list_length (list) : 0;
+	int list = OS.gtk_container_get_children (handle);
+	if (list == 0) return new MenuItem [0];
+	int count = OS.g_list_length (list);
 	MenuItem [] items = new MenuItem [count];
 	for (int i=0; i<count; i++) {
 		int data = OS.g_list_nth_data (list, i);
 		items [i] = (MenuItem) WidgetTable.get (data);
 	}
+	OS.g_list_free (list);
 	return items;
 }
 

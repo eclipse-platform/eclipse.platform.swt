@@ -638,10 +638,11 @@ public void setImage (Image image) {
 	checkWidget();
 	super.setImage (image);
 	if ((style & SWT.SEPARATOR) != 0) return;
-	int list = OS.gtk_container_children (handle);
+	int list = OS.gtk_container_get_children (handle);
 	if (list != 0) {
 		int widget = OS.g_list_nth_data (list, 0);
 		if (widget != 0) OS.gtk_widget_destroy (widget);
+		OS.g_list_free (list);
 	}
 	if (image != null) {
 		int pixmap = OS.gtk_pixmap_new (image.pixmap, image.mask);
@@ -684,10 +685,11 @@ public void setText (String string) {
 	for (int i=0; i<length; i++) {
 		if (text [i] == '&') text [i] = '_';
 	}
-	int list = OS.gtk_container_children (handle);
+	int list = OS.gtk_container_get_children (handle);
 	if (list != 0) {
 		int widget = OS.g_list_nth_data (list, 0);
 		if (widget !=  0) OS.gtk_widget_destroy (widget);
+		OS.g_list_free (list);
 	}
 	byte [] buffer = Converter.wcsToMbcs (null, text);
 	int label = OS.gtk_label_new_with_mnemonic (buffer);

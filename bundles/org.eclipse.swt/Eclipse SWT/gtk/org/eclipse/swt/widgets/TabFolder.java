@@ -172,8 +172,12 @@ void createWidget (int index) {
 }
 
 void createItem (TabItem item, int index) {
-	int list = OS.gtk_container_children (handle);
-	int itemCount = (list != 0) ? OS.g_list_length (list) : 0;
+	int list = OS.gtk_container_get_children (handle);
+	int itemCount = 0;
+	if (list != 0) {
+		itemCount = OS.g_list_length (list);
+		OS.g_list_free (list);
+	}
 	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_ITEM_NOT_ADDED);
 	if (itemCount == items.length) {
 		TabItem [] newItems = new TabItem [items.length + 4];
@@ -232,8 +236,10 @@ int eventHandle () {
 
 public TabItem getItem (int index) {
 	checkWidget();
-	int list = OS.gtk_container_children (handle);
-	int itemCount = list != 0 ? OS.g_list_length (list) : 0;
+	int list = OS.gtk_container_get_children (handle);
+	if (list == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
+	int itemCount = OS.g_list_length (list);
+	OS.g_list_free (list);
 	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_CANNOT_GET_ITEM);
 	return items [index];
 }
@@ -250,8 +256,11 @@ public TabItem getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget();
-	int list = OS.gtk_container_children (handle);
-	return list != 0 ? OS.g_list_length (list) : 0;
+	int list = OS.gtk_container_get_children (handle);
+	if (list == 0) return 0;
+	int itemCount = OS.g_list_length (list);
+	OS.g_list_free (list);
+	return itemCount;
 }
 
 /**
@@ -272,8 +281,7 @@ public int getItemCount () {
  */
 public TabItem [] getItems () {
 	checkWidget();
-	int list = OS.gtk_container_children (handle);
-	int count = list != 0 ? OS.g_list_length (list) : 0;
+	int count = getItemCount ();
 	TabItem [] result = new TabItem [count];
 	System.arraycopy (items, 0, result, 0, count);
 	return result;
@@ -343,8 +351,10 @@ void hookEvents () {
 public int indexOf (TabItem item) {
 	checkWidget();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int list = OS.gtk_container_children (handle);
-	int count = list != 0 ? OS.g_list_length (list) : 0;
+	int list = OS.gtk_container_get_children (handle);
+	if (list == 0) return -1;
+	int count = OS.g_list_length (list);
+	OS.g_list_free (list);
 	for (int i=0; i<count; i++) {
 		if (items [i] == item) return i;
 	}

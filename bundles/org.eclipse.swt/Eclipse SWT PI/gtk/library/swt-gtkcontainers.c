@@ -60,10 +60,10 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1container_1remo
 	gtk_container_remove((GtkContainer*)container, (GtkWidget*)widget);
 }
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1container_1children
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1container_1get_1children
   (JNIEnv *env, jclass that, jint container)
 {
-	return (jint)gtk_container_children((GtkContainer*)container);
+	return (jint)gtk_container_get_children((GtkContainer*)container);
 }
 
 /* gtk_event_box */

@@ -602,8 +602,9 @@ public void setText (String string) {
 	for (int i=0; i<length; i++) {
 		if (text [i] == '&') text [i] = '_';
 	}
-	int list = OS.gtk_container_children (handle);
+	int list = OS.gtk_container_get_children (handle);
 	int label = OS.g_list_nth_data (list, 0);
+	OS.g_list_free (list);
 	byte [] buffer = Converter.wcsToMbcs (null, text);
 	OS.gtk_label_set_text_with_mnemonic (label, buffer);
 }

@@ -185,9 +185,10 @@ void createWidget (int index) {
 
 int fontHandle () {
 	//FIX ME - font lost when no text
-	int list = OS.gtk_container_children (handle);
+	int list = OS.gtk_container_get_children (handle);
 	if (list != 0) {
 		int widget = OS.g_list_nth_data (list, 0);
+		OS.g_list_free (list);
 		if (widget != 0) return widget;
 	}
 	return super.fontHandle ();
@@ -328,16 +329,18 @@ public void setAlignment (int alignment) {
 				arrow_type = OS.GTK_ARROW_RIGHT;
 				break;
 		}
-		int list = OS.gtk_container_children (handle);
+		int list = OS.gtk_container_get_children (handle);
 		int arrow = OS.g_list_nth_data (list, 0);
+		OS.g_list_free (list);
 		OS.gtk_arrow_set (arrow, arrow_type, OS.GTK_SHADOW_OUT);
 		return;
 	}
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-	int list = OS.gtk_container_children (handle);
+	int list = OS.gtk_container_get_children (handle);
 	int label = OS.g_list_nth_data (list, 0);
+	OS.g_list_free (list);
 	if (label == 0) return;
 	boolean isText = OS.GTK_WIDGET_TYPE (handle) == OS.gtk_label_get_type ();
 	if ((style & SWT.LEFT) != 0) {
@@ -375,10 +378,11 @@ public void setImage (Image image) {
 	checkWidget ();
 	this.image = image;
 	if ((style & SWT.ARROW) != 0) return;
-	int list = OS.gtk_container_children (handle);
+	int list = OS.gtk_container_get_children (handle);
 	if (list != 0) {
 		int widget = OS.g_list_nth_data (list, 0);
 		if (widget != 0) OS.gtk_widget_destroy (widget);
+		OS.g_list_free (list);
 	}
 	if (image != null) {
 		int pixmap = OS.gtk_pixmap_new (image.pixmap, image.mask);
@@ -455,10 +459,11 @@ public void setText (String string) {
 	for (int i=0; i<length; i++) {
 		if (text [i] == '&') text [i] = '_';
 	}
-	int list = OS.gtk_container_children (handle);
+	int list = OS.gtk_container_get_children (handle);
 	if (list != 0) {
 		int widget = OS.g_list_nth_data (list, 0);
 		if (widget != 0) OS.gtk_widget_destroy (widget);
+		OS.g_list_free (list);
 	}
 	byte [] buffer = Converter.wcsToMbcs (null, text);
 	int label = OS.gtk_label_new_with_mnemonic (buffer);

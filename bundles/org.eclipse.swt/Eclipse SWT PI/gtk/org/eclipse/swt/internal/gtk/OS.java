@@ -571,7 +571,7 @@ public static final native void gtk_clist_set_column_width(int clist, int column
 public static final native void gtk_clist_set_pixtext(int clist, int row, int column, byte[] text, byte spacing, int pixmap, int mask);
 //public static final native void gtk_clist_set_pixmap(int clist, int row, int column, int pixmap, int mask);
 public static final native void gtk_container_add(int container, int widget);
-public static final native int gtk_container_children(int container);
+public static final native int gtk_container_get_children(int container);
 public static final native int gtk_color_selection_dialog_new(byte[] title);
 public static final native void gtk_color_selection_get_color(int colorsel, double[] color);
 public static final native void gtk_color_selection_set_color(int colorsel, double[] color);
