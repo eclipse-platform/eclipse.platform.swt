@@ -223,6 +223,7 @@ public void setText (String string) {
 	}
 	byte [] buffer = Converter.wcsToMbcs (null, text);
 	OS.gtk_label_set_text_with_mnemonic (handle, buffer);
+	parent.fixPage ();
 }
 
 /**

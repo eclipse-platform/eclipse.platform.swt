@@ -338,6 +338,8 @@ void moveHandle (int x, int y) {
 
 void resizeHandle (int width, int height) {
 	int topHandle = topHandle ();
+	int flags = OS.GTK_WIDGET_FLAGS (topHandle);
+	OS.GTK_WIDGET_SET_FLAGS(topHandle, OS.GTK_VISIBLE);
 	OS.gtk_widget_set_size_request (topHandle, width, height);
 	if (topHandle != handle) {
 		OS.gtk_widget_set_size_request (handle, width, height);
@@ -363,8 +365,6 @@ void resizeHandle (int width, int height) {
 	/*
 	* Force the container to allocate the size of its children.
 	*/
-	int flags = OS.GTK_WIDGET_FLAGS (topHandle);
-	OS.GTK_WIDGET_SET_FLAGS(topHandle, OS.GTK_VISIBLE);
 	int parentHandle = parent.parentingHandle ();
 	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();

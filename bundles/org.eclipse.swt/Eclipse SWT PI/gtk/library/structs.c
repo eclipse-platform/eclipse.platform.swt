@@ -1110,7 +1110,7 @@ void getGtkStyleFields(JNIEnv *env, jobject lpObject, GtkStyle *lpGtkStyle, GtkS
 	lpGtkStyle->white.red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->white_red);
 	lpGtkStyle->white.green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->white_green);
 	lpGtkStyle->white.blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->white_blue);
-	lpGtkStyle->font_desc = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->font_desc);
+	lpGtkStyle->font_desc = (PangoFontDescription*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->font_desc);
 	lpGtkStyle->fg_gc[0] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->fg_gc0);
 	lpGtkStyle->fg_gc[1] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->fg_gc1);
 	lpGtkStyle->fg_gc[2] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->fg_gc2);

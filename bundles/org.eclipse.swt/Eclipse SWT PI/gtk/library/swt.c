@@ -1766,11 +1766,6 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1signal_1connect_1
 	return rc;
 }
 
-/*
- * Class:	org_eclipse_swt_internal_gtk_OS
- * Method:	gtk_notebook_insert_page
- * Signature:	
- */
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1notebook_1set_1scrollable
   (JNIEnv *env, jclass that, jint notebook, jboolean scrollable)
 {
@@ -1779,6 +1774,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1notebook_1set_1
 #endif
 
 	gtk_notebook_set_scrollable((GtkNotebook*)notebook, (gboolean) scrollable);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1notebook_1get_1scrollable
+  (JNIEnv *env, jclass that, jint notebook, jboolean scrollable)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "gtk_notebook_get_scrollable");
+#endif
+
+	return (jboolean)gtk_notebook_get_scrollable((GtkNotebook*)notebook);
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1style_1set_1xthickness

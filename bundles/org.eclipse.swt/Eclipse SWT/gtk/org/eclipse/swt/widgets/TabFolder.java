@@ -113,36 +113,39 @@ public void addSelectionListener(SelectionListener listener) {
 }
 
 int clientHandle () {
-	if (items [0] != null) return items [0].pageHandle;
+	int index = OS.gtk_notebook_get_current_page (handle);
+	if (index != -1 && items [index] != null) {
+		return items [index].pageHandle;
+	}
 	return handle;
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-//	int width = OS.GTK_WIDGET_WIDTH (fixedHandle);
-//	int height = OS.GTK_WIDGET_HEIGHT (fixedHandle);
-//	OS.gtk_widget_set_size_request (handle, wHint, hHint);
-//	GtkRequisition requisition = new GtkRequisition ();
-//	OS.gtk_widget_size_request (handle, requisition);
-//	OS.gtk_widget_set_size_request (handle, width, height);
-//	width = wHint == SWT.DEFAULT ? requisition.width : wHint;
-//	height = hHint == SWT.DEFAULT ? requisition.height : hHint;
-//	Point size;
-//	if (layout != null) {
-//		size = layout.computeSize (this, wHint, hHint, changed);
-//	} else {
-//		size = minimumSize ();
-//	}
-//	if (size.x == 0) size.x = DEFAULT_WIDTH;
-//	if (size.y == 0) size.y = DEFAULT_HEIGHT;
-//	if (wHint != SWT.DEFAULT) size.x = wHint;
-//	if (hHint != SWT.DEFAULT) size.y = hHint;
-//	width = Math.max (width, size.x);
-//	height = Math.max (height, size.y);
-////	Rectangle trim = computeTrim (0, 0, width, height);
-////	width = trim.width;  height = trim.height;
-//	return new Point (width, height);
-	return new Point (300, 300);
+	int width = OS.GTK_WIDGET_WIDTH (fixedHandle);
+	int height = OS.GTK_WIDGET_HEIGHT (fixedHandle);
+	OS.gtk_widget_set_size_request (handle, wHint, hHint);
+	GtkRequisition requisition = new GtkRequisition ();
+	boolean scrollable = OS.gtk_notebook_get_scrollable (handle);
+	OS.gtk_notebook_set_scrollable (handle, false);
+	OS.gtk_widget_size_request (handle, requisition);
+	OS.gtk_notebook_set_scrollable (handle, scrollable);
+	OS.gtk_widget_set_size_request (handle, width, height);
+	width = wHint == SWT.DEFAULT ? requisition.width : wHint;
+	height = hHint == SWT.DEFAULT ? requisition.height : hHint;
+	Point size;
+	if (layout != null) {
+		size = layout.computeSize (this, wHint, hHint, changed);
+	} else {
+		size = minimumSize ();
+	}
+	if (size.x == 0) size.x = DEFAULT_WIDTH;
+	if (size.y == 0) size.y = DEFAULT_HEIGHT;
+	if (wHint != SWT.DEFAULT) size.x = wHint;
+	if (hHint != SWT.DEFAULT) size.y = hHint;
+	width = Math.max (width, size.x);
+	height = Math.max (height, size.y);
+	return new Point (width, height);
 }
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
@@ -184,7 +187,7 @@ void createItem (TabItem item, int index) {
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
 	}
-	int labelHandle = OS.gtk_label_new ("");
+	int labelHandle = OS.gtk_label_new (null);
 	if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	int pageHandle = OS.gtk_fixed_new ();
 	if (pageHandle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -200,6 +203,34 @@ void createItem (TabItem item, int index) {
 	items [index] = item;
 	item.setForegroundColor (getForegroundColor ());
 	item.setFontDescription (getFontDescription ());
+	if (itemCount == 1) {
+		fixPage ();
+		Event event = new Event();
+		event.item = items[0];
+		sendEvent (SWT.Selection, event);
+		// the widget could be destroyed at this point
+	}
+}
+
+void fixPage () {
+	/*
+	* Feature in GTK.  For some reason, the positioning of
+	* tab labels and pages become corrupted when when there
+	* is no current page.  The fix is to force the notebook
+	* to resize which causes the current page to be set.
+	*/
+//	int index = OS.gtk_notebook_get_current_page (handle);
+//	if (index != -1) return;
+	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	int flags = OS.GTK_WIDGET_FLAGS (handle);
+	OS.GTK_WIDGET_SET_FLAGS(handle, OS.GTK_VISIBLE);
+	GtkRequisition requisition = new GtkRequisition ();
+	OS.gtk_widget_size_request (handle, requisition);
+	OS.gtk_container_resize_children (handle);
+	if ((flags & OS.GTK_VISIBLE) == 0) {
+		OS.GTK_WIDGET_UNSET_FLAGS(handle, OS.GTK_VISIBLE);	
+	}
+	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 }
 
 void destroyItem (TabItem item) {
@@ -210,10 +241,28 @@ void destroyItem (TabItem item) {
 		index++;
 	}
 	if (index == itemCount) error (SWT.ERROR_ITEM_NOT_REMOVED);
+	int oldIndex = OS.gtk_notebook_get_current_page (handle);
+	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
 	OS.gtk_notebook_remove_page (handle, index);
+	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
 	item.handle = 0;
+	if (index == oldIndex) {
+		fixPage ();
+		int newIndex = OS.gtk_notebook_get_current_page (handle);
+		if (newIndex != -1) {
+			Control control = items [newIndex].getControl ();
+			if (control != null && !control.isDisposed ()) {
+				control.setBounds (getClientArea());
+				control.setVisible (true);
+			}
+			Event event = new Event ();
+			event.item = items [newIndex];
+			sendEvent (SWT.Selection, event);	
+			// the widget could be destroyed at this point
+		}
+	}
 }
 
 int eventHandle () {
