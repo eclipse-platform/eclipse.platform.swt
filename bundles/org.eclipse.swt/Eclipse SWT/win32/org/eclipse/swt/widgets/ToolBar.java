@@ -41,7 +41,7 @@ import org.eclipse.swt.graphics.*;
 public class ToolBar extends Composite {
 	int lastFocusId;
 	ToolItem [] items;
-	boolean ignoreResize;
+	boolean ignoreResize, ignoreMouse;
 	ImageList imageList, disabledImageList, hotImageList;
 	static final int ToolBarProc;
 	static final TCHAR ToolBarClass = new TCHAR (0, OS.TOOLBARCLASSNAME, true);
@@ -835,6 +835,16 @@ LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 	int code = OS.SendMessage (handle, OS.TB_GETBUTTON, index, lpButton);
 	if (code != 0) lastFocusId = lpButton.idCommand;
 	return super.WM_KILLFOCUS (wParam, lParam);
+}
+
+LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
+	if (ignoreMouse) return null;
+	return super.WM_LBUTTONDOWN (wParam, lParam);
+}
+
+LRESULT WM_LBUTTONUP (int wParam, int lParam) {
+	if (ignoreMouse) return null;
+	return super.WM_LBUTTONUP (wParam, lParam);
 }
 
 LRESULT WM_NOTIFY (int wParam, int lParam) {

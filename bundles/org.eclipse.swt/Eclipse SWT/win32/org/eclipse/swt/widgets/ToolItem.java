@@ -163,6 +163,13 @@ protected void checkSubclass () {
 }
 
 void click (boolean dropDown) {	
+	int hwnd = parent.handle;
+	if (OS.GetKeyState (OS.VK_LBUTTON) < 0) return;
+	int index = OS.SendMessage (hwnd, OS.TB_COMMANDTOINDEX, id, 0);
+	RECT rect = new RECT ();
+	OS.SendMessage (hwnd, OS.TB_GETITEMRECT, index, rect);
+	int hotIndex = OS.SendMessage (hwnd, OS.TB_GETHOTITEM, 0, 0);
+	
 	/*
 	* In order to emulate all the processing that
 	* happens when a mnemonic key is pressed, fake
@@ -170,16 +177,13 @@ void click (boolean dropDown) {
 	* that radio and pull down items are handled
 	* properly.
 	*/
-	int hwnd = parent.handle;
-	if (OS.GetKeyState (OS.VK_LBUTTON) < 0) return;
-	int index = OS.SendMessage (hwnd, OS.TB_COMMANDTOINDEX, id, 0);
-	RECT rect = new RECT ();
-	OS.SendMessage (hwnd, OS.TB_GETITEMRECT, index, rect);
 	int y = rect.top + (rect.bottom - rect.top) / 2;
 	int lParam = (dropDown ? rect.right - 1 : rect.left) | (y << 16);
-	int hotIndex = OS.SendMessage (hwnd, OS.TB_GETHOTITEM, 0, 0);
+	parent.ignoreMouse = true;
 	OS.SendMessage (hwnd, OS.WM_LBUTTONDOWN, 0, lParam);
 	OS.SendMessage (hwnd, OS.WM_LBUTTONUP, 0, lParam);
+	parent.ignoreMouse = false;
+	
 	if (hotIndex != -1) {
 		OS.SendMessage (hwnd, OS.TB_SETHOTITEM, hotIndex, 0);
 	}
