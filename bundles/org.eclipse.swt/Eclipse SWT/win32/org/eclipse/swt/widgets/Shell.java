@@ -1280,6 +1280,9 @@ LRESULT WM_MOUSEACTIVATE (int wParam, int lParam) {
 						display.lastHittestControl = control;
 						return null;
 					}
+					if (OS.IsWin95 && hittest == OS.HTCAPTION) {
+						display.lastHittestControl = control;
+					}
 					return new LRESULT (OS.MA_NOACTIVATE);
 				}
 			}
@@ -1354,15 +1357,16 @@ LRESULT WM_NCLBUTTONDOWN (int wParam, int lParam) {
 	*/
 	if (!display.ignoreRestoreFocus) return result;
 	Display display = this.display;
-	int hwndActive = OS.GetActiveWindow ();
-	OS.SetActiveWindow (handle);
+	int hwndActive = 0;
+	boolean fixActive = OS.IsWin95 && display.lastHittest == OS.HTCAPTION;
+	if (fixActive) hwndActive = OS.SetActiveWindow (handle);
 	display.lockActiveWindow = true;
 	int code = callWindowProc (OS.WM_NCLBUTTONDOWN, wParam, lParam);
 	display.lockActiveWindow = false;
-	OS.SetActiveWindow (hwndActive);
-	Control lastFocusControl = display.lastHittestControl;
-	if (lastFocusControl != null && !lastFocusControl.isDisposed ()) {
-		lastFocusControl.setFocus ();
+	if (fixActive) OS.SetActiveWindow (hwndActive);
+	Control focusControl = display.lastHittestControl;
+	if (focusControl != null && !focusControl.isDisposed ()) {
+		focusControl.setFocus ();
 	}
 	display.lastHittestControl = null;
 	display.ignoreRestoreFocus = false;
