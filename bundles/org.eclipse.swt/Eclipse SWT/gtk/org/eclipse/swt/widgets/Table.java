@@ -183,6 +183,8 @@ void createHandle (int index) {
 	OS.gtk_widget_show (fixedHandle);
 	OS.gtk_widget_show (scrolledHandle);
 	OS.gtk_widget_show (handle);
+
+	OS.gtk_clist_set_row_height(handle, 0);
 	
 	/* Single or Multiple Selection */
 	int mode = (style & SWT.MULTI) != 0 ? OS.GTK_SELECTION_EXTENDED : OS.GTK_SELECTION_BROWSE;
