@@ -6211,3 +6211,27 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__Lorg_ecl
     }
 }
 */
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PgSetFillTransPat
+ * Signature: ([B)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PgSetFillTransPat
+  (JNIEnv *env, jobject that, jbyteArray pat)
+{
+    char *pat1=NULL;
+
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "PgSetFillTransPat\n");
+#endif
+
+    if (pat)
+        pat1 = (char *)(*env)->GetByteArrayElements(env, pat, NULL);
+
+    PgSetFillTransPat(pat1);
+
+    if (pat)
+        (*env)->ReleaseByteArrayElements(env, pat, (jbyte *)pat1, 0);
+}
+
