@@ -544,11 +544,11 @@ void fixShell (Shell newShell, Control control) {
 }
 
 /**
- * Moves the receiver to the top of the drawing order for
- * the display on which it was created (so that all other
- * shells on that display, which are not the receiver's
- * children will be drawn behind it) and forces the window
- * manager to make the shell active.
+ * If the receiver is visible, moves it to the top of the 
+ * drawing order for the display on which it was created 
+ * (so that all other shells on that display, which are not 
+ * the receiver's children will be drawn behind it) and forces 
+ * the window manager to make the shell active.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -566,6 +566,7 @@ void fixShell (Shell newShell, Control control) {
  */
 public void forceActive () {
 	checkWidget ();
+	if(!isVisible()) return;
 	OS.SetForegroundWindow (handle);
 }
 
@@ -923,11 +924,11 @@ LRESULT selectPalette (int hPalette) {
 }
 
 /**
- * Moves the receiver to the top of the drawing order for
- * the display on which it was created (so that all other
- * shells on that display, which are not the receiver's
- * children will be drawn behind it) and asks the window
- * manager to make the shell active.
+ * If the receiver is visible, moves it to the top of the 
+ * drawing order for the display on which it was created 
+ * (so that all other shells on that display, which are not 
+ * the receiver's children will be drawn behind it) and asks 
+ * the window manager to make the shell active 
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -945,6 +946,7 @@ LRESULT selectPalette (int hPalette) {
  */
 public void setActive () {
 	checkWidget ();
+	if(!isVisible()) return;
 	bringToTop ();
 }
 

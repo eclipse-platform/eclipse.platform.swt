@@ -549,11 +549,11 @@ Cursor findCursor () {
 }
 
 /**
- * Moves the receiver to the top of the drawing order for
- * the display on which it was created (so that all other
- * shells on that display, which are not the receiver's
- * children will be drawn behind it) and forces the window
- * manager to make the shell active.
+ * If the receiver is visible, moves it to the top of the 
+ * drawing order for the display on which it was created 
+ * (so that all other shells on that display, which are not 
+ * the receiver's children will be drawn behind it) and forces 
+ * the window manager to make the shell active.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -572,6 +572,7 @@ Cursor findCursor () {
 public void forceActive () {
 	checkWidget ();
 	if (activate) return;
+	if(!isVisible()) return;
 	OS.SelectWindow (shellHandle);
 	OS.SetFrontProcessWithOptions (new int [] {0, OS.kCurrentProcess}, OS.kSetFrontProcessFrontWindowOnly);
 }
@@ -1112,11 +1113,11 @@ public void removeShellListener(ShellListener listener) {
 }
 
 /**
- * Moves the receiver to the top of the drawing order for
- * the display on which it was created (so that all other
- * shells on that display, which are not the receiver's
- * children will be drawn behind it) and asks the window
- * manager to make the shell active.
+ * If the receiver is visible, moves it to the top of the 
+ * drawing order for the display on which it was created 
+ * (so that all other shells on that display, which are not 
+ * the receiver's children will be drawn behind it) and forces 
+ * the window manager to make the shell active.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1135,6 +1136,7 @@ public void removeShellListener(ShellListener listener) {
 public void setActive () {
 	checkWidget ();
 	if (activate) return;
+	if(!isVisible()) return;
 	OS.SelectWindow (shellHandle);
 }
 
