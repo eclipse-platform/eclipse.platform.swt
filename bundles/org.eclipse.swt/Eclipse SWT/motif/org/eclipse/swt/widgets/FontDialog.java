@@ -61,7 +61,7 @@ public class FontDialog extends Dialog {
 	private static final String PREFIX_TRADITIONALCHINESE = "cns";
 	private static final String PREFIX_KOREAN = "ks";
 	private static final String [] ISO_CHARSETS = new String [] {
-		"",	// undefined
+		"",	// 0 undefined
 		SWT.getMessage ("SWT_Charset_Western"),
 		SWT.getMessage ("SWT_Charset_EastEuropean"),
 		SWT.getMessage ("SWT_Charset_SouthEuropean"),
@@ -73,10 +73,11 @@ public class FontDialog extends Dialog {
 		SWT.getMessage ("SWT_Charset_Turkish"),
 		SWT.getMessage ("SWT_Charset_Nordic"),
 		SWT.getMessage ("SWT_Charset_Thai"),
-		"",	// undefined
+		"",	// 12 undefined
 		SWT.getMessage ("SWT_Charset_BalticRim"),
 		SWT.getMessage ("SWT_Charset_Celtic"),
-		SWT.getMessage ("SWT_Charset_Euro")
+		SWT.getMessage ("SWT_Charset_Euro"),
+		SWT.getMessage ("SWT_Charset_Romanian")
 	};
 
 /**
@@ -444,9 +445,10 @@ String getTranslatedCharSet (FontData fontData) {
 			 * value is already specified above.
 			 */
 		}
-
-		characterSet += "-" + charSetName;
-		translatedCharSet = ISO_CHARSETS [charSetName];
+		if (charSetName < ISO_CHARSETS.length) {
+			characterSet += "-" + charSetName;
+			translatedCharSet = ISO_CHARSETS [charSetName];
+		}
 	}
 	else	
 	if (characterSet.startsWith (PREFIX_ISO646)) {
