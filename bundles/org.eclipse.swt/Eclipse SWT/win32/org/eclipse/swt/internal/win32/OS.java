@@ -1056,6 +1056,7 @@ public class OS {
 	public static final int WS_EX_STATICEDGE = 0x20000;
 	public static final int WS_EX_TOOLWINDOW = 0x80;
 	public static final int WS_EX_TOPMOST = 0x8;
+	public static final int WS_EX_TRANSPARENT = 0x20;
 	public static final int WS_HSCROLL = 0x100000;
 	public static final int WS_MAXIMIZEBOX = 0x10000;
 	public static final int WS_MINIMIZEBOX = 0x20000;
