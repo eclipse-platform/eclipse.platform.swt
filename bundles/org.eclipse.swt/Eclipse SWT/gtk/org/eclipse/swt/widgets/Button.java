@@ -496,9 +496,9 @@ void setForegroundColor (GdkColor color) {
  */
 public void setImage (Image image) {
 	checkWidget ();
-	this.image = image;
 	if ((style & SWT.ARROW) != 0) return;
 	if (image != null) {
+		if (image.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 		OS.gtk_image_set_from_pixmap (imageHandle, image.pixmap, image.mask);
 		OS.gtk_widget_hide (labelHandle);
 		OS.gtk_widget_show (imageHandle);
@@ -507,6 +507,7 @@ public void setImage (Image image) {
 		OS.gtk_widget_show (labelHandle);
 		OS.gtk_widget_hide (imageHandle);
 	}
+	this.image = image;
 	/*
 	* Bug in GTK.  For some reason, the button does not allocate the size of its internal
 	* children if its bounds is set before the image is set.  The fix is to force this by calling
