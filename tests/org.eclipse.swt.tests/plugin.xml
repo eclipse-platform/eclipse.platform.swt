@@ -3,7 +3,7 @@
 <plugin
    id="org.eclipse.swt.tests"
    name="Tests"
-   version="1.9.0">
+   version="2.0.0">
 
 <requires>
    <import plugin="org.junit"/>
