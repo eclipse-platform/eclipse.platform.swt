@@ -141,6 +141,12 @@ public int getSelection () {
 int gtk_realize (int widget) {
 	int result = super.gtk_realize (widget);
 	if (result != 0) return result;
+	/*
+	* Bug in GTK.  When a progress bar has been unrealized after being
+	* realized at least once, gtk_progress_bar_set_fraction() GP's.  The
+	* fix is to update the progress bar state only when realized and restore
+	* the state when the progress bar becomes realized.
+	*/
 	updateBar (selection, minimum, maximum);
 	return 0;
 }
@@ -215,7 +221,12 @@ int timerProc (int widget) {
 }
 
 void updateBar (int selection, int minimum, int maximum) {
-	if ((style & SWT.INDETERMINATE ) != 0) return;
+	/*
+	* Bug in GTK.  When a progress bar has been unrealized after being
+	* realized at least once, gtk_progress_bar_set_fraction() GP's.  The
+	* fix is to update the progress bar state only when realized and restore
+	* the state when the progress bar becomes realized.
+	*/
 	if ((OS.GTK_WIDGET_FLAGS (handle) & OS.GTK_REALIZED) == 0) return;
 
 	double fraction = minimum == maximum ? 1 : (double)(selection - minimum) / (maximum - minimum);
