@@ -39,6 +39,7 @@ public class Tracker extends Widget {
 	Composite parent;
 	boolean tracking, stippled;
 	Rectangle [] rectangles, proportions;
+	Rectangle bounds;
 	int resizeCursor, clientCursor, clientBitmap;
 	int cursorOrientation = SWT.NONE;
 
@@ -157,7 +158,6 @@ public void addControlListener(ControlListener listener) {
 }
 
 Point adjustMoveCursor () {
-	Rectangle bounds = computeBounds ();
 	int newX = bounds.x + bounds.width / 2;
 	int newY = bounds.y;
 	/*
@@ -175,7 +175,6 @@ Point adjustMoveCursor () {
 
 Point adjustResizeCursor () {
 	int newX, newY;
-	Rectangle bounds = computeBounds ();
 
 	if ((cursorOrientation & SWT.LEFT) != 0) {
 		newX = bounds.x;
@@ -286,7 +285,7 @@ Rectangle computeBounds () {
 
 Rectangle [] computeProportions (Rectangle [] rects) {
 	Rectangle [] result = new Rectangle [rects.length];
-	Rectangle bounds = computeBounds ();
+	bounds = computeBounds ();
 	for (int i = 0; i < rects.length; i++) {
 		int x = 0, y = 0, width = 0, height = 0;
 		if (bounds.width != 0) {
@@ -380,7 +379,6 @@ void moveRectangles (int xChange, int yChange) {
 	if (xChange > 0 && ((style & SWT.RIGHT) == 0)) return;
 	if (yChange < 0 && ((style & SWT.UP) == 0)) return;
 	if (yChange > 0 && ((style & SWT.DOWN) == 0)) return;
-	Rectangle bounds = computeBounds ();
 	bounds.x += xChange; bounds.y += yChange;
 	for (int i = 0; i < rectangles.length; i++) {
 		rectangles [i].x += xChange;
@@ -652,10 +650,12 @@ void resizeRectangles (int xChange, int yChange) {
 		cursorOrientation |= SWT.DOWN;
 	}
 	
-	Rectangle bounds = computeBounds ();
-	// if the bounds will flip about the x or y axis then apply the adjustment
-	// up to the axis (ie.- where bounds width/height becomes 0) and change the
-	// cursor's orientation accordingly
+	/*
+	 * If the bounds will flip about the x or y axis then apply the adjustment
+	 * up to the axis (ie.- where bounds width/height becomes 0), change the
+	 * cursor's orientation accordingly, and flip each Rectangle's origin (only
+	 * necessary for > 1 Rectangles) 
+	 */
 	if ((cursorOrientation & SWT.LEFT) != 0) {
 		if (xChange > bounds.width) {
 			if ((style & SWT.RIGHT) == 0) return;
@@ -664,6 +664,12 @@ void resizeRectangles (int xChange, int yChange) {
 			bounds.x += bounds.width;
 			xChange -= bounds.width;
 			bounds.width = 0;
+			if (proportions.length > 1) {
+				for (int i = 0; i < proportions.length; i++) {
+					Rectangle proportion = proportions [i];
+					proportion.x = 100 - proportion.x - proportion.width;
+				}
+			}
 		}
 	} else if ((cursorOrientation & SWT.RIGHT) != 0) {
 		if (bounds.width < -xChange) {
@@ -672,6 +678,12 @@ void resizeRectangles (int xChange, int yChange) {
 			cursorOrientation &= ~SWT.RIGHT;
 			xChange += bounds.width;
 			bounds.width = 0;
+			if (proportions.length > 1) {
+				for (int i = 0; i < proportions.length; i++) {
+					Rectangle proportion = proportions [i];
+					proportion.x = 100 - proportion.x - proportion.width;
+				}
+			}
 		}
 	}
 	if ((cursorOrientation & SWT.UP) != 0) {
@@ -682,6 +694,12 @@ void resizeRectangles (int xChange, int yChange) {
 			bounds.y += bounds.height;
 			yChange -= bounds.height;
 			bounds.height = 0;
+			if (proportions.length > 1) {
+				for (int i = 0; i < proportions.length; i++) {
+					Rectangle proportion = proportions [i];
+					proportion.y = 100 - proportion.y - proportion.height;
+				}
+			}
 		}
 	} else if ((cursorOrientation & SWT.DOWN) != 0) {
 		if (bounds.height < -yChange) {
@@ -690,6 +708,12 @@ void resizeRectangles (int xChange, int yChange) {
 			cursorOrientation &= ~SWT.DOWN;
 			yChange += bounds.height;
 			bounds.height = 0;
+			if (proportions.length > 1) {
+				for (int i = 0; i < proportions.length; i++) {
+					Rectangle proportion = proportions [i];
+					proportion.y = 100 - proportion.y - proportion.height;
+				}
+			}
 		}
 	}
 	
