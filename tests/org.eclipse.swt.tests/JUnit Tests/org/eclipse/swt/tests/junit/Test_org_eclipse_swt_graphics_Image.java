@@ -187,7 +187,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	gc.drawImage(image, 0, 0);
 	ImageData gcImageData = gcImage.getImageData();
 	int redPixel = gcImageData.getPixel(9, 9);
-	assertEquals(":a:", new RGB(255, 0, 0), gcImageData.palette.getRGB(redPixel));
+	assertEquals(":a:", getRealRGB(display.getSystemColor(SWT.COLOR_RED)), gcImageData.palette.getRGB(redPixel));
 	gc.dispose();
 	gcImage.dispose();
 	image.dispose();
@@ -260,9 +260,9 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	gc.drawImage(image, 0, 0);
 	ImageData gcImageData = gcImage.getImageData();
 	int redPixel = gcImageData.getPixel(9, 9);
-	assertEquals(":a:", new RGB(255, 0, 0), gcImageData.palette.getRGB(redPixel));
+	assertEquals(":a:", getRealRGB(display.getSystemColor(SWT.COLOR_RED)), gcImageData.palette.getRGB(redPixel));
 	int bluePixel = gcImageData.getPixel(0, 0);
-	assertEquals(":b:", backgroundColor.getRGB(), gcImageData.palette.getRGB(bluePixel));
+	assertEquals(":b:", getRealRGB(backgroundColor), gcImageData.palette.getRGB(bluePixel));
 	gc.dispose();
 	gcImage.dispose();
 	image.dispose();
@@ -731,5 +731,22 @@ String getPath(String fileName) {
 	
 	System.out.println("Resolved file name for " + fileName + " = " + urlPath);
 	return urlPath;
+}
+RGB getRealRGB(Color color) {
+	Image colorImage = new Image(display, 10, 10);
+	GC imageGc = new GC(colorImage);
+	ImageData imageData;
+	PaletteData palette;
+	int pixel;
+	
+	imageGc.setBackground(color);
+	imageGc.setForeground(color);
+	imageGc.fillRectangle(0, 0, 10, 10);
+	imageData = colorImage.getImageData();
+	palette = imageData.palette;
+	imageGc.dispose();
+	colorImage.dispose();
+	pixel = imageData.getPixel(0, 0);
+	return palette.getRGB(pixel);
 }
 }
