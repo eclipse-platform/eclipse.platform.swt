@@ -465,6 +465,9 @@ public void setImage (Image image) {
 public void setImages (Image [] images) {
 	checkWidget ();
 	if (images == null) error (SWT.ERROR_INVALID_ARGUMENT);
+	for (int i = 0; i < images.length; i++) {
+		if (images [i] == null || images [i].isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	}
 	this.images = images;
 	setImages (image, images);
 }
