@@ -383,12 +383,8 @@ void createHandle (int index) {
 	int[] child= new int[1];
 	for (short i= newCount; i > oldCount; i--) {
 		OS.GetIndexedSubControl(root, i, child);
-		if (true) {
-			OS.HIViewRemoveFromSuperview(child[0]);
-			OS.HIViewAddSubview(handle, child[0]);
-		} else {
-			MacUtil.embedControl(child[0], handle);
-		}
+		OS.HIViewRemoveFromSuperview(child[0]);
+		OS.HIViewAddSubview(handle, child[0]);
 	}
 	
 	fTX= tnxObject[0];
