@@ -760,7 +760,7 @@ private int OnDataChange(int pFormatetc, int pStgmed) {
 }
 private void onDispose(Event e) {
 	doVerb(OLE.OLEIVERB_DISCARDUNDOSTATE);
-	
+	deactivateInPlaceClient();
 	releaseObjectInterfaces(); // Note, must release object interfaces before releasing frame
 	deleteTempStorage();
 	
