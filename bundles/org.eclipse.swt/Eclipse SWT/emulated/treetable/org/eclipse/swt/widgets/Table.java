@@ -266,10 +266,6 @@ void columnMouseDown(Event event) {
 	TableItem hitItem;
 	TableColumn hitColumn = getColumnAtX (event.x);
 
-	// only react to button one clicks. fixes bug 6770
-	if (event.button != 1) {
-		return;
-	}
 	if (isFocusControl () == false) {
 		forceFocus ();
 	}
@@ -282,6 +278,10 @@ void columnMouseDown(Event event) {
 			}
 			else 
 			if (hitItem.isCheckHit(new Point(event.x, event.y)) == true) {
+				// only react to button one clicks. fixes bug 6770
+				if (event.button != 1) {
+					return;
+				}
 				doCheckItem(hitItem);
 			}
 		}

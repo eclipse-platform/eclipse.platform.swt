@@ -583,6 +583,12 @@ void doHome(int keyMask) {
  * @param button - the mouse button that was pressed
  */
 void doMouseSelect(SelectableItem item, int itemIndex, int eventStateMask, int button) {
+	if (button != 1 && item.isSelected() == true) {
+		// If the item is already selected, do not change the selection when using 
+		// button 2 or 3.  These buttons may invoke drag and drop or open the 
+		// context menu for the current selection.
+		return;
+	}
 	if (((eventStateMask & SWT.MOD1) != 0) &&
 		((eventStateMask & SWT.MOD2) != 0) &&
 		(isMultiSelect() == true)) {
@@ -605,10 +611,9 @@ void doMouseSelect(SelectableItem item, int itemIndex, int eventStateMask, int b
 		setCtrlSelection(true);
 	}
 	else
-	if (((eventStateMask & (SWT.MOD3 | SWT.MOD4)) == 0) && (button != 3 || item.isSelected() == false)) {
-		// only select the item (and deselect all others) if the mouse click is 
-		// not a button 3 click or if a previously unselected item was clicked.
-		// Fixes 1G97L65
+	if ((eventStateMask & (SWT.MOD3 | SWT.MOD4)) == 0) {
+		// On MacOSX, holding the control key down while pressing button 1 brings up the context menu.
+		// Do not change the selection in this case.
 		deselectAllExcept(item);
 		selectNotify(item);
 		setCtrlSelection(false);
