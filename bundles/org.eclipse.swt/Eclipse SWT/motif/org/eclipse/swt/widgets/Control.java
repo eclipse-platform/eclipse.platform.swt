@@ -1051,7 +1051,7 @@ boolean mnemonicMatch (char key) {
  */
 public void moveAbove (Control control) {
 	checkWidget();
-	if (control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
+	if (control != null && control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
 	setZOrder (control, true);
 }
 /**
@@ -1073,7 +1073,7 @@ public void moveAbove (Control control) {
  */
 public void moveBelow (Control control) {
 	checkWidget();
-	if (control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
+	if (control != null && control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
 	setZOrder (control, false);
 }
 /**
