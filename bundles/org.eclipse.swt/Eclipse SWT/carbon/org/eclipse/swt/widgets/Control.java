@@ -39,7 +39,7 @@ public abstract class Control extends Widget implements Drawable {
 	Accessible accessible;
 	// AW
 	int fDrawCount= 0;
-	private boolean fVisible= true;
+	boolean fVisible= true;
 	// AW
 
 Control () {
@@ -1225,10 +1225,6 @@ int processMouseDown (Object callData) {
 	Display display = getDisplay ();
 	Shell shell = getShell ();
 	display.hideToolTip ();
-    /* AW
-	XButtonEvent xEvent = new XButtonEvent ();
-	OS.memmove (xEvent, callData, XButtonEvent.sizeof);
-    */
 	MacEvent xEvent= (MacEvent) callData;
     int button= xEvent.getButton();
 	sendMouseEvent (SWT.MouseDown, button, xEvent);
@@ -1270,7 +1266,7 @@ int processMouseEnter (Object callData) {
     */
 	MacEvent me= (MacEvent) callData;
 	Event event = new Event ();
-	Point p= me.getWhere2();
+	Point p= MacUtil.toControl(handle, me.getWhere2());
 	event.x = p.x;
 	event.y = p.y;
 	postEvent (SWT.MouseEnter, event);
@@ -1294,7 +1290,7 @@ int processMouseExit (Object callData) {
 	*/
 	MacEvent me= (MacEvent) callData;
 	Event event = new Event ();
-	Point p= me.getWhere2();
+	Point p= MacUtil.toControl(handle, me.getWhere2());
 	event.x = p.x;
 	event.y = p.y;
 	postEvent (SWT.MouseExit, event);
@@ -1312,11 +1308,6 @@ int processMouseHover (Object callData) {
 int processMouseUp (Object callData) {
 	Display display = getDisplay ();
 	display.hideToolTip ();
-    /* AW
-	XButtonEvent xEvent = new XButtonEvent ();
-	OS.memmove (xEvent, callData, XButtonEvent.sizeof);
-	sendMouseEvent (SWT.MouseUp, xEvent.button, xEvent);
-    */
 	MacEvent xEvent = (MacEvent) callData;
 	sendMouseEvent (SWT.MouseUp, xEvent.getButton(), xEvent);
 	return 0;
@@ -1325,7 +1316,7 @@ int processPaint (Object callData) {
 	if (!hooks (SWT.Paint)) return 0;
 	
 	if (!fVisible || fDrawCount > 0) {
-		//System.out.println("Control.processPaint: premature exit");
+		System.out.println("Control.processPaint: premature exit");
 		return 0;
 	}
 	
@@ -1799,9 +1790,6 @@ void sendMouseEvent (int type, int button, MacEvent xEvent) {
 	Event event = new Event ();
     event.time = xEvent.getWhen();
 	event.button = button;
-    /* AW
-	event.x = xEvent.x;  event.y = xEvent.y;
-    */
 	Point ml= MacUtil.toControl(handle, xEvent.getWhere2());
 	event.x = ml.x;  event.y = ml.y;
 	setInputState (event, xEvent);
