@@ -678,8 +678,10 @@ public void setVisible (boolean visible) {
 	OS.gtk_scrolled_window_get_policy (scrolledHandle, hsp, vsp);
 	int policy = visible ? OS.GTK_POLICY_ALWAYS : OS.GTK_POLICY_NEVER;
 	if ((style & SWT.HORIZONTAL) != 0) {
+		if (hsp [0] == policy) return;
 		hsp [0] = policy;
 	} else {
+		if (vsp [0] == policy) return;
 		vsp [0] = policy;
 	}
 	OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp [0], vsp [0]);
@@ -691,6 +693,7 @@ public void setVisible (boolean visible) {
 	OS.gtk_container_resize_children (parentHandle);
 
 	parent.sendEvent (SWT.Resize);
+	sendEvent (visible ? SWT.Show : SWT.Hide);
 }
 
 }
