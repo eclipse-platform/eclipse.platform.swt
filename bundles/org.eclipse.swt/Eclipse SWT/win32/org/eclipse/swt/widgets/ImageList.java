@@ -131,11 +131,8 @@ int copyBitmap (int hImage, int width, int height) {
 	int hdc2 = OS.CreateCompatibleDC (hDC);
 	int hBitmap = OS.CreateCompatibleBitmap (hDC, width, height);
 	OS.SelectObject (hdc2, hBitmap);
-	boolean stretch = width != bm.bmWidth || height != bm.bmHeight;
-	if (!OS.IsWinCE) {
-		if (stretch) OS.SetStretchBltMode(hdc2, OS.COLORONCOLOR);
-	}
-	if (stretch) {
+	if (width != bm.bmWidth || height != bm.bmHeight) {
+		if (!OS.IsWinCE) OS.SetStretchBltMode(hdc2, OS.COLORONCOLOR);
 		OS.StretchBlt (hdc2, 0, 0, width, height, hdc1, 0, 0, bm.bmWidth, bm.bmHeight, OS.SRCCOPY);
 	} else {
 		OS.BitBlt (hdc2, 0, 0, width, height, hdc1, 0, 0, OS.SRCCOPY);
