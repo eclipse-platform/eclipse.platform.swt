@@ -420,6 +420,10 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
  	OS.CGContextSaveGState(handle);
  	OS.CGContextScaleCTM(handle, 1, -1);
  	OS.CGContextTranslateCTM(handle, 0, -(destHeight + 2 * destY));
+	/*
+	* Feature in Quartz.  
+	*/
+	OS.CGContextTranslateCTM(handle, -0.5f, -0.5f);
  	CGRect rect = new CGRect();
  	rect.x = destX;
  	rect.y = destY;

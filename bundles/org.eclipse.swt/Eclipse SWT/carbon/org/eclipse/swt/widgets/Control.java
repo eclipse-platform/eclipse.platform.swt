@@ -446,6 +446,10 @@ public int internal_new_GC (GCData data) {
 			int portHeight = portRect.bottom - portRect.top;
 			OS.CGContextScaleCTM (context, 1, -1);
 			OS.CGContextTranslateCTM (context, rect.left, -portHeight + rect.top);
+			/*
+			* Feature in Quartz.  
+			*/
+			OS.CGContextTranslateCTM(context, 0.5f, 0.5f);
 		}
 	}
 	if (context == 0) SWT.error (SWT.ERROR_NO_HANDLES);
