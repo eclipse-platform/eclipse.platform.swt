@@ -224,6 +224,24 @@ public int getSelection () {
 	return value;
 }
 
+int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEvent, int nextHandler) {
+	int result = super.callPaintEventHandler (control, damageRgn, visibleRgn, theEvent, nextHandler);
+	/*
+	* Bug in the Macintosh.  For some reason, when the slider
+	* is not ghosted, if the control is added to the window
+	* before the window is made visible, the user will not be
+	* able to drag the thumb to the end of the slider.  The
+	* fix to force the slider to be added after the window
+	* is visible by removing it and then adding it back.
+	* This is necessary every time the slider draws.
+	*/
+	int topHandle = topHandle ();
+	int parentHandle = parent.handle;
+	OS.HIViewRemoveFromSuperview (topHandle);
+	OS.HIViewAddSubview (parentHandle, topHandle);
+	return result;
+}
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the receiver's value changes.
