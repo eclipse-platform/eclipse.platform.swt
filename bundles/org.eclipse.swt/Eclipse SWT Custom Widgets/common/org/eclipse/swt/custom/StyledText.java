@@ -145,9 +145,16 @@ public class StyledText extends Canvas {
 	Image leftCaretBitmap = null;
 	Image rightCaretBitmap = null;
 	int caretDirection = SWT.NULL;
-	boolean isCarbon;					// flag set to true on Mac OSX
 	boolean advancing = true;
-	
+
+	final static boolean IS_CARBON;
+	final static boolean DOUBLE_BUFFERED;	
+	static {
+		String platform = SWT.getPlatform();
+		IS_CARBON = "carbon".equals(platform);
+		DOUBLE_BUFFERED = !("carbon".equals(platform) || "gtk".equals(platform));
+	}
+
 	/**
 	 * The Printing class implements printing of a range of text.
 	 * An instance of <class>Printing </class> is returned in the 
@@ -1609,8 +1616,6 @@ public StyledText(Composite parent, int style) {
 		}
 	};
 	StyledTextBidi.addLanguageListener(this, runnable);
-	String platform= SWT.getPlatform();
-	isCarbon = "carbon".equals(platform);
 	calculateScrollBars();
 	createKeyBindings();
 	ibeamCursor = new Cursor(display, SWT.CURSOR_IBEAM);
@@ -4913,7 +4918,7 @@ void handleKey(Event event) {
 	if (action == SWT.NULL) {
 		boolean ignore = false;
 		
-		if (isCarbon) {
+		if (IS_CARBON) {
 			// Ignore acclerator key combinations (we do not want to 
 			// insert a character in the text in this instance). Do not  
 			// ignore COMMAND+ALT combinations since that key sequence
@@ -4984,7 +4989,7 @@ void handleMouseDoubleClick(Event event) {
  */
 void handleMouseDown(Event event) {
 	mouseDoubleClick = false;
-	if ((event.button != 1) || (isCarbon && (event.stateMask & SWT.MOD4) != 0)) {
+	if ((event.button != 1) || (IS_CARBON && (event.stateMask & SWT.MOD4) != 0)) {
 		return;	
 	}
 	boolean select = (event.stateMask & SWT.MOD2) != 0;	
@@ -5581,29 +5586,41 @@ void performPaint(GC gc,int startLine,int startY, int renderHeight)	{
 		// renderHeight will be negative when only top margin needs redrawing
 		Color foreground = getForeground();
 		int lineCount = content.getLineCount();
-		int paintY = 0;
 		int gcStyle = isMirrored() ? SWT.RIGHT_TO_LEFT : SWT.LEFT_TO_RIGHT;
 		if (isSingleLine()) {
 			lineCount = 1;
 		}
-		Image lineBuffer = new Image(getDisplay(), clientArea.width, renderHeight);
-		GC lineGC = new GC(lineBuffer, gcStyle);		
-		lineGC.setFont(getFont());
-		lineGC.setForeground(foreground);
-		lineGC.setBackground(background);		
-		for (int i = startLine; paintY < renderHeight && i < lineCount; i++, paintY += lineHeight) {
+		int paintY, paintHeight;
+		Image lineBuffer;
+		GC lineGC;
+		if (DOUBLE_BUFFERED) {
+			paintY = 0;
+			paintHeight = renderHeight;
+			lineBuffer = new Image(getDisplay(), clientArea.width, renderHeight);
+			lineGC = new GC(lineBuffer, gcStyle);
+			lineGC.setFont(getFont());
+			lineGC.setForeground(foreground);
+			lineGC.setBackground(background);
+		} else {
+			paintY = startY;
+			paintHeight = startY + renderHeight;
+			lineBuffer = null;
+			lineGC = gc;
+		}		
+		for (int i = startLine; paintY < paintHeight && i < lineCount; i++, paintY += lineHeight) {
 			String line = content.getLine(i);
 			renderer.drawLine(line, i, paintY, lineGC, background, foreground, true);
 		}
-		if (paintY < renderHeight) {
+		if (paintY < paintHeight) {
 			lineGC.setBackground(background);
-			lineGC.setForeground(background);
 			lineGC.fillRectangle(0, paintY, clientArea.width, renderHeight - paintY);
 		}
-		clearMargin(lineGC, background, clientArea, startY);
-		gc.drawImage(lineBuffer, 0, startY);
-		lineGC.dispose();
-		lineBuffer.dispose();
+		if (DOUBLE_BUFFERED) {
+			clearMargin(lineGC, background, clientArea, startY);
+			gc.drawImage(lineBuffer, 0, startY);
+			lineGC.dispose();
+			lineBuffer.dispose();
+		}
 	}
 	clearMargin(gc, background, clientArea, 0);
 }
