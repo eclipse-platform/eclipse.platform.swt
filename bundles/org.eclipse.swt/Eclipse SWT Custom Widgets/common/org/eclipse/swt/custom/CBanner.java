@@ -67,7 +67,7 @@ public CBanner(Composite parent, int style) {
 	super(parent, checkStyle(style));
 	
 	if (BORDER1 == null) {
-		BORDER1 = getDisplay().getSystemColor(SWT.COLOR_WIDGET_DARK_SHADOW).getRGB();
+		BORDER1 = getDisplay().getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW).getRGB();
 	}
 	if (BORDER2 == null) {
 		BORDER2 = getDisplay().getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW).getRGB();
@@ -150,7 +150,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	int trimX = x - BORDER_LEFT;
 	int trimY = y - BORDER_TOP;
 	int trimWidth = width + BORDER_LEFT + BORDER_RIGHT;
-	int trimHeight = height + BORDER_TOP + BORDER_BOTTOM + BORDER_STRIPE;
+	int trimHeight = height + BORDER_TOP + BORDER_BOTTOM + 2*BORDER_STRIPE;
 	return new Rectangle(trimX, trimY, trimWidth, trimHeight);
 }
 public Rectangle getClientArea() {
@@ -189,23 +189,23 @@ public void layout (boolean changed) {
 	Rectangle rightRect = null;
 	if(left != null) {
 		int height = size.y - BORDER_TOP - BORDER_BOTTOM - BORDER_STRIPE;
-		int y = (leftSize.y > height) ? BORDER_TOP : BORDER_TOP + (height - leftSize.y) / 2;
+		int y = BORDER_STRIPE + BORDER_TOP;
 		leftRect = new Rectangle(x, y, leftSize.x, Math.min(height, leftSize.y));
 		x += leftSize.x;
 	}
 	if (middle != null) {
 		if (left != null) x += LEFT_MIDDLE_GAP;
-		int height = size.y - BORDER_TOP - BORDER_BOTTOM;
-		int y = (middleSize.y > height) ? BORDER_TOP : BORDER_TOP + (height - middleSize.y) / 2;
-		middleRect = new Rectangle(x, y, middleSize.x, Math.min(size.y, middleSize.y));
+		int height = Math.min(size.y  - BORDER_TOP - BORDER_BOTTOM - 2*BORDER_STRIPE, middleSize.y);
+		int y = BORDER_STRIPE + BORDER_TOP;
+		middleRect = new Rectangle(x, y, middleSize.x, height);
 		x += middleSize.x;
 	}
 	curveStart = x - INDENT;
 	x += CURVE_WIDTH - 2*INDENT;
 	if (right != null) {
-		int height = size.y - BORDER_TOP - BORDER_BOTTOM;
-		int y = (rightSize.y > height) ? BORDER_TOP : BORDER_TOP + (height - rightSize.y) / 2;
-		rightRect = new Rectangle(x, y, rightSize.x, Math.min(size.y, rightSize.y));
+		int height = Math.min(size.y  - BORDER_TOP - BORDER_BOTTOM - 2*BORDER_STRIPE, rightSize.y);
+		int y = BORDER_STRIPE + BORDER_TOP;
+		rightRect = new Rectangle(x, y, rightSize.x, height);
 	}
 	if (curveStart < oldStart) {
 		redraw(curveStart, 0, oldStart + CURVE_WIDTH - curveStart, size.y, false);
