@@ -1129,9 +1129,9 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 		OS.memmove(xImagePtr, xImage, XImage.sizeof);
 		int destOrder = ImageData.MSB_FIRST;
 		ImageData.blit(ImageData.BLIT_SRC,
-			image.data, 1, image.bytesPerLine, ImageData.MSB_FIRST, srcX, srcY, srcWidth, srcHeight, null, null, null,
+			image.data, 1, image.bytesPerLine, image.getByteOrder(), srcX, srcY, srcWidth, srcHeight, null, null, null,
 			ImageData.ALPHA_OPAQUE, null, 0,
-			buf, 1, bplX, ImageData.MSB_FIRST, 0, 0, destWidth, destHeight, null, null, null,
+			buf, 1, bplX, destOrder, 0, 0, destWidth, destHeight, null, null, null,
 			flipX, flipY);
 		OS.memmove(xImage.data, buf, bufSize);
 		XGCValues values = new XGCValues();
@@ -1155,7 +1155,7 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 	int bufPtr = OS.XtMalloc(bufSize);
 	xImage.data = bufPtr;
 	OS.memmove(xImagePtr, xImage, XImage.sizeof);
-	int srcOrder = image.depth == 16 ? ImageData.LSB_FIRST : ImageData.MSB_FIRST;
+	int srcOrder = image.getByteOrder();
 	int destOrder = xImage.byte_order == OS.MSBFirst ? ImageData.MSB_FIRST : ImageData.LSB_FIRST;
 	if (palette.isDirect) {
 		if (screenDirect) {

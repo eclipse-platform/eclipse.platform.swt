@@ -20,6 +20,7 @@ import org.eclipse.swt.internal.image.*;
  * <code>disposalMethod</code> and <code>delayTime</code> are
  * typically only used when the image is in a set of images used
  * for animation.
+ * </p>
  *
  * @see Image
  * @see ImageLoader
@@ -39,24 +40,40 @@ public final class ImageData implements Cloneable {
 
 	/**
 	 * the color depth of the image, in bits per pixel
+	 * <p>
+	 * Note that a depth of 8 or less does not necessary
+	 * mean that the image is palette indexed, or
+	 * conversely that a depth greater than 8 means that
+	 * the image is direct color.  Check the associated
+	 * PaletteData's isDirect field for such determinations.
 	 */
 	public int depth;
 
 	/**
-	 * the scanline padding. If one scanline of the image
-	 * is not a multiple of this number, it will be padded
-	 * with zeros until it is
+	 * the scanline padding
+	 * <p>
+	 * If one scanline of the image is not a multiple of
+	 * this number, it will be padded with zeros until it is.
+	 * </p>
 	 */
 	public int scanlinePad;
 
 	/**
-	 * the number of bytes per scanline. This is a multiple
-	 * of the scanline padding
+	 * the number of bytes per scanline
+	 * <p>
+	 * This is a multiple of the scanline padding.
+	 * </p>
 	 */
 	public int bytesPerLine;
 
 	/**
 	 * the pixel data of the image
+	 * <p>
+	 * Note that for 16 bit depth images the pixel data is stored
+	 * in least significant byte order; however, for 24bit and
+	 * 32bit depth images the pixel data is stored in most
+	 * significant byte order.
+	 * </p>
 	 */
 	public byte[] data;
 
@@ -66,33 +83,58 @@ public final class ImageData implements Cloneable {
 	public PaletteData palette;
 
 	/**
-	 * the transparent pixel. Pixels with this value are transparent.
-	 * The default is -1 which means 'no transparency'
+	 * the transparent pixel
+	 * <p>
+	 * Pixels with this value are transparent.
+	 * </p><p>
+	 * The default is -1 which means 'no transparent pixel'.
+	 * </p>
 	 */
 	public int transparentPixel;
 
 	/**
 	 * icon-specific field containing the data from the icon mask
+	 * <p>
+	 * This is a 1 bit bitmap stored with the most significant
+	 * bit first.  The number of bytes per scanline is
+	 * '((width + 7) / 8 + (maskPad - 1)) / maskPad * maskPad'.
+	 * </p><p>
+	 * The default is null which means 'no transparency mask'.
+	 * </p>
 	 */
 	public byte[] maskData;
 
 	/**
 	 * icon-specific field containing the scanline pad of the mask
+	 * <p>
+	 * If one scanline of the transparency mask is not a
+	 * multiple of this number, it will be padded with zeros until
+	 * it is.
+	 * </p>
 	 */
 	public int maskPad;
 	
 	/**
-	 * the alpha data of the image.  Every pixel can have an
-	 * <em>alpha blending</em> value that varies from 0, meaning
-	 * fully transparent, to 255 meaning fully opaque
+	 * the alpha data of the image
+	 * <p>
+	 * Every pixel can have an <em>alpha blending</em> value that
+	 * varies from 0, meaning fully transparent, to 255 meaning
+	 * fully opaque.  The number of bytes per scanline is
+	 * 'width'.
+	 * </p>
 	 */
 	public byte[] alphaData;
 	
 	/**
-	 * the global alpha value to be used for every pixel.
-	 * If this value is set the <code>alphaData</code> field
-	 * is ignored. The default is -1 which means 'no global alpha
-	 * value'
+	 * the global alpha value to be used for every pixel
+	 * <p>
+	 * If this value is set, the <code>alphaData</code> field
+	 * is ignored and when the image is rendered each pixel
+	 * will be blended with the background an amount
+	 * proportional to this value.
+	 * </p><p>
+	 * The default is -1 which means 'no global alpha value'
+	 * </p>
 	 */
 	public int alpha;
 
@@ -975,6 +1017,15 @@ public int getTransparencyType() {
 }
 
 /**
+ * Returns the byte order of the receiver.
+ * 
+ * @return MSB_FIRST or LSB_FIRST
+ */
+final int getByteOrder() {
+	return (depth != 16) ? MSB_FIRST : LSB_FIRST;
+}
+
+/**
  * Returns a copy of the receiver which has been stretched or
  * shrunk to the specified size. If either the width or height
  * is negative, the resulting image will be inverted in the
@@ -999,14 +1050,14 @@ public ImageData scaledTo(int width, int height) {
 
 	/* Scale the image contents */
 	if (palette.isDirect) blit(BLIT_SRC,
-		this.data, this.depth, this.bytesPerLine, MSB_FIRST, 0, 0, this.width, this.height, 0, 0, 0,
+		this.data, this.depth, this.bytesPerLine, this.getByteOrder(), 0, 0, this.width, this.height, 0, 0, 0,
 		ALPHA_OPAQUE, null, 0,
-		dest.data, dest.depth, dest.bytesPerLine, MSB_FIRST, 0, 0, dest.width, dest.height, 0, 0, 0,
+		dest.data, dest.depth, dest.bytesPerLine, dest.getByteOrder(), 0, 0, dest.width, dest.height, 0, 0, 0,
 		flipX, flipY);
 	else blit(BLIT_SRC,
-		this.data, this.depth, this.bytesPerLine, MSB_FIRST, 0, 0, this.width, this.height, null, null, null,
+		this.data, this.depth, this.bytesPerLine, this.getByteOrder(), 0, 0, this.width, this.height, null, null, null,
 		ALPHA_OPAQUE, null, 0,
-		dest.data, dest.depth, dest.bytesPerLine, MSB_FIRST, 0, 0, dest.width, dest.height, null, null, null,
+		dest.data, dest.depth, dest.bytesPerLine, dest.getByteOrder(), 0, 0, dest.width, dest.height, null, null, null,
 		flipX, flipY);
 	
 	/* Scale the image mask or alpha */

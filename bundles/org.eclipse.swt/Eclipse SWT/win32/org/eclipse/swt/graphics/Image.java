@@ -1268,7 +1268,7 @@ void init(Device device, ImageData i) {
 	if ((i.depth == 1 && i.getTransparencyType() != SWT.TRANSPARENCY_MASK) || i.depth == 2) {
 		ImageData img = new ImageData(i.width, i.height, 4, i.palette);
 		ImageData.blit(ImageData.BLIT_SRC, 
-			i.data, i.depth, i.bytesPerLine, ImageData.MSB_FIRST, 0, 0, i.width, i.height, null, null, null,
+			i.data, i.depth, i.bytesPerLine, i.getByteOrder(), 0, 0, i.width, i.height, null, null, null,
 			ImageData.ALPHA_OPAQUE, null, 0,
 			img.data, img.depth, img.bytesPerLine, ImageData.MSB_FIRST, 0, 0, img.width, img.height, null, null, null, 
 			false, false);
@@ -1286,15 +1286,22 @@ void init(Device device, ImageData i) {
 	 * Windows-supported.
 	 */
 	if (i.palette.isDirect) {
+		final PaletteData palette = i.palette;
+		final int redMask = palette.redMask;
+		final int greenMask = palette.greenMask;
+		final int blueMask = palette.blueMask;
+		int newDepth = i.depth;
+		int newOrder = ImageData.MSB_FIRST;
 		PaletteData newPalette = null;
-		PaletteData palette = i.palette;
-		int redMask = palette.redMask;
-		int greenMask = palette.greenMask;
-		int blueMask = palette.blueMask;
-		int order = ImageData.MSB_FIRST;
+
 		switch (i.depth) {
+			case 8:
+				newDepth = 16;
+				newOrder = ImageData.LSB_FIRST;
+				newPalette = new PaletteData(0x7C00, 0x3E0, 0x1F);
+				break;
 			case 16:
-				order = ImageData.LSB_FIRST;
+				newOrder = ImageData.LSB_FIRST;
 				if (!(redMask == 0x7C00 && greenMask == 0x3E0 && blueMask == 0x1F)) {
 					newPalette = new PaletteData(0x7C00, 0x3E0, 0x1F);
 				}
@@ -1313,11 +1320,11 @@ void init(Device device, ImageData i) {
 				SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
 		}
 		if (newPalette != null) {
-			ImageData img = new ImageData(i.width, i.height, i.depth, newPalette);
+			ImageData img = new ImageData(i.width, i.height, newDepth, newPalette);
 			ImageData.blit(ImageData.BLIT_SRC, 
-					i.data, i.depth, i.bytesPerLine, order, 0, 0, i.width, i.height, redMask, greenMask, blueMask,
+					i.data, i.depth, i.bytesPerLine, i.getByteOrder(), 0, 0, i.width, i.height, redMask, greenMask, blueMask,
 					ImageData.ALPHA_OPAQUE, null, 0,
-					img.data, img.depth, img.bytesPerLine, order, 0, 0, img.width, img.height, newPalette.redMask, newPalette.greenMask, newPalette.blueMask,
+					img.data, img.depth, img.bytesPerLine, newOrder, 0, 0, img.width, img.height, newPalette.redMask, newPalette.greenMask, newPalette.blueMask,
 					false, false);
 			if (i.transparentPixel != -1) {
 				img.transparentPixel = newPalette.getPixel(palette.getRGB(i.transparentPixel));
