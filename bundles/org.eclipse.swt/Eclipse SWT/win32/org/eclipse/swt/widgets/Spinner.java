@@ -556,7 +556,6 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 		return true;
 	}
 	if (event.character == 0) return true;
-//	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return true;
 	char key = event.character;
 	int stateMask = event.stateMask;
 	
@@ -686,7 +685,7 @@ public void setMaximum (int value) {
 	} else {
 		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 	}
-	if (pos > value) setSelection (value, false, false);
+	if (pos > value) setSelection (value, false);
 }
 
 /**
@@ -715,7 +714,7 @@ public void setMinimum (int value) {
 	} else {
 		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 	}
-	if (pos < value) setSelection (value, false, false);
+	if (pos < value) setSelection (value, false);
 }
 
 /**
@@ -751,15 +750,13 @@ public void setPageIncrement (int value) {
  */
 public void setSelection (int value) {
 	checkWidget ();
-	setSelection (value, true, false);
+	int [] max = new int [1], min = new int [1];
+	OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, min, max);
+	value = Math.min (Math.max (min [0], value), max [0]);
+	setSelection (value, false);
 }
 
-int setSelection (int value, boolean clamp, boolean notify) {
-	if (clamp) {
-		int [] max = new int [1], min = new int [1];
-		OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, min, max);
-		value = Math.min (Math.max (min [0], value), max [0]);
-	}
+int setSelection (int value, boolean notify) {
 	OS.SendMessage (hwndUpDown , OS.IsWinCE ? OS.UDM_SETPOS : OS.UDM_SETPOS32, 0, value);
 	String oldText = String.valueOf (value);
 	int length = OS.GetWindowTextLength (hwndText);
@@ -940,7 +937,6 @@ LRESULT wmChar (int hwnd, int wParam, int lParam) {
 
 LRESULT wmClipboard (int hwndText, int msg, int wParam, int lParam) {
 	if ((style & SWT.READ_ONLY) != 0) return null;
-//	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return null;
 	boolean call = false;
 	int [] start = new int [1], end = new int [1];
 	String oldText = null, newText = null;
@@ -1021,25 +1017,35 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
 	LRESULT result = super.wmKeyDown (hwnd, wParam, lParam);
 	if (result != null) return result;
-	int pos;
-	if (OS.IsWinCE) {
-		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xFFFF;
-	} else {
-		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
+	
+	/* Increment the value */
+	int delta = 0;
+	switch (wParam) {
+		case OS.VK_UP: delta = increment; break;
+		case OS.VK_DOWN: delta = -increment; break;
+		case OS.VK_PRIOR: delta = pageIncrement; break;
+		case OS.VK_NEXT: delta = -pageIncrement; break;
 	}
+	if (delta != 0) {
+		int pos;
+		if (OS.IsWinCE) {
+			pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xFFFF;
+		} else {
+			pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
+		}
+		pos += delta;
+		int [] max = new int [1], min = new int [1];
+		OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, min, max);
+		if (pos < min [0]) pos = max [0];
+		if (pos > max [0]) pos = min [0];
+		setSelection (pos, true);
+	}
+	
+	/*  Stop the edit control from moving the caret */
 	switch (wParam) {
 		case OS.VK_UP:
-			setSelection (pos + increment, true, true);
-			break;
 		case OS.VK_DOWN:
-			setSelection (pos - increment, true, true);
-			break;
-		case OS.VK_PRIOR:
-			setSelection (pos + pageIncrement, true, true);
-			break;
-		case OS.VK_NEXT:
-			setSelection (pos - pageIncrement, true, true);
-			break;
+			return LRESULT.ZERO;
 	}
 	return result;
 }
@@ -1049,7 +1055,7 @@ LRESULT wmKillFocus (int hwnd, int wParam, int lParam) {
 	if (length == 0) {
 		int [] min = new int [1];
 		OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, min, null);
-		setSelection (min [0], false, true);
+		setSelection (min [0], true);
 	}
 	return super.wmKillFocus (hwnd, wParam, lParam);
 }
@@ -1064,7 +1070,7 @@ LRESULT wmScrollChild (int wParam, int lParam) {
 			} else {
 				pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 			}
-			setSelection (pos, true, true);
+			setSelection (pos, true);
 			break;
 	}
 	return super.wmScrollChild (wParam, lParam);
