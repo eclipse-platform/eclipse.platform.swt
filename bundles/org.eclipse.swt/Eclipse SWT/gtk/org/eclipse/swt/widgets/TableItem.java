@@ -10,6 +10,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import sun.dc.pr.PathStroker;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.graphics.*;
 
@@ -117,8 +118,12 @@ public TableItem (Table parent, int style) {
  */
 public Color getBackground () {
 	checkWidget ();
-	Table parent = getParent();
-	return parent.getBackground();
+	int[] ptr = new int[1];
+	OS.gtk_tree_model_get(parent.modelHandle, handle, 2*parent.MAX_COLUMNS+2, ptr, -1);
+	if (ptr[0]==0) return parent.getBackground();
+	GdkColor gdkColor = new GdkColor();
+	OS.memmove(gdkColor, ptr[0], GdkColor.sizeof);
+	return Color.gtk_new(getDisplay(), gdkColor);
 }
 
 /**
@@ -135,19 +140,13 @@ public Color getBackground () {
  */
 public Rectangle getBounds (int index) {
 	checkWidget();
-	int CELL_SPACING = 1;
-	int clist = parent.handle;
-	int columnHandle = OS.GTK_CLIST_COLUMN (clist);
-	columnHandle= columnHandle + index * GtkCListColumn.sizeof;
-	GtkCListColumn column = new GtkCListColumn ();
-	OS.memmove (column, columnHandle, GtkCListColumn.sizeof);
-	int x = column.area_x + OS.GTK_CLIST_HOFFSET (clist);
-	int width = column.area_width;
-	int height = OS.GTK_CLIST_ROW_HEIGHT (clist);
-	int row = parent.indexOf (this);
-	int headerHeight = OS.GTK_CLIST_COLUMN_TITLE_AREA_HEIGHT (clist);
-	int y = headerHeight + OS.GTK_CLIST_VOFFSET (clist) + (height + CELL_SPACING) * row + 3;
-	return new Rectangle (x, y, width, height);
+	GdkRectangle rect = new GdkRectangle();
+	String pathString = Integer.toString(parent.indexOf(this));
+	int path = OS.gtk_tree_path_new_from_string(Converter.wcsToMbcs(null, pathString, true));
+	int columnPtr = parent.columns[index].handle;
+	OS.gtk_tree_view_get_cell_area(parent.handle, path, columnPtr, rect);
+	int headerHeight = parent.getHeaderHeight();
+	return new Rectangle (rect.x, rect.y+headerHeight, rect.width, rect.height);
 }
 
 /**
@@ -167,10 +166,9 @@ public boolean getChecked () {
 	if ((parent.style & SWT.CHECK) == 0) return false;
 	int row = parent.indexOf (this);
 	if (row == -1) return false;
-	int clist = parent.handle;
-	int [] pixmap = new int [1];
-	OS.gtk_clist_get_pixtext (clist, row, 0, null, null, pixmap, null);
-	return pixmap [0] == parent.check;
+	int[] ptr = new int[1];
+	OS.gtk_tree_model_get(parent.modelHandle, handle, 2*parent.MAX_COLUMNS, ptr, -1);
+	return ptr[0] != 0;
 }
 
 public Display getDisplay () {
@@ -194,8 +192,12 @@ public Display getDisplay () {
  */
 public Color getForeground () {
 	checkWidget ();
-	Table parent = getParent();
-	return parent.getForeground();
+	int[] ptr = new int[1];
+	OS.gtk_tree_model_get(parent.modelHandle, handle, 2*parent.MAX_COLUMNS+1, ptr, -1);
+	if (ptr[0]==0) return parent.getForeground();
+	GdkColor gdkColor = new GdkColor();
+	OS.memmove(gdkColor, ptr[0], GdkColor.sizeof);
+	return Color.gtk_new(getDisplay(), gdkColor);
 }
 
 /**
@@ -231,7 +233,10 @@ public boolean getGrayed () {
  */
 public Image getImage (int index) {
 	checkWidget ();
-	if (index == 0) return getImage ();
+	// FIXME - not implemented
+	return null;
+
+/*	if (index == 0) return getImage ();
 	int row = parent.indexOf (this);
 	if (row == -1) return null;
 	int clist = parent.handle;
@@ -240,6 +245,7 @@ public Image getImage (int index) {
 	if (pixmap [0] == 0) return null;
 	Display display = getDisplay ();
 	return Image.gtk_new (display, mask [0] == 0 ? SWT.BITMAP : SWT.ICON, pixmap [0], mask [0]);
+	*/
 }
 
 /**
@@ -257,7 +263,9 @@ public Image getImage (int index) {
  */
 public Rectangle getImageBounds (int index) {
 	checkWidget ();
-	int CELL_SPACING = 1;
+	// FIXME - images not implemented yet
+	return new Rectangle(0,0,0,0);
+/*	int CELL_SPACING = 1;
 	int clist = parent.handle;
 	int columnHandle = OS.GTK_CLIST_COLUMN (clist);
 	columnHandle= columnHandle + index * GtkCListColumn.sizeof;
@@ -278,7 +286,7 @@ public Rectangle getImageBounds (int index) {
 			width = w [0];
 		}
 	}
-	return new Rectangle (x, y, width, height);
+	return new Rectangle (x, y, width, height);*/
 }
 
 /**
@@ -329,20 +337,21 @@ public Table getParent () {
  */
 public String getText (int index) {
 	checkWidget ();
-	if (index == 0) return getText ();
-	int row = parent.indexOf (this);
-	if (row == -1) error (SWT.ERROR_CANNOT_GET_TEXT);
-	int clist = parent.handle;
-	int [] address = new int [1];
-	int [] pixmap = new int [1];
-	OS.gtk_clist_get_pixtext (clist, row, index, address, null, pixmap, null);
-	if (pixmap [0] == 0) {
-		OS.gtk_clist_get_text (clist, row, index, address);
-	}
-	if (address [0] == 0) return "";
-	byte [] buffer = new byte [OS.strlen (address [0])];
-	OS.memmove (buffer, address [0], buffer.length);
-	return new String (Converter.mbcsToWcs (null, buffer));
+	if (index<0) error(SWT.ERROR_CANNOT_GET_TEXT);
+	if ((index>0)&&(index>=parent.columnCount)) error(SWT.ERROR_CANNOT_GET_TEXT);
+	int[] ptr = new int[1];
+	OS.gtk_tree_model_get(parent.modelHandle, handle, index, ptr, -1);
+	if (ptr[0]==0) return null;
+	int length = OS.strlen(ptr[0]);
+	byte[] bytes = new byte[length+1];
+	OS.memmove(bytes, ptr[0], length);
+	char[] chars = Converter.mbcsToWcs(null, bytes);
+	OS.g_free(ptr[0]);
+	return new String(chars);
+}
+
+public String getText () {
+	return getText(0);
 }
 
 void releaseChild () {
@@ -375,13 +384,11 @@ void releaseWidget () {
  */
 public void setBackground (Color color) {
 	checkWidget ();
-	if (color != null && color.isDisposed ()) {
-		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-	}
+	if (color != null && color.isDisposed ()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	int row = parent.indexOf (this);
 	if (row == -1) return;
-	int clist = parent.handle;
-	OS.gtk_clist_set_background (clist, row, color != null ? color.handle : null);
+	GdkColor ptr = (color != null)? color.handle : null;
+	OS.gtk_list_store_set(parent.modelHandle, handle, 2*parent.MAX_COLUMNS+2, ptr, -1);
 }
 
 /**
@@ -397,14 +404,7 @@ public void setBackground (Color color) {
  */
 public void setChecked (boolean checked) {
 	checkWidget();
-	int row = parent.indexOf (this);
-	if (row == -1) return;
-	int ctable = parent.handle;
-	byte [] buffer = Converter.wcsToMbcs (null, text, true);
-	int pixmap = checked ? parent.check : parent.uncheck;
-	byte [] spacing = new byte [1];
-	OS.gtk_clist_get_pixtext(ctable, row, 0, null, spacing, null, null);
-	OS.gtk_clist_set_pixtext (ctable, row, 0, buffer, spacing [0], pixmap, 0);
+	OS.gtk_list_store_set(parent.modelHandle, handle, 2*parent.MAX_COLUMNS, checked, -1);
 }
 
 /**
@@ -427,13 +427,11 @@ public void setChecked (boolean checked) {
  */
 public void setForeground (Color color){
 	checkWidget ();
-	if (color != null && color.isDisposed ()) {
-		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-	}
+	if (color != null && color.isDisposed ()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	int row = parent.indexOf (this);
 	if (row == -1) return;
-	int clist = parent.handle;
-	OS.gtk_clist_set_foreground (clist, row, color != null ? color.handle : null);
+	GdkColor ptr = (color != null)? color.handle : null;
+	OS.gtk_list_store_set(parent.modelHandle, handle, 2*parent.MAX_COLUMNS+1, ptr, -1);
 }
 
 /**
@@ -471,32 +469,39 @@ public void setImage (int index, Image image) {
 	if (image != null && image.isDisposed()) {
 		error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (index == 0) {
-		if ((parent.style & SWT.CHECK) != 0) return;
-		super.setImage (image);
-	}
-	int row = parent.indexOf (this);
-	if (row == -1) return;
-	int clist = parent.handle;
-	String string = getText (index);
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);
-	if (image == null) {
-		OS.gtk_clist_set_text (clist, row, index, buffer);
-	} else {
-		int pixmap = image.pixmap, mask = image.mask;
-		byte [] spacing = new byte [] {2};
-//		OS.gtk_clist_get_pixtext (clist, row, index, null, spacing, null, null);
-		OS.gtk_clist_set_pixtext (clist, row, index, buffer, spacing [0], pixmap, mask);
-		if (parent.imageHeight == 0) {	
-			int [] width = new int [1], height = new int [1];
-			OS.gdk_drawable_get_size (pixmap, width, height);
-			if (height [0] > OS.GTK_CLIST_ROW_HEIGHT (parent.handle)) {
-				parent.imageHeight = height [0];
-				OS.gtk_widget_realize (clist);
-				OS.gtk_clist_set_row_height (clist, height [0]);
+	if (index<0) return;
+	if ((index>0)&&(index>=parent.columnCount)) return;
+	int pixbuf = 0;
+	if (image != null) {
+		int[] w = new int[1], h = new int[1];
+		boolean hasMask = (image.mask != 0);
+	 	OS.gdk_drawable_get_size(image.pixmap, w, h);
+ 		int width = w[0], height = h[0]; 	
+		pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, hasMask, 8, width, height);
+		if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		int colormap = OS.gdk_colormap_get_system();
+		OS.gdk_pixbuf_get_from_drawable(pixbuf, image.pixmap, colormap, 0, 0, 0, 0, width, height);
+		if (hasMask) {
+			int gdkMaskImagePtr = OS.gdk_drawable_get_image(image.mask, 0, 0, width, height);
+			if (gdkMaskImagePtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
+			int pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
+			byte[] line = new byte[stride];
+			for (int y=0; y<height; y++) {
+				OS.memmove(line, pixels + (y * stride), stride);
+				for (int x=0; x<width; x++) {
+					if (OS.gdk_image_get_pixel(gdkMaskImagePtr, x, y) != 0) {
+						line[x*4+3] = (byte)0xFF;
+					} else {
+						line[x*4+3] = 0;
+					}
+				}
+				OS.memmove(pixels + (y * stride), line, stride);
 			}
+			OS.g_object_unref(gdkMaskImagePtr);
 		}
-	}
+	}	
+	OS.gtk_list_store_set(parent.modelHandle, handle, index+parent.MAX_COLUMNS, pixbuf, -1);
 }
 
 public void setImage (Image image) {
@@ -559,21 +564,10 @@ public void setImageIndent (int indent) {
 public void setText (int index, String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (index == 0) {
-		super.setText (string);
-	}
-	int row = parent.indexOf (this);
-	if (row == -1) return;
-	int clist = parent.handle;
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);
-	byte [] spacing = new byte [1];
-	int [] pixmap = new int [1], mask = new int [1];
-	OS.gtk_clist_get_pixtext (clist, row, index, null, spacing, pixmap, mask);
-	if (pixmap [0] == 0) {
-		OS.gtk_clist_set_text (clist, row, index, buffer);
-	} else {
-		OS.gtk_clist_set_pixtext (clist, row, index, buffer, spacing [0], pixmap [0], mask [0]);
-	}
+	if (index<0) return;
+	if ((index>0)&&(index>=parent.columnCount)) return;
+	byte[] bytes = Converter.wcsToMbcs(null, string, true);
+	OS.gtk_list_store_set(parent.modelHandle, handle, index, bytes, -1);
 }
 
 public void setText (String string) {
@@ -602,5 +596,4 @@ public void setText (String [] strings) {
 		if (string != null) setText (i, string);
 	}
 }
-
 }
