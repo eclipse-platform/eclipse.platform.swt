@@ -2,7 +2,7 @@ package org.eclipse.swt.examples.paint;/* * (c) Copyright IBM Corp. 2000, 200
 
 public class PaintStatus {
 	private Text statusText;
-	private String actionInfo, messageInfo, coordInfo;
+	private String actionInfo, messageInfo, coordInfo;	private Point pointA = new Point(-1, -1), pointB = new Point(-1, -1);	private int coordFlag = 0;
 	
 	/**
 	 * Constructs a PaintStatus.
@@ -64,7 +64,7 @@ public class PaintStatus {
 	 * 
 	 * @param coord the coordinates to display
 	 */
-	public void setCoord(Point coord) {
+	public void setCoord(Point coord) {		if (coordFlag == 1 && pointA.equals(coord)) return; // big speedup		pointA.x = coord.x; pointA.y = coord.y;		coordFlag = 1;		
 		coordInfo = PaintPlugin.getResourceString("status.Coord.format", new Object[]			{ new Integer(coord.x), new Integer(coord.y)});		update();
 	}
 
@@ -75,14 +75,14 @@ public class PaintStatus {
 	 * @param b the "to" coordinate
 	 */
 	public void setCoordRange(Point a, Point b) {
-		coordInfo = PaintPlugin.getResourceString("status.CoordRange.format", new Object[]			{ new Integer(a.x), new Integer(a.y), new Integer(b.x), new Integer(b.y)});		update();
+		if (coordFlag == 2 && pointA.equals(a) && pointB.equals(b)) return; // big speedup		pointA.x = a.x; pointA.y = a.y; pointB.x = b.x; pointB.y = b.y;		coordFlag = 2;		coordInfo = PaintPlugin.getResourceString("status.CoordRange.format", new Object[]			{ new Integer(a.x), new Integer(a.y), new Integer(b.x), new Integer(b.y)});		update();
 	}
 
 	/**
 	 * Clears the coordinates in the status bar.
 	 */
 	public void clearCoord() {
-		coordInfo = "";
+		coordInfo = "";		coordFlag = 0;
 		update();
 	}
 

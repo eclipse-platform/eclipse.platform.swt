@@ -45,7 +45,7 @@ public class FileViewer implements ShellContents {
 	
 	/* Simulate only flag */
 	// when true, disables actual filesystem manipulations and outputs results to standard out
-	private static boolean simulateOnly = true;
+	private static boolean simulateOnly = false;
 
 	/**
 	 * Runs main program.
@@ -819,7 +819,7 @@ public class FileViewer implements ShellContents {
 		// only uses the 1st file (for now)
 		if (files.length == 0) return;
 		final File file = files[0];
-		String fileName = file.getAbsolutePath() + file.separator + file.getName();
+		final String fileName = file.getAbsolutePath();
 		if (! Program.launch(fileName)) {	
 			MessageBox dialog = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
 			dialog.setMessage(getResourceString("Failed_launch", new Object[] { fileName }));
