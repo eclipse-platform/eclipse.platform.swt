@@ -1073,6 +1073,25 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateStandardAle
 }
 #endif /* NO_CreateStandardAlert */
 
+#ifndef NO_CreateUserPaneControl
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateUserPaneControl
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jintArray arg3)
+{
+	Rect _arg1, *lparg1=NULL;
+	jint *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("CreateUserPaneControl\n")
+
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	rc = (jint)CreateUserPaneControl((WindowRef)arg0, (const Rect *)lparg1, (UInt32)arg2, (ControlRef *)lparg3);
+	if (arg1) setRectFields(env, arg1, lparg1);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	return rc;
+}
+#endif /* NO_CreateUserPaneControl */
+
 #ifndef NO_DeleteMenu
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DeleteMenu
 	(JNIEnv *env, jclass that, jshort arg0)
@@ -1771,6 +1790,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetCurrentEventLo
 	return (jint)GetCurrentEventLoop();
 }
 #endif /* NO_GetCurrentEventLoop */
+
+#ifndef NO_GetCurrentEventKeyModifiers
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetCurrentEventKeyModifiers
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("GetCurrentEventKeyModifiers\n")
+
+	return (jint)GetCurrentEventKeyModifiers();
+}
+#endif /* NO_GetCurrentEventKeyModifiers */
 
 #ifndef NO_GetCurrentProcess
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetCurrentProcess
@@ -2683,6 +2712,20 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetWindowPort
 	return (jint)GetWindowPort((WindowRef)arg0);
 }
 #endif /* NO_GetWindowPort */
+
+#ifndef NO_GetWindowStructureWidths
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetWindowStructureWidths
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	Rect _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("GetWindowStructureWidths\n")
+
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	GetWindowStructureWidths((WindowRef)arg0, (Rect *)lparg1);
+	if (arg1) setRectFields(env, arg1, lparg1);
+}
+#endif /* NO_GetWindowStructureWidths */
 
 #ifndef NO_HIComboBoxAppendTextItem
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIComboBoxAppendTextItem
@@ -4785,6 +4828,20 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetWindowActivati
 }
 #endif /* NO_SetWindowActivationScope */
 
+#ifndef NO_SetWindowBounds
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetWindowBounds
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jobject arg2)
+{
+	Rect _arg2, *lparg2=NULL;
+
+	DEBUG_CALL("SetWindowBounds\n")
+
+	if (arg2) lparg2 = getRectFields(env, arg2, &_arg2);
+	SetWindowBounds((WindowRef)arg0, (WindowRegionCode)arg1, (Rect *)lparg2);
+	if (arg2) setRectFields(env, arg2, lparg2);
+}
+#endif /* NO_SetWindowBounds */
+
 #ifndef NO_SetWindowDefaultButton
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetWindowDefaultButton
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -5400,3 +5457,20 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNGetRectBounds
 	return rc;
 }
 #endif /* NO_TXNGetRectBounds */
+
+#ifndef NO_ZoomWindowIdeal
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ZoomWindowIdeal
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jobject arg2)
+{
+	Point _arg2, *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("ZoomWindowIdeal\n")
+
+	if (arg2) lparg2 = getPointFields(env, arg2, &_arg2);
+	rc = (jint)ZoomWindowIdeal((WindowRef)arg0, (WindowPartCode)arg1, (Point *)lparg2);
+	if (arg2) setPointFields(env, arg2, lparg2);
+	return rc;
+}
+#endif /* NO_ZoomWindowIdeal */
+

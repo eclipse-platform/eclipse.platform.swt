@@ -7,11 +7,14 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.CGPoint;
+import org.eclipse.swt.internal.carbon.CGRect;
+
+import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 
 
 public abstract class Control extends Widget implements Drawable {
@@ -174,6 +177,8 @@ void destroyWidget () {
 
 public boolean forceFocus () {
 	checkWidget();
+	int window = OS.GetControlOwner (handle);
+	OS.SetKeyboardFocus (window, handle, (short)-1 /*???OS.kControlFocusNoPart*/);
 	return isFocusControl ();
 }
 
@@ -184,18 +189,14 @@ public Color getBackground () {
 
 public int getBorderWidth () {
 	checkWidget();
-    /* AW
-	int topHandle = topHandle ();
-	int [] argList = {OS.XmNborderWidth, 0};
-	OS.XtGetValues (topHandle, argList, argList.length / 2);
-	return argList [1];
-    */
     return 0;
 }
 
 public Rectangle getBounds () {
 	checkWidget();
-	return new Rectangle(0, 0, 0, 0);
+	Rect rect = new Rect ();
+	OS.GetControlBounds (handle, rect);
+	return new Rectangle (rect.top, rect.left, rect.right - rect.left, rect.bottom - rect.top);
 }
 
 public Display getDisplay () {
@@ -206,7 +207,7 @@ public Display getDisplay () {
 
 public boolean getEnabled () {
 	checkWidget();
-	return false;
+	return OS.IsControlEnabled (handle);
 }
 
 public Font getFont () {
@@ -226,7 +227,9 @@ public Object getLayoutData () {
 
 public Point getLocation () {
 	checkWidget();
-	return new Point(0, 0);
+	Rect rect = new Rect ();
+	OS.GetControlBounds (handle, rect);
+	return new Point (rect.top, rect.left);
 }
 
 public Composite getParent () {
@@ -258,7 +261,9 @@ public Shell getShell () {
 
 public Point getSize () {
 	checkWidget();
-	return new Point(0, 0);
+	Rect rect = new Rect ();
+	OS.GetControlBounds (handle, rect);
+	return new Point (rect.bottom - rect.top, rect.right - rect.left);
 }
 
 public String getToolTipText () {
@@ -268,16 +273,20 @@ public String getToolTipText () {
 
 public boolean getVisible () {
 	checkWidget();
-	return false;
+	return OS.IsControlVisible (handle);
 }
 
 int kEventRawKeyUp (int nextHandler, int theEvent, int userData) {
 	sendKeyEvent (SWT.KeyUp, theEvent);
 	return OS.eventNotHandledErr;
-}int kEventRawKeyRepeat (int nextHandler, int theEvent, int userData) {
+}
+
+int kEventRawKeyRepeat (int nextHandler, int theEvent, int userData) {
 	sendKeyEvent (SWT.KeyDown, theEvent);
 	return OS.eventNotHandledErr;
-}int kEventRawKeyModifiersChanged (int nextHandler, int theEvent, int userData) {
+}
+
+int kEventRawKeyModifiersChanged (int nextHandler, int theEvent, int userData) {
 	int [] modifiers = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, modifiers.length * 4, null, modifiers);
 	Display display = getDisplay ();
@@ -290,7 +299,9 @@ int kEventRawKeyUp (int nextHandler, int theEvent, int userData) {
 	sendKeyEvent (type, theEvent);
 	display.lastModifiers = modifiers [0];
 	return OS.eventNotHandledErr;
-}int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
+}
+
+int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
 	int [] keyCode = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
 	if (keyCode [0] == 114) {	// help key
@@ -299,9 +310,39 @@ int kEventRawKeyUp (int nextHandler, int theEvent, int userData) {
 	}
 	sendKeyEvent (SWT.KeyDown, theEvent);
 	return OS.eventNotHandledErr;
-}int kEventControlDraw (int nextHandler, int theEvent, int userData) {
+}
+
+int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
+	int [] attributes = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamAttributes, OS.typeUInt32, null, attributes.length * 4, null, attributes);
+	if ((attributes [0] & OS.kControlBoundsChangePositionChanged) != 0) {
+		sendEvent (SWT.Move);
+		if (isDisposed ()) return OS.noErr;
+	}
+	if ((attributes [0] & OS.kControlBoundsChangeSizeChanged) != 0) {
+		sendEvent (SWT.Resize);
+		if (isDisposed ()) return OS.noErr;
+	}
 	return OS.eventNotHandledErr;
-}int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
+}
+
+int kEventControlDraw (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventWindowBoundsChanged (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventWindowClose (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventWindowCollapsed (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
@@ -309,7 +350,7 @@ int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
-int kEventWindowClose (int nextHandler, int theEvent, int userData) {
+int kEventWindowExpanded (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
@@ -321,6 +362,7 @@ void hookEvents () {
 	Display display = getDisplay ();
 	int [] mask = new int [] {
 		OS.kEventClassControl, OS.kEventControlDraw,
+		OS.kEventClassControl, OS.kEventControlBoundsChanged,
 	};
 	int controlTarget = OS.GetControlEventTarget (handle);
 	OS.InstallEventHandler (controlTarget, display.windowProc, mask.length / 2, mask, handle, null);
@@ -365,10 +407,24 @@ public boolean isVisible () {
 
 public void moveAbove (Control control) {
 	checkWidget();
+	int inOther = 0;
+	if (control != null) {
+		if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+		if (parent != control.parent) return;
+		inOther = control.handle;
+	}
+	OS.HIViewSetZOrder (handle, OS.kHIViewZOrderAbove, inOther);
 }
 
 public void moveBelow (Control control) {
 	checkWidget();
+	int inOther = 0;
+	if (control != null) {
+		if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+		if (parent != control.parent) return;
+		inOther = control.handle;
+	}
+	OS.HIViewSetZOrder (handle, OS.kHIViewZOrderBelow, inOther);
 }
 
 public void pack () {
@@ -383,10 +439,17 @@ public void pack (boolean changed) {
 
 public void redraw () {
 	checkWidget();
+	OS.HIViewSetNeedsDisplay (handle, true);
 }
 
 public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget ();
+	Rect rect = new Rect ();
+	OS.SetRect (rect, (short)x, (short)y, (short)(x + width), (short)(y + height));
+	int inRgn = OS.NewRgn ();
+	OS.RectRgn (inRgn, rect);
+	OS.HIViewSetNeedsDisplayInRegion (handle, inRgn, true);
+	OS.DisposeRgn (inRgn);
 }
 
 void register () {
@@ -476,23 +539,22 @@ boolean sendKeyEvent (int type, int theEvent) {
 	setKeyState (event, theEvent);
 	postEvent (type, event);
 	return true;
-}public void setBackground (Color color) {
+}
+
+public void setBackground (Color color) {
 	checkWidget();
-	int pixel = -1;
 	if (color != null) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-		pixel = color.handle;
 	}
-	setBackgroundPixel (pixel);
-}
-void setBackgroundPixel (int pixel) {
 }
 
 public void setBounds (int x, int y, int width, int height) {
 	checkWidget();
-	Rect bounds = new Rect ();
-	OS.SetRect (bounds, (short)x, (short)y, (short) (x + Math.max (0, width)), (short) (y + Math.max (0, height)));
-	OS.SetControlBounds (handle, bounds);
+	width = Math.max (0, width);
+	height = Math.max (0, height);
+	Rect rect = new Rect ();
+	OS.SetRect (rect, (short)x, (short)y, (short) (x + width), (short) (y + height));
+	OS.SetControlBounds (handle, rect);
 }
 
 public void setBounds (Rectangle rect) {
@@ -523,8 +585,9 @@ public void setFont (Font font) {
 
 public void setForeground (Color color) {
 	checkWidget();
-}
-void setForegroundPixel (int pixel) {
+	if (color != null) {
+		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
 }
 
 public void setLayoutData (Object layoutData) {
@@ -564,7 +627,9 @@ public void setRedraw (boolean redraw) {
 
 public void setSize (int width, int height) {
 	checkWidget();
-	OS.SizeControl (handle, (short) Math.max (0, width), (short)Math.max (0, height));
+	width = Math.max (0, width);
+	height = Math.max (0, height);
+	OS.SizeControl (handle, (short) width, (short) height);
 }
 
 public void setSize (Point size) {
@@ -592,13 +657,27 @@ public void setVisible (boolean visible) {
 public Point toControl (Point point) {
 	checkWidget();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-    return new Point (0, 0);
+	Rect rect = new Rect ();
+	int window = OS.GetControlOwner (handle);
+	OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
+	CGPoint ioPoint = new CGPoint ();
+	ioPoint.x = (int) (point.x - rect.left);
+	ioPoint.y = (int) (point.y - rect.top);
+	OS.HIViewConvertPoint (ioPoint, 0, handle); 
+    return new Point ((short)ioPoint.x, (short)ioPoint.y);
 }
 
 public Point toDisplay (Point point) {
 	checkWidget();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-    return new Point (0, 0);
+	CGPoint ioPoint = new CGPoint ();
+	ioPoint.x = (int) point.x;
+	ioPoint.y = (int) point.y;
+	OS.HIViewConvertPoint (ioPoint, handle, 0);
+	Rect rect = new Rect ();
+	int window = OS.GetControlOwner (handle);
+	OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
+    return new Point ((short)(rect.left + ioPoint.x), (short)(rect.top + ioPoint.y));
 }
 
 boolean traverseMnemonic (char key) {

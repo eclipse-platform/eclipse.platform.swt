@@ -7,6 +7,9 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.Rect;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
@@ -14,6 +17,7 @@ public abstract class Scrollable extends Control {
  	int scrolledHandle /* formHandle */;
 	int hScrollBar, vScrollBar;
 	ScrollBar horizontalBar, verticalBar;
+	
 Scrollable () {
 	/* Do nothing */
 }
@@ -24,7 +28,7 @@ public Scrollable (Composite parent, int style) {
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
-	return new Rectangle (0, 0, 0, 0);
+	return new Rectangle (x, y, width, height);
 }
 
 ScrollBar createScrollBar (int type) {
@@ -44,7 +48,9 @@ void deregister () {
 
 public Rectangle getClientArea () {
 	checkWidget();
-	return new Rectangle (0, 0, 0, 0);
+	Rect rect = new Rect ();
+	OS.GetControlBounds (handle, rect);
+	return new Rectangle (0, 0, rect.right - rect.left, rect.bottom - rect.top);
 }
 
 public ScrollBar getHorizontalBar () {

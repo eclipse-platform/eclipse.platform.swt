@@ -25,7 +25,28 @@ public Composite (Composite parent, int style) {
 }
 
 Control [] _getChildren () {
-	return new Control [0];
+	short [] count = new short [1];
+	OS.CountSubControls (handle, count);
+	if (count [0] == 0) return new Control [0];
+	Control [] children = new Control [count [0]];
+	int [] outControl= new int [1];
+	int i = 0, j = 0;
+	while (i < count [0]) {
+		int status = OS.GetIndexedSubControl (handle, (short)(i+1), outControl);
+		if (status == OS.noErr) {
+			Widget widget = WidgetTable.get (outControl [0]);
+			if (widget != null && widget != this) {
+				if (widget instanceof Control) {
+					children [j++] = (Control) widget;
+				}
+			}
+		}
+		i++;
+	}
+	if (i == j) return children;
+	Control [] newChildren = new Control [j];
+	System.arraycopy (children, 0, newChildren, 0, j);
+	return newChildren;
 }
 
 Control [] _getTabList () {
@@ -48,7 +69,22 @@ Control [] _getTabList () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
-	return new Point (0, 0);
+	Point size;
+	if (layout != null) {
+		if ((wHint == SWT.DEFAULT) || (hHint == SWT.DEFAULT)) {
+			size = layout.computeSize (this, wHint, hHint, changed);
+		} else {
+			size = new Point (wHint, hHint);
+		}
+	} else {
+		size = minimumSize ();
+	}
+	if (size.x == 0) size.x = DEFAULT_WIDTH;
+	if (size.y == 0) size.y = DEFAULT_HEIGHT;
+	if (wHint != SWT.DEFAULT) size.x = wHint;
+	if (hHint != SWT.DEFAULT) size.y = hHint;
+	Rectangle trim = computeTrim (0, 0, size.x, size.y);
+	return new Point (trim.width, trim.height);
 }
 
 protected void checkSubclass () {
@@ -74,6 +110,14 @@ Control [] computeTabList () {
 
 void createHandle () {
 	state |= CANVAS;
+	int features = OS.kControlSupportsEmbedding | OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick;
+	int [] outControl = new int [1];
+	int window = OS.GetControlOwner (parent.handle);
+	OS.CreateUserPaneControl (window, null, features, outControl);
+	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
+	handle = outControl [0];
+	OS.HIViewAddSubview (parent.handle, handle);
+	OS.HIViewSetZOrder (handle, OS.kHIViewZOrderBelow, 0);
 }
 
 public Control [] getChildren () {
@@ -116,6 +160,19 @@ public Control [] getTabList () {
 	return tabList;
 }
 
+int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventControlBoundsChanged (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	if (layout != null) {
+		int [] attributes = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamAttributes, OS.typeUInt32, null, attributes.length * 4, null, attributes);
+		if ((attributes [0] & OS.kControlBoundsChangeSizeChanged) != 0) {
+			layout.layout (this, false);
+		}
+	}
+	return OS.eventNotHandledErr;
+}
+
 boolean hooksKeys () {
 	return hooks (SWT.KeyDown) || hooks (SWT.KeyUp) || hooks (SWT.Traverse);
 }
@@ -131,6 +188,17 @@ public void layout (boolean changed) {
 	int count = getChildrenCount ();
 	if (count == 0) return;
 	layout.layout (this, changed);
+}
+
+Point minimumSize () {
+	Control [] children = _getChildren ();
+	int width = 0, height = 0;
+	for (int i=0; i<children.length; i++) {
+		Rectangle rect = children [i].getBounds ();
+		width = Math.max (width, rect.x + rect.width);
+		height = Math.max (height, rect.y + rect.height);
+	}
+	return new Point (width, height);
 }
 
 void releaseChildren () {
@@ -151,11 +219,6 @@ void releaseWidget () {
 	tabList = null;
 }
 
-public void setBounds (int x, int y, int width, int height) {
-	super.setBounds (x, y, width, height);
-	if (layout != null) layout (false);
-}
-
 public boolean setFocus() {
 	checkWidget ();
 	if ((style & SWT.NO_FOCUS) != 0) return false;
@@ -170,11 +233,6 @@ public boolean setFocus() {
 public void setLayout (Layout layout) {
 	checkWidget();
 	this.layout = layout;
-}
-
-public void setSize (int width, int height) {
-	super.setSize (width, height);
-	if (layout != null) layout (false);
 }
 
 public void setTabList (Control [] tabList) {

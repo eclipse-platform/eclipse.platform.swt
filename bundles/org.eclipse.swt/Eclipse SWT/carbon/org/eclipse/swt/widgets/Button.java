@@ -53,8 +53,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle () {
 	int [] outControl = new int [1];
-//	int window = OS.GetControlOwner (parent.handle);
-	int window = getShell ().shellHandle;
+	int window = OS.GetControlOwner (parent.handle);
 	OS.CreatePushButtonControl (window, null, 0, outControl);
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];

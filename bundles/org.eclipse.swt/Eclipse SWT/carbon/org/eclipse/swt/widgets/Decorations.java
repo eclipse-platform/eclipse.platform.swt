@@ -13,7 +13,8 @@ import org.eclipse.swt.graphics.*;
 
 public class Decorations extends Canvas {
 	Image image;
-	Control savedFocus;
+	String text;
+	boolean minimized, maximized;
 	Button defaultButton, saveDefault;
 	
 Decorations () {
@@ -59,12 +60,12 @@ public Image getImage () {
 
 public boolean getMaximized () {
 	checkWidget();
-	return false;
+	return maximized;
 }
 
 public boolean getMinimized () {
 	checkWidget();
-	return false;
+	return minimized;
 }
 
 String getNameText () {
@@ -73,7 +74,7 @@ String getNameText () {
 
 public String getText () {
 	checkWidget();
-	return "";
+	return text;
 }
 boolean isTabGroup () {
 	return true;
@@ -85,17 +86,6 @@ boolean isTabItem () {
 void releaseWidget () {
 	super.releaseWidget ();
 	defaultButton = saveDefault = null;
-}
-
-boolean restoreFocus () {
-	if (savedFocus != null && savedFocus.isDisposed ()) savedFocus = null;
-	if (savedFocus == null) return false;
-	return savedFocus.forceFocus ();
-}
-
-void saveFocus () {
-	Control control = getDisplay ().getFocusControl ();
-	if (control != null) setSavedFocus (control);
 }
 
 public void setDefaultButton (Button button) {
@@ -116,23 +106,18 @@ public void setImage (Image image) {
 
 public void setMaximized (boolean maximized) {
 	checkWidget();
+	this.maximized = maximized;
 }
 
 public void setMinimized (boolean minimized) {
 	checkWidget();
-}
-
-void setSavedFocus (Control control) {
-	if (this == control) return;
-	savedFocus = control;
+	this.minimized = minimized;
 }
 
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	text = string;
 }
 
-public void setVisible (boolean visible) {
-	super.setVisible (visible);
-}
 }

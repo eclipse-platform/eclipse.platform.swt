@@ -723,7 +723,8 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 			Control control = WidgetTable.get (theControl [0]);
 			if (control != null) {
 				switch (eventKind) {
-					case OS.kEventControlDraw:	return control.kEventControlDraw (nextHandler, theEvent, userData);
+					case OS.kEventControlDraw:				return control.kEventControlDraw (nextHandler, theEvent, userData);
+					case OS.kEventControlBoundsChanged:	return control.kEventControlBoundsChanged (nextHandler, theEvent, userData);
 				}
 			}
 			break;
@@ -738,6 +739,7 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 				OS.GetRootControl (theWindow, theControl);
 			}
 			Control control = WidgetTable.get (theControl [0]);
+			System.out.println ("KEY: " + control);
 			if (control != null) {
 				switch (eventKind) {
 					case OS.kEventRawKeyDown:				return control.kEventRawKeyDown (nextHandler, theEvent, userData);
@@ -774,9 +776,12 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 			Control control = WidgetTable.get (theRoot [0]);
 			if (control != null) {
 				switch (eventKind) {
-					case OS.kEventWindowActivated:		return control.kEventWindowActivated (nextHandler, theEvent, userData);
-					case OS.kEventWindowDeactivated:	return control.kEventWindowDeactivated (nextHandler, theEvent, userData);
+					case OS.kEventWindowActivated:		return control.kEventWindowActivated (nextHandler, theEvent, userData);	
+					case OS.kEventWindowBoundsChanged:	return control.kEventWindowBoundsChanged (nextHandler, theEvent, userData);
 					case OS.kEventWindowClose:			return control.kEventWindowClose (nextHandler, theEvent, userData);
+					case OS.kEventWindowCollapsed:		return control.kEventWindowCollapsed (nextHandler, theEvent, userData);
+					case OS.kEventWindowDeactivated:	return control.kEventWindowDeactivated (nextHandler, theEvent, userData);
+					case OS.kEventWindowExpanded:		return control.kEventWindowExpanded (nextHandler, theEvent, userData);
 				}
 			}
 			break;

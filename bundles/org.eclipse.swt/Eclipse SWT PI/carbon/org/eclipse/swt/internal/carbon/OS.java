@@ -30,6 +30,8 @@ public class OS {
 	public static final int inContent = 3;
 	public static final int inMenuBar = 1;
 	public static final int inStructure = 15;
+	public static final int inZoomIn = 7;
+	public static final int inZoomOut = 8;
 	public static final int italic = 2;
 	public static final int kAEQuitApplication = ('q'<<24) + ('u'<<16) + ('i'<<8) + 't';
 	public static final int kAlertCautionAlert = 2;
@@ -43,6 +45,8 @@ public class OS {
 	public static final int kColorPickerDialogIsModal = 2;
 	public static final int kControlBehaviorToggles = 0x0100;
 	public static final int kControlBevelButtonNormalBevelProc = 33;
+	public static final int kControlBoundsChangeSizeChanged = 1 << 2;
+	public static final int kControlBoundsChangePositionChanged = 1 << 3;
 	public static final int kControlCheckBoxAutoToggleProc = 371;
 	public static final int kControlContentCIconHandle = 130;
 	public static final int kControlContentMetaPart = -2;
@@ -174,8 +178,10 @@ public class OS {
 	public static final int kEventWindowActivated = 5;
 	public static final int kEventWindowBoundsChanged = 27;
 	public static final int kEventWindowClose = 72;
+	public static final int kEventWindowCollapsed = 67;
 	public static final int kEventWindowDeactivated = 6;
 	public static final int kEventWindowDrawContent = 2;
+	public static final int kEventWindowExpanded = 70;
 	public static final int kFloatingWindowClass = 5;
 	public static final int kHIComboBoxAutoSizeListAttribute = (1 << 3);
 	public static final int kHIComboBoxEditTextPart = 5;
@@ -287,6 +293,8 @@ public class OS {
     public static final int kWindowActivationScopeNone = 0;
     public static final int kWindowActivationScopeIndependent = 1;
     public static final int kWindowActivationScopeAll = 2;
+    public static final int kWindowBoundsChangeOriginChanged = 1<<3;
+    public static final int kWindowBoundsChangeSizeChanged = 1<<2;
 	public static final int kWindowCloseBoxAttribute = (1 << 0);
 	public static final int kWindowCollapseBoxAttribute = (1 << 3);
 	public static final int kWindowCompositingAttribute = (1 << 19);
@@ -415,6 +423,7 @@ public static final native int CreateNewWindow(int windowClass, int attributes, 
 public static final native int CreatePushButtonControl(int window, Rect boundsRect, int title, int[] outControl);
 public static final native int CreateRootControl(int windowHandle, int[] cHandle);
 public static final native int CreateStandardAlert(short alertType, int errorSHandle, int explanationSHandle, int alertParamHandle, int[] dialogHandle);
+public static final native int CreateUserPaneControl(int window, Rect boundsRect, int features, int [] outControl);
 public static final native void DeleteMenu(short menuID);
 public static final native void DeleteMenuItem(int mHandle, short index);
 public static final native int DeleteMenuItems(int mHandle, short firstItem, int numItems);
@@ -472,6 +481,7 @@ public static final native int GetControlRegion(int cHandle, short inPart, int r
 public static final native short GetControlValue(int cHandle);
 public static final native int GetControlViewSize(int cHandle);
 public static final native int GetCurrentEventLoop();
+public static final native int GetCurrentEventKeyModifiers();
 public static final native int GetCurrentProcess(int[] psn);
 public static final native int GetCurrentScrap(int[] scrap);
 public static final native int GetDataBrowserCallbacks(int browser, DataBrowserCallbacks  callbacks);
@@ -535,6 +545,7 @@ public static final native int GetWindowEventTarget(int wHandle);
 public static final native int GetWindowFromPort(int pHandle);
 public static final native int GetWindowModality(int wHandle, int[] modalityKind, int[] unavailableWindowHandle);
 public static final native int GetWindowPort(int wHandle);
+public static final native void GetWindowStructureWidths(int intWindow, Rect outRect);
 public static final native int HIComboBoxAppendTextItem(int inComboBox, int inText, int[] outIndex);
 public static final native int HIComboBoxCopyTextItemAtIndex(int inComboBox, int inIndex, int[] outString);
 public static final native int HIComboBoxCreate(CGRect boundsRect, int text, ControlFontStyleRec style, int list, int inAttributes, int[] outComboBox);
@@ -710,6 +721,7 @@ public static final native int SetThemeWindowBackground(int wHandle, short brush
 public static final native int SetUpControlBackground(int cHandle, short depth, boolean isColorDevice);
 public static final native void SetWRefCon(int wHandle, int data);
 public static final native int SetWindowActivationScope(int wHandle, int scope);
+public static final native void SetWindowBounds(int window, int regionCode, Rect globalBounds);
 public static final native int SetWindowDefaultButton(int wHandle, int cHandle);
 public static final native int SetWindowModality(int wHandle, int modalityKind, int unavailableWindowHandle);
 public static final native int SetWindowTitleWithCFString(int wHandle, int sHandle);
@@ -752,6 +764,7 @@ public static final native void UnionRgn(int srcRgnA, int srcRgnB, int dstRgn);
 public static final native int UnlockPortBits(int portHandle);
 public static final native void UpdateControls(int wHandle, int rgnHandle);
 public static final native int UpdateDataBrowserItems(int cHandle, int container, int numItems, int[] items, int preSortProperty, int propertyID);
+public static final native int ZoomWindowIdeal(int inWindow, short inPartCode, Point ioIdealSize);
 public static final native void memcpy(byte[] dest, int src, int n);
 public static final native void memcpy(char[] dest, int src, int n);
 public static final native void memcpy(int[] dest, int src, int n);

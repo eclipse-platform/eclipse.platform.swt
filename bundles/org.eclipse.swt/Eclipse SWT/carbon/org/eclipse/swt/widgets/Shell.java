@@ -89,6 +89,18 @@ void closeWidget () {
 	if (event.doit && !isDisposed ()) dispose ();
 }
 
+public Rectangle computeTrim (int x, int y, int width, int height) {
+	checkWidget();
+	Rectangle trim = super.computeTrim (x, y, width, height);
+	Rect rect = new Rect ();
+	OS.GetWindowStructureWidths (shellHandle, rect);
+	trim.x -= rect.left;
+	trim.y -= rect.top;
+	trim.width += rect.left + rect.right;
+	trim.height += rect.top + rect.bottom;
+	return trim;
+}
+
 void createHandle () {
 	state |= CANVAS;
 	int attributes = OS.kWindowCompositingAttribute | OS.kWindowStandardHandlerAttribute;
@@ -133,9 +145,14 @@ void createHandle () {
 		}
 	}
 	int [] outWindow = new int[1];
-	Rect contentBounds = new Rect ();
-	OS.SetRect (contentBounds, (short)100, (short)100, (short)200, (short)200);
-	OS.CreateNewWindow (windowClass, attributes, contentBounds, outWindow);
+	Rect rect = new Rect ();
+	OS.SetRect (rect, (short)100, (short)100, (short)400, (short)400);
+
+//	int kWindowStandardDocumentAttributes = OS.kWindowCloseBoxAttribute | OS.kWindowFullZoomAttribute | OS.kWindowCollapseBoxAttribute | OS.kWindowResizableAttribute;
+//	int windowAttrs = kWindowStandardDocumentAttributes | OS.kWindowStandardHandlerAttribute;
+//	OS.CreateNewWindow (OS.kDocumentWindowClass, attributes, rect, outWindow);
+	OS.CreateNewWindow (windowClass, attributes, rect, outWindow);
+
 	if (outWindow [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	shellHandle = outWindow [0];
 
@@ -172,14 +189,18 @@ public void forceActive () {
 	OS.SelectWindow (shellHandle);
 }
 
-public int getBorderWidth () {
+public Rectangle getClientArea () {
 	checkWidget();
-    return 0;
+	Rect rect = new Rect ();
+	OS.GetWindowBounds (shellHandle, (short) OS.kWindowContentRgn, rect);
+	return new Rectangle (0, 0, rect.right - rect.left, rect.bottom - rect.top);
 }
 
 public Rectangle getBounds () {
 	checkWidget();
-	return new Rectangle (0, 0, 0, 0);
+	Rect rect = new Rect ();
+	OS.GetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
+	return new Rectangle (rect.top, rect.left, rect.right - rect.left, rect.bottom - rect.top);
 }
 
 public Display getDisplay () {
@@ -187,14 +208,16 @@ public Display getDisplay () {
 	return display;
 }
 
-public boolean getEnabled () {
+public int getImeInputMode () {
 	checkWidget();
-	return false;
+	return SWT.NONE;
 }
 
 public Point getLocation () {
 	checkWidget();
-	return new Point(0, 0);
+	Rect rect = new Rect ();
+	OS.GetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
+	return new Point (rect.top, rect.left);
 }
 
 public Shell getShell () {
@@ -229,12 +252,14 @@ public Shell [] getShells () {
 
 public Point getSize () {
 	checkWidget();
-	return new Point (0, 0);
+	Rect rect = new Rect ();
+	OS.GetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
+	return new Point (rect.right - rect.left, rect.bottom - rect.top);
 }
 
 public boolean getVisible () {
 	checkWidget();
-    return false;
+    return OS.IsWindowVisible (shellHandle);
 }
 
 int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
@@ -245,10 +270,41 @@ int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+int kEventWindowBoundsChanged (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventWindowBoundsChanged (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	if (layout != null) {
+		int [] attributes = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamAttributes, OS.typeUInt32, null, attributes.length * 4, null, attributes);
+		if ((attributes [0] & OS.kWindowBoundsChangeOriginChanged) != 0) {
+			sendEvent (SWT.Move);
+		}
+		if ((attributes [0] & OS.kWindowBoundsChangeSizeChanged) != 0) {
+			sendEvent (SWT.Resize);
+			layout.layout (this, false);
+		}
+	}
+	return OS.eventNotHandledErr;
+}
+
+int kEventWindowCollapsed (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventWindowCollapsed (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	sendEvent (SWT.Iconify);
+	return OS.eventNotHandledErr;
+}
+
 int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowDeactivated (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	sendEvent (SWT.Deactivate);
+	return OS.eventNotHandledErr;
+}
+
+int kEventWindowExpanded (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventWindowExpanded (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	sendEvent (SWT.Deiconify);
 	return OS.eventNotHandledErr;
 }
 
@@ -260,13 +316,23 @@ int kEventWindowClose (int nextHandler, int theEvent, int userData) {
 }
 
 void hookEvents () {
-	super.hookEvents ();
+	//DO NOT CALL SUPER
+//	super.hookEvents ();
 	Display display = getDisplay ();
+	int [] mask2 = new int [] {
+		OS.kEventClassControl, OS.kEventControlDraw,
+	};
+	int controlTarget = OS.GetControlEventTarget (handle);
+	OS.InstallEventHandler (controlTarget, display.windowProc, mask2.length / 2, mask2, handle, null);
+
+//	Display display = getDisplay ();
 	int[] mask= new int[] {
 		OS.kEventClassWindow, OS.kEventWindowActivated,
-		OS.kEventClassWindow, OS.kEventWindowDeactivated,
 		OS.kEventClassWindow, OS.kEventWindowBoundsChanged,
 		OS.kEventClassWindow, OS.kEventWindowClose,
+		OS.kEventClassWindow, OS.kEventWindowCollapsed,
+		OS.kEventClassWindow, OS.kEventWindowDeactivated,
+		OS.kEventClassWindow, OS.kEventWindowExpanded,
 	};
 	int windowTarget = OS.GetWindowEventTarget (shellHandle);
 	OS.InstallEventHandler (windowTarget, display.windowProc, mask.length / 2, mask, shellHandle, null);
@@ -306,23 +372,57 @@ public void setActive () {
 }
 
 public void setBounds (int x, int y, int width, int height) {
+	checkWidget ();
+	Rect rect = new Rect ();
+	OS.SetRect (rect, (short) x, (short) y, (short) (x + width), (short) (y + height));
+	OS.SetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
+}
+
+public void setImeInputMode (int mode) {
 	checkWidget();
 }
 
 public void setLocation (int x, int y) {
 	checkWidget();
+	Rect rect = new Rect ();
+	OS.GetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
+	OS.SetRect (rect, (short) x, (short) y, rect.right, rect.bottom);
+	OS.SetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
+}
+
+public void setMaximized (boolean maximized) {
+	checkWidget();
+	super.setMaximized (maximized);
+	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
+	short inPartCode = (short) (maximized ? OS.inZoomOut : OS.inZoomIn);
+	//FIXME - returns -50 errParam
+	OS.ZoomWindowIdeal (shellHandle, inPartCode, pt);
 }
 
 public void setMinimized (boolean minimized) {
 	checkWidget();
+	super.setMinimized (minimized);
+	OS.CollapseWindow (shellHandle, true);
 }
 
 public void setSize (int width, int height) {
 	checkWidget();
+	Rect rect = new Rect ();
+	OS.GetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
+	OS.SetRect (rect, rect.left, rect.top, (short)(rect.left + width), (short)(rect.top + height));
+	OS.SetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
 }
 
 public void setText (String string) {
 	checkWidget();
+	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	super.setText (string);
+	char [] buffer = new char [string.length ()];
+	string.getChars (0, buffer.length, buffer, 0);
+	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+	if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+	OS.SetWindowTitleWithCFString (shellHandle, ptr);
+	OS.CFRelease (ptr);
 }
 
 public void setVisible (boolean visible) {
