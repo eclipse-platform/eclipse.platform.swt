@@ -38,19 +38,10 @@ import org.eclipse.swt.events.*;
  * </p>
  */
 public class Tree extends Composite {
-	TreeItem [] items;
-	boolean selected, doubleSelected;
-	int check, uncheck, imageHeight, timerID;
-	static int CELL_SPACING = 1;
-
-	/*
-	* NOT DONE - These need to be moved to display,
-	* they are not thread safe.  Consider moving the
-	* methods that access them to Display.
-	*/
-	static TreeItem [] Items;
-	static int Index, Count, Sibling;
-
+	int selSize; int[] selIndices;
+	TreeItem[] items;
+	int modelHandle, columnHandle;	
+	
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -86,11 +77,6 @@ public Tree (Composite parent, int style) {
 }
 
 static int checkStyle (int style) {
-	/*
-	* To be compatible with Windows, force the H_SCROLL
-	* and V_SCROLL style bits.  On Windows, it is not
-	* possible to create a tree without scroll bars.
-	*/
 	style |= SWT.H_SCROLL | SWT.V_SCROLL;
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
@@ -170,92 +156,85 @@ void createHandle (int index) {
 	OS.gtk_fixed_set_has_window (fixedHandle, true);
 	scrolledHandle = OS.gtk_scrolled_window_new (0, 0);
 	if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	handle = OS.gtk_ctree_new (1, 0);
-	if (handle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+
+	/* Columns:
+	 * 0 - text
+	 * 1 - pixmap
+	 * 2 - foreground
+	 * 3 - background
+	 * 4 - id
+	 * 5 - checked (if needed)
+	 */
+	int COLUMN_NUM = (style&SWT.CHECK)!=0? 6:5;
+	int[] types = new int[COLUMN_NUM];
+	types[0] = OS.G_TYPE_STRING();
+	types[1] = OS.gdk_pixbuf_get_type();
+	types[2] = OS.GDK_TYPE_COLOR();
+	types[3] = OS.GDK_TYPE_COLOR();
+	types[4] = OS.G_TYPE_INT();
+	if ((style&SWT.CHECK) != 0) types[5] = OS.G_TYPE_BOOLEAN();
+	modelHandle = OS.gtk_tree_store_newv(COLUMN_NUM, types);
+	if (modelHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	handle = OS.gtk_tree_view_new_with_model(modelHandle);
+	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	
 	int parentHandle = parent.parentingHandle ();
 	OS.gtk_container_add (parentHandle, fixedHandle);
 	OS.gtk_container_add (fixedHandle, scrolledHandle);
 	OS.gtk_container_add (scrolledHandle, handle);
-	OS.gtk_widget_show (fixedHandle);
-	OS.gtk_widget_show (scrolledHandle);
-	OS.gtk_widget_show (handle);
-	
-	/* Force row_height to be computed */
-	OS.gtk_clist_set_row_height (handle, 0);
-		
-	/* Single or Multiple Selection */
 	int mode = (style & SWT.MULTI) != 0 ? OS.GTK_SELECTION_EXTENDED : OS.GTK_SELECTION_BROWSE;
-	OS.gtk_clist_set_selection_mode (handle, mode);
-	
-	/* Scrolling policy */
+	int selectionObject = OS.gtk_tree_view_get_selection(handle);
+	OS.gtk_tree_selection_set_mode(selectionObject, mode);
+	OS.gtk_tree_view_set_headers_visible(handle, false);	
 	int hsp = (style & SWT.H_SCROLL) != 0 ? OS.GTK_POLICY_AUTOMATIC : OS.GTK_POLICY_NEVER;
 	int vsp = (style & SWT.V_SCROLL) != 0 ? OS.GTK_POLICY_AUTOMATIC : OS.GTK_POLICY_NEVER;
 	OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
-	
+	if ((style & SWT.BORDER) != 0) OS.gtk_scrolled_window_set_shadow_type (scrolledHandle, OS.GTK_SHADOW_ETCHED_IN);
+	OS.gtk_widget_show (fixedHandle);
+	OS.gtk_widget_show (scrolledHandle);
+	OS.gtk_widget_show (handle);
+	columnHandle = OS.gtk_tree_view_column_new();
+	int renderer;
+	renderer = OS.gtk_cell_renderer_text_new();
+	if (renderer == 0) error(SWT.ERROR_NO_HANDLES);
+	OS.gtk_tree_view_column_pack_end (columnHandle, renderer, true);
+	OS.gtk_tree_view_column_add_attribute (columnHandle, renderer, "text", 0);
+	OS.gtk_tree_view_column_add_attribute(columnHandle, renderer, "foreground-gdk", 2);
+	OS.gtk_tree_view_column_add_attribute(columnHandle, renderer, "background-gdk", 3);
+	renderer = OS.gtk_cell_renderer_pixbuf_new();
+	if (renderer == 0) error(SWT.ERROR_NO_HANDLES);
+	OS.gtk_tree_view_column_pack_end (columnHandle, renderer, false);
+	OS.gtk_tree_view_column_add_attribute (columnHandle, renderer, "pixbuf", 1);
 	if ((style & SWT.CHECK) != 0) {
-		OS.gtk_widget_realize (handle);
-		uncheck = createCheckPixmap (false);
-		check = createCheckPixmap (true);
+		renderer = OS.gtk_cell_renderer_toggle_new();
+		if (renderer == 0) error(SWT.ERROR_NO_HANDLES);
+		OS.gtk_tree_view_column_pack_end (columnHandle, renderer, false);
+		OS.gtk_tree_view_column_add_attribute (columnHandle, renderer, "active", 5);
+		OS.g_signal_connect(renderer, OS.toggled, getDisplay().toggleProc, columnHandle);
 	}
+	OS.gtk_tree_view_insert_column (handle, columnHandle, 0);
+	OS.gtk_tree_view_set_headers_visible(handle, false);
 }
 
 void hookEvents () {
 	//TO DO - get rid of enter/exit for mouse crossing border
 	super.hookEvents ();
 	Display display = getDisplay ();
-	int windowProc3 = display.windowProc3;
-	int windowProc4 = display.windowProc4;
-	OS.g_signal_connect (handle, OS.tree_select_row, windowProc4, SWT.Selection);
-	OS.g_signal_connect (handle, OS.tree_unselect_row, windowProc4, SWT.Selection);
-	OS.g_signal_connect (handle, OS.tree_expand, windowProc3, SWT.Expand);
-	OS.g_signal_connect (handle, OS.tree_collapse, windowProc3, SWT.Collapse);
-	OS.g_signal_connect (handle, OS.event_after, windowProc3, 0);
+	int selection = OS.gtk_tree_view_get_selection(handle);
+	OS.g_signal_connect_after (selection, OS.changed, display.windowProc2, SWT.Selection);
+	OS.g_signal_connect (handle, OS.row_activated, display.windowProc4, SWT.DefaultSelection);
+	OS.g_signal_connect (handle, OS.row_expanded, display.windowProc4, SWT.Expand);
+	OS.g_signal_connect (handle, OS.row_collapsed, display.windowProc4, SWT.Collapse);
+	OS.g_signal_connect (handle, OS.event_after, display.windowProc3, 0);
+	// FIXME - we want to get MouseUp *AFTER*
 }
 
-int createCheckPixmap(boolean checked) {
-	/*
-	 * The box will occupy the whole item width.
-	 */
-	int check_height = OS.GTK_CLIST_ROW_HEIGHT (handle) - 2;
-	int check_width = check_height;
-
-	GdkVisual visual = new GdkVisual();
-	OS.memmove(visual, OS.gdk_visual_get_system());
-	int pixmap = OS.gdk_pixmap_new(0, check_width, check_height, visual.depth);
-	
-	int gc = OS.gdk_gc_new(pixmap);
-	
-	GdkColor fgcolor = new GdkColor();
-	fgcolor.pixel = 0xFFFFFFFF;
-	fgcolor.red = (short) 0xFFFF;
-	fgcolor.green = (short) 0xFFFF;
-	fgcolor.blue = (short) 0xFFFF;
-	OS.gdk_gc_set_foreground(gc, fgcolor);
-	OS.gdk_draw_rectangle(pixmap, gc, 1, 0,0, check_width,check_height);
-
-	fgcolor = new GdkColor();
-	fgcolor.pixel = 0;
-	fgcolor.red = (short) 0;
-	fgcolor.green = (short) 0;
-	fgcolor.blue = (short) 0;
-	OS.gdk_gc_set_foreground(gc, fgcolor);
-	
-	OS.gdk_draw_line(pixmap, gc, 0,0, 0,check_height-1);
-	OS.gdk_draw_line(pixmap, gc, 0,check_height-1, check_width-1,check_height-1);
-	OS.gdk_draw_line(pixmap, gc, check_width-1,check_height-1, check_width-1,0);
-	OS.gdk_draw_line(pixmap, gc, check_width-1,0, 0,0);
-
-	/* now the cross check */
-	if (checked) {
-		OS.gdk_draw_line(pixmap, gc, 0,0, check_width-1,check_height-1);
-		OS.gdk_draw_line(pixmap, gc, 0,check_height-1, check_width-1,0);
-	}
-	
-	OS.g_object_unref(gc);
-	return pixmap;
+void createWidget(int index) {
+	super.createWidget(index);
+	items = new TreeItem[4];
 }
 
-void createItem (TreeItem item, int node, int index) {
+void createItem (TreeItem item, int iter, int index) {
 	int id = 0;
 	while (id < items.length && items [id] != null) id++;
 	if (id == items.length) {
@@ -263,36 +242,15 @@ void createItem (TreeItem item, int node, int index) {
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
 	}
-	int sibling = index == -1 ? 0 : findSibling (node, index);
-	if (OS.GTK_WIDGET_MAPPED (handle) && timerID == 0) {
-		OS.gtk_clist_freeze (handle);
-		Display display = getDisplay ();
-		timerID = OS.gtk_timeout_add (0, display.windowTimerProc, handle);
+	item.handle = OS.g_malloc(OS.GtkTreeIter_sizeof());
+	if (item.handle == 0) error(SWT.ERROR_NO_HANDLES);
+	if (index==-1) {
+		OS.gtk_tree_store_append(modelHandle, item.handle, iter);
+	} else {
+		OS.gtk_tree_store_insert(modelHandle, item.handle, iter, index);
 	}
-	blockSignal (handle, SWT.Selection);
-	item.handle = OS.gtk_ctree_insert_node (handle, node, sibling, null, (byte) 2, uncheck, 0, uncheck, 0, false, false);
-	if ((style & SWT.SINGLE) != 0 && OS.GTK_CLIST_ROWS (handle) == 1) {
-		OS.gtk_clist_unselect_row (handle, 0, 0);
-	}
-	unblockSignal (handle, SWT.Selection);
-	if (item.handle == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
-	OS.gtk_ctree_node_set_row_data (handle, item.handle, id + 1);
-	items [id] = item;
-}
-
-void createWidget (int index) {
-	super.createWidget (index);
-	items = new TreeItem [4];
-}
-
-GdkColor defaultBackground () {
-	Display display = getDisplay ();
-	return display.COLOR_LIST_BACKGROUND;
-}
-
-GdkColor defaultForeground () {
-	Display display = getDisplay ();
-	return display.COLOR_LIST_FOREGROUND;
+	OS.gtk_tree_store_set(modelHandle, item.handle, 4, id, -1);
+	items[id] = item;
 }
 
 /**
@@ -305,62 +263,15 @@ GdkColor defaultForeground () {
  */
 public void deselectAll() {
 	checkWidget();
-	blockSignal (handle, SWT.Selection);
-	if ((style & SWT.SINGLE) != 0) {
-		int selection = OS.GTK_CLIST_SELECTION (handle);
-		if (selection != 0 && OS.g_list_length (selection) > 0) {
-			int index = OS.GTK_CLIST_FOCUS_ROW (handle);
-			if (index == -1) index = 0;
-			OS.gtk_clist_select_row (handle, index, 0);
-			OS.gtk_clist_unselect_row (handle, index, 0);
-		}
-	} else {
-		OS.gtk_ctree_unselect_recursive (handle, 0);
-	}
-	unblockSignal (handle, SWT.Selection);
+	blockSignal(handle, SWT.Selection);
+	int selection = OS.gtk_tree_view_get_selection(handle);
+	OS.gtk_tree_selection_unselect_all(selection);
+	unblockSignal(handle, SWT.Selection);
 }
 
 void destroyItem (TreeItem item) {
-	int node = item.handle;
-	Callback GtkCTreeFunc = new Callback (this, "GtkCTreeDispose", 3);
-	int address = GtkCTreeFunc.getAddress ();
-	OS.gtk_ctree_post_recursive (handle, node, address, 0);
-	GtkCTreeFunc.dispose ();
-	blockSignal (handle, SWT.Collapse);
-	boolean fixSelection = false;
-	if ((style & SWT.SINGLE) != 0) {
-		int selection = OS.GTK_CLIST_SELECTION (handle);
-		fixSelection = selection == 0 || OS.g_list_length (selection) == 0;
-	}
-	if (fixSelection) blockSignal (handle, SWT.Selection);
-	OS.gtk_ctree_remove_node (handle, node);
-	if (fixSelection) {
-		OS.gtk_clist_unselect_row (handle, 0, 0);
-		unblockSignal (handle, SWT.Selection);
-	}
-	unblockSignal (handle, SWT.Collapse);
-}
-
-int findSibling (int node, int index) {
-	int depth = 1;
-	if (node != 0) {
-		int data = OS.g_list_nth_data (node, 0);
-		GtkCTreeRow row = new GtkCTreeRow ();
-		OS.memmove (row, data, GtkCTreeRow.sizeof);
-		depth = row.level + 1;
-	}
-	Index = 0;
-	Sibling = 0;
-	Callback GtkCTreeCountItems = new Callback (this, "GtkCTreeFindSibling", 3);
-	int address0 = GtkCTreeCountItems.getAddress ();
-	OS.gtk_ctree_post_recursive_to_depth (handle, node, depth, address0, index);
-	GtkCTreeCountItems.dispose ();
-	if (Sibling == node) Sibling = 0; 
-	return Sibling;
-}
-
-GdkColor getBackgroundColor () {
-	return getBaseColor ();
+	// FIXME - do I need to block Collapse?
+	OS.gtk_tree_store_remove (modelHandle, item.handle);
 }
 
 /**
@@ -381,15 +292,15 @@ GdkColor getBackgroundColor () {
  */
 public TreeItem getItem (Point point) {
 	checkWidget ();
-	int [] row = new int [1], column = new int [1];
-	if (OS.gtk_clist_get_selection_info (handle, point.x, point.y, row, column) == 0) {
-		return null;
-	}
-	int node = OS.gtk_ctree_node_nth (handle, row [0]);
-	if (node == 0) return null;
-	int index = OS.gtk_ctree_node_get_row_data (handle, node) - 1;
-	if (index == -1) return null;
-	return items [index];
+	int [] path = new int [1];	
+	if (!OS.gtk_tree_view_get_path_at_pos(handle, point.x, point.y, path, null, null, null)) return null;
+	if (path[0]==0) return null;
+	int iter = OS.g_malloc(OS.GtkTreeIter_sizeof());
+	OS.gtk_tree_model_get_iter(modelHandle, iter, path[0]);
+	int[] index = new int[1];
+	OS.gtk_tree_model_get(modelHandle, iter, 4, index, -1);
+	OS.g_free(iter);
+	return items[index[0]];
 }
 
 /**
@@ -410,20 +321,8 @@ public int getItemCount () {
 	return getItemCount (0);
 }
 
-int getItemCount (int node) {
-	int depth = 1;
-	if (node != 0) {
-		int data = OS.g_list_nth_data (node, 0);
-		GtkCTreeRow row = new GtkCTreeRow ();
-		OS.memmove (row, data, GtkCTreeRow.sizeof);
-		depth = row.level + 1;
-	}
-	Count = 0;
-	Callback GtkCTreeCountItems = new Callback (this, "GtkCTreeCountItems", 3);
-	int address0 = GtkCTreeCountItems.getAddress ();
-	OS.gtk_ctree_post_recursive_to_depth (handle, node, depth, address0, node);
-	GtkCTreeCountItems.dispose ();
-	return Count;
+int getItemCount (int iter) {
+	return OS.gtk_tree_model_iter_n_children(modelHandle, iter);
 }
 
 /**
@@ -439,7 +338,15 @@ int getItemCount (int node) {
  */
 public int getItemHeight () {
 	checkWidget ();
-	return OS.GTK_CLIST_ROW_HEIGHT (handle) + CELL_SPACING;
+	// FIXME
+	// I (bgs) am not sure what to do with this.
+	// In GTK2, rows may have different heights, so asking
+	// this question will only make sense given the item.
+	if (getItemCount() == 0) return 18;
+	GdkRectangle rect = new GdkRectangle();
+	int path = OS.gtk_tree_path_new_from_string(Converter.wcsToMbcs(null, "0", true));
+	OS.gtk_tree_view_get_cell_area(parent.handle, path, columnHandle, rect);
+	return rect.height;
 }
 
 /**
@@ -460,32 +367,25 @@ public int getItemHeight () {
  * </ul>
  */
 public TreeItem [] getItems () {
+	TreeItem[] items;
 	checkWidget();
 	return getItems (0);
 }
 
-TreeItem [] getItems (int node) {
-	int depth = 1;
-	if (node != 0) {
-		int data = OS.g_list_nth_data (node, 0);
-		GtkCTreeRow row = new GtkCTreeRow ();
-		OS.memmove (row, data, GtkCTreeRow.sizeof);
-		depth = row.level + 1;
+TreeItem [] getItems (int parent) {
+	int len = getItemCount(parent);
+	TreeItem[] answer = new TreeItem [len];
+	if (len==0) return answer;
+	int currentIter = OS.g_malloc(OS.GtkTreeIter_sizeof());
+	if (!OS.gtk_tree_model_iter_children(modelHandle, currentIter, parent)) return answer;
+	for (int i=0; i<len; i++) {
+		int[] index = new int[1];
+		OS.gtk_tree_model_get(modelHandle, currentIter, 4, index, -1);
+		answer[i] = items[index[0]];
+		OS.gtk_tree_model_iter_next(modelHandle, currentIter);
 	}
-	Count = 0;
-	Callback GtkCTreeCountItems = new Callback (this, "GtkCTreeCountItems", 3);
-	int address0 = GtkCTreeCountItems.getAddress ();
-	OS.gtk_ctree_post_recursive_to_depth (handle, node, depth, address0, node);
-	GtkCTreeCountItems.dispose ();
-	Items = new TreeItem [Count];
-	Count = 0;
-	Callback GtkCTreeGetItems = new Callback (this, "GtkCTreeGetItems", 3);
-	int address1 = GtkCTreeGetItems.getAddress ();
-	OS.gtk_ctree_post_recursive_to_depth (handle, node, depth, address1, node);
-	GtkCTreeGetItems.dispose ();
-	TreeItem [] result = Items;
-	Items = null;
-	return result;
+	OS.g_free(currentIter);
+	return answer;
 }
 
 /**
@@ -523,16 +423,35 @@ public TreeItem getParentItem () {
  */
 public TreeItem[] getSelection () {
 	checkWidget();
-	int selection = OS.GTK_CLIST_SELECTION (handle);
-	if (selection == 0) return new TreeItem [0];
-	int length = OS.g_list_length (selection);
-	TreeItem [] result = new TreeItem [length];
-	for (int i=0; i<length; i++) {
-		int node = OS.g_list_nth_data (selection, i);
-		int index = OS.gtk_ctree_node_get_row_data (handle, node) - 1;
-		result [i] = items [index];
+	TreeItem[] answer;
+	if ((style & SWT.MULTI) != 0) {
+		/*
+		 * Multi-selection case
+		 */
+		selSize = 0;
+		selIndices = new int[items.length];
+		int selection = OS.gtk_tree_view_get_selection(handle);
+		OS.gtk_tree_selection_selected_foreach(selection, getDisplay().selectionIterProc, handle);
+		answer = new TreeItem[selSize];
+		for (int i=0; i<selSize; i++) answer[i] = items[selIndices[i]];
+	} else {
+		/*
+		 * Single-selection case
+		 */
+		int iter = OS.g_malloc(OS.GtkTreeIter_sizeof());
+		int selection = OS.gtk_tree_view_get_selection(handle);
+		boolean hasSelection = OS.gtk_tree_selection_get_selected(selection, null, iter);
+		if (hasSelection) {
+			int[] index = new int[1];
+			OS.gtk_tree_model_get(modelHandle, iter, 4, index, -1);
+			answer = new TreeItem[1];
+			answer[0] = items[index[0]];
+		} else {
+			answer = new TreeItem[0];
+		}
+		OS.g_free(iter);
 	}
-	return result;
+	return answer;
 }
 	
 /**
@@ -547,310 +466,94 @@ public TreeItem[] getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget();
-	int selection = OS.GTK_CLIST_SELECTION (handle);
-	if (selection == 0) return 0;
-	return OS.g_list_length (selection);
+	selSize = 0;
+	selIndices = new int[items.length];
+	int selection = OS.gtk_tree_view_get_selection(handle);
+	OS.gtk_tree_selection_selected_foreach(selection, getDisplay().selectionIterProc, handle);
+	return selSize;
 }
 
-int GtkCTreeCountItems (int ctree, int node, int data) {
-	if (data != node) Count++;
-	return 0;
-}
-
-int GtkCTreeFindSibling (int ctree, int node, int data) {
-	if (Index == -1) return 0;
-	if (Index == data) {
-		Sibling = node;
-		Index = -1;
-	} else {
-		Index++;
-	}
-	return 0;
-}
-
-int GtkCTreeGetItems (int ctree, int node, int data) {
-	if (data != node) {
-		int index = OS.gtk_ctree_node_get_row_data (ctree, node) - 1;
-		Items [Count++] = items [index];
-	}
-	return 0;
-}
-
-int GtkCTreeDispose (int ctree, int node, int data) {
-	int index = OS.gtk_ctree_node_get_row_data (ctree, node) - 1;
-	OS.gtk_ctree_node_set_row_data (ctree, node, 0);
-	TreeItem item = items [index];
-	if (item != null && !item.isDisposed ()) item.releaseResources ();
-	items [index] = null;
-	return 0;
-}
-
-int paintWindow () {
-	OS.gtk_widget_realize (handle);
-	return OS.GTK_CLIST_CLIST_WINDOW (handle);
-}
-
-int processCollapse (int int0, int int1, int int2) {
-	int index = OS.gtk_ctree_node_get_row_data (handle, int0) - 1;
+int processCollapse (int iter, int path, int data) {
 	Event event = new Event ();
-	event.item = items [index];
-	/*
-	* This code is intentionally commented.
-	* Not yet sure if freezing improves the
-	* look when a tree is collapsed.
-	*/
-//	OS.gtk_clist_freeze (handle);
-	sendEvent (SWT.Collapse, event);
-//	OS.gtk_clist_thaw (handle);
+	int[] index = new int[1];
+	OS.gtk_tree_model_get(modelHandle, iter, 4, index, -1);
+	event.item = items[index[0]];
+	sendEvent (SWT.Collapse, event);	
 	return 0;
 }
 
-int processKeyDown (int callData, int arg1, int int2) {
-	int result = super.processKeyDown (callData, arg1, int2);
-	if (result != 0) return result;
-
-	/*
-	* Feature in GTK.  When an item is reselected using
-	* the space bar or default selected using the return key,
-	* GTK does not issue notification. The fix is to ignore the
-	* notification that is sent by GTK and look for the space key.
-	*/
-	GdkEventKey keyEvent = new GdkEventKey ();
-	OS.memmove (keyEvent, callData, GdkEventKey.sizeof);
-	int key = keyEvent.keyval;
-	switch (key) {
-		case OS.GDK_Return:
-		case OS.GDK_KP_Enter:
-		case OS.GDK_space: {
-			int focus_row = OS.GTK_CLIST_FOCUS_ROW (handle);
-			if (focus_row != -1) {
-				int focus = OS.gtk_ctree_node_nth (handle, focus_row);
-				TreeItem item = null;
-				if (focus != 0) {
-					int index = OS.gtk_ctree_node_get_row_data (handle, focus) - 1;
-					item = items [index];
-				}
-				if (key == OS.GDK_space && (style & SWT.CHECK) != 0) {
-					if (item != null) item.setChecked (!item.getChecked ());
-				}
-				Event event = new Event ();
-				event.item = item;
-				int type = key == OS.GDK_space ? SWT.Selection : SWT.DefaultSelection;
-				postEvent (type, event);
-				if (key == OS.GDK_space && (style & SWT.CHECK) != 0) {
-					event = new Event ();
-					event.item = item;
-					event.detail = SWT.CHECK;
-					postEvent (SWT.Selection, event);
-				}
-			}
-			break;
-		}
-	}
-	return result;
-}
-
-int processEvent (int eventNumber, int int0, int int1, int int2) {
-	if (eventNumber == 0) {
-		GdkEvent gdkEvent = new GdkEvent ();
-		OS.memmove (gdkEvent, int0, GdkEvent.sizeof);
-		int type = gdkEvent.type;
-		switch (type) {
-			case OS.GDK_BUTTON_PRESS:
-			case OS.GDK_2BUTTON_PRESS: {
-				OS.GTK_CLIST_RESYNC_SELECTION (handle);
-				
-				/*
-				* Feature in GTK.  Double selection can only be implemented
-				* in a mouse down handler for a tree unlike the list, the event
-				* that caused the select signal is not included when the select
-				* signal is issued.
-				*/
-				if (type == OS.GDK_2BUTTON_PRESS) {
-					doubleSelected = true;
-					double[] px = new double [1], py = new double [1];
-					OS.gdk_event_get_coords (int0, px, py);
-					int x = (int)(px[0]), y = (int)(py[0]);	
-					if (!OS.gtk_ctree_is_hot_spot (handle, x, y)) {
-						int [] row = new int [1], column = new int [1];
-						int code = OS.gtk_clist_get_selection_info (handle, x, y, row, column);
-						if (code != 0) {
-							int node = OS.gtk_ctree_node_nth (handle, row [0]);
-							int index = OS.gtk_ctree_node_get_row_data (handle, node) - 1;
-							Event event = new Event ();
-							event.item = items [index];
-							postEvent (SWT.DefaultSelection, event);
-						}
-					}
-				}
-				break;
-			}
-			case OS.GDK_BUTTON_RELEASE: {
-				/*
-				* Feature in GTK.  When an item is reselected in a
-				* multi-select tree, GTK does not issue notification.
-				* The fix is to detect that the mouse was released over
-				* a selected item when no selection signal was set and
-				* issue a fake selection event.
-				*/
-				if ((style & SWT.MULTI) != 0) {
-					if (selected && !doubleSelected) {
-						double[] px = new double [1], py = new double [1];
-						OS.gdk_event_get_coords (int0, px, py);
-						int x = (int)(px[0]), y = (int)(py[0]);	
-						if (!OS.gtk_ctree_is_hot_spot (handle, x, y)) {
-							int [] row = new int [1], column = new int [1];
-							int code = OS.gtk_clist_get_selection_info (handle, x, y, row, column);
-							if (code != 0) {
-								int focus = OS.gtk_ctree_node_nth (handle, row [0]);
-								int selection = OS.GTK_CLIST_SELECTION (handle);
-								if (selection != 0) {
-									int length = OS.g_list_length (selection);
-									for (int i=0; i<length; i++) {
-										int node = OS.g_list_nth_data (selection, i);
-										if (node == focus) {
-											int index = OS.gtk_ctree_node_get_row_data (handle, node) - 1;
-											Event event = new Event ();
-											event.item = items [index];
-											postEvent (SWT.Selection, event);
-										}
-									}
-								}
-							}
-						}
-					}
-					selected = false;
-				}
-				doubleSelected = false;
-				break;
-			}
-			case OS.GDK_FOCUS_CHANGE: {
-				/*
-				* Bug in GTK.  When an application opens a new modal top level
-				* shell from inside the "select_row" signal, the GtkCList does not get the
-				* mouse up and does not release grabs.  The fix is to release the grabs
-				* when focus is lost.
-				*/
-				GdkEventFocus focusEvent = new GdkEventFocus ();
-				OS.memmove (focusEvent, int0, GdkEventFocus.sizeof);
-				if (focusEvent.in == 0) {
-					if (OS.gtk_grab_get_current () == handle) {
-						OS.gtk_grab_remove (handle);
-						OS.gdk_pointer_ungrab (OS.GDK_CURRENT_TIME);
-					}
-				}
-				break;
-			}
-		}
-		return 1;
-	}
-	return super.processEvent (eventNumber, int0, int1, int2);
-}
-
-int processExpand (int int0, int int1, int int2) {
-	int index = OS.gtk_ctree_node_get_row_data (handle, int0) - 1;
+int processExpand (int iter, int path, int data) {
 	Event event = new Event ();
-	event.item = items [index];
-	OS.gtk_clist_freeze (handle);
+	int[] index = new int[1];
+	OS.gtk_tree_model_get(modelHandle, iter, 4, index, -1);
+	event.item = items[index[0]];
 	sendEvent (SWT.Expand, event);
-	OS.gtk_clist_thaw (handle);
-	boolean [] expanded = new boolean [1];
-	OS.gtk_ctree_get_node_info (handle, int0, null, null, null, null, null, null, null, expanded);
-	if (!expanded [0]) {
-		blockSignal (handle, SWT.Expand);
-		OS.gtk_ctree_expand (handle, int0);
-		unblockSignal (handle, SWT.Expand);
-	}
+	/* FIXME
+	 * The similar code in 1.2 checks if the expand is necesary.
+	 * Should we call gtk_tree_view_row_expanded() for a similar check?
+	 */
+	blockSignal(handle, SWT.Expand);
+	OS.gtk_tree_view_expand_row(handle, path, false);
+	unblockSignal(handle, SWT.Expand);
 	return 0;
 }
 
-int processMouseDown (int int0, int int1, int int2) {
-	int result = super.processMouseDown (int0, int1, int2);
-	if ((style & SWT.MULTI) != 0) selected = true;
-	double [] px = new double [1], py = new double [1];
-	OS.gdk_event_get_coords (int0, px, py);
-	int x = (int)(px[0]), y = (int)(py[0]);	
-	if ((style & SWT.CHECK) != 0) {
-		if (!OS.gtk_ctree_is_hot_spot (handle, x, y)) {
-			int [] row = new int [1], column = new int [1];
-			if (OS.gtk_clist_get_selection_info (handle, x, y, row, column) != 0) {
-				int node = OS.gtk_ctree_node_nth (handle, row [0]);
-				int crow = OS.g_list_nth_data (node, 0);
-				GtkCTreeRow row_data = new GtkCTreeRow ();
-				OS.memmove (row_data, crow, GtkCTreeRow.sizeof);
-				int nX = OS.GTK_CLIST_HOFFSET (handle) + OS.GTK_CTREE_TREE_INDENT (handle) * row_data.level - 2;
-				int nY = OS.GTK_CLIST_VOFFSET (handle) + (OS.GTK_CLIST_ROW_HEIGHT (handle) + 1) * row [0] + 2;
-				int [] check_width = new int [1], check_height = new int [1];
-				OS.gdk_drawable_get_size (check, check_width, check_height);
-				if (nX <= x && x <= nX + check_width [0]) {
-					if (nY <= y && y <= nY + check_height [0]) {
-						byte [] spacing = new byte [1];
-						boolean [] is_leaf = new boolean [1], expanded = new boolean [1];
-						int [] pixmap = new int [1], mask = new int [1];
-						int index = OS.gtk_ctree_node_get_row_data (handle, node) - 1;
-						byte [] text = Converter.wcsToMbcs (null, items [index].getText (), true);
-						OS.gtk_ctree_get_node_info (handle, node, null, spacing, pixmap, mask, pixmap, mask, is_leaf, expanded);
-						pixmap [0] = pixmap [0] == check ? uncheck : check;
-						OS.gtk_ctree_set_node_info (handle, node, text, spacing [0], pixmap [0], mask [0], pixmap [0], mask [0], is_leaf [0], expanded [0]);
-						Event event = new Event ();
-						event.detail = SWT.CHECK;
-						event.item = items [index];
-						postEvent (SWT.Selection, event);
-					}
-				}
-			}
-		}
-	}
-	GdkEvent gdkEvent = new GdkEvent ();
-	OS.memmove (gdkEvent, int0, GdkEvent.sizeof);
-	if (gdkEvent.type == OS.GDK_2BUTTON_PRESS) {
-		if (hooks (SWT.DefaultSelection)) return 1;
-	}
-	return result;
+int processDefaultSelection (int int0, int int1, int int2) {
+	int iter = OS.g_malloc(OS.GtkTreeIter_sizeof());
+	OS.gtk_tree_model_get_iter(modelHandle, iter, int0);
+	int[] index = new int[1];
+	OS.gtk_tree_model_get(modelHandle, iter, 4, index, -1);
+	OS.g_free(iter);
+	Event event = new Event ();
+	event.item = items[index[0]];
+	postEvent (SWT.DefaultSelection, event);
+	return 0;
 }
 
 int processSelection (int int0, int int1, int int2) {
-	int focus_row = OS.GTK_CLIST_FOCUS_ROW (handle);
-	int focus = OS.gtk_ctree_node_nth (handle, focus_row);
-	if (focus != int0) return 0;
-	if ((style & SWT.MULTI) != 0) selected = false;
-	int ptr = OS.gtk_get_current_event ();
-	if (ptr != 0) {
-		GdkEvent gdkEvent = new GdkEvent ();
-		OS.memmove (gdkEvent, ptr, GdkEvent.sizeof);
-		OS.gdk_event_free (ptr);
-		/*
-		* Feature in GTK.  When a leaf node is double clicked, the
-		* GtkCTree issues two tree_row_select signals.  Non-leaf
-		* nodes only get one tree_row_select.  Avoid issueing
-		* a selection event for the double clicked leaf node.
-		*/ 
-		if (gdkEvent.type == OS.GDK_2BUTTON_PRESS) return 0;
-	}
-	int index = OS.gtk_ctree_node_get_row_data (handle, int0) - 1;
 	Event event = new Event ();
-	event.item = items [index];
+	if ((style&SWT.SINGLE)!=0) {
+		event.item = getSelectionCount()>0? getSelection()[0] : null;
+	} else {
+		if (getSelectionCount()==1) event.item = getSelection()[0];
+	}
 	postEvent (SWT.Selection, event);
+	return 0;	
+}
+
+int processSelectionIter(int path, int iter, int data) {
+	int[] index = new int[1];
+	OS.gtk_tree_model_get(modelHandle, iter, 4, index, -1);
+	selIndices[selSize++] = index[0];
 	return 0;
 }
 
-int processTimer (int id) {
-	if (timerID != 0) OS.gtk_clist_thaw (handle);
-	timerID = 0;
+int processToggle(int pathString, int handle) {
+	int path = OS.gtk_tree_path_new_from_string(pathString);
+	int iter = OS.g_malloc(OS.GtkTreeIter_sizeof());
+	OS.gtk_tree_model_get_iter(modelHandle, iter, path);
+	int[] index = new int[1];
+	OS.gtk_tree_model_get(modelHandle, iter, 4, index, -1);
+	OS.g_free(iter);
+	OS.gtk_tree_path_free(path);
+	// FIXME - just use OS calls	
+	boolean checked = items[index[0]].getChecked();
+	checked = !checked;
+	items[index[0]].setChecked(checked);
 	return 0;
 }
 
 void releaseWidget () {
 	for (int i=0; i<items.length; i++) {
 		TreeItem item = items [i];
-		if (item != null && !item.isDisposed ()) item.releaseResources ();
+		if (item != null && !item.isDisposed ()) {
+			item.releaseWidget ();
+			item.releaseHandle ();
+		}
 	}
 	items = null;
-	if (check != 0) OS.g_object_unref (check);
-	if (uncheck != 0) OS.g_object_unref (uncheck);
-	check = uncheck = 0;
-	if (timerID != 0) OS.gtk_timeout_remove (timerID);
-	super.releaseWidget ();
+	modelHandle = 0;
+	super.releaseWidget();
 }
 
 /**
@@ -863,12 +566,15 @@ void releaseWidget () {
  */
 public void removeAll () {
 	checkWidget ();
-	OS.gtk_ctree_remove_node (handle, 0);
+	OS.gtk_tree_store_clear (modelHandle);
 	for (int i=0; i<items.length; i++) {
-		TreeItem item = items [i];
-		if (item != null && !item.isDisposed ()) item.releaseResources ();
+		TreeItem item = items[i];
+		if (item!=null && !item.isDisposed()) {
+			item.releaseWidget();
+			item.releaseHandle();
+		}
 	}
-	items = new TreeItem [4];
+	items = new TreeItem[4];
 }
 
 /**
@@ -920,38 +626,8 @@ public void removeTreeListener(TreeListener listener) {
 	eventTable.unhook (SWT.Collapse, listener);
 }
 
-void setFontDescription (int font) {
-	super.setFontDescription (font);
-	if (imageHeight != 0) {
-		OS.gtk_widget_realize (handle);
-		OS.gtk_clist_set_row_height (handle, 0);
-		if (imageHeight > OS.GTK_CLIST_ROW_HEIGHT (handle)) {
-			OS.gtk_clist_set_row_height (handle, imageHeight);
-		}
-	}
-}
-
-/**
- * Display a mark indicating the point at which an item will be inserted.
- * The drop insert item has a visual hint to show where a dragged item 
- * will be inserted when dropped on the tree.
- * 
- * @param item the insert item.  Null will clear the insertion mark.
- * @param after true places the insert mark above 'item'. false places 
- *	the insert mark below 'item'.
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the item has been disposed</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public void setInsertMark(TreeItem item, boolean before){
-	checkWidget();
-	if (item != null && item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-	// This needs to be implemented
+public void setInsertMark(TreeItem item, boolean set) {
+	// FIXME - not yet implemented
 }
 
 /**
@@ -964,9 +640,9 @@ public void setInsertMark(TreeItem item, boolean before){
  */
 public void selectAll () {
 	checkWidget();
-	blockSignal (handle, SWT.Selection);
-	OS.gtk_ctree_select_recursive (handle, 0);
-	unblockSignal (handle, SWT.Selection);	
+	blockSignal(handle, SWT.Selection);
+	OS.gtk_tree_selection_select_all (OS.gtk_tree_view_get_selection(handle));
+	unblockSignal(handle, SWT.Selection);
 }
 
 void setBackgroundColor (GdkColor color) {
@@ -974,13 +650,9 @@ void setBackgroundColor (GdkColor color) {
 	OS.gtk_widget_modify_base (handle, 0, color);
 }
 
-public void setRedraw (boolean redraw) {
-	checkWidget ();
-	if (redraw) {
-		OS.gtk_clist_thaw (handle);
-	} else {
-		OS.gtk_clist_freeze (handle);
-	}
+void setForegroundColor (GdkColor color) {
+	super.setForegroundColor (color);
+	OS.gtk_widget_modify_text (handle, 0, color);
 }
 
 /**
@@ -1002,29 +674,16 @@ public void setRedraw (boolean redraw) {
  * @see Tree#deselectAll()
  */
 public void setSelection (TreeItem [] items) {
-	checkWidget();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
-	deselectAll();
-	blockSignal (handle, SWT.Selection);
-	int index = 0, length = items.length;
-	while (index < length) {
-		TreeItem item = items [index];
-		if (item != null) {
-			if (item.isDisposed ()) break;
-			OS.gtk_ctree_select (handle, item.handle);
-		}
-		index++;
+	checkWidget();
+	int selection = OS.gtk_tree_view_get_selection(handle);
+	blockSignal(handle, SWT.Selection);
+	OS.gtk_tree_selection_unselect_all(selection);
+	for (int i = 0; i < items.length; i++) {
+		if (items[i].isDisposed ()) break;
+		OS.gtk_tree_selection_select_iter (selection, items[i].handle);
 	}
-	unblockSignal (handle, SWT.Selection);
-	index = 0;
-	while (index < length) {
-		TreeItem item = items [index];
-		if (item != null && !item.isDisposed ()) {
-			showItem (item);
-			return;
-		}
-		index++;
-	}
+	unblockSignal(handle, SWT.Selection);
 }
 
 /**
@@ -1044,12 +703,7 @@ public void setSelection (TreeItem [] items) {
  */
 public void showSelection () {
 	checkWidget();
-	int selection = OS.GTK_CLIST_SELECTION (handle);
-	if (selection == 0) return;
-	if (OS.g_list_length (selection) == 0) return;
-	int node = OS.g_list_nth_data (selection, 0);
-	int index = OS.gtk_ctree_node_get_row_data (handle, node) - 1;
-	showItem (items [index]);
+	// FIXME - not implemented
 }
 
 /**
@@ -1072,35 +726,21 @@ public void showSelection () {
  */
 public void showItem (TreeItem item) {
 	checkWidget ();
-	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (item.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
-	int node = item.handle;
-	int visibility = OS.gtk_ctree_node_is_visible (handle, node);
-	if (visibility != OS.GTK_VISIBILITY_NONE) return;
-	if (!OS.gtk_ctree_is_viewable (handle, node)) {
-		int parent = node;
-		GtkCTreeRow row;
-		blockSignal (handle, SWT.Expand);
-		do {
-			int data = OS.g_list_nth_data (parent, 0);
-			row = new GtkCTreeRow ();
-			OS.memmove (row, data, GtkCTreeRow.sizeof);
-			if ((parent = row.parent) == 0) break;
-			OS.gtk_ctree_expand (handle, parent);
-		} while (true);
-		unblockSignal (handle, SWT.Expand);
-	}
-	OS.gtk_ctree_node_moveto (handle, node, 0, 0.0f, 0.0f);
+	int path = OS.gtk_tree_model_get_path(modelHandle, item.handle);
+	OS.gtk_tree_view_scroll_to_cell(handle, path, 0, false, 0, 0);
+	OS.gtk_tree_path_free(path);
 }
 
-public void update () {
-	checkWidget ();
-	if (timerID != 0) {
-		OS.gtk_clist_thaw (handle);
-		OS.gtk_timeout_remove (timerID);
-		timerID = 0;
-	}
-	super.update ();
+void deregister () {
+	super.deregister ();
+	WidgetTable.remove(OS.gtk_tree_view_get_selection(handle));
+	WidgetTable.remove(columnHandle);
 }
 
+void register () {
+	super.register ();
+	WidgetTable.put (OS.gtk_tree_view_get_selection(handle), this);
+	WidgetTable.put (columnHandle, this);
 }
+}
+
