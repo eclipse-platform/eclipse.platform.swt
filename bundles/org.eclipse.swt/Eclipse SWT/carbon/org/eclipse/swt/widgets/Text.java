@@ -496,6 +496,7 @@ int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
 			}
 		}
 	}
+	if ((style & SWT.SINGLE) != 0) return OS.noErr;
 	return result;
 }
 
@@ -544,8 +545,8 @@ boolean sendKeyEvent (int type, Event event) {
 		return false;
 	}
 	if (type != SWT.KeyDown) return true;
+	if ((style & SWT.READ_ONLY) != 0) return true;
 	if (event.character == 0) return true;
-	if ((style & SWT.READ_ONLY) != 0) return false;
 	String oldText = "";
 	int charCount = getCharCount ();
 	Point selection = getSelection ();
