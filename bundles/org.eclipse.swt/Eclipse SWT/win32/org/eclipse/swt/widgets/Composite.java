@@ -584,12 +584,13 @@ LRESULT WM_GETDLGCODE (int wParam, int lParam) {
 	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
 	if (result != null) return result;
 	if ((state & CANVAS) != 0) {
-		if ((style & SWT.NO_FOCUS) != 0) return new LRESULT (OS.DLGC_STATIC);
+		int flags = 0;
 		if (hooksKeys ()) {
-			int flags = OS.DLGC_WANTALLKEYS | OS.DLGC_WANTARROWS | OS.DLGC_WANTTAB;
-			return new LRESULT (flags);
+			flags |= OS.DLGC_WANTALLKEYS | OS.DLGC_WANTARROWS | OS.DLGC_WANTTAB;
 		}
-		if (OS.GetWindow (handle, OS.GW_CHILD) != 0) return new LRESULT (OS.DLGC_STATIC);
+		if ((style & SWT.NO_FOCUS) != 0) flags |= OS.DLGC_STATIC;
+		if (OS.GetWindow (handle, OS.GW_CHILD) != 0) flags |= OS.DLGC_STATIC;
+		if (flags != 0) return new LRESULT (flags);
 	}
 	return result;
 }
