@@ -733,7 +733,22 @@ public void setSelection (boolean selected) {
 		fsState &= ~OS.TBSTATE_CHECKED;
 	}
 	OS.SendMessage (hwnd, OS.TB_SETSTATE, id, fsState);
+	
+	/*
+	* Bug in Windows.  When a tool item with the style
+	* BTNS_CHECK or BTNS_CHECKGROUP is selected and then
+	* disabled, the item does not draw using the disabled
+	* image.  The fix is to use the disabled image in all
+	* image lists.
+	* 
+	* NOTE: This means that the image list must be updated
+	* when the selection changes in a disabled tool item.
+	*/
+	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
+		if (!getEnabled ()) updateImages ();
+	}
 }
+
 /**
  * Sets the receiver's text. The string may include
  * the mnemonic character.
@@ -846,9 +861,12 @@ void updateImages () {
 		Rectangle bounds = image.getBounds ();
 		Point size = new Point (bounds.width, bounds.height);
 		if (imageList == null) imageList = display.getToolImageList (size);
-		info.iImage = imageList.add (image);
-		parent.setImageList (imageList);
-		if (disabledImageList == null) disabledImageList = display.getToolDisabledImageList (size);
+		if (disabledImageList == null) {
+			disabledImageList = display.getToolDisabledImageList (size);
+		}
+		if (hotImageList == null) {
+			hotImageList = display.getToolHotImageList (size);
+		}
 		Image disabled = disabledImage;
 		if (disabledImage == null) {
 			if (disabledImage2 != null) disabledImage2.dispose ();
@@ -859,17 +877,26 @@ void updateImages () {
 				disabled = disabledImage2 = createDisabledImage (image, color);
 			}
 		}
+		/*
+		* Bug in Windows.  When a tool item with the style
+		* BTNS_CHECK or BTNS_CHECKGROUP is selected and then
+		* disabled, the item does not draw using the disabled
+		* image.  The fix is to assign the disabled image in
+		* all image lists.
+		*/
+		Image image2 = image, hot = hotImage;
+		if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
+			if (!getEnabled ()) image2 = hot = disabled;
+		}
+		info.iImage = imageList.add (image2);
 		disabledImageList.add (disabled);
+		hotImageList.add (hot != null ? hot : image2);
+		parent.setImageList (imageList);
 		parent.setDisabledImageList (disabledImageList);
-//		if ((parent.style & SWT.FLAT) != 0) {
-			if (hotImageList == null) hotImageList = display.getToolHotImageList (size);
-			hotImageList.add (hotImage != null ? hotImage : image);
-			parent.setHotImageList (hotImageList);
-//		}
+		parent.setHotImageList (hotImageList);
 	} else {
-		if (imageList != null) imageList.put (info.iImage, image);
+		Image disabled = null;
 		if (disabledImageList != null) {
-			Image disabled = null;
 			if (image != null) {
 				if (disabledImage2 != null) disabledImage2.dispose ();
 				disabledImage2 = null;
@@ -884,9 +911,21 @@ void updateImages () {
 			}
 			disabledImageList.put (info.iImage, disabled);
 		}
+		/*
+		* Bug in Windows.  When a tool item with the style
+		* BTNS_CHECK or BTNS_CHECKGROUP is selected and then
+		* disabled, the item does not draw using the disabled
+		* image.  The fix is to use the disabled image in all
+		* image lists.
+		*/
+		Image image2 = image;
+		if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
+			if (!getEnabled ()) image2 = disabled;
+		}
+		if (imageList != null) imageList.put (info.iImage, image2);
 		if (hotImageList != null) {
 			Image hot = null;
-			if (image != null) hot = hotImage != null ? hotImage : image;
+			if (image2 != null) hot = hotImage != null ? hotImage : image2;
 			hotImageList.put (info.iImage, hot);
 		}
 		if (image == null) info.iImage = OS.I_IMAGENONE;
