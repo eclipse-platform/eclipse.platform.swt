@@ -1027,7 +1027,6 @@ void setBounds (int x, int y, int width, int height, int flags) {
 				if (oldWidth == width && oldHeight == height) flags |= OS.SWP_NOSIZE;
 			}
 		}
-		flags |= OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
 		OS.SetWindowPos (handle, 0, x, y, width, height, flags);
 		return;
 	}

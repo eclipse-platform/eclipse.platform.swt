@@ -824,6 +824,7 @@ void setActiveControl (Control control) {
 }
 
 void setBounds (int x, int y, int width, int height, int flags) {
+	flags |= OS.SWP_NOZORDER | OS.SWP_NOACTIVATE;
 	if (OS.IsWinCE) {
 		swFlags = OS.SW_RESTORE;
 		if ((style & SWT.NO_TRIM) == 0) {
@@ -840,7 +841,6 @@ void setBounds (int x, int y, int width, int height, int flags) {
 			return;
 		}
 	}
-	flags |= OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
 	OS.SetWindowPos (handle, 0, x, y, width, height, flags);
 }
 

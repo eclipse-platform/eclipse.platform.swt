@@ -1729,19 +1729,12 @@ void setBackgroundPixel (int pixel) {
  */
 public void setBounds (int x, int y, int width, int height) {
 	checkWidget ();
-	setBounds (x, y, Math.max (0, width), Math.max (0, height), 0);
+	int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
+	setBounds (x, y, Math.max (0, width), Math.max (0, height), flags);
 }
 
 void setBounds (int x, int y, int width, int height, int flags) {
-	flags |= OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
-	/*
-	* Feature on WinCE.  The SWP_DRAWFRAME flag for SetWindowPos()
-	* causes a WM_SIZE message to be sent even when the SWP_NOSIZE
-	* flag is specified.  The fix is to clear SWP_DRAWFRAME.
-	*/
-	if (OS.IsWinCE) {
-		if ((flags & OS.SWP_NOSIZE) != 0) flags &= ~OS.SWP_DRAWFRAME;
-	}
+	flags |= OS.SWP_NOZORDER | OS.SWP_NOACTIVATE;
 	if (parent == null) {
 		OS.SetWindowPos (handle, 0, x, y, width, height, flags);
 		return;
@@ -2013,7 +2006,15 @@ public void setLayoutData (Object layoutData) {
  */
 public void setLocation (int x, int y) {
 	checkWidget ();
-	setBounds (x, y, 0, 0, OS.SWP_NOSIZE);
+	int flags = OS.SWP_NOSIZE | OS.SWP_NOZORDER | OS.SWP_NOACTIVATE;
+	/*
+	* Feature in WinCE.  The SWP_DRAWFRAME flag for SetWindowPos()
+	* causes a WM_SIZE message to be sent even when the SWP_NOSIZE
+	* flag is specified.  The fix is to set SWP_DRAWFRAME only when
+	* not running on WinCE.
+	*/
+	if (!OS.IsWinCE) flags |= OS.SWP_DRAWFRAME;
+	setBounds (x, y, 0, 0, flags);
 }
 
 /**
@@ -2155,7 +2156,8 @@ boolean setSavedFocus () {
  */
 public void setSize (int width, int height) {
 	checkWidget ();
-	setBounds (0, 0, Math.max (0, width), Math.max (0, height), OS.SWP_NOMOVE);
+	int flags = OS.SWP_NOMOVE | OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
+	setBounds (0, 0, Math.max (0, width), Math.max (0, height), flags);
 }
 
 /**
