@@ -1355,7 +1355,7 @@ public void setItem (int index, String string) {
  * @param items the array of items
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the items array is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the items array, or any item in the array, is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1365,11 +1365,13 @@ public void setItem (int index, String string) {
 public void setItems (String [] items) {
 	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
+	for (int i=0; i<items.length; i++) {
+		if (items [i] == null) error (SWT.ERROR_NULL_ARGUMENT);
+	}
 	OS.SendMessage (handle, OS.CB_RESETCONTENT, 0, 0);
 	int codePage = getCodePage ();
 	for (int i=0; i<items.length; i++) {
 		String string = items [i];
-		if (string == null) break;
 		TCHAR buffer = new TCHAR (codePage, string, true);
 		int code = OS.SendMessage (handle, OS.CB_ADDSTRING, 0, buffer);
 		if (code == OS.CB_ERR) error (SWT.ERROR_ITEM_NOT_ADDED);
