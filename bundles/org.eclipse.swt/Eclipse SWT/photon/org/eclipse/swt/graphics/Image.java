@@ -9,6 +9,53 @@ import org.eclipse.swt.internal.photon.*;
 import org.eclipse.swt.*;
 import java.io.*;
 
+/**
+ * Instances of this class are graphics which have been prepared
+ * for display on a specific device. That is, they are ready
+ * to paint using methods such as <code>GC.drawImage()</code>
+ * and display on widgets with, for example, <code>Button.setImage()</code>.
+ * <p>
+ * If loaded from a file format that supports it, an
+ * <code>Image</code> may have transparency, meaning that certain
+ * pixels are specified as being transparent when drawn. Examples
+ * of file formats that support transparency are GIF and PNG.
+ * </p><p>
+ * There are two primary ways to use <code>Images</code>. 
+ * The first is to load a graphic file from disk and create an
+ * <code>Image</code> from it. This is done using an <code>Image</code>
+ * constructor, for example:
+ * <pre>
+ *    Image i = new Image(device, "C:\\graphic.bmp");
+ * </pre>
+ * A graphic file may contain a color table specifying which
+ * colors the image was intended to possess. In the above example,
+ * these colors will be mapped to the closest available color in
+ * SWT. It is possible to get more control over the mapping of
+ * colors as the image is being created, using code of the form:
+ * <pre>
+ *    ImageData data = new ImageData("C:\\graphic.bmp"); 
+ *    RGB[] rgbs = data.getRGBs(); 
+ *    // At this point, rgbs contains specifications of all
+ *    // the colors contained within this image. You may
+ *    // allocate as many of these colors as you wish by
+ *    // using the Color constructor Color(RGB), then
+ *    // create the image:
+ *    Image i = new Image(device, data);
+ * </pre>
+ * <p>
+ * Applications which require even greater control over the image
+ * loading process should use the support provided in class
+ * <code>ImageLoader</code>.
+ * </p><p>
+ * Application code must explicitely invoke the <code>Image.dispose()</code> 
+ * method to release the operating system resources managed by each instance
+ * when those instances are no longer required.
+ * </p>
+ *
+ * @see Color
+ * @see ImageData
+ * @see ImageLoader
+ */
 public final class Image implements Drawable {
 
 	/**
@@ -49,6 +96,26 @@ public final class Image implements Drawable {
 Image () {
 }
 
+/**
+ * Constructs an empty instance of this class with the
+ * specified width and height. The result may be drawn upon
+ * by creating a GC and using any of its drawing operations,
+ * as shown in the following example:
+ * <pre>
+ *    Image i = new Image(device, width, height);
+ *    GC gc = new GC(i);
+ *    gc.drawRectangle(0, 0, 50, 50);
+ *    gc.dispose();
+ * </pre>
+ *
+ * @param device the device on which to create the image
+ * @param width the width of the new image
+ * @param height the height of the new image
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if either the width or height is negative</li>
+ * </ul>
+ */
 public Image(Device device, int width, int height) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -56,6 +123,36 @@ public Image(Device device, int width, int height) {
 	if (device.tracking) device.new_Object(this);
 }
 
+/**
+ * Constructs a new instance of this class based on the
+ * provided image, with an appearance that varies depending
+ * on the value of the flag. The possible flag values are:
+ * <dl>
+ * <dt><b>IMAGE_COPY</b></dt>
+ * <dd>the result is an identical copy of srcImage</dd>
+ * <dt><b>IMAGE_DISABLE</b></dt>
+ * <dd>the result is a copy of srcImage which has a <em>disabled</em> look</dd>
+ * <dt><b>IMAGE_GRAY</b></dt>
+ * <dd>the result is a copy of srcImage which has a <em>gray scale</em> look</dd>
+ * </dl>
+ *
+ * @param device the device on which to create the image
+ * @param srcImage the image to use as the source
+ * @param flag the style, either <code>IMAGE_COPY</code>, <code>IMAGE_DISABLE</code> or <code>IMAGE_GRAY</code>
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if srcImage is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the flag is not one of <code>IMAGE_COPY</code>, <code>IMAGE_DISABLE</code> or <code>IMAGE_GRAY</code></li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_INVALID_IMAGE - if the image is not a bitmap or an icon, or
+ *          is otherwise in an invalid state</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
+ * </ul>
+ */
 public Image(Device device, Image srcImage, int flag) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -177,6 +274,26 @@ public Image(Device device, Image srcImage, int flag) {
 	}
 }
 
+/**
+ * Constructs an empty instance of this class with the
+ * width and height of the specified rectangle. The result
+ * may be drawn upon by creating a GC and using any of its
+ * drawing operations, as shown in the following example:
+ * <pre>
+ *    Image i = new Image(device, boundsRectangle);
+ *    GC gc = new GC(i);
+ *    gc.drawRectangle(0, 0, 50, 50);
+ *    gc.dispose();
+ * </pre>
+ *
+ * @param device the device on which to create the image
+ * @param bounds a rectangle specifying the image's width and height (must not be null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the bounds rectangle is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if either the rectangle's width or height is negative</li>
+ * </ul>
+ */
 public Image(Device device, Rectangle bounds) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -185,6 +302,17 @@ public Image(Device device, Rectangle bounds) {
 	if (device.tracking) device.new_Object(this);	
 }
 
+/**
+ * Constructs an instance of this class from the given
+ * <code>ImageData</code>.
+ *
+ * @param device the device on which to create the image
+ * @param data the image data to create the image from (must not be null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the image data is null</li>
+ * </ul>
+ */
 public Image(Device device, ImageData data) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -192,6 +320,31 @@ public Image(Device device, ImageData data) {
 	if (device.tracking) device.new_Object(this);
 }
 
+/**
+ * Constructs an instance of this class, whose type is 
+ * <code>SWT.ICON</code>, from the two given <code>ImageData</code>
+ * objects. The two images must be the same size, and the mask image
+ * must have a color depth of 1. Pixel transparency in either image
+ * will be ignored. If either image is an icon to begin with, an
+ * exception is thrown.
+ * <p>
+ * The mask image should contain white wherever the icon is to be visible,
+ * and black wherever the icon is to be transparent. In addition,
+ * the source image should contain black wherever the icon is to be
+ * transparent.
+ * </p>
+ *
+ * @param device the device on which to create the icon
+ * @param source the color data for the icon
+ * @param mask the mask data for the icon
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if either the source or mask is null </li>
+ *    <li>ERROR_INVALID_ARGUMENT - if source and mask are different sizes or
+ *          if the mask is not monochrome, or if either the source or mask
+ *          is already an icon</li>
+ * </ul>
+ */
 public Image(Device device, ImageData source, ImageData mask) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -208,6 +361,31 @@ public Image(Device device, ImageData source, ImageData mask) {
 	if (device.tracking) device.new_Object(this);	
 }
 
+/**
+ * Constructs an instance of this class by loading its representation
+ * from the specified input stream. Throws an error if an error
+ * occurs while loading the image, or if the result is an image
+ * of an unsupported type.
+ * <p>
+ * This constructor is provided for convenience when loading a single
+ * image only. If the stream contains multiple images, only the first
+ * one will be loaded. To load multiple images, use 
+ * <code>ImageLoader.load()</code>.
+ * </p><p>
+ * This constructor may be used to load a resource as follows:
+ * </p>
+ * <pre>
+ *     new Image(device, clazz.getResourceAsStream("file.gif"));
+ * </pre>
+ *
+ * @param device the device on which to create the image
+ * @param stream the input stream to load the image from
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data </li>
+ *    <li>ERROR_IO - if an IO error occurs while reading data</li>
+ * </ul>
+ */
 public Image (Device device, InputStream stream) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -215,6 +393,24 @@ public Image (Device device, InputStream stream) {
 	if (device.tracking) device.new_Object(this);
 }
 
+/**
+ * Constructs an instance of this class by loading its representation
+ * from the file with the specified name. Throws an error if an error
+ * occurs while loading the image, or if the result is an image
+ * of an unsupported type.
+ * <p>
+ * This constructor is provided for convenience when loading
+ * a single image only. If the specified file contains
+ * multiple images, only the first one will be used.
+ *
+ * @param device the device on which to create the image
+ * @param filename the name of the file to load the image from
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data </li>
+ *    <li>ERROR_IO - if an IO error occurs while reading data</li>
+ * </ul>
+ */
 public Image (Device device, String filename) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -222,6 +418,11 @@ public Image (Device device, String filename) {
 	if (device.tracking) device.new_Object(this);	
 }
 
+/**
+ * Disposes of the operating system resources associated with
+ * the image. Applications must dispose of all images which
+ * they allocate.
+ */
 public void dispose () {
 	if (handle == 0) return;
 	destroyImage(handle);
@@ -231,6 +432,16 @@ public void dispose () {
 	device = null;
 }
 
+/**
+ * Compares the argument to the receiver, and returns true
+ * if they represent the <em>same</em> object using a class
+ * specific comparison.
+ *
+ * @param object the object to compare with this object
+ * @return <code>true</code> if the object is the same as this object and <code>false</code> otherwise
+ *
+ * @see #hashCode
+ */
 public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Image)) return false;
@@ -238,6 +449,24 @@ public boolean equals (Object object) {
 	return device == image.device && handle == image.handle;
 }
 
+/**
+ * Returns the color to which to map the transparent pixel, or null if
+ * the receiver has no transparent pixel.
+ * <p>
+ * There are certain uses of Images that do not support transparency
+ * (for example, setting an image into a button or label). In these cases,
+ * it may be desired to simulate transparency by using the background
+ * color of the widget to paint the transparent pixels of the image.
+ * Use this method to check which color will be used in these cases
+ * in place of transparency. This value may be set with setBackground().
+ * <p>
+ *
+ * @return the background color of the image, or null if there is no transparency in the image
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
 public Color getBackground() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (transparentPixel == -1) return null;
@@ -275,6 +504,18 @@ public Color getBackground() {
 	return Color.photon_new(device, color);
 }
 
+/**
+ * Returns the bounds of the receiver. The rectangle will always
+ * have x and y values of 0, and the width and height of the
+ * image.
+ *
+ * @return a rectangle specifying the image's bounds
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image is not a bitmap or an icon</li>
+ * </ul>
+ */
 public Rectangle getBounds() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	PhImage_t image = new PhImage_t();
@@ -282,6 +523,20 @@ public Rectangle getBounds() {
 	return new Rectangle(0, 0, image.size_w, image.size_h);
 }
 
+/**
+ * Returns an <code>ImageData</code> based on the receiver
+ * Modifications made to this <code>ImageData</code> will not
+ * affect the Image.
+ *
+ * @return an <code>ImageData</code> containing the image's data and attributes
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_INVALID_IMAGE - if the image is not a bitmap or an icon</li>
+ * </ul>
+ *
+ * @see ImageData
+ */
 public ImageData getImageData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	PhImage_t phImage = new PhImage_t();
@@ -361,6 +616,16 @@ public ImageData getImageData() {
 	return imageData;
 }
 
+/**
+ * Returns an integer hash code for the receiver. Any two 
+ * objects which return <code>true</code> when passed to 
+ * <code>equals</code> must return the same value for this
+ * method.
+ *
+ * @return the receiver's hash
+ *
+ * @see #equals
+ */
 public int hashCode () {
 	return handle;
 }
@@ -562,6 +827,21 @@ void init(Device device, ImageData i) {
 	this.handle = handle;
 }
 
+/**	 
+ * Invokes platform specific functionality to allocate a new GC handle.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Image</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param data the platform specific GC data 
+ * @return the platform specific GC handle
+ *
+ * @private
+ */
 public int internal_new_GC (GCData data) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	/*
@@ -586,10 +866,35 @@ public int internal_new_GC (GCData data) {
 	return pmMC;
 }
 
+/**	 
+ * Invokes platform specific functionality to dispose a GC handle.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>Image</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param handle the platform specific GC handle
+ * @param data the platform specific GC data 
+ *
+ * @private
+ */
 public void internal_dispose_GC (int pmMC, GCData data) {
 	OS.PmMemReleaseMC(pmMC);
 }
 
+/**
+ * Returns <code>true</code> if the image has been disposed,
+ * and <code>false</code> otherwise.
+ * <p>
+ * This method gets the dispose state for the image.
+ * When an image has been disposed, it is an error to
+ * invoke any other method using the image.
+ *
+ * @return <code>true</code> when the image is disposed and <code>false</code> otherwise
+ */
 public boolean isDisposed() {
 	return handle == 0;
 }
@@ -661,6 +966,12 @@ public static Image photon_new(Device device, int type, int handle) {
 	return image;
 }
 
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the receiver
+ */
 public String toString () {
 	if (isDisposed()) return "Image {*DISPOSED*}";
 	return "Image {" + handle + "}";
