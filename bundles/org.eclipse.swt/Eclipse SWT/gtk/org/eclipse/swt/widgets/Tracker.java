@@ -152,7 +152,8 @@ public void addControlListener(ControlListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Move,typedListener);
+	addListener (SWT.Resize, typedListener);
+	addListener (SWT.Move, typedListener);
 }
 
 /**
