@@ -143,10 +143,13 @@ void createScrolledHandle (int parentHandle) {
 }
 
 void draw (int control) {
-	if (control != handle) return;
 	if ((state & CANVAS) == 0) return;
-	if ((style & SWT.NO_BACKGROUND) != 0) return;
-	drawBackground (handle, background);
+	if (control == scrolledHandle) {
+		drawBackground (control, background);
+	} else {
+		if ((style & SWT.NO_BACKGROUND) != 0) return;
+		drawBackground (control, background);
+	}
 }
 
 public Control [] getChildren () {
