@@ -729,6 +729,9 @@ String getPath(String fileName) {
 	if (pluginPath == null) urlPath = getClass().getClassLoader().getResource(fileName).getFile();
 	else urlPath = pluginPath + "/data/" + fileName;
 	
+	if (File.separatorChar != '/') urlPath = urlPath.replace('/', File.separatorChar);	
+	if (urlPath.indexOf(File.separatorChar) == 0) urlPath = urlPath.substring(1);			
+	
 	System.out.println("Resolved file name for " + fileName + " = " + urlPath);
 	return urlPath;
 }
