@@ -17,13 +17,6 @@ public class MacEvent {
 	
 	private static final boolean EMULATE_RIGHT_BUTTON= true;
 
-	// 0: what
-	// 1: message
-	// 2: when
-	// 3: where.v
-	// 4: where.h
-	// 5: modifiers
-	private int[] fData;
 	private int fEventRef;
 		
 	public MacEvent() {
@@ -34,36 +27,28 @@ public class MacEvent {
 		fEventRef= eventRef;
 	}
 	
-	private void convert() {
-		if (fData == null) {
-			fData= new int[6];
-			if (fEventRef != -1) {
-				System.out.println("ConvertEventRefToEventRecord");
-				if (!OS.ConvertEventRefToEventRecord(fEventRef, fData))
-					System.out.println("MacEvent.convert: can't convert event");
-			}
+	public int[] toOldMacEvent() {
+		if (fEventRef != -1) {
+			int macEvent[]= new int[6];
+			if (OS.ConvertEventRefToEventRecord(fEventRef, macEvent))
+				return macEvent;
 		}
-	}
-	
-	public int[] getData() {
-		convert();
-		return fData;
+		System.out.println("MacEvent.toOldMacEvent: can't convert event");
+		return null;
 	}
 	
 	public int getKind() {
 		if (fEventRef != -1)
 			return OS.GetEventKind(fEventRef);
 		System.out.println("MacEvent.getKind: no EventRef");
-		convert();
-		return (short) fData[0];
+		return 0;
 	}
 	
 	public int getWhen() {
 		if (fEventRef != -1)
 			return (int)(OS.GetEventTime(fEventRef) * 1000.0);
 		System.out.println("MacEvent.getModifierKeys: no EventRef");
-		convert();
-		return (fData[2] * 1000)/60;
+		return 0;
 	}
 	
 	public MacPoint getWhere() {
@@ -74,8 +59,7 @@ public class MacEvent {
 			}
 		}
 		System.out.println("MacEvent.getWhere: no EventRef");
-		convert();
-		return new MacPoint(fData[4], fData[3]);
+		return new MacPoint(0, 0);
 	}
 	
 	public Point getWhere2() {
@@ -86,26 +70,17 @@ public class MacEvent {
 			}
 		}
 		System.out.println("MacEvent.getWhere2: no EventRef");
-		convert();
-		return new Point(fData[4], fData[3]);
+		return new Point(0, 0);
 	}
 
 	/**
 	 * Returns the Mac modifiers for this event
 	 */
 	public int getModifiers() {
-		
-		int modifiers;
-		
 		if (fEventRef != -1)
-			modifiers= getEventModifiers(fEventRef);
-		else {
-			System.out.println("MacEvent.getModifiers: no EventRef");
-			convert();
-			modifiers= fData[5];
-		}
-		
-		return modifiers;
+			return getEventModifiers(fEventRef);
+		System.out.println("MacEvent.getModifiers: no EventRef");
+		return 0;
 	}
 	
 	/**
@@ -145,27 +120,10 @@ public class MacEvent {
 	}
 		
 	public int getKeyCode() {
-		
-		if (fEventRef != -1) {
-			int[] keyCode= new int[1];
-			if (OS.GetEventParameter(fEventRef, OS.kEventParamKeyCode, OS.typeUInt32, null, null, keyCode) == OS.kNoErr)
-				return keyCode[0];
-		}
-		
+		if (fEventRef != -1)
+			return getKeyCode(fEventRef);
 		System.out.println("MacEvent.getKeyCode: no EventRef");
-		
-		convert();
-		switch (fData[0]) {
-		case OS.keyDown:
-		case OS.autoKey:
-		case OS.keyUp:
-			int code= (fData[1] & OS.keyCodeMask) >> 8;
-			System.out.println(" kcode: " + code);
-			return code;
-		default:
-			System.out.println("MacEvent.getKeyCode: wrong event type");
-			return 0;
-		}
+		return 0;
 	}
 	
 	/**
@@ -176,12 +134,6 @@ public class MacEvent {
 			return getEventMouseButton(fEventRef);
 
 		System.out.println("MacEvent.getButton: no EventRef");
-		convert();
-		if ((fData[5] & OS.btnState) == 0) {
-			if (EMULATE_RIGHT_BUTTON)
-				return ((fData[5] & OS.controlKey) != 0) ? 3 : 1;
-			return 1;
-		}
 		return 0;
 	}
 	
@@ -197,25 +149,9 @@ public class MacEvent {
 	}
 
 	public int getMacCharCodes() {
-		if (fEventRef != -1) {
-			byte[] charCode= new byte[1];
-			if (OS.GetEventParameter(fEventRef, OS.kEventParamKeyMacCharCodes, OS.typeChar, null, null, charCode) == OS.kNoErr)	
-				return charCode[0];
-		}
+		if (fEventRef != -1)
+			return getCharCode(fEventRef);
 		System.out.println("MacEvent.getMacCharCodes: no EventRef");
-		
-		convert();
-		switch (fData[0]) {
-		case OS.keyDown:
-		case OS.autoKey:
-		case OS.keyUp:
-			byte b= (byte)(fData[1] & OS.charCodeMask);
-			//System.out.println("char: " + c);
-			return b;
-		default:
-			System.out.println("MacEvent.getMacCharCodes: wrong event type");
-			break;
-		}
 		return -1;
 	}
 
@@ -258,7 +194,7 @@ public class MacEvent {
 		return 0;
 	}
 	
-	private static int getEventModifiers(int eRefHandle) {
+	public static int getEventModifiers(int eRefHandle) {
 		int[] modifierKeys= new int[1];
 		if (OS.GetEventParameter(eRefHandle, OS.kEventParamKeyModifiers, OS.typeUInt32, null, null, modifierKeys) == OS.kNoErr) {	
 			return modifierKeys[0];
@@ -273,6 +209,21 @@ public class MacEvent {
 			return mouseChord[0];
 		}
 		System.out.println("MacEvent.getMouseChord: getMouseChord error");			
+		return -1;
+	}
+	
+	public static int getKeyCode(int eRefHandle) {
+		int[] keyCode= new int[1];
+		if (OS.GetEventParameter(eRefHandle, OS.kEventParamKeyCode, OS.typeUInt32, null, null, keyCode) == OS.kNoErr)
+			return keyCode[0];
+		System.out.println("MacEvent.getMouseChord: getKeyCode error");			
+		return -1;
+	}
+	
+	public static int getCharCode(int eRefHandle) {
+		byte[] charCode= new byte[1];
+		if (OS.GetEventParameter(eRefHandle, OS.kEventParamKeyMacCharCodes, OS.typeChar, null, null, charCode) == OS.kNoErr)	
+			return charCode[0];
 		return -1;
 	}
 
