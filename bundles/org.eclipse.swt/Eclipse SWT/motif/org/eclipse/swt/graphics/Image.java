@@ -907,11 +907,11 @@ void init(Device device, int width, int height) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
-	/* Create the pixmap */
 	if (width <= 0 | height <= 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 
+	/* Create the pixmap */
 	this.type = SWT.BITMAP;
 	int xDisplay = device.xDisplay;
 	int screen = OS.XDefaultScreenOfDisplay(xDisplay);
