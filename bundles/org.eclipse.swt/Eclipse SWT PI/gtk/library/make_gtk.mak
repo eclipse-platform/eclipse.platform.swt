@@ -78,11 +78,11 @@ MOZILLACFLAGS = -O \
 MOZILLALIBS = -L$(MOZILLA_HOME)/lib -lembed_base_s -lxpcom
 MOZILLALDFLAGS = -s
 
-SWT_OBJECTS		= callback.o
+SWT_OBJECTS		= swt.o callback.o
 AWT_OBJECTS		= swt_awt.o
-SWTPI_OBJECTS	= os.o os_structs.o os_custom.o os_stats.o
-ATK_OBJECTS		= atk.o atk_structs.o atk_custom.o atk_stats.o
-GNOME_OBJECTS	= gnome.o gnome_structs.o gnome_stats.o
+SWTPI_OBJECTS	= swt.o os.o os_structs.o os_custom.o os_stats.o
+ATK_OBJECTS		= swt.o atk.o atk_structs.o atk_custom.o atk_stats.o
+GNOME_OBJECTS	= swt.o gnome.o gnome_structs.o gnome_stats.o
 MOZILLA_OBJECTS = xpcom.o
  
 CFLAGS = -O -Wall \
@@ -116,6 +116,8 @@ callback.o: callback.c callback.h
 $(SWTPI_LIB): $(SWTPI_OBJECTS)
 	$(LD) $(LIBS) $(GTKLIBS) -o $(SWTPI_LIB) $(SWTPI_OBJECTS)
 
+swt.o: swt.c swt.h
+	$(CC) $(CFLAGS) -c swt.c
 os.o: os.c os.h swt.h os_custom.h
 	$(CC) $(CFLAGS) $(GTKCFLAGS) -c os.c
 os_structs.o: os_structs.c os_structs.h os.h swt.h
