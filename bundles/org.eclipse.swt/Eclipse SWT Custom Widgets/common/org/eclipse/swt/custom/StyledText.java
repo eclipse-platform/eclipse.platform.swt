@@ -2722,7 +2722,7 @@ StyleRange[] filterLineStyles(StyleRange[] styles) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * <p>
- * IMPORTANT: This API is in-progress and may change in the future.
+ * @deprecated use BidiSegmentListener instead.
  * </p>
  */
 public boolean getBidiColoring() {
@@ -3150,7 +3150,33 @@ StyledTextEvent getLineStyleData(int lineOffset, String line) {
 		if (event.styles == null) {
 			event.styles = new StyleRange[0];
 		}
-		return event;
+// code for 4846 		
+/*		else
+		if (isBidi()) {
+			GC gc = new GC(this);
+			if (StyledTextBidi.isLigated(gc)) {
+				// check for ligatures that are partially styled, if one is found
+				// automatically apply the style to the entire ligature
+				for (int i=0; i<event.styles.length; i++) {
+					StyleRange range = event.styles[i];
+					int relativeStart = range.start - lineOffset;
+					StyledTextBidi bidi = new StyledTextBidi(gc, tabWidth, line, null, null, new int[] {0});
+					int startLigature = bidi.getLigatureStartOffset(relativeStart);
+					if (startLigature != relativeStart) {
+						range.start = range.start - (relativeStart - startLigature);
+						range.length = range.length + (relativeStart - startLigature);
+					}
+					int rangeEnd = range.start + range.length;
+					int relativeEnd = rangeEnd - lineOffset - 1;
+					int endLigature = bidi.getLigatureEndOffset(relativeEnd);
+					if (endLigature != relativeEnd) {
+						range.length = range.length + (endLigature - relativeEnd);
+					}
+		        }
+		    }
+		    gc.dispose();
+		}
+*/		return event;
 	}
 	return null;
 }
@@ -5591,6 +5617,8 @@ public void setCaret(Caret caret) {
 }
 /**
  * Moves the Caret to the current caret offset.
+ * 
+ * @deprecated use BidiSegmentListener instead.
  */
 void setBidiCaretLocation() {
 	int line = content.getLineAtOffset(caretOffset);
