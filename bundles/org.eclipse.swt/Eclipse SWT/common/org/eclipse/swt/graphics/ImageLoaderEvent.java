@@ -5,7 +5,7 @@ package org.eclipse.swt.graphics;
  * All Rights Reserved
  */
 
-import java.util.*;
+import java.util.EventObject;
 
 /**
  * Instances of this class are sent as a result of the incremental

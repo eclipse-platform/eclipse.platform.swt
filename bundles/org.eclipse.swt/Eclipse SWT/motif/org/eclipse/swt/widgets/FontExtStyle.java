@@ -5,7 +5,7 @@ package org.eclipse.swt.widgets;
  * All Rights Reserved
  */
  
-import java.util.*;
+import java.util.Vector;
 
 /**
  * This class stores the sizes and styles for a font extended style.

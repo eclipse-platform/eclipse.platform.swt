@@ -4,7 +4,7 @@ package org.eclipse.swt.custom;
  * All Rights Reserved
  */
 
-import java.util.*;
+import java.util.EventListener;
 
 /**
  * The StyledText widget implements this listener to receive

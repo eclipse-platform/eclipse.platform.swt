@@ -9,7 +9,9 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import java.io.*;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Stack;
+import java.util.Vector;
  
 /**
  * Instances of this class provide a selectable user interface object

@@ -8,7 +8,6 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import java.util.*;
  
 /**
  * A header draws one or more header items. Each item may have a text 

@@ -6,7 +6,6 @@ package org.eclipse.swt.graphics;
  */
 
 import java.io.*;
-import java.util.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.image.*;
 
@@ -25,7 +24,7 @@ import org.eclipse.swt.internal.image.*;
  * @see Image
  * @see ImageLoader
  */
- 
+
 public final class ImageData implements Cloneable {
 	
 	/**

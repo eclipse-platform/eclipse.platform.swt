@@ -6,7 +6,8 @@ package org.eclipse.swt.widgets;
  */
  
 import org.eclipse.swt.graphics.*;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Vector;
  
 /** 
  * This class is used to store tree root items.

@@ -7,7 +7,8 @@ package org.eclipse.swt.widgets;
  
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import java.util.*;
+import java.util.Hashtable;
+import java.util.Vector;
 
 /**
  * This class stores the extended styles that are available for a 

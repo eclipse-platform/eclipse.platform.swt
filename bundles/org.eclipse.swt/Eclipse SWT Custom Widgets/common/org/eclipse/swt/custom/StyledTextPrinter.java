@@ -6,7 +6,7 @@ package org.eclipse.swt.custom;
  */
 
 import java.io.*;
-import java.util.*;
+import java.util.Vector;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
@@ -344,7 +344,11 @@ class StyledTextPrinter implements Runnable {
 			setBackground(1);
 			creatingColorTable = false;
 		}
-		RTFState state = (RTFState)savedState.remove(savedState.size() - 1);
+		
+		int index = savedState.size() - 1;
+		RTFState state = (RTFState)savedState.elementAt(index);
+		savedState.removeElementAt(index);
+		
 		setFontStyle(state.fontStyle);
 		if (state.foreground != -1) setForeground(state.foreground);
 		if (state.background != -1) setBackground(state.background);

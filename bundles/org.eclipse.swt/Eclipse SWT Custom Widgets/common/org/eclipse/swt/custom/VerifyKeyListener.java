@@ -5,7 +5,7 @@ package org.eclipse.swt.custom;
  */
 
 import org.eclipse.swt.events.*;
-import java.util.*;
+import java.util.EventListener;
 
 public interface VerifyKeyListener extends EventListener {
 /**

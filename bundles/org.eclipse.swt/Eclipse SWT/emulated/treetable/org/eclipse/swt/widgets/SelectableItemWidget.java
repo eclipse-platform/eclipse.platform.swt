@@ -8,7 +8,9 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import java.io.*;
-import java.util.*;
+
+import java.util.Enumeration;
+import java.util.Vector;
  
 /**
  * This class is intended for widgets that display data of 

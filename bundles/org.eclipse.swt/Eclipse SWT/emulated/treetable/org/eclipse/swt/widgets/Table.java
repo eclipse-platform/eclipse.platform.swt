@@ -8,7 +8,8 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.*;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Vector;
  
 /** 
  * Instances of this class implement a selectable user interface

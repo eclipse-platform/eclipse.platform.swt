@@ -6,7 +6,6 @@ package org.eclipse.swt.internal.image;
  */
 
 import java.io.*;
-import java.util.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 

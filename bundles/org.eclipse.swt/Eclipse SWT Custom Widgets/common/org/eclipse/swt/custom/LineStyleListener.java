@@ -4,7 +4,7 @@ package org.eclipse.swt.custom;
  * All Rights Reserved
  */
 
-import java.util.*;
+import java.util.EventListener;
 
 public interface LineStyleListener extends EventListener {
 /**

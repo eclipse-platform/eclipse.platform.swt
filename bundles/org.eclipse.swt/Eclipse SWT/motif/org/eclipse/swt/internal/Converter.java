@@ -6,7 +6,6 @@ package org.eclipse.swt.internal;
  */
 
 import org.eclipse.swt.internal.motif.*;
-import java.util.*;
 
 /**
  * This class implements the conversions between unicode characters

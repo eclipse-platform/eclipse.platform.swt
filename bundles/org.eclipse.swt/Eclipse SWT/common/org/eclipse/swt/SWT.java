@@ -5,8 +5,9 @@ package org.eclipse.swt;
  * All Rights Reserved
  */
 
-import java.util.*;
 import org.eclipse.swt.internal.*;
+import java.util.ResourceBundle;
+import java.util.MissingResourceException;
 
 /**
  * This class provides access to a small number of SWT system-wide

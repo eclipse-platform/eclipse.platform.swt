@@ -6,7 +6,7 @@ package org.eclipse.swt.custom;
 
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import java.util.*;
+import java.util.Vector;
 
 class DefaultLineStyler implements LineStyleListener, LineBackgroundListener {
 	StyledTextContent content;
@@ -260,7 +260,7 @@ public void lineGetStyle(LineStyleEvent event) {
 			// style starts after the line, end looping 
 			break;
 		int styleEnd = style.start + style.length - 1;
-		if (styleEnd >= lineStart) lineStyles.add(style);
+		if (styleEnd >= lineStart) lineStyles.addElement(style);
 	}
 	event.styles = new StyleRange[lineStyles.size()];
 	lineStyles.copyInto(event.styles);

@@ -7,7 +7,9 @@ package org.eclipse.swt.layout;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Vector;
 
 public final class GridLayout extends Layout {
 	/**

@@ -8,7 +8,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.*;
 import java.io.*;
-import java.util.*;
+import java.util.Vector;
 
 class DefaultContent implements StyledTextContent {
 	private final static String LineDelimiter = System.getProperty("line.separator");
