@@ -514,6 +514,16 @@ JNIEXPORT void JNICALL ATK_NATIVE(memmove__ILorg_eclipse_swt_internal_accessibil
 }
 #endif
 
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkHypertextIface_2
+JNIEXPORT void JNICALL ATK_NATIVE(memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkHypertextIface_2)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkHypertextIface_2\n")
+	if (arg1) getAtkHypertextIfaceFields(env, arg1, (AtkHypertextIface *)arg0);
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkHypertextIface_2\n")
+}
+#endif
+
 #ifndef NO_memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkObjectClass_2
 JNIEXPORT void JNICALL ATK_NATIVE(memmove__ILorg_eclipse_swt_internal_accessibility_gtk_AtkObjectClass_2)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
@@ -605,6 +615,16 @@ JNIEXPORT void JNICALL ATK_NATIVE(memmove__Lorg_eclipse_swt_internal_accessibili
 	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkComponentIface_2I\n")
 	if (arg0) setAtkComponentIfaceFields(env, arg0, (AtkComponentIface *)arg1);
 	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkComponentIface_2I\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkHypertextIface_2I
+JNIEXPORT void JNICALL ATK_NATIVE(memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkHypertextIface_2I)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkHypertextIface_2I\n")
+	if (arg0) setAtkHypertextIfaceFields(env, arg0, (AtkHypertextIface *)arg1);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_accessibility_gtk_AtkHypertextIface_2I\n")
 }
 #endif
 

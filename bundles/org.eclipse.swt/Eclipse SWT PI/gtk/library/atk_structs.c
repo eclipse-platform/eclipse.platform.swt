@@ -129,6 +129,43 @@ void setAtkComponentIfaceFields(JNIEnv *env, jobject lpObject, AtkComponentIface
 }
 #endif
 
+#ifndef NO_AtkHypertextIface
+typedef struct AtkHypertextIface_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID get_link, get_n_links, get_link_index;
+} AtkHypertextIface_FID_CACHE;
+
+AtkHypertextIface_FID_CACHE AtkHypertextIfaceFc;
+
+void cacheAtkHypertextIfaceFields(JNIEnv *env, jobject lpObject)
+{
+	if (AtkHypertextIfaceFc.cached) return;
+	AtkHypertextIfaceFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	AtkHypertextIfaceFc.get_link = (*env)->GetFieldID(env, AtkHypertextIfaceFc.clazz, "get_link", "I");
+	AtkHypertextIfaceFc.get_n_links = (*env)->GetFieldID(env, AtkHypertextIfaceFc.clazz, "get_n_links", "I");
+	AtkHypertextIfaceFc.get_link_index = (*env)->GetFieldID(env, AtkHypertextIfaceFc.clazz, "get_link_index", "I");
+	AtkHypertextIfaceFc.cached = 1;
+}
+
+AtkHypertextIface *getAtkHypertextIfaceFields(JNIEnv *env, jobject lpObject, AtkHypertextIface *lpStruct)
+{
+	if (!AtkHypertextIfaceFc.cached) cacheAtkHypertextIfaceFields(env, lpObject);
+	lpStruct->get_link = (AtkHyperlink *(*)())(*env)->GetIntField(env, lpObject, AtkHypertextIfaceFc.get_link);
+	lpStruct->get_n_links = (gint (*)())(*env)->GetIntField(env, lpObject, AtkHypertextIfaceFc.get_n_links);
+	lpStruct->get_link_index = (gint (*)())(*env)->GetIntField(env, lpObject, AtkHypertextIfaceFc.get_link_index);
+	return lpStruct;
+}
+
+void setAtkHypertextIfaceFields(JNIEnv *env, jobject lpObject, AtkHypertextIface *lpStruct)
+{
+	if (!AtkHypertextIfaceFc.cached) cacheAtkHypertextIfaceFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, AtkHypertextIfaceFc.get_link, (jint)lpStruct->get_link);
+	(*env)->SetIntField(env, lpObject, AtkHypertextIfaceFc.get_n_links, (jint)lpStruct->get_n_links);
+	(*env)->SetIntField(env, lpObject, AtkHypertextIfaceFc.get_link_index, (jint)lpStruct->get_link_index);
+}
+#endif
+
 #ifndef NO_AtkObjectClass
 typedef struct AtkObjectClass_FID_CACHE {
 	int cached;

@@ -250,6 +250,7 @@ class AccessibleFactory {
 			action = hypertext = selection = text = true;
 		}
 		String swtTypeName = new String (SWT_TYPE_PREFIX);
+		swtTypeName += new String (widgetTypeName);
 		if (action) swtTypeName += "Action";
 		if (hypertext) swtTypeName += "Hypertext";
 		if (selection) swtTypeName += "Selection";

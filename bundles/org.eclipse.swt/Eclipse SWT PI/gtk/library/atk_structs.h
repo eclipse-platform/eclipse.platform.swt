@@ -35,6 +35,16 @@ void setAtkComponentIfaceFields(JNIEnv *env, jobject lpObject, AtkComponentIface
 #define AtkComponentIface_sizeof() 0
 #endif
 
+#ifndef NO_AtkHypertextIface
+AtkHypertextIface *getAtkHypertextIfaceFields(JNIEnv *env, jobject lpObject, AtkHypertextIface *lpStruct);
+void setAtkHypertextIfaceFields(JNIEnv *env, jobject lpObject, AtkHypertextIface *lpStruct);
+#define AtkHypertextIface_sizeof() sizeof(AtkHypertextIface)
+#else
+#define getAtkHypertextIfaceFields(a,b,c) NULL
+#define setAtkHypertextIfaceFields(a,b,c)
+#define AtkHypertextIface_sizeof() 0
+#endif
+
 #ifndef NO_AtkObjectClass
 AtkObjectClass *getAtkObjectClassFields(JNIEnv *env, jobject lpObject, AtkObjectClass *lpStruct);
 void setAtkObjectClassFields(JNIEnv *env, jobject lpObject, AtkObjectClass *lpStruct);

@@ -126,6 +126,7 @@ public class ATK extends OS {
 	public static final synchronized native int /*long*/ gtk_widget_get_toplevel (int /*long*/ widget);
 	public static final synchronized native void memmove (AtkActionIface dest, int /*long*/ src);
 	public static final synchronized native void memmove (AtkComponentIface dest, int /*long*/ src);
+	public static final synchronized native void memmove (AtkHypertextIface dest, int /*long*/ src);
 	public static final synchronized native void memmove (AtkObjectClass dest, int /*long*/ src);
 	public static final synchronized native void memmove (AtkObjectFactoryClass  dest, int /*long*/ src);
 	public static final synchronized native void memmove (AtkSelectionIface dest, int /*long*/ src);	
@@ -135,6 +136,7 @@ public class ATK extends OS {
 	public static final synchronized native void memmove (GTypeQuery dest, int /*long*/ src, int /*long*/ size);	
 	public static final synchronized native void memmove (int /*long*/ dest, AtkActionIface src);
 	public static final synchronized native void memmove (int /*long*/ dest, AtkComponentIface src);
+	public static final synchronized native void memmove (int /*long*/ dest, AtkHypertextIface src);
 	public static final synchronized native void memmove (int /*long*/ dest, AtkObjectClass src);
 	public static final synchronized native void memmove (int /*long*/ dest, AtkObjectFactoryClass src);
 	public static final synchronized native void memmove (int /*long*/ dest, AtkSelectionIface src);
