@@ -196,7 +196,36 @@ public final class ImageData implements Cloneable {
 	 * Delay Time value)
 	 */
 	public int delayTime;
-	
+
+	/**
+	 * Arbitrary channel width data to 8-bit conversion table
+	 */
+	static final byte[][] ANY_TO_EIGHT = new byte[9][];
+	static {
+		for (int b = 0; b < 9; ++b) {
+			byte[] data = ANY_TO_EIGHT[b] = new byte[1 << b];
+			if (b == 0) continue;
+			int inc = 0;
+			for (int bit = 0x10000; (bit >>= b) != 0;) inc |= bit;
+			for (int v = 0, p = 0; v < 0x10000; v+= inc) data[p++] = (byte)(v >> 8);
+		}
+	}
+	static final byte[] ONE_TO_ONE_MAPPING = ANY_TO_EIGHT[8];
+
+	/**
+	 * Scaled 8x8 Bayer dither matrix
+	 */
+	static final int[][] DITHER_MATRIX = {
+		{ 0xfc0000, 0x7c0000, 0xdc0000, 0x5c0000, 0xf40000, 0x740000, 0xd40000, 0x540000 },
+		{ 0x3c0000, 0xbc0000, 0x1c0000, 0x9c0000, 0x340000, 0xb40000, 0x140000, 0x940000 },
+		{ 0xcc0000, 0x4c0000, 0xec0000, 0x6c0000, 0xc40000, 0x440000, 0xe40000, 0x640000 },
+		{ 0x0c0000, 0x8c0000, 0x2c0000, 0xac0000, 0x040000, 0x840000, 0x240000, 0xa40000 },
+		{ 0xf00000, 0x700000, 0xd00000, 0x500000, 0xf80000, 0x780000, 0xd80000, 0x580000 },
+		{ 0x300000, 0xb00000, 0x100000, 0x900000, 0x380000, 0xb80000, 0x180000, 0x980000 },
+		{ 0xc00000, 0x400000, 0xe00000, 0x600000, 0xc80000, 0x480000, 0xe80000, 0x680000 },
+		{ 0x000000, 0x800000, 0x200000, 0xa00000, 0x080000, 0x880000, 0x280000, 0xa80000 }
+	};
+
 /**
  * Constructs a new, empty ImageData with the given width, height,
  * depth and palette. The data will be initialized to an (all zero)
@@ -1028,7 +1057,7 @@ public int getTransparencyType() {
  * 
  * @return MSB_FIRST or LSB_FIRST
  */
-final int getByteOrder() {
+int getByteOrder() {
 	return (depth != 16) ? MSB_FIRST : LSB_FIRST;
 }
 
@@ -1669,7 +1698,7 @@ private static final int
  * @param flipX if true the resulting image is flipped along the vertical axis
  * @param flipY if true the resulting image is flipped along the horizontal axis
  */
-static final void blit(int op,
+static void blit(int op,
 	byte[] srcData, int srcDepth, int srcStride, int srcOrder,
 	int srcX, int srcY, int srcWidth, int srcHeight,
 	int srcRedMask, int srcGreenMask, int srcBlueMask,
@@ -1824,29 +1853,29 @@ static final void blit(int op,
 	}
 	/*** Comprehensive blit (apply transformations) ***/
 	final int srcRedShift = getChannelShift(srcRedMask);
-	final byte[] srcReds = anyToEight[getChannelWidth(srcRedMask, srcRedShift)];
+	final byte[] srcReds = ANY_TO_EIGHT[getChannelWidth(srcRedMask, srcRedShift)];
 	final int srcGreenShift = getChannelShift(srcGreenMask);
-	final byte[] srcGreens = anyToEight[getChannelWidth(srcGreenMask, srcGreenShift)];
+	final byte[] srcGreens = ANY_TO_EIGHT[getChannelWidth(srcGreenMask, srcGreenShift)];
 	final int srcBlueShift = getChannelShift(srcBlueMask);
-	final byte[] srcBlues = anyToEight[getChannelWidth(srcBlueMask, srcBlueShift)];
+	final byte[] srcBlues = ANY_TO_EIGHT[getChannelWidth(srcBlueMask, srcBlueShift)];
 	final int srcAlphaShift = getChannelShift(srcAlphaMask);
-	final byte[] srcAlphas = anyToEight[getChannelWidth(srcAlphaMask, srcAlphaShift)];
+	final byte[] srcAlphas = ANY_TO_EIGHT[getChannelWidth(srcAlphaMask, srcAlphaShift)];
 
 	final int destRedShift = getChannelShift(destRedMask);
 	final int destRedWidth = getChannelWidth(destRedMask, destRedShift);
-	final byte[] destReds = anyToEight[destRedWidth];
+	final byte[] destReds = ANY_TO_EIGHT[destRedWidth];
 	final int destRedPreShift = 8 - destRedWidth;
 	final int destGreenShift = getChannelShift(destGreenMask);
 	final int destGreenWidth = getChannelWidth(destGreenMask, destGreenShift);
-	final byte[] destGreens = anyToEight[destGreenWidth];
+	final byte[] destGreens = ANY_TO_EIGHT[destGreenWidth];
 	final int destGreenPreShift = 8 - destGreenWidth;
 	final int destBlueShift = getChannelShift(destBlueMask);
 	final int destBlueWidth = getChannelWidth(destBlueMask, destBlueShift);
-	final byte[] destBlues = anyToEight[destBlueWidth];
+	final byte[] destBlues = ANY_TO_EIGHT[destBlueWidth];
 	final int destBluePreShift = 8 - destBlueWidth;
 	final int destAlphaShift = getChannelShift(destAlphaMask);
 	final int destAlphaWidth = getChannelWidth(destAlphaMask, destAlphaShift);
-	final byte[] destAlphas = anyToEight[destAlphaWidth];
+	final byte[] destAlphas = ANY_TO_EIGHT[destAlphaWidth];
 	final int destAlphaPreShift = 8 - destAlphaWidth;
 
 	int ap = apr, alpha = alphaMode;
@@ -2091,7 +2120,7 @@ static final void blit(int op,
  * @param flipX if true the resulting image is flipped along the vertical axis
  * @param flipY if true the resulting image is flipped along the horizontal axis
  */
-static final void blit(int op,
+static void blit(int op,
 	byte[] srcData, int srcDepth, int srcStride, int srcOrder,
 	int srcX, int srcY, int srcWidth, int srcHeight,
 	byte[] srcReds, byte[] srcGreens, byte[] srcBlues,
@@ -2202,12 +2231,12 @@ static final void blit(int op,
 			/*** If the palettes and formats are equivalent use a one-to-one mapping ***/
 			if ((stype == dtype) &&
 				(srcReds == destReds) && (srcGreens == destGreens) && (srcBlues == destBlues)) {
-				paletteMapping = oneToOneMapping;
+				paletteMapping = ONE_TO_ONE_MAPPING;
 				break;
 			/*** If palettes have not been supplied, supply a suitable mapping ***/
 			} else if ((srcReds == null) || (destReds == null)) {
 				if (srcDepth <= destDepth) {
-					paletteMapping = oneToOneMapping;
+					paletteMapping = ONE_TO_ONE_MAPPING;
 				} else {
 					paletteMapping = new byte[1 << srcDepth];
 					int mask = (0xff << destDepth) >>> 8;
@@ -2615,7 +2644,7 @@ static final void blit(int op,
  * @param flipX if true the resulting image is flipped along the vertical axis
  * @param flipY if true the resulting image is flipped along the horizontal axis
  */
-static final void blit(int op,
+static void blit(int op,
 	byte[] srcData, int srcDepth, int srcStride, int srcOrder,
 	int srcX, int srcY, int srcWidth, int srcHeight,
 	byte[] srcReds, byte[] srcGreens, byte[] srcBlues,
@@ -2719,19 +2748,19 @@ static final void blit(int op,
 	/*** Comprehensive blit (apply transformations) ***/
 	final int destRedShift = getChannelShift(destRedMask);
 	final int destRedWidth = getChannelWidth(destRedMask, destRedShift);
-	final byte[] destReds = anyToEight[destRedWidth];
+	final byte[] destReds = ANY_TO_EIGHT[destRedWidth];
 	final int destRedPreShift = 8 - destRedWidth;
 	final int destGreenShift = getChannelShift(destGreenMask);
 	final int destGreenWidth = getChannelWidth(destGreenMask, destGreenShift);
-	final byte[] destGreens = anyToEight[destGreenWidth];
+	final byte[] destGreens = ANY_TO_EIGHT[destGreenWidth];
 	final int destGreenPreShift = 8 - destGreenWidth;
 	final int destBlueShift = getChannelShift(destBlueMask);
 	final int destBlueWidth = getChannelWidth(destBlueMask, destBlueShift);
-	final byte[] destBlues = anyToEight[destBlueWidth];
+	final byte[] destBlues = ANY_TO_EIGHT[destBlueWidth];
 	final int destBluePreShift = 8 - destBlueWidth;
 	final int destAlphaShift = getChannelShift(destAlphaMask);
 	final int destAlphaWidth = getChannelWidth(destAlphaMask, destAlphaShift);
-	final byte[] destAlphas = anyToEight[destAlphaWidth];
+	final byte[] destAlphas = ANY_TO_EIGHT[destAlphaWidth];
 	final int destAlphaPreShift = 8 - destAlphaWidth;
 
 	int dp = dpr;
@@ -2951,7 +2980,7 @@ static final void blit(int op,
  * @param flipX if true the resulting image is flipped along the vertical axis
  * @param flipY if true the resulting image is flipped along the horizontal axis
  */
-static final void blit(int op,
+static void blit(int op,
 	byte[] srcData, int srcDepth, int srcStride, int srcOrder,
 	int srcX, int srcY, int srcWidth, int srcHeight,
 	int srcRedMask, int srcGreenMask, int srcBlueMask,
@@ -3057,13 +3086,13 @@ static final void blit(int op,
 
 	/*** Comprehensive blit (apply transformations) ***/
 	final int srcRedShift = getChannelShift(srcRedMask);
-	final byte[] srcReds = anyToEight[getChannelWidth(srcRedMask, srcRedShift)];
+	final byte[] srcReds = ANY_TO_EIGHT[getChannelWidth(srcRedMask, srcRedShift)];
 	final int srcGreenShift = getChannelShift(srcGreenMask);
-	final byte[] srcGreens = anyToEight[getChannelWidth(srcGreenMask, srcGreenShift)];
+	final byte[] srcGreens = ANY_TO_EIGHT[getChannelWidth(srcGreenMask, srcGreenShift)];
 	final int srcBlueShift = getChannelShift(srcBlueMask);
-	final byte[] srcBlues = anyToEight[getChannelWidth(srcBlueMask, srcBlueShift)];
+	final byte[] srcBlues = ANY_TO_EIGHT[getChannelWidth(srcBlueMask, srcBlueShift)];
 	final int srcAlphaShift = getChannelShift(srcAlphaMask);
-	final byte[] srcAlphas = anyToEight[getChannelWidth(srcAlphaMask, srcAlphaShift)];
+	final byte[] srcAlphas = ANY_TO_EIGHT[getChannelWidth(srcAlphaMask, srcAlphaShift)];
 
 	int dp = dpr;
 	int sp = spr;
@@ -3278,7 +3307,7 @@ static final void blit(int op,
 /**
  * Computes the required channel shift from a mask.
  */
-final static int getChannelShift(int mask) {
+static int getChannelShift(int mask) {
 	if (mask == 0) return 0;
 	int i;
 	for (i = 0; ((mask & 1) == 0) && (i < 32); ++i) {
@@ -3290,7 +3319,7 @@ final static int getChannelShift(int mask) {
 /**
  * Computes the required channel width (depth) from a mask.
  */
-final static int getChannelWidth(int mask, int shift) {
+static int getChannelWidth(int mask, int shift) {
 	if (mask == 0) return 0;
 	int i;
 	mask >>>= shift;
@@ -3303,25 +3332,209 @@ final static int getChannelWidth(int mask, int shift) {
 /**
  * Extracts a field from packed RGB data given a mask for that field.
  */
-final static byte getChannelField(int data, int mask) {
+static byte getChannelField(int data, int mask) {
 	final int shift = getChannelShift(mask);
-	return anyToEight[getChannelWidth(mask, shift)][(data & mask) >>> shift];
+	return ANY_TO_EIGHT[getChannelWidth(mask, shift)][(data & mask) >>> shift];
 }
 
 /**
- * Arbitrary channel width data to 8-bit conversion table
+ * Creates an ImageData containing one band's worth of a gradient filled
+ * block.  If <code>vertical</code> is true, the band must be tiled
+ * horizontally to fill a region, otherwise it must be tiled vertically.
+ *
+ * @param width the width of the region to be filled
+ * @param height the height of the region to be filled
+ * @param vertical if true sweeps from top to bottom, else
+ *        sweeps from left to right
+ * @param fromRGB the color to start with
+ * @param toRGB the color to end with
+ * @param redBits the number of significant red bits, 0 for palette modes
+ * @param greenBits the number of significant green bits, 0 for palette modes
+ * @param blueBits the number of significant blue bits, 0 for palette modes
+ * @return the new ImageData
  */
-static final byte[][] anyToEight = new byte[9][];
-static {
-	for (int b = 0; b < 9; ++b) {
-		byte[] data = anyToEight[b] = new byte[1 << b];
-		if (b == 0) continue;
-		int inc = 0;
-		for (int bit = 0x10000; (bit >>= b) != 0;) inc |= bit;
-		for (int v = 0, p = 0; v < 0x10000; v+= inc) data[p++] = (byte)(v >> 8);
+static ImageData createGradientBand(
+	int width, int height, boolean vertical,
+	RGB fromRGB, RGB toRGB,
+	int redBits, int greenBits, int blueBits) {
+	/* Gradients are drawn as tiled bands */
+	final int bandWidth, bandHeight, bitmapDepth;
+	final byte[] bitmapData;
+	final PaletteData paletteData;
+	/* Select an algorithm depending on the depth of the screen */
+	if (redBits != 0 && greenBits != 0 && blueBits != 0) {
+		paletteData = new PaletteData(0x0000ff00, 0x00ff0000, 0xff000000);
+		bitmapDepth = 32;
+		if (redBits >= 8 && greenBits >= 8 && blueBits >= 8) {
+			/* Precise color */
+			final int steps;
+			if (vertical) {
+				bandWidth = 1;
+				bandHeight = height;
+				steps = bandHeight > 1 ? bandHeight - 1 : 1;
+			} else {
+				bandWidth = width;
+				bandHeight = 1;
+				steps = bandWidth > 1 ? bandWidth - 1 : 1;
+			}
+			final int bytesPerLine = bandWidth * 4;
+			bitmapData = new byte[bandHeight * bytesPerLine];
+			buildPreciseGradientChannel(fromRGB.blue, toRGB.blue, steps, bandWidth, bandHeight, vertical, bitmapData, 0, bytesPerLine);
+			buildPreciseGradientChannel(fromRGB.green, toRGB.green, steps, bandWidth, bandHeight, vertical, bitmapData, 1, bytesPerLine);
+			buildPreciseGradientChannel(fromRGB.red, toRGB.red, steps, bandWidth, bandHeight, vertical, bitmapData, 2, bytesPerLine);
+		} else {
+			/* Dithered color */
+			final int steps;
+			if (vertical) {
+				bandWidth = (width < 8) ? width : 8;
+				bandHeight = height;
+				steps = bandHeight > 1 ? bandHeight - 1 : 1;
+			} else {
+				bandWidth = width;
+				bandHeight = (height < 8) ? height : 8;
+				steps = bandWidth > 1 ? bandWidth - 1 : 1;
+			}
+			final int bytesPerLine = bandWidth * 4;
+			bitmapData = new byte[bandHeight * bytesPerLine];
+			buildDitheredGradientChannel(fromRGB.blue, toRGB.blue, steps, bandWidth, bandHeight, vertical, bitmapData, 0, bytesPerLine, blueBits);
+			buildDitheredGradientChannel(fromRGB.green, toRGB.green, steps, bandWidth, bandHeight, vertical, bitmapData, 1, bytesPerLine, greenBits);
+			buildDitheredGradientChannel(fromRGB.red, toRGB.red, steps, bandWidth, bandHeight, vertical, bitmapData, 2, bytesPerLine, redBits);			
+		}
+	} else {
+		/* Dithered two tone */
+		paletteData = new PaletteData(new RGB[] { fromRGB, toRGB });
+		bitmapDepth = 8;
+		final int blendi;
+		if (vertical) {
+			bandWidth = (width < 8) ? width : 8;
+			bandHeight = height;
+			blendi = (bandHeight > 1) ? 0x1040000 / (bandHeight - 1) + 1 : 1;
+		} else {
+			bandWidth = width;
+			bandHeight = (height < 8) ? height : 8;
+			blendi = (bandWidth > 1) ? 0x1040000 / (bandWidth - 1) + 1 : 1;
+		}
+		final int bytesPerLine = (bandWidth + 3) & -4;
+		bitmapData = new byte[bandHeight * bytesPerLine];
+		if (vertical) {
+			for (int dy = 0, blend = 0, dp = 0; dy < bandHeight;
+				++dy, blend += blendi, dp += bytesPerLine) {
+				for (int dx = 0; dx < bandWidth; ++dx) {
+					bitmapData[dp + dx] = (blend + DITHER_MATRIX[dy & 7][dx]) <
+						0x1000000 ? (byte)0 : (byte)1;
+				}
+			}		
+		} else {
+			for (int dx = 0, blend = 0; dx < bandWidth; ++dx, blend += blendi) {
+				for (int dy = 0, dptr = dx; dy < bandHeight; ++dy, dptr += bytesPerLine) {
+					bitmapData[dptr] = (blend + DITHER_MATRIX[dy][dx & 7]) <
+						0x1000000 ? (byte)0 : (byte)1;
+				}
+			}
+		}
+	}
+	return new ImageData(bandWidth, bandHeight, bitmapDepth, paletteData, 4, bitmapData);
+}
+
+/* 
+ * Fill in gradated values for a color channel
+ */
+static final void buildPreciseGradientChannel(int from, int to, int steps,
+	int bandWidth, int bandHeight, boolean vertical,
+	byte[] bitmapData, int dp, int bytesPerLine) {
+	int val = from << 16;
+	final int inc = ((to << 16) - val) / steps + 1;
+	if (vertical) {
+		for (int dy = 0; dy < bandHeight; ++dy, dp += bytesPerLine) {
+			bitmapData[dp] = (byte)(val >>> 16);
+			val += inc;
+		}
+	} else {
+		for (int dx = 0; dx < bandWidth; ++dx, dp += 4) {
+			bitmapData[dp] = (byte)(val >>> 16);
+			val += inc;
+		}
+	}		
+}
+
+/* 
+ * Fill in dithered gradated values for a color channel
+ */
+static final void buildDitheredGradientChannel(int from, int to, int steps,
+	int bandWidth, int bandHeight, boolean vertical,
+	byte[] bitmapData, int dp, int bytesPerLine, int bits) {
+	final int mask = 0xff00 >>> bits;
+	int val = from << 16;
+	final int inc = ((to << 16) - val) / steps + 1;
+	if (vertical) {
+		for (int dy = 0; dy < bandHeight; ++dy, dp += bytesPerLine) {
+			for (int dx = 0, dptr = dp; dx < bandWidth; ++dx, dptr += 4) {
+				final int thresh = DITHER_MATRIX[dy & 7][dx] >>> bits;
+				int temp = val + thresh;
+				if (temp > 0xffffff) bitmapData[dptr] = -1;
+				else bitmapData[dptr] = (byte)((temp >>> 16) & mask);
+			}
+			val += inc;
+		}
+	} else {
+		for (int dx = 0; dx < bandWidth; ++dx, dp += 4) {
+			for (int dy = 0, dptr = dp; dy < bandHeight; ++dy, dptr += bytesPerLine) {
+				final int thresh = DITHER_MATRIX[dy][dx & 7] >>> bits;
+				int temp = val + thresh;
+				if (temp > 0xffffff) bitmapData[dptr] = -1;
+				else bitmapData[dptr] = (byte)((temp >>> 16) & mask);
+			}
+			val += inc;
+		}
 	}
 }
-private static final byte[] oneToOneMapping = anyToEight[8];
 
+/**
+ * Renders a gradient onto a GC.
+ * <p>
+ * This is a GC helper.
+ * </p>
+ *
+ * @param gc the GC to render the gradient onto
+ * @param device the device the GC belongs to
+ * @param x the top-left x coordinate of the region to be filled
+ * @param y the top-left y coordinate of the region to be filled
+ * @param width the width of the region to be filled
+ * @param height the height of the region to be filled
+ * @param vertical if true sweeps from top to bottom, else
+ *        sweeps from left to right
+ * @param fromRGB the color to start with
+ * @param toRGB the color to end with
+ * @param redBits the number of significant red bits, 0 for palette modes
+ * @param greenBits the number of significant green bits, 0 for palette modes
+ * @param blueBits the number of significant blue bits, 0 for palette modes
+ */
+static void fillGradientRectangle(GC gc, Device device,
+	int x, int y, int width, int height, boolean vertical,
+	RGB fromRGB, RGB toRGB,
+	int redBits, int greenBits, int blueBits) {
+	/* Create the bitmap and tile it */
+	ImageData band = createGradientBand(width, height, vertical,
+		fromRGB, toRGB, redBits, greenBits, blueBits);
+	Image image = new Image(device, band);
+	if ((band.width == 1) || (band.height == 1)) {
+		gc.drawImage(image, 0, 0, band.width, band.height, x, y, width, height);
+	} else {
+		if (vertical) {
+			for (int dx = 0; dx < width; dx += band.width) {
+				int blitWidth = width - dx;
+				if (blitWidth > band.width) blitWidth = band.width;
+				gc.drawImage(image, 0, 0, blitWidth, band.height, dx + x, y, blitWidth, band.height);
+			}
+		} else {
+			for (int dy = 0; dy < height; dy += band.height) {
+				int blitHeight = height - dy;
+				if (blitHeight > band.height) blitHeight = band.height;
+				gc.drawImage(image, 0, 0, band.width, blitHeight, x, dy + y, band.width, blitHeight);
+			}
+		}
+	}
+	image.dispose();
 }
 
+}

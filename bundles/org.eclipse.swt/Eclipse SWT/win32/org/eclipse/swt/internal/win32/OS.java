@@ -186,6 +186,13 @@ public class OS {
 	public static final int WM_MOUSEWHEEL = 0x020A;
 /*** END TrackMouseEvent ***/
 
+/*** BEGIN GradientFill ***/
+	public static final int GRADIENT_FILL_RECT_H = 0;
+	public static final int GRADIENT_FILL_RECT_V = 1;
+//	public static final int GRADIENT_FILL_TRIANGLE = 2;
+//	public static final int GRADIENT_FILL_OP_FLAG = 0xff;
+/*** END GradientFill ***/
+
 /*** BEGIN ICC ***/
 //	public static final int ICC_LISTVIEW_CLASSES 	= 0x00000001;
 //	public static final int ICC_TREEVIEW_CLASSES 	= 0x00000002;
@@ -4125,6 +4132,7 @@ public static final native int GlobalFree (int hMem);
 public static final native int GlobalLock (int hMem);
 public static final native int GlobalSize (int hMem);
 public static final native boolean GlobalUnlock (int hMem);
+public static final native boolean GradientFill(int hdc, int pVertex, int dwNumVertex, int pMesh, int dwNumMesh, int dwMode);
 public static final native int HeapAlloc (
   int hHeap,  // handle to the private heap block
   int dwFlags, // heap allocation control flags
@@ -4243,6 +4251,11 @@ public static final native void MoveMemory (
   int Length        // size, in bytes, of block to move
 );
 public static final native void MoveMemory (
+  int Destination,  // address of move destination
+  GRADIENT_RECT Source, 	// address of block to move
+  int Length        // size, in bytes, of block to move
+);
+public static final native void MoveMemory (
   int Destination,				// address of move destination
   LOGFONT Source, 				// address of block to move
   int Length        			// size, in bytes, of block to move
@@ -4260,6 +4273,11 @@ public static final native void MoveMemory (
 public static final native void MoveMemory (
   int Destination,  // address of move destination
   RECT Source, 	// address of block to move
+  int Length        // size, in bytes, of block to move
+);
+public static final native void MoveMemory (
+  int Destination,  // address of move destination
+  TRIVERTEX Source, 	// address of block to move
   int Length        // size, in bytes, of block to move
 );
 public static final native void MoveMemory (
