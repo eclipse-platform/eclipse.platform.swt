@@ -529,10 +529,11 @@ void createDisplay (DeviceData data) {
 	OS.XtSetLanguageProc (xtContext, 0, 0);
 	
 	/* 
-	* On some DB Linux platforms, the default font list may not be properly
-	* initialized to contain a FontSet. This causes the input method to
-	* fail. The fix is to set the fallback resource with an appropriated
-	* font.	*/
+	* Feature in Linux.  On some DBCS Linux platforms, the default
+	* font is not be properly initialized to contain a font set.
+	* This causes the IME to fail.  The fix is to set a fallback
+	* resource with an appropriated font to ensure a font set is
+	* found.	*/
 	int ptr1 = 0, ptr2 = 0; 
 	if (OS.IsLinux && OS.IsDBLocale) {
 		String resource = "*fontList: -*-fixed-medium-r-*-*-*-120-*-*-*-*-*-*:";
