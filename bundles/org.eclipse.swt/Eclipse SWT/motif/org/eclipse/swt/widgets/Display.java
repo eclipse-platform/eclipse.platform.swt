@@ -781,6 +781,7 @@ boolean filterEvent (int event) {
 		char [] result = Converter.mbcsToWcs (null, buffer1);
 		if (result.length != 0) key = result [0];
 	}
+	fixKey (buffer2, buffer1, 0);
 	int keysym = buffer2 [0] & 0xFFFF;
 	keyEvent.state = oldState;
 
@@ -810,8 +811,20 @@ boolean filterEvent (int event) {
 	* on Solaris.
 	*/
 	if (OS.IsSunOS) {
-		if (widget.translateAccelerator (key, keysym, keyEvent, true)) {
-			return true;
+		/* Ignore modifiers. */
+		switch (keysym) {
+			case OS.XK_Control_L:
+			case OS.XK_Control_R:
+			case OS.XK_Alt_L:
+			case OS.XK_Alt_R:
+			case OS.XK_Meta_L:
+			case OS.XK_Meta_R:
+			case OS.XK_Shift_L:
+			case OS.XK_Shift_R: break;
+			default:
+				if (widget.translateAccelerator (key, keysym, keyEvent, true)) {
+					return true;
+				}
 		}
 	}
 
@@ -865,6 +878,109 @@ boolean filterEvent (int event) {
 public Widget findWidget (int handle) {
 	checkDevice ();
 	return getWidget (handle);
+}
+boolean fixKey (int[] keysym, byte[] buffer, int state) {
+	/*
+	* Bug in MOTIF.  On Solaris only, XK_F11 and XK_F12 are not
+	* translated correctly by XLookupString().  They are mapped
+	* to 0x1005FF10 and 0x1005FF11 respectively.  The fix is to
+	* look for these values explicitly and correct them.
+	*/
+	if (OS.IsSunOS && keysym [0] != 0) {
+		switch (keysym [0]) {
+			case OS.SunXK_F36: 
+				keysym [0] = OS.XK_F11;
+				buffer [0] = 0;
+				break;
+			case OS.SunXK_F37:
+				keysym [0] = OS.XK_F12;
+				buffer [0] = 0;
+				break;
+			case OS.XK_R1: keysym [0] = OS.XK_Pause; break;
+			case OS.XK_R2: keysym [0] = OS.XK_Print; break;
+			case OS.XK_R3: keysym [0] = OS.XK_Scroll_Lock; break;
+			case OS.XK_R4: keysym [0] = OS.XK_KP_Subtract; break;
+			case OS.XK_R5: keysym [0] = OS.XK_KP_Divide; break;
+			case OS.XK_R6: keysym [0] = OS.XK_KP_Multiply; break;
+			case OS.XK_R7: keysym [0] = OS.XK_KP_Home; break;
+			case OS.XK_R9: keysym [0] = OS.XK_KP_Page_Up; break;
+			case OS.XK_R13: keysym [0] = OS.XK_KP_End; break;
+			case OS.XK_R15: keysym [0] = OS.XK_KP_Page_Down; break;
+		}
+		/*
+		* Bug in MOTIF.  On Solaris only, there is garbage in the
+		* high 16-bits for Keysyms such as XK_Down.  Since Keysyms
+		* must be 16-bits to fit into a Character, mask away the
+		* high 16-bits on all platforms.
+		*/
+		keysym [0] &= 0xFFFF;
+	}
+	
+	/*
+	* Bug in Motif.  On HP-UX only, Shift+F9, Shift+F10, Shift+F11
+	* and Shift+F12 are not translated correctly by XLookupString().
+	* The fix is to look for these values explicitly and correct them.
+	*/
+	if (OS.IsHPUX && keysym [0] != 0) {
+		switch (keysym [0]) {
+			case OS.XK_KP_F1: keysym [0] = OS.XK_F9; break;
+			case OS.XK_KP_F2: keysym [0] = OS.XK_F10; break;
+			case OS.XK_KP_F3: keysym [0] = OS.XK_F11; break;
+			case OS.XK_KP_F4: keysym [0] = OS.XK_F12; break;
+		}
+	}
+	
+	/*
+	* Bug in Motif.  There are some keycodes for which 
+	* XLookupString() does not translate the character.
+	* Some of examples are Shift+Tab and Ctrl+Space.
+	*/
+	switch (keysym [0]) {
+		case OS.XK_KP_Delete: buffer [0] = 0x7f; break;
+		case OS.XK_ISO_Left_Tab: buffer [0] = '\t'; break;
+		case OS.XK_space: buffer [0] = ' '; break;
+	}
+	
+	/*
+	* Feature in MOTIF. For some reason, XLookupString() fails 
+	* to translate both the keysym and the character when the
+	* control key is down.  For example, Ctrl+2 has the correct
+	* keysym value (50) but no character value, while Ctrl+/ has
+	* the keysym value (2F) but an invalid character value
+	* (1F).  It seems that Motif is applying the algorithm to
+	* convert a character to a control character for characters
+	* that are not valid control characters.  The fix is to test
+	* for 7-bit ASCII keysym values that fall outside of the
+	* the valid control character range and use the keysym value
+	* as the character, not the incorrect value that XLookupString()
+	* returns.  Even though lower case values are not strictly
+	* valid control characters, they are included in the range.
+	* 
+	* Some other cases include Ctrl+3..Ctr+8, Ctrl+[.
+	*/
+	boolean isNull = false;
+	int key = keysym [0];
+	if ((state & OS.ControlMask) != 0) {
+		if (0 <= key && key <= 0x7F) {
+			if ('a' <= key && key <= 'z') key -= 'a' - 'A';
+			if (!(64 <= key && key <= 95)) buffer [0] = (byte) key;
+			isNull = key == '@' && buffer [0] == 0;
+		} else {
+			switch (keysym [0]) {
+				case OS.XK_KP_0: buffer [0] = '0'; break;
+				case OS.XK_KP_1: buffer [0] = '1'; break;
+				case OS.XK_KP_2: buffer [0] = '2'; break;
+				case OS.XK_KP_3: buffer [0] = '3'; break;
+				case OS.XK_KP_4: buffer [0] = '4'; break;
+				case OS.XK_KP_5: buffer [0] = '5'; break;
+				case OS.XK_KP_6: buffer [0] = '6'; break;
+				case OS.XK_KP_7: buffer [0] = '7'; break;
+				case OS.XK_KP_8: buffer [0] = '8'; break;
+				case OS.XK_KP_9: buffer [0] = '9'; break;
+			}
+		}
+	}
+	return isNull;
 }
 int focusProc (int w, int client_data, int call_data, int continue_to_dispatch) {
 	Widget widget = getWidget (client_data);

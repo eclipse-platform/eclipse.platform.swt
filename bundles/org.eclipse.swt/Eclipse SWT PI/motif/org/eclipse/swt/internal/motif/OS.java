@@ -151,6 +151,8 @@ public class OS {
 	public static final int StructureNotifyMask = 1 << 17;
 	public static final int SubstructureNotifyMask = 1 << 19;
 	public static final int SubstructureRedirectMask = 1 << 20;
+	public static final int SunXK_F36 = 0x1005FF10;
+	public static final int SunXK_F37 = 0x1005FF11;
 	public static final int UnmapNotify = 18;
 	public static final int Unsorted = 0x0;
 	public static final int XA_FONT = 18;
@@ -226,6 +228,10 @@ public class OS {
 	public static final int XK_ISO_Left_Tab = 0xFE20;
 	public static final int XK_Insert = 0xFF63;
 	public static final int XK_KP_Enter = 0xFF8D;
+	public static final int XK_KP_F1 = 0xFF91;
+	public static final int XK_KP_F2 = 0xFF92;
+	public static final int XK_KP_F3 = 0xFF93;
+	public static final int XK_KP_F4 = 0xFF94;
 	public static final int XK_KP_Home = 0xFF95;
 	public static final int XK_KP_Left = 0xFF96;
 	public static final int XK_KP_Up = 0xFF97;
@@ -263,6 +269,16 @@ public class OS {
 	public static final int XK_Page_Up = 0xFF55;
 	public static final int XK_Pause = 0xFF13;
 	public static final int XK_Print = 0xFF61;
+	public static final int XK_R1 = 0xFFD2;
+	public static final int XK_R2 = 0xFFD3;
+	public static final int XK_R3 = 0xFFD4;
+	public static final int XK_R4 = 0xFFD5;
+	public static final int XK_R5 = 0xFFD6;
+	public static final int XK_R6 = 0xFFD7;
+	public static final int XK_R7 = 0xFFD8;
+	public static final int XK_R9 = 0xFFDA;
+	public static final int XK_R13 = 0xFFDE;
+	public static final int XK_R15 = 0xFFE0;
 	public static final int XK_Return = 0xFF0D;
 	public static final int XK_Right = 0xFF53;
 	public static final int XK_Scroll_Lock = 0xFF14;
