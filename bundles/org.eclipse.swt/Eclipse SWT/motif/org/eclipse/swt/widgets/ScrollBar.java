@@ -63,8 +63,11 @@ import org.eclipse.swt.events.*;
  * <dd>Selection</dd>
  * </dl>
  * <p>
+ * Note: Only one of the styles HORIZONTAL and VERTICAL may be specified.
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
- *
+ * </p>
+ * 
  * @see Slider
  * @see Scrollable
  * @see Scrollable#getHorizontalBar

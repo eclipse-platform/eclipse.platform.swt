@@ -25,6 +25,8 @@ import org.eclipse.swt.*;
  * <dd>(none)</dd>
  * </dl>
  * <p>
+ * Note: Only one of the above styles may be specified.
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */

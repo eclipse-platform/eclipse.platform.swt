@@ -24,6 +24,8 @@ import org.eclipse.swt.events.*;
  * <dd>Selection, DefaultSelection</dd>
  * </dl>
  * <p>
+ * Note: Only one of SINGLE and MULTI may be specified.
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
