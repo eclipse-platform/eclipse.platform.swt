@@ -363,6 +363,7 @@ public void addShellListener(ShellListener listener) {
 }
 
 void bringToTop (boolean force) {
+	if (getMinimized ()) return;
 	if (force) {
 		forceActive ();
 	} else {
@@ -1033,7 +1034,7 @@ void resizeBounds () {
  */
 public void open () {
 	checkWidget();
-	OS.SelectWindow (shellHandle);
+	bringToTop (false);
 	setVisible (true);
 	if (isDisposed ()) return;
 	if (!restoreFocus () && !traverseGroup (true)) setFocus ();
