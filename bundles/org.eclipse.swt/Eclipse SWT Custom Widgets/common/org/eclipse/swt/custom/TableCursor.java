@@ -183,6 +183,10 @@ public TableCursor(Table parent, int style) {
 				case SWT.Traverse :
 					traverse(event);
 					break;
+				case SWT.FocusIn :
+				case SWT.FocusOut :
+					redraw();
+					break;
 			}
 		}
 	};
@@ -190,6 +194,8 @@ public TableCursor(Table parent, int style) {
 	addListener(SWT.KeyDown, listener);
 	addListener(SWT.Paint, listener);
 	addListener(SWT.Traverse, listener);
+	addListener(SWT.FocusIn, listener);
+	addListener(SWT.FocusOut, listener);
 
 	tableListener = new Listener() {
 		public void handleEvent(Event event) {
