@@ -12,7 +12,7 @@ import java.util.Vector;
 
 /*
  */
-public class StyledTextBidi {
+class StyledTextBidi {
 	GC gc;
 	int tabWidth;
 	int[] renderPositions;
