@@ -58,6 +58,7 @@ static final int S_setFrameLoadDelegate = WebKit.sel_registerName("setFrameLoadD
 static final int S_setGroupName = WebKit.sel_registerName("setGroupName:"); //$NON-NLS-1$
 static final int S_setPolicyDelegate = WebKit.sel_registerName("setPolicyDelegate:"); //$NON-NLS-1$
 static final int S_setResourceLoadDelegate = WebKit.sel_registerName("setResourceLoadDelegate:"); //$NON-NLS-1$
+static final int S_setStatusText = WebKit.sel_registerName("setStatusText:"); //$NON-NLS-1$
 static final int S_setUIDelegate = WebKit.sel_registerName("setUIDelegate:"); //$NON-NLS-1$
 static final int S_stopLoading = WebKit.sel_registerName("stopLoading:"); //$NON-NLS-1$
 static final int S_stringByEvaluatingJavaScriptFromString = WebKit.sel_registerName("stringByEvaluatingJavaScriptFromString:"); //$NON-NLS-1$

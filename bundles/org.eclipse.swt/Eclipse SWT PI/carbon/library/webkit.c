@@ -177,6 +177,11 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_browser_WebKit_sel_1registerName(JNI
 	proc((int)sender, 18, (int)visible, 0, 0, 0);
 }
 
+- (void)webView:(WebView *)sender setStatusText:(NSString *)text
+{
+	proc((int)sender, 23, (int)text, 0, 0, 0);
+}
+
 /* WebPolicyDelegate */
 /*
 - (void)webView:(WebView *)sender decidePolicyForMIMEType:(NSString *)type request:(NSURLRequest *)request frame:(WebFrame*)frame decisionListener:(id<WebPolicyDecisionListener>)listener

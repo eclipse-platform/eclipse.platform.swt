@@ -616,6 +616,7 @@ int handleCallback(int selector, int arg0, int arg1, int arg2, int arg3) {
 		case 20: decidePolicyForNavigationAction(arg0, arg1, arg2, arg3); break;
 		case 21: decidePolicyForNewWindowAction(arg0, arg1, arg2, arg3); break;
 		case 22: unableToImplementPolicyWithError(arg0, arg1); break;
+		case 23: setStatusText(arg0); break;
 	}
 	return ret;
 }
@@ -1443,6 +1444,22 @@ int contextMenuItemsForElement(int element, int defaultMenuItems) {
 void setStatusBarVisible(int visible) {
 	/* Note.  Webkit only emits the notification when the status bar should be hidden. */
 	statusBar = visible != 0;
+}
+
+void setStatusText(int text) {
+	int length = OS.CFStringGetLength(text);
+	if (length == 0) return;
+	char[] buffer = new char[length];
+	CFRange range = new CFRange();
+	range.length = length;
+	OS.CFStringGetCharacters(text, range, buffer);
+
+	StatusTextEvent statusText = new StatusTextEvent(this);
+	statusText.display = getDisplay();
+	statusText.widget = this;
+	statusText.text = new String(buffer);
+	for (int i = 0; i < statusTextListeners.length; i++)
+		statusTextListeners[i].changed(statusText);
 }
 
 void setResizable(int visible) {
