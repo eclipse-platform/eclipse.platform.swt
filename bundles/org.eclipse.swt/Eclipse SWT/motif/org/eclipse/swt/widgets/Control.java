@@ -2024,8 +2024,7 @@ public void setCursor (Cursor cursor) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget();
-	boolean fixFocus = false;
-	if (!enabled) fixFocus = isFocusAncestor ();
+	boolean fixFocus = !enabled && isFocusAncestor ();
 	enableWidget (enabled);
 	if (fixFocus) fixFocus ();
 	if (!enabled || (isEnabled () && enabled)) {

@@ -2001,7 +2001,6 @@ void setDefaultFont () {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget ();
-
 	/*
 	* Feature in Windows.  If the receiver has focus, disabling
 	* the receiver causes no window to have focus.  The fix is
@@ -2009,8 +2008,7 @@ public void setEnabled (boolean enabled) {
 	* focus.  If no window will take focus, set focus to the
 	* desktop.
 	*/
-	boolean fixFocus = false;
-	if (!enabled) fixFocus = isFocusAncestor ();
+	boolean fixFocus = !enabled && isFocusAncestor ();
 	OS.EnableWindow (handle, enabled);
 	if (fixFocus) fixFocus ();
 }

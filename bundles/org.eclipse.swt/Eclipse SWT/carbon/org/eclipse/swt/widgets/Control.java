@@ -2181,21 +2181,13 @@ public void setCursor (Cursor cursor) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget();
+	if (((state & DISABLED) == 0) == enabled) return;
+	boolean fixFocus = !enabled && isFocusAncestor ();
 	if (enabled) {
-		if ((state & DISABLED) == 0) return;
 		state &= ~DISABLED;
 	} else {
-		if ((state & DISABLED) != 0) return;
 		state |= DISABLED;
 	}
-	/*
-	* Feature in the Macintosh.  If the receiver has focus,
-	* disabling the receiver causes no control to have focus. 
-	* The fix is to assign focus to the first ancestor control
-	* that takes focus.  If no control will take focus, clear
-	* the focus control.
-	*/
-	boolean fixFocus = !enabled && isFocusAncestor ();
 	enableWidget (enabled);
 	if (fixFocus) fixFocus ();
 }
