@@ -6526,7 +6526,11 @@ void setCaretLocation(int newCaretX, int line, int direction) {
 		getAccessible().textCaretMoved(getCaretOffset());
 		if (direction != caretDirection) {
 			caretDirection = direction;
-			if (updateImage) setCaretImage(direction);
+			if (updateImage) {
+				setCaretImage(direction);
+			} else {
+				caret.setSize(caret.getSize().x, lineHeight);
+			}
 			if (caretDirection == SWT.LEFT) {
 				BidiUtil.setKeyboardLanguage(BidiUtil.KEYBOARD_NON_BIDI);
 			} else if (caretDirection == SWT.RIGHT) {
