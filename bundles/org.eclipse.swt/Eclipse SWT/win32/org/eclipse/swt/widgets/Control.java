@@ -2319,10 +2319,10 @@ boolean translateTraversal (MSG msg) {
 		case OS.VK_ESCAPE: {
 			lastAscii = 27;
 			Shell shell = getShell ();
-			if (shell.parent == null) return false;
 			if (!shell.isVisible () || !shell.isEnabled ()) return false;
 			int code = OS.SendMessage (hwnd, OS.WM_GETDLGCODE, 0, 0);
 			if ((code & OS.DLGC_WANTALLKEYS) != 0) doit = false;
+			if (shell.parent == null) doit = false;
 			detail = SWT.TRAVERSE_ESCAPE;
 			break;
 		}
