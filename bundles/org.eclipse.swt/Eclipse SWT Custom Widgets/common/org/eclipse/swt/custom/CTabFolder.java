@@ -1340,7 +1340,10 @@ int getRightItemEdge (){
 	if (showMin) x -= BUTTON_SIZE;
 	if (showMax) x -= BUTTON_SIZE;
 	if (showChevron) x -= 3*BUTTON_SIZE/2;
-	if (topRight != null && topRightAlignment != SWT.FILL) x -= topRightRect.width + 3;
+	if (topRight != null && topRightAlignment != SWT.FILL) {
+		Point rightSize = topRight.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		x -= rightSize.x + 3;
+	}
 	return Math.max(0, x);
 }
 /**
@@ -2610,6 +2613,10 @@ void setButtonBounds() {
 	}
 	if (oldX != topRightRect.x || oldWidth != topRightRect.width ||
 		oldY != topRightRect.y || oldHeight != topRightRect.height) {	
+		int left = Math.min(oldX, topRightRect.x);
+		int right = Math.max(oldX + oldWidth, topRightRect.x + topRightRect.width);
+		int top = onBottom ? size.y - borderBottom - tabHeight : borderTop + 1;
+		redraw(left, top, right - left, tabHeight, false);
 	}
 	
 	// chevron button
