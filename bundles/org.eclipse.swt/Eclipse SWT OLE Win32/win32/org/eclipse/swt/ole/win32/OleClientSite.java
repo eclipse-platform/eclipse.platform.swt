@@ -776,7 +776,7 @@ public boolean isDirty() {
 public boolean isFocusControl () {
 	checkWidget ();
 	int focusHwnd = OS.GetFocus();
-	if (focusHwnd == handle) return true;
+	if (focusHwnd == handle) return (objIOleInPlaceObject == null);
 	if (objIOleInPlaceObject == null) return false;
 	int[] phwnd = new int[1];
 	objIOleInPlaceObject.GetWindow(phwnd);
