@@ -24,7 +24,7 @@ public class DragSourceEvent extends TypedEvent {
 	 * @see DND#DROP_MOVE
 	 * @see DND#DROP_COPY
 	 * @see DND#DROP_LINK
-	 * @see DND#DROP_TARGET_MOVE.
+	 * @see DND#DROP_TARGET_MOVE
 	 */
  	public int detail;
  	

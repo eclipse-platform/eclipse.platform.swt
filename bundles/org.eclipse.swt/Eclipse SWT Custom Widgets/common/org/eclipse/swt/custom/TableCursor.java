@@ -249,7 +249,6 @@ public TableCursor(Table parent, int style) {
  * </ul>
  *
  * @see SelectionListener
- * @see #removeSelectionListener
  * @see SelectionEvent
  */
 public void addSelectionListener(SelectionListener listener) {
