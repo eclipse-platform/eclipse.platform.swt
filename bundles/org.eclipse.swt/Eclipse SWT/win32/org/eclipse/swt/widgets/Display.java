@@ -101,7 +101,7 @@ public class Display extends Device {
 	Callback windowCallback;
 	int windowProc, threadId, processId;
 	TCHAR windowClass;
-	static int windowClassCount = 0;
+	static int WindowClassCount = 0;
 	static final String WindowName = "SWT_Window";
 	EventTable eventTable;
 	
@@ -1155,7 +1155,7 @@ protected void init () {
 	processId = OS.GetCurrentProcessId ();
 	
 	/* Use the character encoding for the default locale */
-	windowClass = new TCHAR (0, WindowName + windowClassCount++, true);
+	windowClass = new TCHAR (0, WindowName + WindowClassCount++, true);
 
 	/* Register the SWT window class */
 	int hHeap = OS.GetProcessHeap ();
