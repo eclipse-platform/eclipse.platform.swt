@@ -34,11 +34,13 @@ public class FileViewer {
 	
 	private File currentDirectory = null;
 	
-	/* Drag and drop optimizations -- avoid redundant updates */
-	private File[] deferredRefreshFiles = null;
-	private boolean deferredRefreshRequested = false;
-	private boolean isDragging = false; // don't refresh during drag and drop  
-	private boolean isDropping = false; // don't refresh during drag and drop
+	/* Drag and drop optimizations */
+	private boolean isDragging = false; // if this app is dragging
+	private boolean isDropping = false; // if this app is dropping
+
+	private File[]  processedDropFiles = null; // so Drag only deletes what it needs to
+	private File[]  deferredRefreshFiles = null;      // to defer notifyRefreshFiles while we do DND
+	private boolean deferredRefreshRequested = false; // to defer notifyRefreshFiles while we do DND
 
 	/* Combo view */
 	private static final String COMBODATA_ROOTS = "Combo.roots";
@@ -431,12 +433,14 @@ public class FileViewer {
 				sourceNames = null;
 				event.doit = dndSelection.length > 0;
 				isDragging = true;
+				processedDropFiles = null;
 			}
 			public void dragFinished(DragSourceEvent event){
 				dragSourceHandleDragFinished(event, sourceNames);
 				dndSelection = null;
 				sourceNames = null;
 				isDragging = false;
+				processedDropFiles = null;
 				handleDeferredRefresh();
 			}
 			public void dragSetData(DragSourceEvent event){
@@ -474,13 +478,11 @@ public class FileViewer {
 			public void dragOver(DropTargetEvent event) {
 				dropTargetValidate(event, getTargetFile(event));
 			}
-			public void dropAccept(DropTargetEvent event) {
-				dropTargetValidate(event, getTargetFile(event));
-			}
 			public void drop(DropTargetEvent event) {
-				if (dropTargetValidate(event, getTargetFile(event)))
-					dropTargetHandleDrop(event, getTargetFile(event));
-			}				
+				File targetFile = getTargetFile(event);
+				if (dropTargetValidate(event, targetFile))
+					dropTargetHandleDrop(event, targetFile);
+			}
 			private File getTargetFile(DropTargetEvent event) {
 				// Determine the target File for the drop 
 				final TreeItem item = tree.getItem(tree.toControl(new Point(event.x, event.y)));
@@ -504,52 +506,146 @@ public class FileViewer {
 	 * @param item the TreeItem to fill in
 	 */
 	private void treeExpandItem(TreeItem item) {
-		final File file = (File) item.getData(TREEITEMDATA_FILE);
+		shell.setCursor(IconCache.stockCursors[IconCache.cursorWait]);
 		final Object stub = item.getData(TREEITEMDATA_STUB);
-		if (stub == null) treeRebuildItem(item, file);
+		if (stub == null) treeRefreshItem(item, true);
+		shell.setCursor(IconCache.stockCursors[IconCache.cursorDefault]);
 	}
 	
 	/**
-	 * Populates an item in the tree with a complete directory listing.
+	 * Traverse the entire tree and update only what has changed.
 	 * 
-	 * @param item the TreeItem to fill in
-	 * @param file the directory to use
+	 * @param roots the root directory listing
 	 */
-	private void treeRebuildItem(TreeItem item, File file) {
-		/* Get directory listing */
-		shell.setCursor(IconCache.stockCursors[IconCache.cursorWait]);
-		File[] subFiles = null;
-		if (file != null) {
-			subFiles = FileViewer.getDirectoryList(file);
-		}
-		
-		/* Eliminate any existing (possibly placeholder) children */
-		final TreeItem[] oldChildren = item.getItems();
-		for (int i = 0; i < oldChildren.length; ++i) {
-			oldChildren[i].dispose();
-		}
-
-		if (subFiles != null && subFiles.length > 0) {
-			/* Add subdirectory entries */
-			for (int i = 0; i < subFiles.length; ++i) {
-				final File folder = subFiles[i];
-				if (! folder.isDirectory()) continue;
-				
-				// add the directory to the tree
-				TreeItem newItem = new TreeItem(item, SWT.NULL);
-				treeInitFolder(newItem, folder);
-				
-				// add a placeholder child item so we get the "expand" button
-				TreeItem placeholderItem = new TreeItem(newItem, SWT.NULL);
+	private void treeRefresh(File[] masterFiles) {
+		TreeItem[] items = tree.getItems();
+		int masterIndex = 0;
+		int itemIndex = 0;
+		for (int i = 0; i < items.length; ++i) {
+			final TreeItem item = items[i];
+			final File itemFile = (File) item.getData(TREEITEMDATA_FILE);
+			if ((itemFile == null) || (masterIndex == masterFiles.length)) {
+				// remove bad item or placeholder
+				item.dispose();
+				continue;
 			}
-		} else {
-			/* Error or nothing found -- collapse the item */
-			item.setExpanded(false);
+			final File masterFile = masterFiles[masterIndex];
+			int compare = compareFiles(masterFile, itemFile);
+			if (compare == 0) {
+				// same file, update it
+				treeRefreshItem(item, false);
+				++itemIndex;
+				++masterIndex;
+			} else if (compare < 0) {
+				// should appear before file, insert it
+				TreeItem newItem = new TreeItem(tree, SWT.NULL, itemIndex);
+				treeInitVolume(newItem, masterFile);
+				new TreeItem(newItem, SWT.NULL); // placeholder child item to get "expand" button
+				++itemIndex;
+				++masterIndex;
+				--i;
+			} else {
+				// should appear after file, delete stale item
+				item.dispose();
+			}
+		}
+		for (;masterIndex < masterFiles.length; ++masterIndex) {
+			final File masterFile = masterFiles[masterIndex];
+			TreeItem newItem = new TreeItem(tree, SWT.NULL);
+			treeInitVolume(newItem, masterFile);
+			new TreeItem(newItem, SWT.NULL); // placeholder child item to get "expand" button
 		}		
+	}
+	
+	/**
+	 * Traverse an item in the tree and update only what has changed.
+	 * 
+	 * @param dirItem the tree item of the directory
+	 * @param forcePopulate true iff we should populate non-expanded items as well
+	 */
+	private void treeRefreshItem(TreeItem dirItem, boolean forcePopulate) {
+		final File dir = (File) dirItem.getData(TREEITEMDATA_FILE);
+		
+		if (! forcePopulate && ! dirItem.getExpanded()) {
+			// Refresh non-expanded item
+			if (dirItem.getData(TREEITEMDATA_STUB) != null) {
+				treeItemRemoveAll(dirItem);
+				new TreeItem(dirItem, SWT.NULL); // placeholder child item to get "expand" button
+				dirItem.setData(TREEITEMDATA_STUB, null);
+			}
+			return;
+		}
+		// Refresh expanded item
+		dirItem.setData(TREEITEMDATA_STUB, this); // clear stub flag
 
-		// Clear stub flag
-		item.setData(TREEITEMDATA_STUB, this);
-		shell.setCursor(IconCache.stockCursors[IconCache.cursorDefault]);
+		/* Get directory listing */
+		File[] subFiles = (dir != null) ? FileViewer.getDirectoryList(dir) : null;
+		if (subFiles == null || subFiles.length == 0) {
+			/* Error or no contents */
+			treeItemRemoveAll(dirItem);
+			dirItem.setExpanded(false);
+			return;
+		}
+
+		/* Refresh sub-items */
+		TreeItem[] items = dirItem.getItems();
+		final File[] masterFiles = subFiles;
+		int masterIndex = 0;
+		int itemIndex = 0;
+		File masterFile = null;
+		for (int i = 0; i < items.length; ++i) {
+			while ((masterFile == null) && (masterIndex < masterFiles.length)) {
+				masterFile = masterFiles[masterIndex++];
+				if (! masterFile.isDirectory()) masterFile = null;
+			}
+
+			final TreeItem item = items[i];
+			final File itemFile = (File) item.getData(TREEITEMDATA_FILE);
+			if ((itemFile == null) || (masterFile == null)) {
+				// remove bad item or placeholder
+				item.dispose();
+				continue;
+			}
+			int compare = compareFiles(masterFile, itemFile);
+			if (compare == 0) {
+				// same file, update it
+				treeRefreshItem(item, false);
+				masterFile = null;
+				++itemIndex;
+			} else if (compare < 0) {
+				// should appear before file, insert it
+				TreeItem newItem = new TreeItem(dirItem, SWT.NULL, itemIndex);
+				treeInitFolder(newItem, masterFile);
+				new TreeItem(newItem, SWT.NULL); // add a placeholder child item so we get the "expand" button
+				masterFile = null;
+				++itemIndex;
+				--i;
+			} else {
+				// should appear after file, delete stale item
+				item.dispose();
+			}
+		}
+		while ((masterFile != null) || (masterIndex < masterFiles.length)) {
+			if (masterFile != null) {
+				TreeItem newItem = new TreeItem(dirItem, SWT.NULL);
+				treeInitFolder(newItem, masterFile);
+				new TreeItem(newItem, SWT.NULL); // add a placeholder child item so we get the "expand" button
+				if (masterIndex == masterFiles.length) break;
+			}
+			masterFile = masterFiles[masterIndex++];
+			if (! masterFile.isDirectory()) masterFile = null;
+		}
+	}
+
+	/**
+	 * Foreign method: remove all children of a TreeItem
+	 * @param treeItem the TreeItem
+	 */
+	private static void treeItemRemoveAll(TreeItem treeItem) {
+		final TreeItem[] children = treeItem.getItems();
+		for (int i = 0; i < children.length; ++i) {
+			children[i].dispose();
+		}
 	}
 
 	/**
@@ -684,13 +780,11 @@ public class FileViewer {
 			public void dragOver(DropTargetEvent event) {
 				dropTargetValidate(event, getTargetFile(event));
 			}
-			public void dropAccept(DropTargetEvent event) {
-				dropTargetValidate(event, getTargetFile(event));
-			}
 			public void drop(DropTargetEvent event) {
-				if (dropTargetValidate(event, getTargetFile(event)))
-					dropTargetHandleDrop(event, getTargetFile(event));
-			}				
+				File targetFile = getTargetFile(event);
+				if (dropTargetValidate(event, targetFile))
+					dropTargetHandleDrop(event, targetFile);
+			}
 			private File getTargetFile(DropTargetEvent event) {
 				// Determine the target File for the drop 
 				final TableItem item = table.getItem(table.toControl(new Point(event.x, event.y)));
@@ -841,43 +935,68 @@ public class FileViewer {
 		deferredRefreshRequested = false;
 		File[] files = deferredRefreshFiles;
 		deferredRefreshFiles = null;
-		
-		// Does not refresh very intelligently at the moment.
+
+		shell.setCursor(IconCache.stockCursors[IconCache.cursorWait]);
 
 		/* Table view:
 		 * Refreshes information about any files in the list and their children.
 		 */
-		workerUpdate(currentDirectory, true);
-
-		final File[] roots = getRoots();
+		boolean refreshTable = false;
+		if (files != null) {
+			for (int i = 0; i < files.length; ++i) {
+				final File file = files[i];
+				if (file.equals(currentDirectory)) {
+					refreshTable = true;
+					break;
+				}
+				File parentFile = file.getParentFile();
+				if ((parentFile != null) && (parentFile.equals(currentDirectory))) {
+					refreshTable = true;
+					break;
+				}
+			}
+		} else refreshTable = true;
+		if (refreshTable) workerUpdate(currentDirectory, true);
 
 		/* Combo view:
 		 * Refreshes the list of roots
 		 */
-		combo.removeAll();
-		combo.setData(COMBODATA_ROOTS, roots);
-		for (int i = 0; i < roots.length; ++i) {
-			final File file = roots[i];
-			combo.add(file.getPath());
+		final File[] roots = getRoots();
+
+		if (files == null) {
+			boolean refreshCombo = false;
+			final File[] comboRoots = (File[]) combo.getData(COMBODATA_ROOTS);
+		
+			if ((comboRoots != null) && (comboRoots.length == roots.length)) {
+				for (int i = 0; i < roots.length; ++i) {
+					if (! roots[i].equals(comboRoots[i])) {
+						refreshCombo = true;
+						break;
+					}
+				}
+			} else refreshCombo = true;
+
+			if (refreshCombo) {
+				combo.removeAll();
+				combo.setData(COMBODATA_ROOTS, roots);
+				for (int i = 0; i < roots.length; ++i) {
+					final File file = roots[i];
+					combo.add(file.getPath());
+				}
+			}
 		}
 
 		/* Tree view:
 		 * Refreshes information about any files in the list and their children.
 		 */
-		tree.removeAll();
-		for (int i = 0; i < roots.length; ++i) {
-			final File file = roots[i];
-			TreeItem item = new TreeItem(tree, SWT.NULL);
-			treeInitVolume(item, file);
-
-			// add a placeholder child item so we get the "expand" button
-			TreeItem placeholderItem = new TreeItem(item, SWT.NULL);
-		}
+		treeRefresh(roots);
 		
 		// Remind everyone where we are in the filesystem
 		final File dir = currentDirectory;
 		currentDirectory = null;
 		notifySelectedDirectory(dir);
+
+		shell.setCursor(IconCache.stockCursors[IconCache.cursorDefault]);
 	}
 
 	/**
@@ -944,7 +1063,7 @@ public class FileViewer {
 	 * Handles a drop on a dropTarget.
 	 * <p>
 	 * Used in drop().<br>
-	 * Note event.detail is modified by this method
+	 * Note event.detail is modified by this method.
 	 * </p>
 	 * @param event the DropTargetEvent passed as parameter to the drop() method
 	 * @param targetFile the File representing the drop target location
@@ -957,20 +1076,51 @@ public class FileViewer {
 		if (sourceNames == null) event.detail = DND.DROP_NONE;
 		if (event.detail == DND.DROP_NONE) return;
 
+		// Copy each file
+		Vector /* of File */ processedFiles = new Vector();
 		for (int i = 0; i < sourceNames.length; i++){
 			final File source = new File(sourceNames[i]);
 			final File dest = new File(targetFile, source.getName());
-	
-			// Copy each file
-			if (! copyFileStructure(source, dest)) {
-				event.detail = DND.DROP_NONE; // forbid the source from deleting files on us
-				MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-				box.setText(getResourceString("dialog.FailedCopy.title"));
-				box.setMessage(getResourceString("dialog.FailedCopy.description",
-					new Object[] { source, dest }));
-				box.open();
-				break;
+			if (source.equals(dest)) continue; // ignore if in same location
+
+			for (;;) {
+				if (copyFileStructure(source, dest)) {
+					processedFiles.add(source);
+					break;
+				} else {
+					if (event.detail == DND.DROP_MOVE && (!isDragging)) {
+						// It is not possible to notify an external drag source that a drop
+						// operation was only partially successful.  This is particularly a
+						// problem for DROP_MOVE operations since unless the source gets
+						// DROP_NONE, it will delete the original data including bits that
+						// may not have been transferred successfully.
+						MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.RETRY | SWT.CANCEL);
+						box.setText(getResourceString("dialog.FailedCopy.title"));
+						box.setMessage(getResourceString("dialog.FailedCopy.description",
+							new Object[] { source }));
+						int button = box.open();
+						if (button == SWT.CANCEL) {
+							i = sourceNames.length;
+							event.detail = DND.DROP_NONE;
+							break;
+						}
+					} else {
+						// We can recover gracefully from errors if the drag source belongs
+						// to this application since it will look at processedDropFiles.
+						MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.ABORT | SWT.RETRY | SWT.IGNORE);
+						box.setText(getResourceString("dialog.FailedCopy.title"));
+						box.setMessage(getResourceString("dialog.FailedCopy.description",
+							new Object[] { source }));
+						int button = box.open();
+						if (button == SWT.ABORT) i = sourceNames.length;
+						if (button != SWT.RETRY) break;
+					}
+				}
 			}
+		}
+		if (isDragging) {
+			// Remember exactly which files we processed
+			processedDropFiles = ((File[]) processedFiles.toArray(new File[processedFiles.size()]));
 		}
 		notifyRefreshFiles(new File[] { targetFile });
 	}
@@ -981,28 +1131,40 @@ public class FileViewer {
 	 * Used in dragFinished().<br>
 	 * </p>
 	 * @param event the DragSourceEvent passed as parameter to the dragFinished() method
-	 * @param sourceNames the names of the files that were dragged (event.data is inadequate)
+	 * @param sourceNames the names of the files that were dragged (event.data is invalid)
 	 */
 	private void dragSourceHandleDragFinished(DragSourceEvent event, String[] sourceNames) {
 		if (sourceNames == null) return;
 		if (event.detail != DND.DROP_MOVE) return;
 
-		Vector /* of File */ dirtyFiles = new Vector();
-		for (int i = 0; i < sourceNames.length; i++){
-			final File source = new File(sourceNames[i]);
-			dirtyFiles.add(source);
-	
-			// Delete each file
-			if (! deleteFileStructure(source)) {
-				MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-				box.setText(getResourceString("dialog.FailedDelete.title"));
-				box.setMessage(getResourceString("dialog.FailedDelete.description",
-					new Object[] { source }));
-				box.open();
-				break;
+		// Get array of files that were actually transferred
+		final File[] sourceFiles;
+		if (processedDropFiles != null) {
+			sourceFiles = processedDropFiles;
+		} else {
+			sourceFiles = new File[sourceNames.length];
+			for (int i = 0; i < sourceNames.length; ++i)
+				sourceFiles[i] = new File(sourceNames[i]);
+		}	
+
+		// Delete each file
+		for (int i = 0; i < sourceFiles.length; i++){
+			final File source = sourceFiles[i];
+			for (;;) {
+				if (deleteFileStructure(source)) {
+					break;
+				} else {
+					MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.ABORT | SWT.RETRY | SWT.IGNORE);
+					box.setText(getResourceString("dialog.FailedDelete.title"));
+					box.setMessage(getResourceString("dialog.FailedDelete.description",
+						new Object[] { source }));
+					int button = box.open();
+					if (button == SWT.ABORT) i = sourceNames.length;
+					if (button == SWT.RETRY) break;
+				}
 			}
 		}
-		notifyRefreshFiles((File[]) dirtyFiles.toArray(new File[dirtyFiles.size()]));
+		notifyRefreshFiles(sourceFiles);
 	}
 
 	/**
@@ -1062,7 +1224,7 @@ public class FileViewer {
 	boolean copyFileStructure(File oldFile, File newFile) {
 		if (oldFile == null || newFile == null) return false;
 		
-		// ensure that newFile is not a child of oldFile
+		// ensure that newFile is not a child of oldFile or a dupe
 		File searchFile = newFile;
 		do {
 			if (oldFile.equals(searchFile)) return false;
@@ -1191,7 +1353,11 @@ public class FileViewer {
 //		boolean bIsDir = b.isDirectory();
 //		if (aIsDir && ! bIsDir) return -1;
 //		if (bIsDir && ! aIsDir) return 1;
-		return a.getName().compareToIgnoreCase(b.getName());
+
+		// sort case-sensitive files in a case-insensitive manner
+		int compare = a.getName().compareToIgnoreCase(b.getName());
+		if (compare == 0) compare = a.getName().compareTo(b.getName());
+		return compare;
 	}
 	
 	/*
