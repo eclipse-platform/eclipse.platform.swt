@@ -34,13 +34,7 @@ import org.eclipse.swt.events.*;
  * </p>
  */
 public class TabFolder extends Composite {
-	
-	int topHandle;
 	TabItem [] items;
-
-/*
- *   ==  CONSTRUCTORS  ==
- */
 
 /**
  * Constructs a new instance of this class given its parent
@@ -74,36 +68,18 @@ public TabFolder (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
-/*
- *   ==  Handle code  ==
- */
-
 void createHandle (int index) {
 	state |= HANDLE;
-	topHandle = OS.eclipse_fixed_new();
+	fixedHandle = OS.gtk_fixed_new ();
+	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.gtk_fixed_set_has_window (fixedHandle, true);
 	handle = OS.gtk_notebook_new ();
-	boxHandle = OS.gtk_event_box_new();
-	fixedHandle = OS.eclipse_fixed_new ();
-}
-
-void configure () {
-	parent._connectChild(topHandle);
-	OS.gtk_container_add(topHandle, handle);
-	OS.gtk_container_add(topHandle, boxHandle);
-	OS.gtk_container_add(boxHandle, fixedHandle);	
-	OS.eclipse_fixed_set_location(topHandle, boxHandle, 2, 33); /* FIXME */
-}
-
-void showHandle() {
-	OS.gtk_widget_show(topHandle);
-	OS.gtk_widget_show(handle);
-	OS.gtk_widget_show(boxHandle);
-	OS.gtk_widget_show(fixedHandle);
-}
-
-void register () {
-	super.register ();
-	WidgetTable.put (topHandle, this);
+	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	int parentHandle = parent.parentingHandle ();
+	OS.gtk_container_add (parentHandle, fixedHandle);
+	OS.gtk_container_add (fixedHandle, handle);
+	OS.gtk_widget_show (handle);
+	OS.gtk_widget_show (fixedHandle);
 }
 
 void hookEvents () {
@@ -114,14 +90,6 @@ void hookEvents () {
 void createWidget (int index) {
 	super.createWidget(index);
 	items = new TabItem [4];
-}
-
-int topHandle () { return topHandle; }
-public int paintHandle () { return boxHandle; } /* can't do much :-( */
-int parentingHandle () { return fixedHandle; }
-boolean isMyHandle(int h) {
-	if (h==topHandle) return true;
-	return super.isMyHandle(h);
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -148,6 +116,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point(300,300);
 }
 
+int clientHandle () {
+	if (items [0] != null) return items [0].pageHandle;
+	return handle;
+}
+
 /**
  * Computes the widget trim.
  */
@@ -156,38 +129,24 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	return new Rectangle(x-2, y-33, width+4, height+35);
 }
 
-/*
- *   === Layout code ===
- */
-
-void _setSize(int width, int height) {
-	OS.eclipse_fixed_set_size(parent.parentingHandle(), topHandle(), width, height);
-	/* FIXME */
-	int w = Math.max(width - 4, 1);
-	int h = Math.max(height - 35, 1);
-	OS.eclipse_fixed_set_size(topHandle, handle, w, h);
-	layoutCurrent();
-}
-
-public Rectangle getClientArea () {
-	checkWidget();
-	int[] sz = new int[2];
-	OS.eclipse_fixed_get_size(topHandle, boxHandle, sz);
-	return new Rectangle(0,0, sz[0], sz[1]);
-}
-
-void layoutCurrent() {
-	int index=getSelectionIndex();
-	if (index==-1) return;
-	Control control = items[index].control;
-	if (control==null) return;
-	if (control.isDisposed()) return;
-	control.setBounds(getClientArea());
+boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	boolean changed = super.setBounds (x, y, width, height, move, resize);
+	if (changed && resize) {
+		int index = getSelectionIndex ();
+		if (index != -1) {
+			TabItem item = items [index];
+			Control control = item.control;
+			if (control != null && !control.isDisposed ()) {
+				control.setBounds (getClientArea ());
+			}
+		}
+	}
+	return changed;
 }
 
 void createItem (TabItem item, int index) {
 	int list = OS.gtk_container_children (handle);
-	int itemCount = OS.g_list_length (list);
+	int itemCount = (list != 0) ? OS.g_list_length (list) : 0;
 	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_ITEM_NOT_ADDED);
 	if (itemCount == items.length) {
 		TabItem [] newItems = new TabItem [items.length + 4];
@@ -197,20 +156,23 @@ void createItem (TabItem item, int index) {
 	
 	// create a new label	
 	int labelHandle = OS.gtk_label_new ("");
+	if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
 
 	// create a new fake page
-	int stubPage = OS.eclipse_fixed_new();
+	int pageHandle = OS.gtk_fixed_new();
+	if (pageHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	
 	// put the label and the fake page inside the notebook
 	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
-	OS.gtk_notebook_append_page(handle, stubPage, labelHandle);
+	OS.gtk_notebook_append_page(handle, pageHandle, labelHandle);
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 	
 	OS.gtk_widget_show(labelHandle);
-	OS.gtk_widget_show(stubPage);
+	OS.gtk_widget_show(pageHandle);
 
 	item.state |= HANDLE;
 	item.handle = labelHandle;
+	item.pageHandle = pageHandle;
 	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
 	items [index] = item;
 	OS.gtk_notebook_set_show_tabs (handle, true);
@@ -262,6 +224,7 @@ void destroyItem (TabItem item) {
 	items [itemCount] = null;
 	item.handle = 0;
 }
+		
 /**
  * Returns the item at the given, zero-relative index in the
  * receiver. Throws an exception if the index is out of range.
@@ -281,10 +244,11 @@ void destroyItem (TabItem item) {
 public TabItem getItem (int index) {
 	checkWidget();
 	int list = OS.gtk_container_children (handle);
-	int itemCount = OS.g_list_length (list);
+	int itemCount = list != 0 ? OS.g_list_length (list) : 0;
 	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_CANNOT_GET_ITEM);
 	return items [index];
 }
+
 /**
  * Returns the number of items contained in the receiver.
  *
@@ -297,10 +261,10 @@ public TabItem getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget();
-	//return itemCount;
 	int list = OS.gtk_container_children (handle);
-	return OS.g_list_length (list);
+	return list != 0 ? OS.g_list_length (list) : 0;
 }
+
 /**
  * Returns an array of <code>TabItem</code>s which are the items
  * in the receiver. 
@@ -320,11 +284,12 @@ public int getItemCount () {
 public TabItem [] getItems () {
 	checkWidget();
 	int list = OS.gtk_container_children (handle);
-	int itemCount = OS.g_list_length (list);
-	TabItem [] result = new TabItem [itemCount];
-	System.arraycopy (items, 0, result, 0, itemCount);
+	int count = list != 0 ? OS.g_list_length (list) : 0;
+	TabItem [] result = new TabItem [count];
+	System.arraycopy (items, 0, result, 0, count);
 	return result;
 }
+
 /**
  * Returns an array of <code>TabItem</code>s that are currently
  * selected in the receiver. An empty array indicates that no
@@ -347,6 +312,7 @@ public TabItem [] getSelection () {
 	if (index == -1) return new TabItem [0];
 	return new TabItem [] {items [index]};
 }
+
 /**
  * Returns the zero-relative index of the item which is currently
  * selected in the receiver, or -1 if no item is selected.
@@ -384,8 +350,8 @@ public int indexOf (TabItem item) {
 	checkWidget();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int list = OS.gtk_container_children (handle);
-	int itemCount = OS.g_list_length (list);
-	for (int i=0; i<itemCount; i++) {
+	int count = list != 0 ? OS.g_list_length (list) : 0;
+	for (int i=0; i<count; i++) {
 		if (items [i] == item) return i;
 	}
 	return -1;
@@ -481,54 +447,15 @@ public void setSelection (TabItem [] items) {
 	}
 }
 
-/*
- *   == DESTRUCTION ===
- */
-
-void deregister () {
-	super.deregister ();
-	WidgetTable.remove (topHandle);
-}
-
-void releaseChildren() {
-	int list = OS.gtk_container_children (handle);
-	int itemCount = OS.g_list_length (list);
-	for (int i=0; i<itemCount; i++) {
-		TabItem item = items [i];
-		if (!item.isDisposed ()) {
-			item.releaseWidget ();
-			item.releaseHandle ();
-		}
-	}
-	
-	// Now, the non-item children
-	list = OS.gtk_container_children(parentingHandle());
-	int childCount = OS.g_list_length (list);
-	for (int i=0; i<childCount; i++) {
-		int childHandle = OS.g_list_nth_data(list, i);
-		if (!isMyHandle(childHandle)) {
-			Widget w = WidgetTable.get(childHandle);
-			if (!(w==null)  &&  !(w.isDisposed())) {
-				w.releaseWidget();
-				w.releaseHandle();
-			}
-		}
-	}
-}
-
-void releaseHandle () {
-	super.releaseHandle ();
-	boxHandle = 0;
-}
-
 void releaseWidget () {
-	super.releaseWidget();
+	int count = getItemCount ();
+	for (int i=0; i<count; i++) {
+		TabItem item = items [i];
+		if (!item.isDisposed ()) item.releaseWidget ();
+	}
 	items = null;
+	super.releaseWidget ();
 }
-
-/*
- *   == AS YET UNCLASSIFIED ===
- */
 
 static int checkStyle (int style) {
 	/*
