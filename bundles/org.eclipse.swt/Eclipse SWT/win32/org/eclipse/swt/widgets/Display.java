@@ -1760,9 +1760,10 @@ public Image getSystemImage (int id) {
 }
 
 /**
- * Returns the single instance of the system tray.
+ * Returns the single instance of the system tray or null
+ * when there is no system tray available for the platform.
  *
- * @return the system tray
+ * @return the system tray or <code>null</code>
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>

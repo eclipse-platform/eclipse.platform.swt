@@ -1722,8 +1722,7 @@ public Image getSystemImage (int id) {
  */
 public Tray getSystemTray () {
 	checkDevice ();
-	if (tray != null) return tray;
-	return tray = new Tray (this, SWT.NONE);
+	return null;
 }
 
 /**

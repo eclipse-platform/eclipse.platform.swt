@@ -1793,8 +1793,7 @@ public Image getSystemImage (int style) {
  */
 public Tray getSystemTray () {
 	checkDevice ();
-	if (tray != null) return tray;
-	return tray = new Tray (this, SWT.NULL);
+	return null;
 }
 /**
  * Returns the user-interface thread for the receiver.
