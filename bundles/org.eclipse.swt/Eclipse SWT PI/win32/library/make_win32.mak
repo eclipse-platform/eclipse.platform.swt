@@ -33,11 +33,6 @@ AWT_LIB    = $(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
 AWT_LIBS   = $(JAVA_HOME)\jre\bin\jawt.lib
 AWT_OBJS   = swt_awt.obj
 
-MOZILLA_PREFIX	= swt-mozilla
-MOZILLA_LIB     = $(MOZILLA_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
-MOZILLA_LIBS	= embedstring.lib embed_base_s.lib xpcomglue_s.lib xpcom.lib nspr4.lib plds4.lib plc4.lib
-MOZILLA_OBJS	= xpcom.obj xpcom_stats.obj xpcom_structs.obj xpcom_custom.obj swt.obj
-
 # Uncomment for Native Stats tool
 #NATIVE_STATS = -DNATIVE_STATS
 
@@ -50,23 +45,10 @@ CFLAGS = -c -W3 -G6 -GD -O1 $(SWT_CDEBUG) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_
 RCFLAGS = -DSWT_FILE_VERSION=\"$(maj_ver).$(min_ver)\" -DSWT_COMMA_VERSION=$(comma_ver)
 LFLAGS = /INCREMENTAL:NO /PDB:NONE /RELEASE /NOLOGO $(SWT_LDEBUG) -entry:_DllMainCRTStartup@12 -dll /BASE:0x10000000 /comment:$(pgm_ver_str) /comment:$(copyright) /DLL
 
-MOZILLA_INCLUDES = -I$(GECKO_SDK) \
-	-I$(GECKO_SDK)\nspr\include \
-	-I$(GECKO_SDK)\xpcom\include \
-	-I$(GECKO_SDK)\string\include \
-	-I$(GECKO_SDK)\embed_base\include \
-	-I$(GECKO_SDK)\embedstring\include
-MOZILLACFLAGS = -c -W3 -O1 -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) -nologo -D_X86_=1 -D_WIN32 -D_WIN95 -D_WIN32_WINDOWS=0x0400 -DWIN32 -D_WIN32_DCOM /I$(JAVA_HOME)\include /I$(JAVA_HOME)\include\win32 /I. \
-				 -DXPCOM_GLUE=1 -DMOZILLA_STRICT_API=1 -DXP_WIN -DXP_WIN32 $(MOZILLA_INCLUDES)
-MOZILLALFLAGS = $(LFLAGS) /NODEFAULTLIB:LIBC.lib /libpath:"$(GECKO_SDK)\embed_base\bin" /libpath:"$(GECKO_SDK)\xpcom\bin" /libpath:"$(GECKO_SDK)\nspr\bin" /libpath:"$(GECKO_SDK)\embedstring\bin"
-
-all: $(SWT_LIB) $(AWT_LIB) #$(MOZILLA_LIB)
+all: $(SWT_LIB) $(AWT_LIB)
 
 .c.obj:
 	cl $(CFLAGS) $*.c
-
-.cpp.obj:
-	cl $(MOZILLACFLAGS) $*.cpp
 
 $(SWT_LIB): $(SWT_OBJS) swt.res
 	echo $(LFLAGS) >templrf
@@ -89,17 +71,6 @@ $(AWT_LIB): $(AWT_OBJS) swt_awt.res
 	echo swt_awt.res >>templrf
 	link @templrf
 	del templrf
-
-$(MOZILLA_LIB): $(MOZILLA_OBJS) xpcom.res
-	echo $(MOZILLALFLAGS) >templrf
-	echo $(MOZILLA_LIBS) >>templrf
-	echo -machine:IX86 >>templrf
-	echo -subsystem:windows >>templrf
-	echo -out:$(MOZILLA_LIB) >>templrf
-	echo $(MOZILLA_OBJS) >>templrf
-	echo xpcom.res >>templrf
-	link @templrf
-	del templrf
 	
 swt.res:
 	rc $(RCFLAGS) -DSWT_ORG_FILENAME=\"$(SWT_LIB)\" -r -fo swt.res swt.rc
@@ -107,9 +78,6 @@ swt.res:
 swt_awt.res:
 	rc $(RCFLAGS) -DSWT_ORG_FILENAME=\"$(AWT_LIB)\" -r -fo swt_awt.res swt_awt.rc
 
-xpcom.res:
-	rc $(RCFLAGS) -DSWT_ORG_FILENAME=\"$(MOZILLA_LIB)\" -r -fo xpcom.res xpcom.rc
-	
 install: all
 	copy *.dll $(OUTPUT_DIR)
 
