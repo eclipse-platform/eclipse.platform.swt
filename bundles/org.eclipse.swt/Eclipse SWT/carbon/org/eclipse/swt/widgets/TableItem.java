@@ -203,7 +203,7 @@ public Color getBackground (int index) {
 public Rectangle getBounds (int index) {
 	checkWidget ();
 	parent.checkItems (true);
-	if (index != 0 && !(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);;
+	if (index != 0 && !(0 <= index && index < parent.columnCount)) return new Rectangle (0, 0, 0, 0);
 	Rect rect = new Rect();
 	int itemIndex = parent.indexOf (this);
 	int id = itemIndex + 1;

@@ -1459,7 +1459,7 @@ void showIndex (int index) {
 		OS.GetDataBrowserScrollBarInset (handle, inset);
 		OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short)(rect.right - rect.left - inset.left - inset.right));
 		OS.RevealDataBrowserItem (handle, index + 1, COLUMN_ID, (byte) (OS.kDataBrowserRevealWithoutSelecting | OS.kDataBrowserRevealAndCenterInView));
-		OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short)width [0]);
+		OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, width [0]);
 	}
 }
 

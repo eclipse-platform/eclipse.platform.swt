@@ -223,7 +223,7 @@ public FontData open () {
 	Display display = parent.display;
 	while (!parent.isDisposed() && open) {
 		if (!display.readAndDispatch ()) display.sleep ();
-	};
+	}
 	OS.RemoveEventHandler (outRef [0]);
 	fontPanelCallback.dispose ();
 	return fontData;

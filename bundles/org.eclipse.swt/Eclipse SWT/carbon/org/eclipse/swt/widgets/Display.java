@@ -628,7 +628,7 @@ int createOverlayWindow () {
 	GDevice device = new GDevice ();
 	OS.memcpy (device, ptr [0], GDevice.sizeof);
 	Rect rect = new Rect ();	
-	OS.SetRect (rect, (short) device.left, (short) device.top, (short) device.right, (short) device.bottom);
+	OS.SetRect (rect, device.left, device.top, device.right, device.bottom);
 	int [] outWindow = new int [1];
 	OS.CreateNewWindow (OS.kOverlayWindowClass, 0, rect, outWindow);
 	if (outWindow [0] == 0) SWT.error (SWT.ERROR_NO_HANDLES);
@@ -2586,7 +2586,7 @@ protected void release () {
 	}
 	if (tray != null) tray.dispose ();
 	tray = null;
-	while (readAndDispatch ()) {};
+	while (readAndDispatch ()) {}
 	if (disposeList != null) {
 		for (int i=0; i<disposeList.length; i++) {
 			if (disposeList [i] != null) disposeList [i].run ();
