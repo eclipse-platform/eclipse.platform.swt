@@ -29,6 +29,9 @@ import org.eclipse.swt.events.*;
 public class LocationEvent extends TypedEvent {
 	/** current location */
 	public String location;
+	
+	/** cancel location loading */
+	public boolean cancel;
 
 LocationEvent(Widget w) {
 	super(w);

@@ -30,6 +30,19 @@ import org.eclipse.swt.internal.SWTEventListener;
 public interface LocationListener extends SWTEventListener {
 
 /**
+ * This method is called when the current location is about to be changed.
+ * <p>
+ *
+ * @param event.location the location to be loaded 
+ * @param event.cancel can be set to true to prevent the location from being loaded 
+ *
+ * @see LocationEvent
+ * 
+ * @since 3.0
+ */ 
+public void changing(LocationEvent event);
+
+/**
  * This method is called when the current location is changed.
  * <p>
  *
@@ -40,4 +53,5 @@ public interface LocationListener extends SWTEventListener {
  * @since 3.0
  */ 
 public void changed(LocationEvent event);
+
 }
