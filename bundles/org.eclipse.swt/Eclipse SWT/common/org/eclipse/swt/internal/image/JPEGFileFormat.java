@@ -131,7 +131,7 @@ void compress(ImageData image, byte[] dataYComp, byte[] dataCbComp, byte[] dataC
 	int srcHeight = image.height;
 	int vhFactor = maxV * maxH;
 	int[] frameComponent;
-	byte[][] imageComponents = new byte[nComponents][];
+	imageComponents = new byte[nComponents][];
 	for (int i = 0; i < nComponents; i++) {
 		frameComponent = frameComponents[i];
 		imageComponents[i] = new byte[frameComponent[CW] * frameComponent[CH]];
@@ -301,6 +301,7 @@ void convertImageToYCbCr(ImageData image) {
 			return;
 		case 16:
 		case 24:
+		case 32:
 			convertMultiRGBToYCbCr(image);
 			return;
 		default:
@@ -1841,8 +1842,8 @@ void unloadIntoByteStream(ImageData image) {
 	int mcuHeight = maxV * DCTSIZE;
 	interleavedMcuCols = (imageWidth + mcuWidth - 1) / mcuWidth;
 	interleavedMcuRows = (imageHeight + mcuHeight - 1) / mcuHeight;
-	JPEGHuffmanTable[] acHuffmanTables = new JPEGHuffmanTable[4];
-	JPEGHuffmanTable[] dcHuffmanTables = new JPEGHuffmanTable[4];
+	acHuffmanTables = new JPEGHuffmanTable[4];
+	dcHuffmanTables = new JPEGHuffmanTable[4];
 	JPEGHuffmanTable[] dhtTables = new JPEGHuffmanTable[] {
 		JPEGHuffmanTable.getDefaultDCLuminanceTable(),
 		JPEGHuffmanTable.getDefaultDCChrominanceTable(),
