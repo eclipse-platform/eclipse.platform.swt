@@ -37,8 +37,6 @@ public abstract class Widget {
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
 	static final char Mnemonic = '&';
-	
-	static final boolean EMULATE_RIGHT_BUTTON = true;
 
 Widget () {
 	/* Do nothing */
@@ -417,23 +415,28 @@ public void setData (String key, Object value) {
 }
 
 void setInputState (Event event, int theEvent) {
-	int [] modifiers = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
 	short [] button = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
-	setInputState (event, button [0], modifiers [0]);
+	int [] chord = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamMouseChord, OS.typeUInt32, null, 4, null, chord);
+	int [] modifiers = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
+	setInputState (event, button [0], chord [0], modifiers [0]);
 }
 
-void setInputState (Event event, short button, int modifiers) {
+void setInputState (Event event, short button, int chord, int modifiers) {
+	switch (button) {
+		case 1: event.button = 1; break;
+		case 2: event.button = 3; break;
+		case 3: event.button = 2; break;
+	}
+	if ((chord & 0x01) != 0) event.stateMask |= SWT.BUTTON1;
+	if ((chord & 0x02) != 0) event.stateMask |= SWT.BUTTON3;
+	if ((chord & 0x04) != 0) event.stateMask |= SWT.BUTTON2;
 	if ((modifiers & OS.optionKey) != 0) event.stateMask |= SWT.ALT;
 	if ((modifiers & OS.shiftKey) != 0) event.stateMask |= SWT.SHIFT;
 	if ((modifiers & OS.controlKey) != 0) event.stateMask |= SWT.CONTROL;
 	if ((modifiers & OS.cmdKey) != 0) event.stateMask |= SWT.COMMAND;
-	switch (button) {
-		case OS.kEventMouseButtonPrimary: event.stateMask |= SWT.BUTTON1; break;
-		case OS.kEventMouseButtonSecondary: event.stateMask |= SWT.BUTTON3; break;
-		case OS.kEventMouseButtonTertiary:	event.stateMask |= SWT.BUTTON2; break;
-	}
 	switch (event.type) {
 		case SWT.MouseDown:
 		case SWT.MouseDoubleClick:
@@ -444,10 +447,7 @@ void setInputState (Event event, short button, int modifiers) {
 		case SWT.MouseUp:
 			if (event.button == 1) event.stateMask |= SWT.BUTTON1;
 			if (event.button == 2) event.stateMask |= SWT.BUTTON2;
-			if (event.button == 3) {
-				event.stateMask |= SWT.BUTTON3;	
-				if (EMULATE_RIGHT_BUTTON) event.stateMask &= ~SWT.CONTROL;
-			}
+			if (event.button == 3) event.stateMask |= SWT.BUTTON3;
 			break;
 		case SWT.KeyDown:
 		case SWT.Traverse: {
