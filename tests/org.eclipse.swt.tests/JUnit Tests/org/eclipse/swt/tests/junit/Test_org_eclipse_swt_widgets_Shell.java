@@ -567,7 +567,6 @@ public void test_consistency_Open() {
 	    while(!shell.isDisposed()) {
 	        if(!display.readAndDispatch()) display.sleep();
 	    }
-	    display.dispose();
 	    setUp();        
 	    String[] results = new String[events.size()];
 	    events.copyInto(results);

@@ -999,7 +999,6 @@ protected void consistencyEvent(final int paramA, final int paramB,
         while(!shell.isDisposed()) {
             if(!display.readAndDispatch()) display.sleep();
         }
-        display.dispose();
         setUp();        
         String[] results = new String[events.size()];
         events.copyInto(results);
