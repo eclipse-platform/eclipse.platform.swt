@@ -309,6 +309,17 @@ public Browser(Composite parent, int style) {
 					break;
 				}
 				case NewWindow2: {
+					/*
+					* Feature in Internet Explorer.  If the NewWindow2 event
+					* is not handled, Internet Explorer opens a new standalone
+					* instance, as documented in MSDN.  The workaround is to
+					* default to Cancel true before dispatching the WindowEvent 
+					* to the application since the application handler could
+					* throw an exception.
+					*/
+					Variant cancel = event.arguments[1];
+					int pCancel = cancel.getByRef();
+					COM.MoveMemory(pCancel, new short[]{COM.VARIANT_TRUE}, 2);
 					WindowEvent newEvent = new WindowEvent(Browser.this);
 					newEvent.display = getDisplay();
 					newEvent.widget = Browser.this;
@@ -331,8 +342,6 @@ public Browser(Composite parent, int style) {
 						//variant.dispose();
 						//iDispatch.Release();
 					}
-					Variant cancel = event.arguments[1];
-					int pCancel = cancel.getByRef();
 					COM.MoveMemory(pCancel, new short[]{doit ? COM.VARIANT_FALSE : COM.VARIANT_TRUE}, 2);
 					break;
 				}
@@ -476,8 +485,7 @@ public Browser(Composite parent, int style) {
 					size.x = arg1.getInt();
 					break;
 				}
-			}
-			
+			}			
 			/*
 			* Dispose all arguments passed in the OleEvent.  This must be
 			* done to properly release any IDispatch reference that was
