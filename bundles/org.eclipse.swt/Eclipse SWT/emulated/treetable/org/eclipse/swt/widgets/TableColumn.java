@@ -371,11 +371,11 @@ public int getWidth () {
 	return width;
 }
 int getX () {
-	TableColumn[] columns = parent.getOrderedColumns ();
+	TableColumn[] orderedColumns = parent.getOrderedColumns ();
 	int index = getOrderIndex ();
 	int result = -parent.horizontalOffset;
 	for (int i = 0; i < index; i++) {
-		result += columns [i].width;
+		result += orderedColumns [i].width;
 	}
 	return result;
 }

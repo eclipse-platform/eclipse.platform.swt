@@ -321,11 +321,11 @@ public void clearAll () {
  * -1 if the x lies to the right of the last column.
  */
 int computeColumnIntersect (int x, int startColumn) {
-	TableColumn[] columns = getOrderedColumns ();
-	if (columns.length - 1 < startColumn) return -1;
-	int rightX = columns [startColumn].getX ();
-	for (int i = startColumn; i < columns.length; i++) {
-		rightX += columns [i].width;
+	TableColumn[] orderedColumns = getOrderedColumns ();
+	if (orderedColumns.length - 1 < startColumn) return -1;
+	int rightX = orderedColumns [startColumn].getX ();
+	for (int i = startColumn; i < orderedColumns.length; i++) {
+		rightX += orderedColumns [i].width;
 		if (x <= rightX) return i;
 	}
 	return -1;
@@ -342,8 +342,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 				width = Math.max (width, itemBounds.x + itemBounds.width);
 			}
 		} else {
-			TableColumn[] columns = getOrderedColumns ();
-			TableColumn lastColumn = columns [columns.length - 1];
+			TableColumn[] orderedColumns = getOrderedColumns ();
+			TableColumn lastColumn = orderedColumns [orderedColumns.length - 1];
 			width = lastColumn.getX () + lastColumn.width;
 		}
 	}
@@ -569,10 +569,10 @@ void destroyItem (TableColumn column) {
 			redraw ();
 		}
 	}
-	TableColumn[] columns = getOrderedColumns ();
-	for (int i = orderedIndex; i < columns.length; i++) {
-		if (!columns [i].isDisposed ()) {
-			columns [i].sendEvent (SWT.Move);
+	TableColumn[] orderedColumns = getOrderedColumns ();
+	for (int i = orderedIndex; i < orderedColumns.length; i++) {
+		if (!orderedColumns [i].isDisposed ()) {
+			orderedColumns [i].sendEvent (SWT.Move);
 		}
 	}
 }
@@ -1107,9 +1107,9 @@ void handleEvents (Event event) {
 }
 void headerOnMouseDown (Event event) {
 	if (event.button != 1) return;
-	TableColumn[] columns = getOrderedColumns ();
-	for (int i = 0; i < columns.length; i++) {
-		TableColumn column = columns [i]; 
+	TableColumn[] orderedColumns = getOrderedColumns ();
+	for (int i = 0; i < orderedColumns.length; i++) {
+		TableColumn column = orderedColumns [i]; 
 		int x = column.getX () + column.width;
 		/* if close to a column separator line then begin column resize */
 		if (Math.abs (x - event.x) <= TOLLERANCE_COLUMNRESIZE) {
@@ -1181,8 +1181,8 @@ void headerOnMouseUp (Event event) {
 	resizeColumn = null;
 }
 void headerOnPaint (Event event) {
-	TableColumn[] columns = getOrderedColumns ();
-	int numColumns = columns.length;
+	TableColumn[] orderedColumns = getOrderedColumns ();
+	int numColumns = orderedColumns.length;
 	GC gc = event.gc;
 	Rectangle clipping = gc.getClipping ();
 	int startColumn = -1, endColumn = -1;
@@ -1206,9 +1206,9 @@ void headerOnPaint (Event event) {
 	/* paint each of the column headers */
 	if (numColumns == 0) return;	/* no headers to paint */
 	for (int i = startColumn; i <= endColumn; i++) {
-		Rectangle bounds = new Rectangle (columns [i].getX (), 0, columns [i].width, getClientArea ().height);
+		Rectangle bounds = new Rectangle (orderedColumns [i].getX (), 0, orderedColumns [i].width, getClientArea ().height);
 		headerPaintShadow (gc, bounds, false, true);
-		columns [i].paint (gc);
+		orderedColumns [i].paint (gc);
 	}
 }
 void headerPaintShadow (GC gc, Rectangle bounds, boolean paintHLines, boolean paintVLines) {
@@ -2171,10 +2171,10 @@ void onPageUp (int stateMask) {
 	postEvent (SWT.Selection, newEvent);
 }
 void onPaint (Event event) {
-	TableColumn[] columns = getOrderedColumns ();
+	TableColumn[] orderedColumns = getOrderedColumns ();
 	GC gc = event.gc;
 	Rectangle clipping = gc.getClipping ();
-	int numColumns = columns.length;
+	int numColumns = orderedColumns.length;
 	int startColumn = -1, endColumn = -1;
 	if (numColumns > 0) {
 		startColumn = computeColumnIntersect (clipping.x, 0);
@@ -2193,7 +2193,7 @@ void onPaint (Event event) {
 		if (numColumns > 0 && startColumn != -1) {
 			/* vertical column lines */
 			for (int i = startColumn; i <= endColumn; i++) {
-				int x = columns [i].getX () + columns [i].width - 1;
+				int x = orderedColumns [i].getX () + orderedColumns [i].width - 1;
 				gc.drawLine (x, clipping.y, x, clipping.y + clipping.height);
 			}
 		}
@@ -2227,7 +2227,7 @@ void onPaint (Event event) {
 				item.paint (gc, null, true);
 			} else {
 				for (int j = startColumn; j <= endColumn; j++) {
-					item.paint (gc, columns [j], true);
+					item.paint (gc, orderedColumns [j], true);
 				}
 			}
 		}
@@ -3131,9 +3131,9 @@ public void showColumn (TableColumn column) {
 	if (0 <= x && rightX <= bounds.width) return;	 /* column is fully visible */
 
 	int absX = 0;	/* the X of the column irrespective of the horizontal scroll */
-	TableColumn[] columns = getOrderedColumns ();
+	TableColumn[] orderedColumns = getOrderedColumns ();
 	for (int i = 0; i < column.getOrderIndex (); i++) {
-		absX += columns [i].width;
+		absX += orderedColumns [i].width;
 	}
 	if (x < bounds.x) { 	/* column is to left of viewport */
 		horizontalOffset = absX;
@@ -3253,10 +3253,10 @@ void updateColumnWidth (TableColumn column, int width) {
 	}
 
 	column.sendEvent (SWT.Resize);
-	TableColumn[] columns = getOrderedColumns ();
-	for (int i = column.getOrderIndex () + 1; i < columns.length; i++) {
-		if (!columns [i].isDisposed ()) {
-			columns [i].sendEvent (SWT.Move);
+	TableColumn[] orderedColumns = getOrderedColumns ();
+	for (int i = column.getOrderIndex () + 1; i < orderedColumns.length; i++) {
+		if (!orderedColumns [i].isDisposed ()) {
+			orderedColumns [i].sendEvent (SWT.Move);
 		}
 	}
 }
