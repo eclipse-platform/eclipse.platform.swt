@@ -397,6 +397,8 @@ static void fillRegion(GC gc, Region region) {
  *
  * @see CTabFolder2Listener
  * @see #removeCTabFolder2Listener(CTabFolder2Listener)
+ * 
+ * @since 3.0
  */
 public void addCTabFolder2Listener(CTabFolder2Listener listener) {
 	checkWidget();
