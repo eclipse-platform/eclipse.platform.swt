@@ -646,7 +646,8 @@ public static final native void gtk_notebook_set_scrollable(int notebook, boolea
 public static final native void gtk_notebook_set_show_tabs(int notebook, boolean show_tabs);
 public static final native void gtk_object_sink(int object);
 public static final native int gtk_progress_bar_new();
-public static final native void gtk_progress_bar_pulse(int pbar);public static final native void gtk_progress_bar_set_fraction(int pbar, double fraction);
+public static final native void gtk_progress_bar_pulse(int pbar);
+public static final native void gtk_progress_bar_set_fraction(int pbar, double fraction);
 public static final native void gtk_progress_bar_set_bar_style(int pbar, int style);
 public static final native void gtk_progress_bar_set_orientation(int pbar, int orientation);
 public static final native int gtk_radio_button_get_group(int radio_button);
@@ -911,4 +912,5 @@ static final native int GValue_sizeof();
 public static final native int G_TYPE_BOOLEAN();
 public static final native int G_TYPE_STRING();
 public static final native int GDK_TYPE_COLOR();
-public static final native void gtk_progress_bar_pulse(int pbar);public static final native void gtk_progress_bar_pulse(int pbar);}
+
+}
