@@ -428,9 +428,7 @@ void setDefault (boolean value) {
 public boolean setFocus () {
 	checkWidget();
 	if ((style & SWT.ARROW) != 0) return false;
-	if (!super.setFocus ()) return false;
-	menuShell ().setDefaultButton (this, false);
-	return true;
+	return super.setFocus ();
 }
 
 /**
@@ -476,6 +474,7 @@ public void setImage (Image image) {
 	}
 	OS.SendMessage (handle, OS.BM_SETIMAGE, fImageType, hImage);
 }
+
 boolean setRadioFocus () {
 	if ((style & SWT.RADIO) == 0 || !getSelection ()) return false;
 	return setFocus ();
@@ -589,6 +588,14 @@ LRESULT WM_GETDLGCODE (int wParam, int lParam) {
 	return result;
 }
 
+LRESULT WM_KILLFOCUS (int wParam, int lParam) {
+	LRESULT result = super.WM_KILLFOCUS (wParam, lParam);
+	if ((style & SWT.PUSH) != 0 && getDefault ()) {
+		menuShell ().setDefaultButton (null, false);
+	}
+	return result;
+}
+
 LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	/*
 	* Feature in Windows. When Windows sets focus to
@@ -603,6 +610,9 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	LRESULT result = super.WM_SETFOCUS (wParam, lParam);
 	if ((style & SWT.RADIO) != 0) {
 		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+	}
+	if ((style & SWT.PUSH) != 0) {
+		menuShell ().setDefaultButton (this, false);
 	}
 	return result;
 }

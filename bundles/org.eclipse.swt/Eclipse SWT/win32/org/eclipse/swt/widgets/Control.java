@@ -564,9 +564,7 @@ public boolean forceFocus () {
 	*/
 //	if (OS.GetFocus () != OS.SetFocus (handle)) return false;
 	OS.SetFocus (handle);
-	if (!isFocusControl ()) return false;
-	shell.setDefaultButton (null, false);
-	return true;
+	return isFocusControl ();
 }
 
 /**

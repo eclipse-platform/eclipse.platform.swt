@@ -671,8 +671,11 @@ void remove (MenuItem item) {
 
 boolean restoreFocus () {
 	if (savedFocus != null && savedFocus.isDisposed ()) savedFocus = null;
-	if (savedFocus == null) return false;
-	return savedFocus.forceFocus ();
+	if (savedFocus != null && savedFocus.forceFocus ()) return true;
+	if (defaultButton != null && !defaultButton.isDisposed ()) {
+		if (defaultButton.setFocus ()) return true;
+	}
+	return false;
 }
 
 void saveFocus () {

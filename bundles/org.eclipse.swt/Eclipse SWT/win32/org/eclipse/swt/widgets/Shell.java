@@ -599,20 +599,16 @@ public boolean isEnabled () {
 public void open () {
 	checkWidget ();
 	bringToTop ();
-	if (OS.IsWinCE) {
-		/*
-		* Feature on WinCE PPC.  A new application becomes the
-		* foreground application only if it has at least one
-		* visible window before the event loop is started.
-		* The workaround is to explicitely force the shell to
-		* be the foreground window.
-		*/
-		OS.SetForegroundWindow (handle);
-	}
+	/*
+	* Feature on WinCE PPC.  A new application becomes the
+	* foreground application only if it has at least one
+	* visible window before the event loop is started.
+	* The workaround is to explicitely force the shell to
+	* be the foreground window.
+	*/
+	if (OS.IsWinCE) OS.SetForegroundWindow (handle);
 	setVisible (true);
-	if (!restoreFocus ()) {
-		traverseGroup (true);
-	}
+	if (!restoreFocus ()) traverseGroup (true);
 }
 
 void releaseShells () {
@@ -1103,24 +1099,6 @@ LRESULT WM_MOUSEACTIVATE (int wParam, int lParam) {
 	if (hwnd == 0) return null;
 	Control control = display.findControl (hwnd);
 	setActiveControl (control);
-	// widget could be disposed at this point
-	if (isDisposed ()) return null;
-	if (control == null || control.isDisposed ()) return null;	
-	Button button = null;
-	boolean setDefault = false;
-	if (OS.GetActiveWindow () == handle && this == control.getShell ()) {
-		if ((hittest != OS.HTHSCROLL) && (hittest != OS.HTVSCROLL)) {
-			int hwndChild = control.handle;
-			int code = OS.SendMessage (hwndChild, OS.WM_GETDLGCODE, 0, 0);
-			setDefault = (code & OS.DLGC_STATIC) == 0;
-			if (setDefault && control instanceof Button) {
-				if (((button = (Button) control).style & SWT.PUSH) == 0) {
-					button = null;
-				}
-			}
-		}
-	}
-	if (setDefault) setDefaultButton (button, false);
 	/*
 	* This code is intentionally commented.  On some platforms,
 	* shells that are created with SWT.NO_TRIM won't take focus
