@@ -21,9 +21,9 @@ import java.applet.*;
 	 
 public class Snippet157 extends Applet {
 	
-	org.eclipse.swt.widgets.Display display = null;
-	org.eclipse.swt.widgets.Shell swtParent = null;
-	java.awt.Canvas awtParent = null;
+	org.eclipse.swt.widgets.Display display;
+	org.eclipse.swt.widgets.Shell swtParent;
+	java.awt.Canvas awtParent;
 
 public void init () {
 	Thread thread = new Thread (new Runnable() {
