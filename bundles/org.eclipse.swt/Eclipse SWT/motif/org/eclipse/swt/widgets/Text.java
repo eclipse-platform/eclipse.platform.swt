@@ -967,6 +967,11 @@ int processVerify (int callData) {
 	textVerify = null;
 	return 0;
 }
+void releaseWidget () {
+	super.releaseWidget ();
+	hiddenText = null;
+	textVerify = null;
+}
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the receiver's text is modified.

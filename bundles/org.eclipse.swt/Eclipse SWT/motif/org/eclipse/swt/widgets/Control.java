@@ -1448,6 +1448,18 @@ void redrawWidget (int x, int y, int width, int height, boolean all) {
 	redrawHandle (x, y, width, height, handle);
 }
 void releaseWidget () {
+	/*
+	* Restore the default font for the widget in case the
+	* application disposes the widget font in the dispose
+	* callback.  If a font is disposed while it is still
+	* in use in the widget, Motif GP's.
+	*/
+	int fontList = defaultFont ();
+	if (this.fontList != fontList) {
+		int fontHandle = fontHandle ();
+		int [] argList2 = {OS.XmNfontList, fontList};
+		OS.XtSetValues (fontHandle, argList2, argList2.length / 2);
+	}
 	super.releaseWidget ();
 	Display display = getDisplay ();
 	display.releaseToolTipHandle (handle);
