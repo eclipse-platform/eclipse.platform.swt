@@ -1,17 +1,13 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
-
-/**
- * JNI SWT object field getters and setters declarations for Mac/Carbon structs.
- */
+* Copyright (c) 2000, 2003 IBM Corporation and others.
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Common Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/cpl-v10.html
+* 
+* Contributors:
+*     IBM Corporation - initial API and implementation
+*******************************************************************************/
 
 #include "swt.h"
 #include "structs.h"
@@ -25,7 +21,7 @@ typedef struct AEDesc_FID_CACHE {
 
 AEDesc_FID_CACHE AEDescFc;
 
-void cacheAEDescFids(JNIEnv *env, jobject lpObject)
+void cacheAEDescFields(JNIEnv *env, jobject lpObject)
 {
 	if (AEDescFc.cached) return;
 	AEDescFc.clazz = (*env)->GetObjectClass(env, lpObject);
@@ -36,7 +32,7 @@ void cacheAEDescFids(JNIEnv *env, jobject lpObject)
 
 AEDesc *getAEDescFields(JNIEnv *env, jobject lpObject, AEDesc *lpStruct)
 {
-	if (!AEDescFc.cached) cacheAEDescFids(env, lpObject);
+	if (!AEDescFc.cached) cacheAEDescFields(env, lpObject);
 	lpStruct->descriptorType = (DescType)(*env)->GetIntField(env, lpObject, AEDescFc.descriptorType);
 	lpStruct->dataHandle = (AEDataStorage)(*env)->GetIntField(env, lpObject, AEDescFc.dataHandle);
 	return lpStruct;
@@ -44,11 +40,11 @@ AEDesc *getAEDescFields(JNIEnv *env, jobject lpObject, AEDesc *lpStruct)
 
 void setAEDescFields(JNIEnv *env, jobject lpObject, AEDesc *lpStruct)
 {
-	if (!AEDescFc.cached) cacheAEDescFids(env, lpObject);
+	if (!AEDescFc.cached) cacheAEDescFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, AEDescFc.descriptorType, (jint)lpStruct->descriptorType);
 	(*env)->SetIntField(env, lpObject, AEDescFc.dataHandle, (jint)lpStruct->dataHandle);
 }
-#endif /* NO_AEDesc */
+#endif
 
 #ifndef NO_ATSTrapezoid
 typedef struct ATSTrapezoid_FID_CACHE {
@@ -59,7 +55,7 @@ typedef struct ATSTrapezoid_FID_CACHE {
 
 ATSTrapezoid_FID_CACHE ATSTrapezoidFc;
 
-void cacheATSTrapezoidFids(JNIEnv *env, jobject lpObject)
+void cacheATSTrapezoidFields(JNIEnv *env, jobject lpObject)
 {
 	if (ATSTrapezoidFc.cached) return;
 	ATSTrapezoidFc.clazz = (*env)->GetObjectClass(env, lpObject);
@@ -76,7 +72,7 @@ void cacheATSTrapezoidFids(JNIEnv *env, jobject lpObject)
 
 ATSTrapezoid *getATSTrapezoidFields(JNIEnv *env, jobject lpObject, ATSTrapezoid *lpStruct)
 {
-	if (!ATSTrapezoidFc.cached) cacheATSTrapezoidFids(env, lpObject);
+	if (!ATSTrapezoidFc.cached) cacheATSTrapezoidFields(env, lpObject);
 	lpStruct->upperLeft.x = (*env)->GetIntField(env, lpObject, ATSTrapezoidFc.upperLeft_x);
 	lpStruct->upperLeft.y = (*env)->GetIntField(env, lpObject, ATSTrapezoidFc.upperLeft_y);
 	lpStruct->upperRight.x = (*env)->GetIntField(env, lpObject, ATSTrapezoidFc.upperRight_x);
@@ -90,7 +86,7 @@ ATSTrapezoid *getATSTrapezoidFields(JNIEnv *env, jobject lpObject, ATSTrapezoid 
 
 void setATSTrapezoidFields(JNIEnv *env, jobject lpObject, ATSTrapezoid *lpStruct)
 {
-	if (!ATSTrapezoidFc.cached) cacheATSTrapezoidFids(env, lpObject);
+	if (!ATSTrapezoidFc.cached) cacheATSTrapezoidFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, ATSTrapezoidFc.upperLeft_x, (jint)lpStruct->upperLeft.x);
 	(*env)->SetIntField(env, lpObject, ATSTrapezoidFc.upperLeft_y, (jint)lpStruct->upperLeft.y);
 	(*env)->SetIntField(env, lpObject, ATSTrapezoidFc.upperRight_x, (jint)lpStruct->upperRight.x);
@@ -100,7 +96,7 @@ void setATSTrapezoidFields(JNIEnv *env, jobject lpObject, ATSTrapezoid *lpStruct
 	(*env)->SetIntField(env, lpObject, ATSTrapezoidFc.lowerLeft_x, (jint)lpStruct->lowerLeft.x);
 	(*env)->SetIntField(env, lpObject, ATSTrapezoidFc.lowerLeft_y, (jint)lpStruct->lowerLeft.y);
 }
-#endif /* NO_ATSTrapezoid */
+#endif
 
 #ifndef NO_AlertStdCFStringAlertParamRec
 typedef struct AlertStdCFStringAlertParamRec_FID_CACHE {
@@ -111,7 +107,7 @@ typedef struct AlertStdCFStringAlertParamRec_FID_CACHE {
 
 AlertStdCFStringAlertParamRec_FID_CACHE AlertStdCFStringAlertParamRecFc;
 
-void cacheAlertStdCFStringAlertParamRecFids(JNIEnv *env, jobject lpObject)
+void cacheAlertStdCFStringAlertParamRecFields(JNIEnv *env, jobject lpObject)
 {
 	if (AlertStdCFStringAlertParamRecFc.cached) return;
 	AlertStdCFStringAlertParamRecFc.clazz = (*env)->GetObjectClass(env, lpObject);
@@ -130,23 +126,23 @@ void cacheAlertStdCFStringAlertParamRecFids(JNIEnv *env, jobject lpObject)
 
 AlertStdCFStringAlertParamRec *getAlertStdCFStringAlertParamRecFields(JNIEnv *env, jobject lpObject, AlertStdCFStringAlertParamRec *lpStruct)
 {
-	if (!AlertStdCFStringAlertParamRecFc.cached) cacheAlertStdCFStringAlertParamRecFids(env, lpObject);
-	lpStruct->version = (UInt32)(*env)->GetIntField(env, lpObject, AlertStdCFStringAlertParamRecFc.version);
-	lpStruct->movable = (Boolean)(*env)->GetBooleanField(env, lpObject, AlertStdCFStringAlertParamRecFc.movable);
-	lpStruct->helpButton = (Boolean)(*env)->GetBooleanField(env, lpObject, AlertStdCFStringAlertParamRecFc.helpButton);
+	if (!AlertStdCFStringAlertParamRecFc.cached) cacheAlertStdCFStringAlertParamRecFields(env, lpObject);
+	lpStruct->version = (*env)->GetIntField(env, lpObject, AlertStdCFStringAlertParamRecFc.version);
+	lpStruct->movable = (*env)->GetBooleanField(env, lpObject, AlertStdCFStringAlertParamRecFc.movable);
+	lpStruct->helpButton = (*env)->GetBooleanField(env, lpObject, AlertStdCFStringAlertParamRecFc.helpButton);
 	lpStruct->defaultText = (CFStringRef)(*env)->GetIntField(env, lpObject, AlertStdCFStringAlertParamRecFc.defaultText);
 	lpStruct->cancelText = (CFStringRef)(*env)->GetIntField(env, lpObject, AlertStdCFStringAlertParamRecFc.cancelText);
 	lpStruct->otherText = (CFStringRef)(*env)->GetIntField(env, lpObject, AlertStdCFStringAlertParamRecFc.otherText);
-	lpStruct->defaultButton = (SInt16)(*env)->GetShortField(env, lpObject, AlertStdCFStringAlertParamRecFc.defaultButton);
-	lpStruct->cancelButton = (SInt16)(*env)->GetShortField(env, lpObject, AlertStdCFStringAlertParamRecFc.cancelButton);
-	lpStruct->position = (UInt16)(*env)->GetShortField(env, lpObject, AlertStdCFStringAlertParamRecFc.position);
-	lpStruct->flags = (OptionBits)(*env)->GetIntField(env, lpObject, AlertStdCFStringAlertParamRecFc.flags);
+	lpStruct->defaultButton = (*env)->GetShortField(env, lpObject, AlertStdCFStringAlertParamRecFc.defaultButton);
+	lpStruct->cancelButton = (*env)->GetShortField(env, lpObject, AlertStdCFStringAlertParamRecFc.cancelButton);
+	lpStruct->position = (*env)->GetShortField(env, lpObject, AlertStdCFStringAlertParamRecFc.position);
+	lpStruct->flags = (*env)->GetIntField(env, lpObject, AlertStdCFStringAlertParamRecFc.flags);
 	return lpStruct;
 }
 
 void setAlertStdCFStringAlertParamRecFields(JNIEnv *env, jobject lpObject, AlertStdCFStringAlertParamRec *lpStruct)
 {
-	if (!AlertStdCFStringAlertParamRecFc.cached) cacheAlertStdCFStringAlertParamRecFids(env, lpObject);
+	if (!AlertStdCFStringAlertParamRecFc.cached) cacheAlertStdCFStringAlertParamRecFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, AlertStdCFStringAlertParamRecFc.version, (jint)lpStruct->version);
 	(*env)->SetBooleanField(env, lpObject, AlertStdCFStringAlertParamRecFc.movable, (jboolean)lpStruct->movable);
 	(*env)->SetBooleanField(env, lpObject, AlertStdCFStringAlertParamRecFc.helpButton, (jboolean)lpStruct->helpButton);
@@ -158,7 +154,7 @@ void setAlertStdCFStringAlertParamRecFields(JNIEnv *env, jobject lpObject, Alert
 	(*env)->SetShortField(env, lpObject, AlertStdCFStringAlertParamRecFc.position, (jshort)lpStruct->position);
 	(*env)->SetIntField(env, lpObject, AlertStdCFStringAlertParamRecFc.flags, (jint)lpStruct->flags);
 }
-#endif /* NO_AlertStdCFStringAlertParamRec */
+#endif
 
 #ifndef NO_BitMap
 typedef struct BitMap_FID_CACHE {
@@ -169,7 +165,7 @@ typedef struct BitMap_FID_CACHE {
 
 BitMap_FID_CACHE BitMapFc;
 
-void cacheBitMapFids(JNIEnv *env, jobject lpObject)
+void cacheBitMapFields(JNIEnv *env, jobject lpObject)
 {
 	if (BitMapFc.cached) return;
 	BitMapFc.clazz = (*env)->GetObjectClass(env, lpObject);
@@ -184,7 +180,7 @@ void cacheBitMapFids(JNIEnv *env, jobject lpObject)
 
 BitMap *getBitMapFields(JNIEnv *env, jobject lpObject, BitMap *lpStruct)
 {
-	if (!BitMapFc.cached) cacheBitMapFids(env, lpObject);
+	if (!BitMapFc.cached) cacheBitMapFields(env, lpObject);
 	lpStruct->baseAddr = (void *)(*env)->GetIntField(env, lpObject, BitMapFc.baseAddr);
 	lpStruct->rowBytes = (*env)->GetShortField(env, lpObject, BitMapFc.rowBytes);
 	lpStruct->bounds.top = (*env)->GetShortField(env, lpObject, BitMapFc.top);
@@ -196,7 +192,7 @@ BitMap *getBitMapFields(JNIEnv *env, jobject lpObject, BitMap *lpStruct)
 
 void setBitMapFields(JNIEnv *env, jobject lpObject, BitMap *lpStruct)
 {
-	if (!BitMapFc.cached) cacheBitMapFids(env, lpObject);
+	if (!BitMapFc.cached) cacheBitMapFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, BitMapFc.baseAddr, (jint)lpStruct->baseAddr);
 	(*env)->SetShortField(env, lpObject, BitMapFc.rowBytes, (jshort)lpStruct->rowBytes);
 	(*env)->SetShortField(env, lpObject, BitMapFc.top, (jshort)lpStruct->bounds.top);
@@ -204,7 +200,7 @@ void setBitMapFields(JNIEnv *env, jobject lpObject, BitMap *lpStruct)
 	(*env)->SetShortField(env, lpObject, BitMapFc.bottom, (jshort)lpStruct->bounds.bottom);
 	(*env)->SetShortField(env, lpObject, BitMapFc.right, (jshort)lpStruct->bounds.right);
 }
-#endif /* NO_BitMap */
+#endif
 
 #ifndef NO_CFRange
 typedef struct CFRange_FID_CACHE {
@@ -215,7 +211,7 @@ typedef struct CFRange_FID_CACHE {
 
 CFRange_FID_CACHE CFRangeFc;
 
-void cacheCFRangeFids(JNIEnv *env, jobject lpObject)
+void cacheCFRangeFields(JNIEnv *env, jobject lpObject)
 {
 	if (CFRangeFc.cached) return;
 	CFRangeFc.clazz = (*env)->GetObjectClass(env, lpObject);
@@ -226,7 +222,7 @@ void cacheCFRangeFids(JNIEnv *env, jobject lpObject)
 
 CFRange *getCFRangeFields(JNIEnv *env, jobject lpObject, CFRange *lpStruct)
 {
-	if (!CFRangeFc.cached) cacheCFRangeFids(env, lpObject);
+	if (!CFRangeFc.cached) cacheCFRangeFields(env, lpObject);
 	lpStruct->location = (CFIndex)(*env)->GetIntField(env, lpObject, CFRangeFc.location);
 	lpStruct->length = (CFIndex)(*env)->GetIntField(env, lpObject, CFRangeFc.length);
 	return lpStruct;
@@ -234,11 +230,11 @@ CFRange *getCFRangeFields(JNIEnv *env, jobject lpObject, CFRange *lpStruct)
 
 void setCFRangeFields(JNIEnv *env, jobject lpObject, CFRange *lpStruct)
 {
-	if (!CFRangeFc.cached) cacheCFRangeFids(env, lpObject);
+	if (!CFRangeFc.cached) cacheCFRangeFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, CFRangeFc.location, (jint)lpStruct->location);
 	(*env)->SetIntField(env, lpObject, CFRangeFc.length, (jint)lpStruct->length);
 }
-#endif /* NO_CFRange */
+#endif
 
 #ifndef NO_CGPoint
 typedef struct CGPoint_FID_CACHE {
@@ -249,7 +245,7 @@ typedef struct CGPoint_FID_CACHE {
 
 CGPoint_FID_CACHE CGPointFc;
 
-void cacheCGPointFids(JNIEnv *env, jobject lpObject)
+void cacheCGPointFields(JNIEnv *env, jobject lpObject)
 {
 	if (CGPointFc.cached) return;
 	CGPointFc.clazz = (*env)->GetObjectClass(env, lpObject);
@@ -260,7 +256,7 @@ void cacheCGPointFids(JNIEnv *env, jobject lpObject)
 
 CGPoint *getCGPointFields(JNIEnv *env, jobject lpObject, CGPoint *lpStruct)
 {
-	if (!CGPointFc.cached) cacheCGPointFids(env, lpObject);
+	if (!CGPointFc.cached) cacheCGPointFields(env, lpObject);
 	lpStruct->x = (float)(*env)->GetFloatField(env, lpObject, CGPointFc.x);
 	lpStruct->y = (float)(*env)->GetFloatField(env, lpObject, CGPointFc.y);
 	return lpStruct;
@@ -268,11 +264,11 @@ CGPoint *getCGPointFields(JNIEnv *env, jobject lpObject, CGPoint *lpStruct)
 
 void setCGPointFields(JNIEnv *env, jobject lpObject, CGPoint *lpStruct)
 {
-	if (!CGPointFc.cached) cacheCGPointFids(env, lpObject);
+	if (!CGPointFc.cached) cacheCGPointFields(env, lpObject);
 	(*env)->SetFloatField(env, lpObject, CGPointFc.x, (jfloat)lpStruct->x);
 	(*env)->SetFloatField(env, lpObject, CGPointFc.y, (jfloat)lpStruct->y);
 }
-#endif /* NO_CGPoint */
+#endif
 
 #ifndef NO_CGRect
 typedef struct CGRect_FID_CACHE {
@@ -283,7 +279,7 @@ typedef struct CGRect_FID_CACHE {
 
 CGRect_FID_CACHE CGRectFc;
 
-void cacheCGRectFids(JNIEnv *env, jobject lpObject)
+void cacheCGRectFields(JNIEnv *env, jobject lpObject)
 {
 	if (CGRectFc.cached) return;
 	CGRectFc.clazz = (*env)->GetObjectClass(env, lpObject);
@@ -296,7 +292,7 @@ void cacheCGRectFids(JNIEnv *env, jobject lpObject)
 
 CGRect *getCGRectFields(JNIEnv *env, jobject lpObject, CGRect *lpStruct)
 {
-	if (!CGRectFc.cached) cacheCGRectFids(env, lpObject);
+	if (!CGRectFc.cached) cacheCGRectFields(env, lpObject);
 	lpStruct->origin.x = (float)(*env)->GetFloatField(env, lpObject, CGRectFc.x);
 	lpStruct->origin.y = (float)(*env)->GetFloatField(env, lpObject, CGRectFc.y);
 	lpStruct->size.width = (float)(*env)->GetFloatField(env, lpObject, CGRectFc.width);
@@ -306,13 +302,13 @@ CGRect *getCGRectFields(JNIEnv *env, jobject lpObject, CGRect *lpStruct)
 
 void setCGRectFields(JNIEnv *env, jobject lpObject, CGRect *lpStruct)
 {
-	if (!CGRectFc.cached) cacheCGRectFids(env, lpObject);
+	if (!CGRectFc.cached) cacheCGRectFields(env, lpObject);
 	(*env)->SetFloatField(env, lpObject, CGRectFc.x, (jfloat)lpStruct->origin.x);
 	(*env)->SetFloatField(env, lpObject, CGRectFc.y, (jfloat)lpStruct->origin.y);
 	(*env)->SetFloatField(env, lpObject, CGRectFc.width, (jfloat)lpStruct->size.width);
 	(*env)->SetFloatField(env, lpObject, CGRectFc.height, (jfloat)lpStruct->size.height);
 }
-#endif /* NO_CGRect */
+#endif
 
 #ifndef NO_ColorPickerInfo
 typedef struct ColorPickerInfo_FID_CACHE {
@@ -323,7 +319,7 @@ typedef struct ColorPickerInfo_FID_CACHE {
 
 ColorPickerInfo_FID_CACHE ColorPickerInfoFc;
 
-void cacheColorPickerInfoFids(JNIEnv *env, jobject lpObject)
+void cacheColorPickerInfoFields(JNIEnv *env, jobject lpObject)
 {
 	if (ColorPickerInfoFc.cached) return;
 	ColorPickerInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
@@ -353,7 +349,7 @@ void cacheColorPickerInfoFids(JNIEnv *env, jobject lpObject)
 
 ColorPickerInfo *getColorPickerInfoFields(JNIEnv *env, jobject lpObject, ColorPickerInfo *lpStruct)
 {
-	if (!ColorPickerInfoFc.cached) cacheColorPickerInfoFids(env, lpObject);
+	if (!ColorPickerInfoFc.cached) cacheColorPickerInfoFields(env, lpObject);
 	lpStruct->theColor.profile = (CMProfileHandle)(*env)->GetIntField(env, lpObject, ColorPickerInfoFc.profile);
 	lpStruct->theColor.color.rgb.red = (UInt16)(*env)->GetShortField(env, lpObject, ColorPickerInfoFc.red);
 	lpStruct->theColor.color.rgb.green = (UInt16)(*env)->GetShortField(env, lpObject, ColorPickerInfoFc.green);
@@ -383,7 +379,7 @@ ColorPickerInfo *getColorPickerInfoFields(JNIEnv *env, jobject lpObject, ColorPi
 
 void setColorPickerInfoFields(JNIEnv *env, jobject lpObject, ColorPickerInfo *lpStruct)
 {
-	if (!ColorPickerInfoFc.cached) cacheColorPickerInfoFids(env, lpObject);
+	if (!ColorPickerInfoFc.cached) cacheColorPickerInfoFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, ColorPickerInfoFc.profile, (jint)lpStruct->theColor.profile);
 	(*env)->SetShortField(env, lpObject, ColorPickerInfoFc.red, (jshort)lpStruct->theColor.color.rgb.red);
 	(*env)->SetShortField(env, lpObject, ColorPickerInfoFc.green, (jshort)lpStruct->theColor.color.rgb.green);
@@ -409,7 +405,7 @@ void setColorPickerInfoFields(JNIEnv *env, jobject lpObject, ColorPickerInfo *lp
 	(*env)->SetShortField(env, lpObject, ColorPickerInfoFc.undoItem, (jshort)lpStruct->mInfo.undoItem);
 	(*env)->SetBooleanField(env, lpObject, ColorPickerInfoFc.newColorChosen, (jboolean)lpStruct->newColorChosen);
 }
-#endif /* NO_ColorPickerInfo */
+#endif
 
 #ifndef NO_ControlButtonContentInfo
 typedef struct ControlButtonContentInfo_FID_CACHE {
@@ -420,7 +416,7 @@ typedef struct ControlButtonContentInfo_FID_CACHE {
 
 ControlButtonContentInfo_FID_CACHE ControlButtonContentInfoFc;
 
-void cacheControlButtonContentInfoFids(JNIEnv *env, jobject lpObject)
+void cacheControlButtonContentInfoFields(JNIEnv *env, jobject lpObject)
 {
 	if (ControlButtonContentInfoFc.cached) return;
 	ControlButtonContentInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
@@ -431,7 +427,7 @@ void cacheControlButtonContentInfoFids(JNIEnv *env, jobject lpObject)
 
 ControlButtonContentInfo *getControlButtonContentInfoFields(JNIEnv *env, jobject lpObject, ControlButtonContentInfo *lpStruct)
 {
-	if (!ControlButtonContentInfoFc.cached) cacheControlButtonContentInfoFids(env, lpObject);
+	if (!ControlButtonContentInfoFc.cached) cacheControlButtonContentInfoFields(env, lpObject);
 	lpStruct->contentType = (ControlContentType)(*env)->GetShortField(env, lpObject, ControlButtonContentInfoFc.contentType);
 	lpStruct->u.iconRef = (void *)(*env)->GetIntField(env, lpObject, ControlButtonContentInfoFc.iconRef);
 	return lpStruct;
@@ -439,11 +435,11 @@ ControlButtonContentInfo *getControlButtonContentInfoFields(JNIEnv *env, jobject
 
 void setControlButtonContentInfoFields(JNIEnv *env, jobject lpObject, ControlButtonContentInfo *lpStruct)
 {
-	if (!ControlButtonContentInfoFc.cached) cacheControlButtonContentInfoFids(env, lpObject);
+	if (!ControlButtonContentInfoFc.cached) cacheControlButtonContentInfoFields(env, lpObject);
 	(*env)->SetShortField(env, lpObject, ControlButtonContentInfoFc.contentType, (jshort)lpStruct->contentType);
 	(*env)->SetIntField(env, lpObject, ControlButtonContentInfoFc.iconRef, (jint)lpStruct->u.iconRef);
 }
-#endif /* NO_ControlButtonContentInfo */
+#endif
 
 #ifndef NO_ControlFontStyleRec
 typedef struct ControlFontStyleRec_FID_CACHE {
@@ -454,7 +450,7 @@ typedef struct ControlFontStyleRec_FID_CACHE {
 
 ControlFontStyleRec_FID_CACHE ControlFontStyleRecFc;
 
-void cacheControlFontStyleRecFids(JNIEnv *env, jobject lpObject)
+void cacheControlFontStyleRecFields(JNIEnv *env, jobject lpObject)
 {
 	if (ControlFontStyleRecFc.cached) return;
 	ControlFontStyleRecFc.clazz = (*env)->GetObjectClass(env, lpObject);
@@ -475,7 +471,7 @@ void cacheControlFontStyleRecFids(JNIEnv *env, jobject lpObject)
 
 ControlFontStyleRec *getControlFontStyleRecFields(JNIEnv *env, jobject lpObject, ControlFontStyleRec *lpStruct)
 {
-	if (!ControlFontStyleRecFc.cached) cacheControlFontStyleRecFids(env, lpObject);
+	if (!ControlFontStyleRecFc.cached) cacheControlFontStyleRecFields(env, lpObject);
 	lpStruct->flags = (*env)->GetShortField(env, lpObject, ControlFontStyleRecFc.flags);
 	lpStruct->font = (*env)->GetShortField(env, lpObject, ControlFontStyleRecFc.font);
 	lpStruct->size = (*env)->GetShortField(env, lpObject, ControlFontStyleRecFc.size);
@@ -493,7 +489,7 @@ ControlFontStyleRec *getControlFontStyleRecFields(JNIEnv *env, jobject lpObject,
 
 void setControlFontStyleRecFields(JNIEnv *env, jobject lpObject, ControlFontStyleRec *lpStruct)
 {
-	if (!ControlFontStyleRecFc.cached) cacheControlFontStyleRecFids(env, lpObject);
+	if (!ControlFontStyleRecFc.cached) cacheControlFontStyleRecFields(env, lpObject);
 	(*env)->SetShortField(env, lpObject, ControlFontStyleRecFc.flags, (jshort)lpStruct->flags);
 	(*env)->SetShortField(env, lpObject, ControlFontStyleRecFc.font, (jshort)lpStruct->font);
 	(*env)->SetShortField(env, lpObject, ControlFontStyleRecFc.size, (jshort)lpStruct->size);
@@ -507,7 +503,7 @@ void setControlFontStyleRecFields(JNIEnv *env, jobject lpObject, ControlFontStyl
 	(*env)->SetShortField(env, lpObject, ControlFontStyleRecFc.backColor_green, (jshort)lpStruct->backColor.green);
 	(*env)->SetShortField(env, lpObject, ControlFontStyleRecFc.backColor_blue, (jshort)lpStruct->backColor.blue);
 }
-#endif /* NO_ControlFontStyleRec */
+#endif
 
 #ifndef NO_ControlTabEntry
 typedef struct ControlTabEntry_FID_CACHE {
@@ -518,7 +514,7 @@ typedef struct ControlTabEntry_FID_CACHE {
 
 ControlTabEntry_FID_CACHE ControlTabEntryFc;
 
-void cacheControlTabEntryFids(JNIEnv *env, jobject lpObject)
+void cacheControlTabEntryFields(JNIEnv *env, jobject lpObject)
 {
 	if (ControlTabEntryFc.cached) return;
 	ControlTabEntryFc.clazz = (*env)->GetObjectClass(env, lpObject);
@@ -530,7 +526,7 @@ void cacheControlTabEntryFids(JNIEnv *env, jobject lpObject)
 
 ControlTabEntry *getControlTabEntryFields(JNIEnv *env, jobject lpObject, ControlTabEntry *lpStruct)
 {
-	if (!ControlTabEntryFc.cached) cacheControlTabEntryFids(env, lpObject);
+	if (!ControlTabEntryFc.cached) cacheControlTabEntryFields(env, lpObject);
 	lpStruct->icon = (ControlButtonContentInfo *)(*env)->GetIntField(env, lpObject, ControlTabEntryFc.icon);
 	lpStruct->name = (CFStringRef)(*env)->GetIntField(env, lpObject, ControlTabEntryFc.name);
 	lpStruct->enabled = (Boolean)(*env)->GetBooleanField(env, lpObject, ControlTabEntryFc.enabled);
@@ -539,12 +535,12 @@ ControlTabEntry *getControlTabEntryFields(JNIEnv *env, jobject lpObject, Control
 
 void setControlTabEntryFields(JNIEnv *env, jobject lpObject, ControlTabEntry *lpStruct)
 {
-	if (!ControlTabEntryFc.cached) cacheControlTabEntryFids(env, lpObject);
+	if (!ControlTabEntryFc.cached) cacheControlTabEntryFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, ControlTabEntryFc.icon, (jint)lpStruct->icon);
 	(*env)->SetIntField(env, lpObject, ControlTabEntryFc.name, (jint)lpStruct->name);
 	(*env)->SetBooleanField(env, lpObject, ControlTabEntryFc.enabled, (jboolean)lpStruct->enabled);
 }
-#endif /* NO_ControlTabEntry */
+#endif
 
 #ifndef NO_ControlTabInfoRecV1
 typedef struct ControlTabInfoRecV1_FID_CACHE {
@@ -555,7 +551,7 @@ typedef struct ControlTabInfoRecV1_FID_CACHE {
 
 ControlTabInfoRecV1_FID_CACHE ControlTabInfoRecV1Fc;
 
-void cacheControlTabInfoRecV1Fids(JNIEnv *env, jobject lpObject)
+void cacheControlTabInfoRecV1Fields(JNIEnv *env, jobject lpObject)
 {
 	if (ControlTabInfoRecV1Fc.cached) return;
 	ControlTabInfoRecV1Fc.clazz = (*env)->GetObjectClass(env, lpObject);
@@ -567,7 +563,7 @@ void cacheControlTabInfoRecV1Fids(JNIEnv *env, jobject lpObject)
 
 ControlTabInfoRecV1 *getControlTabInfoRecV1Fields(JNIEnv *env, jobject lpObject, ControlTabInfoRecV1 *lpStruct)
 {
-	if (!ControlTabInfoRecV1Fc.cached) cacheControlTabInfoRecV1Fids(env, lpObject);
+	if (!ControlTabInfoRecV1Fc.cached) cacheControlTabInfoRecV1Fields(env, lpObject);
 	lpStruct->version = (SInt16)(*env)->GetShortField(env, lpObject, ControlTabInfoRecV1Fc.version);
 	lpStruct->iconSuiteID = (SInt16)(*env)->GetShortField(env, lpObject, ControlTabInfoRecV1Fc.iconSuiteID);
 	lpStruct->name = (CFStringRef)(*env)->GetIntField(env, lpObject, ControlTabInfoRecV1Fc.name);
@@ -576,12 +572,12 @@ ControlTabInfoRecV1 *getControlTabInfoRecV1Fields(JNIEnv *env, jobject lpObject,
 
 void setControlTabInfoRecV1Fields(JNIEnv *env, jobject lpObject, ControlTabInfoRecV1 *lpStruct)
 {
-	if (!ControlTabInfoRecV1Fc.cached) cacheControlTabInfoRecV1Fids(env, lpObject);
+	if (!ControlTabInfoRecV1Fc.cached) cacheControlTabInfoRecV1Fields(env, lpObject);
 	(*env)->SetShortField(env, lpObject, ControlTabInfoRecV1Fc.version, (jshort)lpStruct->version);
 	(*env)->SetShortField(env, lpObject, ControlTabInfoRecV1Fc.iconSuiteID, (jshort)lpStruct->iconSuiteID);
 	(*env)->SetIntField(env, lpObject, ControlTabInfoRecV1Fc.name, (jint)lpStruct->name);
 }
-#endif /* NO_ControlTabInfoRecV1 */
+#endif
 
 #ifndef NO_Cursor
 typedef struct Cursor_FID_CACHE {
@@ -592,7 +588,7 @@ typedef struct Cursor_FID_CACHE {
 
 Cursor_FID_CACHE CursorFc;
 
-void cacheCursorFids(JNIEnv *env, jobject lpObject)
+void cacheCursorFields(JNIEnv *env, jobject lpObject)
 {
 	if (CursorFc.cached) return;
 	CursorFc.clazz = (*env)->GetObjectClass(env, lpObject);
@@ -605,7 +601,7 @@ void cacheCursorFids(JNIEnv *env, jobject lpObject)
 
 Cursor *getCursorFields(JNIEnv *env, jobject lpObject, Cursor *lpStruct)
 {
-	if (!CursorFc.cached) cacheCursorFids(env, lpObject);
+	if (!CursorFc.cached) cacheCursorFields(env, lpObject);
 	{
 	jshortArray lpObject1 = (*env)->GetObjectField(env, lpObject, CursorFc.data);
 	(*env)->GetShortArrayRegion(env, lpObject1, 0, sizeof(lpStruct->data) / 2, lpStruct->data);
@@ -621,7 +617,7 @@ Cursor *getCursorFields(JNIEnv *env, jobject lpObject, Cursor *lpStruct)
 
 void setCursorFields(JNIEnv *env, jobject lpObject, Cursor *lpStruct)
 {
-	if (!CursorFc.cached) cacheCursorFids(env, lpObject);
+	if (!CursorFc.cached) cacheCursorFields(env, lpObject);
 	{
 	jshortArray lpObject1 = (*env)->GetObjectField(env, lpObject, CursorFc.data);
 	(*env)->SetShortArrayRegion(env, lpObject1, 0, sizeof(lpStruct->data) / 2, lpStruct->data);
@@ -633,7 +629,7 @@ void setCursorFields(JNIEnv *env, jobject lpObject, Cursor *lpStruct)
 	(*env)->SetShortField(env, lpObject, CursorFc.hotSpot_v, (jshort)lpStruct->hotSpot.v);
 	(*env)->SetShortField(env, lpObject, CursorFc.hotSpot_h, (jshort)lpStruct->hotSpot.h);
 }
-#endif /* NO_Cursor */
+#endif
 
 #ifndef NO_DataBrowserCallbacks
 typedef struct DataBrowserCallbacks_FID_CACHE {
@@ -644,7 +640,7 @@ typedef struct DataBrowserCallbacks_FID_CACHE {
 
 DataBrowserCallbacks_FID_CACHE DataBrowserCallbacksFc;
 
-void cacheDataBrowserCallbacksFids(JNIEnv *env, jobject lpObject)
+void cacheDataBrowserCallbacksFields(JNIEnv *env, jobject lpObject)
 {
 	if (DataBrowserCallbacksFc.cached) return;
 	DataBrowserCallbacksFc.clazz = (*env)->GetObjectClass(env, lpObject);
@@ -664,7 +660,7 @@ void cacheDataBrowserCallbacksFids(JNIEnv *env, jobject lpObject)
 
 DataBrowserCallbacks *getDataBrowserCallbacksFields(JNIEnv *env, jobject lpObject, DataBrowserCallbacks *lpStruct)
 {
-	if (!DataBrowserCallbacksFc.cached) cacheDataBrowserCallbacksFids(env, lpObject);
+	if (!DataBrowserCallbacksFc.cached) cacheDataBrowserCallbacksFields(env, lpObject);
 	lpStruct->version = (UInt32)(*env)->GetIntField(env, lpObject, DataBrowserCallbacksFc.version);
 	lpStruct->u.v1.itemDataCallback = (DataBrowserItemDataUPP)(*env)->GetIntField(env, lpObject, DataBrowserCallbacksFc.v1_itemDataCallback);
 	lpStruct->u.v1.itemCompareCallback = (DataBrowserItemCompareUPP)(*env)->GetIntField(env, lpObject, DataBrowserCallbacksFc.v1_itemCompareCallback);
@@ -681,7 +677,7 @@ DataBrowserCallbacks *getDataBrowserCallbacksFields(JNIEnv *env, jobject lpObjec
 
 void setDataBrowserCallbacksFields(JNIEnv *env, jobject lpObject, DataBrowserCallbacks *lpStruct)
 {
-	if (!DataBrowserCallbacksFc.cached) cacheDataBrowserCallbacksFids(env, lpObject);
+	if (!DataBrowserCallbacksFc.cached) cacheDataBrowserCallbacksFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, DataBrowserCallbacksFc.version, (jint)lpStruct->version);
 	(*env)->SetIntField(env, lpObject, DataBrowserCallbacksFc.v1_itemDataCallback, (jint)lpStruct->u.v1.itemDataCallback);
 	(*env)->SetIntField(env, lpObject, DataBrowserCallbacksFc.v1_itemCompareCallback, (jint)lpStruct->u.v1.itemCompareCallback);
@@ -694,7 +690,7 @@ void setDataBrowserCallbacksFields(JNIEnv *env, jobject lpObject, DataBrowserCal
 	(*env)->SetIntField(env, lpObject, DataBrowserCallbacksFc.v1_getContextualMenuCallback, (jint)lpStruct->u.v1.getContextualMenuCallback);
 	(*env)->SetIntField(env, lpObject, DataBrowserCallbacksFc.v1_selectContextualMenuCallback, (jint)lpStruct->u.v1.selectContextualMenuCallback);
 }
-#endif /* NO_DataBrowserCallbacks */
+#endif
 
 #ifndef NO_DataBrowserCustomCallbacks
 typedef struct DataBrowserCustomCallbacks_FID_CACHE {
@@ -705,7 +701,7 @@ typedef struct DataBrowserCustomCallbacks_FID_CACHE {
 
 DataBrowserCustomCallbacks_FID_CACHE DataBrowserCustomCallbacksFc;
 
-void cacheDataBrowserCustomCallbacksFids(JNIEnv *env, jobject lpObject)
+void cacheDataBrowserCustomCallbacksFields(JNIEnv *env, jobject lpObject)
 {
 	if (DataBrowserCustomCallbacksFc.cached) return;
 	DataBrowserCustomCallbacksFc.clazz = (*env)->GetObjectClass(env, lpObject);
@@ -722,9 +718,9 @@ void cacheDataBrowserCustomCallbacksFids(JNIEnv *env, jobject lpObject)
 
 DataBrowserCustomCallbacks *getDataBrowserCustomCallbacksFields(JNIEnv *env, jobject lpObject, DataBrowserCustomCallbacks *lpStruct)
 {
-	if (!DataBrowserCustomCallbacksFc.cached) cacheDataBrowserCustomCallbacksFids(env, lpObject);
+	if (!DataBrowserCustomCallbacksFc.cached) cacheDataBrowserCustomCallbacksFields(env, lpObject);
 	lpStruct->version = (*env)->GetIntField(env, lpObject, DataBrowserCustomCallbacksFc.version);
-	lpStruct->u.v1.drawItemCallback = (DataBrowserDrawItemUPP) (*env)->GetIntField(env, lpObject, DataBrowserCustomCallbacksFc.v1_drawItemCallback);
+	lpStruct->u.v1.drawItemCallback = (DataBrowserDrawItemUPP)(*env)->GetIntField(env, lpObject, DataBrowserCustomCallbacksFc.v1_drawItemCallback);
 	lpStruct->u.v1.editTextCallback = (DataBrowserEditItemUPP)(*env)->GetIntField(env, lpObject, DataBrowserCustomCallbacksFc.v1_editTextCallback);
 	lpStruct->u.v1.hitTestCallback = (DataBrowserHitTestUPP)(*env)->GetIntField(env, lpObject, DataBrowserCustomCallbacksFc.v1_hitTestCallback);
 	lpStruct->u.v1.trackingCallback = (DataBrowserTrackingUPP)(*env)->GetIntField(env, lpObject, DataBrowserCustomCallbacksFc.v1_trackingCallback);
@@ -736,7 +732,7 @@ DataBrowserCustomCallbacks *getDataBrowserCustomCallbacksFields(JNIEnv *env, job
 
 void setDataBrowserCustomCallbacksFields(JNIEnv *env, jobject lpObject, DataBrowserCustomCallbacks *lpStruct)
 {
-	if (!DataBrowserCustomCallbacksFc.cached) cacheDataBrowserCustomCallbacksFids(env, lpObject);
+	if (!DataBrowserCustomCallbacksFc.cached) cacheDataBrowserCustomCallbacksFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, DataBrowserCustomCallbacksFc.version, (jint)lpStruct->version);
 	(*env)->SetIntField(env, lpObject, DataBrowserCustomCallbacksFc.v1_drawItemCallback, (jint)lpStruct->u.v1.drawItemCallback);
 	(*env)->SetIntField(env, lpObject, DataBrowserCustomCallbacksFc.v1_editTextCallback, (jint)lpStruct->u.v1.editTextCallback);
@@ -746,7 +742,7 @@ void setDataBrowserCustomCallbacksFields(JNIEnv *env, jobject lpObject, DataBrow
 	(*env)->SetIntField(env, lpObject, DataBrowserCustomCallbacksFc.v1_acceptDragCallback, (jint)lpStruct->u.v1.acceptDragCallback);
 	(*env)->SetIntField(env, lpObject, DataBrowserCustomCallbacksFc.v1_receiveDragCallback, (jint)lpStruct->u.v1.receiveDragCallback);
 }
-#endif /* NO_DataBrowserCustomCallbacks */
+#endif
 
 #ifndef NO_DataBrowserListViewColumnDesc
 typedef struct DataBrowserListViewColumnDesc_FID_CACHE {
@@ -757,7 +753,7 @@ typedef struct DataBrowserListViewColumnDesc_FID_CACHE {
 
 DataBrowserListViewColumnDesc_FID_CACHE DataBrowserListViewColumnDescFc;
 
-void cacheDataBrowserListViewColumnDescFids(JNIEnv *env, jobject lpObject)
+void cacheDataBrowserListViewColumnDescFields(JNIEnv *env, jobject lpObject)
 {
 	if (DataBrowserListViewColumnDescFc.cached) return;
 	DataBrowserListViewColumnDescFc.clazz = (*env)->GetObjectClass(env, lpObject);
@@ -789,7 +785,7 @@ void cacheDataBrowserListViewColumnDescFids(JNIEnv *env, jobject lpObject)
 
 DataBrowserListViewColumnDesc *getDataBrowserListViewColumnDescFields(JNIEnv *env, jobject lpObject, DataBrowserListViewColumnDesc *lpStruct)
 {
-	if (!DataBrowserListViewColumnDescFc.cached) cacheDataBrowserListViewColumnDescFids(env, lpObject);
+	if (!DataBrowserListViewColumnDescFc.cached) cacheDataBrowserListViewColumnDescFields(env, lpObject);
 	lpStruct->propertyDesc.propertyID = (DataBrowserPropertyID)(*env)->GetIntField(env, lpObject, DataBrowserListViewColumnDescFc.propertyDesc_propertyID);
 	lpStruct->propertyDesc.propertyType = (OSType)(*env)->GetIntField(env, lpObject, DataBrowserListViewColumnDescFc.propertyDesc_propertyType);
 	lpStruct->propertyDesc.propertyFlags = (DataBrowserPropertyFlags)(*env)->GetIntField(env, lpObject, DataBrowserListViewColumnDescFc.propertyDesc_propertyFlags);
@@ -818,7 +814,7 @@ DataBrowserListViewColumnDesc *getDataBrowserListViewColumnDescFields(JNIEnv *en
 
 void setDataBrowserListViewColumnDescFields(JNIEnv *env, jobject lpObject, DataBrowserListViewColumnDesc *lpStruct)
 {
-	if (!DataBrowserListViewColumnDescFc.cached) cacheDataBrowserListViewColumnDescFids(env, lpObject);
+	if (!DataBrowserListViewColumnDescFc.cached) cacheDataBrowserListViewColumnDescFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, DataBrowserListViewColumnDescFc.propertyDesc_propertyID, (jint)lpStruct->propertyDesc.propertyID);
 	(*env)->SetIntField(env, lpObject, DataBrowserListViewColumnDescFc.propertyDesc_propertyType, (jint)lpStruct->propertyDesc.propertyType);
 	(*env)->SetIntField(env, lpObject, DataBrowserListViewColumnDescFc.propertyDesc_propertyFlags, (jint)lpStruct->propertyDesc.propertyFlags);
@@ -843,7 +839,7 @@ void setDataBrowserListViewColumnDescFields(JNIEnv *env, jobject lpObject, DataB
 	(*env)->SetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_btnContentInfo_contentType, (jshort)lpStruct->headerBtnDesc.btnContentInfo.contentType);
 	(*env)->SetIntField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_btnContentInfo_iconRef, (jint)lpStruct->headerBtnDesc.btnContentInfo.u.iconRef);
 }
-#endif /* NO_DataBrowserListViewColumnDesc */
+#endif
 
 #ifndef NO_DataBrowserListViewHeaderDesc
 typedef struct DataBrowserListViewHeaderDesc_FID_CACHE {
@@ -854,7 +850,7 @@ typedef struct DataBrowserListViewHeaderDesc_FID_CACHE {
 
 DataBrowserListViewHeaderDesc_FID_CACHE DataBrowserListViewHeaderDescFc;
 
-void cacheDataBrowserListViewHeaderDescFids(JNIEnv *env, jobject lpObject)
+void cacheDataBrowserListViewHeaderDescFields(JNIEnv *env, jobject lpObject)
 {
 	if (DataBrowserListViewHeaderDescFc.cached) return;
 	DataBrowserListViewHeaderDescFc.clazz = (*env)->GetObjectClass(env, lpObject);
@@ -883,33 +879,33 @@ void cacheDataBrowserListViewHeaderDescFids(JNIEnv *env, jobject lpObject)
 
 DataBrowserListViewHeaderDesc *getDataBrowserListViewHeaderDescFields(JNIEnv *env, jobject lpObject, DataBrowserListViewHeaderDesc *lpStruct)
 {
-	if (!DataBrowserListViewHeaderDescFc.cached) cacheDataBrowserListViewHeaderDescFids(env, lpObject);
-	lpStruct->version = (UInt32)(*env)->GetIntField(env, lpObject, DataBrowserListViewHeaderDescFc.version);
-	lpStruct->minimumWidth = (UInt16)(*env)->GetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.minimumWidth);
-	lpStruct->maximumWidth = (UInt16)(*env)->GetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.maximumWidth);
-	lpStruct->titleOffset = (SInt16)(*env)->GetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.titleOffset);
+	if (!DataBrowserListViewHeaderDescFc.cached) cacheDataBrowserListViewHeaderDescFields(env, lpObject);
+	lpStruct->version = (*env)->GetIntField(env, lpObject, DataBrowserListViewHeaderDescFc.version);
+	lpStruct->minimumWidth = (*env)->GetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.minimumWidth);
+	lpStruct->maximumWidth = (*env)->GetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.maximumWidth);
+	lpStruct->titleOffset = (*env)->GetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.titleOffset);
 	lpStruct->titleString = (CFStringRef)(*env)->GetIntField(env, lpObject, DataBrowserListViewHeaderDescFc.titleString);
-	lpStruct->initialOrder = (DataBrowserSortOrder)(*env)->GetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.initialOrder);
-	lpStruct->btnFontStyle.flags = (SInt16)(*env)->GetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.btnFontStyle_flags);
-	lpStruct->btnFontStyle.font = (SInt16)(*env)->GetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.btnFontStyle_font);
-	lpStruct->btnFontStyle.size = (SInt16)(*env)->GetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.btnFontStyle_size);
-	lpStruct->btnFontStyle.style = (SInt16)(*env)->GetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.btnFontStyle_style);
-	lpStruct->btnFontStyle.mode = (SInt16)(*env)->GetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.btnFontStyle_mode);
-	lpStruct->btnFontStyle.just = (SInt16)(*env)->GetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.btnFontStyle_just);
-	lpStruct->btnFontStyle.foreColor.red = (unsigned short)(*env)->GetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.btnFontStyle_foreColor_red);
-	lpStruct->btnFontStyle.foreColor.green = (unsigned short)(*env)->GetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.btnFontStyle_foreColor_green);
-	lpStruct->btnFontStyle.foreColor.blue = (unsigned short)(*env)->GetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.btnFontStyle_foreColor_blue);
-	lpStruct->btnFontStyle.backColor.red = (unsigned short)(*env)->GetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.btnFontStyle_backColor_red);
-	lpStruct->btnFontStyle.backColor.green = (unsigned short)(*env)->GetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.btnFontStyle_backColor_green);
-	lpStruct->btnFontStyle.backColor.blue = (unsigned short)(*env)->GetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.btnFontStyle_backColor_blue);
-	lpStruct->btnContentInfo.contentType = (ControlContentType)(*env)->GetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.btnContentInfo_contentType);
+	lpStruct->initialOrder = (*env)->GetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.initialOrder);
+	lpStruct->btnFontStyle.flags = (*env)->GetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.btnFontStyle_flags);
+	lpStruct->btnFontStyle.font = (*env)->GetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.btnFontStyle_font);
+	lpStruct->btnFontStyle.size = (*env)->GetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.btnFontStyle_size);
+	lpStruct->btnFontStyle.style = (*env)->GetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.btnFontStyle_style);
+	lpStruct->btnFontStyle.mode = (*env)->GetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.btnFontStyle_mode);
+	lpStruct->btnFontStyle.just = (*env)->GetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.btnFontStyle_just);
+	lpStruct->btnFontStyle.foreColor.red = (*env)->GetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.btnFontStyle_foreColor_red);
+	lpStruct->btnFontStyle.foreColor.green = (*env)->GetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.btnFontStyle_foreColor_green);
+	lpStruct->btnFontStyle.foreColor.blue = (*env)->GetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.btnFontStyle_foreColor_blue);
+	lpStruct->btnFontStyle.backColor.red = (*env)->GetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.btnFontStyle_backColor_red);
+	lpStruct->btnFontStyle.backColor.green = (*env)->GetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.btnFontStyle_backColor_green);
+	lpStruct->btnFontStyle.backColor.blue = (*env)->GetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.btnFontStyle_backColor_blue);
+	lpStruct->btnContentInfo.contentType = (*env)->GetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.btnContentInfo_contentType);
 	lpStruct->btnContentInfo.u.iconRef = (IconRef)(*env)->GetIntField(env, lpObject, DataBrowserListViewHeaderDescFc.btnContentInfo_iconRef);
 	return lpStruct;
 }
 
 void setDataBrowserListViewHeaderDescFields(JNIEnv *env, jobject lpObject, DataBrowserListViewHeaderDesc *lpStruct)
 {
-	if (!DataBrowserListViewHeaderDescFc.cached) cacheDataBrowserListViewHeaderDescFids(env, lpObject);
+	if (!DataBrowserListViewHeaderDescFc.cached) cacheDataBrowserListViewHeaderDescFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, DataBrowserListViewHeaderDescFc.version, (jint)lpStruct->version);
 	(*env)->SetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.minimumWidth, (jshort)lpStruct->minimumWidth);
 	(*env)->SetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.maximumWidth, (jshort)lpStruct->maximumWidth);
@@ -931,7 +927,7 @@ void setDataBrowserListViewHeaderDescFields(JNIEnv *env, jobject lpObject, DataB
 	(*env)->SetShortField(env, lpObject, DataBrowserListViewHeaderDescFc.btnContentInfo_contentType, (jshort)lpStruct->btnContentInfo.contentType);
 	(*env)->SetIntField(env, lpObject, DataBrowserListViewHeaderDescFc.btnContentInfo_iconRef, (jint)lpStruct->btnContentInfo.u.iconRef);
 }
-#endif /* NO_DataBrowserListViewHeaderDesc */
+#endif
 
 #ifndef NO_EventRecord
 typedef struct EventRecord_FID_CACHE {
@@ -942,7 +938,7 @@ typedef struct EventRecord_FID_CACHE {
 
 EventRecord_FID_CACHE EventRecordFc;
 
-void cacheEventRecordFids(JNIEnv *env, jobject lpObject)
+void cacheEventRecordFields(JNIEnv *env, jobject lpObject)
 {
 	if (EventRecordFc.cached) return;
 	EventRecordFc.clazz = (*env)->GetObjectClass(env, lpObject);
@@ -957,7 +953,7 @@ void cacheEventRecordFids(JNIEnv *env, jobject lpObject)
 
 EventRecord *getEventRecordFields(JNIEnv *env, jobject lpObject, EventRecord *lpStruct)
 {
-	if (!EventRecordFc.cached) cacheEventRecordFids(env, lpObject);
+	if (!EventRecordFc.cached) cacheEventRecordFields(env, lpObject);
 	lpStruct->what = (EventKind)(*env)->GetShortField(env, lpObject, EventRecordFc.what);
 	lpStruct->message = (*env)->GetIntField(env, lpObject, EventRecordFc.message);
 	lpStruct->when = (*env)->GetIntField(env, lpObject, EventRecordFc.when);
@@ -969,7 +965,7 @@ EventRecord *getEventRecordFields(JNIEnv *env, jobject lpObject, EventRecord *lp
 
 void setEventRecordFields(JNIEnv *env, jobject lpObject, EventRecord *lpStruct)
 {
-	if (!EventRecordFc.cached) cacheEventRecordFids(env, lpObject);
+	if (!EventRecordFc.cached) cacheEventRecordFields(env, lpObject);
 	(*env)->SetShortField(env, lpObject, EventRecordFc.what, (jshort)lpStruct->what);
 	(*env)->SetIntField(env, lpObject, EventRecordFc.message, (jint)lpStruct->message);
 	(*env)->SetIntField(env, lpObject, EventRecordFc.when, (jint)lpStruct->when);
@@ -977,7 +973,7 @@ void setEventRecordFields(JNIEnv *env, jobject lpObject, EventRecord *lpStruct)
 	(*env)->SetShortField(env, lpObject, EventRecordFc.where_h, (jshort)lpStruct->where.h);
 	(*env)->SetShortField(env, lpObject, EventRecordFc.modifiers, (jshort)lpStruct->modifiers);
 }
-#endif /* NO_EventRecord */
+#endif
 
 #ifndef NO_FontInfo
 typedef struct FontInfo_FID_CACHE {
@@ -988,7 +984,7 @@ typedef struct FontInfo_FID_CACHE {
 
 FontInfo_FID_CACHE FontInfoFc;
 
-void cacheFontInfoFids(JNIEnv *env, jobject lpObject)
+void cacheFontInfoFields(JNIEnv *env, jobject lpObject)
 {
 	if (FontInfoFc.cached) return;
 	FontInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
@@ -1001,7 +997,7 @@ void cacheFontInfoFids(JNIEnv *env, jobject lpObject)
 
 FontInfo *getFontInfoFields(JNIEnv *env, jobject lpObject, FontInfo *lpStruct)
 {
-	if (!FontInfoFc.cached) cacheFontInfoFids(env, lpObject);
+	if (!FontInfoFc.cached) cacheFontInfoFields(env, lpObject);
 	lpStruct->ascent = (*env)->GetShortField(env, lpObject, FontInfoFc.ascent);
 	lpStruct->descent = (*env)->GetShortField(env, lpObject, FontInfoFc.descent);
 	lpStruct->widMax = (*env)->GetShortField(env, lpObject, FontInfoFc.widMax);
@@ -1011,13 +1007,13 @@ FontInfo *getFontInfoFields(JNIEnv *env, jobject lpObject, FontInfo *lpStruct)
 
 void setFontInfoFields(JNIEnv *env, jobject lpObject, FontInfo *lpStruct)
 {
-	if (!FontInfoFc.cached) cacheFontInfoFids(env, lpObject);
+	if (!FontInfoFc.cached) cacheFontInfoFields(env, lpObject);
 	(*env)->SetShortField(env, lpObject, FontInfoFc.ascent, (jshort)lpStruct->ascent);
 	(*env)->SetShortField(env, lpObject, FontInfoFc.descent, (jshort)lpStruct->descent);
 	(*env)->SetShortField(env, lpObject, FontInfoFc.widMax, (jshort)lpStruct->widMax);
 	(*env)->SetShortField(env, lpObject, FontInfoFc.leading, (jshort)lpStruct->leading);
 }
-#endif /* NO_FontInfo */
+#endif
 
 #ifndef NO_FontSelectionQDStyle
 typedef struct FontSelectionQDStyle_FID_CACHE {
@@ -1028,7 +1024,7 @@ typedef struct FontSelectionQDStyle_FID_CACHE {
 
 FontSelectionQDStyle_FID_CACHE FontSelectionQDStyleFc;
 
-void cacheFontSelectionQDStyleFids(JNIEnv *env, jobject lpObject)
+void cacheFontSelectionQDStyleFields(JNIEnv *env, jobject lpObject)
 {
 	if (FontSelectionQDStyleFc.cached) return;
 	FontSelectionQDStyleFc.clazz = (*env)->GetObjectClass(env, lpObject);
@@ -1046,13 +1042,13 @@ void cacheFontSelectionQDStyleFids(JNIEnv *env, jobject lpObject)
 
 FontSelectionQDStyle *getFontSelectionQDStyleFields(JNIEnv *env, jobject lpObject, FontSelectionQDStyle *lpStruct)
 {
-	if (!FontSelectionQDStyleFc.cached) cacheFontSelectionQDStyleFids(env, lpObject);
-	lpStruct->version = (UInt32)(*env)->GetIntField(env, lpObject, FontSelectionQDStyleFc.version);
-	lpStruct->instance.fontFamily = (FMFontFamily)(*env)->GetShortField(env, lpObject, FontSelectionQDStyleFc.instance_fontFamily);
-	lpStruct->instance.fontStyle = (FMFontStyle)(*env)->GetShortField(env, lpObject, FontSelectionQDStyleFc.instance_fontStyle);
-	lpStruct->size = (FMFontSize)(*env)->GetShortField(env, lpObject, FontSelectionQDStyleFc.size);
-	lpStruct->hasColor = (Boolean)(*env)->GetBooleanField(env, lpObject, FontSelectionQDStyleFc.hasColor);
-	lpStruct->reserved = (UInt8)(*env)->GetByteField(env, lpObject, FontSelectionQDStyleFc.reserved);
+	if (!FontSelectionQDStyleFc.cached) cacheFontSelectionQDStyleFields(env, lpObject);
+	lpStruct->version = (*env)->GetIntField(env, lpObject, FontSelectionQDStyleFc.version);
+	lpStruct->instance.fontFamily = (*env)->GetShortField(env, lpObject, FontSelectionQDStyleFc.instance_fontFamily);
+	lpStruct->instance.fontStyle = (*env)->GetShortField(env, lpObject, FontSelectionQDStyleFc.instance_fontStyle);
+	lpStruct->size = (*env)->GetShortField(env, lpObject, FontSelectionQDStyleFc.size);
+	lpStruct->hasColor = (*env)->GetBooleanField(env, lpObject, FontSelectionQDStyleFc.hasColor);
+	lpStruct->reserved = (*env)->GetByteField(env, lpObject, FontSelectionQDStyleFc.reserved);
 	lpStruct->color.red = (*env)->GetShortField(env, lpObject, FontSelectionQDStyleFc.color_red);
 	lpStruct->color.green = (*env)->GetShortField(env, lpObject, FontSelectionQDStyleFc.color_green);
 	lpStruct->color.blue = (*env)->GetShortField(env, lpObject, FontSelectionQDStyleFc.color_blue);
@@ -1061,7 +1057,7 @@ FontSelectionQDStyle *getFontSelectionQDStyleFields(JNIEnv *env, jobject lpObjec
 
 void setFontSelectionQDStyleFields(JNIEnv *env, jobject lpObject, FontSelectionQDStyle *lpStruct)
 {
-	if (!FontSelectionQDStyleFc.cached) cacheFontSelectionQDStyleFids(env, lpObject);
+	if (!FontSelectionQDStyleFc.cached) cacheFontSelectionQDStyleFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, FontSelectionQDStyleFc.version, (jint)lpStruct->version);
 	(*env)->SetShortField(env, lpObject, FontSelectionQDStyleFc.instance_fontFamily, (jshort)lpStruct->instance.fontFamily);
 	(*env)->SetShortField(env, lpObject, FontSelectionQDStyleFc.instance_fontStyle, (jshort)lpStruct->instance.fontStyle);
@@ -1072,7 +1068,7 @@ void setFontSelectionQDStyleFields(JNIEnv *env, jobject lpObject, FontSelectionQ
 	(*env)->SetShortField(env, lpObject, FontSelectionQDStyleFc.color_green, (jshort)lpStruct->color.green);
 	(*env)->SetShortField(env, lpObject, FontSelectionQDStyleFc.color_blue, (jshort)lpStruct->color.blue);
 }
-#endif /* NO_FontSelectionQDStyle */
+#endif
 
 #ifndef NO_GDevice
 typedef struct GDevice_FID_CACHE {
@@ -1083,7 +1079,7 @@ typedef struct GDevice_FID_CACHE {
 
 GDevice_FID_CACHE GDeviceFc;
 
-void cacheGDeviceFids(JNIEnv *env, jobject lpObject)
+void cacheGDeviceFields(JNIEnv *env, jobject lpObject)
 {
 	if (GDeviceFc.cached) return;
 	GDeviceFc.clazz = (*env)->GetObjectClass(env, lpObject);
@@ -1113,7 +1109,7 @@ void cacheGDeviceFids(JNIEnv *env, jobject lpObject)
 
 GDevice *getGDeviceFields(JNIEnv *env, jobject lpObject, GDevice *lpStruct)
 {
-	if (!GDeviceFc.cached) cacheGDeviceFids(env, lpObject);
+	if (!GDeviceFc.cached) cacheGDeviceFields(env, lpObject);
 	lpStruct->gdRefNum = (*env)->GetShortField(env, lpObject, GDeviceFc.gdRefNum);
 	lpStruct->gdID = (*env)->GetShortField(env, lpObject, GDeviceFc.gdID);
 	lpStruct->gdType = (*env)->GetShortField(env, lpObject, GDeviceFc.gdType);
@@ -1140,7 +1136,7 @@ GDevice *getGDeviceFields(JNIEnv *env, jobject lpObject, GDevice *lpStruct)
 
 void setGDeviceFields(JNIEnv *env, jobject lpObject, GDevice *lpStruct)
 {
-	if (!GDeviceFc.cached) cacheGDeviceFids(env, lpObject);
+	if (!GDeviceFc.cached) cacheGDeviceFields(env, lpObject);
 	(*env)->SetShortField(env, lpObject, GDeviceFc.gdRefNum, (jshort)lpStruct->gdRefNum);
 	(*env)->SetShortField(env, lpObject, GDeviceFc.gdID, (jshort)lpStruct->gdID);
 	(*env)->SetShortField(env, lpObject, GDeviceFc.gdType, (jshort)lpStruct->gdType);
@@ -1163,7 +1159,7 @@ void setGDeviceFields(JNIEnv *env, jobject lpObject, GDevice *lpStruct)
 	(*env)->SetIntField(env, lpObject, GDeviceFc.gdCCXMask, (jint)lpStruct->gdCCXMask);
 	(*env)->SetIntField(env, lpObject, GDeviceFc.gdExt, (jint)lpStruct->gdExt);
 }
-#endif /* NO_GDevice */
+#endif
 
 #ifndef NO_HICommand
 typedef struct HICommand_FID_CACHE {
@@ -1174,7 +1170,7 @@ typedef struct HICommand_FID_CACHE {
 
 HICommand_FID_CACHE HICommandFc;
 
-void cacheHICommandFids(JNIEnv *env, jobject lpObject)
+void cacheHICommandFields(JNIEnv *env, jobject lpObject)
 {
 	if (HICommandFc.cached) return;
 	HICommandFc.clazz = (*env)->GetObjectClass(env, lpObject);
@@ -1187,7 +1183,7 @@ void cacheHICommandFids(JNIEnv *env, jobject lpObject)
 
 HICommand *getHICommandFields(JNIEnv *env, jobject lpObject, HICommand *lpStruct)
 {
-	if (!HICommandFc.cached) cacheHICommandFids(env, lpObject);
+	if (!HICommandFc.cached) cacheHICommandFields(env, lpObject);
 	lpStruct->attributes = (*env)->GetIntField(env, lpObject, HICommandFc.attributes);
 	lpStruct->commandID = (*env)->GetIntField(env, lpObject, HICommandFc.commandID);
 	lpStruct->menu.menuRef = (MenuRef)(*env)->GetIntField(env, lpObject, HICommandFc.menu_menuRef);
@@ -1197,13 +1193,13 @@ HICommand *getHICommandFields(JNIEnv *env, jobject lpObject, HICommand *lpStruct
 
 void setHICommandFields(JNIEnv *env, jobject lpObject, HICommand *lpStruct)
 {
-	if (!HICommandFc.cached) cacheHICommandFids(env, lpObject);
+	if (!HICommandFc.cached) cacheHICommandFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, HICommandFc.attributes, (jint)lpStruct->attributes);
 	(*env)->SetIntField(env, lpObject, HICommandFc.commandID, (jint)lpStruct->commandID);
 	(*env)->SetIntField(env, lpObject, HICommandFc.menu_menuRef, (jint)lpStruct->menu.menuRef);
 	(*env)->SetShortField(env, lpObject, HICommandFc.menu_menuItemIndex, (jshort)lpStruct->menu.menuItemIndex);
 }
-#endif /* NO_HICommand */
+#endif
 
 #ifndef NO_HMHelpContentRec
 typedef struct HMHelpContentRec_FID_CACHE {
@@ -1214,7 +1210,7 @@ typedef struct HMHelpContentRec_FID_CACHE {
 
 HMHelpContentRec_FID_CACHE HMHelpContentRecFc;
 
-void cacheHMHelpContentRecFids(JNIEnv *env, jobject lpObject)
+void cacheHMHelpContentRecFields(JNIEnv *env, jobject lpObject)
 {
 	if (HMHelpContentRecFc.cached) return;
 	HMHelpContentRecFc.clazz = (*env)->GetObjectClass(env, lpObject);
@@ -1233,7 +1229,7 @@ void cacheHMHelpContentRecFids(JNIEnv *env, jobject lpObject)
 
 HMHelpContentRec *getHMHelpContentRecFields(JNIEnv *env, jobject lpObject, HMHelpContentRec *lpStruct)
 {
-	if (!HMHelpContentRecFc.cached) cacheHMHelpContentRecFids(env, lpObject);
+	if (!HMHelpContentRecFc.cached) cacheHMHelpContentRecFields(env, lpObject);
 	lpStruct->version = (*env)->GetIntField(env, lpObject, HMHelpContentRecFc.version);
 	lpStruct->absHotRect.top = (*env)->GetShortField(env, lpObject, HMHelpContentRecFc.absHotRect_top);
 	lpStruct->absHotRect.left = (*env)->GetShortField(env, lpObject, HMHelpContentRecFc.absHotRect_left);
@@ -1249,7 +1245,7 @@ HMHelpContentRec *getHMHelpContentRecFields(JNIEnv *env, jobject lpObject, HMHel
 
 void setHMHelpContentRecFields(JNIEnv *env, jobject lpObject, HMHelpContentRec *lpStruct)
 {
-	if (!HMHelpContentRecFc.cached) cacheHMHelpContentRecFids(env, lpObject);
+	if (!HMHelpContentRecFc.cached) cacheHMHelpContentRecFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, HMHelpContentRecFc.version, (jint)lpStruct->version);
 	(*env)->SetShortField(env, lpObject, HMHelpContentRecFc.absHotRect_top, (jshort)lpStruct->absHotRect.top);
 	(*env)->SetShortField(env, lpObject, HMHelpContentRecFc.absHotRect_left, (jshort)lpStruct->absHotRect.left);
@@ -1261,7 +1257,7 @@ void setHMHelpContentRecFields(JNIEnv *env, jobject lpObject, HMHelpContentRec *
 	(*env)->SetIntField(env, lpObject, HMHelpContentRecFc.content1_contentType, (jint)lpStruct->content[1].contentType);
 	(*env)->SetIntField(env, lpObject, HMHelpContentRecFc.content1_tagCFString, (jint)lpStruct->content[1].u.tagCFString);
 }
-#endif /* NO_HMHelpContentRec */
+#endif
 
 #ifndef NO_MenuTrackingData
 typedef struct MenuTrackingData_FID_CACHE {
@@ -1272,7 +1268,7 @@ typedef struct MenuTrackingData_FID_CACHE {
 
 MenuTrackingData_FID_CACHE MenuTrackingDataFc;
 
-void cacheMenuTrackingDataFids(JNIEnv *env, jobject lpObject)
+void cacheMenuTrackingDataFields(JNIEnv *env, jobject lpObject)
 {
 	if (MenuTrackingDataFc.cached) return;
 	MenuTrackingDataFc.clazz = (*env)->GetObjectClass(env, lpObject);
@@ -1290,7 +1286,7 @@ void cacheMenuTrackingDataFids(JNIEnv *env, jobject lpObject)
 
 MenuTrackingData *getMenuTrackingDataFields(JNIEnv *env, jobject lpObject, MenuTrackingData *lpStruct)
 {
-	if (!MenuTrackingDataFc.cached) cacheMenuTrackingDataFids(env, lpObject);
+	if (!MenuTrackingDataFc.cached) cacheMenuTrackingDataFields(env, lpObject);
 	lpStruct->menu = (MenuRef)(*env)->GetIntField(env, lpObject, MenuTrackingDataFc.menu);
 	lpStruct->itemSelected = (*env)->GetShortField(env, lpObject, MenuTrackingDataFc.itemSelected);
 	lpStruct->itemUnderMouse = (*env)->GetShortField(env, lpObject, MenuTrackingDataFc.itemUnderMouse);
@@ -1305,7 +1301,7 @@ MenuTrackingData *getMenuTrackingDataFields(JNIEnv *env, jobject lpObject, MenuT
 
 void setMenuTrackingDataFields(JNIEnv *env, jobject lpObject, MenuTrackingData *lpStruct)
 {
-	if (!MenuTrackingDataFc.cached) cacheMenuTrackingDataFids(env, lpObject);
+	if (!MenuTrackingDataFc.cached) cacheMenuTrackingDataFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, MenuTrackingDataFc.menu, (jint)lpStruct->menu);
 	(*env)->SetShortField(env, lpObject, MenuTrackingDataFc.itemSelected, (jshort)lpStruct->itemSelected);
 	(*env)->SetShortField(env, lpObject, MenuTrackingDataFc.itemUnderMouse, (jshort)lpStruct->itemUnderMouse);
@@ -1316,7 +1312,7 @@ void setMenuTrackingDataFields(JNIEnv *env, jobject lpObject, MenuTrackingData *
 	(*env)->SetIntField(env, lpObject, MenuTrackingDataFc.virtualMenuTop, (jint)lpStruct->virtualMenuTop);
 	(*env)->SetIntField(env, lpObject, MenuTrackingDataFc.virtualMenuBottom, (jint)lpStruct->virtualMenuBottom);
 }
-#endif /* NO_MenuTrackingData */
+#endif
 
 #ifndef NO_NavDialogCreationOptions
 typedef struct NavDialogCreationOptions_FID_CACHE {
@@ -1327,7 +1323,7 @@ typedef struct NavDialogCreationOptions_FID_CACHE {
 
 NavDialogCreationOptions_FID_CACHE NavDialogCreationOptionsFc;
 
-void cacheNavDialogCreationOptionsFids(JNIEnv *env, jobject lpObject)
+void cacheNavDialogCreationOptionsFields(JNIEnv *env, jobject lpObject)
 {
 	if (NavDialogCreationOptionsFc.cached) return;
 	NavDialogCreationOptionsFc.clazz = (*env)->GetObjectClass(env, lpObject);
@@ -1350,7 +1346,7 @@ void cacheNavDialogCreationOptionsFids(JNIEnv *env, jobject lpObject)
 
 NavDialogCreationOptions *getNavDialogCreationOptionsFields(JNIEnv *env, jobject lpObject, NavDialogCreationOptions *lpStruct)
 {
-	if (!NavDialogCreationOptionsFc.cached) cacheNavDialogCreationOptionsFids(env, lpObject);
+	if (!NavDialogCreationOptionsFc.cached) cacheNavDialogCreationOptionsFields(env, lpObject);
 	lpStruct->version = (*env)->GetShortField(env, lpObject, NavDialogCreationOptionsFc.version);
 	lpStruct->optionFlags = (NavDialogOptionFlags)(*env)->GetIntField(env, lpObject, NavDialogCreationOptionsFc.optionFlags);
 	lpStruct->location.h = (*env)->GetShortField(env, lpObject, NavDialogCreationOptionsFc.location_h);
@@ -1370,7 +1366,7 @@ NavDialogCreationOptions *getNavDialogCreationOptionsFields(JNIEnv *env, jobject
 
 void setNavDialogCreationOptionsFields(JNIEnv *env, jobject lpObject, NavDialogCreationOptions *lpStruct)
 {
-	if (!NavDialogCreationOptionsFc.cached) cacheNavDialogCreationOptionsFids(env, lpObject);
+	if (!NavDialogCreationOptionsFc.cached) cacheNavDialogCreationOptionsFields(env, lpObject);
 	(*env)->SetShortField(env, lpObject, NavDialogCreationOptionsFc.version, (jshort)lpStruct->version);
 	(*env)->SetIntField(env, lpObject, NavDialogCreationOptionsFc.optionFlags, (jint)lpStruct->optionFlags);
 	(*env)->SetShortField(env, lpObject, NavDialogCreationOptionsFc.location_h, (jshort)lpStruct->location.h);
@@ -1386,7 +1382,7 @@ void setNavDialogCreationOptionsFields(JNIEnv *env, jobject lpObject, NavDialogC
 	(*env)->SetIntField(env, lpObject, NavDialogCreationOptionsFc.modality, (jint)lpStruct->modality);
 	(*env)->SetIntField(env, lpObject, NavDialogCreationOptionsFc.parentWindow, (jint)lpStruct->parentWindow);
 }
-#endif /* NO_NavDialogCreationOptions */
+#endif
 
 #ifndef NO_NavReplyRecord
 typedef struct NavReplyRecord_FID_CACHE {
@@ -1397,7 +1393,7 @@ typedef struct NavReplyRecord_FID_CACHE {
 
 NavReplyRecord_FID_CACHE NavReplyRecordFc;
 
-void cacheNavReplyRecordFids(JNIEnv *env, jobject lpObject)
+void cacheNavReplyRecordFields(JNIEnv *env, jobject lpObject)
 {
 	if (NavReplyRecordFc.cached) return;
 	NavReplyRecordFc.clazz = (*env)->GetObjectClass(env, lpObject);
@@ -1420,7 +1416,7 @@ void cacheNavReplyRecordFids(JNIEnv *env, jobject lpObject)
 
 NavReplyRecord *getNavReplyRecordFields(JNIEnv *env, jobject lpObject, NavReplyRecord *lpStruct)
 {
-	if (!NavReplyRecordFc.cached) cacheNavReplyRecordFids(env, lpObject);
+	if (!NavReplyRecordFc.cached) cacheNavReplyRecordFields(env, lpObject);
 	lpStruct->version = (UInt16)(*env)->GetShortField(env, lpObject, NavReplyRecordFc.version);
 	lpStruct->validRecord = (Boolean)(*env)->GetBooleanField(env, lpObject, NavReplyRecordFc.validRecord);
 	lpStruct->replacing = (Boolean)(*env)->GetBooleanField(env, lpObject, NavReplyRecordFc.replacing);
@@ -1443,7 +1439,7 @@ NavReplyRecord *getNavReplyRecordFields(JNIEnv *env, jobject lpObject, NavReplyR
 
 void setNavReplyRecordFields(JNIEnv *env, jobject lpObject, NavReplyRecord *lpStruct)
 {
-	if (!NavReplyRecordFc.cached) cacheNavReplyRecordFids(env, lpObject);
+	if (!NavReplyRecordFc.cached) cacheNavReplyRecordFields(env, lpObject);
 	(*env)->SetShortField(env, lpObject, NavReplyRecordFc.version, (jshort)lpStruct->version);
 	(*env)->SetBooleanField(env, lpObject, NavReplyRecordFc.validRecord, (jboolean)lpStruct->validRecord);
 	(*env)->SetBooleanField(env, lpObject, NavReplyRecordFc.replacing, (jboolean)lpStruct->replacing);
@@ -1462,7 +1458,7 @@ void setNavReplyRecordFields(JNIEnv *env, jobject lpObject, NavReplyRecord *lpSt
 	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->reserved), lpStruct->reserved);
 	}
 }
-#endif /* NO_NavReplyRecord */
+#endif
 
 #ifndef NO_PixMap
 typedef struct PixMap_FID_CACHE {
@@ -1473,10 +1469,10 @@ typedef struct PixMap_FID_CACHE {
 
 PixMap_FID_CACHE PixMapFc;
 
-void cachePixMapFids(JNIEnv *env, jobject lpObject)
+void cachePixMapFields(JNIEnv *env, jobject lpObject)
 {
 	if (PixMapFc.cached) return;
-	cacheBitMapFids(env, lpObject);
+	cacheBitMapFields(env, lpObject);
 	PixMapFc.clazz = (*env)->GetObjectClass(env, lpObject);
 	PixMapFc.pmVersion = (*env)->GetFieldID(env, PixMapFc.clazz, "pmVersion", "S");
 	PixMapFc.packType = (*env)->GetFieldID(env, PixMapFc.clazz, "packType", "S");
@@ -1495,7 +1491,7 @@ void cachePixMapFids(JNIEnv *env, jobject lpObject)
 
 PixMap *getPixMapFields(JNIEnv *env, jobject lpObject, PixMap *lpStruct)
 {
-	if (!PixMapFc.cached) cachePixMapFids(env, lpObject);
+	if (!PixMapFc.cached) cachePixMapFields(env, lpObject);
 	getBitMapFields(env, lpObject, (BitMap *)lpStruct);
 	lpStruct->pmVersion = (*env)->GetShortField(env, lpObject, PixMapFc.pmVersion);
 	lpStruct->packType = (*env)->GetShortField(env, lpObject, PixMapFc.packType);
@@ -1514,7 +1510,7 @@ PixMap *getPixMapFields(JNIEnv *env, jobject lpObject, PixMap *lpStruct)
 
 void setPixMapFields(JNIEnv *env, jobject lpObject, PixMap *lpStruct)
 {
-	if (!PixMapFc.cached) cachePixMapFids(env, lpObject);
+	if (!PixMapFc.cached) cachePixMapFields(env, lpObject);
 	setBitMapFields(env, lpObject, (BitMap *)lpStruct);
 	(*env)->SetShortField(env, lpObject, PixMapFc.pmVersion, (jshort)lpStruct->pmVersion);
 	(*env)->SetShortField(env, lpObject, PixMapFc.packType, (jshort)lpStruct->packType);
@@ -1529,7 +1525,7 @@ void setPixMapFields(JNIEnv *env, jobject lpObject, PixMap *lpStruct)
 	(*env)->SetIntField(env, lpObject, PixMapFc.pmTable, (jint)lpStruct->pmTable);
 	(*env)->SetIntField(env, lpObject, PixMapFc.pmExt, (jint)lpStruct->pmExt);
 }
-#endif /* NO_PixMap */
+#endif
 
 #ifndef NO_Point
 typedef struct Point_FID_CACHE {
@@ -1540,7 +1536,7 @@ typedef struct Point_FID_CACHE {
 
 Point_FID_CACHE PointFc;
 
-void cachePointFids(JNIEnv *env, jobject lpObject)
+void cachePointFields(JNIEnv *env, jobject lpObject)
 {
 	if (PointFc.cached) return;
 	PointFc.clazz = (*env)->GetObjectClass(env, lpObject);
@@ -1551,7 +1547,7 @@ void cachePointFids(JNIEnv *env, jobject lpObject)
 
 Point *getPointFields(JNIEnv *env, jobject lpObject, Point *lpStruct)
 {
-	if (!PointFc.cached) cachePointFids(env, lpObject);
+	if (!PointFc.cached) cachePointFields(env, lpObject);
 	lpStruct->v = (*env)->GetShortField(env, lpObject, PointFc.v);
 	lpStruct->h = (*env)->GetShortField(env, lpObject, PointFc.h);
 	return lpStruct;
@@ -1559,11 +1555,11 @@ Point *getPointFields(JNIEnv *env, jobject lpObject, Point *lpStruct)
 
 void setPointFields(JNIEnv *env, jobject lpObject, Point *lpStruct)
 {
-	if (!PointFc.cached) cachePointFids(env, lpObject);
+	if (!PointFc.cached) cachePointFields(env, lpObject);
 	(*env)->SetShortField(env, lpObject, PointFc.v, (jshort)lpStruct->v);
 	(*env)->SetShortField(env, lpObject, PointFc.h, (jshort)lpStruct->h);
 }
-#endif /* NO_Point */
+#endif
 
 #ifndef NO_RGBColor
 typedef struct RGBColor_FID_CACHE {
@@ -1574,7 +1570,7 @@ typedef struct RGBColor_FID_CACHE {
 
 RGBColor_FID_CACHE RGBColorFc;
 
-void cacheRGBColorFids(JNIEnv *env, jobject lpObject)
+void cacheRGBColorFields(JNIEnv *env, jobject lpObject)
 {
 	if (RGBColorFc.cached) return;
 	RGBColorFc.clazz = (*env)->GetObjectClass(env, lpObject);
@@ -1586,7 +1582,7 @@ void cacheRGBColorFids(JNIEnv *env, jobject lpObject)
 
 RGBColor *getRGBColorFields(JNIEnv *env, jobject lpObject, RGBColor *lpStruct)
 {
-	if (!RGBColorFc.cached) cacheRGBColorFids(env, lpObject);
+	if (!RGBColorFc.cached) cacheRGBColorFields(env, lpObject);
 	lpStruct->red = (*env)->GetShortField(env, lpObject, RGBColorFc.red);
 	lpStruct->green = (*env)->GetShortField(env, lpObject, RGBColorFc.green);
 	lpStruct->blue = (*env)->GetShortField(env, lpObject, RGBColorFc.blue);
@@ -1595,12 +1591,12 @@ RGBColor *getRGBColorFields(JNIEnv *env, jobject lpObject, RGBColor *lpStruct)
 
 void setRGBColorFields(JNIEnv *env, jobject lpObject, RGBColor *lpStruct)
 {
-	if (!RGBColorFc.cached) cacheRGBColorFids(env, lpObject);
+	if (!RGBColorFc.cached) cacheRGBColorFields(env, lpObject);
 	(*env)->SetShortField(env, lpObject, RGBColorFc.red, (jshort)lpStruct->red);
 	(*env)->SetShortField(env, lpObject, RGBColorFc.green, (jshort)lpStruct->green);
 	(*env)->SetShortField(env, lpObject, RGBColorFc.blue, (jshort)lpStruct->blue);
 }
-#endif /* NO_RGBColor */
+#endif
 
 #ifndef NO_Rect
 typedef struct Rect_FID_CACHE {
@@ -1611,7 +1607,7 @@ typedef struct Rect_FID_CACHE {
 
 Rect_FID_CACHE RectFc;
 
-void cacheRectFids(JNIEnv *env, jobject lpObject)
+void cacheRectFields(JNIEnv *env, jobject lpObject)
 {
 	if (RectFc.cached) return;
 	RectFc.clazz = (*env)->GetObjectClass(env, lpObject);
@@ -1624,7 +1620,7 @@ void cacheRectFids(JNIEnv *env, jobject lpObject)
 
 Rect *getRectFields(JNIEnv *env, jobject lpObject, Rect *lpStruct)
 {
-	if (!RectFc.cached) cacheRectFids(env, lpObject);
+	if (!RectFc.cached) cacheRectFields(env, lpObject);
 	lpStruct->top = (*env)->GetShortField(env, lpObject, RectFc.top);
 	lpStruct->left = (*env)->GetShortField(env, lpObject, RectFc.left);
 	lpStruct->bottom = (*env)->GetShortField(env, lpObject, RectFc.bottom);
@@ -1634,90 +1630,13 @@ Rect *getRectFields(JNIEnv *env, jobject lpObject, Rect *lpStruct)
 
 void setRectFields(JNIEnv *env, jobject lpObject, Rect *lpStruct)
 {
-	if (!RectFc.cached) cacheRectFids(env, lpObject);
+	if (!RectFc.cached) cacheRectFields(env, lpObject);
 	(*env)->SetShortField(env, lpObject, RectFc.top, (jshort)lpStruct->top);
 	(*env)->SetShortField(env, lpObject, RectFc.left, (jshort)lpStruct->left);
 	(*env)->SetShortField(env, lpObject, RectFc.bottom, (jshort)lpStruct->bottom);
 	(*env)->SetShortField(env, lpObject, RectFc.right, (jshort)lpStruct->right);
 }
-#endif /* NO_Rect */
-
-#ifndef NO_ThemeButtonDrawInfo
-typedef struct ThemeButtonDrawInfo_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID state, value, adornment;
-} ThemeButtonDrawInfo_FID_CACHE;
-
-ThemeButtonDrawInfo_FID_CACHE ThemeButtonDrawInfoFc;
-
-void cacheThemeButtonDrawInfoFids(JNIEnv *env, jobject lpObject)
-{
-	if (ThemeButtonDrawInfoFc.cached) return;
-	ThemeButtonDrawInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	ThemeButtonDrawInfoFc.state = (*env)->GetFieldID(env, ThemeButtonDrawInfoFc.clazz, "state", "I");
-	ThemeButtonDrawInfoFc.value = (*env)->GetFieldID(env, ThemeButtonDrawInfoFc.clazz, "value", "S");
-	ThemeButtonDrawInfoFc.adornment = (*env)->GetFieldID(env, ThemeButtonDrawInfoFc.clazz, "adornment", "S");
-	ThemeButtonDrawInfoFc.cached = 1;
-}
-
-ThemeButtonDrawInfo *getThemeButtonDrawInfoFields(JNIEnv *env, jobject lpObject, ThemeButtonDrawInfo *lpStruct)
-{
-	if (!ThemeButtonDrawInfoFc.cached) cacheThemeButtonDrawInfoFids(env, lpObject);
-	lpStruct->state = (ThemeDrawState)(*env)->GetIntField(env, lpObject, ThemeButtonDrawInfoFc.state);
-	lpStruct->value = (ThemeButtonValue)(*env)->GetShortField(env, lpObject, ThemeButtonDrawInfoFc.value);
-	lpStruct->adornment = (ThemeButtonAdornment)(*env)->GetShortField(env, lpObject, ThemeButtonDrawInfoFc.adornment);
-	return lpStruct;
-}
-
-void setThemeButtonDrawInfoFields(JNIEnv *env, jobject lpObject, ThemeButtonDrawInfo *lpStruct)
-{
-	if (!ThemeButtonDrawInfoFc.cached) cacheThemeButtonDrawInfoFids(env, lpObject);
-	(*env)->SetIntField(env, lpObject, ThemeButtonDrawInfoFc.state, (jint)lpStruct->state);
-	(*env)->SetShortField(env, lpObject, ThemeButtonDrawInfoFc.value, (jshort)lpStruct->value);
-	(*env)->SetShortField(env, lpObject, ThemeButtonDrawInfoFc.adornment, (jshort)lpStruct->adornment);
-}
-#endif /* NO_ThemeButtonDrawInfo */
-
-#ifndef NO_TXNLongRect
-typedef struct TXNLongRect_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID top, left, bottom, right;
-} TXNLongRect_FID_CACHE;
-
-TXNLongRect_FID_CACHE TXNLongRectFc;
-
-void cacheTXNLongRectFids(JNIEnv *env, jobject lpObject)
-{
-	if (TXNLongRectFc.cached) return;
-	TXNLongRectFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	TXNLongRectFc.top = (*env)->GetFieldID(env, TXNLongRectFc.clazz, "top", "I");
-	TXNLongRectFc.left = (*env)->GetFieldID(env, TXNLongRectFc.clazz, "left", "I");
-	TXNLongRectFc.bottom = (*env)->GetFieldID(env, TXNLongRectFc.clazz, "bottom", "I");
-	TXNLongRectFc.right = (*env)->GetFieldID(env, TXNLongRectFc.clazz, "right", "I");
-	TXNLongRectFc.cached = 1;
-}
-
-TXNLongRect *getTXNLongRectFields(JNIEnv *env, jobject lpObject, TXNLongRect *lpStruct)
-{
-	if (!TXNLongRectFc.cached) cacheTXNLongRectFids(env, lpObject);
-	lpStruct->top = (*env)->GetIntField(env, lpObject, TXNLongRectFc.top);
-	lpStruct->left = (*env)->GetIntField(env, lpObject, TXNLongRectFc.left);
-	lpStruct->bottom = (*env)->GetIntField(env, lpObject, TXNLongRectFc.bottom);
-	lpStruct->right = (*env)->GetIntField(env, lpObject, TXNLongRectFc.right);
-	return lpStruct;
-}
-
-void setTXNLongRectFields(JNIEnv *env, jobject lpObject, TXNLongRect *lpStruct)
-{
-	if (!TXNLongRectFc.cached) cacheTXNLongRectFids(env, lpObject);
-	(*env)->SetIntField(env, lpObject, TXNLongRectFc.top, (jint)lpStruct->top);
-	(*env)->SetIntField(env, lpObject, TXNLongRectFc.left, (jint)lpStruct->left);
-	(*env)->SetIntField(env, lpObject, TXNLongRectFc.bottom, (jint)lpStruct->bottom);
-	(*env)->SetIntField(env, lpObject, TXNLongRectFc.right, (jint)lpStruct->right);
-}
-#endif /* NO_TXNLongRect */
+#endif
 
 #ifndef NO_TXNBackground
 typedef struct TXNBackground_FID_CACHE {
@@ -1728,7 +1647,7 @@ typedef struct TXNBackground_FID_CACHE {
 
 TXNBackground_FID_CACHE TXNBackgroundFc;
 
-void cacheTXNBackgroundFids(JNIEnv *env, jobject lpObject)
+void cacheTXNBackgroundFields(JNIEnv *env, jobject lpObject)
 {
 	if (TXNBackgroundFc.cached) return;
 	TXNBackgroundFc.clazz = (*env)->GetObjectClass(env, lpObject);
@@ -1741,7 +1660,7 @@ void cacheTXNBackgroundFids(JNIEnv *env, jobject lpObject)
 
 TXNBackground *getTXNBackgroundFields(JNIEnv *env, jobject lpObject, TXNBackground *lpStruct)
 {
-	if (!TXNBackgroundFc.cached) cacheTXNBackgroundFids(env, lpObject);
+	if (!TXNBackgroundFc.cached) cacheTXNBackgroundFields(env, lpObject);
 	lpStruct->bgType = (*env)->GetIntField(env, lpObject, TXNBackgroundFc.bgType);
 	lpStruct->bg.color.red = (*env)->GetShortField(env, lpObject, TXNBackgroundFc.bg_red);
 	lpStruct->bg.color.green = (*env)->GetShortField(env, lpObject, TXNBackgroundFc.bg_green);
@@ -1751,12 +1670,88 @@ TXNBackground *getTXNBackgroundFields(JNIEnv *env, jobject lpObject, TXNBackgrou
 
 void setTXNBackgroundFields(JNIEnv *env, jobject lpObject, TXNBackground *lpStruct)
 {
-	if (!TXNBackgroundFc.cached) cacheTXNBackgroundFids(env, lpObject);
+	if (!TXNBackgroundFc.cached) cacheTXNBackgroundFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, TXNBackgroundFc.bgType, (jint)lpStruct->bgType);
 	(*env)->SetShortField(env, lpObject, TXNBackgroundFc.bg_red, (jshort)lpStruct->bg.color.red);
 	(*env)->SetShortField(env, lpObject, TXNBackgroundFc.bg_green, (jshort)lpStruct->bg.color.green);
 	(*env)->SetShortField(env, lpObject, TXNBackgroundFc.bg_blue, (jshort)lpStruct->bg.color.blue);
 }
-#endif /* NO_TXNBackground */
+#endif
 
+#ifndef NO_TXNLongRect
+typedef struct TXNLongRect_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID top, left, bottom, right;
+} TXNLongRect_FID_CACHE;
+
+TXNLongRect_FID_CACHE TXNLongRectFc;
+
+void cacheTXNLongRectFields(JNIEnv *env, jobject lpObject)
+{
+	if (TXNLongRectFc.cached) return;
+	TXNLongRectFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	TXNLongRectFc.top = (*env)->GetFieldID(env, TXNLongRectFc.clazz, "top", "I");
+	TXNLongRectFc.left = (*env)->GetFieldID(env, TXNLongRectFc.clazz, "left", "I");
+	TXNLongRectFc.bottom = (*env)->GetFieldID(env, TXNLongRectFc.clazz, "bottom", "I");
+	TXNLongRectFc.right = (*env)->GetFieldID(env, TXNLongRectFc.clazz, "right", "I");
+	TXNLongRectFc.cached = 1;
+}
+
+TXNLongRect *getTXNLongRectFields(JNIEnv *env, jobject lpObject, TXNLongRect *lpStruct)
+{
+	if (!TXNLongRectFc.cached) cacheTXNLongRectFields(env, lpObject);
+	lpStruct->top = (*env)->GetIntField(env, lpObject, TXNLongRectFc.top);
+	lpStruct->left = (*env)->GetIntField(env, lpObject, TXNLongRectFc.left);
+	lpStruct->bottom = (*env)->GetIntField(env, lpObject, TXNLongRectFc.bottom);
+	lpStruct->right = (*env)->GetIntField(env, lpObject, TXNLongRectFc.right);
+	return lpStruct;
+}
+
+void setTXNLongRectFields(JNIEnv *env, jobject lpObject, TXNLongRect *lpStruct)
+{
+	if (!TXNLongRectFc.cached) cacheTXNLongRectFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, TXNLongRectFc.top, (jint)lpStruct->top);
+	(*env)->SetIntField(env, lpObject, TXNLongRectFc.left, (jint)lpStruct->left);
+	(*env)->SetIntField(env, lpObject, TXNLongRectFc.bottom, (jint)lpStruct->bottom);
+	(*env)->SetIntField(env, lpObject, TXNLongRectFc.right, (jint)lpStruct->right);
+}
+#endif
+
+#ifndef NO_ThemeButtonDrawInfo
+typedef struct ThemeButtonDrawInfo_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID state, value, adornment;
+} ThemeButtonDrawInfo_FID_CACHE;
+
+ThemeButtonDrawInfo_FID_CACHE ThemeButtonDrawInfoFc;
+
+void cacheThemeButtonDrawInfoFields(JNIEnv *env, jobject lpObject)
+{
+	if (ThemeButtonDrawInfoFc.cached) return;
+	ThemeButtonDrawInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	ThemeButtonDrawInfoFc.state = (*env)->GetFieldID(env, ThemeButtonDrawInfoFc.clazz, "state", "I");
+	ThemeButtonDrawInfoFc.value = (*env)->GetFieldID(env, ThemeButtonDrawInfoFc.clazz, "value", "S");
+	ThemeButtonDrawInfoFc.adornment = (*env)->GetFieldID(env, ThemeButtonDrawInfoFc.clazz, "adornment", "S");
+	ThemeButtonDrawInfoFc.cached = 1;
+}
+
+ThemeButtonDrawInfo *getThemeButtonDrawInfoFields(JNIEnv *env, jobject lpObject, ThemeButtonDrawInfo *lpStruct)
+{
+	if (!ThemeButtonDrawInfoFc.cached) cacheThemeButtonDrawInfoFields(env, lpObject);
+	lpStruct->state = (ThemeDrawState)(*env)->GetIntField(env, lpObject, ThemeButtonDrawInfoFc.state);
+	lpStruct->value = (ThemeButtonValue)(*env)->GetShortField(env, lpObject, ThemeButtonDrawInfoFc.value);
+	lpStruct->adornment = (ThemeButtonAdornment)(*env)->GetShortField(env, lpObject, ThemeButtonDrawInfoFc.adornment);
+	return lpStruct;
+}
+
+void setThemeButtonDrawInfoFields(JNIEnv *env, jobject lpObject, ThemeButtonDrawInfo *lpStruct)
+{
+	if (!ThemeButtonDrawInfoFc.cached) cacheThemeButtonDrawInfoFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, ThemeButtonDrawInfoFc.state, (jint)lpStruct->state);
+	(*env)->SetShortField(env, lpObject, ThemeButtonDrawInfoFc.value, (jshort)lpStruct->value);
+	(*env)->SetShortField(env, lpObject, ThemeButtonDrawInfoFc.adornment, (jshort)lpStruct->adornment);
+}
+#endif
 

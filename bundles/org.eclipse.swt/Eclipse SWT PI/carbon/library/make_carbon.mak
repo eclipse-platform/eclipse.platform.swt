@@ -22,7 +22,7 @@ DEBUG =
 CFLAGS = -c -DSWT_VERSION=$(SWT_VERSION) $(DEBUG) -DCARBON -I /System/Library/Frameworks/JavaVM.framework/Versions/1.3.1/Headers
 LFLAGS = -bundle -framework JavaVM -framework Carbon 
 
-SWT_OBJS = swt.o structs.o callback.o
+SWT_OBJS = swt.o swt_custom.o structs.o callback.o
 
 all: $(SWT_LIB)
 
