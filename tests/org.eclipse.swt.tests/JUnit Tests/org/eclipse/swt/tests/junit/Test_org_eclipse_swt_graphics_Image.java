@@ -356,52 +356,52 @@ public void test_isDisposed() {
 
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	Image image = new Image(display, 10, 10);
-	Color color = new Color(display, 255, 255, 255);
 
 	try {
 		image.setBackground(null);
-		image.dispose();
-		color.dispose();
 		fail("No exception thrown for color == null");
 	} catch (IllegalArgumentException e) {
+	} finally {
 		image.dispose();
-		color.dispose();
 	}
 
 	image = new Image(display, 10, 10);
-	color = new Color(display, 255, 255, 255);
+	Color color = new Color(display, 255, 255, 255);
 	color.dispose();
 	try {
 		image.setBackground(color);
-		image.dispose();
 		fail("No exception thrown for disposed color");
 	} catch (IllegalArgumentException e) {
+	} finally {
+		image.dispose();
 	}
 
+	image = new Image(display, 10, 10);
+	image.dispose();
+	color = new Color(display, 255, 255, 255);
 	try {
-		image.dispose();
-		color = new Color(display, 255, 255, 255);
 		image.setBackground(color);
-		color.dispose();
 		fail("No exception thrown for disposed image");
 	} catch (SWTException e) {
+	} finally {
+		color.dispose();
 	}
 	
-	// this image does not have a transparent pixel by default so setBackground has not effect
+	// this image does not have a transparent pixel by default so setBackground has no effect
 	image = new Image(display, 10, 10);
 	image.setBackground(display.getSystemColor(SWT.COLOR_GREEN));
 	color = image.getBackground();
+	assertNull("background color should be null for non-transparent image", color);
 	image.dispose();
-	assertNull(":a:", color);
 	
-	// simulate a transparent pixel
+	// create an image with transparency and then set the background color
 	ImageData imageData = new ImageData(10, 10, 2, new PaletteData(new RGB[] {new RGB(0, 0, 0), new RGB(255, 255, 255), new RGB(50, 100, 150)}));
-	imageData.transparentPixel = 0;
+	imageData.transparentPixel = 0; // transparent pixel is currently black
 	image = new Image(display, imageData);
 	image.setBackground(display.getSystemColor(SWT.COLOR_GREEN));
 	color = image.getBackground();
+	assertEquals("background color should have been set to green", display.getSystemColor(SWT.COLOR_GREEN), color);
 	image.dispose();
-	assertEquals(":b:", display.getSystemColor(SWT.COLOR_GREEN), color);
 }
 
 public void test_toString() {
