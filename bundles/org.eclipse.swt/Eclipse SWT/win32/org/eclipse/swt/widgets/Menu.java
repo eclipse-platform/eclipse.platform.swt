@@ -32,12 +32,12 @@ import org.eclipse.swt.events.*;
 
 public class Menu extends Widget {
 	/**
-	 * Handles to the OS resources 
-	 * (Warning: Theses fields are platform dependent)
+	 * the handle to the OS resource 
+	 * (Warning: This field is platform dependent)
 	 */
-	public int handle, hwndCB, id0, id1;
+	public int handle;
 	
-	int x, y;
+	int x, y, hwndCB, id0, id1;
 	boolean hasLocation;
 	MenuItem cascade;
 	Decorations parent;
