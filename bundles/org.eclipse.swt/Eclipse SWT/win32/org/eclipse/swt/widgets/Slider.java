@@ -543,8 +543,8 @@ public void setSelection (int value) {
 /**
  * Sets the size of the receiver's thumb relative to the
  * difference between its maximum and minimum values.  This new
- * value will be ignored if it is less than one or is greater than the
- * size of the receiver's current range.
+ * value will be ignored if it is less than one, and will be
+ * clamped if it exceeds the receiver's current range.
  *
  * @param value the new thumb value, which must be at least one and not
  * larger than the size of the current range
