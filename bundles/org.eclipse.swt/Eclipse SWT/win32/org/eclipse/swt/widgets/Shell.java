@@ -433,6 +433,7 @@ int findBrush (int pixel) {
 int findCursor () {
 	return hCursor;
 }
+
 /**
  * Moves the receiver to the top of the drawing order for
  * the display on which it was created (so that all other
