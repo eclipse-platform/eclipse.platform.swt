@@ -724,11 +724,11 @@ int getTabWidth (int tabs) {
  */
 public String getText (int start, int end) {
 	checkWidget ();
+	if (start > end) return "";
 	String text = getText ();
 	int length = text.length ();
 	start = Math.max (0, start);
 	end = Math.min (end, length - 1);
-	if (start > end) return "";
 	/*
 	* NOTE: The current implementation uses substring ()
 	* which can reference a potentially large character

@@ -741,6 +741,7 @@ public String getText () {
  */
 public String getText (int start, int end) {
 	checkWidget ();
+	if (start > end) return "";
 	if (!(0 <= start && start <= end)) error (SWT.ERROR_INVALID_RANGE);
 	int address;
 	if ((style & SWT.SINGLE) != 0) {

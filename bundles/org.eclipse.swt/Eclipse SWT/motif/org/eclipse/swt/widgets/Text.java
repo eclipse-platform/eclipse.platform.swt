@@ -775,11 +775,11 @@ public String getText () {
  */
 public String getText (int start, int end) {
 	checkWidget();
+	if (start > end) return "";
 	boolean hasEcho = echoCharacter != '\0';
 	int length = hasEcho ? hiddenText.length () : OS.XmTextGetLastPosition (handle);
 	start = Math.max (0, start);
 	end = Math.min (end, length - 1);
-	if (start > end) return "";
 	if (hasEcho) return hiddenText.substring (start, end + 1);
 	int numChars = end - start + 1;
 	int bufLength = numChars * OS.MB_CUR_MAX () + 1;
