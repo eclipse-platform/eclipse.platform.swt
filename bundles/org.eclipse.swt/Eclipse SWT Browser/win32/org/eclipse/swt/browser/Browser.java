@@ -654,7 +654,7 @@ public boolean back() {
 	if (!back) return false;
 	int[] rgdispid = auto.getIDsOfNames(new String[] { "GoBack" }); //$NON-NLS-1$
 	Variant pVarResult = auto.invoke(rgdispid[0]);
-	return pVarResult.getType() == OLE.VT_EMPTY;
+	return pVarResult != null && pVarResult.getType() == OLE.VT_EMPTY;
 }
 
 protected void checkSubclass() {
@@ -684,7 +684,7 @@ public boolean forward() {
 	if (!forward) return false;
 	int[] rgdispid = auto.getIDsOfNames(new String[] { "GoForward" }); //$NON-NLS-1$
 	Variant pVarResult = auto.invoke(rgdispid[0]);
-	return pVarResult.getType() == OLE.VT_EMPTY;
+	return pVarResult != null && pVarResult.getType() == OLE.VT_EMPTY;
 }
 
 /**
@@ -1077,7 +1077,7 @@ public boolean setText(String html) {
 	int[] rgdispidNamedArgs = new int[1];
 	rgdispidNamedArgs[0] = rgdispid[1];
 	Variant pVarResult = auto.invoke(rgdispid[0], rgvarg, rgdispidNamedArgs);
-	return pVarResult.getType() == OLE.VT_EMPTY;
+	return pVarResult != null && pVarResult.getType() == OLE.VT_EMPTY;
 }
 
 /**
@@ -1110,7 +1110,7 @@ public boolean setUrl(String url) {
 	int[] rgdispidNamedArgs = new int[1];
 	rgdispidNamedArgs[0] = rgdispid[1];
 	Variant pVarResult = auto.invoke(rgdispid[0], rgvarg, rgdispidNamedArgs);
-	return pVarResult.getType() == OLE.VT_EMPTY;
+	return pVarResult != null && pVarResult.getType() == OLE.VT_EMPTY;
 }
 
 /**
