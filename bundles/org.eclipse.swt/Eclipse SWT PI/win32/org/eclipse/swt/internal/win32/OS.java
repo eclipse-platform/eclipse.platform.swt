@@ -986,6 +986,7 @@ public class OS {
 	public static final int TVE_EXPAND = 0x2;
 	public static final int TVGN_CARET = 0x9;
 	public static final int TVGN_CHILD = 0x4;
+	public static final int TVGN_DROPHILITED = 0x8;
 	public static final int TVGN_FIRSTVISIBLE = 0x5;
 	public static final int TVGN_LASTVISIBLE = 0xa;
 	public static final int TVGN_NEXT = 0x1;
@@ -1003,7 +1004,6 @@ public class OS {
 	public static final int TVIF_SELECTEDIMAGE = 0x20;
 	public static final int TVIF_STATE = 0x8;
 	public static final int TVIF_TEXT = 0x1;
-	public static final int TVIS_DROPHILITED = 0x8;
 	public static final int TVIS_EXPANDED = 0x20;
 	public static final int TVIS_SELECTED = 0x2;
 	public static final int TVIS_STATEIMAGEMASK = 0xf000;

@@ -18,13 +18,10 @@ import org.eclipse.swt.internal.win32.OS;
 
 class TableDragUnderEffect extends DragUnderEffect {
 	private Table table;
-	private TableItem[] selection = new TableItem[0];
 	int currentEffect = DND.FEEDBACK_NONE;
-//	private TableItem dropSelection
 	private TableItem scrollItem;
 	private long scrollBeginTime;
-	private static final int SCROLL_HYSTERESIS = 400; // milli seconds
-	private static final int SCROLL_WIDTH = 100; // pixels
+	private static final int SCROLL_HYSTERESIS = 600; // milli seconds
 	
 TableDragUnderEffect(Table table) {
 	this.table = table;
@@ -32,16 +29,8 @@ TableDragUnderEffect(Table table) {
 void show(int effect, int x, int y) {
 	TableItem item = findItem(x, y);
 	if (item == null) effect = DND.FEEDBACK_NONE;
-	if (currentEffect == DND.FEEDBACK_NONE && effect != DND.FEEDBACK_NONE) {
-		selection = table.getSelection();
-		table.deselectAll();
-	}
 	scrollHover(effect, item, x, y);
 	setDragUnderEffect(effect, item);
-	if (currentEffect != DND.FEEDBACK_NONE && effect == DND.FEEDBACK_NONE) {
-		table.setSelection(selection);
-		selection = new TableItem[0];
-	}
 	currentEffect = effect;
 }
 private TableItem findItem(int x, int y){
@@ -71,18 +60,13 @@ private void setDragUnderEffect(int effect, TableItem item) {
 	}
 }
 private void setDropSelection (TableItem item) {
-//	if (item == dropSelection) return;
-//	if (dropSelection != null) table.deselectAll();
-//	dropSelection = item;
-//	if (dropSelection != null) table.setSelection(new TableItem[]{dropSelection});
-	
 	LVITEM lvItem = new LVITEM ();
 	lvItem.stateMask = OS.LVIS_DROPHILITED;
 	// remove all drop highlighting
 	OS.SendMessage (table.handle, OS.LVM_SETITEMSTATE, -1, lvItem);
-	if (item != null) { 
-		lvItem.state = OS.LVIS_DROPHILITED;
+	if (item != null) {
 		int index = table.indexOf(item);
+		lvItem.state = OS.LVIS_DROPHILITED;
 		OS.SendMessage (table.handle, OS.LVM_SETITEMSTATE, index, lvItem);
 	}
 }
@@ -110,9 +94,11 @@ private void scroll(TableItem item, int x, int y) {
 	Rectangle area = table.getClientArea();
 	TableItem showItem = null;
 	int itemIndex = table.indexOf(item);
-	if (coordinates.y - area.y < SCROLL_WIDTH) {
+	// scroll if two lines from top or bottom
+	int scroll_width = 2*table.getItemHeight();
+	if (coordinates.y < area.y + scroll_width) {
 		showItem = table.getItem(Math.max(0, itemIndex - 1));
-	} else if ((area.y + area.height - coordinates.y) < SCROLL_WIDTH) {
+	} else if (coordinates.y > area.y + area.height - scroll_width) {
 		showItem = table.getItem(Math.min(table.getItemCount() - 1, itemIndex + 1));
 	}
 	if (showItem != null) {

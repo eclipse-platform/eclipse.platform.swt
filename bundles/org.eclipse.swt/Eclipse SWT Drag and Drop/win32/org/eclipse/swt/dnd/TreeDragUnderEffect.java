@@ -12,19 +12,18 @@ package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.win32.OS;
+import org.eclipse.swt.internal.win32.TVITEM;;
 
 class TreeDragUnderEffect extends DragUnderEffect {
-
 	private Tree tree;
 	private int currentEffect = DND.FEEDBACK_NONE;
-	private TreeItem[] selection = new TreeItem[0];
-//	private TreeItem dropSelection = null;
+	
 	private TreeItem scrollItem;
 	private long scrollBeginTime;
-	private static final int SCROLL_HYSTERESIS = 400; // milli seconds
-	private static final int SCROLL_WIDTH = 100; // pixels
+	private static final int SCROLL_HYSTERESIS = 600; // milli seconds
+	
 	private TreeItem expandItem;
 	private long expandBeginTime;
 	private static final int EXPAND_HYSTERESIS = 1000; // milli seconds
@@ -36,19 +35,10 @@ void show(int effect, int x, int y) {
 	effect = checkEffect(effect);
 	TreeItem item = findItem(x, y);
 	if (item == null) effect = DND.FEEDBACK_NONE;
-	if (currentEffect == DND.FEEDBACK_NONE && effect != DND.FEEDBACK_NONE) {
-		selection = tree.getSelection();
-		tree.deselectAll();
-	}
 	scrollHover(effect, item, x, y);
 	expandHover(effect, item, x, y);
 	setDragUnderEffect(effect, item);
-	if (currentEffect != DND.FEEDBACK_NONE && effect == DND.FEEDBACK_NONE) {
-		tree.setSelection(selection);
-		selection = new TreeItem[0];
-	}
 	currentEffect = effect;
-	
 }
 private int checkEffect(int effect) {
 	// Some effects are mutually exclusive.  Make sure that only one of the mutually exclusive effects has been specified.
@@ -102,7 +92,7 @@ private void setDragUnderEffect(int effect, TreeItem item) {
 		if ((currentEffect & DND.FEEDBACK_SELECT) != 0) {
 			setDropSelection(null);
 		}
-		tree.setInsertMark(item, (effect & DND.FEEDBACK_INSERT_BEFORE) != 0);
+		setInsertMark(item, (effect & DND.FEEDBACK_INSERT_BEFORE) != 0);
 		return;			
 	}
 	if ((currentEffect & DND.FEEDBACK_INSERT_AFTER) != 0 ||
@@ -113,15 +103,25 @@ private void setDragUnderEffect(int effect, TreeItem item) {
 		setDropSelection(null);
 	}
 }
-private void setDropSelection (TreeItem item) {	
-//	if (item == dropSelection) return;
-//	if (dropSelection != null) tree.deselectAll();
-//	dropSelection = item;
-//	if (dropSelection != null) tree.setSelection(new TreeItem[]{dropSelection});
-	
-	int hNewItem = 0;
-	if (item != null) hNewItem = item.handle;
-	OS.SendMessage (tree.handle, OS.TVM_SELECTITEM, OS.TVIS_DROPHILITED, hNewItem);
+private void setDropSelection(TreeItem item) {	
+	int hItem = (item != null) ? item.handle : 0;
+	if (item != null) {
+		TVITEM tvItem = new TVITEM ();
+		tvItem.mask = OS.TVIF_STATE;
+		tvItem.stateMask = OS.TVIS_SELECTED;
+		tvItem.hItem = item.handle;
+		OS.SendMessage(tree.handle, OS.TVM_GETITEM, 0, tvItem);
+		// don't set drop highlight on selected items because this will
+		// clear the selection
+		if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
+			hItem = 0;
+		}
+	}
+	OS.SendMessage (tree.handle, OS.TVM_SELECTITEM, OS.TVGN_DROPHILITED, hItem);
+}
+private void setInsertMark(TreeItem item, boolean before) {
+	int hItem = (item != null) ? item.handle : 0;
+	OS.SendMessage (tree.handle, OS.TVM_SETINSERTMARK, (before) ? 0 : 1, hItem);
 }
 private void scrollHover (int effect, TreeItem item, int x, int y) {
 	if ((effect & DND.FEEDBACK_SCROLL) == 0) {
@@ -145,14 +145,17 @@ private void scroll(TreeItem item, int x, int y) {
 	Point coordinates = new Point(x, y);
 	coordinates = tree.toControl(coordinates);
 	Rectangle area = tree.getClientArea();
-	TreeItem showItem = null;
-	if (coordinates.y - area.y < SCROLL_WIDTH) {
-		showItem = getPreviousVisibleItem(item);
-	} else if ((area.y + area.height - coordinates.y) < SCROLL_WIDTH) {
-		showItem = getNextVisibleItem(item, true);
+	TreeItem top = tree.getTopItem();
+	TreeItem newTop = null;
+	// scroll if two lines from top or bottom
+	int scroll_width = 2*tree.getItemHeight();
+	if (coordinates.y < area.y + scroll_width) {
+		 newTop = getPreviousVisibleItem(top);
+	} else if (coordinates.y > area.y + area.height - scroll_width) {
+		newTop = getNextVisibleItem(top, true);
 	}
-	if (showItem != null) {
-		tree.showItem(showItem);
+	if (newTop != null && newTop != top) {
+		tree.setTopItem(newTop);
 	}		
 }
 private void expandHover (int effect, TreeItem item, int x, int y) {
@@ -173,8 +176,7 @@ private void expandHover (int effect, TreeItem item, int x, int y) {
 	expandItem = item;
 }
 private void expand(TreeItem item, int x, int y) {
-	if (item == null) return;
-	if (item.getExpanded()) return;
+	if (item == null || item.getExpanded()) return;
 	Event event = new Event();
 	event.x = x;
 	event.y = y;
@@ -215,5 +217,4 @@ private TreeItem getPreviousVisibleItem(TreeItem item) {
 	// look up
 	return parent;
 }
-
 }
