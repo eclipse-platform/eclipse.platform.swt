@@ -471,6 +471,11 @@ void createHandle (int index) {
 		OS.gtk_window_set_transient_for (shellHandle, parent.topHandle ());
 		OS.gtk_window_set_destroy_with_parent (shellHandle, true);
 	}
+	/*
+	* Feature in GTK.  The window size must be set when the window
+	* is created or it will not be allowed to be resized smaller that the
+	* initial size by the user.  The fix is to set the size to zero.
+	*/
 	OS.gtk_widget_set_size_request (shellHandle, 0, 0);
 	OS.gtk_window_set_resizable (shellHandle, true);
 	createScrolledHandle (shellHandle);
@@ -486,8 +491,8 @@ void createHandle (int index) {
 		if ((style & SWT.TITLE) != 0) decorations |= OS.GDK_DECOR_TITLE;
 		/*
 		* Feature in GTK.  Under some Window Managers (Sawmill), in order
-		* to get any border at all from the window manager it is necessary
-		* to set GDK_DECOR_BORDER.  The fix is to force these bits when any
+		* to get any border at all from the window manager it is necessary to
+		* set GDK_DECOR_BORDER.  The fix is to force these bits when any
 		* kind of border is requested.
 		*/
 		if ((style & SWT.RESIZE) != 0) decorations |= OS.GDK_DECOR_BORDER;
