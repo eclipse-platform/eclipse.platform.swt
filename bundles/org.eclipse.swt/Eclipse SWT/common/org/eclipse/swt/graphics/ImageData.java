@@ -702,7 +702,7 @@ public void getPixels(int x, int y, int getWidth, byte[] pixels, int startIndex)
 	if (depth == 1) {
 		index = (y * bytesPerLine) + (x >> 3);
 		theByte = data[index] & 0xFF;
-		while (n > 1) {
+		while (n > 0) {
 			mask = 1 << (7 - (srcX & 0x7));
 			if ((theByte & mask) == 0) {
 				pixels[i] = 0;
