@@ -1093,10 +1093,12 @@ protected void init () {
 	
 	/* Initialize the system font */
 	int systemFont = 0;
-	NONCLIENTMETRICS info = new NONCLIENTMETRICS ();
-	info.cbSize = NONCLIENTMETRICS.sizeof;
-	if (OS.SystemParametersInfo (OS.SPI_GETNONCLIENTMETRICS, 0, info, 0)) {
-		systemFont = OS.CreateFontIndirect (info.lfMessageFont);
+	if (!OS.IsWinCE) {
+		NONCLIENTMETRICS info = new NONCLIENTMETRICS ();
+		info.cbSize = NONCLIENTMETRICS.sizeof;
+		if (OS.SystemParametersInfo (OS.SPI_GETNONCLIENTMETRICS, 0, info, 0)) {
+			systemFont = OS.CreateFontIndirect (info.lfMessageFont);
+		}
 	}
 	if (systemFont == 0) systemFont = OS.GetStockObject (OS.DEFAULT_GUI_FONT);
 	if (systemFont == 0) systemFont = OS.GetStockObject (OS.SYSTEM_FONT);
@@ -1746,6 +1748,7 @@ public void update() {
 }
 
 void updateFont () {
+	if (OS.IsWinCE) return;
 	Font oldFont = getSystemFont ();
 	int systemFont = 0;
 	NONCLIENTMETRICS info = new NONCLIENTMETRICS ();
