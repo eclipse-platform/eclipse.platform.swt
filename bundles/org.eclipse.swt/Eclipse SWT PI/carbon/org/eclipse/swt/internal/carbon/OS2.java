@@ -87,6 +87,7 @@ public static final int kNavCBNewLocation = 5;
 public static final int kNavSupportPackages = 0x00001000;
 public static final int kNavAllowOpenPackages = 0x00002000;
 public static final int kNavAllowInvisibleFiles = 0x00000100;
+public static final int errUnknownControl = -30584;
 
 public static native void CGContextBeginPath(int inContext);
 public static native void CGContextAddArc(int inContext, float x, float y, float radius,
