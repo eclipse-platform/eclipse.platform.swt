@@ -27,24 +27,24 @@ public abstract class Layout {
  * Computes and returns the size of the specified
  * composite's client area according to this layout.
  * <p>
- * This method computes the minimum size that the
- * client area of the composite must be in order to
- * position all children at their minimum size inside
- * the composite according to the layout algorithm
+ * This method computes the size that the client area 
+ * of the composite must be in order to position all 
+ * children at their preferred size inside the
+ * composite according to the layout algorithm
  * encoded by this layout.
  * </p>
  * <p>
  * When a width or height hint is supplied, it is
  * used to constrain the result. For example, if a
- * width hint is provided that is less than the minimum
+ * width hint is provided that is less than the
  * width of the client area, the layout may choose
  * to wrap and increase height, clip, overlap, or
  * otherwise constrain the children.
  * </p>
  *
  * @param composite a composite widget using this layout
- * @param wHint width (<code>SWT.DEFAULT</code> for minimum)
- * @param hHint height (<code>SWT.DEFAULT</code> for minimum)
+ * @param wHint width (<code>SWT.DEFAULT</code> for preferred size)
+ * @param hHint height (<code>SWT.DEFAULT</code> for preferred size)
  * @param flushCache <code>true</code> means flush cached layout values
  * @return a point containing the computed size (width, height)
  * 
@@ -56,6 +56,20 @@ public abstract class Layout {
  * @see "computeTrim, getClientArea for controls that implement them"
  */
 protected abstract Point computeSize (Composite composite, int wHint, int hHint, boolean flushCache);
+
+/**
+ * Instruct the layout to flush any cached values
+ * associated with the control specified in the argument 
+ * <code>control</code>.
+ * 
+ * @param control a control managed by this layout
+ * @return true if the Layout has flushed all cached information associated with control
+ * 
+ * @since 3.1
+ */
+protected boolean flushCache (Control control) {
+	return false;
+}
 
 /**
  * Lays out the children of the specified composite

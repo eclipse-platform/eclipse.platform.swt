@@ -94,8 +94,7 @@ public final class GridLayout extends Layout {
 /**
  * Constructs a new instance of this class.
  */
-public GridLayout () {
-}
+public GridLayout () {}
 
 /**
  * Constructs a new instance of this class given the
@@ -113,10 +112,16 @@ public GridLayout (int numColumns, boolean makeColumnsEqualWidth) {
 }
 
 protected Point computeSize (Composite composite, int wHint, int hHint, boolean flushCache) {
-	Point size =  layout (composite, false, 0, 0, wHint, hHint, flushCache);
+	Point size = layout (composite, false, 0, 0, wHint, hHint, flushCache);
 	if (wHint != SWT.DEFAULT) size.x = wHint;
 	if (hHint != SWT.DEFAULT) size.y = hHint;
 	return size;
+}
+
+protected boolean flushCache (Control control) {
+	Object data = control.getLayoutData ();
+	if (data != null) ((GridData) data).flushCache ();
+	return true;
 }
 
 GridData getData (Control [][] grid, int row, int column, int rowCount, int columnCount, boolean first) {
@@ -161,14 +166,14 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 					trim = child.getBorderWidth () * 2;
 				}
 				data.cacheWidth = data.cacheHeight = SWT.DEFAULT;
-				data.computeSize(child, Math.max (0, data.minimumWidth - trim), data.heightHint, false);
+				data.computeSize (child, Math.max (0, data.minimumWidth - trim), data.heightHint, false);
 			}
 		}
 		if (data.grabExcessVerticalSpace && data.minimumHeight > 0) {
-			data.cacheHeight = Math.max(data.cacheHeight, data.minimumHeight);
+			data.cacheHeight = Math.max (data.cacheHeight, data.minimumHeight);
 		}
 	}
-	
+
 	/* Build the grid */
 	int row = 0, column = 0, rowCount = 0, columnCount = numColumns;
 	Control [][] grid = new Control [4] [columnCount];
@@ -180,7 +185,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 		while (true) {
 			int lastRow = row + vSpan;
 			if (lastRow >= grid.length) {
-				Control [] [] newGrid = new Control [lastRow + 4] [columnCount];
+				Control [][] newGrid = new Control [lastRow + 4] [columnCount];
 				System.arraycopy (grid, 0, newGrid, 0, grid.length);
 				grid = newGrid;
 			}
@@ -215,7 +220,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 		rowCount = Math.max (rowCount, row + vSpan);
 		column += hSpan;
 	}
-	
+
 	/* Column widths */
 	int availableWidth = width - horizontalSpacing * (columnCount - 1) - marginWidth * 2;
 	int expandCount = 0;
@@ -269,7 +274,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 									widths [last=j-k] += delta;
 								}
 							}
-							if (last > -1) widths [last] += remainder;	
+							if (last > -1) widths [last] += remainder;
 						}
 					}
 					if (!data.grabExcessHorizontalSpace || data.minimumWidth != 0) {
@@ -286,7 +291,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 										minWidths [last=j-k] += delta;
 									}
 								}
-								if (last > -1) minWidths [last] += remainder;	
+								if (last > -1) minWidths [last] += remainder;
 							}
 						}
 					}
@@ -333,7 +338,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 				for (int j=0; j<columnCount; j++) {
 					for (int i=0; i<rowCount; i++) {
 						GridData data = getData (grid, i, j, rowCount, columnCount, false);
-						if (data != null) {		
+						if (data != null) {
 							int hSpan = Math.max (1, Math.min (data.horizontalSpan, columnCount));
 							if (hSpan > 1) {
 								if (!data.grabExcessHorizontalSpace || data.minimumWidth != 0) {
@@ -374,7 +379,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 			}
 		}
 	}
-	
+
 	/* Wrapping */
 	GridData [] flush = null;
 	int flushLength = 0;
@@ -392,8 +397,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 							currentWidth += widths [j-k];
 						}
 						currentWidth += (hSpan - 1) * horizontalSpacing - data.horizontalIndent;
-						if ((currentWidth != data.cacheWidth && data.horizontalAlignment == SWT.FILL) ||
-							(data.cacheWidth > currentWidth)) { 
+						if ((currentWidth != data.cacheWidth && data.horizontalAlignment == SWT.FILL) || (data.cacheWidth > currentWidth)) {
 							int trim = 0;
 							if (child instanceof Scrollable) {
 								Rectangle rect = ((Scrollable) child).computeTrim (0, 0, 0, 0);
@@ -402,9 +406,9 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 								trim = child.getBorderWidth () * 2;
 							}
 							data.cacheWidth = data.cacheHeight = SWT.DEFAULT;
-							data.computeSize(child, Math.max (0, currentWidth - trim), data.heightHint, false);
+							data.computeSize (child, Math.max (0, currentWidth - trim), data.heightHint, false);
 							if (data.grabExcessVerticalSpace && data.minimumHeight > 0) {
-								data.cacheHeight = Math.max(data.cacheHeight, data.minimumHeight);
+								data.cacheHeight = Math.max (data.cacheHeight, data.minimumHeight);
 							}
 							if (flush == null) flush = new GridData [children.length];
 							flush [flushLength++] = data;
@@ -414,7 +418,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 			}
 		}
 	}
-	
+
 	/* Row heights */
 	int availableHeight = height - verticalSpacing * (rowCount - 1) - marginHeight * 2;
 	expandCount = 0;
@@ -519,7 +523,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 			for (int i=0; i<rowCount; i++) {
 				for (int j=0; j<columnCount; j++) {
 					GridData data = getData (grid, i, j, rowCount, columnCount, false);
-					if (data != null) {		
+					if (data != null) {
 						int vSpan = Math.max (1, Math.min (data.verticalSpan, rowCount));
 						if (vSpan > 1) {
 							if (!data.grabExcessVerticalSpace || data.minimumHeight != 0) {
@@ -541,7 +545,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 												heights [last2=i-k] += delta2;
 											}
 										}
-										if (last2 > -1) heights [last2] += remainder2;	
+										if (last2 > -1) heights [last2] += remainder2;
 									}
 								}
 							}
@@ -559,7 +563,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 			last = -1;
 		}
 	}
-	
+
 	/* Position the controls */
 	if (move) {
 		int gridY = y + marginHeight;
@@ -621,12 +625,12 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 			gridY += heights [i] + verticalSpacing;
 		}
 	}
-	
+
 	// clean up cache
 	for (int i = 0; i < flushLength; i++) {
 		flush [i].cacheWidth = flush [i].cacheHeight = -1;
 	}
-		
+
 	int totalDefaultWidth = 0;
 	int totalDefaultHeight = 0;
 	for (int i=0; i<columnCount; i++) {

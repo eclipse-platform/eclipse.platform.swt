@@ -126,6 +126,10 @@ protected Point computeSize (Composite composite, int wHint, int hHint, boolean 
 	return new Point (width, height);
 }
 
+protected boolean flushCache (Control control) {
+	return true;
+}
+
 String getName () {
 	String string = getClass ().getName ();
 	int index = string.lastIndexOf ('.');

@@ -206,6 +206,10 @@ Point computeSize (Control control, boolean flushCache) {
 	return control.computeSize (wHint, hHint, flushCache);
 }
 
+protected boolean flushCache (Control control) {
+	return true;
+}
+
 String getName () {
 	String string = getClass ().getName ();
 	int index = string.lastIndexOf ('.');

@@ -201,6 +201,12 @@ protected Point computeSize (Composite composite, int wHint, int hHint, boolean 
 	return size;
 }
 
+protected boolean flushCache (Control control) {
+	Object data = control.getLayoutData ();
+	if (data != null) ((FormData) data).flushCache ();
+	return true;
+}
+
 String getName () {
 	String string = getClass ().getName ();
 	int index = string.lastIndexOf ('.');
