@@ -2581,6 +2581,38 @@ public static void error (int code) {
  * @see IllegalArgumentException
  */
 public static void error (int code, Throwable throwable) {
+	error (code, throwable, null);
+}
+
+/**
+ * Throws an appropriate exception based on the passed in error code.
+ * The <code>throwable</code> argument should be either null, or the
+ * throwable which caused SWT to throw an exception.
+ * <p>
+ * In SWT, errors are reported by throwing one of three exceptions:
+ * <dl>
+ * <dd>java.lang.IllegalArgumentException</dd>
+ * <dt>thrown whenever one of the API methods is invoked with an illegal argument</dt>
+ * <dd>org.eclipse.swt.SWTException (extends java.lang.RuntimeException)</dd>
+ * <dt>thrown whenever a recoverable error happens internally in SWT</dt>
+ * <dd>org.eclipse.swt.SWTError (extends java.lang.Error)</dd>
+ * <dt>thrown whenever a <b>non-recoverable</b> error happens internally in SWT</dt>
+ * </dl>
+ * This method provides the logic which maps between error codes
+ * and one of the above exceptions.
+ * </p>
+ *
+ * @param code the SWT error code.
+ * @param throwable the exception which caused the error to occur.
+ * @param detail more information about error.
+ *
+ * @see SWTError
+ * @see SWTException
+ * @see IllegalArgumentException
+ * 
+ * @since 3.0
+ */
+public static void error (int code, Throwable throwable, String detail) {
 
 	/*
 	* This code prevents the creation of "chains" of SWTErrors and
@@ -2595,7 +2627,9 @@ public static void error (int code, Throwable throwable) {
 	*/
 	if (throwable instanceof SWTError) throw (SWTError) throwable;
 	if (throwable instanceof SWTException) throw (SWTException) throwable;
-		
+
+	String message = findErrorText (code);
+	if (detail != null) message += detail;
 	switch (code) {
 		
 		/* Illegal Arguments (non-fatal) */
@@ -2608,7 +2642,7 @@ public static void error (int code, Throwable throwable) {
 		case ERROR_MENUITEM_NOT_CASCADE:
 		case ERROR_INVALID_PARENT: 		
 		case ERROR_INVALID_RANGE: {
-			throw new IllegalArgumentException (findErrorText (code));
+			throw new IllegalArgumentException (message);
 		}
 		
 		/* SWT Errors (non-fatal) */
@@ -2622,7 +2656,7 @@ public static void error (int code, Throwable throwable) {
 		case ERROR_UNSUPPORTED_FORMAT:
 		case ERROR_FAILED_EXEC:
 		case ERROR_IO: {
-			SWTException exception = new SWTException (code);
+			SWTException exception = new SWTException (code, message);
 			exception.throwable = throwable;
 			throw exception;
 		}
@@ -2648,14 +2682,14 @@ public static void error (int code, Throwable throwable) {
 		case ERROR_NO_MORE_CALLBACKS:
 		case ERROR_NOT_IMPLEMENTED:
 		case ERROR_UNSPECIFIED: {
-			SWTError error = new SWTError (code);
+			SWTError error = new SWTError (code, message);
 			error.throwable = throwable;
 			throw error;
 		}
 	}
 	
 	/* Unknown/Undefined Error */
-	SWTError error = new SWTError (code);
+	SWTError error = new SWTError (code, message);
 	error.throwable = throwable;
 	throw error;
 }

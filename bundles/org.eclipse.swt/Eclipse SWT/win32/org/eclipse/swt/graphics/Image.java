@@ -1352,21 +1352,19 @@ void init(Device device, int width, int height) {
 	}
 	this.device = device;
 	type = SWT.BITMAP;
-	
-	/* Get the HDC for the device */
 	int hDC = device.internal_new_GC(null);
-			
-	/* Fill the bitmap with the current background color */
 	handle = OS.CreateCompatibleBitmap(hDC, width, height);
-	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	int memDC = OS.CreateCompatibleDC(hDC);
-	int hOldBitmap = OS.SelectObject(memDC, handle);
-	OS.PatBlt(memDC, 0, 0, width, height, OS.PATCOPY);
-	OS.SelectObject(memDC, hOldBitmap);
-	OS.DeleteDC(memDC);
-	
-	/* Release the HDC for the device */	
+	if (handle != 0) {
+		int memDC = OS.CreateCompatibleDC(hDC);
+		int hOldBitmap = OS.SelectObject(memDC, handle);
+		OS.PatBlt(memDC, 0, 0, width, height, OS.PATCOPY);
+		OS.SelectObject(memDC, hOldBitmap);
+		OS.DeleteDC(memDC);
+	}
 	device.internal_dispose_GC(hDC, null);
+	if (handle == 0) {
+		SWT.error(SWT.ERROR_NO_HANDLES, null, device.getLastError());
+	}
 }
 
 /**
