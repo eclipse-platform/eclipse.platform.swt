@@ -1,11 +1,15 @@
-package org.eclipse.swt.graphics;
-
-/*
- * Copyright (c) 2000, 2002 IBM Corp.  All rights reserved.
- * This file is made available under the terms of the Common Public License v1.0
+/*******************************************************************************
+ * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials 
+ * are made available under the terms of the Common Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/cpl-v10.html
- */
+ * 
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.swt.graphics;
+
  
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
@@ -560,7 +564,8 @@ protected void init () {
 		* devices return 0 for the number of reserved entries in
 		* the system palette.  Their system palette correctly contains
 		* the usual 20 system colors.  The workaround is to assume
-		* there are 20 reserved system colors instead of 0.		*/
+		* there are 20 reserved system colors instead of 0.
+		*/
 		if (numReserved == 0 && numEntries >= 20) numReserved = 20;
 	}
 

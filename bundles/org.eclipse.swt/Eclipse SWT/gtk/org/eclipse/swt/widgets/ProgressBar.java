@@ -1,11 +1,15 @@
-package org.eclipse.swt.widgets;
-
-/*
- * Copyright (c) 2000, 2002 IBM Corp.  All rights reserved.
- * This file is made available under the terms of the Common Public License v1.0
+/*******************************************************************************
+ * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials 
+ * are made available under the terms of the Common Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/cpl-v10.html
- */
+ * 
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.swt.widgets;
+
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.gtk.*;
@@ -83,7 +87,8 @@ void createHandle (int index) {
 		timerId = OS.gtk_timeout_add (DELAY, display.windowTimerProc, handle);
 	} else {
 		/*
-		* Note: this API is deprecated, but there is no replacement.		*/
+		* Note: this API is deprecated, but there is no replacement.
+		*/
 		int barStyle = (this.style & SWT.SMOOTH) == 0 ? OS.GTK_PROGRESS_DISCRETE : OS.GTK_PROGRESS_CONTINUOUS;
 		OS.gtk_progress_bar_set_bar_style (handle, barStyle);
 	}

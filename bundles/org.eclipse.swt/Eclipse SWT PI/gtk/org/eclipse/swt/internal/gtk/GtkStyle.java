@@ -1,16 +1,15 @@
+/*******************************************************************************
+ * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials 
+ * are made available under the terms of the Common Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ * 
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
 package org.eclipse.swt.internal.gtk;
 
-/*
- * (c) Copyright 2000, 2002 IBM Corp.  All rights reserved.
- * The contents of this file are made available under the terms
- * of the GNU Lesser General Public License (LGPL) Version 2.1 that
- * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
- * available at http://www.gnu.org/licenses/lgpl.html.  If the version
- * of the LGPL at http://www.gnu.org is different to the version of
- * the LGPL accompanying this distribution and there is any conflict
- * between the two license versions, the terms of the LGPL accompanying
- * this distribution shall govern.
- */
 
 public class GtkStyle {
 	public int fg0_pixel;

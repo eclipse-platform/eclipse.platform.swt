@@ -1,11 +1,15 @@
-package org.eclipse.swt.graphics;
-
-/*
- * Copyright (c) 2000, 2002 IBM Corp.  All rights reserved.
- * This file is made available under the terms of the Common Public License v1.0
+/*******************************************************************************
+ * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials 
+ * are made available under the terms of the Common Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/cpl-v10.html
- */
+ * 
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.swt.graphics;
+
 
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
@@ -1585,7 +1589,8 @@ static int[] init(Device device, Image image, ImageData i) {
 			int blueMask = palette.blueMask;
 			/*
 			 * The color masks must be written based on the
-			 * endianness of the ImageData.			 */
+			 * endianness of the ImageData.
+			 */
 			if (i.getByteOrder() == ImageData.LSB_FIRST) {
 				bmi[offset] = (byte)((redMask & 0xFF) >> 0);
 				bmi[offset + 1] = (byte)((redMask & 0xFF00) >> 8);
