@@ -273,7 +273,7 @@ void createItem (TableColumn column, int index) {
 	} else {
 		createColumn (column, index);
 	}
-	int boxHandle = OS.gtk_hbox_new (false, 0);
+	int boxHandle = OS.gtk_hbox_new (false, 3);
 	if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	int labelHandle = OS.gtk_label_new_with_mnemonic (null);
 	if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);

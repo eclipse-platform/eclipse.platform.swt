@@ -592,7 +592,7 @@ public void setText (String string) {
 	OS.gtk_widget_show (labelHandle);
 	/*
 	* Bug in GTK.  For some reason, the button does not allocate the size of its internal
-	* children if its bounds is set before the image is set.  The fix is to force this by calling
+	* children if its bounds is set before the text is set.  The fix is to force this by calling
 	* gtk_widget_size_request() (and throw the results away).
 	*/
 	GtkRequisition requisition = new GtkRequisition ();
