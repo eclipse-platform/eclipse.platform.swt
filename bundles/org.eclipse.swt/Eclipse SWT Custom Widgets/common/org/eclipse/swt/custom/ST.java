@@ -37,6 +37,7 @@ public class ST {
 	public static final int WINDOW_END = 17039366; 		// binding = SWT.MOD1 + SWT.PAGE_DOWN
 
 	/* Selection Key Actions */
+	public static final int SELECT_ALL = 262209; 				// binding = SWT.MOD1 + 'A'
 	public static final int SELECT_LINE_UP = 16908289; 			// binding = SWT.MOD2 + SWT.ARROW_UP
 	public static final int SELECT_LINE_DOWN = 16908290; 		// binding = SWT.MOD2 + SWT.ARROW_DOWN
 	public static final int SELECT_LINE_START = 16908295; 		// binding = SWT.MOD2 + SWT.HOME

@@ -5418,6 +5418,11 @@ public void invokeAction(int action) {
 		case ST.SELECT_LINE_UP:
 			doSelectionLineUp();
 			break;
+		case ST.SELECT_ALL:
+			internalSetSelection(0, content.getCharCount(), false);
+			setCaretLocation();
+			showCaret();
+			break;
 		case ST.SELECT_LINE_DOWN:
 			doSelectionLineDown();
 			break;
