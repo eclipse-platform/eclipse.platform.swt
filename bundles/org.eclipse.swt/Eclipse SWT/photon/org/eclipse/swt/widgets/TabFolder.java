@@ -415,11 +415,11 @@ Point minimumSize (int wHint, int hHint, boolean flushCache) {
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
 		int index = 0;
-		while (index < items.length) {
+		while (index < itemCount) {
 			if (items [index].control == child) break;
 			index++;
 		}
-		if (index == items.length) {
+		if (index == itemCount) {
 			Rectangle rect = child.getBounds ();
 			width = Math.max (width, rect.x + rect.width);
 			height = Math.max (height, rect.y + rect.height);
