@@ -259,7 +259,7 @@ void createMainClassPanel(Composite panel, Listener updateListener) {
 	String mainClasses = app.getMetaData().getMetaData("swt_main_classes", null);
 	if (mainClasses != null) {
 		String[] list = ItemData.split(mainClasses, ",");
-		for (int i = 0; i < list.length - 1; i += 2) {
+		for (int i = 0; i < list.length; i += 2) {
 			mainClassCb.add(list[i].trim());
 			outputDirCb.add(list[i + 1].trim());
 		}

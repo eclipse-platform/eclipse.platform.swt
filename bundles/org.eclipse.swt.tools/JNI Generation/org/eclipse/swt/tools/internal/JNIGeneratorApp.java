@@ -372,7 +372,7 @@ public void setMainClass(String str) {
 	String mainClasses = getMetaData().getMetaData("swt_main_classes", null);
 	if (mainClasses != null) {
 		String[] list = ItemData.split(mainClasses, ",");
-		for (int i = 0; i < list.length - 1; i += 2) {
+		for (int i = 0; i < list.length; i += 2) {
 			if (mainClass.equals(list[i].trim())) {
 				setOutputDir(list[i + 1].trim());
 			}
