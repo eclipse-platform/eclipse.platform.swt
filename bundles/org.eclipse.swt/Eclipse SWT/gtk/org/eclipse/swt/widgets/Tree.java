@@ -712,7 +712,7 @@ int /*long*/ gtk_toggled (int /*long*/ renderer, int /*long*/ pathStr) {
 	}
 	OS.g_free (iter);
 	OS.gtk_tree_path_free (path);
-	item.setChecked (!item.getChecked ());
+	if (item != null) item.setChecked (!item.getChecked ());
 	Event event = new Event ();
 	event.detail = SWT.CHECK;
 	event.item = item;

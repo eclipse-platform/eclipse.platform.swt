@@ -611,7 +611,6 @@ void createItem (TableColumn column, int index) {
 	OS.gtk_container_add (boxHandle, labelHandle);
 	OS.gtk_widget_show (boxHandle);
 	OS.gtk_widget_show (labelHandle);
-	column.boxHandle = boxHandle;
 	column.labelHandle = labelHandle;
 	column.imageHandle = imageHandle;	
 	OS.gtk_tree_view_column_set_widget (column.handle, boxHandle);
@@ -831,7 +830,7 @@ void destroyItem (TableColumn column) {
 		}
 	}
 	column.handle = column.buttonHandle = column.labelHandle = 0;
-	column.boxHandle = column.imageHandle = 0;
+	column.imageHandle = 0;
 }
 
 void destroyItem (TableItem item) {

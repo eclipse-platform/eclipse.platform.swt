@@ -32,7 +32,7 @@ import org.eclipse.swt.events.*;
  * </p>
  */
 public class TableColumn extends Item {
-	int /*long*/ boxHandle, labelHandle, imageHandle, buttonHandle;
+	int /*long*/ labelHandle, imageHandle, buttonHandle;
 	Table parent;
 	int modelIndex, lastButton, lastTime, lastX, lastWidth;
 	boolean customDraw;
