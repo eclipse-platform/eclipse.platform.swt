@@ -532,7 +532,7 @@ private Vector getDirectionRuns(int logicalStart, int length) {
 			bidiSegmentEnd = bidiSegments[bidiSegmentIndex + 1];
 		}
 		while (segmentLogicalEnd <= logicalEnd) {
-			int segType = classBuffer[segmentLogicalStart];
+			boolean isRightToLeftSegment = isRightToLeft(segmentLogicalStart);
 			// Search for the end of the direction segment. Each segment needs to 
 			// be rendered separately. 
 			// E.g., 11211 (1=R2L, 2=L2R), rendering from logical index 0 to 5 
@@ -540,7 +540,12 @@ private Vector getDirectionRuns(int logicalStart, int length) {
 			// segments separately would render from visual 1 to 0, then 2, then 
 			// 4 to 3.
 			while (segmentLogicalEnd < logicalEnd &&
-					segType == classBuffer[segmentLogicalEnd + 1] &&
+					// If our segment type is RtoL, the order index for the next character should be one less, if there
+					// is no direction change.
+					// If our segment type is LtoR, the order index for the next character will be one more if there is
+					// no direction change.
+					((isRightToLeftSegment && (order[segmentLogicalEnd + 1]+ 1 == order[segmentLogicalEnd])) ||
+					(isRightToLeftSegment == false && (order[segmentLogicalEnd + 1]- 1 == order[segmentLogicalEnd]))) &&
 					segmentLogicalEnd + 1 < bidiSegmentEnd) {
 				segmentLogicalEnd++;
 			}
