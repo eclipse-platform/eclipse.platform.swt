@@ -233,7 +233,9 @@ public CTabFolder(Composite parent, int style) {
 	
 	setBorderVisible((style & SWT.BORDER) != 0);
 	
-	initAccessible();	
+	initAccessible();
+	
+	oldFont = getFont();
 
 }
 private static int checkStyle (int style) {
@@ -383,7 +385,6 @@ void createItem (CTabItem item, int index) {
 	}
 	if (items.length == 1) {
 		topTabIndex = 0;
-		resetTabSize(true);
 	} else {
 		setItemBounds();
 		showItem(item);
@@ -1150,7 +1151,7 @@ private boolean onMnemonic (Event event) {
  */
 private void onPaint(Event event) {
 	Font font = getFont();
-	if (oldFont == null || !oldFont.equals(font)) {
+	if (!oldFont.equals(font)) {
 		oldFont = font;
 		resetTabSize(true);
 	}
@@ -1300,6 +1301,10 @@ public void removeCTabFolderListener(CTabFolderListener listener) {
  */ 
 private void onResize() {
 
+	Point size = getSize();
+	if (tabHeight == 0 && size.y > 2) 
+		resetTabSize(true);
+	
 	if (items.length == 0) {
 		redraw();
 		return;
@@ -1308,8 +1313,7 @@ private void onResize() {
 	if (setItemBounds()) {
 		redrawTabArea(-1);
 	}
-	
-	Point size = getSize();
+
 	if (oldSize == null) {
 		redraw();
 	} else {
