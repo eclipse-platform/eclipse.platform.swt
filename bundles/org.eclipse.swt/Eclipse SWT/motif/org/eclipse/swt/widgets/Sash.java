@@ -141,7 +141,7 @@ void drawBand (int x, int y, int width, int height) {
 	int [] argList = {OS.XmNforeground, 0, OS.XmNbackground, 0};
 	OS.XtGetValues (parent.handle, argList, argList.length / 2);
 	int color = argList [1] ^ argList [3];
-	byte [] bits = {-86, 0, 85, 0, -86, 0, 85, 0, -86, 0, 85, 0, -86, 0, 85, 0};
+	byte [] bits = {-86, 85, -86, 85, -86, 85, -86, 85};
 	int stipplePixmap = OS.XCreateBitmapFromData (display, window, bits, 8, 8);
 	int gc = OS.XCreateGC (display, window, 0, null);
 	OS.XSetForeground (display, gc, color);
