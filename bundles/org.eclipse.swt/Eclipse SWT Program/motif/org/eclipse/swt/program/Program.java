@@ -16,6 +16,8 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gnome.*;
+import org.eclipse.swt.internal.kde.*;
+import org.eclipse.swt.internal.cde.*;
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.widgets.*;
 
@@ -111,11 +113,12 @@ static Hashtable cde_getDataTypeInfo() {
 	if (dataTypeList != 0) {
 		/* For each data type name in the list */
 		index = 0; 
-		int dataType = CDE.listElementAt(dataTypeList, index++);
-		while (dataType != 0) {
-			int length = OS.strlen(dataType);
+		int[] dataType = new int[1];
+		OS.memmove(dataType, dataTypeList + (index++ * 4), 4);
+		while (dataType[0] != 0) {
+			int length = OS.strlen(dataType[0]);
 			byte[] dataTypeBuf = new byte[length];
-			OS.memmove(dataTypeBuf, dataType, length);
+			OS.memmove(dataTypeBuf, dataType[0], length);
 			/* Use the character encoding for the default locale */
 			String dataTypeName = new String(Converter.mbcsToWcs(null, dataTypeBuf));
      		
@@ -127,7 +130,7 @@ static Hashtable cde_getDataTypeInfo() {
 				exts.addElement(extension);
 				dataTypeInfo.put(dataTypeName, exts);
 			}
-			dataType = CDE.listElementAt(dataTypeList, index++);
+			OS.memmove(dataType, dataTypeList + (index++ * 4), 4);
 		}
 		CDE.DtDtsFreeDataTypeNames(dataTypeList);
 	}
@@ -506,9 +509,9 @@ static String kde_convertQStringAndFree(int qString) {
 	int qCString = KDE.QString_utf8(qString);
 	int charString = KDE.QCString_data(qCString);
 	
-	int length = KDE.strlen(charString);
+	int length = OS.strlen(charString);
 	byte[] buffer = new byte[length];
-	KDE.memmove(buffer, charString, length);
+	OS.memmove(buffer, charString, length);
 	/* Use the character encoding for the default locale */
 	String answer = new String(Converter.mbcsToWcs(null, buffer));
 		
@@ -518,10 +521,6 @@ static String kde_convertQStringAndFree(int qString) {
 }
 
 static boolean kde_init() {
-	/* Note.  For some reason, loading a native library that binds to the C++ KDE APi causes the VM to crash.
-	 * As a result, KDE is not supported. */
-	if (true) return false;
-	
 	try {
 		Library.loadLibrary("swt-kde");
 	} catch (Throwable e) {
@@ -531,7 +530,11 @@ static boolean kde_init() {
 	/* Use the character encoding for the default locale */
 	byte[] nameBuffer = Converter.wcsToMbcs(null, "SWT", true);
 	int qcString = KDE.QCString_new(nameBuffer);
-	KDE.KApplication_new(qcString);
+	int ptr = OS.XtMalloc(nameBuffer.length);
+	OS.memmove(ptr, nameBuffer, nameBuffer.length);
+	int[] argv = new int[]{ptr, 0};
+	KDE.KApplication_new(1, argv, qcString, false, false);
+	OS.XtFree(ptr);
 	KDE.QCString_delete(qcString);
 	return true;
 }
@@ -551,7 +554,7 @@ static Hashtable kde_getMimeInfo() {
 	int mimeTypeList = KDE.KMimeType_allMimeTypes();
 	int iterator = KDE.KMimeTypeList_begin(mimeTypeList);
 	int listEnd = KDE.KMimeTypeList_end(mimeTypeList);
-	while (KDE.KMimeTypeListIterator_equals(iterator, listEnd) == 0) {
+	while (!KDE.KMimeTypeListIterator_equals(iterator, listEnd)) {
 		int kMimeType = KDE.KMimeTypeListIterator_dereference(iterator);
 		int mimeName = KDE.KMimeType_name(kMimeType);
 		mimeType = kde_convertQStringAndFree(mimeName);
@@ -564,7 +567,7 @@ static Hashtable kde_getMimeInfo() {
 		int patternList = KDE.KMimeType_patterns(kMimeType);
 		int patIterator = KDE.QStringList_begin(patternList);
 		int patListEnd  = KDE.QStringList_end(patternList);
-		while (KDE.QStringListIterator_equals(patIterator, patListEnd) == 0) {
+		while (!KDE.QStringListIterator_equals(patIterator, patListEnd)) {
 			/* Get the next extension pattern from the list. */
 			int patString = KDE.QStringListIterator_dereference(patIterator);
 			extension = kde_convertQStringAndFree(patString);
@@ -778,7 +781,13 @@ public boolean execute(String fileName) {
 			Integer shell = (Integer) display.getData(CDE_SHELL);
 			int actionID = 0;
 			if (shell != null) {
-				actionID = CDE.DtActionInvoke(shell.intValue(), action, fileArg, 1, null, null, null, 1, 0, 0);
+				int ptr = OS.XtMalloc(fileArg.length);
+				OS.memmove(ptr, fileArg, fileArg.length);
+				DtActionArg args = new DtActionArg();
+				args.argClass = CDE.DtACTION_FILE;
+				args.name = ptr;
+				actionID = CDE.DtActionInvoke(shell.intValue(), action, args, 1, null, null, null, 1, 0, 0);
+				OS.XtFree(ptr);
 			}
 			return (actionID != 0);
 		}
@@ -803,9 +812,9 @@ public ImageData getImageData() {
 			int mimeType = KDE.KMimeType_mimeType(mimeTypeName);
 			KDE.QString_delete(mimeTypeName);			
 			if (mimeType == 0) return null;			
-			int mimeIcon = KDE.KMimeType_icon(mimeType, 0, 0);
+			int mimeIcon = KDE.KMimeType_icon(mimeType, 0, false);
 			int loader = KDE.KGlobal_iconLoader();
-			int path = KDE.KIconLoader_iconPath(loader, mimeIcon, KDE.KICON_SMALL, 1);
+			int path = KDE.KIconLoader_iconPath(loader, mimeIcon, KDE.KICON_SMALL, true);
 			if (path == 0) return null;
 			iconPath = kde_convertQStringAndFree(path);
 			break;

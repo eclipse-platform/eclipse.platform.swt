@@ -33,7 +33,7 @@ SWT_LIBS = -L$(MOTIF_HOME) -G -bnoentry -lc_r -lC_r -lm -bexpall -lXm -lMrm -lXt
 
 CDE_PREFIX = swt-cde
 CDE_LIB = lib$(CDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).a
-CDE_OBJS = cde.o
+CDE_OBJS = swt.o cde.o cde_structs.o cde_stats.o
 CDE_LIBS = -L$(CDE_HOME)/lib -bnoentry -bexpall -lDtSvc -lc
 
 #

@@ -39,8 +39,8 @@ GNOME_LIBS = -shared -fpic -fPIC `pkg-config --libs gnome-vfs-module-2.0 libgnom
 
 KDE_PREFIX = swt-kde
 KDE_LIB = lib$(KDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
-KDE_OBJS = kde.o
-KDE_LIBS = -L/usr/lib  -L$(QT_HOME)/lib -shared  -lkdecore -lqt
+KDE_OBJS = swt.o kde.o kde_stats.o
+KDE_LIBS = -L/usr/lib  -L$(QT_HOME)/lib -shared  -lkdecore -lqt -lkparts
 KDE_CFLAGS = -fno-rtti -c -O -I/usr/include/kde -I$(QT_HOME)/include -I$(JAVA_HOME)/include
 
 AWT_PREFIX = swt-awt
@@ -91,8 +91,11 @@ make_kde: $(KDE_LIB)
 $(KDE_LIB): $(KDE_OBJS)
 	ld -o $@ $(KDE_OBJS) $(KDE_LIBS)
 
-$(KDE_OBJS): kde.cc
-	g++ $(KDE_CFLAGS) -o kde.o kde.cc
+kde.o: kde.cpp
+	g++ $(KDE_CFLAGS) -o kde.o kde.cpp
+
+kde_stats.o: kde_stats.c
+	gcc $(KDE_CFLAGS) -o kde_stats.o kde_stats.c
 
 make_awt: $(AWT_LIB)
 
