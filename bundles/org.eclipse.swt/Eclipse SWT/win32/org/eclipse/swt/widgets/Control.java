@@ -1300,7 +1300,7 @@ public void moveAbove (Control control) {
 		}
 	}
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE; 
-	OS.SetWindowPos (handle, hwndAbove, 0, 0, 0, 0, flags);
+	SetWindowPos (handle, hwndAbove, 0, 0, 0, 0, flags);
 }
 
 /**
@@ -1332,7 +1332,7 @@ public void moveBelow (Control control) {
 	}
 	if (hwndAbove == 0 || hwndAbove == handle) return;
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE; 
-	OS.SetWindowPos (handle, hwndAbove, 0, 0, 0, 0, flags);
+	SetWindowPos (handle, hwndAbove, 0, 0, 0, 0, flags);
 }
 
 Accessible new_Accessible (Control control) {
@@ -1714,33 +1714,6 @@ public void removeTraverseListener(TraverseListener listener) {
 	eventTable.unhook (SWT.Traverse, listener);
 }
 
-static boolean SetWindowPos(int hWnd, int hWndInsertAfter, int X, int Y, int cx, int cy, int uFlags) {
-	if (OS.IsWinCE) {
-		/*
-		* Feature on Windows CE.  Calling SetWindowPos without SWP_NOSIZE triggers a WM_SIZE event
-		* even if the new size is the same as the current one.  This causes an infinite loop when
-		* SetWindowPos is called from within a WM_SIZE callback.  The workaround is to ignore the
-		* size information in this case. 
-		*/
-		if ((uFlags & OS.SWP_NOSIZE) == 0) {
-			RECT lpRect = new RECT();
-			OS.GetWindowRect(hWnd, lpRect);
-			if (cy == lpRect.bottom - lpRect.top && cx == lpRect.right - lpRect.left) {
-				/*
-				* Feature on Windows CE.  Calling SetWindowPos with SWP_DRAWFRAME triggers
-				* a WM_SIZE event even when SWP_NOSIZE is set and/or when the new size is the same
-				* as the current one.  This causes an infinite loop when SetWindowPos is called 
-				* from within a WM_SIZE callback.  The workaround is to not set SWP_DRAWFRAME in 
-				* this case. 
-				*/
-				uFlags &= ~OS.SWP_DRAWFRAME;
-				uFlags |= OS.SWP_NOSIZE;
-			}
-		}
-	}
-	return OS.SetWindowPos(hWnd, hWndInsertAfter, X, Y, cx, cy, uFlags);
-}
-
 boolean sendKeyEvent (int type, int msg, int wParam, int lParam) {
 	Event event = new Event ();
 	if (!setKeyState (event, type, wParam, lParam)) return true;
@@ -1880,7 +1853,7 @@ public void setBounds (int x, int y, int width, int height) {
 
 void setBounds (int x, int y, int width, int height, int flags) {
 	if (parent == null) {
-		OS.SetWindowPos (handle, 0, x, y, width, height, flags);
+		SetWindowPos (handle, 0, x, y, width, height, flags);
 		return;
 	}
 	if (parent.lpwp == null) {
@@ -1894,7 +1867,7 @@ void setBounds (int x, int y, int width, int height, int flags) {
 //			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 //			if ((bits & OS.WS_CLIPSIBLINGS) == 0) flags |= OS.SWP_NOCOPYBITS;
 //		}
-		OS.SetWindowPos (handle, 0, x, y, width, height, flags);
+		SetWindowPos (handle, 0, x, y, width, height, flags);
 		return;
 	}
 	forceResize ();
@@ -2964,7 +2937,7 @@ public boolean setParent (Composite parent) {
 	if (OS.SetParent (handle, parent.handle) == 0) return false;
 	this.parent = parent;
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE; 
-	OS.SetWindowPos (handle, OS.HWND_BOTTOM, 0, 0, 0, 0, flags);
+	SetWindowPos (handle, OS.HWND_BOTTOM, 0, 0, 0, 0, flags);
 	return true;
 }
 

@@ -456,7 +456,7 @@ void createHandle () {
 		*/
 		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 		int flags = OS.SWP_DRAWFRAME | OS.SWP_NOMOVE | OS.SWP_NOSIZE | OS.SWP_NOZORDER | OS.SWP_NOACTIVATE;
-		OS.SetWindowPos (handle, 0, 0, 0, 0, 0, flags);
+		SetWindowPos (handle, 0, 0, 0, 0, 0, flags);
 		if (OS.IsWinCE) setMaximized (true);
 		if (OS.IsPPC) {
 			psai = new SHACTIVATEINFO ();
@@ -932,7 +932,7 @@ void setBounds (int x, int y, int width, int height, int flags) {
 			return;
 		}
 	}
-	OS.SetWindowPos (handle, 0, x, y, width, height, flags);
+	SetWindowPos (handle, 0, x, y, width, height, flags);
 }
 
 public void setEnabled (boolean enabled) {

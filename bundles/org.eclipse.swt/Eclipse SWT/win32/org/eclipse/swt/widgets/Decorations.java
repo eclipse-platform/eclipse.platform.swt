@@ -1000,7 +1000,7 @@ public void setMaximized (boolean maximized) {
 				}
 			}
 			int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
-			OS.SetWindowPos (handle, 0, rect.left, rect.top, width, height, flags);	
+			SetWindowPos (handle, 0, rect.left, rect.top, width, height, flags);	
 		} else {
 			if ((style & SWT.NO_TRIM) == 0) {
 				/* Insert caption when no longer maximized */
@@ -1008,7 +1008,7 @@ public void setMaximized (boolean maximized) {
 				bits |= OS.WS_CAPTION;
 				OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 				int flags = OS.SWP_NOMOVE | OS.SWP_NOSIZE | OS.SWP_NOZORDER | OS.SWP_DRAWFRAME;
-				OS.SetWindowPos (handle, 0, 0, 0, 0, 0, flags);
+				SetWindowPos (handle, 0, 0, 0, 0, 0, flags);
 			}
 		}
 	} else {
@@ -1137,7 +1137,7 @@ void setParent () {
 	OS.SetWindowLong (handle, OS.GWL_STYLE, bits | OS.WS_POPUP);
 	OS.SetWindowLong (handle, OS.GWL_ID, 0);
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE; 
-	OS.SetWindowPos (handle, OS.HWND_BOTTOM, 0, 0, 0, 0, flags);
+	SetWindowPos (handle, OS.HWND_BOTTOM, 0, 0, 0, 0, flags);
 	display.lockActiveWindow = false;
 }
 

@@ -990,6 +990,33 @@ boolean setKeyState (Event event, int type, int wParam, int lParam) {
 	return setInputState (event, type);
 }
 
+boolean SetWindowPos (int hWnd, int hWndInsertAfter, int X, int Y, int cx, int cy, int uFlags) {
+	if (OS.IsWinCE) {
+		/*
+		* Feature in Windows.  On Windows CE, SetWindowPos() always causes
+		* a WM_SIZE message, even when the new size is the same as the old
+		* size.  The fix is to detect that the size has not changed and set
+		* SWP_NOSIZE.
+		*/
+		if ((uFlags & OS.SWP_NOSIZE) == 0) {
+			RECT lpRect = new RECT ();
+			OS.GetWindowRect (hWnd, lpRect);
+			if (cy == lpRect.bottom - lpRect.top && cx == lpRect.right - lpRect.left) {
+				/*
+				* Feature in Windows.  On Windows CE, SetWindowPos() when called
+				* with SWP_DRAWFRAME always causes a WM_SIZE message, even when
+				* when SWP_NOSIZE is set and when the new size is the same as the
+				* old size.  The fix is to clear SWP_DRAWFRAME when the size is
+				* the same.
+				*/
+				uFlags &= ~OS.SWP_DRAWFRAME;
+				uFlags |= OS.SWP_NOSIZE;
+			}
+		}
+	}
+	return OS.SetWindowPos (hWnd, hWndInsertAfter, X, Y, cx, cy, uFlags);
+}
+
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.

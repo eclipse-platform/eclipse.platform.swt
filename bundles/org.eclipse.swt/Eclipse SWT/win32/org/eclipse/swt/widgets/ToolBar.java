@@ -182,7 +182,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		ignoreResize = true;
 		if (redraw) OS.UpdateWindow (handle);
 		int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOREDRAW | OS.SWP_NOZORDER;
-		OS.SetWindowPos (handle, 0, 0, 0, newWidth, newHeight, flags);
+		SetWindowPos (handle, 0, 0, 0, newWidth, newHeight, flags);
 		int count = OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
 		if (count != 0) {
 			RECT rect = new RECT ();
@@ -190,7 +190,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			width = Math.max (width, rect.right);
 			height = Math.max (height, rect.bottom);
 		}
-		OS.SetWindowPos (handle, 0, 0, 0, oldWidth, oldHeight, flags);
+		SetWindowPos (handle, 0, 0, 0, oldWidth, oldHeight, flags);
 		if (redraw) OS.ValidateRect (handle, null);
 		ignoreResize = false;
 	}
@@ -687,7 +687,7 @@ void setRows (int count) {
 		count += 2;
 		OS.SendMessage (handle, OS.TB_SETROWS, (1 << 16) | count, 0);
 		int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOZORDER;
-		OS.SetWindowPos (handle, 0, 0, 0, rect.right - rect.left, rect.bottom - rect.top, flags);
+		SetWindowPos (handle, 0, 0, 0, rect.right - rect.left, rect.bottom - rect.top, flags);
 		ignoreResize = false;
 	}
 }

@@ -373,7 +373,7 @@ public void setImage (Image image) {
 	* original size.
 	*/
 	int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE | OS.SWP_NOMOVE;
-	OS.SetWindowPos (handle, 0, 0, 0, rect.right - rect.left, rect.bottom - rect.top, flags);
+	SetWindowPos (handle, 0, 0, 0, rect.right - rect.left, rect.bottom - rect.top, flags);
 	OS.InvalidateRect (handle, null, true);
 }
 

@@ -1270,7 +1270,7 @@ void setBounds (int x, int y, int width, int height, int flags) {
 			int [] start = new int [1], end = new int [1];
 			OS.SendMessage (handle, OS.EM_GETSEL, start, end);
 			if (start [0] != 0 || end [0] != 0) {
-				OS.SetWindowPos (handle, 0, x, y, width, height, flags);
+				SetWindowPos (handle, 0, x, y, width, height, flags);
 				OS.SendMessage (handle, OS.EM_SETSEL, 0, 0);
 				OS.SendMessage (handle, OS.EM_SETSEL, start [0], end [0]);
 				return;

@@ -425,7 +425,7 @@ boolean resizeChildren (boolean defer, WINDOWPOS [] pwp) {
 				hdwp = OS.DeferWindowPos (hdwp, wp.hwnd, 0, wp.x, wp.y, wp.cx, wp.cy, wp.flags);
 				if (hdwp == 0) return false;
 			} else {
-				OS.SetWindowPos (wp.hwnd, 0, wp.x, wp.y, wp.cx, wp.cy, wp.flags);
+				SetWindowPos (wp.hwnd, 0, wp.x, wp.y, wp.cx, wp.cy, wp.flags);
 			}
 		}
 	}
@@ -646,7 +646,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 				display.lockActiveWindow = true;
 				int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOSIZE;
 				int hwndInsertAfter = hdr.code == OS.TTN_SHOW ? OS.HWND_TOPMOST : OS.HWND_NOTOPMOST;
-				OS.SetWindowPos (hdr.hwndFrom, hwndInsertAfter, 0, 0, 0, 0, flags);
+				SetWindowPos (hdr.hwndFrom, hwndInsertAfter, 0, 0, 0, 0, flags);
 				display.lockActiveWindow = false;
 				break;
 			}

@@ -416,8 +416,8 @@ void createHandle () {
 	*/
 	if ((style & SWT.SIMPLE) != 0) {
 		int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
-		OS.SetWindowPos (handle, 0, 0, 0, 0x3FFF, 0x3FFF, flags);
-		OS.SetWindowPos (handle, 0, 0, 0, 0, 0, flags);
+		SetWindowPos (handle, 0, 0, 0, 0x3FFF, 0x3FFF, flags);
+		SetWindowPos (handle, 0, 0, 0, 0, 0, flags);
 	}
 }
 
@@ -1091,7 +1091,7 @@ void setBounds (int x, int y, int width, int height, int flags) {
 				if (oldWidth == width && oldHeight == height) flags |= OS.SWP_NOSIZE;
 			}
 		}
-		OS.SetWindowPos (handle, 0, x, y, width, height, flags);
+		SetWindowPos (handle, 0, x, y, width, height, flags);
 		return;
 	}
 
@@ -1262,10 +1262,10 @@ public void setOrientation (int orientation) {
 		OS.GetWindowRect (handle, rect);
 		int widthCombo = rect.right - rect.left, heightCombo = rect.bottom - rect.top;
 		int uFlags = OS.SWP_NOMOVE | OS.SWP_NOZORDER | OS.SWP_NOACTIVATE;
-		OS.SetWindowPos (hwndText, 0, 0, 0, width - 1, height - 1, uFlags);
-		OS.SetWindowPos (handle, 0, 0, 0, widthCombo - 1, heightCombo - 1, uFlags);
-		OS.SetWindowPos (hwndText, 0, 0, 0, width, height, uFlags);
-		OS.SetWindowPos (handle, 0, 0, 0, widthCombo, heightCombo, uFlags);
+		SetWindowPos (hwndText, 0, 0, 0, width - 1, height - 1, uFlags);
+		SetWindowPos (handle, 0, 0, 0, widthCombo - 1, heightCombo - 1, uFlags);
+		SetWindowPos (hwndText, 0, 0, 0, width, height, uFlags);
+		SetWindowPos (handle, 0, 0, 0, widthCombo, heightCombo, uFlags);
 		OS.InvalidateRect (handle, null, true);
 	}	
 	if (hwndList != 0) {

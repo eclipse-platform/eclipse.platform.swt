@@ -342,7 +342,7 @@ public void setControl (Control control) {
 	if (showOld) oldControl.setVisible (true);
 	if (hwndAbove != 0 && hwndAbove != hwndChild) {
 		int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE; 
-		OS.SetWindowPos (hwndChild, hwndAbove, 0, 0, 0, 0, flags);
+		SetWindowPos (hwndChild, hwndAbove, 0, 0, 0, 0, flags);
 	}
 }
 

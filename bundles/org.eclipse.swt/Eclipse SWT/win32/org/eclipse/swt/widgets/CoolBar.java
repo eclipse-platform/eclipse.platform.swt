@@ -137,11 +137,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		int oldWidth = oldRect.right - oldRect.left;
 		int oldHeight = oldRect.bottom - oldRect.top;
 		int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOREDRAW | OS.SWP_NOZORDER;	
-		OS.SetWindowPos (handle, 0, 0, 0, newWidth, newHeight, flags);
+		SetWindowPos (handle, 0, 0, 0, newWidth, newHeight, flags);
 		RECT rect = new RECT ();
 		OS.SendMessage (handle, OS.RB_GETRECT, count - 1, rect);
 		height = Math.max (height, rect.bottom);
-		OS.SetWindowPos (handle, 0, 0, 0, oldWidth, oldHeight, flags);
+		SetWindowPos (handle, 0, 0, 0, oldWidth, oldHeight, flags);
 		REBARBANDINFO rbBand = new REBARBANDINFO ();
 		rbBand.cbSize = REBARBANDINFO.sizeof;
 		rbBand.fMask = OS.RBBIM_IDEALSIZE | OS.RBBIM_STYLE;
