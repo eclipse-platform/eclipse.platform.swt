@@ -59,6 +59,15 @@ public class MacRect {
 		return new Point(fData[1], fData[0]);
 	}
 	
+	public void setLocation(int x, int y) {
+		int w= fData[3]-fData[1];
+		int h= fData[2]-fData[0];
+		fData[0]= (short)(y);
+		fData[1]= (short)(x);
+		fData[2]= (short)(y+h);
+		fData[3]= (short)(x+w);
+	}
+	
 	public void setSize(int width, int height) {
 		fData[2]= (short)(fData[0]+ height);
 		fData[3]= (short)(fData[1]+ width);
