@@ -8594,7 +8594,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_iconv_1open
         tocode1 = (*env)->GetByteArrayElements(env, tocode, NULL);
     if (fromcode) 
         fromcode1 = (*env)->GetByteArrayElements(env, fromcode, NULL);
-	result = (jint)iconv_open(tocode1, fromcode1);
+	result = (jint)iconv_open((const char *)tocode1, (const char *)fromcode1);
     if (tocode)
     	(*env)->ReleaseByteArrayElements(env, tocode, tocode1, 0);
     if (fromcode)
