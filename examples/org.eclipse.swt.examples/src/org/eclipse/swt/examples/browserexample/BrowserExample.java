@@ -22,10 +22,15 @@ import java.util.*;
 public class BrowserExample {
 	static ResourceBundle resourceBundle = ResourceBundle.getBundle("examples_browser");
 	static Shell shell;
+	int index;
+	boolean busy;
 	Image images[];
 	Text location;
 	Browser browser;
-	static final String[] imageLocations = {"back.gif", "forward.gif", "stop.gif", "refresh", "go"};
+	static final String[] imageLocations = {
+			"eclipse01.bmp", "eclipse02.bmp", "eclipse03.bmp", "eclipse04.bmp", "eclipse05.bmp",
+			"eclipse06.bmp", "eclipse07.bmp", "eclipse08.bmp", "eclipse09.bmp", "eclipse10.bmp",
+			"eclipse11.bmp", "eclipse12.bmp",};
 	
 /**
  * Creates an instance of a ControlExample embedded inside
@@ -34,7 +39,8 @@ public class BrowserExample {
  * @param parent the container of the example
  */
 public BrowserExample(Composite parent) {
-	//initResources();
+	initResources();
+	final Display display = parent.getDisplay();
 	GridLayout gridLayout = new GridLayout();
 	gridLayout.numColumns = 3;
 	parent.setLayout(gridLayout);
@@ -49,18 +55,49 @@ public BrowserExample(Composite parent) {
 	itemRefresh.setText(getResourceString("Refresh"));
 	final ToolItem itemGo = new ToolItem(toolbar, SWT.PUSH);
 	itemGo.setText(getResourceString("Go"));
-	
+		
 	GridData data = new GridData();
-	data.horizontalSpan = 3;
+	data.horizontalSpan = 2;
 	toolbar.setLayoutData(data);
 
+	final Canvas canvas = new Canvas(parent, SWT.NO_BACKGROUND);
+	data = new GridData();
+	data.horizontalAlignment = GridData.END;
+	Rectangle rect = images[0].getBounds();
+	data.widthHint = rect.width;
+	data.heightHint = rect.height;
+	data.verticalSpan = 2;
+	canvas.setLayoutData(data);
+	canvas.addListener(SWT.Paint, new Listener() {
+		public void handleEvent(Event e) {
+			e.gc.drawImage(images[index], 0, 0);
+		}
+	});
+	canvas.addListener(SWT.MouseDown, new Listener() {
+		public void handleEvent(Event e) {
+			browser.setUrl(getResourceString("Startup"));
+		}
+	});
+	
+	display.asyncExec(new Runnable() {
+		public void run() {
+			if (canvas.isDisposed()) return;
+			if (busy) {
+				index++;
+				if (index == images.length) index = 0;
+				canvas.redraw();
+			}
+			display.timerExec(150, this);
+		}
+	});
+	
 	Label labelAddress = new Label(parent, SWT.NONE);
 	labelAddress.setText(getResourceString("Address"));
 	
 	location = new Text(parent, SWT.BORDER);
 	data = new GridData();
 	data.horizontalAlignment = GridData.FILL;
-	data.horizontalSpan = 2;
+	data.horizontalSpan = 1;
 	data.grabExcessHorizontalSpace = true;
 	location.setLayoutData(data);
 
@@ -106,9 +143,17 @@ public BrowserExample(Composite parent) {
 				if (event.total == 0) return;                            
 				int ratio = event.current * 100 / event.total;
 				progressBar.setSelection(ratio);
+				busy = event.current != event.total;
+				if (!busy) {
+					index = 0;
+					canvas.redraw();
+				}
 			}
 			public void completed(ProgressEvent event) {
 				progressBar.setSelection(0);
+				busy = false;
+				index = 0;
+				canvas.redraw();
 			}
 		});
 		browser.addStatusTextListener(new StatusTextListener() {
@@ -118,6 +163,7 @@ public BrowserExample(Composite parent) {
 		});
 		browser.addLocationListener(new LocationListener() {
 			public void changed(LocationEvent event) {
+				busy = true;
 				location.setText(event.location);
 			}
 			public void changing(LocationEvent event) {
@@ -205,10 +251,8 @@ void initResources() {
 		try {
 			if (images == null) {
 				images = new Image[imageLocations.length];
-				
 				for (int i = 0; i < imageLocations.length; ++i) {
-					ImageData source = new ImageData(clazz.getResourceAsStream(
-							imageLocations[i]));
+					ImageData source = new ImageData(clazz.getResourceAsStream(imageLocations[i]));
 					ImageData mask = source.getTransparencyMask();
 					images[i] = new Image(null, source, mask);
 				}
@@ -217,9 +261,7 @@ void initResources() {
 		} catch (Throwable t) {
 		}
 	}
-	String error = (resourceBundle != null) ?
-											getResourceString("error.CouldNotLoadResources") :
-											"Unable to load resources";
+	String error = (resourceBundle != null) ? getResourceString("error.CouldNotLoadResources") : "Unable to load resources";
 	freeResources();
 	throw new RuntimeException(error);
 }
