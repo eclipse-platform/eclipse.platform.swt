@@ -92,8 +92,7 @@ public void generate(Method method) {
 				output(" ");
 				output(paramNames[i]);
 			}
-			output(");");
-			outputln();
+			outputln(");");
 			usedCount++;
 			return;
 		}

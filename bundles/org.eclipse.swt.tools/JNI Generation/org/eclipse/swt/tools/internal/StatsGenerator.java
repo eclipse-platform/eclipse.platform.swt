@@ -57,42 +57,32 @@ public void generateHeaderFile(Class[] classes) {
 
 void generateNATIVEMacros(Class clazz) {
 	String className = getClassName(clazz);
-	output("#ifdef NATIVE_STATS");
-	outputln();
+	outputln("#ifdef NATIVE_STATS");
 	output("extern int ");
 	output(className);
-	output("_nativeFunctionCount;");
-	outputln();
+	outputln("_nativeFunctionCount;");
 	output("extern int ");
 	output(className);
-	output("_nativeFunctionCallCount[];");
-	outputln();
+	outputln("_nativeFunctionCallCount[];");
 	output("extern char* ");
 	output(className);
-	output("_nativeFunctionNames[];");
-	outputln();
+	outputln("_nativeFunctionNames[];");
 	output("#define ");
 	output(className);
 	output("_NATIVE_ENTER(env, that, func) ");
 	output(className);
-	output("_nativeFunctionCallCount[func]++;");
-	outputln();
+	outputln("_nativeFunctionCallCount[func]++;");
 	output("#define ");
 	output(className);
-	output("_NATIVE_EXIT(env, that, func) ");
-	outputln();
-	output("#else");
-	outputln();
+	outputln("_NATIVE_EXIT(env, that, func) ");
+	outputln("#else");
 	output("#define ");
 	output(className);
-	output("_NATIVE_ENTER(env, that, func) ");
-	outputln();
+	outputln("_NATIVE_ENTER(env, that, func) ");
 	output("#define ");
 	output(className);
-	output("_NATIVE_EXIT(env, that, func) ");
-	outputln();
-	output("#endif");
-	outputln();
+	outputln("_NATIVE_EXIT(env, that, func) ");
+	outputln("#endif");
 	outputln();	
 }
 
@@ -106,8 +96,7 @@ public void generateSourceFile(Class[] classes) {
 	sort(classes);
 	generateMetaData("swt_copyright");
 	generateMetaData("swt_includes");
-	output("#ifdef NATIVE_STATS");
-	outputln();
+	outputln("#ifdef NATIVE_STATS");
 	outputln();
 	for (int i = 0; i < classes.length; i++) {
 		Class clazz = classes[i];
@@ -125,8 +114,7 @@ public void generateSourceFile(Class[] classes) {
 		generateSourceFile(clazz);
 	}
 	outputln();
-	output("#endif");
-	outputln();
+	outputln("#endif");
 }
 
 public void generateSourceFile(Class clazz) {
@@ -142,54 +130,41 @@ public void generateSourceFile(Class clazz) {
 	output(className);
 	output("_nativeFunctionCount = ");
 	output(String.valueOf(methodCount));
-	output(";");
-	outputln();
+	outputln(";");
 	output("int ");
 	output(className);
 	output("_nativeFunctionCallCount[");
 	output(String.valueOf(methodCount));
-	output("];");
-	outputln();
+	outputln("];");
 	output("char * ");
 	output(className);
-	output("_nativeFunctionNames[] = {");
-	outputln();
+	outputln("_nativeFunctionNames[] = {");
 	generate(methods);
-	output("};");
-	outputln();
+	outputln("};");
 	outputln();
 	generateStatsNatives(className);
 }
 
 void generateStatsNatives(String className) {
-	output("#define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func");
-	outputln();
+	outputln("#define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func");
 	outputln();
 
 	output("JNIEXPORT jint JNICALL STATS_NATIVE(");
 	output(toC(className + "_GetFunctionCount"));
-	output(")");
-	outputln();
-	output("\t(JNIEnv *env, jclass that)");
-	outputln();
-	output("{");
-	outputln();
+	outputln(")");
+	outputln("\t(JNIEnv *env, jclass that)");
+	outputln("{");
 	output("\treturn ");
 	output(className);
-	output("_nativeFunctionCount;");
-	outputln();
-	output("}");
-	outputln();
+	outputln("_nativeFunctionCount;");
+	outputln("}");
 	outputln();
 
 	output("JNIEXPORT jstring JNICALL STATS_NATIVE(");
 	output(toC(className + "_GetFunctionName"));
-	output(")");
-	outputln();
-	output("\t(JNIEnv *env, jclass that, jint index)");
-	outputln();
-	output("{");
-	outputln();
+	outputln(")");
+	outputln("\t(JNIEnv *env, jclass that, jint index)");
+	outputln("{");
 	output("\treturn ");
 	if (isCPP) {
 		output("env->NewStringUTF(");
@@ -197,52 +172,41 @@ void generateStatsNatives(String className) {
 		output("(*env)->NewStringUTF(env, ");
 	}
 	output(className);
-	output("_nativeFunctionNames[index]);");
-	outputln();
-	output("}");
-	outputln();
+	outputln("_nativeFunctionNames[index]);");
+	outputln("}");
 	outputln();
 
 	output("JNIEXPORT jint JNICALL STATS_NATIVE(");
 	output(toC(className + "_GetFunctionCallCount"));
-	output(")");
-	outputln();
-	output("\t(JNIEnv *env, jclass that, jint index)");
-	outputln();
-	output("{");
-	outputln();
+	outputln(")");
+	outputln("\t(JNIEnv *env, jclass that, jint index)");
+	outputln("{");
 	output("\treturn ");
 	output(className);
-	output("_nativeFunctionCallCount[index];");
-	outputln();
-	output("}");
-	outputln();
+	outputln("_nativeFunctionCallCount[index];");
+	outputln("}");
 }
 
 void generateStringArray(Method method) {	
 	output("\t\"");
 	output(getFunctionName(method));
-	output("\", ");
-	outputln();
+	outputln("\", ");
 }
 
 void generateDefines(Method[] methods) {
 	if (methods.length == 0) return;
-	output("typedef enum {");
-	outputln();
+	outputln("typedef enum {");
 	for (int i = 0; i < methods.length; i++) {
 		Method method = methods[i];
 		if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
 		output("\t");
 		output(getFunctionName(method));
-		output("_FUNC,");
-		outputln();
+		outputln("_FUNC,");
 	}
 	Class clazz = methods[0].getDeclaringClass();
 	output("} ");
 	output(getClassName(clazz));
-	output("_FUNCS;");
-	outputln();
+	outputln("_FUNCS;");
 }
 
 }

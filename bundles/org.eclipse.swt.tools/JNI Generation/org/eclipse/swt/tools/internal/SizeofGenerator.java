@@ -15,11 +15,9 @@ import java.lang.reflect.*;
 public class SizeofGenerator extends JNIGenerator {
 
 public void generate(Class[] classes) {
-	output("int main() {");
-	outputln();
+	outputln("int main() {");
 	super.generate(classes);
-	output("}");
-	outputln();
+	outputln("}");
 }
 
 public void generate(Class clazz) {
@@ -28,8 +26,7 @@ public void generate(Class clazz) {
 	output(className);
 	output("=%d\\n\", sizeof(");
 	output(className);
-	output("));");
-	outputln();
+	outputln("));");
 //	Field[] fields = clazz.getDeclaredFields();
 //	generate(fields);	
 }
@@ -48,8 +45,7 @@ public void generate(Field field) {
 	output(field.getName());
 	output("=%d\\n\", sizeof(");
 	output(field.getName());
-	output("));");
-	outputln();
+	outputln("));");
 }
 
 public static void main(String[] args) {

@@ -244,8 +244,7 @@ public void generateMetaData(String key) {
 	MetaData mt = getMetaData();
 	String data = mt.getMetaData(key, null);
 	if (data == null) return;
-	output(fixDelimiter(data));
-	outputln();
+	outputln(fixDelimiter(data));
 }
 
 public String getDelimiter() {

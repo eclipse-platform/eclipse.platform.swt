@@ -63,8 +63,7 @@ public void generate(Field field) {
 			output(field.getName());
 			output(" = ");
 			output(getFieldValue(field));
-			output(";");
-			outputln();
+			outputln(";");
 			usedCount++;
 			return;
 		}

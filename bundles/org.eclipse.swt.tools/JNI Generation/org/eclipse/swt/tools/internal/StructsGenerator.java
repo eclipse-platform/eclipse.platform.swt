@@ -39,20 +39,17 @@ public void generateExcludes(Class[] classes) {
 	}
 	for (Iterator iter = excludes.iterator(); iter.hasNext();) {
 		String exclude = (String)iter.next();
-		output(exclude);
-		outputln();
+		outputln(exclude);
 		for (int i = 0; i < classes.length; i++) {
 			Class clazz = classes[i];
 			ClassData classData = getMetaData().getMetaData(clazz);
 			String classExclude = classData.getExclude();
 			if (exclude.equals(classExclude)) {
 				output("#define NO_");
-				output(getClassName(clazz));
-				outputln();
+				outputln(getClassName(clazz));
 			}
 		}
-		output("#endif");
-		outputln();
+		outputln("#endif");
 		outputln();
 	}
 }
@@ -114,13 +111,11 @@ public void generateSourceFile(Class[] classes) {
 void generateSourceStart(Class clazz) {
 	String clazzName = getClassName(clazz);
 	output("#ifndef NO_");
-	output(clazzName);
-	outputln();
+	outputln(clazzName);
 }
 
 void generateSourceEnd(Class clazz) {
-	output("#endif");
-	outputln();
+	outputln("#endif");
 }
 
 void generateGlobalVar(Class clazz) {
@@ -128,69 +123,56 @@ void generateGlobalVar(Class clazz) {
 	output(clazzName);
 	output("_FID_CACHE ");
 	output(clazzName);
-	output("Fc;");
-	outputln();
+	outputln("Fc;");
 }
 
 void generateBlankMacros(Class clazz) {
 	String clazzName = getClassName(clazz);
-	output("#else");
-	outputln();
+	outputln("#else");
 	output("#define cache");
 	output(clazzName);
-	output("Fields(a,b)");
-	outputln();
+	outputln("Fields(a,b)");
 	output("#define get");
 	output(clazzName);
-	output("Fields(a,b,c) NULL");
-	outputln();
+	outputln("Fields(a,b,c) NULL");
 	output("#define set");
 	output(clazzName);
-	output("Fields(a,b,c)");
-	outputln();
+	outputln("Fields(a,b,c)");
 	output("#define ");
 	output(clazzName);
-	output("_sizeof() 0");
-	outputln();
+	outputln("_sizeof() 0");
 }
 
 void generatePrototypes(Class clazz) {
 	String clazzName = getClassName(clazz);
 	output("void cache");
 	output(clazzName);
-	output("Fields(JNIEnv *env, jobject lpObject);");
-	outputln();
+	outputln("Fields(JNIEnv *env, jobject lpObject);");
 	output(clazzName);
 	output(" *get");
 	output(clazzName);
 	output("Fields(JNIEnv *env, jobject lpObject, ");
 	output(clazzName);
-	output(" *lpStruct);");
-	outputln();
+	outputln(" *lpStruct);");
 	output("void set");
 	output(clazzName);
 	output("Fields(JNIEnv *env, jobject lpObject, ");
 	output(clazzName);
-	output(" *lpStruct);");
-	outputln();
+	outputln(" *lpStruct);");
 	output("#define ");
 	output(clazzName);
 	output("_sizeof() sizeof(");
 	output(clazzName);
-	output(")");
-	outputln();
+	outputln(")");
 }
 
 void generateFIDsStructure(Class clazz) {
 	String clazzName = getClassName(clazz);
 	output("typedef struct ");
 	output(clazzName);
-	output("_FID_CACHE {");
-	outputln();
-	output("\tint cached;");
-	outputln();
-	output("\tjclass clazz;");
-	outputln();
+	outputln("_FID_CACHE {");
+	outputln("\tint cached;");
+	outputln("\tjclass clazz;");
 	output("\tjfieldID ");
 	Field[] fields = clazz.getDeclaredFields();
 	boolean first = true;
@@ -201,33 +183,27 @@ void generateFIDsStructure(Class clazz) {
 		output(field.getName());
 		first = false;
 	}
-	output(";");
-	outputln();
+	outputln(";");
 	output("} ");
 	output(clazzName);
-	output("_FID_CACHE;");
-	outputln();
+	outputln("_FID_CACHE;");
 }
 
 void generateCacheFunction(Class clazz) {
 	String clazzName = getClassName(clazz);
 	output("void cache");
 	output(clazzName);
-	output("Fields(JNIEnv *env, jobject lpObject)");
-	outputln();
-	output("{");
-	outputln();
+	outputln("Fields(JNIEnv *env, jobject lpObject)");
+	outputln("{");
 	output("\tif (");
 	output(clazzName);
-	output("Fc.cached) return;");
-	outputln();
+	outputln("Fc.cached) return;");
 	Class superclazz = clazz.getSuperclass();
 	if (superclazz != Object.class) {
 		String superName = getClassName(superclazz);
 		output("\tcache");
 		output(superName);
-		output("Fields(env, lpObject);");
-		outputln();
+		outputln("Fields(env, lpObject);");
 	}
 	output("\t");
 	output(clazzName);
@@ -255,15 +231,12 @@ void generateCacheFunction(Class clazz) {
 		output(field.getName());
 		output("\", \"");
 		output(getTypeSignature(field.getType()));
-		output("\");");
-		outputln();
+		outputln("\");");
 	}
 	output("\t");
 	output(clazzName);
-	output("Fc.cached = 1;");
-	outputln();
-	output("}");
-	outputln();
+	outputln("Fc.cached = 1;");
+	outputln("}");
 }
 
 void generateGetFields(Class clazz) {
@@ -277,8 +250,7 @@ void generateGetFields(Class clazz) {
 			output(superName);
 			output("Fields(env, lpObject, (");
 			output(superName);
-			output(" *)lpStruct);");
-			outputln();
+			outputln(" *)lpStruct);");
 		} else {
 			generateGetFields(superclazz);
 		}
@@ -290,13 +262,11 @@ void generateGetFields(Class clazz) {
 		FieldData fieldData = getMetaData().getMetaData(field);
 		String exclude = fieldData.getExclude();
 		if (exclude.length() != 0) {
-			output(exclude);
-			outputln();
+			outputln(exclude);
 		}
 		boolean noWinCE = fieldData.getFlag("no_wince");
 		if (noWinCE) {
-			output("#ifndef _WIN32_WCE");
-			outputln();
+			outputln("#ifndef _WIN32_WCE");
 		}
 		Class type = field.getType();
 		String typeName = getClassName(type);
@@ -325,8 +295,7 @@ void generateGetFields(Class clazz) {
 		} else if (type.isArray()) {
 			Class componentType = type.getComponentType();
 			if (componentType.isPrimitive()) {
-				output("\t{");
-				outputln();
+				outputln("\t{");
 				output("\t");				
 				output(getTypeSignature2(field.getType()));
 				output(" lpObject1 = (");
@@ -339,8 +308,7 @@ void generateGetFields(Class clazz) {
 				output(getClassName(field.getDeclaringClass()));
 				output("Fc.");
 				output(field.getName());
-				output(");");
-				outputln();
+				outputln(");");
 				if (isCPP) {
 					output("\tenv->Get");
 				} else {
@@ -363,15 +331,13 @@ void generateGetFields(Class clazz) {
 				output(getTypeSignature4(type));				
 				output(")lpStruct->");
 				output(accessor);
-				output(");");
-				outputln();
+				outputln(");");
 				output("\t}");
 			} else {
 				throw new Error("not done");
 			}
 		} else {
-			output("\t{");
-			outputln();
+			outputln("\t{");
 			if (isCPP) {
 				output("\tjobject lpObject1 = env->GetObjectField(lpObject, ");
 			} else {
@@ -380,24 +346,20 @@ void generateGetFields(Class clazz) {
 			output(getClassName(field.getDeclaringClass()));
 			output("Fc.");
 			output(field.getName());
-			output(");");
-			outputln();
+			outputln(");");
 			output("\tget");
 			output(typeName);
 			output("Fields(env, lpObject1, &lpStruct->");
 			output(accessor);
-			output(");");
-			outputln();
+			outputln(");");
 			output("\t}");
 		}
 		outputln();
 		if (noWinCE) {
-			output("#endif");
-			outputln();
+			outputln("#endif");
 		}
 		if (exclude.length() != 0) {
-			output("#endif");
-			outputln();
+			outputln("#endif");
 		}
 	}
 }
@@ -409,21 +371,16 @@ void generateGetFunction(Class clazz) {
 	output(clazzName);
 	output("Fields(JNIEnv *env, jobject lpObject, ");
 	output(clazzName);
-	output(" *lpStruct)");
-	outputln();
-	output("{");
-	outputln();
+	outputln(" *lpStruct)");
+	outputln("{");
 	output("\tif (!");
 	output(clazzName);
 	output("Fc.cached) cache");
 	output(clazzName);
-	output("Fields(env, lpObject);");
-	outputln();
+	outputln("Fields(env, lpObject);");
 	generateGetFields(clazz);
-	output("\treturn lpStruct;");
-	outputln();
-	output("}");
-	outputln();
+	outputln("\treturn lpStruct;");
+	outputln("}");
 }
 
 void generateSetFields(Class clazz) {
@@ -437,8 +394,7 @@ void generateSetFields(Class clazz) {
 			output(superName);
 			output("Fields(env, lpObject, (");
 			output(superName);
-			output(" *)lpStruct);");
-			outputln();
+			outputln(" *)lpStruct);");
 		} else {
 			generateSetFields(superclazz);
 		}
@@ -450,13 +406,11 @@ void generateSetFields(Class clazz) {
 		FieldData fieldData = getMetaData().getMetaData(field);
 		String exclude = fieldData.getExclude();
 		if (exclude.length() != 0) {
-			output(exclude);
-			outputln();
+			outputln(exclude);
 		}
 		boolean noWinCE = fieldData.getFlag("no_wince");
 		if (noWinCE) {
-			output("#ifndef _WIN32_WCE");
-			outputln();
+			outputln("#ifndef _WIN32_WCE");
 		}
 		Class type = field.getType();
 		String typeName = getClassName(type);
@@ -485,8 +439,7 @@ void generateSetFields(Class clazz) {
 		} else if (type.isArray()) {
 			Class componentType = type.getComponentType();
 			if (componentType.isPrimitive()) {
-				output("\t{");
-				outputln();
+				outputln("\t{");
 				output("\t");				
 				output(getTypeSignature2(field.getType()));
 				output(" lpObject1 = (");
@@ -499,8 +452,7 @@ void generateSetFields(Class clazz) {
 				output(getClassName(field.getDeclaringClass()));
 				output("Fc.");
 				output(field.getName());
-				output(");");
-				outputln();
+				outputln(");");
 				if (isCPP) {
 					output("\tenv->Set");
 				} else {
@@ -523,37 +475,31 @@ void generateSetFields(Class clazz) {
 				output(getTypeSignature4(type));				
 				output(")lpStruct->");
 				output(accessor);
-				output(");");
-				outputln();
+				outputln(");");
 				output("\t}");
 			} else {
 				throw new Error("not done");
 			}
 		} else {
-			output("\t{");
-			outputln();
+			outputln("\t{");
 			output("\tjobject lpObject1 = (*env)->GetObjectField(env, lpObject, ");
 			output(getClassName(field.getDeclaringClass()));
 			output("Fc.");
 			output(field.getName());
-			output(");");
-			outputln();
+			outputln(");");
 			output("\tset");
 			output(typeName);
 			output("Fields(env, lpObject1, &lpStruct->");
 			output(accessor);
-			output(");");
-			outputln();
+			outputln(");");
 			output("\t}");
 		}
 		outputln();
 		if (noWinCE) {
-			output("#endif");
-			outputln();
+			outputln("#endif");
 		}
 		if (exclude.length() != 0) {
-			output("#endif");
-			outputln();
+			outputln("#endif");
 		}
 	}
 }
@@ -564,19 +510,15 @@ void generateSetFunction(Class clazz) {
 	output(clazzName);
 	output("Fields(JNIEnv *env, jobject lpObject, ");
 	output(clazzName);
-	output(" *lpStruct)");
-	outputln();
-	output("{");
-	outputln();
+	outputln(" *lpStruct)");
+	outputln("{");
 	output("\tif (!");
 	output(clazzName);
 	output("Fc.cached) cache");
 	output(clazzName);
-	output("Fields(env, lpObject);");
-	outputln();
+	outputln("Fields(env, lpObject);");
 	generateSetFields(clazz);
-	output("}");
-	outputln();
+	outputln("}");
 }
 
 void generateFunctions(Class clazz) {
