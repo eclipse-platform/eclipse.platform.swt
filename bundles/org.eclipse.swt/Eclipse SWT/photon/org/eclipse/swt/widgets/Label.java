@@ -298,7 +298,7 @@ public void setText (String string) {
 		ptr2 = OS.malloc (buffer2.length);
 		OS.memmove (ptr2, buffer2, buffer2.length);
 	}
-	replaceMnemonic (mnemonic, 0);
+	replaceMnemonic (mnemonic, true, true);
 	int [] args = {
 		OS.Pt_ARG_TEXT_STRING, ptr, 0,
 		OS.Pt_ARG_LABEL_TYPE, OS.Pt_Z_STRING, 0,

@@ -424,7 +424,7 @@ public void removeDisposeListener (DisposeListener listener) {
 	eventTable.unhook (SWT.Dispose, listener);
 }
 
-void replaceMnemonic (int mnemonic, int mods) {
+void replaceMnemonic (int mnemonic, boolean normal, boolean alt) {
 	Display display = getDisplay ();
 	int [] args = {OS.Pt_ARG_ACCEL_KEY, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
@@ -436,13 +436,23 @@ void replaceMnemonic (int mnemonic, int mods) {
 			char [] accelText = Converter.mbcsToWcs (null, buffer);
 			if (accelText.length > 0) {
 				char key = Character.toLowerCase (accelText [0]);
-				OS.PtRemoveHotkeyHandler (handle, key, 0, (short)0, SWT.Activate, display.windowProc);
+				if (normal) {
+					OS.PtRemoveHotkeyHandler (handle, key, 0, (short)0, SWT.Activate, display.windowProc);
+				}
+				if (alt) {
+					OS.PtRemoveHotkeyHandler (handle, key, OS.Pk_KM_Alt, (short)0, SWT.Activate, display.windowProc);
+				}
 			}
 		}
 	}
 	if (mnemonic == 0) return;
 	char key = Character.toLowerCase ((char)mnemonic);
-	OS.PtAddHotkeyHandler (handle, key, mods, (short)0, SWT.Activate, display.windowProc);
+	if (normal) {
+		OS.PtAddHotkeyHandler (handle, key, 0, (short)0, SWT.Activate, display.windowProc);
+	}
+	if (alt) {
+		OS.PtAddHotkeyHandler (handle, key, OS.Pk_KM_Alt, (short)0, SWT.Activate, display.windowProc);
+	}
 }
 
 void sendEvent (int eventType) {

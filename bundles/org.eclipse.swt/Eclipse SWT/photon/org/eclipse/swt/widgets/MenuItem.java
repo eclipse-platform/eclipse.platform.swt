@@ -396,7 +396,7 @@ public void setText (String string) {
 		OS.memmove (ptr3, buffer3, buffer3.length);
 	}
 	if ((parent.style & SWT.BAR) != 0) {
-		replaceMnemonic (mnemonic, OS.Pk_KM_Alt);
+		replaceMnemonic (mnemonic, false, true);
 	}
 	int [] args = {
 		OS.Pt_ARG_TEXT_STRING, ptr1, 0,
