@@ -40,7 +40,7 @@ import org.eclipse.swt.internal.carbon.PMResolution;
 public final class Printer extends Device {
 	PrinterData data;
 	int printSession, printSettings, pageFormat;
-	boolean inPage;
+	boolean inPage, isGCCreated;
 	int context;
 	int colorspace;
 
@@ -324,9 +324,13 @@ protected void destroy() {
 public int internal_new_GC(GCData data) {
 	checkDevice();
 	setupNewPage();
-	data.device = this;
-	data.background = getSystemColor(SWT.COLOR_WHITE).handle;
-	data.foreground = getSystemColor(SWT.COLOR_BLACK).handle;
+	if (data != null) {
+		if (isGCCreated) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		data.device = this;
+		data.background = getSystemColor(SWT.COLOR_WHITE).handle;
+		data.foreground = getSystemColor(SWT.COLOR_BLACK).handle;
+		isGCCreated = true;
+	}
 	return context;
 }
 
@@ -351,6 +355,7 @@ protected void init () {
  */
 public void internal_dispose_GC(int context, GCData data) {
 	checkDevice();
+	if (data != null) isGCCreated = false;
 }
 
 protected void release () {
