@@ -19,22 +19,22 @@ import org.eclipse.swt.graphics.*;
  * 
  * @since 2.2
  */
-public final class Monitor {	
-	
-	int screen_number;
+public final class Monitor {
+	int handle;
 	int x, y, width, height;
-
+	int clientX, clientY, clientWidth, clientHeight;
+	
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
-Monitor() {	
+Monitor () {	
 }
 	
 public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Monitor)) return false;
-	Monitor monitor = (Monitor)object;
-	return screen_number == monitor.screen_number;
+	Monitor monitor = (Monitor) object;
+	return handle == monitor.handle;
 }
 
 /**
@@ -54,11 +54,11 @@ public Rectangle getBounds () {
  * @return the client area
  */
 public Rectangle getClientArea () {
-	return getBounds ();
+	return new Rectangle (clientX, clientY, clientWidth, clientHeight);
 }
 	
 public int hashCode () {
-	return screen_number;
+	return handle;
 }
 
 }

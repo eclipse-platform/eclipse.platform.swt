@@ -1104,11 +1104,15 @@ public Monitor [] getMonitors () {
 					Monitor monitor = new Monitor ();
 					OS.memmove (info, address, XineramaScreenInfo.sizeof);
 					address += XineramaScreenInfo.sizeof;
-					monitor.screen_number = info.screen_number;
+					monitor.handle = info.screen_number;
 					monitor.x = info.x_org;
 					monitor.y = info.y_org;
 					monitor.width = info.width;
 					monitor.height = info.height;
+					monitor.clientX = monitor.x;
+					monitor.clientY = monitor.y;
+					monitor.clientWidth = monitor.width;
+					monitor.clientHeight = monitor.height;
 					monitors [i] = monitor;
 				}
 			}
@@ -1118,12 +1122,15 @@ public Monitor [] getMonitors () {
 	if (monitors == null) {
 		/* No multimonitor support detected, default to one monitor */
 		Monitor monitor = new Monitor ();
-		monitor.screen_number = 0;
 		Rectangle bounds = getBounds ();
 		monitor.x = bounds.x;
 		monitor.y = bounds.y;
 		monitor.width = bounds.width;
 		monitor.height = bounds.height;
+		monitor.clientX = monitor.x;
+		monitor.clientY = monitor.y;
+		monitor.clientWidth = monitor.width;
+		monitor.clientHeight = monitor.height;		
 		monitors = new Monitor [] { monitor };			
 	}
 	return monitors;
@@ -1149,11 +1156,15 @@ public Monitor getPrimaryMonitor () {
 				monitor = new Monitor ();
 				XineramaScreenInfo info = new XineramaScreenInfo ();
 				OS.memmove (info, ptr, XineramaScreenInfo.sizeof);
-				monitor.screen_number = info.screen_number;
+				monitor.handle = info.screen_number;
 				monitor.x = info.x_org;
 				monitor.y = info.y_org;
 				monitor.width = info.width;
 				monitor.height = info.height;
+				monitor.clientX = monitor.x;
+				monitor.clientY = monitor.y;
+				monitor.clientWidth = monitor.width;
+				monitor.clientHeight = monitor.height;
 			}
 			if (ptr != 0) OS.XFree (ptr);
 		}
@@ -1161,12 +1172,15 @@ public Monitor getPrimaryMonitor () {
 	if (monitor == null) {
 		/* No multimonitor support detected, default to one monitor */
 		monitor = new Monitor ();
-		monitor.screen_number = 0;
 		Rectangle bounds = getBounds ();
 		monitor.x = bounds.x;
 		monitor.y = bounds.y;
 		monitor.width = bounds.width;
 		monitor.height = bounds.height;
+		monitor.clientX = monitor.x;
+		monitor.clientY = monitor.y;
+		monitor.clientWidth = monitor.width;
+		monitor.clientHeight = monitor.height;
 	}
 	return monitor;		
 }
