@@ -283,45 +283,64 @@ public String open () {
 		int byteCount1 = buffer.length () * TCHAR.sizeof;
 		OS.MoveMemory (buffer, lpstrFile, byteCount1);
 		
-		/* Use the character encoding for the default locale */
-		TCHAR prefix = new TCHAR (0, struct.nFileOffset - 1);
-		int byteCount2 = prefix.length () * TCHAR.sizeof;
-		OS.MoveMemory (prefix, lpstrFile, byteCount2);
-		filterPath = prefix.toString (0, prefix.length ());
-		
 		/*
-		* Get each file from the buffer.  Files are delimited
-		* by a NULL character with 2 NULL characters at the end.
+		* Bug in WinCE HPC.  For some reason, nFileOffset and
+		* nFileExtension are always zero.  The fix is to parse
+		* lpstrFile to calculate nFileOffset.  Note: WinCE does
+		* not support multiple selection.
 		*/
-		int count = 0;
-		fileNames = new String [(style & SWT.MULTI) != 0 ? 4 : 1];
-		int start = struct.nFileOffset;
-		do {
-			int end = start;
-			while (end < buffer.length () && buffer.tcharAt (end) != 0) end++;
-			String string = buffer.toString (start, end - start);
-			start = end;
-			if (count == fileNames.length) {
-				String [] newFileNames = new String [fileNames.length + 4];
-				System.arraycopy (fileNames, 0, newFileNames, 0, fileNames.length);
+		int nFileOffset = struct.nFileOffset;
+		if (OS.IsHPC && nFileOffset == 0) {
+			int index = 0; 
+			while (index < buffer.length ()) {
+				int ch = buffer.tcharAt (index);
+				if (ch == 0) break;
+				if (ch == '\\') nFileOffset = index;
+				index++;
+			}
+		}
+		if (nFileOffset != 0) {
+		
+			/* Use the character encoding for the default locale */
+			TCHAR prefix = new TCHAR (0, nFileOffset - 1);
+			int byteCount2 = prefix.length () * TCHAR.sizeof;
+			OS.MoveMemory (prefix, lpstrFile, byteCount2);
+			filterPath = prefix.toString (0, prefix.length ());
+			
+			/*
+			* Get each file from the buffer.  Files are delimited
+			* by a NULL character with 2 NULL characters at the end.
+			*/
+			int count = 0;
+			fileNames = new String [(style & SWT.MULTI) != 0 ? 4 : 1];
+			int start = nFileOffset;
+			do {
+				int end = start;
+				while (end < buffer.length () && buffer.tcharAt (end) != 0) end++;
+				String string = buffer.toString (start, end - start);
+				start = end;
+				if (count == fileNames.length) {
+					String [] newFileNames = new String [fileNames.length + 4];
+					System.arraycopy (fileNames, 0, newFileNames, 0, fileNames.length);
+					fileNames = newFileNames;
+				}
+				fileNames [count++] = string;
+				if ((style & SWT.MULTI) == 0) break;
+				start++;
+			} while (start < buffer.length () && buffer.tcharAt (start) != 0);
+			
+			if (fileNames.length > 0) fileName = fileNames  [0];
+			String separator = "";
+			int length = filterPath.length ();
+			if (length > 0 && filterPath.charAt (length - 1) != '\\') {
+				separator = "\\";
+			}
+			fullPath = filterPath + separator + fileName;
+			if (count < fileNames.length) {
+				String [] newFileNames = new String [count];
+				System.arraycopy (fileNames, 0, newFileNames, 0, count);
 				fileNames = newFileNames;
 			}
-			fileNames [count++] = string;
-			if ((style & SWT.MULTI) == 0) break;
-			start++;
-		} while (start < buffer.length () && buffer.tcharAt (start) != 0);
-		
-		if (fileNames.length > 0) fileName = fileNames  [0];
-		String separator = "";
-		int length = filterPath.length ();
-		if (length > 0 && filterPath.charAt (length - 1) != '\\') {
-			separator = "\\";
-		}
-		fullPath = filterPath + separator + fileName;
-		if (count < fileNames.length) {
-			String [] newFileNames = new String [count];
-			System.arraycopy (fileNames, 0, newFileNames, 0, count);
-			fileNames = newFileNames;
 		}
 	}
 	
