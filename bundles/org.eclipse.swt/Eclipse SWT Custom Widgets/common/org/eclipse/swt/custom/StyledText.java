@@ -2104,15 +2104,17 @@ void doPageDown(boolean select) {
 	int line = content.getLineAtOffset(caretOffset);
 	int lineCount = content.getLineCount();
 	
-	if (line < lineCount) {
-		int lineOffset = content.getOffsetAtLine(line);	
-		int offsetInLine = caretOffset - lineOffset;
+	if (line < lineCount - 1) {
+		int offsetInLine = caretOffset - content.getOffsetAtLine(line);
 		int verticalMaximum = content.getLineCount() * getVerticalIncrement();
 		int pageSize = getClientArea().height;
-		int scrollLines = Math.min(lineCount - line - 1, getLineCountWhole() - 1);
+		int scrollLines = Math.min(lineCount - line - 1, getLineCountWhole());
 		int scrollOffset;
 		int caretX = getXAtOffset(content.getLine(line), line, offsetInLine);
 		
+		// ensure that scrollLines never gets negative and at leat one line is scrolled. 
+		// fixes bug 5602.
+		scrollLines = Math.max(1, scrollLines);
 		line += scrollLines;
 		if (isBidi()) {
 			caretOffset = getBidiOffsetAtMouseLocation(caretX, line);
@@ -2140,12 +2142,11 @@ void doPageDown(boolean select) {
  * Moves the cursor to the end of the last fully visible line.
  */
 void doPageEnd() {
-	int line = content.getLineAtOffset(caretOffset);
-	int lineCount = content.getLineCount();
+	int line = getBottomIndex();
+	int bottomCaretOffset = content.getOffsetAtLine(line) + content.getLine(line).length();
 	
-	if (line < lineCount) {
-		line = getBottomIndex();
-		caretOffset = content.getOffsetAtLine(line) + content.getLine(line).length();
+	if (caretOffset < bottomCaretOffset) {
+		caretOffset = bottomCaretOffset;
 		showCaret();
 	}
 }
@@ -2153,8 +2154,10 @@ void doPageEnd() {
  * Moves the cursor to the beginning of the first fully visible line.
  */
 void doPageStart() {
-	if (content.getLineAtOffset(caretOffset) > topIndex) {
-		caretOffset = content.getOffsetAtLine(topIndex);
+	int topCaretOffset = content.getOffsetAtLine(topIndex);
+	
+	if (caretOffset > topCaretOffset) {
+		caretOffset = topCaretOffset;
 		showCaret();
 	}
 }
@@ -2170,9 +2173,8 @@ void doPageUp() {
 	int line = content.getLineAtOffset(caretOffset);
 
 	if (line > 0) {	
-		int lineOffset = content.getOffsetAtLine(line);	
-		int offsetInLine = caretOffset - lineOffset;
-		int scrollLines = Math.min(line, getLineCountWhole() - 1);
+		int offsetInLine = caretOffset - content.getOffsetAtLine(line);
+		int scrollLines = Math.max(1, Math.min(line, getLineCountWhole()));
 		int scrollOffset;
 		int caretX = getXAtOffset(content.getLine(line), line, offsetInLine);
 		
@@ -2791,7 +2793,7 @@ int[] getBoldRanges(StyleRange[] styles, int lineOffset, int lineLength) {
  * @return index of the last fully visible line.
  */
 int getBottomIndex() {
-	return Math.min(content.getLineCount(), topIndex + getLineCountWhole()) - 1;
+	return Math.max(0, Math.min(content.getLineCount(), topIndex + getLineCountWhole()) - 1);
 }
 /**
  * Returns the caret position relative to the start of the text.
