@@ -1147,6 +1147,10 @@ Menu getMenuBar () {
 	return menuBar;
 }
 
+int getMessageCount () {
+	return synchronizer.getMessageCount ();
+}
+
 /**
  * Returns an array of monitors attached to the device.
  * 
@@ -2513,6 +2517,7 @@ void setMenuBar (Menu menu) {
  */
 public boolean sleep () {
 	checkDevice ();
+	if (getMessageCount () != 0) return false;
 	allowTimers = false;
 	boolean result = OS.ReceiveNextEvent (0, null, OS.kEventDurationForever, false, null) == OS.noErr;
 	allowTimers = true;
