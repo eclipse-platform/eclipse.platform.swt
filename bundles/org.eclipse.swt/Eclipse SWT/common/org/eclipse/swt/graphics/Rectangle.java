@@ -182,10 +182,7 @@ public Rectangle intersection (Rectangle rect) {
 	lhs = y + height;
 	rhs = rect.y + rect.height;
 	int bottom = lhs < rhs ? lhs : rhs;
-	return new Rectangle (
-		left, top,
-		right < left ? 0 : right - left,
-		bottom < top ? 0 : bottom - top);
+	return new Rectangle (left, top, right - left, bottom - top);
 }
 
 /**
