@@ -1274,7 +1274,7 @@ public void setText (String string) {
 	/* Set the title for the shell */
 	int ptr = OS.XtMalloc (buffer2.length + 1);
 	OS.memmove (ptr, buffer2, buffer2.length);
-	int [] argList = {OS.XmNtitle, ptr};
+	int [] argList = {OS.XmNtitle, ptr, OS.XmNiconName, ptr};
 	OS.XtSetValues (shellHandle, argList, argList.length / 2);
 	OS.XtFree (ptr);
 }

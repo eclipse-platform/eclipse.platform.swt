@@ -376,6 +376,7 @@ public class OS {
 	public static final int XmNhighlightThickness = malloc ("highlightThickness", 2);
 	public static final int XmNhorizontalScrollBar = malloc ("horizontalScrollBar", 4);
 	public static final int XmNiconMask = malloc ("iconMask", 4);
+	public static final int XmNiconName = malloc ("iconName", 4);
 	public static final int XmNiconPixmap = malloc ("iconPixmap", 4);
 	public static final int XmNiconic = malloc ("iconic", 1);
 	public static final int XmNimportTargets = malloc("importTargets", 4);
