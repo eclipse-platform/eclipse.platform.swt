@@ -164,7 +164,7 @@ void setPhPointerEvent_tFields(JNIEnv *env, jobject lpObject, PhPointerEvent_t *
 typedef struct PhKeyEvent_t_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID key_flags, key_mods, key_sym, key_cap, key_scan, key_zero1, key_zero2, pos_x, pos_y, button_state;
+	jfieldID key_flags, key_mods, key_sym, key_cap, key_scan, key_zero, pos_x, pos_y, button_state;
 } PhKeyEvent_t_FID_CACHE;
 typedef PhKeyEvent_t_FID_CACHE *PPhKeyEvent_t_FID_CACHE;
 

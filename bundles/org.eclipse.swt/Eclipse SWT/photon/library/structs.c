@@ -431,9 +431,8 @@ void cachePhKeyEvent_tFids(JNIEnv *env, jobject lpObject, PPhKeyEvent_t_FID_CACH
 	lpCache->key_mods = (*env)->GetFieldID(env, lpCache->clazz, "key_mods", "I");
 	lpCache->key_sym = (*env)->GetFieldID(env, lpCache->clazz, "key_sym", "I");
 	lpCache->key_cap = (*env)->GetFieldID(env, lpCache->clazz, "key_cap", "I");
-	lpCache->key_scan = (*env)->GetFieldID(env, lpCache->clazz, "key_scan", "B");
-	lpCache->key_zero1 = (*env)->GetFieldID(env, lpCache->clazz, "key_zero1", "B");
-	lpCache->key_zero2 = (*env)->GetFieldID(env, lpCache->clazz, "key_zero2", "S");
+	lpCache->key_scan = (*env)->GetFieldID(env, lpCache->clazz, "key_scan", "S");
+	lpCache->key_zero = (*env)->GetFieldID(env, lpCache->clazz, "key_zero", "S");
 	lpCache->pos_x = (*env)->GetFieldID(env, lpCache->clazz, "pos_x", "S");
 	lpCache->pos_y = (*env)->GetFieldID(env, lpCache->clazz, "pos_y", "S");
 	lpCache->button_state = (*env)->GetFieldID(env, lpCache->clazz, "button_state", "S");
@@ -446,9 +445,10 @@ void getPhKeyEvent_tFields(JNIEnv *env, jobject lpObject, PhKeyEvent_t *lpStruct
 	lpStruct->key_mods = (*env)->GetIntField(env, lpObject, lpCache->key_mods);
 	lpStruct->key_sym = (*env)->GetIntField(env, lpObject, lpCache->key_sym);
 	lpStruct->key_cap = (*env)->GetIntField(env, lpObject, lpCache->key_cap);
-	lpStruct->key_scan = (*env)->GetByteField(env, lpObject, lpCache->key_scan);
-	lpStruct->key_zero1 = (*env)->GetByteField(env, lpObject, lpCache->key_zero1);
-	lpStruct->key_zero2 = (*env)->GetShortField(env, lpObject, lpCache->key_zero2);
+	lpStruct->key_scan = (*env)->GetShortField(env, lpObject, lpCache->key_scan);
+#if _NTO_VERSION+0 >= 610
+	lpStruct->key_zero = (*env)->GetShortField(env, lpObject, lpCache->key_zero);
+#endif
 	lpStruct->pos.x = (*env)->GetShortField(env, lpObject, lpCache->pos_x);
 	lpStruct->pos.y = (*env)->GetShortField(env, lpObject, lpCache->pos_y);
 	lpStruct->button_state = (*env)->GetShortField(env, lpObject, lpCache->button_state);
@@ -460,9 +460,10 @@ void setPhKeyEvent_tFields(JNIEnv *env, jobject lpObject, PhKeyEvent_t *lpStruct
 	(*env)->SetIntField(env, lpObject, lpCache->key_mods, lpStruct->key_mods);
 	(*env)->SetIntField(env, lpObject, lpCache->key_sym, lpStruct->key_sym);
 	(*env)->SetIntField(env, lpObject, lpCache->key_cap, lpStruct->key_cap);
-	(*env)->SetByteField(env, lpObject, lpCache->key_scan, lpStruct->key_scan);
-	(*env)->SetByteField(env, lpObject, lpCache->key_zero1, lpStruct->key_zero1);
-	(*env)->SetShortField(env, lpObject, lpCache->key_zero2, lpStruct->key_zero2);
+	(*env)->SetShortField(env, lpObject, lpCache->key_scan, lpStruct->key_scan);
+#if _NTO_VERSION+0 >= 610
+	(*env)->SetShortField(env, lpObject, lpCache->key_zero, lpStruct->key_zero);
+#endif
 	(*env)->SetShortField(env, lpObject, lpCache->pos_x, lpStruct->pos.x);
 	(*env)->SetShortField(env, lpObject, lpCache->pos_y, lpStruct->pos.y);
 	(*env)->SetShortField(env, lpObject, lpCache->button_state, lpStruct->button_state);
