@@ -3499,7 +3499,13 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	sendMouseEvent (SWT.MouseDown, 1, OS.WM_LBUTTONDOWN, wParam, lParam);
 	int result = callWindowProc (OS.WM_LBUTTONDOWN, wParam, lParam);	
 	if (OS.IsPPC) {
-		if (menu != null && !menu.isDisposed ()) {
+		boolean hasPopup = menu != null && !menu.isDisposed ();
+		/*
+		* Note on WinCE PPC.  Detect the gesture for a popup menu
+		* only if a valid menu has been set or if there are
+		* registered listeners for the MenuDetect event.
+		*/
+		if (hasPopup || hooks (SWT.MenuDetect)) {
 			int x = (short) (lParam & 0xFFFF);
 			int y = (short) (lParam >> 16);
 			SHRGINFO shrg = new SHRGINFO ();
@@ -3514,7 +3520,9 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 				event.x = x;
 				event.y = y;
 				sendEvent (SWT.MenuDetect, event);
-				if (event.doit) menu.setVisible (true);
+				if (event.doit && hasPopup) {
+					menu.setVisible (true); 
+				} 
 			}
 		}
 	}
