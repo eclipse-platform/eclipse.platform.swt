@@ -58,7 +58,11 @@ public class MenuItem extends Item {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#CHECK
+ * @see CASCADE
+ * @see PUSH
+ * @see RADIO
+ * @see SEPARATOR
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -95,7 +99,11 @@ public MenuItem (Menu parent, int style) {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#CHECK
+ * @see CASCADE
+ * @see PUSH
+ * @see RADIO
+ * @see SEPARATOR
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */

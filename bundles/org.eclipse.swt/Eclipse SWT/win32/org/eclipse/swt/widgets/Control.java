@@ -72,7 +72,7 @@ Control () {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#BORDER
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -138,9 +138,9 @@ public void addFocusListener (FocusListener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the help events are generated for the control, by sending
- * it one of the messages defined in the <code>HelpListener</code>
- * interface.
+ * be notified when help events are generated for the control,
+ * by sending it one of the messages defined in the
+ * <code>HelpListener</code> interface.
  *
  * @param listener the listener which should be notified
  *

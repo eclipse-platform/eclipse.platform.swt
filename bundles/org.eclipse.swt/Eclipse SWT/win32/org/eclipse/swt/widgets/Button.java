@@ -76,7 +76,16 @@ public class Button extends Control {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#ARROW
+ * @see SWT#CHECK
+ * @see SWT#PUSH
+ * @see SWT#RADIO
+ * @see SWT#TOGGLE
+ * @see SWT#FLAT
+ * @see SWT#LEFT
+ * @see SWT#RIGHT
+ * @see SWT#CENTER
+ * @see "style bits inherited from superclasses"
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */

@@ -142,9 +142,9 @@ public Menu (MenuItem parentItem) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the help events are generated for the control, by sending
- * it one of the messages defined in the <code>HelpListener</code>
- * interface.
+ * be notified when help events are generated for the control,
+ * by sending it one of the messages defined in the
+ * <code>HelpListener</code> interface.
  *
  * @param listener the listener which should be notified
  *
@@ -168,8 +168,8 @@ public void addHelpListener (HelpListener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the help events are generated for the control, by sending
- * it one of the messages defined in the <code>MenuListener</code>
+ * be notified when menus are hidden or shown, by sending it
+ * one of the messages defined in the <code>MenuListener</code>
  * interface.
  *
  * @param listener the listener which should be notified
