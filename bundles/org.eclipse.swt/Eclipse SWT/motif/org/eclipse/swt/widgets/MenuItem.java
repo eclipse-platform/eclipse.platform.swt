@@ -290,7 +290,7 @@ void createHandle (int index) {
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		int indicatorType = OS.XmONE_OF_MANY;
 		if ((style & SWT.CHECK) != 0) indicatorType = OS.XmN_OF_MANY;
-		int [] argList2 = {OS.XmNindicatorType, indicatorType};
+		int [] argList2 = {OS.XmNindicatorType, indicatorType, OS.XmNmarginHeight, 0};
 		OS.XtSetValues (handle, argList2, argList2.length / 2);
 		return;
 	}
