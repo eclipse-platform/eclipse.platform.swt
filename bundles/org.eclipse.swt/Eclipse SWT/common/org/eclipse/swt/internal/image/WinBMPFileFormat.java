@@ -16,9 +16,11 @@ import org.eclipse.swt.graphics.*;
 import java.io.*;
 
 final class WinBMPFileFormat extends FileFormat {
+	static final int BMPFileHeaderSize = 14;
+	static final int BMPHeaderFixedSize = 40;
+	int width, height, bitCount;
 	int importantColors;
 	Point pelsPerMeter = new Point(0, 0);
-	public static final int BMPHeaderFixedSize = 40;
 
 /**
  * Compress numBytes bytes of image data from src, storing in dest
@@ -321,18 +323,16 @@ int decompressRLE8Data(byte[] src, int numBytes, int stride, byte[] dest, int de
 }
 boolean isFileFormat(LEDataInputStream stream) {
 	try {
-		byte[] header = new byte[2];
+		byte[] header = new byte[18];
 		stream.read(header);
 		stream.unread(header);
-		return header[0] == 0x42 && header[1] == 0x4D;
+		int infoHeaderSize = (header[14] & 0xFF) | ((header[15] & 0xFF) << 8) | ((header[16] & 0xFF) << 16) | ((header[17] & 0xFF) << 24);
+		return header[0] == 0x42 && header[1] == 0x4D && infoHeaderSize >= BMPHeaderFixedSize;
 	} catch (Exception e) {
 		return false;
 	}
 }
 byte[] loadData(byte[] infoHeader) {
-	int width = (infoHeader[4] & 0xFF) | ((infoHeader[5] & 0xFF) << 8) | ((infoHeader[6] & 0xFF) << 16) | ((infoHeader[7] & 0xFF) << 24);
-	int height = (infoHeader[8] & 0xFF) | ((infoHeader[9] & 0xFF) << 8) | ((infoHeader[10] & 0xFF) << 16) | ((infoHeader[11] & 0xFF) << 24);
-	int bitCount = (infoHeader[14] & 0xFF) | ((infoHeader[15] & 0xFF) << 8);
 	int stride = (width * bitCount + 7) / 8;
 	stride = (stride + 3) / 4 * 4; // Round up to 4 byte multiple
 	byte[] data = loadData(infoHeader, stride);
@@ -340,7 +340,6 @@ byte[] loadData(byte[] infoHeader) {
 	return data;
 }
 byte[] loadData(byte[] infoHeader, int stride) {
-	int height = (infoHeader[8] & 0xFF) | ((infoHeader[9] & 0xFF) << 8) | ((infoHeader[10] & 0xFF) << 16) | ((infoHeader[11] & 0xFF) << 24);
 	int dataSize = height * stride;
 	byte[] data = new byte[dataSize];
 	int cmp = (infoHeader[16] & 0xFF) | ((infoHeader[17] & 0xFF) << 8) | ((infoHeader[18] & 0xFF) << 16) | ((infoHeader[19] & 0xFF) << 24);
@@ -387,6 +386,9 @@ ImageData[] loadFromByteStream() {
 	} catch (Exception e) {
 		SWT.error(SWT.ERROR_IO, e);
 	}
+	width = (infoHeader[4] & 0xFF) | ((infoHeader[5] & 0xFF) << 8) | ((infoHeader[6] & 0xFF) << 16) | ((infoHeader[7] & 0xFF) << 24);
+	height = (infoHeader[8] & 0xFF) | ((infoHeader[9] & 0xFF) << 8) | ((infoHeader[10] & 0xFF) << 16) | ((infoHeader[11] & 0xFF) << 24);
+	bitCount = (infoHeader[14] & 0xFF) | ((infoHeader[15] & 0xFF) << 8);
 	PaletteData palette = loadPalette(infoHeader);
 	if (inputStream.getPosition() < fileHeader[4]) {
 		// Seek to the specified offset
@@ -402,9 +404,6 @@ ImageData[] loadFromByteStream() {
 	int xPelsPerMeter = (infoHeader[24] & 0xFF) | ((infoHeader[25] & 0xFF) << 8) | ((infoHeader[26] & 0xFF) << 16) | ((infoHeader[27] & 0xFF) << 24);
 	int yPelsPerMeter = (infoHeader[28] & 0xFF) | ((infoHeader[29] & 0xFF) << 8) | ((infoHeader[30] & 0xFF) << 16) | ((infoHeader[31] & 0xFF) << 24);
 	this.pelsPerMeter = new Point(xPelsPerMeter, yPelsPerMeter);
-	int width = (infoHeader[4] & 0xFF) | ((infoHeader[5] & 0xFF) << 8) | ((infoHeader[6] & 0xFF) << 16) | ((infoHeader[7] & 0xFF) << 24);
-	int height = (infoHeader[8] & 0xFF) | ((infoHeader[9] & 0xFF) << 8) | ((infoHeader[10] & 0xFF) << 16) | ((infoHeader[11] & 0xFF) << 24);
-	int bitCount = (infoHeader[14] & 0xFF) | ((infoHeader[15] & 0xFF) << 8);
 	int type = (this.compression == 1 /*BMP_RLE8_COMPRESSION*/) || (this.compression == 2 /*BMP_RLE4_COMPRESSION*/) ? SWT.IMAGE_BMP_RLE : SWT.IMAGE_BMP;
 	return new ImageData[] {
 		ImageData.internal_new(
@@ -427,11 +426,10 @@ ImageData[] loadFromByteStream() {
 	};
 }
 PaletteData loadPalette(byte[] infoHeader) {
-	int depth = (infoHeader[14] & 0xFF) | ((infoHeader[15] & 0xFF) << 8);
-	if (depth <= 8) {
+	if (bitCount <= 8) {
 		int numColors = (infoHeader[32] & 0xFF) | ((infoHeader[33] & 0xFF) << 8) | ((infoHeader[34] & 0xFF) << 16) | ((infoHeader[35] & 0xFF) << 24);
 		if (numColors == 0) {
-			numColors = 1 << ((infoHeader[14] & 0xFF) | ((infoHeader[15] & 0xFF) << 8));
+			numColors = 1 << bitCount;
 		} else {
 			if (numColors > 256)
 				numColors = 256;
@@ -445,8 +443,8 @@ PaletteData loadPalette(byte[] infoHeader) {
 		}
 		return paletteFromBytes(buf, numColors);
 	}
-	if (depth == 16) return new PaletteData(0x7C00, 0x3E0, 0x1F);
-	if (depth == 24) return new PaletteData(0xFF, 0xFF00, 0xFF0000);
+	if (bitCount == 16) return new PaletteData(0x7C00, 0x3E0, 0x1F);
+	if (bitCount == 24) return new PaletteData(0xFF, 0xFF00, 0xFF0000);
 	return new PaletteData(0xFF00, 0xFF0000, 0xFF000000);
 }
 PaletteData paletteFromBytes(byte[] bytes, int numColors) {
@@ -590,7 +588,7 @@ void unloadIntoByteStream(ImageData image) {
 		rgbs = paletteToBytes(pal);
 	}
 	// Fill in file header, except for bfsize, which is done later.
-	int headersSize = 54;
+	int headersSize = BMPFileHeaderSize + BMPHeaderFixedSize;
 	int[] fileHeader = new int[5];
 	fileHeader[0] = 0x4D42;	// Signature
 	fileHeader[1] = 0; // File size - filled in later
@@ -605,10 +603,10 @@ void unloadIntoByteStream(ImageData image) {
 	// the stream and fill in the details later.
 	ByteArrayOutputStream out = new ByteArrayOutputStream();
 	unloadData(image, out, comp);
-	byte[] compressedData = out.toByteArray();
+	byte[] data = out.toByteArray();
 	
 	// Calculate file size
-	fileHeader[1] = fileHeader[4] + compressedData.length;
+	fileHeader[1] = fileHeader[4] + data.length;
 
 	// Write the headers
 	try {
@@ -621,13 +619,13 @@ void unloadIntoByteStream(ImageData image) {
 		SWT.error(SWT.ERROR_IO, e);
 	}
 	try {
-		outputStream.writeInt(WinBMPFileFormat.BMPHeaderFixedSize);
+		outputStream.writeInt(BMPHeaderFixedSize);
 		outputStream.writeInt(image.width);
 		outputStream.writeInt(image.height);
 		outputStream.writeShort(1);
 		outputStream.writeShort((short)image.depth);
 		outputStream.writeInt(comp);
-		outputStream.writeInt(compressedData.length);
+		outputStream.writeInt(data.length);
 		outputStream.writeInt(pelsPerMeter.x);
 		outputStream.writeInt(pelsPerMeter.y);
 		outputStream.writeInt(numCols);
@@ -647,7 +645,7 @@ void unloadIntoByteStream(ImageData image) {
 
 	// Unload the data
 	try {
-		outputStream.write(compressedData);
+		outputStream.write(data);
 	} catch (IOException e) {
 		SWT.error(SWT.ERROR_IO, e);
 	}

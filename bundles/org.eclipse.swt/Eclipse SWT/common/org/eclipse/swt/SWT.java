@@ -2414,6 +2414,11 @@ public class SWT {
 	public static final int IMAGE_TIFF = 6;
 
 	/**
+	 * Image format constant indicating an OS/2 BMP format image (value is 7).
+	 */
+	public static final int IMAGE_BMP_OS2 = 7;
+
+	/**
 	 * GIF image disposal method constants indicating that the
 	 * disposal method is unspecified (value is 0).
 	 */
