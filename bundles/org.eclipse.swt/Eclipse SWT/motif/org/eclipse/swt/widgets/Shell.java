@@ -1119,7 +1119,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		width = Math.max (width - trimWidth (), 1);
 		height = Math.max (height - trimHeight (), 1);
 	}
-	if (!reparented) {
+	if (!reparented || !OS.XtIsRealized (shellHandle)) {
 		return super.setBounds (x, y, width, height, move, resize);
 	}
 	if (!configured) saveBounds ();
