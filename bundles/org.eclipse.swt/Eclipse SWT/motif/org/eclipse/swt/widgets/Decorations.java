@@ -94,6 +94,7 @@ import org.eclipse.swt.graphics.*;
 public class Decorations extends Canvas {
 	String label;
 	Image image;
+	Image [] images = new Image [0];
 	int dialogHandle;
 	boolean minimized, maximized;
 	Menu menuBar;
@@ -270,6 +271,13 @@ public Image getImage () {
 	checkWidget();
 	return image;
 }
+public Image [] getImages () {
+	checkWidget ();
+	if (images == null) return new Image [0];
+	Image [] result = new Image [images.length];
+	System.arraycopy (images, 0, result, 0, images.length);
+	return result;
+}
 /**
  * Returns <code>true</code> if the receiver is currently
  * maximized, and false otherwise. 
@@ -371,6 +379,7 @@ void releaseWidget () {
 	menus = null;
 	super.releaseWidget ();
 	image = null;
+	images = null;
 	savedFocus = null;
 	defaultButton = saveDefault = null;
 	label = null;
@@ -498,6 +507,7 @@ public void setImages (Image [] images) {
 	for (int i = 0; i < images.length; i++) {
 		if (images [i] == null || images [i].isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	}
+	this.images = images;
 	_setImages (images);
 }
 
