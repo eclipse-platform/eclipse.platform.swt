@@ -545,6 +545,7 @@ public class OS {
 	public static final int LVM_GETSTRINGWIDTH = IsUnicode ? 0x1057 : 0x1011;
 	public static final int LVM_GETSUBITEMRECT = 0x1038;
 	public static final int LVM_GETTEXTCOLOR = 0x1023;
+	public static final int LVM_GETTOOLTIPS = 0x104e;
 	public static final int LVM_GETTOPINDEX = 0x1027;
 	public static final int LVM_HITTEST = 0x1012;
 	public static final int LVM_INSERTCOLUMN = IsUnicode ? 0x1061 : 0x101b;

@@ -2119,6 +2119,12 @@ public void showSelection () {
 	if (index != -1) showItem (index);
 }
 
+String toolTipText (NMTTDISPINFO hdr) {
+	int hwndToolTip = OS.SendMessage (handle, OS.LVM_GETTOOLTIPS, 0, 0);
+	if (hwndToolTip == hdr.hwndFrom && toolTipText != null) return ""; //$NON-NLS-1$
+	return super.toolTipText (hdr);
+}
+
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.LVS_SHAREIMAGELISTS | OS.WS_CLIPCHILDREN;
 	if ((style & SWT.HIDE_SELECTION) == 0) bits |= OS.LVS_SHOWSELALWAYS;
