@@ -271,7 +271,10 @@ public Image getImage (int index) {
 	lvItem.iItem = itemIndex;
 	lvItem.iSubItem = index;
 	if (OS.SendMessage (hwnd, OS.LVM_GETITEM, 0, lvItem) == 0) return null;
-	if (lvItem.iImage >= 0) return parent.imageList.get (lvItem.iImage);
+	if (lvItem.iImage >= 0) {
+		ImageList imageList = parent.imageList;
+		if (imageList != null) return imageList.get (lvItem.iImage);
+	}
 	return null;
 }
 
