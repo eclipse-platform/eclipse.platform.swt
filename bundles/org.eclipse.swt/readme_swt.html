@@ -39,27 +39,20 @@ Until this is rectified, <code>Printer.getPrinterList()</code> will always retur
 an empty array on the Linux platform.</dd>
 
 <h4>
-1.3 Disposing in a Focus Event</h4>
-
-Applications should not dispose widgets in focus changing events.  Doing so  on Motif may cause Eclipse to terminate,
-since Motif accesses the disposed widget within their internal focus change event handler.
-Similar but less serious issues exist on Windows such that occasionally an SWT exception can be thrown.
-
-<h4>
-1.4 List and ComboBox on Windows NT</h4>
+1.3 List and ComboBox on Windows NT</h4>
 
 On Windows NT only, you should avoid creating items in a List or ComboBox with strings longer than 1000 characters.
 Doing so may result in a General Protection Fault.  This has been fixed in more recent versions of Windows.
 
 <h4>
-1.5 BiDi Support</h4>
+1.4 BiDi Support</h4>
 
 The StyledText widget now provides bidirectional language support for Hebrew and Arabic locales.
 Currently, this support is available only on win32, and has several known problems. It should be
 considered to be a preliminary implementation only.
 
 <h4>
-1.6 Cursor constructor arguments</h4>
+1.5 Cursor constructor arguments</h4>
 
 In the constructor Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int hotspotY), 
 when both a source and mask argument are specified (i.e. mask is not null), the meaning of the two arguments 
@@ -67,20 +60,20 @@ is reversed. That is, the "mask" argument should be the source image and the "so
 the mask image. For a description of this issue see bugzilla report #4809.
 
 <h4>
-1.7  ToolBar on Windows</h4>
+1.6  ToolBar on Windows</h4>
 
 On Windows, you must create all tool bars with the FLAT style bit set. If you do not do this,
 the "hot" (rollover) images of <em>all</em> toolbars may display incorrectly.
 This will be fixed in a future release.
 
 <h4>
-1.8  Non ASCII strings on Linux</h4>
+1.7  Non ASCII strings on Linux</h4>
 
 On Linux RedHat 6.2 only, you will not be able to display text that contains non
 ASCII characters. This limitation is not present on Linux RedHat 7.1 or higher.
 
 <h4>
-1.9  Using J9 VM on Photon and AIX</h4>
+1.8  Using J9 VM on Photon and AIX</h4>
 
 On Photon and AIX, the SWT library will not be found when running with
 the J9 VM (version 1.5). This is a bug in the J9 classes library. You
@@ -88,7 +81,7 @@ can workaround this problem by adding the SWT library directory to your
 load library path.
 
 <h4>
-1.10 Javadoc not consistent across platforms</h4>
+1.9  Javadoc not consistent across platforms</h4>
 
 Because of a bug in the way we updated the javadoc in our source code,
 the javadoc for protected methods is not consistent across platforms.
@@ -97,7 +90,7 @@ documentation that appears in the Platform Plug-in Developer guide,
 is the definitive source. This will be fixed in a future release.
 
 <h4>
-1.11 JAWS requires MSAA for List Views to read checkboxes in Tables</h4>
+1.10 JAWS requires MSAA for List Views to read checkboxes in Tables</h4>
 
 In order for JAWS to detect the checkbox information in Tables, 
 MSAA support for List Views must be activated as follows:
@@ -112,17 +105,7 @@ MSAA support for List Views must be activated as follows:
 </ol>
 
 <h4>
-1.12 No accelerators or mnemonics on Solaris</h4>
-
-The Solaris implementation of Motif has a long standing bug w.r.t. adding and
-removing accelerators and mnemonics. The behavior is such that, the time to do
-so becomes increasingly longer each time it occurs, to the point that, in 
-Eclipse's case, it can take more than a minute to switch between editors and
-views. Because of this, accelerators and mnemonics are explicitely ignored on
-Solaris.
-
-<h4>
-1.13 Combo boxes with multi-line items on Linux/Motif</h4>
+1.11 Combo boxes with multi-line items on Linux/Motif</h4>
 
 The Linux implementation of Motif has a bug that causes program execution to terminate
 if the value of an editable Combo is set through Combo.setText(String) to a string
