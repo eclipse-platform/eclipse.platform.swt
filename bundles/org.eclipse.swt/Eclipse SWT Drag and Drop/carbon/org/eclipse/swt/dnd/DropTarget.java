@@ -157,6 +157,7 @@ public DropTarget(Control control, int style) {
 		}
 	});
 	
+	// Drag under effect
 	if (control instanceof Tree) {
 		effect = new TreeDragUnderEffect((Tree)control);
 	} else if (control instanceof Table) {
@@ -323,7 +324,7 @@ protected void checkSubclass () {
 private int dragReceiveHandler(int theWindow, int handlerRefCon, int theDrag) {
 	updateDragOverHover(0, null);
 	effect.show(DND.FEEDBACK_NONE, 0, 0);
-	
+
 	DNDEvent event = new DNDEvent();
 	event.widget = this;
 	event.time = (int)System.currentTimeMillis();
@@ -389,7 +390,7 @@ private int dragReceiveHandler(int theWindow, int handlerRefCon, int theDrag) {
 			data = newData;
 		}
 	}
-	
+	// Get Data in a Java format
 	Object object = null;
 	for (int i = 0; i < transferAgents.length; i++) {
 		Transfer transfer = transferAgents[i];
@@ -399,7 +400,11 @@ private int dragReceiveHandler(int theWindow, int handlerRefCon, int theDrag) {
 			break;
 		}
 	}
-			
+	
+	if (object == null) {
+		selectedOperation = DND.DROP_NONE;
+	}
+		
 	event.dataType = selectedDataType;
 	event.detail = selectedOperation;
 	event.data = object;
@@ -414,8 +419,7 @@ private int dragReceiveHandler(int theWindow, int handlerRefCon, int theDrag) {
 	} 
 
 	keyOperation = -1;
-	
-	// update result
+	//notify source of action taken
 	int action = opToOsOp(selectedOperation);
 	OS.SetDragDropAction(theDrag, action);
 	return (selectedOperation == DND.DROP_NONE) ? OS.dragNotAcceptedErr : OS.noErr;
@@ -427,6 +431,7 @@ private int dragTrackingHandler(int message, int theWindow, int handlerRefCon, i
 		updateDragOverHover(0, null);
 		effect.show(DND.FEEDBACK_NONE, 0, 0);
 		OS.SetThemeCursor(OS.kThemeArrowCursor);
+		
 		if (keyOperation == -1) return OS.noErr;
 		keyOperation = -1;
 		
@@ -442,6 +447,11 @@ private int dragTrackingHandler(int message, int theWindow, int handlerRefCon, i
 	
 	int oldKeyOperation = keyOperation;
 	
+	if (message == OS.kDragTrackingEnterWindow) {
+		selectedDataType = null;
+		selectedOperation = 0;
+	}
+	
 	DNDEvent event = new DNDEvent();
 	if (!setEventData(theDrag, event)) {
 		OS.SetThemeCursor(OS.kThemeNotAllowedCursor);
@@ -455,16 +465,15 @@ private int dragTrackingHandler(int message, int theWindow, int handlerRefCon, i
 	switch (message) {
 		case OS.kDragTrackingEnterWindow:
 			event.type = DND.DragEnter;
-			selectedDataType = null;
-			selectedOperation = 0;
 			break;
 		case OS.kDragTrackingInWindow:
-			event.dataType = selectedDataType;
-			if (keyOperation != oldKeyOperation) {
-				event.type = DND.DragOperationChanged;
-			} else {
+			if (keyOperation == oldKeyOperation) {
 				event.type = DND.DragOver;
+				event.dataType = selectedDataType;
 				event.detail = selectedOperation;
+			}else {
+				event.type = DND.DragOperationChanged;
+				event.dataType = selectedDataType;
 			}
 			break;
 	}
