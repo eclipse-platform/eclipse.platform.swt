@@ -5611,9 +5611,9 @@ void performPaint(GC gc,int startLine,int startY, int renderHeight)	{
 			String line = content.getLine(i);
 			renderer.drawLine(line, i, paintY, lineGC, background, foreground, true);
 		}
-		if (paintY < renderHeight) {
+		if (paintY < paintHeight) {
 			lineGC.setBackground(background);
-			lineGC.fillRectangle(0, paintY, clientArea.width, renderHeight - paintY);
+			lineGC.fillRectangle(0, paintY, clientArea.width, paintHeight - paintY);
 		}
 		if (DOUBLE_BUFFERED) {
 			clearMargin(lineGC, background, clientArea, startY);
