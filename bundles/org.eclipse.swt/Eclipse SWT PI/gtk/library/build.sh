@@ -97,10 +97,10 @@ case $OS in
 				if [ "${JAVA_HOME}" = "" ]; then
 					echo "JAVA_HOME is missing. Build will probably fail."
 				fi
-				AWT_LIB_PATH=$JAVA_HOME/jre/bin
+				AWT_LIB_PATH=$JAVA_HOME/jre/lib/ia64
 				XTEST_LIB_PATH=/usr/X11R6/lib
-				KDE_LIB_PATH=/opt/kde3/lib
-				KDE_INCLUDE_PATH=/opt/kde3/include
+				KDE_LIB_PATH="/usr/lib/kde -L/usr/lib/qt-3.1/lib"
+				KDE_INCLUDE_PATH="/usr/include/kde -I/usr/lib/qt-3.1/include"
 				SWT_PTR_CFLAGS=-DSWT_PTR_SIZE_64
 				OUTPUT_DIR=../../../org.eclipse.swt.gtk64/os/linux/ia64
 				makefile="make_linux.mak"
