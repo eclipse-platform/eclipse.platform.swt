@@ -150,6 +150,7 @@ public Image(Device display, int width, int height) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(device, width, height);
+	if (device.tracking) device.new_Object(this);
 }
 
 /**
@@ -240,6 +241,7 @@ public Image(Device device, Image srcImage, int flag) {
 	if (flag == SWT.IMAGE_COPY) {
 		OS.gdk_draw_drawable(pixmap, gdkGC, srcImage.pixmap, 0, 0, 0, 0, width, height);
 		OS.g_object_unref(gdkGC);
+		if (device.tracking) device.new_Object(this);
 		return;
 	}
 	
@@ -317,6 +319,7 @@ public Image(Device device, Image srcImage, int flag) {
 	/* Free resources */
 	OS.g_object_unref(pixbuf);
 	OS.g_object_unref(gdkGC);
+	if (device.tracking) device.new_Object(this);
 }
 
 /**
@@ -354,6 +357,7 @@ public Image(Device display, Rectangle bounds) {
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(device, bounds.width, bounds.height);
+	if (device.tracking) device.new_Object(this);
 }
 
 /**
@@ -375,6 +379,7 @@ public Image(Device device, ImageData data) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(device, data);
+	if (device.tracking) device.new_Object(this);
 }
 
 /**
@@ -418,6 +423,7 @@ public Image(Device display, ImageData source, ImageData mask) {
 	image.maskPad = mask.scanlinePad;
 	image.maskData = mask.data;
 	init(device, image);
+	if (device.tracking) device.new_Object(this);
 }
 
 /**
@@ -456,6 +462,7 @@ public Image(Device device, InputStream stream) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(device, new ImageData(stream));
+	if (device.tracking) device.new_Object(this);
 }
 
 /**
@@ -487,6 +494,7 @@ public Image(Device display, String filename) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(device, new ImageData(filename));
+	if (device.tracking) device.new_Object(this);
 }
 
 /**
@@ -526,9 +534,10 @@ public void dispose () {
 	if (device.isDisposed()) return;
 	if (pixmap != 0) OS.g_object_unref(pixmap);
 	if (mask != 0) OS.g_object_unref(mask);
-	device = null;
 	pixmap = mask = 0;
 	memGC = null;
+	if (device.tracking) device.dispose_Object(this);
+	device = null;
 }
 
 /**

@@ -64,6 +64,7 @@ Color() {
  */
 public Color(Device device, int red, int green, int blue) {
 	init(device, red, green, blue);
+	if (device.tracking) device.new_Object(this);
 }
 
 /**	 
@@ -91,6 +92,7 @@ public Color(Device device, int red, int green, int blue) {
 public Color(Device device, RGB rgb) {
 	if (rgb == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(device, rgb.red, rgb.green, rgb.blue);
+	if (device.tracking) device.new_Object(this);
 }
 
 /**
@@ -110,8 +112,9 @@ public void dispose() {
 	}
 	int colormap = OS.gdk_colormap_get_system();
 	OS.gdk_colormap_free_colors(colormap, handle, 1);
-	device = null;
 	handle = null;
+	if (device.tracking) device.dispose_Object(this);
+	device = null;
 }
 
 /**

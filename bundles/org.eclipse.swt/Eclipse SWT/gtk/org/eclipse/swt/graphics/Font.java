@@ -57,11 +57,12 @@ Font() {
  *    <li>ERROR_NO_HANDLES - if a font could not be created from the given font data</li>
  * </ul>
  */
-public Font(Device display, FontData fd) {
+public Font(Device device, FontData fd) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (fd == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(device, fd.getName(), fd.getHeight(), fd.getStyle(), fd.string);
+	if (device.tracking) device.new_Object(this);
 }
 
 /**	 
@@ -92,6 +93,7 @@ public Font(Device device, FontData[] fds) {
 	FontData fd = fds[0];
 	if (fd == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(device,fd.getName(), fd.getHeight(), fd.getStyle(), fd.string);
+	if (device.tracking) device.new_Object(this);
 }
 
 /**	 
@@ -116,10 +118,11 @@ public Font(Device device, FontData[] fds) {
  *    <li>ERROR_NO_HANDLES - if a font could not be created from the given arguments</li>
  * </ul>
  */
-public Font(Device display, String name, int height, int style) {
+public Font(Device device, String name, int height, int style) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(device, name, height, style, null);
+	if (device.tracking) device.new_Object(this);
 }
 
 /**
@@ -130,6 +133,7 @@ public Font(Device display, String name, int height, int style) {
 public void dispose() {
 	if (handle != 0) OS.pango_font_description_free(handle);
 	handle = 0;
+	if (device.tracking) device.dispose_Object(this);
 	device = null;
 }
 
@@ -226,7 +230,7 @@ public int hashCode() {
 void init(Device device, String name, int height, int style, byte[] fontString) {
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	
+	this.device = device;
 	if (fontString != null) {
 		handle = OS.pango_font_description_from_string (fontString);
 		if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);

@@ -63,7 +63,12 @@ public GC(Drawable drawable) {
 	if (drawable == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	GCData data = new GCData();
 	int gdkGC = drawable.internal_new_GC(data);
+	Device device = data.device;
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	data.device = device;
 	init(drawable, data, gdkGC);
+	if (device.tracking) device.new_Object(this);
 }
 
 /**
@@ -175,14 +180,16 @@ public void dispose() {
 	if (layout != 0) OS.g_object_unref(layout);
 
 	/* Dispose the GC */
+	Device device = data.device;
 	drawable.internal_dispose_GC(handle, data);
 
 	data.layout = data.context = data.drawable = data.clipRgn = 0;
 	drawable = null;
-	data.image = null;
-	data = null;
 	handle = 0;
-	
+	data.image = null;
+	if (device.tracking) device.dispose_Object(this);
+	data.device = null;
+	data = null;
 }
 
 /**

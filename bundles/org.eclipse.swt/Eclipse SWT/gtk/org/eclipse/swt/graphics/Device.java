@@ -100,12 +100,12 @@ public Device(DeviceData data) {
 		debug = data.debug;
 		tracking = data.tracking;
 	}
-	create (data);
-	init ();
 	if (tracking) {
 		errors = new Error [128];
 		objects = new Object [128];
 	}
+	create (data);
+	init ();
 
 	/* Initialize the system font slot */
 	systemFont = getSystemFont ();

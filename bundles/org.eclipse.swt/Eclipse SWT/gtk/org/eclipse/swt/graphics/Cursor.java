@@ -90,7 +90,10 @@ Cursor () {
  * @see SWT#CURSOR_NO
  * @see SWT#CURSOR_HAND
  */
-public Cursor(Device display, int style) {
+public Cursor(Device device, int style) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	this.device = device;
 	int osFlag = 0;
 	switch (style) {
 		case SWT.CURSOR_ARROW:
@@ -164,6 +167,7 @@ public Cursor(Device display, int style) {
 	}
 	this.handle = OS.gdk_cursor_new(osFlag);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	if (device.tracking) device.new_Object(this);
 }
 
 /**	 
@@ -198,7 +202,10 @@ public Cursor(Device display, int style) {
  *    <li>ERROR_NO_HANDLES - if a handle could not be obtained for cursor creation</li>
  * </ul>
  */
-public Cursor(Device display, ImageData source, ImageData mask, int hotspotX, int hotspotY) {
+public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int hotspotY) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	this.device = device;
 	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (mask == null) {
 		if (!(source.getTransparencyType() == SWT.TRANSPARENCY_MASK)) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -270,6 +277,7 @@ public Cursor(Device display, ImageData source, ImageData mask, int hotspotX, in
 	OS.g_object_unref (sourcePixmap);
 	OS.g_object_unref (maskPixmap);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	if (device.tracking) device.new_Object(this);
 }
 
 /**
@@ -280,6 +288,7 @@ public Cursor(Device display, ImageData source, ImageData mask, int hotspotX, in
 public void dispose() {
 	if (handle != 0) OS.gdk_cursor_destroy(handle);
 	handle = 0;
+	if (device.tracking) device.dispose_Object(this);
 	device = null;
 }
 
