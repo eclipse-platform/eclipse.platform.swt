@@ -10,4 +10,6 @@
 #     IBM Corporation - initial API and implementation
 #*******************************************************************************
 
+cd `dirname $0`
+
 make -f make_macosx.mak $1 $2 $3 $4 $5 $6 $7 $8 $9

@@ -12,6 +12,8 @@
 #     Tom Tromey (Red Hat, Inc.)
 #*******************************************************************************
 
+cd `dirname $0`
+
 makefile="make_linux.mak"
 CC=gcc
 LD=gcc

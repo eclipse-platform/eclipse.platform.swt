@@ -13,6 +13,8 @@
 #     Sridhar Bidigalu (ICS)
 #*******************************************************************************
 
+cd `dirname $0`
+
 # Determine the operating system being built
 makefile=""
 OS=`uname -s`
