@@ -101,7 +101,7 @@ void adjustGridDimensions(Composite composite, boolean flushCache) {
 							pixelColumnWidths[lastColumn] = colWidth;
 						} else {
 							Vector localExpandableColumns = new Vector();
-							for (int i = column; i < lastColumn; i++) {
+							for (int i = column; i <= lastColumn; i++) {
 								for (int j = 0; j < expandableColumns.length; j++) {
 									if (expandableColumns[j] == i) {
 										localExpandableColumns.addElement(new Integer(i));
@@ -147,7 +147,7 @@ void adjustGridDimensions(Composite composite, boolean flushCache) {
 						int lastRow = row + spec.verticalSpan - 1;
 						int rowHeight;
 						Vector localExpandableRows = new Vector();
-						for (int i = row; i < lastRow; i++) {
+						for (int i = row; i <= lastRow; i++) {
 							for (int j = 0; j < expandableRows.length; j++) {
 								if (expandableRows[j] == i) {
 									localExpandableRows.addElement(new Integer(i));
@@ -504,7 +504,9 @@ protected void layout(Composite composite, boolean flushCache) {
 		for (int j = 0; j < grid.size(); j++) {
 			GridData[] row = (GridData[]) grid.elementAt(j);
 			GridData spec = row[expandableCol];
-			minWidth = Math.max(minWidth, spec.widthHint);
+			if (spec.hSpan == 1) {
+				minWidth = Math.max(minWidth, spec.widthHint);
+			}
 		}
 		columnWidths[expandableCol] = Math.max(colWidth, minWidth);
 	}
@@ -535,7 +537,9 @@ protected void layout(Composite composite, boolean flushCache) {
 		GridData[] row = (GridData[]) grid.elementAt(expandableRow);
 		for (int j = 0; j < numColumns; j++) {
 			GridData spec = row[j];
-			minHeight = Math.max(minHeight, spec.heightHint);
+			if (spec.verticalSpan == 1) {
+				minHeight = Math.max(minHeight, spec.heightHint);
+			}
 		}
 		rowHeights[expandableRow] = Math.max(rowHeight, minHeight);
 	}
