@@ -294,8 +294,9 @@ boolean hasFocus () {
 void hookEvents () {
 	Display display = getDisplay ();
 	int [] mask = new int [] {
-		OS.kEventClassControl, OS.kEventControlDraw,
 		OS.kEventClassControl, OS.kEventControlBoundsChanged,
+		OS.kEventClassControl, OS.kEventControlContextualMenuClick,
+		OS.kEventClassControl, OS.kEventControlDraw,
 		OS.kEventClassControl, OS.kEventControlHit,
 	};
 	int controlTarget = OS.GetControlEventTarget (handle);
@@ -374,34 +375,6 @@ int itemNotificationProc (int browser, int item, int message) {
 	return OS.noErr;
 }
 
-int kEventMouseDown (int nextHandler, int theEvent, int userData) {
-	if ((state & GRAB) != 0) {
-		sendMouseEvent (SWT.MouseDown, theEvent);
-		Display display = getDisplay ();
-		display.grabControl = this;
-	}
-	return OS.eventNotHandledErr;
-}
-
-int kEventMouseDragged (int nextHandler, int theEvent, int userData) {
-	sendMouseEvent (SWT.MouseMove, theEvent);
-	return OS.eventNotHandledErr;
-}
-
-int kEventMouseMoved (int nextHandler, int theEvent, int userData) {
-	sendMouseEvent (SWT.MouseMove, theEvent);
-	return OS.eventNotHandledErr;
-}
-
-int kEventMouseUp (int nextHandler, int theEvent, int userData) {
-	sendMouseEvent (SWT.MouseUp, theEvent);
-	return OS.eventNotHandledErr;
-}
-
-int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
 int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
 	int [] attributes = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamAttributes, OS.typeUInt32, null, attributes.length * 4, null, attributes);
@@ -412,6 +385,17 @@ int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
 	if ((attributes [0] & OS.kControlBoundsChangeSizeChanged) != 0) {
 		sendEvent (SWT.Resize);
 		if (isDisposed ()) return OS.noErr;
+	}
+	return OS.eventNotHandledErr;
+}
+
+int kEventControlContextualMenuClick (int nextHandler, int theEvent, int userData) {
+	if (menu != null && !menu.isDisposed ()) {
+		CGPoint pt = new CGPoint ();
+		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeHIPoint, null, pt.sizeof, null, pt);
+		menu.setLocation ((int) pt.x, (int) pt.y);
+		menu.setVisible (true);
+		return OS.noErr;
 	}
 	return OS.eventNotHandledErr;
 }
@@ -449,6 +433,37 @@ int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventControlHit (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventMouseDown (int nextHandler, int theEvent, int userData) {
+	if ((state & GRAB) != 0) {
+		int [] clickCount = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamClickCount, OS.typeUInt32, null, 4, null, clickCount);
+		sendMouseEvent (SWT.MouseDown, theEvent);
+		if (clickCount [0] == 2) sendMouseEvent (SWT.MouseDoubleClick, theEvent);
+		Display display = getDisplay ();
+		display.grabControl = this;
+	}
+	return OS.eventNotHandledErr;
+}
+
+int kEventMouseDragged (int nextHandler, int theEvent, int userData) {
+	sendMouseEvent (SWT.MouseMove, theEvent);
+	return OS.eventNotHandledErr;
+}
+
+int kEventMouseMoved (int nextHandler, int theEvent, int userData) {
+	sendMouseEvent (SWT.MouseMove, theEvent);
+	return OS.eventNotHandledErr;
+}
+
+int kEventMouseUp (int nextHandler, int theEvent, int userData) {
+	sendMouseEvent (SWT.MouseUp, theEvent);
+	return OS.eventNotHandledErr;
+}
+
+int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 

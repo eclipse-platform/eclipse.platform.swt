@@ -45,7 +45,7 @@ public class Display extends Device {
 	/* Menus */
 	static final int ID_START = 1000;
 	Menu menuBar;
-	Menu [] menus;
+	Menu [] menus, popups;
 	MenuItem [] items;
 	
 	/* Key Mappings. */
@@ -187,6 +187,25 @@ void addMenuItem (MenuItem item) {
 	newItems [items.length] = item;
 	System.arraycopy (items, 0, newItems, 0, items.length);
 	items = newItems;
+}
+
+void addPopup (Menu menu) {
+	if (popups == null) popups = new Menu [4];
+	int length = popups.length;
+	for (int i=0; i<length; i++) {
+		if (popups [i] == menu) return;
+	}
+	int index = 0;
+	while (index < length) {
+		if (popups [index] == null) break;
+		index++;
+	}
+	if (index == length) {
+		Menu [] newPopups = new Menu [length + 4];
+		System.arraycopy (popups, 0, newPopups, 0, length);
+		popups = newPopups;
+	}
+	popups [index] = menu;
 }
 
 public void asyncExec (Runnable runnable) {
@@ -586,6 +605,7 @@ public boolean readAndDispatch () {
 		OS.SendEventToEventTarget (outEvent [0], OS.GetEventDispatcherTarget ());
 		OS.ReleaseEvent (outEvent [0]);
 		runDeferredEvents ();
+		if (runPopups ()) grabControl = null;
 		runGrabs ();
 		return true;
 	}
@@ -658,6 +678,16 @@ void removeMenu (Menu menu) {
 void removeMenuItem (MenuItem item) {
 	if (items == null) return;
 	items [item.id - ID_START] = null;
+}
+
+void removePopup (Menu menu) {
+	if (popups == null) return;
+	for (int i=0; i<popups.length; i++) {
+		if (popups [i] == menu) {
+			popups [i] = null;
+			return;
+		}
+	}
 }
 
 boolean runAsyncMessages () {
@@ -738,6 +768,22 @@ void runGrabs () {
 	} finally {
 		grabControl = null;
 	}
+}
+
+boolean runPopups () {
+	if (popups == null) return false;
+	boolean result = false;
+	while (popups != null) {
+		Menu menu = popups [0];
+		if (menu == null) break;
+		int length = popups.length;
+		System.arraycopy (popups, 1, popups, 0, --length);
+		popups [length] = null;
+		menu._setVisible (true);
+		result = true;
+	}
+	popups = null;
+	return result;
 }
 
 void sendEvent (int eventType, Event event) {
@@ -958,9 +1004,10 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 			Control control = WidgetTable.get (theControl [0]);
 			if (control != null) {
 				switch (eventKind) {
-					case OS.kEventControlBoundsChanged:	return control.kEventControlBoundsChanged (nextHandler, theEvent, userData);
-					case OS.kEventControlDraw:				return control.kEventControlDraw (nextHandler, theEvent, userData);
-					case OS.kEventControlHit:				return control.kEventControlHit (nextHandler, theEvent, userData);
+					case OS.kEventControlBoundsChanged:		return control.kEventControlBoundsChanged (nextHandler, theEvent, userData);
+					case OS.kEventControlContextualMenuClick:	return control.kEventControlContextualMenuClick (nextHandler, theEvent, userData);
+					case OS.kEventControlDraw:					return control.kEventControlDraw (nextHandler, theEvent, userData);
+					case OS.kEventControlHit:					return control.kEventControlHit (nextHandler, theEvent, userData);
 				}
 			}
 			break;

@@ -174,6 +174,7 @@ public class OS {
 	public static final int kEventClassWindow = ('w'<<24) + ('i'<<16) + ('n'<<8) + 'd';
 	public static final int kEventControlAddedSubControl = 152;
 	public static final int kEventControlBoundsChanged = 154;
+	public static final int kEventControlContextualMenuClick = 12;
 	public static final int kEventControlDraw = 4;
 	public static final int kEventControlHit = 1;
 	public static final int kEventControlRemovingSubControl = 153;
@@ -199,6 +200,7 @@ public class OS {
 	public static final int kEventParamAEEventID = ('e'<<24) + ('v'<<16) + ('t'<<8) + 'i';
 	public static final int kEventParamAttributes = ('a'<<24) + ('t'<<16) + ('t'<<8) + 'r';
 	public static final int kEventParamCGContextRef= ('c'<<24) + ('n'<<16) + ('t'<<8) + 'x';
+	public static final int kEventParamClickCount = ('c'<<24) + ('c'<<16) + ('n'<<8) + 't';
 	public static final int kEventParamControlPart= ('c'<<24) + ('p'<<16) + ('r'<<8) + 't';
 	public static final int kEventParamControlRef = ('c'<<24) + ('t'<<16) + ('r'<<8) + 'l';
 	public static final int kEventParamDirectObject = ('-'<<24) + ('-'<<16) + ('-'<<8) + '-';

@@ -13,10 +13,10 @@ import org.eclipse.swt.internal.carbon.Rect;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
-public  class Label extends Control {
+public class Label extends Control {
 	String text = "";
 	Image image;
-
+	boolean isImage;
 
 public Label (Composite parent, int style) {
 	super (parent, checkStyle (style));
@@ -99,6 +99,12 @@ public String getText () {
 }
 
 int kEventControlDraw (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventControlDraw (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	if (isImage) {
+		//NOT DONE
+		return OS.noErr;
+	}
 	return OS.eventNotHandledErr;
 }
 
@@ -110,12 +116,14 @@ public void setAlignment (int alignment) {
 public void setImage (Image image) {
 	checkWidget();
 	this.image = image;
+	isImage = true;
 }
 
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
+	isImage = false;
 	text = string;
 	char [] buffer = new char [text.length ()];
 	text.getChars (0, buffer.length, buffer, 0);

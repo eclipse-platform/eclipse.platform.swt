@@ -13,7 +13,7 @@ import org.eclipse.swt.internal.carbon.*;
 
 public class Menu extends Widget {
 	int handle;
-	short id;
+	short id, lastIndex;
 	int x, y;
 	boolean hasLocation;
 	MenuItem cascade, defaultItem;
@@ -54,6 +54,20 @@ static MenuItem checkNull (MenuItem item) {
 
 static int checkStyle (int style) {
 	return checkBits (style, SWT.POP_UP, SWT.BAR, SWT.DROP_DOWN, 0, 0, 0);
+}
+
+public void _setVisible (boolean visible) {
+	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
+	if (!visible) return;
+	int left = x, top = y;
+	if (!hasLocation) {
+		org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
+		OS.GetGlobalMouse (where);
+		left = where.h; top = where.v;
+	}
+	int index = defaultItem != null ? indexOf (defaultItem) + 1 : lastIndex;
+	int result = OS.PopUpMenuSelect (handle, (short)top, (short)left, (short)(index));
+	lastIndex = OS.LoWord (result);
 }
 
 public void addHelpListener (HelpListener listener) {
@@ -224,8 +238,15 @@ public Shell getShell () {
 public boolean getVisible () {
 	checkWidget ();
 	if ((style & SWT.BAR) != 0) {
+		return this == parent.menuShell ().menuBar;
+	}
+	if ((style & SWT.POP_UP) != 0) {
 		Display display = getDisplay ();
-		return this == display.getMenuBar ();
+		Menu [] popups = display.popups;
+		if (popups == null) return false;
+		for (int i=0; i<popups.length; i++) {
+			if (popups [i] == this) return true;
+		}
 	}
 	MenuTrackingData outData = new MenuTrackingData ();
 	return OS.GetMenuTrackingData (handle, outData) == OS.noErr;
@@ -338,15 +359,13 @@ public void setLocation (int x, int y) {
 public void setVisible (boolean visible) {
 	checkWidget ();
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
-	if (!visible) return;
-	int nX = x, nY = y;
-	if (!hasLocation) {
+	Display display = getDisplay ();
+	if (visible) {
+		display.addPopup (this);
+	} else {
+		display.removePopup (this);
+		_setVisible (false);
 	}
-	int index = defaultItem != null ? indexOf (defaultItem) : -1;
-//	getDisplay ().menuIsVisible (true);
-	int result = OS.PopUpMenuSelect (handle, (short)nY, (short)nX, (short)(index+1));
-//	getDisplay().menuIsVisible(false);
-//	short menuID= OS.HiWord (result);
 }
 	
 }
