@@ -702,7 +702,7 @@ public static final synchronized native boolean gtk_im_context_filter_keypress(i
 public static final synchronized native void gtk_im_context_focus_in(int /*long*/ context);
 public static final synchronized native void gtk_im_context_focus_out(int /*long*/ context);
 public static final synchronized native void gtk_im_context_get_preedit_string(int /*long*/ context, int /*long*/[] str, int /*long*/[] attrs, int[] cursor_pos);
-public static final synchronized native int gtk_im_context_get_type();
+public static final synchronized native int /*long*/ gtk_im_context_get_type();
 public static final synchronized native void gtk_im_context_reset(int /*long*/ context);
 public static final synchronized native void gtk_im_context_set_client_window(int /*long*/ context, int /*long*/ window);
 public static final synchronized native void gtk_im_context_set_cursor_location(int /*long*/ context, GdkRectangle area);
