@@ -22,6 +22,7 @@ import java.util.ResourceBundle;
 public class ControlView extends ViewPart {
 	private ShellTab shellTab;
 	private TabFolder tabFolder;
+	private Composite mainFrame;
 
 	/**
 	 * The constructor.
@@ -36,6 +37,8 @@ public class ControlView extends ViewPart {
 	 * @see ViewPart#createPartControl
 	 */
 	public void createPartControl(Composite frame) {
+		this.mainFrame = frame;
+
 		/* Create the tab folder */
 		tabFolder = new TabFolder (frame, SWT.NULL);
 		Tab [] tabs = new Tab [] {
@@ -67,7 +70,8 @@ public class ControlView extends ViewPart {
 	 * @see org.eclipse.ui.part.ViewPart#setFocus
 	 */
 	public void setFocus()  {
-		tabFolder.setFocus();
+		//tabFolder.setFocus();
+		mainFrame.setFocus();
 	}
 
 	/**

@@ -19,6 +19,9 @@
 </requires>
 
 <!-- Runtime -->
+<!-- Runtime -->
+<!-- Runtime -->
+<!-- Runtime -->
 <runtime>
    <library name="launcher.jar"/>
 </runtime>
@@ -58,14 +61,17 @@
          description="%launchcategory.SWTViewExamples.description"
          id="org.eclipse.swt.examples.launchViewCategory">
    </category>
-   <viewItem
-         viewId="org.eclipse.swt.examples.launcher.view"
+   <item
+         enabled="false"
          name="%launchitem.LauncherExample.name"
          icon="icons/launcher_example.gif"
          description="%launchitem.LauncherExample.description"
          category="org.eclipse.swt.examples.launchViewCategory"
-         source="launchersrc.zip"
          id="org.eclipse.swt.examples.launcher.viewlauncher">
-   </viewItem>
+      <view
+         viewId="org.eclipse.swt.examples.launcher.view"/>
+      <source
+         source="launchersrc.zip"/>
+   </item>
 </extension>
 </plugin>

@@ -38,14 +38,16 @@
          description="%launchcategory.SWTWin32OnlyExamples.description"
          id="org.eclipse.swt.examples.launchWin32OnlyCategory">
    </category>
-   <viewItem
-         viewId="org.eclipse.swt.examples.ole.win32.browserView"
+   <item
          name="%launchitem.OLEWebBrowserExample.name"
          description="%launchitem.OLEWebBrowserExample.description"
          category="org.eclipse.swt.examples.launchWin32OnlyCategory"
-         source="olewin32src.zip"
          id="org.eclipse.swt.examples.ole.win32.viewlauncher"
          icon="icons/webbrowser_example.gif">
-   </viewItem>
+      <view
+         viewId="org.eclipse.swt.examples.ole.win32.browserView"/>
+      <source
+         source="olewin32src.zip"/>
+   </item>
 </extension>
 </plugin>

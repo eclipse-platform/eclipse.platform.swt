@@ -12,37 +12,46 @@ org.eclipse.swt.examples.launcher.launchItems<H2>Description</H2>
 <br><samp>&nbsp;&nbsp; &gt;</samp>
 <ul>
 <li><b>point</b> - </li><li><b>id</b> - </li><li><b>name</b> - </li></ul>
-<p><samp>&nbsp;&nbsp; &lt;!ELEMENT programItem (EMPTY)&gt;</samp>
-<br><samp>&nbsp;&nbsp; &lt;!ATTLIST programItem</samp>
-<br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED</samp>
-<br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED</samp>
+<p><samp>&nbsp;&nbsp; &lt;!ELEMENT program (EMPTY)&gt;</samp>
+<br><samp>&nbsp;&nbsp; &lt;!ATTLIST program</samp>
 <br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mainClass&nbsp;CDATA #REQUIRED</samp>
 <br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pluginId&nbsp;&nbsp;CDATA #REQUIRED</samp>
-<br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;category&nbsp;&nbsp;CDATA #IMPLIED</samp>
-<br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;source&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED</samp>
-<br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;icon&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED</samp>
 <br><samp>&nbsp;&nbsp; &gt;</samp>
 <ul>
-<li><b>name</b> - </li><li><b>id</b> - </li><li><b>mainClass</b> - </li><li><b>pluginId</b> - </li><li><b>category</b> - </li><li><b>source</b> - </li><li><b>icon</b> - </li></ul>
-<p><samp>&nbsp;&nbsp; &lt;!ELEMENT viewItem (EMPTY)&gt;</samp>
-<br><samp>&nbsp;&nbsp; &lt;!ATTLIST viewItem</samp>
-<br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED</samp>
-<br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED</samp>
+<li><b>mainClass</b> - </li><li><b>pluginId</b> - </li></ul>
+<p><samp>&nbsp;&nbsp; &lt;!ELEMENT view (EMPTY)&gt;</samp>
+<br><samp>&nbsp;&nbsp; &lt;!ATTLIST view</samp>
 <br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;viewId&nbsp;&nbsp;&nbsp;CDATA #REQUIRED</samp>
 <br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;category&nbsp;CDATA #IMPLIED</samp>
-<br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;source&nbsp;&nbsp;&nbsp;CDATA #IMPLIED</samp>
-<br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;icon&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED</samp>
 <br><samp>&nbsp;&nbsp; &gt;</samp>
 <ul>
-<li><b>name</b> - </li><li><b>id</b> - </li><li><b>viewId</b> - </li><li><b>category</b> - </li><li><b>source</b> - </li><li><b>icon</b> - </li></ul>
+<li><b>viewId</b> - </li><li><b>category</b> - </li></ul>
 <p><samp>&nbsp;&nbsp; &lt;!ELEMENT category (EMPTY)&gt;</samp>
 <br><samp>&nbsp;&nbsp; &lt;!ATTLIST category</samp>
 <br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED</samp>
 <br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED</samp>
 <br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;category&nbsp;CDATA #IMPLIED</samp>
+<br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;enabled&nbsp;&nbsp;(true | false) "false"#IMPLIED</samp>
 <br><samp>&nbsp;&nbsp; &gt;</samp>
 <ul>
-<li><b>name</b> - </li><li><b>id</b> - </li><li><b>category</b> - </li></ul>
+<li><b>name</b> - </li><li><b>id</b> - </li><li><b>category</b> - </li><li><b>enabled</b> - </li></ul>
+<p><samp>&nbsp;&nbsp; &lt;!ELEMENT item (EMPTY)&gt;</samp>
+<br><samp>&nbsp;&nbsp; &lt;!ATTLIST item</samp>
+<br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;name&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED</samp>
+<br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;id&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #REQUIRED</samp>
+<br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;category&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED</samp>
+<br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;icon&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CDATA #IMPLIED</samp>
+<br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;enabled&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(true | false) "false"#IMPLIED</samp>
+<br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;description&nbsp;CDATA #IMPLIED</samp>
+<br><samp>&nbsp;&nbsp; &gt;</samp>
+<ul>
+<li><b>name</b> - </li><li><b>id</b> - </li><li><b>category</b> - </li><li><b>icon</b> - </li><li><b>enabled</b> - </li><li><b>description</b> - </li></ul>
+<p><samp>&nbsp;&nbsp; &lt;!ELEMENT source (EMPTY)&gt;</samp>
+<br><samp>&nbsp;&nbsp; &lt;!ATTLIST source</samp>
+<br><samp>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;zip&nbsp;CDATA #IMPLIED</samp>
+<br><samp>&nbsp;&nbsp; &gt;</samp>
+<ul>
+<li><b>zip</b> - </li></ul>
 <H2>Example</H2>
 [Enter extension point usage example here.]<H2>API Information</H2>
 [Enter API information here.]<H2>Supplied Implementation</H2>

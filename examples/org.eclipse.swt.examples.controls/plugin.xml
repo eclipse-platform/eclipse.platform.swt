@@ -38,14 +38,16 @@
          description="%launchcategory.SWTViewExamples.description"
          id="org.eclipse.swt.examples.launchViewCategory">
    </category>
-   <viewItem
-         viewId="org.eclipse.swt.examples.controls.view"
+   <item
          name="%launchitem.ControlsExample.name"
          description="%launchitem.ControlsExample.description"
          category="org.eclipse.swt.examples.launchViewCategory"
-         source="controlssrc.zip"
          id="org.eclipse.swt.examples.controls.viewlauncher"
          icon="icons/controls_example.gif">
-   </viewItem>
+       <view
+         viewId="org.eclipse.swt.examples.controls.view"/>
+       <source
+         zip="controlssrc.zip"/>
+   </item>
 </extension>
 </plugin>

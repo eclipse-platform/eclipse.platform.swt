@@ -126,14 +126,16 @@
          description="%launchcategory.SWTViewExamples.description"
          id="org.eclipse.swt.examples.launchViewCategory">
    </category>
-   <viewItem
-         viewId="org.eclipse.swt.examples.paint.view"
+   <item
          name="%launchitem.PaintExample.name"
          description="%launchitem.PaintExample.description"
          category="org.eclipse.swt.examples.launchViewCategory"
-         source="paintsrc.zip"
          icon="icons/paint_example.gif"
          id="org.eclipse.swt.examples.paint.viewlauncher">
-   </viewItem>
+      <view
+         viewId="org.eclipse.swt.examples.paint.view"/>
+      <source
+         source="paintsrc.zip"/>
+   </item>
 </extension>
 </plugin>

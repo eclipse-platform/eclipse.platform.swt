@@ -25,104 +25,126 @@
          description="%launchcategory.SWTStandaloneExamples.description"
          id="org.eclipse.swt.examples.launchStandaloneCategory">
    </category>
-   <programItem
-         pluginId="org.eclipse.swt.examples"
-         mainClass="org.eclipse.swt.examples.addressbook.AddressBook"
+   <item
          name="%launchitem.AddressBook.name"
          description="%launchitem.AddressBook.description"
          category="org.eclipse.swt.examples.launchStandaloneCategory"
-         source="swtexamplessrc.zip"
          id="org.eclipse.swt.examples.addressbook.standalonelauncher">
-   </programItem>
-   <programItem
-         pluginId="org.eclipse.swt.examples"
-         mainClass="org.eclipse.swt.examples.fileviewer.FileViewer"
+		<program
+			pluginId="org.eclipse.swt.examples"
+	        mainClass="org.eclipse.swt.examples.addressbook.AddressBook"/>
+        <source
+            zip="swtexamplessrc.zip"/>
+   </item>
+   <item
          name="%launchitem.FileViewer.name"
          description="%launchitem.FileViewer.description"
          category="org.eclipse.swt.examples.launchStandaloneCategory"
-         source="swtexamplessrc.zip"
          id="org.eclipse.swt.examples.fileviewer.standalonelauncher">
-   </programItem>
-   <programItem
+		<program
          pluginId="org.eclipse.swt.examples"
-         mainClass="org.eclipse.swt.examples.hoverhelp.HoverHelp"
+         mainClass="org.eclipse.swt.examples.fileviewer.FileViewer"/>
+        <source
+         zip="swtexamplessrc.zip"/>
+   </item>
+   <item
          name="%launchitem.HoverHelp.name"
          description="%launchitem.HoverHelp.description"
          category="org.eclipse.swt.examples.launchStandaloneCategory"
-         source="swtexamplessrc.zip"
          id="org.eclipse.swt.examples.hoverhelp.standalonelauncher">
-   </programItem>
-   <programItem
+		<program
          pluginId="org.eclipse.swt.examples"
-         mainClass="org.eclipse.swt.examples.helloworld.HelloWorld1"
+         mainClass="org.eclipse.swt.examples.hoverhelp.HoverHelp"/>
+        <source
+         zip="swtexamplessrc.zip"/>
+   </item>
+   <item
          name="%launchitem.HelloWorld1.name"
          description="%launchitem.HelloWorld1.description"
          category="org.eclipse.swt.examples.launchStandaloneCategory"
-         source="swtexamplessrc.zip"
          id="org.eclipse.swt.examples.helloworld1.standalonelauncher">
-   </programItem>
-   <programItem
+		<program
          pluginId="org.eclipse.swt.examples"
-         mainClass="org.eclipse.swt.examples.helloworld.HelloWorld2"
+         mainClass="org.eclipse.swt.examples.helloworld.HelloWorld1"/>
+        <source
+         zip="swtexamplessrc.zip"/>
+   </item>
+   <item
          name="%launchitem.HelloWorld2.name"
          description="%launchitem.HelloWorld2.description"
          category="org.eclipse.swt.examples.launchStandaloneCategory"
-         source="swtexamplessrc.zip"
          id="org.eclipse.swt.examples.helloworld2.standalonelauncher">
-   </programItem>
-   <programItem
+		<program
          pluginId="org.eclipse.swt.examples"
-         mainClass="org.eclipse.swt.examples.helloworld.HelloWorld3"
+         mainClass="org.eclipse.swt.examples.helloworld.HelloWorld2"/>
+        <source
+         zip="swtexamplessrc.zip"/>
+   </item>
+   <item
          name="%launchitem.HelloWorld3.name"
          description="%launchitem.HelloWorld3.description"
          category="org.eclipse.swt.examples.launchStandaloneCategory"
-         source="swtexamplessrc.zip"
          id="org.eclipse.swt.examples.helloworld3.standalonelauncher">
-   </programItem>
-   <programItem
+		<program
          pluginId="org.eclipse.swt.examples"
-         mainClass="org.eclipse.swt.examples.helloworld.HelloWorld4"
+         mainClass="org.eclipse.swt.examples.helloworld.HelloWorld3"/>
+        <source
+         zip="swtexamplessrc.zip"/>
+   </item>
+   <item
          name="%launchitem.HelloWorld4.name"
          description="%launchitem.HelloWorld4.description"
          category="org.eclipse.swt.examples.launchStandaloneCategory"
-         source="swtexamplessrc.zip"
          id="org.eclipse.swt.examples.helloworld4.standalonelauncher">
-   </programItem>
-   <programItem
+		<program
          pluginId="org.eclipse.swt.examples"
-         mainClass="org.eclipse.swt.examples.helloworld.HelloWorld5"
+         mainClass="org.eclipse.swt.examples.helloworld.HelloWorld4"/>
+        <source
+         zip="swtexamplessrc.zip"/>
+   </item>
+   <item
          name="%launchitem.HelloWorld5.name"
          description="%launchitem.HelloWorld5.description"
          category="org.eclipse.swt.examples.launchStandaloneCategory"
-         source="swtexamplessrc.zip"
          id="org.eclipse.swt.examples.helloworld5.standalonelauncher">
-   </programItem>
-   <programItem
+		<program
          pluginId="org.eclipse.swt.examples"
-         mainClass="org.eclipse.swt.examples.imageanalyzer.ImageAnalyzer"
+         mainClass="org.eclipse.swt.examples.helloworld.HelloWorld5"/>
+        <source
+         zip="swtexamplessrc.zip"/>
+   </item>
+   <item
          name="%launchitem.ImageAnalyzer.name"
          description="%launchitem.ImageAnalyzer.description"
          category="org.eclipse.swt.examples.launchStandaloneCategory"
-         source="swtexamplessrc.zip"
          id="org.eclipse.swt.examples.imageanalyzer.standalonelauncher">
-   </programItem>
-   <programItem
+		<program
          pluginId="org.eclipse.swt.examples"
-         mainClass="org.eclipse.swt.examples.javaviewer.JavaViewer"
+         mainClass="org.eclipse.swt.examples.imageanalyzer.ImageAnalyzer"/>
+        <source
+         zip="swtexamplessrc.zip"/>
+   </item>
+   <item
          name="%launchitem.JavaViewer.name"
          description="%launchitem.JavaViewer.description"
          category="org.eclipse.swt.examples.launchStandaloneCategory"
-         source="swtexamplessrc.zip"
          id="org.eclipse.swt.examples.javaviewer.standalonelauncher">
-   </programItem>
-   <programItem
+		<program
          pluginId="org.eclipse.swt.examples"
-         mainClass="org.eclipse.swt.examples.texteditor.TextEditor"
+         mainClass="org.eclipse.swt.examples.javaviewer.JavaViewer"/>
+        <source
+         zip="swtexamplessrc.zip"/>
+   </item>
+   <item
          name="%launchitem.TextEditor.name"
          description="%launchitem.TextEditor.description"
          category="org.eclipse.swt.examples.launchStandaloneCategory"
-         source="swtexamplessrc.zip"
          id="org.eclipse.swt.examples.texteditor.standalonelauncher">
-   </programItem>
+		<program
+         pluginId="org.eclipse.swt.examples"
+         mainClass="org.eclipse.swt.examples.texteditor.TextEditor"/>
+        <source
+         zip="swtexamplessrc.zip"/>
+   </item>
 </extension>
 </plugin>

@@ -18,17 +18,22 @@ public class LauncherPlugin extends AbstractUIPlugin {
 	private static final String
 		LAUNCH_ITEMS_POINT_ID = "org.eclipse.swt.examples.launcher.launchItems",
 		LAUNCH_ITEMS_XML_CATEGORY = "category",
-		LAUNCH_ITEMS_XML_ATTRIB_ID = "id",
-		LAUNCH_ITEMS_XML_ATTRIB_NAME = "name",
-		LAUNCH_ITEMS_XML_ATTRIB_ICON = "icon",
-		LAUNCH_ITEMS_XML_ATTRIB_CATEGORY = "category",
-		LAUNCH_ITEMS_XML_ATTRIB_SOURCE = "source",
-		LAUNCH_ITEMS_XML_ATTRIB_DESCRIPTION = "description",
-		LAUNCH_ITEMS_XML_PROGRAM = "programItem",
+		LAUNCH_ITEMS_XML_ITEM = "item",
+		LAUNCH_ITEMS_XML_ITEM_ICON = "icon",
+		LAUNCH_ITEMS_XML_ITEM_DESCRIPTION = "description",
+		LAUNCH_ITEMS_XML_PROGRAM = "program",
 		LAUNCH_ITEMS_XML_PROGRAM_PLUGIN = "pluginId",
 		LAUNCH_ITEMS_XML_PROGRAM_CLASS = "mainClass",
-		LAUNCH_ITEMS_XML_VIEW = "viewItem",
-		LAUNCH_ITEMS_XML_VIEW_VIEWID = "viewId";
+		LAUNCH_ITEMS_XML_VIEW = "view",
+		LAUNCH_ITEMS_XML_VIEW_VIEWID = "viewId",
+		LAUNCH_ITEMS_XML_SOURCE = "source",
+		LAUNCH_ITEMS_XML_SOURCE_ZIP = "zip",
+		LAUNCH_ITEMS_XML_ATTRIB_ID = "id",
+		LAUNCH_ITEMS_XML_ATTRIB_NAME = "name",
+		LAUNCH_ITEMS_XML_ATTRIB_ENABLED = "enabled",
+		LAUNCH_ITEMS_XML_ATTRIB_CATEGORY = "category",
+		LAUNCH_ITEMS_XML_VALUE_TRUE = "true",
+		LAUNCH_ITEMS_XML_VALUE_FALSE = "false";		
 
 	static final int
 		liClosedFolder = 0,
@@ -152,7 +157,7 @@ public class LauncherPlugin extends AbstractUIPlugin {
 			pluginRegistry.getConfigurationElementsFor(LAUNCH_ITEMS_POINT_ID);
 			
 		if (configurationElements == null || configurationElements.length == 0) {
-			System.err.println("Could not find registered extensions");
+			logError("Could not find registered extensions", null);
 			return categoryTree;
 		}
 		
@@ -193,20 +198,20 @@ public class LauncherPlugin extends AbstractUIPlugin {
 			final String ceName = ce.getName();
 			final String attribId = getItemAttribute(ce, LAUNCH_ITEMS_XML_ATTRIB_ID, null);
 
-			ItemDescriptor theDescriptor = null;
-			
 			if (idMap.containsKey(attribId)) continue;
 			if (ceName.equalsIgnoreCase(LAUNCH_ITEMS_XML_CATEGORY)) {
 				// ignore
-			} else if (ceName.equalsIgnoreCase(LAUNCH_ITEMS_XML_PROGRAM)) {
-				theDescriptor = createProgramItemDescriptor(ce, attribId);
-			} else if (ceName.equalsIgnoreCase(LAUNCH_ITEMS_XML_VIEW)) {
-				theDescriptor = createViewItemDescriptor(ce, attribId);
-			}
-			if (theDescriptor != null) {
-				final ItemTreeNode theNode = new ItemTreeNode(theDescriptor);
-				addItemByCategory(ce, categoryTree, theNode, idMap);
-				idMap.put(attribId, theNode);
+			} else if (ceName.equalsIgnoreCase(LAUNCH_ITEMS_XML_ITEM)) {
+				final String enabled = getItemAttribute(ce, LAUNCH_ITEMS_XML_ATTRIB_ENABLED, 
+					LAUNCH_ITEMS_XML_VALUE_TRUE);
+				if (enabled.equalsIgnoreCase(LAUNCH_ITEMS_XML_VALUE_FALSE)) continue;
+				ItemDescriptor theDescriptor = createItemDescriptor(ce, attribId);				
+			
+				if (theDescriptor != null) {
+					final ItemTreeNode theNode = new ItemTreeNode(theDescriptor);
+					addItemByCategory(ce, categoryTree, theNode, idMap);
+					idMap.put(attribId, theNode);
+				}
 			}
 		}
 		return categoryTree;
@@ -232,46 +237,63 @@ public class LauncherPlugin extends AbstractUIPlugin {
 	}
 
 	/**
-	 * Creates an ItemDescriptor for a program from an XML definition.
+	 * Creates an ItemDescriptor from an XML definition.
 	 * 
 	 * @param ce the IConfigurationElement describing the item
 	 * @param attribId the attribute id
 	 * @return a new ItemDescriptor, or null if an error occurs
 	 */
-	private static ItemDescriptor createProgramItemDescriptor(IConfigurationElement ce,
-		String attribId) {
+	private static ItemDescriptor createItemDescriptor(IConfigurationElement ce, String attribId) {
 		final String attribName = getItemName(ce);
 		final Image  attribIcon = getItemIcon(ce);
-		final String attribPluginId = getItemAttribute(ce, LAUNCH_ITEMS_XML_PROGRAM_PLUGIN, null);
-		final String attribClass    = getItemAttribute(ce, LAUNCH_ITEMS_XML_PROGRAM_CLASS, null);
-				
-		if (attribClass == null || attribPluginId == null) {
-			System.err.println(getResourceString("error.IncompleteProgramLaunchItem"));
-			return null;
+		final String attribDescription = getItemDescription(ce);
+		final URL attribSourceZip;
+		final LaunchDelegate launchDelegate;
+
+		IConfigurationElement sourceCE = getItemElement(ce, LAUNCH_ITEMS_XML_SOURCE);
+		attribSourceZip = (sourceCE != null) ? getSourceCodePath(sourceCE) : null;
+
+		IConfigurationElement viewCE = getItemElement(ce, LAUNCH_ITEMS_XML_VIEW);
+		if (viewCE != null) {
+			final String attribView = getItemAttribute(viewCE, LAUNCH_ITEMS_XML_VIEW_VIEWID, null);		
+			if (attribView == null) {
+				logError(getResourceString("error.IncompleteViewLaunchItem",
+					new Object[] { attribId } ), null);
+				return null;
+			}
+			launchDelegate = new ViewLaunchDelegate(attribView);
+		} else {
+			IConfigurationElement programCE = getItemElement(ce, LAUNCH_ITEMS_XML_PROGRAM);
+			if (programCE != null) {
+				final String attribPluginId = getItemAttribute(programCE, LAUNCH_ITEMS_XML_PROGRAM_PLUGIN, null);
+				final String attribClass    = getItemAttribute(programCE, LAUNCH_ITEMS_XML_PROGRAM_CLASS, null);
+						
+				if (attribClass == null || attribPluginId == null) {
+					logError(getResourceString("error.IncompleteProgramLaunchItem",
+					new Object[] { attribId } ), null);
+					return null;
+				}
+				launchDelegate = new ProgramLaunchDelegate(attribPluginId, attribClass);
+			} else {
+				logError(getResourceString("error.IncompleteLaunchItem",
+					new Object[] { attribId } ), null);
+				return null;
+			}
 		}
-		return new ItemDescriptor(attribId, attribName, getItemDescription(ce),
-			getSourceCodePath(ce), attribIcon, new ProgramLaunchDelegate(attribPluginId, attribClass));
+		return new ItemDescriptor(attribId, attribName, attribDescription, attribSourceZip,
+			attribIcon, launchDelegate);
 	}
 
 	/**
-	 * Creates an ItemDescriptor for a program from an XML definition.
+	 * Returns the first instance of a particular child XML element.
 	 * 
-	 * @param ce the IConfigurationElement describing the item
-	 * @param attribId the attribute id
-	 * @return a new ItemDescriptor, or null if an error occurs
+	 * @param ce the IConfigurationElement parent
+	 * @param element the name of the element to fetch
+	 * @return the element's IConfigurationElement, or null if not found
 	 */
-	private static ItemDescriptor createViewItemDescriptor(IConfigurationElement ce,
-		String attribId) {
-		final String attribName = getItemName(ce);
-		final Image  attribIcon = getItemIcon(ce);
-		final String attribView = getItemAttribute(ce, LAUNCH_ITEMS_XML_VIEW_VIEWID, null);
-				
-		if (attribView == null) {
-			System.err.println(getResourceString("error.IncompleteViewLaunchItem"));
-			return null;
-		}
-		return new ItemDescriptor(attribId, attribName, getItemDescription(ce),
-			getSourceCodePath(ce), attribIcon, new ViewLaunchDelegate(attribView));
+	private static IConfigurationElement getItemElement(IConfigurationElement ce, String element) {
+		IConfigurationElement[] elementCEs = ce.getChildren(element);
+		return (elementCEs != null && elementCEs.length != 0) ? elementCEs[0] : null;
 	}
 
 	/**
@@ -294,7 +316,7 @@ public class LauncherPlugin extends AbstractUIPlugin {
 	 * @return a newline-delimited string that describes this item, or null if none
 	 */
 	private static String getItemDescription(IConfigurationElement ce) {
-		String description = getItemAttribute(ce, LAUNCH_ITEMS_XML_ATTRIB_DESCRIPTION, "");
+		String description = getItemAttribute(ce, LAUNCH_ITEMS_XML_ITEM_DESCRIPTION, "");
 		return (description.length() == 0) ? null : description;
 	}
 
@@ -317,7 +339,7 @@ public class LauncherPlugin extends AbstractUIPlugin {
 	 * @return an icon
 	 */
 	private static Image getItemIcon(IConfigurationElement ce) {
-		String iconPath = getItemAttribute(ce, LAUNCH_ITEMS_XML_ATTRIB_ICON, "");
+		String iconPath = getItemAttribute(ce, LAUNCH_ITEMS_XML_ITEM_ICON, "");
 		if (iconPath.length() != 0) {
 			Image icon = getImageFromPlugin(ce.getDeclaringExtension().getDeclaringPluginDescriptor(),
 				iconPath);
@@ -366,7 +388,7 @@ public class LauncherPlugin extends AbstractUIPlugin {
 	 * @return a URL containing the source code path, or null if none is available
 	 */
 	private static URL getSourceCodePath(IConfigurationElement ce) {
-		String sourcePath = getItemAttribute(ce, LAUNCH_ITEMS_XML_ATTRIB_SOURCE, "");
+		String sourcePath = getItemAttribute(ce, LAUNCH_ITEMS_XML_SOURCE_ZIP, "");
 		if (sourcePath.length() != 0) {
 			try {
 				// Extract the URL

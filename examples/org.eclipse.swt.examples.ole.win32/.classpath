@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+    <classpathentry kind="src" path=""/>
+    <classpathentry kind="src" path="/org.eclipse.swt"/>
+    <classpathentry kind="src" path="/org.eclipse.core.runtime"/>
+    <classpathentry kind="src" path="/org.eclipse.core.resources"/>
+    <classpathentry kind="src" path="/org.eclipse.ui"/>
     <classpathentry kind="var" path="JRE_LIB"/>
     <classpathentry kind="var"
-        path="ECLIPSE_PLUGINS/org.eclipse.core.resources/resources.jar" sourcepath="ECLIPSE_PLUGINS/org.eclipse.core.resources/resourcessrc.zip"/>
+        path="ECLIPSE_PLUGINS/org.eclipse.swt/swt.jar" sourcepath="ECLIPSE_PLUGINS/org.eclipse.swt/swtsrc.zip"/>
     <classpathentry kind="var"
         path="ECLIPSE_PLUGINS/org.eclipse.core.runtime/runtime.jar" sourcepath="ECLIPSE_PLUGINS/org.eclipse.core.runtime/runtimesrc.zip"/>
     <classpathentry kind="var"
-        path="ECLIPSE_PLUGINS/org.eclipse.ui/workbench.jar" sourcepath="ECLIPSE_PLUGINS/org.eclipse.ui/workbenchsrc.zip"/>
+        path="ECLIPSE_PLUGINS/org.eclipse.core.resources/resources.jar" sourcepath="ECLIPSE_PLUGINS/org.eclipse.core.resources/resourcessrc.zip"/>
     <classpathentry kind="var"
-        path="ECLIPSE_PLUGINS/org.eclipse.swt/swt.jar" sourcepath="ECLIPSE_PLUGINS/org.eclipse.swt/swtsrc.zip"/>
-    <classpathentry kind="src" path=""/>
+        path="ECLIPSE_PLUGINS/org.eclipse.ui/workbench.jar" sourcepath="ECLIPSE_PLUGINS/org.eclipse.ui/workbenchsrc.zip"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
