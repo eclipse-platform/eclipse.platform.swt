@@ -761,6 +761,7 @@ public int getItemHeight () {
 	if (itemCount == 0) return 15;
 	GdkRectangle rect = new GdkRectangle ();
 	int path = OS.gtk_tree_path_new_first ();
+	OS.gtk_widget_realize (handle);
 	OS.gtk_tree_view_get_cell_area (handle, path, 0, rect);
 	OS.gtk_tree_path_free (path);
 	return rect.height;
