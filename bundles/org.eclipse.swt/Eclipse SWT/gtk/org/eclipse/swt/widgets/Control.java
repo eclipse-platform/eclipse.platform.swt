@@ -1659,7 +1659,7 @@ int /*long*/ gtk_enter_notify_event (int /*long*/ widget, int /*long*/ event) {
 
 int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
 	GdkEvent event = new GdkEvent ();
-	OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
+	OS.memmove (event, gdkEvent, GdkEvent.sizeof);
 	switch (event.type) {
 		case OS.GDK_BUTTON_PRESS: {
 			if ((state & MENU) == 0) {
