@@ -130,6 +130,12 @@ Image () {
  *    gc.drawRectangle(0, 0, 50, 50);
  *    gc.dispose();
  * </pre>
+ * <p>
+ * Note: Some platforms may have a limitation on the size
+ * of image that can be created (size depends on width, height,
+ * and depth). For example, Windows 95, 98, and ME do not allow
+ * images larger than 16M.
+ * </p>
  *
  * @param device the device on which to create the image
  * @param width the width of the new image
@@ -486,6 +492,12 @@ public Image(Device device, Image srcImage, int flag) {
  *    gc.drawRectangle(0, 0, 50, 50);
  *    gc.dispose();
  * </pre>
+ * <p>
+ * Note: Some platforms may have a limitation on the size
+ * of image that can be created (size depends on width, height,
+ * and depth). For example, Windows 95, 98, and ME do not allow
+ * images larger than 16M.
+ * </p>
  *
  * @param device the device on which to create the image
  * @param bounds a rectangle specifying the image's width and height (must not be null)
