@@ -175,7 +175,11 @@ public void add (String string, int index) {
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 
-	int [] args = new int [] {OS.Pt_ARG_WIDTH, 0, 0, OS.Pt_ARG_HEIGHT, 0, 0};
+	int [] args = new int [] {
+		OS.Pt_ARG_WIDTH, 0, 0,
+		OS.Pt_ARG_HEIGHT, 0, 0,
+		OS.Pt_ARG_LIST_ITEM_COUNT, 0, 0,
+	};
 	OS.PtGetResources (handle, args.length / 3, args);
 	int resizeFlags = OS.Pt_RESIZE_X_ALWAYS | OS.Pt_RESIZE_Y_ALWAYS;
 	OS.PtSetResource (handle, OS.Pt_ARG_RESIZE_FLAGS, resizeFlags, OS.Pt_RESIZE_XY_BITS);
@@ -185,6 +189,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int width = dim.w, height = dim.h;
 	OS.PtSetResource (handle, OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS);
 	OS.PtSetResources (handle, args.length / 3, args);
+	if (args [7] <= 0) {
+		width += DEFAULT_WIDTH;
+		height += DEFAULT_HEIGHT;
+	}
 			
 	if (wHint != SWT.DEFAULT || hHint != SWT.DEFAULT) {
 		PhRect_t rect = new PhRect_t ();
