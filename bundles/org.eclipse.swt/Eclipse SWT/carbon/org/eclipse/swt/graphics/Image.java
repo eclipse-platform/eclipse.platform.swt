@@ -59,7 +59,7 @@ import java.io.*;
  * @see ImageLoader
  */
 public final class Image implements Drawable {
-		
+	
 	/**
 	 * specifies whether the receiver is a bitmap or an icon
 	 * (one of <code>SWT.BITMAP</code>, <code>SWT.ICON</code>)
@@ -950,14 +950,12 @@ void init(Device device, ImageData image) {
 	this.device = device;
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 
-	//int pixmapDepth = device.fScreenDepth;
-	int pixmapDepth = image.depth;
-	int pixmap = createPixMap(image.width, image.height, pixmapDepth);
+	int pixmap= createPixMap(image.width, image.height, image.depth);
 
-	int[] transPixel = null;
-	if (image.transparentPixel != -1) transPixel = new int[]{image.transparentPixel};
+	int[] transPixel= null;
+	if (image.transparentPixel != -1) transPixel= new int[]{ image.transparentPixel };
 	
-	int error= putImage(image, pixmapDepth, transPixel, pixmap);
+	int error= putImage(image, transPixel, pixmap);
 	if (error != 0) {
 		disposeBitmapOrPixmap(pixmap);
 		SWT.error(error);
@@ -1051,21 +1049,10 @@ public void internal_dispose_GC (int gc, GCData data) {
 public boolean isDisposed() {
 	return pixmap == 0;
 }
-/*
-public static Image macosx_new(Device device, int type, int pixmap, int mask) {
-	if (device == null) device = Device.getDevice();
-	Image image = new Image();
-	image.device = device;
-	image.type = type;
-	image.pixmap = pixmap;
-	image.mask = mask;
-	return image;
-}
-*/
 /**
  * Put a device-independent image of any depth into a drawable of any depth,
  */
-static int putImage(ImageData image, int screenDepth, int[] transparentPixel, int drawable) {
+static int putImage(ImageData image, int[] transparentPixel, int drawable) {
 	
 	int srcX= 0, srcY= 0;
 	int srcWidth= image.width, srcHeight= image.height;
@@ -1106,7 +1093,8 @@ static int putImage(ImageData image, int screenDepth, int[] transparentPixel, in
 	byte[] destReds = null, destGreens = null, destBlues = null;
 	int destRedMask = 0, destGreenMask = 0, destBlueMask = 0;
 	final boolean screenDirect;
-	if (screenDepth <= 8) {
+	int destDepth= OS.GetPixDepth(drawable);
+	if (destDepth <= 8) {
 		destReds = new byte[srcReds.length];
 		destGreens = new byte[srcGreens.length];
 		destBlues = new byte[srcBlues.length];
@@ -1118,9 +1106,9 @@ static int putImage(ImageData image, int screenDepth, int[] transparentPixel, in
 		setColorTable(drawable, destReds, destGreens, destBlues);
 		screenDirect = false;
 	} else {
-		destRedMask = getRedMask(screenDepth);
-		destGreenMask = getGreenMask(screenDepth);
-		destBlueMask = getBlueMask(screenDepth);
+		destRedMask = getRedMask(destDepth);
+		destGreenMask = getGreenMask(destDepth);
+		destBlueMask = getBlueMask(destDepth);
 		screenDirect = true;
 	}
 	if (transparentPixel != null) {
@@ -1139,11 +1127,10 @@ static int putImage(ImageData image, int screenDepth, int[] transparentPixel, in
 				transBlue = rgb.blue;
 			}
 		}
-		transparentPixel[0] = ImageData.closestMatch(screenDepth, (byte)transRed, (byte)transGreen, (byte)transBlue,
+		transparentPixel[0] = ImageData.closestMatch(destDepth, (byte)transRed, (byte)transGreen, (byte)transBlue,
 			destRedMask, destGreenMask, destBlueMask, destReds, destGreens, destBlues);
 	}
 	
-	int destDepth= screenDepth; // Device.getDeviceDepth(OS.GetMainDevice());
 	int destBitsPerPixel= destDepth;
 	
 	int dest_red_mask= getRedMask(destBitsPerPixel);
@@ -1151,7 +1138,7 @@ static int putImage(ImageData image, int screenDepth, int[] transparentPixel, in
 	int dest_blue_mask= getBlueMask(destBitsPerPixel);
 	
 	int destRowBytes= rowBytes(destWidth, destDepth);
-	int bufSize = destRowBytes * destHeight;	
+	int bufSize = destRowBytes * destHeight;
 	byte[] buf = new byte[bufSize];
 
 	int srcOrder = image.getByteOrder();
@@ -1266,6 +1253,8 @@ public String toString () {
 ////////////////////////////////////////////////////////
 
 	private static int rowBytes(int width, int depth) {
+		if (depth == 24)
+			depth= 32;
 		return (((width*depth-1)/(8*DEFAULT_SCANLINE_PAD))+1)*DEFAULT_SCANLINE_PAD;
 	}
 
@@ -1303,7 +1292,11 @@ public String toString () {
 		
 		int pixelType= 0, pixelSize= 0, cmpSize= 0, cmpCount= 0, pixelFormat= 0;
 		
+		if (depth == 24)
+			depth= 32;
+		
 		pixelFormat= depth;
+		pixelSize= depth;
 		
 		switch (depth) {
 		case 1:
@@ -1311,20 +1304,19 @@ public String toString () {
 		case 4:
 		case 8:
 			pixelType= OS.Indexed;
-			pixelSize= depth;
-			cmpCount= 1;
 			cmpSize= depth;
+			cmpCount= 1;
 			break;
 		
 		case 16:
-		case 24:
+			pixelType= OS.RGBDirect;
+			cmpSize= 5;
+			cmpCount= 3;
+			break;
+						
 		case 32:
 			pixelType= OS.RGBDirect;
-			pixelSize= depth;
-			if (depth == 16)
-				cmpSize= 5;
-			else
-				cmpSize= 8;
+			cmpSize= 8;
 			cmpCount= 3;
 			break;
 			

@@ -932,8 +932,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetPort(JNIEnv *e
 	return (jint) p;
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetPort(JNIEnv *env, jclass zz, jint portHandle) {
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetPort(JNIEnv *env, jclass zz,
+		jint portHandle) {
 	SetPort((GrafPtr) portHandle);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_IsValidPort(JNIEnv *env, jclass zz,
+		jint portHandle) {
+	return (jboolean) IsValidPort((CGrafPtr)portHandle);
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetPortWindowPort(JNIEnv *env, jclass zz, jint wHandle) {
@@ -1394,8 +1400,11 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_setRowBytes(JNIEn
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_getBaseAddr(JNIEnv *env, jclass zz, jint pHandle) {
+	/*
 	BitMap **bmh= (BitMap**) pHandle;
 	return (jint) (*bmh)->baseAddr;
+	*/
+	return (jint) GetPixBaseAddr((PixMapHandle)pHandle);
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_getColorTableSize(JNIEnv *env, jclass zz,
@@ -1529,48 +1538,24 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_getPixVRes(JNIEnv
 	return (jint) (*pmh)->vRes;
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CopyBits(JNIEnv *env, jclass zz, jint srcBits, jint dstBits,
-		jshortArray srcRect, jshortArray dstRect, jshort mode, jint maskRgn) {
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CopyBits(JNIEnv *env, jclass zz,
+		jint srcBits, jint dstBits, jshortArray srcRect, jshortArray dstRect, jshort mode, jint maskRgn) {
     jshort *sa= (*env)->GetShortArrayElements(env, srcRect, 0);
     jshort *sb= (*env)->GetShortArrayElements(env, dstRect, 0);
-	CopyBits((BitMap*)srcBits, (BitMap*)dstBits, (Rect*) sa, (Rect*) sb, mode, (RgnHandle) maskRgn);
-	(*env)->ReleaseShortArrayElements(env, srcRect, sa, 0);
+   	CopyBits((BitMap*)srcBits, (BitMap*)dstBits, (Rect*)sa, (Rect*)sb, mode, (RgnHandle) maskRgn);
+ 	(*env)->ReleaseShortArrayElements(env, srcRect, sa, 0);
 	(*env)->ReleaseShortArrayElements(env, dstRect, sb, 0);
 }
 
-static jmp_buf jmpbuf;
-
-static void jumper() {
-	longjmp(jmpbuf, 1);
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CopyMask(JNIEnv *env, jclass zz, jint srcBits,
-		jint maskBits, jint dstBits, jshortArray srcRect, jshortArray maskRect, jshortArray dstRect) {
-		
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CopyMask(JNIEnv *env, jclass zz,
+		jint srcBits, jint maskBits, jint dstBits, jshortArray srcRect, jshortArray maskRect, jshortArray dstRect) {
     jshort *sa= (*env)->GetShortArrayElements(env, srcRect, 0);
     jshort *sb= (*env)->GetShortArrayElements(env, maskRect, 0);
     jshort *sc= (*env)->GetShortArrayElements(env, dstRect, 0);
-    
-    Rect ra= *((Rect*)sa);
-    Rect rb= *((Rect*)sb);
-    Rect rc= *((Rect*)sc);
-    
+	CopyMask((BitMap*)srcBits, (BitMap*)maskBits, (BitMap*)dstBits, (Rect*)sa, (Rect*)sb, (Rect*)sc);
 	(*env)->ReleaseShortArrayElements(env, srcRect, sa, 0);
 	(*env)->ReleaseShortArrayElements(env, maskRect, sb, 0);
-	(*env)->ReleaseShortArrayElements(env, dstRect, sc, 0);
-    
-    if (setjmp(jmpbuf) != 0) {
-    	SysBeep(100);
-    	fprintf(stderr, "OS.CopyMask: signal %08x %08x %08x\n", srcBits, maskBits, dstBits);
-    	return -1;
-    }
-    
-	if (signal(SIGSEGV, jumper) == BADSIG)
- 		fprintf(stderr, "OS.CopyMask: error in signal1\n");
-	CopyMask((BitMap*)srcBits, (BitMap*)maskBits, (BitMap*)dstBits, &ra, &rb, &rc);
-	if (signal(SIGSEGV, SIG_DFL) == BADSIG)
- 		fprintf(stderr, "OS.CopyMask: error in signal2\n");
-	return 0;
+	(*env)->ReleaseShortArrayElements(env, dstRect, sc, 0); 
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CopyDeepMask(JNIEnv *env, jclass zz, jint srcBits,

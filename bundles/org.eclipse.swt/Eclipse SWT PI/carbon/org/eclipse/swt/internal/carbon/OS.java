@@ -374,6 +374,7 @@ public class OS {
 
 	public static native int GetPort();
 	public static native void SetPort(int pHandle);
+	public static native boolean IsValidPort(int pHandle);
 	public static native int GetWindowFromPort(int pHandle);
 	public static native void GetPortBounds(int pHandle, short[] rect);
 	public static native void NormalizeThemeDrawingState();
@@ -483,7 +484,7 @@ public class OS {
 
 	public static native void CopyBits(int srcPixMapHandle, int dstPixMapHandle, short[] srcRect, short[] dstRect,
 											short mode, int maskRgn);
-	public static native int CopyMask(int srcPixMapHandle, int maskPixMapHandle, int dstPixMapHandle,
+	public static native void CopyMask(int srcPixMapHandle, int maskPixMapHandle, int dstPixMapHandle,
 											short[] srcRect, short[] maskRect, short[] dstRect);
 	public static native void CopyDeepMask(int srcPixMapHandle, int maskPixMapHandle, int dstPixMapHandle,
 											short[] srcRect, short[] maskRect, short[] dstRect, short mode, int maskRgn);
