@@ -12,4 +12,4 @@
 maj_ver=3
 min_ver=002
 bld_num=0
-comma_ver=3,0,0,2
+comma_ver=3,0,0,3
