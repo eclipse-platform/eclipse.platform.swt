@@ -1468,10 +1468,12 @@ private void onTraverse (Event event) {
 			break;
 		case SWT.TRAVERSE_MNEMONIC:
 			event.doit = onMnemonic(event);
+			if (event.doit) event.detail = SWT.TRAVERSE_NONE;
 			break;
 		case SWT.TRAVERSE_PAGE_NEXT:
 		case SWT.TRAVERSE_PAGE_PREVIOUS:
 			event.doit = onPageTraversal(event);
+			if (event.doit) event.detail = SWT.TRAVERSE_NONE;
 			break;
 	}
 }
