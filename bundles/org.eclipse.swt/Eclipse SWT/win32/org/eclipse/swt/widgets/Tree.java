@@ -424,6 +424,11 @@ void createItem (TreeColumn column, int index) {
 	}
 	setScrollWidth ();
 	updateScrollBar ();
+	
+	/* Redraw to hide the items when the first column is created */
+	if (count == 0 && OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0) != 0) {
+		OS.InvalidateRect (handle, null, true);
+	}
 }
 
 void createItem (TreeItem item, int hParent, int hInsertAfter) {
