@@ -45,7 +45,6 @@ public class Menu extends Widget {
 	boolean hasLocation;
 	MenuItem cascade;
 	Decorations parent;
-	Control parentControl;
 	
 	/* Resource ID for SHMENUBARINFO */
 	static final int ID_PPC = 100;
@@ -79,7 +78,6 @@ public class Menu extends Widget {
  */
 public Menu (Control parent) {
 	this (checkNull (parent).menuShell (), SWT.POP_UP);
-	parentControl = parent;
 }
 
 /**

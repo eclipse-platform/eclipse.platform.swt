@@ -535,6 +535,11 @@ Cursor findCursor () {
 	return parent.findCursor ();
 }
 
+Menu [] findMenus (Control control) {
+	if (menu != null && this != control) return new Menu [] {menu};
+	return new Menu [0];
+}
+
 char findMnemonic (String string) {
 	int index = 0;
 	int length = string.length ();
@@ -547,9 +552,9 @@ char findMnemonic (String string) {
  	return '\0';
 }
 
-void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, Decorations oldDecorations) {
+void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, Decorations oldDecorations, Menu [] menus) {
 	oldShell.fixShell (newShell, this);
-	oldDecorations.fixDecorations (newDecorations, this);
+	oldDecorations.fixDecorations (newDecorations, this, menus);
 }
 
 void fixFocus () {
@@ -2141,15 +2146,8 @@ public void setMenu (Menu menu) {
 		if ((menu.style & SWT.POP_UP) == 0) {
 			error (SWT.ERROR_MENU_NOT_POP_UP);
 		}
-		Decorations menuShell = menuShell ();
-		if (menu.parent != menuShell) error (SWT.ERROR_INVALID_PARENT);
-		Control parentControl = menu.parentControl;
-		if (parentControl != null && parentControl != this) {
-			Control control = this;
-			while ((control = control.parent) != null) {
-				if (control == parentControl || control == menuShell) break;
-			}
-			if (control != parentControl) error (SWT.ERROR_INVALID_PARENT);
+		if (menu.parent != menuShell ()) {
+			error (SWT.ERROR_INVALID_PARENT);
 		}
 	}
 	this.menu = menu;
@@ -2875,8 +2873,9 @@ public boolean setParent (Composite parent) {
 	releaseChild ();
 	Shell newShell = parent.getShell (), oldShell = getShell ();
 	Decorations newDecorations = parent.menuShell (), oldDecorations = menuShell ();
+	Menu [] menus = oldShell.findMenus (this);
 	if (oldShell != newShell || oldDecorations != newDecorations) {
-		fixChildren (newShell, oldShell, newDecorations, oldDecorations);
+		fixChildren (newShell, oldShell, newDecorations, oldDecorations, menus);
 	}
 	if (OS.SetParent (handle, parent.handle) == 0) return false;
 	this.parent = parent;

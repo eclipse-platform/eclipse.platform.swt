@@ -381,22 +381,24 @@ MenuItem findMenuItem (int id) {
 	return null;
 }
 
-void fixDecorations (Decorations newDecorations, Control control) {
+void fixDecorations (Decorations newDecorations, Control control, Menu [] menus) {
 	if (this == newDecorations) return;
 	if (control == savedFocus) savedFocus = null;
 	if (control == defaultButton) defaultButton = null;
 	if (control == saveDefault) saveDefault = null;
 	if (menus == null) return;
-	if (control.menu != null && control.menu.parentControl == null) {
-		control.setMenu (null);
-	}
-	for (int i=0; i<menus.length; i++) {
-		Menu menu = menus [i];
-		if (menu != null && menu.parentControl == control) {
-			menu.fixMenus (newDecorations);
-			destroyAccelerators ();
-			return;
+	Menu menu = control.menu;
+	if (menu != null) {
+		int index = 0;
+		while (index <menus.length) {
+			if (menus [index] == menu) {
+				control.setMenu (null);
+				return;
+			}
+			index++;
 		}
+		menu.fixMenus (newDecorations);
+		destroyAccelerators ();
 	}
 }
 
