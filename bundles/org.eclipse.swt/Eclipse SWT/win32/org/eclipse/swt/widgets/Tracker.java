@@ -406,6 +406,18 @@ public boolean open () {
 	Event event = new Event ();
 	MSG msg = new MSG ();
 	boolean isMirrored = parent != null && (parent.style & SWT.MIRRORED) != 0;
+
+	// if exactly one of UP/DOWN is specified as a style then set the cursor
+	// orientation accordingly (the same is done for LEFT/RIGHT styles below)
+	int vStyle = style & (SWT.UP | SWT.DOWN);
+	if (vStyle == SWT.UP || vStyle == SWT.DOWN) {
+		cursorOrientation |= vStyle;
+	}
+	int hStyle = style & (SWT.LEFT | SWT.RIGHT);
+	if (hStyle == SWT.LEFT || hStyle == SWT.RIGHT) {
+		cursorOrientation |= hStyle;
+	}
+
 	/*
 	* If this tracker is being created without a mouse drag then
 	* we need to create a transparent window that fills the screen
