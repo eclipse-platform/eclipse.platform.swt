@@ -98,7 +98,7 @@ void createHandle () {
 	column.headerBtnDesc_initialOrder = OS.kDataBrowserOrderIncreasing;
 	OS.AddDataBrowserListViewColumn (handle, column, position);
 	OS.SetDataBrowserListViewDisclosureColumn (handle, COLUMN_ID, true);
-	OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short)300);
+	OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short)800);
 
 	/*
 	* Feature in the Macintosh.  Scroll bars are not created until
