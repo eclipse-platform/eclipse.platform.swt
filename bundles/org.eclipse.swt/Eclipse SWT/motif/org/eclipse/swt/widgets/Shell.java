@@ -1163,40 +1163,6 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	if (isFocus) caret.setFocus ();
 	return move || resize;
 }
-
-/**
- * Sets the shape of the shell to the region specified
- * by the argument.  A null region will restore the default shape.
- * Shell must be created with the style SWT.NO_TRIM.
- *
- * @param rgn the region that defines the shape of the shell
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @since 3.0
- *
- */
-public void setRegion (Region region) {
-	checkWidget ();
-	if ((style & SWT.NO_TRIM) == 0) return;
-	OS.XtSetMappedWhenManaged (shellHandle, false);
-	OS.XtRealizeWidget (shellHandle);
-	int xDisplay = OS.XtDisplay (shellHandle);
-	if (xDisplay == 0) return;
-	int xWindow = OS.XtWindow (shellHandle);
-	if (xWindow == 0) return;
-	if (region != null) {
-		OS.XShapeCombineRegion (xDisplay, xWindow, OS.ShapeBounding, 0, 0, region.handle, OS.ShapeSet);
-		OS.XShapeCombineRegion (xDisplay, xWindow, OS.ShapeClip, 0, 0, region.handle, OS.ShapeSet);
-	} else {
-		OS.XShapeCombineMask (xDisplay, xWindow, OS.ShapeBounding, 0, 0, 0, OS.ShapeSet);
-		OS.XShapeCombineMask (xDisplay, xWindow, OS.ShapeClip, 0, 0, 0, OS.ShapeSet);
-	}
-	this.region = region;
-}
 public void setMinimized (boolean minimized) {
 	checkWidget();
 	if (minimized == this.minimized) return;
@@ -1246,6 +1212,38 @@ public void setMinimized (boolean minimized) {
 }
 void setParentTraversal () {
 	/* Do nothing - Child shells do not affect the traversal of their parent shell */
+}
+/**
+ * Sets the shape of the shell to the region specified
+ * by the argument.  A null region will restore the default shape.
+ * Shell must be created with the style SWT.NO_TRIM.
+ *
+ * @param rgn the region that defines the shape of the shell
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.0
+ *
+ */
+public void setRegion (Region region) {
+	checkWidget ();
+	if ((style & SWT.NO_TRIM) == 0) return;
+	if (!OS.XtIsRealized (shellHandle)) realizeWidget ();
+	int xDisplay = OS.XtDisplay (shellHandle);
+	if (xDisplay == 0) return;
+	int xWindow = OS.XtWindow (shellHandle);
+	if (xWindow == 0) return;
+	if (region != null) {
+		OS.XShapeCombineRegion (xDisplay, xWindow, OS.ShapeBounding, 0, 0, region.handle, OS.ShapeSet);
+		OS.XShapeCombineRegion (xDisplay, xWindow, OS.ShapeClip, 0, 0, region.handle, OS.ShapeSet);
+	} else {
+		OS.XShapeCombineMask (xDisplay, xWindow, OS.ShapeBounding, 0, 0, 0, OS.ShapeSet);
+		OS.XShapeCombineMask (xDisplay, xWindow, OS.ShapeClip, 0, 0, 0, OS.ShapeSet);
+	}
+	this.region = region;
 }
 public void setText (String string) {
 	checkWidget();
