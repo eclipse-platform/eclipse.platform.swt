@@ -194,7 +194,7 @@ public int hashCode() {
 
 void init(Device device, String name, int height, int style, byte[] fontString) {
 	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (height < 0) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	
 	if (fontString != null) {
 		handle = OS.pango_font_description_from_string (fontString);
