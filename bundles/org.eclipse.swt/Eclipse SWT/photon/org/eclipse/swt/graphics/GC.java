@@ -1210,6 +1210,44 @@ public void drawText (String string, int x, int y, boolean isTransparent) {
 	}
 }
 
+/** 
+ * Draws the given string, using the receiver's current font and
+ * foreground color. Tab expansion, line delimiter and mnemonic
+ * processing are performed according to the specified flags. If
+ * <code>flags</code> includes <code>DRAW_TRANSPARENT</code>,
+ * then the background of the rectangular area where the text is being
+ * drawn will not be modified, otherwise it will be filled with the
+ * receiver's background color.
+ * <p>
+ * The parameter <code>flags</code> may be a combination of:
+ * <dl>
+ * <dt><b>DRAW_DELIMITER</b></dt>
+ * <dd>draw multiple lines</dd>
+ * <dt><b>DRAW_TAB</b></dt>
+ * <dd>expand tabs</dd>
+ * <dt><b>DRAW_MNEMONIC</b></dt>
+ * <dd>underline the mnemonic character</dd>
+ * <dt><b>DRAW_TRANSPARENT</b></dt>
+ * <dd>transparent background</dd>
+ * </dl>
+ * </p>
+ *
+ * @param string the string to be drawn
+ * @param x the x coordinate of the top left corner of the rectangular area where the text is to be drawn
+ * @param y the y coordinate of the top left corner of the rectangular area where the text is to be drawn
+ * @param flags the flags specifing how to process the text
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>	
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public void drawText (String string, int x, int y, int flags) {
+	drawText(string, x, y);
+}
+
 /**
  * Compares the argument to the receiver, and returns true
  * if they represent the <em>same</em> object using a class
@@ -2379,6 +2417,41 @@ public Point textExtent(String string) {
 	else width = rect.lr_x - (rect.ul_x < 0 ? rect.ul_x : 0) + 1;
 	int height = rect.lr_y - rect.ul_y + 1;
 	return new Point(width, height);
+}
+
+/**
+ * Returns the extent of the given string. Tab expansion, line
+ * delimiter and mnemonic processing are performed according to
+ * the specified flags, which can be a combination of:
+ * <dl>
+ * <dt><b>DRAW_DELIMITER</b></dt>
+ * <dd>draw multiple lines</dd>
+ * <dt><b>DRAW_TAB</b></dt>
+ * <dd>expand tabs</dd>
+ * <dt><b>DRAW_MNEMONIC</b></dt>
+ * <dd>underline the mnemonic character</dd>
+ * <dt><b>DRAW_TRANSPARENT</b></dt>
+ * <dd>transparent background</dd>
+ * </dl>
+ * <p>
+ * The <em>extent</em> of a string is the width and height of
+ * the rectangular area it would cover if drawn in a particular
+ * font (in this case, the current font in the receiver).
+ * </p>
+ *
+ * @param string the string to measure
+ * @param flags the flags specifing how to process the text
+ * @return a point containing the extent of the string
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public Point textExtent(String string, int flags) {
+	return textExtent(string);
 }
 
 /**
