@@ -1177,11 +1177,10 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 		xImage.data = bufPtr;
 		OS.memmove(xImagePtr, xImage, XImage.sizeof);
 		byte[] buf = new byte[bufSize];
-		int destOrder = xImage.byte_order == OS.MSBFirst ? ImageData.MSB_FIRST : ImageData.LSB_FIRST;
 		ImageData.blit(ImageData.BLIT_SRC,
 			image.data, image.depth, image.bytesPerLine, image.getByteOrder(), srcX, srcY, srcWidth, srcHeight, null, null, null,
 			ImageData.ALPHA_OPAQUE, null, 0, srcX, srcY,
-			buf, xImage.bits_per_pixel, xImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, null, null, null,
+			buf, xImage.bits_per_pixel, xImage.bytes_per_line, xImage.bitmap_bit_order, 0, 0, destWidth, destHeight, null, null, null,
 			flipX, flipY);
 		OS.memmove(xImage.data, buf, bufSize);
 
@@ -1218,19 +1217,18 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 	xImage.data = bufPtr;
 	OS.memmove(xImagePtr, xImage, XImage.sizeof);
 	byte[] buf = new byte[bufSize];
-	int destOrder = xImage.byte_order == OS.MSBFirst ? ImageData.MSB_FIRST : ImageData.LSB_FIRST;
 	if (palette.isDirect) {
 		if (screenDirect) {
 			ImageData.blit(ImageData.BLIT_SRC,
 				image.data, image.depth, image.bytesPerLine, image.getByteOrder(), srcX, srcY, srcWidth, srcHeight, palette.redMask, palette.greenMask, palette.blueMask,
 				ImageData.ALPHA_OPAQUE, null, 0, srcX, srcY,
-				buf, xImage.bits_per_pixel, xImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, xImage.red_mask, xImage.green_mask, xImage.blue_mask,
+				buf, xImage.bits_per_pixel, xImage.bytes_per_line, xImage.byte_order, 0, 0, destWidth, destHeight, xImage.red_mask, xImage.green_mask, xImage.blue_mask,
 				flipX, flipY);
 		} else {
 			ImageData.blit(ImageData.BLIT_SRC,
 				image.data, image.depth, image.bytesPerLine, image.getByteOrder(), srcX, srcY, srcWidth, srcHeight, palette.redMask, palette.greenMask, palette.blueMask,
 				ImageData.ALPHA_OPAQUE, null, 0, srcX, srcY,
-				buf, xImage.bits_per_pixel, xImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, destReds, destGreens, destBlues,
+				buf, xImage.bits_per_pixel, xImage.bytes_per_line, xImage.byte_order, 0, 0, destWidth, destHeight, destReds, destGreens, destBlues,
 				flipX, flipY);
 		}
 	} else {
@@ -1238,13 +1236,13 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 			ImageData.blit(ImageData.BLIT_SRC,
 				image.data, image.depth, image.bytesPerLine, image.getByteOrder(), srcX, srcY, srcWidth, srcHeight, srcReds, srcGreens, srcBlues,
 				ImageData.ALPHA_OPAQUE, null, 0, srcX, srcY,
-				buf, xImage.bits_per_pixel, xImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, xImage.red_mask, xImage.green_mask, xImage.blue_mask,
+				buf, xImage.bits_per_pixel, xImage.bytes_per_line, xImage.byte_order, 0, 0, destWidth, destHeight, xImage.red_mask, xImage.green_mask, xImage.blue_mask,
 				flipX, flipY);
 		} else {
 			ImageData.blit(ImageData.BLIT_SRC,
 				image.data, image.depth, image.bytesPerLine, image.getByteOrder(), srcX, srcY, srcWidth, srcHeight, srcReds, srcGreens, srcBlues,
 				ImageData.ALPHA_OPAQUE, null, 0, srcX, srcY,
-				buf, xImage.bits_per_pixel, xImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, destReds, destGreens, destBlues,
+				buf, xImage.bits_per_pixel, xImage.bytes_per_line, xImage.byte_order, 0, 0, destWidth, destHeight, destReds, destGreens, destBlues,
 				flipX, flipY);
 		}
 	}

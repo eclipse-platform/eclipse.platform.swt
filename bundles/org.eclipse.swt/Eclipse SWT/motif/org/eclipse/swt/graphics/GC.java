@@ -407,8 +407,6 @@ void drawImageAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHei
 		OS.memmove(srcData, xSrcImage.data, srcData.length);
 		
 		/* Compose the pixels */		
-		int srcOrder = xSrcImage.byte_order == OS.MSBFirst ? ImageData.MSB_FIRST : ImageData.LSB_FIRST;
-		int destOrder = xDestImage.byte_order == OS.MSBFirst ? ImageData.MSB_FIRST : ImageData.LSB_FIRST;
 		if (xSrcImage.depth <= 8) {
 			XColor[] xcolors = data.device.xcolors;
 			if (xcolors == null) SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
@@ -423,9 +421,9 @@ void drawImageAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHei
 				blues[i] = (byte)((color.blue >> 8) & 0xFF);
 			}
 			ImageData.blit(ImageData.BLIT_ALPHA,
-				srcData, xSrcImage.bits_per_pixel, xSrcImage.bytes_per_line, srcOrder, 0, 0, srcWidth, srcHeight, reds, greens, blues,
+				srcData, xSrcImage.bits_per_pixel, xSrcImage.bytes_per_line, xSrcImage.byte_order, 0, 0, srcWidth, srcHeight, reds, greens, blues,
 				srcImage.alpha, srcImage.alphaData, imgWidth, srcX, srcY,
-				destData, xDestImage.bits_per_pixel, xDestImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, reds, greens, blues,
+				destData, xDestImage.bits_per_pixel, xDestImage.bytes_per_line, xDestImage.byte_order, 0, 0, destWidth, destHeight, reds, greens, blues,
 				false, false);
 		} else {
 			int srcRedMask = xSrcImage.red_mask;
@@ -458,9 +456,9 @@ void drawImageAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHei
 			}
 			
 			ImageData.blit(ImageData.BLIT_ALPHA,
-				srcData, xSrcImage.bits_per_pixel, xSrcImage.bytes_per_line, srcOrder, 0, 0, srcWidth, srcHeight, srcRedMask, srcGreenMask, srcBlueMask,
+				srcData, xSrcImage.bits_per_pixel, xSrcImage.bytes_per_line, xSrcImage.byte_order, 0, 0, srcWidth, srcHeight, srcRedMask, srcGreenMask, srcBlueMask,
 				srcImage.alpha, srcImage.alphaData, imgWidth, srcX, srcY,
-				destData, xDestImage.bits_per_pixel, xDestImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, destRedMask, destGreenMask, destBlueMask,
+				destData, xDestImage.bits_per_pixel, xDestImage.bytes_per_line, xDestImage.byte_order, 0, 0, destWidth, destHeight, destRedMask, destGreenMask, destBlueMask,
 				false, false);
 		}
 		
@@ -565,10 +563,8 @@ static int scalePixmap(int display, int pixmap, int srcX, int srcY, int srcWidth
 			xImage.data = bufPtr;
 			OS.memmove(xImagePtr, xImage, XImage.sizeof);
 			byte[] buf = new byte[bufSize];
-			int order = xSrcImage.bits_per_pixel == 1 ? xSrcImage.bitmap_bit_order : xSrcImage.byte_order;
-			int srcOrder = order == OS.MSBFirst ? ImageData.MSB_FIRST : ImageData.LSB_FIRST;
-			order = xImage.bits_per_pixel == 1 ? xImage.bitmap_bit_order : xImage.byte_order;
-			int destOrder = order == OS.MSBFirst ? ImageData.MSB_FIRST : ImageData.LSB_FIRST;
+			int srcOrder = xSrcImage.bits_per_pixel == 8 ? xSrcImage.byte_order : xSrcImage.bitmap_bit_order;
+			int destOrder = xImage.bits_per_pixel == 8 ? xImage.byte_order : xImage.bitmap_bit_order;
 			ImageData.blit(ImageData.BLIT_SRC,
 				srcData, xSrcImage.bits_per_pixel, xSrcImage.bytes_per_line, srcOrder, 0, 0, srcWidth, srcHeight, null, null, null,
 				ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
@@ -590,9 +586,9 @@ static int scalePixmap(int display, int pixmap, int srcX, int srcY, int srcWidth
 			OS.memmove(xImagePtr, xImage, XImage.sizeof);
 			byte[] buf = new byte[bufSize];
 			ImageData.blit(ImageData.BLIT_SRC,
-				srcData, xSrcImage.bits_per_pixel, xSrcImage.bytes_per_line, ImageData.MSB_FIRST, 0, 0, srcWidth, srcHeight, 0, 0, 0,
+				srcData, xSrcImage.bits_per_pixel, xSrcImage.bytes_per_line, xSrcImage.byte_order, 0, 0, srcWidth, srcHeight, 0, 0, 0,
 				ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
-				buf, xImage.bits_per_pixel, xImage.bytes_per_line, ImageData.MSB_FIRST, 0, 0, destWidth, destHeight, 0, 0, 0,
+				buf, xImage.bits_per_pixel, xImage.bytes_per_line, xImage.byte_order, 0, 0, destWidth, destHeight, 0, 0, 0,
 				flipX, flipY);
 			OS.memmove(bufPtr, buf, bufSize);
 			break;

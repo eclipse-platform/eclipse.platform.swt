@@ -1059,7 +1059,7 @@ public int getTransparencyType() {
  * @return MSB_FIRST or LSB_FIRST
  */
 int getByteOrder() {
-	return (depth != 16) ? MSB_FIRST : LSB_FIRST;
+	return depth != 16 ? MSB_FIRST : LSB_FIRST;
 }
 
 /**
@@ -1634,8 +1634,8 @@ static final int
 /**
  * Byte and bit order constants.
  */
+static final int LSB_FIRST = 0;
 static final int MSB_FIRST = 1;
-static final int LSB_FIRST = 2;
 
 /**
  * Data types (internal)
