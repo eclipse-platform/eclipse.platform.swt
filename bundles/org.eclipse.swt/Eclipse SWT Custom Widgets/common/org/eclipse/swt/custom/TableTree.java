@@ -399,7 +399,6 @@ void onDispose(Event e) {
 }
 
 void onTraverse(Event e) {
-	if (e.stateMask != SWT.SHIFT) return;
 	if (e.detail == SWT.TRAVERSE_ARROW_PREVIOUS || e.detail == SWT.TRAVERSE_ARROW_NEXT) {
 		TableTreeItem[] selection = getSelection();
 		if (selection.length > 0) {
