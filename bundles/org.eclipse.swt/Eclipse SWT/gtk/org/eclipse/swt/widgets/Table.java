@@ -1747,7 +1747,7 @@ public void setSelection (int start, int end) {
 public void setSelection (int [] indices) {
 	checkWidget ();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if ((style & SWT.MULTI) != 0) deselectAll ();
+	deselectAll ();
 	select (indices);
 	showSelection ();
 }
@@ -1774,7 +1774,7 @@ public void setSelection (int [] indices) {
 public void setSelection (TableItem [] items) {
 	checkWidget();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if ((style & SWT.MULTI) != 0) deselectAll ();
+	deselectAll ();
 	int length = items.length;
 	if (length == 0) return;
 	if ((style & SWT.SINGLE) != 0) length = 1;
