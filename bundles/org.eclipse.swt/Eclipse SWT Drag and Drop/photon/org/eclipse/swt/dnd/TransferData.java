@@ -9,10 +9,7 @@ public class TransferData {
 	public int type;
 	
 	// attributes specific to set/get
+	int pData;
 	int length;
-	int format;
-	int pValue;
-
 	int result;
-	
 }

@@ -6516,3 +6516,183 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgGetVideoModeInf
 	return result;
 }
 
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PhClipboardCopy
+ * Signature: (SI[B)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhClipboardCopy
+  (JNIEnv *env, jclass that, jshort ig, jint n, jbyteArray clip)
+{	
+   jbyte *clip1;
+   jint result;
+   
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "PhClipboardCopy\n");
+#endif
+
+    if (clip) {
+        clip1 = (*env)->GetByteArrayElements(env, clip, NULL);
+    }
+    
+    result = (jint)PhClipboardCopy(ig, n, (PhClipHeader const *)clip1);
+    
+    if (clip) {
+        (*env)->ReleaseByteArrayElements(env, clip, clip1, 0);
+    }
+    
+    return result;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PhClipboardPasteStart
+ * Signature: (S)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhClipboardPasteStart
+  (JNIEnv *env, jobject that, jshort ig)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "PhClipboardPasteStart\n");
+#endif
+	
+	return (jint) PhClipboardPasteStart(ig);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PhClipboardPasteType
+ * Signature: (I[B)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhClipboardPasteType
+  (JNIEnv *env, jobject that, jint cbdata, jbyteArray type)
+{
+	 char *type1=NULL;
+	 jint result;
+
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "PhClipboardPasteType\n");
+#endif
+
+ 	if (type)
+        type1 = (char *)(*env)->GetByteArrayElements(env, type, NULL);
+    	
+	result = (jint) PhClipboardPasteType((void *)cbdata, type1);
+	
+	if (type)
+        (*env)->ReleaseByteArrayElements(env, type, (jbyte *)type1, 0);
+        
+	return result;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PhClipboardPasteTypeN
+ * Signature: (II)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhClipboardPasteTypeN
+  (JNIEnv *env, jobject that, jint cbdata, jint n)
+{
+
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "PhClipboardPasteTypeN\n");
+#endif
+	return (jint) PhClipboardPasteTypeN((void *)cbdata, n);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PhClipboardPasteFinish
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PhClipboardPasteFinish
+  (JNIEnv *env, jobject that, jint cbdata)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "PhClipboardPasteFinish\n");
+#endif
+	
+	PhClipboardPasteFinish((void *)cbdata);
+	
+	return;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    memmove
+ * Signature: (Lorg/eclipse/swt/internal/photon/PhClipHeader;II)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__Lorg_eclipse_swt_internal_photon_PhClipHeader_2II
+  (JNIEnv *env, jobject that, jobject dest, jint src, jint count)
+{
+	DECL_GLOB(pGlob)
+	PhClipHeader object, *dest1=NULL;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_photon_PhClipHeader_2II\n");
+#endif
+
+    memmove((void *)&object, (void *)src, count);
+    if (dest) {
+        dest1=&object;
+        cachePhClipHeaderFids(env, dest, &PGLOB(PhClipHeaderFc));
+        setPhClipHeaderFields(env, dest, dest1, &PGLOB(PhClipHeaderFc));
+    }
+
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    memmove
+ * Signature: ([BLorg/eclipse/swt/internal/photon/PhClipHeader;I)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove___3BLorg_eclipse_swt_internal_photon_PhClipHeader_2I
+  (JNIEnv *env, jobject that, jbyteArray dest, jobject src, jint count)
+{
+	DECL_GLOB(pGlob)
+	jbyte *dest1=NULL;
+    PhClipHeader object, *src1= NULL;
+    
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "memmove___3BLorg_eclipse_swt_internal_photon_PhClipHeader_2I\n");
+#endif
+
+    if (src) {
+        src1=&object;
+        cachePhClipHeaderFids(env, src, &PGLOB(PhClipHeaderFc));
+        getPhClipHeaderFields(env, src, src1, &PGLOB(PhClipHeaderFc));
+    }
+    
+    if (dest) {
+    	dest1 = (*env)->GetByteArrayElements(env, dest, NULL);
+    }
+    
+    memmove((void *)dest1, (void *)src1, count);
+    
+    if (dest) {
+    	 (*env)->ReleaseByteArrayElements(env, dest, (jbyte *)dest1, 0);
+    }
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    memmove
+ * Signature: (ILorg/eclipse/swt/internal/photon/PhClipHeader;I)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove___ILorg_eclipse_swt_internal_photon_PhClipHeader_2I
+  (JNIEnv *env, jobject that, jint dest, jobject src, jint count)
+{
+	DECL_GLOB(pGlob)
+    PhClipHeader object, *src1= NULL;
+    
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "memmove___3BLorg_eclipse_swt_internal_photon_PhClipHeader_2I\n");
+#endif
+
+    if (src) {
+        src1=&object;
+        cachePhClipHeaderFids(env, src, &PGLOB(PhClipHeaderFc));
+        getPhClipHeaderFields(env, src, src1, &PGLOB(PhClipHeaderFc));
+    }
+    
+    memmove((void *)dest, (void *)src1, count);
+}

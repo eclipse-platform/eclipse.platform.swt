@@ -1306,3 +1306,47 @@ void setPgVideoModeInfo_tFields(JNIEnv *env, jobject lpObject, PgVideoModeInfo_t
 	(*env)->SetShortField(env, lpObject, lpCache->width, lpStruct->width);
 }
 
+void cachePhClipHeaderFids(JNIEnv *env, jobject lpObject, PPhClipHeader_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->data = (*env)->GetFieldID(env, lpCache->clazz, "data", "I");
+	lpCache->length = (*env)->GetFieldID(env, lpCache->clazz, "length", "S");
+	lpCache->type_7 = (*env)->GetFieldID(env, lpCache->clazz, "type_7", "B");
+	lpCache->type_6 = (*env)->GetFieldID(env, lpCache->clazz, "type_6", "B");
+	lpCache->type_5 = (*env)->GetFieldID(env, lpCache->clazz, "type_5", "B");
+	lpCache->type_4 = (*env)->GetFieldID(env, lpCache->clazz, "type_4", "B");
+	lpCache->type_3 = (*env)->GetFieldID(env, lpCache->clazz, "type_3", "B");
+	lpCache->type_2 = (*env)->GetFieldID(env, lpCache->clazz, "type_2", "B");
+	lpCache->type_1 = (*env)->GetFieldID(env, lpCache->clazz, "type_1", "B");
+	lpCache->type_0 = (*env)->GetFieldID(env, lpCache->clazz, "type_0", "B");
+	lpCache->cached = 1;
+}
+
+void getPhClipHeaderFields(JNIEnv *env, jobject lpObject, PhClipHeader *lpStruct, PPhClipHeader_FID_CACHE lpCache)
+{
+	lpStruct->data = (void *)(*env)->GetIntField(env, lpObject, lpCache->data);
+	lpStruct->length = (*env)->GetShortField(env, lpObject, lpCache->length);
+	lpStruct->type[7] = (*env)->GetByteField(env, lpObject, lpCache->type_7);
+	lpStruct->type[6] = (*env)->GetByteField(env, lpObject, lpCache->type_6);
+	lpStruct->type[5] = (*env)->GetByteField(env, lpObject, lpCache->type_5);
+	lpStruct->type[4] = (*env)->GetByteField(env, lpObject, lpCache->type_4);
+	lpStruct->type[3] = (*env)->GetByteField(env, lpObject, lpCache->type_3);
+	lpStruct->type[2] = (*env)->GetByteField(env, lpObject, lpCache->type_2);
+	lpStruct->type[1] = (*env)->GetByteField(env, lpObject, lpCache->type_1);
+	lpStruct->type[0] = (*env)->GetByteField(env, lpObject, lpCache->type_0);
+}
+
+void setPhClipHeaderFields(JNIEnv *env, jobject lpObject, PhClipHeader *lpStruct, PPhClipHeader_FID_CACHE lpCache)
+{
+	(*env)->SetIntField(env, lpObject, lpCache->data, (jint)lpStruct->data);
+	(*env)->SetShortField(env, lpObject, lpCache->length, lpStruct->length);
+	(*env)->SetByteField(env, lpObject, lpCache->type_7, lpStruct->type[7]);
+	(*env)->SetByteField(env, lpObject, lpCache->type_6, lpStruct->type[6]);
+	(*env)->SetByteField(env, lpObject, lpCache->type_5, lpStruct->type[5]);
+	(*env)->SetByteField(env, lpObject, lpCache->type_4, lpStruct->type[4]);
+	(*env)->SetByteField(env, lpObject, lpCache->type_3, lpStruct->type[3]);
+	(*env)->SetByteField(env, lpObject, lpCache->type_2, lpStruct->type[2]);
+	(*env)->SetByteField(env, lpObject, lpCache->type_1, lpStruct->type[1]);
+	(*env)->SetByteField(env, lpObject, lpCache->type_0, lpStruct->type[0]);
+}

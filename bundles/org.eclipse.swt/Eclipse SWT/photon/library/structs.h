@@ -41,7 +41,8 @@
 	PtContainerCallback_t_FID_CACHE PtContainerCallback_tFc; \
 	PhCursorDef_t_FID_CACHE PhCursorDef_tFc; \
 	PgDisplaySettings_t_FID_CACHE PgDisplaySettings_tFc; \
-	PgVideoModeInfo_t_FID_CACHE PgVideoModeInfo_tFc;
+	PgVideoModeInfo_t_FID_CACHE PgVideoModeInfo_tFc; \
+	PhClipHeader_FID_CACHE PhClipHeaderFc;
 
 /* PhPoint_t struct */
 typedef struct PhPoint_t_FID_CACHE {
@@ -350,5 +351,18 @@ typedef PgVideoModeInfo_t_FID_CACHE *PPgVideoModeInfo_t_FID_CACHE;
 void cachePgVideoModeInfo_tFids(JNIEnv *env, jobject lpObject, PPgVideoModeInfo_t_FID_CACHE lpCache);
 void getPgVideoModeInfo_tFields(JNIEnv *env, jobject lpObject, PgVideoModeInfo_t *lpStruct, PPgVideoModeInfo_t_FID_CACHE lpCache);
 void setPgVideoModeInfo_tFields(JNIEnv *env, jobject lpObject, PgVideoModeInfo_t *lpStruct, PPgVideoModeInfo_t_FID_CACHE lpCache);
+
+/* PhClipHeader struct */
+typedef struct PhClipHeader_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID data, length, type_7, type_6, type_5, type_4, type_3, type_2, type_1, type_0;
+} PhClipHeader_FID_CACHE;
+typedef PhClipHeader_FID_CACHE *PPhClipHeader_FID_CACHE;
+
+void cachePhClipHeaderFids(JNIEnv *env, jobject lpObject, PPhClipHeader_FID_CACHE lpCache);
+void getPhClipHeaderFields(JNIEnv *env, jobject lpObject, PhClipHeader *lpStruct, PPhClipHeader_FID_CACHE lpCache);
+void setPhClipHeaderFields(JNIEnv *env, jobject lpObject, PhClipHeader *lpStruct, PPhClipHeader_FID_CACHE lpCache);
+
 
 #endif // INC_structs_H
