@@ -295,7 +295,6 @@ public int getCaretLineNumber () {
 	int addr_index=getCaretPosition();
 	String tmpString= new String(getText(0,addr_index));
 	return getLineNumberInString(tmpString,'\n');
-	return 0;
 }
 
 /**
@@ -334,8 +333,7 @@ public Point getCaretLocation () {
  */
 public int getCaretPosition () {
 	checkWidget ();
-//	return OS.gtk_editable_get_position (handle);
-	return 0;
+	return OS.gtk_editable_get_position (handle);
 }
 
 
@@ -351,14 +349,13 @@ public int getCaretPosition () {
  */
 public int getCharCount () {
 	checkWidget ();
-	/*if ((style & SWT.SINGLE) != 0) {
+	if ((style & SWT.SINGLE) != 0) {
 		int address = OS.gtk_editable_get_chars (handle, 0, -1);
 		int length = OS.strlen (address);
 		OS.g_free (address);
 		return length;
 	}
-	return OS.gtk_text_get_length (handle);*/
-	return 0;
+	return OS.gtk_text_get_length (handle);
 }
 
 /**
@@ -420,10 +417,7 @@ public char getEchoChar () {
  */
 public boolean getEditable () {
 	checkWidget ();
-	/*GtkEditable widget = new GtkEditable ();
-	OS.memmove (widget, handle, GtkEditable.sizeof);
-	return widget.editable!=0;*/
-	return true;
+	return OS.gtk_editable_get_editable(handle) != 0;
 }
 
 /**
@@ -438,8 +432,7 @@ public boolean getEditable () {
  */
 public int getLineCount () {
 	checkWidget ();
-	/*return getLineNumberInString(new String(getText()),'\n') + 1;*/
-	return 0;
+	return getLineNumberInString(new String(getText()),'\n') + 1;
 }
 /**
  * Gets the height of a line.
@@ -481,8 +474,10 @@ public Point getSelection () {
 	/*GtkEditable widget = new GtkEditable ();
 	OS.memmove (widget, handle, GtkEditable.sizeof);
 	return new Point (widget.selection_start_pos, widget.selection_end_pos);*/
-	return new Point(0,0);
+	return new Point (OS.gtk_editable_get_selection_start(handle),
+	                  OS.gtk_editable_get_selection_end(handle));
 }
+
 /**
  * Gets the number of selected characters.
  *
@@ -495,12 +490,8 @@ public Point getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget ();
-	/*GtkEditable widget = new GtkEditable ();
-	OS.memmove (widget, handle, GtkEditable.sizeof);
-	int start = Math.min(widget.selection_start_pos, widget.selection_end_pos);
-	int end = Math.max(widget.selection_start_pos, widget.selection_end_pos);
-	return  end - start;*/
-	return 0;
+	Point sel = getSelection();
+	return  Math.abs(sel.y - sel.x);
 }
 /**
  * Gets the selected text.
@@ -646,8 +637,8 @@ public int getTextLimit () {
  */
 public int getTopIndex () {
 	checkWidget ();
-	/*if ((style & SWT.SINGLE) != 0) return 0;
-	GtkText widget = new GtkText ();
+	if ((style & SWT.SINGLE) != 0) return 0;
+	/*GtkText widget = new GtkText ();
 	OS.memmove (widget, handle, GtkText.sizeof);
 	int topCharIndex=widget.first_line_start_index;
 	return (getLineNumberInString(getText(0,topCharIndex), '\n'));
@@ -729,11 +720,7 @@ public void insert (String string) {
  */
 public void paste () {
 	checkWidget ();
-	/*byte [] clipboard = Converter.wcsToMbcs (null, "CLIPBOARD", true);
-	byte [] compound = Converter.wcsToMbcs (null, "COMPOUND_TEXT", true);
-	int clipboard_atom = OS.gdk_atom_intern (clipboard, 0);
-	int compound_atom = OS.gdk_atom_intern (compound, 0);
-	OS.gtk_selection_convert(handle, clipboard_atom, compound_atom, 0);*/
+	OS.gtk_editable_paste_clipboard(handle);
 }
 
 int processModify (int arg0, int arg1, int int2) {
@@ -918,9 +905,9 @@ public void setDoubleClickEnabled (boolean doubleClick) {
  */
 public void setEchoChar (char echo) {
 	checkWidget ();
-	/*if ((style & SWT.SINGLE) != 0) {
+	if ((style & SWT.SINGLE) != 0) {
 		OS.gtk_entry_set_visibility (handle, visibility = echo == '\0');
-	}*/
+	}
 }
 
 /**
@@ -966,7 +953,7 @@ public void setEditable (boolean editable) {
  */
 public void setSelection (int start) {
 	checkWidget ();
-	/*OS.gtk_editable_set_position (handle, start);*/
+	OS.gtk_editable_set_position (handle, start);
 }
 
 /**
@@ -998,8 +985,8 @@ public void setSelection (int start) {
  */
 public void setSelection (int start, int end) {
 	checkWidget ();
-	/*OS.gtk_editable_set_position (handle, start);
-	OS.gtk_editable_select_region (handle, start, end);*/
+	OS.gtk_editable_set_position (handle, start);
+	OS.gtk_editable_select_region (handle, start, end);
 }
 
 /**
@@ -1031,8 +1018,8 @@ public void setSelection (int start, int end) {
 public void setSelection (Point selection) {
 	checkWidget ();
 	if (selection == null) error (SWT.ERROR_NULL_ARGUMENT);
-	/*OS.gtk_editable_set_position (handle, selection.x);
-	OS.gtk_editable_select_region (handle, selection.x, selection.y);*/
+	OS.gtk_editable_set_position (handle, selection.x);
+	OS.gtk_editable_select_region (handle, selection.x, selection.y);
 }
 
  /**
@@ -1097,11 +1084,11 @@ public void setText (String string) {
  */
 public void setTextLimit (int limit) {
 	checkWidget ();
-	/*if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
+	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
 	if ((style & SWT.SINGLE) != 0) {
 		textLimit = (short) limit;
 		OS.gtk_entry_set_max_length (handle, (short) limit);
-	}*/
+	}
 }
 
 /**
@@ -1118,7 +1105,7 @@ public void setTextLimit (int limit) {
  */
 public void setTopIndex (int index) {
 	checkWidget ();
-	/*if ((style & SWT.SINGLE) != 0) return;
+	if ((style & SWT.SINGLE) != 0) return;
 	if (index > getLineCount()) return;
 	int adjustmentHandle = OS.gtk_scrolled_window_get_vadjustment(scrolledHandle);
 	GtkAdjustment adjustment = new GtkAdjustment(adjustmentHandle);
@@ -1137,12 +1124,12 @@ public void setTopIndex (int index) {
 		verticalBar.setSelection(adjust+lineheight);
 		OS.gtk_adjustment_value_changed(verticalBar.handle);
 		topindex=getTopIndex();
-	}		*/
+	}
 }
 
 void setWrap (boolean wrap) {
 	checkWidget ();
-	/*OS.gtk_text_set_word_wrap(handle, wrap ? 1 : 0);*/
+	OS.gtk_text_set_word_wrap(handle, wrap ? 1 : 0);
 }
 
 /**
@@ -1193,14 +1180,13 @@ public void showSelection () {
 }
 
 String verifyText (String string, int start, int end) {
-	/*Event event = new Event ();
+	Event event = new Event ();
 	event.text = string;
 	event.start = start;
 	event.end = end;
 	sendEvent (SWT.Verify, event);
 	if (!event.doit) return null;
-	return event.text;*/
-	return "";
+	return event.text;
 }
 
 int getLineNumberInString( String string,char delimiter) {
