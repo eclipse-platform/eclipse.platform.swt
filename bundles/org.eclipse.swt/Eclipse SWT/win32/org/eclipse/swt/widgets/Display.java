@@ -111,11 +111,11 @@ public class Display extends Device {
 
 	/* Widget Table */
 	int freeSlot = 0;
-	final static int GROW_SIZE = 1024;
 	int [] indexTable;
 	Control [] controlTable;
+	final static int GROW_SIZE = 1024;
 	
-	/* Bar and Popup Menus */
+	/* Menus */
 	Menu [] bars, popups;
 	
 	/* Message Filter */
