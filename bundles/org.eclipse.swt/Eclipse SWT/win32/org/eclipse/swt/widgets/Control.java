@@ -3664,7 +3664,10 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 		if (OS.GetCapture () != handle) OS.SetCapture (handle);
 	}
 	if (dragging) {
-		postEvent (SWT.DragDetect);
+		Event event = new Event ();
+		event.x = (short) (lParam & 0xFFFF);
+		event.y = (short) (lParam >> 16);
+		postEvent (SWT.DragDetect, event);
 	} else {
 		if (dragDetect) {
 			/*

@@ -1753,7 +1753,10 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	* issue a fake mouse up.
 	*/
 	if (dragStarted) {
-		postEvent (SWT.DragDetect);
+		event = new Event ();
+		event.x = (short) (lParam & 0xFFFF);
+		event.y = (short) (lParam >> 16);
+		postEvent (SWT.DragDetect, event);
 	} else {
 		sendMouseEvent (SWT.MouseUp, 1, OS.WM_LBUTTONUP, wParam, lParam);
 	}
@@ -1874,12 +1877,13 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 		}
 		case OS.NM_DBLCLK:
 			int pos = OS.GetMessagePos ();
-			TVHITTESTINFO lpht = new TVHITTESTINFO ();
 			POINT pt = new POINT ();
 			pt.x = (short) (pos & 0xFFFF);
 			pt.y = (short) (pos >> 16);
 			OS.ScreenToClient (handle, pt);
-			lpht.x = pt.x;  lpht.y = pt.y;
+			TVHITTESTINFO lpht = new TVHITTESTINFO ();
+			lpht.x = pt.x;
+			lpht.y = pt.y;
 			OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
 			if ((lpht.flags & OS.TVHT_ONITEM) == 0) break;
 			// FALL THROUGH

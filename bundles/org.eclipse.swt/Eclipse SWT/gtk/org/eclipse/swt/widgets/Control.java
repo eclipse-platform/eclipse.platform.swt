@@ -1806,7 +1806,10 @@ int gtk_motion_notify_event (int widget, int event) {
 				OS.gdk_event_get_coords (event, px, py);
 				if (OS.gtk_drag_check_threshold (handle, display.dragStartX, display.dragStartY, (int) px [0], (int) py [0])){
 					display.dragging = true;
-					postEvent (SWT.DragDetect);
+					Event e = new Event ();
+					e.x = display.dragStartX;
+					e.y = display.dragStartY;
+					postEvent (SWT.DragDetect, e);
 				}
 			}
 		}

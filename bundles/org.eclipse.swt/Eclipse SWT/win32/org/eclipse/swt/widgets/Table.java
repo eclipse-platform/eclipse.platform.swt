@@ -2569,7 +2569,15 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 		case OS.LVN_BEGINRDRAG: {
 			dragStarted = true;
 			if (hdr.code == OS.LVN_BEGINDRAG) {
-				postEvent (SWT.DragDetect);
+				int pos = OS.GetMessagePos ();
+				POINT pt = new POINT ();
+				pt.x = (short) (pos & 0xFFFF);
+				pt.y = (short) (pos >> 16); 
+				OS.ScreenToClient (handle, pt);
+				Event event = new Event ();
+				event.x = pt.x;
+				event.y = pt.y;
+				postEvent (SWT.DragDetect, event);
 			}
 			break;
 		}

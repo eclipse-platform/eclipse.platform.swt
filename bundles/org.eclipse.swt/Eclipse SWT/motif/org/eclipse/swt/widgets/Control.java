@@ -2795,7 +2795,10 @@ int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatc
 	OS.memmove (xEvent, call_data, XButtonEvent.sizeof);
 	sendMouseEvent (SWT.MouseDown, xEvent);
 	if (xEvent.button == 2 && hooks (SWT.DragDetect)) {
-		postEvent (SWT.DragDetect);
+		Event event = new Event ();
+		event.x = xEvent.x;
+		event.y = xEvent.y;
+		postEvent (SWT.DragDetect, event);
 	}
 	if (xEvent.button == 3) {
 		setFocus ();
