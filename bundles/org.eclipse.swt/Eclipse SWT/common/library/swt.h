@@ -40,7 +40,7 @@
 		return; \
 	}
 #else
-#define DEBUG_CHECK_NULL(func)
+#define DEBUG_CHECK_NULL(env, address)
 #endif
 
 #define DECL_GLOB(pSym)
