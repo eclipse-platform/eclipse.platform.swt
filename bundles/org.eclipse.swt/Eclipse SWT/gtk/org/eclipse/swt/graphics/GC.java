@@ -1427,7 +1427,7 @@ void init(Drawable drawable, GCData data, int gdkGC) {
 	if (context == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	data.context = context;	
 	int layout = OS.pango_layout_new(context);
-	if (context == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	if (layout == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	data.layout = layout;
 
 	GdkColor foreground = data.foreground;
