@@ -3011,6 +3011,7 @@ void doSelectionWordPrevious() {
 void doWordNext() {
 	if (selection.y - selection.x > 0) {
 		caretOffset = selection.y;
+		caretLine = content.getLineAtOffset(caretOffset);
 		showCaret();
 	}
 	else {
@@ -3025,6 +3026,7 @@ void doWordNext() {
 void doWordPrevious() {
 	if (selection.y - selection.x > 0) {
 		caretOffset = selection.x;
+		caretLine = content.getLineAtOffset(caretOffset);
 		showCaret();
 	}
 	else {
