@@ -329,9 +329,7 @@ public String getText (int index) {
 	OS.MoveMemory (buffer, pszText, byteCount);
 	OS.HeapFree (hHeap, 0, pszText);
 	if (result == 0) error (SWT.ERROR_CANNOT_GET_TEXT);
-//	int length = 0;
-//	while (length < buffer2.length && buffer2 [length] != 0) length++;
-	return buffer.toString (0, cchTextMax).trim ();
+	return buffer.toString (0, buffer.strlen ());
 }
 
 void releaseChild () {

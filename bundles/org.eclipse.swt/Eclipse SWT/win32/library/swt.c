@@ -5971,6 +5971,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_MultiByteToWideCha
  * Method:    MultiByteToWideChar
  * Signature: (IIII[CI)I
  */
+/*
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_MultiByteToWideChar__IIII_3CI
   (JNIEnv *env, jclass that, jint CodePage, jint dwFlags, jint lpMultiByteStr, jint cchMultiByte, jcharArray lpWideCharStr, jint cchWideChar)
 {
@@ -5990,6 +5991,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_MultiByteToWideCha
         (*env)->ReleaseCharArrayElements(env, lpWideCharStr, (jchar *)lpWideCharStr1, 0);
     return rc;
 }
+*/
 
 /*
  * Class:     org_eclipse_swt_internal_win32_OS

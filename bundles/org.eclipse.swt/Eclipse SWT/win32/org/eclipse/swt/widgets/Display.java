@@ -737,7 +737,7 @@ public int getIconDepth () {
 	result = OS.RegQueryValueEx (phkResult [0], buffer2, 0, null, lpData, lpcbData);
 	if (result == 0) {
 		try {
-			depth = Integer.parseInt (lpData.toString ().trim ());
+			depth = Integer.parseInt (lpData.toString (0, lpData.strlen ()));
 		} catch (NumberFormatException e) {};
 	}
 	OS.RegCloseKey (phkResult [0]);

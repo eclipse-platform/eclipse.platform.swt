@@ -337,7 +337,7 @@ int EnumLocalesProc(int lpLocaleString) {
 	int length = 8;
 	TCHAR buffer = new TCHAR(0, length);
 	OS.MoveMemory(buffer, lpLocaleString, length);
-	int lcid = Integer.parseInt(buffer.toString(0, length).trim(), 16);
+	int lcid = Integer.parseInt(buffer.toString(0, buffer.strlen ()), 16);
 
 	/* Check the language */
 	int size = OS.GetLocaleInfo(lcid, OS.LOCALE_SISO639LANGNAME, buffer, length);

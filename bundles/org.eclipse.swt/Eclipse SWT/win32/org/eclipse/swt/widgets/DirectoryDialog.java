@@ -102,7 +102,7 @@ int BrowseCallbackProc (int hwnd, int uMsg, int lParam, int lpData) {
 			TCHAR buffer = new TCHAR (0, 256);
 			int byteCount = buffer.length () * TCHAR.sizeof;
 			OS.MoveMemory (buffer, lParam, byteCount);
-			directoryPath = buffer.toString (0, 256).trim ();
+			directoryPath = buffer.toString (0, buffer.strlen ());
 			break;
 	}
 	return 0;
@@ -178,7 +178,7 @@ public String open () {
 		/* Use the character encoding for the default locale */
 		TCHAR buffer = new TCHAR (0, 256);
 		if (OS.SHGetPathFromIDList (lpItemIdList, buffer)) {
-			directoryPath = buffer.toString (0, 256).trim ();
+			directoryPath = buffer.toString (0, buffer.strlen ());
 		}
 	}
 

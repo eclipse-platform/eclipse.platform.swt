@@ -455,29 +455,24 @@ public int getCharCount () {
 	return length;
 }
 
-char [] getClipboardData () {
-	char [] lpWideCharStr = null;
+String getClipboardText () {
+	String string = "";
 	if (OS.OpenClipboard (0)) {
-		int hMem = OS.GetClipboardData (OS.CF_TEXT);
+		int hMem = OS.GetClipboardData (OS.IsUnicode ? OS.CF_UNICODETEXT : OS.CF_TEXT);
 		if (hMem != 0) {
+			int byteCount = OS.GlobalSize (hMem);
 			int ptr = OS.GlobalLock (hMem);
 			if (ptr != 0) {
 				/* Use the character encoding for the default locale */
-				int cp = OS.CP_ACP;
-				int cchWideChar = OS.MultiByteToWideChar (cp, OS.MB_PRECOMPOSED, ptr, -1, null, 0);
-				lpWideCharStr = new char [--cchWideChar];
-				OS.MultiByteToWideChar (cp, OS.MB_PRECOMPOSED, ptr, -1, lpWideCharStr, cchWideChar);
+				TCHAR buffer = new TCHAR (0, byteCount / TCHAR.sizeof);
+				OS.MoveMemory (buffer, ptr, byteCount);
+				string = buffer.toString (0, buffer.strlen ());
+				OS.GlobalUnlock (hMem);
 			}
 		}
 		OS.CloseClipboard ();
 	}
-	return lpWideCharStr;
-}
-
-String getClipboardText () {
-	char [] data = getClipboardData ();
-	if (data == null) return null;
-	return new String (data);
+	return string;
 }
 
 /**
@@ -849,7 +844,7 @@ int mbcsToWcsPos (int mbcsPos) {
 	byte [] buffer = new byte [128];
 	String delimiter = getLineDelimiter();
 	int delimiterSize = delimiter.length ();
-	int count = OS.SendMessage (handle, OS.EM_GETLINECOUNT, 0, 0);
+	int count = OS.SendMessageA (handle, OS.EM_GETLINECOUNT, 0, 0);
 	for (int line=0; line<count; line++) {
 		int wcsSize = 0;
 		int linePos = OS.SendMessageA (handle, OS.EM_LINEINDEX, line, 0);
@@ -1451,7 +1446,7 @@ int wcsToMbcsPos (int wcsPos) {
 	byte [] buffer = new byte [128];
 	String delimiter = getLineDelimiter ();
 	int delimiterSize = delimiter.length ();
-	int count = OS.SendMessage (handle, OS.EM_GETLINECOUNT, 0, 0);
+	int count = OS.SendMessageA (handle, OS.EM_GETLINECOUNT, 0, 0);
 	for (int line=0; line<count; line++) {
 		int wcsSize = 0;
 		int linePos = OS.SendMessageA (handle, OS.EM_LINEINDEX, line, 0);

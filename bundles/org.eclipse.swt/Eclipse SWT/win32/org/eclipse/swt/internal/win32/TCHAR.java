@@ -41,6 +41,24 @@ public int length () {
 	}
 }
 
+public int strlen () {
+	if (OS.IsUnicode) {
+		for (int i=0; i<chars.length; i++) {
+			if (chars [i] == '\0') return i;
+		}
+		return chars.length;
+	} else {
+		for (int i=0; i<byteCount; i++) {
+			if (bytes [i] == '\0') return i;
+		}
+		return byteCount;
+	}
+}
+
+public String toString () {
+	return toString (0, length ());
+}
+
 //BOGUS - start must be zero
 public String toString (int start, int length) {
 	if (OS.IsUnicode) {

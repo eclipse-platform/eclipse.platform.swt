@@ -44,17 +44,17 @@ public static Program findProgram (String extension) {
 	if (extension.length () == 0) return null;
 	if (extension.charAt (0) != '.') extension = "." + extension;
 	/* Use the character encoding for the default locale */
-	byte [] key = Converter.wcsToMbcs (0, extension, true);
+	TCHAR key = new TCHAR (0, extension, true);
 	int [] phkResult = new int [1];
 	if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult) != 0) {
 		return null;
 	}	
 	int [] lpcbData = new int [] {256};
-	byte [] lpData = new byte [lpcbData [0]];			
+	TCHAR lpData = new TCHAR (0, lpcbData [0]);
 	int result = OS.RegQueryValueEx (phkResult [0], null, 0, null, lpData, lpcbData);
 	OS.RegCloseKey (phkResult [0]);
 	if (result != 0) return null;
-	return getProgram (lpData);
+	return getProgram (lpData.toString (0, lpData.strlen ()));
 }
 
 /**
@@ -64,16 +64,12 @@ public static Program findProgram (String extension) {
  */
 public static String [] getExtensions () {
 	String [] extensions = new String [1024];
-	byte [] key = new byte [1024];
+	/* Use the character encoding for the default locale */
+	TCHAR key = new TCHAR (0, 1024);
 	int index = 0, count = 0;
-	while (OS.RegEnumKey (OS.HKEY_CLASSES_ROOT, index, key, key.length) != OS.ERROR_NO_MORE_ITEMS) {
-		if (key [0] == '.') {
-			int length = 0;
-			while (length < key.length && key [length] != 0) length++;
-			byte [] buffer = new byte [length];
-			System.arraycopy (key, 0, buffer, 0, length);
-			/* Use the character encoding for the default locale */
-			String extension = new String (Converter.mbcsToWcs (0, buffer));
+	while (OS.RegEnumKey (OS.HKEY_CLASSES_ROOT, index, key, key.length ()) != OS.ERROR_NO_MORE_ITEMS) {
+		String extension = key.toString (0, key.strlen ());
+		if (extension.length () > 0 && extension.charAt (0) == '.') {
 			if (count == extensions.length) {
 				String [] newExtensions = new String [extensions.length + 1024];
 				System.arraycopy (extensions, 0, newExtensions, 0, extensions.length);
@@ -91,7 +87,9 @@ public static String [] getExtensions () {
 	return extensions;
 }
 
-static String getKeyValue (byte [] key) {
+static String getKeyValue (String string) {
+	/* Use the character encoding for the default locale */
+	TCHAR key = new TCHAR (0, string, true);
 	int [] phkResult = new int [1];
 	if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult) != 0) {
 		return null;
@@ -99,40 +97,30 @@ static String getKeyValue (byte [] key) {
 	String result = null;
 	int [] lpcbData = new int [1];
 	if (OS.RegQueryValueEx (phkResult [0], null, 0, null, null, lpcbData) == 0) {
-		byte [] lpData = new byte [lpcbData [0]];
+		/* Use the character encoding for the default locale */
+		TCHAR lpData = new TCHAR (0, lpcbData [0]);
 		if (OS.RegQueryValueEx (phkResult [0], null, 0, null, lpData, lpcbData) == 0) {
-			/* Use the character encoding for the default locale */
-			char [] charArray = Converter.mbcsToWcs (0, lpData);
-			result = new String (charArray, 0, charArray.length - 1);
+			result = lpData.toString (0, lpData.length () - 1);
 		}
 	}
 	if (phkResult [0] != 0) OS.RegCloseKey (phkResult [0]);
 	return result;
 }
 
-static Program getProgram (byte [] key) {
-
-	/* Command */
-	/* Use the character encoding for the default locale */
-	byte [] COMMAND = Converter.wcsToMbcs (0, "\\shell\\open\\command", true);
-	int length = 0;
-	while (length < key.length && key [length] != 0) length++;
-	for (int i=0; i<COMMAND.length; i++) key [length + i] = COMMAND [i];
-	key [length + COMMAND.length] = 0;
-	String command = getKeyValue (key);
-	if (command == null || command.length () == 0) return null;
-
+static Program getProgram (String key) {
+	
 	/* Name */
-	key [length] = 0;	
 	String name = getKeyValue (key);
 	if (name == null || name.length () == 0) return null;
-		
+
+	/* Command */
+	String COMMAND = "\\shell\\open\\command";
+	String command = getKeyValue (key + COMMAND);
+	if (command == null || command.length () == 0) return null;
+
 	/* Icon */
-	/* Use the character encoding for the default locale */
-	byte [] DEFAULT_ICON = Converter.wcsToMbcs (0, "\\DefaultIcon", true);
-	for (int i=0; i<DEFAULT_ICON.length; i++) key [length + i] = DEFAULT_ICON [i];
-	key [length + DEFAULT_ICON.length] = 0;
-	String iconName = getKeyValue (key);
+	String DEFAULT_ICON = "\\DefaultIcon";
+	String iconName = getKeyValue (key + DEFAULT_ICON);
 	if (iconName == null || iconName.length () == 0) return null;
 	
 	Program program = new Program ();
@@ -149,10 +137,12 @@ static Program getProgram (byte [] key) {
  */
 public static Program [] getPrograms () {
 	Program [] programs = new Program [1024];
-	byte [] key = new byte [1024];
+	/* Use the character encoding for the default locale */
+	TCHAR key = new TCHAR (0, 1024);
 	int index = 0, count = 0;
-	while (OS.RegEnumKey (OS.HKEY_CLASSES_ROOT, index, key, key.length) != OS.ERROR_NO_MORE_ITEMS) {
-		Program program = getProgram (key);
+	while (OS.RegEnumKey (OS.HKEY_CLASSES_ROOT, index, key, key.length ()) != OS.ERROR_NO_MORE_ITEMS) {
+		String path = key.toString (0, key.strlen ());
+		Program program = getProgram (path);
 		if (program != null) {
 			if (count == programs.length) {
 				Program [] newPrograms = new Program [programs.length + 1024];
@@ -186,8 +176,8 @@ public static Program [] getPrograms () {
 public static boolean launch (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	/* Use the character encoding for the default locale */
-	byte [] OPEN = Converter.wcsToMbcs (0, "open", true);
-	byte [] lpFile = Converter.wcsToMbcs (0, fileName, true);
+	TCHAR OPEN = new TCHAR (0, "open", true);
+	TCHAR lpFile = new TCHAR (0, fileName, true);
 	return OS.ShellExecute (0, OPEN, lpFile, null, null, OS.SW_SHOW) > 32;
 }
 
@@ -248,7 +238,7 @@ public ImageData getImageData () {
 		} catch (NumberFormatException e) {};
 	}
 	/* Use the character encoding for the default locale */
-	byte [] lpszFile = Converter.wcsToMbcs (0, fileName, true);
+	TCHAR lpszFile = new TCHAR (0, fileName, true);
 	int [] phiconSmall = new int[1], phiconLarge = null;
 	OS.ExtractIconEx (lpszFile, nIconIndex, phiconLarge, phiconSmall, 1);
 	if (phiconSmall [0] == 0) return null;

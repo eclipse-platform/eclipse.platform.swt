@@ -838,6 +838,7 @@ public static final void MoveMemory (
 	public static final int CF_INITTOLOGFONTSTRUCT = 0x40;
 	public static final int CF_SCREENFONTS = 0x1;
 	public static final int CF_TEXT = 0x1;
+	public static final int CF_UNICODETEXT = 13;
 	public static final int CF_USESTYLE = 0x80;
 	public static final int CLR_INVALID = 0xffffffff;
 	public static final int COLORONCOLOR = 0x3;
@@ -2344,7 +2345,7 @@ public static final native void MoveMemory (
 );
 public static final native boolean MoveToEx (int hdc,int x1, int x2, int lPoint);
 public static final native int MultiByteToWideChar (int CodePage, int dwFlags, byte [] lpMultiByteStr, int cchMultiByte, char [] lpWideCharStr, int cchWideChar);
-public static final native int MultiByteToWideChar (int CodePage, int dwFlags, int lpMultiByteStr, int cchMultiByte, char [] lpWideCharStr, int cchWideChar);
+//public static final native int MultiByteToWideChar (int CodePage, int dwFlags, int lpMultiByteStr, int cchMultiByte, char [] lpWideCharStr, int cchWideChar);
 public static final native int OleInitialize (int pvReserved);
 public static final native void OleUninitialize ();
 public static final native boolean OpenClipboard (int hWndNewOwner);
