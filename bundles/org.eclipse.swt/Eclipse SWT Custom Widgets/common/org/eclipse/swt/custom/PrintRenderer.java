@@ -38,7 +38,6 @@ class PrintRenderer extends StyledTextRenderer {
  * </p>
  * @param device Device to render on
  * @param regularFont Font to use for regular (non-bold) text.
- * @param isBidi true=bidi platform, false=no bidi platform.
  * @param gc printer GC to use for rendering. There can be only one GC for 
  * 	each printer device at any given time.
  * @param logicalContent StyledTextContent to print.
@@ -50,11 +49,11 @@ class PrintRenderer extends StyledTextRenderer {
  * @param clientArea the printer client area.
  */
 PrintRenderer(
-		Device device, Font regularFont, boolean isBidi, GC gc, 
+		Device device, Font regularFont, GC gc, 
 		StyledTextContent logicalContent, Hashtable lineBackgrounds, 
 		Hashtable lineStyles, Hashtable bidiSegments,
 		int tabLength, Rectangle clientArea) {
-	super(device, regularFont, isBidi, clientArea.x);
+	super(device, regularFont, clientArea.x);
 	this.logicalContent = logicalContent;
 	this.lineBackgrounds = lineBackgrounds;
 	this.lineStyles = lineStyles;
@@ -84,7 +83,7 @@ protected void disposeGC(GC gc) {
  * Do not print the selection.
  * @see StyledTextRenderer#drawLineSelectionBackground
  */
-protected void drawLineBreakSelection(String line, int lineOffset, StyleRange[] styles, int paintY, GC gc, StyledTextBidi bidi) {
+protected void drawLineBreakSelection(String line, int lineOffset, int paintX, int paintY, GC gc) {
 }
 /**
  * Returns from cache the text segments that should be treated as 
@@ -202,6 +201,15 @@ private int getLogicalLineOffset(int visualLineOffset) {
 	
 	return logicalContent.getOffsetAtLine(logicalLineIndex);
 }
+protected  int getOrientation () {
+	return SWT.LEFT_TO_RIGHT;
+}
+protected Color getSelectionBackground() {
+	return null;
+}
+protected Color getSelectionForeground() {
+	return null;
+}
 /**
  * Return cached line background data.
  * @see StyledTextRenderer#getLineBackgroundData
@@ -236,65 +244,6 @@ protected StyledTextEvent getLineStyleData(int lineOffset, String line) {
  */
 protected Point getSelection() {
 	return new Point(0, 0);
-}
-/**
- * Returns the width of the specified text segment. 
- * Expands tabs to tab stops using the widget tab width.
- * </p>
- *
- * @param text text to measure
- * @param textStartOffset offset of the first character in text relative 
- * 	to the first character in the document
- * @param lineStyles styles of the line
- * @param paintX x location to start drawing at
- * @param gc GC to measure with
- * @return the width of the specified text segment.
- */
-protected int getStyledTextWidth(String text, int textStartOffset, StyleRange[] lineStyles, int paintX, GC gc) {
-	String textSegment;
-	int textLength = text.length();
-	int textIndex = 0;
-
-	for (int styleIndex = 0; styleIndex < lineStyles.length; styleIndex++) {
-		StyleRange style = lineStyles[styleIndex];
-		int textEnd;
-		int styleSegmentStart = style.start - textStartOffset;
-		if (styleSegmentStart + style.length < 0) {
-			continue;
-		}
-		if (styleSegmentStart >= textLength) {
-			break;
-		}
-		// is there a style for the current string position?
-		if (textIndex < styleSegmentStart) {
-			textSegment = text.substring(textIndex, styleSegmentStart);
-			setLineFont(gc, SWT.NORMAL);
-			paintX += gc.stringExtent(textSegment).x;
-			textIndex = styleSegmentStart;
-		}
-		textEnd = Math.min(textLength, styleSegmentStart + style.length);
-		textSegment = text.substring(textIndex, textEnd);
-		setLineFont(gc, style.fontStyle);
-		paintX += gc.stringExtent(textSegment).x;
-		textIndex = textEnd;
-	}
-	// is there unmeasured and unstyled text?
-	if (textIndex < textLength) {
-		textSegment = text.substring(textIndex, textLength);
-		setLineFont(gc, SWT.NORMAL);
-		paintX += gc.stringExtent(textSegment).x;
-	}
-	return paintX;
-}
-/**
- * Do not print the selection. Returns the styles that were passed into
- * the method without modifications.
- * <p>
- * @return the same styles that were passed into the method.
- * @see StyledTextRenderer#getSelectionLineStyles
- */
-protected StyleRange[] mergeSelectionLineStyles(StyleRange[] styles) {
-	return styles;
 }
 /**
  * Printed content is always wrapped.

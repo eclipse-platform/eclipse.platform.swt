@@ -21,6 +21,8 @@ public class StyleRange implements CloneableCompatibility {
 	public Color background;
 	public int fontStyle = SWT.NORMAL;	// may be SWT.NORMAL or SWT.BOLD
 
+	TextStyle textStyle;
+
 public StyleRange() {
 }
 /** 

@@ -253,7 +253,7 @@ static void removeLanguageListener(Control control) {
  */
 private void calculateRenderPositions() {
 	renderPositions = new int[dx.length];	
-	renderPositions[0] = StyledText.XINSET;
+	renderPositions[0] = StyledText.BIDI_CARET_WIDTH - 1; //TODO  used to be XINSET
 	for (int i = 0; i < dx.length - 1; i++) {
 		renderPositions[i + 1] = renderPositions[i] + dx[i];
 	}
@@ -705,7 +705,7 @@ int getTextPosition(int logicalOffset, int direction) {
 	int caretX;
 	
 	if (getTextLength() == 0 || logicalOffset < 0) {
-		return StyledText.XINSET;
+		return StyledText.BIDI_CARET_WIDTH - 1; //TODO used to be XINSET
 	}
 
 	boolean isRightToLeft = isRightToLeft(logicalOffset);

@@ -10,11 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
-
-import java.util.Vector;
-
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyledText.LineCache;
 import org.eclipse.swt.graphics.*;
 
 /**
@@ -34,8 +30,8 @@ class DisplayRenderer extends StyledTextRenderer {
  * @param parent <class>StyledText</class> widget to render
  * @param tabLength length in characters of a tab character
  */
-DisplayRenderer(Device device, Font regularFont, boolean isBidi, int leftMargin, StyledText parent, int tabLength) {
-	super(device, regularFont, isBidi, leftMargin);
+DisplayRenderer(Device device, Font regularFont, int leftMargin, StyledText parent, int tabLength) {
+	super(device, regularFont, leftMargin);
 	this.parent = parent;
 	calculateLineHeight();
 	setTabLength(tabLength);
@@ -58,43 +54,24 @@ protected void disposeGC(GC gc) {
  * @param styles line styles
  * @param paintY y location to draw at
  * @param gc GC to draw on
- * @param bidi the bidi object to use for measuring and rendering 	text in bidi
- * locales. null when not in bidi mode.
  */
-protected void drawLineBreakSelection(String line, int lineOffset, StyleRange[] styles, int paintY, GC gc, StyledTextBidi bidi) {
+protected void drawLineBreakSelection(String line, int lineOffset, int paintX, int paintY, GC gc) {
 	Point selection = parent.internalGetSelection();
 	int lineLength = line.length();
-	int paintX;
 	int selectionStart = Math.max(0, selection.x - lineOffset);
 	int selectionEnd = selection.y - lineOffset;
-	int horizontalScrollOffset = parent.internalGetHorizontalPixel();
-	int leftMargin = getLeftMargin();
 	int lineEndSpaceWidth = getLineEndSpaceWidth();
 	int lineHeight = getLineHeight();
 	
 	if (selectionEnd == selectionStart || selectionEnd < 0 || selectionStart > lineLength || selectionEnd <= lineLength) {
 		return;
 	}
-	if (bidi != null) {
-		paintX = bidi.getTextWidth();
-		// handle empty line case
-		if (paintX == 0) {
-			paintX = StyledText.XINSET;
-		}
-	}
-	else {
-		paintX = getTextPosition(line, lineOffset, lineLength, filterLineStyles(styles), gc);
-	}
+	
 	gc.setBackground(parent.getSelectionBackground());
 	gc.setForeground(parent.getSelectionForeground());
 	if ((parent.getStyle() & SWT.FULL_SELECTION) != 0) {
-		LineCache lineCache = parent.internalGetLineCache();
-		// use the greater of the client area width and the content 
-		// width. fixes 1G8IYRD
-		int selectionBackgroundWidth = Math.max(getClientArea().width, lineCache.getWidth());
-		gc.fillRectangle(paintX - horizontalScrollOffset + leftMargin, paintY, selectionBackgroundWidth, lineHeight);
-	}
-	else {
+		gc.fillRectangle(paintX, paintY, getClientArea().width - paintX, lineHeight);
+	} else {
 		boolean isWrappedLine = false;
 		if (parent.internalGetWordWrap()) {
 			StyledTextContent content = getContent();
@@ -110,7 +87,7 @@ protected void drawLineBreakSelection(String line, int lineOffset, StyleRange[] 
 		}
 		if (isWrappedLine == false) {
 			// render the line break selection
-			gc.fillRectangle(paintX - horizontalScrollOffset + leftMargin, paintY, lineEndSpaceWidth, lineHeight);
+			gc.fillRectangle(paintX, paintY, lineEndSpaceWidth, lineHeight);
 		}
 	}	
 }
@@ -183,297 +160,25 @@ protected StyledTextEvent getLineBackgroundData(int lineOffset, String line) {
  */
 protected StyledTextEvent getLineStyleData(int lineOffset, String line) {
 	StyledTextEvent logicalLineEvent = parent.getLineStyleData(lineOffset, line);
-	
 	if (logicalLineEvent != null) {
 		logicalLineEvent = getLineStyleData(logicalLineEvent, lineOffset, line);
 	}
 	return logicalLineEvent;
+}
+protected  int getOrientation () {
+	return parent.getOrientation();
+}
+protected Color getSelectionBackground() {
+	return parent.getSelectionBackground();
+}
+protected Color getSelectionForeground() {
+	return parent.getSelectionForeground();
 }
 /**
  * @see StyledTextRenderer#getSelection
  */
 protected Point getSelection() {
 	return parent.internalGetSelection();
-}
-/**
- * Returns the width of the specified text segment. 
- * Expands tabs to tab stops using the widget tab width.
- * </p>
- *
- * @param text text to measure
- * @param textStartOffset offset of the first character in text relative 
- * 	to the first character in the document
- * @param lineStyles styles of the line
- * @param paintX x location to start drawing at
- * @param gc GC to measure with
- * @return the width of the specified text segment.
- */
-protected  int getStyledTextWidth(String text, int textStartOffset, StyleRange[] lineStyles, int paintX, GC gc) {
-	String textSegment;
-	int textLength = text.length();
-	int textIndex = 0;
-	GC boldGC = null;
-	GC normalGC = null;
-	int fontStyle = getCurrentFontStyle();
-	
-	// Use two gcs for performance reasons (i.e., minimize number of times setFont gets called).
-	if (fontStyle == SWT.NORMAL) normalGC = gc;
-	else boldGC = gc;
-	for (int styleIndex = 0; styleIndex < lineStyles.length; styleIndex++) {
-		StyleRange style = lineStyles[styleIndex];
-		int textEnd;
-		int styleSegmentStart = style.start - textStartOffset;
-		if (styleSegmentStart + style.length < 0) {
-			continue;
-		}
-		if (textIndex > 0 && styleSegmentStart < textIndex) {
-			/* overlapping style line being measured, which is not valid, ignore style */
-			continue;
-		}
-		if (styleSegmentStart >= textLength) {
-			break;
-		}
-		// is there a style for the current string position?
-		if (textIndex < styleSegmentStart) {
-			textSegment = text.substring(textIndex, styleSegmentStart);
-			if (normalGC == null) {
-				normalGC = getGC();
-				normalGC.setFont(regularFont);
-			}
-			paintX += normalGC.stringExtent(textSegment).x;
-			textIndex = styleSegmentStart;
-		}
-		textEnd = Math.min(textLength, styleSegmentStart + style.length);
-		textSegment = text.substring(textIndex, textEnd);
-		if (style.fontStyle == SWT.NORMAL) {
-			if (normalGC == null) {
-				normalGC = getGC();
-				normalGC.setFont(regularFont);
-			}
-			paintX += normalGC.stringExtent(textSegment).x;
-		} else {
-			if (boldGC == null) {
-				boldGC = getGC();
-				boldGC.setFont(boldFont);
-			}
-			paintX += boldGC.stringExtent(textSegment).x;
-		} 
-		textIndex = textEnd;
-	}
-	// is there unmeasured and unstyled text?
-	if (textIndex < textLength) {
-		textSegment = text.substring(textIndex, textLength);
-		if (normalGC == null) {
-			normalGC = getGC();
-			normalGC.setFont(regularFont);
-		}
-		paintX += normalGC.stringExtent(textSegment).x;
-	}
-	if (fontStyle == SWT.NORMAL) {
-		if (boldGC != null) disposeGC(boldGC);
-	} else {
-		if (normalGC != null) disposeGC(normalGC);
-	}
-	return paintX;
-}
-/**
- * @see StyledTextRenderer#getSelectionLineStyles
- */
-/*
-Pseudo code for getSelectionLineStyles
-	for each style {
-		if (style ends before selection start) {
-			add style to list
-		}
-		else
-		if (style overlaps selection start (i.e., starts before selection start, ends after selection start) {
-			change style end
-			create new selection style with same font style starting at selection start ending at style end
-			add selection style
-			// does style extend beyond selection?
-			if (selection style end > selection end) {
-				selection style end = selection end
-				// preserve rest (unselected part) of old style
-				style start = selection end
-				style length = old style end - selection end
-				add style
-			}
-		}
-		else
-		if (style starts within selection) {
-			if (no selection style created) {
-				create selection style with regular font style, starting at selection start, ending at style start
-				add selection style				
-				if (style start == selection start) {
-					set selection style font to style font
-				}
-			}
-			// gap between current selection style end and new style start?
-			if (style start > selection styke end && selection style font style != NORMAL) {
-				create selection style with regular font style, starting at selection style end, ending at style start
-				add selection style
-			}
-			if (selection style font != style font) {
-				selection style end = style start
-				add selection style
-				create selection style with style font style, starting at style start, ending at style end
-			}
-			else {
-				selection style end = style end
-			}
-			// does style extend beyond selection?			
-			if (selection style end > selection end) {
-				selection style end = selection end
-				// preserve rest (unselected part) of old style
-				style start = selection end
-				style length = old style end - selection end
-				style start = selection end
-				add style
-			}
-		}
-		else {
-			if (no selection style created) {
-				create selection style with regular font style, starting at selection start, ending at selection end
-				add selection style
-			}
-			else
-			if (selection style end < selection end) {
-				if (selection style font style != NORMAL) {
-					create selection style with regular font style, starting at selection style end, ending at selection end					
-					add selection style
-				}
-				else {
-					selection style end = selection end
-				}
-			}
-			add style
-		}									
-	}
-	if (no selection style created) {
-		create selection style with regular font style, starting at selection start, ending at selection end
-		add selection style to list
-	}
-	else
-	if (selection style end < selection end) {
-		if (selection style font style != NORMAL) {
-			create selection style with regular font style, starting at selection style end, ending at selection end					
-			add selection style
-		}
-		else {
-			selection style end = selection end
-		}
-	}
-*/
-protected StyleRange[] mergeSelectionLineStyles(StyleRange[] styles) {
-	Point selection = parent.internalGetSelection();	
-	int selectionStart = selection.x;
-	int selectionEnd = selection.y;
-	Vector newStyles = new Vector(styles.length);	
-	StyleRange selectionStyle = null;
-	Color foreground = parent.getSelectionForeground();
-	Color background = parent.getSelectionBackground();
-
-	// potential optimization: ignore styles if there is no bold style and the entire line is selected
-	for (int i = 0; i < styles.length; i++) {
-		StyleRange style = styles[i];
-		int styleEnd = style.start + style.length;
-		
-		if (styleEnd <= selectionStart) {
-			newStyles.addElement(style);
-		}
-		else // style overlaps selection start? (i.e., starts before selection start, ends after selection start
-		if (style.start < selectionStart && styleEnd > selectionStart) {
-			StyleRange newStyle = (StyleRange) style.clone();
-			newStyle.length -= styleEnd - selectionStart;
-			newStyles.addElement(newStyle);
-			// create new selection style with same font style starting at selection start ending at style end
-			selectionStyle = new StyleRange(selectionStart, styleEnd - selectionStart, foreground, background, newStyle.fontStyle);
-			newStyles.addElement(selectionStyle);
-			// if style extends beyond selection a new style is returned for the unselected part of the style
-			newStyle = setSelectionStyleEnd(selectionStyle, style);
-			if (newStyle != null) {
-				newStyles.addElement(newStyle);					
-			}				
-		}
-		else // style starts within selection?
-		if (style.start >= selectionStart && style.start < selectionEnd) {
-			StyleRange newStyle;
-			int selectionStyleEnd;
-			// no selection style created yet?
-			if (selectionStyle == null) {
-				// create selection style with regular font style, starting at selection start, ending at style start
-				selectionStyle = new StyleRange(selectionStart, style.start - selectionStart, foreground, background);
-				newStyles.addElement(selectionStyle);
-				if (style.start == selectionStart) {
-					selectionStyle.fontStyle = style.fontStyle;
-				}
-			}
-			selectionStyleEnd = selectionStyle.start + selectionStyle.length;
-			// gap between current selection style end and style start?
-			if (style.start > selectionStyleEnd && selectionStyle.fontStyle != SWT.NORMAL) {
-				// create selection style with regular font style, starting at selection style end, ending at style start
-				selectionStyle = new StyleRange(selectionStyleEnd, style.start - selectionStyleEnd, foreground, background);
-				newStyles.addElement(selectionStyle);
-			}
-			if (selectionStyle.fontStyle != style.fontStyle) {
-				// selection style end = style start
-				selectionStyle.length = style.start - selectionStyle.start;
-				// create selection style with style font style, starting at style start, ending at style end
-				selectionStyle = new StyleRange(style.start, style.length, foreground, background, style.fontStyle);
-				newStyles.addElement(selectionStyle);
-			}
-			else {
-				// selection style end = style end
-				selectionStyle.length = styleEnd - selectionStyle.start;
-			}
-			// if style extends beyond selection a new style is returned for the unselected part of the style
-			newStyle = setSelectionStyleEnd(selectionStyle, style);
-			if (newStyle != null) {
-				newStyles.addElement(newStyle);					
-			}				
-		}
-		else {
-			// no selection style created yet?
-			if (selectionStyle == null) {
-				// create selection style with regular font style, starting at selection start, ending at selection end
-				selectionStyle = new StyleRange(selectionStart, selectionEnd - selectionStart, foreground, background);
-				newStyles.addElement(selectionStyle);
-			}
-			else // does the current selection style end before the selection end?
-			if (selectionStyle.start + selectionStyle.length < selectionEnd) {
-				if (selectionStyle.fontStyle != SWT.NORMAL) {
-					int selectionStyleEnd = selectionStyle.start + selectionStyle.length;
-					// create selection style with regular font style, starting at selection style end, ending at selection end
-					selectionStyle = new StyleRange(selectionStyleEnd, selectionEnd - selectionStyleEnd, foreground, background);
-					newStyles.addElement(selectionStyle);
-				}
-				else {
-					selectionStyle.length = selectionEnd - selectionStyle.start;
-				}
-			}
-			newStyles.addElement(style);
-		}
-	}
-	if (selectionStyle == null) {
-		// create selection style with regular font style, starting at selection start, ending at selection end
-		selectionStyle = new StyleRange(selectionStart, selectionEnd - selectionStart, foreground, background);
-		newStyles.addElement(selectionStyle);
-	}
-	else // does the current selection style end before the selection end?
-	if (selectionStyle.start + selectionStyle.length < selectionEnd) {
-		if (selectionStyle.fontStyle != SWT.NORMAL) {
-			int selectionStyleEnd = selectionStyle.start + selectionStyle.length;
-			// create selection style with regular font style, starting at selection style end, ending at selection end
-			selectionStyle = new StyleRange(selectionStyleEnd, selectionEnd - selectionStyleEnd, foreground, background);
-			newStyles.addElement(selectionStyle);
-		}
-		else {
-			selectionStyle.length = selectionEnd - selectionStyle.start;
-		}
-	}
-	styles = new StyleRange[newStyles.size()];
-	newStyles.copyInto(styles);
-	return styles;
 }
 /**
  * @see StyledTextRenderer#getWordWrap
@@ -486,34 +191,5 @@ protected boolean getWordWrap() {
  */
 protected boolean isFullLineSelection() {
 	return (parent.getStyle() & SWT.FULL_SELECTION) != 0;
-}
-/**
- * Ensures that the selection style ends at the selection end.
- * <code>selectionStyle</code> is assumed to be created based on the style 
- * range of <code>style</code>. If <code>selectionStyle</code> does extend
- * beyond the selection range a new style is returned to preserve the style
- * passed in with <code>style</code>.
- * <p>
- * @param selectionStyle the selection style based on the style range in 
- * 	<code>style</code>
- * @param style the existing style that is to be merged with the selection
- * @return a new style that preserves the style passed in with <code>style</code>
- * 	if the selection does not fully extend over the existing style range.
- *  null otherwise.
- */
-private StyleRange setSelectionStyleEnd(StyleRange selectionStyle, StyleRange style) {
-	int selectionEnd = parent.internalGetSelection().y;
-	StyleRange newStyle = null;
-	
-	// does style extend beyond selection?				
-	if (selectionStyle.start + selectionStyle.length > selectionEnd) {
-		int styleEnd = style.start + style.length;	
-		selectionStyle.length = selectionEnd - selectionStyle.start;
-		// preserve rest (unselected part) of old style					
-		newStyle = (StyleRange) style.clone();
-		newStyle.start = selectionEnd;
-		newStyle.length = styleEnd - selectionEnd;
-	}
-	return newStyle;				
 }
 }

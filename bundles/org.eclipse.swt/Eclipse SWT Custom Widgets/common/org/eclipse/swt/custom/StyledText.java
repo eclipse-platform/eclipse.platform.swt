@@ -78,8 +78,7 @@ import org.eclipse.swt.widgets.*;
 public class StyledText extends Canvas {
 	static final char TAB = '\t';
 	static final String PlatformLineDelimiter = System.getProperty("line.separator");
-	static final int BIDI_CARET_WIDTH = 4;		
-	static final int XINSET = BIDI_CARET_WIDTH - 1;
+	static final int BIDI_CARET_WIDTH = 3;
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT = 64;
 	
@@ -113,11 +112,10 @@ public class StyledText extends Canvas {
 										// if line wrap needs to be recalculated
 	int lineHeight;						// line height=font height
 	int tabLength = 4;					// number of characters in a tab
-	int lineEndSpaceWidth;				// space, in pixel, used to indicated a selected line break
-	int leftMargin = 1;
-	int topMargin = 1;
-	int rightMargin = 2;
-	int bottomMargin = 2;
+	int leftMargin;
+	int topMargin;
+	int rightMargin;
+	int bottomMargin;
 	Cursor ibeamCursor;		
 	int columnX;							// keep track of the horizontal caret position
 										// when changing lines/pages. Fixes bug 5935
@@ -147,9 +145,8 @@ public class StyledText extends Canvas {
 	Image leftCaretBitmap = null;
 	Image rightCaretBitmap = null;
 	int caretDirection = SWT.NULL;
-	PaletteData caretPalette = null;	
-	int lastCaretDirection = SWT.NULL;
 	boolean isCarbon;					// flag set to true on Mac OSX
+	boolean advancing = true;
 	
 	/**
 	 * The Printing class implements printing of a range of text.
@@ -413,7 +410,7 @@ public class StyledText extends Canvas {
 		gc = new GC(printer);
 		gc.setFont(printerFont);				
 		renderer = new PrintRenderer(
-			printer, printerFont, isBidi(), gc, printerContent,
+			printer, printerFont, gc, printerContent,
 			lineBackgrounds, lineStyles, bidiSegments, 
 			tabLength, clientArea);
 		if (printOptions.header != null) {
@@ -557,22 +554,15 @@ public class StyledText extends Canvas {
 		if (segment.length() > 0) {
 			int segmentWidth;
 			int drawX = 0;
-			int drawY;
-			StyledTextBidi bidi = null;
-			
-			if (isBidi()) {
-				bidi = new StyledTextBidi(gc, tabLength, segment, null, null, new int[] {0, segment.length()});
-				segmentWidth = bidi.getTextWidth();
-			}			
-			else {
-				segmentWidth = gc.textExtent(segment).x;
-			}
+			int drawY = 0;
+			TextLayout layout = renderer.getTextLayout(segment, 0, null);
+			segmentWidth = layout.getLineBounds(0).width;
 			if (header) {
 				drawY = clientArea.y - renderer.getLineHeight() * 2;
 			}
 			else {
 				drawY = clientArea.y + clientArea.height + renderer.getLineHeight();
-			}			
+			}
 			if (alignment == LEFT) {
 				drawX = clientArea.x;
 			}
@@ -584,12 +574,8 @@ public class StyledText extends Canvas {
 			if (alignment == RIGHT) {
 				drawX = clientArea.x + clientArea.width - segmentWidth;
 			}
-			if (bidi != null) {
-				bidi.drawBidiText(0, segment.length(), drawX, drawY);
-			}
-			else {
-				gc.drawString(segment, drawX, drawY, true);
-			}
+			layout.draw(gc, drawX, drawY);
+			renderer.disposeTextLayout(layout, null);
 		}
 	}
 	/**
@@ -1207,31 +1193,23 @@ public class StyledText extends Canvas {
 	 * @param lineCount number of lines to calculate the line width for
 	 */
 	public void calculate(int startLine, int lineCount) {
-		GC gc = null;
 		int caretWidth = 0;
 		int endLine = startLine + lineCount;
 			
 		if (startLine < 0 || endLine > lineWidth.length) {
 			return;
 		}
+		caretWidth = getCaretWidth();
 		for (int i = startLine; i < endLine; i++) {
 			if (lineWidth[i] == -1) {
 				String line = content.getLine(i);
 				int lineOffset = content.getOffsetAtLine(i);
-		
-				if (gc == null) {
-					gc = parent.getGC();
-					caretWidth = getCaretWidth();
-				}		
-				lineWidth[i] = contentWidth(line, lineOffset, gc) + caretWidth;
+				lineWidth[i] = contentWidth(line, lineOffset) + caretWidth;
 			}
 			if (lineWidth[i] > maxWidth) {
 				maxWidth = lineWidth[i];
 				maxWidthLineIndex = i;
 			}
-		}
-		if (gc != null) {
-			gc.dispose();	
 		}
 	}
 	/** 
@@ -1261,22 +1239,12 @@ public class StyledText extends Canvas {
 	 * 	performance. Null when running in a bidi locale.
 	 * @return the width of the given line
 	 */
-	int contentWidth(String line, int lineOffset, GC gc) {
-		int width;
-		
-		if (isBidi()) {
-			StyledTextBidi bidi = getStyledTextBidi(line, lineOffset, gc);
-			width = bidi.getTextWidth();
-		}
-		else {
-			StyledTextEvent event = renderer.getLineStyleData(lineOffset, line);
-			StyleRange[] styles = null;
-			if (event != null) {
-				styles = renderer.filterLineStyles(event.styles);
-			}
-			width = renderer.getTextWidth(line, lineOffset, 0, line.length(), styles, 0, gc);
-		}
-		return width + leftMargin;
+	int contentWidth(String line, int lineOffset) {
+		StyledTextEvent event = getLineStyleData(lineOffset, line);
+		TextLayout layout = renderer.getTextLayout(line, lineOffset, event);
+		Rectangle rect = layout.getLineBounds(0);
+		renderer.disposeTextLayout(layout, event);
+		return rect.x + rect.width + leftMargin + rightMargin;
 	}
 	/**
 	 * Grows the <code>lineWidth</code> array to accomodate new line width
@@ -1617,8 +1585,9 @@ public StyledText(Composite parent, int style) {
 	if ((style & SWT.READ_ONLY) != 0) {
 		setEditable(false);
 	}
-	if ((style & SWT.BORDER) == 0 || (style & SWT.SINGLE) == 0) {
-		leftMargin = topMargin = rightMargin = bottomMargin = 0;
+	leftMargin = BIDI_CARET_WIDTH - 1;
+	if ((style & SWT.SINGLE) != 0 && (style & SWT.BORDER) != 0) {
+		topMargin = rightMargin = bottomMargin = 2;
 	}
 	clipboard = new Clipboard(display);
 	installDefaultContent();
@@ -1629,32 +1598,20 @@ public StyledText(Composite parent, int style) {
 	else {
 	    lineCache = new ContentWidthCache(this, content);
 	}	
-	if (isBidi() == false) {
-		Caret caret = new Caret(this, SWT.NULL);
-		caret.setSize(1, caret.getSize().y);
-	} 
-	else {
-		createCaretBitmaps();
-		if (isMirrored) {
-			BidiUtil.setKeyboardLanguage(BidiUtil.KEYBOARD_BIDI);
+	new Caret(this, SWT.NULL);
+	if (isBidi) createCaretBitmaps();
+	setCaretImage(isBidi ? (isMirrored ? SWT.RIGHT : SWT.LEFT) : SWT.DEFAULT);
+	Runnable runnable = new Runnable() {
+		public void run() {
+			int direction = BidiUtil.getKeyboardLanguage() == BidiUtil.KEYBOARD_BIDI ? SWT.RIGHT : SWT.LEFT;
+			if (direction == caretDirection) return;
+			int newCaretX = direction == SWT.LEFT ? columnX + getCaretWidth() - 1 : columnX;
+			setCaretLocation(newCaretX, getCaretLine(), direction);
 		}
-		new Caret(this, SWT.NULL);			
-		setBidiCaretDirection();
-		Runnable runnable = new Runnable() {
-			public void run() {
-				// setBidiCaretLocation calculates caret location like during 
-				// cursor movement and takes keyboard language into account. 
-				// Fixes 1GKPYMK
-				setBidiCaretLocation(null);
-			}
-		};
-		StyledTextBidi.addLanguageListener(this, runnable);
-	}
-	
+	};
+	StyledTextBidi.addLanguageListener(this, runnable);
 	String platform= SWT.getPlatform();
-	isCarbon = "carbon".equals(platform);	
-	
-	// set the caret width, the height of the caret will default to the line height
+	isCarbon = "carbon".equals(platform);
 	calculateScrollBars();
 	createKeyBindings();
 	ibeamCursor = new Cursor(display, SWT.CURSOR_IBEAM);
@@ -2052,12 +2009,12 @@ void clearMargin(GC gc, Color background, Rectangle clientArea, int renderHeight
 	// clear the margin background
 	gc.setBackground(background);
 	gc.fillRectangle(0, 0, clientArea.width, topMargin);
-	gc.fillRectangle(0, 0, leftMargin, renderHeight + topMargin);	
+	gc.fillRectangle(0, topMargin, leftMargin, renderHeight + topMargin);	
 	gc.fillRectangle(
-		0, clientArea.height - bottomMargin, 
+		leftMargin, clientArea.height - bottomMargin, 
 		clientArea.width, bottomMargin);
 	gc.fillRectangle(
-		clientArea.width - rightMargin, 0, 
+		clientArea.width - rightMargin, topMargin, 
 		rightMargin, renderHeight + topMargin);
 }
 /**
@@ -2323,20 +2280,18 @@ void createKeyBindings() {
  */
 void createCaretBitmaps() {
 	int caretWidth = BIDI_CARET_WIDTH;
-	int gcStyle = isMirrored() ? SWT.RIGHT_TO_LEFT : SWT.LEFT_TO_RIGHT;
-	
 	Display display = getDisplay();	
-	if (caretPalette == null) {
-		caretPalette = new PaletteData(new RGB[] {new RGB (0,0,0), new RGB (255,255,255)});
-	}	
 	if (leftCaretBitmap != null) {
+		Caret caret = getCaret();
+		if (caret != null && leftCaretBitmap.equals(caret.getImage())) {
+			getCaret().setImage(null);
+		}
 		leftCaretBitmap.dispose();
 	}
-	ImageData imageData = new ImageData(caretWidth, lineHeight, 1, caretPalette);
-	leftCaretBitmap = new Image(display, imageData);
-	// mirror the caret gc because when the bitmap is rendered on the screen it will be 
-	// mirrored since the GC for the canvas is mirrored
-	GC gc = new GC (leftCaretBitmap, gcStyle); 
+	leftCaretBitmap = new Image(display, caretWidth, lineHeight);
+	GC gc = new GC (leftCaretBitmap); 
+	gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
+	gc.fillRectangle(0, 0, caretWidth, lineHeight);
 	gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
 	gc.drawLine(0,0,0,lineHeight);
 	gc.drawLine(0,0,caretWidth-1,0);
@@ -2344,17 +2299,21 @@ void createCaretBitmaps() {
 	gc.dispose();	
 	
 	if (rightCaretBitmap != null) {
+		Caret caret = getCaret();
+		if (caret != null && rightCaretBitmap.equals(caret.getImage())) {
+			getCaret().setImage(null);
+		}
 		rightCaretBitmap.dispose();
 	}
-	rightCaretBitmap = new Image(display, imageData);
-	// mirror the caret gc because when the bitmap is rendered on the screen it will be 
-	// mirrored since the GC for the canvas is mirrored
-	gc = new GC (rightCaretBitmap, gcStyle); 
+	rightCaretBitmap = new Image(display, caretWidth, lineHeight);
+	gc = new GC (rightCaretBitmap); 
+	gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
+	gc.fillRectangle(0, 0, caretWidth, lineHeight);
 	gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
 	gc.drawLine(caretWidth-1,0,caretWidth-1,lineHeight);
 	gc.drawLine(0,0,caretWidth-1,0);
 	gc.drawLine(caretWidth-1,1,1,1);
-	gc.dispose();	
+	gc.dispose();
 }
 /**
  * Moves the selected text to the clipboard.  The text will be put in the 
@@ -2486,6 +2445,7 @@ void doAutoScroll(int direction) {
  */
 void doBackspace() {
 	Event event = new Event();
+	advancing = true;
 	event.text = "";
 	if (selection.x != selection.y) {
 		event.start = selection.x;
@@ -2503,7 +2463,11 @@ void doBackspace() {
 			event.end = caretOffset;
 		}
 		else {
-			event.start = caretOffset - 1;
+			String lineText = content.getLine(line);
+			TextLayout layout = renderer.getTextLayout(lineText, lineOffset, null);
+			int start = layout.getPreviousOffset(caretOffset - lineOffset, TextLayout.MOVEMENT_CLUSTER);
+			renderer.disposeTextLayout(layout, null); 
+			event.start = start + lineOffset;
 			event.end = caretOffset;
 		}
 		sendKeyEvent(event);
@@ -2592,6 +2556,7 @@ void doContentStart() {
  * @see #doSelectionCursorPrevious
  */
 void doCursorPrevious() {
+	advancing = false;
 	if (selection.y - selection.x > 0) {
 		int caretLine;
 		
@@ -2612,6 +2577,7 @@ void doCursorPrevious() {
  * @see #doSelectionCursorNext
  */
 void doCursorNext() {
+	advancing = true;
 	if (selection.y - selection.x > 0) {
 		int caretLine;
 
@@ -2628,7 +2594,8 @@ void doCursorNext() {
  */
 void doDelete() {
 	Event event = new Event();
-	
+
+	advancing = false;
 	event.text = "";
 	if (selection.x != selection.y) {
 		event.start = selection.x;
@@ -2647,7 +2614,7 @@ void doDelete() {
 		}
 		else {
 			event.start = caretOffset;
-			event.end = caretOffset + 1;
+			event.end = getClusterNext(caretOffset, line);
 		}
 		sendKeyEvent(event);
 	}
@@ -2700,14 +2667,7 @@ int doLineDown() {
 	int caretLine = getCaretLine(); 
 	if (caretLine < content.getLineCount() - 1) {
 		caretLine++;
-		if (isBidi()) {
-			int offsetDirection[] = getBidiOffsetAtMouseLocation(columnX, caretLine); 
-			caretOffset = offsetDirection[0];
-			lastCaretDirection = offsetDirection[1];
-		}
-		else {
-			caretOffset = getOffsetAtMouseLocation(columnX, caretLine);
-		}
+		caretOffset = getOffsetAtMouseLocation(columnX, caretLine);
 	}
 	return caretLine;
 }
@@ -2731,7 +2691,6 @@ void doLineEnd() {
 void doLineStart() {
 	int caretLine = getCaretLine();
 	int lineOffset = content.getOffsetAtLine(caretLine);
-		
 	if (caretOffset > lineOffset) {
 		caretOffset = lineOffset;
 		showCaret(caretLine);
@@ -2746,17 +2705,9 @@ void doLineStart() {
  */
 int doLineUp() {
 	int caretLine = getCaretLine();
-
 	if (caretLine > 0) {
 		caretLine--;
-		if (isBidi()) {
-			int offsetDirection[] = getBidiOffsetAtMouseLocation(columnX, caretLine); 
-			caretOffset = offsetDirection[0];
-			lastCaretDirection = offsetDirection[1];
-		}
-		else {
-			caretOffset = getOffsetAtMouseLocation(columnX, caretLine);
-		}
+		caretOffset = getOffsetAtMouseLocation(columnX, caretLine);
 	}
 	return caretLine;
 }
@@ -2774,8 +2725,7 @@ void doMouseLocationChange(int x, int y, boolean select) {
 	int lineCount = content.getLineCount();
 	int newCaretOffset;
 	int newCaretLine;
-	int newCaretDirection = lastCaretDirection;
-	
+
 	if (line > lineCount - 1) {
 		line = lineCount - 1;
 	}	
@@ -2784,14 +2734,8 @@ void doMouseLocationChange(int x, int y, boolean select) {
 	if (line < 0 || (isSingleLine() && line > 0)) {
 		return;
 	}
-	if (isBidi()) {
-		int offsetDirection[] = getBidiOffsetAtMouseLocation(x, line);
-		newCaretOffset = offsetDirection[0];
-		newCaretDirection = offsetDirection[1];
-	}
-	else {
-		newCaretOffset = getOffsetAtMouseLocation(x, line);
-	}
+	newCaretOffset = getOffsetAtMouseLocation(x, line);
+	
 	if (mouseDoubleClick) {
 		// double click word select the previous/next word. fixes bug 15610
 		newCaretOffset = doMouseWordSelect(x, newCaretOffset, line);
@@ -2801,9 +2745,9 @@ void doMouseLocationChange(int x, int y, boolean select) {
 	// a different line? If not the autoscroll selection 
 	// could be incorrectly reset. Fixes 1GKM3XS
 	if (y >= 0 && y < getClientArea().height && 
-		(x >= 0 && x < getClientArea().width || newCaretLine != content.getLineAtOffset(caretOffset))) {
+		(x >= 0 && x < getClientArea().width || 
+		newCaretLine != content.getLineAtOffset(caretOffset))) {
 		if (newCaretOffset != caretOffset) {
-			lastCaretDirection = newCaretDirection;
 			caretOffset = newCaretOffset;
 			if (select) {
 				doMouseSelection();
@@ -2812,7 +2756,7 @@ void doMouseLocationChange(int x, int y, boolean select) {
 		}
 	}
 	if (select == false) {
-		lastCaretDirection = newCaretDirection;
+		caretOffset = newCaretOffset;
 		clearSelection(true);
 	}
 }
@@ -2902,15 +2846,8 @@ void doPageDown(boolean select) {
 		// ensure that scrollLines never gets negative and at leat one 
 		// line is scrolled. fixes bug 5602.
 		scrollLines = Math.max(1, scrollLines);
-		caretLine += scrollLines;		
-		if (isBidi()) {
-			int offsetDirection[] = getBidiOffsetAtMouseLocation(columnX, caretLine); 
-			caretOffset = offsetDirection[0];
-			lastCaretDirection = offsetDirection[1];
-		}
-		else {
-			caretOffset = getOffsetAtMouseLocation(columnX, caretLine);
-		}
+		caretLine += scrollLines;
+		caretOffset = getOffsetAtMouseLocation(columnX, caretLine); 
 		if (select) {
 			doSelection(ST.COLUMN_NEXT);
 		}
@@ -2978,18 +2915,11 @@ void doPageUp() {
 		int scrollLines = Math.max(1, Math.min(caretLine, getLineCountWhole()));
 		int scrollOffset;
 		
-		caretLine -= scrollLines;		
-		if (isBidi()) {
-			int offsetDirection[] = getBidiOffsetAtMouseLocation(columnX, caretLine); 
-			caretOffset = offsetDirection[0];
-			lastCaretDirection = offsetDirection[1];
-		}
-		else {
-			caretOffset = getOffsetAtMouseLocation(columnX, caretLine);
-		}
+		caretLine -= scrollLines;
+		caretOffset = getOffsetAtMouseLocation(columnX, caretLine);
 		// scroll one page up or to the top
 		scrollOffset = Math.max(0, verticalScrollOffset - scrollLines * getVerticalIncrement());
-		if (scrollOffset < verticalScrollOffset) {				
+		if (scrollOffset < verticalScrollOffset) {
 			setVerticalScrollOffset(scrollOffset, true);
 		}
 	}
@@ -3009,7 +2939,7 @@ void doSelection(int direction) {
 	
 	if (selectionAnchor == -1) {
 		selectionAnchor = selection.x;
-	}
+	}	
 	if (direction == ST.COLUMN_PREVIOUS) {
 		if (caretOffset < selection.x) {
 			// grow selection
@@ -3061,13 +2991,9 @@ void doSelectionCursorNext() {
 	int caretLine = getCaretLine();
 	int lineOffset = content.getOffsetAtLine(caretLine);
 	int offsetInLine = caretOffset - lineOffset;
-		
+	advancing = true;
 	if (offsetInLine < content.getLine(caretLine).length()) {
-		// Remember the last direction. Always update lastCaretDirection,
-		// even though it's not used in non-bidi mode in order to avoid 
-		// extra methods.		
-		lastCaretDirection = ST.COLUMN_NEXT;
-		caretOffset++;
+		caretOffset = getClusterNext(caretOffset, caretLine);
 		showCaret();
 	}
 	else
@@ -3088,15 +3014,9 @@ void doSelectionCursorPrevious() {
 	int caretLine = getCaretLine();
 	int lineOffset = content.getOffsetAtLine(caretLine);
 	int offsetInLine = caretOffset - lineOffset;
-	
+	advancing = false;
 	if (offsetInLine > 0) {
-		// Remember the last direction. Always update lastCaretDirection,
-		// even though it's not used in non-bidi mode in order to avoid 
-		// extra methods.			
-		lastCaretDirection = ST.COLUMN_PREVIOUS;		
-		caretOffset--;
-		// explicitly go to the calculated caret line. may be different 
-		// from content.getLineAtOffset(caretOffset) when in word wrap mode
+		caretOffset = getClusterPrevious(caretOffset, caretLine);
 		showCaret(caretLine);
 	}
 	else
@@ -3231,12 +3151,11 @@ void doSelectionPageUp() {
  */
 void doSelectionWordNext() {
 	int newCaretOffset = getWordEnd(caretOffset);
-	
+	advancing = true;
 	// don't change caret position if in single line mode and the cursor 
 	// would be on a different line. fixes 5673
 	if (isSingleLine() == false || 
 		content.getLineAtOffset(caretOffset) == content.getLineAtOffset(newCaretOffset)) {
-		lastCaretDirection = ST.COLUMN_NEXT;
 		caretOffset = newCaretOffset;
 		showCaret();
 	}
@@ -3245,9 +3164,8 @@ void doSelectionWordNext() {
  * Moves the caret to the start of the previous word.
  */
 void doSelectionWordPrevious() {
-	int caretLine;
-	
-	lastCaretDirection = ST.COLUMN_PREVIOUS;
+	int caretLine;	
+	advancing = false;
 	caretOffset = getWordStart(caretOffset);
 	caretLine = content.getLineAtOffset(caretOffset);
 	// word previous always comes from bottom line. when
@@ -3265,80 +3183,8 @@ void doSelectionWordPrevious() {
  * left (visually left because it's now in a L2R segment).
  */
 void doVisualPrevious() {
-	int line = content.getLineAtOffset(caretOffset);
-	int lineOffset = content.getOffsetAtLine(line);	
-	int offsetInLine = caretOffset - lineOffset;
-	
-	if (isBidi()) {
-		// check if caret location is at the visual beginning of the line
-		if (columnX <= XINSET && horizontalScrollOffset == 0) { 
-			return;
-		}		
-		String lineText = content.getLine(line);
-		int lineLength = lineText.length();
-		GC gc = getGC();
-		StyledTextBidi bidi = getStyledTextBidi(lineText, lineOffset, gc);
-		int visualOffset = -1;
-		
-		if (offsetInLine == lineLength) {
-			//logical end of line may not be visual end, setup visualOffset to process as usual
-			visualOffset = bidi.getVisualOffset(offsetInLine - 1);
-		}
-		else
-		if (offsetInLine < lineLength) {
-			visualOffset = bidi.getVisualOffset(offsetInLine);
-		}
-		if (visualOffset != -1) {
-			if (visualOffset > 0) {
-				visualOffset--;
-				offsetInLine = bidi.getLogicalOffset(visualOffset);
-			}
-			else
-			if (visualOffset == 0) {
-				boolean isRightOriented = isMirrored();
-
-				//move to visual line end (i.e., behind L2R character/in front of R2L character at visual 0)
-				if ((isRightOriented && bidi.isRightToLeft(offsetInLine) == false) ||
-					(isRightOriented == false && bidi.isRightToLeft(offsetInLine))) {
-					offsetInLine++;
-				}
-				
-				if (offsetInLine > 0 && offsetInLine < lineLength) {
-					if (isRightOriented) {
-						boolean rightToLeftStart = bidi.isRightToLeft(offsetInLine) && bidi.isRightToLeft(offsetInLine - 1) == false;
-						if (rightToLeftStart) {
-							//moving from LtoR segment to RtoL segment
-							lastCaretDirection = ST.COLUMN_NEXT;
-						}						
-					}
-					else {
-						boolean leftToRightStart = bidi.isRightToLeft(offsetInLine) == false && bidi.isRightToLeft(offsetInLine - 1);
-						if (bidi.isLatinNumber(offsetInLine) && bidi.isRightToLeftInput(offsetInLine - 1)) {
-							//moving from LtoR segment to latin number 
-							lastCaretDirection = ST.COLUMN_PREVIOUS;
-						}
-						else
-						if (leftToRightStart) {
-							//moving from RtoL segment to LtoR segment
-							lastCaretDirection = ST.COLUMN_NEXT;
-						}						
-					}
-				}
-			}
-			caretOffset = lineOffset + offsetInLine;
-			showCaret();
-		}
-		if (bidi.getTextPosition(offsetInLine, ST.COLUMN_NEXT) == XINSET) {
-			//scroll to origin if caret is at origin
-			scrollHorizontalBar(-horizontalScrollOffset);
-		}
-		gc.dispose();
-	}
-	else
-	if (offsetInLine > 0) {
-		caretOffset--;
-		showCaret();
-	}
+	caretOffset = getClusterPrevious(caretOffset, getCaretLine());
+	showCaret();
 }
 /**
  * Moves the caret one character to the right.  Do not go to the next line.
@@ -3347,69 +3193,8 @@ void doVisualPrevious() {
  * right (visually right because it's now in a L2R segment).
  */
 void doVisualNext() {
-	int line = content.getLineAtOffset(caretOffset);
-	int lineOffset = content.getOffsetAtLine(line);	
-	int offsetInLine = caretOffset - lineOffset;
-	String lineText = content.getLine(line);
-	int lineLength = lineText.length();
-	
-	if (isBidi()) {
-		GC gc = getGC();
-		StyledTextBidi bidi = getStyledTextBidi(lineText, lineOffset, gc);
-		// Fixes bug 39032
-		int lineEndPixel = Math.max(bidi.getTextWidth(), XINSET); 
-
-		// check if caret location is at the visual end of the line (can't use 
-		// caret location here since it's location is dependent on current keyboard
-		// language direction)
-		if (bidi.getTextPosition(offsetInLine, lastCaretDirection) == lineEndPixel) {
-			gc.dispose(); 
-			return;
-		}
-		int visualOffset = -1;
-		if (offsetInLine == lineLength) {
-			//logical end of line may not be visual end, setup visualOffset to process as usual
-			visualOffset = bidi.getVisualOffset(offsetInLine - 1);
-		}
-		else
-		if (offsetInLine < lineLength) {
-			visualOffset = bidi.getVisualOffset(offsetInLine);
-		}
-		if (visualOffset != -1) {
-			visualOffset++;
-			offsetInLine = bidi.getLogicalOffset(visualOffset);
-			if (offsetInLine > 0 && offsetInLine < lineLength) {
-				boolean isRightOriented = isMirrored();
-				if (isRightOriented) {
-					boolean leftToRightStart = bidi.isRightToLeft(offsetInLine) == false && bidi.isRightToLeft(offsetInLine - 1);
-					if (leftToRightStart) {
-						//moving from RtoL segment to LtoR segment
-						lastCaretDirection = ST.COLUMN_PREVIOUS;
-					}						
-				}
-				else {
-					boolean rightToLeftStart = bidi.isRightToLeft(offsetInLine) && bidi.isRightToLeft(offsetInLine - 1) == false;
-					if (bidi.isRightToLeftInput(offsetInLine) && bidi.isLatinNumber(offsetInLine - 1)) {
-						//moving from latin number to RtoL segment
-						lastCaretDirection = ST.COLUMN_NEXT;
-					}
-					else
-					if (rightToLeftStart) {
-						//moving from LtoR segment to RtoL segment
-						lastCaretDirection = ST.COLUMN_PREVIOUS;
-					}						
-				}
-			}
-			caretOffset = lineOffset + offsetInLine;
-			showCaret();
-		}
-		gc.dispose();
-	}
-	else
-	if (offsetInLine < lineLength) {
-		caretOffset++;
-		showCaret();
-	}
+	caretOffset = getClusterNext(caretOffset, getCaretLine());
+	showCaret();
 }
 /**
  * Moves the caret to the end of the next word.
@@ -3521,50 +3306,6 @@ public boolean getBidiColoring() {
 	checkWidget();
 	return bidiColoring;
 }
-/**
- * Returns the offset and caret direction at the specified x location 
- * in the specified line.
- * The returned caret direction needs to be set in order to place the 
- * caret correctly based on whether the mouse location is in a R2L 
- * or L2R segment.
- * <p>
- *
- * @param x	x location of the mouse location
- * @param line	line the mouse location is in
- * @return int array, first element is the offset at the specified x 
- * 	location in the specified line, relative to the beginning of the 
- * 	document. second element is the caret direction.
- */
-int[] getBidiOffsetAtMouseLocation(int x, int line) {
-	String lineText = content.getLine(line);
-	int lineOffset = content.getOffsetAtLine(line);
-	GC gc = getGC();
-	StyledTextBidi bidi = getStyledTextBidi(lineText, lineOffset, gc);
-	int[] values = bidi.getCaretOffsetAndDirectionAtX(x + horizontalScrollOffset - leftMargin);
-	
-	gc.dispose();	
-	return new int[] {lineOffset + values[0], values[1]};
-}
-/**
- * Returns the x position of the character at the specified offset 
- * relative to the first character in the line.
- * </p>
- *
- * @param text text to be measured.
- * @param endOffset offset of the character
- * @param bidi the bidi object to use for measuring text in bidi
- *	locales. 
- * @return x position of the character at the specified offset. 
- * 	0 if the length is outside the specified text.
- */
-int getBidiTextPosition(String text, int endOffset, StyledTextBidi bidi) {
-	if (endOffset > text.length()) {
-		return 0;
-	}
-	// Use lastCaretDirection in order to get same results as during
-	// caret positioning (setBidiCaretLocation). Fixes 1GKU4C5.
-	return bidi.getTextPosition(endOffset, lastCaretDirection);
-}
 /** 
  * Returns the index of the last fully visible line.
  * <p>
@@ -3613,32 +3354,31 @@ public int getCaretOffset() {
  * @param lineXOffset x location in the line
  * @return caret offset at the x location relative to the start of the line.
  */
-int getCaretOffsetAtX(String line, int lineOffset, int lineXOffset) {
-	int offset = 0;
-	GC gc = getGC();
-	StyleRange[] styles = null;
+int getOffsetAtX(String line, int lineOffset, int lineXOffset) {
+	int offset;
+	int[] trailing;
+	TextLayout layout;
 	StyledTextEvent event = renderer.getLineStyleData(lineOffset, line);
-	
-	lineXOffset += horizontalScrollOffset;
-	if (event != null) {
-		styles = renderer.filterLineStyles(event.styles);
+	int x = lineXOffset - leftMargin + horizontalScrollOffset;
+	layout = renderer.getTextLayout(line, lineOffset, event);
+	Rectangle rect = layout.getLineBounds(0);
+	if (x < rect.x) {
+		offset = 0;
+	} else if (x > rect.x + rect.width) {
+		offset = line.length();
+	} else {
+		trailing = new int[1];
+		offset = layout.getOffset(x, 0, trailing);
+		advancing = false;
+		if ((trailing[0] & SWT.TRAIL) != 0) {
+			int level = layout.getLevel(offset) & 0x1;
+			offset++;
+			int trailingLevel = layout.getLevel(offset) & 0x1;
+			advancing  = (level ^ trailingLevel) != 0;
+		} 
 	}
-	int low = -1;
-	int high = line.length();
-	while (high - low > 1) {
-		offset = (high + low) / 2;
-		int x = renderer.getTextPosition(line, lineOffset, offset, styles, gc) + leftMargin;
-		int charWidth = renderer.getTextPosition(line, lineOffset, offset + 1, styles, gc) + leftMargin - x;
-		if (lineXOffset <= x + charWidth / 2) {
-			high = offset;			
-		}
-		else {
-			low = offset;
-		}
-	}
-	offset = high;
-	gc.dispose();
-	return offset;	
+	renderer.disposeTextLayout(layout, event);
+	return offset;
 }
 /**
  * Returns the caret width.
@@ -3650,6 +3390,26 @@ int getCaretWidth() {
 	Caret caret = getCaret();
 	if (caret == null) return 0;
 	return caret.getSize().x;
+}
+int getClusterNext(int offset, int lineIndex) {
+	String line = content.getLine(lineIndex);
+	int lineOffset = content.getOffsetAtLine(lineIndex);	
+	TextLayout layout = renderer.getTextLayout(line, lineOffset, null);
+	offset -= lineOffset;
+	offset = layout.getNextOffset(offset, TextLayout.MOVEMENT_CLUSTER);
+	offset += lineOffset;
+	renderer.disposeTextLayout(layout, null);
+	return offset;
+}
+int getClusterPrevious(int offset, int lineIndex) {
+	String line = content.getLine(lineIndex);
+	int lineOffset = content.getOffsetAtLine(lineIndex);	
+	TextLayout layout = renderer.getTextLayout(line, lineOffset, null);
+	offset -= lineOffset;
+	offset = layout.getPreviousOffset(offset, TextLayout.MOVEMENT_CLUSTER);
+	offset += lineOffset;
+	renderer.disposeTextLayout(layout, null);
+	return offset;
 }
 /**
  * Returns the content implementation that is used for text storage
@@ -3715,7 +3475,6 @@ public Color getForeground() {
  * @return GC.
  */
 GC getGC() {
-	renderer.setCurrentFontStyle(SWT.NORMAL);
 	return new GC(this);
 }
 /** 
@@ -4089,6 +3848,7 @@ public int getOffsetAtLine(int lineIndex) {
  */
 public int getOffsetAtLocation(Point point) {
 	checkWidget();
+	TextLayout layout;
 	int line;
 	int lineOffset;
 	int offsetInLine;
@@ -4108,11 +3868,19 @@ public int getOffsetAtLocation(Point point) {
 	}	
 	lineText = content.getLine(line);
 	lineOffset = content.getOffsetAtLine(line);	
-	offsetInLine = getOffsetAtX(lineText, lineOffset, point.x);
-	// is the x position within the line?
-	if (offsetInLine == -1) {
+	
+	int x = point.x - leftMargin + horizontalScrollOffset;
+	StyledTextEvent event = renderer.getLineStyleData(lineOffset, lineText);
+	layout = renderer.getTextLayout(lineText, lineOffset, event);
+	Rectangle rect = layout.getLineBounds(0);
+	if (x > rect.x + rect.width) {
+		renderer.disposeTextLayout(layout, event);
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
+	int[] trailing = new int[1];
+	offsetInLine = layout.getOffset(x, 0, trailing);
+	if ((trailing[0] & SWT.TRAIL) != 0) offsetInLine++;
+	renderer.disposeTextLayout(layout, event);
 	return lineOffset + offsetInLine;
 }
 /**
@@ -4127,58 +3895,7 @@ public int getOffsetAtLocation(Point point) {
 int getOffsetAtMouseLocation(int x, int line) {
 	String lineText = content.getLine(line);
 	int lineOffset = content.getOffsetAtLine(line);
-	int offsetInLine = getCaretOffsetAtX(lineText, lineOffset, x);
-	return lineOffset + offsetInLine;
-}
-/**
- * Returns the offset of the character at the given x location in the line.
- * <p>
- *
- * @param line text of the line to calculate the offset in
- * @param lineOffset offset of the first character in the line. 
- * 	0 based from the beginning of the document.
- * @param lineXOffset x location in the line
- * @return offset of the character at the x location relative to the start 
- * 	of the line. -1 if the x location is past the end if the line.
- */
-int getOffsetAtX(String line, int lineOffset, int lineXOffset) {
-	GC gc = getGC();
-	int offset;	
-	
-	lineXOffset += (horizontalScrollOffset - leftMargin);
-	if (isBidi()) {
-		StyledTextBidi bidi = getStyledTextBidi(line, lineOffset, gc);
-		offset = bidi.getOffsetAtX(lineXOffset);
-	}		
-	else {
-		StyleRange[] styles = null;
-		StyledTextEvent event = renderer.getLineStyleData(lineOffset, line);
-					
-		if (event != null) {
-			styles = renderer.filterLineStyles(event.styles);
-		}
-		int low = -1;
-		int high = line.length();
-		while (high - low > 1) {
-			offset = (high + low) / 2;
-			// Restrict right/high search boundary only if x is within searched text segment.
-			// Fixes 1GL4ZVE.			
-			if (lineXOffset < renderer.getTextPosition(line, lineOffset, offset + 1, styles, gc)) {
-				high = offset;			
-			}
-			else 
-			if (high == line.length() && high - offset == 1) {
-				// requested x location is past end of line
-				high = -1;
-			}
-			else {
-				low = offset;
-			}
-		}
-		offset = high;
-	}
-	gc.dispose();	
-	return offset;	
+	return getOffsetAtX(lineText, lineOffset, x) + lineOffset;
 }
 /**
  * Return the orientation of the receiver.
@@ -4551,7 +4268,7 @@ public StyleRange [] getStyleRanges(int start, int length) {
 	
 	if (userLineStyle == false) {
 		styles = defaultLineStyler.getStyleRangesFor(start, length);
-		if (styles == null) return new StyleRange[0];;
+		if (styles == null) return new StyleRange[0];
 		// adjust the first and last style to reflect the specified 
 		// range, clone these styles since the returned styles are the
 		// styles cached by the widget
@@ -4589,36 +4306,6 @@ public StyleRange [] getStyleRanges(int start, int length) {
 	}
 	return styles;
 }
-/**
- * Returns a StyledTextBidi object for the specified line.
- * <p>
- * 
- * @param lineText the line that the StyledTextBidi object should 
- * 	work on.
- * @param lineOffset offset of the beginning of the line, relative 
- * 	to the beginning of the document
- * @param gc GC to use when creating a new StyledTextBidi object.
- * @return a StyledTextBidi object for the specified line.
- */
-StyledTextBidi getStyledTextBidi(String lineText, int lineOffset, GC gc) {
-	return getStyledTextBidi(lineText, lineOffset, gc, null);
-}
-/**
- * Returns a StyledTextBidi object for the specified line.
- * <p>
- * 
- * @param lineText the line that the StyledTextBidi object should 
- * 	work on.
- * @param lineOffset offset of the beginning of the line, relative 
- * 	to the beginning of the document
- * @param gc GC to use when creating a new StyledTextBidi object.
- * @param styles StyleRanges to use when creating a new StyledTextBidi 
- * 	object.
- * @return a StyledTextBidi object for the specified line.
- */
-StyledTextBidi getStyledTextBidi(String lineText, int lineOffset, GC gc, StyleRange[] styles) {
-	return renderer.getStyledTextBidi(lineText, lineOffset, gc, styles);
-}		
 /**
  * Returns the tab width measured in characters.
  *
@@ -4712,43 +4399,6 @@ public int getTextLimit() {
 	return textLimit;
 }
 /**
- * Returns the x position of the character at the specified offset 
- * relative to the first character in the line.
- * Expands tabs to tab stops using the widget tab width.
- * <p>
- *
- * @param line line to be measured.
- * @param lineIndex index of the line relative to the first kine of the 
- * 	document
- * @param length number of characters to measure. Tabs are counted 
- * 	as one character in this parameter.
- * @param gc GC to use for measuring text
- * @return x position of the character at the specified offset 
- * 	with tabs expanded to tab stops. 0 if the length is outside the 
- * 	specified text.
- */
-int getTextPosition(String line, int lineIndex, int length, GC gc) {
-	int lineOffset = content.getOffsetAtLine(lineIndex);
-	int lineLength = line.length();
-	int width;
-	if (lineLength == 0 || length > lineLength) {
-		return 0;
-	}	
-	if (isBidi()) {
-		StyledTextBidi bidi = getStyledTextBidi(line, lineOffset, gc, null);
-		width = getBidiTextPosition(line, length, bidi);
-	}
-	else {
-		StyledTextEvent event = renderer.getLineStyleData(lineOffset, line);
-		StyleRange[] styles = null;
-		if (event != null) {
-			styles = renderer.filterLineStyles(event.styles);
-		}
-		width = renderer.getTextPosition(line, lineOffset, length, styles, gc);
-	}
-	return width;
-}
-/**
  * Gets the top index.  The top index is the index of the fully visible line that
  * is currently at the top of the widget or the topmost partially visible line if 
  * no line is fully visible. 
@@ -4798,6 +4448,27 @@ public int getTopPixel() {
 int getVerticalIncrement() {
 	return lineHeight;
 }
+int getCaretDirection() {
+	if (!isBidi()) return SWT.DEFAULT;
+	int caretLine = getCaretLine();
+	int lineOffset = content.getOffsetAtLine(caretLine);
+	String line = content.getLine(caretLine);
+	int offset = caretOffset - lineOffset;
+	int lineLength = line.length();
+	if (lineLength == 0) return isMirrored() ? SWT.RIGHT : SWT.LEFT;
+	TextLayout layout = renderer.getTextLayout(line, lineOffset, null);
+	if (advancing && offset > 0) offset--;
+	int level = layout.getLevel(offset);
+	while (offset > 0 && level > 1) level = layout.getLevel(--offset);
+	renderer.disposeTextLayout(layout, null);
+	if (offset == 0 && level > 1) return isMirrored() ? SWT.RIGHT : SWT.LEFT;
+	int direction = SWT.LEFT;
+	if ((level & 1) != 0) direction = SWT.RIGHT;
+	if (isMirrored()) {
+		direction = direction == SWT.LEFT ? SWT.RIGHT : SWT.LEFT;
+	}
+	return direction;
+}
 /**
  * Returns the index of the line the caret is on.
  * When in word wrap mode and at the end of one wrapped line/ 
@@ -4808,11 +4479,7 @@ int getVerticalIncrement() {
  */
 int getCaretLine() {
 	int caretLine = content.getLineAtOffset(caretOffset);
-	int leftColumnX = 0;
-	
-	if (isBidi()) {
-		leftColumnX = XINSET;
-	}	
+	int leftColumnX = leftMargin;
 	if (wordWrap && columnX <= leftColumnX &&
 		caretLine < content.getLineCount() - 1 &&
 		caretOffset == content.getOffsetAtLine(caretLine + 1)) {
@@ -4850,22 +4517,11 @@ int getWordEnd(int offset) {
 		offset = logicalContent.getOffsetAtLine(line);
 	}
 	else {
+		TextLayout layout = renderer.getTextLayout(lineText, lineOffset, null);
 		offset -= lineOffset;
-		char ch = lineText.charAt(offset);
-		boolean letterOrDigit = Compatibility.isLetterOrDigit(ch);
-		while (offset < lineLength - 1 && Compatibility.isLetterOrDigit(ch) == letterOrDigit) {
-			offset++;
-			ch = lineText.charAt(offset);
-		}
-		// skip over trailing whitespace
-		while (offset < lineLength - 1 && Compatibility.isSpaceChar(ch)) {
-			offset++;
-			ch = lineText.charAt(offset);		
-		}
-		if (offset == lineLength - 1 && (Compatibility.isLetterOrDigit(ch) == letterOrDigit || Compatibility.isSpaceChar(ch))) {
-			offset++;
-		}
+		offset = layout.getNextOffset(offset, TextLayout.MOVEMENT_WORD);
 		offset += lineOffset;
+		renderer.disposeTextLayout(layout, null);
 	}
 	return offset;
 }
@@ -4932,7 +4588,7 @@ int getWordStart(int offset) {
 	int line = logicalContent.getLineAtOffset(offset);
 	int lineOffset = logicalContent.getOffsetAtLine(line);
 	String lineText = logicalContent.getLine(line);
-	
+
 	if (offset <= 0) {
 		return offset;
 	}
@@ -4942,24 +4598,11 @@ int getWordStart(int offset) {
 		offset = logicalContent.getOffsetAtLine(line) + lineText.length();
 	}
 	else {
-		char ch;
-		boolean letterOrDigit;
-		
+		TextLayout layout = renderer.getTextLayout(lineText, lineOffset, null);
 		offset -= lineOffset;
-		// skip over trailing whitespace
-		do {		
-			offset--;
-			ch = lineText.charAt(offset);
-		} while (offset > 0 && Compatibility.isSpaceChar(ch));
-		letterOrDigit = Compatibility.isLetterOrDigit(ch);
-		while (offset > 0 && Compatibility.isLetterOrDigit(ch) == letterOrDigit && Compatibility.isSpaceChar(ch) == false) {
-			offset--;
-			ch = lineText.charAt(offset);
-		}
-		if (offset > 0 || Compatibility.isLetterOrDigit(ch) != letterOrDigit) {
-			offset++;
-		}
+		offset = layout.getPreviousOffset(offset, TextLayout.MOVEMENT_WORD);
 		offset += lineOffset;
+		renderer.disposeTextLayout(layout, null); 
 	}
 	return offset;
 }
@@ -4981,22 +4624,21 @@ public boolean getWordWrap() {
  *
  * @return x location of the character at the given offset in the line.
  */
-int getXAtOffset(String line, int lineIndex, int lineOffset) {
-	int x;
-	if (lineOffset == 0 && isBidi() == false) {
-		x = leftMargin;
-	}
-	else {
-		GC gc = getGC();		
-		x = getTextPosition(line, lineIndex, Math.min(line.length(), lineOffset), gc) + leftMargin;
-		gc.dispose();
-		if (lineOffset > line.length()) {
-			// offset is not on the line. return an x location one character 
-			// after the line to indicate the line delimiter.
-			x += lineEndSpaceWidth;
+int getXAtOffset(String line, int lineIndex, int offsetInLine) {
+	int x  = 0;
+	int lineLength = line.length();
+	if (lineLength != 0  && offsetInLine <= lineLength) {
+		int lineOffset = content.getOffsetAtLine(lineIndex);
+		StyledTextEvent event = renderer.getLineStyleData(lineOffset, line);
+		TextLayout layout = renderer.getTextLayout(line, lineOffset, event);
+		if (!advancing || offsetInLine == 0) {
+			x = layout.getLocation(offsetInLine, SWT.LEAD).x;
+		} else {
+			x = layout.getLocation(offsetInLine - 1, SWT.TRAIL).x;
 		}
+		renderer.disposeTextLayout(layout, event);
 	}
-	return x - horizontalScrollOffset;
+	return x + leftMargin - horizontalScrollOffset;
 }
 /** 
  * Inserts a string.  The old selection is replaced with the new text.  
@@ -5165,18 +4807,13 @@ void internalRedrawRange(int start, int length, boolean clearBackground) {
 		lastLine = partialBottomIndex + 1;	// + 1 to redraw whole bottom line, including line break
 		end = content.getOffsetAtLine(lastLine);
 	}
-	// redraw first and last lines
-	if (isBidi()) {
-		redrawBidiLines(firstLine, offsetInFirstLine, lastLine, end, clearBackground);
-	}	
-	else {
-		redrawLines(firstLine, offsetInFirstLine, lastLine, end, clearBackground);
-	}
+	redrawLines(firstLine, offsetInFirstLine, lastLine, end, clearBackground);
+	
 	// redraw entire center lines if redraw range includes more than two lines
 	if (lastLine - firstLine > 1) {
 		Rectangle clientArea = getClientArea();
 		int redrawStopY = lastLine * lineHeight - verticalScrollOffset;		
-		int redrawY = (firstLine + 1) * lineHeight - verticalScrollOffset;				
+		int redrawY = (firstLine + 1) * lineHeight - verticalScrollOffset;		
 		draw(0, redrawY, clientArea.width, redrawStopY - redrawY, clearBackground);
 	}
 }
@@ -5240,7 +4877,6 @@ void handleDispose(Event event) {
 	background = null;
 	foreground = null;
 	clipboard = null;
-	caretPalette = null;
 }
 /** 
  * Scrolls the widget horizontally.
@@ -5258,7 +4894,7 @@ void handleHorizontalScroll(Event event) {
  */
 void handleKey(Event event) {
 	int action;
-	
+	advancing = true;
 	if (event.keyCode != 0) {
 		// special key pressed (e.g., F1)
 		action = getKeyBinding(event.keyCode | event.stateMask);
@@ -5389,12 +5025,9 @@ void handlePaint(Event event) {
 	int topLineOffset = topIndex * lineHeight - verticalScrollOffset;
 	int startY = paintYFromTopLine + topLineOffset + topMargin;	// adjust y position for pixel based scrolling and top margin
 	int renderHeight = event.y + event.height - startY;
-	Rectangle clientArea = getClientArea();
 	
-	// Check if there is work to do. clientArea.width should never be 0
-	// if we receive a paint event but we never want to try and create 
-	// an Image with 0 width.
-	if (clientArea.width == 0 || event.height == 0) {		
+	// Check if there is work to do
+	if (event.height == 0) {		
 		return;
 	}
 	performPaint(event.gc, startLine, startY, renderHeight);
@@ -5632,9 +5265,11 @@ void initializeRenderer() {
 		renderer.dispose();
 	}
 	renderer = new DisplayRenderer(
-		getDisplay(), getFont(), isBidi(), leftMargin, this, tabLength);
+		getDisplay(), getFont(), leftMargin, this, tabLength);
 	lineHeight = renderer.getLineHeight();
-	lineEndSpaceWidth = renderer.getLineEndSpaceWidth();
+	if (wordWrap) {
+	    content = new WrappedContent(renderer, logicalContent);
+	}
 }
 /**
  * Executes the action.
@@ -5850,49 +5485,6 @@ boolean isAreaVisible(int firstLine, int lastLine) {
 	return !notVisible;
 }
 /**
- * Returns whether or not the given styles will necessitate a redraw for the given start line.  
- * A redraw is necessary when font style changes after the start of a style will take place.  
- * This method assumes ranges is in order and non-overlapping.
- * <p>
- *
- * @return true if a redraw of the given line is necessary, false otherwise
- */
-boolean isRedrawFirstLine(StyleRange[] ranges, int firstLine, int firstLineOffset) {
-	int lineEnd = firstLineOffset + content.getLine(firstLine).length();
-	for (int i=0; i<ranges.length; i++) {
-		StyleRange range = ranges[i];
-		// does the style start on the first line?
-		if (range.start < lineEnd) {
-			int rangeEnd = range.start + range.length;
-			if (isStyleChanging(range, range.start, Math.min(rangeEnd, lineEnd))) return true;
-		} else {
-			return false;
-		}
-	}
-	return false;
-}
-/**
- * Returns whether or not the given styles will necessitate a redraw for the given end line.  
- * A redraw is necessary when font style changes after the start of a style will take place.  
- * This method assumes ranges is in order and non-overlapping.
- * <p>
- *
- * @return true if a redraw of the last line is necessary, false otherwise
- */
-boolean isRedrawLastLine(StyleRange[] ranges, int lastLine, int lastLineOffset) {
-	for (int i = ranges.length - 1; i >= 0; i--) {
-		StyleRange range = ranges[i];
-		int rangeEnd = range.start + range.length;
-		// does style range end on the last line?
-		if (rangeEnd >= lastLineOffset) {
-			if (isStyleChanging(range, Math.max(range.start, lastLineOffset), rangeEnd)) return true;
-		} else {
-			break;
-		}
-	}
-	return false;
-}
-/**
  * Returns whether the widget can have only one line.
  * <p>
  *
@@ -5901,36 +5493,6 @@ boolean isRedrawLastLine(StyleRange[] ranges, int lastLine, int lastLineOffset) 
  */
 boolean isSingleLine() {
 	return (getStyle() & SWT.SINGLE) != 0;
-}
-/** 
- * Returns whether the font style in the given style range is changing 
- * from SWT.NORMAL to SWT.BOLD or vice versa.
- * <p>
- *
- * @param range StyleRange to compare current font style with.
- * @param start offset of the first font style to compare 
- * @param end offset behind the last font style to compare
- * @return true if the font style is changing in the given style range,
- * 	false if the font style is not changing in the given style range.
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-boolean isStyleChanging(StyleRange range, int start, int end) {
-	checkWidget();
-	StyleRange[] styles = defaultLineStyler.getStyleRangesFor(start, end - start);
-	
-	if (styles == null) {
-		return (range.fontStyle != SWT.NORMAL);
-	}
-	for (int i = 0; i < styles.length; i++) {
-		StyleRange newStyle = styles[i];
-		if (newStyle.fontStyle != range.fontStyle) {
-			return true;
-		}
-	}
-	return false;
 }
 /**
  * Sends the specified verify event, replace/insert text as defined by 
@@ -5952,44 +5514,6 @@ void modifyContent(Event event, boolean updateCaret) {
 	if (event.doit) {
 		StyledTextEvent styledTextEvent = null;
 		int replacedLength = event.end - event.start;
-		boolean isCharacterRemove = replacedLength == 1 && event.text.length() == 0;
-		boolean isBackspace = event.start < caretOffset;
-		boolean isDirectionBoundary = false;
-				
-		if (updateCaret && isBidi() && isCharacterRemove) {
-			// set the keyboard language to the language of the deleted character.
-			// determine direction boundary so that caret location can be updated 
-			// properly.
-			int line = content.getLineAtOffset(caretOffset);
-			int lineStartOffset = content.getOffsetAtLine(line);		
-			int offsetInLine = caretOffset - lineStartOffset;
-			String lineText = content.getLine(line);
-			GC gc = getGC();
-			StyledTextBidi bidi = new StyledTextBidi(gc, lineText, getBidiSegments(lineStartOffset, lineText));			
-			if (isBackspace) {
-				if (offsetInLine > 0) {
-					// the line start/end does not represent a direction boundary 
-					// even if the previous/next line has a different direction.
-					isDirectionBoundary = 
-						offsetInLine < lineText.length() && 
-						(bidi.isRightToLeft(offsetInLine) != bidi.isRightToLeft(offsetInLine - 1) || 
-						 bidi.isLocalNumber(offsetInLine) != bidi.isLocalNumber(offsetInLine - 1));
-					bidi.setKeyboardLanguage(offsetInLine - 1);
-				}
-			}
-			else {
-				if (offsetInLine < lineText.length()) {
-					// the line start/end does not represent a direction boundary 
-					// even if the previous/next line has a different direction.
-					isDirectionBoundary = 
-						offsetInLine > 0 && 
-						(bidi.isRightToLeft(offsetInLine) != bidi.isRightToLeft(offsetInLine - 1) || 
-						 bidi.isLocalNumber(offsetInLine) != bidi.isLocalNumber(offsetInLine - 1));
-					bidi.setKeyboardLanguage(offsetInLine);
-				}
-			}
-			gc.dispose();
-		}						
 		if (isListening(ExtendedModify)) {
 			styledTextEvent = new StyledTextEvent(logicalContent);
 			styledTextEvent.start = event.start;
@@ -5999,23 +5523,10 @@ void modifyContent(Event event, boolean updateCaret) {
 		content.replaceTextRange(event.start, replacedLength, event.text);
 		// set the caret position prior to sending the modify event.
 		// fixes 1GBB8NJ
-		if (updateCaret) {		
+		if (updateCaret) {
 			// always update the caret location. fixes 1G8FODP
 			internalSetSelection(event.start + event.text.length(), 0, true);
-			if (isBidi()) {
-				// Update the caret direction so that the caret moves to the 
-				// typed/deleted character. Fixes 1GJLQ16.
-				if (isCharacterRemove) {
-					updateBidiDirection(isBackspace, isDirectionBoundary);
-				}
-				else {
-					lastCaretDirection = ST.COLUMN_NEXT;
-				}
-				showBidiCaret();
-			}
-			else {
-				showCaret();
-			}
+			showCaret();
 		}	
 		sendModifyEvent(event);		
 		if (isListening(ExtendedModify)) {
@@ -6068,27 +5579,30 @@ void performPaint(GC gc,int startLine,int startY, int renderHeight)	{
 	if (clientArea.width == 0) {
 		return;
 	}
+	clearMargin(gc, background, clientArea, renderHeight);
 	if (renderHeight > 0) {
 		// renderHeight will be negative when only top margin needs redrawing
 		Color foreground = getForeground();
 		int lineCount = content.getLineCount();
 		int paintY = 0;
 		int gcStyle = isMirrored() ? SWT.RIGHT_TO_LEFT : SWT.LEFT_TO_RIGHT;
-		
 		if (isSingleLine()) {
 			lineCount = 1;
-			if (startLine > 1) {
-				startLine = 1;
-			}
 		}
 		Image lineBuffer = new Image(getDisplay(), clientArea.width, renderHeight);
-		GC lineGC = new GC(lineBuffer, gcStyle);	
-	
+		GC lineGC = new GC(lineBuffer, gcStyle);		
+		Region region = new Region(getDisplay());
+		gc.getClipping(region);
+		Rectangle rect = new Rectangle(0, 0, 0, 0);
+		rect.x = clientArea.x + leftMargin;
+		rect.y = clientArea.y + topMargin;
+		rect.width = clientArea.width - leftMargin - rightMargin;
+		rect.height = clientArea.height - topMargin - bottomMargin;
+		region.intersect(rect);
+		gc.setClipping(region);	
 		lineGC.setFont(getFont());
-		renderer.setCurrentFontStyle(SWT.NORMAL);
 		lineGC.setForeground(foreground);
-		lineGC.setBackground(background);
-		
+		lineGC.setBackground(background);		
 		for (int i = startLine; paintY < renderHeight && i < lineCount; i++, paintY += lineHeight) {
 			String line = content.getLine(i);
 			renderer.drawLine(line, i, paintY, lineGC, background, foreground, true);
@@ -6101,8 +5615,8 @@ void performPaint(GC gc,int startLine,int startY, int renderHeight)	{
 		gc.drawImage(lineBuffer, 0, startY);
 		lineGC.dispose();
 		lineBuffer.dispose();
+		region.dispose();		
 	}
-	clearMargin(gc, background, clientArea, renderHeight);
 }
 /** 
  * Prints the widget's text to the default printer.
@@ -6254,65 +5768,6 @@ public void redraw(int x, int y, int width, int height, boolean all) {
 	}
 }
 /** 
- * Redraws a text range in the specified lines
- * <p>
- *
- * @param firstLine first line to redraw at the specified offset
- * @param offsetInFirstLine offset in firstLine to start redrawing
- * @param lastLine last line to redraw
- * @param endOffset offset in the last where redrawing should stop
- * @param clearBackground true=clear the background by invalidating
- *  the requested redraw range, false=draw the foreground directly
- *  without invalidating the redraw range.
- */
-void redrawBidiLines(int firstLine, int offsetInFirstLine, int lastLine, int endOffset, boolean clearBackground) {
-	int lineCount = lastLine - firstLine + 1;
-	int redrawY = firstLine * lineHeight - verticalScrollOffset;
-	int firstLineOffset = content.getOffsetAtLine(firstLine);
-	String line = content.getLine(firstLine);
-	GC gc = getGC();
-	StyledTextBidi bidi = getStyledTextBidi(line, firstLineOffset, gc);
-			
-	bidi.redrawRange(
-		this, offsetInFirstLine, 	
-		Math.min(line.length(), endOffset) - offsetInFirstLine, 
-		leftMargin - horizontalScrollOffset, redrawY + topMargin, lineHeight);
-	// redraw line break marker (either space or full client area width)
-	// if redraw range extends over more than one line and background should be redrawn
-	if (lastLine > firstLine && clearBackground) {
-		int lineBreakWidth;		
-		int lineBreakStartX = bidi.getTextWidth();
-		// handle empty line case
-		if (lineBreakStartX == leftMargin) {
-			lineBreakStartX += XINSET;
-		}
-		lineBreakStartX = lineBreakStartX - horizontalScrollOffset;
-		if ((getStyle() & SWT.FULL_SELECTION) != 0) {
-			lineBreakWidth = getClientArea().width - lineBreakStartX;
-		}
-		else {
-			lineBreakWidth = lineEndSpaceWidth;
-		}
-		draw(lineBreakStartX, redrawY, lineBreakWidth, lineHeight, clearBackground);
-	}
-	// redraw last line if more than one line needs redrawing 
-	if (lineCount > 1) {
-		int lastLineOffset = content.getOffsetAtLine(lastLine);
-		int offsetInLastLine = endOffset - lastLineOffset;	
-		// no redraw necessary if redraw offset is 0
-		if (offsetInLastLine > 0) {				
-			line = content.getLine(lastLine);
-			redrawY = lastLine * lineHeight - verticalScrollOffset;		
-			bidi = getStyledTextBidi(line, lastLineOffset, gc);
-			bidi.redrawRange(
-				this, 0, offsetInLastLine, 
-				leftMargin - horizontalScrollOffset, 
-				redrawY + topMargin, lineHeight);
-		}
-	}
-	gc.dispose();
-}
-/** 
  * Redraw the given line.
  * <p>
  *
@@ -6328,7 +5783,7 @@ void redrawLine(int line, int offset) {
 	int redrawY = line * lineHeight - verticalScrollOffset;
 	super.redraw(
 		redrawX + leftMargin, redrawY + topMargin, 
-		getClientArea().width, lineHeight, true);
+		getClientArea().width - leftMargin - rightMargin, lineHeight, true);
 }
 /** 
  * Redraws a text range in the specified lines
@@ -6348,25 +5803,28 @@ void redrawLine(int line, int offset) {
 void redrawLines(int firstLine, int offsetInFirstLine, int lastLine, int endOffset, boolean clearBackground) {
 	String line = content.getLine(firstLine);
 	int lineCount = lastLine - firstLine + 1;
-	int redrawX = getXAtOffset(line, firstLine, offsetInFirstLine) - leftMargin;
-	int redrawStopX;
-	int redrawY = firstLine * lineHeight - verticalScrollOffset;
+	int redrawY, redrawWidth;
 	int firstLineOffset = content.getOffsetAtLine(firstLine);
-	boolean fullLineRedraw = ((getStyle() & SWT.FULL_SELECTION) != 0 && lastLine > firstLine);
-
+	boolean fullLineRedraw;
+	StyledTextEvent event;
+	Rectangle clientArea = getClientArea();
+	
+	fullLineRedraw = ((getStyle() & SWT.FULL_SELECTION) != 0 && lastLine > firstLine);
 	// if redraw range includes last character on the first line, 
 	// clear background to right widget border. fixes bug 19595.
 	if (clearBackground && endOffset - firstLineOffset >= line.length()) {
 		fullLineRedraw = true;
-	}
-	// calculate redraw stop location
-	if (fullLineRedraw) {
-		redrawStopX = getClientArea().width - leftMargin;
-	}
-	else {
-		redrawStopX = getXAtOffset(line, firstLine, endOffset - firstLineOffset) - leftMargin;
-	}
-	draw(redrawX, redrawY, redrawStopX - redrawX, lineHeight, clearBackground);
+	}	
+	event = renderer.getLineStyleData(firstLineOffset, line);
+	TextLayout layout = renderer.getTextLayout(line, firstLineOffset, event);
+	Rectangle rect = layout.getBounds(offsetInFirstLine, Math.min(endOffset, line.length()) - 1);
+	renderer.disposeTextLayout(layout, event);
+	rect.x -= horizontalScrollOffset;
+	rect.intersect(clientArea);
+	redrawY = firstLine * lineHeight - verticalScrollOffset;
+	redrawWidth = fullLineRedraw ? clientArea.width - leftMargin - rightMargin : rect.width;
+	draw(rect.x, redrawY, redrawWidth, lineHeight, clearBackground);
+	
 	// redraw last line if more than one line needs redrawing 
 	if (lineCount > 1) {
 		int offsetInLastLine = endOffset - content.getOffsetAtLine(lastLine);	
@@ -6378,14 +5836,16 @@ void redrawLines(int firstLine, int offsetInFirstLine, int lastLine, int endOffs
 			if (clearBackground && offsetInLastLine >= line.length()) {
 				fullLineRedraw = true;
 			}
-			if (fullLineRedraw) {
-				redrawStopX = getClientArea().width - leftMargin;
-			}
-			else {
-				redrawStopX = getXAtOffset(line, lastLine, offsetInLastLine) - leftMargin;
-			}
+			line = content.getLine(lastLine);
+			event = renderer.getLineStyleData(offsetInLastLine, line);
+			layout = renderer.getTextLayout(line, endOffset, event);
+			rect = layout.getBounds(0, offsetInLastLine - 1);
+			renderer.disposeTextLayout(layout, event);
+			rect.x -= horizontalScrollOffset;
+			rect.intersect(clientArea);
 			redrawY = lastLine * lineHeight - verticalScrollOffset;
-			draw(0, redrawY, redrawStopX, lineHeight, clearBackground);
+			redrawWidth = fullLineRedraw ? clientArea.width - leftMargin - rightMargin : rect.width;
+			draw(rect.x, redrawY, redrawWidth, lineHeight, clearBackground);
 		}
 	}
 }
@@ -6689,52 +6149,17 @@ public void replaceStyleRanges(int start, int length, StyleRange[] ranges) {
 	if (start > end || start < 0 || end > getCharCount()) {
 		SWT.error(SWT.ERROR_INVALID_RANGE);
 	}	
-	
 	int firstLine = content.getLineAtOffset(start);
 	int lastLine = content.getLineAtOffset(end);
 
-	// if the area is not visible, there is no need to redraw
-	boolean redrawLines = isAreaVisible(firstLine, lastLine);
+	defaultLineStyler.replaceStyleRanges(start, length, ranges);
+	lineCache.reset(firstLine, lastLine - firstLine + 1, true);
 
-	if (!redrawLines) {
-		defaultLineStyler.replaceStyleRanges(start, length, ranges);
-		lineCache.reset(firstLine, lastLine - firstLine + 1, true);
-	} else {
-		boolean redrawFirstLine = false;
-		boolean redrawLastLine = false;	
-		// the first and last line needs to be redrawn completely if the 
-		// font style is changing from SWT.NORMAL to something else or 
-		// vice versa. fixes 1G7M5WE.
-		int firstLineOffset = content.getOffsetAtLine(firstLine);
-		if (isBidi()) {
-			redrawFirstLine = true;
-			redrawLastLine = true;
-		} else {
-			int firstLineEnd = firstLineOffset + content.getLine(firstLine).length();
-			redrawFirstLine = isRedrawFirstLine(ranges, firstLine, firstLineOffset);
-			// check if any bold styles will be cleared
-			StyleRange clearRange = new StyleRange(firstLineOffset, firstLineEnd - firstLineOffset, null, null);
-			redrawFirstLine = redrawFirstLine || isRedrawFirstLine(new StyleRange[] {clearRange}, firstLine, firstLineOffset);
-			if (lastLine != firstLine) {
-				int lastLineOffset = content.getOffsetAtLine(lastLine);
-				int lastLineEnd = lastLineOffset + content.getLine(lastLine).length();
-				redrawLastLine = isRedrawLastLine(ranges, lastLine, lastLineOffset);
-				// check if any bold styles will be cleared
-				clearRange = new StyleRange(lastLineOffset, lastLineEnd - lastLineOffset, null, null);
-				redrawLastLine = redrawLastLine || isRedrawLastLine(new StyleRange[] {clearRange}, lastLine, lastLineOffset);
-			}
-		}
-		defaultLineStyler.replaceStyleRanges(start, length, ranges);
-		// reset all lines affected by the style change but let the redraw
-		// recalculate only those that are visible.
-		lineCache.reset(firstLine, lastLine - firstLine + 1, true);
-		internalRedrawRange(start, length, true);
-		if (redrawFirstLine) {
-			redrawLine(firstLine, start - firstLineOffset);
-		}
-		if (redrawLastLine) {
-			redrawLine(lastLine, 0);
-		}
+	// if the area is not visible, there is no need to redraw
+	if (isAreaVisible(firstLine, lastLine)) {
+		int redrawY = firstLine * lineHeight - verticalScrollOffset;
+		int redrawStopY = (lastLine + 1) * lineHeight - verticalScrollOffset;		
+		draw(0, redrawY, getClientArea().width, redrawStopY - redrawY, true);
 	}
 
 	// make sure that the caret is positioned correctly.
@@ -6992,33 +6417,6 @@ public void setWordWrap(boolean wrap) {
 	}
 }
 /**
- * Sets the caret location and scrolls the caret offset into view.
- */
-void showBidiCaret() {
-	int line = content.getLineAtOffset(caretOffset);
-	int lineOffset = content.getOffsetAtLine(line);
-	int offsetInLine = caretOffset - lineOffset;
-	String lineText = content.getLine(line);
-	int xAtOffset = 0;
-	boolean scrolled = false;		
-	GC gc = getGC();
-	StyledTextBidi bidi = getStyledTextBidi(lineText, lineOffset, gc);
-	// getXAtOffset, inlined for better performance
-	xAtOffset = getBidiTextPosition(lineText, offsetInLine, bidi) + leftMargin;
-	if (offsetInLine > lineText.length()) {
-		// offset is not on the line. return an x location one character 
-		// after the line to indicate the line delimiter.
-		xAtOffset += lineEndSpaceWidth;
-	}
-	xAtOffset -= horizontalScrollOffset;
-	//
-	scrolled = showLocation(xAtOffset, line);
-	if (scrolled == false) {
-		setBidiCaretLocation(bidi);
-	}
-	gc.dispose();
-}
-/**
  * Sets the receiver's caret.  Set the caret's height and location.
  * 
  * </p>
@@ -7032,15 +6430,10 @@ void showBidiCaret() {
 public void setCaret(Caret caret) {
 	checkWidget ();
 	super.setCaret(caret);
+	caretDirection = SWT.NULL; 
 	if (caret != null) {
-		if (isBidi() == false) {
-			caret.setSize(caret.getSize().x, lineHeight);
-		}
 		setCaretLocation();
-		if (isBidi()) {
-			setBidiKeyboardLanguage();	
-		}
-	}		
+	}
 }
 /**
  * @see org.eclipse.swt.widgets.Control#setBackground
@@ -7054,80 +6447,42 @@ public void setBackground(Color color) {
 /**
  * Set the caret to indicate the current typing direction.
  */
-void setBidiCaretDirection() {
+void setCaretImage(int direction) {
 	Caret caret = getCaret();
-	int direction = StyledTextBidi.getKeyboardLanguageDirection();
 	
 	if (caret == null || direction == caretDirection) {
 		return;
 	}
+	boolean updateImage = true;
+	Image caretImage = caret.getImage();
+	if (caretImage != null) {
+		updateImage = caretImage.equals(leftCaretBitmap) || caretImage.equals(rightCaretBitmap);
+	}
+	
+	//workaround bug#54922 
+	if (updateImage) {
+		if ((leftCaretBitmap != null && leftCaretBitmap.isDisposed()) ||
+			(rightCaretBitmap != null && rightCaretBitmap.isDisposed())) {
+			createCaretBitmaps();
+		}
+	}
+	
 	caretDirection = direction;
 	if (direction == SWT.DEFAULT) {
-		caret.setImage(null);
+		if (updateImage) caret.setImage(null);
 		caret.setSize(caret.getSize().x, lineHeight);
-	} 
-	else 
+	}
+	else
 	if (caretDirection == SWT.LEFT) {
-		caret.setImage(leftCaretBitmap);			
-	} 
-	else 
+		if (updateImage) caret.setImage(leftCaretBitmap);
+		//TODO API needed
+		BidiUtil.setKeyboardLanguage(BidiUtil.KEYBOARD_NON_BIDI);
+	}
+	else
 	if (caretDirection == SWT.RIGHT) {
-		caret.setImage(rightCaretBitmap);			
-	}
-}
-/**
- * Moves the Caret to the current caret offset.
- * <p>
- * 
- * @param bidi StyledTextBidi object to use for measuring.
- * 	May be left null in which case a new object will be created.
- */
-void setBidiCaretLocation(StyledTextBidi bidi) {
-	int caretLine = getCaretLine();
-	
-	setBidiCaretLocation(bidi, caretLine);
-}
-/**
- * Moves the Caret to the current caret offset.
- * <p>
- * 
- * @param bidi StyledTextBidi object to use for measuring.
- * 	May be left null in which case a new object will be created.
- * @param caretLine line the caret should be placed on. Relative to
- * 	first line in document
- */
-void setBidiCaretLocation(StyledTextBidi bidi, int caretLine) {
-	Caret caret = getCaret();
-	String lineText = content.getLine(caretLine);
-	int lineStartOffset = content.getOffsetAtLine(caretLine);
-	int offsetInLine = caretOffset - lineStartOffset;
-	GC gc = null;
-	boolean isRightOriented = isMirrored();
-	
-	if (bidi == null) {
-		gc = getGC();
-		bidi = getStyledTextBidi(lineText, lineStartOffset, gc);
-	}		
-	if (lastCaretDirection == SWT.NULL) {
-		columnX = bidi.getTextPosition(offsetInLine) + leftMargin - horizontalScrollOffset;
-	} else {
-		columnX = bidi.getTextPosition(offsetInLine, lastCaretDirection) + leftMargin - horizontalScrollOffset;
-	}
-	// take the width of the caret into account
-	int keyboardDirection = StyledTextBidi.getKeyboardLanguageDirection();
-	if ((keyboardDirection == SWT.RIGHT && isRightOriented == false) || 
-		(keyboardDirection == SWT.LEFT && isRightOriented)){  
-		columnX -= (getCaretWidth() - 1);
-	}
-	if (caret != null) {
-		setBidiCaretDirection();		
-		caret.setLocation(
-			columnX, 
-			caretLine * lineHeight - verticalScrollOffset + topMargin);
-		getAccessible().textCaretMoved(getCaretOffset());
-	}
-	if (gc != null) {
-		gc.dispose();
+		if (updateImage) caret.setImage(rightCaretBitmap);
+		//TODO API needed
+		BidiUtil.setKeyboardLanguage(BidiUtil.KEYBOARD_BIDI);
 	}
 }
 /**
@@ -7148,86 +6503,29 @@ public void setBidiColoring(boolean mode) {
 	checkWidget();
 	bidiColoring = mode;
 }
-/**
- * Switches the keyboard language according to the current editing 
- * position and cursor direction.
- */
-void setBidiKeyboardLanguage() {
-	int caretLine = getCaretLine();	
-	int lineStartOffset = content.getOffsetAtLine(caretLine);
-	int offsetInLine = caretOffset - lineStartOffset;
-	String lineText = content.getLine(caretLine);
-	GC gc = getGC();
-	StyledTextBidi bidi;
-	int lineLength = lineText.length();
-	
-	// Don't supply the bold styles/font since we don't want to measure anything
-	bidi = new StyledTextBidi(gc, lineText, getBidiSegments(lineStartOffset, lineText));
-	if (offsetInLine == 0) {
-		bidi.setKeyboardLanguage(offsetInLine);
+void setCaretLocation(int newCaretX, int line, int direction) {
+	Caret caret = getCaret();
+	if ((direction & SWT.RIGHT) != 0) {
+		newCaretX -= (getCaretWidth() - 1);
 	}
-	else
-	if (offsetInLine >= lineLength) {
-		offsetInLine = Math.min(offsetInLine, lineLength - 1);
-		bidi.setKeyboardLanguage(offsetInLine);
+	columnX = newCaretX;
+	if (caret != null) {
+		int newCaretY = line * lineHeight - verticalScrollOffset + topMargin;
+		caret.setLocation(columnX, newCaretY);
+		getAccessible().textCaretMoved(getCaretOffset());
 	}
-	else
-	if (lastCaretDirection == ST.COLUMN_NEXT) {
-		// continue with previous character type
-		bidi.setKeyboardLanguage(offsetInLine - 1);
-	} 
-	else {
-		bidi.setKeyboardLanguage(offsetInLine);
-	}	
-	gc.dispose();
-}
-/**
- * Moves the Caret to the current caret offset.
- * <p>
- * 
- * @param newCaretX the new x location of the caret.
- * 	passed in for better performance when it has already been 
- * 	calculated outside this method.
- * @param line index of the line the caret is on. Relative to 
- *	the first line in the document.
- */
-void setCaretLocation(int newCaretX, int line) {
-	if (isBidi()) {
-		setBidiCaretLocation(null, line);
-	}
-	else {	
-		Caret caret = getCaret();
-		
-		columnX = newCaretX;
-		if (caret != null) {
-			caret.setLocation(
-				newCaretX, 
-				line * lineHeight - verticalScrollOffset + topMargin);
-			getAccessible().textCaretMoved(getCaretOffset());
-		}
-	}
+	setCaretImage(direction);
 }
 /**
  * Moves the Caret to the current caret offset.
  */
 void setCaretLocation() {
-	if (isBidi()) {
-		setBidiCaretLocation(null);
-	}
-	else {	
-		Caret caret = getCaret();
-		int caretLine = getCaretLine();	
-		int lineStartOffset = content.getOffsetAtLine(caretLine);
-									
-		columnX = getXAtOffset(
-			content.getLine(caretLine), caretLine, caretOffset - lineStartOffset);
-		if (caret != null) {
-			caret.setLocation(
-				columnX, 
-				caretLine * lineHeight - verticalScrollOffset + topMargin);
-			getAccessible().textCaretMoved(getCaretOffset());
-		}
-	}
+	int lineIndex = getCaretLine();
+	String line = content.getLine(lineIndex);
+	int lineOffset = content.getOffsetAtLine(lineIndex);
+	int offsetInLine = caretOffset - lineOffset;
+	int newCaretX = getXAtOffset(line, lineIndex, offsetInLine);
+	setCaretLocation(newCaretX, lineIndex, getCaretDirection());
 }
 /**
  * Sets the caret offset.
@@ -7268,9 +6566,6 @@ public void setCaretOffset(int offset) {
 	}
 	// always update the caret location. fixes 1G8FODP
 	setCaretLocation();
-	if (isBidi()) {
-		setBidiKeyboardLanguage();	
-	}
 }	
 /**
  * Copies the specified text range to the clipboard.  The text will be placed
@@ -7396,17 +6691,8 @@ public void setFont(Font font) {
 	}
 	calculateContentWidth();
 	calculateScrollBars();
-	if (isBidi()) {
-		caretDirection = SWT.NULL;
-		createCaretBitmaps();
-		setBidiCaretDirection();
-	} 
-	else {
-		Caret caret = getCaret();
-		if (caret != null) {
-			caret.setSize(caret.getSize().x, lineHeight);
-		}
-	}
+	if (isBidi()) createCaretBitmaps();
+	caretDirection = SWT.NULL;
 	// always set the caret location. Fixes 6685
 	setCaretLocation();
 	super.redraw();
@@ -7645,11 +6931,7 @@ public void setOrientation(int orientation) {
 	isMirrored = (orientation & SWT.RIGHT_TO_LEFT) != 0;
 	isBidi = StyledTextBidi.isBidiPlatform() || isMirrored();
 	initializeRenderer();
-	if (isBidi()) {
-		caretDirection = SWT.NULL;		
-		createCaretBitmaps();
-		setBidiCaretDirection();
-	}
+	caretDirection = SWT.NULL;
 	setCaretLocation();
 	keyActionMap.clear();
 	createKeyBindings();
@@ -7850,9 +7132,6 @@ public void setSelectionRange(int start, int length) {
 	internalSetSelection(start, length, false);
 	// always update the caret location. fixes 1G8FODP
 	setCaretLocation();
-	if (isBidi()) {
-		setBidiKeyboardLanguage();	
-	}
 }
 /** 
  * Sets the selection. 
@@ -7920,55 +7199,24 @@ public void setStyleRange(StyleRange range) {
 	if (userLineStyle) {
 		return;
 	}
- 	// check the range, make sure it falls within the range of the
- 	// text 
+ 	// check the range, make sure it falls within the range of the text 
 	if (range != null && range.start + range.length > content.getCharCount()) {
 		SWT.error(SWT.ERROR_INVALID_RANGE);
 	} 	
+	defaultLineStyler.setStyleRange(range);
 	if (range != null) {
-		boolean redrawFirstLine = false;
-		boolean redrawLastLine = false;
 		int firstLine = content.getLineAtOffset(range.start);
 		int lastLine = content.getLineAtOffset(range.start + range.length);
+		lineCache.reset(firstLine, lastLine - firstLine + 1, true);
 
 		// if the style is not visible, there is no need to redraw
-		boolean redrawLines = isAreaVisible(firstLine, lastLine);
-
-		if (!redrawLines) {
-			defaultLineStyler.setStyleRange(range);
-			lineCache.reset(firstLine, lastLine - firstLine + 1, true);
-		} else {
-			// the first and last line needs to be redrawn completely if the 
-			// font style is changing from SWT.NORMAL to something else or 
-			// vice versa. fixes 1G7M5WE.
-			int firstLineOffset = content.getOffsetAtLine(firstLine);
-			int lastLineOffset = content.getOffsetAtLine(lastLine);
-			if (isBidi()) {
-				if (firstLine != lastLine) {
-					redrawFirstLine = true;
-				}
-				redrawLastLine = true;
-			} else {
-				redrawFirstLine = isRedrawFirstLine(new StyleRange[] {range}, firstLine, firstLineOffset);
-				if (lastLine != firstLine) {
-					redrawLastLine = isRedrawLastLine(new StyleRange[] {range}, lastLine, lastLineOffset);
-				}
-			}
-			defaultLineStyler.setStyleRange(range);
-			// reset all lines affected by the style change but let the redraw
-			// recalculate only those that are visible.
-			lineCache.reset(firstLine, lastLine - firstLine + 1, true);
-			internalRedrawRange(range.start, range.length, true);
-			if (redrawFirstLine) {
-				redrawLine(firstLine, range.start - firstLineOffset);
-			}
-			if (redrawLastLine) {
-				redrawLine(lastLine, 0);
-			}
+		if (isAreaVisible(firstLine, lastLine)) {
+			int redrawY = firstLine * lineHeight - verticalScrollOffset;
+			int redrawStopY = (lastLine + 1) * lineHeight - verticalScrollOffset;		
+			draw(0, redrawY, getClientArea().width, redrawStopY - redrawY, true);
 		}
 	} else {
 		// clearing all styles
-		defaultLineStyler.setStyleRange(range);
 		lineCache.reset(0, content.getLineCount(), false);
 		redraw();
 	}
@@ -8048,12 +7296,7 @@ public void setTabs(int tabs) {
 	renderer.setTabLength(tabLength);
 	if (caretOffset > 0) {
 		caretOffset = 0;
-		if (isBidi()) {
-			showBidiCaret();
-		}
-		else {
-			showCaret();
-		}
+		showCaret();
 		clearSelection(false);
 	}
 	// reset all line widths when the tab width changes
@@ -8295,10 +7538,10 @@ void showCaret() {
  */
 void showCaret(int caretLine) {
 	int lineOffset = content.getOffsetAtLine(caretLine);
-	String lineText = content.getLine(caretLine);
+	String line = content.getLine(caretLine);
 	int offsetInLine = caretOffset - lineOffset;
-	int xAtOffset = getXAtOffset(lineText, caretLine, offsetInLine);	
-	boolean scrolled = showLocation(xAtOffset, caretLine);
+	int newCaretX = getXAtOffset(line, caretLine, offsetInLine);	
+	boolean scrolled = showLocation(newCaretX, caretLine);
 	boolean setWrapCaretLocation = false;
 	Caret caret = getCaret();
 
@@ -8313,10 +7556,7 @@ void showCaret(int caretLine) {
 		// sideeffect of scrolling) or when in word wrap mode and the caret 
 		// line was explicitly specified (i.e., because getWrapCaretLine does 
 		// not return the desired line causing scrolling to not set it correctly)
-		setCaretLocation(xAtOffset, caretLine);
-	}
-	if (isBidi()) {
-		setBidiKeyboardLanguage();
+		setCaretLocation(newCaretX, caretLine, getCaretDirection());
 	}
 }
 /**
@@ -8390,42 +7630,6 @@ public void showSelection() {
 		// will not be visible
 		showLocation(endX, endLine);
 	}	 
-}
-/**
- * Updates the caret direction when a delete operation occured based on 
- * the type of the delete operation (next/previous character) and the 
- * caret location (at a direction boundary or inside a direction segment).
- * The intent is to place the caret at the visual location where a
- * character was deleted.
- * <p>
- * 
- * @param isBackspace true=the previous character was deleted, false=the 
- * 	character next to the caret location was deleted
- * @param isDirectionBoundary true=the caret is between a R2L and L2R segment,
- * 	false=the caret is within a direction segment
- */
-void updateBidiDirection(boolean isBackspace, boolean isDirectionBoundary) {
-	if (isDirectionBoundary) {
-		if (isBackspace) {
-			// Deleted previous character (backspace) at a direction boundary
-			// Go to direction segment of deleted character
-			lastCaretDirection = ST.COLUMN_NEXT;
-		}
-		else {
-			// Deleted next character. Go to direction segment of deleted character
-			lastCaretDirection = ST.COLUMN_PREVIOUS;
-		}
-	}
-	else {
-		if (isBackspace) {
-			// Delete previous character inside direction segment (i.e., not at a direction boundary)
-			lastCaretDirection = ST.COLUMN_PREVIOUS;
-		}
-		else {
-			// Deleted next character.
-			lastCaretDirection = ST.COLUMN_NEXT;
-		}
-	}
 }
 /**
  * Updates the selection and caret position depending on the text change.
