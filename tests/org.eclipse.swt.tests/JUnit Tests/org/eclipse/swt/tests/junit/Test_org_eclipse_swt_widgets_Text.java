@@ -36,7 +36,6 @@ public static void main(String[] args) {
 protected void setUp() {
 	super.setUp();
 	makeCleanEnvironment(false); // use multi-line by default
-	shell.open();	
 }
 
 protected void tearDown() {
