@@ -132,7 +132,12 @@ public class DropTarget extends Widget {
 public DropTarget(Control control, int style) {
 	super(control, checkStyle(style));
 	this.control = control;
-	if (control.getData(DROPTARGETID) != null) DND.error(DND.ERROR_CANNOT_INIT_DROP);
+	if (Drag_Motion == null || Drag_Leave == null || Drag_Data_Received == null || Drag_Drop == null) {
+		 DND.error(DND.ERROR_CANNOT_INIT_DROP);
+	}
+	if (control.getData(DROPTARGETID) != null) {
+		DND.error(DND.ERROR_CANNOT_INIT_DROP);
+	}
 	control.setData(DROPTARGETID, this);
 	byte[] buffer = Converter.wcsToMbcs(null, "drag_motion", true); //$NON-NLS-1$
 	OS.g_signal_connect(control.handle, buffer, Drag_Motion.getAddress(), 0);
@@ -326,13 +331,11 @@ private int drag_data_received ( int widget, int context, int x, int y, int data
 		transferData.length = selectionData.length;
 		transferData.pValue = selectionData.data;
 		transferData.format = selectionData.format;
-		Transfer transfer = null;
 		for (int i = 0; i < transferAgents.length; i++) {
-			transfer = transferAgents[i];
-			if (transfer.isSupportedType(transferData)) break;
-		}
-		if (transfer != null) {
-			object = transfer.nativeToJava(transferData);
+			if (transferAgents[i].isSupportedType(transferData)) {
+				object = transferAgents[i].nativeToJava(transferData);
+				break;
+			}
 		}
 	}
 	
@@ -666,7 +669,7 @@ private boolean setEventData(int context, int x, int y, int time, DNDEvent event
 	// get current operation
 	int operation = getOperationFromKeyState();
 	keyOperation = operation;
-	if (operation== DND.DROP_DEFAULT) {
+	if (operation == DND.DROP_DEFAULT) {
 		if ((style & DND.DROP_DEFAULT) == 0) {
 			operation = (operations & DND.DROP_MOVE) != 0 ? DND.DROP_MOVE : DND.DROP_NONE;
 		}
