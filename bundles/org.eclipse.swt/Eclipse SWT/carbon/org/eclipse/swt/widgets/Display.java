@@ -3474,6 +3474,7 @@ void wakeThread () {
 	int [] wakeEvent = new int [1];
 	OS.CreateEvent (0, WAKE_CLASS, WAKE_KIND, 0.0, OS.kEventAttributeUserEvent, wakeEvent);
 	OS.PostEventToQueue (queue, wakeEvent [0], (short) OS.kEventPriorityStandard);
+	if (wakeEvent [0] != 0) OS.ReleaseEvent (wakeEvent [0]);
 }
 
 int windowProc (int nextHandler, int theEvent, int userData) {
