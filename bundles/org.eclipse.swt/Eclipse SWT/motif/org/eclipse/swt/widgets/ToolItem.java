@@ -38,6 +38,7 @@ public ToolItem (ToolBar parent, int style) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
 	parent.createItem (this, parent.getItemCount ());
+	parent.relayout ();
 }
 /**
 * Creates a new instance of the widget.
@@ -46,6 +47,7 @@ public ToolItem (ToolBar parent, int style, int index) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
 	parent.createItem (this, index);
+	parent.relayout ();
 }
 /**
  * Adds the listener to the collection of listeners who will
