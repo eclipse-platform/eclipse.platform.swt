@@ -141,7 +141,7 @@ byte[] getTypeBytes() {
  */	
 void setType(byte[] value) {
 	if (value.length != TYPE_FIELD_LENGTH) {
-		throw new SWTException(SWT.ERROR_INVALID_ARGUMENT);
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	System.arraycopy(value, 0, reference, TYPE_OFFSET, TYPE_FIELD_LENGTH);
 }
@@ -152,7 +152,7 @@ void setType(byte[] value) {
 byte[] getData() {
 	int dataLength = getLength();
 	if (reference.length < MIN_LENGTH + dataLength) {
-		throw new SWTException(SWT.ERROR_INVALID_RANGE);
+		SWT.error (SWT.ERROR_INVALID_RANGE);
 	}
 	byte[] data = new byte[dataLength];
 	System.arraycopy(reference, DATA_OFFSET, data, 0, dataLength);
