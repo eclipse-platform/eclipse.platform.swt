@@ -337,7 +337,6 @@ boolean hasFocus () {
 public int indexOf (ToolItem item) {
 	checkWidget();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-	// TEMPORARY CODE
 	ToolItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
 		if (item == items[i]) return i;
