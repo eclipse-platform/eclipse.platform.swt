@@ -345,9 +345,12 @@ int EnumLocalesProc(int lpLocaleString) {
 	if (!locale.getLanguage().equals(lang)) return 1;
 
 	/* Check the country */
-	size = OS.GetLocaleInfo(lcid, OS.LOCALE_SISO3166CTRYNAME, buffer, length);
-	String country = new String(buffer, 0, size - 1);
-	if (!locale.getCountry().equals(country)) return 1;
+	String javaCountry = locale.getCountry();
+	if (javaCountry.length() != 0) {
+		size = OS.GetLocaleInfo(lcid, OS.LOCALE_SISO3166CTRYNAME, buffer, length);
+		String country = new String(buffer, 0, size - 1);
+		if (!javaCountry.equals(country)) return 1;
+	}
 
 	/* Get the charset */
 	size = OS.GetLocaleInfo(lcid, OS.LOCALE_IDEFAULTANSICODEPAGE, buffer, length);
