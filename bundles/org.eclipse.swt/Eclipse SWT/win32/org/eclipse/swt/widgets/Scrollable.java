@@ -292,7 +292,7 @@ LRESULT WM_MOUSEWHEEL (int wParam, int lParam) {
 		int position = horizontalBar.getSelection ();
 		if (position != hPosition) {
 			Event event = new Event ();
-			event.detail = position < vPosition ? SWT.PAGE_UP : SWT.PAGE_DOWN; 
+			event.detail = position < hPosition ? SWT.PAGE_UP : SWT.PAGE_DOWN; 
 			horizontalBar.sendEvent (SWT.Selection, event);
 		}
 	}
