@@ -173,7 +173,7 @@ public void dispose () {
 
 	/* Dispose the GC */
 	Device device = data.device;
-	drawable.internal_dispose_GC(handle, data);
+	if (drawable != null) drawable.internal_dispose_GC(handle, data);
 
 	data.display = data.drawable = data.colormap = data.fontList = 
 		data.clipRgn = data.renderTable = 0;
@@ -2270,10 +2270,45 @@ public boolean isClipped() {
 public boolean isDisposed() {
 	return handle == 0;
 }
+/**	 
+ * Invokes platform specific functionality to allocate a new graphics context.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>GC</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param drawable the Drawable for the receiver.
+ * @param data the data for the receiver.
+ *
+ * @return a new <code>GC</code>
+ */
 public static GC motif_new(Drawable drawable, GCData data) {
 	GC gc = new GC();
 	int xGC = drawable.internal_new_GC(data);
 	gc.init(drawable, data, xGC);
+	return gc;
+}
+/**	 
+ * Invokes platform specific functionality to wrap a graphics context.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>GC</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
+ *
+ * @param xGC the X Windows graphics context.
+ * @param data the data for the receiver.
+ *
+ * @return a new <code>GC</code>
+ */
+public static GC motif_new(int xGC, GCData data) {
+	GC gc = new GC();
+	gc.init(null, data, xGC);
 	return gc;
 }
 /**

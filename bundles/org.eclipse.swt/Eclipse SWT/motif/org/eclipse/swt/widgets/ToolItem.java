@@ -1022,13 +1022,15 @@ int XmNexposureCallback (int w, int client_data, int call_data) {
 		}
 	}
 
-	ToolDrawable wrapper = new ToolDrawable ();
-	wrapper.device = display;
-	wrapper.display = xDisplay;
-	wrapper.drawable = xWindow;
-	wrapper.font = parent.font;
-	wrapper.colormap = argList [1];	
-	GC gc = new GC (wrapper);
+	GCData data = new GCData ();
+	data.device = display;
+	data.display = xDisplay;
+	data.drawable = xWindow;
+	data.fontList = parent.font.handle;
+	data.colormap = argList [1];
+	int xGC = OS.XCreateGC (xDisplay, xWindow, 0, null);
+	if (xGC == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	GC gc = GC.motif_new (xGC, data);
 	
 	XmAnyCallbackStruct cb = new XmAnyCallbackStruct ();
 	OS.memmove (cb, call_data, XmAnyCallbackStruct.sizeof);
@@ -1095,6 +1097,7 @@ int XmNexposureCallback (int w, int client_data, int call_data) {
 		gc.drawPolygon (arrow);
 	}
 	gc.dispose ();
+	OS.XFreeGC (xDisplay, xGC);
 	
 	if (!enabled && disabledImage == null) {
 		if (currentImage != null) currentImage.dispose ();
