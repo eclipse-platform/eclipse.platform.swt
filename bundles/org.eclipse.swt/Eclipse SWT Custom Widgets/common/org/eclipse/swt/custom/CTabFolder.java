@@ -3402,19 +3402,21 @@ void showToolTip (int x, int y) {
 }
 boolean updateItems() {
 	boolean changed = false;
-	if (setItemSize()) changed = true;
-	if (setItemLocation()) changed = true;
-	CTabItem item = items[items.length - 1];
-	if (item.x + item.width < getRightItemEdge()) {
-		int first = firstIndex;
-		setLastIndex(items.length - 1);
-		if (first != firstIndex) changed = true;
-	}
-	setButtonBounds();
-	if (selectedIndex != -1) {
-		int top = firstIndex;
-		showItem(items[selectedIndex]);
-		if (top != firstIndex) changed = true;
+	if (items.length > 0) {
+		if (setItemSize()) changed = true;
+		if (setItemLocation()) changed = true;
+		CTabItem item = items[items.length - 1];
+		if (item.x + item.width < getRightItemEdge()) {
+			int first = firstIndex;
+			setLastIndex(items.length - 1);
+			if (first != firstIndex) changed = true;
+		}
+		setButtonBounds();
+		if (selectedIndex != -1) {
+			int top = firstIndex;
+			showItem(items[selectedIndex]);
+			if (top != firstIndex) changed = true;
+		}
 	}
 	if (changed && toolTipShell != null) {
 		Point pt = getDisplay().getCursorLocation();
