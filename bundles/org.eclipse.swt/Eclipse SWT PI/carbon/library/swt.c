@@ -3226,6 +3226,16 @@ JNIEXPORT jshort JNICALL OS_NATIVE(GetDefFontSize)
 }
 #endif
 
+#ifndef NO_GetDeviceList
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDeviceList
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("GetDeviceList\n")
+
+	return (jint)GetDeviceList();
+}
+#endif
+
 #ifndef NO_GetEventClass
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventClass
 	(JNIEnv *env, jclass that, jint arg0)
@@ -3768,6 +3778,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMouse
 	if (arg0) setPointFields(env, arg0, lparg0);
 }
 #endif /* NO_GetMouse */
+
+#ifndef NO_GetNextDevice
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetNextDevice
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetNextDevice\n")
+
+	return (jint)GetNextDevice((GDHandle)arg0);
+}
+#endif
 
 #ifndef NO_GetPixBounds
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetPixBounds

@@ -16,6 +16,7 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.CGPoint;
 import org.eclipse.swt.internal.carbon.CGRect;
+import org.eclipse.swt.internal.carbon.GDevice;
 import org.eclipse.swt.internal.carbon.HICommand;
 import org.eclipse.swt.internal.carbon.Rect;
 import org.eclipse.swt.internal.carbon.RGBColor;
@@ -837,6 +838,20 @@ public Shell getActiveShell () {
 	return null;
 }
 
+public Rectangle getBounds () {
+	checkDevice ();
+	int gdevice = OS.GetDeviceList();
+	if (gdevice == 0 || OS.GetNextDevice (gdevice) == 0) {
+		return super.getBounds ();
+	}
+	Monitor [] monitors = getMonitors ();
+	Rectangle rect = monitors [0].getBounds ();
+	for (int i=1; i<monitors.length; i++) {
+		rect = rect.union (monitors [i].getBounds ()); 
+	}
+	return rect;
+}
+
 /**
  * Returns the display which the currently running thread is
  * the user-interface thread for, or null if the currently
@@ -850,6 +865,20 @@ public static synchronized Display getCurrent () {
 
 int getCaretBlinkTime () {
 	return OS.GetCaretTime () * 1000 / 60;
+}
+
+public Rectangle getClientArea () {
+	checkDevice ();
+	int gdevice = OS.GetDeviceList();
+	if (gdevice == 0 || OS.GetNextDevice (gdevice) == 0) {
+		return super.getClientArea ();
+	}
+	Monitor [] monitors = getMonitors ();
+	Rectangle rect = monitors [0].getBounds ();
+	for (int i=1; i<monitors.length; i++) {
+		rect = rect.union (monitors [i].getBounds ()); 
+	}
+	return rect;
 }
 
 /**
@@ -1124,7 +1153,40 @@ Menu getMenuBar () {
  */
 public Monitor [] getMonitors () {
 	checkDevice ();
-	return new Monitor [] {getPrimaryMonitor ()};
+	int count = 0;
+	Monitor [] monitors = new Monitor [1];
+	Rect rect = new Rect ();
+	GDevice device = new GDevice ();
+	int gdevice = OS.GetDeviceList ();
+	while (gdevice != 0) {
+		if (count >= monitors.length) {
+			Monitor [] newMonitors = new Monitor [monitors.length + 4];
+			System.arraycopy (monitors, 0, newMonitors, 0, monitors.length);
+			monitors = newMonitors;
+		}
+		Monitor monitor = new Monitor ();
+		monitor.handle = gdevice;
+		int [] ptr = new int [1];
+		OS.memcpy (ptr, gdevice, 4);
+		OS.memcpy (device, ptr [0], GDevice.sizeof);				
+		monitor.x = device.left;
+		monitor.y = device.top;
+		monitor.width = device.right - device.left;
+		monitor.height = device.bottom - device.top;
+		OS.GetAvailableWindowPositioningBounds (gdevice, rect);
+		monitor.clientX = rect.left;
+		monitor.clientY = rect.top;
+		monitor.clientWidth = rect.right - rect.left;
+		monitor.clientHeight = rect.bottom - rect.top;
+		monitors [count++] = monitor;
+		gdevice = OS.GetNextDevice (gdevice);		
+	}
+	if (count < monitors.length) {
+		Monitor [] newMonitors = new Monitor [count];
+		System.arraycopy (monitors, 0, newMonitors, 0, count);
+		monitors = newMonitors;
+	}	
+	return monitors;
 }
 
 /**
@@ -1136,17 +1198,23 @@ public Monitor [] getMonitors () {
  */
 public Monitor getPrimaryMonitor () {
 	checkDevice ();
+	int gdevice = OS.GetMainDevice ();
 	Monitor monitor = new Monitor ();
-	Rectangle rect = getBounds ();
-	monitor.x = rect.x;
-	monitor.y = rect.y;
-	monitor.width = rect.width;
-	monitor.height = rect.height;
-	rect = getClientArea ();
-	monitor.clientX = rect.x;
-	monitor.clientY = rect.y;
-	monitor.clientWidth = rect.width;
-	monitor.clientHeight = rect.height;
+	monitor.handle = gdevice;
+	int [] ptr = new int [1];
+	OS.memcpy (ptr, gdevice, 4);
+	GDevice device = new GDevice ();
+	OS.memcpy (device, ptr [0], GDevice.sizeof);		
+	monitor.x = device.left;
+	monitor.y = device.top;
+	monitor.width = device.right - device.left;
+	monitor.height = device.bottom - device.top;
+	Rect rect = new Rect ();		
+	OS.GetAvailableWindowPositioningBounds (gdevice, rect);
+	monitor.clientX = rect.left;
+	monitor.clientY = rect.top;
+	monitor.clientWidth = rect.right - rect.left;
+	monitor.clientHeight = rect.bottom - rect.top;
 	return monitor;
 }
 
