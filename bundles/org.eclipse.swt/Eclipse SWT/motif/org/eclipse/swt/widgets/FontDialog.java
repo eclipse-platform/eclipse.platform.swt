@@ -897,7 +897,13 @@ void openDialog() {
 	if (pt.x > widthLimit) {
 		pt = dialog.computeSize (widthLimit, -1, false);
 	}
-	dialog.setBounds (0, 0, pt.x, pt.y);
+	Rectangle parentBounds = getParent ().getBounds ();
+	int originX = (parentBounds.width - pt.x) / 2 + parentBounds.x;
+	originX = Math.max (0, originX);
+	int originY = (parentBounds.height - pt.y) / 2 + parentBounds.y;
+	originY = Math.max (0, originY);
+	
+	dialog.setBounds (originX, originY, pt.x, pt.y);
 	dialog.setText(getText());
 	// Open the window.
 	dialog.open();
