@@ -424,6 +424,7 @@ void createWidget (int index) {
 	checkOrientation (parent);
 	super.createWidget (index);
 	setParentTraversal ();
+	overrideTranslations ();
 	
 	/*
 	* Register for the IME.  This is necessary on single byte
@@ -514,6 +515,9 @@ void fixFocus () {
 		if (control.setFocus () || control == shell) return;
 	}
 }
+int focusHandle () {
+	return handle;
+}
 int fontHandle () {
 	return handle;
 }
@@ -535,7 +539,7 @@ public boolean forceFocus () {
 	Decorations shell = menuShell ();
 	shell.setSavedFocus (this);
 	shell.bringToTop (false);
-	return XmProcessTraversal (handle, OS.XmTRAVERSE_CURRENT);
+	return XmProcessTraversal (focusHandle (), OS.XmTRAVERSE_CURRENT);
 }
 
 /**
@@ -987,17 +991,18 @@ boolean hasIMSupport() {
 	return false;
 }
 void hookEvents () {
+	int focusHandle = focusHandle ();
 	int windowProc = getDisplay ().windowProc;
-	OS.XtAddEventHandler (handle, OS.KeyPressMask, false, windowProc, KEY_PRESS);
-	OS.XtAddEventHandler (handle, OS.KeyReleaseMask, false, windowProc, KEY_RELEASE);
 	OS.XtAddEventHandler (handle, OS.ButtonPressMask, false, windowProc, BUTTON_PRESS);
 	OS.XtAddEventHandler (handle, OS.ButtonReleaseMask, false, windowProc, BUTTON_RELEASE);
 	OS.XtAddEventHandler (handle, OS.PointerMotionMask, false, windowProc, POINTER_MOTION);
 	OS.XtAddEventHandler (handle, OS.EnterWindowMask, false, windowProc, ENTER_WINDOW);
 	OS.XtAddEventHandler (handle, OS.LeaveWindowMask, false, windowProc, LEAVE_WINDOW);
 	OS.XtInsertEventHandler (handle, OS.ExposureMask, false, windowProc, EXPOSURE, OS.XtListTail);
-	OS.XtInsertEventHandler (handle, OS.FocusChangeMask, false, windowProc, FOCUS_CHANGE, OS.XtListTail);
 	OS.XtAddCallback (handle, OS.XmNhelpCallback, windowProc, HELP_CALLBACK);
+	OS.XtAddEventHandler (focusHandle, OS.KeyPressMask, false, windowProc, KEY_PRESS);
+	OS.XtAddEventHandler (focusHandle, OS.KeyReleaseMask, false, windowProc, KEY_RELEASE);
+	OS.XtInsertEventHandler (focusHandle, OS.FocusChangeMask, false, windowProc, FOCUS_CHANGE, OS.XtListTail);
 }
 int hoverProc (int id) {
 	return hoverProc (id, true);
@@ -1183,33 +1188,7 @@ public boolean isVisible () {
 }
 void manageChildren () {
 	OS.XtSetMappedWhenManaged (handle, false);
-	/*
-	* Feature in Motif.  When a widget is managed and an
-	* ancestor in the widget hierarchy has focus, Motif
-	* assigns focus to another widget in the shell.  This
-	* happens because Motif does not expect a non-leaf
-	* widget to have the focus.  The fix is to save the
-	* current value of XmNtraversalOn, set the new value
-	* to false, then manage the widget and restore the
-	* value.  This relies on the fact that Motif will
-	* not reassign focus when the new widget is not
-	* traversable.
-	* 
-	* NOTE: This code currently does not work when a
-	* sibling will take focus.
-	*/
-	int topHandle = topHandle ();
-	int [] argList1 = {OS.XmNtraversalOn, 0};
-	OS.XtGetValues (topHandle, argList1, argList1.length / 2);
-	if (argList1 [1] != 0) {
-		int [] argList2 = {OS.XmNtraversalOn, 0};
-		OS.XtSetValues (topHandle, argList2, argList2.length / 2);
-	}
 	OS.XtManageChild (handle);
-	if (argList1 [1] != 0) {
-		OS.XtSetValues (topHandle, argList1, argList1.length / 2);
-	}
-	overrideTranslations ();
 	int [] argList3 = {OS.XmNborderWidth, 0};
 	OS.XtGetValues (handle, argList3, argList3.length / 2);
 	OS.XtResizeWidget (handle, 1, 1, argList3 [1]);
@@ -1276,8 +1255,9 @@ public void moveBelow (Control control) {
 }
 void overrideTranslations () {
 	Display display = getDisplay ();
-	OS.XtOverrideTranslations (handle, display.tabTranslations);
-	OS.XtOverrideTranslations (handle, display.arrowTranslations);
+	int focusHandle = focusHandle ();
+	OS.XtOverrideTranslations (focusHandle, display.tabTranslations);
+	OS.XtOverrideTranslations (focusHandle, display.arrowTranslations);
 }
 /**
  * Causes the receiver to be resized to its preferred size.
@@ -1945,10 +1925,7 @@ public void setEnabled (boolean enabled) {
  */
 public boolean setFocus () {
 	checkWidget();
-	Decorations shell = menuShell ();
-	shell.setSavedFocus (this);
-	shell.bringToTop (false);
-	return XmProcessTraversal (handle, OS.XmTRAVERSE_CURRENT);
+	return forceFocus ();
 }
 /**
  * Sets the font that the receiver will use to paint textual information
