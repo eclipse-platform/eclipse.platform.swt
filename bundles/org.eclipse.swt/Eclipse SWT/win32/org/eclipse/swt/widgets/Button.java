@@ -505,8 +505,19 @@ boolean setRadioFocus () {
 public void setSelection (boolean selected) {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
-	int bits = selected ? OS.BST_CHECKED : OS.BST_UNCHECKED;
-	OS.SendMessage (handle, OS.BM_SETCHECK, bits, 0);
+	int flags = selected ? OS.BST_CHECKED : OS.BST_UNCHECKED;
+	
+	/*
+	* Feature in Windows. When BM_SETCHECK is used
+	* to set the checked state of a radio or check
+	* button, it sets the WM_TABSTOP style.  This
+	* is undocumented and unwanted.  The fix is
+	* to save and restore the window style bits.
+	*/
+	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	OS.SendMessage (handle, OS.BM_SETCHECK, flags, 0);
+	OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+	
 	/*
 	* Feature in Windows.  When a radio button gets focus, 
 	* it selects the button in WM_SETFOCUS.  If the previous
@@ -591,7 +602,7 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	* Feature in Windows. When Windows sets focus to
 	* a radio button, it sets the WM_TABSTOP style.
 	* This is undocumented and unwanted.  The fix is
-	* to clear this style.
+	* to save and restore the window style bits.
 	*/
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	int code = callWindowProc (OS.WM_SETFOCUS, wParam, lParam);
