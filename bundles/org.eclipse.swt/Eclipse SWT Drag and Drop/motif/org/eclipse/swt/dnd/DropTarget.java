@@ -217,7 +217,8 @@ public DropTarget(Control control, int style) {
 	
 	dragOverHeartbeat = new Runnable() {
 		public void run() {
-			if (DropTarget.this.control.isDisposed() || dragOverStart == 0) return;
+			Control control = DropTarget.this.control;
+			if (control == null || control.isDisposed() || dragOverStart == 0) return;
 			long time = System.currentTimeMillis();
 			int delay = DRAGOVER_HYSTERESIS;
 			if (time < dragOverStart) {
@@ -258,7 +259,9 @@ public DropTarget(Control control, int style) {
 					selectedOperation = event.detail;
 				}
 			}
-			DropTarget.this.control.getDisplay().timerExec(delay, dragOverHeartbeat);
+			control = DropTarget.this.control;
+			if (control == null || control.isDisposed ()) return;
+			control.getDisplay().timerExec(delay, dragOverHeartbeat);
 		}
 	};
 }
