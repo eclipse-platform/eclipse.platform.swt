@@ -3188,9 +3188,9 @@ static void stretch8(
 	int destX, int destY, int destWidth, int destHeight,
 	int[] paletteMapping, boolean flipX, boolean flipY) {
 	blit(BLIT_SRC,
-		srcData, 2, srcStride, MSB_FIRST, srcX, srcY, srcWidth, srcHeight, null, null, null,
+		srcData, 8, srcStride, MSB_FIRST, srcX, srcY, srcWidth, srcHeight, null, null, null,
 		ALPHA_OPAQUE, null, 0,
-		destData, 2, destStride, MSB_FIRST, destX, destY, destWidth, destHeight, null, null, null,
+		destData, 8, destStride, MSB_FIRST, destX, destY, destWidth, destHeight, null, null, null,
 		flipX, flipY);
 }
 
@@ -3205,9 +3205,9 @@ static void stretch4(
 	int destX, int destY, int destWidth, int destHeight,
 	int[] paletteMapping, boolean flipX, boolean flipY) {
 	blit(BLIT_SRC,
-		srcData, 2, srcStride, MSB_FIRST, srcX, srcY, srcWidth, srcHeight, null, null, null,
+		srcData, 4, srcStride, MSB_FIRST, srcX, srcY, srcWidth, srcHeight, null, null, null,
 		ALPHA_OPAQUE, null, 0,
-		destData, 2, destStride, MSB_FIRST, destX, destY, destWidth, destHeight, null, null, null,
+		destData, 4, destStride, MSB_FIRST, destX, destY, destWidth, destHeight, null, null, null,
 		flipX, flipY);
 }
 
