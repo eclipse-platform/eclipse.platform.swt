@@ -213,11 +213,9 @@ void createHandle (int index, int parentHandle, boolean scrolled) {
 		handle = OS.XmCreateDrawingArea (parentHandle, null, argList, argList.length / 2);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	}
-	if ((style & SWT.NO_FOCUS) == 0) {
-		int [] argList = {OS.XmNtraversalOn, 0};
-		focusHandle = OS.XmCreateDrawingArea (handle, null, argList, argList.length / 2);
-		if (focusHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	}
+	int [] argList = {OS.XmNtraversalOn, 0};
+	focusHandle = OS.XmCreateDrawingArea (handle, null, argList, argList.length / 2);
+	if (focusHandle == 0) error (SWT.ERROR_NO_HANDLES);
 }
 int defaultBackground () {
 	return display.compositeBackground;
