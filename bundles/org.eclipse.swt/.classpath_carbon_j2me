@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-    <classpathentry kind="var" path="JRE_LIB"/>
+    <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
     <classpathentry kind="src" path="Eclipse SWT/carbon"/>
     <classpathentry kind="src" path="Eclipse SWT/emulated/bidi"/>
     <classpathentry kind="src" path="Eclipse SWT/emulated/coolbar"/>
