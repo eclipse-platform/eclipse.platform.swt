@@ -491,7 +491,8 @@ int imContext () {
  */
 public void deselect (int index) {
 	checkWidget();
-	setItems (items, true, getSelectionIndex () != index);
+	boolean isSelected = getSelectionIndex () == index;
+	setItems (items, !isSelected, !isSelected);
 }
 
 /**
@@ -510,7 +511,7 @@ public void deselect (int index) {
  */
 public void deselectAll () {
 	checkWidget();
-	setItems (items, true, false);
+	setItems (items, false, false);
 }
 
 void enableWidget (boolean enabled) {
