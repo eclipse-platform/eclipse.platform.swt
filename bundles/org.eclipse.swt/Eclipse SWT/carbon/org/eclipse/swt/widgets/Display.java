@@ -1484,14 +1484,9 @@ public Monitor getPrimaryMonitor () {
  */
 public Shell [] getShells () {
 	checkDevice ();
-	int length = 0;
-	for (int i=0; i<widgetTable.length; i++) {
-		Widget widget = widgetTable [i];
-		if (widget != null && widget instanceof Shell) length++;
-	}
 	int index = 0;
-	Shell [] result = new Shell [length];
-	for (int i=0; i<widgetTable.length; i++) {
+	Shell [] result = new Shell [16];
+	for (int i = 0; i < widgetTable.length; i++) {
 		Widget widget = widgetTable [i];
 		if (widget != null && widget instanceof Shell) {
 			int j = 0;
@@ -1499,10 +1494,17 @@ public Shell [] getShells () {
 				if (result [j] == widget) break;
 				j++;
 			}
-			if (j == index) result [index++] = (Shell) widget;
+			if (j == index) {
+				if (index == result.length) {
+					Shell [] newResult = new Shell [index + 16];
+					System.arraycopy (result, 0, newResult, 0, index);
+					result = newResult;
+				}
+				result [index++] = (Shell) widget;	
+			}
 		}
 	}
-	if (index == length) return result;
+	if (index == result.length) return result;
 	Shell [] newResult = new Shell [index];
 	System.arraycopy (result, 0, newResult, 0, index);
 	return newResult;
