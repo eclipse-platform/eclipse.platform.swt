@@ -111,13 +111,9 @@ public class MacUtil {
 	public static Point toControl(int cHandle, Point point) {
 		MacPoint mp= new MacPoint(point);
 		
-		int savedPort= OS.GetPort();
-		try {
-			OS.SetPortWindowPort(OS.GetControlOwner(cHandle));
-			OS.GlobalToLocal(mp.getData());
-		} finally {
-			OS.SetPort(savedPort);
-		}
+		int wHandle= OS.GetControlOwner(cHandle);
+		int port= OS.GetWindowPort(wHandle);
+		OS.QDGlobalToLocalPoint(port, mp.getData());
 	
 		MacRect bounds= new MacRect();
 		OS.GetControlBounds(cHandle, bounds.getData());
@@ -125,6 +121,15 @@ public class MacUtil {
 		Point p= mp.toPoint();
 		p.x-= bounds.getX();
 		p.y-= bounds.getY();
+		
+		/*
+		float[] p2= new float[2];
+		p2[0]= mp.getX();
+		p2[1]= mp.getY();
+		OS.HIViewConvertPoint(p2, 0, cHandle);
+		System.out.println("MacUtil.toControl: " + p + "  " + p2[0] + " " + p2[1]);
+		*/
+		
 		return p;
 	}
 	
@@ -132,13 +137,11 @@ public class MacUtil {
 		MacRect bounds= new MacRect();
 		OS.GetControlBounds(cHandle, bounds.getData());
 		MacPoint mp= new MacPoint(point.x+bounds.getX(), point.y+bounds.getY());
-		int port= OS.GetPort();
-		try {
-			OS.SetPortWindowPort(OS.GetControlOwner(cHandle));
-			OS.LocalToGlobal(mp.getData());
-		} finally {
-			OS.SetPort(port);
-		}
+		
+		int wHandle= OS.GetControlOwner(cHandle);
+		int port= OS.GetWindowPort(wHandle);
+		OS.QDLocalToGlobalPoint(port, mp.getData());
+		
 		return mp.toPoint();
 	}
 	

@@ -2016,10 +2016,7 @@ static String convertToLf(String text) {
 				int[] w= new int[1];
 				short part= OS.FindWindow(where.getData(), w);
 								
-				int oldPort= OS.GetPort();
-				OS.SetPortWindowPort(w[0]);
-				OS.GlobalToLocal(where.getData());
-				OS.SetPort(oldPort);
+				OS.QDGlobalToLocalPoint(OS.GetWindowPort(w[0]), where.getData());
 				
 				if (part == OS.inMenuBar) {
 					OS.MenuSelect(mEvent.getWhere().getData());
@@ -2110,11 +2107,7 @@ static String convertToLf(String text) {
 		
 			fTrackedControl= 0;
 		
-			int oldPort= OS.GetPort();
-			OS.SetPortWindowPort(whichWindow);
-			OS.GlobalToLocal(where.getData());
-			OS.SetPort(oldPort);
-			
+			OS.QDGlobalToLocalPoint(OS.GetWindowPort(whichWindow), where.getData());			
 			int whichControl= MacUtil.findControlUnderMouse(where, whichWindow, null);
 		
 			if (fCurrentControl != whichControl) {
@@ -2184,10 +2177,7 @@ static String convertToLf(String text) {
 		MacPoint where= me.getWhere();
 		MacPoint globalPos= me.getWhere();
 				
-		int savedPort= OS.GetPort();
-		OS.SetPortWindowPort(whichWindow);
-		OS.GlobalToLocal(where.getData());
-		OS.SetPort(savedPort);
+		OS.QDGlobalToLocalPoint(OS.GetWindowPort(whichWindow), where.getData());
 		
 		short[] cpart= new short[1];
 		//int whichControl= OS.FindControlUnderMouse(where.getData(), whichWindow, cpart);

@@ -379,8 +379,8 @@ public class OS {
 	public static native void NormalizeThemeDrawingState();
 	public static native void RGBForeColor(short red, short green, short blue);
 	public static native void RGBBackColor(short red, short green, short blue);
-	public static native void GlobalToLocal(short[] point);
-	public static native void LocalToGlobal(short[] point);
+	//public static native void GlobalToLocal(short[] point);
+	//public static native void LocalToGlobal(short[] point);
 	public static native void QDGlobalToLocalPoint(int port, short[] point);
 	public static native void QDLocalToGlobalPoint(int port, short[] point);
 
