@@ -2260,6 +2260,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetParent
 	return (jint)GetParent((HWND)arg0);
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetPixel
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("GetPixel\n")
+
+	return (jint)GetPixel((HDC)arg0, arg1, arg2);
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetProcAddress
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
 {

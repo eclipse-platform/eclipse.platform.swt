@@ -172,8 +172,9 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 	}
 }
 
-int createDIB(int width, int height, int depth) {
-	byte[]	bmi = new byte[40];
+int createDIB(int width, int height) {
+	int depth = 32;
+	byte[]	bmi = new byte[40 + (OS.IsWinCE ? 12 : 0)];
 		
 	/* DWORD biSize = 40 */
 	bmi[0] = 40; bmi[1] = 0; bmi[2] = 0; bmi[3] = 0;
@@ -193,8 +194,13 @@ int createDIB(int width, int height, int depth) {
 	/* WORD biBitCount = depth */
 	bmi[14] = (byte)(depth & 0xFF);
 	bmi[15] = (byte)((depth >> 8) & 0xFF);
-	/* DWORD biCompression = BI_RGB = 0 */
-	bmi[16] = bmi[17] = bmi[18] = bmi[19] = 0;
+	if (OS.IsWinCE) {
+		/* DWORD biCompression = BI_BITFIELDS = 3 */
+		bmi[16] = 3; bmi[17] = bmi[18] = bmi[19] = 0;
+	} else {
+		/* DWORD biCompression = BI_RGB = 0 */
+		bmi[16] = bmi[17] = bmi[18] = bmi[19] = 0;
+	}
 	/* DWORD biSizeImage = 0 (default) */
 	bmi[20] = bmi[21] = bmi[22] = bmi[23] = 0;
 	/* LONG biXPelsPerMeter = 0 */
@@ -206,6 +212,13 @@ int createDIB(int width, int height, int depth) {
 	/* DWORD biClrImportant = 0 */
 	bmi[36] = bmi[37] = bmi[38] = bmi[39] = 0;
 	/* Set the rgb colors into the bitmap info */
+	if (OS.IsWinCE) {
+		/* the 32 bit masks are 0xFF000000, 0xFF0000, 0xFF00 */
+		bmi[40] = (byte)0xFF; bmi[41] = bmi[42] = bmi[43] = 0;
+		bmi[44] = 0; bmi[45] = (byte)0xFF; bmi[46] = bmi[47] = 0;
+		bmi[48] = bmi[49] = 0; bmi[50] = (byte)0xFF; bmi[51] = 0;
+	}
+
 	int[] pBits = new int[1];
 	int hDib = OS.CreateDIBSection(0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
 	if (hDib == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -614,7 +627,7 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 	int srcHdc = OS.CreateCompatibleDC(handle);
 	int oldSrcBitmap = OS.SelectObject(srcHdc, srcImage.handle);
 	int memHdc = OS.CreateCompatibleDC(handle);
-	int memDib = createDIB(Math.max(srcWidth, destWidth), Math.max(srcHeight, destHeight), 32);
+	int memDib = createDIB(Math.max(srcWidth, destWidth), Math.max(srcHeight, destHeight));
 	int oldMemBitmap = OS.SelectObject(memHdc, memDib);
 
 	BITMAP dibBM = new BITMAP();
@@ -697,19 +710,32 @@ void drawBitmapTransparent(Image srcImage, int srcX, int srcY, int srcWidth, int
 	if (bm.bmBitsPixel <= 8) {
 		if (isDib) {
 			/* Palette-based DIBSECTION */
-			int maxColors = 1 << bm.bmBitsPixel;
-			byte[] oldColors = new byte[maxColors * 4];
-			if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
-			int numColors = OS.GetDIBColorTable(srcHdc, 0, maxColors, oldColors);
-			int offset = srcImage.transparentPixel * 4;
-			byte[] newColors = new byte[oldColors.length];
-			transRed = transGreen = transBlue = 0xff;
-			newColors[offset] = (byte)transBlue;
-			newColors[offset+1] = (byte)transGreen;
-			newColors[offset+2] = (byte)transRed;
-			if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
-			OS.SetDIBColorTable(srcHdc, 0, maxColors, newColors);
-			originalColors = oldColors;
+			if (OS.IsWinCE) {
+				byte[] pBits = new byte[1];
+				OS.MoveMemory(pBits, bm.bmBits, 1);
+				byte oldValue = pBits[0];			
+				int mask = (0xFF << (8 - bm.bmBitsPixel)) & 0x00FF;
+				pBits[0] = (byte)((srcImage.transparentPixel << (8 - bm.bmBitsPixel)) | (pBits[0] & ~mask));
+				OS.MoveMemory(bm.bmBits, pBits, 1);
+				int color = OS.GetPixel(srcHdc, 0, 0);
+          		pBits[0] = oldValue;
+           		OS.MoveMemory(bm.bmBits, pBits, 1);				
+				transBlue = (color & 0xFF0000) >> 16;
+				transGreen = (color & 0xFF00) >> 8;
+				transRed = color & 0xFF;				
+			} else {
+				int maxColors = 1 << bm.bmBitsPixel;
+				byte[] oldColors = new byte[maxColors * 4];
+				int numColors = OS.GetDIBColorTable(srcHdc, 0, maxColors, oldColors);
+				int offset = srcImage.transparentPixel * 4;
+				byte[] newColors = new byte[oldColors.length];
+				transRed = transGreen = transBlue = 0xff;
+				newColors[offset] = (byte)transBlue;
+				newColors[offset+1] = (byte)transGreen;
+				newColors[offset+2] = (byte)transRed;
+				OS.SetDIBColorTable(srcHdc, 0, maxColors, newColors);
+				originalColors = oldColors;
+			}
 		} else {
 			/* Palette-based bitmap */
 			int numColors = 1 << bm.bmBitsPixel;

@@ -1870,6 +1870,7 @@ public static final native boolean GetOpenFileNameW (OPENFILENAME lpofn);
 public static final native boolean GetOpenFileNameA (OPENFILENAME lpofn);
 public static final native int GetPaletteEntries (int hPalette, int iStartIndex, int nEntries, byte[] logPalette);
 public static final native int GetParent (int hWnd);
+public static final native int GetPixel (int hdc, int x, int y);
 public static final native int GetProcAddress (int hModule, byte [] lpProcName);
 public static final native int GetProcessHeap ();
 public static final native int GetProfileStringW (char [] lpAppName, char [] lpKeyName, char [] lpDefault, char [] lpReturnedString, int nSize);

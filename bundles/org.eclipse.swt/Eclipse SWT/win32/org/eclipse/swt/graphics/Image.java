@@ -1354,8 +1354,9 @@ void init(Device device, ImageData i) {
 	/* Construct bitmap info header by hand */
 	RGB[] rgbs = i.palette.getRGBs();
 	byte[] bmi;
+	boolean useBitfields = OS.IsWinCE && (i.depth == 16 || i.depth == 32);
 	if (i.palette.isDirect)
-		bmi = new byte[40];
+		bmi = new byte[40 + (useBitfields ? 12 : 0)];
 	else
 		bmi = new byte[40 + rgbs.length * 4];
 	/* DWORD biSize = 40 */
@@ -1377,8 +1378,13 @@ void init(Device device, ImageData i) {
 	/* WORD biBitCount = depth */
 	bmi[14] = (byte)(i.depth & 0xFF);
 	bmi[15] = (byte)((i.depth >> 8) & 0xFF);
-	/* DWORD biCompression = BI_RGB = 0 */
-	bmi[16] = bmi[17] = bmi[18] = bmi[19] = 0;
+	if (useBitfields) {
+		/* DWORD biCompression = BI_BITFIELDS = 3 */
+		bmi[16] = 3; bmi[17] = bmi[18] = bmi[19] = 0;
+	} else {
+		/* DWORD biCompression = BI_RGB = 0 */
+		bmi[16] = bmi[17] = bmi[18] = bmi[19] = 0;
+	}
 	/* DWORD biSizeImage = 0 (default) */
 	bmi[20] = bmi[21] = bmi[22] = bmi[23] = 0;
 	/* LONG biXPelsPerMeter = 0 */
@@ -1398,7 +1404,26 @@ void init(Device device, ImageData i) {
 	bmi[36] = bmi[37] = bmi[38] = bmi[39] = 0;
 	/* Set the rgb colors into the bitmap info */
 	int offset = 40;
-	if (!i.palette.isDirect) {
+	if (i.palette.isDirect) {
+		if (useBitfields) {
+			PaletteData palette = i.palette;
+			int redMask = palette.redMask;
+			int greenMask = palette.greenMask;
+			int blueMask = palette.blueMask;
+			bmi[40] = (byte)((redMask & 0xFF) >> 0);
+			bmi[41] = (byte)((redMask & 0xFF00) >> 8);
+			bmi[42] = (byte)((redMask & 0xFF0000) >> 16);
+			bmi[43] = (byte)((redMask & 0xFF000000) >> 24);
+			bmi[44] = (byte)((greenMask & 0xFF) >> 0);
+			bmi[45] = (byte)((greenMask & 0xFF00) >> 8);
+			bmi[46] = (byte)((greenMask & 0xFF0000) >> 16);
+			bmi[47] = (byte)((greenMask & 0xFF000000) >> 24);
+			bmi[48] = (byte)((blueMask & 0xFF) >> 0);
+			bmi[49] = (byte)((blueMask & 0xFF00) >> 8);
+			bmi[50] = (byte)((blueMask & 0xFF0000) >> 16);
+			bmi[51] = (byte)((blueMask & 0xFF000000) >> 24);
+		}
+	} else {
 		for (int j = 0; j < rgbs.length; j++) {
 			bmi[offset] = (byte)rgbs[j].blue;
 			bmi[offset + 1] = (byte)rgbs[j].green;
