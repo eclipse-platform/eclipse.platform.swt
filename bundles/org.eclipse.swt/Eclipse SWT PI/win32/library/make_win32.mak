@@ -1,5 +1,9 @@
-# (c) Copyright IBM Corp., 2000, 2001
-# All Rights Reserved.
+#**********************************************************************
+# Copyright (c) 1999, 2002 IBM Corp.  All rights reserved.
+# This file is made available under the terms of the Common Public License v1.0
+# which accompanies this distribution, and is available at
+# http://www.eclipse.org/legal/cpl-v10.html
+#**********************************************************************
 #
 # Makefile for SWT libraries on Windows
 
@@ -11,7 +15,7 @@ APPVER=5.0
 
 pgm_ver_str="SWT $(maj_ver).$(min_ver) for Windows"
 timestamp_str=__DATE__\" \"__TIME__\" (EST)\"
-copyright = "Copyright (C) IBM Corporation 1999, 2000.  All rights reserved."
+copyright = "Copyright (C) 1999, 2002 IBM Corp.  All rights reserved."
 
 SWT_PREFIX=swt
 WS_PREFIX=win32

@@ -1,7 +1,7 @@
 #!/bin/csh
 
-# Copyright (c) IBM Corp. 2000, 2001.  All rights reserved.
-#
+#**********************************************************************
+# Copyright (c) 2000, 2002 IBM Corp. All rights reserved.
 # The contents of this file are made available under the terms
 # of the GNU Lesser General Public License (LGPL) Version 2.1 that
 # accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -10,6 +10,7 @@
 # the LGPL accompanying this distribution and there is any conflict
 # between the two license versions, the terms of the LGPL accompanying
 # this distribution shall govern.
+#********************************************************************** 
 
 # Some UNIX/Linux compilers don't like <CR>'s in files (DOS format).
 set fixup_files = `grep -l "\" *.[ch]`

@@ -1,7 +1,9 @@
 @echo off
 
-rem  (c) Copyright IBM Corp., 2000, 2001
-rem  All Rights Reserved.
+rem Copyright (c) 2000, 2002 IBM Corp.  All rights reserved.
+rem This file is made available under the terms of the Common Public License v1.0
+rem which accompanies this distribution, and is available at
+rem http://www.eclipse.org/legal/cpl-v10.html
 
 IF NOT "%JAVA_HOME%"=="" GOTO MAKE
 
