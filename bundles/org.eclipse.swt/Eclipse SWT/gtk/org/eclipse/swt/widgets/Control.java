@@ -158,7 +158,6 @@ void hookEvents () {
 	OS.g_signal_connect_after (eventHandle, OS.expose_event, windowProc3, EXPOSE_EVENT);
 	int imHandle = imHandle ();
 	if (imHandle != 0) {
-		int topHandle = topHandle ();
 		OS.g_signal_connect (handle, OS.unrealize, windowProc2, UNREALIZE);
 		OS.g_signal_connect (imHandle, OS.commit, windowProc3, COMMIT);
 		OS.g_signal_connect (imHandle, OS.preedit_changed, windowProc2, PREEDIT_CHANGED);

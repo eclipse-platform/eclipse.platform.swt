@@ -1718,7 +1718,6 @@ public void showItem (TableItem item) {
 }
 
 void showItem (int iter) {
-	GdkRectangle rect = new GdkRectangle ();
 	int path = OS.gtk_tree_model_get_path (modelHandle, iter);
 	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, false, 0, 0);
 	OS.gtk_tree_path_free (path);
