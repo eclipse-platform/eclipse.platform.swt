@@ -2167,7 +2167,6 @@ void onPaint (Event event) {
 		int rightX = clipping.x + clipping.width;
 		int headerHeight = getHeaderHeight ();
 		int y = (clipping.y - headerHeight) / itemHeight * itemHeight + headerHeight;
-		if (y == headerHeight) y += itemHeight;		/* do not paint line at very top */
 		while (y <= bottomY) {
 			gc.drawLine (clipping.x, y, rightX, y);
 			y += itemHeight;
