@@ -141,6 +141,15 @@ void createScrolledHandle (int parentHandle) {
 	handle = outControl [0];
 }
 
+void draw (int control) {
+	if (control != handle) return;
+	if ((state & CANVAS) == 0) return;
+	if ((style & SWT.NO_BACKGROUND) != 0) return;
+	Rect rect = new Rect ();
+	OS.GetControlBounds (handle, rect);
+	OS.EraseRect (rect);
+}
+
 public Control [] getChildren () {
 	checkWidget();
 	return _getChildren ();
