@@ -9,7 +9,7 @@
 # MINOR_VER  - the minor version number 
 # BUILD_NUM  - the build number
 
-DLL_VERSION=$(MAJOR_VER)$(MINOR_VER)
+DLL_VERSION=$(MAJOR_VER)0$(MINOR_VER)
 
 CC=cc_r
 
