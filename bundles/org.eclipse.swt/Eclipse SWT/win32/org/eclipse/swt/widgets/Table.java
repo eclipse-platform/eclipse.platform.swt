@@ -2083,11 +2083,7 @@ void setCheckboxImageList (int width, int height) {
 	if ((style & SWT.CHECK) == 0) return;
 	int count = 4;
 	int flags = ImageList.CREATE_FLAGS;
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
-			flags |= OS.ILC_MIRROR;
-		}
-	}
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) flags |= OS.ILC_MIRROR;
 	int hImageList = OS.ImageList_Create (width, height, flags, count, count);
 	int hDC = OS.GetDC (handle);
 	int memDC = OS.CreateCompatibleDC (hDC);
