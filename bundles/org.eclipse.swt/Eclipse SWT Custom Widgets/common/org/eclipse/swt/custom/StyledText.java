@@ -1379,7 +1379,8 @@ public StyledText(Composite parent, int style) {
 	} 
 	else {
 		createCaretBitmaps();
-		createBidiCaret();
+		new Caret(this, SWT.NULL);			
+		setBidiCaretDirection();
 		Runnable runnable = new Runnable() {
 			public void run() {
 				// setBidiCaretLocation calculates caret location like during 
@@ -1992,28 +1993,6 @@ void createKeyBindings() {
 	
 	// Miscellaneous
 	setKeyBinding(SWT.INSERT, ST.TOGGLE_OVERWRITE);
-}
-/**
- * Create the bidi caret.  Use the caret for the current keyboard
- * mode.
- */
-void createBidiCaret() {
-	Caret caret = getCaret();
-	if (caret == null) {
-		caret = new Caret(this, SWT.NULL);			
-	}
-	int direction = StyledTextBidi.getKeyboardLanguageDirection();
-	if (direction == caretDirection) {
-		return;
-	}
-	caretDirection = direction;
-	if (caretDirection == SWT.LEFT) {
-		caret.setImage(leftCaretBitmap);			
-	} 
-	else 
-	if (caretDirection == SWT.RIGHT) {
-		caret.setImage(rightCaretBitmap);			
-	}	
 }
 /**
  * Create the bitmaps to use for the caret in bidi mode.  This
@@ -6284,6 +6263,25 @@ public void setBackground(Color color) {
 	redraw();
 }
 /**
+ * Set the caret to indicate the current typing direction.
+ */
+void setBidiCaretDirection() {
+	Caret caret = getCaret();
+	int direction = StyledTextBidi.getKeyboardLanguageDirection();
+	
+	if (caret == null || direction == caretDirection) {
+		return;
+	}
+	caretDirection = direction;
+	if (caretDirection == SWT.LEFT) {
+		caret.setImage(leftCaretBitmap);			
+	} 
+	else 
+	if (caretDirection == SWT.RIGHT) {
+		caret.setImage(rightCaretBitmap);			
+	}
+}
+/**
  * Moves the Caret to the current caret offset.
  * <p>
  * 
@@ -6300,6 +6298,7 @@ void setBidiCaretLocation(StyledTextBidi bidi) {
 		int caretX;
 		GC gc = null;
 		
+		setBidiCaretDirection();		
 		if (bidi == null) {
 			gc = new GC(this);
 			bidi = getStyledTextBidi(lineText, lineStartOffset, gc);
@@ -6313,7 +6312,6 @@ void setBidiCaretLocation(StyledTextBidi bidi) {
 		if (StyledTextBidi.getKeyboardLanguageDirection() == SWT.RIGHT) {
 			caretX -= (getCaretWidth() - 1);
 		}
-		createBidiCaret();
 		caret.setLocation(
 			caretX, 
 			caretLine * lineHeight - verticalScrollOffset + topMargin);
@@ -6573,7 +6571,7 @@ public void setFont(Font font) {
 	if (isBidi()) {
 		caretDirection = SWT.NULL;
 		createCaretBitmaps();
-		createBidiCaret();
+		setBidiCaretDirection();
 	} 
 	else {
 		Caret caret = getCaret();
