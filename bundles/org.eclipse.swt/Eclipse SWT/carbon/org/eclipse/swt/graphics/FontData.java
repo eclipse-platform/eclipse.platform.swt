@@ -188,6 +188,46 @@ public int getHeight() {
 }
 
 /**
+ * Returns the locale of the receiver.
+ * <p>
+ * The locale determines which platform character set this
+ * font is going to use. Widgets and graphics operations that
+ * use this font will convert UNICODE strings to the platform
+ * character set of the specified locale.
+ * </p>
+ * <p>
+ * On platforms where there are multiple character sets for a
+ * given language/country locale, the variant portion of the
+ * locale will determine the character set.
+ * </p>
+ * 
+ * @return the <code>String</code> representing a Locale object
+ * @since 3.0
+ */
+public String getLocale () {
+	StringBuffer buffer = new StringBuffer ();
+	char sep = '_';
+	if (lang != null) {
+		buffer.append (lang);
+		buffer.append (sep);
+	}
+	if (country != null) {
+		buffer.append (country);
+		buffer.append (sep);
+	}
+	if (variant != null) {
+		buffer.append (variant);
+	}
+	
+	String result = buffer.toString ();
+	int length = result.length ();
+	if (result.charAt (length - 1) == sep) {
+		result = result.substring (0, length - 1);
+	} 
+	return result;
+}
+
+/**
  * Returns the name of the receiver.
  * On platforms that support font foundries, the return value will
  * be the foundry followed by a dash ("-") followed by the face name.
@@ -254,7 +294,7 @@ public void setHeight(int height) {
  * character set of the specified locale.
  * </p>
  * <p>
- * On platforms which there are multiple character sets for a
+ * On platforms where there are multiple character sets for a
  * given language/country locale, the variant portion of the
  * locale will determine the character set.
  * </p>
