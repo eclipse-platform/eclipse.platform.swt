@@ -305,7 +305,7 @@ Rectangle [] computeProportions (Rectangle [] rects) {
 	return result;
 }
 
-void drawRectangles (Rectangle [] rects) {
+void drawRectangles (Rectangle [] rects, boolean stippled) {
 	if (parent != null) {
 		if (parent.isDisposed ()) return;
 		parent.getShell ().update ();
@@ -461,7 +461,7 @@ public boolean open () {
 		cursorOrientation |= hStyle;
 	}
 
-	drawRectangles (rectangles);
+	drawRectangles (rectangles, stippled);
 	if ((style & SWT.MENU) == 0) {
 		oldX = info.pos_x;
 		oldY = info.pos_y;
@@ -500,6 +500,7 @@ public boolean open () {
 					int newY = pe.pos_y;
 					if (newX != oldX || newY != oldY) {
 						Rectangle [] oldRectangles = rectangles;
+						boolean oldStippled = stippled;
 						Rectangle [] rectsToErase = new Rectangle [rectangles.length];
 						for (int i = 0; i < rectangles.length; i++) {
 							Rectangle current = rectangles [i];
@@ -543,8 +544,8 @@ public boolean open () {
 								draw = true;
 							}
 							if (draw) {
-								drawRectangles (rectsToErase);
-								drawRectangles (rectangles);
+								drawRectangles (rectsToErase, oldStippled);
+								drawRectangles (rectangles, stippled);
 							}
 							cursorPos = adjustResizeCursor ();
 							newX = cursorPos.x; newY = cursorPos.y;
@@ -584,8 +585,8 @@ public boolean open () {
 								draw = true;
 							}
 							if (draw) {
-								drawRectangles (rectsToErase);
-								drawRectangles (rectangles);
+								drawRectangles (rectsToErase, oldStippled);
+								drawRectangles (rectangles, stippled);
 							}
 						}
 						oldX = newX;  oldY = newY;
@@ -623,6 +624,7 @@ public boolean open () {
 						}
 						if (xChange != 0 || yChange != 0) {
 							Rectangle [] oldRectangles = rectangles;
+							boolean oldStippled = stippled;
 							Rectangle [] rectsToErase = new Rectangle [rectangles.length];
 							for (int i = 0; i < rectangles.length; i++) {
 								Rectangle current = rectangles [i];
@@ -668,8 +670,8 @@ public boolean open () {
 									draw = true;
 								}
 								if (draw) {
-									drawRectangles (rectsToErase);
-									drawRectangles (rectangles);
+									drawRectangles (rectsToErase, oldStippled);
+									drawRectangles (rectangles, stippled);
 								}
 								cursorPos = adjustResizeCursor ();
 							} else {
@@ -708,8 +710,8 @@ public boolean open () {
 									draw = true;
 								}
 								if (draw) {
-									drawRectangles (rectsToErase);
-									drawRectangles (rectangles);
+									drawRectangles (rectsToErase, oldStippled);
+									drawRectangles (rectangles, stippled);
 								}
 								cursorPos = adjustMoveCursor ();
 							}
@@ -736,7 +738,7 @@ public boolean open () {
 		OS.PtEventHandler (buffer);
 	}
 	OS.free (buffer);
-	if (!isDisposed ()) drawRectangles (rectangles);
+	if (!isDisposed ()) drawRectangles (rectangles, stippled);
 	tracking = false;
 	if (region != 0) OS.PtDestroyWidget (region);
 	return !cancelled;
