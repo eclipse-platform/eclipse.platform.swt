@@ -13,5 +13,7 @@ public class OSVERSIONINFO {
 	public int dwPlatformId;
 //	TCHAR szCSDVersion [128];
 //	public char [] szCSDVersion = new char [128];
-	public static /*final*/ int sizeof = OS.IsUnicode ? 276 : 148;
+	public static final int sizeofW = 276;
+	public static final int sizeofA = 148;
+	public static /*final*/ int sizeof = OS.IsUnicode ? sizeofW : sizeofA;
 }

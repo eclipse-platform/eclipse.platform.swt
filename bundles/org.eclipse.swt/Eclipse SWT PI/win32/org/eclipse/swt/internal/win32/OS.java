@@ -56,12 +56,12 @@ public class OS {
 		// TEMPORARY CODE
 		String MBCS = System.getProperty ("MBCS");
 		if (MBCS != null) {
-			info.dwOSVersionInfoSize = 148;
+			info.dwOSVersionInfoSize = OSVERSIONINFO.sizeofA;
 			OS.GetVersionExA (info);
 		} else {
-			info.dwOSVersionInfoSize = 276;
+			info.dwOSVersionInfoSize = OSVERSIONINFO.sizeofW;
 			if (!OS.GetVersionExW (info)) {
-				info.dwOSVersionInfoSize = 148;
+				info.dwOSVersionInfoSize = OSVERSIONINFO.sizeofA;
 				OS.GetVersionExA (info);
 			}
 		}
