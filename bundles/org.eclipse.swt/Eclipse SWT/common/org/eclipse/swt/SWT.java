@@ -741,16 +741,9 @@ public class SWT {
 	 * <li><code>Menu</code></li>
 	 * </ul></p>
 	 * 
-	 * <p>
-	 * <b>NOTE:</b> This API element is part of an interim API that is still under
-	 * development and is expected to change significantly before reaching stability.
-	 * It is being made available at this early stage to solicit feedback from
-	 * pioneering adopters on the understanding that any code that uses this API
-	 * will almost certainly be broken (repeatedly) as the API evolves.
-	 * </p>
-	 * 
-	 * @since 2.1
+	 * @since 3.0
 	 */
+//	public static final int LTR = 1 << 25;
 	public static final int LEFT_TO_RIGHT = 1 << 25;
 	
 	/**
@@ -767,16 +760,9 @@ public class SWT {
 	 * <li><code>Menu</code></li>
 	 * </ul></p>
 	 * 
-	 * <p>
-	 * <b>NOTE:</b> This API element is part of an interim API that is still under
-	 * development and is expected to change significantly before reaching stability.
-	 * It is being made available at this early stage to solicit feedback from
-	 * pioneering adopters on the understanding that any code that uses this API
-	 * will almost certainly be broken (repeatedly) as the API evolves.
-	 * </p>
-	 * 
-	 * @since 2.1
+	 * @since 3.0
 	 */
+//	public static final int RTL = 1 << 26;
 	public static final int RIGHT_TO_LEFT = 1 << 26;
 	
 	/**
@@ -837,7 +823,7 @@ public class SWT {
 	public static final int BOTTOM             = DOWN;
 
 	/**
-	 * Style constant for align left behavior (value is 1&lt;&lt;14).
+	 * Style constant for leading alignment (value is 1&lt;&lt;14).
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Button</code></li>
 	 * <li><code>Label</code></li>
@@ -845,11 +831,21 @@ public class SWT {
 	 * <li><code>Tracker</code></li>
 	 * <li><code>FormAttachment</code> in a <code>FormLayout</code></li>
 	 * </ul></p>
+	 * 
+	 * @since 3.0
 	 */
-	public static final int LEFT               = 1 << 14;
+	public static final int LEAD               = 1 << 14;
+	
+	/**
+	 * Style constant for align left behavior (value is 1&lt;&lt;14).
+	 * This is a synonym for LEAD (value is 1&lt;&lt;14).  Newer
+	 * applications should use LEAD instead of LEFT to make code more
+	 * understandable on right-to-left platforms.
+	 */
+	public static final int LEFT               = LEAD;
 
 	/**
-	 * Style constant for align right behavior (value is 1&lt;&lt;17).
+	 * Style constant for trailiing alignment (value is 1&lt;&lt;17).
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Button</code></li>
 	 * <li><code>Label</code></li>
@@ -857,8 +853,18 @@ public class SWT {
 	 * <li><code>Tracker</code></li>
 	 * <li><code>FormAttachment</code> in a <code>FormLayout</code></li>
 	 * </ul></p>
+	 * 
+	 * @since 3.0
 	 */
-	public static final int RIGHT              = 1 << 17;
+	public static final int TRAIL              = 1 << 17;
+		
+	/**
+	 * Style constant for align right behavior (value is 1&lt;&lt;17).
+	 * This is a synonym for TRAIL (value is 1&lt;&lt;14).  Newer
+	 * applications should use TRAIL instead of RIGHT to make code more
+	 * understandable on right-to-left platforms.
+	 */
+	public static final int RIGHT              = TRAIL;
 
 	/**
 	 * Style constant for align center behavior (value is 1&lt;&lt;24).
