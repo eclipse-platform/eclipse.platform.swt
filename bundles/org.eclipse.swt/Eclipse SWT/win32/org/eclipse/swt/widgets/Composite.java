@@ -808,10 +808,12 @@ void updateFont (Font oldFont, Font newFont) {
 		}
 	}
 	super.updateFont (oldFont, newFont);
-	if (layout != null) {
-		markLayout (true, false);
-		updateLayout (true, false);
-	}
+	/*
+	* Call layout() directly so that subclasses that reimplement
+	* this method instead of using a Layout will set the size and
+	* location of their children when the font changes.
+	*/
+	layout (true);
 }
 
 void updateLayout (boolean resize, boolean all) {
