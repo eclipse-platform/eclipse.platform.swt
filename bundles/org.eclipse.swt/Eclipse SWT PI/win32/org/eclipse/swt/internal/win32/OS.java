@@ -634,6 +634,7 @@ public class OS extends Platform {
 	public static final int LVIR_BOUNDS = 0x0;
 	public static final int LVIR_ICON = 0x1;
 	public static final int LVIR_LABEL = 0x2;
+	public static final int LVIR_SELECTBOUNDS = 0x3;
 	public static final int LVIS_DROPHILITED = 0x8;
 	public static final int LVIS_FOCUSED = 0x1;
 	public static final int LVIS_SELECTED = 0x2;

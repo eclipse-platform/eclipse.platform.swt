@@ -3343,11 +3343,25 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					if (strings != null) string = strings [plvfi.iSubItem];
 				}
 				if (string != null) {
-					TCHAR buffer = new TCHAR (getCodePage (), string, false);
-					int byteCount = Math.min (buffer.length (), plvfi.cchTextMax - 1) * TCHAR.sizeof;
-					OS.MoveMemory (plvfi.pszText, buffer, byteCount);
-					OS.MoveMemory (plvfi.pszText + byteCount, new byte [TCHAR.sizeof], TCHAR.sizeof);
-					plvfi.cchTextMax = Math.min (plvfi.cchTextMax, string.length () + 1);
+					/*
+					* Bug in Windows.  When pszText points to a zero length NULL
+					* terminated string, Windows correctly draws the empty string
+					* but the cache of the bounds for the item is not reset.  This
+					* means that when the text for an item is set and then reset
+					* to an empty string, the selection draws using the bounds of
+					* the previous text.  The fix is to assign a NULL pointer to
+					* pszText rather than a pointer to a zero-length string.
+					*/
+					if (string.length () == 0) {
+						plvfi.pszText = 0;
+						plvfi.cchTextMax = 0;
+					} else {
+						TCHAR buffer = new TCHAR (getCodePage (), string, false);
+						int byteCount = Math.min (buffer.length (), plvfi.cchTextMax - 1) * TCHAR.sizeof;
+						OS.MoveMemory (plvfi.pszText, buffer, byteCount);
+						OS.MoveMemory (plvfi.pszText + byteCount, new byte [TCHAR.sizeof], TCHAR.sizeof);
+						plvfi.cchTextMax = Math.min (plvfi.cchTextMax, string.length () + 1);
+					}
 				}
 			}
 			if ((plvfi.mask & OS.LVIF_IMAGE) != 0) {

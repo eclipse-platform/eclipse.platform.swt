@@ -225,48 +225,61 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage) {
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > column || column > count - 1) return new RECT ();
 	if (parent.fixScrollWidth) parent.setScrollWidth (null, true);
-	int hwnd = parent.handle;
 	RECT rect = new RECT ();
-	rect.top = column;
-	rect.left = getText ? OS.LVIR_LABEL : OS.LVIR_ICON;
-	if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, rect) != 0) {
+	int hwnd = parent.handle;
+	if (column == 0 && count == 1) {
 		if (getText && getImage) {
-			/*
-			* Feature in Windows.  Calling LVM_GETSUBITEMRECT with LVIR_LABEL
-			* and zero for the column number gives the bounds of the first item
-			* without including the bounds of the icon.  This is undocumented.
-			* When called with values greater than zero, the icon bounds are
-			* included and this behavior is documented.
-			*/
-			if (column == 0) {
-				RECT iconRect = new RECT ();
-				iconRect.left = OS.LVIR_ICON;
-				iconRect.top = column;
-				if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, iconRect) != 0) {
-					rect.left = iconRect.left;
-					rect.right = Math.max (rect.right, iconRect.right);
+			rect.left = OS.LVIR_SELECTBOUNDS;
+		} else {
+			rect.left = getText ? OS.LVIR_LABEL : OS.LVIR_ICON;
+		}
+		if (OS.SendMessage (hwnd, OS. LVM_GETITEMRECT, row, rect) == 0) {
+			rect.left = 0;
+		}
+	} else {
+		/*
+		* Feature in Windows.  Calling LVM_GETSUBITEMRECT with LVIR_LABEL
+		* and zero for the column number gives the bounds of the first item
+		* without including the bounds of the icon.  This is undocumented.
+		* When called with values greater than zero, the icon bounds are
+		* included and this behavior is documented.
+		*/
+		rect.top = column;
+		rect.left = getText ? OS.LVIR_LABEL : OS.LVIR_ICON;
+		if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, rect) != 0) {
+			if (getText && getImage) {
+				if (column == 0) {
+					RECT iconRect = new RECT ();
+					iconRect.left = OS.LVIR_ICON;
+					iconRect.top = column;
+					if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, iconRect) != 0) {
+						rect.left = iconRect.left;
+						rect.right = Math.max (rect.right, iconRect.right);
+					}
+				}
+			} else {
+				if (column != 0) {
+					/*
+					* Feature in Windows.  LVM_GETSUBITEMRECT returns an image width
+					* even when the subitem does not contain an image.  The fix is to
+					* adjust the rectangle to represent the area the table is drawing.
+					*/
+					if (images != null && images [column] != null) {
+						if (getText) {
+							RECT iconRect = new RECT ();
+							iconRect.left = OS.LVIR_ICON;
+							iconRect.top = column;		
+							if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, iconRect) != 0) {
+								rect.left = iconRect.right + Table.INSET / 2;
+							}
+						}
+					} else {
+						if (getImage) rect.right = rect.left;
+					}
 				}
 			}
 		} else {
-			if (column != 0) {
-				/*
-				* Feature in Windows.  LVM_GETSUBITEMRECT returns an image width
-				* even when the subitem does not contain an image.  The fix is to
-				* adjust the rectangle to represent the area the table is drawing.
-				*/
-				if (images != null && images [column] != null) {
-					if (getText) {
-						RECT iconRect = new RECT ();
-						iconRect.left = OS.LVIR_ICON;
-						iconRect.top = column;		
-						if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, iconRect) != 0) {
-							rect.left = iconRect.right + Table.INSET / 2;
-						}
-					}
-				} else {
-					if (getImage) rect.right = rect.left;
-				}
-			}
+			rect.left = rect.top = 0;
 		}
 	}
 	
