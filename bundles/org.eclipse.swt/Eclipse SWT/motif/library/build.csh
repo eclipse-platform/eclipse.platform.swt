@@ -10,7 +10,7 @@
 # calls so java can query the swt shared library version number
 
 setenv MAJOR_VER  2
-setenv MINOR_VER  002
+setenv MINOR_VER  003
 setenv BUILD_NUM  0
 
 # Some UNIX/Linux compilers don't like <CR>'s in files (DOS format).
