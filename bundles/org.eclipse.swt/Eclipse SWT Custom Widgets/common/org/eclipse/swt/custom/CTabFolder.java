@@ -2700,6 +2700,7 @@ boolean setItemSize() {
 					widths[i] = Math.min(widths[i], minWidth);
 				}
 			} else {
+				firstIndex = 0;
 				// determine compression for each item
 				int extra = (tabAreaWidth - totalWidth)/large;
 				while (true) {

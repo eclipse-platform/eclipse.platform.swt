@@ -298,7 +298,7 @@ void drawSelected(GC gc ) {
 		// only draw image if it won't overlap with close button
 		int maxImageWidth = rightEdge - xDraw - marginRight(true);
 		if (closeRect.width > 0) maxImageWidth -= closeRect.width + INTERNAL_SPACING;
-		if (closeRect.width == 0 || imageBounds.width < maxImageWidth) {
+		if (imageBounds.width < maxImageWidth) {
 			int imageX = xDraw;
 			int imageHeight = imageBounds.height;
 			int imageY = y + (height - imageHeight) / 2;
@@ -316,9 +316,8 @@ void drawSelected(GC gc ) {
 	if (closeRect.width > 0) textWidth -= closeRect.width + INTERNAL_SPACING;
 	if (textWidth > 0) {
 		Font gcFont = gc.getFont();
-		if (font != null) {
-			gc.setFont(font);
-		}
+		gc.setFont(font == null ? parent.getFont() : font);
+		
 		if (shortenedText == null || shortenedTextWidth != textWidth) {
 			shortenedText = shortenText(gc, getText(), textWidth);
 			shortenedTextWidth = textWidth;
@@ -360,33 +359,42 @@ void drawUnselected(GC gc) {
 	Image image = getImage();
 	if (image != null && parent.showUnselectedImage) {
 		Rectangle imageBounds = image.getBounds();
-		int imageX = xDraw;
-		int imageHeight = imageBounds.height;
-		int imageY = y + (height - imageHeight) / 2;
-		imageY += parent.onBottom ? -1 : 1;
-		int imageWidth = imageBounds.width * imageHeight / imageBounds.height;
-		gc.drawImage(image, 
-			         imageBounds.x, imageBounds.y, imageBounds.width, imageBounds.height,
-			         imageX, imageY, imageWidth, imageHeight);
-		xDraw += imageWidth + INTERNAL_SPACING;
+		// only draw image if it won't overlap with close button
+		int maxImageWidth = x + width - xDraw - marginRight(false);
+		if (parent.showUnselectedClose && (parent.showClose || showClose)) {
+			maxImageWidth -= closeRect.width + INTERNAL_SPACING;
+		}
+		if (imageBounds.width < maxImageWidth) {		
+			int imageX = xDraw;
+			int imageHeight = imageBounds.height;
+			int imageY = y + (height - imageHeight) / 2;
+			imageY += parent.onBottom ? -1 : 1;
+			int imageWidth = imageBounds.width * imageHeight / imageBounds.height;
+			gc.drawImage(image, 
+				         imageBounds.x, imageBounds.y, imageBounds.width, imageBounds.height,
+				         imageX, imageY, imageWidth, imageHeight);
+			xDraw += imageWidth + INTERNAL_SPACING;
+		}
 	}
 	// draw Text
 	int textWidth = x + width - xDraw - marginRight(false);
-	if (closeRect.width > 0) textWidth -= closeRect.width + INTERNAL_SPACING;
-	Font gcFont = gc.getFont();
-	if (font != null) {
-		gc.setFont(font);
+	if (parent.showUnselectedClose && (parent.showClose || showClose)) {
+		textWidth -= closeRect.width + INTERNAL_SPACING;
 	}
-	if (shortenedText == null || shortenedTextWidth != textWidth) {
-		shortenedText = shortenText(gc, getText(), textWidth);
-		shortenedTextWidth = textWidth;
-	}	
-	Point extent = gc.textExtent(shortenedText, FLAGS);
-	int textY = y + (height - extent.y) / 2;
-	textY += parent.onBottom ? -1 : 1;
-	gc.setForeground(parent.getForeground());
-	gc.drawText(shortenedText, xDraw, textY, FLAGS);
-	gc.setFont(gcFont);
+	if (textWidth > 0) {
+		Font gcFont = gc.getFont();
+		gc.setFont(font == null ? parent.getFont() : font);
+		if (shortenedText == null || shortenedTextWidth != textWidth) {
+			shortenedText = shortenText(gc, getText(), textWidth);
+			shortenedTextWidth = textWidth;
+		}	
+		Point extent = gc.textExtent(shortenedText, FLAGS);
+		int textY = y + (height - extent.y) / 2;
+		textY += parent.onBottom ? -1 : 1;
+		gc.setForeground(parent.getForeground());
+		gc.drawText(shortenedText, xDraw, textY, FLAGS);
+		gc.setFont(gcFont);
+	}
 	// draw close
 	if (parent.showUnselectedClose && (parent.showClose || showClose)) drawClose(gc);
 }
