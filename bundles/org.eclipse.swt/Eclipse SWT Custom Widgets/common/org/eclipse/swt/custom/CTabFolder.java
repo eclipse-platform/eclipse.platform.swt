@@ -255,7 +255,7 @@ public class CTabFolder extends Composite {
  * @see #getStyle()
  */
 public CTabFolder(Composite parent, int style) {
-	super(parent, checkStyle (style));
+	super(parent, checkStyle (parent, style));
 	int style2 = super.getStyle();
 	oldFont = getFont();
 	onBottom = (style2 & SWT.BOTTOM) != 0;
@@ -333,7 +333,7 @@ public CTabFolder(Composite parent, int style) {
 		}
 	};
 }
-static int checkStyle (int style) {
+static int checkStyle (Composite parent, int style) {
 	int mask = SWT.CLOSE | SWT.TOP | SWT.BOTTOM | SWT.FLAT | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT | SWT.SINGLE | SWT.MULTI;
 	style = style & mask;
 	// TOP and BOTTOM are mutually exlusive.
@@ -356,6 +356,16 @@ static int checkStyle (int style) {
 	 */
 	String platform = SWT.getPlatform();
 	if ("carbon".equals(platform) || "gtk".equals(platform)) return style; //$NON-NLS-1$ //$NON-NLS-2$
+	
+	//TEMPORARY CODE
+	/*
+	 * In Right To Left orientation on Windows, all GC calls that use a brush are drawing 
+	 * offset by one pixel.  This results in some parts of the CTabFolder not drawing correctly.
+	 * To alleviate some of the appearance problems, allow the OS to draw the background.
+	 * This does not draw correctly but the result is less obviously wrong.
+	 */
+	if ("win32".equals(platform) && (parent.getStyle() & SWT.RIGHT_TO_LEFT) != 0) return style;
+	
 	return style | SWT.NO_BACKGROUND;
 }
 static void fillRegion(GC gc, Region region) {
@@ -755,22 +765,6 @@ void drawBody(Event event) {
 	GC gc = event.gc;
 	Point size = getSize();
 	
-	//draw 1 pixel border around outside
-	if (borderLeft > 0) {
-		gc.setForeground(borderColor);
-		int x1 = borderLeft - 1;
-		int x2 = size.x - borderRight;
-		int y1 = onBottom ? borderTop - 1 : borderTop + tabHeight;
-		int y2 = onBottom ? size.y - tabHeight - borderBottom - 1 : size.y - borderBottom;
-		gc.drawLine(x1, y1, x1, y2); // left
-		gc.drawLine(x2, y1, x2, y2); // right
-		if (onBottom) {
-			gc.drawLine(x1, y1, x2, y1); // top
-		} else {
-			gc.drawLine(x1, y2, x2, y2); // bottom
-		}
-	}
-	
 	// fill in body
 	if (!minimized){
 		int width = size.x  - borderLeft - borderRight - 2*highlight_margin;
@@ -817,6 +811,22 @@ void drawBody(Event event) {
 				gc.setBackground(getParent().getBackground());
 				gc.fillRectangle(0, height, size.x, size.y - height);
 			}
+		}
+	}
+	
+	//draw 1 pixel border around outside
+	if (borderLeft > 0) {
+		gc.setForeground(borderColor);
+		int x1 = borderLeft - 1;
+		int x2 = size.x - borderRight;
+		int y1 = onBottom ? borderTop - 1 : borderTop + tabHeight;
+		int y2 = onBottom ? size.y - tabHeight - borderBottom - 1 : size.y - borderBottom;
+		gc.drawLine(x1, y1, x1, y2); // left
+		gc.drawLine(x2, y1, x2, y2); // right
+		if (onBottom) {
+			gc.drawLine(x1, y1, x2, y1); // top
+		} else {
+			gc.drawLine(x1, y2, x2, y2); // bottom
 		}
 	}
 }
