@@ -104,6 +104,28 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
 
+int _getBackgroundPixel () {
+	if (OS.IsWinCE) return OS.GetSysColor (OS.COLOR_WINDOW);
+	int pixel = OS.SendMessage (handle, OS.TVM_GETBKCOLOR, 0, 0);
+	if (pixel == -1) return OS.GetSysColor (OS.COLOR_WINDOW);
+	return pixel;
+}
+
+void _setBackgroundPixel (int pixel) {
+	/*
+	* Bug in Windows.  When TVM_GETBKCOLOR is used more
+	* than once to set the background color of a tree,
+	* the background color of the lines and the plus/minus
+	* does not change to the new color.  The fix is to set
+	* the background color to the default before setting
+	* the new color.
+	*/
+	int oldPixel = OS.SendMessage (handle, OS.TVM_GETBKCOLOR, 0, 0);
+	if (oldPixel != -1) OS.SendMessage (handle, OS.TVM_SETBKCOLOR, 0, -1);
+	OS.SendMessage (handle, OS.TVM_SETBKCOLOR, 0, pixel);
+	if ((style & SWT.CHECK) != 0) setCheckboxImageList ();
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the receiver's selection changes, by sending
@@ -435,11 +457,35 @@ void destroyItem (TreeItem item) {
 	}
 }
 
+void enableWidget (boolean enabled) {
+	super.enableWidget (enabled);
+	/*
+	* Feature in Windows.  When a tree is given a background color
+	* using TVM_SETBKCOLOR and the tree is disabled, Windows draws
+	* the tree using the background color rather than the disabled
+	* colors.  This is different from the table which draws grayed.
+	* The fix is to set the default background color while the tree
+	* is disabled and restore it when enabled.
+	*/
+	if (background != -1) {
+		_setBackgroundPixel (enabled ? background : -1);
+	}
+}
+
 int getBackgroundPixel () {
-	if (OS.IsWinCE) return OS.GetSysColor (OS.COLOR_WINDOW);
-	int pixel = OS.SendMessage (handle, OS.TVM_GETBKCOLOR, 0, 0);
-	if (pixel == -1) return OS.GetSysColor (OS.COLOR_WINDOW);
-	return pixel;
+	if (!OS.IsWinCE) return _getBackgroundPixel ();
+	/*
+	* Feature in Windows.  When a tree is given a background color
+	* using TVM_SETBKCOLOR and the tree is disabled, Windows draws
+	* the tree using the background color rather than the disabled
+	* colors.  This is different from the table which draws grayed.
+	* The fix is to set the default background color while the tree
+	* is disabled and restore it when enabled.
+	*/
+	if (!OS.IsWindowEnabled (handle) && background != -1) {
+		return background;
+	}
+	return _getBackgroundPixel ();
 }
 
 int getForegroundPixel () {
@@ -964,17 +1010,14 @@ void setBackgroundPixel (int pixel) {
 	if (background == pixel) return;
 	background = pixel;
 	/*
-	* Bug in Windows.  When TVM_GETBKCOLOR is used more
-	* than once to set the background color of a tree,
-	* the background color of the lines and the plus/minus
-	* does not change to the new color.  The fix is to set
-	* the background color to the default before setting
-	* the new color.
+	* Feature in Windows.  When a tree is given a background color
+	* using TVM_SETBKCOLOR and the tree is disabled, Windows draws
+	* the tree using the background color rather than the disabled
+	* colors.  This is different from the table which draws grayed.
+	* The fix is to set the default background color while the tree
+	* is disabled and restore it when enabled.
 	*/
-	int oldPixel = OS.SendMessage (handle, OS.TVM_GETBKCOLOR, 0, 0);
-	if (oldPixel != -1) OS.SendMessage (handle, OS.TVM_SETBKCOLOR, 0, -1);
-	OS.SendMessage (handle, OS.TVM_SETBKCOLOR, 0, pixel);
-	if ((style & SWT.CHECK) != 0) setCheckboxImageList ();
+	if (OS.IsWindowEnabled (handle)) _setBackgroundPixel (pixel);
 }
 
 void setBounds (int x, int y, int width, int height, int flags) {
@@ -1024,7 +1067,7 @@ void setCheckboxImageList () {
 	int hOldBitmap = OS.SelectObject (memDC, hBitmap);
 	RECT rect = new RECT ();
 	OS.SetRect (rect, 0, 0, width * count, height);
-	int hBrush = OS.CreateSolidBrush (getBackgroundPixel ());
+	int hBrush = OS.CreateSolidBrush (_getBackgroundPixel ());
 	OS.FillRect (memDC, rect, hBrush);
 	OS.DeleteObject (hBrush);
 	int oldFont = OS.SelectObject (hDC, defaultFont ());
@@ -2025,6 +2068,17 @@ LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
 	return result;
 }
 
+LRESULT wmColorChild (int wParam, int lParam) {
+	/*
+	* Feature in Windows.  Tree controls send WM_CTLCOLOREDIT
+	* to allow application code to change the default colors.
+	* This is undocumented and conflicts with TVM_SETTEXTCOLOR
+	* and TVM_SETBKCOLOR, the documented way to do this.  The
+	* fix is to ignore WM_CTLCOLOREDIT messages from trees.
+	*/
+	return null;
+}
+
 LRESULT wmNotifyChild (int wParam, int lParam) {
 	NMHDR hdr = new NMHDR ();
 	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
@@ -2058,10 +2112,10 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					if (hFont != -1) OS.SelectObject (nmcd.hdc, hFont);
 					if ((tvItem.state & (OS.TVIS_SELECTED | OS.TVIS_DROPHILITED)) == 0) {
 						if (OS.IsWindowEnabled (handle)) {
-							nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
-							nmcd.clrTextBk = clrTextBk == -1 ? getBackgroundPixel () : clrTextBk;
+						nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
+						nmcd.clrTextBk = clrTextBk == -1 ? getBackgroundPixel () : clrTextBk;
 							OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
-						}
+					}
 					}
 					return new LRESULT (OS.CDRF_NEWFONT);
 			}
