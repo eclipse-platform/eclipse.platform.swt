@@ -1473,7 +1473,8 @@ void installListeners() {
 	removeListener(SWT.FocusIn, listener);	
 	focusWindow.addListener(SWT.FocusOut, listener);
 	focusWindow.addListener(SWT.FocusIn, listener);
-	focusWindow.addListener(SWT.KeyDown, listener);			
+	focusWindow.addListener(SWT.KeyDown, listener);		
+	focusWindow.addListener(SWT.Traverse, listener);		
 	
 	addListener(SWT.MouseMove, listener);
 	addListener(SWT.MouseDown, listener);

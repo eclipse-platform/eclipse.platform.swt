@@ -700,6 +700,7 @@ void doPageUp(int keyMask) {
 
 void doSpace(int keyMask) {
 	SelectableItem item = getLastFocus();
+	if (item == null) return;
 	int itemIndex = getVisibleIndex(item);
 
 	if (keyMask == SWT.NULL && item.isSelected() == false) {	// do simple space select in SINGLE and MULTI mode
@@ -707,7 +708,7 @@ void doSpace(int keyMask) {
 		selectNotify(item);
 		return;
 	}
-	if (isMultiSelect() == false || item == null) {
+	if (isMultiSelect() == false) {
 		return;
 	}
 	if (keyMask == SWT.CTRL) {
@@ -1149,6 +1150,16 @@ void handleEvents(Event event) {
 			break;
 		case SWT.FocusIn:
 			focusIn(event);
+			break;	
+		case SWT.Traverse:
+			switch (event.detail) {
+				case SWT.TRAVERSE_ESCAPE:
+				case SWT.TRAVERSE_RETURN:
+				case SWT.TRAVERSE_TAB_NEXT:
+				case SWT.TRAVERSE_TAB_PREVIOUS:
+					event.doit = true;
+					break;
+			}
 			break;			
 	}	
 }
@@ -1215,6 +1226,7 @@ void installListeners() {
 	addListener(SWT.KeyDown, listener);
 	addListener(SWT.FocusOut, listener);
 	addListener(SWT.FocusIn, listener);
+	addListener(SWT.Traverse, listener);
 	
 	getVerticalBar().addListener(SWT.Selection, listener);
 	getHorizontalBar().addListener(SWT.Selection, listener);
