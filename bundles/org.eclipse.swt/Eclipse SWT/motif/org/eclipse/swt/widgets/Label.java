@@ -181,6 +181,16 @@ Font defaultFont () {
 int defaultForeground () {
 	return getDisplay ().labelForeground;
 }
+public boolean forceFocus () {
+	checkWidget();
+	int [] argList = new int [] {OS.XmNtraversalOn, 1};
+	OS.XtSetValues (handle, argList, argList.length / 2);
+	overrideTranslations ();
+	if (super.forceFocus ()) return true;
+	argList [1] = 0;
+	OS.XtSetValues (handle, argList, argList.length / 2);
+	return false;
+}
 /**
  * Returns a value which describes the position of the
  * text or image in the receiver. The value will be one of
@@ -262,6 +272,17 @@ boolean mnemonicMatch (char key) {
 	char mnemonic = findMnemonic (getText ());
 	if (mnemonic == '\0') return false;
 	return Character.toUpperCase (key) == Character.toUpperCase (mnemonic);
+}
+int processFocusOut () {
+	int result = super.processFocusOut ();
+	if (handle == 0) return result;
+	int [] argList = new int [] {OS.XmNtraversalOn, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	if (argList [1] != 0) {
+		argList [1] = 0;
+		OS.XtSetValues (handle, argList, argList.length / 2);
+	}
+	return result;
 }
 void releaseWidget () {
 	super.releaseWidget ();

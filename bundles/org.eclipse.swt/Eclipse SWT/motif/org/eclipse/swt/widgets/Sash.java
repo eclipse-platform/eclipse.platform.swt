@@ -396,14 +396,13 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook(SWT.DefaultSelection,listener);	
 }
 public boolean setFocus () {
+	checkWidget();
 	int [] argList = new int [] {OS.XmNtraversalOn, 1};
 	OS.XtSetValues (handle, argList, argList.length / 2);
 	overrideTranslations ();
-	boolean result = super.setFocus ();
-	if (!result) {
-		argList [1] = 0;
-		OS.XtSetValues (handle, argList, argList.length / 2);
-	}
-	return result;
+	if (super.setFocus ()) return true;
+	argList [1] = 0;
+	OS.XtSetValues (handle, argList, argList.length / 2);
+	return false;
 }
 }
