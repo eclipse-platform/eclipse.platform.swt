@@ -328,18 +328,16 @@ void createRenderers (int columnHandle, int modelIndex, boolean check, int colum
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "foreground-gdk", FOREGROUND_COLUMN);
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "background-gdk", BACKGROUND_COLUMN);
 	
-	boolean setCellDataFunc = false;
-	if (columnCount == 0) {
-		setCellDataFunc = firstCustomDraw;
-	} else {
-		for (int i = 0; i < columns.length; i++) {
-			if (columns [i] != null && columns [i].handle == columnHandle) {
-				setCellDataFunc = columns [i].customDraw;
+	boolean customDraw = firstCustomDraw;
+	if (columnCount != 0) {
+		for (int i=0; i<columnCount; i++) {
+			if (columns [i].handle == columnHandle) {
+				customDraw = columns [i].customDraw;
 				break;
 			}
 		}
 	}
-	if (setCellDataFunc) {
+	if (customDraw) {
 		OS.gtk_tree_view_column_set_cell_data_func (columnHandle, textRenderer, display.cellDataProc, handle, 0);
 	}
 }
