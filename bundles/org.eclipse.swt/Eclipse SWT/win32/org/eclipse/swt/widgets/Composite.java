@@ -469,7 +469,7 @@ void updateFont (Font oldFont, Font newFont) {
 }
 
 int widgetStyle () {
-	/* Temporary code to force SWT.CLIP_SIBLINGS */
+	/* Force strict clipping by setting WS_CLIPCHILDREN */
 	return super.widgetStyle () | OS.WS_CLIPCHILDREN;
 }
 
