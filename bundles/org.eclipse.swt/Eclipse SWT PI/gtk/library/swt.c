@@ -654,30 +654,43 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1quark_1from_1stri
 #endif
 
 #ifndef NO_g_1signal_1connect
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1signal_1connect
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1signal_1connect
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
+	jint rc;
 
 	DEBUG_CALL("g_1signal_1connect\n")
 
 	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
-	g_signal_connect((gpointer)arg0, (const gchar *)lparg1, (GCallback)arg2, (gpointer)arg3);
+	rc = (jint)g_signal_connect((gpointer)arg0, (const gchar *)lparg1, (GCallback)arg2, (gpointer)arg3);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	return rc;
 }
 #endif
 
 #ifndef NO_g_1signal_1connect_1after
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1signal_1connect_1after
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1signal_1connect_1after
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
+	jint rc;
 
 	DEBUG_CALL("g_1signal_1connect_1after\n")
 
 	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
-	g_signal_connect_after((gpointer)arg0, (const gchar *)lparg1, (GCallback)arg2, (gpointer)arg3);
+	rc = (jint)g_signal_connect_after((gpointer)arg0, (const gchar *)lparg1, (GCallback)arg2, (gpointer)arg3);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	return rc;
+}
+#endif
+
+#ifndef NO_g_1signal_1handler_1disconnect
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1signal_1handler_1disconnect
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("g_1signal_1handler_1disconnect\n")
+	g_signal_handler_disconnect((gpointer)arg0, (gulong)arg1);
 }
 #endif
 

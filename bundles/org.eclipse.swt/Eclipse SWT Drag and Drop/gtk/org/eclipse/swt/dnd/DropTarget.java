@@ -87,6 +87,11 @@ public class DropTarget extends Widget {
 	private Runnable dragOverHeartbeat;
 	private DNDEvent dragOverEvent;
 	
+	private int drag_motion_handler;
+	private int drag_leave_handler;
+	private int drag_data_received_handler;
+	private int drag_drop_handler;
+	
 	private static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
 	private static final int DRAGOVER_HYSTERESIS = 50;
 	
@@ -141,13 +146,13 @@ public DropTarget(Control control, int style) {
 	control.setData(DROPTARGETID, this);
 	
 	byte[] buffer = Converter.wcsToMbcs(null, "drag_motion", true); //$NON-NLS-1$
-	OS.g_signal_connect(control.handle, buffer, Drag_Motion.getAddress(), 0);
+	drag_motion_handler = OS.g_signal_connect(control.handle, buffer, Drag_Motion.getAddress(), 0);
 	buffer = Converter.wcsToMbcs(null, "drag_leave", true); //$NON-NLS-1$
-	OS.g_signal_connect(control.handle, buffer, Drag_Leave.getAddress(), 0);
+	drag_leave_handler = OS.g_signal_connect(control.handle, buffer, Drag_Leave.getAddress(), 0);
 	buffer = Converter.wcsToMbcs(null, "drag_data_received", true); //$NON-NLS-1$
-	OS.g_signal_connect(control.handle, buffer, Drag_Data_Received.getAddress(), 0);
+	drag_data_received_handler = OS.g_signal_connect(control.handle, buffer, Drag_Data_Received.getAddress(), 0);
 	buffer = Converter.wcsToMbcs(null, "drag_drop", true); //$NON-NLS-1$
-	OS.g_signal_connect(control.handle, buffer, Drag_Drop.getAddress(), 0);
+	drag_drop_handler = OS.g_signal_connect(control.handle, buffer, Drag_Drop.getAddress(), 0);
 
 	// Dispose listeners	
 	controlListener = new Listener(){
@@ -555,6 +560,10 @@ public void notifyListeners (int eventType, Event event) {
 
 private void onDispose(){
 	if (control == null) return;
+	OS.g_signal_handler_disconnect(control.handle, drag_motion_handler);
+	OS.g_signal_handler_disconnect(control.handle, drag_leave_handler);
+	OS.g_signal_handler_disconnect(control.handle, drag_data_received_handler);
+	OS.g_signal_handler_disconnect(control.handle, drag_drop_handler);
 	if (transferAgents.length != 0)
 		OS.gtk_drag_dest_unset(control.handle);
 	transferAgents = null;
