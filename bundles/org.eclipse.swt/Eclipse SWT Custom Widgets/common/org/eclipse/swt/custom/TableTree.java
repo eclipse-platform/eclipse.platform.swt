@@ -65,37 +65,39 @@ public TableTree(Composite parent, int style) {
 	setBackground(table.getBackground());
 	setForeground(table.getForeground());
 	setFont(table.getFont());
-	table.addListener(SWT.MouseDown, new Listener() {
+	Listener tableListener = new Listener() {
 		public void handleEvent(Event e) {
-			onMouseDown(e);
+			switch (e.type) {
+			case SWT.MouseDown: onMouseDown(e); break;
+			case SWT.Selection: onSelection(e); break;
+			case SWT.DefaultSelection: onSelection(e); break;
+			case SWT.Traverse: onTraverse(e); break;
+			}
 		}
-	});
-	table.addListener(SWT.Selection, new Listener() {
+	};
+	int[] tableEvents = new int[]{SWT.MouseDown, 
+		                           SWT.Selection, 
+		                           SWT.DefaultSelection, 
+		                           SWT.Traverse};
+	for (int i = 0; i < tableEvents.length; i++) {
+		table.addListener(tableEvents[i], tableListener);
+	}
+	
+	Listener listener = new Listener() {
 		public void handleEvent(Event e) {
-			onSelection(e);
+			switch (e.type) {
+			case SWT.Dispose: onDispose(e); break;
+			case SWT.Resize:  onResize(e); break;
+			case SWT.FocusIn: onFocusIn(e); break;
+			}
 		}
-	});
-	table.addListener(SWT.DefaultSelection, new Listener() {
-		public void handleEvent(Event e) {
-			onSelection(e);
-		}
-	});
-
-	addListener(SWT.Dispose, new Listener() {
-		public void handleEvent(Event e) {
-			onDispose();
-		}
-	});
-	addListener(SWT.Resize, new Listener() {
-		public void handleEvent(Event e) {
-			onResize();
-		}
-	});
-	addListener(SWT.FocusIn, new Listener() {
-		public void handleEvent(Event e) {
-			onFocusIn();
-		}
-	});
+	};
+	int[] events = new int[]{SWT.Dispose, 
+		                      SWT.Resize, 
+		                      SWT.FocusIn};
+	for (int i = 0; i < events.length; i++) {
+		addListener(events[i], listener);
+	}	                      
 }
 
 int addItem(TableTreeItem item, int index) {
@@ -384,7 +386,7 @@ public int indexOf (TableTreeItem item) {
 	return -1;
 }
 
-void onDispose() {
+void onDispose(Event e) {
 	inDispose = true;
 	for (int i = 0; i < items.length; i++) {
 		items[i].dispose();
@@ -396,12 +398,37 @@ void onDispose() {
 	plusImage = minusImage = sizeImage = null;
 }
 
-void onResize () {
+void onTraverse(Event e) {
+	if (e.stateMask != SWT.SHIFT) return;
+	if (e.detail == SWT.TRAVERSE_ARROW_PREVIOUS || e.detail == SWT.TRAVERSE_ARROW_NEXT) {
+		TableTreeItem[] selection = getSelection();
+		if (selection.length > 0) {
+			TableTreeItem item = selection[0];
+			if (item.getItemCount() == 0) return;
+			int type;
+			if (e.detail == SWT.TRAVERSE_ARROW_NEXT) {
+				if (item.getExpanded()) return;
+				item.setExpanded(true);
+				table.setTopIndex(table.indexOf(item.tableItem));
+				type = SWT.Expand;
+			} else {
+				if (!item.getExpanded()) return;
+				item.setExpanded(false);
+				type = SWT.Collapse;
+			}
+			Event event = new Event();
+			event.item = item;
+			notifyListeners(type, event);
+		}
+	}
+}
+
+void onResize(Event e) {
 	Rectangle area = getClientArea();
 	table.setBounds(0, 0, area.width, area.height);
 }
 
-void onSelection (Event e) {
+void onSelection(Event e) {
 	Event event = new Event();
 	TableItem tableItem = (TableItem)e.item;
     	TableTreeItem item = getItem(tableItem);
@@ -429,7 +456,7 @@ TableTreeItem getItem(TableItem tableItem) {
 	}
 	return null;
 }
-void onFocusIn () {
+void onFocusIn (Event e) {
 	table.setFocus();
 }
 
