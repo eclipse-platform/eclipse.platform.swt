@@ -415,8 +415,8 @@ private int dragDropFinishCallback(int widget, int client_data, int call_data) {
 	return 0;
 }
 private int dropFinishCallback(int widget, int client_data, int call_data) {
-	XmDropFinishCallback data = new XmDropFinishCallback();
-	OS.memmove(data, call_data, XmDropFinishCallback.sizeof);
+	XmDropFinishCallbackStruct data = new XmDropFinishCallbackStruct();
+	OS.memmove(data, call_data, XmDropFinishCallbackStruct.sizeof);
 	if (data.dropAction != OS.XmDROP || data.dropSiteStatus != OS.XmDROP_SITE_VALID) {
 		DNDEvent event = new DNDEvent();
 		event.widget = this.control;

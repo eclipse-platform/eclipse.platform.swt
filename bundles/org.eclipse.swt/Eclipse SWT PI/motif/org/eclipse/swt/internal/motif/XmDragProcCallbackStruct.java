@@ -11,7 +11,7 @@
 package org.eclipse.swt.internal.motif;
 
  
-public class XmDragProcCallback {
+public class XmDragProcCallbackStruct {
 	public int reason;
 	public int event;
 	public int timeStamp;
