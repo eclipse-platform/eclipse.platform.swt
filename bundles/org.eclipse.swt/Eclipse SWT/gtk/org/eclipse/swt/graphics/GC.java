@@ -446,30 +446,6 @@ void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeig
 	if (srcImage.transparentPixel != -1) srcImage.createMask();
 	int maskPixmap = srcImage.mask;
 
-	/* Merge clipping with mask if necessary */
-	if (data.clipRgn != 0)	 {
-		int newWidth =  imgWidth;
-		int newHeight = imgHeight;
-		int bytesPerLine = (((newWidth + 7) / 8) + 3) / 4 * 4;
-		byte[] maskData = new byte[bytesPerLine * newHeight];
-		int mask = OS.gdk_bitmap_create_from_data(0, maskData, bytesPerLine * 8, newHeight);
-		if (mask != 0) {
-			int gc = OS.gdk_gc_new(mask);
-			OS.gdk_region_offset(data.clipRgn, -destX + srcX, -destY + srcY);
-			OS.gdk_gc_set_clip_region(gc, data.clipRgn);
-			OS.gdk_region_offset(data.clipRgn, -destX, -destY);
-			GdkColor color = new GdkColor();
-			color.pixel = 1;
-			OS.gdk_gc_set_foreground(gc, color);
-			OS.gdk_draw_rectangle(mask, gc, 1, 0, 0, newWidth, newHeight);
-			OS.gdk_gc_set_function(gc, OS.GDK_AND);
-			OS.gdk_draw_drawable(mask, gc, maskPixmap, 0, 0, 0, 0, newWidth, newHeight);
-			OS.g_object_unref(gc);
-			if (maskPixmap != 0 && srcImage.mask != maskPixmap) OS.g_object_unref(maskPixmap);
-			maskPixmap = mask;
-		}
-	}
-
 	if (srcWidth != destWidth || srcHeight != destHeight) {
 		//NOT DONE - there must be a better way of scaling a GdkBitmap
 		int pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, true, 8, srcWidth, srcHeight);
@@ -508,6 +484,30 @@ void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeig
 		srcY = 0;
 		srcWidth = destWidth;
 		srcHeight = destHeight;
+	}
+
+	/* Merge clipping with mask if necessary */
+	if (data.clipRgn != 0)	 {
+		int newWidth =  srcX + srcWidth;
+		int newHeight = srcY + srcHeight;
+		int bytesPerLine = (((newWidth + 7) / 8) + 3) / 4 * 4;
+		byte[] maskData = new byte[bytesPerLine * newHeight];
+		int mask = OS.gdk_bitmap_create_from_data(0, maskData, bytesPerLine * 8, newHeight);
+		if (mask != 0) {
+			int gc = OS.gdk_gc_new(mask);
+			OS.gdk_region_offset(data.clipRgn, -destX + srcX, -destY + srcY);
+			OS.gdk_gc_set_clip_region(gc, data.clipRgn);
+			OS.gdk_region_offset(data.clipRgn, -destX, -destY);
+			GdkColor color = new GdkColor();
+			color.pixel = 1;
+			OS.gdk_gc_set_foreground(gc, color);
+			OS.gdk_draw_rectangle(mask, gc, 1, 0, 0, newWidth, newHeight);
+			OS.gdk_gc_set_function(gc, OS.GDK_AND);
+			OS.gdk_draw_drawable(mask, gc, maskPixmap, 0, 0, 0, 0, newWidth, newHeight);
+			OS.g_object_unref(gc);
+			if (maskPixmap != 0 && srcImage.mask != maskPixmap) OS.g_object_unref(maskPixmap);
+			maskPixmap = mask;
+		}
 	}
 
 	/* Blit cliping the mask */
