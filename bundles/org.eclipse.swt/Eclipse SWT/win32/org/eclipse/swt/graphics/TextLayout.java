@@ -1089,6 +1089,7 @@ int _getOffset(int offset, int movement, boolean forward) {
 	} while (0 <= i && i < allRuns.length - 1 && 0 <= offset && offset < length);
 	return forward ? text.length() : 0;
 }
+
 /**
  * Returns the character offset for the specified point.  
  * For a typical character, the trailing argument will be filled in to 
