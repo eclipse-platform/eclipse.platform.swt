@@ -582,12 +582,6 @@ private int opToOsOp(int operation) {
 	if ((operation & DND.DROP_MOVE) != 0) {
 		osOperation |= OS.kDragActionDelete;
 	}
-	if ((operation & DND.DROP_DEFAULT) != 0) {
-		osOperation |= OS.kDragActionGeneric;
-	}
-	if ((operation & DND.DROP_TARGET_MOVE) != 0) {
-		osOperation |= OS.kDragActionMove;
-	}
 	return osOperation;
 }
 
@@ -602,17 +596,10 @@ private int osOpToOp(int osOperation){
 	if ((osOperation & OS.kDragActionDelete) != 0) {
 		operation |= DND.DROP_MOVE;
 	}
-	if ((osOperation & OS.kDragActionMove) != 0) {
-		operation |= DND.DROP_TARGET_MOVE;
-	}
-	if ((osOperation & OS.kDragActionGeneric) != 0) {
-		operation |= DND.DROP_DEFAULT;
-	}
-	if ((osOperation & OS.kDragActionAll) != 0) {
+	if (osOperation == OS.kDragActionAll) {
 		operation = DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_LINK;
 	}
 	return operation;
-
 }
 
 /**
