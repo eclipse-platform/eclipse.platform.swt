@@ -55,6 +55,23 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	}
 }
 
+public void test_addCloseWindowListenerLorg_eclipse_swt_browser_CloseWindowListener() {
+	shell.setText("test_addCloseWindowListenerLorg_eclipse_swt_browser_CloseWindowListener");
+	try {
+		browser.addCloseWindowListener(null);
+		fail("No exception thrown for listener == null");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	
+	CloseWindowListener listener = new CloseWindowListener() {
+		public void close(CloseWindowEvent event) {
+		}
+	};
+	for (int i = 0; i < 100; i++) browser.addCloseWindowListener(listener);
+	for (int i = 0; i < 100; i++) browser.removeCloseWindowListener(listener);
+}
+
 public void test_addLocationListenerLorg_eclipse_swt_browser_LocationListener() {
 	shell.setText("test_addLocationListenerLorg_eclipse_swt_browser_LocationListener");
 	try {
@@ -74,8 +91,21 @@ public void test_addLocationListenerLorg_eclipse_swt_browser_LocationListener() 
 	for (int i = 0; i < 100; i++) browser.removeLocationListener(listener);
 }
 
-public void test_addNewWindowListenerLorg_eclipse_swt_browser_NewWindowListener() {
-	warnUnimpl("Test test_addNewWindowListenerLorg_eclipse_swt_browser_NewWindowListener not written");
+public void test_addOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListener() {
+	shell.setText("test_addOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListener");
+	try {
+		browser.addOpenWindowListener(null);
+		fail("No exception thrown for listener == null");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	
+	OpenWindowListener listener = new OpenWindowListener() {
+		public void open(OpenWindowEvent event) {
+		}
+	};
+	for (int i = 0; i < 100; i++) browser.addOpenWindowListener(listener);
+	for (int i = 0; i < 100; i++) browser.removeOpenWindowListener(listener);
 }
 
 public void test_addProgressListenerLorg_eclipse_swt_browser_ProgressListener() {
@@ -154,6 +184,16 @@ public void test_refresh() {
 	}
 }
 
+public void test_removeCloseWindowListenerLorg_eclipse_swt_browser_CloseWindowListener() {
+	try {
+		browser.removeCloseWindowListener(null);
+		fail("No exception thrown for listener == null");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	// tested in addCloseWindowListener
+}
+
 public void test_removeLocationListenerLorg_eclipse_swt_browser_LocationListener() {
 	try {
 		browser.removeLocationListener(null);
@@ -164,8 +204,14 @@ public void test_removeLocationListenerLorg_eclipse_swt_browser_LocationListener
 	// tested in addLocationListener
 }
 
-public void test_removeNewWindowListenerLorg_eclipse_swt_browser_NewWindowListener() {
-	warnUnimpl("Test test_removeNewWindowListenerLorg_eclipse_swt_browser_NewWindowListener not written");
+public void test_removeOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListener() {
+	try {
+		browser.removeOpenWindowListener(null);
+		fail("No exception thrown for listener == null");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	// tested in addOpenWindowListener
 }
 
 public void test_removeProgressListenerLorg_eclipse_swt_browser_ProgressListener() {
@@ -250,8 +296,9 @@ public static Test suite() {
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
+	methodNames.addElement("test_addCloseWindowListenerLorg_eclipse_swt_browser_CloseWindowListener");
 	methodNames.addElement("test_addLocationListenerLorg_eclipse_swt_browser_LocationListener");
-	methodNames.addElement("test_addNewWindowListenerLorg_eclipse_swt_browser_NewWindowListener");
+	methodNames.addElement("test_addOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListener");
 	methodNames.addElement("test_addProgressListenerLorg_eclipse_swt_browser_ProgressListener");
 	methodNames.addElement("test_addStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener");
 	methodNames.addElement("test_addVisibilityListenerLorg_eclipse_swt_browser_VisibilityListener");
@@ -259,8 +306,9 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_forward");
 	methodNames.addElement("test_getUrl");
 	methodNames.addElement("test_refresh");
+	methodNames.addElement("test_removeCloseWindowListenerLorg_eclipse_swt_browser_CloseWindowListener");
 	methodNames.addElement("test_removeLocationListenerLorg_eclipse_swt_browser_LocationListener");
-	methodNames.addElement("test_removeNewWindowListenerLorg_eclipse_swt_browser_NewWindowListener");
+	methodNames.addElement("test_removeOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListener");
 	methodNames.addElement("test_removeProgressListenerLorg_eclipse_swt_browser_ProgressListener");
 	methodNames.addElement("test_removeStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener");
 	methodNames.addElement("test_removeVisibilityListenerLorg_eclipse_swt_browser_VisibilityListener");
@@ -273,8 +321,9 @@ public static java.util.Vector methodNames() {
 
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
+	else if (getName().equals("test_addCloseWindowListenerLorg_eclipse_swt_browser_CloseWindowListener")) test_addCloseWindowListenerLorg_eclipse_swt_browser_CloseWindowListener();
 	else if (getName().equals("test_addLocationListenerLorg_eclipse_swt_browser_LocationListener")) test_addLocationListenerLorg_eclipse_swt_browser_LocationListener();
-	else if (getName().equals("test_addNewWindowListenerLorg_eclipse_swt_browser_NewWindowListener")) test_addNewWindowListenerLorg_eclipse_swt_browser_NewWindowListener();
+	else if (getName().equals("test_addOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListener")) test_addOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListener();
 	else if (getName().equals("test_addProgressListenerLorg_eclipse_swt_browser_ProgressListener")) test_addProgressListenerLorg_eclipse_swt_browser_ProgressListener();
 	else if (getName().equals("test_addStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener")) test_addStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener();
 	else if (getName().equals("test_addVisibilityListenerLorg_eclipse_swt_browser_VisibilityListener")) test_addVisibilityListenerLorg_eclipse_swt_browser_VisibilityListener();
@@ -282,8 +331,9 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_forward")) test_forward();
 	else if (getName().equals("test_getUrl")) test_getUrl();
 	else if (getName().equals("test_refresh")) test_refresh();
+	else if (getName().equals("test_removeCloseWindowListenerLorg_eclipse_swt_browser_CloseWindowListener")) test_removeCloseWindowListenerLorg_eclipse_swt_browser_CloseWindowListener();
 	else if (getName().equals("test_removeLocationListenerLorg_eclipse_swt_browser_LocationListener")) test_removeLocationListenerLorg_eclipse_swt_browser_LocationListener();
-	else if (getName().equals("test_removeNewWindowListenerLorg_eclipse_swt_browser_NewWindowListener")) test_removeNewWindowListenerLorg_eclipse_swt_browser_NewWindowListener();
+	else if (getName().equals("test_removeOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListener")) test_removeOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListener();
 	else if (getName().equals("test_removeProgressListenerLorg_eclipse_swt_browser_ProgressListener")) test_removeProgressListenerLorg_eclipse_swt_browser_ProgressListener();
 	else if (getName().equals("test_removeStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener")) test_removeStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener();
 	else if (getName().equals("test_removeVisibilityListenerLorg_eclipse_swt_browser_VisibilityListener")) test_removeVisibilityListenerLorg_eclipse_swt_browser_VisibilityListener();

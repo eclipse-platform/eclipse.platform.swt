@@ -212,6 +212,7 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_ole_win32_Variant.suite());
 
 	addTest(Test_org_eclipse_swt_browser_Browser.suite());
+	addTest(Test_org_eclipse_swt_browser_CloseWindowListener.suite());
 	addTest(Test_org_eclipse_swt_browser_LocationAdapter.suite());
 	addTest(Test_org_eclipse_swt_browser_LocationListener.suite());
 	addTest(Test_org_eclipse_swt_browser_OpenWindowListener.suite());
