@@ -3329,7 +3329,7 @@ void showToolTip (int x, int y) {
 		return;
 	}
 	
-	final int [] events = new int[] {SWT.MouseExit, SWT.MouseHover, SWT.MouseMove};
+	final int [] events = new int[] {SWT.MouseExit, SWT.MouseHover, SWT.MouseMove, SWT.DragDetect};
 	final Listener[] listener = new Listener[1];
 	listener[0] = new Listener() {
 		public void handleEvent(Event event) {
@@ -3339,6 +3339,7 @@ void showToolTip (int x, int y) {
 					if (updateToolTip(event.x, event.y, label)) break;
 					// FALL THROUGH
 				case SWT.MouseExit:
+				case SWT.DragDetect:
 					for (int i = 0; i < events.length; i++) {
 						removeListener(events[i], listener[0]);
 					}
