@@ -609,31 +609,29 @@ int processKeyDown (int callData, int arg1, int int2) {
 
 	/*
 	* Feature in GTK.  When an item is reselected using
-	* the space bar, GTK does not issue notification.
-	* The fix is to ignore the notification that is sent
-	* by GTK and look for the space key.
+	* the space bar or default selected using the return key,
+	* GTK does not issue notification. The fix is to ignore the
+	* notification that is sent by GTK and look for the space key.
 	*/
 	GdkEventKey keyEvent = new GdkEventKey ();
 	OS.memmove (keyEvent, callData, GdkEventKey.sizeof);
-	int length = keyEvent.length;
-	if (length == 1) {
-		int string = keyEvent.string;
-		byte [] buffer = new byte [length];
-		OS.memmove (buffer, string, length);
-		char [] unicode = Converter.mbcsToWcs (null, buffer);
-		switch (unicode [0]) {
-			case ' ':
-				int focus_row = OS.GTK_CLIST_FOCUS_ROW (handle);
-				if (focus_row != -1) {
-					Event event = new Event ();
-					int focus = OS.gtk_ctree_node_nth (handle, focus_row);
-					if (focus != 0) {
-						int index = OS.gtk_ctree_node_get_row_data (handle, focus) - 1;
-						event.item = items [index];
-					}
-					postEvent (SWT.Selection, event);
+	int key = keyEvent.keyval;
+	switch (key) {
+		case OS.GDK_Return:
+		case OS.GDK_KP_Enter:
+		case OS.GDK_space: {
+			int focus_row = OS.GTK_CLIST_FOCUS_ROW (handle);
+			if (focus_row != -1) {
+				Event event = new Event ();
+				int focus = OS.gtk_ctree_node_nth (handle, focus_row);
+				if (focus != 0) {
+					int index = OS.gtk_ctree_node_get_row_data (handle, focus) - 1;
+					event.item = items [index];
 				}
-				break;
+				int type = key == OS.GDK_space ? SWT.Selection : SWT.DefaultSelection;
+				postEvent (type, event);
+			}
+			break;
 		}
 	}
 	return result;
