@@ -30,6 +30,8 @@ public class Combo extends Composite {
 	static {
 		LIMIT = 0x7FFFFFFF;
 	}
+	
+	int menuHandle;
 
 public Combo (Composite parent, int style) {
 	super (parent, checkStyle (style));
@@ -38,11 +40,18 @@ public Combo (Composite parent, int style) {
 public void add (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);	
+	
 	char [] buffer = new char [string.length ()];
 	string.getChars (0, buffer.length, buffer, 0);
 	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
 	if (ptr == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
-	int result = OS.HIComboBoxAppendTextItem (handle, ptr, null);
+	int result;
+	if ((style & SWT.READ_ONLY) != 0) {
+		result = OS.AppendMenuItemTextWithCFString (menuHandle, ptr, 0, 0, null);
+		OS.SetControl32BitMaximum (handle, OS.CountMenuItems(menuHandle));
+	} else {
+		result = OS.HIComboBoxAppendTextItem (handle, ptr, null);
+	}
 	OS.CFRelease (ptr);
 	if (result != OS.noErr) error (SWT.ERROR_ITEM_NOT_ADDED);
 }
@@ -50,14 +59,20 @@ public void add (String string) {
 public void add (String string, int index) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (index == -1) error (SWT.ERROR_INVALID_RANGE);
-	int count = OS.HIComboBoxGetItemCount (handle);
+	int count = getItemCount ();
 	if (0 > index || index > count) error (SWT.ERROR_INVALID_RANGE);
+	
 	char [] buffer = new char [string.length ()];
 	string.getChars (0, buffer.length, buffer, 0);
 	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
 	if (ptr == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
-	int result = OS.HIComboBoxInsertTextItemAtIndex (handle, index, ptr);
+	int result;
+	if ((style & SWT.READ_ONLY) != 0) {
+		result = OS.InsertMenuItemTextWithCFString (menuHandle, ptr, (short)index, 0, 0);
+		OS.SetControl32BitMaximum(handle, OS.CountMenuItems (menuHandle));	
+	} else {
+		result = OS.HIComboBoxInsertTextItemAtIndex (handle, index, ptr);
+	}
 	OS.CFRelease (ptr);
 	if (result != OS.noErr) error (SWT.ERROR_ITEM_NOT_ADDED);
 }
@@ -111,7 +126,15 @@ protected void checkSubclass () {
 
 public void clearSelection () {
 	checkWidget();
-	// NEEDS WORK
+	if ((style & SWT.READ_ONLY) != 0) {
+		OS.SetControl32BitValue (handle, 0);
+	} else {
+		char [] buffer = new char [0];
+		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+		if (ptr == 0) return;	
+		OS.SetControlData (handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, new int[] {ptr});
+		OS.CFRelease (ptr);
+	}
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -130,16 +153,34 @@ public void copy () {
 }
 
 void createHandle () {
-	// NEEDS WORK
-	int [] outControl = new int [1];
-	//int window = OS.GetControlOwner (parent.handle);
-	CGRect rect = new CGRect ();
-	int kHIComboBoxAutoCompletionAttribute = (1 << 0);
-	int inAttributes = kHIComboBoxAutoCompletionAttribute | OS.kHIComboBoxAutoSizeListAttribute;
-	OS.HIComboBoxCreate(rect, 0, null, 0, inAttributes, outControl);
-	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
-	handle = outControl [0];
-	OS.HIViewSetVisible (handle, true);
+	// NEEDS WORK - SIMPLE
+	if ((style & SWT.READ_ONLY) != 0) {
+		int [] outControl = new int [1];
+		int window = OS.GetControlOwner (parent.handle);
+		/* From ControlDefinitions.h:
+		 * 
+		 * Passing in a menu ID of -12345 causes the popup not to try and get the menu from a
+		 * resource. Instead, you can build the menu and later stuff the MenuRef field in
+		 * the popup data information.                                                                         
+		 */
+		OS.CreatePopupButtonControl(window, null, 0, (short)-12345, true, (short)0, (short)0, 0, outControl);
+		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
+		handle = outControl [0];
+		int[] menuRef= new int[1];
+		OS.CreateNewMenu ((short)0, 0, menuRef);
+		if (menuRef [0] == 0) error (SWT.ERROR_NO_HANDLES);
+		menuHandle = menuRef[0];
+		OS.SetControlPopupMenuHandle(handle, menuHandle);
+	} else {
+		int [] outControl = new int [1];
+		CGRect rect = new CGRect ();
+		int kHIComboBoxAutoCompletionAttribute = (1 << 0);
+		int inAttributes = kHIComboBoxAutoCompletionAttribute | OS.kHIComboBoxAutoSizeListAttribute;
+		OS.HIComboBoxCreate(rect, 0, null, 0, inAttributes, outControl);
+		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
+		handle = outControl [0];
+		OS.HIViewSetVisible (handle, true);
+	}
 	OS.HIViewAddSubview (parent.handle, handle);
 	OS.HIViewSetZOrder (handle, OS.kHIViewZOrderBelow, 0);
 }
@@ -162,10 +203,16 @@ public void deselectAll () {
 
 public String getItem (int index) {
 	checkWidget ();
-	int count = OS.HIComboBoxGetItemCount (handle);
+	int count = getItemCount ();
 	if (0 > index || index >= count) error (SWT.ERROR_INVALID_RANGE);
 	int[] ptr = new int[1];
-	if (OS.HIComboBoxCopyTextItemAtIndex (handle, index, ptr) != OS.noErr) error(SWT.ERROR_CANNOT_GET_ITEM);
+	int result;
+	if ((style & SWT.READ_ONLY) != 0) {
+		result = OS.CopyMenuItemTextAsCFString(menuHandle, (short)(index+1), ptr);
+	} else {
+		result = OS.HIComboBoxCopyTextItemAtIndex (handle, index, ptr);
+	}
+	if (result != OS.noErr) error(SWT.ERROR_CANNOT_GET_ITEM);
 	int length = OS.CFStringGetLength (ptr [0]);
 	char [] buffer= new char [length];
 	CFRange range = new CFRange ();
@@ -177,7 +224,13 @@ public String getItem (int index) {
 
 public int getItemCount () {
 	checkWidget ();
-	return OS.HIComboBoxGetItemCount (handle);
+	int count;
+	if ((style & SWT.READ_ONLY) != 0) {
+		count = OS.CountMenuItems (menuHandle);
+	} else {
+		count = OS.HIComboBoxGetItemCount (handle);
+	}
+	return count;
 }
 
 public int getItemHeight () {
@@ -187,30 +240,50 @@ public int getItemHeight () {
 
 public String [] getItems () {
 	checkWidget ();
-	int count = OS.HIComboBoxGetItemCount (handle);
-	String[] result = new String [count];
+	int count = getItemCount ();
+	String [] result = new String [count];
 	for (int i=0; i<count; i++) result [i] = getItem (i);
 	return result;
 }
 
 public Point getSelection () {
 	checkWidget ();
-	// NEEDS WORK
-	return new Point(0, 0);
+	Point selection;
+	if ((style & SWT.READ_ONLY) != 0) {
+		// NEEDS WORK
+		selection = new Point(0, 0);
+	} else {
+		short [] s = new short [2];
+		OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, 4, s, null);
+		selection = new Point (s[0], s[2]);
+	}
+	return selection;
 }
 
 public int getSelectionIndex () {
 	checkWidget ();
-    return indexOf(getText());
+	int index;
+	if ((style & SWT.READ_ONLY) != 0) {
+		index = OS.GetControlValue (handle) - 1;
+	} else {
+		// NEEDS WORK
+    	index = indexOf(getText ());
+	}
+	return index;
 }
 
 public String getText () {
 	checkWidget ();
 	int [] ptr = new int [1];
-	int [] actualSize = new int [1];
-	if (OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, ptr, actualSize) != OS.noErr) {
-		return "";
+	int result;
+	if ((style & SWT.READ_ONLY) != 0) {
+		int index = OS.GetControlValue (handle) - 1;
+		result = OS.CopyMenuItemTextAsCFString(menuHandle, (short)(index+1), ptr);
+	} else {
+		int [] actualSize = new int [1];
+		result = OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, ptr, actualSize);
 	}
+	if (result != OS.noErr) return "";
 	int length = OS.CFStringGetLength (ptr [0]);
 	char [] buffer= new char [length];
 	CFRange range = new CFRange ();
@@ -237,7 +310,7 @@ public int indexOf (String string) {
 public int indexOf (String string, int start) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int count = OS.HIComboBoxGetItemCount (handle);
+	int count = getItemCount ();
 	for (int i=start; i<count; i++) {
 		if (string.equals (getItem (i))) {
 			return i;
@@ -254,26 +327,38 @@ public void paste () {
 public void remove (int index) {
 	checkWidget ();
 	if (index == -1) error (SWT.ERROR_INVALID_RANGE);
-	int count = OS.HIComboBoxGetItemCount (handle);
-	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
-	OS.HIComboBoxRemoveItemAtIndex(handle, index);
+	int count = getItemCount ();
+	if (0 > index || index >= count) error (SWT.ERROR_INVALID_RANGE);
+	if ((style & SWT.READ_ONLY) != 0) {
+		OS.DeleteMenuItems (menuHandle, (short)(index+1), 1);
+		OS.SetControl32BitMaximum (handle, OS.CountMenuItems (menuHandle));
+	} else {
+		OS.HIComboBoxRemoveItemAtIndex (handle, index);
+	}
 }
 
 public void remove (int start, int end) {
 	checkWidget();
 	if (start > end) return;
-	int count = OS.HIComboBoxGetItemCount (handle);
+	int count = getItemCount ();
 	if (0 > start || start >= count) error (SWT.ERROR_INVALID_RANGE);
 	int newEnd = Math.min (end, count - 1);
-	for (int i=newEnd; i>=start; i--) {
-		OS.HIComboBoxRemoveItemAtIndex(handle, i);
+	if ((style & SWT.READ_ONLY) != 0) {
+		OS.DeleteMenuItems (menuHandle, (short)(start+1), newEnd-start+1);
+		OS.SetControl32BitMaximum (handle, OS.CountMenuItems (menuHandle));
+	} else {
+		// NEEDS WORK
+		for (int i=newEnd; i>=start; i--) {
+			OS.HIComboBoxRemoveItemAtIndex(handle, i);
+		}
 	}
 }
 
 public void remove (String string) {
-	checkWidget();
+	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int count = OS.HIComboBoxGetItemCount (handle);
+	// NEEDS WORK
+	int count = getItemCount ();
 	for (int i=0; i<count; i++) {
 		String s = getItem (i);
 		if (string.equals (s)) {
@@ -286,10 +371,16 @@ public void remove (String string) {
 
 public void removeAll () {
 	checkWidget ();
-	int count = OS.HIComboBoxGetItemCount (handle);
-	if (count > 0) {
-		for (int i=count-1; i>=0; i--) {
-  			OS.HIComboBoxRemoveItemAtIndex (handle, i);
+	int count = getItemCount ();
+	if ((style & SWT.READ_ONLY) != 0) {
+		OS.DeleteMenuItems (menuHandle, (short)1, count);
+		OS.SetControl32BitMaximum (handle, OS.CountMenuItems (menuHandle));
+	} else {
+		// NEEDS WORK
+		if (count > 0) {
+			for (int i=count-1; i>=0; i--) {
+  				OS.HIComboBoxRemoveItemAtIndex (handle, i);
+			}
 		}
 	}
 }
@@ -310,24 +401,37 @@ public void removeSelectionListener (SelectionListener listener) {
 }
 
 public void select (int index) {
-	checkWidget();
-	int count = OS.HIComboBoxGetItemCount (handle);
+	checkWidget ();
+	int count = getItemCount ();
 	if (0 > index || index >= count) error (SWT.ERROR_INVALID_RANGE);
-	// NEEDS WORK
+	if ((style & SWT.READ_ONLY) != 0) {
+		OS.SetControl32BitValue (handle, index+1);
+	} else {
+		int[] ptr = new int[1];
+		if (OS.HIComboBoxCopyTextItemAtIndex (handle, index, ptr) != OS.noErr) return;
+		OS.SetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, ptr);
+		OS.CFRelease (ptr [0]);		
+	}
 }
 
 public void setItem (int index, String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int count = OS.HIComboBoxGetItemCount (handle);
+	int count = getItemCount ();
 	if (0 > index || index >= count) error (SWT.ERROR_INVALID_RANGE);
 	char [] buffer = new char [string.length ()];
 	string.getChars (0, buffer.length, buffer, 0);
 	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
 	if (ptr == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
-	OS.HIComboBoxInsertTextItemAtIndex(handle, index, ptr);
-	OS.HIComboBoxRemoveItemAtIndex(handle, index+1);
+	int result;
+	if ((style & SWT.READ_ONLY) != 0) {
+		result = OS.SetMenuItemTextWithCFString (menuHandle, (short)(index+1), ptr);
+	} else {
+		result = OS.HIComboBoxInsertTextItemAtIndex (handle, index, ptr);
+		OS.HIComboBoxRemoveItemAtIndex (handle, index+1);
+	}
 	OS.CFRelease(ptr);
+	if (result != OS.noErr) error (SWT.ERROR_ITEM_NOT_ADDED);
 }
 
 public void setItems (String [] items) {
@@ -342,8 +446,14 @@ public void setItems (String [] items) {
 		string.getChars (0, buffer.length, buffer, 0);
 		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
 		if (ptr == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
-		int [] outIndex = new int[1];
-		int result = OS.HIComboBoxAppendTextItem (handle, ptr, outIndex);
+		int result;
+		if ((style & SWT.READ_ONLY) != 0) {
+			result = OS.AppendMenuItemTextWithCFString (menuHandle, ptr, 0, 0, null);
+			OS.SetControl32BitMaximum(handle, OS.CountMenuItems (menuHandle));
+		} else {
+			int [] outIndex = new int[1];
+			result = OS.HIComboBoxAppendTextItem (handle, ptr, outIndex);
+		}
 		OS.CFRelease(ptr);
 		if (result != OS.noErr) error (SWT.ERROR_ITEM_NOT_ADDED);
 	}
@@ -351,18 +461,29 @@ public void setItems (String [] items) {
 
 public void setSelection (Point selection) {
 	checkWidget ();
-	// NEEDS WORK
+	if (selection == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if ((style & SWT.READ_ONLY) != 0) {
+		// NEEDS WORK
+	} else {
+		short [] s = new short [] {(short)selection.x, (short)selection.y };
+		OS.SetControlData (handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, 4, s);
+	}
 }
 
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.READ_ONLY) != 0) {
-		int index= indexOf (string);
+		int index = indexOf (string);
 		if (index != -1) select(index);
-		return;
+	} else {
+		char [] buffer = new char [string.length ()];
+		string.getChars (0, buffer.length, buffer, 0);
+		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+		if (ptr == 0) return;	
+		OS.SetControlData (handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, new int[] {ptr});
+		OS.CFRelease (ptr);
 	}
-	// NEEDS WORK
 }
 
 public void setTextLimit (int limit) {

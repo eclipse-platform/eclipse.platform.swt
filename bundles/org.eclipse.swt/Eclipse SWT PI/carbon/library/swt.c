@@ -1260,6 +1260,25 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreatePopupArrowC
 }
 #endif
 
+#ifndef NO_CreatePopupButtonControl
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreatePopupButtonControl
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jshort arg3, jboolean arg4, jshort arg5, jshort arg6, jint arg7, jintArray arg8)
+{
+	Rect _arg1, *lparg1=NULL;
+	jint *lparg8=NULL;
+	jint rc;
+
+	DEBUG_CALL("CreatePopupButtonControl\n")
+
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	if (arg8) lparg8 = (*env)->GetIntArrayElements(env, arg8, NULL);
+	rc = (jint)CreatePopupButtonControl((WindowRef)arg0, (const Rect *)lparg1, (CFStringRef)arg2, (SInt16)arg3, (Boolean)arg4, (SInt16)arg5, (SInt16)arg6, (Style)arg7, (ControlRef *)lparg8);
+	if (arg1) setRectFields(env, arg1, lparg1);
+	if (arg8) (*env)->ReleaseIntArrayElements(env, arg8, lparg8, 0);
+	return rc;
+}
+#endif
+
 #ifndef NO_CreateProgressBarControl
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateProgressBarControl
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jint arg3, jint arg4, jboolean arg5, jintArray arg6)
@@ -5769,7 +5788,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNGetTXNObjectCo
 
 	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
 	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
-	rc = (jint)TXNGetTXNObjectControls((TXNObject)arg0, (ItemCount)arg1, (const TXNControlTag *)lparg2, (const TXNControlData *)lparg3);
+	rc = (jint)TXNGetTXNObjectControls((TXNObject)arg0, (ItemCount)arg1, (const TXNControlTag *)lparg2, (TXNControlData *)lparg3);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	return rc;
