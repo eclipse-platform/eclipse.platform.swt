@@ -64,17 +64,18 @@ class MenuTab extends Tab {
 			shells = newShells;
 		}
 	
-		int menuStyle = 0;
-		if (noRadioGroupButton.getSelection()) menuStyle |= SWT.NO_RADIO_GROUP;
-		if (leftToRightButton.getSelection()) menuStyle |= SWT.LEFT_TO_RIGHT;
-		if (rightToLeftButton.getSelection()) menuStyle |= SWT.RIGHT_TO_LEFT;
+		int orientation = 0;
+		if (leftToRightButton.getSelection()) orientation |= SWT.LEFT_TO_RIGHT;
+		if (rightToLeftButton.getSelection()) orientation |= SWT.RIGHT_TO_LEFT;
+		int radioBehavior = 0;
+		if (noRadioGroupButton.getSelection()) radioBehavior |= SWT.NO_RADIO_GROUP;
 		
 		/* Create the shell and menu(s) */
 		Shell shell = new Shell (SWT.SHELL_TRIM);
 		shells [shellCount] = shell;
 		if (barButton.getSelection ()) {
 			/* Create menu bar. */
-			Menu menuBar = new Menu(shell, SWT.BAR | menuStyle);
+			Menu menuBar = new Menu(shell, SWT.BAR | orientation | radioBehavior);
 			shell.setMenuBar(menuBar);
 			hookListeners(menuBar);
 
@@ -84,7 +85,7 @@ class MenuTab extends Tab {
 				item.setText(getMenuItemText("Cascade"));
 				if (imagesButton.getSelection()) item.setImage(instance.images[ControlExample.ciOpenFolder]);
 				hookListeners(item);
-				Menu dropDownMenu = new Menu(shell, SWT.DROP_DOWN | menuStyle);
+				Menu dropDownMenu = new Menu(shell, SWT.DROP_DOWN | orientation | radioBehavior);
 				item.setMenu(dropDownMenu);
 				hookListeners(dropDownMenu);
 	
@@ -95,7 +96,7 @@ class MenuTab extends Tab {
 		
 		if (popUpButton.getSelection()) {
 			/* Create pop-up menu. */
-			Menu popUpMenu = new Menu(shell, SWT.POP_UP | menuStyle);
+			Menu popUpMenu = new Menu(shell, SWT.POP_UP | orientation | radioBehavior);
 			shell.setMenu(popUpMenu);
 			hookListeners(popUpMenu);
 
