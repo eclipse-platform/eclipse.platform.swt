@@ -810,6 +810,7 @@ public void setWrapIndices (int [] indices) {
 			error (SWT.ERROR_INVALID_RANGE);
 		}	
 	}
+	setRedraw (false);
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	rbBand.fMask = OS.RBBIM_STYLE;
@@ -836,6 +837,7 @@ public void setWrapIndices (int [] indices) {
 		*/
 		resizeToMaximumWidth (indices [i] - 1);
 	}
+	setRedraw (true);
 }
 
 int widgetStyle () {
