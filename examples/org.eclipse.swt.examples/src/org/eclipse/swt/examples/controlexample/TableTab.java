@@ -19,7 +19,7 @@ class TableTab extends ScrollableTab {
 	Group tableGroup, tableItemGroup;
 
 	/* Style widgets added to the "Style" group */
-	Button checkButton, fullSelectionButton;
+	Button checkButton, fullSelectionButton, hideSelectionButton;
 
 	/* Display widgets added to the "Display" group */
 	Button headerVisibleButton, linesVisibleButton;
@@ -166,6 +166,7 @@ class TableTab extends ScrollableTab {
 		if (horizontalButton.getSelection ()) style |= SWT.H_SCROLL;
 		if (checkButton.getSelection ()) style |= SWT.CHECK;
 		if (fullSelectionButton.getSelection ()) style |= SWT.FULL_SELECTION;
+		if (hideSelectionButton.getSelection ()) style |= SWT.HIDE_SELECTION;
 		if (borderButton.getSelection ()) style |= SWT.BORDER;
 	
 		/* Create the table widget */
@@ -211,6 +212,8 @@ class TableTab extends ScrollableTab {
 		checkButton.setText ("SWT.CHECK");
 		fullSelectionButton = new Button (styleGroup, SWT.CHECK);
 		fullSelectionButton.setText ("SWT.FULL_SELECTION");
+		hideSelectionButton = new Button (styleGroup, SWT.CHECK);
+		hideSelectionButton.setText ("SWT.HIDE_SELECTION");
 	}
 	
 	/**
@@ -266,6 +269,7 @@ class TableTab extends ScrollableTab {
 		setWidgetLinesVisible ();
 		checkButton.setSelection ((table1.getStyle () & SWT.CHECK) != 0);
 		fullSelectionButton.setSelection ((table1.getStyle () & SWT.FULL_SELECTION) != 0);
+		hideSelectionButton.setSelection ((table1.getStyle () & SWT.HIDE_SELECTION) != 0);
 	}
 	
 	/**
