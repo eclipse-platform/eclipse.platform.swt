@@ -132,15 +132,6 @@ public String getMessage () {
  * </ul>
  */
 public int open () {
-	
-	/* Create the dialog.*/
-	boolean destroyContext;
-	Display appContext = Display.getCurrent ();
-	if (destroyContext = (appContext == null)) appContext = new Display ();
-	int parentHandle = appContext.shellHandle;
-	if (parent != null && parent.display == appContext)
-		parentHandle = parent.shellHandle;
-
 	/* Compute the dialog title */	
 	/*
 	* Feature in Motif.  It is not possible to set a shell
@@ -178,6 +169,7 @@ public int open () {
 		OS.XmNdialogStyle, dialogStyle,
 		OS.XmNdialogTitle, xmStringPtr,
 	};
+	int parentHandle = parent.shellHandle;
 	int dialog = createHandle (parentHandle, argList);
 	if (dialog == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.XmStringFree (xmStringPtr);
@@ -195,12 +187,12 @@ public int open () {
 	OS.XtManageChild (dialog);
 	
 	// Should be a pure OS message loop (no SWT AppContext)
+	Display display = parent.display;
 	while (OS.XtIsRealized (dialog) && OS.XtIsManaged (dialog))
-		if (!appContext.readAndDispatch()) appContext.sleep ();
+		if (!display.readAndDispatch()) display.sleep ();
 
 	/* Destroy the dialog and update the display. */
 	if (OS.XtIsRealized (dialog)) OS.XtDestroyWidget (dialog);
-	if (destroyContext) appContext.dispose ();
 	callback.dispose ();
 
 	if ((style & (SWT.YES | SWT.NO | SWT.CANCEL)) == (SWT.YES | SWT.NO | SWT.CANCEL)) {

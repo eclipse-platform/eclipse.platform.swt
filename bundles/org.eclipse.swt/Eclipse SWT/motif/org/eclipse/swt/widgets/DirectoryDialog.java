@@ -116,18 +116,6 @@ public String getMessage () {
  * </ul>
  */
 public String open () {
-
-	/* Get the parent */
-	boolean destroyContext;
-	Display appContext = Display.getCurrent ();
-	if (destroyContext = (appContext == null)) appContext = new Display ();
-	int display = appContext.xDisplay;
-	int parentHandle = appContext.shellHandle;
-	if ((parent != null) && (parent.display == appContext)) {
-		if (OS.IsAIX) parent.realizeWidget ();		/* Fix for bug 17507 */
-		parentHandle = parent.shellHandle;
-	}
-
 	/* Compute the dialog title */	
 	/*
 	* Feature in Motif.  It is not possible to set a shell
@@ -185,10 +173,11 @@ public String open () {
 		0);
 
 	/* Create the dialog */
+	Display display = parent.display;
 	int [] argList1 = {
 		OS.XmNresizePolicy, OS.XmRESIZE_NONE,
 		OS.XmNdialogStyle, OS.XmDIALOG_PRIMARY_APPLICATION_MODAL,
-		OS.XmNwidth, OS.XDisplayWidth (display, OS.XDefaultScreen (display)) * 4 / 9,
+		OS.XmNwidth, OS.XDisplayWidth (display.xDisplay, OS.XDefaultScreen (display.xDisplay)) * 4 / 9,
 		OS.XmNdialogTitle, xmStringPtr1,
 		OS.XmNpattern, xmStringPtr2,
 		OS.XmNdirectory, xmStringPtr3,
@@ -196,6 +185,12 @@ public String open () {
 		OS.XmNfilterLabelString, xmStringPtr4
 	};
 
+	/*
+	* Bug in AIX. The dialog does not responde to input, if the parent
+	* is not realized.  The fix is to realized the parent.  
+	*/
+	if (OS.IsAIX) parent.realizeWidget ();
+	int parentHandle = parent.shellHandle;
 	/*
 	* Feature in Linux.  For some reason, the XmCreateFileSelectionDialog()
 	* will not accept NULL for the widget name.  This works fine on the other
@@ -246,7 +241,7 @@ public String open () {
 
 	/* Should be a pure OS message loop (no SWT AppContext) */
 	while (OS.XtIsRealized (dialog) && OS.XtIsManaged (dialog))
-		if (!appContext.readAndDispatch ()) appContext.sleep ();
+		if (!display.readAndDispatch ()) display.sleep ();
 
 	/* Set the new path, file name and filter. */
 	String directoryPath="";
@@ -254,7 +249,7 @@ public String open () {
 		int [] argList2 = {OS.XmNdirMask, 0};
 		OS.XtGetValues (dialog, argList2, argList2.length / 2);
 		int xmString3 = argList2 [1];
-		int [] table = new int [] {appContext.tabMapping, appContext.crMapping};
+		int [] table = new int [] {display.tabMapping, display.crMapping};
 		int ptr = OS.XmStringUnparse (
 			xmString3,
 			null,
@@ -285,7 +280,6 @@ public String open () {
 
 	/* Destroy the dialog and update the display. */
 	if (OS.XtIsRealized (dialog)) OS.XtDestroyWidget (dialog);
-	if (destroyContext) appContext.dispose ();
 	callback.dispose ();
 	
 	if (cancel) return null;

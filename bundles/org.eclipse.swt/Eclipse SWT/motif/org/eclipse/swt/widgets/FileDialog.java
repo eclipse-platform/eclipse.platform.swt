@@ -321,18 +321,6 @@ int okPressed (int widget, int client, int call) {
  * </ul>
  */
 public String open () {
-
-	/* Get the parent */
-	boolean destroyContext;
-	Display appContext = Display.getCurrent ();
-	if (destroyContext = (appContext == null)) appContext = new Display ();
-	int display = appContext.xDisplay;
-	int parentHandle = appContext.shellHandle;
-	if ((parent != null) && (parent.display == appContext)) {
-		if (OS.IsAIX) parent.realizeWidget ();		/* Fix for bug 17507 */
-		parentHandle = parent.shellHandle;
-	}
-
 	/* Compute the dialog title */	
 	/*
 	* Feature in Motif.  It is not possible to set a shell
@@ -397,15 +385,22 @@ public String open () {
 		0);
 
 	/* Create the dialog */
+	Display display = parent.display;
 	int [] argList1 = {
 		OS.XmNresizePolicy, OS.XmRESIZE_NONE,
 		OS.XmNdialogStyle, OS.XmDIALOG_PRIMARY_APPLICATION_MODAL,
-		OS.XmNwidth, OS.XDisplayWidth (display, OS.XDefaultScreen (display)) * 4 / 9,
+		OS.XmNwidth, OS.XDisplayWidth (display.xDisplay, OS.XDefaultScreen (display.xDisplay)) * 4 / 9,
 		OS.XmNpathMode, OS.XmPATH_MODE_FULL,
 		OS.XmNdialogTitle, xmStringPtr1,
 		OS.XmNpattern, xmStringPtr2,
 		OS.XmNdirMask, xmStringPtr3,
 	};
+	/*
+	* Bug in AIX. The dialog does not responde to input, if the parent
+	* is not realized.  The fix is to realized the parent.  
+	*/
+	if (OS.IsAIX) parent.realizeWidget ();
+	int parentHandle = parent.shellHandle;
 	/*
 	* Feature in Linux.  For some reason, the XmCreateFileSelectionDialog()
 	* will not accept NULL for the widget name.  This works fine on the other
@@ -470,11 +465,10 @@ public String open () {
 
 	// Should be a pure OS message loop (no SWT AppContext)
 	while (OS.XtIsRealized (dialog) && OS.XtIsManaged (dialog))
-		if (!appContext.readAndDispatch ()) appContext.sleep ();
+		if (!display.readAndDispatch ()) display.sleep ();
 
 	/* Destroy the dialog and update the display. */
 	if (OS.XtIsRealized (dialog)) OS.XtDestroyWidget (dialog);
-	if (destroyContext) appContext.dispose ();
 	okCallback.dispose ();
 	cancelCallback.dispose ();
 	if (selectCallback != null) selectCallback.dispose ();
