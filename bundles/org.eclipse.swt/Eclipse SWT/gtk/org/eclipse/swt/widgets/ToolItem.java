@@ -29,7 +29,7 @@ public class ToolItem extends Item {
 	Control control;
 	Image hotImage, disabledImage;
 
-	int boxHandle, arrowHandle;
+	int boxHandle, arrowHandle, arrowButtonHandle;
 	
 	int currentpixmap;
 	boolean drawHotImage;
@@ -146,7 +146,7 @@ public void addSelectionListener(SelectionListener listener) {
 
 void createHandle (int index) {
 	state |= HANDLE;
-	switch (style & (SWT.SEPARATOR | SWT.RADIO | SWT.CHECK | SWT.PUSH)) {
+	switch (style & (SWT.SEPARATOR | SWT.RADIO | SWT.CHECK | SWT.PUSH | SWT.DROP_DOWN)) {
 		case SWT.PUSH:
 		case 0:
 			handle = OS.gtk_toolbar_insert_element (parent.handle,
@@ -184,6 +184,30 @@ void createHandle (int index) {
 			OS.gtk_widget_show(boxHandle);
 			OS.gtk_widget_show(handle);
 			return;
+		case SWT.DROP_DOWN:
+			/* create the box */
+			isVertical = (parent.getStyle()&SWT.VERTICAL) != 0;
+			boxHandle = isVertical? OS.gtk_vbox_new(false, 0) : OS.gtk_hbox_new(false, 0);
+			if (boxHandle==0) error(SWT.ERROR_NO_HANDLES);
+			/* create the button */
+			handle = OS.gtk_button_new();
+			if (handle==0) error(SWT.ERROR_NO_HANDLES);
+			/* create the arrow */
+			arrowHandle = OS.gtk_arrow_new (OS.GTK_ARROW_DOWN, OS.GTK_SHADOW_NONE);
+			arrowButtonHandle = OS.gtk_button_new ();
+			OS.gtk_toolbar_insert_widget (
+				parent.handle,
+				boxHandle,
+				new byte[1], new byte[1],
+				index);
+			OS.gtk_box_pack_start(boxHandle, handle, true,true,0);
+			OS.gtk_box_pack_end(boxHandle, arrowButtonHandle, true,true,0);
+			OS.gtk_container_add (arrowButtonHandle, arrowHandle);
+			OS.gtk_widget_show(handle);
+			OS.gtk_widget_show (arrowHandle);
+			OS.gtk_widget_show (arrowButtonHandle);
+			OS.gtk_widget_show(boxHandle);
+			return;
 		default:
 			/*
 			 * Can not specify more than one style
@@ -196,10 +220,14 @@ void createHandle (int index) {
 void register() {
 	super.register ();
 	if (boxHandle != 0) WidgetTable.put(boxHandle, this);
+	if (arrowButtonHandle != 0) WidgetTable.put(arrowButtonHandle, this);
+	if (arrowHandle != 0) WidgetTable.put(arrowHandle, this);
 }
 void deregister() {
 	super.deregister ();
 	if (boxHandle != 0) WidgetTable.remove (boxHandle);
+	if (arrowButtonHandle != 0) WidgetTable.remove (arrowButtonHandle);
+	if (arrowHandle != 0) WidgetTable.remove (arrowHandle);
 }
 
 int topHandle() {
@@ -378,6 +406,7 @@ void hookEvents () {
 	signal_connect(handle, "clicked",   SWT.Selection, 2);
 	signal_connect(handle, "enter-notify-event", SWT.MouseEnter, 3);
 	signal_connect(handle, "leave-notify-event", SWT.MouseExit,  3);
+	if (arrowButtonHandle!=0) signal_connect(arrowButtonHandle, "clicked",   SWT.DefaultSelection, 2);
 }
 
 /**
@@ -453,9 +482,15 @@ int processSelection  (int int0, int int1, int int2) {
 	postEvent (SWT.Selection, event);
 	return 0;
 }
+int processDoubleSelection (int int0, int int1, int int2) {
+	Event event = new Event ();
+	event.detail = SWT.ARROW;
+	postEvent (SWT.Selection, event);
+	return 0;
+}
 void releaseWidget () {
 	super.releaseWidget ();
-	tooltipsHandle = 0;
+	tooltipsHandle = arrowButtonHandle = arrowHandle = 0;
 	parent = null;
 }
 
