@@ -244,6 +244,7 @@ public static final native int gtk_label_get_type();
 public static final native int g_log_set_handler(byte [] log_domain, int log_levels, int log_func, int user_data);
 public static final native void g_log_remove_handler(byte [] log_domain, int handler_id);
 public static final native void g_log_default_handler(int log_domain, int log_levels, int message, int unused_data);
+public static final native int gtk_clist_row_is_visible(int clist, int row);
 
 public static final native void g_free(int mem);
 public static final native int g_get_home_dir();

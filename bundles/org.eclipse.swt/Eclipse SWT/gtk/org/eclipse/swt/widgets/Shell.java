@@ -323,7 +323,7 @@ void createHandle (int index) {
 	state |= HANDLE;
 	shellHandle = OS.gtk_window_new((parent==null)? OS.GTK_WINDOW_TOPLEVEL:OS.GTK_WINDOW_DIALOG);
 	if (shellHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-	if (parent!=null) OS.gtk_window_set_transient_for(shellHandle, ((Shell)parent).shellHandle);
+	if (parent!=null) OS.gtk_window_set_transient_for(shellHandle, parent.topHandle());
 	
 	vboxHandle = OS.gtk_vbox_new(false,0);
 	if (vboxHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);

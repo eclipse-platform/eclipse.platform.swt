@@ -29,7 +29,7 @@ import org.eclipse.swt.events.*;
  */
 
 public class List extends Scrollable {
-	int boxHandle;
+	boolean selected;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -62,6 +62,7 @@ public class List extends Scrollable {
 public List (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
+
 /**
  * Adds the argument to the end of the receiver's list.
  *
@@ -91,6 +92,7 @@ public void add (String string) {
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 	OS.g_free (ptr);
 }
+
 /**
  * Adds the argument to the receiver's list at the given
  * zero-relative index.
@@ -118,8 +120,7 @@ public void add (String string) {
  * @see #add(String)
  */
 public void add (String string, int index) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (index == -1) error (SWT.ERROR_ITEM_NOT_ADDED);
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
@@ -130,6 +131,7 @@ public void add (String string, int index) {
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 	OS.g_free (ptr);
 }
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the receiver's selection changes, by sending
@@ -155,26 +157,23 @@ public void add (String string, int index) {
  * @see SelectionEvent
  */
 public void addSelectionListener(SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Selection,typedListener);
 	addListener (SWT.DefaultSelection,typedListener);
 }
+
 static int checkStyle (int style) {
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
 
 void createHandle (int index) {
 	state |= HANDLE;
-	boxHandle = OS.gtk_hbox_new(true,0); // false for homogeneous; doesn't really matter
-	if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);	
-
-	handle = OS.gtk_clist_new (1);
-	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	scrolledHandle = OS.gtk_scrolled_window_new (0, 0);
 	if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	handle = OS.gtk_clist_new (1);
+	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
 
 void setHandleStyle() {
@@ -197,42 +196,20 @@ void setHandleStyle() {
 
 void configure() {
 	_connectParent();
-	OS.gtk_box_pack_start(boxHandle, scrolledHandle, true,true,0);
 	OS.gtk_container_add (scrolledHandle, handle);
 }
 
 void hookEvents () {
 	//TO DO - get rid of enter/exit for mouse crossing border
 	super.hookEvents();
-	signal_connect(handle, "select_row", SWT.Selection, 5);
-	signal_connect(handle, "unselect_row", SWT.Selection, 5);
-	signal_connect(handle, "extend_selection", SWT.Selection, 5);
+	signal_connect (handle, "select_row", SWT.Selection, 5);
+	signal_connect (handle, "unselect_row", SWT.Selection, 5);
 }
 
 void showHandle() {
-	OS.gtk_widget_show (boxHandle);
 	OS.gtk_widget_show (scrolledHandle);
 	OS.gtk_widget_show (handle);
 	OS.gtk_widget_realize (handle);
-}
-
-void register () {
-	super.register ();
-	WidgetTable.put (boxHandle, this);
-}
-
-void releaseHandle () {
-	super.releaseHandle ();
-	boxHandle = 0;
-}
-
-void deregister () {
-	super.deregister ();
-	WidgetTable.remove (boxHandle);
-}
-
-int topHandle() {
-	return boxHandle;
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -240,7 +217,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (wHint == SWT.DEFAULT) wHint = 200;
 	return super.computeSize (wHint, hHint, changed);
 }
-
 
 /**
  * Deselects the item at the given zero-relative index in the receiver.
@@ -255,12 +231,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
  * </ul>
  */
 public void deselect (int index) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
 	OS.gtk_clist_unselect_row (handle, index, 0);
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 }
+
 /**
  * Deselects the items at the given zero-relative indices in the receiver.
  * If the item at the given zero-relative index in the receiver 
@@ -277,14 +253,14 @@ public void deselect (int index) {
  * </ul>
  */
 public void deselect (int start, int end) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
 	for (int i=start; i<=end; i++) {
 		OS.gtk_clist_unselect_row (handle, i, 0);
 	}
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 }
+
 /**
  * Deselects the items at the given zero-relative indices in the receiver.
  * If the item at the given zero-relative index in the receiver 
@@ -303,8 +279,7 @@ public void deselect (int start, int end) {
  * </ul>
  */
 public void deselect (int [] indices) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
 	for (int i=0; i<indices.length; i++) {
@@ -312,6 +287,7 @@ public void deselect (int [] indices) {
 	}
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 }
+
 /**
  * Deselects all selected items in the receiver.
  *
@@ -321,12 +297,12 @@ public void deselect (int [] indices) {
  * </ul>
  */
 public void deselectAll () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
 	OS.gtk_clist_unselect_all (handle);
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 }
+
 /**
  * Returns the item at the given, zero-relative index in the
  * receiver. Throws an exception if the index is out of range.
@@ -346,8 +322,7 @@ public void deselectAll () {
  * </ul>
  */
 public String getItem (int index) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] buffer = new int [1];
 	int result = OS.gtk_clist_get_text (handle, index, 0, buffer);
 	int length = OS.strlen (buffer [0]);
@@ -356,6 +331,7 @@ public String getItem (int index) {
 	char [] buffer2 = Converter.mbcsToWcs (null, buffer1);
 	return new String (buffer2, 0, buffer2.length);
 }
+
 /**
  * Returns the number of items contained in the receiver.
  *
@@ -370,12 +346,12 @@ public String getItem (int index) {
  * </ul>
  */
 public int getItemCount () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	GtkCList widget = new GtkCList ();
 	OS.memmove (widget, handle, GtkCList.sizeof);
 	return widget.rows;
 }
+
 /**
  * Returns the height of the area which would be used to
  * display <em>one</em> of the items in the tree.
@@ -391,12 +367,12 @@ public int getItemCount () {
  * </ul>
  */
 public int getItemHeight () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	GtkCList clist = new GtkCList ();
 	OS.memmove (clist, handle, GtkCList.sizeof);
 	return clist.row_height;
 }
+
 /**
  * Returns an array of <code>String</code>s which are the items
  * in the receiver. 
@@ -418,13 +394,13 @@ public int getItemHeight () {
  * </ul>
  */
 public String [] getItems () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int count = getItemCount ();
 	String [] result = new String [count];
 	for (int i=0; i<count; i++) result [i] = getItem (i);
 	return result;
 }
+
 /**
  * Returns an array of <code>String</code>s that are currently
  * selected in the receiver. An empty array indicates that no
@@ -446,8 +422,7 @@ public String [] getItems () {
  * </ul>
  */
 public String [] getSelection () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	GtkCList widget = new GtkCList ();
 	OS.memmove (widget, handle, GtkCList.sizeof);
 	int list = widget.selection;
@@ -466,6 +441,7 @@ public String [] getSelection () {
 	}
 	return items;
 }
+
 /**
  * Returns the number of selected items contained in the receiver.
  *
@@ -480,12 +456,12 @@ public String [] getSelection () {
  * </ul>
  */
 public int getSelectionCount () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	GtkCList widget = new GtkCList ();
 	OS.memmove (widget, handle, GtkCList.sizeof);
 	return OS.g_list_length (widget.selection);
 }
+
 /**
  * Returns the zero-relative index of the item which is currently
  * selected in the receiver, or -1 if no item is selected.
@@ -501,20 +477,14 @@ public int getSelectionCount () {
  * </ul>
  */
 public int getSelectionIndex () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	
-	if ((style&SWT.SINGLE)!=0) {
-		GtkCList clist = new GtkCList();
-		OS.memmove(clist, handle, GtkCList.sizeof);
-		int pselection = clist.selection;
-		if (OS.g_list_length (pselection) == 0) return -1;
-		return OS.g_list_nth_data (pselection, 0);
-	}
-	
-	error(SWT.ERROR_NOT_IMPLEMENTED);
-	return 0;
+	checkWidget();
+	GtkCList clist = new GtkCList ();
+	OS.memmove(clist, handle, GtkCList.sizeof);
+	int list = clist.selection;
+	if (OS.g_list_length (list) == 0) return -1;
+	return OS.g_list_nth_data (list, 0);
 }
+
 /**
  * Returns the zero-relative indices of the items which are currently
  * selected in the receiver.  The array is empty if no items are selected.
@@ -534,8 +504,7 @@ public int getSelectionIndex () {
  * </ul>
  */
 public int [] getSelectionIndices () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	GtkCList widget = new GtkCList ();
 	OS.memmove (widget, handle, GtkCList.sizeof);
 	int list = widget.selection;
@@ -546,6 +515,7 @@ public int [] getSelectionIndices () {
 	}
 	return indices;
 }
+
 /**
  * Returns the zero-relative index of the item which is currently
  * at the top of the receiver. This index can change when items are
@@ -559,8 +529,7 @@ public int [] getSelectionIndices () {
  * </ul>
  */
 public int getTopIndex () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	GtkCList clist = new GtkCList ();
 	OS.memmove(clist, handle, GtkCList.sizeof);
 	return -clist.voffset / (clist.row_height + 1);
@@ -586,10 +555,10 @@ public int getTopIndex () {
  * </ul>
  */
 public int indexOf (String string) {
-	if (!isValidThread ()) error(SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error(SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return indexOf (string, 0);
 }
+
 /**
  * Searches the receiver's list starting at the given, 
  * zero-relative index until an item is found that is equal
@@ -613,8 +582,7 @@ public int indexOf (String string) {
  * </ul>
  */
 public int indexOf (String string, int start) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	String [] items = getItems ();
 	for (int i=start; i<items.length; i++) {
@@ -622,6 +590,7 @@ public int indexOf (String string, int start) {
 	}
 	return -1;
 }
+
 /**
  * Returns <code>true</code> if the item is selected,
  * and <code>false</code> otherwise.  Indices out of
@@ -636,8 +605,7 @@ public int indexOf (String string, int start) {
  * </ul>
  */
 public boolean isSelected (int index) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	GtkCList widget = new GtkCList ();
 	OS.memmove (widget, handle, GtkCList.sizeof);
 	int list = widget.selection;
@@ -647,6 +615,56 @@ public boolean isSelected (int index) {
 	}
 	return false;
 }
+
+int processMouseDown (int callData, int arg1, int int2) {
+	if ((style & SWT.MULTI) != 0) selected = true;
+	return super.processMouseDown (callData, arg1, int2);
+}
+
+int processMouseUp (int callData, int arg1, int int2) {
+	int result = super.processMouseUp (callData, arg1, int2);
+	if ((style & SWT.MULTI) != 0) {
+		/*
+		* Feature in GTK.  When a list item is reselected, GTK
+		* does not issue notification.  The fix is to detect
+		* that the mouse was released over a selected item when
+		* not selection signal was set and issue a fake selection
+		* event.
+		*/
+		GdkEventButton gdkEvent = new GdkEventButton ();
+		OS.memmove (gdkEvent, callData, GdkEventButton.sizeof);
+		int x = (int) gdkEvent.x, y = (int) gdkEvent.y;
+		int [] row = new int [1], column = new int [1];
+		int code = OS.gtk_clist_get_selection_info (handle, x, y, row, column);
+		if (code != 0) {
+			GtkCList clist = new GtkCList ();
+			OS.memmove (clist, handle, GtkCList.sizeof);
+			if (isSelected (row [0]) && selected) postEvent (SWT.Selection);
+		}
+		selected = false;
+	}
+	return result;
+}
+
+int processSelection (int int0, int int1, int int2) {
+	GtkCList clist = new GtkCList ();
+	OS.memmove (clist, handle, GtkCList.sizeof);
+	if (int0 != clist.focus_row) return 0;
+	if ((style & SWT.MULTI) != 0) selected = false;
+	boolean single = true;
+	if (int2 != 0) {
+		GdkEventButton gdkEvent = new GdkEventButton ();
+		OS.memmove (gdkEvent, int2, GdkEventButton.sizeof);
+		single = gdkEvent.type != OS.GDK_2BUTTON_PRESS;
+	}
+	if (single) {
+		postEvent (SWT.Selection);
+	} else {
+		postEvent (SWT.DefaultSelection);
+	}
+	return 0;
+}
+
 /**
  * Removes the item from the receiver at the given
  * zero-relative index.
@@ -665,12 +683,12 @@ public boolean isSelected (int index) {
  * </ul>
  */
 public void remove (int index) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
 	OS.gtk_clist_remove (handle, index);
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 }
+
 /**
  * Removes the items from the receiver which are
  * between the given zero-relative start and end 
@@ -691,8 +709,7 @@ public void remove (int index) {
  * </ul>
  */
 public void remove (int start, int end) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
 	int index = start;
 	while (index <= end) {
@@ -701,6 +718,7 @@ public void remove (int start, int end) {
 	}
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 }
+
 /**
  * Searches the receiver's list starting at the first item
  * until an item is found that is equal to the argument, 
@@ -721,12 +739,12 @@ public void remove (int start, int end) {
  * </ul>
  */
 public void remove (String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int index = indexOf (string, 0);
 	if (index == -1) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	remove (index);
 }
+
 /**
  * Removes the items from the receiver at the given
  * zero-relative indices.
@@ -745,8 +763,7 @@ public void remove (String string) {
  * </ul>
  */
 public void remove (int [] indices) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int [] newIndices = new int [indices.length];
 	System.arraycopy (indices, 0, newIndices, 0, indices.length);
@@ -762,6 +779,7 @@ public void remove (int [] indices) {
 	}
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 }
+
 /**
  * Removes all of the items from the receiver.
  * <p>
@@ -776,6 +794,7 @@ public void removeAll () {
 	OS.gtk_clist_clear (handle);
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 }
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the receiver's selection changes.
@@ -794,13 +813,13 @@ public void removeAll () {
  * @see #addSelectionListener
  */
 public void removeSelectionListener(SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
+
 /**
  * Selects the item at the given zero-relative index in the receiver's 
  * list.  If the item at the index was already selected, it remains
@@ -819,6 +838,7 @@ public void select (int index) {
 	OS.gtk_clist_select_row (handle, index, 0);
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 }
+
 /**
  * Selects the items at the given zero-relative indices in the receiver.
  * If the item at the index was already selected, it remains
@@ -841,6 +861,7 @@ public void select (int start, int end) {
 	}
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 }
+
 /**
  * Selects the items at the given zero-relative indices in the receiver.
  * If the item at the given zero-relative index in the receiver 
@@ -867,6 +888,7 @@ public void select (int [] indices) {
 	}
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 }
+
 /**
  * Selects all the items in the receiver.
  *
@@ -881,6 +903,7 @@ public void selectAll () {
 	OS.gtk_clist_select_all (handle);
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 }
+
 /**
  * Sets the text of the item in the receiver's list at the given
  * zero-relative index to the string argument. This is equivalent
@@ -910,6 +933,7 @@ public void setItem (int index, String string) {
 	OS.gtk_clist_set_text (handle, index, 0, buffer);
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 }
+
 /**
  * Sets the receiver's items to be the given array of items.
  *
@@ -924,14 +948,14 @@ public void setItem (int index, String string) {
  * </ul>
  */
 public void setItems (String [] items) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
 	removeAll ();
 	for (int i=0; i<items.length; i++) {
 		add (items [i]);
 	}
 }
+
 /**
  * Selects the item at the given zero-relative index in the receiver. 
  * If the item at the index was already selected, it remains selected.
@@ -948,9 +972,12 @@ public void setItems (String [] items) {
  * @see List#select(int)
  */
 public void setSelection (int index) {
+	checkWidget();
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (index);
+	showSelection ();
 }
+
 /**
  * Selects the items at the given zero-relative indices in the receiver. 
  * The current selected if first cleared, then the new items are selected.
@@ -967,9 +994,12 @@ public void setSelection (int index) {
  * @see Table#select(int,int)
  */
 public void setSelection (int start, int end) {
+	checkWidget();
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (start, end);
+	showSelection ();
 }
+
 /**
  * Selects the items at the given zero-relative indices in the receiver. 
  * The current selection is first cleared, then the new items are selected.
@@ -988,9 +1018,12 @@ public void setSelection (int start, int end) {
  * @see List#select(int[])
  */
 public void setSelection(int[] indices) {
+	checkWidget();
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (indices);
+	showSelection ();
 }
+
 /**
  * Sets the receiver's selection to be the given array of items.
  * The current selected is first cleared, then the new items are
@@ -1010,8 +1043,7 @@ public void setSelection(int[] indices) {
  * @see List#select(int)
  */
 public void setSelection (String [] items) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	for (int i=items.length-1; i>=0; --i) {
@@ -1020,13 +1052,18 @@ public void setSelection (String [] items) {
 		if (string != null) {
 			while ((index = indexOf (string, index)) != -1) {
 				select (index);
-				if (((style & SWT.SINGLE) != 0) && isSelected (index)) return;
+				if (((style & SWT.SINGLE) != 0) && isSelected (index)) {
+					showSelection ();
+					return;
+				}
 				index++;
 			}
 		}
 	}
 	if ((style & SWT.SINGLE) != 0) deselectAll ();
+	showSelection ();
 }
+
 /**
  * Sets the zero-relative index of the item which is currently
  * at the top of the receiver. This index can change when items
@@ -1041,10 +1078,10 @@ public void setSelection (String [] items) {
  */
 public void setTopIndex (int index) {
 	checkWidget();
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	//BUG IN GTK - doesn't scroll correctly before shell open
 	OS.gtk_clist_moveto (handle, index, 0, 0.0f, 0.0f);
-	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 }
+
 /**
  * Shows the selection.  If the selection is already showing in the receiver,
  * this method simply returns.  Otherwise, the items are scrolled until
@@ -1060,30 +1097,15 @@ public void setTopIndex (int index) {
  */
 public void showSelection () {
 	checkWidget();
-	/* FIXME */
+	GtkCList clist = new GtkCList ();
+	OS.memmove(clist, handle, GtkCList.sizeof);
+	int list = clist.selection;
+	if (OS.g_list_length (list) == 0) return;
+	int index = OS.g_list_nth_data (list, 0);
+	int visibility = OS.gtk_clist_row_is_visible (handle, index);
+	if (visibility == OS.GTK_VISIBILITY_FULL) return;
+	//BUG IN GTK - doesn't scroll correctly before shell open
+	OS.gtk_clist_moveto (handle, index, 0, 0.5f, 0.0f);
 }
 
-int processSelection (int int0, int int1, int int2) {
-	Event event = new Event();
-	event.widget=this;
-	sendEvent (SWT.Selection,event);
-	return 0;
-}
-int processMouseDown (int callData, int arg1, int int2) {
-	OS.gtk_widget_grab_focus(handle);
-	GdkEventButton gdkEvent = new GdkEventButton ();
-	OS.memmove (gdkEvent, callData, GdkEventButton.sizeof);
-	int eventType = SWT.MouseDown;
-	if (gdkEvent.type == OS.GDK_2BUTTON_PRESS) {
-		eventType = SWT.MouseDoubleClick;
-		Event event = new Event ();
-		event.widget=this;	
-		sendEvent (SWT.DefaultSelection, event);
-	}else
-		sendMouseEvent (eventType, gdkEvent.button, gdkEvent.state, gdkEvent.time, (int)gdkEvent.x, (int)gdkEvent.y);
-	if (gdkEvent.button == 3 && menu != null) {
-		menu.setVisible (true);
-	}
-	return 1;
-}
 }

@@ -26,6 +26,21 @@
 
 /*
  * Class:	org_eclipse_swt_internal_gtk_OS
+ * Method:	gtk_clist_row_is_visible
+ * Signature:	
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1clist_1row_1is_1visible
+  (JNIEnv *env, jclass that, jint clist, jint row)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "gtk_clist_row_is_visible");
+#endif
+
+	return gtk_clist_row_is_visible((GtkCList *)clist, (gint)row);
+}
+
+/*
+ * Class:	org_eclipse_swt_internal_gtk_OS
  * Method:	g_log_default_handler
  * Signature:	
  */
