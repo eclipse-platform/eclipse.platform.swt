@@ -94,25 +94,6 @@ public ToolBar (Composite parent, int style) {
 	OS.gtk_toolbar_set_orientation (handle, orientation);
 }
 
-Control [] _getChildren () {
-	Control [] children = super._getChildren ();
-	int count = 0;
-	ToolItem [] items = getItems ();
-	for (int i=0; i<items.length; i++) {
-		ToolItem item = items [i];
-		if (item != null && item.control != null) count++;
-	}
-	if (count == 0) return children;
-	Control [] newChildren = new Control [children.length + count];
-	System.arraycopy (children, 0, newChildren, 0, children.length);
-	int index = children.length;
-	for (int i=0; i<items.length; i++) {
-		ToolItem item = items [i];
-		if (item != null && item.control != null) newChildren [index++] = item.control;
-	}
-	return newChildren;
-}
-
 static int checkStyle (int style) {
 	/*
 	* Feature in GTK.  It is not possible to create
@@ -364,6 +345,14 @@ public int indexOf (ToolItem item) {
 	return -1;
 }
 
+void layoutItems () {
+	ToolItem [] items = getItems ();
+	for (int i=0; i<items.length; i++) {
+		ToolItem item = items [i];
+		if (item != null) item.resizeControl ();
+	}
+}
+
 boolean mnemonicHit (char key) {
 	ToolItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
@@ -403,6 +392,12 @@ void removeControl (Control control) {
 	}
 }
 
+boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	boolean changed = super.setBounds (x, y, width, height, move, resize);
+	if (changed && resize) layoutItems ();
+	return changed;
+}
+
 void setFontDescription (int /*long*/ font) {
 	super.setFontDescription (font);
 	ToolItem [] items = getItems ();
@@ -411,6 +406,7 @@ void setFontDescription (int /*long*/ font) {
 			items[i].setFontDescription (font);
 		}
 	}
+	layoutItems ();
 }
 
 void setForegroundColor (GdkColor color) {

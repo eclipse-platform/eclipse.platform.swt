@@ -238,11 +238,19 @@ void createHandle (int index) {
 void createWidget (int index) {
 	super.createWidget (index);
 	showWidget ();
+	parent.layoutItems ();
 }
 
 void deregister() {
 	super.deregister ();
 	if (labelHandle != 0) display.removeWidget (labelHandle);
+}
+
+public void dispose () {
+	if (isDisposed ()) return;
+	ToolBar parent = this.parent;
+	super.dispose ();
+	parent.layoutItems ();
 }
 
 /**
@@ -630,6 +638,25 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+void resizeControl () {
+	if (control != null && !control.isDisposed ()) {
+		/*
+		* Set the size and location of the control
+		* separately to minimize flashing in the
+		* case where the control does not resize
+		* to the size that was requested.  This
+		* case can occur when the control is a
+		* combo box.
+		*/
+		Rectangle itemRect = getBounds ();
+		control.setSize (itemRect.width, itemRect.height);
+		Rectangle rect = control.getBounds ();
+		rect.x = itemRect.x + (itemRect.width - rect.width) / 2;
+		rect.y = itemRect.y + (itemRect.height - rect.height) / 2;
+		control.setLocation (rect.x, rect.y);
+	}
+}
+
 void selectRadio () {
 	int index = 0;
 	ToolItem [] items = parent.getItems ();
@@ -663,22 +690,9 @@ public void setControl (Control control) {
 		if (control.parent != parent) error (SWT.ERROR_INVALID_PARENT);
 	}
 	if ((style & SWT.SEPARATOR) == 0) return;
-	Control newControl = control;
-	Control oldControl = this.control;
-	if (oldControl == newControl) return;
-	this.control = newControl;
-	int /*long*/ parentHandle = parent.parentingHandle ();
-	if (oldControl != null) {
-		OS.gtk_widget_reparent (oldControl.topHandle(), parentHandle);
-	}
-	if (newControl != null) {
-		OS.gtk_widget_reparent (newControl.topHandle(), parentHandle);
-		newControl.setBounds (getBounds ());
-		OS.gtk_widget_reparent (newControl.topHandle(), handle);
-		OS.gtk_widget_hide (separatorHandle);
-	} else {
-		OS.gtk_widget_show (separatorHandle);
-	}
+	if (this.control == control) return;
+	this.control = control;
+	resizeControl ();
 }
 
 /**
@@ -782,6 +796,7 @@ public void setImage (Image image) {
 		OS.gtk_image_set_from_pixmap (imageHandle, 0, 0);
 		OS.gtk_widget_hide (imageHandle);
 	}
+	parent.layoutItems ();
 }
 
 boolean setRadioSelection (boolean value) {
@@ -856,6 +871,7 @@ public void setText (String string) {
 	} else {
 		OS.gtk_widget_hide (labelHandle);
 	}
+	parent.layoutItems ();
 }
 
 /**
@@ -898,11 +914,7 @@ public void setWidth (int width) {
 	*/
 	int /*long*/ parentHandle = parent.parentingHandle ();
 	OS.gtk_container_resize_children (parentHandle);
-	if (control != null && !control.isDisposed ()) {
-		OS.gtk_widget_reparent (control.topHandle(), parentHandle);
-		control.setBounds (getBounds ());
-		OS.gtk_widget_reparent (control.topHandle(), handle);
-	}
+	parent.layoutItems ();
 }
 
 void showWidget () {
