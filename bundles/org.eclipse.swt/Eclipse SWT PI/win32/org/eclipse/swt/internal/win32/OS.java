@@ -474,6 +474,9 @@ public class OS {
 	public static final int LB_SETHORIZONTALEXTENT = 0x194;
 	public static final int LB_SETSEL = 0x185;
 	public static final int LB_SETTOPINDEX = 0x197;
+	public static final int LGRPID_ARABIC = 0xd;
+	public static final int LGRPID_HEBREW = 0xc;
+	public static final int LGRPID_INSTALLED = 1;
 	public static final int LCID_SUPPORTED = 0x2;
 	public static final int LOCALE_IDEFAULTANSICODEPAGE = 0x1004;
 	public static final int LOCALE_SISO3166CTRYNAME = 0x5a;
@@ -1303,14 +1306,14 @@ public static final int EnumFontFamilies (int hdc, TCHAR lpszFamily, int lpEnumF
 	return EnumFontFamiliesA (hdc, lpszFamily1, lpEnumFontFamProc, lParam);
 }
 
-public static final boolean EnumSystemCodePages (int lpCodePageEnumProc, int dwFlags) {
-	if (IsUnicode) return EnumSystemCodePagesW (lpCodePageEnumProc, dwFlags);
-	return EnumSystemCodePagesA (lpCodePageEnumProc, dwFlags);
-}
-
 public static final boolean EnumSystemLocales (int lpLocaleEnumProc, int dwFlags) {
 	if (IsUnicode) return EnumSystemLocalesW (lpLocaleEnumProc, dwFlags);
 	return EnumSystemLocalesA (lpLocaleEnumProc, dwFlags);
+}
+
+public static final boolean EnumSystemLanguageGroups (int pLangGroupEnumProc, int dwFlags, int lParam) {
+	if (IsUnicode) return EnumSystemLanguageGroupsW (pLangGroupEnumProc, dwFlags, lParam);
+	return EnumSystemLanguageGroupsA (pLangGroupEnumProc, dwFlags, lParam);
 }
 
 public static final int ExpandEnvironmentStrings (TCHAR lpSrc, TCHAR lpDst, int nSize) {
@@ -1987,8 +1990,8 @@ public static final native boolean Ellipse (int hdc,int nLeftRect,int nTopRect,i
 public static final native boolean EnableMenuItem (int hMenu, int uIDEnableItem, int uEnable);
 public static final native boolean EnableScrollBar (int hWnd, int wSBflags, int wArrows);
 public static final native boolean EnableWindow (int hWnd, boolean bEnable);
-public static final native boolean EnumSystemCodePagesW (int lpCodePageEnumProc, int dwFlags);
-public static final native boolean EnumSystemCodePagesA (int lpCodePageEnumProc, int dwFlags);
+public static final native boolean EnumSystemLanguageGroupsW(int pLangGroupEnumProc, int dwFlags, int lParam);
+public static final native boolean EnumSystemLanguageGroupsA(int pLangGroupEnumProc, int dwFlags, int lParam);
 public static final native boolean EnumSystemLocalesW (int lpLocaleEnumProc, int dwFlags);
 public static final native boolean EnumSystemLocalesA (int lpLocaleEnumProc, int dwFlags);
 public static final native boolean EndDeferWindowPos (int hWinPosInfo);

@@ -44,7 +44,7 @@
 #define NO_EndDoc
 #define NO_EndPage
 #define NO_EnumFontFamiliesA
-#define NO_EnumSystemCodePagesA
+#define NO_EnumSystemLanguageGroupsA
 #define NO_EnumSystemLocalesA
 #define NO_ExpandEnvironmentStringsW
 #define NO_ExpandEnvironmentStringsA
@@ -1422,25 +1422,55 @@ JNIEXPORT jint JNICALL OS_NATIVE(EnumFontFamiliesW)
 }
 #endif /* NO_EnumFontFamiliesW */
 
-#ifndef NO_EnumSystemCodePagesA
-JNIEXPORT jboolean JNICALL OS_NATIVE(EnumSystemCodePagesA)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+#ifndef NO_EnumSystemLanguageGroupsA
+JNIEXPORT jboolean JNICALL OS_NATIVE(EnumSystemLanguageGroupsA)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-	DEBUG_CALL("EnumSystemCodePagesA\n")
+    HMODULE hm;
+    FARPROC fp;
 
-	return (jboolean)EnumSystemCodePagesA((CODEPAGE_ENUMPROCA)arg0, arg1);
+	DEBUG_CALL("EnumSystemLanguageGroupsA\n")
+
+	/* SPECIAL */
+    /*
+    *  EnumSystemLanguageGroupsA is a Win2000 or later specific call
+    *  If you link it into swt.dll a system modal entry point not found dialog will
+    *  appear as soon as swt.dll is loaded. Here we check for the entry point and
+    *  only do the call if it exists.
+    */
+    if ((hm=GetModuleHandle("kernel32.dll")) && (fp=GetProcAddress(hm, "EnumSystemLanguageGroupsA"))) {
+
+        return (jboolean)(fp)((LANGUAGEGROUP_ENUMPROCA)arg0, arg1, (LONG_PTR)arg2);
+//		return (jboolean)EnumSystemLanguageGroupsA((LANGUAGEGROUP_ENUMPROCA)arg0, arg1, (LONG_PTR)arg2);
+	}
+	return 0;
 }
-#endif /* NO_EnumSystemCodePagesA */
+#endif /* NO_EnumSystemLanguageGroupsA */
 
-#ifndef NO_EnumSystemCodePagesW
-JNIEXPORT jboolean JNICALL OS_NATIVE(EnumSystemCodePagesW)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+#ifndef NO_EnumSystemLanguageGroupsW
+JNIEXPORT jboolean JNICALL OS_NATIVE(EnumSystemLanguageGroupsW)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-	DEBUG_CALL("EnumSystemCodePagesW\n")
+    HMODULE hm;
+    FARPROC fp;
 
-	return (jboolean)EnumSystemCodePagesW((CODEPAGE_ENUMPROCW)arg0, arg1);
+	DEBUG_CALL("EnumSystemLanguageGroupsW\n")
+
+	/* SPECIAL */
+    /*
+    *  EnumSystemLanguageGroupsW is a Win2000 or later specific call
+    *  If you link it into swt.dll a system modal entry point not found dialog will
+    *  appear as soon as swt.dll is loaded. Here we check for the entry point and
+    *  only do the call if it exists.
+    */
+    if ((hm=GetModuleHandle("kernel32.dll")) && (fp=GetProcAddress(hm, "EnumSystemLanguageGroupsW"))) {
+
+        return (jboolean)(fp)((LANGUAGEGROUP_ENUMPROCW)arg0, arg1, (LONG_PTR)arg2);
+//		return (jboolean)EnumSystemLanguageGroupsW((LANGUAGEGROUP_ENUMPROCW)arg0, arg1, (LONG_PTR)arg2);
+	}
+	return 0;
 }
-#endif /* NO_EnumSystemCodePagesW */
+#endif /* NO_EnumSystemLanguageGroupsW */
 
 #ifndef NO_EnumSystemLocalesA
 JNIEXPORT jboolean JNICALL OS_NATIVE(EnumSystemLocalesA)
