@@ -19,7 +19,7 @@ import org.eclipse.swt.events.*;
  * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>MULTI, SINGLE, READ_ONLY, WRAP</dd>
+ * <dd>CENTER, LEFT, MULTI, SINGLE, RIGHT, READ_ONLY, WRAP</dd>
  * <dt><b>Events:</b></dt>
  * <dd>DefaultSelection, Modify, Verify</dd>
  * </dl>
@@ -215,6 +215,7 @@ public void append (String string) {
 }
 
 static int checkStyle (int style) {
+	style = checkBits (style, SWT.LEFT, SWT.CENTER, SWT.RIGHT, 0, 0, 0);
 	if ((style & SWT.SINGLE) != 0) style &= ~(SWT.H_SCROLL | SWT.V_SCROLL);
 	if ((style & (SWT.SINGLE | SWT.MULTI)) != 0) return style;
 	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) return style | SWT.MULTI;
@@ -1513,6 +1514,8 @@ int wcsToMbcsPos (int wcsPos) {
 
 int widgetStyle () {
 	int bits = super.widgetStyle ();
+	if ((style & SWT.CENTER) != 0) bits |= OS.ES_CENTER;
+	if ((style & SWT.RIGHT) != 0) bits |= OS.ES_RIGHT;
 	if ((style & SWT.READ_ONLY) != 0) bits |= OS.ES_READONLY;
 	if ((style & SWT.SINGLE) != 0) return bits | OS.ES_AUTOHSCROLL;
 	bits |= OS.ES_MULTILINE | OS.ES_AUTOHSCROLL | OS.ES_NOHIDESEL;	

@@ -205,6 +205,7 @@ public void append (String string) {
 	replaceTXNText(OS.kTXNEndOffset, OS.kTXNEndOffset, string);
 }
 static int checkStyle (int style) {
+	style = checkBits (style, SWT.LEFT, SWT.CENTER, SWT.RIGHT, 0, 0, 0);
 	if ((style & SWT.SINGLE) != 0) style &= ~(SWT.H_SCROLL | SWT.V_SCROLL);
 	if ((style & (SWT.SINGLE | SWT.MULTI)) != 0) return style;
 	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
