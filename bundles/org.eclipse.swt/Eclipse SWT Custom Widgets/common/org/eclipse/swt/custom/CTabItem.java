@@ -78,7 +78,6 @@ public Control getControl () {
  * Answer the display of the receiver's parent widget.
  */
 public Display getDisplay() {
-	checkWidget();
 	if (parent == null) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getDisplay();
 }
