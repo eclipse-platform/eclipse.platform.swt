@@ -109,7 +109,7 @@ class DialogTab extends Tab {
 			dialog.setText (instance.getResourceString("Title"));
 			RGB result = dialog.open ();
 			textWidget.append (instance.getResourceString("ColorDialog") + Text.DELIMITER);
-			textWidget.append (instance.getResourceString("Result") + " " + result + Text.DELIMITER + Text.DELIMITER);
+			textWidget.append (instance.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER + Text.DELIMITER);
 			return;
 		}
 		
@@ -119,7 +119,7 @@ class DialogTab extends Tab {
 			dialog.setText (instance.getResourceString("Title"));
 			String result = dialog.open ();
 			textWidget.append (instance.getResourceString("DirectoryDialog") + Text.DELIMITER);
-			textWidget.append (instance.getResourceString("Result") + " " + result + Text.DELIMITER + Text.DELIMITER);
+			textWidget.append (instance.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER + Text.DELIMITER);
 			return;
 		}
 		
@@ -131,7 +131,7 @@ class DialogTab extends Tab {
 			dialog.setText (instance.getResourceString("Title"));
 			String result = dialog.open();
 			textWidget.append (instance.getResourceString("FileDialog") + Text.DELIMITER);
-			textWidget.append (instance.getResourceString("Result") + " " + result + Text.DELIMITER + Text.DELIMITER);
+			textWidget.append (instance.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER + Text.DELIMITER);
 			return;
 		}
 		
@@ -140,7 +140,7 @@ class DialogTab extends Tab {
 			dialog.setText (instance.getResourceString("Title"));
 			FontData result = dialog.open ();
 			textWidget.append (instance.getResourceString("FontDialog") + Text.DELIMITER);
-			textWidget.append (instance.getResourceString("Result") + " " + result + Text.DELIMITER + Text.DELIMITER);
+			textWidget.append (instance.getResourceString("Result", new String [] {"" + result}) + Text.DELIMITER + Text.DELIMITER);
 			return;
 		}
 	
@@ -156,28 +156,28 @@ class DialogTab extends Tab {
 			 */
 			switch (result) {
 				case SWT.OK:
-					textWidget.append (instance.getResourceString("Result") + "SWT.OK");
+					textWidget.append (instance.getResourceString("Result", new String [] {"SWT.OK"}));
 					break;
 				case SWT.YES:
-					textWidget.append (instance.getResourceString("Result") + "SWT.YES");
+					textWidget.append (instance.getResourceString("Result", new String [] {"SWT.YES"}));
 					break;
 				case SWT.NO:
-					textWidget.append (instance.getResourceString("Result") + "SWT.NO");
+					textWidget.append (instance.getResourceString("Result", new String [] {"SWT.NO"}));
 					break;
 				case SWT.CANCEL:
-					textWidget.append (instance.getResourceString("Result") + "SWT.CANCEL");
+					textWidget.append (instance.getResourceString("Result", new String [] {"SWT.CANCEL"}));
 					break;
 				case SWT.ABORT: 
-					textWidget.append (instance.getResourceString("Result") + "SWT.ABORT");
+					textWidget.append (instance.getResourceString("Result", new String [] {"SWT.ABORT"}));
 					break;
 				case SWT.RETRY:
-					textWidget.append (instance.getResourceString("Result") + "SWT.RETRY");
+					textWidget.append (instance.getResourceString("Result", new String [] {"SWT.RETRY"}));
 					break;
 				case SWT.IGNORE:
-					textWidget.append (instance.getResourceString("Result") + "SWT.IGNORE");
+					textWidget.append (instance.getResourceString("Result", new String [] {"SWT.IGNORE"}));
 					break;
 				default:
-					textWidget.append(instance.getResourceString("Result") + result);
+					textWidget.append(instance.getResourceString("Result", new String [] {"" + result}));
 					break;
 			}
 			textWidget.append (Text.DELIMITER + Text.DELIMITER);
