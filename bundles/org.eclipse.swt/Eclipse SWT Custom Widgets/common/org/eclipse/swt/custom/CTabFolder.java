@@ -975,7 +975,6 @@ private void setButtonBounds() {
 		int y = onBottom ? area.y + area.height - borderBottom - size.y : area.y + borderTop;
 		topRight.setBounds(x, y, size.x, size.y);
 		offset = size.x;
-		topRight.setVisible(true);
 	}
 	boolean leftVisible = scroll_leftVisible();
 	boolean rightVisible = scroll_rightVisible();
@@ -1623,11 +1622,10 @@ public void setTopRight(Control control) {
 	if (control != null && control.getParent() != this) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (topRight != null) {
-		topRight.setVisible (false);
-	}
+	if (topRight != null) topRight.setVisible (false);
 	topRight = control;
 	resetTabSize(true);
+	if (topRight != null) topRight.setVisible (true);
 }
 
 /**
@@ -1668,8 +1666,9 @@ public void showItem (CTabItem item) {
 		return;
 	}
 	int rightEdge = area.x + area.width;
-	if (scroll_leftVisible() || scroll_rightVisible()) {
-		rightEdge -=  arrowBar.getSize().x;
+	Rectangle rect = getToolSpace();
+	if (rect.width > 0) {
+		rightEdge -=  rect.width;
 	}
 	if (item.x + item.width < rightEdge) return;
 	setLastItem(index);
