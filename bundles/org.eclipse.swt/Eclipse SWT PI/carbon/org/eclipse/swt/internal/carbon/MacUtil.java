@@ -15,10 +15,14 @@ import org.eclipse.swt.graphics.*;
 public class MacUtil {
 
 	public final static boolean DEBUG;
-	public final static boolean JAGUAR;
 	public final static boolean USE_MENU_ICONS;
 	/** Prevent use of standard Mac shortcuts Cmd-Q, Cmd-H */
 	public final static boolean KEEP_MAC_SHORTCUTS;
+	public final static boolean USE_FRAME= false;
+	
+	public final static boolean FULL_KBD_NAV= true;
+	
+	public final static boolean HIVIEW= false;
 	
 	static final char MNEMONIC = '&';
 	
@@ -26,7 +30,6 @@ public class MacUtil {
 		DEBUG= false;
 		USE_MENU_ICONS= true;
 		KEEP_MAC_SHORTCUTS= true;
-		JAGUAR= System.getProperty("os.version").startsWith("10.2");
 	}
 	
 	//////////////////////////////////////////////////////////////////////
@@ -109,7 +112,7 @@ public class MacUtil {
 	}
 	
 	public static int OSEmbedControl(int controlHandle, int parentControlHandle) {
-		if (JAGUAR) {
+		if (true) {
 			/* 
 			 * in Jaguar it is no longer possible to use EmbedControl for rearranging children in a composite.
 			 * The fix is to temporarily move a child to its root control fisrt and then to its
