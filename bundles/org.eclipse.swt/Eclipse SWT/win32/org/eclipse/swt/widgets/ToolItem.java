@@ -381,6 +381,7 @@ public void setEnabled (boolean enabled) {
 	fsState &= ~OS.TBSTATE_ENABLED;
 	if (enabled) fsState |= OS.TBSTATE_ENABLED;
 	OS.SendMessage (hwnd, OS.TB_SETSTATE, id, fsState);
+	if (image != null) updateImages ();
 }
 
 /**
@@ -545,8 +546,11 @@ void updateImages () {
 		if (disabledImageList == null) disabledImageList = new ImageList ();
 		Image disabled = disabledImage;
 		if (disabledImage == null) {
-			Color color = parent.getBackground ();
-			disabled = disabledImage2 = createDisabledImage (image, color);
+			disabled = image;
+			if (!getEnabled ()) {
+				Color color = parent.getBackground ();
+				disabled = disabledImage2 = createDisabledImage (image, color);
+			}
 		}
 		disabledImageList.add (disabled);
 		parent.setDisabledImageList (disabledImageList);
@@ -564,8 +568,11 @@ void updateImages () {
 				disabledImage2 = null;
 				disabled = disabledImage;
 				if (disabledImage == null) {
-					Color color = parent.getBackground ();
-					disabled = disabledImage2 = createDisabledImage (image, color);
+					disabled = image;
+					if (!getEnabled ()) {
+						Color color = parent.getBackground ();
+						disabled = disabledImage2 = createDisabledImage (image, color);
+					}
 				}
 			}
 			disabledImageList.put (info.iImage, disabled);
