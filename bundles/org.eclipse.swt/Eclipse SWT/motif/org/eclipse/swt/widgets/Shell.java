@@ -458,7 +458,7 @@ void createHandle (int index) {
 	byte [] buffer = {(byte)' ', 0, 0, 0};
 	int ptr = OS.XtMalloc (buffer.length);
 	OS.memmove (ptr, buffer, buffer.length);
-	int [] argList = {
+	int [] argList1 = {
 		OS.XmNmwmInputMode, inputMode,
 		OS.XmNmwmDecorations, decorations,
 		OS.XmNoverrideRedirect, (style & SWT.ON_TOP) != 0 ? 1 : 0,
@@ -468,7 +468,7 @@ void createHandle (int index) {
 	if (parent == null && (style & SWT.ON_TOP) == 0) {
 		int xDisplay = display.xDisplay;
 		int widgetClass = OS.TopLevelShellWidgetClass ();
-		shellHandle = OS.XtAppCreateShell (display.appName, appClass, widgetClass, xDisplay, argList, argList.length / 2);
+		shellHandle = OS.XtAppCreateShell (display.appName, appClass, widgetClass, xDisplay, argList1, argList1.length / 2);
 	} else {
 		int widgetClass = OS.TransientShellWidgetClass ();
 //		if ((style & SWT.ON_TOP) != 0) {
@@ -476,7 +476,7 @@ void createHandle (int index) {
 //		}
 		int parentHandle = display.shellHandle;
 		if (parent != null) parentHandle = parent.handle;
-		shellHandle = OS.XtCreatePopupShell (appClass, widgetClass, parentHandle, argList, argList.length / 2);
+		shellHandle = OS.XtCreatePopupShell (appClass, widgetClass, parentHandle, argList1, argList1.length / 2);
 	}
 	OS.XtFree (ptr);
 	if (shellHandle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -492,8 +492,8 @@ void createHandle (int index) {
 	* on the client area.
 	*/
 	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.RESIZE)) == 0) {
-		int [] argList1 = {OS.XmNborderWidth, 1};
-		OS.XtSetValues (handle, argList1, argList1.length / 2);
+		int [] argList2 = {OS.XmNborderWidth, 1};
+		OS.XtSetValues (handle, argList2, argList2.length / 2);
 	}
 	
 	/*
@@ -501,8 +501,12 @@ void createHandle (int index) {
 	* status line. The fix is to force the status line to appear
 	* by creating a hidden text widget.  This is much safer than
 	* using X API because this may conflict with Motif.
+	*
+	* Note that  XmNtraversalOn must be set to FALSE or the shell
+	* will not take focus when the user clicks on it.
 	*/
-	int textHandle = OS.XmCreateTextField (handle, null, null, 0);
+	int [] argList3 = {OS.XmNtraversalOn, 0};
+	int textHandle = OS.XmCreateTextField (handle, null, argList3, argList3.length / 2);
 	if (textHandle == 0) error (SWT.ERROR_NO_HANDLES);
 }
 void deregister () {

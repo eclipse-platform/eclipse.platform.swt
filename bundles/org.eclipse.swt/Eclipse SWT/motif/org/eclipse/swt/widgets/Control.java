@@ -1051,6 +1051,7 @@ boolean mnemonicMatch (char key) {
  */
 public void moveAbove (Control control) {
 	checkWidget();
+	if (control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
 	setZOrder (control, true);
 }
 /**
@@ -1072,6 +1073,7 @@ public void moveAbove (Control control) {
  */
 public void moveBelow (Control control) {
 	checkWidget();
+	if (control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
 	setZOrder (control, false);
 }
 /**
@@ -2306,7 +2308,6 @@ void setZOrder (Control control, boolean above) {
 		}
 		return;
 	}
-	if (control.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	int topHandle2 = control.topHandle ();
 	if (display != OS.XtDisplay (topHandle2)) return;
 	if (!OS.XtIsRealized (topHandle2)) {
