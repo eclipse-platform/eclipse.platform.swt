@@ -804,7 +804,7 @@ public TableItem [] getItems () {
  */
 public boolean getLinesVisible() {
 	checkWidget();
-	return false;
+	return OS.gtk_tree_view_get_rules_hint (handle);
 }
 
 /**
@@ -1497,6 +1497,7 @@ public void setHeaderVisible (boolean show) {
  */
 public void setLinesVisible (boolean show) {
 	checkWidget();
+	OS.gtk_tree_view_set_rules_hint (handle, show);
 }
 
 /**

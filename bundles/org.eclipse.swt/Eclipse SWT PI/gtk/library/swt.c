@@ -5284,6 +5284,16 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_
 }
 #endif
 
+#ifndef NO_gtk_1tree_1view_1get_1rules_1hint
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1get_1rules_1hint
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1tree_1view_1get_1rules_1hint\n")
+
+	return (jboolean)gtk_tree_view_get_rules_hint((GtkTreeView *)arg0);
+}
+#endif
+
 #ifndef NO_gtk_1tree_1view_1get_1selection
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1get_1selection
 	(JNIEnv *env, jclass that, jint arg0)
@@ -5371,6 +5381,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1set
 	DEBUG_CALL("gtk_1tree_1view_1set_1model\n")
 
 	gtk_tree_view_set_model((GtkTreeView *)arg0, (GtkTreeModel *)arg1);
+}
+#endif
+
+#ifndef NO_gtk_1tree_1view_1set_1rules_1hint
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1set_1rules_1hint
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	DEBUG_CALL("gtk_1tree_1view_1set_1rules_1hint\n")
+
+	gtk_tree_view_set_rules_hint((GtkTreeView *)arg0, (gboolean)arg1);
 }
 #endif
 
