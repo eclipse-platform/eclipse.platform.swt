@@ -434,7 +434,7 @@ void createHandle () {
 	if (!embedded) {
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);	
 		bits &= ~(OS.WS_OVERLAPPED | OS.WS_CAPTION);
-		bits |= OS.WS_POPUP;
+		if (!OS.IsWinCE) bits |= OS.WS_POPUP;
 		if ((style & SWT.TITLE) != 0) bits |= OS.WS_CAPTION;
 		if ((style & SWT.NO_TRIM) == 0) {
 			if ((style & (SWT.BORDER | SWT.RESIZE)) == 0) bits |= OS.WS_BORDER;
@@ -1061,12 +1061,17 @@ int widgetStyle () {
 	* Feature in WinCE.  Calling CreateWindowEx () with WS_OVERLAPPED
 	* and a parent window causes the new window to become a WS_CHILD of
 	* the parent instead of a dialog child.  The fix is to use WS_POPUP
-	* instead.  
+	* for a window with a parent.  
+	* 
+	* Feature in WinCE PPC.  A window without a parent with WS_POPUP
+	* always shows on top of the Pocket PC 'Today Screen'. The fix
+	* is to not set WS_POPUP for a window without a parent on WinCE
+	* devices.
 	* 
 	* NOTE: WS_POPUP causes CreateWindowEx () to ignore CW_USEDEFAULT
 	* and causes the default window location and size to be zero.
 	*/
-	if (OS.IsWinCE) return bits | OS.WS_POPUP;
+	if (OS.IsWinCE) return parent == null ? bits : bits | OS.WS_POPUP;
 	
 	/*
 	* Use WS_OVERLAPPED for all windows, either dialog or top level
