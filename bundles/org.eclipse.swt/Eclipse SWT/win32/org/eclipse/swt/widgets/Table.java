@@ -1760,15 +1760,6 @@ public void setRedraw (boolean redraw) {
 	checkWidget ();
 	if (redraw) {
 		if (--drawCount == 0) {
-			/* Resize the item array to match the item count */
-			int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-			if (items.length > 4 && items.length - count > 3) {
-				TableItem [] newItems = new TableItem [(count + 3) / 4 * 4];
-				System.arraycopy (items, 0, newItems, 0, count);
-				items = newItems;
-			}
-			
-			setScrollWidth ();
 			/*
 			* This code is intentionally commented.  When many items
 			* are added to a table, it is slightly faster to temporarily
@@ -1780,6 +1771,16 @@ public void setRedraw (boolean redraw) {
 			* For now, don't attempt it.
 			*/
 //			subclass ();
+			
+			/* Resize the item array to match the item count */
+			int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+			if (items.length > 4 && items.length - count > 3) {
+				TableItem [] newItems = new TableItem [(count + 3) / 4 * 4];
+				System.arraycopy (items, 0, newItems, 0, count);
+				items = newItems;
+			}
+			
+			setScrollWidth ();
 
 			/*
 			* Bug in Windows.  For some reason, when WM_SETREDRAW is used 
@@ -1809,28 +1810,32 @@ public void setRedraw (boolean redraw) {
 			* behavior.  The commented code below shows what is actually
 			* happening and reminds us that we are relying on this
 			* undocumented behavior.
-			*
+			*/
+//			int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);	
+//			if (hwndHeader != 0) OS.SendMessage (hwndHeader, OS.WM_SETREDRAW, 1, 0);
+//			int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
+//			OS.RedrawWindow (handle, null, 0, flags);
+//			if (hwndHeader != 0) OS.RedrawWindow (hwndHeader, null, 0, flags);
+
+			/*
 			* NOTE: The window proc for the table does not redraw the
 			* non-client area (ie. the border and scroll bars).  This 
 			* must be explicitly redrawn.  This code can be removed
-			* if we stop relying on the undocuemented behavior.
+			* if we stop relying on the undocuemented behavior described
+			* above.
 			*/
 			if (OS.IsWinCE) {
 				OS.InvalidateRect (handle, null, false);
 			} else {
 				OS.RedrawWindow (handle, null, 0, OS.RDW_FRAME | OS.RDW_INVALIDATE);
 			}
-//			int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);	
-//			if (hwndHeader != 0) OS.SendMessage (hwndHeader, OS.WM_SETREDRAW, 1, 0);
-//			int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
-//			OS.RedrawWindow (handle, null, 0, flags);
-//			if (hwndHeader != 0) OS.RedrawWindow (hwndHeader, null, 0, flags);
 		}
 	} else {
 		if (drawCount++ == 0) {
 			OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 			int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 			if (hwndHeader != 0) OS.SendMessage (hwndHeader, OS.WM_SETREDRAW, 0, 0);
+			
 			/*
 			* This code is intentionally commented.  When many items
 			* are added to a table, it is slightly faster to temporarily
