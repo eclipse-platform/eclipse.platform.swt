@@ -343,6 +343,11 @@ public void setFont (Font font) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	this.font = font;
+	if (isVisible && parent.hasFocus()) {
+		int handle = parent.handle;
+		int [] argList = {OS.XmNfontList, font.handle};
+		OS.XmImSetValues (handle, argList, argList.length / 2);
+	}
 }
 /**
  * Sets the image that the receiver will use to paint the caret

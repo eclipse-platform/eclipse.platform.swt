@@ -1330,6 +1330,8 @@ int processIMEFocusIn () {
 	* XmImSetFocusValues.
 	*/
 	int[] argList = {
+//		OS.XmNforeground, getForegroundPixel(),
+//		OS.XmNbackground, getBackgroundPixel(),
 		OS.XmNspotLocation, ptr,
 		OS.XmNfontList, font.handle,
 	};
@@ -1385,6 +1387,7 @@ int processMouseDown (int callData) {
 	}
 	if (xEvent.button == 3 && menu != null) {
 		setFocus ();
+//		menu.setLocation (xEvent.x_root, xEvent.y_root);
 		menu.setVisible (true);
 	}
 	int clickTime = display.getDoubleClickTime ();
