@@ -304,7 +304,7 @@ public boolean back() {
 	if (result[0] == 0) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_ERROR_NO_INTERFACE));
 	
 	nsIWebNavigation webNavigation = new nsIWebNavigation(result[0]);		 	
-	webNavigation.GoBack();	
+	rc = webNavigation.GoBack();	
 	webNavigation.Release();
 	
 	return rc == XPCOM.NS_OK;
@@ -483,9 +483,9 @@ public boolean forward() {
 	if (result[0] == 0) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_ERROR_NO_INTERFACE));
 	
 	nsIWebNavigation webNavigation = new nsIWebNavigation(result[0]);
-	webNavigation.GoForward();
+	rc = webNavigation.GoForward();
 	webNavigation.Release();
-	
+
 	return rc == XPCOM.NS_OK;
 }
 
