@@ -380,25 +380,19 @@ public void setText (String string) {
 		OS.SetBevelButtonContentInfo(handle, inContent);
 	}
 	isImage = false;
-	char [] buffer;
 	int length = text.length ();
-	if (length == 0) {
-		buffer = new char [] {' '};
-		length = 1;
-	} else {
-		buffer = new char [length];
-		text.getChars (0, buffer.length, buffer, 0);
-		int i=0, j=0;
-		while (i < buffer.length) {
-			if ((buffer [j++] = buffer [i++]) == Mnemonic) {
-				if (i == buffer.length) {continue;}
-				if (buffer [i] == Mnemonic) {i++; continue;}
-				j--;
-			}
+	String s = (length == 0) ? " ": text;
+	char [] buffer = new char [length];
+	s.getChars (0, buffer.length, buffer, 0);
+	int i=0, j=0;
+	while (i < buffer.length) {
+		if ((buffer [j++] = buffer [i++]) == Mnemonic) {
+			if (i == buffer.length) {continue;}
+			if (buffer [i] == Mnemonic) {i++; continue;}
+			j--;
 		}
-		length = j;
 	}
-	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, length);
+	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, j);
 	if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 	OS.SetControlTitleWithCFString (handle, ptr);
 	OS.CFRelease (ptr);
