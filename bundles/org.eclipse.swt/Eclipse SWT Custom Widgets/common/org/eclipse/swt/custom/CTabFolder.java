@@ -241,14 +241,14 @@ static int[] bezier(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int 
 	// The parametric equations for a Bezier curve for x[t] and y[t] where  0 <= t <=1 are:
 	// x[t] = x0+3(x1-x0)t+3(x0+x2-2x1)t^3+(x3-x0+3x1-3x2)t^3
 	// y[t] = y0+3(y1-y0)t+3(y0+y2-2y1)t^2+(y3-y0+3y1-3y2)t^3
-	int a0 = x0;
-	int a1 = 3*(x1 - x0);
-	int a2 = 3*(x0 + x2 - 2*x1);
-	int a3 = x3 - x0 + 3*x1 - 3*x2;
-	int b0 = y0;
-	int b1 = 3*(y1 - y0);
-	int b2 = 3*(y0 + y2 - 2*y1);
-	int b3 = y3 - y0 + 3*y1 - 3*y2;
+	double a0 = x0;
+	double a1 = 3*(x1 - x0);
+	double a2 = 3*(x0 + x2 - 2*x1);
+	double a3 = x3 - x0 + 3*x1 - 3*x2;
+	double b0 = y0;
+	double b1 = 3*(y1 - y0);
+	double b2 = 3*(y0 + y2 - 2*y1);
+	double b3 = y3 - y0 + 3*y1 - 3*y2;
 
 	int[] polygon = new int[2*count + 2];
 	for (int i = 0; i <= count; i++) {
