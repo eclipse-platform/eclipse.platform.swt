@@ -36,7 +36,26 @@ import org.eclipse.swt.internal.carbon.*;
  * </p>
  */
 public /*final*/ class Button extends Control {
-	Image image, bitmap, disabled;
+	Image image;
+	
+	// AW
+	private boolean fImageMode;
+	private int fAlignment;
+	private int fCIconHandle;
+	
+	private static final int SHADOW_WIDTH;
+	private static final int SHADOW_HEIGHT;
+	// AW
+	
+	static {
+		if (! MacUtil.JAGUAR) {
+			SHADOW_WIDTH= 3;
+			SHADOW_HEIGHT= 3;
+		} else {
+			SHADOW_WIDTH= 0;
+			SHADOW_HEIGHT= 0;
+		}
+	}
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -124,6 +143,7 @@ void click () {
     /* AW
 	OS.XtCallActionProc (handle, ARM_AND_ACTIVATE, new XAnyEvent (), null, 0);
     */
+    System.out.println("Button.click: nyi");
 }
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
@@ -143,9 +163,28 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	OS.XtQueryGeometry (handle, null, result);
 	int [] argList3 = {OS.XmNrecomputeSize, 0};
 	OS.XtSetValues(handle, argList3, argList3.length / 2);
-	width += result.width;
-	height += result.height;
-    */
+	*/
+	Point result= MacUtil.computeSize(handle);
+	if ((style & SWT.PUSH) != 0) {
+		if (MacUtil.JAGUAR) {
+			
+		} else {
+			String s= getText();
+			if (s != null && s.length() > 0) {
+				GC gc= new GC(this);
+				result= gc.textExtent(s);
+				gc.dispose();
+			} else if (image != null) {
+				Rectangle bounds= image.getBounds();
+				result.x= bounds.width;
+				result.y= bounds.height;
+			}
+			result.x= SHADOW_WIDTH + 16 + result.x + 16 + SHADOW_WIDTH;
+			result.y= SHADOW_HEIGHT + 4 + result.y + 4 + SHADOW_HEIGHT;
+		}
+	}
+	width += result.x;
+	height += result.y;
 	/*
 	 * Feature in Motif. If a button's labelType is XmSTRING but it
 	 * has no label set into it yet, recomputing the size will
@@ -161,21 +200,31 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		int xmString = argList1 [1];
 		if (OS.XmStringEmpty (xmString)) height += getFontHeight ();
 	}
+	*/
 	if (wHint != SWT.DEFAULT || hHint != SWT.DEFAULT) {
+		/* AW
 		int [] argList4 = new int [] {OS.XmNmarginLeft, 0, OS.XmNmarginRight, 0, OS.XmNmarginTop, 0, OS.XmNmarginBottom, 0};
 		OS.XtGetValues (handle, argList4, argList4.length / 2);
 		if (wHint != SWT.DEFAULT) width = wHint + argList4 [1] + argList4 [3] + (border * 2);
 		if (hHint != SWT.DEFAULT) height = hHint + argList4 [5] + argList4 [7] + (border * 2);
+		*/
+		int left= 0;
+		int right= 0;
+		int top= 0;
+		int bottom= 0;
+		
+		if (wHint != SWT.DEFAULT) width = wHint + left + right;
+		if (hHint != SWT.DEFAULT) height = hHint + top + bottom;
 	}
-    */
-	Point size= MacUtil.computeSize(handle);
 	
+	/*
 	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
 		size.x -= 14;
 		size.y += 6;
 	}
-		
-	return size;
+	*/
+	
+	return new Point(width, height);
 }
 void createHandle (int index) {
 	state |= HANDLE;
@@ -186,6 +235,7 @@ void createHandle (int index) {
 
 	/* ARROW button */
 	if ((style & SWT.ARROW) != 0) {
+		System.out.println("Button.createHandle(Arrow): nyi");
         /*
 		int alignment = OS.XmARROW_UP;
 		if ((style & SWT.UP) != 0) alignment = OS.XmARROW_UP;
@@ -241,6 +291,7 @@ void createHandle (int index) {
         */
 		handle= MacUtil.newControl(parentHandle, (short)0, OS.kControlBehaviorToggles, (short)0, OS.kControlBevelButtonNormalBevelProc);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+		setFont(defaultFont());
 		return;
 	}
 
@@ -284,7 +335,7 @@ void createHandle (int index) {
     */
 	short type= (style & SWT.FLAT) != 0
 					? OS.kControlBevelButtonNormalBevelProc
-					: OS.kControlPushButtonProc; // OS.kControlPushButLeftIconProc; // 
+					: OS.kControlPushButtonProc;
     handle= MacUtil.newControl(parentHandle, (short)0, (short)0, (short)0, type);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	setFont(defaultFont());
@@ -293,15 +344,6 @@ void createHandle (int index) {
 		int [] argList1 = {OS.XmNshadowThickness, 1};
 		OS.XtSetValues (handle, argList1, argList1.length / 2);
 	}
-	*/
-}
-void createWidget (int index) {
-	super.createWidget (index);
-	if ((style & SWT.PUSH) == 0) return;
-	if (getShell ().parent == null) return;
-	/* AW
-	int [] argList = new int [] {OS.XmNdefaultButtonShadowThickness, 1};
-	OS.XtSetValues (handle, argList, argList.length / 2);
 	*/
 }
 int defaultBackground () {
@@ -331,34 +373,10 @@ int defaultForeground () {
  */
 public int getAlignment () {
 	checkWidget();
-    /*
-	if ((style & SWT.ARROW) != 0) {
-		int [] argList = {OS.XmNarrowDirection, 0};
-		OS.XtGetValues (handle, argList, argList.length / 2);
-		int direction = argList [1];
-		if (direction == OS.XmARROW_UP) return SWT.UP;
-		if (direction == OS.XmARROW_DOWN) return SWT.DOWN;
-		if (direction == OS.XmARROW_LEFT) return SWT.LEFT;
-		if (direction == OS.XmARROW_RIGHT) return SWT.RIGHT;
-		return SWT.UP;
-	}
-	int [] argList = {OS.XmNalignment, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	int alignment = argList [1];
-	if (alignment == OS.XmALIGNMENT_BEGINNING) return SWT.LEFT;
-	if (alignment == OS.XmALIGNMENT_CENTER) return SWT.CENTER;
-	if (alignment == OS.XmALIGNMENT_END)return SWT.RIGHT;
-    */
-	System.out.println("Button.getAlignment: nyi");
-    return 0;
+    return fAlignment;
 }
 boolean getDefault () {
 	if ((style & SWT.PUSH) == 0) return false;
-    /* AW
-	int [] argList = {OS.XmNshowAsDefault, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	return argList [1] != 0;
-    */
     int[] control= new int[1];
 	OS.GetWindowDefaultButton(OS.GetControlOwner(handle), control);
 	return control[0] == handle;
@@ -400,11 +418,6 @@ String getNameText () {
 public boolean getSelection () {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return false;
-    /* AW
-	int [] argList = {OS.XmNset, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	return argList [1] != 0;
-    */
     return OS.GetControl32BitValue(handle) != 0;
 }
 /**
@@ -421,49 +434,6 @@ public boolean getSelection () {
 public String getText () {
 	checkWidget();
 	if ((style & SWT.ARROW) != 0) return "";
-    /* AW
-	int [] argList = {OS.XmNlabelString, 0, OS.XmNmnemonic, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	int xmString = argList [1];
-	int mnemonic = argList [3];
-	if (mnemonic == OS.XK_VoidSymbol) mnemonic = 0;
-	if (xmString == 0) error (SWT.ERROR_CANNOT_GET_TEXT);
-	char [] result = null;
-	int address = OS.XmStringUnparse (
-		xmString,
-		null,
-		OS.XmCHARSET_TEXT,
-		OS.XmCHARSET_TEXT,
-		null,
-		0,
-		OS.XmOUTPUT_ALL);
-	if (address != 0) {
-		int length = OS.strlen (address);
-		byte [] buffer = new byte [length];
-		OS.memmove (buffer, address, length);
-		OS.XtFree (address);
-		result = Converter.mbcsToWcs (getCodePage (), buffer);
-	}
-	if (xmString != 0) OS.XmStringFree (xmString);
-	int count = 0;
-	if (mnemonic != 0) count++;
-	for (int i=0; i<result.length-1; i++)
-		if (result [i] == Mnemonic) count++;
-	char [] newResult = result;
-	if ((count != 0) || (mnemonic != 0)) {
-		newResult = new char [result.length + count];
-		int i = 0, j = 0;
-		while (i < result.length) {
-			if ((mnemonic != 0) && (result [i] == mnemonic)) {
-				if (j < newResult.length) newResult [j++] = Mnemonic;
-				mnemonic = 0;
-			}
-			if ((newResult [j++] = result [i++]) == Mnemonic)
-				if (j < newResult.length) newResult [j++] = Mnemonic;
-		}
-	}
-	return new String (newResult);
-    */
 	int sHandle[]= new int[1];
     OS.GetControlTitleAsCFString(handle, sHandle);
 	return MacUtil.getStringAndRelease(sHandle[0]);
@@ -520,9 +490,13 @@ void releaseWidget () {
 	};
 	OS.XtSetValues (handle, argList, argList.length / 2);
     */
-	if (bitmap != null) bitmap.dispose ();
-	if (disabled != null) disabled.dispose ();
-	image = bitmap = disabled = null;
+    if (fCIconHandle != 0) {
+    	if (handle != 0)
+    		OS.SetBevelButtonContentInfo(handle, (short)0, 0);
+		Image.DisposeCIcon(fCIconHandle);
+		fCIconHandle= 0;
+    }
+	image = null;
 }
 /**
  * Removes the listener from the collection of listeners who will
@@ -582,85 +556,18 @@ void selectRadio () {
  */
 public void setAlignment (int alignment) {
 	checkWidget();
-    /* AW
 	if ((style & SWT.ARROW) != 0) {
-		int [] argList = {OS.XmNarrowDirection, OS.XmARROW_UP};
-		if ((alignment & SWT.UP) != 0) argList [1] = OS.XmARROW_UP;
-		if ((alignment & SWT.DOWN) != 0) argList [1] = OS.XmARROW_DOWN;
-		if ((alignment & SWT.LEFT) != 0) argList [1] = OS.XmARROW_LEFT;
-		if ((alignment & SWT.RIGHT) != 0) argList [1] = OS.XmARROW_RIGHT;
-		OS.XtSetValues (handle, argList, argList.length / 2);
+		fAlignment= alignment;
+		System.out.println("Button.setAlignment: nyi");
 		return;
 	}
-    */
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
-    /* AW
-	int [] argList = {OS.XmNalignment, OS.XmALIGNMENT_BEGINNING};
-	if ((alignment & SWT.CENTER) != 0) argList [1] = OS.XmALIGNMENT_CENTER;
-	if ((alignment & SWT.RIGHT) != 0) argList [1] = OS.XmALIGNMENT_END;
-	OS.XtSetValues (handle, argList, argList.length / 2);
-    */
+	fAlignment= alignment;
 	System.out.println("Button.setAlignment: nyi");
-}
-void setBackgroundPixel (int pixel) {
-	super.setBackgroundPixel (pixel);
-	/* AW
-	int [] argList = {OS.XmNlabelType, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	if (argList [1] == OS.XmPIXMAP) setBitmap (image);
-	*/
-}
-void setBitmap (Image image) {
-    /* AW
-	int labelPixmap = OS.XmUNSPECIFIED_PIXMAP;
-	int labelInsensitivePixmap = OS.XmUNSPECIFIED_PIXMAP;
-    */
-	if (bitmap != null) bitmap.dispose ();
-	if (disabled != null) disabled.dispose ();
-	bitmap = disabled = null;
-	if (image != null) {
-		if (image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-        /* AW
-		Display display = getDisplay ();
-		switch (image.type) {
-			case SWT.BITMAP:
-				labelPixmap = image.pixmap;
-				disabled = new Image (display, image, SWT.IMAGE_DISABLE);
-				labelInsensitivePixmap = disabled.pixmap;
-				break;
-			case SWT.ICON:
-				Rectangle rect = image.getBounds ();
-				bitmap = new Image (display, rect.width, rect.height);
-				GC gc = new GC (bitmap);
-				gc.setBackground (getBackground ());
-				gc.fillRectangle (rect);
-				gc.drawImage (image, 0, 0);
-				gc.dispose ();
-				labelPixmap = bitmap.pixmap;
-				disabled = new Image (display, bitmap, SWT.IMAGE_DISABLE);
-				labelInsensitivePixmap = disabled.pixmap;
-				break;
-			default:
-				error (SWT.ERROR_NOT_IMPLEMENTED);
-		}
-        */
-	}
-    /* AW
-	int [] argList = {
-		OS.XmNlabelType, OS.XmPIXMAP,
-		OS.XmNlabelPixmap, labelPixmap,
-		OS.XmNlabelInsensitivePixmap, labelInsensitivePixmap,
-	};
-	OS.XtSetValues (handle, argList, argList.length / 2);
-    */
 }
 void setDefault (boolean value) {
 	if ((style & SWT.PUSH) == 0) return;
 	if (getShell ().parent == null) return;
-    /* AW
-	int [] argList = {OS.XmNshowAsDefault, (value ? 1 : 0)};
-	OS.XtSetValues (handle, argList, argList.length / 2);
-    */
 	OS.SetWindowDefaultButton(OS.GetControlOwner(handle), value ? handle : 0);
 }
 /**
@@ -679,7 +586,21 @@ void setDefault (boolean value) {
  */
 public void setImage (Image image) {
 	checkWidget();
-	setBitmap (this.image = image);
+	
+	this.image = image;
+	
+	if (fCIconHandle != 0) {
+		Image.DisposeCIcon(fCIconHandle);
+		fCIconHandle= 0;
+	}
+	
+	if (image != null) {
+		if (image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+		fCIconHandle= Image.carbon_createCIcon(image);
+		if (fCIconHandle != 0)
+			setMode(fCIconHandle);
+	} else 
+		setMode(0);
 }
 /**
  * Sets the selection state of the receiver, if it is of type <code>CHECK</code>, 
@@ -700,10 +621,6 @@ public void setImage (Image image) {
 public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
-    /*
-	int [] argList = {OS.XmNset, selected ? 1 : 0};
-	OS.XtSetValues (handle, argList, argList.length / 2);
-    */
 	OS.SetControl32BitValue(handle, selected ? 1 : 0);
 }
 /**
@@ -727,42 +644,12 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.ARROW) != 0) return;
-	char [] text = new char [string.length ()];
-	string.getChars (0, text.length, text, 0);
-	int i=0, j=0, mnemonic=0;
-	while (i < text.length) {
-		if ((text [j++] = text [i++]) == Mnemonic) {
-			if (i == text.length) {continue;}
-			if (text [i] == Mnemonic) {i++; continue;}
-			if (mnemonic == 0) mnemonic = text [i];
-			j--;
-		}
-	}
-    /* AW
-	while (j < text.length) text [j++] = 0;
-	byte [] buffer = Converter.wcsToMbcs (getCodePage (), text, true);
-	int xmString = OS.XmStringParseText (
-		buffer,
-		0,
-		OS.XmFONTLIST_DEFAULT_TAG,
-		OS.XmCHARSET_TEXT,
-		null,
-		0,
-		0);
-	if (xmString == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
-	if (mnemonic == 0) mnemonic = OS.XK_VoidSymbol;
-	int [] argList = {
-		OS.XmNlabelType, OS.XmSTRING,
-		OS.XmNlabelString, xmString,
-		OS.XmNmnemonic, mnemonic,
-	};
-	OS.XtSetValues (handle, argList, argList.length / 2);
-	if (xmString != 0) OS.XmStringFree (xmString);
-    */
+	
 	int sHandle= 0;
 	try {
-		sHandle= OS.CFStringCreateWithCharacters(new String(text, 0, j));
-		OS.SetControlTitleWithCFString(handle, sHandle);
+		sHandle= OS.CFStringCreateWithCharacters(MacUtil.removeMnemonics(string));
+		if (OS.SetControlTitleWithCFString(handle, sHandle) != OS.kNoErr)
+			error (SWT.ERROR_CANNOT_SET_TEXT);
 	} finally {
 		if (sHandle != 0)
 			OS.CFRelease(sHandle);
@@ -773,17 +660,57 @@ public void setText (String string) {
 // Mac stuff
 ////////////////////////////////////////////////////////
 
+private void setMode(int icon) {
+	
+	if ((style & SWT.FLAT) != 0 || fImageMode) {
+		OS.SetBevelButtonContentInfo(handle, OS.kControlContentCIconHandle, icon);
+		return;
+	}
+
+	if ((style & SWT.PUSH) == 0)
+		return;	// we only transmogrify push buttons
+	
+	fImageMode= true;
+	
+	int[] ph= new int[1];
+	int rc= OS.GetSuperControl(handle, ph);
+	if (rc != OS.kNoErr)
+		System.out.println("Button.setMode: " + rc);
+	int parentHandle= ph[0];
+	
+	MacRect bounds= new MacRect();
+	OS.GetControlBounds(handle, bounds.getData());
+	
+	int index= MacUtil.indexOf(parentHandle, handle);
+	if (index < 0)
+		System.out.println("Button.setMode: can't find handle");
+	Widget w= WidgetTable.get(handle);
+	WidgetTable.remove(handle);
+	OS.DisposeControl(handle);
+	
+	short type= icon != 0 ? OS.kControlBevelButtonNormalBevelProc : OS.kControlPushButtonProc;
+		
+    handle= MacUtil.newControl(parentHandle, index, (short)0, (short)0, (short)0, type);
+	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	WidgetTable.put(handle, w);
+	
+	OS.SetControlBounds(handle, bounds.getData());
+	OS.SetBevelButtonContentInfo(handle, OS.kControlContentCIconHandle, icon);
+}
+
 /**
  * Overridden from Control.
  * x and y are relative to window!
  */
 void handleResize(int hndl, int x, int y, int width, int height) {
-	// for push buttons
-	int style= getStyle();
-	if ((style & SWT.PUSH) != 0) {
-		super.handleResize(hndl, x+3, y+3, width-6, height-6);
-	} else
-		super.handleResize(hndl, x, y, width, height);
+	if (!MacUtil.JAGUAR) {
+		int style= getStyle();
+		if ((style & SWT.PUSH) != 0) {	// for push buttons
+			super.handleResize(hndl, x+SHADOW_WIDTH, y+SHADOW_HEIGHT, width-2*SHADOW_WIDTH, height-2*SHADOW_HEIGHT);
+			return;
+		}
+	}
+	super.handleResize(hndl, x, y, width, height);
 }
 
 }
