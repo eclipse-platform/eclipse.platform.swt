@@ -1171,6 +1171,7 @@ public class StyledText extends Canvas {
 	class ContentWidthCache implements LineCache {
 		StyledText parent;				// parent widget, used to create a GC for line measuring
 		int[] lineWidth;				// width in pixel of each line in the document, -1 for unknown width
+		StyledTextContent content;		// content to use for line width calculation
 		int lineCount;					// number of lines in lineWidth array
 		int maxWidth;					// maximum line width of all measured lines
 		int maxWidthLineIndex;			// index of the widest line
@@ -1184,9 +1185,10 @@ public class StyledText extends Canvas {
 	 * 	line measuring
 	 * @param lineCount initial number of lines to allocate space for
 	 */
-	public ContentWidthCache(StyledText parent, int lineCount) {
-		this.lineCount = lineCount;
+	public ContentWidthCache(StyledText parent, StyledTextContent content) {
 		this.parent = parent;
+		this.content = content;
+		this.lineCount = content.getLineCount();
 		lineWidth = new int[lineCount];
 		reset(0, lineCount, false);
 	}
@@ -1613,7 +1615,7 @@ public StyledText(Composite parent, int style) {
 		setWordWrap(true);
 	}
 	else {
-	    lineCache = new ContentWidthCache(this, content.getLineCount());
+	    lineCache = new ContentWidthCache(this, content);
 	}	
 	if (isBidi() == false) {
 		Caret caret = new Caret(this, SWT.NULL);
@@ -2091,38 +2093,30 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	else {
 		width = DEFAULT_WIDTH;
 	}
-
-	if (wordWrap) {
-		if (((WrappedContent) content).getVisualLineCount() != 0) {
-			// lines have already been wrapped to a specific width.
-			// use existing line count. fixes bug 9191
-			if (wHint == SWT.DEFAULT) {
-				width = lineCache.getWidth();
-			} else {
-				((WrappedContent) content).wrapLines(width);
-			  	// caret may be on a different line after a rewrap
-		  		setCaretLocation();
-			}	
+	if (wHint == SWT.DEFAULT) {
+		LineCache computeLineCache = lineCache;
+		if (wordWrap) {
+			// set non-wrapping content width calculator. Ensures ideal line width 
+			// that does not required wrapping. Fixes bug 31195.
+			computeLineCache = new ContentWidthCache(this, logicalContent);
 			if (singleLine == false) {
-				count = content.getLineCount();
+				count = logicalContent.getLineCount();
 			}
 		}
-		else {
-			if (singleLine == false) {
-				((WrappedContent) content).wrapLines(width);
-			  	// caret may be on a different line after a rewrap
-		  		setCaretLocation();
-				count = content.getLineCount();
-			}
-		}
-	}
-	else if (wHint == SWT.DEFAULT) {
 		// Only calculate what can actually be displayed.
 		// Do this because measuring each text line is a 
 		// time-consuming process.
 		int visibleCount = Math.min (count, getDisplay().getBounds().height / lineHeight);
-		lineCache.calculate(0, visibleCount);
-		width = lineCache.getWidth() + leftMargin + rightMargin;
+		computeLineCache.calculate(0, visibleCount);
+		width = computeLineCache.getWidth() + leftMargin + rightMargin;
+	}
+	else
+	if (wordWrap && singleLine == false) {
+		// calculate to wrap to width hint. Fixes bug 20377. 
+		// don't wrap live content. Fixes bug 38344.
+		WrappedContent wrappedContent = new WrappedContent(renderer, logicalContent);
+		wrappedContent.wrapLines(width);
+		count = wrappedContent.getLineCount();
 	}
 	if (hHint != SWT.DEFAULT) {
 		height = hHint;
@@ -3968,7 +3962,7 @@ LineCache getLineCache(StyledTextContent content) {
 	    lineCache = new WordWrapCache(this, (WrappedContent) content);
 	}
 	else {
-	    lineCache = new ContentWidthCache(this, content.getLineCount());
+	    lineCache = new ContentWidthCache(this, content);
 	}
 	return lineCache;
 }
