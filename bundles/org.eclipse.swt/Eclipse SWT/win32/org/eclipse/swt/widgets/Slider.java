@@ -721,14 +721,6 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 	
 	/*
-	* Feature in Windows.  For some reason, capturing
-	* the mouse after processing WM_LBUTTONDBLCLK for the
-	* widget interferes with the normal mouse processing
-	* for the widget.  The fix is to avoid the automatic
-	* mouse capture.
-	*/
-
-	/*
 	* Feature in Windows.  Windows uses the WS_TABSTOP
 	* style for the scroll bar to decide that focus
 	* should be set during WM_LBUTTONDBLCLK.  This is
@@ -736,37 +728,27 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 	* and restore WS_TABSTOP so that Windows will not
 	* assign focus.
 	*/
-
-	int hwndCapture = OS.GetCapture ();
 	int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	int newBits = oldBits & ~OS.WS_TABSTOP;
 	OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);	
 	LRESULT result = super.WM_LBUTTONDBLCLK (wParam, lParam);
 	OS.SetWindowLong (handle, OS.GWL_STYLE, oldBits);
-	if (hwndCapture != 0 && OS.GetCapture () != hwndCapture) {
-		OS.SetCapture (hwndCapture);
-	}
 	
 	/*
 	* Feature in Windows.  Windows runs a modal message loop
 	* when the user drags a scroll bar that terminates when
 	* it sees an WM_LBUTTONUP.  Unfortunately the WM_LBUTTONUP
-	* is consumed.  The fix is to send a fake mouse up.
-	*/	
-	sendMouseEvent (SWT.MouseUp, 1, OS.WM_LBUTTONUP, wParam, lParam);	
+	* is consumed.  The fix is to send a fake mouse up and
+	* release the automatic capture.
+	*/
+	if (!OS.IsWinCE) {
+		sendMouseEvent (SWT.MouseUp, 1, OS.WM_LBUTTONUP, wParam, lParam);
+		if (OS.GetCapture () == handle) OS.ReleaseCapture ();
+	}
 	return result;
 }
 
 LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
-	
-	/*
-	* Feature in Windows.  For some reason, capturing
-	* the mouse after processing WM_LBUTTONDOWN for the
-	* widget interferes with the normal mouse processing
-	* for the widget.  The fix is to avoid the automatic
-	* mouse capture.
-	*/
-
 	/*
 	* Feature in Windows.  Windows uses the WS_TABSTOP
 	* style for the scroll bar to decide that focus
@@ -775,24 +757,23 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	* and restore WS_TABSTOP so that Windows will not
 	* assign focus.
 	*/
-
-	int hwndCapture = OS.GetCapture ();
 	int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	int newBits = oldBits & ~OS.WS_TABSTOP;
-	OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);	
+	OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
 	LRESULT result = super.WM_LBUTTONDOWN (wParam, lParam);
 	OS.SetWindowLong (handle, OS.GWL_STYLE, oldBits);
-	if (hwndCapture != 0 && OS.GetCapture () != hwndCapture) {
-		OS.SetCapture (hwndCapture);
-	}
-	
+
 	/*
 	* Feature in Windows.  Windows runs a modal message loop
 	* when the user drags a scroll bar that terminates when
 	* it sees an WM_LBUTTONUP.  Unfortunately the WM_LBUTTONUP
-	* is consumed.  The fix is to send a fake mouse up.
+	* is consumed.  The fix is to send a fake mouse up and
+	* release the automatic capture.
 	*/	
-	sendMouseEvent (SWT.MouseUp, 1, OS.WM_LBUTTONUP, wParam, lParam);
+	if (!OS.IsWinCE) {
+		sendMouseEvent (SWT.MouseUp, 1, OS.WM_LBUTTONUP, wParam, lParam);
+		if (OS.GetCapture () == handle) OS.ReleaseCapture ();
+	}
 	return result;
 }
 
