@@ -145,7 +145,7 @@ public void test_getSelection() {
 }
 
 public void test_getThumb() {
-	warnUnimpl("Test test_getThumb not written");
+	// tested in test_setThumb() method
 }
 
 public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
