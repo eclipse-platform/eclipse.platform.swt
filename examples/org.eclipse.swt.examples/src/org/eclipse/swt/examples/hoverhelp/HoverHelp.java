@@ -35,6 +35,7 @@ public class HoverHelp {
 		"warning.gif"
 	};
 	Image images[];
+	static final String HELP_KEY = SWT.getPlatform().equals("gtk") ? "Ctrl+F1" : "F1";
 
 	/**
 	 * Runs main program.
@@ -139,7 +140,7 @@ public class HoverHelp {
 			ToolItem item = new ToolItem (bar, SWT.PUSH);
 			item.setText (getResourceString("ToolItem.text", new Object[] { new Integer(i) }));
 			item.setData ("TIP_TEXT", getResourceString("ToolItem.tooltip",
-				new Object[] { item.getText() }));
+				new Object[] { item.getText(), HELP_KEY }));
 			item.setData ("TIP_HELPTEXTHANDLER", new ToolTipHelpTextHandler() {
 				public String getHelpText(Widget widget) {
 					Item item = (Item) widget;
@@ -159,7 +160,7 @@ public class HoverHelp {
 			item.setData ("TIP_IMAGE", images[hhiInformation]);
 			item.setText (getResourceString("TableItem.text", new Object[] { new Integer(i) }));
 			item.setData ("TIP_TEXT", getResourceString("TableItem.tooltip",
-				new Object[] { item.getText() }));
+				new Object[] { item.getText(), HELP_KEY }));
 			item.setData ("TIP_HELPTEXTHANDLER", new ToolTipHelpTextHandler() {
 				public String getHelpText(Widget widget) {
 					Item item = (Item) widget;
@@ -177,7 +178,7 @@ public class HoverHelp {
 			item.setData ("TIP_IMAGE", images[hhiWarning]);
 			item.setText (getResourceString("TreeItem.text", new Object[] { new Integer(i) }));
 			item.setData ("TIP_TEXT", getResourceString("TreeItem.tooltip",
-				new Object[] { item.getText() }));
+				new Object[] { item.getText(), HELP_KEY }));
 			item.setData ("TIP_HELPTEXTHANDLER", new ToolTipHelpTextHandler() {
 				public String getHelpText(Widget widget) {
 					Item item = (Item) widget;
