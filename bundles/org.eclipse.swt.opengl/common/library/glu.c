@@ -351,7 +351,7 @@ JNIEXPORT void JNICALL GLU_NATIVE(gluNurbsCallback)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
 	GLU_NATIVE_ENTER(env, that, gluNurbsCallback_FUNC);
-	gluNurbsCallback((GLUnurbs *)arg0, arg1, (void (__stdcall *)())arg2);
+	gluNurbsCallback((GLUnurbs *)arg0, arg1, (GLvoid(*))arg2);
 	GLU_NATIVE_EXIT(env, that, gluNurbsCallback_FUNC);
 }
 #endif
@@ -578,7 +578,7 @@ JNIEXPORT void JNICALL GLU_NATIVE(gluQuadricCallback)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
 	GLU_NATIVE_ENTER(env, that, gluQuadricCallback_FUNC);
-	gluQuadricCallback((GLUquadricObj *)arg0, arg1, (void (__stdcall *)())arg2);
+	gluQuadricCallback((GLUquadricObj *)arg0, arg1, (GLvoid(*))arg2);
 	GLU_NATIVE_EXIT(env, that, gluQuadricCallback_FUNC);
 }
 #endif
@@ -670,7 +670,7 @@ JNIEXPORT void JNICALL GLU_NATIVE(gluTessCallback)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
 	GLU_NATIVE_ENTER(env, that, gluTessCallback_FUNC);
-	gluTessCallback((GLUtesselator *)arg0, arg1, (void (__stdcall *)())arg2);
+	gluTessCallback((GLUtesselator *)arg0, arg1, (GLvoid(*))arg2);
 	GLU_NATIVE_EXIT(env, that, gluTessCallback_FUNC);
 }
 #endif
