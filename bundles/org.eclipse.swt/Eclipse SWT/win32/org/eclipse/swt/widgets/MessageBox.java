@@ -165,10 +165,11 @@ public int open () {
 	}
 
 	/*
-	* Bug in Windows.  In order for MB_TASKMODAL to work,
+	* Feature in Windows.  In order for MB_TASKMODAL to work,
 	* the parent HWND of the MessageBox () call must be NULL.
-	* The fix is to force the parent to be NULL when this
-	* style is set.
+	* If the parent is not NULL, MB_TASKMODAL behaves the
+	* same as MB_APPLMODAL.  The fix is to force the parent
+	* to be NULL when this style is set.
 	*/
 	int hwndOwner = 0;
 	if (parent != null && (bits & OS.MB_TASKMODAL) == 0) {
