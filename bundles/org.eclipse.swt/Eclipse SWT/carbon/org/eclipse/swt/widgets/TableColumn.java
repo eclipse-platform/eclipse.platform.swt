@@ -34,7 +34,7 @@ import org.eclipse.swt.events.*;
  */
 public class TableColumn extends Item {
 	Table parent;
-	int id, lastWidth;
+	int id, lastWidth, lastPosition;
 	boolean resizable;
 
 /**
@@ -223,6 +223,31 @@ public Table getParent () {
 }
 
 /**
+ * Gets the moveable attribute. A column that is
+ * not moveable cannot be reordered by the user 
+ * by dragging the header but may be reordered 
+ * by the programmer.
+ *
+ * @return the moveable attribute
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see Table#getColumnOrder()
+ * @see Table#setColumnOrder(int[])
+ * 
+ * @since 3.1
+ */
+public boolean getMoveable () {
+	checkWidget ();
+	int [] flags = new int [1];
+	OS.GetDataBrowserPropertyFlags (parent.handle, id, flags);
+	return (flags [0] & OS.kDataBrowserListViewMovableColumn) != 0;
+}
+
+/**
  * Gets the resizable attribute. A column that is
  * not resizable cannot be dragged by the user but
  * may be resized by the programmer.
@@ -347,10 +372,16 @@ public void removeSelectionListener(SelectionListener listener) {
 void resized (int newWidth) {
 	lastWidth = newWidth;
 	sendEvent (SWT.Resize);
-	int index = parent.indexOf(this);
-	for (int j = index + 1; j < parent.columnCount; j++) {
-		TableColumn column = parent.columns [j];
-		column.sendEvent (SWT.Move);
+	if (isDisposed ()) return;
+	boolean moved = false;
+	int [] order = parent.getColumnOrder ();
+	TableColumn [] columns = parent.getColumns ();
+	for (int i=0; i<order.length; i++) {
+		TableColumn column = columns [order [i]];
+		if (moved && !column.isDisposed ()) {
+			column.sendEvent (SWT.Move);
+		}
+		if (column == this) moved = true;
 	}
 }
 
@@ -384,6 +415,38 @@ public void setImage (Image image) {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	super.setImage (image);
+}
+
+/**
+ * Sets the moveable attribute.  A column that is
+ * moveable can be reordered by the user by dragging
+ * the header. A column that is not moveable cannot be 
+ * dragged by the user but may be reordered 
+ * by the programmer.
+ *
+ * @param moveable the moveable attribute
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see Table#setColumnOrder(int[])
+ * @see Table#getColumnOrder()
+ * 
+ * @since 3.1
+ */
+public void setMoveable (boolean moveable) {
+	checkWidget ();
+	if (true) return;
+	int [] flags = new int [1];
+	OS.GetDataBrowserPropertyFlags (parent.handle, id, flags);
+	if (moveable) {
+		flags [0] |= OS.kDataBrowserListViewMovableColumn;
+	} else {
+		flags [0] &= ~OS.kDataBrowserListViewMovableColumn;
+	}
+	OS.SetDataBrowserPropertyFlags (parent.handle, id, flags [0]);
 }
 
 /**

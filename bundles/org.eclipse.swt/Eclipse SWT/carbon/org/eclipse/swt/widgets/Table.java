@@ -427,6 +427,7 @@ void createHandle () {
 	int [] outControl = new int [1];
 	int window = OS.GetControlOwner (parent.handle);
 	OS.CreateDataBrowserControl (window, null, OS.kDataBrowserListView, outControl);
+	OS.SetAutomaticControlDragTrackingEnabledForWindow (window, true);
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];
 	if (!drawFocusRing ()) {
@@ -559,6 +560,12 @@ void createItem (TableColumn column, int index) {
 				}
 			}
 		}
+	}
+	int [] lastPosition = new int [1];
+	for (int i=0; i<columnCount; i++) {
+		TableColumn c = columns [i];
+		OS.GetDataBrowserTableViewColumnPosition (handle, c.id, lastPosition);
+		c.lastPosition = lastPosition [0];
 	}
 }
 
@@ -970,6 +977,42 @@ public TableColumn getColumn (int index) {
 public int getColumnCount () {
 	checkWidget ();
 	return columnCount;
+}
+
+/**
+ * Returns an array of zero-relative integers that map
+ * the creation order of the receiver's items to the
+ * order in which they are currently being displayed.
+ * <p>
+ * Specifically, the indices of the returned array represent
+ * the current visual order of the items, and the contents
+ * of the array represent the creation order of the items.
+ * </p><p>
+ * Note: This is not the actual structure used by the receiver
+ * to maintain its list of items, so modifying the array will
+ * not affect the receiver. 
+ * </p>
+ *
+ * @return the current visual order of the receiver's items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
+public int [] getColumnOrder () {
+	checkWidget ();
+	int [] order = new int [columnCount];
+	int [] position = new int [1];
+	for (int i=0; i<columnCount; i++) {
+		TableColumn column = columns [i];
+		OS.GetDataBrowserTableViewColumnPosition (handle, column.id, position);
+		if ((style & SWT.CHECK) != 0) position [0] -= 1;
+		order [position [0]] = i;
+	}
+	return order;
 }
 
 /**
@@ -1466,12 +1509,22 @@ int itemDataProc (int browser, int id, int property, int itemData, int setValue)
 int itemNotificationProc (int browser, int id, int message) {
 	if (message == OS.kDataBrowserUserStateChanged) {
 		short [] width = new short [1];
+		int [] position = new int [1];
+		TableColumn [] columns = getColumns ();
 		for (int i = 0; i < columnCount; i++) {
 			TableColumn column = columns [i];
-			OS.GetDataBrowserTableViewNamedColumnWidth (handle, column.id, width);
-			if (width [0] != column.lastWidth) {
-				column.resized (width [0]);
-				return OS.noErr;
+			if (!column.isDisposed ()) {
+				OS.GetDataBrowserTableViewNamedColumnWidth (handle, column.id, width);
+				if (width [0] != column.lastWidth) {
+					column.resized (width [0]);
+				}
+			}
+			if (!column.isDisposed ()) {
+				OS.GetDataBrowserTableViewColumnPosition (handle, column.id, position);
+				if (position [0] != column.lastPosition) {
+					column.lastPosition = position [0];
+					column.sendEvent (SWT.Move);
+				}
 			}
 		}
 		return OS.noErr;
@@ -1939,6 +1992,64 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		showIndex (showIndex);
 	}
 	return result;
+}
+
+/**
+ * Sets the order that the items in the receiver should 
+ * be displayed in to the given argument which is described
+ * in terms of the zero-relative ordering of when the items
+ * were added.
+ *
+ * @param order the new order to display the items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the item order is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the item order is not the same length as the number of items</li>
+ * </ul>
+ *
+ * @since 3.1
+ */
+public void setColumnOrder (int [] order) {
+	checkWidget ();
+	if (order == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (columnCount == 0) {
+		if (order.length != 0) error (SWT.ERROR_INVALID_ARGUMENT);
+		return;
+	}
+	if (order.length != columnCount) error (SWT.ERROR_INVALID_ARGUMENT);
+	int [] oldOrder = getColumnOrder ();
+	boolean reorder = false;
+	boolean [] seen = new boolean [columnCount];
+	for (int i=0; i<order.length; i++) {
+		int index = order [i];
+		if (index < 0 || index >= columnCount) error (SWT.ERROR_INVALID_ARGUMENT);
+		if (seen [index]) error (SWT.ERROR_INVALID_ARGUMENT);
+		seen [index] = true;
+		if (order [i] != oldOrder [i]) reorder = true;
+	}
+	if (reorder) {
+		TableColumn [] moved = new TableColumn [columnCount];
+		for (int i=0; i<order.length; i++) {
+			int index = order [i];
+			TableColumn column = columns [index];
+			int position = (style & SWT.CHECK) != 0 ? i + 1 : i;
+			OS.SetDataBrowserTableViewColumnPosition(handle, column.id, position);
+			if (position != column.lastPosition) {
+				column.lastPosition = position;
+				moved [i] = column;
+			}
+		}
+		for (int i=0; i<columnCount; i++) {
+			TableColumn column = moved [i];
+			if (column != null && !column.isDisposed ()) {
+				column.sendEvent (SWT.Move);
+			}
+		}
+	}
 }
 
 void setFontStyle (Font font) {
