@@ -275,7 +275,9 @@ public void pack () {
 		int index = parent.indexOf (this);
 		for (int i=0; i<parent.itemCount; i++) {
 			TableItem item = parent.items [i];
-			width = Math.max (width, item.calculateWidth (index, gc));
+			if (item != null) {
+				width = Math.max (width, item.calculateWidth (index, gc));
+			}
 		}
 	}
 	gc.dispose ();

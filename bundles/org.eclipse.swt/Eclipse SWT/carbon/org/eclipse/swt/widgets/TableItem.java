@@ -34,7 +34,7 @@ public class TableItem extends Item {
 	Table parent;
 	String [] strings;
 	Image [] images;
-	boolean checked, grayed;
+	boolean checked, grayed, cached;
 	Color foreground, background;
 	Color[] cellForeground, cellBackground;
 	Font font;
@@ -121,10 +121,6 @@ static Table checkNull (Table control) {
 	return control;
 }
 
-protected void checkSubclass () {
-	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
-}
-
 int calculateWidth (int index, GC gc) {
 	if (index == 0 && this.width != -1) return this.width;
 	int width = 0;
@@ -134,6 +130,23 @@ int calculateWidth (int index, GC gc) {
 	if (text != null && text.length () > 0) width += gc.stringExtent (text).x;
 	if (index == 0) this.width = width;
 	return width;
+}
+
+protected void checkSubclass () {
+	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
+void clear () {
+	text = "";
+	image = null;
+	strings = null;
+	images = null;
+	checked = grayed = cached = false;
+	foreground = background = null;
+	cellForeground = cellBackground = null;
+	font = null;
+	cellFont = null;
+	int width = -1;
 }
 
 /**
@@ -445,8 +458,8 @@ public String getText (int index) {
 }
 
 void redraw () {
-	if (parent.ignoreRedraw) return;
-	if (parent.drawCount > 0) return;
+	cached = true;
+	if (parent.ignoreRedraw || parent.drawCount != 0) return;
 	int itemIndex = parent.indexOf (this);
 	int [] id = new int [] {itemIndex + 1};
 	OS.UpdateDataBrowserItems (parent.handle, 0, id.length, id, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
@@ -734,20 +747,22 @@ public void setImage (int index, Image image) {
 	int itemIndex = parent.indexOf (this);
 	if (itemIndex == -1) return;
 	if (index == 0)  {
+		if (image != null && image.type == SWT.ICON) {
+			if (image.equals (this.image)) return;
+		}
 		width = -1;
 		super.setImage (image);
 	}
-	int columnCount = parent.columnCount;
-	if (0 <= index && index < columnCount) {
-		if (images == null) images = new Image [columnCount];
+	int count = Math.max (1, parent.columnCount);
+	if (0 <= index && index < count) {
+		if (images == null) images = new Image [count];
+		if (image != null && image.type == SWT.ICON) {
+			if (image.equals (images [index])) return;
+		}
 		images [index] = image;	
 	}
-	if (parent.ignoreRedraw) return;
-	if (parent.drawCount == 0) {
-		if (index == 0) parent.setScrollWidth (this);
-		int [] id = new int [] {itemIndex + 1};
-		OS.UpdateDataBrowserItems (parent.handle, 0, id.length, id, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
-	}
+	if (index == 0) parent.setScrollWidth (this);
+	redraw ();
 }
 
 public void setImage (Image image) {
@@ -769,6 +784,8 @@ public void setImage (Image image) {
 public void setImageIndent (int indent) {
 	checkWidget();
 	if (indent < 0) return;
+	/* Image indent is not supported on the Macintosh */
+	redraw ();
 }
 
 /**
@@ -810,23 +827,19 @@ public void setText (String [] strings) {
 public void setText (int index, String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int itemIndex = parent.indexOf (this);
-	if (itemIndex == -1) return;
 	if (index == 0) {
+		if (string.equals (text)) return;
 		width = -1;
 		super.setText (string);
 	}
-	int columnCount = parent.columnCount;
-	if (0 <= index && index < columnCount) {
-		if (strings == null) strings = new String [columnCount];
+	int count = Math.max (1, parent.columnCount);
+	if (0 <= index && index < count) {
+		if (strings == null) strings = new String [count];
+		if (string.equals (strings [index])) return;
 		strings [index] = string;
 	}
-	if (parent.ignoreRedraw) return;
-	if (parent.drawCount == 0) {
-		if (index == 0) parent.setScrollWidth (this);
-		int [] id = new int [] {itemIndex + 1};
-		OS.UpdateDataBrowserItems (parent.handle, 0, id.length, id, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
-	}
+	if (index == 0) parent.setScrollWidth (this);
+	redraw ();
 }
 
 public void setText (String string) {

@@ -129,6 +129,11 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
+TableItem _getItem (int index) {
+	if (items [index] != null) return items [index];
+	return items [index] = new TableItem (this, SWT.NULL, -1, false);
+}
+
 static int checkStyle (int style) {
 	/*
 	* Feature in Windows.  It is not possible to create
@@ -163,6 +168,17 @@ void checkItems (boolean setScrollWidth) {
 		error (SWT.ERROR_CANNOT_GET_COUNT);
 	}
 	if (itemCount != count [0]) {
+		/*
+		* Feature in the Mac. When AddDataBrowserItems() is used
+		* to add items, item notification callbacks are issued with
+		* the message kDataBrowserItemAdded.  When many items are
+		* added, this is slow.  The fix is to temporarily remove
+		* the item notification callback.
+		*/
+		DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
+		OS.GetDataBrowserCallbacks (handle, callbacks);
+		callbacks.v1_itemNotificationCallback = 0;
+		OS.SetDataBrowserCallbacks (handle, callbacks);
 		int delta = itemCount - count [0];
 		if (delta < 1024) {
 			int [] ids = new int [delta];
@@ -178,12 +194,73 @@ void checkItems (boolean setScrollWidth) {
 				error (SWT.ERROR_ITEM_NOT_ADDED);
 			}
 		}
+		callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
+		OS.SetDataBrowserCallbacks (handle, callbacks);
 	}
-	if (setScrollWidth) setScrollWidth ();
+	if (setScrollWidth) setScrollWidth (items, true);
 }
 
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
+public void clear (int index) {
+	checkWidget();
+	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_INVALID_RANGE);
+	TableItem item = items [index];
+	if (item != null) {
+		item.clear ();
+		item.cached = false;
+		if (!ignoreRedraw && drawCount == 0) {
+			int [] id = new int [] {index + 1};
+			OS.UpdateDataBrowserItems (handle, 0, id.length, id, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
+		}
+		setScrollWidth (item);
+	}
+}
+
+public void clear (int start, int end) {
+	checkWidget();
+	if (start > end) return;
+	if (!(0 <= start && start <= end && end < itemCount)) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
+	if (start == 0 && end == itemCount - 1) {
+		clearAll ();
+	} else {
+		for (int i=start; i<=end; i++) {
+			clear (i);
+		}
+	}
+}
+
+public void clear (int [] indices) {
+	checkWidget();
+	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (indices.length == 0) return;
+	for (int i=0; i<indices.length; i++) {
+		if (!(0 <= indices [i] && indices [i] < itemCount)) {
+			error (SWT.ERROR_INVALID_RANGE);
+		}
+	}
+	for (int i=0; i<indices.length; i++) {
+		clear (indices [i]);
+	}
+}
+
+public void clearAll () {
+	checkWidget();
+	for (int i=0; i<itemCount; i++) {
+		TableItem item = items [i];
+		if (item != null) {
+			item.clear ();
+			item.cached = false;
+		}
+	}
+	if (!ignoreRedraw && drawCount == 0) {
+		OS.UpdateDataBrowserItems (handle, 0, 0, null, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
+		setScrollWidth (items, true);
+	}
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -196,7 +273,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			int columnWidth = 0;
 			for (int i=0; i<itemCount; i++) {
 				TableItem item = items [i];
-				columnWidth = Math.max (columnWidth, item.calculateWidth (j, gc));
+				if (item != null) {
+					columnWidth = Math.max (columnWidth, item.calculateWidth (j, gc));
+				}
 			}
 			width += columnWidth + EXTRA_WIDTH;
 		}
@@ -325,43 +404,46 @@ void createItem (TableColumn column, int index) {
 	columns [index] = column;
 	if (columnCount >= 1) {
 		for (int i=0; i<itemCount; i++) {
-			String [] strings = items [i].strings;
-			if (strings != null) {
-				String [] temp = new String [columnCount];
-				System.arraycopy (strings, 0, temp, 0, index);
-				System.arraycopy (strings, index, temp, index+1, columnCount-index-1);
-				temp [index] = "";
-				items [i].strings = temp;
-			}
-			if (index == 0) items [i].text = "";
-			Image [] images = items [i].images;
-			if (images != null) {
-				Image [] temp = new Image [columnCount];
-				System.arraycopy (images, 0, temp, 0, index);
-				System.arraycopy (images, index, temp, index+1, columnCount-index-1);
-				items [i].images = temp;
-			}
-			if (index == 0) items [i].image = null;
-			Color [] cellBackground = items [i].cellBackground;
-			if (cellBackground != null) {
-				Color [] temp = new Color [columnCount];
-				System.arraycopy (cellBackground, 0, temp, 0, index);
-				System.arraycopy (cellBackground, index, temp, index+1, columnCount-index-1);
-				items [i].cellBackground = temp;
-			}
-			Color [] cellForeground = items [i].cellForeground;
-			if (cellForeground != null) {
-				Color [] temp = new Color [columnCount];
-				System.arraycopy (cellForeground, 0, temp, 0, index);
-				System.arraycopy (cellForeground, index, temp, index+1, columnCount-index-1);
-				items [i].cellForeground = temp;
-			}
-			Font [] cellFont = items [i].cellFont;
-			if (cellFont != null) {
-				Font [] temp = new Font [columnCount];
-				System.arraycopy (cellFont, 0, temp, 0, index);
-				System.arraycopy (cellFont, index, temp, index+1, columnCount-index-1);
-				items [i].cellFont = temp;
+			TableItem item = items [i];
+			if (item != null) {
+				String [] strings = item.strings;
+				if (strings != null) {
+					String [] temp = new String [columnCount];
+					System.arraycopy (strings, 0, temp, 0, index);
+					System.arraycopy (strings, index, temp, index+1, columnCount-index-1);
+					temp [index] = "";
+					item.strings = temp;
+				}
+				if (index == 0) item.text = "";
+				Image [] images = item.images;
+				if (images != null) {
+					Image [] temp = new Image [columnCount];
+					System.arraycopy (images, 0, temp, 0, index);
+					System.arraycopy (images, index, temp, index+1, columnCount-index-1);
+					item.images = temp;
+				}
+				if (index == 0) item.image = null;
+				Color [] cellBackground = item.cellBackground;
+				if (cellBackground != null) {
+					Color [] temp = new Color [columnCount];
+					System.arraycopy (cellBackground, 0, temp, 0, index);
+					System.arraycopy (cellBackground, index, temp, index+1, columnCount-index-1);
+					item.cellBackground = temp;
+				}
+				Color [] cellForeground = item.cellForeground;
+				if (cellForeground != null) {
+					Color [] temp = new Color [columnCount];
+					System.arraycopy (cellForeground, 0, temp, 0, index);
+					System.arraycopy (cellForeground, index, temp, index+1, columnCount-index-1);
+					item.cellForeground = temp;
+				}
+				Font [] cellFont = item.cellFont;
+				if (cellFont != null) {
+					Font [] temp = new Font [columnCount];
+					System.arraycopy (cellFont, 0, temp, 0, index);
+					System.arraycopy (cellFont, index, temp, index+1, columnCount-index-1);
+					item.cellFont = temp;
+				}
 			}
 		}
 	}
@@ -449,11 +531,15 @@ public void deselect (int index) {
 public void deselect (int start, int end) {
 	checkWidget();
 	//TODO - check range
-	int length = end - start + 1;
-	if (length <= 0) return;
-	int [] ids = new int [length];
-	for (int i=0; i<length; i++) ids [i] = end - i + 1;
-	deselect (ids, length);
+	if (start == 0 && end == itemCount - 1) {
+		deselectAll ();
+	} else {
+		int length = end - start + 1;
+		if (length <= 0) return;
+		int [] ids = new int [length];
+		for (int i=0; i<length; i++) ids [i] = end - i + 1;
+		deselect (ids, length);
+	}
 }
 
 /**
@@ -519,61 +605,64 @@ void destroyItem (TableColumn column) {
 	}
 	if (columnCount >= 1) {
 		for (int i=0; i<itemCount; i++) {
-			String [] strings = items [i].strings;
-			if (strings != null) {
-				if (columnCount == 1) {
-					items [i].strings = null;
-				} else {
-					if (index == 0) items [i].text = strings [1];
-					String [] temp = new String [columnCount - 1];
-					System.arraycopy (strings, 0, temp, 0, index);
-					System.arraycopy (strings, index + 1, temp, index, columnCount - 1 - index);
-					items [i].strings = temp;
+			TableItem item = items [i];
+			if (item != null) {
+				String [] strings = item.strings;
+				if (strings != null) {
+					if (columnCount == 1) {
+						item.strings = null;
+					} else {
+						if (index == 0) item.text = strings [1];
+						String [] temp = new String [columnCount - 1];
+						System.arraycopy (strings, 0, temp, 0, index);
+						System.arraycopy (strings, index + 1, temp, index, columnCount - 1 - index);
+						item.strings = temp;
+					}
 				}
-			}
-			Image [] images = items [i].images;
-			if (images != null) {
-				if (columnCount == 1) {
-					items [i].images = null;
-				} else {
-					if (index == 0) items [i].image = images [1];
-					Image [] temp = new Image [columnCount - 1];
-					System.arraycopy (images, 0, temp, 0, index);
-					System.arraycopy (images, index + 1, temp, index, columnCount - 1 - index);
-					items [i].images = temp;
+				Image [] images = item.images;
+				if (images != null) {
+					if (columnCount == 1) {
+						item.images = null;
+					} else {
+						if (index == 0) item.image = images [1];
+						Image [] temp = new Image [columnCount - 1];
+						System.arraycopy (images, 0, temp, 0, index);
+						System.arraycopy (images, index + 1, temp, index, columnCount - 1 - index);
+						item.images = temp;
+					}
 				}
-			}
-			Color [] cellBackground = items [i].cellBackground;
-			if (cellBackground != null) {
-				if (columnCount == 1) {
-					items [i].cellBackground = null;
-				} else {
-					Color [] temp = new Color [columnCount - 1];
-					System.arraycopy (cellBackground, 0, temp, 0, index);
-					System.arraycopy (cellBackground, index + 1, temp, index, columnCount - 1 - index);
-					items [i].cellBackground = temp;
+				Color [] cellBackground = item.cellBackground;
+				if (cellBackground != null) {
+					if (columnCount == 1) {
+						item.cellBackground = null;
+					} else {
+						Color [] temp = new Color [columnCount - 1];
+						System.arraycopy (cellBackground, 0, temp, 0, index);
+						System.arraycopy (cellBackground, index + 1, temp, index, columnCount - 1 - index);
+						item.cellBackground = temp;
+					}
 				}
-			}
-			Color [] cellForeground = items [i].cellForeground;
-			if (cellForeground != null) {
-				if (columnCount == 1) {
-					items [i].cellForeground = null;
-				} else {
-					Color [] temp = new Color [columnCount - 1];
-					System.arraycopy (cellForeground, 0, temp, 0, index);
-					System.arraycopy (cellForeground, index + 1, temp, index, columnCount - 1 - index);
-					items [i].cellForeground = temp;
+				Color [] cellForeground = item.cellForeground;
+				if (cellForeground != null) {
+					if (columnCount == 1) {
+						item.cellForeground = null;
+					} else {
+						Color [] temp = new Color [columnCount - 1];
+						System.arraycopy (cellForeground, 0, temp, 0, index);
+						System.arraycopy (cellForeground, index + 1, temp, index, columnCount - 1 - index);
+						item.cellForeground = temp;
+					}
 				}
-			}
-			Font [] cellFont = items [i].cellFont;
-			if (cellFont != null) {
-				if (columnCount == 1) {
-					items [i].cellFont = null;
-				} else {
-					Font [] temp = new Font [columnCount - 1];
-					System.arraycopy (cellFont, 0, temp, 0, index);
-					System.arraycopy (cellFont, index + 1, temp, index, columnCount - 1 - index);
-					items [i].cellFont = temp;
+				Font [] cellFont = item.cellFont;
+				if (cellFont != null) {
+					if (columnCount == 1) {
+						item.cellFont = null;
+					} else {
+						Font [] temp = new Font [columnCount - 1];
+						System.arraycopy (cellFont, 0, temp, 0, index);
+						System.arraycopy (cellFont, index + 1, temp, index, columnCount - 1 - index);
+						item.cellFont = temp;
+					}
 				}
 			}
 		}
@@ -625,22 +714,25 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		if (columnIndex == columnCount) return OS.noErr;
 	}
 	lastIndexOf = index;
-	final TableItem item = items [index];
-	if ((style & SWT.VIRTUAL) != 0) {
-		Event event = new Event ();
-		event.item = item;
-		ignoreRedraw = true;
-		sendEvent (SWT.SetData, event);
-		//widget could be disposed at this point
-		if (isDisposed ()) return OS.noErr;
-		ignoreRedraw = false;
-		if (setScrollWidth (item)) {
-			Rect rect = new Rect();
-			if (OS.GetDataBrowserItemPartBounds (handle, id, property, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-				redrawWidget (handle, rect.left, rect.top, rect.right, rect.bottom, false);
+	TableItem item = _getItem (index);
+	if (!item.cached) {
+		if ((style & SWT.VIRTUAL) != 0) {
+			Event event = new Event ();
+			event.item = item;
+			ignoreRedraw = true;
+			sendEvent (SWT.SetData, event);
+			//widget could be disposed at this point
+			if (isDisposed ()) return OS.noErr;
+			ignoreRedraw = false;
+			if (setScrollWidth (item)) {
+				Rect rect = new Rect();
+				if (OS.GetDataBrowserItemPartBounds (handle, id, property, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+					redrawWidget (handle, rect.left, rect.top, rect.right, rect.bottom, false);
+				}
+				return OS.noErr;
 			}
-			return OS.noErr;
 		}
+		item.cached = true;
 	}
 	Rect rect = new Rect ();
 	OS.memcpy (rect, theRect, Rect.sizeof);
@@ -871,7 +963,7 @@ public boolean getHeaderVisible () {
 public TableItem getItem (int index) {
 	checkWidget ();
 	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_INVALID_RANGE);
-	return items [index];
+	return _getItem (index);
 }
 
 /**
@@ -903,9 +995,9 @@ public TableItem getItem (Point point) {
 	for (int i=0; i<itemCount; i++) {
 		if (OS.GetDataBrowserItemPartBounds (handle, i + 1, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
 			if ((style & SWT.FULL_SELECTION) != 0) {
-				if (rect.top <= pt.v && pt.v < rect.bottom) return items [i];
+				if (rect.top <= pt.v && pt.v < rect.bottom) return _getItem (i);
 			} else {
-				if (OS.PtInRect (pt, rect)) return items [i];
+				if (OS.PtInRect (pt, rect)) return _getItem (i);
 			}
 		}
 	}
@@ -966,7 +1058,13 @@ public int getItemHeight () {
 public TableItem [] getItems () {
 	checkWidget ();
 	TableItem [] result = new TableItem [itemCount];
-	System.arraycopy (items, 0, result, 0, itemCount);
+	if ((style & SWT.VIRTUAL) != 0) {
+		for (int i=0; i<itemCount; i++) {
+			result [i] = _getItem (i);
+		}
+	} else {
+		System.arraycopy (items, 0, result, 0, itemCount);
+	}
 	return result;
 }
 
@@ -1022,7 +1120,7 @@ public TableItem [] getSelection () {
 	int [] id = new int [1];
 	for (int i=0; i<count; i++) {
 		OS.memcpy (id, start [0] + (i * 4), 4);
-		result [i] = items [id [0] - 1];
+		result [i] = _getItem (id [0] - 1);
 	}
 	OS.HUnlock (ptr);
 	OS.DisposeHandle (ptr);
@@ -1227,9 +1325,9 @@ public boolean isSelected (int index) {
 int itemDataProc (int browser, int id, int property, int itemData, int setValue) {
 	int row = id - 1;
 	if (!(0 <= row && row < items.length)) return OS.noErr;
-	TableItem item = items [row];
 	switch (property) {
 		case CHECK_COLUMN_ID: {
+			TableItem item = _getItem (row);
 			if (setValue != 0) {
 //				short [] theData = new short [1];
 //				OS.GetDataBrowserItemDataButtonValue (itemData, theData);
@@ -1255,30 +1353,16 @@ int itemDataProc (int browser, int id, int property, int itemData, int setValue)
 			break;
 		}
 	}
-//	if (property >= COLUMN_ID) {
-//		int column = 0;
-//		while (column < columnCount) {
-//			if (columns [column].id == property) break;
-//			column++;
-//		}
-//		String text = item.getText (column);
-//		char [] buffer = new char [text.length ()];
-//		text.getChars (0, buffer.length, buffer, 0);
-//		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-//		if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
-//		OS.SetDataBrowserItemDataText (itemData, ptr);
-//		OS.CFRelease (ptr);
-//	}
 	return OS.noErr;
 }
 
 int itemNotificationProc (int browser, int id, int message) {
 	int index = id - 1;
 	if (!(0 <= index && index < items.length)) return OS.noErr;
-	TableItem item = items [index];
 	switch (message) {
 		case OS.kDataBrowserItemSelected:
 		case OS.kDataBrowserItemDeselected: {
+			TableItem item = _getItem (index);
 			wasSelected = true;
 			if (ignoreSelect) break;
 			int [] first = new int [1], last = new int [1];
@@ -1312,6 +1396,7 @@ int itemNotificationProc (int browser, int id, int message) {
 			break;
 		}	
 		case OS.kDataBrowserItemDoubleClicked: {
+			TableItem item = _getItem (index);
 			wasSelected = true;
 			Event event = new Event ();
 			event.item = item;
@@ -1348,7 +1433,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 			int index = lastHittest - 1;
 			if (0 <= index && index < itemCount) {
 				Event event = new Event ();
-				event.item = items [index];
+				event.item = _getItem (index);
 				postEvent (SWT.Selection, event);
 			}
 		}
@@ -1398,7 +1483,7 @@ void releaseWidget () {
 	columns = null;
 	for (int i=0; i<itemCount; i++) {
 		TableItem item = items [i];
-		if (!item.isDisposed ()) item.releaseResources ();
+		if (item != null && !item.isDisposed ()) item.releaseResources ();
 	}
 	items = null;
 	super.releaseWidget ();
@@ -1432,7 +1517,7 @@ public void remove (int index) {
 	TableItem item = items [index];
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
-	item.releaseResources ();
+	if (item != null) item.releaseResources ();
 	OS.UpdateDataBrowserItems (handle, 0, 0, null, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
 }
 
@@ -1461,8 +1546,12 @@ public void remove (int start, int end) {
 	if (!(0 <= start && start <= end && end < itemCount)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	int length = end - start + 1;
-	for (int i=0; i<length; i++) remove (start);
+	if (start == 0 && end == itemCount - 1) {
+		removeAll ();
+	} else {
+		int length = end - start + 1;
+		for (int i=0; i<length; i++) remove (start);
+	}
 }
 
 /**
@@ -1514,11 +1603,24 @@ public void remove (int [] indices) {
  */
 public void removeAll () {
 	checkWidget();
+	/*
+	* Feature in the Mac. When RemoveDataBrowserItems() is used
+	* to remove items, item notification callbacks are issued with
+	* the message kDataBrowserItemRemoved  When many items are
+	* removed, this is slow.  The fix is to temporarily remove
+	* the item notification callback.
+	*/
+	DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
+	OS.GetDataBrowserCallbacks (handle, callbacks);
+	callbacks.v1_itemNotificationCallback = 0;
+	OS.SetDataBrowserCallbacks (handle, callbacks);
 	OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, 0, null, 0);
+	callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
+	OS.SetDataBrowserCallbacks (handle, callbacks);
 	OS.SetDataBrowserScrollPosition (handle, 0, 0);
 	for (int i=0; i<itemCount; i++) {
 		TableItem item = items [i];
-		if (!item.isDisposed ()) item.releaseResources ();
+		if (item != null && !item.isDisposed ()) item.releaseResources ();
 	}
 	items = new TableItem [4];
 	itemCount = anchorFirst = anchorLast = 0;
@@ -1597,12 +1699,16 @@ public void select (int start, int end) {
 	checkItems (false);
 	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) return;
 	if (itemCount == 0 || start >= itemCount) return;
-	start = Math.max (0, start);
-	end = Math.min (end, itemCount - 1);
-	int length = end - start + 1;
-	int [] ids = new int [length];
-	for (int i=0; i<length; i++) ids [i] = end - i + 1;
-	select (ids, length, false, false);
+	if (start == 0 && end == itemCount - 1) {
+		selectAll ();
+	} else {
+		start = Math.max (0, start);
+		end = Math.min (end, itemCount - 1);
+		int length = end - start + 1;
+		int [] ids = new int [length];
+		for (int i=0; i<length; i++) ids [i] = end - i + 1;
+		select (ids, length, false, false);
+	}
 }
 
 /**
@@ -1728,10 +1834,26 @@ public void setItemCount (int count) {
 	removeAll ();
 	itemCount = Math.max (0, count);
 	items = new TableItem [(itemCount + 3) / 4 * 4];
-	for (int i=0; i<itemCount; i++) {
-		items [i] = new TableItem (this, SWT.NONE, -1, false);
+	if ((style & SWT.VIRTUAL) == 0) {
+		for (int i=0; i<itemCount; i++) {
+			items [i] = new TableItem (this, SWT.NONE, i, true);
+		}
 	}
+
+	/*
+	* Feature in the Mac. When AddDataBrowserItems() is used
+	* to add items, item notification callbacks are issued with
+	* the message kDataBrowserItemAdded.  When many items are
+	* added, this is slow.  The fix is to temporarily remove
+	* the item notification callback.
+	*/
+	DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
+	OS.GetDataBrowserCallbacks (handle, callbacks);
+	callbacks.v1_itemNotificationCallback = 0;
+	OS.SetDataBrowserCallbacks (handle, callbacks);
 	OS.AddDataBrowserItems (handle, 0, itemCount, null, OS.kDataBrowserItemNoProperty);
+	callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
+	OS.SetDataBrowserCallbacks (handle, callbacks);
 	setRedraw (true);
 }
 
@@ -1769,31 +1891,30 @@ public void setRedraw (boolean redraw) {
 	}
 }
 
-void setScrollWidth () {
-	if (columnCount != 0) return;
-	setScrollWidth (items, true);
-}
-
-void setScrollWidth (TableItem [] items, boolean set) {
-	if (columnCount != 0) return;
+boolean setScrollWidth (TableItem [] items, boolean set) {
+	if (ignoreRedraw || drawCount != 0) return false;
+	if (columnCount != 0) return false;
 	GC gc = new GC (this);
 	int newWidth = 0;
 	for (int i = 0; i < items.length; i++) {
 		TableItem item = items [i];
-		if (item == null) break;
-		newWidth = Math.max (newWidth, item.calculateWidth (0, gc));
+		if (item != null) {
+			newWidth = Math.max (newWidth, item.calculateWidth (0, gc));
+		}
 	}
 	gc.dispose ();
 	newWidth += EXTRA_WIDTH;
 	if (!set) {
 		short [] width = new short [1];
 		OS.GetDataBrowserTableViewNamedColumnWidth (handle, column_id, width);
-		if (width [0] >= newWidth) return;
+		if (width [0] >= newWidth) return false;
 	}
 	OS.SetDataBrowserTableViewNamedColumnWidth (handle, column_id, (short) newWidth);
+	return true;
 }
 
 boolean setScrollWidth (TableItem item) {
+	if (ignoreRedraw || drawCount != 0) return false;
 	if (columnCount != 0) return false;
 	GC gc = new GC (this);
 	int newWidth = item.calculateWidth (0, gc);
@@ -2042,7 +2163,7 @@ void showIndex (int index) {
 			return;
 		}
 		showIndex = -1;
-		TableItem item = items [index];
+		TableItem item = _getItem (index);
 		Rectangle itemRect = item.getBounds (0);
 		if (!itemRect.isEmpty()) {
 			if (rect.contains (itemRect.x, itemRect.y)
