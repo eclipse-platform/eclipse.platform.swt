@@ -55,7 +55,7 @@ import org.eclipse.swt.events.*;
  */
 public class Combo extends Composite {
 	int /*long*/ arrowHandle, entryHandle, listHandle;
-	int lastEventTime;
+	int lastEventTime, visibleCount = 5;
 	String [] items = new String [0];
 	boolean ignoreSelect;
 
@@ -734,6 +734,24 @@ public int getTextLimit () {
 	return limit == 0 ? LIMIT : limit;
 }
 
+/**
+ * Gets the number of items that are visible in the drop
+ * down portion of the receiver's list.
+ *
+ * @return the number of items that are visible
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public int getVisibleCount () {
+	checkWidget ();
+	return visibleCount;
+}
+
 int /*long*/ gtk_activate (int /*long*/ widget) {
 	postEvent (SWT.DefaultSelection);
 	return 0;
@@ -1305,6 +1323,25 @@ public void setTextLimit (int limit) {
 	checkWidget();
 	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
 	OS.gtk_entry_set_max_length (entryHandle, limit);
+}
+
+/**
+ * Sets the number of items that are visible in the drop
+ * down portion of the receiver's list.
+ *
+ * @param count the new number of items to be visible
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public void setVisibleCount (int count) {
+	checkWidget ();
+	if (count < 0) return;
+	visibleCount = count;
 }
 
 boolean translateTraversal (GdkEventKey keyEvent) {
