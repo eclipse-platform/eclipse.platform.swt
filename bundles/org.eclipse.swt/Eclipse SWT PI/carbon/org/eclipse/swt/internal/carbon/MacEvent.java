@@ -101,35 +101,19 @@ public class MacEvent {
 	 * Returns the SWT modifiers for this event
 	 */
 	public int getStateMask() {
-		
 		int stateMask= fgMouseButtonState;
-		
-		int modifiers= getModifiers();
-
-		if ((modifiers & OS.shiftKey) != 0)
-			stateMask |= SWT.SHIFT;
-		
+		int modifiers= getModifiers ();
+		if ((modifiers & OS.shiftKey) != 0) stateMask |= SWT.SHIFT;
 		if ((modifiers & OS.controlKey) != 0) {
 			if (EMULATE_RIGHT_BUTTON) {
 				// we only report CONTROL, iff it was not used to emulate the right mouse button
-				if ((stateMask & SWT.BUTTON3) == 0)
-					stateMask |= SWT.CONTROL;
+				if ((stateMask & SWT.BUTTON3) == 0) stateMask |= SWT.CONTROL;
 			} else {
 				stateMask |= SWT.CONTROL;
 			}
 		}
-		
-		if ((modifiers & OS.cmdKey) != 0) {
-			// the Command modifier is always mapped to Control
-			stateMask |= SWT.CONTROL;
-		
-			// if the Command modifier is pressed we report the Option modifier as 'ALT'
-			if ((modifiers & OS.optionKey) != 0)
-				stateMask |= SWT.ALT;
-		} else {
-			// we don't report the option modifier as 'ALT'
-		}
-
+		if ((modifiers & OS.cmdKey) != 0) stateMask |= SWT.COMMAND;
+		if ((modifiers & OS.optionKey) != 0) stateMask |= SWT.ALT;
 		return stateMask;
 	}
 		
