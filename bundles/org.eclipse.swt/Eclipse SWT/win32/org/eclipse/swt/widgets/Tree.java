@@ -2682,11 +2682,11 @@ LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 }
 
 LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
+	TVHITTESTINFO lpht = new TVHITTESTINFO ();
+	lpht.x = (short) (lParam & 0xFFFF);
+	lpht.y = (short) (lParam >> 16);
+	OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
 	if ((style & SWT.CHECK) != 0) {
-		TVHITTESTINFO lpht = new TVHITTESTINFO ();
-		lpht.x = (short) (lParam & 0xFFFF);
-		lpht.y = (short) (lParam >> 16);
-		OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
 		if ((lpht.flags & OS.TVHT_ONITEMSTATEICON) != 0) {
 			sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam);
 			sendMouseEvent (SWT.MouseDoubleClick, 1, handle, OS.WM_LBUTTONDBLCLK, wParam, lParam);
@@ -2718,27 +2718,16 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 			return LRESULT.ZERO;
 		}
 	}
-	LRESULT result =  super.WM_LBUTTONDBLCLK (wParam, lParam);
-	/*
-	 * In a tree with multiple columns, the NM_DBLCLK event is only received 
-	 * for the first column.  The following code detects a double click
-	 * in the other columns and issues a DefaultSelection event.
-	 */
-	if (!ignoreSelect) {
-		if (hwndHeader != 0 && (style & SWT.FULL_SELECTION) != 0) {
-			TVHITTESTINFO lpht = new TVHITTESTINFO ();
-			lpht.x = (short) (lParam & 0xFFFF);
-			lpht.y = (short) (lParam >> 16);
-			OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
-			if (lpht.hItem != 0 && (lpht.flags & OS.TVHT_ONITEM) == 0) {
-				Event event = new Event ();
-				TVITEM tvItem = new TVITEM ();
-				tvItem.hItem = lpht.hItem;
-				tvItem.mask = OS.TVIF_PARAM;
-				OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-				event.item = items [tvItem.lParam];
-				postEvent (SWT.DefaultSelection, event);
-			}
+	LRESULT result = super.WM_LBUTTONDBLCLK (wParam, lParam);
+	if (lpht.hItem != 0) {
+		if ((style & SWT.FULL_SELECTION) != 0 || (lpht.flags & OS.TVHT_ONITEM) != 0) {
+			Event event = new Event ();
+			TVITEM tvItem = new TVITEM ();
+			tvItem.hItem = lpht.hItem;
+			tvItem.mask = OS.TVIF_PARAM;
+			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+			event.item = items [tvItem.lParam];
+			postEvent (SWT.DefaultSelection, event);
 		}
 	}
 	return result;
@@ -3558,28 +3547,6 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			break;
 		}
 		case OS.NM_DBLCLK: {
-			if (!ignoreSelect) {
-				int pos = OS.GetMessagePos ();
-				POINT pt = new POINT ();
-				pt.x = (short) (pos & 0xFFFF);
-				pt.y = (short) (pos >> 16);
-				OS.ScreenToClient (handle, pt);
-				TVHITTESTINFO lpht = new TVHITTESTINFO ();
-				lpht.x = pt.x;
-				lpht.y = pt.y;
-				OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
-				if ((lpht.flags & OS.TVHT_ONITEM) == 0) break;
-				Event event = new Event ();
-				int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-				if (hItem != 0) {
-					TVITEM tvItem = new TVITEM ();
-					tvItem.hItem = hItem;
-					tvItem.mask = OS.TVIF_PARAM;
-					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-					event.item = items [tvItem.lParam];
-				}
-				postEvent (SWT.DefaultSelection, event);
-			}
 			if (hooks (SWT.DefaultSelection)) return LRESULT.ONE;
 			break;
 		}
