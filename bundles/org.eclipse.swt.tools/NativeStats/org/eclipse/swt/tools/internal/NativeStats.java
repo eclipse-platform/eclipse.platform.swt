@@ -113,7 +113,15 @@ void dump(String className, NativeFunction[] funcs, PrintStream ps) {
 			return ((NativeFunction)b).getCallCount() - ((NativeFunction)a).getCallCount();
 		}
 	});
-	ps.println(className);
+	int total = 0;
+	for (int i = 0; i < funcs.length; i++) {
+		NativeFunction func = funcs[i];
+		total += func.getCallCount();
+	}
+	ps.print(className);
+	ps.print("=");
+	ps.print(total);
+	ps.println();
 	for (int i = 0; i < funcs.length; i++) {
 		NativeFunction func = funcs[i];
 		if (func.getCallCount() > 0) {
