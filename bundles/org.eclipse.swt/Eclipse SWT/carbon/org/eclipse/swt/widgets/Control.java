@@ -201,6 +201,16 @@ Cursor findCursor () {
 	return parent.findCursor ();
 }
 
+void fixFocus () {
+	Shell shell = getShell ();
+	Control control = this;
+	while ((control = control.parent) != null) {
+		if (control.setFocus () || control == shell) return;
+	}
+	int window = OS.GetControlOwner (handle);
+	OS.ClearKeyboardFocus (window);
+}
+
 public boolean forceFocus () {
 	checkWidget();
 	int window = OS.GetControlOwner (handle);
@@ -480,6 +490,15 @@ public void internal_dispose_GC (int context, GCData data) {
 public boolean isEnabled () {
 	checkWidget();
 	return OS.IsControlEnabled (topHandle ());
+}
+
+boolean isFocusAncestor () {
+	Display display = getDisplay ();
+	Control control = display.getFocusControl ();
+	while (control != null && control != this) {
+		control = control.parent;
+	}
+	return control == this;
 }
 
 public boolean isFocusControl () {
@@ -1090,8 +1109,37 @@ public void setVisible (boolean visible) {
 		if ((state & HIDDEN) != 0) return;
 		state |= HIDDEN;
 	}
+	if (visible) {
+		/*
+		* It is possible (but unlikely), that application
+		* code could have disposed the widget in the show
+		* event.  If this happens, just return.
+		*/
+		sendEvent (SWT.Show);
+		if (isDisposed ()) return;
+	}
+	
+	/*
+	* Feature in the Macintosh.  If the receiver has focus, hiding
+	* the receiver causes no control to have focus.  Also, the focus
+	* needs to be cleared from any TXNObject so that it stops blinking
+	* the caret.  The fix is to assign focus to the first ancestor
+	* control that takes focus.  If no control will take focus, clear
+	* the focus control.
+	*/
+	boolean fixFocus = false;
+	if (!visible) fixFocus = isFocusAncestor ();
 	OS.HIViewSetVisible (topHandle (), visible);
-	sendEvent (visible ? SWT.Show : SWT.Hide);
+	if (!visible) {
+		/*
+		* It is possible (but unlikely), that application
+		* code could have disposed the widget in the show
+		* event.  If this happens, just return.
+		*/
+		sendEvent (SWT.Hide);
+		if (isDisposed ()) return;
+	}
+	if (fixFocus) fixFocus ();
 }
 
 void setZOrder () {
