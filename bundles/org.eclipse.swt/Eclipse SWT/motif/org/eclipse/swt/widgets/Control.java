@@ -412,6 +412,7 @@ void createWidget (int index) {
 	*/
 	Display display = getDisplay ();
 	OS.XtOverrideTranslations (handle, display.dragTranslations);
+	fontList = defaultFont ();
 }
 int defaultBackground () {
 	return getDisplay ().defaultBackground;
@@ -522,7 +523,7 @@ Point getClientLocation () {
 	return new Point (handle_x [0] - topHandle_x [0], handle_y [0] - topHandle_y [0]);
 }
 String getCodePage () {
-	return Converter.getCodePage (OS.XtDisplay (handle), getFontList ());
+	return Converter.getCodePage (OS.XtDisplay (handle), fontList);
 }
 /**
  * Returns the display that the receiver was created on.
@@ -570,11 +571,10 @@ public boolean getEnabled () {
  */
 public Font getFont () {
 	checkWidget();
-	return Font.motif_new (getDisplay (), getFontList ());
+	return Font.motif_new (getDisplay (), fontList);
 }
 
 int getFontAscent () {
-	int fontList = getFontList ();
 	
 	/* Create a font context to iterate over each element in the font list */
 	int [] buffer = new int [1];
@@ -618,8 +618,7 @@ int getFontAscent () {
 }
 
 int getFontHeight () {
-	int fontList = getFontList ();
-	
+
 	/* Create a font context to iterate over each element in the font list */
 	int [] buffer = new int [1];
 	if (!OS.XmFontListInitFontContext (buffer, fontList)) {
@@ -664,14 +663,14 @@ int getFontHeight () {
 	OS.XmFontListFreeFontContext (context);
 	return height;
 }
-int getFontList () {
-	int fontHandle = fontHandle ();
-	int [] argList = {OS.XmNfontList, 0};
-	OS.XtGetValues (fontHandle, argList, argList.length / 2);
-	if (argList [1] != 0) return argList [1];
-	if (fontList == 0) fontList = defaultFont ();
-	return fontList;
-}
+//int getFontList () {
+//	int fontHandle = fontHandle ();
+//	int [] argList = {OS.XmNfontList, 0};
+//	OS.XtGetValues (fontHandle, argList, argList.length / 2);
+//	if (argList [1] != 0) return argList [1];
+//	if (fontList == 0) fontList = defaultFont ();
+//	return fontList;
+//}
 /**
  * Returns the foreground color that the receiver will use to draw.
  *
@@ -920,7 +919,7 @@ public int internal_new_GC (GCData data) {
 		data.drawable = xWindow;
 		data.foreground = argList [1];
 		data.background = argList [3];
-		data.fontList = getFontList ();
+		data.fontList = fontList;
 		data.colormap = argList [5];
 	}
 	return xGC;
@@ -1152,7 +1151,7 @@ int processIMEFocusIn () {
 		OS.XmNforeground, getForegroundPixel(),
 		OS.XmNbackground, getBackgroundPixel(),
 		OS.XmNspotLocation, ptr,
-		OS.XmNfontList, getFontList(),
+		OS.XmNfontList, fontList,
 		0);
 	
 	if (ptr != 0) OS.XtFree (ptr);

@@ -87,18 +87,17 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (labelType == OS.XmSTRING && (style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT) {
 		/* If we are wrapping text, calculate the height based on wHint. */
 		int [] argList4 = {
-			OS.XmNfontList, 0,      /* 1 */
-			OS.XmNmarginTop, 0,     /* 3 */
-			OS.XmNmarginBottom, 0,  /* 5 */
-			OS.XmNmarginHeight, 0,  /* 7 */
+			OS.XmNmarginTop, 0,     /* 1 */
+			OS.XmNmarginBottom, 0,  /* 3 */
+			OS.XmNmarginHeight, 0,  /* 5 */
 		};
 		OS.XtGetValues (handle, argList4, argList4.length / 2);
 		Display display = getDisplay ();
-		String string = display.wrapText (text, argList4 [1], wHint);
+		String string = display.wrapText (text, fontList, wHint);
 		GC gc = new GC(this);
 		Point extent = gc.textExtent(string);
 		gc.dispose();
-		height = extent.y + argList4 [3] + argList4 [5] + argList4 [7] * 2 + border * 2;
+		height = extent.y + argList4 [1] + argList4 [3] + argList4 [5] * 2 + border * 2;
 	} else {
 		/* If we are not wrapping, ask the widget for its geometry. */
 		XtWidgetGeometry result = new XtWidgetGeometry ();
@@ -409,18 +408,17 @@ public void setText (String string) {
 	byte [] buffer;
 	if ((style & SWT.WRAP) != 0) {
 		int [] argList = {
-			OS.XmNfontList, 0,     /* 1 */
-			OS.XmNwidth, 0,        /* 3 */
-			OS.XmNmarginLeft, 0,   /* 5 */
-			OS.XmNmarginRight, 0,  /* 7 */
-			OS.XmNborderWidth, 0,  /* 9 */
-			OS.XmNmarginWidth, 0,  /* 11 */
+			OS.XmNwidth, 0,        /* 1 */
+			OS.XmNmarginLeft, 0,   /* 3 */
+			OS.XmNmarginRight, 0,  /* 5 */
+			OS.XmNborderWidth, 0,  /* 7 */
+			OS.XmNmarginWidth, 0,  /* 9 */
 		};
 		OS.XtGetValues (handle, argList, argList.length / 2);
-		int width = argList [3] - argList [5] - argList [7] - argList [9] * 2 - argList [11] * 2;
+		int width = argList [1] - argList [3] - argList [5] - argList [7] * 2 - argList [9] * 2;
 		Display display = getDisplay ();
 		if (mnemonic != 0) string = new String (unicode);
-		string = display.wrapText (string, argList [1], width);
+		string = display.wrapText (string, fontList, width);
 		buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	} else {
 		buffer = Converter.wcsToMbcs (getCodePage (), unicode, true);

@@ -215,8 +215,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int width = wHint;
 	int height = hHint;
 	if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
-		int [] argList = {OS.XmNfontList, 0};
-		OS.XtGetValues (handle, argList, argList.length / 2);
 		int ptr = OS.XmTextGetString (handle);
 		if (ptr == 0) return new Point (0, 0);
 		int size = OS.strlen (ptr);
@@ -246,10 +244,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 				if ((style & SWT.SINGLE) != 0) {
 					height = getLineHeight ();
 				} else {
-					height = OS.XmStringHeight (argList [1], xmString);
+					height = OS.XmStringHeight (fontList, xmString);
 				}
 			}
-			if (wHint == SWT.DEFAULT) width = OS.XmStringWidth(argList [1], xmString);
+			if (wHint == SWT.DEFAULT) width = OS.XmStringWidth(fontList, xmString);
 			OS.XmStringFree (xmString);
 		}
 		OS.XtFree (ptr);

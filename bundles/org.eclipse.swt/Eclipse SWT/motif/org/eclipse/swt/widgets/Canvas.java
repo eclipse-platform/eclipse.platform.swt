@@ -65,10 +65,6 @@ Canvas () {
 public Canvas (Composite parent, int style) {
 	super (parent, style);
 }
-void createWidget (int index) {
-	super.createWidget (index);
-	fontList = defaultFont ();
-}
 /**
  * Returns the caret.
  * <p>

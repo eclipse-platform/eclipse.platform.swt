@@ -894,7 +894,7 @@ int processPaint (int callData) {
 	wrapper.device = getDisplay ();
 	wrapper.display = xDisplay;
 	wrapper.drawable = xWindow;
-	wrapper.fontList = parent.getFontList ();
+	wrapper.fontList = parent.fontList;
 	wrapper.colormap = argList [1];	
 	GC gc = new GC (wrapper);
 	
