@@ -1508,7 +1508,7 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 		OS.GetClassName (lParam, buffer, buffer.length ());
 		String className = buffer.toString (0, buffer.strlen ());
 		if (className.equals (Display.AWT_WINDOW_CLASS)) {
-			return LRESULT.ONE;
+			return LRESULT.ZERO;
 		}
 	}
 	if ((wParam & 0xFFFF) != 0) {
