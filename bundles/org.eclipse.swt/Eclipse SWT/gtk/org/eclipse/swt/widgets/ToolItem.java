@@ -402,9 +402,9 @@ void hookEvents () {
 	Display display = getDisplay ();
 	int windowProc2 = display.windowProc2;
 	int windowProc3 = display.windowProc3;
-	OS.gtk_signal_connect (handle, OS.clicked, windowProc2, SWT.Selection);
-	OS.gtk_signal_connect (handle, OS.enter_notify_event, windowProc3, SWT.MouseEnter);
-	OS.gtk_signal_connect (handle, OS.leave_notify_event, windowProc3, SWT.MouseExit);
+	OS.g_signal_connect (handle, OS.clicked, windowProc2, SWT.Selection);
+	OS.g_signal_connect (handle, OS.enter_notify_event, windowProc3, SWT.MouseEnter);
+	OS.g_signal_connect (handle, OS.leave_notify_event, windowProc3, SWT.MouseExit);
 
 	/*
 	 * Feature in GTK.
@@ -421,8 +421,8 @@ void hookEvents () {
 		OS.GDK_KEY_PRESS_MASK | OS.GDK_KEY_RELEASE_MASK |
 		OS.GDK_FOCUS_CHANGE_MASK;
 	OS.gtk_widget_add_events (handle, mask);
-	OS.gtk_signal_connect (handle, OS.button_press_event, windowProc3, SWT.MouseDown);
-	OS.gtk_signal_connect (handle, OS.button_release_event, windowProc3, SWT.MouseUp);
+	OS.g_signal_connect (handle, OS.button_press_event, windowProc3, SWT.MouseDown);
+	OS.g_signal_connect (handle, OS.button_release_event, windowProc3, SWT.MouseUp);
 }
 
 /**
@@ -723,9 +723,9 @@ public void setSelection (boolean selected) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	blockSignal (handle, SWT.Selection);
 	OS.gtk_toggle_button_set_active (handle, selected);
-	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
+	unblockSignal (handle, SWT.Selection);
 }
 
 public void setText (String string) {

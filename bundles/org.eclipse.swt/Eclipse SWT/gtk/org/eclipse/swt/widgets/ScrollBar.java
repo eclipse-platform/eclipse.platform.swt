@@ -351,7 +351,7 @@ void hookEvents () {
 	super.hookEvents ();
 	Display display = getDisplay ();
 	int windowProc2 = display.windowProc2;
-	OS.gtk_signal_connect (handle, OS.value_changed, windowProc2, SWT.Selection);
+	OS.g_signal_connect (handle, OS.value_changed, windowProc2, SWT.Selection);
 }
 
 /**
@@ -478,9 +478,9 @@ public void setIncrement (int value) {
 	OS.memmove (adjustment, handle);
 	adjustment.step_increment = (float) value;
 	OS.memmove (handle, adjustment);
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	blockSignal (handle, SWT.Selection);
 	OS.gtk_adjustment_changed (handle);
-	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
+	unblockSignal (handle, SWT.Selection);
 }
 
 /**
@@ -502,9 +502,9 @@ public void setMaximum (int value) {
 	OS.memmove (adjustment, handle);
 	adjustment.upper = (float) value;
 	OS.memmove (handle, adjustment);
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	blockSignal (handle, SWT.Selection);
 	OS.gtk_adjustment_changed (handle);
-	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
+	unblockSignal (handle, SWT.Selection);
 }
 
 /**
@@ -526,9 +526,9 @@ public void setMinimum (int value) {
 	OS.memmove (adjustment, handle);
 	adjustment.lower = (float) value;
 	OS.memmove (handle, adjustment);
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	blockSignal (handle, SWT.Selection);
 	OS.gtk_adjustment_changed (handle);
-	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
+	unblockSignal (handle, SWT.Selection);
 }
 
 /**
@@ -551,9 +551,9 @@ public void setPageIncrement (int value) {
 	OS.memmove (adjustment, handle);
 	adjustment.page_increment = (float) value;
 	OS.memmove (handle, adjustment);
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	blockSignal (handle, SWT.Selection);
 	OS.gtk_adjustment_changed (handle);
-	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
+	unblockSignal (handle, SWT.Selection);
 }
 
 /**
@@ -571,9 +571,9 @@ public void setPageIncrement (int value) {
 public void setSelection (int value) {
 	checkWidget ();
 	if (value < 0) return;
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	blockSignal (handle, SWT.Selection);
 	OS.gtk_adjustment_set_value (handle, value);
-	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
+	unblockSignal (handle, SWT.Selection);
 }
 
 /**
@@ -597,9 +597,9 @@ public void setThumb (int value) {
 	OS.memmove (adjustment, handle);
 	adjustment.page_size = (float) value;
 	OS.memmove (handle, adjustment);
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	blockSignal (handle, SWT.Selection);
 	OS.gtk_adjustment_changed (handle);
-	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
+	unblockSignal (handle, SWT.Selection);
 }
 
 /**
@@ -641,10 +641,10 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	adjustment.page_size = thumb;
 	adjustment.value = selection;
 	OS.memmove (handle, adjustment);
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	blockSignal (handle, SWT.Selection);
 	OS.gtk_adjustment_changed (handle);
 	OS.gtk_adjustment_value_changed (handle);
-	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
+	unblockSignal (handle, SWT.Selection);
 }
 
 /**

@@ -131,6 +131,10 @@ public void addListener (int eventType, Listener handler) {
 	eventTable.hook (eventType, handler);
 }
 
+void blockSignal (int instance, int data) {
+	OS.g_signal_handlers_block_matched (instance, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, data);
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notifed when the widget is disposed. When the widget is
@@ -948,6 +952,10 @@ int topHandle () {
 
 boolean translateTraversal (int event) {
 	return false;
+}
+
+void unblockSignal (int instance, int data) {
+	OS.g_signal_handlers_unblock_matched (instance, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, data);
 }
 
 char wcsToMbcs (char ch) {

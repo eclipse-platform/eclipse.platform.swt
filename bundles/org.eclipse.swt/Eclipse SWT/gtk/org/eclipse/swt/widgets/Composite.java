@@ -508,7 +508,7 @@ int radioGroup() {
 		radioHandle = OS.gtk_radio_button_new (0);
 		if (radioHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	}
-	return OS.gtk_radio_button_group (radioHandle);
+	return OS.gtk_radio_button_get_group (radioHandle);
 }
 
 void releaseChildren () {

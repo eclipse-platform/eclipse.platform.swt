@@ -486,12 +486,12 @@ void hookEvents () {
 	super.hookEvents ();
 	Display display = getDisplay ();
 	int windowProc3 = display.windowProc3;
-	OS.gtk_signal_connect (shellHandle, OS.map_event, windowProc3, SWT.Deiconify);
-	OS.gtk_signal_connect (shellHandle, OS.unmap_event, windowProc3, SWT.Iconify);
-	OS.gtk_signal_connect (shellHandle, OS.size_allocate, windowProc3, SWT.Resize);
-	OS.gtk_signal_connect (shellHandle, OS.configure_event, windowProc3, SWT.Move);
-	OS.gtk_signal_connect (shellHandle, OS.delete_event, windowProc3, SWT.Dispose);
-	OS.gtk_signal_connect (shellHandle, OS.event_after, windowProc3, SWT.Activate);
+	OS.g_signal_connect (shellHandle, OS.map_event, windowProc3, SWT.Deiconify);
+	OS.g_signal_connect (shellHandle, OS.unmap_event, windowProc3, SWT.Iconify);
+	OS.g_signal_connect (shellHandle, OS.size_allocate, windowProc3, SWT.Resize);
+	OS.g_signal_connect (shellHandle, OS.configure_event, windowProc3, SWT.Move);
+	OS.g_signal_connect (shellHandle, OS.delete_event, windowProc3, SWT.Dispose);
+	OS.g_signal_connect (shellHandle, OS.event_after, windowProc3, SWT.Activate);
 }
 
 public boolean isVisible () {

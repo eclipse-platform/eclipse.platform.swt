@@ -205,11 +205,11 @@ void hookEvents () {
 	Display display = getDisplay ();
 	int windowProc3 = display.windowProc3;
 	int windowProc4 = display.windowProc4;
-	OS.gtk_signal_connect (handle, OS.tree_select_row, windowProc4, SWT.Selection);
-	OS.gtk_signal_connect (handle, OS.tree_unselect_row, windowProc4, SWT.Selection);
-	OS.gtk_signal_connect (handle, OS.tree_expand, windowProc3, SWT.Expand);
-	OS.gtk_signal_connect (handle, OS.tree_collapse, windowProc3, SWT.Collapse);
-	OS.gtk_signal_connect (handle, OS.event_after, windowProc3, 0);
+	OS.g_signal_connect (handle, OS.tree_select_row, windowProc4, SWT.Selection);
+	OS.g_signal_connect (handle, OS.tree_unselect_row, windowProc4, SWT.Selection);
+	OS.g_signal_connect (handle, OS.tree_expand, windowProc3, SWT.Expand);
+	OS.g_signal_connect (handle, OS.tree_collapse, windowProc3, SWT.Collapse);
+	OS.g_signal_connect (handle, OS.event_after, windowProc3, 0);
 }
 
 int createCheckPixmap(boolean checked) {
@@ -269,12 +269,12 @@ void createItem (TreeItem item, int node, int index) {
 		Display display = getDisplay ();
 		timerID = OS.gtk_timeout_add (0, display.windowTimerProc, handle);
 	}
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	blockSignal (handle, SWT.Selection);
 	item.handle = OS.gtk_ctree_insert_node (handle, node, sibling, null, (byte) 2, uncheck, 0, uncheck, 0, false, false);
 	if ((style & SWT.SINGLE) != 0 && OS.GTK_CLIST_ROWS (handle) == 1) {
 		OS.gtk_clist_unselect_row (handle, 0, 0);
 	}
-	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
+	unblockSignal (handle, SWT.Selection);
 	if (item.handle == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 	OS.gtk_ctree_node_set_row_data (handle, item.handle, id + 1);
 	items [id] = item;
@@ -305,7 +305,7 @@ GdkColor defaultForeground () {
  */
 public void deselectAll() {
 	checkWidget();
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	blockSignal (handle, SWT.Selection);
 	if ((style & SWT.SINGLE) != 0) {
 		int selection = OS.GTK_CLIST_SELECTION (handle);
 		if (selection != 0 && OS.g_list_length (selection) > 0) {
@@ -317,7 +317,7 @@ public void deselectAll() {
 	} else {
 		OS.gtk_ctree_unselect_recursive (handle, 0);
 	}
-	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
+	unblockSignal (handle, SWT.Selection);
 }
 
 void destroyItem (TreeItem item) {
@@ -326,19 +326,19 @@ void destroyItem (TreeItem item) {
 	int address = GtkCTreeFunc.getAddress ();
 	OS.gtk_ctree_post_recursive (handle, node, address, 0);
 	GtkCTreeFunc.dispose ();
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Collapse);
+	blockSignal (handle, SWT.Collapse);
 	boolean fixSelection = false;
 	if ((style & SWT.SINGLE) != 0) {
 		int selection = OS.GTK_CLIST_SELECTION (handle);
 		fixSelection = selection == 0 || OS.g_list_length (selection) == 0;
 	}
-	if (fixSelection) OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	if (fixSelection) blockSignal (handle, SWT.Selection);
 	OS.gtk_ctree_remove_node (handle, node);
 	if (fixSelection) {
 		OS.gtk_clist_unselect_row (handle, 0, 0);
-		OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
+		unblockSignal (handle, SWT.Selection);
 	}
-	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Collapse);
+	unblockSignal (handle, SWT.Collapse);
 }
 
 int findSibling (int node, int index) {
@@ -755,9 +755,9 @@ int processExpand (int int0, int int1, int int2) {
 	boolean [] expanded = new boolean [1];
 	OS.gtk_ctree_get_node_info (handle, int0, null, null, null, null, null, null, null, expanded);
 	if (!expanded [0]) {
-		OS.gtk_signal_handler_block_by_data (handle, SWT.Expand);
+		blockSignal (handle, SWT.Expand);
 		OS.gtk_ctree_expand (handle, int0);
-		OS.gtk_signal_handler_unblock_by_data (handle, SWT.Expand);
+		unblockSignal (handle, SWT.Expand);
 	}
 	return 0;
 }
@@ -939,9 +939,9 @@ void setFontDescription (int font) {
  */
 public void selectAll () {
 	checkWidget();
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	blockSignal (handle, SWT.Selection);
 	OS.gtk_ctree_select_recursive (handle, 0);
-	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);	
+	unblockSignal (handle, SWT.Selection);	
 }
 
 void setBackgroundColor (GdkColor color) {
@@ -980,7 +980,7 @@ public void setSelection (TreeItem [] items) {
 	checkWidget();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
 	deselectAll();
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	blockSignal (handle, SWT.Selection);
 	int index = 0, length = items.length;
 	while (index < length) {
 		TreeItem item = items [index];
@@ -990,7 +990,7 @@ public void setSelection (TreeItem [] items) {
 		}
 		index++;
 	}
-	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
+	unblockSignal (handle, SWT.Selection);
 	index = 0;
 	while (index < length) {
 		TreeItem item = items [index];
@@ -1055,7 +1055,7 @@ public void showItem (TreeItem item) {
 	if (!OS.gtk_ctree_is_viewable (handle, node)) {
 		int parent = node;
 		GtkCTreeRow row;
-		OS.gtk_signal_handler_block_by_data (handle, SWT.Expand);
+		blockSignal (handle, SWT.Expand);
 		do {
 			int data = OS.g_list_nth_data (parent, 0);
 			row = new GtkCTreeRow ();
@@ -1063,7 +1063,7 @@ public void showItem (TreeItem item) {
 			if ((parent = row.parent) == 0) break;
 			OS.gtk_ctree_expand (handle, parent);
 		} while (true);
-		OS.gtk_signal_handler_unblock_by_data (handle, SWT.Expand);
+		unblockSignal (handle, SWT.Expand);
 	}
 	OS.gtk_ctree_node_moveto (handle, node, 0, 0.0f, 0.0f);
 }

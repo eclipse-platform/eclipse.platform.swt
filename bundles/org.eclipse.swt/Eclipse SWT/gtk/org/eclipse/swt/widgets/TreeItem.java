@@ -497,13 +497,13 @@ public void setExpanded (boolean expanded) {
 	checkWidget();
 	int ctree = parent.handle;
 	if (expanded) {
-		OS.gtk_signal_handler_block_by_data (ctree, SWT.Expand);
+		blockSignal (ctree, SWT.Expand);
 		OS.gtk_ctree_expand (ctree, handle);
-		OS.gtk_signal_handler_unblock_by_data (ctree, SWT.Expand);
+		unblockSignal (ctree, SWT.Expand);
 	} else {
-		OS.gtk_signal_handler_block_by_data (ctree, SWT.Collapse);
+		blockSignal (ctree, SWT.Collapse);
 		OS.gtk_ctree_collapse (ctree, handle);
-		OS.gtk_signal_handler_unblock_by_data (ctree, SWT.Collapse);
+		unblockSignal (ctree, SWT.Collapse);
 	}
 }
 

@@ -208,9 +208,9 @@ void createItem (TabItem item, int index) {
 	OS.gtk_container_add (boxHandle, labelHandle);
 	int pageHandle = OS.gtk_fixed_new ();
 	if (pageHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	blockSignal (handle, SWT.Selection);
 	OS.gtk_notebook_insert_page (handle, pageHandle, boxHandle, index);
-	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
+	unblockSignal (handle, SWT.Selection);
 	OS.gtk_widget_show (boxHandle);
 	OS.gtk_widget_show (labelHandle);
 	OS.gtk_widget_show (pageHandle);
@@ -241,7 +241,7 @@ void fixPage () {
 	*/
 //	int index = OS.gtk_notebook_get_current_page (handle);
 //	if (index != -1) return;
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	blockSignal (handle, SWT.Selection);
 	int flags = OS.GTK_WIDGET_FLAGS (handle);
 	OS.GTK_WIDGET_SET_FLAGS(handle, OS.GTK_VISIBLE);
 	GtkRequisition requisition = new GtkRequisition ();
@@ -250,7 +250,7 @@ void fixPage () {
 	if ((flags & OS.GTK_VISIBLE) == 0) {
 		OS.GTK_WIDGET_UNSET_FLAGS(handle, OS.GTK_VISIBLE);	
 	}
-	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
+	unblockSignal (handle, SWT.Selection);
 }
 
 void destroyItem (TabItem item) {
@@ -262,9 +262,9 @@ void destroyItem (TabItem item) {
 	}
 	if (index == itemCount) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	int oldIndex = OS.gtk_notebook_get_current_page (handle);
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	blockSignal (handle, SWT.Selection);
 	OS.gtk_notebook_remove_page (handle, index);
-	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
+	unblockSignal (handle, SWT.Selection);
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
 	item.handle = 0;
@@ -400,7 +400,7 @@ void hookEvents () {
 	super.hookEvents ();
 	Display display = getDisplay ();
 	int windowProc4 = display.windowProc4;
-	OS.gtk_signal_connect (handle, OS.switch_page, windowProc4, SWT.Selection);
+	OS.g_signal_connect (handle, OS.switch_page, windowProc4, SWT.Selection);
 }
 
 /**
@@ -550,9 +550,9 @@ void setSelection (int index, boolean notify) {
 			control.setVisible (false);
 		}
 	}
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
-	OS.gtk_notebook_set_page (handle, index);
-	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
+	blockSignal (handle, SWT.Selection);
+	OS.gtk_notebook_set_current_page (handle, index);
+	unblockSignal (handle, SWT.Selection);
 	int newIndex = OS.gtk_notebook_get_current_page (handle);
 	if (newIndex != -1) {
 		TabItem item = items [newIndex];

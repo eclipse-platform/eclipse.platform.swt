@@ -249,9 +249,6 @@ void createHandle (int index) {
 			break;
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
-		OS.gtk_check_menu_item_set_show_toggle (handle, true);
-	}
 	if ((style & SWT.SEPARATOR) == 0) {
 		int label = OS.gtk_bin_get_child (handle);
 		OS.gtk_accel_label_set_accel_widget (label, 0);
@@ -370,9 +367,9 @@ void hookEvents () {
 	Display display = getDisplay ();
 	int windowProc2 = display.windowProc2;
 	int windowProc3 = display.windowProc3;
-	OS.gtk_signal_connect (handle, OS.activate, windowProc2, SWT.Selection);
-	OS.gtk_signal_connect (handle, OS.select, windowProc2, SWT.Arm);
-	OS.gtk_signal_connect (handle, OS.show_help, windowProc3, SWT.Help);
+	OS.g_signal_connect (handle, OS.activate, windowProc2, SWT.Selection);
+	OS.g_signal_connect (handle, OS.select, windowProc2, SWT.Arm);
+	OS.g_signal_connect (handle, OS.show_help, windowProc3, SWT.Help);
 }
 
 /**
@@ -670,9 +667,9 @@ public void setMenu (Menu menu) {
 public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	blockSignal (handle, SWT.Selection);
 	OS.gtk_check_menu_item_set_active (handle, selected);
-	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
+	unblockSignal (handle, SWT.Selection);
 }
 
 public void setText (String string) {

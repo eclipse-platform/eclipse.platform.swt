@@ -470,9 +470,9 @@ void hookEvents () {
 	Display display = getDisplay ();
 	int windowProc2 = display.windowProc2;
 	int windowProc3 = display.windowProc3;
-	OS.gtk_signal_connect (handle, OS.show, windowProc2, SWT.Show);
-	OS.gtk_signal_connect (handle, OS.hide, windowProc2, SWT.Hide);
-	OS.gtk_signal_connect (handle, OS.show_help, windowProc3, SWT.Help);
+	OS.g_signal_connect (handle, OS.show, windowProc2, SWT.Show);
+	OS.g_signal_connect (handle, OS.hide, windowProc2, SWT.Hide);
+	OS.g_signal_connect (handle, OS.show_help, windowProc3, SWT.Help);
 }
 
 /**
@@ -556,8 +556,8 @@ int processHide (int int0, int int1, int int2) {
 			OS.gdk_keyboard_ungrab (OS.GDK_CURRENT_TIME);
 		}
 		if (barHandle != 0) {
-			OS.gtk_signal_disconnect_by_data (barHandle, SWT.MouseDown);
-			OS.gtk_signal_disconnect_by_data (barHandle, 0);
+			OS.g_signal_handlers_disconnect_matched (barHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWT.MouseDown);
+			OS.g_signal_handlers_disconnect_matched (barHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, 0);
 			OS.gtk_widget_destroy (barHandle);
 			barHandle = 0;
 		}
@@ -775,8 +775,8 @@ public void setVisible (boolean visible) {
 			barHandleCallback = new Callback (this, "GtkMenuBarEventFunc", 3);
 			int barHandleProc = barHandleCallback.getAddress ();
 			if (barHandleProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-			OS.gtk_signal_connect (barHandle, OS.event_after, barHandleProc, 0);
-			OS.gtk_signal_connect (barHandle, OS.button_press_event, barHandleProc, SWT.MouseDown);
+			OS.g_signal_connect (barHandle, OS.event_after, barHandleProc, 0);
+			OS.g_signal_connect (barHandle, OS.button_press_event, barHandleProc, SWT.MouseDown);
 
 			/* Pop up the menu */
 			int address = 0;

@@ -51,7 +51,7 @@ import org.eclipse.swt.events.*;
  */
 public class Combo extends Composite {
 	int entryHandle, listHandle;
-	int glist;
+	String [] items = new String [0];
 	/**
 	 * the operating system limit for the number of characters
 	 * that the text field in an instance of this class can hold
@@ -122,7 +122,6 @@ public Combo (Composite parent, int style) {
 public void add (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	String [] items = getItems ();
 	String [] newItems = new String [items.length + 1];
 	System.arraycopy (items, 0, newItems, 0, items.length);
 	newItems [items.length] = string;
@@ -158,10 +157,9 @@ public void add (String string) {
 public void add (String string, int index) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (!(0 <= index && index <= getItemCount ())) {
+	if (!(0 <= index && index <= items.length)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	String [] items = getItems ();
 	String [] newItems = new String [items.length + 1];
 	System.arraycopy (items, 0, newItems, 0, items.length);
 	newItems [index] = string;
@@ -330,7 +328,7 @@ void createHandle (int index) {
 	entryHandle = combo.entry;
 	listHandle = combo.list;
 	boolean editable = (style & SWT.READ_ONLY) == 0;
-	OS.gtk_entry_set_editable (entryHandle, editable);
+	OS.gtk_editable_set_editable (entryHandle, editable);
 	OS.gtk_entry_set_activates_default (entryHandle, true);
 	OS.gtk_combo_disable_activate (handle);
 	OS.gtk_combo_set_case_sensitive (handle, true);
@@ -399,9 +397,9 @@ void hookEvents () {
 	int windowProc2 = display.windowProc2;
 	int windowProc3 = display.windowProc3;
 	// TO DO - fix multiple selection events for one user action
-	OS.gtk_signal_connect (listHandle, OS.select_child, windowProc3, SWT.Selection);
-	OS.gtk_signal_connect_after (entryHandle, OS.changed, windowProc2, SWT.Modify);
-	OS.gtk_signal_connect (entryHandle, OS.activate, windowProc2, SWT.DefaultSelection);
+	OS.g_signal_connect (listHandle, OS.select_child, windowProc3, SWT.Selection);
+	OS.g_signal_connect_after (entryHandle, OS.changed, windowProc2, SWT.Modify);
+	OS.g_signal_connect (entryHandle, OS.activate, windowProc2, SWT.DefaultSelection);
 	int mask =
 		OS.GDK_POINTER_MOTION_MASK | 
 		OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK | 
@@ -411,16 +409,16 @@ void hookEvents () {
 	for (int i=0; i<handles.length; i++) {
 		int handle = handles [i];
 		OS.gtk_widget_add_events (handle, mask);
-		OS.gtk_signal_connect (handle, OS.button_press_event, windowProc3, SWT.MouseDown);
-		OS.gtk_signal_connect (handle, OS.button_release_event, windowProc3, SWT.MouseUp);
-		OS.gtk_signal_connect (handle, OS.key_press_event, windowProc3, SWT.KeyDown);
-		OS.gtk_signal_connect (handle, OS.key_release_event, windowProc3, SWT.KeyUp);
-		OS.gtk_signal_connect (handle, OS.motion_notify_event, windowProc3, SWT.MouseMove);
-		OS.gtk_signal_connect_after (handle, OS.button_press_event, windowProc3, -SWT.MouseDown);
-		OS.gtk_signal_connect_after (handle, OS.button_release_event, windowProc3, -SWT.MouseUp);
-		OS.gtk_signal_connect_after (handle, OS.key_press_event, windowProc3, -SWT.KeyDown);
-		OS.gtk_signal_connect_after (handle, OS.key_release_event, windowProc3, -SWT.KeyUp);
-		OS.gtk_signal_connect_after (handle, OS.motion_notify_event, windowProc3, -SWT.MouseMove);
+		OS.g_signal_connect (handle, OS.button_press_event, windowProc3, SWT.MouseDown);
+		OS.g_signal_connect (handle, OS.button_release_event, windowProc3, SWT.MouseUp);
+		OS.g_signal_connect (handle, OS.key_press_event, windowProc3, SWT.KeyDown);
+		OS.g_signal_connect (handle, OS.key_release_event, windowProc3, SWT.KeyUp);
+		OS.g_signal_connect (handle, OS.motion_notify_event, windowProc3, SWT.MouseMove);
+		OS.g_signal_connect_after (handle, OS.button_press_event, windowProc3, -SWT.MouseDown);
+		OS.g_signal_connect_after (handle, OS.button_release_event, windowProc3, -SWT.MouseUp);
+		OS.g_signal_connect_after (handle, OS.key_press_event, windowProc3, -SWT.KeyDown);
+		OS.g_signal_connect_after (handle, OS.key_release_event, windowProc3, -SWT.KeyUp);
+		OS.g_signal_connect_after (handle, OS.motion_notify_event, windowProc3, -SWT.MouseMove);
 	}
 }
 
@@ -438,7 +436,7 @@ void hookEvents () {
  */
 public void deselect (int index) {
 	checkWidget();
-	setItems (getItems (), true, getSelectionIndex () != index);
+	setItems (items, true, getSelectionIndex () != index);
 }
 
 /**
@@ -457,7 +455,7 @@ public void deselect (int index) {
  */
 public void deselectAll () {
 	checkWidget();
-	setItems (getItems (), true, false);
+	setItems (items, true, false);
 }
 
 GdkColor getBackgroundColor () {
@@ -489,10 +487,9 @@ GdkColor getForegroundColor () {
  */
 public String getItem (int index) {
 	checkWidget();
-	if (!(0 <= index && index < getItemCount ())) {
+	if (!(0 <= index && index < items.length)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	String [] items = getItems ();
 	return items [index];
 }
 
@@ -511,8 +508,7 @@ public String getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget();
-	if (glist == 0) return 0;
-	return OS.g_list_length (glist);
+	return items.length;
 }
 
 /**
@@ -562,18 +558,9 @@ public int getItemHeight () {
  */
 public String [] getItems () {
 	checkWidget();
-	if (glist == 0) return new String [0];
-	int count = OS.g_list_length (glist);
-	String [] items = new String [count];
-	for (int i=0; i<count; i++) {
-		int data = OS.g_list_nth_data (glist, i);
-		int length = OS.strlen (data);
-		byte [] buffer1 = new byte [length];
-		OS.memmove (buffer1, data, length);
-		char [] buffer2 = Converter.mbcsToWcs (null, buffer1);
-		items [i] = new String (buffer2, 0, length);
-	}
-	return items;
+	String [] result = new String [items.length];
+	System.arraycopy (items, 0, result, 0, items.length);
+	return result;
 }
 
 /**
@@ -736,7 +723,6 @@ public int indexOf (String string) {
 public int indexOf (String string, int start) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	String [] items = getItems ();
 	for (int i=start; i<items.length; i++) {
 		if (string.equals(items [i])) return i;
 	}
@@ -792,19 +778,6 @@ void releaseHandle () {
 	entryHandle = listHandle = 0;
 }
 
-void releaseWidget () {
-	if (glist != 0) {
-		int count = OS.g_list_length (glist);
-		for (int i=0; i<count; i++) {
-			int data = OS.g_list_nth_data (glist, i);
-			if (data != 0) OS.g_free (data);
-		}
-		OS.g_list_free (glist);
-	}
-	glist = 0;
-	super.releaseWidget ();
-}
-
 /**
  * Removes the item from the receiver's list at the given
  * zero-relative index.
@@ -824,10 +797,10 @@ void releaseWidget () {
  */
 public void remove (int index) {
 	checkWidget();
-	if (!(0 <= index && index < getItemCount ())) {
+	if (!(0 <= index && index < items.length)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	String [] oldItems = getItems ();
+	String [] oldItems = items;
 	String [] newItems = new String [oldItems.length - 1];
 	System.arraycopy (oldItems, 0, newItems, 0, index);
 	System.arraycopy (oldItems, index + 1, newItems, index, oldItems.length - index - 1);
@@ -855,10 +828,10 @@ public void remove (int index) {
  */
 public void remove (int start, int end) {
 	checkWidget();
-	if (!(0 <= start && start <= end && end < getItemCount ())) {
+	if (!(0 <= start && start <= end && end < items.length)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	String [] oldItems = getItems ();
+	String [] oldItems = items;
 	String [] newItems = new String [oldItems.length - (end - start + 1)];
 	System.arraycopy (oldItems, 0, newItems, 0, start);
 	System.arraycopy (oldItems, end + 1, newItems, start, oldItems.length - end - 1);
@@ -966,10 +939,8 @@ public void removeSelectionListener (SelectionListener listener) {
  */
 public void select (int index) {
 	checkWidget();
-	if (index < 0 || index >= getItemCount ()) return;
-	OS.gtk_signal_handler_block_by_data (listHandle, SWT.Selection);
-	OS.gtk_list_select_item (listHandle, index);
-	OS.gtk_signal_handler_unblock_by_data (listHandle, SWT.Selection);
+	if (index < 0 || index >= items.length) return;
+	setText (items [index]);
 }
 
 void setBackgroundColor (GdkColor color) {
@@ -979,7 +950,7 @@ void setBackgroundColor (GdkColor color) {
 }
 
 boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
-	int newHeight = (resize && (style & SWT.DROP_DOWN) != 0) ? getTextHeight() : height;
+	int newHeight = (resize && (style & SWT.DROP_DOWN) != 0) ? getTextHeight () : height;
 	return super.setBounds (x, y, width, newHeight, move, resize);
 }
 
@@ -1019,10 +990,9 @@ void setForegroundColor (GdkColor color) {
 public void setItem (int index, String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (!(0 <= index && index <= getItemCount ())) {
+	if (!(0 <= index && index <= items.length)) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	String [] items = getItems ();
 	items [index] = string;
 	setItems (items, true, true);
 }
@@ -1048,27 +1018,33 @@ public void setItems (String [] items) {
 	
 void setItems (String [] items, boolean keepText, boolean keepSelection) {
 	int selectedIndex = -1;
-	if (keepSelection) selectedIndex = getSelectionIndex();
+	if (keepSelection) selectedIndex = getSelectionIndex ();
+	this.items = items;
 	if (items.length == 0) {
-		OS.gtk_list_clear_items (listHandle, 0, -1);
-		//LEAK
-		glist = 0;
+		int itemsList = OS.gtk_container_get_children (listHandle);
+		if (itemsList != 0) {
+			int count = OS.g_list_length (itemsList);
+			for (int i=count - 1; i>=0; i--) {
+				int widget = OS.g_list_nth_data (itemsList, i);
+				OS.gtk_container_remove (listHandle, widget);
+			}
+			OS.g_list_free (itemsList);
+		}
 	} else {
-		int new_glist = 0;
+		int glist = 0;
 		for (int i=0; i<items.length; i++) {
 			String string = items [i];
-			// FIXME leaked strings and glist
-			if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+			if (string == null) break;
 			byte [] buffer = Converter.wcsToMbcs (null, string, true);
 			int data = OS.g_malloc (buffer.length);
 			OS.memmove (data, buffer, buffer.length);
-			new_glist = OS.g_list_append (new_glist, data);
+			glist = OS.g_list_append (glist, data);
 		}
-		OS.gtk_signal_handler_block_by_data (entryHandle, SWT.Modify);
-		OS.gtk_signal_handler_block_by_data (listHandle, SWT.Selection);
-		OS.gtk_combo_set_popdown_strings (handle, new_glist);
-		OS.gtk_signal_handler_unblock_by_data (entryHandle, SWT.Modify);
-		OS.gtk_signal_handler_unblock_by_data (listHandle, SWT.Selection);
+		blockSignal (entryHandle, SWT.Modify);
+		blockSignal (listHandle, SWT.Selection);
+		OS.gtk_combo_set_popdown_strings (handle, glist);
+		unblockSignal (entryHandle, SWT.Modify);
+		unblockSignal (listHandle, SWT.Selection);
 		if (glist != 0) {
 			int count = OS.g_list_length (glist);
 			for (int i=0; i<count; i++) {
@@ -1077,7 +1053,6 @@ void setItems (String [] items, boolean keepText, boolean keepSelection) {
 			}
 			OS.g_list_free (glist);
 		}
-		glist = new_glist;
 	}
 	if (keepSelection) select (selectedIndex);
 	if (!keepText) OS.gtk_editable_delete_text (entryHandle, 0, -1);
@@ -1131,12 +1106,10 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int [] position = new int [1];
-	byte [] buffer = Converter.wcsToMbcs (null, string);
-	OS.gtk_signal_handler_block_by_data (listHandle, SWT.Selection);
-	OS.gtk_editable_delete_text (entryHandle, 0, -1);
-	OS.gtk_editable_insert_text (entryHandle, buffer, buffer.length, position);
-	OS.gtk_editable_set_position (entryHandle, 0);
-	OS.gtk_signal_handler_unblock_by_data (listHandle, SWT.Selection);
+	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	blockSignal (listHandle, SWT.Selection);
+	OS.gtk_entry_set_text (entryHandle, buffer);
+	unblockSignal (listHandle, SWT.Selection);
 }
 
 /**

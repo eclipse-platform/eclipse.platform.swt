@@ -274,7 +274,7 @@ void hookEvents () {
 	if (labelHandle != 0) {
 		Display display = getDisplay ();
 		int windowProc3 = display.windowProc3;
-		OS.gtk_signal_connect (labelHandle, OS.mnemonic_activate, windowProc3, SWT.Activate);
+		OS.g_signal_connect (labelHandle, OS.mnemonic_activate, windowProc3, SWT.Activate);
 	}
 }
 

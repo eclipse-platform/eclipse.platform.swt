@@ -10,10 +10,15 @@
  * this distribution shall govern.
  */
 
-#define GTK_ENABLE_BROKEN 1
+/*
+#define NO_CLIST
+#define G_DISABLE_DEPRECATED
+#define GTK_DISABLE_DEPRECATED
+*/
 
 #include "swt.h"
 #include "structs.h"
+#include <string.h>
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GDK_1ROOT_1PARENT
 	(JNIEnv *env, jclass that)
@@ -37,6 +42,19 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1ACCEL_1LABEL_1A
 	DEBUG_CALL("GTK_1ACCEL_1LABEL_1ACCEL_1STRING__II\n")
 
 	((GtkAccelLabel *)arg0)->accel_string = (gchar *)arg1;
+}
+
+#ifndef NO_CLIST
+#define CELL_SPACING 1
+#define ROW_TOP_YPIXEL(clist, row) (((clist)->row_height * (row)) + \
+				    (((row) + 1) * CELL_SPACING) + \
+				    (clist)->voffset)
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_ROW_1TOP_1YPIXEL
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("ROW_1TOP_1YPIXEL\n")
+
+	return (jint)ROW_TOP_YPIXEL((GtkCList*)arg0, arg1);
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1CLIST_1CLIST_1WINDOW
@@ -67,8 +85,6 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1CLIST_1FOCUS_1R
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	return (jint)((GtkCList *)arg0)->focus_row;
-
-	return (jint)GTK_CLIST_FOCUS_ROW(arg0);
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1CLIST_1HADJUSTMENT
@@ -111,6 +127,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1CLIST_1ROW_1HEI
 	return (jint)((GtkCList *)arg0)->row_height;
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1CLIST_1ROW_1LIST
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GTK_1CLIST_1ROW_1LIST\n")
+
+	return (jint) ((GtkCList*)arg0) -> row_list;
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1CLIST_1SELECTION
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -143,6 +167,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1CLIST_1VOFFSET
 	return (jint)((GtkCList *)arg0)->voffset;
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1CLIST_1WINDOW_1WIDTH
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("OS_GTK_1CLIST_1WINDOW_1WIDTH\n")
+
+	return (jint) ((GtkCList*)arg0)->clist_window_width;
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1CTREE_1TREE_1INDENT
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -150,6 +182,23 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1CTREE_1TREE_1IN
 
 	return (jint)((GtkCTree *)arg0)->tree_indent;
 }
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1CTREE_1NODE_1NEXT
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GTK_1CTREE_1NODE_1NEXT\n")
+
+	return (jint) GTK_CTREE_NODE_NEXT((GtkCTreeNode*)arg0);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1CTREE_1ROW
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GTK_1CTREE_1ROW\n")
+
+	return (jint)GTK_CTREE_ROW((GtkCTreeNode*)arg0);
+}
+#endif /* NO_CLIST */
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1WIDGET_1FLAGS
 	(JNIEnv *env, jclass that, jint arg0)
@@ -468,6 +517,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1malloc
 	return (jint)g_malloc((gulong)arg0);
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1object_1get_1qdata
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("g_1object_1get_1qdata\n")
+
+	return (jint)g_object_get_qdata((GObject *)arg0, (GQuark)arg1);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1object_1set_1qdata
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("g_1object_1set_1qdata\n")
+
+	g_object_set_qdata((GObject *)arg0, (GQuark)arg1, (gpointer)arg2);
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1object_1ref
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -484,16 +549,78 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1object_1unref
 	g_object_unref((gpointer)arg0);
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1signal_1connect
-	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jint arg3)
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1quark_1from_1string
+	(JNIEnv *env, jclass that, jbyteArray arg0)
 {
-	const jbyte *lparg1= NULL;
+	jbyte *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("g_1quark_1from_1string\n")
+
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	rc = (jint)g_quark_from_string((gchar *)lparg0);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	return rc;
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1signal_1connect
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
 
 	DEBUG_CALL("g_1signal_1connect\n")
 
-	if (arg1) lparg1 = (*env)->GetStringUTFChars(env, arg1, NULL);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
 	g_signal_connect((gpointer)arg0, (const gchar *)lparg1, (GCallback)arg2, (gpointer)arg3);
-	if (arg1) (*env)->ReleaseStringUTFChars(env, arg1, lparg1);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1signal_1connect_1after
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+
+	DEBUG_CALL("g_1signal_1connect_1after\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	g_signal_connect_after((gpointer)arg0, (const gchar *)lparg1, (GCallback)arg2, (gpointer)arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1signal_1handlers_1block_1matched
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6)
+{
+	DEBUG_CALL("g_1signal_1handlers_1block_1matched\n")
+
+	return (jint)g_signal_handlers_block_matched((gpointer)arg0, (GSignalMatchType)arg1, arg2, (GQuark)arg3, (GClosure *)arg4, (gpointer)arg5, (gpointer)arg6);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1signal_1handlers_1disconnect_1matched
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6)
+{
+	DEBUG_CALL("g_1signal_1handlers_1disconnect_1matched\n")
+
+	return (jint)g_signal_handlers_disconnect_matched((gpointer)arg0, (GSignalMatchType)arg1, arg2, (GQuark)arg3, (GClosure *)arg4, (gpointer)arg5, (gpointer)arg6);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1signal_1handlers_1unblock_1matched
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6)
+{
+	DEBUG_CALL("g_1signal_1handlers_1unblock_1matched\n")
+
+	return (jint)g_signal_handlers_unblock_matched((gpointer)arg0, (GSignalMatchType)arg1, arg2, (GQuark)arg3, (GClosure *)arg4, (gpointer)arg5, (gpointer)arg6);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1signal_1stop_1emission_1by_1name
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+
+	DEBUG_CALL("g_1signal_1stop_1emission_1by_1name\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	g_signal_stop_emission_by_name((gpointer)arg0, (const gchar *)lparg1);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1strfreev
@@ -1631,14 +1758,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1check_1menu_1it
 	gtk_check_menu_item_set_active((GtkCheckMenuItem *)arg0, (gboolean)arg1);
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1check_1menu_1item_1set_1show_1toggle
-	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
-{
-	DEBUG_CALL("gtk_1check_1menu_1item_1set_1show_1toggle\n")
-
-	gtk_check_menu_item_set_show_toggle((GtkCheckMenuItem *)arg0, (gboolean)arg1);
-}
-
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1check_1version
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
@@ -1679,6 +1798,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1clipboard_1wait
 	return (jint)gtk_clipboard_wait_for_contents((GtkClipboard *)arg0, (GdkAtom)arg1);
 }
 
+#ifndef NO_CLIST
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1clist_1append
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
 {
@@ -1821,6 +1941,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1clist_1new
 	DEBUG_CALL("gtk_1clist_1new\n")
 
 	return (jint)gtk_clist_new((gint)arg0);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1clist_1optimal_1column_1width
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1clist_1optimal_1column_1width\n")
+
+	return (jint)gtk_clist_optimal_column_width((GtkCList*)arg0, (gint)arg1);
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1clist_1remove
@@ -1994,6 +2122,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1clist_1unselect
 
 	gtk_clist_unselect_row((GtkCList *)arg0, (gint)arg1, (gint)arg2);
 }
+#endif /* NO_CLIST */
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1color_1selection_1dialog_1new
 	(JNIEnv *env, jclass that, jbyteArray arg0)
@@ -2089,6 +2218,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1container_1get_
 	return (jint)gtk_container_get_children((GtkContainer *)arg0);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1container_1remove
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1container_1remove\n")
+
+	gtk_container_remove((GtkContainer *)arg0, (GtkWidget *)arg1);
+}
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1container_1resize_1children
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -2105,6 +2242,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1container_1set_
 	gtk_container_set_border_width((GtkContainer *)arg0, (guint)arg1);
 }
 
+#ifndef NO_CLIST
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1ctree_1collapse
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -2325,6 +2463,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1ctree_1unselect
 
 	gtk_ctree_unselect_recursive((GtkCTree *)arg0, (GtkCTreeNode *)arg1);
 }
+#endif /* NO_CLIST */
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1dialog_1add_1button
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
@@ -2524,24 +2663,20 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1editable_1selec
 	gtk_editable_select_region((GtkEditable *)arg0, (gint)arg1, (gint)arg2);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1editable_1set_1editable
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	DEBUG_CALL("gtk_1editable_1set_1editable\n")
+
+	gtk_editable_set_editable((GtkEditable *)arg0, (gboolean)arg1);
+}
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1editable_1set_1position
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	DEBUG_CALL("gtk_1editable_1set_1position\n")
 
 	gtk_editable_set_position((GtkEditable *)arg0, (gint)arg1);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1entry_1append_1text
-	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
-{
-	jbyte *lparg1=NULL;
-
-	DEBUG_CALL("gtk_1entry_1append_1text\n")
-
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
-	gtk_entry_append_text((GtkEntry *)arg0, (const gchar *)lparg1);
-	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 }
 
 JNIEXPORT jchar JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1entry_1get_1invisible_1char
@@ -2590,14 +2725,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1entry_1set_1act
 	DEBUG_CALL("gtk_1entry_1set_1activates_1default\n")
 
 	gtk_entry_set_activates_default((GtkEntry *)arg0, (gboolean)arg1);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1entry_1set_1editable
-	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
-{
-	DEBUG_CALL("gtk_1entry_1set_1editable\n")
-
-	gtk_entry_set_editable((GtkEntry *)arg0, (gboolean)arg1);
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1entry_1set_1has_1frame
@@ -3041,22 +3168,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1label_1set_1tex
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1list_1clear_1items
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
-{
-	DEBUG_CALL("gtk_1list_1clear_1items\n")
-
-	gtk_list_clear_items((GtkList *)arg0, (gint)arg1, (gint)arg2);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1list_1select_1item
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	DEBUG_CALL("gtk_1list_1select_1item\n")
-
-	gtk_list_select_item((GtkList *)arg0, (gint)arg1);
-}
-
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1main
 	(JNIEnv *env, jclass that)
 {
@@ -3277,12 +3388,12 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1notebook_1remov
 	gtk_notebook_remove_page((GtkNotebook *)arg0, (gint)arg1);
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1notebook_1set_1page
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1notebook_1set_1current_1page
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	DEBUG_CALL("gtk_1notebook_1set_1page\n")
+	DEBUG_CALL("gtk_1notebook_1set_1current_1page\n")
 
-	gtk_notebook_set_page((GtkNotebook *)arg0, (gint)arg1);
+	gtk_notebook_set_current_page((GtkNotebook *)arg0, (gint)arg1);
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1notebook_1set_1scrollable
@@ -3299,30 +3410,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1notebook_1set_1
 	DEBUG_CALL("gtk_1notebook_1set_1show_1tabs\n")
 
 	gtk_notebook_set_show_tabs((GtkNotebook *)arg0, (gboolean)arg1);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1object_1destroy
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	DEBUG_CALL("gtk_1object_1destroy\n")
-
-	gtk_object_destroy((GtkObject *)arg0);
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1object_1get_1user_1data
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	DEBUG_CALL("gtk_1object_1get_1user_1data\n")
-
-	return (jint)gtk_object_get_user_data((GtkObject *)arg0);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1object_1set_1user_1data
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	DEBUG_CALL("gtk_1object_1set_1user_1data\n")
-
-	gtk_object_set_user_data((GtkObject *)arg0, (gpointer)arg1);
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1object_1sink
@@ -3365,12 +3452,12 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1progress_1bar_1
 	gtk_progress_bar_set_orientation((GtkProgressBar *)arg0, (GtkProgressBarOrientation)arg1);
 }
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1radio_1button_1group
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1radio_1button_1get_1group
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	DEBUG_CALL("gtk_1radio_1button_1group\n")
+	DEBUG_CALL("gtk_1radio_1button_1get_1group\n")
 
-	return (jint)gtk_radio_button_group((GtkRadioButton *)arg0);
+	return (jint)gtk_radio_button_get_group((GtkRadioButton *)arg0);
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1radio_1button_1new
@@ -3458,6 +3545,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1scrolled_1windo
 	return (jint)gtk_scrolled_window_get_hadjustment((GtkScrolledWindow *)arg0);
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1scrolled_1window_1get_1shadow_1type
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1scrolled_1window_1get_1shadow_1type\n")
+
+	return (jint)gtk_scrolled_window_get_shadow_type((GtkScrolledWindow *)arg0);
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1scrolled_1window_1get_1vadjustment
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -3514,94 +3609,6 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1set_1locale
 	return (jint)gtk_set_locale();
 }
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1signal_1connect
-	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jint arg3)
-{
-	jbyte *lparg1=NULL;
-	jint rc;
-
-	DEBUG_CALL("gtk_1signal_1connect\n")
-
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
-	rc = (jint)gtk_signal_connect((GtkObject *)arg0, (const gchar *)lparg1, (GtkSignalFunc)arg2, (gpointer)arg3);
-	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	return rc;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1signal_1connect_1after
-	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jint arg3)
-{
-	jbyte *lparg1=NULL;
-	jint rc;
-
-	DEBUG_CALL("gtk_1signal_1connect_1after\n")
-
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
-	rc = (jint)gtk_signal_connect_after((GtkObject *)arg0, (const gchar *)lparg1, (GtkSignalFunc)arg2, (gpointer)arg3);
-	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	return rc;
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1signal_1disconnect_1by_1data
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	DEBUG_CALL("gtk_1signal_1disconnect_1by_1data\n")
-
-	gtk_signal_disconnect_by_data((GtkObject *)arg0, (gpointer)arg1);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1signal_1emit_1stop_1by_1name
-	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
-{
-	jbyte *lparg1=NULL;
-
-	DEBUG_CALL("gtk_1signal_1emit_1stop_1by_1name\n")
-
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
-	gtk_signal_emit_stop_by_name((GtkObject *)arg0, (const gchar *)lparg1);
-	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1signal_1handler_1block_1by_1data
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	DEBUG_CALL("gtk_1signal_1handler_1block_1by_1data\n")
-
-	gtk_signal_handler_block_by_data((GtkObject *)arg0, (gpointer)arg1);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1signal_1handler_1block_1by_1func
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
-{
-	DEBUG_CALL("gtk_1signal_1handler_1block_1by_1func\n")
-
-	gtk_signal_handler_block_by_func((GtkObject *)arg0, (GtkSignalFunc)arg1, (gpointer)arg2);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1signal_1handler_1unblock_1by_1data
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	DEBUG_CALL("gtk_1signal_1handler_1unblock_1by_1data\n")
-
-	gtk_signal_handler_unblock_by_data((GtkObject *)arg0, (gpointer)arg1);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1signal_1handler_1unblock_1by_1func
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
-{
-	DEBUG_CALL("gtk_1signal_1handler_1unblock_1by_1func\n")
-
-	gtk_signal_handler_unblock_by_func((GtkObject *)arg0, (GtkSignalFunc)arg1, (gpointer)arg2);
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1style_1copy
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	DEBUG_CALL("gtk_1style_1copy\n")
-
-	return (jint)gtk_style_copy((GtkStyle *)arg0);
-}
-
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1target_1list_1new
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -3618,36 +3625,382 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1target_1list_1u
 	gtk_target_list_unref((GtkTargetList *)arg0);
 }
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1get_1length
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1buffer_1copy_1clipboard
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1text_1buffer_1copy_1clipboard\n")
+
+	gtk_text_buffer_copy_clipboard((GtkTextBuffer *)arg0, (GtkClipboard *)arg1);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1buffer_1cut_1clipboard
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
+{
+	DEBUG_CALL("gtk_1text_1buffer_1cut_1clipboard\n")
+
+	gtk_text_buffer_cut_clipboard((GtkTextBuffer *)arg0, (GtkClipboard *)arg1, (gboolean)arg2);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1buffer_1delete
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jbyteArray arg2)
+{
+	jbyte *lparg1=NULL;
+	jbyte *lparg2=NULL;
+
+	DEBUG_CALL("gtk_1text_1buffer_1delete\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	gtk_text_buffer_delete((GtkTextBuffer *)arg0, (GtkTextIter *)lparg1, (GtkTextIter *)lparg2);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1buffer_1get_1bounds
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jbyteArray arg2)
+{
+	jbyte *lparg1=NULL;
+	jbyte *lparg2=NULL;
+
+	DEBUG_CALL("gtk_1text_1buffer_1get_1bounds\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	gtk_text_buffer_get_bounds((GtkTextBuffer *)arg0, (GtkTextIter *)lparg1, (GtkTextIter *)lparg2);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1buffer_1get_1char_1count
 	(JNIEnv *env, jclass that, jint arg0)
 {
-	DEBUG_CALL("gtk_1text_1get_1length\n")
+	DEBUG_CALL("gtk_1text_1buffer_1get_1char_1count\n")
 
-	return (jint)gtk_text_get_length((GtkText *)arg0);
+	return (jint)gtk_text_buffer_get_char_count((GtkTextBuffer *)arg0);
 }
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1new
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1buffer_1get_1end_1iter
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+
+	DEBUG_CALL("gtk_1text_1buffer_1get_1end_1iter\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	gtk_text_buffer_get_end_iter((GtkTextBuffer *)arg0, (GtkTextIter *)lparg1);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1buffer_1get_1insert
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1text_1buffer_1get_1insert\n")
+
+	return (jint)gtk_text_buffer_get_insert((GtkTextBuffer *)arg0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1buffer_1get_1iter_1at_1line
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
+{
+	jbyte *lparg1=NULL;
+
+	DEBUG_CALL("gtk_1text_1buffer_1get_1iter_1at_1line\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	gtk_text_buffer_get_iter_at_line((GtkTextBuffer *)arg0,  (GtkTextIter *)lparg1, arg2);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1buffer_1get_1iter_1at_1mark
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
+{
+	jbyte *lparg1=NULL;
+
+	DEBUG_CALL("gtk_1text_1buffer_1get_1iter_1at_1mark\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	gtk_text_buffer_get_iter_at_mark((GtkTextBuffer *)arg0, (GtkTextIter *)lparg1, (GtkTextMark *)arg2);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1buffer_1get_1iter_1at_1offset
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
+{
+	jbyte *lparg1=NULL;
+
+	DEBUG_CALL("gtk_1text_1buffer_1get_1iter_1at_1offset\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	gtk_text_buffer_get_iter_at_offset((GtkTextBuffer *)arg0, (GtkTextIter *)lparg1, arg2);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1buffer_1get_1line_1count
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1text_1buffer_1get_1line_1count\n")
+
+	return (jint)gtk_text_buffer_get_line_count((GtkTextBuffer *)arg0);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1buffer_1get_1selection_1bound
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1text_1buffer_1get_1selection_1bound\n")
+
+	return (jint)gtk_text_buffer_get_selection_bound((GtkTextBuffer *)arg0);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1buffer_1get_1selection_1bounds
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jbyteArray arg2)
+{
+	jbyte *lparg1=NULL;
+	jbyte *lparg2=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("gtk_1text_1buffer_1get_1selection_1bounds\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	rc = (jboolean)gtk_text_buffer_get_selection_bounds((GtkTextBuffer *)arg0, (GtkTextIter *)lparg1, (GtkTextIter *)lparg2);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1buffer_1get_1text
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jbyteArray arg2, jboolean arg3)
+{
+	jbyte *lparg1=NULL;
+	jbyte *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("gtk_1text_1buffer_1get_1text\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	rc = (jint)gtk_text_buffer_get_text((GtkTextBuffer *)arg0, (GtkTextIter *)lparg1, (GtkTextIter *)lparg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	return rc;
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1buffer_1insert
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jbyteArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jbyte *lparg2=NULL;
+
+	DEBUG_CALL("gtk_1text_1buffer_1insert\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	gtk_text_buffer_insert((GtkTextBuffer *)arg0, (GtkTextIter *)lparg1, (gchar *)lparg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1buffer_1move_1mark
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2)
+{
+	jbyte *lparg2=NULL;
+
+	DEBUG_CALL("gtk_1text_1buffer_1move_1mark\n")
+
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	gtk_text_buffer_move_mark((GtkTextBuffer *)arg0, (GtkTextMark *)arg1, (GtkTextIter *)lparg2);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1buffer_1paste_1clipboard
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jboolean arg3)
+{
+	jbyte *lparg2=NULL;
+
+	DEBUG_CALL("gtk_1text_1buffer_1paste_1clipboard\n")
+
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	gtk_text_buffer_paste_clipboard((GtkTextBuffer *)arg0, (GtkClipboard *)arg1, (GtkTextIter *)lparg2, (gboolean)arg3);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1buffer_1place_1cursor
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+
+	DEBUG_CALL("gtk_1text_1buffer_1place_1cursor\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	gtk_text_buffer_place_cursor((GtkTextBuffer *)arg0, (GtkTextIter *)lparg1);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1buffer_1set_1text
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
+{
+	jbyte *lparg1=NULL;
+
+	DEBUG_CALL("gtk_1text_1buffer_1set_1text\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	gtk_text_buffer_set_text((GtkTextBuffer *)arg0, (gchar *)lparg1, arg2);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1iter_1get_1line
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("gtk_1text_1iter_1get_1line\n")
+
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	rc = (jint)gtk_text_iter_get_line((GtkTextIter *)lparg0);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1iter_1get_1offset
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("gtk_1text_1iter_1get_1offset\n")
+
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	rc = (jint)gtk_text_iter_get_offset((GtkTextIter *)lparg0);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	return rc;
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1view_1buffer_1to_1window_1coords
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jintArray arg4, jintArray arg5)
+{
+	jint *lparg4=NULL;
+	jint *lparg5=NULL;
+
+	DEBUG_CALL("gtk_1text_1view_1buffer_1to_1window_1coords\n")
+
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	gtk_text_view_buffer_to_window_coords((GtkTextView *)arg0, (GtkTextWindowType)arg1, arg2, arg3, lparg4, lparg5);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1view_1get_1buffer
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1text_1view_1get_1buffer\n")
+
+	return (jint)gtk_text_view_get_buffer((GtkTextView *)arg0);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1view_1get_1editable
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1text_1view_1get_1editable\n")
+
+	return (jboolean)gtk_text_view_get_editable((GtkTextView *)arg0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1view_1get_1iter_1location
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jobject arg2)
+{
+	jbyte *lparg1=NULL;
+	GdkRectangle _arg2, *lparg2=NULL;
+
+	DEBUG_CALL("gtk_1text_1view_1get_1iter_1location\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = getGdkRectangleFields(env, arg2, &_arg2);
+	gtk_text_view_get_iter_location((GtkTextView *)arg0, (GtkTextIter *)lparg1, (GdkRectangle *)lparg2);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) setGdkRectangleFields(env, arg2, lparg2);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1view_1get_1line_1at_1y
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jintArray arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg3=NULL;
+
+	DEBUG_CALL("gtk_1text_1view_1get_1line_1at_1y\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	gtk_text_view_get_line_at_y((GtkTextView *)arg0, (GtkTextIter *)lparg1, arg2, lparg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1view_1get_1visible_1rect
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	GdkRectangle _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("gtk_1text_1view_1get_1visible_1rect\n")
+
+	if (arg1) lparg1 = getGdkRectangleFields(env, arg1, &_arg1);
+	gtk_text_view_get_visible_rect((GtkTextView *)arg0, (GdkRectangle *)lparg1);
+	if (arg1) setGdkRectangleFields(env, arg1, lparg1);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1view_1new
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("gtk_1text_1view_1new\n")
+
+	return (jint)gtk_text_view_new();
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1view_1scroll_1mark_1onscreen
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	DEBUG_CALL("gtk_1text_1new\n")
+	DEBUG_CALL("gtk_1text_1view_1scroll_1mark_1onscreen\n")
 
-	return (jint)gtk_text_new((GtkAdjustment *)arg0, (GtkAdjustment *)arg1);
+	gtk_text_view_scroll_mark_onscreen((GtkTextView *)arg0, (GtkTextMark *)arg1);
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1set_1editable
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1view_1scroll_1to_1iter
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jdouble arg2, jboolean arg3, jdouble arg4, jdouble arg5)
+{
+	jbyte *lparg1=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("gtk_1text_1view_1scroll_1to_1iter\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	rc = (jboolean)gtk_text_view_scroll_to_iter((GtkTextView *)arg0, (GtkTextIter *)lparg1, (gdouble)arg2, (gboolean)arg3, (gdouble)arg4, (gdouble)arg5);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	return rc;
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1view_1set_1editable
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
 {
-	DEBUG_CALL("gtk_1text_1set_1editable\n")
+	DEBUG_CALL("gtk_1text_1view_1set_1editable\n")
 
-	gtk_text_set_editable((GtkText *)arg0, (gboolean)arg1);
+	gtk_text_view_set_editable((GtkTextView *)arg0, (gboolean)arg1);
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1set_1word_1wrap
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1view_1set_1tabs
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	DEBUG_CALL("gtk_1text_1set_1word_1wrap\n")
+	DEBUG_CALL("gtk_1text_1view_1set_1tabs\n")
 
-	gtk_text_set_word_wrap((GtkText *)arg0, (gboolean)arg1);
+	gtk_text_view_set_tabs((GtkTextView *)arg0, (PangoTabArray *)arg1);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1view_1set_1wrap_1mode
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1text_1view_1set_1wrap_1mode\n")
+
+	gtk_text_view_set_wrap_mode((GtkTextView *)arg0, (GtkWrapMode)arg1);
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1timeout_1add
@@ -3838,6 +4191,20 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1add_1ev
 	DEBUG_CALL("gtk_1widget_1add_1events\n")
 
 	gtk_widget_add_events((GtkWidget *)arg0, (gint)arg1);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1create_1pango_1layout
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("gtk_1widget_1create_1pango_1layout\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	rc = (jint)gtk_widget_create_pango_layout((GtkWidget *)arg0, (gchar *)lparg1);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	return rc;
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1destroy
@@ -4265,14 +4632,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1set_1mo
 	gtk_window_set_modal((GtkWindow *)arg0, (gboolean)arg1);
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1set_1policy
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
-{
-	DEBUG_CALL("gtk_1window_1set_1policy\n")
-
-	gtk_window_set_policy((GtkWindow *)arg0, (gint)arg1, (gint)arg2, (gint)arg3);
-}
-
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1set_1resizable
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
 {
@@ -4331,6 +4690,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__ILorg_eclip
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
 }
 
+#ifndef NO_CLIST
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__ILorg_eclipse_swt_internal_gtk_GtkCListColumn_2I
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
 {
@@ -4341,6 +4701,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__ILorg_eclip
 	if (arg1) lparg1 = getGtkCListColumnFields(env, arg1, &_arg1);
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
 }
+#endif /* NO_CLIST */
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclipse_swt_internal_gtk_GtkTargetPair_2II
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
@@ -4350,7 +4711,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclips
 	DEBUG_CALL("memmove__Lorg_eclipse_swt_internal_gtk_GtkTargetPair_2II\n")
 
 	if (arg0) lparg0 = &_arg0;
-	memmove(lparg0, arg1, arg2);
+	memmove((void *)lparg0, (const void *)arg1, arg2);
 	if (arg0) setGtkTargetPairFields(env, arg0, lparg0);
 }
 
@@ -4374,10 +4735,11 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclips
 	DEBUG_CALL("memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2II\n")
 
 	if (arg0) lparg0 = &_arg0;
-	memmove(lparg0, arg1, arg2);
+	memmove((void *)lparg0, (const void *)arg1, arg2);
 	if (arg0) setGdkDragContextFields(env, arg0, lparg0);
 }
 
+#ifndef NO_CLIST
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclipse_swt_internal_gtk_GtkCTreeRow_2II
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
 {
@@ -4401,6 +4763,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclips
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setGtkCListColumnFields(env, arg0, lparg0);
 }
+#endif /* NO_CLIST */
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent_2II
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
@@ -4446,7 +4809,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclips
 	DEBUG_CALL("memmove__Lorg_eclipse_swt_internal_gtk_GdkEventCrossing_2II\n")
 
 	if (arg0) lparg0 = &_arg0;
-	memmove(lparg0, arg1, arg2);
+	memmove((void *)lparg0, (const void *)arg1, arg2);
 	if (arg0) setGdkEventCrossingFields(env, arg0, lparg0);
 }
 
@@ -4922,6 +5285,45 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1layout_1set_1
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1tab_1array_1free
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("pango_1tab_1array_1free\n")
+
+	pango_tab_array_free((PangoTabArray *)arg0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1tab_1array_1get_1tab
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3)
+{
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+
+	DEBUG_CALL("pango_1tab_1array_1get_1tab\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	pango_tab_array_get_tab((PangoTabArray *)arg0, arg1, (PangoTabAlign *)lparg2, (gint *)lparg3);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1tab_1array_1new
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	DEBUG_CALL("pango_1tab_1array_1new\n")
+
+	return (jint)pango_tab_array_new(arg0, (gboolean)arg1);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1tab_1array_1set_1tab
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	DEBUG_CALL("pango_1tab_1array_1set_1tab\n")
+
+	pango_tab_array_set_tab((PangoTabArray *)arg0, arg1, (PangoTabAlign)arg2, arg3);
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_strlen
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -4929,56 +5331,3 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_strlen
 
 	return (jint)strlen((const char *)arg0);
 }
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1clist_1optimal_1column_1width
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	DEBUG_CALL("gtk_1clist_1optimal_1column_1width\n")
-
-	return (jint)gtk_clist_optimal_column_width((GtkCList*)arg0, (gint)arg1);
-}
-
-#define CELL_SPACING 1
-#define ROW_TOP_YPIXEL(clist, row) (((clist)->row_height * (row)) + \
-				    (((row) + 1) * CELL_SPACING) + \
-				    (clist)->voffset)
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_ROW_1TOP_1YPIXEL
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	DEBUG_CALL("ROW_1TOP_1YPIXEL\n")
-
-	return (jint)ROW_TOP_YPIXEL((GtkCList*)arg0, arg1);
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1CTREE_1ROW
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	DEBUG_CALL("GTK_1CTREE_1ROW\n")
-
-	return (jint)GTK_CTREE_ROW((GtkCTreeNode*)arg0);
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1CLIST_1ROW_1LIST
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	DEBUG_CALL("GTK_1CLIST_1ROW_1LIST\n")
-
-	return (jint) ((GtkCList*)arg0) -> row_list;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1CTREE_1NODE_1NEXT
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	DEBUG_CALL("GTK_1CTREE_1NODE_1NEXT\n")
-
-	return (jint) GTK_CTREE_NODE_NEXT((GtkCTreeNode*)arg0);
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1CLIST_1WINDOW_1WIDTH
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	DEBUG_CALL("OS_GTK_1CLIST_1WINDOW_1WIDTH\n")
-
-	return (jint) ((GtkCList*)arg0)->clist_window_width;
-}
-

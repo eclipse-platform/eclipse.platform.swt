@@ -330,7 +330,7 @@ void hookEvents () {
 	super.hookEvents();
 	Display display = getDisplay ();
 	int windowProc2 = display.windowProc2;
-	OS.gtk_signal_connect (handle, OS.clicked, windowProc2, SWT.Selection);
+	OS.g_signal_connect (handle, OS.clicked, windowProc2, SWT.Selection);
 }
 
 int processFocusIn(int int0, int int1, int int2) {
@@ -535,9 +535,9 @@ public void setImage (Image image) {
 public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	blockSignal (handle, SWT.Selection);
 	OS.gtk_toggle_button_set_active (handle, selected);
-	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
+	unblockSignal (handle, SWT.Selection);
 }
 
 /**

@@ -95,9 +95,11 @@ $(SWTPI_DLL): $(PI_OBJECTS) structs.o
 
 # All about Compiling
 
+SWT_WARNINGS = #-Wimplicit-function-declaration
 CFLAGS = -c -O -s \
 	    -DSWT_VERSION=$(SWT_VERSION) \
 	    -DLINUX -DGTK \
+		$(SWT_WARNINGS) \
 	    -fpic -fPIC \
 	    $(GTKCFLAGS) \
 	    -I$(JAVA_JNI)

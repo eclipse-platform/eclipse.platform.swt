@@ -7,6 +7,7 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
  
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 
 class WidgetTable {
@@ -14,14 +15,17 @@ class WidgetTable {
 	static int GrowSize = 1024;
 	static int [] IndexTable = new int [GrowSize];
 	static Widget [] WidgetTable = new Widget [GrowSize];
+	static final int Key;
 	static {
+		byte [] buffer = Converter.wcsToMbcs (null, "SWT_OBJ_INDEX", true);
+		Key = OS.g_quark_from_string (buffer);
 		for (int i=0; i<GrowSize-1; i++) IndexTable [i] = i + 1;
 		IndexTable [GrowSize - 1] = -1;
 	}
 	
 public static synchronized Widget get (int handle) {
 	if (handle == 0) return null;
-	int index = OS.gtk_object_get_user_data (handle) - 1;
+	int index = OS.g_object_get_qdata (handle, Key) - 1;
 	if (0 <= index && index < WidgetTable.length) return WidgetTable [index];
 	return null;
 }
@@ -42,7 +46,7 @@ public synchronized static void put(int handle, Widget widget) {
 		WidgetTable = newWidgetTable;
 	}
 	int index = FreeSlot + 1;
-	OS.gtk_object_set_user_data (handle, index);
+	OS.g_object_set_qdata (handle, Key, index);
 	int oldSlot = FreeSlot;
 	FreeSlot = IndexTable[oldSlot];
 	IndexTable [oldSlot] = -2;
@@ -52,13 +56,13 @@ public synchronized static void put(int handle, Widget widget) {
 public static synchronized Widget remove (int handle) {
 	if (handle == 0) return null;
 	Widget widget = null;
-	int index = OS.gtk_object_get_user_data (handle) - 1;
+	int index = OS.g_object_get_qdata (handle, Key) - 1;
 	if (0 <= index && index < WidgetTable.length) {
 		widget = WidgetTable [index];
 		WidgetTable [index] = null;
 		IndexTable [index] = FreeSlot;
 		FreeSlot = index;
-		OS.gtk_object_set_user_data (handle, 0);
+		OS.g_object_set_qdata (handle, Key, 0);
 	}
 	return widget;
 }

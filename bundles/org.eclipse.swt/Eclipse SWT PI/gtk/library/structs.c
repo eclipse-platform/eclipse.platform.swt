@@ -770,6 +770,7 @@ void setGtkAllocationFields(JNIEnv *env, jobject lpObject, GtkAllocation *lpStru
 	(*env)->SetIntField(env, lpObject, lpCache->height, (jint)lpStruct->height);
 }
 
+#ifndef NO_CLIST
 typedef struct GtkCListColumn_FID_CACHE {
 	int cached;
 	jclass clazz;
@@ -985,6 +986,7 @@ void setGtkCTreeRowFields(JNIEnv *env, jobject lpObject, GtkCTreeRow *lpStruct)
 	(*env)->SetIntField(env, lpObject, lpCache->is_leaf, (jint)lpStruct->is_leaf);
 	(*env)->SetIntField(env, lpObject, lpCache->expanded, (jint)lpStruct->expanded);
 }
+#endif /* NO_CLIST */
 
 typedef struct GtkCombo_FID_CACHE {
 	int cached;

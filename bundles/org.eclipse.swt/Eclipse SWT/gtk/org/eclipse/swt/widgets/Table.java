@@ -275,12 +275,12 @@ void createItem (TableItem item, int index) {
 	}
 	int [] strings = new int [MAX_COLUMNS];
 	for (int i=0; i<strings.length; i++) strings [i] = 0;
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	blockSignal (handle, SWT.Selection);
 	int result = OS.gtk_clist_insert (handle, index, strings);
 	if ((style & SWT.SINGLE) != 0) {
 		if (itemCount == 0) OS.gtk_clist_unselect_row (handle, 0, 0);
 	}
-	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
+	unblockSignal (handle, SWT.Selection);
 	if ((style & SWT.CHECK) != 0) {
 		OS.gtk_clist_set_pixtext (handle, index, 0, new byte [1], (byte) 2, uncheck, 0);
 	}
@@ -319,9 +319,9 @@ GdkColor defaultForeground () {
  */
 public void deselect (int index) {
 	checkWidget();
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	blockSignal (handle, SWT.Selection);
 	OS.gtk_clist_unselect_row (handle, index, 0);
-	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
+	unblockSignal (handle, SWT.Selection);
 }
 
 /**
@@ -341,11 +341,11 @@ public void deselect (int index) {
  */
 public void deselect (int start, int end) {
 	checkWidget();
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	blockSignal (handle, SWT.Selection);
 	for (int i=start; i<=end; i++) {
 		OS.gtk_clist_unselect_row (handle, i, 0);
 	}
-	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
+	unblockSignal (handle, SWT.Selection);
 }
 
 /**
@@ -368,11 +368,11 @@ public void deselect (int start, int end) {
 public void deselect (int [] indices) {
 	checkWidget();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	blockSignal (handle, SWT.Selection);
 	for (int i=0; i<indices.length; i++) {
 		OS.gtk_clist_unselect_row (handle, indices [i], 0);
 	}
-	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
+	unblockSignal (handle, SWT.Selection);
 }
 
 /**
@@ -385,7 +385,7 @@ public void deselect (int [] indices) {
  */
 public void deselectAll () {
 	checkWidget();
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	blockSignal (handle, SWT.Selection);
 	if ((style & SWT.SINGLE) != 0) {
 		int selection = OS.GTK_CLIST_SELECTION (handle);
 		if (selection != 0 && OS.g_list_length (selection) > 0) {
@@ -397,7 +397,7 @@ public void deselectAll () {
 	} else {
 		OS.gtk_clist_unselect_all (handle);
 	}
-	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
+	unblockSignal (handle, SWT.Selection);
 }
 
 void destroyItem (TableColumn column) {
@@ -420,7 +420,7 @@ void destroyItem (TableItem item) {
 		index++;
 	}
 	if (index == itemCount) return;
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	blockSignal (handle, SWT.Selection);
 	if ((style & SWT.SINGLE) != 0) {
 		int selectionIndex = -1;
 		int selection = OS.GTK_CLIST_SELECTION (handle);
@@ -436,7 +436,7 @@ void destroyItem (TableItem item) {
 	} else {
 		OS.gtk_clist_remove (handle, index);
 	}
-	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
+	unblockSignal (handle, SWT.Selection);
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
 }
@@ -994,10 +994,10 @@ void hookEvents () {
 	Display display = getDisplay ();
 	int windowProc3 = display.windowProc3;
 	int windowProc5 = display.windowProc5;
-	OS.gtk_signal_connect (handle, OS.select_row, windowProc5, SWT.Selection);
-	OS.gtk_signal_connect (handle, OS.unselect_row, windowProc5, SWT.Selection);
-	OS.gtk_signal_connect (handle, OS.click_column, windowProc3, SWT.Activate);
-	OS.gtk_signal_connect (handle, OS.event_after, windowProc3, 0);
+	OS.g_signal_connect (handle, OS.select_row, windowProc5, SWT.Selection);
+	OS.g_signal_connect (handle, OS.unselect_row, windowProc5, SWT.Selection);
+	OS.g_signal_connect (handle, OS.click_column, windowProc3, SWT.Activate);
+	OS.g_signal_connect (handle, OS.event_after, windowProc3, 0);
 }
 
 /**
@@ -1226,9 +1226,9 @@ public void removeSelectionListener(SelectionListener listener) {
  */
 public void select (int index) {
 	checkWidget();
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	blockSignal (handle, SWT.Selection);
 	OS.gtk_clist_select_row (handle, index, 0);
-	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
+	unblockSignal (handle, SWT.Selection);
 }
 
 /**
@@ -1247,11 +1247,11 @@ public void select (int index) {
  */
 public void select (int start, int end) {
 	checkWidget();
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	blockSignal (handle, SWT.Selection);
 	for (int i=start; i<=end; i++) {
 		OS.gtk_clist_select_row (handle, i, 0);
 	}
-	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
+	unblockSignal (handle, SWT.Selection);
 }
 
 /**
@@ -1274,11 +1274,11 @@ public void select (int start, int end) {
 public void select (int [] indices) {
 	checkWidget();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	blockSignal (handle, SWT.Selection);
 	for (int i=0; i<indices.length; i++) {
 		OS.gtk_clist_select_row (handle, indices [i], 0);
 	}
-	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
+	unblockSignal (handle, SWT.Selection);
 }
 
 /**
@@ -1291,9 +1291,9 @@ public void select (int [] indices) {
  */
 public void selectAll () {
 	checkWidget();
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	blockSignal (handle, SWT.Selection);
 	OS.gtk_clist_select_all (handle);
-	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
+	unblockSignal (handle, SWT.Selection);
 }
 
 void setBackgroundColor (GdkColor color) {
@@ -1526,9 +1526,9 @@ public void setSelection (TableItem [] items) {
  */
 public void setTopIndex (int index) {
 	checkWidget();
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	blockSignal (handle, SWT.Selection);
 	OS.gtk_clist_moveto (handle, index, 0, 0.0f, 0.0f);
-	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
+	unblockSignal (handle, SWT.Selection);
 }
 
 /**
