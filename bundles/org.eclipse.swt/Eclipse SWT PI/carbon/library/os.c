@@ -8063,6 +8063,21 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetFrontProcess)
 }
 #endif
 
+#ifndef NO_SetFrontProcessWithOptions
+JNIEXPORT jint JNICALL OS_NATIVE(SetFrontProcessWithOptions)
+	(JNIEnv *env, jclass that, jintArray arg0, jint arg1)
+{
+	jint *lparg0=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "SetFrontProcessWithOptions\n")
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	rc = (jint)SetFrontProcessWithOptions((const ProcessSerialNumber *)lparg0, arg1);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "SetFrontProcessWithOptions\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_SetGWorld
 JNIEXPORT void JNICALL OS_NATIVE(SetGWorld)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)

@@ -448,6 +448,7 @@ public class OS {
 	public static final int kScrapFlavorTypeText = ('T'<<24) + ('E'<<16) + ('X'<<8) + 'T';
 	public static final boolean kScrollBarsSyncAlwaysActive = true;
 	public static final boolean kScrollBarsSyncWithFocus = false;
+	public static final int kSetFrontProcessFrontWindowOnly = 1 << 0;
 	public static final int kSheetWindowClass = 11;
 	public static final int kStdCFStringAlertVersionOne = 1;
 	public static final int kSymbolLigaturesOffSelector = 17;
@@ -1226,6 +1227,7 @@ public static final native int SetEventParameter(int inEvent, int inName, int in
 public static final native int SetEventParameter(int inEvent, int inName, int inType, int inSize, short[] inDataPtr);
 public static final native int SetFontInfoForSelection(int iStyleType, int iNumStyles, int iStyles, int iFPEventTarget);
 public static final native int SetFrontProcess(int[] psn);
+public static final native int SetFrontProcessWithOptions(int[] psn, int inOptions);
 public static final native void SetGWorld(int portHandle, int gdHandle);
 public static final native void SetItemMark(int theMenu, short item, short markChar);
 public static final native int SetKeyboardFocus(int wHandle, int cHandle, short inPart);
