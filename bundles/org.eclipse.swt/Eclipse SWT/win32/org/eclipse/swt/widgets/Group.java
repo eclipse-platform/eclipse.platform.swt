@@ -321,6 +321,18 @@ LRESULT WM_NCHITTEST (int wParam, int lParam) {
 	return new LRESULT (code);
 }
 
+LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
+	LRESULT result = super.WM_SIZE (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Feature in Windows.  In version 6.00 of COMCTL32.DLL,
+	* every time the mouse moves, the group title redraws.
+	* This only happens when WM_NCHITTEST returns HTCLIENT.
+	* The fix is to avoid calling the group window proc.
+	*/
+	return LRESULT.ZERO;
+}
+
 LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
 	LRESULT result = super.WM_PRINTCLIENT (wParam, lParam);
 	if (result != null) return result;
