@@ -41,7 +41,7 @@ import org.eclipse.swt.events.*;
  * </p>
  */
 public class Tree extends Composite {
-	int /*long*/ modelHandle, checkRenderer, columnHandle;
+	int /*long*/ modelHandle, columnHandle, checkRenderer, pixbufRenderer, textRenderer;
 	TreeItem[] items;
 	ImageList imageList;
 	
@@ -223,7 +223,7 @@ void createHandle (int index) {
 			OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, "inconsistent", GRAYED_COLUMN);
 		}
 	}
-	int /*long*/ pixbufRenderer = OS.gtk_cell_renderer_pixbuf_new ();
+	pixbufRenderer = OS.gtk_cell_renderer_pixbuf_new ();
 	if (pixbufRenderer == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_tree_view_column_pack_start (columnHandle, pixbufRenderer, false);
 	OS.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, "pixbuf", PIXBUF_COLUMN);
@@ -236,7 +236,7 @@ void createHandle (int index) {
 	if ((style & SWT.CHECK) != 0) {
 		OS.g_object_set (pixbufRenderer, OS.mode, OS.GTK_CELL_RENDERER_MODE_ACTIVATABLE, 0);
 	}
-	int /*long*/ textRenderer = OS.gtk_cell_renderer_text_new ();
+	textRenderer = OS.gtk_cell_renderer_text_new ();
 	if (textRenderer == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_tree_view_column_pack_start (columnHandle, textRenderer, true);
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "text", TEXT_COLUMN);

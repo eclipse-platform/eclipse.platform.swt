@@ -329,6 +329,7 @@ public class OS {
 	public static final byte[] background_gdk = signal("background-gdk");
 	public static final byte[] button_relief = signal("button_relief");
 	public static final byte[] cell_background_gdk = signal("cell-background-gdk");
+	public static final byte[] expander_size = signal("expander-size");
 	public static final byte[] fixed_height_mode = signal("fixed-height-mode");
 	public static final byte[] focus_line_width = signal("focus_line_width");
 	public static final byte[] font_desc = signal("font-desc");
@@ -985,6 +986,7 @@ public static final synchronized native void gtk_tree_view_set_drag_dest_row(int
 public static final synchronized native boolean gtk_tree_view_expand_row(int /*long*/ view, int /*long*/ path, boolean open_all);
 public static final synchronized native int /*long*/ gtk_tree_view_get_bin_window(int /*long*/ tree_view);
 public static final synchronized native void gtk_tree_view_get_cell_area(int /*long*/ tree_view, int /*long*/ path, int /*long*/ column, GdkRectangle rect);
+public static final synchronized native int /*long*/gtk_tree_view_get_expander_column(int /*long*/ tree_view);
 public static final synchronized native int /*long*/ gtk_tree_view_get_column(int /*long*/ tree_view, int n);
 public static final synchronized native void gtk_tree_view_get_cursor(int /*long*/ tree_view, int /*long*/[] path, int /*long*/[] focus_column);
 public static final synchronized native boolean gtk_tree_view_get_headers_visible(int /*long*/ tree_view);

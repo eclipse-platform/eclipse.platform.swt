@@ -7556,6 +7556,18 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1view_1get_1cursor)
 }
 #endif
 
+#ifndef NO_gtk_1tree_1view_1get_1expander_1column
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1tree_1view_1get_1expander_1column)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, gtk_1tree_1view_1get_1expander_1column_FUNC);
+	rc = (jint)gtk_tree_view_get_expander_column((GtkTreeView *)arg0);
+	OS_NATIVE_EXIT(env, that, gtk_1tree_1view_1get_1expander_1column_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1tree_1view_1get_1headers_1visible
 JNIEXPORT jboolean JNICALL OS_NATIVE(gtk_1tree_1view_1get_1headers_1visible)
 	(JNIEnv *env, jclass that, jint arg0)
