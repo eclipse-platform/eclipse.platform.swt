@@ -27,19 +27,12 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-import org.eclipse.swt.internal.*;
-
 public class XPCOM {
 	
 	/* Mozilla version */
 	static final int MAJOR = 1;
 	static final int MINOR = 4;
 	static final String SUPPORTED_VERSION = MAJOR + "." + MINOR; //$NON-NLS-1$
-		
-	static {
-		/* Load the SWT Mozilla library */
-		Library.loadLibrary ("swt-mozilla"); //$NON-NLS-1$
-	}
 
 	/* NsWidgetCID constants */
 	public static final nsID NS_APPSHELL_CID =	new nsID("2d96b3df-c051-11d1-a827-0040959a28c9"); //$NON-NLS-1$

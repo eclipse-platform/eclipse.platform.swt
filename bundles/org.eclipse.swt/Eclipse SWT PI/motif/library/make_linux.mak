@@ -50,6 +50,12 @@ AWT_DLL      = lib$(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 AWT_OBJ      = swt_awt.o
 AWT_LIB      = -L$(JAVA_HOME)/jre/bin -ljawt -shared
 
+GTK_PREFIX  = swt-gtk
+GTK_DLL     = lib$(GTK_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+GTK_OBJ     = gtk.o
+GTK_CFLAGS  = `pkg-config --cflags gtk+-2.0`
+GTK_LIB     = -x -shared `pkg-config --libs gtk+-2.0`
+	
 #
 # The following CFLAGS are for compiling both the SWT library and the GNOME
 # library. The KDE library uses its own (C++) flags.
@@ -63,8 +69,7 @@ CFLAGS = -O -s \
 	-I$(MOTIF_HOME)/include \
 	-I/usr/X11R6/include 
 
-
-all: make_swt make_awt make_gnome
+all: make_swt make_awt make_gnome make_gtk
 
 kde: make_kde
 
@@ -94,6 +99,14 @@ make_awt: $(AWT_DLL)
 
 $(AWT_DLL): $(AWT_OBJ)
 	ld -o $@ $(AWT_OBJ) $(AWT_LIB)
+
+make_gtk: $(GTK_DLL)
+
+$(GTK_DLL): $(GTK_OBJ)
+	ld -o $@ $(GTK_OBJ) $(GTK_LIB)
+
+$(GTK_OBJ): gtk.c
+	$(CC) $(CFLAGS) $(GTK_CFLAGS) -c -o gtk.o gtk.c
 
 clean:
 	rm -f *.so *.o

@@ -63,6 +63,10 @@ public class Browser extends Composite {
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
 
+static {
+	Library.loadLibrary ("swt-mozilla"); //$NON-NLS-1$
+}
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
