@@ -14,8 +14,6 @@ public abstract class Control extends Widget implements Drawable {
 	Composite parent;
 	Menu menu;
 	Object layoutData;
-	String toolTipText;
-	int toolTipHandle;
 	
 Control () {
 	/* Do nothing */
@@ -188,17 +186,15 @@ public int getBorderWidth () {
 	int topHandle = topHandle ();
 	int [] args = {
 		OS.Pt_ARG_BASIC_FLAGS, 0, 0,
-		OS.Pt_ARG_FLAGS, 0, 0,
 //		OS.Pt_ARG_BEVEL_WIDTH, 0, 0,
 	};
 	OS.PtGetResources (topHandle, args.length / 3, args);
-	if ((args [4] & OS.Pt_HIGHLIGHTED) == 0) return 0;
 	int border = 0;
 	int flags = args [1];
 	if ((flags & OS.Pt_ALL_ETCHES) != 0) border++;
 	if ((flags & OS.Pt_ALL_OUTLINES) != 0) border++;
 	if ((flags & OS.Pt_ALL_INLINES) != 0) border++;
-//	if ((flags & OS.Pt_ALL_BEVELS) != 0) border += args [7];
+//	if ((flags & OS.Pt_ALL_BEVELS) != 0) border += args [4];
 	return border;
 }
 
@@ -281,7 +277,7 @@ public Point getSize () {
 public String getToolTipText () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	return toolTipText;
+	return null;
 }
 
 public Shell getShell () {
@@ -664,16 +660,9 @@ int processMouseEnter (int info) {
 			break;
 		case OS.Ph_EV_PTR_LEAVE:
 		case OS.Ph_EV_PTR_LEAVE_TO_CHILD:
-			sendEvent (SWT.MouseExit, event);
-			break;
+			sendEvent (SWT.MouseExit, event);			
 		case OS.Ph_EV_PTR_STEADY:
 			postEvent (SWT.MouseHover, event);
-			destroyToolTip (toolTipHandle);
-			toolTipHandle = createToolTip (toolTipText, handle, getFont ().handle);
-			break;
-		case OS.Ph_EV_PTR_UNSTEADY:
-			destroyToolTip (toolTipHandle);
-			toolTipHandle = 0;
 			break;		
 	}
 	return OS.Pt_END;
@@ -1115,7 +1104,6 @@ public void setVisible (boolean visible) {
 public void setToolTipText (String string) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	toolTipText = string;
 }
 
 void setZOrder() {

@@ -341,8 +341,7 @@ void hookEvents () {
 public int indexOf (String string) {
 	if (!isValidThread ()) error(SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error(SWT.ERROR_WIDGET_DISPOSED);
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);
-	return OS.PtListItemPos(handle, buffer) - 1;
+	return indexOf (string, 0);
 }
 
 public int indexOf (String string, int start) {
@@ -351,7 +350,8 @@ public int indexOf (String string, int start) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	
 	// NOT DONE - start is ignored
-	return indexOf (string);
+	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	return OS.PtListItemPos(handle, buffer) - 1;
 }
 
 int processModify (int info) {

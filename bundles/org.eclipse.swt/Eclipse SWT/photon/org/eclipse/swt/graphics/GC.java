@@ -838,28 +838,7 @@ public void drawText (String string, int x, int y) {
 }
 
 public void drawText (String string, int x, int y, boolean isTransparent) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-
-	int drawFlags = OS.Pg_TEXT_LEFT | OS.Pg_TEXT_TOP;
-	if (!isTransparent) drawFlags |= OS.Pg_BACK_FILL;
-	string = replaceTabs(string, 8);
-	byte[] buffer = Converter.wcsToMbcs(null, string, false);
-	PhRect_t rect = new PhRect_t();
-	rect.ul_x = (short)x;
-	rect.ul_y = (short)y;
-	rect.lr_x = (short)0xFFFF;
-	rect.lr_y = (short)0xFFFF;
-
-	int flags = OS.PtEnter(0);
-	try {
-		int prevContext = setGC();	
-		setGCClipping();
-		OS.PgDrawMultiTextArea(buffer, buffer.length, rect, drawFlags, OS.Pg_TEXT_LEFT | OS.Pg_TEXT_TOP, 0);
-		unsetGC(prevContext);
-	} finally {
-		if (flags >= 0) OS.PtLeave(flags);
-	}
+	drawString(string, x, y, isTransparent);;
 }
 
 public boolean equals (Object object) {
@@ -1188,26 +1167,6 @@ public boolean isDisposed() {
 	return handle == 0;
 }
 
-static String replaceTabs(String text, int spaces) {
-	int length = text.length();
-	int index = text.indexOf('\t', 0);
-	if (index == -1) return text;
-
-	int start = 0;
-	StringBuffer result = new StringBuffer();
-	StringBuffer spaceString = new StringBuffer();
-	while (spaces-- > 0) {
-		spaceString.append(' ');
-	}
-	while (index != -1 && index < length) {
-		result.append(text.substring(start, index));
-		result.append(spaceString);
-		index = text.indexOf('\t', start = index + 1);
-	}
-	if (index == -1) result.append(text.substring(start, length));
-	return result.toString();
-}
-
 public void setBackground (Color color) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -1481,27 +1440,7 @@ public Point stringExtent(String string) {
 }
 
 public Point textExtent(String string) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	PhRect_t rect = new PhRect_t();
-	string = replaceTabs(string, 8);
-	int size = string.length();
-	byte [] buffer = Converter.wcsToMbcs (null, string, false);
-
-	int flags = OS.PtEnter(0);
-	try {
-		int prevContext = setGC();
-		OS.PgExtentMultiText(rect, null, data.font, buffer, buffer.length, 0);
-		unsetGC(prevContext);
-	} finally {
-		if (flags >= 0) OS.PtLeave(flags);
-	}
-	
-	int width;
-	if (size == 0) width = 0;
-	else width = rect.lr_x - (rect.ul_x < 0 ? rect.ul_x : 0) + 1;
-	int height = rect.lr_y - rect.ul_y + 1;
-	return new Point(width, height);
+	return stringExtent(string);
 }
 
 public String toString () {
