@@ -2701,12 +2701,12 @@ public void test_setFontLorg_eclipse_swt_graphics_Font(){
 	int lineHeight;
 	Font font;
 	
-	font = new Font(text.getDisplay(), fontData.getName(), 8, fontData.getStyle());
+	font = new Font(text.getDisplay(), fontData.getName(), 20, fontData.getStyle());
 	text.setFont(font);
 	lineHeight = text.getLineHeight();
 	text.setFont(null);
 	font.dispose();
-	font = new Font(text.getDisplay(), fontData.getName(), 12, fontData.getStyle());
+	font = new Font(text.getDisplay(), fontData.getName(), 25, fontData.getStyle());
 	text.setFont(font);
 	assertTrue(":a:", text.getLineHeight() > lineHeight && font.equals(text.getFont()));
 	text.setFont(null);
