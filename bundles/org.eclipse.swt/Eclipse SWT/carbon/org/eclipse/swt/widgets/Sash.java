@@ -89,9 +89,9 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 			case OS.kMouseTrackingMouseUp:
 			case OS.kMouseTrackingMouseDragged: {
 				OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-				int x = pt.h - rect.left;
-				int y = pt.v - rect.top;
-				OS.GetControlBounds (handle, rect);
+				int x = outPt.h - rect.left;
+				int y = outPt.v - rect.top;
+				OS.GetControlBounds (parent.handle, rect);
 				x -= rect.left;
 				y -= rect.top;				
 				int newX = startX, newY = startY;
