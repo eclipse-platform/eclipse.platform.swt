@@ -1317,7 +1317,10 @@ void runGrabs () {
 		while (grabControl != null && !grabControl.isDisposed () && outResult [0] != OS.kMouseTrackingMouseUp) {
 			lastModifiers = OS.GetCurrentEventKeyModifiers ();
 			int oldState = OS.GetCurrentEventButtonState ();
-			OS.TrackMouseLocationWithOptions (0, 0, OS.kEventDurationForever, outPt, outModifiers, outResult);
+			int handle = grabControl.handle;
+			int window = OS.GetControlOwner (handle);
+			int port = OS.GetWindowPort (window);
+			OS.TrackMouseLocationWithOptions (port, 0, OS.kEventDurationForever, outPt, outModifiers, outResult);
 			int type = 0, button = 0;
 			switch ((int)outResult [0]) {
 				case OS.kMouseTrackingMouseDown: {
@@ -1345,14 +1348,9 @@ void runGrabs () {
 				case OS.kMouseTrackingMouseMoved: 				type = SWT.MouseMove; break;
 			}
 			if (type != 0) {	
-				int handle = grabControl.handle;
-				int window = OS.GetControlOwner (handle);
-				OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+				OS.GetControlBounds (handle, rect);
 				int x = outPt.h - rect.left;
 				int y = outPt.v - rect.top;
-				OS.GetControlBounds (handle, rect);
-				x -= rect.left;
-				y -=  rect.top;
 				int chord = OS.GetCurrentEventButtonState ();
 				grabControl.sendMouseEvent (type, (short)button, chord, (short)x, (short)y, outModifiers [0]);
 				//TEMPORARY CODE
