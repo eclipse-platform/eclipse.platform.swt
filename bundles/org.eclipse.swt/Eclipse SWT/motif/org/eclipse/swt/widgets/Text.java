@@ -240,6 +240,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 				null,
 				0,
 				0);
+			int fontList = font.handle;
 			if (hHint == SWT.DEFAULT) {
 				if ((style & SWT.SINGLE) != 0) {
 					height = getLineHeight ();
@@ -357,7 +358,7 @@ public void cut () {
 int defaultBackground () {
 	return getDisplay ().textBackground;
 }
-int defaultFont () {
+Font defaultFont () {
 	return getDisplay ().textFont;
 }
 int defaultForeground () {

@@ -9,6 +9,7 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of this class are used used to inform or warn the user.
@@ -392,7 +393,8 @@ void setMessage (int dialogHandle) {
 			int xDisplay = display.xDisplay;
 			int screen = OS.XDefaultScreen (xDisplay);
 			int width = OS.XDisplayWidth (xDisplay, screen);
-			text = display.wrapText (message, fontList, width * 3 / 5);
+			Font font = Font.motif_new (display, fontList);
+			text = display.wrapText (message, font, width * 3 / 5);
 		}
 	}
 	/* Use the character encoding for the default locale */

@@ -1777,7 +1777,7 @@ public void getClipping(Region region) {
 	OS.XUnionRegion (clipRgn, hRegion, hRegion);
 }
 String getCodePage () {
-	return Converter.getCodePage(data.display, data.fontList);
+	return data.codePage;
 }
 /** 
  * Returns the font currently being used by the receiver
@@ -2258,7 +2258,7 @@ public void setClipping (Region region) {
 public void setFont (Font font) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (font == null) {
-		data.fontList = data.device.systemFont;
+		data.fontList = data.device.systemFont.handle;
 	} else {
 		if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		data.fontList = font.handle;

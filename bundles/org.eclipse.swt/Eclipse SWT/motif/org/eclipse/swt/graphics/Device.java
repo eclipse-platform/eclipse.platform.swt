@@ -38,7 +38,7 @@ public abstract class Device implements Drawable {
 	Color COLOR_GREEN, COLOR_YELLOW, COLOR_BLUE, COLOR_MAGENTA, COLOR_CYAN, COLOR_WHITE;
 	
 	/* System Font */
-	int systemFont;
+	Font systemFont;
 	String characterSetName;
 	String characterSetRegistry;
 
@@ -109,9 +109,8 @@ public Device(DeviceData data) {
 	}
 	
 	/* Initialize the system font slot */
-	Font font = getSystemFont ();
-	FontData fd = font.getFontData ()[0];
-	systemFont = font.handle;
+	systemFont = getSystemFont ();
+	FontData fd = systemFont.getFontData ()[0];
 	characterSetName = fd.characterSetName;
 	characterSetRegistry = fd.characterSetRegistry;
 }
@@ -395,7 +394,7 @@ public Color getSystemColor (int id) {
  */
 public Font getSystemFont () {
 	checkDevice ();
-	return Font.motif_new (this, systemFont);
+	return systemFont;
 }
 
 /**

@@ -14,7 +14,7 @@ class ToolDrawable implements Drawable {
 	Device device;
 	int display;
 	int drawable;
-	int fontList;
+	Font font;
 	int colormap;
 	
 public int internal_new_GC (GCData data) {
@@ -24,7 +24,8 @@ public int internal_new_GC (GCData data) {
 		data.device = device;
 		data.display = display;
 		data.drawable = drawable;
-		data.fontList = fontList;
+		data.fontList = font.handle;
+		data.codePage = font.codePage;
 		data.colormap = colormap;
 	}
 	return xGC;

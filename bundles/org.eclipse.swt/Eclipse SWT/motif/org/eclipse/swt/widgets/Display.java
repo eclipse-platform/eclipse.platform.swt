@@ -95,8 +95,8 @@ public class Display extends Device {
 	XKeyEvent keyEvent = new XKeyEvent ();
 	
 	/* Default Fonts, Colors, Insets, Widths and Heights. */
-	int defaultFont, defaultFontList;
-	int listFont, textFont, buttonFont, labelFont;
+	Font defaultFont;
+	Font listFont, textFont, buttonFont, labelFont;
 	int dialogBackground, dialogForeground;
 	int buttonBackground, buttonForeground, buttonShadowThickness;
 	int compositeBackground, compositeForeground;
@@ -919,7 +919,7 @@ public Color getSystemColor (int id) {
  */
 public Font getSystemFont () {
 	checkDevice ();
-	return Font.motif_new (this, defaultFontList);
+	return defaultFont;
 }
 /**
  * Returns the user-interface thread for the receiver.
@@ -977,7 +977,7 @@ void initializeButton () {
 	 * font list to be freed as well. The fix is to make a copy of
 	 * the font list, then to free it when the display is disposed.
 	 */ 
-	buttonFont = OS.XmFontListCopy (argList [7]);
+	buttonFont = Font.motif_new (this, OS.XmFontListCopy (argList [7]));
 	OS.XtDestroyWidget (shellHandle);
 }
 void initializeComposite () {
@@ -1039,42 +1039,9 @@ void initializeComposite () {
 	OS.XtDestroyWidget (shellHandle);
 }
 void initializeDefaults () {
-	defaultFontList = labelFont;
+	defaultFont = labelFont;
 	defaultForeground = compositeForeground;
 	defaultBackground = compositeBackground;
-	
-	/**
-	 * Initialize the default font id to the first
-	 * font in the default font list
-	 */
-	int [] buffer = new int [1];
-	if (!OS.XmFontListInitFontContext (buffer, defaultFontList)) {
-		return;
-	}
-	int context = buffer [0];
-	XFontStruct fontStruct = new XFontStruct ();
-	int [] fontStructPtr = new int [1];
-	int [] fontNamePtr = new int [1];
-	
-	/* Take the first entry from the font list */
-	int fontListEntry = OS.XmFontListNextEntry (context);
-	int fontPtr = OS.XmFontListEntryGetFont (fontListEntry, buffer);
-	if (buffer [0] == 0) { 
-		/* FontList contains a single font */
-		OS.memmove (fontStruct, fontPtr, XFontStruct.sizeof);
-		defaultFont = fontStruct.fid;
-	} else { 
-		/* FontList contains a fontSet */
-		/* Take the first font in the font set */
-		int nFonts = OS.XFontsOfFontSet (fontPtr, fontStructPtr, fontNamePtr);
-		if (nFonts > 0) {
-			int [] fontStructs = new int [1];
-			OS.memmove (fontStructs, fontStructPtr [0], 4);
-			OS.memmove (fontStruct, fontStructs [0], XFontStruct.sizeof);
-			defaultFont = fontStruct.fid;
-		}
-	}
-	OS.XmFontListFreeFontContext (context);
 }
 void initializeDialog () {
 	int shellHandle, widgetHandle;
@@ -1167,7 +1134,7 @@ void initializeLabel () {
 	 * font list to be freed as well. The fix is to make a copy of
 	 * the font list, then to free it when the display is disposed.
 	 */ 
-	labelFont = OS.XmFontListCopy (argList [5]);
+	labelFont = Font.motif_new (this, OS.XmFontListCopy (argList [5]));
 	OS.XtDestroyWidget (shellHandle);
 }
 void initializeList () {
@@ -1189,7 +1156,7 @@ void initializeList () {
 	 * font list to be freed as well. The fix is to make a copy of
 	 * the font list, then to free it when the display is disposed.
 	 */ 
-	listFont = OS.XmFontListCopy (argList [5]);
+	listFont = Font.motif_new (this, OS.XmFontListCopy (argList [5]));
 	
 	/**
 	* Feature in Motif.  If the value of resource XmNselectColor is
@@ -1291,7 +1258,7 @@ void initializeText () {
 	 * font list to be freed as well. The fix is to make a copy of
 	 * the font list, then to free it when the display is disposed.
 	 */ 
-	textFont = OS.XmFontListCopy (argList [5]); 
+	textFont = Font.motif_new (this, OS.XmFontListCopy (argList [5])); 
 	OS.XtDestroyWidget (shellHandle);
 
 }
@@ -1328,7 +1295,8 @@ public int internal_new_GC (GCData data) {
 		data.device = this;
 		data.display = xDisplay;
 		data.drawable = xDrawable;
-		data.fontList = defaultFontList;
+		data.fontList = defaultFont.handle;
+		data.codePage = defaultFont.codePage;
 		data.colormap = OS.XDefaultColormap (xDisplay, OS.XDefaultScreen (xDisplay));
 	}
 	return xGC;
@@ -1517,12 +1485,24 @@ void releaseDisplay () {
 	OS.close (write_fd);
 		
 	/* Free the font lists */
-	if (buttonFont != 0) OS.XmFontListFree (buttonFont);
-	if (labelFont != 0) OS.XmFontListFree (labelFont);
-	if (textFont != 0) OS.XmFontListFree (textFont);
-	if (listFont != 0) OS.XmFontListFree (listFont);
-	listFont = textFont = labelFont = buttonFont = 0;
-	defaultFontList = defaultFont = 0;
+	if (buttonFont != null) {
+		OS.XmFontListFree (buttonFont.handle);
+		buttonFont.handle = 0;
+	}
+	if (labelFont != null) {
+		OS.XmFontListFree (labelFont.handle);
+		labelFont.handle = 0;
+	}
+	if (textFont != null) {
+		OS.XmFontListFree (textFont.handle);
+		textFont.handle = 0;
+	}
+	if (listFont != null) {
+		OS.XmFontListFree (listFont.handle);
+		listFont.handle = 0;
+	}
+	listFont = textFont = labelFont = buttonFont = null;
+	defaultFont = null;	
 
 	/* Free the translations (no documentation describes how to do this) */
 	//OS.XtFree (arrowTranslations);
@@ -1846,9 +1826,10 @@ public void syncExec (Runnable runnable) {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	synchronizer.syncExec (runnable);
 }
-int textWidth (String string, int fontList) {
+int textWidth (String string, Font font) {
 	if (string.length () == 0) return 0;
-	String codePage = Converter.getCodePage (xDisplay, fontList);
+	int fontList = font.handle;
+	String codePage = font.codePage;
 	byte [] textBuffer = Converter.wcsToMbcs (codePage, string, true);
 	int xmString = OS.XmStringGenerate (textBuffer, null, OS.XmCHARSET_TEXT, null);
 	int width = OS.XmStringWidth (fontList, xmString);
@@ -1946,7 +1927,7 @@ int windowProc (int handle, int clientData, int callData, int unused) {
 	if (widget == null) return 0;
 	return widget.processEvent (clientData, callData);
 }
-String wrapText (String text, int fontList, int width) {
+String wrapText (String text, Font font, int width) {
 	String Lf = "\n";
 	text = convertToLf (text);
 	int length = text.length ();
@@ -1971,7 +1952,7 @@ String wrapText (String text, int fontList, int width) {
 			}
 			wordEnd = i - 1;
 			String line = text.substring (lineStart, wordEnd + 1);
-			int lineWidth = textWidth (line, fontList);
+			int lineWidth = textWidth (line, font);
 			while (i < lineEnd && Compatibility.isWhitespace (text.charAt (i))) {
 				i++;
 			}
@@ -1979,7 +1960,7 @@ String wrapText (String text, int fontList, int width) {
 				if (lastStart == wordStart) {
 					while (wordStart < wordEnd) {
 						line = text.substring (lineStart, wordStart + 1);
-						lineWidth = textWidth (line, fontList);
+						lineWidth = textWidth (line, font);
 						if (lineWidth >= width) break;
 						wordStart++;
 					}

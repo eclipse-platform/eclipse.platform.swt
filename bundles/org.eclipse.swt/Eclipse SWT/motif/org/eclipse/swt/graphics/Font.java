@@ -30,6 +30,14 @@ public final class Font {
 	public int handle;
 
 	/**
+	 * the code page of the font
+	 * (Warning: This field is platform dependent)
+	 * 
+	 * @since 2.0
+	 */
+	public String codePage;
+
+	/**
 	 * The device where this image was created.
 	 */
 	Device device;
@@ -89,7 +97,7 @@ public Font (Device device, String fontFamily, int height, int style) {
 public void dispose () {
 	if (handle == 0) return;
 	if (device.isDisposed()) return;
-	if (handle == device.systemFont) return;
+	if (handle == device.systemFont.handle) return;
 	
 	/* Free the fonts associated with the font list */
 	int [] buffer = new int [1];
@@ -128,6 +136,81 @@ public boolean equals (Object object) {
 	if (!(object instanceof Font)) return false;
 	Font font = (Font)object;
 	return device == font.device && handle == font.handle;
+}
+/**
+ * Returns the code page for the specified font list.
+ *
+ * @return the code page for the font list
+ */	
+static String getCodePage (int xDisplay, int fontList) {
+	int[] buffer = new int[1];
+	if (!OS.XmFontListInitFontContext(buffer, fontList)) return null;
+	int context = buffer[0];
+	XFontStruct fontStruct = new XFontStruct();
+	int fontListEntry;
+	int[] fontStructPtr = new int[1];
+	int[] fontNamePtr = new int[1];
+	String codePage = null;
+	/* Go through each entry in the font list */
+	while ((fontListEntry = OS.XmFontListNextEntry(context)) != 0) {
+		int fontPtr = OS.XmFontListEntryGetFont(fontListEntry, buffer);
+		if (buffer[0] == OS.XmFONT_IS_FONT) { 
+			/* FontList contains a single font */
+			OS.memmove(fontStruct,fontPtr,20 * 4);
+			int propPtr = fontStruct.properties;
+			for (int i = 0; i < fontStruct.n_properties; i++) {
+				/* Reef through properties looking for XAFONT */
+				int[] prop = new int[2];
+				OS.memmove(prop, propPtr, 8);
+				if (prop[0] == OS.XA_FONT) {
+					/* Found it, prop[1] points to the string */
+					int ptr = OS.XmGetAtomName(xDisplay, prop[1]);
+					int length = OS.strlen(ptr);
+					byte[] nameBuf = new byte[length];
+					OS.memmove(nameBuf, ptr, length);
+					/* Use the character encoding for the default locale */
+					String xlfd = new String(Converter.mbcsToWcs(null, nameBuf)).toLowerCase();
+					int start = xlfd.lastIndexOf ('-');
+					if (start != -1 && start > 0) {
+						start = xlfd.lastIndexOf ('-', start - 1);
+						if (start != -1) {
+							codePage = xlfd.substring (start + 1, xlfd.length ());
+							if (codePage.indexOf ("iso") == 0) {
+								if (OS.IsLinux) {
+									codePage = "ISO-" + codePage.substring (3, codePage.length ());
+								}
+							}
+						}
+					}
+					OS.XtFree(ptr);
+					break;
+				}
+				propPtr += 8;
+			}
+		}
+		else { 
+			/* FontList contains a fontSet */
+			
+			/* Get the font set locale */
+			int localePtr = OS.XLocaleOfFontSet(fontPtr);
+			int length = OS.strlen (localePtr);
+			byte [] locale = new byte [length + 1];
+			OS.memmove (locale, localePtr, length);
+			
+			/* Get code page for the font set locale */
+			OS.setlocale (OS.LC_CTYPE,  locale);
+			int codesetPtr = OS.nl_langinfo (OS.CODESET);
+			length = OS.strlen (codesetPtr);
+			byte [] codeset = new byte [length];
+			OS.memmove (codeset, codesetPtr, length);
+			codePage = new String (codeset);
+			
+			/* Reset the locale */
+			OS.setlocale (OS.LC_CTYPE, new byte[1]);
+		}
+	}
+	OS.XmFontListFreeFontContext(context);
+	return codePage;
 }
 /**
  * Returns an array of <code>FontData</code>s representing the receiver.
@@ -169,7 +252,6 @@ public FontData[] getFontData() {
 				OS.memmove(prop, propPtr, 8);
 				if (prop[0] == OS.XA_FONT) {
 					/* Found it, prop[1] points to the string */
-					StringBuffer stringBuffer = new StringBuffer();
 					int ptr = OS.XmGetAtomName(xDisplay, prop[1]);
 					int length = OS.strlen(ptr);
 					byte[] nameBuf = new byte[length];
@@ -201,7 +283,6 @@ public FontData[] getFontData() {
 					OS.memmove(prop, propPtr, 8);
 					if (prop[0] == OS.XA_FONT) {
 						/* Found it, prop[1] points to the string */
-						StringBuffer stringBuffer = new StringBuffer();
 						int ptr = OS.XmGetAtomName(xDisplay, prop[1]);
 						int length = OS.strlen(ptr);
 						byte[] nameBuf = new byte[length];
@@ -359,13 +440,16 @@ void init (Device device, FontData fd) {
 	
 	/* Failed to load any font. Use the system font. */
 	if (fontSet == 0) {
-		handle = device.systemFont;
-		if (handle != 0) return;
+		handle = device.systemFont.handle;
+	} else {
+		fontListEntry = OS.XmFontListEntryCreate(OS.XmFONTLIST_DEFAULT_TAG, OS.XmFONT_IS_FONTSET, fontSet);
+		if (fontListEntry == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		handle = OS.XmFontListAppendEntry(0, fontListEntry);
+		OS.XmFontListEntryFree(new int[]{fontListEntry});
 	}
-	fontListEntry = OS.XmFontListEntryCreate(OS.XmFONTLIST_DEFAULT_TAG, OS.XmFONT_IS_FONTSET, fontSet);
-	if (fontListEntry == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	handle = OS.XmFontListAppendEntry(0, fontListEntry);
-	OS.XmFontListEntryFree(new int[]{fontListEntry});
+	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	
+	codePage = getCodePage(xDisplay, handle);
 }
 /**
  * Returns <code>true</code> if the font has been disposed,
@@ -385,6 +469,7 @@ public static Font motif_new(Device device, int handle) {
 	Font font = new Font();
 	font.device = device;
 	font.handle = handle;
+	font.codePage = getCodePage(device.xDisplay, handle);
 	return font;
 }
 /**

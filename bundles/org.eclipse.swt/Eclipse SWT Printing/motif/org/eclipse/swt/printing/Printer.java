@@ -33,7 +33,7 @@ import org.eclipse.swt.internal.motif.*;
 public final class Printer extends Device {
 	PrinterData data;
 	int printContext, xScreen, xDrawable, xtContext;
-	int defaultFontList;
+	Font defaultFont;
 
 	static String APP_NAME = "SWT_Printer";
 	
@@ -206,8 +206,9 @@ protected void init() {
 	byte [] buffer = Converter.wcsToMbcs(null, "-*-courier-medium-r-*-*-*-120-*-*-*-*-*-*", true);
 	int fontListEntry = OS.XmFontListEntryLoad(xDisplay, buffer, OS.XmFONT_IS_FONTSET, OS.XmFONTLIST_DEFAULT_TAG);
 	if (fontListEntry == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	defaultFontList = OS.XmFontListAppendEntry(0, fontListEntry);
+	int defaultFontList = OS.XmFontListAppendEntry(0, fontListEntry);
 	OS.XmFontListEntryFree(new int[]{fontListEntry});
+	defaultFont = Font.motif_new(this, defaultFontList);
 }
 
 protected void destroy() {
@@ -237,7 +238,8 @@ public int internal_new_GC(GCData data) {
 		data.device = this;
 		data.display = xDisplay;
 		data.drawable = xDrawable; // not valid until after startJob
-		data.fontList = defaultFontList;
+		data.fontList = defaultFont.handle;
+		data.codePage = defaultFont.codePage;
 		data.colormap = OS.XDefaultColormapOfScreen(xScreen);
 	}
 	return xGC;
@@ -525,7 +527,7 @@ public PrinterData getPrinterData() {
  */
 public Font getSystemFont () {
 	checkDevice ();
-	return Font.motif_new (this, defaultFontList);
+	return defaultFont;
 }
 
 protected void checkDevice() {
@@ -534,9 +536,10 @@ protected void checkDevice() {
 
 protected void release() {
 	super.release();
-	if (defaultFontList != 0) {
-		OS.XmFontListFree(defaultFontList);
-		defaultFontList = 0;
+	if (defaultFont != null) {
+		OS.XmFontListFree(defaultFont.handle);
+		defaultFont.handle = 0;
+		defaultFont = null;
 	}
 	if (printContext != 0) {
 		OS.XpDestroyContext(xDisplay, printContext);

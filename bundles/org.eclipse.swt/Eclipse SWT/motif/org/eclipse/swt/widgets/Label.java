@@ -95,7 +95,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		OS.XtGetValues (handle, argList4, argList4.length / 2);
 		int unavailable = 2 * (argList4 [7] + getBorderWidth());
 		Display display = getDisplay ();
-		String string = display.wrapText (text, fontList, wHint - unavailable);
+		String string = display.wrapText (text, font, wHint - unavailable);
 		GC gc = new GC(this);
 		Point extent = gc.textExtent(string);
 		gc.dispose();
@@ -159,7 +159,7 @@ void createHandle (int index) {
 int defaultBackground () {
 	return getDisplay ().labelBackground;
 }
-int defaultFont () {
+Font defaultFont () {
 	return getDisplay ().labelFont;
 }
 int defaultForeground () {
@@ -417,7 +417,7 @@ public void setText (String string) {
 		int width = argList [1] - argList [3] - argList [5] - argList [7] * 2 - argList [9] * 2;
 		Display display = getDisplay ();
 		if (mnemonic != 0) string = new String (unicode);
-		string = display.wrapText (string, fontList, width);
+		string = display.wrapText (string, font, width);
 		buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	} else {
 		buffer = Converter.wcsToMbcs (getCodePage (), unicode, true);

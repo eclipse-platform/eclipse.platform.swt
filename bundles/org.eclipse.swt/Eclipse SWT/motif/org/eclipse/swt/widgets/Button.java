@@ -275,7 +275,7 @@ void createWidget (int index) {
 int defaultBackground () {
 	return getDisplay ().buttonBackground;
 }
-int defaultFont () {
+Font defaultFont () {
 	return getDisplay ().buttonFont;
 }
 int defaultForeground () {

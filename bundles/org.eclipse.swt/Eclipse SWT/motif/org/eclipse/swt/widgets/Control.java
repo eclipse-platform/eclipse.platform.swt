@@ -28,7 +28,7 @@ import org.eclipse.swt.events.*;
  */
 public abstract class Control extends Widget implements Drawable {
 	Composite parent;
-	int fontList;
+	Font font;
 	Menu menu;
 	String toolTipText;
 	Object layoutData;
@@ -453,13 +453,13 @@ void createWidget (int index) {
 	* the programmer provides.  The initial value of the cache is
 	* the default font for the widget.
 	*/
-	fontList = defaultFont ();
+	font = defaultFont ();
 }
 int defaultBackground () {
 	return getDisplay ().defaultBackground;
 }
-int defaultFont () {
-	return getDisplay ().defaultFontList;
+Font defaultFont () {
+	return getDisplay ().defaultFont;
 }
 int defaultForeground () {
 	return getDisplay ().defaultForeground;
@@ -564,7 +564,7 @@ Point getClientLocation () {
 	return new Point (handle_x [0] - topHandle_x [0], handle_y [0] - topHandle_y [0]);
 }
 String getCodePage () {
-	return Converter.getCodePage (OS.XtDisplay (handle), fontList);
+	return font.codePage;
 }
 /**
  * Returns the display that the receiver was created on.
@@ -612,14 +612,14 @@ public boolean getEnabled () {
  */
 public Font getFont () {
 	checkWidget();
-	return Font.motif_new (getDisplay (), fontList);
+	return font;
 }
 
 int getFontAscent () {
 	
 	/* Create a font context to iterate over each element in the font list */
 	int [] buffer = new int [1];
-	if (!OS.XmFontListInitFontContext (buffer, fontList)) {
+	if (!OS.XmFontListInitFontContext (buffer, font.handle)) {
 		error (SWT.ERROR_NO_HANDLES);
 	}
 	int context = buffer [0];
@@ -662,7 +662,7 @@ int getFontHeight () {
 
 	/* Create a font context to iterate over each element in the font list */
 	int [] buffer = new int [1];
-	if (!OS.XmFontListInitFontContext (buffer, fontList)) {
+	if (!OS.XmFontListInitFontContext (buffer, font.handle)) {
 		error (SWT.ERROR_NO_HANDLES);
 	}
 	int context = buffer [0];
@@ -965,7 +965,8 @@ public int internal_new_GC (GCData data) {
 		data.drawable = xWindow;
 		data.foreground = argList [1];
 		data.background = argList [3];
-		data.fontList = fontList;
+		data.fontList = font.handle;
+		data.codePage = font.codePage;
 		data.colormap = argList [5];
 	}
 	return xGC;
@@ -1222,7 +1223,7 @@ int processIMEFocusIn () {
 		OS.XmNforeground, getForegroundPixel(),
 		OS.XmNbackground, getBackgroundPixel(),
 		OS.XmNspotLocation, ptr,
-		OS.XmNfontList, fontList,
+		OS.XmNfontList, font.handle,
 		0);
 	
 	if (ptr != 0) OS.XtFree (ptr);
@@ -1506,8 +1507,8 @@ void releaseWidget () {
 	* callback.  If a font is disposed while it is still
 	* in use in the widget, Motif GP's.
 	*/
-	int fontList = defaultFont ();
-	if (this.fontList != fontList) {
+	int fontList = defaultFont ().handle;
+	if (font.handle != fontList) {
 		int fontHandle = fontHandle ();
 		int [] argList2 = {OS.XmNfontList, fontList};
 		OS.XtSetValues (fontHandle, argList2, argList2.length / 2);
@@ -2057,16 +2058,9 @@ public boolean setFocus () {
  */
 public void setFont (Font font) {
 	checkWidget();
-	int fontList = 0;
-	if (font != null) {
-		if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-		fontList = font.handle;
-	}
-	if (fontList == 0) fontList = defaultFont ();
-	setFontList (fontList);
-}
-void setFontList (int fontList) {
-	this.fontList = fontList;
+	if (font == null) font = defaultFont ();
+	if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	this.font = font;
 	
 	/*
 	* Feature in Motif.  Setting the font in a widget
@@ -2080,7 +2074,7 @@ void setFontList (int fontList) {
 
 	/* Set the font list */
 	int fontHandle = fontHandle ();
-	int [] argList2 = {OS.XmNfontList, fontList};
+	int [] argList2 = {OS.XmNfontList, font.handle};
 	OS.XtSetValues (fontHandle, argList2, argList2.length / 2);
 
 	/* Restore the widget size */

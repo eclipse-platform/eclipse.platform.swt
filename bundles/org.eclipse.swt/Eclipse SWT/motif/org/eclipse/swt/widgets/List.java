@@ -289,7 +289,7 @@ ScrollBar createScrollBar (int type) {
 int defaultBackground () {
 	return getDisplay ().listBackground;
 }
-int defaultFont () {
+Font defaultFont () {
 	return getDisplay ().listFont;
 }
 int defaultForeground () {

@@ -991,7 +991,8 @@ public int internal_new_GC (GCData data) {
 		data.device = device;
 		data.display = xDisplay;
 		data.drawable = pixmap;
-		data.fontList = device.systemFont;
+		data.fontList = device.systemFont.handle;
+		data.codePage = device.systemFont.codePage;
 		data.colormap = OS.XDefaultColormap (xDisplay, OS.XDefaultScreen (xDisplay));
 		data.image = this;
 	}
