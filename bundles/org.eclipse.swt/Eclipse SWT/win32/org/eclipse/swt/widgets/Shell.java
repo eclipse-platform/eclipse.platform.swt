@@ -1312,13 +1312,6 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_CLOSE (int wParam, int lParam) {
-	if ((Display.TrimEnabled && !isEnabled ()) || !isActive ()) {
-		return LRESULT.ZERO;
-	}
-	return super.WM_CLOSE (wParam, lParam);
-}
-
 LRESULT WM_COMMAND (int wParam, int lParam) {
 	if (OS.IsPPC) {
 		/*
@@ -1390,7 +1383,7 @@ LRESULT WM_MOUSEACTIVATE (int wParam, int lParam) {
 	* and stop the normal shell activation but allow the mouse
 	* down to be delivered.
 	*/
-	int hittest = lParam & 0xFFFF;
+	int hittest = (short) (lParam & 0xFFFF);
 	switch (hittest) {
 		case OS.HTERROR:
 		case OS.HTTRANSPARENT:
@@ -1524,7 +1517,7 @@ LRESULT WM_SETCURSOR (int wParam, int lParam) {
 	* fix is to detect this case and bring the shell
 	* forward.
 	*/
-	int msg = lParam >> 16;
+	int msg = (short) (lParam >> 16);
 	if (msg == OS.WM_LBUTTONDOWN) {
 		if (!Display.TrimEnabled) {
 			Shell modalShell = display.getModalShell ();
@@ -1543,6 +1536,35 @@ LRESULT WM_SETCURSOR (int wParam, int lParam) {
 						if (OS.IsWindowEnabled (hwndPopup)) {
 							OS.SetActiveWindow (hwndPopup);
 						}
+					}
+				}
+			}
+		}
+	}
+	/*
+	* When the shell that contains a cursor is disabled,
+	* WM_SETCURSOR is called with HTERROR.  Normally,
+	* when a control is disabled, the parent will get
+	* mouse and cursor events.  In the case of a disabled
+	* shell, there is no enabled parent.  In order to
+	* show the cursor when a shell is disabled, it is
+	* necessary to override WM_SETCURSOR when called
+	* with HTERROR to set the cursor but only when the
+	* mouse is in the client area of the shell.
+	*/
+	int hitTest = (short) (lParam & 0xFFFF);
+	if (hitTest == OS.HTERROR) {
+		if (!getEnabled ()) {
+			Control control = display.getControl (wParam);
+			if (control == this && cursor != null) {
+				POINT pt = new POINT ();
+				if (OS.GetCursorPos (pt)) {
+					OS.ScreenToClient (handle, pt);
+					RECT rect = new RECT ();
+					OS.GetClientRect (handle, rect);
+					if (OS.PtInRect (rect, pt)) {
+						OS.SetCursor (cursor.handle);
+						return LRESULT.ONE;
 					}
 				}
 			}

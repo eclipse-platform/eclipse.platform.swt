@@ -1176,6 +1176,10 @@ public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();
 }
 
+boolean isEnabledCursor () {
+	return isEnabled ();
+}
+
 boolean isEnabledModal () {
 	//NOT DONE - fails for multiple APP MODAL shells
 	Shell [] shells = display.getShells ();
@@ -1330,7 +1334,7 @@ int kEventControlContextualMenuClick (int nextHandler, int theEvent, int userDat
 }
 
 int kEventControlSetCursor (int nextHandler, int theEvent, int userData) {
-	if (!isEnabled ()) return OS.noErr;
+	if (!isEnabledCursor ()) return OS.noErr;
 	Cursor cursor = null;
 	if (isEnabledModal ()) {
 		if ((cursor = findCursor ()) != null) display.setCursor (cursor.handle);

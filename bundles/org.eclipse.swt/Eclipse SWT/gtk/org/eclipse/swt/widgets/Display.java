@@ -704,24 +704,27 @@ int /*long*/ eventProc (int /*long*/ event, int /*long*/ data) {
 					}
 				}
 			} while ((window = OS.gdk_window_get_parent (window)) != 0);
-			if (window != 0 && forward && control != null) {
-				GdkEventButton gdkEventButton = new GdkEventButton ();
-				OS.memmove (gdkEventButton, event, GdkEventButton.sizeof);
-				int /*long*/ oldWindow = gdkEventButton.window;
-				double oldX = gdkEventButton.x, oldY = gdkEventButton.y;
-				int /*long*/ eventHandle = control.eventHandle ();
-				gdkEventButton.window = OS.GTK_WIDGET_WINDOW (eventHandle);
-				int [] origin_x = new int [1], origin_y = new int [1];
-				OS.gdk_window_get_origin (gdkEventButton.window, origin_x, origin_y);
-				gdkEventButton.x = gdkEventButton.x_root - origin_x [0];
-				gdkEventButton.y = gdkEventButton.y_root - origin_y [0];
-				OS.memmove (event, gdkEventButton, GdkEventButton.sizeof);
-				OS.gtk_main_do_event (event);
-				gdkEventButton.window = oldWindow;
-				gdkEventButton.x = oldX;
-				gdkEventButton.y = oldY;
-				OS.memmove (event, gdkEventButton, GdkEventButton.sizeof);
-				return 0;
+			if (control != null) {
+				if (window == 0) return 0;
+				if (forward) {
+					GdkEventButton gdkEventButton = new GdkEventButton ();
+					OS.memmove (gdkEventButton, event, GdkEventButton.sizeof);
+					int /*long*/ oldWindow = gdkEventButton.window;
+					double oldX = gdkEventButton.x, oldY = gdkEventButton.y;
+					int /*long*/ eventHandle = control.eventHandle ();
+					gdkEventButton.window = OS.GTK_WIDGET_WINDOW (eventHandle);
+					int [] origin_x = new int [1], origin_y = new int [1];
+					OS.gdk_window_get_origin (gdkEventButton.window, origin_x, origin_y);
+					gdkEventButton.x = gdkEventButton.x_root - origin_x [0];
+					gdkEventButton.y = gdkEventButton.y_root - origin_y [0];
+					OS.memmove (event, gdkEventButton, GdkEventButton.sizeof);
+					OS.gtk_main_do_event (event);
+					gdkEventButton.window = oldWindow;
+					gdkEventButton.x = oldX;
+					gdkEventButton.y = oldY;
+					OS.memmove (event, gdkEventButton, GdkEventButton.sizeof);
+					return 0;
+				}
 			}
 		}
 	}

@@ -386,6 +386,7 @@ public void close () {
 }
 
 void closeWidget () {
+	if (!isEnabled ()) return;
 	Event event = new Event ();
 	sendEvent (SWT.Close, event);
 	if (event.doit && !isDisposed ()) dispose ();
@@ -755,6 +756,10 @@ void invalWindowRgn (int window, int rgn) {
 public boolean isEnabled () {
 	checkWidget();
 	return getEnabled ();
+}
+
+boolean isEnabledCursor () {
+	return true;
 }
 
 public boolean isVisible () {

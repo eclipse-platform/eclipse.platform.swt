@@ -1488,6 +1488,7 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 LRESULT WM_CLOSE (int wParam, int lParam) {
 	LRESULT result = super.WM_CLOSE (wParam, lParam);
 	if (result != null) return result;
+	if (!isEnabled () || !isActive ()) return LRESULT.ZERO;
 	Event event = new Event ();
 	sendEvent (SWT.Close, event);
 	// the widget could be disposed at this point
