@@ -490,6 +490,7 @@ void onKeyDown (Event e) {
 	} 
 	if (type == 0) return;
 	Event event = new Event();
+	event.item = item;
 	notifyListeners(type, event);
 }
 void onMouseDown(Event event) {
