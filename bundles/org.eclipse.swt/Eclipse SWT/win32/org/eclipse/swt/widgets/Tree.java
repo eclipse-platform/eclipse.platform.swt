@@ -3663,7 +3663,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				if (hasMenu || hooks (SWT.MenuDetect)) {
 					NMRGINFO nmrg = new NMRGINFO ();
 					OS.MoveMemory (nmrg, lParam, NMRGINFO.sizeof);
-					showMenu (menu, nmrg.x, nmrg.y);
+					showMenu (nmrg.x, nmrg.y);
 					gestureCompleted = true;
 					return LRESULT.ONE;
 				}

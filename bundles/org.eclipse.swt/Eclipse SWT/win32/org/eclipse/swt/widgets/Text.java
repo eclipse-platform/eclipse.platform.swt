@@ -497,7 +497,7 @@ public int getCaretLineNumber () {
 }
 
 /**
- * Gets the location the caret.
+ * Gets the location of the caret.
  * <p>
  * The location of the caret is returned.
  * </p>
@@ -1916,7 +1916,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 		shrg.dwFlags = OS.SHRG_RETURNCMD;
 		int type = OS.SHRecognizeGesture (shrg);
 		if (type == OS.GN_CONTEXTMENU) {
-			showMenu (menu, x, y);
+			showMenu (x, y);
 			return LRESULT.ONE;
 		}
 	}

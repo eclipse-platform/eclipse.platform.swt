@@ -1137,12 +1137,13 @@ boolean SetWindowPos (int hWnd, int hWndInsertAfter, int X, int Y, int cx, int c
 	return OS.SetWindowPos (hWnd, hWndInsertAfter, X, Y, cx, cy, uFlags);
 }
 
-boolean showMenu (Menu menu, int x, int y) {
+boolean showMenu (int x, int y) {
 	Event event = new Event ();
 	event.x = x;
 	event.y = y;
 	sendEvent (SWT.MenuDetect, event);
 	if (!event.doit) return true;
+	Menu menu = getMenu ();
 	if (menu != null && !menu.isDisposed ()) {
 		if (x != event.x || y != event.y) {
 			menu.setLocation (event.x, event.y);
@@ -1228,8 +1229,7 @@ LRESULT wmContextMenu (int hwnd, int wParam, int lParam) {
 	}
 
 	/* Show the menu */
-	Menu menu = getMenu ();
-	return showMenu (menu, x, y) ? LRESULT.ZERO : null;
+	return showMenu (x, y) ? LRESULT.ZERO : null;
 }
 
 LRESULT wmIMEChar (int hwnd, int wParam, int lParam) {
@@ -1639,7 +1639,7 @@ LRESULT wmLButtonDown (int hwnd, int wParam, int lParam) {
 			shrg.ptDown_y = y; 
 			shrg.dwFlags = OS.SHRG_RETURNCMD;
 			int type = OS.SHRecognizeGesture (shrg);
-			if (type == OS.GN_CONTEXTMENU) showMenu (menu, x, y);
+			if (type == OS.GN_CONTEXTMENU) showMenu (x, y);
 		}
 	}
 	if (mouseDown) {
