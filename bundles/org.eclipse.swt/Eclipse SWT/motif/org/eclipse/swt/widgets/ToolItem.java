@@ -656,6 +656,7 @@ void setDrawPressed (boolean value) {
 }
 int processMouseDown (int callData) {
 	Display display = getDisplay ();
+//	Shell shell = parent.getShell ();
 	display.hideToolTip ();
 	XButtonEvent xEvent = new XButtonEvent ();
 	OS.memmove (xEvent, callData, XButtonEvent.sizeof);
@@ -680,6 +681,15 @@ int processMouseDown (int callData) {
 	OS.memmove (callData, xEvent, XButtonEvent.sizeof);
 	parent.processMouseDown (callData);
 
+	/*
+	* It is possible that the shell may be
+	* disposed at this point.  If this happens
+	* don't send the activate and deactivate
+	* events.
+	*/	
+//	if (!shell.isDisposed()) {
+//		shell.setActiveControl (parent);
+//	}
 	return 0;
 }
 int processMouseEnter (int callData) {

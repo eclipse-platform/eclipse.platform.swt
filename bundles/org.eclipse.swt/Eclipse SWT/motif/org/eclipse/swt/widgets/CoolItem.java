@@ -239,12 +239,22 @@ void manageChildren () {
 	OS.XtManageChild (handle);
 }
 int processMouseDown (int callData) {
+	Shell shell = parent.getShell();
 	XButtonEvent xEvent = new XButtonEvent ();
 	OS.memmove (xEvent, callData, XButtonEvent.sizeof);
 	if (getGrabberArea().contains(xEvent.x, xEvent.y)) {
 		dragging = true;
 		mouseXOffset = xEvent.x;
 		parent.setCursor(parent.dragCursor);
+	}
+	/*
+	* It is possible that the shell may be
+	* disposed at this point.  If this happens
+	* don't send the activate and deactivate
+	* events.
+	*/	
+	if (!shell.isDisposed()) {
+		shell.setActiveControl(parent);
 	}
 	return 0;
 }

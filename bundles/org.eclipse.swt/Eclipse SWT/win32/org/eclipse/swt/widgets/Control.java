@@ -2936,9 +2936,11 @@ LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 	* don't send the activate and deactivate
 	* events.
 	*/	
-	Control control = display.findControl (wParam);
-	if (control == null && !shell.isDisposed ()) {
-		shell.setActiveControl (null);
+	if (!shell.isDisposed ()) {
+		Control control = display.findControl (wParam);
+		if (control == null || shell != control.getShell ()) {
+			shell.setActiveControl (null);
+		}
 	}
 	
 	/*

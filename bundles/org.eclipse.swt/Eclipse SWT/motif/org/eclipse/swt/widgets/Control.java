@@ -1169,6 +1169,7 @@ int processModify (int callData) {
 }
 int processMouseDown (int callData) {
 	Display display = getDisplay ();
+	Shell shell = getShell ();
 	display.hideToolTip ();
 	XButtonEvent xEvent = new XButtonEvent ();
 	OS.memmove (xEvent, callData, XButtonEvent.sizeof);
@@ -1189,6 +1190,16 @@ int processMouseDown (int callData) {
 	if (eventTime == 0) eventTime = 1;
 	display.lastTime = eventTime;
 	display.lastButton = eventButton;
+	
+	/*
+	* It is possible that the shell may be
+	* disposed at this point.  If this happens
+	* don't send the activate and deactivate
+	* events.
+	*/	
+	if (!shell.isDisposed ()) {
+		shell.setActiveControl (this);
+	}
 	return 0;
 }
 int processMouseEnter (int callData) {
@@ -1298,46 +1309,39 @@ int processSetFocus (int callData) {
 	/* Process the focus change for the widget */
 	switch (xEvent.type) {
 		case OS.FocusIn: {
+			Shell shell = getShell ();
 			processFocusIn ();
 			// widget could be disposed at this point
-			if (handle == 0) return 0;
-			int index = 0;
-			Shell shell = getShell ();
-			Control [] focusIn = getPath ();
-			Control lastFocus = shell.lastFocus;
-			if (lastFocus != null) {
-				if (!lastFocus.isDisposed ()) {
-					Control [] focusOut = lastFocus.getPath ();
-					int length = Math.min (focusIn.length, focusOut.length);
-					while (index < length) {
-						if (focusIn [index] != focusOut [index]) break;
-						index++;
-					}
-					for (int i=focusOut.length-1; i>=index; --i) {
-						focusOut [i].sendEvent (SWT.Deactivate);
-					}
-				}
-				shell.lastFocus = null;
-			}
-			for (int i=focusIn.length-1; i>=index; --i) {
-				focusIn [i].sendEvent (SWT.Activate);
+			
+			/*
+			* It is possible that the shell may be
+			* disposed at this point.  If this happens
+			* don't send the activate and deactivate
+			* events.
+			*/	
+			if (!shell.isDisposed ()) {
+				shell.setActiveControl (this);
 			}
 			break;
 		}
 		case OS.FocusOut: {
+			Shell shell = getShell ();
+			Display display = getDisplay ();
+			
 			processFocusOut ();
 			// widget could be disposed at this point
-			if (handle == 0) return 0;
-			Shell shell = getShell ();
-			shell.lastFocus = this;
-			Display display = getDisplay ();
-			Control focusControl = display.getFocusControl ();
-			if (focusControl == null || shell != focusControl.getShell ()) {
-				Control [] focusOut = getPath ();
-				for (int i=focusOut.length-1; i>=0; --i) {
-					focusOut [i].sendEvent (SWT.Deactivate);
+			
+			/*
+			* It is possible that the shell may be
+			* disposed at this point.  If this happens
+			* don't send the activate and deactivate
+			* events.
+			*/
+			if (!shell.isDisposed ()) {
+				Control control = display.getFocusControl ();
+				if (control == null || shell != control.getShell () ) {
+					shell.setActiveControl (null);
 				}
-				shell.lastFocus = null;
 			}
 			break;
 		}
