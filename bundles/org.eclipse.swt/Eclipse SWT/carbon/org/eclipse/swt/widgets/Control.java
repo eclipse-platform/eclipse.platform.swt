@@ -1395,8 +1395,8 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
 	int [] clickCount = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamClickCount, OS.typeUInt32, null, 4, null, clickCount);
-	sendMouseEvent (SWT.MouseDown, button [0], theEvent);
-	if (clickCount [0] == 2) sendMouseEvent (SWT.MouseDoubleClick, button [0], theEvent);
+	sendMouseEvent (SWT.MouseDown, button [0], 0, 0, false, theEvent);
+	if (clickCount [0] == 2) sendMouseEvent (SWT.MouseDoubleClick, button [0], 0, 0, false, theEvent);
 	if ((state & GRAB) != 0) display.grabControl = this;
 	/*
 	* It is possible that the shell may be
@@ -1419,21 +1419,21 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 
 int kEventMouseDragged (int nextHandler, int theEvent, int userData) {
 	if ((state & CANVAS) == 0) {
-		if (isEnabledModal ()) sendMouseEvent (SWT.MouseMove, (short) 0, theEvent);
+		if (isEnabledModal ()) sendMouseEvent (SWT.MouseMove, (short) 0, 0, 0, false, theEvent);
 		display.dragDetect (this);
 	}
 	return OS.eventNotHandledErr;
 }
 
 int kEventMouseMoved (int nextHandler, int theEvent, int userData) {
-	if (isEnabledModal ()) sendMouseEvent (SWT.MouseMove, (short) 0, theEvent);
+	if (isEnabledModal ()) sendMouseEvent (SWT.MouseMove, (short) 0, 0, 0, false, theEvent);
 	return OS.eventNotHandledErr;
 }
 
 int kEventMouseUp (int nextHandler, int theEvent, int userData) {
 	short [] button = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
-	sendMouseEvent (SWT.MouseUp, button [0], theEvent);
+	sendMouseEvent (SWT.MouseUp, button [0], 0, 0, false, theEvent);
 	return OS.eventNotHandledErr;
 }
 
@@ -1442,11 +1442,10 @@ int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
 	if (result == OS.noErr) return result;
 	int [] wheelDelta = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseWheelDelta, OS.typeSInt32, null, 4, null, wheelDelta);
-	Event event = new Event ();
-	event.detail = SWT.SCROLL_LINE;
-	event.count = wheelDelta [0];
-	sendEvent (SWT.MouseWheel, event);
-	return event.doit ? OS.eventNotHandledErr : OS.noErr;
+	if (!sendMouseEvent (SWT.MouseWheel, (short) 0, wheelDelta [0], SWT.SCROLL_LINE, true, theEvent)) {
+		return OS.noErr;
+	}
+	return OS.eventNotHandledErr;
 }
 
 int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userData) {
@@ -1935,7 +1934,7 @@ void sendFocusEvent (int type, boolean post) {
 	display.focusControl = null;
 }
 
-boolean sendMouseEvent (int type, short button, int theEvent) {
+boolean sendMouseEvent (int type, short button, int count, int detail, boolean send, int theEvent) {
 	int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
 	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
@@ -1951,10 +1950,14 @@ boolean sendMouseEvent (int type, short button, int theEvent) {
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseChord, OS.typeUInt32, null, 4, null, chord);
 	int [] modifiers = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
-	return sendMouseEvent (type, button, chord [0], (short) x, (short) y, modifiers [0], false);
+	return sendMouseEvent (type, button, count, detail, chord [0], (short) x, (short) y, modifiers [0], send);
 }
 
 boolean sendMouseEvent (int type, short button, int chord, short x, short y, int modifiers, boolean send) {
+	return sendMouseEvent (type, button, 0, 0, chord, x, y, modifiers, send);
+}
+
+boolean sendMouseEvent (int type, short button, int count, int detail, int chord, short x, short y, int modifiers, boolean send) {
 	Event event = new Event ();
 	switch (button) {
 		case 1: event.button = 1; break;
@@ -1965,9 +1968,11 @@ boolean sendMouseEvent (int type, short button, int chord, short x, short y, int
 	}
 	event.x = x;
 	event.y = y;
+	event.count = count;
+	event.detail = detail;
 	setInputState (event, type, chord, modifiers);
 	sendEvent (type, event, send);
-	return true;
+	return event.doit;
 }
 
 /**
