@@ -764,8 +764,19 @@ void dragDetect (Control control) {
 	if (!dragging && control.hooks (SWT.DragDetect)) {
 		if (OS.WaitMouseMoved (dragMouseStart)) {
 			dragging = true;
-			//control.postEvent (SWT.DragDetect);
-			control.sendEvent (SWT.DragDetect);
+			Rect rect = new Rect ();
+			int window = OS.GetControlOwner (control.handle);
+			OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+			int x = dragMouseStart.h - rect.left;
+			int y = dragMouseStart.v - rect.top;
+			OS.GetControlBounds (control.handle, rect);
+			x -= rect.left;
+			y -= rect.top;
+			Event event = new Event ();
+			event.x = x;
+			event.y = y;
+			//control.postEvent (SWT.DragDetect, event);
+			control.sendEvent (SWT.DragDetect, event);
 		}
 	}
 }
