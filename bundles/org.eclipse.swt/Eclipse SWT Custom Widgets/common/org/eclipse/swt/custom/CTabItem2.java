@@ -144,7 +144,7 @@ void drawSelected(GC gc ) {
 		gc.fillRectangle(x, y - 1, parent.getSize().x - x, height + 1);
 		return;
 	}
-	int extra = CTabFolder2.CURVE_WIDTH/2;
+	int extra = CTabFolder2.CURVE_WIDTH/2 + 4; // +4 to avoid overlapping with text in next tab
 	// draw background
 	int[] shape = null;
 	if (this.parent.onBottom) {

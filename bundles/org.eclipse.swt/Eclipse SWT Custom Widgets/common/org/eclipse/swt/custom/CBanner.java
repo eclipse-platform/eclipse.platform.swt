@@ -60,7 +60,7 @@ public class CBanner extends Composite {
 	static final int BORDER_STRIPE = 2;
 	static final int INDENT = 5;
 	
-	static RGB BORDER1 = CTabFolder2.borderInsideRGB;
+	static RGB BORDER1 = null;
 	
 		
 /**
@@ -74,6 +74,7 @@ public class CBanner extends Composite {
 public CBanner(Composite parent, int style) {
 	super(parent, checkStyle(style));
 	
+	if (BORDER1 == null)BORDER1 = getDisplay().getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW).getRGB();
 	addPaintListener(new PaintListener() {
 		public void paintControl(PaintEvent event) {
 			onPaint(event.gc);

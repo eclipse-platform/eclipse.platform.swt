@@ -622,7 +622,7 @@ void drawBorder(GC gc) {
 		int itemY = item.y;
 		int itemW = item.width;
 		int itemH = item.height;
-		int extra = CTabFolder2.CURVE_WIDTH/2;
+		int extra = CTabFolder2.CURVE_WIDTH/2 + 4; // +4 to avoid overlapping with text in next tab
 		if (onBottom) {
 			int rightTabEdge = getRightItemEdge();
 			if (!single && selectedIndex != topTabIndex && itemX + itemW >= rightTabEdge){ 
@@ -2409,7 +2409,7 @@ boolean setButtonBounds() {
 	if (items.length > 1) {
 		if (single && selectedIndex != -1){
 			CTabItem2 item = items[selectedIndex];
-			chevronRect.x = Math.min(item.x +item.width, size.x - borderRight - closeRect.width - expandRect.width - decoratorWidth - 3);
+			chevronRect.x = Math.min(item.x +item.width - 3, size.x - borderRight - closeRect.width - expandRect.width - decoratorWidth - 3);
 			if (borderRight > 0) chevronRect.x += 1;
 			chevronRect.y = onBottom ? size.y - borderBottom - tabHeight: borderTop + 1;
 			chevronRect.width = decoratorWidth;
