@@ -225,14 +225,22 @@ int ShowMessage(int hwnd, int lpstrText, int lpstrCaption, int dwType, int lpstr
 			* It is not a BSTR.  A BSTR is a null terminated unicode string that contains its length
 			* at the beginning. 
 			*/
-			int cnt = OS.wcslen(lpstrText) + 1;
+			int cnt = OS.wcslen(lpstrText);
 			char[] buffer = new char[cnt];
-			OS.MoveMemory(buffer, lpstrText, cnt * TCHAR.sizeof);
+			/* 
+			* Note.  lpstrText is unicode on both unicode and ansi platforms.
+			* The nbr of chars is multiplied by the constant 2 and not by TCHAR.sizeof since
+			* TCHAR.sizeof returns 1 on ansi platforms.
+			*/
+			OS.MoveMemory(buffer, lpstrText, cnt * 2);
 			String text = new String(buffer);
-			TCHAR lpBuffer = new TCHAR(0, cnt);
-			OS.LoadString(hModule, IDS_MESSAGE_BOX_CAPTION, lpBuffer, cnt);
+			/* provide a buffer large enough to hold the string to compare to */
+			int length = OS.IsUnicode ? cnt : OS.WideCharToMultiByte (OS.CP_ACP, 0, buffer, cnt, 0, 0, null, null) + 1;
+
+			TCHAR lpBuffer = new TCHAR(0, length);
+			int result = OS.LoadString(hModule, IDS_MESSAGE_BOX_CAPTION, lpBuffer, length);
 			OS.FreeLibrary(hModule);
-			return text.equals(lpBuffer.toString()) ? COM.S_OK : COM.S_FALSE;
+			return result > 0 && text.equals(lpBuffer.toString(0, result)) ? COM.S_OK : COM.S_FALSE;
 		}
 	}
 	return COM.S_FALSE;
