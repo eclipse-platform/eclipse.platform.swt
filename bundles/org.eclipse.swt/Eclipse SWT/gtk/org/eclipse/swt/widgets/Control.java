@@ -124,10 +124,10 @@ void fixFocus (Control focusControl) {
 		if (control == shell) break;
 	}
 	shell.setSavedFocus (focusControl);
-	int /*long*/ shellHandle = shell.shellHandle;
-	OS.GTK_WIDGET_SET_FLAGS (shellHandle, OS.GTK_CAN_FOCUS);
-	OS.gtk_widget_grab_focus (shellHandle);
-	OS.GTK_WIDGET_UNSET_FLAGS (shellHandle, OS.GTK_CAN_FOCUS);
+	int /*long*/ focusHandle = shell.fixedHandle;
+	OS.GTK_WIDGET_SET_FLAGS (focusHandle, OS.GTK_CAN_FOCUS);
+	OS.gtk_widget_grab_focus (focusHandle);
+	OS.GTK_WIDGET_UNSET_FLAGS (focusHandle, OS.GTK_CAN_FOCUS);
 }
 
 int /*long*/ focusHandle () {
