@@ -174,6 +174,8 @@ public class Display extends Device {
 		{OS.XK_Shift_R,		SWT.SHIFT},
 		{OS.XK_Control_L,	SWT.CONTROL},
 		{OS.XK_Control_R,	SWT.CONTROL},
+//		{OS.XP_????,		SWT.COMMAND},
+//		{OS.XP_????,		SWT.COMMAND},
 		
 		/* Non-Numeric Keypad Keys */
 		{OS.XK_Up,			SWT.ARROW_UP},
