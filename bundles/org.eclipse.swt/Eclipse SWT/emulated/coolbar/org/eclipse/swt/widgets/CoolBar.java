@@ -124,10 +124,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (height == 0) height = DEFAULT_HEIGHT;
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
-	int border = getBorderWidth();
-	width += 2 * border;
-	height += 2 * border;
-	return new Point(width, height);
+	Rectangle trim = computeTrim(0, 0, width, height);
+	return new Point(trim.width, trim.height);
 }
 CoolItem getGrabbedItem(int x, int y) {
 	for (int row = 0; row < items.length; row++) {
