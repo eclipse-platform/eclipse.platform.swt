@@ -179,7 +179,7 @@ Point computeSize () {
 	checkWidget();
 	int width = 0, height = 0;
 	if ((style & SWT.SEPARATOR) != 0) {
-		if ((style & SWT.HORIZONTAL) != 0) {
+		if ((parent.style & SWT.HORIZONTAL) != 0) {
 			width = getWidth ();
 			height = DEFAULT_HEIGHT;
 		} else {
@@ -1044,6 +1044,7 @@ void setZOrder () {
 }
 
 void updateImage () {
+	if ((style & SWT.SEPARATOR) != 0) return;
 	if (cIcon != 0) destroyCIcon (cIcon);
 	cIcon = 0;
 	Image image = null;
@@ -1069,6 +1070,7 @@ void updateImage () {
 }
 
 void updateText () {
+	if ((style & SWT.SEPARATOR) != 0) return;
 	if (labelCIcon != 0) destroyCIcon (labelCIcon);
 	labelCIcon = 0;
 	ControlButtonContentInfo inContent = new ControlButtonContentInfo ();
