@@ -1257,7 +1257,6 @@ void headerOnMouseMove (Event event) {
 	resizeColumnX = event.x;
 	gc.drawLine (resizeColumnX - 1, 0, resizeColumnX - 1, lineHeight);
 	gc.dispose ();
-	
 }
 void headerOnMouseUp (Event event) {
 	if (resizeColumn == null) return;	/* not resizing a column */
@@ -1299,8 +1298,9 @@ void headerOnPaint (Event event) {
 	
 	/* paint each of the column headers */
 	if (numColumns == 0) return;	/* no headers to paint */
+	int height = getClientArea ().height;
 	for (int i = startColumn; i <= endColumn; i++) {
-		headerPaintShadow (gc, orderedColumns [i].getX (), 0, orderedColumns [i].width, getClientArea ().height, false, true);
+		headerPaintShadow (gc, orderedColumns [i].getX (), 0, orderedColumns [i].width, height, false, true);
 		orderedColumns [i].paint (gc);
 	}
 }
