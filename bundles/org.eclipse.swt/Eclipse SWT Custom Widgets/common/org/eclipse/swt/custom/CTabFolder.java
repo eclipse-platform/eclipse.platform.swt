@@ -11,7 +11,6 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.layout.*;
 import org.eclipse.swt.accessibility.*;
 
 /**
@@ -138,6 +137,7 @@ public class CTabFolder extends Composite {
 	                         
 	// tool tip
 	private Shell tip;
+	private Label label;
 	private boolean showToolTip = false;
 	private CTabItem toolTipItem;
 
@@ -181,11 +181,7 @@ public CTabFolder(Composite parent, int style) {
 	// tool tip support
 	Display display = getDisplay();
 	tip = new Shell (getShell(), SWT.ON_TOP);
-	GridLayout layout = new GridLayout();
-	layout.marginWidth = layout.marginHeight = 1;
-	tip.setLayout(layout);
-	Label label = new Label (tip, SWT.NONE);
-	label.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+	label = new Label (tip, SWT.CENTER);
 	
 	// Add all listeners
 	Listener listener = new Listener() {
@@ -542,6 +538,7 @@ private void onDispose() {
 	if (tip != null  && !tip.isDisposed()) {
 		tip.dispose();
 		tip = null;
+		label = null;
 	}
 	
 	if (arrowLeftImage != null) arrowLeftImage.dispose();
@@ -1827,14 +1824,13 @@ private void showToolTip (int x, int y) {
 		toolTipItem = item;
 		String tooltip = item.getToolTipText();
 		if (tooltip != null) {			
-			Label label = (Label) (tip.getChildren() [0]);
-			label.setText(tooltip);
 			Display display = tip.getDisplay();
-			Color foreground = display.getSystemColor (SWT.COLOR_INFO_FOREGROUND);
-			Color background = display.getSystemColor (SWT.COLOR_INFO_BACKGROUND);
-			label.setForeground (foreground);
-			label.setBackground (background);
-			tip.setBackground(background);
+			label.setForeground (display.getSystemColor (SWT.COLOR_INFO_FOREGROUND));
+			label.setBackground (display.getSystemColor (SWT.COLOR_INFO_BACKGROUND));
+			label.setText(tooltip);
+			Point labelSize = label.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+			labelSize.x += 2; labelSize.y += 2;
+			label.setSize(labelSize);
 			tip.pack();
 			Point pt = new Point(item.x + item.width / 4, item.y + item.height + 2);
 			pt = toDisplay(pt);
@@ -1842,9 +1838,9 @@ private void showToolTip (int x, int y) {
 			* Ensure that the tooltip is on the screen.
 			*/
 			Rectangle rect = display.getBounds();
-			Point size = tip.getSize();
-			pt.x = Math.max (0, Math.min (pt.x, rect.width - size.x));
-			pt.y = Math.max (0, Math.min (pt.y, rect.height - size.y));
+			Point tipSize = tip.getSize();
+			pt.x = Math.max (0, Math.min (pt.x, rect.width - tipSize.x));
+			pt.y = Math.max (0, Math.min (pt.y, rect.height - tipSize.y));
 			tip.setLocation(pt);
 			tip.setVisible(true);
 			return;
