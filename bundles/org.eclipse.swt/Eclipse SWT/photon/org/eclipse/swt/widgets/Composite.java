@@ -224,38 +224,45 @@ void drawWidget (int widget, int damage) {
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_BACKGROUND) == 0) {
 			
-			/* Get the clipping tiles for children and siblings */
-			int clip_tile = getClipping (handle, topHandle (), true, true);
-			if (clip_tile == 0) return;
-
-			/* Translate the clipping to the current GC coordinates */
-			short [] abs_x = new short [1], abs_y = new short [1];
-			OS.PtGetAbsPosition (handle, abs_x, abs_y);
-			short [] dis_abs_x = new short [1], dis_abs_y = new short [1];
-			OS.PtGetAbsPosition (OS.PtFindDisjoint (handle), dis_abs_x, dis_abs_y);
-			PhPoint_t delta = new PhPoint_t ();
-			delta.x = (short) (abs_x [0] - dis_abs_x [0]);
-			delta.y = (short) (abs_y [0] - dis_abs_y [0]);
-			OS.PhTranslateTiles(clip_tile, delta);
-
-			/* Set the clipping */
-			int[] clip_rects_count = new int [1];
-			int clip_rects = OS.PhTilesToRects (clip_tile, clip_rects_count);
-			OS.PhFreeTiles (clip_tile);	
-			if (clip_rects_count [0] == 0) {
-				clip_rects_count [0] = 1;
+			/*
+			* Note that QNX 6.2.1 provides full widget hierarchy clipping in paint.
+			*/
+			if (!(OS.QNX_MAJOR > 6 || (OS.QNX_MAJOR == 6 && (OS.QNX_MINOR > 2 || (OS.QNX_MINOR == 2 && OS.QNX_MICRO >= 1))))) {
+				/* Get the clipping tiles for children and siblings */
+				int clip_tile = getClipping (handle, topHandle (), true, true);
+				if (clip_tile == 0) return;
+	
+				/* Translate the clipping to the current GC coordinates */
+				short [] abs_x = new short [1], abs_y = new short [1];
+				OS.PtGetAbsPosition (handle, abs_x, abs_y);
+				short [] dis_abs_x = new short [1], dis_abs_y = new short [1];
+				OS.PtGetAbsPosition (OS.PtFindDisjoint (handle), dis_abs_x, dis_abs_y);
+				PhPoint_t delta = new PhPoint_t ();
+				delta.x = (short) (abs_x [0] - dis_abs_x [0]);
+				delta.y = (short) (abs_y [0] - dis_abs_y [0]);
+				OS.PhTranslateTiles(clip_tile, delta);
+	
+				/* Set the clipping */
+				int[] clip_rects_count = new int [1];
+				int clip_rects = OS.PhTilesToRects (clip_tile, clip_rects_count);
+				OS.PhFreeTiles (clip_tile);	
+				if (clip_rects_count [0] == 0) {
+					clip_rects_count [0] = 1;
+					OS.free (clip_rects);
+					clip_rects = OS.malloc (PhRect_t.sizeof);
+					OS.memset(clip_rects, 0, PhRect_t.sizeof);
+				}
+				OS.PgSetMultiClip (clip_rects_count[0], clip_rects);
 				OS.free (clip_rects);
-				clip_rects = OS.malloc (PhRect_t.sizeof);
-				OS.memset(clip_rects, 0, PhRect_t.sizeof);
 			}
-			OS.PgSetMultiClip (clip_rects_count[0], clip_rects);
-			OS.free (clip_rects);
 			
 			/* Draw the widget */
 			super.drawWidget (widget, damage);
 			
-			/* Reset the clipping */
-			OS.PgSetMultiClip (0, 0);
+			if (!(OS.QNX_MAJOR > 6 || (OS.QNX_MAJOR == 6 && (OS.QNX_MINOR > 2 || (OS.QNX_MINOR == 2 && OS.QNX_MICRO >= 1))))) {
+				/* Reset the clipping */
+				OS.PgSetMultiClip (0, 0);
+			}
 		}
 	} else {
 		super.drawWidget (widget, damage);

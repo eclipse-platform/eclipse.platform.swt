@@ -37,4 +37,5 @@ public final class GCData {
 	public int lineWidth = 1;
 	public int clipRectsCount;
 	public int clipRects;
+	public boolean paint;
 }
