@@ -77,13 +77,9 @@ import org.eclipse.swt.events.*;
  */
 public /*final*/ class ScrollBar extends Widget {
 	Scrollable parent;
-	// AW
-	private int fIncrement= 1;
-	private int fPageIncrement= 10;
-	boolean fVisible= true;
-	
-	private static final boolean WORKS= true;
-	// AW
+	private int increment= 1;
+	private int pageIncrement= 10;
+	boolean visible= true;
 	
 ScrollBar () {
 	/* Do Nothing */
@@ -139,9 +135,9 @@ void createHandle (int index) {
 	state |= HANDLE;
 	handle= 0;
 	if ((style & SWT.H_SCROLL) != 0) {
-		handle= parent.fHScrollBar;
+		handle= parent.hScrollBar;
 	} else if ((style & SWT.V_SCROLL) != 0) {
-		handle= parent.fVScrollBar;
+		handle= parent.vScrollBar;
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
@@ -184,7 +180,7 @@ public boolean getEnabled () {
  */
 public int getIncrement () {
 	checkWidget();
-    return fIncrement;
+    return increment;
 }
 /**
  * Returns the maximum value which the receiver will allow.
@@ -228,7 +224,7 @@ public int getMinimum () {
  */
 public int getPageIncrement () {
 	checkWidget();
-    return fPageIncrement;
+    return pageIncrement;
 }
 /**
  * Returns the receiver's parent, which must be scrollable.
@@ -313,9 +309,7 @@ public int getThumb () {
  */
 public boolean getVisible () {
 	checkWidget();
-	if (WORKS)
-		return OS.IsControlVisible(handle);
-	return fVisible;
+	return OS.IsControlVisible(handle);
 }
 /* AW
 void hookEvents () {
@@ -385,19 +379,19 @@ int processSelection (Object callData) {
 	
     switch (partCode) {
     case OS.kControlUpButtonPart:
-		OS.SetControl32BitValue(handle, OS.GetControl32BitValue(handle) - fIncrement);
+		OS.SetControl32BitValue(handle, OS.GetControl32BitValue(handle) - increment);
         event.detail = SWT.ARROW_UP;
         break;
     case OS.kControlPageUpPart:
-		OS.SetControl32BitValue(handle, OS.GetControl32BitValue(handle) - fPageIncrement);
+		OS.SetControl32BitValue(handle, OS.GetControl32BitValue(handle) - pageIncrement);
         event.detail = SWT.PAGE_UP;
         break;
     case OS.kControlPageDownPart:
-		OS.SetControl32BitValue(handle, OS.GetControl32BitValue(handle) + fPageIncrement);
+		OS.SetControl32BitValue(handle, OS.GetControl32BitValue(handle) + pageIncrement);
         event.detail = SWT.PAGE_DOWN;
         break;
     case OS.kControlDownButtonPart:
-		OS.SetControl32BitValue(handle, OS.GetControl32BitValue(handle) + fIncrement);
+		OS.SetControl32BitValue(handle, OS.GetControl32BitValue(handle) + increment);
         event.detail = SWT.ARROW_DOWN;
         break;
     case OS.kControlIndicatorPart:	// end of drag or continuos drag
@@ -411,8 +405,9 @@ int processSelection (Object callData) {
 		}
         break;
     }
-		
+
 	sendEvent (SWT.Selection, event);
+	// flush display
 	getDisplay().update();
 
 	return OS.kNoErr;
@@ -420,7 +415,7 @@ int processSelection (Object callData) {
 int processWheel(int eRefHandle) {
 	int[] t= new int[1];
 	OS.GetEventParameter(eRefHandle, OS.kEventParamMouseWheelDelta, OS.typeSInt32, null, null, t);
-	OS.SetControl32BitValue(handle, OS.GetControl32BitValue(handle) - (fIncrement * t[0]));
+	OS.SetControl32BitValue(handle, OS.GetControl32BitValue(handle) - (increment * t[0]));
 	Event event= new Event ();
     event.detail= t[0] > 0 ? SWT.ARROW_UP : SWT.ARROW_DOWN;	
 	sendEvent (SWT.Selection, event);
@@ -496,7 +491,7 @@ public void setEnabled (boolean enabled) {
 public void setIncrement (int value) {
 	checkWidget();
 	if (value < 1) return;
-	fIncrement= value;
+	increment= value;
 }
 /**
  * Sets the maximum value which the receiver will allow
@@ -513,7 +508,10 @@ public void setIncrement (int value) {
 public void setMaximum (int value) {
 	checkWidget();
 	if (value < 0) return;
+	boolean notVisible= !isVisible();
+	if (notVisible) OS.HIViewSetDrawingEnabled(handle, false);
     OS.SetControl32BitMaximum(handle, value-OS.GetControlViewSize(handle));
+	if (notVisible) OS.HIViewSetDrawingEnabled(handle, true);
 }
 /**
  * Sets the minimum value which the receiver will allow
@@ -530,7 +528,10 @@ public void setMaximum (int value) {
 public void setMinimum (int value) {
 	checkWidget();
 	if (value < 0) return;
+	boolean notVisible= !isVisible();
+	if (notVisible) OS.HIViewSetDrawingEnabled(handle, false);
     OS.SetControl32BitMinimum(handle, value);
+	if (notVisible) OS.HIViewSetDrawingEnabled(handle, true);
 }
 /**
  * Sets the amount that the receiver's value will be
@@ -548,7 +549,7 @@ public void setMinimum (int value) {
 public void setPageIncrement (int value) {
 	checkWidget();
 	if (value < 1) return;
-	fPageIncrement= value;
+	pageIncrement= value;
 }
 /**
  * Sets the single <em>selection</em> that is the receiver's
@@ -565,7 +566,10 @@ public void setPageIncrement (int value) {
 public void setSelection (int selection) {
 	checkWidget();
 	if (selection < 0) return;
+	boolean notVisible= !isVisible();
+	if (notVisible) OS.HIViewSetDrawingEnabled(handle, false);
     OS.SetControl32BitValue(handle, selection);
+	if (notVisible) OS.HIViewSetDrawingEnabled(handle, true);
 }
 /**
  * Sets the size of the receiver's thumb relative to the
@@ -585,8 +589,11 @@ public void setThumb (int value) {
 	checkWidget();
 	if (value < 1) return;
 	int oldMaximum= OS.GetControl32BitMaximum(handle) + OS.GetControlViewSize(handle);
+	boolean notVisible= !isVisible();
+	if (notVisible) OS.HIViewSetDrawingEnabled(handle, false);
     OS.SetControlViewSize(handle, value);
     OS.SetControl32BitMaximum(handle, oldMaximum-value);
+	if (notVisible) OS.HIViewSetDrawingEnabled(handle, true);
 }
 /**
  * Sets the receiver's selection, minimum value, maximum
@@ -618,12 +625,15 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	if (maximum - minimum - thumb < 0) return;
 	if (increment < 1) return;
 	if (pageIncrement < 1) return;
+	boolean notVisible= !isVisible();
+	if (notVisible) OS.HIViewSetDrawingEnabled(handle, false);
 	OS.SetControl32BitMinimum(handle, minimum);
 	OS.SetControl32BitMaximum(handle, maximum-thumb);
 	OS.SetControlViewSize(handle, thumb);
 	OS.SetControl32BitValue(handle, selection);
-	fIncrement= increment;
-	fPageIncrement= pageIncrement;
+	if (notVisible) OS.HIViewSetDrawingEnabled(handle, true);
+	this.increment= increment;
+	this.pageIncrement= pageIncrement;
 }
 /**
  * Marks the receiver as visible if the argument is <code>true</code>,
@@ -643,36 +653,30 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
  */
 public void setVisible (boolean visible) {
 	checkWidget();
-    
-    if (WORKS) {
-		fVisible= visible;
-		if (OS.IsControlVisible(handle) != visible) {
-			OS.HIViewSetVisible(handle, visible);
-			//OS.SetControlVisibility(handle, visible, true);
-			
-			parent.relayout123();
 	
-			sendEvent(visible ? SWT.Show : SWT.Hide);
+//	this.visible= visible;
+//	if (OS.IsControlVisible(handle) != visible) {
+//		OS.HIViewSetVisible(handle, visible);		
+//		parent.relayout123();
+//		sendEvent(visible ? SWT.Show : SWT.Hide);
+//	}
+	
+    if (this.visible != visible) {
+	    this.visible= visible;
+		int topHandle = topHandle ();
+		if (OS.IsControlVisible(topHandle) != visible) {
+			OS.HIViewSetVisible(topHandle, visible);
+			parent.relayout123();
+			sendEvent (visible ? SWT.Show : SWT.Hide);
 		}
-    } else {
-		if (visible != fVisible) {
-		    fVisible= visible;
-			int topHandle = topHandle ();
-			if (OS.IsControlVisible(topHandle) != visible) {
-				if (visible) {
-					OS.HIViewSetVisible(handle, true);
-					//OS.SetControlVisibility(topHandle, true, false);
-					parent.relayout123();
-					sendEvent(SWT.Show);
-					//redrawHandle (0, 0, 0, 0, topHandle, true);
-				} else {
-					OS.HIViewSetVisible(handle, false);
-					//OS.SetControlVisibility(topHandle, false, true);
-					parent.relayout123();
-					sendEvent(SWT.Hide);
-				}
-			}
-		}
-	}
+    }
 }
+
+void internalSetBounds(MacRect bounds) {
+	boolean notVisible= !isVisible();
+	if (notVisible) OS.HIViewSetDrawingEnabled(handle, false);
+	OS.SetControlBounds(handle, bounds.getData());
+	if (notVisible) OS.HIViewSetDrawingEnabled(handle, true);
+}
+
 }
