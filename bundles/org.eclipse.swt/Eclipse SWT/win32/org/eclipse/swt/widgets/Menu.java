@@ -1296,9 +1296,11 @@ void update () {
 	info.fMask = OS.MIIM_BITMAP;
 	for (int i=0; i<items.length; i++) {
 		MenuItem item = items [i];
-		if (item.getImage () == null) {
-			info.hbmpItem = hasImage ? OS.HBMMENU_CALLBACK : 0;
-			OS.SetMenuItemInfo (handle, item.id, false, info);
+		if ((style & SWT.SEPARATOR | SWT.CASCADE) == 0) {
+			if (item.getImage () == null) {
+				info.hbmpItem = hasImage ? OS.HBMMENU_CALLBACK : 0;
+				OS.SetMenuItemInfo (handle, item.id, false, info);
+			}
 		}
 	}
 
