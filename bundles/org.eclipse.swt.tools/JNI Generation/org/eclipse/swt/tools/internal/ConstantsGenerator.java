@@ -16,7 +16,7 @@ public class ConstantsGenerator extends JNIGenerator {
 
 public void generate(Class clazz) {
 	Field[] fields = clazz.getDeclaredFields();
-	generate(fields);	
+	generate(fields);
 }
 
 public void generate(Field[] fields) {

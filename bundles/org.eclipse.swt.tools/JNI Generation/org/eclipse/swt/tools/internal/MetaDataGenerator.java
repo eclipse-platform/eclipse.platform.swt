@@ -27,11 +27,6 @@ public void generate(Class clazz) {
 	outputln();
 }
 
-public void generate(Class[] classes) {
-	generateMetaData("swt_properties_copyright");
-	super.generate(classes);
-}
-
 public void generate(Field[] fields) {
 	for (int i = 0; i < fields.length; i++) {
 		Field field = fields[i];
@@ -91,22 +86,12 @@ public void generate(Method method) {
 	}
 }
 
-public static void main(String[] args) {
-	if (args.length < 1) {
-		System.out.println("Usage: java CastGenerator <className1> <className2>");
-		return;
-	}
-	try {
-		MetaDataGenerator gen = new MetaDataGenerator();
-		for (int i = 0; i < args.length; i++) {
-			String clazzName = args[i];
-			Class clazz = Class.forName(clazzName);
-			gen.generate(clazz);
-		}
-	} catch (Exception e) {
-		System.out.println("Problem");
-		e.printStackTrace(System.out);
-	}
+protected String getCopyrightKey() {
+	return "swt_properties_copyright";
+}
+
+protected boolean getGenerate(Class clazz) {
+	return true;
 }
 
 }

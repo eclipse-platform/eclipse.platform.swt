@@ -16,18 +16,27 @@ import java.util.Iterator;
 
 public class StructsGenerator extends JNIGenerator {
 
-	boolean isCPP;
+boolean header;
+
+public StructsGenerator(boolean header) {
+	this.header = header;
+}
 	
-public boolean getCPP() {
-	return isCPP;
-}
-
 public void generate(Class clazz) {
-	generateHeaderFile(clazz);
-	generateSourceFile(clazz);
+	if (header) {
+		generateHeaderFile(clazz);
+	} else {
+		generateSourceFile(clazz);
+	}
+	if (progress != null) progress.step();
 }
 
-public void generateExcludes(Class[] classes) {
+public void generate() {
+	if (!header && getClasses().length == 0) return;
+	super.generate();
+}
+
+void generateExcludes(Class[] classes) {
 	HashSet excludes = new HashSet();
 	for (int i = 0; i < classes.length; i++) {
 		Class clazz = classes[i];
@@ -54,7 +63,7 @@ public void generateExcludes(Class[] classes) {
 	}
 }
 
-public void generateHeaderFile(Class clazz) {
+void generateHeaderFile(Class clazz) {
 	generateSourceStart(clazz);
 	generatePrototypes(clazz);
 	generateBlankMacros(clazz);
@@ -62,21 +71,7 @@ public void generateHeaderFile(Class clazz) {
 	outputln();
 }
 
-public void generateHeaderFile(Class[] classes) {
-	sort(classes);
-	generateMetaData("swt_copyright");
-	generateMetaData("swt_includes");
-	generateExcludes(classes);
-	for (int i = 0; i < classes.length; i++) {
-		Class clazz = classes[i];
-		ClassData classData = getMetaData().getMetaData(clazz);
-		if (classData.getFlag("no_gen")) continue;
-		generateHeaderFile(clazz);
-		if (progress != null) progress.step();
-	}
-}
-
-public void generateSourceFile(Class clazz) {
+void generateSourceFile(Class clazz) {
 	generateSourceStart(clazz);
 	generateFIDsStructure(clazz);
 	outputln();
@@ -85,29 +80,6 @@ public void generateSourceFile(Class clazz) {
 	generateFunctions(clazz);
 	generateSourceEnd(clazz);
 	outputln();
-}
-
-public void generateSourceFile(Class[] classes) {
-	if (classes.length == 0) return;
-	sort(classes);
-	generateMetaData("swt_copyright");
-	generateMetaData("swt_includes");
-	for (int i = 0; i < classes.length; i++) {
-		Class clazz = classes[i];
-		ClassData classData = getMetaData().getMetaData(clazz);
-		if (classData.getFlag("no_gen")) continue;
-		if (classData.getFlag("cpp")) {
-			isCPP = true;
-			break;
-		}
-	}
-	for (int i = 0; i < classes.length; i++) {
-		Class clazz = classes[i];
-		ClassData classData = getMetaData().getMetaData(clazz);
-		if (classData.getFlag("no_gen")) continue;
-		generateSourceFile(clazz);
-		if (progress != null) progress.step();
-	}
 }
 
 void generateSourceStart(Class clazz) {
@@ -537,24 +509,6 @@ boolean ignoreField(Field field) {
 		((mods & Modifier.PUBLIC) == 0) ||
 		((mods & Modifier.FINAL) != 0) ||
 		((mods & Modifier.STATIC) != 0);
-}
-
-public static void main(String[] args) {
-	if (args.length < 1) {
-		System.out.println("Usage: java StructsGenerator <className1> <className2>");
-		return;
-	}
-	try {
-		StructsGenerator gen = new StructsGenerator();
-		for (int i = 0; i < args.length; i++) {
-			String clazzName = args[i];
-			Class clazz = Class.forName(clazzName);
-			gen.generate(clazz);
-		}
-	} catch (Exception e) {
-		System.out.println("Problem");
-		e.printStackTrace(System.out);
-	}
 }
 
 }

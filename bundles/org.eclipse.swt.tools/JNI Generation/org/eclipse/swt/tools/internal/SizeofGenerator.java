@@ -14,11 +14,6 @@ import java.lang.reflect.*;
 
 public class SizeofGenerator extends JNIGenerator {
 
-public void generate(Class[] classes) {
-	outputln("int main() {");
-	super.generate(classes);
-	outputln("}");
-}
 
 public void generate(Class clazz) {
 	String className = getClassName(clazz);
@@ -29,6 +24,12 @@ public void generate(Class clazz) {
 	outputln("));");
 //	Field[] fields = clazz.getDeclaredFields();
 //	generate(fields);	
+}
+	
+public void generate() {
+	outputln("int main() {");
+	super.generate();
+	outputln("}");
 }
 
 public void generate(Field[] fields) {

@@ -56,13 +56,14 @@ void generateSTATS_C(Class[] classes) {
 			"#include \"swt.h\"\n" +
 			"#include \"" + outputName + "_stats.h\"\n";
 		metaData.setMetaData("swt_includes", inc);
-		StatsGenerator gen = new StatsGenerator();
+		StatsGenerator gen = new StatsGenerator(false);
+		gen.setClasses(classes);
 		gen.setMetaData(metaData);
 		gen.setProgressMonitor(progress);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		PrintStream print = new PrintStream(out);
 		gen.setOutput(print);
-		gen.generateSourceFile(classes);
+		gen.generate();
 		print.flush();
 		String extension = gen.getCPP() ? ".cpp" : ".c";
 		if (out.size() > 0) output(out.toByteArray(), outputDir + outputName + "_stats" + extension);
@@ -75,15 +76,15 @@ void generateSTATS_C(Class[] classes) {
 void generateSTATS_H(Class[] classes) {
 	try {
 		String outputName = getClassName(mainClass).toLowerCase();
-		String inc = "";
-		metaData.setMetaData("swt_includes", inc);
-		StatsGenerator gen = new StatsGenerator();
+		metaData.setMetaData("swt_includes", "");
+		StatsGenerator gen = new StatsGenerator(true);
+		gen.setClasses(classes);
 		gen.setMetaData(metaData);
 		gen.setProgressMonitor(progress);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		PrintStream print = new PrintStream(out);
 		gen.setOutput(print);
-		gen.generateHeaderFile(classes);
+		gen.generate();
 		print.flush();
 		if (out.size() > 0) output(out.toByteArray(), outputDir + outputName + "_stats.h");
 	} catch (Exception e) {
@@ -96,13 +97,14 @@ void generateSTRUCTS_H(Class[] classes) {
 	try {
 		String outputName = getClassName(mainClass).toLowerCase();
 		metaData.setMetaData("swt_includes", "#include \"" + outputName + ".h\"\n");
-		StructsGenerator gen = new StructsGenerator();
+		StructsGenerator gen = new StructsGenerator(true);
+		gen.setClasses(classes);
 		gen.setMetaData(metaData);
 		gen.setProgressMonitor(progress);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		PrintStream print = new PrintStream(out);
 		gen.setOutput(print);
-		gen.generateHeaderFile(classes);
+		gen.generate();
 		print.flush();
 		if (out.size() > 0) output(out.toByteArray(), outputDir + outputName + "_structs.h");
 	} catch (Exception e) {
@@ -119,13 +121,14 @@ void generateSTRUCTS_C(Class[] classes) {
 			"#include \"swt.h\"\n" +
 			"#include \"" + outputName + "_structs.h\"\n";
 		metaData.setMetaData("swt_includes", inc);
-		StructsGenerator gen = new StructsGenerator();
+		StructsGenerator gen = new StructsGenerator(false);
+		gen.setClasses(classes);
 		gen.setMetaData(metaData);
 		gen.setProgressMonitor(progress);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		PrintStream print = new PrintStream(out);
 		gen.setOutput(print);
-		gen.generateSourceFile(classes);
+		gen.generate();
 		print.flush();
 		String extension = gen.getCPP() ? ".cpp" : ".c";
 		if (out.size() > 0) output(out.toByteArray(), outputDir + outputName + "_structs" + extension);
@@ -145,12 +148,13 @@ void generateSWT_C(Class[] classes) {
 			"#include \"" + outputName + "_stats.h\"\n";
 		metaData.setMetaData("swt_includes", inc);
 		NativesGenerator gen = new NativesGenerator();
+		gen.setClasses(classes);
 		gen.setMetaData(metaData);
 		gen.setProgressMonitor(progress);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		PrintStream print = new PrintStream(out);
 		gen.setOutput(print);
-		gen.generate(classes);
+		gen.generate();
 		print.flush();
 		String extension = gen.getCPP() ? ".cpp" : ".c";
 		if (out.size() > 0) output(out.toByteArray(), outputDir + outputName + extension);
@@ -163,13 +167,15 @@ void generateSWT_C(Class[] classes) {
 
 void generateAllMetaData() {
 	try {
+		metaData.setMetaData("swt_includes", "");
 		MetaDataGenerator gen = new MetaDataGenerator();
+		gen.setClasses(getClasses());
 		gen.setMetaData(metaData);
 		gen.setProgressMonitor(progress);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		PrintStream print = new PrintStream(out);
 		gen.setOutput(print);
-		gen.generate(getClasses());
+		gen.generate();
 		print.flush();
 		if (!new File(getMetaDataDir()).exists()) {
 			System.out.println("Warning: Meta data output dir does not exist");

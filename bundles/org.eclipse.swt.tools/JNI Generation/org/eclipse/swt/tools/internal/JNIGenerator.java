@@ -18,9 +18,11 @@ import org.eclipse.swt.SWT;
 
 public abstract class JNIGenerator {
 
+Class[] classes;
+MetaData metaData;
+boolean isCPP;
 String delimiter;
 PrintStream output;
-MetaData metaData;
 ProgressMonitor progress;
 
 public JNIGenerator() {
@@ -251,11 +253,18 @@ static String toC(String str) {
 
 public abstract void generate(Class clazz);
 
-public void generate(Class[] classes) {
+public void generate() {
+	generateMetaData(getCopyrightKey());
+	generateMetaData(getIncludesKey());
 	sort(classes);
 	for (int i = 0; i < classes.length; i++) {
 		Class clazz = classes[i];
-		generate(clazz);
+		ClassData data = getMetaData().getMetaData(clazz);
+		if (data.getFlag("cpp")) isCPP = true;
+	}
+	for (int i = 0; i < classes.length; i++) {
+		Class clazz = classes[i];
+		if (getGenerate(clazz)) generate(clazz);
 	}
 }
 
@@ -263,7 +272,29 @@ public void generateMetaData(String key) {
 	MetaData mt = getMetaData();
 	String data = mt.getMetaData(key, null);
 	if (data == null) return;
+	if (data.length() == 0) return;
 	outputln(fixDelimiter(data));
+}
+
+public Class[] getClasses() {
+	return classes;
+}
+
+protected String getCopyrightKey() {
+	return "swt_copyright";
+}
+
+protected boolean getGenerate(Class clazz) {
+	ClassData data = getMetaData().getMetaData(clazz);
+	return !data.getFlag("no_gen");
+}
+
+protected String getIncludesKey() {
+	return "swt_includes";
+}
+
+public boolean getCPP() {
+	return isCPP;
 }
 
 public String getDelimiter() {
@@ -297,6 +328,10 @@ public void outputln() {
 public void outputln(String str) {
 	output(str);
 	output(getDelimiter());
+}
+
+public void setClasses(Class[] classes) {
+	this.classes = classes;
 }
 
 public void setDelimiter(String delimiter) {

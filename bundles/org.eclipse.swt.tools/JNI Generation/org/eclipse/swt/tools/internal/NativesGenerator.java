@@ -16,15 +16,10 @@ import java.util.Iterator;
 
 public class NativesGenerator extends JNIGenerator {
 
-boolean nativeMacro, enterExitMacro, isCPP;
+boolean enterExitMacro;
 
 public NativesGenerator() {
 	enterExitMacro = true;
-	nativeMacro = true;
-}
-
-public boolean getCPP() {
-	return isCPP;
 }
 
 public void generate(Class clazz, String methodName) {
@@ -42,18 +37,19 @@ public void generate(Class clazz, String methodName) {
 }
 
 public void generate(Class clazz) {
-	ClassData classData = getMetaData().getMetaData(clazz);
-	if (classData.getFlag("no_gen")) return;
-	generateMetaData("swt_copyright");
-	generateMetaData("swt_includes");
-	isCPP = classData.getFlag("cpp");
+	Method[] methods = clazz.getDeclaredMethods();
+	int i = 0;
+	for (; i < methods.length; i++) {
+		Method method = methods[i];
+		if ((method.getModifiers() & Modifier.NATIVE) != 0) break;
+	}
+	if (i == methods.length) return;
+	sort(methods);
 	if (isCPP) {
 		outputln("extern \"C\" {");
 		outputln();
 	}
 	generateNativeMacro(clazz);
-	Method[] methods = clazz.getDeclaredMethods();
-	sort(methods);
 	generateExcludes(methods);
 	generate(methods);
 	if (isCPP) {
@@ -61,7 +57,7 @@ public void generate(Class clazz) {
 	}
 }
 
-public void generateExcludes(Method[] methods) {
+void generateExcludes(Method[] methods) {
 	HashSet excludes = new HashSet();
 	for (int i = 0; i < methods.length; i++) {
 		Method method = methods[i];
@@ -122,10 +118,6 @@ public void generate(Method method) {
 
 public void setEnterExitMacro(boolean enterExitMacro) {
 	this.enterExitMacro = enterExitMacro;
-}
-
-public void setNativeMacro(boolean nativeMacro) {
-	this.nativeMacro = nativeMacro;
 }
 
 void generateNativeMacro(Class clazz) {
@@ -697,19 +689,10 @@ void generateFunctionPrototype(Method method, String function, Class[] paramType
 	output("JNIEXPORT ");
 	output(getTypeSignature2(returnType));
 	output(" JNICALL ");
-	if (nativeMacro) {
-		output(getClassName(method.getDeclaringClass()));
-		output("_NATIVE(");
-	} else {
-		output("Java_");
-		output(toC(method.getDeclaringClass().getName()));
-		output("_");
-	}
+	output(getClassName(method.getDeclaringClass()));
+	output("_NATIVE(");
 	output(function);
-	if (nativeMacro) {
-		output(")");
-	}
-	outputln();
+	outputln(")");
 	output("\t(JNIEnv *env, ");
 	if ((method.getModifiers() & Modifier.STATIC) != 0) {
 		output("jclass");

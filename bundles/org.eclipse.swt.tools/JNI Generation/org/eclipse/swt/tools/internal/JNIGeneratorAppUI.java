@@ -96,39 +96,48 @@ void cleanup() {
 }
 
 void generateStructsHeader () {
-	StructsGenerator gen = new StructsGenerator();
+	StructsGenerator gen = new StructsGenerator(true);
 	gen.setMetaData(app.getMetaData());
-	Class[] classes = getSelectedClasses();
-	gen.generateHeaderFile(classes);
+	gen.setClasses(getSelectedClasses());
+	gen.generate();
 }
 
 void generateStructs () {
-	StructsGenerator gen = new StructsGenerator();
+	StructsGenerator gen = new StructsGenerator(false);
 	gen.setMetaData(app.getMetaData());
-	Class[] classes = getSelectedClasses();
-	gen.generateSourceFile(classes);
+	gen.setClasses(getSelectedClasses());
+	gen.generate();
 }
 
 void generateSizeof () {
 	SizeofGenerator gen = new SizeofGenerator();
 	gen.setMetaData(app.getMetaData());
-	gen.generate(getSelectedClasses());
+	gen.setClasses(getSelectedClasses());
+	gen.generate();
 }
 
 void generateMetaData () {
 	MetaDataGenerator gen = new MetaDataGenerator();
 	gen.setMetaData(app.getMetaData());
 	Method[] methods = getSelectedMethods();
-	if (methods.length != 0) gen.generate(methods);
-	else gen.generate(getSelectedClasses());
+	if (methods.length != 0) {
+		gen.generate(methods);
+	} else {
+		gen.setClasses(getSelectedClasses());
+		gen.generate();
+	}
 }
 
 void generateNatives () {
 	NativesGenerator gen = new NativesGenerator();
 	gen.setMetaData(app.getMetaData());
 	Method[] methods = getSelectedMethods();
-	if (methods.length != 0) gen.generate(methods);
-	else gen.generate(getSelectedClasses());
+	if (methods.length != 0) {
+		gen.generate(methods);
+	} else {
+		gen.setClasses(getSelectedClasses());
+		gen.generate();
+	}
 }
 
 void generateAll() {
@@ -197,8 +206,12 @@ void generateConstants () {
 	ConstantsGenerator gen = new ConstantsGenerator();
 	gen.setMetaData(app.getMetaData());
 	Field[] fields = getSelectedFields();
-	if (fields.length != 0) gen.generate(fields);
-	else gen.generate(getSelectedClasses());
+	if (fields.length != 0) {
+		gen.generate(fields);
+	} else {
+		gen.setClasses(getSelectedClasses());
+		gen.generate();
+	}
 }
 
 Class[] getSelectedClasses() {

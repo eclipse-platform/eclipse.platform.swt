@@ -13,47 +13,26 @@ package org.eclipse.swt.tools.internal;
 import java.lang.reflect.*;
 
 public class StatsGenerator extends JNIGenerator {
+
+	boolean header;
 	
-	boolean isCPP;
-
-public StatsGenerator() {
-}
-
-public boolean getCPP() {
-	return isCPP;
+public StatsGenerator(boolean header) {
+	this.header = header;
 }
 
 public void generate(Class clazz) {
-	generateHeaderFile(clazz);
-	generateSourceFile(clazz);
-}
-
-public void generate(Method[] methods) {
-	sort(methods);
-	for (int i = 0; i < methods.length; i++) {
-		Method method = methods[i];
-		if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
-		generateStringArray(method);
-		if (progress != null) progress.step();
-	}
-}
-
-public void generateHeaderFile(Class clazz){
-	generateNATIVEMacros(clazz);
-	Method[] methods = clazz.getDeclaredMethods();	
-	generateHeaderFile(methods);
-}
-
-public void generateHeaderFile(Class[] classes) {
-	if (classes.length == 0) return;
-	sort(classes);
-	generateMetaData("swt_copyright");
-	for (int i = 0; i < classes.length; i++) {
-		Class clazz = classes[i];
-		ClassData classData = getMetaData().getMetaData(clazz);
-		if (classData.getFlag("no_gen")) continue;
+	if (header) {
 		generateHeaderFile(clazz);
+	} else {
+		generateSourceFile(clazz);
 	}
+}
+
+void generateHeaderFile(Class clazz){
+	generateNATIVEMacros(clazz);
+	Method[] methods = clazz.getDeclaredMethods();
+	sort(methods);
+	generateFunctionEnum(methods);	
 }
 
 void generateNATIVEMacros(Class clazz) {
@@ -87,38 +66,9 @@ void generateNATIVEMacros(Class clazz) {
 	outputln();	
 }
 
-public void generateHeaderFile(Method[] methods) {
-	sort(methods);
-	generateFunctionEnum(methods);	
-}
-
-public void generateSourceFile(Class[] classes) {
-	if (classes.length == 0) return;
-	sort(classes);
-	generateMetaData("swt_copyright");
-	generateMetaData("swt_includes");
+void generateSourceFile(Class clazz) {
 	outputln("#ifdef NATIVE_STATS");
 	outputln();
-	for (int i = 0; i < classes.length; i++) {
-		Class clazz = classes[i];
-		ClassData classData = getMetaData().getMetaData(clazz);
-		if (classData.getFlag("no_gen")) continue;
-		if (classData.getFlag("cpp")) {
-			isCPP = true;
-			break;
-		}
-	}
-	for (int i = 0; i < classes.length; i++) {
-		Class clazz = classes[i];
-		ClassData classData = getMetaData().getMetaData(clazz);
-		if (classData.getFlag("no_gen")) continue;
-		generateSourceFile(clazz);
-	}
-	outputln();
-	outputln("#endif");
-}
-
-public void generateSourceFile(Class clazz) {
 	Method[] methods = clazz.getDeclaredMethods();
 	int methodCount = 0;
 	for (int i = 0; i < methods.length; i++) {
@@ -140,10 +90,20 @@ public void generateSourceFile(Class clazz) {
 	output("char * ");
 	output(className);
 	outputln("_nativeFunctionNames[] = {");
-	generate(methods);
+	sort(methods);
+	for (int i = 0; i < methods.length; i++) {
+		Method method = methods[i];
+		if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
+		output("\t\"");
+		output(getFunctionName(method));
+		outputln("\", ");
+		if (progress != null) progress.step();
+	}
 	outputln("};");
 	outputln();
 	generateStatsNatives(className);
+	outputln();
+	outputln("#endif");
 }
 
 void generateStatsNatives(String className) {
@@ -186,12 +146,6 @@ void generateStatsNatives(String className) {
 	output(className);
 	outputln("_nativeFunctionCallCount[index];");
 	outputln("}");
-}
-
-void generateStringArray(Method method) {	
-	output("\t\"");
-	output(getFunctionName(method));
-	outputln("\", ");
 }
 
 void generateFunctionEnum(Method[] methods) {
