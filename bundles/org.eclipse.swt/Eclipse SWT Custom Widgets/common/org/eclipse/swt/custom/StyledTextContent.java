@@ -1,18 +1,25 @@
 package org.eclipse.swt.custom;
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2002.
  * All Rights Reserved
  */
 
 import org.eclipse.swt.events.*;
 
+/**
+ * Clients may implement the StyledTextContent interface to provide a 
+ * custom store for the StyledText widget content. The StyledText widget 
+ * interacts with its StyledTextContent in order to access and update 
+ * the text that is being displayed and edited in the widget. 
+ * A custom content implementation can be set in the widget using the
+ * StyledText.setContent API.
+ */
 public interface StyledTextContent {
 
 /**
  * Called by StyledText to add itself as an Observer to content changes.
- * Implementors should send a TextChangingEvent when changes to the content
- * are about to occur and a TextChangedEvent when the changes did occur. 
- * The widget only updates the screen properly when it receives both events.
+ * See TextChangeListener for a description of the listener methods that
+ * are called when text changes occur.
  * <p>
  *
  * @param listener the listener
@@ -34,8 +41,9 @@ public int getCharCount();
  * Return the line at the given line index without delimiters.
  * <p>
  *
- * @param lineIndex index of the line to return. Does not include delimiters
- *	of preceeding lines. Index 0 is the first line of the content.
+ * @param lineIndex index of the line to return. Does not include 
+ *	delimiters of preceeding lines. Index 0 is the first line of the 
+ * 	content.
  * @return the line text without delimiters
  */
 public String getLine(int lineIndex);
@@ -44,12 +52,13 @@ public String getLine(int lineIndex);
  * Return the line index at the given character offset.
  * <p>
  *
- * @param offset offset of the line to return. The first character of the document
- *	is at offset 0.  An offset of getLength() is valid and should answer
- *	the number of lines. 
- * @return the line index. The first line is at index 0.  If the character at offset 
- *	is a delimiter character, answer the line index of the line that is delimited.  
- *	For example, if text = "\r\n\r\n", and delimiter = "\r\n", then:
+ * @param offset offset of the line to return. The first character of the 
+ * 	document is at offset 0.  An offset of getLength() is valid and should 
+ *	answer the number of lines. 
+ * @return the line index. The first line is at index 0.  If the character 
+ * 	at offset is a delimiter character, answer the line index of the line 
+ * 	that is delimited. 
+ * 	For example, if text = "\r\n\r\n", and delimiter = "\r\n", then:
  * <ul>
  * <li>getLineAtOffset(0) == 0
  * <li>getLineAtOffset(1) == 0
@@ -97,10 +106,10 @@ public String getLineDelimiter();
  * </p>
  *
  * @param lineIndex index of the line. The first line is at index 0.
- * @return offset offset of the first character of the line. The first character 
- *	of the document is at offset 0.  The return value should include
- *	line delimiters.  For example, if text = "\r\ntest\r\n" and delimiter = "\r\n", 
- *	then:
+ * @return offset offset of the first character of the line. The first 
+ * 	character of the document is at offset 0.  The return value should 
+ * 	include line delimiters.  
+ * 	For example, if text = "\r\ntest\r\n" and delimiter = "\r\n", then:
  * <ul>
  * <li>getOffsetAtLine(0) == 0
  * <li>getOffsetAtLine(1) == 2
@@ -113,8 +122,8 @@ public int getOffsetAtLine(int lineIndex);
  * Returns a string representing the content at the given range.
  * <p>
  *
- * @param start	the start offset of the text to return. Offset 0 is the first 
- *	character of the document.
+ * @param start the start offset of the text to return. Offset 0 is the 
+ * 	first character of the document.
  * @param length the length of the text to return
  * @return the text at the given range
  */
@@ -137,8 +146,9 @@ public void removeTextChangeListener(TextChangeListener listener);
  * <p>
  * Implementors have to notify the TextChangeListeners that were added 
  * using <code>addTextChangeListener</code> before and after the content 
- * is changed. A <code>TextChangingEvent</code> has to be sent before the 
- * content is changed and a <code>TextChangedEvent</code> has to be sent 
+ * is changed. A <code>TextChangingEvent</code> has to be sent to the 
+ * textChanging method before the content is changed and a 
+ * <code>TextChangedEvent</code> has to be sent to the textChanged method
  * after the content has changed.
  * The text change that occurs after the <code>TextChangingEvent</code> 
  * has been sent has to be consistent with the data provided in the 
@@ -156,9 +166,9 @@ public void removeTextChangeListener(TextChangeListener listener);
  * <li>event.replaceLineCount = number of lines that are going to be replaced
  * <li>event.newLineCount = number of new lines that are going to be inserted
  * </ul>
- * <b>NOTE:</b> newLineCount is the number of inserted lines and replaceLineCount is 
- * the number of deleted lines based on the change that occurs visually.  For
- * example:
+ * <b>NOTE:</b> newLineCount is the number of inserted lines and replaceLineCount 
+ * is the number of deleted lines based on the change that occurs visually.  
+ * For example:
  * <ul>
  * <li>(replaceText, newText) ==> (replaceLineCount, newLineCount)
  * <li>("", "\n") ==> (0, 1)
@@ -168,20 +178,24 @@ public void removeTextChangeListener(TextChangeListener listener);
  * </ul>
  * </p>
  *
- * @param start	start offset of text to replace, none of the offsets include 
- *	delimiters of preceeding lines, offset 0 is the first character of the document 
- * @param replaceLength	start offset of text to replace
+ * @param start start offset of text to replace, none of the offsets include 
+ *	delimiters of preceeding lines, offset 0 is the first character of the 
+ * 	document 
+ * @param replaceLength start offset of text to replace
  * @param newText start offset of text to replace
+ * @see TextChangeListener
  */
 public void replaceTextRange(int start, int replaceLength, String text);
 
 /**
  * Set text to "text".
  * Implementors have to send a <code>TextChangedEvent</code> to the 
- * TextChangeListeners that were added using <code>addTextChangeListener</code>.
+ * textSet method of the TextChangeListeners that were added using 
+ * <code>addTextChangeListener</code>.
  * <p>
  *
  * @param text the new text
+ * @see TextChangeListener
  */
 public void setText(String text);
 }
