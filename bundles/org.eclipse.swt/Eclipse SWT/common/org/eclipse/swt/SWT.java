@@ -1373,6 +1373,12 @@ public class SWT {
 	public static final int TRAVERSE_ARROW_NEXT = 1 << 6;
 
 	/**
+	 * traversal event detail field value indicating that a MNEMONIC
+	 * keys was pressed (value is 1&lt;&lt;7)
+	 */
+	public static final int TRAVERSE_MNEMONIC = 1 << 7;
+
+	/**
 	 * constant indicating that an image or operation is of type bitmap (value is 0)
 	 */	
 	public static final int BITMAP = 0;
