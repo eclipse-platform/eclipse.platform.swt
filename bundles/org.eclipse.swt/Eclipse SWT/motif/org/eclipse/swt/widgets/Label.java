@@ -117,7 +117,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		};
 		OS.XtGetValues (handle, argList4, argList4.length / 2);
 		int unavailable = 2 * (argList4 [7] + getBorderWidth());
-		Display display = getDisplay ();
 		String string = display.wrapText (text, font, wHint - unavailable);
 		GC gc = new GC(this);
 		Point extent = gc.textExtent(string);
@@ -180,13 +179,13 @@ void createHandle (int index) {
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
 int defaultBackground () {
-	return getDisplay ().labelBackground;
+	return display.labelBackground;
 }
 Font defaultFont () {
-	return getDisplay ().labelFont;
+	return display.labelFont;
 }
 int defaultForeground () {
-	return getDisplay ().labelForeground;
+	return display.labelForeground;
 }
 public boolean forceFocus () {
 	checkWidget();
@@ -331,7 +330,6 @@ void setBitmap (Image image) {
 	bitmap = disabled = null;
 	if (image != null) {
 		if (image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-		Display display = getDisplay ();
 		switch (image.type) {
 			case SWT.BITMAP:
 				labelPixmap = image.pixmap;
@@ -470,7 +468,6 @@ public void setText (String string) {
 		};
 		OS.XtGetValues (handle, argList, argList.length / 2);
 		int width = argList [1] - argList [3] - argList [5] - argList [7] * 2 - argList [9] * 2;
-		Display display = getDisplay ();
 		if (mnemonic != 0) string = new String (unicode);
 		string = display.wrapText (string, font, width);
 		buffer = Converter.wcsToMbcs (getCodePage (), string, true);

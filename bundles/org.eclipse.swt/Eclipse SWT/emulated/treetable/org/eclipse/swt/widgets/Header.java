@@ -75,7 +75,7 @@ void drawHighlightShadow(GC gc, int itemIndex) {
 	Rectangle bounds = getBounds(itemIndex);
 	Color oldForeground = getForeground();
 
-	gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW));	
+	gc.setForeground(display.getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW));	
 	// draw top horizontal line
 	gc.drawLine(bounds.x, bounds.y, bounds.x + bounds.width - 1, bounds.y);
 	// draw left vertical line
@@ -93,7 +93,6 @@ void drawLowlightShadows(GC gc, int itemIndex) {
 	Point bottomShadowStop = new Point(bottomShadowStart.x + bounds.width - 2, bottomShadowStart.y);	
 	Point rightShadowStart = null;
 	Point rightShadowStop = null;
-	Display display = getDisplay();
 	Color oldForeground = getForeground();	
 
 	// light inner shadow

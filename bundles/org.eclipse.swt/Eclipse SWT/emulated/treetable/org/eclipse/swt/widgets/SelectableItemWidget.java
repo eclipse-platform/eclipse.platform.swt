@@ -877,7 +877,7 @@ Point getCheckBoxExtent() {
 Image getCheckMarkImage() {
 	
 	if (checkMarkImage == null) {
-		checkMarkImage = new Image(getDisplay(), CheckMarkImageData);
+		checkMarkImage = new Image(display, CheckMarkImageData);
 	}
 	return checkMarkImage;
 }
@@ -996,7 +996,7 @@ public int getItemHeight() {
  * Answer the number of pixels that should be added to the item height.
  */
 int getItemPadding() {
-	return 2 + getDisplay().textHighlightThickness;
+	return 2 + display.textHighlightThickness;
 }
 /**
  * Answer the item that most recently received the input focus.
@@ -1079,7 +1079,7 @@ int getTopIndex() {
 Image getUncheckedImage() {
 	
 	if (uncheckedImage == null) {
-		uncheckedImage = new Image(getDisplay(), UncheckedImageData);
+		uncheckedImage = new Image(display, UncheckedImageData);
 	}
 	return uncheckedImage;
 }
@@ -1090,7 +1090,7 @@ Image getUncheckedImage() {
 Image getGrayUncheckedImage() {
 	
 	if (grayUncheckedImage == null) {
-		grayUncheckedImage = new Image(getDisplay(), GrayUncheckedImageData);
+		grayUncheckedImage = new Image(display, GrayUncheckedImageData);
 	}
 	return grayUncheckedImage;
 }
@@ -1189,7 +1189,6 @@ boolean hasFocus(SelectableItem item) {
  * colors.
  */
 void initialize() {
-	Display display = getDisplay();	
 	ScrollBar horizontalBar = getHorizontalBar();
 	ScrollBar verticalBar = getVerticalBar();
 
@@ -1694,7 +1693,7 @@ void selectNotify(final SelectableItem item, boolean asyncNotify) {
 			notifyListeners(SWT.Selection, event);
 		}
 		else {
-			getDisplay().asyncExec(new Runnable() {
+			display.asyncExec(new Runnable() {
 				public void run() {
 					// Only send a selection event when the item has not been disposed.
 					// Fixes 1GE6XQA

@@ -341,7 +341,7 @@ int XKeyPress (int w, int client_data, int call_data, int continue_to_dispatch) 
 			if (newX == lastX && newY == lastY) return result;
 			
 			/* Ensure that the pointer image does not change */
-			int xDisplay = getDisplay().xDisplay;
+			int xDisplay = display.xDisplay;
 			int xWindow = OS.XtWindow (parent.handle);
 			int ptrGrabResult = OS.XGrabPointer (
 				xDisplay,

@@ -211,7 +211,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
-	Display display = getDisplay ();
 	int border = getBorderWidth ();
 	int trimX = x - border;
 	int trimY = y - border;
@@ -296,13 +295,13 @@ ScrollBar createScrollBar (int type) {
 	return createStandardBar (type);
 }
 int defaultBackground () {
-	return getDisplay ().listBackground;
+	return display.listBackground;
 }
 Font defaultFont () {
-	return getDisplay ().listFont;
+	return display.listFont;
 }
 int defaultForeground () {
-	return getDisplay ().listForeground;
+	return display.listForeground;
 }
 /**
  * Deselects the item at the given zero-relative index in the receiver.
@@ -689,7 +688,7 @@ public int getTopIndex () {
 }
 void hookEvents () {
 	super.hookEvents ();
-	int windowProc = getDisplay ().windowProc;
+	int windowProc = display.windowProc;
 	OS.XtAddCallback (handle, OS.XmNbrowseSelectionCallback, windowProc, BROWSE_SELECTION_CALLBACK);
 	OS.XtAddCallback (handle, OS.XmNextendedSelectionCallback, windowProc, EXTENDED_SELECTION_CALLBACK);
 	OS.XtAddCallback (handle, OS.XmNdefaultActionCallback, windowProc, DEFAULT_ACTION_CALLBACK);
@@ -786,7 +785,6 @@ public boolean isSelected (int index) {
 	return OS.XmListPosSelected (handle, index + 1);
 }
 void overrideTranslations () {
-	Display display = getDisplay ();
 	OS.XtOverrideTranslations (handle, display.tabTranslations);
 }
 /**

@@ -1250,9 +1250,6 @@ public boolean getChecked() {
 	checkWidget();
 	return super.getChecked();
 }
-public Display getDisplay() {
-	return super.getDisplay();
-}
 boolean getExpanding(){
 	return isExpanding;
 }

@@ -420,7 +420,6 @@ public void deselect (int index) {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	
 	if (OS.XmListPosSelected (argList[3], index + 1)) {
-		Display display = getDisplay ();
 		boolean warnings = display.getWarnings ();
 		display.setWarnings (false);
 		OS.XmTextSetString (argList[1], new byte[1]);
@@ -446,7 +445,6 @@ public void deselectAll () {
 	checkWidget();
 	int [] argList = {OS.XmNtextField, 0, OS.XmNlist, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
-	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XmTextSetString (argList[1], new byte[1]);
@@ -740,7 +738,7 @@ public int getTextLimit () {
 }
 void hookEvents () {
 	super.hookEvents ();
-	int windowProc = getDisplay ().windowProc;
+	int windowProc = display.windowProc;
 	OS.XtAddCallback (handle, OS.XmNselectionCallback, windowProc, SELECTION_CALLBACK);
 	int [] argList = {OS.XmNtextField, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
@@ -838,7 +836,6 @@ public int indexOf (String string, int start) {
  */
 public void paste () {
 	checkWidget();
-	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	int [] argList = {OS.XmNtextField, 0};
@@ -972,7 +969,6 @@ public void removeAll () {
 	int [] argList = {OS.XmNtextField, 0, OS.XmNlist, 0, OS.XmNitemCount, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	
-	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XmTextSetString (argList[1], new byte[1]);
@@ -1047,7 +1043,6 @@ public void select (int index) {
 	if (index == -1) {
 		int [] argList = {OS.XmNtextField, 0, OS.XmNlist, 0};
 		OS.XtGetValues (handle, argList, argList.length / 2);
-		Display display = getDisplay ();
 		boolean warnings = display.getWarnings ();
 		display.setWarnings (false);
 		OS.XmTextSetString (argList[1], new byte[1]);
@@ -1085,7 +1080,6 @@ byte [] sendIMKeyEvent (int type, XKeyEvent xEvent) {
 	if (start [0] == end [0]) {
 		start [0] = end [0] = OS.XmTextGetInsertionPosition (textHandle);
 	}
-	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XmTextReplace (textHandle, start [0], end [0], mbcs);
@@ -1241,7 +1235,6 @@ public void setItems (String [] items) {
 	
 	int [] argList2 = {OS.XmNtextField, 0};
 	OS.XtGetValues (handle, argList2, argList2.length / 2);
-	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XmTextSetString (argList2[1], new byte[1]);
@@ -1291,7 +1284,6 @@ public void setSelection (Point selection) {
 	if (xDisplay == 0) return;
 	int nStart = Math.min (Math.max (Math.min (selection.x, selection.y), 0), position);
 	int nEnd = Math.min (Math.max (Math.max (selection.x, selection.y), 0), position);
-	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XmTextSetSelection (argList[1], nStart, nEnd, OS.XtLastTimestampProcessed (xDisplay));
@@ -1347,7 +1339,6 @@ public void setText (String string) {
 			OS.XmComboBoxSelectItem(handle, xmString);
 		} else {
 			/* The list does not contain the item. */
-			Display display = getDisplay ();
 			boolean warnings = display.getWarnings ();
 			display.setWarnings (false);
 			OS.XmTextSetString (argList[1], buffer);

@@ -310,8 +310,8 @@ void drawBorder(Event event) {
 	int wClient = clientArea.width;
 	int hClient = clientArea.height;
 	int x, y, x1, y1;
-	final Color HighlightShadow = getDisplay().getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW);
-	final Color LightShadow = getDisplay().getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW);
+	final Color HighlightShadow = display.getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW);
+	final Color LightShadow = display.getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW);
 
 	// Draw the left line
 	gc.setForeground(HighlightShadow);
@@ -339,7 +339,7 @@ void drawBorder(Event event) {
 	}
 
 	// Draw the right and bottom black lines
-	gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_FOREGROUND));
+	gc.setForeground(display.getSystemColor(SWT.COLOR_WIDGET_FOREGROUND));
 	gc.drawLine((x = xClient - CLIENT_MARGIN_WIDTH),
 		(y = yClient + hClient + CLIENT_MARGIN_WIDTH),
 		(x1 = xClient + wClient + CLIENT_MARGIN_WIDTH),
@@ -352,7 +352,7 @@ void drawBorder(Event event) {
 
 
 	// There is a dark gray line above the bottom back line
-	gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW));
+	gc.setForeground(display.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW));
 	gc.drawLine(x, y, x1, y);
 	// On the right there is a dark gray line, left of the black one
 	gc.drawLine(x1, y-1, x1, y1);
@@ -369,18 +369,18 @@ void drawBorder(Event event) {
  */
 void drawPlainButton(GC gc, int xPos, int yPos, int size) {
 	Color rightBottomColor = getForeground();
-	Color leftTopColor = getDisplay().getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
-	Color rightBottomInnerColor = getDisplay().getSystemColor(SWT.COLOR_WIDGET_DARK_SHADOW);
-	Color leftTopInnerColor = getDisplay().getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW);	
+	Color leftTopColor = display.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
+	Color rightBottomInnerColor = display.getSystemColor(SWT.COLOR_WIDGET_DARK_SHADOW);
+	Color leftTopInnerColor = display.getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW);	
 	int upper = yPos;
 	int left = xPos;
 	int lower = yPos + size - 1;
 	int right = xPos + size - 1;
 
 	if (scrollButtonDown) {						// draw the button in the pressed down state?
-		rightBottomColor = getDisplay().getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW);	
-		leftTopColor = getDisplay().getSystemColor(SWT.COLOR_WIDGET_DARK_SHADOW);
-		rightBottomInnerColor = getDisplay().getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
+		rightBottomColor = display.getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW);	
+		leftTopColor = display.getSystemColor(SWT.COLOR_WIDGET_DARK_SHADOW);
+		rightBottomInnerColor = display.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
 		leftTopInnerColor = getForeground();
 	}		
 	gc.fillRectangle(left, upper, right - left, lower - upper);

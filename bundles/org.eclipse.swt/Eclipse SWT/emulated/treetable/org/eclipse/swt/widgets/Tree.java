@@ -98,7 +98,7 @@ public class Tree extends SelectableItemWidget {
  */
 public Tree(Composite parent, int style) {
 	super(parent, checkStyle (style));
-	CONNECTOR_LINE_COLOR = new Color(getDisplay(), 170, 170, 170);	// Light gray;
+	CONNECTOR_LINE_COLOR = new Color(display, 170, 170, 170);	// Light gray;
 }
 /**
  * Add 'item' to the list of root items.
@@ -566,7 +566,7 @@ void expandAll(TreeItem item) {
  */
 Image getCollapsedImage() {
 	if (collapsedImage == null) {
-		collapsedImage = new Image(getDisplay(), CollapsedImageData);
+		collapsedImage = new Image(display, CollapsedImageData);
 	}
 	return collapsedImage;
 }
@@ -588,7 +588,7 @@ int getContentWidth(int itemIndex) {
  */
 Image getExpandedImage() {
 	if (expandedImage == null) {
-		expandedImage = new Image(getDisplay(), ExpandedImageData);
+		expandedImage = new Image(display, ExpandedImageData);
 	}
 	return expandedImage;
 }

@@ -494,7 +494,7 @@ void drawGridLines(Event event, Enumeration drawColumns) {
 	int lineYPosition = headerHeight + ((event.y-headerHeight) / itemHeight) * itemHeight;
 	int lineYStopPosition = event.y + event.height;
 
-	gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW));
+	gc.setForeground(display.getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW));
 	// Draw the horizontal lines	
 	if (itemHeight > 0) {
 		while (lineYPosition < lineYStopPosition) {
@@ -630,7 +630,7 @@ public int getColumnCount() {
  */
 Cursor getColumnResizeCursor() {
 	if (columnResizeCursor == null) {
-		columnResizeCursor = new Cursor(getDisplay(), SWT.CURSOR_SIZEWE);
+		columnResizeCursor = new Cursor(display, SWT.CURSOR_SIZEWE);
 	}
 	return columnResizeCursor;
 }
@@ -896,7 +896,7 @@ public int getItemHeight() {
  * Answer the number of pixels that should be added to the item height.
  */
 int getItemPadding() {
-	return getGridLineWidth() + getDisplay().textHighlightThickness + 1;
+	return getGridLineWidth() + display.textHighlightThickness + 1;
 }
 /**
  * Returns an array of <code>TableItem</code>s which are the items
@@ -1679,7 +1679,7 @@ TableItem paintItems(Event event, int topPaintIndex, int bottomPaintIndex, Vecto
 	TableItem focusItem = null;
 	Point selectionExtent;
 	GC gc = event.gc;
-	Color selectionColor = getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION);
+	Color selectionColor = display.getSystemColor(SWT.COLOR_LIST_SELECTION);
 	Point fullSelectionExtent;	
 	int paintXPosition;
 	int paintYPosition;

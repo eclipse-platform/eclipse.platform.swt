@@ -76,7 +76,6 @@ public class CoolBar extends Composite {
  */
 public CoolBar (Composite parent, int style) {
 	super (parent, checkStyle(style));
-	Display display = getDisplay();
 	hoverCursor = new Cursor(display, SWT.CURSOR_SIZEWE);
 	dragCursor = new Cursor(display, SWT.CURSOR_SIZEALL);
 	Listener listener = new Listener() {
@@ -636,7 +635,6 @@ void onMouseDoubleClick(Event event) {
 void onPaint(Event event) {
 	GC gc = event.gc;
 	if (items.length == 0) return;
-	Display display = getDisplay();
 	Color shadowColor = display.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
 	Color highlightColor = display.getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW);
 

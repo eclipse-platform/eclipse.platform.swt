@@ -363,9 +363,6 @@ int getCheckboxXPosition() {
 Vector getDataLabels() {
 	return dataLabels;
 }
-public Display getDisplay() {
-	return super.getDisplay();
-}
 /**
  * Return the position at which the string starts that is used 
  * to indicate a truncated item text.

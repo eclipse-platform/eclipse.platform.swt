@@ -189,7 +189,6 @@ void createScrolledHandle (int topHandle) {
 	scrolledHandle = OS.XmCreateMainWindow (topHandle, null, argList, argList.length / 2);
 	if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
-		Display display = getDisplay ();
 		int thickness = display.buttonShadowThickness;
 		int [] argList1 = {
 			OS.XmNmarginWidth, 3,
@@ -223,10 +222,10 @@ void createScrolledHandle (int topHandle) {
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
 int defaultBackground () {
-	return getDisplay ().compositeBackground;
+	return display.compositeBackground;
 }
 int defaultForeground () {
-	return getDisplay ().compositeForeground;
+	return display.compositeForeground;
 }
 void deregister () {
 	super.deregister ();
@@ -314,8 +313,7 @@ public Control [] getTabList () {
 void hookEvents () {
 	super.hookEvents ();
 	if ((state & CANVAS) != 0) {
-		int windowProc = getDisplay ().windowProc;
-		OS.XtInsertEventHandler (handle, 0, true, windowProc, NON_MASKABLE, OS.XtListTail);
+		OS.XtInsertEventHandler (handle, 0, true, display.windowProc, NON_MASKABLE, OS.XtListTail);
 	}
 }
 
@@ -673,7 +671,6 @@ int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) 
 	if (exposeCount == 0) {
 		if (OS.XEventsQueued (xEvent.display, OS.QueuedAfterReading) != 0) {
 			XAnyEvent xAnyEvent = new XAnyEvent ();
-			Display display = getDisplay ();
 			display.exposeCount = display.lastExpose = 0;
 			int checkExposeProc = display.checkExposeProc;
 			OS.XCheckIfEvent (xEvent.display, xAnyEvent, checkExposeProc, xEvent.window);

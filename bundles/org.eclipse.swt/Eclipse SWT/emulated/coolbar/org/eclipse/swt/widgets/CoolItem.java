@@ -171,7 +171,7 @@ protected void checkSubclass () {
 void calculateChevronTrim () {
 	ToolBar tb = new ToolBar (parent, SWT.FLAT);
 	ToolItem ti = new ToolItem (tb, SWT.PUSH);
-	Image image = new Image (getDisplay(), 1, 1);
+	Image image = new Image (display, 1, 1);
 	ti.setImage (image);
 	Point size = tb.computeSize (SWT.DEFAULT, SWT.DEFAULT);
 	CHEVRON_HORIZONTAL_TRIM = size.x - 1;
@@ -239,7 +239,6 @@ public void dispose () {
 }
 
 Image createArrowImage (int width, int height) {
-	Display display = getDisplay ();
 	Color foreground = parent.getForeground ();
 	Color black = display.getSystemColor (SWT.COLOR_BLACK);
 	Color background = parent.getBackground ();
@@ -299,11 +298,6 @@ public Rectangle getBounds () {
 public Control getControl () {
 	checkWidget();
 	return control;
-}
-public Display getDisplay () {
-	Composite parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
 }
 /**
  * Returns the minimum size that the cool item can

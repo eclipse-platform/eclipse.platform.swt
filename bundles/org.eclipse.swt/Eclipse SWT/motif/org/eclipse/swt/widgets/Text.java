@@ -193,7 +193,6 @@ public void append (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int position = OS.XmTextGetLastPosition (handle);
 	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
-	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XmTextSetInsertionPosition (handle, position);
@@ -385,13 +384,13 @@ public void cut () {
 	OS.XmTextCut (handle, OS.XtLastTimestampProcessed (xDisplay));
 }
 int defaultBackground () {
-	return getDisplay ().textBackground;
+	return display.textBackground;
 }
 Font defaultFont () {
-	return getDisplay ().textFont;
+	return display.textFont;
 }
 int defaultForeground () {
-	return getDisplay ().textForeground;
+	return display.textForeground;
 }
 /**
  * Gets the line number of the caret.
@@ -841,7 +840,7 @@ boolean hasIMSupport() {
 }
 void hookEvents () {
 	super.hookEvents ();
-	int windowProc = getDisplay ().windowProc;
+	int windowProc = display.windowProc;
 	OS.XtAddCallback (handle, OS.XmNactivateCallback, windowProc, ACTIVATE_CALLBACK);
 	OS.XtAddCallback (handle, OS.XmNvalueChangedCallback, windowProc, VALUE_CHANGED_CALLBACK);
 	OS.XtAddCallback (handle, OS.XmNmodifyVerifyCallback, windowProc, MODIFY_VERIFY_CALLBACK);
@@ -872,7 +871,6 @@ public void insert (String string) {
 		start [0] = end [0] = OS.XmTextGetInsertionPosition (handle);
 	}
 	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
-	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XmTextReplace (handle, start [0], end [0], buffer);
@@ -882,7 +880,6 @@ public void insert (String string) {
 }
 void overrideTranslations () {
 	if ((style & SWT.SINGLE) != 0) {
-		Display display = getDisplay ();
 		OS.XtOverrideTranslations (handle, display.tabTranslations);
 	}
 }
@@ -900,7 +897,6 @@ void overrideTranslations () {
  */
 public void paste () {
 	checkWidget();
-	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	/*
@@ -1010,7 +1006,6 @@ byte [] sendIMKeyEvent (int type, XKeyEvent xEvent) {
 	if (start [0] == end [0]) {
 		start [0] = end [0] = OS.XmTextGetInsertionPosition (handle);
 	}
-	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XmTextReplace (handle, start [0], end [0], mbcs);
@@ -1046,7 +1041,6 @@ public void selectAll () {
 	/* Set the selection. */
 	int xDisplay = OS.XtDisplay (handle);
 	if (xDisplay == 0) return;
-	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XmTextSetSelection (handle, 0, position, OS.XtLastTimestampProcessed (xDisplay));
@@ -1062,7 +1056,6 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	* the visible region during a resize.  The fix is
 	* to temporarily turn off warnings below.
 	*/
-	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	boolean changed = super.setBounds (x, y, width, height, move, resize);
@@ -1200,7 +1193,6 @@ public void setSelection (int start) {
 	if (xDisplay == 0) return;
 	int position = OS.XmTextGetLastPosition (handle);
 	int nStart = Math.min (Math.max (start, 0), position);
-	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 //	OS.XmTextSetHighlight (handle, 0, position, OS.XmHIGHLIGHT_NORMAL);
@@ -1255,7 +1247,6 @@ public void setSelection (int start, int end) {
 	if (xDisplay == 0) return;
 	int nStart = Math.min (Math.max (Math.min (start, end), 0), position);
 	int nEnd = Math.min (Math.max (Math.max (start, end), 0), position);
-	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XmTextSetSelection (handle, nStart, nEnd, OS.XtLastTimestampProcessed (xDisplay));
@@ -1334,7 +1325,6 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
-	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XmTextSetString (handle, buffer);
@@ -1410,7 +1400,6 @@ public void setTopIndex (int index) {
  */
 public void showSelection () {
 	checkWidget();
-	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	int position = OS.XmTextGetInsertionPosition (handle);

@@ -145,7 +145,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int border = getBorderWidth ();
 	int width = border * 2, height = border * 2;
 	if ((style & SWT.ARROW) != 0) {
-		Display display = getDisplay ();
 		width += display.scrolledMarginX;
 		height += display.scrolledMarginY;
 		if (wHint != SWT.DEFAULT) width = wHint + (border * 2);
@@ -229,7 +228,6 @@ void createHandle (int index) {
 		* push button look.  The fix is to set the shadow
 		* thickness when ever this resource is changed.
 		*/
-		Display display = getDisplay ();
 		int thickness = display.buttonShadowThickness;
 		int [] argList = {
 			OS.XmNancestorSensitive, 1,
@@ -310,13 +308,13 @@ void createWidget (int index) {
 	OS.XtSetValues (handle, argList, argList.length / 2);
 }
 int defaultBackground () {
-	return getDisplay ().buttonBackground;
+	return display.buttonBackground;
 }
 Font defaultFont () {
-	return getDisplay ().buttonFont;
+	return display.buttonFont;
 }
 int defaultForeground () {
-	return getDisplay ().buttonForeground;
+	return display.buttonForeground;
 }
 /**
  * Returns a value which describes the position of the
@@ -459,7 +457,7 @@ public String getText () {
 }
 void hookEvents () {
 	super.hookEvents ();
-	int windowProc = getDisplay ().windowProc;
+	int windowProc = display.windowProc;
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) != 0) {
 		OS.XtAddCallback (handle, OS.XmNvalueChangedCallback, windowProc, VALUE_CHANGED_CALLBACK);
 	} else {
@@ -583,7 +581,6 @@ void setBitmap (Image image) {
 	bitmap = disabled = null;
 	if (image != null) {
 		if (image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-		Display display = getDisplay ();
 		switch (image.type) {
 			case SWT.BITMAP:
 				labelPixmap = image.pixmap;
@@ -762,7 +759,6 @@ void updateShadows () {
 	if ((style & SWT.FLAT) != 0 && (style & SWT.TOGGLE) != 0) {
 		int [] argList1 = {OS.XmNset, 0};
 		OS.XtGetValues (handle, argList1, argList1.length / 2);
-		Display display = getDisplay ();
 		int pixel = argList1 [1] == OS.XmUNSET ? display.compositeBottomShadow : display.compositeTopShadow;
 		int [] argList2 = {OS.XmNtopShadowColor, pixel};
 		OS.XtSetValues (handle, argList2, argList2.length / 2);

@@ -469,7 +469,6 @@ void createWidget (int index) {
 	* disable the built in drag and drop for all widgets
 	* by overriding the drag start traslation.
 	*/
-	Display display = getDisplay ();
 	OS.XtOverrideTranslations (handle, display.dragTranslations);
 	
 	/*
@@ -486,13 +485,13 @@ void createWidget (int index) {
 	font = defaultFont ();
 }
 int defaultBackground () {
-	return getDisplay ().defaultBackground;
+	return display.defaultBackground;
 }
 Font defaultFont () {
-	return getDisplay ().defaultFont;
+	return display.defaultFont;
 }
 int defaultForeground () {
-	return getDisplay ().defaultForeground;
+	return display.defaultForeground;
 }
 void enableWidget (boolean enabled) {
 	enableHandle (enabled, handle);
@@ -579,7 +578,7 @@ public Accessible getAccessible () {
  */
 public Color getBackground () {
 	checkWidget();
-	return Color.motif_new (getDisplay (), getXColor (getBackgroundPixel ()));
+	return Color.motif_new (display, getXColor (getBackgroundPixel ()));
 }
 int getBackgroundPixel () {
 	int [] argList = {OS.XmNbackground, 0};
@@ -631,21 +630,6 @@ Point getClientLocation () {
 }
 String getCodePage () {
 	return font.codePage;
-}
-/**
- * Returns the display that the receiver was created on.
- *
- * @return the receiver's display
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public Display getDisplay () {
-	Composite parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
 }
 /**
  * Returns <code>true</code> if the receiver is enabled, and
@@ -792,7 +776,7 @@ int getFontHeight () {
  */
 public Color getForeground () {
 	checkWidget();
-	return Color.motif_new (getDisplay (), getXColor (getForegroundPixel ()));
+	return Color.motif_new (display, getXColor (getForegroundPixel ()));
 }
 int getForegroundPixel () {
 	int [] argList = {OS.XmNforeground, 0};
@@ -982,7 +966,7 @@ XColor getXColor (int pixel) {
 	return color;
 }
 boolean hasFocus () {
-	return this == getDisplay ().getFocusControl ();
+	return this == display.getFocusControl ();
 }
 /**
  * Returns true if the widget has native IM support
@@ -992,7 +976,7 @@ boolean hasIMSupport() {
 }
 void hookEvents () {
 	int focusHandle = focusHandle ();
-	int windowProc = getDisplay ().windowProc;
+	int windowProc = display.windowProc;
 	OS.XtAddEventHandler (handle, OS.ButtonPressMask, false, windowProc, BUTTON_PRESS);
 	OS.XtAddEventHandler (handle, OS.ButtonReleaseMask, false, windowProc, BUTTON_RELEASE);
 	OS.XtAddEventHandler (handle, OS.PointerMotionMask, false, windowProc, POINTER_MOTION);
@@ -1008,7 +992,6 @@ int hoverProc (int id) {
 	return hoverProc (id, true);
 }
 int hoverProc (int id, boolean showTip) {
-	Display display = getDisplay ();
 	if (showTip) display.showToolTip (handle, toolTipText);
 	sendMouseEvent (SWT.MouseHover, 0);
 	return 0;
@@ -1042,7 +1025,7 @@ public int internal_new_GC (GCData data) {
 	int [] argList = {OS.XmNforeground, 0, OS.XmNbackground, 0, OS.XmNcolormap, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	if (data != null) {
-		data.device = getDisplay ();
+		data.device = display;
 		data.display = xDisplay;
 		data.drawable = xWindow;
 		data.foreground = argList [1];
@@ -1094,7 +1077,6 @@ public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();
 }
 boolean isFocusAncestor () {
-	Display display = getDisplay ();
 	Control control = display.getFocusControl ();
 	while (control != null && control != this) {
 		control = control.parent;
@@ -1254,7 +1236,6 @@ public void moveBelow (Control control) {
 	setZOrder (control, false);
 }
 void overrideTranslations () {
-	Display display = getDisplay ();
 	int focusHandle = focusHandle ();
 	OS.XtOverrideTranslations (focusHandle, display.tabTranslations);
 	OS.XtOverrideTranslations (focusHandle, display.arrowTranslations);
@@ -1378,7 +1359,6 @@ void releaseWidget () {
 		OS.XtSetValues (fontHandle, argList2, argList2.length / 2);
 	}
 	super.releaseWidget ();
-	Display display = getDisplay ();
 	display.releaseToolTipHandle (handle);
 	toolTipText = null;
 	if (menu != null && !menu.isDisposed ()) {
@@ -1652,7 +1632,6 @@ void sendKeyEvent (int type, XKeyEvent xEvent) {
 	Control control = this;
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_FOCUS) != 0) {
-			Display display = getDisplay ();
 			control = display.getFocusControl ();
 		}
 	}
@@ -2216,7 +2195,6 @@ public void setSize (Point size) {
  */
 public void setToolTipText (String string) {
 	checkWidget();
-	Display display = getDisplay ();
 	display.setToolTipText (handle, toolTipText = string);
 }
 /**
@@ -2648,7 +2626,6 @@ public void update () {
 void update (boolean all) {
 //	checkWidget();
 	if (all) {
-		Display display = getDisplay ();
 		display.update ();		
 	} else {
 		int display = OS.XtDisplay (handle);
@@ -2663,7 +2640,6 @@ void update (boolean all) {
 	}
 }
 int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatch) {
-	Display display = getDisplay ();
 	Shell shell = getShell ();
 	display.hideToolTip ();
 	XButtonEvent xEvent = new XButtonEvent ();
@@ -2697,7 +2673,6 @@ int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatc
 	return 0;
 }
 int XButtonRelease (int w, int client_data, int call_data, int continue_to_dispatch) {
-	Display display = getDisplay ();
 	display.hideToolTip ();
 	XButtonEvent xEvent = new XButtonEvent ();
 	OS.memmove (xEvent, call_data, XButtonEvent.sizeof);
@@ -2778,7 +2753,6 @@ int XFocusChange (int w, int client_data, int call_data, int continue_to_dispatc
 		}
 		case OS.FocusOut: {
 			Shell shell = getShell ();
-			Display display = getDisplay ();
 			
 			xFocusOut ();
 			// widget could be disposed at this point
@@ -2829,7 +2803,6 @@ int xFocusIn () {
 	return 0;
 }
 int xFocusOut () {
-	Display display = getDisplay ();
 	if (display.postFocusOut) {
 		postEvent (SWT.FocusOut);
 	} else {
@@ -2869,7 +2842,6 @@ int XKeyRelease (int w, int client_data, int call_data, int continue_to_dispatch
 	return 0;
 }
 int XLeaveWindow (int w, int client_data, int call_data, int continue_to_dispatch) {
-	Display display = getDisplay ();
 	display.removeMouseHoverTimeOut ();
 	display.hideToolTip ();
 	XCrossingEvent xEvent = new XCrossingEvent ();
@@ -2884,7 +2856,6 @@ int XmNhelpCallback (int w, int client_data, int call_data) {
 	return 0;
 }
 int XPointerMotion (int w, int client_data, int call_data, int continue_to_dispatch) {
-	Display display = getDisplay ();
 	display.addMouseHoverTimeOut (handle);
 	XMotionEvent xEvent = new XMotionEvent ();
 	OS.memmove (xEvent, call_data, XMotionEvent.sizeof);

@@ -101,7 +101,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int border = getBorderWidth ();
 	int width = border * 2, height = border * 2;
-	Display display = getDisplay ();
 	int hScroll = display.scrolledMarginX;
 	int vScroll = display.scrolledMarginY;
 	if ((style & SWT.HORIZONTAL) != 0) {
@@ -212,12 +211,11 @@ public int getSelection () {
 }
 void hookEvents () {
 	super.hookEvents ();
-	int windowProc = getDisplay ().windowProc;
+	int windowProc = display.windowProc;
 	OS.XtAddCallback (handle, OS.XmNvalueChangedCallback, windowProc, VALUE_CHANGED_CALLBACK);
 	OS.XtAddCallback (handle, OS.XmNdragCallback, windowProc, DRAG_CALLBACK);
 }
 void overrideTranslations () {
-	Display display = getDisplay ();
 	OS.XtOverrideTranslations (handle, display.tabTranslations);
 }
 /**
@@ -276,7 +274,6 @@ public void setMaximum (int value) {
 	checkWidget();
 	if (value < 0) return;
 	int [] argList = {OS.XmNmaximum, value};
-	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XtSetValues (handle, argList, argList.length / 2);
@@ -298,7 +295,6 @@ public void setMinimum (int value) {
 	checkWidget();
 	if (value < 0) return;
 	int [] argList = {OS.XmNminimum, value};
-	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XtSetValues (handle, argList, argList.length / 2);
@@ -321,7 +317,6 @@ public void setPageIncrement (int pageIncrement) {
 	checkWidget();
 	if (pageIncrement < 1) return;
 	int [] argList = {OS.XmNscaleMultiple, pageIncrement};
-	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XtSetValues (handle, argList, argList.length / 2);
@@ -342,7 +337,6 @@ public void setPageIncrement (int pageIncrement) {
 public void setSelection (int selection) {
 	checkWidget();
 	int [] argList = {OS.XmNvalue, selection};
-	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XtSetValues (handle, argList, argList.length / 2);

@@ -43,8 +43,13 @@ import org.eclipse.swt.events.*;
  * @see #checkSubclass
  */
 public abstract class Widget {
+	/**
+	 * the handle to the OS resource
+	 * (WARNING: This field is platform dependend)
+	 */
 	public int handle;
 	int style, state;
+	Display display;
 	EventTable eventTable;
 	Object data;
 	
@@ -141,6 +146,7 @@ public Widget (Widget parent, int style) {
 	checkSubclass ();
 	checkParent (parent);
 	this.style = style;
+	display = parent.display;
 }
 /**
  * Adds the listener to the collection of listeners who will
@@ -216,8 +222,7 @@ void checkOrientation (Widget parent) {
 }
 void checkParent (Widget parent) {
 	if (parent == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (!parent.isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (parent.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	parent.checkWidget ();
 }
 /**
  * Checks that this class can be subclassed.
@@ -274,8 +279,10 @@ protected void checkSubclass () {
  * </ul>
  */
 protected void checkWidget () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (isDisposed ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	Display display = this.display;
+	if (display == null) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (display.thread != Thread.currentThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if ((state & DISPOSED) != 0) error (SWT.ERROR_WIDGET_DISPOSED);
 }
 void createHandle (int index) {
 	/* Do nothing */
@@ -339,7 +346,6 @@ void error (int code) {
 	SWT.error(code);
 }
 boolean filters (int eventType) {
-	Display display = getDisplay ();
 	return display.filters (eventType);
 }
 /**
@@ -421,7 +427,11 @@ public Object getData (String key) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public abstract Display getDisplay ();
+public Display getDisplay () {
+	Display display = this.display;
+	if (display == null) error (SWT.ERROR_WIDGET_DISPOSED);
+	return display;
+}
 String getName () {
 	String string = getClass ().getName ();
 	int index = string.lastIndexOf ('.');
@@ -604,6 +614,7 @@ void releaseChild () {
 void releaseHandle () {
 	handle = 0;
 	state |= DISPOSED;
+	display = null;
 }
 void releaseResources () {
 	releaseWidget ();
@@ -819,7 +830,6 @@ void sendEvent (int eventType, Event event) {
 	sendEvent (eventType, event, true);
 }
 void sendEvent (int eventType, Event event, boolean send) {
-	Display display = getDisplay ();
 	if (eventTable == null && !display.filters (eventType)) {
 		return;
 	}
@@ -967,7 +977,6 @@ boolean XmProcessTraversal (int widget, int direction) {
 	* is to post focus events and run them when the handler
 	* has returned.
 	*/
-	Display display = getDisplay ();
 	boolean oldFocusOut = display.postFocusOut;
 	display.postFocusOut = true;
 	boolean result = OS.XmProcessTraversal (widget, direction);

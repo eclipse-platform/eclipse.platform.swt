@@ -143,7 +143,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int border = getBorderWidth ();
 	int width = border * 2, height = border * 2;
-	Display display = getDisplay ();
 	int hScroll = display.scrolledMarginX;
 	int vScroll = display.scrolledMarginY;
 	if ((style & SWT.HORIZONTAL) != 0) {
@@ -159,7 +158,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 void createHandle (int index) {
 	state |= HANDLE;
-	Display display = getDisplay ();
 	int [] argList = {
 		OS.XmNancestorSensitive, 1,
 		OS.XmNhighlightThickness, display.textHighlightThickness,
@@ -273,7 +271,7 @@ public int getThumb () {
 }
 void hookEvents () {
 	super.hookEvents ();
-	int windowProc = getDisplay ().windowProc;
+	int windowProc = display.windowProc;
 	OS.XtAddCallback (handle, OS.XmNvalueChangedCallback, windowProc, VALUE_CHANGED_CALLBACK);
 	OS.XtAddCallback (handle, OS.XmNdragCallback, windowProc, DRAG_CALLBACK);
 	OS.XtAddCallback (handle, OS.XmNtoBottomCallback, windowProc, TO_BOTTOM_CALLBACK);
@@ -284,7 +282,6 @@ void hookEvents () {
 	OS.XtAddCallback (handle, OS.XmNpageDecrementCallback, windowProc, PAGE_DECREMENT_CALLBACK);
 }
 void overrideTranslations () {
-	Display display = getDisplay ();
 	OS.XtOverrideTranslations (handle, display.tabTranslations);
 }
 /**
@@ -351,7 +348,6 @@ public void setMaximum (int value) {
 	checkWidget();
 	if (value < 0) return;
 	int [] argList = {OS.XmNmaximum, value};
-	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XtSetValues (handle, argList, argList.length / 2);
@@ -392,7 +388,6 @@ public void setMinimum (int value) {
 		argList [5] = argList [3] - value;
 	}
 	argList [1] = value;
-	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XtSetValues (handle, argList, argList.length / 2);
@@ -432,7 +427,6 @@ public void setPageIncrement (int value) {
 public void setSelection (int value) {
 	checkWidget();
 	int [] argList = {OS.XmNvalue, value};
-	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XtSetValues (handle, argList, argList.length / 2);
@@ -456,7 +450,6 @@ public void setThumb (int value) {
 	checkWidget();
 	if (value < 1) return;
 	int [] argList = {OS.XmNsliderSize, value};
-	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XtSetValues (handle, argList, argList.length / 2);
@@ -499,7 +492,6 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 		OS.XmNincrement, increment,
 		OS.XmNpageIncrement, pageIncrement,
 	};
-	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XtSetValues (handle, argList, argList.length / 2);

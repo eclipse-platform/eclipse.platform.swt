@@ -86,7 +86,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int border = getBorderWidth ();
 	int width = border * 2, height = border * 2;
-	Display display = getDisplay ();
 	int hScroll = display.scrolledMarginX;
 	int vScroll = display.scrolledMarginY;
 	if ((style & SWT.HORIZONTAL) != 0) {
@@ -124,7 +123,6 @@ void createHandle (int index) {
 	if ((style & SWT.INDETERMINATE) != 0) createTimer ();
 }
 void createTimer () {
-	Display display = getDisplay ();
 	int xDisplay = display.xDisplay;
 	int windowTimerProc = display.windowTimerProc;
 	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
@@ -282,7 +280,6 @@ public void setMaximum (int value) {
 	checkWidget();
 	if (value < 0) return;
 	int [] argList = {OS.XmNmaximum, value, OS.XmNvalue, 0};
-	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XtSetValues (handle, argList, argList.length / 2);
@@ -319,7 +316,6 @@ public void setMinimum (int value) {
 	if (value > selection) selection = value;
 	argList [1] = value;
 	argList [7] = value;
-	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XtSetValues (handle, argList, argList.length / 2);
@@ -378,7 +374,6 @@ void setThumb (int sliderSize) {
 		OS.XmNvalue, argList1 [3]
 	};
 	
-	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XtSetValues (handle, argList2, argList2.length / 2);

@@ -100,7 +100,6 @@ import org.eclipse.swt.events.*;
  * @see SWT
  */
 public class Shell extends Decorations {
-	Display display;
 	int shellHandle;
 	boolean reparented, realized, configured;
 	int oldX, oldY, oldWidth, oldHeight;
@@ -307,7 +306,7 @@ public Shell (Shell parent) {
  * @see SWT#SYSTEM_MODAL
  */
 public Shell (Shell parent, int style) {
-	this (parent != null ? parent.getDisplay () : null, parent, style, 0);
+	this (parent != null ? parent.display : null, parent, style, 0);
 }
 
 static int checkStyle (int style) {
@@ -789,10 +788,6 @@ public Rectangle getBounds () {
 	int height = argList [3] + trimHeight + (border * 2);
 	return new Rectangle (root_x [0], root_y [0], width, height);
 }
-public Display getDisplay () {
-	if (display == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return display;
-}
 /**
  * Returns the receiver's input method editor mode. This
  * will be the result of bitwise OR'ing together one or
@@ -986,7 +981,6 @@ void releaseShells () {
 void releaseWidget () {
 	releaseShells ();
 	super.releaseWidget ();
-	display = null;
 	lastActive = null;
 }
 /**

@@ -96,7 +96,6 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	int trimX = x - border, trimY = y - border;
 	int trimWidth = width + (border * 2), trimHeight = height + (border * 2);
 	if (horizontalBar != null) {
-		Display display = getDisplay ();
 		trimY -= display.scrolledInsetY;
 		trimHeight += display.scrolledInsetY + display.scrolledMarginY;
 		if (verticalBar == null) {
@@ -106,7 +105,6 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 		}
 	}
 	if (verticalBar != null) {
-		Display display = getDisplay ();
 		trimX -= display.scrolledInsetX;
 		trimWidth += display.scrolledInsetX + display.scrolledMarginX;
 		if (horizontalBar == null) {
@@ -125,6 +123,7 @@ ScrollBar createStandardBar (int style) {
 	ScrollBar bar = new ScrollBar ();
 	bar.parent = this;
 	bar.style = style;
+	bar.display = display;
 	bar.state |= HANDLE;
 	int [] argList = {OS.XmNhorizontalScrollBar, 0, OS.XmNverticalScrollBar, 0};
 	OS.XtGetValues (scrolledHandle, argList, argList.length / 2);

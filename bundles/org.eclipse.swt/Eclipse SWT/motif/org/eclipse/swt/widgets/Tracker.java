@@ -37,7 +37,6 @@ import org.eclipse.swt.events.*;
  */
 public class Tracker extends Widget {
 	Composite parent;
-	Display display;
 	boolean tracking, stippled;
 	Rectangle [] rectangles, proportions;
 	int cursorOrientation = SWT.NONE;
@@ -80,7 +79,6 @@ public class Tracker extends Widget {
 public Tracker (Composite parent, int style) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
-	display = parent.getDisplay ();
 }
 
 /**
@@ -295,9 +293,6 @@ void drawRectangles () {
 		OS.XFreePixmap (xDisplay, stipplePixmap);
 	}
 	OS.XFreeGC (xDisplay, gc);
-}
-public Display getDisplay () {
-	return display;
 }
 /**
  * Returns the bounds that are being drawn, expressed relative to the parent
