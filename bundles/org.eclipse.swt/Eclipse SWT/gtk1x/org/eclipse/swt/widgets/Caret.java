@@ -84,22 +84,32 @@ boolean blinkCaret () {
 boolean drawCaret () {
 	if (parent == null) return false;
 	if (parent.isDisposed ()) return false;
-	int handle = parent.handle;
+	
+	/* The parent is a Canvas; its handle is a GtkDrawingArea.
+	 * Get the DA's GDK window to draw on.
+	 */
 	GtkWidget widget = new GtkWidget();
-	OS.memmove (widget, handle, GtkWidget.sizeof);
+	OS.memmove (widget, parent.handle, GtkWidget.sizeof);
 	int window = widget.window;
-	if (window == 0) return false;
+
+	/* Create the GC, and set the working color and rop. */
 	int gc = OS.gdk_gc_new(window);
 	GdkGCValues gcvalues = new GdkGCValues();
 	OS.gdk_gc_get_values(gc, gcvalues);
-	//GdkColor color = new GdkColor();
-	//color.pixel = gcvalues.foreground_pixel ^ gcvalues.background_pixel;
-	//color.red = (short)(gcvalues.foreground_red ^ gcvalues.background_red);
-	//color.green = (short)(gcvalues.foreground_green ^ gcvalues.background_green);
-	//color.blue = (short)(gcvalues.foreground_blue ^ gcvalues.background_blue);
-	Color COLOR_DARK_RED = new Color (Display.getCurrent(), 0x80,0xFF,0xFF);
-	OS.gdk_gc_set_foreground(gc, COLOR_DARK_RED.handle);
+	/* Actually, we should look at the background and foreground colors.
+	 * This would require distinguishing between the cases when the GC
+	 * gives the color as RGB or Pixel, and in the case of Pixel, we
+	 * would need to distinguish between direct and indexed color.
+	 * In general, it's not easy to find out the RGB value of a GdkColor
+	 * (somebody please correct me if I am wrong).
+	 */
+	GdkColor c = new GdkColor();
+	c.red = c.green = c.blue = (short)0xFFFF;
+	OS.gdk_color_alloc(OS.gdk_colormap_get_system(), c);
+	OS.gdk_gc_set_foreground(gc, c);
 	OS.gdk_gc_set_function(gc, OS.GDK_XOR);
+	
+	/* Draw the caret */
 	int nWidth = width;
 	if (nWidth <= 0) nWidth = 2;
 	OS.gdk_draw_rectangle(window, gc, 1, x, y, nWidth, height);
