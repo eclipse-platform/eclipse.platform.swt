@@ -1566,13 +1566,13 @@ JNIEXPORT jint JNICALL OS_NATIVE(CGPostKeyboardEvent)
 
 #ifndef NO_CGPostMouseEvent
 JNIEXPORT jint JNICALL OS_NATIVE(CGPostMouseEvent)
-	(JNIEnv *env, jclass that, jobject arg0, jboolean arg1, jint arg2, jboolean arg3)
+	(JNIEnv *env, jclass that, jobject arg0, jboolean arg1, jint arg2, jboolean arg3, jboolean arg4, jboolean arg5)
 {
 	CGPoint _arg0, *lparg0=NULL;
 	jint rc;
 	NATIVE_ENTER(env, that, "CGPostMouseEvent\n")
 	if (arg0) lparg0 = getCGPointFields(env, arg0, &_arg0);
-	rc = (jint)CGPostMouseEvent(*lparg0, (boolean_t)arg1, (CGButtonCount)arg2, (boolean_t)arg3);
+	rc = (jint)CGPostMouseEvent(*lparg0, (boolean_t)arg1, arg2, (boolean_t)arg3, (boolean_t)arg4, (boolean_t)arg5);
 	if (arg0) setCGPointFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "CGPostMouseEvent\n")
 	return rc;
@@ -1743,6 +1743,24 @@ JNIEXPORT jint JNICALL OS_NATIVE(ConvertFromPStringToUnicode)
 	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	NATIVE_EXIT(env, that, "ConvertFromPStringToUnicode\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_ConvertFromUnicodeToPString
+JNIEXPORT jint JNICALL OS_NATIVE(ConvertFromUnicodeToPString)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jbyteArray arg3)
+{
+	jchar *lparg2=NULL;
+	jbyte *lparg3=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "ConvertFromUnicodeToPString\n")
+	if (arg2) lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	rc = (jint)ConvertFromUnicodeToPString((UnicodeToTextInfo)arg0, arg1, (ConstUniCharArrayPtr)lparg2, lparg3);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "ConvertFromUnicodeToPString\n")
 	return rc;
 }
 #endif
@@ -2308,6 +2326,21 @@ JNIEXPORT jint JNICALL OS_NATIVE(CreateTextToUnicodeInfoByEncoding)
 }
 #endif
 
+#ifndef NO_CreateUnicodeToTextInfoByEncoding
+JNIEXPORT jint JNICALL OS_NATIVE(CreateUnicodeToTextInfoByEncoding)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "CreateUnicodeToTextInfoByEncoding\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)CreateUnicodeToTextInfoByEncoding((TextEncoding)arg0, (UnicodeToTextInfo *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "CreateUnicodeToTextInfoByEncoding\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_CreateUserPaneControl
 JNIEXPORT jint JNICALL OS_NATIVE(CreateUserPaneControl)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jintArray arg3)
@@ -2522,6 +2555,21 @@ JNIEXPORT jint JNICALL OS_NATIVE(DisposeTextToUnicodeInfo)
 	rc = (jint)DisposeTextToUnicodeInfo((TextToUnicodeInfo *)lparg0);
 	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "DisposeTextToUnicodeInfo\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_DisposeUnicodeToTextInfo
+JNIEXPORT jint JNICALL OS_NATIVE(DisposeUnicodeToTextInfo)
+	(JNIEnv *env, jclass that, jintArray arg0)
+{
+	jint *lparg0=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "DisposeUnicodeToTextInfo\n")
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	rc = (jint)DisposeUnicodeToTextInfo((UnicodeToTextInfo *)lparg0);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "DisposeUnicodeToTextInfo\n")
 	return rc;
 }
 #endif

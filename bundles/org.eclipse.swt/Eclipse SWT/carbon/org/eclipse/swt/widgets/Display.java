@@ -1710,35 +1710,30 @@ public boolean post(Event event) {
 			} else {
 				vKey = -1;
 				int code = -1, kchrPtr = OS.GetScriptManagerVariable ((short) OS.smKCHRCache);
-				char key = event.character;
+				int key = -1;
 				int [] state = new int [1];
-				for (int i = 0 ; i <= 0x7F ; i++) {
-					int result = OS.KeyTranslate (kchrPtr, (short) i, state);
-					if (result <= 0x7f) {
-						code = result & 0x7f;
-					} else {
-						int [] encoding = new int [1];
-						short keyScript = (short) OS.GetScriptManagerVariable ((short) OS.smKeyScript);
-						short regionCode = (short) OS.GetScriptManagerVariable ((short) OS.smRegionCode);
-						if (OS.UpgradeScriptInfoToTextEncoding (keyScript, (short) OS.kTextLanguageDontCare, regionCode, null, encoding) == OS.paramErr) {
-							if (OS.UpgradeScriptInfoToTextEncoding (keyScript, (short) OS.kTextLanguageDontCare, (short) OS.kTextRegionDontCare, null, encoding) == OS.paramErr) {
-								encoding [0] = OS.kTextEncodingMacRoman;
-							}
-						}
-						int [] encodingInfo = new int [1];
-						OS.CreateTextToUnicodeInfoByEncoding (encoding [0], encodingInfo);
-						if (encodingInfo [0] != 0) {
-							char [] chars = new char [1];
-							int [] nchars = new int [1];
-							byte [] buffer = new byte [2];
-							buffer [0] = 1;
-							buffer [1] = (byte) (result & 0xFF);
-							OS.ConvertFromPStringToUnicode (encodingInfo [0], buffer, chars.length * 2, nchars, chars);
-							OS.DisposeTextToUnicodeInfo (encodingInfo);
-							code = chars [0];
-						}
+				int [] encoding = new int [1];
+				short keyScript = (short) OS.GetScriptManagerVariable ((short) OS.smKeyScript);
+				short regionCode = (short) OS.GetScriptManagerVariable ((short) OS.smRegionCode);
+				if (OS.UpgradeScriptInfoToTextEncoding (keyScript, (short) OS.kTextLanguageDontCare, regionCode, null, encoding) == OS.paramErr) {
+					if (OS.UpgradeScriptInfoToTextEncoding (keyScript, (short) OS.kTextLanguageDontCare, (short) OS.kTextRegionDontCare, null, encoding) == OS.paramErr) {
+						encoding [0] = OS.kTextEncodingMacRoman;
 					}
-					if (code == key) {
+				}
+				int [] encodingInfo = new int [1];
+				OS.CreateUnicodeToTextInfoByEncoding (encoding [0], encodingInfo);
+				if (encodingInfo [0] != 0) {
+					char [] input = {event.character};
+					byte [] buffer = new byte [2];
+					OS.ConvertFromUnicodeToPString (encodingInfo [0], 2, input, buffer);
+					OS.DisposeUnicodeToTextInfo (encodingInfo);
+					key = buffer [1] & 0x7f;
+				}
+				if (key == -1) return false;				
+				for (int i = 0 ; i <= 0x7F ; i++) {
+					int result1 = OS.KeyTranslate (kchrPtr, (short) (i | 512), state);
+					int result2 = OS.KeyTranslate (kchrPtr, (short) i, state);
+					if ((result1 & 0x7f) == key || (result2 & 0x7f) == key) {
 						vKey = i;
 						break;
 					}
@@ -1751,18 +1746,40 @@ public boolean post(Event event) {
 		case SWT.MouseMove: 
 		case SWT.MouseUp: {
 			CGPoint mouseCursorPosition = new CGPoint ();
+			int chord = OS.GetCurrentEventButtonState ();
 			if (type == SWT.MouseMove) {
 				mouseCursorPosition.x = event.x;
 				mouseCursorPosition.y = event.y;
-				int chord = OS.GetCurrentEventButtonState ();
-				return OS.CGPostMouseEvent (mouseCursorPosition, true, 1, ((chord & 0x1) != 0)) == 0;
+				return OS.CGPostMouseEvent (mouseCursorPosition, true, 3, (chord & 0x1) != 0, (chord & 0x2) != 0, (chord & 0x4) != 0) == 0;
 			} else {
-				if (event.button != 1) return false;
+				int button = event.button;
+				if (button < 1 || button > 3) return false;
+				boolean button1 = false, button2 = false, button3 = false;
+				switch (button) {
+					case 1: {
+						button1 = type == SWT.MouseDown;
+						button2 = (chord & 0x4) != 0;
+						button3 = (chord & 0x2) != 0;
+						break;
+					}
+					case 2: {
+						button1 = (chord & 0x1) != 0;
+						button2 = type == SWT.MouseDown;
+						button3 = (chord & 0x2) != 0;
+						break;
+					}
+					case 3: {
+						button1 = (chord & 0x1) != 0;
+						button2 = (chord & 0x4) != 0;
+						button3 = type == SWT.MouseDown;
+						break;
+					}
+				}
 				org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
 				OS.GetGlobalMouse (pt);
 				mouseCursorPosition.x = pt.h;
 				mouseCursorPosition.y = pt.v;
-				return OS.CGPostMouseEvent (mouseCursorPosition, true, 1, type == SWT.MouseDown) == 0;
+				return OS.CGPostMouseEvent (mouseCursorPosition, true, 3, button1, button3, button2) == 0;
 			}
 		}
 	} 
