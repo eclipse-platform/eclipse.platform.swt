@@ -163,7 +163,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			OS.SendMessage (handle, OS.TB_GETITEMRECT, i, rect);
 			height = Math.max (height, rect.bottom);
 			OS.SendMessage (handle, OS.TB_GETBUTTON, i, lpButton);
-			if ((lpButton.fsStyle & OS.BTNS_SEP) == 0) {
+			if ((lpButton.fsStyle & OS.BTNS_SEP) != 0) {
+				TBBUTTONINFO info = new TBBUTTONINFO ();
+				info.cbSize = TBBUTTONINFO.sizeof;
+				info.dwMask = OS.TBIF_SIZE;
+				OS.SendMessage (handle, OS.TB_GETBUTTONINFO, lpButton.idCommand, info);
+				width = Math.max (width, info.cx);
+			} else {
 				width = Math.max (width, rect.right);
 			}
 		}
@@ -309,7 +315,7 @@ void createItem (ToolItem item, int index) {
 		error (SWT.ERROR_ITEM_NOT_ADDED);
 	}
 	items [item.id = id] = item;
-	if ((style & SWT.VERTICAL) != 0) setRows (count + 1);
+	if ((style & SWT.VERTICAL) != 0) setRowCount (count + 1);
 	layoutItems ();
 }
 
@@ -365,7 +371,7 @@ void destroyItem (ToolItem item) {
 		imageList = hotImageList = disabledImageList = null;
 		items = new ToolItem [4];
 	}
-	if ((style & SWT.VERTICAL) != 0) setRows (count - 1);
+	if ((style & SWT.VERTICAL) != 0) setRowCount (count - 1);
 	layoutItems ();
 }
 
@@ -680,7 +686,7 @@ public boolean setParent (Composite parent) {
 	return true;
 }
 
-void setRows (int count) {
+void setRowCount (int count) {
 	if ((style & SWT.VERTICAL) != 0) {
 		/*
 		* Feature in Windows.  When the TB_SETROWS is used to set the

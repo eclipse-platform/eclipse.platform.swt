@@ -538,14 +538,17 @@ public void setControl (Control control) {
 	* Feature in Windows.  When a tool bar wraps, tool items
 	* with the style BTNS_SEP are used as wrap points.  This
 	* means that controls that are placed on top of separator
-	* items are not positioned properly.  The fix is to change
-	* the tool item style from BTNS_SEP to BTNS_BUTTON, causing
-	* the item to wrap like a tool item button.  The new tool
-	* item button is disabled to avoid key traversal and the
-	* image is set to I_IMAGENONE to avoid getting the first
-	* image from the image list.
+	* items are not positioned properly.  Also, vertical tool
+	* bars are implemented using TB_SETROWS to set the number
+	* of rows.  When a control is placed on top of a separator,
+	* the height of the separator does not grow.  The fix in
+	* both cases is to change the tool item style from BTNS_SEP
+	* to BTNS_BUTTON, causing the item to wrap like a tool item
+	* button.  The new tool item button is disabled to avoid key
+	* traversal and the image is set to I_IMAGENONE to avoid
+	* getting the first image from the image list.
 	*/
-	if ((parent.style & SWT.WRAP) != 0) {
+	if ((parent.style & (SWT.WRAP | SWT.VERTICAL)) != 0) {
 		boolean changed = false;
 		int hwnd = parent.handle;
 		TBBUTTONINFO info = new TBBUTTONINFO ();
