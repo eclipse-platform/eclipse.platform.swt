@@ -31,7 +31,7 @@ import org.eclipse.swt.events.*;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
-class Spinner extends Composite {
+public class Spinner extends Composite {
 	int hwndText, hwndUpDown;
 	boolean ignoreModify;
 	int increment, pageIncrement;
@@ -574,7 +574,7 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 		return true;
 	}
 	if (event.character == 0) return true;
-	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return true;
+//	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return true;
 	char key = event.character;
 	int stateMask = event.stateMask;
 	
@@ -638,7 +638,7 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 			oldText = new String (new char [] {key});
 			break;
 	}
-	String newText = verifyText (oldText, start [0], end [0], event, true);
+	String newText = verifyText (oldText, start [0], end [0], event);
 	if (newText == null) return false;
 	if (newText == oldText) return true;
 	TCHAR buffer = new TCHAR (getCodePage (), newText, true);
@@ -780,7 +780,7 @@ void setSelection (int value, boolean notify) {
 	String string = String.valueOf (value);
 	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 		int length = OS.GetWindowTextLength (hwndText);
-		string = verifyText (string, 0, length, null, false);
+		string = verifyText (string, 0, length, null);
 		if (string == null) return;
 	}
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
@@ -801,7 +801,7 @@ void unsubclass () {
 	OS.SetWindowLong (hwndUpDown, OS.GWL_WNDPROC, UpDownProc);
 }
 
-String verifyText (String string, int start, int end, Event keyEvent, boolean empty) {
+String verifyText (String string, int start, int end, Event keyEvent) {
 	Event event = new Event ();
 	event.text = string;
 	event.start = start;
@@ -811,30 +811,16 @@ String verifyText (String string, int start, int end, Event keyEvent, boolean em
 		event.keyCode = keyEvent.keyCode;
 		event.stateMask = keyEvent.stateMask;
 	}
+	int index = 0;
+	while (index < string.length ()) {
+		if (!Character.isDigit (string.charAt (index))) break;
+		index++;
+	}
+	event.doit = index == string.length ();
 	if (OS.IsDBLocale) {
 		event.start = mbcsToWcsPos (start);
 		event.end = mbcsToWcsPos (end);
 	}
-
-	/* Set the doit flag */
-	int length = OS.GetWindowTextLength (hwndText);
-	TCHAR buffer = new TCHAR (getCodePage (), length + 1);
-	OS.GetWindowText (hwndText, buffer, length + 1);
-	String oldText = buffer.toString (0, length);
-	String leftText = oldText.substring (0, start);
-	String rightText = oldText.substring (end, oldText.length ());
-	String newText = leftText + event.text + rightText;
-	if (!empty || newText.length () != 0) {
-		try {
-			int value = Integer.parseInt (newText);
-			int [] max = new int [1], min = new int [1];
-			OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, min, max);
-			event.doit = min [0] <= value && value <= max [0];
-		} catch (NumberFormatException e) {
-			event.doit = false;
-		}
-	}
-	
 	sendEvent (SWT.Verify, event);
 	if (!event.doit || isDisposed ()) return null;
 	return event.text;
@@ -958,7 +944,7 @@ LRESULT wmChar (int hwnd, int wParam, int lParam) {
 
 LRESULT wmClipboard (int hwndText, int msg, int wParam, int lParam) {
 	if ((style & SWT.READ_ONLY) != 0) return null;
-	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return null;
+//	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return null;
 	boolean call = false;
 	int [] start = new int [1], end = new int [1];
 	String oldText = null, newText = null;
@@ -1000,7 +986,7 @@ LRESULT wmClipboard (int hwndText, int msg, int wParam, int lParam) {
 	}
 	if (newText != null && !newText.equals (oldText)) {
 		oldText = newText;
-		newText = verifyText (newText, start [0], end [0], null, false);
+		newText = verifyText (newText, start [0], end [0], null);
 		if (newText == null) return LRESULT.ZERO;
 		if (!newText.equals (oldText)) {
 			if (call) {
