@@ -213,14 +213,14 @@ void createItem (CoolItem item, int index) {
 
 	/*
 	* Feature in Windows.  When inserting an item at end of a row,
-	* eventually, Windows will begin to place the item on the right
-	* side of the cool bar.  The fix is to resize the next to last
-	* item to the ideal size and resize the new items to the maximum
-	* size.
+	* sometimes, Windows will begin to place the item on the right
+	* side of the cool bar.  The fix is to resize the new items to
+	* the maximum size and then resize the next to last item to the
+	* ideal size.
 	*/
 	int lastIndex = getLastIndexOfRow (index - 1);
-	if (index == lastIndex + 1) {  	
-		resizeToPreferredWidth (lastIndex);
+	boolean fixLast = index == lastIndex + 1;
+	if (fixLast) {  	
 		rbBand.fMask |= OS.RBBIM_SIZE;
 		rbBand.cx = MAX_WIDTH; 
 	}
@@ -241,6 +241,12 @@ void createItem (CoolItem item, int index) {
 	if (OS.SendMessage (handle, OS.RB_INSERTBAND, index, rbBand) == 0) {
 		error (SWT.ERROR_ITEM_NOT_ADDED);
 	}
+	
+	/* Resize the next to last item to the ideal size */
+	if (fixLast) {  	
+		resizeToPreferredWidth (lastIndex);
+	}
+	
 	OS.HeapFree (hHeap, 0, lpText);
 	items [item.id = id] = item;
 	int length = originalItems.length;
