@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 755;
-int OS_nativeFunctionCallCount[755];
+int OS_nativeFunctionCount = 757;
+int OS_nativeFunctionCallCount[757];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems", 
 	"AEGetNthPtr", 
@@ -374,7 +374,8 @@ char * OS_nativeFunctionNames[] = {
 	"GetRegionBounds", 
 	"GetRootControl", 
 	"GetScrapFlavorCount", 
-	"GetScrapFlavorData", 
+	"GetScrapFlavorData__II_3I_3B", 
+	"GetScrapFlavorData__II_3I_3C", 
 	"GetScrapFlavorInfoList", 
 	"GetScrapFlavorSize", 
 	"GetScriptManagerVariable", 
@@ -558,7 +559,8 @@ char * OS_nativeFunctionNames[] = {
 	"PostEventToQueue", 
 	"PtInRect", 
 	"PtInRgn", 
-	"PutScrapFlavor", 
+	"PutScrapFlavor__IIII_3B", 
+	"PutScrapFlavor__IIII_3C", 
 	"QDBeginCGContext", 
 	"QDEndCGContext", 
 	"QDFlushPortBuffer", 

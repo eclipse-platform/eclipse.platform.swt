@@ -1032,6 +1032,7 @@ public static final native void GetRegionBounds(int rgnHandle, Rect bounds);
 public static final native int GetRootControl(int windowHandle, int[] cHandle);
 public static final native int GetScrapFlavorCount(int scrap, int[] infoCount);
 public static final native int GetScrapFlavorData(int scrap, int flavorType, int[] byteCount, byte[] destination);
+public static final native int GetScrapFlavorData(int scrap, int flavorType, int[] byteCount, char[] destination);
 public static final native int GetScrapFlavorInfoList(int scrap, int[] infoCount, int[] info);
 public static final native int GetScrapFlavorSize(int scrap, int flavorType, int[] byteCount);
 public static final native int GetScriptManagerVariable(short selector);
@@ -1216,6 +1217,7 @@ public static final native int PMUnflattenPrintSettings(int flatSettings, int[] 
 public static final native boolean PtInRect(Point pt, Rect r);
 public static final native boolean PtInRgn(Point pt, int rgnHandle);
 public static final native int PutScrapFlavor(int scrap, int flavorType, int flavorFlags, int flavorSize, byte[] flavorData);
+public static final native int PutScrapFlavor(int scrap, int flavorType, int flavorFlags, int flavorSize, char[] flavorData);
 public static final native int QDBeginCGContext(int inPort, int[] outContext);
 public static final native int QDEndCGContext(int inPort, int[] inoutContext);
 public static final native void QDFlushPortBuffer(int port, int rgnHandle);

@@ -5000,20 +5000,38 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetScrapFlavorCount)
 }
 #endif
 
-#ifndef NO_GetScrapFlavorData
-JNIEXPORT jint JNICALL OS_NATIVE(GetScrapFlavorData)
+#ifndef NO_GetScrapFlavorData__II_3I_3B
+JNIEXPORT jint JNICALL OS_NATIVE(GetScrapFlavorData__II_3I_3B)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jbyteArray arg3)
 {
 	jint *lparg2=NULL;
 	jbyte *lparg3=NULL;
 	jint rc;
-	OS_NATIVE_ENTER(env, that, GetScrapFlavorData_FUNC);
+	OS_NATIVE_ENTER(env, that, GetScrapFlavorData__II_3I_3B_FUNC);
 	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
 	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
 	rc = (jint)GetScrapFlavorData((ScrapRef)arg0, (ScrapFlavorType)arg1, (Size *)lparg2, (void *)lparg3);
 	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
-	OS_NATIVE_EXIT(env, that, GetScrapFlavorData_FUNC);
+	OS_NATIVE_EXIT(env, that, GetScrapFlavorData__II_3I_3B_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetScrapFlavorData__II_3I_3C
+JNIEXPORT jint JNICALL OS_NATIVE(GetScrapFlavorData__II_3I_3C)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jcharArray arg3)
+{
+	jint *lparg2=NULL;
+	jchar *lparg3=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, GetScrapFlavorData__II_3I_3C_FUNC);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetCharArrayElements(env, arg3, NULL);
+	rc = (jint)GetScrapFlavorData((ScrapRef)arg0, (ScrapFlavorType)arg1, (Size *)lparg2, (void *)lparg3);
+	if (arg3) (*env)->ReleaseCharArrayElements(env, arg3, lparg3, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, GetScrapFlavorData__II_3I_3C_FUNC);
 	return rc;
 }
 #endif
@@ -7496,17 +7514,32 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(PtInRgn)
 }
 #endif
 
-#ifndef NO_PutScrapFlavor
-JNIEXPORT jint JNICALL OS_NATIVE(PutScrapFlavor)
+#ifndef NO_PutScrapFlavor__IIII_3B
+JNIEXPORT jint JNICALL OS_NATIVE(PutScrapFlavor__IIII_3B)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jbyteArray arg4)
 {
 	jbyte *lparg4=NULL;
 	jint rc;
-	OS_NATIVE_ENTER(env, that, PutScrapFlavor_FUNC);
+	OS_NATIVE_ENTER(env, that, PutScrapFlavor__IIII_3B_FUNC);
 	if (arg4) lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL);
 	rc = (jint)PutScrapFlavor((ScrapRef)arg0, (ScrapFlavorType)arg1, (ScrapFlavorFlags)arg2, (Size)arg3, (const void *)lparg4);
 	if (arg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
-	OS_NATIVE_EXIT(env, that, PutScrapFlavor_FUNC);
+	OS_NATIVE_EXIT(env, that, PutScrapFlavor__IIII_3B_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_PutScrapFlavor__IIII_3C
+JNIEXPORT jint JNICALL OS_NATIVE(PutScrapFlavor__IIII_3C)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jcharArray arg4)
+{
+	jchar *lparg4=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, PutScrapFlavor__IIII_3C_FUNC);
+	if (arg4) lparg4 = (*env)->GetCharArrayElements(env, arg4, NULL);
+	rc = (jint)PutScrapFlavor((ScrapRef)arg0, (ScrapFlavorType)arg1, (ScrapFlavorFlags)arg2, (Size)arg3, (const void *)lparg4);
+	if (arg4) (*env)->ReleaseCharArrayElements(env, arg4, lparg4, 0);
+	OS_NATIVE_EXIT(env, that, PutScrapFlavor__IIII_3C_FUNC);
 	return rc;
 }
 #endif
