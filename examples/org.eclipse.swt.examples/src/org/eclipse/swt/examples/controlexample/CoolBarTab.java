@@ -408,10 +408,12 @@ class CoolBarTab extends Tab {
 						if ((tool.getStyle() & SWT.DROP_DOWN) != 0) {
 							MenuItem menuItem = new MenuItem (menu, SWT.CASCADE);
 							menuItem.setImage(image);
+							String text = tool.getToolTipText();
+							if (text != null) menuItem.setText(text);
 							Menu m = new Menu(menu);
 							menuItem.setMenu(m);
 							for (int k = 0; k < 9; ++k) {
-								String text = ControlExample.getResourceString("DropDownData_" + k);
+								text = ControlExample.getResourceString("DropDownData_" + k);
 								if (text.length() != 0) {
 									MenuItem mi = new MenuItem(m, SWT.NONE);
 									mi.setText(text);
@@ -423,9 +425,10 @@ class CoolBarTab extends Tab {
 						} else {
 							MenuItem menuItem = new MenuItem (menu, SWT.NONE);
 							menuItem.setImage(image);
+							String text = tool.getToolTipText();
+							if (text != null) menuItem.setText(text);
 						}
 						/* Application code to perform the action for the menu item would go here. */
-
 					}
 				}
 				
