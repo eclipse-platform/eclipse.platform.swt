@@ -17,12 +17,26 @@ import org.eclipse.swt.internal.SWTEventObject;
  * </p>
  *
  * @see AccessibleListener
+ * @see AccessibleAdapter
  * 
  * @since 2.0
  */
 public class AccessibleEvent extends SWTEventObject {
-	public int childID;	// IN - can be CHILDID_SELF or a positive integer
-	public String result;	// OUT - result depends on the listener method called
+	/**
+	 * The value of this field is set by an accessibility client
+	 * before the accessible listener method is called.
+	 * ChildID can be CHILDID_SELF, representing the control itself,
+	 * or a 0-based integer representing a specific child of the control.
+	 */
+	public int childID;
+	
+	/**
+	 * The value of this field must be set in the accessible listener
+	 * method before returning.
+	 * What to set it to depends on the listener method called, and
+	 * the childID specified by the client.
+	 */
+	public String result;
 	
 public AccessibleEvent(Object source) {
 	super(source);
