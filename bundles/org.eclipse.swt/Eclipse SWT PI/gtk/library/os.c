@@ -1501,7 +1501,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(gdk_1keymap_1translate_1keyboard_1state)
 	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
 	if (arg6) lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL);
 	if (arg7) lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL);
-	rc = (jboolean)gdk_keymap_translate_keyboard_state((GdkKeymap*)arg0, arg1, (GdkModifierType)arg2, arg3, (guint*)lparg4, (gint*)lparg5, (gint*)lparg6, (GdkModifierType)lparg7);
+	rc = (jboolean)gdk_keymap_translate_keyboard_state((GdkKeymap*)arg0, arg1, (GdkModifierType)arg2, arg3, (guint*)lparg4, (gint*)lparg5, (gint*)lparg6, (GdkModifierType *)lparg7);
 	if (arg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
 	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
 	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
