@@ -3359,12 +3359,26 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	
 	/* Map the virtual key */
 	/*
-	* Bug on WinCE.  MapVirtualKey() returns incorrect values.
+	* Bug in WinCE.  MapVirtualKey() returns incorrect values.
 	* The fix is to rely on a key mappings table to determine
 	* whether the key event must be sent now or if a WM_CHAR
-	* event will follow.
+	* event will follow.  The key mappings table maps virtual
+	* keys to SWT key codes and does not contain mappings for
+	* Windows virtual keys like VK_A.  Virtual keys that are
+	* both virtual and ASCII are a special case.
 	*/
-	int mapKey = OS.IsWinCE ? 0 : OS.MapVirtualKey (wParam, 2);
+	int mapKey = 0;
+	if (OS.IsWinCE) {
+		switch (wParam) {
+			case OS.VK_BACK: mapKey = SWT.BS; break;
+			case OS.VK_RETURN: mapKey = SWT.CR; break;
+			case OS.VK_DELETE: mapKey = SWT.DEL; break;
+			case OS.VK_ESCAPE: mapKey = SWT.ESC; break;
+			case OS.VK_TAB: mapKey = SWT.TAB; break;
+		}
+	} else {
+		mapKey = OS.MapVirtualKey (wParam, 2);
+	}
 
 	/*
 	* Bug in Windows 95 and NT.  When the user types an accent key such
@@ -3560,12 +3574,26 @@ LRESULT WM_KEYUP (int wParam, int lParam) {
 	
 	/* Map the virtual key. */
 	/*
-	* Bug on WinCE.  MapVirtualKey() returns incorrect values.
+	* Bug in WinCE.  MapVirtualKey() returns incorrect values.
 	* The fix is to rely on a key mappings table to determine
 	* whether the key event must be sent now or if a WM_CHAR
-	* event will follow.
+	* event will follow.  The key mappings table maps virtual
+	* keys to SWT key codes and does not contain mappings for
+	* Windows virtual keys like VK_A.  Virtual keys that are
+	* both virtual and ASCII are a special case.
 	*/
-	int mapKey = OS.IsWinCE ? 0 : OS.MapVirtualKey (wParam, 2);
+	int mapKey = 0;
+	if (OS.IsWinCE) {
+		switch (wParam) {
+			case OS.VK_BACK: mapKey = SWT.BS; break;
+			case OS.VK_RETURN: mapKey = SWT.CR; break;
+			case OS.VK_DELETE: mapKey = SWT.DEL; break;
+			case OS.VK_ESCAPE: mapKey = SWT.ESC; break;
+			case OS.VK_TAB: mapKey = SWT.TAB; break;
+		}
+	} else {
+		mapKey = OS.MapVirtualKey (wParam, 2);
+	}
 
 	/*
 	* Bug in Windows 95 and NT.  When the user types an accent key such
@@ -4363,17 +4391,26 @@ LRESULT WM_SYSKEYDOWN (int wParam, int lParam) {
 
 	/* If are going to get a WM_SYSCHAR, ignore this message. */
 	/*
-	* Bug on WinCE.  MapVirtualKey() returns incorrect values.
+	* Bug in WinCE.  MapVirtualKey() returns incorrect values.
 	* The fix is to rely on a key mappings table to determine
-	* whether the key event must be sent now or if a WM_SYSCHAR
-	* event will follow.
-	* 
-	* NOTE: On Windows 98, keypad keys are virtual despite the
-	* fact that a WM_CHAR is issued.  On Windows 2000 and XP,
-	* they are not virtual.  Therefore it is necessary to force
-	* numeric keypad keys to be virtual.
+	* whether the key event must be sent now or if a WM_CHAR
+	* event will follow.  The key mappings table maps virtual
+	* keys to SWT key codes and does not contain mappings for
+	* Windows virtual keys like VK_A.  Virtual keys that are
+	* both virtual and ASCII are a special case.
 	*/
-	int mapKey = OS.IsWinCE ? 0 : OS.MapVirtualKey (wParam, 2);
+	int mapKey = 0;
+	if (OS.IsWinCE) {
+		switch (wParam) {
+			case OS.VK_BACK: mapKey = SWT.BS; break;
+			case OS.VK_RETURN: mapKey = SWT.CR; break;
+			case OS.VK_DELETE: mapKey = SWT.DEL; break;
+			case OS.VK_ESCAPE: mapKey = SWT.ESC; break;
+			case OS.VK_TAB: mapKey = SWT.TAB; break;
+		}
+	} else {
+		mapKey = OS.MapVirtualKey (wParam, 2);
+	}
 	display.lastVirtual = mapKey == 0 || display.numpadKey (wParam) != 0;
 	if (display.lastVirtual) {
 	 	display.lastKey = wParam;
