@@ -245,6 +245,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 		data.cacheHeight = size.y;
 		data.cacheLeft = data.cacheRight = data.cacheTop = data.cacheBottom = null;
 	}
+	Rectangle [] bounds = null;
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
 		FormData data = (FormData) child.getLayoutData ();
@@ -253,7 +254,8 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 			int y1 = data.getTopAttachment (spacing).solveX (height);
 			int x2 = data.getRightAttachment (spacing).solveX (width);
 			int y2 = data.getBottomAttachment (spacing).solveX (height);
-			child.setBounds (x + x1, y + y1, x2 - x1, y2 - y1);
+			if (bounds == null) bounds = new Rectangle [children.length];
+			bounds [i] = new Rectangle (x + x1, y + y1, x2 - x1, y2 - y1);
 		} else {
 			width = Math.max (computeWidth (data), width);
 			height = Math.max (computeHeight (data), height);
@@ -264,6 +266,11 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 		FormData data = (FormData) child.getLayoutData ();
 		data.cacheWidth = data.cacheHeight = 0;
 		data.cacheLeft = data.cacheRight = data.cacheTop = data.cacheBottom = null;
+	}
+	if (move) {
+		for (int i=0; i<children.length; i++) {
+			children [i].setBounds (bounds [i]);		
+		}
 	}
 	return move ? null : new Point (width, height);
 }
