@@ -834,9 +834,30 @@ LRESULT WM_COMMAND (int wParam, int lParam) {
 	return LRESULT.ZERO;
 }
 
+LRESULT WM_ERASEBKGND (int wParam, int lParam) {
+	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
+	if (result != null) return result;
+		
+	/*
+	* Feature in Windows.  For some reason, Windows
+	* does not fully erase the area that the cool bar
+	* occupies when the size of the cool bar is larger
+	* than the space occupied by the cool bar items.
+	* The fix is to erase the cool bar background.
+	*/
+	drawBackground (wParam);
+	
+	/*
+	* NOTE: The cool bar draws separators in WM_ERASEBKGND
+	* so it is essential to run the cool bar window proc
+	* after the background has been erased.
+	*/
+	return null;
+}
+
 LRESULT WM_NOTIFY (int wParam, int lParam) {
 	/*
-	* Feature in Windows.  When the coolbar window
+	* Feature in Windows.  When the cool bar window
 	* proc processes WM_NOTIFY, it forwards this
 	* message to its parent.  This is done so that
 	* children of this control that send this message 
