@@ -130,6 +130,9 @@ public BrowserExample(Composite parent) {
 	progressBar.setLayoutData(data);
 
 	if (browser != null) {
+		itemBack.setEnabled(browser.isBackEnabled());
+		itemForward.setEnabled(browser.isForwardEnabled());
+		
 		Listener listener = new Listener() {
 			public void handleEvent(Event event) {
 				ToolItem item = (ToolItem)event.widget;
@@ -152,6 +155,8 @@ public BrowserExample(Composite parent) {
 				}
 			}
 			public void completed(ProgressEvent event) {
+				itemBack.setEnabled(browser.isBackEnabled());
+				itemForward.setEnabled(browser.isForwardEnabled());
 				progressBar.setSelection(0);
 				busy = false;
 				index = 0;
@@ -308,7 +313,6 @@ public static void main(String [] args) {
 	shell.setLayout(new FillLayout());
 	BrowserExample instance = new BrowserExample(shell);
 	shell.setText(getResourceString("window.title"));
-	shell.setSize(800, 600);
 	Image icon = new Image(display, BrowserExample.class.getResourceAsStream(iconLocation));
 	shell.setImage(icon);
 	shell.open();
