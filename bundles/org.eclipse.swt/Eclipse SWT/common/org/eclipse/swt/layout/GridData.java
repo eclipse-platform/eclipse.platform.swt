@@ -7,8 +7,6 @@ package org.eclipse.swt.layout;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
 
 /**
  * <code>GridData</code> is the layout data object associated with 

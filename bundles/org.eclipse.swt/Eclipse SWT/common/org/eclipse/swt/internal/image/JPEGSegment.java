@@ -7,8 +7,6 @@ package org.eclipse.swt.internal.image;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.*;
-
 class JPEGSegment {
 	public byte[] reference;
 

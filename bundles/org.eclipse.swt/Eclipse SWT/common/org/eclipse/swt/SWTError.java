@@ -7,8 +7,6 @@ package org.eclipse.swt;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import java.io.*;
-
 /**
  * This error is thrown whenever an unrecoverable error
  * occurs internally in SWT. The message text and error code 

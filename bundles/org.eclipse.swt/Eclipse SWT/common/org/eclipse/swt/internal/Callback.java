@@ -7,8 +7,6 @@ package org.eclipse.swt.internal;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.*;
-
 /**
  * Instances of this class represent entry points into Java
  * which can be invoked from operating system level callback

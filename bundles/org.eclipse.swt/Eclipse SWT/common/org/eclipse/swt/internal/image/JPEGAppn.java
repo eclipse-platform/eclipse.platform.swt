@@ -7,8 +7,6 @@ package org.eclipse.swt.internal.image;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.*;
-
 final class JPEGAppn extends JPEGVariableSizeSegment {
 
 	public JPEGAppn(byte[] reference) {

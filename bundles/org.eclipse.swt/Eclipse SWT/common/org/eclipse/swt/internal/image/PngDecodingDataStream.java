@@ -7,7 +7,6 @@ package org.eclipse.swt.internal.image;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import java.io.*;
 import org.eclipse.swt.*;
 
 public class PngDecodingDataStream {

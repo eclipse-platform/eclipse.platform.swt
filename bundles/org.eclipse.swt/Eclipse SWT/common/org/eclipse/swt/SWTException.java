@@ -7,8 +7,6 @@ package org.eclipse.swt;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import java.io.*;
-
 /**
  * This runtime exception is thrown whenever a recoverable error
  * occurs internally in SWT. The message text and error code 
