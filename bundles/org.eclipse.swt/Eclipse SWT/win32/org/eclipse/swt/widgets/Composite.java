@@ -497,8 +497,16 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 		NMHDR hdr = new NMHDR ();
 		OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
 		switch (hdr.code) {
-			case OS.TTN_GETDISPINFOA:
 			case OS.TTN_GETDISPINFOW:
+				/*
+				* Bug in Windows 98.  For some reason, the tool bar control
+				* sends both TTN_GETDISPINFOW and TTN_GETDISPINFOA to get the
+				* tool tip text.  The fix is to avoid TTN_GETDISPINFOW, which
+				* should never be sent on Windows 98.
+				*/
+				if (!OS.IsUnicode) break;
+				// FALL THROUGH
+			case OS.TTN_GETDISPINFOA:
 				NMTTDISPINFO lpnmtdi = new NMTTDISPINFO ();
 				OS.MoveMemory (lpnmtdi, lParam, NMTTDISPINFO.sizeof);
 				String string = toolTipText (lpnmtdi);
