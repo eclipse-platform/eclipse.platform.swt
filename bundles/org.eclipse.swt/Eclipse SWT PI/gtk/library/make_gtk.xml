@@ -25,8 +25,8 @@
 <target name="build_gtk_64_linux_lib" depends="init">
 	<mkdir dir="${lib_destdir64}" />
 	<exec dir="./bin/library" executable="sh">
-		<arg line="${basedir}/bin/library/build64.sh"/>
-			<arg line="all64"/>
+		<arg line="${basedir}/bin/library/build.sh"/>
+		<arg line="all64"/>
 	</exec>
 	<copy todir="${lib_destdir64}">
 		<fileset dir="${basedir}/bin/library/" includes="*.so"/>

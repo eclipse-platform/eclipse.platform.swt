@@ -16,17 +16,10 @@ include make_common.mak
 
 SWT_VERSION=$(maj_ver)$(min_ver)
 
-# Define the installation directories for various products.
+# This makefile expects the following environment variables set:
 #    JAVA_HOME  - The JDK > 1.3
-#    MOTIF_HOME - Motif includes and libraries
 #    CDE_HOME - CDE includes and libraries
-JAVA_HOME  = /usr/java
-MOTIF_HOME = /usr/dt
-CDE_HOME   = /usr/dt
-
-# Compiler (Solaris 9, using GNU GCC)
-CC = gcc
-PATH = /bin:/usr/ccs/bin/:/usr/ucb/:/usr/local/bin
+#    MOTIF_HOME - Motif includes and libraries
 
 # Define the various DLL (shared) libraries to be made.
 
@@ -60,7 +53,6 @@ CFLAGS = -O -s \
 	-I$(MOTIF_HOME)/include \
 	-I$(CDE_HOME)/include
 
-
 all: make_swt make_cde
 
 make_swt: $(SWT_LIB)
@@ -68,12 +60,10 @@ make_swt: $(SWT_LIB)
 $(SWT_LIB): $(SWT_OBJS)
 	ld -o $@ $(SWT_OBJS) $(SWT_LIBS)
 
-
 make_cde: $(CDE_LIB)
 
 $(CDE_LIB): $(CDE_OBJS)
 	ld -o $@ $(CDE_OBJS) $(CDE_LIBS)
-
 
 clean:
 	rm -f *.so *.o

@@ -17,13 +17,10 @@ include make_common.mak
 
 SWT_VERSION=$(maj_ver)$(min_ver)
 
-# Define the installation directories for various products.
-#    JAVA_HOME  - Sun's version of Java (JDK2)
-#    MOTIF_HOME - Motif includes and libraries
+# This makefile expects the following environment variables set:
+#    JAVA_HOME  - The JDK > 1.3
 #    CDE_HOME - CDE includes and libraries
-JAVA_HOME  = /opt/jdk14101
-MOTIF_HOME = /usr
-CDE_HOME   = /usr/dt
+#    MOTIF_HOME - Motif includes and libraries
 
 # Define the various DLL (shared) libraries to be made.
 

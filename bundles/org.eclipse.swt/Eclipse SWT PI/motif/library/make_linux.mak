@@ -15,16 +15,10 @@ include make_common.mak
 
 SWT_VERSION=$(maj_ver)$(min_ver)
 
-# Define the installation directories for various products.
+# This makefile expects the following environment variables set:
 #    JAVA_HOME  - The JDK > 1.3
 #    MOTIF_HOME - Motif includes and libraries
-#    QT_HOME    - identifier namespace package (used by KDE)
-JAVA_HOME   = /bluebird/teamswt/swt-builddir/IBMJava2-141
-MOTIF_HOME = /bluebird/teamswt/swt-builddir/motif21
-# Redhat 9
-QT_HOME    = /usr/lib/qt-3.1
-# SuSE 8.2
-#QT_HOME    = /usr/lib/qt3
+#    QT_HOME - identifier namespace package (used by KDE)
 
 # Define the various DLL (shared) libraries to be made.
 
@@ -60,9 +54,7 @@ GTK_OBJS     = swt.o gtk.o
 GTK_CFLAGS  = `pkg-config --cflags gtk+-2.0`
 GTK_LIBS     = -x -shared `pkg-config --libs-only-l --libs-only-L gtk+-2.0`
 	
-all: make_swt make_awt make_gnome make_gtk
-
-kde: make_kde
+all: make_swt make_awt make_gnome make_gtk make_kde
 
 make_swt: $(SWT_LIB)
 

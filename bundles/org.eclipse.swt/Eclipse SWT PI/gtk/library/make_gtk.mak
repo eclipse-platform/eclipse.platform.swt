@@ -13,49 +13,27 @@
 
 include make_common.mak
 
-CC=gcc
-LD=gcc
-
 SWT_VERSION=$(maj_ver)$(min_ver)
 
-# Define the installation directories for various products.
-# Your system may have these in a different place.
-#    JAVA_HOME   - IBM's version of Java
-
-ifeq ($(SWT_PTR_CFLAGS),-DSWT_PTR_SIZE_64)
-# 64 bit path
-JAVA_HOME		= /bluebird/teamswt/swt-builddir/jdk1.5.0
-AWT_LIB_PATH	= $(JAVA_HOME)/jre/lib/amd64
-XTEST_LIB_PATH  = /usr/X11R6/lib64
-else
-# 32 bit path
-JAVA_HOME		= /bluebird/teamswt/swt-builddir/IBMJava2-141
-AWT_LIB_PATH	= $(JAVA_HOME)/jre/bin
-XTEST_LIB_PATH  = /usr/X11R6/lib
-endif
-
-#  mozilla source distribution folder
-MOZILLA_HOME = /mozilla/mozilla/1.6/linux_gtk2/mozilla/dist
-
 # Define the various shared libraries to be build.
-WS_PREFIX    		= gtk
-SWT_PREFIX   		= swt
-AWT_PREFIX		= swt-awt
-SWTPI_PREFIX   	= swt-pi
-ATK_PREFIX   		= swt-atk
-GNOME_PREFIX	= swt-gnome
+WS_PREFIX = gtk
+SWT_PREFIX = swt
+AWT_PREFIX = swt-awt
+SWTPI_PREFIX = swt-pi
+ATK_PREFIX = swt-atk
+GNOME_PREFIX = swt-gnome
 MOZILLA_PREFIX = swt-mozilla
-SWT_LIB			= lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
-AWT_LIB			= lib$(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
-SWTPI_LIB		= lib$(SWTPI_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
-ATK_LIB				= lib$(ATK_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
-GNOME_LIB		= lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
-MOZILLA_LIB 	= lib$(MOZILLA_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+SWT_LIB = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+AWT_LIB = lib$(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+SWTPI_LIB = lib$(SWTPI_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+ATK_LIB = lib$(ATK_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+GNOME_LIB = lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+MOZILLA_LIB = lib$(MOZILLA_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 
 GTKCFLAGS = `pkg-config --cflags gtk+-2.0`
 GTKLIBS = `pkg-config --libs gtk+-2.0` -L$(XTEST_LIB_PATH) -lXtst
 
-AWT_LIBS      = -L$(AWT_LIB_PATH) -ljawt -shared
+AWT_LIBS = -L$(AWT_LIB_PATH) -ljawt -shared
 
 ATKCFLAGS = `pkg-config --cflags atk gtk+-2.0`
 ATKLIBS = `pkg-config --libs atk gtk+-2.0`
@@ -75,28 +53,22 @@ MOZILLACFLAGS = -O \
 	-I$(MOZILLA_HOME)/include/nspr \
 	-I$(MOZILLA_HOME)/include/embed_base \
 	-I$(MOZILLA_HOME)/include/gfx
-MOZILLALIBS = -L$(MOZILLA_HOME)/lib -lembed_base_s -lxpcom
-MOZILLALDFLAGS = -s
+MOZILLALIBS = -L$(MOZILLA_HOME)/lib -lembed_base_s -lxpcom -s
 
-SWT_OBJECTS		= swt.o callback.o
-AWT_OBJECTS		= swt_awt.o
-SWTPI_OBJECTS	= swt.o os.o os_structs.o os_custom.o os_stats.o
-ATK_OBJECTS		= swt.o atk.o atk_structs.o atk_custom.o atk_stats.o
-GNOME_OBJECTS	= swt.o gnome.o gnome_structs.o gnome_stats.o
+SWT_OBJECTS = swt.o callback.o
+AWT_OBJECTS = swt_awt.o
+SWTPI_OBJECTS = swt.o os.o os_structs.o os_custom.o os_stats.o
+ATK_OBJECTS = swt.o atk.o atk_structs.o atk_custom.o atk_stats.o
+GNOME_OBJECTS = swt.o gnome.o gnome_structs.o gnome_stats.o
 MOZILLA_OBJECTS = xpcom.o
  
 CFLAGS = -O -Wall \
 		-DSWT_VERSION=$(SWT_VERSION) \
 		-DLINUX -DGTK \
 		-I$(JAVA_HOME)/include \
-		-fpic \
 		${SWT_PTR_CFLAGS}
-
 LIBS = -shared -fpic
 
-#
-#  Target Rules
-#
 
 all: make_swt make_atk make_gnome make_awt make_mozilla
 
@@ -175,7 +147,7 @@ gnome_stats.o: gnome_stats.c gnome_stats.h
 make_mozilla:$(MOZILLA_LIB)
 
 $(MOZILLA_LIB): $(MOZILLA_OBJECTS)
-	$(CXX) $(LIBS) $(MOZILLALDFLAGS) -o $(MOZILLA_LIB) $(MOZILLA_OBJECTS) $(MOZILLALIBS)
+	$(CXX) $(LIBS) $(MOZILLALIBS) -o $(MOZILLA_LIB) $(MOZILLA_OBJECTS) 
 
 xpcom.o: xpcom.cpp
 	$(CXX) $(MOZILLACFLAGS) -c xpcom.cpp	

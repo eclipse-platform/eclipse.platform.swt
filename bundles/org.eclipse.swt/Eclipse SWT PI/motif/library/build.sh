@@ -1,3 +1,4 @@
+#!/bin/sh
 #*******************************************************************************
 # Copyright (c) 2000, 2004 IBM Corporation and others.
 # All rights reserved. This program and the accompanying materials
@@ -12,80 +13,54 @@
 #     Sridhar Bidigalu (ICS)
 #*******************************************************************************
 
-#!/bin/sh
-
 # Determine the operating system being built
+makefile=""
 OS=`uname -s`
+MODEL=`uname -m`
 
-# build according to the operating system
 case $OS in
+	"AIX")
+		JAVA_HOME=/bluebird/teamswt/swt-builddir/aixj9
+		MOTIF_HOME=/usr
+		CDE_HOME=/usr/dt
+		makefile="make_aix.mak"
+		echo "Building AIX version of SWT"
+		;;
+	"Linux")
+		JAVA_HOME=/bluebird/teamswt/swt-builddir/IBMJava2-141
+		MOTIF_HOME=/bluebird/teamswt/swt-builddir/motif21
+		QT_HOME=$QTDIR
+		makefile="make_linux.mak"
+		echo "Building Linux version of SWT"
+		;;
+	"SunOS")
+		JAVA_HOME=/usr/java
+		MOTIF_HOME=/usr/dt
+		CDE_HOME=/usr/dt		
+		makefile="make_solaris.mak"
+		echo "Building Solaris version of SWT"
+		;;
+	"HP-UX")
+		JAVA_HOME=/opt/jdk14101
+		MOTIF_HOME=/usr
+		CDE_HOME=/usr/dt
+		case $MODEL in
+			"ia64")
+				makefile="make_hpux_ia64.mak"
+				echo "Building HPUX ia64 version of SWT"
+				;;
+			*)
+				makefile="make_hpux_PA_RISC.mak"
+				echo "Building HPUX risc version of SWT"
+				;;
+		esac
+		;;
 
-    "AIX")
-        if  [ "$1" = "clean" ]; then
-            make -f make_aix.mak clean
-        else
-            echo "Building AIX version of SWT and CDE DLLs."
-            make -f make_aix.mak make_swt
-            make -f make_aix.mak make_cde
-        fi
-        ;;
-
-    "Linux")
-        if  [ "$1" = "clean" ]; then
-            make -f make_linux.mak clean
-        else
-            echo "Building Linux version of SWT and GNOME DLLs."
-            make -f make_linux.mak make_swt make_awt make_gnome make_gtk
-
-            build_kde=`rpm -q kdebase | grep "not installed"`
-            if [ "$build_kde" = "" ]; then
-                echo "Building Linux version of KDE DLL."
-                make -f make_linux.mak make_kde
-            fi
-        fi
-        ;;
-
-    "SunOS")
-        if  [ "$1" = "clean" ]; then
-            make -f make_solaris.mak clean
-        else
-            echo "Building Solaris version of SWT and CDE DLLs."
-            make -f make_solaris.mak make_swt
-            make -f make_solaris.mak make_cde
-        fi
-        ;;
-
-        "HP-UX")
-        # Determine the model number system being built
-        MODEL=`uname -m`
-       
-        case $MODEL in
-
-        "ia64")
-           # ia64 based systems
-           if  [ "$1" = "clean" ]; then
-               make -f make_hpux_ia64.mak clean
-           else
-               echo "Building HP-UX ia64 version of SWT and CDE DLLs."
-               make -f make_hpux_ia64.mak make_swt
-               make -f make_hpux_ia64.mak make_cde
-           fi
-           ;;
-
-        *)
-          # PA_RISC based systems 
-	      if  [ "$1" = "clean" ]; then
-               make -f make_hpux_PA_RISC.mak clean
-          else
-               echo "Building HP-UX PA_RISC version of SWT and CDE DLLs."
-               make -f make_hpux_PA_RISC.mak make_swt
-               make -f make_hpux_PA_RISC.mak make_cde
-           fi
-           ;;
-        esac
-        ;;
-
-    *)
-        echo "Unknown OS -- build aborted"
-        ;;
+	*)
+		echo "Unknown OS -- build aborted"
+		;;
 esac
+
+export JAVA_HOME MOTIF_HOME CDE_HOME QT_HOME
+
+make -f $makefile $1 $2 $3 $4
