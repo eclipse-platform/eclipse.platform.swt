@@ -97,6 +97,7 @@ class CTabFolderTab extends Tab {
 		/* Create display controls specific to this example */
 		setSimpleTabButton = new Button (otherGroup, SWT.CHECK);
 		setSimpleTabButton.setText (ControlExample.getResourceString("Set_Simple_Tabs"));
+		setSimpleTabButton.setSelection(true);
 		setImageButton = new Button (otherGroup, SWT.CHECK);
 		setImageButton.setText (ControlExample.getResourceString("Set_Image"));
 	
