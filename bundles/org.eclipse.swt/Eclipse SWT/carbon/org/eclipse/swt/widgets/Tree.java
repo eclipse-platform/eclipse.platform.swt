@@ -50,6 +50,7 @@ public class Tree extends Composite {
 	TreeItem [] items;
 	TreeColumn [] columns;
 	GC paintGC;
+	int [] clickCount;
 	int columnCount, column_id, idCount, anchorFirst, anchorLast, headerHeight;
 	boolean ignoreRedraw, ignoreSelect, wasSelected, ignoreExpand, wasExpanded;
 	Rectangle imageBounds;
@@ -303,7 +304,7 @@ void createHandle () {
 	column.headerBtnDesc_version = OS.kDataBrowserListViewLatestHeaderDesc;
 	column.propertyDesc_propertyID = column_id;
 	column.propertyDesc_propertyType = OS.kDataBrowserCustomType;
-	column.propertyDesc_propertyFlags = OS.kDataBrowserListViewSelectionColumn | OS.kDataBrowserDefaultPropertyFlags;
+	column.propertyDesc_propertyFlags = OS.kDataBrowserListViewSelectionColumn | OS.kDataBrowserDefaultPropertyFlags | OS.kDataBrowserListViewSortableColumn;
 	column.headerBtnDesc_maximumWidth = 0x7fff;
 	column.headerBtnDesc_initialOrder = (short) OS.kDataBrowserOrderIncreasing;
 	OS.AddDataBrowserListViewColumn (handle, column, position);
@@ -351,7 +352,7 @@ void createItem (TreeColumn column, int index) {
 		desc.headerBtnDesc_version = OS.kDataBrowserListViewLatestHeaderDesc;
 		desc.propertyDesc_propertyID = column.id;
 		desc.propertyDesc_propertyType = OS.kDataBrowserCustomType;
-		desc.propertyDesc_propertyFlags = OS.kDataBrowserListViewSelectionColumn | OS.kDataBrowserDefaultPropertyFlags;
+		desc.propertyDesc_propertyFlags = OS.kDataBrowserListViewSelectionColumn | OS.kDataBrowserDefaultPropertyFlags | OS.kDataBrowserListViewSortableColumn;
 		desc.headerBtnDesc_maximumWidth = 0x7fff;
 		desc.headerBtnDesc_initialOrder = OS.kDataBrowserOrderIncreasing;
 		desc.headerBtnDesc_btnFontStyle_just = OS.teFlushLeft;
@@ -473,6 +474,7 @@ void createWidget () {
 	super.createWidget ();
 	items = new TreeItem [4];
 	columns = new TreeColumn [4];
+	clickCount = new int [1];
 }
 
 Color defaultBackground () {
@@ -1244,6 +1246,18 @@ int itemNotificationProc (int browser, int id, int message) {
 				}
 			}
 		}
+		int [] property = new int [1];
+		OS.GetDataBrowserSortProperty (handle, property);
+		if (property [0] != 0) {
+			for (int i = 0; i < columnCount; i++) {
+				TreeColumn column = columns [i];
+				if (property [0] == column.id) {
+					column.postEvent (clickCount [0] == 2 ? SWT.DefaultSelection : SWT.Selection);
+					break;
+				}
+			}
+			OS.SetDataBrowserSortProperty (handle, 0);
+		}
 		return OS.noErr;
 	}
 	int index = id - 1;
@@ -1389,6 +1403,7 @@ int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userDa
 }
 
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
+	OS.GetEventParameter (theEvent, OS.kEventParamClickCount, OS.typeUInt32, null, 4, null, clickCount);
 	int result = super.kEventMouseDown (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	Shell shell = getShell ();
