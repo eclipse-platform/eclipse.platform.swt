@@ -93,26 +93,27 @@ public abstract class Widget {
 	static final int MAP_EVENT = 24;
 	static final int MNEMONIC_ACTIVATE = 25;
 	static final int MOTION_NOTIFY_EVENT = 26;
-	static final int POPUP_MENU = 27;
-	static final int PREEDIT_CHANGED = 28;
-	static final int REALIZE = 29;
-	static final int ROW_ACTIVATED = 30;
-	static final int SCROLL_CHILD = 31;
-	static final int SELECT = 32;
-	static final int SHOW = 33;
-	static final int SHOW_HELP = 34;
-	static final int SIZE_ALLOCATE = 35;
-	static final int STYLE_SET = 36;
-	static final int SWITCH_PAGE = 37;
-	static final int TEST_COLLAPSE_ROW = 38;
-	static final int TEST_EXPAND_ROW = 39;
-	static final int TOGGLED = 40;
-	static final int UNMAP = 41;
-	static final int UNMAP_EVENT = 42;
-	static final int UNREALIZE = 43;
-	static final int VALUE_CHANGED = 44;
-	static final int VISIBILITY_NOTIFY_EVENT = 45;
-	static final int WINDOW_STATE_EVENT = 46;
+	static final int MOVE_FOCUS = 27;
+	static final int POPUP_MENU = 28;
+	static final int PREEDIT_CHANGED = 29;
+	static final int REALIZE = 30;
+	static final int ROW_ACTIVATED = 31;
+	static final int SCROLL_CHILD = 32;
+	static final int SELECT = 33;
+	static final int SHOW = 34;
+	static final int SHOW_HELP = 35;
+	static final int SIZE_ALLOCATE = 36;
+	static final int STYLE_SET = 37;
+	static final int SWITCH_PAGE = 38;
+	static final int TEST_COLLAPSE_ROW = 39;
+	static final int TEST_EXPAND_ROW = 40;
+	static final int TOGGLED = 41;
+	static final int UNMAP = 42;
+	static final int UNMAP_EVENT = 43;
+	static final int UNREALIZE = 44;
+	static final int VALUE_CHANGED = 45;
+	static final int VISIBILITY_NOTIFY_EVENT = 46;
+	static final int WINDOW_STATE_EVENT = 47;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -603,6 +604,10 @@ int /*long*/ gtk_mnemonic_activate (int /*long*/ widget, int /*long*/ arg1) {
 }
 
 int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ event) {
+	return 0;
+}
+
+int /*long*/ gtk_move_focus (int /*long*/ widget, int /*long*/ event) {
 	return 0;
 }
 
@@ -1226,6 +1231,7 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ us
 		case MAP_EVENT: return gtk_map_event (handle, arg0);
 		case MNEMONIC_ACTIVATE: return gtk_mnemonic_activate (handle, arg0);
 		case MOTION_NOTIFY_EVENT: return gtk_motion_notify_event (handle, arg0);
+		case MOVE_FOCUS: return gtk_move_focus (handle, arg0);
 		case SHOW_HELP: return gtk_show_help (handle, arg0);
 		case SIZE_ALLOCATE: return gtk_size_allocate (handle, arg0);
 		case STYLE_SET: return gtk_style_set (handle, arg0);

@@ -325,6 +325,7 @@ public class OS {
 	public static final byte[] map_event = signal("map_event");
 	public static final byte[] mnemonic_activate = signal("mnemonic_activate");
 	public static final byte[] motion_notify_event = signal("motion_notify_event");
+	public static final byte[] move_focus = signal("move_focus");
 	public static final byte[] popup_menu = signal("popup_menu");
 	public static final byte[] preedit_changed = signal("preedit_changed");
 	public static final byte[] realize = signal("realize");

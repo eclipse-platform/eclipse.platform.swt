@@ -554,6 +554,7 @@ void hookEvents () {
 	OS.g_signal_connect (shellHandle, OS.focus_out_event, windowProc3, FOCUS_OUT_EVENT);
 	OS.g_signal_connect (shellHandle, OS.map_event, shellMapProc, 0);
 	OS.g_signal_connect (shellHandle, OS.enter_notify_event, windowProc3, ENTER_NOTIFY_EVENT);
+	OS.g_signal_connect (shellHandle, OS.move_focus, windowProc3, MOVE_FOCUS);
 	if (OS.GDK_WINDOWING_X11 ()) {
 		int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
 		OS.gdk_window_add_filter  (window, display.filterProc, shellHandle);
@@ -759,6 +760,16 @@ int /*long*/ gtk_focus (int /*long*/ widget, int /*long*/ directionType) {
 			break;
 	}
 	return super.gtk_focus (widget, directionType);
+}
+
+int /*long*/ gtk_move_focus (int /*long*/ widget, int /*long*/ directionType) {
+	Control control = display.getFocusControl ();
+	if (control != null) {
+		int /*long*/ focusHandle = control.focusHandle ();
+		OS.gtk_widget_child_focus (focusHandle, directionType);
+	}
+	OS.g_signal_stop_emission_by_name (shellHandle, OS.move_focus);
+	return 1;
 }
 
 int /*long*/ gtk_focus_in_event (int /*long*/ widget, int /*long*/ event) {
