@@ -21,8 +21,8 @@ public class Display extends Device {
 
 	/* Windows and Events */
 	Event [] eventQueue;
-	Callback actionCallback, itemDataCallback, itemNotificationCallback, windowCallback;
-	int actionProc, itemDataProc, itemNotificationProc, windowProc;
+	Callback actionCallback, itemDataCallback, itemNotificationCallback, scrollBarActionCallback, windowCallback;
+	int actionProc, itemDataProc, itemNotificationProc, scrollBarActionProc, windowProc;
 	EventTable eventTable, filterTable;
 	int queue, lastModifiers;
 	
@@ -514,6 +514,9 @@ protected void init () {
 	timerCallback = new Callback (this, "timerProc", 2);
 	timerProc = timerCallback.getAddress ();
 	if (timerProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	scrollBarActionCallback = new Callback (this, "scrollBarActionProc", 2);
+	scrollBarActionProc = scrollBarActionCallback.getAddress ();
+	if (scrollBarActionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	windowCallback = new Callback (this, "windowProc", 3);
 	windowProc = windowCallback.getAddress ();
 	if (windowProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -650,9 +653,10 @@ void releaseDisplay () {
 	actionCallback.dispose ();
 	itemDataCallback.dispose ();
 	timerCallback.dispose ();
+	scrollBarActionCallback.dispose ();
 	windowCallback.dispose ();
-	actionCallback = itemDataCallback = timerCallback = windowCallback = null;
-	actionProc = itemDataProc = timerProc = windowProc = 0;
+	actionCallback = itemDataCallback = timerCallback = scrollBarActionCallback = windowCallback = null;
+	actionProc = itemDataProc = timerProc = scrollBarActionProc = windowProc = 0;
 }
 
 public void removeFilter (int eventType, Listener listener) {
@@ -807,6 +811,14 @@ void sendEvent (int eventType, Event event) {
  * @param name the new app name
  */
 public static void setAppName (String name) {
+}
+
+int scrollBarActionProc (int scrollBarControl, int partCode) {
+	int [] theControl = new int [1];
+	OS.GetSuperControl (scrollBarControl, theControl);
+	Control control = WidgetTable.get (theControl [0]);
+	if (control != null) return control.scrollBarActionProc (scrollBarControl, partCode);
+	return OS.noErr;
 }
 
 /**
@@ -1079,7 +1091,7 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 				}
 			}
 			Control control = WidgetTable.get (theControl [0]);
-			if (control != null) {
+			if (control != null && control.handle == theControl [0]) {
 				switch (eventKind) {
 					case OS.kEventMouseDown:  			return control.kEventMouseDown (nextHandler, theEvent, userData);
 					case OS.kEventMouseUp: 			return control.kEventMouseUp (nextHandler, theEvent, userData);

@@ -164,6 +164,7 @@ void createWidget () {
 	createHandle ();
 	register ();
 	hookEvents ();
+	hookBounds ();
 }
 
 void deregister () {
@@ -172,7 +173,7 @@ void deregister () {
 }
 
 void destroyWidget () {
-	int theControl = handle;
+	int theControl = topHandle ();
 	releaseHandle ();
 	if (theControl != 0) {
 		OS.DisposeControl (theControl);
@@ -200,7 +201,7 @@ public int getBorderWidth () {
 public Rectangle getBounds () {
 	checkWidget();
 	Rect rect = new Rect ();
-	OS.GetControlBounds (handle, rect);
+	OS.GetControlBounds (topHandle (), rect);
 	return new Rectangle (rect.top, rect.left, rect.right - rect.left, rect.bottom - rect.top);
 }
 
@@ -234,7 +235,7 @@ public Object getLayoutData () {
 public Point getLocation () {
 	checkWidget();
 	Rect rect = new Rect ();
-	OS.GetControlBounds (handle, rect);
+	OS.GetControlBounds (topHandle (), rect);
 	return new Point (rect.top, rect.left);
 }
 
@@ -273,7 +274,7 @@ public Shell getShell () {
 public Point getSize () {
 	checkWidget();
 	Rect rect = new Rect ();
-	OS.GetControlBounds (handle, rect);
+	OS.GetControlBounds (topHandle (), rect);
 	return new Point (rect.bottom - rect.top, rect.right - rect.left);
 }
 
@@ -291,10 +292,19 @@ boolean hasFocus () {
 	return (this == getDisplay ().getFocusControl ());
 }
 
-void hookEvents () {
+void hookBounds () {
 	Display display = getDisplay ();
 	int [] mask = new int [] {
 		OS.kEventClassControl, OS.kEventControlBoundsChanged,
+	};
+	int controlTarget = OS.GetControlEventTarget (handle);
+	OS.InstallEventHandler (controlTarget, display.windowProc, mask.length / 2, mask, handle, null);
+}
+
+void hookEvents () {
+	Display display = getDisplay ();
+	int [] mask = new int [] {
+//		OS.kEventClassControl, OS.kEventControlBoundsChanged,
 		OS.kEventClassControl, OS.kEventControlContextualMenuClick,
 		OS.kEventClassControl, OS.kEventControlDraw,
 		OS.kEventClassControl, OS.kEventControlHit,
@@ -308,8 +318,8 @@ public int internal_new_GC (GCData data) {
 	int context = 0;
 	if (data.paintEvent != 0) {
 		int inEvent = data.paintEvent;
-		int[] buffer = new int[1];
-		OS.GetEventParameter(inEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, buffer);
+		int [] buffer = new int [1];
+		OS.GetEventParameter (inEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, buffer);
 		context = buffer [0];
 	} else {
 	}
@@ -319,10 +329,10 @@ public int internal_new_GC (GCData data) {
 //		data.background = getBackgroundPixel ();
 //		data.hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 //		data.hwnd = handle;
-		Rect rect = new Rect();
-		int wHandle = OS.GetControlOwner(handle);
-		int port = OS.GetWindowPort(wHandle);
-		OS.GetPortBounds(port, rect);
+		Rect rect = new Rect ();
+		int wHandle = OS.GetControlOwner (handle);
+		int port = OS.GetWindowPort (wHandle);
+		OS.GetPortBounds (port, rect);
 		data.portRect = rect;
 	}
 	return context;
@@ -337,7 +347,7 @@ public void internal_dispose_GC (int context, GCData data) {
 
 public boolean isEnabled () {
 	checkWidget();
-	return OS.IsControlEnabled (handle);
+	return OS.IsControlEnabled (topHandle ());
 }
 
 public boolean isFocusControl () {
@@ -360,7 +370,7 @@ boolean isTabItem () {
 
 public boolean isVisible () {
 	checkWidget();
-	return OS.HIViewIsVisible (handle);
+	return OS.HIViewIsVisible (topHandle ());
 }
 
 Decorations menuShell () {
@@ -533,9 +543,9 @@ public void moveAbove (Control control) {
 	if (control != null) {
 		if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 		if (parent != control.parent) return;
-		inOther = control.handle;
+		inOther = control.topHandle ();
 	}
-	OS.HIViewSetZOrder (handle, OS.kHIViewZOrderAbove, inOther);
+	OS.HIViewSetZOrder (topHandle (), OS.kHIViewZOrderAbove, inOther);
 }
 
 public void moveBelow (Control control) {
@@ -544,9 +554,9 @@ public void moveBelow (Control control) {
 	if (control != null) {
 		if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 		if (parent != control.parent) return;
-		inOther = control.handle;
+		inOther = control.topHandle ();
 	}
-	OS.HIViewSetZOrder (handle, OS.kHIViewZOrderBelow, inOther);
+	OS.HIViewSetZOrder (topHandle (), OS.kHIViewZOrderBelow, inOther);
 }
 
 public void pack () {
@@ -660,6 +670,10 @@ public void removeTraverseListener(TraverseListener listener) {
 	eventTable.unhook (SWT.Traverse, listener);
 }
 
+int scrollBarActionProc (int theControl, int partCode) {
+	return OS.eventNotHandledErr;
+}
+
 boolean sendKeyEvent (int type, int theEvent) {
 	Event event = new Event ();
 	event.type = type;
@@ -719,7 +733,7 @@ public void setBounds (int x, int y, int width, int height) {
 	height = Math.max (0, height);
 	Rect rect = new Rect ();
 	OS.SetRect (rect, (short)x, (short)y, (short) (x + width), (short) (y + height));
-	OS.SetControlBounds (handle, rect);
+	OS.SetControlBounds (topHandle (), rect);
 }
 
 public void setBounds (Rectangle rect) {
@@ -740,11 +754,11 @@ public void setEnabled (boolean enabled) {
 	if (enabled) {
 		if ((state & DISABLED) == 0) return;
 		state &= ~DISABLED;
-		OS.EnableControl(handle);
+		OS.EnableControl (topHandle ());
 	} else {
 		if ((state & DISABLED) != 0) return;
 		state |= DISABLED;
-		OS.DisableControl(handle);
+		OS.DisableControl (topHandle ());
 	}
 }
 
@@ -771,7 +785,7 @@ public void setLayoutData (Object layoutData) {
 
 public void setLocation (int x, int y) {
 	checkWidget();
-    OS.MoveControl (handle, (short)x, (short)y);
+    OS.MoveControl (topHandle (), (short)x, (short)y);
 }
 
 public void setLocation (Point location) {
@@ -821,7 +835,7 @@ public void setSize (int width, int height) {
 	checkWidget();
 	width = Math.max (0, width);
 	height = Math.max (0, height);
-	OS.SizeControl (handle, (short) width, (short) height);
+	OS.SizeControl (topHandle (), (short) width, (short) height);
 }
 
 public void setSize (Point size) {
@@ -851,7 +865,7 @@ public void setVisible (boolean visible) {
 		if ((state & HIDDEN) != 0) return;
 		state |= HIDDEN;
 	}
-	OS.HIViewSetVisible (handle, visible);
+	OS.HIViewSetVisible (topHandle (), visible);
 	sendEvent (visible ? SWT.Show : SWT.Hide);
 }
 
@@ -879,6 +893,10 @@ public Point toDisplay (Point point) {
 	int window = OS.GetControlOwner (handle);
 	OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
     return new Point (rect.left + (int) ioPoint.x, rect.top + (int) ioPoint.y);
+}
+
+int topHandle () {
+	return handle;
 }
 
 boolean traverseMnemonic (char key) {

@@ -385,7 +385,7 @@ void releaseWidget () {
 	int count = OS.GetControl32BitMaximum (handle);
 	for (int i = 0; i < count; i++) {
 		TabItem item = items [i];
-		if (item != null && !item.isDisposed ()) item.releaseWidget ();
+		if (item != null && !item.isDisposed ()) item.releaseResources ();
 	}
 	items = null;
 	super.releaseWidget ();

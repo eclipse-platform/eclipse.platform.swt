@@ -65,9 +65,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle () {
 	Display display = getDisplay ();
+	int actionProc = display.actionProc;
 	int [] outControl = new int [1];
 	int window = OS.GetControlOwner (parent.handle);
-	OS.CreateSliderControl (window, null, 0, 0, 100, OS.kControlSliderDoesNotPoint, (short)0, true, display.actionProc, outControl);
+	OS.CreateSliderControl (window, null, 0, 0, 100, OS.kControlSliderDoesNotPoint, (short)0, true, actionProc, outControl);
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];
 	OS.HIViewAddSubview (parent.handle, handle);

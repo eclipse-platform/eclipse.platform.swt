@@ -44,10 +44,6 @@ Control computeTabRoot () {
 	return this;
 }
 
-void createHandle (int index) {
-	state |= CANVAS | GRAB;
-}
-
 public Button getDefaultButton () {
 	checkWidget();
 	return defaultButton;

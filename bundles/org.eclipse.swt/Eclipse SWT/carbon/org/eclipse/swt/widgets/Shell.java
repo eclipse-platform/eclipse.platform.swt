@@ -101,6 +101,13 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	return trim;
 }
 
+void createWidget () {
+	super.createWidget ();
+	if ((style & SWT.H_SCROLL) != 0) horizontalBar = createScrollBar (SWT.H_SCROLL);
+	if ((style & SWT.V_SCROLL) != 0) verticalBar = createScrollBar (SWT.V_SCROLL);
+	layoutControl ();
+}
+
 void createHandle () {
 	state |= CANVAS | GRAB;
 	int attributes = OS.kWindowCompositingAttribute | OS.kWindowStandardHandlerAttribute;
@@ -169,7 +176,12 @@ void createHandle () {
 	int [] theRoot = new int [1];
 	OS.HIViewFindByID (OS.HIViewGetRoot (shellHandle), OS.kHIViewWindowContentID (), theRoot);
 	if (theRoot [0] == 0) error (SWT.ERROR_NO_HANDLES);
-	handle = theRoot [0];
+	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
+		scrolledHandle = theRoot [0];
+		createHandle (scrolledHandle);
+	} else {
+		handle = theRoot [0];
+	}
 }
 
 public void dispose () {
@@ -275,16 +287,15 @@ int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
 int kEventWindowBoundsChanged (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowBoundsChanged (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	if (layout != null) {
-		int [] attributes = new int [1];
-		OS.GetEventParameter (theEvent, OS.kEventParamAttributes, OS.typeUInt32, null, attributes.length * 4, null, attributes);
-		if ((attributes [0] & OS.kWindowBoundsChangeOriginChanged) != 0) {
-			sendEvent (SWT.Move);
-		}
-		if ((attributes [0] & OS.kWindowBoundsChangeSizeChanged) != 0) {
-			sendEvent (SWT.Resize);
-			layout.layout (this, false);
-		}
+	int [] attributes = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamAttributes, OS.typeUInt32, null, attributes.length * 4, null, attributes);
+	if ((attributes [0] & OS.kWindowBoundsChangeOriginChanged) != 0) {
+		sendEvent (SWT.Move);
+	}
+	if ((attributes [0] & OS.kWindowBoundsChangeSizeChanged) != 0) {
+		layoutControl ();
+		sendEvent (SWT.Resize);
+		if (layout != null) layout.layout (this, false);
 	}
 	return OS.eventNotHandledErr;
 }
@@ -317,25 +328,19 @@ int kEventWindowClose (int nextHandler, int theEvent, int userData) {
 	return OS.noErr;
 }
 
-void hookEvents () {
-	//DO NOT CALL SUPER
-//	super.hookEvents ();
-	Display display = getDisplay ();
-	int [] mask2 = new int [] {
-		OS.kEventClassControl, OS.kEventControlDraw,
-	};
-	int controlTarget = OS.GetControlEventTarget (handle);
-	OS.InstallEventHandler (controlTarget, display.windowProc, mask2.length / 2, mask2, handle, null);
+void hookBounds () {
+}
 
-//	Display display = getDisplay ();
-	int[] mask= new int[] {
+void hookEvents () {
+	super.hookEvents ();
+	int[] mask= new int [] {
+		OS.kEventClassMouse, OS.kEventMouseDown,
 		OS.kEventClassWindow, OS.kEventWindowActivated,
 		OS.kEventClassWindow, OS.kEventWindowBoundsChanged,
 		OS.kEventClassWindow, OS.kEventWindowClose,
 		OS.kEventClassWindow, OS.kEventWindowCollapsed,
 		OS.kEventClassWindow, OS.kEventWindowDeactivated,
 		OS.kEventClassWindow, OS.kEventWindowExpanded,
-		OS.kEventClassMouse, OS.kEventMouseDown,
 	};
 	int windowTarget = OS.GetWindowEventTarget (shellHandle);
 	OS.InstallEventHandler (windowTarget, display.windowProc, mask.length / 2, mask, shellHandle, null);

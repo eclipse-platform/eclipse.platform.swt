@@ -110,14 +110,39 @@ Control [] computeTabList () {
 
 void createHandle () {
 	state |= CANVAS | GRAB;
+	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
+		createScrolledHandle (parent.handle);
+	} else {
+		createHandle (parent.handle);
+	}
+}
+
+void createHandle (int parentHandle) {
 	int features = OS.kControlSupportsEmbedding | OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick;
 	int [] outControl = new int [1];
-	int window = OS.GetControlOwner (parent.handle);
+	int window = OS.GetControlOwner (parentHandle);
 	OS.CreateUserPaneControl (window, null, features, outControl);
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];
-	OS.HIViewAddSubview (parent.handle, handle);
+	OS.HIViewAddSubview (parentHandle, handle);
 	OS.HIViewSetZOrder (handle, OS.kHIViewZOrderBelow, 0);
+}
+
+void createScrolledHandle (int parentHandle) {
+	int features = OS.kControlSupportsEmbedding;
+	int [] outControl = new int [1];
+	int window = OS.GetControlOwner (parentHandle);
+	OS.CreateUserPaneControl (window, null, features, outControl);
+	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
+	scrolledHandle = outControl [0];
+	outControl [0] = 0;
+	features |= OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick;
+	OS.CreateUserPaneControl (window, null, features, outControl);
+	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
+	handle = outControl [0];
+	OS.HIViewAddSubview (parentHandle, scrolledHandle);
+	OS.HIViewAddSubview (scrolledHandle, handle);
+	OS.HIViewSetZOrder (scrolledHandle, OS.kHIViewZOrderBelow, 0);
 }
 
 public Control [] getChildren () {
@@ -163,7 +188,9 @@ public Control [] getTabList () {
 int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlBoundsChanged (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	if (layout != null) {
+	int [] theControl = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
+	if (theControl [0] == handle && layout != null) {
 		int [] attributes = new int [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamAttributes, OS.typeUInt32, null, attributes.length * 4, null, attributes);
 		if ((attributes [0] & OS.kControlBoundsChangeSizeChanged) != 0) {

@@ -102,7 +102,12 @@ int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlDraw (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	if (isImage) {
-		//NOT DONE
+		if (image != null) {
+			//NOT CLIPPED
+			GC gc = new GC (this);
+			gc.drawImage (image, 0, 0);
+			gc.dispose ();
+		}
 		return OS.noErr;
 	}
 	return OS.eventNotHandledErr;
