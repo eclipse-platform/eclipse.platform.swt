@@ -175,7 +175,7 @@ public void test_getSelectionCount(){
 }
 
 public void test_getTopItem() {
-	warnUnimpl("Test test_getTopItem not written");
+// tested in test_setTopItemLorg_eclipse_swt_widgets_TreeItem
 }
 
 public void test_removeAll() {
@@ -405,7 +405,26 @@ public void test_setSelection$Lorg_eclipse_swt_widgets_TreeItem(){
 }
 
 public void test_setTopItemLorg_eclipse_swt_widgets_TreeItem() {
-	warnUnimpl("Test test_setTopItemLorg_eclipse_swt_widgets_TreeItem not written");
+	tree.removeAll();
+	for (int i = 0; i < 10; i++) {
+		TreeItem item = new TreeItem(tree, 0);	
+	}
+	TreeItem top = new TreeItem(tree, 0);
+	for (int i = 0; i < 10; i++) {
+		TreeItem item = new TreeItem(tree, 0);	
+	}
+	tree.setTopItem(top);
+	for (int i = 0; i < 10; i++) {
+		TreeItem item = new TreeItem(tree, 0);	
+	}
+	TreeItem top2 = tree.getTopItem();
+	assertEquals(top, top2);
+	try {
+		tree.setTopItem(null);
+		fail("No exception thrown for item == null");
+	}
+	catch (IllegalArgumentException e) {
+	}		
 }
 
 public void test_showItemLorg_eclipse_swt_widgets_TreeItem(){
