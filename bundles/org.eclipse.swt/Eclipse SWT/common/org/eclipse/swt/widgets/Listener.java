@@ -12,8 +12,9 @@ package org.eclipse.swt.widgets;
 
 
 /**
- * <code>Listener</code>s implement a simple <code>handleEvent(...)</code>
- * method that is used internally by SWT to dispatch events.
+ * Implementers of <code>Listener</code> provide a simple 
+ * <code>handleEvent()</code> method that is used internally 
+ * by SWT to dispatch events.
  * <p>
  * After creating an instance of a class that implements this interface
  * it can be added to a widget using the 
