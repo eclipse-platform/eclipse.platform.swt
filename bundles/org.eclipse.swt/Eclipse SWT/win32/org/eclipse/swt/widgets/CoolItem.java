@@ -475,10 +475,11 @@ void setWrap(boolean wrap) {
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	rbBand.fMask = OS.RBBIM_STYLE;
+	OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
 	if (wrap) {
-		rbBand.fStyle = OS.RBBS_VARIABLEHEIGHT | OS.RBBS_GRIPPERALWAYS | OS.RBBS_BREAK;
+		rbBand.fStyle |= OS.RBBS_BREAK;
 	} else {
-		rbBand.fStyle = OS.RBBS_VARIABLEHEIGHT | OS.RBBS_GRIPPERALWAYS;
+		rbBand.fStyle &= ~OS.RBBS_BREAK;
 	}
 	OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, rbBand);
 }
