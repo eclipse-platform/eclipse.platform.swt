@@ -21,62 +21,10 @@ public class TreeItem extends Item {
 	Color[] cellForegrounds, cellBackgrounds;
 	Font font;
 	Font[] cellFonts;
-
-	// TODO these cannot be static
-	static Color LinesColor, SelectionBackgroundColor, SelectionForegroundColor;
-	static Image ExpandedImage, CollapsedImage;
-	static Image UncheckedImage, GrayUncheckedImage, CheckmarkImage;
-	static Rectangle ExpanderBounds;
 	
 	static final int INDENT_HIERARCHY = 6;
 	static final int MARGIN_TEXT = 3;			/* the left and right margins within the text's space */
-	static final ImageData IMAGEDATA_CHECKMARK;
-	static final ImageData IMAGEDATA_GRAY_UNCHECKED;
-	static final ImageData IMAGEDATA_UNCHECKED;
-	static final ImageData IMAGEDATA_COLLAPSED;
-	static final ImageData IMAGEDATA_EXPANDED;
-	
-	static {
-		PaletteData fourBit = new PaletteData (new RGB[] {
-			new RGB (0, 0, 0), new RGB (128, 0, 0), new RGB (0, 128, 0), new RGB (128, 128, 0),
-			new RGB (0, 0, 128), new RGB (128, 0, 128), new RGB (0, 128, 128), new RGB (128, 128, 128),
-			new RGB (192, 192, 192), new RGB (255, 0, 0), new RGB (0, 255, 0), new RGB (255, 255, 0),
-			new RGB (0, 0, 255), new RGB (255, 0, 255), new RGB (0, 255, 255), new RGB (255, 255, 255)});	
-		IMAGEDATA_COLLAPSED = new ImageData (
-			9, 9, 4, 										/* width, height, depth */
-			fourBit, 4,
-			new byte[] {
-				119, 119, 119, 119, 112, 0, 0, 0, 127, -1, -1, -1,
-				112, 0, 0, 0, 127, -1, 15, -1, 112, 0, 0, 0,
-				127, -1, 15, -1, 112, 0, 0, 0, 127, 0, 0, 15,
-				112, 0, 0, 0, 127, -1, 15, -1, 112, 0, 0, 0,
-				127, -1, 15, -1, 112, 0, 0, 0, 127, -1, -1, -1,
-				112, 0, 0, 0, 119, 119, 119, 119, 112, 0, 0, 0});
-		IMAGEDATA_COLLAPSED.transparentPixel = 15;			/* white for transparency */
-		IMAGEDATA_EXPANDED = new ImageData (
-			9, 9, 4, 										/* width, height, depth */
-			fourBit, 4,
-			new byte[] {
-				119, 119, 119, 119, 112, 0, 0, 0, 127, -1, -1, -1,
-				112, 0, 0, 0, 127, -1, -1, -1, 112, 0, 0, 0,
-				127, -1, -1, -1, 112, 0, 0, 0, 127, 0, 0, 15,
-				112, 0, 0, 0, 127, -1, -1, -1, 112, 0, 0, 0,
-				127, -1, -1, -1, 112, 0, 0, 0, 127, -1, -1, -1,
-				112, 0, 0, 0, 119, 119, 119, 119, 112, 0, 0, 0});
-		IMAGEDATA_EXPANDED.transparentPixel = 15;			/* use white for transparency */
-		
-		PaletteData uncheckedPalette = new PaletteData (	
-			new RGB[] {new RGB (128, 128, 128), new RGB (255, 255, 255)});
-		PaletteData grayUncheckedPalette = new PaletteData (	
-			new RGB[] {new RGB (128, 128, 128), new RGB (192, 192, 192)});
-		PaletteData checkMarkPalette = new PaletteData (	
-			new RGB[] {new RGB (0, 0, 0), new RGB (252, 3, 251)});
-		byte[] checkbox = new byte[] {0, 0, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 0, 0};
-		IMAGEDATA_UNCHECKED = new ImageData (11, 11, 1, uncheckedPalette, 2, checkbox);
-		IMAGEDATA_GRAY_UNCHECKED = new ImageData (11, 11, 1, grayUncheckedPalette, 2, checkbox);
-		IMAGEDATA_CHECKMARK = new ImageData (7, 7, 1, checkMarkPalette, 1, new byte[] {-4, -8, 112, 34, 6, -114, -34});
-		IMAGEDATA_CHECKMARK.transparentPixel = 1;
-	}
+
 public TreeItem (Tree parent, int style) {
 	this (parent, style, checkNull (parent).getItemCount ());
 }
@@ -85,7 +33,6 @@ public TreeItem (Tree parent, int style, int index) {
 	int validItemIndex = parent.getItemCount ();
 	if (!(0 <= index && index <= validItemIndex)) error (SWT.ERROR_INVALID_RANGE);
 	this.parent = parent;
-	initialize ();
 	parent.addItem (this, index);
 	int validColumnCount = Math.max (1, parent.getColumnCount ());
 	if (validColumnCount > 1) {
@@ -423,7 +370,7 @@ public Rectangle getBounds (int columnIndex) {
 Rectangle getCheckboxBounds () {
 	if ((parent.getStyle () & SWT.CHECK) == 0) return null;
 	int itemHeight = parent.getItemHeight ();
-	Rectangle result = UncheckedImage.getBounds ();
+	Rectangle result = parent.uncheckedImage.getBounds ();
 	Point[] hLinePoints = getHconnectorEndpoints ();
 	result.x = hLinePoints[1].x;
 	result.y = parent.getItemY (this) + (itemHeight - result.height) / 2;
@@ -482,12 +429,12 @@ Rectangle getExpanderBounds () {
 	int x = parent.getCellPadding () - parent.horizontalOffset;
 	int y = parent.getItemY (this);
 	if (!isRoot ()) {
-		int expanderWidth = ExpanderBounds.width + INDENT_HIERARCHY;
+		int expanderWidth = parent.expanderBounds.width + INDENT_HIERARCHY;
 		x += expanderWidth * getDepth ();
 	}
 	return new Rectangle (
-		x, y + (itemHeight - ExpanderBounds.height) / 2,
-		ExpanderBounds.width, ExpanderBounds.height);
+		x, y + (itemHeight - parent.expanderBounds.height) / 2,
+		parent.expanderBounds.width, parent.expanderBounds.height);
 }
 /*
  * Returns the bounds that should be used for drawing a focus rectangle on the receiver
@@ -703,20 +650,6 @@ boolean hasAncestor (TreeItem item) {
 	if (parentItem == null) return false;
 	return parentItem.hasAncestor (item);
 }
-void initialize () {
-	if (ExpandedImage == null) {
-		Display display = getDisplay ();
-		ExpandedImage = new Image (display, IMAGEDATA_EXPANDED);
-		CollapsedImage = new Image (display, IMAGEDATA_COLLAPSED);
-		UncheckedImage = new Image (display, IMAGEDATA_UNCHECKED);
-		GrayUncheckedImage = new Image (display, IMAGEDATA_GRAY_UNCHECKED);
-		CheckmarkImage = new Image (display, IMAGEDATA_CHECKMARK);
-		LinesColor = new Color (display, 170, 170, 170);
-		SelectionBackgroundColor = display.getSystemColor (SWT.COLOR_LIST_SELECTION);
-		SelectionForegroundColor = display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT);
-		ExpanderBounds = ExpandedImage.getBounds ();
-	}
-}
 boolean isAvailable () {
 	if (parentItem == null) return true; 	/* root items are always available */
 	if (!parentItem.expanded) return false;
@@ -788,7 +721,7 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 	/* draw the selection bar if the receiver is selected */
 	if (isSelected () && columnIndex == 0) {
 		Color oldBackground = gc.getBackground ();
-		gc.setBackground (SelectionBackgroundColor);
+		gc.setBackground (parent.selectionBackgroundColor);
 		int startX = getFocusX () + 1;
 		gc.fillRectangle (
 			startX,
@@ -805,7 +738,7 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 		/* Draw hierarchy connector lines */
 		Rectangle expanderBounds = getExpanderBounds ();
 		Color oldForeground = gc.getForeground ();
-		gc.setForeground (LinesColor);
+		gc.setForeground (parent.connectorLineColor);
 
 		/* Draw vertical line above expander */
 		int lineX = expanderBounds.x + expanderBounds.width / 2;
@@ -847,21 +780,21 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 		
 		/* Draw expand/collapse image if receiver has children */
 		if (items.length > 0) {
-			Image image = expanded ? ExpandedImage : CollapsedImage;
+			Image image = expanded ? parent.expandedImage : parent.collapsedImage;
 			gc.drawImage (image, expanderBounds.x, expanderBounds.y);
 		}
 		
 		/* Draw checkbox if parent Tree has style SWT.CHECK */
 		if ((parent.style & SWT.CHECK) != 0) {
-			Image baseImage = grayed ? GrayUncheckedImage : UncheckedImage;
+			Image baseImage = grayed ? parent.grayUncheckedImage : parent.uncheckedImage;
 			Rectangle checkboxBounds = getCheckboxBounds ();
 			gc.drawImage (baseImage, checkboxBounds.x, checkboxBounds.y);
 
 			if (checked) {
-				Rectangle checkmarkBounds = CheckmarkImage.getBounds ();
+				Rectangle checkmarkBounds = parent.checkmarkImage.getBounds ();
 				int xInset = (checkboxBounds.width - checkmarkBounds.width) / 2;
 				int yInset = (checkboxBounds.height - checkmarkBounds.height) / 2;
-				gc.drawImage (CheckmarkImage, checkboxBounds.x + xInset, checkboxBounds.y + yInset);
+				gc.drawImage (parent.checkmarkImage, checkboxBounds.x + xInset, checkboxBounds.y + yInset);
 			}
 		}
 	}
@@ -901,7 +834,7 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 		int fontHeight = getFontHeight (columnIndex);
 		Color oldForeground = gc.getForeground ();
 		if (isSelected () && columnIndex == 0) {
-			gc.setForeground (SelectionForegroundColor);
+			gc.setForeground (parent.selectionForegroundColor);
 			foregroundChanged = true;
 		} else {
 			Color foreground = getForeground (columnIndex);

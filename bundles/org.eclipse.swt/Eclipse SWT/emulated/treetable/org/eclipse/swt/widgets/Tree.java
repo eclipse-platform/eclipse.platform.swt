@@ -25,9 +25,12 @@ public class Tree extends Composite {
 	int resizeColumnX = -1;
 	boolean inExpand = false;	/* enables item creation within Expand callback */
 
-	// TODO these cannot be static
-	static Color LineColor, HighlightShadowColor, NormalShadowColor;
-	static Cursor ResizeCursor;
+	Color connectorLineColor, gridLineColor, highlightShadowColor, normalShadowColor;
+	Color selectionBackgroundColor, selectionForegroundColor;
+	Image expandedImage, collapsedImage;
+	Image uncheckedImage, grayUncheckedImage, checkmarkImage;
+	Rectangle expanderBounds;
+	Cursor resizeCursor;
 	
 	static final int MARGIN_IMAGE = 3;
 	static final int MARGIN_CELL = 1;
@@ -35,6 +38,53 @@ public class Tree extends Composite {
 	static final int TOLLERANCE_COLUMNRESIZE = 2;
 	static final int WIDTH_HEADER_SHADOW = 2;
 	static final int WIDTH_CELL_HIGHLIGHT = 1;
+	static final ImageData IMAGEDATA_CHECKMARK;
+	static final ImageData IMAGEDATA_GRAY_UNCHECKED;
+	static final ImageData IMAGEDATA_UNCHECKED;
+	static final ImageData IMAGEDATA_COLLAPSED;
+	static final ImageData IMAGEDATA_EXPANDED;
+	
+	static {
+		PaletteData fourBit = new PaletteData (new RGB[] {
+			new RGB (0, 0, 0), new RGB (128, 0, 0), new RGB (0, 128, 0), new RGB (128, 128, 0),
+			new RGB (0, 0, 128), new RGB (128, 0, 128), new RGB (0, 128, 128), new RGB (128, 128, 128),
+			new RGB (192, 192, 192), new RGB (255, 0, 0), new RGB (0, 255, 0), new RGB (255, 255, 0),
+			new RGB (0, 0, 255), new RGB (255, 0, 255), new RGB (0, 255, 255), new RGB (255, 255, 255)});	
+		IMAGEDATA_COLLAPSED = new ImageData (
+			9, 9, 4, 										/* width, height, depth */
+			fourBit, 4,
+			new byte[] {
+				119, 119, 119, 119, 112, 0, 0, 0, 127, -1, -1, -1,
+				112, 0, 0, 0, 127, -1, 15, -1, 112, 0, 0, 0,
+				127, -1, 15, -1, 112, 0, 0, 0, 127, 0, 0, 15,
+				112, 0, 0, 0, 127, -1, 15, -1, 112, 0, 0, 0,
+				127, -1, 15, -1, 112, 0, 0, 0, 127, -1, -1, -1,
+				112, 0, 0, 0, 119, 119, 119, 119, 112, 0, 0, 0});
+		IMAGEDATA_COLLAPSED.transparentPixel = 15;			/* white for transparency */
+		IMAGEDATA_EXPANDED = new ImageData (
+			9, 9, 4, 										/* width, height, depth */
+			fourBit, 4,
+			new byte[] {
+				119, 119, 119, 119, 112, 0, 0, 0, 127, -1, -1, -1,
+				112, 0, 0, 0, 127, -1, -1, -1, 112, 0, 0, 0,
+				127, -1, -1, -1, 112, 0, 0, 0, 127, 0, 0, 15,
+				112, 0, 0, 0, 127, -1, -1, -1, 112, 0, 0, 0,
+				127, -1, -1, -1, 112, 0, 0, 0, 127, -1, -1, -1,
+				112, 0, 0, 0, 119, 119, 119, 119, 112, 0, 0, 0});
+		IMAGEDATA_EXPANDED.transparentPixel = 15;			/* use white for transparency */
+		
+		PaletteData uncheckedPalette = new PaletteData (	
+			new RGB[] {new RGB (128, 128, 128), new RGB (255, 255, 255)});
+		PaletteData grayUncheckedPalette = new PaletteData (	
+			new RGB[] {new RGB (128, 128, 128), new RGB (192, 192, 192)});
+		PaletteData checkMarkPalette = new PaletteData (	
+			new RGB[] {new RGB (0, 0, 0), new RGB (252, 3, 251)});
+		byte[] checkbox = new byte[] {0, 0, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 0, 0};
+		IMAGEDATA_UNCHECKED = new ImageData (11, 11, 1, uncheckedPalette, 2, checkbox);
+		IMAGEDATA_GRAY_UNCHECKED = new ImageData (11, 11, 1, grayUncheckedPalette, 2, checkbox);
+		IMAGEDATA_CHECKMARK = new ImageData (7, 7, 1, checkMarkPalette, 1, new byte[] {-4, -8, 112, 34, 6, -114, -34});
+		IMAGEDATA_CHECKMARK.transparentPixel = 1;
+	}
 
 public Tree (Composite parent, int style) {
 	super (parent, checkStyle (style | SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_REDRAW_RESIZE));
@@ -45,13 +95,20 @@ public Tree (Composite parent, int style) {
 	fontHeight = gc.getFontMetrics ().getHeight ();
 	gc.dispose ();
 	itemHeight = fontHeight + (2 * getCellPadding ());
-	if (LineColor == null) {
-		LineColor = display.getSystemColor (SWT.COLOR_BLACK);
-		HighlightShadowColor = display.getSystemColor (SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW);
-		NormalShadowColor = display.getSystemColor (SWT.COLOR_WIDGET_NORMAL_SHADOW);
-		ResizeCursor = display.getSystemCursor (SWT.CURSOR_SIZEWE);
-	}
-
+	gridLineColor = display.getSystemColor (SWT.COLOR_BLACK);
+	highlightShadowColor = display.getSystemColor (SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW);
+	normalShadowColor = display.getSystemColor (SWT.COLOR_WIDGET_NORMAL_SHADOW);
+	selectionBackgroundColor = display.getSystemColor (SWT.COLOR_LIST_SELECTION);
+	selectionForegroundColor = display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT);
+	resizeCursor = display.getSystemCursor (SWT.CURSOR_SIZEWE);
+	expandedImage = new Image (display, IMAGEDATA_EXPANDED);
+	collapsedImage = new Image (display, IMAGEDATA_COLLAPSED);
+	uncheckedImage = new Image (display, IMAGEDATA_UNCHECKED);
+	grayUncheckedImage = new Image (display, IMAGEDATA_GRAY_UNCHECKED);
+	checkmarkImage = new Image (display, IMAGEDATA_CHECKMARK);
+	connectorLineColor = new Color (display, 170, 170, 170);
+	expanderBounds = expandedImage.getBounds ();
+	
 	Listener listener = new Listener () {
 		public void handleEvent (Event event) {
 			handleEvents (event);
@@ -67,6 +124,7 @@ public Tree (Composite parent, int style) {
 	addListener (SWT.FocusOut, listener);
 	addListener (SWT.FocusIn, listener);
 	addListener (SWT.Traverse, listener);
+	
 	header = new Canvas (this, SWT.NO_REDRAW_RESIZE | SWT.NO_FOCUS);
 	header.setVisible (false);
 	header.setLocation (0,0);
@@ -432,11 +490,24 @@ void doDispose () {
 	for (int i = 0; i < columns.length; i++) {
 		columns[i].dispose (false);
 	}
+	connectorLineColor.dispose ();
+	expandedImage.dispose ();
+	collapsedImage.dispose ();
+	uncheckedImage.dispose ();
+	grayUncheckedImage.dispose ();
+	checkmarkImage.dispose ();
+	
 	availableItems = items = selectedItems = null;
 	columns = null;
 	focusItem = anchorItem = insertMarkItem = lastClickedItem = null;
 	header = null;
 	resizeColumn = null;
+	expanderBounds = null;
+	gridLineColor = highlightShadowColor = normalShadowColor = connectorLineColor = null;
+	selectionBackgroundColor = selectionForegroundColor = null;
+	resizeCursor = null;
+	expandedImage = collapsedImage = uncheckedImage = null;
+	grayUncheckedImage = checkmarkImage = null;
 }
 void doEnd (int stateMask) {
 	int lastAvailableIndex = availableItems.length - 1;
@@ -954,7 +1025,7 @@ void doPaint (Event event) {
 	if (linesVisible) {
 		Color oldForeground = gc.getForeground ();
 		if (numColumns > 0 && startColumn != -1) {
-			gc.setForeground (LineColor);
+			gc.setForeground (gridLineColor);
 			/* vertical column lines */
 			for (int i = startColumn; i <= endColumn; i++) {
 				int x = columns[i].getX () + columns[i].width - 1;
@@ -1306,7 +1377,7 @@ void headerDoMouseMove (Event event) {
 			int x = column.getX () + column.width;
 			if (Math.abs (x - event.x) <= TOLLERANCE_COLUMNRESIZE) {
 				if (column.getResizable ()) {
-					setCursor (ResizeCursor);
+					setCursor (resizeCursor);
 				} else {
 					setCursor (null);
 				}
@@ -1385,7 +1456,7 @@ void headerPaintShadow (GC gc, Rectangle bounds, boolean paintHorizontalLines, b
 	Color oldForeground = gc.getForeground ();
 	
 	/* draw highlight shadow */
-	gc.setForeground (HighlightShadowColor);
+	gc.setForeground (highlightShadowColor);
 	if (paintHorizontalLines) {
 		int endX = bounds.x + bounds.width;
 		gc.drawLine (bounds.x, bounds.y, endX, bounds.y);
@@ -1399,7 +1470,7 @@ void headerPaintShadow (GC gc, Rectangle bounds, boolean paintHorizontalLines, b
 	Point bottomShadowStop = new Point (bottomShadowStart.x + bounds.width - 2, bottomShadowStart.y);	
 
 	/* light inner shadow */
-	gc.setForeground (NormalShadowColor);
+	gc.setForeground (normalShadowColor);
 	if (paintHorizontalLines) {
 		gc.drawLine (
 			bottomShadowStart.x, bottomShadowStart.y,
