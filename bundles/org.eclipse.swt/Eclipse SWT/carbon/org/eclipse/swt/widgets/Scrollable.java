@@ -354,6 +354,20 @@ int setBounds (int control, int x, int y, int width, int height, boolean move, b
 	return result;
 }
 
+void setScrollbarVisible (ScrollBar bar, boolean visible) {
+	if (scrolledHandle == 0) return;
+	if (visible) {
+		if ((bar.state & HIDDEN) == 0) return;
+		bar.state &= ~HIDDEN;
+	} else {
+		if ((bar.state & HIDDEN) != 0) return;
+		bar.state |= HIDDEN;
+	}
+	setVisible (bar.handle, visible);
+	layoutControl (true);
+	bar.sendEvent (visible ? SWT.Show : SWT.Hide);
+}
+
 int topHandle () {
 	if (scrolledHandle != 0) return scrolledHandle;
 	return handle;

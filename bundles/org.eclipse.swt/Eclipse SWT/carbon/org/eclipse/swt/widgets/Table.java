@@ -1883,9 +1883,21 @@ void showIndex (int index) {
 			if (rect.contains (itemRect.x, itemRect.y)
 				&& rect.contains (itemRect.x, itemRect.y + itemRect.height)) return;
 		}
+		int [] top = new int [1], left = new int [1];
+		OS.GetDataBrowserScrollPosition (handle, top, left);
 		int id = columnCount == 0 ? column_id : columns [0].id;
 		if ((style & SWT.CHECK) != 0) id = CHECK_COLUMN_ID;
 		OS.RevealDataBrowserItem (handle, index + 1, id, (byte) OS.kDataBrowserRevealWithoutSelecting);
+
+		/*
+		* Bug in the Macintosh.  For some reason, when the DataBrowser is scrolled
+		* by RevealDataBrowserItem(), the scrollbars are not redrawn.  The fix is to
+		* force a redraw.
+		*/
+		int [] newTop = new int [1], newLeft = new int [1];
+		OS.GetDataBrowserScrollPosition (handle, newTop, newLeft);
+		if (horizontalBar != null && newLeft [0] != left [0]) horizontalBar.redraw ();
+		if (verticalBar != null && newTop [0] != top [0]) verticalBar.redraw ();
 	}
 }
 

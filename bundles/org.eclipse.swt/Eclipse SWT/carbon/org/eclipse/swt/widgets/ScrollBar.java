@@ -417,6 +417,19 @@ void invalidateVisibleRegion (int control) {
 	parent.resetVisibleRegion (control);
 }
 
+boolean isDrawing (int control) {
+	/*
+	* Feature in the Macintosh.  The scroll bars in a DataBrowser are
+	* always invisible according to IsControlVisible(), despite the fact
+	* that they are drawn.  The fix is to check our visibility flag
+	* instead of calling IsControlVisible().
+	* 
+	* Note: During resize IsControlVisible() returns true allowing the
+	* clipping to be properly calculated.
+	*/
+	return getVisible () && getDrawCount (control) == 0;
+}
+
 /**
  * Returns <code>true</code> if the receiver is enabled and all
  * of the receiver's ancestors are enabled, and <code>false</code>
@@ -457,7 +470,7 @@ boolean isTrimHandle (int trimHandle) {
  */
 public boolean isVisible () {
 	checkWidget();
-	return OS.IsControlVisible (handle);
+	return getVisible () && parent.isVisible ();
 }
 
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
@@ -471,6 +484,10 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	}
 	dragging = false;
 	return status;
+}
+
+void redraw () {
+	redrawWidget (handle, false);
 }
 
 /**
@@ -741,16 +758,7 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
  */
 public void setVisible (boolean visible) {
 	checkWidget();
-	if (visible) {
-		if ((state & HIDDEN) == 0) return;
-		state &= ~HIDDEN;
-	} else {
-		if ((state & HIDDEN) != 0) return;
-		state |= HIDDEN;
-	}
-	setVisible (handle, visible);
-	parent.layoutControl (true);
-	sendEvent (visible ? SWT.Show : SWT.Hide);
+	parent.setScrollbarVisible (this, visible);
 }
 
 void setZOrder () {
