@@ -1419,6 +1419,8 @@ public void setClipping(Rectangle r) {
 		if (data.clipRgn != 0) {
 			OS.DisposeRgn(data.clipRgn);
 			data.clipRgn = 0;
+		} else {
+			return;
 		}
 	} else {
 		if (data.clipRgn == 0) data.clipRgn = OS.NewRgn();
@@ -1444,6 +1446,8 @@ public void setClipping(Region region) {
 		if (data.clipRgn != 0) {
 			OS.DisposeRgn(data.clipRgn);
 			data.clipRgn = 0;
+		} else {
+			return;
 		}
 	} else {
 		if (data.clipRgn == 0) data.clipRgn = OS.NewRgn();
@@ -1455,7 +1459,14 @@ public void setClipping(Region region) {
 void setCGClipping () {
 	if (data.control == 0) {
 		OS.CGContextScaleCTM(handle, 1, -1);
-		OS.ClipCGContextToRegion(handle, new Rect(), data.clipRgn);
+		if (data.clipRgn != 0) {
+			OS.ClipCGContextToRegion(handle, new Rect(), data.clipRgn);
+		} else {
+			int rgn = OS.NewRgn();
+			OS.SetRectRgn(rgn, (short)-32768, (short)-32768, (short)32767, (short)32767);
+			OS.ClipCGContextToRegion(handle, new Rect(), rgn);
+			OS.DisposeRgn(rgn);
+		}
 		OS.CGContextScaleCTM(handle, 1, -1);
 		return;
 	}
