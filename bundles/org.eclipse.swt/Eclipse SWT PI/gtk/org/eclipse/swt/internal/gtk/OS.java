@@ -421,6 +421,9 @@ public static final synchronized native void gdk_region_subtract(int source1, in
 public static final synchronized native void gdk_region_union(int source1, int source2);
 public static final synchronized native void gdk_region_union_with_rect(int region, GdkRectangle rect);
 public static final synchronized native void gdk_rgb_init();
+public static final synchronized native int gdk_screen_get_default();
+public static final synchronized native void gdk_screen_get_monitor_geometry (int screen, int monitor_num, GdkRectangle dest);
+public static final synchronized native int gdk_screen_get_n_monitors(int screen);
 public static final synchronized native int gdk_screen_height();
 public static final synchronized native int gdk_screen_width();
 public static final synchronized native int gdk_screen_width_mm();

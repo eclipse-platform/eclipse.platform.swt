@@ -960,6 +960,52 @@ int getLastEventTime () {
 }
 
 /**
+ * Returns an array of monitors attached to the device.
+ * 
+ * @return the array of monitors
+ * 
+ * @since 2.2
+ */
+public Monitor [] getMonitors () {
+	Monitor [] monitors = null;
+	int screen = OS.gdk_screen_get_default ();
+	if (screen != 0) {
+		int monitorCount = OS.gdk_screen_get_n_monitors (screen);
+		if (monitorCount > 0) {
+			monitors = new Monitor [monitorCount];
+			GdkRectangle dest = new GdkRectangle ();
+			for (int i = 0; i < monitorCount; i++) {
+				OS.gdk_screen_get_monitor_geometry (screen, i, dest);
+				Monitor monitor = new Monitor ();
+				monitor.id = i;
+				monitor.bounds = new Rectangle (dest.x, dest.y, dest.width, dest.height);
+				monitors [i] = monitor;
+			}
+		}
+	}
+	if (monitors == null) {
+		/* No multimonitor support detected, default to one monitor */
+		Monitor monitor = new Monitor ();
+		monitor.id = 0;
+		monitor.bounds = getBounds ();
+		monitors = new Monitor [] { monitor };			
+	}
+	return monitors;
+}
+
+/**
+ * Returns the primary monitor for that device.
+ * 
+ * @return the primary monitor
+ * 
+ * @since 2.2
+ */
+public Monitor getPrimaryMonitor () {
+	Monitor [] monitors = getMonitors ();
+	return monitors [0];
+}
+
+/**
  * Returns an array containing all shells which have not been
  * disposed and have the receiver as their display.
  *

@@ -20,6 +20,7 @@
 #include "swt.h"
 #include "structs.h"
 #include <string.h>
+#include <dlfcn.h>
 
 #ifndef NO_X_WINDOW
 #include <X11/Xlib.h>
@@ -1733,6 +1734,74 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1rgb_1init
 	DEBUG_CALL("gdk_1rgb_1init\n")
 
 	gdk_rgb_init();
+}
+#endif
+
+#ifndef NO_gdk_1screen_1get_1default
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1screen_1get_1default
+	(JNIEnv *env, jclass that)
+{
+	void *handle = NULL;
+	GdkScreen* (*fptr)();
+
+	DEBUG_CALL("gdk_1screen_1get_1default\n")
+
+	/* SPECIAL - GTK 2.2 specific */ 
+//	return (jint)gdk_screen_get_default();
+	handle = dlopen("libgdk-x11-2.0.so", RTLD_LAZY);
+	if (handle != NULL) {
+		fptr = (GdkScreen* (*)())dlsym(handle, "gdk_screen_get_default");
+		if (fptr != NULL) {
+			return (jint)(*fptr)();
+		}
+	}	
+}
+#endif
+
+#ifndef NO_gdk_1screen_1get_1monitor_1geometry
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1screen_1get_1monitor_1geometry
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	GdkRectangle _arg2, *lparg2=NULL;
+	void *handle = NULL;
+	void (*fptr)(GdkScreen *, gint, GdkRectangle *);
+
+	DEBUG_CALL("gdk_1screen_1get_1monitor_1geometry\n")
+
+	if (arg2) lparg2 = getGdkRectangleFields(env, arg2, &_arg2);
+	/* SPECIAL - GTK 2.2 specific */ 
+//	gdk_screen_get_monitor_geometry((GdkScreen *)arg0, arg1, lparg2);
+	handle = dlopen("libgdk-x11-2.0.so", RTLD_LAZY);
+	if (handle != NULL) {
+		fptr = (gint (*)(GdkScreen *))dlsym(handle, "gdk_screen_get_monitor_geometry");
+		if (fptr != NULL) {
+			(*fptr)((GdkScreen *)arg0, arg1, lparg2);
+		}
+	}
+	if (arg2) setGdkRectangleFields(env, arg2, lparg2);
+}
+#endif
+
+#ifndef NO_gdk_1screen_1get_1n_1monitors
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1screen_1get_1n_1monitors
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	void *handle = NULL;
+	gint (*fptr)(GdkScreen *);
+
+	DEBUG_CALL("gdk_1screen_1get_1n_1monitors\n")
+
+	/* SPECIAL - GTK 2.2 specific */ 
+//	return (jint)gdk_screen_get_n_monitors((GdkScreen *)arg0);
+
+	handle = dlopen("libgdk-x11-2.0.so", RTLD_LAZY);
+	if (handle != NULL) {
+		fptr = (gint (*)(GdkScreen *))dlsym(handle, "gdk_screen_get_n_monitors");
+		if (fptr != NULL) {
+			return (jint)(*fptr)((GdkScreen *)arg0);
+		}
+	}
+	return 0;
 }
 #endif
 
