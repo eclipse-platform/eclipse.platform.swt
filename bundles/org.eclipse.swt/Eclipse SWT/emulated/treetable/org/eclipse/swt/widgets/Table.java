@@ -2281,19 +2281,15 @@ void scrollVerticalRemovedItem(int index) {
  * </ul>
  */
 public void select(int indices[]) {
-	checkWidget();
-	SelectableItem item = null;
-	int selectionCount;
-
-	if (indices == null) {
-		error(SWT.ERROR_NULL_ARGUMENT);
-	}
-	selectionCount = indices.length;
-	if (isMultiSelect() == false && selectionCount > 1) {
-		selectionCount = 1;
+	checkWidget ();
+	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int length = indices.length;
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
+	if ((style & SWT.SINGLE) != 0) {
 		deselectAllExcept(getVisibleItem(indices[0]));
 	}
-	for (int i = selectionCount - 1; i >= 0; --i) {
+	SelectableItem item = null;
+	for (int i = length - 1; i >= 0; --i) {
 		item = getVisibleItem(indices[i]);
 		if (item != null) {
 			select(item);
@@ -2343,19 +2339,19 @@ public void select(int index) {
  * </ul>
  */
 public void select(int start, int end) {
-	checkWidget();
-	SelectableItem item = null;
-	
-	if (isMultiSelect() == false) {
-		if (start < 0 && end >= 0) {
-			start = 0;
-		}
-		end = start;
-		deselectAllExcept(getVisibleItem(end));
+	checkWidget ();
+	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) return;
+	int count = getItemVector().size();
+	if (count == 0 || start >= count) return;
+	start = Math.max (0, start);
+	end = Math.min (end, count - 1);
+	if ((style & SWT.SINGLE) != 0) {
+		deselectAllExcept(getVisibleItem(start));
 	}
 	// select in the same order as all the other selection and deslection methods.
 	// Otherwise setLastSelection repeatedly changes the lastSelectedItem for repeated 
 	// selections of the items, causing flash.
+	SelectableItem item = null;
 	for (int i = end; i >= start; i--) {
 		item = getVisibleItem(i);
 		if (item != null) {
@@ -2584,20 +2580,23 @@ void setResizeColumn(TableColumn column) {
  * @see Table#select(int[])
  */
 public void setSelection(int [] indices) {
-	checkWidget();
-	Vector keepSelected;
-	
-	if (indices == null)  {
-		error(SWT.ERROR_NULL_ARGUMENT);
-	}	
-	keepSelected = new Vector(indices.length);
-	for (int i = 0; i < indices.length; i++) {
-		SelectableItem item = getVisibleItem(indices[i]);
-		if (item != null) {
-			keepSelected.addElement(item);
-		}
+	checkWidget ();
+	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int length = indices.length;
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) {
+		deselectAll ();
+		return;
 	}
-	deselectAllExcept(keepSelected);
+	if ((style & SWT.MULTI) != 0) {
+		Vector keepSelected = new Vector(length);
+		for (int i = 0; i < length; i++) {
+			SelectableItem item = getVisibleItem(indices[i]);
+			if (item != null) {
+				keepSelected.addElement(item);
+			}
+		}
+		deselectAllExcept(keepSelected);
+	}
 	select(indices);
 	showSelection ();
 }
@@ -2620,12 +2619,15 @@ public void setSelection(int [] indices) {
  * @see Table#deselectAll()
  * @see Table#select(int)
  */
-public void setSelection(TableItem selectionItems[]) {
-	checkWidget();
-	if (selectionItems == null)  {
-		error(SWT.ERROR_NULL_ARGUMENT);
-	}	
-	setSelectableSelection(selectionItems);
+public void setSelection(TableItem items[]) {
+	checkWidget ();
+	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int length = items.length;
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) {
+		deselectAll ();
+		return;
+	}
+	setSelectableSelection(items);
 }
 /**
  * Selects the item at the given zero-relative index in the receiver. 
@@ -2665,16 +2667,28 @@ public void setSelection(int index) {
  * @see Table#select(int,int)
  */
 public void setSelection(int start, int end) {
-	checkWidget();
-	Vector keepSelected = new Vector();
-	
-	for (int i = start; i <= end; i++) {
-		SelectableItem item = getVisibleItem(i);
-		if (item != null) {
-			keepSelected.addElement(item);
+	checkWidget ();
+	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) {
+		deselectAll ();
+		return;
+	}
+	int count = getItemVector().size();
+	if (count == 0 || start >= count) {
+		deselectAll ();
+		return;
+	}
+	start = Math.max (0, start);
+	end = Math.min (end, count - 1);
+	if ((style & SWT.MULTI) != 0) {
+		Vector keepSelected = new Vector();
+		for (int i = start; i <= end; i++) {
+			SelectableItem item = getVisibleItem(i);
+			if (item != null) {
+				keepSelected.addElement(item);
+			}
 		}
-	}	
-	deselectAllExcept(keepSelected);
+		deselectAllExcept(keepSelected);
+	}
 	select(start, end);
 	showSelection ();
 }

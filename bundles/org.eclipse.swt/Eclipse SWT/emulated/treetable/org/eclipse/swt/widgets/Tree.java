@@ -1509,12 +1509,15 @@ public void setInsertMark(TreeItem item, boolean before){
  *
  * @see Tree#deselectAll()
  */
-public void setSelection(TreeItem selectionItems[]) {
-	checkWidget();
-	if (selectionItems == null)  {
-		error(SWT.ERROR_NULL_ARGUMENT);
-	}	
-	setSelectableSelection(selectionItems);
+public void setSelection(TreeItem items[]) {
+	checkWidget ();
+	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int length = items.length;
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) {
+		deselectAll ();
+		return;
+	}
+	setSelectableSelection(items);
 }
 /**
  * Set the index of the first visible item in the tree client area 

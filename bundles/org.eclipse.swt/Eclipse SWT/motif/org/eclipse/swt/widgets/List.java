@@ -1024,13 +1024,16 @@ public void select (int index) {
  * </ul>
  */
 public void select (int start, int end) {
-	checkWidget();
-	if (start > end) return;
+	checkWidget ();
+	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) return;
+	int [] argList = {OS.XmNitemCount, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	int count = argList[1];
+	if (count == 0 || start >= count) return;
+	start = Math.max (0, start);
+	end = Math.min (end, count - 1);
 	if ((style & SWT.SINGLE) != 0) {
-		int [] argList = {OS.XmNitemCount, 0};
-		OS.XtGetValues (handle, argList, argList.length / 2);
-		int index = Math.min (argList[1] - 1, end) + 1;
-		if (index != 0 && index >= start + 1) OS.XmListSelectPos (handle, index, false);
+		OS.XmListSelectPos (handle, start + 1, false);
 		return;
 	}
 	/*
@@ -1041,7 +1044,7 @@ public void select (int start, int end) {
 	* and then switch it back because XmListSelectPos () works as specified
 	* for XmMULTIPLE_SELECT list widgets.
 	*/
-	int [] argList = {OS.XmNselectionPolicy, 0};
+	argList = new int[] {OS.XmNselectionPolicy, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	int oldPolicy = argList [1];
 	if (oldPolicy == OS.XmEXTENDED_SELECT) {
@@ -1049,12 +1052,11 @@ public void select (int start, int end) {
 		OS.XtSetValues (handle, argList, argList.length / 2);
 	}
 	/*
-	* Note:  We rely on the fact that XmListSelectPos ()
-	* fails silently when the indices are out of range.
+	* Note: XmListSelectPos () fails silently when the indices are out of range.
 	*/
 	for (int i=start; i<=end; i++) {
 		int index = i + 1;
-		if ((index != 0) && !OS.XmListPosSelected (handle, index)) {
+		if (!OS.XmListPosSelected (handle, index)) {
 			OS.XmListSelectPos (handle, index, false);
 		}
 	}
@@ -1081,18 +1083,17 @@ public void select (int start, int end) {
  * </ul>
  */
 public void select (int [] indices) {
-	checkWidget();
+	checkWidget ();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int length = indices.length;
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
 	if ((style & SWT.SINGLE) != 0) {
 		int [] argList = {OS.XmNitemCount, 0};
 		OS.XtGetValues (handle, argList, argList.length / 2);
 		int count = argList [1];
-		for (int i = 0; i < indices.length; i++) {
-			int index = indices [i];
-			if (0 <= index && index < count) {
-				select (index);
-				return;
-			}
+		int index = indices [0];
+		if (0 <= index && index < count) {
+			select (index);
 		}
 		return;
 	}
@@ -1115,7 +1116,7 @@ public void select (int [] indices) {
 	* Note:  We rely on the fact that XmListSelectPos ()
 	* fails silently when the indices are out of range.
 	*/
-	for (int i=0; i<indices.length; i++) {
+	for (int i=0; i<length; i++) {
 		int index = indices [i] + 1;
 		if ((index != 0) && !OS.XmListPosSelected (handle, index)) {
 			OS.XmListSelectPos (handle, index, false);
@@ -1379,12 +1380,25 @@ public void setSelection (int index) {
  * @see Table#select(int,int)
  */
 public void setSelection (int start, int end) {
-	checkWidget();
+	checkWidget ();
+	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) {
+		deselectAll ();
+		return;
+	}
+	int [] argList = {OS.XmNitemCount, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	int count = argList[1];
+	if (count == 0 || start >= count) {
+		deselectAll ();
+		return;
+	}
+	start = Math.max (0, start);
+	end = Math.min (end, count - 1);
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (start, end);
 	showSelection ();
 	if ((style & SWT.MULTI) != 0) {
-		if (0 <= start && start <= end) setFocusIndex (start);
+		setFocusIndex (start);
 	}
 }
 /**
@@ -1405,16 +1419,16 @@ public void setSelection (int start, int end) {
  * @see List#select(int[])
  */
 public void setSelection(int[] indices) {
-	checkWidget();
+	checkWidget ();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	deselectAll ();
+	int length = indices.length;
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
 	select (indices);
 	showSelection ();
 	if ((style & SWT.MULTI) != 0) {
-		if (indices.length != 0) {
-			int focusIndex = indices [0];
-			if (0 <= focusIndex) setFocusIndex (focusIndex);
-		}
+		int focusIndex = indices [0];
+		if (0 <= focusIndex) setFocusIndex (focusIndex);
 	}
 }
 /**
@@ -1436,46 +1450,49 @@ public void setSelection(int[] indices) {
  * @see List#select(int)
  */
 public void setSelection (String [] items) {
-	checkWidget();
+	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int length = items.length;
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) {
+		deselectAll ();
+		return;
+	}
 	String codePage = getCodePage ();
 	if ((style & SWT.SINGLE) != 0) {
-		for (int i=items.length-1; i>=0; --i) {
-			String string = items [i];
-			if (string != null) {
-				byte [] buffer = Converter.wcsToMbcs (codePage, string, true);
-				int xmString = OS.XmStringCreateLocalized (buffer);
-				if (xmString != 0) {
-					int index = OS.XmListItemPos (handle, xmString);
-					if (index != 0) OS.XmListSelectPos (handle, index, false);
-					OS.XmStringFree (xmString);
-					if (index != 0 && OS.XmListPosSelected (handle, index)) {
-						showSelection ();
-						return;
-					}
+		String string = items [0];
+		if (string != null) {
+			byte [] buffer = Converter.wcsToMbcs (codePage, string, true);
+			int xmString = OS.XmStringCreateLocalized (buffer);
+			if (xmString != 0) {
+				int index = OS.XmListItemPos (handle, xmString);
+				if (index != 0) OS.XmListSelectPos (handle, index, false);
+				OS.XmStringFree (xmString);
+				if (index != 0 && OS.XmListPosSelected (handle, index)) {
+					showSelection ();
+					return;
 				}
 			}
 		}
-		OS.XmListDeselectAllItems (handle);
+		deselectAll ();
 		return;
 	}
-	OS.XmListDeselectAllItems (handle);
-	int length = 0;
-	int [] table = new int [items.length];
-	for (int i=0; i<items.length; i++) {
+	deselectAll ();
+	int count = 0;
+	int [] table = new int [length];
+	for (int i=0; i<length; i++) {
 		String string = items [i];
 		if (string != null) {
 			byte [] buffer = Converter.wcsToMbcs (codePage, string, true);
 			int xmString = OS.XmStringCreateLocalized (buffer);
-			if (xmString != 0) table [length++] = xmString;
+			if (xmString != 0) table [count++] = xmString;
 		}
 	}
-	int ptr = OS.XtMalloc (length * 4);
-	OS.memmove (ptr, table, length * 4);
-	int [] argList = {OS.XmNselectedItems, ptr, OS.XmNselectedItemCount, length};
+	int ptr = OS.XtMalloc (count * 4);
+	OS.memmove (ptr, table, count * 4);
+	int [] argList = {OS.XmNselectedItems, ptr, OS.XmNselectedItemCount, count};
 	OS.XtSetValues (handle, argList, argList.length / 2);
 	boolean focusSet = false;
-	for (int i = 0; i < length; i++) {
+	for (int i = 0; i < count; i++) {
 		if (!focusSet) {
 			int index = OS.XmListItemPos (handle, table [i]);
 			if (index > 0) {
