@@ -775,7 +775,7 @@ void emit(int huffCode, int nBits) {
 	if ((abs / 8) > 0) {
 		currentByte += codeBuffer[2];
 		emitByte((byte)currentByte);
-		emitByte((byte)codeBuffer[1]);
+		emitByte(codeBuffer[1]);
 		currentByte = codeBuffer[0];
 		currentBitCount += nBits - 16;
 	} else {

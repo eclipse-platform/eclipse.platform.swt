@@ -122,7 +122,7 @@ public static int floor(int p, int q) {
  * @return the closest integer to the rational number p / q
  */
 public static int round(int p, int q) {
-	return (int)Math.round((float)p / q);
+	return Math.round((float)p / q);
 }
 
 /**
