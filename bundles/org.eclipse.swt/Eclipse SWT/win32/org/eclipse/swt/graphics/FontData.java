@@ -290,9 +290,16 @@ public FontData(String name, int height, int style) {
 public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof FontData)) return false;
-	LOGFONT lf = ((FontData)object).data;
-	return data.lfCharSet == lf.lfCharSet && 
-		data.lfHeight == lf.lfHeight &&
+	FontData fd = (FontData)object;
+	LOGFONT lf = fd.data;
+	return data.lfCharSet == lf.lfCharSet &&
+		/*
+		* This code is intentionally commented.  When creating
+		* a FontData, lfHeight is not necessarily set.  Instead
+		* we check the height field which is always set.
+		*/ 
+//		data.lfHeight == lf.lfHeight &&
+		height == fd.height &&
 		data.lfWidth == lf.lfWidth &&
 		data.lfEscapement == lf.lfEscapement &&
 		data.lfOrientation == lf.lfOrientation &&
@@ -435,7 +442,7 @@ public int getStyle() {
  * @see #equals
  */
 public int hashCode () {
-	return data.lfCharSet ^ data.lfHeight ^ data.lfWidth ^ data.lfEscapement ^
+	return data.lfCharSet ^ height ^ data.lfWidth ^ data.lfEscapement ^
 		data.lfOrientation ^ data.lfWeight ^ data.lfItalic ^data.lfUnderline ^
 		data.lfStrikeOut ^ data.lfCharSet ^ data.lfOutPrecision ^
 		data.lfClipPrecision ^ data.lfQuality ^ data.lfPitchAndFamily ^
