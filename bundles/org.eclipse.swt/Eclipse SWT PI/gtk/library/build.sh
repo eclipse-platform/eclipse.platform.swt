@@ -58,9 +58,27 @@ case $OS in
 				;;	
 		esac
 		;;
-	*)
-		echo "*** Unknown OS <${OS}>"
+	"SunOS")
+		CC=gcc
+		LD=gcc
+		if [ "${JAVA_HOME}" = "" ]; then
+			JAVA_HOME=/usr/j2se
+		fi
+		AWT_LIB_PATH=$JAVA_HOME/jre/lib/sparc
+		PATH=/usr/ccs/bin:/usr/local/bin:$PATH
+		export PATH
+		XTEST_LIB_PATH=/usr/openwin/lib/
+#		if [ "${GECKO_SDK}" = "" ]; then
+#			GECKO_SDK=/mozilla/mozilla/1.4/linux_gtk2/mozilla/dist/sdk
+#		fi
+		OUTPUT_DIR=../../../org.eclipse.swt.gtk/os/solaris/sparc
+		makefile="make_solaris.mak"
+		echo "Building Solaris GTK version of SWT"
 		;;
+	*)
+
+	echo "*** Unknown OS <${OS}>"
+	;;
 esac
 
 export CC LD JAVA_HOME QT_HOME AWT_LIB_PATH XTEST_LIB_PATH GECKO_SDK SWT_PTR_CFLAGS OUTPUT_DIR
