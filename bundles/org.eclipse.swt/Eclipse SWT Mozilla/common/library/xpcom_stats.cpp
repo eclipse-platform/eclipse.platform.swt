@@ -199,4 +199,24 @@ char * XPCOM_nativeFunctionNames[] = {
 	"strlen_1PRUnichar", 
 };
 
+#define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
+
+JNIEXPORT jint JNICALL STATS_NATIVE(XPCOM_1GetFunctionCount)
+	(JNIEnv *env, jclass that)
+{
+	return XPCOM_nativeFunctionCount;
+}
+
+JNIEXPORT jstring JNICALL STATS_NATIVE(XPCOM_1GetFunctionName)
+	(JNIEnv *env, jclass that, jint index)
+{
+	return env->NewStringUTF(XPCOM_nativeFunctionNames[index]);
+}
+
+JNIEXPORT jint JNICALL STATS_NATIVE(XPCOM_1GetFunctionCallCount)
+	(JNIEnv *env, jclass that, jint index)
+{
+	return XPCOM_nativeFunctionCallCount[index];
+}
+
 #endif
