@@ -181,7 +181,7 @@ private int convertProcCallback(int widget, int pSelection, int pTarget, int pTy
 	}
 		
 	// do we support the requested data type?
-	boolean dataMatch = true;
+	boolean dataMatch = false;
 	TransferData transferData = new TransferData();
 	transferData.type = target[0];
 	for (int i = 0; i < transferAgents.length; i++){
