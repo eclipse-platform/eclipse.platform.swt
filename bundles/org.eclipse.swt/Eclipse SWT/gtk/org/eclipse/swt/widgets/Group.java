@@ -245,6 +245,11 @@ void releaseWidget () {
 	text = null;
 }
 
+void setBackgroundColor (GdkColor color) {
+        super.setBackgroundColor (color);
+        OS.gtk_widget_modify_bg (fixedHandle, 0, color);
+}
+
 void setFontDescription (int font) {
 	super.setFontDescription (font);
 	OS.gtk_widget_modify_font (labelHandle, font);
