@@ -86,7 +86,6 @@ import org.eclipse.swt.graphics.*;
  * @see #sleep
  * @see #dispose
  */
-
 public class Display extends Device {
 
 	/* Windows, Events and Callbacks */
@@ -540,7 +539,6 @@ public Shell getActiveShell () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public Rectangle getBounds () {
 	checkDevice ();
 	//System.out.println("Display.getBounds");
@@ -905,7 +903,7 @@ void hideToolTip () {
 protected void init () {
 	super.init ();
 	
-	System.out.println("SWT: Fri 24.5.2002");
+	System.out.println("Display: Mon 3.6.2002");
 	
 	/* Create the callbacks */
 	fApplicationProc= OS.NewApplicationCallbackUPP(this, "handleApplicationCallback");
@@ -1639,7 +1637,6 @@ public boolean sleep () {
  *
  * @see #asyncExec
  */
-
 public void syncExec (Runnable runnable) {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	synchronizer.syncExec (runnable);
@@ -1674,7 +1671,6 @@ int textWidth2 (String string, GC gc) {
  *
  * @see #asyncExec
  */
-
 public void timerExec (int milliseconds, Runnable runnable) {
 	checkDevice ();
 	if (timerList == null) timerList = new Runnable [4];
