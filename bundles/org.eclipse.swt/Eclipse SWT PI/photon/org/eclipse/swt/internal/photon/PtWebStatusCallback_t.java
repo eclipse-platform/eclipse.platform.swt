@@ -8,27 +8,11 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
+package org.eclipse.swt.internal.photon;
 
-#ifndef INC_os_H
-#define INC_os_H
-
-#define NDEBUG
-
-#include <Ph.h>
-#include <Pt.h>
-#include <photon/PhRender.h>
-#include <photon/PtWebClient.h>
-#include <sys/utsname.h>
-#include <stdio.h>
-#include <string.h>
-#include <assert.h>
-#include <malloc.h>
-
-void *PtCreateAppContext();
-
-#define utsname struct utsname
-
-#define NATIVE_ENTER(env,clazz,func)
-#define NATIVE_EXIT(env,clazz,func)
-
-#endif /* INC_os_H */
+public class PtWebStatusCallback_t {
+	public byte[] desc = new byte[OS.MAX_URL_LENGTH + 6];
+	public short type;
+	public byte[] url = new byte[OS.MAX_URL_LENGTH];
+	public static final int sizeof = (OS.MAX_URL_LENGTH*2) + 6 + 2;
+}

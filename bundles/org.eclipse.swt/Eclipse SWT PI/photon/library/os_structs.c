@@ -1480,6 +1480,55 @@ void setPtTextCallback_tFields(JNIEnv *env, jobject lpObject, PtTextCallback_t *
 }
 #endif
 
+#ifndef NO_PtWebStatusCallback_t
+typedef struct PtWebStatusCallback_t_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID desc, type, url;
+} PtWebStatusCallback_t_FID_CACHE;
+
+PtWebStatusCallback_t_FID_CACHE PtWebStatusCallback_tFc;
+
+void cachePtWebStatusCallback_tFields(JNIEnv *env, jobject lpObject)
+{
+	if (PtWebStatusCallback_tFc.cached) return;
+	PtWebStatusCallback_tFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PtWebStatusCallback_tFc.desc = (*env)->GetFieldID(env, PtWebStatusCallback_tFc.clazz, "desc", "[B");
+	PtWebStatusCallback_tFc.type = (*env)->GetFieldID(env, PtWebStatusCallback_tFc.clazz, "type", "S");
+	PtWebStatusCallback_tFc.url = (*env)->GetFieldID(env, PtWebStatusCallback_tFc.clazz, "url", "[B");
+	PtWebStatusCallback_tFc.cached = 1;
+}
+
+PtWebStatusCallback_t *getPtWebStatusCallback_tFields(JNIEnv *env, jobject lpObject, PtWebStatusCallback_t *lpStruct)
+{
+	if (!PtWebStatusCallback_tFc.cached) cachePtWebStatusCallback_tFields(env, lpObject);
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtWebStatusCallback_tFc.desc);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->desc), (void *)lpStruct->desc);
+	}
+	lpStruct->type = (*env)->GetShortField(env, lpObject, PtWebStatusCallback_tFc.type);
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtWebStatusCallback_tFc.url);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->url), (void *)lpStruct->url);
+	}
+	return lpStruct;
+}
+
+void setPtWebStatusCallback_tFields(JNIEnv *env, jobject lpObject, PtWebStatusCallback_t *lpStruct)
+{
+	if (!PtWebStatusCallback_tFc.cached) cachePtWebStatusCallback_tFields(env, lpObject);
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtWebStatusCallback_tFc.desc);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->desc), (void *)lpStruct->desc);
+	}
+	(*env)->SetShortField(env, lpObject, PtWebStatusCallback_tFc.type, (jshort)lpStruct->type);
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, PtWebStatusCallback_tFc.url);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->url), (void *)lpStruct->url);
+	}
+}
+#endif
+
 #ifndef NO_utsname
 typedef struct utsname_FID_CACHE {
 	int cached;

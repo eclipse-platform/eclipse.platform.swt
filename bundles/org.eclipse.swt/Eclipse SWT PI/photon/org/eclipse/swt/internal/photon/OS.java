@@ -63,6 +63,7 @@ public class OS {
 	/** Constants */
 	public static final int MAX_DESC_LENGTH = 0x20;
 	public static final int MAX_FONT_TAG = 0x50;
+	public static final int MAX_URL_LENGTH=1024;
 	public static final int NAME_MAX = 0xff;
 	public static final int PATH_MAX = 0x400;
 	public static final int PF_STYLE_BOLD = 0x1;
@@ -262,6 +263,7 @@ public class OS {
 	public static final int Pt_ALWAYS = 0x1;
 	public static final int Pt_ARG_ACCEL_KEY = 0xbca;
 	public static final int Pt_ARG_ACCEL_TEXT = 0x1b58;
+	public static final int Pt_ARG_ANCHOR_FLAGS = 0x2711;
 	public static final int Pt_ARG_AREA = 0x3e8;
 	public static final int Pt_ARG_BALLOON_COLOR = 0xbcc;
 	public static final int Pt_ARG_BALLOON_FILL_COLOR = 0xbcb;
@@ -275,6 +277,7 @@ public class OS {
 	public static final int Pt_ARG_CBOX_FLAGS = 0x7918;
 	public static final int Pt_ARG_CBOX_MAX_VISIBLE_COUNT = 0x792b;
 	public static final int Pt_ARG_CBOX_SELECTION_ITEM = 0x7919;
+	public static final int Pt_ARG_CLIENT_NAME = 0x182BC;
 	public static final int Pt_ARG_COLOR = 0x7d1;
 	public static final int Pt_ARG_CONTAINER_FLAGS = 0x2715;
 	public static final int Pt_ARG_CURSOR_POSITION = 0xfa3;
@@ -348,6 +351,12 @@ public class OS {
 	public static final int Pt_ARG_USER_DATA = 0x3f6;
 	public static final int Pt_ARG_VERTICAL_ALIGNMENT = 0xbc7;
 	public static final int Pt_ARG_VISIBLE_COUNT = 0x59e1;
+	public static final int Pt_ARG_WEB_GET_URL = 0x186A0;
+	public static final int Pt_ARG_WEB_NAVIGATE_PAGE = 0x186A1;
+	public static final int Pt_ARG_WEB_OPTION = 0x186AC;
+	public static final int Pt_ARG_WEB_RELOAD = 0x186A6;
+	public static final int Pt_ARG_WEB_SERVER = 0x186A9;
+	public static final int Pt_ARG_WEB_STOP = 0x186A7;
 	public static final int Pt_ARG_WIDTH = 0x3ff;
 	public static final int Pt_ARG_WINDOW_MANAGED_FLAGS = 0x465b;
 	public static final int Pt_ARG_WINDOW_NOTIFY_FLAGS = 0x465c;
@@ -357,6 +366,8 @@ public class OS {
 	public static final int Pt_BALLOON_BOTTOM = 0x3;
 	public static final int Pt_BALLOON_RIGHT = 0x0;
 	public static final int Pt_BLOCKED = 0x20000;
+	public static final int Pt_BOTTOM_ANCHORED_BOTTOM = 0x00000080;
+	public static final int Pt_BOTTOM_ANCHORED_TOP = 0x00000800;
 	public static final int Pt_BOTTOM_BEVEL = 0x200;
 	public static final int Pt_BOTTOM_ETCH = 0x2;
 	public static final int Pt_BOTTOM_INLINE = 0x2000;
@@ -377,6 +388,10 @@ public class OS {
 	public static final int Pt_CB_TEXT_CHANGED = 0xfaa;
 	public static final int Pt_CB_TIMER_ACTIVATE = 0xa02a;
 	public static final int Pt_CB_UNREALIZED = 0x3f5;
+	public static final int Pt_CB_WEB_COMPLETE = 0x18704;
+	public static final int Pt_CB_WEB_START = 0x1870B;
+	public static final int Pt_CB_WEB_STATUS = 0x18708;
+	public static final int Pt_CB_WEB_URL = 0x18706;
 	public static final int Pt_CB_WINDOW = 0x4661;
 	public static final int Pt_CENTER = 0x2;
 	public static final int Pt_COLORSELECT_ACCEPT = 0x8000;
@@ -412,6 +427,7 @@ public class OS {
 	public static final int Pt_HOTKEYS_FIRST = 0x80;
 	public static final int Pt_IMAGE = 0x4;
 	public static final int Pt_LEFT = 0x0;
+	public static final int Pt_LEFT_ANCHORED_LEFT = 0x00000100;
 	public static final int Pt_LEFT_BEVEL = 0x400;
 	public static final int Pt_LEFT_ETCH = 0x4;
 	public static final int Pt_LEFT_INLINE = 0x4000;
@@ -435,6 +451,7 @@ public class OS {
 	public static final int Pt_RESIZE_X_ALWAYS = 0x800000;
 	public static final int Pt_RESIZE_Y_ALWAYS = 0x100000;
 	public static final int Pt_RIGHT = 0x1;
+	public static final int Pt_RIGHT_ANCHORED_RIGHT = 0x00000020;
 	public static final int Pt_RIGHT_BEVEL = 0x800;
 	public static final int Pt_RIGHT_ETCH = 0x8;
 	public static final int Pt_RIGHT_INLINE = 0x8000;
@@ -466,11 +483,16 @@ public class OS {
 	public static final int Pt_TOOLBAR_DRAGGABLE = 0x1;
 	public static final int Pt_TOOLBAR_END_SEPARATOR = 0x40;
 	public static final int Pt_TOP = 0x0;
+	public static final int Pt_TOP_ANCHORED_TOP = 0x00000400;
 	public static final int Pt_TOP_BEVEL = 0x100;
 	public static final int Pt_TOP_ETCH = 0x1;
 	public static final int Pt_TOP_INLINE = 0x1000;
 	public static final int Pt_TOP_OUTLINE = 0x10;
 	public static final int Pt_VERTICAL = 0x0;
+	public static final int Pt_WEB_ACTION_DISPLAY = 0x1;
+	public static final int Pt_WEB_DIRECTION_BACK = 6;
+	public static final int Pt_WEB_DIRECTION_CANCEL = 7;
+	public static final int Pt_WEB_DIRECTION_FWD = 5;
 	public static final int Pt_Z_STRING = 0x1;
 
 
@@ -688,6 +710,7 @@ public static final native int PtToolbar();
 public static final native void PtUnblockWindows(int bl);
 public static final native int PtUnrealizeWidget(int widget);
 public static final native int PtValidParent(int widget_parent, int class_ref);
+public static final native int PtWebClient();
 public static final native int PtWidgetArea(int widget, PhArea_t area);
 public static final native int PtWidgetBrotherBehind(int widget);
 public static final native int PtWidgetBrotherInFront(int widget);
@@ -747,6 +770,7 @@ public static final native void memmove(PgMap_t dest, int src, int size);
 public static final native void memmove(int dest, PhCursorDef_t src, int size);
 public static final native void memmove(PhClipHeader dest, int src, int size);
 public static final native void memmove(byte[] dest, PhClipHeader src, int size);
+public static final native void memmove(PtWebStatusCallback_t dest, int src, int size);
 public static final native int strdup(int string);
 public static final native int strlen(int string);
 public static final native int uname(utsname udata);

@@ -2894,6 +2894,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(PtValidParent)
 }
 #endif
 
+#ifndef NO_PtWebClient
+JNIEXPORT jint JNICALL OS_NATIVE(PtWebClient)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PtWebClient\n")
+	rc = (jint)PtWebClient;
+	NATIVE_EXIT(env, that, "PtWebClient\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_PtWidgetArea
 JNIEXPORT jint JNICALL OS_NATIVE(PtWidgetArea)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
@@ -3577,6 +3589,19 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_PtTex
 	memmove((void *)lparg0, (const void *)arg1, arg2);
 	if (arg0) setPtTextCallback_tFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PtTextCallback_1t_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_photon_PtWebStatusCallback_1t_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_PtWebStatusCallback_1t_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	PtWebStatusCallback_t _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PtWebStatusCallback_1t_2II\n")
+	if (arg0) lparg0 = getPtWebStatusCallback_tFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setPtWebStatusCallback_tFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PtWebStatusCallback_1t_2II\n")
 }
 #endif
 

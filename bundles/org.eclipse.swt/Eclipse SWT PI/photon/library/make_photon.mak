@@ -22,7 +22,7 @@ SWT_LIB=lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 
 DEBUG =  
 CFLAGS = -c -shared -DSWT_VERSION=$(SWT_VERSION) -w8 $(DEBUG) -DPHOTON -I$(IVE_HOME)/include
-LFLAGS = -shared -lph -lphrender
+LFLAGS = -shared -lph -lphrender -lPtWeb
 
 SWT_OBJS = os.o os_structs.o os_custom.o callback.o
 

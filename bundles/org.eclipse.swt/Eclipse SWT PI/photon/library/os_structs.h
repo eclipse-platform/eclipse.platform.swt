@@ -211,6 +211,14 @@ void setPtTextCallback_tFields(JNIEnv *env, jobject lpObject, PtTextCallback_t *
 #define setPtTextCallback_tFields(a,b,c)
 #endif
 
+#ifndef NO_PtWebStatusCallback_t
+PtWebStatusCallback_t *getPtWebStatusCallback_tFields(JNIEnv *env, jobject lpObject, PtWebStatusCallback_t *lpStruct);
+void setPtWebStatusCallback_tFields(JNIEnv *env, jobject lpObject, PtWebStatusCallback_t *lpStruct);
+#else
+#define getPtWebStatusCallback_tFields(a,b,c) NULL
+#define setPtWebStatusCallback_tFields(a,b,c)
+#endif
+
 #ifndef NO_utsname
 utsname *getutsnameFields(JNIEnv *env, jobject lpObject, utsname *lpStruct);
 void setutsnameFields(JNIEnv *env, jobject lpObject, utsname *lpStruct);
