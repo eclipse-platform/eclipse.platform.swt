@@ -433,8 +433,8 @@ COMPOSITIONFORM *getCOMPOSITIONFORMFields(JNIEnv *env, jobject lpObject, COMPOSI
 {
 	if (!COMPOSITIONFORMFc.cached) cacheCOMPOSITIONFORMFields(env, lpObject);
 	lpStruct->dwStyle = (*env)->GetIntField(env, lpObject, COMPOSITIONFORMFc.dwStyle);
-	lpStruct->ptCurrentPos.y = (*env)->GetIntField(env, lpObject, COMPOSITIONFORMFc.x);
-	lpStruct->ptCurrentPos.x = (*env)->GetIntField(env, lpObject, COMPOSITIONFORMFc.y);
+	lpStruct->ptCurrentPos.x = (*env)->GetIntField(env, lpObject, COMPOSITIONFORMFc.x);
+	lpStruct->ptCurrentPos.y = (*env)->GetIntField(env, lpObject, COMPOSITIONFORMFc.y);
 	lpStruct->rcArea.left = (*env)->GetIntField(env, lpObject, COMPOSITIONFORMFc.left);
 	lpStruct->rcArea.top = (*env)->GetIntField(env, lpObject, COMPOSITIONFORMFc.top);
 	lpStruct->rcArea.right = (*env)->GetIntField(env, lpObject, COMPOSITIONFORMFc.right);
@@ -446,8 +446,8 @@ void setCOMPOSITIONFORMFields(JNIEnv *env, jobject lpObject, COMPOSITIONFORM *lp
 {
 	if (!COMPOSITIONFORMFc.cached) cacheCOMPOSITIONFORMFields(env, lpObject);
 	(*env)->SetIntField(env, lpObject, COMPOSITIONFORMFc.dwStyle, (jint)lpStruct->dwStyle);
-	(*env)->SetIntField(env, lpObject, COMPOSITIONFORMFc.x, (jint)lpStruct->ptCurrentPos.y);
-	(*env)->SetIntField(env, lpObject, COMPOSITIONFORMFc.y, (jint)lpStruct->ptCurrentPos.x);
+	(*env)->SetIntField(env, lpObject, COMPOSITIONFORMFc.x, (jint)lpStruct->ptCurrentPos.x);
+	(*env)->SetIntField(env, lpObject, COMPOSITIONFORMFc.y, (jint)lpStruct->ptCurrentPos.y);
 	(*env)->SetIntField(env, lpObject, COMPOSITIONFORMFc.left, (jint)lpStruct->rcArea.left);
 	(*env)->SetIntField(env, lpObject, COMPOSITIONFORMFc.top, (jint)lpStruct->rcArea.top);
 	(*env)->SetIntField(env, lpObject, COMPOSITIONFORMFc.right, (jint)lpStruct->rcArea.right);
