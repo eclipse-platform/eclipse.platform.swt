@@ -96,7 +96,6 @@ int /*long*/ clientHandle () {
 	return clientHandle;
 }
 
-
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
 	int clientX = OS.GTK_WIDGET_X (clientHandle);
