@@ -14,8 +14,9 @@ SWT</h1>
 SWT Build 3.0 015 - Tuesday July 29, 2003
 
 <h2>
-<a NAME="Problem reports fixed"></a>Breaking Changes</h2>
-<strong>Motif and Photon: Change of event ordering in Table and Tree</strong>
+<a NAME="Breaking Changes"></a>Breaking Changes</h2>
+<p>
+<b>Motif and Photon: Change of event ordering in Table and Tree</b>
 <p>
 The ordering of selection events has changed on these platforms to become consistent with that of win32:
 <ul>
@@ -31,6 +32,16 @@ The ordering of selection events has changed on these platforms to become consis
 Eclipse Platform Build Notes<br>
 SWT</h1>
 SWT Build 3.0 014f - Tuesday July 22, 2003
+
+<h2>
+<a NAME="Breaking Changes"></a>Breaking Changes</h2>
+<p>
+<b>Clipboard API must be called from UI Thread</b>
+<p>
+On GTK, Clipboard interactions run an event loop which must 
+be executed in the UI Thread.  As a result, on all platforms,
+invoking the Clipboard API from a non UI thread will result 
+in an SWT Exception of ERROR_THREAD_INVALID_ACCESS.
 
 <h2>
 <a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
