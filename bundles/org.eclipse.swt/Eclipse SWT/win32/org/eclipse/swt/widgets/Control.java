@@ -2810,9 +2810,12 @@ LRESULT WM_CONTEXTMENU (int wParam, int lParam) {
 	* and the parent of all menus is the shell, the menu may
 	* have been destroyed but not removed from the control.
 	*/
-	if (menu == null || menu.isDisposed ()) return null;
-	menu.setVisible (true);
-	return LRESULT.ZERO;
+	if (wParam != handle) return null;
+	if (menu != null && !menu.isDisposed ()) {
+		menu.setVisible (true);
+		return LRESULT.ZERO;
+	}
+	return null;
 }
 
 LRESULT WM_CTLCOLOR (int wParam, int lParam) {
