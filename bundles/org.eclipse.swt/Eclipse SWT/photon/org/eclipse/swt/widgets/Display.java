@@ -689,8 +689,9 @@ public Control getCursorControl () {
 	return null;
 }
 
-public Point getCursorSize () {
-	return new Point (32, 32);
+public Point [] getCursorSizes () {
+	checkDevice ();
+	return new Point [] {new Point (16, 16), new Point (32, 32)};
 }
 
 /**
@@ -839,6 +840,11 @@ int getLastEventTime () {
  */
 public int getIconDepth () {
 	return getDepth ();
+}
+
+public Point [] getIconSizes () {
+	checkDevice ();
+	return new Point [] {new Point (15, 15), new Point (43, 43)};	
 }
 
 int getMessageCount () {
