@@ -74,9 +74,6 @@ public abstract class Widget {
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
 	
-	/* Global widget variables */
-	static final char Mnemonic = '&';
-	
 	/* Events and Callback constants */		
 	static final int BUTTON_PRESS = 1;
 	static final int BUTTON_RELEASE = 2;
@@ -349,6 +346,20 @@ void error (int code) {
 }
 boolean filters (int eventType) {
 	return display.filters (eventType);
+}
+char fixMnemonic (char [] buffer) {
+	int i=0, j=0;
+	char mnemonic=0;
+	while (i < buffer.length) {
+		if ((buffer [j++] = buffer [i++]) == '&') {
+			if (i == buffer.length) {continue;}
+			if (buffer [i] == '&') {i++; continue;}
+			if (mnemonic == 0) mnemonic = buffer [i];
+			j--;
+		}
+	}
+	while (j < buffer.length) buffer [j++] = 0;
+	return mnemonic;
 }
 int focusProc (int w, int client_data, int call_data, int continue_to_dispatch) {
 	return 0;

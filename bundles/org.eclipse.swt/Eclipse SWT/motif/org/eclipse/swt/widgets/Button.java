@@ -41,6 +41,7 @@ import org.eclipse.swt.events.*;
  * </p>
  */
 public class Button extends Control {
+	String text = "";
 	Image image, bitmap, disabled;
 	static final byte [] ARM_AND_ACTIVATE;
 	static {
@@ -416,47 +417,7 @@ public boolean getSelection () {
 public String getText () {
 	checkWidget();
 	if ((style & SWT.ARROW) != 0) return "";
-	int [] argList = {OS.XmNlabelString, 0, OS.XmNmnemonic, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	int xmString = argList [1];
-	int mnemonic = argList [3];
-	if (mnemonic == OS.XK_VoidSymbol) mnemonic = 0;
-	if (xmString == 0) error (SWT.ERROR_CANNOT_GET_TEXT);
-	char [] result = null;	
-	int address = OS.XmStringUnparse (
-		xmString,
-		null,
-		OS.XmCHARSET_TEXT,
-		OS.XmCHARSET_TEXT,
-		null,
-		0,
-		OS.XmOUTPUT_ALL);
-	if (address != 0) {
-		int length = OS.strlen (address);
-		byte [] buffer = new byte [length];
-		OS.memmove (buffer, address, length);
-		OS.XtFree (address);
-		result = Converter.mbcsToWcs (getCodePage (), buffer);
-	}	
-	OS.XmStringFree (xmString);
-	int count = 0;
-	if (mnemonic != 0) count++;
-	for (int i=0; i<result.length-1; i++)
-		if (result [i] == Mnemonic) count++;
-	char [] newResult = result;
-	if ((count != 0) || (mnemonic != 0)) {
-		newResult = new char [result.length + count];
-		int i = 0, j = 0;
-		while (i < result.length) {
-			if ((mnemonic != 0) && (result [i] == mnemonic)) {
-				if (j < newResult.length) newResult [j++] = Mnemonic;
-				mnemonic = 0;
-			}
-			if ((newResult [j++] = result [i++]) == Mnemonic)
-				if (j < newResult.length) newResult [j++] = Mnemonic;
-		}
-	}
-	return new String (newResult);
+	return text;
 }
 void hookEvents () {
 	super.hookEvents ();
@@ -724,18 +685,10 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.ARROW) != 0) return;
+	text = string;
 	char [] text = new char [string.length ()];
 	string.getChars (0, text.length, text, 0);
-	int i=0, j=0, mnemonic=0;
-	while (i < text.length) {
-		if ((text [j++] = text [i++]) == Mnemonic) {
-			if (i == text.length) {continue;}
-			if (text [i] == Mnemonic) {i++; continue;}
-			if (mnemonic == 0) mnemonic = text [i];
-			j--;
-		}
-	}
-	while (j < text.length) text [j++] = 0;
+	int mnemonic = fixMnemonic (text);
 	byte [] buffer = Converter.wcsToMbcs (getCodePage (), text, true);
 	int xmString = OS.XmStringParseText (
 		buffer,

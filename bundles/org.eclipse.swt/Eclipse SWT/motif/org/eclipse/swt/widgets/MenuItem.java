@@ -797,9 +797,9 @@ public void setText (String string) {
 	int i=0, j=0, mnemonic=0;
 	while (i < text.length) {
 		if (text [i] == '\t') {accel = true; break;};
-		if ((text [j++] = text [i++]) == Mnemonic) {
+		if ((text [j++] = text [i++]) == '&') {
 			if (i == text.length) {continue;}
-			if (text [i] == Mnemonic) {i++; continue;}
+			if (text [i] == '&') {i++; continue;}
 			if (mnemonic == 0) mnemonic = text [i];
 			j--;
 		}

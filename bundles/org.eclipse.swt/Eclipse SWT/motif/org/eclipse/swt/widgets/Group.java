@@ -277,16 +277,7 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	char [] text = new char [string.length ()];
 	string.getChars (0, text.length, text, 0);
-	int i=0, j=0, mnemonic=0;
-	while (i < text.length) {
-		if ((text [j++] = text [i++]) == Mnemonic) {
-			if (i == text.length) {continue;}
-			if (text [i] == Mnemonic) {i++; continue;}
-			if (mnemonic == 0) mnemonic = text [i];
-			j--;
-		}
-	}
-	while (j < text.length) text [j++] = 0;
+	int mnemonic = fixMnemonic (text);
 	byte [] buffer = Converter.wcsToMbcs (getCodePage (), text, true);
 	int xmString = OS.XmStringParseText (
 		buffer,
