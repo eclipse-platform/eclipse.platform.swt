@@ -24,12 +24,13 @@ import org.eclipse.swt.*;
  * </p>
  */
 public /*final*/ class FileDialog extends Dialog {
+	int dialog;
 	String [] filterNames = new String [0];
 	String [] filterExtensions = new String [0];
 	String filterPath = "";
 	String fullPath = "";
 	String fileName = "";
-	boolean cancel = true;
+	boolean cancel = false;
 	static final String FILTER = "*";
 
 /**
@@ -92,12 +93,61 @@ public FileDialog (Shell parent, int style) {
 	super (parent, style);
 }
 
-int activate (int widget, int client, int call) {
-	cancel = client == OS.XmDIALOG_CANCEL_BUTTON;
+int cancelPressed (int widget, int client, int call) {
+	cancel = true;
 	OS.XtUnmanageChild (widget);
 	return 0;
 }
-
+void extractValues() {
+	filterPath = fullPath = "";
+	int [] argList2 = {OS.XmNdirectory, 0, OS.XmNdirSpec, 0};
+	OS.XtGetValues (dialog, argList2, argList2.length / 2);
+	
+	int xmString3 = argList2 [1];
+	int ptr = OS.XmStringUnparse (
+		xmString3,
+		null,
+		OS.XmCHARSET_TEXT,
+		OS.XmCHARSET_TEXT,
+		null,
+		0,
+		OS.XmOUTPUT_ALL);
+	if (ptr != 0) {
+		int length = OS.strlen (ptr);
+		byte [] buffer = new byte [length];
+		OS.memmove (buffer, ptr, length);
+		OS.XtFree (ptr);
+		/* Use the character encoding for the default locale */
+		filterPath = new String (Converter.mbcsToWcs (null, buffer));
+	}
+	OS.XmStringFree (xmString3);
+	
+	int xmString4 = argList2 [3];
+	ptr = OS.XmStringUnparse (
+		xmString4,
+		null,
+		OS.XmCHARSET_TEXT,
+		OS.XmCHARSET_TEXT,
+		null,
+		0,
+		OS.XmOUTPUT_ALL);
+	if (ptr != 0) {
+		int length = OS.strlen (ptr);
+		byte [] buffer = new byte [length];
+		OS.memmove (buffer, ptr, length);
+		OS.XtFree (ptr);
+		/* Use the character encoding for the default locale */
+		fullPath = new String (Converter.mbcsToWcs (null, buffer));
+	}
+	OS.XmStringFree (xmString4);
+	
+	int length = filterPath.length ();
+	if (length != 0 && filterPath.charAt (length - 1) == '/') {
+		filterPath = filterPath.substring (0, length - 1);
+		int index = fullPath.lastIndexOf ('/');
+		fileName = fullPath.substring (index + 1, fullPath.length ());
+	}
+}
 /**
  * Returns the path of the first file that was
  * selected in the dialog relative to the filter path,
@@ -148,6 +198,26 @@ public String [] getFilterNames () {
  */
 public String getFilterPath () {
 	return filterPath;
+}
+
+int okPressed (int widget, int client, int call) {
+	extractValues();
+	
+	// preferred case, a file is selected
+	if (!fileName.equals("")) {
+		OS.XtUnmanageChild (widget);
+		return 0;
+	}
+	
+	// no file selected, so go into the current directory
+	int [] argList1 = {OS.XmNdirMask, 0};
+	OS.XtGetValues (dialog, argList1, argList1.length / 2);
+	int directoryHandle = argList1[1];
+	int [] argList2 = {OS.XmNpattern,directoryHandle};
+	OS.XtSetValues (dialog, argList2, argList2.length / 2);
+	OS.XmStringFree (directoryHandle);
+	
+	return 0;
 }
 
 /**
@@ -245,7 +315,7 @@ public String open () {
 	* to pass in a NULL terminated string, not a NULL pointer.
 	*/
 	byte [] name = new byte [] {0};
-	int dialog = OS.XmCreateFileSelectionDialog (parentHandle, name, argList1, argList1.length / 2);
+	dialog = OS.XmCreateFileSelectionDialog (parentHandle, name, argList1, argList1.length / 2);
 	int child = OS.XmFileSelectionBoxGetChild (dialog, OS.XmDIALOG_HELP_BUTTON);
 	if (child != 0) OS.XtUnmanageChild (child);
 	OS.XmStringFree (xmStringPtr1);
@@ -275,13 +345,13 @@ public String open () {
 */
 
 	/* Hook the callbacks. */
-	Callback callback = new Callback (this, "activate", 3);
-	int address = callback.getAddress ();
-	OS.XtAddCallback (dialog, OS.XmNokCallback, address, OS.XmDIALOG_OK_BUTTON);
-	OS.XtAddCallback (dialog, OS.XmNcancelCallback, address, OS.XmDIALOG_CANCEL_BUTTON);
+	Callback cancelCallback = new Callback (this, "cancelPressed", 3);
+	int cancelAddress = cancelCallback.getAddress ();
+	OS.XtAddCallback (dialog, OS.XmNcancelCallback, cancelAddress, OS.XmDIALOG_CANCEL_BUTTON);
+	Callback okCallback = new Callback (this, "okPressed", 3);
+	int okAddress = okCallback.getAddress ();
+	OS.XtAddCallback (dialog, OS.XmNokCallback, okAddress, OS.XmDIALOG_OK_BUTTON);
 
-	/* Open the dialog and dispatch events. */
-	cancel = true;
 /*
 	shell == nil ifFalse: [
 		shell minimized ifTrue: [shell minimized: false]].
@@ -292,60 +362,11 @@ public String open () {
 	while (OS.XtIsRealized (dialog) && OS.XtIsManaged (dialog))
 		if (!appContext.readAndDispatch ()) appContext.sleep ();
 
-	/* Set the new path, file name and filter. */
-	fullPath = "";
-	if (!cancel) {
-		filterPath = fullPath = "";
-		int [] argList2 = {OS.XmNdirectory, 0, OS.XmNdirSpec, 0};
-		OS.XtGetValues (dialog, argList2, argList2.length / 2);
-		int xmString3 = argList2 [1];
-		int ptr = OS.XmStringUnparse (
-			xmString3,
-			null,
-			OS.XmCHARSET_TEXT,
-			OS.XmCHARSET_TEXT,
-			null,
-			0,
-			OS.XmOUTPUT_ALL);
-		if (ptr != 0) {
-			int length = OS.strlen (ptr);
-			byte [] buffer = new byte [length];
-			OS.memmove (buffer, ptr, length);
-			OS.XtFree (ptr);
-			/* Use the character encoding for the default locale */
-			filterPath = new String (Converter.mbcsToWcs (null, buffer));
-		}
-		OS.XmStringFree (xmString3);
-		int xmString4 = argList2 [3];
-		ptr = OS.XmStringUnparse (
-			xmString4,
-			null,
-			OS.XmCHARSET_TEXT,
-			OS.XmCHARSET_TEXT,
-			null,
-			0,
-			OS.XmOUTPUT_ALL);
-		if (ptr != 0) {
-			int length = OS.strlen (ptr);
-			byte [] buffer = new byte [length];
-			OS.memmove (buffer, ptr, length);
-			OS.XtFree (ptr);
-			/* Use the character encoding for the default locale */
-			fullPath = new String (Converter.mbcsToWcs (null, buffer));
-		}
-		OS.XmStringFree (xmString4);
-		int length = filterPath.length ();
-		if (length != 0 && filterPath.charAt (length - 1) == '/') {
-			filterPath = filterPath.substring (0, length - 1);
-			int index = fullPath.lastIndexOf ('/');
-			fileName = fullPath.substring (index + 1, fullPath.length ());
-		}
-	}
-
 	/* Destroy the dialog and update the display. */
 	if (OS.XtIsRealized (dialog)) OS.XtDestroyWidget (dialog);
 	if (destroyContext) appContext.dispose ();
-	callback.dispose ();
+	okCallback.dispose ();
+	cancelCallback.dispose ();
 	
 //	(shell == nil or: [shell isDestroyed not]) ifTrue: [dialog xtDestroyWidget].
 //	OSWidget updateDisplay.
