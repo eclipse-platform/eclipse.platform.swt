@@ -649,10 +649,18 @@ String toolTipText (NMTTDISPINFO hdr) {
 	if ((hdr.uFlags & OS.TTF_IDISHWND) != 0) {
 		return null;
 	}
+	/*
+	* Bug in Windows.  On Windows XP, when TB_SETHOTITEM is
+	* used to set the hot item, the tool bar control attempts
+	* to display the tool tip, even when the cursor is not in
+	* the hot item.  The fix is to detect this case and fail to
+	* provide the string, causing no tool tip to be displayed.
+	*/
+	if (!hasCursor ()) return ""; //$NON-NLS-1$
 	int index = hdr.idFrom;
 	int hwndToolTip = OS.SendMessage (handle, OS.TB_GETTOOLTIPS, 0, 0);
 	if (hwndToolTip == hdr.hwndFrom) {
-		if (toolTipText != null) return ""; //$NON-NLS-1$
+		if (toolTipText != null) return ""; //$NON-NLS-2$
 		if (0 <= index && index < items.length) {
 			ToolItem item = items [index];
 			if (item != null) return item.toolTipText;
