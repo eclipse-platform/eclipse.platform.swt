@@ -11,12 +11,100 @@
 <h1>
 Eclipse Platform Build Notes<br>
 SWT</h1>
+SWT Build 2.0 041 - Tuesday May 28, 2002
+
+<h2>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+<blockquote>
+4398: Visual Coordination: Borders (1FSGONG)  
+<br>4411: DCR - Support printing (1PQ8QCK)  
+<br>4426: ScrollBar - Can't query size (1FDVP23)  
+<br>4431: Folder tab does not get focus (1FIGI95)  
+<br>4437: Tree Keyboard Support (1FOLZPT)  
+<br>4452: MenuItem: setImage does not show image on menu (1FGNP8U)  
+<br>4469: Inconsistencies between single line Text and RichText widgets (1FK1RRM)
+<br>4474: Not supportting Windows Accessibility Standard? (1FM0IFS)  
+<br>4490: Fonts in examples appear too big (1FOMCWQ)  
+<br>4496: DCR - Contour mouse middle button doesn't work (1FREAS4)  
+<br>4503: FontDialog is missing fonts (1FSMRV0)  
+<br>4526: Severe - Delete key is not redirected to editor (1FVXDST)  
+<br>4529: Closing external MS Word makes in-place MS Word disappear (1FWG9AR)
+<br>4534: Flashing when computeSize called on Toolbar (1FWLD1E)  
+<br>4545: No OS.GetKeyState function on motif (1FZQOZM)  
+<br>4550: JUnit tests assumes boundary condition which is setting dependant (1G0LQKD)
+<br>4552: Adobe doesn't like ImageData... (1G0ZBE0)  
+<br>4563: Need support for *.xpm and *.png image file formats (1G3HWSA)
+<br>4636: Tooltips not working on Linux (1GCN4FK)  
+<br>4672: DCR - Include "begining / end " arrows to select files (1GEFYCG)
+<br>4679: Colour gradient of views is not gradual (16bit color depth) (1GELWSO)
+<br>4699: DCR - outstanding issue for customer- Changing cursor during drag operation (1GETC8U)
+<br>4703: WinME - Disabled icons in tabbed folder do not display properly. (1GEWXLI)
+<br>4706: StackOverflow resizing Workbench window (1GEWLSU)  
+<br>4708: FATAL X error (1GF07HN)  
+<br>4709: GP running ( Eclipse ^ 2 ) (1GEZ9UR)  
+<br>4711: Navigator messed up when midi(w/DBCS) in it -Can't create view (1GEZNVC)
+<br>4728: Windows with tab pages should allow Ctrl-Tab switching (1GFIUG5)
+<br>4785: DCR - Custom notebook scrolling not optimal (1GI97VZ)  
+<br>4839: TabFolder mnemonic problem (1GKAPKK)  
+<br>4840: Hebrew: cannot paste from external file into java editor (1GKCWVX)
+<br>4851: Print ignores print to file option (1GKXC30)  
+<br>4867: PgMemFlush() considered expensive (1GLEEJC)  
+<br>5697: *Please* make SWT use GTK+ instead of Motif  
+<br>8346: Workbench will not start  
+<br>9217: Internal error at open the package view  
+<br>9491: 1GRTRXQ: WSWB:Workbench 2.0 Problem- ArrayIndexOutOfBoundsException with MultiPageEditorPart
+<br>11204: Some ActiveX control can not accept key input.  
+<br>11436: Request for public interface to call "UIDeactivate()" of  IOleInPlaceObject
+<br>11498: StyledText does not always redraw when the line style changes
+<br>14846: Accessibility: getLocation does not position XP Magnifier  
+<br>15218: Platform does not recognize the GUI - 20020502  
+<br>15466: ImageData.blit throws ArrayIndexOutOfBounds Exception  
+<br>15548: 'X' close box on tab hidden by arrows  
+<br>15564: javaw.exe has generated errors and will be closed by windows  
+<br>15653: Tab halts on CCombo objects  
+<br>16094: Cheese on CTabFolder when resizing  
+<br>16200: Tracker leaves cheese  
+<br>16345: JVM termination when attepmting to run Update Manager  
+<br>16458: Trying to free a GdkEvent: pointer=NULL  
+<br>16549: Cannot navigate tabbed notebook with keyboard  
+<br>16557: Tab does not move cursor between text fields  
+<br>16565: Typed text is lost  
+<br>16576: ACC: Checkboxes in lists are not real checkboxes  
+<br>16828: CTabFolder flashing tooltip  
+<br>16927: External programs support on Photon  
+<br>16957: TreeItem.setForegroundColor() doesn't work  
+<br>16967: Strange scroll behavior in package dialog  
+<br>16995: HoverHelp example does not create ON_TOP Shell for tooltips  
+<br>17022: SWT Layouts example - missing window title  
+<br>17090: StyledText selects text when menu is showing  
+<br>17183: Icon in wizard banner clipped  
+<br>17208: Long operations are being modal.  
+<br>17305: Search Dialog: Java Page clipped  
+<br>17320: Search dialog freezes Eclipse  
+<br>17368: 4 Toolbar icons pushed off the toolbar way to the right  
+<br>17488: Image Support in SWT - FAQ (1G5Z1KS)  
+<br>17497: FileDialog open() returns wrong result  
+<br>17632: "Color Button" doesn't update  
+<br>17802: Moving a sash requires an extra click to take effect  
+<br>17811: Two menu bar items highlighted at the same time  
+<br>17816: Menu appears then dissapprears with click after Alt.  
+<br>17832: Vertical Scrollbar clipped  
+<br>17834: JavaDoc API bad for Image  
+<br>17835: Smalltalk code around :)  
+<br>17928: NPE on addressbook example  
+<br>17932: Emulated Coolbar do not resize when the last item on the row is removed
+<br>17933: Emulated Coolbar chevron too narrow on Photon  
+<br>18005: BusyIndicator should check args  
+</blockquote>
+
+<h1>
+Eclipse Platform Build Notes<br>
+SWT</h1>
 SWT Build 2.0 040 - Tuesday May 21, 2002
 
 <h2>
 <a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
 <blockquote>
-
 3554: TP125: weird tab order in create project wizard (1G83VP8)  
 <br>4424: Table draws a stray pixel in top left corner (1FS9QBQ)  
 <br>4476: No syncExec runnables run during scrolling (1FMGG2X)  
@@ -78,10 +166,6 @@ SWT Build 2.0 040 - Tuesday May 21, 2002
 <br>16465: Stack Overflow when importing a project
 <br>16523: Unable to double-click
 <br>16525: Eclipse does not layout properly
-
-
-
-
 </blockquote>
 
 <h1>
