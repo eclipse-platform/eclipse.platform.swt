@@ -21,32 +21,21 @@ SWT_PREFIX = swt
 AWT_PREFIX = swt-awt
 SWTPI_PREFIX = swt-pi
 ATK_PREFIX = swt-atk
-KDE_PREFIX = swt-kde
-GNOME_PREFIX = swt-gnome
 MOZILLA_PREFIX = swt-mozilla
 SWT_LIB = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 AWT_LIB = lib$(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 SWTPI_LIB = lib$(SWTPI_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 ATK_LIB = lib$(ATK_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
-GNOME_LIB = lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
-KDE_LIB = lib$(KDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 MOZILLA_LIB = lib$(MOZILLA_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 
 # Do not use pkg-config to get libs because it includes unnecessary dependencies (i.e. pangoxft-1.0)
 GTKCFLAGS = `pkg-config --cflags gtk+-2.0`
-GTKLIBS = `pkg-config --libs-only-L gtk+-2.0 gthread-2.0` -lgtk-x11-2.0 -lgthread-2.0
-#GTKLIBS = `pkg-config --libs-only-L gtk+-2.0 gthread-2.0` -lgtk-x11-2.0 -lgthread-2.0 -Wl,-rpath -Wl,$(XTEST_LIB_PATH) -lXtst
+GTKLIBS = `pkg-config --libs-only-L gtk+-2.0 gthread-2.0` -lgtk-x11-2.0 -lgthread-2.0 -L$(XTEST_LIB_PATH) -Wl,-R -Wl,$(XTEST_LIB_PATH) -lXtst
 
 AWT_LIBS = -L$(AWT_LIB_PATH) -ljawt -shared
 
 ATKCFLAGS = `pkg-config --cflags atk gtk+-2.0`
 ATKLIBS = `pkg-config --libs-only-L atk gtk+-2.0`-latk-1.0 -lgtk-x11-2.0
-
-GNOMECFLAGS = `pkg-config --cflags gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0`
-GNOMELIBS = `pkg-config --libs-only-L gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0` -lgnomevfs-2 -lgnome-2 -lgnomeui-2
-
-KDE_LIBS = -L/usr/lib  -L$(QT_HOME)/lib -shared  -lkdecore -lqt -lkparts
-KDE_CFLAGS = -fno-rtti -c -O -I/usr/include/kde -I$(QT_HOME)/include -I$(JAVA_HOME)/include
 
 # Uncomment for Native Stats tool
 #NATIVE_STATS = -DNATIVE_STATS
@@ -78,8 +67,6 @@ SWT_OBJECTS = swt.o callback.o
 AWT_OBJECTS = swt_awt.o
 SWTPI_OBJECTS = swt.o os.o os_structs.o os_custom.o os_stats.o
 ATK_OBJECTS = swt.o atk.o atk_structs.o atk_custom.o atk_stats.o
-GNOME_OBJECTS = swt.o gnome.o gnome_structs.o gnome_stats.o
-KDE_OBJS = swt.o kde.o kde_stats.o
 MOZILLA_OBJECTS = swt.o xpcom.o xpcom_custom.o xpcom_structs.o xpcom_stats.o
  
 CFLAGS = -O -Wall \
@@ -94,7 +81,6 @@ LIBS = -shared -fpic
 
 
 all: make_swt make_atk make_awt
-# make_gnome make_kde
 
 #
 # SWT libs
@@ -145,37 +131,6 @@ atk_custom.o: atk_custom.c atk_structs.h atk.h
 	$(CC) $(CFLAGS) $(ATKCFLAGS) -c atk_custom.c
 atk_stats.o: atk_stats.c atk_structs.h atk_stats.h atk.h
 	$(CC) $(CFLAGS) $(ATKCFLAGS) -c atk_stats.c
-
-#
-# Gnome lib
-#
-make_gnome: $(GNOME_LIB)
-
-$(GNOME_LIB): $(GNOME_OBJECTS)
-	$(LD) $(LIBS) $(GNOMELIBS) -o $(GNOME_LIB) $(GNOME_OBJECTS)
-
-gnome.o: gnome.c 
-	$(CC) $(CFLAGS) $(GNOMECFLAGS) -c gnome.c
-
-gnome_structs.o: gnome_structs.c 
-	$(CC) $(CFLAGS) $(GNOMECFLAGS) -c gnome_structs.c
-	
-gnome_stats.o: gnome_stats.c gnome_stats.h
-	$(CC) $(CFLAGS) $(GNOMECFLAGS) -c gnome_stats.c
-
-#
-# KDE lib
-#
-make_kde: $(KDE_LIB)
-
-$(KDE_LIB): $(KDE_OBJS)
-	$(LD) -o $@ $(KDE_OBJS) $(KDE_LIBS)
-
-kde.o: kde.cpp
-	$(CXX) $(CFLAGS) $(KDE_CFLAGS) -o kde.o kde.cpp
-
-kde_stats.o: kde_stats.cpp
-	$(CXX) $(CFLAGS) $(KDE_CFLAGS) -o kde_stats.o kde_stats.cpp
 	
 #
 # Mozilla lib

@@ -67,7 +67,7 @@ case $OS in
 		AWT_LIB_PATH=$JAVA_HOME/jre/lib/sparc
 		PATH=/usr/ccs/bin:/usr/local/bin:$PATH
 		export PATH
-		XTEST_LIB_PATH=/usr/openwin/lib/
+		XTEST_LIB_PATH=/usr/openwin/lib
 #		if [ "${GECKO_SDK}" = "" ]; then
 #			GECKO_SDK=/mozilla/mozilla/1.4/linux_gtk2/mozilla/dist/sdk
 #		fi
