@@ -555,9 +555,13 @@ private void onDispose() {
 	unregisterDropTarget();
 	
 	if (controlListener != null) {
+		Control c = control;
+		while (c != null) {
+			c.removeListener (SWT.Show, controlListener);
+			c.removeListener (SWT.Hide, controlListener);
+			c = c.getParent();
+		}
 		control.removeListener(SWT.Dispose, controlListener);
-		control.removeListener(SWT.Show, controlListener);
-		control.removeListener(SWT.Hide, controlListener);
 	}
 	controlListener = null;
 	control.setData(DROPTARGETID, null);
