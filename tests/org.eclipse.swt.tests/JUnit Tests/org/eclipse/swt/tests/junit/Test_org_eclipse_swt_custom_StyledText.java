@@ -1087,12 +1087,14 @@ public void test_getSelection(){
 	assertTrue(":a:", text.getSelection().equals(new Point(4, 4)));
 	text.setSelection(11);
 	assertTrue(":b:", text.getSelection().equals(new Point(11, 11)));
+	text.setSelection(new Point(3, 2));	
+	assertTrue(":c:", text.getSelection().equals(new Point(2, 3)));	
 }
 
 public void test_getSelectionRange() {
 	String testText = "Line1\r\nLine2";
-	int invalidRanges [][] = {{-1, 0}, {-1, -1}, {100, 1}, {100, -1}, {12, 1}, {11, 2}};
-	int selectionRanges [][] = {{0, 1}, {0, 0}, {2, 3}, {12, 0}};
+	int invalidRanges [][] = {{-1, 0}, {-1, -1}, {100, 1}, {100, -1}, {12, 1}, {11, 2}, {2, -3}, {50, -1}};
+	int selectionRanges [][] = {{0, 1}, {0, 0}, {2, 3}, {12, 0}, {2, -2}, {5, -1}};
 	int textLength;
 	boolean exceptionThrown;
 	
@@ -1118,6 +1120,14 @@ public void test_getSelectionRange() {
 		int start = selectionRanges[i][0];
 		int length = selectionRanges[i][1];
 		text.setSelectionRange(start, length);
+		if (length < 0) {
+			start += length;
+			length *= -1;
+			assertEquals(":c:a:" + i, start, text.getCaretOffset());			
+		}
+		else {
+			assertEquals(":c:a:" + i, start + length, text.getCaretOffset());			
+		}
 		assertTrue(":c:" + i, text.getSelectionRange().x == start && text.getSelectionRange().y == length);
 	}
 
@@ -2922,7 +2932,7 @@ public void test_setSelectionLorg_eclipse_swt_graphics_Point() {
 }
 
 public void test_setSelectionII(){
-	int[][] invalidRanges = {{-1, 0}, {-1, -1}, {100, 1}, {100, -1}, {11, 12}, {10, 12}};
+	int[][] invalidRanges = {{-1, 0}, {-1, -1}, {100, 1}, {100, -1}, {11, 12}, {10, 12}, {2, -3}, {50, -1}};
 	boolean exceptionThrown;
 
 	for (int i = 0; i < invalidRanges.length; i++) {
@@ -2942,6 +2952,9 @@ public void test_setSelectionII(){
 	assertEquals("", text.getSelectionText());
 	text.setSelection(3, 7);
 	assertEquals("3456", text.getSelectionText());
+	text.setSelection(3, 0);
+	assertEquals("012", text.getSelectionText());
+	assertEquals(0, text.getCaretOffset());	
 
 	for (int i = 0; i < invalidRanges.length; i++) {
 		int start = invalidRanges[i][0];
