@@ -587,8 +587,8 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 	/* Create resources */
 	int srcHdc = OS.CreateCompatibleDC(handle);
 	int oldSrcBitmap = OS.SelectObject(srcHdc, srcImage.handle);
-	int memDib = createDIB(destWidth, destHeight, 32);
 	int memHdc = OS.CreateCompatibleDC(handle);
+	int memDib = createDIB(Math.max(srcWidth, destWidth), Math.max(srcWidth, destHeight), 32);
 	int oldMemBitmap = OS.SelectObject(memHdc, memDib);
 
 	BITMAP dibBM = new BITMAP();
@@ -601,23 +601,46 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 	OS.MoveMemory(destData, dibBM.bmBits, sizeInBytes);
 
  	/* Get the foreground pixels */
-	OS.SetStretchBltMode(memHdc, OS.COLORONCOLOR);
-	OS.StretchBlt(memHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCCOPY);
-	byte[] srcData = new byte[sizeInBytes];
+ 	OS.BitBlt(memHdc, 0, 0, srcWidth, srcHeight, srcHdc, srcX, srcY, OS.SRCCOPY);
+ 	byte[] srcData = new byte[sizeInBytes];
 	OS.MoveMemory(srcData, dibBM.bmBits, sizeInBytes);
-
-	/* Compose the pixels */
+	
+	/* Merge the alpha channel in place */
 	int alpha = srcImage.alpha;
-	byte[] alphaData = null;
-	if (alpha == -1) {
-		alphaData = new byte[destWidth * destHeight];
-		ImageData.stretch8(srcImage.alphaData, imgWidth, srcX, srcY, srcWidth, srcHeight, alphaData, destWidth, 0, 0, destWidth, destHeight, null, false, false);
+	final boolean hasAlphaChannel = (srcImage.alpha == -1);
+	if (hasAlphaChannel) {
+		final int apinc = imgWidth - srcWidth;
+		final int spinc = dibBM.bmWidthBytes - srcWidth * 4;
+		int ap = 0, sp = 3;
+		byte[] alphaData = srcImage.alphaData;
+		for (int y = 0; y < srcHeight; ++y) {
+			for (int x = 0; x < srcWidth; ++x) {
+				srcData[sp] = alphaData[ap++];
+				sp += 4;
+			}
+			ap += apinc;
+			sp += spinc;
+		}
 	}
-	for (int i = 0; i < sizeInBytes; i += 4) {
-		if (alphaData != null) alpha = alphaData[i / 4] & 0xff;
-		destData[i] += ((srcData[i] & 0xFF) - (destData[i] & 0xFF)) * alpha / 255;
-		destData[i+1] += ((srcData[i+1] & 0xFF) - (destData[i+1] & 0xFF)) * alpha / 255;
-		destData[i+2] += ((srcData[i+2] & 0xFF) - (destData[i+2] & 0xFF)) * alpha / 255;
+	
+	/* Scale the foreground pixels with alpha */
+	OS.SetStretchBltMode(memHdc, OS.COLORONCOLOR);
+	OS.MoveMemory(dibBM.bmBits, srcData, sizeInBytes);
+	OS.StretchBlt(memHdc, 0, 0, destWidth, destHeight, memHdc, 0, 0, srcWidth, srcHeight, OS.SRCCOPY);
+	OS.MoveMemory(srcData, dibBM.bmBits, sizeInBytes);
+	
+	/* Compose the pixels */
+	final int dpinc = dibBM.bmWidthBytes - destWidth * 4;
+	int dp = 0;
+	for (int y = 0; y < destHeight; ++y) {
+		for (int x = 0; x < destWidth; ++x) {
+			if (hasAlphaChannel) alpha = srcData[dp + 3] & 0xff;
+			destData[dp] += ((srcData[dp] & 0xff) - (destData[dp] & 0xff)) * alpha / 255;
+			destData[dp + 1] += ((srcData[dp + 1] & 0xff) - (destData[dp + 1] & 0xff)) * alpha / 255;
+			destData[dp + 2] += ((srcData[dp + 2] & 0xff) - (destData[dp + 2] & 0xff)) * alpha / 255;
+			dp += 4;
+		}
+		dp += dpinc;
 	}
 
 	/* Draw the composed pixels */
