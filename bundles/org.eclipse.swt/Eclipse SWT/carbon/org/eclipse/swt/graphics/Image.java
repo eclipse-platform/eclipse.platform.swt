@@ -619,8 +619,8 @@ private static int createMaskImage(ImageData image) {
 public void dispose () {
 	if (pixmap == 0) return;
 	if (device.isDisposed()) return;
-	if (pixmap != 0) Dispose(pixmap);
-	if (mask != 0) Dispose(mask);
+	if (pixmap != 0) disposeBitmapOrPixmap(pixmap);
+	if (mask != 0) disposeBitmapOrPixmap(mask);
 	device = null;
 	memGC = null;
 	pixmap = mask = 0;
@@ -630,7 +630,7 @@ public void dispose () {
  */
 void destroyMask() {
 	if (mask == 0) return;
-	Dispose(mask);
+	disposeBitmapOrPixmap(mask);
 	mask= 0;
 }
 /**
@@ -952,14 +952,14 @@ void init(Device device, ImageData image) {
 	int error= putImage(image, 0, 0, image.width, image.height,
 							    0, 0, image.width, image.height, screenDepth, transPixel, pixmap);
 	if (error != 0) {
-		Dispose(pixmap);
+		disposeBitmapOrPixmap(pixmap);
 		SWT.error(error);
 	}
 	if (image.getTransparencyType() == SWT.TRANSPARENCY_MASK || image.transparentPixel != -1) {
 		if (image.transparentPixel != -1) transparentPixel = transPixel[0];
 		int mask= createMaskImage(image.getTransparencyMask());
 		if (mask == 0) {
-			Dispose(pixmap);
+			disposeBitmapOrPixmap(pixmap);
 			SWT.error(error);
 		}
 		this.mask = mask;
@@ -1329,7 +1329,7 @@ public String toString () {
 				(short)cmpSize, (short)cmpCount, (short)pixelFormat);
 	}
 	
-	private static void Dispose(int handle) {
+	public static void disposeBitmapOrPixmap(int handle) {
 
 		if (handle == 0)
 			return;
@@ -1417,7 +1417,7 @@ public String toString () {
 			int icon= OS.NewCIcon(pm, mask);
 			
 			if (mask != image.mask)
-				Dispose(mask);
+				disposeBitmapOrPixmap(mask);
 			
 			//System.out.println("CIcons: " + fgIconCount++);
 			
