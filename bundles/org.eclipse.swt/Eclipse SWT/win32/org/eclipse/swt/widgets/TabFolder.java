@@ -433,12 +433,13 @@ Point minimumSize (int wHint, int hHint, boolean flushCache) {
 	int width = 0, height = 0;
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
-		int index = 0;
-		while (index < items.length) {
+		int index = 0;	
+		int count = OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
+		while (index < count) {
 			if (items [index].control == child) break;
 			index++;
 		}
-		if (index == items.length) {
+		if (index == count) {
 			Rectangle rect = child.getBounds ();
 			width = Math.max (width, rect.x + rect.width);
 			height = Math.max (height, rect.y + rect.height);

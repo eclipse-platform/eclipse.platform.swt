@@ -199,7 +199,7 @@ void createWidget () {
 }
 
 void destroyItem (TabItem item) {
-	int count = OS.GetControl32BitMaximum(handle);
+	int count = OS.GetControl32BitMaximum (handle);
 	int index = 0;
 	while (index < count) {
 		if (items [index] == item) break;
@@ -208,7 +208,7 @@ void destroyItem (TabItem item) {
 	if (index == count) return;	// not found
 	int selectionIndex = OS.GetControl32BitValue (handle) - 1;
 	--count;
-	OS.SetControl32BitMaximum(handle, count);
+	OS.SetControl32BitMaximum (handle, count);
 	if (count == 0) {
 		items = new TabItem [4];
 		return;
@@ -373,11 +373,12 @@ Point minimumSize (int wHint, int hHint, boolean flushCache) {
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
 		int index = 0;
-		while (index < items.length) {
+		int count = OS.GetControl32BitMaximum (handle);
+		while (index < count) {
 			if (items [index].control == child) break;
 			index++;
 		}
-		if (index == items.length) {
+		if (index == count) {
 			Rectangle rect = child.getBounds ();
 			width = Math.max (width, rect.x + rect.width);
 			height = Math.max (height, rect.y + rect.height);
@@ -425,9 +426,9 @@ int kEventControlHit (int nextHandler, int theEvent, int userData) {
 
 void releaseWidget () {
 	int count = OS.GetControl32BitMaximum (handle);
-	for (int i = 0; i < count; i++) {
+	for (int i=0; i<count; i++) {
 		TabItem item = items [i];
-		if (item != null && !item.isDisposed ()) item.releaseResources ();
+		if (!item.isDisposed ()) item.releaseResources ();
 	}
 	items = null;
 	super.releaseWidget ();
