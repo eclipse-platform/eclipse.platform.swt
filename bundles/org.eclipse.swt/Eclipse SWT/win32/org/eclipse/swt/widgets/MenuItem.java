@@ -727,14 +727,16 @@ public void setText (String string) {
 			* is a sequence '&&').  The fix is to remove all '&' from
 			* the string. 
 			*/
-			int length = string.length ();
-			char[] text = new char [length];
-			string.getChars( 0, length, text, 0);
-			int i = 0, j = 0;
-			for (i=0; i<length; i++) {
-				if (text[i] != '&') text [j++] = text [i];
+			if (string.indexOf ('&') != -1) {
+				int length = string.length ();
+				char[] text = new char [length];
+				string.getChars( 0, length, text, 0);
+				int i = 0, j = 0;
+				for (i=0; i<length; i++) {
+					if (text[i] != '&') text [j++] = text [i];
+				}
+				if (j < i) string = new String (text, 0, j);
 			}
-			if (j < i) string = new String (text, 0, j);
 		}
 	}
 	int hMenu = parent.handle;
