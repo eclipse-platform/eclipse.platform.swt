@@ -7,9 +7,11 @@ package org.eclipse.swt.dnd;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
  
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.gtk.*;
 
 /**
  *
@@ -88,7 +90,16 @@ import org.eclipse.swt.internal.*;
  * </dl>
  */
 public final class DragSource extends Widget {
-
+	Control control;
+	Listener controlListener;
+	Transfer[] transferAgents = new Transfer[0];
+	
+	Callback dragGetData;
+	Callback dragEnd;
+	Callback dragDataDelete;
+	int targetList;
+	boolean movePerformed;
+	
 /**
  * Creates a new <code>DragSource</code> to handle dragging from the specified <code>Control</code>.
  * Creating an instance of a DragSource may cause system resources to be allocated depending on the platform.  
@@ -111,7 +122,48 @@ public final class DragSource extends Widget {
  * @see DND#DROP_LINK
  */
 public DragSource(Control control, int style) {
-	super (control, style);
+	super (control, checkStyle(style));
+	this.control = control;	
+	
+	// Drag Get Data Callback	
+	dragGetData = new Callback(this, "dragGetData", 6);
+	byte[] buffer = Converter.wcsToMbcs(null, "drag_data_get", true);
+	OS.g_signal_connect(control.handle, buffer, dragGetData.getAddress(), 0);
+
+	// Drag End Callback	
+	dragEnd = new Callback(this, "dragEnd", 3);
+	buffer = Converter.wcsToMbcs(null, "drag_end", true);
+	OS.g_signal_connect(control.handle, buffer, dragEnd.getAddress(), 0);
+
+	// Drag Data Delete Callback	
+	dragDataDelete = new Callback(this, "dragDataDelete", 3);
+	buffer = Converter.wcsToMbcs(null, "drag_data_delete", true);
+	OS.g_signal_connect(control.handle, buffer, dragDataDelete.getAddress(), 0);
+	
+	controlListener = new Listener () {
+		public void handleEvent (Event event) {
+			if (event.type == SWT.Dispose) {
+				if (!DragSource.this.isDisposed()){
+					DragSource.this.dispose();
+				}
+			}
+			if (event.type == SWT.DragDetect){
+				if (!DragSource.this.isDisposed()){
+					DragSource.this.drag(event);
+				}
+			}
+			
+		}
+	};
+	this.control.addListener (SWT.Dispose, controlListener);
+	this.control.addListener (SWT.DragDetect, controlListener);
+	
+	this.addListener (SWT.Dispose, new Listener () {
+		public void handleEvent (Event event) {
+			onDispose();
+		}
+	});
+		
 }
 
 /**
@@ -144,7 +196,16 @@ public DragSource(Control control, int style) {
  * @see DragSourceEvent
  */
 public void addDragListener(DragSourceListener listener) {
+	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
+	DNDListener typedListener = new DNDListener (listener);
+	addListener (DND.DragStart, typedListener);
+	addListener (DND.DragEnd, typedListener);
+	addListener (DND.DragSetData, typedListener);
+}
 
+static int checkStyle (int style) {
+	if (style == SWT.NONE) return DND.DROP_MOVE;	
+	return style;
 }
 
 /**
@@ -154,20 +215,152 @@ public void addDragListener(DragSourceListener listener) {
  * @return the Control which is registered for this DragSource
  */
 public Control getControl () {
-	return null;
+	return control;
 }
 
-public Display getDisplay () {
-	return null;
+private void drag(Event dragEvent) {
+	if (transferAgents == null) return;
+
+	DNDEvent event = new DNDEvent();
+	event.widget = this;	
+	event.time = dragEvent.time;
+	event.doit = true;
+	try {
+		notifyListeners(DND.DragStart, event);
+	} catch (Throwable e) {
+		event.doit = false;
+	}
+	if (!event.doit) return;
+	int actions = opToOsOp(getStyle());
+	OS.gtk_drag_begin(control.handle, targetList, actions, 1, 0);
 }
+
+int dragEnd(int widget, int context, int data){ 
+	int op = DND.DROP_NONE;
+	if (context != 0) {
+		GdkDragContext gdkDragContext = new GdkDragContext ();
+		OS.memmove(gdkDragContext, context, GdkDragContext.sizeof);
+		if (gdkDragContext.dest_window != 0) { //NOTE: if dest_window is 0, drag was aborted
+			op = osOpToOp(gdkDragContext.action);
+			if (movePerformed) op = DND.DROP_MOVE;
+		}
+	}	
+	
+	DNDEvent event = new DNDEvent();
+	event.widget = this;
+	event.doit = op != 0;
+	event.detail = op; 
+	
+	try {
+		notifyListeners(DND.DragEnd, event);
+	} catch (Throwable e) {
+		return 0;
+	}
+	movePerformed = false;
+	return 1;	
+}	
+
+int dragGetData(int widget, int context, int selection_data,  int info, int time, int data){
+	if (selection_data == 0) return 0;	
+	GtkSelectionData gtkSelectionData = new GtkSelectionData();
+	OS.memmove(gtkSelectionData, selection_data, GtkSelectionData.sizeof);
+	if (gtkSelectionData.target == 0) return 0;
+	TransferData tdata = new TransferData();
+	tdata.type = gtkSelectionData.target;
+	tdata.pValue = gtkSelectionData.data;
+	tdata.length = gtkSelectionData.length;
+	tdata.format = gtkSelectionData.format;
+		
+	DNDEvent event = new DNDEvent();
+	event.widget = this;
+	event.time = time; 
+	event.dataType = tdata; 
+	try {
+		notifyListeners(DND.DragSetData, event);
+	} catch (Throwable e) {
+		return 0;
+	}
+	if (event.data == null) return 0;
+		
+	Transfer transfer = null;
+	for (int i = 0; i < transferAgents.length; i++) {
+		transfer = transferAgents[i];
+		if (transfer.isSupportedType(event.dataType)) break;
+	}
+	if (transfer == null) return 0;
+	transfer.javaToNative(event.data, event.dataType);
+	if (event.dataType.result == 0) return 0;
+	
+	OS.gtk_selection_data_set(selection_data, event.dataType.type, event.dataType.format, event.dataType.pValue, event.dataType.length);
+	return 1;	
+}
+int dragDataDelete(int widget, int context, int data){
+	movePerformed = true;
+	return 1;
+}
+public Display getDisplay () {
+	if (control == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
+	return control.getDisplay ();
+}
+
 /**
  * Returns the list of data types that can be transferred by this DragSource.
  *
  * @return the list of data types that can be transferred by this DragSource
  */
 public Transfer[] getTransfer(){
-	return null;
+	return transferAgents;
 }
+
+private void onDispose(){
+	if (controlListener != null) {
+			control.removeListener(SWT.Dispose, controlListener);
+			control.removeListener(SWT.DragDetect, controlListener);
+	}	
+	control = null;
+	controlListener = null;
+	
+	if (targetList != 0) 
+		OS.gtk_target_list_unref(targetList);
+	targetList = 0;
+	
+	if (dragGetData != null ) 
+		dragGetData.dispose();
+	dragGetData = null;
+	
+	if (dragEnd != null ) 
+		dragEnd.dispose();
+	dragEnd = null;
+	
+	if (dragDataDelete != null ) 
+		dragDataDelete.dispose();
+	dragDataDelete = null;
+}
+
+private int opToOsOp(int operation){
+	int osOperation = 0;
+	
+	if ((operation & DND.DROP_COPY) == DND.DROP_COPY)
+		osOperation |= OS.GDK_ACTION_COPY;
+	if ((operation & DND.DROP_MOVE) == DND.DROP_MOVE)
+		osOperation |= OS.GDK_ACTION_MOVE;
+	if ((operation & DND.DROP_LINK) == DND.DROP_LINK)
+		osOperation |= OS.GDK_ACTION_LINK;
+	
+	return osOperation;
+}
+private int osOpToOp(int osOperation){
+	int operation = DND.DROP_NONE;
+	
+	if ((osOperation & OS.GDK_ACTION_COPY) == OS.GDK_ACTION_COPY)
+		operation |= DND.DROP_COPY;
+	if ((osOperation & OS.GDK_ACTION_MOVE) == OS.GDK_ACTION_MOVE)
+		operation |= DND.DROP_MOVE;
+	if ((osOperation & OS.GDK_ACTION_LINK) == OS.GDK_ACTION_LINK)
+		operation |= DND.DROP_LINK;
+	
+	return operation;
+}		
 
 /**
  * Removes the listener from the collection of listeners who will
@@ -187,6 +380,10 @@ public Transfer[] getTransfer(){
  * @see #addDragListener
  */
 public void removeDragListener(DragSourceListener listener) {
+	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
+	removeListener (DND.DragStart, listener);
+	removeListener (DND.DragEnd, listener);
+	removeListener (DND.DragSetData, listener);
 }
 
 /**
@@ -198,6 +395,40 @@ public void removeDragListener(DragSourceListener listener) {
  * dragged from this source
  */
 public void setTransfer(Transfer[] transferAgents){
+	if (targetList != 0) {
+		OS.gtk_target_list_unref(targetList);
+		targetList = 0;
+	}
+	this.transferAgents = transferAgents;
+	if (transferAgents == null) return;
+	
+	GtkTargetEntry[] targets = new GtkTargetEntry[0];
+	for (int i = 0; i < transferAgents.length; i++) {
+		Transfer transfer = transferAgents[i];
+		int[] typeIds = transfer.getTypeIds();
+		String[] typeNames = transfer.getTypeNames();
+		for (int j = 0; j < typeIds.length; j++) {
+			GtkTargetEntry entry = new GtkTargetEntry();
+			byte[] buffer = Converter.wcsToMbcs(null, typeNames[j], true);
+			entry.target = OS.g_malloc(buffer.length);
+			OS.memmove(entry.target, buffer, buffer.length);						
+			entry.info = typeIds[j];
+			GtkTargetEntry[] newTargets = new GtkTargetEntry[targets.length + 1];
+			System.arraycopy(targets, 0, newTargets, 0, targets.length);
+			newTargets[targets.length] = entry;
+			targets = newTargets;
+		}	
+	}
+	
+	int pTargets = OS.g_malloc(targets.length * GtkTargetEntry.sizeof);
+	for (int i = 0; i < targets.length; i++) {
+		OS.memmove(pTargets + i*GtkTargetEntry.sizeof, targets[i], GtkTargetEntry.sizeof);		
+	}			
+	targetList = OS.gtk_target_list_new(pTargets, targets.length);
+	
+	for (int i = 0; i < targets.length; i++) {
+		OS.g_free(targets[i].target);
+	}
 }
 
 }
