@@ -133,6 +133,7 @@ void createHandle (int index) {
 		case SWT.PUSH:
 		default:
 			handle = OS.gtk_button_new ();
+			OS.GTK_WIDGET_SET_FLAGS(handle, OS.GTK_CAN_DEFAULT);
 			break;
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
