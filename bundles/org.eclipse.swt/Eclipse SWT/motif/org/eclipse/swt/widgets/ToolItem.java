@@ -917,6 +917,8 @@ int processPaint (int callData) {
 				FontMetrics fontMetrics = gc.getFontMetrics();
 				int underlineY = textY + fontMetrics.getHeight();
 				gc.drawLine(x, underlineY, x + mnemonicWidth, underlineY);
+				// Should use OS.XmStringDrawUnderline instead, but this functionality
+				// really belongs in GC so we'll deal with this the right way later.
 				x += mnemonicWidth;
 			}
 			if (mnemonicPos < text.length()) gc.drawText(text.substring(mnemonicPos + 1),
