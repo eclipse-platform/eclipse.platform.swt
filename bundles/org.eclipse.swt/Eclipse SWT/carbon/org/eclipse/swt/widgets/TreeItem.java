@@ -277,12 +277,6 @@ public boolean getChecked () {
 	return checked;
 }
 
-public Display getDisplay () {
-	Tree parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
-}
-
 /**
  * Returns <code>true</code> if the receiver is expanded,
  * and false otherwise.

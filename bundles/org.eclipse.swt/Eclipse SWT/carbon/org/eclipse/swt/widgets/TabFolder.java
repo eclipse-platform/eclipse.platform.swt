@@ -398,7 +398,6 @@ Point minimumSize (int wHint, int hHint, boolean flushCache) {
 }
 
 Rect getInset () {
-	Display display = getDisplay ();
 	return display.tabFolderInset;
 }
 

@@ -410,7 +410,6 @@ public String getText () {
 
 Rect getInset () {
 	if ((style & SWT.PUSH) == 0) return super.getInset();
-	Display display = getDisplay ();
 	return display.buttonInset;
 }
 

@@ -288,12 +288,10 @@ ScrollBar createScrollBar (int style) {
 }
 
 Color defaultBackground () {
-	Display display = getDisplay ();
 	return display.getSystemColor (SWT.COLOR_LIST_BACKGROUND);
 }
 
 Color defaultForeground () {
-	Display display = getDisplay ();
 	return display.getSystemColor (SWT.COLOR_LIST_FOREGROUND);
 }
 
@@ -664,7 +662,6 @@ public int getTopIndex () {
 
 void hookEvents () {
 	super.hookEvents ();
-	Display display= getDisplay();
 	DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
 	callbacks.version = OS.kDataBrowserLatestCallbacks;
 	OS.InitDataBrowserCallbacks (callbacks);
@@ -716,7 +713,6 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	* The fix is to ignore kEvenControlSetFocusPart when the user
 	* clicks and send the focus events from kEventMouseDown.
 	*/
-	Display display = getDisplay ();
 	Control oldFocus = display.getFocusControl ();
 	display.ignoreFocus = true;
 	result = OS.CallNextEventHandler (nextHandler, theEvent);

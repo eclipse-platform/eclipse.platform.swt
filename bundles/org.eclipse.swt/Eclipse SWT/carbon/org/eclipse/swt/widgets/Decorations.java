@@ -300,7 +300,6 @@ Decorations menuShell () {
 void releaseWidget () {
 	if (menuBar != null) menuBar.dispose ();
 	menuBar = null;
-	Display display = getDisplay ();
 	Menu [] menus = display.getMenus (this);
 	if (menus != null) {
 		do {
@@ -332,7 +331,7 @@ boolean restoreFocus () {
 
 void saveFocus () {
 	int window = OS.GetControlOwner (handle);
-	Control control = getDisplay ().getFocusControl (window);
+	Control control = display.getFocusControl (window);
 	if (control != null) savedFocus = control;
 }
 

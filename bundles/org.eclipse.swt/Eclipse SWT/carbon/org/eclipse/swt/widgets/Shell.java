@@ -101,7 +101,6 @@ import org.eclipse.swt.graphics.*;
  * @see SWT
  */
 public class Shell extends Decorations {
-	Display display;
 	int shellHandle, windowGroup;
 	boolean resized;
 	Control lastActive;
@@ -312,7 +311,7 @@ public Shell (Shell parent) {
  * @see SWT#SYSTEM_MODAL
  */
 public Shell (Shell parent, int style) {
-	this (parent != null ? parent.getDisplay () : null, parent, style, 0);
+	this (parent != null ? parent.display : null, parent, style, 0);
 }
 
 static int checkStyle (int style) {
@@ -524,11 +523,6 @@ public Rectangle getBounds () {
 	return new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 }
 
-public Display getDisplay () {
-	if (display == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return display;
-}
-
 int getDrawCount (int control) {
 	if (!isTrimHandle (control)) return drawCount;
 	return 0;
@@ -685,7 +679,6 @@ int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
 	int [] outScope = new int [1];
 	OS.GetWindowActivationScope (shellHandle, outScope); 
 	if (outScope [0] == OS.kWindowActivationScopeNone) return result;
-	Display display = getDisplay ();
 	display.setMenuBar (menuBar);
 	sendEvent (SWT.Activate);
 	if (isDisposed ()) return result;
@@ -743,7 +736,6 @@ int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 		//TEMPORARY CODE - should be send, but causes a GP
 		if (!savedFocus.isDisposed ()) savedFocus.sendFocusEvent (false, true);
 	}
-	Display display = getDisplay ();
 	display.setMenuBar (null);
 	return result;
 }
@@ -946,7 +938,6 @@ public void setBounds (int x, int y, int width, int height) {
 public void setMenuBar (Menu menu) {
 	checkWidget();
 	super.setMenuBar (menu);
-	Display display = getDisplay ();
 	if (display.getActiveShell () == this) {
 		display.setMenuBar (menuBar);
 	}

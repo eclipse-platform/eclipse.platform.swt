@@ -194,12 +194,6 @@ public boolean getChecked () {
 	return checked;
 }
 
-public Display getDisplay () {
-	Table parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
-}
-
 /**
  * Returns the foreground color that the receiver will use to draw.
  *

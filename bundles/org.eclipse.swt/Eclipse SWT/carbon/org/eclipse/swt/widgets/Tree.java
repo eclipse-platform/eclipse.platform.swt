@@ -329,12 +329,10 @@ void createWidget () {
 }
 
 Color defaultBackground () {
-	Display display = getDisplay ();
 	return display.getSystemColor (SWT.COLOR_LIST_BACKGROUND);
 }
 
 Color defaultForeground () {
-	Display display = getDisplay ();
 	return display.getSystemColor (SWT.COLOR_LIST_FOREGROUND);
 }
 
@@ -411,7 +409,6 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	}
 	Point extent = gc.stringExtent (item.text);
 	if ((itemState & OS.kDataBrowserItemIsSelected) != 0) {
-		Display display = getDisplay ();
 		gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
 		gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
 		gc.fillRectangle (x - 1, y, extent.x + 2, height);
@@ -690,7 +687,6 @@ int hitTestProc (int browser, int id, int property, int theRect, int mouseRect) 
 
 void hookEvents () {
 	super.hookEvents ();
-	Display display= getDisplay();
 	DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
 	callbacks.version = OS.kDataBrowserLatestCallbacks;
 	OS.InitDataBrowserCallbacks (callbacks);
@@ -903,7 +899,6 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	* The fix is to ignore kEvenControlSetFocusPart when the user
 	* clicks and send the focus events from kEventMouseDown.
 	*/
-	Display display = getDisplay ();
 	Control oldFocus = display.getFocusControl ();
 	display.ignoreFocus = true;
 	result = OS.CallNextEventHandler (nextHandler, theEvent);
@@ -941,6 +936,7 @@ void releaseWidget () {
 			item.releaseResources ();
 		}
 	}
+	items = null;
 	super.releaseWidget ();
 }
 

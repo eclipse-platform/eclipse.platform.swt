@@ -471,7 +471,6 @@ void createWidget () {
 }
 
 Color defaultBackground () {
-	Display display = getDisplay ();
 	return display.getSystemColor (SWT.COLOR_WHITE);
 }
 
@@ -483,11 +482,10 @@ Font defaultFont () {
 	short id = OS.FMGetFontFamilyFromName (family);
 	int [] font = new int [1]; 
 	OS.FMGetFontFromFontFamilyInstance (id, style [0], font, null);
-	return Font.carbon_new (getDisplay (), font [0], id, style [0], size [0]);
+	return Font.carbon_new (display, font [0], id, style [0], size [0]);
 }
 
 Color defaultForeground () {
-	Display display = getDisplay ();
 	return display.getSystemColor (SWT.COLOR_BLACK);
 }
 
@@ -628,7 +626,7 @@ public Color getBackground () {
 	checkWidget();
 	//NOT DONE - get default colors
 	if (background == null) return defaultBackground ();
-	return Color.carbon_new (getDisplay (), background);
+	return Color.carbon_new (display, background);
 }
 
 /**
@@ -661,22 +659,6 @@ public Rectangle getBounds () {
 	checkWidget();
 	Rect rect = getControlBounds (topHandle ());
 	return new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
-}
-
-/**
- * Returns the display that the receiver was created on.
- *
- * @return the receiver's display
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public Display getDisplay () {
-	Composite parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
 }
 
 int getDrawCount (int control) {
@@ -733,7 +715,7 @@ public Color getForeground () {
 	checkWidget();
 	//NOT DONE - get default colors
 	if (foreground == null) return defaultForeground ();
-	return Color.carbon_new (getDisplay (), foreground);
+	return Color.carbon_new (display, foreground);
 }
 
 /**
@@ -904,11 +886,10 @@ public boolean getVisible () {
 }
 
 boolean hasFocus () {
-	return this == getDisplay ().getFocusControl ();
+	return this == display.getFocusControl ();
 }
 
 int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentProvided, int ioHelpContent) {
-	Display display = getDisplay ();
     switch (inRequest) {
 		case OS.kHMSupplyContent: {
 			int [] contentProvided = new int [] {OS.kHMContentNotProvidedDontPropagate};
@@ -982,7 +963,6 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 
 void hookEvents () {
 	super.hookEvents ();
-	Display display = getDisplay ();
 	int controlProc = display.controlProc;
 	int [] mask = new int [] {
 		OS.kEventClassControl, OS.kEventControlActivate,
@@ -1050,7 +1030,6 @@ public int internal_new_GC (GCData data) {
 	}
 	if (context == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	if (data != null) {
-		Display display = getDisplay ();
 		data.device = display;
 		data.foreground = foreground != null ? foreground : new float [] {0, 0, 0, 1};
 		data.background = background != null ? background : new float [] {1, 1, 1, 1};
@@ -1115,7 +1094,6 @@ public boolean isEnabled () {
 
 boolean isEnabledModal () {
 	//NOT DONE - fails for multiple APP MODAL shells
-	Display display = getDisplay ();
 	Shell [] shells = display.getShells ();
 	for (int i = 0; i < shells.length; i++) {
 		Shell modal = shells [i];
@@ -1141,7 +1119,6 @@ boolean isEnabledModal () {
 }
 
 boolean isFocusAncestor () {
-	Display display = getDisplay ();
 	Control control = display.getFocusControl ();
 	while (control != null && control != this) {
 		control = control.parent;
@@ -1278,7 +1255,6 @@ int kEventControlSetCursor (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
-	Display display = getDisplay ();
 	if (!display.ignoreFocus) {
 		short [] part = new short [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
@@ -1298,10 +1274,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	OS.GetEventParameter (theEvent, OS.kEventParamClickCount, OS.typeUInt32, null, 4, null, clickCount);
 	sendMouseEvent (SWT.MouseDown, theEvent);
 	if (clickCount [0] == 2) sendMouseEvent (SWT.MouseDoubleClick, theEvent);
-	if ((state & GRAB) != 0) {
-		Display display = getDisplay ();
-		display.grabControl = this;
-	}
+	if ((state & GRAB) != 0) display.grabControl = this;
 	/*
 	* It is possible that the shell may be
 	* disposed at this point.  If this happens
@@ -1354,7 +1327,6 @@ int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
 int kEventRawKeyModifiersChanged (int nextHandler, int theEvent, int userData) {
 	int [] modifiers = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, modifiers.length * 4, null, modifiers);
-	Display display = getDisplay ();
 	int lastModifiers = display.lastModifiers;
 	int type = SWT.KeyUp;
 	if ((modifiers [0] & OS.shiftKey) != 0 && (lastModifiers & OS.shiftKey) == 0) type = SWT.KeyDown;
@@ -1778,7 +1750,6 @@ void sendFocusEvent (boolean focusIn, boolean post) {
 		if (focusIn) {
 			shell.setActiveControl (this);
 		} else {
-			Display display = shell.getDisplay ();
 			Control control = display.getFocusControl ();
 			if (control == null || shell != control.getShell () ) {
 				shell.setActiveControl (null);

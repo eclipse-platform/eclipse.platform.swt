@@ -241,7 +241,6 @@ public void addMenuListener (MenuListener listener) {
 }
 
 void createHandle () {
-	Display display = getDisplay ();
 	display.addMenu (this);
 	int outMenuRef [] = new int [1];
 	OS.CreateNewMenu (id, 0, outMenuRef);
@@ -334,12 +333,6 @@ void destroyWidget (Display display) {
 public MenuItem getDefaultItem () {
 	checkWidget();
 	return defaultItem;
-}
-
-public Display getDisplay () {
-	Decorations parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
 }
 
 /**
@@ -529,7 +522,6 @@ public boolean getVisible () {
 		return this == parent.menuShell ().menuBar;
 	}
 	if ((style & SWT.POP_UP) != 0) {
-		Display display = getDisplay ();
 		Menu [] popups = display.popups;
 		if (popups == null) return false;
 		for (int i=0; i<popups.length; i++) {
@@ -542,7 +534,6 @@ public boolean getVisible () {
 
 void hookEvents () {
 	super.hookEvents ();
-	Display display = getDisplay ();
 	int menuProc = display.menuProc;
 	int [] mask = new int [] {
 		OS.kEventClassMenu, OS.kEventMenuClosed,
@@ -671,7 +662,6 @@ void releaseWidget () {
 	}
 	items = null;
 	super.releaseWidget ();
-	Display display = getDisplay ();
 	display.removeMenu (this);
 	parent = null;
 	cascade = defaultItem = lastTarget = null;
@@ -838,7 +828,6 @@ public void setLocation (Point location) {
 public void setVisible (boolean visible) {
 	checkWidget ();
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
-	Display display = getDisplay ();
 	if (visible) {
 		display.addPopup (this);
 	} else {

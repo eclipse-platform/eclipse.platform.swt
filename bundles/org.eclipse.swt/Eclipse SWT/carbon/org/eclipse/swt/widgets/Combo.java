@@ -775,7 +775,6 @@ public int getTextLimit () {
 void hookEvents () {
 	super.hookEvents ();
 	if ((style & SWT.READ_ONLY) != 0) {
-		Display display = getDisplay ();
 		int commandProc = display.commandProc;
 		int [] mask = new int [] {
 			OS.kEventClassCommand, OS.kEventProcessCommand,
@@ -837,7 +836,6 @@ public int indexOf (String string, int start) {
 }
 
 Rect getInset () {
-	Display display = getDisplay ();
 	return display.comboInset;
 }
 

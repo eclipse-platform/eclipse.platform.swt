@@ -50,6 +50,7 @@ import org.eclipse.swt.events.*;
  */
 public abstract class Widget {
 	int style, state;
+	Display display;
 	EventTable eventTable;
 	Object data;
 
@@ -113,6 +114,7 @@ public Widget (Widget parent, int style) {
 	checkSubclass ();
 	checkParent (parent);
 	this.style = style;
+	display = parent.display;
 }
 
 int actionProc (int theControl, int partCode) {
@@ -197,8 +199,7 @@ void checkOrientation (Widget parent) {
 
 void checkParent (Widget parent) {
 	if (parent == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (!parent.isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (parent.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	parent.checkWidget ();
 }
 
 /**
@@ -257,8 +258,10 @@ protected void checkSubclass () {
  * </ul>
  */
 protected void checkWidget () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (isDisposed ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	Display display = this.display;
+	if (display == null) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (display.thread != Thread.currentThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if ((state & DISPOSED) != 0) error (SWT.ERROR_WIDGET_DISPOSED);
 }
 
 int colorProc (int inControl, int inMessage, int inDrawDepth, int inDrawInColor) {
@@ -440,7 +443,6 @@ public void dispose () {
 	*/
 	if (isDisposed()) return;
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	Display display = getDisplay ();
 	releaseChild ();
 	releaseWidget ();
 	destroyWidget (display);
@@ -506,7 +508,6 @@ void error (int code) {
 }
 
 boolean filters (int eventType) {
-	Display display = getDisplay ();
 	return display.filters (eventType);
 }
 
@@ -621,7 +622,11 @@ public Object getData (String key) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public abstract Display getDisplay ();
+public Display getDisplay () {
+	Display display = this.display;
+	if (display == null) error (SWT.ERROR_WIDGET_DISPOSED);
+	return display;
+}
 
 String getName () {
 	String string = getClass ().getName ();
@@ -1036,6 +1041,7 @@ void releaseChild () {
 
 void releaseHandle () {
 	state |= DISPOSED;
+	display = null;
 }
 
 void releaseResources () {
@@ -1146,7 +1152,6 @@ void sendEvent (int eventType, Event event) {
 }
 
 void sendEvent (int eventType, Event event, boolean send) {
-	Display display = getDisplay ();
 	if (eventTable == null && !display.filters (eventType)) {
 		return;
 	}
@@ -1358,7 +1363,6 @@ void setInputState (Event event, short button, int chord, int modifiers) {
 		case SWT.KeyDown:
 		case SWT.Traverse: {
 			if (event.keyCode != 0 || event.character != 0) return;
-			Display display = getDisplay ();
 			int lastModifiers = display.lastModifiers;
 			if ((modifiers & OS.shiftKey) != 0 && (lastModifiers & OS.shiftKey) == 0) {
 				event.stateMask &= ~SWT.SHIFT;
@@ -1384,7 +1388,6 @@ void setInputState (Event event, short button, int chord, int modifiers) {
 		}
 		case SWT.KeyUp: {
 			if (event.keyCode != 0 || event.character != 0) return;
-			Display display = getDisplay ();
 			int lastModifiers = display.lastModifiers;
 			if ((modifiers & OS.shiftKey) == 0 && (lastModifiers & OS.shiftKey) != 0) {
 				event.stateMask |= SWT.SHIFT;

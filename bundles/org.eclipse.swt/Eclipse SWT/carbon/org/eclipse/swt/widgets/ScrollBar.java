@@ -192,7 +192,6 @@ void enableWidget (boolean enabled) {
 }
 
 void createHandle () {
-	Display display = getDisplay ();
 	int actionProc = display.actionProc;
 	int [] outControl = new int [1];
 	int window = OS.GetControlOwner (parent.scrolledHandle);
@@ -209,12 +208,6 @@ void createWidget () {
 void deregister () {
 	super.deregister ();
 	WidgetTable.remove (handle);
-}
-
-public Display getDisplay () {
-	Scrollable parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
 }
 
 int getDrawCount (int control) {
@@ -398,7 +391,6 @@ public boolean getVisible () {
 
 void hookEvents () {
 	super.hookEvents ();
-	Display display = getDisplay ();
 	int controlProc = display.controlProc;
 	int [] mask = new int [] {
 		OS.kEventClassControl, OS.kEventControlDraw,

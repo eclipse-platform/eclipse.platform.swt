@@ -371,12 +371,6 @@ public boolean getEnabled () {
 	return (state & DISABLED) == 0;
 }
 
-public Display getDisplay () {
-	Composite parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
-}
-
 int getDrawCount (int control) {
 	return parent.getDrawCount (control);
 }
@@ -473,7 +467,6 @@ public int getWidth () {
 }
 
 int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentProvided, int ioHelpContent) {
-	Display display = getDisplay ();
     switch (inRequest) {
 		case OS.kHMSupplyContent: {
 			int [] contentProvided = new int [] {OS.kHMContentNotProvided};
@@ -520,7 +513,6 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 
 void hookEvents () {
 	super.hookEvents ();
-	Display display = getDisplay ();
 	int controlProc = display.controlProc;
 	int [] mask1 = new int [] {
 		OS.kEventClassControl, OS.kEventControlDraw,
@@ -617,7 +609,6 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	* NOTE: No mouse move events are sent while tracking.  There is no
 	* fix for this at this time.
 	*/
-	Display display = getDisplay ();
 	display.grabControl = null;
 	display.runDeferredEvents ();
 	tracking = false;
@@ -1050,7 +1041,6 @@ void updateImage () {
 void updateArrow () {
 	if (arrowCIcon != 0) destroyCIcon (arrowCIcon);
 	arrowCIcon = 0;
-	Display display = getDisplay ();
 	Image image = new Image (display, 7, 4);
 	GC gc = new GC (image);
 	int startX = 0, startY = 0;
@@ -1062,7 +1052,7 @@ void updateArrow () {
 	ImageData data = image.getImageData ();
 	data.transparentPixel = 0xFFFFFFFF;
 	image.dispose ();
-	image = new Image (getDisplay (), data, data.getTransparencyMask());
+	image = new Image (display, data, data.getTransparencyMask());
 	arrowCIcon = createCIcon (image);
 	image.dispose ();
 	ControlButtonContentInfo inContent = new ControlButtonContentInfo ();
@@ -1090,7 +1080,6 @@ void updateText () {
 		GC gc = new GC (parent);
 		Point size = gc.stringExtent (text);
 		gc.dispose ();
-		Display display = getDisplay ();
 		Image image = new Image (display, size.x, size.y);
 		gc = new GC (image);
 		gc.setFont (font);

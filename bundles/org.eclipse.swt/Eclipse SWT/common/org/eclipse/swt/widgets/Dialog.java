@@ -167,8 +167,7 @@ protected void checkSubclass () {
  */
 void checkParent (Shell parent) {
 	if (parent == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (!parent.isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (parent.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	parent.checkWidget ();
 }
 
 /**
