@@ -48,7 +48,7 @@ public static TextTransfer getInstance () {
  */
 public void javaToNative (Object object, TransferData transferData){
 	if (object == null || !(object instanceof String)) return;
-	byte [] buffer = Converter.wcsToMbcs (null, (String)object, false);
+	byte [] buffer = Converter.wcsToMbcs (null, (String)object, true);
 	super.javaToNative(buffer, transferData);
 }
 /**
@@ -59,9 +59,14 @@ public void javaToNative (Object object, TransferData transferData){
  *         otherwise null
  */
 public Object nativeToJava(TransferData transferData){
-	// get byte array from super
-	byte[] buffer = (byte[])super.nativeToJava(transferData);
-	if (buffer == null) return null;
+
+	if (transferData.pData == 0 || !(isSupportedType(transferData))) return null;
+	
+	int size = transferData.length;
+	if (size == 0) return null;
+	byte[] buffer = new byte[OS.strlen(transferData.pData)];
+	OS.memmove(buffer, transferData.pData, buffer.length);
+
 	// convert byte array to a string
 	char [] unicode = Converter.mbcsToWcs (null, buffer);
 	return new String (unicode);
