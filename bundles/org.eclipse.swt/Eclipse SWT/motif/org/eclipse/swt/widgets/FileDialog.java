@@ -335,11 +335,10 @@ public String open () {
 		}
 		OS.XmStringFree (xmString4);
 		int length = filterPath.length ();
-		if ((length != 0) && (filterPath.charAt (length - 1) == '/')) {
+		if (length != 0 && filterPath.charAt (length - 1) == '/') {
 			filterPath = filterPath.substring (0, length - 1);
-			int index = fullPath.length () - 1;
-			while ((index >= 0) && (fullPath.charAt (index) != '/')) --index;
-			fileName = fullPath.substring (index, fullPath.length ());
+			int index = fullPath.lastIndexOf ('/');
+			fileName = fullPath.substring (index + 1, fullPath.length ());
 		}
 	}
 
