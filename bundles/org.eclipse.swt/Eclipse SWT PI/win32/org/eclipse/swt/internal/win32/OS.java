@@ -1390,6 +1390,7 @@ public class OS extends Platform {
 	public static final int VK_APP5 = 0xc5;
 	public static final int VK_APP6 = 0xc6;
 	public static final String WC_HEADER = "SysHeader32"; //$NON-NLS-1$
+	public static final String WC_LINK = "SysLink"; //$NON-NLS-1$
 	public static final String WC_LISTVIEW = "SysListView32"; //$NON-NLS-1$
 	public static final String WC_TABCONTROL = "SysTabControl32"; //$NON-NLS-1$
 	public static final String WC_TREEVIEW = "SysTreeView32"; //$NON-NLS-1$

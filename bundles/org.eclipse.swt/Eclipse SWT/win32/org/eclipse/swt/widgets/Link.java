@@ -43,7 +43,7 @@ public class Link extends Control {
 	int font;
 	
 	static final int LinkProc;
-	static final TCHAR LinkClass = new TCHAR (0, "SysLink", true);
+	static final TCHAR LinkClass = new TCHAR (0, OS.WC_LINK, true);
 	static {
 		if (OS.COMCTL32_MAJOR >= 6) {
 			WNDCLASS lpWndClass = new WNDCLASS ();
