@@ -21,7 +21,7 @@ import org.eclipse.swt.internal.photon.*;
  * can have a graphics context (GC) created for them, and they
  * can be drawn on by sending messages to the associated GC.
  */
-public abstract class Device extends Resource implements Drawable {
+public abstract class Device implements Drawable {
 	
 	/* Debugging */
 	public static boolean DEBUG;
@@ -74,7 +74,6 @@ static Device getDevice () {
  * @see DeviceData
  */
 public Device(DeviceData data) {
-    this.device = this;
 	if (data != null) {
 		debug = data.debug;
 		tracking = data.tracking;
