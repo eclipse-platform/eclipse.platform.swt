@@ -309,7 +309,7 @@ int getChildrenCount () {
 	/*
 	* NOTE:  The current implementation will count
 	* non-registered children.
-	* */
+	*/
 	int [] argList = {OS.XmNnumChildren, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	if (focusHandle != 0) return Math.max (0, argList [1] - 1);
@@ -816,12 +816,15 @@ int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatc
 
 	/* Set focus for a canvas with no children */
 	if ((state & CANVAS) != 0) {
-		XButtonEvent xEvent = new XButtonEvent ();
-		OS.memmove (xEvent, call_data, XButtonEvent.sizeof);
-		if (xEvent.button == 1) {
-			if ((style & SWT.NO_FOCUS) != 0) return result;
-			if (getChildrenCount () == 0) setFocus ();
+		if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
+			XButtonEvent xEvent = new XButtonEvent ();
+			OS.memmove (xEvent, call_data, XButtonEvent.sizeof);
+			if (xEvent.button == 1) {
+				if (getChildrenCount () == 0) setFocus ();
+			}
 		}
+		OS.memmove (continue_to_dispatch, new int [1], 4);
+		return 1;
 	}
 	return result;
 }

@@ -332,6 +332,18 @@ public Control [] getChildren () {
 	return _getChildren ();
 }
 
+int getChildrenCount () {
+	/*
+	* NOTE: The current implementation will count
+	* non-registered children.
+	*/
+	int list = OS.gtk_container_get_children (handle);
+	if (list == 0) return 0;
+	int count = OS.g_list_length (list);
+	OS.g_list_free (list);
+	return count;
+}
+
 /**
  * Returns layout which is associated with the receiver, or
  * null if one has not been set.
@@ -383,14 +395,12 @@ public Control [] getTabList () {
 int gtk_button_press_event (int widget, int event) {
 	int result = super.gtk_button_press_event (widget, event);
 	if ((state & CANVAS) != 0) {
-		if ((style & SWT.NO_FOCUS) == 0) {
-			int count = 0;
-			int list = OS.gtk_container_get_children (handle);
-			if (list != 0) {
-				count = OS.g_list_length (list);
-				OS.g_list_free (list);
+		if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
+			GdkEventButton gdkEvent = new GdkEventButton ();
+			OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
+			if (gdkEvent.button == 1) {
+				if (getChildrenCount () == 0)  setFocus ();
 			}
-			if (count == 0) setFocus ();
 		}
 	}
 	return result;
