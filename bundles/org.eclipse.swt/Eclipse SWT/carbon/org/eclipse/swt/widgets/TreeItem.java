@@ -27,6 +27,7 @@ public TreeItem (Tree parent, int style) {
 public TreeItem (Tree parent, int style, int index) {
 	super (parent, style);
 	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
+	this.parent = parent;
 	parent.createItem (this, null, index);
 }
 
