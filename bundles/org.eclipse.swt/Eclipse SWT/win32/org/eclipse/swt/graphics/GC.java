@@ -356,7 +356,7 @@ public void dispose() {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public void drawArc (int x, int y, int width, int height, int startAngle, int endAngle) {
+public void drawArc (int x, int y, int width, int height, int startAngle, int arcAngle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0) {
 		x = x + width;
@@ -366,7 +366,7 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int en
 		y = y + height;
 		height = -height;
 	}
-	if (width == 0 || height == 0 || endAngle == 0) {
+	if (width == 0 || height == 0 || arcAngle == 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	/*
@@ -376,16 +376,16 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int en
 	*/
 	if (OS.IsWinCE) {
 		/* compute arc with a simple linear interpolation */
-		if (endAngle < 0) {
-			startAngle += endAngle;
-			endAngle = -endAngle;
+		if (arcAngle < 0) {
+			startAngle += arcAngle;
+			arcAngle = -arcAngle;
 		}
-		if (endAngle > 360) endAngle = 360;
-		int[] points = new int[(endAngle + 1) * 2];		
+		if (arcAngle > 360) arcAngle = 360;
+		int[] points = new int[(arcAngle + 1) * 2];		
 		int cteX = 2 * x + width;
 		int cteY = 2 * y + height;
 		int index = 0;
-		for (int i = 0; i <= endAngle; i++) {
+		for (int i = 0; i <= arcAngle; i++) {
 			points[index++] = (Compatibility.cos(startAngle + i, width) + cteX) >> 1;
 			points[index++] = (cteY - Compatibility.sin(startAngle + i, height)) >> 1;
 		} 
@@ -393,29 +393,29 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int en
 	} else {	
 		int x1, y1, x2, y2,tmp;
 		boolean isNegative;
-		if (endAngle >= 360 || endAngle <= -360) {
+		if (arcAngle >= 360 || arcAngle <= -360) {
 			x1 = x2 = x + width;
 			y1 = y2 = y + height / 2;
 		} else {
-			isNegative = endAngle < 0;
+			isNegative = arcAngle < 0;
 	
-			endAngle = endAngle + startAngle;
+			arcAngle = arcAngle + startAngle;
 			if (isNegative) {
 				// swap angles
 			   	tmp = startAngle;
-				startAngle = endAngle;
-				endAngle = tmp;
+				startAngle = arcAngle;
+				arcAngle = tmp;
 			}
 			x1 = Compatibility.cos(startAngle, width) + x + width/2;
 			y1 = -1 * Compatibility.sin(startAngle, height) + y + height/2;
 			
-			x2 = Compatibility.cos(endAngle, width) + x + width/2;
-			y2 = -1 * Compatibility.sin(endAngle, height) + y + height/2; 		
+			x2 = Compatibility.cos(arcAngle, width) + x + width/2;
+			y2 = -1 * Compatibility.sin(arcAngle, height) + y + height/2; 		
 		}
 		int nullBrush = OS.GetStockObject(OS.NULL_BRUSH);
 		int oldBrush = OS.SelectObject(handle, nullBrush);
-		OS.Arc(handle, x,y,x+width+1,y+height+1,x1,y1,x2,y2 );
-		OS.SelectObject(handle,oldBrush);
+		OS.Arc(handle, x, y, x + width + 1, y + height + 1, x1, y1, x2, y2);
+		OS.SelectObject(handle, oldBrush);
 	}
 }
 
@@ -1445,7 +1445,7 @@ public boolean equals (Object object) {
  *
  * @see #drawArc
  */
-public void fillArc (int x, int y, int width, int height, int startAngle, int endAngle) {
+public void fillArc (int x, int y, int width, int height, int startAngle, int arcAngle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 		
 	if (width < 0) {
@@ -1457,7 +1457,7 @@ public void fillArc (int x, int y, int width, int height, int startAngle, int en
 		height = -height;
 	}
 	
-	if (width == 0 || height == 0 || endAngle == 0) {
+	if (width == 0 || height == 0 || arcAngle == 0) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	
@@ -1467,20 +1467,20 @@ public void fillArc (int x, int y, int width, int height, int startAngle, int en
 	*/
 	if (OS.IsWinCE) {
 		/* compute arc with a simple linear interpolation */
-		if (endAngle < 0) {
-			startAngle += endAngle;
-			endAngle = -endAngle;
+		if (arcAngle < 0) {
+			startAngle += arcAngle;
+			arcAngle = -arcAngle;
 		}
 		boolean drawSegments = true;
-		if (endAngle >= 360) {
-			endAngle = 360;
+		if (arcAngle >= 360) {
+			arcAngle = 360;
 			drawSegments = false;
 		}
-		int[] points = new int[(endAngle + 1) * 2 + (drawSegments ? 4 : 0)];		
+		int[] points = new int[(arcAngle + 1) * 2 + (drawSegments ? 4 : 0)];		
 		int cteX = 2 * x + width;
 		int cteY = 2 * y + height;
 		int index = (drawSegments ? 2 : 0);
-		for (int i = 0; i <= endAngle; i++) {
+		for (int i = 0; i <= arcAngle; i++) {
 			points[index++] = (Compatibility.cos(startAngle + i, width) + cteX) >> 1;
 			points[index++] = (cteY - Compatibility.sin(startAngle + i, height)) >> 1;
 		} 
@@ -1495,30 +1495,30 @@ public void fillArc (int x, int y, int width, int height, int startAngle, int en
 	} else {
 	 	int x1, y1, x2, y2,tmp;
 		boolean isNegative;
-		if (endAngle >= 360 || endAngle <= -360) {
+		if (arcAngle >= 360 || arcAngle <= -360) {
 			x1 = x2 = x + width;
 			y1 = y2 = y + height / 2;
 		} else {
-			isNegative = endAngle < 0;
+			isNegative = arcAngle < 0;
 	
-			endAngle = endAngle + startAngle;
+			arcAngle = arcAngle + startAngle;
 			if (isNegative) {
 				// swap angles
 			   	tmp = startAngle;
-				startAngle = endAngle;
-				endAngle = tmp;
+				startAngle = arcAngle;
+				arcAngle = tmp;
 			}
 			x1 = Compatibility.cos(startAngle, width) + x + width/2;
 			y1 = -1 * Compatibility.sin(startAngle, height) + y + height/2;
 			
-			x2 = Compatibility.cos(endAngle, width) + x + width/2;
-			y2 = -1 * Compatibility.sin(endAngle, height) + y + height/2; 				
+			x2 = Compatibility.cos(arcAngle, width) + x + width/2;
+			y2 = -1 * Compatibility.sin(arcAngle, height) + y + height/2; 				
 		}
 	
 		int nullPen = OS.GetStockObject(OS.NULL_PEN);
 		int oldPen = OS.SelectObject(handle, nullPen);
-		OS.Pie(handle, x,y,x+width+1,y+height+1,x1,y1,x2,y2 );
-		OS.SelectObject(handle,oldPen);
+		OS.Pie(handle, x, y, x + width + 1, y + height + 1, x1, y1, x2, y2);
+		OS.SelectObject(handle, oldPen);
 	}
 }
 
