@@ -44,6 +44,7 @@ public final class GCData {
 	public String string;
 	public int stringPtr;
 	
+	public int window;	
 	public int paintEvent;
 	public int visibleRgn;
 	public int control;

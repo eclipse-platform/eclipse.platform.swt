@@ -1107,8 +1107,7 @@ public void internal_dispose_GC (int context, GCData data) {
 	* instead of CGContextFlush to improve performance.
 	*/
 //	OS.CGContextFlush (context);
-	OS.CGContextSynchronize(context);
-	
+	OS.CGContextSynchronize (context);
 	OS.CGContextRelease (context);
 }
 
@@ -1304,7 +1303,7 @@ int kEventControlSetCursor (int nextHandler, int theEvent, int userData) {
 	if (!isEnabled ()) return OS.noErr;
 	Cursor cursor = null;
 	if (isEnabledModal ()) {
-		if ((cursor = findCursor ()) != null) setCursor (cursor.handle);
+		if ((cursor = findCursor ()) != null) display.setCursor (cursor.handle);
 	}
 	return cursor != null ? OS.noErr : OS.eventNotHandledErr;
 }
@@ -2058,25 +2057,6 @@ public void setCursor (Cursor cursor) {
 	boolean [] cursorWasSet = new boolean [1];
 	OS.HandleControlSetCursor (theControl [0], localPoint, (short) modifiers, cursorWasSet);
 	if (!cursorWasSet [0]) OS.SetThemeCursor (OS.kThemeArrowCursor);
-}
-
-void setCursor (int cursor) {
-	switch (cursor) {
-		case OS.kThemePointingHandCursor:
-		case OS.kThemeArrowCursor:
-		case OS.kThemeSpinningCursor:
-		case OS.kThemeCrossCursor:
-		case OS.kThemeWatchCursor:
-		case OS.kThemeIBeamCursor:
-		case OS.kThemeNotAllowedCursor:
-		case OS.kThemeResizeLeftRightCursor:
-		case OS.kThemeResizeLeftCursor:
-		case OS.kThemeResizeRightCursor:
-			OS.SetThemeCursor (cursor);
-			break;
-		default:
-			OS.SetCursor (cursor);
-	}
 }
 
 /**

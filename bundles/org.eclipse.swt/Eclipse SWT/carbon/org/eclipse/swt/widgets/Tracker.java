@@ -14,6 +14,10 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.CGPoint;
+import org.eclipse.swt.internal.carbon.CGRect;
+import org.eclipse.swt.internal.carbon.Rect;
 
 /**
  *  Instances of this class implement rubber banding rectangles that are
@@ -35,10 +39,18 @@ import org.eclipse.swt.events.*;
  * </p>
  */
 public class Tracker extends Widget {
-		Control parent;
-		boolean tracking, stippled;
-		Rectangle [] rectangles, proportions;
-		int cursorOrientation = SWT.NONE;
+	Control parent;
+	boolean tracking, stippled;
+	Cursor clientCursor, resizeCursor;
+	Rectangle [] rectangles, proportions;
+	int cursorOrientation = SWT.NONE;
+	boolean inEvent = false;
+		
+	/*
+	* The following values mirror step sizes on Windows
+	*/
+	final static int STEPSIZE_SMALL = 1;
+	final static int STEPSIZE_LARGE = 9;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -147,12 +159,109 @@ public void addControlListener (ControlListener listener) {
 	addListener (SWT.Move,typedListener);
 }
 
-Point adjustMoveCursor (int xDisplay, int xWindow) {
-	return new Point (0, 0);
+Point adjustMoveCursor () {
+	Rectangle bounds = computeBounds ();
+	int newX = bounds.x + bounds.width / 2;
+	int newY = bounds.y;
+	/*
+	 * Convert to screen coordinates iff needed
+ 	 */
+	if (parent != null) {
+		Rect rect = new Rect ();
+		OS.GetControlBounds (parent.handle, rect);
+		newX += rect.left; 
+		newY += rect.top; 
+		int window = OS.GetControlOwner (parent.handle);
+		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+		newX += rect.left; 
+		newY += rect.top; 
+	}
+	CGPoint pt = new CGPoint ();
+	pt.x = newX;  pt.y = newY;
+	OS.CGWarpMouseCursorPosition (pt);
+	return new Point ((int) pt.x, (int) pt.y);
 }
 
-Point adjustResizeCursor (int xDisplay, int xWindow) {
-	return new Point (0, 0);
+Point adjustResizeCursor () {
+	int newX, newY;
+	Rectangle bounds = computeBounds ();
+
+	if ((cursorOrientation & SWT.LEFT) != 0) {
+		newX = bounds.x;
+	} else if ((cursorOrientation & SWT.RIGHT) != 0) {
+		newX = bounds.x + bounds.width;
+	} else {
+		newX = bounds.x + bounds.width / 2;
+	}
+
+	if ((cursorOrientation & SWT.UP) != 0) {
+		newY = bounds.y;
+	} else if ((cursorOrientation & SWT.DOWN) != 0) {
+		newY = bounds.y + bounds.height;
+	} else {
+		newY = bounds.y + bounds.height / 2;
+	}
+
+	/*
+	 * Convert to screen coordinates iff needed
+ 	 */
+	if (parent != null) {
+		Rect rect = new Rect ();
+		OS.GetControlBounds (parent.handle, rect);
+		newX += rect.left; 
+		newY += rect.top; 
+		int window = OS.GetControlOwner (parent.handle);
+		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+		newX += rect.left; 
+		newY += rect.top; 
+	}
+	CGPoint pt = new CGPoint ();
+	pt.x = newX;  pt.y = newY;
+	OS.CGWarpMouseCursorPosition (pt);
+
+	/*
+	* If the client has not provided a custom cursor then determine
+	* the appropriate resize cursor.
+	*/
+	if (clientCursor == null) {
+		Cursor newCursor = null;
+		switch (cursorOrientation) {
+			case SWT.UP:
+				newCursor = new Cursor(display, SWT.CURSOR_SIZENS);
+				break;
+			case SWT.DOWN:
+				newCursor = new Cursor(display, SWT.CURSOR_SIZENS);
+				break;
+			case SWT.LEFT:
+				newCursor = new Cursor(display, SWT.CURSOR_SIZEWE);
+				break;
+			case SWT.RIGHT:
+				newCursor = new Cursor(display, SWT.CURSOR_SIZEWE);
+				break;
+			case SWT.LEFT | SWT.UP:
+				newCursor = new Cursor(display, SWT.CURSOR_SIZENWSE);
+				break;
+			case SWT.RIGHT | SWT.DOWN:
+				newCursor = new Cursor(display, SWT.CURSOR_SIZENWSE);
+				break;
+			case SWT.LEFT | SWT.DOWN:
+				newCursor = new Cursor(display, SWT.CURSOR_SIZENESW);
+				break;
+			case SWT.RIGHT | SWT.UP:
+				newCursor = new Cursor(display, SWT.CURSOR_SIZENESW);
+				break;
+			default:
+				newCursor = new Cursor(display, SWT.CURSOR_SIZEALL);
+				break;
+		}
+		display.setCursor (newCursor.handle);
+		if (resizeCursor != null) {
+			resizeCursor.dispose ();
+		}
+		resizeCursor = newCursor;
+	}
+		
+	return new Point ((int) pt.x, (int) pt.y);
 }
 
 static int checkStyle (int style) {
@@ -211,7 +320,8 @@ Rectangle [] computeProportions (Rectangle [] rects) {
 	return result;
 }
 
-void drawRectangles () {
+
+void drawRectangles (int window, boolean erase) {
 	if (parent != null) {
 		if (parent.isDisposed ()) return;
 		Shell shell = parent.getShell ();
@@ -219,6 +329,32 @@ void drawRectangles () {
 	} else {
 		display.update ();
 	}
+	int[] context = new int [1];
+	int port = OS.GetWindowPort (window);
+	Rect portRect = new Rect ();
+	OS.GetPortBounds (port, portRect);
+	OS.QDBeginCGContext (port, context);
+	OS.CGContextScaleCTM (context [0], 1, -1);
+	OS.CGContextTranslateCTM (context [0], 0, portRect.top - portRect.bottom);
+	CGRect cgRect = new CGRect ();
+	for (int i=0; i<rectangles.length; i++) {
+		Rectangle rect = rectangles [i];
+		cgRect.x = rect.x;
+		cgRect.y = rect.y;
+		cgRect.width = rect.width;
+		cgRect.height = rect.height;
+		if (erase) {
+			cgRect.width++;
+			cgRect.height++;
+			OS.CGContextClearRect (context [0], cgRect);
+		} else {
+			cgRect.x += 0.5f;
+			cgRect.y += 0.5f;
+			OS.CGContextStrokeRect (context [0], cgRect);
+		}
+	}
+	OS.CGContextSynchronize (context [0]);
+	OS.QDEndCGContext (port, context);
 }
 
 /**
@@ -279,7 +415,163 @@ void moveRectangles (int xChange, int yChange) {
 public boolean open () {
 	checkWidget ();
 	if (rectangles == null) return false;
-	return false;
+	boolean cancelled = false;
+	tracking = true;
+	int window = display.createOverlayWindow ();
+	OS.ShowWindow (window);
+	drawRectangles (window, false);
+	Point cursorPos;
+	if (OS.StillDown ()) {
+		org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
+		OS.GetGlobalMouse (pt);
+		cursorPos = new Point (pt.h, pt.v);
+	} else {
+		if ((style & SWT.RESIZE) != 0) {
+			cursorPos = adjustResizeCursor ();
+		} else {
+			cursorPos = adjustMoveCursor ();
+		}
+	}
+	
+	int oldX = cursorPos.x, oldY = cursorPos.y;
+	/*
+	* Tracker behaves like a Dialog with its own OS event loop.
+	*/
+	Event event = new Event ();
+	int [] outEvent  = new int [1];
+	while (tracking && !cancelled) {
+		int status = OS.ReceiveNextEvent (0, null, OS.kEventDurationNoWait, true, outEvent);
+		if (status != OS.noErr) continue;
+		int eventClass = OS.GetEventClass (outEvent [0]);
+		int eventKind = OS.GetEventKind (outEvent [0]);
+		int newX = oldX, newY = oldY;	
+		switch (eventClass) {
+			case OS.kEventClassMouse: {
+				switch (eventKind) {
+					case OS.kEventMouseUp:
+					case OS.kEventMouseMoved:
+					case OS.kEventMouseDragged:
+						int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
+						org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
+						OS.GetEventParameter (outEvent [0], OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, where);
+						newX = where.h;
+						newY = where.v;	
+						if (newX != oldX || newY != oldY) {
+							drawRectangles (window, true);
+							event.x = newX;
+							event.y = newY;
+							if ((style & SWT.RESIZE) != 0) {
+							   resizeRectangles (newX - oldX, newY - oldY);
+								cursorPos = adjustResizeCursor ();
+								newX = cursorPos.x; newY = cursorPos.y;
+								inEvent = true;
+								sendEvent (SWT.Resize, event);
+							} else {
+								moveRectangles (newX - oldX, newY - oldY);
+								inEvent = true;
+								sendEvent (SWT.Move, event);
+							}
+							inEvent = false;
+							/*
+							* It is possible (but unlikely), that application
+							* code could have disposed the widget in the move
+							* event.  If this happens, return false to indicate
+							* that the tracking has failed.
+							*/
+							if (isDisposed ()) return false;
+							drawRectangles (window, false);
+							oldX = newX;  oldY = newY;
+						}
+						tracking = eventKind != OS.kEventMouseUp;
+						break;
+				}
+				break;
+			}
+			case OS.kEventClassKeyboard: {
+				switch (eventKind) {
+					case OS.kEventRawKeyDown:
+					case OS.kEventRawKeyModifiersChanged:
+					case OS.kEventRawKeyRepeat: {
+						int [] keyCode = new int [1];
+						OS.GetEventParameter (outEvent [0], OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
+						int [] modifiers = new int [1];
+						OS.GetEventParameter (outEvent [0], OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
+						int stepSize = (modifiers [0] & OS.controlKey) != 0 ? STEPSIZE_SMALL : STEPSIZE_LARGE;
+						int xChange = 0, yChange = 0;
+						switch (keyCode [0]) {
+							case 53: /* Esc */
+								cancelled = true;
+								tracking = false;
+								break;
+							case 36: /* Return */
+								tracking = false;
+								break;
+							case 123: /* Left arrow */
+								xChange = -stepSize;
+								break;
+							case 124: /* Right arrow */
+								xChange = stepSize;
+								break;
+							case 126: /* Up arrow */
+								yChange = -stepSize;
+								break;
+							case 125: /* Down arrow */
+								yChange = stepSize;
+								break;
+						}
+						if (xChange != 0 || yChange != 0) {
+							drawRectangles (window, true);
+							newX = oldX + xChange;
+							newY = oldY + yChange;
+							event.x = newX;
+							event.y = newY;
+							if ((style & SWT.RESIZE) != 0) {
+								resizeRectangles (xChange, yChange);
+								cursorPos = adjustResizeCursor ();
+								inEvent = true;
+								sendEvent (SWT.Resize, event);
+							} else {
+								moveRectangles (xChange, yChange);
+								cursorPos = adjustMoveCursor ();
+								inEvent = true;
+								sendEvent (SWT.Move, event);
+							}
+							inEvent = false;
+							/*
+							* It is possible (but unlikely) that application
+							* code could have disposed the widget in the move
+							* event.  If this happens return false to indicate
+							* that the tracking has failed.
+							*/
+							if (isDisposed ()) return false;
+							drawRectangles (window, false);
+							oldX = cursorPos.x;  oldY = cursorPos.y;
+						}
+						break;
+					}
+				}
+			}
+		}
+		/*
+		* Don't dispatch mouse and key events in general, EXCEPT once this
+		* tracker has finished its work.
+		*/
+		boolean dispatch = true;
+		if (tracking && !cancelled) {
+			if (eventClass == OS.kEventClassMouse) dispatch = false;
+			if (eventClass == OS.kEventClassKeyboard) dispatch = false;
+		}
+		if (dispatch) OS.SendEventToEventTarget (outEvent [0], OS.GetEventDispatcherTarget ());
+		OS.ReleaseEvent (outEvent [0]);
+		if (clientCursor != null && resizeCursor == null) {
+			display.setCursor (clientCursor.handle);
+		}
+	}
+	drawRectangles (window, true);
+	OS.DisposeWindow (window);
+	tracking = false;
+	display.grabControl = null;
+	return !cancelled;
 }
 
 /**
@@ -361,8 +653,12 @@ void resizeRectangles (int xChange, int yChange) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setCursor (Cursor value) {
+public void setCursor (Cursor newCursor) {
 	checkWidget ();
+	clientCursor = newCursor;
+	if (newCursor != null) {
+		if (inEvent) display.setCursor (newCursor.handle);
+	}
 }
 
 /**

@@ -484,6 +484,20 @@ protected void checkSubclass () {
 	if (!Display.isValidClass (getClass ())) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+int createOverlayWindow () {
+	int gdevice = OS.GetMainDevice ();
+	int [] ptr = new int [1];
+	OS.memcpy (ptr, gdevice, 4);
+	GDevice device = new GDevice ();
+	OS.memcpy (device, ptr [0], GDevice.sizeof);
+	Rect rect = new Rect ();	
+	OS.SetRect (rect, (short) device.left, (short) device.top, (short) device.right, (short) device.bottom);
+	int [] outWindow = new int [1];
+	OS.CreateNewWindow (OS.kOverlayWindowClass, 0, rect, outWindow);
+	if (outWindow [0] == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	return outWindow [0];
+}
+
 /**
  * Constructs a new instance of this class.
  * <p>
@@ -730,13 +744,13 @@ public void disposeExec (Runnable runnable) {
 }
 
 void dragDetect (Control control) {
-//	if (!dragging && control.hooks (SWT.DragDetect)) {
-//		if (OS.WaitMouseMoved (dragMouseStart)) {
-//			dragging = true;
-//			//control.postEvent (SWT.DragDetect);
-//			control.sendEvent (SWT.DragDetect);
-//		}
-//	}
+	if (!dragging && control.hooks (SWT.DragDetect)) {
+		if (OS.WaitMouseMoved (dragMouseStart)) {
+			dragging = true;
+			//control.postEvent (SWT.DragDetect);
+			control.sendEvent (SWT.DragDetect);
+		}
+	}
 }
 
 int drawItemProc (int browser, int item, int property, int itemState, int theRect, int gdDepth, int colorDevice) {
@@ -1495,21 +1509,27 @@ void initializeInsets () {
  */
 public int internal_new_GC (GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
-	// NEEDS WORK
-	int window = OS.FrontWindow ();
+	//TODO - multiple monitors
+	int window = createOverlayWindow ();
+	OS.ShowWindow (window);
 	int port = OS.GetWindowPort (window);
 	int [] buffer = new int [1];
 	OS.CreateCGContextForPort (port, buffer);
 	int context = buffer [0];
 	if (context == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	Rect portRect = new Rect ();
+	OS.GetPortBounds (port, portRect);
+	OS.CGContextScaleCTM (context, 1, -1);
+	OS.CGContextTranslateCTM (context, 0, portRect.top - portRect.bottom);
 	if (data != null) {
 		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 		if ((data.style & mask) == 0) {
 			data.style |= SWT.LEFT_TO_RIGHT;
 		}
 		data.device = this;
-		data.background = new float [] {0, 0, 0, 1};
-		data.foreground = new float [] {1, 1, 1, 1};
+		data.window = window;
+		data.background = new float [] {1, 1, 1, 1};
+		data.foreground = new float [] {0, 0, 0, 1};
 		data.font = getSystemFont ();
 	}
 	return context;
@@ -1530,8 +1550,18 @@ public int internal_new_GC (GCData data) {
  */
 public void internal_dispose_GC (int context, GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
-	// NEEDS WORK
-	OS.CGContextFlush (context);
+	if (data != null) {
+		int window = data.window;
+		OS.DisposeWindow (window);
+		data.window = 0;
+	}
+	
+	/*
+	* This code is intentionaly commented. Use CGContextSynchronize
+	* instead of CGContextFlush to improve performance.
+	*/
+//	OS.CGContextFlush (context);
+	OS.CGContextSynchronize (context);
 	OS.CGContextRelease (context);
 }
 
@@ -2158,7 +2188,9 @@ void runGrabs () {
 				int x = outPt.h - rect.left;
 				int y = outPt.v - rect.top;
 				int chord = OS.GetCurrentEventButtonState ();
-				grabControl.sendMouseEvent (type, (short)button, chord, (short)x, (short)y, outModifiers [0]);
+				if (grabControl != null && !grabControl.isDisposed ()) {
+					grabControl.sendMouseEvent (type, (short)button, chord, (short)x, (short)y, outModifiers [0]);
+				}
 				//TEMPORARY CODE
 				if (grabControl != null && !grabControl.isDisposed ()) grabControl.update (true);
 			}
@@ -2243,6 +2275,25 @@ void setCurrentCaret (Caret caret) {
 	}
 }
 
+void setCursor (int cursor) {
+	switch (cursor) {
+		case OS.kThemePointingHandCursor:
+		case OS.kThemeArrowCursor:
+		case OS.kThemeSpinningCursor:
+		case OS.kThemeCrossCursor:
+		case OS.kThemeWatchCursor:
+		case OS.kThemeIBeamCursor:
+		case OS.kThemeNotAllowedCursor:
+		case OS.kThemeResizeLeftRightCursor:
+		case OS.kThemeResizeLeftCursor:
+		case OS.kThemeResizeRightCursor:
+			OS.SetThemeCursor (cursor);
+			break;
+		default:
+			OS.SetCursor (cursor);
+	}
+}
+
 /**
  * Sets the location of the on-screen pointer relative to the top left corner
  * of the screen.  <b>Note: It is typically considered bad practice for a
@@ -2260,7 +2311,9 @@ void setCurrentCaret (Caret caret) {
  */
 public void setCursorLocation (int x, int y) {
 	checkDevice ();
-	/* Not possible on the MAC */
+	CGPoint pt = new CGPoint ();
+	pt.x = x;  pt.y = y;
+	OS.CGWarpMouseCursorPosition (pt);
 }
 
 /**

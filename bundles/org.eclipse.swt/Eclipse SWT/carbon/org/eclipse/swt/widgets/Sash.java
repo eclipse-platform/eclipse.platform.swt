@@ -146,7 +146,7 @@ int kEventControlClick (int nextHandler, int theEvent, int userData) {
 int kEventControlSetCursor (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlSetCursor (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	setCursor (sizeCursor.handle);
+	display.setCursor (sizeCursor.handle);
 	return OS.noErr;
 }
 

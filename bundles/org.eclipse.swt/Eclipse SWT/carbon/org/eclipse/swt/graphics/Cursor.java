@@ -236,28 +236,77 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 		hotspotY >= source.height || hotspotY < 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
+
+	/* Find the first non transparent pixel if cursor bigger than 16x16. */
+	int width = source.width;
+	int height = source.height;
+	int minX = 0, minY = 0;
+	if (width > 16 || height > 16) {
+		minX = width;
+		minY = height;
+		int maxX = 0, maxY = 0;
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				if (!(source.getPixel(x, y) == 1 && mask.getPixel(x, y) == 0)) {
+					minX = Math.min(minX, x);
+					minY = Math.min(minY, y);
+					maxX = Math.max(maxX, x);
+					maxY = Math.max(maxY, y);
+				}
+			}
+		}
+		width = maxX - minX + 1;
+		height = maxY - minY + 1;
+		
+		/* Stretch cursor if still bigger than 16x16. */
+		if (width > 16 || height > 16) {
+			int newWidth = Math.min(width, 16);
+			int newHeight = Math.min(height, 16);
+			ImageData newSource =
+				new ImageData(newWidth, newHeight, source.depth, source.palette,
+					1, null, 0, null, null, -1, -1, source.type,
+					source.x, source.y, source.disposalMethod, source.delayTime);
+			ImageData newMask = new ImageData(newWidth, newHeight, mask.depth,
+					mask.palette, 1, null, 0, null, null, -1, -1, mask.type,
+					mask.x, mask.y, mask.disposalMethod, mask.delayTime);
+			ImageData.blit(ImageData.BLIT_SRC,
+				source.data, source.depth, source.bytesPerLine, source.getByteOrder(), minX, minY, width, height, null, null, null,
+				ImageData.ALPHA_OPAQUE, null, 0, minX, minY,
+				newSource.data, newSource.depth, newSource.bytesPerLine, newSource.getByteOrder(), 0, 0, newWidth, newHeight, null, null, null,
+				false, false);
+			ImageData.blit(ImageData.BLIT_SRC,
+				mask.data, mask.depth, mask.bytesPerLine, mask.getByteOrder(), minX, minY, width, height, null, null, null,
+				ImageData.ALPHA_OPAQUE, null, 0, minX, minY,
+				newMask.data, newMask.depth, newMask.bytesPerLine, newMask.getByteOrder(), 0, 0, newWidth, newHeight, null, null, null,
+				false, false);
+			width = newWidth;
+			height = newHeight;
+			minX = minY = 0;
+			source = newSource;
+			mask = newMask;
+		}
+	}
+
 	/* Create the cursor */
 	org.eclipse.swt.internal.carbon.Cursor cursor = new org.eclipse.swt.internal.carbon.Cursor();
-	int width = Math.min(16, source.width);
-	int height = Math.min(16, source.height);
 	short[] srcData = cursor.data;
 	short[] maskData = cursor.mask;
-	for (int y= 0; y < height; y++) {
+	for (int y = 0; y < height; y++) {
 		short d = 0, m = 0;
 		for (int x = 0; x < width; x++) {
 			int bit = 1 << (width - 1 - x);
-			if (source.getPixel(x, y) == 0) {
+			if (source.getPixel(minX + x, minY + y) == 0) {
 				m |= bit;
-				if (mask.getPixel(x, y) == 0) d |= bit;
-			} else if (mask.getPixel(x, y) != 0) {
+				if (mask.getPixel(minX + x, minY + y) == 0) d |= bit;
+			} else if (mask.getPixel(minX + x, minY + y) != 0) {
 				d |= bit;
 			}
 		}
 		srcData[y] = d;
 		maskData[y] = m;
 	}
-	cursor.hotSpot_h = (short)Math.min(16, hotspotX);
-	cursor.hotSpot_v = (short)Math.min(16, hotspotY);
+	cursor.hotSpot_h = (short)Math.max(0, Math.min(15, hotspotY - minX));
+	cursor.hotSpot_v = (short)Math.max(0, Math.min(15, hotspotY - minY));
 	handle = OS.NewPtr(org.eclipse.swt.internal.carbon.Cursor.sizeof);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.memcpy(handle, cursor, org.eclipse.swt.internal.carbon.Cursor.sizeof);
@@ -297,30 +346,78 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 		source = newSource;
 	}
 
+	/* Find the first non transparent pixel if cursor bigger than 16x16. */
+	int width = source.width;
+	int height = source.height;
+	int minX = 0, minY = 0;
+	if (width > 16 || height > 16) {
+		minX = width;
+		minY = height;
+		int maxX = 0, maxY = 0;
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				if (!(source.getPixel(x, y) == 1 && mask.getPixel(x, y) == 0)) {
+					minX = Math.min(minX, x);
+					minY = Math.min(minY, y);
+					maxX = Math.max(maxX, x);
+					maxY = Math.max(maxY, y);
+				}
+			}
+		}
+		width = maxX - minX + 1;
+		height = maxY - minY + 1;
+		
+		/* Stretch cursor if still bigger than 16x16. */
+		if (width > 16 || height > 16) {
+			int newWidth = Math.min(width, 16);
+			int newHeight = Math.min(height, 16);
+			ImageData newSource =
+				new ImageData(newWidth, newHeight, source.depth, source.palette,
+					1, null, 0, null, null, -1, -1, source.type,
+					source.x, source.y, source.disposalMethod, source.delayTime);
+			ImageData newMask = new ImageData(newWidth, newHeight, mask.depth,
+					mask.palette, 1, null, 0, null, null, -1, -1, mask.type,
+					mask.x, mask.y, mask.disposalMethod, mask.delayTime);
+			ImageData.blit(ImageData.BLIT_SRC,
+				source.data, source.depth, source.bytesPerLine, source.getByteOrder(), minX, minY, width, height, null, null, null,
+				ImageData.ALPHA_OPAQUE, null, 0, minX, minY,
+				newSource.data, newSource.depth, newSource.bytesPerLine, newSource.getByteOrder(), 0, 0, newWidth, newHeight, null, null, null,
+				false, false);
+			ImageData.blit(ImageData.BLIT_SRC,
+				mask.data, mask.depth, mask.bytesPerLine, mask.getByteOrder(), minX, minY, width, height, null, null, null,
+				ImageData.ALPHA_OPAQUE, null, 0, minX, minY,
+				newMask.data, newMask.depth, newMask.bytesPerLine, newMask.getByteOrder(), 0, 0, newWidth, newHeight, null, null, null,
+				false, false);
+			width = newWidth;
+			height = newHeight;
+			minX = minY = 0;
+			source = newSource;
+			mask = newMask;
+		}
+	}
+
 	/* Create the cursor */
 	org.eclipse.swt.internal.carbon.Cursor cursor = new org.eclipse.swt.internal.carbon.Cursor();
-	int width = Math.min(16, source.width);
-	int height = Math.min(16, source.height);
 	short[] srcData = cursor.data;
 	short[] maskData = cursor.mask;
 	for (int y= 0; y < height; y++) {
 		short d = 0, m = 0;
 		for (int x = 0; x < width; x++) {
 			int bit = 1 << (width - 1 - x);			
-			if (source.getPixel(x, y) == 0) {
-				if (mask.getPixel(x, y) != 0) {
+			if (source.getPixel(x + minX, y + minY) == 0) {
+				if (mask.getPixel(x + minX, y + minY) != 0) {
 					d |= bit;
 					m |= bit;
 				}
 			} else {
-				if (mask.getPixel(x, y) != 0) m |= bit;
+				if (mask.getPixel(x + minX, y + minY) != 0) m |= bit;
 			}
 		}
 		srcData[y] = d;
 		maskData[y] = m;
 	}
-	cursor.hotSpot_h = (short)Math.min(16, hotspotX);
-	cursor.hotSpot_v = (short)Math.min(16, hotspotY);
+	cursor.hotSpot_h = (short)Math.max(0, Math.min(15, hotspotY - minX));
+	cursor.hotSpot_v = (short)Math.max(0, Math.min(15, hotspotY - minY));
 	handle = OS.NewPtr(org.eclipse.swt.internal.carbon.Cursor.sizeof);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.memcpy(handle, cursor, org.eclipse.swt.internal.carbon.Cursor.sizeof);
