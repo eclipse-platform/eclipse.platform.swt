@@ -1528,7 +1528,9 @@ void setFocusIndex (int index) {
 	lvItem.state = OS.LVIS_FOCUSED;
 	lvItem.stateMask = OS.LVIS_FOCUSED;
 	lvItem.iItem = index;
+	ignoreSelect = true;
 	OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
+	ignoreSelect = false;
 }
 
 public void setFont (Font font) {
