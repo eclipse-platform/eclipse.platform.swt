@@ -699,8 +699,16 @@ public void setSelection (boolean selected) {
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	/*
+	* Feature in Motif.  Motif does not optimize the case
+	* when the same text is set into a menu item causing
+	* it to flash.  The fix is to test for equality and
+	* do nothing.
+	*/
+	if (text.equals (string)) return;
 	super.setText (string);
 	if ((style & (SWT.ARROW | SWT.SEPARATOR)) != 0) return;
+	
 	/*
 	* Bug in Linux.  In certain contexts setting the label of a
 	* CHECK or RADIO menu item to the empty string can cause a
