@@ -49,9 +49,10 @@ public class Tree extends Composite {
 	static final int PIXBUF_COLUMN = 1;
 	static final int FOREGROUND_COLUMN = 2;
 	static final int BACKGROUND_COLUMN = 3;
-	static final int ID_COLUMN = 4;
-	static final int CHECKED_COLUMN = 5;
-	static final int GRAYED_COLUMN = 6;
+	static final int FONT_COLUMN = 4;
+	static final int ID_COLUMN = 5;
+	static final int CHECKED_COLUMN = 6;
+	static final int GRAYED_COLUMN = 7;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -178,15 +179,17 @@ void createHandle (int index) {
 	* 1 - pixmap
 	* 2 - foreground
 	* 3 - background
-	* 4 - id
-	* 5 - checked (if needed)
-	* 6 - grayed (if needed)
+	* 4 - font
+	* 5 - id
+	* 6 - checked (if needed)
+	* 7 - grayed (if needed)
 	*/
-	int [] types = new int [(style & SWT.CHECK) !=0 ? 7 : 5];
+	int [] types = new int [(style & SWT.CHECK) !=0 ? 8 : 6];
 	types [TEXT_COLUMN] = OS.G_TYPE_STRING ();
 	types [PIXBUF_COLUMN] = OS.GDK_TYPE_PIXBUF ();
 	types [FOREGROUND_COLUMN] = OS.GDK_TYPE_COLOR ();
 	types [BACKGROUND_COLUMN] = OS.GDK_TYPE_COLOR ();
+	types [FONT_COLUMN] = OS.PANGO_TYPE_FONT_DESCRIPTION ();
 	types [ID_COLUMN] = OS.G_TYPE_INT ();
 	if ((style & SWT.CHECK) != 0) {
 		types [CHECKED_COLUMN] = OS.G_TYPE_BOOLEAN (); 
@@ -231,6 +234,7 @@ void createHandle (int index) {
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "text", TEXT_COLUMN);
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "foreground-gdk", FOREGROUND_COLUMN);
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "background-gdk", BACKGROUND_COLUMN);
+	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "font-desc", FONT_COLUMN);
 	int parentHandle = parent.parentingHandle ();
 	OS.gtk_container_add (parentHandle, fixedHandle);
 	OS.gtk_container_add (fixedHandle, scrolledHandle);

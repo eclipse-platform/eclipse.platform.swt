@@ -274,6 +274,27 @@ public boolean getExpanded () {
 }
 
 /**
+ * Returns the font that the receiver will use to paint textual information for this item.
+ *
+ * @return the receiver's font
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.0
+ */
+public Font getFont () {
+	checkWidget ();
+	int [] ptr = new int [1];
+	OS.gtk_tree_model_get (parent.modelHandle, handle, Tree.FONT_COLUMN, ptr, -1);
+	if (ptr [0] == 0) return parent.getFont ();
+	return Font.gtk_new (display, ptr[0]);
+}
+
+
+/**
  * Returns the foreground color that the receiver will use to draw.
  *
  * @return the receiver's foreground color
@@ -497,6 +518,33 @@ public void setExpanded (boolean expanded) {
 		OS.g_signal_handlers_unblock_matched (parent.handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_COLLAPSE_ROW);
 	}
 	OS.gtk_tree_path_free (path);
+}
+
+
+/**
+ * Sets the font that the receiver will use to paint textual information
+ * for this item to the font specified by the argument, or to the default font
+ * for that kind of control if the argument is null.
+ *
+ * @param font the new font (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public void setFont (Font font){
+	checkWidget ();
+	if (font != null && font.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	int fontHandle  = font != null ? font.handle : 0;
+	OS.gtk_tree_store_set (parent.modelHandle, handle, Tree.FONT_COLUMN, fontHandle, -1);
 }
 
 /**
