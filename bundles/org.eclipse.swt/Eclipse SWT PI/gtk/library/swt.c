@@ -1752,3 +1752,17 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_XListFonts
     return rc;
 }
 
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1signal_1connect_1swapped
+  (JNIEnv *env, jclass that, jint instance, jbyteArray detailed_signal, jint c_handler, jint data)
+{
+	jint rc;
+	jbyte *detailed_signal1 = NULL;
+	if (detailed_signal) detailed_signal1 = (*env)->GetByteArrayElements(env, detailed_signal, NULL);
+
+	rc = (jint)gtk_signal_connect((gpointer)instance, (const char*)detailed_signal1, (GCallback)c_handler, (gpointer)data);
+
+	if (detailed_signal) (*env)->ReleaseByteArrayElements(env, detailed_signal, detailed_signal1, 0);
+	return rc;
+}
+
