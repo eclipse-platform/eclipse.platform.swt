@@ -450,7 +450,7 @@ public void setHeight(int height) {
  * <code>getName()</code>.
  * </p>
  *
- * @param name the name of the font data
+ * @param name the name of the font data (must not be null)
  *
  * @see #getName
  */

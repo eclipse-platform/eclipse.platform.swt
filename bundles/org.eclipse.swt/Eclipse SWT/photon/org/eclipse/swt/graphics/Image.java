@@ -563,6 +563,7 @@ void init(Device device, ImageData i) {
 }
 
 public int internal_new_GC (GCData data) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	/*
 	* Create a new GC that can draw into the image.
 	* Only supported for bitmaps.

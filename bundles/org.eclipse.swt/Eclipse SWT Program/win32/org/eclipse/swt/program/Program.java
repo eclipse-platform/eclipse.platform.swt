@@ -270,6 +270,7 @@ public String getName () {
  * @return true if the programs are the same
  */
 public boolean equals(Object other) {
+	if (this == other) return true;
 	if (other instanceof Program) {
 		final Program program = (Program) other;
 		return name.equals(program.name) && command.equals(program.command)

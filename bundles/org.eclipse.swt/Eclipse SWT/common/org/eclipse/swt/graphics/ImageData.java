@@ -527,7 +527,7 @@ public Object clone() {
  * </ul>
  */
 public int getAlpha(int x, int y) {
-	if (x > width || y > height || x < 0 || y < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (x >= width || y >= height || x < 0 || y < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 
 	if (alphaData == null) return 255;
 	return alphaData[y * width + x] & 0xFF;
@@ -546,13 +546,14 @@ public int getAlpha(int x, int y) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if pixels is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if <code>x</code> or <code>y</code> is out of bounds</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if x or y is out of bounds</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if getWidth is negative</li>
  * </ul>
  */
 public void getAlphas(int x, int y, int getWidth, byte[] alphas, int startIndex) {
 	if (alphas == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (getWidth <= 0) return;
-	if (x >= width || y >= height || x < 0 || y < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (getWidth < 0 || x + getWidth > width || y >= height || x < 0 || y < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (getWidth == 0) return;
 
 	if (alphaData == null) {
 		int endIndex = startIndex + getWidth;
@@ -580,7 +581,7 @@ public void getAlphas(int x, int y, int getWidth, byte[] alphas, int startIndex)
  * </ul>
  */
 public int getPixel(int x, int y) {
-	if (x > width || y > height || x < 0 || y < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (x >= width || y >= height || x < 0 || y < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int index;
 	int theByte;
 	int mask;
@@ -646,6 +647,7 @@ public int getPixel(int x, int y) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if pixels is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if x or y is out of bounds</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if getWidth is negative</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_UNSUPPORTED_DEPTH - if the depth is not one of 1, 2, 4 or 8
@@ -654,8 +656,8 @@ public int getPixel(int x, int y) {
  */
 public void getPixels(int x, int y, int getWidth, byte[] pixels, int startIndex) {
 	if (pixels == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (getWidth <= 0) return;
-	if (x >= width || y >= height || x < 0 || y < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (getWidth < 0 || x + getWidth > width || y >= height || x < 0 || y < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (getWidth == 0) return;
 	int index;
 	int theByte;
 	int mask = 0;
@@ -793,6 +795,7 @@ public void getPixels(int x, int y, int getWidth, byte[] pixels, int startIndex)
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if pixels is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if x or y is out of bounds</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if getWidth is negative</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_UNSUPPORTED_DEPTH - if the depth is not one of 1, 2, 4, 8, 16, 24 or 32</li>
@@ -800,8 +803,8 @@ public void getPixels(int x, int y, int getWidth, byte[] pixels, int startIndex)
  */
 public void getPixels(int x, int y, int getWidth, int[] pixels, int startIndex) {
 	if (pixels == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (getWidth <= 0) return;
-	if (x > width || y > height || x < 0 || y < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (getWidth < 0 || x + getWidth > width || y >= height || x < 0 || y < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (getWidth == 0) return;
 	int index;
 	int theByte;
 	int mask;
@@ -1099,7 +1102,7 @@ public ImageData scaledTo(int width, int height) {
  *  </ul>
  */
 public void setAlpha(int x, int y, int alpha) {
-	if (x > width || y > height || x < 0 || y < 0 || alpha < 0 || alpha > 255)
+	if (x >= width || y >= height || x < 0 || y < 0 || alpha < 0 || alpha > 255)
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	
 	if (alphaData == null) alphaData = new byte[width * height];
@@ -1121,12 +1124,13 @@ public void setAlpha(int x, int y, int alpha) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if pixels is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if x or y is out of bounds</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if putWidth is negative</li>
  * </ul>
  */
 public void setAlphas(int x, int y, int putWidth, byte[] alphas, int startIndex) {
 	if (alphas == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (putWidth <= 0) return;
-	if (x > width || y > height || x < 0 || y < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (putWidth < 0 || x + putWidth > width || y >= height || x < 0 || y < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (putWidth == 0) return;
 	
 	if (alphaData == null) alphaData = new byte[width * height];
 	System.arraycopy(alphas, startIndex, alphaData, y * width + x, putWidth);
@@ -1148,7 +1152,7 @@ public void setAlphas(int x, int y, int putWidth, byte[] alphas, int startIndex)
  * </ul>
  */
 public void setPixel(int x, int y, int pixelValue) {
-	if (x > width || y > height || x < 0 || y < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (x >= width || y >= height || x < 0 || y < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int index;
 	byte theByte;
 	int mask;
@@ -1224,6 +1228,7 @@ public void setPixel(int x, int y, int pixelValue) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if pixels is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if x or y is out of bounds</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if putWidth is negative</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_UNSUPPORTED_DEPTH if the depth is not one of 1, 2, 4, 8
@@ -1232,8 +1237,8 @@ public void setPixel(int x, int y, int pixelValue) {
  */
 public void setPixels(int x, int y, int putWidth, byte[] pixels, int startIndex) {
 	if (pixels == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (putWidth <= 0) return;
-	if (x > width || y > height || x < 0 || y < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (putWidth < 0 || x + putWidth > width || y >= height || x < 0 || y < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (putWidth == 0) return;
 	int index;
 	int theByte;
 	int mask;
@@ -1350,6 +1355,7 @@ public void setPixels(int x, int y, int putWidth, byte[] pixels, int startIndex)
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if pixels is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if x or y is out of bounds</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if putWidth is negative</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_UNSUPPORTED_DEPTH if the depth is not one of 1, 2, 4, 8, 16, 24 or 32</li>
@@ -1357,8 +1363,8 @@ public void setPixels(int x, int y, int putWidth, byte[] pixels, int startIndex)
  */
 public void setPixels(int x, int y, int putWidth, int[] pixels, int startIndex) {
 	if (pixels == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (putWidth <= 0) return;
-	if (x > width || y > height || x < 0 || y < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (putWidth < 0 || x + putWidth > width || y >= height || x < 0 || y < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (putWidth == 0) return;
 	int index;
 	int theByte;
 	int mask;

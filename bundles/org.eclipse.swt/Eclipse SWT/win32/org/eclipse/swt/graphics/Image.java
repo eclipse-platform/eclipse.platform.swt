@@ -477,6 +477,7 @@ public Image(Device device, Image srcImage, int flag) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the bounds rectangle is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if either the rectangle's width or height is negative</li>
  * </ul>
  */
 public Image(Device device, Rectangle bounds) {
@@ -1488,6 +1489,7 @@ void init(Device device, ImageData i) {
  * @private
  */
 public int internal_new_GC (GCData data) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	/*
 	* Create a new GC that can draw into the image.
 	* Only supported for bitmaps.

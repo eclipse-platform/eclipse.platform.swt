@@ -157,6 +157,7 @@ public int hashCode () {
 }
 
 public void setHeight(int height) {
+	if (height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	this.height = height;
 }
 
