@@ -2469,10 +2469,4 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 	return super.wmNotifyChild (wParam, lParam);
 }
 
-LRESULT wmScroll (int msg, int wParam, int lParam) {
-	int code = callWindowProc (msg, wParam, lParam);
-	if (code == 0) return LRESULT.ZERO;
-	return new LRESULT (code);
-}
-
 }

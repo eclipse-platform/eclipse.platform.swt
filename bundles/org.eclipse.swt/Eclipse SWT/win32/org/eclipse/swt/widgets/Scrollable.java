@@ -225,8 +225,7 @@ LRESULT WM_HSCROLL (int wParam, int lParam) {
 	* both.
 	*/
 	if ((lParam == 0 || lParam == handle) && horizontalBar != null) {
-		result = wmScroll (OS.WM_HSCROLL, wParam, lParam);
-		horizontalBar.wmScrollChild (wParam, lParam);
+		return wmScroll (horizontalBar, OS.WM_HSCROLL, wParam, lParam);
 	}
 	return result;
 }
@@ -278,16 +277,18 @@ LRESULT WM_MOUSEWHEEL (int wParam, int lParam) {
 	int hPosition = horizontalBar == null ? 0 : horizontalBar.getSelection ();
 	int code = callWindowProc (OS.WM_MOUSEWHEEL, wParam, lParam);
 	if (verticalBar != null) {
-		if (verticalBar.getSelection () != vPosition) {
+		int position = verticalBar.getSelection ();
+		if (position != vPosition) {
 			Event event = new Event ();
-			event.detail = SWT.DRAG; 
+			event.detail = position < vPosition ? SWT.PAGE_UP : SWT.PAGE_DOWN; 
 			verticalBar.sendEvent (SWT.Selection, event);
 		}
 	}
 	if (horizontalBar != null) {
-		if (horizontalBar.getSelection () != hPosition) {
+		int position = horizontalBar.getSelection ();
+		if (position != hPosition) {
 			Event event = new Event ();
-			event.detail = SWT.DRAG; 
+			event.detail = position < vPosition ? SWT.PAGE_UP : SWT.PAGE_DOWN; 
 			horizontalBar.sendEvent (SWT.Selection, event);
 		}
 	}
@@ -313,62 +314,62 @@ LRESULT WM_VSCROLL (int wParam, int lParam) {
 	* contains the handle to the scroll bar.  The fix is to check for
 	* both.
 	*/
-	if ((lParam == 0 || lParam == handle) && (verticalBar != null)) {
-		result = wmScroll (OS.WM_VSCROLL, wParam, lParam);
-		verticalBar.wmScrollChild (wParam, lParam);
+	if ((lParam == 0 || lParam == handle) && verticalBar != null) {
+		return wmScroll (verticalBar, OS.WM_VSCROLL, wParam, lParam);
 	}
 	return result;
 }
 
-LRESULT wmScroll (int msg, int wParam, int lParam) {
-	int type = OS.SB_HORZ;
-	ScrollBar bar = horizontalBar;
-	if (msg == OS.WM_VSCROLL) {
-		type = OS.SB_VERT;
-		bar = verticalBar;
+LRESULT wmScroll (ScrollBar bar, int msg, int wParam, int lParam) {
+	LRESULT result = null;
+	if ((state & CANVAS) != 0) {
+		int type = msg == OS.WM_HSCROLL ? OS.SB_HORZ : OS.SB_VERT;
+		SCROLLINFO info = new SCROLLINFO ();
+		info.cbSize = SCROLLINFO.sizeof;
+		info.fMask = OS.SIF_TRACKPOS | OS.SIF_POS | OS.SIF_RANGE;
+		OS.GetScrollInfo (handle, type, info);
+		info.fMask = OS.SIF_POS;
+		int code = wParam & 0xFFFF;
+		switch (code) {
+			case OS.SB_ENDSCROLL:  return null;
+			case OS.SB_THUMBTRACK:
+			case OS.SB_THUMBPOSITION:
+				/* 
+				* Note: On WinCE, the value in SB_THUMBPOSITION is relative to nMin.
+				* Same for SB_THUMBPOSITION 'except' for the very first thumb track
+				* message which has the actual value of nMin. This is a problem when
+				* nMin is not zero.
+				*/
+				info.nPos = info.nTrackPos;
+				break;
+			case OS.SB_TOP:
+				info.nPos = info.nMin;
+				break;
+			case OS.SB_BOTTOM:
+				info.nPos = info.nMax;
+				break;
+			case OS.SB_LINEDOWN:
+				info.nPos += bar.getIncrement ();
+				break;
+			case OS.SB_LINEUP:
+				int increment = bar.getIncrement ();
+				info.nPos = Math.max (info.nMin, info.nPos - increment);
+				break;
+			case OS.SB_PAGEDOWN:
+				info.nPos += bar.getPageIncrement ();
+				break;
+			case OS.SB_PAGEUP:
+				int pageIncrement = bar.getPageIncrement ();
+				info.nPos = Math.max (info.nMin, info.nPos - pageIncrement);
+				break;
+		}
+		OS.SetScrollInfo (handle, type, info, true);
+	} else {
+		int code = callWindowProc (msg, wParam, lParam);
+		result = code == 0 ? LRESULT.ZERO : new LRESULT (code);
 	}
-	if (bar == null) return null;
-	SCROLLINFO info = new SCROLLINFO ();
-	info.cbSize = SCROLLINFO.sizeof;
-	info.fMask = OS.SIF_TRACKPOS | OS.SIF_POS | OS.SIF_RANGE;
-	OS.GetScrollInfo (handle, type, info);
-	info.fMask = OS.SIF_POS;
-	int code = wParam & 0xFFFF;
-	switch (code) {
-		case OS.SB_ENDSCROLL:  return null;
-		case OS.SB_THUMBTRACK:
-		case OS.SB_THUMBPOSITION:
-			/* 
-			* Note: On WinCE, the value in SB_THUMBPOSITION is relative to nMin.
-			* Same for SB_THUMBPOSITION 'except' for the very first thumb track
-			* message which has the actual value of nMin. This is a problem when
-			* nMin is not zero.
-			*/
-			info.nPos = info.nTrackPos;
-			break;
-		case OS.SB_TOP:
-			info.nPos = info.nMin;
-			break;
-		case OS.SB_BOTTOM:
-			info.nPos = info.nMax;
-			break;
-		case OS.SB_LINEDOWN:
-			info.nPos += bar.getIncrement ();
-			break;
-		case OS.SB_LINEUP:
-			int increment = bar.getIncrement ();
-			info.nPos = Math.max (info.nMin, info.nPos - increment);
-			break;
-		case OS.SB_PAGEDOWN:
-			info.nPos += bar.getPageIncrement ();
-			break;
-		case OS.SB_PAGEUP:
-			int pageIncrement = bar.getPageIncrement ();
-			info.nPos = Math.max (info.nMin, info.nPos - pageIncrement);
-			break;
-	}
-	OS.SetScrollInfo (handle, type, info, true);
-	return null;
+	bar.wmScrollChild (wParam, lParam);
+	return result;
 }
 
 }
