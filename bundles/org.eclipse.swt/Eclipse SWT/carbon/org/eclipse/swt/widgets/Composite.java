@@ -30,8 +30,8 @@ Control [] _getChildren () {
 	if (count [0] == 0) return new Control [0];
 	Control [] children = new Control [count [0]];
 	int [] outControl= new int [1];
-	int i = 0, j = 0;
-	while (i < count [0]) {
+	int i = count [0] - 1, j = 0;
+	while (i >= 0) {
 		int status = OS.GetIndexedSubControl (handle, (short)(i+1), outControl);
 		if (status == OS.noErr) {
 			Widget widget = WidgetTable.get (outControl [0]);
@@ -41,9 +41,9 @@ Control [] _getChildren () {
 				}
 			}
 		}
-		i++;
+		--i;
 	}
-	if (i == j) return children;
+	if (j == count [0]) return children;
 	Control [] newChildren = new Control [j];
 	System.arraycopy (children, 0, newChildren, 0, j);
 	return newChildren;
