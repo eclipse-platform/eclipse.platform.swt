@@ -214,13 +214,17 @@ public void layout (boolean changed) {
 	checkWidget();
 	Point size = getSize();
 	Point rightSize;
+	boolean drawCurve = left != null && right != null;
+	int curveWidth = drawCurve ? CURVE_WIDTH : 0;
+	int indentLeft = drawCurve ? INDENT_LEFT : 0;
+	int indentRight = drawCurve ? INDENT_RIGHT : 0;
 	if (right == null) {
 		int width = rightWidth == SWT.DEFAULT ? 0 : rightWidth;
 		rightSize = new Point(width, 0);
 	} else {
 		rightSize = right.computeSize(rightWidth, SWT.DEFAULT);
 	}
-	int width = size.x - CURVE_WIDTH + INDENT_LEFT + INDENT_RIGHT - BORDER_LEFT - BORDER_RIGHT; 
+	int width = size.x - curveWidth + indentLeft + indentRight - BORDER_LEFT - BORDER_RIGHT; 
 	rightSize.x = Math.min(width, rightSize.x);
 	width -= rightSize.x;
 	Point leftSize = (left == null) ? new Point (0, 0) : left.computeSize(width, SWT.DEFAULT);
@@ -235,8 +239,8 @@ public void layout (boolean changed) {
 		leftRect = new Rectangle(x, y, leftSize.x, height);
 		x += leftSize.x;
 	}
-	curveStart = x - INDENT_LEFT;
-	x += CURVE_WIDTH - INDENT_LEFT - INDENT_RIGHT;
+	curveStart = x - indentLeft;
+	x += curveWidth - indentLeft - indentRight;
 	if (right != null) {
 		int height = size.y - BORDER_TOP - BORDER_BOTTOM - 2*BORDER_STRIPE;
 		int y = BORDER_TOP + BORDER_STRIPE;
@@ -250,7 +254,7 @@ public void layout (boolean changed) {
 	}
 	curveRegion.dispose();
 	curveRegion = new Region();
-	curveRegion.add(new Rectangle(curveStart, 0, CURVE_WIDTH, size.y));
+	curveRegion.add(new Rectangle(curveStart, 0, curveWidth, size.y));
 	update();
 	if (leftRect != null) left.setBounds(leftRect);
 	if (rightRect != null) right.setBounds(rightRect);
@@ -266,7 +270,7 @@ void onDispose() {
 void onMouseDown (int x, int y) {
 	if (curveRegion.contains(x, y)) {
 		dragging = true;
-		rightDragDisplacement = curveStart + CURVE_WIDTH - INDENT_RIGHT - x;
+		rightDragDisplacement = curveStart - x + BORDER_LEFT + CURVE_WIDTH - INDENT_RIGHT;
 	}
 }
 void onMouseExit() {
@@ -291,6 +295,7 @@ void onMouseUp () {
 	dragging = false;
 }
 void onPaint(GC gc) {
+	if (left == null || right == null) return;
 	if (curve == null) updateCurve();
 	Point size = getSize();
 	int[] line1 = new int[curve.length+6];

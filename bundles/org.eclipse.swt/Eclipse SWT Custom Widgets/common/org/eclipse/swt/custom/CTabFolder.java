@@ -3404,7 +3404,7 @@ boolean updateTabHeight(int oldHeight, boolean force){
 		               CURVE_LEFT, tabHeight + 2,
 				       CURVE_WIDTH - CURVE_RIGHT, 1,
 		               CURVE_WIDTH, 1,
-		               CURVE_WIDTH);
+		               CURVE_WIDTH * 2);
 		// workaround to get rid of blip at end of bezier
 		int index = -1;
 		for (int i = 0; i < curve.length/2; i++) {
@@ -3424,7 +3424,7 @@ boolean updateTabHeight(int oldHeight, boolean force){
 		               CURVE_LEFT, 0, 
 		               CURVE_WIDTH - CURVE_RIGHT, tabHeight + 1,
 		               CURVE_WIDTH, tabHeight + 1,
-		               CURVE_WIDTH);
+		               CURVE_WIDTH * 2);
 	}
 	notifyListeners(SWT.Resize, new Event());
 	return true;
