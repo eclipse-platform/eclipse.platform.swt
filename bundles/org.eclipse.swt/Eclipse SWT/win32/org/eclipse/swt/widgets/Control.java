@@ -3026,7 +3026,13 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	}
 	
 	/* Map the virtual key */
-	int mapKey = OS.MapVirtualKey (wParam, 2);
+	/*
+	* Bug on WinCE.  MapVirtualKey returns incorrect values.
+	* The fix is to rely on a key mappings table to determine
+	* whether the key event must be sent now or if a WM_CHAR
+	* event will follow.
+	*/
+	int mapKey = OS.IsWinCE ? 0 : OS.MapVirtualKey (wParam, 2);
 
 	/*
 	* Bug in Windows 95 and NT.  When the user types an accent key such
@@ -3198,7 +3204,7 @@ LRESULT WM_KEYUP (int wParam, int lParam) {
 	}
 	
 	/* Map the virtual key. */
-	int mapKey = OS.MapVirtualKey (wParam, 2);
+	int mapKey = OS.IsWinCE ? 0 : OS.MapVirtualKey (wParam, 2);
 
 	/*
 	* Bug in Windows 95 and NT.  When the user types an accent key such
@@ -3938,7 +3944,9 @@ LRESULT WM_SYSKEYDOWN (int wParam, int lParam) {
 	}
 
 	/* If are going to get a WM_SYSCHAR, ignore this message. */
-	if (OS.MapVirtualKey (wParam, 2) != 0) return null;
+	if (!OS.IsWinCE) {
+		if (OS.MapVirtualKey (wParam, 2) != 0) return null;
+	}
 	
 	/* Ignore repeating keys for modifiers by testing key down state. */
 	switch (wParam) {
