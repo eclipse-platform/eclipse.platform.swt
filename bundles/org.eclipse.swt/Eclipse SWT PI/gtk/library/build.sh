@@ -38,7 +38,7 @@ case $OS in
 				if [ "${GECKO_SDK}" = "" ]; then
 					GECKO_SDK=/bluebird/teamswt/chrisx/gentoo/mozilla/dist/sdk
 					GECKO_INCLUDES="-include ${GECKO_SDK}/include/mozilla-config.h -I${GECKO_SDK}/include"
-					GECKO_LIBS="-L${GECKO_SDK}/lib -L${GECKO_SDK}/bin"
+					GECKO_LIBS="-L${GECKO_SDK}/lib -L${GECKO_SDK}/bin -lembed_base_s -lxpcomglue_s -lxpcom -lnspr4 -lplds4 -lplc4"
 				fi
 				SWT_PTR_CFLAGS=-DSWT_PTR_SIZE_64
 				OUTPUT_DIR=../../../org.eclipse.swt.gtk64/os/linux/amd64
