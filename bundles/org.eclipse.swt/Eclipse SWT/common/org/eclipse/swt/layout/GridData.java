@@ -183,7 +183,7 @@ public final class GridData {
 	public boolean grabExcessVerticalSpace = false;
 
 	/**
-	 * minimumWidth specifies the minimum desired width in pixels.  This value
+	 * minimumWidth specifies the minimum width in pixels.  This value
 	 * applies only if grabExcessHorizontalSpace is true. A value of 
 	 * SWT#DEFAULT means that the minimum width will be the result
 	 * of Control#computeSize(int, int, boolean) where wHint is 
