@@ -2051,6 +2051,15 @@ static final void blit(int op,
 				(srcReds == destReds) && (srcGreens == destGreens) && (srcBlues == destBlues)) {
 				paletteMapping = oneToOneMapping;
 				break;
+			/*** If palettes have not been supplied, supply a suitable mapping ***/
+			} else if ((srcReds == null) || (destReds == null)) {
+				if (srcDepth <= destDepth) {
+					paletteMapping = oneToOneMapping;
+				} else {
+					paletteMapping = new byte[1 << srcDepth];
+					int mask = (0xff << destDepth) >>> 8;
+					for (int i = 0; i < paletteMapping.length; ++i) paletteMapping[i] = (byte)(i & mask);
+				}
 			}
 		case ALPHA_MASK_UNPACKED:
 		case ALPHA_MASK_PACKED:
