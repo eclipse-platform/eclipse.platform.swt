@@ -246,7 +246,7 @@ public String open () {
 	cancel = true;
 	OS.XtManageChild (dialog);
 
-	//BOGUS - should be a pure OS message loop (no SWT AppContext)
+	// Should be a pure OS message loop (no SWT AppContext)
 	while (OS.XtIsRealized (dialog) && OS.XtIsManaged (dialog))
 		if (!appContext.readAndDispatch ()) appContext.sleep ();
 
