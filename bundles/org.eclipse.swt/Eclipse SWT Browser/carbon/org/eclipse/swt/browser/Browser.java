@@ -101,6 +101,17 @@ public class Browser extends Composite {
 public Browser(Composite parent, int style) {
 	super(parent, style);
 
+	/*
+	* Note.  Loading the webkit bundle on Jaguar causes a crash.
+	* The workaround is to detect any OS prior to 10.30 and fail
+	* without crashing.
+	*/
+	int[] response = new int[1];
+	int err = OS.Gestalt(OS.getstaltSystemVersion, response);
+	if (err != OS.noErr || ((response[0] & 0xffff) < 0x1030)) {
+		dispose();
+		SWT.error(SWT.ERROR_NO_HANDLES);
+	}
 	int outControl[] = new int[1];
 	try {
 		WebKit.HIWebViewCreate(outControl);

@@ -3190,6 +3190,21 @@ JNIEXPORT jint JNICALL OS_NATIVE(FrontWindow)
 }
 #endif
 
+#ifndef NO_Gestalt
+JNIEXPORT jint JNICALL OS_NATIVE(Gestalt)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, Gestalt_FUNC);
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)Gestalt((OSType)arg0, (long *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, Gestalt_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetAppFont
 JNIEXPORT jshort JNICALL OS_NATIVE(GetAppFont)
 	(JNIEnv *env, jclass that)

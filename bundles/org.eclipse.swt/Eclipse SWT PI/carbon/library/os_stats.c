@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 730;
-int OS_nativeFunctionCallCount[730];
+int OS_nativeFunctionCount = 731;
+int OS_nativeFunctionCallCount[731];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems", 
 	"AEGetNthPtr", 
@@ -250,6 +250,7 @@ char * OS_nativeFunctionNames[] = {
 	"FrameRect", 
 	"FrameRoundRect", 
 	"FrontWindow", 
+	"Gestalt", 
 	"GetAppFont", 
 	"GetApplicationEventTarget", 
 	"GetAvailableWindowAttributes", 
