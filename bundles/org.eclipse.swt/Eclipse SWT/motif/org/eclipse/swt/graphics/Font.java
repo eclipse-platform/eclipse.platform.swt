@@ -345,9 +345,9 @@ int loadFont(int xDisplay, FontData fd) {
 int loadFontSet(int xDisplay, FontData fd) {
 	/* Use the character encoding for the default locale */
 	byte[] buffer = Converter.wcsToMbcs(null, fd.getXlfd(), true);
-	int [] missing_charset = new int [1];
-	int [] missing_charset_count = new int [1];
-	int [] def_string = new int [1];
+	int[] missing_charset = new int[1];
+	int[] missing_charset_count = new int[1];
+	int[] def_string = new int[1];
 	return OS.XCreateFontSet(xDisplay, buffer, missing_charset, missing_charset_count, def_string);
 }
 int matchFont(int xDisplay, FontData fd, boolean fontSet) {	
@@ -405,6 +405,13 @@ void init (Device device, FontData fd) {
 //		}
 //	}
 //	fontListEntry = OS.XmFontListEntryCreate(OS.XmFONTLIST_DEFAULT_TAG, OS.XmFONT_IS_FONT, fontStruct);
+	int horizontalResolution = fd.horizontalResolution;
+	int verticalResolution = fd.verticalResolution;
+	if (device.setDPI) {
+		Point dpi = device.getDPI();
+		if (fd.horizontalResolution == 0) fd.horizontalResolution  = dpi.x;
+		if (fd.verticalResolution == 0)	fd.verticalResolution = dpi.y;
+	}
 	if (fd.lang != null) {
 		String lang = fd.lang;
 		String country = fd.country;
@@ -431,6 +438,8 @@ void init (Device device, FontData fd) {
 		newFD.slant = fd.slant;
 		newFD.weight = fd.weight;
 		newFD.points = fd.points;
+		newFD.horizontalResolution = fd.horizontalResolution;
+		newFD.verticalResolution = fd.verticalResolution;
 		newFD.characterSetName = fd.characterSetName;
 		if (newFD.characterSetName == null) {
 			newFD.characterSetName = device.characterSetName;
@@ -452,6 +461,8 @@ void init (Device device, FontData fd) {
 		handle = OS.XmFontListAppendEntry(0, fontListEntry);
 		OS.XmFontListEntryFree(new int[]{fontListEntry});
 	}
+	fd.horizontalResolution = horizontalResolution;
+	fd.verticalResolution = verticalResolution;
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	
 	codePage = getCodePage(xDisplay, handle);

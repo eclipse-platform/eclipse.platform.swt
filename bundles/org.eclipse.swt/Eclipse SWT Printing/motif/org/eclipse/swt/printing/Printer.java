@@ -127,7 +127,7 @@ public static PrinterData[] getPrinterList() {
 	System.arraycopy(list, 0, newList, 1, list.length);
 	newList[0] = data;
 	return newList;
-}	
+}
 
 /**
  * Returns a array of <code> PrinterData</code> objects
@@ -280,6 +280,7 @@ protected void create(DeviceData deviceData) {
 		OS.XtDestroyApplicationContext(xtContext);
 		SWT.error(SWT.ERROR_NO_HANDLES);
 	}
+	setDPI = true;
 }
 
 protected void init() {

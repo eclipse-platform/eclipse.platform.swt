@@ -24,10 +24,13 @@ public abstract class Device implements Drawable {
 	*/
 	public int xDisplay;
 	
-	/* Arguments for XtOpenDisplay */
-	String display_name;
-	String application_name;
-	String application_class;
+	/**
+	* whether the XLFD resolution should match the
+	* resolution of the device when fonts are created
+	* (Warning: This field is platform dependent)
+	*/
+	// TEMPORARY CODE
+	public boolean setDPI;
 	
 	/* Debugging */
 	public static boolean DEBUG;
@@ -35,7 +38,12 @@ public abstract class Device implements Drawable {
 	public boolean tracking = DEBUG;
 	Error [] errors;
 	Object [] objects;
-	
+
+	/* Arguments for XtOpenDisplay */
+	String display_name;
+	String application_name;
+	String application_class;
+		
 	/* Colormap and reference count for this display */
 	XColor [] xcolors;
 	int [] colorRefCount;
