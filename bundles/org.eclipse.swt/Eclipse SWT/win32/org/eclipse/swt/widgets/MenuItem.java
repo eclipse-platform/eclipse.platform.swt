@@ -964,7 +964,7 @@ LRESULT wmDrawChild (int wParam, int lParam) {
 		data.device = display;
 		GC gc = GC.win32_new (struct.hDC, data);
 		gc.drawImage (image, struct.left, struct.top + 2);
-		gc.dispose ();
+//		gc.dispose ();
 	}
 	return null;
 }
