@@ -105,9 +105,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device$Lorg_eclipse_swt_gr
 	} catch (IllegalArgumentException e) {
 		exceptionThrown = true;
 	} 
-//	 Bug 70630 - Font constructor fails to throw ERROR_NULL_ARGUMENT
-//	 remove comment when bug is fixed.
-//	assertTrue("null data element 1",exceptionThrown);
+	assertTrue("null data element 1",exceptionThrown);
 	
 	// test that FontData is set correctly
 	
