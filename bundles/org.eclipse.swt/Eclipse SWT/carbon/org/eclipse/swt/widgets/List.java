@@ -332,8 +332,17 @@ int itemDataProc (int browser, int id, int property, int itemData, int setValue)
 
 int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlBoundsChanged (nextHandler, theEvent, userData);
-	Rectangle rect = getClientArea ();
-	OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short) rect.width);
+	/*
+	* This code is intentionally commented.  Setting the column
+	* width to be the size of the client are causes the initial
+	* value of the veritcal scroll bar to be wrong and causes
+	* '...' to appear in strings that are too long, even though
+	* a horizontal scroll bar is present.
+	*/
+//	Rect rect = new Rect (), inset = new Rect ();
+//	OS.GetControlBounds (handle, rect);
+//	OS.GetDataBrowserScrollBarInset (handle, inset);
+//	OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short) (rect.right - rect.left + inset.right));
 	return result;
 }
 
