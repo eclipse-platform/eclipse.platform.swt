@@ -11,6 +11,7 @@
 package org.eclipse.swt.printing;
 
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
 
 /**
@@ -93,6 +94,7 @@ public Printer() {
  * @see #dispose
  */
 public Printer(PrinterData data) {
+	super (data);
 	SWT.error(SWT.ERROR_NO_HANDLES);
 }
 
