@@ -430,8 +430,9 @@ void textChanged(int startOffset, int newLineCount, int replaceLineCount, int ne
 	if (replaceLineCount > 0) {	
 		visualReplaceLastLine = getLineAtOffset(startOffset + replaceCharCount);
 	    // at the start of a visual line/end of the previous visual line?
-		if (visualReplaceLastLine == 0 || 
-		    visualLines[visualReplaceLastLine][LINE_OFFSET] == visualLines[visualReplaceLastLine - 1][LINE_OFFSET] + visualLines[visualReplaceLastLine - 1][LINE_LENGTH]) {
+		if ((visualReplaceLastLine == 0 || 
+		    visualLines[visualReplaceLastLine][LINE_OFFSET] == visualLines[visualReplaceLastLine - 1][LINE_OFFSET] + visualLines[visualReplaceLastLine - 1][LINE_LENGTH]) &&
+		    visualReplaceLastLine != visualLineCount - 1) {
 			visualReplaceLastLine++;
 		}		
 		visualStartLine = reset(visualStartLine, visualReplaceLastLine - visualStartLine + 1, false);
