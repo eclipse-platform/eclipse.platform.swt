@@ -1118,10 +1118,10 @@ public void moveBelow (Control control) {
 	checkWidget ();
 	int hwndAfter = OS.HWND_BOTTOM;
 	if (control != null) {
-		if (control.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+		if (control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
 		hwndAfter = control.handle;
 	}
-	if (hwndAfter == 0) return;
+	if (hwndAfter == 0 || hwndAfter == handle) return;
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE; 
 	OS.SetWindowPos (handle, hwndAfter, 0, 0, 0, 0, flags);
 }
