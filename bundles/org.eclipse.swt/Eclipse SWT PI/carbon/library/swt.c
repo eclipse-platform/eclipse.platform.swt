@@ -2221,6 +2221,11 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetMenuItemIconHa
 	return RC(SetMenuItemIconHandle((MenuRef) mHandle, (SInt16)index, (UInt8)type, (Handle)icon));
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetMenuItemCommandID(JNIEnv *env, jclass zz,
+	jint mHandle, jshort index, jint commandID) {
+	return RC(SetMenuItemCommandID((MenuRef) mHandle, (SInt16)index, (MenuCommand)commandID));
+}
+
 //---- Control Manager
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlAction(JNIEnv *env, jclass zz, jint cHandle, jint actionProc) {
