@@ -810,12 +810,7 @@ void setDefaultButton (Button button, boolean save) {
  * be null. The image is typically displayed by the window
  * manager when the instance is marked as iconified, and
  * may also be displayed somewhere in the trim when the
- * instance is in normal or maximized states. This image,
- * along with any other images that may have been supplied
- * by <code>setImages()</code>, is provided to the window
- * manager. Depending on the requirements of the window
- * manager and the platform, this image may be given
- * priority over the other images. 
+ * instance is in normal or maximized states.
  * 
  * @param image the new image (or null)
  *
@@ -833,7 +828,7 @@ public void setImage (Image image) {
 	checkWidget ();
 	if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	this.image = image;
-	setImages (image, images);
+	setImages (image, null);
 }
 
 /**
@@ -868,7 +863,7 @@ public void setImages (Image [] images) {
 		if (images [i] == null || images [i].isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	this.images = images;
-	setImages (image, images);
+	setImages (null, images);
 }
 
 void setImages (Image image, Image [] images) {
