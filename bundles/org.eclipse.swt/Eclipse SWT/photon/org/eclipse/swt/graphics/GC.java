@@ -288,6 +288,17 @@ public void dispose() {
 
 public void drawArc (int x, int y, int width, int height, int startAngle, int endAngle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (width < 0) {
+		x = x + width;
+		width = -width;
+	}
+	if (height < 0) {
+		y = y + height;
+		height = -height;
+	}
+	if (width == 0 || height == 0 || endAngle == 0) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
 	if (startAngle > 0) {
 		if (endAngle > 0) {
 			//No need to modify start angle.
@@ -313,21 +324,8 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int en
 			endAngle = newStopAngle;			
 		}
 	}
-			
 	startAngle = (int) (startAngle * 65536 / 360);
 	endAngle   = (int) (endAngle * 65536 / 360);
-	
-	if (width < 0) {
-		x = x + width;
-		width = -width;
-	}
-	if (height < 0) {
-		y = y + height;
-		height = -height;
-	}
-	if (width == 0 || height == 0 || endAngle == 0) {
-		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	}
 
 	PhPoint_t center = new PhPoint_t();
 	center.x = (short)(x + (width / 2));
@@ -859,6 +857,17 @@ public boolean equals (Object object) {
 
 public void fillArc (int x, int y, int width, int height, int startAngle, int endAngle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (width < 0) {
+		x = x + width;
+		width = -width;
+	}
+	if (height < 0) {
+		y = y + height;
+		height = -height;
+	}
+	if (width == 0 || height == 0 || endAngle == 0) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
 	if (startAngle > 0) {
 		if (endAngle > 0) {
 			//No need to modify start angle.
@@ -883,22 +892,9 @@ public void fillArc (int x, int y, int width, int height, int startAngle, int en
 			startAngle = newStopAngle - Math.abs(endAngle);
 			endAngle = newStopAngle;			
 		}
-	}
-			
+	}			
 	startAngle = (int) (startAngle * 65536 / 360);
 	endAngle   = (int) (endAngle * 65536 / 360);
-	
-	if (width < 0) {
-		x = x + width;
-		width = -width;
-	}
-	if (height < 0) {
-		y = y + height;
-		height = -height;
-	}
-	if (width == 0 || height == 0 || endAngle == 0) {
-		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	}
 	
 	PhPoint_t center = new PhPoint_t();
 	center.x = (short)(x + (width / 2));
