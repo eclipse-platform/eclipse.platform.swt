@@ -55,6 +55,7 @@ import org.eclipse.swt.events.*;
 
 public class Combo extends Composite {
 	boolean noSelection, ignoreCharacter;
+	int visibleCount = 5;
 	
 	/**
 	 * the operating system limit for the number of characters
@@ -717,6 +718,24 @@ public int getTextLimit () {
 	return OS.SendMessage (hwndText, OS.EM_GETLIMITTEXT, 0, 0);
 }
 
+/**
+ * Gets the number of items that are visible in the drop
+ * down portion of the receiver's list.
+ *
+ * @return the number of items that are visible
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public int getVisibleCount () {
+	checkWidget ();
+	return visibleCount;
+}
+
 boolean hasFocus () {
 	int hwndFocus = OS.GetFocus ();
 	if (hwndFocus == handle) return true;
@@ -1070,7 +1089,7 @@ void setBounds (int x, int y, int width, int height, int flags) {
 	if ((style & SWT.DROP_DOWN) != 0) {
 		int textHeight = OS.SendMessage (handle, OS.CB_GETITEMHEIGHT, -1, 0);
 		int itemHeight = OS.SendMessage (handle, OS.CB_GETITEMHEIGHT, 0, 0);
-		height = textHeight + 6 + (itemHeight * 5) + 2;
+		height = textHeight + 6 + (itemHeight * visibleCount) + 2;
 		/*
 		* Feature in Windows.  When a drop down combo box is resized,
 		* the combo box resizes the height of the text field and uses
@@ -1357,6 +1376,25 @@ public void setTextLimit (int limit) {
 	checkWidget ();
 	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
 	OS.SendMessage (handle, OS.CB_LIMITTEXT, limit, 0);
+}
+
+/**
+ * Sets the number of items that are visible in the drop
+ * down portion of the receiver's list.
+ *
+ * @param count the new number of items to be visible
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public void setVisibleCount (int count) {
+	checkWidget ();
+	if (count < 0) return;
+	visibleCount = count;
 }
 
 void subclass () {
