@@ -31,13 +31,13 @@ QT_HOME    = /usr/lib/qt-3.1
 SWT_PREFIX   = swt
 WS_PREFIX    = motif
 SWT_DLL      = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
-SWT_OBJ      = callback.o os.o os_structs.o os_custom.o
+SWT_OBJ      = callback.o os.o os_structs.o os_custom.o os_stats.o
 SWT_LIB      = -L$(MOTIF_HOME)/lib -lXm -L/usr/lib -L/usr/X11R6/lib \
 	           -rpath . -x -shared -lX11 -lm -lXext -lXt -lXp -ldl -lXinerama -lXtst
 
 GNOME_PREFIX = swt-gnome
 GNOME_DLL    = lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
-GNOME_OBJECTS= gnome.o gnome_structs.o 
+GNOME_OBJECTS= gnome.o gnome_structs.o gnome_stats.o
 GNOME_CFLAGS = `pkg-config --cflags gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0`
 GNOME_LIB = -shared -fpic -fPIC `pkg-config --libs gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0`
 
@@ -90,6 +90,9 @@ gnome.o: gnome.c
 
 gnome_structs.o: gnome_structs.c
 	gcc -O -Wall -DSWT_VERSION=$(SWT_VERSION) -DLINUX -DGTK -I$(JAVA_HOME)/include $(GNOME_CFLAGS) -c -o gnome_structs.o gnome_structs.c
+
+gnome_stats.o: gnome_stats.c
+	gcc -O -Wall -DSWT_VERSION=$(SWT_VERSION) -DLINUX -DGTK -I$(JAVA_HOME)/include $(GNOME_CFLAGS) -c -o gnome_stats.o gnome_stats.c
 
 make_kde: $(KDE_DLL)
 

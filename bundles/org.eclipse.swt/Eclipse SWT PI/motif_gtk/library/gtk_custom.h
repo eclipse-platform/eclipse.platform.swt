@@ -13,4 +13,6 @@
 *     IBM Corporation - initial API and implementation
 *******************************************************************************/
 
-#include "gtk.h"
+/* Field accessors */
+#define GTK_WIDGET_HEIGHT(arg0) (arg0)->allocation.height
+#define GTK_WIDGET_WIDTH(arg0) (arg0)->allocation.width

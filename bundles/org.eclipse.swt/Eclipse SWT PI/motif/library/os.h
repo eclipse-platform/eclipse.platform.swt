@@ -63,9 +63,7 @@
 #define NO_XpStartPage
 #endif
 
-#define NATIVE_ENTER(env,clazz,func)
-#define NATIVE_EXIT(env,clazz,func)
-
+#include "os_stats.h"
 #include "os_custom.h"
 
 #endif /* INC_os_H */

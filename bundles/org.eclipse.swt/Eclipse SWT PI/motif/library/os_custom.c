@@ -21,8 +21,10 @@ static int RESOURCES_END;
 JNIEXPORT void JNICALL OS_NATIVE(setResourceMem)
   (JNIEnv *env, jclass that, jint start, jint end)
 {
+	OS_NATIVE_ENTER(env, that, setResourceMem_FUNC)
     RESOURCES_START = start;
     RESOURCES_END = end;
+	OS_NATIVE_EXIT(env, that, setResourceMem_FUNC)
 }
 #endif
 
@@ -39,7 +41,7 @@ JNIEXPORT void JNICALL OS_NATIVE(XtGetValues)
 	int *zeros = zeroBuff;
 	int i;
 
-	NATIVE_ENTER(env, that, "XtGetValues\n")
+	OS_NATIVE_ENTER(env, that, XtGetValues_FUNC)
 	if (argList) argList1 = (*env)->GetIntArrayElements(env, argList, NULL);
 	if (numArgs > MAX_ARGS) {
 		values = (int *) XtMalloc (numArgs * sizeof(int));
@@ -71,6 +73,6 @@ JNIEXPORT void JNICALL OS_NATIVE(XtGetValues)
 		XtFree((char *)zeros);
 	}
 	if (argList)(*env)->ReleaseIntArrayElements(env, argList, argList1, 0);
-	NATIVE_EXIT(env, that, "XtGetValues\n")
+	OS_NATIVE_EXIT(env, that, XtGetValues_FUNC)
 }
 #endif

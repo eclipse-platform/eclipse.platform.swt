@@ -13,31 +13,18 @@
 *     IBM Corporation - initial API and implementation
 *******************************************************************************/
 
-#include "swt.h"
-#include "gtk_structs.h"
+#ifndef INC_gtk_H
+#define INC_gtk_H
 
-#define GTK_NATIVE(func) Java_org_eclipse_swt_internal_gtk_GTK_##func
+#define NDEBUG
 
-#ifndef NO_GTK_1WIDGET_1HEIGHT
-JNIEXPORT jint JNICALL OS_NATIVE(GTK_1WIDGET_1HEIGHT)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jint rc;
-	NATIVE_ENTER(env, that, "GTK_1WIDGET_1HEIGHT\n")
-	rc = (jint)((GtkWidget *)arg0)->allocation.height;
-	NATIVE_EXIT(env, that, "GTK_1WIDGET_1HEIGHT\n")
-	return rc;
-}
-#endif
+#include <stdio.h>
+#include <assert.h>
 
-#ifndef NO_GTK_1WIDGET_1WIDTH
-JNIEXPORT jint JNICALL OS_NATIVE(GTK_1WIDGET_1WIDTH)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jint rc;
-	NATIVE_ENTER(env, that, "GTK_1WIDGET_1WIDTH\n")
-	rc = (jint)((GtkWidget *)arg0)->allocation.width;
-	NATIVE_EXIT(env, that, "GTK_1WIDGET_1WIDTH\n")
-	return rc;
-}
-#endif
+#include <gtk/gtk.h>
+#include <gdk/gdk.h>
+
+#include "gtk_stats.h"
+#include "gtk_custom.h"
+
+#endif /* INC_gtk_H */

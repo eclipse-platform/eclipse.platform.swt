@@ -13,4 +13,26 @@
 *     IBM Corporation - initial API and implementation
 *******************************************************************************/
 
-#include "gtk.h"
+#include "swt.h"
+#include "os_structs.h"
+
+#ifdef NATIVE_STATS
+
+int GTK_nativeFunctionCount = 12;
+int GTK_nativeFunctionCallCount[12];
+char * GTK_nativeFunctionNames[] = {
+	"GTK_1WIDGET_1HEIGHT", 
+	"GTK_1WIDGET_1WIDTH", 
+	"g_1signal_1connect", 
+	"gtk_1events_1pending", 
+	"gtk_1init_1check", 
+	"gtk_1main", 
+	"gtk_1main_1iteration", 
+	"gtk_1plug_1new", 
+	"gtk_1widget_1destroy", 
+	"gtk_1widget_1show", 
+	"gtk_1widget_1show_1now", 
+	"gtk_1window_1new", 
+};
+
+#endif
