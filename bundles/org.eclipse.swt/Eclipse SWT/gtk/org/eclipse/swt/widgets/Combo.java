@@ -1034,6 +1034,7 @@ public void setItems (String [] items) {
 }
 	
 void setItems (String [] items, boolean keepText, boolean keepSelection) {
+	String[] oldItems = this.items;
 	this.items = items;
 	int selectedIndex = -1;
 	if (keepSelection) selectedIndex = getSelectionIndex ();
@@ -1057,11 +1058,24 @@ void setItems (String [] items, boolean keepText, boolean keepSelection) {
 			OS.memmove (data, buffer, buffer.length);
 			glist = OS.g_list_append (glist, data);
 		}
-		OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-		OS.g_signal_handlers_block_matched (listHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SELECT_CHILD);
+		/*
+		 * A call to gtk_combo_set_popdown_strings will result in the top item being selected
+		 * and a SELECT_CHILD and CHANGED event will be sent.  In the case where there
+		 * are no entires in the Combo widget and the first item is added, it is neccessary
+		 * to inform the application that a selection has occurred.  However, in all other cases,
+		 * the previous selection should be maintained and the application should not
+		 * be notified of a selection change.
+		 */
+		boolean block = oldItems != null && oldItems.length > 0;
+		if (block) {
+			OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+			OS.g_signal_handlers_block_matched (listHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SELECT_CHILD);
+		}
 		OS.gtk_combo_set_popdown_strings (handle, glist);
-		OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-		OS.g_signal_handlers_unblock_matched (listHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SELECT_CHILD);
+		if (block) {
+			OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+			OS.g_signal_handlers_unblock_matched (listHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SELECT_CHILD);
+		}
 		if (glist != 0) {
 			int count = OS.g_list_length (glist);
 			for (int i=0; i<count; i++) {
