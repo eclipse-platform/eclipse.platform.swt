@@ -1535,6 +1535,7 @@ void itemChanged(SelectableItem changedItem, int repaintStartX, int repaintWidth
 	// remember if any item ever had an image in the first column.
 	if (firstColumnImage == false && changedItem.getImage() != null) {
 		firstColumnImage = true;
+		redraw ();
 	}
 	setFirstColumnWidth((TableItem) changedItem);	
 }
