@@ -451,7 +451,7 @@ public void setImage (Image image) {
 	if (oldHeight != parent.getTabHeight()) {
 		parent.onClientAreaChange();
 	} else {
-		parent.layoutItems();
+		parent.setItemBounds();
 		parent.redraw();
 	}
 }
@@ -493,7 +493,7 @@ public void setText (String string) {
 	checkWidget();
 	if (string.equals(getText())) return;
 	super.setText(string);
-	parent.layoutItems();
+	parent.setItemBounds();
 	parent.redraw();	
 }
 /**

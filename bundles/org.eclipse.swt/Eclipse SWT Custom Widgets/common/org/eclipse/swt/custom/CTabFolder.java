@@ -110,8 +110,6 @@ public class CTabFolder extends Composite {
 	ToolBar closeBar;
 	private ToolBar inactiveCloseBar;
 	private CTabItem inactiveItem;	
-
-	private boolean shortenedTabs = false;
 	
 	// borders
 	boolean showBorders = false;
@@ -287,7 +285,7 @@ public void addCTabFolderListener(CTabFolderListener listener) {
 	tabListeners = newTabListeners;
 	tabListeners[tabListeners.length - 1] = listener;
 	showClose = true;
-	layoutButtons();
+	setButtonBounds();
 }
 void onClientAreaChange() {
 	oldArea = null;
@@ -384,7 +382,7 @@ void createItem (CTabItem item, int index) {
 	if (items.length == 1) {
 		topTabIndex = 0;
 	}
-	layoutItems();
+	setItemBounds();
 	showItem(item);
 	
 	if (items.length == 1) {
@@ -503,7 +501,7 @@ void destroyItem (CTabItem item) {
 		selectedIndex --;
 	}
 	
-	layoutItems();
+	setItemBounds();
 	redrawTabArea(-1);
 }
 private void onKeyDown(Event e) {
@@ -880,7 +878,7 @@ private void initAccessible() {
 		}
 	});
 }
-private void layoutButtons() {
+private void setButtonBounds() {
 	
 	updateArrowBar();
 	updateCloseBar();
@@ -926,7 +924,7 @@ private void layoutButtons() {
 		}
 	}
 }
-boolean setItemsLocation() {
+boolean setItemLocation() {
 	if (items.length == 0) return false;
 	Rectangle area = super.getClientArea();
 	int x = area.x;
@@ -954,14 +952,15 @@ boolean setItemsLocation() {
 		tab.y = y;
 		x = x + tab.width;
 	}
-	layoutButtons();
+	setButtonBounds();
 	return changed;
 }
 /**
  * Layout the items and store the client area size.
  */
-boolean layoutItems() {
-	if (isDisposed()) return false;
+boolean setItemBounds() {
+	boolean changed = false;
+	if (isDisposed()) return changed;
 	Rectangle area = super.getClientArea();
 	
 	int tabHeight = getTabHeight();
@@ -973,9 +972,8 @@ boolean layoutItems() {
 		// +1 is for the line at the bottom of the tabs
 	}
 	
-	if (area.width == 0 || area.height == 0 || items.length == 0) return false;
+	if (area.width == 0 || area.height == 0 || items.length == 0) return changed;
 	
-	shortenedTabs = false;
 	int[] widths = new int[items.length];
 	GC gc = new GC(this);
 	for (int i = 0; i < items.length; i++) {
@@ -1005,10 +1003,7 @@ boolean layoutItems() {
 			widths[i] = averageWidth;
 		}
 	}
-	topTabIndex = 0;
-	shortenedTabs = true;
-
-	boolean changed = false;
+	
 	int totalWidth = 0;
 	for (int i = 0; i < items.length; i++) { 
 		CTabItem tab = items[i];
@@ -1018,14 +1013,14 @@ boolean layoutItems() {
 		totalWidth += widths[i];
 	}
 	
-	if (setItemsLocation()) changed = true;
+	if (setItemLocation()) changed = true;
 	
 	int areaWidth = area.x + area.width - borderRight;
 	if (totalWidth <= areaWidth) {
 		// if all items can be displayed, show all items
 		if (topTabIndex != 0) {
 			topTabIndex = 0;
-			setItemsLocation();
+			setItemLocation();
 			changed = true;
 		}
 	} else {
@@ -1039,7 +1034,7 @@ boolean layoutItems() {
 			}
 			while (topTabIndex > 0 && maxWidth - lastItem.x - lastItem.width > items[topTabIndex - 1].width) {
 				topTabIndex--;
-				setItemsLocation();
+				setItemLocation();
 				changed = true;
 				maxWidth = areaWidth;
 				if (scroll_leftVisible() || scroll_rightVisible()) {
@@ -1210,7 +1205,7 @@ public void removeCTabFolderListener(CTabFolderListener listener) {
 	if (tabListeners.length == 1) {
 		tabListeners = new CTabFolderListener[0];
 		showClose = false;
-		layoutButtons();
+		setButtonBounds();
 		return;
 	}
 	CTabFolderListener[] newTabListeners = new CTabFolderListener[tabListeners.length - 1];
@@ -1229,7 +1224,7 @@ private void onResize() {
 		return;
 	}
 	
-	if (layoutItems()) {
+	if (setItemBounds()) {
 		redrawTabArea(-1);
 	}
 	
@@ -1421,7 +1416,7 @@ public void setFont(Font font) {
 	if (oldHeight != getTabHeight()){
 		onClientAreaChange();
 	} else {
-		layoutItems();
+		setItemBounds();
 		redraw();
 	}
 }
@@ -1528,7 +1523,7 @@ public void setSelection(int index) {
 		}		
 	}
 	showItem(items[selectedIndex]);
-	layoutButtons();
+	setButtonBounds();
 	redrawTabArea(-1);
 }
 /**
@@ -1559,7 +1554,7 @@ public void showItem (CTabItem item) {
 	int index = indexOf(item);
 	if (index < topTabIndex) {
 		topTabIndex = index;
-		setItemsLocation();
+		setItemLocation();
 		redrawTabArea(-1);
 		return;
 	}
@@ -1573,7 +1568,7 @@ public void showItem (CTabItem item) {
 	}
 	while (item.x + item.width > width && index != topTabIndex) {
 		topTabIndex++;
-		setItemsLocation();
+		setItemLocation();
 		redrawTabArea(-1);
 		width = areaWidth;
 		if (scroll_leftVisible() || scroll_rightVisible()) {
@@ -1916,7 +1911,7 @@ private boolean scroll_rightVisible() {
 private void scroll_scrollLeft() {
 	if (scroll_leftVisible()) {
 		--topTabIndex;
-		setItemsLocation();
+		setItemLocation();
 		redrawTabArea(-1);
 	}
 }
@@ -1927,7 +1922,7 @@ private void scroll_scrollLeft() {
 private void scroll_scrollRight() {
 	if (scroll_rightVisible()) {
 		topTabIndex++;
-		setItemsLocation();
+		setItemLocation();
 		redrawTabArea(-1);
 	}
 }
@@ -1951,7 +1946,7 @@ public void setTabHeight(int height) {
 	}
 	if (fixedTabHeight == height) return;
 	fixedTabHeight = height;
-	layoutItems();
+	setItemBounds();
 	redraw();
 	onClientAreaChange();
 }
