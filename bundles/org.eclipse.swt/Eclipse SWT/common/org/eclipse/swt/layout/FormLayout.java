@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.layout;
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
@@ -251,19 +252,18 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 		if (move) {
 			FormAttachment left = data.getLeftAttachment (child, spacing, flushCache);
 			FormAttachment right = data.getRightAttachment (child, spacing, flushCache);
-			int x1 = left.solveX (width);
-			int x2 = right.solveX (width);
-//			if ((child.getStyle () & SWT.WRAP) != 0) {
-//				if (data.width == SWT.DEFAULT && data.cacheWidth == -1) {
-//					//width favoured over height (calling getLeftAttachment() does this)
-//					//this means that when y1 and y2 are computed, the cached height values
-//					//reflect the desired height wrt "x2 - x1" rather than "width".  This
-//					//means that the cache is wrong wrt "width" and should be cleared
-//					//bug (x2 - x1) needs to get rid of trim
-//					int border = child.getBorderWidth ();
-//					data.computeCache (child, x2 - x1 - border * 2, data.height, flushCache);
-//				}
-//			}
+			int x1 = left.solveX (width), x2 = right.solveX (width);
+			if (data.width == SWT.DEFAULT && data.height == SWT.DEFAULT) {
+				if (data.cacheWidth == -1 && (child.getStyle () & SWT.WRAP) != 0) {
+					//width favoured over height (calling getLeftAttachment() does this)
+					//this means that when y1 and y2 are computed, the cached height values
+					//reflect the desired height wrt "x2 - x1" rather than "width".  This
+					//means that the cache is wrong wrt "width" and should be cleared
+					//bug (x2 - x1) needs to get rid of trim
+					int border = child.getBorderWidth ();
+					data.computeCache (child, x2 - x1 - border * 2, data.height, flushCache);
+				}
+			}
 			int y1 = data.getTopAttachment (child, spacing, flushCache).solveX (height);
 			int y2 = data.getBottomAttachment (child, spacing, flushCache).solveX (height);
 			if (bounds == null) bounds = new Rectangle [children.length];
