@@ -198,10 +198,6 @@ Vector getRow (CoolItem item) {
 	}
 	return null;
 }
-void hookEvents () {
-	int windowProc = getDisplay ().windowProc;
-	OS.XtAddEventHandler (handle, OS.ExposureMask, false, windowProc, SWT.Paint);
-}
 /**
  * Searches the receiver's items, in the order they were
  * added, starting at the first item (index 0) until an item

@@ -229,13 +229,8 @@ void propagateWidget (boolean enabled) {
 	if (formHandle != 0) propagateHandle (enabled, formHandle);
 	if (scrolledHandle != 0) {
 		propagateHandle (enabled, scrolledHandle);
-		int [] argList = {
-			OS.XmNhorizontalScrollBar, 0,
-			OS.XmNverticalScrollBar, 0,
-		};
-		OS.XtGetValues (scrolledHandle, argList, argList.length / 2);
-		if (argList [1] != 0) propagateHandle (enabled, argList [1]);
-		if (argList [3] != 0) propagateHandle (enabled, argList [3]);
+		if (horizontalBar != null) horizontalBar.propagateWidget (enabled);
+		if (verticalBar != null) verticalBar.propagateWidget (enabled);
 	}
 }
 void redrawWidget (int x, int y, int width, int height, boolean all) {

@@ -16,38 +16,30 @@ public class OS {
 
 	/* OS and locale Constants*/
 	public static final boolean IsAIX, IsSunOS, IsLinux;
-	public static final int CODESET;
-	public static final int LC_CTYPE;
 	static {
 		
 		/* Initialize the OS flags and locale constants */
 		String osName = System.getProperty ("os.name");
-		if (osName.equals("Linux")) {
-			IsLinux = true;
-			IsAIX = IsSunOS = false;
-		} else {
-			if (osName.equals("AIX")) {
-				IsAIX = true;
-				IsLinux = IsSunOS = false;
-			} else {
-				if (osName.equals("Solaris")) {
-					IsSunOS = true;
-					IsLinux = IsAIX = false;
-				} else {
-					IsLinux = IsSunOS = IsAIX = false;
-				}
-			}
-		}
-		
-		CODESET = OS.IsLinux ? 14 : 49;
-		LC_CTYPE = OS.IsAIX ? 1 : 0;
+		boolean isAIX = false, isSunOS = false, isLinux = false;
+		if (osName.equals ("Linux")) isLinux = true;
+		if (osName.equals ("AIX")) isAIX = true;
+		if (osName.equals ("Solaris")) isSunOS = true;
+		IsAIX = isAIX;  IsSunOS = isSunOS;  IsLinux = isLinux;
 	}
+	public static final int CODESET = OS.IsLinux ? 14 : 49;
+	public static final int LC_CTYPE = OS.IsAIX ? 1 : 0;
 	
 	/*
 	* Added for XmNnavigationType.
 	*/
-	public static final int XmSTICKY_TAB_GROUP = 0x2;
+//	public static final int XmSTICKY_TAB_GROUP = 0x2;
 	public static final int XmEXCLUSIVE_TAB_GROUP = 0x3;
+		
+	/*
+	* Added for XtInsertEventHandler.
+	*/
+//	public static final int XtListHead = 0x0;
+	public static final int XtListTail = 0x1;
 	
 	/* BEGIN Visual classes */
 	//public static final int StaticGray = 0;
@@ -422,6 +414,7 @@ public class OS {
 	public static final int XK_Return = 0xFF0D;
 	public static final int XK_Shift_L = 0xFFE1;
 	public static final int XK_Shift_R = 0xFFE2;
+	public static final int XK_space = 0x20;
 	public static final int XK_Tab = 0xFF09;
 	public static final int XK_Up = 0xFF52;
 	public static final int XK_VoidSymbol = 0xFFFFFF;
@@ -1357,4 +1350,5 @@ public static final native int setlocale (int category, byte[] locale);
 public static final native int XCreateFontSet (int display, byte [] base_font_name_list, int [] missing_charset_list_return, int [] missing_charset_count_return, int [] def_string_return);
 public static final native int XLocaleOfFontSet (int fontSet);
 
+public static final native void XtInsertEventHandler (int w, int event_mask, boolean nonmaskable, int proc, int client_data, int position);
 }

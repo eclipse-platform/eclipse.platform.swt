@@ -129,6 +129,7 @@ void createHandle (int index) {
 		OS.XmNancestorSensitive, 1,
 		OS.XmNborderWidth, (style & SWT.BORDER) != 0 ? 1 : 0,
 		OS.XmNorientation, ((style & SWT.H_SCROLL) != 0) ? OS.XmHORIZONTAL : OS.XmVERTICAL,
+		OS.XmNtraversalOn, 0,
 	};
 	int parentHandle = parent.scrolledHandle;
 	handle = OS.XmCreateScrollBar (parentHandle, null, argList, argList.length / 2);
@@ -404,6 +405,16 @@ int processSelection (int callData) {
 	
 	sendEvent (SWT.Selection, event);
 	return 0;
+}
+void propagateWidget (boolean enabled) {
+	propagateHandle (enabled, handle);
+	/*
+	* Scroll bars never participate in focus traversal.
+	*/
+	if (enabled) {
+		int [] argList = {OS.XmNtraversalOn, 0};
+		OS.XtSetValues (handle, argList, argList.length / 2);
+	}
 }
 void releaseChild () {
 	super.releaseChild ();

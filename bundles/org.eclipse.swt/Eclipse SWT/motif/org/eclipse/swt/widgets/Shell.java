@@ -689,9 +689,10 @@ public boolean getVisible () {
 void hookEvents () {
 	super.hookEvents ();
 	int windowProc = display.windowProc;
-	OS.XtAddEventHandler (shellHandle, OS.StructureNotifyMask, false, windowProc, SWT.Resize);
+//	OS.XtAddEventHandler (shellHandle, OS.StructureNotifyMask, false, windowProc, SWT.Resize);
+	OS.XtInsertEventHandler (shellHandle, OS.StructureNotifyMask, false, windowProc, SWT.Resize, OS.XtListTail);
 	if (OS.XtIsSubclass (shellHandle, OS.OverrideShellWidgetClass ())) return;
-	OS.XtAddEventHandler (shellHandle, OS.FocusChangeMask, false, windowProc, SWT.FocusIn);
+	OS.XtInsertEventHandler (shellHandle, OS.FocusChangeMask, false, windowProc, SWT.FocusIn, OS.XtListTail);
 	int [] argList = {OS.XmNdeleteResponse, OS.XmDO_NOTHING};
 	OS.XtSetValues (shellHandle, argList, argList.length / 2);
 	int xDisplay = OS.XtDisplay (shellHandle);

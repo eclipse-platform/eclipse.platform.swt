@@ -169,10 +169,10 @@ void createHandle (int index) {
 		OS.XmNwidth, DEFAULT_WIDTH,
 		OS.XmNheight, DEFAULT_HEIGHT,
 		OS.XmNrecomputeSize, 0,
-		OS.XmNhighlightThickness, 0,
+		OS.XmNhighlightThickness, (parent.style & SWT.NO_FOCUS) != 0 ? 0 : 1,
 		OS.XmNmarginWidth, 2,
 		OS.XmNmarginHeight, 1,
-		OS.XmNtraversalOn, 0,
+		OS.XmNtraversalOn, (parent.style & SWT.NO_FOCUS) != 0 ? 0 : 1,
 		OS.XmNpositionIndex, index,
 		OS.XmNshadowType, OS.XmSHADOW_OUT,
 		OS.XmNancestorSensitive, 1,
@@ -427,12 +427,14 @@ void hookEvents () {
 	super.hookEvents ();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	int windowProc = getDisplay ().windowProc;
-	OS.XtAddCallback (handle, OS.XmNexposeCallback, windowProc, SWT.Paint);
+	OS.XtAddEventHandler (handle, OS.KeyPressMask, false, windowProc, SWT.KeyDown);
+	OS.XtAddEventHandler (handle, OS.KeyReleaseMask, false, windowProc, SWT.KeyUp);
 	OS.XtAddEventHandler (handle, OS.ButtonPressMask, false, windowProc, SWT.MouseDown);
 	OS.XtAddEventHandler (handle, OS.ButtonReleaseMask, false, windowProc, SWT.MouseUp);
 	OS.XtAddEventHandler (handle, OS.PointerMotionMask, false, windowProc, SWT.MouseMove);
 	OS.XtAddEventHandler (handle, OS.EnterWindowMask, false, windowProc, SWT.MouseEnter);
 	OS.XtAddEventHandler (handle, OS.LeaveWindowMask, false, windowProc, SWT.MouseExit);
+	OS.XtAddCallback (handle, OS.XmNexposeCallback, windowProc, SWT.Paint);
 }
 /**
  * Returns <code>true</code> if the receiver is enabled, and
@@ -659,6 +661,7 @@ public void setSelection (boolean selected) {
 	set = selected;
 	setDrawPressed (set);
 }
+
 void setSize (int width, int height) {
 	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
@@ -717,6 +720,58 @@ void setDrawPressed (boolean value) {
 	int shadowType = value ? OS.XmSHADOW_IN : OS.XmSHADOW_OUT;
 	int [] argList = {OS.XmNshadowType, shadowType};
 	OS.XtSetValues(handle, argList, argList.length / 2);
+}
+int processKeyDown (int callData) {
+	XKeyEvent xEvent = new XKeyEvent ();
+	OS.memmove (xEvent, callData, XKeyEvent.sizeof);
+
+	/*
+	* Forward the key event to the parent.
+	* This is necessary so that mouse listeners
+	* in the parent will be called, despite the
+	* fact that the event did not really occur
+	* in X in the parent.  This is done to be
+	* compatible with Windows.
+	*/
+	xEvent.window = OS.XtWindow (parent.handle);
+//	OS.memmove (callData, xEvent, XKeyEvent.sizeof);
+	parent.processKeyDown (callData);
+	return 0;
+}
+int processKeyUp (int callData) {
+	XKeyEvent xEvent = new XKeyEvent ();
+	OS.memmove (xEvent, callData, XKeyEvent.sizeof);
+	int [] keysym = new int [1];
+	OS.XLookupString (xEvent, null, 0, keysym, null);
+	keysym [0] &= 0xFFFF;
+	switch (keysym [0]) {
+		case OS.XK_Return:
+		case OS.XK_space:
+			if ((style & SWT.RADIO) != 0) {
+				selectRadio ();
+			} else {
+				if ((style & SWT.CHECK) != 0) setSelection(!set);			
+			}
+			Event event = new Event ();
+			if ((style & SWT.DROP_DOWN) != 0) {
+				if (keysym [0] == OS.XK_Return) event.detail = SWT.ARROW;
+			}
+			setInputState(event, xEvent);
+			postEvent (SWT.Selection, event);
+			break;
+	}
+	/*
+	* Forward the key event to the parent.
+	* This is necessary so that mouse listeners
+	* in the parent will be called, despite the
+	* fact that the event did not really occur
+	* in X in the parent.  This is done to be
+	* compatible with Windows.
+	*/
+	xEvent.window = OS.XtWindow (parent.handle);
+//	OS.memmove (callData, xEvent, XKeyEvent.sizeof);
+	parent.processKeyUp (callData);
+	return 0;
 }
 int processMouseDown (int callData) {
 	Display display = getDisplay ();
@@ -974,12 +1029,14 @@ int processPaint (int callData) {
 void propagateWidget (boolean enabled) {
 	propagateHandle (enabled, handle);
 	/*
-	* ToolItems never participate in focus traversal when
-	* either enabled or disabled.
+	* Tool items participate in focus traversal only when
+	* the tool bar takes focus.
 	*/
-	if (enabled) {
-		int [] argList = {OS.XmNtraversalOn, 0};
-		OS.XtSetValues (handle, argList, argList.length / 2);
+	if ((parent.style & SWT.NO_FOCUS) != 0) {
+		if (enabled) {
+			int [] argList = {OS.XmNtraversalOn, 0};
+			OS.XtSetValues (handle, argList, argList.length / 2);
+		}
 	}
 }
 /**

@@ -724,9 +724,9 @@ void setInputState (Event event, XInputEvent xEvent) {
 }
 void setKeyState (Event event, XKeyEvent xEvent) {
 	if (xEvent.keycode != 0) {
-		byte [] buffer1 = new byte [1];
+		byte [] buffer = new byte [1];
 		int [] keysym = new int [1];
-		if (OS.XLookupString (xEvent, buffer1, buffer1.length, keysym, null) == 0) {
+		if (OS.XLookupString (xEvent, buffer, buffer.length, keysym, null) == 0) {
 			/*
 			* Bug in MOTIF.  On Solaris only, XK_F11 and XK_F12 are not
 			* translated correctly by XLookupString().  They are mapped
@@ -747,7 +747,7 @@ void setKeyState (Event event, XKeyEvent xEvent) {
 			*/
 			event.keyCode = Display.translateKey (keysym [0] & 0xFFFF);
 		} else {
-			event.character = (char) buffer1 [0];
+			event.character = (char) buffer [0];
 		}
 	}
 	setInputState (event, xEvent);

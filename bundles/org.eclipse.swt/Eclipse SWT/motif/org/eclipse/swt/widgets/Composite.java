@@ -90,6 +90,15 @@ Control [] _getChildren () {
 	System.arraycopy (children, 0, newChildren, 0, j);
 	return newChildren;
 }
+public void addListener (int eventType, Listener handler) {
+	checkWidget();
+	super.addListener (eventType, handler);
+	if ((state & CANVAS) != 0) {
+		if (eventType == SWT.KeyDown || eventType == SWT.KeyUp) {
+			enableTraversal (true);
+		}
+	}
+}
 /**
 * Computes the preferred size.
 */
@@ -125,7 +134,7 @@ void createHandle (int index) {
 			OS.XmNmarginWidth, 0,
 			OS.XmNmarginHeight, 0,
 			OS.XmNresizePolicy, OS.XmRESIZE_NONE,
-			OS.XmNtraversalOn, (style & SWT.NO_FOCUS) != 0 ? 0 : 1,
+			OS.XmNtraversalOn, 0,
 		};
 		int parentHandle = parent.handle;
 		handle = OS.XmCreateDrawingArea (parentHandle, null, argList, argList.length / 2);
@@ -162,7 +171,7 @@ void createScrolledHandle (int topHandle) {
 			OS.XmNleftAttachment, OS.XmATTACH_FORM,
 			OS.XmNrightAttachment, OS.XmATTACH_FORM,
 			OS.XmNresizable, 0,
-			OS.XmNtraversalOn, (style & SWT.NO_FOCUS) != 0 ? 0 : 1,
+			OS.XmNtraversalOn, 0,
 		};
 		handle = OS.XmCreateDrawingArea (formHandle, null, argList2, argList2.length / 2);
 	} else {
@@ -170,7 +179,7 @@ void createScrolledHandle (int topHandle) {
 			OS.XmNmarginWidth, 0,
 			OS.XmNmarginHeight, 0,
 			OS.XmNresizePolicy, OS.XmRESIZE_NONE,
-			OS.XmNtraversalOn, (style & SWT.NO_FOCUS) != 0 ? 0 : 1,
+			OS.XmNtraversalOn, 0,
 		};
 		handle = OS.XmCreateDrawingArea (scrolledHandle, null, argList3, argList3.length / 2);
 	}
@@ -183,6 +192,13 @@ int defaultBackground () {
 }
 int defaultForeground () {
 	return getDisplay ().compositeForeground;
+}
+void enableTraversal (boolean enable) {
+	if ((state & CANVAS) != 0) {
+		if ((style & SWT.NO_FOCUS) != 0) return;
+		int [] argList = {OS.XmNtraversalOn, enable ? 1 : 0};
+		OS.XtSetValues (handle, argList, argList.length / 2);
+	}
 }
 public boolean forceFocus () {
 	checkWidget();
@@ -273,7 +289,7 @@ void hookEvents () {
 	super.hookEvents ();
 	if ((state & CANVAS) != 0) {
 		int windowProc = getDisplay ().windowProc;
-		OS.XtAddEventHandler (handle, 0, true, windowProc, -1);
+		OS.XtInsertEventHandler (handle, 0, true, windowProc, -1, OS.XtListTail);
 	}
 }
 
@@ -481,6 +497,15 @@ void redrawWidget (int x, int y, int width, int height, boolean all) {
 		child.redrawWidget (x - location.x, y - location.y, width, height, all);
 	}
 }
+public void removeListener (int eventType, Listener handler) {
+	checkWidget();
+	super.removeListener (eventType, handler);
+	if ((state & CANVAS) != 0) {
+		if (eventType == SWT.KeyDown || eventType == SWT.KeyUp) {
+			enableTraversal (!(hooks (SWT.KeyDown) || hooks (SWT.KeyUp)));
+		}
+	}
+}
 void releaseChildren () {
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
@@ -538,6 +563,16 @@ public void setSize (int width, int height) {
 public void setTabList (Control [] tabList) {
 	checkWidget ();
 	if (tabList == null) error (SWT.ERROR_NULL_ARGUMENT);
+	for (int i=0; i<tabList.length; i++) {
+		Control control = tabList [i];
+		if (control == null) error (SWT.ERROR_INVALID_ARGUMENT);
+		if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+		Shell shell = control.getShell ();
+		while (control != shell && control != this) {
+			control = control.parent;
+		}
+		if (control != this) error (SWT.ERROR_INVALID_PARENT);
+	}
 	int [] argList1 = new int [] {OS.XmNnavigationType, OS.XmTAB_GROUP};
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
@@ -559,7 +594,7 @@ public void setTabList (Control [] tabList) {
 }
 int traversalCode () {
 	if ((state & CANVAS) != 0) {
-		if (hooks (SWT.KeyDown)) return 0;
+		if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) return 0;
 	}
 	return super.traversalCode ();
 }

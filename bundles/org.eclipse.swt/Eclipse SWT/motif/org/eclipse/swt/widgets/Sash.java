@@ -120,6 +120,7 @@ void createHandle (int index) {
 		OS.XmNmarginHeight, 0,
 		OS.XmNresizePolicy, OS.XmRESIZE_NONE,
 		OS.XmNancestorSensitive, 1,
+		OS.XmNtraversalOn, 0,
 	};
 	int parentHandle = parent.handle;
 	handle = OS.XmCreateDrawingArea (parentHandle, null, argList, argList.length / 2);
@@ -220,6 +221,16 @@ int processMouseUp (int callData) {
 	drawBand (lastX, lastY, width, height);
 	sendEvent (SWT.Selection, event);
 	return 0;
+}
+void propagateWidget (boolean enabled) {
+	propagateHandle (enabled, handle);
+	/*
+	* Sashes do not participate in focus traversal.
+	*/
+	if (enabled) {
+		int [] argList = {OS.XmNtraversalOn, 0};
+		OS.XtSetValues (handle, argList, argList.length / 2);
+	}
 }
 void realizeChildren () {
 	super.realizeChildren ();

@@ -227,11 +227,11 @@ Point getSize () {
 }
 void hookEvents () {
 	int windowProc = getDisplay ().windowProc;
-	OS.XtAddEventHandler (handle, OS.ExposureMask, false, windowProc, SWT.Paint);
 	OS.XtAddEventHandler (handle, OS.ButtonPressMask, false, windowProc, SWT.MouseDown);
 	OS.XtAddEventHandler (handle, OS.ButtonReleaseMask, false, windowProc, SWT.MouseUp);
 	OS.XtAddEventHandler (handle, OS.PointerMotionMask, false, windowProc, SWT.MouseMove);
 	OS.XtAddEventHandler (handle, OS.LeaveWindowMask, false, windowProc, SWT.MouseExit);
+	OS.XtInsertEventHandler (handle, OS.ExposureMask, false, windowProc, SWT.Paint, OS.XtListTail);
 }
 void manageChildren () {
 	OS.XtManageChild (handle);
@@ -337,8 +337,7 @@ int processPaint (int callData) {
 void propagateWidget (boolean enabled) {
 	propagateHandle (enabled, handle);
 	/*
-	* CoolItems never participate in focus traversal when
-	* either enabled or disabled.
+	* Cool items never participate in focus traversal.
 	*/
 	if (enabled) {
 		int [] argList = {OS.XmNtraversalOn, 0};

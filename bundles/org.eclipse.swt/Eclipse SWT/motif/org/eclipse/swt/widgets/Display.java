@@ -506,10 +506,17 @@ boolean filterEvent (XAnyEvent event) {
 	
 	/* Check for a traversal key */
 	if (keysym == 0) return false;
-	if (keysym == OS.XK_Escape || keysym == OS.XK_Cancel ||
-		keysym == OS.XK_Tab || keysym == OS.XK_Return ||
-		keysym == OS.XK_Up || keysym == OS.XK_Down ||
-		keysym == OS.XK_Left || keysym == OS.XK_Right) {
+	switch (keysym) {
+		case OS.XK_Escape:
+		case OS.XK_Cancel:
+		case OS.XK_Tab:
+		case OS.XK_Return:
+		case OS.XK_Up:
+		case OS.XK_Down:
+		case OS.XK_Left:
+		case OS.XK_Right:
+		case OS.XK_Page_Up:
+		case OS.XK_Page_Down:
 			if (control.translateTraversal (keysym, keyEvent)) return true;
 	}
 
