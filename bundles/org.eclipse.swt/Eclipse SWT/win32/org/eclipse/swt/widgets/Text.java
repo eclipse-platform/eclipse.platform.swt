@@ -987,20 +987,22 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 	char key = event.character;
 	int stateMask = event.stateMask;
 	
-	/* Disable all magic keys that could modify the text */
+	/*
+	* Disable all magic keys that could modify the text
+	* and don't send events when Alt, Shift or Ctrl is
+	* pressed.
+	*/
 	switch (msg) {
 		case OS.WM_CHAR:
 			if (key != 0x08 && key != 0x7F && key != '\r' && key != '\t' && key != '\n') break;
 			// FALL THROUGH
 		case OS.WM_KEYDOWN:
-			int modifiers = SWT.ALT | SWT.SHIFT | SWT.CONTROL;
-			if ((stateMask & modifiers) != 0) return false;
+			if ((stateMask & SWT.ALT | SWT.SHIFT | SWT.CONTROL) != 0) return false;
 			break;
 	}
 
 	/*
-	* If the left button is down, the text widget
-	* refuses the character.
+	* If the left button is down, the text widget refuses the character.
 	*/
 	if (OS.GetKeyState (OS.VK_LBUTTON) < 0) {
 		return true;
