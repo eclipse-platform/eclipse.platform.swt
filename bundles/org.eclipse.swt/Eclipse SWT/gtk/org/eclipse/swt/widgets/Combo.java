@@ -475,9 +475,9 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget();
+	int font = getFontDescription ();
 	int context = OS.gtk_widget_get_pango_context (listHandle != 0 ? listHandle : handle);
 	int lang = OS.pango_context_get_language (context);
-	int font = OS.pango_context_get_font_description (context);
 	int metrics = OS.pango_context_get_metrics (context, font, lang);
 	int ascent = OS.PANGO_PIXELS (OS.pango_font_metrics_get_ascent (metrics));
 	int descent = OS.PANGO_PIXELS (OS.pango_font_metrics_get_descent (metrics));
@@ -608,9 +608,9 @@ String getText (int start, int stop) {
  */
 public int getTextHeight () {
 	checkWidget();
+	int font = getFontDescription ();
 	int context = OS.gtk_widget_get_pango_context (entryHandle != 0 ? entryHandle : handle);
 	int lang = OS.pango_context_get_language (context);
-	int font = OS.pango_context_get_font_description (context);
 	int metrics = OS.pango_context_get_metrics (context, font, lang);
 	int ascent = OS.PANGO_PIXELS (OS.pango_font_metrics_get_ascent (metrics));
 	int descent = OS.PANGO_PIXELS (OS.pango_font_metrics_get_descent (metrics));
@@ -1056,11 +1056,13 @@ public void setSelection (Point selection) {
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	OS.gtk_editable_delete_text (entryHandle, 0, -1);
 	int [] position = new int [1];
 	byte [] buffer = Converter.wcsToMbcs (null, string);
+	OS.gtk_signal_handler_block_by_data (listHandle, SWT.Selection);
+	OS.gtk_editable_delete_text (entryHandle, 0, -1);
 	OS.gtk_editable_insert_text (entryHandle, buffer, buffer.length, position);
 	OS.gtk_editable_set_position (entryHandle, 0);
+	OS.gtk_signal_handler_unblock_by_data (listHandle, SWT.Selection);
 }
 
 /**
