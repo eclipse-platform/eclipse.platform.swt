@@ -639,9 +639,11 @@ void setScrollbarVisible (int barHandle, boolean visible) {
 		int childHandle = children [i].topHandle ();
 		OS.XtGetValues (childHandle, argList, argList.length / 2);
 		if ((traversals [i] = argList [1]) != 0) {
-			argList [1] = 0;
-			display.postFocusOut = true;
-			OS.XtSetValues (children [i].handle, argList, argList.length / 2);
+			if (!children[i].hasFocus ()) {
+				argList [1] = 0;
+				display.postFocusOut = true;
+				OS.XtSetValues (children [i].handle, argList, argList.length / 2);
+			}
 		}
 	}
 	super.setScrollbarVisible(barHandle, visible);
