@@ -763,6 +763,7 @@ public static final native int NewHandleClear(int size);
 public static final native int NewPtr(int size);
 public static final native int NewPtrClear(int size);
 public static final native int NewRgn();
+public static final native void OffsetRect(Rect rect, short dh, short dv);
 public static final native void OffsetRgn(int rgnHandle, short dh, short dv);
 public static final native int OpenDataBrowserContainer(int cHandle, int container);
 public static final native int OpenPoly();

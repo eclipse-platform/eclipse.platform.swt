@@ -4463,6 +4463,20 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewRgn
 }
 #endif /* NO_NewRgn */
 
+#ifndef NO_OffsetRect
+JNIEXPORT void JNICALL OS_NATIVE(OffsetRect)
+	(JNIEnv *env, jclass that, jobject arg0, jshort arg1, jshort arg2)
+{
+	Rect _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("OffsetRect\n")
+
+	if (arg0) lparg0 = getRectFields(env, arg0, &_arg0);
+	OffsetRect(lparg0, arg1, arg2);
+	if (arg0) setRectFields(env, arg0, lparg0);
+}
+#endif
+
 #ifndef NO_OffsetRgn
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_OffsetRgn
 	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jshort arg2)
