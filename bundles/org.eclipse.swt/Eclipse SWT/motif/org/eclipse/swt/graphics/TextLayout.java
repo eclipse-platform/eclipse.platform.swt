@@ -350,6 +350,14 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 						if (!run.tab) {
 							gc.setForeground(selectionForeground);
 							gc.drawString(string, drawX, drawRunY, true);
+							if (run.style != null && run.style.underline) {
+								int underlineY = drawRunY + run.baseline + 1;
+								gc.drawLine (drawX, underlineY, drawX + run.width, underlineY);								
+							}
+							if (run.style != null && run.style.strikeout) {
+								int strikeoutY = drawRunY + run.height - run.height/2 - 1;
+								gc.drawLine (drawX, strikeoutY, drawX + run.width, strikeoutY);
+							}
 						}
 					} else {
 						if (run.style != null && run.style.background != null) {
@@ -362,6 +370,14 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 							if (run.style != null && run.style.foreground != null) fg = run.style.foreground;
 							gc.setForeground(fg);
 							gc.drawString(string, drawX, drawRunY, true);
+							if (run.style != null && run.style.underline) {
+								int underlineY = drawRunY + run.baseline + 1;
+								gc.drawLine (drawX, underlineY, drawX + run.width, underlineY);								
+							}
+							if (run.style != null && run.style.strikeout) {
+								int strikeoutY = drawRunY + run.height - run.height/2 - 1;
+								gc.drawLine (drawX, strikeoutY, drawX + run.width, strikeoutY);
+							}
 							boolean partialSelection = hasSelection && !(selectionStart > end || run.start > selectionEnd);
 							if (partialSelection) {
 								int selStart = Math.max(selectionStart, run.start);
@@ -375,6 +391,14 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 								if (fg != selectionForeground) {
 									gc.setForeground(selectionForeground);
 									gc.drawString(string, selX, drawRunY, true);
+									if (run.style != null && run.style.underline) {
+										int underlineY = drawRunY + run.baseline + 1;
+										gc.drawLine (selX, underlineY, selX + selWidth, underlineY);
+									}
+									if (run.style != null && run.style.strikeout) {
+										int strikeoutY = drawRunY + run.height - run.height/2 - 1;
+										gc.drawLine (selX, strikeoutY, selX + selWidth, strikeoutY);
+									}
 								}
 							}
 						}
