@@ -3302,6 +3302,9 @@ public boolean sleep () {
 				OS.MonitorExit (OS_LOCK);
 			}
 		}
+		synchronized (OS_LOCK) {
+			OS_LOCK.notifyAll ();
+		}
 		try {
 			result = OS.select (max_fd + 1, fd_set, null, null, timeout);
 		} finally {

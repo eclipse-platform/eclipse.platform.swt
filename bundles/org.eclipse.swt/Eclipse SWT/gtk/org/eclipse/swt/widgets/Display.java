@@ -2967,6 +2967,9 @@ public boolean sleep () {
 							OS.MonitorExit (OS_LOCK);
 						}
 					}
+					synchronized (OS_LOCK) {
+						OS_LOCK.notifyAll ();
+					}
 					try {
 						wake = false;
 						OS.Call (poll, fds, nfds, timeout [0]);
