@@ -41,6 +41,7 @@ public class Browser extends Composite {
 	Point location;
 	Point size;
 	boolean addressBar = true, menuBar = true, statusBar = true, toolBar = true;
+	int info;
 	
 	int globalDispatch;
 	String html;
@@ -146,7 +147,9 @@ public class Browser extends Composite {
  * @since 3.0
  */
 public Browser(Composite parent, int style) {
-	super(parent, style);
+	super(parent, style &~ SWT.BORDER);
+	info = Browser.DOCHOSTUIFLAG_THEME;
+	if ((style & SWT.BORDER) == 0) info |= Browser.DOCHOSTUIFLAG_NO3DBORDER;
 	frame = new OleFrame(this, SWT.NONE);
 	try {
 		site = new WebSite(frame, SWT.NONE, "Shell.Explorer"); //$NON-NLS-1$
