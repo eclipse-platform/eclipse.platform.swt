@@ -493,6 +493,12 @@ public class OS {
 	public static final int Pt_WEB_DIRECTION_BACK = 6;
 	public static final int Pt_WEB_DIRECTION_CANCEL = 7;
 	public static final int Pt_WEB_DIRECTION_FWD = 5;
+	public static final int Pt_WEB_STATUS_CONNECT = 2;
+	public static final int Pt_WEB_STATUS_DEFAULT = 6;
+	public static final int Pt_WEB_STATUS_INFO = 4;
+	public static final int Pt_WEB_STATUS_MOUSE = 1;
+	public static final int Pt_WEB_STATUS_PROGRESS = 3;
+	public static final int Pt_WEB_STATUS_PRINT = 5;
 	public static final int Pt_Z_STRING = 0x1;
 
 
