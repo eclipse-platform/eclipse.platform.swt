@@ -236,7 +236,7 @@ void arrowEvent (Event event) {
 				public void run() {
 					if (CCombo.this.isDisposed()) return;
 					Control focusControl = getDisplay().getFocusControl();
-					if (focusControl == list || focusControl == text) return;
+					if (focusControl == arrow || focusControl == list || focusControl == text) return;
 					hasFocus = false;
 					Event e = new Event();
 					notifyListeners(SWT.FocusOut, e);
@@ -678,7 +678,7 @@ void listEvent (Event event) {
 				public void run() {
 					if (CCombo.this.isDisposed()) return;
 					Control focusControl = getDisplay().getFocusControl();
-					if (focusControl == text || focusControl == arrow) return;
+					if (focusControl == arrow || focusControl == list || focusControl == text) return;
 					hasFocus = false;
 					Event e = new Event();
 					notifyListeners(SWT.FocusOut, e);
@@ -1116,7 +1116,7 @@ void textEvent (Event event) {
 				public void run() {
 					if (CCombo.this.isDisposed()) return;
 					Control focusControl = getDisplay().getFocusControl();
-					if (focusControl == list || focusControl == arrow) return;
+					if (focusControl == arrow || focusControl == list || focusControl == text) return;
 					hasFocus = false;
 					Event e = new Event();
 					notifyListeners(SWT.FocusOut, e);
