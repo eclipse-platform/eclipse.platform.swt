@@ -317,9 +317,8 @@ public boolean isVisible () {
 int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowActivated (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	//NOT DONE
 	Display display = getDisplay ();
-	display.setMenuBar (menuBar);
+	display.updateMenuBar (this);
 	sendEvent (SWT.Activate);
 	restoreFocus ();
 	return result;
@@ -372,6 +371,8 @@ int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 		display.ignoreFocus = false;
 		savedFocus.sendFocusEvent (false);
 	}
+	Display display = getDisplay ();
+	display.updateMenuBar (null);
 	return result;
 }
 
@@ -580,14 +581,14 @@ void setWindowVisible (boolean visible) {
 		}
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
-		int inputMode = OS.kWindowModalityNone;
-		if ((style & SWT.PRIMARY_MODAL) != 0) inputMode = OS.kWindowModalityWindowModal;
-		if ((style & SWT.APPLICATION_MODAL) != 0) inputMode = OS.kWindowModalityAppModal;
-		if ((style & SWT.SYSTEM_MODAL) != 0) inputMode = OS.kWindowModalitySystemModal;
-		if (inputMode != OS.kWindowModalityNone) {
-			int parentHandle = 0;
-			if (parent != null) parentHandle = parent.getShell ().shellHandle;
-			OS.SetWindowModality (shellHandle, inputMode, parentHandle);
+		int inModalKind = OS.kWindowModalityNone;
+		if ((style & SWT.PRIMARY_MODAL) != 0) inModalKind = OS.kWindowModalityWindowModal;
+		if ((style & SWT.APPLICATION_MODAL) != 0) inModalKind = OS.kWindowModalityAppModal;
+		if ((style & SWT.SYSTEM_MODAL) != 0) inModalKind = OS.kWindowModalitySystemModal;
+		if (inModalKind != OS.kWindowModalityNone) {
+			int inUnavailableWindow = 0;
+			if (parent != null) inUnavailableWindow = OS.GetControlOwner (parent.handle);
+			OS.SetWindowModality (shellHandle, inModalKind, inUnavailableWindow);
 		}
 		OS.ShowWindow (shellHandle);
 	} else {

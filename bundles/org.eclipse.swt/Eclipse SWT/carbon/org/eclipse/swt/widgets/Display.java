@@ -70,7 +70,8 @@ public class Display extends Device {
 	Menu menuBar;
 	Menu [] menus, popups;
 	MenuItem [] items;
-	static final int ID_START = 1000;
+	static final int ID_TEMPORARY = 1000;
+	static final int ID_START = 1001;
 	
 	/* Insets */
 	Rect buttonInset, tabFolderInset, comboInset;
@@ -870,15 +871,7 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 	switch (part) {
 		case OS.inMenuBar: {
 			if (eventKind == OS.kEventMouseDown) {
-				//WRONG - doesn't work for nested modal windows and modal windows with menu bars
-				boolean modal = false;
-				int activeWindow = OS.ActiveNonFloatingWindow ();
-				if (activeWindow != 0) {
-					int [] outModalityKind = new int [1], outUnavailableWindow = new int [1];
-					OS.GetWindowModality (activeWindow, outModalityKind, outUnavailableWindow);
-					modal = outModalityKind [0] != OS.kWindowModalityNone;
-				}
-				if (!modal) OS.MenuSelect (where);
+				OS.MenuSelect (where);
 				return OS.noErr;
 			}
 			break;
@@ -1336,10 +1329,29 @@ public void setSynchronizer (Synchronizer synchronizer) {
 }
 
 void setMenuBar (Menu menu) {
+	/*
+	* Feature in the Macintosh.  SetRootMenu() does not
+	* accept NULL to indicate that their should be no
+	* menu bar. The fix is to create a temporary empty
+	* menu, set that to be the menu bar, clear the menu
+	* bar and then delete the temporary menu.
+	*/
+	if (menu == menuBar) return;
+	int theMenu = 0;
+	if (menu == null) {
+		int outMenuRef [] = new int [1];
+		OS.CreateNewMenu ((short) ID_TEMPORARY, 0, outMenuRef);
+		theMenu = outMenuRef [0];
+	} else {
+		theMenu = menu.handle;
+	}
+	OS.SetRootMenu (theMenu);
+	if (menu == null) {
+		OS.ClearMenuBar ();
+		OS.DeleteMenu (OS.GetMenuID (theMenu));
+		OS.DisposeMenu (theMenu);
+	}
 	menuBar = menu;
-	//NOT DONE
-	int inMenu = menuBar != null ? menu.handle : 0; 
-	OS.SetRootMenu (inMenu);
 }
 
 public boolean sleep () {
@@ -1421,6 +1433,42 @@ public void update () {
 	while (OS.ReceiveNextEvent (mask.length / 2, mask, OS.kEventDurationNoWait, true, outEvent) == OS.noErr) {
 		OS.SendEventToEventTarget (outEvent [0], OS.GetEventDispatcherTarget ());
 		OS.ReleaseEvent (outEvent [0]);
+	}
+}
+
+void updateMenuBar () {
+	updateMenuBar (getActiveShell ());
+}
+
+void updateMenuBar (Shell shell) {
+	if (shell == null) shell = getActiveShell ();
+	boolean modal = false;
+	int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
+	while (shell != null) {
+		if (shell.menuBar != null) break;
+		if ((shell.style & mask) != 0) modal = true;
+		shell = (Shell) shell.parent;
+	}
+	/*
+	* Feature in the Macintosh.  For some reason, when a modal shell
+	* is active, DisableMenuItem() when called with zero (indicating
+	* that the entire menu is to be disabled) will not disable the
+	* current menu bar.  The fix is to disable each individual menu
+	* item.
+	*/
+	Menu menu = null;
+	if (menuBar != null) {
+		int theMenu = menuBar.handle;
+		MenuItem [] items = menuBar.getItems ();
+		for (int i=0; i<items.length; i++) {
+			if (items [i].getEnabled ()) items [i]._setEnabled (true);
+		}
+	}
+	setMenuBar (shell != null ? shell.menuBar : null);
+	if (menuBar != null && modal) {
+		int theMenu = menuBar.handle;
+		MenuItem [] items = menuBar.getItems ();
+		for (int i=0; i<items.length; i++) items [i]._setEnabled (false);
 	}
 }
 

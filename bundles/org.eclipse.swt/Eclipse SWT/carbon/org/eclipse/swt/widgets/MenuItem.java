@@ -28,6 +28,20 @@ public MenuItem (Menu parent, int style, int index) {
 	parent.createItem (this, index);
 }
 
+public void _setEnabled (boolean enabled) {
+	short [] outIndex = new short [1];
+	OS.GetIndMenuItemWithCommandID (parent.handle, id, 1, null, outIndex);
+	int outMenuRef [] = new int [1];
+	OS.GetMenuItemHierarchicalMenu (parent.handle, outIndex [0], outMenuRef);
+	if (enabled) {
+		if (outMenuRef [0] != 0) OS.EnableMenuItem (outMenuRef [0], (short) 0);
+		OS.EnableMenuCommand (parent.handle, id);
+	} else {
+		if (outMenuRef [0] != 0) OS.DisableMenuItem (outMenuRef [0], (short) 0);
+		OS.DisableMenuCommand (parent.handle, id);
+	}
+}
+
 public void addArmListener (ArmListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -70,8 +84,8 @@ public Display getDisplay () {
 }
 
 public boolean getEnabled () {
-	checkWidget ();
-	return OS.IsMenuCommandEnabled (parent.handle, id);
+	checkWidget();
+	return (state & DISABLED) == 0;
 }
 
 public Menu getMenu () {
@@ -260,17 +274,12 @@ public void setAccelerator (int accelerator) {
 
 public void setEnabled (boolean enabled) {
 	checkWidget ();
-	short [] outIndex = new short [1];
-	OS.GetIndMenuItemWithCommandID (parent.handle, id, 1, null, outIndex);
-	int outMenuRef [] = new int [1];
-	OS.GetMenuItemHierarchicalMenu (parent.handle, outIndex [0], outMenuRef);
 	if (enabled) {
-		if (outMenuRef [0] != 0) OS.EnableMenuItem (outMenuRef [0], (short) 0);
-		OS.EnableMenuCommand (parent.handle, id);
+		state &= ~DISABLED;
 	} else {
-		if (outMenuRef [0] != 0) OS.DisableMenuItem (outMenuRef [0], (short) 0);
-		OS.DisableMenuCommand (parent.handle, id);
+		state |= DISABLED;
 	}
+	_setEnabled (enabled);
 }
 
 public void setImage (Image image) {

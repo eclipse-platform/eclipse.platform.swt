@@ -159,8 +159,8 @@ public Display getDisplay () {
 }
 
 public boolean getEnabled () {
-	checkWidget ();
-	return OS.IsMenuItemEnabled (handle, (short)0);
+	checkWidget();
+	return (state & DISABLED) == 0;
 }
 
 public MenuItem getItem (int index) {
@@ -332,10 +332,12 @@ public void setDefaultItem (MenuItem item) {
 }
 
 public void setEnabled (boolean enabled) {
-	checkWidget ();
+	checkWidget();
 	if (enabled) {
+		state &= ~DISABLED;
 		OS.EnableMenuItem (handle, (short)0);
 	} else {
+		state |= DISABLED;
 		OS.DisableMenuItem (handle, (short)0);
 	}
 }

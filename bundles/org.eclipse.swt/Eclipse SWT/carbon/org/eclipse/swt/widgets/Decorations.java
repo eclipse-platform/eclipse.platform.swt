@@ -159,9 +159,8 @@ public void setMenuBar (Menu menu) {
 		if (menu.parent != this) error (SWT.ERROR_INVALID_PARENT);
 	}
 	menuBar = menu;
-	//NOT DONE
 	Display display = getDisplay ();
-//	display.setMenuBar (menuBar);
+	display.updateMenuBar ();
 }
 
 public void setMinimized (boolean minimized) {
