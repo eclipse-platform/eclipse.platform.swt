@@ -320,6 +320,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 	RECT rect = new RECT ();
 	int flags = OS.DT_CALCRECT | OS.DT_NOPREFIX;
+	if ((style & SWT.READ_ONLY) == 0) flags |= OS.DT_EDITCONTROL;
 	int length = OS.GetWindowTextLength (handle);
 	int cp = getCodePage ();
 	TCHAR buffer = new TCHAR (cp, length + 1);
@@ -337,16 +338,26 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			}
 		}
 	}	
-	TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
-	OS.GetTextMetrics (hDC, tm);
-	if (newFont != 0) OS.SelectObject (hDC, oldFont);
-	OS.ReleaseDC (handle, hDC);
 	if (width == 0) width = DEFAULT_WIDTH;
 	if (height == 0) height = DEFAULT_HEIGHT;
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	int border = OS.GetSystemMetrics (OS.SM_CXEDGE);
-	width += OS.GetSystemMetrics (OS.SM_CXVSCROLL) + (tm.tmInternalLeading + border) * 2;
+	if ((style & SWT.READ_ONLY) != 0) {
+		TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
+		OS.GetTextMetrics (hDC, tm);
+		width += tm.tmInternalLeading * 2;
+	} else {
+		int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+		if (hwndText != 0) {
+			int margins = OS.SendMessage (hwndText, OS.EM_GETMARGINS, 0, 0);
+			int marginWidth = (margins & 0xFFFF) + ((margins >> 16) & 0xFFFF);
+			width += marginWidth + 3;
+		}
+	}
+	width += OS.GetSystemMetrics (OS.SM_CXVSCROLL) + border * 2;
+	if (newFont != 0) OS.SelectObject (hDC, oldFont);
+	OS.ReleaseDC (handle, hDC);
 	int textHeight = OS.SendMessage (handle, OS.CB_GETITEMHEIGHT, -1, 0);
 	if ((style & SWT.DROP_DOWN) != 0) {
 		height = textHeight + 6;
