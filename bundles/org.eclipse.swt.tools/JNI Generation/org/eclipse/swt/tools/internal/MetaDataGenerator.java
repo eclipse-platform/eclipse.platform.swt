@@ -85,20 +85,6 @@ public void generate(Method method) {
 }
 
 public static void main(String[] args) {
-//	args = new String[]{
-//		"org.eclipse.swt.internal.carbon.CFRange",
-//		"org.eclipse.swt.internal.carbon.CGPoint",
-//		"org.eclipse.swt.internal.carbon.CGRect",
-//		"org.eclipse.swt.internal.carbon.ColorPickerInfo",
-//		"org.eclipse.swt.internal.carbon.ControlButtonContentInfo",
-//		"org.eclipse.swt.internal.carbon.ControlFontStyleRec",
-//		"org.eclipse.swt.internal.carbon.NavDialogCreationOptions",
-//		"org.eclipse.swt.internal.carbon.PixMap",
-//		"org.eclipse.swt.internal.carbon.Point",
-//		"org.eclipse.swt.internal.carbon.Rect",
-//		"org.eclipse.swt.internal.carbon.RGBColor",
-//		"org.eclipse.swt.internal.carbon.OS",
-//	};
 	if (args.length < 1) {
 		System.out.println("Usage: java CastGenerator <className1> <className2>");
 		return;
