@@ -680,7 +680,7 @@ void remove (MenuItem item) {
 
 boolean restoreFocus () {
 	if (savedFocus != null && savedFocus.isDisposed ()) savedFocus = null;
-	if (savedFocus != null && savedFocus.forceFocus ()) return true;
+	if (savedFocus != null && savedFocus.setSavedFocus ()) return true;
 	/*
 	* This code is intentionally commented.  When no widget
 	* has been given focus, some platforms give focus to the
@@ -1367,7 +1367,8 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 		*/
 		sendEvent (SWT.Activate);
 		if (isDisposed ()) return LRESULT.ZERO;
-		if (restoreFocus ()) return LRESULT.ZERO;
+		if (restoreFocus ()) return LRESULT.ZERO;	
+		if (traverseGroup (true)) return LRESULT.ZERO;
 	}
 	return result;
 }
@@ -1408,7 +1409,7 @@ LRESULT WM_QUERYOPEN (int wParam, int lParam) {
 
 LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	LRESULT result = super.WM_SETFOCUS (wParam, lParam);
-	restoreFocus ();
+	if (!restoreFocus ()) traverseGroup (true);
 	return result;
 }
 

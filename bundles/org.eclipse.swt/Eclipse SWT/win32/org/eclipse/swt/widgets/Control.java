@@ -1735,19 +1735,14 @@ public void setBounds (int x, int y, int width, int height) {
 }
 
 void setBounds (int x, int y, int width, int height, int flags) {
+	flags |= OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
 	/*
-	* Feature on WinCE.  The SWP_DRAWFRAME flag in SetWindowPos
-	* causes a WM_SIZE event to be thrown even if SWP_NOSIZE is
-	* set.  When setBounds is called with the flag SWP_NOSIZE,
-	* the width and height are ignored.  This case should not throw
-	* a WM_SIZE event.  The fix is to set the SWP_DRAWFRAME flag only if
-	* SWP_NOSIZE is not specified.
+	* Feature on WinCE.  The SWP_DRAWFRAME flag for SetWindowPos()
+	* causes a WM_SIZE message to be sent even when the SWP_NOSIZE
+	* flag is specified.  The fix is to clear SWP_DRAWFRAME.
 	*/
 	if (OS.IsWinCE) {
-		if ((flags | OS.SWP_NOSIZE) == 0) flags |= OS.SWP_DRAWFRAME;
-		flags |= OS.SWP_NOZORDER | OS.SWP_NOACTIVATE;
-	} else {
-		flags |= OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
+		if ((flags & OS.SWP_NOSIZE) != 0) flags &= ~OS.SWP_DRAWFRAME;
 	}
 	if (parent == null) {
 		OS.SetWindowPos (handle, 0, x, y, width, height, flags);
@@ -2113,6 +2108,10 @@ public void setRedraw (boolean redraw) {
 			OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 		}
 	}
+}
+
+boolean setSavedFocus () {
+	return forceFocus ();
 }
 
 /**

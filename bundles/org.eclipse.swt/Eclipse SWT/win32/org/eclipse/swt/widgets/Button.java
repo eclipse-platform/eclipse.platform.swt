@@ -381,6 +381,7 @@ public void removeSelectionListener (SelectionListener listener) {
 	eventTable.unhook (SWT.Selection, listener);
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
+
 void selectRadio () {
 	Control [] children = parent._getChildren ();
 	for (int i=0; i<children.length; i++) {
@@ -504,6 +505,20 @@ boolean setRadioFocus () {
 	return setFocus ();
 }
 
+boolean setSavedFocus () {
+	/*
+	* Feature in Windows.  When a radio button gets focus, 
+	* it selects the button in WM_SETFOCUS.  If the previous
+	* saved focus widget was a radio button, allowing the shell
+	* to automatically restore the focus to the previous radio
+	* button will unexpectedly check that button.  The fix is
+	* to disallow focus to be restored to radio button that is
+	* not selected.
+	*/
+	if ((style & SWT.RADIO) != 0 && !getSelection ()) return false;
+	return super.setSavedFocus ();
+}
+
 /**
  * Sets the selection state of the receiver, if it is of type <code>CHECK</code>, 
  * <code>RADIO</code>, or <code>TOGGLE</code>.
@@ -534,21 +549,7 @@ public void setSelection (boolean selected) {
 	*/
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	OS.SendMessage (handle, OS.BM_SETCHECK, flags, 0);
-	OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
-	
-	/*
-	* Feature in Windows.  When a radio button gets focus, 
-	* it selects the button in WM_SETFOCUS.  If the previous
-	* saved focus widget was a radio button, allowing the shell
-	* to automatically restore the focus to the previous radio
-	* button will unexpectedly check that button.  The fix is
-	* to set the saved focus widget for the shell to be the
-	* radio button so that when focus is restored, the focus
-	* widget will be the new radio button.
-	*/
-	if (!selected) return;
-	if ((style & SWT.RADIO) == 0) return;
-	menuShell ().setSavedFocus (this);      
+	OS.SetWindowLong (handle, OS.GWL_STYLE, bits);     
 }
 
 /**
