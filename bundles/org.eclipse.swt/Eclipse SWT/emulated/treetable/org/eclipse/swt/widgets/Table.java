@@ -3108,6 +3108,7 @@ public void setSelection (int index) {
 	if (!(0 <= index && index < itemsCount)) return;
 	selectItem (items [index], false);
 	setFocusItem (items [index], true);
+	redrawItem (index, true);
 	showSelection ();
 }
 /**
