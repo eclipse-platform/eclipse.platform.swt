@@ -133,7 +133,10 @@ void addAccelerator (int accelGroup) {
 	if (newKey != 0) {
 		keysym = newKey;
 	} else {
-		keysym = wcsToMbcs ((char) keysym);
+		switch (keysym) {
+			case '\r': keysym = OS.GDK_Return; break;
+			default: keysym = wcsToMbcs ((char) keysym);
+		}
 	}
 	OS.gtk_widget_add_accelerator (handle, OS.activate, accelGroup, keysym, mask, OS.GTK_ACCEL_VISIBLE);
 }
@@ -248,6 +251,10 @@ void createHandle (int index) {
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
 		OS.gtk_check_menu_item_set_show_toggle (handle, true);
+	}
+	if ((style & SWT.SEPARATOR) == 0) {
+		int label = OS.gtk_bin_get_child (handle);
+		OS.gtk_accel_label_set_accel_widget (label, 0);
 	}
 	OS.gtk_menu_shell_insert (parent.handle, handle, index);
 	OS.gtk_widget_show (handle);
@@ -636,13 +643,23 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setText (string);
+	String accelString = null;
 	int index = string.indexOf ('\t');
-	if (index != -1) string = string.substring (0, index);
+	if (index != -1) {
+		accelString = string.substring (index, string.length());
+		string = string.substring (0, index);
+	}
 	char [] chars = fixMnemonic (string);
 	byte [] buffer = Converter.wcsToMbcs (null, chars);
-	int list = OS.gtk_container_get_children (handle);
-	int label = OS.g_list_nth_data (list, 0);
-	OS.g_list_free (list);
+	int label = OS.gtk_bin_get_child (handle);
 	OS.gtk_label_set_text_with_mnemonic (label, buffer);
+	if (accelString != null) {
+		buffer = Converter.wcsToMbcs (null, accelString, true);
+		int ptr = OS.g_malloc (buffer.length);
+		OS.memmove (ptr, buffer, buffer.length);
+		int oldPtr = OS.GTK_ACCEL_LABEL_ACCEL_STRING (label);
+		OS.GTK_ACCEL_LABEL_ACCEL_STRING (label, ptr);
+		if (oldPtr != 0) OS.g_free (oldPtr);
+	}
 }
 }

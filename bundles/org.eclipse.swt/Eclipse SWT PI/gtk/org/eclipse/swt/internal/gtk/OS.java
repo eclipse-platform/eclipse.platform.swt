@@ -281,6 +281,8 @@ public static final native int GTK_SCROLLED_WINDOW_SCROLLBAR_SPACING(int widget)
 public static final native int ROW_TOP_YPIXEL(int clist, int row);
 public static final native int GTK_CLIST_WINDOW_WIDTH(int clist);
 public static final native int GTK_CLIST_ROW_LIST(int clist);
+public static final native int GTK_ACCEL_LABEL_ACCEL_STRING(int acce_label);
+public static final native void GTK_ACCEL_LABEL_ACCEL_STRING(int acce_label, int string);
 
 /** Native methods */
 public static final native int GDK_ROOT_PARENT();
@@ -418,6 +420,7 @@ public static final native void gdk_window_set_icon(int window, int icon_window,
 public static final native void gdk_window_set_override_redirect(int window, boolean override_redirect);
 public static final native int gtk_accel_group_new();
 public static final native boolean gtk_accel_groups_activate(int accelGroup, int accelKey, int accelMods);
+public static final native void gtk_accel_label_set_accel_widget(int accel_label, int accel_widget);
 public static final native void gtk_adjustment_changed(int adjustment);
 public static final native double gtk_adjustment_get_value(int adj);
 public static final native int gtk_adjustment_new(double value, double lower, double upper, double step_increment, double page_increment, double page_size);
@@ -425,6 +428,7 @@ public static final native void gtk_adjustment_set_value(int adjustment, double 
 public static final native void gtk_adjustment_value_changed(int adjustment);
 public static final native int gtk_arrow_new(int arrow_type, int shadow_type);
 public static final native void gtk_arrow_set(int arrow, int arrow_type, int shadow_type);
+public static final native int gtk_bin_get_child(int bin);
 public static final native void gtk_box_pack_end(int box, int child, boolean expand, boolean fill, int padding);
 public static final native void gtk_box_pack_start(int box, int child, boolean expand, boolean fill, int padding);
 public static final native int gtk_button_new();

@@ -23,6 +23,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GDK_1ROOT_1PARENT
 	return (jint)GDK_ROOT_PARENT();
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1ACCEL_1LABEL_1ACCEL_1STRING__I
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GTK_1ACCEL_1LABEL_1ACCEL_1STRING__I\n")
+
+	return (jint)((GtkAccelLabel *)arg0)->accel_string;
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1ACCEL_1LABEL_1ACCEL_1STRING__II
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("GTK_1ACCEL_1LABEL_1ACCEL_1STRING__II\n")
+
+	((GtkAccelLabel *)arg0)->accel_string = (gchar *)arg1;
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1CLIST_1CLIST_1WINDOW
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1451,6 +1467,14 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1accel_1grou
 	return (jboolean)gtk_accel_groups_activate((GObject *)arg0, (guint)arg1, (GdkModifierType)arg2);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1accel_1label_1set_1accel_1widget
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1accel_1label_1set_1accel_1widget\n")
+
+	gtk_accel_label_set_accel_widget((GtkAccelLabel *)arg0, (GtkWidget *)arg1);
+}
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1adjustment_1changed
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1505,6 +1529,14 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1arrow_1set
 	DEBUG_CALL("gtk_1arrow_1set\n")
 
 	gtk_arrow_set((GtkArrow *)arg0, (GtkArrowType)arg1, (GtkArrowType)arg2);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1bin_1get_1child
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1bin_1get_1child\n")
+
+	return (jint)gtk_bin_get_child((GtkBin *)arg0);
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1box_1pack_1end
