@@ -969,7 +969,7 @@ int processPaint (int callData) {
 	if (!enabled) {
 		Display display = getDisplay ();
 		currentImage = disabledImage;
-		if (currentImage == null) {
+		if (currentImage == null && image != null) {
 			currentImage = new Image (display, image, SWT.IMAGE_DISABLE);
 		}
 		Color disabledColor = display.getSystemColor (SWT.COLOR_WIDGET_NORMAL_SHADOW);
