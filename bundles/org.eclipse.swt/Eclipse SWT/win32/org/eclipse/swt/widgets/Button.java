@@ -47,6 +47,7 @@ public class Button extends Control {
 	boolean ignoreMouse;
 	static final int ButtonProc;
 	static final TCHAR ButtonClass = new TCHAR (0,"BUTTON", true);
+	static final char [] SCROLLBAR = new char [] {'S', 'C', 'R', 'O', 'L', 'L', 'B', 'A', 'R', 0};
 	static final int CheckWidth, CheckHeight;
 	static {
 		int hBitmap = OS.LoadBitmap (0, OS.OBM_CHECKBOXES);
@@ -773,19 +774,39 @@ LRESULT wmDrawChild (int wParam, int lParam) {
 	if ((style & SWT.ARROW) == 0) return super.wmDrawChild (wParam, lParam);
 	DRAWITEMSTRUCT struct = new DRAWITEMSTRUCT ();
 	OS.MoveMemory (struct, lParam, DRAWITEMSTRUCT.sizeof);
-	int uState = OS.DFCS_SCROLLLEFT;
-	switch (style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT)) {
-		case SWT.UP: uState = OS.DFCS_SCROLLUP; break;
-		case SWT.DOWN: uState = OS.DFCS_SCROLLDOWN; break;
-		case SWT.LEFT: uState = OS.DFCS_SCROLLLEFT; break;
-		case SWT.RIGHT: uState = OS.DFCS_SCROLLRIGHT; break;
-	}
-	if (!getEnabled ()) uState |= OS.DFCS_INACTIVE;
-	if ((style & SWT.FLAT) == SWT.FLAT) uState |= OS.DFCS_FLAT;
-	if ((struct.itemState & OS.ODS_SELECTED) != 0) uState |= OS.DFCS_PUSHED;
 	RECT rect = new RECT ();
 	OS.SetRect (rect, struct.left, struct.top, struct.right, struct.bottom);
-	OS.DrawFrameControl (struct.hDC, rect, OS.DFC_SCROLL, uState);
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		int hTheme = OS.OpenThemeData (handle, SCROLLBAR);
+		int iStateId = OS.ABS_LEFTNORMAL;
+		switch (style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT)) {
+			case SWT.UP: iStateId = OS.ABS_UPNORMAL; break;
+			case SWT.DOWN: iStateId = OS.ABS_DOWNNORMAL; break;
+			case SWT.LEFT: iStateId = OS.ABS_LEFTNORMAL; break;
+			case SWT.RIGHT: iStateId = OS.ABS_RIGHTNORMAL; break;
+		}
+		/*
+		* NOTE: The normal, hot, pressed and disabled state is
+		* computed relying on the fact that the increment between
+		* the direction states is invariant (always separated by 4).
+		*/
+		if (!getEnabled ()) iStateId += OS.ABS_UPDISABLED - OS.ABS_UPNORMAL;
+		if ((struct.itemState & OS.ODS_SELECTED) != 0) iStateId += OS.ABS_UPPRESSED - OS.ABS_UPNORMAL;
+		OS.DrawThemeBackground (hTheme, struct.hDC, OS.SBP_ARROWBTN, iStateId, rect, null);
+		OS.CloseThemeData (hTheme);
+	} else {
+		int uState = OS.DFCS_SCROLLLEFT;
+		switch (style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT)) {
+			case SWT.UP: uState = OS.DFCS_SCROLLUP; break;
+			case SWT.DOWN: uState = OS.DFCS_SCROLLDOWN; break;
+			case SWT.LEFT: uState = OS.DFCS_SCROLLLEFT; break;
+			case SWT.RIGHT: uState = OS.DFCS_SCROLLRIGHT; break;
+		}
+		if (!getEnabled ()) uState |= OS.DFCS_INACTIVE;
+		if ((style & SWT.FLAT) == SWT.FLAT) uState |= OS.DFCS_FLAT;
+		if ((struct.itemState & OS.ODS_SELECTED) != 0) uState |= OS.DFCS_PUSHED;
+		OS.DrawFrameControl (struct.hDC, rect, OS.DFC_SCROLL, uState);
+	}
 	return null;
 }
 

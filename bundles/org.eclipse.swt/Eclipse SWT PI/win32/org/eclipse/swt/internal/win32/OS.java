@@ -148,6 +148,18 @@ public class OS extends Platform {
 	*/
 
 	/* Constants */
+	public static final int ABS_DOWNDISABLED = 8;
+	public static final int ABS_DOWNNORMAL = 5;
+	public static final int ABS_DOWNPRESSED = 7;
+	public static final int ABS_LEFTDISABLED = 12;
+	public static final int ABS_LEFTNORMAL = 9;
+	public static final int ABS_LEFTPRESSED = 11;
+	public static final int ABS_RIGHTDISABLED = 16;
+	public static final int	ABS_RIGHTNORMAL = 13;
+	public static final int	ABS_RIGHTPRESSED = 15;
+	public static final int ABS_UPDISABLED = 4;
+	public static final int ABS_UPNORMAL = 1;
+	public static final int ABS_UPPRESSED = 3;	
 	public static final int ALTERNATE = 1;
 	public static final int BDR_SUNKENINNER = 0x8;
 	public static final int BFFM_INITIALIZED = 0x1;
@@ -949,6 +961,7 @@ public class OS extends Platform {
 	public static final int RGN_DIFF = 0x4;
 	public static final int RGN_ERROR = 0;
 	public static final int RGN_OR = 0x2;
+	public static final int SBP_ARROWBTN = 0x1;
 	public static final int SBS_HORZ = 0x0;
 	public static final int SBS_VERT = 0x1;
 	public static final int SB_BOTH = 0x3;
