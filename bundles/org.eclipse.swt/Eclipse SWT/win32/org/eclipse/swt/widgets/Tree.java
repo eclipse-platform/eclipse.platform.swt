@@ -494,9 +494,8 @@ void createParent () {
 	int newStyle = super.widgetStyle () & ~OS.WS_VISIBLE;
 	if ((oldStyle & OS.WS_DISABLED) != 0) newStyle |= OS.WS_DISABLED;
 //	if ((oldStyle & OS.WS_VISIBLE) != 0) newStyle |= OS.WS_VISIBLE;
-	int newExtStyle = super.widgetExtStyle ();
 	hwndParent = OS.CreateWindowEx (
-		newExtStyle,
+		super.widgetExtStyle (),
 		super.windowClass (),
 		null,
 		newStyle,
