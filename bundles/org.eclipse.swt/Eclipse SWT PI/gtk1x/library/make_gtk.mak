@@ -61,23 +61,24 @@ make_pixbuf: $(PIXBUF_DLL)
 
 # All about Linking
 
+LD=ld
 $(SWT_DLL): callback.o
-	ld -x -shared \
+	$(LD) -x -shared \
 	    -o $(SWT_DLL) callback.o
 	    
 # Note:  your setup may be different.  Consult `gtk-config --libs`
 $(SWTPI_DLL): swt.o structs.o
-	ld -x -shared \
+	$(LD) -x -shared \
 	    -L/usr/lib -L/usr/X11R6/lib \
 	    -lgtk -lgdk -lgmodule -lglib \
 	    -ldl -lXi -lXext -lX11 -lm -lc \
 	    -o $(SWTPI_DLL) swt.o structs.o
 
 #$(GNOME_DLL): gnome.o
-#	ld -o $@ gnome.o $(GNOME_LIB)
+#	$(LD) -o $@ gnome.o $(GNOME_LIB)
 
 $(PIXBUF_DLL): pixbuf.o
-	ld -x -shared \
+	$(LD) -x -shared \
 	    -L/usr/lib -L/usr/X11R6/lib \
 	    -lgdk_pixbuf \
 	    -lgtk -lgdk -lgmodule -lglib \
@@ -87,6 +88,7 @@ $(PIXBUF_DLL): pixbuf.o
 
 # All about Compiling
 
+CC=gcc
 SWT_C_FLAGS = -c -O -s \
 	    -DSWT_VERSION=$(SWT_VERSION) \
 	    -DLINUX -DGTK \
@@ -110,25 +112,25 @@ SWT_GNOME_FLAGS = -c -O -s \
 	    `gnome-config --cflags gnome`
 
 swt.o: swt.c swt.h
-	gcc $(SWT_C_FLAGS) swt.c
+	$(GCC) $(SWT_C_FLAGS) swt.c
 
 structs.o: structs.c
-	gcc $(SWT_C_FLAGS) structs.c
+	$(GCC) $(SWT_C_FLAGS) structs.c
 
 callback.o: callback.c
-	gcc $(SWT_C_FLAGS) callback.c
+	$(GCC) $(SWT_C_FLAGS) callback.c
 
 globals.o: globals.c
-	gcc $(SWT_C_FLAGS) globals.c
+	$(GCC) $(SWT_C_FLAGS) globals.c
 
 library.o: library.c
-	gcc $(SWT_C_FLAGS) library.c
+	$(GCC) $(SWT_C_FLAGS) library.c
 
 pixbuf.o: pixbuf.c
-	gcc $(SWT_PIXBUF_FLAGS) pixbuf.c
+	$(GCC) $(SWT_PIXBUF_FLAGS) pixbuf.c
 
 #gnome.o: gnome.c
-#	gcc $(SWT_GNOME_FLAGS) gnome.c
+#	$(GCC) $(SWT_GNOME_FLAGS) gnome.c
 
 clean:
 	rm -f *.o *.so
