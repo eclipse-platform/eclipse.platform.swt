@@ -1997,59 +1997,56 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			}
 			break;
 		}
-		case OS.NM_DBLCLK:
-			int pos = OS.GetMessagePos ();
-			POINT pt = new POINT ();
-			pt.x = (short) (pos & 0xFFFF);
-			pt.y = (short) (pos >> 16);
-			OS.ScreenToClient (handle, pt);
-			TVHITTESTINFO lpht = new TVHITTESTINFO ();
-			lpht.x = pt.x;
-			lpht.y = pt.y;
-			OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
-			if ((lpht.flags & OS.TVHT_ONITEM) == 0) break;
-			// FALL THROUGH
-		case OS.TVN_SELCHANGEDA:
-		case OS.TVN_SELCHANGEDW:
+		case OS.NM_DBLCLK: {
 			if (!ignoreSelect) {
-				TVITEM tvItem = null;
-				if (code == OS.TVN_SELCHANGED) {
-					tvItem = new TVITEM ();
-					int offset = NMHDR.sizeof + 4 + TVITEM.sizeof;
-					OS.MoveMemory (tvItem, lParam + offset, TVITEM.sizeof);
-					hAnchor = tvItem.hItem;
-				} else {
-					int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-					if (hItem != 0) {
-						tvItem = new TVITEM ();
-						tvItem.hItem = hItem;
-						tvItem.mask = OS.TVIF_PARAM;
-						OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-					}
-				}
+				int pos = OS.GetMessagePos ();
+				POINT pt = new POINT ();
+				pt.x = (short) (pos & 0xFFFF);
+				pt.y = (short) (pos >> 16);
+				OS.ScreenToClient (handle, pt);
+				TVHITTESTINFO lpht = new TVHITTESTINFO ();
+				lpht.x = pt.x;
+				lpht.y = pt.y;
+				OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
+				if ((lpht.flags & OS.TVHT_ONITEM) == 0) break;
 				Event event = new Event ();
-				if (tvItem != null) {
+				int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+				if (hItem != 0) {
+					TVITEM tvItem = new TVITEM ();
+					tvItem.hItem = hItem;
+					tvItem.mask = OS.TVIF_PARAM;
+					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 					event.item = items [tvItem.lParam];
 				}
-				if (code == OS.TVN_SELCHANGED) {
-					postEvent (SWT.Selection, event);
-				} else {
-					postEvent (SWT.DefaultSelection, event);
-				}
+				postEvent (SWT.DefaultSelection, event);
 			}
-			if (code == OS.NM_DBLCLK && hooks (SWT.DefaultSelection)) {
+			if (hooks (SWT.DefaultSelection)) {
 				return LRESULT.ONE;
 			}
+		}
+		case OS.TVN_SELCHANGEDA:
+		case OS.TVN_SELCHANGEDW: {
+			if (!ignoreSelect) {
+				TVITEM tvItem = new TVITEM ();
+				int offset = NMHDR.sizeof + 4 + TVITEM.sizeof;
+				OS.MoveMemory (tvItem, lParam + offset, TVITEM.sizeof);
+				hAnchor = tvItem.hItem;
+				Event event = new Event ();
+				event.item = items [tvItem.lParam];
+				postEvent (SWT.Selection, event);
+			}
 			break;
+		}
 		case OS.TVN_SELCHANGINGA:
-		case OS.TVN_SELCHANGINGW:
+		case OS.TVN_SELCHANGINGW: {
 			if (!ignoreSelect && !ignoreDeselect) {
 				hAnchor = 0;
 				if ((style & SWT.MULTI) != 0) deselectAll ();
 			}
 			break;
+		}
 		case OS.TVN_ITEMEXPANDINGA:
-		case OS.TVN_ITEMEXPANDINGW:
+		case OS.TVN_ITEMEXPANDINGW: {
 			if (!ignoreExpand) {
 				TVITEM tvItem = new TVITEM ();
 				int offset = NMHDR.sizeof + 4 + TVITEM.sizeof;
@@ -2084,10 +2081,11 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				}
 			}
 			break;
+		}
 		case OS.TVN_BEGINDRAGA:
 		case OS.TVN_BEGINDRAGW:
 		case OS.TVN_BEGINRDRAGA:
-		case OS.TVN_BEGINRDRAGW:
+		case OS.TVN_BEGINRDRAGW: {
 			TVITEM tvItem = new TVITEM ();
 			int offset = NMHDR.sizeof + 4 + TVITEM.sizeof;
 			OS.MoveMemory (tvItem, lParam + offset, TVITEM.sizeof);
@@ -2098,7 +2096,8 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			}
 			dragStarted = true;
 			break;
-		case OS.NM_RECOGNIZEGESTURE:
+		}
+		case OS.NM_RECOGNIZEGESTURE: {
 			/* 
 			* Feature on Pocket PC.  The tree and table controls detect the tap
 			* and hold gesture by default. They send a GN_CONTEXTMENU message to show
@@ -2113,7 +2112,8 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				if (!hasMenu && !hooks (SWT.MenuDetect)) return LRESULT.ONE;
 			}
 			break;
-		case OS.GN_CONTEXTMENU:
+		}
+		case OS.GN_CONTEXTMENU: {
 			if (OS.IsPPC) {
 				boolean hasMenu = menu != null && !menu.isDisposed ();
 				if (hasMenu || hooks (SWT.MenuDetect)) {
@@ -2125,6 +2125,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				}
 			}
 			break;
+		}
 	}
 	return super.wmNotifyChild (wParam, lParam);
 }
