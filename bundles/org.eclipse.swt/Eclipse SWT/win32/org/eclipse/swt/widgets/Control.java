@@ -1972,7 +1972,8 @@ public void setEnabled (boolean enabled) {
 
 /**
  * Causes the receiver to have the <em>keyboard focus</em>, 
- * such that all keyboard events will be delivered to it.
+ * such that all keyboard events will be delivered to it.  Focus
+ * reassignment will respect applicable platform constraints.
  *
  * @return <code>true</code> if the control got focus, and <code>false</code> if it was unable to.
  *
