@@ -225,7 +225,10 @@ void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
 	OS.OffsetRect (rect, (short) -bounds.left, (short) -bounds.top);
 
 	/* Send paint event */
+	int [] port = new int [1];
+	OS.GetPort (port);
 	GCData data = new GCData ();
+	data.port = port [0];
 	data.paintEvent = theEvent;
 	data.visibleRgn = visibleRgn;
 	GC gc = GC.carbon_new (this, data);
@@ -495,8 +498,11 @@ void hookEvents () {
 public int internal_new_GC (GCData data) {
 	checkWidget();
 	int visibleRgn = 0;
-	int window = OS.GetControlOwner (handle);
-	int port = OS.GetWindowPort (window);
+	int port = data != null ? data.port : 0;
+	if (port == 0) {
+		int window = OS.GetControlOwner (handle);
+		port = OS.GetWindowPort (window);
+	}
 	int [] buffer = new int [1];
 	OS.CreateCGContextForPort (port, buffer);
 	int context = buffer [0];

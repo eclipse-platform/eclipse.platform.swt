@@ -537,9 +537,9 @@ int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 	int visibleRgn = getVisibleRegion (theControl [0], true);
 	OS.SectRgn(region [0], visibleRgn, visibleRgn);
 	if (!OS.EmptyRgn (visibleRgn)) {
-		int window = OS.GetControlOwner (theControl [0]);
-		int port = OS.GetWindowPort (window);
-		OS.LockPortBits (port);
+		int [] port = new int [1];
+		OS.GetPort (port);
+		OS.LockPortBits (port [0]);
 //		OS.QDSetDirtyRegion (port, visibleRgn);
 		int oldClip = OS.NewRgn ();
 		OS.GetClip (oldClip);
@@ -549,7 +549,7 @@ int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 		drawWidget (theControl [0], region [0], visibleRgn, theEvent);
 		OS.SetClip (oldClip);
 		OS.DisposeRgn (oldClip);
-		OS.UnlockPortBits (port);
+		OS.UnlockPortBits (port [0]);
 	}
 	OS.DisposeRgn (visibleRgn);
 	return OS.noErr;

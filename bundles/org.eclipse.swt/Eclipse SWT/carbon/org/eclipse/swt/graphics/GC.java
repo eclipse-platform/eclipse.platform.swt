@@ -146,8 +146,9 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
  		return;
 	}
 	if (data.control != 0) {
+		int port = data.port;
 		int window = OS.GetControlOwner(data.control);
-		int port = OS.GetWindowPort(window);
+		if (port == 0) port = OS.GetWindowPort(window);
 
 		/* Calculate src and dest rectangles/regions */
 		Rect rect = new Rect();
@@ -1563,8 +1564,11 @@ void setCGClipping () {
 		OS.CGContextScaleCTM(handle, 1, -1);
 		return;
 	}
-	int window = OS.GetControlOwner(data.control);
-	int port = OS.GetWindowPort(window);
+	int port = data.port;
+	if (port == 0) {
+		int window = OS.GetControlOwner(data.control);
+		port = OS.GetWindowPort(window);
+	}
 	Rect rect = new Rect();
 	OS.GetControlBounds(data.control, rect);
 	Rect portRect = new Rect();

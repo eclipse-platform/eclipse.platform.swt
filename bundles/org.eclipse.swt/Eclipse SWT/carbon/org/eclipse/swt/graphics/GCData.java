@@ -43,4 +43,5 @@ public final class GCData {
 	public int paintEvent;
 	public int visibleRgn;
 	public int control;
+	public int port;
 }
