@@ -244,7 +244,20 @@ public void append (String string) {
 	}
 	OS.SendMessage (handle, OS.EM_SETSEL, length, length);
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
+	/*
+	* Feature in Windows.  When an edit control with ES_MULTILINE
+	* style that does not have the WS_VSCROLL style is full (i.e.
+	* there is no space at the end to draw any more characters),
+	* EM_REPLACESEL sends a WM_CHAR with a backspace character
+	* to remove any further text that is added.  This is an
+	* implementation detail of the edit control that is unexpected
+	* and can cause endless recursion when EM_REPLACESEL is sent
+	* from a WM_CHAR handler.  The fix is to ignore calling the
+	* handler from WM_CHAR.
+	*/
+	ignoreCharacter = true;
 	OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
+	ignoreCharacter = false;
 	OS.SendMessage (handle, OS.EM_SCROLLCARET, 0, 0);
 }
 
@@ -488,10 +501,23 @@ public Point getCaretLocation () {
 		pos = 0;
 		if (start [0] >= OS.GetWindowTextLength (handle)) {
 			int cp = getCodePage ();
+			/*
+			* Feature in Windows.  When an edit control with ES_MULTILINE
+			* style that does not have the WS_VSCROLL style is full (i.e.
+			* there is no space at the end to draw any more characters),
+			* EM_REPLACESEL sends a WM_CHAR with a backspace character
+			* to remove any further text that is added.  This is an
+			* implementation detail of the edit control that is unexpected
+			* and can cause endless recursion when EM_REPLACESEL is sent
+			* from a WM_CHAR handler.  The fix is to ignore calling the
+			* handler from WM_CHAR.
+			*/
+			ignoreCharacter = true;
 			OS.SendMessage (handle, OS.EM_REPLACESEL, 0, new TCHAR (cp, " ", true));
 			pos = OS.SendMessage (handle, OS.EM_POSFROMCHAR, start [0], 0);
 			OS.SendMessage (handle, OS.EM_SETSEL, start [0], start [0] + 1);
 			OS.SendMessage (handle, OS.EM_REPLACESEL, 0, new TCHAR (cp, "", true));
+			ignoreCharacter = false;
 		}
 	}
 	return new Point ((short) (pos & 0xFFFF), (short) (pos >> 16));
@@ -926,7 +952,20 @@ public void insert (String string) {
 		if (string == null) return;
 	}
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
+	/*
+	* Feature in Windows.  When an edit control with ES_MULTILINE
+	* style that does not have the WS_VSCROLL style is full (i.e.
+	* there is no space at the end to draw any more characters),
+	* EM_REPLACESEL sends a WM_CHAR with a backspace character
+	* to remove any further text that is added.  This is an
+	* implementation detail of the edit control that is unexpected
+	* and can cause endless recursion when EM_REPLACESEL is sent
+	* from a WM_CHAR handler.  The fix is to ignore calling the
+	* handler from WM_CHAR.
+	*/
+	ignoreCharacter = true;
 	OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
+	ignoreCharacter = false;
 }
 
 int mbcsToWcsPos (int mbcsPos) {
@@ -1165,7 +1204,20 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 	newText = Display.withCrLf (newText);
 	TCHAR buffer = new TCHAR (getCodePage (), newText, true);
 	OS.SendMessage (handle, OS.EM_SETSEL, start [0], end [0]);
+	/*
+	* Feature in Windows.  When an edit control with ES_MULTILINE
+	* style that does not have the WS_VSCROLL style is full (i.e.
+	* there is no space at the end to draw any more characters),
+	* EM_REPLACESEL sends a WM_CHAR with a backspace character
+	* to remove any further text that is added.  This is an
+	* implementation detail of the edit control that is unexpected
+	* and can cause endless recursion when EM_REPLACESEL is sent
+	* from a WM_CHAR handler.  The fix is to ignore calling the
+	* handler from WM_CHAR.
+	*/
+	ignoreCharacter = true;
 	OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
+	ignoreCharacter = false;
 	return false;
 }
 
@@ -1381,7 +1433,7 @@ public void setRedraw (boolean redraw) {
 	super.setRedraw (redraw);
 	/*
 	* Feature in Windows.  When WM_SETREDRAW is used to turn
-	* redraw off, the text control is not scrolled to show the
+	* redraw off, the edit control is not scrolled to show the
 	* i-beam.  The fix is to detect that the i-beam has moved
 	* while redraw is turned off and force it to be visible
 	* when redraw is restored.
@@ -1698,7 +1750,20 @@ LRESULT WM_CLEAR (int wParam, int lParam) {
 		result = new LRESULT (callWindowProc (OS.WM_CLEAR, 0, 0));	
 		newText = Display.withCrLf (newText);
 		TCHAR buffer = new TCHAR (getCodePage (), newText, true);
+		/*
+		* Feature in Windows.  When an edit control with ES_MULTILINE
+		* style that does not have the WS_VSCROLL style is full (i.e.
+		* there is no space at the end to draw any more characters),
+		* EM_REPLACESEL sends a WM_CHAR with a backspace character
+		* to remove any further text that is added.  This is an
+		* implementation detail of the edit control that is unexpected
+		* and can cause endless recursion when EM_REPLACESEL is sent
+		* from a WM_CHAR handler.  The fix is to ignore calling the
+		* handler from WM_CHAR.
+		*/
+		ignoreCharacter = true;
 		OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
+		ignoreCharacter = false;
 	}
 	return result;
 }
@@ -1718,7 +1783,20 @@ LRESULT WM_CUT (int wParam, int lParam) {
 		result = new LRESULT (callWindowProc (OS.WM_CUT, 0, 0));	
 		newText = Display.withCrLf (newText);
 		TCHAR buffer = new TCHAR (getCodePage (), newText, true);
+		/*
+		* Feature in Windows.  When an edit control with ES_MULTILINE
+		* style that does not have the WS_VSCROLL style is full (i.e.
+		* there is no space at the end to draw any more characters),
+		* EM_REPLACESEL sends a WM_CHAR with a backspace character
+		* to remove any further text that is added.  This is an
+		* implementation detail of the edit control that is unexpected
+		* and can cause endless recursion when EM_REPLACESEL is sent
+		* from a WM_CHAR handler.  The fix is to ignore calling the
+		* handler from WM_CHAR.
+		*/
+		ignoreCharacter = true;
 		OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
+		ignoreCharacter = false;
 	}
 	return result;
 }
@@ -1729,7 +1807,7 @@ LRESULT WM_GETDLGCODE (int wParam, int lParam) {
 	
 	/*
 	* Bug in WinCE PPC.  For some reason, sending WM_GETDLGCODE
-	* to a multi-line text control causes it to ignore return and
+	* to a multi-line edit control causes it to ignore return and
 	* tab keys.  The fix is to return the value which is normally
 	* returned by the text window proc on other versions of Windows.
 	*/
@@ -1741,7 +1819,7 @@ LRESULT WM_GETDLGCODE (int wParam, int lParam) {
 
 	/*
 	* Feature in Windows.  Despite the fact that the
-	* text control is read only, it still returns a
+	* edit control is read only, it still returns a
 	* dialog code indicating that it wants keys.  The
 	* fix is to detect this case and clear the bits.
 	*/
@@ -1834,7 +1912,20 @@ LRESULT WM_PASTE (int wParam, int lParam) {
 	if (newText != oldText) {
 		newText = Display.withCrLf (newText);
 		TCHAR buffer = new TCHAR (getCodePage (), newText, true);
+		/*
+		* Feature in Windows.  When an edit control with ES_MULTILINE
+		* style that does not have the WS_VSCROLL style is full (i.e.
+		* there is no space at the end to draw any more characters),
+		* EM_REPLACESEL sends a WM_CHAR with a backspace character
+		* to remove any further text that is added.  This is an
+		* implementation detail of the edit control that is unexpected
+		* and can cause endless recursion when EM_REPLACESEL is sent
+		* from a WM_CHAR handler.  The fix is to ignore calling the
+		* handler from WM_CHAR.
+		*/
+		ignoreCharacter = true;
 		OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
+		ignoreCharacter = false;
 		return LRESULT.ZERO;
 	}
 	return result;
@@ -1865,7 +1956,20 @@ LRESULT WM_UNDO (int wParam, int lParam) {
 	if (newText != oldText) {
 		newText = Display.withCrLf (newText);
 		TCHAR buffer = new TCHAR (getCodePage (), newText, true);
+		/*
+		* Feature in Windows.  When an edit control with ES_MULTILINE
+		* style that does not have the WS_VSCROLL style is full (i.e.
+		* there is no space at the end to draw any more characters),
+		* EM_REPLACESEL sends a WM_CHAR with a backspace character
+		* to remove any further text that is added.  This is an
+		* implementation detail of the edit control that is unexpected
+		* and can cause endless recursion when EM_REPLACESEL is sent
+		* from a WM_CHAR handler.  The fix is to ignore calling the
+		* handler from WM_CHAR.
+		*/
+		ignoreCharacter = true;
 		OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
+		ignoreCharacter = false;
 		return LRESULT.ZERO;
 	}
 	
