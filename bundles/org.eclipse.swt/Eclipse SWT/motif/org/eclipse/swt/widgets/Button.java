@@ -140,10 +140,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int border = getBorderWidth ();
 	int width = border * 2, height = border * 2;
-	if ((style & SWT.ARROW) != 0 && wHint == SWT.DEFAULT && hHint == SWT.DEFAULT) {
+	if ((style & SWT.ARROW) != 0) {
 		Display display = getDisplay ();
 		width += display.scrolledMarginX;
 		height += display.scrolledMarginY;
+		if (wHint != SWT.DEFAULT) width = wHint + (border * 2);
+		if (hHint != SWT.DEFAULT) height = hHint + (border * 2);
 		return new Point (width, height);
 	}
 	XtWidgetGeometry result = new XtWidgetGeometry ();

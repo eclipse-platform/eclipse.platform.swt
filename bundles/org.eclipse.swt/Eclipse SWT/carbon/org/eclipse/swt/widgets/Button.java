@@ -148,6 +148,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		Display display = getDisplay ();
 		width += display.scrolledMarginX;
 		height += display.scrolledMarginY;
+		if (wHint != SWT.DEFAULT) width = wHint + (border * 2);
+		if (hHint != SWT.DEFAULT) height = hHint + (border * 2);
 		return new Point (width, height);
 	}
     /* AW
