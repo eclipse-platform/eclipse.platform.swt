@@ -11,11 +11,13 @@
 package org.eclipse.swt.tests.junit;
 
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.graphics.*;
 import junit.framework.*;
 import junit.textui.*;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Combo
@@ -24,7 +26,7 @@ import junit.textui.*;
  */
 public class Test_org_eclipse_swt_widgets_Combo extends Test_org_eclipse_swt_widgets_Composite {
 
-Combo combo;
+	Combo combo;
 
 public Test_org_eclipse_swt_widgets_Combo(String name) {
 	super(name);
@@ -104,11 +106,65 @@ public void test_addLjava_lang_StringI() {
 }
 
 public void test_addModifyListenerLorg_eclipse_swt_events_ModifyListener() {
-	warnUnimpl("Test test_addModifyListenerLorg_eclipse_swt_events_ModifyListener not written");
+	boolean exceptionThrown = false;
+	ModifyListener listener = new ModifyListener() {
+		public void modifyText(ModifyEvent event) {
+			listenerCalled = true;
+		}
+	};
+	try {
+		combo.addModifyListener(null);
+	}
+	catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	}
+	assertTrue("Expected exception not thrown", exceptionThrown);
+	
+	// test whether all content modifying API methods send a Modify event	
+	combo.addModifyListener(listener);
+	listenerCalled = false;
+	combo.setText("new text");	
+	assertTrue("setText does not send event", listenerCalled);
+
+	listenerCalled = false;	
+	combo.removeModifyListener(listener);
+	// cause to call the listener. 
+	combo.setText("line");	
+	assertTrue("Listener not removed", listenerCalled == false);
+	try {
+		combo.removeModifyListener(null);
+	}
+	catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	}
 }
 
 public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	warnUnimpl("Test test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
+	listenerCalled = false;
+	boolean exceptionThrown = false;
+	SelectionListener listener = new SelectionListener() {
+		public void widgetSelected(SelectionEvent event) {
+			listenerCalled = true;
+		}
+		public void widgetDefaultSelected(SelectionEvent event) {
+		}
+	};
+	try {
+		combo.addSelectionListener(null);
+	}
+	catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	}
+	combo.addSelectionListener(listener);
+	combo.select(0);
+	assertTrue(":a:", listenerCalled == false);
+	combo.removeSelectionListener(listener);
+	try {
+		combo.removeSelectionListener(null);
+	}
+	catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	}
 }
 
 public void test_clearSelection() {
@@ -127,21 +183,34 @@ public void test_clearSelection() {
 }
 
 public void test_computeSizeIIZ() {
-	warnUnimpl("Test test_computeSizeIIZ not written");
+	// super class test is sufficient
 }
 
 public void test_copy() {
-	warnUnimpl("Test test_copy not written");
+	combo.setText("123456");
+	combo.setSelection(new Point(1,3));
+	combo.copy();
+	combo.setSelection(new Point(0,0));
+	combo.paste();
+	assertTrue(":a:", combo.getText().equals("23123456"));
 }
 
 public void test_cut() {
-	warnUnimpl("Test test_cut not written");
+	combo.setText("123456");
+	combo.setSelection(new Point(1,3));
+	combo.cut();
+	assertTrue(":a:", combo.getText().equals("1456"));
 }
 
 public void test_deselectAll() {
-	warnUnimpl("Test test_deselectAll not written");
+	combo.add("123");
+	combo.add("456");
+	combo.add("789");
+	combo.select(0);
+	combo.select(2);
+	combo.deselectAll();
+	assertTrue(":a:", combo.getSelectionIndex()== -1);
 }
-
 public void test_deselectI() {
 	combo.deselect(2);
 
@@ -197,15 +266,26 @@ public void test_getItemI() {
 }
 
 public void test_getItems() {
-	warnUnimpl("Test test_getItems not written");
+	combo.removeAll();
+	combo.add("1");
+	combo.add("2");
+	combo.add("3");
+	String[] items = combo.getItems();
+	assertTrue(":a:", items.length==3);
+	assertTrue(":a:", items[0].equals("1"));
+	assertTrue(":a:", items[1].equals("2"));
+	assertTrue(":a:", items[2].equals("3"));
 }
 
 public void test_getOrientation() {
-	warnUnimpl("Test test_getOrientation not written");
+	// tested in setOrientation
 }
 
 public void test_getSelection() {
-	warnUnimpl("Test test_getSelection not written");
+	combo.setText("123456");
+	combo.setSelection(new Point(1,3));
+	combo.getSelection();
+	assertTrue(":a:", combo.getSelection().equals(new Point(1,3)));
 }
 
 public void test_getSelectionIndex() {
@@ -244,7 +324,8 @@ public void test_getTextHeight() {
 }
 
 public void test_getTextLimit() {
-	warnUnimpl("Test test_getTextLimit not written");
+	combo.setTextLimit(3);
+	assertTrue(":a:", combo.getTextLimit()==3);
 }
 
 public void test_hasFocus() {
@@ -304,11 +385,19 @@ public void test_indexOfLjava_lang_StringI() {
 }
 
 public void test_paste() {
-	warnUnimpl("Test test_paste not written");
+	combo.setText("123456");
+	combo.setSelection(new Point(1,3));
+	combo.cut();
+	assertTrue(":a:", combo.getText().equals("1456"));
+	combo.paste();
+	assertTrue(":a:", combo.getText().equals("123456"));
 }
 
 public void test_removeAll() {
-	warnUnimpl("Test test_removeAll not written");
+	combo.add("1");
+	combo.add("2");
+	combo.removeAll();
+	assertTrue(":a:", combo.getItems().length==0);
 }
 
 public void test_removeI() {
@@ -457,15 +546,18 @@ public void test_removeLjava_lang_String() {
 }
 
 public void test_removeModifyListenerLorg_eclipse_swt_events_ModifyListener() {
-	warnUnimpl("Test test_removeModifyListenerLorg_eclipse_swt_events_ModifyListener not written");
+	// tested in addModifyListener method
 }
 
 public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	warnUnimpl("Test test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
+	// tested in addSelectionListener method
 }
-
 public void test_selectI() {
-	warnUnimpl("Test test_selectI not written");
+	combo.add("123");
+	combo.add("456");
+	combo.add("789");
+	combo.select(1);
+	assertTrue(":a:", combo.getSelectionIndex()== 1);
 }
 
 public void test_setItemILjava_lang_String() {
@@ -525,7 +617,8 @@ public void test_setItems$Ljava_lang_String() {
 }
 
 public void test_setOrientationI() {
-	warnUnimpl("Test test_setOrientationI not written");
+	combo.setOrientation(SWT.RIGHT_TO_LEFT);
+	assertTrue(":a:", combo.getOrientation()==SWT.RIGHT_TO_LEFT);
 }
 
 public void test_setSelectionLorg_eclipse_swt_graphics_Point() {
@@ -540,7 +633,7 @@ public void test_setSelectionLorg_eclipse_swt_graphics_Point() {
 }
 
 public void test_setTextLimitI() {
-	warnUnimpl("Test test_setTextLimitI not written");
+	// tested in getTextLimit
 }
 
 public void test_setTextLjava_lang_String() {

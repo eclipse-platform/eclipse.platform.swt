@@ -68,7 +68,7 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI(){
 }
 
 public void test_computeSizeIIZ() {
-	warnUnimpl("Test test_computeSizeIIZ not written");
+	// super class test is sufficient
 }
 
 public void test_getAlignment(){
@@ -108,11 +108,11 @@ public void test_setAlignmentI(){
 }
 
 public void test_setFocus() {
-	warnUnimpl("Test test_setFocus not written");
+	// super class test is sufficient
 }
 
 public void test_setImageLorg_eclipse_swt_graphics_Image() {
-	warnUnimpl("Test test_setImageLorg_eclipse_swt_graphics_Image not written");
+	// tested in getImage method
 }
 
 public void test_setTextLjava_lang_String(){

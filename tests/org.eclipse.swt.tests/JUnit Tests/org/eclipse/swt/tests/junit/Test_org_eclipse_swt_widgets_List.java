@@ -13,7 +13,10 @@ package org.eclipse.swt.tests.junit;
 
 import junit.framework.*;
 import junit.textui.*;
+
 import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -107,11 +110,35 @@ public void test_addLjava_lang_StringI() {
 }
 
 public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	warnUnimpl("Test test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
+	listenerCalled = false;
+	boolean exceptionThrown = false;
+	SelectionListener listener = new SelectionListener() {
+		public void widgetSelected(SelectionEvent event) {
+			listenerCalled = true;
+		}
+		public void widgetDefaultSelected(SelectionEvent event) {
+		}
+	};
+	try {
+		list.addSelectionListener(null);
+	}
+	catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	}
+	list.addSelectionListener(listener);
+	list.select(0);
+	assertTrue(":a:", listenerCalled == false);
+	list.removeSelectionListener(listener);
+	try {
+		list.removeSelectionListener(null);
+	}
+	catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	}
 }
 
 public void test_computeSizeIIZ() {
-	warnUnimpl("Test test_computeSizeIIZ not written");
+	// super class test is sufficient
 }
 
 public void test_deselect$I() {
@@ -328,7 +355,12 @@ public void test_deselectII() {
 }
 
 public void test_getFocusIndex() {
-	warnUnimpl("Test test_getFocusIndex not written");
+	String[] items = { "item0", "item1", "item2"};
+	list.setItems(items);
+	list.select(0);
+	assertEquals(0, list.getFocusIndex());
+	list.select(2);
+	assertEquals(2, list.getFocusIndex());
 }
 
 public void test_getItemCount() {
@@ -355,7 +387,19 @@ public void test_getItemCount() {
 }
 
 public void test_getItemHeight() {
-	warnUnimpl("Test test_getItemHeight not written");
+	FontData fontData = list.getFont().getFontData()[0];
+	int lineHeight;
+	Font font;
+	
+	font = new Font(list.getDisplay(), fontData.getName(), 8, fontData.getStyle());
+	list.setFont(font);
+	font.dispose();
+	lineHeight = list.getItemHeight();
+	font = new Font(list.getDisplay(), fontData.getName(), 12, fontData.getStyle());
+	list.setFont(font);
+	int newLineHeight = list.getItemHeight();
+	assertTrue(":a:", newLineHeight > lineHeight);
+	font.dispose();
 }
 
 public void test_getItemI() {
@@ -990,7 +1034,7 @@ public void test_removeLjava_lang_String() {
 }
 
 public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	warnUnimpl("Test test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
+	// tested in addSelectionListener method
 }
 
 public void test_select$I() {
@@ -1259,7 +1303,18 @@ public void test_selectII() {
 }
 
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
-	warnUnimpl("Test test_setFontLorg_eclipse_swt_graphics_Font not written");
+	FontData fontData = list.getFont().getFontData()[0];
+	int lineHeight;
+	Font font;
+	
+	font = new Font(list.getDisplay(), fontData.getName(), 8, fontData.getStyle());
+	list.setFont(font);
+	font.dispose();
+	lineHeight = list.getItemHeight();
+	font = new Font(list.getDisplay(), fontData.getName(), 12, fontData.getStyle());
+	list.setFont(font);
+	assertTrue(":a:", list.getItemHeight() > lineHeight && font.equals(list.getFont()));
+	font.dispose();
 }
 
 public void test_setItemILjava_lang_String() {

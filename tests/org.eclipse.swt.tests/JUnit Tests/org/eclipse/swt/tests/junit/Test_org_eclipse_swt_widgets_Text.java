@@ -12,9 +12,11 @@ package org.eclipse.swt.tests.junit;
 
 import junit.framework.*;
 import junit.textui.*;
+
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Text
@@ -55,15 +57,137 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 }
 
 public void test_addModifyListenerLorg_eclipse_swt_events_ModifyListener() {
-	warnUnimpl("Test test_addModifyListenerLorg_eclipse_swt_events_ModifyListener not written");
+	boolean exceptionThrown = false;
+	ModifyListener listener = new ModifyListener() {
+		public void modifyText(ModifyEvent event) {
+			listenerCalled = true;
+		}
+	};
+	try {
+		text.addModifyListener(null);
+	}
+	catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	}
+	assertTrue("Expected exception not thrown", exceptionThrown);
+	
+	// test whether all content modifying API methods send a Modify event	
+	text.addModifyListener(listener);
+	listenerCalled = false;
+	text.setText("new text");	
+	assertTrue("setText does not send event", listenerCalled);
+
+	listenerCalled = false;	
+	text.removeModifyListener(listener);
+	// cause to call the listener. 
+	text.setText("line");	
+	assertTrue("Listener not removed", listenerCalled == false);
+	try {
+		text.removeModifyListener(null);
+	}
+	catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	}
 }
 
 public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	warnUnimpl("Test test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
+	boolean exceptionThrown = false;
+	listenerCalled = false;
+	SelectionListener listener = new SelectionListener() {
+		public void widgetSelected(SelectionEvent event) {
+			listenerCalled = true;
+		}
+		public void widgetDefaultSelected(SelectionEvent event) {
+		}
+	};
+	try {
+		text.addSelectionListener(null);
+	}
+	catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	}
+	text.addSelectionListener(listener);
+	text.setText("12345");
+	text.setSelection(1,3);
+	assertTrue(":a:", listenerCalled == false);
+	text.removeSelectionListener(listener);
+	try {
+		text.removeSelectionListener(null);
+	}
+	catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	}
 }
 
 public void test_addVerifyListenerLorg_eclipse_swt_events_VerifyListener() {
-	warnUnimpl("Test test_addVerifyListenerLorg_eclipse_swt_events_VerifyListener not written");
+	final String line = "Line1";
+	final String newLine = "NewLine1";
+	boolean exceptionThrown = false;
+	text.setText("");
+	
+	// test null listener case
+	try {
+		text.addVerifyListener(null);
+	}
+	catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	}
+	assertTrue("Expected exception not thrown", exceptionThrown);
+	
+	// test append case
+	VerifyListener listener = new VerifyListener() {
+		public void verifyText(VerifyEvent event) {
+			listenerCalled = true;
+			assertEquals("Verify event data invalid", 0, event.start);
+			assertEquals("Verify event data invalid", 0, event.end);
+			assertEquals("Verify event data invalid", line, event.text);
+			event.text = newLine;
+		}
+	};	
+	text.addVerifyListener(listener);
+	listenerCalled = false;
+	text.append(line);	
+	assertTrue("append does not send event", listenerCalled);
+	assertEquals("Listener failed", newLine, text.getText());
+	text.removeVerifyListener(listener);
+
+	// test insert case
+	listener = new VerifyListener() {
+		public void verifyText(VerifyEvent event) {
+			listenerCalled = true;
+			assertEquals("Verify event data invalid", 8, event.start);
+			assertEquals("Verify event data invalid", 8, event.end);
+			assertEquals("Verify event data invalid", line, event.text);
+			event.text = newLine;
+		}
+	};	
+	text.addVerifyListener(listener);
+	listenerCalled = false;
+	text.insert(line);	
+	assertTrue("insert does not send event", listenerCalled);
+	assertEquals("Listener failed", newLine + newLine, text.getText());
+	text.removeVerifyListener(listener);
+
+	// test setText case
+	listener = new VerifyListener() {
+		public void verifyText(VerifyEvent event) {
+			listenerCalled = true;
+			assertEquals("Verify event data invalid", 0, event.start);
+			assertEquals("Verify event data invalid", 16, event.end);
+			assertEquals("Verify event data invalid", line, event.text);
+			event.text = newLine;
+		}
+	};	
+	text.addVerifyListener(listener);
+	text.setText(line);	
+	assertTrue("setText does not send event", listenerCalled);
+	assertEquals("Listener failed", newLine, text.getText());
+
+	// test remove case
+	listenerCalled = false;	
+	text.removeVerifyListener(listener);
+	text.setText(line);	
+	assertTrue("Listener not removed", listenerCalled == false);
 }
 
 public void test_appendLjava_lang_String() {
@@ -154,7 +278,7 @@ public void test_clearSelection() {
 }
 
 public void test_computeSizeIIZ() {
-	warnUnimpl("Test test_computeSizeIIZ not written");
+	// super class test is sufficient
 }
 
 public void test_copy() {
@@ -221,15 +345,45 @@ public void test_cut() {
 }
 
 public void test_getCaretLineNumber() {
-	warnUnimpl("Test test_getCaretLineNumber not written");
+	assertTrue(":a:", text.getCaretLineNumber() == 0);
+	text.setText("Line0\r\n");
+	assertTrue(":b:", text.getCaretLineNumber() == 0);
+	text.setTopIndex(1);
+	assertTrue(":c:", text.getCaretLineNumber() == 0);
+
+	text.append("Line1");
+	assertTrue(":d:", text.getCaretLineNumber() == 1);
+	String newText = "Line-1\r\n";
+	text.setSelection(0,0);
+	text.insert(newText);
+	assertTrue(":e:", text.getCaretLineNumber() == 1);
+
+	text.setSelection(0,0);
+	assertTrue(":f:", text.getCaretLineNumber() == 0);
+	text.setSelection(8,8);
+	assertTrue(":g:", text.getCaretLineNumber() == 1);
 }
 
 public void test_getCaretLocation() {
-	warnUnimpl("Test test_getCaretLocation not written");
+	assertTrue(":a:", text.getCaretLocation().x == 0);
+	assertTrue(":a:", text.getCaretLocation().y == 0);
+	text.setText("Line0\r\nLine1\r\nLine2");
+	assertTrue(":b:", text.getCaretLocation().x == 0);
+	assertTrue(":b:", text.getCaretLocation().y == 0);
+	text.setSelection(1,1);
+	Point pt = text.getCaretLocation();
+	assertTrue(":c:", text.getCaretLocation().x > 0);
+	assertTrue(":c:", text.getCaretLocation().y == 0);
 }
 
 public void test_getCaretPosition() {
-	warnUnimpl("Test test_getCaretPosition not written");
+	text.setText("Line");
+	assertTrue(":a:", text.getCaretPosition() == 0);
+	text.append("123");
+	assertTrue(":b:", text.getCaretPosition() == 7);
+	text.setSelection(1,3);
+	text.insert("123");
+	assertTrue(":b:", text.getCaretPosition() == 4);
 }
 
 public void test_getCharCount() {
@@ -309,7 +463,15 @@ public void test_getEchoChar() {
 }
 
 public void test_getEditable() {
-	warnUnimpl("Test test_getEditable not written");
+	assertTrue(":a:", text.getEditable() == true);
+	text.setEditable(true);
+	assertTrue(":b:", text.getEditable() == true);
+	text.setEditable(false);
+	assertTrue(":c:", text.getEditable() == false);
+	text.setEditable(false);
+	assertTrue(":d:", text.getEditable() == false);
+	text.setEditable(true);
+	assertTrue(":e:", text.getEditable() == true);
 }
 
 public void test_getLineCount() {
@@ -330,23 +492,53 @@ public void test_getLineCount() {
 }
 
 public void test_getLineDelimiter() {
-	warnUnimpl("Test test_getLineDelimiter not written");
+	String platform = SWT.getPlatform();
+	String delimiter = text.getLineDelimiter();
+	if (platform.equals("win32")) {
+		assertTrue(":a:", delimiter.equals("\r\n"));
+	} else if (platform.equals("motif")) {
+		assertTrue(":a:", delimiter.equals("\n"));
+	}
 }
 
 public void test_getLineHeight() {
-	warnUnimpl("Test test_getLineHeight not written");
+	assertTrue(":a:", text.getLineHeight() > 0);
 }
 
 public void test_getOrientation() {
-	warnUnimpl("Test test_getOrientation not written");
+	// tested in setOrientation
 }
 
 public void test_getSelection() {
-	warnUnimpl("Test test_getSelection not written");
+	text.setText("01234567890");
+	text.setSelection(new Point(2, 2));
+	assertTrue(":b:", text.getSelection().equals(new Point(2, 2)));
+	text.setSelection(new Point(2, 3));
+	assertTrue(":c:", text.getSelection().equals(new Point(2, 3)));
+	text.setSelection(new Point(3, 11));
+	assertTrue(":d:", text.getSelection().equals(new Point(3, 11)));
+	text.setText("01234567890");
+	text.setSelection(4);
+	assertTrue(":a:", text.getSelection().equals(new Point(4, 4)));
+	text.setSelection(11);
+	assertTrue(":b:", text.getSelection().equals(new Point(11, 11)));
+	text.setSelection(new Point(3, 2));	
+	assertTrue(":c:", text.getSelection().equals(new Point(2, 3)));	
 }
 
 public void test_getSelectionCount() {
-	warnUnimpl("Test test_getSelectionCount not written");
+	text.setText("01234567890");
+	assertTrue(":a:", text.getSelectionCount()==0);
+	text.setSelection(2, 4);
+	assertTrue(":b:", text.getSelectionCount()==2);
+	text.setSelection(2, 11);
+	assertTrue(":c:", text.getSelectionCount()==9);
+	text.setText("0123\n4567890");
+	assertTrue(":d:", text.getSelectionCount()==0);
+	text.setSelection(2, 4);
+	assertTrue(":e:", text.getSelectionCount()==2);
+	text.setSelection(2, 12);
+	assertTrue(":f:", text.getSelectionCount()==10);
 }
 
 public void test_getSelectionText() {
@@ -360,7 +552,14 @@ public void test_getSelectionText() {
 }
 
 public void test_getTabs() {
-	warnUnimpl("Test test_getTabs not written");
+	text.setTabs(1);
+	assertTrue(":a:", text.getTabs() == 1);
+	text.setTabs(8);
+	assertTrue(":b:", text.getTabs() == 8);
+	text.setText("Line\t1\r\n");
+	assertTrue(":c:", text.getTabs() == 8);
+	text.setTabs(7);
+	assertTrue(":d:", text.getTabs() == 7);
 }
 
 public void test_getText() {
@@ -390,7 +589,9 @@ public void test_getTextII() {
 }
 
 public void test_getTextLimit() {
-	warnUnimpl("Test test_getTextLimit not written");
+	assertTrue(":a:", text.getTextLimit() < 0);
+	text.setTextLimit(10);
+	assertTrue(":b:", text.getTextLimit() == 10);
 }
 
 public void test_getTopIndex() {
@@ -406,7 +607,21 @@ public void test_getTopIndex() {
 }
 
 public void test_getTopPixel() {
-	warnUnimpl("Test test_getTopPixel not written");
+	text.setText("Line0\r\nLine0a\r\n");
+
+	assertTrue(":a:", text.getTopPixel() == 0);
+	text.setTopIndex(-2);
+	assertTrue(":b:", text.getTopPixel() == 0);
+	text.setTopIndex(-1);
+	assertTrue(":c:", text.getTopPixel() == 0);
+	text.setTopIndex(1);
+	assertTrue(":d:", text.getTopPixel() == text.getLineHeight());
+	text.setTopIndex(2);
+	assertTrue(":e:", text.getTopPixel() == text.getLineHeight() * 2);
+	text.setTopIndex(0);
+	assertTrue(":f:", text.getTopPixel() == 0);
+	text.setTopIndex(3);
+	assertTrue(":g:", text.getTopPixel() == text.getLineHeight() * 2);
 }
 
 public void test_insertLjava_lang_String() {
@@ -523,15 +738,15 @@ public void test_paste() {
 }
 
 public void test_removeModifyListenerLorg_eclipse_swt_events_ModifyListener() {
-	warnUnimpl("Test test_removeModifyListenerLorg_eclipse_swt_events_ModifyListener not written");
+	// tested in addModifyListener method
 }
 
 public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	warnUnimpl("Test test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
+	// tested in addSelectionListener method
 }
 
 public void test_removeVerifyListenerLorg_eclipse_swt_events_VerifyListener() {
-	warnUnimpl("Test test_removeVerifyListenerLorg_eclipse_swt_events_VerifyListener not written");
+	// tested in addVerifyListener method
 }
 
 public void test_selectAll() {
@@ -615,15 +830,34 @@ public void test_setEchoCharC() {
 }
 
 public void test_setEditableZ() {
-	warnUnimpl("Test test_setEditableZ not written");
+	text.setEditable(true);
+	assertTrue(":a:", text.getEditable() == true);
+	text.setEditable(false);
+	assertTrue(":b:", text.getEditable() == false);
+	text.setEditable(false);
+	assertTrue(":c:", text.getEditable() == false);
+	text.setEditable(true);
+	assertTrue(":d:", text.getEditable() == true);
 }
 
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
-	warnUnimpl("Test test_setFontLorg_eclipse_swt_graphics_Font not written");
+	FontData fontData = text.getFont().getFontData()[0];
+	int lineHeight;
+	Font font;
+	
+	font = new Font(text.getDisplay(), fontData.getName(), 8, fontData.getStyle());
+	text.setFont(font);
+	font.dispose();
+	lineHeight = text.getLineHeight();
+	font = new Font(text.getDisplay(), fontData.getName(), 12, fontData.getStyle());
+	text.setFont(font);
+	assertTrue(":a:", text.getLineHeight() > lineHeight && font.equals(text.getFont()));
+	font.dispose();
 }
 
 public void test_setOrientationI() {
-	warnUnimpl("Test test_setOrientationI not written");
+	text.setOrientation(SWT.RIGHT_TO_LEFT);
+	assertTrue(":a:", text.getOrientation()==SWT.RIGHT_TO_LEFT);
 }
 
 public void test_setRedrawZ() {
@@ -632,7 +866,12 @@ public void test_setRedrawZ() {
 }
 
 public void test_setSelectionI() {
-	warnUnimpl("Test test_setSelectionI not written");
+	text.setText("01234567890");
+	assertEquals("", text.getSelectionText());
+	text.setSelection(3, 7);
+	assertEquals("3456", text.getSelectionText());
+	text.setSelection(3, 0);
+	assertEquals("012", text.getSelectionText());
 }
 
 public void test_setSelectionII() {
@@ -750,7 +989,22 @@ public void test_setTabsI() {
 }
 
 public void test_setTextLimitI() {
-	warnUnimpl("Test test_setTextLimitI not written");
+	boolean exceptionThrown = false;
+	
+	text.setTextLimit(10);
+	assertTrue(":a:", text.getTextLimit() == 10);
+
+	text.setTextLimit(-1);
+	assertTrue(":b:", text.getTextLimit() == -1);
+
+	try {
+		text.setTextLimit(0);
+	}
+	catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	}
+	assertTrue(":c:", exceptionThrown == true);
+	exceptionThrown = false;
 }
 
 public void test_setTextLjava_lang_String() {
