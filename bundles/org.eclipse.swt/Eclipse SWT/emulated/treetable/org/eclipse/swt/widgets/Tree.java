@@ -995,9 +995,11 @@ void mouseDoubleClick(Event event) {
 		return;
 	}
 	if (isListening(SWT.DefaultSelection) == true) {
-		newEvent = new Event();
-		newEvent.item = hitItem;
-		notifyListeners(SWT.DefaultSelection, newEvent);
+		if (!getIgnoreDoubleClick()) {
+			newEvent = new Event();
+			newEvent.item = hitItem;
+			notifyListeners(SWT.DefaultSelection, newEvent);
+		}
 	}
 	else
 	if (hitItem.isLeaf() == false) {		// item with children was hit. Default behavior is expand/collapse item

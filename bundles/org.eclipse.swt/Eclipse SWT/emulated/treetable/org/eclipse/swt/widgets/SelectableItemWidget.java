@@ -52,6 +52,7 @@ abstract class SelectableItemWidget extends Composite {
 														// selected using the Ctrl modifier key
 	private boolean isRemovingAll = false;				// true=all items are removed. Used to optimize screen updates and to control item selection on dispose.
 	private boolean hasFocus;					// workaround for 1FMITIE
+	private boolean ignoreDoubleClick;					// don't fire DefaultSelection if second click changes selected item
 	private Image uncheckedImage;					// deselected check box
 	private Image grayUncheckedImage;						// grayed check box
 	private Image checkMarkImage;					// check mark for selected check box
@@ -597,6 +598,7 @@ void doHome(int keyMask) {
  * @param button - the mouse button that was pressed
  */
 void doMouseSelect(SelectableItem item, int itemIndex, int eventStateMask, int button) {
+	ignoreDoubleClick = item != lastSelectedItem;
 	if (button != 1 && item.isSelected() == true) {
 		// If the item is already selected, do not change the selection when using 
 		// button 2 or 3.  These buttons may invoke drag and drop or open the 
@@ -905,7 +907,12 @@ int getContentWidth() {
 int getHorizontalOffset() {
 	return horizontalOffset;
 }
-
+/**
+ * Answer whether a double click should be ignored.
+ */
+boolean getIgnoreDoubleClick() {
+	return ignoreDoubleClick; 
+}
 /**
  * Answer the size of item images. Calculated during the item 
  * height calculation.

@@ -390,23 +390,20 @@ void columnChange(TableColumn column, Rectangle newBounds) {
  * @param event - the mouse event
  */
 void columnMouseDoubleClick(Event event) {
-	int itemHeight = getItemHeight();
-	int itemIndex;
-	TableItem hitItem;
-	TableColumn hitColumn = getColumnAtX (event.x);
-	Event columnDblClickEvent;
-	boolean isFullSelection = (getStyle () & SWT.FULL_SELECTION) != 0;
-
 	if (isFocusControl () == false) {
 		forceFocus ();
 	}
+	if (getIgnoreDoubleClick()) return;	
+	int itemHeight = getItemHeight();
+	TableColumn hitColumn = getColumnAtX (event.x);
+	boolean isFullSelection = (getStyle () & SWT.FULL_SELECTION) != 0;
 	if (hitColumn != null) {
-		itemIndex = (event.y - getHeaderHeight()) / itemHeight + getTopIndex();
-		hitItem = (TableItem) getVisibleItem(itemIndex);
+		int itemIndex = (event.y - getHeaderHeight()) / itemHeight + getTopIndex();
+		TableItem hitItem = (TableItem) getVisibleItem(itemIndex);
 		if (hitItem != null && 
 			(hitColumn.getIndex() == TableColumn.FIRST || isFullSelection)) {
 			if (hitItem.isSelectionHit(event.x) == true) {
-				columnDblClickEvent = new Event();
+				Event columnDblClickEvent = new Event();
 				columnDblClickEvent.item = hitItem;
 				notifyListeners(SWT.DefaultSelection, columnDblClickEvent);
 			}
