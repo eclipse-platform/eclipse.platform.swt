@@ -69,8 +69,8 @@ void createHandle () {
 	OS.CreateDataBrowserControl (window, null, OS.kDataBrowserListView, outControl);
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];
-	int selectionFlags = OS.kDataBrowserSelectOnlyOne | OS.kDataBrowserNeverEmptySelectionSet;
-	if ((style & SWT.MULTI) != 0) selectionFlags = OS.kDataBrowserDragSelect | OS.kDataBrowserCmdTogglesSelection;
+	int selectionFlags = OS.kDataBrowserSelectOnlyOne;
+	if ((style & SWT.MULTI) != 0) selectionFlags = OS.kDataBrowserCmdTogglesSelection;
 	OS.SetDataBrowserSelectionFlags (handle, selectionFlags);
 	OS.SetDataBrowserListViewHeaderBtnHeight (handle, (short) 0);
 	OS.SetDataBrowserHasScrollBars (handle, (style & SWT.H_SCROLL) != 0, (style & SWT.V_SCROLL) != 0);
@@ -145,11 +145,7 @@ void createWidget () {
 public void deselectAll () {
 	checkWidget ();
 	ignoreSelect = true;
-	for (int i=0; i<items.length; i++) {
-		if (items [i] != null) {
-			OS.SetDataBrowserSelectedItems (handle, 1, new int [] {items [i].id}, OS.kDataBrowserItemsRemove);
-		}
-	}
+	OS.SetDataBrowserSelectedItems (handle, 0, null, OS.kDataBrowserItemsRemove);
 	ignoreSelect = false;
 }
 
@@ -291,7 +287,7 @@ int itemDataProc (int browser, int id, int property, int itemData, int setValue)
 				Event event = new Event ();
 				event.item = item;
 				event.detail = SWT.CHECK;
-				sendEvent (SWT.Selection);
+				postEvent (SWT.Selection, event);
 			} else {
 				short theData = (short)(item.checked ? OS.kThemeButtonOn : OS.kThemeButtonOff);
 				OS.SetDataBrowserItemDataButtonValue (itemData, theData);
@@ -354,14 +350,14 @@ int itemNotificationProc (int browser, int id, int message) {
 				anchorLast = last [0];
 				Event event = new Event ();
 				event.item = item;
-				sendEvent (SWT.Selection);
+				postEvent (SWT.Selection, event);
 			}
 			break;
 		}	
 		case OS.kDataBrowserItemDoubleClicked: {
 			Event event = new Event ();
 			event.item = item;
-			sendEvent (SWT.DefaultSelection);
+			postEvent (SWT.DefaultSelection, event);
 			break;
 		}
 		case OS.kDataBrowserContainerClosed: {		
@@ -442,11 +438,7 @@ public void selectAll () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return;
 	ignoreSelect = true;
-	for (int i=0; i<items.length; i++) {
-		if (items [i] != null) {
-			OS.SetDataBrowserSelectedItems (handle, 1, new int [] {items [i].id}, OS.kDataBrowserItemsAdd);
-		}
-	}
+	OS.SetDataBrowserSelectedItems (handle, 0, null, OS.kDataBrowserItemsAssign);
 	ignoreSelect = false;
 }
 
@@ -496,6 +488,7 @@ void showItem (TreeItem item, boolean scroll) {
 
 public void showSelection () {
 	checkWidget ();
+	//OPTIMIZE
 	TreeItem [] selection = getSelection ();
 	if (selection.length > 0) showItem (selection [0], true);
 }

@@ -1003,6 +1003,22 @@ public void setVisible (boolean visible) {
 	sendEvent (visible ? SWT.Show : SWT.Hide);
 }
 
+void sort (int [] items) {
+	/* Shell Sort from K&R, pg 108 */
+	int length = items.length;
+	for (int gap=length/2; gap>0; gap/=2) {
+		for (int i=gap; i<length; i++) {
+			for (int j=i-gap; j>=0; j-=gap) {
+		   		if (items [j] <= items [j + gap]) {
+					int swap = items [j];
+					items [j] = items [j + gap];
+					items [j + gap] = swap;
+		   		}
+	    	}
+	    }
+	}
+}
+
 public Point toControl (Point point) {
 	checkWidget();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);

@@ -113,23 +113,20 @@ void destroyItem (ToolItem item) {
 
 public ToolItem getItem (int index) {
 	checkWidget();
-	ToolItem [] items = getItems ();
-	if (0 <= index && index < items.length) return items [index];
+	if (0 <= index && index < itemCount) return items [index];
 	error (SWT.ERROR_INVALID_RANGE);
 	return null;
 }
 
-
 public ToolItem getItem (Point pt) {
 	checkWidget();
-	ToolItem [] items = getItems ();
-	for (int i=0; i<items.length; i++) {
+	if (pt == null) error (SWT.ERROR_NULL_ARGUMENT);
+	for (int i=0; i<itemCount; i++) {
 		Rectangle rect = items [i].getBounds ();
 		if (rect.contains (pt)) return items [i];
 	}
 	return null;
 }
-
 
 public int getItemCount () {
 	checkWidget();
@@ -153,8 +150,7 @@ public int indexOf (ToolItem item) {
 	checkWidget();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-	ToolItem [] items = getItems ();
-	for (int i=0; i<items.length; i++) {
+	for (int i=0; i<itemCount; i++) {
 		if (items [i] == item) return i;
 	}
 	return -1;
@@ -163,20 +159,17 @@ public int indexOf (ToolItem item) {
 int [] layoutHorizontal (int width, int height, boolean resize) {
 	int xSpacing = 0, ySpacing = (style & SWT.NO_FOCUS) != 0 ? 4 : 2;
 	int marginWidth = 0, marginHeight = 0;
-	ToolItem [] children = getItems ();
-	int length = children.length;
 	int x = marginWidth, y = marginHeight;
 	int maxHeight = 0, maxX = 0, rows = 1;
 	boolean wrap = (style & SWT.WRAP) != 0;
 	int itemHeight = 0;
-	for (int i=0; i<length; i++) {
-		ToolItem child = children [i];
-		Rectangle rect = child.getBounds ();
+	for (int i=0; i<itemCount; i++) {
+		Rectangle rect = items [i].getBounds ();
 		itemHeight = Math.max (itemHeight, rect.height);
 	}
-	for (int i=0; i<length; i++) {
-		ToolItem child = children [i];
-		Rectangle rect = child.getBounds ();
+	for (int i=0; i<itemCount; i++) {
+		ToolItem item = items [i];
+		Rectangle rect = item.getBounds ();
 		if (wrap && i != 0 && x + rect.width > width) {
 			rows++;
 			x = marginWidth;
@@ -185,7 +178,7 @@ int [] layoutHorizontal (int width, int height, boolean resize) {
 		}
 		maxHeight = Math.max (maxHeight, rect.height);
 		if (resize) {
-			child.setBounds (x, y, rect.width, itemHeight);
+			item.setBounds (x, y, rect.width, itemHeight);
 		}
 		x += xSpacing + rect.width;
 		maxX = Math.max (maxX, x);
@@ -196,20 +189,17 @@ int [] layoutHorizontal (int width, int height, boolean resize) {
 int [] layoutVertical (int width, int height, boolean resize) {
 	int xSpacing = (style & SWT.NO_FOCUS) != 0 ? 4 : 2, ySpacing = 0;
 	int marginWidth = 0, marginHeight = 0;
-	ToolItem [] children = getItems ();
-	int length = children.length;
 	int x = marginWidth, y = marginHeight;
 	int maxWidth = 0, maxY = 0, cols = 1;
 	boolean wrap = (style & SWT.WRAP) != 0;
 	int itemWidth = 0;
-	for (int i=0; i<length; i++) {
-		ToolItem child = children [i];
-		Rectangle rect = child.getBounds ();
+	for (int i=0; i<itemCount; i++) {
+		Rectangle rect = items [i].getBounds ();
 		itemWidth = Math.max (itemWidth, rect.width);
 	}
-	for (int i=0; i<length; i++) {
-		ToolItem child = children [i];
-		Rectangle rect = child.getBounds ();
+	for (int i=0; i<itemCount; i++) {
+		ToolItem item = items [i];
+		Rectangle rect = item.getBounds ();
 		if (wrap && i != 0 && y + rect.height > height) {
 			cols++;
 			x += xSpacing + maxWidth;
@@ -218,7 +208,7 @@ int [] layoutVertical (int width, int height, boolean resize) {
 		}
 		maxWidth = Math.max (maxWidth, rect.width);
 		if (resize) {
-			child.setBounds (x, y, itemWidth, rect.height);
+			item.setBounds (x, y, itemWidth, rect.height);
 		}
 		y += ySpacing + rect.height;
 		maxY = Math.max (maxY, y);
@@ -229,10 +219,9 @@ int [] layoutVertical (int width, int height, boolean resize) {
 int menuProc (int nextHandler, int theEvent, int userData) {
 	int [] theMenu = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeMenuRef, null, 4, null, theMenu);
-	for (int i=0; i<items.length; i++) {
-		ToolItem item = items [i];
-		if (item != null && item.menuHandle == theMenu [0]) {
-			return item.menuProc (nextHandler, theEvent, userData);
+	for (int i=0; i<itemCount; i++) {
+		if (items [i].menuHandle == theMenu [0]) {
+			return items [i].menuProc (nextHandler, theEvent, userData);
 		}
 	}
 	return OS.eventNotHandledErr;
@@ -276,12 +265,10 @@ public void setBounds (int x, int y, int width, int height) {
 public void setFont (Font font) {
 	checkWidget();
 	super.setFont (font);
-	for (int i=0; i<items.length; i++) {
+	for (int i=0; i<itemCount; i++) {
 		ToolItem item = items [i];
-		if (item != null) {
-			Point size = item.computeSize ();
-			item.setSize (size.x, size.y, false);
-		}
+		Point size = item.computeSize ();
+		item.setSize (size.x, size.y, false);
 	}
 	relayout ();
 }

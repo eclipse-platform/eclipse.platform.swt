@@ -2485,6 +2485,38 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserIte
 }
 #endif /* NO_GetDataBrowserItemState */
 
+#ifndef NO_GetDataBrowserTableViewItemID
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserTableViewItemID
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetDataBrowserTableViewItemID\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)GetDataBrowserTableViewItemID((ControlRef)arg0, (DataBrowserTableViewRowIndex)arg1, (DataBrowserItemID *)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	return rc;
+}
+#endif /* NO_GetDataBrowserTableViewItemID */
+
+#ifndef NO_GetDataBrowserTableViewItemRow
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserTableViewItemRow
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetDataBrowserTableViewItemRow\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)GetDataBrowserTableViewItemRow((ControlRef)arg0, (DataBrowserTableViewRowIndex)arg1, (DataBrowserItemID *)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	return rc;
+}
+#endif /* NO_GetDataBrowserTableViewItemRow */
+
 #ifndef NO_GetDataBrowserTableViewRowHeight
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserTableViewRowHeight
 	(JNIEnv *env, jclass that, jint arg0, jshortArray arg1)
@@ -2500,6 +2532,21 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserTab
 	return rc;
 }
 #endif /* NO_GetDataBrowserTableViewRowHeight */
+
+#ifndef NO_GetDataBrowserScrollBarInset
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserScrollBarInset
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	Rect _arg1, *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetDataBrowserScrollBarInset\n")
+
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	rc = (jint) GetDataBrowserScrollBarInset((ControlRef)arg0, (Rect *)lparg1);
+	if (arg1) setRectFields(env, arg1, lparg1);
+}
+#endif /* NO_GetDataBrowserScrollBarInset */
 
 #ifndef NO_GetDataBrowserScrollPosition
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserScrollPosition
@@ -5340,6 +5387,18 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserSel
 	return (jint)SetDataBrowserSelectionFlags((ControlRef)arg0, (DataBrowserSelectionFlags)arg1);
 }
 #endif /* NO_SetDataBrowserSelectionFlags */
+
+#ifndef NO_SetDataBrowserTableViewItemRow
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserTableViewItemRow
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+
+	DEBUG_CALL("SetDataBrowserTableViewItemRow\n")
+
+	return (jint)SetDataBrowserTableViewItemRow((ControlRef)arg0, (DataBrowserItemID)arg1, (DataBrowserTableViewRowIndex)arg2);
+
+}
+#endif /* NO_SetDataBrowserTableViewItemRow */
 
 #ifndef NO_SetDataBrowserTarget
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserTarget
