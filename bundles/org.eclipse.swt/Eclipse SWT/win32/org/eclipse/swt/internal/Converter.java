@@ -124,7 +124,7 @@ public static byte [] wcsToMbcs (int codePage, char [] buffer, boolean terminate
 	 */
 	byte [] mbcs = new byte [(terminate) ? length + 1 : length];
 	for (int i=0; i<length; i++) {
-		if ((buffer [i] & 0xFF) <= 0x7F) {
+		if ((buffer [i] & 0xFFFF) <= 0x7F) {
 			mbcs [i] = (byte) buffer [i];
 		} else {
 			/* Convert from UNICODE to DBCS */
