@@ -287,6 +287,7 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 	}
 	return OS.noErr;
 }
+
 void hookEvents () {
 	super.hookEvents ();
 	Display display = getDisplay ();
@@ -294,11 +295,13 @@ void hookEvents () {
 	int [] mask1 = new int [] {
 		OS.kEventClassControl, OS.kEventControlDraw,
 		OS.kEventClassControl, OS.kEventControlHit,
+		OS.kEventClassControl, OS.kEventControlContextualMenuClick,
 	};
 	int controlTarget = OS.GetControlEventTarget (handle);
 	OS.InstallEventHandler (controlTarget, controlProc, mask1.length / 2, mask1, handle, null);
 	int [] mask2 = new int [] {
 		OS.kEventClassControl, OS.kEventControlDraw,
+		OS.kEventClassControl, OS.kEventControlContextualMenuClick,
 	};
 	if (iconHandle != 0) {
 		controlTarget = OS.GetControlEventTarget (iconHandle);
@@ -321,6 +324,10 @@ public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();
 }
 
+int kEventControlContextualMenuClick (int nextHandler, int theEvent, int userData) {
+	return parent.kEventControlContextualMenuClick (nextHandler, theEvent, userData);
+}
+
 int kEventControlHit (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlHit (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
@@ -338,6 +345,55 @@ int kEventControlHit (int nextHandler, int theEvent, int userData) {
 	}
 	postEvent (SWT.Selection, event);
 	return OS.eventNotHandledErr;
+}
+
+int kEventMouseDown (int nextHandler, int theEvent, int userData) {
+	int result = parent.kEventMouseDown (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	/*
+	* Feature in the Macintosh.  When the receiver gets kEventControlClick
+	* (which gets sent from kEventMouseDown), it calls TrackControl() or
+	* HandleControlClick() to grab the mouse.  Unfortunately, all mouse
+	* move events and the mouse up are consumed.  The fix is to call the
+	* default hanlder and send a fake mouse up when tracking is finished.
+	* 
+	* NOTE: No mouse move events are sent while tracking.  There is no
+	* fix for this at this time.
+	*/
+	Display display = getDisplay ();
+	display.grabControl = null;
+	display.runDeferredEvents ();
+	result = OS.CallNextEventHandler (nextHandler, theEvent);
+	org.eclipse.swt.internal.carbon.Point outPt = new org.eclipse.swt.internal.carbon.Point ();
+	OS.GetGlobalMouse (outPt);
+	Rect rect = new Rect ();
+	int window = OS.GetControlOwner (handle);
+	OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+	int x = outPt.h - rect.left;
+	int y = outPt.v - rect.top;
+	int [] theControl = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
+	OS.GetControlBounds (theControl [0], rect);
+	x -= rect.left;
+	y -=  rect.top;
+	short [] button = new short [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
+	int chord = OS.GetCurrentEventButtonState ();
+	int modifiers = OS.GetCurrentEventKeyModifiers ();
+	parent.sendMouseEvent (SWT.MouseUp, button [0], chord, (short)x, (short)y, modifiers);
+	return result;
+}
+
+int kEventMouseDragged (int nextHandler, int theEvent, int userData) {
+	return parent.kEventMouseDragged (nextHandler, theEvent, userData);
+}
+
+int kEventMouseMoved (int nextHandler, int theEvent, int userData) {
+	return parent.kEventMouseMoved (nextHandler, theEvent, userData);
+}
+
+int kEventMouseUp (int nextHandler, int theEvent, int userData) {
+	return parent.kEventMouseUp (nextHandler, theEvent, userData);
 }
 
 void register () {
