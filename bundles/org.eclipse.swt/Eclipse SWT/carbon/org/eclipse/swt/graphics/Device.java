@@ -585,11 +585,11 @@ protected void release () {
 
 /**
  * If the underlying window system supports printing warning messages
- * to the console, setting warnings to <code>true</code> prevents these
- * messages from being printed. If the argument is <code>false</code>
+ * to the console, setting warnings to <code>false</code> prevents these
+ * messages from being printed. If the argument is <code>true</code> then
  * message printing is not blocked.
  *
- * @param warnings <code>true</code>if warnings should be handled, and <code>false</code> otherwise
+ * @param warnings <code>true</code>if warnings should be printed, and <code>false</code> otherwise
  *
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
