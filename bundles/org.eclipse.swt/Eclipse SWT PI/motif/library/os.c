@@ -26,6 +26,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(CODESET)
 }
 #endif
 
+#ifndef NO_Call
+JNIEXPORT jint JNICALL OS_NATIVE(Call)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "Call\n")
+	rc = (jint)((jint (*)())arg0)(arg1, arg2);
+	NATIVE_EXIT(env, that, "Call\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_ConnectionNumber
 JNIEXPORT jint JNICALL OS_NATIVE(ConnectionNumber)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -4755,6 +4767,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(close)
 	NATIVE_ENTER(env, that, "close\n")
 	rc = (jint)close(arg0);
 	NATIVE_EXIT(env, that, "close\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_fd_1set_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(fd_1set_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "fd_1set_1sizeof\n")
+	rc = (jint)fd_set_sizeof();
+	NATIVE_EXIT(env, that, "fd_1set_1sizeof\n")
 	return rc;
 }
 #endif

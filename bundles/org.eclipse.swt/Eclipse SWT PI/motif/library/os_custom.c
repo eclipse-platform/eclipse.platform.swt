@@ -14,30 +14,6 @@
 
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_motif_OS_##func
 
-#ifndef NO_Call
-JNIEXPORT jint JNICALL OS_NATIVE(Call)
-	(JNIEnv *env, jclass that, jint proc, jint arg0, jint arg1)
-{
-	jint rc;
-	NATIVE_ENTER(env, that, "Call\n")
-	rc = (*((jint (*)(jint, jint))proc)) (arg0, arg1);
-	NATIVE_EXIT(env, that, "Call\n")
-	return rc;
-}
-#endif
-
-#ifndef NO_fd_1set_1sizeof
-JNIEXPORT jint JNICALL OS_NATIVE(fd_1set_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc;
-	NATIVE_ENTER(env, that, "fd_1set_1sizeof\n")
-	rc = sizeof(fd_set);
-	NATIVE_EXIT(env, that, "fd_1set_1sizeof\n")
-	return rc;
-}
-#endif
-
 static int RESOURCES_START;
 static int RESOURCES_END;
 
