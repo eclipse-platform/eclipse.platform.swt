@@ -1379,6 +1379,20 @@ public class SWT {
 	public static final int TRAVERSE_MNEMONIC = 1 << 7;
 
 	/**
+	 * traversal event detail field value indicating that the PREVIOUS-PAGE
+	 * key was pressed (value is 1&lt;&lt;8).  Typically, this key maps to
+	 * Ctrl+PgUp on most platforms.
+	 */
+	public static final int TRAVERSE_PAGE_PREVIOUS = 1 << 8;
+	
+	/**
+	 * traversal event detail field value indicating that the NEXT-PAGE
+	 * key was pressed (value is 1&lt;&lt;9).  Typically, this key maps to
+	 * Ctrl+PgDn on most platforms.
+	 */
+	public static final int TRAVERSE_PAGE_NEXT = 1 << 9;
+
+	/**
 	 * constant indicating that an image or operation is of type bitmap (value is 0)
 	 */	
 	public static final int BITMAP = 0;
