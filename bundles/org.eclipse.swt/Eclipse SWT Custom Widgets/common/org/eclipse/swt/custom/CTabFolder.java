@@ -70,7 +70,7 @@ public class CTabFolder extends Composite {
 	 * A multiple of the tab height that specifies the minimum width to which a tab 
 	 * will be compressed before scrolling arrows are used to navigate the tabs.
 	 */
-	public static int MIN_TAB_WIDTH = 3;
+	public int MIN_TAB_WIDTH = 3;
 
 	/* sizing, positioning */
 	int xClient, yClient;
