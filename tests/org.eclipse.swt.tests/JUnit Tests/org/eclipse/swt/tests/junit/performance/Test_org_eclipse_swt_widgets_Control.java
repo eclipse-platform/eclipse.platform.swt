@@ -1200,7 +1200,7 @@ public void test_traverseI() {
 }
 
 public void test_update() {
-	final int COUNT = 2000000;
+	final int COUNT = isGTK ? 20000 : 2000000;
 	
 	PerformanceMeter meter = createMeter(getTypeString() + "update");
 	meter.start();

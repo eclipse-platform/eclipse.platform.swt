@@ -3397,20 +3397,16 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 //			if (drawCount != 0 || !OS.IsWindowVisible (handle)) break;
 			NMLVDISPINFO plvfi = new NMLVDISPINFO ();
 			OS.MoveMemory (plvfi, lParam, NMLVDISPINFO.sizeof);
-			if (ignoreResize) {
-				/*
-				* Feature in Windows.  When LVSCW_AUTOSIZE_USEHEADER is used
-				* with LVM_SETCOLUMNWIDTH to resize the last column, the last
-				* column is expanded to fill the client area.  The fix is to
-				* insert and remove a temporary last column for the duration
-				* of LVM_SETCOLUMNWIDTH.  As a result, LVN_GETDISPINFO should
-				* be ignored for the temporary column.
-				*/
-				int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-				int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-				if (count == 1 && columns [0] == null) count = 0;
-				if (count - 1 >= plvfi.iSubItem) break;
-			}
+			/*
+			* Feature in Windows.  When LVSCW_AUTOSIZE_USEHEADER is used
+			* with LVM_SETCOLUMNWIDTH to resize the last column, the last
+			* column is expanded to fill the client area.  The fix is to
+			* insert and remove a temporary last column for the duration
+			* of LVM_SETCOLUMNWIDTH.  As a result, LVN_GETDISPINFO should
+			* be ignored for the temporary column.
+			*/
+			if (ignoreResize && (plvfi.iSubItem >= columns.length || columns [plvfi.iSubItem] == null)) break;
+			
 			lastIndexOf = plvfi.iItem;
 			TableItem item = _getItem (plvfi.iItem);
 			/*
