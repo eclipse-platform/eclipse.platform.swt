@@ -25,8 +25,9 @@ public class TreeItem extends Item {
 	// TODO these cannot be static
 	static Color LinesColor, SelectionBackgroundColor, SelectionForegroundColor;
 	static Image ExpandedImage, CollapsedImage;
-	static Image UncheckedImage, GrayUncheckedImage, CheckmarkImage;	
-
+	static Image UncheckedImage, GrayUncheckedImage, CheckmarkImage;
+	static Rectangle ExpanderBounds;
+	
 	static final int INDENT_HIERARCHY = 6;
 	static final int MARGIN_TEXT = 3;			/* the left and right margins within the text's space */
 	static final ImageData IMAGEDATA_CHECKMARK;
@@ -481,13 +482,12 @@ Rectangle getExpanderBounds () {
 	int x = parent.getCellPadding () - parent.horizontalOffset;
 	int y = parent.getItemY (this);
 	if (!isRoot ()) {
-		int expanderWidth = ExpandedImage.getBounds ().width + INDENT_HIERARCHY;
+		int expanderWidth = ExpanderBounds.width + INDENT_HIERARCHY;
 		x += expanderWidth * getDepth ();
 	}
-	Rectangle result = ExpandedImage.getBounds ();
-	result.x = x;
-	result.y = y + (itemHeight - result.height) / 2;
-	return result;
+	return new Rectangle (
+		x, y + (itemHeight - ExpanderBounds.height) / 2,
+		ExpanderBounds.width, ExpanderBounds.height);
 }
 /*
  * Returns the bounds that should be used for drawing a focus rectangle on the receiver
@@ -714,6 +714,7 @@ void initialize () {
 		LinesColor = new Color (display, 170, 170, 170);
 		SelectionBackgroundColor = display.getSystemColor (SWT.COLOR_LIST_SELECTION);
 		SelectionForegroundColor = display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT);
+		ExpanderBounds = ExpandedImage.getBounds ();
 	}
 }
 boolean isAvailable () {
