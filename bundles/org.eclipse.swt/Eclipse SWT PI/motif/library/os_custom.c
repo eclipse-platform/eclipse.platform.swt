@@ -57,18 +57,14 @@ JNIEXPORT void JNICALL OS_NATIVE(XtGetValues)
 {
 	jint *argList1=NULL;
 
-#ifndef SOLARIS
 	int valueBuff[MAX_ARGS];
 	int zeroBuff[MAX_ARGS];
 	int *values = valueBuff;
 	int *zeros = zeroBuff;
 	int i;
-#endif
 
 	NATIVE_ENTER(env, that, "XtGetValues\n")
 	if (argList) argList1 = (*env)->GetIntArrayElements(env, argList, NULL);
-
-#ifndef SOLARIS
 	if (numArgs > MAX_ARGS) {
 		values = (int *) XtMalloc (numArgs * sizeof(int));
 		zeros = (int *) XtMalloc (numArgs * sizeof(int));
@@ -82,9 +78,7 @@ JNIEXPORT void JNICALL OS_NATIVE(XtGetValues)
 			}
 		}
 	}
-#endif
 	XtGetValues((Widget)widget, (ArgList)argList1, numArgs);
-#ifndef SOLARIS
 	for (i = 0; i < numArgs; i++) {   
 		if (zeros[i]) {
 			char* charPtr = (char *)(argList1[i*2] - 1);
@@ -100,7 +94,6 @@ JNIEXPORT void JNICALL OS_NATIVE(XtGetValues)
 		XtFree((char *)values);
 		XtFree((char *)zeros);
 	}
-#endif
 	if (argList)(*env)->ReleaseIntArrayElements(env, argList, argList1, 0);
 	NATIVE_EXIT(env, that, "XtGetValues\n")
 }
