@@ -2467,6 +2467,7 @@ boolean translateTraversal (int gdkEvent) {
 			detail = SWT.TRAVERSE_ESCAPE;
 			break;
 		}
+		case OS.GDK_KP_Enter:
 		case OS.GDK_Return: {
 			all = true;
 			detail = SWT.TRAVERSE_RETURN;
