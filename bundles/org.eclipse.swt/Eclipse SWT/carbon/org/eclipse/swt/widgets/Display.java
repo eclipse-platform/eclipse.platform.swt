@@ -139,57 +139,53 @@ public class Display extends Device {
 	int timerProc;	
 	
 	/* Key Mappings. */
-		static int [] [] KeyTable = {
-
-			/* Keyboard and Mouse Masks */
-	//		{OS.XK_Alt_L,		SWT.ALT},
-	//		{OS.XK_Alt_R,		SWT.ALT},
-	//		{OS.XK_Shift_L,		SWT.SHIFT},
-	//		{OS.XK_Shift_R,		SWT.SHIFT},
-	//		{OS.XK_Control_L,	SWT.CONTROL},
-	//		{OS.XK_Control_R,	SWT.CONTROL},
-
-			/* NOT CURRENTLY USED */
-	//		{OS.VK_LBUTTON, SWT.BUTTON1},
-	//		{OS.VK_MBUTTON, SWT.BUTTON3},
-	//		{OS.VK_RBUTTON, SWT.BUTTON2},
-
-			/* Non-Numeric Keypad Keys */
-			{126,	SWT.ARROW_UP},
-			{125,	SWT.ARROW_DOWN},
-			{123,	SWT.ARROW_LEFT},
-			{124,	SWT.ARROW_RIGHT},
-			{116,	SWT.PAGE_UP},
-			{121,	SWT.PAGE_DOWN},
-			{115,	SWT.HOME},
-			{119,	SWT.END},
-			{71,	SWT.INSERT},
-
-			/* Virtual and Ascii Keys */
-			{51,	SWT.BS},
-			{36,	SWT.CR},
-			{117,	SWT.DEL},
-			{53,	SWT.ESC},
-			{76,	SWT.LF},
-			{48,	SWT.TAB},
-
-			/* Functions Keys */
-			{122,		SWT.F1},
-			{120,		SWT.F2},
-			{99,		SWT.F3},
-			{118,		SWT.F4},
-			{96,		SWT.F5},
-			{97,		SWT.F6},
-			{98,		SWT.F7},
-			{100,		SWT.F8},
-			{101,		SWT.F9},
-			{109,		SWT.F10},
-			{103,		SWT.F11},
-			{111,		SWT.F12},
-
-			/* Numeric Keypad Keys */
-		};
+	static int [] [] KeyTable = {
+	
+		// AW
+		//{49,				0x20},	// space
+		{51,				SWT.BS},
+		//{36,				SWT.CR},
+		// AW
 		
+		// Keyboard and Mouse Masks
+//		{OS.XK_Alt_L,		SWT.ALT},
+//		{OS.XK_Alt_R,		SWT.ALT},
+//		{OS.XK_Shift_L,		SWT.SHIFT},
+//		{OS.XK_Shift_R,		SWT.SHIFT},
+//		{OS.XK_Control_L,	SWT.CONTROL},
+//		{OS.XK_Control_R,	SWT.CONTROL},
+		
+//		{OS.VK_LBUTTON, SWT.BUTTON1},
+//		{OS.VK_MBUTTON, SWT.BUTTON3},
+//		{OS.VK_RBUTTON, SWT.BUTTON2},
+		
+		// Non-Numeric Keypad Constants
+		{126,				SWT.ARROW_UP},
+		{125,				SWT.ARROW_DOWN},
+		{123,				SWT.ARROW_LEFT},
+		{124,				SWT.ARROW_RIGHT},
+		{116,				SWT.PAGE_UP},
+		{121,				SWT.PAGE_DOWN},
+		{115,				SWT.HOME},
+		{119,				SWT.END},
+		{71,				SWT.INSERT},
+//		{OS.XK_Delete,		SWT.DELETE},
+	
+		// Functions Keys 
+		{122,		SWT.F1},
+		{120,		SWT.F2},
+		{99,		SWT.F3},
+		{118,		SWT.F4},
+		{96,		SWT.F5},
+		{97,		SWT.F6},
+		{98,		SWT.F7},
+		{100,		SWT.F8},
+		{101,		SWT.F9},
+		{109,		SWT.F10},
+		{103,		SWT.F11},
+		{111,		SWT.F12},
+	};
+
 	/* Multiple Displays. */
 	static Display Default;
 	static Display [] Displays = new Display [4];
