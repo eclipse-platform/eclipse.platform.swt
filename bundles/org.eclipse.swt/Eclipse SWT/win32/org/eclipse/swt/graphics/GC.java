@@ -2602,10 +2602,7 @@ public void getTransform(Transform transform) {
 	if (gdipGraphics != 0) {
 		Gdip.Graphics_GetTransform(gdipGraphics, transform.handle);
 	} else {
-		float[] xform = new float[6];
-		if (OS.GetWorldTransform(handle, xform)) {
-			transform.setElements(xform[0], xform[1], xform[2], xform[3], xform[4], xform[5]);
-		}
+		transform.setElements(1, 0, 0, 1, 0, 0);
 	}
 }
 
@@ -3242,17 +3239,14 @@ public void setXORMode(boolean xor) {
  */
 public void setTransform(Transform transform) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (transform == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	if (OS.IsWin95) initGdip(false, false);
-	int gdipGraphics = data.gdipGraphics;
-	if (gdipGraphics == 0) {
-		OS.SetGraphicsMode(handle, OS.GM_ADVANCED);
-		float[] elements = new float[6];
-		transform.getElements(elements);
-		OS.SetWorldTransform(handle, elements);
+	if (transform != null && transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	initGdip(false, false);
+	if (transform != null) {
+		Gdip.Graphics_SetTransform(data.gdipGraphics, transform.handle);
 	} else {
-		Gdip.Graphics_SetTransform(gdipGraphics, transform.handle);
+		int identity = Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
+		Gdip.Graphics_SetTransform(data.gdipGraphics, identity);
+		Gdip.Matrix_delete(identity);
 	}
 }
 
