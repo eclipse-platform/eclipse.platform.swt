@@ -96,7 +96,7 @@ public class Display extends Device {
 	 */
 	public MSG msg = new MSG ();
 	
-	/* Windows, Events and Callback */
+	/* Windows and Events */
 	Event [] eventQueue;
 	Callback windowCallback;
 	int windowProc, threadId, processId;
@@ -105,7 +105,7 @@ public class Display extends Device {
 	static final String WindowName = "SWT_Window";
 	EventTable eventTable, filterTable;
 
-	/* Windows Message Filter */
+	/* Message Filter */
 	Callback msgFilterCallback;
 	int msgFilterProc, hHook;
 	MSG hookMsg = new MSG ();
