@@ -852,19 +852,6 @@ int /*long*/ eventProc (int /*long*/ event, int /*long*/ data) {
 	return 0;
 }
 
-void putGdkEvents () {
-	if (gdkEventCount != 0) {
-		for (int i = 0; i < gdkEventCount; i++) {
-			if (gdkEventWidgets [i] == null || !gdkEventWidgets [i].isDisposed ()) {
-				OS.gdk_event_put (gdkEvents [i]);
-				OS.gdk_event_free (gdkEvents [i]);
-			}
-		}
-		gdkEventCount = 0;
-		gdkEvents = null;
-	}
-}
-
 /**
  * Given the operating system handle for a widget, returns
  * the instance of the <code>Widget</code> subclass which
@@ -2219,6 +2206,19 @@ void postEvent (Event event) {
 		eventQueue = newQueue;
 	}
 	eventQueue [index] = event;
+}
+
+void putGdkEvents () {
+	if (gdkEventCount != 0) {
+		for (int i = 0; i < gdkEventCount; i++) {
+			if (gdkEventWidgets [i] == null || !gdkEventWidgets [i].isDisposed ()) {
+				OS.gdk_event_put (gdkEvents [i]);
+				OS.gdk_event_free (gdkEvents [i]);
+			}
+		}
+		gdkEventCount = 0;
+		gdkEvents = null;
+	}
 }
 
 /**

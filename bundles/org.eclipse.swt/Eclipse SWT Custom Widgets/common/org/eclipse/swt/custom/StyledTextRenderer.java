@@ -186,7 +186,7 @@ protected abstract StyledTextContent getContent();
 Device getDevice() {
 	return device;
 }
-int getBaseLine() {
+int getBaseline() {
 	return ascent;
 }
 /**

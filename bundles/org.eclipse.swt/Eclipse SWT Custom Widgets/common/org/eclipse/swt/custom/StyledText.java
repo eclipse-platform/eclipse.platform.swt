@@ -3304,7 +3304,7 @@ public Color getBackground() {
 	return background;
 }
 /**
- * Gets the baseline, in pixels. 
+ * Returns the baseline, in pixels. 
  * 
  * @return baseline the baseline
  * @exception SWTException <ul>
@@ -3315,7 +3315,7 @@ public Color getBackground() {
  */
 public int getBaseline() {
 	checkWidget();
-	return renderer.getBaseLine();
+	return renderer.getBaseline();
 }
 /**
  * Gets the BIDI coloring mode.  When true the BIDI text display
