@@ -307,7 +307,7 @@ public Rectangle getBounds () {
 }
 public Rectangle getBounds (int columnIndex) {
 	checkWidget ();
-	if (!isAvailable()) return new Rectangle (0, 0, 0, 0);
+	if (!isAvailable ()) return new Rectangle (0, 0, 0, 0);
 
 	TreeColumn[] columns = parent.columns;
 	int columnCount = columns.length;
@@ -326,6 +326,21 @@ public Rectangle getBounds (int columnIndex) {
 		return new Rectangle (x, parent.getItemY (this), width, parent.itemHeight);
 	}
 	TreeColumn column = columns [columnIndex];
+	if (columnIndex == 0) {
+		int columnX = column.getX ();
+		int xOffset = getExpanderBounds ().x - columnX;
+		int width = Math.max (0, column.width - xOffset);	/* for columns with width < expander x */
+		return new Rectangle (columnX + xOffset, parent.getItemY (this), width, parent.itemHeight);
+	}
+	return new Rectangle (column.getX (), parent.getItemY (this), column.width, parent.itemHeight);
+}
+Rectangle getCellBounds (int columnIndex) {
+	if (parent.columns.length == 0 || columnIndex != 0) {
+		return getBounds (columnIndex);
+	}
+	if (!isAvailable ()) return new Rectangle (0, 0, 0, 0);
+
+	TreeColumn column = parent.columns [columnIndex];
 	return new Rectangle (column.getX (), parent.getItemY (this), column.width, parent.itemHeight);
 }
 Rectangle getCheckboxBounds () {
@@ -653,7 +668,7 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 	Rectangle clientArea = parent.getClientArea ();
 	if (clientArea.x + clientArea.width < x) return;
 
-	Rectangle cellBounds = getBounds (columnIndex);
+	Rectangle cellBounds = getCellBounds (columnIndex);
 	int cellRightX = 0;
 	if (column != null) {
 		cellRightX = column.getX () + column.width;

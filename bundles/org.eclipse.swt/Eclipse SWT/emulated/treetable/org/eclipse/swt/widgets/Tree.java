@@ -2102,8 +2102,7 @@ void updateHorizontalBar () {
 	int maxX = 0;
 	for (int i = 0; i < availableItems.length; i++) {
 		Rectangle itemBounds = availableItems [i].getBounds ();
-		int rightmostX = itemBounds.x + itemBounds.width;
-		maxX = Math.max (maxX, rightmostX);
+		maxX = Math.max (maxX, itemBounds.x + itemBounds.width);
 	}
 	maxX += horizontalOffset;
 	hBar.setMaximum (maxX);
