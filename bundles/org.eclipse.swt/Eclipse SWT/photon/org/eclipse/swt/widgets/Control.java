@@ -1376,6 +1376,11 @@ int processMouseEnter (int info) {
 	event.time = ev.timestamp;
 	event.x = rect.ul_x;
 	event.y = rect.ul_y;
+	int data = OS.PhGetData (cbinfo.event);
+	if (data == 0) return OS.Pt_END;
+	PhPointerEvent_t pe = new PhPointerEvent_t ();
+	OS.memmove (pe, data, PhPointerEvent_t.sizeof);
+	setMouseState (event, pe, ev);
 	switch (ev.subtype) {
 		case OS.Ph_EV_PTR_ENTER:
 		case OS.Ph_EV_PTR_ENTER_FROM_CHILD:
