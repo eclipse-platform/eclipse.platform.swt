@@ -719,8 +719,8 @@ public void setVisible (boolean visible) {
 		state |= HIDDEN;
 	}
 	setVisible (handle, visible);
-	sendEvent (visible ? SWT.Show : SWT.Hide);
 	parent.layoutControl (true);
+	sendEvent (visible ? SWT.Show : SWT.Hide);
 }
 
 void setZOrder () {
