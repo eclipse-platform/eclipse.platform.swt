@@ -882,8 +882,9 @@ public void select (int index) {
 	checkWidget ();
 	int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
 	if (0 <= index && index < count) {
+		int selection = OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
 		int code = OS.SendMessage (handle, OS.CB_SETCURSEL, index, 0);
-		if (code != OS.CB_ERR) {
+		if (code != OS.CB_ERR && code != selection) {
 			sendEvent (SWT.Modify);
 			// widget could be disposed at this point
 		}
