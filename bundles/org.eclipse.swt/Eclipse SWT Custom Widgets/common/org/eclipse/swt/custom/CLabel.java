@@ -67,6 +67,8 @@ public class CLabel extends Canvas {
 	private Color[] gradientColors;
 	private int[] gradientPercents;
 	private boolean gradientVertical;
+	
+	private static int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB | SWT.DRAW_TRANSPARENT;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -118,6 +120,14 @@ public CLabel(Composite parent, int style) {
 		}
 	});
 
+	addTraverseListener(new TraverseListener() {
+		public void keyTraversed(TraverseEvent event) {
+			if (event.detail == SWT.TRAVERSE_MNEMONIC) {
+				onMnemonic(event);
+			}
+		}
+	});
+	
 	initAccessible();
 
 }
@@ -178,6 +188,19 @@ private void drawBevelRect(GC gc, int x, int y, int w, int h, Color topleft, Col
 	gc.drawLine(x, y, x+w-1, y);
 	gc.drawLine(x, y, x,     y+h-1);
 }
+
+char findMnemonic (String string) {
+	int index = 0;
+	int length = string.length ();
+	do {
+		while (index < length && string.charAt (index) != '&') index++;
+		if (++index >= length) return '\0';
+		if (string.charAt (index) != '&') return string.charAt (index);
+		index++;
+	} while (index < length);
+ 	return '\0';
+}
+
 /**
  * Returns the alignment.
  * The alignment style (LEFT, CENTER or RIGHT) is returned.
@@ -211,7 +234,7 @@ private Point getTotalSize(Image image, String text) {
 		
 	GC gc = new GC(this);
 	if (text != null && text.length() > 0) {
-		Point e = gc.textExtent(text);
+		Point e = gc.textExtent(text, DRAW_FLAGS);
 		size.x += e.x;
 		size.y = Math.max(size.y, e.y);
 		if (image != null) size.x += GAP;
@@ -256,6 +279,15 @@ private void initAccessible() {
 		public void getHelp(AccessibleEvent e) {
 			e.result = getToolTipText();
 		}
+		
+		public void getKeyboardShortcut(AccessibleEvent e) {
+			if (CLabel.this.text != null) {
+				char mnemonic = findMnemonic(CLabel.this.text);	
+				if (mnemonic != '\0') {
+					e.result = "Alt+"+mnemonic; //$NON-NLS-1$
+				}
+			}
+		}
 	});
 		
 	accessible.addAccessibleControlListener(new AccessibleControlAdapter() {
@@ -298,9 +330,28 @@ void onDispose(DisposeEvent event) {
 	image = null;
 	appToolTipText = null;
 }
-/* 
- * Process the paint event
- */
+void onMnemonic(TraverseEvent event) {
+	char mnemonic = findMnemonic(text);
+	if (mnemonic == '\0') return;
+	if (Character.toUpperCase(event.character) != Character.toUpperCase(mnemonic)) return;
+	Composite control = this.getParent();
+	while (control != null) {
+		Control [] children = control.getChildren();
+		int index = 0;
+		while (index < children.length) {
+			if (children [index] == this) break;
+			index++;
+		}
+		index++;
+		if (index < children.length) {
+			if (children [index].setFocus ()) {
+				event.doit = true;
+				event.detail = SWT.TRAVERSE_NONE;
+			}
+		}
+		control = control.getParent();
+	}
+}
 void onPaint(PaintEvent event) {
 	Rectangle rect = getClientArea();
 	if (rect.width == 0 || rect.height == 0) return;
@@ -423,7 +474,7 @@ void onPaint(PaintEvent event) {
 	if (t != null) {
 		int textHeight = gc.getFontMetrics().getHeight();
 		gc.setForeground(getForeground());
-		gc.drawText(t, x, rect.y + (rect.height-textHeight)/2, true);
+		gc.drawText(t, x, rect.y + (rect.height-textHeight)/2, DRAW_FLAGS);
 	}
 }
 /**
@@ -682,7 +733,7 @@ public void setToolTipText (String string) {
  */
 protected String shortenText(GC gc, String t, int width) {
 	if (t == null) return null;
-	int w = gc.textExtent(ELLIPSIS).x;
+	int w = gc.textExtent(ELLIPSIS, DRAW_FLAGS).x;
 	int l = t.length();
 	int pivot = l/2;
 	int s = pivot;
@@ -690,8 +741,8 @@ protected String shortenText(GC gc, String t, int width) {
 	while (s >= 0 && e < l) {
 		String s1 = t.substring(0, s);
 		String s2 = t.substring(e, l);
-		int l1 = gc.textExtent(s1).x;
-		int l2 = gc.textExtent(s2).x;
+		int l1 = gc.textExtent(s1, DRAW_FLAGS).x;
+		int l2 = gc.textExtent(s2, DRAW_FLAGS).x;
 		if (l1+w+l2 < width) {
 			t = s1 + ELLIPSIS + s2;
 			break;
