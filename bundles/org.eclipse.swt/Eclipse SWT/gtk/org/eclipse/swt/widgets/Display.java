@@ -1773,6 +1773,7 @@ public boolean readAndDispatch () {
 		int /*long*/ event = removeGdkEvent ();
 		if (event != 0) {
 			eventProc (event, 0);
+			OS.gdk_event_free (event);
 		} else {
 			OS.gtk_main_iteration ();
 		}

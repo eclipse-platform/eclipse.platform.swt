@@ -362,7 +362,8 @@ public boolean open () {
 		if (parent != null && parent.isDisposed ()) break;
 		int /*long*/ eventPtr;
 		while (true) {
-			eventPtr = OS.gdk_event_get ();
+			eventPtr = display.removeGdkEvent ();
+			if (eventPtr == 0) eventPtr = OS.gdk_event_get ();
 			if (eventPtr != 0) {
 				break;
 			} else {
