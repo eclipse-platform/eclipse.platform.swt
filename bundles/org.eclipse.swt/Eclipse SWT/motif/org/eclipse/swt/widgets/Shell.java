@@ -1353,6 +1353,7 @@ public void setVisible (boolean visible) {
 		adjustTrim ();
 		
 		sendEvent (SWT.Show);
+		if (isDisposed ()) return;
 		
 		int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.APPLICATION_MODAL;
 		if ((style & mask) != 0) {

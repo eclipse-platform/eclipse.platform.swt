@@ -1109,6 +1109,7 @@ public void setVisible (boolean visible) {
 		if (!OS.IsWinCE) OS.ShowOwnedPopups (handle, false);
 	}
 	super.setVisible (visible);
+	if (isDisposed ()) return;
 	if (showWithParent == visible) return;
 	showWithParent = visible;
 	if (visible) {
