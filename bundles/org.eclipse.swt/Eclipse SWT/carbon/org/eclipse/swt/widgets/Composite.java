@@ -7,10 +7,11 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.MacUtil;
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.carbon.Rect;
 
 /**
  * Instances of this class are controls which are capable
@@ -180,8 +181,12 @@ void createHandle (int index) {
 			OS.XmNtraversalOn, (style & SWT.NO_FOCUS) != 0 ? 0 : 1,
 		};
         */
-		int parentHandle = parent.handle;
-        handle= MacUtil.createDrawingArea (parentHandle, -1, true, 0, 0, border);
+        int features= OS.kControlSupportsEmbedding;
+        if ((style & SWT.NO_FOCUS) == 0)
+        	features |= OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick;
+        handle= OS.NewControl(0, new Rect(), null, false, (short)features, (short)0, (short)0, (short)OS.kControlUserPaneProc, 0);
+		MacUtil.addControl(handle, parent.handle);
+        OS.HIViewSetVisible(handle, true);
 
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
         /* AW
@@ -227,7 +232,10 @@ void createScrolledHandle (int topHandle) {
 		};
 		handle = OS.XmCreateDrawingArea (formHandle, null, argList2, argList2.length / 2);
         */
-        handle= MacUtil.createDrawingArea (scrolledHandle, -1, true, 0, 0, 0);
+        int features= OS.kControlSupportsEmbedding;
+        if ((style & SWT.NO_FOCUS) == 0)
+        	features |= OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick;
+        handle= OS.NewControl(0, new Rect(), null, false, (short)features, (short)0, (short)0, (short)OS.kControlUserPaneProc, 0);
 	} else {
         /* AW
 		int [] argList3 = {
@@ -238,9 +246,14 @@ void createScrolledHandle (int topHandle) {
 		};
 		handle = OS.XmCreateDrawingArea (scrolledHandle, null, argList3, argList3.length / 2);
         */
-        handle = MacUtil.createDrawingArea (scrolledHandle, -1, true, 0, 0, 0);
+        int features= OS.kControlSupportsEmbedding;
+        if ((style & SWT.NO_FOCUS) == 0)
+        	features |= OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick;
+        handle= OS.NewControl(0, new Rect(), null, false, (short)features, (short)0, (short)0, (short)OS.kControlUserPaneProc, 0);
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	MacUtil.addControl(handle, scrolledHandle);
+	OS.HIViewSetVisible(handle, true);
     /* AW
 	OS.XtOverrideTranslations (handle, display.tabTranslations);
 	OS.XtOverrideTranslations (handle, display.arrowTranslations);
@@ -351,24 +364,19 @@ public Control [] getTabList () {
 void hookEvents () {
 	super.hookEvents ();
 	if ((state & CANVAS) != 0) {
-        /* AW
-		int windowProc = getDisplay ().windowProc;
-		OS.XtAddEventHandler (handle, 0, true, windowProc, -1);
-        */
-		Display display= getDisplay();		
-		OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneDrawProcTag, 4, new int[]{display.fUserPaneDrawProc});
+		Display display= getDisplay();
 		OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneHitTestProcTag, 4, new int[]{display.fUserPaneHitTestProc});
 
-
-		if (MacUtil.HIVIEW) {
-			// OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneTrackingProcTag, display.fUserPaneTrackingProc);
-			int ref= OS.GetControlEventTarget(handle);
-			int[] mask= new int[] {
-				OS.kEventClassMouse, OS.kEventMouseDown,
-				OS.kEventClassMouse, OS.kEventMouseWheelMoved,
-			};
-			OS.InstallEventHandler(ref, display.fMouseProc, mask.length / 2, mask, handle, null);
-		}
+		int[] mask= new int[] {
+			OS.kEventClassMouse, OS.kEventMouseDown,
+			OS.kEventClassMouse, OS.kEventMouseWheelMoved,
+		};
+		OS.InstallEventHandler(OS.GetControlEventTarget(handle), display.fMouseProc, mask.length, mask, handle, null);
+		
+		int[] mask2= new int[] {
+			OS.kEventClassControl, OS.kEventControlDraw,
+		};
+		OS.InstallEventHandler(OS.GetControlEventTarget(handle), display.fControlProc, mask2.length, mask2, handle, null);
 	}
 }
 

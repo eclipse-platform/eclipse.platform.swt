@@ -6,11 +6,11 @@ package org.eclipse.swt.widgets;
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/cpl-v10.html
  */
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
-import org.eclipse.swt.internal.carbon.MacUtil;
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of the receiver represent is an unselectable
@@ -91,10 +91,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle (int index) {
 	state |= HANDLE;
 	int parentHandle = parent.handle;
-	handle = MacUtil.newControl(parentHandle, (short)0, (short)0, (short)100, OS.kControlProgressBarProc);
+	handle= OS.NewControl(0, new Rect(), null, false, (short)0, (short)0, (short)100, (short)OS.kControlProgressBarProc, 0);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+ 	MacUtil.addControl(handle, parentHandle);
 	if ((style & SWT.INDETERMINATE) != 0)
 		OS.SetControlData(handle, (short)0, OS.kControlProgressBarIndeterminateTag, 4, new int[]{-1});
+	OS.HIViewSetVisible(handle, true);
 }
 /* AW
 void disableButtonPress () {

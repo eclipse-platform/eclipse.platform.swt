@@ -7,8 +7,9 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
  
-import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.internal.Callback;
 
 /**
  * Instances of this class allow the user to navigate
@@ -209,8 +210,11 @@ private String interpretOsAnswer(int dialog) {
  */
 public String open () {
 
+	String separator= System.getProperty("file.separator");
 	int dialog= 0;
 	String result= null;
+	Callback eventCallback= null;
+	Callback filterCallback= null;
 	
 	int titleHandle= 0;
 	try {
@@ -230,11 +234,26 @@ public String open () {
 		options.windowTitle= titleHandle;
 		options.parentWindow= parentWindowHandle;
 		if ((style & SWT.SAVE) != 0) {
-			status= OS.NavCreatePutFileDialog(options, MacUtil.OSType("TEXT"), MacUtil.OSType("KAHL"), 0, 0, dialogHandle);
+			status= OS.NavCreatePutFileDialog(options, MacUtil.OSType("TEXT"),
+							MacUtil.OSType("KAHL"), 0, 0, dialogHandle);
 		} else /* if ((style & SWT.OPEN) != 0) */ {
+			
+			eventCallback= new Callback(this, "eventProc", 3);
+			int eventProc= eventCallback.getAddress();
+			if (eventProc == 0)
+				error (SWT.ERROR_NO_MORE_CALLBACKS);
+				
+			filterCallback= new Callback(this, "filterProc", 4);
+			int filterProc= filterCallback.getAddress();
+			if (filterProc == 0)
+				error (SWT.ERROR_NO_MORE_CALLBACKS);
+			
 			if ((style & SWT.MULTI) != 0)
 				options.optionFlags |= OS.kNavAllowMultipleFiles;
-			status= OS.NavCreateGetFileDialog(options, 0, 0, 0, 0, 0, dialogHandle);
+			options.optionFlags |= OS.kNavSupportPackages;
+			options.optionFlags |= OS.kNavAllowOpenPackages;
+			options.optionFlags |= OS.kNavAllowInvisibleFiles;
+			status= OS.NavCreateGetFileDialog(options, 0/*titleHandle*/, eventProc, 0, filterProc, 12345, dialogHandle);
 		}
 		
 		if (status == 0) {
@@ -247,6 +266,21 @@ public String open () {
 			//System.out.println("FileDialog.open: got dialog");
 		
 			if ((style & SWT.SAVE) != 0) {
+				String directoryName;
+				String fileName;
+				String pathName= fileNames[0];
+				if (pathName == null)
+					pathName= "";
+				// if fileName is a path, separate directory from filename
+				int separatorIndex= pathName.lastIndexOf(separator);
+				if (separatorIndex >= 0) {
+					fileName= pathName.substring(separatorIndex+separator.length());
+					directoryName= pathName.substring(0, separatorIndex);
+				} else {
+					fileName= pathName;
+					directoryName= null;
+				}
+								
 				int fileNameHandle= 0;
 				try {
 					fileNameHandle= OS.CFStringCreateWithCharacters(fileNames[0]);
@@ -272,7 +306,9 @@ public String open () {
 				break;
 				
 			case OS.kNavUserActionSaveAs:
-				result= MacUtil.getStringAndRelease(OS.NavDialogGetSaveFileName(dialog));
+				String directory= interpretOsAnswer(dialog);
+				String file= MacUtil.getStringAndRelease(OS.NavDialogGetSaveFileName(dialog));
+				result= directory + separator + file;
 				break;
 			}
 		} else {
@@ -286,7 +322,35 @@ public String open () {
 			OS.NavDialogDispose(dialog);
 	}
 	
+	if (eventCallback != null)
+		eventCallback.dispose();
+	if (filterCallback != null)
+		filterCallback.dispose();
 	return result;
+}
+
+private int eventProc(int selector, int params, int callBackUD) {
+	
+	System.out.println("FileDialog.eventProc: selector: " + selector);
+	
+	switch (selector) {
+	case OS.kNavCBNewLocation:
+		// NavCustomControl()
+		break;
+	default:
+		break;
+	}	
+	return 0;
+}
+
+private int filterProc(int theItem, int info, int callBackUD, int filterMode) {
+	/* AEDesc *theItem, void *info, void *callBackUD, NavFilterModes filterMode */
+	System.out.println("FileDialog.filterProc: UD: " + callBackUD);
+	
+	
+	
+	
+	return 1;
 }
 
 /**

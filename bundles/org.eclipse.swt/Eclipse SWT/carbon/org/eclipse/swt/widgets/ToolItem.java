@@ -7,13 +7,12 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
  
-import org.eclipse.swt.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTError;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
-import org.eclipse.swt.internal.carbon.CGRect;
-import org.eclipse.swt.internal.carbon.MacUtil;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -195,8 +194,13 @@ void createHandle (int index) {
 		else
 			height= DEFAULT_SEPARATOR_WIDTH;
 	}
-	handle = MacUtil.createDrawingArea(parentHandle, index, false, width, height, 0);
+		
+	Rect bounds= new Rect();
+	OS.SetRect(bounds, (short)0, (short)0, (short)width, (short)height);
+	handle= OS.NewControl(0, bounds, null, false, (short)(OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick), (short)0, (short)0, (short)OS.kControlUserPaneProc, 0);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	MacUtil.insertControl(handle, parentHandle, index);
+	OS.HIViewSetVisible(handle, false);
 }
 void click (boolean dropDown, MacMouseEvent mmEvent) {
 	if ((style & SWT.RADIO) != 0) {
@@ -300,17 +304,9 @@ public void dispose () {
  */
 public Rectangle getBounds () {
 	checkWidget();
-	if (MacUtil.USE_FRAME) {
-		CGRect rect= new CGRect();
-		OS.HIViewGetFrame(handle, rect);
-		return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
-	} else {
-		Rect bounds= new Rect();
-		Rect pbounds= new Rect();
-		OS.GetControlBounds(handle, bounds);
-		OS.GetControlBounds(parent.handle, pbounds);
-		return new Rectangle(bounds.left-pbounds.left, bounds.top-pbounds.top, bounds.right-bounds.left, bounds.bottom-bounds.top);
-	}
+	Rect bounds= new Rect();
+	OS.GetControlBounds(handle, bounds);
+	return new Rectangle(bounds.left, bounds.top, bounds.right-bounds.left, bounds.bottom-bounds.top);
 }
 /**
  * Returns the control that is used to fill the bounds of
@@ -458,6 +454,7 @@ boolean hasCursor () {
 	OS.GetMouse(mp);
 	Rect bounds= new Rect();
 	OS.GetControlBounds(handle, bounds);
+	OS.SetRect(bounds, (short)0, (short)0, (short)(bounds.right-bounds.left), (short)(bounds.bottom-bounds.top));
 	return OS.PtInRect(mp, bounds);
 }
 void hookEvents () {
@@ -473,8 +470,12 @@ void hookEvents () {
 	OS.XtAddEventHandler (handle, OS.LeaveWindowMask, false, windowProc, SWT.MouseExit);
 	OS.XtAddCallback (handle, OS.XmNexposeCallback, windowProc, SWT.Paint);
 	*/
-	Display display= getDisplay();		
-	OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneDrawProcTag, 4, new int[]{display.fUserPaneDrawProc});
+	Display display= getDisplay();
+	OS.InstallEventHandler(OS.GetControlEventTarget(handle), display.fControlProc, 1,
+		new int[] {
+			OS.kEventClassControl, OS.kEventControlDraw,
+		},
+		handle, null);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneHitTestProcTag, 4, new int[]{display.fUserPaneHitTestProc});
 }
@@ -568,27 +569,9 @@ void setBounds (int x, int y, int width, int height) {
 	width = Math.max(width, 0);
 	height = Math.max(height, 0);
 	
-	if (MacUtil.USE_FRAME) {
-		CGRect rect= new CGRect();
-		OS.HIViewGetFrame(handle, rect);
-		if (rect.x != x || rect.y != y || rect.width != width || rect.height != height) {
-			OS.HIViewSetFrame(handle, rect);
-		}
-	} else {
-		Rect bounds= new Rect();
-		Rect pbounds= new Rect();
-		OS.GetControlBounds(handle, bounds);
-		OS.GetControlBounds(parent.handle, pbounds);
-			
-		boolean sameOrigin = (bounds.left-pbounds.left) == x && (bounds.top-pbounds.top) == y;
-		boolean sameExtent = (bounds.right-bounds.left) == width && (bounds.bottom-bounds.top) == height;
-		if (!sameOrigin || !sameExtent){
-			short left = (short)(pbounds.left+x);
-			short top = (short)(pbounds.top +y);
-			OS.SetRect(bounds, left, top, (short)(left + width), (short)(top + height));
-			OS.SetControlBounds(handle, bounds);
-		}
-	}
+	Rect bounds= new Rect();
+	OS.SetRect(bounds, (short)x, (short)y, (short)(x+width), (short)(y+height));
+	OS.SetControlBounds(handle, bounds);
 
 	if (parent.fGotSize)
 		OS.HIViewSetVisible(handle, true);
@@ -772,7 +755,7 @@ public void setWidth (int width) {
 	if (width < 0) return;
 	Rect bounds= new Rect();
 	OS.GetControlBounds(handle, bounds);
-	setSize (width, bounds.bottom - bounds.top);
+	setSize (width, bounds.bottom-bounds.top);
 	if (control != null && !control.isDisposed ()) {
 		control.setBounds (getBounds ());
 	}
@@ -892,9 +875,9 @@ int processMouseExit (MacMouseEvent mme) {
 	else if ((parent.style & SWT.FLAT) != 0) redraw ();
 	return 0;
 }
-Point toControl (Point point) {
-	return MacUtil.toControl(handle, point);
-}
+//Point toControl (Point point) {
+//	return MacUtil.toControl(handle, point);
+//}
 /* AW
 boolean translateTraversal (int key, XKeyEvent xEvent) {
 	return parent.translateTraversal (key, xEvent);
@@ -1008,9 +991,8 @@ int processPaint (Object callData) {
 	boolean hasCursor= hasCursor ();
 
 	GC gc= new GC(drawable);
-	
 	MacControlEvent me= (MacControlEvent) callData;
-	Rectangle r= gc.carbon_focus(me.getDamageRegionHandle());
+	Rectangle r= gc.carbon_focus(me.getDamageRegionHandle(), me.getGCContext());
 	if (!r.isEmpty()) {
 		
 		// erase background

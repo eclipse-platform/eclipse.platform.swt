@@ -10,12 +10,11 @@ package org.eclipse.swt.widgets;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.eclipse.swt.*;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.Callback;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
-import org.eclipse.swt.internal.carbon.MacUtil;
 
 /**
  * Instances of this class are responsible for managing the
@@ -226,11 +225,12 @@ public class Display extends Device {
 	int fMouseProc;
 	int fMenuProc;
 	int fControlActionProc;
-	int fUserPaneDrawProc, fUserPaneHitTestProc, fUserPaneTrackingProc;
+	int fUserPaneHitTestProc;
 	int fDataBrowserDataProc, fDataBrowserCompareProc, fDataBrowserItemNotificationProc;
+	int fControlProc;
 	
 	private boolean fMenuIsVisible;
-	private int fUpdateRegion;
+	//private int fUpdateRegion;
 	private int fTrackedControl;
 	private int fFocusControl;
 	private int fCurrentControl;
@@ -885,13 +885,17 @@ protected void init () {
 
 	fWindowProc= createCallback("handleWindowCallback", 3);
 	fMouseProc= createCallback("handleMouseCallback", 3);
+	
 	fControlActionProc= createCallback("handleControlAction", 2);
-	fUserPaneDrawProc= createCallback("handleUserPaneDraw", 2);
+	fControlProc= createCallback("handleControlProc", 3);
+	
+	//fUserPaneDrawProc= createCallback("handleUserPaneDraw", 2);
 	fUserPaneHitTestProc= createCallback("handleUserPaneHitTest", 2);
-	fUserPaneTrackingProc= createCallback("handleUserPaneTracking", 3);
+	
 	fDataBrowserDataProc= createCallback("handleDataBrowserDataCallback", 5);
 	fDataBrowserCompareProc= createCallback("handleDataBrowserCompareCallback", 4);
 	fDataBrowserItemNotificationProc= createCallback("handleDataBrowserItemNotificationCallback", 3);
+	
 	fMenuProc= createCallback("handleMenuCallback", 3);
 	
 	// create standard event handler
@@ -903,7 +907,7 @@ protected void init () {
 		OS.kEventClassAppleEvent, OS.kEventAppleEvent,
 		
 		// we track down events here because we need to know when the user 
-		// clicked in the menu bar
+		// has clicked in the menu bar
 		OS.kEventClassMouse, OS.kEventMouseDown,
 		// we track up, dragged, and moved events because
 		// we need to get these events even if the mouse is outside of the window.
@@ -970,7 +974,7 @@ protected void init () {
 	COLOR_LIST_SELECTION_TEXT = 	Color.carbon_new(this, 0xFFFFFF, true);
 	COLOR_INFO_BACKGROUND = 		Color.carbon_new(this, 0xFFFFE1, true);
 	
-	fHoverThemeFont= OS.kThemeSmallSystemFont;
+	fHoverThemeFont= (short) OS.kThemeSmallSystemFont;
 
 	defaultFont = Font.carbon_new (this, getThemeFont(OS.kThemeSmallSystemFont));
 	
@@ -1780,73 +1784,44 @@ static String convertToLf(String text) {
 	//---- callbacks
 	
 	private int handleControlAction(int cHandle, int partCode) {
-		if (MacUtil.HIVIEW)
-			System.out.println("Display.handleControlAction: " + cHandle + " " + partCode);
 		return windowProc(cHandle, SWT.Selection, new MacControlEvent(cHandle, partCode, true));
 	}
-
-	private int handleUserPaneDraw(int cHandle, int partCode) {
-		int updateRgn= fUpdateRegion;
-		if (updateRgn == 0) {
-			updateRgn= OS.NewRgn();
-			int wHandle= OS.GetControlOwner(cHandle);
-			OS.GetPortVisibleRegion(OS.GetWindowPort(wHandle), updateRgn);
-		}
-		int status= windowProc(cHandle, SWT.Paint, new MacControlEvent(cHandle, fUpdateRegion));
-		if (updateRgn != fUpdateRegion && updateRgn != 0)
-			OS.DisposeRgn(updateRgn);
-		return status;
-	}
+	
+	private int handleControlProc(int inCallRef, int inEvent, int cHandle) {
+		int clazz= OS.GetEventClass(inEvent);
 		
+		if (OS.GetEventClass(inEvent) == OS.kEventClassControl) {
+			int kind= OS.GetEventKind(inEvent);
+			switch (kind) {
+			case OS.kEventControlDraw:
+			
+				int[] gccontext= new int[1];
+				OS.GetEventParameter(inEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, gccontext);
+			
+				int[] region= new int[1];
+				if (OS.GetEventParameter(inEvent, OS.kEventParamRgnHandle, OS.typeQDRgnHandle, null, 4, null, region) != OS.noErr)
+					System.err.println("kEventControlDraw: couldn't retrieve region");
+				
+				windowProc(cHandle, SWT.Paint, new MacControlEvent(inEvent, region[0], gccontext[0]));
+				return OS.noErr;
+				
+			default:
+				System.out.println("Display.handleControlProc: wrong event kind: " + kind);
+				break;
+			}
+		} else {
+			System.out.println("Display.handleControlProc: wrong event class: " + clazz);
+		}
+		return OS.eventNotHandledErr;
+	}
+			
 	private int handleUserPaneHitTest(int cHandle, int where) {
-		if (MacUtil.HIVIEW)
-			System.out.println("handleUserPaneHitTest");
 		Widget w= WidgetTable.get(cHandle);
 		if (w instanceof Text || w instanceof Combo)
 			return 112;
 		return 111;
 	}
-		
-	private int handleUserPaneTracking(int cHandle, int where, int actionProc) {
-		
-		org.eclipse.swt.internal.carbon.Point pt= new org.eclipse.swt.internal.carbon.Point();
-		OS.SetPt(pt, OS.HiWord(where), OS.LoWord(where));
-		short[] trackingResult= new short[1];
-		
-		Widget widget = WidgetTable.get (cHandle);
-		if (widget == null) return 0;
-
-		widget.processMouseDown(new MacMouseEvent(1, new Point(pt.h, pt.v)));
-		//System.out.println("V" + pt.toPoint());
-		
-		/*
-		MacRect bounds= new MacRect();
-		OS.GetControlBounds(cHandle, bounds.getData());
-		int x= bounds.getX();
-		int y= bounds.getY();
-		System.out.println("Bounds" + bounds.toRectangle());
-		*/
-		
-		while (true) {
-			OS.TrackMouseLocation(0, pt, trackingResult);
-			Point p= new Point(pt.h, pt.v);
-			p.x-= 100;
-			p.y-= 100
-			;
-			switch (trackingResult[0]) {
-			case 5: // kMouseTrackingMouseDragged
-				widget.processMouseMove(new MacMouseEvent(1, p));
-				//System.out.println("-" + p);
-				break;
-			case 2: // kMouseTrackingMouseUp
-			case 7: // kMouseTrackingUserCancelled
-				widget.processMouseUp(new MacMouseEvent(1, p));
-				//System.out.println("A" + p);
-				return 0;
-			}
-		}
-	}
-	
+			
 	private int handleDataBrowserDataCallback(int cHandle, int item, int property, int itemData, int setValue) {
 		Widget widget= WidgetTable.get(cHandle);
 		if (widget instanceof List) {
@@ -2024,11 +1999,12 @@ static String convertToLf(String text) {
 				if (toolTipWindowHandle == whichWindow) {
 					processPaintToolTip(whichWindow);
 				} else {
-					if (MacUtil.HIVIEW)
-						break;
-					updateWindow2(whichWindow);
+					//if (MacUtil.HIVIEW)
+					//return OS.eventNotHandledErr;
+					//updateWindow2(whichWindow);
 				}
-				return OS.noErr;
+				return OS.eventNotHandledErr;
+				//return OS.noErr;
 				
 			default:
 				System.out.println("handleWindowCallback: kEventClassWindow kind:" + eventKind);
@@ -2108,12 +2084,8 @@ static String convertToLf(String text) {
 				org.eclipse.swt.internal.carbon.Point where= mEvent.getWhere();
 				int[] w= new int[1];
 				short part= OS.FindWindow(where, w);
-								
-				OS.QDGlobalToLocalPoint(OS.GetWindowPort(w[0]), where);
-				
 				if (part == OS.inMenuBar) {
-					OS.MenuSelect(mEvent.getWhere());
-					//doMenuCommand(OS.MenuSelect(mEvent.getWhere().getData()));
+					OS.MenuSelect(mEvent.getWindowWhere(w[0]));
 					return OS.noErr;
 				}
 				break;
@@ -2138,37 +2110,41 @@ static String convertToLf(String text) {
 		
 	private int handleMouseEvent(int nextHandler, int eRefHandle, int eventKind, int whichWindow) {
 		
-		if (MacUtil.HIVIEW)
-			return OS.eventNotHandledErr;
-		
 		if (eventKind == OS.kEventMouseDown)
 			fTrackedControl= 0;
 		
 		MacEvent me= new MacEvent(eRefHandle);
 		org.eclipse.swt.internal.carbon.Point where= me.getWhere();
 		
-		short part= 0;
+		// retrieve window and window part from event
 		if (whichWindow == 0) {
 			if (fTrackedControl != 0) {
-				whichWindow= OS.GetControlOwner(fTrackedControl);
+				// in tracking mode: get window from control
+				int ww= OS.GetControlOwner(fTrackedControl);
+				int[] w= new int[1];
+				int rc= OS.GetEventParameter(eRefHandle, OS.kEventParamWindowRef, OS.typeWindowRef, null, 4, null, w);
+				if (rc == OS.noErr)
+					whichWindow= w[0];
+				if (whichWindow != ww)
+					System.out.println("Display.handleMouseEvent:  oops");
 			} else {
 				int[] w= new int[1];
-				part= OS.FindWindow(where, w);
+				OS.FindWindow(where, w);
 				whichWindow= w[0];
+				if (whichWindow == 0) {
+					// try to retrieve window from event
+					int rc= OS.GetEventParameter(eRefHandle, OS.kEventParamWindowRef, OS.typeWindowRef, null, 4, null, w);
+					if (rc == OS.noErr)
+						whichWindow= w[0];
+					else {
+						// the event is a MouseMoved event:
+					}
+				}
 			}
-		} else {
-			part= OS.FindWindow(where, new int[1]);
 		}
-		
-		if (whichWindow == 0 && eventKind == OS.kEventMouseDown) {
-			int[] wHandle= new int[1];
-			int rc= OS.GetEventParameter(eRefHandle, OS.kEventParamWindowRef, OS.typeWindowRef, null, wHandle.length*4, null, wHandle);
-			if (rc == OS.noErr)
-				whichWindow= wHandle[0];
-		}
-		
+				
 		if (whichWindow == 0) {
-			//System.out.println("Display.handleMouseEvent:  whichWindow == 0");
+			// give up
 			return OS.eventNotHandledErr;
 		}
 			
@@ -2177,8 +2153,7 @@ static String convertToLf(String text) {
 		switch (eventKind) {
 		
 		case OS.kEventMouseWheelMoved:
-			OS.QDGlobalToLocalPoint(OS.GetWindowPort(whichWindow), where);			
-			int cntrl= MacUtil.findControlUnderMouse(where, whichWindow, null);
+			int cntrl= MacUtil.findControlUnderMouse(whichWindow, me, null);
 			Widget ww= findWidget(cntrl);
 			if (ww instanceof Composite) {
 				Composite s= (Composite) ww;
@@ -2192,20 +2167,12 @@ static String convertToLf(String text) {
 					
 			if (!OS.IsWindowActive(whichWindow)) {
 				// let the default handler activate the window
-				return OS.eventNotHandledErr;
+				break;
 			}
 		
 			hideToolTip ();
-		
-			if (part == OS.inContent || (MacUtil.HIVIEW && part == OS.inStructure))
-				if (false && MacUtil.HIVIEW) {
-					return OS.eventNotHandledErr;
-				} else {
-					if (!handleContentClick(me, whichWindow))
-						return OS.noErr;
-				}
-
-			break;
+							
+			return handleContentClick(me, whichWindow);
 		
 		case OS.kEventMouseDragged:
 			if (fTrackedControl != 0) {
@@ -2226,8 +2193,7 @@ static String convertToLf(String text) {
 		
 			fTrackedControl= 0;			
 			
-			OS.QDGlobalToLocalPoint(OS.GetWindowPort(whichWindow), where);			
-			int whichControl= MacUtil.findControlUnderMouse(where, whichWindow, null);
+			int whichControl= MacUtil.findControlUnderMouse(whichWindow, me, null);
 		
 			if (fCurrentControl != whichControl) {
 			
@@ -2266,8 +2232,18 @@ static String convertToLf(String text) {
 		return OS.eventNotHandledErr;
 	}
 
-	boolean setMacFocusHandle(int wHandle, int focusHandle) {
+	void setMacFocusHandle(int wHandle, int focusHandle) {
 	
+		Widget w= findWidget(focusHandle);
+		if (w == null) {
+			int[] parent= new int[1];
+			OS.GetSuperControl(focusHandle, parent);
+			focusHandle= parent[0];
+			w= findWidget(focusHandle);
+			if (w == null)
+				return;
+		}
+
 		if (fFocusControl != focusHandle) {
 			int oldFocus= fFocusControl;
 			fFocusControl= focusHandle;
@@ -2288,28 +2264,13 @@ static String convertToLf(String text) {
 			if (fFocusControl != 0)
 				windowProc(fFocusControl, true);
 		}
-		return true;
 	}
-			
-	private boolean handleContentClick(MacEvent me, int whichWindow) {
-	
-		org.eclipse.swt.internal.carbon.Point where= me.getWhere();
-		org.eclipse.swt.internal.carbon.Point globalPos= me.getWhere();
-				
-		OS.QDGlobalToLocalPoint(OS.GetWindowPort(whichWindow), where);
 		
+	private int handleContentClick(MacEvent me, int whichWindow) {
+
 		short[] cpart= new short[1];		
-		int whichControl= 0;
-		if (MacUtil.HIVIEW) {
-			int[] ov= new int[1];
-			int root= OS.HIViewGetRoot(whichWindow);
-			OS.HIViewGetViewForMouseEvent(root, me.getEventRef(), ov);
-			whichControl= ov[0];
-		} else {
-			whichControl= MacUtil.findControlUnderMouse(where, whichWindow, cpart);				
-		}
-		
-		// focus change
+		int whichControl= MacUtil.findControlUnderMouse(whichWindow, me, cpart);				
+
 		setMacFocusHandle(whichWindow, whichControl);
 								
 		if (whichControl != 0) {
@@ -2323,22 +2284,18 @@ static String convertToLf(String text) {
 						fInContextMenu= true;
 						// AW: not ready for primetime
 						// OS.ContextualMenuSelect(cm.handle, globalPos.getData(), new short[1], new short[1]);
-						OS.PopUpMenuSelect(cm.handle, globalPos.v, globalPos.h, (short)1);
+						org.eclipse.swt.internal.carbon.Point pos= me.getWhere();
+						OS.PopUpMenuSelect(cm.handle, pos.v, pos.h, (short)1);
 					} finally {
 						fInContextMenu= false;
 					}
-					return false;
+					return OS.noErr;
 				}
 			}
-			
-			if (MacUtil.HIVIEW) {
-				OS.HIViewClick(whichControl, me.getEventRef());
-				return false;
-			}
-		
+					
 			switch (cpart[0]) {
-			case 0:
-				break;
+//			case 0:
+//				break;
 
 			case 111:	// User pane
 				fTrackedControl= whichControl;	// starts mouse tracking
@@ -2351,20 +2308,11 @@ static String convertToLf(String text) {
 				
 			default:
 				windowProc(whichControl, SWT.MouseDown, new MacMouseEvent(me));
-				
-				if (MacUtil.HIVIEW) {
-					// AW: Jaguar:
-					OS.HIViewClick(whichControl, me.getEventRef());
-				} else {
-					int cpart2= OS.HandleControlClick(whichControl, where, me.getModifiers(), -1);
-					if (cpart2 != 0) {
-						windowProc(whichControl, SWT.Selection, new MacControlEvent(whichControl, cpart2, false));
-					}
-				}
-				break;
+				//OS.HIViewClick(whichControl, me.getEventRef());
+				return OS.eventNotHandledErr;
 			}
 		}
-		return false;
+		return OS.noErr;
 	}
 		
 	public void updateWindow(int whichWindow) {
@@ -2384,14 +2332,14 @@ static String convertToLf(String text) {
 		if (toolTipWindowHandle == whichWindow) {
 			processPaintToolTip(whichWindow);
 		} else {
-			fUpdateRegion= OS.NewRgn();
-			OS.GetPortVisibleRegion(OS.GetWindowPort(whichWindow), fUpdateRegion);
+			System.out.println("Display.updateWindow2");
+			int updateRegion= OS.NewRgn();
+			OS.GetPortVisibleRegion(OS.GetWindowPort(whichWindow), updateRegion);
 
-			OS.EraseRgn(fUpdateRegion);
-			OS.UpdateControls(whichWindow, fUpdateRegion);
+			OS.EraseRgn(updateRegion);
+			OS.UpdateControls(whichWindow, updateRegion);
 							
-			OS.DisposeRgn(fUpdateRegion);
-			fUpdateRegion= 0;
+			OS.DisposeRgn(updateRegion);
 		}
 	}
 		

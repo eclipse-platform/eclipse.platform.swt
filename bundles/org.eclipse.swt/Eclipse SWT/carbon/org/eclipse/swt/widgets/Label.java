@@ -7,11 +7,10 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.*;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
-import org.eclipse.swt.internal.carbon.MacUtil;
 
 /**
  * Instances of this class represent a non-selectable
@@ -110,7 +109,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 				bounds[1]= (short) wHint;	// If we are wrapping text, calculate the height based on wHint.
 			}
 			int sHandle= OS.CFStringCreateWithCharacters(MacUtil.removeMnemonics(text));
-					
+			
 			GC gc= new GC(this);
 			gc.installFont();
 			OS.GetThemeTextDimensions(sHandle, (short)OS.kThemeCurrentPortFont, OS.kThemeStateActive, wrap, bounds, baseLine);
@@ -139,18 +138,20 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 void createHandle (int index) {
 	state |= HANDLE;
-	int parentHandle = parent.handle;
 	int borderWidth = (style & SWT.BORDER) != 0 ? 1 : 0;
+	if ((style & SWT.SEPARATOR) != 0)
+   		handle= OS.NewControl(0, new Rect(), null, false, (short)0, (short)0, (short)100, (short)OS.kControlSeparatorLineProc, 0);
+	else
+	    handle= OS.NewControl(0, new Rect(), null, false, (short)(OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick), (short)0, (short)0, (short)OS.kControlUserPaneProc, 0);
+	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	MacUtil.addControl(handle, parent.handle);
 	if ((style & SWT.SEPARATOR) != 0) {
-  		handle= MacUtil.newControl(parentHandle, (short)0, (short)0, (short)100, OS.kControlSeparatorLineProc);
 		if ((style & SWT.HORIZONTAL) != 0)
 			OS.SizeControl(handle, (short) 20, (short) 1);
 		else
 			OS.SizeControl(handle, (short) 1, (short) 20);	
-	} else {
-		handle = MacUtil.createDrawingArea(parentHandle, -1, true, 0, 0, borderWidth);
 	}
-	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.HIViewSetVisible(handle, true);
 }
 int defaultBackground () {
 	return getDisplay ().labelBackground;
@@ -225,8 +226,14 @@ public String getText () {
 }
 void hookEvents () {
 	super.hookEvents ();
-	Display display= getDisplay();		
-	OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneDrawProcTag, 4, new int[]{display.fUserPaneDrawProc});
+	if ((style & SWT.SEPARATOR) != 0)
+		return;
+	Display display= getDisplay();
+	OS.InstallEventHandler(OS.GetControlEventTarget(handle), display.fControlProc, 1,
+		new int[] {
+			OS.kEventClassControl, OS.kEventControlDraw,
+		},
+		handle, null);	
 }
 /* AW
 boolean mnemonicHit (char key) {
@@ -253,12 +260,11 @@ boolean mnemonicMatch (char key) {
 }
 */
 int processPaint (Object callData) {
-	if ((style & SWT.SEPARATOR) != 0) return 0;
+	if ((style & SWT.SEPARATOR) != 0) return OS.eventNotHandledErr;
 	
 	GC gc= new GC(this);
 	MacControlEvent me= (MacControlEvent) callData;
-	Rectangle r= gc.carbon_focus(me.getDamageRegionHandle());
-	
+	Rectangle r= gc.carbon_focus(me.getDamageRegionHandle(), me.getGCContext());
 	if (! r.isEmpty()) {
 		
 		Rect bounds= new Rect();
@@ -311,7 +317,7 @@ int processPaint (Object callData) {
 	gc.carbon_unfocus();
 	gc.dispose();
 	
-	return 0;
+	return OS.noErr;
 }
 void propagateWidget (boolean enabled) {
 	super.propagateWidget (enabled);

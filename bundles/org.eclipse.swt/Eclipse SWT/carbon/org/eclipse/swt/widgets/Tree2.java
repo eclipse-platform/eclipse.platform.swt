@@ -7,11 +7,11 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.TreeListener;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.MacUtil;
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class provide a selectable user interface object
@@ -212,8 +212,8 @@ void createHandle (int index) {
 	int windowHandle= OS.GetControlOwner(parentHandle);
 	handle= OS.createDataBrowserControl(windowHandle);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	MacUtil.addControl(handle, parentHandle);
-	MacUtil.initLocation(handle);
+	//OS.HIViewAddSubview(parentHandle, handle);
+	MacUtil.insertControl(handle, parentHandle, -1);
 	
 	/* Single or Multiple Selection */
 	int mode= OS.kDataBrowserSelectOnlyOne | OS.kDataBrowserNeverEmptySelectionSet;

@@ -7,12 +7,12 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ShellListener;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
-import org.eclipse.swt.internal.carbon.MacUtil;
 
 /**
  * Instances of this class represent the "windows"
@@ -504,7 +504,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 void createHandle (int index) {
 	state |= HANDLE | CANVAS;
 	
-	int decorations = 0;
+	int decorations = OS.kWindowCompositingAttribute;
     /* AW
 	if ((style & SWT.NO_TRIM) == 0) {
 		if ((style & SWT.MIN) != 0) decorations |= NSWindow.MiniaturizableWindowMask;
@@ -516,9 +516,6 @@ void createHandle (int index) {
 	}
     */
     
-	if (MacUtil.HIVIEW)
-    	decorations |= OS.kWindowCompositingAttribute;
-	
 	if (style == SWT.NONE) {
 	} else if ((style & SWT.NO_TRIM) == 0) {
 		if ((style & SWT.CLOSE) != 0) decorations |= OS.kWindowCloseBoxAttribute;
@@ -552,7 +549,7 @@ void createHandle (int index) {
     */
 	
 	int windowClass= 0;
-	short themeBrush= OS.kThemeBrushDialogBackgroundActive;
+	int themeBrush= OS.kThemeBrushDialogBackgroundActive;
 	if (parent == null && (style & SWT.ON_TOP) == 0) {
         /* AW
 		int xDisplay = display.xDisplay;
@@ -643,7 +640,7 @@ void createHandle (int index) {
 	if (shellHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	
 	if (themeBrush != 0)
-		OS.SetThemeWindowBackground(shellHandle, themeBrush, false);
+		OS.SetThemeWindowBackground(shellHandle, (short)themeBrush, false);
 	
 	// set modality
 	if (inputMode != OS.kWindowModalityNone) {
@@ -1001,8 +998,10 @@ void manageChildren () {
 	OS.XtSetMappedWhenManaged (shellHandle, false);
     */
 	super.manageChildren ();
-	int width = MacUtil.getDisplayWidth() * 5 / 8;
-	int height = MacUtil.getDisplayHeight() * 5 / 8;
+	Rect bounds= new Rect();
+	OS.GetAvailableWindowPositioningBounds(OS.GetMainDevice(), bounds);
+	int width = (bounds.right - bounds.left) * 5 / 8;
+	int height = (bounds.bottom - bounds.top) * 5 / 8;
 	OS.SizeWindow(shellHandle, (short)width, (short)height, true);
 }
 /**

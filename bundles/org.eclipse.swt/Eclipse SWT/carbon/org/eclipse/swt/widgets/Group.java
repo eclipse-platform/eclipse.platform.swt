@@ -7,10 +7,10 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.MacUtil;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.*;
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.Rect;
 
 /**
  * Instances of this class provide an etched border
@@ -117,7 +117,6 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 }
 void createHandle (int index) {
 	state |= HANDLE;
-	int parentHandle = parent.handle;
     /*
 	formHandle = OS.XmCreateForm (parentHandle, null, argList1, argList1.length / 2);
 	if (formHandle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -133,8 +132,10 @@ void createHandle (int index) {
 	};
 	handle = OS.XmCreateFrame (formHandle, null, argList2, argList2.length / 2);
     */
-	handle= MacUtil.newControl(parentHandle, OS.kControlGroupBoxTextTitleProc);
+	handle= OS.NewControl(0, new Rect(), null, false, (short)0, (short)0, (short)0, (short)OS.kControlGroupBoxTextTitleProc, 0);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+ 	MacUtil.addControl(handle, parent.handle);
+	OS.HIViewSetVisible(handle, true);
 	setFont(defaultFont());
 }
 Font defaultFont () {

@@ -7,12 +7,11 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
-import org.eclipse.swt.internal.carbon.MacUtil;
 
 /**
  * Instances of this class are selectable user interface
@@ -335,17 +334,10 @@ void createHandle (int index) {
 		frameOptions |= OS.kTXNAlwaysWrapAtViewEdgeMask;
 	
 	int parentHandle= parent.handle;
-	handle= MacUtil.createDrawingArea(parentHandle, -1, true, 0, 0, 0);		
+    handle= OS.NewControl(0, new Rect(), null, false, (short)(OS.kControlSupportsEmbedding | OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick), (short)0, (short)0, (short)OS.kControlUserPaneProc, 0);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-
-	int wHandle= OS.GetControlOwner(parentHandle);
-	Rect bounds= new Rect();
-	OS.GetControlBounds(handle, bounds);
-	int frameType= OS.kTXNTextEditStyleFrameType;
-	int iFileType= OS.kTXNUnicodeTextFile;
-	int iPermanentEncoding= OS.kTXNSystemDefaultEncoding;
-	int[] tnxObject= new int[1];
-	int[] frameID= new int[1];
+	MacUtil.addControl(handle, parentHandle);
+	OS.HIViewSetVisible(handle, true);
 	
 	/*
 	 * Since MLTE is no real control it must embed its scrollbars in the root control.
@@ -355,14 +347,10 @@ void createHandle (int index) {
 	 * This is done in two steps: before creating the MLTE object with TXNNewObject
 	 * we count the number of controls under the root control. Second step: see below.
 	 */
-	int root;
-	if (true) {
-		int[] rootHandle= new int[1];
-		OS.GetRootControl(wHandle, rootHandle);
-		root= rootHandle[0];
-	} else {
-		root= OS.HIViewGetRoot(wHandle);
-	}
+	int wHandle= OS.GetControlOwner(parentHandle);	
+	int[] rootHandle= new int[1];
+	OS.GetRootControl(wHandle, rootHandle);
+	int root= rootHandle[0];
 	short[] cnt= new short[1];
 	OS.CountSubControls(root, cnt);
 	short oldCount= cnt[0];
@@ -370,8 +358,15 @@ void createHandle (int index) {
 	/*
 	 * Create the MLTE object (and possibly 0-2 scrollbars)
 	 */
-	int status= OS.TXNNewObject(0, wHandle, bounds, frameOptions, frameType, iFileType, iPermanentEncoding,
-						tnxObject, frameID, handle);
+	int frameType= OS.kTXNTextEditStyleFrameType;
+	int iFileType= OS.kTXNUnicodeTextFile;
+	int iPermanentEncoding= OS.kTXNSystemDefaultEncoding;
+	int[] tnxObject= new int[1];
+	int[] frameID= new int[1];
+	Rect bounds= new Rect();
+	MacUtil.getControlBounds(handle, bounds);
+	int status= OS.TXNNewObject(0, wHandle, bounds, frameOptions, frameType, iFileType,
+					iPermanentEncoding, tnxObject, frameID, handle);
 	if (status != OS.noErr)
 		error(SWT.ERROR_NO_HANDLES);
 		
@@ -384,9 +379,10 @@ void createHandle (int index) {
 	short newCount= newCnt[0];
 	int[] child= new int[1];
 	for (short i= newCount; i > oldCount; i--) {
-		OS.GetIndexedSubControl(root, i, child);
-		OS.HIViewRemoveFromSuperview(child[0]);
+		int rc= OS.GetIndexedSubControl(root, i, child);
+		//OS.HIViewRemoveFromSuperview(child[0]);
 		OS.HIViewAddSubview(handle, child[0]);
+		//WidgetTable.put(child[0], this);
 	}
 	
 	fTX= tnxObject[0];
@@ -877,8 +873,12 @@ void hookEvents () {
 	OS.XtAddCallback (handle, OS.XmNmodifyVerifyCallback, windowProc, SWT.Verify);
     */
 	Display display= getDisplay();		
-	OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneDrawProcTag, 4, new int[]{display.fUserPaneDrawProc});
 	OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneHitTestProcTag, 4, new int[]{display.fUserPaneHitTestProc});
+	OS.InstallEventHandler(OS.GetControlEventTarget(handle), display.fControlProc, 1,
+		new int[] {
+			OS.kEventClassControl, OS.kEventControlDraw,
+		},
+		handle, null);
 }
 /**
  * Inserts a string.
@@ -967,7 +967,7 @@ int processMouseDown (MacMouseEvent mmEvent) {
 	return 0;
 }
 int processPaint (Object callData) {
-	syncBounds(null);
+	syncBounds();
 	drawFrame(callData);
 	return 0;
 }
@@ -1404,7 +1404,7 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		s.getChars(0, l, chars, 0); 
 		OS.TXNSetData(fTX, OS.kTXNUnicodeTextData, chars, chars.length * 2, start, end);
 		
-		//syncBounds(null);
+		//syncBounds();
 		
 		sendEvent (SWT.Modify);
 	}
@@ -1503,35 +1503,33 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 
 	void handleResize(int hndl, Rect bounds) {
 		super.handleResize(hndl, bounds);
-		syncBounds(bounds);
+		syncBounds();
 	}
 	
-	private void syncBounds(Rect b) {
+	/**
+	 * Synchronize the size of the MLTEtext with the underlying HIView.	 */
+	private void syncBounds() {
 		
 		if (fTX == 0)
 			return;
-	
-		if (b == null) {
-			b= new Rect();
-			OS.GetControlBounds(handle, b);
-		}
-	
-		int x= b.left;
-		int y= b.top;
-		int w= b.right - b.left;
-		int h= b.bottom - b.top;
 		
+		Rect b= new Rect();
+		MacUtil.getControlBounds(handle, b);
+		
+		// this is just too hard to explain...
+		OS.HIViewSetBoundsOrigin(handle, b.left, b.top);
+				
 		if ((style & SWT.BORDER) != 0) {
-			x+= FOCUS_BORDER;
-			y+= FOCUS_BORDER;
-			w-= 2*FOCUS_BORDER;
-			h-= 2*FOCUS_BORDER;
+			b.left+= FOCUS_BORDER;
+			b.top+= FOCUS_BORDER;
+			b.right-= FOCUS_BORDER;
+			b.bottom-= FOCUS_BORDER;
 		}
 		
 		Rectangle oldRect= fFrameBounds;
-		fFrameBounds= new Rectangle(x, y, w, h);
+		fFrameBounds= new Rectangle(b.left, b.top, b.right-b.left, b.bottom-b.top);
 		if (oldRect == null || !oldRect.equals(fFrameBounds)) {
-			OS.TXNSetFrameBounds(fTX, y, x, y+h, x+w, fFrameID);
+			OS.TXNSetFrameBounds(fTX, b.top, b.left, b.bottom, b.right, fFrameID);
 		}
 		
 		OS.TXNDraw(fTX, 0);

@@ -7,15 +7,13 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.accessibility.Accessible;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.accessibility.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
-import org.eclipse.swt.internal.carbon.CGRect;
-import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
-import org.eclipse.swt.internal.carbon.MacUtil;
 
 /**
  * Control is the abstract superclass of all windowed user interface classes.
@@ -620,21 +618,11 @@ public Rectangle getBounds () {
 	int borders = argList [9] * 2;
 	return new Rectangle ((short) argList [1], (short) argList [3], argList [5] + borders, argList [7] + borders);
     */
-    if (MacUtil.USE_FRAME) {
-		Rect bounds= new Rect();
-		internalGetControlBounds(topHandle, bounds);
-		int width = bounds.right - bounds.left;
-		int height = bounds.bottom - bounds.top;
-		return new Rectangle(bounds.left, bounds.top, width, height);
-   } else {
-	    Rect bounds= new Rect();
-		Rect pbounds= new Rect();
-		internalGetControlBounds(topHandle, bounds);
-		OS.GetControlBounds(parent.handle, pbounds);
-		int width = bounds.right - bounds.left;
-		int height = bounds.bottom - bounds.top;
-		return new Rectangle(bounds.left-pbounds.left, bounds.top-pbounds.top, width, height);
-    }
+	Rect bounds= new Rect();
+	internalGetControlBounds(topHandle, bounds);
+	int width = bounds.right - bounds.left;
+	int height = bounds.bottom - bounds.top;
+	return new Rectangle(bounds.left, bounds.top, width, height);
 }
 Point getClientLocation () {
     /* AW
@@ -645,10 +633,8 @@ Point getClientLocation () {
 	return new Point (handle_x [0] - topHandle_x [0], handle_y [0] - topHandle_y [0]);
     */
     Rect bounds= new Rect();
-	Rect pbounds= new Rect();
-	OS.GetControlBounds(handle, bounds);
-	OS.GetControlBounds(parent.handle, pbounds);
-	return new Point(bounds.left-pbounds.left, bounds.top-pbounds.top);
+    OS.GetControlBounds(handle, bounds);
+    return new Point(bounds.left, bounds.top);
 }
 /**
  * Returns the display that the receiver was created on.
@@ -783,15 +769,8 @@ public Point getLocation () {
 	checkWidget();
 	int topHandle= topHandle ();
 	Rect bounds= new Rect();
-    if (MacUtil.USE_FRAME) {
-		internalGetControlBounds(topHandle, bounds);
-		return new Point(bounds.left, bounds.top);
-    } else {
-		Rect pbounds= new Rect();
-		internalGetControlBounds(topHandle, bounds);
-		OS.GetControlBounds(parent.handle, pbounds);
-		return new Point(bounds.left-pbounds.left, bounds.top-pbounds.top);
-    }
+	internalGetControlBounds(topHandle, bounds);
+	return new Point(bounds.left, bounds.top);
 }
 /**
  * Returns the receiver's pop up menu if it has one, or null
@@ -987,17 +966,9 @@ public int internal_new_GC (GCData data) {
 		data.controlHandle = handle;
 	}
 
-	int wHandle= 0;
-	if (MacUtil.USE_FRAME) {
-		Shell shell= getShell();
-		if (shell != null)
-			wHandle= shell.shellHandle;
-	} else {
-		wHandle= OS.GetControlOwner(handle);
-	}
+	int wHandle= OS.GetControlOwner(handle);
 	int xGC= OS.GetWindowPort(wHandle);
 	if (xGC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	
     return xGC;
 }
 /**	 
@@ -1262,19 +1233,19 @@ public void pack (boolean changed) {
 }
 int processDefaultSelection (Object callData) {
 	postEvent (SWT.DefaultSelection);
-	return 0;
+	return OS.noErr;
 }
 int processFocusIn () {
 	sendEvent (SWT.FocusIn);
-	return 0;
+	return OS.noErr;
 }
 int processFocusOut () {
 	sendEvent (SWT.FocusOut);
-	return 0;
+	return OS.noErr;
 }
 int processHelp (Object callData) {
 	sendHelpEvent (callData);
-	return 0;
+	return OS.noErr;
 }
 int processKeyDown (Object callData) {
 	MacEvent macEvent = (MacEvent) callData;
@@ -1291,7 +1262,7 @@ int processKeyUp (Object callData) {
 }
 int processModify (Object callData) {
 	sendEvent (SWT.Modify);
-	return 0;
+	return OS.noErr;
 }
 int processMouseDown (MacMouseEvent mmEvent) {
 	Display display = getDisplay ();
@@ -1326,7 +1297,7 @@ int processMouseDown (MacMouseEvent mmEvent) {
 	if (!shell.isDisposed ()) {
 		shell.setActiveControl (this);
 	}
-	return 0;
+	return OS.noErr;
 }
 int processMouseEnter (MacMouseEvent mme) {
     /* AW
@@ -1340,13 +1311,13 @@ int processMouseEnter (MacMouseEvent mme) {
 	event.x = p.x;
 	event.y = p.y;
 	postEvent (SWT.MouseEnter, event);
-	return 0;
+	return OS.noErr;
 }
 int processMouseMove (MacMouseEvent mme) {
 	Display display = getDisplay ();
 	display.addMouseHoverTimeOut (handle);
 	sendMouseEvent (SWT.MouseMove, 0, mme);
-	return 0;
+	return OS.noErr;
 }
 int processMouseExit (MacMouseEvent mme) {
 	Display display = getDisplay ();
@@ -1363,7 +1334,7 @@ int processMouseExit (MacMouseEvent mme) {
 	event.x = p.x;
 	event.y = p.y;
 	postEvent (SWT.MouseExit, event);
-	return 0;
+	return OS.noErr;
 }
 int processMouseHover (MacMouseEvent mme) {
 	Display display = getDisplay ();
@@ -1372,45 +1343,31 @@ int processMouseHover (MacMouseEvent mme) {
 	event.x = local.x; event.y = local.y;
 	postEvent (SWT.MouseHover, event);
 	display.showToolTip (handle, toolTipText);
-	return 0;
+	return OS.noErr;
 }
 int processMouseUp (MacMouseEvent mmEvent) {
 	Display display = getDisplay ();
 	display.hideToolTip ();
 	sendMouseEvent (SWT.MouseUp, mmEvent.getButton(), mmEvent);
-	return 0;
+	return OS.noErr;
 }
 int processPaint (Object callData) {
-	//if (!hooks (SWT.Paint)) return 0;
 	
-	/*
-	if (!fVisible || fDrawCount > 0) {
-		System.out.println("Control.processPaint: premature exit");
-		return 0;
-	}
-	*/
-    /* AW
-	event.count = xEvent.count;
-	event.time = OS.XtLastTimestampProcessed (xDisplay);
-    */
-    
+	MacControlEvent mce= (MacControlEvent) callData;
 	GC gc= new GC (this);
-	MacControlEvent me= (MacControlEvent) callData;
-	Rectangle r= gc.carbon_focus(me.getDamageRegionHandle());
+	Rectangle r= gc.carbon_focus(mce.getDamageRegionHandle(), mce.getGCContext());
 	if (r == null || !r.isEmpty()) {
 				
-		if (!MacUtil.HIVIEW) {
-			// erase background
-			//if ((state & CANVAS) != 0) {
-				if ((style & SWT.NO_BACKGROUND) == 0) {
-					//gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_YELLOW));
-					gc.fillRectangle(r);
-				}
-			//}
+		// erase background
+		if ((style & SWT.NO_BACKGROUND) == 0) {
+			if ((state & CANVAS) != 0)
+				gc.fillRectangle(r);
 		}
 		
 		if (hooks (SWT.Paint)) {
 			Event event = new Event();
+			//event.count = xEvent.count;
+			//event.time = OS.XtLastTimestampProcessed (xDisplay);
 			event.gc = gc;
 			event.x = r.x;  event.y = r.y;
 			event.width = r.width;  event.height = r.height;
@@ -1424,16 +1381,16 @@ int processPaint (Object callData) {
 	if (!gc.isDisposed ())
 		gc.dispose ();
 
-	return 0;
+	return OS.noErr;
 }
 int processResize (Object callData) {
 	sendEvent (SWT.Resize);
 	// widget could be disposed at this point
-	return 0;
+	return OS.noErr;
 }
 int processSelection (Object callData) {
 	postEvent (SWT.Selection);
-	return 0;
+	return OS.noErr;
 }
 int processSetFocus (Object callData) {
 	/*
@@ -1487,7 +1444,7 @@ int processSetFocus (Object callData) {
 			}
 		}
 	}
-	return 0;
+	return OS.noErr;
 }
 void propagateChildren (boolean enabled) {
 	propagateWidget (enabled);
@@ -1875,15 +1832,10 @@ public void setBounds (int x, int y, int width, int height) {
 	Rect pbounds= new Rect();
 	internalGetControlBounds(topHandle, bounds);
 	OS.GetControlBounds(parent.handle, pbounds);
-	boolean sameOrigin;
-	if (MacUtil.USE_FRAME) {
-		sameOrigin = bounds.left == x && bounds.top == y;
-	} else {
-		sameOrigin = (bounds.left-pbounds.left) == x && (bounds.top-pbounds.top) == y;
-	}
+	boolean sameOrigin = bounds.left == x && bounds.top == y;
 	boolean sameExtent = (bounds.right-bounds.left) == width && (bounds.bottom-bounds.top) == height;
 	if (sameOrigin && sameExtent) return;
-	internalSetBounds(topHandle, bounds, pbounds.left+x, pbounds.top+y, width, height);
+	internalSetBounds(topHandle, x, y, width, height);
 	if (!sameOrigin) sendEvent (SWT.Move);
 	if (!sameExtent) sendEvent (SWT.Resize);
 }
@@ -2131,14 +2083,9 @@ public void setLocation (int x, int y) {
 	Rect pbounds= new Rect();
 	internalGetControlBounds(topHandle, bounds);
 	OS.GetControlBounds(parent.handle, pbounds);
-	boolean sameOrigin;
-	if (MacUtil.USE_FRAME) {
-		sameOrigin = (x == bounds.left) && (y == bounds.top);
-	} else {
-		sameOrigin = (x == (bounds.left-pbounds.left)) && (y == (bounds.top-pbounds.top));
-	}
+	boolean sameOrigin = (x == bounds.left) && (y == bounds.top);
 	if (sameOrigin) return;
-	internalSetBounds(topHandle, bounds, pbounds.left+x, pbounds.top+y, bounds.right-bounds.left, bounds.bottom-bounds.top);
+	internalSetBounds(topHandle, x, y, bounds.right-bounds.left, bounds.bottom-bounds.top);
 	sendEvent (SWT.Move);
 }
 /**
@@ -2278,7 +2225,7 @@ public void setSize (int width, int height) {
 	internalGetControlBounds(topHandle, bounds);
 	boolean sameExtent = (bounds.right-bounds.left) == width && (bounds.bottom-bounds.top) == height;
 	if (sameExtent) return;	
-	internalSetBounds(topHandle, bounds, bounds.left, bounds.top, width, height);
+	internalSetBounds(topHandle, bounds.left, bounds.top, width, height);
 	sendEvent (SWT.Resize);
 }
 /**
@@ -2736,48 +2683,24 @@ public void update () {
 	/**
 	 * Sets the bounds of the given control.
 	 */
-	private void internalSetBounds(int hndl, Rect oldBounds, int x, int y, int width, int height) {
+	private void internalSetBounds(int hndl, int x, int y, int width, int height) {
 		Rect newBounds= new Rect();
 		OS.SetRect(newBounds, (short)x, (short)y, (short)(x+width), (short)(y+height));
-		if (MacUtil.USE_FRAME) {
-			handleResize(hndl, newBounds);
-		} else {
-			int wHandle= OS.GetControlOwner(hndl);
-			OS.InvalWindowRect(wHandle, oldBounds);
-			
-			handleResize(hndl, newBounds);
-			OS.InvalWindowRect(wHandle, newBounds);
-		}
+		handleResize(hndl, newBounds);
 	}
 	
 	/**
 	 * subclasses can override if a resize must trigger some internal layout.
 	 */
 	void handleResize(int hndl, Rect bounds) {
-		if (MacUtil.USE_FRAME) {
-			CGRect rect = new CGRect();
-			rect.x = bounds.left;
-			rect.y = bounds.top;
-			rect.width = bounds.right -bounds.left;
-			rect.height = bounds.bottom - bounds.top;
-			OS.HIViewSetFrame(hndl, rect);
-		} else
-			OS.SetControlBounds(hndl, bounds);
+		OS.SetControlBounds(hndl, bounds);
 	}
 	
 	/**
 	 * subclasses can override.
 	 */
 	void internalGetControlBounds(int hndl, Rect bounds) {
-		if (MacUtil.USE_FRAME) {
-			CGRect rect= new CGRect();
-			OS.HIViewGetFrame(hndl, rect);
-			short right = (short)(rect.x + rect.width);
-			short bottom = (short)(rect.y + rect.height);
-			OS.SetRect(bounds, (short)rect.x, (short)rect.y, right, bottom);
-		} else {
-			OS.GetControlBounds(hndl, bounds);
-		}
+		OS.GetControlBounds(hndl, bounds);
 	}
 
 	/**

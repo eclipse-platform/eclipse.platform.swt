@@ -91,6 +91,15 @@ class MacEvent {
 	}
 
 	/**
+	 * In window coordinates.
+	 */
+	public org.eclipse.swt.internal.carbon.Point getWindowWhere(int window) {
+		org.eclipse.swt.internal.carbon.Point where= getWhere();
+		OS.QDGlobalToLocalPoint(OS.GetWindowPort(window), where);
+		return where;
+	}
+
+	/**
 	 * Returns the Mac modifiers for this event
 	 */
 	public int getModifiers() {

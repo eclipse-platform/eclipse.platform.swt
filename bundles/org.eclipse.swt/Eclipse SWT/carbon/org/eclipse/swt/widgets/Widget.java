@@ -503,13 +503,13 @@ void postEvent (int eventType, Event event) {
 	display.postEvent (event);
 }
 int processArm (Object callData) {
-	return 0;
+	return OS.noErr;
 }
 int processDispose (Object callData) {
-	return 0;
+	return OS.noErr;
 }
 int processDefaultSelection (Object callData) {
-	return 0;
+	return OS.noErr;
 }
 final int processEvent (int eventNumber) {
 	switch (eventNumber) {
@@ -519,7 +519,7 @@ final int processEvent (int eventNumber) {
 		System.out.println("Widget.processEvent(): unexpected event");
 		break;
 	}
-	return 0;
+	return OS.eventNotHandledErr;
 }
 final int processEvent (int eventNumber, MacControlEvent mcEvent) {
 	switch (eventNumber) {
@@ -529,7 +529,7 @@ final int processEvent (int eventNumber, MacControlEvent mcEvent) {
 		System.out.println("Widget.processEvent(MacMouseEvent): unexpected event");
 		break;
 	}
-	return 0;
+	return OS.eventNotHandledErr;
 }
 final int processEvent (int eventNumber, MacMouseEvent mmEvent) {
 	switch (eventNumber) {
@@ -543,7 +543,7 @@ final int processEvent (int eventNumber, MacMouseEvent mmEvent) {
 		System.out.println("Widget.processEvent(MacMouseEvent): unexpected event");
 		break;
 	}
-	return 0;
+	return OS.eventNotHandledErr;
 }
 final int processEvent (int eventNumber, MacEvent me) {
 	switch (eventNumber) {
@@ -560,61 +560,61 @@ final int processEvent (int eventNumber, MacEvent me) {
 		System.out.println("Widget.processEvent(Object): unexpected event");
 		break;
 	}
-	return 0;
+	return OS.eventNotHandledErr;
 }
 int processHelp (Object callData) {
-	return 0;
+	return OS.noErr;
 }
 int processHide (Object callData) {
-	return 0;
+	return OS.noErr;
 }
 int processKeyDown (Object callData) {
-	return 0;
+	return OS.noErr;
 }
 int processKeyUp (Object callData) {
-	return 0;
+	return OS.noErr;
 }
 int processModify (Object callData) {
-	return 0;
+	return OS.noErr;
 }
 int processMouseDown (MacMouseEvent mme) {
-	return 0;
+	return OS.noErr;
 }
 int processMouseEnter (MacMouseEvent mme) {
-	return 0;
+	return OS.noErr;
 }
 int processMouseExit (MacMouseEvent mme) {
-	return 0;
+	return OS.noErr;
 }
 int processMouseHover (MacMouseEvent mme) {
-	return 0;
+	return OS.noErr;
 }
 int processMouseMove (MacMouseEvent mme) {
-	return 0;
+	return OS.noErr;
 }
 int processMouseUp (MacMouseEvent mme) {
-	return 0;
+	return OS.noErr;
 }
 int processNonMaskable (Object callData) {
-	return 0;
+	return OS.noErr;
 }
 int processPaint (Object callData) {
-	return 0;
+	return OS.noErr;
 }
 int processResize (Object callData) {
-	return 0;
+	return OS.noErr;
 }
 int processSelection (Object callData) {
-	return 0;
+	return OS.noErr;
 }
 int processSetFocus (Object callData) {
-	return 0;
+	return OS.noErr;
 }
 int processShow (Object callData) {
-	return 0;
+	return OS.noErr;
 }
 int processVerify (Object callData) {
-	return 0;
+	return OS.noErr;
 }
 void propagateHandle (boolean enabled, int widgetHandle) {
 	/* AW
@@ -669,44 +669,17 @@ final void redrawHandle (int x, int y, int width, int height, int widgetHandle, 
 	}
 	OS.XClearArea (display, window, x, y, width, height, true);
 	*/
-	
-	if (false) {
-		int rgn= OS.NewRgn();
-		Rect rect = new Rect();
-		OS.SetRect(rect, (short)x, (short)y, (short)(x + width), (short)(y + height));
-		OS.RectRgn(rgn, rect);
-		OS.HIViewSetNeedsDisplayInRegion(widgetHandle, rgn, true);
-		OS.DisposeRgn(rgn);
-	} else {
-		Rect br= new Rect();
-		OS.GetControlBounds(widgetHandle, br);
-	    if (!OS.EmptyRect(br)) {
-	        x+= br.left;
-	        y+= br.top;
-	        if (width == 0)
-	        	width= br.right - br.left;
-	        else
-				width+= 1; // AW strange workaround for Caret
-	        if (height == 0)
-				height= br.bottom - br.top;
-	                
-	        int rgn= OS.NewRgn();
-	      	Rect rect = new Rect();
-			OS.SetRect(rect, (short)x, (short)y, (short)(x + width), (short)(y + height));
-	        OS.RectRgn(rgn, rect);
-	                
-	        int region= OS.NewRgn();
-	        if (MacUtil.getVisibleRegion(widgetHandle, region, all) == OS.noErr) {
-	        
-	            OS.SectRgn(region, rgn, region);
-	        
-	            OS.InvalWindowRgn(OS.GetControlOwner(widgetHandle), region);
-	        }
-	        
-	        OS.DisposeRgn(rgn);
-	        OS.DisposeRgn(region);
-	    }
+	Rect r= new Rect();
+	OS.SetRect(r, (short)x, (short)y, (short)(x + width), (short)(y + height));
+	if (width <= 0 || height <= 0) {
+		OS.HIViewSetNeedsDisplay(widgetHandle, true);
+		return;
+		//OS.GetControlBounds(widgetHandle, r.getData());
 	}
+	int rgn= OS.NewRgn();
+	OS.RectRgn(rgn, r);
+	OS.HIViewSetNeedsDisplayInRegion(widgetHandle, rgn, true);
+	OS.DisposeRgn(rgn);
 }
 void register () {
 	if (handle == 0) return;

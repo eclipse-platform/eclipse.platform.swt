@@ -7,11 +7,11 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class are selectable user interface
@@ -408,8 +408,6 @@ int processSelection (Object callData) {
     }
 
 	sendEvent (SWT.Selection, event);
-	// flush display
-	getDisplay().update();
 
 	return OS.noErr;
 }
@@ -562,6 +560,7 @@ public void setSelection (int selection) {
 	checkWidget();
 	if (selection < 0) return;
     OS.SetControl32BitValue(handle, selection);
+    redrawHandle(0, 0, 0, 0, handle, false);
 }
 /**
  * Sets the size of the receiver's thumb relative to the
@@ -640,22 +639,22 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 public void setVisible (boolean visible) {
 	checkWidget();
 	
-//	this.visible= visible;
-//	if (OS.IsControlVisible(handle) != visible) {
-//		OS.HIViewSetVisible(handle, visible);		
-//		parent.relayout123();
-//		sendEvent(visible ? SWT.Show : SWT.Hide);
-//	}
+	this.visible= visible;
+	if (OS.IsControlVisible(handle) != visible) {
+		OS.HIViewSetVisible(handle, visible);		
+		parent.relayout();
+		sendEvent(visible ? SWT.Show : SWT.Hide);
+	}
 	
-    if (this.visible != visible) {
-	    this.visible= visible;
-		int topHandle = topHandle ();
-		if (OS.IsControlVisible(topHandle) != visible) {
-			OS.HIViewSetVisible(topHandle, visible);
-			parent.relayout123();
-			sendEvent (visible ? SWT.Show : SWT.Hide);
-		}
-    }
+//    if (this.visible != visible) {
+//	    this.visible= visible;
+//		int topHandle = topHandle ();
+//		if (OS.IsControlVisible(topHandle) != visible) {
+//			OS.HIViewSetVisible(topHandle, visible);
+//			parent.relayout123();
+//			sendEvent (visible ? SWT.Show : SWT.Hide);
+//		}
+//    }
 }
 
 void internalSetBounds(Rect bounds) {

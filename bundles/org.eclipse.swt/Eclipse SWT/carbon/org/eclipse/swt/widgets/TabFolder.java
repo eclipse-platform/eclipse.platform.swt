@@ -7,12 +7,11 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
  
-import org.eclipse.swt.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
-import org.eclipse.swt.internal.carbon.MacUtil;
 
 /**
  * Instances of this class implement the notebook user interface
@@ -40,7 +39,8 @@ import org.eclipse.swt.internal.carbon.MacUtil;
 public class TabFolder extends Composite {
 	
 	private static final int TAB_HEIGHT= 32;
-	private static final int MARGIN= 6;
+	private static final int TOP_MARGIN= 1;
+	private static final int MARGIN= 4;
 	
 	TabItem [] items;
 	private int oldValue;
@@ -170,7 +170,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	int newHeight = rect.bottom - rect.top;
 	return new Rectangle (rect.left, rect.top, newWidth, newHeight);
 	*/
-	return new Rectangle (x-MARGIN, y-TAB_HEIGHT, width+(2*MARGIN), height+TAB_HEIGHT+MARGIN);
+	return new Rectangle (x-MARGIN, y-TOP_MARGIN-TAB_HEIGHT, width+(2*MARGIN), height+TOP_MARGIN+TAB_HEIGHT+MARGIN);
 }
 
 void createItem (TabItem item, int index) {
@@ -208,9 +208,10 @@ void createItem (TabItem item, int index) {
 void createHandle (int index) {
 	state |= HANDLE;
 	state &= ~CANVAS;
-		
-	handle= MacUtil.newControl(parent.handle, OS.kControlTabSmallProc);
+	handle= OS.NewControl(0, new Rect(), null, false, (short)0, (short)0, (short)0, (short)OS.kControlTabSmallProc, 0);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	MacUtil.addControl(handle, parent.handle);
+	OS.HIViewSetVisible(handle, true);
 }
 
 void createWidget (int index) {
@@ -281,13 +282,9 @@ public Rectangle getClientArea () {
 	return new Rectangle (rect.left, rect.top, width, height);
 	*/
 	
-	Rect outer= new Rect();
-	OS.GetControlBounds(handle, outer);
-
 	Rect inner= new Rect();
 	OS.GetControlData(handle, (short)OS.kControlEntireControl, OS.kControlTabContentRectTag, Rect.sizeof, inner, null);
-	
-	return new Rectangle(inner.left-outer.left, inner.top-outer.top, inner.right-inner.left, inner.bottom-inner.top);
+	return new Rectangle(inner.left, inner.top, inner.right-inner.left, inner.bottom-inner.top);
 }
 
 /**
@@ -597,39 +594,42 @@ boolean traversePage (boolean next) {
 
 int processSelection (Object callData) {
 	MacControlEvent macEvent= (MacControlEvent) callData;
-	if (!macEvent.isMouseDown())
-		handleSelectionChange(macEvent.getPartCode()-1);
-	else
-		oldValue= OS.GetControl32BitValue(handle)-1;
-	return 0;
+	oldValue= OS.GetControl32BitValue(handle)-1;
+	handleSelectionChange(macEvent.getPartCode()-1);
+	return OS.noErr;
 }
 
 private void handleSelectionChange(int newValue)  {
-
-	TabItem item = null;
-	int index= oldValue;
-
-	if (index != -1) item = items [index];
-	if (item != null) {
-		Control control = item.control;
-		if (control != null && !control.isDisposed ()) {
-			control.setVisible (false);
-		}
-	}
-		
-	index= newValue;
-	if (index != -1) item = items [index];
-	if (item != null) {
-		Control control = item.control;
-		if (control != null && !control.isDisposed ()) {
-			control.setBounds (getClientArea ());
-			control.setVisible (true);
-		}
-	}
 	
-	Event event = new Event ();
-	event.item = item;
-	postEvent (SWT.Selection, event);
+	if (false)
+		setSelection (newValue, true);
+	
+	else {
+		TabItem item = null;
+		int index= oldValue;
+	
+		if (index != -1) item = items [index];
+		if (item != null) {
+			Control control = item.control;
+			if (control != null && !control.isDisposed ()) {
+				control.setVisible (false);
+			}
+		}
+			
+		index= newValue;
+		if (index != -1) item = items [index];
+		if (item != null) {
+			Control control = item.control;
+			if (control != null && !control.isDisposed ()) {
+				control.setBounds (getClientArea ());
+				control.setVisible (true);
+			}
+		}
+		
+		Event event = new Event ();
+		event.item = item;
+		postEvent (SWT.Selection, event);
+	}
 }
 
 private void updateCarbon(int startIndex) {
@@ -657,9 +657,17 @@ void setTabImage(int index, Image image) {
 	/* AW: does not work yet...
 	int icon= Image.carbon_createCIcon(image);
 	if (icon != 0)
-		if (OS.setTabIcon(handle, index+1, icon) != OS.kNoErr)
+		if (OS.setTabIcon(handle, index+1, icon) != OS.noErr)
 			System.err.println("TabFolder.setTabImage: error");
 	*/
+}
+
+void internalGetControlBounds(int hndl, Rect bounds) {
+	super.internalGetControlBounds(hndl, bounds);
+	bounds.left += -MARGIN;
+	bounds.top += -TOP_MARGIN;
+	bounds.right -= -MARGIN;
+	bounds.bottom -= -MARGIN;
 }
 
 /**
@@ -667,9 +675,10 @@ void setTabImage(int index, Image image) {
  * x and y are relative to window!
  */
 void handleResize(int hndl, Rect bounds) {
-	
+
 	bounds.left+= MARGIN;
 	bounds.right-= MARGIN;
+	bounds.top+= TOP_MARGIN;
 	bounds.bottom-= MARGIN;
 	super.handleResize(hndl, bounds);
 	
