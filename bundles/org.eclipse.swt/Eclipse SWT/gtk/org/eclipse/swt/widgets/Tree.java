@@ -879,6 +879,7 @@ public void setSelection (TreeItem [] items) {
 	}
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 	if (index != length) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (items.length != 0) showItem (items [0]);
 }
 
 /**
