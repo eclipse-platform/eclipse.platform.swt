@@ -1009,6 +1009,7 @@ public static final native void XUndefineCursor (int display, int window);
 public static final native int XUngrabPointer (int display, int time);
 public static final native void XUnionRectWithRegion (XRectangle rectangle, int src_region, int dest_region_return);
 public static final native void XUnionRegion (int sra, int srb, int dr_return);
+public static final native int XWarpPointer (int display, int sourceWindow, int destWindow, int sourceX, int sourceY, int sourceWidth, int sourceHeight, int destX, int destY);
 public static final native int XWhitePixel (int display, int screenNum);
 public static final native void XWithdrawWindow (int display, int window, int screen);
 public static final native void XmAddWMProtocolCallback (int shell, int protocol, int callback, int closure);
