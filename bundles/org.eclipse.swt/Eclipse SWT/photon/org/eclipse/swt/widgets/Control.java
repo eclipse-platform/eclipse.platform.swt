@@ -672,6 +672,8 @@ void realizeWidget() {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	if (toolTipHandle != 0) destroyToolTip (toolTipHandle);
+	toolTipHandle = 0;
 	if (menu != null && !menu.isDisposed ()) {
 		menu.dispose ();
 	}

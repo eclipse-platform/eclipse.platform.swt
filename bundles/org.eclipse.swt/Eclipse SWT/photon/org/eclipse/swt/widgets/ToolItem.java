@@ -296,6 +296,8 @@ void releaseHandle () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	if (toolTipHandle != 0) destroyToolTip (toolTipHandle);
+	toolTipHandle = 0;
 	parent = null;
 	control = null;
 	hotImage = null;
