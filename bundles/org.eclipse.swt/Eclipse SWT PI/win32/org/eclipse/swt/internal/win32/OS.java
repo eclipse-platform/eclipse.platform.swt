@@ -484,6 +484,7 @@ public class OS {
 	public static final int LGRPID_HEBREW = 0xc;
 	public static final int LGRPID_INSTALLED = 1;
 	public static final int LCID_SUPPORTED = 0x2;
+	public static final int LOAD_LIBRARY_AS_DATAFILE = 0x2;
 	public static final int LOCALE_IDEFAULTANSICODEPAGE = 0x1004;
 	public static final int LOCALE_SISO3166CTRYNAME = 0x5a;
 	public static final int LOCALE_SISO639LANGNAME = 0x59;
@@ -1426,6 +1427,24 @@ public static final short GetFileTitle (TCHAR lpszFile, TCHAR lpszTitle, short c
 	return GetFileTitleA (lpszFile1, lpszTitle1, cbBuf);
 }
 
+public static final int GetFileVersionInfo (TCHAR lptstrFileName, int dwHandle, int dwLen, int lpData) {
+	if (IsUnicode) {
+		char [] lptstrFileName1 = lptstrFileName == null ? null : lptstrFileName.chars;
+		return GetFileVersionInfoW (lptstrFileName1, dwHandle, dwLen, lpData);
+	}
+	byte [] lptstrFileName1 = lptstrFileName == null ? null : lptstrFileName.bytes;
+	return GetFileVersionInfoA (lptstrFileName1, dwHandle, dwLen, lpData);
+}
+
+public static final int GetFileVersionInfoSize (TCHAR lptstrFileName, int [] lpdwHandle) {
+	if (IsUnicode) {
+		char [] lptstrFileName1 = lptstrFileName == null ? null : lptstrFileName.chars;
+		return GetFileVersionInfoSizeW (lptstrFileName1, lpdwHandle);
+	}
+	byte [] lptstrFileName1 = lptstrFileName == null ? null : lptstrFileName.bytes;
+	return GetFileVersionInfoSizeA (lptstrFileName1, lpdwHandle);
+}
+
 public static final int GetLocaleInfo (int Locale, int LCType, TCHAR lpLCData, int cchData) {
 	if (IsUnicode) {
 		char [] lpLCData1 = lpLCData == null ? null : lpLCData.chars;
@@ -1606,6 +1625,24 @@ public static final int LoadLibrary (TCHAR lpLibFileName) {
 	}
 	byte [] lpLibFileName1 = lpLibFileName == null ? null : lpLibFileName.bytes;
 	return LoadLibraryA (lpLibFileName1);
+}
+
+public static final int LoadLibraryEx (TCHAR lpFileName, int hFile, int dwFlags) {
+	if (IsUnicode) {
+		char [] lpFileName1 = lpFileName == null ? null : lpFileName.chars;
+		return LoadLibraryExW (lpFileName1, hFile, dwFlags);
+	}
+	byte [] lpFileName1 = lpFileName == null ? null : lpFileName.bytes;
+	return LoadLibraryExA (lpFileName1, hFile, dwFlags);
+}
+
+public static final int LoadString (int hInstance, int uID, TCHAR lpBuffer, int nBufferMax) {
+	if (IsUnicode) {
+		char [] lpBuffer1 = lpBuffer == null ? null : lpBuffer.chars;
+		return LoadStringW (hInstance, uID, lpBuffer1, nBufferMax);
+	}
+	byte [] lpBuffer1 = lpBuffer == null ? null : lpBuffer.bytes;
+	return LoadStringA (hInstance, uID, lpBuffer1, nBufferMax);
 }
 
 public static final int MapVirtualKey (int uCode, int uMapType) {
@@ -1917,6 +1954,16 @@ public static final boolean UnregisterClass (TCHAR lpClassName, int hInstance) {
 	return UnregisterClassA (lpClassName1, hInstance);
 }
 
+public static final boolean VerQueryValue (int pBlock, TCHAR lpSubBlock, int[] lplpBuffer, int[] puLen) {
+	if (IsUnicode) {
+		char [] lpSubBlock1 = lpSubBlock == null ? null : lpSubBlock.chars;
+		return VerQueryValueW (pBlock, lpSubBlock1, lplpBuffer, puLen);
+	}
+	byte [] lpSubBlock1 = lpSubBlock == null ? null : lpSubBlock.bytes;
+	return VerQueryValueA (pBlock, lpSubBlock1, lplpBuffer, puLen);
+}
+
+
 public static final short VkKeyScan (short ch) {
 	if (IsUnicode) return VkKeyScanW (ch);
 	return VkKeyScanA (ch);
@@ -2068,6 +2115,10 @@ public static final native int GetDlgItem (int hDlg, int nIDDlgItem);
 public static final native int GetDoubleClickTime ();
 public static final native short GetFileTitleW (char [] lpszFile, char [] lpszTitle, short cbBuf);
 public static final native short GetFileTitleA (byte [] lpszFile, byte [] lpszTitle, short cbBuf);
+public static final native int GetFileVersionInfoA (byte [] lptstrFileName, int dwHandle, int dwLen, int lpData);
+public static final native int GetFileVersionInfoW (char [] lptstrFileName, int dwHandle, int dwLen, int lpData);
+public static final native int GetFileVersionInfoSizeA (byte [] lptstrFileName, int [] lpdwHandle);
+public static final native int GetFileVersionInfoSizeW (char [] lptstrFileName, int [] lpdwHandle);
 public static final native int GetFocus ();
 public static final native int GetFontLanguageInfo(int hdc);
 public static final native boolean GetIconInfo (int hIcon, ICONINFO piconinfo);
@@ -2211,6 +2262,10 @@ public static final native int LoadImageW (int hinst, char [] lpszName, int uTyp
 public static final native int LoadImageA (int hinst, byte [] lpszName, int uType, int cxDesired, int cyDesired, int fuLoad);
 public static final native int LoadLibraryW (char [] lpLibFileName);
 public static final native int LoadLibraryA (byte [] lpLibFileName);
+public static final native int LoadLibraryExW (char [] lpFileName, int hFile, int dwFlags);
+public static final native int LoadLibraryExA (byte [] lpFileName, int hFile, int dwFlags);
+public static final native int LoadStringW (int hInstance, int uID, char [] lpBuffer, int nBufferMax);
+public static final native int LoadStringA (int hInstance, int uID, byte [] lpBuffer, int nBufferMax);
 public static final native int MapVirtualKeyW (int uCode, int uMapType);
 public static final native int MapVirtualKeyA (int uCode, int uMapType);
 public static final native int MapWindowPoints (int hWndFrom, int hWndTo, POINT lpPoints, int cPoints);
@@ -2421,6 +2476,9 @@ public static final native boolean UnregisterClassW (char [] lpClassName, int hI
 public static final native boolean UnregisterClassA (byte [] lpClassName, int hInstance);
 public static final native boolean UpdateWindow (int hWnd);
 public static final native boolean ValidateRect (int hWnd, RECT lpRect);
+public static final native boolean VerQueryValueW (int pBlock, char [] lpSubBlock, int [] lplpBuffer, int [] puLen);
+public static final native boolean VerQueryValueA (int pBlock, byte [] lpSubBlock, int [] lplpBuffer, int [] puLen);
+
 public static final native short VkKeyScanW (short ch);
 public static final native short VkKeyScanA (short ch);
 public static final native int VtblCall (int ppVtbl, int fnNumber, int arg0);
