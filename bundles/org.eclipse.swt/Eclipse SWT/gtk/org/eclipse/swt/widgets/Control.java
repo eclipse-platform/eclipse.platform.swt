@@ -1329,25 +1329,15 @@ GdkColor getBackgroundColor () {
 
 GdkColor getBgColor () {
 	int fontHandle = fontHandle ();
-	GtkStyle style = new GtkStyle ();
-	OS.memmove (style, OS.gtk_widget_get_style (fontHandle));
 	GdkColor color = new GdkColor ();
-	color.pixel = style.bg0_pixel;
-	color.red = style.bg0_red;
-	color.green = style.bg0_green;
-	color.blue = style.bg0_blue;
+	OS.gtk_style_get_bg (OS.gtk_widget_get_style (fontHandle), 0, color);
 	return color;
 }
 
 GdkColor getBaseColor () {
 	int fontHandle = fontHandle ();
-	GtkStyle style = new GtkStyle ();
-	OS.memmove (style, OS.gtk_widget_get_style (fontHandle));
 	GdkColor color = new GdkColor ();
-	color.pixel = style.base0_pixel;
-	color.red = style.base0_red;
-	color.green = style.base0_green;
-	color.blue = style.base0_blue;
+	OS.gtk_style_get_base (OS.gtk_widget_get_style (fontHandle), 0, color);
 	return color;
 }
 
@@ -1404,9 +1394,7 @@ public Font getFont () {
 	
 int getFontDescription () {
 	int fontHandle = fontHandle ();
-	GtkStyle style = new GtkStyle ();
-	OS.memmove(style, OS.gtk_widget_get_style (fontHandle));
-	return style.font_desc;
+	return OS.gtk_style_get_font_desc (OS.gtk_widget_get_style (fontHandle));
 }
 
 /**
@@ -1430,13 +1418,8 @@ GdkColor getForegroundColor () {
 
 GdkColor getFgColor () {
 	int fontHandle = fontHandle ();
-	GtkStyle style = new GtkStyle ();
-	OS.memmove(style, OS.gtk_widget_get_style (fontHandle));
 	GdkColor color = new GdkColor ();
-	color.pixel = style.fg0_pixel;
-	color.red = style.fg0_red;
-	color.green = style.fg0_green;
-	color.blue = style.fg0_blue;
+	OS.gtk_style_get_fg (OS.gtk_widget_get_style (fontHandle), 0, color);
 	return color;
 }
 
@@ -1446,13 +1429,8 @@ Point getIMCaretPos () {
 
 GdkColor getTextColor () {
 	int fontHandle = fontHandle ();
-	GtkStyle style = new GtkStyle ();
-	OS.memmove(style, OS.gtk_widget_get_style (fontHandle));
 	GdkColor color = new GdkColor ();
-	color.pixel = style.text0_pixel;
-	color.red = style.text0_red;
-	color.green = style.text0_green;
-	color.blue = style.text0_blue;
+	OS.gtk_style_get_text (OS.gtk_widget_get_style (fontHandle), 0, color);
 	return color;
 }
 
@@ -1882,22 +1860,10 @@ public int internal_new_GC (GCData data) {
 			data.style |= style & (mask | SWT.MIRRORED);
 		}
 		int fontHandle = fontHandle ();
-		GtkStyle style = new GtkStyle ();
-		OS.memmove(style, OS.gtk_widget_get_style (fontHandle));
-		GdkColor foreground = new GdkColor ();
-		foreground.pixel = style.fg0_pixel;
-		foreground.red = style.fg0_red;
-		foreground.green = style.fg0_green;
-		foreground.blue = style.fg0_blue;
-		GdkColor background = new GdkColor ();
-		background.pixel = style.bg0_pixel;
-		background.red = style.bg0_red;
-		background.green = style.bg0_green;
-		background.blue = style.bg0_blue;
 		data.drawable = window;
 		data.device = display;
-		data.background = background;
-		data.foreground = foreground;
+		data.background = getBackgroundColor ();
+		data.foreground = getForegroundColor ();
 		data.font = font != null ? font.handle : defaultFont (); 
 	}	
 	return gdkGC;

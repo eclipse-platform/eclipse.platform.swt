@@ -310,6 +310,112 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1rc_1style_1set_1ythickness)
 }
 #endif
 
+#ifndef NO_gtk_1style_1get_1base
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1style_1get_1base)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	NATIVE_ENTER(env, that, "gtk_1style_1get_1base\n")
+	if (arg2) setGdkColorFields(env, arg2, &((GtkStyle *)arg0)->base[arg1]);
+	NATIVE_EXIT(env, that, "gtk_1style_1get_1base\n")
+}
+#endif
+
+#ifndef NO_gtk_1style_1get_1bg
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1style_1get_1bg)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	NATIVE_ENTER(env, that, "gtk_1style_1get_1bg\n")
+	if (arg2) setGdkColorFields(env, arg2, &((GtkStyle *)arg0)->bg[arg1]);
+	NATIVE_EXIT(env, that, "gtk_1style_1get_1bg\n")
+}
+#endif
+
+#ifndef NO_gtk_1style_1get_1black
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1style_1get_1black)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	NATIVE_ENTER(env, that, "gtk_1style_1get_1black\n")
+	if (arg1) setGdkColorFields(env, arg1, &((GtkStyle *)arg0)->black);
+	NATIVE_EXIT(env, that, "gtk_1style_1get_1black\n")
+}
+#endif
+
+#ifndef NO_gtk_1style_1get_1dark
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1style_1get_1dark)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	NATIVE_ENTER(env, that, "gtk_1style_1get_1dark\n")
+	if (arg2) setGdkColorFields(env, arg2, &((GtkStyle *)arg0)->dark[arg1]);
+	NATIVE_EXIT(env, that, "gtk_1style_1get_1dark\n")
+}
+#endif
+
+#ifndef NO_gtk_1style_1get_1fg
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1style_1get_1fg)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	NATIVE_ENTER(env, that, "gtk_1style_1get_1fg\n")
+	if (arg2) setGdkColorFields(env, arg2, &((GtkStyle *)arg0)->fg[arg1]);
+	NATIVE_EXIT(env, that, "gtk_1style_1get_1fg\n")
+}
+#endif
+
+#ifndef NO_gtk_1style_1get_1font_1desc
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1style_1get_1font_1desc)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "gtk_1style_1get_1font_1desc\n")
+	rc = (jint)((GtkStyle *)arg0)->font_desc;
+	NATIVE_EXIT(env, that, "gtk_1style_1get_1font_1desc\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1style_1get_1light
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1style_1get_1light)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	NATIVE_ENTER(env, that, "gtk_1style_1get_1light\n")
+	if (arg2) setGdkColorFields(env, arg2, &((GtkStyle *)arg0)->light[arg1]);
+	NATIVE_EXIT(env, that, "gtk_1style_1get_1light\n")
+}
+#endif
+
+#ifndef NO_gtk_1style_1get_1text
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1style_1get_1text)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	NATIVE_ENTER(env, that, "gtk_1style_1get_1text\n")
+	if (arg2) setGdkColorFields(env, arg2, &((GtkStyle *)arg0)->text[arg1]);
+	NATIVE_EXIT(env, that, "gtk_1style_1get_1text\n")
+}
+#endif
+
+#ifndef NO_gtk_1style_1get_1xthickness
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1style_1get_1xthickness)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "gtk_1style_1get_1xthickness\n")
+	rc = (jint)((GtkStyle *)arg0)->xthickness;
+	NATIVE_EXIT(env, that, "gtk_1style_1get_1xthickness\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1style_1get_1ythickness
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1style_1get_1ythickness)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "gtk_1style_1get_1ythickness\n")
+	rc = (jint)((GtkStyle *)arg0)->ythickness;
+	NATIVE_EXIT(env, that, "gtk_1style_1get_1ythickness\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1tree_1view_1column_1cell_1get_1position
 JNIEXPORT jboolean JNICALL OS_NATIVE(gtk_1tree_1view_1column_1cell_1get_1position)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3)
@@ -360,16 +466,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkFileS
 }
 #endif
 
-#ifndef NO_memmove__ILorg_eclipse_swt_internal_gtk_GtkStyle_2
-JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_GtkStyle_2)
-	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
-{
-	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_gtk_GtkStyle_2\n")
-	if (arg1) getGtkStyleFields(env, arg1, (GtkStyle *)arg0);
-	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_gtk_GtkStyle_2\n")
-}
-#endif
-
 #ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_GtkColorSelectionDialog_2I
 JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkColorSelectionDialog_2I)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1)
@@ -377,16 +473,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkColor
 	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_GtkColorSelectionDialog_2I\n")
 	if (arg0) setGtkColorSelectionDialogFields(env, arg0, (GtkColorSelectionDialog *)arg1);
 	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_GtkColorSelectionDialog_2I\n")
-}
-#endif
-
-#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_GtkStyle_2I
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkStyle_2I)
-	(JNIEnv *env, jclass that, jobject arg0, jint arg1)
-{
-	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_GtkStyle_2I\n")
-	if (arg0) setGtkStyleFields(env, arg0, (GtkStyle *)arg1);
-	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_GtkStyle_2I\n")
 }
 #endif
 
@@ -409,7 +495,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkAdjus
 	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_GtkAdjustment_2I\n")
 }
 #endif
-
 
 #ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_GtkFixed_2I
 JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkFixed_2I)

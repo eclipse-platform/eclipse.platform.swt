@@ -293,10 +293,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int layout = OS.gtk_entry_get_layout (entryHandle);
 	OS.pango_layout_get_size (layout, w, h);
 	int xborder = INNER_BORDER, yborder = INNER_BORDER;
-	GtkStyle style = new GtkStyle (); 
-	OS.memmove (style, OS.gtk_widget_get_style (entryHandle));
-	xborder += style.xthickness;
-	yborder += style.ythickness;
+	int style = OS.gtk_widget_get_style (entryHandle);
+	xborder += OS.gtk_style_get_xthickness (style);
+	yborder += OS.gtk_style_get_ythickness (style);
 	int [] property = new int [1];
 	OS.gtk_widget_style_get (entryHandle, OS.interior_focus, property, 0);
 	if (property [0] != 0) {

@@ -1198,151 +1198,89 @@ void initializeSystemResources () {
 	OS.gtk_widget_realize (tooltipShellHandle);
 
 	GdkColor gdkColor;
-	GtkStyle style = new GtkStyle();
-	OS.memmove (style, OS.gtk_widget_get_style (shellHandle));	
-	GtkStyle tooltipStyle = new GtkStyle();
-	OS.memmove (tooltipStyle, OS.gtk_widget_get_style (tooltipShellHandle));
+	int style = OS.gtk_widget_get_style (shellHandle);	
+	int tooltipStyle = OS.gtk_widget_get_style (tooltipShellHandle);
 	
-	defaultFont = OS.pango_font_description_copy (style.font_desc);
+	defaultFont = OS.pango_font_description_copy (OS.gtk_style_get_font_desc (style));
 
 	gdkColor = new GdkColor();
-	gdkColor.pixel = style.black_pixel;
-	gdkColor.red   = style.black_red;
-	gdkColor.green = style.black_green;
-	gdkColor.blue  = style.black_blue;
+	OS.gtk_style_get_black (style, gdkColor);
 	COLOR_WIDGET_DARK_SHADOW = gdkColor;
 	
 	gdkColor = new GdkColor();
-	gdkColor.pixel = style.dark0_pixel;
-	gdkColor.red   = style.dark0_red;
-	gdkColor.green = style.dark0_green;
-	gdkColor.blue  = style.dark0_blue;
+	OS.gtk_style_get_dark (style, 0, gdkColor);
 	COLOR_WIDGET_NORMAL_SHADOW = gdkColor;
 
 	gdkColor = new GdkColor();
-	gdkColor.pixel = style.bg0_pixel;
-	gdkColor.red   = style.bg0_red;
-	gdkColor.green = style.bg0_green;
-	gdkColor.blue  = style.bg0_blue;
+	OS.gtk_style_get_bg (style, 0, gdkColor);
 	COLOR_WIDGET_LIGHT_SHADOW = gdkColor;
 
 	gdkColor = new GdkColor();
-	gdkColor.pixel = style.light0_pixel;
-	gdkColor.red   = style.light0_red;
-	gdkColor.green = style.light0_green;
-	gdkColor.blue  = style.light0_blue;
+	OS.gtk_style_get_light (style, 0, gdkColor);
 	COLOR_WIDGET_HIGHLIGHT_SHADOW = gdkColor;
 
 	gdkColor = new GdkColor();
-	gdkColor.pixel = style.fg0_pixel;
-	gdkColor.red   = style.fg0_red;
-	gdkColor.green = style.fg0_green;
-	gdkColor.blue  = style.fg0_blue;
+	OS.gtk_style_get_fg (style, 0, gdkColor);
 	COLOR_WIDGET_FOREGROUND = gdkColor;
 
 	gdkColor = new GdkColor();
-	gdkColor.pixel = style.bg0_pixel;
-	gdkColor.red   = style.bg0_red;
-	gdkColor.green = style.bg0_green;
-	gdkColor.blue  = style.bg0_blue;
+	OS.gtk_style_get_bg (style, 0, gdkColor);
 	COLOR_WIDGET_BACKGROUND = gdkColor;
 
 	gdkColor = new GdkColor();
-	gdkColor.pixel = style.text0_pixel;
-	gdkColor.red   = style.text0_red;
-	gdkColor.green = style.text0_green;
-	gdkColor.blue  = style.text0_blue;
+	OS.gtk_style_get_text (style, 0, gdkColor);
 	COLOR_TEXT_FOREGROUND = gdkColor;
 
 	gdkColor = new GdkColor();
-	gdkColor.pixel = style.base0_pixel;
-	gdkColor.red   = style.base0_red;
-	gdkColor.green = style.base0_green;
-	gdkColor.blue  = style.base0_blue;
+	OS.gtk_style_get_base (style, 0, gdkColor);
 	COLOR_TEXT_BACKGROUND = gdkColor;
 
 	gdkColor = new GdkColor();
-	gdkColor.pixel = style.text0_pixel;
-	gdkColor.red   = style.text0_red;
-	gdkColor.green = style.text0_green;
-	gdkColor.blue  = style.text0_blue;
+	OS.gtk_style_get_text (style, 0, gdkColor);
 	COLOR_LIST_FOREGROUND = gdkColor;
 
 	gdkColor = new GdkColor();
-	gdkColor.pixel = style.base0_pixel;
-	gdkColor.red   = style.base0_red;
-	gdkColor.green = style.base0_green;
-	gdkColor.blue  = style.base0_blue;
+	OS.gtk_style_get_base (style, 0, gdkColor);
 	COLOR_LIST_BACKGROUND = gdkColor;
 
 	gdkColor = new GdkColor();
-	gdkColor.pixel = style.text3_pixel;
-	gdkColor.red   = style.text3_red;
-	gdkColor.green = style.text3_green;
-	gdkColor.blue  = style.text3_blue;
+	OS.gtk_style_get_text (style, 3, gdkColor);
 	COLOR_LIST_SELECTION_TEXT = gdkColor;
 
 	gdkColor = new GdkColor();
-	gdkColor.pixel = style.base3_pixel;
-	gdkColor.red   = style.base3_red;
-	gdkColor.green = style.base3_green;
-	gdkColor.blue  = style.base3_blue;
+	OS.gtk_style_get_base (style, 3, gdkColor);
 	COLOR_LIST_SELECTION = gdkColor;
 
 	gdkColor = new GdkColor();
-	gdkColor.pixel = tooltipStyle.fg0_pixel;
-	gdkColor.red   = tooltipStyle.fg0_red;
-	gdkColor.green = tooltipStyle.fg0_green;
-	gdkColor.blue  = tooltipStyle.fg0_blue;
+	OS.gtk_style_get_fg (tooltipStyle, 0, gdkColor);
 	COLOR_INFO_FOREGROUND = gdkColor;
 
 	gdkColor = new GdkColor();
-	gdkColor.pixel = tooltipStyle.bg0_pixel;
-	gdkColor.red   = tooltipStyle.bg0_red;
-	gdkColor.green = tooltipStyle.bg0_green;
-	gdkColor.blue  = tooltipStyle.bg0_blue;
+	OS.gtk_style_get_bg (tooltipStyle, 0, gdkColor);
 	COLOR_INFO_BACKGROUND = gdkColor;
 	
 	gdkColor = new GdkColor();
-	gdkColor.pixel = style.bg3_pixel;
-	gdkColor.red   = style.bg3_red;
-	gdkColor.green = style.bg3_green;
-	gdkColor.blue  = style.bg3_blue;
+	OS.gtk_style_get_bg (style, 3, gdkColor);
 	COLOR_TITLE_BACKGROUND = gdkColor;
 	
 	gdkColor = new GdkColor();
-	gdkColor.pixel = style.fg3_pixel;
-	gdkColor.red   = style.fg3_red;
-	gdkColor.green = style.fg3_green;
-	gdkColor.blue  = style.fg3_blue;
+	OS.gtk_style_get_fg (style, 3, gdkColor);
 	COLOR_TITLE_FOREGROUND = gdkColor;
 	
 	gdkColor = new GdkColor();
-	gdkColor.pixel = style.light3_pixel;
-	gdkColor.red   = style.light3_red;
-	gdkColor.green = style.light3_green;
-	gdkColor.blue  = style.light3_blue;
+	OS.gtk_style_get_light (style, 3, gdkColor);
 	COLOR_TITLE_BACKGROUND_GRADIENT = gdkColor;
 	
 	gdkColor = new GdkColor();
-	gdkColor.pixel = style.bg4_pixel;
-	gdkColor.red   = style.bg4_red;
-	gdkColor.green = style.bg4_green;
-	gdkColor.blue  = style.bg4_blue;
+	OS.gtk_style_get_bg (style, 4, gdkColor);
 	COLOR_TITLE_INACTIVE_BACKGROUND = gdkColor;
 	
 	gdkColor = new GdkColor();
-	gdkColor.pixel = style.fg4_pixel;
-	gdkColor.red   = style.fg4_red;
-	gdkColor.green = style.fg4_green;
-	gdkColor.blue  = style.fg4_blue;
+	OS.gtk_style_get_fg (style, 4, gdkColor);
 	COLOR_TITLE_INACTIVE_FOREGROUND = gdkColor;
 	
 	gdkColor = new GdkColor();
-	gdkColor.pixel = style.light4_pixel;
-	gdkColor.red   = style.light4_red;
-	gdkColor.green = style.light4_green;
-	gdkColor.blue  = style.light4_blue;
+	OS.gtk_style_get_light (style, 4, gdkColor);
 	COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT = gdkColor;
 
 	OS.gtk_widget_destroy (tooltipShellHandle);

@@ -278,14 +278,9 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
  */
 public void drawFocus(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	GtkStyle style = new GtkStyle();
 	//CHECK - default style might not be attached to any window
-	OS.memmove(style, OS.gtk_widget_get_default_style());
 	GdkColor color = new GdkColor();
-	color.pixel = style.fg0_pixel;
-	color.red = style.fg0_red;
-	color.green = style.fg0_green;
-	color.blue = style.fg0_blue;
+	OS.gtk_style_get_fg (OS.gtk_widget_get_default_style(), 0, color);
 	GdkGCValues values = new GdkGCValues();
 	OS.gdk_gc_get_values(handle, values);
 	OS.gdk_gc_set_foreground(handle, color);

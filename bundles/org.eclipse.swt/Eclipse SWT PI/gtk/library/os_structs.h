@@ -183,14 +183,6 @@ void setGtkSelectionDataFields(JNIEnv *env, jobject lpObject, GtkSelectionData *
 #define setGtkSelectionDataFields(a,b,c)
 #endif
 
-#ifndef NO_GtkStyle
-GtkStyle *getGtkStyleFields(JNIEnv *env, jobject lpObject, GtkStyle *lpStruct);
-void setGtkStyleFields(JNIEnv *env, jobject lpObject, GtkStyle *lpStruct);
-#else
-#define getGtkStyleFields(a,b,c) NULL
-#define setGtkStyleFields(a,b,c)
-#endif
-
 #ifndef NO_GtkTargetEntry
 GtkTargetEntry *getGtkTargetEntryFields(JNIEnv *env, jobject lpObject, GtkTargetEntry *lpStruct);
 void setGtkTargetEntryFields(JNIEnv *env, jobject lpObject, GtkTargetEntry *lpStruct);

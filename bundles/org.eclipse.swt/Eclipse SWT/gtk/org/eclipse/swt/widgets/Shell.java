@@ -486,13 +486,8 @@ void createHandle (int index) {
 	}
 	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.RESIZE)) == 0) {
 		OS.gtk_container_set_border_width (shellHandle, 1);
-		GtkStyle style = new GtkStyle ();
-		OS.memmove (style, OS.gtk_widget_get_style (shellHandle));
 		GdkColor color = new GdkColor ();
-		color.red = style.black_red;
-		color.green = style.black_green;
-		color.blue = style.black_blue;
-		color.pixel = style.black_pixel;
+		OS.gtk_style_get_black (OS.gtk_widget_get_style (shellHandle), color);
 		OS.gtk_widget_modify_bg (shellHandle, 0, color);
 	}
 	//TEMPORARY CODE
