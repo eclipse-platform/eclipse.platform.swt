@@ -250,7 +250,7 @@ public void setAccelerator (int accelerator) {
 	boolean inSetVirtualKey = false;
 	int inModifiers = OS.kMenuNoModifiers, inGlyph = OS.kMenuNullGlyph, inKey = 0;
 	if (accelerator != 0) {
-		inKey = accelerator & ~(SWT.SHIFT | SWT.CONTROL | SWT.ALT | SWT.COMMAND);
+		inKey = accelerator & SWT.KEY_MASK;
 		inGlyph = keyGlyph (inKey);
 		int virtualKey = Display.untranslateKey (inKey);
 		if (inKey == ' ') virtualKey = 49;
