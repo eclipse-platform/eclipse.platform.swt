@@ -248,6 +248,7 @@ public class Display extends Device {
 	int caretID, caretProc;
 
 	/* Workaround for GP when disposing a display */
+	static int XtContext;
 	static boolean DisplayDisposed;
 
 	/* Package Name */
@@ -618,6 +619,7 @@ void createDisplay (DeviceData data) {
 	/* Create the AppContext */
 	int [] argc = new int [] {0};
 	int xtContext = OS.XtCreateApplicationContext ();
+	if (OS.IsSunOS && XtContext == 0) XtContext = xtContext;
 	OS.XtSetLanguageProc (xtContext, 0, 0);
 	
 	xEvent = OS.XtMalloc (XEvent.sizeof);
@@ -708,8 +710,10 @@ void destroyDisplay () {
 	* Destroy AppContext (this destroys the display)
 	*/
 	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
-	OS.XtDestroyApplicationContext (xtContext);
-	DisplayDisposed = true;
+	if (XtContext != xtContext) {
+		OS.XtDestroyApplicationContext (xtContext);
+		DisplayDisposed = true;
+	}
 }
 /**
  * Causes the <code>run()</code> method of the runnable to
