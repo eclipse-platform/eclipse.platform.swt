@@ -86,7 +86,7 @@ int defaultFont () {
 	int hFont = 0;
 	if (hwndIME != 0) {
 		hFont = OS.SendMessage (hwndIME, OS.WM_GETFONT, 0, 0);
-	} 
+	}
 	if (hFont == 0) {
 		hFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
 	}
