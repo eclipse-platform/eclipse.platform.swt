@@ -1079,6 +1079,30 @@ public class SWT {
 	 */
 	public static final int COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT = 35;
 	
+	/**
+	 * draw constant indicating whether the drawing operation
+	 * should fill the background (value is 1&lt;&lt;0)
+	 */
+	public static final int DRAW_TRANSPARENT = 1 << 0;
+
+	/**
+	 * draw constant indicating whether the string drawing operation
+	 * should handle line-delimeters (value is 1&lt;&lt;1)
+	 */
+	public static final int DRAW_DELIMITER = 1 << 1;
+
+	/**
+	 * draw constant indicating whether the string drawing operation
+	 * should expand TAB characters (value is 1&lt;&lt;2)
+	 */
+	public static final int DRAW_TAB = 1 << 2;
+
+	/**
+	 * draw constant indicating whether the string drawing operation
+	 * should handle mnemonics (value is 1&lt;&lt;3)
+	 */
+	public static final int DRAW_MNEMONIC = 1 << 3;	
+	
 	/** 
 	 * SWT error constant indicating that no error number was specified
 	 * (value is 1) 
