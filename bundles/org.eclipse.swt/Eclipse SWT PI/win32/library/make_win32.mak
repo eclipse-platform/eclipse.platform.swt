@@ -19,7 +19,7 @@ APPVER=5.0
 
 pgm_ver_str="SWT $(maj_ver).$(min_ver) for Windows"
 timestamp_str=__DATE__\" \"__TIME__\" (EST)\"
-copyright = "Copyright (C) 1999, 2002 IBM Corp.  All rights reserved."
+copyright = "Copyright (C) 1999, 2003 IBM Corp.  All rights reserved."
 
 SWT_PREFIX=swt
 WS_PREFIX=win32
