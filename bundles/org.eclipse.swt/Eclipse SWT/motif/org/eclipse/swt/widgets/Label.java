@@ -478,6 +478,7 @@ void setBitmap (Image image) {
 		OS.XmNlabelInsensitivePixmap, labelInsensitivePixmap,
 	};
 	OS.XtSetValues (handle, argList, argList.length / 2);
+	if (image == null && text != null && !text.equals("")) _setText(text);
 }
 boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	boolean changed = super.setBounds (x, y, width, height, move, resize);
