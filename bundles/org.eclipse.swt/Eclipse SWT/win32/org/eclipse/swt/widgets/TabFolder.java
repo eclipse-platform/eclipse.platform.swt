@@ -46,6 +46,7 @@ public class TabFolder extends Composite {
 	ImageList imageList;
 	static final int TabFolderProc;
 	static final TCHAR TabFolderClass = new TCHAR (0, OS.WC_TABCONTROL, true);
+	static final char [] TAB = new char [] {'T', 'A', 'B', 0};
 	
 	/*
 	* These are the undocumented control id's for the children of
@@ -293,6 +294,16 @@ void destroyItem (TabItem item) {
 	if (count > 0 && index == selectionIndex) {
 		setSelection (Math.max (0, selectionIndex - 1), true);
 	}
+}
+
+void drawThemeBackground (int hDC, RECT rect) {
+	int hTheme = OS.OpenThemeData (handle, TAB);
+	OS.DrawThemeBackground (hTheme, hDC, OS.TABP_BODY, 0, rect, null);
+	OS.CloseThemeData (hTheme);	
+}
+
+Control findThemeControl () {
+	return background == -1 ? this : null;	
 }
 
 public Rectangle getClientArea () {

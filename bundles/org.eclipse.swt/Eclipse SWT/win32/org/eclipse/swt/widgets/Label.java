@@ -568,6 +568,22 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	return result;
 }
 
+LRESULT wmColorChild (int wParam, int lParam) {
+	LRESULT result = super.wmColorChild (wParam, lParam);
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		Control control = findThemeControl ();
+		if (control != null) {
+			OS.SetBkMode (wParam, OS.TRANSPARENT);
+			RECT rect = new RECT ();
+			OS.GetClientRect (control.handle, rect);
+			OS.MapWindowPoints (control.handle, handle, rect, 2);
+			control.drawThemeBackground (wParam, rect);
+			return new LRESULT (OS.GetStockObject (OS.NULL_BRUSH));
+		}
+	}
+	return result;
+}
+
 LRESULT wmDrawChild (int wParam, int lParam) {
 	DRAWITEMSTRUCT struct = new DRAWITEMSTRUCT ();
 	OS.MoveMemory (struct, lParam, DRAWITEMSTRUCT.sizeof);

@@ -1164,10 +1164,22 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	setResizeChildren (true);
 	
 	/* Damage the widget to cause a repaint */
-	if ((state & CANVAS) != 0) {
-		if ((style & SWT.NO_REDRAW_RESIZE) == 0) {
-			if (hooks (SWT.Paint)) {
-				OS.InvalidateRect (handle, null, true);
+	if (OS.IsWindowVisible (handle)) {
+		if ((state & CANVAS) != 0) {
+			if ((style & SWT.NO_REDRAW_RESIZE) == 0) {
+				if (hooks (SWT.Paint)) {
+					OS.InvalidateRect (handle, null, true);
+				}
+			}
+		}
+		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+			if (findThemeControl () != null) {
+				int hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
+				while (hwndChild != 0) {
+					int flags = OS.RDW_ERASE | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
+					OS.RedrawWindow (hwndChild, null, 0, flags);
+					hwndChild = OS.GetWindow (hwndChild, OS.GW_HWNDNEXT);
+				}
 			}
 		}
 	}

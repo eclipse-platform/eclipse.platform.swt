@@ -530,6 +530,10 @@ Cursor findCursor () {
 	return cursor;
 }
 
+Control findThemeControl () {
+	return null;
+}
+
 void fixShell (Shell newShell, Control control) {
 	if (this == newShell) return;
 	if (control == lastActive) setActiveControl (null);

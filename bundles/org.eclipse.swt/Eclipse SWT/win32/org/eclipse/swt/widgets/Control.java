@@ -515,14 +515,29 @@ void drawBackground (int hDC) {
 }
 
 void drawBackground (int hDC, RECT rect) {
-	int hPalette = display.hPalette;
-	if (hPalette != 0) {
-		OS.SelectPalette (hDC, hPalette, false);
-		OS.RealizePalette (hDC);
+	Control control = null;
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		control = findThemeControl ();
 	}
-	int pixel = getBackgroundPixel ();
-	int hBrush = findBrush (pixel);
-	OS.FillRect (hDC, rect, hBrush);
+	if (control == null) {
+		int hPalette = display.hPalette;
+		if (hPalette != 0) {
+			OS.SelectPalette (hDC, hPalette, false);
+			OS.RealizePalette (hDC);
+		}
+		int pixel = getBackgroundPixel ();
+		int hBrush = findBrush (pixel);
+		OS.FillRect (hDC, rect, hBrush);
+	} else {
+		RECT rect2 = new RECT ();
+		OS.GetWindowRect (control.handle, rect2);		
+		OS.MapWindowPoints (0, handle, rect2, 2);
+		control.drawThemeBackground (hDC, rect2);	
+	}
+}
+
+void drawThemeBackground (int hDC, RECT rect) {
+	/* Do nothing */
 }
 
 void enableWidget (boolean enabled) {
@@ -536,6 +551,10 @@ int findBrush (int pixel) {
 Cursor findCursor () {
 	if (cursor != null) return cursor;
 	return parent.findCursor ();
+}
+
+Control findThemeControl () {
+	return background == - 1 ? parent.findThemeControl () : null;
 }
 
 Menu [] findMenus (Control control) {
@@ -3474,6 +3493,14 @@ LRESULT WM_MOUSEWHEEL (int wParam, int lParam) {
 }
 
 LRESULT WM_MOVE (int wParam, int lParam) {
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		if (OS.IsWindowVisible (handle)) {
+			if (findThemeControl () != null) {
+				int flags = OS.RDW_ERASE | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
+				OS.RedrawWindow (handle, null, 0, flags);
+			}
+		}
+	}
 	sendEvent (SWT.Move);
 	// widget could be disposed at this point
 	return null;
