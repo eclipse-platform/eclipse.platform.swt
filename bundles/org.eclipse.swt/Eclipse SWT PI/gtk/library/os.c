@@ -4638,6 +4638,16 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1get_1default_1language)
 }
 #endif
 
+#ifndef NO_gtk_1grab_1add
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1grab_1add)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "gtk_1grab_1add\n")
+	gtk_grab_add((GtkWidget *)arg0);
+	NATIVE_EXIT(env, that, "gtk_1grab_1add\n")
+}
+#endif
+
 #ifndef NO_gtk_1grab_1get_1current
 JNIEXPORT jint JNICALL OS_NATIVE(gtk_1grab_1get_1current)
 	(JNIEnv *env, jclass that)

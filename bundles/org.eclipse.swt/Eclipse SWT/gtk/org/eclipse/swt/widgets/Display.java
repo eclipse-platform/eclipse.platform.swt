@@ -687,16 +687,19 @@ void error (int code) {
 
 int /*long*/ eventProc (int /*long*/ event, int /*long*/ data) {
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
+	boolean forward = false;
+	Control control = null;
+	int /*long*/ window = 0;
 	switch (gdkEvent.type) {
+		case OS.GDK_ENTER_NOTIFY:
+		case OS.GDK_LEAVE_NOTIFY:
 		case OS.GDK_BUTTON_PRESS:
 		case OS.GDK_2BUTTON_PRESS: 
 		case OS.GDK_3BUTTON_PRESS:
 		case OS.GDK_BUTTON_RELEASE: 
 		case OS.GDK_MOTION_NOTIFY:  {
-			Control control = null;
-			boolean forward = false;
+			window = gdkEvent.window;
 			int /*long*/ [] user_data = new int /*long*/ [1];
-			int /*long*/ window = gdkEvent.window;
 			do {
 				OS.gdk_window_get_user_data (window, user_data);
 				int /*long*/ handle = user_data [0];
@@ -709,31 +712,50 @@ int /*long*/ eventProc (int /*long*/ event, int /*long*/ data) {
 					}
 				}
 			} while ((window = OS.gdk_window_get_parent (window)) != 0);
-			if (control != null) {
-				if (window == 0) return 0;
-				if (forward) {
-					GdkEventButton gdkEventButton = new GdkEventButton ();
-					OS.memmove (gdkEventButton, event, GdkEventButton.sizeof);
-					int /*long*/ oldWindow = gdkEventButton.window;
-					double oldX = gdkEventButton.x, oldY = gdkEventButton.y;
-					int /*long*/ eventHandle = control.eventHandle ();
-					gdkEventButton.window = OS.GTK_WIDGET_WINDOW (eventHandle);
-					int [] origin_x = new int [1], origin_y = new int [1];
-					OS.gdk_window_get_origin (gdkEventButton.window, origin_x, origin_y);
-					gdkEventButton.x = gdkEventButton.x_root - origin_x [0];
-					gdkEventButton.y = gdkEventButton.y_root - origin_y [0];
-					OS.memmove (event, gdkEventButton, GdkEventButton.sizeof);
-					OS.gtk_main_do_event (event);
-					gdkEventButton.window = oldWindow;
-					gdkEventButton.x = oldX;
-					gdkEventButton.y = oldY;
-					OS.memmove (event, gdkEventButton, GdkEventButton.sizeof);
+		}
+	}
+	Shell shell = null;
+	GdkEventButton gdkEventButton = null;
+	int /*long*/ oldWindow = 0;
+	double oldX = 0, oldY = 0;
+	if (control != null ) {
+		if (window == 0) return 0;
+		if (forward) {
+			switch (gdkEvent.type) {
+				case OS.GDK_ENTER_NOTIFY:
+				case OS.GDK_LEAVE_NOTIFY:
 					return 0;
-				}
 			}
+			gdkEventButton = new GdkEventButton ();
+			OS.memmove (gdkEventButton, event, GdkEventButton.sizeof);
+			oldWindow = gdkEventButton.window;
+			oldX = gdkEventButton.x;
+			oldY = gdkEventButton.y;
+			int /*long*/ eventHandle = control.eventHandle ();
+			gdkEventButton.window = OS.GTK_WIDGET_WINDOW (eventHandle);
+			int [] origin_x = new int [1], origin_y = new int [1];
+			OS.gdk_window_get_origin (gdkEventButton.window, origin_x, origin_y);
+			gdkEventButton.x = gdkEventButton.x_root - origin_x [0];
+			gdkEventButton.y = gdkEventButton.y_root - origin_y [0];
+			OS.memmove (event, gdkEventButton, GdkEventButton.sizeof);
+		}
+		shell = control.getShell ();
+		if ((shell.style & SWT.ON_TOP) != 0) {
+			OS.gtk_grab_add (shell.shellHandle);
 		}
 	}
 	OS.gtk_main_do_event (event);
+	if (control != null ) {
+		if (shell != null && !shell.isDisposed () && (shell.style & SWT.ON_TOP) != 0) {
+			OS.gtk_grab_remove (shell.shellHandle);
+		}
+		if (forward) {
+			gdkEventButton.window = oldWindow;
+			gdkEventButton.x = oldX;
+			gdkEventButton.y = oldY;
+			OS.memmove (event, gdkEventButton, GdkEventButton.sizeof);
+		}
+	}
 	return 0;
 }
 

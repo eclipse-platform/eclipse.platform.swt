@@ -66,6 +66,7 @@ public class OS {
 	public static final int GDK_Delete = 0xffff;
 	public static final int GDK_Down = 0xff54;
 	public static final int GDK_ENTER_NOTIFY_MASK = 0x1000;
+	public static final int GDK_ENTER_NOTIFY = 10;
 	public static final int GDK_EVEN_ODD_RULE = 0;
 	public static final int GDK_EXPOSURE_MASK = 0x2;
 	public static final int GDK_End = 0xff57;
@@ -130,6 +131,7 @@ public class OS {
 	public static final int GDK_KP_Right = 0xFF98;
 	public static final int GDK_KP_Subtract = 0xffad;
 	public static final int GDK_KP_Up = 0xFF97;
+	public static final int GDK_LEAVE_NOTIFY = 11;
 	public static final int GDK_LEAVE_NOTIFY_MASK = 0x2000;
 	public static final int GDK_LEFT_PTR = 0x44;
 	public static final int GDK_LEFT_SIDE = 0x46;
@@ -729,6 +731,7 @@ public static final synchronized native int /*long*/ gtk_get_current_event();
 public static final synchronized native boolean gtk_get_current_event_state (int[] state);
 public static final synchronized native int gtk_get_current_event_time();
 public static final synchronized native int /*long*/ gtk_get_default_language();
+public static final synchronized native void gtk_grab_add(int /*long*/ widget);
 public static final synchronized native int /*long*/ gtk_grab_get_current();
 public static final synchronized native void gtk_grab_remove(int /*long*/ widget);
 public static final synchronized native int /*long*/ gtk_hbox_new(boolean homogeneous, int spacing);
