@@ -450,6 +450,20 @@ void fixAlignment () {
 	OS.SetWindowLong (handle, OS.GWL_STYLE, bits1);
 }
 
+public int getBorderWidth () {
+	checkWidget ();
+	/*
+	* Feature in Windows.  Despite the fact that WS_BORDER is set
+	* when the edit control is created, the style bit is cleared.
+	* The fix is to avoid the check for WS_BORDER and use the SWT
+	* widget style bits instead.
+	*/
+//	if ((style & SWT.BORDER) != 0 && (style & SWT.FLAT) != 0) {
+//		return OS.GetSystemMetrics (OS.SM_CXBORDER);
+//	}
+	return super.getBorderWidth ();
+}
+
 /**
  * Gets the line number of the caret.
  * <p>
@@ -635,7 +649,8 @@ public char getEchoChar () {
  */
 public boolean getEditable () {
 	checkWidget ();
-	return (style & SWT.READ_ONLY) == 0;
+	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	return (bits & OS.ES_READONLY) == 0;
 }
 
 /**
