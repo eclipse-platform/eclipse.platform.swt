@@ -29,6 +29,7 @@ class StyledTextPrinter {
 	
 	String rtf;
 	int index, end;
+	int tabSize;
 	StringBuffer wordBuffer;
 
 	/* We can optimize for fonts because we know styledText only has one font.
@@ -61,6 +62,12 @@ class StyledTextPrinter {
 	
 	public void print() {
 		printer = new Printer();
+		print(printer);
+		printer.dispose();
+	}
+	
+	public void print(Printer printer) {
+		this.printer = printer;
 		if (printer.startJob("StyledText")) {
 			Rectangle clientArea = printer.getClientArea();
 			Rectangle trim = printer.computeTrim(0, 0, 0, 0);
@@ -71,7 +78,11 @@ class StyledTextPrinter {
 			bottomMargin = clientArea.height - dpi.y + trim.y + trim.height; // one inch from bottom edge of paper
 			
 			/* Create a buffer for computing tab width. */
-			int tabSize = styledText.getTabs();
+			styledText.getDisplay().syncExec(new Runnable() {
+				public void run() {
+					tabSize = styledText.getTabs();
+				}
+			});
 			StringBuffer tabBuffer = new StringBuffer(tabSize);
 			for (int i = 0; i < tabSize; i++) tabBuffer.append(' ');
 			tabs = tabBuffer.toString();
@@ -80,7 +91,11 @@ class StyledTextPrinter {
 			gc = new GC(printer);
 			x = leftMargin;
 			y = topMargin;
+			printer.startPage();
 			printStyledTextRTF();
+			if (y + lineHeight <= bottomMargin) {
+				printer.endPage();
+			}
 			printer.endJob();
 
 			/* Cleanup */
@@ -92,11 +107,14 @@ class StyledTextPrinter {
 				((Color)colorTable.elementAt(i)).dispose();
 			}
 		}
-		printer.dispose();
 	}
-	
+
 	void printStyledTextRTF() {
-		rtf = styledText.getRtf();
+		styledText.getDisplay().syncExec(new Runnable() {
+			public void run() {
+				rtf = styledText.getRtf();
+			}
+		});
 		end = rtf.length();
 		index = 0;
 		wordBuffer = new StringBuffer();
