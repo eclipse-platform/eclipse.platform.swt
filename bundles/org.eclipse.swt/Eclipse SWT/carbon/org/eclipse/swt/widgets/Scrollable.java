@@ -146,7 +146,7 @@ int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
 		short [] wheelAxis = new short [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamMouseWheelAxis, OS.typeMouseWheelAxis, null, 2, null, wheelAxis);
 		ScrollBar bar = wheelAxis [0] == OS.kEventMouseWheelAxisX ? horizontalBar : verticalBar;
-		if (bar != null) {
+		if (bar != null && bar.getVisible ()) {
 			int [] wheelDelta = new int [1];
 			OS.GetEventParameter (theEvent, OS.kEventParamMouseWheelDelta, OS.typeSInt32, null, 4, null, wheelDelta);
 			bar.setSelection (Math.max (0, bar.getSelection () - bar.getIncrement () * wheelDelta [0]));
