@@ -44,7 +44,7 @@ public class Tree extends Composite {
 	int hAnchor;
 	TreeItem [] items;
 	ImageList imageList;
-	boolean dragStarted;
+	boolean dragStarted, gestureCompleted;
 	boolean ignoreSelect, ignoreExpand, ignoreDeselect;
 	boolean customDraw;
 	static final int TreeProc;
@@ -1624,7 +1624,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 
 	/* Do the selection */
 	sendMouseEvent (SWT.MouseDown, 1, OS.WM_LBUTTONDOWN, wParam, lParam);
-	dragStarted = false;
+	dragStarted = gestureCompleted = false;
 	ignoreDeselect = ignoreSelect = true;
 	int code = callWindowProc (OS.WM_LBUTTONDOWN, wParam, lParam);
 	ignoreDeselect = ignoreSelect = false;
@@ -1737,12 +1737,15 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	if ((wParam & OS.MK_SHIFT) == 0) hAnchor = hNewItem;
 			
 	/* Issue notification */
-	tvItem.hItem = hNewItem;
-	tvItem.mask = OS.TVIF_PARAM;
-	OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-	Event event = new Event ();
-	event.item = items [tvItem.lParam];
-	postEvent (SWT.Selection, event);
+	if (!gestureCompleted) {
+		tvItem.hItem = hNewItem;
+		tvItem.mask = OS.TVIF_PARAM;
+		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+		Event event = new Event ();
+		event.item = items [tvItem.lParam];
+		postEvent (SWT.Selection, event);
+	}
+	gestureCompleted = false;
 	
 	/*
 	* Feature in Windows.  Inside WM_LBUTTONDOWN and WM_RBUTTONDOWN,
@@ -1753,7 +1756,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	* issue a fake mouse up.
 	*/
 	if (dragStarted) {
-		event = new Event ();
+		Event event = new Event ();
 		event.x = (short) (lParam & 0xFFFF);
 		event.y = (short) (lParam >> 16);
 		postEvent (SWT.DragDetect, event);
@@ -1999,6 +2002,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					NMRGINFO nmrg = new NMRGINFO ();
 					OS.MoveMemory (nmrg, lParam, NMRGINFO.sizeof);
 					showMenu (nmrg.x, nmrg.y);
+					gestureCompleted = true;
 					return LRESULT.ONE;
 				}
 			}
