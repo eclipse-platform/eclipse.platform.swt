@@ -417,19 +417,10 @@ void createItem (TreeColumn column, int index) {
 	OS.SendMessage (hwndHeader, OS.HDM_INSERTITEM, index, hdItem);
 	if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
 	
-	/*
-	* When the first column is created, get rid of the horizontal
-	* scroll bar from the tree and clear TVS_FULLROWSELECT.  Due
-	* to drawing problems, TVS_FULLROWSELECT is not used when a
-	* tree has columns.
-	*/
+	/* When the first column is created, hide the horizontal scroll bar */
 	if (columnCount == 0) {
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 		bits |= OS.TVS_NOHSCROLL;
-		if ((style & SWT.FULL_SELECTION) != 0) {
-			bits &= ~OS.TVS_FULLROWSELECT;
-			bits |= OS.TVS_HASLINES;
-		}
 		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 	}
 	setScrollWidth ();
@@ -692,19 +683,13 @@ void destroyItem (TreeColumn column) {
 	}
 
 	/*
-	* When the last column is deleted, put back the horizontal
-	* scroll bar in the tree and TVS_FULLROWSELECT.  Due to
-	* drawing problems, TVS_FULLROWSELECT is not used when a
-	* tree has columns.  Otherwise, left align the first column
+	* When the last column is deleted, show the horizontal
+	* scroll bar.   Otherwise, left align the first column
 	* and redraw the columns to the right.
 	*/
 	if (columnCount == 0) {
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 		bits &= ~OS.TVS_NOHSCROLL;
-		if ((style & SWT.FULL_SELECTION) != 0) {
-			bits |= OS.TVS_FULLROWSELECT;
-			bits &= ~OS.TVS_HASLINES;
-		}
 		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 	    OS.InvalidateRect (handle, null, true);
 	} else {
@@ -2829,18 +2814,6 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	dragStarted = gestureCompleted = false;
 	ignoreDeselect = ignoreSelect = true;
 	int code = callWindowProc (handle, OS.WM_LBUTTONDOWN, wParam, lParam);
-	/*
-	* Determine whether the full line should be selected.
-	* Note that mouse selection for a tree with columns
-	* does not currently use TVS_FULLROWSELECT to do the
-	* selection because it does not draw properly.
-	*/
-	if ((style & SWT.FULL_SELECTION) != 0) {
-		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		if ((bits & OS.TVS_FULLROWSELECT) == 0) {
-			OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, lpht.hItem);
-		}
-	}
 	ignoreDeselect = ignoreSelect = false;
 	if (dragStarted && OS.GetCapture () != handle) OS.SetCapture (handle);
 	int hNewItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
@@ -3315,7 +3288,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 						OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
 						OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
 					}
-					if (!printClient) {
+					if (!printClient && (style & SWT.FULL_SELECTION) == 0) {
 						if (hwndHeader != 0) {
 							int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 							if (count != 0) {
@@ -3370,8 +3343,44 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					int hDC = nmcd.hdc;
 					OS.RestoreDC (hDC, -1);
 					OS.SetBkMode (hDC, OS.TRANSPARENT);
-					if (OS.IsWindowEnabled (handle)) {
-						OS.SetTextColor (hDC, getForegroundPixel ());
+					boolean useColor = OS.IsWindowEnabled (handle);
+					if (useColor) {
+						if ((style & SWT.FULL_SELECTION) != 0) {
+							TVITEM tvItem = new TVITEM ();
+							tvItem.mask = OS.TVIF_STATE;
+							tvItem.hItem = item.handle;
+							OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+							if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
+								useColor = false;
+							} else {
+								/*
+								* Feature in Windows.  When the mouse is pressed and the
+								* selection is first drawn for a tree, the item is drawn
+								* selected, but the TVIS_SELECTED bits for the item are
+								* not set.  When the user moves the mouse slightly and
+								* a drag and drop operation is not started, the item is
+								* drawn again and this time TVIS_SELECTED is set.  This
+								* means that an item that is in a tree that has the style
+								* TVS_FULLROWSELECT and that also contains colored cells
+								* will not draw the entire row selected until the user
+								* moves the mouse.  The fix is to test for the selection
+								* colors and guess that the item is selected.
+								* 
+								* NOTE: This code doesn't work when the foreground and
+								* background of the tree are set to the selection colors
+								* but this does not happen in a regular application.
+								*/
+								int clrForeground = OS.GetTextColor (hDC);
+								if (clrForeground == OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT)) {
+									int clrBackground = OS.GetBkColor (hDC);
+									if (clrBackground == OS.GetSysColor (OS.COLOR_HIGHLIGHT)) {
+										useColor = false;
+									}
+								}
+							}
+						} else {
+							OS.SetTextColor (hDC, getForegroundPixel ());
+						}
 					}
 					if (hwndHeader != 0) {
 						GCData data = new GCData();
@@ -3387,12 +3396,10 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 							OS.SendMessage (hwndHeader, OS.HDM_GETITEM, i, hdItem);
 							if (i > 0) {
 								OS.SetRect (rect, x, nmcd.top, x + hdItem.cxy, nmcd.bottom - GRID_WIDTH);
-								if (printClient) {
-									/* Assume that the disabled color is COLOR_BTN_FACE */
-									int clrBackground = OS.IsWindowEnabled (handle) ? getBackgroundPixel () : OS.GetSysColor (OS.COLOR_BTNFACE);
-									drawBackground (hDC, clrBackground, rect);
+								if (printClient || (style & SWT.FULL_SELECTION) != 0) {
+									drawBackground (hDC, OS.GetBkColor (hDC), rect);
 								}
-								if (OS.IsWindowEnabled (handle)) {
+								if (useColor) {
 									int clrTextBk = item.cellBackground != null ? item.cellBackground [i] : item.background;
 									if (clrTextBk != -1) drawBackground (hDC, clrTextBk, rect);
 								}
@@ -3416,7 +3423,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 										int hFont = item.cellFont != null ? item.cellFont [i] : item.font;
 										hFont = hFont != -1 ? OS.SelectObject (hDC, hFont) : -1;
 										int clrText = -1;
-										if (OS.IsWindowEnabled (handle)) {
+										if (useColor) {
 											clrText = item.cellForeground != null ? item.cellForeground [i] : item.foreground;
 											clrText = clrText != -1? OS.SetTextColor (hDC, clrText) : -1;
 										}
@@ -3437,26 +3444,27 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 						gc.dispose ();
 					}
 					if (linesVisible) {
-						RECT rect = new RECT ();
-						if (printClient) {
+						if (printClient && (style & SWT.FULL_SELECTION) == 0) {
 							if (hwndHeader != 0) {
 								int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 								if (count != 0 && printClient) {
 									HDITEM hdItem = new HDITEM ();
 									hdItem.mask = OS.HDI_WIDTH;
 									OS.SendMessage (hwndHeader, OS.HDM_GETITEM, 0, hdItem);
+									RECT rect = new RECT ();
 									OS.SetRect (rect, nmcd.left + hdItem.cxy, nmcd.top, nmcd.right, nmcd.bottom);
 									OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
 								}
 							}
 						}
-						if (OS.COMCTL32_MAJOR < 6) {
+						RECT rect = new RECT ();
+						if (OS.COMCTL32_MAJOR < 6 || (style & SWT.FULL_SELECTION) != 0) {
 							OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
 						} else {
 							rect.left = item.handle;
 							if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, rect) != 0) {
 								int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-								if (hItem == item.handle || OS.COMCTL32_MAJOR < 6) {
+								if (hItem == item.handle) {
 									OS.SetRect (rect, rect.right, nmcd.top, nmcd.right, nmcd.bottom);
 								} else {
 									TVITEM tvItem = new TVITEM ();
