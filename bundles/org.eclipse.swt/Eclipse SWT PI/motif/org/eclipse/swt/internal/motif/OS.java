@@ -528,6 +528,7 @@ public class OS {
 //	public static final int XmCR_UNMAP = 0x11;
 	public static final int XmCR_VALUE_CHANGED = 0x2;
 //	public static final int XmCR_WMPROTOCOLS = 0x1A0A;
+	public static final int XmDEFAULT_SELECT_COLOR = -1;
 //	public static final int XmDESTROY = 0x0;
 	public static final int XmDIALOG_APPLICATION_MODAL = 0x1;
 	public static final int XmDIALOG_APPLY_BUTTON = 0x1;
