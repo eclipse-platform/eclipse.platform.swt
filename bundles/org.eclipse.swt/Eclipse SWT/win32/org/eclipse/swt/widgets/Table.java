@@ -196,7 +196,7 @@ boolean checkData (TableItem item, boolean redraw) {
 		if (isDisposed () || item.isDisposed ()) return false;
 		if (redraw) {
 			if (!setScrollWidth (item, false)) {
-				item.redraw (-1, true, true);
+				item.redraw ();
 			}
 		}
 	}

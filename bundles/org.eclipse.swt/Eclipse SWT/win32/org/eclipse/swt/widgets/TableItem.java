@@ -186,46 +186,99 @@ public Color getBackground (int index) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @since 3.1
+ */
+/*public*/ Rectangle getBounds () {
+	checkWidget();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	int itemIndex = parent.indexOf (this);
+	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
+	RECT rect = getBounds (itemIndex, 0, true, false);
+	int width = rect.right - rect.left, height = rect.bottom - rect.top;
+	return new Rectangle (rect.left, rect.top, width, height);
+}
+
+/**
+ * Returns a rectangle describing the receiver's size and location
+ * relative to its parent at a column in the table.
+ *
+ * @param index the index that specifies the column
+ * @return the receiver's bounding column rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public Rectangle getBounds (int index) {
 	checkWidget();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int itemIndex = parent.indexOf (this);
 	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
-	int hwnd = parent.handle;	
-	int hwndHeader =  OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
-	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	if (!(0 <= index && index < count)) return new Rectangle (0, 0, 0, 0); 
-	int gridWidth = parent.getLinesVisible () ? parent.getGridLineWidth () : 0;
-	/*
-	* Feature in Windows.  Calling LVM_GETSUBITEMRECT with LVIR_LABEL and
-	* zero for the column number gives the bounds of the first item without
-	* including the bounds of the icon.  This behavior is undocumented.
-	* When called with values greater than zero, the icon bounds are
-	* included and this behavior is documented.
-	*/
+	RECT rect = getBounds (itemIndex, index, true, true);
+	int width = rect.right - rect.left, height = rect.bottom - rect.top;
+	return new Rectangle (rect.left, rect.top, width, height);
+}
+
+RECT getBounds (int row, int column, boolean getText, boolean getImage) {
+	if (!getText && !getImage) return new RECT ();
+	int hwnd = parent.handle;
 	RECT rect = new RECT ();
-	rect.top = index;
-	rect.left = OS.LVIR_LABEL;
-	OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, itemIndex, rect);
-	if (index == 0) {
-		RECT iconRect = new RECT ();
-		iconRect.left = OS.LVIR_ICON;
-		OS.SendMessage (hwnd, OS.LVM_GETSUBITEMRECT, itemIndex, iconRect);	
-		rect.left = iconRect.left - gridWidth;
+	rect.top = column;
+	rect.left = getText ? OS.LVIR_LABEL : OS.LVIR_ICON;
+	if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, rect) != 0) {
+		/*
+		* Feature in Windows.  Calling LVM_GETSUBITEMRECT with LVIR_LABEL and
+		* zero for the column number gives the bounds of the first item without
+		* including the bounds of the icon.  This behavior is undocumented.
+		* When called with values greater than zero, the icon bounds are
+		* included and this behavior is documented.
+		*/
+		if (column == 0) {
+			if (getText && getImage) {
+				RECT iconRect = new RECT ();
+				iconRect.left = OS.LVIR_ICON;
+				iconRect.top = column;
+				if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, iconRect) != 0) {
+					rect.left = iconRect.left;
+				}
+			}
+			rect.left -= 1;
+		} else {
+			if (getText && !getImage && images != null) {
+				RECT iconRect = new RECT ();
+				iconRect.left = OS.LVIR_ICON;
+				iconRect.top = column;
+				if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, row, iconRect) != 0) {
+					/*
+					* Feature in Windows.  LVM_GETSUBITEMRECT returns a small width
+					* value even when the subitem does not contain an image.  The
+					* fix is to detect this case adjust the rectangle accordingly.
+					*/
+					LVITEM lvItem = new LVITEM ();
+					lvItem.mask = OS.LVIF_IMAGE;
+					lvItem.iItem = row;
+					lvItem.iSubItem = column;
+					OS.SendMessage (hwnd, OS.LVM_GETITEM, 0, lvItem);
+					if (lvItem.iImage >= 0) rect.left = iconRect.right + 2;	
+				}
+			}
+		}
 	}
-	int width = Math.max (0, rect.right - rect.left - gridWidth);
-	int height = Math.max (0, rect.bottom - rect.top - gridWidth);
+	
 	/*
 	* Bug in Windows.  In version 5.80 of COMCTL32.DLL, the top
 	* of the rectangle returned by LVM_GETSUBITEMRECT is off by
 	* the grid width when the grid is visible.  The fix is to
 	* move the top of the rectangle up by the grid width.
 	*/
-	if (OS.COMCTL32_VERSION >= OS.VERSION (5, 80)) {
-		rect.top -= gridWidth;
-	}
-	return new Rectangle (rect.left + gridWidth, rect.top + gridWidth, width, height);
+	int gridWidth = parent.getLinesVisible () ? Table.GRID_WIDTH : 0;
+	if (OS.COMCTL32_VERSION >= OS.VERSION (5, 80)) rect.top -= gridWidth;
+	rect.left += gridWidth;
+	rect.top += gridWidth;
+	rect.bottom = Math.max (rect.bottom - gridWidth, rect.top);
+	return rect;
 }
 
 /**
@@ -396,52 +449,9 @@ public Rectangle getImageBounds (int index) {
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int itemIndex = parent.indexOf (this);
 	if (itemIndex == -1) return new Rectangle (0, 0, 0, 0);
-	int hwnd = parent.handle;	
-	int hwndHeader =  OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
-	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	if (!(0 <= index && index < count)) return new Rectangle (0, 0, 0, 0);
-	int gridWidth = parent.getLinesVisible () ? parent.getGridLineWidth () : 0;
-	
-	/*
-	* Feature in Windows.  Calling LVM_GETSUBITEMRECT with LVIR_ICON and
-	* zero for the column number gives the bounds of the icon (despite the
-	* fact that this behaivor is only documented for values greater than
-	* one).
-	*/
-	RECT rect = new RECT ();
-	rect.top = index;
-	rect.left = OS.LVIR_ICON;
-	OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, itemIndex, rect);
-	if (index == 0) {
-		rect.left -= gridWidth;
-	}
-	int width = Math.max (0, rect.right - rect.left - gridWidth);
-	int height = Math.max (0, rect.bottom - rect.top - gridWidth);
-	
-	/*
-	* Feature in Windows.  LVM_GETSUBITEMRECT returns a small width
-	* value even when the subitem does not contain an image.  The
-	* fix is to detect this case and set the width to zero.
-	*/
-	if (index != 0) {
-		LVITEM lvItem = new LVITEM ();
-		lvItem.mask = OS.LVIF_IMAGE;
-		lvItem.iItem = itemIndex;
-		lvItem.iSubItem = index;
-		OS.SendMessage (hwnd, OS.LVM_GETITEM, 0, lvItem);
-		if (lvItem.iImage < 0) width = 0;
-	}
-
-	/*
-	* Bug in Windows.  In version 5.80 of COMCTL32.DLL, the top
-	* of the rectangle returned by LVM_GETSUBITEMRECT is off by
-	* the grid width when the grid is visible.  The fix is to
-	* move the top of the rectangle up by the grid width.
-	*/
-	if (OS.COMCTL32_VERSION >= OS.VERSION (5, 80)) {
-		rect.top -= gridWidth;
-	}
-	return new Rectangle (rect.left + gridWidth, rect.top + gridWidth, width, height);
+	RECT rect = getBounds (itemIndex, index, false, true);
+	int width = rect.right - rect.left, height = rect.bottom - rect.top;
+	return new Rectangle (rect.left, rect.top, width, height);
 }
 
 /**
@@ -506,67 +516,25 @@ public String getText (int index) {
 	return "";
 }
 
+void redraw () {
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
+	if (parent.ignoreRedraw || parent.drawCount != 0) return;
+	int hwnd = parent.handle;
+	if (!OS.IsWindowVisible (hwnd)) return;
+	int index = parent.indexOf (this);
+	if (index == -1) return;
+	OS.SendMessage (hwnd, OS.LVM_REDRAWITEMS, index, index);
+}
+
 void redraw (int column, boolean drawText, boolean drawImage) {
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	if (parent.ignoreRedraw || parent.drawCount != 0) return;
 	int hwnd = parent.handle;
-	if (OS.IsWindowVisible (hwnd)) {
-		RECT rect = new RECT ();
-		int index = parent.indexOf (this);
-		if (column == -1) {
-			OS.SendMessage (hwnd, OS.LVM_REDRAWITEMS, index, index);
-		} else {
-			if (column == 0) {
-				if (drawText) rect.left |= OS.LVIR_LABEL;
-				if (drawImage) rect.left |= OS.LVIR_ICON;
-				if (OS.SendMessage (hwnd, OS.LVM_GETITEMRECT, index, rect) != 0) {	
-					OS.InvalidateRect (hwnd, rect, true);
-				}
-			} else {
-				/*
-				* Feature in Windows.  When LVM_GETSUBITEMRECT is called with
-				* LVIR_ICON and LVIR_LABEL instead of LIVR_BOUNDS and the item
-				* does not contain an image, LVM_GETSUBITEMRECT fails and returns
-				* an error code.  The fix is to use LVIR_BOUNDS instead.  Note
-				* that the MSDN says that LVIR_BOUNDS and LIVR_LABEL both return
-				* the bounds of the entire item, not just the label when used
-				* with LVM_GETSUBITEMRECT.  There is no API to get just the bounds
-				* of the label.
-				*/
-				if (drawText) {
-					rect.left = OS.LVIR_BOUNDS;
-				} else {
-					if (drawImage) rect.left = OS.LVIR_ICON;
-				}
-				rect.top = column;
-				if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, index, rect) != 0) {
-					if (drawText && !drawImage && images != null) {
-						RECT iconRect = new RECT ();
-						iconRect.left = OS.LVIR_ICON;
-						iconRect.top = column;
-						if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, index, iconRect) != 0) {
-							/*
-							* Feature in Windows.  LVM_GETSUBITEMRECT returns a small width
-							* value even when the subitem does not contain an image.  The
-							* fix is to detect this case and avoid adjusting the rectangle. 
-							*/
-							boolean fixWidth = true;
-							if (column != 0) {
-								LVITEM lvItem = new LVITEM ();
-								lvItem.mask = OS.LVIF_IMAGE;
-								lvItem.iItem = index;
-								lvItem.iSubItem = column;
-								OS.SendMessage (hwnd, OS.LVM_GETITEM, 0, lvItem);
-								if (lvItem.iImage < 0) fixWidth = false;
-							}
-							if (fixWidth) rect.left = iconRect.right;	
-						}
-					}
-					OS.InvalidateRect (hwnd, rect, true);
-				}
-			}
-		}
-	}
+	if (!OS.IsWindowVisible (hwnd)) return;
+	int index = parent.indexOf (this);
+	if (index == -1) return;
+	RECT rect = getBounds (index, column, drawText, drawImage);
+	OS.InvalidateRect (hwnd, rect, true);
 }
 
 void releaseChild () {
@@ -612,7 +580,7 @@ public void setBackground (Color color) {
 	}
 	if (background == pixel) return;
 	background = pixel;
-	redraw (-1, true, true);
+	redraw ();
 }
 
 /**
@@ -683,7 +651,7 @@ void setChecked (boolean checked, boolean notify) {
 		event.detail = SWT.CHECK;
 		parent.postEvent (SWT.Selection, event);
 	}
-	redraw (-1, true, true);
+	redraw ();
 }
 
 /**
@@ -739,7 +707,7 @@ public void setFont (Font font){
 		}
 	}
 	parent.setScrollWidth (this, false);
-	redraw (-1, true, true);
+	redraw ();
 }
 
 /**
@@ -807,8 +775,9 @@ public void setFont (int index, Font font) {
 		}
 		parent.setScrollWidth (this, false);
 	}	
-	redraw (index, true, true);
+	redraw (index, true, false);
 }
+
 /**
  * Sets the receiver's foreground color to the color specified
  * by the argument, or to the default system color for the item
@@ -839,7 +808,7 @@ public void setForeground (Color color){
 	}
 	if (foreground == pixel) return;
 	foreground = pixel;
-	redraw (-1, true, true);
+	redraw ();
 }
 
 /**
@@ -881,7 +850,7 @@ public void setForeground (int index, Color color){
 	}
 	if (cellForeground [index] == pixel) return;
 	cellForeground [index] = pixel;
-	redraw (index, true, true);
+	redraw (index, true, false);
 }
 
 /**
@@ -900,11 +869,11 @@ public void setGrayed (boolean grayed) {
 	if ((parent.style & SWT.CHECK) == 0) return;
 	if (this.grayed == grayed) return;
 	this.grayed = grayed;
-	redraw (-1, true, true);
+	redraw ();
 }
 
 /**
- * Sets the image for multiple columns in the Table. 
+ * Sets the image for multiple columns in the table. 
  * 
  * @param images the array of new images
  *
@@ -1000,7 +969,7 @@ public void setImageIndent (int indent) {
 		}
 	}
 	parent.setScrollWidth (this, false);
-	redraw (-1, true, true);
+	redraw ();
 }
 
 /**
