@@ -10,18 +10,17 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
 import junit.framework.*;
 import junit.textui.*;
 
 /**
- * Automated Test Suite for class org.eclipse.swt.layout.FillLayout
+ * Automated Test Suite for class org.eclipse.swt.layout.FormData
  *
- * @see org.eclipse.swt.layout.FillLayout
+ * @see org.eclipse.swt.layout.FormData
  */
-public class Test_org_eclipse_swt_layout_FillLayout extends Test_org_eclipse_swt_widgets_Layout {
+public class Test_org_eclipse_swt_layout_FormData extends SwtTestCase {
 
-public Test_org_eclipse_swt_layout_FillLayout(String name) {
+public Test_org_eclipse_swt_layout_FormData(String name) {
 	super(name);
 }
 
@@ -30,40 +29,39 @@ public static void main(String[] args) {
 }
 
 protected void setUp() {
-	super.setUp();
 }
 
 protected void tearDown() {
-	super.tearDown();
 }
 
 public void test_Constructor() {
 	warnUnimpl("Test test_Constructor not written");
 }
 
-public void test_ConstructorI() {
-	warnUnimpl("Test test_ConstructorI not written");
+public void test_ConstructorII() {
+	warnUnimpl("Test test_ConstructorII not written");
 }
+
 
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector methodNames = methodNames();
 	java.util.Enumeration e = methodNames.elements();
 	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_layout_FillLayout((String)e.nextElement()));
+		suite.addTest(new Test_org_eclipse_swt_layout_FormData((String)e.nextElement()));
 	}
 	return suite;
 }
+
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_Constructor");
-	methodNames.addElement("test_ConstructorI");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Layout.methodNames()); // add superclass method names
+	methodNames.addElement("test_ConstructorII");
 	return methodNames;
 }
+
 protected void runTest() throws Throwable {
 	if (getName().equals("test_Constructor")) test_Constructor();
-	else if (getName().equals("test_ConstructorI")) test_ConstructorI();
-	else super.runTest();
+	else if (getName().equals("test_ConstructorII")) test_ConstructorII();
 }
 }

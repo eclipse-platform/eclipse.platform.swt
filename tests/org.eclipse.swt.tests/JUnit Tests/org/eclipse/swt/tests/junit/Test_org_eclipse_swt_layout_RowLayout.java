@@ -14,8 +14,6 @@ package org.eclipse.swt.tests.junit;
 import junit.framework.*;
 import junit.textui.*;
 
-import org.eclipse.swt.layout.RowLayout;
-
 /**
  * Automated Test Suite for class org.eclipse.swt.layout.RowLayout
  *
@@ -43,15 +41,8 @@ public void test_Constructor() {
 	warnUnimpl("Test test_Constructor not written");
 }
 
-public void test_computeSizeLorg_eclipse_swt_widgets_CompositeIIZ() {
-	warnUnimpl("Test test_computeSizeLorg_eclipse_swt_widgets_CompositeIIZ not written");
-}
-
-public void test_layoutLorg_eclipse_swt_widgets_CompositeZ() {
-	composite.setLayout(new RowLayout());
-	composite.layout(false);
-	composite.layout(true);
-	composite.layout();
+public void test_ConstructorI() {
+	warnUnimpl("Test test_ConstructorI not written");
 }
 
 public static Test suite() {
@@ -66,15 +57,13 @@ public static Test suite() {
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_Constructor");
-	methodNames.addElement("test_computeSizeLorg_eclipse_swt_widgets_CompositeIIZ");
-	methodNames.addElement("test_layoutLorg_eclipse_swt_widgets_CompositeZ");
+	methodNames.addElement("test_ConstructorI");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Layout.methodNames()); // add superclass method names
 	return methodNames;
 }
 protected void runTest() throws Throwable {
 	if (getName().equals("test_Constructor")) test_Constructor();
-	else if (getName().equals("test_computeSizeLorg_eclipse_swt_widgets_CompositeIIZ")) test_computeSizeLorg_eclipse_swt_widgets_CompositeIIZ();
-	else if (getName().equals("test_layoutLorg_eclipse_swt_widgets_CompositeZ")) test_layoutLorg_eclipse_swt_widgets_CompositeZ();
+	else if (getName().equals("test_ConstructorI")) test_ConstructorI();
 	else super.runTest();
 }
 }

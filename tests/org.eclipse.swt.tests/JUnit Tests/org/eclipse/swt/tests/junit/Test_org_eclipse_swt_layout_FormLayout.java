@@ -10,18 +10,17 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
 import junit.framework.*;
 import junit.textui.*;
 
 /**
- * Automated Test Suite for class org.eclipse.swt.layout.FillLayout
+ * Automated Test Suite for class org.eclipse.swt.layout.FormLayout
  *
- * @see org.eclipse.swt.layout.FillLayout
+ * @see org.eclipse.swt.layout.FormLayout
  */
-public class Test_org_eclipse_swt_layout_FillLayout extends Test_org_eclipse_swt_widgets_Layout {
+public class Test_org_eclipse_swt_layout_FormLayout extends Test_org_eclipse_swt_widgets_Layout {
 
-public Test_org_eclipse_swt_layout_FillLayout(String name) {
+public Test_org_eclipse_swt_layout_FormLayout(String name) {
 	super(name);
 }
 
@@ -41,29 +40,26 @@ public void test_Constructor() {
 	warnUnimpl("Test test_Constructor not written");
 }
 
-public void test_ConstructorI() {
-	warnUnimpl("Test test_ConstructorI not written");
-}
 
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector methodNames = methodNames();
 	java.util.Enumeration e = methodNames.elements();
 	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_layout_FillLayout((String)e.nextElement()));
+		suite.addTest(new Test_org_eclipse_swt_layout_FormLayout((String)e.nextElement()));
 	}
 	return suite;
 }
+
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_Constructor");
-	methodNames.addElement("test_ConstructorI");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Layout.methodNames()); // add superclass method names
 	return methodNames;
 }
+
 protected void runTest() throws Throwable {
 	if (getName().equals("test_Constructor")) test_Constructor();
-	else if (getName().equals("test_ConstructorI")) test_ConstructorI();
 	else super.runTest();
 }
 }
