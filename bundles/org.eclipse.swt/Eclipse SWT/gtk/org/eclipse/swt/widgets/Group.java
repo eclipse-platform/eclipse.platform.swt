@@ -274,6 +274,14 @@ void setForegroundColor (GdkColor color) {
 	OS.gtk_widget_modify_fg (labelHandle, 0, color);
 }
 
+void setOrientation () {
+	super.setOrientation ();
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		OS.gtk_widget_set_direction (handle, OS.GTK_TEXT_DIR_RTL);
+		OS.gtk_widget_set_direction (labelHandle, OS.GTK_TEXT_DIR_RTL);
+	}
+}
+
 /**
  * Sets the receiver's text, which is the string that will
  * be displayed as the receiver's <em>title</em>, to the argument,
