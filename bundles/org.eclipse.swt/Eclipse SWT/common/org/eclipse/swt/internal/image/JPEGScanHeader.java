@@ -54,12 +54,12 @@ void initializeComponentParameters() {
 		int cid = reference[ofs] & 0xFF;
 		int dc = (reference[ofs + 1] & 0xFF) / 16;
 		int ac = (reference[ofs + 1] & 0xFF) % 16;
-		if (componentParameters.length < cid) {
-			int[][] newParams = new int[cid][];
+		if (componentParameters.length <= cid) {
+			int[][] newParams = new int[cid + 1][];
 			System.arraycopy(componentParameters, 0, newParams, 0, componentParameters.length);
 			componentParameters = newParams;
 		}
-		componentParameters[cid - 1] = new int[] { dc, ac };
+		componentParameters[cid] = new int[] { dc, ac };
 	}
 }
 
