@@ -117,6 +117,7 @@ void hookEvents () {
 	int windowProc2 = display.windowProc2;
 	int windowProc3 = display.windowProc3;
 	OS.gtk_signal_connect (eventHandle, OS.popup_menu, windowProc2, SWT.Show);
+	OS.gtk_signal_connect (eventHandle, OS.show_help, windowProc3, SWT.Help);
 	OS.gtk_signal_connect (eventHandle, OS.button_press_event, windowProc3, SWT.MouseDown);
 	OS.gtk_signal_connect (eventHandle, OS.button_release_event, windowProc3, SWT.MouseUp);
 	OS.gtk_signal_connect (eventHandle, OS.key_press_event, windowProc3, SWT.KeyDown);
@@ -1646,13 +1647,12 @@ Decorations menuShell () {
 	return parent.menuShell ();
 }
 
+int processHelp (int int0, int int1, int int2) {
+	sendHelpEvent (int0);
+	return 0;
+}
+
 int processKeyDown (int callData, int arg1, int int2) {
-//	int keyval = OS.gdk_event_key_get_keyval (callData);
-//	int [] state = new int [1];
-//	OS.gdk_event_get_state (callData, state);
-//	int shellHandle = _getShell ().topHandle ();
-//	if (keyval==OS.GDK_Return && (state[0]&(OS.GDK_SHIFT_MASK|OS.GDK_CONTROL_MASK))==0)
-//		if (OS.gtk_window_activate_default(shellHandle)) return 0;
 	sendKeyEvent (SWT.KeyDown, callData);
 	return 0;
 }
@@ -1861,6 +1861,17 @@ void releaseWidget () {
 	parent = null;
 	menu = null;
 	layoutData = null;
+}
+
+void sendHelpEvent (int helpType) {
+	Control control = this;
+	while (control != null) {
+		if (control.hooks (SWT.Help)) {
+			control.postEvent (SWT.Help);
+			return;
+		}
+		control = control.parent;
+	}
 }
 
 void sendKeyEvent (int type, int gdkEvent) {

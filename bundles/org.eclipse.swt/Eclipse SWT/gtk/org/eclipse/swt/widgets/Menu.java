@@ -367,8 +367,10 @@ void hookEvents () {
 	super.hookEvents ();
 	Display display = getDisplay ();
 	int windowProc2 = display.windowProc2;
+	int windowProc3 = display.windowProc3;
 	OS.gtk_signal_connect (handle, OS.show, windowProc2, SWT.Show);
 	OS.gtk_signal_connect (handle, OS.hide, windowProc2, SWT.Hide);
+	OS.gtk_signal_connect (handle, OS.show_help, windowProc3, SWT.Help);
 }
 
 /**
@@ -436,6 +438,11 @@ public boolean isEnabled () {
 public boolean isVisible () {
 	checkWidget();
 	return getVisible ();
+}
+
+int processHelp (int int0, int int1, int int2) {
+	sendHelpEvent (int0);
+	return 0;
 }
 
 int processHide (int int0, int int1, int int2) {
@@ -520,6 +527,14 @@ public void removeHelpListener (HelpListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Help, listener);
+}
+
+void sendHelpEvent (int helpType) {
+	if (hooks (SWT.Help)) {
+		postEvent (SWT.Help);
+		return;
+	}
+	parent.sendHelpEvent (helpType);
 }
 
 /**

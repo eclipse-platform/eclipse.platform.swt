@@ -344,8 +344,10 @@ void hookEvents () {
 	super.hookEvents ();
 	Display display = getDisplay ();
 	int windowProc2 = display.windowProc2;
+	int windowProc3 = display.windowProc3;
 	OS.gtk_signal_connect (handle, OS.activate, windowProc2, SWT.Selection);
 	OS.gtk_signal_connect (handle, OS.select, windowProc2, SWT.Arm);
+	OS.gtk_signal_connect (handle, OS.show_help, windowProc3, SWT.Help);
 }
 
 /**
@@ -367,6 +369,15 @@ public boolean isEnabled () {
 
 int processArm (int int0, int int1, int int2) {
 	postEvent (SWT.Arm);
+	return 0;
+}
+
+int processHelp (int int0, int int1, int int2) {
+	if (hooks (SWT.Help)) {
+		postEvent (SWT.Help);
+		return 0;
+	}
+	parent.sendHelpEvent (int0);
 	return 0;
 }
 
