@@ -5616,7 +5616,6 @@ void performPaint(GC gc,int startLine,int startY, int renderHeight)	{
 		int paintY, paintHeight;
 		Image lineBuffer;
 		GC lineGC;
-		int topIndex = getTopIndex();
 		boolean doubleBuffer = DOUBLE_BUFFERED && lastPaintTopIndex == topIndex;
 		lastPaintTopIndex = topIndex;
 		if (doubleBuffer) {
