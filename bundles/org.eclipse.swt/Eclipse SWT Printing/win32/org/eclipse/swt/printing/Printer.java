@@ -112,7 +112,7 @@ public static PrinterData[] getPrinterList() {
  *    <li>ERROR_UNSPECIFIED - if there are no valid printers
  * </ul>
  *
- * @return the default printer data or null if there is no default printer
+ * @return the default printer data
  */
 static PrinterData getDefaultPrinterData() {
 	byte [] deviceName = null;
