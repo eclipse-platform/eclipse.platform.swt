@@ -585,7 +585,16 @@ public Rectangle getBounds () {
 public void getClipping (Region region) {
 	checkWidget ();
 	if (region == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	OS.GetWindowRgn (handle, region.handle);
+	int hRegion = region.handle;
+	OS.GetWindowRgn (handle, hRegion);
+	RECT rect = new RECT ();
+	if (OS.GetRgnBox  (hRegion, rect) == OS.NULLREGION) {
+		OS.GetWindowRect (handle, rect);
+		int rectRgn = OS.CreateRectRgn (0, 0, rect.right - rect.left, rect.bottom - rect.top);
+		OS.CombineRgn (hRegion, hRegion, hRegion, OS.RGN_DIFF);
+		OS.CombineRgn (hRegion, hRegion, rectRgn, OS.RGN_OR);
+		OS.DeleteObject (rectRgn);
+	}
 }
 
 public boolean getEnabled () {
