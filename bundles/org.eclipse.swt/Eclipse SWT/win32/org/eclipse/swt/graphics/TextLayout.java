@@ -795,19 +795,20 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	checkLayout();
 	computeRuns(null);
 	if (!(0 <= lineIndex && lineIndex < runs.length)) SWT.error(SWT.ERROR_INVALID_RANGE);
-	int hdc = device.internal_new_GC(null);
+	int hDC = device.internal_new_GC(null);
+	int srcHdc = OS.CreateCompatibleDC(hDC);
 	TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
 	if (text.length() == 0) {
 		Font font = this.font != null ? this.font : device.getSystemFont();
-		OS.SelectObject(hdc, font.handle);
-		OS.GetTextMetrics(hdc, lptm);
+		OS.SelectObject(srcHdc, font.handle);
+		OS.GetTextMetrics(srcHdc, lptm);
 	} else {
 		int ascent = 0, descent = 0, leading = 0, aveCharWidth = 0, height = 0;
 		StyleItem[] lineRuns = runs[lineIndex];
 		for (int i = 0; i<lineRuns.length; i++) {
 			StyleItem run = lineRuns[i];
-			OS.SelectObject(hdc, getItemFont(run));
-			OS.GetTextMetrics(hdc, lptm);
+			OS.SelectObject(srcHdc, getItemFont(run));
+			OS.GetTextMetrics(srcHdc, lptm);
 			ascent = Math.max (ascent, lptm.tmAscent);
 			descent = Math.max (descent, lptm.tmDescent);
 			height = Math.max (height, lptm.tmHeight);
@@ -820,7 +821,8 @@ public FontMetrics getLineMetrics (int lineIndex) {
 		lptm.tmInternalLeading = leading;
 		lptm.tmAveCharWidth = aveCharWidth / lineRuns.length;
 	}
-	device.internal_dispose_GC(hdc, null);
+	if (srcHdc != 0) OS.DeleteDC(srcHdc);
+	device.internal_dispose_GC(hDC, null);
 	return FontMetrics.win32_new(lptm);
 }
 

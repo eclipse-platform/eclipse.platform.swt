@@ -229,8 +229,7 @@ protected void create(DeviceData deviceData) {
 public int internal_new_GC(GCData data) {
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (data != null) {
-		/* This code is intentionaly commented. */
-//		if (isGCCreated) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		if (isGCCreated) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 		if ((data.style & mask) != 0) {
 			data.layout = (data.style & SWT.RIGHT_TO_LEFT) != 0 ? OS.LAYOUT_RTL : 0;
