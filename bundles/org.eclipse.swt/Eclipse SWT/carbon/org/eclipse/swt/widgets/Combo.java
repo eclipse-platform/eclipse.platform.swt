@@ -1120,16 +1120,17 @@ public void select (int index) {
 	checkWidget ();
 	//NEEDS WORK Modify/Verify
 	int count = getItemCount ();
-	if (0 > index || index >= count) error (SWT.ERROR_INVALID_RANGE);
-	if ((style & SWT.READ_ONLY) != 0) {
-		OS.SetControl32BitValue (handle, index+1);
-	} else {
-		int[] ptr = new int[1];
-		if (OS.HIComboBoxCopyTextItemAtIndex (handle, index, ptr) != OS.noErr) return;
-		OS.SetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, ptr);
-		OS.CFRelease (ptr [0]);		
-	}
-	sendEvent (SWT.Modify);
+	if (0 <= index && index < count) {
+		if ((style & SWT.READ_ONLY) != 0) {
+			OS.SetControl32BitValue (handle, index+1);
+		} else {
+			int[] ptr = new int[1];
+			if (OS.HIComboBoxCopyTextItemAtIndex (handle, index, ptr) != OS.noErr) return;
+			OS.SetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, ptr);
+			OS.CFRelease (ptr [0]);		
+		}
+		sendEvent (SWT.Modify);
+	}	
 }
 
 boolean sendKeyEvent (int type, Event event) {
