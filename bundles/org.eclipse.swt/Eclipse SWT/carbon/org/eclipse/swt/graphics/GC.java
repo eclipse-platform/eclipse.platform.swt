@@ -149,50 +149,50 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 	if (data.control != 0) {
 		int window = OS.GetControlOwner(data.control);
 		int port = OS.GetWindowPort(window);
-		int[] currentPort = new int[1];
-		OS.GetPort(currentPort);
-		OS.SetPort(port);
-		int oldRgn = OS.NewRgn();
-		OS.GetClip(oldRgn);
+		
+		/* Calculate src and dest rectangles/regions */
+		Rect rect = new Rect();
+		OS.GetControlBounds(data.control, rect);		
+		Rect srcRect = new Rect();
+		OS.GetControlBounds(data.control, srcRect);
+		int left = srcRect.left + srcX;
+		int top = srcRect.top + srcY;
+		OS.SetRect(srcRect, (short)left, (short)top, (short)(left + width), (short)(top + height));
+		int srcRgn = OS.NewRgn();
+		OS.RectRgn(srcRgn, srcRect);		
+		OS.SectRect(rect, srcRect, srcRect);
+		Rect destRect = new Rect ();
+		destRect.left = srcRect.left;
+		destRect.top = srcRect.top;
+		destRect.right = srcRect.right;
+		destRect.bottom = srcRect.bottom;
+		OS.OffsetRect(destRect, (short)deltaX, (short)deltaY);
+		int destRgn = OS.NewRgn();
+		OS.RectRgn(destRgn, destRect);
+		
+		/* Copy bits with appropriated clipping region */
 		int clipRgn = OS.NewRgn();
 		OS.CopyRgn(data.visibleRgn, clipRgn);
 		if (data.clipRgn != 0) {
 			OS.SectRgn(data.clipRgn, clipRgn, clipRgn);
 		}
-		Rect rect = new Rect();
-		OS.GetControlBounds(data.control, rect);
-		Rect tempRect = new Rect();
-		int left = rect.left + srcX;
-		int top = rect.top + srcY;
-		OS.SetRect(tempRect, (short)left, (short)top, (short)(left + width), (short)(top + height));
-		int tempRgn = OS.NewRgn();
-		OS.RectRgn(tempRgn, tempRect);
-		OS.OffsetRgn(tempRgn, (short)deltaX, (short)deltaY);
-		OS.SectRgn(tempRgn, clipRgn, clipRgn);
-		OS.DisposeRgn(tempRgn);
-		OS.SetClip(clipRgn);
+		int portBitMap = OS.GetPortBitMapForCopyBits (port);
+		OS.CopyBits(portBitMap, portBitMap, srcRect, destRect, (short)OS.srcCopy, clipRgn);
+		OS.QDFlushPortBuffer(port, destRgn);
 		OS.DisposeRgn(clipRgn);
-
-		/*
-		* Feature in the Macintosh.  ScrollRect() only copies bits
-		* in the intersection of the source and destination rectangle
-		* and it does not damage any obscured area.  The fix is to
-		* copy bits for the whole control and damage obscured areas
-		* ourselves.		*/
+		
+		/* Invalidate src and obscured areas */
 		int invalRgn = OS.NewRgn();
-		OS.ScrollRect(rect, (short)deltaX, (short)deltaY, invalRgn);
-		int controlRgn = OS.NewRgn();
-		OS.RectRgn(controlRgn, rect);
-		OS.DiffRgn(controlRgn, data.visibleRgn, controlRgn);
-		OS.OffsetRgn(controlRgn, (short)deltaX, (short)deltaY);
-		OS.UnionRgn(invalRgn, controlRgn, invalRgn);
+		OS.DiffRgn(srcRgn, data.visibleRgn, invalRgn);
+		OS.OffsetRgn(invalRgn, (short)deltaX, (short)deltaY);
+		OS.InvalWindowRgn(window, invalRgn);
+		OS.DiffRgn(srcRgn, destRgn, invalRgn);
 		OS.InvalWindowRgn(window, invalRgn);
 		OS.DisposeRgn(invalRgn);
-		OS.DisposeRgn(controlRgn);
 		
-		OS.SetClip (oldRgn);
-		OS.DisposeRgn(oldRgn);
-		OS.SetPort(currentPort[0]);
+		/* Dispose src and dest regions */
+		OS.DisposeRgn(destRgn);
+		OS.DisposeRgn(srcRgn);
 	}
 }
 
