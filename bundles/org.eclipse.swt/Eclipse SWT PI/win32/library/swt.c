@@ -2972,6 +2972,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetSystemMetrics)
 }
 #endif /* NO_GetSystemMetrics */
 
+#ifndef NO_GetSystemPaletteEntries
+JNIEXPORT jint JNICALL OS_NATIVE(GetSystemPaletteEntries)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3)
+{
+	jbyte *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetSystemPaletteEntries\n");
+
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	rc = GetSystemPaletteEntries((HDC)arg0, (UINT)arg1, (UINT)arg2, (LPPALETTEENTRY)lparg3);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	return rc;
+}
+#endif /* NO_GetSystemPaletteEntries */
+
 #ifndef NO_GetTextCharset
 JNIEXPORT jint JNICALL OS_NATIVE(GetTextCharset)
 	(JNIEnv *env, jclass that, jint arg0)

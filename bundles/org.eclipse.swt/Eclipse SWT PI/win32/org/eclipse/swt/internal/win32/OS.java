@@ -629,6 +629,7 @@ public class OS {
 	public static final int NULLREGION = 0x1;
 	public static final int NULL_BRUSH = 0x5;
 	public static final int NULL_PEN = 0x8;
+	public static final int NUMRESERVED = 106;
 	public static final int OBJID_CLIENT = 0xFFFFFFFC;
 	public static final int OBJ_FONT = 0x6;
 	public static final int OBJ_PEN = 0x1;
@@ -773,6 +774,7 @@ public class OS {
 	public static final int SIP_UP = 0;
 	public static final int SIPF_ON = 0x1;
 	public static final int SIZE_MINIMIZED = 0x1;
+	public static final int SIZEPALETTE = 104;
 	public static final int SM_CMONITORS = 80;
 	public static final int SM_CXBORDER = 0x5;
 	public static final int SM_CXCURSOR = 0xd;
@@ -2108,6 +2110,7 @@ public static final native int GetSysColor (int nIndex);
 public static final native int GetSysColorBrush (int nIndex);
 public static final native int GetSystemMenu (int hWnd, boolean bRevert);
 public static final native int GetSystemMetrics (int nIndex);
+public static final native int GetSystemPaletteEntries(int hdc, int iStartIndex, int nEntries, byte[] lppe);
 public static final native int GetTextColor (int hDC);
 public static final native boolean GetTextExtentPoint32W (int hdc, char [] lpString, int cbString, SIZE lpSize);
 public static final native boolean GetTextExtentPoint32A (int hdc, byte [] lpString, int cbString, SIZE lpSize);

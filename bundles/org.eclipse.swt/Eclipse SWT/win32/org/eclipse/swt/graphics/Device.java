@@ -542,37 +542,31 @@ protected void init () {
 	int rc = OS.GetDeviceCaps (hDC, OS.RASTERCAPS);
 	int bits = OS.GetDeviceCaps (hDC, OS.BITSPIXEL);
 	int planes = OS.GetDeviceCaps (hDC, OS.PLANES);
-	internal_dispose_GC (hDC, null);
 	
 	bits *= planes;
-	if ((rc & OS.RC_PALETTE) == 0 || bits != 8) return;
-
-	/*
-	 * The following colors are listed in the Windows
-	 * Programmer's Reference as the colors guaranteed
-	 * to be in the default system palette.
-	 */
-	RGB [] rgbs = new RGB [] {
-		new RGB (0,0,0),
-		new RGB (0x80,0,0),
-		new RGB (0,0x80,0),
-		new RGB (0x80,0x80,0),
-		new RGB (0,0,0x80),
-		new RGB (0x80,0,0x80),
-		new RGB (0,0x80,0x80),
-		new RGB (0xC0,0xC0,0xC0),
-		new RGB (0x80,0x80,0x80),
-		new RGB (0xFF,0,0),
-		new RGB (0,0xFF,0),
-		new RGB (0xFF,0xFF,0),
-		new RGB (0,0,0xFF),
-		new RGB (0xFF,0,0xFF),
-		new RGB (0,0xFF,0xFF),
-		new RGB (0xFF,0xFF,0xFF),
-	};
+	if ((rc & OS.RC_PALETTE) == 0 || bits != 8) {
+		internal_dispose_GC (hDC, null);
+		return;
+	}
 	
-	/* 4 bytes header + 4 bytes per entry * 256 entries */
-	byte [] logPalette = new byte [4 + 4 * 256];
+	int numReserved = OS.GetDeviceCaps (hDC, OS.NUMRESERVED);
+	int numEntries = OS.GetDeviceCaps (hDC, OS.SIZEPALETTE);
+
+	if (OS.IsWinCE) {
+		/*
+		* Feature on WinCE.  For some reason, certain 8 bit WinCE
+		* devices return 0 for the number of reserved entries in
+		* the system palette.  Their system palette correctly contains
+		* the usual 20 system colors.  The workaround is to assume
+		* there are 20 reserved system colors instead of 0.		*/
+		if (numReserved == 0 && numEntries >= 20) numReserved = 20;
+	}
+
+	/* Create the palette and reference counter */
+	colorRefCount = new int [numEntries];
+
+	/* 4 bytes header + 4 bytes per entry * numEntries entries */
+	byte [] logPalette = new byte [4 + 4 * numEntries];
 	
 	/* 2 bytes = special header */
 	logPalette [0] = 0x00;
@@ -581,19 +575,27 @@ protected void init () {
 	/* 2 bytes = number of colors, LSB first */
 	logPalette [2] = 0;
 	logPalette [3] = 1;
-	
-	/* Create the palette and reference counter */
-	colorRefCount = new int [256];
-	for (int i = 0; i < rgbs.length; i++) {
+
+	/* 
+	* Create a palette which contains the system entries
+	* as they are located in the system palette.  The
+	* MSDN article 'Memory Device Contexts' describes
+	* where system entries are located.  On an 8 bit
+	* display with 20 reserved colors, the system colors
+	* will be the first 10 entries and the last 10 ones.
+	*/
+	byte[] lppe = new byte [4 * numEntries];
+	OS.GetSystemPaletteEntries (hDC, 0, numEntries, lppe);
+	/* Copy all entries from the system palette */
+	System.arraycopy (lppe, 0, logPalette, 4, 4 * numEntries);
+	/* Lock the indices corresponding to the system entries */
+	for (int i = 0; i < numReserved / 2; i++) {
 		colorRefCount [i] = 1;
-		int offset = i * 4 + 4;
-		logPalette [offset] = (byte) rgbs[i].red;
-		logPalette [offset + 1] = (byte) rgbs[i].green;
-		logPalette [offset + 2] = (byte) rgbs[i].blue;
+		colorRefCount [numEntries - 1 - i] = 1;
 	}
+	internal_dispose_GC (hDC, null);
 	hPalette = OS.CreatePalette (logPalette);
 }
-
 /**	 
  * Invokes platform specific functionality to allocate a new GC handle.
  * <p>
