@@ -13,6 +13,7 @@ package org.eclipse.swt.tests.junit;
 import junit.framework.*;
 import junit.textui.*;
 import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -61,27 +62,109 @@ public void test_ConstructorLorg_eclipse_swt_widgets_MenuII() {
 }
 
 public void test_addArmListenerLorg_eclipse_swt_events_ArmListener() {
-	warnUnimpl("Test test_addArmListenerLorg_eclipse_swt_events_ArmListener not written");
+	listenerCalled = false;
+	ArmListener listener = new ArmListener() {
+		public void widgetArmed(ArmEvent e) {
+			listenerCalled = true;
+		};
+	};
+	
+	try {
+		menuItem.addArmListener(null);
+		fail("No exception thrown for addArmListener with null argument");
+	} catch (IllegalArgumentException e) {
+	}
+	
+	menuItem.addArmListener(listener);
+	menuItem.notifyListeners(SWT.Arm, new Event());
+	assertTrue(listenerCalled);
+	
+	try {
+		menuItem.removeArmListener(null);
+		fail("No exception thrown for removeArmListener with null argument");
+	} catch (IllegalArgumentException e) {
+	}
+	listenerCalled = false;
+	menuItem.removeArmListener(listener);
+	menuItem.notifyListeners(SWT.Arm, new Event());
+	assertFalse(listenerCalled);
 }
 
 public void test_addHelpListenerLorg_eclipse_swt_events_HelpListener() {
-	warnUnimpl("Test test_addHelpListenerLorg_eclipse_swt_events_HelpListener not written");
+	listenerCalled = false;
+	HelpListener listener = new HelpListener() {
+		public void helpRequested(HelpEvent e) {
+			listenerCalled = true;
+		};
+	};
+	
+	try {
+		menuItem.addHelpListener(null);
+		fail("No exception thrown for addHelpListener with null argument");
+	} catch (IllegalArgumentException e) {
+	}
+	
+	menuItem.addHelpListener(listener);
+	menuItem.notifyListeners(SWT.Help, new Event());
+	assertTrue(listenerCalled);
+	
+	try {
+		menuItem.removeHelpListener(null);
+		fail("No exception thrown for removeHelpListener with null argument");
+	} catch (IllegalArgumentException e) {
+	}
+	listenerCalled = false;
+	menuItem.removeHelpListener(listener);
+	menuItem.notifyListeners(SWT.Help, new Event());
+	assertFalse(listenerCalled);
 }
 
 public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	warnUnimpl("Test test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
+	listenerCalled = false;
+	SelectionListener listener = new SelectionListener() {
+		public void widgetSelected(SelectionEvent e) {
+			listenerCalled = true;
+		};
+		public void widgetDefaultSelected(SelectionEvent e) {
+		};
+	};
+	
+	try {
+		menuItem.addSelectionListener(null);
+		fail("No exception thrown for addSelectionListener with null argument");
+	} catch (IllegalArgumentException e) {
+	}
+	
+	menuItem.addSelectionListener(listener);
+	menuItem.notifyListeners(SWT.Selection, new Event());
+	assertTrue(listenerCalled);
+	
+	try {
+		menuItem.removeSelectionListener(null);
+		fail("No exception thrown for removeSelectionListener with null argument");
+	} catch (IllegalArgumentException e) {
+	}
+	listenerCalled = false;
+	menuItem.removeSelectionListener(listener);
+	menuItem.notifyListeners(SWT.Selection, new Event());
+	assertFalse(listenerCalled);
 }
 
 public void test_getAccelerator() {
-	warnUnimpl("Test test_getAccelerator not written");
+	menuItem.setAccelerator(SWT.MOD1 + 'X');
+	assertEquals(menuItem.getAccelerator(), SWT.MOD1 + 'X');
+	menuItem.setAccelerator(SWT.MOD2 + 'Y');
+	assertEquals(menuItem.getAccelerator(), SWT.MOD2 + 'Y');
+	menuItem.setAccelerator(SWT.MOD3 + 'Z');
+	assertEquals(menuItem.getAccelerator(), SWT.MOD3 + 'Z');
 }
 
 public void test_getEnabled() {
-	warnUnimpl("Test test_getEnabled not written");
+	// tested in test_setEnabledZ()
 }
 
 public void test_getMenu() {
-	warnUnimpl("Test test_getMenu not written");
+	// tested in test_setMenuLorg_eclipse_swt_widgets_Menu
 }
 
 public void test_getParent() {
@@ -89,7 +172,7 @@ public void test_getParent() {
 }
 
 public void test_getSelection() {
-	warnUnimpl("Test test_getSelection not written");
+	// tested in test_setSelectionZ()
 }
 
 public void test_isEnabled() {
@@ -100,21 +183,20 @@ public void test_isEnabled() {
 }
 
 public void test_removeArmListenerLorg_eclipse_swt_events_ArmListener() {
-	warnUnimpl("Test test_removeArmListenerLorg_eclipse_swt_events_ArmListener not written");
+	// tested in test_addArmListenerLorg_eclipse_swt_events_ArmListener()
 }
 
 public void test_removeHelpListenerLorg_eclipse_swt_events_HelpListener() {
-	warnUnimpl("Test test_removeHelpListenerLorg_eclipse_swt_events_HelpListener not written");
+	// tested in test_addHelpListenerLorg_eclipse_swt_events_HelpListener()
 }
 
 public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
-	warnUnimpl("Test test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
+	// tested in test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener
 }
 
 public void test_setAcceleratorI() {
 	menuItem.setAccelerator(SWT.CTRL + 'Z');
 	assertEquals(menuItem.getAccelerator(), SWT.CTRL + 'Z');
-	
 }
 
 public void test_setEnabledZ() {
@@ -125,7 +207,12 @@ public void test_setEnabledZ() {
 }
 
 public void test_setImageLorg_eclipse_swt_graphics_Image() {
-	warnUnimpl("Test test_setImageLorg_eclipse_swt_graphics_Image not written");
+	assertNull(menuItem.getImage());
+	menuItem.setImage(images[0]);
+	assertEquals(images[0], menuItem.getImage());
+	assertTrue(menuItem.getImage() != images[1]);
+	menuItem.setImage(null);
+	assertNull(menuItem.getImage());
 }
 
 public void test_setMenuLorg_eclipse_swt_widgets_Menu() {
@@ -151,7 +238,19 @@ public void test_setSelectionZ() {
 }
 
 public void test_setTextLjava_lang_String() {
-	warnUnimpl("Test test_setTextLjava_lang_String not written");
+	menuItem.setText("ABCDEFG");
+	assertTrue(menuItem.getText().equals("ABCDEFG"));
+	try {
+		menuItem.setText(null);
+		fail("No exception thrown for addArmListener with null argument");
+	} catch (IllegalArgumentException e) {
+	}
+	menuItem.setText("ABCDEFG");
+	menuItem.setAccelerator(SWT.MOD1 + 'A');
+	assertTrue(menuItem.getText().equals("ABCDEFG"));
+	menuItem.setText("AB&CDEFG");
+	String text = menuItem.getText();
+	assertTrue(menuItem.getText().equals("AB&CDEFG"));
 }
 
 public static Test suite() {

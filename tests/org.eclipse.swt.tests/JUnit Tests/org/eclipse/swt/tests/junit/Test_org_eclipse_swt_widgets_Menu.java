@@ -104,7 +104,10 @@ public void test_addHelpListenerLorg_eclipse_swt_events_HelpListener() {
 	} catch (IllegalArgumentException e) {
 	}
 	
+	listenerCalled = false;
 	menu.removeHelpListener(listener);
+	menu.notifyListeners(SWT.Help, new Event());
+	assertFalse(listenerCalled);
 }
 
 public void test_addMenuListenerLorg_eclipse_swt_events_MenuListener() {
@@ -138,7 +141,10 @@ public void test_addMenuListenerLorg_eclipse_swt_events_MenuListener() {
 	} catch (IllegalArgumentException e) {
 	}
 	
+	listenerCalled = false;
 	menu.removeMenuListener(menuListener);
+	menu.notifyListeners(SWT.Show, new Event());
+	assertFalse(listenerCalled);
 }
 
 public void test_getDefaultItem() {

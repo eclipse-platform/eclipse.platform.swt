@@ -56,7 +56,7 @@ public void test_getStyle() {
 }
 
 public void test_getText() {
-	warnUnimpl("Test test_getText not written");
+	// tested in test_setTextLjava_lang_String()
 }
 
 public void test_setTextLjava_lang_String() {
