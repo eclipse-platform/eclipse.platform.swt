@@ -825,7 +825,7 @@ void drawChevron(GC gc) {
 		count = selectedIndex == -1 ? items.length : items.length - 1;
 	} else {
 		int lastIndex = getLastIndex();
-		count = items.length - (lastIndex - firstIndex + 1);
+		count = Math.max(0, items.length - (lastIndex - firstIndex + 1));
 	}
 	switch (chevronImageState) {
 		case NORMAL: {
@@ -1274,6 +1274,7 @@ public CTabItem [] getItems() {
 }
 int getLastIndex() {
 	if (single) return selectedIndex;
+	if (items.length == 0) return -1;
 	int edge = getRightItemEdge();
 	for (int i = firstIndex; i < items.length; i++) {
 		CTabItem item = items[i];
@@ -2488,23 +2489,29 @@ boolean setButtonBounds() {
 	oldWidth = chevronRect.width;
 	oldHeight = chevronRect.height;
 	chevronRect.x = chevronRect.y = chevronRect.height = chevronRect.width = 0;
-	if (items.length > 1) {
-		if (single && selectedIndex > -1){
-			CTabItem item = items[selectedIndex];
+	if (single) {
+		if (selectedIndex == -1 || items.length > 1){
 			chevronRect.width = 3*BUTTON_SIZE/2;
 			chevronRect.height = BUTTON_SIZE;
-			chevronRect.x = Math.min(item.x +item.width + 3, size.x - borderRight - minRect.width - maxRect.width - topRightRect.width - chevronRect.width + 3);
 			chevronRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - chevronRect.height)/2 : borderTop + (tabHeight - chevronRect.height)/2;
+			if (selectedIndex > -1) {
+				CTabItem item = items[selectedIndex];				
+				chevronRect.x = Math.min(item.x +item.width + 3, size.x - borderRight - minRect.width - maxRect.width - topRightRect.width - chevronRect.width);
+			} else {
+				chevronRect.x = size.x - borderRight - minRect.width - maxRect.width - topRightRect.width - chevronRect.width;
+			}
 			if (borderRight > 0) chevronRect.x += 1;
-		} else {
-			int rightEdge = getRightItemEdge();
-			CTabItem item = items[items.length-1];
-			if (firstIndex > 0 || item.x + item.width >= rightEdge) {
+		}
+	} else {
+		if (items.length > 1) {
+			int lastIndex = getLastIndex();
+			if (firstIndex > 0 || lastIndex < items.length - 1) {
 				chevronRect.width = 3*BUTTON_SIZE/2;
 				chevronRect.height = BUTTON_SIZE;
-				chevronRect.x = size.x - borderRight - minRect.width - maxRect.width - topRightRect.width - chevronRect.width - 3;
-				if (borderRight > 0) chevronRect.x += 1;
-				chevronRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - chevronRect.height)/2: borderTop + (tabHeight - chevronRect.height)/2;
+				lastIndex = getLastIndex(); // last index may change when chevron is present
+				CTabItem lastItem = items[lastIndex];
+				chevronRect.x = Math.min(lastItem.x +lastItem.width + 3, size.x - borderRight - minRect.width - maxRect.width - topRightRect.width - chevronRect.width);
+				chevronRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - chevronRect.height)/2 : borderTop + (tabHeight - chevronRect.height)/2;
 			}
 		}
 	}
@@ -2518,6 +2525,7 @@ void setFirstItem(int index) {
 	if (index == firstIndex) return;
 	firstIndex = index;
 	setItemLocation();
+	setButtonBounds();
 	redraw();
 }
 public void setFont(Font font) {
@@ -2759,6 +2767,7 @@ void setLastIndex(int index) {
 	if (firstIndex == index) return;
 	firstIndex = index;
 	setItemLocation();
+	setButtonBounds();
 	redraw();
 }
 /**
@@ -3246,6 +3255,7 @@ public void showItem (CTabItem item) {
 	setLastIndex(index);
 }
 void showList (Rectangle rect, int alignment) {
+	if (items.length == 0) return;
 	// if all items are showing, no list is required
 	int lastIndex = getLastIndex();
 	if (!single && firstIndex == 0 && lastIndex == items.length - 1) return;
