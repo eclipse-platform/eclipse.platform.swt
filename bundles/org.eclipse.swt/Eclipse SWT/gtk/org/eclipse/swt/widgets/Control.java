@@ -2114,11 +2114,10 @@ public void setCapture (boolean capture) {
  */
 public void setCursor (Cursor cursor) {
 	checkWidget();
-	int window = OS.GTK_WIDGET_WINDOW(paintHandle());
-	if (window == 0) return;
-	int hCursor = 0;
-	if (cursor != null) hCursor = cursor.handle;
-	OS.gdk_window_set_cursor (window, hCursor);
+	int window = paintWindow ();
+	if (window != 0) {
+		OS.gdk_window_set_cursor (window, cursor != null ? cursor.handle : 0);
+	}
 }
 /**
  * Enables the receiver if the argument is <code>true</code>,
