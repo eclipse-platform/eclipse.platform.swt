@@ -1036,7 +1036,7 @@ public void test_timerExecILjava_lang_Runnable() {
 		while (!threadRan[0]) {
 			// The read and dispatch loop must be running in order
 			// for the runnable in the timer exec to be executed.
-			display.readAndDispatch();
+			if (!display.readAndDispatch ()) display.sleep();
 		}
 		
 		// Verify the timerExec with less than zero milliseconds didn't execute.
