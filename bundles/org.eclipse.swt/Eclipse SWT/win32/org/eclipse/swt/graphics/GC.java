@@ -25,6 +25,12 @@ import org.eclipse.swt.*;
  * </dl>
  * 
  * <p>
+ * The SWT drawing coordinate system is the two-dimensional space with the origin
+ * (0,0) at the top left corner of the drawing area and with (x,y) values increasing
+ * to the right and downward respectively.
+ * </p>
+ * 
+ * <p>
  * Application code must explicitly invoke the <code>GC.dispose()</code> 
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required. This is <em>particularly</em>
