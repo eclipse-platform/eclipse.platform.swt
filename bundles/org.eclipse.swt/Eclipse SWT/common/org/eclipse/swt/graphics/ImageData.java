@@ -1010,7 +1010,7 @@ public ImageData scaledTo(int width, int height) {
 		flipX, flipY);
 	
 	/* Scale the image mask or alpha */
-	if (getTransparencyType() == SWT.TRANSPARENCY_MASK) {
+	if (maskData != null) {
 		dest.maskPad = this.maskPad;
 		int destBpl = (dest.width + 7) / 8;
 		destBpl = (destBpl + (dest.maskPad - 1)) / dest.maskPad * dest.maskPad;
@@ -1548,7 +1548,9 @@ static final int LSB_FIRST = 2;
  * Logic operations are specified by packing bits representing the
  * result of the 8 possible combinations of Mask, Source and Dest bits
  * then XORing this with 0xca and shifting left by 8 bits.  The XOR
- * ensures backwards compatibility with earlier blitter operation codes.
+ * ensures backwards compatibility with existing blitter operation codes.
+ * (The default operation BLIT_LOGIC_MASKSRC becomes 0x00)
+ *
  * i.e.
  *   (MSB) bit 7 = NOT result when Mask = 1, Src = 1, Dest = 1
  *         bit 6 = NOT result when Mask = 1, Src = 1, Dest = 0
@@ -1558,36 +1560,35 @@ static final int LSB_FIRST = 2;
  *         bit 2 =     result when Mask = 0, Src = 1, Dest = 0
  *         bit 1 = NOT result when Mask = 0, Src = 0, Dest = 1
  *   (LSB) bit 0 =     result when Mask = 0, Src = 0, Dest = 0
- */ /**
-static final int
-	BLIT_LOGIC_OPERATIONS     = 0xff00, // Mask for blit logic operations bitfield
-	BLIT_LOGIC_ZERO           = 0xca00, // Always zero
-	BLIT_LOGIC_MASKZERO       = 0xc000, // Copy zeros through mask
-	BLIT_LOGIC_NOTMASKZERO    = 0x6a00, // Copy zeros through inverted mask
-	BLIT_LOGIC_ONE            = 0x3500, // Always one
-	BLIT_LOGIC_MASKONE        = 0x3000, // Copy ones through mask
-	BLIT_LOGIC_NOTMASKONE     = 0x6500, // Copy ones through inverted mask
-	BLIT_LOGIC_NOP            = 0x6000, // No change
-	BLIT_LOGIC_SRC            = 0x0a00, // Copy source
-	BLIT_LOGIC_NOTSRC         = 0xf900, // Copy inverted source
-	BLIT_LOGIC_ORSRC          = 0x2400, // OR source with dest
-	BLIT_LOGIC_ANDSRC         = 0x4200, // AND source with dest
-	BLIT_LOGIC_XORSRC         = 0xac00, // XOR source with dest
-	BLIT_LOGIC_MASKSRC        = 0x0000, // Copy source through mask
-	BLIT_LOGIC_MASKNOTSRC     = 0xf000, // Copy inverted source through mask
-	BLIT_LOGIC_MASKORSRC      = 0x2000, // OR source with dest through mask
-	BLIT_LOGIC_MASKANDSRC     = 0x4000, // AND source with dest through mask
-	BLIT_LOGIC_MASKXORSRC     = 0xa000, // XOR source with dest through mask
-	BLIT_LOGIC_NOTMASKSRC     = 0x6600, // Copy source through inverted mask
-	BLIT_LOGIC_NOTMASKNOTSRC  = 0x6900, // Copy inverted source through inverted mask
-	BLIT_LOGIC_NOTMASKORSRC   = 0x6400, // OR source with dest through inverted mask
-	BLIT_LOGIC_NOTMASKANDSRC  = 0x6200, // AND source with dest through inverted mask
-	BLIT_LOGIC_NOTMASKXORSRC  = 0x6c00, // XOR source with dest through inverted mask
-	BLIT_LOGIC_DEST           = 0x6000, // No change
-	BLIT_LOGIC_NOTDEST        = 0x9f00, // Copy inverted dest
-	BLIT_LOGIC_MASKNOTDEST    = 0x9000, // Copy inverted dest through mask
-	BLIT_LOGIC_NOTMASKNOTDEST = 0x6f00; // Copy inverted dest through inverted mask
-*/
+ */
+//public static final int
+//	BLIT_LOGIC_OPERATIONS     = 0xff00, // Mask for blit logic operations bitfield
+//	BLIT_LOGIC_ZERO           = 0xca00, // Always zero
+//	BLIT_LOGIC_MASKZERO       = 0xc000, // Copy zeros through mask
+//	BLIT_LOGIC_NOTMASKZERO    = 0x6a00, // Copy zeros through inverted mask
+//	BLIT_LOGIC_ONE            = 0x3500, // Always one
+//	BLIT_LOGIC_MASKONE        = 0x3000, // Copy ones through mask
+//	BLIT_LOGIC_NOTMASKONE     = 0x6500, // Copy ones through inverted mask
+//	BLIT_LOGIC_NOP            = 0x6000, // No change
+//	BLIT_LOGIC_SRC            = 0x0a00, // Copy source
+//	BLIT_LOGIC_NOTSRC         = 0xf900, // Copy inverted source
+//	BLIT_LOGIC_ORSRC          = 0x2400, // OR source with dest
+//	BLIT_LOGIC_ANDSRC         = 0x4200, // AND source with dest
+//	BLIT_LOGIC_XORSRC         = 0xac00, // XOR source with dest
+//	BLIT_LOGIC_MASKSRC        = 0x0000, // Copy source through mask
+//	BLIT_LOGIC_MASKNOTSRC     = 0xf000, // Copy inverted source through mask
+//	BLIT_LOGIC_MASKORSRC      = 0x2000, // OR source with dest through mask
+//	BLIT_LOGIC_MASKANDSRC     = 0x4000, // AND source with dest through mask
+//	BLIT_LOGIC_MASKXORSRC     = 0xa000, // XOR source with dest through mask
+//	BLIT_LOGIC_NOTMASKSRC     = 0x6600, // Copy source through inverted mask
+//	BLIT_LOGIC_NOTMASKNOTSRC  = 0x6900, // Copy inverted source through inverted mask
+//	BLIT_LOGIC_NOTMASKORSRC   = 0x6400, // OR source with dest through inverted mask
+//	BLIT_LOGIC_NOTMASKANDSRC  = 0x6200, // AND source with dest through inverted mask
+//	BLIT_LOGIC_NOTMASKXORSRC  = 0x6c00, // XOR source with dest through inverted mask
+//	BLIT_LOGIC_DEST           = 0x6000, // No change
+//	BLIT_LOGIC_NOTDEST        = 0x9f00, // Copy inverted dest
+//	BLIT_LOGIC_MASKNOTDEST    = 0x9000, // Copy inverted dest through mask
+//	BLIT_LOGIC_NOTMASKNOTDEST = 0x6f00; // Copy inverted dest through inverted mask
 
 /**
  * Data types (internal)
@@ -3098,6 +3099,14 @@ private final static int getChannelWidth(int mask, int shift) {
 		mask >>>= 1;
 	}
 	return i - shift;
+}
+
+/**
+ * Extracts a field from packed RGB data given a mask for that field.
+ */
+private final static byte getChannelField(int data, int mask) {
+	final int shift = getChannelShift(mask);
+	return anyToEight[getChannelWidth(mask, shift)][(data & mask) >>> shift];
 }
 
 /**
