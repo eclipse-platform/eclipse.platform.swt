@@ -7,7 +7,10 @@ package org.eclipse.swt.dnd;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.internal.Converter;
+import org.eclipse.swt.internal.motif.OS;
+import org.eclipse.swt.internal.motif.XTextProperty;
 /**
  * The class <code>TextTransfer</code> provides a platform specific mechanism 
  * for converting plain text represented as a java <code>String</code> 
@@ -24,14 +27,10 @@ import org.eclipse.swt.internal.Converter;
 public class TextTransfer extends ByteArrayTransfer {
 
 	private static TextTransfer _instance = new TextTransfer();
-	private static final String TYPENAME1 = "STRING";
+	private static final String TYPENAME1 = "COMPOUND_TEXT";
 	private static final int TYPEID1 = registerType(TYPENAME1);
-	private static final String TYPENAME2 = "text/plain";
+	private static final String TYPENAME2 = "STRING";
 	private static final int TYPEID2 = registerType(TYPENAME2);
-	private static final String TYPENAME3 = "text/text";
-	private static final int TYPEID3 = registerType(TYPENAME3);
-	private static final String TYPENAME4 = "TEXT";
-	private static final int TYPEID4 = registerType(TYPENAME4);
 
 private TextTransfer() {
 }
@@ -54,8 +53,34 @@ public static TextTransfer getInstance () {
  */
 public void javaToNative (Object object, TransferData transferData){
 	if (object == null || !(object instanceof String)) return;
-	byte [] buffer = Converter.wcsToMbcs (null, (String)object, true);
-	super.javaToNative(buffer, transferData);
+	byte[] buffer = Converter.wcsToMbcs (null, (String)object, true);
+	if (transferData.type == TYPEID1) { // COMPOUND_TEXT
+		Display display = Display.getCurrent();
+		if (display == null) {
+			transferData.result = 0;
+			return;
+		}
+		int xDisplay = display.xDisplay;
+		int pBuffer = OS.XtMalloc(buffer.length);
+		OS.memmove(pBuffer, buffer, buffer.length);
+		int list = OS.XtMalloc(4);
+		OS.memmove(list, new int[] {pBuffer}, 4);
+		XTextProperty text_prop_return = new XTextProperty();
+		int result = OS.XmbTextListToTextProperty (xDisplay, list, 1, OS.XCompoundTextStyle, text_prop_return);
+		OS.XtFree(pBuffer);
+		OS.XtFree(list);
+		if (result != 0){
+			transferData.result = 0;
+		} else {	
+			transferData.format = text_prop_return.format;
+			transferData.length = text_prop_return.nitems;
+			transferData.pValue = text_prop_return.value;
+			transferData.type = text_prop_return.encoding;
+			transferData.result = 1;
+		}
+	} else {
+		super.javaToNative(buffer, transferData);
+	}
 }
 /**
  * This implementation of <code>nativeToJava</code> converts a platform specific 
@@ -69,7 +94,30 @@ public void javaToNative (Object object, TransferData transferData){
  */
 public Object nativeToJava(TransferData transferData){
 	// get byte array from super
-	byte[] buffer = (byte[])super.nativeToJava(transferData);
+	byte[] buffer = null;
+	if (transferData.type == TYPEID1){ //COMPOUND_TEXT
+		Display display = Display.getCurrent();
+		if (display == null) return null;
+		int xDisplay = display.xDisplay;
+		XTextProperty text_prop = new XTextProperty();
+		text_prop.encoding = transferData.type;
+		text_prop.format = transferData.format;
+		text_prop.nitems = transferData.length;
+		text_prop.value = transferData.pValue;
+		int[] list_return = new int[1];
+		int[] count_return = new int[1];
+		int result = OS.XmbTextPropertyToTextList (xDisplay, text_prop, list_return, count_return);
+		if (result != 0) return null;
+		//Note: only handling the first string in list
+		int[] ptr = new int[1];
+		OS.memmove(ptr, list_return[0], 4);
+		int length = OS.strlen(ptr[0]);
+		buffer = new byte[length];
+		OS.memmove(buffer, ptr[0], buffer.length);
+		OS.XFreeStringList(list_return[0]);
+	} else {
+		buffer = (byte[])super.nativeToJava(transferData);
+	}
 	if (buffer == null) return null;
 	// convert byte array to a string
 	char [] unicode = Converter.mbcsToWcs (null, buffer);
@@ -78,9 +126,9 @@ public Object nativeToJava(TransferData transferData){
 	return (end == -1) ? string : string.substring(0, end);
 }
 protected String[] getTypeNames(){
-	return new String[]{TYPENAME1, TYPENAME2, TYPENAME3, TYPENAME4};
+	return new String[]{TYPENAME1, TYPENAME2,};
 }
 protected int[] getTypeIds(){
-	return new int[]{TYPEID1, TYPEID2, TYPEID3, TYPEID4};
+	return new int[]{TYPEID1, TYPEID2,};
 }
 }
