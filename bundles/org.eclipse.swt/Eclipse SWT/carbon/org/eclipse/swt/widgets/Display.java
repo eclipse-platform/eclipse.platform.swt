@@ -751,40 +751,20 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 			break;
 		}
 		case OS.kEventClassKeyboard: {
-//			// decide whether a SWT control has the focus
-//			Control focus= getFocusControl();
-//			if (focus == null || focus.handle == 0)
-//				return OS.eventNotHandledErr;
-//				
-//			int frontWindow= OS.FrontWindow();
-//			if (findWidget(frontWindow) == null) {
-//				int w= OS.GetControlOwner(focus.handle);
-//				if (w != OS.FrontWindow())	// its probably a standard dialog
-//					return OS.eventNotHandledErr;
-//			}	
-			switch (eventKind) {
-				case OS.kEventRawKeyDown:
-					int [] keyCode = new int [1];
-					OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
-					if (keyCode [0] == 114) {	// help key
-//						windowProc(focus.handle, SWT.Help);
-//						return OS.noErr;
-					}
-					//FALL THROUGH
-				case OS.kEventRawKeyRepeat:
-					break;
-				case OS.kEventRawKeyUp:
-					break;
-				case OS.kEventRawKeyModifiersChanged:
-					int [] modifiers = new int [1];
-					OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, modifiers.length * 4, null, modifiers);
-					int eventType = SWT.KeyUp;
-					if ((modifiers [0] & OS.shiftKey) != 0 && (lastModifiers & OS.shiftKey) == 0) eventType = SWT.KeyDown;
-					if ((modifiers [0] & OS.controlKey) != 0 && (lastModifiers & OS.controlKey) == 0) eventType = SWT.KeyDown;
-					if ((modifiers [0] & OS.cmdKey) != 0 && (lastModifiers & OS.cmdKey) == 0) eventType = SWT.KeyDown;
-					if ((modifiers [0] & OS.optionKey) != 0 && (lastModifiers & OS.optionKey) == 0) eventType = SWT.KeyDown;
-					lastModifiers = modifiers [0];
-					break;			
+			int theWindow = OS.FrontWindow ();
+			if (theWindow == 0) return OS.eventNotHandledErr;
+			int [] theRoot = new int [1];
+			OS.GetRootControl (theWindow, theRoot);
+			int [] theControl = new int [1];
+			OS.GetKeyboardFocus (theWindow, theControl);
+			Control control = WidgetTable.get (theRoot [0]);
+			if (control != null) {
+				switch (eventKind) {
+					case OS.kEventRawKeyDown:				return control.kEventRawKeyDown (nextHandler, theEvent, userData);
+					case OS.kEventRawKeyRepeat:			return control.kEventRawKeyRepeat (nextHandler, theEvent, userData);
+					case OS.kEventRawKeyUp:				return control.kEventRawKeyUp (nextHandler, theEvent, userData);
+					case OS.kEventRawKeyModifiersChanged:	return control.kEventRawKeyModifiersChanged (nextHandler, theEvent, userData);
+				}
 			}
 			break;
 		}

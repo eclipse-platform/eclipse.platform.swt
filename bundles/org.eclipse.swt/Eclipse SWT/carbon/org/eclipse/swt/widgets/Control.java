@@ -270,6 +270,42 @@ public boolean getVisible () {
 	return false;
 }
 
+int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
+	int [] keyCode = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
+	if (keyCode [0] == 114) {	// help key
+//		windowProc(focus.handle, SWT.Help);
+//		return OS.noErr;
+	}
+	sendKeyEvent (SWT.KeyDown, theEvent);
+	return OS.eventNotHandledErr;
+}
+
+int kEventRawKeyRepeat (int nextHandler, int theEvent, int userData) {
+	sendKeyEvent (SWT.KeyDown, theEvent);
+	return OS.eventNotHandledErr;
+}
+
+int kEventRawKeyUp (int nextHandler, int theEvent, int userData) {
+	sendKeyEvent (SWT.KeyUp, theEvent);
+	return OS.eventNotHandledErr;
+}
+
+int kEventRawKeyModifiersChanged (int nextHandler, int theEvent, int userData) {
+	int [] modifiers = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, modifiers.length * 4, null, modifiers);
+	Display display = getDisplay ();
+	int lastModifiers = display.lastModifiers;
+	int type = SWT.KeyUp;
+	if ((modifiers [0] & OS.shiftKey) != 0 && (lastModifiers & OS.shiftKey) == 0) type = SWT.KeyDown;
+	if ((modifiers [0] & OS.controlKey) != 0 && (lastModifiers & OS.controlKey) == 0) type = SWT.KeyDown;
+	if ((modifiers [0] & OS.cmdKey) != 0 && (lastModifiers & OS.cmdKey) == 0) type = SWT.KeyDown;
+	if ((modifiers [0] & OS.optionKey) != 0 && (lastModifiers & OS.optionKey) == 0) type = SWT.KeyDown;
+	display.lastModifiers = modifiers [0];
+	sendKeyEvent (type, theEvent);
+	return OS.eventNotHandledErr;
+}
+					
 int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
@@ -431,6 +467,14 @@ public void removeTraverseListener(TraverseListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Traverse, listener);
+}
+
+boolean sendKeyEvent (int type, int theEvent) {
+	Event event = new Event ();
+	event.type = type;
+	setKeyState (event, theEvent);
+	postEvent (type, event);
+	return true;
 }
 
 public void setBackground (Color color) {

@@ -171,7 +171,6 @@ boolean isValidThread () {
 	return getDisplay ().isValidThread ();
 }
 
-
 public void notifyListeners (int eventType, Event event) {
 	checkWidget();
 	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -179,6 +178,14 @@ public void notifyListeners (int eventType, Event event) {
 	event.type = eventType;
 	event.widget = this;
 	eventTable.sendEvent (event);
+}
+
+void postEvent (int eventType) {
+	sendEvent (eventType, null, false);
+}
+
+void postEvent (int eventType, Event event) {
+	sendEvent (eventType, event, false);
 }
 
 void releaseChild () {
