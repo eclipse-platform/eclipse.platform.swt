@@ -610,7 +610,6 @@ static void read(RandomAccessFile raf, BITMAPINFOHEADER bih) throws IOException 
 }
 static void read(RandomAccessFile raf, BITMAPINFO bi) throws IOException {
 	read(raf, bi.bmiHeader);
-	System.out.println("Reading BITMAPINFO");
 }
 /* Little Endian helpers */
 static int readU2(RandomAccessFile raf) throws IOException {
