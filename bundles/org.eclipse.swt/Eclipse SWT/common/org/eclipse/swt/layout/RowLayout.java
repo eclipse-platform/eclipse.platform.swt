@@ -175,7 +175,7 @@ protected Point computeSize (Composite composite, int wHint, int hHint, boolean 
 	return extent;
 }
 
-Point getSize (Control control, boolean flushCache) {
+Point computeSize (Control control, boolean flushCache) {
 	int wHint = SWT.DEFAULT, hHint = SWT.DEFAULT;
 	RowData data = (RowData) control.getLayoutData ();
 	if (data != null) {
@@ -201,9 +201,9 @@ Point layoutHorizontal (Composite composite, boolean move, boolean wrap, int wid
 	if (!pack) {
 		for (int i=0; i<count; i++) {
 			Control child = children [i];
-			Point pt = getSize (child, flushCache);
-			childWidth = Math.max (childWidth, pt.x);
-			childHeight = Math.max (childHeight, pt.y);
+			Point size = computeSize (child, flushCache);
+			childWidth = Math.max (childWidth, size.x);
+			childHeight = Math.max (childHeight, size.y);
 		}
 		maxHeight = childHeight;
 	}
@@ -224,9 +224,9 @@ Point layoutHorizontal (Composite composite, boolean move, boolean wrap, int wid
 	for (int i=0; i<count; i++) {
 		Control child = children [i];
 		if (pack) {
-			Point pt = getSize (child, flushCache);
-			childWidth = pt.x;
-			childHeight = pt.y;
+			Point size = computeSize (child, flushCache);
+			childWidth = size.x;
+			childHeight = size.y;
 		}
 		if (wrap && (i != 0) && (x + childWidth > width)) {
 			wrapped = true;
@@ -298,9 +298,9 @@ Point layoutVertical (Composite composite, boolean move, boolean wrap, int heigh
 	if (!pack) {
 		for (int i=0; i<count; i++) {
 			Control child = children [i];
-			Point pt = getSize (child, flushCache);
-			childWidth = Math.max (childWidth, pt.x);
-			childHeight = Math.max (childHeight, pt.y);
+			Point size = computeSize (child, flushCache);
+			childWidth = Math.max (childWidth, size.x);
+			childHeight = Math.max (childHeight, size.y);
 		}
 		maxWidth = childWidth;
 	}
@@ -321,9 +321,9 @@ Point layoutVertical (Composite composite, boolean move, boolean wrap, int heigh
 	for (int i=0; i<count; i++) {
 		Control child = children [i];
 		if (pack) {
-			Point pt = getSize (child, flushCache);
-			childWidth = pt.x;
-			childHeight = pt.y;
+			Point size = computeSize (child, flushCache);
+			childWidth = size.x;
+			childHeight = size.y;
 		}
 		if (wrap && (i != 0) && (y + childHeight > height)) {
 			wrapped = true;

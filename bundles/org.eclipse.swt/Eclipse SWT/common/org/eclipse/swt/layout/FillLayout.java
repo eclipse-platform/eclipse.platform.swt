@@ -77,14 +77,11 @@ protected Point computeSize (Composite composite, int wHint, int hHint, boolean 
 	int maxWidth = 0, maxHeight = 0;
 	for (int i=0; i<count; i++) {
 		Control child = children [i];
-		Point pt = child.computeSize (SWT.DEFAULT, SWT.DEFAULT, flushCache);
-		maxWidth = Math.max (maxWidth, pt.x);
-		maxHeight = Math.max (maxHeight, pt.y);
+		Point size = child.computeSize (SWT.DEFAULT, SWT.DEFAULT, flushCache);
+		maxWidth = Math.max (maxWidth, size.x);
+		maxHeight = Math.max (maxHeight, size.y);
 	}	
-	if (type == SWT.HORIZONTAL) {
-		return new Point (count * maxWidth, maxHeight);
-	}
-	return new Point (maxWidth, count * maxHeight);
+	return type == SWT.HORIZONTAL ? new Point (count * maxWidth, maxHeight) : new Point (maxWidth, count * maxHeight);
 }
 
 protected void layout (Composite composite, boolean flushCache) {
@@ -101,15 +98,16 @@ protected void layout (Composite composite, boolean flushCache) {
 			child.setBounds (x, y, width, height);
 			x += width;
 		}
-		return;
-	}
-	int x = rect.x, width = rect.width;
-	int y = rect.y + ((rect.height % count) / 2);
-	int height = rect.height / count;
-	for (int i=0; i<count; i++) {
-		Control child = children [i];
-		child.setBounds (x, y, width, height);
-		y += height;
+	} else {
+		int x = rect.x, width = rect.width;
+		int y = rect.y + ((rect.height % count) / 2);
+		int height = rect.height / count;
+		for (int i=0; i<count; i++) {
+			Control child = children [i];
+			child.setBounds (x, y, width, height);
+			y += height;
+		}
 	}
 }
+
 }
