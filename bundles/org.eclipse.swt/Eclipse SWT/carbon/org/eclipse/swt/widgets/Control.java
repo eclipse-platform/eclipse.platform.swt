@@ -331,7 +331,7 @@ public boolean isVisible () {
 
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	if ((state & GRAB) != 0) {
-		sendMouseEvent (SWT.MouseDown, (short)0, theEvent);
+		sendMouseEvent (SWT.MouseDown, theEvent);
 		Display display = getDisplay ();
 		display.grabControl = this;
 	}
@@ -339,17 +339,17 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventMouseDragged (int nextHandler, int theEvent, int userData) {
-	sendMouseEvent (SWT.MouseMove, (short)0, theEvent);
+	sendMouseEvent (SWT.MouseMove, theEvent);
 	return OS.eventNotHandledErr;
 }
 
 int kEventMouseMoved (int nextHandler, int theEvent, int userData) {
-	sendMouseEvent (SWT.MouseMove, (short)0, theEvent);
+	sendMouseEvent (SWT.MouseMove, theEvent);
 	return OS.eventNotHandledErr;
 }
 
 int kEventMouseUp (int nextHandler, int theEvent, int userData) {
-	sendMouseEvent (SWT.MouseUp, (short)0, theEvent);
+	sendMouseEvent (SWT.MouseUp, theEvent);
 	return OS.eventNotHandledErr;
 }
 
@@ -569,6 +569,12 @@ boolean sendKeyEvent (int type, int theEvent) {
 	setKeyState (event, theEvent);
 	postEvent (type, event);
 	return true;
+}
+
+boolean sendMouseEvent (int type, int theEvent) {
+	short [] button = new short [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
+	return sendMouseEvent (type, button [0], theEvent);
 }
 
 boolean sendMouseEvent (int type, short button, int theEvent) {
