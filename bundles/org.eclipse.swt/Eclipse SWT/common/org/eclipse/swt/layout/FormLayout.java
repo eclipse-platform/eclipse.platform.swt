@@ -256,6 +256,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 			FormAttachment left = data.getLeftAttachment (child, spacing, flushCache);
 			FormAttachment right = data.getRightAttachment (child, spacing, flushCache);
 			int x1 = left.solveX (width), x2 = right.solveX (width);
+			//TEMPORARY CODE
 			if (data.width == SWT.DEFAULT && data.height == SWT.DEFAULT) {
 				if (!data.needed && (child.getStyle () & SWT.WRAP) != 0) {
 					int trim = 0;
