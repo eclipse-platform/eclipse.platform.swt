@@ -101,7 +101,7 @@ import org.eclipse.swt.events.*;
  */
 public class Shell extends Decorations {
 	int shellHandle, focusProxy;
-	boolean reparented, realized, configured;
+	boolean reparented, realized, moved, resized;
 	int oldX, oldY, oldWidth, oldHeight;
 	Control lastActive;
 	Region region;
@@ -773,19 +773,62 @@ public int getBorderWidth () {
 }
 public Rectangle getBounds () {
 	checkWidget();
-	short [] root_x = new short [1], root_y = new short [1];
-	OS.XtTranslateCoords (shellHandle, (short) 0, (short) 0, root_x, root_y);
-	if (reparented) {
-		root_x [0] -= trimLeft ();
-		root_y [0] -= trimTop ();
+	Rectangle bounds = new Rectangle (0, 0, 0, 0);
+	getBounds (null, null, bounds);
+	return bounds;
+}
+void getBounds(Point location, Point size, Rectangle bounds) {
+	int x = 0, y = 0;
+	if (location != null || bounds != null) {
+		/*
+		* Bug in Motif.  For some reason, XtTranslateCoords() returns different
+		* values depending on whether XtMoveWidget() or XtConfigureWidget() has
+		* been called.  This only happens after the shell has been realized.
+		* The fix is to use XTranslateCoordinates() instead.
+		*/
+		if (OS.XtIsRealized (shellHandle)) {
+			int xDisplay = OS.XtDisplay (shellHandle);
+			int xWindow = OS.XtWindow (shellHandle);
+			int[] root_x = new int[1], root_y = new int[1], child = new int[1];
+			/* Flush outstanding move and resize requests */
+			OS.XSync (xDisplay, false);
+			OS.XTranslateCoordinates (xDisplay, xWindow, OS.XDefaultRootWindow (xDisplay), 0, 0, root_x, root_y, child);
+			x = root_x [0];
+			y = root_y [0];
+		} else {
+			short [] root_x = new short [1], root_y = new short [1];
+			OS.XtTranslateCoords (shellHandle, (short) 0, (short) 0, root_x, root_y);
+			x = root_x [0];
+			y = root_y [0];
+		}
+		if (reparented) {
+			x -= trimLeft ();
+			y -= trimTop ();
+		}
 	}
-	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
-	OS.XtGetValues (shellHandle, argList, argList.length / 2);
-	int border = argList [5];
-	int trimWidth = trimWidth (), trimHeight = trimHeight ();
-	int width = argList [1] + trimWidth + (border * 2);
-	int height = argList [3] + trimHeight + (border * 2);
-	return new Rectangle (root_x [0], root_y [0], width, height);
+	int width = 0, height = 0;
+	if (size != null || bounds != null) {
+		int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
+		OS.XtGetValues (shellHandle, argList, argList.length / 2);
+		int border = argList [5];
+		int trimWidth = trimWidth (), trimHeight = trimHeight ();
+		width = argList [1] + trimWidth + (border * 2);		
+		height = argList [3] + trimHeight + (border * 2);
+	}
+	if (location != null) {
+		location.x = x;
+		location.y = y;
+	}
+	if (size != null) {
+		size.x = width;
+		size.y = height;
+	}
+	if (bounds != null) {
+		bounds.x = x;
+		bounds.y = y;
+		bounds.width = width;
+		bounds.height = height;
+	}
 }
 
 /**
@@ -811,13 +854,9 @@ public int getImeInputMode () {
 }
 public Point getLocation () {
 	checkWidget();
-	short [] root_x = new short [1], root_y = new short [1];
-	OS.XtTranslateCoords (shellHandle, (short) 0, (short) 0, root_x, root_y);
-	if (reparented) {
-		root_x [0] -= trimLeft ();
-		root_y [0] -= trimTop ();
-	}
-	return new Point (root_x [0], root_y [0]);
+	Point location = new Point (0, 0);
+	getBounds (location, null, null);
+	return location;
 }
 public boolean getMaximized () {
 	checkWidget();
@@ -912,13 +951,9 @@ public Shell [] getShells () {
 }
 public Point getSize () {
 	checkWidget();
-	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
-	OS.XtGetValues (shellHandle, argList, argList.length / 2);
-	int border = argList [5];
-	int trimWidth = trimWidth (), trimHeight = trimHeight ();
-	int width = argList [1] + trimWidth + (border * 2);
-	int height = argList [3] + trimHeight + (border * 2);
-	return new Point (width, height);
+	Point size = new Point (0, 0);
+	getBounds (null, size, null);
+	return size;
 }
 public boolean getVisible () {
 	checkWidget();
@@ -1076,16 +1111,6 @@ public void removeShellListener(ShellListener listener) {
 	eventTable.unhook(SWT.Iconify,listener);
 	eventTable.unhook(SWT.Deiconify,listener);
 }
-void saveBounds () {
-	short [] root_x = new short [1], root_y = new short [1];
-	OS.XtTranslateCoords (shellHandle, (short) 0, (short) 0, root_x, root_y);
-	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
-	OS.XtGetValues (shellHandle, argList, argList.length / 2);
-	oldX = root_x [0];
-	oldY = root_y [0];
-	oldWidth = argList [1];
-	oldHeight = argList [3];
-}
 
 /**
  * Moves the receiver to the top of the drawing order for
@@ -1184,31 +1209,30 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		width = Math.max (1, Math.max (argList [1], width - trimWidth ()));
 		height = Math.max (1, Math.max (argList [3], height - trimHeight ()));
 	}
-	if (!reparented || !OS.XtIsRealized (shellHandle)) {
-		return super.setBounds (x, y, width, height, move, resize);
-	}
-	if (move) {
-		x += trimLeft ();
-		y += trimTop ();
-	}		
-	if (!configured) saveBounds ();
-	configured = true;
-	boolean isFocus = caret != null && caret.isFocusCaret ();
-	if (isFocus) caret.killFocus ();
-	if (resize) {
-		if (redrawWindow != 0) {
-			int xDisplay = OS.XtDisplay (handle);
-			OS.XResizeWindow (xDisplay, redrawWindow, width, height);
-		}
-	}
 	if (move && resize) {
 		OS.XtConfigureWidget (shellHandle, x, y, width, height, 0);
 	} else {
 		if (move) OS.XtMoveWidget (shellHandle, x, y);
 		if (resize) OS.XtResizeWidget (shellHandle, width, height, 0);
 	}
-	if (resize && OS.IsLinux) updateResizable (width, height);
-	if (isFocus) caret.setFocus ();
+	if (redrawWindow != 0) {
+		int xDisplay = OS.XtDisplay (handle);
+		OS.XResizeWindow (xDisplay, redrawWindow, width, height);
+	}
+	if (move && (oldX != x || oldY != y)) {
+		moved = true;
+		oldX = x + trimLeft ();
+		oldY = y + trimTop ();
+		sendEvent (SWT.Move);
+	}
+	if (resize && (width != oldWidth || height != oldHeight)) {
+		if (OS.IsLinux) updateResizable (width, height);
+		resized = true;
+		oldWidth = width;
+		oldHeight = height;
+		sendEvent (SWT.Resize);
+		if (layout != null) layout.layout (this, false);
+	}
 	return move || resize;
 }
 public void setEnabled (boolean enabled) {
@@ -1406,6 +1430,21 @@ public void setVisible (boolean visible) {
 		if ((style & mask) != 0) {
 			OS.XUngrabPointer (display.xDisplay, OS.CurrentTime);
 		}
+		if (!moved) {
+			moved = true;
+			Point location = getLocation ();
+			oldX = location.x + trimLeft ();
+			oldY = location.x + trimTop ();
+			sendEvent (SWT.Move);
+		}
+		if (!resized) {
+			resized = true;
+			Point size = getSize ();
+			oldWidth = size.x - trimWidth ();
+			oldHeight = size.y - trimHeight ();
+			sendEvent (SWT.Resize);
+			if (layout != null) layout.layout (this, false);
+		}
 	} else {
 	
 		/* Hide the shell */
@@ -1515,14 +1554,13 @@ int trimWidth () {
 	return 0;
 }
 void updateResizable (int width, int height) {
+	if ((style & SWT.RESIZE) != 0) return;
 	if (!OS.XtIsRealized (shellHandle)) return;
-	if ((style & SWT.RESIZE) == 0) {
-		XSizeHints hints = new XSizeHints ();
-		hints.flags = OS.PMinSize | OS.PMaxSize;
-		hints.min_width = hints.max_width = width;
-		hints.min_height = hints.max_height = height;
-		OS.XSetWMNormalHints (OS.XtDisplay (shellHandle), OS.XtWindow (shellHandle), hints);
-	}
+	XSizeHints hints = new XSizeHints ();
+	hints.flags = OS.PMinSize | OS.PMaxSize;
+	hints.min_width = hints.max_width = width;
+	hints.min_height = hints.max_height = height;
+	OS.XSetWMNormalHints (OS.XtDisplay (shellHandle), OS.XtWindow (shellHandle), hints);
 }
 int WM_DELETE_WINDOW (int w, int client_data, int call_data) {
 	if (!isEnabled ()) return 0;
@@ -1590,22 +1628,21 @@ int XStructureNotify (int w, int client_data, int call_data, int continue_to_dis
 	}
 	switch (xEvent.type) {
 		case OS.ReparentNotify: {
-			if (reparented) return 0;
 			reparented = true;
-			short [] root_x = new short [1], root_y = new short [1];
-			OS.XtTranslateCoords (shellHandle, (short) 0, (short) 0, root_x, root_y);
-			int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
-			OS.XtGetValues (shellHandle, argList, argList.length / 2);	
-			xEvent.x = root_x [0];  xEvent.y = root_y [0];
-			xEvent.width = argList [1];  xEvent.height = argList [3];
+			adjustTrim ();
 			if (OS.IsLinux) updateResizable (xEvent.width, xEvent.height);
-			// FALL THROUGH
+			break;
 		}
 		case OS.ConfigureNotify:
-			if (!reparented) return 0;
-			configured = false;
-			if (oldX != xEvent.x || oldY != xEvent.y) sendEvent (SWT.Move);
-			if (oldWidth != xEvent.width || oldHeight != xEvent.height) {
+			int [] root_x = new int [1], root_y = new int [1], child = new int [1];
+			OS.XTranslateCoordinates (xEvent.display, xEvent.window, OS.XDefaultRootWindow (xEvent.display), 0, 0, root_x, root_y, child);
+			if (!moved || oldX != root_x [0] || oldY != root_y [0]) {
+				moved = true;
+				oldX = root_x [0];
+				oldY = root_y [0];
+				sendEvent (SWT.Move);
+			}
+			if (!resized || oldWidth != xEvent.width || oldHeight != xEvent.height) {
 				int xEvent1 = OS.XtMalloc (XEvent.sizeof);
 				display.resizeWindow = xEvent.window;
 				display.resizeWidth = xEvent.width;
@@ -1613,16 +1650,15 @@ int XStructureNotify (int w, int client_data, int call_data, int continue_to_dis
 				display.resizeCount = 0;
 				int checkResizeProc = display.checkResizeProc;
 				OS.XCheckIfEvent (xEvent.display, xEvent1, checkResizeProc, 0);
-				if (display.resizeCount == 0) {
-					sendEvent (SWT.Resize);
-					if (layout != null) layout (false);
-				}
 				OS.XtFree (xEvent1);
+				if (display.resizeCount == 0) {
+					resized = true;
+					oldWidth = xEvent.width;
+					oldHeight = xEvent.height;
+					sendEvent (SWT.Resize);
+					if (layout != null) layout.layout (this, false);
+				}
 			}
-			if (xEvent.x != 0) oldX = xEvent.x;
-			if (xEvent.y != 0) oldY = xEvent.y;
-			oldWidth = xEvent.width;
-			oldHeight = xEvent.height;
 			return 0;
 		case OS.UnmapNotify:
 			int [] argList = {OS.XmNmappedWhenManaged, 0};
