@@ -369,10 +369,7 @@ public static final native boolean GTK_WIDGET_HAS_GRAB(int wid);
 
 public static final native int GTK_FONT_SELECTION_DIALOG_OK_BUTTON(int handle);
 public static final native int GTK_FONT_SELECTION_DIALOG_CANCEL_BUTTON(int handle);
-public static final native int GTK_COLOR_SELECTION_OK_BUTTON(int handle);
-public static final native int GTK_COLOR_SELECTION_CANCEL_BUTTON(int handle);
-public static final native int GTK_COLOR_SELECTION_HELP_BUTTON(int handle);
-public static final native int GTK_COLOR_SELECTION_COLORSEL(int handle);
+public static final native int GTK_COLOR_SELECTION_DIALOG_COLORSEL(int handle);
 public static final native int GTK_DIALOG_ACTION_AREA(int handle);
 public static final native int GTK_DIALOG_VBOX(int handle);
 public static final native void gtk_window_get_position(int handle, int[] x, int[] y);
@@ -1005,4 +1002,10 @@ public static final native void gtk_file_selection_set_select_multiple(int files
 public static final native int gtk_file_selection_get_selections(int filesel);
 public static final native void g_strfreev(int string_array);
 public static final native int g_filename_to_utf8(int opsysstring, int len, int bytes_read, int bytes_written, int error);
+public static final native int gtk_message_dialog_new(int parent, int flags, int type, int button, String message_format);
+public static final native int GTK_MESSAGE_INFO();
+public static final native int GTK_MESSAGE_WARNING();
+public static final native int GTK_MESSAGE_QUESTION();
+public static final native int GTK_MESSAGE_ERROR();
+public static final native int gtk_dialog_add_button(int dialog, String text, int response_id);
 }

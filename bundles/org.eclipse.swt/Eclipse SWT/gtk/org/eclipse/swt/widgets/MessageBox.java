@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2002.
  * All Rights Reserved
  */
 
@@ -34,18 +34,7 @@ import org.eclipse.swt.widgets.*;
 public class MessageBox extends Dialog {
 
 	String message;
-
-	// Handles
 	int handle;
-	int label;
-	int buttonOK, buttonCANCEL, buttonYES, buttonNO, buttonABORT, buttonRETRY, buttonIGNORE;
-
-	int state;
-
-/*
- *   ===  CONSTRUCTORS  ===
- */
-
 /**
  * Constructs a new instance of this class given only its
  * parent.
@@ -107,12 +96,6 @@ public MessageBox (Shell parent, int style) {
 	checkSubclass ();
 }
 
-
-
-/*
- *   ===  GET/SET MESSAGE;  OPEN  ===
- */
-
 /**
  * Returns the dialog's message, which is a description of
  * the purpose for which it was opened. This message will be
@@ -148,74 +131,34 @@ public void setMessage (String string) {
  * </ul>
  */
 public int open () {
-	createHandle();
-	createMessage(); // includes configuring
-	Callback okCallback = new Callback (this, "activateFunc", 2);
-	createActionButtons(okCallback);
-	state=0;
-	Callback destroyCallback = new Callback (this, "destroyFunc", 2);
-	int destroyFunc = destroyCallback.getAddress ();
-	byte [] destroy = Converter.wcsToMbcs (null, "delete_event", true);
-	OS.gtk_signal_connect_after (handle, destroy, destroyFunc, handle);
-	showHandle();
-	while(state==0) OS.gtk_main_iteration();
-	OS.gtk_widget_destroy(handle);
-	destroyCallback.dispose();
-	okCallback.dispose();
-	return state;
-}
-
-/*
- *   ===  Actual handle operations  ===
- */
-
-private void createHandle() {
-	handle = OS.gtk_dialog_new();
-	if (handle==0) SWT.error(SWT.ERROR_NO_HANDLES);
+	int parentHandle = (parent != null)? parent.topHandle() : 0;
+	int dialogFlags = OS.GTK_DIALOG_DESTROY_WITH_PARENT;
 	if ((style & (SWT.PRIMARY_MODAL|SWT.APPLICATION_MODAL|SWT.SYSTEM_MODAL)) != 0) {
-		OS.gtk_window_set_modal(handle, true);
+		dialogFlags |= OS.GTK_DIALOG_MODAL;
 	}
-}
-private void createMessage() {
-	label = OS.gtk_label_new (message);
-	if (label==0) error(SWT.ERROR_NO_HANDLES);
-	OS.gtk_box_pack_start (OS.GTK_DIALOG_VBOX(handle), label, true, true, 5); // FIXME should we use container_add??
-}
-private void createActionButtons(Callback callback) {	
-	if ((style & SWT.OK) != 0) buttonOK = createButton("OK", callback);
-	if ((style & SWT.CANCEL) != 0) buttonCANCEL = createButton("CANCEL", callback);
-
-	if ((style & SWT.YES) != 0) buttonYES = createButton("YES", callback);
-	if ((style & SWT.NO) != 0) buttonNO = createButton("NO", callback);
-
-	if ((style & SWT.ABORT) != 0) buttonABORT = createButton("ABORT", callback);
-	if ((style & SWT.RETRY) != 0) buttonRETRY = createButton("RETRY", callback);
-	if ((style & SWT.IGNORE) != 0) buttonIGNORE = createButton("IGNORE", callback);
-}
-private void showHandle() {
-	OS.gtk_widget_show_all (handle);
+	int messageType = OS.GTK_MESSAGE_INFO();
+	if ((style & (SWT.ICON_WARNING)) != 0)  messageType = OS.GTK_MESSAGE_WARNING();
+	if ((style & (SWT.ICON_QUESTION)) != 0) messageType = OS.GTK_MESSAGE_QUESTION();
+	if ((style & (SWT.ICON_ERROR)) != 0)    messageType = OS.GTK_MESSAGE_ERROR();
 	
-	boolean hasTitle=false;
-	String title = getText();
-	if (title!=null) if (title.length()!=0) hasTitle=true;
-	
-	int decor = 0;
-	if (hasTitle) decor |= OS.GDK_DECOR_TITLE;
-	int gdkWindow = OS.GTK_WIDGET_WINDOW(handle);
-	OS.gdk_window_set_decorations(gdkWindow, decor);
-	if (hasTitle) {
-		byte[] bytes = Converter.wcsToMbcs (null, title, true);
-		OS.gtk_window_set_title(handle, bytes);
-	}
+	handle = OS.gtk_message_dialog_new(parentHandle, dialogFlags, messageType, 0, message);
+	if (handle==0) SWT.error(SWT.ERROR_NO_HANDLES);
+	createButtons();
+	int result = OS.gtk_dialog_run(handle);
+	OS.gtk_widget_destroy(handle);
+	return result;
 }
-int createButton(String buttonName, Callback callback) {
-	byte[] bytes = Converter.wcsToMbcs (null, buttonName, true);
-	int buttonHandle = OS.gtk_button_new_with_label(bytes);
-	OS.gtk_box_pack_start (OS.GTK_DIALOG_ACTION_AREA(handle), buttonHandle, true, true, 0);
-	byte [] clicked = Converter.wcsToMbcs (null, "clicked", true);
-	int function = callback.getAddress ();
-	OS.gtk_signal_connect (buttonHandle, clicked, function, buttonHandle);
-	return buttonHandle;
+
+private void createButtons() {	
+	if ((style & SWT.OK) != 0) OS.gtk_dialog_add_button(handle, "gtk-ok", SWT.OK);
+	if ((style & SWT.CANCEL) != 0) OS.gtk_dialog_add_button(handle, "gtk-cancel", SWT.CANCEL);
+
+	if ((style & SWT.YES) != 0) OS.gtk_dialog_add_button(handle, "gtk-yes", SWT.YES);
+	if ((style & SWT.NO) != 0) OS.gtk_dialog_add_button(handle, "gtk-no", SWT.NO);
+
+	if ((style & SWT.ABORT) != 0) OS.gtk_dialog_add_button(handle, "Abort", SWT.ABORT);
+	if ((style & SWT.RETRY) != 0) OS.gtk_dialog_add_button(handle, "Retry", SWT.RETRY);
+	if ((style & SWT.IGNORE) != 0) OS.gtk_dialog_add_button(handle, "Ignore", SWT.IGNORE);
 }
 private static int checkStyle (int style) {
 	int mask = (SWT.YES | SWT.NO | SWT.OK | SWT.CANCEL | SWT.ABORT | SWT.RETRY | SWT.IGNORE);
@@ -225,22 +168,5 @@ private static int checkStyle (int style) {
 	if (bits == (SWT.RETRY | SWT.CANCEL) || bits == (SWT.ABORT | SWT.RETRY | SWT.IGNORE)) return style;
 	style = (style & ~mask) | SWT.OK;
 	return style;
-}
-int activateFunc(int widget, int callData) {
-	if (widget==buttonOK)     { state=SWT.OK;     return 0; }
-	if (widget==buttonCANCEL) { state=SWT.CANCEL; return 0; }
-	if (widget==buttonYES)    { state=SWT.YES;    return 0; }
-	if (widget==buttonNO)     { state=SWT.NO;     return 0; }
-	if (widget==buttonABORT)  { state=SWT.ABORT;  return 0; }
-	if (widget==buttonRETRY)  { state=SWT.RETRY;  return 0; }
-	if (widget==buttonIGNORE) { state=SWT.IGNORE; return 0; }
-	return 0;
-}
-/*
- * We need this because some WMs will give us a cross even when
- * we specifically ask it not to.
- */
-int destroyFunc(int widget, int callData) {
-	return 1;
 }
 }

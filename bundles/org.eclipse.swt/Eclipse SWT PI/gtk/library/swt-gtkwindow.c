@@ -122,11 +122,65 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1add_1ac
  *  DIALOGS
  */
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1message_1dialog_1new
+  (JNIEnv *env, jclass that, jint parent, jint flags, jint type, jint buttons, jstring message_format)
+{
+  const gchar *message_format1 = NULL;
+  GtkWidget *result = NULL;
+  if (message_format != NULL) {
+    message_format1 = (*env)->GetStringUTFChars(env, message_format, NULL);
+    if (message_format1 == NULL) return 0; /* OutOfMemory */
+  }
+  result = gtk_message_dialog_new((GtkWindow*)parent,
+	                              (GtkDialogFlags) flags,
+	                              (GtkMessageType) type,
+	                              (GtkButtonsType) buttons,
+	                              message_format1);
+  (*env)->ReleaseStringUTFChars(env, message_format, message_format1);
+  return (jint) result;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1dialog_1add_1button
+  (JNIEnv *env, jclass that, jint dialog, jstring text, jint response_id)
+{
+  const gchar *text1 = NULL;
+  GtkWidget *result;
+  if (text != NULL) {
+    text1 = (*env)->GetStringUTFChars(env, text, NULL);
+    if (text1 == NULL) return 0; /* OutOfMemory */
+  }
+  result = gtk_dialog_add_button ((GtkDialog*)dialog , (const gchar*)text1, (gint)response_id);
+  (*env)->ReleaseStringUTFChars(env, text, text1);
+  return (jint) result;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1MESSAGE_1INFO
+  (JNIEnv *env, jclass that)
+{
+  return (jint) GTK_MESSAGE_INFO;
+}
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1MESSAGE_1WARNING
+  (JNIEnv *env, jclass that)
+{
+  return (jint) GTK_MESSAGE_WARNING;
+}
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1MESSAGE_1QUESTION
+  (JNIEnv *env, jclass that)
+{
+  return (jint) GTK_MESSAGE_QUESTION;
+}
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1MESSAGE_1ERROR
+  (JNIEnv *env, jclass that)
+{
+  return (jint) GTK_MESSAGE_ERROR;
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1dialog_1run
   (JNIEnv *env, jclass that, jint dialog)
 {
 	return (jint)gtk_dialog_run((GtkDialog*)dialog);
 }
+
 
 /*
  *  Color selection
