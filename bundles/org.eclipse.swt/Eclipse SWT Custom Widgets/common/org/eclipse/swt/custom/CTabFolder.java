@@ -829,9 +829,9 @@ void drawChevron(GC gc) {
 		int lastIndex = getLastIndex();
 		count = Math.max(0, items.length - (lastIndex - firstIndex + 1));
 	}
-	Color chevronBorder = display.getSystemColor(BUTTON_BORDER);
 	switch (chevronImageState) {
 		case NORMAL: {
+			Color chevronBorder = single ? getSelectionForeground() : getForeground();
 			gc.setForeground(chevronBorder);
 			gc.drawLine(x,y,     x+2,y+2);
 			gc.drawLine(x+2,y+2, x,y+4);
@@ -846,7 +846,9 @@ void drawChevron(GC gc) {
 			break;
 		}
 		case HOT: {
-			gc.setBackground(display.getSystemColor(BUTTON_FILL));
+			Color chevronBorder = display.getSystemColor(BUTTON_BORDER);
+			Color fill = display.getSystemColor(BUTTON_FILL);
+			gc.setBackground(fill);
 			gc.fillRoundRectangle(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, 6, 6);
 			gc.setForeground(chevronBorder);
 			gc.drawRoundRectangle(chevronRect.x, chevronRect.y, chevronRect.width - 1, chevronRect.height - 1, 6, 6);
@@ -863,7 +865,9 @@ void drawChevron(GC gc) {
 			break;
 		}
 		case SELECTED: {
-			gc.setBackground(display.getSystemColor(BUTTON_FILL));
+			Color chevronBorder = display.getSystemColor(BUTTON_BORDER);
+			Color fill = display.getSystemColor(BUTTON_FILL);
+			gc.setBackground(fill);
 			gc.fillRoundRectangle(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, 6, 6);
 			gc.setForeground(chevronBorder);
 			gc.drawRoundRectangle(chevronRect.x, chevronRect.y, chevronRect.width - 1, chevronRect.height - 1, 6, 6);
@@ -1352,7 +1356,7 @@ int getRightItemEdge (){
 	if (showMin) x -= BUTTON_SIZE;
 	if (showMax) x -= BUTTON_SIZE;
 	if (showChevron) x -= 3*BUTTON_SIZE/2;
-	if (topRight != null && topRightAlignment != SWT.FILL) x -= topRightRect.width;
+	if (topRight != null && topRightAlignment != SWT.FILL) x -= topRightRect.width + 3;
 	return x;
 }
 /**
@@ -2441,43 +2445,40 @@ boolean setButtonBounds() {
 	topRightRect.x = topRightRect.y = topRightRect.width = topRightRect.height = 0;
 	if (topRight != null) {
 		switch (topRightAlignment) {
-			case SWT.FILL:
-				int rightEdge = getRightItemEdge();
-				int lastIndex = getLastIndex();
-				if (lastIndex == -1) {
-					topRightRect.x = borderLeft + 3;
-					topRightRect.width = rightEdge - topRightRect.x;
-				} else {
-					CTabItem lastItem = items[lastIndex];
-					if (single) {
-						// fill size is 0 if item compressed
-						if (lastItem.x + lastItem.width >= rightEdge) {
-							break;
-						}
+			case SWT.FILL: {
+				int rightEdge = size.x - borderRight - 3 - maxRect.width - minRect.width;
+				if (single) {
+					if (items.length == 0 || selectedIndex == -1) {
+						topRightRect.x = borderLeft + 3;
+						topRightRect.width = rightEdge - topRightRect.x;
 					} else {
-						// fill size is 0 if chevron showing
-						if (showChevron) {
-							break;
-						}
+						// fill size is 0 if item compressed
+						CTabItem item = items[selectedIndex];
+						if (item.x + item.width + 7 + 3*BUTTON_SIZE/2 >= rightEdge) break;
+						topRightRect.x = item.x + item.width + 7 + 3*BUTTON_SIZE/2;
+						topRightRect.width = rightEdge - topRightRect.x;
 					}
-					topRightRect.x = lastItem.x + lastItem.width;
+				} else {
+					// fill size is 0 if chevron showing
+					if (showChevron) break;
+					CTabItem item = items[items.length - 1];
+					topRightRect.x = item.x + item.width;
 					topRightRect.width = rightEdge - topRightRect.x;
 				}
-				break;
-			case SWT.RIGHT:
-				Point topRightSize = topRight.computeSize(SWT.DEFAULT, tabHeight);
-				if (single && selectedIndex > -1) {
-					CTabItem item = items[selectedIndex];
-					topRightRect.x = Math.min(item.x +item.width + BUTTON_SIZE, size.x - borderRight - minRect.width - maxRect.width - topRightSize.x - 3);
-				} else {
-					topRightRect.x = size.x - borderRight - minRect.width - maxRect.width - topRightSize.x - 3;
-				}
-				topRightRect.width = topRightSize.x;
+				topRightRect.y = onBottom ? size.y - borderBottom - tabHeight: borderTop + 1;
+				topRightRect.height = tabHeight - 1;
 				break;
 			}
-			topRightRect.y = onBottom ? size.y - borderBottom - tabHeight: borderTop + 1;
-			topRightRect.height = tabHeight - 1;
-			topRight.setBounds(topRightRect);
+			case SWT.RIGHT: {
+				Point topRightSize = topRight.computeSize(SWT.DEFAULT, tabHeight);
+				int rightEdge = size.x - borderRight - 3 - maxRect.width - minRect.width;
+				topRightRect.x = rightEdge - topRightSize.x;
+				topRightRect.width = topRightSize.x;
+				topRightRect.y = onBottom ? size.y - borderBottom - tabHeight: borderTop + 1;
+				topRightRect.height = tabHeight - 1;
+			}
+		}
+		topRight.setBounds(topRightRect);
 	}
 	if (oldX != topRightRect.x || oldWidth != topRightRect.width ||
 		oldY != topRightRect.y || oldHeight != topRightRect.height) {	
@@ -2490,11 +2491,18 @@ boolean setButtonBounds() {
 	oldHeight = chevronRect.height;
 	chevronRect.x = chevronRect.y = chevronRect.height = chevronRect.width = 0;
 	if (single) {
-		if (selectedIndex == -1 || items.length > 1){
+		if (selectedIndex == -1 || items.length > 1) {
 			chevronRect.width = 3*BUTTON_SIZE/2;
 			chevronRect.height = BUTTON_SIZE + 2;
 			chevronRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - chevronRect.height)/2 : borderTop + (tabHeight - chevronRect.height)/2;
-			chevronRect.x = getRightItemEdge();
+			if (selectedIndex == -1) {
+				chevronRect.x = size.x - borderRight - 3 - minRect.width - maxRect.width - topRightRect.width - chevronRect.width;
+			} else {
+				CTabItem item = items[selectedIndex];
+				int w = size.x - borderRight - 3 - minRect.width - maxRect.width - chevronRect.width;
+				if (topRightRect.width > 0) w -= topRightRect.width + 3;
+				chevronRect.x = Math.min(item.x + item.width + 3, w);
+			}
 			if (borderRight > 0) chevronRect.x += 1;
 		}
 	} else {

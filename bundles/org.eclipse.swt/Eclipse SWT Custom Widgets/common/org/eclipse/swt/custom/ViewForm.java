@@ -451,7 +451,6 @@ public void setContent(Control content) {
 		this.content.setBounds(OFFSCREEN, OFFSCREEN, 0, 0);
 	}
 	this.content = content;
-	layout();
 }
 
 public void setFont(Font f) {
@@ -459,8 +458,6 @@ public void setFont(Font f) {
 	if (topLeft != null && !topLeft.isDisposed()) topLeft.setFont(f);
 	if (topCenter != null && !topCenter.isDisposed()) topCenter.setFont(f);
 	if (topRight != null && !topRight.isDisposed()) topRight.setFont(f);
-	
-	layout();
 }
 /**
  * Sets the layout which is associated with the receiver to be
@@ -514,7 +511,6 @@ public void setTopCenter(Control topCenter) {
 		this.topCenter.setBounds(OFFSCREEN, OFFSCREEN, 0, 0);
 	}
 	this.topCenter = topCenter;
-	layout();
 }
 /**
 * Set the control that appears in the top left corner of the pane.
@@ -539,7 +535,6 @@ public void setTopLeft(Control c) {
 		this.topLeft.setBounds(OFFSCREEN, OFFSCREEN, 0, 0);
 	}
 	this.topLeft = c;
-	layout();
 }
 /**
 * Set the control that appears in the top right corner of the pane.
@@ -564,7 +559,6 @@ public void setTopRight(Control c) {
 		this.topRight.setBounds(OFFSCREEN, OFFSCREEN, 0, 0);
 	}
 	this.topRight = c;
-	layout();
 }
 /**
 * Specify whether the border should be displayed or not.
@@ -588,7 +582,6 @@ public void setBorderVisible(boolean show) {
 		borderBottom = borderTop = borderLeft = borderRight = 0;
 		highlight = 0;
 	}
-
 	layout();
 	redraw();
 }
@@ -607,7 +600,6 @@ public void setBorderVisible(boolean show) {
 public void setTopCenterSeparate(boolean show) {
 	checkWidget();
 	separateTopCenter = show;
-	layout();
 }
 
 }
