@@ -168,6 +168,7 @@ void createItem (CoolItem item, int index) {
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	rbBand.fMask = OS.RBBIM_TEXT | OS.RBBIM_STYLE | OS.RBBIM_ID;
 	rbBand.fStyle = OS.RBBS_VARIABLEHEIGHT | OS.RBBS_GRIPPERALWAYS;
+	
 	rbBand.lpText = lpText;
 	rbBand.wID = id;
 	if (OS.SendMessage (handle, OS.RB_INSERTBAND, index, rbBand) == 0) {
@@ -361,6 +362,31 @@ public Point [] getItemSizes () {
 }
 
 /**
+ * Returns whether or not the coolbar is 'locked'. When a coolbar
+ * is locked, its items cannot be repositioned.
+ *
+ * @return true if the coolbar is locked, false otherwise
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public boolean getLocked () {
+	checkWidget ();
+	boolean locked = true;
+	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	REBARBANDINFO rbBand = new REBARBANDINFO ();
+	rbBand.cbSize = REBARBANDINFO.sizeof;
+	rbBand.fMask = OS.RBBIM_STYLE;
+	for (int i=0; i<count; i++) {
+		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
+		locked = locked && ((rbBand.fStyle & OS.RBBS_NOGRIPPER) != 0);
+	}
+	return locked;
+}
+
+/**
  * Returns an array of ints which describe the zero-relative
  * row number of the row which each of the items in the 
  * receiver occurs in.
@@ -544,6 +570,34 @@ void setItemSizes (Point [] sizes) {
 }
 
 /**
+ * Sets whether the reciever is 'locked' or not. When a coolbar
+ * is locked, its items cannot be repositioned.
+ *
+ * @param locked lock the coolbar if true, otherwise unlock the coolbar
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setLocked (boolean locked) {
+	checkWidget ();
+	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	REBARBANDINFO rbBand = new REBARBANDINFO ();
+	rbBand.cbSize = REBARBANDINFO.sizeof;
+	rbBand.fMask = OS.RBBIM_STYLE;
+	for (int i=0; i<count; i++) {
+		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
+		if (locked) {
+			rbBand.fStyle |= OS.RBBS_NOGRIPPER;
+		} else {
+			rbBand.fStyle &= ~OS.RBBS_NOGRIPPER;
+		}
+		OS.SendMessage (handle, OS.RB_SETBANDINFO, i, rbBand);
+	}
+}
+
+/**
  * Sets the row that each of the receiver's items will be
  * displayed in to the given array of ints which describe
  * the zero-relative row number of the row for each item.
@@ -582,7 +636,7 @@ public void setWrapIndices (int [] indices) {
 
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.CCS_NODIVIDER | OS.CCS_NORESIZE;
-	bits |= OS.RBS_VARHEIGHT | OS.RBS_BANDBORDERS;
+	bits |= OS.RBS_VARHEIGHT | OS.RBS_BANDBORDERS | OS.RBS_DBLCLKTOGGLE;
 	return bits;
 }
 
