@@ -1757,11 +1757,15 @@ public void removeTraverseListener(TraverseListener listener) {
 }
 	
 void sendFocusEvent (boolean focusIn) {
+	sendFocusEvent (focusIn, false);
+}
+
+void sendFocusEvent (boolean focusIn, boolean post) {
 	Shell shell = getShell ();
-	if (focusIn) {
-		sendEvent (SWT.FocusIn);
+	if (post) {
+		postEvent (focusIn ? SWT.FocusIn : SWT.FocusOut);
 	} else {
-		sendEvent (SWT.FocusOut);
+		sendEvent (focusIn ? SWT.FocusIn : SWT.FocusOut);
 	}
 	
 	/*
@@ -1770,12 +1774,10 @@ void sendFocusEvent (boolean focusIn) {
 	* don't send the activate and deactivate
 	* events.
 	*/
-	if (focusIn) {
-		if (!shell.isDisposed ()) {
+	if (!shell.isDisposed ()) {
+		if (focusIn) {
 			shell.setActiveControl (this);
-		}
-	} else {
-		if (!shell.isDisposed ()) {
+		} else {
 			Display display = shell.getDisplay ();
 			Control control = display.getFocusControl ();
 			if (control == null || shell != control.getShell () ) {

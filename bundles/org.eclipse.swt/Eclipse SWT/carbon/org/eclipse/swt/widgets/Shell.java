@@ -727,7 +727,8 @@ int kEventWindowCollapsed (int nextHandler, int theEvent, int userData) {
 int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowDeactivated (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	sendEvent (SWT.Deactivate);
+	//TEMPORARY CODE - should be send, but causes a GP
+	postEvent (SWT.Deactivate);
 	if (isDisposed ()) return result;
 	saveFocus ();
 	if (savedFocus != null) {
@@ -739,7 +740,8 @@ int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 		display.ignoreFocus = true;
 		OS.ClearKeyboardFocus (shellHandle);
 		display.ignoreFocus = false;
-		if (!savedFocus.isDisposed ()) savedFocus.sendFocusEvent (false);
+		//TEMPORARY CODE - should be send, but causes a GP
+		if (!savedFocus.isDisposed ()) savedFocus.sendFocusEvent (false, true);
 	}
 	Display display = getDisplay ();
 	display.setMenuBar (null);
