@@ -20,7 +20,6 @@ Workbench views are created within the active Workbench Perspective.
          <choice minOccurs="0" maxOccurs="unbounded">
             <element ref="category"/>
             <element ref="item"/>
-            <element ref="view"/>
          </choice>
          <attribute name="point" type="string" use="required">
             <annotation>
