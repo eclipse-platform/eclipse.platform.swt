@@ -55,7 +55,7 @@ public class Table extends Composite {
 	boolean ignoreRedraw, ignoreSelect, wasSelected;
 	int showIndex, lastHittest;
 	static final int CHECK_COLUMN_ID = 1024;
-	static final int EXTRA_WIDTH = 25;
+	static final int EXTRA_WIDTH = 24;
 	static final int CHECK_COLUMN_WIDTH = 25;
 
 /**
