@@ -155,7 +155,7 @@ protected void checkSubclass () {
 
 /**
  * Clears the item at the given zero-relative index in the receiver.
- * The text, icon and other attribues of the item are set to the default
+ * The text, icon and other attributes of the item are set to the default
  * value.  If the table was created with the SWT.VIRTUAL style, these
  * attributes are requested again as needed.
  *
