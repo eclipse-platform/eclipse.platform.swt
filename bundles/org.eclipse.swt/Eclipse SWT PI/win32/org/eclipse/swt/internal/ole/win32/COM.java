@@ -378,6 +378,9 @@ public class COM extends OS {
 	public static final short VT_UI4 = 19;      // Unsigned int.
 	public static final short VT_UNKNOWN = 13;  // IUnknown FAR*.
 	public static final short VT_VARIANT = 12;  // VARIANT FAR*.
+	
+	public static final short VARIANT_TRUE = -1;
+	public static final short VARIANT_FALSE = 0;
 
 public static final native int CLSIDFromProgID(char[] lpszProgID, GUID pclsid);
 public static final native int CLSIDFromString(char[] lpsz, GUID pclsid);
