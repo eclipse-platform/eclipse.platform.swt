@@ -52,6 +52,7 @@ public class TableItem extends SelectableItem {
 	Font font = null;
 	Color [] cellBackground, cellForeground;
 	Font[] cellFont;
+	boolean cached;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -159,6 +160,18 @@ static Table checkNull(Table table) {
 }
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+void clear() {
+	super.clear();
+	dataLabels = new Vector();
+	trimmedLabels = new String[getParent().internalGetColumnCount()];
+	images = new Vector();
+	selectionExtent = null;
+	background = foreground = null;
+	font = null;
+	cellBackground = cellForeground = null;
+	cellFont = null;
+	cached = false;
 }
 public void dispose() {
 	if (isDisposed()) return;
@@ -1028,6 +1041,7 @@ void notifyImageChanged(int columnIndex, boolean imageWasNull) {
 		}
 		redrawWidth += changedColumnBounds.x - redrawStartX;
 	}
+	cached = true;
 	parent.itemChanged(this, redrawStartX, redrawWidth);
 }
 
@@ -1057,6 +1071,7 @@ void notifyTextChanged(int columnIndex, boolean textWasNull) {
 			redrawWidth = columnBounds.x + columnBounds.width - redrawStartX;
 		}
 	}
+	cached = true;
 	parent.itemChanged(this, redrawStartX, redrawWidth);
 }
 /**
@@ -1159,6 +1174,7 @@ void reset(int index) {
 }
 
 void redraw(){
+	cached = true;
 	Table parent = getParent();
 	int y = parent.getRedrawY(this);
 	parent.redraw(0, y, parent.getClientArea().width, parent.getItemHeight(), false);
@@ -1421,6 +1437,7 @@ public void setImageIndent(int indent) {
 		parent.redraw(
 			0, parent.getRedrawY(this), 
 			column.getWidth(), parent.getItemHeight(), false);
+		cached = true;
 	}
 }
 /**

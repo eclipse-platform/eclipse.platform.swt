@@ -221,6 +221,51 @@ static int checkStyle (int style) {
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
+public void clear (int index) {
+	checkWidget ();
+	if (!(0 <= index && index < getItemCount())) {
+		error(SWT.ERROR_INVALID_RANGE);
+	}
+	TableItem item = (TableItem) getVisibleItem(index);
+	item.clear();
+	int y = getRedrawY(item);
+	redraw(0, y, getClientArea().width, getItemHeight(), false);
+}
+public void clear (int start, int end) {
+	checkWidget ();
+	if (start > end) return;
+	if (!(0 <= start && start <= end && end < getItemCount())) {
+		error(SWT.ERROR_INVALID_RANGE);
+	}
+	if (start == 0 && end == getItemCount() - 1) {
+		clearAll();
+	} else {
+		for (int i=start; i<=end; i++) {
+			clear(i);
+		}
+	}
+}
+public void clear (int [] indices) {
+	checkWidget ();
+	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (indices.length == 0) return;
+	for (int i=0; i<indices.length; i++) {
+		if (!(0 <= indices [i] && indices [i] < getItemCount())) {
+			error(SWT.ERROR_INVALID_RANGE);
+		}
+	}
+	for (int i=0; i<indices.length; i++) {
+		clear(indices [i]);
+	}
+}
+public void clearAll () {
+	checkWidget ();
+	for (int i=0; i<getItemCount(); i++) {
+		TableItem item = (TableItem) getVisibleItem(i);
+		item.clear();
+	}
+	redraw();
+}
 /**
  * The width of 'column' is about to change.
  * Adjust the position of all columns behind it.
@@ -1745,14 +1790,17 @@ TableItem paintItems(Event event, int topPaintIndex, int bottomPaintIndex, Vecto
 	if ((getStyle () & SWT.VIRTUAL) != 0) {
 		for (int i = topPaintIndex; i <= bottomPaintIndex; i++) {
 			paintItem = (TableItem) getVisibleItem(i);
-			Event dataEvent = new Event();
-			dataEvent.item = paintItem;
-			ignoreRedraw = true;
-			sendEvent(SWT.SetData, dataEvent);
-			if (isDisposed()) return null;
-			//widget could be disposed at this point
-			ignoreRedraw = false;
-			calculateItemHeight(paintItem);
+			if (!paintItem.cached) {
+				Event dataEvent = new Event();
+				dataEvent.item = paintItem;
+				ignoreRedraw = true;
+				sendEvent(SWT.SetData, dataEvent);
+				if (isDisposed()) return null;
+				//widget could be disposed at this point
+				ignoreRedraw = false;
+				calculateItemHeight(paintItem);
+				paintItem.cached = true;
+			}
 		}
 	}
 	

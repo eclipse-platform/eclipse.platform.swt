@@ -34,6 +34,10 @@ SelectableItem(SelectableItemWidget parent, int style) {
 	super(parent, style);
 	setParent(parent);	
 }
+
+void clear() {
+	isChecked = isGrayed = false;
+}
 public void dispose() {
 	if (isDisposed()) return;
 	super.dispose();
