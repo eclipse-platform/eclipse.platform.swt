@@ -1443,7 +1443,7 @@ public FontMetrics getFontMetrics() {
 	//fm.averageCharWidth = info.widMax / 3;
 	String s = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; 
 	int averageCharWidth = stringExtent(s).x / s.length();
-	return FontMetrics.carbon_new(ascent, descent, averageCharWidth, leading, ascent + descent);
+	return FontMetrics.carbon_new(ascent, descent, averageCharWidth, leading, ascent + leading + descent);
 }
 
 /** 
