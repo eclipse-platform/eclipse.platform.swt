@@ -547,25 +547,7 @@ int processHelp (int int0, int int1, int int2) {
 }
 
 int processHide (int int0, int int1, int int2) {
-	if ((style & SWT.POP_UP) != 0) {
-		/* Release resources and unwanted grabs */
-		int grabHandle = OS.gtk_grab_get_current ();
-		if (grabHandle != 0) OS.gtk_grab_remove (grabHandle);
-		if (OS.gdk_pointer_is_grabbed ()) {
-			OS.gdk_pointer_ungrab (OS.GDK_CURRENT_TIME);
-			OS.gdk_keyboard_ungrab (OS.GDK_CURRENT_TIME);
-		}
-		if (barHandle != 0) {
-			OS.g_signal_handlers_disconnect_matched (barHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWT.MouseDown);
-			OS.g_signal_handlers_disconnect_matched (barHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, 0);
-			OS.gtk_widget_destroy (barHandle);
-			barHandle = 0;
-		}
-		if (barHandleCallback != null) {
-			barHandleCallback.dispose ();
-			barHandleCallback = null;
-		}
-	}
+	releaseGrabs ();
 	sendEvent (SWT.Hide);
 	return 0;
 }
@@ -584,7 +566,32 @@ void releaseChild () {
 	}
 }
 
+void releaseGrabs () {
+	if ((style & SWT.POP_UP) != 0) {
+		/* Release resources and unwanted grabs */
+		if (OS.GTK_WIDGET_MAPPED (handle)) {
+			int grabHandle = OS.gtk_grab_get_current ();
+			if (grabHandle != 0) OS.gtk_grab_remove (grabHandle);
+			if (OS.gdk_pointer_is_grabbed ()) {
+				OS.gdk_pointer_ungrab (OS.GDK_CURRENT_TIME);
+				OS.gdk_keyboard_ungrab (OS.GDK_CURRENT_TIME);
+			}
+		}
+		if (barHandle != 0) {
+			OS.g_signal_handlers_disconnect_matched (barHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWT.MouseDown);
+			OS.g_signal_handlers_disconnect_matched (barHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, 0);
+			OS.gtk_widget_destroy (barHandle);
+			barHandle = 0;
+		}
+		if (barHandleCallback != null) {
+			barHandleCallback.dispose ();
+			barHandleCallback = null;
+		}
+	}
+}
+
 void releaseWidget () {
+	releaseGrabs ();
 	MenuItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
 		MenuItem item = items [i];
