@@ -465,6 +465,8 @@ abstract class Tab {
 			code.append ("\t\tcoolToolItem.setText (\"Item 2\");\n");
 			code.append ("\t\tCoolItem coolItem1 = new CoolItem (" + names [i] + ", SWT.NONE);\n");
 			code.append ("\t\tcoolItem1.setControl (coolToolBar);\n");
+			code.append ("\t\tPoint size = coolToolBar.computeSize (SWT.DEFAULT, SWT.DEFAULT);\n");
+			code.append ("\t\tcoolItem1.setSize (coolItem1.computeSize (size.x, size.y));\n");
 			code.append ("\t\tcoolToolBar = new ToolBar (" + names [i] + ", SWT.BORDER);\n");
 			code.append ("\t\tcoolToolItem = new ToolItem (coolToolBar, SWT.NONE);\n");
 			code.append ("\t\tcoolToolItem.setText (\"Item 3\");\n");
@@ -472,8 +474,7 @@ abstract class Tab {
 			code.append ("\t\tcoolToolItem.setText (\"Item 4\");\n");
 			code.append ("\t\tCoolItem coolItem2 = new CoolItem (" + names [i] + ", SWT.NONE);\n");
 			code.append ("\t\tcoolItem2.setControl (coolToolBar);\n");
-			code.append ("\t\tPoint size = coolToolBar.computeSize (SWT.DEFAULT, SWT.DEFAULT);\n");
-			code.append ("\t\tcoolItem1.setSize (coolItem1.computeSize (size.x, size.y));\n");
+			code.append ("\t\tsize = coolToolBar.computeSize (SWT.DEFAULT, SWT.DEFAULT);\n");
 			code.append ("\t\tcoolItem2.setSize (coolItem2.computeSize (size.x, size.y));\n");
 			code.append ("\t\t" + names [i] + ".setSize (" + names [i] + ".computeSize (SWT.DEFAULT, SWT.DEFAULT));\n");
 		} else if (controlType.equals ("ProgressBar")) {
