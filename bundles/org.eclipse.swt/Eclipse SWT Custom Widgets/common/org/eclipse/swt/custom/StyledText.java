@@ -2000,22 +2000,18 @@ void claimRightFreeSpace() {
  * @param gc GC to render on
  * @param background background color to use for clearing the margin
  * @param clientArea widget client area dimensions
- * @param renderHeight height in pixel of the rendered lines
  */
-void clearMargin(GC gc, Color background, Rectangle clientArea, int renderHeight) {
-	if (renderHeight + topMargin <= 0) {
-		return;
-	}
+void clearMargin(GC gc, Color background, Rectangle clientArea) {
 	// clear the margin background
 	gc.setBackground(background);
+	// top margin
 	gc.fillRectangle(0, 0, clientArea.width, topMargin);
-	gc.fillRectangle(0, topMargin, leftMargin, renderHeight + topMargin);	
-	gc.fillRectangle(
-		leftMargin, clientArea.height - bottomMargin, 
-		clientArea.width, bottomMargin);
-	gc.fillRectangle(
-		clientArea.width - rightMargin, topMargin, 
-		rightMargin, renderHeight + topMargin);
+	// bottom margin
+	gc.fillRectangle(0, clientArea.height - bottomMargin, clientArea.width, bottomMargin);
+	// left margin
+	gc.fillRectangle(0, topMargin, leftMargin, clientArea.height - bottomMargin - topMargin);
+	// right margin
+	gc.fillRectangle(clientArea.width - rightMargin, topMargin, rightMargin, clientArea.height - bottomMargin - topMargin);
 }
 /**
  * Removes the widget selection.
@@ -5579,7 +5575,6 @@ void performPaint(GC gc,int startLine,int startY, int renderHeight)	{
 	if (clientArea.width == 0) {
 		return;
 	}
-	clearMargin(gc, background, clientArea, renderHeight);
 	if (renderHeight > 0) {
 		// renderHeight will be negative when only top margin needs redrawing
 		Color foreground = getForeground();
@@ -5591,15 +5586,6 @@ void performPaint(GC gc,int startLine,int startY, int renderHeight)	{
 		}
 		Image lineBuffer = new Image(getDisplay(), clientArea.width, renderHeight);
 		GC lineGC = new GC(lineBuffer, gcStyle);		
-		Region region = new Region(getDisplay());
-		gc.getClipping(region);
-		Rectangle rect = new Rectangle(0, 0, 0, 0);
-		rect.x = clientArea.x + leftMargin;
-		rect.y = clientArea.y + topMargin;
-		rect.width = clientArea.width - leftMargin - rightMargin;
-		rect.height = clientArea.height - topMargin - bottomMargin;
-		region.intersect(rect);
-		gc.setClipping(region);	
 		lineGC.setFont(getFont());
 		lineGC.setForeground(foreground);
 		lineGC.setBackground(background);		
@@ -5615,8 +5601,8 @@ void performPaint(GC gc,int startLine,int startY, int renderHeight)	{
 		gc.drawImage(lineBuffer, 0, startY);
 		lineGC.dispose();
 		lineBuffer.dispose();
-		region.dispose();		
 	}
+	clearMargin(gc, background, clientArea);
 }
 /** 
  * Prints the widget's text to the default printer.
