@@ -12,8 +12,9 @@ package org.eclipse.swt.tools.internal;
 
 import java.io.*;
 import java.lang.reflect.*;
-
 import java.util.*;
+
+import org.eclipse.swt.SWT;
 
 public abstract class JNIGenerator {
 
@@ -246,6 +247,10 @@ public PrintStream getOutput() {
 
 public MetaData getMetaData() {
 	return metaData;
+}
+
+public String getPlatform() {
+	return SWT.getPlatform();
 }
 
 public abstract void generate(Class clazz);
