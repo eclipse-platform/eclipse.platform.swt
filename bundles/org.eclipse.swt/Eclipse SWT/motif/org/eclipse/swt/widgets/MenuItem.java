@@ -804,24 +804,22 @@ public void setText (String string) {
 			j--;
 		}
 	}
-	byte [] buffer2;
+	int xmString2 = 0;
 	if (accel && ++i < text.length) {
 		char [] accelText = new char [text.length - i];
 		System.arraycopy (text, i, accelText, 0, accelText.length);
 		/* Use the character encoding for the default locale */
-		buffer2 = Converter.wcsToMbcs (null, accelText, true);
-	} else {
-		buffer2 = new byte [1];
-	}
-	int xmString2 = OS.XmStringParseText (
-		buffer2,
-		0,
-		OS.XmFONTLIST_DEFAULT_TAG, 
-		OS.XmCHARSET_TEXT, 
-		null,
-		0,
-		0);
-	if (xmString2 == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+		byte [] buffer2 = Converter.wcsToMbcs (null, accelText, true);
+		xmString2 = OS.XmStringParseText (
+			buffer2,
+			0,
+			OS.XmFONTLIST_DEFAULT_TAG, 
+			OS.XmCHARSET_TEXT, 
+			null,
+			0,
+			0);
+		if (xmString2 == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+	} 
 	while (j < text.length) text [j++] = 0;
 	/* Use the character encoding for the default locale */
 	byte [] buffer1 = Converter.wcsToMbcs (null, text, true);
@@ -839,11 +837,20 @@ public void setText (String string) {
 		OS.XmNlabelType, OS.XmSTRING,
 		OS.XmNlabelString, xmString1,
 		OS.XmNmnemonic, mnemonic,
-		OS.XmNacceleratorText, xmString2,
 	};
 	OS.XtSetValues (handle, argList, argList.length / 2);
 	if (xmString1 != 0) OS.XmStringFree (xmString1);
-	if (xmString2 != 0) OS.XmStringFree (xmString2);
+	/*
+	 * Bug in Solaris 9 x86.  Setting a MenuItem's accelerator
+	 * text to an empty string causes the item's full text to
+	 * appear empty.  The fix is to only set the XmNacceleratorText
+	 * resource if it has a non-empty value. 
+	 */
+	if (xmString2 != 0) {
+		int [] argList2 = {OS.XmNacceleratorText, xmString2,};
+		OS.XtSetValues (handle, argList2, argList2.length / 2);
+		OS.XmStringFree (xmString2);
+	}
 }
 boolean translateAccelerator (int accel, boolean doit) {
 	if (!getEnabled ()) return false;
