@@ -3459,7 +3459,7 @@ boolean updateToolTip (int x, int y, Label label) {
 	// the arrow cursor on Windows 
 	int cursorHeight = 21; 
 	Point size = tip.getSize();
-	Rectangle rect = tip.getMonitor().getBounds();
+	Rectangle rect = getMonitor().getBounds();
 	Point pt = new Point(cursorLocation.x, cursorLocation.y + cursorHeight + 2);
 	pt.x = Math.max(pt.x, rect.x);
 	if (pt.x + size.x > rect.x + rect.width) pt.x = rect.x + rect.width - size.x;
