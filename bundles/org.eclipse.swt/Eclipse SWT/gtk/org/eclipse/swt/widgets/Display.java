@@ -2629,7 +2629,7 @@ public void setData (String key, Object value) {
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
 
 	if (key.equals (DISPATCH_EVENT_KEY)) {
-		if (value instanceof int []) {
+		if (value == null || value instanceof int []) {
 			dispatchEvents = (int []) value;
 			if (value == null) putGdkEvents ();
 			return;
