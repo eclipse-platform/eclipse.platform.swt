@@ -218,7 +218,8 @@ FormAttachment divide (int value) {
 
 int gcd (int m, int n) {
 	int temp;
-	m = Math.abs (m); n = Math.abs (n);
+	m = Math.abs (m);
+	n = Math.abs (n);
 	if (m < n) {
 		temp = m;
 		m = n;
