@@ -2806,33 +2806,33 @@ void doDelete() {
  * Deletes the next word.
  */
 void doDeleteWordNext() {
-	Event event = new Event();
-	event.text = "";
 	if (selection.x != selection.y) {
-		event.start = selection.x;
-		event.end = getWordEnd(selection.x);
-	}
-	else {	
+		// if a selection exists, treat the as if 
+		// only the delete key was pressed
+		doDelete();
+	} else {
+		Event event = new Event();
+		event.text = "";
 		event.start = caretOffset;
 		event.end = getWordEnd(caretOffset);
+		sendKeyEvent(event);
 	}
-	sendKeyEvent(event);
 }
 /**
  * Deletes the previous word.
  */
 void doDeleteWordPrevious() {
-	Event event = new Event();
-	event.text = "";
 	if (selection.x != selection.y) {
-		event.start = getWordStart(selection.y);
-		event.end = selection.y;
-	}
-	else {	
+		// if a selection exists, treat as if 
+		// only the backspace key was pressed
+		doBackspace();
+	} else {
+		Event event = new Event();
+		event.text = "";
 		event.start = getWordStart(caretOffset);
 		event.end = caretOffset;
+		sendKeyEvent(event);
 	}
-	sendKeyEvent(event);
 }
 /**
  * Moves the caret one line down and to the same character offset relative 
