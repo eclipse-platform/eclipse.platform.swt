@@ -10,7 +10,6 @@
     <property name="dll_ce_destdir" value="${fragment_dir}/os/win32-ce/arm" />
     <property name="bin_dir" value="${basedir}/bin" />
 	
-    <mkdir dir="${jar_destdir}" />
     <mkdir dir="${dll_destdir}" />
     <mkdir dir="${dll_ce_destdir}" />
 </target>
@@ -53,6 +52,7 @@
 </target>
 	
 <target name="build_jar" depends="build">
+    <mkdir dir="${jar_destdir}" />
     <jar
         jarfile="${jar_destdir}/swt.jar"
         basedir="${bin_dir}"
