@@ -1884,10 +1884,18 @@ void sendKeyEvent (int type, int gdkEvent) {
 		event.keyCode = Display.translateKey (keyEvent.keyval);
 		if (event.keyCode == 0) {
 			switch (keyEvent.keyval) {
+				case OS.GDK_BackSpace:		event.character = '\b'; break;
+				case OS.GDK_Tab:
 				case OS.GDK_ISO_Left_Tab: 	event.character = '\t'; break;
+				case OS.GDK_Linefeed:			event.character = '\n'; break;
+				case OS.GDK_Clear: 				event.character = 0xB; break;
+				case OS.GDK_Return: 			event.character = '\r'; break;
+				case OS.GDK_Pause:				event.character = 0x13; break;
 				case OS.GDK_Scroll_Lock:		event.character = 0x14; break;
+				case OS.GDK_Escape:			event.character = 0x1B; break;
+				case OS.GDK_Delete:			event.character = 0x7F; break;
 				default:
-					event.character = (char) keyEvent.keyval;
+					event.character = (char) OS.gdk_keyval_to_unicode (keyEvent.keyval);
 			}
 		}
 		postEvent (type, event);
