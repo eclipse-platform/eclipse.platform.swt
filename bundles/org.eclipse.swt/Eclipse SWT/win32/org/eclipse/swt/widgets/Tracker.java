@@ -564,6 +564,7 @@ public boolean open () {
 							drawRectangles (rectangles);
 						}
 						cursorPos = adjustResizeCursor ();
+						newX = cursorPos.x;  newY = cursorPos.y;
 					} else {
 						if (isMirrored) {
 							moveRectangles (oldX - newX, newY - oldY); 
@@ -609,9 +610,8 @@ public boolean open () {
 							drawRectangles (rectsToErase);
 							drawRectangles (rectangles);
 						}
-						cursorPos = adjustMoveCursor ();
 					}
-					oldX = cursorPos.x;  oldY = cursorPos.y;
+					oldX = newX;  oldY = newY;
 				}
 				tracking = msg.message != OS.WM_LBUTTONUP;
 				break;
