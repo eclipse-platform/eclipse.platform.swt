@@ -1459,6 +1459,7 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 
 Event createMouseEvent (int type, int button, int wParam, int lParam) {
 	Event event = new Event ();
+	event.time = OS.GetMessageTime ();
 	event.button = button;
 	event.x = (short) (lParam & 0xFFFF);
 	event.y = (short) (lParam >> 16);
@@ -2990,7 +2991,6 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	
 	Event e = createMouseEvent(SWT.MouseDown, 1, wParam, lParam);
 	e.item = this;
-	e.time = OS.GetMessageTime ();
 	notifyParentListeners(SWT.ChildMouseDown, e);
 	
 	sendMouseEvent (SWT.MouseDown, 1, OS.WM_LBUTTONDOWN, wParam, lParam);
@@ -3040,7 +3040,6 @@ LRESULT WM_MBUTTONDBLCLK (int wParam, int lParam) {
 LRESULT WM_MBUTTONDOWN (int wParam, int lParam) {
 	Event e = createMouseEvent(SWT.MouseDown, 2, wParam, lParam);
 	e.item = this;
-	e.time = OS.GetMessageTime ();
 	notifyParentListeners(SWT.ChildMouseDown, e);
 	
 	sendMouseEvent (SWT.MouseDown, 2, OS.WM_MBUTTONDOWN, wParam, lParam);
@@ -3352,9 +3351,7 @@ LRESULT WM_RBUTTONDBLCLK (int wParam, int lParam) {
 
 LRESULT WM_RBUTTONDOWN (int wParam, int lParam) {
 	Event e = createMouseEvent(SWT.MouseDown, 3, wParam, lParam);
-	e.type = SWT.ChildMouseDown;
 	e.item = this;
-	e.time = OS.GetMessageTime ();
 	notifyParentListeners(SWT.ChildMouseDown, e);
 	
 	sendMouseEvent (SWT.MouseDown, 3, OS.WM_RBUTTONDOWN, wParam, lParam);

@@ -379,8 +379,6 @@ public void dispose () {
 	super.dispose ();
 	// widget is disposed at this point
 //	if (oldDisplay != null) oldDisplay.update ();
-	eventTypes = null;
-	lastEventControls = null;
 }
 
 int findBrush (int pixel) {
@@ -580,6 +578,8 @@ void releaseWidget () {
 	if (IsDBLocale) {
 		if (hIMC != 0) OS.ImmDestroyContext (hIMC);
 	}
+	eventTypes = null;
+	lastEventControls = null;
 }
 
 void remove (Menu menu) {
