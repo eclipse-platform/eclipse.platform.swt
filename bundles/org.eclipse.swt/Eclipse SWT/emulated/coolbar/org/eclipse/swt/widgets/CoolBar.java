@@ -664,24 +664,24 @@ void onPaint(Event event) {
 				if (!flat) nativeGripper = drawGripper(bounds.x, bounds.y, CoolItem.MINIMUM_WIDTH, bounds.height);
 				if (!nativeGripper) {
 					int grabberTrim = 2; 
-					int grabberHeight = bounds.height - (2 * CoolItem.MARGIN_HEIGHT) - (2 * grabberTrim) - 1;				
+					int grabberHeight = bounds.height - (2 * grabberTrim) - 1;
 					gc.setForeground(shadowColor);
 					gc.drawRectangle(
 						bounds.x + CoolItem.MARGIN_WIDTH, 
-						bounds.y + CoolItem.MARGIN_HEIGHT + grabberTrim, 
+						bounds.y + grabberTrim, 
 						2, 
 						grabberHeight);
 					gc.setForeground(highlightColor);
 					gc.drawLine(
 						bounds.x + CoolItem.MARGIN_WIDTH, 
-						bounds.y + CoolItem.MARGIN_HEIGHT + grabberTrim + 1, 
+						bounds.y + grabberTrim + 1, 
 						bounds.x + CoolItem.MARGIN_WIDTH, 
-						bounds.y + CoolItem.MARGIN_HEIGHT + grabberTrim + grabberHeight - 1);
+						bounds.y + grabberTrim + grabberHeight - 1);
 					gc.drawLine(
 						bounds.x + CoolItem.MARGIN_WIDTH, 
-						bounds.y + CoolItem.MARGIN_HEIGHT + grabberTrim, 
+						bounds.y + grabberTrim, 
 						bounds.x + CoolItem.MARGIN_WIDTH + 1, 
-						bounds.y + CoolItem.MARGIN_HEIGHT + grabberTrim);
+						bounds.y + grabberTrim);
 				}
 			}
 			
@@ -764,7 +764,6 @@ int layoutItems () {
 			}
 			available -= item.internalGetMinimumWidth();	
 		}
-		rowHeight += 2 * CoolItem.MARGIN_HEIGHT;
 		if (row > 0) y += rowSpacing;
 	
 		/* lay the items out */

@@ -34,20 +34,18 @@ public class CoolItem extends Item {
 	CoolBar parent;
 	int preferredWidth, requestedWidth;
 	boolean ideal;
-	Point minimumSize = new Point (MINIMUM_WIDTH, 2 * MARGIN_HEIGHT);
+	Point minimumSize = new Point(0, 0);
 	Rectangle itemBounds = new Rectangle(0, 0, 0, 0);
 	
 	static final int MARGIN_WIDTH = 4;
-	static final int MARGIN_HEIGHT = 0;
 	static final int GRABBER_WIDTH = 2;
+	static final int MINIMUM_WIDTH = (2 * MARGIN_WIDTH) + GRABBER_WIDTH;
 	
 	private int CHEVRON_HORIZONTAL_TRIM = -1;			//platform dependent values
 	private int CHEVRON_VERTICAL_TRIM = -1;	
 	private static final int CHEVRON_LEFT_MARGIN = 2;
 	private static final int CHEVRON_IMAGE_WIDTH = 8;	//Width to draw the double arrow
 	
-	static final int MINIMUM_WIDTH = (2 * MARGIN_WIDTH) + GRABBER_WIDTH;
-
 	ToolBar chevron;
 	boolean wrap;
 	Image arrowImage = null;
@@ -213,8 +211,7 @@ public Point computeSize (int wHint, int hHint) {
 	int width = wHint, height = hHint;
 	if (wHint == SWT.DEFAULT) width = 32;
 	if (hHint == SWT.DEFAULT) height = 32;
-	width += 2 * MINIMUM_WIDTH;
-	height += 2 * MARGIN_HEIGHT;
+	width += MINIMUM_WIDTH;
 	return new Point (width, height);
 }
 public void dispose () {
@@ -366,8 +363,7 @@ public Point getSize () {
 	return new Point (itemBounds.width, itemBounds.height);
 }
 int internalGetMinimumWidth () {
-	int width = minimumSize.x;
-	width += 2 * MINIMUM_WIDTH;
+	int width = minimumSize.x + MINIMUM_WIDTH;
 	if ((style & SWT.DROP_DOWN) != 0 && width < preferredWidth) {
 		width += CHEVRON_IMAGE_WIDTH + CHEVRON_HORIZONTAL_TRIM + CHEVRON_LEFT_MARGIN;
 	}
@@ -416,16 +412,11 @@ void setBounds (int x, int y, int width, int height) {
 	itemBounds.width = width;
 	itemBounds.height = height;
 	if (control != null) {
-		int controlHeight = Math.min (height, control.getSize().y);
-		int controlWidth = width - (2 * MINIMUM_WIDTH);
+		int controlWidth = width - MINIMUM_WIDTH;
 		if ((style & SWT.DROP_DOWN) != 0 && width < preferredWidth) {
 			controlWidth -= CHEVRON_IMAGE_WIDTH + CHEVRON_HORIZONTAL_TRIM + CHEVRON_LEFT_MARGIN;
 		}
-		control.setBounds (
-			x + MINIMUM_WIDTH, 
-			y + MARGIN_HEIGHT, 
-			controlWidth, 
-			controlHeight);
+		control.setBounds (	x + MINIMUM_WIDTH,	y, controlWidth, height);
 	}
 	updateChevron();
 }
@@ -458,11 +449,7 @@ public void setControl (Control control) {
 	this.control = control;
 	if (control != null && !control.isDisposed ()) {
 		Rectangle bounds = getBounds();
-		control.setBounds (
-			bounds.x + MINIMUM_WIDTH, 
-			bounds.y + MARGIN_HEIGHT, 
-			bounds.width - (2 * MINIMUM_WIDTH), 
-			bounds.height - (2 * MARGIN_HEIGHT));	
+		control.setBounds (	bounds.x + MINIMUM_WIDTH, bounds.y, bounds.width - MINIMUM_WIDTH, bounds.height);	
 		control.setVisible(true);
 	}
 }
@@ -566,12 +553,11 @@ public void setSize (int width, int height) {
 	if (!ideal) preferredWidth = newWidth;
 	itemBounds.height = height;
 	if (control != null) {
-		int controlWidth = newWidth - (2 * MINIMUM_WIDTH);
+		int controlWidth = newWidth - MINIMUM_WIDTH;
 		if ((style & SWT.DROP_DOWN) != 0 && newWidth < preferredWidth) {
 			controlWidth -= CHEVRON_IMAGE_WIDTH + CHEVRON_HORIZONTAL_TRIM + CHEVRON_LEFT_MARGIN;
 		}
-		int controlHeight = height - (2 * MARGIN_HEIGHT);
-		control.setSize(controlWidth, controlHeight);
+		control.setSize(controlWidth, height);
 	}
 	parent.relayout();
 	updateChevron();
@@ -608,7 +594,6 @@ void updateChevron() {
 			if (chevron == null) {
 				chevron = new ToolBar (parent, SWT.FLAT | SWT.NO_FOCUS);
 				ToolItem toolItem = new ToolItem (chevron, SWT.PUSH);
-				chevron.setBackground (parent.getBackground());
 				toolItem.addListener (SWT.Selection, new Listener() {
 					public void handleEvent (Event event) {
 						CoolItem.this.onSelection (event);
@@ -622,9 +607,10 @@ void updateChevron() {
 				if (arrowImage != null) arrowImage.dispose ();
 				arrowImage = image;
 			}
+			chevron.setBackground (parent.getBackground());			
 			chevron.setBounds (
 				itemBounds.x + width - CHEVRON_LEFT_MARGIN - CHEVRON_IMAGE_WIDTH - CHEVRON_HORIZONTAL_TRIM,
-				itemBounds.y + MARGIN_HEIGHT,
+				itemBounds.y,
 				CHEVRON_IMAGE_WIDTH + CHEVRON_HORIZONTAL_TRIM,
 				height);
 			chevron.setVisible(true);
