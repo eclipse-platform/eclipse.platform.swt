@@ -334,6 +334,17 @@ void createItem (CoolItem item, int index) {
 			row = items.length - 1;
 			i = items[row].length;	
 		}
+		
+		// Set the last item in the row to the preferred size 
+		// and add the new one just to it's right
+		int lastIndex = items[row].length - 1;
+		CoolItem lastItem = items[row][lastIndex];
+		if (lastItem.preferredWidth != -1) {
+			Rectangle bounds = lastItem.getBounds();
+			bounds.width = lastItem.preferredWidth;
+			lastItem.requestedWidth = lastItem.preferredWidth;
+			lastItem.setBounds(bounds.x, bounds.y, bounds.width, bounds.height);  
+		}
 		int oldLength = items[row].length;
 		CoolItem[] newRow = new CoolItem[oldLength + 1];
 		System.arraycopy(items[row], 0, newRow, 0, i);
@@ -357,7 +368,7 @@ void destroyItem(CoolItem item) {
 	Rectangle bounds = item.getBounds();
 	removeItemFromRow(item, row);
 	redraw(bounds.x, bounds.y, CoolItem.MINIMUM_WIDTH, bounds.height, false);
-	layoutItems();
+	relayout();
 
 	int index = 0;
 	while (index < originalItems.length) {
