@@ -2634,12 +2634,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(gdk_1screen_1get_1default)
 	rc = (jint)gdk_screen_get_default();
 */
 	{
-	void *handle = NULL;
-	int (*fptr)();
-	rc = 0;
-	if ((handle = dlopen(gdk_screen_get_default_LIB, RTLD_LAZY)) != NULL && (fptr = dlsym(handle, "gdk_screen_get_default")) != NULL) {
-		rc = (jint)(*fptr)();
-	}
+		static int initialized = 0;
+		static void *handle = NULL;
+		static int (*fptr)();
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gdk_screen_get_default_LIB, RTLD_LAZY);
+			if (handle) fptr = dlsym(handle, "gdk_screen_get_default");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)();
+		}
 	}
 	NATIVE_EXIT(env, that, "gdk_1screen_1get_1default\n")
 	return rc;
@@ -2656,12 +2662,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(gdk_1screen_1get_1monitor_1at_1window)
 	rc = (jint)gdk_screen_get_monitor_at_window((GdkScreen *)arg0, (GdkWindow *)arg1);
 */
 	{
-	void *handle = NULL;
-	int (*fptr)();
-	rc = 0;
-	if ((handle = dlopen(gdk_screen_get_monitor_at_window_LIB, RTLD_LAZY)) != NULL && (fptr = dlsym(handle, "gdk_screen_get_monitor_at_window")) != NULL) {
-		rc = (jint)(*fptr)((GdkScreen *)arg0, (GdkWindow *)arg1);
-	}
+		static int initialized = 0;
+		static void *handle = NULL;
+		static int (*fptr)();
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gdk_screen_get_monitor_at_window_LIB, RTLD_LAZY);
+			if (handle) fptr = dlsym(handle, "gdk_screen_get_monitor_at_window");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)((GdkScreen *)arg0, (GdkWindow *)arg1);
+		}
 	}
 	NATIVE_EXIT(env, that, "gdk_1screen_1get_1monitor_1at_1window\n")
 	return rc;
@@ -2679,11 +2691,17 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1screen_1get_1monitor_1geometry)
 	gdk_screen_get_monitor_geometry((GdkScreen *)arg0, arg1, lparg2);
 */
 	{
-	void *handle = NULL;
-	int (*fptr)();
-	if ((handle = dlopen(gdk_screen_get_monitor_geometry_LIB, RTLD_LAZY)) != NULL && (fptr = dlsym(handle, "gdk_screen_get_monitor_geometry")) != NULL) {
-		(*fptr)((GdkScreen *)arg0, arg1, lparg2);
-	}
+		static int initialized = 0;
+		static void *handle = NULL;
+		static int (*fptr)();
+		if (!initialized) {
+			if (!handle) handle = dlopen(gdk_screen_get_monitor_geometry_LIB, RTLD_LAZY);
+			if (handle) fptr = dlsym(handle, "gdk_screen_get_monitor_geometry");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)((GdkScreen *)arg0, arg1, lparg2);
+		}
 	}
 	if (arg2) setGdkRectangleFields(env, arg2, lparg2);
 	NATIVE_EXIT(env, that, "gdk_1screen_1get_1monitor_1geometry\n")
@@ -2700,12 +2718,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(gdk_1screen_1get_1n_1monitors)
 	rc = (jint)gdk_screen_get_n_monitors((GdkScreen *)arg0);
 */
 	{
-	void *handle = NULL;
-	int (*fptr)();
-	rc = 0;
-	if ((handle = dlopen(gdk_screen_get_n_monitors_LIB, RTLD_LAZY)) != NULL && (fptr = dlsym(handle, "gdk_screen_get_n_monitors")) != NULL) {
-		rc = (jint)(*fptr)((GdkScreen *)arg0);
-	}
+		static int initialized = 0;
+		static void *handle = NULL;
+		static int (*fptr)();
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gdk_screen_get_n_monitors_LIB, RTLD_LAZY);
+			if (handle) fptr = dlsym(handle, "gdk_screen_get_n_monitors");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)((GdkScreen *)arg0);
+		}
 	}
 	NATIVE_EXIT(env, that, "gdk_1screen_1get_1n_1monitors\n")
 	return rc;
@@ -6651,12 +6675,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(gtk_1tree_1view_1column_1cell_1get_1positio
 	rc = (jboolean)gtk_tree_view_column_cell_get_position((GtkTreeViewColumn *)arg0, (GtkCellRenderer *)arg1, (gint *)lparg2, (gint *)lparg3);
 */
 	{
-	void *handle = NULL;
-	int (*fptr)();
-	rc = 0;
-	if ((handle = dlopen(gtk_tree_view_column_cell_get_position_LIB, RTLD_LAZY)) != NULL && (fptr = dlsym(handle, "gtk_tree_view_column_cell_get_position")) != NULL) {
-		rc = (jboolean)(*fptr)((GtkTreeViewColumn *)arg0, (GtkCellRenderer *)arg1, (gint *)lparg2, (gint *)lparg3);
-	}
+		static int initialized = 0;
+		static void *handle = NULL;
+		static int (*fptr)();
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_tree_view_column_cell_get_position_LIB, RTLD_LAZY);
+			if (handle) fptr = dlsym(handle, "gtk_tree_view_column_cell_get_position");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jboolean)(*fptr)((GtkTreeViewColumn *)arg0, (GtkCellRenderer *)arg1, (gint *)lparg2, (gint *)lparg3);
+		}
 	}
 	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
