@@ -319,13 +319,6 @@ public void setContent(Control content) {
 	this.content = content;
 	layout(false);
 }
-
-public void setFont(Font f) {
-	super.setFont(f);
-	if (topLeft != null && !topLeft.isDisposed()) topLeft.setFont(f);
-	if (topCenter != null && !topCenter.isDisposed()) topCenter.setFont(f);
-	if (topRight != null && !topRight.isDisposed()) topRight.setFont(f);
-}
 /**
  * Sets the layout which is associated with the receiver to be
  * the argument which may be null.
