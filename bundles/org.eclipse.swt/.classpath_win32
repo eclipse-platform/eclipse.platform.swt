@@ -15,5 +15,7 @@
     <classpathentry kind="src" path="Eclipse SWT Custom Widgets/common"/>
     <classpathentry kind="src" path="Eclipse SWT PI/win32"/>
     <classpathentry kind="src" path="Eclipse SWT PI/common_j2se"/>
+    <classpathentry kind="src" path="Eclipse SWT Accessibility/win32"/>
+    <classpathentry kind="src" path="Eclipse SWT Accessibility/common"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>

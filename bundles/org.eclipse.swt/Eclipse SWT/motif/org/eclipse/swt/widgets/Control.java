@@ -10,6 +10,9 @@ import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
+/* Start ACCESSIBILITY */
+import org.eclipse.swt.accessibility.*;
+/* End ACCESSIBILITY */
 
 /**
  * Control is the abstract superclass of all windowed user interface classes.
@@ -32,6 +35,10 @@ public abstract class Control extends Widget implements Drawable {
 	Menu menu;
 	String toolTipText;
 	Object layoutData;
+/* Start ACCESSIBILITY */
+	Accessible accessible;
+/* End ACCESSIBILITY */
+
 Control () {
 	/* Do nothing */
 }
@@ -501,6 +508,33 @@ public boolean forceFocus () {
 	shell.bringToTop ();
 	return OS.XmProcessTraversal (handle, OS.XmTRAVERSE_CURRENT);
 }
+
+
+/* Start ACCESSIBILITY */
+/**
+ * Returns the accessible object for the receiver.
+ * If this is the first time this object is requested,
+ * then the object is created and returned.
+ *
+ * @return the accessible object
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see addAccessibleListener
+ * @see addAccessibleControlListener
+ */
+public Accessible getAccessible () {
+	checkWidget ();
+	if (accessible == null) {
+		accessible = Accessible.internal_new_accessible (this);
+	}
+	return accessible;
+}
+/* End ACCESSIBILITY */
+
 /**
  * Returns the receiver's background color.
  *
