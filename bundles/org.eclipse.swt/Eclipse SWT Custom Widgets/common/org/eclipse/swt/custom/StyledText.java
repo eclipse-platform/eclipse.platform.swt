@@ -3886,7 +3886,9 @@ public int getOffsetAtLocation(Point point) {
 	}
 	int[] trailing = new int[1];
 	offsetInLine = layout.getOffset(x, 0, trailing);
-	offsetInLine = Math.min(lineText.length(), offsetInLine + trailing[0]);
+	if (offsetInLine != lineText.length() - 1) {
+		offsetInLine = Math.min(lineText.length(), offsetInLine + trailing[0]);		
+	}
 	renderer.disposeTextLayout(layout);
 	return lineOffset + offsetInLine;
 }
