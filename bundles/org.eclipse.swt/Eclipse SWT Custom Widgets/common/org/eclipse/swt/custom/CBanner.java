@@ -17,6 +17,12 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 
 /**
+* DO NOT USE - UNDER CONSTRUCTION
+*
+* @ since 3.0
+*/
+
+/**
  * Instances of this class implement a Composite that ...
  * <p>
  * Note that although this class is a subclass of <code>Composite</code>,
