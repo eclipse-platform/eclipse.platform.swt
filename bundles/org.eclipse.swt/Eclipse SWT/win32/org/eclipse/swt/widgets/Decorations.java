@@ -960,21 +960,6 @@ public void setMaximized (boolean maximized) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-/**
- * Sets the receiver's menu bar to the argument, which
- * may be null.
- *
- * @param menu the new menu bar
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the menu has been disposed</li> 
- *    <li>ERROR_INVALID_PARENT - if the menu is not in the same widget tree</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
 public void setMenuBar (Menu menu) {
 	checkWidget ();
 	if (menuBar == menu) return;
