@@ -1088,6 +1088,7 @@ int getLastEventTime () {
  * @since 2.2
  */
 public Monitor [] getMonitors () {
+	checkDevice ();
 	Monitor [] monitors = null;
 	if (OS.IsLinux) {
 		boolean result = OS.XineramaIsActive (xDisplay);
@@ -1128,6 +1129,7 @@ public Monitor [] getMonitors () {
  * @since 2.2
  */
 public Monitor getPrimaryMonitor () {
+	checkDevice ();
 	Monitor monitor = null;
 	if (OS.IsLinux) {
 		boolean result = OS.XineramaIsActive (xDisplay);
