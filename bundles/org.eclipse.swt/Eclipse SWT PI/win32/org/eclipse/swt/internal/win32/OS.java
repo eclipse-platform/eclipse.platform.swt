@@ -671,12 +671,27 @@ public class OS {
 	public static final int MONITOR_DEFAULTTONEAREST = 0x2;
 	public static final int MONITORINFOF_PRIMARY = 0x1;
 	public static final int MWMO_INPUTAVAILABLE = 0x4;
+	public static final int NIF_ICON = 0x00000002;
+	public static final int NIF_INFO = 0x00000010;
+	public static final int NIF_MESSAGE = 0x00000001;
+	public static final int NIF_STATE = 0x00000008;
+	public static final int NIF_TIP = 0x00000004;
+	public static final int NIIF_ERROR = 0x00000003;
+	public static final int NIIF_INFO = 0x00000001;
+	public static final int NIIF_NONE = 0x00000000;
+	public static final int NIIF_WARNING = 0x00000002;
+	public static final int NIM_ADD = 0x00000000;
+	public static final int NIM_DELETE = 0x00000002;
+	public static final int NIM_MODIFY = 0x00000001;
+	public static final int NIS_HIDDEN = 0x00000001;
 	public static final int NM_FIRST = 0x0;
 	public static final int NM_CLICK = 0xfffffffe;
 	public static final int NM_CUSTOMDRAW = NM_FIRST - 12;
 	public static final int NM_DBLCLK = 0xfffffffd;
 	public static final int NM_RECOGNIZEGESTURE = NM_FIRST - 16;
 	public static final int NM_RETURN = 0xfffffffc;
+	public static final int NOTIFYICONDATA_V1_SIZE = 88;
+	public static final int NOTIFYICONDATA_V2_SIZE = 488;
 	public static final int NOTSRCCOPY = 0x330008;
 	public static final int NULLREGION = 0x1;
 	public static final int NULL_BRUSH = 0x5;
@@ -1958,6 +1973,11 @@ public static final boolean ShellExecuteEx (SHELLEXECUTEINFO lpExecInfo) {
 	return ShellExecuteExA (lpExecInfo);
 }
 
+public static final boolean Shell_NotifyIcon (int dwMessage, NOTIFYICONDATA lpData) {
+	if (IsUnicode) return Shell_NotifyIconW (dwMessage, (NOTIFYICONDATAW)lpData);
+	return Shell_NotifyIconA (dwMessage, (NOTIFYICONDATAA)lpData);
+}
+
 public static final boolean SHGetPathFromIDList (int pidl, TCHAR pszPath) {
 	if (IsUnicode) {
 		char [] pszPath1 = pszPath == null ? null : pszPath.chars;
@@ -2372,6 +2392,7 @@ public static final native boolean MoveToEx (int hdc,int x1, int x2, int lPoint)
 public static final native int MsgWaitForMultipleObjectsEx (int nCount, int pHandles, int dwMilliseconds, int dwWakeMask, int dwFlags);
 public static final native int MultiByteToWideChar (int CodePage, int dwFlags, byte [] lpMultiByteStr, int cchMultiByte, char [] lpWideCharStr, int cchWideChar);
 public static final native int MultiByteToWideChar (int CodePage, int dwFlags, int lpMultiByteStr, int cchMultiByte, char [] lpWideCharStr, int cchWideChar);
+public static final native int NOTIFYICONDATA_sizeof ();
 public static final native int OffsetRgn (int hrgn, int nXOffset, int nYOffset);
 public static final native int OleInitialize (int pvReserved);
 public static final native void OleUninitialize ();
@@ -2501,6 +2522,8 @@ public static final native void SHSendBackToFocusWindow (int uMsg, int wp, int l
 public static final native boolean SHSipPreference (int hwnd, int st);
 public static final native boolean ShellExecuteExW (SHELLEXECUTEINFO lpExecInfo);
 public static final native boolean ShellExecuteExA (SHELLEXECUTEINFO lpExecInfo);
+public static final native boolean Shell_NotifyIconA (int dwMessage, NOTIFYICONDATAA lpData);
+public static final native boolean Shell_NotifyIconW (int dwMessage, NOTIFYICONDATAW lpData);
 public static final native int SHGetMalloc (int [] ppMalloc);
 public static final native boolean SHGetPathFromIDListW (int pidl, char [] pszPath);
 public static final native boolean SHGetPathFromIDListA (int pidl, byte [] pszPath);

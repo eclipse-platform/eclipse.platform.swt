@@ -134,6 +134,10 @@ public class Display extends Device {
 	/* Display Shutdown */
 	Runnable [] disposeList;
 	
+	/* TrayIcons */
+	TrayIcon [] trayIcons;
+	int nextTrayId = 0;
+	
 	/* Timers */
 	int timerCount;
 	int [] timerIds;
@@ -266,6 +270,7 @@ public class Display extends Device {
 	static final int SWT_KEYMSG	 		= OS.WM_APP + 2;
 	static final int SWT_DESTROY	 	= OS.WM_APP + 3;
 	static final int SWT_RESIZE			= OS.WM_APP + 4;
+	static final int SWT_TRAYICONMSG	= OS.WM_APP + 5;
 	
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.widgets.";
@@ -465,6 +470,26 @@ void addPopup (Menu menu) {
 		popups = newPopups;
 	}
 	popups [index] = menu;
+}
+
+void addTrayIcon (TrayIcon icon) {
+	if (trayIcons == null) trayIcons = new TrayIcon [4];
+	int length = trayIcons.length;
+	for (int i = 0; i < length; i++) {
+		if (trayIcons [i] == icon) return;
+	}
+	int index = 0;
+	while (index < length) {
+		if (trayIcons [index] == null) break;
+		index++;
+	}
+	if (index == length) {
+		TrayIcon [] newTrayIcons = new TrayIcon [length + 4];
+		System.arraycopy (trayIcons, 0, newTrayIcons, 0, length);
+		trayIcons = newTrayIcons;
+	}
+	trayIcons [index] = icon;
+	icon.id = nextTrayId++;
 }
 
 /**
@@ -1532,6 +1557,26 @@ public Thread getThread () {
 	return thread;
 }
 
+TrayIcon getTrayIcon (int id) {
+	if (trayIcons == null) return null;
+	for (int i = 0; i < trayIcons.length; i++) {
+		TrayIcon current = trayIcons [i]; 
+		if (current != null && current.id == id) return current;
+	}
+	return null;
+}
+
+/**
+ * Returns an array of tray icons that are active on the display.
+ * 
+ * @return the array of tray icons
+ * 
+ * @since 3.0
+ */
+public TrayIcon [] getTrayIcons () {
+	return trayIcons;
+}
+
 /**	 
  * Invokes platform specific functionality to allocate a new GC handle.
  * <p>
@@ -1932,6 +1977,28 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 		case OS.WM_TIMER:
 			runTimer (wParam);
 			break;
+		case SWT_TRAYICONMSG:
+			TrayIcon trayIcon = getTrayIcon (wParam);
+			if (trayIcon == null) return 0;
+			switch (lParam) {
+				case OS.WM_LBUTTONDOWN:
+					trayIcon.WM_LBUTTONDOWN (wParam, lParam);
+					break;
+				case OS.WM_LBUTTONDBLCLK:
+					trayIcon.WM_LBUTTONDBLCLK (wParam, lParam);
+					break;
+				case OS.WM_RBUTTONDOWN:
+					trayIcon.WM_RBUTTONDOWN (wParam, lParam);
+					break;
+				case OS.WM_RBUTTONDBLCLK:
+					trayIcon.WM_RBUTTONDBLCLK (wParam, lParam);
+					break;
+				case OS.WM_CONTEXTMENU:
+					// TODO why isn't this ever invoked?
+					trayIcon.WM_CONTEXTMENU (wParam, lParam);
+					break;
+			}
+			break;
 	}
 	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 }
@@ -2095,6 +2162,13 @@ protected void release () {
 		Shell shell = shells [i];
 		if (!shell.isDisposed ()) shell.dispose ();
 	}
+	/* Release the tray icons*/
+	if (trayIcons != null) {
+		for (int i = 0; i < trayIcons.length; i++) {
+			if (trayIcons [i] != null) trayIcons [i].dispose ();
+		}
+	}
+	trayIcons = null;
 	while (readAndDispatch ()) {}
 	if (disposeList != null) {
 		for (int i=0; i<disposeList.length; i++) {
@@ -2335,6 +2409,16 @@ void removePopup (Menu menu) {
 	for (int i=0; i<popups.length; i++) {
 		if (popups [i] == menu) {
 			popups [i] = null;
+			return;
+		}
+	}
+}
+
+void removeTrayIcon (TrayIcon icon) {
+	if (trayIcons == null) return;
+	for (int i = 0; i < trayIcons.length; i++) {
+		if (trayIcons [i] == icon) {
+			trayIcons [i] = null;
 			return;
 		}
 	}

@@ -7061,6 +7061,36 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(ShellExecuteExW)
 }
 #endif
 
+#ifndef NO_Shell_1NotifyIconA
+JNIEXPORT jboolean JNICALL OS_NATIVE(Shell_1NotifyIconA)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	NOTIFYICONDATAA _arg1, *lparg1=NULL;
+	jboolean rc;
+	NATIVE_ENTER(env, that, "Shell_1NotifyIconA\n")
+	if (arg1) lparg1 = getNOTIFYICONDATAAFields(env, arg1, &_arg1);
+	rc = (jboolean)Shell_NotifyIconA(arg0, lparg1);
+	if (arg1) setNOTIFYICONDATAAFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "Shell_1NotifyIconA\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_Shell_1NotifyIconW
+JNIEXPORT jboolean JNICALL OS_NATIVE(Shell_1NotifyIconW)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	NOTIFYICONDATAW _arg1, *lparg1=NULL;
+	jboolean rc;
+	NATIVE_ENTER(env, that, "Shell_1NotifyIconW\n")
+	if (arg1) lparg1 = getNOTIFYICONDATAWFields(env, arg1, &_arg1);
+	rc = (jboolean)Shell_NotifyIconW(arg0, lparg1);
+	if (arg1) setNOTIFYICONDATAWFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "Shell_1NotifyIconW\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_ShowCaret
 JNIEXPORT jboolean JNICALL OS_NATIVE(ShowCaret)
 	(JNIEnv *env, jclass that, jint arg0)

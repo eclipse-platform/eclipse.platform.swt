@@ -2798,6 +2798,216 @@ void setNONCLIENTMETRICSWFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICSW
 }
 #endif
 
+#ifndef NO_NOTIFYICONDATA
+typedef struct NOTIFYICONDATA_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID cbSize, hWnd, uID, uFlags, uCallbackMessage, hIcon, dwState, dwStateMask, uVersion, dwInfoFlags;
+} NOTIFYICONDATA_FID_CACHE;
+
+NOTIFYICONDATA_FID_CACHE NOTIFYICONDATAFc;
+
+void cacheNOTIFYICONDATAFields(JNIEnv *env, jobject lpObject)
+{
+	if (NOTIFYICONDATAFc.cached) return;
+	NOTIFYICONDATAFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	NOTIFYICONDATAFc.cbSize = (*env)->GetFieldID(env, NOTIFYICONDATAFc.clazz, "cbSize", "I");
+	NOTIFYICONDATAFc.hWnd = (*env)->GetFieldID(env, NOTIFYICONDATAFc.clazz, "hWnd", "I");
+	NOTIFYICONDATAFc.uID = (*env)->GetFieldID(env, NOTIFYICONDATAFc.clazz, "uID", "I");
+	NOTIFYICONDATAFc.uFlags = (*env)->GetFieldID(env, NOTIFYICONDATAFc.clazz, "uFlags", "I");
+	NOTIFYICONDATAFc.uCallbackMessage = (*env)->GetFieldID(env, NOTIFYICONDATAFc.clazz, "uCallbackMessage", "I");
+	NOTIFYICONDATAFc.hIcon = (*env)->GetFieldID(env, NOTIFYICONDATAFc.clazz, "hIcon", "I");
+	NOTIFYICONDATAFc.dwState = (*env)->GetFieldID(env, NOTIFYICONDATAFc.clazz, "dwState", "I");
+	NOTIFYICONDATAFc.dwStateMask = (*env)->GetFieldID(env, NOTIFYICONDATAFc.clazz, "dwStateMask", "I");
+	NOTIFYICONDATAFc.uVersion = (*env)->GetFieldID(env, NOTIFYICONDATAFc.clazz, "uVersion", "I");
+	NOTIFYICONDATAFc.dwInfoFlags = (*env)->GetFieldID(env, NOTIFYICONDATAFc.clazz, "dwInfoFlags", "I");
+	NOTIFYICONDATAFc.cached = 1;
+}
+
+NOTIFYICONDATA *getNOTIFYICONDATAFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATA *lpStruct)
+{
+	if (!NOTIFYICONDATAFc.cached) cacheNOTIFYICONDATAFields(env, lpObject);
+	lpStruct->cbSize = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.cbSize);
+	lpStruct->hWnd = (HWND)(*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.hWnd);
+	lpStruct->uID = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uID);
+	lpStruct->uFlags = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uFlags);
+	lpStruct->uCallbackMessage = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uCallbackMessage);
+	lpStruct->hIcon = (HICON)(*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.hIcon);
+	lpStruct->dwState = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwState);
+	lpStruct->dwStateMask = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwStateMask);
+	lpStruct->uVersion = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uVersion);
+	lpStruct->dwInfoFlags = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwInfoFlags);
+	return lpStruct;
+}
+
+void setNOTIFYICONDATAFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATA *lpStruct)
+{
+	if (!NOTIFYICONDATAFc.cached) cacheNOTIFYICONDATAFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.cbSize, (jint)lpStruct->cbSize);
+	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.hWnd, (jint)lpStruct->hWnd);
+	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uID, (jint)lpStruct->uID);
+	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uFlags, (jint)lpStruct->uFlags);
+	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uCallbackMessage, (jint)lpStruct->uCallbackMessage);
+	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.hIcon, (jint)lpStruct->hIcon);
+	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwState, (jint)lpStruct->dwState);
+	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwStateMask, (jint)lpStruct->dwStateMask);
+	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uVersion, (jint)lpStruct->uVersion);
+	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwInfoFlags, (jint)lpStruct->dwInfoFlags);
+}
+#endif
+
+#ifndef NO_NOTIFYICONDATAA
+typedef struct NOTIFYICONDATAA_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID szTip, szInfo, szInfoTitle;
+} NOTIFYICONDATAA_FID_CACHE;
+
+NOTIFYICONDATAA_FID_CACHE NOTIFYICONDATAAFc;
+
+void cacheNOTIFYICONDATAAFields(JNIEnv *env, jobject lpObject)
+{
+	if (NOTIFYICONDATAAFc.cached) return;
+	cacheNOTIFYICONDATAFields(env, lpObject);
+	NOTIFYICONDATAAFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	NOTIFYICONDATAAFc.szTip = (*env)->GetFieldID(env, NOTIFYICONDATAAFc.clazz, "szTip", "[B");
+	NOTIFYICONDATAAFc.szInfo = (*env)->GetFieldID(env, NOTIFYICONDATAAFc.clazz, "szInfo", "[B");
+	NOTIFYICONDATAAFc.szInfoTitle = (*env)->GetFieldID(env, NOTIFYICONDATAAFc.clazz, "szInfoTitle", "[B");
+	NOTIFYICONDATAAFc.cached = 1;
+}
+
+NOTIFYICONDATAA *getNOTIFYICONDATAAFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATAA *lpStruct)
+{
+	if (!NOTIFYICONDATAAFc.cached) cacheNOTIFYICONDATAAFields(env, lpObject);
+	lpStruct->cbSize = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.cbSize);
+	lpStruct->hWnd = (HWND)(*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.hWnd);
+	lpStruct->uID = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uID);
+	lpStruct->uFlags = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uFlags);
+	lpStruct->uCallbackMessage = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uCallbackMessage);
+	lpStruct->hIcon = (HICON)(*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.hIcon);
+	lpStruct->dwState = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwState);
+	lpStruct->dwStateMask = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwStateMask);
+	lpStruct->uVersion = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uVersion);
+	lpStruct->dwInfoFlags = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwInfoFlags);
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szTip);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szTip), (void *)lpStruct->szTip);
+	}
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szInfo);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfo), (void *)lpStruct->szInfo);
+	}
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szInfoTitle);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfoTitle), (void *)lpStruct->szInfoTitle);
+	}
+	return lpStruct;
+}
+
+void setNOTIFYICONDATAAFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATAA *lpStruct)
+{
+	if (!NOTIFYICONDATAAFc.cached) cacheNOTIFYICONDATAAFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.cbSize, (jint)lpStruct->cbSize);
+	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.hWnd, (jint)lpStruct->hWnd);
+	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uID, (jint)lpStruct->uID);
+	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uFlags, (jint)lpStruct->uFlags);
+	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uCallbackMessage, (jint)lpStruct->uCallbackMessage);
+	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.hIcon, (jint)lpStruct->hIcon);
+	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwState, (jint)lpStruct->dwState);
+	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwStateMask, (jint)lpStruct->dwStateMask);
+	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uVersion, (jint)lpStruct->uVersion);
+	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwInfoFlags, (jint)lpStruct->dwInfoFlags);
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szTip);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szTip), (void *)lpStruct->szTip);
+	}
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szInfo);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfo), (void *)lpStruct->szInfo);
+	}
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAAFc.szInfoTitle);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfoTitle), (void *)lpStruct->szInfoTitle);
+	}
+}
+#endif
+
+#ifndef NO_NOTIFYICONDATAW
+typedef struct NOTIFYICONDATAW_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID szTip, szInfo, szInfoTitle;
+} NOTIFYICONDATAW_FID_CACHE;
+
+NOTIFYICONDATAW_FID_CACHE NOTIFYICONDATAWFc;
+
+void cacheNOTIFYICONDATAWFields(JNIEnv *env, jobject lpObject)
+{
+	if (NOTIFYICONDATAWFc.cached) return;
+	cacheNOTIFYICONDATAFields(env, lpObject);
+	NOTIFYICONDATAWFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	NOTIFYICONDATAWFc.szTip = (*env)->GetFieldID(env, NOTIFYICONDATAWFc.clazz, "szTip", "[C");
+	NOTIFYICONDATAWFc.szInfo = (*env)->GetFieldID(env, NOTIFYICONDATAWFc.clazz, "szInfo", "[C");
+	NOTIFYICONDATAWFc.szInfoTitle = (*env)->GetFieldID(env, NOTIFYICONDATAWFc.clazz, "szInfoTitle", "[C");
+	NOTIFYICONDATAWFc.cached = 1;
+}
+
+NOTIFYICONDATAW *getNOTIFYICONDATAWFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATAW *lpStruct)
+{
+	if (!NOTIFYICONDATAWFc.cached) cacheNOTIFYICONDATAWFields(env, lpObject);
+	lpStruct->cbSize = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.cbSize);
+	lpStruct->hWnd = (HWND)(*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.hWnd);
+	lpStruct->uID = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uID);
+	lpStruct->uFlags = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uFlags);
+	lpStruct->uCallbackMessage = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uCallbackMessage);
+	lpStruct->hIcon = (HICON)(*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.hIcon);
+	lpStruct->dwState = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwState);
+	lpStruct->dwStateMask = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwStateMask);
+	lpStruct->uVersion = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.uVersion);
+	lpStruct->dwInfoFlags = (*env)->GetIntField(env, lpObject, NOTIFYICONDATAFc.dwInfoFlags);
+	{
+	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szTip);
+	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szTip) / 2, (void *)lpStruct->szTip);
+	}
+	{
+	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szInfo);
+	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfo) / 2, (void *)lpStruct->szInfo);
+	}
+	{
+	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szInfoTitle);
+	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfoTitle) / 2, (void *)lpStruct->szInfoTitle);
+	}
+	return lpStruct;
+}
+
+void setNOTIFYICONDATAWFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATAW *lpStruct)
+{
+	if (!NOTIFYICONDATAWFc.cached) cacheNOTIFYICONDATAWFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.cbSize, (jint)lpStruct->cbSize);
+	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.hWnd, (jint)lpStruct->hWnd);
+	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uID, (jint)lpStruct->uID);
+	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uFlags, (jint)lpStruct->uFlags);
+	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uCallbackMessage, (jint)lpStruct->uCallbackMessage);
+	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.hIcon, (jint)lpStruct->hIcon);
+	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwState, (jint)lpStruct->dwState);
+	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwStateMask, (jint)lpStruct->dwStateMask);
+	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.uVersion, (jint)lpStruct->uVersion);
+	(*env)->SetIntField(env, lpObject, NOTIFYICONDATAFc.dwInfoFlags, (jint)lpStruct->dwInfoFlags);
+	{
+	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szTip);
+	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szTip) / 2, (void *)lpStruct->szTip);
+	}
+	{
+	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szInfo);
+	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfo) / 2, (void *)lpStruct->szInfo);
+	}
+	{
+	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, NOTIFYICONDATAWFc.szInfoTitle);
+	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szInfoTitle) / 2, (void *)lpStruct->szInfoTitle);
+	}
+}
+#endif
+
 #ifndef NO_OPENFILENAME
 typedef struct OPENFILENAME_FID_CACHE {
 	int cached;

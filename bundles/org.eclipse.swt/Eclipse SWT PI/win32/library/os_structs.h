@@ -531,6 +531,36 @@ void setNONCLIENTMETRICSWFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICSW
 #define NONCLIENTMETRICSW_sizeof() 0
 #endif
 
+#ifndef NO_NOTIFYICONDATA
+NOTIFYICONDATA *getNOTIFYICONDATAFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATA *lpStruct);
+void setNOTIFYICONDATAFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATA *lpStruct);
+#define NOTIFYICONDATA_sizeof() sizeof(NOTIFYICONDATA)
+#else
+#define getNOTIFYICONDATAFields(a,b,c) NULL
+#define setNOTIFYICONDATAFields(a,b,c)
+#define NOTIFYICONDATA_sizeof() 0
+#endif
+
+#ifndef NO_NOTIFYICONDATAA
+NOTIFYICONDATAA *getNOTIFYICONDATAAFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATAA *lpStruct);
+void setNOTIFYICONDATAAFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATAA *lpStruct);
+#define NOTIFYICONDATAA_sizeof() sizeof(NOTIFYICONDATAA)
+#else
+#define getNOTIFYICONDATAAFields(a,b,c) NULL
+#define setNOTIFYICONDATAAFields(a,b,c)
+#define NOTIFYICONDATAA_sizeof() 0
+#endif
+
+#ifndef NO_NOTIFYICONDATAW
+NOTIFYICONDATAW *getNOTIFYICONDATAWFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATAW *lpStruct);
+void setNOTIFYICONDATAWFields(JNIEnv *env, jobject lpObject, NOTIFYICONDATAW *lpStruct);
+#define NOTIFYICONDATAW_sizeof() sizeof(NOTIFYICONDATAW)
+#else
+#define getNOTIFYICONDATAWFields(a,b,c) NULL
+#define setNOTIFYICONDATAWFields(a,b,c)
+#define NOTIFYICONDATAW_sizeof() 0
+#endif
+
 #ifndef NO_OPENFILENAME
 OPENFILENAME *getOPENFILENAMEFields(JNIEnv *env, jobject lpObject, OPENFILENAME *lpStruct);
 void setOPENFILENAMEFields(JNIEnv *env, jobject lpObject, OPENFILENAME *lpStruct);
