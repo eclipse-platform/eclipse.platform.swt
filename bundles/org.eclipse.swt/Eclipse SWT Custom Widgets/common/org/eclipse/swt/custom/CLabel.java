@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
@@ -68,7 +67,7 @@ public class CLabel extends Canvas {
 	private int[] gradientPercents;
 	private boolean gradientVertical;
 	
-	private static int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB | SWT.DRAW_TRANSPARENT;
+	private static int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB | SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -226,7 +225,7 @@ public Image getImage() {
  */
 private Point getTotalSize(Image image, String text) {
 	Point size = new Point(0, 0);
-	
+
 	if (image != null) {
 		Rectangle r = image.getBounds();
 		size.x += r.width;
@@ -351,6 +350,7 @@ void onMnemonic(TraverseEvent event) {
 		control = control.getParent();
 	}
 }
+
 void onPaint(PaintEvent event) {
 	Rectangle rect = getClientArea();
 	if (rect.width == 0 || rect.height == 0) return;
@@ -369,11 +369,15 @@ void onPaint(PaintEvent event) {
 	}
 	
 	GC gc = event.gc;
-		
+	String[] lines = text == null ? null : splitString(text); 
+	
 	// shorten the text
 	if (shortenText) {
-		t = shortenText(gc, text, availableWidth);
-		extent = getTotalSize(img, t);
+		extent.x = 0;
+	    for(int i = 0; i < lines.length; i++) {
+	       lines[i] = shortenText(gc, lines[i], availableWidth);
+	       extent.x = Math.max(extent.x, getTotalSize(null, lines[i]).x);
+	    }
 		if (appToolTipText == null) {
 			super.setToolTipText(text);
 		}
@@ -384,10 +388,10 @@ void onPaint(PaintEvent event) {
 	// determine horizontal position
 	int x = rect.x + hIndent;
 	if (align == SWT.CENTER) {
-		x = (rect.width-extent.x)/2;
+		x = (rect.width - extent.x)/2;
 	}
 	if (align == SWT.RIGHT) {
-		x = rect.width-extent.x - hIndent;
+		x = rect.width - hIndent - extent.x;
 	}
 	
 	// draw a background image behind the text
@@ -462,18 +466,36 @@ void onPaint(PaintEvent event) {
 	if ((style & SWT.SHADOW_IN) != 0 || (style & SWT.SHADOW_OUT) != 0) {
 		paintBorder(gc, rect);
 	}
-	// draw the image		
+
+	// draw the image
 	if (img != null) {
 		Rectangle imageRect = img.getBounds();
 		gc.drawImage(img, 0, 0, imageRect.width, imageRect.height, 
 		                x, (rect.height-imageRect.height)/2, imageRect.width, imageRect.height);
-		x += imageRect.width + GAP;
+		x +=  imageRect.width + GAP;
+		extent.x -= imageRect.width + GAP;
 	}
 	// draw the text
-	if (t != null) {
-		int textHeight = gc.getFontMetrics().getHeight();
+	if (lines != null) {
+		int lineHeight = gc.getFontMetrics().getHeight();
+		int textHeight = lines.length * lineHeight;
+		int lineY = Math.max(vIndent, rect.y + (rect.height - textHeight) / 2);
 		gc.setForeground(getForeground());
-		gc.drawText(t, x, rect.y + (rect.height-textHeight)/2, DRAW_FLAGS);
+		for (int i = 0; i < lines.length; i++) {
+			int lineX = x;
+			if (lines.length > 1) {
+				if (align == SWT.CENTER) {
+					int lineWidth = gc.textExtent(lines[i], DRAW_FLAGS).x;
+					lineX = x + Math.max(0, (extent.x - lineWidth) / 2);
+				}
+				if (align == SWT.RIGHT) {
+					int lineWidth = gc.textExtent(lines[i], DRAW_FLAGS).x;
+					lineX = Math.max(x, rect.x + rect.width - hIndent - lineWidth);
+				}
+			}
+			gc.drawText(lines[i], lineX, lineY, DRAW_FLAGS);
+			lineY += lineHeight;
+		}
 	}
 }
 /**
@@ -750,5 +772,24 @@ protected String shortenText(GC gc, String t, int width) {
 		e++;
 	}
 	return t;
+}
+
+private String[] splitString(String text) {
+    String[] lines = new String[1];
+    int start = 0, pos;
+    do {
+        pos = text.indexOf('\n', start);
+        if (pos == -1) {
+        	lines[lines.length - 1] = text.substring(start);
+        } else {
+            boolean crlf = (pos > 0) && (text.charAt(pos - 1) == '\r');
+            lines[lines.length - 1] = text.substring(start, pos - (crlf ? 1 : 0));
+            start = pos + 1;
+            String[] newLines = new String[lines.length+1];
+            System.arraycopy(lines, 0, newLines, 0, lines.length);
+       		lines = newLines;
+        }
+    } while (pos != -1);
+    return lines;
 }
 }
