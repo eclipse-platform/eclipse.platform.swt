@@ -158,14 +158,19 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
-	Rect oldBounds = new Rect ();
+	Rect bounds, oldBounds = new Rect ();
 	OS.GetControlBounds (handle, oldBounds);
-	Rect bounds = new Rect ();
-	bounds.right = bounds.bottom = 100;
-	OS.SetControlBounds (handle, bounds);
+	boolean fixBounds = (oldBounds.right - oldBounds.left) < 100 || (oldBounds.bottom - oldBounds.top) < 100;
+	if (fixBounds) {
+		bounds = new Rect ();
+		bounds.right = bounds.bottom = 100;
+		OS.SetControlBounds (handle, bounds);
+	} else {
+		bounds = oldBounds;
+	}
 	Rect client = new Rect ();
 	OS.GetTabContentRect (handle, client);
-	OS.SetControlBounds (handle, oldBounds);
+	if (fixBounds) OS.SetControlBounds (handle, oldBounds);
 	x -= client.left - bounds.left;
 	y -= client.top - bounds.top;
 	width += (bounds.right - bounds.left) - (client.right - client.left);
