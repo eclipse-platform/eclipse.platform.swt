@@ -448,15 +448,14 @@ public int getItemCount () {
 public int getItemHeight () {
 	checkWidget();
 	int itemCount = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
+	int /*long*/ column = OS.gtk_tree_view_get_column (handle, 0);
 	if (itemCount == 0) {
-		int /*long*/ column = OS.gtk_tree_view_get_column (handle, 0);
 		int [] w = new int [1], h = new int [1];
 		OS.gtk_tree_view_column_cell_get_size (column, null, null, null, w, h);
 		return h [0];
 	} else {
 		int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 		OS.gtk_tree_model_get_iter_first (modelHandle, iter);
-		int /*long*/ column = OS.gtk_tree_view_get_column (handle, 0);
 		int /*long*/ renderers = OS.gtk_tree_view_column_get_cell_renderers (column);
 		int /*long*/ list = renderers;
 		while (list != 0) {
