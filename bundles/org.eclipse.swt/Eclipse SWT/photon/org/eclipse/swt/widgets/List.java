@@ -1131,7 +1131,7 @@ public void setSelection (int index) {
  * @see List#select(int[])
  */
 public void setSelection(int[] indices) {
-	if ((style & SWT.MULTI) != 0) deselectAll ();
+	deselectAll ();
 	select (indices);
 }
 
