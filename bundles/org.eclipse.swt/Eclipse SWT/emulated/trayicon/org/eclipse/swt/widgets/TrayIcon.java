@@ -6,7 +6,6 @@ import org.eclipse.swt.graphics.*;
 
 public class TrayIcon extends Widget {
 	Image image;
-	Menu menu;
 	String toolTipText;
 	boolean visible;
 
@@ -30,11 +29,6 @@ Image getImage () {
 	return image;
 }
 
-public Menu getMenu () {
-	checkWidget ();
-	return menu;
-}
-
 public String getToolTipText () {
 	checkWidget ();
 	return toolTipText;
@@ -54,12 +48,6 @@ public void setImage (Image image) {
 	checkWidget ();
 	if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	this.image = image;
-}
-
-void setMenu (Menu menu) {
-	checkWidget ();
-	if (menu != null && menu.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-	this.menu = menu;
 }
 
 public void setToolTipText (String string) {

@@ -11,7 +11,6 @@ public class TrayIcon extends Widget {
 	int /*long*/ imageHandle;
 	int /*long*/ tooltipsHandle;
 	Image image;
-	Menu menu;
 	String toolTipText;
 
 public TrayIcon (Display display) {
@@ -79,11 +78,6 @@ public Image getImage () {
 	return image;
 }
 
-Menu getMenu () {
-	checkWidget ();
-	return menu;
-}
-
 public String getToolTipText () {
 	checkWidget ();
 	return toolTipText;
@@ -94,10 +88,7 @@ int gtk_button_press_event (int widget, int eventPtr) {
 	OS.memmove (gdkEvent, eventPtr, GdkEventButton.sizeof);
 	if (gdkEvent.type == OS.GDK_3BUTTON_PRESS) return 0;
 	if (gdkEvent.button == 3 && gdkEvent.type == OS.GDK_BUTTON_PRESS) {
-		Event event = new Event ();
-//		event.x = (int) gdkEvent.x_root;
-//		event.y = (int) gdkEvent.y_root;
-		sendEvent (SWT.MenuDetect, event);
+		sendEvent (SWT.MenuDetect);
 		return 0;
 	}
 	if (gdkEvent.type == OS.GDK_2BUTTON_PRESS) {
@@ -125,7 +116,6 @@ void releaseWidget () {
 	imageHandle = tooltipsHandle = 0;
 	image = null;
 	toolTipText = null;
-	menu = null;
 }
 
 public void removeSelectionListener (SelectionListener listener) {
@@ -150,12 +140,6 @@ public void setImage (Image image) {
 		OS.gtk_image_set_from_pixmap (imageHandle, 0, 0);
 		OS.gtk_widget_hide (imageHandle);
 	}
-}
-
-void setMenu (Menu menu) {
-	checkWidget ();
-	if (menu != null && menu.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-	this.menu = menu;
 }
 
 public void setToolTipText (String string) {
