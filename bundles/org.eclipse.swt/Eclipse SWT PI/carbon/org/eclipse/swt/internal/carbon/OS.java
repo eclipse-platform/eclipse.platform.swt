@@ -671,6 +671,7 @@ public static final native int ATSUGetGlyphBounds(int iTextLayout, int iTextBase
 public static final native int ATSUGetGlyphBounds(int iTextLayout, int iTextBasePointX, int iTextBasePointY, int iBoundsCharStart, int iBoundsCharLength, short iTypeOfBounds, int iMaxNumberOfBounds, ATSTrapezoid oGlyphBounds, int[] oActualNumberOfBounds);
 public static final native int ATSUGetLayoutControl(int iTextLayout, int iTag, int iExpectedValueSize, int[] oValue, int[] oActualValueSize);
 public static final native int ATSUGetSoftLineBreaks(int iTextLayout, int iRangeStart, int iRangeLength, int iMaximumBreaks, int[] oBreaks, int[] oBreakCount);
+public static final native int ATSUGetTextHighlight (int iTextLayout, int iTextBasePointX, int iTextBasePointY, int iHighlightStart, int iHighlightLength, int oHighlightRegion);
 public static final native int ATSUGetUnjustifiedBounds(int iTextLayout, int iLineStart, int iLineLength,  int[] oTextBefore, int[] oTextAfter, int[] oAscent, int[] oDescent);
 public static final native int ATSUHighlightText(int iTextLayout, int iTextBasePointX, int iTextBasePointY, int iHighlightStart, int iHighlightLength);
 public static final native int ATSUNextCursorPosition(int iTextLayout, int iOldOffset, int iMovementType, int[] oNewOffset);

@@ -296,6 +296,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(ATSUGetSoftLineBreaks)
 }
 #endif
 
+#ifndef NO_ATSUGetTextHighlight
+JNIEXPORT jint JNICALL OS_NATIVE(ATSUGetTextHighlight)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "ATSUGetTextHighlight\n")
+	rc = (jint)ATSUGetTextHighlight((ATSUTextLayout)arg0, arg1, arg2, arg3, arg4, (RgnHandle)arg5);
+	NATIVE_EXIT(env, that, "ATSUGetTextHighlight\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_ATSUGetUnjustifiedBounds
 JNIEXPORT jint JNICALL OS_NATIVE(ATSUGetUnjustifiedBounds)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jintArray arg4, jintArray arg5, jintArray arg6)
@@ -7545,11 +7557,9 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(SectRect)
 	NATIVE_ENTER(env, that, "SectRect\n")
 	if (arg0) lparg0 = getRectFields(env, arg0, &_arg0);
 	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
-	if (arg2) lparg2 = getRectFields(env, arg2, &_arg2);
+	if (arg2) lparg2 = &_arg2;
 	rc = (jboolean)SectRect(lparg0, lparg1, lparg2);
 	if (arg2) setRectFields(env, arg2, lparg2);
-	if (arg1) setRectFields(env, arg1, lparg1);
-	if (arg0) setRectFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "SectRect\n")
 	return rc;
 }
@@ -9270,11 +9280,9 @@ JNIEXPORT void JNICALL OS_NATIVE(UnionRect)
 	NATIVE_ENTER(env, that, "UnionRect\n")
 	if (arg0) lparg0 = getRectFields(env, arg0, &_arg0);
 	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
-	if (arg2) lparg2 = getRectFields(env, arg2, &_arg2);
+	if (arg2) lparg2 = &_arg2;
 	UnionRect(lparg0, lparg1, lparg2);
 	if (arg2) setRectFields(env, arg2, lparg2);
-	if (arg1) setRectFields(env, arg1, lparg1);
-	if (arg0) setRectFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "UnionRect\n")
 }
 #endif
