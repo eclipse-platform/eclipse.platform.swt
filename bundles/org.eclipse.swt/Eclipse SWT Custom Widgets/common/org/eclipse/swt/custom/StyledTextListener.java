@@ -26,32 +26,38 @@ public void handleEvent(Event e) {
 			((ExtendedModifyListener) eventListener).modifyText(extendedModifyEvent);
 		break;
 		
-		case StyledText.LineGetStyle:
-			LineStyleEvent lineStyleEvent = new LineStyleEvent((StyledTextEvent) e);
-			((LineStyleListener) eventListener).lineGetStyle(lineStyleEvent);
-			((StyledTextEvent) e).styles = lineStyleEvent.styles;
-		break;
-		
 		case StyledText.LineGetBackground:
 			LineBackgroundEvent lineBgEvent = new LineBackgroundEvent((StyledTextEvent) e);
 			((LineBackgroundListener) eventListener).lineGetBackground(lineBgEvent);
 			((StyledTextEvent) e).lineBackground = lineBgEvent.lineBackground;
 		break;
 		
+		case StyledText.LineGetSegments:
+			BidiSegmentEvent segmentEvent = new BidiSegmentEvent((StyledTextEvent) e);
+			((BidiSegmentListener) eventListener).lineGetSegments(segmentEvent);
+			((StyledTextEvent) e).segments = segmentEvent.segments;
+		break;
+		
+		case StyledText.LineGetStyle:
+			LineStyleEvent lineStyleEvent = new LineStyleEvent((StyledTextEvent) e);
+			((LineStyleListener) eventListener).lineGetStyle(lineStyleEvent);
+			((StyledTextEvent) e).styles = lineStyleEvent.styles;
+		break;
+
 		case StyledText.VerifyKey:
 			VerifyEvent verifyEvent = new VerifyEvent(e);
 			((VerifyKeyListener) eventListener).verifyKey(verifyEvent);
 			e.doit = verifyEvent.doit;
 		break;		
 
-		case StyledText.TextChanging:
-			TextChangingEvent textChangingEvent = new TextChangingEvent((StyledTextContent) e.data, (StyledTextEvent) e);
-			((TextChangeListener) eventListener).textChanging(textChangingEvent);
-		break;
-
 		case StyledText.TextChanged:
 			textChangedEvent = new TextChangedEvent((StyledTextContent) e.data);
 			((TextChangeListener) eventListener).textChanged(textChangedEvent);
+		break;
+
+		case StyledText.TextChanging:
+			TextChangingEvent textChangingEvent = new TextChangingEvent((StyledTextContent) e.data, (StyledTextEvent) e);
+			((TextChangeListener) eventListener).textChanging(textChangingEvent);
 		break;
 
 		case StyledText.TextSet:

@@ -15,6 +15,8 @@ class StyledTextEvent extends Event {
 	StyleRange[] styles;		
 	// used by LineBackgroundEvent
 	Color lineBackground;
+	// used by BidiSegmentEvent
+	int[] segments;	
 	// used by TextChangedEvent
 	int replaceCharCount; 	
 	int newCharCount; 

@@ -19,6 +19,7 @@ import java.util.Vector;
 class StyledTextBidi {
 	private GC gc;
 	private int tabWidth;			// tab width in number of spaces. used to calculate tab stops
+	private int[] bidiSegments;		// bidi direction segments specified to explicitly render separately
 	private int[] renderPositions;	// x position where characters of the line get rendered at.
 									// in visual order
 	private int[] order;			// reordering indices in logical order. iV=order[iL]. iV=visual index, iL=logical index.
@@ -97,6 +98,7 @@ public StyledTextBidi(GC gc, int tabWidth, String text, int[] boldRanges, Font b
 		
 	this.gc = gc;
 	this.tabWidth = tabWidth;
+	bidiSegments = offsets;
 	renderPositions = new int[length];
 	order = new int[length];
 	dx = new int[length];
@@ -404,8 +406,10 @@ int getCaretPosition(int logicalOffset, int direction) {
 	else
 	// consider local numbers as R2L in determining direction boundaries.
 	// fixes 1GK9API.
+	// treat user specified direction segments like real direction changes.
 	if (direction == ST.COLUMN_NEXT &&
-		isRightToLeftInput(logicalOffset) != isRightToLeftInput(logicalOffset - 1)) {
+		(isRightToLeftInput(logicalOffset) != isRightToLeftInput(logicalOffset - 1) ||
+		 isStartOfBidiSegment(logicalOffset))) {
 		int visualOffset = order[logicalOffset-1];
 		// moving between segments.
 		// do not consider local numbers as R2L here, to determine position,
@@ -454,6 +458,8 @@ int getCaretPosition(int logicalOffset, int direction) {
  * range. The text range may be visually discontiguous if the 
  * text is bidirectional. Each returned direction run has a single 
  * direction and is thus contiguous ensuring proper rendering.
+ * User specified direction segments are taken into account and 
+ * result in separate direction runs.
  * <p>
  * 
  * @param logicalStart offset of the logcial start of the first 
@@ -471,6 +477,15 @@ private Vector getDirectionRuns(int logicalStart, int length) {
 	int segmentLogicalEnd = segmentLogicalStart;
 	 
 	if (logicalEnd < getTextLength()) {
+		int bidiSegmentIndex = 0;
+		int bidiSegmentEnd = bidiSegments[bidiSegmentIndex + 1];			
+
+		// Find the bidi segment that the direction runs start in.
+		// There will always be at least on bidi segment (for the entire line).
+		while (bidiSegmentIndex < bidiSegments.length - 2 && bidiSegmentEnd <= logicalStart) {
+			bidiSegmentIndex++;
+			bidiSegmentEnd = bidiSegments[bidiSegmentIndex + 1];
+		}
 		while (segmentLogicalEnd <= logicalEnd) {
 			int segType = classBuffer[segmentLogicalStart];
 			// Search for the end of the direction segment. Each segment needs to 
@@ -479,11 +494,18 @@ private Vector getDirectionRuns(int logicalStart, int length) {
 			// would be visual 1 to 4 and would thus miss visual 0. Rendering the 
 			// segments separately would render from visual 1 to 0, then 2, then 
 			// 4 to 3.
-			while (segmentLogicalEnd < logicalEnd && segType == classBuffer[segmentLogicalEnd + 1]) {
+			while (segmentLogicalEnd < logicalEnd &&
+					segType == classBuffer[segmentLogicalEnd + 1] &&
+					segmentLogicalEnd + 1 < bidiSegmentEnd) {
 				segmentLogicalEnd++;
 			}
 			directionRuns.addElement(new DirectionRun(segmentLogicalStart, segmentLogicalEnd));
 			segmentLogicalStart = ++segmentLogicalEnd;
+			// The current direction run ends at a bidi segment end. Get the next bidi segment.
+			if (segmentLogicalEnd == bidiSegmentEnd && bidiSegmentIndex < bidiSegments.length - 2) {
+				bidiSegmentIndex++;
+				bidiSegmentEnd = bidiSegments[bidiSegmentIndex + 1];
+			}
 		}
 	}
 	return directionRuns;
@@ -708,7 +730,22 @@ boolean isRightToLeftInput(int logicalIndex) {
 	return isRightToLeft;
 }
 /**
- * Reorder and calculate render positions for the specified sub-line 
+ * Returns whether the specified index is the start of a user 
+ * specified direction segment.
+ * <p>
+ * 
+ * @param logicalIndex the index to test
+ * @return true=the specified index is the start of a user specified 
+ * 	direction segment. false otherwise
+ */
+private boolean isStartOfBidiSegment(int logicalIndex) {
+	for (int i = 0; i < bidiSegments.length; i++) {
+		if (bidiSegments[i] == logicalIndex) return true;
+	}
+	return false;	
+}
+/**
+ * Reorders and calculates render positions for the specified sub-line 
  * of text. The results will be merged with the data for the rest of 
  * the line .
  * <p>
