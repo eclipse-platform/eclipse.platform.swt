@@ -91,28 +91,6 @@ int clientHandle () {
 	return clientHandle;
 }
 
-public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget ();
-	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
-	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
-	Point defaultSize = computeNativeSize (handle, wHint, hHint, changed);
-	Point size;
-	if (layout != null) {
-		size = layout.computeSize (this, wHint, hHint, changed);
-	} else {
-		size = minimumSize ();
-	}
-	int width = size.x,  height = size.y;
-	if (width == 0) width = DEFAULT_WIDTH;
-	if (height == 0) height = DEFAULT_HEIGHT;
-	if (wHint != SWT.DEFAULT) width = wHint;
-	if (hHint != SWT.DEFAULT) height = hHint;
-	Rectangle trim = computeTrim (0, 0, width, height);
-	width = Math.max (trim.width, defaultSize.x);
-	height = trim.height;
-	return new Point (width, height);
-}
-
 /**
  * Given a desired <em>client area</em> for the receiver
  * (as described by the arguments), returns the bounding
@@ -142,7 +120,8 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	int clientY = OS.GTK_WIDGET_Y (clientHandle);
 	x -= clientX;
 	y -= clientY;
-	width += clientX + clientX;
+	Point defaultSize = computeNativeSize (handle, SWT.DEFAULT, SWT.DEFAULT, true);
+	width = Math.max (width + clientX + clientX, defaultSize.x);
 	height += clientX + clientY;
 	return new Rectangle (x, y, width, height);
 }
