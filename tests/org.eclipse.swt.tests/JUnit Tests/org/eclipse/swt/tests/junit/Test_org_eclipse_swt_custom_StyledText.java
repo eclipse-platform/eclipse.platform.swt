@@ -1107,20 +1107,17 @@ public void test_getSelectionRange() {
 	String testText = "Line1\r\nLine2";
 	int invalidRanges [][] = {{-1, 0}, {-1, -1}, {100, 1}, {100, -1}, {12, 1}, {11, 2}, {2, -3}, {50, -1}};
 	int selectionRanges [][] = {{0, 1}, {0, 0}, {2, 3}, {12, 0}, {2, -2}, {5, -1}};
-	boolean exceptionThrown;
 	
 	for (int i = 0; i < invalidRanges.length; i++) {
 		int start = invalidRanges[i][0];
 		int length = invalidRanges[i][1];
 	
-		exceptionThrown = false;
 		try {
 			text.setSelectionRange(start, length);
 		}
 		catch (IllegalArgumentException e) {
-			exceptionThrown = true;
+			fail("should not thrown exception for out of range");
 		}
-		assertTrue(":a:", exceptionThrown);
 	}	
 	
 	text.setSelectionRange(0, 0);
@@ -1145,14 +1142,12 @@ public void test_getSelectionRange() {
 		int start = invalidRanges[i][0];
 		int length = invalidRanges[i][1];
 	
-		exceptionThrown = false;
 		try {
 			text.setSelectionRange(start, length);
 		}
 		catch (IllegalArgumentException e) {
-			exceptionThrown = true;
+			fail("should not thrown exception for out of range");
 		}
-		assertTrue(":a:", exceptionThrown);
 	}
 }
 
@@ -2931,17 +2926,13 @@ public void test_setOrientationI() {
 
 public void test_setSelectionI() {
 	int[] invalid = {-1, 100, 12};
-	boolean exceptionThrown;
 
 	for (int i = 0; i < invalid.length; i++) {
-		exceptionThrown = false;
 		try {
 			text.setSelection(invalid[i]);
+		} catch (IllegalArgumentException e) {
+			fail("should not thrown exception for out of range");
 		}
-		catch (IllegalArgumentException e) {
-			exceptionThrown = true;
-		}
-		assertTrue(exceptionThrown);
 	}	
 	text.setText("01234567890");
 	assertEquals(0, text.getCaretOffset());
@@ -2951,31 +2942,26 @@ public void test_setSelectionI() {
 	assertEquals(11, text.getCaretOffset());
 
 	for (int i = 0; i < invalid.length; i++) {
-		exceptionThrown = false;
 		try {
 			text.setSelection(invalid[i]);
 		}
 		catch (IllegalArgumentException e) {
-			exceptionThrown = true;
+			fail("should not thrown exception for out of range");
 		}
-		assertTrue(exceptionThrown);
 	}	
 }
 
 public void test_setSelectionLorg_eclipse_swt_graphics_Point() {
 	Point[] invalidRanges = {new Point(-1, 0), new Point(-1, -1), new Point(100, 1), 
 		new Point(100, -1), new Point(11, 12), new Point(10, 12)};
-	boolean exceptionThrown;
 
 	for (int i = 0; i < invalidRanges.length; i++) {
-		exceptionThrown = false;
 		try {
 			text.setSelection(invalidRanges[i]);
 		}
 		catch (IllegalArgumentException e) {
-			exceptionThrown = true;
+			fail("should not thrown exception for out of range");
 		}
-		assertTrue(exceptionThrown);
 	}	
 	text.setText("01234567890");
 	assertEquals("", text.getSelectionText());
@@ -2983,33 +2969,28 @@ public void test_setSelectionLorg_eclipse_swt_graphics_Point() {
 	assertEquals("3456", text.getSelectionText());
 
 	for (int i = 0; i < invalidRanges.length; i++) {
-		exceptionThrown = false;
 		try {
 			text.setSelection(invalidRanges[i]);
 		}
 		catch (IllegalArgumentException e) {
-			exceptionThrown = true;
+			fail("should not thrown exception for out of range");
 		}
-		assertTrue(exceptionThrown);
 	}	
 }
 
 public void test_setSelectionII(){
 	int[][] invalidRanges = {{-1, 0}, {-1, -1}, {100, 1}, {100, -1}, {11, 12}, {10, 12}, {2, -3}, {50, -1}};
-	boolean exceptionThrown;
 
 	for (int i = 0; i < invalidRanges.length; i++) {
 		int start = invalidRanges[i][0];
 		int end = invalidRanges[i][1];
 	
-		exceptionThrown = false;
 		try {
 			text.setSelection(start, end);
 		}
 		catch (IllegalArgumentException e) {
-			exceptionThrown = true;
+			fail("should not thrown exception for out of range");
 		}
-		assertTrue(exceptionThrown);
 	}	
 	text.setText("01234567890");
 	assertEquals("", text.getSelectionText());
@@ -3023,14 +3004,12 @@ public void test_setSelectionII(){
 		int start = invalidRanges[i][0];
 		int end = invalidRanges[i][1];
 	
-		exceptionThrown = false;
 		try {
 			text.setSelection(start, end);
 		}
 		catch (IllegalArgumentException e) {
-			exceptionThrown = true;
+			fail("should not thrown exception for out of range");
 		}
-		assertTrue(exceptionThrown);
 	}	
 }
 public void test_setSelectionBackgroundLorg_eclipse_swt_graphics_Color(){

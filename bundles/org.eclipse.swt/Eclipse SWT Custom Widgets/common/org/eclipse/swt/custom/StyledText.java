@@ -7090,7 +7090,6 @@ void setScrollBars() {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * @exception IllegalArgumentException <ul>
- *   <li>ERROR_INVALID_RANGE when start is outside the widget content
  *   <li>ERROR_INVALID_ARGUMENT when either the start or the end of the selection range is inside a 
  * multi byte line delimiter (and thus neither clearly in front of or after the line delimiter)
  * </ul> 
@@ -7116,7 +7115,6 @@ public void setSelection(int start) {
  * </ul>
  * @exception IllegalArgumentException <ul>
  *   <li>ERROR_NULL_ARGUMENT when point is null</li>
- *   <li>ERROR_INVALID_RANGE when start or end is outside the widget content
  *   <li>ERROR_INVALID_ARGUMENT when either the start or the end of the selection range is inside a 
  * multi byte line delimiter (and thus neither clearly in front of or after the line delimiter)
  * </ul> 
@@ -7191,7 +7189,6 @@ public void setSelectionForeground (Color color) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * @exception IllegalArgumentException <ul>
- *   <li>ERROR_INVALID_RANGE when start or end is outside the widget content
  *   <li>ERROR_INVALID_ARGUMENT when either the start or the end of the selection range is inside a 
  * multi byte line delimiter (and thus neither clearly in front of or after the line delimiter)
  * </ul>
@@ -7221,15 +7218,20 @@ public void setSelection(int start, int end) {
 public void setSelectionRange(int start, int length) {
 	checkWidget();
 	int contentLength = getCharCount();
-	start = Math.max(0, Math.min(start, contentLength));
-	int end = Math.max(start, Math.min(start + length, contentLength));
-	if (isLineDelimiter(start) || isLineDelimiter(end)) {
+	start = Math.max(0, Math.min (start, contentLength));
+	int end = start + length;
+	if (end < 0) {
+		length = -start;
+	} else {
+		if (end > contentLength) length = contentLength - start;
+	}
+	if (isLineDelimiter(start) || isLineDelimiter(start + length)) {
 		// the start offset or end offset of the selection range is inside a 
 		// multi byte line delimiter. This is an illegal operation and an exception 
 		// is thrown. Fixes 1GDKK3R
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}					
-	internalSetSelection(start, end - start, false);
+	internalSetSelection(start, length, false);
 	// always update the caret location. fixes 1G8FODP
 	setCaretLocation();
 }
