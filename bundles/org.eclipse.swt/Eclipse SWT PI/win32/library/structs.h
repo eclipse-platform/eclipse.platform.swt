@@ -503,7 +503,10 @@ void setNMREBARCHEVRONFields(JNIEnv *env, jobject lpObject, NMREBARCHEVRON *lpSt
 typedef struct NMTOOLBAR_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID hwndFrom, idFrom, code, iItem, iBitmap, idCommand, fsState, fsStyle, dwData, iString, cchText, pszText, left, top, right, bottom;
+	jfieldID hwndFrom, idFrom, code, iItem, iBitmap, idCommand, fsState, fsStyle, dwData, iString, cchText, pszText;
+#ifndef _WIN32_WCE
+	jfieldID left, top, right, bottom;
+#endif // _WIN32_WCE
 } NMTOOLBAR_FID_CACHE;
 typedef NMTOOLBAR_FID_CACHE *PNMTOOLBAR_FID_CACHE;
 

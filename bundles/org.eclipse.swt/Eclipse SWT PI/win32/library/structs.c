@@ -1868,10 +1868,12 @@ void cacheNMTOOLBARFids(JNIEnv *env, jobject lpObject, PNMTOOLBAR_FID_CACHE lpCa
 	lpCache->iString = (*env)->GetFieldID(env, lpCache->clazz, "iString", "I");
 	lpCache->cchText = (*env)->GetFieldID(env, lpCache->clazz, "cchText", "I");
 	lpCache->pszText = (*env)->GetFieldID(env, lpCache->clazz, "pszText", "I");
+#ifndef _WIN32_WCE
 	lpCache->left = (*env)->GetFieldID(env, lpCache->clazz, "left", "I");
 	lpCache->top = (*env)->GetFieldID(env, lpCache->clazz, "top", "I");
 	lpCache->right = (*env)->GetFieldID(env, lpCache->clazz, "right", "I");
 	lpCache->bottom = (*env)->GetFieldID(env, lpCache->clazz, "bottom", "I");
+#endif // _WIN32_WCE
 	lpCache->cached = 1;
 }
 

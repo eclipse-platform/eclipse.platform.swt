@@ -980,10 +980,10 @@ LRESULT WM_COMMAND (int wParam, int lParam) {
 	if (OS.IsPPC) {
 		/*
 		* Note in WinCE PPC:  close the Shell when the "Done Button" has
-		* been pressed.
+		* been pressed. The event originates from the Shell.
 		*/
 		int loWord = wParam & 0xFFFF;
-		if (loWord == OS.IDOK) {
+		if (loWord == OS.IDOK && lParam == handle) {
 			OS.PostMessage (handle, OS.WM_CLOSE, 0, 0);
 			return LRESULT.ZERO;			
 		}

@@ -25,5 +25,6 @@ public class REBARBANDINFO {
 	public int cxIdeal;
 	public int lParam;
 	public int cxHeader;
+	/* Note in WinCE.  The field cxHeader is not defined. */ 
 	public static final int sizeof = OS.IsWinCE ? 76 : 80;
 }
