@@ -136,6 +136,10 @@ static int checkStyle (int style) {
 }
 
 void click () {
+	/*
+	 * Note: calling BM_CLICK will result in
+	 * WM_LBUTTONDOWN and WM_LBUTTONUP callbacks.
+	 */
 	OS.SendMessage (handle, OS.BM_CLICK, 0, 0);
 }
 
