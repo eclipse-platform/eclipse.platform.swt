@@ -40,50 +40,6 @@ public void test_Constructor() {
 	ImageLoader loader = new ImageLoader();
 }
 
-public void test_addImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderListener() {
-	ImageLoader loader = new ImageLoader();
-	ImageLoaderListener loaderListener = new ImageLoaderListener() {
-		public void imageDataLoaded(ImageLoaderEvent e) {
-		};
-	};
-	
-	PerformanceMeter meter = createMeter();
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		loader.addImageLoaderListener(loaderListener);
-	}
-	meter.stop();
-	
-	disposeMeter(meter);
-}
-
-public void test_hasListeners() {
-	ImageLoader loader = new ImageLoader();
-	
-	PerformanceMeter meter = createMeter("no listeners");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		loader.hasListeners();	// no listeners
-	}
-	meter.stop();
-	
-	disposeMeter(meter);
-	
-	loader.addImageLoaderListener(new ImageLoaderListener() {
-		public void imageDataLoaded(ImageLoaderEvent e) {
-		};
-	});
-	
-	meter = createMeter("has listeners");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		loader.hasListeners();	// has listener
-	}
-	meter.stop();
-	
-	disposeMeter(meter);
-}
-
 public void test_loadLjava_io_InputStream() {
 	// TODO
 }
@@ -119,26 +75,6 @@ public void test_notifyListenersLorg_eclipse_swt_graphics_ImageLoaderEvent() {
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		loader.notifyListeners(event);
-	}
-	meter.stop();
-	
-	disposeMeter(meter);
-}
-
-public void test_removeImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderListener() {
-	ImageLoader loader = new ImageLoader();
-	ImageLoaderListener[] listeners = new ImageLoaderListener[COUNT];
-	for (int i = 0; i < COUNT; i++) {
-		listeners[i] = new ImageLoaderListener() {
-			public void imageDataLoaded(ImageLoaderEvent e) {}
-		};
-		loader.addImageLoaderListener(listeners[i]);
-	}
-	
-	PerformanceMeter meter = createMeter();
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		loader.removeImageLoaderListener(listeners[i]);
 	}
 	meter.stop();
 	
@@ -266,24 +202,18 @@ public static Test suite() {
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_Constructor");
-	methodNames.addElement("test_addImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderListener");
-	methodNames.addElement("test_hasListeners");
 	methodNames.addElement("test_loadLjava_io_InputStream");
 	methodNames.addElement("test_loadLjava_lang_String");
 	methodNames.addElement("test_notifyListenersLorg_eclipse_swt_graphics_ImageLoaderEvent");
-	methodNames.addElement("test_removeImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderListener");
 	methodNames.addElement("test_saveLjava_io_OutputStreamI");
 	methodNames.addElement("test_saveLjava_lang_StringI");
 	return methodNames;
 }
 protected void runTest() throws Throwable {
 	if (getName().equals("test_Constructor")) test_Constructor();
-	else if (getName().equals("test_addImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderListener")) test_addImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderListener();
-	else if (getName().equals("test_hasListeners")) test_hasListeners();
 	else if (getName().equals("test_loadLjava_io_InputStream")) test_loadLjava_io_InputStream();
 	else if (getName().equals("test_loadLjava_lang_String")) test_loadLjava_lang_String();
 	else if (getName().equals("test_notifyListenersLorg_eclipse_swt_graphics_ImageLoaderEvent")) test_notifyListenersLorg_eclipse_swt_graphics_ImageLoaderEvent();
-	else if (getName().equals("test_removeImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderListener")) test_removeImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderListener();
 	else if (getName().equals("test_saveLjava_io_OutputStreamI")) test_saveLjava_io_OutputStreamI();
 	else if (getName().equals("test_saveLjava_lang_StringI")) test_saveLjava_lang_StringI();
 }

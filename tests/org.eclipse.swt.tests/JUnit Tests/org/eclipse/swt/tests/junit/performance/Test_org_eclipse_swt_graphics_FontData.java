@@ -93,19 +93,6 @@ public void test_equalsLjava_lang_Object() {
 	disposeMeter(meter);
 }
 
-public void test_getHeight() {
-	FontData data = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
-	
-	PerformanceMeter meter = createMeter();
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		data.getHeight();
-	}
-	meter.stop();
-	
-	disposeMeter(meter);
-}
-
 public void test_getLocale() {
 	FontData data = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
 	
@@ -113,32 +100,6 @@ public void test_getLocale() {
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		data.getLocale();
-	}
-	meter.stop();
-	
-	disposeMeter(meter);
-}
-
-public void test_getName() {
-	FontData data = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
-	
-	PerformanceMeter meter = createMeter();
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		data.getName();
-	}
-	meter.stop();
-	
-	disposeMeter(meter);
-}
-
-public void test_getStyle() {
-	FontData data = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
-	
-	PerformanceMeter meter = createMeter();
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		data.getStyle();
 	}
 	meter.stop();
 	
@@ -159,19 +120,6 @@ public void test_hashCode() {
 
 }
 
-public void test_setHeightI() {
-	FontData data = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
-	
-	PerformanceMeter meter = createMeter();
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		data.setHeight(12);
-	}
-	meter.stop();
-	
-	disposeMeter(meter);
-}
-
 public void test_setLocaleLjava_lang_String() {
 	FontData data = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
 	String localeString = Locale.ENGLISH.toString();
@@ -185,35 +133,6 @@ public void test_setLocaleLjava_lang_String() {
 	
 	disposeMeter(meter);
 }
-
-public void test_setNameLjava_lang_String() {
-	FontData data = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
-	String name = "name";
-	
-	PerformanceMeter meter = createMeter();
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		data.setName(name);
-	}
-	meter.stop();
-	
-	disposeMeter(meter);
-}
-
-public void test_setStyleI() {
-	FontData data = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
-	int style = SWT.ITALIC | SWT.BOLD;
-	
-	PerformanceMeter meter = createMeter();
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		data.setStyle(style);
-	}
-	meter.stop();
-	
-	disposeMeter(meter);
-}
-
 
 public void test_win32_newLorg_eclipse_swt_internal_win32_LOGFONTI() {
 	// do not test - Windows only
@@ -234,15 +153,9 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_ConstructorLjava_lang_String");
 	methodNames.addElement("test_ConstructorLjava_lang_StringII");
 	methodNames.addElement("test_equalsLjava_lang_Object");
-	methodNames.addElement("test_getHeight");
 	methodNames.addElement("test_getLocale");
-	methodNames.addElement("test_getName");
-	methodNames.addElement("test_getStyle");
 	methodNames.addElement("test_hashCode");
-	methodNames.addElement("test_setHeightI");
 	methodNames.addElement("test_setLocaleLjava_lang_String");
-	methodNames.addElement("test_setNameLjava_lang_String");
-	methodNames.addElement("test_setStyleI");
 	methodNames.addElement("test_win32_newLorg_eclipse_swt_internal_win32_LOGFONTI");
 	return methodNames;
 }
@@ -251,15 +164,9 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_ConstructorLjava_lang_String")) test_ConstructorLjava_lang_String();
 	else if (getName().equals("test_ConstructorLjava_lang_StringII")) test_ConstructorLjava_lang_StringII();
 	else if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
-	else if (getName().equals("test_getHeight")) test_getHeight();
 	else if (getName().equals("test_getLocale")) test_getLocale();
-	else if (getName().equals("test_getName")) test_getName();
-	else if (getName().equals("test_getStyle")) test_getStyle();
 	else if (getName().equals("test_hashCode")) test_hashCode();
-	else if (getName().equals("test_setHeightI")) test_setHeightI();
 	else if (getName().equals("test_setLocaleLjava_lang_String")) test_setLocaleLjava_lang_String();
-	else if (getName().equals("test_setNameLjava_lang_String")) test_setNameLjava_lang_String();
-	else if (getName().equals("test_setStyleI")) test_setStyleI();
 	else if (getName().equals("test_win32_newLorg_eclipse_swt_internal_win32_LOGFONTI")) test_win32_newLorg_eclipse_swt_internal_win32_LOGFONTI();
 }
 }
