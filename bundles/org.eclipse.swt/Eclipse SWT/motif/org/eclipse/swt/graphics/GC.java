@@ -410,7 +410,7 @@ void drawImageAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHei
 	try {
 		/* Get the background pixels */
 		xDestImagePtr = OS.XGetImage(xDisplay, xDrawable, destX, destY, destWidth, destHeight, OS.AllPlanes, OS.ZPixmap);
-		if (xDestImagePtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		if (xDestImagePtr == 0) return;
 		XImage xDestImage = new XImage();
 		OS.memmove(xDestImage, xDestImagePtr, XImage.sizeof);
 		byte[] destData = new byte[xDestImage.bytes_per_line * xDestImage.height];
@@ -418,7 +418,7 @@ void drawImageAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHei
 	
 		/* Get the foreground pixels */
 		xSrcImagePtr = OS.XGetImage(xDisplay, srcImage.pixmap, srcX, srcY, srcWidth, srcHeight, OS.AllPlanes, OS.ZPixmap);
-		if (xSrcImagePtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		if (xSrcImagePtr == 0) return;
 		XImage xSrcImage = new XImage();
 		OS.memmove(xSrcImage, xSrcImagePtr, XImage.sizeof);
 		byte[] srcData = new byte[xSrcImage.bytes_per_line * xSrcImage.height];
@@ -491,29 +491,35 @@ void drawImageAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHei
 void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imgWidth, int imgHeight, int depth) {
 	int xDisplay = data.display;
 	int xDrawable = data.drawable;
-	int colorPixmap = srcImage.pixmap;
 	/* Generate the mask if necessary. */
 	if (srcImage.transparentPixel != -1) srcImage.createMask();
-	int maskPixmap = srcImage.mask;
+	int colorPixmap = 0, maskPixmap = 0;
 	int foreground = 0x00000000;
-	if (!(simple || (srcWidth == destWidth && srcHeight == destHeight))) {
+	if (simple || (srcWidth == destWidth && srcHeight == destHeight)) {
+		colorPixmap = srcImage.pixmap;
+		maskPixmap = srcImage.mask;
+	} else {
 		/* Stretch the color and mask*/
-		int xImagePtr = scalePixmap(xDisplay, colorPixmap, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, false, false);
-		int xMaskPtr = scalePixmap(xDisplay, maskPixmap, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, false, false);
+		int xImagePtr = scalePixmap(xDisplay, srcImage.pixmap, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, false, false);
+		if (xImagePtr != 0) {
+			int xMaskPtr = scalePixmap(xDisplay, srcImage.mask, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, false, false);
+			if (xMaskPtr != 0) {
+				/* Create color scaled pixmaps */
+				colorPixmap = OS.XCreatePixmap(xDisplay, xDrawable, destWidth, destHeight, depth);
+				int tempGC = OS.XCreateGC(xDisplay, colorPixmap, 0, null);
+				OS.XPutImage(xDisplay, colorPixmap, tempGC, xImagePtr, 0, 0, 0, 0, destWidth, destHeight);
+				OS.XFreeGC(xDisplay, tempGC);
+		
+				/* Create mask scaled pixmaps */
+				maskPixmap = OS.XCreatePixmap(xDisplay, xDrawable, destWidth, destHeight, 1);
+				tempGC = OS.XCreateGC(xDisplay, maskPixmap, 0, null);
+				OS.XPutImage(xDisplay, maskPixmap, tempGC, xMaskPtr, 0, 0, 0, 0, destWidth, destHeight);
+				OS.XFreeGC(xDisplay, tempGC);
 
-		/* Create color scaled pixmaps */
-		colorPixmap = OS.XCreatePixmap(xDisplay, xDrawable, destWidth, destHeight, depth);
-		int tempGC = OS.XCreateGC(xDisplay, colorPixmap, 0, null);
-		OS.XPutImage(xDisplay, colorPixmap, tempGC, xImagePtr, 0, 0, 0, 0, destWidth, destHeight);
-		OS.XDestroyImage(xImagePtr);
-		OS.XFreeGC(xDisplay, tempGC);
-
-		/* Create mask scaled pixmaps */
-		maskPixmap = OS.XCreatePixmap(xDisplay, xDrawable, destWidth, destHeight, 1);
-		tempGC = OS.XCreateGC(xDisplay, maskPixmap, 0, null);
-		OS.XPutImage(xDisplay, maskPixmap, tempGC, xMaskPtr, 0, 0, 0, 0, destWidth, destHeight);
-		OS.XDestroyImage(xMaskPtr);
-		OS.XFreeGC(xDisplay, tempGC);
+				OS.XDestroyImage(xMaskPtr);
+			}
+			OS.XDestroyImage(xImagePtr);
+		}
 		
 		/* Change the source rectangle */
 		srcX = srcY = 0;
@@ -524,23 +530,25 @@ void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeig
 	}
 	
 	/* Do the blts */
-	XGCValues values = new XGCValues();
-	OS.XGetGCValues(xDisplay, handle, OS.GCForeground | OS. GCBackground | OS.GCFunction, values);
-	OS.XSetFunction(xDisplay, handle, OS.GXxor);
-	OS.XCopyArea(xDisplay, colorPixmap, xDrawable, handle, srcX, srcY, srcWidth, srcHeight, destX, destY);
-	OS.XSetForeground(xDisplay, handle, foreground);
-	OS.XSetBackground(xDisplay, handle, ~foreground);
-	OS.XSetFunction(xDisplay, handle, OS.GXand);
-	OS.XCopyPlane(xDisplay, maskPixmap, xDrawable, handle, srcX, srcY, srcWidth, srcHeight, destX, destY, 1);
-	OS.XSetFunction(xDisplay, handle, OS.GXxor);
-	OS.XCopyArea(xDisplay, colorPixmap, xDrawable, handle, srcX, srcY, srcWidth, srcHeight, destX, destY);
-	OS.XSetForeground(xDisplay, handle, values.foreground);
-	OS.XSetBackground(xDisplay, handle, values.background);
-	OS.XSetFunction(xDisplay, handle, values.function);
+	if (colorPixmap != 0 && maskPixmap != 0) {
+		XGCValues values = new XGCValues();
+		OS.XGetGCValues(xDisplay, handle, OS.GCForeground | OS. GCBackground | OS.GCFunction, values);
+		OS.XSetFunction(xDisplay, handle, OS.GXxor);
+		OS.XCopyArea(xDisplay, colorPixmap, xDrawable, handle, srcX, srcY, srcWidth, srcHeight, destX, destY);
+		OS.XSetForeground(xDisplay, handle, foreground);
+		OS.XSetBackground(xDisplay, handle, ~foreground);
+		OS.XSetFunction(xDisplay, handle, OS.GXand);
+		OS.XCopyPlane(xDisplay, maskPixmap, xDrawable, handle, srcX, srcY, srcWidth, srcHeight, destX, destY, 1);
+		OS.XSetFunction(xDisplay, handle, OS.GXxor);
+		OS.XCopyArea(xDisplay, colorPixmap, xDrawable, handle, srcX, srcY, srcWidth, srcHeight, destX, destY);
+		OS.XSetForeground(xDisplay, handle, values.foreground);
+		OS.XSetBackground(xDisplay, handle, values.background);
+		OS.XSetFunction(xDisplay, handle, values.function);
+	}
 
 	/* Destroy scaled pixmaps */
-	if (srcImage.pixmap != colorPixmap) OS.XFreePixmap(xDisplay, colorPixmap);
-	if (srcImage.mask != maskPixmap) OS.XFreePixmap(xDisplay, maskPixmap);
+	if (colorPixmap != 0 && srcImage.pixmap != colorPixmap) OS.XFreePixmap(xDisplay, colorPixmap);
+	if (maskPixmap != 0 && srcImage.mask != maskPixmap) OS.XFreePixmap(xDisplay, maskPixmap);
 	/* Destroy the image mask if the there is a GC created on the image */
 	if (srcImage.transparentPixel != -1 && srcImage.memGC != null) srcImage.destroyMask();
 }
@@ -555,17 +563,20 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 	
 	/* Streching case */
 	int xImagePtr = scalePixmap(xDisplay, srcImage.pixmap, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, false, false);
-	OS.XPutImage(xDisplay, xDrawable, handle, xImagePtr, 0, 0, destX, destY, destWidth, destHeight);
-	OS.XDestroyImage(xImagePtr);
+	if (xImagePtr != 0) {
+		OS.XPutImage(xDisplay, xDrawable, handle, xImagePtr, 0, 0, destX, destY, destWidth, destHeight);
+		OS.XDestroyImage(xImagePtr);
+	}
 }
 static int scalePixmap(int display, int pixmap, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean flipX, boolean flipY) {
 	int xSrcImagePtr = OS.XGetImage(display, pixmap, srcX, srcY, srcWidth, srcHeight, OS.AllPlanes, OS.ZPixmap);
-	if (xSrcImagePtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	if (xSrcImagePtr == 0) return 0;
 	XImage xSrcImage = new XImage();
 	OS.memmove(xSrcImage, xSrcImagePtr, XImage.sizeof);
 	byte[] srcData = new byte[xSrcImage.bytes_per_line * xSrcImage.height];
 	OS.memmove(srcData, xSrcImage.data, srcData.length);
-	int error = 0, xImagePtr = 0;
+	OS.XDestroyImage(xSrcImagePtr);
+	int xImagePtr = 0;
 	int visual = OS.XDefaultVisual(display, OS.XDefaultScreen(display));
 	switch (xSrcImage.bits_per_pixel) {
 		case 1:
@@ -573,10 +584,14 @@ static int scalePixmap(int display, int pixmap, int srcX, int srcY, int srcWidth
 		case 8: {
 			int format = xSrcImage.bits_per_pixel == 1 ? OS.XYBitmap : OS.ZPixmap;
 			xImagePtr = OS.XCreateImage(display, visual, xSrcImage.depth, format, 0, 0, destWidth, destHeight, xSrcImage.bitmap_pad, 0);
-			if (xImagePtr == 0) break;
+			if (xImagePtr == 0) return 0;
 			XImage xImage = new XImage();
 			OS.memmove(xImage, xImagePtr, XImage.sizeof);
 			int bufSize = xImage.bytes_per_line * xImage.height;
+			if (bufSize < 0) {
+				OS.XDestroyImage(xImagePtr);
+				return 0;
+			} 
 			int bufPtr = OS.XtMalloc(bufSize);
 			xImage.data = bufPtr;
 			OS.memmove(xImagePtr, xImage, XImage.sizeof);
@@ -595,10 +610,14 @@ static int scalePixmap(int display, int pixmap, int srcX, int srcY, int srcWidth
 		case 24:
 		case 32: {
 			xImagePtr = OS.XCreateImage(display, visual, xSrcImage.depth, OS.ZPixmap, 0, 0, destWidth, destHeight, xSrcImage.bitmap_pad, 0);
-			if (xImagePtr == 0) break;
+			if (xImagePtr == 0) return 0;
 			XImage xImage = new XImage();
 			OS.memmove(xImage, xImagePtr, XImage.sizeof);
 			int bufSize = xImage.bytes_per_line * xImage.height;
+			if (bufSize < 0) {
+				OS.XDestroyImage(xImagePtr);
+				return 0;
+			} 
 			int bufPtr = OS.XtMalloc(bufSize);
 			xImage.data = bufPtr;
 			OS.memmove(xImagePtr, xImage, XImage.sizeof);
@@ -611,14 +630,6 @@ static int scalePixmap(int display, int pixmap, int srcX, int srcY, int srcWidth
 			OS.memmove(bufPtr, buf, bufSize);
 			break;
 		}
-		default:
-			error = SWT.ERROR_UNSUPPORTED_DEPTH;
-	}
-	OS.XDestroyImage(xSrcImagePtr);
-	if (xImagePtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (error != 0) {
-		if (xImagePtr != 0) OS.XDestroyImage(xImagePtr);
-		SWT.error(error);
 	}
 	return xImagePtr;
 }
