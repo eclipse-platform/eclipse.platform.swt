@@ -254,9 +254,8 @@ public void setFilterPath (String string) {
 }
 
 /**
- * Sets the dialog's message, which is a description of
- * the purpose for which it was opened. This message will be
- * visible on the dialog while it is open.
+ * Sets the dialog's description message, which may be
+ * null.  This message will be visible on the dialog while it is open.
  *
  * @param string the message
  */

@@ -191,7 +191,7 @@ public RGB open () {
  * Sets the receiver's selected color to be the argument.
  *
  * @param rgb the new RGB value for the selected color, may be
- *        null to let the platform to select a default when
+ *        null to let the platform select a default when
  *        open() is called
  * @see PaletteData#getRGBs
  */
