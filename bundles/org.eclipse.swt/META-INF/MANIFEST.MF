@@ -20,3 +20,4 @@ Provide-Package:
  org.eclipse.swt.printing,
  org.eclipse.swt.program,
  org.eclipse.swt.widgets
+Eclipse-ExtensibleAPI: true
