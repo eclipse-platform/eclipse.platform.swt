@@ -1573,7 +1573,7 @@ static int[] init(Device device, Image image, ImageData i) {
 			
 		/* Create the mask. Windows requires icon masks to have a scanline pad of 2. */
 		byte[] maskData = ImageData.convertPad(i.maskData, i.width, i.height, 1, i.maskPad, 2);
-		int hMask = OS.CreateBitmap(i.width, i.height, 1, 1, i.maskData);
+		int hMask = OS.CreateBitmap(i.width, i.height, 1, 1, maskData);
 		if (hMask == 0) SWT.error(SWT.ERROR_NO_HANDLES);	
 		OS.SelectObject(hdcSrc, hMask);
 		OS.PatBlt(hdcSrc, 0, 0, i.width, i.height, OS.DSTINVERT);
