@@ -2341,6 +2341,10 @@ void drawLineSelectionBackground(String line, int lineOffset, StyleRange[] style
 			}
 		}
 	}	
+	// handle empty line case
+	if (bidi != null && (paintX == 0)) {
+		paintX = xInset;	
+	}
 	// fill the background first since expanded tabs are not 
 	// drawn as spaces. tabs just move the draw position. 
 	gc.fillRectangle(paintX - horizontalScrollOffset, paintY, selectionBackgroundWidth, lineHeight);
@@ -4623,7 +4627,10 @@ void redrawBidiLines(int firstLine, int offsetInFirstLine, int lastLine, int end
 	// redraw line break marker (either space or full client area width)
 	// if redraw range extends over more than one line and background should be redrawn
 	if (lastLine > firstLine && clearBackground) {
-		int lineBreakStartX = bidi.getTextWidth() - horizontalScrollOffset + xInset;
+		int lineBreakStartX = bidi.getTextWidth();
+		// handle empty line case
+		if (lineBreakStartX == 0) lineBreakStartX = xInset;
+		lineBreakStartX = lineBreakStartX - horizontalScrollOffset;
 		int lineBreakWidth;		
 		if ((getStyle() & SWT.FULL_SELECTION) != 0) {
 			lineBreakWidth = clientArea.width - lineBreakStartX;
