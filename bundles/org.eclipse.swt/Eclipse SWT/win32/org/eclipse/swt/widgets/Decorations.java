@@ -1270,7 +1270,8 @@ public void setVisible (boolean visible) {
 }
 
 boolean translateAccelerator (MSG msg) {
-	if (!isEnabled ()) return false;
+	if (!isEnabled () || !isActive ()) return false;
+	if (menuBar != null && !menuBar.getEnabled ()) return false;
 	if (hAccel == -1) createAcceleratorTable ();
 	if (hAccel == 0) return false;
 	return OS.TranslateAccelerator (handle, hAccel, msg) != 0;
