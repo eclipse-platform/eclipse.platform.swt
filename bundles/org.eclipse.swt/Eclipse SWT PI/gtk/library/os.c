@@ -2863,6 +2863,32 @@ fail:
 }
 #endif
 
+#ifndef NO__1gdk_1draw_1pixbuf
+JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1draw_1pixbuf)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11)
+{
+	OS_NATIVE_ENTER(env, that, _1gdk_1draw_1pixbuf_FUNC);
+/*
+	gdk_draw_pixbuf((GdkDrawable *)arg0, (GdkGC *)arg1, (GdkPixbuf *)arg2, (gint)arg3, (gint)arg4, (gint)arg5, (gint)arg6, (gint)arg7, (gint)arg8, (GdkRgbDither)arg9, (gint)arg10, (gint)arg11);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(GdkDrawable *, GdkGC *, GdkPixbuf *, gint, gint, gint, gint, gint, gint, GdkRgbDither, gint, gint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gdk_draw_pixbuf_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gdk_draw_pixbuf");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)((GdkDrawable *)arg0, (GdkGC *)arg1, (GdkPixbuf *)arg2, (gint)arg3, (gint)arg4, (gint)arg5, (gint)arg6, (gint)arg7, (gint)arg8, (GdkRgbDither)arg9, (gint)arg10, (gint)arg11);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1draw_1pixbuf_FUNC);
+}
+#endif
+
 #ifndef NO__1gdk_1draw_1point
 JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1draw_1point)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)

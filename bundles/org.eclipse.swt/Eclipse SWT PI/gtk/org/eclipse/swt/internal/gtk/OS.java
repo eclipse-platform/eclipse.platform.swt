@@ -1962,6 +1962,15 @@ public static final void gdk_draw_lines(int /*long*/ drawable, int /*long*/ gc, 
 		lock.unlock();
 	}
 }
+public static final native void _gdk_draw_pixbuf(int /*long*/ drawable, int /*long*/ gc, int /*long*/ pixbuf, int xsrc, int ysrc, int xdest, int ydest, int width, int height, int dither, int x_dither, int y_dither);
+public static final void gdk_draw_pixbuf(int /*long*/ drawable, int /*long*/ gc, int /*long*/ pixbuf, int xsrc, int ysrc, int xdest, int ydest, int width, int height, int dither, int x_dither, int y_dither) {
+	lock.lock();
+	try {
+		_gdk_draw_pixbuf(drawable, gc, pixbuf, xsrc, ysrc, xdest, ydest, width, height, dither, x_dither, y_dither);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gdk_draw_point(int /*long*/ drawable, int /*long*/ gc, int x, int y);
 public static final void gdk_draw_point(int /*long*/ drawable, int /*long*/ gc, int x, int y) {
 	lock.lock();

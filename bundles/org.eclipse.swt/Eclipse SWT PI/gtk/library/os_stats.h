@@ -242,6 +242,7 @@ typedef enum {
 	_1gdk_1draw_1layout_1with_1colors_FUNC,
 	_1gdk_1draw_1line_FUNC,
 	_1gdk_1draw_1lines_FUNC,
+	_1gdk_1draw_1pixbuf_FUNC,
 	_1gdk_1draw_1point_FUNC,
 	_1gdk_1draw_1polygon_FUNC,
 	_1gdk_1draw_1rectangle_FUNC,

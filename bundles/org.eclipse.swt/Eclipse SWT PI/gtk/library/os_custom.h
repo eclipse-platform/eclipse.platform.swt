@@ -37,6 +37,7 @@
 #define gtk_tree_selection_get_selected_rows_LIB "libgtk-x11-2.0.so.0"
 #define gtk_tree_view_column_cell_get_position_LIB "libgtk-x11-2.0.so.0"
 #define gtk_entry_set_alignment_LIB "libgtk-x11-2.0.so.0"
+#define gdk_draw_pixbuf_LIB "libgdk-x11-2.0.so.0"
 #define gdk_screen_get_default_LIB "libgdk-x11-2.0.so.0"
 #define gdk_screen_get_monitor_at_window_LIB "libgdk-x11-2.0.so.0"
 #define gdk_screen_get_monitor_geometry_LIB "libgdk-x11-2.0.so.0"
