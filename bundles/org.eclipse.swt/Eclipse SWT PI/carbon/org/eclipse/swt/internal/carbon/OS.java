@@ -379,6 +379,8 @@ public class OS {
 	public static native void NormalizeThemeDrawingState();
 	public static native void RGBForeColor(short red, short green, short blue);
 	public static native void RGBBackColor(short red, short green, short blue);
+	public static native void GlobalToLocal(short[] point);
+	public static native void LocalToGlobal(short[] point);
 	public static native void QDGlobalToLocalPoint(int port, short[] point);
 	public static native void QDLocalToGlobalPoint(int port, short[] point);
 
@@ -481,7 +483,7 @@ public class OS {
 
 	public static native void CopyBits(int srcPixMapHandle, int dstPixMapHandle, short[] srcRect, short[] dstRect,
 											short mode, int maskRgn);
-	public static native void CopyMask(int srcPixMapHandle, int maskPixMapHandle, int dstPixMapHandle,
+	public static native int CopyMask(int srcPixMapHandle, int maskPixMapHandle, int dstPixMapHandle,
 											short[] srcRect, short[] maskRect, short[] dstRect);
 	public static native void CopyDeepMask(int srcPixMapHandle, int maskPixMapHandle, int dstPixMapHandle,
 											short[] srcRect, short[] maskRect, short[] dstRect, short mode, int maskRgn);
@@ -898,7 +900,7 @@ public class OS {
 		
 	public static native int GetRootControl(int windowHandle, int[] cHandle);
 	public static native int CreateRootControl(int windowHandle, int[] cHandle);
-	//public static native int EmbedControl(int cHandle, int parentControlHandle);
+	public static native int EmbedControl(int cHandle, int parentControlHandle);
 	public static native int CountSubControls(int cHandle, short[] count);
 	public static native int GetIndexedSubControl(int cHandle, short index, int[] outHandle);
 	public static native int GetSuperControl(int cHandle, int[] parentHandle);
@@ -909,8 +911,8 @@ public class OS {
 	public static native short HandleControlClick(int cHandle, short[] where, int modifiers, int actionUPP);
 	public static native void MoveControl(int cHandle, short x, short y);
 	public static native void SizeControl(int cHandle, short w, short h);
-	//public static native void ShowControl(int cHandle);
-	//public static native void HideControl(int cHandle);
+	public static native void ShowControl(int cHandle);
+	public static native void HideControl(int cHandle);
 	public static native boolean IsValidControlHandle(int cHandle);
 	public static native void SetControlReference(int cHandle, int data);
 	public static native int GetControlReference(int cHandle);
@@ -921,7 +923,7 @@ public class OS {
 	public static native void SetControlBounds(int cHandle, short[] bounds);
 	public static native int CreateUserPaneControl(int windowHandle, short[] bounds, int features, int[] cHandle);
 	public static native boolean IsControlVisible(int cHandle);
-	//public static native int SetControlVisibility(int cHandle, boolean inIsVisible, boolean inDoDraw);
+	public static native int SetControlVisibility(int cHandle, boolean inIsVisible, boolean inDoDraw);
 	public static native boolean IsControlActive(int cHandle);
 	public static native int EnableControl(int cHandle);
 	public static native int DisableControl(int cHandle);
