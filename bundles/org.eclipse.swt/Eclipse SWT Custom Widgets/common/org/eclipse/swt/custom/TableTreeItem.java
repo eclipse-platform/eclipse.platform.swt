@@ -178,7 +178,6 @@ public boolean getChecked () {
  *	</ul>
  */
 public Display getDisplay () {
-	checkWidget();
 	TableTree parent = this.parent;
 	if (parent == null) throw new SWTError (SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getDisplay ();

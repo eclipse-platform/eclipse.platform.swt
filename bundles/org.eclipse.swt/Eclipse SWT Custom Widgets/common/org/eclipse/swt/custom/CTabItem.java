@@ -45,8 +45,8 @@ private static int checkStyle(int style) {
 }
 
 public void dispose () {
-	super.dispose();
 	if (isDisposed()) return;
+	super.dispose();
 	parent.destroyItem(this);
 	parent = null;
 	control = null;
@@ -57,7 +57,6 @@ public void dispose () {
  * Return the bounds of the CTabItem.
  */
 public Rectangle getBounds () {
-	checkWidget();
 	return new Rectangle(x, y, width, height);
 }
 /**
@@ -71,26 +70,22 @@ public Rectangle getBounds () {
 *	when the widget has been disposed
 */
 public Control getControl () {
-	checkWidget();
 	return control;
 }
 /**
  * Answer the display of the receiver's parent widget.
  */
 public Display getDisplay() {
-	checkWidget();
 	if (parent == null) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getDisplay();
 }
 public Image getDisabledImage(){
-	checkWidget();
 	return disabledImage;
 }
 /**
  * Return the parent of the CTabItem.
  */
 public CTabFolder getParent () {
-	checkWidget();
 	return parent;
 }
 /**
@@ -104,7 +99,6 @@ public CTabFolder getParent () {
  *	when the widget has been disposed
  */
 public String getToolTipText () {
-	checkWidget();
 	return toolTipText;
 }
 /**
@@ -361,7 +355,6 @@ int preferredWidth(GC gc) {
  * </ul>
  */
 public void setControl (Control control) {
-	checkWidget();
 	if (control != null) {
 		if (control.isDisposed()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 		if (control.getParent() != parent) SWT.error (SWT.ERROR_INVALID_PARENT);
@@ -381,7 +374,6 @@ public void setControl (Control control) {
 	}
 }	
 public void setImage (Image image) {
-	checkWidget();
 	if (image != null && image.equals(getImage())) return;
 	int oldHeight = parent.getTabHeight();
 	super.setImage(image);
@@ -393,7 +385,6 @@ public void setImage (Image image) {
 	}
 }
 public void setDisabledImage (Image image) {
-	checkWidget();
 	if (image != null && image.equals(getDisabledImage())) return;
 	disabledImage = image;
 	parent.redraw();
@@ -416,7 +407,6 @@ public void setDisabledImage (Image image) {
  * </ul>
  */
 public void setText (String string) {
-	checkWidget();
 	if (string.equals(getText())) return;
 	super.setText(string);
 	parent.layoutItems();
@@ -434,7 +424,6 @@ public void setText (String string) {
  *	when the widget has been disposed
  */
 public void setToolTipText (String string) {
-	checkWidget();
 	toolTipText = string;
 }
 

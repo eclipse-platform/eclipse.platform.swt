@@ -110,10 +110,8 @@ public class Display extends Device {
 		
 	/* Colors */
 	Color NORMAL_fg,   NORMAL_bg,   NORMAL_dark,   NORMAL_mid,   NORMAL_light,   NORMAL_text,   NORMAL_base;
-	Color ACTIVE_fg,   ACTIVE_bg,   ACTIVE_dark,   ACTIVE_mid,   ACTIVE_light,   ACTIVE_text,   ACTIVE_base;
-	Color PRELIGHT_fg, PRELIGHT_bg, PRELIGHT_dark, PRELIGHT_mid, PRELIGHT_light, PRELIGHT_text, PRELIGHT_base;
-	Color SELECTED_fg, SELECTED_bg, SELECTED_dark, SELECTED_mid, SELECTED_light, SELECTED_text, SELECTED_base;
-	Color INSENSITIVE_fg, INSENSITIVE_bg, INSENSITIVE_dark, INSENSITIVE_mid, INSENSITIVE_light, INSENSITIVE_text, INSENSITIVE_base;
+	Color SELECTED_bg, SELECTED_dark, SELECTED_light, SELECTED_text, SELECTED_base;
+	Color INSENSITIVE_fg, INSENSITIVE_bg, INSENSITIVE_dark, INSENSITIVE_mid, INSENSITIVE_light, INSENSITIVE_text;
 	
 	/* Key Mappings */
 	static final int [] [] KeyTable = {
@@ -798,107 +796,127 @@ void initializeSystemColors() {
 	gdk_NORMAL_dark.red   = defaultStyle.dark0_red;
 	gdk_NORMAL_dark.green = defaultStyle.dark0_green;
 	gdk_NORMAL_dark.blue  = defaultStyle.dark0_blue;
-	NORMAL_dark = Color.gtk_new(gdk_NORMAL_dark);
+	NORMAL_dark = Color.gtk_new_system(gdk_NORMAL_dark);
 
 	GdkColor gdk_NORMAL_mid = new GdkColor();
 	gdk_NORMAL_mid.pixel = defaultStyle.mid0_pixel;
 	gdk_NORMAL_mid.red   = defaultStyle.mid0_red;
 	gdk_NORMAL_mid.green = defaultStyle.mid0_green;
 	gdk_NORMAL_mid.blue  = defaultStyle.mid0_blue;
-	NORMAL_mid = Color.gtk_new(gdk_NORMAL_mid);
+	NORMAL_mid = Color.gtk_new_system(gdk_NORMAL_mid);
 
 	GdkColor gdk_NORMAL_light = new GdkColor();
 	gdk_NORMAL_light.pixel = defaultStyle.light0_pixel;
 	gdk_NORMAL_light.red   = defaultStyle.light0_red;
 	gdk_NORMAL_light.green = defaultStyle.light0_green;
 	gdk_NORMAL_light.blue  = defaultStyle.light0_blue;
-	NORMAL_light = Color.gtk_new(gdk_NORMAL_light);
+	NORMAL_light = Color.gtk_new_system(gdk_NORMAL_light);
 
 	GdkColor gdk_NORMAL_fg = new GdkColor();
 	gdk_NORMAL_fg.pixel = defaultStyle.fg0_pixel;
 	gdk_NORMAL_fg.red   = defaultStyle.fg0_red;
 	gdk_NORMAL_fg.green = defaultStyle.fg0_green;
 	gdk_NORMAL_fg.blue  = defaultStyle.fg0_blue;
-	NORMAL_fg = Color.gtk_new(gdk_NORMAL_fg);
+	NORMAL_fg = Color.gtk_new_system(gdk_NORMAL_fg);
 
 	GdkColor gdk_NORMAL_bg = new GdkColor();
 	gdk_NORMAL_bg.pixel = defaultStyle.bg0_pixel;
 	gdk_NORMAL_bg.red   = defaultStyle.bg0_red;
 	gdk_NORMAL_bg.green = defaultStyle.bg0_green;
 	gdk_NORMAL_bg.blue  = defaultStyle.bg0_blue;
-	NORMAL_bg = Color.gtk_new(gdk_NORMAL_bg);
+	NORMAL_bg = Color.gtk_new_system(gdk_NORMAL_bg);
 
 	GdkColor gdk_NORMAL_text = new GdkColor();
 	gdk_NORMAL_text.pixel = defaultStyle.text0_pixel;
 	gdk_NORMAL_text.red   = defaultStyle.text0_red;
 	gdk_NORMAL_text.green = defaultStyle.text0_green;
 	gdk_NORMAL_text.blue  = defaultStyle.text0_blue;
-	NORMAL_text = Color.gtk_new(gdk_NORMAL_text);
+	NORMAL_text = Color.gtk_new_system(gdk_NORMAL_text);
 
 	GdkColor gdk_NORMAL_base = new GdkColor();
 	gdk_NORMAL_base.pixel = defaultStyle.base0_pixel;
 	gdk_NORMAL_base.red   = defaultStyle.base0_red;
 	gdk_NORMAL_base.green = defaultStyle.base0_green;
 	gdk_NORMAL_base.blue  = defaultStyle.base0_blue;
-	NORMAL_base = Color.gtk_new(gdk_NORMAL_base);
+	NORMAL_base = Color.gtk_new_system(gdk_NORMAL_base);
 
 	GdkColor gdk_SELECTED_text = new GdkColor();
 	gdk_SELECTED_text.pixel = defaultStyle.text3_pixel;
 	gdk_SELECTED_text.red   = defaultStyle.text3_red;
 	gdk_SELECTED_text.green = defaultStyle.text3_green;
 	gdk_SELECTED_text.blue  = defaultStyle.text3_blue;
-	SELECTED_text = Color.gtk_new(gdk_SELECTED_text);
+	SELECTED_text = Color.gtk_new_system(gdk_SELECTED_text);
 
 	GdkColor gdk_SELECTED_bg = new GdkColor();
 	gdk_SELECTED_bg.pixel = defaultStyle.bg3_pixel;
 	gdk_SELECTED_bg.red   = defaultStyle.bg3_red;
 	gdk_SELECTED_bg.green = defaultStyle.bg3_green;
 	gdk_SELECTED_bg.blue  = defaultStyle.bg3_blue;
-	SELECTED_bg = Color.gtk_new(gdk_SELECTED_bg);
+	SELECTED_bg = Color.gtk_new_system(gdk_SELECTED_bg);
 
 	GdkColor gdk_SELECTED_base = new GdkColor();
 	gdk_SELECTED_base.pixel = defaultStyle.base3_pixel;
 	gdk_SELECTED_base.red   = defaultStyle.base3_red;
 	gdk_SELECTED_base.green = defaultStyle.base3_green;
 	gdk_SELECTED_base.blue  = defaultStyle.base3_blue;
-	SELECTED_base = Color.gtk_new(gdk_SELECTED_base);
+	SELECTED_base = Color.gtk_new_system(gdk_SELECTED_base);
 
 	GdkColor gdk_SELECTED_light = new GdkColor();
 	gdk_SELECTED_light.pixel = defaultStyle.light3_pixel;
 	gdk_SELECTED_light.red   = defaultStyle.light3_red;
 	gdk_SELECTED_light.green = defaultStyle.light3_green;
 	gdk_SELECTED_light.blue  = defaultStyle.light3_blue;
-	SELECTED_light = Color.gtk_new(gdk_SELECTED_light);
+	SELECTED_light = Color.gtk_new_system(gdk_SELECTED_light);
 	
-
-	GdkColor gdk_PRELIGHT_light = new GdkColor();
-	gdk_PRELIGHT_light.pixel = defaultStyle.light2_pixel;
-	gdk_PRELIGHT_light.red   = defaultStyle.light2_red;
-	gdk_PRELIGHT_light.green = defaultStyle.light2_green;
-	gdk_PRELIGHT_light.blue  = defaultStyle.light2_blue;
-	PRELIGHT_light = Color.gtk_new(gdk_PRELIGHT_light);
+	GdkColor gdk_SELECTED_dark = new GdkColor();
+	gdk_SELECTED_dark.pixel = defaultStyle.dark3_pixel;
+	gdk_SELECTED_dark.red   = defaultStyle.dark3_red;
+	gdk_SELECTED_dark.green = defaultStyle.dark3_green;
+	gdk_SELECTED_dark.blue  = defaultStyle.dark3_blue;
+	SELECTED_dark = Color.gtk_new_system(gdk_SELECTED_dark);
+	
 
 	GdkColor gdk_INSENSITIVE_light = new GdkColor();
 	gdk_INSENSITIVE_light.pixel = defaultStyle.light4_pixel;
 	gdk_INSENSITIVE_light.red   = defaultStyle.light4_red;
 	gdk_INSENSITIVE_light.green = defaultStyle.light4_green;
 	gdk_INSENSITIVE_light.blue  = defaultStyle.light4_blue;
-	INSENSITIVE_light = Color.gtk_new(gdk_INSENSITIVE_light);
+	INSENSITIVE_light = Color.gtk_new_system(gdk_INSENSITIVE_light);
+
+	GdkColor gdk_INSENSITIVE_dark = new GdkColor();
+	gdk_INSENSITIVE_dark.pixel = defaultStyle.light4_pixel;
+	gdk_INSENSITIVE_dark.red   = defaultStyle.light4_red;
+	gdk_INSENSITIVE_dark.green = defaultStyle.light4_green;
+	gdk_INSENSITIVE_dark.blue  = defaultStyle.light4_blue;
+	INSENSITIVE_dark = Color.gtk_new_system(gdk_INSENSITIVE_dark);
 
 	GdkColor gdk_INSENSITIVE_fg = new GdkColor();
 	gdk_INSENSITIVE_fg.pixel = defaultStyle.fg4_pixel;
 	gdk_INSENSITIVE_fg.red   = defaultStyle.fg4_red;
 	gdk_INSENSITIVE_fg.green = defaultStyle.fg4_green;
 	gdk_INSENSITIVE_fg.blue  = defaultStyle.fg4_blue;
-	INSENSITIVE_fg = Color.gtk_new(gdk_INSENSITIVE_fg);
+	INSENSITIVE_fg = Color.gtk_new_system(gdk_INSENSITIVE_fg);
 
 	GdkColor gdk_INSENSITIVE_bg = new GdkColor();
 	gdk_INSENSITIVE_bg.pixel = defaultStyle.bg4_pixel;
 	gdk_INSENSITIVE_bg.red   = defaultStyle.bg4_red;
 	gdk_INSENSITIVE_bg.green = defaultStyle.bg4_green;
 	gdk_INSENSITIVE_bg.blue  = defaultStyle.bg4_blue;
-	INSENSITIVE_bg = Color.gtk_new(gdk_INSENSITIVE_bg);
+	INSENSITIVE_bg = Color.gtk_new_system(gdk_INSENSITIVE_bg);
 
+	GdkColor gdk_INSENSITIVE_mid = new GdkColor();
+	gdk_INSENSITIVE_mid.pixel = defaultStyle.bg4_pixel;
+	gdk_INSENSITIVE_mid.red   = defaultStyle.bg4_red;
+	gdk_INSENSITIVE_mid.green = defaultStyle.bg4_green;
+	gdk_INSENSITIVE_mid.blue  = defaultStyle.bg4_blue;
+	INSENSITIVE_mid = Color.gtk_new_system(gdk_INSENSITIVE_mid);
+
+	GdkColor gdk_INSENSITIVE_text = new GdkColor();
+	gdk_INSENSITIVE_text.pixel = defaultStyle.bg4_pixel;
+	gdk_INSENSITIVE_text.red   = defaultStyle.bg4_red;
+	gdk_INSENSITIVE_text.green = defaultStyle.bg4_green;
+	gdk_INSENSITIVE_text.blue  = defaultStyle.bg4_blue;
+	INSENSITIVE_text = Color.gtk_new_system(gdk_INSENSITIVE_text);
 
 }
 
@@ -1152,11 +1170,8 @@ void releaseDisplay () {
 	messagesSize = windowProc2 = windowProc3 = windowProc4 = windowProc5 = 0;
 	
 	NORMAL_fg = NORMAL_bg = NORMAL_dark = NORMAL_mid = NORMAL_light = NORMAL_text = NORMAL_base =
-	ACTIVE_fg = ACTIVE_bg = ACTIVE_dark = ACTIVE_mid = ACTIVE_light = ACTIVE_text = ACTIVE_base =
-	PRELIGHT_fg = PRELIGHT_bg = PRELIGHT_dark = PRELIGHT_mid = PRELIGHT_light = PRELIGHT_text = PRELIGHT_base =
-	SELECTED_fg = SELECTED_bg = SELECTED_dark = SELECTED_mid = SELECTED_light = SELECTED_text = SELECTED_base =
-	INSENSITIVE_fg = INSENSITIVE_bg = INSENSITIVE_dark = INSENSITIVE_mid = INSENSITIVE_light = INSENSITIVE_text =
-	INSENSITIVE_base = null;
+	SELECTED_bg = SELECTED_dark = SELECTED_light = SELECTED_text = SELECTED_base =
+	INSENSITIVE_fg = INSENSITIVE_bg = INSENSITIVE_dark = INSENSITIVE_mid = INSENSITIVE_light = INSENSITIVE_text =null;
 }
 
 RunnableLock removeFirst () {

@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<classpath>
-    <classpathentry kind="var" path="JRE_LIB"/>
-    <classpathentry kind="src" path="/org.eclipse.swt"/>
-    <classpathentry kind="src" path=""/>
-    <classpathentry kind="output" path="bin"/>
-</classpath>

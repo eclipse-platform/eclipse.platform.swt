@@ -51,6 +51,9 @@ public final class Printer extends Device {
  * @return the list of available printers
  */
 public static PrinterData[] getPrinterList() {
+	// TEMPORARY CODE
+	if (true) return new PrinterData[0];
+	
 	/* Connect to the default X print server */
 	byte [] buffer = Converter.wcsToMbcs(null, XDefaultPrintServer, true);
 	int xtContext = OS.XtCreateApplicationContext ();

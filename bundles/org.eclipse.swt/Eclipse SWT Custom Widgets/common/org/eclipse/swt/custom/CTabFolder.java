@@ -228,7 +228,6 @@ private static int checkStyle (int style) {
 *	</ul>
 */
 public void addSelectionListener(SelectionListener listener) {
-	checkWidget();
 	if (listener == null) {
 		SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	}
@@ -250,7 +249,6 @@ public void addSelectionListener(SelectionListener listener) {
  * @see #removeCTabFolderListener
  */
 public void addCTabFolderListener(CTabFolderListener listener) {
-	checkWidget();
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	// add to array
 	CTabFolderListener[] newTabListeners = new CTabFolderListener[tabListeners.length + 1];
@@ -282,7 +280,6 @@ private void closeNotify(CTabItem item, int time) {
 	}
 }
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget();
 	int minWidth = 0;
 	int minHeight = 0;
 
@@ -311,7 +308,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (trim.width, trim.height);
 }
 public Rectangle computeTrim (int x, int y, int width, int height) {
-	checkWidget();
 	int tabHeight = getTabHeight();
 	int trimX = x - marginWidth - borderLeft;
 	int trimY = y - marginHeight - tabHeight - borderTop;
@@ -521,8 +517,7 @@ private void onDispose() {
 	if (borderColor3 != null) borderColor3.dispose();
 	borderColor3 = null;
 }
-void onFocus(Event e) {
-	checkWidget();
+public void onFocus(Event e) {
 	if (selectedIndex >= 0) {
 		redrawTabArea(selectedIndex);
 	} else {
@@ -579,7 +574,6 @@ private void drawBorder(GC gc) {
 	gc.setForeground(getForeground());
 }
 public Rectangle getClientArea() {
-	checkWidget();
 	Rectangle clientArea = super.getClientArea();
 	clientArea.x = xClient;
 	clientArea.y = yClient;
@@ -588,7 +582,6 @@ public Rectangle getClientArea() {
 	return clientArea;
 }
 public int getTabHeight(){
-	checkWidget();
 	if (fixedTabHeight > 0) return fixedTabHeight;
 
 	int tempHeight = 0;
@@ -603,7 +596,6 @@ public int getTabHeight(){
  * Return the tab that is located at the specified index.
  */
 public CTabItem getItem (int index) {
-	checkWidget();
 	if (index  < 0 || index > items.length) 
 		SWT.error(SWT.ERROR_INVALID_RANGE);
 	return items [index];
@@ -621,7 +613,6 @@ public CTabItem getItem (int index) {
 *	</ul>
 */
 public CTabItem getItem (Point pt) {
-	checkWidget();
 	for (int i = 0; i < items.length; i++) {
 		Rectangle bounds = items[i].getBounds();
 		if (bounds.contains(pt)) return items[i];
@@ -632,14 +623,12 @@ public CTabItem getItem (Point pt) {
  * Return the number of tabs in the folder.
  */
 public int getItemCount(){
-	checkWidget();
 	return items.length;
 }
 /**
  * Return the tab items.
  */
 public CTabItem [] getItems() {
-	checkWidget();
 	CTabItem[] tabItems = new CTabItem [items.length];
 	System.arraycopy(items, 0, tabItems, 0, items.length);
 	return tabItems;
@@ -649,7 +638,6 @@ public CTabItem [] getItems() {
  * is no selection.
  */
 public CTabItem getSelection() {
-	checkWidget();
 	if (selectedIndex == -1) return null;
 	return items[selectedIndex];
 }
@@ -658,7 +646,6 @@ public CTabItem getSelection() {
  * is no selection.
  */
 public int getSelectionIndex() {
-	checkWidget();
 	return selectedIndex;
 }
 
@@ -668,7 +655,6 @@ public int getSelectionIndex() {
  * in the receiver.
  */
 public int indexOf(CTabItem item) {
-	checkWidget();
 	if (item == null) {
 		SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	}
@@ -938,7 +924,6 @@ private void redrawTabArea(int index) {
  * 		<li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
  */
 public void removeSelectionListener(SelectionListener listener) {
-	checkWidget();
 	if (listener == null) {
 		SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	}
@@ -956,7 +941,6 @@ public void removeSelectionListener(SelectionListener listener) {
  * 		<li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
  */
 public void removeCTabFolderListener(CTabFolderListener listener) {
-	checkWidget();
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (tabListeners.length == 0) return;
 	int index = -1;
@@ -1070,7 +1054,6 @@ public void setBackground (Color color) {
  */
 
 public void setSelectionBackground(Color[] colors, int[] percents) {
-	checkWidget();
 	if (colors != null) {
 		if (percents == null || percents.length != colors.length - 1) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -1133,7 +1116,6 @@ public void setSelectionBackground(Color[] colors, int[] percents) {
 	if (selectedIndex > -1) redrawTabArea(selectedIndex);
 }
 public void setSelectionBackground(Image image) {
-	checkWidget();
 	if (image == backgroundImage) return;
 	gradientColors = null;
 	gradientPercents = null;
@@ -1141,7 +1123,6 @@ public void setSelectionBackground(Image image) {
 	redrawTabArea(selectedIndex);
 }
 public void setBorderVisible(boolean show) {
-	checkWidget();
 	if (showBorders == show) return;
 	
 	showBorders = show;
@@ -1158,7 +1139,6 @@ public void setBorderVisible(boolean show) {
 	onClientAreaChange();
 }
 public void setFont(Font font) {
-	checkWidget();
 	if (font != null && font.equals(getFont())) return;
 	int oldHeight = getTabHeight();
 	super.setFont(font);
@@ -1170,7 +1150,6 @@ public void setFont(Font font) {
 	}
 }
 public void setSelectionForeground (Color color) {
-	checkWidget();
 	if (selectionForeground == color) return;
 	if (color == null) color = getForeground();
 	selectionForeground = color;
@@ -1179,7 +1158,6 @@ public void setSelectionForeground (Color color) {
 	}
 }
 public void setInsertMark(CTabItem item, boolean after) {
-	checkWidget();
 	int index = -1;
 	if (item != null) {
 		index = indexOf(item);
@@ -1187,7 +1165,6 @@ public void setInsertMark(CTabItem item, boolean after) {
 	setInsertMark(index, after);
 }
 public void setInsertMark(int index, boolean after) {
-	checkWidget();
 	if (index < -1 || index >= getItemCount()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
@@ -1209,7 +1186,6 @@ public void setInsertMark(int index, boolean after) {
  * Set the selection to the tab at the specified index.
  */
 public void setSelection(int index) {
-	checkWidget();
 	if (index < 0 || index >= items.length) return;
 	if (selectedIndex == index) return;
 	
@@ -1287,7 +1263,6 @@ char getMnemonic (String string) {
  * Set the selection to the specified item.
  */
 public void setSelection(CTabItem item) {
-	checkWidget();
 	if (item == null) 
 		SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	int index = indexOf(item);
@@ -1586,7 +1561,6 @@ private void scroll_scrollRight() {
 	}
 }
 public void setTabHeight(int height) {
-	checkWidget();
 	if (height < 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
