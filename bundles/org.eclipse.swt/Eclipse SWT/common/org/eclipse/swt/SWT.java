@@ -696,6 +696,7 @@ public class SWT {
 	 * <br>Note that this is a <em>HINT</em>.
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>ProgressBar</code></li>
+	 * <li><code>Sash</code></li>
 	 * </ul></p>
 	 */
 	public static final int SMOOTH = 1 << 16;

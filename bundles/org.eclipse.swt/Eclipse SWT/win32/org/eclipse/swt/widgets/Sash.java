@@ -22,7 +22,7 @@ import org.eclipse.swt.events.*;
  * the parent control.
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>HORIZONTAL, VERTICAL</dd>
+ * <dd>HORIZONTAL, VERTICAL, SMOOTH</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection</dd>
  * </dl>
@@ -129,6 +129,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void drawBand (int x, int y, int width, int height) {
+	if ((style & SWT.SMOOTH) != 0) return;
 	int hwndTrack = parent.handle;
 	byte [] bits = {-86, 0, 85, 0, -86, 0, 85, 0, -86, 0, 85, 0, -86, 0, 85, 0};
 	int stippleBitmap = OS.CreateBitmap (8, 8, 1, 1, bits);
@@ -231,20 +232,18 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 			}
 			OS.SetCursorPos (cursorPt.x, cursorPt.y);
 
-			/* The event must be sent because doit flag is used */
 			Event event = new Event ();
-			event.x = newX;  event.y = newY;
-			event.width = width;  event.height = height;
-			
-			/*
-			* It is possible (but unlikely), that application
-			* code could have disposed the widget in the selection
-			* event.  If this happens, end the processing of the
-			* Windows message by returning zero as the result of
-			* the window proc.
-			*/
+			event.x = newX;
+			event.y = newY;
+			event.width = width;
+			event.height = height;
 			sendEvent (SWT.Selection, event);
 			if (isDisposed ()) return LRESULT.ZERO;
+			if (event.doit) {
+				if ((style & SWT.SMOOTH) != 0) {
+					setBounds (event.x, event.y, width, height);
+				}
+			}
 			return result;
 	}
 	return result;
@@ -279,21 +278,17 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	event.y = lastY;
 	event.width = width;
 	event.height = height;
-	event.detail = SWT.DRAG;
-	
-	/*
-	* It is possible (but unlikely), that application
-	* code could have disposed the widget in the selection
-	* event.  If this happens, end the processing of the
-	* Windows message by returning zero as the result of
-	* the window proc.
-	*/
+	if ((style & SWT.SMOOTH) == 0) {
+		event.detail = SWT.DRAG;
+	}
 	sendEvent (SWT.Selection, event);
 	if (isDisposed ()) return LRESULT.ZERO;
 	
 	/* Draw the banding rectangle */
 	if (event.doit) {
 		dragging = true;
+		lastX = event.x;
+		lastY = event.y;
 		menuShell ().bringToTop ();
 		if (OS.IsWinCE) {
 			OS.UpdateWindow (hwndTrack);
@@ -301,7 +296,11 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 			int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
 			OS.RedrawWindow (hwndTrack, null, 0, flags);
 		}
-		drawBand (lastX = event.x, lastY = event.y, width, height);
+		drawBand (event.x, event.y, width, height);
+		if ((style & SWT.SMOOTH) != 0) {
+			setBounds (event.x, event.y, width, height);
+			// widget could be disposed at this point
+		}
 	}
 	return result;
 }
@@ -323,9 +322,15 @@ LRESULT WM_LBUTTONUP (int wParam, int lParam) {
 	event.y = lastY;
 	event.width = width;
 	event.height = height;
-	drawBand (lastX, lastY, width, height);
+	drawBand (event.x, event.y, width, height);
 	sendEvent (SWT.Selection, event);
-	// widget could be disposed at this point
+	if (isDisposed ()) return result;
+	if (event.doit) {
+		if ((style & SWT.SMOOTH) != 0) {
+			setBounds (event.x, event.y, width, height);
+			// widget could be disposed at this point
+		}
+	}
 	return result;
 }
 
@@ -362,28 +367,25 @@ LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 	event.y = newY;
 	event.width = width;
 	event.height = height;
-	event.detail = SWT.DRAG;
-	
-	/*
-	* It is possible (but unlikely), that application
-	* code could have disposed the widget in the selection
-	* event.  If this happens, end the processing of the
-	* Windows message by returning zero as the result of
-	* the window proc.
-	*/
+	if ((style & SWT.SMOOTH) == 0) {
+		event.detail = SWT.DRAG;
+	}
 	sendEvent (SWT.Selection, event);
 	if (isDisposed ()) return LRESULT.ZERO;
-
-	/* Draw the banding rectangle */
 	if (event.doit) {
-		lastX = event.x; lastY = event.y;
-		if (OS.IsWinCE) {
-			OS.UpdateWindow (hwndTrack);
-		} else {
-			int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
-			OS.RedrawWindow (hwndTrack, null, 0, flags);
-		}
-		drawBand (lastX, lastY, width, height);
+		lastX = event.x;
+		lastY = event.y;
+	}
+	if (OS.IsWinCE) {
+		OS.UpdateWindow (hwndTrack);
+	} else {
+		int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
+		OS.RedrawWindow (hwndTrack, null, 0, flags);
+	}
+	drawBand (lastX, lastY, width, height);
+	if ((style & SWT.SMOOTH) != 0) {
+		setBounds (lastX, lastY, width, height);
+		// widget could be disposed at this point
 	}
 	return result;
 }

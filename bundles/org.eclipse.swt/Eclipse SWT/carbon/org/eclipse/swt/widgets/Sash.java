@@ -110,6 +110,10 @@ public void addSelectionListener(SelectionListener listener) {
 }
 
 static int checkStyle (int style) {
+	/*
+	* Macintosh only supports smooth dragging.
+	*/
+	style |= SWT.SMOOTH;
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
@@ -210,13 +214,12 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 				event.y = newY;
 				event.width = width;
 				event.height = height;
-				event.detail = 0; //outResult [0] == OS.kMouseTrackingMouseDragged ? SWT.DRAG : 0;
 				sendEvent (SWT.Selection, event);
 				if (isDisposed ()) return result;
 				if (event.doit) {
 					setBounds (event.x, event.y, width, height);
-					Shell shell = parent.getShell ();
-					shell.update (true);
+					if (isDisposed ()) return result;
+					parent.update (true);
 				}
 				break;
 			}
@@ -274,23 +277,20 @@ int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userDa
 				newY = Math.min (Math.max (0, lastY + yChange - startY), parentHeight - height);
 			}
 			if (newX == lastX && newY == lastY) return result;
-			
-			/* The event must be sent because its doit flag is used. */
 			Event event = new Event ();
-			event.x = newX;  event.y = newY;
-			event.width = width;  event.height = height;
+			event.x = newX;
+			event.y = newY;
+			event.width = width;
+			event.height = height;
 			sendEvent (SWT.Selection, event);
-					
-			/*
-			 * It is possible (but unlikely) that client code could have disposed
-			 * the widget in the selection event.  If this happens end the processing
-			 * of this message by returning.
-			 */
 			if (isDisposed ()) break;
 			if (event.doit) {
-				lastX = event.x;  lastY = event.y;
-				/* Adjust the pointer position */
-				int cursorX = newX;  int cursorY = newY;
+				setBounds (event.x, event.y, width, height);
+				if (isDisposed ()) break;
+				lastX = event.x;
+				lastY = event.y;
+				if (isDisposed ()) return result;
+				int cursorX = event.x, cursorY = event.y;
 				if ((style & SWT.VERTICAL) != 0) {
 					cursorY += height / 2;
 				} else {

@@ -138,6 +138,7 @@ void createHandle (int index) {
 }
 
 void drawBand (int x, int y, int width, int height) {
+	if ((style & SWT.SMOOTH) != 0) return;
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (parent.paintHandle());
 	if (window == 0) return;
 	byte [] bits = {-86, 85, -86, 85, -86, 85, -86, 85};
@@ -176,25 +177,27 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ eventPtr)
 	int height = OS.GTK_WIDGET_HEIGHT (handle);
 	lastX = x - border; 
 	lastY = y - border;
-	/* The event must be sent because its doit flag is used. */
 	Event event = new Event ();
-	event.detail = SWT.DRAG;
 	event.time = gdkEvent.time;
 	event.x = lastX;
 	event.y = lastY;
 	event.width = width;
 	event.height = height;
-	/*
-	 * It is possible (but unlikely) that client code could have disposed
-	 * the widget in the selection event.  If this happens end the processing
-	 * of this message by returning.
-	 */
+	if ((style & SWT.SMOOTH) == 0) {
+		event.detail = SWT.DRAG;
+	}
 	sendEvent (SWT.Selection, event);
 	if (isDisposed ()) return 0;
 	if (event.doit) {
 		dragging = true;
+		lastX = event.x;
+		lastY = event.y;
 		parent.update (true);
-		drawBand (lastX = event.x, lastY = event.y, width, height);
+		drawBand (event.x, event.y, width, height);
+		if ((style & SWT.SMOOTH) != 0) {
+			setBounds (event.x, event.y, width, height);
+			// widget could be disposed at this point
+		}
 	}
 	return result;	
 }
@@ -209,7 +212,6 @@ int /*long*/ gtk_button_release_event (int /*long*/ widget, int /*long*/ eventPt
 	dragging = false;
 	int width = OS.GTK_WIDGET_WIDTH (handle);
 	int height = OS.GTK_WIDGET_HEIGHT (handle);
-	/* The event must be sent because its doit flag is used. */
 	Event event = new Event ();
 	event.time = gdkEvent.time;
 	event.x = lastX;
@@ -218,7 +220,13 @@ int /*long*/ gtk_button_release_event (int /*long*/ widget, int /*long*/ eventPt
 	event.height = height;
 	drawBand (lastX, lastY, width, height);
 	sendEvent (SWT.Selection, event);
-	/* widget could be disposed here */
+	if (isDisposed ()) return result;
+	if (event.doit) {
+		if ((style & SWT.SMOOTH) != 0) {
+			setBounds (event.x, event.y, width, height);
+			// widget could be disposed at this point
+		}
+	}
 	return result;
 }
 
@@ -283,23 +291,22 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 			event.height = height;
 			sendEvent (SWT.Selection, event);
 			if (ptrGrabResult == OS.GDK_GRAB_SUCCESS) OS.gdk_pointer_ungrab (OS.GDK_CURRENT_TIME);
-			
-			/*
-			 * It is possible (but unlikely) that client code could have disposed
-			 * the widget in the selection event.  If this happens end the processing
-			 * of this message by returning.
-			 */
 			if (isDisposed ()) break;
+			
 			if (event.doit) {
-				lastX = event.x;  lastY = event.y;
-				/* Adjust the pointer position */
-				int cursorX = newX;  int cursorY = newY;
+				lastX = event.x;
+				lastY = event.y;
+				if ((style & SWT.SMOOTH) != 0) {
+					setBounds (event.x, event.y, width, height);
+					if (isDisposed ()) break;
+				}
+				int cursorX = event.x, cursorY = event.y;
 				if ((style & SWT.VERTICAL) != 0) {
 					cursorY += height / 2;
 				} else {
 					cursorX += width / 2;
 				}
-				//OS.XWarpPointer (xDisplay, OS.None, xWindow, 0, 0, 0, 0, cursorX, cursorY);
+				display.setCursorLocation (parent.toDisplay (cursorX, cursorY));
 			}
 			break;
 	}
@@ -339,25 +346,27 @@ int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ eventPtr
 	}
 	if (newX == lastX && newY == lastY) return 0;
 	drawBand (lastX, lastY, width, height);
-	/* The event must be sent because its doit flag is used. */
+	
 	Event event = new Event ();
-	event.detail = SWT.DRAG;
 	event.time = gdkEvent.time;
 	event.x = newX;
 	event.y = newY;
 	event.width = width;
 	event.height = height;
-	/*
-	 * It is possible (but unlikely) that client code could have disposed
-	 * the widget in the selection event.  If this happens end the processing
-	 * of this message by returning.
-	 */
+	if ((style & SWT.SMOOTH) == 0) {
+		event.detail = SWT.DRAG;
+	}
 	sendEvent (SWT.Selection, event);
 	if (isDisposed ()) return 0;
 	if (event.doit) {
-		lastX = event.x;  lastY = event.y;
-		parent.update (true);
-		drawBand (lastX, lastY, width, height);
+		lastX = event.x;
+		lastY = event.y;
+	}
+	parent.update (true);
+	drawBand (lastX, lastY, width, height);
+	if ((style & SWT.SMOOTH) != 0) {
+		setBounds (lastX, lastY, width, height);
+		// widget could be disposed at this point
 	}
 	return result;
 }
