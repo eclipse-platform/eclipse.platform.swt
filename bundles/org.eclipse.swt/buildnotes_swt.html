@@ -12,6 +12,60 @@
 Eclipse Platform Build Notes<br>
 SWT</h1>
 
+<h2> SWT Build 3.1 019 - Tuesday January 11th, 2005 </h2>
+<h3><a NAME="New APIs"></a>New APIs</h3>
+<blockquote>
+TreeColumn - support creating columns in a tree widget. This replaces the
+emulated TableTree and gives access to the native look and feel of the tree.
+<br>
+<br><b>New Tree API:</b>
+<br>int getGridLineWidth
+<br>int getHeaderHeight
+<br>boolean getHeaderVisible
+<br>TreeColumn getColumn (int index)
+<br>int getColumnCount
+<br>TreeColumn [] getColumns
+<br>boolean getLinesVisible
+<br>void setLinesVisible (boolean show)
+<br>void setHeaderVisible (boolean show)
+<br>void showColumn (TreeColumn column)
+<br>
+<br><b>New TreeItem API:</b>
+<br>Color getBackground (int index)
+<br>Rectangle getBounds (int index)
+<br>Font getFont (int index)
+<br>Color getForeground (int index)
+<br>Image getImage (int index)
+<br>Rectangle getImageBounds (int index)
+<br>String getText (int index)
+<br>void setBackground (int index, Color color)
+<br>void setFont (int index, Font font)
+<br>void setForeground (int index, Color color)
+<br>void setImage (Image [] images)
+<br>void setImage (int index, Image image)
+<br>void setText (String [] strings)
+<br>void setText (int index, String string)
+</blockquote>
+<br>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+<br>4591:  prop sheet - the first column seems to leave too much unused space (1G7GIC3)  
+<br>13954:  TableTree Tree icons are large  
+<br>25007:  Allow for icons in TableTreeItems in first column  
+<br>36822:  DCR - TableTree doesn't support drag and drop  
+<br>52145:  TableTree incorrectly handles Left-Arrow in subtree  
+<br>66179:  TableTree widget has weird +/- signs on Windows  
+<br>73622:  TableTree plus sign background wrong color on Solaris  
+<br>80599:  SWT gets window origin even if nobody has hooked a motion event  
+<br>80830:  implement GC.drawFocus  
+<br>81695:  [Linux GTK] SWT Text displays the wrong characters if call addModifyListener  
+<br>81893:  IllegalArgumentException from StyledText Widget  
+<br>82156:  [launcher] typo in eclipseConfig.c  
+<br>82160:  [launcher] eclipseUnicode.h needs to include ctype.h  
+<br>82282:  Control.redraw() invalidates children on Linux-GTK  
+<br>82385:  Browser widget causes crash or freeze when opening URL with Java 2 applets 
+</blockquote>
+
 <h2> SWT Build 3.1 018 - Tuesday January 4th, 2005 </h2>
 <h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
