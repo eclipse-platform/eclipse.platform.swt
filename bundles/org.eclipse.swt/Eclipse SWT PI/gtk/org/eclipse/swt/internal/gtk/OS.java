@@ -155,6 +155,7 @@ public class OS {
 	public static final int GDK_BUTTON_RELEASE = 7;
 	public static final int GDK_KEY_PRESS = 8;
 	public static final int GDK_KEY_RELEASE = 9;
+	public static final int GDK_FOCUS_CHANGE = 12;
 	public static final int GDK_NO_EXPOSE = 30;
 
 	/* The values for the GdkModifierType constants are specified in the
@@ -935,5 +936,6 @@ public static final native int gtk_window_get_default(int window);
 public static final native boolean gtk_window_activate_default(int window);
 public static final native void gtk_widget_activate(int widget);
 public static final native void gtk_clist_set_row_height(int clist, int height);
-public static final native void gdk_window_set_override_redirect(int window, boolean override_redirect);
-}
+public static final native void gdk_window_set_override_redirect(int window, boolean override_redirect);public static final native boolean gdk_event_focus_get_in(int event);
+public static final native void gdk_window_set_back_pixmap(int window, int pixmap, boolean parent_relative);
+public static final native void gdk_window_set_override_redirect(int window, boolean override_redirect);}

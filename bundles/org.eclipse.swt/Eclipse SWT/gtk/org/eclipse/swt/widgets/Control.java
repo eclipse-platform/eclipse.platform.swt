@@ -1329,6 +1329,23 @@ public Composite getParent () {
 	return parent;
 }
 
+Control [] getPath () {
+	int count = 0;
+	Shell shell = getShell ();
+	Control control = this;
+	while (control != shell) {
+		count++;
+		control = control.parent;
+	}
+	control = this;
+	Control [] result = new Control [count];
+	while (control != shell) {
+		result [--count] = control;
+		control = control.parent;
+	}
+	return result;
+}
+
 /**
  * Returns the receiver's shell. For all controls other than
  * shells, this simply returns the control's nearest ancestor
@@ -1532,10 +1549,21 @@ int processKeyUp (int callData, int arg1, int int2) {
 }
 
 int processMouseDown (int callData, int arg1, int int2) {
+	Shell shell = _getShell ();
 	int type = OS.GDK_EVENT_TYPE (callData);
 	int eventType = type != OS.GDK_2BUTTON_PRESS ? SWT.MouseDown : SWT.MouseDoubleClick;
 	int button = OS.gdk_event_button_get_button (callData);
 	sendMouseEvent (eventType, button, callData);
+
+	/*
+	* It is possible that the shell may be
+	* disposed at this point.  If this happens
+	* don't send the activate and deactivate
+	* events.
+	*/	
+	if (!shell.isDisposed ()) {
+		shell.setActiveControl (this);
+	}
 	return 0;
 }
 
@@ -1561,11 +1589,38 @@ int processMouseMove (int callData, int arg1, int int2) {
 }
 
 int processFocusIn(int int0, int int1, int int2) {
-	postEvent(SWT.FocusIn);
+	Shell shell = _getShell ();
+	postEvent (SWT.FocusIn);
+
+	/*
+	* It is possible that the shell may be
+	* disposed at this point.  If this happens
+	* don't send the activate and deactivate
+	* events.
+	*/	
+	if (!shell.isDisposed ()) {
+		shell.setActiveControl (this);
+	}
 	return 0;
 }
+
 int processFocusOut(int int0, int int1, int int2) {
-	postEvent(SWT.FocusOut);
+	Shell shell = _getShell ();
+	postEvent (SWT.FocusOut);
+	
+	/*
+	* It is possible that the shell may be
+	* disposed at this point.  If this happens
+	* don't send the activate and deactivate
+	* events.
+	*/
+	if (!shell.isDisposed ()) {
+		Display display = shell.getDisplay ();
+		Control control = display.getFocusControl ();
+		if (control == null || shell != control.getShell () ) {
+			shell.setActiveControl (null);
+		}
+	}
 	return 0;
 }
 

@@ -97,6 +97,7 @@ public class Shell extends Decorations {
 	int accelGroup;
 	boolean hasFocus;
 	int oldX, oldY, oldWidth, oldHeight;
+	Control lastActive;
 
 /**
  * Constructs a new instance of this class. This is equivalent
@@ -409,11 +410,12 @@ void createHandle (int index) {
 
 void hookEvents () {
 	super.hookEvents ();
-	signal_connect_after(shellHandle, "map-event", SWT.Deiconify, 3);
-	signal_connect_after(shellHandle, "unmap-event", SWT.Iconify, 3);
+	signal_connect(shellHandle, "map-event", SWT.Deiconify, 3);
+	signal_connect(shellHandle, "unmap-event", SWT.Iconify, 3);
 	signal_connect(shellHandle, "size-allocate", SWT.Resize, 3);
 	signal_connect(shellHandle, "configure-event", SWT.Move, 3);
 	signal_connect(shellHandle, "delete-event", SWT.Dispose, 3);
+	signal_connect(shellHandle, "event-after", SWT.Activate, 3);
 }
 
 void register () {
@@ -536,20 +538,28 @@ public void open () {
 	setVisible (true);
 }
 
+int processDeiconify (int int0, int int1, int int2) {
+	minimized = false;
+	sendEvent (SWT.Deiconify);
+	return 0;
+}
+
 int processDispose (int int0, int int1, int int2) {
 	closeWidget ();
 	return 0;
 }
 
-int processFocusIn(int int0, int int1, int int2) {
-	hasFocus=true;
-	postEvent(SWT.Activate);
+int processActivate (int int0, int int1, int int2) {
+	if (OS.GDK_EVENT_TYPE (int0) == OS.GDK_FOCUS_CHANGE) {
+		hasFocus = OS.gdk_event_focus_get_in (int0);
+		postEvent (hasFocus ? SWT.Activate : SWT.Deactivate);
+	}
 	return 0;
 }
 
-int processFocusOut(int int0, int int1, int int2) {
-	hasFocus=false;
-	postEvent(SWT.Deactivate);
+int processIconify (int int0, int int1, int int2) {
+	minimized = true;
+	sendEvent (SWT.Iconify);
 	return 0;
 }
 
@@ -601,6 +611,43 @@ public void removeShellListener (ShellListener listener) {
 	eventTable.unhook (SWT.Deiconify,listener);
 	eventTable.unhook (SWT.Activate, listener);
 	eventTable.unhook (SWT.Deactivate, listener);
+}
+
+void setActiveControl (Control control) {
+	if (control != null && control.isDisposed ()) control = null;
+	if (lastActive != null && lastActive.isDisposed ()) lastActive = null;
+	if (lastActive == control) return;
+	
+	/*
+	* Compute the list of controls to be activated and
+	* deactivated by finding the first common parent
+	* control.
+	*/
+	Control [] activate = (control == null) ? new Control[0] : control.getPath ();
+	Control [] deactivate = (lastActive == null) ? new Control[0] : lastActive.getPath ();
+	lastActive = control;
+	int index = 0, length = Math.min (activate.length, deactivate.length);
+	while (index < length) {
+		if (activate [index] != deactivate [index]) break;
+		index++;
+	}
+	
+	/*
+	* It is possible (but unlikely), that application
+	* code could have destroyed some of the widgets. If
+	* this happens, keep processing those widgets that
+	* are not disposed.
+	*/
+	for (int i=deactivate.length-1; i>=index; --i) {
+		if (!deactivate [i].isDisposed ()) {
+			deactivate [i].sendEvent (SWT.Deactivate);
+		}
+	}
+	for (int i=activate.length-1; i>=index; --i) {
+		if (!activate [i].isDisposed ()) {
+			activate [i].sendEvent (SWT.Activate);
+		}
+	}
 }
 
 void resizeBounds (int width, int height, boolean notify) {
@@ -809,5 +856,7 @@ void releaseWidget () {
 	super.releaseWidget ();
 	if (accelGroup != 0) OS.gtk_accel_group_unref (accelGroup);
 	accelGroup = 0;
+	display = null;
+	lastActive = null;
 }
 }

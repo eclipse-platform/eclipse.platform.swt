@@ -371,8 +371,36 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1get_1de
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1activate_1default
   (JNIEnv *env, jclass that, jint window)
 {
-    return (jboolean)(((GtkWindow*)window)->default_widget);
+    return (jboolean)gtk_window_activate_default((GtkWindow*)window);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1iconify
+  (JNIEnv *env, jclass that, jint window)
+{
+    gtk_window_iconify((GtkWindow*)window);
+}
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1deiconify
+  (JNIEnv *env, jclass that, jint window)
+{
+    gtk_window_deiconify((GtkWindow*)window);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1maximize
+  (JNIEnv *env, jclass that, jint window)
+{
+    gtk_window_maximize((GtkWindow*)window);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1unmaximize
+  (JNIEnv *env, jclass that, jint window)
+{
+    gtk_window_unmaximize((GtkWindow*)window);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1get_1focus
+  (JNIEnv *env, jclass that, jint window)
+{
+    return (jint)gtk_window_get_focus((GtkWindow*)window);
+}
 

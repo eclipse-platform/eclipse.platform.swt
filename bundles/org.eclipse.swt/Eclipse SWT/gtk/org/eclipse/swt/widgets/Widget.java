@@ -543,11 +543,13 @@ int processEvent (int eventNumber, int int0, int int1, int int2) {
 	*/
 	if (eventNumber < 0) return 1;
 	switch (eventNumber) {
+		case SWT.Activate:			return processActivate         	(int0, int1, int2);
 		case SWT.Arm:				return processArm           	(int0, int1, int2);
 		case SWT.Collapse:			return processCollapse      	(int0, int1, int2);
 		case SWT.Expand:			return processExpand        	(int0, int1, int2);
 		case SWT.Dispose:			return processDispose        	(int0, int1, int2);
 		case SWT.DefaultSelection:	return processDoubleSelection	(int0, int1, int2);
+		case SWT.Deiconify:			return processDeiconify			(int0, int1, int2);
 		case SWT.FocusIn:			return processFocusIn         	(int0, int1, int2);
 		case SWT.FocusOut:			return processFocusOut        	(int0, int1, int2);
 		case SWT.Help:				return processHelp            	(int0, int1, int2);
@@ -555,7 +557,6 @@ int processEvent (int eventNumber, int int0, int int1, int int2) {
 		case SWT.KeyDown:			return processKeyDown         	(int0, int1, int2);
 		case SWT.KeyUp:				return processKeyUp           	(int0, int1, int2);
 		case SWT.Iconify:			return processIconify         	(int0, int1, int2);
-		case SWT.Deiconify:			return processDeiconify       	(int0, int1, int2);
 		case SWT.Modify:			return processModify          	(int0, int1, int2);
 		case SWT.MouseDown:			return processMouseDown       	(int0, int1, int2);
 		case SWT.MouseEnter:		return processMouseEnter      	(int0, int1, int2);
@@ -570,6 +571,10 @@ int processEvent (int eventNumber, int int0, int int1, int int2) {
 		case SWT.Selection:			return processSelection       	(int0, int1, int2);
 		case SWT.Verify:			return processVerify          	(int0, int1, int2);
 	}
+	return 0;
+}
+
+int processActivate (int int0, int int1, int int2) {
 	return 0;
 }
 
@@ -593,18 +598,12 @@ int processExpand (int int0, int int1, int int2) {
 int processDispose (int arg0, int arg1, int int2) {
 	return 1;
 }
-
-/*
- * The WM has Iconified/Deiconified a Shell.
- * The Gtk event is map_event/unmap_event
- */
 int processIconify (int int0, int int1, int int2) {
 	return 0;
 }
 int processDeiconify (int int0, int int1, int int2) {
 	return 0;
 }
-
 int processHelp (int int0, int int1, int int2) {
 	return 0;
 }

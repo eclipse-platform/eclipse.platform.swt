@@ -1220,3 +1220,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1set_1ov
 {
   gdk_window_set_override_redirect((GdkWindow*)window, (gboolean)override_redirect);
 }
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1event_1focus_1get_1in
+  (JNIEnv *env, jclass that, jint event)
+{
+  return (jboolean) (((GdkEventFocus*)event) -> in);
+}
+
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1set_1back_1pixmap
+  (JNIEnv *env, jclass that, jint window, jint pixmap, jboolean parent_relative)
+{
+	gdk_window_set_back_pixmap((GdkWindow*)window, (GdkPixmap*)pixmap, (gboolean)parent_relative);
+}

@@ -87,6 +87,7 @@ import org.eclipse.swt.graphics.*;
 public class Decorations extends Canvas {
 	String text;
 	Image image;
+	boolean minimized, maximized;
 	Menu menuBar;
 	Menu [] menus;
 Decorations () {
@@ -211,7 +212,7 @@ public Image getImage () {
  */
 public boolean getMaximized () {
 	checkWidget();
-	return false;
+	return maximized;
 }
 /**
  * Returns the receiver's menu bar if one had previously
@@ -244,7 +245,7 @@ public Menu getMenuBar () {
  */
 public boolean getMinimized () {
 	checkWidget();
-	return false;
+	return minimized;
 }
 String getNameText () {
 	return getText ();
@@ -381,6 +382,7 @@ public void setImage (Image image) {
  */
 public void setMaximized (boolean maximized) {
 	checkWidget();
+	this.maximized = maximized;
 }
 /**
  * Sets the receiver's menu bar to the argument, which
@@ -431,6 +433,7 @@ public void setMenuBar (Menu menu) {
  */
 public void setMinimized (boolean minimized) {
 	checkWidget();
+	this.minimized = minimized;
 }
 /**
  * Sets the receiver's text, which is the string that the
