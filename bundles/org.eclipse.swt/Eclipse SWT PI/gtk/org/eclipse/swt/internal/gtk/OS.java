@@ -62,7 +62,6 @@ public class OS {
 	public static final int GDK_DECOR_MINIMIZE = 0x20;
 	public static final int GDK_DECOR_RESIZEH = 0x4;
 	public static final int GDK_DECOR_TITLE = 0x8;
-	public static final int GDK_DIAMOND_CROSS = 0x24;
 	public static final int GDK_DOUBLE_ARROW = 0x2a;
 	public static final int GDK_Delete = 0xffff;
 	public static final int GDK_Down = 0xff54;
@@ -88,6 +87,7 @@ public class OS {
 	public static final int GDK_F7 = 0xffc4;
 	public static final int GDK_F8 = 0xffc5;
 	public static final int GDK_F9 = 0xffc6;
+	public static final int GDK_FLEUR = 0x34;
 	public static final int GDK_FOCUS_CHANGE = 0xc;
 	public static final int GDK_FOCUS_CHANGE_MASK = 0x4000;
 	public static final int GDK_GC_CLIP_MASK = 0x80;

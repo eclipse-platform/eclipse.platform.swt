@@ -106,7 +106,7 @@ public Cursor(Device device, int style) {
 		case SWT.CURSOR_APPSTARTING:	osFlag = OS.GDK_LEFT_PTR; break;
 		case SWT.CURSOR_HAND:					osFlag = OS.GDK_HAND1; break;
 		case SWT.CURSOR_HELP:					osFlag = OS.GDK_QUESTION_ARROW; break;
-		case SWT.CURSOR_SIZEALL:				osFlag = OS.GDK_DIAMOND_CROSS; break;
+		case SWT.CURSOR_SIZEALL:				osFlag = OS.GDK_FLEUR; break;
 		case SWT.CURSOR_SIZENESW:			osFlag = OS.GDK_SIZING; break;
 		case SWT.CURSOR_SIZENS:				osFlag = OS.GDK_DOUBLE_ARROW; break;
 		case SWT.CURSOR_SIZENWSE:			osFlag = OS.GDK_SIZING; break;
