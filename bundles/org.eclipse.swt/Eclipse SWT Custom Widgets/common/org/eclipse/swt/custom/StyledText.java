@@ -4996,7 +4996,7 @@ void setBidiCaretLocation() {
 	caret = getCaret();
 	if (caret != null) {
 		int caretX = bidi.getCaretPosition(offsetInLine);
-
+		caretX = caretX - horizontalScrollOffset;
 		if (StyledTextBidi.getKeyboardLanguageDirection() == SWT.RIGHT) {
 			caretX -= (getCaretWidth() - 1);
 		}
