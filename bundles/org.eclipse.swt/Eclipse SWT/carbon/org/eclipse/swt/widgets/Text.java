@@ -278,7 +278,7 @@ public int getTopPixel () {
 	return oDestinationRect.top - oTextRect.top;
 }
 
-public String getTXNText (int iStartOffset, int iEndOffset) {
+String getTXNText (int iStartOffset, int iEndOffset) {
 	int [] oDataHandle = new int [1];
 	OS.TXNGetData (txnObject, iStartOffset, iEndOffset, oDataHandle);
 	if (oDataHandle [0] == 0) return "";
@@ -523,7 +523,16 @@ public void setTopIndex (int index) {
 public void setVisible (boolean visible) {
 	super.setVisible (visible);
 	//DOESN'T WOORK
-	OS.TXNSetTXNObjectControls (txnObject, false, 1, new int[] {OS.kTXNVisibilityTag}, new int[] {visible ? 1 : 0});
+//	OS.TXNSetTXNObjectControls (txnObject, false, 1, new int[] {OS.kTXNVisibilityTag}, new int[] {visible ? 1 : 0});
+
+	//ALSO DOESN'T REALLY WORK
+//	if (visible) {
+//		Rect rect = new Rect ();
+//		OS.GetControlBounds (handle, rect);
+//		OS.TXNSetFrameBounds (txnObject, rect.top, rect.left, rect.bottom, rect.right, txnFrameID);
+//	} else {
+//		OS.TXNSetFrameBounds (txnObject, 0, 0, 0, 0, txnFrameID);
+//	}
 }
 
 public void showSelection () {
