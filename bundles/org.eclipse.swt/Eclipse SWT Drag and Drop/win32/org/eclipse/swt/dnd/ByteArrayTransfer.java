@@ -210,8 +210,4 @@ protected Object nativeToJava(TransferData transferData) {
 boolean _validate(Object object) {
 	return (object != null && object instanceof byte[] && ((byte[])object).length > 0);
 }
-
-protected boolean validate(Object object) {
-	return true;
-}
 }

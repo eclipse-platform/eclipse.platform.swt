@@ -110,17 +110,6 @@ abstract protected void javaToNative (Object object, TransferData transferData);
 abstract protected Object nativeToJava(TransferData transferData);
 
 /**
- * Test that the object is of the correct format for this Transfer class.
- * 
- * @param object a java representation of the data to be converted
- * 
- * @return true if object is of the correct form for this transfer type
- * 
- * @since 3.1
- */
-abstract protected boolean validate(Object object);
-
-/**
  * Registers a name for a data type and returns the associated unique identifier.
  *
  * <p>You may register the same type more than once, the same unique identifier 
@@ -140,5 +129,18 @@ public static int registerType(String formatName) {
 	// If name already exists in registry, return its assigned value
 	TCHAR chFormatName = new TCHAR(0, formatName, true);
 	return OS.RegisterClipboardFormat(chFormatName);
+}
+
+/**
+ * Test that the object is of the correct format for this Transfer class.
+ * 
+ * @param object a java representation of the data to be converted
+ * 
+ * @return true if object is of the correct form for this transfer type
+ * 
+ * @since 3.1
+ */
+protected boolean validate(Object object) {
+	return true;
 }
 }
