@@ -311,9 +311,9 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 
 int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ eventPtr) {
 	int /*long*/ result = super.gtk_motion_notify_event (widget, eventPtr);
-	int [] state = new int [1];
-	OS.gdk_event_get_state (eventPtr, state);
-	if (!dragging || (state [0] & OS.GDK_BUTTON1_MASK) == 0) return 0;
+	GdkEventMotion gdkEvent = new GdkEventMotion ();
+	OS.memmove (gdkEvent, eventPtr, GdkEventButton.sizeof);
+	if (!dragging || (gdkEvent.state & OS.GDK_BUTTON1_MASK) == 0) return 0;
 	int x = OS.GTK_WIDGET_X (handle);
 	int y = OS.GTK_WIDGET_Y (handle);
 	int width = OS.GTK_WIDGET_WIDTH (handle);
@@ -321,12 +321,18 @@ int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ eventPtr
 	int parentBorder = 0;
 	int parentWidth = OS.GTK_WIDGET_WIDTH (parent.handle);
 	int parentHeight = OS.GTK_WIDGET_HEIGHT (parent.handle);
-	double [] root_x = new double [1], root_y = new double [1];
-	OS.gdk_event_get_root_coords (eventPtr, root_x, root_y);	
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (widget);
-	int [] origin_x = new int [1], origin_y = new int [1];
-	OS.gdk_window_get_origin (window, origin_x, origin_y);
-	int eventX = (int) (root_x [0] - origin_x [0]), eventY = (int) (root_y [0] - origin_y [0]);
+	int eventX, eventY;
+	if (gdkEvent.is_hint != 0) {
+		int [] pointer_x = new int [1], pointer_y = new int [1];
+		OS.gdk_window_get_pointer (gdkEvent.window, pointer_x, pointer_y, null);
+		eventX = pointer_x [0];
+		eventY = pointer_y [0];
+	} else {
+		int [] origin_x = new int [1], origin_y = new int [1];
+		OS.gdk_window_get_origin (gdkEvent.window, origin_x, origin_y);	
+		eventX = (int) (gdkEvent.x_root - origin_x [0]);
+		eventY = (int) (gdkEvent.y_root - origin_y [0]);
+	}
 	int newX = lastX, newY = lastY;
 	if ((style & SWT.VERTICAL) != 0) {
 		newX = Math.min (Math.max (0, eventX + x - startX - parentBorder), parentWidth - width);
@@ -338,7 +344,7 @@ int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ eventPtr
 	/* The event must be sent because its doit flag is used. */
 	Event event = new Event ();
 	event.detail = SWT.DRAG;
-	event.time = OS.gdk_event_get_time (eventPtr);
+	event.time = gdkEvent.time;
 	event.x = newX;
 	event.y = newY;
 	event.width = width;

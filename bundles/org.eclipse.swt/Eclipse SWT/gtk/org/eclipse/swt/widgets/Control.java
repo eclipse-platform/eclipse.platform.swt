@@ -2352,19 +2352,35 @@ boolean sendKeyEvent (int type, GdkEventKey keyEvent) {
 	return sendIMKeyEvent (type, keyEvent, chars) != null;
 }
 
-void sendMouseEvent (int type, int button, int /*long*/ gdkEvent) {
+void sendMouseEvent (int type, int button, int /*long*/ eventPtr) {
 	Event event = new Event ();
-	event.time = OS.gdk_event_get_time (gdkEvent);
+	event.time = OS.gdk_event_get_time (eventPtr);
 	event.button = button;
-	double [] root_x = new double [1], root_y = new double [1];
-	OS.gdk_event_get_root_coords (gdkEvent, root_x, root_y);	
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (eventHandle ());
-	int [] origin_x = new int [1], origin_y = new int [1];
-	OS.gdk_window_get_origin (window, origin_x, origin_y);
-	event.x = (int)(root_x [0] - origin_x [0]);
-	event.y = (int)(root_y [0] - origin_y [0]);
+	if (type == SWT.MouseMove) {
+		GdkEventMotion gdkEvent = new GdkEventMotion ();
+		OS.memmove (gdkEvent, eventPtr, GdkEventMotion.sizeof);
+		if (gdkEvent.is_hint != 0) {
+			int [] pointer_x = new int [1], pointer_y = new int [1];
+			OS.gdk_window_get_pointer (gdkEvent.window, pointer_x, pointer_y, null);
+			event.x = pointer_x [0];
+			event.y = pointer_y [0];
+		} else {
+			int [] origin_x = new int [1], origin_y = new int [1];
+			OS.gdk_window_get_origin (gdkEvent.window, origin_x, origin_y);	
+			event.x = (int) (gdkEvent.x_root - origin_x [0]);
+			event.y = (int) (gdkEvent.y_root - origin_y [0]);
+		}
+	} else {
+		double [] root_x = new double [1], root_y = new double [1];
+		OS.gdk_event_get_root_coords (eventPtr, root_x, root_y);	
+		int /*long*/ window = OS.GTK_WIDGET_WINDOW (eventHandle ());
+		int [] origin_x = new int [1], origin_y = new int [1];
+		OS.gdk_window_get_origin (window, origin_x, origin_y);
+		event.x = (int)(root_x [0] - origin_x [0]);
+		event.y = (int)(root_y [0] - origin_y [0]);
+	}
 	int [] state = new int [1];
-	OS.gdk_event_get_state (gdkEvent, state);
+	OS.gdk_event_get_state (eventPtr, state);
 	setInputState (event, state [0]);
 	postEvent (type, event);
 }

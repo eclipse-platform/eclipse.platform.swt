@@ -111,6 +111,18 @@ void setGdkEventKeyFields(JNIEnv *env, jobject lpObject, GdkEventKey *lpStruct);
 #define GdkEventKey_sizeof() 0
 #endif
 
+#ifndef NO_GdkEventMotion
+void cacheGdkEventMotionFields(JNIEnv *env, jobject lpObject);
+GdkEventMotion *getGdkEventMotionFields(JNIEnv *env, jobject lpObject, GdkEventMotion *lpStruct);
+void setGdkEventMotionFields(JNIEnv *env, jobject lpObject, GdkEventMotion *lpStruct);
+#define GdkEventMotion_sizeof() sizeof(GdkEventMotion)
+#else
+#define cacheGdkEventMotionFields(a,b)
+#define getGdkEventMotionFields(a,b,c) NULL
+#define setGdkEventMotionFields(a,b,c)
+#define GdkEventMotion_sizeof() 0
+#endif
+
 #ifndef NO_GdkEventVisibility
 void cacheGdkEventVisibilityFields(JNIEnv *env, jobject lpObject);
 GdkEventVisibility *getGdkEventVisibilityFields(JNIEnv *env, jobject lpObject, GdkEventVisibility *lpStruct);

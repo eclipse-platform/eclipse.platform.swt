@@ -382,6 +382,7 @@ public static final synchronized native int GdkEventCrossing_sizeof();
 public static final synchronized native int GdkEventExpose_sizeof();
 public static final synchronized native int GdkEventFocus_sizeof();
 public static final synchronized native int GdkEventKey_sizeof();
+public static final synchronized native int GdkEventMotion_sizeof();
 public static final synchronized native int GdkEventVisibility_sizeof();
 public static final synchronized native int GdkEventWindowState_sizeof();
 public static final synchronized native int GdkGCValues_sizeof();
@@ -1138,6 +1139,7 @@ public static final native void memmove(GdkEventCrossing dest, int /*long*/ src,
 public static final native void memmove(GdkEventExpose dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(GdkEventFocus dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(GdkEventKey dest, int /*long*/ src, int /*long*/ size);
+public static final native void memmove(GdkEventMotion dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(GdkEventVisibility dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(GdkEventWindowState dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(GtkFixed dest, int /*long*/ src);

@@ -426,6 +426,70 @@ void setGdkEventKeyFields(JNIEnv *env, jobject lpObject, GdkEventKey *lpStruct)
 }
 #endif
 
+#ifndef NO_GdkEventMotion
+typedef struct GdkEventMotion_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID window, send_event, time, x, y, axes, state, is_hint, device, x_root, y_root;
+} GdkEventMotion_FID_CACHE;
+
+GdkEventMotion_FID_CACHE GdkEventMotionFc;
+
+void cacheGdkEventMotionFields(JNIEnv *env, jobject lpObject)
+{
+	if (GdkEventMotionFc.cached) return;
+	cacheGdkEventFields(env, lpObject);
+	GdkEventMotionFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	GdkEventMotionFc.window = (*env)->GetFieldID(env, GdkEventMotionFc.clazz, "window", "I");
+	GdkEventMotionFc.send_event = (*env)->GetFieldID(env, GdkEventMotionFc.clazz, "send_event", "B");
+	GdkEventMotionFc.time = (*env)->GetFieldID(env, GdkEventMotionFc.clazz, "time", "I");
+	GdkEventMotionFc.x = (*env)->GetFieldID(env, GdkEventMotionFc.clazz, "x", "D");
+	GdkEventMotionFc.y = (*env)->GetFieldID(env, GdkEventMotionFc.clazz, "y", "D");
+	GdkEventMotionFc.axes = (*env)->GetFieldID(env, GdkEventMotionFc.clazz, "axes", "I");
+	GdkEventMotionFc.state = (*env)->GetFieldID(env, GdkEventMotionFc.clazz, "state", "I");
+	GdkEventMotionFc.is_hint = (*env)->GetFieldID(env, GdkEventMotionFc.clazz, "is_hint", "S");
+	GdkEventMotionFc.device = (*env)->GetFieldID(env, GdkEventMotionFc.clazz, "device", "I");
+	GdkEventMotionFc.x_root = (*env)->GetFieldID(env, GdkEventMotionFc.clazz, "x_root", "D");
+	GdkEventMotionFc.y_root = (*env)->GetFieldID(env, GdkEventMotionFc.clazz, "y_root", "D");
+	GdkEventMotionFc.cached = 1;
+}
+
+GdkEventMotion *getGdkEventMotionFields(JNIEnv *env, jobject lpObject, GdkEventMotion *lpStruct)
+{
+	if (!GdkEventMotionFc.cached) cacheGdkEventMotionFields(env, lpObject);
+	getGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
+	lpStruct->window = (GdkWindow *)(*env)->GetIntField(env, lpObject, GdkEventMotionFc.window);
+	lpStruct->send_event = (gint8)(*env)->GetByteField(env, lpObject, GdkEventMotionFc.send_event);
+	lpStruct->time = (guint32)(*env)->GetIntField(env, lpObject, GdkEventMotionFc.time);
+	lpStruct->x = (gdouble)(*env)->GetDoubleField(env, lpObject, GdkEventMotionFc.x);
+	lpStruct->y = (gdouble)(*env)->GetDoubleField(env, lpObject, GdkEventMotionFc.y);
+	lpStruct->axes = (gdouble *)(*env)->GetIntField(env, lpObject, GdkEventMotionFc.axes);
+	lpStruct->state = (guint)(*env)->GetIntField(env, lpObject, GdkEventMotionFc.state);
+	lpStruct->is_hint = (gint16)(*env)->GetShortField(env, lpObject, GdkEventMotionFc.is_hint);
+	lpStruct->device = (GdkDevice *)(*env)->GetIntField(env, lpObject, GdkEventMotionFc.device);
+	lpStruct->x_root = (gdouble)(*env)->GetDoubleField(env, lpObject, GdkEventMotionFc.x_root);
+	lpStruct->y_root = (gdouble)(*env)->GetDoubleField(env, lpObject, GdkEventMotionFc.y_root);
+	return lpStruct;
+}
+
+void setGdkEventMotionFields(JNIEnv *env, jobject lpObject, GdkEventMotion *lpStruct)
+{
+	if (!GdkEventMotionFc.cached) cacheGdkEventMotionFields(env, lpObject);
+	setGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
+	(*env)->SetIntField(env, lpObject, GdkEventMotionFc.window, (jint)lpStruct->window);
+	(*env)->SetByteField(env, lpObject, GdkEventMotionFc.send_event, (jbyte)lpStruct->send_event);
+	(*env)->SetIntField(env, lpObject, GdkEventMotionFc.time, (jint)lpStruct->time);
+	(*env)->SetDoubleField(env, lpObject, GdkEventMotionFc.x, (jdouble)lpStruct->x);
+	(*env)->SetDoubleField(env, lpObject, GdkEventMotionFc.y, (jdouble)lpStruct->y);
+	(*env)->SetIntField(env, lpObject, GdkEventMotionFc.axes, (jint)lpStruct->axes);
+	(*env)->SetIntField(env, lpObject, GdkEventMotionFc.state, (jint)lpStruct->state);
+	(*env)->SetShortField(env, lpObject, GdkEventMotionFc.is_hint, (jshort)lpStruct->is_hint);
+	(*env)->SetIntField(env, lpObject, GdkEventMotionFc.device, (jint)lpStruct->device);
+	(*env)->SetDoubleField(env, lpObject, GdkEventMotionFc.x_root, (jdouble)lpStruct->x_root);
+	(*env)->SetDoubleField(env, lpObject, GdkEventMotionFc.y_root, (jdouble)lpStruct->y_root);
+}
+#endif
+
 #ifndef NO_GdkEventVisibility
 typedef struct GdkEventVisibility_FID_CACHE {
 	int cached;
