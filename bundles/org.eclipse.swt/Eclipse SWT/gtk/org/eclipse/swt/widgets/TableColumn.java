@@ -29,8 +29,6 @@ import org.eclipse.swt.events.*;
  */
 public class TableColumn extends Item {
 	Table parent;
-	int pixbufRendererHandle;
-
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>Table</code>) and a style value
@@ -222,9 +220,13 @@ public Table getParent () {
  */
 public boolean getResizable () {
 	checkWidget();
-	return OS.gtk_tree_view_column_get_resizable(handle);
+	int index = parent.indexOf (this);
+	if (index == -1) return false;
+	int chandle=OS.GTK_CLIST_COLUMN (parent.handle);
+	GtkCListColumn gtkcolumn = new GtkCListColumn ();
+	OS.memmove(gtkcolumn, chandle+index*GtkCListColumn.sizeof, GtkCListColumn.sizeof);
+	return (gtkcolumn.resizeable == 1) ? true : false;
 }
-
 /**
  * Gets the width of the receiver.
  *
@@ -237,9 +239,13 @@ public boolean getResizable () {
  */
 public int getWidth () {
 	checkWidget();
-	return OS.gtk_tree_view_column_get_width(handle);
+	int index = parent.indexOf (this);
+	if (index == -1) return 0;
+	int chandle=OS.GTK_CLIST_COLUMN (parent.handle);
+	GtkCListColumn gtkcolumn = new GtkCListColumn();
+	OS.memmove(gtkcolumn, chandle+index*GtkCListColumn.sizeof, GtkCListColumn.sizeof);
+	return gtkcolumn.width;
 }
-
 /**
  * Causes the receiver to be resized to its preferred size.
  * For a composite, this involves computing the preferred size
@@ -253,12 +259,11 @@ public int getWidth () {
  */
 public void pack () {
 	checkWidget();
-	if (getResizable()) {
-		// Feature in GTK: AUTOSIZE and RESIZABLE are mutually exclusive
-		OS.gtk_tree_view_column_set_sizing(handle, OS.GTK_TREE_VIEW_COLUMN_GROW_ONLY);
-	} else {
-		OS.gtk_tree_view_column_set_sizing(handle, OS.GTK_TREE_VIEW_COLUMN_AUTOSIZE);
-	}
+	int index = parent.indexOf (this);
+	if (index == -1) return;
+	int clist = parent.handle;
+	int width = OS.gtk_clist_optimal_column_width (clist, index);
+	OS.gtk_clist_set_column_width (clist, index, width);	
 }
 void releaseChild () {
 	super.releaseChild ();
@@ -332,8 +337,16 @@ public void removeSelectionListener(SelectionListener listener) {
 public void setAlignment (int alignment) {
 	checkWidget();
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
-	// FIXME
-	// NOT IMPLEMENTED
+	int index = parent.indexOf (this);
+	if (index == -1 || index == 0) return;
+	int table = parent.handle;
+	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
+	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
+	int justification = 0;
+	if ((style & SWT.LEFT) == SWT.LEFT) justification |= OS.GTK_JUSTIFY_LEFT;
+	if ((style & SWT.CENTER) == SWT.CENTER) justification |= OS.GTK_JUSTIFY_CENTER;
+	if ((style & SWT.RIGHT) == SWT.RIGHT) justification |= OS.GTK_JUSTIFY_RIGHT;
+	OS.gtk_clist_set_column_justification (table, index, justification);
 }
 /**
  * Sets the resizable attribute.  A column that is
@@ -349,25 +362,33 @@ public void setAlignment (int alignment) {
  */
 public void setResizable (boolean resizable) {
 	checkWidget();
-	OS.gtk_tree_view_column_set_resizable(handle, resizable);
+	int index = parent.indexOf (this);
+	if (index == -1) return;
+	int table = parent.handle;
+	OS.gtk_clist_set_column_resizeable (table, index, resizable);
 }
-
 public void setText (String string) {
-	checkWidget();
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	super.setText (string);
-	byte[] bytes = Converter.wcsToMbcs(null, string, true);
-	OS.gtk_tree_view_column_set_title(handle, bytes);
+	int index = parent.indexOf (this);
+	if (index == -1) return;
+	int table = parent.handle;
+	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	OS.gtk_clist_set_column_title (table, index, buffer);
 	/*
 	* Bug in GTK.  When a table column is hidden and then shown,
 	* and new text is set into the column, the widget that shows the
 	* text is not resized to show the new text.  The fix is to force the
 	* table header to resize the widget.
-	* 
-	* FIXME - Must investigate what is the story with the new Table.
 	*/
+	int headerHandle = OS.gtk_clist_get_column_widget (table, index);
+	if (headerHandle != 0) {
+		GtkRequisition requisition = new GtkRequisition ();
+		OS.gtk_widget_size_request (headerHandle, requisition);
+	}
 }
-
 /**
  * Sets the width of the receiver.
  *
@@ -380,7 +401,10 @@ public void setText (String string) {
  */
 public void setWidth (int width) {
 	checkWidget();
-	OS.gtk_tree_view_column_set_sizing(handle, OS.GTK_TREE_VIEW_COLUMN_FIXED);
-	OS.gtk_tree_view_column_set_fixed_width(handle, width);
+	int index = parent.indexOf (this);
+	if (index == -1) return;
+	int table = parent.handle;
+	OS.gtk_clist_set_column_width (table, index, width);
 }
+
 }

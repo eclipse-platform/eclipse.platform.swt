@@ -154,12 +154,8 @@ public TreeItem (TreeItem parentItem, int style) {
  */
 public Color getBackground () {
 	checkWidget ();
-	int[] ptr = new int[1];
-	OS.gtk_tree_model_get(parent.modelHandle, handle, 3, ptr, -1);
-	if (ptr[0]==0) return parent.getBackground();
-	GdkColor gdkColor = new GdkColor();
-	OS.memmove(gdkColor, ptr[0], GdkColor.sizeof);
-	return Color.gtk_new(getDisplay(), gdkColor);
+	Tree parent = getParent();
+	return parent.getBackground();
 }
 
 /**
@@ -217,9 +213,36 @@ static TreeItem checkNull (TreeItem item) {
  * </ul>
  */
 public Rectangle getBounds () {
-	GdkRectangle rect = new GdkRectangle();
-	OS.gtk_tree_view_get_cell_area(parent.handle, handle, parent.columnHandle, rect);
-	return new Rectangle (rect.x, rect.y, rect.width, rect.height);
+	int ctree = parent.handle;
+	/* NB: Different from gtk_ctree_is_visible() */
+	if (!OS.gtk_ctree_is_viewable(ctree, handle)) return new Rectangle(0,0,0,0);
+
+	/* Vertical */
+	int row_index = 0;
+	int work = OS.GTK_CLIST_ROW_LIST(ctree);
+	while ((work!=0) && (work!=handle)) {
+		work = OS.GTK_CTREE_NODE_NEXT(work);
+		row_index++;
+	}
+	
+	int border = OS.gtk_container_get_border_width(ctree);
+	// observe the weird row spacing rule
+	int y = OS.ROW_TOP_YPIXEL(ctree, row_index) + Tree.CELL_SPACING;
+	int height = parent.getItemHeight();
+
+	/* Horizontal */	
+	int row_ptr = OS.GTK_CTREE_ROW(ctree, handle);
+	GtkCTreeRow row = new GtkCTreeRow();
+	OS.memmove(row, OS.g_list_nth_data (handle, 0), GtkCTreeRow.sizeof);
+	int x = OS.GTK_CLIST_HOFFSET(ctree) + OS.GTK_CTREE_TREE_INDENT (ctree) * row.level;
+	if (image != null) {
+		int[] w = new int[1], h = new int[1];
+ 		OS.gdk_drawable_get_size(image.pixmap, w, h);
+ 		x += w[0]; 
+	}	
+	int width = OS.GTK_CLIST_WINDOW_WIDTH(ctree) - x; // No hoffset!
+	
+	return new Rectangle (x, y, width, parent.getItemHeight());
 }	
 
 /**
@@ -238,9 +261,10 @@ public Rectangle getBounds () {
 public boolean getChecked () {
 	checkWidget();
 	if ((parent.style & SWT.CHECK) == 0) return false;
-	int[] ptr = new int[1];
-	OS.gtk_tree_model_get(parent.modelHandle, handle, 5, ptr, -1);
-	return ptr[0] != 0;
+	int ctree = parent.handle;
+	int [] pixmap = new int [1];
+	OS.gtk_ctree_get_node_info (ctree, handle, null, null, pixmap, null, null, null, null, null);
+	return pixmap [0] == parent.check;
 }
 
 public Display getDisplay () {
@@ -262,10 +286,10 @@ public Display getDisplay () {
  */
 public boolean getExpanded () {
 	checkWidget();
-	int path = OS.gtk_tree_model_get_path(parent.modelHandle, handle);
-	boolean answer = OS.gtk_tree_view_row_expanded(parent.handle, path);
-	OS.gtk_tree_path_free(path);
-	return answer;
+	int ctree = parent.handle;
+	boolean [] buffer = new boolean [1];
+	OS.gtk_ctree_get_node_info (ctree, handle, null, null, null, null, null, null, null, buffer);
+	return buffer [0];
 }
 
 /**
@@ -283,12 +307,8 @@ public boolean getExpanded () {
  */
 public Color getForeground () {
 	checkWidget ();
-	int[] ptr = new int[1];
-	OS.gtk_tree_model_get(parent.modelHandle, handle, 2, ptr, -1);
-	if (ptr[0]==0) return parent.getBackground();
-	GdkColor gdkColor = new GdkColor();
-	OS.memmove(gdkColor, ptr[0], GdkColor.sizeof);
-	return Color.gtk_new(getDisplay(), gdkColor);
+	Tree parent = getParent();
+	return parent.getForeground();
 }
 
 /**
@@ -375,19 +395,13 @@ public Tree getParent () {
  */
 public TreeItem getParentItem () {
 	checkWidget();
-	int path = OS.gtk_tree_model_get_path(parent.modelHandle, handle);
-	if (OS.gtk_tree_path_get_depth(path)<2) {
-		OS.gtk_tree_path_free(path);
-		return null;
-	}
-	OS.gtk_tree_path_up(path);
-	int iter = OS.g_malloc(OS.GtkTreeIter_sizeof());
-	OS.gtk_tree_model_get_iter(parent.modelHandle, iter, path);
-	int[] index = new int[1];
-	OS.gtk_tree_model_get(parent.modelHandle, iter, 4, index, -1);
-	OS.g_free(iter);
-	OS.gtk_tree_path_free(path);
-	return parent.items[index[0]];
+	int data = OS.g_list_nth_data (handle, 0);
+	GtkCTreeRow row = new GtkCTreeRow ();
+	OS.memmove (row, data, GtkCTreeRow.sizeof);
+	if (row.parent == 0) return null;
+	int ctree = parent.handle;
+	int index = OS.gtk_ctree_node_get_row_data (ctree, row.parent) - 1;
+	return parent.items [index];
 }
 
 void releaseChild () {
@@ -423,8 +437,8 @@ public void setBackground (Color color) {
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	GdkColor ptr = (color != null)? color.handle : null;
-	OS.gtk_tree_store_set(parent.modelHandle, handle, 3, ptr, -1);
+	int ctree = parent.handle;
+	OS.gtk_ctree_node_set_background (ctree, handle, color != null ? color.handle : null);
 }
 
 /**
@@ -441,7 +455,16 @@ public void setBackground (Color color) {
 public void setChecked (boolean checked) {
 	checkWidget();
 	if ((parent.style & SWT.CHECK) == 0) return;
-	OS.gtk_tree_store_set(parent.modelHandle, handle, 5, checked, -1);
+	int ctree = parent.handle;
+	byte [] spacing = new byte [1];
+	int [] pixmap = new int [1], mask = new int [1];
+	boolean [] is_leaf = new boolean [1], expanded = new boolean [1];
+	byte [] buffer = Converter.wcsToMbcs (null, text, true);
+	OS.gtk_ctree_get_node_info (ctree, handle, null, spacing, pixmap, mask, pixmap, mask, is_leaf, expanded);
+	if (checked && pixmap [0] == parent.check) return;
+	if (!checked && pixmap [0] == parent.uncheck) return;
+	pixmap [0] = checked ? parent.check : parent.uncheck;
+	OS.gtk_ctree_set_node_info (ctree, handle, buffer, spacing [0], pixmap [0], mask [0], pixmap [0], mask [0], is_leaf [0], expanded [0]);				
 }
 
 /**
@@ -472,17 +495,16 @@ public void setGrayed (boolean grayed) {
  */
 public void setExpanded (boolean expanded) {
 	checkWidget();
-	int path = OS.gtk_tree_model_get_path(parent.modelHandle, handle);
+	int ctree = parent.handle;
 	if (expanded) {
-		blockSignal(parent.handle, SWT.Expand);
-		OS.gtk_tree_view_expand_row(parent.handle, path, false);
-		unblockSignal(parent.handle, SWT.Expand);
+		blockSignal (ctree, SWT.Expand);
+		OS.gtk_ctree_expand (ctree, handle);
+		unblockSignal (ctree, SWT.Expand);
 	} else {
-		blockSignal(parent.handle, SWT.Collapse);
-		OS.gtk_tree_view_collapse_row(parent.handle, path);
-		unblockSignal(parent.handle, SWT.Collapse);
+		blockSignal (ctree, SWT.Collapse);
+		OS.gtk_ctree_collapse (ctree, handle);
+		unblockSignal (ctree, SWT.Collapse);
 	}
-	OS.gtk_tree_path_free(path);
 }
 
 /**
@@ -510,8 +532,8 @@ public void setForeground (Color color){
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	GdkColor ptr = (color != null)? color.handle : null;
-	OS.gtk_tree_store_set(parent.modelHandle, handle, 2, ptr, -1);
+	int ctree = parent.handle;
+	OS.gtk_ctree_node_set_foreground (ctree, handle, color != null ? color.handle : null);
 }
 
 public void setImage (Image image) {
@@ -519,38 +541,29 @@ public void setImage (Image image) {
 	if (image != null && image.isDisposed()) {
 		error(SWT.ERROR_INVALID_ARGUMENT);
 	}
+	if ((parent.style & SWT.CHECK) != 0) return;
 	this.image = image;
-	int pixbuf = 0;
+	int pixmap = 0, mask = 0;
 	if (image != null) {
-		int[] w = new int[1], h = new int[1];
-		boolean hasMask = (image.mask != 0);
-	 	OS.gdk_drawable_get_size(image.pixmap, w, h);
- 		int width = w[0], height = h[0]; 	
-		pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, hasMask, 8, width, height);
-		if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		int colormap = OS.gdk_colormap_get_system();
-		OS.gdk_pixbuf_get_from_drawable(pixbuf, image.pixmap, colormap, 0, 0, 0, 0, width, height);
-		if (hasMask) {
-			int gdkMaskImagePtr = OS.gdk_drawable_get_image(image.mask, 0, 0, width, height);
-			if (gdkMaskImagePtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-			int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
-			int pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
-			byte[] line = new byte[stride];
-			for (int y=0; y<height; y++) {
-				OS.memmove(line, pixels + (y * stride), stride);
-				for (int x=0; x<width; x++) {
-					if (OS.gdk_image_get_pixel(gdkMaskImagePtr, x, y) != 0) {
-						line[x*4+3] = (byte)0xFF;
-					} else {
-						line[x*4+3] = 0;
-					}
-				}
-				OS.memmove(pixels + (y * stride), line, stride);
+		pixmap = image.pixmap;
+		mask = image.mask;
+	}
+	int ctree = parent.handle;
+	byte [] spacing = new byte [1];
+	boolean [] is_leaf = new boolean [1], expanded = new boolean [1];
+	byte [] buffer = Converter.wcsToMbcs (null, text, true);
+	OS.gtk_ctree_get_node_info (ctree, handle, null, spacing, null, null, null, null, is_leaf, expanded);
+	OS.gtk_ctree_set_node_info (ctree, handle, buffer, spacing [0], pixmap, mask, pixmap, mask, is_leaf [0], expanded [0]);
+	if (image != null) {
+		if (parent.imageHeight == 0) {		
+			int [] width = new int [1], height = new int [1];
+			OS.gdk_drawable_get_size (pixmap, width, height);
+			if (height [0] > OS.GTK_CLIST_ROW_HEIGHT (parent.handle)) {
+				parent.imageHeight = height [0];
+				OS.gtk_clist_set_row_height (ctree, height [0]);
 			}
-			OS.g_object_unref(gdkMaskImagePtr);
 		}
-	}	
-	OS.gtk_tree_store_set(parent.modelHandle, handle, 1, pixbuf, -1);
+	}
 }
 
 /**
@@ -562,8 +575,13 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	super.setText (string);
-	byte[] bytes = Converter.wcsToMbcs(null, string, true);
-	OS.gtk_tree_store_set(parent.modelHandle, handle, 0, bytes, -1);
+	int ctree = parent.handle;
+	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	byte [] spacing = new byte [1];
+	boolean [] is_leaf = new boolean [1], expanded = new boolean [1];
+	int [] pixmap_closed = new int [1], mask_closed= new int [1], pixmap_opened= new int [1], mask_opened= new int [1];
+	OS.gtk_ctree_get_node_info (ctree, handle, null, spacing, pixmap_closed, mask_closed, pixmap_opened, mask_opened, is_leaf, expanded);
+	OS.gtk_ctree_set_node_info (ctree, handle, buffer, spacing [0], pixmap_closed [0], mask_closed [0], pixmap_opened [0], mask_opened [0], is_leaf [0], expanded [0]);
 }
 
 }
