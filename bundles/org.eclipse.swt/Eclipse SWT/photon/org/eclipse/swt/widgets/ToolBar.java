@@ -443,7 +443,7 @@ boolean translateTraversal (int key_sym, PhKeyEvent_t phEvent) {
 	int start = index, offset = (next) ? 1 : -1;
 	while ((index = (index + offset + length) % length) != start) {
 		ToolItem item = items [index];
-		if (item.setFocus ()) return true;
+		if (item.setFocus ()) return false;
 	}
 	return false;
 }
