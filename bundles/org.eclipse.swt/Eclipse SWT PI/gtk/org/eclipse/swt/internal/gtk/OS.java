@@ -1110,6 +1110,7 @@ public static final native void memset(int /*long*/ buffer, char c, int /*long*/
 public static final synchronized native int /*long*/ pango_attr_background_new (short red, short green, short blue);
 public static final synchronized native int /*long*/ pango_attr_font_desc_new(int /*long*/ desc);
 public static final synchronized native int /*long*/ pango_attr_foreground_new (short red, short green, short blue);
+public static final synchronized native int /*long*/ pango_attr_shape_new(PangoRectangle ink_rect, PangoRectangle logical_rect);
 public static final synchronized native void pango_attr_list_insert(int /*long*/ list, int /*long*/ attr);
 public static final synchronized native void pango_attr_list_change(int /*long*/ list, int /*long*/ attr);
 public static final synchronized native int /*long*/ pango_attr_list_new();

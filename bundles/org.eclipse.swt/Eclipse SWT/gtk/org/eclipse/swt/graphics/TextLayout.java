@@ -24,11 +24,12 @@ public final class TextLayout {
 	Device device;
 	Font font;
 	String text;
+	int ascent, descent;
 	int[] segments;
 	StyleItem[] styles;
 	int /*long*/ layout, context, attrList;
 	
-	static final char LTR_MARK = '\u200E', RTL_MARK = '\u200F';
+	static final char LTR_MARK = '\u200E', RTL_MARK = '\u200F', OBJECT_REPLACEMENT_CHARACTER = '\uFFFC';
 
 public TextLayout (Device device) {
 	if (device == null) device = Device.getDevice();
@@ -42,6 +43,7 @@ public TextLayout (Device device) {
 	OS.pango_layout_set_tabs(layout, device.emptyTab);		
 	OS.gdk_pango_context_set_colormap(context, OS.gdk_colormap_get_system());
 	text = "";
+	ascent = descent = -1;
 	styles = new StyleItem[2];
 	styles[0] = new StyleItem();
 	styles[1] = new StyleItem();
@@ -54,12 +56,42 @@ void checkLayout() {
 
 void computeRuns () {
 	if (attrList != 0) return;
-	byte[] buffer = Converter.wcsToMbcs(null, getSegmentsText(), false);
+	String segmentsText = getSegmentsText();
+	byte[] buffer = Converter.wcsToMbcs(null, segmentsText, false);
 	OS.pango_layout_set_text (layout, buffer, buffer.length);
-	if (styles.length == 2 && styles[0].style == null) return;
+	if (styles.length == 2 && styles[0].style == null && ascent == -1 && descent == -1) return;
 	int /*long*/ ptr = OS.pango_layout_get_text(layout);
 	attrList = OS.pango_attr_list_new();	
-	PangoAttribute attribute = new PangoAttribute();	
+	PangoAttribute attribute = new PangoAttribute();
+	if ((ascent != -1  || descent != -1) && segmentsText.length() > 0) {
+		int /*long*/ iter = OS.pango_layout_get_iter(layout);
+		if (iter == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		PangoRectangle rect = new PangoRectangle();
+		if (ascent != -1) rect.y =  -(ascent  * OS.PANGO_SCALE);
+		rect.height = (Math.max(0, ascent) + Math.max(0, descent)) * OS.PANGO_SCALE;
+		int lineCount = OS.pango_layout_get_line_count(layout);
+		char[] chars = new char[segmentsText.length() + lineCount];
+		int oldPos = 0, count = 0;
+		do {
+			int /*long*/ attr = OS.pango_attr_shape_new (rect, rect);
+			OS.memmove (attribute, attr, PangoAttribute.sizeof);
+			int bytePos = OS.pango_layout_iter_get_index(iter);
+			attribute.start_index = bytePos + (count * 3);
+			attribute.end_index = bytePos+ 3 + (count * 3);
+			OS.memmove (attr, attribute, PangoAttribute.sizeof);
+			OS.pango_attr_list_insert(attrList, attr);
+			int pos = (int)/*64*/OS.g_utf8_pointer_to_offset(ptr, ptr + bytePos);
+			chars[pos + count] = OBJECT_REPLACEMENT_CHARACTER;
+			segmentsText.getChars(oldPos, pos, chars,  oldPos + count);
+			oldPos = pos;
+			count++;
+		} while (OS.pango_layout_iter_next_line(iter));
+		OS.pango_layout_iter_free (iter);
+		segmentsText.getChars(oldPos, segmentsText.length(), chars,  oldPos + count);
+		buffer = Converter.wcsToMbcs(null, chars, false);
+		OS.pango_layout_set_text (layout, buffer, buffer.length);
+		ptr = OS.pango_layout_get_text(layout);
+	}	
 	for (int i = 0; i < styles.length - 1; i++) {
 		StyleItem styleItem = styles[i];
 		TextStyle style = styleItem.style; 
@@ -181,6 +213,11 @@ public int getAlignment() {
 	return SWT.LEFT;
 }
 
+public int getAscent () {
+	checkLayout();
+	return ascent;
+}
+
 public Rectangle getBounds() {
 	checkLayout();
 	computeRuns();
@@ -212,6 +249,11 @@ public Rectangle getBounds(int start, int end) {
 	OS.gdk_region_get_clipbox(clipRegion, rect);
 	OS.gdk_region_destroy(clipRegion);
 	return new Rectangle(rect.x, rect.y, rect.width, rect.height);
+}
+
+public int getDescent () {
+	checkLayout();
+	return descent;
 }
 
 public Font getFont () {
@@ -311,6 +353,8 @@ public FontMetrics getLineMetrics (int lineIndex) {
 		PangoItem item = new PangoItem();
 		PangoLayoutRun run = new PangoLayoutRun();
 		int runCount = 0;
+		ascent = Math.max(0, this.ascent * OS.PANGO_SCALE);
+		descent = Math.max(0, this.descent * OS.PANGO_SCALE);
 		while (runs != 0) {
 			OS.memmove(run, OS.g_slist_data(runs), PangoLayoutRun.sizeof);
 			OS.memmove(item, run.item, PangoItem.sizeof);
@@ -393,28 +437,12 @@ int _getOffset (int offset, int movement, boolean forward) {
 	length = (int)/*64*/OS.g_utf8_strlen(OS.pango_layout_get_text(layout), -1);
 	offset = translateOffset(offset);
 	PangoLogAttr logAttr = new PangoLogAttr();
-	offset += step;
-	if (segments != null && segments.length > 2) {
-		for (int j = 0; j < segments.length; j++) {
-			if (translateOffset(segments[j]) - 1 == offset) {
-				offset += step;
-				break;
-			}
-		}
-	}
+	offset = validateOffset(offset, step);
 	while (0 < offset && offset < length) {
 		OS.memmove(logAttr, attrs[0] + offset * PangoLogAttr.sizeof, PangoLogAttr.sizeof);
 		if (((movement & SWT.MOVEMENT_CLUSTER) != 0) && logAttr.is_cursor_position) break; 
 		if (((movement & SWT.MOVEMENT_WORD) != 0) && (logAttr.is_word_start || logAttr.is_sentence_end)) break;
-		offset += step;
-		if (segments != null && segments.length > 2) {
-			for (int j = 0; j < segments.length; j++) {
-				if (translateOffset(segments[j]) - 1 == offset) {
-					offset += step;
-					break;
-				}
-			}
-		}
+		offset = validateOffset(offset, step);
 	}
 	OS.g_free(attrs[0]);
 	return Math.min(Math.max(0, untranslateOffset(offset)), text.length());
@@ -545,6 +573,22 @@ public void setAlignment (int alignment) {
 		case SWT.RIGHT: align = OS.PANGO_ALIGN_RIGHT; break;
 	}
 	OS.pango_layout_set_alignment(layout, align);
+}
+
+public void setAscent (int ascent) {
+	checkLayout();
+	if (ascent < -1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (this.ascent == ascent) return;
+	freeRuns();
+	this.ascent = ascent;
+}
+
+public void setDescent (int descent) {
+	checkLayout();
+	if (descent < -1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (this.descent == descent) return;
+	freeRuns();
+	this.descent = descent;
 }
 
 public void setFont (Font font) {
@@ -723,12 +767,29 @@ static final boolean isAlef(int ch) {
 	return false;
 }
 
+/*
+ *  Translate a client offset to an internal offset
+ */
 int translateOffset(int offset) {
+	int length = text.length();
+	if (length == 0) return offset;
+	if (ascent != -1 || descent != -1) {
+		int /*long*/ ptr = OS.pango_layout_get_text(layout);
+		int /*long*/ iter = OS.pango_layout_get_iter(layout);
+		if (iter == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		int count = 0;
+		do {
+			int bytePos = OS.pango_layout_iter_get_index(iter);
+			int pos = (int)/*64*/OS.g_utf8_pointer_to_offset(ptr, ptr + bytePos);
+			if (pos - count > offset) break;
+			count++;
+		} while (OS.pango_layout_iter_next_line(iter));
+		OS.pango_layout_iter_free (iter);
+		offset += count;
+	}
 	if (segments == null) return offset;
 	int nSegments = segments.length;
 	if (nSegments <= 1) return offset;
-	int length = text.length();
-	if (length == 0) return offset;
 	if (nSegments == 2) {
 		if (segments[0] == 0 && segments[1] == length) return offset;
 	}
@@ -738,12 +799,29 @@ int translateOffset(int offset) {
 	return offset;
 }
 
+/*
+ *  Translate an internal offset to a client offset
+ */
 int untranslateOffset(int offset) {
+	int length = text.length();
+	if (length == 0) return offset;
+	if (ascent != -1 || descent != -1) {
+		int /*long*/ ptr = OS.pango_layout_get_text(layout);
+		int /*long*/ iter = OS.pango_layout_get_iter(layout);
+		if (iter == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		int count = 0;
+		do {
+			int bytePos = OS.pango_layout_iter_get_index(iter);
+			int pos = (int)/*64*/OS.g_utf8_pointer_to_offset(ptr, ptr + bytePos);
+			if (pos > offset) break;
+			count++;
+		} while (OS.pango_layout_iter_next_line(iter));
+		OS.pango_layout_iter_free (iter);
+		offset -= count;
+	}
 	if (segments == null) return offset;
 	int nSegments = segments.length;
 	if (nSegments <= 1) return offset;
-	int length = text.length();
-	if (length == 0) return offset;
 	if (nSegments == 2) {
 		if (segments[0] == 0 && segments[1] == length) return offset;
 	}
@@ -752,4 +830,34 @@ int untranslateOffset(int offset) {
 	}
 	return offset;
 }
+
+int validateOffset(int offset, int step) {
+	offset += step;
+	int pos;
+	int /*long*/ iter;
+	int /*long*/ ptr = OS.pango_layout_get_text(layout);
+	if (ascent != -1 || descent != -1) {
+		iter = OS.pango_layout_get_iter(layout);
+		if (iter == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		do {
+			int bytePos = OS.pango_layout_iter_get_index(iter);
+			pos = (int)/*64*/OS.g_utf8_pointer_to_offset(ptr, ptr + bytePos);
+			if (pos == offset) {
+				offset += step;
+				break;
+			}
+		} while (OS.pango_layout_iter_next_line(iter) && offset > pos);
+		OS.pango_layout_iter_free (iter);
+	}
+	if (segments != null && segments.length > 2) {
+		for (int j = 0; j < segments.length; j++) {
+			if (translateOffset(segments[j]) - 1 == offset) {
+				offset += step;
+				break;
+			}
+		}
+	}
+	return offset;
+}
+
 } 

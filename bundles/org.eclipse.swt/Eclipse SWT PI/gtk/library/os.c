@@ -9099,6 +9099,24 @@ JNIEXPORT void JNICALL OS_NATIVE(pango_1attr_1list_1unref)
 }
 #endif
 
+#ifndef NO_pango_1attr_1shape_1new
+JNIEXPORT jint JNICALL OS_NATIVE(pango_1attr_1shape_1new)
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1)
+{
+	PangoRectangle _arg0, *lparg0=NULL;
+	PangoRectangle _arg1, *lparg1=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, pango_1attr_1shape_1new_FUNC);
+	if (arg0) lparg0 = getPangoRectangleFields(env, arg0, &_arg0);
+	if (arg1) lparg1 = getPangoRectangleFields(env, arg1, &_arg1);
+	rc = (jint)pango_attr_shape_new(lparg0, lparg1);
+	if (arg1) setPangoRectangleFields(env, arg1, lparg1);
+	if (arg0) setPangoRectangleFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, pango_1attr_1shape_1new_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_pango_1attr_1strikethrough_1new
 JNIEXPORT jint JNICALL OS_NATIVE(pango_1attr_1strikethrough_1new)
 	(JNIEnv *env, jclass that, jboolean arg0)
