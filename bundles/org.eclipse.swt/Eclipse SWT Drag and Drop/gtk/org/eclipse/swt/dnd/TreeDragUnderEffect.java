@@ -11,201 +11,108 @@
 package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.internal.gtk.OS;
 
 class TreeDragUnderEffect extends DragUnderEffect {
 	private Tree tree;
-	private int currentEffect = DND.FEEDBACK_NONE;
 	
-	private TreeItem scrollItem;
+	private int scrollIndex = -1;
 	private long scrollBeginTime;
-	private static final int SCROLL_HYSTERESIS = 600; // milli seconds
+	private static final int SCROLL_HYSTERESIS = 500; // milli seconds
 
-	private TreeItem expandItem;
+	private int expandIndex = -1;
 	private long expandBeginTime;
-	private static final int EXPAND_HYSTERESIS = 1000; // milli seconds
+	private static final int EXPAND_HYSTERESIS = 600; // milli seconds
 
 TreeDragUnderEffect(Tree tree) {
 	this.tree = tree;
 }
-void show(int effect, int x, int y) {
-	effect = checkEffect(effect);
-	TreeItem item = findItem(x, y);
-	if (item == null) effect = DND.FEEDBACK_NONE;
-	scrollHover(effect, item, x, y);
-	expandHover(effect, item, x, y);
-	setDragUnderEffect(effect, item);
-	currentEffect = effect;
-}
 private int checkEffect(int effect) {
 	// Some effects are mutually exclusive.  Make sure that only one of the mutually exclusive effects has been specified.
-	int mask = DND.FEEDBACK_INSERT_AFTER | DND.FEEDBACK_INSERT_BEFORE | DND.FEEDBACK_SELECT;
-	int bits = effect & mask;
-	if (bits == DND.FEEDBACK_INSERT_AFTER || bits == DND.FEEDBACK_INSERT_BEFORE || bits == DND.FEEDBACK_SELECT) return effect;
-	return (effect & ~mask);
+	if ((effect & DND.FEEDBACK_SELECT) != 0) effect = effect & ~DND.FEEDBACK_INSERT_AFTER & ~DND.FEEDBACK_INSERT_BEFORE;
+	if ((effect & DND.FEEDBACK_INSERT_BEFORE) != 0) effect = effect & ~DND.FEEDBACK_INSERT_AFTER;
+	return effect;
 }
-private TreeItem findItem(int x, int y){
+
+void show(int effect, int x, int y) {
+	effect = checkEffect(effect);
+	int /*long*/ handle = tree.handle;
 	Point coordinates = new Point(x, y);
 	coordinates = tree.toControl(coordinates);
-	Rectangle area = tree.getClientArea();
-	if (!area.contains(coordinates)) return null;
-	
-	TreeItem item = tree.getItem(coordinates);
-	if (item != null) return item;
-
-	// Scan across the width of the tree.
-	for (int x1 = area.x; x1 < area.x + area.width; x1++) {
-		Point pt = new Point(x1, coordinates.y);
-		item = tree.getItem(pt);
-		if (item != null) return item;
-	}
-	// Check if we are just below the last item of the tree
-	if (coordinates.y > area.y + area.height - tree.getItemHeight()) {
-		int y1 = area.y + area.height - tree.getItemHeight();
-		Point pt = new Point(coordinates.x, y1);
-		item = tree.getItem(pt);	
-		if (item != null) return item;
-		
-		// Scan across the width of the tree just above the bottom..
-		for (int x1 = area.x; x1 < area.x + area.width; x1++) {
-			pt = new Point(x1, y1);
-			item = tree.getItem(pt);
-			if (item != null) return item;
-		}
-	}
-	return null;
-}
-private void setDragUnderEffect(int effect, TreeItem item) {
-	if ((effect & DND.FEEDBACK_SELECT) != 0) {
-		if ((currentEffect & DND.FEEDBACK_INSERT_AFTER) != 0 ||
-		    (currentEffect & DND.FEEDBACK_INSERT_BEFORE) != 0) {
-			tree.setInsertMark(null, false);
-		}
-		setDropSelection(item); 
-		return;
-	}
-	if ((effect & DND.FEEDBACK_INSERT_AFTER) != 0 ||
-	    (effect & DND.FEEDBACK_INSERT_BEFORE) != 0) {
-		if ((currentEffect & DND.FEEDBACK_SELECT) != 0) {
-			setDropSelection(null);
-		}
-		tree.setInsertMark(item, (effect & DND.FEEDBACK_INSERT_BEFORE) != 0);
-		return;
-	}
-	if ((currentEffect & DND.FEEDBACK_INSERT_AFTER) != 0 ||
-	    (currentEffect & DND.FEEDBACK_INSERT_BEFORE) != 0) {
-		tree.setInsertMark(null, false);
-	}
-	if ((currentEffect & DND.FEEDBACK_SELECT) != 0) {
-		setDropSelection(null);
-	}
-}
-private void setDropSelection (TreeItem item) {	
-	if (item == null) {
-		OS.gtk_tree_view_unset_rows_drag_dest(tree.handle);
-		return;
-	}
-	Rectangle rect = item.getBounds();
 	int /*long*/ [] path = new int /*long*/ [1];
-	if (!OS.gtk_tree_view_get_path_at_pos(tree.handle, rect.x, rect.y, path, null, null, null)) return;
-	if (path [0] == 0) return;
-	OS.gtk_tree_view_set_drag_dest_row(tree.handle, path[0], OS.GTK_TREE_VIEW_DROP_INTO_OR_BEFORE);
-	OS.gtk_tree_path_free (path [0]);
-}
-private void scrollHover (int effect, TreeItem item, int x, int y) {
+	int clientX = coordinates.x - tree.getBorderWidth ();
+	int clientY = coordinates.y - tree.getHeaderHeight ();
+	OS.gtk_tree_view_get_path_at_pos (handle, clientX, clientY, path, null, null, null);
+	int index = -1;
+	if (path[0] != 0) {
+		int /*long*/ indices = OS.gtk_tree_path_get_indices(path[0]);
+		if (indices != 0) {	
+			int depth = OS.gtk_tree_path_get_depth(path[0]);
+			int[] temp = new int[depth];
+			OS.memmove (temp, indices, temp.length * 4);
+			index = temp[temp.length - 1];
+		}
+	}
 	if ((effect & DND.FEEDBACK_SCROLL) == 0) {
 		scrollBeginTime = 0;
-		scrollItem = null;
-		return;
-	}
-	if (scrollItem == item && scrollBeginTime != 0) {
-		if (System.currentTimeMillis() >= scrollBeginTime) {
-			scroll(item, x, y);
-			scrollBeginTime = 0;
-			scrollItem = null;
+		scrollIndex = -1;
+	} else {
+		if (index != -1 && scrollIndex == index && scrollBeginTime != 0) {
+			if (System.currentTimeMillis() >= scrollBeginTime) {
+				GdkRectangle cellRect = new GdkRectangle ();
+				OS.gtk_tree_view_get_cell_area (handle, path[0], 0, cellRect);
+				if (cellRect.y < cellRect.height) {
+					int[] tx = new int[1], ty = new int[1];
+					OS.gtk_tree_view_widget_to_tree_coords(handle, cellRect.x, cellRect.y - cellRect.height, tx, ty);
+					OS.gtk_tree_view_scroll_to_point (handle, -1, ty[0]);
+				} else {
+					//scroll down
+					OS.gtk_tree_view_get_path_at_pos (handle, clientX, clientY + cellRect.height, path, null, null, null);
+					if (path[0] != 0) {
+						OS.gtk_tree_view_scroll_to_cell(handle, path[0], 0, false, 0, 0);
+						OS.gtk_tree_path_free(path[0]);
+						path[0] = 0;
+					}
+					OS.gtk_tree_view_get_path_at_pos (handle, clientX, clientY, path, null, null, null);	
+				}
+				scrollBeginTime = 0;
+				scrollIndex = -1;
+			}
+		} else {
+			scrollBeginTime = System.currentTimeMillis() + SCROLL_HYSTERESIS;
+			scrollIndex = index;
 		}
-		return;
 	}
-	scrollBeginTime = System.currentTimeMillis() + SCROLL_HYSTERESIS;
-	scrollItem = item;
-}
-private void scroll(TreeItem item, int x, int y) {
-	if (item == null) return;
-	Point coordinates = new Point(x, y);
-	coordinates = tree.toControl(coordinates);
-	Rectangle area = tree.getClientArea();
-	TreeItem top = tree.getTopItem();
-	TreeItem newTop = null;
-	// scroll if two lines from top or bottom
-	int scroll_width = 2*tree.getItemHeight();
-	if (coordinates.y < area.y + scroll_width) {
-		 newTop = getPreviousVisibleItem(top);
-	} else if (coordinates.y > area.y + area.height - scroll_width) {
-		newTop = getNextVisibleItem(top, true);
-	}
-	if (newTop != null && newTop != top) {
-		tree.setTopItem(newTop);
-	}		
-}
-private void expandHover (int effect, TreeItem item, int x, int y) {
 	if ((effect & DND.FEEDBACK_EXPAND) == 0) {
 		expandBeginTime = 0;
-		expandItem = null;
-		return;
-	}
-	if (expandItem == item && expandBeginTime != 0) {
-		if (System.currentTimeMillis() >= expandBeginTime) {
-			expand(item, x, y);
-			expandBeginTime = 0;
-			expandItem = null;
-		}
-		return;
-	}
-	expandBeginTime = System.currentTimeMillis() + EXPAND_HYSTERESIS;
-	expandItem = item;
-}
-private void expand(TreeItem item, int x, int y) {
-	if (item == null || item.getExpanded()) return;
-	Event event = new Event();
-	event.x = x;
-	event.y = y;
-	event.item = item;
-	event.time = (int) System.currentTimeMillis();
-	tree.notifyListeners(SWT.Expand, event);
-	if (item.isDisposed()) return;
-	item.setExpanded(true);
-}
-private TreeItem getNextVisibleItem(TreeItem item, boolean includeChildren) {
-	// look down
-	// neccesary on the first pass only
-	if (includeChildren && item.getItemCount() > 0 && item.getExpanded()) {
-		return item.getItems()[0];
-	}
-	// look sideways
-	TreeItem parent = item.getParentItem();
-	TreeItem[] peers = (parent != null) ? parent.getItems() : tree.getItems();
-	for (int i = 0; i < peers.length - 1; i++) {
-		if (peers[i] == item) return peers[i + 1];
-	}
-	// look up
-	if (parent != null) return getNextVisibleItem(parent, false);
-	return null;
-}
-private TreeItem getPreviousVisibleItem(TreeItem item) {
-	// look sideways
-	TreeItem parent = item.getParentItem();
-	TreeItem[] peers = (parent != null) ? parent.getItems() : tree.getItems();
-	for (int i = peers.length - 1; i > 0; i--) {
-		if (peers[i] == item) {
-			TreeItem peer = peers[i-1];
-			if (!peer.getExpanded() || peer.getItemCount() == 0) return peer;
-			TreeItem[] peerItems = peer.getItems();
-			return peerItems[peerItems.length - 1];
+		expandIndex = -1;
+	} else {
+		if (index != -1 && expandIndex == index && expandBeginTime != 0) {
+			if (System.currentTimeMillis() >= expandBeginTime) {
+				OS.gtk_tree_view_expand_row (handle, path[0], false);
+				expandBeginTime = 0;
+				expandIndex = -1;
+			}
+		} else {
+			expandBeginTime = System.currentTimeMillis() + EXPAND_HYSTERESIS;
+			expandIndex = index;
 		}
 	}
-	// look up
-	return parent;
+	if (path[0] != 0) {
+		int position = -1;
+		if ((effect & DND.FEEDBACK_SELECT) != 0) position = OS.GTK_TREE_VIEW_DROP_INTO_OR_BEFORE;
+		if ((effect & DND.FEEDBACK_INSERT_BEFORE) != 0) position = OS.GTK_TREE_VIEW_DROP_BEFORE;
+		if ((effect & DND.FEEDBACK_INSERT_AFTER) != 0) position = OS.GTK_TREE_VIEW_DROP_AFTER;		
+		if (position != -1) {
+			OS.gtk_tree_view_set_drag_dest_row(handle, path[0], position);
+		} else {
+			OS.gtk_tree_view_unset_rows_drag_dest(handle);
+		}
+	} else {
+		OS.gtk_tree_view_unset_rows_drag_dest(handle);
+	}
+	
+	if (path[0] != 0) OS.gtk_tree_path_free (path [0]);
 }
 }
