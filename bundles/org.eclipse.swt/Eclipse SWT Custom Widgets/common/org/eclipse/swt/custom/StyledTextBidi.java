@@ -260,47 +260,6 @@ private void drawGlyphs(int visualStart, int length, int x, int y) {
 	System.arraycopy(dx, visualStart, renderDx, 0, length);	
 	BidiUtil.drawGlyphs(gc, renderBuffer, renderDx, x, y);
 }
-/**
- * 
- */
-public boolean equals(Object object) {
-	StyledTextBidi test;
-	if (object == this) return true;
-	if (object instanceof StyledTextBidi) test = (StyledTextBidi) object;
-	else return false;
-
-	int[] intArray1 = test.order;
-	int[] intArray2 = this.order;
-	if (intArray1.length != intArray2.length) return false;
-	for (int i=0; i<intArray1.length; i++) {
-		if (intArray1[i] != intArray2[i]) return false;
-	}
-	intArray1 = test.dx;
-	intArray2 = this.dx;
-	if (intArray1.length != intArray2.length) return false;
-	for (int i=0; i<intArray1.length; i++) {
-		if (intArray1[i] != intArray2[i]) return false;
-	}
-	intArray1 = test.renderPositions;
-	intArray2 = this.renderPositions;
-	if (intArray1.length != intArray2.length) return false;
-	for (int i=0; i<intArray1.length; i++) {
-		if (intArray1[i] != intArray2[i]) return false;
-	}
-	byte[] byteArray1 = test.classBuffer;
-	byte[] byteArray2 = this.classBuffer;
-	if (byteArray1.length != byteArray2.length) return false;
-	for (int i=0; i<byteArray1.length; i++) {
-		if (byteArray1[i] != byteArray2[i]) return false;
-	}
-	byteArray1 = test.glyphBuffer;
-	byteArray2 = this.glyphBuffer;
-	if (byteArray1.length != byteArray2.length) return false;
-	for (int i=0; i<byteArray1.length; i++) {
-		if (byteArray1[i] != byteArray2[i]) return false;
-	}
-	return true;
-}
 /** 
  * Fills a rectangle spanning the given logical range.
  * The rectangle may be visually discontiguous if the text segment 
