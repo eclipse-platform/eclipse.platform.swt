@@ -693,12 +693,14 @@ void destroyDisplay () {
 	* the application context.  The following code fragment GP's without
 	* this work around:
 	* 
+	* OS.XtToolkitInitialize();
 	* int xContext = OS.XtCreateApplicationContext();
-	* int xDisplay = OS.XtOpenDisplay(xContext, null, null, null,  null, 0,  new int[1], null);
-	* OS.XtAppCreateShell(null, null, OS.topLevelShellWidgetClass(), xDisplay, null, 0);   
+	* int xDisplay = OS.XtOpenDisplay(xContext, null, null, null, 0, 0, new int[1], 0);
+	* OS.XtAppCreateShell(null, null, OS.topLevelShellWidgetClass(), xDisplay, null, 0);
+	* //OS.XtDestroyWidget (OS.XmGetXmDisplay (xDisplay));
 	* OS.XtDestroyApplicationContext(xContext);
 	* xContext = OS.XtCreateApplicationContext();
-	* xDisplay = OS.XtOpenDisplay(xContext, null, null, null,  null, 0,  new int[1], null);
+	* xDisplay = OS.XtOpenDisplay(xContext, null, null, null, 0, 0, new int[1], 0);
 	* OS.XtAppCreateShell(null, null, OS.topLevelShellWidgetClass(), xDisplay, null, 0);   
 	* OS.XtDestroyApplicationContext(xContext);
 	*/
