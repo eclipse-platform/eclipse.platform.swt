@@ -84,6 +84,7 @@ public class Display extends Device {
 	/* Windows, Events and Callbacks */
 	static String APP_NAME = "SWT";
 	Event [] eventQueue;
+	EventTable eventTable;
 	
 	/* Default Fonts, Colors, Insets, Widths and Heights. */
 	Font defaultFont;
@@ -284,6 +285,63 @@ public Display () {
 public Display (DeviceData data) {
 	super (checkNull (data));
 }
+
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notifed when an event of the given type occurs. When the
+ * event does occur in the display, the listener is notified by
+ * sending it the <code>handleEvent()</code> message.
+ *
+ * @param eventType the type of event to listen for
+ * @param listener the listener which should be notified when the event occurs
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Listener
+ * @see #removeListener
+ * 
+ * @since 2.0 
+ */
+public void addListener (int eventType, Listener listener) {
+	checkDevice ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) eventTable = new EventTable ();
+	eventTable.hook (eventType, listener);
+}
+
+/**
+ * Requests that the connection between SWT and the underlying
+ * operating system be closed.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #dispose
+ * 
+ * @since 2.0
+ */
+public void close () {
+	checkDevice ();
+	Event event = new Event ();
+	sendEvent (SWT.Close, event);
+	if (event.doit) dispose ();
+}
+
+void addMouseHoverTimeOut (int handle) {
+	if (mouseHoverID != 0) OS.RemoveEventLoopTimer(mouseHoverID);
+	mouseHoverID = 0;
+	if (handle == fLastHoverHandle) return;
+	int[] timer= new int[1];
+	OS.InstallEventLoopTimer(OS.GetCurrentEventLoop(), HOVER_TIMEOUT / 1000.0, 0.0, mouseHoverProc, handle, timer);
+	mouseHoverID = timer[0];
+	mouseHoverHandle = handle;
+}
 static DeviceData checkNull (DeviceData data) {
 	if (data == null) data = new DeviceData ();
 	if (data.application_name == null) {
@@ -297,15 +355,6 @@ static DeviceData checkNull (DeviceData data) {
 protected void checkDevice () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
-}
-void addMouseHoverTimeOut (int handle) {
-	if (mouseHoverID != 0) OS.RemoveEventLoopTimer(mouseHoverID);
-	mouseHoverID = 0;
-	if (handle == fLastHoverHandle) return;
-	int[] timer= new int[1];
-	OS.InstallEventLoopTimer(OS.GetCurrentEventLoop(), HOVER_TIMEOUT / 1000.0, 0.0, mouseHoverProc, handle, timer);
-	mouseHoverID = timer[0];
-	mouseHoverHandle = handle;
 }
 /**
  * Causes the <code>run()</code> method of the runnable to
@@ -847,6 +896,8 @@ void hideToolTip () {
 protected void init () {
 	super.init ();
 	
+	System.out.println("SWT: Fri 24.5.2002");
+	
 	/* Create the callbacks */
 	fApplicationProc= OS.NewApplicationCallbackUPP(this, "handleApplicationCallback");
 	if (fApplicationProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -1221,6 +1272,33 @@ void releaseToolTipHandle (int handle) {
 		*/
 	}
 }
+
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notifed when an event of the given type occurs.
+ *
+ * @param eventType the type of event to listen for
+ * @param listener the listener which should no longer be notified when the event occurs
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Listener
+ * @see #addListener
+ * 
+ * @since 2.0 
+ */
+public void removeListener (int eventType, Listener listener) {
+	checkDevice ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (eventType, listener);
+}
+
 void removeMouseHoverTimeOut () {
 	if (mouseHoverID != 0) OS.RemoveEventLoopTimer(mouseHoverID);
 	mouseHoverID = mouseHoverHandle = 0;
@@ -1263,6 +1341,33 @@ boolean runDeferredEvents () {
 	eventQueue = null;
 	return true;
 }
+void sendEvent (int eventType, Event event) {
+	if (eventTable == null) return;
+	if (event == null) event = new Event ();
+	event.display = this;
+	event.type = eventType;
+	if (event.time == 0) {
+		/* AW
+		if (OS.IsWinCE) {
+			event.time = OS.GetTickCount ();
+		} else {
+			event.time = OS.GetMessageTime ();
+		}
+		*/
+	}
+	eventTable.sendEvent (event);
+}
+/**
+ * On platforms which support it, sets the application name
+ * to be the argument. On Motif, for example, this can be used
+ * to set the name used for resource lookup.
+ *
+ * @param name the new app name
+ */
+public static void setAppName (String name) {
+	APP_NAME = name;
+}
+
 /**
  * Sets the location of the on-screen pointer relative to the top left corner
  * of the screen.  <b>Note: It is typically considered bad practice for a
@@ -1286,16 +1391,7 @@ public void setCursorLocation (Point point) {
 	*/
 	System.out.println("Display.setCursorLocation: nyi");
 }
-/**
- * On platforms which support it, sets the application name
- * to be the argument. On Motif, for example, this can be used
- * to set the name used for resource lookup.
- *
- * @param name the new app name
- */
-public static void setAppName (String name) {
-	APP_NAME = name;
-}
+
 void setCurrentCaret (Caret caret) {
 	if (caretID != 0) OS.RemoveEventLoopTimer(caretID);
 	caretID = 0;
