@@ -120,6 +120,7 @@ public class OS {
 	*/
 
 	/* Constants */
+	public static final int ALTERNATE = 1;
 	public static final int BFFM_INITIALIZED = 0x1;
 	public static final int BFFM_SETSELECTION = IsUnicode ? 0x467 : 0x466;
 	public static final int BFFM_VALIDATEFAILED = IsUnicode ? 0x4 : 0x3;
