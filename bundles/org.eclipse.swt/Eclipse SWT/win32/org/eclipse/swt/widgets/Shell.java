@@ -678,15 +678,16 @@ public void open () {
 	OS.SendMessage (handle, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
 	setVisible (true);
 	/*
-	* Bug in Windows XP.  The task bar displays the wrong icon
-	* for a visible window when a certain delay has elapsed 
-	* between the call to ShowWindow() and the moment the 
-	* event queue is first accessed.  The icon displayed is the
-	* one displayed in the Windows Explorer for the executable 
-	* running the application.  The icon in the window's frame 
-	* is correct.  The workaround is to call PeekMessage() with 
-	* the flag PM_NOREMOVE after the calls to BringWindowToTop()
-	* and ShowWindow() to touch the event queue.
+	* Bug in Windows XP.  Despite the fact that an icon has been
+	* set for a window, the task bar displays the wrong icon the
+	* first time the window is made visible with ShowWindow() after
+	* a call to BringToTop(), when a long time elapses between the
+	* ShowWindow() and the time the event queue is read.  The icon
+	* in the window trimming is correct but the one in the task
+	* bar does not get updated until a new icon is set into the
+	* window or the window text is changed.  The fix is to call
+	* PeekMessage() with the flag PM_NOREMOVE to touch the event
+	* queue but not dispatch events.
 	*/
 	MSG msg = new MSG ();
 	OS.PeekMessage (msg, 0, 0, 0, OS.PM_NOREMOVE);
