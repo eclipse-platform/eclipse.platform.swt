@@ -226,14 +226,18 @@ void createLayout () {
 	OS.ATSUCreateTextLayout(buffer);
 	if (buffer[0] == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	data.layout = buffer[0];	
-	int ptr = OS.NewPtr(4);
+	int ptr1 = OS.NewPtr(4);
 	buffer[0] = handle;
-	OS.memcpy(ptr, buffer, 4);
-	int[] tags = new int[]{OS.kATSUCGContextTag};
-	int[] sizes = new int[]{4};
-	int[] values = new int[]{ptr};
+	OS.memcpy(ptr1, buffer, 4);	
+	int ptr2 = OS.NewPtr(4);
+	buffer[0] = OS.kATSLineUseDeviceMetrics;
+	OS.memcpy(ptr2, buffer, 4);	
+	int[] tags = new int[]{OS.kATSUCGContextTag, OS.kATSULineLayoutOptionsTag};
+	int[] sizes = new int[]{4, 4};
+	int[] values = new int[]{ptr1, ptr2};
 	OS.ATSUSetLayoutControls(data.layout, tags.length, tags, sizes, values);
-	OS.DisposePtr(ptr);
+	OS.DisposePtr(ptr1);
+	OS.DisposePtr(ptr2);
 }
 
 /**
