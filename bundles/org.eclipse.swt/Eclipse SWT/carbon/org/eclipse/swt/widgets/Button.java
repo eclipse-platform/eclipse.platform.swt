@@ -218,7 +218,6 @@ void createHandle (int index) {
 
 	/* ARROW button */
 	if ((style & SWT.ARROW) != 0) {
-		System.out.println("Button.createHandle(Arrow): nyi");
         /*
 		int alignment = OS.XmARROW_UP;
 		if ((style & SWT.UP) != 0) alignment = OS.XmARROW_UP;
@@ -233,7 +232,11 @@ void createHandle (int index) {
 		};
 		handle = OS.XmCreateArrowButton (parentHandle, null, argList, argList.length / 2);
         */
-        handle= MacUtil.newControl(parentHandle, OS.kControlPopupArrowEastProc);
+        int proc = OS.kControlPopupArrowEastProc;
+        if ((style & SWT.LEFT) != 0) proc = OS.kControlPopupArrowWestProc;
+        if ((style & SWT.UP) != 0) proc = OS.kControlPopupArrowNorthProc;
+        if ((style & SWT.DOWN) != 0) proc = OS.kControlPopupArrowSouthProc;
+        handle= MacUtil.newControl(parentHandle, (short)proc);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
         /* AW
 		if ((style & SWT.FLAT) != 0) {
