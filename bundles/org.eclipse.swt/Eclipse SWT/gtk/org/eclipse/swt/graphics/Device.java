@@ -22,7 +22,12 @@ import org.eclipse.swt.internal.gtk.*;
  * can be drawn on by sending messages to the associated GC.
  */
 public abstract class Device implements Drawable {
-	
+	/**
+	* the handle to the X Display
+	* (Warning: This field is platform dependent)
+	*/
+	int /*long*/ xDisplay;
+
 	/* Debugging */
 	public static boolean DEBUG;
 	boolean debug = DEBUG;
@@ -45,6 +50,11 @@ public abstract class Device implements Drawable {
 	int [] handler_ids = new int [log_domains.length];
 	int warningLevel;
 	
+	/* X Warning and Error Handlers */
+	static Callback XErrorCallback, XIOErrorCallback;
+	static int XErrorProc, XIOErrorProc, XNullErrorProc, XNullIOErrorProc;
+	static Device[] Devices = new Device[4];
+
 	/*
 	* The following colors are listed in the Windows
 	* Programmer's Reference as the colors in the default
@@ -112,6 +122,7 @@ public Device(DeviceData data) {
 	}
 	create (data);
 	init ();
+	register (this);
 
 	/* Initialize the system font slot */
 	systemFont = getSystemFont ();
@@ -173,6 +184,8 @@ public void dispose () {
 	checkDevice ();
 	release ();
 	destroy ();
+	deregister (this);
+	xDisplay = 0;
 	disposed = true;
 	if (tracking) {
 		objects = null;
@@ -187,6 +200,22 @@ void dispose_Object (Object object) {
 			errors [i] = null;
 			return;
 		}
+	}
+}
+
+static synchronized Device findDevice (int xDisplay) {
+	for (int i=0; i<Devices.length; i++) {
+		Device device = Devices [i];
+		if (device != null && device.xDisplay == xDisplay) {
+			return device;
+		}
+	}
+	return null;
+}
+
+synchronized static void deregister (Device device) {
+	for (int i=0; i<Devices.length; i++) {
+		if (device == Devices [i]) Devices [i] = null;
 	}
 }
 
@@ -466,9 +495,31 @@ public boolean getWarnings () {
  * @see #create
  */
 protected void init () {
+	if (OS.GDK_WINDOWING_X11()) {
+		xDisplay = OS.GDK_DISPLAY ();
+	}
+
 	if (debug) {
 		if (OS.GDK_WINDOWING_X11()) {
-			int /*long*/ xDisplay = OS.GDK_DISPLAY ();
+			/* Create the warning and error callbacks */
+			Class clazz = getClass ();
+			synchronized (clazz) {
+				int index = 0;
+				while (index < Devices.length) {
+					if (Devices [index] != null) break;
+					index++;
+				}
+				if (index == Devices.length) {
+					XErrorCallback = new Callback (clazz, "XErrorProc", 2);
+					XNullErrorProc = XErrorCallback.getAddress ();
+					if (XNullErrorProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+					XIOErrorCallback = new Callback (clazz, "XIOErrorProc", 1);
+					XNullIOErrorProc = XIOErrorCallback.getAddress ();
+					if (XNullIOErrorProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+					XErrorProc = OS.XSetErrorHandler (XNullErrorProc);
+					XIOErrorProc = OS.XSetIOErrorHandler (XNullIOErrorProc);
+				}
+			}
 			OS.XSynchronize (xDisplay, true);
 		}
 	}
@@ -582,6 +633,19 @@ void new_Object (Object object) {
 	errors = newErrors;
 }
 
+static synchronized void register (Device device) {
+	for (int i=0; i<Devices.length; i++) {
+		if (Devices [i] == null) {
+			Devices [i] = device;
+			return;
+		}
+	}
+	Device [] newDevices = new Device [Devices.length + 4];
+	System.arraycopy (Devices, 0, newDevices, 0, Devices.length);
+	newDevices [Devices.length] = device;
+	Devices = newDevices;
+}
+
 /**
  * Releases any internal resources back to the operating
  * system and clears all fields except the device handle.
@@ -675,6 +739,30 @@ public void setWarnings (boolean warnings) {
 			}
 		}
 	}
+}
+
+static int XErrorProc (int xDisplay, int xErrorEvent) {
+	Device device = findDevice (xDisplay);
+	if (device != null) {
+		if (device.warningLevel == 0) {
+			if (DEBUG || device.debug) {
+				new SWTError ().printStackTrace ();
+			}
+			OS.Call (XErrorProc, xDisplay, xErrorEvent);
+		}
+	} else {
+		OS.Call (XErrorProc, xDisplay, xErrorEvent);
+	}
+	return 0;
+}
+
+static int XIOErrorProc (int xDisplay) {
+	Device device = findDevice (xDisplay);
+	if (device != null && (DEBUG || device.debug)) {
+		new SWTError ().printStackTrace ();
+	}
+	OS.Call (XIOErrorProc, xDisplay, 0);
+	return 0;
 }
 
 }
