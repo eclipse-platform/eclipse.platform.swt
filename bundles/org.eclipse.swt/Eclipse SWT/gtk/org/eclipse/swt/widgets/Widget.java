@@ -102,6 +102,7 @@ public Widget (Widget parent, int style) {
 	if (!parent.isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	this.style = style;
 }
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notifed when an event of the given type occurs. When the
@@ -129,6 +130,7 @@ public void addListener (int eventType, Listener handler) {
 	if (eventTable == null) eventTable = new EventTable ();
 	eventTable.hook (eventType, handler);
 }
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notifed when the widget is disposed. When the widget is
@@ -155,6 +157,7 @@ public void addDisposeListener (DisposeListener listener) {
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Dispose, typedListener);
 }
+
 static int checkBits (int style, int int0, int int1, int int2, int int3, int int4, int int5) {
 	int mask = int0 | int1 | int2 | int3 | int4 | int5;
 	if ((style & mask) == 0) style |= int0;
@@ -227,21 +230,13 @@ protected void checkWidget () {
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 }
 
+void createHandle (int index) {
+}
+
 void createWidget (int index) {
 	createHandle (index);
 	hookEvents ();
 	register ();
-}
-
-void register () {
-	if (handle == 0) return;
-	if ((state & HANDLE) != 0) WidgetTable.put (handle, this);
-}
-
-void createHandle (int index) {
-}
-
-void hookEvents () {
 }
 
 void deregister () {
@@ -295,8 +290,6 @@ public void dispose () {
 void error (int code) {
 	throw new SWTError (code);
 }
-
-
 
 /**
  * Returns the application defined widget data associated
@@ -359,6 +352,7 @@ public Object getData (String key) {
 	}
 	return null;
 }
+
 /**
  * Returns the <code>Display</code> that is associated with
  * the receiver.
@@ -376,6 +370,7 @@ public Object getData (String key) {
  * </ul>
  */
 public abstract Display getDisplay ();
+
 String getName () {
 //	String string = getClass ().getName ();
 //	int index = string.lastIndexOf ('.');
@@ -385,9 +380,11 @@ String getName () {
 	while ((--index > 0) && (string.charAt (index) != '.'));
 	return string.substring (index + 1, string.length ());
 }
+
 String getNameText () {
 	return "";
 }
+
 /**
  * Returns the receiver's style information.
  * <p>
@@ -450,6 +447,22 @@ protected boolean isListening (int eventType) {
 	return hooks (eventType);
 }
 
+boolean isValidThread () {
+	return getDisplay ().isValidThread ();
+}
+
+public boolean isValidWidget () {
+	if (handle != 0) return true;
+	if ((state & HANDLE) != 0) return false;
+	return (state & DISPOSED) == 0;
+}
+
+boolean isValidSubclass() {
+	return Display.isValidClass(getClass());
+}
+
+void hookEvents () {
+}
 
 /*
  * Returns <code>true</code> if the specified eventType is
@@ -469,19 +482,6 @@ boolean hooks (int eventType) {
 	return eventTable.hooks (eventType);
 }
 
-boolean isValidThread () {
-	return getDisplay ().isValidThread ();
-}
-public boolean isValidWidget () {
-	if (handle != 0) return true;
-	if ((state & HANDLE) != 0) return false;
-	return (state & DISPOSED) == 0;
-}
-
-boolean isValidSubclass() {
-	return Display.isValidClass(getClass());
-}
-
 char mbcsToWcs (char ch) {
 	int key = ch & 0xFFFF;
 	if (key <= 0x7F) return ch;
@@ -498,6 +498,7 @@ char mbcsToWcs (char ch) {
 	if (result.length == 0) return 0;
 	return result [0];
 }
+
 /**
  * Notifies all of the receiver's listeners for events
  * of the given type that one such event has occurred by
@@ -522,10 +523,12 @@ public void notifyListeners (int eventType, Event event) {
 	event.widget = this;
 	eventTable.sendEvent (event);
 }
+
 void postEvent (int eventType) {
 	if (eventTable == null) return;
 	postEvent (eventType, new Event ());
 }
+
 void postEvent (int eventType, Event event) {
 	if (eventTable == null) return;
 	event.type = eventType;
@@ -586,63 +589,74 @@ int processArm (int int0, int int1, int int2) {
 	return 0;
 }
 
-/*
- * Item expand/collapse in a tree.
- */
 int processCollapse (int int0, int int1, int int2) {
 	return 1;  // stop emission
 }
+
 int processExpand (int int0, int int1, int int2) {
 	return 1;  // stop emission
 }
 
-/*
- * Close a Shell, triggered by delete_event
- */
 int processDispose (int arg0, int arg1, int int2) {
 	return 1;
 }
-int processIconify (int int0, int int1, int int2) {
-	return 0;
-}
+
 int processDeiconify (int int0, int int1, int int2) {
 	return 0;
 }
-int processHelp (int int0, int int1, int int2) {
+
+int processDoubleSelection (int int0, int int1, int int2) {
 	return 0;
 }
-int processHide (int int0, int int1, int int2) {
-	return 0;
-}
+
 int processFocusIn(int int0, int int1, int int2) {
 	return 0;
 }
+
 int processFocusOut(int int0, int int1, int int2) {
 	return 0;
 }
+
+int processHelp (int int0, int int1, int int2) {
+	return 0;
+}
+
+int processHide (int int0, int int1, int int2) {
+	return 0;
+}
+
+int processIconify (int int0, int int1, int int2) {
+	return 0;
+}
+
 int processKeyDown (int arg0, int arg1, int int2) {
 	return 0;
 }
+
 int processKeyUp (int arg0, int arg1, int int2) {
 	return 0;
 }
+
 int processModify (int arg0, int arg1, int int2) {
 	return 0;
 }
+
 int processMouseDown (int arg0, int arg1, int int2) {
 	return 0;
 }
+
 int processMouseEnter (int arg0, int arg1, int int2) {
 	return 0;
 }
+
 int processMouseExit (int arg0, int arg1, int int2) {
-	/* Do nothing */
 	return 0;
 }
+
 int processMouseHover (int arg0, int arg1, int int2) {
-	/* Do nothing */
 	return 0;
 }
+
 int processMouseMove (int arg0, int arg1, int int2) {
 	/* Do nothing */
 	/* Even though we do nothing, we still need to at least
@@ -663,62 +677,49 @@ int processMove (int arg0, int arg1, int int2) {
 int processPaint (int int0, int int1, int int2) {
 	return 0;
 }
+
 int processResize (int int0, int int1, int int2) {
 	return 0;
 }
+
 int processSelection (int int0, int int1, int int2) {
 	return 0;
 }
+
 int processShow (int int0, int int1, int int2) {
 	return 0;
 }
-int processDoubleSelection (int int0, int int1, int int2) {
+
+int processTimer (int id) {
 	return 0;
 }
+
 int processVerify (int int0, int int1, int int2) {
 	sendEvent (SWT.Verify);
 	return 0;
 }
 
-void signal_connect (int handle, String eventName, int swtEvent, int numArgs) {
-	int proc=0;
-	switch (numArgs) {
-		case 2: proc=getDisplay().windowProc2; break;
-		case 3: proc=getDisplay().windowProc3; break;
-		case 4: proc=getDisplay().windowProc4; break;
-		case 5: proc=getDisplay().windowProc5; break;
-		default: error(SWT.ERROR_INVALID_ARGUMENT);
-	}
-	/*OS.g_signal_connect (handle, eventName, proc, swtEvent);*/
-	byte [] buffer = Converter.wcsToMbcs (null, eventName, true);
-	OS.gtk_signal_connect(handle, buffer, proc, swtEvent);
-}
-void signal_connect_after (int handle, String eventName, int swtEvent, int numArgs) {
-	byte [] buffer = Converter.wcsToMbcs (null, eventName, true);
-	int proc=0;
-	switch (numArgs) {
-		case 2: proc=getDisplay().windowProc2; break;
-		case 3: proc=getDisplay().windowProc3; break;
-		case 4: proc=getDisplay().windowProc4; break;
-		case 5: proc=getDisplay().windowProc5; break;
-		default: error(SWT.ERROR_INVALID_ARGUMENT);
-	}
-	OS.gtk_signal_connect_after (handle, buffer, proc, swtEvent);
+void register () {
+	if (handle == 0) return;
+	if ((state & HANDLE) != 0) WidgetTable.put (handle, this);
 }
 
 void releaseChild () {
 	/* Do nothing */
 }
+
 void releaseHandle () {
 	handle = 0;
 	state |= DISPOSED;
 }
+
 void releaseWidget () {
 	sendEvent (SWT.Dispose);
 	deregister ();
 	eventTable = null;
 	data = null;
 }
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notifed when an event of the given type occurs.
@@ -744,6 +745,7 @@ public void removeListener (int eventType, Listener handler) {
 	if (eventTable == null) return;
 	eventTable.unhook (eventType, handler);
 }
+
 /**
 * Warning: API under construction.
 */
@@ -754,6 +756,7 @@ protected void removeListener (int eventType, SWTEventListener handler) {
 	if (eventTable == null) return;
 	eventTable.unhook (eventType, handler);
 }
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notifed when the widget is disposed.
@@ -778,16 +781,19 @@ public void removeDisposeListener (DisposeListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Dispose, listener);
 }
+
 void sendEvent (int eventType) {
 	if (eventTable == null) return;
 	sendEvent (eventType, new Event ());
 }
+
 void sendEvent (int eventType, Event event) {
 	if (eventTable == null) return;
 	event.widget = this;
 	event.type = eventType;
 	eventTable.sendEvent (event);
 }
+
 /**
  * Sets the application defined widget data associated
  * with the receiver to be the argument. The <em>widget
@@ -812,6 +818,7 @@ public void setData (Object data) {
 	checkWidget();
 	this.data = data;
 }
+
 /**
  * Sets the application defined property of the receiver
  * with the specified name to the given value.
@@ -884,6 +891,34 @@ public void setData (String key, Object value) {
 	keys = newKeys;
 	values = newValues;
 }
+
+void signal_connect (int handle, String eventName, int swtEvent, int numArgs) {
+	int proc=0;
+	switch (numArgs) {
+		case 2: proc=getDisplay().windowProc2; break;
+		case 3: proc=getDisplay().windowProc3; break;
+		case 4: proc=getDisplay().windowProc4; break;
+		case 5: proc=getDisplay().windowProc5; break;
+		default: error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	/*OS.g_signal_connect (handle, eventName, proc, swtEvent);*/
+	byte [] buffer = Converter.wcsToMbcs (null, eventName, true);
+	OS.gtk_signal_connect(handle, buffer, proc, swtEvent);
+}
+
+void signal_connect_after (int handle, String eventName, int swtEvent, int numArgs) {
+	byte [] buffer = Converter.wcsToMbcs (null, eventName, true);
+	int proc=0;
+	switch (numArgs) {
+		case 2: proc=getDisplay().windowProc2; break;
+		case 3: proc=getDisplay().windowProc3; break;
+		case 4: proc=getDisplay().windowProc4; break;
+		case 5: proc=getDisplay().windowProc5; break;
+		default: error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	OS.gtk_signal_connect_after (handle, buffer, proc, swtEvent);
+}
+
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.

@@ -1688,7 +1688,7 @@ int processFocusOut(int int0, int int1, int int2) {
 }
 
 int processPaint (int callData, int int2, int int3) {
-	if (!hooks (SWT.Paint)) return 1;
+	if (!hooks (SWT.Paint)) return 0;
 	GdkEventExpose gdkEvent = new GdkEventExpose (callData);
 	Event event = new Event ();
 	event.count = gdkEvent.count;
@@ -1702,7 +1702,7 @@ int processPaint (int callData, int int2, int int3) {
 	sendEvent (SWT.Paint, event);
 	gc.dispose ();
 	event.gc = null;
-	return 1;
+	return 0;
 }
 
 void register () {

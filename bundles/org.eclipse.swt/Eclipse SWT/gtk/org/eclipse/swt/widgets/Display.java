@@ -102,6 +102,8 @@ public class Display extends Device {
 	Runnable [] timerList;
 	Callback timerCallback;
 	int timerProc;
+	Callback windowTimerCallback;
+	int windowTimerProc;
 	
 	/* Caret */
 	Caret currentCaret;
@@ -993,6 +995,10 @@ void initializeCallbacks () {
 	timerProc = timerCallback.getAddress ();
 	if (timerProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
+	windowTimerCallback = new Callback (this, "windowTimerProc", 2);
+	windowTimerProc = windowTimerCallback.getAddress ();
+	if (windowTimerProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+
 	caretCallback = new Callback(this, "caretProc", 2);
 	caretProc = caretCallback.getAddress();
 	if (caretProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -1170,6 +1176,9 @@ void releaseDisplay () {
 	timerProc = 0;
 	timerCallback.dispose ();
 	timerCallback = null;
+	windowTimerProc = 0;
+	windowTimerCallback.dispose ();
+	windowTimerCallback = null;
 
 	messages = null;  messageLock = null; thread = null;
 	messagesSize = windowProc2 = windowProc3 = windowProc4 = windowProc5 = 0;
@@ -1555,6 +1564,12 @@ int windowProc (int handle, int int0, int int1, int int2, int user_data) {
 	Widget widget = WidgetTable.get (handle);
 	if (widget == null) return 0;
 	return widget.processEvent (user_data, int0, int1, int2);
+}
+
+int windowTimerProc (int handle, int id) {
+	Widget widget = WidgetTable.get (handle);
+	if (widget == null) return 0;
+	return widget.processTimer (id);
 }
 
 }

@@ -38,7 +38,7 @@ import org.eclipse.swt.events.*;
 public class Tree extends Composite {
 	TreeItem [] items;
 	boolean selected, doubleSelected;
-	int check, uncheck, imageHeight;
+	int check, uncheck, imageHeight, timerID;
 	static int CELL_SPACING = 1;
 
 	/*
@@ -256,6 +256,11 @@ void createItem (TreeItem item, int node, int index) {
 		items = newItems;
 	}
 	int sibling = index == -1 ? 0 : findSibling (node, index);
+	if (timerID == 0) {
+		OS.gtk_clist_freeze (handle);
+		Display display = getDisplay ();
+		timerID = OS.gtk_timeout_add (0, display.windowTimerProc, handle);
+	}
 	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
 	item.handle = OS.gtk_ctree_insert_node (handle, node, sibling, null, (byte) 2, uncheck, 0, uncheck, 0, false, false);
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
@@ -753,6 +758,12 @@ int processSelection (int int0, int int1, int int2) {
 	return 0;
 }
 
+int processTimer (int id) {
+	if (timerID != 0) OS.gtk_clist_thaw (handle);
+	timerID = 0;
+	return 0;
+}
+
 void releaseWidget () {
 	for (int i=0; i<items.length; i++) {
 		TreeItem item = items [i];
@@ -765,6 +776,7 @@ void releaseWidget () {
 	if (check != 0) OS.g_object_unref (check);
 	if (uncheck != 0) OS.g_object_unref (uncheck);
 	check = uncheck = 0;
+	if (timerID != 0) OS.gtk_timeout_remove (timerID);
 	super.releaseWidget ();
 }
 
@@ -981,6 +993,16 @@ public void showItem (TreeItem item) {
 		OS.gtk_signal_handler_unblock_by_data (handle, SWT.Expand);
 	}
 	OS.gtk_ctree_node_moveto (handle, node, 0, 0.0f, 0.0f);
+}
+
+public void update () {
+	checkWidget ();
+	if (timerID != 0) {
+		OS.gtk_clist_thaw (handle);
+		OS.gtk_timeout_remove (timerID);
+		timerID = 0;
+	}
+	super.update ();
 }
 
 }
