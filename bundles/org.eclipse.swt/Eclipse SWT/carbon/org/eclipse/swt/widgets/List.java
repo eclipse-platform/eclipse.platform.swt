@@ -926,7 +926,7 @@ public void remove (int index) {
 public void remove (int start, int end) {
 	checkWidget();
 	if (start > end) return;
-	if (!(0 <= start && start <= end && start < itemCount)) {
+	if (!(0 <= start && start <= end && end < itemCount)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
 	int length = end - start + 1;
@@ -987,7 +987,7 @@ public void remove (int [] indices) {
 	sort (newIndices);
 	int start = newIndices [newIndices.length - 1], end = newIndices [0];
 	int count = getItemCount ();
-	if (!(0 <= start && start <= end && start < count)) {
+	if (!(0 <= start && start <= end && end < count)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
 	int last = -1;

@@ -598,13 +598,11 @@ public String getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget ();
-	int count;
 	if ((style & SWT.READ_ONLY) != 0) {
-		count = OS.CountMenuItems (menuHandle);
+		return OS.CountMenuItems (menuHandle);
 	} else {
-		count = OS.HIComboBoxGetItemCount (handle);
+		return OS.HIComboBoxGetItemCount (handle);
 	}
-	return count;
 }
 
 /**
@@ -1022,7 +1020,7 @@ public void remove (int start, int end) {
 	checkWidget();
 	if (start > end) return;
 	int count = getItemCount ();
-	if (!(0 <= start && start <= end && start < count)) {
+	if (!(0 <= start && start <= end && end < count)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
 	int newEnd = Math.min (end, count - 1);
