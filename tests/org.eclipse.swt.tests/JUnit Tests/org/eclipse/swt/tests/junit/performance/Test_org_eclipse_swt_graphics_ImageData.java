@@ -1,10 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2003 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials 
- * are made available under the terms of the Common Public License v1.0
+ * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
@@ -105,34 +105,6 @@ public void test_ConstructorLjava_lang_String() {
 	}
 }
 
-public void test_clone() {
-	final int COUNT = 1500000;
-	
-	String name = getPath(imageFilenames[0] + "." + imageFormats[0]); 
-	FileInputStream inStream = null;
-	try {
-		inStream = new FileInputStream (name);
-	} catch (FileNotFoundException e1) {
-		e1.printStackTrace();
-	}
-	ImageLoader loader = new ImageLoader();
-	ImageData data = loader.load(inStream)[0];
-	try {
-		inStream.close();
-	} catch (Exception e) {
-		e.printStackTrace();
-	}
-	
-	PerformanceMeter meter = createMeter("ImageData clone");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		data.clone();
-	}
-	meter.stop();
-	
-	disposeMeter(meter);
-}
-
 public void test_getAlphaII() {
 	final int COUNT = 60000000;
 	
@@ -209,22 +181,6 @@ public void test_getPixelsIII$II() {
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		imageData.getPixels(0, 1, 10, pixelData, 10);		
-	}
-	meter.stop();
-	
-	disposeMeter(meter);
-}
-
-public void test_getRGBs() {
-	final int COUNT = 400000000;
-	
-	RGB[] rgbs = new RGB[]{new RGB(0, 0, 0), new RGB(255, 255, 255)};
-	imageData = new ImageData(IMAGE_DIMENSION, IMAGE_DIMENSION, 8, new PaletteData(rgbs));
-	
-	PerformanceMeter meter = createMeter("ImageData getRGBs");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		imageData.getRGBs();		
 	}
 	meter.stop();
 	
@@ -405,13 +361,11 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_ConstructorIIILorg_eclipse_swt_graphics_PaletteDataI$B");
 	methodNames.addElement("test_ConstructorLjava_io_InputStream");
 	methodNames.addElement("test_ConstructorLjava_lang_String");
-	methodNames.addElement("test_clone");
 	methodNames.addElement("test_getAlphaII");
 	methodNames.addElement("test_getAlphasIII$BI");
 	methodNames.addElement("test_getPixelII");
 	methodNames.addElement("test_getPixelsIII$BI");
 	methodNames.addElement("test_getPixelsIII$II");
-	methodNames.addElement("test_getRGBs");
 	methodNames.addElement("test_getTransparencyMask");
 	methodNames.addElement("test_getTransparencyType");
 	methodNames.addElement("test_scaledToII");
@@ -427,13 +381,11 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_ConstructorIIILorg_eclipse_swt_graphics_PaletteDataI$B")) test_ConstructorIIILorg_eclipse_swt_graphics_PaletteDataI$B();
 	else if (getName().equals("test_ConstructorLjava_io_InputStream")) test_ConstructorLjava_io_InputStream();
 	else if (getName().equals("test_ConstructorLjava_lang_String")) test_ConstructorLjava_lang_String();
-	else if (getName().equals("test_clone")) test_clone();
 	else if (getName().equals("test_getAlphaII")) test_getAlphaII();
 	else if (getName().equals("test_getAlphasIII$BI")) test_getAlphasIII$BI();
 	else if (getName().equals("test_getPixelII")) test_getPixelII();
 	else if (getName().equals("test_getPixelsIII$BI")) test_getPixelsIII$BI();
 	else if (getName().equals("test_getPixelsIII$II")) test_getPixelsIII$II();
-	else if (getName().equals("test_getRGBs")) test_getRGBs();
 	else if (getName().equals("test_getTransparencyMask")) test_getTransparencyMask();
 	else if (getName().equals("test_getTransparencyType")) test_getTransparencyType();
 	else if (getName().equals("test_scaledToII")) test_scaledToII();
