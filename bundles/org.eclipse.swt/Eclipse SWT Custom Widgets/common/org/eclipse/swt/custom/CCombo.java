@@ -383,6 +383,21 @@ void dropDown (boolean drop) {
 	popup.setVisible (true);
 	list.setFocus();
 }
+/* 
+ * Return the Label immediately preceding the receiver in the z-order, 
+ * or null if none. 
+ */
+Label getAssociatedLabel () {
+	Control[] siblings = getParent().getChildren();
+	for (int i = 0; i < siblings.length; i++) {
+		if (siblings[i] == CCombo.this) {
+			if (i > 0 && siblings[i-1] instanceof Label) {
+				return (Label) siblings[i-1];
+			}
+		}
+	}
+	return null;
+}
 public Control [] getChildren () {
 	checkWidget();
 	return new Control [0];
@@ -483,6 +498,17 @@ public int getItemHeight () {
 public String [] getItems () {
 	checkWidget();
 	return list.getItems ();
+}
+char getMnemonic (String string) {
+	int index = 0;
+	int length = string.length ();
+	do {
+		while ((index < length) && (string.charAt (index) != '&')) index++;
+		if (++index >= length) return '\0';
+		if (string.charAt (index) != '&') return string.charAt (index);
+		index++;
+	} while (index < length);
+ 	return '\0';
 }
 /**
 * Gets the selection.
@@ -668,12 +694,49 @@ public int indexOf (String string, int start) {
 }
 
 void initAccessible() {
-	getAccessible().addAccessibleListener(new AccessibleAdapter() {
+	AccessibleAdapter accessibleAdapter = new AccessibleAdapter() {
+		public void getName(AccessibleEvent e) {
+			String name = null;
+			Label label = getAssociatedLabel ();
+			if (label != null) {
+				name = stripMnemonic(label.getText());
+			}
+			e.result = name;
+		}
+		public void getKeyboardShortcut(AccessibleEvent e) {
+			String shortcut = null;
+			Label label = getAssociatedLabel ();
+			if (label != null) {
+				String text = label.getText();
+				if (text != null) {
+					char mnemonic = getMnemonic(text);
+					if (mnemonic != '\0') {
+						shortcut = "Alt+"+mnemonic; //$NON-NLS-1$
+					}
+				}
+			}
+			e.result = shortcut;
+		}
+		public void getHelp(AccessibleEvent e) {
+			e.result = getToolTipText();
+		}
+	};
+	getAccessible().addAccessibleListener(accessibleAdapter);
+	text.getAccessible().addAccessibleListener(accessibleAdapter);
+	list.getAccessible().addAccessibleListener(accessibleAdapter);
+	
+	arrow.getAccessible().addAccessibleListener(new AccessibleAdapter() {
+		public void getName(AccessibleEvent e) {
+			e.result = isDropped () ? "Close" : "Open"; //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		public void getKeyboardShortcut(AccessibleEvent e) {
+			e.result = "Alt+Down Arrow"; //$NON-NLS-1$
+		}
 		public void getHelp(AccessibleEvent e) {
 			e.result = getToolTipText();
 		}
 	});
-	
+
 	getAccessible().addAccessibleTextListener(new AccessibleTextAdapter() {
 		public void getCaretOffset(AccessibleTextEvent e) {
 			e.offset = text.getCaretPosition();
@@ -711,6 +774,18 @@ void initAccessible() {
 
 		public void getValue(AccessibleControlEvent e) {
 			e.result = getText();
+		}
+	});
+
+	text.getAccessible().addAccessibleControlListener(new AccessibleControlAdapter() {
+		public void getRole(AccessibleControlEvent e) {
+			e.detail = text.getEditable() ? ACC.ROLE_TEXT : ACC.ROLE_LABEL;
+		}
+	});
+
+	arrow.getAccessible().addAccessibleControlListener(new AccessibleControlAdapter() {
+		public void getDefaultAction(AccessibleControlEvent e) {
+			e.result = isDropped () ? "Close" : "Open"; //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	});
 }
@@ -1185,6 +1260,19 @@ public void setVisibleItemCount (int count) {
 	checkWidget ();
 	if (count < 0) return;
 	visibleItemCount = count;
+}
+String stripMnemonic (String string) {
+	int index = 0;
+	int length = string.length ();
+	do {
+		while ((index < length) && (string.charAt (index) != '&')) index++;
+		if (++index >= length) return string;
+		if (string.charAt (index) != '&') {
+			return string.substring(0, index-1) + string.substring(index, length);
+		}
+		index++;
+	} while (index < length);
+ 	return string;
 }
 void textEvent (Event event) {
 	switch (event.type) {
