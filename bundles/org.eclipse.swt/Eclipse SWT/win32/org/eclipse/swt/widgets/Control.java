@@ -1077,12 +1077,12 @@ boolean mnemonicMatch (char key) {
  */
 public void moveAbove (Control control) {
 	checkWidget ();
-	int hwndAfter = OS.HWND_TOP;
+	int hwndAbove = OS.HWND_TOP;
 	if (control != null) {
 		if (control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
 		int hwnd = control.handle;
 		if (hwnd == 0 || hwnd == handle) return;
-		hwndAfter = OS.GetWindow (hwnd, OS.GW_HWNDPREV);
+		hwndAbove = OS.GetWindow (hwnd, OS.GW_HWNDPREV);
 		/*
 		* Bug in Windows.  For some reason, when GetWindow ()
 		* with GW_HWNDPREV is used to query the previous window
@@ -1090,12 +1090,12 @@ public void moveAbove (Control control) {
 		* the first child instead of NULL.  The fix is to detect
 		* this case and move the control to the top.
 		*/
-		if (hwndAfter == 0 || hwndAfter == handle) {
-			hwndAfter = OS.HWND_TOP;
+		if (hwndAbove == 0 || hwndAbove == hwnd) {
+			hwndAbove = OS.HWND_TOP;
 		}
 	}
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE; 
-	OS.SetWindowPos (handle, hwndAfter, 0, 0, 0, 0, flags);
+	OS.SetWindowPos (handle, hwndAbove, 0, 0, 0, 0, flags);
 }
 
 /**
@@ -1117,14 +1117,14 @@ public void moveAbove (Control control) {
  */
 public void moveBelow (Control control) {
 	checkWidget ();
-	int hwndAfter = OS.HWND_BOTTOM;
+	int hwndAbove = OS.HWND_BOTTOM;
 	if (control != null) {
 		if (control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
-		hwndAfter = control.handle;
+		hwndAbove = control.handle;
 	}
-	if (hwndAfter == 0 || hwndAfter == handle) return;
+	if (hwndAbove == 0 || hwndAbove == handle) return;
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE; 
-	OS.SetWindowPos (handle, hwndAfter, 0, 0, 0, 0, flags);
+	OS.SetWindowPos (handle, hwndAbove, 0, 0, 0, 0, flags);
 }
 
 /**
