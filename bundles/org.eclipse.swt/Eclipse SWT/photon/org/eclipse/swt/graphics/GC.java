@@ -1810,7 +1810,7 @@ public Rectangle getClipping() {
 			int clip_ptr = OS.malloc(PhRect_t.sizeof);
 			OS.memmove(clip_ptr, clipRects, PhRect_t.sizeof);
 			for (int i = 1; i < clipRectsCount; i++) {
-				OS.PhRectUnion (clip_ptr, clipRects + (i * 4));
+				OS.PhRectUnion (clip_ptr, clipRects + (i * PhRect_t.sizeof));
 			}
 			int rect_ptr = OS.malloc(PhRect_t.sizeof);
 			OS.memmove(rect_ptr, rect, PhRect_t.sizeof);
