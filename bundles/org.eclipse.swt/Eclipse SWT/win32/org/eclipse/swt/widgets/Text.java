@@ -284,19 +284,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int margins = OS.SendMessage(handle, OS.EM_GETMARGINS, 0, 0);
 	int marginWidth = (margins & 0xFFFF) + ((margins >> 16) & 0xFFFF);
 	width += marginWidth;
-	
-	/*
-	* Bug in Windows.  For some reason, despite the fact
-	* that there is a 1-pixel margin height on a simple
-	* text widget with a border, EM_GETRECT returns 0.
-	* The fix is to detect this case and make the margin
-	* height 1.
-	*/
-	RECT editRect = new RECT ();
-	OS.SendMessage (handle, OS.EM_GETRECT, 0, rect);
-	if ((style & SWT.BORDER) != 0 && editRect.top == 0) {
-		editRect.top = 1;
-	}
 
 	/*
 	* The preferred height of a single-line text widget
@@ -304,8 +291,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	* the single-line text widget in an editable combo
 	* box.
 	*/
-	width += editRect.left * 2;
-	height += editRect.top * 2;
 	if ((style & SWT.V_SCROLL) != 0) {
 		width += OS.GetSystemMetrics (OS.SM_CXVSCROLL);
 	}
@@ -316,7 +301,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if ((style & SWT.BORDER) != 0) {
 		int border = getBorderWidth ();
 		width += (border * 2) + 3;
-		height += (border * 2) + 1;
+		height += (border * 2) + 3;
 	}
 	return new Point (width, height);
 }
