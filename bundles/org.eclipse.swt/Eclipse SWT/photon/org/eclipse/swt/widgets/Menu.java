@@ -324,6 +324,7 @@ public void setVisible (boolean visible) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & SWT.POP_UP) == 0) return;
+	if (visible == OS.PtWidgetIsRealized (handle)) return;
 	if (visible) {
 		PhPoint_t pt = new PhPoint_t ();
 		pt.x = (short) x;
