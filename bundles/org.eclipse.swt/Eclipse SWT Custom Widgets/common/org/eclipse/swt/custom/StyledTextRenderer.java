@@ -367,8 +367,7 @@ void setTabLength(int tabLength) {
  *  Returns TextLayout given a line index and an array of styles 
  */
 TextLayout getTextLayout(String line, int lineOffset) {
-	int lineIndex = getContent().getLineAtOffset(lineOffset);
-	TextLayout layout = createTextLayout(lineIndex);
+	TextLayout layout = createTextLayout(lineOffset);
 	layout.setFont(regularFont);
 	layout.setText(line);
 	layout.setOrientation(getOrientation());
@@ -403,7 +402,7 @@ TextLayout getTextLayout(String line, int lineOffset) {
 	if (lastOffset != length) layout.setStyle(null, lastOffset, length);
 	return layout;
 }
-TextLayout createTextLayout(int lineIndex) {
+TextLayout createTextLayout(int lineOffset) {
 	return new TextLayout(device);
 }
 void disposeTextLayout (TextLayout layout) {

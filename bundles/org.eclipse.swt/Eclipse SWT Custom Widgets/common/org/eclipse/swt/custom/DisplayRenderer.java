@@ -213,8 +213,9 @@ protected boolean getWordWrap() {
 protected boolean isFullLineSelection() {
 	return (parent.getStyle() & SWT.FULL_SELECTION) != 0;
 }
-TextLayout createTextLayout(int lineIndex) {
+TextLayout createTextLayout(int lineOffset) {
 	if (!parent.internalGetWordWrap()) {
+		int lineIndex = getContent().getLineAtOffset(lineOffset);
 		updateTopIndex();
 		if (layouts != null) {
 			int layoutIndex = lineIndex - topIndex;
@@ -225,7 +226,7 @@ TextLayout createTextLayout(int lineIndex) {
 			}
 		}
 	}
-	return super.createTextLayout(lineIndex);
+	return super.createTextLayout(lineOffset);
 }
 void disposeTextLayout (TextLayout layout) {
 	if (layouts != null) {
