@@ -30,7 +30,7 @@ public static final boolean DtAppInitialize(int appContext, int display, int top
 	} finally {
 		lock.unlock();
 	}
-} 
+}
 public static final native void _DtDbLoad();
 public static final void DtDbLoad() {
 	lock.lock();
@@ -112,5 +112,76 @@ public static final int DtActionInvoke(int topWidget, byte[] action, DtActionArg
 		lock.unlock();
 	}
 }
-
+public static final native int _topLevelShellWidgetClass();
+public static final int topLevelShellWidgetClass() {
+	lock.lock();
+	try {
+		return _topLevelShellWidgetClass();
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XtAppCreateShell(byte[] appName, byte[] appClass, int widgetClass, int display, int[] argList, int argCount);
+public static final int XtAppCreateShell(byte[] appName, byte[] appClass, int widgetClass, int display, int[] argList, int argCount) {
+	lock.lock();
+	try {
+		return _XtAppCreateShell(appName, appClass, widgetClass, display, argList, argCount);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XtCreateApplicationContext();
+public static final int XtCreateApplicationContext() {
+	lock.lock();
+	try {
+		return _XtCreateApplicationContext();
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtDisplayInitialize(int app_context, int display, byte[] appName, byte[] appClass, int options, int num_options, int[] argc, int argv);
+public static final void XtDisplayInitialize(int appContext, int display, byte[] appName, byte[] appClass, int options, int num_options, int[] argc, int argv) {
+	lock.lock();
+	try {
+		_XtDisplayInitialize(appContext, display, appName, appClass, options, num_options, argc, argv);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtRealizeWidget(int widget);
+public static final void XtRealizeWidget(int widget) {
+	lock.lock();
+	try {
+		_XtRealizeWidget(widget);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtResizeWidget(int widget, int width, int height, int borderWidth);
+public static final void XtResizeWidget(int widget, int width, int height, int borderWidth) {
+	lock.lock();
+	try {
+		_XtResizeWidget(widget, width, height, borderWidth);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtSetMappedWhenManaged(int widget, boolean flag);
+public static final void XtSetMappedWhenManaged(int widget, boolean flag) {
+	lock.lock();
+	try {
+		_XtSetMappedWhenManaged(widget, flag);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtToolkitInitialize();
+public static final void XtToolkitInitialize() {
+	lock.lock();
+	try {
+		_XtToolkitInitialize();
+	} finally {
+		lock.unlock();
+	}
+}
 }

@@ -168,3 +168,109 @@ JNIEXPORT void JNICALL CDE_NATIVE(_1DtDtsFreeDataTypeNames)
 }
 #endif
 
+#ifndef NO__1XtAppCreateShell
+JNIEXPORT jint JNICALL CDE_NATIVE(_1XtAppCreateShell)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1, jint arg2, jint arg3, jintArray arg4, jint arg5)
+{
+	jbyte *lparg0=NULL;
+	jbyte *lparg1=NULL;
+	jint *lparg4=NULL;
+	jint rc = 0;
+	CDE_NATIVE_ENTER(env, that, _1XtAppCreateShell_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	rc = (jint)XtAppCreateShell((String)lparg0, (String)lparg1, (WidgetClass)arg2, (Display *)arg3, (ArgList)lparg4, arg5);
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	CDE_NATIVE_EXIT(env, that, _1XtAppCreateShell_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1XtCreateApplicationContext
+JNIEXPORT jint JNICALL CDE_NATIVE(_1XtCreateApplicationContext)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	CDE_NATIVE_ENTER(env, that, _1XtCreateApplicationContext_FUNC);
+	rc = (jint)XtCreateApplicationContext();
+	CDE_NATIVE_EXIT(env, that, _1XtCreateApplicationContext_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1XtDisplayInitialize
+JNIEXPORT void JNICALL CDE_NATIVE(_1XtDisplayInitialize)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jbyteArray arg3, jint arg4, jint arg5, jintArray arg6, jint arg7)
+{
+	jbyte *lparg2=NULL;
+	jbyte *lparg3=NULL;
+	jint *lparg6=NULL;
+	CDE_NATIVE_ENTER(env, that, _1XtDisplayInitialize_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto fail;
+	XtDisplayInitialize((XtAppContext)arg0, (Display *)arg1, (String)lparg2, (String)lparg3, (XrmOptionDescRec *)arg4, (Cardinal)arg5, (int *)lparg6, (String *)arg7);
+fail:
+	if (arg6 && lparg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	CDE_NATIVE_EXIT(env, that, _1XtDisplayInitialize_FUNC);
+}
+#endif
+
+#ifndef NO__1XtRealizeWidget
+JNIEXPORT void JNICALL CDE_NATIVE(_1XtRealizeWidget)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	CDE_NATIVE_ENTER(env, that, _1XtRealizeWidget_FUNC);
+	XtRealizeWidget((Widget)arg0);
+	CDE_NATIVE_EXIT(env, that, _1XtRealizeWidget_FUNC);
+}
+#endif
+
+#ifndef NO__1XtResizeWidget
+JNIEXPORT void JNICALL CDE_NATIVE(_1XtResizeWidget)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	CDE_NATIVE_ENTER(env, that, _1XtResizeWidget_FUNC);
+	XtResizeWidget((Widget)arg0, arg1, arg2, arg3);
+	CDE_NATIVE_EXIT(env, that, _1XtResizeWidget_FUNC);
+}
+#endif
+
+#ifndef NO__1XtSetMappedWhenManaged
+JNIEXPORT void JNICALL CDE_NATIVE(_1XtSetMappedWhenManaged)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	CDE_NATIVE_ENTER(env, that, _1XtSetMappedWhenManaged_FUNC);
+	XtSetMappedWhenManaged((Widget)arg0, arg1);
+	CDE_NATIVE_EXIT(env, that, _1XtSetMappedWhenManaged_FUNC);
+}
+#endif
+
+#ifndef NO__1XtToolkitInitialize
+JNIEXPORT void JNICALL CDE_NATIVE(_1XtToolkitInitialize)
+	(JNIEnv *env, jclass that)
+{
+	CDE_NATIVE_ENTER(env, that, _1XtToolkitInitialize_FUNC);
+	XtToolkitInitialize();
+	CDE_NATIVE_EXIT(env, that, _1XtToolkitInitialize_FUNC);
+}
+#endif
+
+#ifndef NO__1topLevelShellWidgetClass
+JNIEXPORT jint JNICALL CDE_NATIVE(_1topLevelShellWidgetClass)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	CDE_NATIVE_ENTER(env, that, _1topLevelShellWidgetClass_FUNC);
+	rc = (jint)topLevelShellWidgetClass;
+	CDE_NATIVE_EXIT(env, that, _1topLevelShellWidgetClass_FUNC);
+	return rc;
+}
+#endif
+

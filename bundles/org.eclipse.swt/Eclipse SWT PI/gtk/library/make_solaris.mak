@@ -18,11 +18,14 @@ SWT_VERSION=$(maj_ver)$(min_ver)
 # Define the various shared libraries to be build.
 WS_PREFIX = gtk
 SWT_PREFIX = swt
+CDE_PREFIX = swt-cde
 AWT_PREFIX = swt-awt
 SWTPI_PREFIX = swt-pi
 ATK_PREFIX = swt-atk
 MOZILLA_PREFIX = swt-mozilla
+
 SWT_LIB = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+CDE_LIB = lib$(CDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 AWT_LIB = lib$(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 SWTPI_LIB = lib$(SWTPI_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 ATK_LIB = lib$(ATK_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
@@ -31,6 +34,8 @@ MOZILLA_LIB = lib$(MOZILLA_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 # Do not use pkg-config to get libs because it includes unnecessary dependencies (i.e. pangoxft-1.0)
 GTKCFLAGS = `pkg-config --cflags gtk+-2.0`
 GTKLIBS = `pkg-config --libs-only-L gtk+-2.0 gthread-2.0` -lgtk-x11-2.0 -lgthread-2.0 -L$(XTEST_LIB_PATH) -Wl,-R -Wl,$(XTEST_LIB_PATH) -lXtst
+
+CDE_LIBS = -L$(CDE_HOME)/lib -R$(CDE_HOME)/lib -lXt -lX11 -lDtSvc
 
 AWT_LIBS = -L$(AWT_LIB_PATH) -ljawt -shared
 
@@ -64,6 +69,7 @@ MOZILLALIBS = -shared -Wl,--version-script=mozilla_exports -Bsymbolic \
 	-L$(GECKO_SDK)/nspr/bin -lnspr4 -lplds4 -lplc4
 
 SWT_OBJECTS = swt.o callback.o
+CDE_OBJECTS = swt.o cde.o cde_structs.o cde_stats.o
 AWT_OBJECTS = swt_awt.o
 SWTPI_OBJECTS = swt.o os.o os_structs.o os_custom.o os_stats.o
 ATK_OBJECTS = swt.o atk.o atk_structs.o atk_custom.o atk_stats.o
@@ -72,15 +78,16 @@ MOZILLA_OBJECTS = swt.o xpcom.o xpcom_custom.o xpcom_structs.o xpcom_stats.o
 CFLAGS = -O -Wall \
 		-DSWT_VERSION=$(SWT_VERSION) \
 		$(NATIVE_STATS) \
-		-DSOLARIS -DGTK \
+		-DSOLARIS -DGTK -DCDE \
 		-I$(JAVA_HOME)/include \
 		-I$(JAVA_HOME)/include/solaris \
 		-fpic \
-		${SWT_PTR_CFLAGS}
+		${SWT_PTR_CFLAGS} \
+		-I$(CDE_HOME)/include
 LIBS = -shared -fpic
 
 
-all: make_swt make_atk make_awt
+all: make_swt make_atk make_awt make_cde
 
 #
 # SWT libs
@@ -107,6 +114,15 @@ os_custom.o: os_custom.c os_structs.h os.h swt.h
 os_stats.o: os_stats.c os_structs.h os.h os_stats.h swt.h
 	$(CC) $(CFLAGS) $(GTKCFLAGS) -c os_stats.c
 
+#
+# CDE lib
+#
+
+make_cde: $(CDE_LIB)
+
+$(CDE_LIB): $(CDE_OBJECTS)
+	$(LD) $(LIBS) $(CDE_LIBS) -o $(CDE_LIB) $(CDE_OBJECTS)
+	
 #
 # AWT lib
 #

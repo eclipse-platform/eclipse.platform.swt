@@ -14,6 +14,7 @@ package org.eclipse.swt.program;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.cde.*;
 import org.eclipse.swt.internal.gnome.*;
 import org.eclipse.swt.internal.kde.*;
 import org.eclipse.swt.internal.gtk.*;
@@ -38,7 +39,11 @@ public final class Program {
 	 * false if expects a path
 	 */
 	boolean gnomeExpectUri;
+	
+	static int cdeShell;
 
+	static final String[] CDE_ICON_EXT = { ".m.pm",   ".l.pm",   ".s.pm",   ".t.pm" };
+	static final String[] CDE_MASK_EXT = { ".m_m.bm", ".l_m.bm", ".s_m.bm", ".t_m.bm" };
 	static final String DESKTOP_DATA = "Program_DESKTOP";
 	static final int DESKTOP_UNKNOWN = 0;
 	static final int DESKTOP_GNOME = 1;
@@ -99,8 +104,156 @@ static int getDesktop(Display display) {
 		}
 	}
 
+	/*
+	* On CDE, the atom below may exist without DTWM running. If the atom 
+	* below is defined, the CDE database exists and the available
+	* applications can be queried.
+	*/
+	if (desktop == DESKTOP_UNKNOWN) {
+		byte[] cdeName = Converter.wcsToMbcs(null, "_DT_SM_PREFERENCES", true);
+		int /*long*/ cde = OS.XInternAtom(xDisplay, cdeName, true);
+		for (int index = 0; desktop == DESKTOP_UNKNOWN && index < property.length; index++) {
+			if (property[index] == OS.None) continue; /* do not match atoms that do not exist */
+			if (property[index] == cde && cde_init(display)) desktop = DESKTOP_CDE;
+		}
+	}
+
 	display.setData(DESKTOP_DATA, new Integer(desktop));
 	return desktop;
+}
+
+boolean cde_execute(String fileName) {
+	/* Use the character encoding for the default locale */
+	byte[] action = Converter.wcsToMbcs(null, command, true);
+	byte[] fileArg = Converter.wcsToMbcs(null, fileName, true);
+	int actionID = 0;
+	int /*long*/ ptr = OS.g_malloc(fileArg.length);
+	OS.memmove(ptr, fileArg, fileArg.length);
+	DtActionArg args = new DtActionArg();
+	args.argClass = CDE.DtACTION_FILE;
+	args.name = ptr;
+	actionID = CDE.DtActionInvoke(cdeShell, action, args, 1, null, null, null, 1, 0, 0);
+	OS.g_free(ptr);
+	return actionID != 0;
+}
+
+static String cde_getAction(String dataType) {
+	String action  = null;
+	String actions = cde_getAttribute(dataType, CDE.DtDTS_DA_ACTION_LIST);
+	if (actions != null) {
+		int index = actions.indexOf("Open");
+		if (index != -1) {
+			action = actions.substring(index, index + 4);
+		} else {
+			index = actions.indexOf(",");
+			action = index != -1 ? actions.substring(0, index) : actions;
+		}
+	}
+	return action;
+}
+
+static String cde_getAttribute(String dataType, String attrName) {
+	/* Use the character encoding for the default locale */
+	byte[] dataTypeBuf = Converter.wcsToMbcs(null, dataType, true);
+	byte[] attrNameBuf = Converter.wcsToMbcs(null, attrName, true);
+	byte[] optNameBuf = null;
+	int /*long*/ attrValue = CDE.DtDtsDataTypeToAttributeValue(dataTypeBuf, attrNameBuf, optNameBuf);
+	if (attrValue == 0) return null;
+	int length = OS.strlen(attrValue);
+	byte[] attrValueBuf = new byte[length];
+	OS.memmove(attrValueBuf, attrValue, length);
+	CDE.DtDtsFreeAttributeValue(attrValue);
+	/* Use the character encoding for the default locale */
+	return new String(Converter.mbcsToWcs(null, attrValueBuf));
+}
+
+static Hashtable cde_getDataTypeInfo() {
+	Hashtable dataTypeInfo = new Hashtable();
+	int index;
+	int /*long*/ dataTypeList = CDE.DtDtsDataTypeNames();
+	if (dataTypeList != 0) {
+		/* For each data type name in the list */
+		index = 0; 
+		int /*long*/ [] dataType = new int /*long*/ [1];
+		OS.memmove(dataType, dataTypeList + (index++ * 4), 4);
+		while (dataType[0] != 0) {
+			int length = OS.strlen(dataType[0]);
+			byte[] dataTypeBuf = new byte[length];
+			OS.memmove(dataTypeBuf, dataType[0], length);
+			/* Use the character encoding for the default locale */
+			String dataTypeName = new String(Converter.mbcsToWcs(null, dataTypeBuf));
+     		
+			/* The data type is valid if it is not an action, and it has an extension and an action. */
+			String extension = cde_getExtension(dataTypeName);
+			if (!CDE.DtDtsDataTypeIsAction(dataTypeBuf) &&
+				extension != null && cde_getAction(dataTypeName) != null) {
+				Vector exts = new Vector();
+				exts.addElement(extension);
+				dataTypeInfo.put(dataTypeName, exts);
+			}
+			OS.memmove(dataType, dataTypeList + (index++ * 4), 4);
+		}
+		CDE.DtDtsFreeDataTypeNames(dataTypeList);
+	}
+	
+	return dataTypeInfo;
+}
+
+static String cde_getExtension(String dataType) {
+	String fileExt = cde_getAttribute(dataType, CDE.DtDTS_DA_NAME_TEMPLATE);
+	if (fileExt == null || fileExt.indexOf("%s.") == -1) return null;
+	int dot = fileExt.indexOf(".");
+	return fileExt.substring(dot);
+}
+
+/**
+ * CDE - Get Image Data
+ * 
+ * This method returns the image data of the icon associated with
+ * the data type. Since CDE supports multiple sizes of icons, several
+ * attempts are made to locate an icon of the desired size and format.
+ * CDE supports the sizes: tiny, small, medium and large. The best
+ * search order is medium, large, small and then tiny. Althoug CDE supports
+ * colour and monochrome bitmaps, only colour icons are tried. (The order is
+ * defined by the  cdeIconExt and cdeMaskExt arrays above.)
+ */
+ImageData cde_getImageData() {
+	// TODO
+	return null;	
+}
+
+static Program cde_getProgram(Display display, String mimeType) {
+	Program program = new Program();
+	program.display = display;
+	program.name = mimeType;
+	program.command = cde_getAction(mimeType);
+	program.iconPath = cde_getAttribute(program.name, CDE.DtDTS_DA_ICON);
+	return program;
+}
+
+static boolean cde_init(Display display) {
+	try {
+		Library.loadLibrary("swt-cde");
+	} catch (Throwable e) {
+		return false;
+	}
+
+	/* Use the character encoding for the default locale */
+	CDE.XtToolkitInitialize();
+	int /*long*/ xtContext = CDE.XtCreateApplicationContext ();
+	int /*long*/ xDisplay = OS.GDK_DISPLAY();
+	byte[] appName = Converter.wcsToMbcs(null, "CDE", true);
+	byte[] appClass = Converter.wcsToMbcs(null, "CDE", true);
+	int /*long*/ [] argc = new int /*long*/ [] {0};
+	CDE.XtDisplayInitialize(xtContext, xDisplay, appName, appClass, 0, 0, argc, 0);
+	int /*long*/ widgetClass = CDE.topLevelShellWidgetClass ();
+	cdeShell = CDE.XtAppCreateShell (appName, appClass, widgetClass, xDisplay, null, 0);
+	CDE.XtSetMappedWhenManaged (cdeShell, false);
+	CDE.XtResizeWidget (cdeShell, 10, 10, 0);
+	CDE.XtRealizeWidget (cdeShell);
+	boolean initOK = CDE.DtAppInitialize(xtContext, xDisplay, cdeShell, appName, appName);
+	if (initOK) CDE.DtDbLoad();
+	return initOK;
 }
 
 static String[] parseCommand(String cmd) {
@@ -519,6 +672,7 @@ static Program findProgram(Display display, String extension) {
 	switch (desktop) {
 		case DESKTOP_GNOME: mimeInfo = gnome_getMimeInfo(); break;
 		case DESKTOP_KDE: mimeInfo = kde_getMimeInfo(); break;
+		case DESKTOP_CDE: mimeInfo = cde_getDataTypeInfo(); break;
 	}
 	if (mimeInfo == null) return null;
 	String mimeType = null;
@@ -538,6 +692,7 @@ static Program findProgram(Display display, String extension) {
 	switch (desktop) {
 		case DESKTOP_GNOME: program = gnome_getProgram(display, mimeType); break;
 		case DESKTOP_KDE: program = kde_getProgram(display, mimeType); break;
+		case DESKTOP_CDE: program = cde_getProgram(display, mimeType); break;
 	}
 	return program;
 }
@@ -563,6 +718,7 @@ static String[] getExtensions(Display display) {
 	switch (desktop) {
 		case DESKTOP_GNOME: mimeInfo = gnome_getMimeInfo(); break;
 		case DESKTOP_KDE: mimeInfo = kde_getMimeInfo(); break;
+		case DESKTOP_CDE: mimeInfo = cde_getDataTypeInfo(); break;
 	}
 	if (mimeInfo == null) return new String[0];
 
@@ -608,6 +764,7 @@ static Program[] getPrograms(Display display) {
 	switch (desktop) {
 		case DESKTOP_GNOME: mimeInfo = gnome_getMimeInfo(); break;
 		case DESKTOP_KDE: mimeInfo = kde_getMimeInfo(); break;
+		case DESKTOP_CDE: mimeInfo = cde_getDataTypeInfo(); break;
 	}
 	if (mimeInfo == null) return new Program[0];
 	Vector programs = new Vector();
@@ -618,6 +775,7 @@ static Program[] getPrograms(Display display) {
 		switch (desktop) {
 			case DESKTOP_GNOME: program = gnome_getProgram(display, mimeType); break;
 			case DESKTOP_KDE: program = kde_getProgram(display, mimeType); break;
+			case DESKTOP_CDE: program = cde_getProgram(display, mimeType); break;
 		}
 		if (program != null) programs.addElement(program);
 	}
@@ -705,6 +863,7 @@ public boolean execute(String fileName) {
 	switch (desktop) {
 		case DESKTOP_GNOME: return gnome_execute(fileName);
 		case DESKTOP_KDE: return kde_execute(fileName);
+		case DESKTOP_CDE: return cde_execute(fileName);
 	}
 	return false;
 }
@@ -720,6 +879,7 @@ public ImageData getImageData() {
 	switch (getDesktop(display)) {
 		case DESKTOP_GNOME: return gnome_getImageData();
 		case DESKTOP_KDE: return kde_getImageData();
+		case DESKTOP_CDE: return cde_getImageData();
 	}
 	return null;
 }

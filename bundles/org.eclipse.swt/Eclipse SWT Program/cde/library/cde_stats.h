@@ -31,4 +31,12 @@ typedef enum {
 	_1DtDtsFreeAttributeValue_FUNC,
 	_1DtDtsFreeDataType_FUNC,
 	_1DtDtsFreeDataTypeNames_FUNC,
+	_1XtAppCreateShell_FUNC,
+	_1XtCreateApplicationContext_FUNC,
+	_1XtDisplayInitialize_FUNC,
+	_1XtRealizeWidget_FUNC,
+	_1XtResizeWidget_FUNC,
+	_1XtSetMappedWhenManaged_FUNC,
+	_1XtToolkitInitialize_FUNC,
+	_1topLevelShellWidgetClass_FUNC,
 } CDE_FUNCS;

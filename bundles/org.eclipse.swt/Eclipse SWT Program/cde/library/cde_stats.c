@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int CDE_nativeFunctionCount = 10;
-int CDE_nativeFunctionCallCount[10];
+int CDE_nativeFunctionCount = 18;
+int CDE_nativeFunctionCallCount[18];
 char * CDE_nativeFunctionNames[] = {
 	"_1DtActionInvoke",
 	"_1DtAppInitialize",
@@ -27,6 +27,14 @@ char * CDE_nativeFunctionNames[] = {
 	"_1DtDtsFreeAttributeValue",
 	"_1DtDtsFreeDataType",
 	"_1DtDtsFreeDataTypeNames",
+	"_1XtAppCreateShell",
+	"_1XtCreateApplicationContext",
+	"_1XtDisplayInitialize",
+	"_1XtRealizeWidget",
+	"_1XtResizeWidget",
+	"_1XtSetMappedWhenManaged",
+	"_1XtToolkitInitialize",
+	"_1topLevelShellWidgetClass",
 };
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func

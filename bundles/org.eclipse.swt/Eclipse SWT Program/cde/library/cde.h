@@ -9,8 +9,8 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 
-#ifndef INC_kde_H
-#define INC_kde_H
+#ifndef INC_cde_H
+#define INC_cde_H
 
 #define NDEBUG 
 
@@ -21,4 +21,7 @@
 #include <Dt/Dts.h>
 #include <Dt/Action.h>
 
-#endif /* INC_kde_H */
+#include <X11/IntrinsicP.h>
+#include <X11/Shell.h>
+
+#endif /* INC_cde_H */

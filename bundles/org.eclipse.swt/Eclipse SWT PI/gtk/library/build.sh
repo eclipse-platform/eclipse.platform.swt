@@ -102,6 +102,9 @@ case $OS in
 		if [ "${JAVA_HOME}" = "" ]; then
 			JAVA_HOME=/usr/j2se
 		fi
+		if [ "${CDE_HOME}" = "" ]; then
+			CDE_HOME=/usr/dt		
+		fi
 		AWT_LIB_PATH=$JAVA_HOME/jre/lib/sparc
 		PATH=/usr/ccs/bin:/usr/local/bin:$PATH
 		export PATH
@@ -119,6 +122,6 @@ case $OS in
 	;;
 esac
 
-export CC LD JAVA_HOME QT_HOME AWT_LIB_PATH XTEST_LIB_PATH GECKO_SDK GECKO_INCLUDES GECKO_LIBS SWT_PTR_CFLAGS KDE_LIB_PATH KDE_INCLUDE_PATH OUTPUT_DIR
+export CC LD JAVA_HOME QT_HOME AWT_LIB_PATH XTEST_LIB_PATH GECKO_SDK GECKO_INCLUDES GECKO_LIBS SWT_PTR_CFLAGS CDE_HOME KDE_LIB_PATH KDE_INCLUDE_PATH OUTPUT_DIR
 
 make -f $makefile ${1} ${2} ${3} ${4}
