@@ -3073,6 +3073,14 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_HideCaret
 	return (jboolean)HideCaret((HWND)arg0);
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ImageList_1Add
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("ImageList_Add\n")
+
+	return (jint)ImageList_Add((HIMAGELIST)arg0, (HBITMAP)arg1, (HBITMAP)arg2);
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ImageList_1AddMasked
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {

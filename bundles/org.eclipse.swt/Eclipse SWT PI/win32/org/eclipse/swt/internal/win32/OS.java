@@ -2015,6 +2015,7 @@ public static final native boolean GradientFill(int hdc, int pVertex, int dwNumV
 public static final native int HeapAlloc (int hHeap, int dwFlags, int dwBytes);
 public static final native boolean HeapFree (int hHeap, int dwFlags, int lpMem);
 public static final native boolean HideCaret (int hWnd);
+public static final native int ImageList_Add (int himl, int hbmImage, int hbmMask);
 public static final native int ImageList_AddMasked (int himl, int hbmImage, int crMask);
 public static final native int ImageList_Create (int cx, int cy, int flags, int cInitial, int cGrow);
 public static final native boolean ImageList_Destroy (int himl);

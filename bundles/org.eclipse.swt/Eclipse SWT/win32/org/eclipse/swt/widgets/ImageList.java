@@ -77,7 +77,13 @@ public int add (Image image) {
 			Color color = image.getBackground ();
 			if (color != null) background = color.handle;
 			if (index == count) {
-				OS.ImageList_AddMasked (handle, hBitmap, background);
+				if (background != -1) {
+					OS.ImageList_AddMasked (handle, hBitmap, background);
+				} else {
+					int hMask = createMask (hBitmap, cx [0], cy [0], background);
+					OS.ImageList_Add (handle, hBitmap, hMask);
+					OS.DeleteObject (hMask);
+				}
 			} else {
 				int hMask = createMask (hBitmap, cx [0], cy [0], background);
 				OS.ImageList_Replace (handle, index, hBitmap, hMask);
