@@ -1004,6 +1004,12 @@ public void setTextLimit (int limit) {
 	text.setTextLimit (limit);
 }
 
+public void setToolTipText (String string) {
+	checkWidget();
+	super.setToolTipText(string);
+	arrow.setToolTipText (string);
+	text.setToolTipText (string);		
+}
 void textEvent (Event event) {
 	switch (event.type) {
 		case SWT.FocusIn: {
