@@ -1315,14 +1315,14 @@ int widgetStyle () {
 	return bits;
 }
 
-int windowProc (int msg, int wParam, int lParam) {
+int windowProc (int hwnd, int msg, int wParam, int lParam) {
 	switch (msg) {
 		case OS.WM_APP:
 		case OS.WM_APP+1:
 			if (hAccel == -1) createAccelerators ();
 			return msg == OS.WM_APP ? nAccel : hAccel;
 	}
-	return super.windowProc (msg, wParam, lParam);
+	return super.windowProc (hwnd, msg, wParam, lParam);
 }
 
 LRESULT WM_ACTIVATE (int wParam, int lParam) {

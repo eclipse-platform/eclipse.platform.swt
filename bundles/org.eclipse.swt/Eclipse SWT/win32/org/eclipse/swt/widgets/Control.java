@@ -2886,7 +2886,7 @@ abstract TCHAR windowClass ();
 
 abstract int windowProc ();
 
-int windowProc (int msg, int wParam, int lParam) {
+int windowProc (int hwnd, int msg, int wParam, int lParam) {
 	LRESULT result = null;
 	switch (msg) {
 		case OS.WM_ACTIVATE:			result = WM_ACTIVATE (wParam, lParam); break;
