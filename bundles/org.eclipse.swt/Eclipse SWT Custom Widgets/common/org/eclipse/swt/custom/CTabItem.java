@@ -222,9 +222,9 @@ void drawSelected(GC gc ) {
 	} else {
 		// Draw selection border across all tabs
 		int xx = parent.borderLeft;
-		int yy = parent.onBottom ? size.y - parent.borderBottom - parent.tabHeight - CTabFolder.HIGHLIGHT_HEADER : parent.borderTop + parent.tabHeight + 1;
+		int yy = parent.onBottom ? size.y - parent.borderBottom - parent.tabHeight - parent.highlight_header : parent.borderTop + parent.tabHeight + 1;
 		int ww = size.x - parent.borderLeft - parent.borderRight;
-		int hh = CTabFolder.HIGHLIGHT_HEADER - 1;
+		int hh = parent.highlight_header - 1;
 		int[] shape = new int[] {xx,yy, xx+ww,yy, xx+ww,yy+hh, xx,yy+hh};
 		parent.drawBackground(gc, shape, true);
 	

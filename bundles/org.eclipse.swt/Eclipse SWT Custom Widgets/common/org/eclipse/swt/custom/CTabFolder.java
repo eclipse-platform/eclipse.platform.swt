@@ -162,6 +162,8 @@ public class CTabFolder extends Composite {
 	int borderRight = 0;
 	int borderTop = 0;
 	int borderBottom = 0;
+	int highlight_margin = 0;
+	int highlight_header = 0;
 	int[] curve;
 	
 	// when disposing CTabFolder, don't try to layout the items or 
@@ -180,8 +182,6 @@ public class CTabFolder extends Composite {
 	// internal constants
 	static final int DEFAULT_WIDTH = 64;
 	static final int DEFAULT_HEIGHT = 64;
-	static final int HIGHLIGHT_HEADER = 5;
-	static final int HIGHLIGHT_MARGIN = 3;
 	static final int CURVE_WIDTH = 50;
 	static final int CURVE_RIGHT = 30;
 	static final int CURVE_LEFT = 30;
@@ -250,7 +250,8 @@ public CTabFolder(Composite parent, int style) {
 	borderLeft = borderRight = (style & SWT.BORDER) != 0 ? 1 : 0;
 	borderTop = onBottom ? borderLeft : 0;
 	borderBottom = onBottom ? 0 : borderLeft;
-	
+	highlight_header = (style & SWT.FLAT) != 0 ? 1 : 5;
+	highlight_margin = (style & SWT.FLAT) != 0 ? 0 : 3;
 	//set up default colors
 	Display display = getDisplay();
 	selectionForeground = display.getSystemColor(SELECTION_FOREGROUND);
@@ -447,9 +448,10 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener(SWT.DefaultSelection, typedListener);
 }
 void antialias (int[] shape, RGB lineRGB, RGB innerRGB, RGB outerRGB, GC gc){
-	//don't perform anti-aliasing on Mac because the platform
+	// Don't perform anti-aliasing on Mac because the platform
 	// already does it.
-	if ("carbon".equals(SWT.getPlatform())) return;
+	// Don't perform anti-aliasing for simple style - no curves
+	if (simple || "carbon".equals(SWT.getPlatform())) return;
 	if (outerRGB != null) {
 		int index = 0;
 		boolean left = true;
@@ -540,23 +542,15 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
+	int trimX = x - marginWidth - highlight_margin - borderLeft;
+	int trimWidth = width + borderLeft + borderRight + 2*marginWidth + 2*highlight_margin;
 	if (minimized) {
-		int trimX = x - borderLeft;
-		int trimY = onBottom ? y - borderTop : y - HIGHLIGHT_HEADER - tabHeight - borderTop;
-		int trimWidth = width + borderLeft + borderRight;
-		int trimHeight = borderTop + borderBottom + tabHeight + HIGHLIGHT_HEADER;
+		int trimY = onBottom ? y - borderTop : y - highlight_header - tabHeight - borderTop;
+		int trimHeight = borderTop + borderBottom + tabHeight + highlight_header;
 		return new Rectangle (trimX, trimY, trimWidth, trimHeight);
 	} else {
-		int style = getStyle();
-		boolean highlight = (style & SWT.BORDER) != 0 && (style & SWT.FLAT) == 0;
-		int trimX = x - marginWidth - borderLeft;
-		if (highlight) trimX -= HIGHLIGHT_MARGIN;
-		int trimY = onBottom ? y - marginHeight - borderTop : y - marginHeight - HIGHLIGHT_HEADER - tabHeight - borderTop;
-		if (highlight && onBottom) trimX -= HIGHLIGHT_MARGIN;
-		int trimWidth = width + borderLeft + borderRight + 2*marginWidth;
-		if (highlight) trimWidth += 2*HIGHLIGHT_MARGIN;
-		int trimHeight = height + borderTop + borderBottom + 2*marginHeight + tabHeight + HIGHLIGHT_HEADER;
-		if (highlight) trimHeight += HIGHLIGHT_HEADER + HIGHLIGHT_MARGIN;
+		int trimY = onBottom ? y - marginHeight - highlight_margin - borderTop: y - marginHeight - highlight_header - tabHeight - borderTop;
+		int trimHeight = height + borderTop + borderBottom + 2*marginHeight + tabHeight + highlight_header + highlight_margin;
 		return new Rectangle (trimX, trimY, trimWidth, trimHeight);
 	}
 }
@@ -642,7 +636,7 @@ void drawBackground(GC gc, int[] shape, boolean selected) {
 }
 void drawBackground(GC gc, int[] shape, Color defaultBackground, Image image, Color[] colors, int[] percents, boolean vertical) {
 	Point size = getSize();
-	int height = tabHeight + HIGHLIGHT_HEADER; 
+	int height = tabHeight + highlight_header; 
 	int y = onBottom ? size.y - borderBottom - height : borderTop;
 	int x = 0;
 	int width = size.x;
@@ -757,30 +751,28 @@ void drawBody(Event event) {
 		}
 	}
 	
-	// Draw highlight margin
+	// fill in body
 	if (!minimized){
-		int style = getStyle();
-		int width = size.x  - borderLeft - borderRight;
-		int height = size.y - borderTop - borderBottom - tabHeight - HIGHLIGHT_HEADER;
-		if (borderLeft > 0 && (style & SWT.FLAT) == 0) {
+		int width = size.x  - borderLeft - borderRight - 2*highlight_margin;
+		int height = size.y - borderTop - borderBottom - tabHeight - highlight_header - highlight_margin;
+		// Draw highlight margin
+		if (highlight_margin > 0) {
 			int[] shape = null;
-			width -= 2*HIGHLIGHT_MARGIN;
-			height -= HIGHLIGHT_MARGIN;
 			if (onBottom) {
-				int x1 = 1;
-				int y1 = 1;
-				int x2 = size.x - 1;
-				int y2 = size.y - borderBottom - tabHeight - HIGHLIGHT_HEADER;
-				shape = new int[] {x1,y1, x2,y1, x2,y2, x2-HIGHLIGHT_MARGIN,y2,
-						           x2-HIGHLIGHT_MARGIN, y1+HIGHLIGHT_MARGIN, x1+HIGHLIGHT_MARGIN,y1+HIGHLIGHT_MARGIN,
-								   x1+HIGHLIGHT_MARGIN,y2, x1,y2};
+				int x1 = borderLeft;
+				int y1 = borderTop;
+				int x2 = size.x - borderRight;
+				int y2 = size.y - borderBottom - tabHeight - highlight_header;
+				shape = new int[] {x1,y1, x2,y1, x2,y2, x2-highlight_margin,y2,
+						           x2-highlight_margin, y1+highlight_margin, x1+highlight_margin,y1+highlight_margin,
+								   x1+highlight_margin,y2, x1,y2};
 			} else {	
-				int x1 = 1;
-				int y1 = borderTop + tabHeight + HIGHLIGHT_HEADER;
-				int x2 = size.x - 1;
-				int y2 = size.y - 1;
-				shape = new int[] {x1,y1, x1+HIGHLIGHT_MARGIN,y1, x1+HIGHLIGHT_MARGIN,y2-HIGHLIGHT_MARGIN, 
-						           x2-HIGHLIGHT_MARGIN,y2-HIGHLIGHT_MARGIN, x2-HIGHLIGHT_MARGIN,y1,
+				int x1 = borderLeft;
+				int y1 = borderTop + tabHeight + highlight_header;
+				int x2 = size.x - borderRight;
+				int y2 = size.y - borderBottom;
+				shape = new int[] {x1,y1, x1+highlight_margin,y1, x1+highlight_margin,y2-highlight_margin, 
+						           x2-highlight_margin,y2-highlight_margin, x2-highlight_margin,y1,
 								   x2,y1, x2,y2, x1,y2};
 			}
 			// If horizontal gradient, show gradient across the whole area
@@ -1021,7 +1013,7 @@ void drawTabArea(Event event) {
 	if (tabHeight == 0) {
 		int x1 = borderLeft - 1;
 		int x2 = size.x - borderRight;
-		int y1 = onBottom ? size.y - borderBottom - HIGHLIGHT_HEADER - 1 : borderTop +HIGHLIGHT_HEADER;
+		int y1 = onBottom ? size.y - borderBottom - highlight_header - 1 : borderTop + highlight_header;
 		int y2 = onBottom ? size.y - borderBottom : borderTop;
 		if (borderLeft > 0 && onBottom) y2 -= 1;
 		
@@ -1057,7 +1049,7 @@ void drawTabArea(Event event) {
 		shape = new int[left.length + right.length + 4];
 		int index = 0;
 		shape[index++] = x;
-		shape[index++] = y-HIGHLIGHT_HEADER;
+		shape[index++] = y-highlight_header;
 		for (int i = 0; i < left.length/2; i++) {
 			shape[index++] = x+left[2*i];
 			shape[index++] = y+height+left[2*i+1];
@@ -1069,14 +1061,14 @@ void drawTabArea(Event event) {
 			if (borderLeft == 0) shape[index-1] += 1;
 		}
 		shape[index++] = x+width;
-		shape[index++] = y-HIGHLIGHT_HEADER;
+		shape[index++] = y-highlight_header;
 	} else {
 		int[] left = simple ? new int[] {0,0} : TOP_LEFT_CORNER;
 		int[] right = simple ? new int[] {0,0} : TOP_RIGHT_CORNER;
 		shape = new int[left.length + right.length + 4];
 		int index = 0;
 		shape[index++] = x;
-		shape[index++] = y+height+HIGHLIGHT_HEADER+1;
+		shape[index++] = y+height+highlight_header+1;
 		for (int i = 0; i < left.length/2; i++) {
 			shape[index++] = x+left[2*i];
 			shape[index++] = y+left[2*i+1];
@@ -1086,7 +1078,7 @@ void drawTabArea(Event event) {
 			shape[index++] = y+right[2*i+1];
 		}
 		shape[index++] = x+width;
-		shape[index++] = y+height+HIGHLIGHT_HEADER+1;
+		shape[index++] = y+height+highlight_header+1;
 	}
 	// Fill in background
 	drawBackground(gc, shape, single);
@@ -1175,17 +1167,13 @@ public Rectangle getChevronBounds() {
 public Rectangle getClientArea() {
 	checkWidget();
 	if (minimized) return new Rectangle(xClient, yClient, 0, 0);
-	int style = getStyle();
-	boolean highlight = (style & SWT.BORDER) != 0 && (style & SWT.FLAT) == 0;
 	Point size = getSize();
-	int width = size.x  - borderLeft - borderRight - 2*marginWidth;
-	if (highlight)width -= 2*HIGHLIGHT_MARGIN;
-	int height = size.y - borderTop - borderBottom - 2*marginHeight;
-	if (highlight)height -= + HIGHLIGHT_MARGIN;
+	int width = size.x  - borderLeft - borderRight - 2*marginWidth - 2*highlight_margin;
+	int height = size.y - borderTop - borderBottom - 2*marginHeight - highlight_margin - highlight_header;
 	if (items.length == 0) {		
 		return new Rectangle(borderLeft + marginWidth, borderTop + marginHeight, width, height);	
 	}
-	height -= tabHeight+HIGHLIGHT_HEADER;
+	height -= tabHeight;
 	return new Rectangle(xClient, yClient, width, height);
 }
 /**
@@ -1901,9 +1889,11 @@ void onMouse(Event event) {
 				chevronImageState = HOT;
 				redraw(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, false);
 				if (!selected) return;
-				Rectangle rect = new Rectangle(chevronRect.x, onBottom ? getSize().y - borderBottom - HIGHLIGHT_HEADER - tabHeight : borderTop, chevronRect.width, tabHeight + HIGHLIGHT_HEADER);
+				Rectangle rect = new Rectangle(chevronRect.x, onBottom ? getSize().y - borderBottom - highlight_header - tabHeight : borderTop, chevronRect.width, tabHeight + highlight_header);
 				if (single && selectedIndex != -1){
 					rect = items[selectedIndex].getBounds();
+					rect.height += highlight_header;
+					if (onBottom) rect.y -= highlight_header;
 				}
 				CTabFolderEvent e = new CTabFolderEvent(this);
 				e.widget = this;
@@ -2619,7 +2609,7 @@ boolean setItemLocation() {
 			item.closeRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - BUTTON_SIZE)/2: borderTop + (tabHeight - BUTTON_SIZE)/2;
 		}
 		
-		x = borderLeft <= 1 ? 0 : HIGHLIGHT_MARGIN;
+		x = 0;
 		for (int i = firstIndex; i < items.length; i++) {
 			// continue laying out remaining, visible items left to right 
 			CTabItem item = items[i];
@@ -2664,15 +2654,11 @@ boolean setItemSize() {
 	if (e.doit) {
 		widths = new int[items.length];
 		if (size.x <= 0 || size.y <= 0 || items.length == 0) return false;
-		int style = getStyle();
-		boolean highlight = borderLeft > 0 && (style & SWT.FLAT) == 0;
-		xClient = borderLeft + marginWidth;
-		if (highlight) xClient += HIGHLIGHT_MARGIN;
+		xClient = borderLeft + marginWidth + highlight_margin;
 		if (onBottom) {
-			yClient = borderTop + marginHeight; 
-			if (highlight) yClient += HIGHLIGHT_MARGIN;
+			yClient = borderTop + highlight_margin + marginHeight;
 		} else {
-			yClient = borderTop + tabHeight + HIGHLIGHT_HEADER + marginHeight; 
+			yClient = borderTop + tabHeight + highlight_header + marginHeight; 
 		}
 		
 		GC gc = new GC(this);
