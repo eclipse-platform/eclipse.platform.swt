@@ -404,7 +404,7 @@ public Rectangle getBounds () {
 public void setBounds (Rectangle rect) {
 	checkWidget ();
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setBounds (rect.x, rect.y, rect.width, rect.height, true, true);
+	setBounds (rect.x, rect.y, rect.width, rect.height);
 }
 
 /**
