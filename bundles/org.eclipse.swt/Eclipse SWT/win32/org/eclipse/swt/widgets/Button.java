@@ -311,7 +311,8 @@ public String getText () {
 }
 
 boolean isTabItem () {
-	if ((style & SWT.PUSH) != 0) return true;
+	//TEMPORARY CODE
+	//if ((style & SWT.PUSH) != 0) return true;
 	return super.isTabItem ();
 }
 
