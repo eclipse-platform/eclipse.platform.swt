@@ -147,7 +147,7 @@ public boolean isSupportedType(TransferData transferData){
  *  object will be filled in on return with the platform specific format of the data
  */
 protected void javaToNative (Object object, TransferData transferData) {
-	if (!_validate(object) && !isSupportedType(transferData)) {
+	if (!checkByteArray(object) && !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
 	byte[] orig = (byte[])object;
@@ -175,7 +175,7 @@ protected Object nativeToJava(TransferData transferData) {
 	if (transferData.data.length == 0 || transferData.data[0].length == 0) return null;
 	return transferData.data[0];
 }
-boolean _validate(Object object) {
+boolean checkByteArray(Object object) {
 	return (object != null && object instanceof byte[] && ((byte[])object).length > 0);
 }
 }

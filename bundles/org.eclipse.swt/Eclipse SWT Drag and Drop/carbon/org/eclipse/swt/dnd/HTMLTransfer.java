@@ -52,7 +52,7 @@ public static HTMLTransfer getInstance () {
  *  object will be filled in on return with the platform specific format of the data
  */
 public void javaToNative (Object object, TransferData transferData){
-	if (!_validate(object) || !isSupportedType(transferData)) {
+	if (!checkHTML(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
 	String string = (String)object;
@@ -93,11 +93,11 @@ protected String[] getTypeNames() {
 	return new String[] {HTML};
 }
 
-boolean _validate(Object object) {
+boolean checkHTML(Object object) {
 	return (object != null && object instanceof String && ((String)object).length() > 0);
 }
 
 protected boolean validate(Object object) {
-	return _validate(object);
+	return checkHTML(object);
 }
 }

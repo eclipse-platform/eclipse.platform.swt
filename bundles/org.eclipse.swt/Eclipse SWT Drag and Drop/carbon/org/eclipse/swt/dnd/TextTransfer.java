@@ -55,7 +55,7 @@ public static TextTransfer getInstance () {
  *  object will be filled in on return with the platform specific format of the data
  */
 public void javaToNative (Object object, TransferData transferData) {
-	if (!_validate(object) || !isSupportedType(transferData)) {
+	if (!checkText(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
 	String string = (String)object;
@@ -144,10 +144,10 @@ protected String[] getTypeNames() {
 	return new String[] {UTEXT, TEXT};
 }
 
-boolean _validate(Object object) {
+boolean checkText(Object object) {
 	return (object != null && object instanceof String && ((String)object).length() > 0);
 }
 protected boolean validate(Object object) {
-	return _validate(object);
+	return checkText(object);
 }
 }
