@@ -1573,7 +1573,7 @@ TrayIcon getTrayIcon (int id) {
  * 
  * @since 3.0
  */
-public TrayIcon [] getTrayIcons () {
+TrayIcon [] getTrayIcons () {
 	return trayIcons;
 }
 
