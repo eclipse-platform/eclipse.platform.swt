@@ -139,7 +139,7 @@ public boolean contains (Point pt) {
  * @param object the object to compare with this object
  * @return <code>true</code> if the object is the same as this object and <code>false</code> otherwise
  *
- * @see #hashCode
+ * @see #hashCode()
  */
 public boolean equals (Object object) {
 	if (object == this) return true;
@@ -156,7 +156,7 @@ public boolean equals (Object object) {
  *
  * @return the receiver's hash
  *
- * @see #equals
+ * @see #equals(Object)
  */
 public int hashCode () {
 	return x ^ y ^ width ^ height;
@@ -244,8 +244,8 @@ public Rectangle intersection (Rectangle rect) {
  *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
  * </ul>
  *
- * @see #intersection
- * @see #isEmpty
+ * @see #intersection(Rectangle)
+ * @see #isEmpty()
  * 
  * @since 3.0
  */
@@ -269,8 +269,8 @@ public boolean intersects (int x, int y, int width, int height) {
  *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
  * </ul>
  *
- * @see #intersection
- * @see #isEmpty
+ * @see #intersection(Rectangle)
+ * @see #isEmpty()
  */
 public boolean intersects (Rectangle rect) {
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -319,7 +319,7 @@ public String toString () {
  *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
  * </ul>
  *
- * @see #add
+ * @see #add(Rectangle)
  */
 public Rectangle union (Rectangle rect) {
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);

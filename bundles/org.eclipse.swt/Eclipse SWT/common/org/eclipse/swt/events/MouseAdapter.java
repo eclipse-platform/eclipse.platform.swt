@@ -33,7 +33,7 @@ public abstract class MouseAdapter implements MouseListener {
  *
  * @param e an event containing information about the mouse double click
  *
- * @see org.eclipse.swt.widgets.Display#getDoubleClickTime
+ * @see org.eclipse.swt.widgets.Display#getDoubleClickTime()
  */
 public void mouseDoubleClick(MouseEvent e) {
 }

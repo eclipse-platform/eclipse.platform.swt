@@ -267,7 +267,7 @@ public void addImageLoaderListener(ImageLoaderListener listener) {
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
  * 
- * @see #addImageLoaderListener
+ * @see #addImageLoaderListener(ImageLoaderListener)
  */
 public void removeImageLoaderListener(ImageLoaderListener listener) {
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
@@ -281,8 +281,8 @@ public void removeImageLoaderListener(ImageLoaderListener listener) {
  *
  * @return <code>true</code> if there are <code>ImageLoaderListener</code>s, and <code>false</code> otherwise
  *
- * @see #addImageLoaderListener
- * @see #removeImageLoaderListener
+ * @see #addImageLoaderListener(ImageLoaderListener)
+ * @see #removeImageLoaderListener(ImageLoaderListener)
  */
 public boolean hasListeners() {
 	return imageLoaderListeners != null && imageLoaderListeners.size() > 0;

@@ -302,7 +302,7 @@ public ImageData(int width, int height, int depth, PaletteData palette, int scan
  *    <li>ERROR_IO - if an IO error occurs while reading data</li>
  * </ul>
  *
- * @see ImageLoader#load
+ * @see ImageLoader#load(InputStream)
  */
 public ImageData(InputStream stream) {
 	ImageData[] data = new ImageLoader().load(stream);
@@ -930,7 +930,7 @@ public void getPixels(int x, int y, int getWidth, int[] pixels, int startIndex) 
 				pixels[i] = theByte & 0x0F;
 				i++;
 				n--;
-				srcX++;;
+				srcX++;
 				if (srcX >= width) {
 					srcY++;
 					index = srcY * bytesPerLine;
@@ -1023,7 +1023,7 @@ public void getPixels(int x, int y, int getWidth, int[] pixels, int startIndex) 
  *
  * @return the RGB values for the image or null if direct color
  *
- * @see PaletteData#getRGBs
+ * @see PaletteData#getRGBs()
  */
 public RGB[] getRGBs() {
 	return palette.getRGBs();

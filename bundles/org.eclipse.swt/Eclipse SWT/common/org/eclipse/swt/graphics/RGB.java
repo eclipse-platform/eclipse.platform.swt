@@ -78,7 +78,7 @@ public RGB(int red, int green, int blue) {
  * @param object the object to compare with this object
  * @return <code>true</code> if the object is the same as this object and <code>false</code> otherwise
  *
- * @see #hashCode
+ * @see #hashCode()
  */
 public boolean equals (Object object) {
 	if (object == this) return true;
@@ -95,7 +95,7 @@ public boolean equals (Object object) {
  *
  * @return the receiver's hash
  *
- * @see #equals
+ * @see #equals(Object)
  */
 public int hashCode () {
 	return (blue << 16) | (green << 8) | red;

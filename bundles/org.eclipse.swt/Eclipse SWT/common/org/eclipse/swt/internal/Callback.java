@@ -173,7 +173,7 @@ static String getSignature(int argCount) {
  * Note: This should not be called by application code.
  * </p>
  *
- * @param ignore true if callbacks should not be invoked
+ * @param enable true if callbacks should be invoked
  */
 public static final native synchronized void setEnabled (boolean enable);
 
