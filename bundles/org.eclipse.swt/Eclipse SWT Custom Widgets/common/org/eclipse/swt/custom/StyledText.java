@@ -1621,6 +1621,12 @@ void doColumnLeft() {
 				}
 				// end of R2L segment reached (visual left side)?
 				if (bidi.isRightToLeft(caretOffset - lineOffset) == false) {
+					if (bidi.getCaretPosition(caretOffset - lineOffset) < horizontalScrollOffset) {
+						// make beginning of R2L segment visible before going left, to L2R segment
+						// important if R2L segment ends at visual left in order to scroll all the 
+						/// way to the left. Fixes 1GKM3XS
+						showCaret();
+					}
 					// go to beginning of R2L segment (visually end of next L2R segment)/beginning of line
 					caretOffset--;
 					while (caretOffset - lineOffset > 0 && bidi.isRightToLeft(caretOffset - lineOffset)) {
@@ -1637,7 +1643,7 @@ void doColumnLeft() {
 				if (caretOffset - lineOffset > 0 && bidi.isRightToLeft(caretOffset - lineOffset - 1)) {
 					// go to beginning of R2L segment (visually start of next L2R segment)/beginning of line
 					caretOffset--;
-					while (caretOffset - lineOffset > 1 && bidi.isRightToLeft(caretOffset - lineOffset - 2)) {
+					while (caretOffset - lineOffset > 0 && bidi.isRightToLeft(caretOffset - lineOffset - 1)) {
 						caretOffset--;
 					}
 				}
@@ -4117,10 +4123,6 @@ void handleMouseMove(Event event) {
 	}
 	doMouseLocationChange(event.x, event.y, true);
 	doAutoScroll(event);
-	// caret location only needs to be updated if we are not autoscrolling
-//	if (autoScrollDirection == SWT.NULL) {
-//		doMouseLocationChange(event.x, event.y, true);
-//	}
 }
 /** 
  * Replaces the selection with the clipboard text or insert the text at 
