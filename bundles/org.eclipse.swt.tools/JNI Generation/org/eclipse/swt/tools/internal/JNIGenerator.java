@@ -166,7 +166,7 @@ static String getTypeSignature4(Class clazz) {
 	return getClassName(clazz) + " *";
 }
 
-static Hashtable uniqueCache = new Hashtable();
+static HashMap uniqueCache = new HashMap();
 static boolean isNativeUnique(Method method) {
 	Object unique = uniqueCache.get(method);
 	if (unique != null) return ((Boolean)unique).booleanValue();
