@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- File written by PDE 1.0 -->
 <plugin
    id="org.eclipse.swt"
    name="%pluginName"
-   version="2.1.1"
+   version="2.1.2"
    provider-name="%providerName">
 
-<!-- Runtime -->
-<runtime>
-   <library name="$ws$/swt.jar">
-      <export name="*"/>
-      <packages prefixes="org.eclipse.swt"/>
-   </library>
-</runtime>
+   <runtime>
+      <library name="$ws$/swt.jar">
+         <export name="*"/>
+         <packages prefixes="org.eclipse.swt"/>
+      </library>
+   </runtime>
+
 </plugin>
