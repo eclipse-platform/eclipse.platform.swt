@@ -757,7 +757,8 @@ public void pack (boolean changed) {
 
 public void redraw () {
 	checkWidget();
-	redrawWidget (handle);
+	//TEMPORARY CODE
+	redrawWidget (handle, true);
 }
 
 public void redraw (int x, int y, int width, int height, boolean all) {
