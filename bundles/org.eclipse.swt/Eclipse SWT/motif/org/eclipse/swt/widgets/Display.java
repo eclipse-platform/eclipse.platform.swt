@@ -3297,7 +3297,7 @@ public boolean sleep () {
 		OS.FD_SET (display_fd, fd_set);
 		OS.FD_SET (read_fd, fd_set);
 		timeout [0] = 0;
-		timeout [1] = 100000;
+		timeout [1] = 50000;
 		/* Exit the OS lock to allow other threads to enter GTK */
 		int count = Callback.getEntryCount ();
 		for (int i = 0; i < count; i++) {
