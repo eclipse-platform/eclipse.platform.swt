@@ -16,22 +16,6 @@
 
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_carbon_OS_##func
 
-#ifndef NO_AECountItems
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AECountItems
-	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
-{
-	jint *lparg1=NULL;
-	jint rc;
-
-	DEBUG_CALL("AECountItems\n")
-
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
-	rc = (jint)AECountItems((const AEDescList *)arg0, (long *)lparg1);
-	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
-	return rc;
-}
-#endif /* NO_AECountItems */
-
 #ifndef NO_AddDataBrowserItems
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AddDataBrowserItems
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jint arg4)
@@ -57,6 +41,50 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AddDataBrowserLis
 	return (jint)AddDataBrowserListViewColumn((ControlRef)arg0, (DataBrowserListViewColumnDesc *)arg1, (DataBrowserTableViewColumnIndex)arg2);
 }
 #endif /* NO_AddDataBrowserListViewColumn */
+
+#ifndef NO_AECountItems
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AECountItems
+	(JNIEnv *env, jclass that, jobject arg0, jintArray arg1)
+{
+	AEDesc _arg0, *lparg0=NULL;
+	jint *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("AECountItems\n")
+
+	if (arg0) lparg0 = getAEDescFields(env, arg0, &_arg0);
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)AECountItems((const AEDescList *)lparg0, (long *)lparg1);
+	if (arg0) setAEDescFields(env, arg0, lparg0);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	return rc;
+}
+#endif /* NO_AECountItems */
+
+#ifndef NO_AEGetNthPtr
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AEGetNthPtr
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jintArray arg3, jintArray arg4, jint arg5, jint arg6, jintArray arg7)
+{
+	AEDesc _arg0, *lparg0=NULL;
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint *lparg7=NULL;
+	jint rc;
+
+	DEBUG_CALL("AEGetNthPtr\n")
+
+	if (arg0) lparg0 = getAEDescFields(env, arg0, &_arg0);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg7) lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL);
+	rc = (jint)AEGetNthPtr((const AEDescList *)lparg0, arg1, (DescType)arg2, (AEKeyword *)lparg3, (DescType *)lparg4, (void *)arg5, (Size)arg6, (Size *)lparg7);
+	if (arg0) setAEDescFields(env, arg0, lparg0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
+	return rc;
+}
+#endif /* NO_AEGetNthPtr */
 
 #ifndef NO_AppendMenuItemTextWithCFString
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AppendMenuItemTextWithCFString
@@ -2742,6 +2770,22 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_NavDialogDispose
 }
 #endif /* NO_NavDialogDispose */
 
+#ifndef NO_NavDialogGetReply
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NavDialogGetReply
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	NavReplyRecord _arg1, *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("NavDialogGetReply\n")
+
+	if (arg1) lparg1 = getNavReplyRecordFields(env, arg1, &_arg1);
+	rc = (jint)NavDialogGetReply((NavDialogRef)arg0, (NavReplyRecord *)lparg1);
+	if (arg1) setNavReplyRecordFields(env, arg1, lparg1);
+	return rc;
+}
+#endif /* NO_NavDialogGetReply */
+
 #ifndef NO_NavDialogGetSaveFileName
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NavDialogGetSaveFileName
 	(JNIEnv *env, jclass that, jint arg0)
@@ -4528,6 +4572,23 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy___3BII
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 }
 #endif /* NO_memcpy___3BII */
+
+#ifndef NO_memcpy__Lorg_eclipse_swt_internal_carbon_NavReplyRecord_2II
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy__Lorg_eclipse_swt_internal_carbon_NavReplyRecord_2II
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	NavReplyRecord _arg0, *lparg0=NULL;
+
+printf("size of NavReplyRecord is %d",sizeof(NavReplyRecord));
+printf("size of boolean is %d",sizeof(Boolean));
+
+	DEBUG_CALL("memcpy__Lorg_eclipse_swt_internal_carbon_NavReplyRecord_2II\n")
+
+	if (arg0) lparg0 = getNavReplyRecordFields(env, arg0, &_arg0);
+	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setNavReplyRecordFields(env, arg0, lparg0);
+}
+#endif /* NO_memcpy__Lorg_eclipse_swt_internal_carbon_NavReplyRecord_2II */
 
 #ifndef NO_memset
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memset

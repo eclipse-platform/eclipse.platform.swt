@@ -11,6 +11,14 @@
 
 #include <Carbon/Carbon.h>
 
+#ifndef NO_AEDesc
+AEDesc *getAEDescFields(JNIEnv *env, jobject lpObject, AEDesc *lpStruct);
+void setAEDescFields(JNIEnv *env, jobject lpObject, AEDesc *lpStruct);
+#else
+#define getAEDescFields(a,b,c) NULL
+#define setAEDescFields(a,b,c)
+#endif /* NO_AEDesc */
+
 #ifndef NO_CFRange
 CFRange *getCFRangeFields(JNIEnv *env, jobject lpObject, CFRange *lpStruct);
 void setCFRangeFields(JNIEnv *env, jobject lpObject, CFRange *lpStruct);
@@ -74,6 +82,14 @@ void setNavDialogCreationOptionsFields(JNIEnv *env, jobject lpObject, NavDialogC
 #define getNavDialogCreationOptionsFields(a,b,c) NULL
 #define setNavDialogCreationOptionsFields(a,b,c)
 #endif /* NO_NavDialogCreationOptions */
+
+#ifndef NO_NavReplyRecord
+NavReplyRecord *getNavReplyRecordFields(JNIEnv *env, jobject lpObject, NavReplyRecord *lpStruct);
+void setNavReplyRecordFields(JNIEnv *env, jobject lpObject, NavReplyRecord *lpStruct);
+#else
+#define getNavReplyRecordFields(a,b,c) NULL
+#define setNavReplyRecordFields(a,b,c)
+#endif /* NO_NavReplyRecord */
 
 #ifndef NO_Point
 Point *getPointFields(JNIEnv *env, jobject lpObject, Point *lpStruct);

@@ -12,6 +12,48 @@
 #include "swt.h"
 #include "structs.h"
 
+#ifndef NO_AEDesc
+AEDesc *getAEDescFields(JNIEnv *env, jobject lpObject, AEDesc *lpStruct);
+void setAEDescFields(JNIEnv *env, jobject lpObject, AEDesc *lpStruct);
+#else
+#define getAEDescFields(a,b,c) NULL
+#define setAEDescFields(a,b,c)
+#endif /* NO_AEDesc */
+
+#ifndef NO_AEDesc
+typedef struct AEDesc_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID descriptorType, dataHandle;
+} AEDesc_FID_CACHE;
+
+AEDesc_FID_CACHE AEDescFc;
+
+void cacheAEDescFids(JNIEnv *env, jobject lpObject)
+{
+	if (AEDescFc.cached) return;
+	AEDescFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	AEDescFc.descriptorType = (*env)->GetFieldID(env, AEDescFc.clazz, "descriptorType", "I");
+	AEDescFc.dataHandle = (*env)->GetFieldID(env, AEDescFc.clazz, "dataHandle", "I");
+	AEDescFc.cached = 1;
+}
+
+AEDesc *getAEDescFields(JNIEnv *env, jobject lpObject, AEDesc *lpStruct)
+{
+	if (!AEDescFc.cached) cacheAEDescFids(env, lpObject);
+	lpStruct->descriptorType = (DescType)(*env)->GetIntField(env, lpObject, AEDescFc.descriptorType);
+	lpStruct->dataHandle = (AEDataStorage)(*env)->GetIntField(env, lpObject, AEDescFc.dataHandle);
+	return lpStruct;
+}
+
+void setAEDescFields(JNIEnv *env, jobject lpObject, AEDesc *lpStruct)
+{
+	if (!AEDescFc.cached) cacheAEDescFids(env, lpObject);
+	(*env)->SetIntField(env, lpObject, AEDescFc.descriptorType, (jint)lpStruct->descriptorType);
+	(*env)->SetIntField(env, lpObject, AEDescFc.dataHandle, (jint)lpStruct->dataHandle);
+}
+#endif /* NO_AEDesc */
+
 #ifndef NO_CFRange
 typedef struct CFRange_FID_CACHE {
 	int cached;
@@ -384,6 +426,90 @@ void setNavDialogCreationOptionsFields(JNIEnv *env, jobject lpObject, NavDialogC
 	(*env)->SetIntField(env, lpObject, NavDialogCreationOptionsFc.parentWindow, (jint)lpStruct->parentWindow);
 }
 #endif /* NO_NavDialogCreationOptions */
+
+#ifndef NO_NavReplyRecord
+NavReplyRecord *getNavReplyRecordFields(JNIEnv *env, jobject lpObject, NavReplyRecord *lpStruct);
+void setNavReplyRecordFields(JNIEnv *env, jobject lpObject, NavReplyRecord *lpStruct);
+#else
+#define getNavReplyRecordFields(a,b,c) NULL
+#define setNavReplyRecordFields(a,b,c)
+#endif /* NO_NavReplyRecord */
+
+#ifndef NO_NavReplyRecord
+typedef struct NavReplyRecord_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, validRecord, replacing, isStationery, translationNeeded, selection_descriptorType, selection_dataHandle, keyScript, fileTranslation, reserved1, saveFileName, saveFileExtensionHidden, reserved2, reserved;
+} NavReplyRecord_FID_CACHE;
+
+NavReplyRecord_FID_CACHE NavReplyRecordFc;
+
+void cacheNavReplyRecordFids(JNIEnv *env, jobject lpObject)
+{
+	if (NavReplyRecordFc.cached) return;
+	NavReplyRecordFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	NavReplyRecordFc.version = (*env)->GetFieldID(env, NavReplyRecordFc.clazz, "version", "S");
+	NavReplyRecordFc.validRecord = (*env)->GetFieldID(env, NavReplyRecordFc.clazz, "validRecord", "Z");
+	NavReplyRecordFc.replacing = (*env)->GetFieldID(env, NavReplyRecordFc.clazz, "replacing", "Z");
+	NavReplyRecordFc.isStationery = (*env)->GetFieldID(env, NavReplyRecordFc.clazz, "isStationery", "Z");
+	NavReplyRecordFc.translationNeeded = (*env)->GetFieldID(env, NavReplyRecordFc.clazz, "translationNeeded", "Z");
+	NavReplyRecordFc.selection_descriptorType = (*env)->GetFieldID(env, NavReplyRecordFc.clazz, "selection_descriptorType", "I");
+	NavReplyRecordFc.selection_dataHandle = (*env)->GetFieldID(env, NavReplyRecordFc.clazz, "selection_dataHandle", "I");
+	NavReplyRecordFc.keyScript = (*env)->GetFieldID(env, NavReplyRecordFc.clazz, "keyScript", "S");
+	NavReplyRecordFc.fileTranslation = (*env)->GetFieldID(env, NavReplyRecordFc.clazz, "fileTranslation", "I");
+	NavReplyRecordFc.reserved1 = (*env)->GetFieldID(env, NavReplyRecordFc.clazz, "reserved1", "I");
+	NavReplyRecordFc.saveFileName = (*env)->GetFieldID(env, NavReplyRecordFc.clazz, "saveFileName", "I");
+	NavReplyRecordFc.saveFileExtensionHidden = (*env)->GetFieldID(env, NavReplyRecordFc.clazz, "saveFileExtensionHidden", "Z");
+	NavReplyRecordFc.reserved2 = (*env)->GetFieldID(env, NavReplyRecordFc.clazz, "reserved2", "B");
+	NavReplyRecordFc.reserved = (*env)->GetFieldID(env, NavReplyRecordFc.clazz, "reserved", "[B");
+	NavReplyRecordFc.cached = 1;
+}
+
+NavReplyRecord *getNavReplyRecordFields(JNIEnv *env, jobject lpObject, NavReplyRecord *lpStruct)
+{
+	if (!NavReplyRecordFc.cached) cacheNavReplyRecordFids(env, lpObject);
+	lpStruct->version = (UInt16)(*env)->GetShortField(env, lpObject, NavReplyRecordFc.version);
+	lpStruct->validRecord = (Boolean)(*env)->GetBooleanField(env, lpObject, NavReplyRecordFc.validRecord);
+	lpStruct->replacing = (Boolean)(*env)->GetBooleanField(env, lpObject, NavReplyRecordFc.replacing);
+	lpStruct->isStationery = (Boolean)(*env)->GetBooleanField(env, lpObject, NavReplyRecordFc.isStationery);
+	lpStruct->translationNeeded = (Boolean)(*env)->GetBooleanField(env, lpObject, NavReplyRecordFc.translationNeeded);
+	lpStruct->selection.descriptorType = (AEDataStorage)(*env)->GetIntField(env, lpObject, NavReplyRecordFc.selection_descriptorType);
+	lpStruct->selection.dataHandle = (DescType)(*env)->GetIntField(env, lpObject, NavReplyRecordFc.selection_dataHandle);
+	lpStruct->keyScript = (ScriptCode)(*env)->GetShortField(env, lpObject, NavReplyRecordFc.keyScript);
+	lpStruct->fileTranslation = (FileTranslationSpecArrayHandle)(*env)->GetIntField(env, lpObject, NavReplyRecordFc.fileTranslation);
+	lpStruct->reserved1 = (UInt32)(*env)->GetIntField(env, lpObject, NavReplyRecordFc.reserved1);
+	lpStruct->saveFileName = (CFStringRef)(*env)->GetIntField(env, lpObject, NavReplyRecordFc.saveFileName);
+	lpStruct->saveFileExtensionHidden = (Boolean)(*env)->GetBooleanField(env, lpObject, NavReplyRecordFc.saveFileExtensionHidden);
+	lpStruct->reserved2 = (UInt8)(*env)->GetByteField(env, lpObject, NavReplyRecordFc.reserved2);
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, NavReplyRecordFc.reserved);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->reserved), lpStruct->reserved);
+	}
+	return lpStruct;
+}
+
+void setNavReplyRecordFields(JNIEnv *env, jobject lpObject, NavReplyRecord *lpStruct)
+{
+	if (!NavReplyRecordFc.cached) cacheNavReplyRecordFids(env, lpObject);
+	(*env)->SetShortField(env, lpObject, NavReplyRecordFc.version, (jshort)lpStruct->version);
+	(*env)->SetBooleanField(env, lpObject, NavReplyRecordFc.validRecord, (jboolean)lpStruct->validRecord);
+	(*env)->SetBooleanField(env, lpObject, NavReplyRecordFc.replacing, (jboolean)lpStruct->replacing);
+	(*env)->SetBooleanField(env, lpObject, NavReplyRecordFc.isStationery, (jboolean)lpStruct->isStationery);
+	(*env)->SetBooleanField(env, lpObject, NavReplyRecordFc.translationNeeded, (jboolean)lpStruct->translationNeeded);
+	(*env)->SetIntField(env, lpObject, NavReplyRecordFc.selection_descriptorType, (jint)lpStruct->selection.descriptorType);
+	(*env)->SetIntField(env, lpObject, NavReplyRecordFc.selection_dataHandle, (jint)lpStruct->selection.dataHandle);
+	(*env)->SetShortField(env, lpObject, NavReplyRecordFc.keyScript, (jshort)lpStruct->keyScript);
+	(*env)->SetIntField(env, lpObject, NavReplyRecordFc.fileTranslation, (jint)lpStruct->fileTranslation);
+	(*env)->SetIntField(env, lpObject, NavReplyRecordFc.reserved1, (jint)lpStruct->reserved1);
+	(*env)->SetIntField(env, lpObject, NavReplyRecordFc.saveFileName, (jint)lpStruct->saveFileName);
+	(*env)->SetBooleanField(env, lpObject, NavReplyRecordFc.saveFileExtensionHidden, (jboolean)lpStruct->saveFileExtensionHidden);
+	(*env)->SetByteField(env, lpObject, NavReplyRecordFc.reserved2, (jbyte)lpStruct->reserved2);
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, NavReplyRecordFc.reserved);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->reserved), lpStruct->reserved);
+	}
+}
+#endif /* NO_NavReplyRecord */
 
 #ifndef NO_Point
 typedef struct Point_FID_CACHE {

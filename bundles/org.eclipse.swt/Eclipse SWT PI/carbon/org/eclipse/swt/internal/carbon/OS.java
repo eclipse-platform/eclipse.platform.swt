@@ -316,7 +316,8 @@ public class OS extends OS2 {
 
 /** Natives */
 public static final native int kHIViewWindowContentID();
-public static final native int AECountItems(int theAEDescList, int[] theCount);
+public static final native int AECountItems(AEDesc theAEDescList, int[] theCount);
+public static final native int AEGetNthPtr(AEDesc theAEDescList, int index, int desiredType, int[] theAEKeyword, int[] typeCode, int dataPtr, int maximumSize, int[] actualSize);
 public static final native int AddDataBrowserItems(int cHandle, int containerID, int numItems, int[] itemIDs, int preSortProperty);
 public static final native int AddDataBrowserListViewColumn(int cHandle, int handle, int index);
 public static final native int AppendMenuItemTextWithCFString(int mHandle, int sHandle, int attributes, int commandID, short[] outItemIndex);
@@ -531,6 +532,7 @@ public static final native int NavDialogGetUserAction(int dialogHandle);
 public static final native int NavDialogRun(int dialogHandle);
 public static final native int NavDialogSetSaveFileName(int dialogHandle, int fileNameHandle);
 public static final native int NavGetDefaultDialogCreationOptions(NavDialogCreationOptions outOptions);
+public static final native int NavDialogGetReply(int inDialog, NavReplyRecord outReply);
 public static final native int NewControl(int owningWindow, Rect boundsRect, byte[] controlTitle, boolean initiallyVisible, short initialValue, short minimumValue, short maximumValue, short procID, int controlReference);
 public static final native int NewGWorldFromPtr(int[] offscreenGWorld, int PixelFormat, Rect boundsRect, int cTable, int aGDevice, int flags, int newBuffer, int rowBytes);
 public static final native int NewHandle(int size);

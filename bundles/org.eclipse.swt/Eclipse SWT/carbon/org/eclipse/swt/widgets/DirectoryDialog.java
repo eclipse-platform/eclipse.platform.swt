@@ -100,19 +100,32 @@ public String getMessage () {
 	return message;
 }
 private String interpretOsAnswer(int dialog) {
-	int[] tmp= new int[1];
-	OS.NavDialogGetReply(dialog, tmp);
-	int reply= tmp[0];
+	String result= null;
+	NavReplyRecord record= new NavReplyRecord();
+	OS.NavDialogGetReply(dialog, record);
+	AEDesc selection= new AEDesc();
+	selection.descriptorType= record.selection_descriptorType;
+	selection.dataHandle= record.selection_dataHandle;
+	int[] count= new int[1];
+	OS.AECountItems(selection, count);
 	
-	int selection= OS.NavReplyRecordGetSelection(reply);
-	OS.AECountItems(selection, tmp);
-	int count= tmp[0];
-	
-	if (count > 0) {
-		OS.AEGetNthPtr(selection, 1, tmp);
-		return MacUtil.getStringAndRelease(tmp[0]);
+	if (count[0] > 0) {
+		int[] theAEKeyword = new int[1];
+		int[] typeCode = new int[1];
+		int maximumSize = 80; // size of FSRef
+		int dataPtr = OS.NewPtr(maximumSize);
+		int[] actualSize = new int[1];
+		int status = OS.AEGetNthPtr(selection, 1, OS.typeFSRef, theAEKeyword, typeCode, dataPtr, maximumSize, actualSize);
+		if (status == OS.noErr && typeCode[0] == OS.typeFSRef) {
+			byte[] fsRef = new byte[actualSize[0]];
+			OS.memcpy(fsRef, dataPtr, actualSize[0]);
+			int anURL= OS.CFURLCreateFromFSRef(OS.kCFAllocatorDefault, fsRef);
+			int shandle= OS.CFURLCopyFileSystemPath(anURL, OS.kCFURLPOSIXPathStyle);
+			result= MacUtil.getStringAndRelease(shandle);
+		}
+		OS.DisposePtr(dataPtr);
 	}
-	return null;
+	return result;
 }
 /**
  * Makes the dialog visible and brings it to the front

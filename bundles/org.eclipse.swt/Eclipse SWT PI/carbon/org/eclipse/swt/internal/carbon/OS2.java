@@ -10,16 +10,12 @@ package org.eclipse.swt.internal.carbon;
 class OS2 {
 
 /** Custom natives - misc */	
-public static final native int AEGetNthPtr(int theAEDescList, int index, int[] actualSize);
 public static final native void AEProcessAppleEvent(int[] theEventRecord);
 public static final native boolean ConvertEventRefToEventRecord(int eHandle, int[] outEvent);
 public static final native int DrawThemeButton(Rect bounds, short kind, short[] newInfo, short[] prevInfo, int eraseProc, int labelProc, int userData);
 public static final native boolean GetNextEvent(short eventMask, int[] eventData);
 public static final native boolean IsShowContextualMenuClick(int[] eventData);
 public static final native int MenuEvent(int[] eventData);
-public static final native void NavDialogDisposeReply(int replyHandle);
-public static final native int NavReplyRecordGetSelection(int replyHandle);
-public static final native int NavDialogGetReply(int dialogHandle, int[] replyHandle);
 public static final native void TXNClick(int txHandle, int[] eventData);
 public static final native int TXNGetRectBounds(int txHandle, short[] viewRect, int[] destinationRect, int[] textRect);
 public static final native int GetEventHICommand(int eRefHandle, int[] outParamType);

@@ -523,47 +523,6 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_getgdPMap(JNIEnv
 	return (jint) (*h)->gdPMap;
 }
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_NavDialogGetReply(JNIEnv *env, jclass zz,
-				jint dialogHandle, jintArray replyHandle) {
-	NavReplyRecord *reply= (NavReplyRecord*) malloc(sizeof(NavReplyRecord));
-	jint *sa= (*env)->GetIntArrayElements(env, replyHandle, 0);
-	sa[0]= (jint) reply;
-	(*env)->ReleaseIntArrayElements(env, replyHandle, sa, 0);
-	return (jint) RC(NavDialogGetReply((NavDialogRef) dialogHandle, reply));
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS2_NavDialogDisposeReply(JNIEnv *env, jclass zz,
-				jint replyHandle) {
-	free((NavReplyRecord*) replyHandle);
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_NavReplyRecordGetSelection(JNIEnv *env, jclass zz,
-				jint replyHandle) {
-	NavReplyRecord *reply= (NavReplyRecord*) replyHandle;
-	return (jint) &reply->selection;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_AEGetNthPtr(JNIEnv *env, jclass zz,
-				jint aeDescList, jint index, jintArray sHandle) {
-	AEKeyword keyWord;
-	DescType returnedType;
-	FSRef fileSpec;
-	Size actualSize;
-        jint *sa= (*env)->GetIntArrayElements(env, sHandle, 0);
-	
-	jint status= RC(AEGetNthPtr((const AEDescList*)aeDescList, index, typeFSRef, &keyWord, &returnedType,
-                            &fileSpec, sizeof(fileSpec), &actualSize));
-
-	if (status == 0) {
-		CFURLRef url= CFURLCreateFromFSRef(kCFAllocatorDefault, &fileSpec);
-		sa[0]= (jint) CFURLCopyFileSystemPath(url, kCFURLPOSIXPathStyle);
-	}
-	
-	(*env)->ReleaseIntArrayElements(env, sHandle, sa, 0);
-	return status;
-}
-
-
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_DerefHandle(JNIEnv *env, jclass zz, jint handle) {
 	Handle h= (Handle) handle;
 	return (jint) *h;

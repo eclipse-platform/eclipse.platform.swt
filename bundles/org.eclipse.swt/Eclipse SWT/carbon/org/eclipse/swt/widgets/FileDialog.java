@@ -145,54 +145,61 @@ public String getFilterPath () {
 	return filterPath;
 }
 private String interpretOsAnswer(int dialog) {
-	String separator = System.getProperty ("file.separator");
-	
+	String separator= System.getProperty ("file.separator");
 	String firstResult= null;
 
-	int[] tmp= new int[1];
-	OS.NavDialogGetReply(dialog, tmp);
-	int reply= tmp[0];
-	
-	int selection= OS.NavReplyRecordGetSelection(reply);
-	OS.AECountItems(selection, tmp);
-	int count= tmp[0];
+	NavReplyRecord record= new NavReplyRecord();
+	OS.NavDialogGetReply(dialog, record);
+	AEDesc selection= new AEDesc();
+	selection.descriptorType= record.selection_descriptorType;
+	selection.dataHandle= record.selection_dataHandle;
+	int[] theCount = new int[1];
+	OS.AECountItems(selection, theCount);
+	int count= theCount[0];
 	
 	String commonPath= null;
-	if (count > 0) {
-		String fileName= null;
+	if (count == 0) {
+		fileNames= null;
+	} else {
 		fileNames= new String[count];
+		int maximumSize = 80; // size of FSRef
+		int dataPtr= OS.NewPtr(maximumSize);
 		for (int i= 0; i < count; i++) {
-			OS.AEGetNthPtr(selection, i+1, tmp);
-			String fullPath= MacUtil.getStringAndRelease(tmp[0]);
-			if (firstResult == null)
-				firstResult= fullPath;
-			if (fullPath != null && fullPath.length() > 0) {
-				int separatorIndex= fullPath.lastIndexOf(separator);
-				if (separatorIndex >= 0) {
-					fileName= fullPath.substring(separatorIndex+separator.length());
-					String fp= fullPath.substring(0, separatorIndex);
-					if (commonPath == null)
-						commonPath= fp;	// remember common filterPath
-					else {
-						if (!commonPath.equals(fp))	// verify that filterPath is in fact common
-							System.out.println("FileDialog.getPaths: mismatch in filterPaths");
+			int[] aeKeyword= new int[1];
+			int[] typeCode= new int[1];
+			int[] actualSize= new int[1];
+			int status= OS.AEGetNthPtr(selection, i+1, OS.typeFSRef, aeKeyword, typeCode, dataPtr, maximumSize, actualSize);
+			if (status == OS.noErr && typeCode[0] == OS.typeFSRef) {
+				byte[] fsRef= new byte[actualSize[0]];
+				OS.memcpy(fsRef, dataPtr, actualSize[0]);
+				int url= OS.CFURLCreateFromFSRef(OS.kCFAllocatorDefault, fsRef);
+				int shandle= OS.CFURLCopyFileSystemPath(url, OS.kCFURLPOSIXPathStyle);
+				String fullPath= MacUtil.getStringAndRelease(shandle);
+				if (firstResult == null)
+					firstResult= fullPath;
+				if (fullPath != null && fullPath.length() > 0) {
+					String fileName= null;
+					int separatorIndex= fullPath.lastIndexOf(separator);
+					if (separatorIndex >= 0) {
+						fileName= fullPath.substring(separatorIndex+separator.length());
+						String fp= fullPath.substring(0, separatorIndex);
+						if (commonPath == null)
+							commonPath= fp;	// remember common filterPath
+						else {
+							if (!commonPath.equals(fp)) // verify that filterPath is in fact common
+								System.out.println("FileDialog.getPaths: mismatch in filterPaths");
+						}
+					} else {
+						fileName= fullPath;
 					}
-				} else {
-					fileName= fullPath;
+					fileNames[i]= fileName;
 				}
-				fileNames[i]= fileName;
 			}
 		}
-	} else {
-		fileNames= null;
+		OS.DisposePtr(dataPtr);
 	}
 	
-	if (commonPath != null)
-		filterPath= commonPath;
-	else
-		filterPath= "";
-	
-	OS.NavDialogDisposeReply(reply);
+	filterPath= (commonPath != null) ? commonPath : "";
 	
 	return firstResult;
 }
