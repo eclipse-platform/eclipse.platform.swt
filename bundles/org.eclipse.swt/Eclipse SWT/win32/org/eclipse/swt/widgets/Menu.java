@@ -400,8 +400,8 @@ void destroyItem (MenuItem item) {
 void destroyWidget () {
 	int hMenu = handle, hCB = hwndCB;
 	releaseHandle ();
-	if (OS.IsWinCE) {
-		if (hCB != 0) OS.CommandBar_Destroy (hCB);
+	if (OS.IsWinCE && hCB != 0) {
+		OS.CommandBar_Destroy (hCB);
 	} else {
 		if (hMenu != 0) OS.DestroyMenu (hMenu);
 	}
