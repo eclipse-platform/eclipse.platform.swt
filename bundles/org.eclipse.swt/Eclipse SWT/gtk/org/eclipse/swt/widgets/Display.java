@@ -780,21 +780,27 @@ public Widget findWidget (int /*long*/ handle) {
 
 void flushExposes () {
 	OS.gdk_flush ();
-	int pendingCount = 0;
-	int /*long*/ eventPtr = 0;
-	int /*long*/ [] pendingEvents = new int /*long*/ [4];
-	while ((eventPtr = OS.gdk_event_get ()) != 0) {
-		if (pendingCount == pendingEvents.length) {
-			int /*long*/ [] newEvents = new int /*long*/ [pendingCount + 4];
-			System.arraycopy (pendingEvents, 0, newEvents, 0, pendingCount);
-			pendingEvents = newEvents;
+	/*
+	* Feature in GTK.  Calling gdk_event_get() accumulates
+	* the outstanding damage for pending GTK expose events.
+	* In order to flush all paint events, get all of the
+	* events from the queue and then put them back.
+	*/
+	int count = 0;
+	int /*long*/ event = 0;
+	int /*long*/ [] events = new int /*long*/ [4];
+	while ((event = OS.gdk_event_get ()) != 0) {
+		if (count == events.length) {
+			int /*long*/ [] newEvents = new int /*long*/ [count + 4];
+			System.arraycopy (events, 0, newEvents, 0, count);
+			events = newEvents;
 		}
-		pendingEvents [pendingCount++] = eventPtr;
+		events [count++] = event;
 	}
-	for (int i=pendingCount - 1; i>=0; i--) {
-		eventPtr = pendingEvents [i];
-		OS.gdk_event_put (eventPtr);
-		OS.gdk_event_free (eventPtr);
+	for (int i=count - 1; i>=0; i--) {
+		event = events [i];
+		OS.gdk_event_put (event);
+		OS.gdk_event_free (event);
 	}
 }
 
