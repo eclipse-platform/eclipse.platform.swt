@@ -7,7 +7,7 @@ package org.eclipse.swt.custom;
 import org.eclipse.swt.*;
 
 /**
- * This class provides access to the public constants provided by <code>StyledText</code>.
+ * This class provides access to the public constants provided by <code>StyledText</code>. 
  */
 public class ST {
 	
