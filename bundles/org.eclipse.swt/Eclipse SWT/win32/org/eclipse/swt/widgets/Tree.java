@@ -1067,10 +1067,6 @@ LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 }
 
 LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
-	Event e = createMouseEvent(SWT.MouseDown, 1, wParam, lParam);
-	e.item = this;
-	notifyParentListeners(SWT.ChildMouseDown, e);
-	
 	/*
 	* Feature in Windows.  When a tree item is
 	* reselected, Windows does not issue a WM_NOTIFY.
@@ -1267,10 +1263,6 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 }
 
 LRESULT WM_RBUTTONDOWN (int wParam, int lParam) {
-	Event e = createMouseEvent(SWT.MouseDown, 3, wParam, lParam);
-	e.item = this;
-	notifyParentListeners(SWT.ChildMouseDown, e);
-	
 	/*
 	* Feature in Windows.  The receiver uses WM_RBUTTONDOWN
 	* to initiate a drag/drop operation depending on how the

@@ -185,25 +185,6 @@ static int getMsgProc(int code, int wParam, int lParam) {
 	MSG msg = new MSG();
 	OS.MoveMemory(msg, lParam, MSG.sizeof);
 	int message = msg.message;
-	if (message == OS.WM_LBUTTONDOWN 
-		|| message == OS.WM_MBUTTONDOWN 
-		|| message == OS.WM_RBUTTONDOWN) {
-		if (display != null) {
-			Widget widget = null;
-			int hwnd = msg.hwnd;
-			while (hwnd != 0) {
-				widget = display.findWidget (hwnd);
-				if (widget != null) break;
-				hwnd = OS.GetParent (hwnd);
-			}
-			if (widget != null && widget instanceof OleClientSite) {
-				OleClientSite site = (OleClientSite)widget;
-				if (site.handle == hwnd) {
-					site.onClientMouseDown(message, msg.lParam, msg.wParam);
-				}
-			}
-		}
-	}
 	if (OS.WM_KEYFIRST <= message && message <= OS.WM_KEYLAST) {		
 		if (display != null) {
 			Widget widget = null;
@@ -218,6 +199,9 @@ static int getMsgProc(int code, int wParam, int lParam) {
 				if (site.handle == hwnd) {
 					OleFrame frame = site.frame;
 					if (frame.translateOleAccelerator(msg)) {
+						// In order to prevent this message from also being processed
+						// by the application, zero out message, wParam and lParam
+						OS.MoveMemory(lParam + 4, new int[] {OS.WM_NULL, 0, 0}, 12);
 						return 0;
 					}
 				}
@@ -226,6 +210,7 @@ static int getMsgProc(int code, int wParam, int lParam) {
 	}
 	return OS.CallNextHookEx(hHook.intValue(), code, wParam, lParam);
 }
+
 /**
  * Increment the count of references to this instance
  *

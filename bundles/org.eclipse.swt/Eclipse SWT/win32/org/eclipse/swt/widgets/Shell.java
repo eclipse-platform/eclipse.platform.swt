@@ -90,10 +90,8 @@ public class Shell extends Decorations {
 	int [] brushes;
 	boolean showWithParent;
 	int toolTipHandle, lpstrTip;
-	
-	// used for parent notify
-	Control[] lastEventControls;
-	int[] eventTypes;
+
+	Control lastActive;
 
 /**
  * Constructs a new instance of this class. This is equivalent
@@ -578,8 +576,7 @@ void releaseWidget () {
 	if (IsDBLocale) {
 		if (hIMC != 0) OS.ImmDestroyContext (hIMC);
 	}
-	eventTypes = null;
-	lastEventControls = null;
+	lastActive = null;
 }
 
 void remove (Menu menu) {
@@ -627,6 +624,43 @@ LRESULT selectPalette (int hPalette) {
 	}
 	OS.ReleaseDC (handle, hDC);
 	return (result > 0) ? LRESULT.ONE : LRESULT.ZERO;
+}
+
+void setActiveControl (Control control) {
+	if (control != null && control.isDisposed ()) control = null;
+	if (lastActive != null && lastActive.isDisposed ()) lastActive = null;
+	if (lastActive == control) return;
+	
+	/*
+	* Compute the list of controls to be activated and
+	* deactivated by finding the first common parent
+	* control.
+	*/
+	Control [] activate = (control == null) ? new Control[0] : control.getPath ();
+	Control [] deactivate = (lastActive == null) ? new Control[0] : lastActive.getPath ();
+	lastActive = control;
+	int index = 0, length = Math.min (activate.length, deactivate.length);
+	while (index < length) {
+		if (activate [index] != deactivate [index]) break;
+		index++;
+	}
+	
+	/*
+	* It is possible (but unlikely), that application
+	* code could have destroyed some of the widgets. If
+	* this happens, keep processing those widgets that
+	* are not disposed.
+	*/
+	for (int i=activate.length-1; i>=index; --i) {
+		if (!activate [i].isDisposed ()) {
+			activate [i].sendEvent (SWT.Activate);
+		}
+	}
+	for (int i=deactivate.length-1; i>=index; --i) {
+		if (!deactivate [i].isDisposed ()) {
+			deactivate [i].sendEvent (SWT.Deactivate);
+		}
+	}
 }
 
 void setBounds (int x, int y, int width, int height, int flags) {
@@ -834,8 +868,11 @@ LRESULT WM_MOUSEACTIVATE (int wParam, int lParam) {
 	pt.y = (short) (pos >> 16);
 	int hwnd = OS.WindowFromPoint (pt);
 	if (hwnd == 0) return null;
-	Control control = WidgetTable.get (hwnd);
-	if (control == null) return null;
+	Control control = display.findControl (hwnd);
+	setActiveControl (control);
+	// widget could be disposed at this point
+	if (isDisposed ()) return null;
+	if (control == null || control.isDisposed ()) return null;	
 	Button button = null;
 	boolean setDefault = false;
 	if (OS.GetActiveWindow () == handle && this == control.getShell ()) {
@@ -864,7 +901,7 @@ LRESULT WM_MOUSEACTIVATE (int wParam, int lParam) {
 //			return new LRESULT (OS.MA_NOACTIVATE);
 //		}
 //	}
-	return result;
+	return null;
 }
 
 LRESULT WM_NCHITTEST (int wParam, int lParam) {
@@ -945,45 +982,5 @@ LRESULT WM_SHOWWINDOW (int wParam, int lParam) {
 		}
 	}
 	return result;
-}
-
-Control getLastControl(int eventType){
-	if (eventTypes == null) return null;
-	for (int i=0; i<eventTypes.length; i++) {
-		if (eventTypes [i] == eventType) {
-			if (lastEventControls[i].isDisposed()) {
-				lastEventControls[i] = null;
-			}
-			return lastEventControls[i];
-		}
-	}
-	return null;
-}
-void setLastControl(int eventType, Control control) {
-	if (eventTypes == null) eventTypes = new int [4];
-	if (lastEventControls == null) lastEventControls = new Control [4];
-	// change the value if eventType is already registered
-	for (int i=0; i<eventTypes.length; i++) {
-		if (eventTypes [i] == eventType) {
-			lastEventControls[i] = control;
-			return;
-		}
-	}
-	// look for an empty slot and add a new value if none was registered
-	for (int i=0; i<eventTypes.length; i++) {
-		if (eventTypes [i] == 0) {
-			eventTypes [i] = eventType;
-			lastEventControls[i] = control;
-			return;
-		}
-	}
-	// need to expand the array
-	int size = eventTypes.length;
-	int [] newTypes = new int [size + 4];
-	Control [] newControls = new Control [size + 4];
-	System.arraycopy (eventTypes, 0, newTypes, 0, size);
-	System.arraycopy (lastEventControls, 0, newControls, 0, size);
-	eventTypes = newTypes;  lastEventControls = newControls;
-	eventTypes [size] = eventType;  lastEventControls [size] = control;
 }
 }

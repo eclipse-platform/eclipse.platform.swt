@@ -2918,20 +2918,8 @@ LRESULT WM_KEYUP (int wParam, int lParam) {
 }
 
 LRESULT WM_KILLFOCUS (int wParam, int lParam) {
-	
-	/* Build the focus out list */
-	int index = 0;
-	Control [] focusOut = getPath ();
 	Display display = getDisplay ();
-	Control control = display.findControl (wParam);
-	if (control != null) {
-		Control [] focusIn = control.getPath ();
-		int length = Math.min (focusIn.length, focusOut.length);
-		while (index < length) {
-			if (focusIn [index] != focusOut [index]) break;
-			index++;
-		}
-	}
+	Shell shell = getShell ();
 	
 	/*
 	* It is possible (but unlikely), that application
@@ -2943,16 +2931,14 @@ LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 	// widget could be disposed at this point
 	
 	/*
-	* It is possible (but unlikely), that application
-	* code could have destroyed some of the widgets in
-	* the focus out event or the deactivate event.  If
-	* this happens, keep processing those widgets that
-	* are not disposed.
-	*/
-	for (int i=focusOut.length-1; i>=index; --i) {
-		if (!focusOut [i].isDisposed ()) {
-			focusOut [i].sendEvent (SWT.Deactivate);
-		}
+	* It is possible that the shell may be
+	* disposed at this point.  If this happens
+	* don't send the activate and deactivate
+	* events.
+	*/	
+	Control control = display.findControl (wParam);
+	if (control == null && !shell.isDisposed ()) {
+		shell.setActiveControl (null);
 	}
 	
 	/*
@@ -2988,11 +2974,6 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 }
 
 LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
-	
-	Event e = createMouseEvent(SWT.MouseDown, 1, wParam, lParam);
-	e.item = this;
-	notifyParentListeners(SWT.ChildMouseDown, e);
-	
 	sendMouseEvent (SWT.MouseDown, 1, OS.WM_LBUTTONDOWN, wParam, lParam);
 	int result = callWindowProc (OS.WM_LBUTTONDOWN, wParam, lParam);
 	if (OS.GetCapture () != handle) OS.SetCapture (handle);
@@ -3038,10 +3019,6 @@ LRESULT WM_MBUTTONDBLCLK (int wParam, int lParam) {
 }
 
 LRESULT WM_MBUTTONDOWN (int wParam, int lParam) {
-	Event e = createMouseEvent(SWT.MouseDown, 2, wParam, lParam);
-	e.item = this;
-	notifyParentListeners(SWT.ChildMouseDown, e);
-	
 	sendMouseEvent (SWT.MouseDown, 2, OS.WM_MBUTTONDOWN, wParam, lParam);
 	int result = callWindowProc (OS.WM_MBUTTONDOWN, wParam, lParam);
 	if (OS.GetCapture () != handle) OS.SetCapture(handle);
@@ -3350,10 +3327,6 @@ LRESULT WM_RBUTTONDBLCLK (int wParam, int lParam) {
 }
 
 LRESULT WM_RBUTTONDOWN (int wParam, int lParam) {
-	Event e = createMouseEvent(SWT.MouseDown, 3, wParam, lParam);
-	e.item = this;
-	notifyParentListeners(SWT.ChildMouseDown, e);
-	
 	sendMouseEvent (SWT.MouseDown, 3, OS.WM_RBUTTONDOWN, wParam, lParam);
 	int result = callWindowProc (OS.WM_RBUTTONDOWN, wParam, lParam);
 	if (OS.GetCapture () != handle) OS.SetCapture (handle);
@@ -3383,20 +3356,7 @@ LRESULT WM_SETCURSOR (int wParam, int lParam) {
 }
 
 LRESULT WM_SETFOCUS (int wParam, int lParam) {
-	
-	/* Build the focus in list */
-	int index = 0;
-	Control [] focusIn = getPath ();
-	Display display = getDisplay ();
-	Control control = display.findControl (wParam);
-	if (control != null) {
-		Control [] focusOut = control.getPath ();
-		int length = Math.min (focusIn.length, focusOut.length);
-		while (index < length) {
-			if (focusIn [index] != focusOut [index]) break;
-			index++;
-		}
-	}
+	Shell shell = getShell ();
 	
 	/*
 	* It is possible (but unlikely), that application
@@ -3406,18 +3366,15 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	*/
 	sendEvent (SWT.FocusIn);
 	// widget could be disposed at this point
-	
+
 	/*
-	* It is possible (but unlikely), that application
-	* code could have destroyed some of the widgets in
-	* the focus in event or the activate event.  If
-	* this happens, keep processing those widgets that
-	* are not disposed.
-	*/
-	for (int i=focusIn.length-1; i>=index; --i) {
-		if (!focusIn [i].isDisposed ()) {
-			focusIn [i].sendEvent (SWT.Activate);
-		}
+	* It is possible that the shell may be
+	* disposed at this point.  If this happens
+	* don't send the activate and deactivate
+	* events.
+	*/	
+	if (!shell.isDisposed ()) {
+		shell.setActiveControl (this);
 	}
 
 	/*
@@ -3428,6 +3385,7 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	* zero as the result of the window proc.
 	*/
 	if (isDisposed ()) return LRESULT.ZERO;
+	
 	return null;
 }
 
@@ -3594,29 +3552,6 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 
 LRESULT wmScrollChild (int wParam, int lParam) {
 	return null;
-}
-
-protected void notifyParentListeners (int eventType, Event event) {
-	checkWidget();
-	int index = 0;
-	Control [] path = getPath ();
-	Shell shell = getShell();
-	Control lastControl = shell.getLastControl(eventType);
-	shell.setLastControl(eventType, this);
-	if (lastControl != null) {
-		Control [] oldPath = lastControl.getPath ();
-		int length = Math.min (path.length, oldPath.length);
-		while (index < length) {
-			if (path [index] != oldPath [index]) break;
-			index++;
-		}
-	}
-
-	for (int i=path.length-1; i>=index; --i) {
-		if (!path [i].isDisposed () && path[i] != this) {
-			path [i].notifyListeners(eventType, event);
-		}
-	}
 }
 
 }
