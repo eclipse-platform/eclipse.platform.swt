@@ -10,9 +10,6 @@ import org.eclipse.swt.internal.photon.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
-import org.eclipse.swt.widgets.Display;
-
-import java.util.Vector;
 import java.io.*;
 
 /**
@@ -45,6 +42,29 @@ Program () {
 public static Program findProgram (String extension) {
 	if (extension == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (extension.length () == 0) return null;
+	String[][] table = loadAssociationTable ();
+	if (table == null) return null;
+	for (int i = 0; i < table.length; i++) {
+		String[] entry = table [i];
+		if (entry == null) break;
+		String [] exts = expandExtensions (entry [0]);
+		for (int j = 0; j < exts.length; j++) {
+			String ext = exts[j];
+			if (ext == null) break;
+			if (ext.endsWith (extension)) {
+				Program program = new Program ();
+				program.extension = ext;
+				program.command = entry [1];
+				int index;
+				String name = entry [1];
+				if ((index = name.indexOf(' ')) != -1) {
+					name = name.substring (0, index);
+				}
+				program.name = name;
+				return program;
+			}
+		}
+	}
 	return null;
 }
 
@@ -54,7 +74,31 @@ public static Program findProgram (String extension) {
  * @return an array of extensions
  */
 public static String [] getExtensions () {
-	return new String[0];
+	String[][] table = loadAssociationTable ();
+	if (table == null) return new String [0];
+	int count = 0;
+	String[] extensions = new String [50];
+	for (int i = 0; i < table.length; i++) {
+		String[] entry = table [i];
+		if (entry == null) break;
+		String [] exts = expandExtensions (entry [0]);
+		for (int j = 0; j < exts.length; j++) {
+			String ext = exts[j];
+			if (ext == null) break;
+			if (count == extensions.length) {
+				String [] newExtensions = new String [count + 50];
+				System.arraycopy (extensions, 0, newExtensions, 0, count);
+				extensions = newExtensions;
+			}
+			extensions[count++] = ext;
+		}
+	}
+	if (count != extensions.length) {
+		String [] newExtensions = new String [count];
+		System.arraycopy (extensions, 0, newExtensions, 0, count);
+		extensions = newExtensions;
+	}
+	return extensions;
 }
 
 /**
@@ -63,21 +107,34 @@ public static String [] getExtensions () {
  * @return an array of programs
  */
 public static Program [] getPrograms () {
-	Program [] programs = new Program [1024];
-	byte [] key = new byte [1024];
-	int index = 0, count = 0;
-//	while (OS.RegEnumKey (OS.HKEY_CLASSES_ROOT, index, key, key.length) != OS.ERROR_NO_MORE_ITEMS) {
-//		Program program = getProgram (key);
-//		if (program != null) {
-//			if (count == programs.length) {
-//				Program [] newPrograms = new Program [programs.length + 1024];
-//				System.arraycopy (programs, 0, newPrograms, 0, programs.length);
-//				programs = newPrograms;
-//			}
-//			programs [count++] = program;
-//		}
-//		index++;
-//	}
+	String[][] table = loadAssociationTable ();
+	if (table == null) return new Program [0];
+	int count = 0;
+	Program [] programs = new Program [50];
+	for (int i = 0; i < table.length; i++) {
+		String [] entry = table [i];
+		if (entry == null) break;
+		String [] extensions = expandExtensions (entry [0]);
+		for (int j = 0; j < extensions.length; j++) {
+			String extension = extensions[j];
+			if (extension == null) break;
+			Program program = new Program ();
+			program.extension = extension;
+			program.command = entry [1];
+			int index;
+			String name = entry [1];
+			if ((index = name.indexOf(' ')) != -1) {
+				name = name.substring (0, index);
+			}
+			program.name = name;
+			if (count 	== programs.length) {
+				Program [] newPrograms = new Program [count + 50];
+				System.arraycopy (programs, 0, newPrograms, 0, count);
+				programs = newPrograms;
+			}
+			programs [count++] = program;
+		}
+	}
 	if (count != programs.length) {
 		Program [] newPrograms = new Program [count];
 		System.arraycopy (programs, 0, newPrograms, 0, count);
@@ -113,6 +170,85 @@ public static boolean launch (String fileName) {
 	}
 }
 
+static String []  expandExtensions (String ext) {
+	int start = 0, index = 0, count = 0, length = ext.length ();
+	String[] extensions = new String [5];
+	while (index < length) {
+			index = ext.indexOf ('|', start);
+			if (index == -1) index = length;
+			String extension = ext.substring (start, index).trim();
+			start = index + 1;
+			int bracketStart = extension.indexOf('[');
+			if (bracketStart != -1) {
+				int bracketEnd = extension.indexOf(']', bracketStart);
+				if (bracketEnd != -1) {
+					String prefix = extension.substring (0, bracketStart);
+					String suffix = extension.substring (bracketEnd + 1, extension.length ());
+					String chars = extension.substring (bracketStart + 1, bracketEnd);
+					for (int i=0; i<chars.length (); i++) {
+						if (count == extensions.length) {
+							String [] newExtensions = new String [count + 5];
+							System.arraycopy (extensions, 0, newExtensions, 0, count);
+							extensions = newExtensions;
+						}
+						extensions [count++] = prefix + chars.charAt (i) + suffix;
+					}
+				}
+			} else {
+				if (count == extensions.length) {
+					String [] newExtensions = new String [count + 5];
+					System.arraycopy (extensions, 0, newExtensions, 0, count);
+					extensions = newExtensions;
+				}
+				extensions [count++] = extension;
+			}
+	}
+	return extensions;
+}
+
+static String [][] loadAssociationTable () {
+	FileInputStream is = null;
+	try {
+		byte[] buffer = Converter.wcsToMbcs (null, "HOME", true);
+		int ptr = OS.getenv (buffer);
+		if (ptr == 0) return null;
+		int length = OS.strlen (ptr);
+		if (length == 0) return null;
+		buffer = new byte [length];
+		OS.memmove (buffer, ptr, length);
+		String home = new String (Converter.mbcsToWcs (null, buffer));
+		is = new FileInputStream (home + "/.ph/pfm/associate.003");
+		BufferedReader reader = new BufferedReader (new InputStreamReader (is));
+		String line;
+		int count = 0;
+		String [][] table = new String [50][];
+		while ((line = reader.readLine ()) != null) {
+			if (line.trim().startsWith ("#")) continue;
+			int start = 0, tabIndex = line.indexOf ('\t', start);
+			if (tabIndex == -1) continue;
+			String extension = line.substring (start, tabIndex);
+			start = tabIndex + 1;
+			tabIndex = line.indexOf ('\t', start);
+			if (tabIndex == -1) continue;
+			String command = line.substring (start, tabIndex);
+			if (count == table.length) {
+				String [][] newTable = new String [table.length + 50][];
+				System.arraycopy (table, 0, newTable, 0, table.length);
+				table = newTable;
+			}
+			String[] entry = new String [] {extension, command};
+			table [count++] = entry;
+		}
+		return table;
+	} catch (IOException e) {
+	} finally {
+		try {
+			if (is != null) is.close();
+		} catch (IOException e) {}
+	}
+	return null;
+}
+
 /**
  * Executes the program with the file as the single argument
  * in the operating system.  It is the responsibility of the
@@ -128,12 +264,24 @@ public static boolean launch (String fileName) {
  */
 public boolean execute (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	int index = command.indexOf ("%f");
-	if (index == -1) return false;
-	String prefix = command.substring (0, index);
-	String suffix = command.substring (index + 2, command.length ());
+	int index = -1;
+	String prefix = command, suffix = "", location = "";
+	String[] locations = {"file://$PWD/@", "$PWD/@", "@"};
+	for (int i = 0; i < locations.length; i++) {
+		location = locations[i];
+		index = command.indexOf (location);
+		if (index != -1) break;
+	}
+	if (index != -1) {
+		int start = 0;
+		prefix = command.substring (start, index);
+		start = index + location.length() + 1;
+		if (start < command.length ()) {
+			suffix = command.substring (start, command.length ());
+		}
+	}
 	try {
-		Compatibility.exec(prefix + '"' + fileName + '"' + suffix);
+		Compatibility.exec(prefix + " "  + fileName + " " +  suffix);
 	} catch (IOException e) {
 		return false;
 	}

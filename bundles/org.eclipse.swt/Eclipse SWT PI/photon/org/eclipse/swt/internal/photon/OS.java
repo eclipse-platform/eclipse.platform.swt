@@ -2988,4 +2988,5 @@ public static final native int PtRelease ();
 public static final native void memmove (PtTreeCallback_t dest, int src, int size);
 public static final native int PtTreeShow(int widget, int item );
 public static final native void PhMoveCursorAbs (int input_group, int x, int y );
+public static final native int getenv(byte[] name);
 }

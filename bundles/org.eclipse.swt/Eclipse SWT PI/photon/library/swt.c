@@ -6956,3 +6956,20 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtWidgetFlags
 	
 	return (jint)PtWidgetFlags((PtWidget_t *)widget);
 }
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_getenv
+  (JNIEnv *env, jobject that, jbyteArray name)
+{
+    char *name1=NULL;
+    jint result;
+
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "getenv\n");
+#endif
+
+    if (name) name1 = (char *)(*env)->GetByteArrayElements(env, name, NULL);
+    result = (jint)getenv(name1);
+    if (name) (*env)->ReleaseByteArrayElements(env, name, (jbyte *)name1, 0);
+
+	return result;
+}
