@@ -7,9 +7,11 @@ package org.eclipse.swt.graphics;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.internal.carbon.*;
-import org.eclipse.swt.*;
- 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.widgets.MacUtil;
+
 /**
  * Class <code>GC</code> is where all of the drawing capabilities that are 
  * supported by SWT are located. Instances are used to draw on either an 
@@ -46,6 +48,7 @@ public final class GC {
 	private boolean fPendingClip;
 	
 	private int[] fContext= new int[1];
+	private boolean fCGContextCreated;
 	//---- AW
 
 GC() {
@@ -108,7 +111,8 @@ public void copyArea(int x, int y, int width, int height, int destX, int destY) 
 		if (focus(true, null)) {
 			int rgn= OS.NewRgn();
 			OS.ScrollRect(r, (short)deltaX, (short)deltaY, rgn);
-			OS.InvalWindowRgn(OS.GetWindowFromPort(handle), rgn);
+			if (data.controlHandle != 0)
+				OS.HIViewSetNeedsDisplayInRegion(data.controlHandle, rgn, true);
 			OS.DisposeRgn(rgn);
 		}
 	} finally {
@@ -2057,7 +2061,7 @@ public String toString () {
 
 		// set origin of port using drawable bounds
 		if (data.controlHandle != 0) {
-			OS.GetControlBounds(data.controlHandle, fRect);
+			MacUtil.getControlBounds(data.controlHandle, fRect);
 			dx= fRect.left;
 			dy= fRect.top;
 			OS.SetOrigin((short)-dx, (short)-dy);
@@ -2070,16 +2074,15 @@ public String toString () {
 		
 		// calculate new clip based on the controls bound and GC clipping region
 		if (data.controlHandle != 0) {
-			
+						
 			int result= OS.NewRgn();
 			MacUtil.getVisibleRegion(data.controlHandle, result, true);
 			OS.OffsetRgn(result, (short)-dx, (short)-dy);
-
+			
 			// clip against damage 
 			if (fDamageRgn != 0) {
 				int dRgn= OS.NewRgn();
 				OS.CopyRgn(fDamageRgn, dRgn);
-				OS.OffsetRgn(dRgn, (short)-dx, (short)-dy);
 				OS.SectRgn(result, dRgn, result);
 			}
 			
@@ -2101,7 +2104,7 @@ public String toString () {
 					OS.GetRegionBounds(data.clipRgn, bounds);
 			} else {
 				if (bounds != null)
-					OS.SetRect(bounds, (short)0, (short)0, (short)0x8fff, (short)0x8fff);
+					OS.SetRect(bounds, (short)0, (short)0, (short)0x7fff, (short)0x7fff);
 			}
 		}
 		fPendingClip= false;
@@ -2125,9 +2128,14 @@ public String toString () {
 	}
 	
 	public Rectangle carbon_focus(int damageRgn) {
-		OS.LockPortBits(handle);
-		fDamageRgn= damageRgn;
+		return carbon_focus(damageRgn, 0);
+	}
+	
+	public Rectangle carbon_focus(int damageRgn, int cgcontext) {
 		Rect bounds= new Rect();
+		fDamageRgn= damageRgn;
+		fContext[0]= cgcontext;
+		OS.LockPortBits(handle);
 		focus(true, bounds);
 		fIsFocused= true;
 		int width = bounds.right - bounds.left;
@@ -2137,6 +2145,7 @@ public String toString () {
 	
 	public void carbon_unfocus() {
 		fIsFocused= false;
+		fContext[0]= 0;
 		unfocus(true);
 		fDamageRgn= 0;
 		OS.UnlockPortBits(handle);
@@ -2155,27 +2164,30 @@ public String toString () {
 	// new Core Graphic stuff
 	
 	public int carbon_CG_focus() {
-		
-		if (OS.QDBeginCGContext(handle, fContext) != OS.noErr)
-			return 0;
+		if (fContext[0] == 0) {
+			// create CGContext from GrafPort
+			if (OS.QDBeginCGContext(handle, fContext) != OS.noErr)
+				return 0;
+			System.out.println("CGContext created");
+			fCGContextCreated= true;
+			// synch CGContext with GrafPort clipping and offset
+			Rect b= new Rect();
+			OS.GetPortBounds(handle, b); 
 			
-		int context= fContext[0];
-		
-		Rect b= new Rect();
-		OS.GetPortBounds(handle, b); 
-		
-		int clip= OS.NewRgn();
-		OS.GetPortClipRegion(handle, clip);
-		OS.ClipCGContextToRegion(context, b, clip);
-		OS.DisposeRgn(clip);
-	              		
-		OS.CGContextTranslateCTM(context, 0, b.bottom - b.top);
-		OS.CGContextScaleCTM(context, 1, -1);
-		return context;
+			int clip= OS.NewRgn();
+			OS.GetPortClipRegion(handle, clip);
+			OS.ClipCGContextToRegion(fContext[0], b, clip);
+			OS.DisposeRgn(clip);
+		              		
+			OS.CGContextTranslateCTM(fContext[0], 0, b.bottom-b.top);
+			OS.CGContextScaleCTM(fContext[0], 1, -1);
+		}
+		return fContext[0];
 	}
 
 	public void carbon_CG_unfocus() {
-		OS.QDEndCGContext(handle, fContext);							
+		if (fCGContextCreated)
+			OS.QDEndCGContext(handle, fContext);
+		fContext[0]= 0;
 	}
-
 }

@@ -9,8 +9,8 @@
 package org.eclipse.swt.graphics;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.internal.carbon.MacUtil;
 import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.widgets.MacUtil;
 
 public class MacFont {
 

@@ -650,3 +650,56 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_NewGWorldFromPtr
 	return status;
 }
 
+//////////////////////////////////////////
+//  added by AW while merging HIView stuff
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_HIViewSetBoundsOrigin(JNIEnv *env, jclass zz,
+			jint inView, jfloat x, jfloat y) {
+	return RC(HIViewSetBoundsOrigin((HIViewRef) inView, x, y));
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_HIViewGetPartHit(JNIEnv *env, jclass zz,
+			jint inView, jfloatArray where, jshortArray outPart) {
+	jfloat *sa= (*env)->GetFloatArrayElements(env, where, 0);
+	jshort *sb= (*env)->GetShortArrayElements(env, outPart, 0);
+	jint status= RC(HIViewGetPartHit((HIViewRef) inView, (const HIPoint*) sa, (HIViewPartCode*) sb));
+	(*env)->ReleaseFloatArrayElements(env, where, sa, 0);
+	(*env)->ReleaseShortArrayElements(env, outPart, sb, 0);
+	return status;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_HIViewGetSubviewHit(JNIEnv *env, jclass zz,
+			jint inView, jfloatArray where, jboolean deep, jintArray outView) {
+	jfloat *sa= (*env)->GetFloatArrayElements(env, where, 0);
+	jint *sb= (*env)->GetIntArrayElements(env, outView, 0);
+	jint status= RC(HIViewGetSubviewHit((HIViewRef) inView, (const HIPoint*) sa, deep, (HIViewRef*) sb));
+	(*env)->ReleaseFloatArrayElements(env, where, sa, 0);
+	(*env)->ReleaseIntArrayElements(env, outView, sb, 0);
+	return status;
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS2_CGContextBeginPath(JNIEnv *env, jclass zz,
+			jint inContext) {
+	CGContextBeginPath((CGContextRef)inContext);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS2_CGContextAddArc(JNIEnv *env, jclass zz,
+			jint inContext, jfloat x, jfloat y, jfloat radius, jfloat startAngle, jfloat endAngle, jint clockwise) {
+	CGContextAddArc((CGContextRef)inContext, x, y, radius, startAngle, endAngle, clockwise);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS2_CGContextClosePath(JNIEnv *env, jclass zz,
+			jint inContext) {
+	CGContextClosePath((CGContextRef)inContext);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS2_CGContextStrokePath(JNIEnv *env, jclass zz,
+			jint inContext) {
+	CGContextStrokePath((CGContextRef)inContext);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS2_CGContextFillPath(JNIEnv *env, jclass zz,
+			jint inContext) {
+	CGContextFillPath((CGContextRef)inContext);
+}
+
