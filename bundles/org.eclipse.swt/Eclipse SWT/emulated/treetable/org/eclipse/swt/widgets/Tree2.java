@@ -569,7 +569,7 @@ void doMouseDown(Event event) {
 		}
 	} else {	/* SWT.MULTI */
 		if (!selectedItem.selected) {
-			if (event.button == 1) {	// TODO button 2?
+			if (event.button == 1) {
 				if ((event.stateMask & (SWT.CTRL | SWT.SHIFT)) == SWT.SHIFT) {
 					// TODO do shift-select
 				} else {
@@ -591,7 +591,7 @@ void doMouseDown(Event event) {
 				}
 			}
 		} else {	/* item is selected */
-			if (event.button != 1) return;	// TODO button 2?
+			if (event.button != 1) return;
 			if ((event.stateMask & SWT.CTRL) != 0) {
 				removeSelectedItem(getSelectionIndex(selectedItem));
 				setFocusItem(selectedItem, true);
@@ -690,7 +690,7 @@ void doPaint (Event event) {
 	for (int i = startIndex; i <= endIndex; i++) {
 		TreeItem2 item = availableItems[i];
 		if (startColumn == -1) {
-			/* indicates that damage occurred to the right of the last column */
+			/* indicates that region to paint is to the right of the last column */
 			item.paint(gc, null, false);
 		} else {
 			if (numColumns == 0) {
@@ -764,9 +764,6 @@ void doSpace() {
 	event.item = focusItem;
 	sendEvent(SWT.Selection, event);
 }
-int getAvailableItemsCount() {
-	return availableItems.length;
-}
 int getCellPadding() {
 	return MARGIN_CELL + WIDTH_CELL_HIGHLIGHT; 
 }
@@ -783,9 +780,6 @@ public Control [] getChildren() {
 		 }
 	}
 	return result;
-}
-int getCol0ImageWidth() {
-	return col0ImageWidth;
 }
 public TreeColumn getColumn(int index) {
 	// TODO public?
@@ -805,18 +799,9 @@ public TreeColumn[] getColumns() {
 	System.arraycopy(columns, 0, result, 0, columns.length);
 	return result;
 }
-TreeItem2 getFocusItem() {
-	return focusItem;
-}
-int getFontHeight() {
-	return fontHeight;
-}
 int getHeaderHeight() {
 	if (!header.getVisible()) return 0;
 	return header.getSize().y;
-}
-int getHeaderImageHeight() {
-	return headerImageHeight;
 }
 int getHeaderPadding() {
 	return MARGIN_CELL + WIDTH_HEADER_SHADOW; 
@@ -824,12 +809,6 @@ int getHeaderPadding() {
 public boolean getHeaderVisible () {
 	checkWidget();
 	return header.getVisible();
-}
-int getHorizontalOffset() {
-	return horizontalOffset;
-}
-int getImageHeight() {
-	return imageHeight;
 }
 public TreeItem2 getItem(Point point) {
 	checkWidget();
@@ -889,9 +868,6 @@ public TreeItem2 getTopItem() {
 	checkWidget();
 	if (availableItems.length == 0) return null;
 	return availableItems[topIndex];
-}
-int getValidColumnCount() {
-	return Math.max (1,columns.length);
 }
 void handleEvents (Event event) {
 	switch (event.type) {
@@ -1260,7 +1236,6 @@ void makeDescendentsUnavailable(TreeItem2 item, TreeItem2[] removedDescendents) 
 	updateVerticalBar();
 	updateHorizontalBar();
 }
-
 /*
  * Important: Assumes that item just became unavailable (ie.- was either disposed
  * or the parent item was collapsed) and the parent is available.
@@ -1434,9 +1409,6 @@ void selectItem(TreeItem2 item, boolean addToSelection) {
 		item.selected = true;
 	}
 }
-void setCol0ImageWidth(int value) {
-	col0ImageWidth = value;
-}
 void setFocusItem(TreeItem2 item, boolean redrawOldFocus) {
 	if (item == focusItem) return;
 	TreeItem2 oldFocusItem = focusItem;
@@ -1575,7 +1547,8 @@ void updateColumnWidth (TreeColumn column, int width) {
 	ScrollBar hBar = getHorizontalBar();
 	hBar.setMaximum(columns[columns.length - 1].getRightmostX());
 	hBar.setThumb(bounds.width);
-	redraw(column.getX(), 0, bounds.width - column.getX(), bounds.height, true);
+	int x = column.getX();
+	redraw(x, 0, bounds.width - x, bounds.height, true);
 }
 /*
  * This is a naive implementation just to make it work.  The args are not currently used.
