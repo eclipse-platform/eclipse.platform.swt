@@ -152,7 +152,7 @@ public Cursor(Device device, int style) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (shape == 0 && style == SWT.CURSOR_APPSTARTING) {
-		handle = createCursor(APPSTARTING_SRC, APPSTARTING_MASK, 32, 32, 2, 2);		
+		handle = createCursor(APPSTARTING_SRC, APPSTARTING_MASK, 32, 32, 2, 2, false);		
 	} else {
 		handle = OS.gdk_cursor_new(shape);
 	}
@@ -245,7 +245,7 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 		maskData[i] = (byte) ~maskData[i];
 	}
 	maskData = ImageData.convertPad(maskData, mask.width, mask.height, mask.depth, mask.scanlinePad, 1);
-	handle = createCursor(sourceData, maskData, source.width, source.height, hotspotX, hotspotY);
+	handle = createCursor(maskData, sourceData, source.width, source.height, hotspotX, hotspotY, true);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (device.tracking) device.new_Object(this);
 }
@@ -340,19 +340,20 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 			((s & 0x01) << 7));
 	}
 	maskData = ImageData.convertPad(maskData, mask.width, mask.height, mask.depth, mask.scanlinePad, 1);
-	handle = createCursor(sourceData, maskData, source.width, source.height, hotspotX, hotspotY);
+	handle = createCursor(sourceData, maskData, source.width, source.height, hotspotX, hotspotY, false);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (device.tracking) device.new_Object(this);
 }
 
-int /*long*/ createCursor(byte[] sourceData, byte[] maskData, int width, int height, int hotspotX, int hotspotY) {
+int /*long*/ createCursor(byte[] sourceData, byte[] maskData, int width, int height, int hotspotX, int hotspotY, boolean reverse) {
 	int /*long*/ sourcePixmap = OS.gdk_bitmap_create_from_data(0, sourceData, width, height);
 	int /*long*/ maskPixmap = OS.gdk_bitmap_create_from_data(0, maskData, width, height);
 	int /*long*/ cursor = 0;
 	if (sourcePixmap != 0 && maskPixmap != 0) {
 		GdkColor foreground = new GdkColor();
-		foreground.red = foreground.green = foreground.blue = (short)0xFFFF;
+		if (!reverse) foreground.red = foreground.green = foreground.blue = (short)0xFFFF;
 		GdkColor background = new GdkColor();
+		if (reverse) background.red = background.green = background.blue = (short)0xFFFF;
 		cursor = OS.gdk_cursor_new_from_pixmap (sourcePixmap, maskPixmap, foreground, background, hotspotX, hotspotY);
 	}	
 	if (sourcePixmap != 0) OS.g_object_unref (sourcePixmap);
