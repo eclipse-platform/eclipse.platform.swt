@@ -67,16 +67,24 @@ public class Browser5 {
 						} else {
 							browser.setData("index", new Integer(-100-index));
 							System.out.println("Visibility.show browser "+index+" location "+event.location+" size "+event.size);
-							if (((event.location == null && regressionBounds[index][0] == null) ||
-								(event.location != null && event.location.equals(regressionBounds[index][0]))) &&
-								((event.size == null && regressionBounds[index][1] == null) ||
-								(event.size != null && event.size.equals(regressionBounds[index][1])))) cntPassed++;
-							else {
-								System.out.println("Failure - was expecting location "+regressionBounds[index][0]+" size "+regressionBounds[index][1]);
+							/* Certain browsers include decorations to the expected size. Accept size that are larger or equal than
+							 * expected. Certain browsers invent size or location when some parameters are missing. If we expect
+							 * null for one of size or location, also accept non null answers.
+							 */
+							boolean checkLocation = (event.location == null && regressionBounds[index][0] == null) ||
+								(event.location != null && event.location.equals(regressionBounds[index][0]) ||
+								(event.location != null && regressionBounds[index][0] == null));
+							boolean checkSize  = ((event.size == null && regressionBounds[index][1] == null) || 
+							(event.size != null && event.size.equals(regressionBounds[index][1])) ||
+							(event.size != null && regressionBounds[index][1] == null) ||
+							(event.size != null && event.size.x >= regressionBounds[index][1].x && event.size.y >= regressionBounds[index][1].y));
+							System.out.println("Expected location "+regressionBounds[index][0]+" size "+regressionBounds[index][1]);
+							if (!checkSize || !checkLocation || ((event.size != null || event.location != null) && regressionBounds[index][0] == null && regressionBounds[index][1] == null)) {
+								System.out.println("	Failure ");
 								passed = false;
 								shell.close();
 								return;
-							}
+							} else cntPassed++;
 						}
 					}
 				});
