@@ -237,6 +237,33 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener (SWT.Selection,typedListener);
 	addListener (SWT.DefaultSelection,typedListener);
 }
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the receiver's text is verified, by sending
+ * it one of the messages defined in the <code>VerifyListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see VerifyListener
+ * @see #removeVerifyListener
+ * 
+ * @since 3.1
+ */
+void addVerifyListener (VerifyListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.Verify, typedListener);
+}
 static int checkStyle (int style) {
 	/*
 	* Feature in Windows.  It is not possible to create
@@ -782,6 +809,7 @@ void hookEvents () {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	OS.XtAddCallback (argList[1], OS.XmNactivateCallback, windowProc, ACTIVATE_CALLBACK);
 	OS.XtAddCallback (argList[1], OS.XmNvalueChangedCallback, windowProc, VALUE_CHANGED_CALLBACK);
+	OS.XtAddCallback (argList[1], OS.XmNmodifyVerifyCallback, windowProc, MODIFY_VERIFY_CALLBACK);
 	OS.XtAddEventHandler (argList[1], OS.KeyPressMask, false, windowProc, KEY_PRESS);
 	OS.XtAddEventHandler (argList[1], OS.KeyReleaseMask, false, windowProc, KEY_RELEASE);
 	OS.XtInsertEventHandler (argList[1], OS.FocusChangeMask, false, windowProc, FOCUS_CHANGE, OS.XtListTail);
@@ -1056,6 +1084,31 @@ public void removeSelectionListener (SelectionListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
 	eventTable.unhook (SWT.DefaultSelection,listener);	
+}
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the control is verified.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see VerifyListener
+ * @see #addVerifyListener
+ * 
+ * @since 3.1
+ */
+void removeVerifyListener (VerifyListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.Verify, listener);	
 }
 /**
  * Selects the item at the given zero-relative index in the receiver's 
@@ -1498,6 +1551,45 @@ int XmNselectionCallback (int w, int client_data, int call_data) {
 	if (ignoreSelect || getSelectionIndex() == -1) return 0;
 	postEvent (SWT.Selection);
 	return 0;
+}
+int XmNmodifyVerifyCallback (int w, int client_data, int call_data) {
+	int result = super.XmNmodifyVerifyCallback (w, client_data, call_data);
+	if (result != 0) return result;
+	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return result;
+	XmTextVerifyCallbackStruct textVerify = new XmTextVerifyCallbackStruct ();
+	OS.memmove (textVerify, call_data, XmTextVerifyCallbackStruct.sizeof);
+	XmTextBlockRec textBlock = new XmTextBlockRec ();
+	OS.memmove (textBlock, textVerify.text, XmTextBlockRec.sizeof);
+	byte [] buffer = new byte [textBlock.length];
+	OS.memmove (buffer, textBlock.ptr, textBlock.length);
+	String codePage = getCodePage ();
+	String text = new String (Converter.mbcsToWcs (codePage, buffer));
+	Event event = new Event ();
+	if (textVerify.event != 0) {
+		XKeyEvent xEvent = new XKeyEvent ();
+		OS.memmove (xEvent, textVerify.event, XKeyEvent.sizeof);
+		event.time = xEvent.time;
+		setKeyState (event, xEvent);
+	}
+	event.start = textVerify.startPos;
+	event.end = textVerify.endPos;
+	event.doit = textVerify.doit == 1;
+	event.text = text;
+	sendEvent (SWT.Verify, event);
+	String newText = event.text;
+	textVerify.doit = (byte) ((event.doit && newText != null) ? 1 : 0);
+	if (newText != null && newText != text) {
+		OS.XtFree(textBlock.ptr);
+		byte [] buffer2 = Converter.wcsToMbcs (codePage, newText, true);
+		int length = buffer2.length;
+		int ptr = OS.XtMalloc (length);
+		OS.memmove (ptr, buffer2, length);
+		textBlock.ptr = ptr;
+		textBlock.length = buffer2.length - 1;
+		OS.memmove (textVerify.text, textBlock, XmTextBlockRec.sizeof);
+	}
+	OS.memmove (call_data, textVerify, XmTextVerifyCallbackStruct.sizeof);
+	return result;
 }
 int XmNvalueChangedCallback (int w, int client_data, int call_data) {
 	sendEvent (SWT.Modify);
