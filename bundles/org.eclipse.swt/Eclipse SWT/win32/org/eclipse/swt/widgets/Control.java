@@ -453,6 +453,10 @@ void createHandle () {
 		OS.GetModuleHandle (null),
 		null);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	if ((bits & OS.WS_CHILD) != 0) {
+		OS.SetWindowLong (handle, OS.GWL_ID, handle);
+	}
 	if (OS.IsDBLocale && parent != null) {
 		int hIMC = OS.ImmGetContext (hwndParent);
 		OS.ImmAssociateContext (handle, hIMC);
@@ -2369,8 +2373,14 @@ boolean translateMnemonic (MSG msg) {
 }
 
 boolean translateTraversal (MSG msg) {
-	int hwnd = msg.hwnd;
 	int key = msg.wParam;
+	if (key == OS.VK_MENU) {
+		Shell shell = getShell ();
+		int hwndShell = shell.handle;
+		OS.SendMessage (hwndShell, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
+		return false;
+	}
+	int hwnd = msg.hwnd;
 	int detail = SWT.TRAVERSE_NONE;
 	boolean doit = true, all = false;
 	boolean lastVirtual = false;
@@ -2722,6 +2732,7 @@ int windowProc (int msg, int wParam, int lParam) {
 		case OS.WM_SETFOCUS:			result = WM_SETFOCUS (wParam, lParam); break;
 		case OS.WM_SETFONT:			result = WM_SETFONT (wParam, lParam); break;
 		case OS.WM_SETTINGCHANGE:		result = WM_SETTINGCHANGE (wParam, lParam); break;
+		case OS.WM_SETREDRAW:			result = WM_SETREDRAW (wParam, lParam); break;
 		case OS.WM_SHOWWINDOW:			result = WM_SHOWWINDOW (wParam, lParam); break;
 		case OS.WM_SIZE:				result = WM_SIZE (wParam, lParam); break;
 		case OS.WM_SYSCHAR:			result = WM_SYSCHAR (wParam, lParam); break;
@@ -3218,17 +3229,40 @@ LRESULT WM_KEYUP (int wParam, int lParam) {
 	* Bug in Windows 95 and NT.  When the user types an accent key such
 	* as ^ to get an accented character on a German keyboard, the accent
 	* key should be ignored and the next key that the user types is the
-	* accented key.  On Windows 95 and NT, a call to ToAscii(), clears the
+	* accented key.  On Windows 95 and NT, a call to ToAscii (), clears the
 	* accented state such that the next WM_CHAR loses the accent.  The fix
 	* is to detect the accent key stroke (called a dead key) by testing the
-	* high bit of the value returned by MapVirtualKey().  A further problem
+	* high bit of the value returned by MapVirtualKey ().  A further problem
 	* is that the high bit on Windows NT is bit 32 while the high bit on
 	* Windows 95 is bit 16.  They should both be bit 32.
+	* 
+	* NOTE: This code is avoiding a call to ToAscii ().
 	*/
 	if (OS.IsWinNT) {
 		if ((mapKey & 0x80000000) != 0) return null;
 	} else {
 		if ((mapKey & 0x8000) != 0) return null;
+	}
+	
+	/*
+	* Bug in Windows.  When the accent key is generated on an international
+	* keyboard using Ctrl+Alt or the special key, MapVirtualKey () does not
+	* have the high bit set indicating that this is an accent key stroke.
+	* The fix is to iterate through all known accent, mapping them back to
+	* their corresponding virtual key and key state.  If the virtual key
+	* and key state match the current key, then this is an accent that has
+	* been generated using an international keyboard and calling ToAscii ()
+	* will clear the accent state.
+	* 
+	* NOTE: This code is avoiding a call to ToAscii ().
+	*/
+	if (!OS.IsWinCE) {
+		for (int i=0; i<ACCENTS.length; i++) {
+			int value = OS.VkKeyScan (ACCENTS [i]);
+			if ((value & 0xFF) == wParam && (value & 0x600) == 0x600) {
+				return null;
+			}
+		}
 	}
 		
 	display.lastVirtual = (mapKey == 0);
@@ -3634,18 +3668,19 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 	if (!hooks (SWT.Paint)) return null;
 
 	/* Get the damage */
-	int rgn = 0;
-	rgn = OS.CreateRectRgn (0, 0, 0, 0);
-	OS.GetUpdateRgn (handle, rgn, false);
-	int result = callWindowProc (OS.WM_PAINT, wParam, lParam);
+	int result = 0;
 	if (OS.IsWinCE) {
 		RECT rect = new RECT ();
-		OS.GetRgnBox (rgn, rect);
+		OS.GetUpdateRect (handle, rect, false);
+		result = callWindowProc (OS.WM_PAINT, wParam, lParam);
 		OS.InvalidateRect (handle, rect, false);
 	} else {
+		int rgn = OS.CreateRectRgn (0, 0, 0, 0);
+		OS.GetUpdateRgn (handle, rgn, false);
+		result = callWindowProc (OS.WM_PAINT, wParam, lParam);
 		OS.InvalidateRgn (handle, rgn, false);
+		OS.DeleteObject (rgn);
 	}
-	OS.DeleteObject (rgn);
 
 	/* Create the paint GC */
 	PAINTSTRUCT ps = new PAINTSTRUCT ();
@@ -3793,6 +3828,10 @@ LRESULT WM_SETTINGCHANGE (int wParam, int lParam) {
 }
 
 LRESULT WM_SETFONT (int wParam, int lParam) {
+	return null;
+}
+
+LRESULT WM_SETREDRAW (int wParam, int lParam) {
 	return null;
 }
 

@@ -834,17 +834,6 @@ LRESULT WM_COMMAND (int wParam, int lParam) {
 	return LRESULT.ZERO;
 }
 
-LRESULT WM_ERASEBKGND (int wParam, int lParam) {
-	/*
-	* Feature in Windows.  For some reason, Windows
-	* does not fully erase the area that the cool bar
-	* occupies when the size of the cool bar grows.
-	* The fix is to erase the cool bar background.
-	*/
-	drawBackground (wParam);
-	return null;
-}
-
 LRESULT WM_NOTIFY (int wParam, int lParam) {
 	/*
 	* Feature in Windows.  When the coolbar window
@@ -867,6 +856,21 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 	LRESULT result = super.WM_NOTIFY (wParam, lParam);
 	if (result != null) return result;
 	return LRESULT.ZERO;
+}
+
+LRESULT WM_SETREDRAW (int wParam, int lParam) {
+	LRESULT result = super.WM_SETREDRAW (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Feature in Windows.  When redraw is turned off, the rebar
+	* control does not call the default window proc.  This means
+	* that the rebar will redraw and children of the rebar will
+	* also redraw.  The fix is to call both the rebar window proc
+	* and the default window proc.
+	*/
+	int code = callWindowProc (OS.WM_SETREDRAW, wParam, lParam);
+	OS.DefWindowProc (handle, OS.WM_SETREDRAW, wParam, lParam);
+	return new LRESULT (code);
 }
 
 LRESULT wmNotifyChild (int wParam, int lParam) {
