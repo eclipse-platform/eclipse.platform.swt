@@ -203,7 +203,7 @@ public class HoverHelp {
 			final Display display = parent.getDisplay();
 			this.parentShell = parent;
 	
-			tipShell = new Shell(parent, SWT.NONE);
+			tipShell = new Shell(parent, SWT.ON_TOP);
 			GridLayout gridLayout = new GridLayout();
 			gridLayout.numColumns = 2;
 			gridLayout.marginWidth = 2;
