@@ -216,14 +216,6 @@ int defaultThemeFont () {
 	return OS.kThemePushButtonFont;
 }
 
-void destroyWidget () {
-	if (cIcon != 0) {
-		destroyCIcon(cIcon);
-		cIcon = 0;
-	}
-	super.destroyWidget();
-}
-
 public int getAlignment () {
 	checkWidget ();
 	if ((style & SWT.ARROW) != 0) {
@@ -303,6 +295,14 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 		menuShell ().setDefaultButton ((part [0] != 0) ? this : null, false);	
 	}
 	return result;
+}
+
+void releaseWidget () {
+	super.releaseWidget ();
+	if (cIcon != 0) {
+		destroyCIcon (cIcon);
+		cIcon = 0;
+	}
 }
 
 public void removeSelectionListener(SelectionListener listener) {
