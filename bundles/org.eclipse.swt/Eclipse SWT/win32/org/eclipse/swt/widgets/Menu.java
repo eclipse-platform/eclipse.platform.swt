@@ -142,6 +142,39 @@ public Menu (MenuItem parentItem) {
 	this (checkNull (parentItem).parent);
 }
 
+public void _setVisible (boolean visible) {
+	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
+	int hwndParent = parent.handle;
+	if (!visible) {
+		OS.SendMessage (hwndParent, OS.WM_CANCELMODE, 0, 0);
+		return;
+	}
+	int flags = OS.TPM_LEFTBUTTON | OS.TPM_RIGHTBUTTON | OS.TPM_LEFTALIGN;
+	int nX = x, nY = y;
+	if (!hasLocation) {
+		int pos = OS.GetMessagePos ();
+		nX = (short) (pos & 0xFFFF);
+		nY = (short) (pos >> 16);
+	}
+	/*
+	* Feature in Windows.  It is legal use TrackPopupMenu ()
+	* to display an empty menu as long as menu items are added
+	* inside of WM_INITPOPUPMENU.  If no items are added, then
+	* TrackPopupMenu () fails and does not send an indication
+	* that the menu has been closed.  This is not strictly a
+	* bug but leads to unwanted behavior when application code
+	* assumes that every WM_INITPOPUPMENU will eventually result
+	* in a WM_MENUSELECT, wParam=0xFFFF0000, lParam=0 to indicate
+	* that the menu has been closed.  The fix is to detect the
+	* case when TrackPopupMenu fails and the number of items in
+	* the menu is zero and issue a fake WM_MENUSELECT.
+	*/
+	boolean success = OS.TrackPopupMenu (handle, flags, nX, nY, 0, hwndParent, null);
+	if (!success && GetMenuItemCount (handle) == 0) {
+		OS.SendMessage (hwndParent, OS.WM_MENUSELECT, 0xFFFF0000, 0);
+	}
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when help events are generated for the control,
@@ -599,6 +632,13 @@ public boolean getVisible () {
 	if ((style & SWT.BAR) != 0) {
 		return this == parent.menuShell ().menuBar;
 	}
+	if ((style & SWT.POP_UP) != 0) {
+		Display display = getDisplay ();
+		Menu [] popups = display.popups;
+		for (int i=0; i<popups.length; i++) {
+			if (popups [i] == this) return true;
+		}
+	}
 	return this == getShell ().activeMenu;
 }
 
@@ -717,8 +757,15 @@ void redraw () {
 void releaseChild () {
 	super.releaseChild ();
 	if (cascade != null) cascade.setMenu (null);
-	if ((style & SWT.BAR) != 0 && this == parent.menuBar) {
-		parent.setMenuBar (null);
+	if ((style & SWT.BAR) != 0) {
+		if (this == parent.menuBar) {
+			parent.setMenuBar (null);
+		}
+	} else {
+		if ((style & SWT.POP_UP) != 0) {
+			Display display = getDisplay ();
+			display.removePopup (this);
+		}
 	}
 }
 
@@ -803,13 +850,15 @@ public void removeMenuListener (MenuListener listener) {
  */
 public void setDefaultItem (MenuItem item) {
 	checkWidget ();
-	int command = -1;
+	int newID = -1;
 	if (item != null) {
 		if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-		command = item.id;
+		newID = item.id;
 	}
 	if (OS.IsWinCE) return;
-	OS.SetMenuDefaultItem (handle, command, OS.MF_BYCOMMAND);
+	int oldID = OS.GetMenuDefaultItem (handle, OS.MF_BYCOMMAND, OS.GMDI_USEDISABLED);
+	if (newID == oldID) return;
+	OS.SetMenuDefaultItem (handle, newID, OS.MF_BYCOMMAND);
 	redraw ();
 }
 
@@ -875,34 +924,12 @@ public void setLocation (int x, int y) {
 public void setVisible (boolean visible) {
 	checkWidget ();
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
-	int hwndParent = parent.handle;
-	if (!visible) {
-		OS.SendMessage (hwndParent, OS.WM_CANCELMODE, 0, 0);
-		return;
-	}
-	int flags = OS.TPM_LEFTBUTTON | OS.TPM_RIGHTBUTTON | OS.TPM_LEFTALIGN;
-	int nX = x, nY = y;
-	if (!hasLocation) {
-		int pos = OS.GetMessagePos ();
-		nX = (short) (pos & 0xFFFF);
-		nY = (short) (pos >> 16);
-	}
-	/*
-	* Feature in Windows.  It is legal use TrackPopupMenu ()
-	* to display an empty menu as long as menu items are added
-	* inside of WM_INITPOPUPMENU.  If no items are added, then
-	* TrackPopupMenu () fails and does not send an indication
-	* that the menu has been closed.  This is not strictly a
-	* bug but leads to unwanted behavior when application code
-	* assumes that every WM_INITPOPUPMENU will eventually result
-	* in a WM_MENUSELECT, wParam=0xFFFF0000, lParam=0 to indicate
-	* that the menu has been closed.  The fix is to detect the
-	* case when TrackPopupMenu fails and the number of items in
-	* the menu is zero and issue a fake WM_MENUSELECT.
-	*/
-	boolean success = OS.TrackPopupMenu (handle, flags, nX, nY, 0, hwndParent, null);
-	if (!success && GetMenuItemCount (handle) == 0) {
-		OS.SendMessage (hwndParent, OS.WM_MENUSELECT, 0xFFFF0000, 0);
+	Display display = getDisplay ();
+	if (visible) {
+		display.addPopup (this);
+	} else {
+		display.removePopup (this);
+		_setVisible (false);
 	}
 }
 

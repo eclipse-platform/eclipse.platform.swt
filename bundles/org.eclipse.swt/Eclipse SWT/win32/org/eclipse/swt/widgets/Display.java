@@ -144,6 +144,9 @@ public class Display extends Device {
 	String [] keys;
 	Object [] values;
 
+	/* Popup Menus */
+	Menu [] popups;
+	
 	/* Key Mappings */
 	static final int [] [] KeyTable = {
 		
@@ -323,6 +326,25 @@ public void addListener (int eventType, Listener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) eventTable = new EventTable ();
 	eventTable.hook (eventType, listener);
+}
+
+void addPopup (Menu menu) {
+	if (popups == null) popups = new Menu [4];
+	int length = popups.length;
+	for (int i=0; i<length; i++) {
+		if (popups [i] == menu) return;
+	}
+	int index = 0;
+	while (index < length) {
+		if (popups [index] == null) break;
+		index++;
+	}
+	if (index == length) {
+		Menu [] newPopups = new Menu [length + 4];
+		System.arraycopy (popups, 0, newPopups, 0, length);
+		popups = newPopups;
+	}
+	popups [index] = menu;
 }
 
 /**
@@ -1143,9 +1165,6 @@ protected void init () {
 	int hHeap = OS.GetProcessHeap ();
 	int hInstance = OS.GetModuleHandle (null);
 	WNDCLASS lpWndClass = new WNDCLASS ();
-	if (OS.GetClassInfo (hInstance, windowClass, lpWndClass)) {
-		OS.UnregisterClass (windowClass, hInstance);
-	}
 	lpWndClass.hInstance = hInstance;
 	lpWndClass.lpfnWndProc = windowProc;
 	lpWndClass.style = OS.CS_BYTEALIGNWINDOW | OS.CS_DBLCLKS;
@@ -1283,6 +1302,7 @@ void postEvent (Event event) {
  */
 public boolean readAndDispatch () {
 	checkDevice ();
+	runPopups ();
 	if (OS.PeekMessage (msg, 0, 0, 0, OS.PM_REMOVE)) {
 		if (!filterMessage (msg)) {
 			OS.TranslateMessage (msg);
@@ -1502,6 +1522,16 @@ public void removeListener (int eventType, Listener listener) {
 	eventTable.unhook (eventType, listener);
 }
 
+void removePopup (Menu menu) {
+	if (popups == null) return;
+	for (int i=0; i<popups.length; i++) {
+		if (popups [i] == menu) {
+			popups [i] = null;
+			return;
+		}
+	}
+}
+
 boolean runAsyncMessages () {
 	return synchronizer.runAsyncMessages ();
 }
@@ -1540,6 +1570,18 @@ boolean runDeferredEvents () {
 	/* Clear the queue */
 	eventQueue = null;
 	return true;
+}
+
+void runPopups () {
+	while (popups != null) {
+		Menu menu = popups [0];
+		if (menu == null) break;
+		int length = popups.length;
+		System.arraycopy (popups, 1, popups, 0, --length);
+		popups [length] = null;
+		menu._setVisible (true);
+	}
+	popups = null;
 }
 
 void runTimer (int id) {
@@ -1856,6 +1898,7 @@ public void timerExec (int milliseconds, Runnable runnable) {
 			return;
 		}
 	} else {
+		if (milliseconds < 0) return;
 		index = 0;
 		while (index < timerList.length) {
 			if (timerList [index] == null) break;
@@ -1903,19 +1946,27 @@ boolean translateMnemonic (MSG msg, Control control) {
 }
 
 boolean translateTraversal (MSG msg, Control control) {
-	if (msg.message == OS.WM_KEYDOWN) {
-		switch (msg.wParam) {
-			case OS.VK_RETURN:
-			case OS.VK_ESCAPE:
-			case OS.VK_TAB:
-			case OS.VK_UP:
-			case OS.VK_DOWN:
-			case OS.VK_LEFT:
-			case OS.VK_RIGHT:
-			case OS.VK_PRIOR:
-			case OS.VK_NEXT:
-				return control.translateTraversal (msg);
-		}
+	switch (msg.message) {
+		case OS.WM_KEYDOWN:
+			switch (msg.wParam) {
+				case OS.VK_RETURN:
+				case OS.VK_ESCAPE:
+				case OS.VK_TAB:
+				case OS.VK_UP:
+				case OS.VK_DOWN:
+				case OS.VK_LEFT:
+				case OS.VK_RIGHT:
+				case OS.VK_PRIOR:
+				case OS.VK_NEXT:
+					return control.translateTraversal (msg);
+			}
+			break;
+		case OS.WM_SYSKEYDOWN:
+			switch (msg.wParam) {
+				case OS.VK_MENU:
+					return control.translateTraversal (msg);
+			}
+			break;
 	}
 	return false;
 }

@@ -42,7 +42,6 @@ public class TabFolder extends Composite {
 	static final int TabFolderProc;
 	static final TCHAR TabFolderClass = new TCHAR (0, "SWT_" + OS.WC_TABCONTROL, true);
 	static {
-		
 		/*
 		* Feature in Windows.  The tab control window class
 		* uses the CS_HREDRAW and CS_VREDRAW style bits to
@@ -748,7 +747,7 @@ LRESULT WM_WINDOWPOSCHANGING (int wParam, int lParam) {
 	OS.GetClientRect (handle, rect);
 	int oldWidth = rect.right - rect.left;
 	int oldHeight = rect.bottom - rect.top;
-	if ((newWidth == oldWidth) && (newHeight == oldHeight)) {
+	if (newWidth == oldWidth && newHeight == oldHeight) {
 		return result;
 	}
 	RECT inset = new RECT ();
