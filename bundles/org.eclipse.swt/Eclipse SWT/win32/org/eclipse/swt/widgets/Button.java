@@ -41,7 +41,9 @@ import org.eclipse.swt.events.*;
  */
 
 public class Button extends Control {
+	String text = "";
 	Image image;
+	ImageList imageList;
 	boolean ignoreMouse;
 	static final int ButtonProc;
 	static final TCHAR ButtonClass = new TCHAR (0,"BUTTON", true);
@@ -185,8 +187,16 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		return new Point (width, height);
 	}
 	int extra = 0;
-	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	if ((bits & (OS.BS_BITMAP | OS.BS_ICON)) == 0) {
+	boolean hasImage;
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST();
+		OS.SendMessage (handle, OS.BCM_GETIMAGELIST, 0, buttonImageList);
+		hasImage = buttonImageList.himl != 0;
+	} else {
+		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		hasImage = (bits & (OS.BS_BITMAP | OS.BS_ICON)) != 0;		
+	}
+	if (!hasImage) {
 		int oldFont = 0;
 		int hDC = OS.GetDC (handle);
 		int newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
@@ -335,11 +345,7 @@ public boolean getSelection () {
 public String getText () {
 	checkWidget ();
 	if ((style & SWT.ARROW) != 0) return "";
-	int length = OS.GetWindowTextLength (handle);
-	if (length == 0) return "";
-	TCHAR buffer = new TCHAR (getCodePage (), length + 1);
-	OS.GetWindowText (handle, buffer, length + 1);
-	return buffer.toString (0, length);
+	return text;
 }
 
 boolean isTabItem () {
@@ -368,7 +374,10 @@ boolean mnemonicMatch (char key) {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	text = null;
 	image = null;
+	if (imageList != null) imageList.dispose ();
+	imageList = null;
 }
 
 /**
@@ -455,6 +464,16 @@ public void setAlignment (int alignment) {
 	if ((style & SWT.CENTER) != 0) bits |= OS.BS_CENTER;
 	if ((style & SWT.RIGHT) != 0) bits |= OS.BS_RIGHT;
 	OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		if (imageList != null) {
+			BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
+			buttonImageList.himl = imageList.getHandle ();
+			if ((style & SWT.LEFT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
+			if ((style & SWT.CENTER) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_CENTER;
+			if ((style & SWT.RIGHT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_RIGHT;
+			OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, buttonImageList);
+		}
+	}
 	OS.InvalidateRect (handle, null, true);
 }
 
@@ -488,32 +507,50 @@ void setDefault (boolean value) {
  */
 public void setImage (Image image) {
 	checkWidget ();
-	int hImage = 0, imageBits = 0, fImageType = 0;
-	if (image != null) {
-		if (image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-		hImage = image.handle;
-		switch (image.type) {
-			case SWT.BITMAP:
-				imageBits = OS.BS_BITMAP;
-				fImageType = OS.IMAGE_BITMAP;
-				break;
-			case SWT.ICON:
-				imageBits = OS.BS_ICON;
-				fImageType = OS.IMAGE_ICON;
-				break;
-			default:
-				return;
-		}
-	}
 	this.image = image;
-	int newBits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	int oldBits = newBits;
-	newBits &= ~(OS.BS_BITMAP | OS.BS_ICON);
-	newBits |= imageBits;
-	if (newBits != oldBits) {
-		OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, 0);
+		if (imageList != null) imageList.dispose ();
+		imageList = null;
+		if (image != null) {
+			imageList = new ImageList ();
+			imageList.add (image);
+			BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
+			buttonImageList.himl = imageList.getHandle ();
+			if ((style & SWT.LEFT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
+			if ((style & SWT.CENTER) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_CENTER;
+			if ((style & SWT.RIGHT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_RIGHT;
+			TCHAR buffer = new TCHAR (getCodePage (), "", true);
+			OS.SetWindowText (handle, buffer);
+			OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, buttonImageList);
+		} else {
+			TCHAR buffer = new TCHAR (getCodePage (), text, true);
+			OS.SetWindowText (handle, buffer);
+			OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, 0);
+		}
+	} else {
+		int hImage = 0, imageBits = 0, fImageType = 0;
+		if (image != null) {
+			if (image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+			hImage = image.handle;
+			switch (image.type) {
+				case SWT.BITMAP:
+					imageBits = OS.BS_BITMAP;
+					fImageType = OS.IMAGE_BITMAP;
+					break;
+				case SWT.ICON:
+					imageBits = OS.BS_ICON;
+					fImageType = OS.IMAGE_ICON;
+					break;
+			}
+		}
+		int newBits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		int oldBits = newBits;
+		newBits &= ~(OS.BS_BITMAP | OS.BS_ICON);
+		newBits |= imageBits;
+		if (newBits != oldBits) OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
+		OS.SendMessage (handle, OS.BM_SETIMAGE, fImageType, hImage);
 	}
-	OS.SendMessage (handle, OS.BM_SETIMAGE, fImageType, hImage);
 }
 
 boolean setRadioFocus () {
@@ -608,12 +645,19 @@ public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.ARROW) != 0) return;
-	int newBits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	int oldBits = newBits;
-	newBits &= ~(OS.BS_BITMAP | OS.BS_ICON);
-	if (newBits != oldBits) {
-		OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, 0);
+		if (imageList != null) imageList.dispose ();
+		imageList = null;
+	} else {
+		int newBits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		int oldBits = newBits;
+		newBits &= ~(OS.BS_BITMAP | OS.BS_ICON);
+		if (newBits != oldBits) {
+			OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
+		}
 	}
+	text = string;
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	OS.SetWindowText (handle, buffer);
 }
