@@ -96,6 +96,11 @@ public class Display extends Device {
 	static int windowClassCount = 0;
 	static final String WindowName = "SWT_Window";
 
+	/* Widnows Message Filter */
+	Callback messageCallback;
+	int messageProc, hHook;
+	MSG hookMsg = new MSG ();
+	
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer = new Synchronizer (this);
 	Thread thread;
@@ -444,24 +449,6 @@ void error (int code) {
 
 boolean filterMessage (MSG msg) {
 	int message = msg.message;
-	if (msg.hwnd == hwndShell) {
-		switch (message) {
-			case OS.WM_TIMER:
-				if (timerList != null && timerIds != null) {
-					for (int i=0; i<timerIds.length; i++) {
-						if (timerIds [i] == msg.wParam) {
-							OS.KillTimer (hwndShell, timerIds [i]);
-							timerIds [i] = 0;
-							Runnable runnable = timerList [i];
-							timerList [i] = null;
-							if (runnable != null) runnable.run ();
-						}
-					}
-				}
-				break;
-		}
-		return false;
-	}
 	if (OS.WM_KEYFIRST <= message && message <= OS.WM_KEYLAST) {
 		Control control = findControl (msg.hwnd);
 		if (control != null) {
@@ -1122,6 +1109,14 @@ protected void init () {
 		0,
 		hInstance,
 		null);
+	
+	/* Hook the message hook */
+	if (!OS.IsWinCE) {
+		messageCallback = new Callback (this, "messageProc", 3);
+		messageProc = messageCallback.getAddress ();
+		if (messageProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+		hHook = OS.SetWindowsHookEx (OS.WH_MSGFILTER, messageProc, 0, threadId);
+	}
 }
 
 /**	 
@@ -1148,10 +1143,28 @@ boolean isValidThread () {
 }
 
 boolean isVirtualKey (int key) {
-	return (key == OS.VK_TAB) || (key == OS.VK_MENU) ||
-		(key == OS.VK_RETURN) || (key == OS.VK_BACK) ||
-		(key == OS.VK_SPACE) || (key == OS.VK_ESCAPE) ||
-		(key == OS.VK_SHIFT) || (key == OS.VK_CONTROL);
+	switch (key) {
+		case OS.VK_TAB:
+		case OS.VK_MENU:
+		case OS.VK_RETURN:
+		case OS.VK_BACK:
+		case OS.VK_SPACE:
+		case OS.VK_ESCAPE:
+		case OS.VK_SHIFT:
+		case OS.VK_CONTROL:
+			return true;
+	}
+	return false;
+}
+
+int messageProc (int code, int wParam, int lParam) {
+	if (code >= 0) {
+		OS.MoveMemory (hookMsg, lParam, MSG.sizeof);
+		if (hookMsg.message == OS.WM_NULL) {
+			runAsyncMessages ();
+		}
+	}
+	return OS.CallNextHookEx (hHook, code, wParam, lParam);
 }
 
 void postEvent (Event event) {
@@ -1270,6 +1283,15 @@ protected void release () {
 }
 
 void releaseDisplay () {
+	
+	/* Unhook the message hook */
+	if (!OS.IsWinCE) {
+		if (hHook != 0) OS.UnhookWindowsHookEx (hHook);
+		hHook = 0;
+		messageCallback.dispose ();
+		messageCallback = null;
+	}
+	
 	/* Destroy the message only HWND */
 	if (hwndShell != 0) OS.DestroyWindow (hwndShell);
 	hwndShell = 0;
@@ -1281,8 +1303,6 @@ void releaseDisplay () {
 	OS.GetClassInfo (0, windowClass, lpWndClass);
 	OS.UnregisterClass (windowClass, hInstance);
 	OS.HeapFree (hHeap, 0, lpWndClass.lpszClassName);
-	
-	/* Release callbacks */
 	windowClass = null;
 	windowCallback.dispose ();
 	windowCallback = null;
@@ -1425,6 +1445,22 @@ boolean runDeferredEvents () {
 	return true;
 }
 
+void runTimer (int id) {
+	if (timerList != null && timerIds != null) {
+		int index = 0;
+		while (index <timerIds.length) {
+			if (timerIds [index] == id) {
+				OS.KillTimer (hwndShell, timerIds [index]);
+				timerIds [index] = 0;
+				Runnable runnable = timerList [index];
+				timerList [index] = null;
+				if (runnable != null) runnable.run ();
+				break;
+			}
+			index++;
+		}
+	}
+}
 /**
  * Sets the location of the on-screen pointer relative to the top left corner
  * of the screen.  <b>Note: It is typically considered bad practice for a
@@ -1672,11 +1708,15 @@ int systemFont () {
 /**
  * Causes the <code>run()</code> method of the runnable to
  * be invoked by the user-interface thread after the specified
- * number of milliseconds have elapsed.
+ * number of milliseconds have elapsed. If milliseconds is less
+ * than zero, the runnable is not executed.
  *
  * @param milliseconds the delay before running the runnable
  * @param runnable code to run on the user-interface thread
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the runnable is null</li>
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
@@ -1685,28 +1725,44 @@ int systemFont () {
  */
 public void timerExec (int milliseconds, Runnable runnable) {
 	checkDevice ();
-	if (timerList == null) {
-		timerList = new Runnable [4];
-		timerIds = new int [4];
-	}
+	if (runnable == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (timerList == null) timerList = new Runnable [4];
+	if (timerIds == null) timerIds = new int [4];
 	int index = 0;
 	while (index < timerList.length) {
-		if (timerList [index] == null) break;
+		if (timerList [index] == runnable) break;
 		index++;
 	}
-	if (index == timerList.length) {
-		Runnable [] newTimerList = new Runnable [timerList.length + 4];
-		System.arraycopy (timerList, 0, newTimerList, 0, timerList.length);
-		timerList = newTimerList;
-		int [] newTimerIds = new int [timerIds.length + 4];
-		System.arraycopy (timerIds, 0, newTimerIds, 0, timerIds.length);
-		timerIds = newTimerIds;
+	int timerId = 0;
+	if (index != timerList.length) {
+		timerId = timerIds [index];
+		if (milliseconds < 0) {			
+			OS.KillTimer (hwndShell, timerId);
+			timerList [index] = null;
+			timerIds [index] = 0;
+			return;
+		}
+	} else {
+		index = 0;
+		while (index < timerList.length) {
+			if (timerList [index] == null) break;
+			index++;
+		}
+		timerCount++;
+		timerId = timerCount;
+		if (index == timerList.length) {
+			Runnable [] newTimerList = new Runnable [timerList.length + 4];
+			System.arraycopy (timerList, 0, newTimerList, 0, timerList.length);
+			timerList = newTimerList;
+			int [] newTimerIds = new int [timerIds.length + 4];
+			System.arraycopy (timerIds, 0, newTimerIds, 0, timerIds.length);
+			timerIds = newTimerIds;
+		}
 	}
-	timerCount++;
-	int timerID = OS.SetTimer (hwndShell, timerCount, milliseconds, 0);
-	if (timerID != 0) {
+	int newTimerID = OS.SetTimer (hwndShell, timerId, milliseconds, 0);
+	if (newTimerID != 0) {
 		timerList [index] = runnable;
-		timerIds [index] = timerID;
+		timerIds [index] = newTimerID;
 	}
 }
 
@@ -1823,6 +1879,9 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 				break;
 			case OS.WM_SETTINGCHANGE:
 				updateFont ();
+				break;
+			case OS.WM_TIMER:
+				runTimer (wParam);
 				break;
 		}
 	}

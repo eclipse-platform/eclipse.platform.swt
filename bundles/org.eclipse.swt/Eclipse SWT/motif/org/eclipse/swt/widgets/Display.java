@@ -1867,11 +1867,15 @@ int textWidth (String string, Font font) {
 /**
  * Causes the <code>run()</code> method of the runnable to
  * be invoked by the user-interface thread after the specified
- * number of milliseconds have elapsed.
+ * number of milliseconds have elapsed. If milliseconds is less
+ * than zero, the runnable is not executed.
  *
  * @param milliseconds the delay before running the runnable
  * @param runnable code to run on the user-interface thread
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the runnable is null</li>
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
