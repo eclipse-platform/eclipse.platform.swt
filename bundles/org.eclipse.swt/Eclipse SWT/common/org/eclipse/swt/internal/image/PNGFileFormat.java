@@ -100,6 +100,19 @@ void readNextChunk(PngChunkReader chunkReader) {
 					trnsChunk.getSwtTransparentPixel(headerChunk);
 			} else {
 				alphaPalette = trnsChunk.getAlphaValues(headerChunk, paletteChunk);
+				int transparentCount = 0, transparentPixel = -1;
+				for (int i = 0; i < alphaPalette.length; i++) {
+					if ((alphaPalette[i] & 0xFF) != 255) {
+						transparentCount++;
+						transparentPixel = i;
+					}
+				}
+				if (transparentCount == 0) {
+					alphaPalette = null;
+				} else if (transparentCount == 1 && alphaPalette[transparentPixel] == 0) {
+					alphaPalette = null;
+					imageData.transparentPixel = transparentPixel;
+				}
 			}
 			break;
 		case PngChunk.CHUNK_IDAT:
