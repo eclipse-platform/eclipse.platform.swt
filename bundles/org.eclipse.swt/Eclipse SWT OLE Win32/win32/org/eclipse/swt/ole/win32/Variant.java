@@ -85,8 +85,6 @@ public Variant(int ptr, short byRefType) {
  * Create a Variant object which represents an IDispatch interface as a VT_Dispatch.
  *
  * @param automation the OleAutomation object that this Variant represents
- *
- * @deprecated use public Variant(Dispatch idispatch)
  * 
  */
 public Variant(OleAutomation automation) {
@@ -101,28 +99,11 @@ public Variant(OleAutomation automation) {
  * @since 2.0
  * 
  * @param idispatch the IDispatch object that this Variant represents
- *
- * @deprecated use public Variant(Dispatch idispatch)
  * 
  */
 public Variant(IDispatch idispatch) {
 	type = COM.VT_DISPATCH;
 	dispatchData = idispatch;
-}
-/**
- * Create a Variant object which represents an IDispatch interface as a VT_Dispatch.
- * An AddRef is called on the Dispatch object in this constructor.
- * Use Variant.dispose to free this object when no longer required.
- *
- * @since 2.1
- * 
- * @param idispatch the Dispatch object that this Variant represents
- *
- */
-public Variant(Dispatch idispatch) {
-	type = COM.VT_DISPATCH;
-	dispatchData = new IDispatch(idispatch.getAddress());
-	dispatchData.AddRef();
 }
 /**
  * Create a Variant object which represents an IUnknown interface as a VT_UNKNOWN.
@@ -131,27 +112,11 @@ public Variant(Dispatch idispatch) {
  * this Variant.
  *
  * @param unknown the IUnknown object that this Variant represents
- * 
- * @deprecated use public Variant(Unknown unknown)
+ *
  */
 public Variant(IUnknown unknown) {
 	type = COM.VT_UNKNOWN;
 	unknownData = unknown;
-}
-/**
- * Create a Variant object which represents an IUnknown interface as a VT_UNKNOWN.
- * An AddRef is called on the Unknown object in this constructor.
- * Use Variant.dispose to free this object when no longer required.
- * 
- * @since 2.1
- * 
- * @param unknown the IUnknown object that this Variant represents
- *
- */
-public Variant(Unknown unknown) {
-	type = COM.VT_UNKNOWN;
-	unknownData = new IUnknown(unknown.getAddress());
-	unknownData.AddRef();
 }
 /**
  * Create a Variant object which represents a Java String as a VT_BSTR.
@@ -185,17 +150,14 @@ public Variant(boolean val) {
 }
 
 /**
- * 
+ * Calling dispose will release resources associated with this Variant.
+ * If the resource is an IDispatch or IUnknown interface, Release will be called.
+ * If the resource is a ByRef pointer, nothing is released.
  * 
  * @since 2.1
  */
 public void dispose() {
 	if ((type & COM.VT_BYREF) == COM.VT_BYREF) {
-		if (byRefPtr == 0) return;
-		int[] data = new int[1];
-		COM.MoveMemory(data, byRefPtr, 4);
-		if (data[0] != 0) COM.VariantClear(data[0]);
-		OS.GlobalFree(byRefPtr);
 		return;
 	}
 		

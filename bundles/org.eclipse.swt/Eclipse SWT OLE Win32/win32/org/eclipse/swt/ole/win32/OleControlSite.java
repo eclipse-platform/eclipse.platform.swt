@@ -766,10 +766,10 @@ public void setForeground (Color color) {
 /**
  * Sets the control site property specified by the dispIdMember to a new value.
  * The value will be disposed by the control site when it is no longer required
- * using Variant.dispose.
+ * using Variant.dispose.  Passing a value of null will clear the dispId value.
  * 
  * @param dispId the ID of the property as specified by the IDL of the ActiveX Control
- * @param value The new value for the property as expressed in a Variant.  
+ * @param value The new value for the property as expressed in a Variant.
  *
  * @since 2.1
  */
