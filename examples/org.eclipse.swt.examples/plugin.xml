@@ -158,5 +158,14 @@
             mainClass="org.eclipse.swt.examples.texteditor.TextEditor">
       </program>
    </item>
+   <item
+         name="%launchitem.AdvancedGraphics.name"
+         description="%launchitem.AdvancedGraphics.description"
+         category="org.eclipse.swt.examples.launchStandaloneCategory"
+         id="org.eclipse.swt.examples.graphics.standalonelauncher">
+      <program
+            mainClass="org.eclipse.swt.examples.graphics.AdvancedGraphics"
+            pluginId="org.eclipse.swt.examples"/>
+   </item>
 </extension>
 </plugin>
