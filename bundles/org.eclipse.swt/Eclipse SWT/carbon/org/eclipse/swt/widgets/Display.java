@@ -2899,6 +2899,10 @@ boolean runEventLoopTimers () {
 
 boolean runGrabs () {
 	if (grabControl == null || grabbing) return false;
+	if (!OS.StillDown ()) {
+		grabControl = null;
+		return false;
+	}
 	Rect rect = new Rect ();
 	int [] outModifiers = new int [1];
 	short [] outResult = new short [1];
