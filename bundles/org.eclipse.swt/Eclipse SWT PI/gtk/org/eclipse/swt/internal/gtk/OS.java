@@ -875,6 +875,7 @@ public static final native void gtk_tree_store_set(int store, int iter, int colu
 public static final native void gtk_tree_store_set(int store, int iter, int column, GdkColor value, int terminator);
 public static final native void gtk_tree_store_set(int store, int iter, int column, boolean value, int terminator);
 public static final native void gtk_list_store_insert (int list_store, int iter, int position);
+public static final native int  gtk_tree_model_get_iter(int tree_model, int iter, int path);
 public static final native int  gtk_tree_model_get_path(int tree_model, int iter);
 public static final native void gtk_tree_model_get(int tree_model, int iter, int column, int[] ptr, int terminator);
 public static final native void gtk_tree_path_free(int path);
@@ -915,6 +916,7 @@ public static final native void    gtk_tree_view_get_cell_area(int tree_view, in
 public static final native int     gtk_tree_view_get_selection(int tree_view);
 public static final native int GtkTreeIter_sizeof();
 public static final native int G_TYPE_BOOLEAN();
+public static final native int G_TYPE_INT();
 public static final native int G_TYPE_STRING();
 public static final native int GDK_TYPE_COLOR();
 }

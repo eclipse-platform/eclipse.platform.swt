@@ -5739,6 +5739,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_G_1TYPE_1STRING
 	return (jint)G_TYPE_STRING;
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_G_1TYPE_1INT
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("G_1TYPE_1INT\n")
+
+	return (jint)G_TYPE_INT;
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GDK_1TYPE_1COLOR
 	(JNIEnv *env, jclass that)
 {
@@ -5958,4 +5966,12 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1store_1re
 	DEBUG_CALL("gtk_1tree_1store_1remove\n")
 	/* See GTK+ bug 94717 */
 	gtk_tree_store_remove((GtkTreeStore*)arg0, (GtkTreeIter*)arg1);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1model_1get_1iter
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("gtk_1tree_1model_1get_1iter\n")
+
+	return (jint)gtk_tree_model_get_iter((GtkTreeModel*)arg0, (GtkTreeIter*)arg1, (GtkTreePath*)arg2);
 }
