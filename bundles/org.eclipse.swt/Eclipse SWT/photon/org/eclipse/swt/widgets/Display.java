@@ -703,7 +703,7 @@ public Color getSystemColor (int id) {
 	switch (id) {
 		case SWT.COLOR_INFO_FOREGROUND: 					color = INFO_FOREGROUND; break;
 		case SWT.COLOR_INFO_BACKGROUND: 					color = INFO_BACKGROUND; break;
-		case SWT.COLOR_TITLE_FOREGROUND: 					color = 0x000000; break;
+		case SWT.COLOR_TITLE_FOREGROUND: 					color = 0xFFFFFF; break;
 		case SWT.COLOR_TITLE_BACKGROUND:					color = 0x6493E7; break;
 		case SWT.COLOR_TITLE_BACKGROUND_GRADIENT:			color = 0x0000FF; break;
 		case SWT.COLOR_TITLE_INACTIVE_FOREGROUND:			color = 0x000000; break;
