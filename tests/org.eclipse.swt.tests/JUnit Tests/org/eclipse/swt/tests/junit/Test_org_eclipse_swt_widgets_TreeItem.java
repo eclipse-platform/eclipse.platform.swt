@@ -96,60 +96,235 @@ public void test_getBounds() {
 }
 
 public void test_getBoundsI() {
-	int boundsX;
+	Image image = images[0];
 	Rectangle bounds;
-	Tree tree2 = new Tree(shell, SWT.CHECK);
-	TreeItem treeItem2 = new TreeItem(tree2, SWT.NULL);
+	Rectangle bounds2;
+	
+	// no columns
  	bounds = treeItem.getBounds(0);
-	assertTrue(":a:", bounds.x > 0 && bounds.width > 0);
-	boundsX = bounds.x;
- 	bounds = treeItem.getBounds(-1);
-	assertTrue(":b:", bounds.equals(new Rectangle(0, 0, 0, 0)));	
+	assertTrue(":1a:", bounds.x > 0 && bounds.height > 0);
+	bounds = treeItem.getBounds(-1);
+	assertTrue(":1b:", bounds.equals(new Rectangle(0, 0, 0, 0)));	
  	bounds = treeItem.getBounds(1);
-	assertTrue(":c:", bounds.equals(new Rectangle(0, 0, 0, 0)));
-	TreeColumn column = new TreeColumn(tree2, SWT.NONE, 0);
-	column.setWidth(100);
+	assertTrue(":1c:", bounds.equals(new Rectangle(0, 0, 0, 0)));
+	
+	treeItem.setText("hello");
+	bounds = treeItem.getBounds(0);
+	assertTrue(":1d:", bounds.x > 0 && bounds.height > 0 && bounds.width > 0);
+	treeItem.setText("");
+	bounds2 = treeItem.getBounds(0);
+	assertTrue(":1e:", bounds2.x > 0 && bounds2.height > 0);
+	assertTrue(":1f:", bounds2.width < bounds.width);
+	
+	//
+	makeCleanEnvironment();
+	
+	treeItem.setImage(image);
+	bounds = treeItem.getBounds(0);
+	assertTrue(":1g:", bounds.x > 0 && bounds.height > 0 && bounds.width > 0);
+	treeItem.setImage((Image)null);
+	bounds2 = treeItem.getBounds(0);
+	assertTrue(":1h:", bounds2.x > 0 && bounds2.height > 0);
+//	assertTrue(":1i:", bounds2.width > bounds.width); // once an image is added the space for it is always there
+ 	
+	//
+	makeCleanEnvironment();
+	
+	treeItem.setText("hello");
+	bounds = treeItem.getBounds(0);
+	treeItem.setImage(image);
+	bounds2 = treeItem.getBounds(0);
+	assertTrue(":1j:", bounds2.x > 0 && bounds2.height > 0);
+	assertTrue(":1k:", bounds2.width > bounds.width);
+	
+	// no columns and CHECK style
+	Tree tree2 = new Tree(shell, SWT.CHECK);
+	TreeItem treeItem2 = new TreeItem(tree2, SWT.NONE);
+	
 	bounds = treeItem2.getBounds(0);
-	assertTrue(":d:", bounds.x > boundsX && bounds.width > 0);
- 	bounds = treeItem2.getBounds(-1);
-	assertEquals(new Rectangle(0, 0, 0, 0), bounds);	
+	assertTrue(":2a:", bounds.x > 0 && bounds.height > 0);
+	bounds = treeItem2.getBounds(-1);
+	assertTrue(":2b:", bounds.equals(new Rectangle(0, 0, 0, 0)));	
  	bounds = treeItem2.getBounds(1);
-	assertEquals(new Rectangle(0, 0, 0, 0), bounds);			
-
+	assertTrue(":2c:", bounds.equals(new Rectangle(0, 0, 0, 0)));
+	
+	treeItem2.setText("hello");
+	bounds = treeItem2.getBounds(0);
+	assertTrue(":2d:", bounds.x > 0 && bounds.height > 0 && bounds.width > 0);
+	treeItem2.setText("");
+	bounds2 = treeItem2.getBounds(0);
+	assertTrue(":2e:", bounds2.x > 0 && bounds2.height > 0);
+	assertTrue(":2f:", bounds2.width < bounds.width);
+	
+	tree2.dispose();
+	tree2 = new Tree(shell, SWT.CHECK);
+	treeItem2 = new TreeItem(tree2, SWT.NONE);
+	
+	treeItem2.setImage(image);
+	bounds = treeItem2.getBounds(0);
+	assertTrue(":2g:", bounds.x > 0 && bounds.height > 0 && bounds.width > 0);
+	treeItem2.setImage((Image)null);
+	bounds2 = treeItem2.getBounds(0);
+	assertTrue(":2h:", bounds2.x > 0 && bounds2.height > 0);
+	//assertTrue(":2i:", bounds2.width < bounds.width);  // once an image is added the space for it is always there
+	
+	tree2.dispose();
+	tree2 = new Tree(shell, SWT.CHECK);
+	treeItem2 = new TreeItem(tree2, SWT.NONE);
+	
+	treeItem2.setText("hello");
+	bounds = treeItem2.getBounds(0);
+	treeItem2.setImage(image);
+	bounds2 = treeItem2.getBounds(0);
+	assertTrue(":2j:", bounds2.x > 0 && bounds2.height > 0);
+	assertTrue(":2k:", bounds2.width > bounds.width);
 	
 	//
 	makeCleanEnvironment();
 
-	Image image = images[0];
+	// with columns
+	
+	TreeColumn column0 = new TreeColumn(tree, SWT.LEFT);
+	TreeColumn column1 = new TreeColumn(tree, SWT.CENTER);
+	
+	bounds = treeItem.getBounds(0);
+	assertTrue(":3a:", bounds.x > 0 && bounds.height > 0 && bounds.width == 0);
+	bounds = treeItem.getBounds(1);
+	assertTrue(":3b:", /*bounds.x > 0 &&*/ bounds.height > 0 && bounds.width == 0); // TODO bounds.x == 0 Is this right?
+	bounds = treeItem.getBounds(-1);
+	assertTrue(":3c:", bounds.equals(new Rectangle(0, 0, 0, 0)));	
+ 	bounds = treeItem.getBounds(2);
+	assertTrue(":3d:", bounds.equals(new Rectangle(0, 0, 0, 0)));
+	
+	column0.setWidth(100);
+	bounds = treeItem.getBounds(0);
+	assertTrue(":3e:", bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
+	bounds = treeItem.getBounds(1);
+	assertTrue(":3f:", bounds.x >= 100 && bounds.height > 0 && bounds.width == 0);
+	
+	column1.setWidth(200);
+	bounds = treeItem.getBounds(0);
+	assertTrue(":3g:", bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
+	bounds = treeItem.getBounds(1);
+	assertTrue(":3h:", bounds.x >= 100 && bounds.height > 0 && bounds.width == 200);
+	
+	treeItem.setText(new String[] {"hello", "world"});
+	bounds = treeItem.getBounds(0);
+	assertTrue(":3i:", bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
+	bounds = treeItem.getBounds(1);
+	assertTrue(":3j:", bounds.x >= 100 && bounds.height > 0 && bounds.width  == 200);
+	treeItem.setText(new String[] {"", ""});
+	bounds = treeItem.getBounds(0);
+	assertTrue(":3k:", bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
+	bounds = treeItem.getBounds(1);
+	assertTrue(":3l:", bounds.x >= 100 && bounds.height > 0 && bounds.width  == 200);
+	
+	//
+	makeCleanEnvironment();
+	column0 = new TreeColumn(tree, SWT.LEFT);
+	column1 = new TreeColumn(tree, SWT.CENTER);
+	column0.setWidth(100);
+	column1.setWidth(200);
+	
+	treeItem.setImage(new Image[] {image, image});
+	bounds = treeItem.getBounds(0);
+	assertTrue(":3m:", bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
+	bounds = treeItem.getBounds(1);
+	assertTrue(":3n:", bounds.x >= 100 && bounds.height > 0 && bounds.width  == 200);
+ 	treeItem.setImage(new Image[] {null, null});
+	bounds = treeItem.getBounds(0);
+	assertTrue(":3o:", bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
+	bounds = treeItem.getBounds(1);
+	assertTrue(":3p:", bounds.x >= 100 && bounds.height > 0 && bounds.width  == 200);
+	
+	//
+	makeCleanEnvironment();
+	column0 = new TreeColumn(tree, SWT.LEFT);
+	column1 = new TreeColumn(tree, SWT.CENTER);
+	column0.setWidth(100);
+	column1.setWidth(200);
+	
+	treeItem.setText(new String[] {"hello", "world"});
+	treeItem.setImage(new Image[] {null, null});
+	bounds = treeItem.getBounds(0);
+	assertTrue(":3q:", bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
+	bounds = treeItem.getBounds(1);
+	assertTrue(":3r:", bounds.x > 0 && bounds.height > 0 && bounds.width  == 200);
+	
+	// with columns and CHECK style
 	tree2.dispose();
 	tree2 = new Tree(shell, SWT.CHECK);
-	treeItem2.dispose();
-	treeItem2 = new TreeItem(tree2, SWT.NULL);
-	column.dispose();
-
-	new TreeColumn(tree, SWT.NULL);
-	new TreeColumn(tree, SWT.NULL);
-	treeItem.setImage(1, image);
-	bounds = treeItem.getBounds(0);
-	assertTrue(":a:", bounds.x >= 0 && bounds.width >= 0);
-	boundsX = bounds.x;
- 	bounds = treeItem.getBounds(-1);
-	assertEquals(new Rectangle(0, 0, 0, 0), bounds);	
- 	bounds = treeItem.getBounds(1);
-	//assert(":c:", bounds.x > 0 && bounds.width > 0);  // ?? setting the image in one column does not affect width of other columns
-	assertTrue(":c:", bounds.x >= 0 && bounds.height >= 0);
- 
-	column = new TreeColumn(tree2, SWT.NULL);
-	column.setWidth(100);
-	new TreeColumn(tree2, SWT.NULL);	
-	treeItem2.setImage(1, image);
+	treeItem2 = new TreeItem(tree2, SWT.NONE);
+	column0 = new TreeColumn(tree2, SWT.LEFT);
+	column1 = new TreeColumn(tree2, SWT.CENTER);
+	
 	bounds = treeItem2.getBounds(0);
-	assertTrue(":d:", bounds.x > boundsX && bounds.width > 0);
- 	bounds = treeItem2.getBounds(-1);
-	assertEquals(new Rectangle(0, 0, 0, 0), bounds);	
- 	bounds = treeItem2.getBounds(1);
-	//assert(":f:", bounds.x > 0 && bounds.width > 0); // ?? setting the image in one column does not affect width of other columns
-	assertTrue(":f:", bounds.x > 0 && bounds.height > 0);
+	assertTrue(":4a:", bounds.x > 0 && bounds.height > 0 && bounds.width == 0);
+	bounds = treeItem2.getBounds(1);
+	assertTrue(":4b:", /*bounds.x > 0 &&*/ bounds.height > 0 && bounds.width == 0); // TODO bounds.x == 0 Is this right?
+	bounds = treeItem2.getBounds(-1);
+	assertTrue(":4c:", bounds.equals(new Rectangle(0, 0, 0, 0)));	
+ 	bounds = treeItem2.getBounds(2);
+	assertTrue(":4d:", bounds.equals(new Rectangle(0, 0, 0, 0)));
+	
+	column0.setWidth(100);
+	bounds = treeItem2.getBounds(0);
+	assertTrue(":4e:", bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
+	bounds = treeItem2.getBounds(1);
+	assertTrue(":4f:", bounds.x >= 100 && bounds.height > 0 && bounds.width == 0);
+	
+	column1.setWidth(200);
+	bounds = treeItem2.getBounds(0);
+	assertTrue(":4g:", bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
+	bounds = treeItem2.getBounds(1);
+	assertTrue(":4h:", bounds.x >= 100 && bounds.height > 0 && bounds.width == 200);
+	
+	treeItem2.setText(new String[] {"hello", "world"});
+	bounds = treeItem2.getBounds(0);
+	assertTrue(":4i:", bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
+	bounds = treeItem2.getBounds(1);
+	assertTrue(":4j:", bounds.x >= 100 && bounds.height > 0 && bounds.width  == 200);
+	treeItem2.setText(new String[] {"", ""});
+	bounds = treeItem2.getBounds(0);
+	assertTrue(":4k:", bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
+	bounds = treeItem2.getBounds(1);
+	assertTrue(":4l:", bounds.x >= 100 && bounds.height > 0 && bounds.width  == 200);
+	
+	//
+	tree2.dispose();
+	tree2 = new Tree(shell, SWT.CHECK);
+	treeItem2 = new TreeItem(tree2, SWT.NONE);
+	column0 = new TreeColumn(tree2, SWT.LEFT);
+	column1 = new TreeColumn(tree2, SWT.CENTER);
+	column0.setWidth(100);
+	column1.setWidth(200);
+	
+	treeItem2.setImage(new Image[] {image, image});
+	bounds = treeItem2.getBounds(0);
+	assertTrue(":4m:", bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
+	bounds = treeItem2.getBounds(1);
+	assertTrue(":4n:", bounds.x >= 100 && bounds.height > 0 && bounds.width  == 200);
+ 	treeItem2.setImage(new Image[] {null, null});
+	bounds = treeItem2.getBounds(0);
+	assertTrue(":4o:", bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
+	bounds = treeItem2.getBounds(1);
+	assertTrue(":4p:", bounds.x >= 100 && bounds.height > 0 && bounds.width  == 200);
+	
+	//
+	tree2.dispose();
+	tree2 = new Tree(shell, SWT.CHECK);
+	treeItem2 = new TreeItem(tree2, SWT.NONE);
+	column0 = new TreeColumn(tree2, SWT.LEFT);
+	column1 = new TreeColumn(tree2, SWT.CENTER);
+	column0.setWidth(100);
+	column1.setWidth(200);
+	
+	treeItem2.setText(new String[] {"hello", "world"});
+	treeItem2.setImage(new Image[] {null, null});
+	bounds = treeItem2.getBounds(0);
+	assertTrue(":4q:", bounds.x > 0 && bounds.height > 0 && bounds.width > 0 && bounds.width < 100);
+	bounds = treeItem2.getBounds(1);
+	assertTrue(":4r:", bounds.x >= 100 && bounds.height > 0 && bounds.width  == 200);
 }
 
 public void test_getChecked() {
