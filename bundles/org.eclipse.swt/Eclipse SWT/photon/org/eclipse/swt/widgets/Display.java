@@ -529,8 +529,13 @@ void initializeWidgetClasses () {
 
 void initializeWidgetColors () {
 	OS.PtSetParentWidget (0);
-	int shellHandle = OS.PtCreateWidget (OS.PtWindow (), 0, 0, null);
 	int [] args = {
+		OS.Pt_ARG_WIDTH, 1, 0,
+		OS.Pt_ARG_HEIGHT, 1, 0,
+		OS.Pt_ARG_WINDOW_RENDER_FLAGS, 0, ~0,
+	};
+	int shellHandle = OS.PtCreateWidget (OS.PtWindow (), 0, args.length / 3, args);
+	args = new int [] {
 		OS.Pt_ARG_COLOR, 0, 0,
 		OS.Pt_ARG_FILL_COLOR, 0, 0,
 	};
@@ -543,22 +548,33 @@ void initializeWidgetColors () {
 		OS.Pt_ARG_FILL_COLOR, 0, 0,
 		OS.Pt_ARG_SELECTION_FILL_COLOR, 0, 0,
 		OS.Pt_ARG_SELECTION_TEXT_COLOR, 0, 0,
-		OS.Pt_ARG_OUTLINE_COLOR, 0, 0,
-		OS.Pt_ARG_OUTLINE_COLOR, 0, 0,
-		OS.Pt_ARG_OUTLINE_COLOR, 0, 0,
-		OS.Pt_ARG_INLINE_COLOR, 0, 0,
-		OS.Pt_ARG_INLINE_COLOR, 0, 0,
 	};
 	OS.PtGetResources (handle, args.length / 3, args);
 	LIST_FOREGROUND = args [1];
 	LIST_BACKGROUND = args [4];
 	LIST_SELECTION = args [7];
 	LIST_SELECTION_TEXT = args [10];
-	WIDGET_BORDER = args [13];
-	WIDGET_DARK_SHADOW = args [16];
-	WIDGET_NORMAL_SHADOW = args [19];
-	WIDGET_LIGHT_SHADOW = args [22];
-	WIDGET_HIGHLIGHT_SHADOW = args [25];
+	handle = OS.PtCreateWidget (OS.PtButton (), shellHandle, 0, null);
+	
+	/*
+	* Feature in Photon. The values of Pt_ARG_DARK_BEVEL_COLOR and
+	* Pt_ARG_LIGHT_BEVEL_COLOR are not initialized until the widget is
+	* realized.  The fix is to realize the shell.
+	*/
+	OS.PtRealizeWidget(shellHandle);
+	args = new int [] {	
+		OS.Pt_ARG_OUTLINE_COLOR, 0, 0,
+		OS.Pt_ARG_OUTLINE_COLOR, 0, 0,
+		OS.Pt_ARG_DARK_BEVEL_COLOR, 0, 0,
+		OS.Pt_ARG_BEVEL_COLOR, 0, 0,
+		OS.Pt_ARG_LIGHT_BEVEL_COLOR, 0, 0,
+	};
+	OS.PtGetResources (handle, args.length / 3, args);
+	WIDGET_BORDER = args [1];
+	WIDGET_DARK_SHADOW = args [4];
+	WIDGET_NORMAL_SHADOW = args [7];
+	WIDGET_LIGHT_SHADOW = args [10];
+	WIDGET_HIGHLIGHT_SHADOW = args [13];
 	OS.PtDestroyWidget (shellHandle);
 }
 

@@ -1170,7 +1170,7 @@ void initialize() {
 	columns = new Vector();
 	setItemVector(new Vector());
 	focusProxy = new Button(this, SWT.NULL);
-	focusProxy.setBounds(0, 0, 0, 0);				// make the focus proxy invisible
+	focusProxy.setBounds(-100, -100, 0, 0);				// make the focus proxy invisible
 	tableHeader = new Header(this);
 	tableHeader.setVisible(false);					// SWT table header is invisible by default, too
 	fillColumn = TableColumn.createFillColumn(this);

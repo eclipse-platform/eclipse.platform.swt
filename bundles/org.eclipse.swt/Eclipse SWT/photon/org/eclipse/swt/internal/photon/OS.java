@@ -166,6 +166,9 @@ public class OS {
 //	public static final int Pt_CONSUME                                     = 2;
 	public static final int Pt_CB_FILTER                                          = ( 1 * 1000 + 26 );
 	
+	public static final int Pt_ALL_BUTTONS                                          = 0x00800000;
+	public static final int Pt_MENUABLE                                          	= 0x08000000;
+
 /*** END MANUALLY ADDED/FIXED ***/
 
 //public static final int Aw_ARG_ONOFF_STATE                                    = ( 5 * 1000 + 1 );
@@ -1851,7 +1854,7 @@ public static final int Pg_BITMAP_TRANSPARENT                                 = 
 //public static final int Pt_CB_IS_DESTROYED                                    = ( 1 * 1000 + 19 );
 //public static final int Pt_CB_LIST_INPUT                                      = ( 23 * 1000 + 24 );
 	public static final int Pt_CB_LOST_FOCUS                                      = ( 2 * 1000 + 11 );
-//public static final int Pt_CB_MENU                                            = ( 2 * 1000 + 16 );
+	public static final int Pt_CB_MENU                                            = ( 2 * 1000 + 16 );
 //public static final int Pt_CB_MODIFY_NOTIFY                                   = ( 4 * 1000 + 10);
 	public static final int Pt_CB_MODIFY_VERIFY                                   = ( 4 * 1000 + 9 );
 //public static final int Pt_CB_MOTION_NOTIFY                                   = ( 4 * 1000 + 14);
