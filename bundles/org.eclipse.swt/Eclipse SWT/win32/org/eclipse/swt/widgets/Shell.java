@@ -651,14 +651,14 @@ void setActiveControl (Control control) {
 	* this happens, keep processing those widgets that
 	* are not disposed.
 	*/
-	for (int i=activate.length-1; i>=index; --i) {
-		if (!activate [i].isDisposed ()) {
-			activate [i].sendEvent (SWT.Activate);
-		}
-	}
 	for (int i=deactivate.length-1; i>=index; --i) {
 		if (!deactivate [i].isDisposed ()) {
 			deactivate [i].sendEvent (SWT.Deactivate);
+		}
+	}
+	for (int i=activate.length-1; i>=index; --i) {
+		if (!activate [i].isDisposed ()) {
+			activate [i].sendEvent (SWT.Activate);
 		}
 	}
 }
