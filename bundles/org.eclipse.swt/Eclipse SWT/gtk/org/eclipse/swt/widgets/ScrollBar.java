@@ -642,7 +642,16 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
  */
 public void setVisible (boolean visible) {
 	checkWidget ();
-	//NOT DONE
+	int scrolledHandle = parent.scrolledHandle;
+	int [] hsp = new int [1], vsp = new int [1];
+	OS.gtk_scrolled_window_get_policy (scrolledHandle, hsp, vsp);
+	int policy = visible ? OS.GTK_POLICY_ALWAYS : OS.GTK_POLICY_NEVER;
+	if ((style & SWT.HORIZONTAL) != 0) {
+		hsp [0] = policy;
+	} else {
+		vsp [0] = policy;
+	}
+	OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp [0], vsp [0]);
 }
 
 }

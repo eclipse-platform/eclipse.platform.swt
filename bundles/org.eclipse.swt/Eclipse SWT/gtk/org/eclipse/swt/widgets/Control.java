@@ -2257,14 +2257,14 @@ public boolean traverse (int traversal) {
 	event.detail = traversal;
 	return traverse (event);
 }
-boolean translateTraversal (int event) {
+boolean translateTraversal (int gdkEvent) {
 	int detail = SWT.TRAVERSE_NONE;
 	GdkEventKey keyEvent = new GdkEventKey ();
-	OS.memmove (keyEvent, event, GdkEventKey.sizeof);
+	OS.memmove (keyEvent, gdkEvent, GdkEventKey.sizeof);
 	int key = keyEvent.keyval;
-	int code = traversalCode (key, event);
+	int code = traversalCode (key, gdkEvent);
 	int [] state = new int [1];
-	OS.gdk_event_get_state (event, state);
+	OS.gdk_event_get_state (gdkEvent, state);
 	int shellHandle = _getShell ().topHandle ();
 	boolean all = false;
 	switch (key) {
@@ -2313,15 +2313,18 @@ boolean translateTraversal (int event) {
 		default:
 			return false;
 	}
-	Event swtEvent = new Event ();
-	swtEvent.doit = (code & detail) != 0;
-	swtEvent.detail = detail;
-	swtEvent.time = OS.gdk_event_get_time (event);
-	setInputState (swtEvent, event);
+	Event event = new Event ();
+	event.doit = (code & detail) != 0;
+	event.detail = detail;
+	event.time = OS.gdk_event_get_time (gdkEvent);
+	setInputState (event, gdkEvent);
 	Shell shell = getShell ();
 	Control control = this;
 	do {
-		if (control.traverse (swtEvent)) return true;
+		if (control.traverse (event)) return true;
+		if (!event.doit && control.hooks (SWT.Traverse)) {
+			return false;
+		}
 		if (control == shell) return false;
 		control = control.parent;
 	} while (all && control != null);

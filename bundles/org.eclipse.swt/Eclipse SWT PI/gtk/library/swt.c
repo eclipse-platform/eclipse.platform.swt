@@ -2654,12 +2654,12 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1menu_1insert
 	gtk_menu_insert((GtkMenu *)arg0, (GtkWidget *)arg1, (gint)arg2);
 }
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1menu_1item_1new
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1separator_1menu_1item_1new
 	(JNIEnv *env, jclass that)
 {
-	DEBUG_CALL("gtk_1menu_1item_1new\n")
+	DEBUG_CALL("gtk_1separator_1menu_1item_1new\n")
 
-	return (jint)gtk_menu_item_new();
+	return (jint)gtk_separator_menu_item_new();
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1image_1menu_1item_1new_1with_1label
@@ -2958,6 +2958,21 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1scale_1set_1dra
 	DEBUG_CALL("gtk_1scale_1set_1draw_1value\n")
 
 	gtk_scale_set_draw_value((GtkScale *)arg0, (gboolean)arg1);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1scrolled_1window_1get_1policy
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+
+	DEBUG_CALL("gtk_1scrolled_1window_1get_1policy\n")
+
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	gtk_scrolled_window_get_policy((GtkScrolledWindow *)arg0, (GtkPolicyType *)lparg1, (GtkPolicyType *)lparg2);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1scrolled_1window_1get_1hadjustment

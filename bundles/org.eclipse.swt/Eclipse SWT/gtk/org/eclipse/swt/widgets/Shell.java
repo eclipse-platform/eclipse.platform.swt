@@ -949,9 +949,9 @@ void releaseShells () {
 }
 void releaseWidget () {
 	releaseShells ();
-	super.releaseWidget ();
 	if (accelGroup != 0) OS.gtk_accel_group_unref (accelGroup);
 	accelGroup = 0;
+	super.releaseWidget ();
 	display = null;
 	lastActive = null;
 }

@@ -215,7 +215,7 @@ void createHandle (int index) {
 	int bits = SWT.CHECK | SWT.RADIO | SWT.PUSH | SWT.SEPARATOR;
 	switch (style & bits) {
 		case SWT.SEPARATOR:
-			handle = OS.gtk_menu_item_new ();
+			handle = OS.gtk_separator_menu_item_new ();
 			break;
 		case SWT.RADIO:
 //			handle = OS.gtk_radio_menu_item_new_with_label (0, buffer);
@@ -368,7 +368,7 @@ void releaseWidget () {
 	menu = null;
 	super.releaseWidget ();
 	int accel_group = parent.getShell ().accelGroup;
-	removeAccelerator (accel_group);
+	if (accel_group != 0) removeAccelerator (accel_group);
 	accelerator = 0;
 	parent = null;
 }
@@ -508,16 +508,13 @@ public void setImage (Image image) {
 	if ((style & SWT.PUSH) == 0) return;
 	if (image != null) {
 		int oldPixmap = OS.gtk_image_menu_item_get_image(handle);
-		if (oldPixmap != 0) WidgetTable.remove(oldPixmap);
 		int pixmap = OS.gtk_pixmap_new (image.pixmap, image.mask);
-		WidgetTable.put(pixmap, this);
 		OS.gtk_image_menu_item_set_image(handle, pixmap);
 		OS.gtk_widget_show(pixmap);
 		if (oldPixmap != 0) OS.gtk_widget_destroy(oldPixmap);
 	} else {  // null image
 		int oldPixmap = OS.gtk_image_menu_item_get_image(handle);
 		if (oldPixmap != 0) {
-			WidgetTable.remove(oldPixmap);
 			OS.gtk_image_menu_item_set_image(handle, 0);
 			OS.gtk_widget_destroy(oldPixmap);
 		}

@@ -1233,6 +1233,7 @@ public void showSelection () {
 
 int traversalCode (int key, int event) {
 	int bits = super.traversalCode (key, event);
+	if ((style & SWT.READ_ONLY) != 0)  return bits;
 	if ((style & SWT.MULTI) != 0) {
 		bits &= ~SWT.TRAVERSE_RETURN;
 		if (key == OS.GDK_Tab && event != 0) {
