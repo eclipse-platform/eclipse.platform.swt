@@ -243,6 +243,8 @@ public Browser(Composite parent, int style) {
 								varResult = event.arguments[1];
 								String url = varResult.getString();
 								LocationEvent locationEvent = new LocationEvent(Browser.this);
+								locationEvent.display = getDisplay();
+								locationEvent.widget = Browser.this;
 								locationEvent.location = url;
 								for (int i = 0; i < locationListeners.length; i++)
 									locationListeners[i].changed(locationEvent);
@@ -256,6 +258,8 @@ public Browser(Composite parent, int style) {
 							//top.Release();
 							//variant.dispose();
 							ProgressEvent progressEvent = new ProgressEvent(Browser.this);
+							progressEvent.display = getDisplay();
+							progressEvent.widget = Browser.this;
 							for (int i = 0; i < progressListeners.length; i++)
 								progressListeners[i].completed(progressEvent);
 						}
