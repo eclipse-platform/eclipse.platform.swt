@@ -195,7 +195,7 @@ public void setImage (Image value) {
 		int oldHeaderHeight = parent.getHeaderHeight ();
 		parent.setHeaderImageHeight (value.getBounds ().height);
 		if (oldHeaderHeight != parent.getHeaderHeight ()) {
-			parent.redrawHeader ();
+			parent.header.redraw ();
 			parent.redraw ();
 			return;
 		}

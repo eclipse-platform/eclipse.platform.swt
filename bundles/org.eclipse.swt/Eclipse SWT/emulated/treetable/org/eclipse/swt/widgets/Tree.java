@@ -1636,9 +1636,6 @@ void reassignFocus () {
 void redrawFromItemDownwards (int index) {
 	redrawItems (index, availableItems.length - 1, false);
 }
-void redrawHeader () {
-	header.redraw ();
-}
 /*
  * Redraws the tree item at the specified index.  It is valid for this index to reside
  * beyond the last available item in the receiver.
