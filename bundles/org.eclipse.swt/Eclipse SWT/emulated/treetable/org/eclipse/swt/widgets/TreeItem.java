@@ -138,19 +138,18 @@ void addItem (TreeItem item, int index) {
 	/* item should be available immediately so update parent */
 	parent.makeAvailable (item);
 	
+	/* update scrollbars */
 	Rectangle bounds = item.getBounds ();
 	int rightX = bounds.x + bounds.width;
 	parent.updateHorizontalBar (rightX, rightX);
-
+	parent.updateVerticalBar ();
 	/* 
 	 * If new item is above viewport then adjust topIndex and the vertical scrollbar
 	 * so that the current viewport items will not change. 
 	 */
-	ScrollBar vBar = parent.getVerticalBar ();
-	vBar.setMaximum (vBar.getMaximum () + 1);
 	if (item.availableIndex < parent.topIndex) {
 		parent.topIndex++;
-		vBar.setSelection (parent.topIndex);
+		parent.getVerticalBar ().setSelection (parent.topIndex);
 		return;
 	}
 	
@@ -1005,8 +1004,19 @@ public void setExpanded (boolean value) {
 	if (value) {
 		expanded = value;
 		if (availableIndex == -1) return;
-		parent.makeDescendentsAvailable (this);
-		int descendentsCount = computeAvailableDescendentCount ();
+		TreeItem[] availableDescendents = computeAvailableDescendents ();
+		int descendentsCount = availableDescendents.length;
+		parent.makeDescendentsAvailable (this, availableDescendents);
+		/* 
+		 * If new item is above viewport then adjust topIndex and the vertical scrollbar
+		 * so that the current viewport items will not change. 
+		 */
+		if (availableIndex < parent.topIndex) {
+			parent.topIndex += descendentsCount - 1;
+			parent.getVerticalBar ().setSelection (parent.topIndex);
+			return;
+		}
+
 		int previousNextAvailableIndex = availableIndex + descendentsCount;
 		if (previousNextAvailableIndex != parent.availableItems.length) {
 			/* the receiver was not the last available item before being expanded */

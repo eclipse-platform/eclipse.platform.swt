@@ -235,19 +235,18 @@ void createItem (TreeItem item, int index) {
 		availableItems [i].availableIndex = i;
 	}
 
+	/* update scrollbars */
 	Rectangle bounds = item.getBounds ();
 	int rightX = bounds.x + bounds.width;
 	updateHorizontalBar (rightX, rightX);
-
+	updateVerticalBar ();
 	/* 
 	 * If new item is above viewport then adjust topIndex and the vertical
 	 * scrollbar so that the current viewport items will not change.
 	 */
-	ScrollBar vBar = getVerticalBar ();
-	vBar.setMaximum (vBar.getMaximum () + 1);
 	if (item.availableIndex < topIndex) {
 		topIndex++;
-		vBar.setSelection (topIndex);
+		getVerticalBar ().setSelection (topIndex);
 		return;
 	}
 
@@ -1757,19 +1756,18 @@ void makeAvailable (TreeItem item) {
  * Important: Assumes that item is available and its descendents have just become
  * available (ie.- they were either created or the item was expanded).
  */
-void makeDescendentsAvailable (TreeItem item) {
+void makeDescendentsAvailable (TreeItem item, TreeItem[] descendents) {
 	int itemAvailableIndex = item.availableIndex;
-	TreeItem[] availableDescendents = item.computeAvailableDescendents ();
-	TreeItem[] newAvailableItems = new TreeItem [availableItems.length + availableDescendents.length - 1];
+	TreeItem[] newAvailableItems = new TreeItem [availableItems.length + descendents.length - 1];
 	
 	System.arraycopy (availableItems, 0, newAvailableItems, 0, itemAvailableIndex);
-	System.arraycopy (availableDescendents, 0, newAvailableItems, itemAvailableIndex, availableDescendents.length);
+	System.arraycopy (descendents, 0, newAvailableItems, itemAvailableIndex, descendents.length);
 	int startIndex = itemAvailableIndex + 1;
 	System.arraycopy (
 		availableItems,
 		startIndex,
 		newAvailableItems,
-		itemAvailableIndex + availableDescendents.length,
+		itemAvailableIndex + descendents.length,
 		availableItems.length - startIndex);
 	availableItems = newAvailableItems;
 	
@@ -1780,8 +1778,8 @@ void makeDescendentsAvailable (TreeItem item) {
 	
 	updateVerticalBar ();
 	int rightX = 0;
-	for (int i = 1; i < availableDescendents.length; i++) {
-		Rectangle bounds = availableDescendents [i].getBounds ();
+	for (int i = 1; i < descendents.length; i++) {
+		Rectangle bounds = descendents [i].getBounds ();
 		rightX = Math.max (rightX, bounds.x + bounds.width);
 	}
 	updateHorizontalBar (rightX, rightX);
@@ -1791,8 +1789,8 @@ void makeDescendentsAvailable (TreeItem item) {
  * Important: Assumes that item is available and its descendents have just become
  * unavailable (ie.- they were either disposed or the item was collapsed).
  */
-void makeDescendentsUnavailable (TreeItem item, TreeItem[] removedDescendents) {
-	int descendentsLength = removedDescendents.length;
+void makeDescendentsUnavailable (TreeItem item, TreeItem[] descendents) {
+	int descendentsLength = descendents.length;
 	TreeItem[] newAvailableItems = new TreeItem [availableItems.length - descendentsLength + 1];
 	
 	System.arraycopy (availableItems, 0, newAvailableItems, 0, item.availableIndex + 1);
@@ -1806,9 +1804,9 @@ void makeDescendentsUnavailable (TreeItem item, TreeItem[] removedDescendents) {
 	availableItems = newAvailableItems;
 	
 	/* update availableIndexes */
-	for (int i = 1; i < removedDescendents.length; i++) {
+	for (int i = 1; i < descendents.length; i++) {
 		/* skip the first descendent since this is the item being collapsed */
-		removedDescendents [i].availableIndex = -1;
+		descendents [i].availableIndex = -1;
 	}
 	for (int i = item.availableIndex; i < availableItems.length; i++) {
 		availableItems [i].availableIndex = i;
