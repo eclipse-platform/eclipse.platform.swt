@@ -395,6 +395,7 @@ void releaseWidget () {
 		if (item != null && !item.isDisposed ()) item.releaseResources ();
 	}
 	items = null;
+	itemCount = 0;
 	super.releaseWidget ();
 }
 
