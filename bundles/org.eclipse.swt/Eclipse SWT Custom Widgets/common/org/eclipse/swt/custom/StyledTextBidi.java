@@ -127,6 +127,33 @@ public StyledTextBidi(GC gc, int tabWidth, String text, int[] boldRanges, Font b
 	}
 }
 /**
+ * Constructs an instance of this class for a line of text. This constructor
+ * should be used when only ordering (not rendering) information is needed.  
+ * Only the class and order arrays will be filled during this call.
+ * <p>
+ * 
+ * @param gc the GC to use for rendering and measuring of this line.
+ * @param tabWidth tab width in number of spaces. used to calculate 
+ * 	tab stops.
+ * @param text line that bidi data should be calculated for
+ * @param offset text segments that should be measured and reordered 
+ * 	separately. May be needed to preserve the order of separate R2L 
+ * 	segments to each other.
+ */
+public StyledTextBidi(GC gc, int tabWidth, String text, int[] offsets) {
+	int length = text.length();		
+	this.gc = gc;
+	bidiSegments = offsets;
+	order = new int[length];
+	classBuffer = new byte[length];
+	BidiUtil.getOrderInfo(gc, text, order, classBuffer, 0, offsets);
+	// initialize the unused arrays
+	dx = new int[0];
+	renderPositions = new int[0];
+	glyphBuffer = new char[0];
+
+}
+/**
  * Adds a listener that should be called when the user changes the 
  * keyboard layout for the specified window.
  * <p>
@@ -701,7 +728,7 @@ int[] segmentedRangesFor(int[] ranges) {
  * @return the number of characters in the line.
  */
 private int getTextLength() {
-	return order.length;
+	return dx.length;
 }
 /**
  * Returns the width in pixels of the line.
