@@ -353,7 +353,6 @@ class CTabFolderTab extends Tab {
 		borderButton.setText ("SWT.BORDER");
 		flatButton = new Button (styleGroup, SWT.CHECK);
 		flatButton.setText ("SWT.FLAT");
-		flatButton.setEnabled(false);
 		closeButton = new Button (styleGroup, SWT.CHECK);
 		closeButton.setText ("SWT.CLOSE");
 	
@@ -371,11 +370,6 @@ class CTabFolderTab extends Tab {
 		borderButton.addSelectionListener (selectionListener);
 		flatButton.addSelectionListener (selectionListener);
 		closeButton.addSelectionListener (selectionListener);
-		borderButton.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				flatButton.setEnabled(borderButton.getSelection());
-			}
-		});
 	}
 	
 	/**
