@@ -84,6 +84,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_GNOME_gnome_1vfs_1get_1
 }
 #endif
 
+#ifndef NO_gnome_1vfs_1initialized
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_GNOME_gnome_1vfs_1init
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("gnome_1vfs_1init\n")
+
+	return (jboolean)gnome_vfs_init();
+}
+#endif
+
 #ifndef NO_gnome_1vfs_1mime_1application_1free
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_GNOME_gnome_1vfs_1mime_1application_1free
 	(JNIEnv *env, jclass that, jint arg0)

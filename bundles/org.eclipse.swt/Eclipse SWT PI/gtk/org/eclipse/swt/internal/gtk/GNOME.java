@@ -16,6 +16,7 @@ public class GNOME extends OS {
 public static final int GNOME_VFS_MIME_APPLICATION_ARGUMENT_TYPE_URIS = 0;
 
 public static final synchronized native int gnome_vfs_get_registered_mime_types();
+public static final synchronized native boolean gnome_vfs_init();
 public static final synchronized native void gnome_vfs_mime_application_free(int application);
 public static final synchronized native void gnome_vfs_mime_extensions_list_free(int list);
 public static final synchronized native int gnome_vfs_mime_get_default_application(byte[] mimeType);
