@@ -22,7 +22,7 @@ public class Accessible {
 	Accessible(Control control) {
 	}
 	
-	public static Accessible internal_new_accessible(Control control) {
+	public static Accessible internal_new_Accessible(Control control) {
 		return new Accessible(control);
 	}
 
@@ -37,4 +37,11 @@ public class Accessible {
 
 	public void removeAccessibleControlListener(AccessibleControlListener listener) {
 	}
+	
+	public void internal_dispose_Accessible() {
+	}
+	
+	public int internal_WM_GETOBJECT (int wParam, int lParam) {
+		return 0;
+	}	
 }

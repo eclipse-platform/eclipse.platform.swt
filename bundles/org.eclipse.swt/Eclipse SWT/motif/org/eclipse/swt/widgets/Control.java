@@ -529,7 +529,7 @@ public boolean forceFocus () {
 public Accessible getAccessible () {
 	checkWidget ();
 	if (accessible == null) {
-		accessible = Accessible.internal_new_accessible (this);
+		accessible = Accessible.internal_new_Accessible (this);
 	}
 	return accessible;
 }

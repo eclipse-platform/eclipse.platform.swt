@@ -9,7 +9,7 @@
     <classpathentry kind="src" path="Eclipse SWT Printing/common"/>
     <classpathentry kind="src" path="Eclipse SWT Program/gtk"/>
     <classpathentry kind="src" path="Eclipse SWT Program/common"/>
-    <classpathentry kind="src" path="Eclipse SWT Drag and Drop/gtk"/>
+    <classpathentry kind="src" path="Eclipse SWT Drag and Drop/emulated"/>
     <classpathentry kind="src" path="Eclipse SWT Drag and Drop/common"/>
     <classpathentry kind="src" path="Eclipse SWT Custom Widgets/common"/>
     <classpathentry kind="src" path="Eclipse SWT PI/gtk"/>

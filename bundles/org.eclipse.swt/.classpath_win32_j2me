@@ -10,7 +10,7 @@
     <classpathentry kind="src" path="Eclipse SWT Program/common"/>
     <classpathentry kind="src" path="Eclipse SWT AWT/win32"/>
     <classpathentry kind="src" path="Eclipse SWT OLE Win32/win32"/>
-    <classpathentry kind="src" path="Eclipse SWT Drag and Drop/win32"/>
+    <classpathentry kind="src" path="Eclipse SWT Drag and Drop/emulated"/>
     <classpathentry kind="src" path="Eclipse SWT Drag and Drop/common"/>
     <classpathentry kind="src" path="Eclipse SWT Custom Widgets/common"/>
     <classpathentry kind="src" path="Eclipse SWT PI/win32"/>
