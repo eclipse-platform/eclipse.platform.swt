@@ -1361,7 +1361,6 @@ void releaseHandle () {
 }
 
 void releaseWidget () {
-	int hwndHeader =  OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 	for (int i=0; i<columnCount; i++) {
 		TreeColumn column = columns [i];
