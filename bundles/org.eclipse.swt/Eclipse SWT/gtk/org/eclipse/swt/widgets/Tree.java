@@ -218,19 +218,19 @@ void createHandle (int index) {
 		checkRenderer = OS.gtk_cell_renderer_toggle_new ();
 		if (checkRenderer == 0) error (SWT.ERROR_NO_HANDLES);
 		OS.gtk_tree_view_column_pack_start (columnHandle, checkRenderer, false);
-		OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, "active", CHECKED_COLUMN);
+		OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, OS.active, CHECKED_COLUMN);
 
 		/*
 		* Feature in GTK. The inconsistent property only exists in GTK 2.2.x.
 		*/
 		if (OS.GTK_VERSION >= OS.VERSION (2, 2, 0)) {
-			OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, "inconsistent", GRAYED_COLUMN);
+			OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, OS.inconsistent, GRAYED_COLUMN);
 		}
 	}
 	pixbufRenderer = OS.gtk_cell_renderer_pixbuf_new ();
 	if (pixbufRenderer == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_tree_view_column_pack_start (columnHandle, pixbufRenderer, false);
-	OS.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, "pixbuf", PIXBUF_COLUMN);
+	OS.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.pixbuf, PIXBUF_COLUMN);
 	/*
 	* Feature on GTK.  When a tree view column contains only one activatable
 	* cell renderer such as a toggle renderer, mouse clicks anywhere in a cell
@@ -243,17 +243,17 @@ void createHandle (int index) {
 	textRenderer = OS.gtk_cell_renderer_text_new ();
 	if (textRenderer == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_tree_view_column_pack_start (columnHandle, textRenderer, true);
-	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "text", TEXT_COLUMN);
-	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "foreground-gdk", FOREGROUND_COLUMN);
+	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.text, TEXT_COLUMN);
+	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.foreground_gdk, FOREGROUND_COLUMN);
 	
 	/*
 	 * Bug on GTK. Gtk renders the background of the text renderer on top of the pixbuf renderer.
 	 * This only happens in version 2.2.1 and earlier. The fix is not to set the background.   
 	 */
 	if (OS.GTK_VERSION > OS.VERSION (2, 2, 1)) {
-		OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "background-gdk", BACKGROUND_COLUMN);
+		OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.background_gdk, BACKGROUND_COLUMN);
 	}
-	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "font-desc", FONT_COLUMN);
+	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.font_desc, FONT_COLUMN);
 	OS.gtk_container_add (fixedHandle, scrolledHandle);
 	OS.gtk_container_add (scrolledHandle, handle);
 
@@ -627,7 +627,7 @@ int /*long*/ gtk_changed (int /*long*/ widget) {
 	TreeItem item = getFocusItem ();
 	if (item != null) {
 		Event event = new Event ();
-		event.item = item; 
+		event.item = item;
 		postEvent (SWT.Selection, event);
 	}
 	return 0;
@@ -636,22 +636,23 @@ int /*long*/ gtk_changed (int /*long*/ widget) {
 int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 	int /*long*/ result = super.gtk_key_press_event (widget, eventPtr);
 	if (result != 0) return result;
-
-	/*
-	* Feature in GTK.  When an item is default selected using
-	* the return key, GTK does not issue notification. The fix is
-	* to issue this notification when the return key is pressed.
-	*/
-	GdkEventKey keyEvent = new GdkEventKey ();
-	OS.memmove (keyEvent, eventPtr, GdkEventKey.sizeof);
-	int key = keyEvent.keyval;
-	switch (key) {
-		case OS.GDK_Return:
-		case OS.GDK_KP_Enter: {
-			Event event = new Event ();
-			event.item = getFocusItem (); 
-			postEvent (SWT.DefaultSelection, event);
-			break;
+	if (OS.GTK_VERSION < OS.VERSION (2, 2 ,0)) {
+		/*
+		* Feature in GTK 2.0.x.  When an item is default selected using
+		* the return key, GTK does not issue notification. The fix is
+		* to issue this notification when the return key is pressed.
+		*/
+		GdkEventKey keyEvent = new GdkEventKey ();
+		OS.memmove (keyEvent, eventPtr, GdkEventKey.sizeof);
+		int key = keyEvent.keyval;
+		switch (key) {
+			case OS.GDK_Return:
+			case OS.GDK_KP_Enter: {
+				Event event = new Event ();
+				event.item = getFocusItem (); 
+				postEvent (SWT.DefaultSelection, event);
+				break;
+			}
 		}
 	}
 	return result;

@@ -203,7 +203,7 @@ void createHandle (int index) {
 	int /*long*/ columnHandle = OS.gtk_tree_view_column_new ();
 	if (columnHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_tree_view_column_pack_start (columnHandle, textRenderer, true);
-	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "text", TEXT_COLUMN);
+	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.text, TEXT_COLUMN);
 	OS.gtk_tree_view_insert_column (handle, columnHandle, index);
 	OS.gtk_container_add (fixedHandle, scrolledHandle);
 	OS.gtk_container_add (scrolledHandle, handle);
@@ -697,23 +697,23 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
 	int /*long*/ result = super.gtk_key_press_event (widget, event);
 	if (result != 0) return result;
-
-	/*
-	* Feature in GTK.  When an item is default selected using
-	* the return key, GTK does not issue notification. The fix is
-	* to issue this notification when the return key is pressed.
-	*/
-	GdkEventKey keyEvent = new GdkEventKey ();
-	OS.memmove (keyEvent, event, GdkEventKey.sizeof);
-	int key = keyEvent.keyval;
-	switch (key) {
-		case OS.GDK_Return:
-		case OS.GDK_KP_Enter: {
-			postEvent (SWT.DefaultSelection);
-			break;
+	if (OS.GTK_VERSION < OS.VERSION (2, 2 ,0)) {
+		/*
+		* Feature in GTK 2.0.x.  When an item is default selected using
+		* the return key, GTK does not issue notification. The fix is
+		* to issue this notification when the return key is pressed.
+		*/
+		GdkEventKey keyEvent = new GdkEventKey ();
+		OS.memmove (keyEvent, event, GdkEventKey.sizeof);
+		int key = keyEvent.keyval;
+		switch (key) {
+			case OS.GDK_Return:
+			case OS.GDK_KP_Enter: {
+				postEvent (SWT.DefaultSelection);
+				break;
+			}
 		}
 	}
-	
 	return result;
 }
 

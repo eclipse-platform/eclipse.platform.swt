@@ -222,9 +222,11 @@ int /*long*/ pixbufCellDataProc (int /*long*/ tree_column, int /*long*/ cell, in
 		ptr = new int /*long*/ [1];
 	}
 	if (customDraw) {
-		OS.gtk_tree_model_get (tree_model, iter, modelIndex + 3, ptr, -1); //cell-background-gdk
-		if (ptr [0] != 0) {
-			OS.g_object_set(cell, OS.cell_background_gdk, ptr[0], 0);
+		if (OS.GTK_VERSION >= OS.VERSION (2, 2, 0)) {
+			OS.gtk_tree_model_get (tree_model, iter, modelIndex + 3, ptr, -1); //cell-background-gdk
+			if (ptr [0] != 0) {
+				OS.g_object_set(cell, OS.cell_background_gdk, ptr[0], 0);
+			}
 		}
 	}
 	if (setData) {
@@ -505,14 +507,10 @@ void createRenderers (int /*long*/ columnHandle, int modelIndex, boolean check, 
 	OS.gtk_tree_view_column_clear (columnHandle);
 	if ((style & SWT.CHECK) != 0 && check) {
 		OS.gtk_tree_view_column_pack_start (columnHandle, checkRenderer, false);
-		OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, "active", CHECKED_COLUMN);
-		OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, "cell-background-gdk", BACKGROUND_COLUMN);
-		
-		/*
-		* Feature in GTK. The inconsistent property only exists in GTK 2.2.x.
-		*/
+		OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, OS.active, CHECKED_COLUMN);
 		if (OS.GTK_VERSION >= OS.VERSION (2, 2, 0)) {
-			OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, "inconsistent", GRAYED_COLUMN);
+			OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, OS.cell_background_gdk, BACKGROUND_COLUMN);
+			OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, OS.inconsistent, GRAYED_COLUMN);
 		}
 	}
 	int /*long*/ pixbufRenderer = OS.gtk_cell_renderer_pixbuf_new ();
@@ -548,12 +546,14 @@ void createRenderers (int /*long*/ columnHandle, int modelIndex, boolean check, 
 	}
 
 	/* Add attributes */
-	OS.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, "pixbuf", modelIndex);
-	OS.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, "cell-background-gdk", BACKGROUND_COLUMN);
-	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "text", modelIndex + 1);
-	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "foreground-gdk", FOREGROUND_COLUMN);
-	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "background-gdk", BACKGROUND_COLUMN);
-	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "font-desc", FONT_COLUMN);
+	OS.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.pixbuf, modelIndex);
+	if (OS.GTK_VERSION >= OS.VERSION (2, 2, 0)) {
+		OS.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.cell_background_gdk, BACKGROUND_COLUMN);
+	}
+	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.text, modelIndex + 1);
+	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.foreground_gdk, FOREGROUND_COLUMN);
+	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.background_gdk, BACKGROUND_COLUMN);
+	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.font_desc, FONT_COLUMN);
 	
 	boolean customDraw = firstCustomDraw;
 	if (columnCount != 0) {
@@ -1383,22 +1383,23 @@ int /*long*/ gtk_changed (int /*long*/ widget) {
 int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 	int /*long*/ result = super.gtk_key_press_event (widget, eventPtr);
 	if (result != 0) return result;
-
-	/*
-	* Feature in GTK.  When an item is default selected using
-	* the return key, GTK does not issue notification. The fix is
-	* to issue this notification when the return key is pressed.
-	*/
-	GdkEventKey keyEvent = new GdkEventKey ();
-	OS.memmove (keyEvent, eventPtr, GdkEventKey.sizeof);
-	int key = keyEvent.keyval;
-	switch (key) {
-		case OS.GDK_Return:
-		case OS.GDK_KP_Enter: {
-			Event event = new Event ();
-			event.item = getFocusItem (); 
-			postEvent (SWT.DefaultSelection, event);
-			break;
+	if (OS.GTK_VERSION < OS.VERSION (2, 2 ,0)) {
+		/*
+		* Feature in GTK 2.0.x.  When an item is default selected using
+		* the return key, GTK does not issue notification. The fix is
+		* to issue this notification when the return key is pressed.
+		*/
+		GdkEventKey keyEvent = new GdkEventKey ();
+		OS.memmove (keyEvent, eventPtr, GdkEventKey.sizeof);
+		int key = keyEvent.keyval;
+		switch (key) {
+			case OS.GDK_Return:
+			case OS.GDK_KP_Enter: {
+				Event event = new Event ();
+				event.item = getFocusItem (); 
+				postEvent (SWT.DefaultSelection, event);
+				break;
+			}
 		}
 	}
 	return result;
