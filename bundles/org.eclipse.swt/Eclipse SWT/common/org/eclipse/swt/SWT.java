@@ -674,6 +674,7 @@ public class SWT {
 	 * Style constant for full row selection behavior. (value is 1&lt;&lt;16).
 	 * <br>Note that this is a <em>HINT</em>.
 	 * <p><b>Used By:</b><ul>
+	 * <li><code>StyledText</code></li>
 	 * <li><code>Table</code></li>
 	 * </ul></p>
 	 */
