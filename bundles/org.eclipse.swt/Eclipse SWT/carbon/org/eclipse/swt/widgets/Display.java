@@ -693,7 +693,7 @@ int commandProc (int nextHandler, int theEvent, int userData) {
 				} else {
 					int menuRef = command.menu_menuRef;
 					short menuID = OS.GetMenuID (menuRef);
-					Menu menu = findMenu (menuID);
+					Menu menu = getMenu (menuID);
 					if (menu != null) {
 						/*
 						* Feature in the Macintosh.  When a menu item is selected by the
@@ -920,13 +920,6 @@ boolean filterEvent (Event event) {
 boolean filters (int eventType) {
 	if (filterTable == null) return false;
 	return filterTable.hooks (eventType);
-}
-
-Menu findMenu (int id) {
-	if (menus == null) return null;
-	int index = id - ID_START;
-	if (0 <= index && index < menus.length) return menus [index];
-	return null;
 }
 
 /**
@@ -1373,6 +1366,13 @@ Menu [] getMenus (Decorations shell) {
 		}
 	}
 	return result;
+}
+
+Menu getMenu (int id) {
+	if (menus == null) return null;
+	int index = id - ID_START;
+	if (0 <= index && index < menus.length) return menus [index];
+	return null;
 }
 
 Menu getMenuBar () {
@@ -2395,7 +2395,7 @@ int menuProc (int nextHandler, int theEvent, int userData) {
 		int [] theMenu = new int [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeMenuRef, null, 4, null, theMenu);
 		short menuID = OS.GetMenuID (theMenu [0]);
-		Menu menu = findMenu (menuID);
+		Menu menu = getMenu (menuID);
 		if (menu != null) return menu.menuProc (nextHandler, theEvent, userData);
 	}
 	return OS.eventNotHandledErr;
