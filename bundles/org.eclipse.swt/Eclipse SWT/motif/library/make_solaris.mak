@@ -43,7 +43,7 @@ CDE_LIB      = -G -L$(CDE_HOME)/lib -lDtSvc
 #   The flag -xarch=generic ensure the compiled modules will be targeted
 #   for 32-bit architectures. If this flag is not
 #
-CFLAGS = -O -s \
+CFLAGS = -O -s -v \
 	-xarch=generic \
 	-DSWT_LIBRARY_MAJOR_VERSION=$(MAJOR_VER) \
 	-DSWT_LIBRARY_MINOR_VERSION=$(MINOR_VER) \
