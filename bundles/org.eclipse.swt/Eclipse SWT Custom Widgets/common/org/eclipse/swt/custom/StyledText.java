@@ -7305,7 +7305,7 @@ public void setStyleRange(StyleRange range) {
  *
  * @param ranges StyleRange objects containing the style information.
  * The ranges should not overlap. The style rendering is undefined if 
- * the ranges do overlap. Must not be null.
+ * the ranges do overlap. Must not be null. The styles need to be in order.
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
