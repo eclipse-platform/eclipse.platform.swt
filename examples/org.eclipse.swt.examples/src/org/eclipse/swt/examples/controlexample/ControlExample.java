@@ -68,6 +68,7 @@ public class ControlExample {
 		if (standAlone) {
 			createControlExampleMenu (parent.getShell ());
 			eventConsole = new Text(form, SWT.MULTI | SWT.V_SCROLL);
+			form.setWeights(new int[] {100, 0});
 			createEventConsolePopup (eventConsole);
 			for (int i = 0; i < DEFAULT_FILTER.length; i++) {
 				eventsFilter [DEFAULT_FILTER [i]] = true;
