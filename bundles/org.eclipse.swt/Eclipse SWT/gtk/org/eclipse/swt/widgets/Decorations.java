@@ -377,7 +377,7 @@ public void setDefaultButton (Button button) {
 		if (button.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 		buttonHandle = button.handle;
 	}
-	this.saveDefault = button;
+	saveDefault = defaultButton = button;
 	OS.gtk_window_set_default (topHandle (), buttonHandle);
 }
 
@@ -517,8 +517,15 @@ boolean traverseItem (boolean next) {
 }
 
 boolean traverseReturn () {
-	if (defaultButton == null || defaultButton.isDisposed ()) return false;
-	if (!defaultButton.isVisible () || !defaultButton.isEnabled ()) return false;
+	Button button = defaultButton != null ? defaultButton: saveDefault;
+	if (button == null || button.isDisposed ()) return false;
+	/*
+	* Bug in GTK.  When a default button that is disabled is
+	* activated using the Enter key, GTK GP's.  The fix is to
+	* detect this case and stop GTK from processing the Enter
+	* key.
+	*/
+	if (!button.isVisible () || !button.isEnabled ()) return true;
 	int shellHandle = _getShell ().topHandle ();
 	return OS.gtk_window_activate_default (shellHandle);
 }
