@@ -60,6 +60,7 @@ public class Display extends Device {
 	
 	/* Grabs */
 	Control grabControl;
+	boolean grabbing;
 
 	/* Hover Help */
 	int helpString;
@@ -1294,11 +1295,12 @@ boolean runDeferredEvents () {
 }
 
 void runGrabs () {
-	if (grabControl == null) return;
+	if (grabControl == null || grabbing) return;
 	Rect rect = new Rect ();
 	int [] outModifiers = new int [1];
 	short [] outResult = new short [1];
 	org.eclipse.swt.internal.carbon.Point outPt = new org.eclipse.swt.internal.carbon.Point ();
+	grabbing = true;
 	try {
 		while (grabControl != null && !grabControl.isDisposed () && outResult [0] != OS.kMouseTrackingMouseUp) {
 			lastModifiers = OS.GetCurrentEventKeyModifiers ();
@@ -1323,12 +1325,12 @@ void runGrabs () {
 					break;
 				}
 				case OS.kMouseTrackingMouseExited: 				type = SWT.MouseExit; break;
-				case OS.kMouseTrackingMouseEntered: 				type = SWT.MouseEnter; break;
-				case OS.kMouseTrackingMouseDragged: 				type = SWT.MouseMove; break;
+				case OS.kMouseTrackingMouseEntered: 			type = SWT.MouseEnter; break;
+				case OS.kMouseTrackingMouseDragged: 			type = SWT.MouseMove; break;
 				case OS.kMouseTrackingMouseKeyModifiersChanged:	break;
-				case OS.kMouseTrackingUserCancelled:				break;
-				case OS.kMouseTrackingTimedOut: 					break;
-				case OS.kMouseTrackingMouseMoved: 					type = SWT.MouseMove; break;
+				case OS.kMouseTrackingUserCancelled:			break;
+				case OS.kMouseTrackingTimedOut: 				break;
+				case OS.kMouseTrackingMouseMoved: 				type = SWT.MouseMove; break;
 			}
 			if (type != 0) {	
 				int handle = grabControl.handle;
@@ -1346,6 +1348,7 @@ void runGrabs () {
 			}
 		}
 	} finally {
+		grabbing = false;
 		grabControl = null;
 	}
 }
