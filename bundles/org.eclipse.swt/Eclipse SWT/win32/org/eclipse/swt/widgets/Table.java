@@ -1709,7 +1709,9 @@ void setScrollWidth () {
 	if (drawCount != 0) return;
 	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	if (count == 1 && columns [0] == null) {
+	//The following code is deliberately commented out as a temporary fix for bug report 5677
+	//if (count == 1 && columns [0] == null) {
+	if (count == 1) {
 		OS.SendMessage (handle, OS.LVM_SETCOLUMNWIDTH, 0, OS.LVSCW_AUTOSIZE);
 	}
 }
