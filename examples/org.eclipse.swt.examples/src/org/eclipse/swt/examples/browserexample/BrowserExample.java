@@ -21,7 +21,6 @@ import java.util.*;
 
 public class BrowserExample {
 	static ResourceBundle resourceBundle = ResourceBundle.getBundle("examples_browser");
-	static Shell shell;
 	int index;
 	boolean busy;
 	Image images[];
@@ -270,7 +269,7 @@ void initResources() {
 
 public static void main(String [] args) {
 	Display display = new Display();
-	final Shell shell = new Shell(display);
+	Shell shell = new Shell(display);
 	shell.setLayout(new FillLayout());
 	BrowserExample instance = new BrowserExample(shell);
 	shell.setText(getResourceString("window.title"));
