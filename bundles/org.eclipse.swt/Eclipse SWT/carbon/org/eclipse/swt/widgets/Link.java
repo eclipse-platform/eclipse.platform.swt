@@ -36,13 +36,16 @@ import org.eclipse.swt.graphics.*;
 public class Link extends Control {
 	String text;
 	TextLayout layout;
-	Color linkColor;
+	Color linkColor, linkDisabledColor;
 	Point [] offsets;
 	Point selection;
 	String [] ids;
 	int [] mnemonics;
 	int focusIndex;
 	
+    static final RGB LINK_FOREGROUND = new RGB (0, 51, 153);
+    static final RGB LINK_DISABLED_FOREGROUND = new RGB (172, 168, 153);
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -141,7 +144,8 @@ void createHandle () {
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];
 	layout = new TextLayout (display);
-	linkColor = new Color (display, 0, 51, 153);
+	linkColor = new Color (display, LINK_FOREGROUND);
+    linkDisabledColor = new Color (display, LINK_DISABLED_FOREGROUND);
 	offsets = new Point [0];
 	ids = new String [0];
 	mnemonics = new int [0]; 
@@ -190,6 +194,17 @@ void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
 	selStart = selEnd = -1;
 	layout.draw (gc, 0, 0, selStart, selEnd, null, null);
 	gc.dispose ();
+}
+
+void enableWidget (boolean enabled) {
+    super.enableWidget (enabled);
+    TextStyle linkStyle = new TextStyle (null, enabled ? linkColor : linkDisabledColor, null);
+    linkStyle.underline = true;
+    for (int i = 0; i < offsets.length; i++) {
+        Point point = offsets [i];
+        layout.setStyle (linkStyle, point.x, point.y);
+    }
+    redraw ();
 }
 
 String getNameText () {
@@ -439,6 +454,8 @@ void releaseWidget () {
 	layout = null;
 	if (linkColor != null) linkColor.dispose ();
 	linkColor = null;
+    if (linkDisabledColor != null) linkDisabledColor.dispose ();
+    linkDisabledColor = null;
 	offsets = null;
 	ids = null;
 	mnemonics = null;
@@ -663,7 +680,8 @@ public void setText (String string) {
 	layout.setText (parse (string));
 	focusIndex = offsets.length > 0 ? 0 : -1 ;
 	selection.x = selection.y = -1;
-	TextStyle linkStyle = new TextStyle (null, linkColor, null);
+    boolean enabled = (state & DISABLED) == 0;
+    TextStyle linkStyle = new TextStyle (null, enabled ? linkColor : linkDisabledColor, null);
 	linkStyle.underline = true;
 	for (int i = 0; i < offsets.length; i++) {
 		Point point = offsets [i];
