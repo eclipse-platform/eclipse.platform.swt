@@ -619,6 +619,7 @@ public void removeControlListener (ControlListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
+	eventTable.unhook (SWT.Resize, listener);
 	eventTable.unhook (SWT.Move, listener);
 }
 
