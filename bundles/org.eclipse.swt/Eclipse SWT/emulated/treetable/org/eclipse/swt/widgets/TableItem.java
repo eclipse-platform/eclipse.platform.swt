@@ -218,8 +218,8 @@ Point drawImage(GC gc, Point destinationPosition, int index) {
 void drawText(String label, GC gc, Point position, int index) {
 	Table parent = getParent();
 	boolean drawSelection;
-	int textOffset;
-		
+	int textOffset, alignmentOffset;
+
 	if (label != null) {
 		drawSelection = (index == TableColumn.FIRST || (parent.getStyle() & SWT.FULL_SELECTION) != 0);
 		if (isSelected() == true && drawSelection == true) {
@@ -227,9 +227,36 @@ void drawText(String label, GC gc, Point position, int index) {
 		} else {
 			gc.setForeground(getForeground());
 		}
+		alignmentOffset = getAlignmentOffset (index, getBounds(index).width, gc);
 		textOffset = (parent.getItemHeight() - parent.getFontHeight()) / 2;			// vertically center the text
-		gc.drawString(label, position.x, position.y + textOffset, true);
+		gc.drawString(label, position.x + alignmentOffset, position.y + textOffset, true);
 	}
+}
+int getAlignmentOffset(int columnIndex, int columnWidth, GC gc) {
+	Table parent = getParent();
+	TableColumn column = parent.internalGetColumn (columnIndex);
+	Image image = getImage(columnIndex);	
+	int alignmentOffset = 0;
+	int alignment = column.getAlignment();
+	String label  = getText(gc, column);
+	int imageWidth = 0;
+	int textWidth = gc.stringExtent (label).x;
+	Point imageExtent = parent.getImageExtent();
+	if (((columnIndex == TableColumn.FIRST &&								// always add the image width for the first column 
+ 	 	  parent.hasFirstColumnImage() == true) ||							// if any item in the first column has an image
+		 (columnIndex != TableColumn.FIRST && 								// add the image width if it's not the first column
+		  image != null)) &&										 		// only when the item actually has an image
+		imageExtent != null) {									
+		textWidth += imageExtent.x;
+	}
+	if ((alignment & SWT.RIGHT) != 0) {
+		alignmentOffset = columnWidth - textWidth - imageWidth - TEXT_INDENT - TEXT_INDENT;
+	}
+	if ((alignment & SWT.CENTER) != 0) {
+		alignmentOffset = ((columnWidth - textWidth) / 2) - imageWidth - TEXT_INDENT;
+	}
+	if (alignmentOffset < 0) alignmentOffset = 0;
+	return alignmentOffset;
 }
 /**
  * Returns the receiver's background color.
@@ -346,18 +373,22 @@ int getDotStartX(int columnIndex, int columnWidth) {
 	GC gc;
 	Table parent = getParent();
 	String label = getText(columnIndex);
+	int alignment = parent.internalGetColumn (columnIndex).getAlignment();
 	int dotStartX = -1;
 	int maxWidth;
 
 	if (label != null) {
 		gc = new GC(parent);
-		maxWidth = getMaxTextWidth(columnIndex, columnWidth);
-		label = parent.trimItemText(label, maxWidth, gc);
-		if (label.endsWith(Table.DOT_STRING) == true) {
-			dotStartX = gc.stringExtent(label).x - parent.getDotsWidth(gc);
-			// add indents, margins and image width
-			dotStartX += getImageStopX(columnIndex);
-			dotStartX += getTextIndent(columnIndex);
+		dotStartX = getAlignmentOffset(columnIndex, columnWidth, gc);
+		if ((alignment & SWT.LEFT) != 0) {
+			maxWidth = getMaxTextWidth(columnIndex, columnWidth);
+			label = parent.trimItemText(label, maxWidth, gc);
+			if (label.endsWith(Table.DOT_STRING)) {
+				dotStartX = gc.stringExtent(label).x - parent.getDotsWidth(gc);
+				// add indents, margins and image width
+				dotStartX += getImageStopX(columnIndex);
+				dotStartX += getTextIndent(columnIndex);
+			}
 		}
 		gc.dispose();		
 	}
@@ -1201,3 +1232,4 @@ void setIndex(int newIndex) {
 }
 
 }
+
