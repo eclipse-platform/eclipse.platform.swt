@@ -216,7 +216,7 @@ void createHandle (int index, int /*long*/ parentHandle, boolean scrolled) {
 		int hsp = (style & SWT.H_SCROLL) != 0 ? OS.GTK_POLICY_ALWAYS : OS.GTK_POLICY_NEVER;
 		int vsp = (style & SWT.V_SCROLL) != 0 ? OS.GTK_POLICY_ALWAYS : OS.GTK_POLICY_NEVER;
 		OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
-		//CHECK WIDTH IS THERE ALREADY THEN DON'T SET
+		//TODO - CHECK WIDTH IS THERE ALREADY THEN DON'T SET
 		if (hasBorder ()) {
 			OS.gtk_scrolled_window_set_shadow_type (scrolledHandle, OS.GTK_SHADOW_ETCHED_IN);
 		}
@@ -399,7 +399,7 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 			GdkEventButton gdkEvent = new GdkEventButton ();
 			OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
 			if (gdkEvent.button == 1) {
-				if (getChildrenCount () == 0)  setFocus ();
+				if (getChildrenCount () == 0) setFocus ();
 			}
 		}
 	}

@@ -3116,6 +3116,29 @@ JNIEXPORT jint JNICALL OS_NATIVE(gdk_1window_1at_1pointer)
 }
 #endif
 
+#ifndef NO_gdk_1window_1begin_1paint_1rect
+JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1begin_1paint_1rect)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	GdkRectangle _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "gdk_1window_1begin_1paint_1rect\n")
+	if (arg1) lparg1 = getGdkRectangleFields(env, arg1, &_arg1);
+	gdk_window_begin_paint_rect((GdkWindow *)arg0, (GdkRectangle *)lparg1);
+	if (arg1) setGdkRectangleFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "gdk_1window_1begin_1paint_1rect\n")
+}
+#endif
+
+#ifndef NO_gdk_1window_1end_1paint
+JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1end_1paint)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "gdk_1window_1end_1paint\n")
+	gdk_window_end_paint((GdkWindow *)arg0);
+	NATIVE_EXIT(env, that, "gdk_1window_1end_1paint\n")
+}
+#endif
+
 #ifndef NO_gdk_1window_1focus
 JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1focus)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -3123,6 +3146,16 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1focus)
 	NATIVE_ENTER(env, that, "gdk_1window_1focus\n")
 	gdk_window_focus((GdkWindow *)arg0, arg1);
 	NATIVE_EXIT(env, that, "gdk_1window_1focus\n")
+}
+#endif
+
+#ifndef NO_gdk_1window_1freeze_1updates
+JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1freeze_1updates)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "gdk_1window_1freeze_1updates\n")
+	gdk_window_freeze_updates((GdkWindow *)arg0);
+	NATIVE_EXIT(env, that, "gdk_1window_1freeze_1updates\n")
 }
 #endif
 
@@ -3256,12 +3289,37 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1raise)
 }
 #endif
 
+#ifndef NO_gdk_1window_1set_1accept_1focus
+JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1set_1accept_1focus)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	NATIVE_ENTER(env, that, "gdk_1window_1set_1accept_1focus\n")
+/*
+	gdk_window_set_accept_focus((GdkWindow *)arg0, (gboolean)arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		static int (*fptr)();
+		if (!initialized) {
+			if (!handle) handle = dlopen(gdk_window_set_accept_focus_LIB, RTLD_LAZY);
+			if (handle) fptr = dlsym(handle, "gdk_window_set_accept_focus");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)((GdkWindow *)arg0, (gboolean)arg1);
+		}
+	}
+	NATIVE_EXIT(env, that, "gdk_1window_1set_1accept_1focus\n")
+}
+#endif
+
 #ifndef NO_gdk_1window_1set_1back_1pixmap
 JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1set_1back_1pixmap)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
 {
 	NATIVE_ENTER(env, that, "gdk_1window_1set_1back_1pixmap\n")
-	gdk_window_set_back_pixmap((GdkWindow *)arg0, (GdkPixmap *)arg1, arg2);
+	gdk_window_set_back_pixmap((GdkWindow *)arg0, (GdkPixmap *)arg1, (gboolean)arg2);
 	NATIVE_EXIT(env, that, "gdk_1window_1set_1back_1pixmap\n")
 }
 #endif
@@ -3306,6 +3364,31 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1set_1icon_1list)
 }
 #endif
 
+#ifndef NO_gdk_1window_1set_1keep_1above
+JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1set_1keep_1above)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	NATIVE_ENTER(env, that, "gdk_1window_1set_1keep_1above\n")
+/*
+	gdk_window_set_keep_above((GdkWindow *)arg0, (gboolean)arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		static int (*fptr)();
+		if (!initialized) {
+			if (!handle) handle = dlopen(gdk_window_set_keep_above_LIB, RTLD_LAZY);
+			if (handle) fptr = dlsym(handle, "gdk_window_set_keep_above");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)((GdkWindow *)arg0, (gboolean)arg1);
+		}
+	}
+	NATIVE_EXIT(env, that, "gdk_1window_1set_1keep_1above\n")
+}
+#endif
+
 #ifndef NO_gdk_1window_1set_1override_1redirect
 JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1set_1override_1redirect)
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
@@ -3333,6 +3416,16 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1show)
 	NATIVE_ENTER(env, that, "gdk_1window_1show\n")
 	gdk_window_show((GdkWindow *)arg0);
 	NATIVE_EXIT(env, that, "gdk_1window_1show\n")
+}
+#endif
+
+#ifndef NO_gdk_1window_1thaw_1updates
+JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1thaw_1updates)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "gdk_1window_1thaw_1updates\n")
+	gdk_window_thaw_updates((GdkWindow *)arg0);
+	NATIVE_EXIT(env, that, "gdk_1window_1thaw_1updates\n")
 }
 #endif
 
