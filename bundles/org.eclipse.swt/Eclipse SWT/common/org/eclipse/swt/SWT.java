@@ -2630,6 +2630,16 @@ public class SWT {
 	 */	
 	public static final int MOVEMENT_WORD = 1 << 2;
 
+	static boolean IS_JDK1_4;
+	static {
+		try {
+			Class.forName ("java.lang.CharSequence"); //$NON-NLS-1$
+			IS_JDK1_4 = true;
+		} catch (Throwable e) {
+			IS_JDK1_4 = false;
+		}
+	}
+	
 /**
  * Answers a concise, human readable description of the error code.
  *

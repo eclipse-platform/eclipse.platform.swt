@@ -122,7 +122,7 @@ public String getMessage () {
  */
 public void printStackTrace () {
 	super.printStackTrace ();
-	if (throwable != null) {
+	if (!SWT.IS_JDK1_4 && throwable != null) {
 		System.err.println ("*** Stack trace of contained exception ***"); //$NON-NLS-1$
 		throwable.printStackTrace ();
 	}

@@ -129,9 +129,9 @@ public String getMessage () {
  * are not provided in order to maintain compatibility with CLDC.
  * </p>
  */
-public synchronized void printStackTrace () {
+public void printStackTrace () {
 	super.printStackTrace ();
-	if (throwable != null) {
+	if (!SWT.IS_JDK1_4 && throwable != null) {
 		System.err.println ("*** Stack trace of contained error ***"); //$NON-NLS-1$
 		throwable.printStackTrace ();
 	}
