@@ -7,8 +7,6 @@ package org.eclipse.swt.custom;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import java.util.Enumeration;
-import java.util.Vector;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;

@@ -10,7 +10,6 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import java.io.*;
 import java.util.Enumeration;
 import java.util.Stack;
 import java.util.Vector;

@@ -10,7 +10,6 @@ package org.eclipse.swt.custom;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.layout.*;
 
 /**
  * This Layout stacks all the controls one on top of the other and resizes all controls

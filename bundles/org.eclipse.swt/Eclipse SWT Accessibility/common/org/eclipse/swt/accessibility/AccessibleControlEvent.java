@@ -8,7 +8,6 @@ package org.eclipse.swt.accessibility;
  */
 
 import org.eclipse.swt.internal.SWTEventObject;
-import org.eclipse.swt.widgets.*;
 
 /**
  * Instances of this class are sent as a result of

@@ -7,8 +7,6 @@ package org.eclipse.swt.dnd;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.widgets.*;
-
 abstract class DragUnderEffect {
 	
 abstract void show(int effect, int x, int y);

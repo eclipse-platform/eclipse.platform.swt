@@ -6,7 +6,6 @@ package org.eclipse.swt.dnd;
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/cpl-v10.html
  */
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.SWTEventListener;
 
 /**

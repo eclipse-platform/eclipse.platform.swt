@@ -8,7 +8,6 @@ package org.eclipse.swt.widgets;
  */
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 import java.util.Enumeration;
 import java.util.Vector;
 
