@@ -445,7 +445,7 @@ public void setForeground (Color color){
  * Sets the grayed state of the checkbox for this item.  This state change 
  * only applies if the Table was created with the SWT.CHECK style.
  *
- * @param grayed the new grayed state of the checkbox
+ * @param grayed the new grayed state of the checkbox; 
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

@@ -1319,7 +1319,8 @@ LRESULT WM_SETTINGCHANGE (int wParam, int lParam) {
 	if (OS.IsPPC) {
 		if (wParam == OS.SPI_SETSIPINFO) {
 			/* 
-			* The SIP is in a new state.  Cache its new value.			* Resize the Shell if it has the style SWT.RESIZE.
+			* The SIP is in a new state.  Cache its new value.
+			* Resize the Shell if it has the style SWT.RESIZE.
 			* Note that SHHandleWMSettingChange resizes the
 			* Shell and also updates the cached state.
 			*/

@@ -295,11 +295,9 @@ public Display getDisplay () {
 
 /**
  * Returns <code>true</code> if the receiver is enabled, and
- * <code>false</code> otherwise.
- * <p>
- * A disabled control is typically not selectable from the
- * user interface and draws with an inactive or "grayed" look.
- * </p>
+ * <code>false</code> otherwise. A disabled control is typically
+ * not selectable from the user interface and draws with an
+ * inactive or "grayed" look.
  *
  * @return the receiver's enabled state
  *
@@ -307,6 +305,8 @@ public Display getDisplay () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see #isEnabled
  */
 public boolean getEnabled () {
 	checkWidget();
@@ -768,6 +768,31 @@ public void setSelection (boolean selected) {
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CLICKED);
 }
 
+/**
+ * Sets the receiver's text. The string may include
+ * the mnemonic character.
+ * </p>
+ * <p>
+ * Mnemonics are indicated by an '&amp' that causes the next
+ * character to be the mnemonic.  When the user presses a
+ * key sequence that matches the mnemonic, a selection
+ * event occurs. On most platforms, the mnemonic appears
+ * underlined but may be emphasised in a platform specific
+ * manner.  The mnemonic indicator character '&amp' can be
+ * escaped by doubling it in the string, causing a single
+ *'&amp' to be displayed.
+ * </p>
+ * 
+ * @param string the new text
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);

@@ -354,7 +354,7 @@ GdkColor getForegroundColor () {
  * @return the item at the given point
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -537,6 +537,20 @@ public int getSelectionCount () {
 	return display.treeSelectionLength;
 }
 
+/**
+ * Returns the item which is currently at the top of the receiver.
+ * This item can change when items are expanded, collapsed, scrolled
+ * or new items are added or removed.
+ *
+ * @return the item at the top of the receiver 
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.1
+ */
 public TreeItem getTopItem () {
 	checkWidget ();
 	int [] path = new int [1];
@@ -791,6 +805,23 @@ public void removeTreeListener(TreeListener listener) {
 	eventTable.unhook (SWT.Collapse, listener);
 }
 
+/**
+ * Display a mark indicating the point at which an item will be inserted.
+ * The drop insert item has a visual hint to show where a dragged item 
+ * will be inserted when dropped on the tree.
+ * 
+ * @param item the insert item.  Null will clear the insertion mark.
+ * @param after true places the insert mark above 'item'. false places 
+ *	the insert mark below 'item'.
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the item has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setInsertMark (TreeItem item, boolean set) {
 	checkWidget ();
 	//NOT IMPLEMENTED
@@ -880,6 +911,26 @@ public void setSelection (TreeItem [] items) {
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 }
 
+/**
+ * Sets the item which is currently at the top of the receiver.
+ * This item can change when items are expanded, collapsed, scrolled
+ * or new items are added or removed.
+ *
+ * @param item the item to be shown
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the item has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Tree#getTopItem()
+ * 
+ * @since 2.1
+ */
 public void setTopItem (TreeItem item) {
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
@@ -895,9 +946,6 @@ public void setTopItem (TreeItem item) {
  * this method simply returns.  Otherwise, the items are scrolled until
  * the selection is visible.
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>

@@ -688,7 +688,7 @@ int gtk_unmap_event (int widget, int event) {
  * @see Decorations#setDefaultButton
  * @see Shell#setActive
  * @see Shell#forceActive
-*/
+ */
 public void open () {
 	checkWidget ();
 	setVisible (true);
@@ -747,7 +747,7 @@ public void removeShellListener (ShellListener listener) {
  * @see Decorations#setDefaultButton
  * @see Shell#open
  * @see Shell#setActive
-*/
+ */
 public void setActive () {
 	checkWidget ();
 	bringToTop (false);
@@ -1036,7 +1036,7 @@ public void dispose () {
  * @see Decorations#setDefaultButton
  * @see Shell#open
  * @see Shell#setActive
-*/
+ */
 public void forceActive () {
 	checkWidget ();
 	bringToTop (true);

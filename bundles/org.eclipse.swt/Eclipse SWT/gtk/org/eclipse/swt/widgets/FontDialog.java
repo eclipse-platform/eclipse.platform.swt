@@ -99,6 +99,8 @@ public FontData getFontData() {
  * @return the RGB value for the selected color, may be null
  *
  * @see PaletteData#getRGBs
+ * 
+ * @since 2.1
  */
 public RGB getRGB () {
 	return rgb;
@@ -163,13 +165,15 @@ public void setFontData (FontData fontData) {
 	this.fontData = fontData;
 }
 /**
- * Returns the receiver's selected color to be the argument.
+ * Sets the receiver's selected color to be the argument.
  *
  * @param rgb the new RGB value for the selected color, may be
  *        null to let the platform to select a default when
  *        open() is called
  *
  * @see PaletteData#getRGBs
+ * 
+ * @since 2.1
  */
 public void setRGB (RGB rgb) {
 	this.rgb = rgb;
