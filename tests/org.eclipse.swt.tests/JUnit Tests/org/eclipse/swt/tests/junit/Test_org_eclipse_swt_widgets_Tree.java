@@ -98,6 +98,93 @@ public void test_deselectAll() {
 	assertEquals(0, tree.getSelectionCount());
 }
 
+public void test_getColumnCount() {
+	assertEquals(0, tree.getColumnCount());
+	TreeColumn column0 = new TreeColumn(tree, SWT.NONE);
+	assertEquals(1, tree.getColumnCount());
+	TreeColumn column1 = new TreeColumn(tree, SWT.NONE);
+	assertEquals(2, tree.getColumnCount());
+	TreeColumn column2 = new TreeColumn(tree, SWT.NONE);
+	assertEquals(3, tree.getColumnCount());
+	column0.dispose();
+	assertEquals(2, tree.getColumnCount());
+	column1.dispose();
+	assertEquals(1, tree.getColumnCount());
+	column2.dispose();
+	assertEquals(0, tree.getColumnCount());
+}
+
+public void test_getColumnI() {
+	try {
+		tree.getColumn(0);
+		fail("No exception thrown for index out of range");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	TreeColumn column0 = new TreeColumn(tree, SWT.LEFT);
+	try {
+		tree.getColumn(1);
+		fail("No exception thrown for index out of range");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	assertEquals(column0, tree.getColumn(0));
+	TreeColumn column1 = new TreeColumn(tree, SWT.LEFT);
+	assertEquals(column1, tree.getColumn(1));
+	column1.dispose();
+	try {
+		tree.getColumn(1);
+		fail("No exception thrown for index out of range");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	column0.dispose();
+	try {
+		tree.getColumn(0);
+		fail("No exception thrown for index out of range");
+	}
+	catch (IllegalArgumentException e) {
+	}
+}
+
+public void test_getColumns() {
+	assertEquals(0, tree.getColumns().length);
+	TreeColumn column0 = new TreeColumn(tree, SWT.LEFT);
+	TreeColumn[] columns = tree.getColumns();
+	assertEquals(1, columns.length);
+	assertEquals(column0, columns[0]);
+	column0.dispose();
+	assertEquals(0, tree.getColumns().length);
+	column0 = new TreeColumn(tree, SWT.LEFT);
+	TreeColumn column1 = new TreeColumn(tree, SWT.RIGHT, 1);
+	columns = tree.getColumns();
+	assertEquals(2, columns.length);
+	assertEquals(column0, columns[0]);
+	assertEquals(column1, columns[1]);
+	column0.dispose();
+	columns = tree.getColumns();
+	assertEquals(1, columns.length);
+	assertEquals(column1, columns[0]);
+	column1.dispose();
+	assertEquals(0, tree.getColumns().length);
+}
+
+public void test_getGridLineWidth() {
+	tree.getGridLineWidth();
+}
+
+public void test_getHeaderHeight() {
+	assertEquals(0, tree.getHeaderHeight());
+	tree.setHeaderVisible(true);
+	assertTrue(tree.getHeaderHeight() > 0);
+	tree.setHeaderVisible(false);
+	assertEquals(0, tree.getHeaderHeight());
+}
+
+public void test_getHeaderVisible() {
+	// tested in test_setHeaderVisibleZ
+}
+
 public void test_getItemCount() {
 	warnUnimpl("Test test_getItemCount not written");
 }
@@ -137,6 +224,10 @@ public void test_getItems() {
 		tree.removeAll();
 		assertEquals(0, tree.getItemCount());
 	}
+}
+
+public void test_getLinesVisible() {
+	// tested in test_setHeaderVisibleZ
 }
 
 public void test_getParentItem() {
@@ -251,6 +342,27 @@ public void test_selectAll() {
 
 public void test_setInsertMarkLorg_eclipse_swt_widgets_TreeItemZ() {
 	warnUnimpl("Test test_setInsertMarkLorg_eclipse_swt_widgets_TreeItemZ not written");
+}
+
+public void test_setHeaderVisibleZ() {
+	assertFalse(tree.getHeaderVisible());
+	tree.setHeaderVisible(true);
+	assertTrue(tree.getHeaderVisible());
+	tree.setHeaderVisible(false);
+	assertFalse(tree.getHeaderVisible());
+}
+
+public void test_setLinesVisibleZ() {
+	if (SwtJunit.isCarbon) {
+		// carbon does not support lines
+		tree.getLinesVisible();
+		return;
+	}
+	assertFalse(tree.getLinesVisible());
+	tree.setLinesVisible(true);
+	assertTrue(tree.getLinesVisible());
+	tree.setLinesVisible(false);
+	assertFalse(tree.getLinesVisible());
 }
 
 public void test_setRedrawZ() {
@@ -442,6 +554,10 @@ public void test_setTopItemLorg_eclipse_swt_widgets_TreeItem() {
 	}
 }
 
+public void test_showColumnLorg_eclipse_swt_widgets_TreeColumn() {
+	warnUnimpl("Test test_showColumnLorg_eclipse_swt_widgets_TreeColumn not written");
+}
+
 public void test_showItemLorg_eclipse_swt_widgets_TreeItem() {
 	try {
 		tree.showItem(null);
@@ -505,10 +621,17 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_addTreeListenerLorg_eclipse_swt_events_TreeListener");
 	methodNames.addElement("test_computeSizeIIZ");
 	methodNames.addElement("test_deselectAll");
+	methodNames.addElement("test_getColumnCount");
+	methodNames.addElement("test_getColumnI");
+	methodNames.addElement("test_getColumns");
+	methodNames.addElement("test_getGridLineWidth");
+	methodNames.addElement("test_getHeaderHeight");
+	methodNames.addElement("test_getHeaderVisible");
 	methodNames.addElement("test_getItemCount");
 	methodNames.addElement("test_getItemHeight");
 	methodNames.addElement("test_getItemLorg_eclipse_swt_graphics_Point");
 	methodNames.addElement("test_getItems");
+	methodNames.addElement("test_getLinesVisible");
 	methodNames.addElement("test_getParentItem");
 	methodNames.addElement("test_getSelection");
 	methodNames.addElement("test_getSelectionCount");
@@ -517,10 +640,13 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_removeTreeListenerLorg_eclipse_swt_events_TreeListener");
 	methodNames.addElement("test_selectAll");
+	methodNames.addElement("test_setHeaderVisibleZ");
 	methodNames.addElement("test_setInsertMarkLorg_eclipse_swt_widgets_TreeItemZ");
+	methodNames.addElement("test_setLinesVisibleZ");
 	methodNames.addElement("test_setRedrawZ");
 	methodNames.addElement("test_setSelection$Lorg_eclipse_swt_widgets_TreeItem");
 	methodNames.addElement("test_setTopItemLorg_eclipse_swt_widgets_TreeItem");
+	methodNames.addElement("test_showColumnLorg_eclipse_swt_widgets_TreeColumn");
 	methodNames.addElement("test_showItemLorg_eclipse_swt_widgets_TreeItem");
 	methodNames.addElement("test_showSelection");
 	methodNames.addElement("test_consistency_MouseSelection");
@@ -541,10 +667,17 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_addTreeListenerLorg_eclipse_swt_events_TreeListener")) test_addTreeListenerLorg_eclipse_swt_events_TreeListener();
 	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
 	else if (getName().equals("test_deselectAll")) test_deselectAll();
+	else if (getName().equals("test_getColumnCount")) test_getColumnCount();
+	else if (getName().equals("test_getColumnI")) test_getColumnI();
+	else if (getName().equals("test_getColumns")) test_getColumns();
+	else if (getName().equals("test_getGridLineWidth")) test_getGridLineWidth();
+	else if (getName().equals("test_getHeaderHeight")) test_getHeaderHeight();
+	else if (getName().equals("test_getHeaderVisible")) test_getHeaderVisible();
 	else if (getName().equals("test_getItemCount")) test_getItemCount();
 	else if (getName().equals("test_getItemHeight")) test_getItemHeight();
 	else if (getName().equals("test_getItemLorg_eclipse_swt_graphics_Point")) test_getItemLorg_eclipse_swt_graphics_Point();
 	else if (getName().equals("test_getItems")) test_getItems();
+	else if (getName().equals("test_getLinesVisible")) test_getLinesVisible();
 	else if (getName().equals("test_getParentItem")) test_getParentItem();
 	else if (getName().equals("test_getSelection")) test_getSelection();
 	else if (getName().equals("test_getSelectionCount")) test_getSelectionCount();
@@ -553,10 +686,14 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();
 	else if (getName().equals("test_removeTreeListenerLorg_eclipse_swt_events_TreeListener")) test_removeTreeListenerLorg_eclipse_swt_events_TreeListener();
 	else if (getName().equals("test_selectAll")) test_selectAll();
+	else if (getName().equals("test_setFontLorg_eclipse_swt_graphics_Font")) test_setFontLorg_eclipse_swt_graphics_Font();
+	else if (getName().equals("test_setHeaderVisibleZ")) test_setHeaderVisibleZ();
 	else if (getName().equals("test_setInsertMarkLorg_eclipse_swt_widgets_TreeItemZ")) test_setInsertMarkLorg_eclipse_swt_widgets_TreeItemZ();
+	else if (getName().equals("test_setLinesVisibleZ")) test_setLinesVisibleZ();
 	else if (getName().equals("test_setRedrawZ")) test_setRedrawZ();
 	else if (getName().equals("test_setSelection$Lorg_eclipse_swt_widgets_TreeItem")) test_setSelection$Lorg_eclipse_swt_widgets_TreeItem();
 	else if (getName().equals("test_setTopItemLorg_eclipse_swt_widgets_TreeItem")) test_setTopItemLorg_eclipse_swt_widgets_TreeItem();
+	else if (getName().equals("test_showColumnLorg_eclipse_swt_widgets_TreeColumn")) test_showColumnLorg_eclipse_swt_widgets_TreeColumn();
 	else if (getName().equals("test_showItemLorg_eclipse_swt_widgets_TreeItem")) test_showItemLorg_eclipse_swt_widgets_TreeItem();
 	else if (getName().equals("test_showSelection")) test_showSelection();
 	else if (getName().equals("test_consistency_MouseSelection")) test_consistency_MouseSelection();
@@ -582,7 +719,7 @@ public Tree tree;
  */
 private void makeCleanEnvironment(boolean single) {
 // this method must be private or protected so the auto-gen tool keeps it
-	tree.dispose();
+	if (tree != null) tree.dispose();
 	tree = new Tree(shell, single?SWT.SINGLE:SWT.MULTI);
 	setWidget(tree);
 }
