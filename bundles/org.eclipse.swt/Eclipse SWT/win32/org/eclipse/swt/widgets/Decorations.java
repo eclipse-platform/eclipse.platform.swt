@@ -241,10 +241,10 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 
 void createAcceleratorTable () {
 	hAccel = nAccel = 0;
-	int maxAccel;
+	int maxAccel = 0;
 	if (menuBar == null || items == null) {
-		if (OS.IsWinCE) maxAccel = 1;
-		else return;
+		if (!OS.IsWinCE) return;
+		maxAccel = 1;
 	} else {
 		maxAccel = OS.IsWinCE ? items.length + 1 : items.length;
 	}
@@ -271,9 +271,8 @@ void createAcceleratorTable () {
 	}
 	if (OS.IsWinCE) {
 		/* 
-		* Note on WinCE PPC.  Close Shell when user taps CTRL-Q.
-		* IDOK represents the "Done Button" which also closes
-		* the Shell.
+		* Note on WinCE PPC.  Close the shell when user taps CTRL-Q.
+		* IDOK represents the "Done Button" which also closes the shell.
 		*/
 		accel.fVirt = OS.FVIRTKEY | OS.FCONTROL;
 		accel.key = 'Q';
