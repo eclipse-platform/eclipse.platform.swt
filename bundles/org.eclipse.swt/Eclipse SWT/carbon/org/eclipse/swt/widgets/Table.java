@@ -97,17 +97,21 @@ void createHandle () {
 	OS.AddDataBrowserListViewColumn (handle, column, position);
 	//NOT DONE
 	OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short)800);
-	
+
 	/*
 	* Feature in the Macintosh.  Scroll bars are not created until
 	* the widget has a minimum size.  The fix is to force the scroll
 	* bars to be created by temporarily giving the widget a size and
 	* then restoring it to zero.
+	* 
+	* NOTE: The widget must be visible and SizeControl() must be used
+	* to resize the widget to a minimim size or the widget will not
+	* create the scroll bars.
 	*/
-	OS.HIViewSetVisible (handle, false);
-	OS.SizeControl (handle, (short) 0xFF, (short) 0xFF);
+	OS.MoveControl (handle, (short) -256, (short) -256);
+	OS.SizeControl (handle, (short) 256, (short) 256);
 	OS.SizeControl (handle, (short) 0, (short) 0);
-	OS.HIViewSetVisible (handle, true);
+	OS.MoveControl (handle, (short) 0, (short) 0);
 }
 
 void createItem (TableColumn column, int index) {
