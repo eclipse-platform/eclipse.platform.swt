@@ -143,8 +143,8 @@ public class ApplicationRunner {
 		
 		VMRunnerConfiguration vmRunConfig = new VMRunnerConfiguration(className, classPath);
 		vmRunConfig.setVMArguments(vmArgs);
-		vmRunConfig.setProgramArguments(programArgs);
-		return vmRunner.run(vmRunConfig);
+		vmRunConfig.setProgramArguments(programArgs);		try {
+			return vmRunner.run(vmRunConfig);		} catch (CoreException ex) {			// a null return value indicates failure to run the application			return null;		}
 	}
 
 	protected static String getPlatformClass() {
