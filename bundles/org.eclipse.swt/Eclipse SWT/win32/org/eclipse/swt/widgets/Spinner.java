@@ -140,7 +140,7 @@ void createHandle () {
         null);
 	if (hwndUpDown == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.SendMessage (hwndUpDown, OS.UDM_SETRANGE32, 0, 100);
-	OS.SendMessage (hwndUpDown, OS.IsWinCE? OS.UDM_SETPOS : OS.UDM_SETPOS32, 0, 0);
+	OS.SendMessage (hwndUpDown, OS.IsWinCE ? OS.UDM_SETPOS : OS.UDM_SETPOS32, 0, 0);
 	increment = 1;
 	pageIncrement = 10;
 	TCHAR buffer = new TCHAR (getCodePage (), "0", true);
