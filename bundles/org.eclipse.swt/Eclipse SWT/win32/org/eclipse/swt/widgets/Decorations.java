@@ -318,9 +318,10 @@ void createAccelerators () {
 
 void createHandle () {
 	super.createHandle ();
-	if (parent == null) return;
-	setParent ();
-	setSystemMenu ();
+	if (parent != null || ((style & SWT.TOOL) != 0)) {
+		setParent ();
+		setSystemMenu ();
+	}
 }
 
 void createWidget () {
