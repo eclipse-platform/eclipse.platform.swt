@@ -435,6 +435,8 @@ TextLayout getTextLayout(String line, int lineOffset) {
 				layout.setStyle(null, lastOffset, start - 1);	
 			}
 			TextStyle textStyle = new TextStyle(getFont(style.fontStyle), style.foreground, style.background);
+			textStyle.underline = style.underline;
+			textStyle.strikeout = style.strikeout;
 			layout.setStyle(textStyle, start, end - 1);
 			lastOffset = Math.max(lastOffset, end);
 		}

@@ -20,6 +20,8 @@ public class StyleRange implements CloneableCompatibility {
 	public Color foreground; 
 	public Color background;
 	public int fontStyle = SWT.NORMAL;	// may be SWT.NORMAL, SWT.ITALIC or SWT.BOLD
+	public boolean underline;
+	public boolean strikeout;
 
 public StyleRange() {
 }
@@ -73,14 +75,7 @@ public boolean equals(Object object) {
 	else return false;
 	if (this.start != style.start) return false;
 	if (this.length != style.length) return false;
-	if (this.foreground != null) {
-		if (!this.foreground.equals(style.foreground)) return false;
-	} else if (style.foreground != null) return false;
-	if (this.background != null) {
-		if (!this.background.equals(style.background)) return false;
-	} else if (style.background != null) return false; 
-	if (this.fontStyle != style.fontStyle) return false;
-	return true;
+	return similarTo(style);
 }
 /**
  * Returns an integer hash code for the receiver. Objects which are
@@ -109,6 +104,8 @@ public boolean isUnstyled() {
 	if (this.foreground != null) return false;
 	if (this.background != null) return false;
 	if (this.fontStyle != SWT.NORMAL) return false;
+	if (this.underline) return false;
+	if (this.strikeout) return false;
 	return true;
 }
 /**
@@ -128,6 +125,8 @@ public boolean similarTo(StyleRange style) {
 		if (!this.background.equals(style.background)) return false;
 	} else if (style.background != null) return false; 
 	if (this.fontStyle != style.fontStyle) return false;
+	if (this.underline != style.underline) return false;
+	if (this.strikeout != style.strikeout) return false;
 	return true;
 }
 /**
@@ -138,6 +137,8 @@ public boolean similarTo(StyleRange style) {
  */	
 public Object clone() {
  	StyleRange style = new StyleRange(start, length, foreground, background, fontStyle);
+ 	style.underline = this.underline;
+ 	style.strikeout = this.strikeout;
 	return style;
 }
 /** 
@@ -162,6 +163,8 @@ public String toString() {
 		default:
 			buf.append("normal");
 	}
+	if (underline) buf.append(" underline");
+	if (strikeout) buf.append(" strikeout");
 	return buf.toString();
 }
 }

@@ -29,6 +29,8 @@ import org.eclipse.swt.widgets.*;
  * <li>foreground color 
  * <li>background color
  * <li>font style (bold, italic, bold-italic, regular)
+ * <li>underline
+ * <li>strikeout
  * </ul>
  * <p>
  * In addition to text style attributes, the background color of a line may 
@@ -934,8 +936,17 @@ public class StyledText extends Canvas {
 				write("\\highlight");
 				write(colorIndex);
 			}
-			if (style.fontStyle == SWT.BOLD) {
+			if ((style.fontStyle & SWT.BOLD) != 0) {
 				write("\\b"); 
+			}
+			if ((style.fontStyle & SWT.ITALIC) != 0) {
+				write("\\i"); 
+			}
+			if (style.underline) {
+				write("\\ul");
+			}
+			if (style.strikeout) {
+				write("\\strike");
 			}
 			write(" "); 
 			// copy to end of style or end of write range or end of line
@@ -943,8 +954,17 @@ public class StyledText extends Canvas {
 			// guard against invalid styles and let style processing continue
 			copyEnd = Math.max(copyEnd, lineIndex);
 			write(line, lineIndex, copyEnd);
-			if (style.fontStyle == SWT.BOLD) {
+			if ((style.fontStyle & SWT.BOLD) != 0) {
 				write("\\b0"); 
+			}
+			if ((style.fontStyle & SWT.ITALIC) != 0) {
+				write("\\i0"); 
+			}
+			if (style.underline) {
+				write("\\ul0");
+			}			
+			if (style.strikeout) {
+				write("\\strike0");
 			}
 			write("}");
 			lineIndex = copyEnd;
