@@ -14,7 +14,7 @@ import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 
 /**
- * Class <code>TextLayout</code> is *SOMETHING*
+ * <code>TextLayout</code> is a graphic object to work with text.
  * 
  * <p>
  * Application code must explicitly invoke the <code>TextLayout#dispose()</code> 
