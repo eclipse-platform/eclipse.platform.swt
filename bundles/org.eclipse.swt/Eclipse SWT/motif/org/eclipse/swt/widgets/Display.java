@@ -725,7 +725,9 @@ void destroyDisplay () {
 	* OS.XtAppCreateShell(null, null, OS.topLevelShellWidgetClass(), xDisplay, null, 0);   
 	* OS.XtDestroyApplicationContext(xContext);
 	*/
-	OS.XtDestroyWidget (OS.XmGetXmDisplay (xDisplay));
+	if (!OS.IsSunOS) {
+		OS.XtDestroyWidget (OS.XmGetXmDisplay (xDisplay));
+	}
 
 	/*
 	* Destroy AppContext (this destroys the display)
