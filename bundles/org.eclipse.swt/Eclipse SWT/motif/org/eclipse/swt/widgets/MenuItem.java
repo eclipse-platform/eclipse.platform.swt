@@ -404,7 +404,7 @@ public boolean getSelection () {
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return false;
 	int [] argList = {OS.XmNset, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
-	return argList [1] != 0;
+	return argList [1] != OS.XmUNSET;
 }
 void hookEvents () {
 	if ((style & SWT.SEPARATOR) != 0) return;
@@ -766,7 +766,7 @@ boolean setRadioSelection (boolean value) {
 public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
-	int [] argList = {OS.XmNset, selected ? 1 : 0};
+	int [] argList = {OS.XmNset, selected ? OS.XmSET : OS.XmUNSET};
 	OS.XtSetValues (handle, argList, argList.length / 2);
 }
 public void setText (String string) {

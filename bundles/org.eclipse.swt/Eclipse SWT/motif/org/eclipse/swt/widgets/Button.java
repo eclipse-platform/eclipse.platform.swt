@@ -384,7 +384,7 @@ public boolean getSelection () {
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return false;
 	int [] argList = {OS.XmNset, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
-	return argList [1] != 0;
+	return argList [1] != OS.XmUNSET;
 }
 /**
  * Returns the receiver's text, which will be an empty
