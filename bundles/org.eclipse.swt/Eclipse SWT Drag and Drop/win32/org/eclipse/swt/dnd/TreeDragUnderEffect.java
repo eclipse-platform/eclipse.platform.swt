@@ -109,7 +109,7 @@ private void setDragUnderEffect(int effect, TreeItem item) {
 			setDropSelection(null);
 		}
 		setInsertMark(item, (effect & DND.FEEDBACK_INSERT_BEFORE) != 0);
-		return;			
+		return;
 	}
 	if ((currentEffect & DND.FEEDBACK_INSERT_AFTER) != 0 ||
 	    (currentEffect & DND.FEEDBACK_INSERT_BEFORE) != 0) {

@@ -22,7 +22,7 @@ class TreeDragUnderEffect extends DragUnderEffect {
 	private TreeItem scrollItem;
 	private long scrollBeginTime;
 	private static final int SCROLL_HYSTERESIS = 600; // milli seconds
-	
+
 	private TreeItem expandItem;
 	private long expandBeginTime;
 	private static final int EXPAND_HYSTERESIS = 1000; // milli seconds
@@ -46,7 +46,7 @@ private int checkEffect(int effect) {
 	if (bits == DND.FEEDBACK_INSERT_AFTER || bits == DND.FEEDBACK_INSERT_BEFORE || bits == DND.FEEDBACK_SELECT) return effect;
 	return (effect & ~mask);
 }
-private TreeItem findItem(int x , int y){
+private TreeItem findItem(int x, int y){
 	Point coordinates = new Point(x, y);
 	coordinates = tree.toControl(coordinates);
 	Rectangle area = tree.getClientArea();
@@ -57,24 +57,21 @@ private TreeItem findItem(int x , int y){
 
 	// Scan across the width of the tree.
 	for (int x1 = area.x; x1 < area.x + area.width; x1++) {
-		coordinates = new Point(x1, coordinates.y);
-		item = tree.getItem(coordinates);
+		Point pt = new Point(x1, coordinates.y);
+		item = tree.getItem(pt);
 		if (item != null) return item;
 	}
 	// Check if we are just below the last item of the tree
-	coordinates = new Point(x, y);
-	coordinates = tree.toControl(coordinates);
 	if (coordinates.y > area.y + area.height - tree.getItemHeight()) {;
 		int y1 = area.y + area.height - tree.getItemHeight();
-		coordinates = new Point(coordinates.x, y1);
-		
-		item = tree.getItem(coordinates);	
+		Point pt = new Point(coordinates.x, y1);
+		item = tree.getItem(pt);	
 		if (item != null) return item;
 		
 		// Scan across the width of the tree just above the bottom..
 		for (int x1 = area.x; x1 < area.x + area.width; x1++) {
-			coordinates = new Point(x1, y1);
-			item = tree.getItem(coordinates);
+			pt = new Point(x1, y1);
+			item = tree.getItem(pt);
 			if (item != null) return item;
 		}
 	}
@@ -90,16 +87,20 @@ private void setDragUnderEffect(int effect, TreeItem item) {
 		return;
 	}
 	if ((effect & DND.FEEDBACK_INSERT_AFTER) != 0 ||
-		(effect & DND.FEEDBACK_INSERT_BEFORE) != 0) {
+	    (effect & DND.FEEDBACK_INSERT_BEFORE) != 0) {
 		if ((currentEffect & DND.FEEDBACK_SELECT) != 0) {
 			setDropSelection(null);
 		}
 		setInsertMark(item, (effect & DND.FEEDBACK_INSERT_BEFORE) != 0);
 		return;
 	}
-	
-	setInsertMark(null, false);
-	setDropSelection(null);
+	if ((currentEffect & DND.FEEDBACK_INSERT_AFTER) != 0 ||
+	    (currentEffect & DND.FEEDBACK_INSERT_BEFORE) != 0) {
+		tree.setInsertMark(null, false);
+	}
+	if ((currentEffect & DND.FEEDBACK_SELECT) != 0) {
+		setDropSelection(null);
+	}
 }
 private void setDropSelection (TreeItem item) {	
 	if (item == null) {

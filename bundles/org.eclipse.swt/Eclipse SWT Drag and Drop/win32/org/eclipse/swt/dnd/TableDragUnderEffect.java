@@ -47,9 +47,10 @@ private TableItem findItem(int x, int y){
 	coordinates = table.toControl(coordinates);
 	Rectangle area = table.getClientArea();
 	if (!area.contains(coordinates)) return null;
-	
+
 	TableItem item = table.getItem(coordinates);
 	if (item != null) return item;
+
 	// Scan across the width of the table
 	for (int x1 = area.x; x1 < area.x + area.width; x1++) {
 		Point pt = new Point(x1, coordinates.y);
@@ -60,11 +61,11 @@ private TableItem findItem(int x, int y){
 }
 private void setDragUnderEffect(int effect, TableItem item) {	
 	if ((effect & DND.FEEDBACK_SELECT) != 0) {
-		setDropSelection(item); 
-	} else {
-		if ((currentEffect & DND.FEEDBACK_SELECT) != 0) {
-			setDropSelection(null);
-		}
+		setDropSelection(item);
+		return;
+	}
+	if ((currentEffect & DND.FEEDBACK_SELECT) != 0) {
+		setDropSelection(null);
 	}
 }
 private void setDropSelection (TableItem item) {
@@ -111,6 +112,6 @@ private void scroll(TableItem item, int x, int y) {
 	}
 	if (newTop != -1 && newTop != top) {
 		table.setTopIndex(newTop);
-	}		
+	}
 }
 }

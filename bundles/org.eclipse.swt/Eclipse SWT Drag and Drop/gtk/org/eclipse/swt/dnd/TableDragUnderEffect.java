@@ -12,8 +12,8 @@ package org.eclipse.swt.dnd;
 
 
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.gtk.OS;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.internal.gtk.OS;
 
 class TableDragUnderEffect extends DragUnderEffect {
 	private Table table;
@@ -38,25 +38,26 @@ private TableItem findItem(int x, int y){
 	coordinates = table.toControl(coordinates);
 	Rectangle area = table.getClientArea();
 	if (!area.contains(coordinates)) return null;
-	
+
 	TableItem item = table.getItem(coordinates);
 	if (item != null) return item;
-	
-	// Scan across the width of the table.
+
+	// Scan across the width of the table
 	for (int x1 = area.x; x1 < area.x + area.width; x1++) {
-		coordinates = new Point(x1, coordinates.y);
-		coordinates = table.toControl(coordinates);
-		item = table.getItem(coordinates);
+		Point pt = new Point(x1, coordinates.y);
+		item = table.getItem(pt);
 		if (item != null) return item;
 	}
 	return null;
 }
 private void setDragUnderEffect(int effect, TableItem item) {	
 	if ((effect & DND.FEEDBACK_SELECT) != 0) {
-		setDropSelection(item); 
+		setDropSelection(item);
 		return;
 	}
-	if ((currentEffect & DND.FEEDBACK_SELECT) != 0) setDropSelection(null);
+	if ((currentEffect & DND.FEEDBACK_SELECT) != 0) {
+		setDropSelection(null);
+	}
 }
 private void setDropSelection (TableItem item) {
 	if (item == null) {
@@ -103,6 +104,6 @@ private void scroll(TableItem item, int x, int y) {
 	}
 	if (newTop != -1 && newTop != top) {
 		table.setTopIndex(newTop);
-	}	
+	}
 }
 }
