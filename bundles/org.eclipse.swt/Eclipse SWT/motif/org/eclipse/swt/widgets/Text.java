@@ -404,7 +404,7 @@ public int getCaretLineNumber () {
 	return getLineNumber (OS.XmTextGetInsertionPosition (handle));
 }
 /**
- * Gets the location the caret.
+ * Gets the location of the caret.
  * <p>
  * The location of the caret is returned.
  * </p>
@@ -528,7 +528,10 @@ public boolean getEditable () {
  */
 public int getLineCount () {
 	checkWidget();
-	return getLineNumber (echoCharacter != '\0' ? hiddenText.length () : OS.XmTextGetLastPosition (handle));
+	if ((style & SWT.SINGLE) != 0) return 1;
+	int [] argList = {OS.XmNtotalLines, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	return argList [1];
 }
 /**
  * Gets the line delimiter.

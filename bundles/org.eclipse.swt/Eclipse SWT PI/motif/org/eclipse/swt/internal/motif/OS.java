@@ -792,6 +792,7 @@ public class OS {
 	public static final int XmNtitle = malloc ("title", 4);
 	public static final int XmNtitleString = malloc ("titleString", 4);
 	public static final int XmNtoBottomCallback = malloc ("toBottomCallback", 4);
+	public static final int XmNtotalLines = malloc ("totalLines", 4);
 	public static final int XmNtoTopCallback = malloc ("toTopCallback", 4);
 //	public static final int XmNtopCharacter = malloc ("topCharacter", 4);
 	public static final int XmNtopItemPosition = malloc ("topItemPosition", 4);
