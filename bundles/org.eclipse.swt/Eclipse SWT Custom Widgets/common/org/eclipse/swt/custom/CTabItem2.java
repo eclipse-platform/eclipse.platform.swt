@@ -136,8 +136,14 @@ public void dispose () {
 }
 
 void drawSelected(GC gc ) {
-	int rightTabEdge = parent.getSize().x - parent.borderRight - parent.chevronRect.width - parent.expandRect.width - parent.closeRect.width - 1;
-	if (rightTabEdge <= x) return;
+	int rightTabEdge = parent.getRightItemEdge();
+	if (x >= rightTabEdge) return;
+	// Do not draw partial items
+	if (!parent.single && parent.items[parent.topTabIndex] != this && x + width >= rightTabEdge){
+		gc.setBackground(parent.getParent().getBackground());
+		gc.fillRectangle(x, y - 1, parent.getSize().x - x, height + 1);
+		return;
+	}
 	int extra = CTabFolder2.CURVE_WIDTH/2;
 	// draw background
 	int[] shape = null;
@@ -269,6 +275,14 @@ void drawSelected(GC gc ) {
 	clipping.dispose();
 }
 void drawUnselected(GC gc) {
+	int rightTabEdge = parent.getRightItemEdge();
+	if (x >= rightTabEdge) return;
+	// Do not draw partial items
+	if (parent.items[parent.topTabIndex] != this && x + width >= rightTabEdge){
+		gc.setBackground(parent.getParent().getBackground());
+		gc.fillRectangle(x, y - 1, parent.getSize().x - x, height + 1);
+		return;
+	}
 	// draw background
 	int[] shape = null;
 	if (this.parent.onBottom) {

@@ -549,8 +549,8 @@ void createItem (CTabItem2 item, int index) {
 	} else {
 		updateItems();
 		// redraw tabs if new item visible
-		if (index >= topTabIndex && 
-		    item.x+item.width <= getSize().x - borderRight - closeRect.width - expandRect.width - chevronRect.width){
+		if (index == topTabIndex ||  
+		    (index > topTabIndex && item.x + item.width < getRightItemEdge())){
 			redraw();
 		}
 	}
@@ -628,77 +628,94 @@ void drawBorder(GC gc) {
 		int itemH = item.height;
 		int extra = CTabFolder2.CURVE_WIDTH/2;
 		if (onBottom) {
-			int[] left = BOTTOM_LEFT_CORNER;
-			int[] right = curve;
-			shape = new int[left.length + right.length + 8];
-			int index = 0;
-			shape[index++] = Math.max(0, borderLeft - 1);
-			shape[index++] = itemY - 1;
-			shape[index++] = itemX;
-			shape[index++] = itemY - 1;
-			for (int i = 0; i < left.length/2; i++) {
-				shape[index++] = itemX + left[2*i];
-				shape[index++] = itemY + itemH + left[2*i+1]-1;
-			}
-			for (int i = 0; i < right.length/2; i++) {
-				shape[index++] = itemX + itemW - extra + right[2*i];
-				shape[index++] = itemY + right[2*i+1] - 2;
-			}
-			int temp = 0;
-			int rightTabEdge = size.x - borderRight - chevronRect.width - expandRect.width - closeRect.width - 1;
-			for (int i = 0; i < shape.length/2; i++) {
-				if (shape[2*i] > rightTabEdge) {
-					if (temp == 0 && i > 0) {
-						temp = shape[2*i-1];
-					} else {
-						temp = itemY - 1;
-					}
-					shape[2*i] = rightTabEdge;
-					shape[2*i+1] = temp;
+			int rightTabEdge = getRightItemEdge();
+			if (!single && selectedIndex != topTabIndex && itemX + itemW >= rightTabEdge){ 
+				shape = new int[4];
+				int index = 0;
+				shape[index++] = Math.max(0, borderLeft - 1);
+				shape[index++] = itemY - 1;
+				shape[index++] = size.x - borderRight;
+				shape[index++] = itemY - 1;
+			} else {
+				int[] left = BOTTOM_LEFT_CORNER;
+				int[] right = curve;
+				shape = new int[left.length + right.length + 8];
+				int index = 0;
+				shape[index++] = Math.max(0, borderLeft - 1);
+				shape[index++] = itemY - 1;
+				shape[index++] = itemX;
+				shape[index++] = itemY - 1;
+				for (int i = 0; i < left.length/2; i++) {
+					shape[index++] = itemX + left[2*i];
+					shape[index++] = itemY + itemH + left[2*i+1]-1;
 				}
+				for (int i = 0; i < right.length/2; i++) {
+					shape[index++] = itemX + itemW - extra + right[2*i];
+					shape[index++] = itemY + right[2*i+1] - 2;
+				}
+				int temp = 0;			
+				for (int i = 0; i < shape.length/2; i++) {
+					if (shape[2*i] > rightTabEdge) {
+						if (temp == 0 && i > 0) {
+							temp = shape[2*i-1];
+						} else {
+							temp = itemY - 1;
+						}
+						shape[2*i] = rightTabEdge;
+						shape[2*i+1] = temp;
+					}
+				}
+				shape[index++] = rightTabEdge;
+				shape[index++] = itemY - 1;
+				shape[index++] = size.x - borderRight;
+				shape[index++] = itemY - 1;
 			}
-			shape[index++] = rightTabEdge;
-			shape[index++] = itemY - 1;
-			shape[index++] = size.x - borderRight;
-			shape[index++] = itemY - 1;
-			
 		} else {
-			int[] left = TOP_LEFT_CORNER;
-			int[] right = curve;
-			shape = new int[left.length+right.length+8];
-			int index = 0;
-			
-			shape[index++] = Math.max(0, borderLeft - 1);
-			shape[index++] = itemY + itemH;
-			shape[index++] = itemX;
-			shape[index++] = itemY + itemH;
-			
-			for (int i = 0; i < left.length/2; i++) {
-				shape[index++] = itemX + left[2*i];
-				shape[index++] = itemY + left[2*i+1];
-			}
-			for (int i = 0; i < right.length/2; i++) {
-				shape[index++] = itemX + itemW - extra + right[2*i];
-				shape[index++] = itemY + right[2*i+1];
-			}
+			int rightTabEdge = getRightItemEdge();
+			if (!single && selectedIndex != topTabIndex && itemX + itemW >= rightTabEdge){ 
+				shape = new int[4];
+				int index = 0;
+				shape[index++] = Math.max(0, borderLeft - 1);
+				shape[index++] = itemY + itemH;
+				shape[index++] = size.x - borderRight;
+				shape[index++] = itemY + itemH;
+			} else {
+				int[] left = TOP_LEFT_CORNER;
+				int[] right = curve;
+				shape = new int[left.length+right.length+8];
+				int index = 0;
 				
-			int temp = 0;
-			int rightTabEdge = size.x - borderRight - chevronRect.width - expandRect.width - closeRect.width - 1;
-			for (int i = 0; i < shape.length/2; i++) {
-				if (shape[2*i] > rightTabEdge) {
-					if (temp == 0 && i > 0) {
-						temp = shape[2*i-1];
-					} else {
-						temp = itemY + itemH;
-					}
-					shape[2*i] = rightTabEdge;
-					shape[2*i+1] = temp;
+				shape[index++] = Math.max(0, borderLeft - 1);
+				shape[index++] = itemY + itemH;
+				shape[index++] = itemX;
+				shape[index++] = itemY + itemH;
+				
+				for (int i = 0; i < left.length/2; i++) {
+					shape[index++] = itemX + left[2*i];
+					shape[index++] = itemY + left[2*i+1];
 				}
+				for (int i = 0; i < right.length/2; i++) {
+					shape[index++] = itemX + itemW - extra + right[2*i];
+					shape[index++] = itemY + right[2*i+1];
+				}
+					
+				int temp = 0;
+				for (int i = 0; i < shape.length/2; i++) {
+					if (shape[2*i] > rightTabEdge) {
+						if (temp == 0 && i > 0) {
+							temp = shape[2*i-1];
+						} else {
+							temp = itemY + itemH;
+						}
+						shape[2*i] = rightTabEdge;
+						shape[2*i+1] = temp;
+					}
+				}
+				shape[index++] = rightTabEdge;
+				shape[index++] = itemY + itemH;
+				shape[index++] = size.x - borderRight;
+				shape[index++] = itemY + itemH;
 			}
-			shape[index++] = rightTabEdge;
-			shape[index++] = itemY + itemH;
-			shape[index++] = size.x - borderRight;
-			shape[index++] = itemY + itemH;
 		}
 		gc.setForeground(borderColor1);
 		gc.drawPolyline(shape);
@@ -1362,7 +1379,9 @@ char getMnemonic (String string) {
 	} while (index < length);
  	return '\0';
 }
-
+int getRightItemEdge (){
+	return getSize().x - borderRight - closeRect.width - expandRect.width - chevronRect.width - 1;
+}
 /**
  * Return the selected tab item, or an empty array if there
  * is no selection.
@@ -1735,11 +1754,10 @@ void onMouse(Event event) {
 				return;
 			}
 			for (int i=0; i<items.length; i++) {
-				if (items[i].getBounds().contains(x, y)) {
-					if (i == selectedIndex) {
-						showSelection();
-						return;
-					}
+				CTabItem2 item = items[i];
+				Rectangle bounds = item.getBounds();
+				if (bounds.contains(x, y)) {
+					if (!single && i != topTabIndex && bounds.x + bounds.width >= getRightItemEdge())return;
 					setSelection(i, true);
 					setFocus();
 					return;
@@ -1807,7 +1825,7 @@ void onMouse(Event event) {
 				redraw(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, false);
 				Rectangle rect = new Rectangle(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height);
 				if (listListeners.length == 0) {
-					showList(rect, SWT.LEFT);
+					showList(rect, SWT.RIGHT);
 				} else {
 					CTabFolderEvent e = new CTabFolderEvent(this);
 					e.widget = this;
@@ -1845,7 +1863,7 @@ void onMouse(Event event) {
 					if (bounds.contains(x, y)) {
 						Rectangle rect = new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height);
 						if (listListeners.length == 0) {
-							showList(rect, SWT.RIGHT);
+							showList(rect, SWT.LEFT);
 						} else {
 							CTabFolderEvent e = new CTabFolderEvent(this);
 							e.widget = this;
@@ -2362,8 +2380,8 @@ boolean setButtonBounds() {
 	chevronRect.x = chevronRect.y = chevronRect.height = chevronRect.width = 0;
 	if (items.length > 1) {
 		CTabItem2 item = items[items.length-1];
-		int rightEdge = size.x - borderRight - closeRect.width - expandRect.width;
-		if (single || topTabIndex > 0 || item.x + item.width > rightEdge) {
+		int rightEdge = getRightItemEdge();
+		if (single || topTabIndex > 0 || item.x + item.width >= rightEdge) {
 			chevronRect.x = size.x - borderRight - closeRect.width - expandRect.width - decoratorWidth;
 			if (borderRight > 0) chevronRect.x += 1;
 			if (single) chevronRect.x -= 3;
@@ -2514,7 +2532,7 @@ boolean setItemLocation() {
 			x = x + tab.width;
 		}
 
-		int rightEdge = size.x - borderRight - closeRect.width - expandRect.width - chevronRect.width;
+		int rightEdge = getRightItemEdge();
 		if (rightEdge > 0) {
 			CTabItem2 item = items[items.length - 1];
 			if (item.x + item.width < rightEdge) {
@@ -2587,9 +2605,9 @@ boolean setItemSize() {
 }
 void setLastItem(int index) {
 	if (index < 0 || index > items.length - 1) return;
-	Rectangle area = getClientArea();
-	if (area.width <= 0) return;
-	int maxWidth = area.width - closeRect.width - expandRect.width - chevronRect.width;
+	Point size = getSize();
+	if (size.x <= 0) return;
+	int maxWidth = size.x - borderLeft - borderRight - closeRect.width - expandRect.width - chevronRect.width;
 	int tabWidth = items[index].width;
 	while (index > 0) {
 		tabWidth += items[index - 1].width;
@@ -2634,11 +2652,13 @@ public void setSelection(CTabItem2 item) {
 public void setSelection(int index) {
 	checkWidget();
 	if (index < 0 || index >= items.length) return;
-	if (selectedIndex == index) return;
+	if (selectedIndex == index) {
+		showItem(items[index]);
+		return;
+	}
 	
 	int oldIndex = selectedIndex;
 	selectedIndex = index;
-	
 	Control control = items[index].control;
 	if (control != null && !control.isDisposed()) {
 		control.setBounds(getClientArea());
@@ -2877,7 +2897,7 @@ public void showItem (CTabItem2 item) {
 		setFirstItem(index);
 		return;
 	}
-	int rightEdge = size.x - borderRight - closeRect.width - expandRect.width - chevronRect.width;
+	int rightEdge = getRightItemEdge();
 	if (item.x + item.width < rightEdge) return;
 	setLastItem(index);
 }
@@ -2904,8 +2924,8 @@ void showList (Rectangle rect, int alignment) {
 					break;
 				case SWT.DefaultSelection:
 				case SWT.MouseUp:
-					int index = table.getSelectionIndex();
-					if (index != selectedIndex) {
+					int index = table.getSelectionIndex();						
+					if (index != -1) {
 						setSelection(index, true);
 						setFocus();
 					}
