@@ -17,7 +17,7 @@ import java.util.*;
  * This is necessary as we could easily end up creating thousands of icons
  * bearing the same image.
  */
-/* package */ class IconCache {
+class IconCache {
 	// Stock images
 	public static final int
 		shellIcon = 0,
@@ -60,7 +60,7 @@ import java.util.*;
 		cursorWait = 1;
 	public static Cursor stockCursors[];
 	// Cached icons
-	private static Hashtable iconCache;
+	private static Hashtable iconCache; /* map Program to Image */
 	/**
 	 * Loads the resources
 	 * 
@@ -127,19 +127,17 @@ import java.util.*;
 		return null;
 	}
 	/**
-	 * Gets an image for a file associated with a given program and extension
+	 * Gets an image for a file associated with a given program
 	 *
 	 * @param program the Program
-	 * @param extension the extension
 	 */
-	public static Image getIconFromProgram(Program program, String extension) {
-		final String key = program.getName() + "$#$" + extension;
-		Image image = (Image) iconCache.get(key);
+	public static Image getIconFromProgram(Program program) {
+		Image image = (Image) iconCache.get(program);
 		if (image == null) {
 			ImageData imageData = program.getImageData();
 			if (imageData != null) {
 				image = new Image(null, imageData, imageData.getTransparencyMask());
-				iconCache.put(key, image);
+				iconCache.put(program, image);
 			} else {
 				image = stockImages[iconFile];
 			}

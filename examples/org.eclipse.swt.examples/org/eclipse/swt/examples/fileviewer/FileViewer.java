@@ -105,7 +105,8 @@ public class FileViewer {
 	 * Runs main program.
 	 */
 	public static void main (String [] args) {
-		resourceBundle = ResourceBundle.getBundle("examples_fileviewer");
+		if (resourceBundle == null)
+			resourceBundle = ResourceBundle.getBundle("examples_fileviewer");
 		new FileViewer().open();
 	}
 	
@@ -133,6 +134,7 @@ public class FileViewer {
 	 * Closes the main program.
 	 */
 	void close() {
+		workerStop(); // be polite
 		shell.close();
 	}
 	
@@ -638,7 +640,7 @@ public class FileViewer {
 	}
 
 	/**
-	 * Foreign method: remove all children of a TreeItem
+	 * Foreign method: removes all children of a TreeItem.
 	 * @param treeItem the TreeItem
 	 */
 	private static void treeItemRemoveAll(TreeItem treeItem) {
@@ -1376,7 +1378,7 @@ public class FileViewer {
 	/**
 	 * Stops the worker and waits for it to terminate.
 	 */
-	public void workerStop() {
+	void workerStop() {
 		if (workerThread == null) return;
 		synchronized(workerLock) {
 			workerCancelled = true;
@@ -1395,7 +1397,7 @@ public class FileViewer {
 	 * @param dir the new base directory for the table, null is ignored
 	 * @param force if true causes a refresh even if the data is the same
 	 */
-	public void workerUpdate(File dir, boolean force) {
+	void workerUpdate(File dir, boolean force) {
 		if (dir == null) return;
 		if ((!force) && (workerNextDir != null) && (workerNextDir.equals(dir))) return;
 
@@ -1436,7 +1438,7 @@ public class FileViewer {
 	/**
 	 * Updates the table's contents
 	 */
-	protected void workerExecute() {
+	private void workerExecute() {
 		File[] dirList;
 		
 		// Clear existing information
@@ -1497,7 +1499,7 @@ public class FileViewer {
 				Program program = Program.findProgram(extension);
 				if (program != null) {
 					typeString = program.getName();
-					iconImage = IconCache.getIconFromProgram(program, extension);
+					iconImage = IconCache.getIconFromProgram(program);
 				} else {
 					typeString = getResourceString("filetype.Unknown", new Object[] { extension.toUpperCase() });
 					iconImage = IconCache.stockImages[IconCache.iconFile];
