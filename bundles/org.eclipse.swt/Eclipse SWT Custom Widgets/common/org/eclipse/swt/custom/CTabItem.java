@@ -37,6 +37,7 @@ public class CTabItem extends Item {
 	Color[] gradientColors;
 	int[] gradientPercents;
 	boolean gradientVertical;
+	Image disabledImage; 
 	
 	Rectangle closeRect = new Rectangle(0, 0, 0, 0);
 	int closeImageState = CTabFolder.NONE;
@@ -526,8 +527,8 @@ public Control getControl () {
  * @deprecated
  */
 public Image getDisabledImage(){
-	//checkWidget();
-	return null;
+	checkWidget();
+	return disabledImage;
 }
 /**
  * UNDER CONSTRUCTION
@@ -825,6 +826,9 @@ public void setBackground(Color[] colors, int[] percents, boolean vertical) {
  */
 public void setBackground(Image image) {
 	checkWidget();
+	if (image != null && image.isDisposed ()) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
 	if (image == bgImage) return;
 	if (image != null) {
 		gradientColors = null;
@@ -886,6 +890,10 @@ public void setControl (Control control) {
  */
 public void setDisabledImage (Image image) {
 	checkWidget();
+	if (image != null && image.isDisposed ()) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	this.disabledImage = image;
 }
 /**
  * Sets the font that the receiver will use to paint textual information
@@ -907,6 +915,9 @@ public void setDisabledImage (Image image) {
  */
 public void setFont (Font font){
 	checkWidget();
+	if (font != null && font.isDisposed ()) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
 	if (font != null && font.equals(this.font)) return;
 	this.font = font;
 	if (!parent.updateTabHeight(parent.tabHeight, false)) {
@@ -946,6 +957,9 @@ public void setForeground (Color color){
 }
 public void setImage (Image image) {
 	checkWidget();
+	if (image != null && image.isDisposed ()) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
 	if (image != null && image.equals(getImage())) return;
 	super.setImage(image);
 	if (!parent.updateTabHeight(parent.tabHeight, false)) {
