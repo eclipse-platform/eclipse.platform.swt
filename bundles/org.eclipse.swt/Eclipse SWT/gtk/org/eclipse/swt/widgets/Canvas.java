@@ -182,6 +182,14 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	if (isVisible) caret.showCaret ();
 }
 
+boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	boolean isFocus = caret != null && caret.isFocusCaret ();
+	if (isFocus) caret.killFocus ();
+	boolean changed = super.setBounds (x, y, width, height, move, resize);
+	if (isFocus) caret.setFocus ();
+	return changed;
+}
+
 /**
  * Sets the receiver's caret.
  * <p>
@@ -230,6 +238,14 @@ int processFocusIn (int int0, int int1, int int2) {
 int processFocusOut(int int0, int int1, int int2) {
 	int result = super.processFocusOut (int0, int1, int2);
 	if (caret != null) caret.killFocus ();
+	return result;
+}
+
+int processPaint (int callData, int int1, int int2) {
+	boolean isFocus = caret != null && caret.isFocusCaret ();
+	if (isFocus) caret.killFocus ();
+	int result = super.processPaint (callData, int1, int2);
+	if (isFocus) caret.setFocus ();
 	return result;
 }
 

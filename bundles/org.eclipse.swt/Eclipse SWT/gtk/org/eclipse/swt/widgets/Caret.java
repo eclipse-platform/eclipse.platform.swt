@@ -273,6 +273,11 @@ public boolean isVisible () {
 	return isVisible && parent.isVisible () && parent.isFocusControl ();
 }
 
+boolean isFocusCaret () {
+	Display display = getDisplay ();
+	return this == display.currentCaret;
+}
+
 void killFocus () {
 	Display display = getDisplay ();
 	if (display.currentCaret != this) return;
