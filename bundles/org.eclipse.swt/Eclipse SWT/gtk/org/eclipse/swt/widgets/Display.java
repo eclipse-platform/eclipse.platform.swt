@@ -640,12 +640,6 @@ synchronized void createDisplay (DeviceData data) {
 }
 
 int createImage (String name) {
-	/*
-	* Bug in gtk.  gtk_icon_set_render_icon is spec'd to accept a NULL style,
-	* but this does not work.  The workaround is to create a temporary shell,
-	* use its style, and then destroy it.  This problem has been logged:
-	* http://bugs.gnome.org/show_bug.cgi?id=142014
-	*/
 	int /*long*/ shellHandle = OS.gtk_window_new (OS.GTK_WINDOW_TOPLEVEL);
 	if (shellHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	int /*long*/ style = OS.gtk_widget_get_style (shellHandle);
