@@ -2491,14 +2491,10 @@ boolean translateAccelerator (MSG msg) {
 	return menuShell ().translateAccelerator (msg);
 }
 
-boolean translateMnemonic (char key) {
+boolean translateMnemonic (Event event, Control control) {
+	if (control == this) return false;
 	if (!isVisible () || !isEnabled ()) return false;
-	Event event = new Event ();
-	event.doit = mnemonicMatch (key);
-	event.detail = SWT.TRAVERSE_MNEMONIC;
-	if (!setKeyState (event, SWT.Traverse)) {
-		return false;
-	}
+	event.doit = mnemonicMatch (event.character);
 	return traverse (event);
 }
 
@@ -2511,14 +2507,16 @@ boolean translateMnemonic (MSG msg) {
 	}
 	Decorations shell = menuShell ();
 	if (shell.isVisible () && shell.isEnabled ()) {
-		boolean result = false;
 		char ch = mbcsToWcs ((char) msg.wParam);
 		if (ch != 0) {
 			display.lastAscii = ch;
 			display.lastVirtual = display.lastNull = false;
-			result = shell.translateMnemonic (ch);
+			Event event = new Event ();
+			event.detail = SWT.TRAVERSE_MNEMONIC;
+			if (setKeyState (event, SWT.Traverse)) {
+				return translateMnemonic (event, null) || shell.translateMnemonic (event, this);
+			}
 		}
-		return result;
 	}
 	return false;
 }
@@ -2595,7 +2593,7 @@ boolean translateTraversal (MSG msg) {
 		case OS.VK_RIGHT: {
 			/*
 			* On WinCE SP there is no tab key.  Focus is assigned
-			* using only the VK_UP and VK_DOWN keys, not with VK_LEFT
+			* using the VK_UP and VK_DOWN keys, not with VK_LEFT
 			* or VK_RIGHT.
 			*/
 			if (OS.IsSP) {
@@ -2635,9 +2633,7 @@ boolean translateTraversal (MSG msg) {
 	display.lastAscii = lastAscii;
 	display.lastVirtual = lastVirtual;
 	display.lastNull = false;
-	if (!setKeyState (event, SWT.Traverse)) {
-		return false;
-	}
+	if (!setKeyState (event, SWT.Traverse)) return false;
 	Shell shell = getShell ();
 	Control control = this;
 	do {
@@ -2646,9 +2642,7 @@ boolean translateTraversal (MSG msg) {
 			OS.SendMessage (hwndShell, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
 			return true;
 		}
-		if (!event.doit && control.hooks (SWT.Traverse)) {
-			return false;
-		}
+		if (!event.doit && control.hooks (SWT.Traverse)) return false;
 		if (control == shell) return false;
 		control = control.parent;
 	} while (all && control != null);

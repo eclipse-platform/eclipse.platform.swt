@@ -548,12 +548,14 @@ String toolTipText (NMTTDISPINFO hdr) {
 	return control.toolTipText;
 }
 
-boolean translateMnemonic (char key) {
-	if (super.translateMnemonic (key)) return true;
-	Control [] children = _getChildren ();
-	for (int i=0; i<children.length; i++) {
-		Control child = children [i];
-		if (child.translateMnemonic (key)) return true;
+boolean translateMnemonic (Event event, Control control) {
+	if (super.translateMnemonic (event, control)) return true;
+	if (control != null) {
+		Control [] children = _getChildren ();
+		for (int i=0; i<children.length; i++) {
+			Control child = children [i];
+			if (child.translateMnemonic (event, control)) return true;
+		}
 	}
 	return false;
 }
