@@ -35,8 +35,15 @@ public class OS {
 		if (osName.equals ("HP-UX")) isHPUX = true;
 		IsAIX = isAIX;  IsSunOS = isSunOS;  IsLinux = isLinux;  IsHPUX = isHPUX;
 		IsDBLocale = OS.MB_CUR_MAX () != 1;
+		if (IsLinux) {
+			CODESET = 14;
+		} else if (IsHPUX) {
+			CODESET = 62;
+		} else {
+			CODESET = 49;
+		}
 	}
-	public static final int CODESET = OS.IsLinux ? 14 : 49;
+	public static final int CODESET;
 	public static final int LC_CTYPE = OS.IsAIX ? 1 : 0;
 	
 	static final int RESOURCE_LENGTH = 1024 * 3;
