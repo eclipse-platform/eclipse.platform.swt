@@ -388,13 +388,26 @@ public void setSize (int width, int height) {
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	
+	/*
+	* Do not set the size for the last item on the row.
+	*/
+	int count = OS.SendMessage (hwnd, OS.RB_GETBANDCOUNT, 0, 0);
+	boolean isLastItem;
+	if (index + 1 == count) {
+		isLastItem = true;
+	} else {
+		rbBand.fMask = OS.RBBIM_STYLE;
+		OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index + 1, rbBand);
+		isLastItem = (rbBand.fStyle & OS.RBBS_BREAK) != 0;
+		rbBand.fMask = 0;
+	}
+	
 	/* Get the child size fields first so we don't overwrite them. */
 	rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_IDEALSIZE;
 	OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
 	
 	/* Set the size fields we are currently modifying. */
-	rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_SIZE | OS.RBBIM_IDEALSIZE;
-	rbBand.cx = width;
+	rbBand.fMask = OS.RBBIM_CHILDSIZE| OS.RBBIM_IDEALSIZE;
 	if (!ideal) {
 		RECT rect = new RECT ();
 		OS.SendMessage (hwnd, OS.RB_GETBANDBORDERS, index, rect);
@@ -402,6 +415,10 @@ public void setSize (int width, int height) {
 	}
 	if (!minimum) rbBand.cyMinChild = height;
 	rbBand.cyChild = rbBand.cyMaxChild = height;
+	if (!isLastItem) {
+		rbBand.cx = width;
+		rbBand.fMask |= OS.RBBIM_SIZE;
+	}
 	OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, rbBand);
 }
 
