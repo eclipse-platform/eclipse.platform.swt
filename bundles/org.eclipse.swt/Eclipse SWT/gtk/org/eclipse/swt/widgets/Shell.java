@@ -991,8 +991,6 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		}
 	}
 	if (resize) {
-		int [] w = new int [1], h = new int [1];
-		OS.gtk_window_get_size (shellHandle, w, h);
 		width = Math.max (1, Math.max (minWidth, width - trimWidth ()));
 		height = Math.max (1, Math.max (minHeight, height - trimHeight ()));
 		OS.gtk_window_resize (shellHandle, width, height);
