@@ -37,7 +37,7 @@ public final class GCData {
 	public boolean clipAgainstChildren= true;
 	public int[] savePort= new int[1];
 	public int[] saveGWorld= new int[1];
-	public int saveClip= OS.NewRgn();
+	public int saveClip;
 	public boolean isFocused= false;
 	public int lineWidth= 1;
 	public boolean xorMode= false;

@@ -148,6 +148,9 @@ public void dispose () {
 	/* Free resources */
 	int clipRgn = data.clipRgn;
 	if (clipRgn != 0) OS.DisposeRgn(clipRgn);
+
+	clipRgn = data.saveClip;
+	if (clipRgn != 0) OS.DisposeRgn(clipRgn);
 		
 	Image image = data.image;
 	if (image != null) image.memGC = null;
@@ -156,6 +159,7 @@ public void dispose () {
 	drawable.internal_dispose_GC(handle, data);
 
 	data.clipRgn = 0;
+	data.saveClip = 0;
 	data.font = null;
 	drawable = null;
 	data.device = null;
@@ -2068,6 +2072,8 @@ public String toString () {
 			OS.QDSetPatternOrigin(p);
 		}
 		// save clip region
+		if (data.saveClip == 0)
+			data.saveClip= OS.NewRgn();
 		OS.GetClip(data.saveClip);
 		
 		// calculate new clip based on the Control's bound and GC clipping region
@@ -2121,7 +2127,8 @@ public String toString () {
 		
 		if (doClip) {
 			// restore clipping and origin of port
-			OS.SetClip(data.saveClip);
+			if (data.saveClip != 0)
+				OS.SetClip(data.saveClip);
 			OS.SetOrigin((short)0, (short)0);
 		}
 		
