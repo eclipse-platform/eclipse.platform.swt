@@ -208,7 +208,6 @@
 #ifndef WIN32_PLATFORM_HPC2000
 #define NO_CommandBar_1AddAdornments
 #define NO_CommandBar_1Create
-#define NO_CommandBar_1Destroy
 #define NO_CommandBar_1DrawMenuBar
 #define NO_CommandBar_1Height
 #define NO_CommandBar_1InsertMenubarEx
@@ -226,6 +225,7 @@
 #endif /* WIN32_PLATFORM_WFSP */
 
 #ifndef _WIN32_WCE
+#define NO_CommandBar_1Destroy
 #define NO_TransparentImage
 #endif /* _WIN32_WCE */
 
