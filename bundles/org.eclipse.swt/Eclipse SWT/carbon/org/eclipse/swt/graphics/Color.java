@@ -31,9 +31,15 @@ public final class Color {
 	public int handle;
 
 	/**
-	 * The device where this image was created.
+	 * The device where this color was created.
 	 */
 	Device device;
+	
+	// AW
+	private static final int DISPOSED = 0x01;
+	private static final int SYSTEM = 0x02;
+	private int fFlags;
+	// AW
 	
 Color() {
 }
@@ -96,8 +102,13 @@ public Color (Device device, RGB rgb) {
  * they allocate.
  */
 public void dispose() {
+	if ((fFlags & SYSTEM) != 0) {
+		System.out.println("Color.dispose: attempt to dispose system color; ignored");
+		return;
+	}
 	if (device != null && device.isDisposed()) return;
 	device = null;
+	fFlags |= DISPOSED;
 }
 /**
  * Compares the argument to the receiver, and returns true
@@ -202,16 +213,15 @@ void init(Device device, int red, int green, int blue) {
  * @return <code>true</code> when the color is disposed and <code>false</code> otherwise
  */
 public boolean isDisposed() {
-	return device == null;
+	return (fFlags & DISPOSED) != 0;
 }
-public static Color carbon_new(Device device, int packed) {
+public static Color carbon_new(Device device, int packed, boolean system) {
 	if (device == null) device = Device.getDevice();
-	if (packed == -1) {
-		System.out.println("Color.carbon_new: packed == -1");
-	}
 	Color color = new Color();
 	color.device = device;
 	color.handle = packed;
+	if (system)
+		color.fFlags |= SYSTEM;
 	return color;
 }
 /**
