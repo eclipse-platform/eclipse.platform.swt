@@ -2982,11 +2982,19 @@ int xFocusOut (XFocusChangeEvent xEvent) {
 	* X input method font back to the default font when the
 	* widget loses focus and restore it when the widget gets
 	* focus.
+	* 
+	* NOTE: On AIX, changing the IM font when focus is lost because
+	* the shell was resized by the user causes the ConfigureNotify
+	* event for the shell to be lost.  The event is not in the
+	* event queue and therefore not dispatched.  The fix is to avoid
+	* the workaround for AIX.
 	*/
-	int fontList = defaultFont ().handle;
-	if (font.handle != fontList) {
-		int [] argList2 = {OS.XmNfontList, fontList};
-		OS.XmImSetValues (focusHandle, argList2, argList2.length / 2);
+	if (!OS.IsAIX) {
+		int fontList = defaultFont ().handle;
+		if (font.handle != fontList) {
+			int [] argList2 = {OS.XmNfontList, fontList};
+			OS.XmImSetValues (focusHandle, argList2, argList2.length / 2);
+		}
 	}
 	
 	/* Set the focus out event */
