@@ -1263,4 +1263,8 @@ public static final native void XtRemoveInput (int id);
 	public static final int XtInputReadMask = 1;
 //	public static final int XtInputWriteMask = 2;
 //	public static final int XtInputExceptMask = 4;
+
+public static final native int XLoadQueryFont (int display, byte[] name);
+public static final native int XmFontListEntryCreate (byte[] tag, int type, int font);
+
 }

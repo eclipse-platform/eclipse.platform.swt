@@ -3883,6 +3883,51 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmFontListEntryGet
 
 /*
  * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    XmFontListEntryCreate
+ * Signature: ([BII)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmFontListEntryCreate
+  (JNIEnv *env, jclass that, jbyteArray tag, jint type, int font)
+{
+    char *tag1=NULL;
+    jint rc;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "XmFontListEntryCreate\n");
+#endif
+
+    if (tag)
+        tag1 = (char *)(*env)->GetByteArrayElements(env, tag, NULL);
+    rc = (jint)XmFontListEntryCreate(tag1, (XmFontType)type, (XtPointer)font);
+    if (tag)
+        (*env)->ReleaseByteArrayElements(env, tag, (jbyte *)tag1, 0);
+    return rc;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    XLoadQueryFont
+ * Signature: (I[B)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XLoadQueryFont
+  (JNIEnv *env, jclass that, jint display, jbyteArray fontName)
+{
+    char *fontName1=NULL;
+    jint rc;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "XLoadQueryFont\n");
+#endif
+
+    if (fontName)
+        fontName1 = (char *)(*env)->GetByteArrayElements(env, fontName, NULL);
+    rc = (jint)XLoadQueryFont((Display *)display, fontName1);
+    if (fontName)
+        (*env)->ReleaseByteArrayElements(env, fontName, (jbyte *)fontName1, 0);
+    
+    return rc;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
  * Method:    XmFontListEntryLoad
  * Signature: (I[BI[B)I
  */
