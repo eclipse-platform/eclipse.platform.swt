@@ -398,8 +398,10 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 		OS.gdk_draw_drawable(data.drawable, handle, srcImage.pixmap, srcX, srcY, destX, destY, destWidth, destHeight);
 	} else {
 		int pixbuf = scale(srcImage.pixmap, srcX, srcY, srcWidth, srcHeight, destWidth, destHeight);
-		OS.gdk_pixbuf_render_to_drawable(pixbuf, data.drawable, handle, 0, 0, destX, destY, destWidth, destHeight, OS.GDK_RGB_DITHER_NORMAL, 0, 0);
-		OS.g_object_unref(pixbuf);
+		if (pixbuf != 0) {
+			OS.gdk_pixbuf_render_to_drawable(pixbuf, data.drawable, handle, 0, 0, destX, destY, destWidth, destHeight, OS.GDK_RGB_DITHER_NORMAL, 0, 0);
+			OS.g_object_unref(pixbuf);
+		}
 	}
 }
 void drawImageAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imgWidth, int imgHeight) {
@@ -409,7 +411,7 @@ void drawImageAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHei
 		return;
 	}
 	int pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, true, 8, srcWidth, srcHeight);
-	if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	if (pixbuf == 0) return;
 	int colormap = OS.gdk_colormap_get_system();
 	OS.gdk_pixbuf_get_from_drawable(pixbuf, srcImage.pixmap, colormap, srcX, srcY, 0, 0, srcWidth, srcHeight);
 	int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
@@ -428,7 +430,7 @@ void drawImageAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHei
 	if (srcWidth != destWidth || srcHeight != destHeight) {
 		int scaledPixbuf = OS.gdk_pixbuf_scale_simple(pixbuf, destWidth, destHeight, OS.GDK_INTERP_BILINEAR);
 		OS.g_object_unref(pixbuf);
-		if (scaledPixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		if (scaledPixbuf == 0) return;
 		pixbuf = scaledPixbuf;
 	}
 	OS.gdk_pixbuf_render_to_drawable_alpha(
@@ -446,35 +448,38 @@ void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeig
 	if (srcWidth != destWidth || srcHeight != destHeight) {
 		//NOT DONE - there must be a better way of scaling a GdkBitmap
 		int pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, true, 8, srcWidth, srcHeight);
-		if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		int colormap = OS.gdk_colormap_get_system();
-		OS.gdk_pixbuf_get_from_drawable(pixbuf, colorPixmap, colormap, srcX, srcY, 0, 0, srcWidth, srcHeight);
-		int gdkImagePtr = OS.gdk_drawable_get_image(maskPixmap, 0, 0, imgWidth, imgHeight);
-		int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
-		int pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
-		if (gdkImagePtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		byte[] line = new byte[stride];
-		for (int y=0; y<srcHeight; y++) {
-			int offset = pixels + (y * stride);
-			OS.memmove(line, offset, stride);
-			for (int x=0; x<srcWidth; x++) {
-				if (OS.gdk_image_get_pixel(gdkImagePtr, x + srcX, y + srcY) != 0) {
-					line[x*4+3] = (byte)0xFF;
-				} else {
-					line[x*4+3] = 0;
+		if (pixbuf != 0) {
+			int colormap = OS.gdk_colormap_get_system();
+			OS.gdk_pixbuf_get_from_drawable(pixbuf, colorPixmap, colormap, srcX, srcY, 0, 0, srcWidth, srcHeight);
+			int gdkImagePtr = OS.gdk_drawable_get_image(maskPixmap, 0, 0, imgWidth, imgHeight);
+			if (gdkImagePtr != 0) {
+				int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
+				int pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
+				byte[] line = new byte[stride];
+				for (int y=0; y<srcHeight; y++) {
+					int offset = pixels + (y * stride);
+					OS.memmove(line, offset, stride);
+					for (int x=0; x<srcWidth; x++) {
+						if (OS.gdk_image_get_pixel(gdkImagePtr, x + srcX, y + srcY) != 0) {
+							line[x*4+3] = (byte)0xFF;
+						} else {
+							line[x*4+3] = 0;
+						}
+					}
+					OS.memmove(offset, line, stride);
+				}
+				OS.g_object_unref(gdkImagePtr);
+				int scaledPixbuf = OS.gdk_pixbuf_scale_simple(pixbuf, destWidth, destHeight, OS.GDK_INTERP_BILINEAR);
+				if (scaledPixbuf != 0) {
+					OS.gdk_pixbuf_render_to_drawable_alpha(
+						scaledPixbuf, data.drawable,
+						0, 0, destX, destY, destWidth, destHeight,
+						OS.GDK_PIXBUF_ALPHA_BILEVEL, 128, OS.GDK_RGB_DITHER_NORMAL, 0, 0);
+					OS.g_object_unref(scaledPixbuf);
 				}
 			}
-			OS.memmove(offset, line, stride);
+			OS.g_object_unref(pixbuf);
 		}
-		OS.g_object_unref(gdkImagePtr);
-		int scaledPixbuf = OS.gdk_pixbuf_scale_simple(pixbuf, destWidth, destHeight, OS.GDK_INTERP_BILINEAR);
-		OS.g_object_unref(pixbuf);
-		if (scaledPixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		OS.gdk_pixbuf_render_to_drawable_alpha(
-			scaledPixbuf, data.drawable,
-			0, 0, destX, destY, destWidth, destHeight,
-			OS.GDK_PIXBUF_ALPHA_BILEVEL, 128, OS.GDK_RGB_DITHER_NORMAL, 0, 0);
-		OS.g_object_unref(scaledPixbuf);
 	} else {
 	
 		/* Blit cliping the mask */
@@ -494,12 +499,11 @@ void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeig
 }
 int scale(int src, int srcX, int srcY, int srcWidth, int srcHeight, int destWidth, int destHeight) {
 	int pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, srcWidth, srcHeight);
-	if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	if (pixbuf == 0) return 0;
 	int colormap = OS.gdk_colormap_get_system();
 	OS.gdk_pixbuf_get_from_drawable(pixbuf, src, colormap, srcX, srcY, 0, 0, srcWidth, srcHeight);
 	int scaledPixbuf = OS.gdk_pixbuf_scale_simple(pixbuf, destWidth, destHeight, OS.GDK_INTERP_BILINEAR);
 	OS.g_object_unref(pixbuf);
-	if (scaledPixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	return scaledPixbuf;
 }
 
