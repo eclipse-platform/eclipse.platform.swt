@@ -22,6 +22,7 @@ public class OS {
 	
 	/** Constants */
 	public static final int RGBDirect = 16;
+	public static final int alphaLock = 0x0400;
 	public static final int bold = 1;
 	public static final int cantGetFlavorErr = -1854;
 	public static final int checkMark = 18;

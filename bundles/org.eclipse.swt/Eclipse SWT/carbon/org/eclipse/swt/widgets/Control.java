@@ -1405,11 +1405,30 @@ int kEventRawKeyModifiersChanged (int nextHandler, int theEvent, int userData) {
 	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, modifiers.length * 4, null, modifiers);
 	int lastModifiers = display.lastModifiers;
 	int type = SWT.KeyUp;
+	if ((modifiers [0] & OS.alphaLock) != 0 && (lastModifiers & OS.alphaLock) == 0) type = SWT.KeyDown;
 	if ((modifiers [0] & OS.shiftKey) != 0 && (lastModifiers & OS.shiftKey) == 0) type = SWT.KeyDown;
 	if ((modifiers [0] & OS.controlKey) != 0 && (lastModifiers & OS.controlKey) == 0) type = SWT.KeyDown;
 	if ((modifiers [0] & OS.cmdKey) != 0 && (lastModifiers & OS.cmdKey) == 0) type = SWT.KeyDown;
 	if ((modifiers [0] & OS.optionKey) != 0 && (lastModifiers & OS.optionKey) == 0) type = SWT.KeyDown;
-	boolean result = sendKeyEvent (type, theEvent);
+	if (type == SWT.KeyUp && (modifiers [0] & OS.alphaLock) == 0 && (lastModifiers & OS.alphaLock) != 0) {
+		Event event = new Event ();
+		event.type = SWT.KeyDown;
+		event.keyCode = SWT.CAPS_LOCK;
+		setInputState (event, (short) 0, 0, modifiers [0]);
+		sendKeyEvent (SWT.KeyDown, event);
+	}
+	Event event = new Event ();
+	event.type = type;
+	setInputState (event, (short) 0, 0, modifiers [0]);
+	if (event.keyCode == 0 && event.character == 0) return OS.eventNotHandledErr;
+	boolean result = sendKeyEvent (type, event);
+	if (type == SWT.KeyDown && (modifiers [0] & OS.alphaLock) != 0 && (lastModifiers & OS.alphaLock) == 0) {
+		event = new Event ();
+		event.type = SWT.KeyUp;
+		event.keyCode = SWT.CAPS_LOCK;
+		setInputState (event, (short) 0, 0, modifiers [0]);
+		sendKeyEvent (SWT.KeyUp, event);
+	}
 	display.lastModifiers = modifiers [0];
 	return result ? OS.eventNotHandledErr : OS.noErr;
 }
@@ -1893,7 +1912,7 @@ boolean sendKeyEvent (int type, int theEvent) {
 	} else {
 		Event event = new Event ();
 		event.type = type;
-		setKeyState (event, theEvent);
+		if (!setKeyState (event, theEvent)) return true;
 		return sendKeyEvent (type, event);
 	}
 }
@@ -2713,7 +2732,7 @@ boolean translateTraversal (int key, int theEvent) {
 	Event event = new Event ();
 	event.doit = (code & detail) != 0;
 	event.detail = detail;
-	setKeyState (event, theEvent);
+	if (!setKeyState (event, theEvent)) return false;
 	Shell shell = getShell ();
 	Control control = this;
 	do {

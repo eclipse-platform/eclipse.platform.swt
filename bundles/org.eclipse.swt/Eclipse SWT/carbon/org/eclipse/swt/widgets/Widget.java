@@ -1371,17 +1371,17 @@ public void setData (String key, Object value) {
 	}
 }
 
-void setInputState (Event event, int theEvent) {
+boolean setInputState (Event event, int theEvent) {
 	short [] button = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
 	int [] chord = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseChord, OS.typeUInt32, null, 4, null, chord);
 	int [] modifiers = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
-	setInputState (event, button [0], chord [0], modifiers [0]);
+	return setInputState (event, button [0], chord [0], modifiers [0]);
 }
 
-void setInputState (Event event, short button, int chord, int modifiers) {
+boolean setInputState (Event event, short button, int chord, int modifiers) {
 	switch (button) {
 		case 1: event.button = 1; break;
 		case 2: event.button = 3; break;
@@ -1408,59 +1408,69 @@ void setInputState (Event event, short button, int chord, int modifiers) {
 			break;
 		case SWT.KeyDown:
 		case SWT.Traverse: {
-			if (event.keyCode != 0 || event.character != 0) return;
+			if (event.keyCode != 0 || event.character != 0) return true;
 			int lastModifiers = display.lastModifiers;
+			if ((modifiers & OS.alphaLock) != 0 && (lastModifiers & OS.alphaLock) == 0) {
+				event.keyCode = SWT.CAPS_LOCK;
+				return true;
+			}
 			if ((modifiers & OS.shiftKey) != 0 && (lastModifiers & OS.shiftKey) == 0) {
 				event.stateMask &= ~SWT.SHIFT;
 				event.keyCode = SWT.SHIFT;
-				return;
+				return true;
 			}
 			if ((modifiers & OS.controlKey) != 0 && (lastModifiers & OS.controlKey) == 0) {
 				event.stateMask &= ~SWT.CONTROL;
 				event.keyCode = SWT.CONTROL;
-				return;
+				return true;
 			}
 			if ((modifiers & OS.cmdKey) != 0 && (lastModifiers & OS.cmdKey) == 0) {
 				event.stateMask &= ~SWT.COMMAND;
 				event.keyCode = SWT.COMMAND;
-				return;
+				return true;
 			}	
 			if ((modifiers & OS.optionKey) != 0 && (lastModifiers & OS.optionKey) == 0) {
 				event.stateMask &= ~SWT.ALT;
 				event.keyCode = SWT.ALT;
-				return;
+				return true;
 			}
 			break;
 		}
 		case SWT.KeyUp: {
-			if (event.keyCode != 0 || event.character != 0) return;
+			if (event.keyCode != 0 || event.character != 0) return true;
 			int lastModifiers = display.lastModifiers;
+			if ((modifiers & OS.alphaLock) == 0 && (lastModifiers & OS.alphaLock) != 0) {
+				event.keyCode = SWT.CAPS_LOCK;
+				return true;
+			}
 			if ((modifiers & OS.shiftKey) == 0 && (lastModifiers & OS.shiftKey) != 0) {
 				event.stateMask |= SWT.SHIFT;
 				event.keyCode = SWT.SHIFT;
-				return;
+				return true;
 			}
 			if ((modifiers & OS.controlKey) == 0 && (lastModifiers & OS.controlKey) != 0) {
 				event.stateMask |= SWT.CONTROL;
 				event.keyCode = SWT.CONTROL;
-				return;
+				return true;
 			}
 			if ((modifiers & OS.cmdKey) == 0 && (lastModifiers & OS.cmdKey) != 0) {
 				event.stateMask |= SWT.COMMAND;
 				event.keyCode = SWT.COMMAND;
-				return;
-			}	
-			if ((modifiers & OS.optionKey) != 0 && (lastModifiers & OS.optionKey) == 0) {
+				return true;
+			}
+			if ((modifiers & OS.optionKey) == 0 && (lastModifiers & OS.optionKey) != 0) {
 				event.stateMask |= SWT.ALT;
 				event.keyCode = SWT.ALT;
-				return;
+				return true;
 			}
 			break;
 		}
 	}
+	return true; 
 }
 
-void setKeyState (Event event, int theEvent) {
+boolean setKeyState (Event event, int theEvent) {
+	boolean isNull = false;
 	int [] keyCode = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
 	event.keyCode = Display.translateKey (keyCode [0]);
@@ -1472,7 +1482,7 @@ void setKeyState (Event event, int theEvent) {
 			* correct platform behavior but is not portable.  The
 			* fix is to convert the '\n' into '\r'.
 			*/
-			event.keyCode = SWT.CR;
+			event.keyCode = SWT.KEYPAD_CR;
 			event.character = '\r';
 			break;
 		}
@@ -1481,31 +1491,43 @@ void setKeyState (Event event, int theEvent) {
 		case SWT.DEL: event.character = 0x7F; break;
 		case SWT.ESC: event.character = 0x1B; break;
 		case SWT.TAB: event.character = '\t'; break;
-		case 0: {
-			int [] length = new int [1];
-			int status = OS.GetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, null, 4, length, (char[])null);
-			if (status == OS.noErr && length [0] > 0) {
-				char [] chars = new char [1];
-				OS.GetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, null, 2, null, chars);
-				event.character = chars [0];
-			} else {
-				byte [] charCode = new byte [1];
-				OS.GetEventParameter (theEvent, OS.kEventParamKeyMacCharCodes, OS.typeChar, null, charCode.length, null, charCode);
-				event.character = (char) charCode [0];
+		default: {
+			if (event.keyCode == 0 || (SWT.KEYPAD_TIMES <= event.keyCode && event.keyCode <= SWT.KEYPAD_CR)) {
+				int [] length = new int [1];
+				int status = OS.GetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, null, 4, length, (char[])null);
+				if (status == OS.noErr && length [0] != 0) {
+					char [] chars = new char [1];
+					OS.GetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, null, 2, null, chars);
+					event.character = chars [0];
+				}
+				/*
+				* Bug in the Mactonish.  For some reason, Ctrl+Shift+'2' and Ctrl+Shift+'6'
+				* fail to give 0x0 (^@ or ASCII NUL) and 0x1e (^^).  Other control character
+				* key sequences such as ^A or even Ctrl+Shift+'-' (^_ or 0x1f) are correctly
+				* translated to control characters.  Since it is not possible to know which
+				* key combination gives '@' on an international keyboard, there is no way to
+				* test for either character and convert it to a control character (Shift+'2'
+				* gives '@' only on an English keyboard) to work around the problem.
+				*
+				* There is no fix at this time.
+				*/
 			}
-			if (event.character != 0) {
+			if (event.keyCode == 0) {
 				int kchrPtr = OS.GetScriptManagerVariable ((short) OS.smKCHRCache);
 				if (display.kchrPtr != kchrPtr) {
 					display.kchrPtr = kchrPtr;
 					display.kchrState [0] = 0;
 				}
-				int result = OS.KeyTranslate (kchrPtr, (short)keyCode [0], display.kchrState);
+				int result = OS.KeyTranslate (display.kchrPtr, (short)keyCode [0], display.kchrState);
 				event.keyCode = result & 0x7f;
 			}
 			break;
 		}
 	}
-	setInputState (event, theEvent);
+	if (event.keyCode == 0 && event.character == 0) {
+		if (!isNull) return false;
+	}
+	return setInputState (event, theEvent);
 }
 
 void setVisible (int control, boolean visible) {
