@@ -32,6 +32,32 @@ public class SashForm extends Composite {
 	private Control maxControl = null;
 	private Listener sashListener;
 
+/**
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a widget which will be the parent of the new instance (cannot be null)
+ * @param style the style of widget to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see #getStyle
+ */
 public SashForm(Composite parent, int style) {
 	super(parent, checkStyle(style));
 	if ((style & SWT.VERTICAL) != 0){
@@ -84,15 +110,30 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point(width, height);
 }
 /**
- * Answer SWT.HORIZONTAL if the controls in the SashForm are laid out side by side.
- * Answer SWT.VERTICAL   if the controls in the SashForm are laid out top to bottom.
+ * Returns SWT.HORIZONTAL if the controls in the SashForm are laid out side by side
+ * or SWT.VERTICAL   if the controls in the SashForm are laid out top to bottom.
+ * 
+ * @return SWT.HORIZONTAL or SWT.VERTICAL
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public int getOrientation() {
 	checkWidget();
 	return orientation;
 }
 /**
- * Answer the control that currently is maximized in the SashForm.  This value may be null.
+ * Answer the control that currently is maximized in the SashForm.  
+ * This value may be null.
+ * 
+ * @return the control that currently is maximized or null
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public Control getMaximizedControl(){
 	checkWidget();
@@ -104,6 +145,13 @@ public Control getMaximizedControl(){
  * total height (if SashForm has Vertical orientation) each control occupies.
  * The weights are returned in order of the creation of the widgets (weight[0]
  * corresponds to the weight of the first child created).
+ * 
+ * @return the relative weight of each child
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 
 public int[] getWeights() {
@@ -302,8 +350,17 @@ private void onDragSash(Event event) {
 	c2.setBounds(b2);
 }
 /**
- * If orientation is SWT.HORIZONTAL, lay the controls in the SashForm out side by side.
- * If orientation is SWT.VERTICAL,   lay the controls in the SashForm out top to bottom.
+ * If orientation is SWT.HORIZONTAL, lay the controls in the SashForm 
+ * out side by side.  If orientation is SWT.VERTICAL, lay the 
+ * controls in the SashForm out top to bottom.
+ * 
+ * @param orientation SWT.HORIZONTAL or SWT.VERTICAL
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the value of orientation is not SWT.HORIZONTAL or SWT.VERTICAL
+ * </ul>
  */
 public void setOrientation(int orientation) {
 	checkWidget();
@@ -321,20 +378,6 @@ public void setOrientation(int orientation) {
 	}
 	layout();
 }
-/**
- * Sets the layout which is associated with the receiver to be
- * the argument which may be null.
- * <p>
- * Note : SashForm does not use a layout class to size and position its children.
- * </p>
- *
- * @param the receiver's new layout or null
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
 public void setLayout (Layout layout) {
 	checkWidget();
 }
@@ -344,6 +387,13 @@ public void setLayout (Layout layout) {
  * the previous control will be minimized and the new control will be maximized..
  * if the value of control is null, the SashForm will minimize all controls and return to
  * the default layout where all controls are laid out separated by sashes.
+ * 
+ * @param control the control to be maximized or null
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public void setMaximizedControl(Control control){
 	checkWidget();
@@ -371,6 +421,14 @@ public void setMaximizedControl(Control control){
  * total height (if SashForm has Vertical orientation) each control will occupy.
  * The weights must be positive values and there must be an entry for each
  * non-sash child of the SashForm.
+ * 
+ * @param weights the relative weight of each child
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the weights value is null or of incorrect length (must match the number of children)</li>
+ * </ul>
  */
 public void setWeights(int[] weights) {
 	checkWidget();
