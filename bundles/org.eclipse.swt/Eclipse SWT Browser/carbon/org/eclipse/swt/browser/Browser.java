@@ -226,6 +226,16 @@ public Browser(Composite parent, int style) {
 								OS.SetEventParameter(showEvent[0], OS.kEventParamDirectObject, OS.typeWindowRef, 4, new int[] {OS.GetControlOwner(handle)});
 								OS.SendEventToEventTarget(showEvent[0], OS.GetWindowEventTarget(OS.GetControlOwner(handle)));
 								if (showEvent[0] != 0) OS.ReleaseEvent(showEvent[0]);
+
+								CGRect bounds = new CGRect();
+								OS.HIViewGetFrame(handle, bounds);
+								/* 
+								* Note.  Setting negative width or height causes Safari to always
+								* display incorrectly even if further resize events are correct.
+								*/
+								if (bounds.width < 0) bounds.width = 0;
+								if (bounds.height < 0) bounds.height = 0;
+								OS.HIViewSetFrame(webViewHandle, bounds);							
 							}
 						});
 					}
@@ -241,6 +251,7 @@ public Browser(Composite parent, int style) {
 					break;
 				}
 				case SWT.Resize: {
+					System.out.println("Browser Resize");
 					/*
 					* Bug on Safari. Resizing the height of a Shell containing a Browser at
 					* a fixed location causes the Browser to redraw at a wrong location.
