@@ -5612,39 +5612,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1file_1chooser_1add_1filter)
 }
 #endif
 
-#ifndef NO__1gtk_1file_1chooser_1dialog_1new
-JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1file_1chooser_1dialog_1new)
-	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7)
-{
-	jbyte *lparg0=NULL;
-	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, _1gtk_1file_1chooser_1dialog_1new_FUNC);
-	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-/*
-	rc = (jint)gtk_file_chooser_dialog_new(lparg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
-*/
-	{
-		static int initialized = 0;
-		static void *handle = NULL;
-		typedef jint (*FPTR)(jbyte *, jint, jint, jint, jint, jint, jint, jint);
-		static FPTR fptr;
-		rc = 0;
-		if (!initialized) {
-			if (!handle) handle = dlopen(gtk_file_chooser_dialog_new_LIB, RTLD_LAZY);
-			if (handle) fptr = (FPTR)dlsym(handle, "gtk_file_chooser_dialog_new");
-			initialized = 1;
-		}
-		if (fptr) {
-			rc = (jint)(*fptr)(lparg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
-		}
-	}
-fail:
-	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	OS_NATIVE_EXIT(env, that, _1gtk_1file_1chooser_1dialog_1new_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO__1gtk_1file_1chooser_1get_1current_1folder
 JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1file_1chooser_1get_1current_1folder)
 	(JNIEnv *env, jclass that, jint arg0)

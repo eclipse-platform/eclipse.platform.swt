@@ -34,3 +34,36 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GDK_1WINDOWING_1X11)
 	return rc;
 }
 #endif
+
+#ifndef NO__1gtk_1file_1chooser_1dialog_1new
+JNIEXPORT SWT_PTR JNICALL OS_NATIVE(_1gtk_1file_1chooser_1dialog_1new)
+	(JNIEnv *env, jclass that, jbyteArray arg0, SWT_PTR arg1, jint arg2, SWT_PTR arg3, jint arg4, SWT_PTR arg5, jint arg6, SWT_PTR arg7)
+{
+	jbyte *lparg0=NULL;
+	SWT_PTR rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1file_1chooser_1dialog_1new_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)gtk_file_chooser_dialog_new(lparg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jbyte *, SWT_PTR, jint, SWT_PTR, ...);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_file_chooser_dialog_new_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gtk_file_chooser_dialog_new");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (SWT_PTR)(*fptr)(lparg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+		}
+	}
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1file_1chooser_1dialog_1new_FUNC);
+	return rc;
+}
+#endif
