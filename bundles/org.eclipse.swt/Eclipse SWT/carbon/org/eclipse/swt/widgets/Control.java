@@ -566,9 +566,10 @@ public Rectangle getBounds () {
 	int borders = argList [9] * 2;
 	return new Rectangle ((short) argList [1], (short) argList [3], argList [5] + borders, argList [7] + borders);
     */
-	short[] bounds= new short[4];
+    MacRect br= new MacRect();
+	short[] bounds= br.getData();
 	short[] pbounds= new short[4];
-	OS.GetControlBounds(topHandle, bounds);
+	internalGetControlBounds(topHandle, br);
 	OS.GetControlBounds(parent.handle, pbounds);
 	return new Rectangle(bounds[1]-pbounds[1], bounds[0]-pbounds[0], bounds[3]-bounds[1], bounds[2]-bounds[0]);
 }
@@ -715,10 +716,11 @@ public Object getLayoutData () {
  */
 public Point getLocation () {
 	checkWidget();
-	int topHandle = topHandle ();
-	short[] bounds= new short[4];
+	int topHandle= topHandle ();
+	MacRect br= new MacRect();
+	short[] bounds= br.getData();
 	short[] pbounds= new short[4];
-	OS.GetControlBounds(topHandle, bounds);
+	internalGetControlBounds(topHandle, br);
 	OS.GetControlBounds(parent.handle, pbounds);
 	return new Point(bounds[1]-pbounds[1], bounds[0]-pbounds[0]);
 }
@@ -815,7 +817,7 @@ public Point getSize () {
 	return new Point (argList [1] + borders, argList [3] + borders);
     */
 	MacRect bounds= new MacRect();
-	OS.GetControlBounds(topHandle, bounds.getData());
+	internalGetControlBounds(topHandle, bounds);
 	return bounds.getSize();
 }
 /**
@@ -1759,14 +1761,15 @@ public void setBounds (int x, int y, int width, int height) {
 	int topHandle = topHandle ();
 	width = Math.max(width, 0);
 	height = Math.max(height, 0);
-	short[] bounds= new short[4];
+	MacRect br= new MacRect();
+	short[] bounds= br.getData();
 	short[] pbounds= new short[4];
-	OS.GetControlBounds(topHandle, bounds);
+	internalGetControlBounds(topHandle, br);
 	OS.GetControlBounds(parent.handle, pbounds);
 	boolean sameOrigin = (bounds[1]-pbounds[1]) == x && (bounds[0]-pbounds[0]) == y;
 	boolean sameExtent = (bounds[3]-bounds[1]) == width && (bounds[2]-bounds[0]) == height;
 	if (sameOrigin && sameExtent) return;
-	internalSetBounds(topHandle, bounds, pbounds[1]+x, pbounds[0]+y, width, height, !sameExtent);
+	internalSetBounds(topHandle, br, pbounds[1]+x, pbounds[0]+y, width, height);
 	if (!sameOrigin) sendEvent (SWT.Move);
 	if (!sameExtent) sendEvent (SWT.Resize);
 }
@@ -2013,13 +2016,14 @@ public void setLocation (int x, int y) {
 	if (!sameOrigin) sendEvent (SWT.Move);
     */
 	int topHandle = topHandle ();
-	short[] bounds= new short[4];
+	MacRect br= new MacRect();
+	short[] bounds= br.getData();
 	short[] pbounds= new short[4];
-	OS.GetControlBounds(topHandle, bounds);
+	internalGetControlBounds(topHandle, br);
 	OS.GetControlBounds(parent.handle, pbounds);
 	boolean sameOrigin = (x == (bounds[1]-pbounds[1])) && (y == (bounds[0]-pbounds[0]));
 	if (sameOrigin) return;
-	internalSetBounds(topHandle, bounds, pbounds[1]+x, pbounds[0]+y, bounds[3]-bounds[1], bounds[2]-bounds[0], false);
+	internalSetBounds(topHandle, br, pbounds[1]+x, pbounds[0]+y, bounds[3]-bounds[1], bounds[2]-bounds[0]);
 	sendEvent (SWT.Move);
 }
 /**
@@ -2161,11 +2165,12 @@ public void setSize (int width, int height) {
 	int topHandle = topHandle ();
 	width = Math.max(width, 0);
 	height = Math.max(height, 0);
-	short[] bounds= new short[4];
-	OS.GetControlBounds(topHandle, bounds);
+	MacRect br= new MacRect();
+	short[] bounds= br.getData();
+	internalGetControlBounds(topHandle, br);
 	boolean sameExtent = (bounds[3]-bounds[1]) == width && (bounds[2]-bounds[0]) == height;
 	if (sameExtent) return;	
-	internalSetBounds(topHandle, bounds, bounds[1], bounds[0], width, height, true);
+	internalSetBounds(topHandle, br, bounds[1], bounds[0], width, height);
 	sendEvent (SWT.Resize);
 }
 /**
@@ -2539,29 +2544,30 @@ public void update () {
 	/**
 	 * Sets the bounds of the given control.
 	 */
-	private void internalSetBounds(int hndl, short[] bounds, int x, int y, int width, int height, boolean sizeChanged) {
+	private void internalSetBounds(int hndl, MacRect oldBounds, int x, int y, int width, int height) {
 	
 		int wHandle= OS.GetControlOwner(hndl);
-		OS.InvalWindowRect(wHandle, bounds);
+		OS.InvalWindowRect(wHandle, oldBounds.getData());
 		
 		MacRect newBounds= new MacRect(x, y, width, height);
-		
-		if (sizeChanged) {
-			handleResize(hndl, x, y, width, height);
-		} else {
-			OS.SetControlBounds(hndl, newBounds.getData());
-		}
-		
+		handleResize(hndl, newBounds);
 		OS.InvalWindowRect(wHandle, newBounds.getData());
 	}
 	
 	/**
 	 * subclasses can override if a resize must trigger some internal layout.
 	 */
-	void handleResize(int hndl, int x, int y, int width, int height) {
-		OS.SetControlBounds(hndl, new MacRect(x, y, width, height).getData());
+	void handleResize(int hndl, MacRect bounds) {
+		OS.SetControlBounds(hndl, bounds.getData());
 	}
 	
+	/**
+	 * subclasses can override.
+	 */
+	void internalGetControlBounds(int hndl, MacRect bounds) {
+		OS.GetControlBounds(hndl, bounds.getData());
+	}
+
 	/**
 	 * Hook (overwritten in Text and Combo)
 	 */
