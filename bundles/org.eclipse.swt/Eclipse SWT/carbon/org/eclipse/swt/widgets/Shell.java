@@ -147,7 +147,7 @@ void createHandle () {
 	} else {
 		createHandle (theRoot [0]);
 	}
-	OS.SetControlVisibility (topHandle (), false, true);
+	OS.HIViewSetVisible (topHandle (), false);
 	int [] outGroup = new int [1];
 	OS.CreateWindowGroup (OS.kWindowGroupAttrHideOnCollapse, outGroup);
 	if (outGroup [0] == 0) error (SWT.ERROR_NO_HANDLES);
@@ -622,11 +622,11 @@ void setWindowVisible (boolean visible) {
 			if (parent != null) inUnavailableWindow = OS.GetControlOwner (parent.handle);
 			OS.SetWindowModality (shellHandle, inModalKind, inUnavailableWindow);
 		}
-		OS.SetControlVisibility (topHandle (), true, true);
+		OS.HIViewSetVisible (topHandle (), true);
 		OS.ShowWindow (shellHandle);
 	} else {
     	OS.HideWindow (shellHandle);
-		OS.SetControlVisibility (topHandle (), false, true);
+		OS.HIViewSetVisible (topHandle (), false);
 		sendEvent (SWT.Hide);
 	}
 }

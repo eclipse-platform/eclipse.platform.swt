@@ -72,8 +72,9 @@ int actionProc (int theControl, int partCode) {
 	}
 	OS.SetControl32BitValue (handle, value);
 	sendEvent (SWT.Selection, event);
-	Display display = getDisplay ();
-	display.update ();
+//	Display display = getDisplay ();
+//	display.update ();
+	parent.update ();
 	return 0;
 }
 
@@ -326,7 +327,7 @@ public void setVisible (boolean visible) {
 		if ((state & HIDDEN) != 0) return;
 		state |= HIDDEN;
 	}
-	OS.SetControlVisibility (handle, visible, true);
+	OS.HIViewSetVisible (handle, visible);
 	sendEvent (visible ? SWT.Show : SWT.Hide);
 	parent.layoutControl();
 }

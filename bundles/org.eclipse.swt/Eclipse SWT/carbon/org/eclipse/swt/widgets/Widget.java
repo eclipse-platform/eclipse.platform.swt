@@ -495,15 +495,20 @@ int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 	int [] region = new int [1];	
 	OS.GetEventParameter (theEvent, OS.kEventParamRgnHandle, OS.typeQDRgnHandle, null, 4, null, region);
 	int visibleRgn = getVisibleRegion (theControl [0], true);
-	int oldClip = OS.NewRgn ();
-	OS.GetClip (oldClip);
 	OS.SectRgn(region [0], visibleRgn, visibleRgn);
-	OS.SetClip (visibleRgn);
-	drawWidget (theControl [0]);
-	int result = OS.CallNextEventHandler (nextHandler, theEvent);
-	OS.SetClip (oldClip);
+	int result = -1;
+	if (!OS.EmptyRgn (visibleRgn)) {
+		int oldClip = OS.NewRgn ();
+		OS.GetClip (oldClip);
+		OS.SetClip (visibleRgn);
+		drawWidget (theControl [0]);
+		Rect rect = new Rect ();
+		OS.GetRegionBounds(visibleRgn, rect);
+		result = OS.CallNextEventHandler (nextHandler, theEvent);
+		OS.SetClip (oldClip);
+		OS.DisposeRgn (oldClip);
+	}
 	OS.DisposeRgn (visibleRgn);
-	OS.DisposeRgn (oldClip);
 	return result;
 }
 
@@ -768,13 +773,11 @@ int setBounds (int control, int x, int y, int width, int height, boolean move, b
 	oldBounds.top -= inset.top;
 	oldBounds.right += inset.right;
 	oldBounds.bottom += inset.bottom;
-	boolean visible = OS.IsControlVisible (control);
-	int window = OS.GetControlOwner (control);
-	if (visible) OS.InvalWindowRect (window, oldBounds);
 	x += inset.left;
 	y += inset.top;
 	width -= (inset.left + inset.right);
 	height -= (inset.top + inset.bottom);
+	int window = OS.GetControlOwner (control);
 	if (move) {
 		int [] theRoot = new int [1];
 		OS.GetRootControl (window, theRoot);
@@ -798,11 +801,14 @@ int setBounds (int control, int x, int y, int width, int height, boolean move, b
 	height = Math.max (0, height);
 	boolean sameOrigin = x == oldBounds.left && y == oldBounds.top;
 	boolean sameExtent = width == (oldBounds.right - oldBounds.left) && height == (oldBounds.bottom - oldBounds.top);
+	if (sameOrigin && sameExtent) return 0;
 	Rect newBounds = new Rect ();
 	newBounds.left = (short) x;
 	newBounds.top = (short) y;
 	newBounds.right = (short) (x + width);
 	newBounds.bottom = (short) (y + height);
+	boolean visible = OS.IsControlVisible (control);
+	if (visible) OS.InvalWindowRect (window, oldBounds);
 	OS.SetControlBounds (control, newBounds);
 	if (visible) OS.InvalWindowRect (window, newBounds);
 	int result = 0;

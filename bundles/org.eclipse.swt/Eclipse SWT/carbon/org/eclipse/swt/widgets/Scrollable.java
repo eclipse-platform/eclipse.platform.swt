@@ -154,8 +154,9 @@ int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
 			System.out.println (wheelDelta [0]);
 		    event.detail = wheelDelta [0] > 0 ? SWT.PAGE_UP : SWT.PAGE_DOWN;	
 			bar.sendEvent (SWT.Selection, event);
-			Display display = getDisplay ();
-			display.update ();
+//			Display display = getDisplay ();
+//			display.update ();
+			update ();
 		}
 		/*
 		* Feature in the Macintosh.   For some reason, when eventNotHandledErr

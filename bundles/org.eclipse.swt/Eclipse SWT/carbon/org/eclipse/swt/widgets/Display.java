@@ -1334,8 +1334,8 @@ void runGrabs () {
 					if ((oldState & 0x4) != 0 && (newState & 0x4) == 0) button = 3;
 					break;
 				}
-				case OS.kMouseTrackingMouseExited: 				type = SWT.MouseExit; break;
-				case OS.kMouseTrackingMouseEntered: 			type = SWT.MouseEnter; break;
+//				case OS.kMouseTrackingMouseExited: 				type = SWT.MouseExit; break;
+//				case OS.kMouseTrackingMouseEntered: 			type = SWT.MouseEnter; break;
 				case OS.kMouseTrackingMouseDragged: 			type = SWT.MouseMove; break;
 				case OS.kMouseTrackingMouseKeyModifiersChanged:	break;
 				case OS.kMouseTrackingUserCancelled:			break;
@@ -1354,7 +1354,7 @@ void runGrabs () {
 				int chord = OS.GetCurrentEventButtonState ();
 				grabControl.sendMouseEvent (type, (short)button, chord, (short)x, (short)y, outModifiers [0]);
 				//TEMPORARY CODE
-				update ();
+				if (grabControl != null && !grabControl.isDisposed ()) grabControl.update ();
 			}
 		}
 	} finally {

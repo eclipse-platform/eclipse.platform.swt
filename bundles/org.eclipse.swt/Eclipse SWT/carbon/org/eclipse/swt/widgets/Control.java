@@ -1206,18 +1206,8 @@ public void setVisible (boolean visible) {
 	* control that takes focus.  If no control will take focus, clear
 	* the focus control.
 	*/
-	boolean fixFocus = false;
-	if (!visible) fixFocus = isFocusAncestor ();
-	int oldRgn = 0;
-	int topHandle = topHandle ();
-	boolean drawing = isDrawing (topHandle);
-	if (drawing) oldRgn = getVisibleRegion (topHandle, false);
-	OS.SetControlVisibility (topHandle, visible, false);
-	if (drawing) {
-		int window = OS.GetControlOwner (topHandle);
-		OS.InvalWindowRgn (window, oldRgn);
-		OS.DisposeRgn (oldRgn);
-	}
+	boolean fixFocus = !visible && isFocusAncestor ();
+	OS.HIViewSetVisible (topHandle (), visible);
 	if (!visible) {
 		/*
 		* It is possible (but unlikely), that application
@@ -1380,18 +1370,34 @@ public void update () {
 	if (!isDrawing (handle)) return;
 	int window = OS.GetControlOwner (handle);
 	int port = OS.GetWindowPort (window);
-	int updateRgn = OS.NewRgn ();
-	OS.GetPortVisibleRegion (port, updateRgn);
-	if (!OS.EmptyRgn (updateRgn)) {
-		int [] currentPort = new int[1];
-		OS.GetPort (currentPort);
-		OS.SetPort (port);
-		OS.BeginUpdate (window);
-		OS.UpdateControls (window, updateRgn);
-		OS.EndUpdate (window);
-		OS.SetPort (currentPort [0]);
+	int portRgn = OS.NewRgn ();
+	OS.GetPortVisibleRegion (port, portRgn);
+	if (!OS.EmptyRgn (portRgn)) {
+		int updateRgn = OS.NewRgn ();
+		OS.GetWindowRegion (window, (short)OS.kWindowUpdateRgn, updateRgn);
+		if (!OS.EmptyRgn (updateRgn)) {
+			int visibleRgn = getVisibleRegion (handle, false);
+			if (!OS.EmptyRgn (visibleRgn)) {
+				Rect rect = new Rect ();
+				OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+				OS.OffsetRgn (updateRgn, (short)-rect.left, (short)-rect.top);
+				OS.SectRgn (portRgn, updateRgn, updateRgn);
+				OS.GetRegionBounds(updateRgn, rect);
+				if (!OS.EmptyRgn (updateRgn) && !OS.EmptyRgn (visibleRgn)) {
+					int [] currentPort = new int[1];
+					OS.GetPort (currentPort);
+					OS.SetPort (port);
+					OS.BeginUpdate (window);
+					OS.UpdateControls (window, updateRgn);
+					OS.EndUpdate (window);
+					OS.SetPort (currentPort [0]);
+				}
+			}
+			OS.DisposeRgn (visibleRgn);
+		}
+		OS.DisposeRgn (updateRgn);
 	}
-	OS.DisposeRgn (updateRgn);
+	OS.DisposeRgn (portRgn);
 }
 
 }
