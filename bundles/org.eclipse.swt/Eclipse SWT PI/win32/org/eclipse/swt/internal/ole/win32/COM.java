@@ -500,6 +500,7 @@ public static final native int StgOpenStorage(
 	int reserved,      //Reserved; must be zero
 	int[] ppstgOpen    //Address of output variable that receives the IStorage interface pointer
 );
+public static final native int StringFromCLSID(GUID rclsid, int[] ppsz); 
 public static final native int SysAllocString(char [] sz);
 public static final native void SysFreeString(int bstr);
 public static final native int SysStringByteLen(int bstr);

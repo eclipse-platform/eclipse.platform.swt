@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2000, 2002 IBM Corp.  All rights reserved.
+ * Copyright (c) 2000, 2003 IBM Corp.  All rights reserved.
  * This file is made available under the terms of the Common Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/cpl-v10.html
@@ -1059,6 +1059,41 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_ole_win32_COM_StgOpenStorag
 
     if (pwcsName)
         (*env)->ReleaseCharArrayElements(env, pwcsName, (jchar *)pwcsName1, 0);
+    return rc;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_ole_win32_COM
+ * Method:    StringFromCLSID
+ * Signature: (Lorg/eclipse/swt/internal/ole/win32/GUID;[I)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_ole_win32_COM_StringFromCLSID
+  (JNIEnv *env, jclass that, jobject rclsid, jintArray ppsz)
+{
+    LPOLESTR *ppsz1=NULL;
+    GUID guid, *rclsid1=NULL;
+    jint rc;
+
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "COM_StringFromCLSID\n");
+#endif
+
+    if (rclsid) {
+        rclsid1=&guid;
+        getGUIDFields(env, rclsid, rclsid1);
+    }
+
+    if (ppsz)
+        ppsz1 = (LPOLESTR *)(*env)->GetIntArrayElements(env, ppsz, NULL);
+
+    rc = (jint) StringFromCLSID(rclsid1, ppsz1);
+
+    if (ppsz)
+        (*env)->ReleaseIntArrayElements(env, ppsz, (jint *)ppsz1, 0);
+    
+    if (rclsid) {
+        setGUIDFields(env, rclsid, rclsid1);
+    }
     return rc;
 }
 
