@@ -60,6 +60,7 @@ typedef enum {
 	cairo_1curve_1to_FUNC,
 	cairo_1default_1matrix_FUNC,
 	cairo_1destroy_FUNC,
+	cairo_1extents_FUNC,
 	cairo_1fill_FUNC,
 	cairo_1fill_1extents_FUNC,
 	cairo_1font_1destroy_FUNC,
