@@ -1218,9 +1218,11 @@ public class OS extends Platform {
 	public static final int TVS_LINESATROOT = 0x4;
 	public static final int TVS_NOTOOLTIPS = 0x80;
 	public static final int TVS_SHOWSELALWAYS = 0x20;
+	public static final int UDM_GETACCEL = 0x046C;
 	public static final int UDM_GETRANGE32 = 0x0470;
 	public static final int UDM_GETPOS = 0x468;
 	public static final int UDM_GETPOS32 = 0x0472;
+	public static final int UDM_SETACCEL = 0x046B;
 	public static final int UDM_SETRANGE32 = 0x046f;
 	public static final int UDM_SETPOS = 0x467;
 	public static final int UDM_SETPOS32 = 0x0471;
@@ -2116,6 +2118,11 @@ public static final int SendMessage (int hWnd, int Msg, int wParam, TVITEM lPara
 	return SendMessageA (hWnd, Msg, wParam, lParam);
 }
 
+public static final int SendMessage (int hWnd, int Msg, int wParam, UDACCEL lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
 public static final boolean SetMenuItemInfo (int hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii) {
 	if (IsUnicode) return SetMenuItemInfoW (hMenu, uItem, fByPosition, lpmii);
 	return SetMenuItemInfoA (hMenu, uItem, fByPosition, lpmii);
@@ -2554,6 +2561,7 @@ public static final native void MoveMemory (int Destination, LOGFONTA Source, in
 public static final native void MoveMemory (int Destination, MEASUREITEMSTRUCT Source, int Length);
 public static final native void MoveMemory (int Destination, MINMAXINFO Source, int Length);
 public static final native void MoveMemory (int Destination, MSG Source, int Length);
+public static final native void MoveMemory (int Destination, UDACCEL Source, int Length);
 public static final native void MoveMemory (int Destination, NMTTDISPINFOW Source, int Length);
 public static final native void MoveMemory (int Destination, NMTTDISPINFOA Source, int Length);
 public static final native void MoveMemory (int Destination, RECT Source, int Length);
@@ -2589,6 +2597,7 @@ public static final native void MoveMemory (NMTTDISPINFOA Destination, int Sourc
 public static final native void MoveMemory (TVITEM Destination, int Source, int Length);
 public static final native void MoveMemory (WINDOWPOS Destination, int Source, int Length);
 public static final native void MoveMemory (MSG Destination, int Source, int Length);
+public static final native void MoveMemory (UDACCEL Destination, int Source, int Length);
 public static final native void MoveMemory(int Destination, DROPFILES Source, int Length);
 public static final native void MoveMemory(double[] Destination, int SourcePtr, int Length);
 public static final native void MoveMemory(float[] Destination, int SourcePtr, int Length);
@@ -2687,6 +2696,7 @@ public static final native int SendMessageW (int hWnd, int Msg, int wParam, TOOL
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, TVHITTESTINFO lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, TVINSERTSTRUCT lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, TVITEM lParam);
+public static final native int SendMessageW (int hWnd, int Msg, int wParam, UDACCEL lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int [] wParam, int [] lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int [] wParam, int lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, byte [] lParam);
@@ -2706,6 +2716,7 @@ public static final native int SendMessageA (int hWnd, int Msg, int wParam, TOOL
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, TVHITTESTINFO lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, TVINSERTSTRUCT lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, TVITEM lParam);
+public static final native int SendMessageA (int hWnd, int Msg, int wParam, UDACCEL lParam);
 public static final native int SetActiveWindow (int hWnd);
 public static final native int SetBkColor (int hdc, int colorRef);
 public static final native int SetBkMode (int hdc, int mode);

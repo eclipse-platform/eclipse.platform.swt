@@ -1199,6 +1199,18 @@ void setTVITEMFields(JNIEnv *env, jobject lpObject, TVITEM *lpStruct);
 #define TVITEM_sizeof() 0
 #endif
 
+#ifndef NO_UDACCEL
+void cacheUDACCELFields(JNIEnv *env, jobject lpObject);
+UDACCEL *getUDACCELFields(JNIEnv *env, jobject lpObject, UDACCEL *lpStruct);
+void setUDACCELFields(JNIEnv *env, jobject lpObject, UDACCEL *lpStruct);
+#define UDACCEL_sizeof() sizeof(UDACCEL)
+#else
+#define cacheUDACCELFields(a,b)
+#define getUDACCELFields(a,b,c) NULL
+#define setUDACCELFields(a,b,c)
+#define UDACCEL_sizeof() 0
+#endif
+
 #ifndef NO_WINDOWPLACEMENT
 void cacheWINDOWPLACEMENTFields(JNIEnv *env, jobject lpObject);
 WINDOWPLACEMENT *getWINDOWPLACEMENTFields(JNIEnv *env, jobject lpObject, WINDOWPLACEMENT *lpStruct);

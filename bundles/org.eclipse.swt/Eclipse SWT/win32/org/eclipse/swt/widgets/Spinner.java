@@ -36,7 +36,7 @@ import org.eclipse.swt.events.*;
 public class Spinner extends Composite {
 	int hwndText, hwndUpDown;
 	boolean ignoreModify;
-	int increment, pageIncrement;
+	int pageIncrement;
 	static final int EditProc;
 	static final TCHAR EditClass = new TCHAR (0, "EDIT", true);
 	static final int UpDownProc;
@@ -143,7 +143,6 @@ void createHandle () {
 	if (hwndUpDown == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.SendMessage (hwndUpDown, OS.UDM_SETRANGE32, 0, 100);
 	OS.SendMessage (hwndUpDown, OS.IsWinCE ? OS.UDM_SETPOS : OS.UDM_SETPOS32, 0, 0);
-	increment = 1;
 	pageIncrement = 10;
 	TCHAR buffer = new TCHAR (getCodePage (), "0", true);
 	OS.SetWindowText (hwndText, buffer);
@@ -361,7 +360,9 @@ boolean hasFocus () {
  */
 public int getIncrement () {
 	checkWidget ();
-	return increment;
+	UDACCEL udaccel = new UDACCEL ();
+	OS.SendMessage (hwndUpDown, OS.UDM_GETACCEL, 1, udaccel);
+	return udaccel.nInc;
 }
 
 /**
@@ -675,7 +676,21 @@ void setForegroundPixel (int pixel) {
 public void setIncrement (int value) {
 	checkWidget ();
 	if (value < 1) return;
-	increment = value;
+	int hHeap = OS.GetProcessHeap ();
+	int count = OS.SendMessage (hwndUpDown, OS.UDM_GETACCEL, 0, (UDACCEL)null);
+	int udaccels = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, UDACCEL.sizeof * count);
+	OS.SendMessage (hwndUpDown, OS.UDM_GETACCEL, count, udaccels);
+	int first = -1;
+	UDACCEL udaccel = new UDACCEL ();
+	for (int i = 0; i < count; i++) {
+		int offset = udaccels + (i * UDACCEL.sizeof);
+		OS.MoveMemory (udaccel, offset, UDACCEL.sizeof);
+		if (first == -1) first = udaccel.nInc;
+		udaccel.nInc  =  udaccel.nInc * value / first;
+		OS.MoveMemory (offset, udaccel, UDACCEL.sizeof);
+	}
+	OS.SendMessage (hwndUpDown, OS.UDM_SETACCEL, count, udaccels);
+	OS.HeapFree (hHeap, 0, udaccels);
 }
 
 /**
@@ -1027,10 +1042,12 @@ LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
 	if (result != null) return result;
 	
 	/* Increment the value */
+	UDACCEL udaccel = new UDACCEL ();
+	OS.SendMessage (hwndUpDown, OS.UDM_GETACCEL, 1, udaccel);
 	int delta = 0;
 	switch (wParam) {
-		case OS.VK_UP: delta = increment; break;
-		case OS.VK_DOWN: delta = -increment; break;
+		case OS.VK_UP: delta = udaccel.nInc; break;
+		case OS.VK_DOWN: delta = -udaccel.nInc; break;
 		case OS.VK_PRIOR: delta = pageIncrement; break;
 		case OS.VK_NEXT: delta = -pageIncrement; break;
 	}

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 596;
-int OS_nativeFunctionCallCount[596];
+int OS_nativeFunctionCount = 600;
+int OS_nativeFunctionCallCount[600];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateKeyboardLayout",
@@ -364,6 +364,7 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_NMTVCUSTOMDRAW_2I",
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_RECT_2I",
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_TRIVERTEX_2I",
+	"MoveMemory__ILorg_eclipse_swt_internal_win32_UDACCEL_2I",
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_WINDOWPOS_2I",
 	"MoveMemory__I_3BI",
 	"MoveMemory__I_3CI",
@@ -400,6 +401,7 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1LOGATTR_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1PROPERTIES_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_TVITEM_2II",
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_UDACCEL_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_WINDOWPOS_2II",
 	"MoveMemory___3BII",
 	"MoveMemory___3BLorg_eclipse_swt_internal_win32_ACCEL_2I",
@@ -501,6 +503,7 @@ char * OS_nativeFunctionNames[] = {
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_TVHITTESTINFO_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_TVINSERTSTRUCT_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_TVITEM_2",
+	"SendMessageA__IIILorg_eclipse_swt_internal_win32_UDACCEL_2",
 	"SendMessageA__III_3B",
 	"SendMessageA__III_3I",
 	"SendMessageA__III_3S",
@@ -520,6 +523,7 @@ char * OS_nativeFunctionNames[] = {
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_TVHITTESTINFO_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_TVINSERTSTRUCT_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_TVITEM_2",
+	"SendMessageW__IIILorg_eclipse_swt_internal_win32_UDACCEL_2",
 	"SendMessageW__III_3C",
 	"SendMessageW__III_3I",
 	"SendMessageW__III_3S",

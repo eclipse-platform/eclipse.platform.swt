@@ -5452,6 +5452,40 @@ void setTVITEMFields(JNIEnv *env, jobject lpObject, TVITEM *lpStruct)
 }
 #endif
 
+#ifndef NO_UDACCEL
+typedef struct UDACCEL_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID nSec, nInc;
+} UDACCEL_FID_CACHE;
+
+UDACCEL_FID_CACHE UDACCELFc;
+
+void cacheUDACCELFields(JNIEnv *env, jobject lpObject)
+{
+	if (UDACCELFc.cached) return;
+	UDACCELFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	UDACCELFc.nSec = (*env)->GetFieldID(env, UDACCELFc.clazz, "nSec", "I");
+	UDACCELFc.nInc = (*env)->GetFieldID(env, UDACCELFc.clazz, "nInc", "I");
+	UDACCELFc.cached = 1;
+}
+
+UDACCEL *getUDACCELFields(JNIEnv *env, jobject lpObject, UDACCEL *lpStruct)
+{
+	if (!UDACCELFc.cached) cacheUDACCELFields(env, lpObject);
+	lpStruct->nSec = (*env)->GetIntField(env, lpObject, UDACCELFc.nSec);
+	lpStruct->nInc = (*env)->GetIntField(env, lpObject, UDACCELFc.nInc);
+	return lpStruct;
+}
+
+void setUDACCELFields(JNIEnv *env, jobject lpObject, UDACCEL *lpStruct)
+{
+	if (!UDACCELFc.cached) cacheUDACCELFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, UDACCELFc.nSec, (jint)lpStruct->nSec);
+	(*env)->SetIntField(env, lpObject, UDACCELFc.nInc, (jint)lpStruct->nInc);
+}
+#endif
+
 #ifndef NO_WINDOWPLACEMENT
 typedef struct WINDOWPLACEMENT_FID_CACHE {
 	int cached;
