@@ -39,7 +39,7 @@ import org.eclipse.swt.events.*;
  * <dd>DefaultSelection, Modify, Selection</dd>
  * </dl>
  * <p>
- * Note: Only one of the styles DROP_DOWN, READ_ONLY, and SIMPLE 
+ * Note: Only one of the styles DROP_DOWN and SIMPLE 
  * may be specified.
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
