@@ -2041,6 +2041,7 @@ public static final native int CreatePolygonRgn(int[] lppt, int cPoints, int fnP
 public static final native int CreatePopupMenu ();
 public static final native int CreateRectRgn (int left, int top, int right, int bottom);
 public static final native int CreateSolidBrush (int colorRef);
+public static final native int CreateStreamOnHGlobal(int hGlobal, boolean fDeleteOnRelease, int[] ppstm);
 public static final native int CreateWindowExW (int dwExStyle, char [] lpClassName, char [] lpWindowName, int dwStyle, int X, int Y, int nWidth, int nHeight, int hWndParent, int hMenu, int hInstance, CREATESTRUCT lpParam);
 public static final native int CreateWindowExA (int dwExStyle, byte [] lpClassName, byte [] lpWindowName, int dwStyle, int X, int Y, int nWidth, int nHeight, int hWndParent, int hMenu, int hInstance, CREATESTRUCT lpParam);
 public static final native int DeferWindowPos (int hWinPosInfo, int hWnd, int hWndInsertAfter, int X, int Y, int cx, int cy, int uFlags);
