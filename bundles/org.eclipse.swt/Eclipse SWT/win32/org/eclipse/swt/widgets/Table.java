@@ -1533,8 +1533,7 @@ public void select (int [] indices) {
 	checkWidget ();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int length = indices.length;
-	if (length == 0) return;
-	if ((style & SWT.SINGLE) != 0 && length > 1) return;
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
 	LVITEM lvItem = new LVITEM ();
 	lvItem.state = OS.LVIS_SELECTED;
 	lvItem.stateMask = OS.LVIS_SELECTED;
@@ -2175,8 +2174,7 @@ public void setSelection (int [] indices) {
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	deselectAll ();
 	int length = indices.length;
-	if (length == 0) return;
-	if ((style & SWT.SINGLE) != 0 && length > 1) return;
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
 	select (indices);
 	int focusIndex = indices [0];
 	if (focusIndex != -1) setFocusIndex (focusIndex);
@@ -2211,8 +2209,7 @@ public void setSelection (TableItem [] items) {
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
 	deselectAll ();
 	int length = items.length;
-	if (length == 0) return;
-	if ((style & SWT.SINGLE) != 0 && length > 1) return;
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
 	int focusIndex = -1;
 	for (int i=length-1; i>=0; --i) {
 		int index = indexOf (items [i]);

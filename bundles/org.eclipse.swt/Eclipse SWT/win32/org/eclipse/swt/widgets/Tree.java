@@ -1061,11 +1061,7 @@ public void setSelection (TreeItem [] items) {
 	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int length = items.length;
-	if (length == 0) {
-		deselectAll();
-		return;
-	}
-	if ((style & SWT.SINGLE) != 0 && length > 1) {
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) {
 		deselectAll();
 		return;
 	}

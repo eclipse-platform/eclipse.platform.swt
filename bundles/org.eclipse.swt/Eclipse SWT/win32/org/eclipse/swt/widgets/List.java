@@ -1002,8 +1002,7 @@ public void select (int [] indices) {
 	checkWidget ();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int length = indices.length;
-	if (length == 0) return;
-	if ((style & SWT.SINGLE) != 0 && length > 1) return;
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
 	select (indices, false);
 }
 
@@ -1370,8 +1369,7 @@ public void setSelection(int [] indices) {
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	deselectAll ();
 	int length = indices.length;
-	if (length == 0) return;
-	if ((style & SWT.SINGLE) != 0 && length > 1) return;
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
 	select (indices, true);
 	if ((style & SWT.MULTI) != 0) {
 		int focusIndex = indices [0];
@@ -1406,8 +1404,7 @@ public void setSelection (String [] items) {
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
 	deselectAll ();
 	int length = items.length;
-	if (length == 0) return;
-	if ((style & SWT.SINGLE) != 0 && length > 1) return;
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
 	int focusIndex = -1;
 	for (int i=length-1; i>=0; --i) {
 		String string = items [i];
