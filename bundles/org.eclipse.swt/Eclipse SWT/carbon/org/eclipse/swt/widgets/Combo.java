@@ -970,16 +970,22 @@ int kEventProcessCommand (int nextHandler, int theEvent, int userData) {
 int kEventRawKeyPressed (int nextHandler, int theEvent, int userData) {
 	/*
 	* Feature in the Macintosh. The combo box widget consumes the
-	* kEventRawKeyDown event when the Return key is pressed causing
-	* the kEventTextInputUnicodeForKeyEvent to be not sent.  The fix
-	* is to handle the Return key in kEventRawKeyDown instead.
+	* kEventRawKeyDown event when the Return key or up and down arrow
+	* keys are pressed, causing kEventTextInputUnicodeForKeyEvent not
+	* to be sent.  The fix is to handle these keys in kEventRawKeyDown.
 	*/
 	int [] keyCode = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
-	if (keyCode [0] == 36 /* Return */) {
-		if (translateTraversal (keyCode [0], theEvent)) return OS.noErr;
-		if (!sendKeyEvent (SWT.KeyDown, theEvent)) return OS.noErr;
-		postEvent(SWT.DefaultSelection);
+	switch (keyCode [0]) {
+		case 36: /* Return */
+			if (translateTraversal (keyCode [0], theEvent)) return OS.noErr;
+			if (!sendKeyEvent (SWT.KeyDown, theEvent)) return OS.noErr;
+			postEvent(SWT.DefaultSelection);
+			break;
+		case 126: /* Up arrow */
+		case 125: /* Down arrow */
+			if (!sendKeyEvent (SWT.KeyDown, theEvent)) return OS.noErr;
+			break;
 	}
 	return OS.eventNotHandledErr;
 }
@@ -996,6 +1002,7 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userData) {
+	System.out.println("Combo.kEventTextInputUnicode");
 	int result = super.kEventTextInputUnicodeForKeyEvent (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	result = OS.CallNextEventHandler (nextHandler, theEvent);
