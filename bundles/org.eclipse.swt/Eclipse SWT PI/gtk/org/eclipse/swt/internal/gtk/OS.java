@@ -164,6 +164,8 @@ public class OS {
 	public static final int GTK_CAN_FOCUS = 0x800;
 	public static final int GTK_CELL_RENDERER_MODE_ACTIVATABLE = 1;
 	public static final int GTK_CLIST_SHOW_TITLES = 0x4;
+	public static final int GTK_CORNER_TOP_LEFT = 0x0;
+	public static final int GTK_CORNER_TOP_RIGHT = 0x2;
 	public static final int GTK_DIALOG_DESTROY_WITH_PARENT = 1 << 1;
 	public static final int GTK_DIALOG_MODAL = 1 << 0;
 	public static final int GTK_JUSTIFY_CENTER = 0x2;
@@ -662,6 +664,7 @@ public static final synchronized native void gtk_scrolled_window_get_policy(int 
 public static final synchronized native int gtk_scrolled_window_get_shadow_type(int scrolled_window);
 public static final synchronized native int gtk_scrolled_window_get_vadjustment(int scrolled_window);
 public static final synchronized native int gtk_scrolled_window_new(int hadjustment, int vadjustment);
+public static final synchronized native void gtk_scrolled_window_set_placement(int scrolled_window, int placement);
 public static final synchronized native void gtk_scrolled_window_set_policy(int scrolled_window, int hscrollbar_policy, int vscrollbar_policy);
 public static final synchronized native void gtk_scrolled_window_set_shadow_type(int scrolled_window, int type);
 public static final synchronized native void gtk_selection_data_free(int selection_data);
