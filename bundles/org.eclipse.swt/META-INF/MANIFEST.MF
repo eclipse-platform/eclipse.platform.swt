@@ -1,4 +1,5 @@
-Bundle-Name: org.eclipse.swt
+Bundle-Name: %pluginName
+Bundle-Vendor: %providerName
 Bundle-GlobalName: org.eclipse.swt
 Bundle-Version: 3.0.0
 Manifest-Version: 1.0
