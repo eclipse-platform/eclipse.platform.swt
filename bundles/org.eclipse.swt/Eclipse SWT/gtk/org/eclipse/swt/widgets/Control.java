@@ -2340,7 +2340,7 @@ public void setBackground (Color color) {
 	}
 	GdkColor oldColor = new GdkColor ();
 	OS.gtk_style_get_bg (OS.gtk_widget_get_style (fontHandle ()), OS.GTK_STATE_NORMAL, oldColor);
-	if (gdkColor == null || (oldColor.pixel != gdkColor.pixel)) {
+	if (gdkColor == null || oldColor.pixel != gdkColor.pixel) {
 		setBackgroundColor (gdkColor);
 	}
 }
@@ -2521,7 +2521,7 @@ public void setForeground (Color color) {
 	}
 	GdkColor oldColor = new GdkColor ();
 	OS.gtk_style_get_fg (OS.gtk_widget_get_style (fontHandle ()), OS.GTK_STATE_NORMAL, oldColor);
-	if (gdkColor == null || (oldColor.pixel != gdkColor.pixel)) {
+	if (gdkColor == null || oldColor.pixel != gdkColor.pixel) {
 		setForegroundColor (gdkColor);
 	}
 }
