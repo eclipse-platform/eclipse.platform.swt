@@ -882,11 +882,6 @@ int processMouseExit (int callData) {
 	else if ((parent.style & SWT.FLAT) != 0) redraw ();
 	return 0;
 }
-Point toControl (Point point) {
-	short [] root_x = new short [1], root_y = new short [1];
-	OS.XtTranslateCoords (handle, (short) 0, (short) 0, root_x, root_y);
-	return new Point (point.x - root_x [0], point.y - root_y [0]);
-}
 boolean translateMnemonic (int key, XKeyEvent xEvent) {
 	return parent.translateMnemonic (key, xEvent);
 }
@@ -895,8 +890,14 @@ boolean translateTraversal (int key, XKeyEvent xEvent) {
 	return parent.translateTraversal (key, xEvent);
 }
 int processMouseHover (int id) {
+	if (toolTipText == null || toolTipText.length () == 0) {
+		return parent.processMouseHover (id);
+	}
 	Display display = getDisplay ();
-	Point local = toControl (display.getCursorLocation ());
+	Event event = new Event ();
+	Point local = parent.toControl (display.getCursorLocation ());
+	event.x = local.x; event.y = local.y;
+	parent.postEvent (SWT.MouseHover, event);
 	display.showToolTip (handle, toolTipText);
 	return 0;
 }
