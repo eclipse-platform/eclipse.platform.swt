@@ -262,7 +262,8 @@ public void setStippled (boolean stippled) {
  */
 
 /**
- * Stop displaying the tracker rectangles.
+ * Stops displaying the tracker rectangles.  Note that this is not considered
+ * to be a cancelation by the user.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -275,7 +276,11 @@ public void close () {
 }
 
 /**
- * Displays the Tracker rectangles.
+ * Displays the Tracker rectangles for manipulation by the user.  Returns when
+ * the user has either finished manipulating the rectangles or has cancelled the
+ * Tracker.
+ * 
+ * @return <code>true</code> if the user did not cancel the Tracker, <code>false</code> otherwise
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
