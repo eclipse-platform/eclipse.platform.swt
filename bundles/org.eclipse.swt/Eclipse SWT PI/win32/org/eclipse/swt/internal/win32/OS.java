@@ -375,6 +375,7 @@ public class OS {
 	public static final int EM_SETREADONLY = 0xcf;
 	public static final int EM_SETSEL = 0xb1;
 	public static final int EM_SETTABSTOPS = 0xcb;
+	public static final int EM_UNDO = 199;
 	public static final int EN_ALIGN_LTR_EC = 0x0700;
 	public static final int EN_ALIGN_RTL_EC = 0x0701;
 	public static final int EN_CHANGE = 0x300;
