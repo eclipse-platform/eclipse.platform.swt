@@ -601,7 +601,7 @@ void setBounds (int x, int y, int width, int height, int flags) {
 	* ensuring that only one tool bar position is deferred at
 	* any given time.
 	*/
-	if (parent.hdwp != null) {
+	if (parent.lpwp != null) {
 		if (drawCount == 0 && OS.IsWindowVisible (handle)) {
 			parent.setResizeChildren (false);
 			parent.setResizeChildren (true);
