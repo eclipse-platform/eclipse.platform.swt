@@ -969,9 +969,7 @@ public void setSelection (TreeItem [] items) {
 	checkWidget();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
 	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
-	if ((style & SWT.MULTI) != 0) {
-		OS.gtk_ctree_unselect_recursive (handle, 0);
-	}
+	deselectAll();
 	int index = 0, length = items.length;
 	while (index < length) {
 		TreeItem item = items [index];

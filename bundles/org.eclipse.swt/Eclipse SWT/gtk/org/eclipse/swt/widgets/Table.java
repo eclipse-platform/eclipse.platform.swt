@@ -1409,6 +1409,7 @@ public void setLinesVisible (boolean show) {
 public void setSelection (int index) {
 	deselectAll ();
 	select (index);
+	setTopIndex (getSelectionIndex ());
 }
 
 public void setRedraw (boolean redraw) {
@@ -1438,6 +1439,7 @@ public void setRedraw (boolean redraw) {
 public void setSelection (int start, int end) {
 	deselectAll ();
 	select (start, end);
+	setTopIndex (getSelectionIndex ());
 }
 
 /**
@@ -1460,6 +1462,7 @@ public void setSelection (int start, int end) {
 public void setSelection (int [] indices) {
 	deselectAll ();
 	select (indices);
+	setTopIndex (getSelectionIndex ());
 }
 
 /**
@@ -1492,6 +1495,7 @@ public void setSelection (TableItem [] items) {
 		int index = indexOf (items [i]);
 		if (index != -1) select (index);
 	}
+	setTopIndex (getSelectionIndex ());
 }
 
 /**
