@@ -29,23 +29,29 @@ public final class Converter {
 	static final char [] EMPTY_CHAR_ARRAY = new char [0];
 
 	static String CodePage;
-	static byte[] Unicode;
+	static final byte[] UCS2;
+	static final byte[] UTF8;
 
 	static final Object LOCK = new Object ();
 	
 	/* Converter cache */
-	static String LastMBToWCCodePage;
-	static String LastWCToMBCodePage;
-	static int LastWCToMB;
-	static int LastMBToWC;
+	static boolean LastMbcsToUCS2Failed, LastUCS2ToMbcsFailed;
+	static String LastMbcsToUCS2CodePage;
+	static String LastUCS2ToMbcsCodePage;
+	static int LastUCS2ToMbcs = -1;
+	static int LastUTF8ToMbcs = -1;
+	static int LastMbcsToUCS2 = -1;
+	static int LastMbcsToUTF8 = -1;
+	static int UTF8ToUCS2 = -1;
+	static int UCS2ToUTF8 = -1;
 	
 	/* Buffers cache */
 	static int BufferSize;
-	static int BufferTimes2;
-	static int BufferTimes4;
+	static int MbcsBuffer, Ucs2Buffer, Utf8Buffer;
 	
-	static {			
-		Unicode = getAsciiBytes("UCS-2");
+	static {		
+		UCS2 = getAsciiBytes("UCS-2");
+		UTF8 = getAsciiBytes("UTF-8");
 
 		int length, item = OS.nl_langinfo (OS.CODESET);
 		if (item != 0 && (length = OS.strlen (item)) > 0) {
@@ -64,9 +70,11 @@ public final class Converter {
 			else CodePage = "iso8859_1";
 		}
 		
+		/* The buffers can hold up to 512 unicode characters */
 		BufferSize = 512;
-		BufferTimes2 = OS.XtMalloc (BufferSize * 2);
-		BufferTimes4 = OS.XtMalloc (BufferSize * 4);
+		Ucs2Buffer = OS.XtMalloc (BufferSize * 2);
+		Utf8Buffer = OS.XtMalloc (BufferSize * 4);
+		MbcsBuffer = OS.XtMalloc (BufferSize * 4);
 	}
 
 /**
@@ -131,39 +139,70 @@ public static char [] mbcsToWcs (String codePage, byte [] buffer) {
 			wideCharStr [i] = (char) buffer [i]; // all bytes <= 0x7F, so no ((char) (buffer[i]&0xFF)) needed
 		} else {
 			synchronized (LOCK) {
+				/*
+				* Feature in Solaris.  Some Solaris machines do not provide an iconv
+				* decoder/encoder that converts directly from/to any MBCS encoding to/from
+				* USC-2.  The fix is to convert to UTF-8 enconding first and them
+				* convert to UCS-2. 
+				*/
 				String cp = codePage != null ? codePage : CodePage;
-				if (LastMBToWC != 0 && !cp.equals (LastMBToWCCodePage)) {
-					OS.iconv_close (LastMBToWC);
-					LastMBToWC = 0;
+				if (!cp.equals (LastMbcsToUCS2CodePage)) {
+					if (LastMbcsToUCS2 != -1) OS.iconv_close (LastMbcsToUCS2);
+					if (LastMbcsToUTF8 != -1) OS.iconv_close (LastMbcsToUTF8);
+					LastMbcsToUCS2 = LastMbcsToUTF8 = -1;
+					LastMbcsToUCS2CodePage = cp;
+					LastMbcsToUCS2Failed = false;
 				}
-				if (LastMBToWC == 0) {
-					LastMBToWCCodePage = cp;
-					LastMBToWC = OS.iconv_open (Unicode, getAsciiBytes (cp));
-					if (LastMBToWC == -1) LastMBToWC = 0;
+				int cd = LastMbcsToUCS2;
+				if (cd == -1 && !LastMbcsToUCS2Failed) {
+					cd = LastMbcsToUCS2 = OS.iconv_open (UCS2, getAsciiBytes (cp));
 				}
-				int cd = LastMBToWC;
-				if (cd == 0) return EMPTY_CHAR_ARRAY;
-				int inBytes = length;
-				int outBytes = length * 2;
-				int ptr1, ptr2;
+				if (cd == -1) {
+					LastMbcsToUCS2Failed = true;
+					cd = UTF8ToUCS2;
+					if (cd == -1) cd = UTF8ToUCS2 = OS.iconv_open (UCS2, UTF8);
+					if (cd == -1) return EMPTY_CHAR_ARRAY;
+					cd = LastMbcsToUTF8;
+					if (cd == -1) cd = LastMbcsToUTF8 = OS.iconv_open (UTF8, getAsciiBytes (cp));
+				}
+				if (cd == -1) return EMPTY_CHAR_ARRAY;
+				boolean utf8 = cd == LastMbcsToUTF8;
+				int inByteCount = length;
+				int outByteCount = utf8 ? length * 4 : length * 2;
+				int ptr1 = 0, ptr2 = 0, ptr3 = 0;
 				if (length <= BufferSize * 2) {
-					ptr1 = BufferTimes2;
-					ptr2 = BufferTimes4;
+					ptr1 = MbcsBuffer;
+					ptr2 = Utf8Buffer;
+					ptr3 = Ucs2Buffer;
 				} else {
-					ptr1 = OS.XtMalloc (inBytes);
-					ptr2 = OS.XtMalloc (outBytes);
+					ptr1 = OS.XtMalloc (inByteCount);
+					if (utf8) ptr2 = OS.XtMalloc (length * 4);
+					ptr3 = OS.XtMalloc (length * 2);
 				}
-				int [] inBuf = {ptr1};
-				int [] inBytesLeft = {inBytes};
-				int [] outBuf = {ptr2};
-				int [] outBytesLeft = {outBytes};
-				OS.memmove (ptr1, buffer, inBytes);
-				OS.iconv (cd, inBuf, inBytesLeft, outBuf, outBytesLeft);
-				outBytes = outBuf [0] - ptr2;
-				wideCharStr = new char [outBytes / 2];
-				OS.memmove (wideCharStr, ptr2, outBytes);
-				if (ptr1 != BufferTimes2) OS.XtFree (ptr1);
-				if (ptr2 != BufferTimes4) OS.XtFree (ptr2);
+				int ptr = utf8 ? ptr2 : ptr3;
+				int [] inBuffer = {ptr1};
+				int [] inBytesLeft = {inByteCount};
+				int [] outBuffer = {ptr};
+				int [] outBytesLeft = {outByteCount};
+				OS.memmove (ptr1, buffer, inByteCount);
+				OS.iconv (cd, inBuffer, inBytesLeft, outBuffer, outBytesLeft);
+				outByteCount = outBuffer [0] - ptr;
+				if (utf8) {
+					cd = UTF8ToUCS2;
+					inByteCount = outByteCount;
+					outByteCount = length * 2;
+					inBuffer[0] = ptr2;
+					inBytesLeft[0] = inByteCount;
+					outBuffer[0] = ptr3;
+					outBytesLeft [0]= outByteCount;
+					OS.iconv (cd, inBuffer, inBytesLeft, outBuffer, outBytesLeft);
+					outByteCount = outBuffer [0] - ptr3;
+				}
+				wideCharStr = new char [outByteCount / 2];
+				OS.memmove (wideCharStr, ptr3, outByteCount);
+				if (ptr1 != 0 && ptr1 != MbcsBuffer) OS.XtFree (ptr1);
+				if (ptr2 != 0 && ptr2 != Utf8Buffer) OS.XtFree (ptr2);
+				if (ptr3 != 0 && ptr3 != Ucs2Buffer) OS.XtFree (ptr3);
 			}
 			return wideCharStr;
 		}
@@ -176,11 +215,16 @@ public static char [] mbcsToWcs (String codePage, byte [] buffer) {
  */	
 public static void release () {
 	synchronized (LOCK) {
-		if (BufferTimes2 != 0) OS.XtFree (BufferTimes2);
-		if (BufferTimes4 != 0) OS.XtFree (BufferTimes4);
-		if (LastWCToMB != 0) OS.iconv_close (LastWCToMB);
-		if (LastMBToWC != 0) OS.iconv_close (LastMBToWC);
-		LastMBToWC = LastWCToMB = BufferTimes4 = BufferTimes2 = 0;
+		if (Ucs2Buffer != 0) OS.XtFree (Ucs2Buffer);
+		if (MbcsBuffer != 0) OS.XtFree (MbcsBuffer);
+		if (LastUCS2ToMbcs != -1) OS.iconv_close (LastUCS2ToMbcs);
+		if (LastUTF8ToMbcs != -1) OS.iconv_close (LastUTF8ToMbcs);
+		if (LastMbcsToUCS2 != -1) OS.iconv_close (LastMbcsToUCS2);
+		if (LastMbcsToUTF8 != -1) OS.iconv_close (LastMbcsToUTF8);
+		if (UTF8ToUCS2 != -1) OS.iconv_close (UTF8ToUCS2);
+		if (UCS2ToUTF8 != -1) OS.iconv_close (UCS2ToUTF8);
+		LastUCS2ToMbcs = LastUTF8ToMbcs = LastMbcsToUCS2 = LastMbcsToUTF8 = UTF8ToUCS2 = UCS2ToUTF8 -1;
+		Ucs2Buffer = Utf8Buffer = MbcsBuffer = 0;
 	}
 }
 
@@ -230,45 +274,75 @@ public static byte [] wcsToMbcs (String codePage, char [] buffer, boolean termin
 			mbcs [i] = (byte) buffer [i];
 		} else {
 			synchronized (LOCK) {
+				/*
+				* Feature in Solaris.  Some Solaris machines do not provide an iconv
+				* decoder/encoder that converts directly from/to any MBCS encoding to/from
+				* USC-2.  The fix is to convert to UTF-8 enconding first and them
+				* convert to UCS-2. 
+				*/
 				String cp = codePage != null ? codePage : CodePage;
-				if (LastWCToMB != 0 && !cp.equals (LastWCToMBCodePage)) {
-					OS.iconv_close (LastWCToMB);
-					LastWCToMB = 0;
+				if (!cp.equals (LastUCS2ToMbcsCodePage)) {
+					if (LastUCS2ToMbcs != -1) OS.iconv_close (LastUCS2ToMbcs);
+					if (LastUTF8ToMbcs != -1) OS.iconv_close (LastUTF8ToMbcs);
+					LastUCS2ToMbcs = LastUTF8ToMbcs = -1;
+					LastUCS2ToMbcsCodePage = cp;
 				}
-				if (LastWCToMB == 0) {
-					LastWCToMBCodePage = cp;
-					LastWCToMB = OS.iconv_open (getAsciiBytes (cp), Unicode);
-					if (LastWCToMB == -1) LastWCToMB = 0;
+				int cd = LastUCS2ToMbcs;
+				if (cd == -1 && !LastUCS2ToMbcsFailed) {
+					cd = LastUCS2ToMbcs = OS.iconv_open (getAsciiBytes (cp), UCS2);
 				}
-				int cd = LastWCToMB;
-				if (cd == 0) return (terminate) ? NULL_BYTE_ARRAY : EMPTY_BYTE_ARRAY;
-				int inBytes = length * 2;
-				int outBytes = length * 4;
-				int ptr1, ptr2;
+				if (cd == -1) {
+					LastUCS2ToMbcsFailed = true;
+					cd = LastUTF8ToMbcs;
+					if (cd == -1) cd = LastUTF8ToMbcs = OS.iconv_open (getAsciiBytes (cp), UTF8);
+					if (cd == -1) return (terminate) ? NULL_BYTE_ARRAY : EMPTY_BYTE_ARRAY;
+					cd = UCS2ToUTF8;
+					if (cd == -1) cd = UCS2ToUTF8 = OS.iconv_open (UTF8, UCS2);
+				}				
+				if (cd == -1) return (terminate) ? NULL_BYTE_ARRAY : EMPTY_BYTE_ARRAY;
+				boolean utf8 = cd == UCS2ToUTF8;
+				int inByteCount = length * 2;
+				int outByteCount = length * 4;
+				int ptr1 = 0, ptr2 = 0, ptr3 = 0;
 				if (length <= BufferSize) {
-					ptr1 = BufferTimes2;
-					ptr2 = BufferTimes4;
+					ptr1 = Ucs2Buffer;
+					ptr2 = Utf8Buffer;
+					ptr3 = MbcsBuffer;
 				} else {
-					ptr1 = OS.XtMalloc (inBytes);
-					ptr2 = OS.XtMalloc (outBytes);
+					ptr1 = OS.XtMalloc (inByteCount);
+					if (utf8) ptr2 = OS.XtMalloc (outByteCount);
+					ptr3 = OS.XtMalloc (outByteCount);
 				}
-				int [] inBuf = {ptr1};
-				int [] inBytesLeft = {inBytes};
-				int [] outBuf = {ptr2};
-				int [] outBytesLeft = {outBytes};
-				OS.memmove (ptr1, buffer, inBytes);
+				int ptr = utf8 ? ptr2 : ptr3;
+				int [] inBuffer = {ptr1};
+				int [] inBytesLeft = {inByteCount};
+				int [] outBuffer = {ptr};
+				int [] outBytesLeft = {outByteCount};
+				OS.memmove (ptr1, buffer, inByteCount);
 				while (inBytesLeft [0] > 0) {
-					OS.iconv (cd, inBuf, inBytesLeft, outBuf, outBytesLeft);
+					OS.iconv (cd, inBuffer, inBytesLeft, outBuffer, outBytesLeft);
 					if (inBytesLeft [0] != 0) {
-						inBuf [0] += 2;
+						inBuffer [0] += 2;
 						inBytesLeft [0] -= 2;
 					}
 				}
-				outBytes = outBuf [0] - ptr2;
-				mbcs = new byte [terminate ? outBytes + 1 : outBytes];
-				OS.memmove (mbcs, ptr2, outBytes);
-				if (ptr1 != BufferTimes2) OS.XtFree (ptr1);
-				if (ptr2 != BufferTimes4) OS.XtFree (ptr2);
+				outByteCount = outBuffer [0] - ptr;
+				if (utf8) {
+					cd = LastUTF8ToMbcs;
+					inByteCount = outByteCount;
+					outByteCount = length * 4;
+					inBuffer[0] = ptr2;
+					inBytesLeft[0] = inByteCount;
+					outBuffer[0] = ptr3;
+					outBytesLeft [0]= outByteCount;
+					OS.iconv (cd, inBuffer, inBytesLeft, outBuffer, outBytesLeft);
+					outByteCount = outBuffer [0] - ptr3;
+				}
+				mbcs = new byte [terminate ? outByteCount + 1 : outByteCount];
+				OS.memmove (mbcs, ptr3, outByteCount);
+				if (ptr1 != 0 && ptr1 != Ucs2Buffer) OS.XtFree (ptr1);
+				if (ptr2 != 0 && ptr2 != Utf8Buffer) OS.XtFree (ptr2);
+				if (ptr3 != 0 && ptr3 != MbcsBuffer) OS.XtFree (ptr3);
 			}
 			return mbcs;
 		}
