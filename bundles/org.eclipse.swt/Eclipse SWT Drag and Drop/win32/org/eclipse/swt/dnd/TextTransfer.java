@@ -104,12 +104,14 @@ public Object nativeToJava(TransferData transferData){
 		return null;
 	}
 	
-	int size = COM.GlobalSize(stgmedium.unionField);
+	int hMem = stgmedium.unionField;
+	/* Ensure byteCount is a multiple of 2 bytes on UNICODE platforms */
+	int size = COM.GlobalSize(hMem) / TCHAR.sizeof * TCHAR.sizeof;
 	TCHAR buffer = new TCHAR(0, size / TCHAR.sizeof);
-	int ptr = COM.GlobalLock(stgmedium.unionField);
+	int ptr = COM.GlobalLock(hMem);
 	COM.MoveMemory(buffer, ptr, size);
-	COM.GlobalUnlock(ptr);	
-	COM.GlobalFree(stgmedium.unionField);
+	COM.GlobalUnlock(hMem);	
+	COM.GlobalFree(hMem);
 	return buffer.toString(0, buffer.strlen());
 }
 protected int[] getTypeIds(){
