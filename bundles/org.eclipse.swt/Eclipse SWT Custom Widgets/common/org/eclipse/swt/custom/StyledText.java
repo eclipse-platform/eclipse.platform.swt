@@ -5071,7 +5071,7 @@ void handleTextSet(TextChangedEvent event) {
 /**
  * Called when a traversal key is pressed.
  * Allow tab next traversal to occur when the widget is in single 
- * line mode or in multi line and read only mode . 
+ * line mode or in multi line and non-editable mode . 
  * When in editable multi line mode we want to prevent the tab 
  * traversal and receive the tab key event instead.
  * <p>
@@ -5080,7 +5080,7 @@ void handleTextSet(TextChangedEvent event) {
  */
 void handleTraverse(Event event) {
 	int style = getStyle();
-	boolean ignoreTab = (style & SWT.MULTI) != 0 && (style & SWT.READ_ONLY) != 0 || isSingleLine();
+	boolean ignoreTab = (style & SWT.MULTI) != 0 && !editable || isSingleLine();
 	
 	if (event.detail == SWT.TRAVERSE_TAB_NEXT && ignoreTab) {
 		event.doit = true;
