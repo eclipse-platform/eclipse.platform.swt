@@ -32,12 +32,16 @@ import java.awt.event.ComponentEvent;
 
 public class SWT_AWT {
 
-	static {
-		System.loadLibrary("jawt");
-		Library.loadLibrary("swt-awt");
-	}
+static boolean loaded;
 
 static native final int getAWTHandle (Canvas canvas);
+
+static synchronized void loadLibrary () {
+	if (loaded) return;
+	loaded = true;
+	System.loadLibrary("jawt");
+	Library.loadLibrary("swt-awt");
+}
 
 public static Frame new_Frame (final Composite parent) {
 	int handle = parent.embeddedHandle;
@@ -95,6 +99,7 @@ public static Frame new_Frame (final Composite parent) {
 public static Shell new_Shell (Display display, final Canvas parent) {
 	int handle = 0;
 	try {
+		loadLibrary ();
 		handle = getAWTHandle (parent);
 	} catch (Throwable e) {
 		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);
