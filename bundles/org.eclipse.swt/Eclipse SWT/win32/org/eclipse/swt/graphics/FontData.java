@@ -45,12 +45,24 @@ public final class FontData {
 	/**
 	 * A Win32 LOGFONT struct
 	 * (Warning: This field is platform dependent)
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
 	 */
 	public LOGFONT data;
 	
 	/**
 	 * The height of the font data in points
 	 * (Warning: This field is platform dependent)
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
 	 */
 	public int height;
 	

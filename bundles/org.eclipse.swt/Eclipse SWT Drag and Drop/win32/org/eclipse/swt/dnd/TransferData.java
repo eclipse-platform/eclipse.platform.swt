@@ -30,6 +30,12 @@ public class TransferData {
 	/**
 	 * The type is a unique identifier of a system format or user defined format.
 	 * (Warning: This field is platform dependent)
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
 	 */
 	public int type;
 	
@@ -38,6 +44,12 @@ public class TransferData {
 	 * encompass a target device, the aspect, or view of the data, and 
 	 * a storage medium.
 	 * (Warning: This field is platform dependent)
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
 	 */
 	public FORMATETC formatetc;
 	
@@ -45,6 +57,12 @@ public class TransferData {
 	 * The stgmedium structure is a generalized global memory handle used for 
 	 * data transfer operations.
 	 * (Warning: This field is platform dependent)
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
 	 */
 	public STGMEDIUM stgmedium;
 
@@ -52,7 +70,12 @@ public class TransferData {
 	 * The result field contains the result of converting a
 	 * java data type into a platform specific value.
 	 * (Warning: This field is platform dependent)
-	 * 
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
  	 * <p>The value of result is 1 if the conversion was successful.
 	 * The value of result is 0 if the conversion failed.</p>
 	 */
@@ -62,6 +85,12 @@ public class TransferData {
 	 * The pIDataObject is the address of an IDataObject OLE Interface which 
 	 * provides access to the data associated with the transfer.
 	 * (Warning: This field is platform dependent)
+	 * <p>
+	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
+	 * public API. It is marked public only so that it can be shared
+	 * within the packages provided by SWT. It is not available on all
+	 * platforms and should never be accessed from application code.
+	 * </p>
 	 */
 	public int pIDataObject;
 	
