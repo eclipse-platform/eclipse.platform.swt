@@ -22,7 +22,7 @@ import org.eclipse.swt.internal.carbon.OS;
  * below:</p>
  * 
  * <code><pre>
- *     String htmlData = "<b>Hello World</b>";
+ *     String htmlData = "<p>This is a paragraph of text.</p>";
  * </code></pre>
  */
 public class HTMLTransfer extends ByteArrayTransfer {
@@ -43,7 +43,7 @@ public static HTMLTransfer getInstance () {
 }
 
 /**
- * This implementation of <code>javaToNative</code> converts HTML text
+ * This implementation of <code>javaToNative</code> converts HTML-formatted text
  * represented by a java <code>String</code> to a platform specific representation.
  * For additional information see <code>Transfer#javaToNative</code>.
  * 

@@ -333,9 +333,19 @@ public Display (DeviceData data) {
 /**
  * Adds the listener to the collection of listeners who will
  * be notifed when an event of the given type occurs anywhere
- * in this display. When the event does occur, the listener is
+ * in a widget. When the event does occur, the listener is
  * notified by sending it the <code>handleEvent()</code> message.
- *
+ * <p>
+ * Setting the type of an event to <code>SWT.None</code> from
+ * within the <code>handleEvent()</code> method can be used to
+ * change the event type and stop subsequent Java listeners
+ * from running. Because event filters run before other listeners,
+ * event filters can both block other listeners and set arbitrary
+ * fields within an event. For this reason, event filters are both
+ * powerful and dangerous. They should generally be avoided for
+ * performance, debugging and code maintenance reasons.
+ * </p>
+ * 
  * @param eventType the type of event to listen for
  * @param listener the listener which should be notified when the event occurs
  *
@@ -630,6 +640,10 @@ boolean filters (int eventType) {
  * the instance of the <code>Widget</code> subclass which
  * represents it in the currently running application, if
  * such exists, or null if no matching widget can be found.
+ * <p>
+ * <b>IMPORTANT:</b> This method should not be called from
+ * application code. The arguments are platform-specific.
+ * </p>
  *
  * @param handle the handle for the widget
  * @return the SWT widget that the handle represents
@@ -644,6 +658,28 @@ public Widget findWidget (int handle) {
 	return WidgetTable.get (handle);
 }
 
+/**
+ * Given the operating system handle for a widget,
+ * and widget-specific id, returns the instance of
+ * the <code>Widget</code> subclass which represents
+ * the handle/id pair in the currently running application,
+ * if such exists, or null if no matching widget can be found.
+ * <p>
+ * <b>IMPORTANT:</b> This method should not be called from
+ * application code. The arguments are platform-specific.
+ * </p>
+ *
+ * @param handle the handle for the widget
+ * @param id the id for the subwidget (usually an item)
+ * @return the SWT widget that the handle/id pair represents
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
 public Widget findWidget (int handle, int id) {
 	return null;
 }
@@ -1183,9 +1219,10 @@ public Image getSystemImage (int id) {
 }
 
 /**
- * Returns the single instance of the system tray.
+ * Returns the single instance of the system tray or null
+ * when there is no system tray available for the platform.
  *
- * @return the receiver's user-interface thread
+ * @return the system tray or <code>null</code>
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
@@ -1498,11 +1535,11 @@ int inputProc (int data, int rcvid, int message, int size) {
  * @param data the platform specific GC data 
  * @return the platform specific GC handle
  * 
- * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES if a handle could not be obtained for gc creation</li>
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for gc creation</li>
  * </ul>
  */
 public int internal_new_GC (GCData data) {
@@ -1562,8 +1599,8 @@ boolean isValidThread () {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see #setData
- * @see #disposeExec
+ * @see #setData(String, Object)
+ * @see #disposeExec(Runnable)
  */
 public Object getData (String key) {
 	checkDevice ();
@@ -1595,8 +1632,8 @@ public Object getData (String key) {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see #setData
- * @see #disposeExec
+ * @see #setData(Object)
+ * @see #disposeExec(Runnable)
  */
 public Object getData () {
 	checkDevice ();
@@ -1634,7 +1671,7 @@ static boolean isValidClass (Class clazz) {
  * @return point with mapped coordinates 
  * 
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the rectangle is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li> 
  * </ul>
  * @exception SWTException <ul>
@@ -1813,7 +1850,12 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
  * and mouse events. The intent is to enable automated UI
  * testing by simulating the input from the user.  Most
  * SWT applications should never need to call this method.
- * 
+ * <p>
+ * Note that this operation can fail when the operating system
+ * fails to generate the event for any reason.  For example,
+ * this can happen when there is no such key or mouse button
+ * or when the system event queue is full.
+ * </p>
  * <p>
  * <b>Event Types:</b>
  * <p>KeyDown, KeyUp
@@ -1901,6 +1943,7 @@ void postEvent (Event event) {
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_FAILED_EXEC - if an exception occurred while running an inter-thread message</li>
  * </ul>
  *
  * @see #sleep
@@ -2049,7 +2092,7 @@ void releaseDisplay () {
 /**
  * Removes the listener from the collection of listeners who will
  * be notifed when an event of the given type occurs anywhere in
- * this display.
+ * a widget.
  *
  * @param eventType the type of event to listen for
  * @param listener the listener which should no longer be notified when the event occurs
@@ -2218,8 +2261,8 @@ public void setCursorLocation (Point point) {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see #setData
- * @see #disposeExec
+ * @see #getData(String)
+ * @see #disposeExec(Runnable)
  */
 public void setData (String key, Object value) {
 	checkDevice ();
@@ -2289,8 +2332,8 @@ public void setData (String key, Object value) {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see #getData
- * @see #disposeExec
+ * @see #getData()
+ * @see #disposeExec(Runnable)
  */
 public void setData (Object data) {
 	checkDevice ();
@@ -2309,6 +2352,7 @@ public void setData (Object data) {
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_FAILED_EXEC - if an exception occurred while running an inter-thread message</li>
  * </ul>
  */
 public void setSynchronizer (Synchronizer synchronizer) {
@@ -2470,7 +2514,7 @@ static int untranslateKey (int key) {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 
- * @see Control#update
+ * @see Control#update()
  */
 public void update() {
 	checkDevice ();

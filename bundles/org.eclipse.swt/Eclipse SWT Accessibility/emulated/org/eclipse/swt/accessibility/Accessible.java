@@ -60,7 +60,7 @@ public class Accessible {
 
 	/**
 	 * Adds the listener to the collection of listeners who will
-	 * be notifed when an accessible client asks for certain strings,
+	 * be notified when an accessible client asks for certain strings,
 	 * such as name, description, help, or keyboard shortcut. The
 	 * listener is notified by sending it one of the messages defined
 	 * in the <code>AccessibleListener</code> interface.
@@ -84,7 +84,7 @@ public class Accessible {
 	
 	/**
 	 * Removes the listener from the collection of listeners who will
-	 * be notifed when an accessible client asks for certain strings,
+	 * be notified when an accessible client asks for certain strings,
 	 * such as name, description, help, or keyboard shortcut.
 	 *
 	 * @param listener the listener that should no longer be notified when the receiver
@@ -106,7 +106,7 @@ public class Accessible {
 	
 	/**
 	 * Adds the listener to the collection of listeners who will
-	 * be notifed when an accessible client asks for custom control
+	 * be notified when an accessible client asks for custom control
 	 * specific information. The listener is notified by sending it
 	 * one of the messages defined in the <code>AccessibleControlListener</code>
 	 * interface.
@@ -130,7 +130,7 @@ public class Accessible {
 
 	/**
 	 * Removes the listener from the collection of listeners who will
-	 * be notifed when an accessible client asks for custom control
+	 * be notified when an accessible client asks for custom control
 	 * specific information.
 	 *
 	 * @param listener the listener that should no longer be notified when the receiver
@@ -152,7 +152,7 @@ public class Accessible {
 	
 	/**
 	 * Adds the listener to the collection of listeners who will
-	 * be notifed when an accessible client asks for custom text control
+	 * be notified when an accessible client asks for custom text control
 	 * specific information. The listener is notified by sending it
 	 * one of the messages defined in the <code>AccessibleTextListener</code>
 	 * interface.
@@ -178,7 +178,7 @@ public class Accessible {
 
 	/**
 	 * Removes the listener from the collection of listeners who will
-	 * be notifed when an accessible client asks for custom text control
+	 * be notified when an accessible client asks for custom text control
 	 * specific information.
 	 *
 	 * @param listener the listener that should no longer be notified when the receiver

@@ -540,9 +540,6 @@ public String getText () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_CANNOT_GET_TEXT - if the column at index does not exist</li>
- * </ul>
  */
 public String getText (int index) {
 	checkWidget ();
@@ -913,7 +910,7 @@ public void setImage (Image image) {
 }
 
 /**
- * Sets the image for multiple columns in the Table. 
+ * Sets the image for multiple columns in the table. 
  * 
  * @param images the array of new images
  *
@@ -944,6 +941,8 @@ public void setImage (Image [] images) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @deprecated this functionality is not supported on most platforms
  */
 public void setImageIndent (int indent) {
 	checkWidget ();

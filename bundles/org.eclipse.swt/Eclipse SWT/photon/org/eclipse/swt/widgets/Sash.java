@@ -22,7 +22,7 @@ import org.eclipse.swt.events.*;
  * the parent control.
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>HORIZONTAL, VERTICAL</dd>
+ * <dd>HORIZONTAL, VERTICAL, SMOOTH</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection</dd>
  * </dl>
@@ -313,7 +313,7 @@ void processMouse (int info) {
  * Removes the listener from the collection of listeners who will
  * be notified when the control is selected.
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>

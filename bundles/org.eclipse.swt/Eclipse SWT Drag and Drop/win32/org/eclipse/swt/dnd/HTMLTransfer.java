@@ -37,7 +37,7 @@ private HTMLTransfer() {}
 /**
  * Returns the singleton instance of the HTMLTransfer class.
  *
- * @return the singleton instance of `the HTMLTransfer class
+ * @return the singleton instance of the HTMLTransfer class
  */
 public static HTMLTransfer getInstance () {
 	return _instance;

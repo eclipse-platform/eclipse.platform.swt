@@ -566,7 +566,7 @@ public void setImage (Image image) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the array of images is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if one of the images has been disposed</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if one of the images is null or has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

@@ -830,8 +830,8 @@ static Program[] getPrograms(Display display) {
  * @return <code>true</code> if the file is launched, otherwise <code>false</code>
  * 
  * @exception IllegalArgumentException <ul>
- *		<li>ERROR_NULL_ARGUMENT when fileName is null</li>
- *	</ul>
+ *    <li>ERROR_NULL_ARGUMENT when fileName is null</li>
+ * </ul>
  */
 public static boolean launch(String fileName) {
 	return launch(Display.getCurrent(), fileName);
@@ -887,8 +887,8 @@ public boolean equals(Object other) {
  * @return <code>true</code> if the file is launched, otherwise <code>false</code>
  * 
  * @exception IllegalArgumentException <ul>
- *		<li>ERROR_NULL_ARGUMENT when fileName is null</li>
- *	</ul>
+ *    <li>ERROR_NULL_ARGUMENT when fileName is null</li>
+ * </ul>
  */
 public boolean execute(String fileName) {
 	if (fileName == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);

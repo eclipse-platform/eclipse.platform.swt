@@ -84,9 +84,6 @@ public List (Composite parent, int style) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_ITEM_NOT_ADDED - if the operation fails because of an operating system failure</li>
- * </ul>
  *
  * @see #add(String,int)
  */
@@ -120,9 +117,6 @@ public void add (String string) {
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_ITEM_NOT_ADDED - if the operation fails because of an operating system failure</li>
  * </ul>
  *
  * @see #add(String)
@@ -386,9 +380,6 @@ GdkColor getForegroundColor () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_CANNOT_GET_ITEM - if the operation fails because of an operating system failure</li>
- * </ul>
  */
 public String getItem (int index) {
 	checkWidget();
@@ -417,9 +408,6 @@ public String getItem (int index) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_CANNOT_GET_COUNT - if the operation fails because of an operating system failure</li>
- * </ul>
  */
 public int getItemCount () {
 	checkWidget();
@@ -435,9 +423,6 @@ public int getItemCount () {
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_CANNOT_GET_ITEM_HEIGHT - if the operation fails because of an operating system failure</li>
  * </ul>
  */
 public int getItemHeight () {
@@ -473,10 +458,6 @@ public int getItemHeight () {
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_CANNOT_GET_ITEM - if the operation fails because of an operating system failure while getting an item</li>
- *    <li>ERROR_CANNOT_GET_COUNT - if the operation fails because of an operating system failure while getting the item count</li>
  * </ul>
  */
 public String [] getItems () {
@@ -515,10 +496,6 @@ public String [] getItems () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_CANNOT_GET_SELECTION - if the operation fails because of an operating system failure while getting the selection</li>
- *    <li>ERROR_CANNOT_GET_ITEM - if the operation fails because of an operating system failure while getting an item</li>
- * </ul>
  */
 public String [] getSelection () {
 	checkWidget();
@@ -539,9 +516,6 @@ public String [] getSelection () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_CANNOT_GET_COUNT - if the operation fails because of an operating system failure</li>
- * </ul>
  */
 public int getSelectionCount () {
 	checkWidget();
@@ -561,9 +535,6 @@ public int getSelectionCount () {
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_CANNOT_GET_SELECTION - if the operation fails because of an operating system failure</li>
  * </ul>
  */
 public int getSelectionIndex () {
@@ -590,9 +561,6 @@ public int getSelectionIndex () {
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_CANNOT_GET_SELECTION - if the operation fails because of an operating system failure</li>
  * </ul>
  */
 public int [] getSelectionIndices () {
@@ -771,10 +739,6 @@ public int indexOf (String string) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_CANNOT_GET_COUNT - if the operation fails because of an operating system failure while getting the item count</li>
- *    <li>ERROR_CANNOT_GET_ITEM - if the operation fails because of an operating system failure while getting an item</li>
- * </ul>
  */
 public int indexOf (String string, int start) {
 	checkWidget();
@@ -838,9 +802,6 @@ void releaseWidget () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_ITEM_NOT_REMOVED - if the operation fails because of an operating system failure</li>
- * </ul>
  */
 public void remove (int index) {
 	checkWidget();
@@ -870,9 +831,6 @@ public void remove (int index) {
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_ITEM_NOT_REMOVED - if the operation fails because of an operating system failure</li>
  * </ul>
  */
 public void remove (int start, int end) {
@@ -908,9 +866,6 @@ public void remove (int start, int end) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_ITEM_NOT_REMOVED - if the operation fails because of an operating system failure</li>
- * </ul>
  */
 public void remove (String string) {
 	checkWidget();
@@ -933,9 +888,6 @@ public void remove (String string) {
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_ITEM_NOT_REMOVED - if the operation fails because of an operating system failure</li>
  * </ul>
  */
 public void remove (int [] indices) {
@@ -1216,10 +1168,6 @@ void setForegroundColor (GdkColor color) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_ITEM_NOT_REMOVED - if the remove operation fails because of an operating system failure</li>
- *    <li>ERROR_ITEM_NOT_ADDED - if the add operation fails because of an operating system failure</li>
- * </ul>
  */
 public void setItem (int index, String string) {
 	checkWidget();
@@ -1246,9 +1194,6 @@ public void setItem (int index, String string) {
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_ITEM_NOT_ADDED - if the operation fails because of an operating system failure</li>
  * </ul>
  */
 public void setItems (String [] items) {

@@ -18,10 +18,12 @@ import org.eclipse.swt.internal.photon.OS;
  * for converting text in HTML format represented as a java <code>String</code> 
  * to a platform specific representation of the data and vice versa.  See 
  * <code>Transfer</code> for additional information.
+ * 
+ * <p>An example of a java <code>String</code> containing HTML text is shown 
  * below:</p>
  * 
  * <code><pre>
- *     String htmlData = "<b>Hello World</b>";
+ *     String htmlData = "<p>This is a paragraph of text.</p>";
  * </code></pre>
  */
 public class HTMLTransfer extends ByteArrayTransfer {
@@ -41,7 +43,7 @@ public static HTMLTransfer getInstance () {
 	return _instance;
 }
 /**
- * This implementation of <code>javaToNative</code> converts HTML text
+ * This implementation of <code>javaToNative</code> converts HTML-formatted text
  * represented by a java <code>String</code> to a platform specific representation.
  * For additional information see <code>Transfer#javaToNative</code>.
  * 

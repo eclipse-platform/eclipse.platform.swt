@@ -373,6 +373,7 @@ boolean forceFocus (int /*long*/ focusHandle) {
 
 /**
  * Returns an array containing the receiver's children.
+ * Children are returned in the order that they are drawn.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of children, so modifying the array will
@@ -380,6 +381,9 @@ boolean forceFocus (int /*long*/ focusHandle) {
  * </p>
  *
  * @return an array of children
+ * 
+ * @see Control#moveAbove
+ * @see Control#moveBelow
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -995,7 +999,7 @@ public void setLayout (Layout layout) {
  * </ul>
  * 
  * @see #layout(boolean)
- * @see #layout(Control)
+ * @see #layout(Control[])
  *
  * @since 3.1
  */

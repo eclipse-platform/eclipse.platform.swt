@@ -1008,9 +1008,10 @@ public void internal_dispose_GC (int phGC, GCData data) {
 
 /**
  * Returns <code>true</code> if the receiver is enabled and all
- * of the receiver's ancestors are enabled, and <code>false</code>
- * otherwise. A disabled control is typically not selectable from the
- * user interface and draws with an inactive or "grayed" look.
+ * ancestors up to and including the receiver's nearest ancestor
+ * shell are enabled.  Otherwise, <code>false</code> is returned.
+ * A disabled control is typically not selectable from the user
+ * interface and draws with an inactive or "grayed" look.
  *
  * @return the receiver's enabled state
  *
@@ -1117,8 +1118,8 @@ boolean isTabItem () {
 
 /**
  * Returns <code>true</code> if the receiver is visible and all
- * of the receiver's ancestors are visible and <code>false</code>
- * otherwise.
+ * ancestors up to and including the receiver's nearest ancestor
+ * shell are visible. Otherwise, <code>false</code> is returned.
  *
  * @return the receiver's visibility state
  *
@@ -1159,7 +1160,8 @@ Decorations menuShell () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
- * @see #moveBelow
+ * @see Control#moveBelow
+ * @see Composite#getChildren
  */
 public void moveAbove (Control control) {
 	checkWidget();
@@ -1192,7 +1194,8 @@ public void moveAbove (Control control) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
- * @see #moveAbove
+ * @see Control#moveAbove
+ * @see Composite#getChildren
  */
 public void moveBelow (Control control) {
 	checkWidget();
@@ -1672,7 +1675,7 @@ public void redraw (int x, int y, int width, int height, boolean allChildren) {
  * Removes the listener from the collection of listeners who will
  * be notified when the control is moved or resized.
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -1697,7 +1700,7 @@ public void removeControlListener (ControlListener listener) {
  * Removes the listener from the collection of listeners who will
  * be notified when the control gains or loses focus.
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -1722,7 +1725,7 @@ public void removeFocusListener(FocusListener listener) {
  * Removes the listener from the collection of listeners who will
  * be notified when the help events are generated for the control.
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -1746,7 +1749,7 @@ public void removeHelpListener (HelpListener listener) {
  * Removes the listener from the collection of listeners who will
  * be notified when keys are pressed and released on the system keyboard.
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -1771,7 +1774,7 @@ public void removeKeyListener(KeyListener listener) {
  * Removes the listener from the collection of listeners who will
  * be notified when the mouse passes or hovers over controls.
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -1797,7 +1800,7 @@ public void removeMouseTrackListener(MouseTrackListener listener) {
  * Removes the listener from the collection of listeners who will
  * be notified when mouse buttons are pressed and released.
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -1823,7 +1826,7 @@ public void removeMouseListener (MouseListener listener) {
  * Removes the listener from the collection of listeners who will
  * be notified when the mouse moves.
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -1847,7 +1850,7 @@ public void removeMouseMoveListener(MouseMoveListener listener) {
  * Removes the listener from the collection of listeners who will
  * be notified when the receiver needs to be painted.
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -1871,7 +1874,7 @@ public void removePaintListener(PaintListener listener) {
  * Removes the listener from the collection of listeners who will
  * be notified when traversal events occur.
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -2308,9 +2311,9 @@ public void setMenu (Menu menu) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
  * </ul>
- * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *	</ul>
  */
 public boolean setParent (Composite parent) {
@@ -2362,7 +2365,8 @@ boolean setRadioSelection (boolean value) {
  * can occur in the receiver until the flag is set to true.
  * Graphics operations that occurred while the flag was
  * <code>false</code> are lost. When the flag is set to <code>true</code>,
- * the entire widget is marked as needing to be redrawn.
+ * the entire widget is marked as needing to be redrawn.  Nested calls
+ * to this method are stacked.
  * <p>
  * Note: This operation is a hint and may not be supported on some
  * platforms or for some widgets.

@@ -13,7 +13,7 @@ package org.eclipse.swt.dnd;
 import org.eclipse.swt.internal.gtk.*;
 
 /**
- * The class <code>er</code> provides a platform specific mechanism 
+ * The class <code>FileTransfer</code> provides a platform specific mechanism 
  * for converting a list of files represented as a java <code>String[]</code> to a 
  * platform specific representation of the data and vice versa.  
  * Each <code>String</code> in the array contains the absolute path for a single 

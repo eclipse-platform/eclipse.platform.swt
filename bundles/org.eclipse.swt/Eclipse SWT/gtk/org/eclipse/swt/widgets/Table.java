@@ -20,7 +20,7 @@ import org.eclipse.swt.events.*;
 /** 
  * Instances of this class implement a selectable user interface
  * object that displays a list of images and strings and issue
- * notificiation when selected.
+ * notification when selected.
  * <p>
  * The item children that may be added to instances of this class
  * must be of type <code>TableItem</code>.
@@ -218,7 +218,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 /**
  * Clears the item at the given zero-relative index in the receiver.
- * The text, icon and other attribues of the item are set to the default
+ * The text, icon and other attributes of the item are set to the default
  * value.  If the table was created with the SWT.VIRTUAL style, these
  * attributes are requested again as needed.
  *
@@ -265,7 +265,7 @@ public void clear (int index) {
  * </ul>
  * 
  * @see SWT#VIRTUAL
- * @see SWT.SetData
+ * @see SWT#SetData
  * 
  * @since 3.0
  */
@@ -303,7 +303,7 @@ public void clear (int start, int end) {
  * </ul>
  * 
  * @see SWT#VIRTUAL
- * @see SWT.SetData
+ * @see SWT#SetData
  * 
  * @since 3.0
  */
@@ -334,7 +334,7 @@ public void clear (int [] indices) {
  * </ul>
  * 
  * @see SWT#VIRTUAL
- * @see SWT.SetData
+ * @see SWT#SetData
  * 
  * @since 3.0
  */
@@ -865,7 +865,7 @@ public TableColumn getColumn (int index) {
  * Returns the number of columns contained in the receiver.
  * If no <code>TableColumn</code>s were created by the programmer,
  * this value is zero, despite the fact that visually, one column
- * of items is may be visible. This occurs when the programmer uses
+ * of items may be visible. This occurs when the programmer uses
  * the table like a list, adding items but never creating a column.
  *
  * @return the number of columns
@@ -873,9 +873,6 @@ public TableColumn getColumn (int index) {
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_CANNOT_GET_COUNT - if the operation fails because of an operating system failure</li>
  * </ul>
  */
 public int getColumnCount () {
@@ -902,7 +899,7 @@ int /*long*/[] getColumnTypes (int columnCount) {
 	return types;
 }
 
- /**
+/**
  * Returns an array of zero-relative integers that map
  * the creation order of the receiver's items to the
  * order in which they are currently being displayed.
@@ -922,6 +919,11 @@ int /*long*/[] getColumnTypes (int columnCount) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see Table#setColumnOrder(int[])
+ * @see TableColumn#getMoveable()
+ * @see TableColumn#setMoveable(boolean)
+ * @see SWT#Move
  * 
  * @since 3.1
  */
@@ -1734,9 +1736,6 @@ void releaseWidget () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_ITEM_NOT_REMOVED - if the operation fails because of an operating system failure</li>
- * </ul>
  */
 public void remove (int index) {
 	checkWidget();
@@ -1774,9 +1773,6 @@ public void remove (int index) {
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_ITEM_NOT_REMOVED - if the operation fails because of an operating system failure</li>
  * </ul>
  */
 public void remove (int start, int end) {
@@ -1816,9 +1812,6 @@ public void remove (int start, int end) {
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_ITEM_NOT_REMOVED - if the operation fails because of an operating system failure</li>
  * </ul>
  */
 public void remove (int [] indices) {
@@ -2134,7 +2127,7 @@ boolean setCellData(int /*long*/ tree_model, int /*long*/ iter) {
  * in terms of the zero-relative ordering of when the items
  * were added.
  *
- * @param itemOrder the new order to display the items
+ * @param order the new order to display the items
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -2144,7 +2137,12 @@ boolean setCellData(int /*long*/ tree_model, int /*long*/ iter) {
  *    <li>ERROR_NULL_ARGUMENT - if the item order is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the item order is not the same length as the number of items</li>
  * </ul>
- *
+ * 
+ * @see Table#getColumnOrder()
+ * @see TableColumn#getMoveable()
+ * @see TableColumn#setMoveable(boolean)
+ * @see SWT#Move
+ * 
  * @since 3.1
  */
 public void setColumnOrder (int [] order) {

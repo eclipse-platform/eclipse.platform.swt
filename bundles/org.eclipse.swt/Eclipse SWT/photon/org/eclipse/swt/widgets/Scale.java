@@ -221,7 +221,7 @@ public int getPageIncrement () {
 }
 
 /**
- * Returns the single <em>selection</em> that is the receiver's position.
+ * Returns the <em>selection</em>, which is the receiver's position.
  *
  * @return the selection
  *
@@ -347,8 +347,8 @@ public void setPageIncrement (int value) {
 }
 
 /**
- * Sets the single <em>selection</em> that is the receiver's
- * value to the argument which must be greater than or equal
+ * Sets the <em>selection</em>, which is the receiver's
+ * value, to the argument which must be greater than or equal
  * to zero.
  *
  * @param value the new selection (must be zero or greater)

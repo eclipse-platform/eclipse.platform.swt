@@ -63,11 +63,11 @@ public Region () {
  *
  * @param device the device on which to allocate the region
  *
-* @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES if a handle could not be obtained for region creation</li>
- * </ul>
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for region creation</li>
  * </ul>
  *
  * @see #dispose
@@ -133,9 +133,13 @@ public void add (Rectangle rect) {
  * Adds the given rectangle to the collection of polygons
  * the receiver maintains to describe its area.
  *
- * @param rect the rectangle to merge with the receiver
+ * @param x the x coordinate of the rectangle
+ * @param y the y coordinate of the rectangle
+ * @param width the width coordinate of the rectangle
+ * @param height the height coordinate of the rectangle
  *
  * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the rectangle's width or height is negative</li>
  * </ul>
  * @exception SWTException <ul>
@@ -337,7 +341,10 @@ public void intersect (Rectangle rect) {
  * Intersects the given rectangle to the collection of polygons
  * the receiver maintains to describe its area.
  *
- * @param rect the rectangle to intersect with the receiver
+ * @param x the x coordinate of the rectangle
+ * @param y the y coordinate of the rectangle
+ * @param width the width coordinate of the rectangle
+ * @param height the height coordinate of the rectangle
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the rectangle's width or height is negative</li>
@@ -532,9 +539,13 @@ public void subtract (Rectangle rect) {
  * Subtracts the given rectangle from the collection of polygons
  * the receiver maintains to describe its area.
  *
- * @param rect the rectangle to subtract from the receiver
+ * @param x the x coordinate of the rectangle
+ * @param y the y coordinate of the rectangle
+ * @param width the width coordinate of the rectangle
+ * @param height the height coordinate of the rectangle
  *
  * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the rectangle's width or height is negative</li>
  * </ul>
  * @exception SWTException <ul>
@@ -612,7 +623,7 @@ public void translate (int x, int y) {
  * Translate all of the polygons the receiver maintains to describe
  * its area by the specified point.
  *
- * @param point the point to translate
+ * @param pt the point to translate
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>

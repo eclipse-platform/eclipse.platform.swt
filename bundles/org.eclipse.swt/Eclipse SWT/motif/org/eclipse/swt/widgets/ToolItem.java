@@ -524,7 +524,7 @@ void releaseWidget () {
  * Removes the listener from the collection of listeners who will
  * be notified when the control is selected.
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -803,7 +803,7 @@ void setVisible (boolean visible) {
 	OS.XtSetMappedWhenManaged (handle, visible);
 }
 /**
- * Sets the width of the receiver.
+ * Sets the width of the receiver, for <code>SEPARATOR</code> ToolItems.
  *
  * @param width the new width
  *

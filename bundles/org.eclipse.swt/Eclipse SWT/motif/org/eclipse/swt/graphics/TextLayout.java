@@ -276,6 +276,9 @@ public void dispose () {
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the gc is null</li>
+ * </ul>
  */
 public void draw (GC gc, int x, int y) {
 	draw(gc, x, y, -1, -1, null, null);
@@ -295,6 +298,9 @@ public void draw (GC gc, int x, int y) {
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the gc is null</li>
  * </ul>
  */
 public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground) {
@@ -869,6 +875,7 @@ public int getNextOffset (int offset, int movement) {
  *  
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the trailing length is less than <code>1</code></li>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
@@ -1262,7 +1269,7 @@ public void setAlignment (int alignment) {
  * </ul>
  * 
  * @see #setDescent(int)
- * @see #getLineMetrics()
+ * @see #getLineMetrics(int)
  */
 public void setAscent (int ascent) {
 	checkLayout();
@@ -1288,7 +1295,7 @@ public void setAscent (int ascent) {
  * </ul>
  * 
  * @see #setAscent(int)
- * @see #getLineMetrics()
+ * @see #getLineMetrics(int)
  */
 public void setDescent (int descent) {
 	checkLayout();

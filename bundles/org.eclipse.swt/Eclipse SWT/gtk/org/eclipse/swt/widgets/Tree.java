@@ -30,7 +30,7 @@ import org.eclipse.swt.events.*;
  * </p><p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>SINGLE, MULTI, CHECK</dd>
+ * <dd>SINGLE, MULTI, CHECK, FULL_SELECTION</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection, DefaultSelection, Collapse, Expand</dd>
  * </dl>
@@ -677,10 +677,10 @@ GdkColor getBackgroundColor () {
 /**
  * Returns the column at the given, zero-relative index in the
  * receiver. Throws an exception if the index is out of range.
- * If no <code>TableColumn</code>s were created by the programmer,
+ * If no <code>TreeColumn</code>s were created by the programmer,
  * this method will throw <code>ERROR_INVALID_RANGE</code> despite
- * the fact that a single column of data may be visible in the table.
- * This occurs when the programmer uses the table like a list, adding
+ * the fact that a single column of data may be visible in the tree.
+ * This occurs when the programmer uses the tree like a list, adding
  * items but never creating a column.
  *
  * @param index the index of the column to return
@@ -693,7 +693,7 @@ GdkColor getBackgroundColor () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- *
+ * 
  * @since 3.1
  */
 public TreeColumn getColumn (int index) {
@@ -704,10 +704,10 @@ public TreeColumn getColumn (int index) {
 
 /**
  * Returns the number of columns contained in the receiver.
- * If no <code>TableColumn</code>s were created by the programmer,
+ * If no <code>TreeColumn</code>s were created by the programmer,
  * this value is zero, despite the fact that visually, one column
- * of items is may be visible. This occurs when the programmer uses
- * the table like a list, adding items but never creating a column.
+ * of items may be visible. This occurs when the programmer uses
+ * the tree like a list, adding items but never creating a column.
  *
  * @return the number of columns
  *
@@ -715,10 +715,7 @@ public TreeColumn getColumn (int index) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_CANNOT_GET_COUNT - if the operation fails because of an operating system failure</li>
- * </ul>
- *
+ * 
  * @since 3.1
  */
 public int getColumnCount () {
@@ -747,11 +744,11 @@ int /*long*/[] getColumnTypes (int columnCount) {
 }
 
 /**
- * Returns an array of <code>TableColumn</code>s which are the
- * columns in the receiver. If no <code>TableColumn</code>s were
+ * Returns an array of <code>TreeColumn</code>s which are the
+ * columns in the receiver. If no <code>TreeColumn</code>s were
  * created by the programmer, the array is empty, despite the fact
  * that visually, one column of items may be visible. This occurs
- * when the programmer uses the table like a list, adding items but
+ * when the programmer uses the tree like a list, adding items but
  * never creating a column.
  * <p>
  * Note: This is not the actual structure used by the receiver
@@ -765,7 +762,7 @@ int /*long*/[] getColumnTypes (int columnCount) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- *
+ * 
  * @since 3.1
  */
 public TreeColumn [] getColumns () {
@@ -804,7 +801,7 @@ GdkColor getForegroundColor () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- *
+ * 
  * @since 3.1
  */
 public int getGridLineWidth () {
@@ -822,7 +819,7 @@ public int getGridLineWidth () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
- * @since 3.1
+ * @since 3.1 
  */
 public int getHeaderHeight () {
 	checkWidget ();
@@ -853,7 +850,7 @@ public int getHeaderHeight () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- *
+ * 
  * @since 3.1
  */
 public boolean getHeaderVisible () {
@@ -1027,7 +1024,7 @@ TreeItem [] getItems (int /*long*/ parent) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- *
+ * 
  * @since 3.1
  */
 public boolean getLinesVisible() {
@@ -1734,8 +1731,8 @@ void setForegroundColor (GdkColor color) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- *
- * @since3.1
+ * 
+ * @since 3.1
  */
 public void setHeaderVisible (boolean show) {
 	checkWidget ();
@@ -1757,7 +1754,7 @@ public void setHeaderVisible (boolean show) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- *
+ * 
  * @since 3.1
  */
 public void setLinesVisible (boolean show) {

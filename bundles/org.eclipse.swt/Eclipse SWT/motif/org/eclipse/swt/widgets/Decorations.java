@@ -274,6 +274,33 @@ public Image getImage () {
 	checkWidget();
 	return image;
 }
+/**
+ * Returns the receiver's images if they had previously been 
+ * set using <code>setImages()</code>. Images are typically
+ * displayed by the window manager when the instance is
+ * marked as iconified, and may also be displayed somewhere
+ * in the trim when the instance is in normal or maximized
+ * states. Depending where the icon is displayed, the platform
+ * chooses the icon with the "best" size. It is expected that
+ * the array will contain the same icon rendered at different
+ * resolutions.
+ * 
+ * <p>
+ * Note: This method will return an empty array if called before
+ * <code>setImages()</code> is called. It does not provide
+ * access to a window manager provided, "default" image
+ * even if one exists.
+ * </p>
+ * 
+ * @return the images
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
 public Image [] getImages () {
 	checkWidget ();
 	if (images == null) return new Image [0];
@@ -495,7 +522,7 @@ public void setImage (Image image) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the array of images is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if one of the images has been disposed</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if one of the images is null or has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

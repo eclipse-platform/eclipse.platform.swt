@@ -18,7 +18,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
 /**
- * Instances of this class represent a column in a table widget.
+ * Instances of this class represent a column in a tree widget.
  *  <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>LEFT, RIGHT, CENTER</dd>
@@ -30,6 +30,8 @@ import org.eclipse.swt.events.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ * 
+ * @since 3.1
  */
 public class TreeColumn extends Item {
 	int /*long*/ labelHandle, imageHandle, buttonHandle;
@@ -39,7 +41,7 @@ public class TreeColumn extends Item {
 
 /**
  * Constructs a new instance of this class given its parent
- * (which must be a <code>Table</code>) and a style value
+ * (which must be a <code>Tree</code>) and a style value
  * describing its behavior and appearance. The item is added
  * to the end of the items maintained by its parent.
  * <p>
@@ -77,7 +79,7 @@ public TreeColumn (Tree parent, int style) {
 
 /**
  * Constructs a new instance of this class given its parent
- * (which must be a <code>Table</code>), a style value
+ * (which must be a <code>Tree</code>), a style value
  * describing its behavior and appearance, and the index
  * at which to place it in the items maintained by its parent.
  * <p>
@@ -216,7 +218,7 @@ public int getAlignment () {
 }
 
 /**
- * Returns the receiver's parent, which must be a <code>Table</code>.
+ * Returns the receiver's parent, which must be a <code>Tree</code>.
  *
  * @return the receiver's parent
  *
@@ -376,7 +378,7 @@ void releaseWidget () {
  * Removes the listener from the collection of listeners who will
  * be notified when the control is moved or resized.
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -401,7 +403,7 @@ public void removeControlListener (ControlListener listener) {
  * Removes the listener from the collection of listeners who will
  * be notified when the control is selected.
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>

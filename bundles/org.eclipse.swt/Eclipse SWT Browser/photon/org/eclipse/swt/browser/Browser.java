@@ -176,10 +176,14 @@ static int webProc(int handle, int data, int info) {
 }
 
 /**	 
- * Adds the listener to receive events.
+ * Adds the listener to the collection of listeners who will be
+ * notified when the window hosting the receiver should be closed.
  * <p>
+ * This notification occurs when a javascript command such as
+ * <code>window.close</code> gets executed by a <code>Browser</code>.
+ * </p>
  *
- * @param listener the listener
+ * @param listener the listener which should be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -202,10 +206,15 @@ public void addCloseWindowListener(CloseWindowListener listener) {
 }
 
 /**	 
- * Adds the listener to receive events.
+ * Adds the listener to the collection of listeners who will be
+ * notified when the current location is changed or about to be changed.
  * <p>
+ * This notification typically occurs when the application navigates
+ * to a new location with {@link #setUrl(String)} or when the user
+ * activates a hyperlink.
+ * </p>
  *
- * @param listener the listener
+ * @param listener the listener which should be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -228,10 +237,14 @@ public void addLocationListener(LocationListener listener) {
 }
 
 /**	 
- * Adds the listener to receive events.
+ * Adds the listener to the collection of listeners who will be
+ * notified when a new window needs to be created.
  * <p>
+ * This notification occurs when a javascript command such as
+ * <code>window.open</code> gets executed by a <code>Browser</code>.
+ * </p>
  *
- * @param listener the listener
+ * @param listener the listener which should be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -254,10 +267,11 @@ public void addOpenWindowListener(OpenWindowListener listener) {
 }
 
 /**	 
- * Adds the listener to receive events.
- * <p>
+ * Adds the listener to the collection of listeners who will be
+ * notified when a progress is made during the loading of the current 
+ * URL or when the loading of the current URL has been completed.
  *
- * @param listener the listener
+ * @param listener the listener which should be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -280,10 +294,14 @@ public void addProgressListener(ProgressListener listener) {
 }
 
 /**	 
- * Adds the listener to receive events.
+ * Adds the listener to the collection of listeners who will be
+ * notified when the status text is changed.
  * <p>
+ * The status text is typically displayed in the status bar of
+ * a browser application.
+ * </p>
  *
- * @param listener the listener
+ * @param listener the listener which should be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -306,10 +324,11 @@ public void addStatusTextListener(StatusTextListener listener) {
 }
 
 /**	 
- * Adds the listener to receive events.
- * <p>
+ * Adds the listener to the collection of listeners who will be
+ * notified when the title of the current document is available
+ * or has changed.
  *
- * @param listener the listener
+ * @param listener the listener which should be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -332,10 +351,11 @@ public void addTitleListener(TitleListener listener) {
 }
 
 /**	 
- * Adds the listener to receive events.
- * <p>
+ * Adds the listener to the collection of listeners who will be
+ * notified when a window hosting the receiver needs to be displayed
+ * or hidden.
  *
- * @param listener the listener
+ * @param listener the listener which should be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -407,6 +427,28 @@ protected void checkSubclass() {
 	}
 }
 
+/**
+ * Execute the specified script.
+ *
+ * <p>
+ * Execute a script containing javascript commands in the context of the current document. 
+ * 
+ * @param script the script with javascript commands
+ *  
+ * @return <code>true</code> if the operation was successful and <code>false</code> otherwise
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the script is null</li>
+ * </ul>
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * </ul>
+ *
+ * WARNING 3.1 API STILL UNDER CONSTRUCTION
+ * @since 3.1
+ */
 public boolean execute(String script) {
 	checkWidget();
 	if (script == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -766,9 +808,10 @@ public void refresh() {
 }
 
 /**	 
- * Removes the listener.
+ * Removes the listener from the collection of listeners who will
+ * be notified when the window hosting the receiver should be closed.
  *
- * @param listener the listener
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -804,9 +847,10 @@ public void removeCloseWindowListener(CloseWindowListener listener) {
 }
 
 /**	 
- * Removes the listener.
+ * Removes the listener from the collection of listeners who will
+ * be notified when the current location is changed or about to be changed.
  *
- * @param listener the listener
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -842,9 +886,10 @@ public void removeLocationListener(LocationListener listener) {
 }
 
 /**	 
- * Removes the listener.
+ * Removes the listener from the collection of listeners who will
+ * be notified when a new window needs to be created.
  *
- * @param listener the listener
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -880,9 +925,11 @@ public void removeOpenWindowListener(OpenWindowListener listener) {
 }
 
 /**	 
- * Removes the listener.
+ * Removes the listener from the collection of listeners who will
+ * be notified when a progress is made during the loading of the current 
+ * URL or when the loading of the current URL has been completed.
  *
- * @param listener the listener
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -918,9 +965,10 @@ public void removeProgressListener(ProgressListener listener) {
 }
 
 /**	 
- * Removes the listener.
+ * Removes the listener from the collection of listeners who will
+ * be notified when the status text is changed.
  *
- * @param listener the listener
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -956,9 +1004,11 @@ public void removeStatusTextListener(StatusTextListener listener) {
 }
 
 /**	 
- * Removes the listener.
+ * Removes the listener from the collection of listeners who will
+ * be notified when the title of the current document is available
+ * or has changed.
  *
- * @param listener the listener
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -994,9 +1044,11 @@ public void removeTitleListener(TitleListener listener) {
 }
 
 /**	 
- * Removes the listener.
+ * Removes the listener from the collection of listeners who will
+ * be notified when a window hosting the receiver needs to be displayed
+ * or hidden.
  *
- * @param listener the listener
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -1033,6 +1085,11 @@ public void removeVisibilityWindowListener(VisibilityWindowListener listener) {
 
 /**
  * Renders HTML.
+ * 
+ * <p>
+ * The html parameter is Unicode encoded since it is a java <code>String</code>.
+ * As a result, the HTML meta tag charset should not be set. The charset is implied
+ * by the <code>String</code> itself.
  * 
  * @param html the HTML content to be rendered
  *

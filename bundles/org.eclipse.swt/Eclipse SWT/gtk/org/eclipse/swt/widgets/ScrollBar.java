@@ -101,7 +101,6 @@ ScrollBar (Scrollable parent, int style) {
  * interface.
  * <p>
  * When <code>widgetSelected</code> is called, the event object detail field contains one of the following values:
- * <code>0</code> - for the end of a drag.
  * <code>SWT.DRAG</code>.
  * <code>SWT.HOME</code>.
  * <code>SWT.END</code>.

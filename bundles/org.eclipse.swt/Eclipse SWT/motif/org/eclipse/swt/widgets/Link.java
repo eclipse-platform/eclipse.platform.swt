@@ -16,6 +16,20 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
 /**
+ * Instances of this class represent a selectable
+ * user interface object that displays a text with 
+ * links.
+ * <p>
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dt><b>Events:</b></dt>
+ * <dd>Selection</dd>
+ * </dl>
+ * <p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
+ * 
+ * @since 3.1
  */
 public class Link extends Control {
 	String text;
@@ -391,6 +405,15 @@ void setForegroundPixel (int pixel) {
 /**
  * Sets the receiver's text.
  * <p>
+ * The string can contain both regular text and hyperlinks.  A hyperlink
+ * is delimited by an anchor tag, &lt;A&gt; and &lt;/A&gt;.  Within an
+ * anchor, a single HREF attribute is supported.  When a hyperlink is
+ * selected, the text field of the selection event contains either the
+ * text of hyperlink or the value of the HREF, if one was specified.
+ * In the rare case of identical hyperlinks within the same string, the
+ * HREF tag can be used to distinguish between them.  The string may
+ * include the mnemonic character and line delimiters.
+ * </p>
  * 
  * @param string the new text
  *

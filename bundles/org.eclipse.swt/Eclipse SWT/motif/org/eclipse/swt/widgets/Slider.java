@@ -238,7 +238,7 @@ public int getPageIncrement () {
 	return argList [1];
 }
 /**
- * Returns the single <em>selection</em> that is the receiver's value.
+ * Returns the <em>selection</em>, which is the receiver's value.
  *
  * @return the selection
  *
@@ -416,8 +416,8 @@ public void setPageIncrement (int value) {
 	OS.XtSetValues (handle, argList, argList.length / 2);
 }
 /**
- * Sets the single <em>selection</em> that is the receiver's
- * value to the argument which must be greater than or equal
+ * Sets the <em>selection</em>, which is the receiver's
+ * value, to the argument which must be greater than or equal
  * to zero.
  *
  * @param value the new selection (must be zero or greater)

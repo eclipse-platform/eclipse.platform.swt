@@ -136,10 +136,12 @@ public void dispose () {
 }
 
 /**
- * Retrieve the data of the specified type currently available on the system clipboard.  Refer to the 
- * specific subclass of <code>Tramsfer</code> to determine the type of object returned.
+ * Retrieve the data of the specified type currently available on the system 
+ * clipboard.  Refer to the specific subclass of <code>Transfer</code> to 
+ * determine the type of object returned.
  * 
- * <p>The following snippet shows text and RTF text being retrieved from the clipboard:</p>
+ * <p>The following snippet shows text and RTF text being retrieved from the 
+ * clipboard:</p>
  * 
  *    <code><pre>
  *    Clipboard clipboard = new Clipboard(display);
@@ -152,10 +154,7 @@ public void dispose () {
  *    clipboard.dispose();
  *    </code></pre>
  * 
- * @see Transfer
- * 
  * @param transfer the transfer agent for the type of data being requested
- * 
  * @return the data obtained from the clipboard or null if no data of this type is available
  * 
  * @exception SWTException <ul>
@@ -165,6 +164,8 @@ public void dispose () {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if transfer is null</li>
  * </ul>
+ * 
+ * @see Transfer
  */
 public Object getContents(Transfer transfer) {
 	checkWidget();
@@ -191,31 +192,36 @@ public boolean isDisposed () {
 }
 
 /**
- * Place data of the specified type on the system clipboard.  More than one type of
- * data can be placed on the system clipboard at the same time.  Setting the data 
- * clears any previous data of the same type from the system clipboard and also
- * clears data of any other type currently on the system clipboard.
+ * Place data of the specified type on the system clipboard.  More than one type
+ * of data can be placed on the system clipboard at the same time.  Setting the
+ * data clears any previous data from the system clipboard, regardless of type.
  * 
  * <p>NOTE: On some platforms, the data is immediately copied to the system
- * clipboard but on other platforms it is provided upon request.  As a result, if the 
- * application modifes the data object it has set on the clipboard, that modification 
- * may or may not be available when the data is subsequently requested.</p>
+ * clipboard but on other platforms it is provided upon request.  As a result,
+ * if the application modifes the data object it has set on the clipboard, that 
+ * modification may or may not be available when the data is subsequently 
+ * requested.</p>
  *
- * <p>The following snippet shows text and RTF text being set on the clipboard:</p>
+ * <p>The following snippet shows text and RTF text being set on the copy/paste
+ * clipboard:
+ * </p>
  * 
  * <code><pre>
  * 	Clipboard clipboard = new Clipboard(display);
- *		String textData = "Hello World";
- *		String rtfData = "{\\rtf1\\b\\i Hello World}";
- *		TextTransfer textTransfer = TextTransfer.getInstance();
- *		RTFTransfer rtfTransfer = RTFTransfer.getInstance();
- *		clipboard.setContents(new Object[]{textData, rtfData}, new Transfer[]{textTransfer, rtfTransfer});
- *		clipboard.dispose();
+ *	String textData = "Hello World";
+ *	String rtfData = "{\\rtf1\\b\\i Hello World}";
+ *	TextTransfer textTransfer = TextTransfer.getInstance();
+ *	RTFTransfer rtfTransfer = RTFTransfer.getInstance();
+ *	Transfer[] transfers = new Transfer[]{textTransfer, rtfTransfer};
+ *	Object[] data = new Object[]{textData, rtfData};
+ *	clipboard.setContents(data, transfers);
+ *	clipboard.dispose();
  * </code></pre>
  *
  * @param data the data to be set in the clipboard
- * @param dataTypes the transfer agents that will convert the data to its platform 
- * specific format; each entry in the data array must have a corresponding dataType
+ * @param dataTypes the transfer agents that will convert the data to its 
+ * platform specific format; each entry in the data array must have a 
+ * corresponding dataType
  * 
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if data is null or datatypes is null 
@@ -247,10 +253,10 @@ public void setContents(Object[] data, Transfer[] dataTypes) {
 }
 
 /**
- * Returns an array of the data types currently available on the system clipboard. Use
- * with Transfer.isSupportedType.
+ * Returns an array of the data types currently available on the system 
+ * clipboard. Use with Transfer.isSupportedType.
  *
- * @return array of TransferData
+ * @return array of data types currently available on teh system clipboard
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

@@ -785,7 +785,7 @@ void releaseWidget () {
  * Removes the listener from the collection of listeners who will
  * be notified when the control is moved or resized.
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -810,7 +810,7 @@ public void removeControlListener (ControlListener listener) {
  * Removes the listener from the collection of listeners who will
  * be notified when keys are pressed and released on the system keyboard.
  *
- * @param listener the listener which should be notified
+ * @param listener the listener which should no longer be notified
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>

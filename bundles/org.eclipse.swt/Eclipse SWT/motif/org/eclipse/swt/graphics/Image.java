@@ -520,11 +520,11 @@ public Image(Device device, Rectangle bounds) {
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if the image data is null</li>
  * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_UNSUPPORTED_DEPTH - if the depth of the ImageData is not supported</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
  */
 public Image(Device device, ImageData image) {
@@ -536,10 +536,8 @@ public Image(Device device, ImageData image) {
 /**
  * Constructs an instance of this class, whose type is 
  * <code>SWT.ICON</code>, from the two given <code>ImageData</code>
- * objects. The two images must be the same size, and the mask image
- * must have a color depth of 1. Pixel transparency in either image
- * will be ignored. If either image is an icon to begin with, an
- * exception is thrown.
+ * objects. The two images must be the same size. Pixel transparency
+ * in either image will be ignored.
  * <p>
  * The mask image should contain white wherever the icon is to be visible,
  * and black wherever the icon is to be transparent. In addition,
@@ -554,9 +552,7 @@ public Image(Device device, ImageData image) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if either the source or mask is null </li>
- *    <li>ERROR_INVALID_ARGUMENT - if source and mask are different sizes or
- *          if the mask is not monochrome, or if either the source or mask
- *          is already an icon</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if source and mask are different sizes</li>
  * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
@@ -581,7 +577,8 @@ public Image(Device device, ImageData source, ImageData mask) {
  * Constructs an instance of this class by loading its representation
  * from the specified input stream. Throws an error if an error
  * occurs while loading the image, or if the result is an image
- * of an unsupported type.
+ * of an unsupported type.  Application code is still responsible
+ * for closing the input stream.
  * <p>
  * This constructor is provided for convenience when loading a single
  * image only. If the stream contains multiple images, only the first
@@ -605,7 +602,8 @@ public Image(Device device, ImageData source, ImageData mask) {
  *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data </li>
  *    <li>ERROR_IO - if an IO error occurs while reading data</li>
  *    <li>ERROR_UNSUPPORTED_DEPTH - if the InputStream describes an image with an unsupported depth</li>
- * </ul>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
+ *  * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
@@ -637,6 +635,7 @@ public Image(Device device, InputStream stream) {
  *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data </li>
  *    <li>ERROR_IO - if an IO error occurs while reading data</li>
  *    <li>ERROR_UNSUPPORTED_DEPTH - if the image file has an unsupported depth</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
  * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
