@@ -10,11 +10,11 @@ import org.eclipse.swt.graphics.*;
 /**
  * 2D Ellipse object
  */
-public class MetaEllipse extends MetaStatelessXORHelper {
+public class EllipseFigure extends StatelessXORFigureHelper {
 	private Color color;
 	private int x1, y1, x2, y2;
 	/**
-	 * Constructs a <code>Meta.Ellipse</code>
+	 * Constructs an Ellipse
 	 * These objects are defined by any two diametrically opposing corners of a 
 	 * 
 	 * @param color the color for this object
@@ -23,7 +23,7 @@ public class MetaEllipse extends MetaStatelessXORHelper {
 	 * @param x2 the virtual X coordinate of the second point
 	 * @param y2 the virtual Y coordinate of the second point
 	 */
-	public MetaEllipse(Color color, int x1, int y1, int x2, int y2) {
+	public EllipseFigure(Color color, int x1, int y1, int x2, int y2) {
 		this.color = color; this.x1 = x1; this.y1 = y1; this.x2 = x2; this.y2 = y2;
 	}
 	public void draw(GC gc, Point offset) {

@@ -91,7 +91,7 @@ public abstract class SegmentedInteractivePaintSession extends BasicPaintSession
 		Assert.assert(anchorPosition.x != -1);	
 
 		getPaintSurface().clearRubberbandSelection();
-		getPaintSurface().drawMeta(createMeta(anchorPosition, firstAnchorPosition));
+		getPaintSurface().drawFigure(createFigure(anchorPosition, firstAnchorPosition));
 		anchorPosition.x = -1;
 		firstAnchorPosition.x = -1;
 
@@ -126,7 +126,7 @@ public abstract class SegmentedInteractivePaintSession extends BasicPaintSession
 		}
 
 		ps.clearRubberbandSelection();
-		ps.addRubberbandSelection(createMeta(anchorPosition, ps.getCurrentPosition()));
+		ps.addRubberbandSelection(createFigure(anchorPosition, ps.getCurrentPosition()));
 	}	
 
 	/**
@@ -140,16 +140,16 @@ public abstract class SegmentedInteractivePaintSession extends BasicPaintSession
 		Assert.assert(numPoints >= 2);
 
 		for (int i = 1; i < numPoints; ++i) {
-			ps.drawMeta(createMeta(points[i - 1], points[i]));
+			ps.drawFigure(createFigure(points[i - 1], points[i]));
 		}
-		ps.drawMeta(createMeta(points[numPoints - 1], points[0]));
+		ps.drawFigure(createFigure(points[numPoints - 1], points[0]));
 	}
 	
 	/**
-	 * Template Method: Creates a Meta for drawing rubberband entities and the final product
+	 * Template Method: Creates a Figure for drawing rubberband entities and the final product
 	 * 
 	 * @param anchor the anchor point
 	 * @param cursor the point marking the current pointer location
 	 */
-	protected abstract Meta createMeta(Point anchor, Point cursor);
+	protected abstract Figure createFigure(Point anchor, Point cursor);
 }

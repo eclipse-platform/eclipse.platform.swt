@@ -47,7 +47,7 @@ public class RectangleTool extends DragInteractivePaintSession implements PaintT
 	/*
 	 * Template methods for drawing
 	 */
-	protected Meta createMeta(Point a, Point b) {
-		return new MetaRectangle(drawColor, a.x, a.y, b.x, b.y);
+	protected Figure createFigure(Point a, Point b) {
+		return new RectangleFigure(drawColor, a.x, a.y, b.x, b.y);
 	}
 }

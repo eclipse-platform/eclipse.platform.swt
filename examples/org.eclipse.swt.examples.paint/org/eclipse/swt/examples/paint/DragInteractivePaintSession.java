@@ -117,7 +117,7 @@ public abstract class DragInteractivePaintSession extends BasicPaintSession
 		ps.clearRubberbandSelection();
 		tempPosition.x = event.x;
 		tempPosition.y = event.y;
-		ps.addRubberbandSelection(createMeta(anchorPosition, tempPosition));
+		ps.addRubberbandSelection(createFigure(anchorPosition, tempPosition));
 	}
 	
 	/**
@@ -128,14 +128,14 @@ public abstract class DragInteractivePaintSession extends BasicPaintSession
 	 */
 	public void render(final Point[] points, int numPoints) {
 		Assert.assert(numPoints == 2);
-		getPaintSurface().drawMeta(createMeta(points[0], points[1]));
+		getPaintSurface().drawFigure(createFigure(points[0], points[1]));
 	}
 	
 	/**
-	 * Template Method: Creates a Meta for drawing rubberband entities and the final product
+	 * Template Method: Creates a Figure for drawing rubberband entities and the final product
 	 * 
 	 * @param anchor the anchor point
 	 * @param cursor the point marking the current pointer location
 	 */
-	protected abstract Meta createMeta(Point anchor, Point cursor);
+	protected abstract Figure createFigure(Point anchor, Point cursor);
 }

@@ -13,7 +13,7 @@ import org.eclipse.swt.graphics.*;
  * temporary version of themselves for previewing the general appearance of the
  * object onscreen before it gets committed.
  */
-public abstract class Meta {
+public abstract class Figure {
 	/**
 	 * Draws an object to the specified GC
 	 * <p>

@@ -8,29 +8,29 @@ package org.eclipse.swt.examples.paint;
 import org.eclipse.swt.graphics.*;
 
 /**
- * Container for Meta objects with stacking preview mechanism.
+ * Container for Figure objects with stacking preview mechanism.
  */
-public class MetaContainer extends Meta {
+public class ContainerFigure extends Figure {
 	private static final int INITIAL_ARRAY_SIZE = 16;
 	
-	Meta[]   objectStack = null;
+	Figure[]   objectStack = null;
 	int      nextIndex = 0;
 
 	/**
-	 * Constructs a <code>Meta.Container</code>
+	 * Constructs an empty Container
 	 */
-	public MetaContainer() {
+	public ContainerFigure() {
 	}
 	/**
 	 * Adds an object to the container for later drawing.
 	 * 
 	 * @param object the object to add to the drawing list
 	 */
-	public void add(Meta object) {
+	public void add(Figure object) {
 		if (objectStack == null) {
-			objectStack = new Meta[INITIAL_ARRAY_SIZE];
+			objectStack = new Figure[INITIAL_ARRAY_SIZE];
 		} else if (objectStack.length <= nextIndex) {
-			Meta[] newObjectStack = new Meta[objectStack.length * 2];
+			Figure[] newObjectStack = new Figure[objectStack.length * 2];
 			System.arraycopy(objectStack, 0, newObjectStack, 0, objectStack.length);
 			objectStack = newObjectStack;
 		}
@@ -47,7 +47,7 @@ public class MetaContainer extends Meta {
 	 *        using this Container, may be null if there was no such previous call
 	 * @return object state that must be passed to erasePreview() later to erase this object
 	 */
-	public Object addAndPreview(Meta object, GC gc, Point offset, Object rememberedState) {
+	public Object addAndPreview(Figure object, GC gc, Point offset, Object rememberedState) {
 		Object[] stateStack = (Object[]) rememberedState;
 		if (stateStack == null) {
 			stateStack = new Object[INITIAL_ARRAY_SIZE];

@@ -8,11 +8,11 @@ package org.eclipse.swt.examples.paint;
 import org.eclipse.swt.graphics.*;
 
 /**
- * Superclass for all Meta objects that do not need to store state about preview copies
+ * Superclass for all Figure objects that do not need to store state about preview copies
  * and have self-complementary preview drawing and erasing operations
  * e.g. Those that use XOR drawing operations
  */
-public abstract class MetaStatelessXORHelper extends Meta {
+public abstract class StatelessXORFigureHelper extends Figure {
 	public Object drawPreview(GC gc, Point offset) {
 		gcDraw(gc, offset);
 		return null;

@@ -45,7 +45,7 @@ public class EllipseTool extends DragInteractivePaintSession implements PaintToo
 	/*
 	 * Template methods for drawing
 	 */
-	protected Meta createMeta(Point a, Point b) {
-		return new MetaEllipse(drawColor, a.x, a.y, b.x, b.y);
+	protected Figure createFigure(Point a, Point b) {
+		return new EllipseFigure(drawColor, a.x, a.y, b.x, b.y);
 	}
 }

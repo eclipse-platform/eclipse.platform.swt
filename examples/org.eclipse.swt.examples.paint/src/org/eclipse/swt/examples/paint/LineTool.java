@@ -47,7 +47,7 @@ public class LineTool extends DragInteractivePaintSession implements PaintTool {
 	/*
 	 * Template methods for drawing
 	 */
-	protected Meta createMeta(Point a, Point b) {
-		return new MetaLine(drawColor, a.x, a.y, b.x, b.y);
+	protected Figure createFigure(Point a, Point b) {
+		return new LineFigure(drawColor, a.x, a.y, b.x, b.y);
 	}
 }

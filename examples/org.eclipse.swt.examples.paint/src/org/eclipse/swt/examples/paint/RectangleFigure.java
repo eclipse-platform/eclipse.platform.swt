@@ -10,11 +10,11 @@ import org.eclipse.swt.graphics.*;
 /**
  * 2D Rectangle object
  */
-public class MetaRectangle extends MetaStatelessXORHelper {
+public class RectangleFigure extends StatelessXORFigureHelper {
 	private Color color;
 	private int x1, y1, x2, y2;
 	/**
-	 * Constructs a <code>Meta.Rectangle</code>
+	 * Constructs a Rectangle
 	 * These objects are defined by any two diametrically opposing corners.
 	 * 
 	 * @param color the color for this object
@@ -23,7 +23,7 @@ public class MetaRectangle extends MetaStatelessXORHelper {
 	 * @param x2 the virtual X coordinate of the second corner
 	 * @param y2 the virtual Y coordinate of the second corner
 	 */
-	public MetaRectangle(Color color, int x1, int y1, int x2, int y2) {
+	public RectangleFigure(Color color, int x1, int y1, int x2, int y2) {
 		this.color = color; this.x1 = x1; this.y1 = y1; this.x2 = x2; this.y2 = y2;
 	}
 	public void draw(GC gc, Point offset) {
