@@ -89,9 +89,11 @@ public abstract class Widget {
 		}
 		COMCTL32_MAJOR = dvi.dwMajorVersion;
 		COMCTL32_MINOR = dvi.dwMinorVersion;
-		if ((COMCTL32_MAJOR << 16 | COMCTL32_MINOR) < (4 << 16 | 71)) {
-			System.out.println ("***WARNING: SWT requires comctl32.dll version 4.71 or greater");
-			System.out.println ("***WARNING: Detected: " + COMCTL32_MAJOR + "." + COMCTL32_MINOR);
+		if (!OS.IsWinCE) {
+			if ((COMCTL32_MAJOR << 16 | COMCTL32_MINOR) < (4 << 16 | 71)) {
+				System.out.println ("***WARNING: SWT requires comctl32.dll version 4.71 or greater");
+				System.out.println ("***WARNING: Detected: " + COMCTL32_MAJOR + "." + COMCTL32_MINOR);
+			}
 		}
 		
 		/* Initialize the Common Controls DLL */
