@@ -945,8 +945,14 @@ public void setVisible (boolean visible) {
 			OS.gdk_pointer_ungrab (OS.GDK_CURRENT_TIME);
 		}
 		sendEvent (SWT.Show);
-		// NOT DONE - gtk_widget_show_now dispatches events.
-		OS.gtk_widget_show_now (shellHandle);
+		// widget could be disposed at this point
+		if (isDisposed ()) return;
+		OS.gtk_widget_show (shellHandle);
+		while (!isDisposed () && !OS.GTK_WIDGET_MAPPED (shellHandle)) {
+			OS.gtk_main_iteration ();
+		}
+		// widget could be disposed at this point
+		if (isDisposed ()) return;
 		adjustTrim ();
 	} else {	
 		OS.gtk_widget_hide (shellHandle);
