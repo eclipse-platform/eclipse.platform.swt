@@ -135,6 +135,7 @@ public static final native int SolidBrush_new(int color);
 public static final native void SolidBrush_delete(int pen);
 public static final native int Pen_new(int color, float width);
 public static final native void Pen_delete(int pen);
+public static final native int Pen_SetBrush(int pen, int brush);
 public static final native int Pen_SetDashPattern(int pen, float[] dashArray, int count);
 public static final native int Pen_SetDashStyle(int pen, int dashStyle);
 public static final native int Pen_SetLineCap(int pen, int startCap, int endCap, int dashCap);
@@ -150,6 +151,7 @@ public static final native int GraphicsPath_AddPath(int path, int addingPath, bo
 public static final native int GraphicsPath_AddRectangle(int path, RectF rect);
 public static final native int GraphicsPath_AddString(int path, char[] string, int length, int family, int style, float emSize, PointF origin, int format);
 public static final native int GraphicsPath_CloseFigure(int path);
+public static final native int GraphicsPath_GetBounds(int path, RectF bounds, int matrix, int pen);
 public static final native int GraphicsPath_GetLastPoint(int path, PointF lastPoint);
 public static final native boolean GraphicsPath_IsOutlineVisible(int path, float x, float y, int pen, int g);
 public static final native boolean GraphicsPath_IsVisible(int path, float x, float y, int g);

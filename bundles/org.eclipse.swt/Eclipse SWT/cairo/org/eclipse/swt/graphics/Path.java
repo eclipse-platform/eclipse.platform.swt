@@ -85,6 +85,7 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	//TODO - see Windows
+	gc.initCairo();
 	boolean result = false;
 	int /*long*/ cairo = gc.data.cairo;
 	Cairo.cairo_add_path(cairo, handle);

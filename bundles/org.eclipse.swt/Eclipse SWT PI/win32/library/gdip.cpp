@@ -293,6 +293,22 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1CloseFigure)
 }
 #endif
 
+#ifndef NO_GraphicsPath_1GetBounds
+JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1GetBounds)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jint arg3)
+{
+	RectF _arg1, *lparg1=NULL;
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, GraphicsPath_1GetBounds_FUNC);
+	if (arg1) if ((lparg1 = getRectFFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jint)((GraphicsPath *)arg0)->GetBounds(lparg1, (Matrix *)arg2, (Pen *)arg3);
+fail:
+	if (arg1 && lparg1) setRectFFields(env, arg1, lparg1);
+	Gdip_NATIVE_EXIT(env, that, GraphicsPath_1GetBounds_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GraphicsPath_1GetLastPoint
 JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1GetLastPoint)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
@@ -1014,6 +1030,18 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(PathGradientBrush_1new)
 	Gdip_NATIVE_ENTER(env, that, PathGradientBrush_1new_FUNC);
 	rc = (jint)new PathGradientBrush((GraphicsPath *)arg0);
 	Gdip_NATIVE_EXIT(env, that, PathGradientBrush_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Pen_1SetBrush
+JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1SetBrush)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Pen_1SetBrush_FUNC);
+	rc = (jint)((Pen *)arg0)->SetBrush((Brush *)arg1);
+	Gdip_NATIVE_EXIT(env, that, Pen_1SetBrush_FUNC);
 	return rc;
 }
 #endif
