@@ -617,6 +617,21 @@ int Pt_CB_WEB_NEW_WINDOW(int info) {
 	final Browser hidden = new Browser(getParent(), SWT.NONE);
 	hidden.addLocationListener(new LocationListener() {
 		public void changed(org.eclipse.swt.browser.LocationEvent event) {
+			/*
+			* Bug on Voyager.  The first PtWebClient widget created
+			* from within the CB_WEB_NEW_WINDOW callback is the one
+			* hosting the new window.  For some reason, this PtWebClient
+			* widget may or may not receive a Pt_CB_WEB_URL
+			* notification. It receives a Pt_CB_WEB_COMPLETE in all cases.
+			* The workaround is to reload the content when this occurs.
+			* This request causes the Pt_CB_WEB_URL to be correctly sent, 
+			* providing the information required to redirect the browser
+			* provided by the application.
+			*/
+			if (event.location.length() == 0) {
+				hidden.refresh();
+				return;
+			}
 			hidden.dispose();
 		}
 		public void changing(final org.eclipse.swt.browser.LocationEvent event) {
