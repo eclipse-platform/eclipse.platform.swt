@@ -1613,14 +1613,8 @@ static int closestMatch(int depth, byte red, byte green, byte blue, int redMask,
 
 static final byte[] convertPad(byte[] data, int width, int height, int depth, int pad, int newPad) {
 	if (pad == newPad) return data;
-	
 	int stride = (width * depth + 7) / 8;
-	int bpl = (stride + (pad - 1)) / pad * pad;
-	
-	
-	pad = bpl - stride + 1; 
-	
-	
+	int bpl = (stride + (pad - 1)) / pad * pad;	
 	int newBpl = (stride + (newPad - 1)) / newPad * newPad;
 	byte[] newData = new byte[height * newBpl];
 	int srcIndex = 0, destIndex = 0;
