@@ -29,6 +29,8 @@ public final class Color {
 	 */
 	public GdkColor handle;
 	Device display;
+	boolean isSystem;
+
 Color() {
 }
 /**	 
@@ -88,6 +90,7 @@ public Color(Device display, RGB rgb) {
  * they allocate.
  */
 public void dispose() {
+	if (isSystem) return;
 	/**
 	 * If this is a palette-based display,
 	 * Decrease the reference count for this color.
@@ -230,6 +233,11 @@ public String toString () {
 
 public static Color gtk_new(GdkColor gdkColor) {
 	Color color = new Color(null, gtk_getRGBIntensities(gdkColor));
+	return color;
+}
+public static Color gtk_new_system(GdkColor gdkColor) {
+	Color color = new Color(null, gtk_getRGBIntensities(gdkColor));
+	color.isSystem = true;
 	return color;
 }
 
