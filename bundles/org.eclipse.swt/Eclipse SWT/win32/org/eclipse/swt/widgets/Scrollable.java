@@ -108,8 +108,9 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
 	RECT rect = new RECT ();
 	OS.SetRect (rect, x, y, x + width, y + height);
-	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	OS.AdjustWindowRectEx (rect, bits, false, OS.GetWindowLong (handle, OS.GWL_EXSTYLE));
+	int bits1 = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	int bits2 = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+	OS.AdjustWindowRectEx (rect, bits1, false, bits2);
 	if (horizontalBar != null) rect.bottom += OS.GetSystemMetrics (OS.SM_CYHSCROLL);
 	if (verticalBar != null) rect.right += OS.GetSystemMetrics (OS.SM_CXVSCROLL);
 	int nWidth = rect.right - rect.left, nHeight = rect.bottom - rect.top;

@@ -425,8 +425,8 @@ void fixAlignment () {
 	* according to the orientation and mirroring.
 	*/
 	if ((style & SWT.MIRRORED) != 0) return;
-	int bits0 = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
-	int bits1 = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	int bits1 = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+	int bits2 = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	if ((style & SWT.LEFT_TO_RIGHT) != 0) {
 		/*
 		* Bug in Windows 98. When the edit control is created
@@ -435,30 +435,30 @@ void fixAlignment () {
 		* bit when the orientation of the control is left
 		* to right.
 		*/
-		bits0 &= ~OS.WS_EX_LEFTSCROLLBAR;
+		bits1 &= ~OS.WS_EX_LEFTSCROLLBAR;
 		if ((style & SWT.RIGHT) != 0) {
-			bits0 |= OS.WS_EX_RIGHT;
-			bits1 |= OS.ES_RIGHT;
+			bits1 |= OS.WS_EX_RIGHT;
+			bits2 |= OS.ES_RIGHT;
 		}
 		if ((style & SWT.LEFT) != 0) {
-			bits0 &= ~OS.WS_EX_RIGHT;
-			bits1 &= ~OS.ES_RIGHT;
+			bits1 &= ~OS.WS_EX_RIGHT;
+			bits2 &= ~OS.ES_RIGHT;
 		}
 	} else {
 		if ((style & SWT.RIGHT) != 0) {
-			bits0 &= ~OS.WS_EX_RIGHT;
-			bits1 &= ~OS.ES_RIGHT;
+			bits1 &= ~OS.WS_EX_RIGHT;
+			bits2 &= ~OS.ES_RIGHT;
 		}
 		if ((style & SWT.LEFT) != 0) {
-			bits0 |= OS.WS_EX_RIGHT;
-			bits1 |= OS.ES_RIGHT;
+			bits1 |= OS.WS_EX_RIGHT;
+			bits2 |= OS.ES_RIGHT;
 		}
 	}
 	if ((style & SWT.CENTER) != 0) {
-		bits1 |= OS.ES_CENTER;
+		bits2 |= OS.ES_CENTER;
 	}	
-	OS.SetWindowLong (handle, OS.GWL_EXSTYLE, bits0);
-	OS.SetWindowLong (handle, OS.GWL_STYLE, bits1);
+	OS.SetWindowLong (handle, OS.GWL_EXSTYLE, bits1);
+	OS.SetWindowLong (handle, OS.GWL_STYLE, bits2);
 }
 
 public int getBorderWidth () {
@@ -1371,7 +1371,7 @@ public void setOrientation (int orientation) {
 	if ((orientation & flags) == 0 || (orientation & flags) == flags) return;
 	style &= ~flags;
 	style |= orientation & flags;
-	int bits  = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+	int bits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		bits |= OS.WS_EX_RTLREADING | OS.WS_EX_LEFTSCROLLBAR;
 	} else {

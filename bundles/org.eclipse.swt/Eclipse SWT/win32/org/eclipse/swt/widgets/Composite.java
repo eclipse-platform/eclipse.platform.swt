@@ -652,8 +652,8 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 				do {
 					hwndParent = OS.GetParent (hwndParent);
 					if (hwndParent == 0) break;
-					int style = OS.GetWindowLong (hwndParent, OS.GWL_EXSTYLE);
-					if ((style & OS.WS_EX_TOPMOST) != 0) break;
+					int bits = OS.GetWindowLong (hwndParent, OS.GWL_EXSTYLE);
+					if ((bits & OS.WS_EX_TOPMOST) != 0) break;
 				} while (true);
 				if (hwndParent != 0) break;
 				display.lockActiveWindow = true;

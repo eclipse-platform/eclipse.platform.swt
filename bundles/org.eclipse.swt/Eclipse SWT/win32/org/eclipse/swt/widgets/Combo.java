@@ -1403,17 +1403,17 @@ public void setOrientation (int orientation) {
 		hwndList = pcbi.hwndList;
 	}
 	if (hwndText != 0) {
-		int bits0 = OS.GetWindowLong (hwndText, OS.GWL_EXSTYLE);
-		int bits1 = OS.GetWindowLong (hwndText, OS.GWL_STYLE);
+		int bits1 = OS.GetWindowLong (hwndText, OS.GWL_EXSTYLE);
+		int bits2 = OS.GetWindowLong (hwndText, OS.GWL_STYLE);
 		if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-			bits0 |= OS.WS_EX_RIGHT | OS.WS_EX_RTLREADING;
-			bits1 |= OS.ES_RIGHT;
+			bits1 |= OS.WS_EX_RIGHT | OS.WS_EX_RTLREADING;
+			bits2 |= OS.ES_RIGHT;
 		} else {
-			bits0 &= ~(OS.WS_EX_RIGHT | OS.WS_EX_RTLREADING);
-			bits1 &= ~OS.ES_RIGHT;
+			bits1 &= ~(OS.WS_EX_RIGHT | OS.WS_EX_RTLREADING);
+			bits2 &= ~OS.ES_RIGHT;
 		}
-		OS.SetWindowLong (hwndText, OS.GWL_EXSTYLE, bits0);
-		OS.SetWindowLong (hwndText, OS.GWL_STYLE, bits1);
+		OS.SetWindowLong (hwndText, OS.GWL_EXSTYLE, bits1);
+		OS.SetWindowLong (hwndText, OS.GWL_STYLE, bits2);
 		
 		/*
 		* Bug in Windows.  For some reason, the single line text field
@@ -1434,13 +1434,13 @@ public void setOrientation (int orientation) {
 		OS.InvalidateRect (handle, null, true);
 	}	
 	if (hwndList != 0) {
-		int exStyle = OS.GetWindowLong (hwndList, OS.GWL_EXSTYLE);		
+		int bits1 = OS.GetWindowLong (hwndList, OS.GWL_EXSTYLE);		
 		if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-			exStyle |= OS.WS_EX_LAYOUTRTL;
+			bits1 |= OS.WS_EX_LAYOUTRTL;
 		} else {
-			exStyle &= ~OS.WS_EX_LAYOUTRTL;
+			bits1 &= ~OS.WS_EX_LAYOUTRTL;
 		}
-		OS.SetWindowLong (hwndList, OS.GWL_EXSTYLE, exStyle);
+		OS.SetWindowLong (hwndList, OS.GWL_EXSTYLE, bits1);
 	}
 }
 

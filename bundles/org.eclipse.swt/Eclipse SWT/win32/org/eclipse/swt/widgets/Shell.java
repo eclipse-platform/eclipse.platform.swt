@@ -660,8 +660,9 @@ public Point getMinimumSize () {
 			height = Math.max (height, OS.GetSystemMetrics (OS.SM_CYMINTRACK));
 		} else {
 			RECT rect = new RECT ();
-			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-			OS.AdjustWindowRectEx (rect, bits, false, OS.GetWindowLong (handle, OS.GWL_EXSTYLE));
+			int bits1 = OS.GetWindowLong (handle, OS.GWL_STYLE);
+			int bits2 = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+			OS.AdjustWindowRectEx (rect, bits1, false, bits2);
 			height = Math.max (height, rect.bottom - rect.top);
 		}
 	}
@@ -1066,8 +1067,9 @@ public void setMinimumSize (int width, int height) {
 			heightLimit = OS.GetSystemMetrics (OS.SM_CYMINTRACK);
 		} else {
 			RECT rect = new RECT ();
-			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-			OS.AdjustWindowRectEx (rect, bits, false, OS.GetWindowLong (handle, OS.GWL_EXSTYLE));
+			int bits1 = OS.GetWindowLong (handle, OS.GWL_STYLE);
+			int bits2 = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+			OS.AdjustWindowRectEx (rect, bits1, false, bits2);
 			heightLimit = rect.bottom - rect.top;
 		}
 	} 
@@ -1780,8 +1782,9 @@ LRESULT WM_WINDOWPOSCHANGING (int wParam, int lParam) {
 				lpwp.cy = Math.max (lpwp.cy, OS.GetSystemMetrics (OS.SM_CYMINTRACK));
 			} else {
 				RECT rect = new RECT ();
-				int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-				OS.AdjustWindowRectEx (rect, bits, false, OS.GetWindowLong (handle, OS.GWL_EXSTYLE));
+				int bits1 = OS.GetWindowLong (handle, OS.GWL_STYLE);
+				int bits2 = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+				OS.AdjustWindowRectEx (rect, bits1, false, bits2);
 				lpwp.cy = Math.max (lpwp.cy, rect.bottom - rect.top);
 			}
 		}
