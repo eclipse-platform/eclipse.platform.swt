@@ -21,8 +21,6 @@ public class Button extends Control {
 	Image image;
 	int cIcon;
 	boolean isImage;
-	int textExtentX;
-	int textExtentY;
 	
 public Button (Composite parent, int style) {
 	super (parent, checkStyle (style));
@@ -59,48 +57,41 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		if (hHint != SWT.DEFAULT) height = hHint;
 		return new Point (width, height);
 	}
-	Rect rect = new Rect();
-	short [] base = new short [1];
-	OS.GetBestControlRect (handle, rect, base);
-	int width = rect.right - rect.left;
-	int height = rect.bottom - rect.top;
+
+	int width = 0, height = 0;
+
+	if (isImage && image != null) {
+		Rectangle bounds = image.getBounds();
+		width = bounds.width;
+		height = bounds.height;
+	} else {
+		GC gc = new GC (this);
+		Point extent = gc.textExtent(text, SWT.DRAW_DELIMITER | SWT.DRAW_MNEMONIC);
+		gc.dispose ();
+		width = extent.x;
+		height = extent.y;
+	}
 
 	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
-		if (isImage && image != null) {
-			Rectangle bounds = image.getBounds();
-			width += bounds.width + 20;
-			height += bounds.height;
-		} else {
-			width += 8;
-		}
+		width += 20;
+		height = Math.max(18, height) + 6;
 	} else {
-		// If any theme was applied to a bevel button, the compute size 
-		// needs to be fixed
-		if ((style & SWT.FLAT) == 0 || (style & SWT.TOGGLE) != 0) {
-			if (isImage && image != null) {
-				Rectangle bounds = image.getBounds();
-				width = bounds.width;
-				height = bounds.height;
-				if ((style & SWT.PUSH) != 0) {
-					width += 28;
-					height += 10;
-				}
-				if ((style & SWT.TOGGLE) != 0) {
-					width += 6;
-					height += 6;
-				}
-			} else {
-				if ((style & SWT.PUSH) != 0) {
-					width = textExtentX + 16;
-					height = textExtentY;
-				}
-				if ((style & SWT.TOGGLE) != 0) {
-					width = textExtentX - 10;
-					height = textExtentY - 2;
-				}
-			}
+		if ((style & SWT.FLAT) != 0 || (style & SWT.TOGGLE) != 0) {
+			width += 10;
+			height += 10;
+		} else {
+			width += 28;
+			height += 6;
 		}
 	}
+	
+	/*
+	 * Feature in Mac OS X. Setting the width of a bevel button
+	 * widget to less than 20 will fail.  This means you can not 
+	 * make a button very small.  By forcing the width to be greater
+	 * than or equal to 20, the height of the button can be made
+	 * very small, even 0.
+	 */
 	width = Math.max(20, width);
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
@@ -397,11 +388,6 @@ public void setText (String string) {
 	OS.SetControlTitleWithCFString (handle, ptr);
 	OS.CFRelease (ptr);
 	redraw ();
-	Rect rect = new Rect();
-	short [] base = new short [1];
-	OS.GetBestControlRect (handle, rect, base);
-	textExtentX = rect.right - rect.left;
-	textExtentY = rect.bottom - rect.top;
 }
 
 }
