@@ -698,7 +698,7 @@ public void setText (String string) {
 	* a very small size.  Also, a tool item will only show text
 	* when text has already been set on one item and then a new
 	* item is created.  The fix is to use WM_SETFONT to force
-	* the tool bar to redraw and layout.  [1G0G7TV, 1G0FUJ5]
+	* the tool bar to redraw and layout.
 	*/
 	int hFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
 	OS.SendMessage (hwnd, OS.WM_SETFONT, hFont, 0);
@@ -804,6 +804,16 @@ void updateImages () {
 		}
 		if (image == null) info.iImage = OS.I_IMAGENONE;
 	}
+
+	/*
+	* Bug in Windows. If the width of an item has already been
+	* calculated the ToolBar control will not recalculate it to 
+	* include the space for the image. The fix is to set cx to 
+	* zero, what causes the ToolBar control to recalculate the 
+	* width for the item.
+	*/
+	info.dwMask |= OS.TBIF_SIZE;
+	info.cx = 0;	
 	OS.SendMessage (hwnd, OS.TB_SETBUTTONINFO, id, info);
 	
 	parent.layoutItems ();
