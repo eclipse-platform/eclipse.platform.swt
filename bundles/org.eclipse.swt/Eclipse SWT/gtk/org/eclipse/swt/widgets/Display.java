@@ -436,6 +436,7 @@ void addGdkEvent (int /*long*/ event) {
 	if (gdkEvents == null) {
 		gdkEvents = new int /*long*/ [4];
 		gdkEventWidgets = new Widget [4];
+		gdkEventCount = 0;
 	}
 	if (gdkEventCount == gdkEvents.length) {
 		int /*long*/ [] newEvents = new int /*long*/ [gdkEventCount + 4];
@@ -2249,8 +2250,9 @@ void putGdkEvents () {
 				OS.gdk_event_free (gdkEvents [i]);
 			}
 		}
-		gdkEventCount = 0;
 		gdkEvents = null;
+		gdkEventWidgets = null;
+		gdkEventCount = 0;
 	}
 }
 
