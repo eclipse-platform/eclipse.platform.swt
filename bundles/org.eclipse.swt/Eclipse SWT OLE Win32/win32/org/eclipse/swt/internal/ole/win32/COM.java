@@ -400,23 +400,10 @@ public static final native int DoDragDrop(
 	int[] pdwEffect   //Pointer to effects on the source
 );
 
-public static final native void DragFinish(int hDrop);
-
-public static final native int DragQueryFile(
-	int hDrop,
-	int iFile,
-	byte[] lpszFile,
-	int cch
-);
-
 public static final native int GetClassFile(
 	char[] szFileName, //Pointer to filename for which you are requesting a CLSID
 	GUID clsid         //Pointer to location for returning the CLSID
 );
-public static final native int GetClipboardFormatName(
-	int format, 
-	byte[] lpszFormatName, 
-	int cchMaxCount);
 public static final native int IIDFromString(char[] lpsz, GUID lpiid);
 private static GUID IIDFromString(String lpsz) {
 	// create a null terminated array of char
@@ -429,13 +416,6 @@ private static GUID IIDFromString(String lpsz) {
 	return null;
 }
 public static final native boolean IsEqualGUID(GUID rguid1, GUID rguid2);
-public static final native void MoveMemory(byte[] Destination, DROPFILES Source, int Length);
-public static final native void MoveMemory(double[] Destination, int SourcePtr, int Length);
-public static final native void MoveMemory(float[] Destination, int SourcePtr, int Length);
-public static final native void MoveMemory(short[] Destination, int SourcePtr, int Length);
-public static final native void MoveMemory(int DestinationPtr, double[] Source, int Length);
-public static final native void MoveMemory(int DestinationPtr, float[] Source, int Length);
-public static final native void MoveMemory(int DestinationPtr, short[] Source, int Length);
 public static final native void MoveMemory(int Destination, FORMATETC Source, int Length);
 public static final native void MoveMemory(int DestinationPtr, GUID Source, int Length);
 public static final native void MoveMemory(int DestinationPtr, OLEINPLACEFRAMEINFO Source, int Length);
@@ -490,7 +470,6 @@ public static final native int ProgIDFromCLSID(
 	GUID clsid,  //CLSID for which the ProgID is requested
 	int[] lplpszProgID //Address of output variable that receives a pointer to the requested ProgID string
 );
-public static final native int RegisterClipboardFormat(byte[] lpszFormat); 
 public static final native int RegisterDragDrop(
 	int hwnd,       //Handle to a window that can accept drops
 	int pDropTarget //Pointer to object that is to be target of drop

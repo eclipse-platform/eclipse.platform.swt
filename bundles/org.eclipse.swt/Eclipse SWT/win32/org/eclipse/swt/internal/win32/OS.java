@@ -1143,6 +1143,15 @@ public static final int DispatchMessage (MSG lpmsg) {
 	return DispatchMessageA (lpmsg);
 }
 
+public static final int DragQueryFile (int hDrop, int iFile, TCHAR lpszFile, int cch) {
+	if (IsUnicode) {
+		char [] lpszFile1 = lpszFile == null ? null : lpszFile.chars;
+		return DragQueryFileW (hDrop, iFile, lpszFile1, cch);
+	}
+	byte [] lpszFile1 = lpszFile == null ? null : lpszFile.bytes;
+	return DragQueryFileA (hDrop, iFile, lpszFile1, cch);
+}
+
 public static final boolean DrawState (int hdc, int hbr, int lpOutputFunc, int lData, int wData, int x, int y, int cx, int cy, int fuFlags) {
 	if (IsUnicode) return DrawStateW (hdc, hbr, lpOutputFunc, lData, wData, x, y, cx, cy, fuFlags);
 	return DrawStateA (hdc, hbr, lpOutputFunc, lData, wData, x, y, cx, cy, fuFlags);
@@ -1215,6 +1224,16 @@ public static final boolean GetClassInfo (int hInstance, TCHAR lpClassName, WNDC
 	}
 	byte [] lpClassName1 = lpClassName == null ? null : lpClassName.bytes;
 	return GetClassInfoA (hInstance, lpClassName1, lpWndClass);
+}
+
+public static final int GetClipboardFormatName (int format, TCHAR lpszFormatName, int cchMaxCount) {
+	if (IsUnicode) {
+		char [] lpszFormatName1 = lpszFormatName == null ? null : lpszFormatName.chars;
+		return GetClipboardFormatNameW (format, lpszFormatName1, cchMaxCount);
+	}
+	byte [] lpszFormatName1 = lpszFormatName == null ? null : lpszFormatName.bytes;
+	return GetClipboardFormatNameA (format, lpszFormatName1, cchMaxCount);
+	
 }
 
 public static final short GetFileTitle (TCHAR lpszFile, TCHAR lpszTitle, short cbBuf) {
@@ -1514,6 +1533,15 @@ public static final int RegisterClass (WNDCLASS lpWndClass) {
 	return RegisterClassA (lpWndClass);
 }
 
+public static final int RegisterClipboardFormat (TCHAR lpszFormat) {
+	if (IsUnicode) {
+		char [] lpszFormat1 = lpszFormat == null ? null : lpszFormat.chars;
+		return RegisterClipboardFormatW (lpszFormat1);
+	}
+	byte [] lpszFormat1 = lpszFormat == null ? null : lpszFormat.bytes;
+	return RegisterClipboardFormatA (lpszFormat1);
+}
+
 public static final int RegOpenKeyEx (int hKey, TCHAR lpSubKey, int ulOptions, int samDesired, int[] phkResult) {
 	if (IsUnicode) {
 		char [] lpSubKey1 = lpSubKey == null ? null : lpSubKey.chars;
@@ -1770,6 +1798,9 @@ public static final native boolean DestroyWindow (int hWnd);
 public static final native int DispatchMessageW (MSG lpmsg);
 public static final native int DispatchMessageA (MSG lpmsg);
 public static final native boolean DragDetect (int hwnd, POINT pt);
+public static final native void DragFinish (int hDrop);
+public static final native int DragQueryFileA (int hDrop, int iFile, byte[] lpszFile, int cch);
+public static final native int DragQueryFileW (int hDrop, int iFile, char[] lpszFile, int cch);
 public static final native boolean DrawEdge (int hdc, RECT qrc, int edge, int grfFlags);
 public static final native boolean DrawFocusRect (int hDC, RECT lpRect);
 public static final native boolean DrawFrameControl (int hdc, RECT lprc, int uType, int uState);
@@ -1813,6 +1844,8 @@ public static final native boolean GetClassInfoW (int hInstance, char [] lpClass
 public static final native boolean GetClassInfoA (int hInstance, byte [] lpClassName, WNDCLASS lpWndClass);
 public static final native boolean GetClientRect (int hWnd, RECT lpRect);
 public static final native int GetClipboardData (int uFormat);
+public static final native int GetClipboardFormatNameA (int format, byte[] lpszFormatName, int cchMaxCount);
+public static final native int GetClipboardFormatNameW (int format, char[] lpszFormatName, int cchMaxCount);
 public static final native int GetClipBox (int hdc, RECT lprc);
 public static final native int GetClipRgn (int hdc, int hrgn);
 public static final native int GetCurrentObject (int hdc, int uObjectType);
@@ -2003,6 +2036,13 @@ public static final native void MoveMemoryA (NMTTDISPINFO Destination, int Sourc
 public static final native void MoveMemory (TVITEM Destination, int Source, int Length);
 public static final native void MoveMemory (WINDOWPOS Destination, int Source, int Length);
 public static final native void MoveMemory (MSG Destination, int Source, int Length);
+public static final native void MoveMemory(int Destination, DROPFILES Source, int Length);
+public static final native void MoveMemory(double[] Destination, int SourcePtr, int Length);
+public static final native void MoveMemory(float[] Destination, int SourcePtr, int Length);
+public static final native void MoveMemory(short[] Destination, int SourcePtr, int Length);
+public static final native void MoveMemory(int DestinationPtr, double[] Source, int Length);
+public static final native void MoveMemory(int DestinationPtr, float[] Source, int Length);
+public static final native void MoveMemory(int DestinationPtr, short[] Source, int Length);
 public static final native boolean MoveToEx (int hdc,int x1, int x2, int lPoint);
 public static final native int MultiByteToWideChar (int CodePage, int dwFlags, byte [] lpMultiByteStr, int cchMultiByte, char [] lpWideCharStr, int cchWideChar);
 public static final native int OleInitialize (int pvReserved);
@@ -2030,6 +2070,8 @@ public static final native int RegCloseKey (int hKey);
 public static final native int RegisterClassW (WNDCLASS lpWndClass);
 public static final native int RegisterClassA (WNDCLASS lpWndClass);
 public static final native int RegEnumKeyExW (int hKey, int dwIndex, char [] lpName, int [] lpcName, int [] lpReserved, char [] lpClass, int [] lpcClass, FILETIME lpftLastWriteTime);
+public static final native int RegisterClipboardFormatA (byte[] lpszFormat); 
+public static final native int RegisterClipboardFormatW (char[] lpszFormat); 
 public static final native int RegOpenKeyExW (int hKey, char[] lpSubKey, int ulOptions, int samDesired, int[] phkResult);
 public static final native int RegQueryInfoKeyW (int hKey, int lpClass, int[] lpcbClass, int lpReserved, int[] lpSubKeys, int[] lpcbMaxSubKeyLen, int[] lpcbMaxClassLen, int[] lpcValues, int[] lpcbMaxValueNameLen, int[] lpcbMaxValueLen, int[] lpcbSecurityDescriptor, int lpftLastWriteTime);
 public static final native int RegQueryValueExW (int hKey, char[] lpValueName, int lpReserved, int[] lpType, char [] lpData, int[] lpcbData);

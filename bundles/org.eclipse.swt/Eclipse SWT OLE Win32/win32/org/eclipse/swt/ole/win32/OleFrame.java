@@ -362,12 +362,13 @@ private int InsertMenus(int hmenuShared, int lpMenuWidths) {
 	// the OS and the OS will fill in the requested information for each menu.
 	MENUITEMINFO lpmii = new MENUITEMINFO();
 	int hHeap = OS.GetProcessHeap();
-	int maxTextLength = 128;
-	int pszText = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, maxTextLength);
+	int cch = 128;
+	int byteCount = cch * TCHAR.sizeof;
+	int pszText = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	lpmii.cbSize = MENUITEMINFO.sizeof;
 	lpmii.fMask = OS.MIIM_STATE | OS.MIIM_ID | OS.MIIM_TYPE | OS.MIIM_SUBMENU;
 	lpmii.dwTypeData = pszText;
-	lpmii.cch = maxTextLength;
+	lpmii.cch = cch;
 
 	// Loop over all "File-like" menus in the menubar and get information about the
 	// item from the OS.
@@ -378,11 +379,11 @@ private int InsertMenus(int hmenuShared, int lpMenuWidths) {
 			MenuItem item = this.fileMenuItems[i];
 			if (item != null) {
 				int index = item.getParent().indexOf(item);
-				lpmii.cch = maxTextLength; // lpmii.cch gets updated by GetMenuItemInfo to indicate the 
-				                           // exact nuber of characters in name.  Reset it to our max size 
-				                           // before each call.
-				if (OS.GetMenuItemInfoA(hMenu, index, true, lpmii)) {
-					if (OS.InsertMenuItemA(hmenuShared, newindex, true, lpmii)) {
+				lpmii.cch = cch;  // lpmii.cch gets updated by GetMenuItemInfo to indicate the 
+				                  // exact nuber of characters in name.  Reset it to our max size 
+				                  // before each call.
+				if (OS.GetMenuItemInfo(hMenu, index, true, lpmii)) {
+					if (OS.InsertMenuItem(hmenuShared, newindex, true, lpmii)) {
 						// keep track of the number of items
 						fileMenuCount++;
 						newindex++;
@@ -403,11 +404,11 @@ private int InsertMenus(int hmenuShared, int lpMenuWidths) {
 			MenuItem item = this.containerMenuItems[i];
 			if (item != null) {
 				int index = item.getParent().indexOf(item);
-				lpmii.cch = maxTextLength; // lpmii.cch gets updated by GetMenuItemInfo to indicate the 
+				lpmii.cch = cch; // lpmii.cch gets updated by GetMenuItemInfo to indicate the 
 				                           // exact nuber of characters in name.  Reset it to a large number 
 				                           // before each call.
-				if (OS.GetMenuItemInfoA(hMenu, index, true, lpmii)) {
-					if (OS.InsertMenuItemA(hmenuShared, newindex, true, lpmii)) {
+				if (OS.GetMenuItemInfo(hMenu, index, true, lpmii)) {
+					if (OS.InsertMenuItem(hmenuShared, newindex, true, lpmii)) {
 						// keep track of the number of items
 						containerMenuCount++;
 						newindex++;
@@ -428,11 +429,11 @@ private int InsertMenus(int hmenuShared, int lpMenuWidths) {
 			MenuItem item = this.windowMenuItems[i];
 			if (item != null) {
 				int index = item.getParent().indexOf(item);
-				lpmii.cch = maxTextLength; // lpmii.cch gets updated by GetMenuItemInfo to indicate the 
+				lpmii.cch = cch; // lpmii.cch gets updated by GetMenuItemInfo to indicate the 
 				                           // exact nuber of characters in name.  Reset it to a large number 
 				                           // before each call.
-				if (OS.GetMenuItemInfoA(hMenu, index, true, lpmii)) {
-					if (OS.InsertMenuItemA(hmenuShared, newindex, true, lpmii)) {
+				if (OS.GetMenuItemInfo(hMenu, index, true, lpmii)) {
+					if (OS.InsertMenuItem(hmenuShared, newindex, true, lpmii)) {
 						// keep track of the number of items
 						windowMenuCount++;
 						newindex++;

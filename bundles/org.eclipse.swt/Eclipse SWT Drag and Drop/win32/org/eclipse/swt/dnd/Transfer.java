@@ -5,6 +5,7 @@ package org.eclipse.swt.dnd;
  * All Rights Reserved
  */
 import org.eclipse.swt.internal.ole.win32.COM;
+import org.eclipse.swt.internal.win32.TCHAR;
 
 /**
  * The class <code>Transfer</code> provides a mechanism for converting a Java object to a 
@@ -85,7 +86,7 @@ public static int registerType(String formatName){
 	// Look name up in the registry
 	// If name is not in registry, add it and return assigned value.
 	// If name already exists in registry, return its assigned value
-	byte[] chFormatName = (formatName+'\0').getBytes();
+	TCHAR chFormatName = new TCHAR(0, formatName, true);
 	return COM.RegisterClipboardFormat(chFormatName);
 }
 }

@@ -827,6 +827,54 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_DragDetect
 }
 #endif // _WIN32_WCE
 
+#ifndef _WIN32_WCE
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_DragFinish
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("DragFinish\n")
+
+	DragFinish((HDROP)arg0);
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_DragQueryFileA
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jint arg3)
+{
+	jbyte *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("DragQueryFileA\n")
+
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+
+	rc = (jint)DragQueryFileA((HDROP)arg0, arg1, (LPTSTR)lparg2, arg3);
+
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_DragQueryFileW
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jint arg3)
+{
+	jchar *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("DragQueryFileW\n")
+
+	if (arg2) lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL);
+
+	rc = (jint)DragQueryFileW((HDROP)arg0, arg1, (LPWSTR)lparg2, arg3);
+
+	if (arg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_DrawEdge
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jint arg3)
 {
@@ -1477,6 +1525,42 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetClipboardData
 	DEBUG_CALL("GetClipboardData\n")
 
 	return (jint)GetClipboardData(arg0);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetClipboardFormatNameA
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
+{
+	jbyte *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetClipboardFormatNameA\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+
+	rc = (jint)GetClipboardFormatNameA(arg0, (LPTSTR)lparg1, arg2);
+
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetClipboardFormatNameW
+	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2)
+{
+	jchar *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetClipboardFormatNameW\n")
+
+	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
+
+	rc = (jint)GetClipboardFormatNameW(arg0, (LPWSTR)lparg1, arg2);
+
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+
+	return rc;
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetCurrentObject
@@ -3593,6 +3677,107 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_MessageBoxW
 	return rc;
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__I_3SI
+	(JNIEnv *env, jclass that, jint arg0, jshortArray arg1, jint arg2)
+{
+	jshort *lparg1=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg1) lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL);
+
+	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
+
+	if (arg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, 0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__I_3FI
+	(JNIEnv *env, jclass that, jint arg0, jfloatArray arg1, jint arg2)
+{
+	jfloat *lparg1=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg1) lparg1 = (*env)->GetFloatArrayElements(env, arg1, NULL);
+
+	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
+
+	if (arg1) (*env)->ReleaseFloatArrayElements(env, arg1, lparg1, 0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__I_3DI
+	(JNIEnv *env, jclass that, jint arg0, jdoubleArray arg1, jint arg2)
+{
+	jdouble *lparg1=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg1) lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL);
+
+	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
+
+	if (arg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, 0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory___3SII
+	(JNIEnv *env, jclass that, jshortArray arg0, jint arg1, jint arg2)
+{
+	jshort *lparg0=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg0) lparg0 = (*env)->GetShortArrayElements(env, arg0, NULL);
+
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+
+	if (arg0) (*env)->ReleaseShortArrayElements(env, arg0, lparg0, 0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory___3FII
+	(JNIEnv *env, jclass that, jfloatArray arg0, jint arg1, jint arg2)
+{
+	jfloat *lparg0=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg0) lparg0 = (*env)->GetFloatArrayElements(env, arg0, NULL);
+
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+
+	if (arg0) (*env)->ReleaseFloatArrayElements(env, arg0, lparg0, 0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory___3DII
+	(JNIEnv *env, jclass that, jdoubleArray arg0, jint arg1, jint arg2)
+{
+	jdouble *lparg0=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg0) lparg0 = (*env)->GetDoubleArrayElements(env, arg0, NULL);
+
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+
+	if (arg0) (*env)->ReleaseDoubleArrayElements(env, arg0, lparg0, 0);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_eclipse_swt_internal_win32_DROPFILES_2I
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	DECL_GLOB(pGlob)
+	DROPFILES _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg1) lparg1 = getDROPFILESFields(env, arg1, &_arg1, &PGLOB(DROPFILESFc));
+
+	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
+
+	if (arg1) setDROPFILESFields(env, arg1, lparg1, &PGLOB(DROPFILESFc));
+}
+#endif // _WIN32_WCE
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_MSG_2II
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
 {
@@ -4639,6 +4824,42 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_RegisterClassW
 	rc = (jint)RegisterClassW((LPWNDCLASSW)lparg0);
 
 	if (arg0) setWNDCLASSFields(env, arg0, lparg0, &PGLOB(WNDCLASSFc));
+
+	return rc;
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_RegisterClipboardFormatA
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("RegisterClipboardFormatA\n")
+
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+
+	rc = (jint)RegisterClipboardFormatA((LPTSTR)lparg0);
+
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_RegisterClipboardFormatW
+	(JNIEnv *env, jclass that, jcharArray arg0)
+{
+	jchar *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("RegisterClipboardFormatW\n")
+
+	if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
+
+	rc = (jint)RegisterClipboardFormatW((LPWSTR)lparg0);
+
+	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
 
 	return rc;
 }

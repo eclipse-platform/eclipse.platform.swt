@@ -5,6 +5,8 @@ package org.eclipse.swt.dnd;
  * All Rights Reserved
  */
 import org.eclipse.swt.internal.ole.win32.*;
+import org.eclipse.swt.internal.win32.TCHAR;
+import org.eclipse.swt.internal.win32.DROPFILES;
 
 /**
  * The <code>FileTransfer</code> class is used to transfer files in a drag and drop operation.
@@ -47,31 +49,41 @@ public void javaToNative(Object object, TransferData transferData) {
 		transferData.result = COM.E_FAIL;
 		return;
 	}
-		
-	// build a byte array from data
-	String[] fileNames = (String[]) object;
-	int fileNameSize = 0;
-	byte[][] files = new byte[fileNames.length][];
-	for (int i = 0; i < fileNames.length; i++) {
-		files[i] = (fileNames[i]+'\0').getBytes(); // each name is null terminated
-		fileNameSize += files[i].length;
-	}
-	byte[] buffer = new byte[DROPFILES.sizeof + fileNameSize + 1]; // there is an extra null terminator at the very end
-	DROPFILES dropfiles = new DROPFILES();
-	dropfiles.pFiles = DROPFILES.sizeof;
-	dropfiles.pt_x = dropfiles.pt_y = 0;
-	dropfiles.fNC = 0;
-	dropfiles.fWide = 0;	
-	COM.MoveMemory(buffer, dropfiles, DROPFILES.sizeof);
 	
-	int offset = DROPFILES.sizeof;
-	for (int i = 0; i < fileNames.length; i++) {
-		System.arraycopy(files[i], 0, buffer, offset, files[i].length);
-		offset += files[i].length;
-	}
+	if (isSupportedType(transferData)) {
 
-	// pass byte array on to super to convert to native
-	super.javaToNative(buffer, transferData);
+		String[] fileNames = (String[]) object;
+		StringBuffer allFiles = new StringBuffer();
+		for (int i = 0; i < fileNames.length; i++) {
+			allFiles.append(fileNames[i]); 
+			allFiles.append('\0'); // each name is null terminated
+		}
+		TCHAR buffer = new TCHAR(0, allFiles.toString(), true); // there is an extra null terminator at the very end
+		
+		DROPFILES dropfiles = new DROPFILES();
+		dropfiles.pFiles = DROPFILES.sizeof;
+		dropfiles.pt_x = dropfiles.pt_y = 0;
+		dropfiles.fNC = 0;
+		dropfiles.fWide = COM.IsUnicode ? 1 : 0;
+		
+		// Allocate the memory because the caller (DropTarget) has not handed it in
+		// The caller of this method must release the data when it is done with it.
+		int byteCount = buffer.length() * TCHAR.sizeof;
+		int newPtr = COM.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, DROPFILES.sizeof + byteCount);
+		COM.MoveMemory(newPtr, dropfiles, DROPFILES.sizeof);
+		COM.MoveMemory(newPtr + DROPFILES.sizeof, buffer, byteCount);
+		
+		transferData.stgmedium = new STGMEDIUM();
+		transferData.stgmedium.tymed = COM.TYMED_HGLOBAL;
+		transferData.stgmedium.unionField = newPtr;
+		transferData.stgmedium.pUnkForRelease = 0;
+		transferData.result = COM.S_OK;
+		return;
+	}
+	
+	// did not match the TYMED
+	transferData.stgmedium = new STGMEDIUM();
+	transferData.result = COM.DV_E_TYMED;
 }
 /**
  * Converts a platform specific representation of a list of file names to a Java array of String.
@@ -113,14 +125,10 @@ public Object nativeToJava(TransferData transferData) {
 	for (int i = 0; i < count; i++){
 		// How long is the name ?
 		int size = COM.DragQueryFile(stgmedium.unionField, i, null, 0) + 1;
-		byte[] lpszFile = new byte[size];	
+		TCHAR lpszFile = new TCHAR(0, size);	
 		// Get file name and append it to string
 		COM.DragQueryFile(stgmedium.unionField, i, lpszFile, size);
-		String fileName = new String(lpszFile);
-		// remove terminating '\0'
-		int index = fileName.indexOf("\0");
-		fileName = fileName.substring(0, index);
-		fileNames[i] = fileName;
+		fileNames[i] = lpszFile.toString(0, lpszFile.strlen());
 	}
 	COM.DragFinish(stgmedium.unionField); // frees data associated with HDROP data
 	return fileNames;

@@ -1,4 +1,4 @@
-package org.eclipse.swt.internal.ole.win32;
+package org.eclipse.swt.internal.win32;
 
 /*
  * (c) Copyright IBM Corp. 2000, 2001.

@@ -5,6 +5,10 @@ package org.eclipse.swt.dnd;
  * All Rights Reserved
  */
 import org.eclipse.swt.internal.ole.win32.COM;
+import org.eclipse.swt.internal.win32.TCHAR;
+import org.eclipse.swt.internal.ole.win32.STGMEDIUM;
+import org.eclipse.swt.internal.ole.win32.FORMATETC;
+import org.eclipse.swt.internal.ole.win32.IDataObject;
 
 /**
  * The <code>TextTransfer</code> class is used to transfer text in a drag and drop operation.
@@ -42,13 +46,29 @@ public static TextTransfer getInstance () {
  *        with the platform specific format of the data
  */
 public void javaToNative (Object object, TransferData transferData){
-	if (object == null || !(object instanceof String)) return;
+	if (object == null || !(object instanceof String)) {
+		transferData.result = COM.E_FAIL;
+		return;
+	}
+	
+	if (isSupportedType(transferData)) {
+		TCHAR buffer = new TCHAR(0, (String)object, true);
+		int byteCount = buffer.length() * TCHAR.sizeof;
+		int newPtr = COM.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, byteCount);
+		COM.MoveMemory(newPtr, buffer, byteCount);
 		
-	// CF_TEXT is stored as a null terminated byte array
-	// create a byte array from object
-	String text = (String) object+'\0';
-	// pass byte array on to super to convert to native
-	super.javaToNative(text.getBytes(), transferData);
+		transferData.stgmedium = new STGMEDIUM();
+		transferData.stgmedium.tymed = COM.TYMED_HGLOBAL;
+		transferData.stgmedium.unionField = newPtr;
+		transferData.stgmedium.pUnkForRelease = 0;
+		transferData.result = COM.S_OK;
+		return;
+	}
+	
+	// did not match the TYMED
+	transferData.stgmedium = new STGMEDIUM();
+	transferData.result = COM.DV_E_TYMED;
+	
 }
 /**
  * Converts a platform specific representation of a string to a Java String.
@@ -58,20 +78,37 @@ public void javaToNative (Object object, TransferData transferData){
  *         otherwise null
  */
 public Object nativeToJava(TransferData transferData){
-	// get byte array from super
-	byte[] buffer = (byte[])super.nativeToJava(transferData);
-	if (buffer == null) return null;
-	// convert byte array to a string
-	String string = new String(buffer);
-	// remove null terminator
-	int index = string.indexOf("\0");
-	string = string.substring(0, index);
-	return string;
+	if (!isSupportedType(transferData) || transferData.pIDataObject == 0) {
+		transferData.result = COM.E_FAIL;
+		return null;
+	}
+	
+	IDataObject data = new IDataObject(transferData.pIDataObject);
+	data.AddRef();
+	
+	FORMATETC formatetc = transferData.formatetc;
+
+	STGMEDIUM stgmedium = new STGMEDIUM();
+	stgmedium.tymed = COM.TYMED_HGLOBAL;	
+	transferData.result = data.GetData(formatetc, stgmedium);
+	data.Release();
+		
+	if (transferData.result != COM.S_OK) {
+		return null;
+	}
+	
+	int size = COM.GlobalSize(stgmedium.unionField);
+	TCHAR buffer = new TCHAR(0, size / TCHAR.sizeof);
+	int ptr = COM.GlobalLock(stgmedium.unionField);
+	COM.MoveMemory(buffer, ptr, size);
+	COM.GlobalUnlock(ptr);	
+	COM.GlobalFree(stgmedium.unionField);
+	return buffer.toString(0, buffer.strlen());
 }
 protected int[] getTypeIds(){
-	return new int[] {COM.CF_TEXT};
+	return new int[] {COM.IsUnicode ? COM.CF_UNICODETEXT : COM.CF_TEXT};
 }
 protected String[] getTypeNames(){
-	return new String[] {"CF_TEXT"};
+	return new String[] {COM.IsUnicode ? "CF_UNICODETEXT" : "CF_TEXT"};
 }
 }

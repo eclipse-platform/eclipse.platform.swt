@@ -275,10 +275,12 @@ public String[] getAvailableTypeNames() {
 		FORMATETC formatetc = new FORMATETC();
 		COM.MoveMemory(formatetc, rgelt, FORMATETC.sizeof);
 		int maxSize = 128;
-		byte[] buffer = new byte[maxSize];
+		TCHAR buffer = new TCHAR(0, maxSize);
 		int size = COM.GetClipboardFormatName(formatetc.cfFormat, buffer, maxSize);
 		String type = null;
-		if (size == 0) {
+		if (size != 0) {
+			type = buffer.toString(0, size);
+		} else {
 			switch (formatetc.cfFormat) {
 				case COM.CF_HDROP:
 					type = "CF_HDROP";
@@ -334,10 +336,6 @@ public String[] getAvailableTypeNames() {
 				default:
 					continue;
 			}
-		} else {
-			byte[] buffer2 = new byte[size];
-			System.arraycopy(buffer, 0, buffer2, 0, size);
-			type = new String(buffer2);
 		}
 		
 		String[] newTypes = new String[types.length + 1];
