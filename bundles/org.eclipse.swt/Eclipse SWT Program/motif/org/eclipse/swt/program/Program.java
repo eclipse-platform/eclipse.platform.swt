@@ -68,7 +68,7 @@ static int getDesktop(Display display) {
 	int /*long*/ rootWindow = OS.XDefaultRootWindow(xDisplay);
 	int[] numProp = new int[1];
 	int /*long*/ propList = OS.XListProperties(xDisplay, rootWindow, numProp);
-	int /*long*/ [] property = new int/*long*/ [numProp[0]];
+	int /*long*/ [] property = new int /*long*/ [numProp[0]];
 	if (propList != 0) {
 		OS.memmove(property, propList, (property.length * 4));
 		OS.XFree(propList);
@@ -481,10 +481,10 @@ static boolean gnome_init() {
 	}
 }
 
-static String kde_convertQStringAndFree(int qString) {
+static String kde_convertQStringAndFree(int /*long*/ qString) {
 	if (qString == 0) return null;
-	int qCString = KDE.QString_utf8(qString);
-	int charString = KDE.QCString_data(qCString);
+	int /*long*/ qCString = KDE.QString_utf8(qString);
+	int /*long*/ charString = KDE.QCString_data(qCString);
 	
 	int length = OS.strlen(charString);
 	byte[] buffer = new byte[length];
@@ -506,10 +506,10 @@ static boolean kde_init() {
 
 	/* Use the character encoding for the default locale */
 	byte[] nameBuffer = Converter.wcsToMbcs(null, "SWT", true);
-	int qcString = KDE.QCString_new(nameBuffer);
-	int ptr = KDE.malloc(nameBuffer.length);
+	int /*long*/ qcString = KDE.QCString_new(nameBuffer);
+	int /*long*/ ptr = KDE.malloc(nameBuffer.length);
 	OS.memmove(ptr, nameBuffer, nameBuffer.length);
-	int[] argv = new int[]{ptr, 0};
+	int /*long*/ [] argv = new int /*long*/ []{ptr, 0};
 	KDE.KApplication_new(1, argv, qcString, false, false);
 	KDE.free(ptr);
 	KDE.QCString_delete(qcString);
