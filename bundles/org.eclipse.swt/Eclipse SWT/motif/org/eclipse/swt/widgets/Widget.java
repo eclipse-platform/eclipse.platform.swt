@@ -745,6 +745,7 @@ void setInputState (Event event, XInputEvent xEvent) {
 	if ((xEvent.state & OS.Mod1Mask) != 0) event.stateMask |= SWT.ALT;
 	if ((xEvent.state & OS.ShiftMask) != 0) event.stateMask |= SWT.SHIFT;
 	if ((xEvent.state & OS.ControlMask) != 0) event.stateMask |= SWT.CONTROL;
+	if ((xEvent.state & OS.ControlMask) != 0) event.stateMask |= SWT.COMMAND;
 	if ((xEvent.state & OS.Button1Mask) != 0) event.stateMask |= SWT.BUTTON1;
 	if ((xEvent.state & OS.Button2Mask) != 0) event.stateMask |= SWT.BUTTON2;
 	if ((xEvent.state & OS.Button3Mask) != 0) event.stateMask |= SWT.BUTTON3;	
