@@ -19,12 +19,12 @@ public void generate(Class clazz) {
 	output("=");
 	ClassData data = getMetaData().getMetaData(clazz);
 	if (data != null) output(data.toString());
-	outputDelimiter();
+	outputln();
 	Field[] fields = clazz.getDeclaredFields();
 	generate(fields);
 	Method[] methods = clazz.getDeclaredMethods();
 	generate(methods);
-	outputDelimiter();
+	outputln();
 }
 
 public void generate(Class[] classes) {
@@ -40,7 +40,7 @@ public void generate(Field[] fields) {
 		if ((mods & Modifier.FINAL) != 0) continue;
 		if ((mods & Modifier.STATIC) != 0) continue;
 		generate(field);
-		outputDelimiter();
+		outputln();
 	}
 }
 
@@ -59,7 +59,7 @@ public void generate(Method[] methods) {
 		Method method = methods[i];
 		if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
 		generate(method);
-		outputDelimiter();
+		outputln();
 	}
 }
 
@@ -77,7 +77,7 @@ public void generate(Method method) {
 	output("=");
 	MethodData methodData = getMetaData().getMetaData(method);
 	if (methodData != null) output(methodData.toString());
-	outputDelimiter();
+	outputln();
 	int length = method.getParameterTypes().length;
 	for (int i = 0; i < length; i++) {
 		output(key);
@@ -85,7 +85,7 @@ public void generate(Method method) {
 		output(i + "=");
 		ParameterData paramData = getMetaData().getMetaData(method, i);
 		if (paramData != null) output(paramData.toString());
-		outputDelimiter();		
+		outputln();		
 	}
 }
 

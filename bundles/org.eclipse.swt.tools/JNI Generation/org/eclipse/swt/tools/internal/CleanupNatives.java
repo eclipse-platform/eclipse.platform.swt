@@ -93,7 +93,7 @@ public void generate(Method method) {
 				output(paramNames[i]);
 			}
 			output(");");
-			outputDelimiter();
+			outputln();
 			usedCount++;
 			return;
 		}

@@ -49,8 +49,8 @@ public void generate(Class clazz) {
 	isCPP = classData.getFlag("cpp");
 	if (isCPP) {
 		output("extern \"C\" {");
-		outputDelimiter();
-		outputDelimiter();
+		outputln();
+		outputln();
 	}
 	generateNativeMacro(clazz);
 	Method[] methods = clazz.getDeclaredMethods();
@@ -58,7 +58,7 @@ public void generate(Class clazz) {
 	generate(methods);
 	if (isCPP) {
 		output("}");
-		outputDelimiter();
+		outputln();
 	}
 }
 
@@ -77,7 +77,7 @@ public void generateExcludes(Method[] methods) {
 	for (Iterator iter = excludes.iterator(); iter.hasNext();) {
 		String exclude = (String)iter.next();
 		output(exclude);
-		outputDelimiter();
+		outputln();
 		for (int i = 0; i < methods.length; i++) {
 			Method method = methods[i];
 			if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
@@ -86,12 +86,12 @@ public void generateExcludes(Method[] methods) {
 			if (exclude.equals(methodExclude)) {
 				output("#define NO_");
 				output(getFunctionName(method));
-				outputDelimiter();
+				outputln();
 			}
 		}
 		output("#endif");
-		outputDelimiter();
-		outputDelimiter();
+		outputln();
+		outputln();
 	}
 }
 
@@ -113,7 +113,7 @@ public void generate(Method method) {
 	
 	if (!(returnType == Void.TYPE || returnType.isPrimitive())) {
 		output("Warning: bad return type. :" + method);
-		outputDelimiter();
+		outputln();
 		return;
 	}
 	
@@ -121,7 +121,7 @@ public void generate(Method method) {
 	generateFunctionPrototype(method, function, paramTypes, returnType);
 	generateFunctionBody(method, methodData, function, paramTypes, returnType);
 	generateSourceEnd(function);
-	outputDelimiter();
+	outputln();
 }
 
 public void setEnterExitMacro(boolean enterExitMacro) {
@@ -138,8 +138,8 @@ void generateNativeMacro(Class clazz) {
 	output("_NATIVE(func) Java_");
 	output(toC(clazz.getName()));
 	output("_##func");
-	outputDelimiter();
-	outputDelimiter();
+	outputln();
+	outputln();
 }
 
 void generateGetParameter(int i, Class paramType, ParameterData paramData, boolean critical) {
@@ -212,7 +212,7 @@ void generateGetParameter(int i, Class paramType, ParameterData paramData, boole
 			output(");");
 		}
 	}
-	outputDelimiter();
+	outputln();
 }
 
 void generateSetParameter(int i, Class paramType, ParameterData paramData, boolean critical) {
@@ -257,7 +257,7 @@ void generateSetParameter(int i, Class paramType, ParameterData paramData, boole
 		} else {
 			throw new Error("not done");
 		}
-		outputDelimiter();
+		outputln();
 	} else if (paramType == String.class) {
 		output("\tif (arg");
 		output(iStr);
@@ -279,7 +279,7 @@ void generateSetParameter(int i, Class paramType, ParameterData paramData, boole
 		output(", lparg");
 		output(iStr);
 		output(");");
-		outputDelimiter();
+		outputln();
 	} else {
 		if (!paramData.getFlag("no_out")) {
 			output("\tif (arg");
@@ -292,7 +292,7 @@ void generateSetParameter(int i, Class paramType, ParameterData paramData, boole
 			output(", lparg");
 			output(iStr);
 			output(");");
-			outputDelimiter();
+			outputln();
 		}
 	}
 }
@@ -304,7 +304,7 @@ void generateExitMacro(Method method, String function) {
 	output("_NATIVE_EXIT(env, that, ");
 	output(function);
 	output("_FUNC);");
-	outputDelimiter();
+	outputln();
 }
 
 void generateEnterMacro(Method method, String function) {
@@ -314,7 +314,7 @@ void generateEnterMacro(Method method, String function) {
 	output("_NATIVE_ENTER(env, that, ");
 	output(function);
 	output("_FUNC);");
-	outputDelimiter();
+	outputln();
 }
 
 boolean generateLocalVars(Method method, Class[] paramTypes, Class returnType) {
@@ -347,7 +347,7 @@ boolean generateLocalVars(Method method, Class[] paramTypes, Class returnType) {
 			output(", *lparg" + i);
 			output("=NULL;");
 		}
-		outputDelimiter();
+		outputln();
 		needsReturn = true;
 	}
 	if (needsReturn) {
@@ -355,7 +355,7 @@ boolean generateLocalVars(Method method, Class[] paramTypes, Class returnType) {
 			output("\t");
 			output(getTypeSignature2(returnType));
 			output(" rc;");
-			outputDelimiter();
+			outputln();
 		}
 	}
 	return needsReturn;
@@ -374,9 +374,9 @@ void generateGetters(Method method, Class[] paramTypes) {
 	}
 	if (criticalCount != 0) {
 		output("#ifdef JNI_VERSION_1_2");
-		outputDelimiter();
+		outputln();
 		output("\tif (IS_JNI_1_2) {");
-		outputDelimiter();
+		outputln();
 		for (int i = 0; i < paramTypes.length; i++) {
 			Class paramType = paramTypes[i];
 			ParameterData paramData = getMetaData().getMetaData(method, i);
@@ -386,11 +386,11 @@ void generateGetters(Method method, Class[] paramTypes) {
 			}
 		}
 		output("\t} else");
-		outputDelimiter();
+		outputln();
 		output("#endif");
-		outputDelimiter();
+		outputln();
 		output("\t{");
-		outputDelimiter();
+		outputln();
 		for (int i = 0; i < paramTypes.length; i++) {
 			Class paramType = paramTypes[i];
 			ParameterData paramData = getMetaData().getMetaData(method, i);
@@ -400,7 +400,7 @@ void generateGetters(Method method, Class[] paramTypes) {
 			}
 		}
 		output("\t}");
-		outputDelimiter();	
+		outputln();	
 	}
 }
 
@@ -415,9 +415,9 @@ void generateSetters(Method method, Class[] paramTypes) {
 	}
 	if (criticalCount != 0) {
 		output("#ifdef JNI_VERSION_1_2");
-		outputDelimiter();
+		outputln();
 		output("\tif (IS_JNI_1_2) {");
-		outputDelimiter();
+		outputln();
 		for (int i = paramTypes.length - 1; i >= 0; i--) {
 			Class paramType = paramTypes[i];
 			ParameterData paramData = getMetaData().getMetaData(method, i);
@@ -427,11 +427,11 @@ void generateSetters(Method method, Class[] paramTypes) {
 			}
 		}
 		output("\t} else");
-		outputDelimiter();
+		outputln();
 		output("#endif");
-		outputDelimiter();
+		outputln();
 		output("\t{");
-		outputDelimiter();
+		outputln();
 		for (int i = paramTypes.length - 1; i >= 0; i--) {
 			Class paramType = paramTypes[i];
 			ParameterData paramData = getMetaData().getMetaData(method, i);
@@ -441,7 +441,7 @@ void generateSetters(Method method, Class[] paramTypes) {
 			}
 		}
 		output("\t}");
-		outputDelimiter();
+		outputln();
 	}
 	for (int i = paramTypes.length - 1; i >= 0; i--) {
 		Class paramType = paramTypes[i];
@@ -454,57 +454,57 @@ void generateSetters(Method method, Class[] paramTypes) {
 
 void generateDynamicFunctionCall(Method method, MethodData methodData, Class[] paramTypes, Class returnType, boolean needsReturn) {
 	output("/*");
-	outputDelimiter();
+	outputln();
 	generateFunctionCall(method, methodData, paramTypes, returnType, needsReturn);
 	output("*/");
-	outputDelimiter();
+	outputln();
 	output("\t");
 	output("{");
-	outputDelimiter();
+	outputln();
 
 	if (getPlatform().equals("win32")) {
 		output("\t\tstatic int initialized = 0;");
-		outputDelimiter();
+		outputln();
 		output("\t\tstatic HMODULE hm = NULL;");
-		outputDelimiter();
+		outputln();
 		output("\t\tstatic FARPROC fp = NULL;");
-		outputDelimiter();
+		outputln();
 		if (returnType != Void.TYPE) {
 			if (needsReturn) {
 				output("\t\trc = 0;");
-				outputDelimiter();
+				outputln();
 			}
 		}
 		output("\t\tif (!initialized) {");
-		outputDelimiter();
+		outputln();
 		output("\t\t\tif (!(hm = GetModuleHandle(");
 		output(method.getName());
 		output("_LIB))) hm = LoadLibrary(");
 		output(method.getName());
 		output("_LIB);");
-		outputDelimiter();
+		outputln();
 		output("\t\t\tif (hm) fp = GetProcAddress(hm, \"");
 		output(method.getName());
 		output("\");");
-		outputDelimiter();
+		outputln();
 		output("\t\t\tinitialized = 1;");
-		outputDelimiter();
+		outputln();
 		output("\t\t}");
-		outputDelimiter();
+		outputln();
 		output("\t\tif (fp) {");
-		outputDelimiter();
+		outputln();
 		output("\t\t");
 		generateFunctionCallLeftSide(method, methodData, returnType, needsReturn);
 		output("fp");
 		generateFunctionCallRightSide(method, methodData, paramTypes, 0);
-		outputDelimiter();
+		outputln();
 		output("\t\t}");
-		outputDelimiter();
+		outputln();
 	} else {
 		output("\t\tstatic int initialized = 0;");
-		outputDelimiter();
+		outputln();
 		output("\t\tstatic void *handle = NULL;");
-		outputDelimiter();
+		outputln();
 		output("\t\ttypedef ");
 		output(getTypeSignature2(returnType));
 		output(" (*FPTR)(");
@@ -520,43 +520,43 @@ void generateDynamicFunctionCall(Method method, MethodData methodData, Class[] p
 			}
 		}
 		output(");");
-		outputDelimiter();
+		outputln();
 		output("\t\tstatic FPTR fptr;");
-		outputDelimiter();
+		outputln();
 		if (returnType != Void.TYPE) {
 			if (needsReturn) {
 				output("\t\trc = 0;");
-				outputDelimiter();
+				outputln();
 			}
 		}
 		output("\t\tif (!initialized) {");
-		outputDelimiter();
+		outputln();
 		output("\t\t\tif (!handle) handle = dlopen(");
 		output(method.getName());
 		output("_LIB, RTLD_LAZY);");
-		outputDelimiter();
+		outputln();
 		output("\t\t\tif (handle) fptr = (FPTR)dlsym(handle, \"");
 		output(method.getName());
 		output("\");");
-		outputDelimiter();
+		outputln();
 		output("\t\t\tinitialized = 1;");
-		outputDelimiter();
+		outputln();
 		output("\t\t}");
-		outputDelimiter();
+		outputln();
 		output("\t\tif (fptr) {");
-		outputDelimiter();
+		outputln();
 		output("\t\t");
 		generateFunctionCallLeftSide(method, methodData, returnType, needsReturn);
 		output("(*fptr)");
 		generateFunctionCallRightSide(method, methodData, paramTypes, 0);
-		outputDelimiter();
+		outputln();
 		output("\t\t}");
-		outputDelimiter();
+		outputln();
 	}
 
 	output("\t");
 	output("}");
-	outputDelimiter();
+	outputln();
 }
 
 void generateFunctionCallLeftSide(Method method, MethodData methodData, Class returnType, boolean needsReturn) {
@@ -672,7 +672,7 @@ void generateFunctionCall(Method method, MethodData methodData, Class[] paramTyp
 			output(cast);
 		}
 		output("arg0;");
-		outputDelimiter();
+		outputln();
 		return;
 	} else {
 		String accessor = methodData.getAccessor();
@@ -683,33 +683,33 @@ void generateFunctionCall(Method method, MethodData methodData, Class[] paramTyp
 		}
 	}
 	generateFunctionCallRightSide(method, methodData, paramTypes, paramStart);
-	outputDelimiter();
+	outputln();
 	if (makeCopy) {
 		output("\t{");
-		outputDelimiter();
+		outputln();
 		output("\t\t");
 		output(copy);
 		output("* copy = new ");
 		output(copy);
 		output("();");
-		outputDelimiter();
+		outputln();
 		output("\t\t*copy = temp;");
-		outputDelimiter();
+		outputln();
 		output("\t\trc = ");
 		output("(");
 		output(getTypeSignature2(returnType));
 		output(")");
 		output("copy;");
-		outputDelimiter();
+		outputln();
 		output("\t}");
-		outputDelimiter();
+		outputln();
 	}
 }
 
 void generateReturn(Method method, Class returnType, boolean needsReturn) {
 	if (needsReturn && returnType != Void.TYPE) {
 		output("\treturn rc;");
-		outputDelimiter();
+		outputln();
 	}
 }
 
@@ -724,13 +724,13 @@ void generateGTKmemmove(Method method, String function, Class[] paramTypes) {
 	output(className);
 	output(get ? " *)arg0)" : " *)arg1)");
 	output(";");
-	outputDelimiter();
+	outputln();
 	generateExitMacro(method, function);	
 }
 
 void generateFunctionBody(Method method, MethodData methodData, String function, Class[] paramTypes, Class returnType) {
 	output("{");
-	outputDelimiter();
+	outputln();
 	
 	/* Custom GTK memmoves. */
 	boolean isGTKmemove = method.getName().equals("memmove") && paramTypes.length == 2 && returnType == Void.TYPE;
@@ -751,7 +751,7 @@ void generateFunctionBody(Method method, MethodData methodData, String function,
 	}
 	
 	output("}");
-	outputDelimiter();
+	outputln();
 }
 
 void generateFunctionPrototype(Method method, String function, Class[] paramTypes, Class returnType) {
@@ -770,7 +770,7 @@ void generateFunctionPrototype(Method method, String function, Class[] paramType
 	if (nativeMacro) {
 		output(")");
 	}
-	outputDelimiter();
+	outputln();
 	output("\t(JNIEnv *env, ");
 	if ((method.getModifiers() & Modifier.STATIC) != 0) {
 		output("jclass");
@@ -785,18 +785,18 @@ void generateFunctionPrototype(Method method, String function, Class[] paramType
 		output(" arg" + i);
 	}
 	output(")");
-	outputDelimiter();
+	outputln();
 }
 
 void generateSourceStart(String function) {
 	output("#ifndef NO_");
 	output(function);
-	outputDelimiter();	
+	outputln();	
 }
 
 void generateSourceEnd(String function) {
 	output("#endif");
-	outputDelimiter();
+	outputln();
 }
 
 boolean isCritical(Class paramType, ParameterData paramData) {

@@ -16,10 +16,10 @@ public class SizeofGenerator extends JNIGenerator {
 
 public void generate(Class[] classes) {
 	output("int main() {");
-	outputDelimiter();
+	outputln();
 	super.generate(classes);
 	output("}");
-	outputDelimiter();
+	outputln();
 }
 
 public void generate(Class clazz) {
@@ -29,7 +29,7 @@ public void generate(Class clazz) {
 	output("=%d\\n\", sizeof(");
 	output(className);
 	output("));");
-	outputDelimiter();
+	outputln();
 //	Field[] fields = clazz.getDeclaredFields();
 //	generate(fields);	
 }
@@ -49,7 +49,7 @@ public void generate(Field field) {
 	output("=%d\\n\", sizeof(");
 	output(field.getName());
 	output("));");
-	outputDelimiter();
+	outputln();
 }
 
 public static void main(String[] args) {

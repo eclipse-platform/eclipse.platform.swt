@@ -22,14 +22,14 @@ public void generate(Class clazz) {
 public void generate(Field[] fields) {
 	sort(fields);
 	output("int main() {");
-	outputDelimiter();
+	outputln();
 	for (int i = 0; i < fields.length; i++) {
 		Field field = fields[i];
 		if ((field.getModifiers() & Modifier.FINAL) == 0) continue;
 		generate(field);
 	}
 	output("}");
-	outputDelimiter();
+	outputln();
 }
 
 public void generate(Field field) {
@@ -44,7 +44,7 @@ public void generate(Field field) {
 	output(";\\n\", ");
 	output(field.getName());
 	output(");");
-	outputDelimiter();
+	outputln();
 }
 
 public static void main(String[] args) {

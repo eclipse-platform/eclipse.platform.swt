@@ -40,7 +40,7 @@ public void generateExcludes(Class[] classes) {
 	for (Iterator iter = excludes.iterator(); iter.hasNext();) {
 		String exclude = (String)iter.next();
 		output(exclude);
-		outputDelimiter();
+		outputln();
 		for (int i = 0; i < classes.length; i++) {
 			Class clazz = classes[i];
 			ClassData classData = getMetaData().getMetaData(clazz);
@@ -48,12 +48,12 @@ public void generateExcludes(Class[] classes) {
 			if (exclude.equals(classExclude)) {
 				output("#define NO_");
 				output(getClassName(clazz));
-				outputDelimiter();
+				outputln();
 			}
 		}
 		output("#endif");
-		outputDelimiter();
-		outputDelimiter();
+		outputln();
+		outputln();
 	}
 }
 
@@ -62,7 +62,7 @@ public void generateHeaderFile(Class clazz) {
 	generatePrototypes(clazz);
 	generateBlankMacros(clazz);
 	generateSourceEnd(clazz);	
-	outputDelimiter();
+	outputln();
 }
 
 public void generateHeaderFile(Class[] classes) {
@@ -81,12 +81,12 @@ public void generateHeaderFile(Class[] classes) {
 public void generateSourceFile(Class clazz) {
 	generateSourceStart(clazz);
 	generateFIDsStructure(clazz);
-	outputDelimiter();
+	outputln();
 	generateGlobalVar(clazz);
-	outputDelimiter();
+	outputln();
 	generateFunctions(clazz);
 	generateSourceEnd(clazz);
-	outputDelimiter();
+	outputln();
 }
 
 public void generateSourceFile(Class[] classes) {
@@ -115,12 +115,12 @@ void generateSourceStart(Class clazz) {
 	String clazzName = getClassName(clazz);
 	output("#ifndef NO_");
 	output(clazzName);
-	outputDelimiter();
+	outputln();
 }
 
 void generateSourceEnd(Class clazz) {
 	output("#endif");
-	outputDelimiter();
+	outputln();
 }
 
 void generateGlobalVar(Class clazz) {
@@ -129,29 +129,29 @@ void generateGlobalVar(Class clazz) {
 	output("_FID_CACHE ");
 	output(clazzName);
 	output("Fc;");
-	outputDelimiter();
+	outputln();
 }
 
 void generateBlankMacros(Class clazz) {
 	String clazzName = getClassName(clazz);
 	output("#else");
-	outputDelimiter();
+	outputln();
 	output("#define cache");
 	output(clazzName);
 	output("Fields(a,b)");
-	outputDelimiter();
+	outputln();
 	output("#define get");
 	output(clazzName);
 	output("Fields(a,b,c) NULL");
-	outputDelimiter();
+	outputln();
 	output("#define set");
 	output(clazzName);
 	output("Fields(a,b,c)");
-	outputDelimiter();
+	outputln();
 	output("#define ");
 	output(clazzName);
 	output("_sizeof() 0");
-	outputDelimiter();
+	outputln();
 }
 
 void generatePrototypes(Class clazz) {
@@ -159,26 +159,26 @@ void generatePrototypes(Class clazz) {
 	output("void cache");
 	output(clazzName);
 	output("Fields(JNIEnv *env, jobject lpObject);");
-	outputDelimiter();
+	outputln();
 	output(clazzName);
 	output(" *get");
 	output(clazzName);
 	output("Fields(JNIEnv *env, jobject lpObject, ");
 	output(clazzName);
 	output(" *lpStruct);");
-	outputDelimiter();
+	outputln();
 	output("void set");
 	output(clazzName);
 	output("Fields(JNIEnv *env, jobject lpObject, ");
 	output(clazzName);
 	output(" *lpStruct);");
-	outputDelimiter();
+	outputln();
 	output("#define ");
 	output(clazzName);
 	output("_sizeof() sizeof(");
 	output(clazzName);
 	output(")");
-	outputDelimiter();
+	outputln();
 }
 
 void generateFIDsStructure(Class clazz) {
@@ -186,11 +186,11 @@ void generateFIDsStructure(Class clazz) {
 	output("typedef struct ");
 	output(clazzName);
 	output("_FID_CACHE {");
-	outputDelimiter();
+	outputln();
 	output("\tint cached;");
-	outputDelimiter();
+	outputln();
 	output("\tjclass clazz;");
-	outputDelimiter();
+	outputln();
 	output("\tjfieldID ");
 	Field[] fields = clazz.getDeclaredFields();
 	boolean first = true;
@@ -202,11 +202,11 @@ void generateFIDsStructure(Class clazz) {
 		first = false;
 	}
 	output(";");
-	outputDelimiter();
+	outputln();
 	output("} ");
 	output(clazzName);
 	output("_FID_CACHE;");
-	outputDelimiter();
+	outputln();
 }
 
 void generateCacheFunction(Class clazz) {
@@ -214,20 +214,20 @@ void generateCacheFunction(Class clazz) {
 	output("void cache");
 	output(clazzName);
 	output("Fields(JNIEnv *env, jobject lpObject)");
-	outputDelimiter();
+	outputln();
 	output("{");
-	outputDelimiter();
+	outputln();
 	output("\tif (");
 	output(clazzName);
 	output("Fc.cached) return;");
-	outputDelimiter();
+	outputln();
 	Class superclazz = clazz.getSuperclass();
 	if (superclazz != Object.class) {
 		String superName = getClassName(superclazz);
 		output("\tcache");
 		output(superName);
 		output("Fields(env, lpObject);");
-		outputDelimiter();
+		outputln();
 	}
 	output("\t");
 	output(clazzName);
@@ -236,7 +236,7 @@ void generateCacheFunction(Class clazz) {
 	} else {
 		output("Fc.clazz = (*env)->GetObjectClass(env, lpObject);");
 	}
-	outputDelimiter();
+	outputln();
 	Field[] fields = clazz.getDeclaredFields();
 	for (int i = 0; i < fields.length; i++) {
 		Field field = fields[i];
@@ -256,14 +256,14 @@ void generateCacheFunction(Class clazz) {
 		output("\", \"");
 		output(getTypeSignature(field.getType()));
 		output("\");");
-		outputDelimiter();
+		outputln();
 	}
 	output("\t");
 	output(clazzName);
 	output("Fc.cached = 1;");
-	outputDelimiter();
+	outputln();
 	output("}");
-	outputDelimiter();
+	outputln();
 }
 
 void generateGetFields(Class clazz) {
@@ -278,7 +278,7 @@ void generateGetFields(Class clazz) {
 			output("Fields(env, lpObject, (");
 			output(superName);
 			output(" *)lpStruct);");
-			outputDelimiter();
+			outputln();
 		} else {
 			generateGetFields(superclazz);
 		}
@@ -291,12 +291,12 @@ void generateGetFields(Class clazz) {
 		String exclude = fieldData.getExclude();
 		if (exclude.length() != 0) {
 			output(exclude);
-			outputDelimiter();
+			outputln();
 		}
 		boolean noWinCE = fieldData.getFlag("no_wince");
 		if (noWinCE) {
 			output("#ifndef _WIN32_WCE");
-			outputDelimiter();
+			outputln();
 		}
 		Class type = field.getType();
 		String typeName = getClassName(type);
@@ -326,7 +326,7 @@ void generateGetFields(Class clazz) {
 			Class componentType = type.getComponentType();
 			if (componentType.isPrimitive()) {
 				output("\t{");
-				outputDelimiter();
+				outputln();
 				output("\t");				
 				output(getTypeSignature2(field.getType()));
 				output(" lpObject1 = (");
@@ -340,7 +340,7 @@ void generateGetFields(Class clazz) {
 				output("Fc.");
 				output(field.getName());
 				output(");");
-				outputDelimiter();
+				outputln();
 				if (isCPP) {
 					output("\tenv->Get");
 				} else {
@@ -364,14 +364,14 @@ void generateGetFields(Class clazz) {
 				output(")lpStruct->");
 				output(accessor);
 				output(");");
-				outputDelimiter();
+				outputln();
 				output("\t}");
 			} else {
 				throw new Error("not done");
 			}
 		} else {
 			output("\t{");
-			outputDelimiter();
+			outputln();
 			if (isCPP) {
 				output("\tjobject lpObject1 = env->GetObjectField(lpObject, ");
 			} else {
@@ -381,23 +381,23 @@ void generateGetFields(Class clazz) {
 			output("Fc.");
 			output(field.getName());
 			output(");");
-			outputDelimiter();
+			outputln();
 			output("\tget");
 			output(typeName);
 			output("Fields(env, lpObject1, &lpStruct->");
 			output(accessor);
 			output(");");
-			outputDelimiter();
+			outputln();
 			output("\t}");
 		}
-		outputDelimiter();
+		outputln();
 		if (noWinCE) {
 			output("#endif");
-			outputDelimiter();
+			outputln();
 		}
 		if (exclude.length() != 0) {
 			output("#endif");
-			outputDelimiter();
+			outputln();
 		}
 	}
 }
@@ -410,20 +410,20 @@ void generateGetFunction(Class clazz) {
 	output("Fields(JNIEnv *env, jobject lpObject, ");
 	output(clazzName);
 	output(" *lpStruct)");
-	outputDelimiter();
+	outputln();
 	output("{");
-	outputDelimiter();
+	outputln();
 	output("\tif (!");
 	output(clazzName);
 	output("Fc.cached) cache");
 	output(clazzName);
 	output("Fields(env, lpObject);");
-	outputDelimiter();
+	outputln();
 	generateGetFields(clazz);
 	output("\treturn lpStruct;");
-	outputDelimiter();
+	outputln();
 	output("}");
-	outputDelimiter();
+	outputln();
 }
 
 void generateSetFields(Class clazz) {
@@ -438,7 +438,7 @@ void generateSetFields(Class clazz) {
 			output("Fields(env, lpObject, (");
 			output(superName);
 			output(" *)lpStruct);");
-			outputDelimiter();
+			outputln();
 		} else {
 			generateSetFields(superclazz);
 		}
@@ -451,12 +451,12 @@ void generateSetFields(Class clazz) {
 		String exclude = fieldData.getExclude();
 		if (exclude.length() != 0) {
 			output(exclude);
-			outputDelimiter();
+			outputln();
 		}
 		boolean noWinCE = fieldData.getFlag("no_wince");
 		if (noWinCE) {
 			output("#ifndef _WIN32_WCE");
-			outputDelimiter();
+			outputln();
 		}
 		Class type = field.getType();
 		String typeName = getClassName(type);
@@ -486,7 +486,7 @@ void generateSetFields(Class clazz) {
 			Class componentType = type.getComponentType();
 			if (componentType.isPrimitive()) {
 				output("\t{");
-				outputDelimiter();
+				outputln();
 				output("\t");				
 				output(getTypeSignature2(field.getType()));
 				output(" lpObject1 = (");
@@ -500,7 +500,7 @@ void generateSetFields(Class clazz) {
 				output("Fc.");
 				output(field.getName());
 				output(");");
-				outputDelimiter();
+				outputln();
 				if (isCPP) {
 					output("\tenv->Set");
 				} else {
@@ -524,36 +524,36 @@ void generateSetFields(Class clazz) {
 				output(")lpStruct->");
 				output(accessor);
 				output(");");
-				outputDelimiter();
+				outputln();
 				output("\t}");
 			} else {
 				throw new Error("not done");
 			}
 		} else {
 			output("\t{");
-			outputDelimiter();
+			outputln();
 			output("\tjobject lpObject1 = (*env)->GetObjectField(env, lpObject, ");
 			output(getClassName(field.getDeclaringClass()));
 			output("Fc.");
 			output(field.getName());
 			output(");");
-			outputDelimiter();
+			outputln();
 			output("\tset");
 			output(typeName);
 			output("Fields(env, lpObject1, &lpStruct->");
 			output(accessor);
 			output(");");
-			outputDelimiter();
+			outputln();
 			output("\t}");
 		}
-		outputDelimiter();
+		outputln();
 		if (noWinCE) {
 			output("#endif");
-			outputDelimiter();
+			outputln();
 		}
 		if (exclude.length() != 0) {
 			output("#endif");
-			outputDelimiter();
+			outputln();
 		}
 	}
 }
@@ -565,25 +565,25 @@ void generateSetFunction(Class clazz) {
 	output("Fields(JNIEnv *env, jobject lpObject, ");
 	output(clazzName);
 	output(" *lpStruct)");
-	outputDelimiter();
+	outputln();
 	output("{");
-	outputDelimiter();
+	outputln();
 	output("\tif (!");
 	output(clazzName);
 	output("Fc.cached) cache");
 	output(clazzName);
 	output("Fields(env, lpObject);");
-	outputDelimiter();
+	outputln();
 	generateSetFields(clazz);
 	output("}");
-	outputDelimiter();
+	outputln();
 }
 
 void generateFunctions(Class clazz) {
 	generateCacheFunction(clazz);
-	outputDelimiter();
+	outputln();
 	generateGetFunction(clazz);
-	outputDelimiter();
+	outputln();
 	generateSetFunction(clazz);
 }
 

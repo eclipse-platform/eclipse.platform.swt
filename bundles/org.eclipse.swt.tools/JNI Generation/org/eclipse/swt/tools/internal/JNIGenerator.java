@@ -245,7 +245,7 @@ public void generateMetaData(String key) {
 	String data = mt.getMetaData(key, null);
 	if (data == null) return;
 	output(fixDelimiter(data));
-	outputDelimiter();
+	outputln();
 }
 
 public String getDelimiter() {
@@ -268,7 +268,12 @@ public void output(String str) {
 	output.print(str);
 }
 
-public void outputDelimiter() {
+public void outputln() {
+	output(getDelimiter());
+}
+
+public void outputln(String str) {
+	output(str);
 	output(getDelimiter());
 }
 
