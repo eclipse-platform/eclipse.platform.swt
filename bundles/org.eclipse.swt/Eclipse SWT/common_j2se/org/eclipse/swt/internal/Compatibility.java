@@ -117,7 +117,7 @@ public static int floor(int p, int q) {
  * @return the closest integer to the rational number p / q
  */
 public static int round(int p, int q) {
-	return (int)Math.round((float)p / q);
+	return Math.round((float)p / q);
 }
 
 /**
@@ -144,6 +144,7 @@ public static int pow2(int n) {
  * 
  * @param filename the name of the file to open
  * @return a stream on the file if it could be opened.
+ * @exception IOException
  */
 public static InputStream newFileInputStream(String filename) throws IOException {
 	return new FileInputStream(filename);
@@ -154,6 +155,7 @@ public static InputStream newFileInputStream(String filename) throws IOException
  * 
  * @param filename the name of the file to open
  * @return a stream on the file if it could be opened.
+ * @exception IOException
  */
 public static OutputStream newFileOutputStream(String filename) throws IOException {
 	return new FileOutputStream(filename);
@@ -192,7 +194,7 @@ public static boolean isSpaceChar(char c) {
 /**
  * Answers whether the character is a whitespace character.
  *
- * @param ch the character to test
+ * @param c the character to test
  * @return true if the character is whitespace
  */
 public static boolean isWhitespace(char c) {
@@ -206,7 +208,7 @@ public static boolean isWhitespace(char c) {
  * The new process inherits the environment of the caller.
  * </p>
  *
- * @param program the name of the program to execute
+ * @param prog the name of the program to execute
  *
  * @exception IOException
  *  if the program cannot be executed
@@ -244,7 +246,7 @@ private static ResourceBundle msgs = null;
  * @param key the key to look up
  * @return the message for the given key
  * 
- * @see SWT#getMessage
+ * @see SWT#getMessage(String)
  */
 public static String getMessage(String key) {
 	String answer = key;
