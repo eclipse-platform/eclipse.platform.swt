@@ -10,17 +10,23 @@ import org.eclipse.swt.*;
 /**
  * Instances of this class manage the operating system resources that
  * implement SWT's RGB color model. To create a color you can either
- * specify the individual color components as integers in the range
- * 0 to 255 or provide an instance of an <code>RGB</code>.
+ * specify the individual color components as integers in the range 
+ * 0 to 255 or provide an instance of an <code>RGB</code>. 
  * <p>
- * Application code must explicitly invoke the <code>Color.dispose()</code>
+ * Application code must explicitly invoke the <code>Color.dispose()</code> 
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required.
  * </p>
  *
  * @see RGB
  */
+
 public final class Color {
+
+	/**
+	 * the handle to the OS color resource 
+	 * (Warning: This field is platform dependent)
+	 */
 
 	public int handle;
 
@@ -31,16 +37,16 @@ public final class Color {
 
 Color() {
 }
-/**
+/**	 
  * Constructs a new instance of this class given a device and the
  * desired red, green and blue values expressed as ints in the range
  * 0 to 255 (where 0 is black and 255 is full brightness). On limited
  * color devices, the color instance created by this call may not have
  * the same RGB values as the ones specified by the arguments. The
- * RGB values on the returned instance will be the color values of
+ * RGB values on the returned instance will be the color values of 
  * the operating system color.
  * <p>
- * You must dispose the color when it is no longer required.
+ * You must dispose the color when it is no longer required. 
  * </p>
  *
  * @param device the device on which to allocate the color
@@ -49,15 +55,17 @@ Color() {
  * @param blue the amount of blue in the color
  *
  * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the red, green or blue argument is not between 0 and 255</li>
  * </ul>
  *
  * @see #dispose
  */
+
 public Color (Device device, int red, int green, int blue) {
 	init(device, red, green, blue);
 }
-/**
+/**	 
  * Constructs a new instance of this class given a device and an
  * <code>RGB</code> describing the desired red, green and blue values.
  * On limited color devices, the color instance created by this call
@@ -65,19 +73,21 @@ public Color (Device device, int red, int green, int blue) {
  * argument. The RGB values on the returned instance will be the color
  * values of the operating system color.
  * <p>
- * You must dispose the color when it is no longer required.
+ * You must dispose the color when it is no longer required. 
  * </p>
  *
  * @param device the device on which to allocate the color
  * @param RGB the RGB values of the desired color
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the red, green or blue components of the argument are not between 0 and 255</li>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if the rgb argument is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the red, green or blue components of the argument are not between 0 and 255</li>
  * </ul>
  *
  * @see #dispose
  */
+
 public Color (Device device, RGB rgb) {
 	if (rgb == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(device, rgb.red, rgb.green, rgb.blue);
@@ -159,8 +169,8 @@ public RGB getRGB () {
 	return new RGB((handle >> 16) & 0xFF, (handle >> 8) & 0xFF, (handle >> 0) & 0xFF);
 }
 /**
- * Returns an integer hash code for the receiver. Any two
- * objects which return <code>true</code> when passed to
+ * Returns an integer hash code for the receiver. Any two 
+ * objects which return <code>true</code> when passed to 
  * <code>equals</code> must return the same value for this
  * method.
  *
@@ -168,6 +178,7 @@ public RGB getRGB () {
  *
  * @see #equals
  */
+
 public int hashCode () {
 	if (isDisposed()) return 0;
 	return handle;

@@ -20,7 +20,7 @@ import java.io.*;
  * pixels are specified as being transparent when drawn. Examples
  * of file formats that support transparency are GIF and PNG.
  * </p><p>
- * There are two primary ways to use <code>Images</code>.
+ * There are two primary ways to use <code>Images</code>. 
  * The first is to load a graphic file from disk and create an
  * <code>Image</code> from it. This is done using an <code>Image</code>
  * constructor, for example:
@@ -33,21 +33,21 @@ import java.io.*;
  * SWT. It is possible to get more control over the mapping of
  * colors as the image is being created, using code of the form:
  * <pre>
- *    ImageData data = new ImageData("C:\\graphic.bmp");
- *    RGB[] rgbs = data.getRGBs();
+ *    ImageData data = new ImageData("C:\\graphic.bmp"); 
+ *    RGB[] rgbs = data.getRGBs(); 
  *    // At this point, rgbs contains specifications of all
  *    // the colors contained within this image. You may
  *    // allocate as many of these colors as you wish by
  *    // using the Color constructor Color(RGB), then
  *    // create the image:
- *    Image i = new Image(device, data);</code>
+ *    Image i = new Image(device, data);
  * </pre>
  * <p>
  * Applications which require even greater control over the image
  * loading process should use the support provided in class
  * <code>ImageLoader</code>.
  * </p><p>
- * Application code must explicitely invoke the <code>Image.dispose()</code>
+ * Application code must explicitely invoke the <code>Image.dispose()</code> 
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required.
  * </p>
@@ -56,6 +56,7 @@ import java.io.*;
  * @see ImageData
  * @see ImageLoader
  */
+
 public final class Image implements Drawable {
 
     static class XImage {
@@ -166,15 +167,26 @@ Image() {
  *    gc.drawRectangle(0, 0, 50, 50);
  *    gc.dispose();
  * </pre>
+ * <p>
+ * Note: Some platforms may have a limitation on the size
+ * of image that can be created (size depends on width, height,
+ * and depth). For example, Windows 95, 98, and ME do not allow
+ * images larger than 16M.
+ * </p>
  *
  * @param device the device on which to create the image
  * @param width the width of the new image
  * @param height the height of the new image
  *
  * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_INVALID_ARGUMENT - if either the width or height is negative or zero</li>
  * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
+ * </ul>
  */
+
 public Image(Device device, int width, int height) {
 	init(device, width, height);
 }
@@ -196,6 +208,7 @@ public Image(Device device, int width, int height) {
  * @param flag the style, either <code>IMAGE_COPY</code>, <code>IMAGE_DISABLE</code> or <code>IMAGE_GRAY</code>
  *
  * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if srcImage is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the flag is not one of <code>IMAGE_COPY</code>, <code>IMAGE_DISABLE</code> or <code>IMAGE_GRAY</code></li>
  *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
@@ -208,6 +221,7 @@ public Image(Device device, int width, int height) {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
  */
+
 public Image(Device device, Image srcImage, int flag) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -544,15 +558,26 @@ public Image(Device device, Image srcImage, int flag) {
  *    gc.drawRectangle(0, 0, 50, 50);
  *    gc.dispose();
  * </pre>
+ * <p>
+ * Note: Some platforms may have a limitation on the size
+ * of image that can be created (size depends on width, height,
+ * and depth). For example, Windows 95, 98, and ME do not allow
+ * images larger than 16M.
+ * </p>
  *
  * @param device the device on which to create the image
  * @param bounds a rectangle specifying the image's width and height (must not be null)
  *
  * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if the bounds rectangle is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if either the rectangle's width or height is negative</li>
  * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
+ * </ul>
  */
+
 public Image(Device device, Rectangle bounds) {
 	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(device, bounds.width, bounds.height);
@@ -565,14 +590,19 @@ public Image(Device device, Rectangle bounds) {
  * @param data the image data to create the image from (must not be null)
  *
  * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if the image data is null</li>
  * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
+ * </ul>
  */
+
 public Image(Device device, ImageData image) {
 	init(device, image);
 }
 /**
- * Constructs an instance of this class, whose type is
+ * Constructs an instance of this class, whose type is 
  * <code>SWT.ICON</code>, from the two given <code>ImageData</code>
  * objects. The two images must be the same size, and the mask image
  * must have a color depth of 1. Pixel transparency in either image
@@ -590,12 +620,17 @@ public Image(Device device, ImageData image) {
  * @param mask the mask data for the icon
  *
  * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if either the source or mask is null </li>
  *    <li>ERROR_INVALID_ARGUMENT - if source and mask are different sizes or
  *          if the mask is not monochrome, or if either the source or mask
  *          is already an icon</li>
  * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
+ * </ul>
  */
+
 public Image(Device device, ImageData source, ImageData mask) {
 	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (mask == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -616,7 +651,7 @@ public Image(Device device, ImageData source, ImageData mask) {
  * <p>
  * This constructor is provided for convenience when loading a single
  * image only. If the stream contains multiple images, only the first
- * one will be loaded. To load multiple images, use
+ * one will be loaded. To load multiple images, use 
  * <code>ImageLoader.load()</code>.
  * </p><p>
  * This constructor may be used to load a resource as follows:
@@ -628,11 +663,19 @@ public Image(Device device, ImageData source, ImageData mask) {
  * @param device the device on which to create the image
  * @param stream the input stream to load the image from
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the stream is null</li>
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data </li>
  *    <li>ERROR_IO - if an IO error occurs while reading data</li>
  * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
+ * </ul>
  */
+
 public Image(Device device, InputStream stream) {
 	init(device, new ImageData(stream));
 }
@@ -649,11 +692,19 @@ public Image(Device device, InputStream stream) {
  * @param device the device on which to create the image
  * @param filename the name of the file to load the image from
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the file name is null</li>
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_INVALID_IMAGE - if the image file contains invalid data </li>
  *    <li>ERROR_IO - if an IO error occurs while reading data</li>
  * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
+ * </ul>
  */
+
 public Image(Device device, String filename) {
 	init(device, new ImageData(filename));
 }
@@ -1041,8 +1092,8 @@ static boolean getOffsetForMask(int bitspp, int mask, int byteOrder, int[] poff)
 	return true;
 }
 /**
- * Returns an integer hash code for the receiver. Any two
- * objects which return <code>true</code> when passed to
+ * Returns an integer hash code for the receiver. Any two 
+ * objects which return <code>true</code> when passed to 
  * <code>equals</code> must return the same value for this
  * method.
  *
@@ -1050,6 +1101,7 @@ static boolean getOffsetForMask(int bitspp, int mask, int byteOrder, int[] poff)
  *
  * @see #equals
  */
+
 public int hashCode () {
 	return pixmap;
 }
@@ -1173,7 +1225,7 @@ void init(Device device, ImageData image) {
 	}
 	this.pixmap = pixmap;
 }
-/**
+/**	 
  * Invokes platform specific functionality to allocate a new GC handle.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -1183,11 +1235,12 @@ void init(Device device, ImageData image) {
  * application code.
  * </p>
  *
- * @param data the platform specific GC data
+ * @param data the platform specific GC data 
  * @return the platform specific GC handle
  *
  * @private
  */
+
 public int internal_new_GC (GCData data) {
 	if (pixmap == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (type != SWT.BITMAP || memGC != null) {
@@ -1216,7 +1269,7 @@ public int internal_new_GC (GCData data) {
 		
 	return xGC;
 }
-/**
+/**	 
  * Invokes platform specific functionality to dispose a GC handle.
  * <p>
  * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -1227,10 +1280,11 @@ public int internal_new_GC (GCData data) {
  * </p>
  *
  * @param handle the platform specific GC handle
- * @param data the platform specific GC data
+ * @param data the platform specific GC data 
  *
  * @private
  */
+
 public void internal_dispose_GC (int gc, GCData data) {
     /* AW
 	int xDisplay = 0;

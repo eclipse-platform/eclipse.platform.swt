@@ -15,7 +15,7 @@ import org.eclipse.swt.*;
  * describing one of the standard operating system provided cursors
  * or the image and mask data for the desired appearance.
  * <p>
- * Application code must explicitly invoke the <code>Cursor.dispose()</code>
+ * Application code must explicitly invoke the <code>Cursor.dispose()</code> 
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required.
  * </p>
@@ -28,7 +28,11 @@ import org.eclipse.swt.*;
  *   CURSOR_SIZESW, CURSOR_SIZENW, CURSOR_UPARROW, CURSOR_IBEAM, CURSOR_NO, CURSOR_HAND
  * </dd>
  * </dl>
+ * <p>
+ * Note: Only one of the above styles may be specified.
+ * </p>
  */
+
 public final class Cursor {
 	/**
 	 * the handle to the OS cursor resource
@@ -43,22 +47,48 @@ public final class Cursor {
 
 Cursor () {
 }
-/**
+/**	 
  * Constructs a new cursor given a device and a style
  * constant describing the desired cursor appearance.
  * <p>
- * You must dispose the cursor when it is no longer required.
+ * You must dispose the cursor when it is no longer required. 
  * </p>
  *
  * @param device the device on which to allocate the cursor
  * @param style the style of cursor to allocate
- *
+ * 
  * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_INVALID_ARGUMENT - when an unknown style is specified</li>
  * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES - if a handle could not be obtained for cursor creation</li>
+ * </ul>
  *
- * @see Cursor for the supported style values
+ * @see SWT#CURSOR_ARROW
+ * @see SWT#CURSOR_WAIT
+ * @see SWT#CURSOR_CROSS
+ * @see SWT#CURSOR_APPSTARTING
+ * @see SWT#CURSOR_HELP
+ * @see SWT#CURSOR_SIZEALL
+ * @see SWT#CURSOR_SIZENESW
+ * @see SWT#CURSOR_SIZENS
+ * @see SWT#CURSOR_SIZENWSE
+ * @see SWT#CURSOR_SIZEWE
+ * @see SWT#CURSOR_SIZEN
+ * @see SWT#CURSOR_SIZES
+ * @see SWT#CURSOR_SIZEE
+ * @see SWT#CURSOR_SIZEW
+ * @see SWT#CURSOR_SIZENE
+ * @see SWT#CURSOR_SIZESE
+ * @see SWT#CURSOR_SIZESW
+ * @see SWT#CURSOR_SIZENW
+ * @see SWT#CURSOR_UPARROW
+ * @see SWT#CURSOR_IBEAM
+ * @see SWT#CURSOR_NO
+ * @see SWT#CURSOR_HAND
  */
+
 public Cursor (Device device, int style) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -107,6 +137,12 @@ public Cursor (Device device, int style) {
 public boolean isDisposed() {
 	return handle == 0;
 }
+
+/**
+ * Disposes of the operating system resources associated with
+ * the cursor. Applications must dispose of all cursors which
+ * they allocate.
+ */
 
     public void dispose()  {
     }

@@ -45,9 +45,10 @@ public final class FontData {
 	 */
 	public String fontFamily;
 	/**
-	 * The font size.
-	 * Warning: This field is platform dependent.
+	 * The height of the font data in points
+	 * (Warning: This field is platform dependent)
 	 */
+
 	public int height;
 	/**
 	 * The font style.
@@ -65,6 +66,7 @@ public final class FontData {
 /**	 
  * Constructs a new un-initialized font data.
  */
+
 public FontData () {
 }
 /**

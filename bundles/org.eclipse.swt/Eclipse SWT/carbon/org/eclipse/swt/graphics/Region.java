@@ -26,7 +26,12 @@ public final class Region {
 	public int handle;
 /**
  * Constructs a new empty region.
+ * 
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for region creation</li>
+ * </ul>
  */
+
 public Region () {
 	handle= OS.NewRgn();
 }

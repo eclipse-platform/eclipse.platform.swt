@@ -59,12 +59,17 @@ GC() {
  * @param drawable the drawable to draw on
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the drawable is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if there is no current device</li>
  *    <li>ERROR_INVALID_ARGUMENT
  *          - if the drawable is an image that is not a bitmap or an icon
  *          - if the drawable is an image or printer that is already selected
  *            into another graphics context</li>
  * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for gc creation</li>
+ * </ul>
  */
+
 public GC (Drawable drawable) {
 	if (drawable == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	GCData data = new GCData();
@@ -283,8 +288,8 @@ public void drawFocus (int x, int y, int width, int height) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the image is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the given coordinates are outside the bounds of the image</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the given coordinates are outside the bounds of the image</li>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES - if no handles are available to perform the operation</li>
  * </ul>
@@ -292,6 +297,7 @@ public void drawFocus (int x, int y, int width, int height) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+
 public void drawImage(Image image, int x, int y) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -303,8 +309,9 @@ public void drawImage(Image image, int x, int y) {
  * different sized) rectangular area in the receiver. If the source
  * and destination areas are of differing sizes, then the source
  * area will be stretched or shrunk to fit the destination area
- * as it is copied. The copy fails if any of the given coordinates
- * are negative or lie outside the bounds of their respective images.
+ * as it is copied. The copy fails if any part of the source rectangle
+ * lies outside the bounds of the source image, or if any of the width
+ * or height arguments are negative.
  *
  * @param image the source image
  * @param srcX the x coordinate in the source image to copy from
@@ -318,16 +325,18 @@ public void drawImage(Image image, int x, int y) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the image is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the given coordinates are outside the bounds of their respective images</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if any of the width or height arguments are negative.
+ *    <li>ERROR_INVALID_ARGUMENT - if the source rectangle is not contained within the bounds of the source image</li>
  * </ul>
- * @exception SWTError <uo>
+ * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES - if no handles are available to perform the operation</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+
 public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (srcWidth == 0 || srcHeight == 0 || destWidth == 0 || destHeight == 0) return;
@@ -1667,7 +1676,7 @@ public Color getForeground() {
  * Returns the receiver's line style, which will be one
  * of the constants <code>SWT.LINE_SOLID</code>, <code>SWT.LINE_DASH</code>,
  * <code>SWT.LINE_DOT</code>, <code>SWT.LINE_DASHDOT</code> or
- * <code>SWT.LINE_DASHDOTDOT<code>.
+ * <code>SWT.LINE_DASHDOTDOT</code>.
  *
  * @return the style used for drawing lines
  *
@@ -1675,6 +1684,7 @@ public Color getForeground() {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+
 public int getLineStyle() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.lineStyle;
@@ -1731,8 +1741,13 @@ public boolean getXORMode() {
  *
  * @return the receiver's hash
  *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
  * @see #equals
  */
+
 public int hashCode () {
 	return handle;
 }
@@ -1808,11 +1823,12 @@ public static GC macosx_new(Drawable drawable, GCData data) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the color is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the color has been disposed</li>
- * </ul>	
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+
 public void setBackground (Color color) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -1898,11 +1914,12 @@ public void setClipping (Region region) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the font has been disposed</li>
- * </ul>	
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+
 public void setFont (Font font) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (font == null) {
@@ -1925,11 +1942,12 @@ public void setFont (Font font) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the color is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the color has been disposed</li>
- * </ul>	
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+
 public void setForeground (Color color) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -1943,7 +1961,7 @@ public void setForeground (Color color) {
  * Sets the receiver's line style to the argument, which must be one
  * of the constants <code>SWT.LINE_SOLID</code>, <code>SWT.LINE_DASH</code>,
  * <code>SWT.LINE_DOT</code>, <code>SWT.LINE_DASHDOT</code> or
- * <code>SWT.LINE_DASHDOTDOT<code>.
+ * <code>SWT.LINE_DASHDOTDOT</code>.
  *
  * @param lineStyle the style to be used for drawing lines
  *
@@ -1951,6 +1969,7 @@ public void setForeground (Color color) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+
 public void setLineStyle(int lineStyle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	/* AW
@@ -2042,11 +2061,12 @@ public void setXORMode(boolean xor) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
- * </ul>	
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
+
 public Point stringExtent(String string) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
