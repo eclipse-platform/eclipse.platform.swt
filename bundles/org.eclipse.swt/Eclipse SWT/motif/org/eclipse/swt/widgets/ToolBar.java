@@ -63,6 +63,16 @@ public /*final*/ class ToolBar extends Composite {
  */
 public ToolBar (Composite parent, int style) {
 	super (parent, checkStyle (style));
+	
+	/*
+	* Ensure that either of HORIZONTAL or VERTICAL is set.
+	* NOTE: HORIZONTAL and VERTICAL have the same values
+	* as H_SCROLL and V_SCROLL so it is necessary to first
+	* clear these bits to avoid scroll bars and then reset
+	* the bits using the original style supplied by the
+	* programmer.
+	*/
+	this.style = checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 static int checkStyle (int style) {
 	/*
@@ -259,7 +269,7 @@ public int indexOf (ToolItem item) {
 	}
 	return -1;
 }
-int [] layout (int nWidth, int nHeight, boolean resize) {
+int [] layoutHorizontal (int nWidth, int nHeight, boolean resize) {
 	int xSpacing = 0, ySpacing = 4;
 	int marginWidth = 0, marginHeight = 0;
 	ToolItem [] children = getItems ();
@@ -283,6 +293,38 @@ int [] layout (int nWidth, int nHeight, boolean resize) {
 		maxX = Math.max (maxX, x);
 	}
 	return new int [] {rows, maxX, y + maxHeight};
+}
+int [] layoutVertical (int nWidth, int nHeight, boolean resize) {
+	int xSpacing = 4, ySpacing = 0;
+	int marginWidth = 0, marginHeight = 0;
+	ToolItem [] children = getItems ();
+	int length = children.length;
+	int x = marginWidth, y = marginHeight;
+	int maxWidth = 0, maxY = 0, cols = 1;
+	boolean wrap = (style & SWT.WRAP) != 0;
+	for (int i=0; i<length; i++) {
+		ToolItem child = children [i];
+		Rectangle rect = child.getBounds ();
+		if (wrap && i != 0 && y + rect.height > nHeight) {
+			cols++;
+			x += xSpacing + maxWidth;  y = marginHeight;
+			maxWidth = 0;
+		}
+		maxWidth = Math.max (maxWidth, rect.width);
+		if (resize) {
+			child.setBounds (x, y, rect.width, rect.height);
+		}
+		y += ySpacing + rect.height;
+		maxY = Math.max (maxY, y);
+	}
+	return new int [] {cols, x + maxWidth, maxY};
+}
+int [] layout (int nWidth, int nHeight, boolean resize) {
+	if ((style & SWT.VERTICAL) != 0) {
+		return layoutVertical (nWidth, nHeight, resize);
+	} else {
+		return layoutHorizontal (nWidth, nHeight, resize);
+	}
 }
 void relayout () {
 	if (drawCount > 0) return;

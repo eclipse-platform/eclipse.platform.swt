@@ -115,6 +115,15 @@ void createHandle (int index) {
 }
 
 Point computeSize () {
+	if ((style & SWT.SEPARATOR) != 0) {
+		int [] argList = {
+			OS.XmNwidth, 0,
+			OS.XmNheight, 0,
+		};
+		OS.XtGetValues (handle, argList, argList.length / 2);
+		int width = argList [1], height = argList [3];
+		return new Point(width, height);
+	}
 	int [] argList = {
 		OS.XmNmarginHeight, 0,
 		OS.XmNmarginWidth, 0,
@@ -128,7 +137,7 @@ Point computeSize () {
 		shadowThickness = Math.min (2, display.buttonShadowThickness);
 	}
 	int textWidth = 0, textHeight = 0;
-	if (text.length () > 0) {
+	if (text.length () != 0) {
 		GC gc = new GC (parent);
 		Point textExtent = gc.textExtent (text);
 		textWidth = textExtent.x;
