@@ -54,6 +54,7 @@ public interface AccessibleControlListener extends SWTEventListener {
 	 * </ul>
 	 */
 	public void hitTest(AccessibleControlEvent e);
+// possibly also IAcc [OUT]
 
 	/**
 	 * Sent when an accessibility client requests the location
@@ -72,21 +73,113 @@ public interface AccessibleControlListener extends SWTEventListener {
 	 */
 	public void getLocation(AccessibleControlEvent e);
 	
+	/**
+	 * Sent when an accessibility client requests the accessible object
+	 * for the control, or the accessible object for a child of the control.
+	 * The default behavior is to do nothing.
+	 * <p>
+	 * Return an <code>Accessible</code> for the specified control or
+	 * child in the <code>accessible</code> field of the event object.
+	 * Return null if the specified child does not have its own
+	 * <code>Accessible</code>.
+	 * </p>
+	 *
+	 * @param e an event object containing the following fields:<ul>
+	 *    <li>childID [IN] - an identifier specifying the control or one of its children</li>
+	 *    <li>accessible [OUT] - an Accessible for the specified childID, or null if one does not exist</li>
+	 * </ul>
+	 */
+// actually, can the IN be childid-self? doesn't make much sense...
 	public void getChild(AccessibleControlEvent e);
 	
+	/**
+	 * Sent when an accessibility client requests the number of
+	 * children in the control.
+	 * The default behavior is to do nothing.
+	 * <p>
+	 * Return the number of child items in the <code>count</code>
+	 * field of the event object.
+	 * </p>
+	 *
+	 * @param e an event object containing the following fields:<ul>
+	 *    <li>count [OUT] - the number of child items in this control</li>
+	 * </ul>
+	 */
 	public void getChildCount(AccessibleControlEvent e);
 	
+	/**
+	 * Sent when an accessibility client requests the default action
+	 * of the control, or the default action of a child of the control.
+	 * The default behavior is to do nothing.
+	 * <p>
+	 * Return a string describing the default action of the specified
+	 * control or child in the <code>result</code> field of the event object.
+	 * This string is typically... ***************
+	 * Return null if ********
+	 * </p>
+	 *
+	 * @param e an event object containing the following fields:<ul>
+	 *    <li>childID [IN] - an identifier specifying the control or one of its children</li>
+	 *    <li>result [OUT] - the requested default action string, or null</li>
+	 * </ul>
+	 */
 	public void getDefaultAction(AccessibleControlEvent e);
 	
+	/**
+	 * Sent when an accessibility client requests the identity of
+	 * the child or control that has keyboard focus.
+	 * The default behavior is to do nothing.
+	 * <p>
+	 * Return the identifier of the child that has focus in the
+	 * <code>childID</code> field of the event object.
+	 * Return CHILDID_SELF if ***********
+	 * Return CHILDID_NONE if ************
+	 * </p>
+	 *
+	 * @param e an event object containing the following fields:<ul>
+	 *    <li>childID [OUT] - the ID of the child with focus, or CHILDID_SELF, or CHILDID_NONE</li>
+	 * </ul>
+	 */
+// OUT can be IAcc also
 	public void getFocus(AccessibleControlEvent e);
 	
+	/**
+	 * @param e an event object containing the following fields:<ul>
+	 *    <li>childID [IN] - an identifier specifying the control or one of its children</li>
+	 *    <li>code [OUT] - a role constant describing the role of the control or child</li>
+	 * </ul>
+	 */
 	public void getRole(AccessibleControlEvent e);
 	
+	/**
+	 * @param e an event object containing the following fields:<ul>
+	 *    <li>childID [OUT] - the ID of the selected child, or CHILDID_SELF, or CHILDID_MULTIPLE, or CHILDID_NONE</li>
+	 * </ul>
+	 */
+// OUT can be IAcc also - but can it be childid-self?
 	public void getSelection(AccessibleControlEvent e);
 	
+	/**
+	 * @param e an event object containing the following fields:<ul>
+	 *    <li>childID [IN] - an identifier specifying the control or one of its children</li>
+	 *    <li>code [OUT] - a state constant describing the current state of the control or child</li>
+	 * </ul>
+	 */
 	public void getState(AccessibleControlEvent e);
 	
+	/**
+	 * @param e an event object containing the following fields:<ul>
+	 *    <li>childID [IN] - an identifier specifying the control or one of its children</li>
+	 *    <li>result [OUT] - the requested value string, or null</li>
+	 * </ul>
+	 */
 	public void getValue(AccessibleControlEvent e);
 	
+	/**
+	 * @param e an event object containing the following fields:<ul>
+	 *    <li>children [OUT] - </li>
+	 * </ul>
+	 */
+// OUT can contain IAcc's also
 	public void getChildren(AccessibleControlEvent e);
 }
