@@ -224,6 +224,10 @@ void hookEvents () {
 	OS.XtAddCallback (handle, OS.XmNvalueChangedCallback, windowProc, VALUE_CHANGED_CALLBACK);
 	OS.XtAddCallback (handle, OS.XmNdragCallback, windowProc, DRAG_CALLBACK);
 	if (scrollHandle != 0) {
+		OS.XtAddEventHandler (scrollHandle, OS.ButtonPressMask, false, windowProc, BUTTON_PRESS);
+		OS.XtAddEventHandler (scrollHandle, OS.ButtonReleaseMask, false, windowProc, BUTTON_RELEASE);
+		OS.XtAddEventHandler (scrollHandle, OS.EnterWindowMask, false, windowProc, ENTER_WINDOW);
+		OS.XtAddEventHandler (scrollHandle, OS.LeaveWindowMask, false, windowProc, LEAVE_WINDOW);
 		OS.XtAddEventHandler (scrollHandle, OS.KeyPressMask, false, windowProc, KEY_PRESS);
 		OS.XtAddEventHandler (scrollHandle, OS.KeyReleaseMask, false, windowProc, KEY_RELEASE);
 		OS.XtInsertEventHandler (scrollHandle, OS.FocusChangeMask, false, windowProc, FOCUS_CHANGE, OS.XtListTail);
