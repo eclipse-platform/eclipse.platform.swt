@@ -606,6 +606,11 @@ void destroyItem (CTabItem item) {
 			control.setVisible(false);
 		}
 		if (fixedTabHeight == SWT.DEFAULT) tabHeight = 0;
+		if (onBottom) {
+			yClient = borderTop + highlight_margin + marginHeight;
+		} else {
+			yClient = borderTop + tabHeight + highlight_header + marginHeight; 
+		}		
 		hideToolTip();
 		redraw();
 		return;
@@ -1093,7 +1098,7 @@ void drawTabArea(Event event) {
 		shape = new int[left.length + right.length + 4];
 		int index = 0;
 		shape[index++] = x;
-		shape[index++] = y+height+highlight_header;
+		shape[index++] = y+height+highlight_header + 1;
 		for (int i = 0; i < left.length/2; i++) {
 			shape[index++] = x+left[2*i];
 			shape[index++] = y+left[2*i+1];
@@ -1103,7 +1108,7 @@ void drawTabArea(Event event) {
 			shape[index++] = y+right[2*i+1];
 		}
 		shape[index++] = x+width;
-		shape[index++] = y+height+highlight_header;
+		shape[index++] = y+height+highlight_header + 1;
 	}
 	// Fill in background
 	drawBackground(gc, shape, single);
@@ -1116,22 +1121,8 @@ void drawTabArea(Event event) {
 	r.dispose();
 	// Draw border line
 	if (borderLeft > 0) {
-		RGB inside;
-		if (single) {
-			inside = getSelectionBackground().getRGB();
-			if (selectionBgImage != null ||
-				(selectionGradientColors != null && selectionGradientColors.length > 1)) {
-				inside = null;
-			}
-		} else {
-			inside = getBackground().getRGB();
-			if (bgImage != null ||
-				(gradientColors != null && gradientColors.length > 1)) {
-				inside = null;
-			}
-		}
 		RGB outside = getParent().getBackground().getRGB();
-		antialias(shape, borderColor.getRGB(), inside, outside, gc);
+		antialias(shape, borderColor.getRGB(), null, outside, gc);
 		gc.setForeground(borderColor);
 		gc.drawPolyline(shape);
 	}	
@@ -1159,9 +1150,11 @@ void drawTabArea(Event event) {
 	}
 	
 	// Draw Buttons
-	drawChevron(gc);
-	drawMinimize(gc);
-	drawMaximize(gc);
+	if (items.length > 0) {
+		drawChevron(gc);
+		drawMinimize(gc);
+		drawMaximize(gc);
+	}
 	
 	// Draw insertion mark
 //	if (insertionIndex > -2) {
@@ -1199,9 +1192,6 @@ public Rectangle getClientArea() {
 	Point size = getSize();
 	int width = size.x  - borderLeft - borderRight - 2*marginWidth - 2*highlight_margin;
 	int height = size.y - borderTop - borderBottom - 2*marginHeight - highlight_margin - highlight_header;
-	if (items.length == 0) {		
-		return new Rectangle(borderLeft + marginWidth, borderTop + marginHeight, width, height);	
-	}
 	height -= tabHeight;
 	return new Rectangle(xClient, yClient, width, height);
 }
@@ -2057,17 +2047,7 @@ void onPaint(Event event) {
 //gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_GREEN));
 //gc.fillRectangle(-10, -10, size.x + 20, size.y+20);
 //}
-	
-	if (items.length == 0) {
-		if ((getStyle() & SWT.NO_BACKGROUND) != 0) {
-			Point size = getSize();	
-			gc.setBackground(getParent().getBackground());
-			gc.fillRectangle(0, 0, size.x, size.y);
-			gc.setBackground(gcBackground);
-		}
-		return;
-	}
-	
+
 	drawBody(event);
 	
 	gc.setFont(gcFont);
@@ -2082,10 +2062,6 @@ void onPaint(Event event) {
 }
 
 void onResize() {
-	if (items.length == 0) {
-		redraw();
-		return;
-	}
 	if (updateItems()) redrawTabs();
 	showSelection();
 	
@@ -2638,7 +2614,7 @@ public void setInsertMark(int index, boolean after) {
 }
 boolean setItemLocation() {
 	boolean changed = false;
-	if (items.length == 0) return changed;
+	if (items.length == 0) return false;
 	Point size = getSize();
 	int y = onBottom ? Math.max(borderBottom, size.y - borderBottom - tabHeight) : borderTop;
 	if (single) {
@@ -2706,7 +2682,7 @@ boolean setItemSize() {
 	if (isDisposed()) return changed;
 	showChevron = false;
 	Point size = getSize();
-	if (size.x <= 0 || size.y <= 0 || items.length == 0) return changed;
+	if (size.x <= 0 || size.y <= 0) return changed;
 	xClient = borderLeft + marginWidth + highlight_margin;
 	if (onBottom) {
 		yClient = borderTop + highlight_margin + marginHeight;
