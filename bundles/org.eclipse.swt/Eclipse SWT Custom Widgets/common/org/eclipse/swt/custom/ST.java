@@ -54,5 +54,26 @@ public class ST {
 	public static final int DELETE_NEXT = SWT.DEL;
 
 	/* Miscellaneous */
-	public static final int TOGGLE_OVERWRITE = SWT.INSERT;		
+	public static final int TOGGLE_OVERWRITE = SWT.INSERT;
+	
+	/*
+	 * Print options used in StyledTextPrintOptions 	 */
+	/**
+	 * Print the text foreground color defined in style ranges
+	 * (value is 1). 	 */		
+	public static final int TEXT_FOREGROUND = 1;
+	/**
+	 * Print the text background color defined in style ranges
+	 * (value is 1&lt;&lt;1). 
+	 */		
+  	public static final int TEXT_BACKGROUND = 1 << 1;
+	/**
+	 * Print the font style defined in style ranges
+	 * (value is 1&lt;&lt;2). 
+	 */		
+  	public static final int TEXT_FONT_STYLE = 1 << 2;
+	/**
+	 * Print the line background color (value is 1&lt;&lt;3). 
+	 */
+  	public static final int LINE_BACKGROUND = 1 << 3;
 }
