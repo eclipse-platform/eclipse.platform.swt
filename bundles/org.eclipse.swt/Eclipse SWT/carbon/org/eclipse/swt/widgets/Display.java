@@ -330,13 +330,25 @@ int commandProc (int nextHandler, int theEvent, int userData) {
 					short menuID = OS.GetMenuID (menuRef);
 					Menu menu = findMenu (menuID);
 					if (menu != null) {
-						int [] outCommandID = new int [1];
-						short menuIndex = command.menu_menuItemIndex;
-						OS.GetMenuItemCommandID (menuRef, menuIndex, outCommandID);
-						MenuItem item = findMenuItem (outCommandID [0]);
+						/*
+						* Feature in the Macintosh.  When a menu item is selected by the
+						* user, the Macintosh sends kEventMenuOpening, remembers the index
+						* of the item the user selected, sends kEventMenuClosed and then
+						* sends kEventProcessCommand.  If application code modifies the menu
+						* inside of kEventMenuClosed by adding or removing items, the index
+						* of the item that the user selected is invalid.  The fix is to detect
+						* that a menu has been modified during kEventMenuClosed and use the
+						* last target item remembered kEventMenuTargetItem.
+						*/
+						MenuItem item = null;
+						if (menu.closed && menu.modified) {
+							item = menu.lastTarget;
+						} else {
+							item = findMenuItem (command.commandID);
+						}
 						if (item != null) {
 							return item.kEventProcessCommand (nextHandler, theEvent, userData);
-						} 
+						}
 					}
 					OS.HiliteMenu ((short) 0);
 				}
@@ -365,6 +377,16 @@ int controlProc (int nextHandler, int theEvent, int userData) {
 	Widget widget = WidgetTable.get (userData);
 	if (widget != null) return widget.controlProc (nextHandler, theEvent, userData);
 	return OS.eventNotHandledErr;
+}
+
+void clearMenuFlags () {
+	if (menus == null) return;
+	for (int i=0; i<menus.length; i++) {
+		Menu menu = menus [i];
+		if (menu != null) {
+			menu.modified = menu.closed = false;
+		}
+	}
 }
 
 public void close () {
@@ -914,7 +936,9 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 	switch (part) {
 		case OS.inMenuBar: {
 			if (eventKind == OS.kEventMouseDown) {
+				clearMenuFlags ();
 				OS.MenuSelect (where);
+				clearMenuFlags ();
 				return OS.noErr;
 			}
 			break;
@@ -1254,7 +1278,9 @@ boolean runPopups () {
 		int length = popups.length;
 		System.arraycopy (popups, 1, popups, 0, --length);
 		popups [length] = null;
+		clearMenuFlags ();
 		menu._setVisible (true);
+		clearMenuFlags ();
 		result = true;
 	}
 	popups = null;

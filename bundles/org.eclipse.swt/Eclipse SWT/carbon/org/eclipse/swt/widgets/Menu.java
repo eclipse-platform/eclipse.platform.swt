@@ -15,8 +15,8 @@ public class Menu extends Widget {
 	int handle;
 	short id, lastIndex;
 	int x, y;
-	boolean hasLocation;
-	MenuItem cascade, defaultItem;
+	boolean hasLocation, modified, closed;
+	MenuItem cascade, defaultItem, lastTarget;
 	Decorations parent;
 
 public Menu (Control parent) {
@@ -111,6 +111,7 @@ void createItem (MenuItem item, int index) {
 		display.removeMenuItem (item);
 		error (SWT.ERROR_ITEM_NOT_ADDED);
 	}
+	modified = true;
 	if ((style & SWT.BAR) != 0) {
 //		Display display = getDisplay ();
 //		short menuID = display.nextMenuId ();
@@ -127,6 +128,7 @@ void destroyItem (MenuItem item) {
 	if (OS.GetIndMenuItemWithCommandID (handle, item.id, 1, null, outIndex) != OS.noErr) {
 		error (SWT.ERROR_ITEM_NOT_REMOVED);
 	}
+	modified = true;
 	if ((style & SWT.BAR) != 0) {
 //		int [] outMenuRef = new int [1];
 //		OS.GetMenuItemHierarchicalMenu (handle, outIndex [0], outMenuRef);
@@ -260,6 +262,7 @@ void hookEvents () {
 int kEventMenuClosed (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventMenuClosed (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
+	closed = true;
 	sendEvent (SWT.Hide);
 	return OS.eventNotHandledErr;
 }
@@ -274,11 +277,12 @@ int kEventMenuOpening (int nextHandler, int theEvent, int userData) {
 int kEventMenuTargetItem (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventMenuTargetItem (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
+	lastTarget = null;
 	int [] commandID = new int [1];
 	if (OS.GetEventParameter (theEvent, OS.kEventParamMenuCommand, OS.typeMenuCommand, null, 4, null, commandID) == OS.noErr) {
 		Display display = getDisplay ();
-		MenuItem item = display.findMenuItem (commandID [0]);
-		if (item != null) item.sendEvent (SWT.Arm);
+		lastTarget = display.findMenuItem (commandID [0]);
+		if (lastTarget != null) lastTarget.sendEvent (SWT.Arm);
 	}
 	return OS.eventNotHandledErr;
 }
@@ -329,7 +333,7 @@ void releaseWidget () {
 	Display display = getDisplay ();
 	display.removeMenu (this);
 	parent = null;
-	cascade = null;
+	cascade = defaultItem = lastTarget = null;
 }
 
 public void removeHelpListener (HelpListener listener) {
