@@ -84,6 +84,7 @@ public class OS {
 	public static final int kControlContentTextOnly = 0;
 	public static final int kControlDownButtonPart = 21;
 	public static final int kControlEditTextCFStringTag = ('c'<<24) + ('f'<<16) + ('s'<<8) + 't';
+	public static final int kControlEditTextSingleLineTag = ('s'<<24) + ('g'<<16) + ('l'<<8) + 'c';
 	public static final int kControlEditTextSelectionTag = ('s'<<24) + ('e'<<16) + ('l'<<8) + 'e';
 	public static final int kControlEntireControl = 0;
 	public static final int kControlGetsFocusOnClick = 1 << 8;
