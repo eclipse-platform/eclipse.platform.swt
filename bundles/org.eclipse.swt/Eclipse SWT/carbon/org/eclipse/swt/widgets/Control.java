@@ -11,7 +11,6 @@ import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.CGPoint;
 import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
 import org.eclipse.swt.internal.carbon.HMHelpContentRec;
-import org.eclipse.swt.internal.carbon.RGBColor;
 import org.eclipse.swt.internal.carbon.Rect;
 
 import org.eclipse.swt.*;

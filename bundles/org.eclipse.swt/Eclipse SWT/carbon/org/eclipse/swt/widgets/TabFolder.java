@@ -398,7 +398,9 @@ Rect getInset () {
 
 int kEventControlApplyBackground (int nextHandler, int theEvent, int userData) {
 	/*
-	* Feature in the Macintosh.  
+	* Feature in the Macintosh.  For some reason, the tab folder applies the
+	* theme background when drawing even though a theme has not been set for
+	* the window.  The fix is to avoid running the default handler. 
 	*/
 	return OS.noErr;
 }
