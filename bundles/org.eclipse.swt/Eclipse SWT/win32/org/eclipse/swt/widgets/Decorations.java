@@ -708,7 +708,7 @@ void setDefaultButton (Button button, boolean save) {
 	if (defaultButton != null) {
 		if (!defaultButton.isDisposed ()) defaultButton.setDefault (true);
 	}
-	if (save || saveDefault == null) saveDefault = defaultButton;
+	if (save) saveDefault = defaultButton;
 	if (saveDefault != null && saveDefault.isDisposed ()) saveDefault = null;
 }
 
