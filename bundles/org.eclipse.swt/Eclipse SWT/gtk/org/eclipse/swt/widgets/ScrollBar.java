@@ -30,10 +30,10 @@ import org.eclipse.swt.events.*;
  * <li>an arrow button for incrementing the value</li>
  * </ol>
  * Based on their style, scroll bars are either <code>HORIZONTAL</code>
- * (which have left and right facing buttons for incrementing and
- * decrementing the value) or <code>VERTICAL</code> (which have
- * up and down facing buttons for incrementing and decrementing
- * the value).
+ * (which have a left facing button for decrementing the value and a
+ * right facing button for incrementing it) or <code>VERTICAL</code>
+ * (which have an upward facing button for decrementing the value
+ * and a downward facing buttons for incrementing it).
  * </p><p>
  * On some platforms, the size of the scroll bar's thumb can be
  * varied relative to the magnitude of the range of values it

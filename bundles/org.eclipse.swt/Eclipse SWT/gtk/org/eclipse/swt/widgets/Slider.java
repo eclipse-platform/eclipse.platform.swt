@@ -30,10 +30,10 @@ import org.eclipse.swt.events.*;
  * <li>an arrow button for incrementing the value</li>
  * </ol>
  * Based on their style, sliders are either <code>HORIZONTAL</code>
- * (which have left and right facing buttons for incrementing and
- * decrementing the value) or <code>VERTICAL</code> (which have
- * up and down facing buttons for incrementing and decrementing
- * the value).
+ * (which have a left facing button for decrementing the value and a
+ * right facing button for incrementing it) or <code>VERTICAL</code>
+ * (which have an upward facing button for decrementing the value
+ * and a downward facing buttons for incrementing it).
  * </p><p>
  * On some platforms, the size of the slider's thumb can be
  * varied relative to the magnitude of the range of values it
@@ -71,8 +71,8 @@ public class Slider extends Control {
  * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
@@ -86,7 +86,8 @@ public class Slider extends Control {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#HORIZONTAL
+ * @see SWT#VERTICAL
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */

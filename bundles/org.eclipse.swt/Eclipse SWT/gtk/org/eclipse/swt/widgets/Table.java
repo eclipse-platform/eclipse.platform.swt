@@ -52,8 +52,8 @@ public class Table extends Composite {
  * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
@@ -67,7 +67,11 @@ public class Table extends Composite {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#SINGLE
+ * @see SWT#MULTI
+ * @see SWT#CHECK
+ * @see SWT#FULL_SELECTION
+ * @see SWT#HIDE_SELECTION
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
