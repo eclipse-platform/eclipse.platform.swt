@@ -86,6 +86,7 @@ public class OS {
 	public static final int kControlEditTextCFStringTag = ('c'<<24) + ('f'<<16) + ('s'<<8) + 't';
 	public static final int kControlEditTextSingleLineTag = ('s'<<24) + ('g'<<16) + ('l'<<8) + 'c';
 	public static final int kControlEditTextSelectionTag = ('s'<<24) + ('e'<<16) + ('l'<<8) + 'e';
+	public static final int kControlEditTextTextTag = ('t'<<24) + ('e'<<16) + ('x'<<8) + 't';
 	public static final int kControlEntireControl = 0;
 	public static final int kControlGetsFocusOnClick = 1 << 8;
 	public static final int kControlGroupBoxTextTitleProc = 160;
@@ -128,6 +129,7 @@ public class OS {
 	public static final int kControlUserPaneTrackingProcTag = ('t'<<24) + ('r'<<16) + ('a'<<8) + 'k';
 	public static final int kControlUseFontMask = 0x1;
 	public static final int kControlUseSizeMask = 0x4;
+	public static final int kControlUseThemeFontIDMask = 0x80;
 	public static final int kControlUseFaceMask = 0x2;
 	public static final int kDataBrowserCheckboxType = ('c'<<24) + ('h'<<16) + ('b'<<8) + 'x';
 	public static final int kDataBrowserCmdTogglesSelection = 1 << 3;
@@ -382,6 +384,7 @@ public class OS {
 	public static final int kThemeNotAllowedCursor = 18;
 	public static final int kThemePointingHandCursor = 10;
 	public static final int kThemePushButton = 0;
+	public static final int kThemePushButtonFont = 105;
 	public static final int kThemeRadioButton = 2;
 	public static final int kThemeRoundedBevelButton = 15;
 	public static final int kThemeSmallBevelButton = 8;

@@ -286,6 +286,15 @@ int kEventMenuOpening (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+public void redraw () {
+	checkWidget();
+	if (!OS.IsControlVisible (handle)) return;
+	Rect rect = new Rect ();
+	OS.GetControlBounds (handle, rect);
+	int window = OS.GetControlOwner (handle);
+	OS.InvalWindowRect (window, rect);
+}
+
 void register () {
 	super.register ();
 	WidgetTable.put (handle, this);
@@ -453,7 +462,7 @@ void updateImage () {
 	inContent.contentType = (short)OS.kControlContentCIconHandle;
 	inContent.iconRef = cIcon;
 	OS.SetBevelButtonContentInfo (handle, inContent);
-	OS.HIViewSetNeedsDisplay (handle, true);
+	redraw ();
 	Point size = computeSize ();
 	setSize (size.x, size.y, true);
 }

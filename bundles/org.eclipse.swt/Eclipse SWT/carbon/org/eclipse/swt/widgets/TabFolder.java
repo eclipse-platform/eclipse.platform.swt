@@ -399,7 +399,7 @@ int kEventControlHit (int nextHandler, int theEvent, int userData) {
 	Event event = new Event ();
 	event.item = item;
 	postEvent (SWT.Selection, event);
-	OS.HIViewSetNeedsDisplay (handle, true);
+	redraw ();
 	return OS.eventNotHandledErr;
 }
 
@@ -509,7 +509,7 @@ void setSelection (int index, boolean notify) {
 			}
 		}
 	}
-	OS.HIViewSetNeedsDisplay (handle, true);
+	redraw ();
 }
 
 boolean traversePage (boolean next) {

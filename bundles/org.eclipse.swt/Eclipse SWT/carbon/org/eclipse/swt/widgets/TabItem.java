@@ -237,7 +237,7 @@ public void setImage (Image image) {
 		inContent.iconRef = cIcon;
 	}
 	OS.SetControlData (parent.handle, index+1, OS.kControlTabImageContentTag, ControlButtonContentInfo.sizeof, inContent);
-	OS.HIViewSetNeedsDisplay (parent.handle, true);
+	parent.redraw ();
 }
 
 public void setText (String string) {

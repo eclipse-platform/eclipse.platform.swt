@@ -123,7 +123,7 @@ public void setImage (Image image) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	this.image = image;
 	isImage = true;
-	OS.HIViewSetNeedsDisplay (handle, true);
+	redraw ();
 }
 
 public void setText (String string) {
@@ -146,7 +146,7 @@ public void setText (String string) {
 	if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 	OS.SetControlData (handle, 0 , OS.kControlStaticTextCFStringTag, 4, new int[]{ptr});
 	OS.CFRelease (ptr);
-	OS.HIViewSetNeedsDisplay (handle, true);
+	redraw ();
 }
 
 }

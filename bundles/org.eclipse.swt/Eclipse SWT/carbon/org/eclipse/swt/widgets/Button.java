@@ -20,7 +20,7 @@ public class Button extends Control {
 	String text;
 	Image image;
 	int cIcon;
-	boolean displayImage;
+	boolean isImage;
 	int textExtentX;
 	int textExtentY;
 	
@@ -66,7 +66,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int height = rect.bottom - rect.top;
 
 	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
-		if (displayImage) {
+		if (isImage && image != null) {
 			Rectangle bounds = image.getBounds();
 			width += bounds.width + 20;
 			height += bounds.height;
@@ -77,7 +77,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		// If any theme was applied to a bevel button, the compute size 
 		// needs to be fixed
 		if ((style & SWT.FLAT) == 0 || (style & SWT.TOGGLE) != 0) {
-			if (displayImage) {
+			if (isImage && image != null) {
 				Rectangle bounds = image.getBounds();
 				width = bounds.width;
 				height = bounds.height;
@@ -160,8 +160,10 @@ void createHandle () {
 	}
 
 	ControlFontStyleRec fontRec = new ControlFontStyleRec();
-	fontRec.flags = (short)OS.kControlUseFontMask;
-	fontRec.font = 0;
+//	fontRec.flags = (short)OS.kControlUseFontMask;
+//	fontRec.font = 0;
+	fontRec.flags = (short)OS.kControlUseThemeFontIDMask;
+	fontRec.font = OS.kThemePushButtonFont;
 	OS.SetControlFontStyle (handle, fontRec);
 	
 	if ((style & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) != 0) {
@@ -302,7 +304,7 @@ public void setAlignment (int alignment) {
 	}
 	OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonTextAlignTag, 2, new short [] {(short)textAlignment});
 	OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonGraphicAlignTag, 2, new short [] {(short)graphicAlignment});
-	OS.HIViewSetNeedsDisplay (handle, true);
+	redraw ();
 }
 
 public void setBounds (int x, int y, int width, int height) {
@@ -331,27 +333,26 @@ public void setImage (Image image) {
 		cIcon = 0;
 	}
 	this.image = image;
-	if (image == null) {
-		ControlButtonContentInfo inContent = new ControlButtonContentInfo();
-		inContent.contentType = (short)OS.kControlContentTextOnly;
-		OS.SetBevelButtonContentInfo (handle, inContent);
-		displayImage = false;
-		return;
-	}
 	if (text != null) {
 		char [] buffer = new char [1];
-		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, 1);
+		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
 		if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 		OS.SetControlTitleWithCFString (handle, ptr);
 		OS.CFRelease (ptr);
 	}
-	cIcon = createCIcon (image);
-	ControlButtonContentInfo inContent = new ControlButtonContentInfo ();
-	inContent.contentType = (short)OS.kControlContentCIconHandle;
-	inContent.iconRef = cIcon;
-	OS.SetBevelButtonContentInfo (handle, inContent);
-	OS.HIViewSetNeedsDisplay (handle, true);
-	displayImage = true;
+	isImage = true;
+	if (image == null) {
+		ControlButtonContentInfo inContent = new ControlButtonContentInfo();
+		inContent.contentType = (short)OS.kControlContentTextOnly;
+		OS.SetBevelButtonContentInfo (handle, inContent);
+	} else {
+		cIcon = createCIcon (image);
+		ControlButtonContentInfo inContent = new ControlButtonContentInfo ();
+		inContent.contentType = (short)OS.kControlContentCIconHandle;
+		inContent.iconRef = cIcon;
+		OS.SetBevelButtonContentInfo (handle, inContent);
+	}
+	redraw ();
 }
 
 boolean setRadioSelection (boolean value){
@@ -374,12 +375,12 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.ARROW) != 0) return;
 	text = string;
-	if (displayImage) {
+	if (isImage) {
 		ControlButtonContentInfo inContent = new ControlButtonContentInfo();
 		inContent.contentType = (short)OS.kControlContentTextOnly;
 		OS.SetBevelButtonContentInfo(handle, inContent);
 	}
-	displayImage = false;
+	isImage = false;
 	char [] buffer = new char [text.length ()];
 	text.getChars (0, buffer.length, buffer, 0);
 	int i=0, j=0;
@@ -394,12 +395,12 @@ public void setText (String string) {
 	if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 	OS.SetControlTitleWithCFString (handle, ptr);
 	OS.CFRelease (ptr);
+	redraw ();
 	Rect rect = new Rect();
 	short [] base = new short [1];
 	OS.GetBestControlRect (handle, rect, base);
 	textExtentX = rect.right - rect.left;
 	textExtentY = rect.bottom - rect.top;
-	
 }
 
 }

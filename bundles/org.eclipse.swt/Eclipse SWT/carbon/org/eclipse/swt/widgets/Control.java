@@ -398,7 +398,7 @@ boolean isTabItem () {
 
 public boolean isVisible () {
 	checkWidget();
-	return OS.HIViewIsVisible (topHandle ());
+	return OS.IsControlVisible (topHandle ());
 }
 
 Decorations menuShell () {
@@ -584,17 +584,24 @@ public void pack (boolean changed) {
 
 public void redraw () {
 	checkWidget();
-	OS.HIViewSetNeedsDisplay (handle, true);
+	if (!OS.IsControlVisible (handle)) return;
+	Rect rect = new Rect ();
+	OS.GetControlBounds (handle, rect);
+	int window = OS.GetControlOwner (handle);
+	OS.InvalWindowRect (window, rect);
 }
 
 public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget ();
+	if (!OS.IsControlVisible (handle)) return;
 	Rect rect = new Rect ();
 	OS.SetRect (rect, (short)x, (short)y, (short)(x + width), (short)(y + height));
-	int inRgn = OS.NewRgn ();
-	OS.RectRgn (inRgn, rect);
-	OS.HIViewSetNeedsDisplayInRegion (handle, inRgn, true);
-	OS.DisposeRgn (inRgn);
+	int rgn = OS.NewRgn ();
+	OS.RectRgn (rgn, rect);
+	OS.GetControlBounds (handle, rect);
+	int window = OS.GetControlOwner (handle);
+	OS.InvalWindowRgn (window, rgn);
+	OS.DisposeRgn (rgn);
 }
 
 void register () {
@@ -849,16 +856,17 @@ public boolean setParent (Composite parent) {
 
 public void setRedraw (boolean redraw) {
 	checkWidget();
-	if (redraw) {
-		if (--drawCount == 0) {
-			OS.HIViewSetDrawingEnabled (handle, true);
-			OS.HIViewSetNeedsDisplay (handle, true);
-		}
-	} else {
-		if (drawCount++ == 0) {
-			OS.HIViewSetDrawingEnabled (handle, false);
-		}
-	}
+	//NOT DONE
+//	if (redraw) {
+//		if (--drawCount == 0) {
+//			OS.HIViewSetDrawingEnabled (handle, true);
+//			OS.HIViewSetNeedsDisplay (handle, true);
+//		}
+//	} else {
+//		if (drawCount++ == 0) {
+//			OS.HIViewSetDrawingEnabled (handle, false);
+//		}
+//	}
 }
 
 boolean setRadioSelection (boolean value){

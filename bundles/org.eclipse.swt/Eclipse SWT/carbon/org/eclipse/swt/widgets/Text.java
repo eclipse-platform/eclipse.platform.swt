@@ -522,17 +522,7 @@ public void setTopIndex (int index) {
 
 public void setVisible (boolean visible) {
 	super.setVisible (visible);
-	//DOESN'T WOORK
-//	OS.TXNSetTXNObjectControls (txnObject, false, 1, new int[] {OS.kTXNVisibilityTag}, new int[] {visible ? 1 : 0});
-
-	//ALSO DOESN'T REALLY WORK
-//	if (visible) {
-//		Rect rect = new Rect ();
-//		OS.GetControlBounds (handle, rect);
-//		OS.TXNSetFrameBounds (txnObject, rect.top, rect.left, rect.bottom, rect.right, txnFrameID);
-//	} else {
-//		OS.TXNSetFrameBounds (txnObject, 0, 0, 0, 0, txnFrameID);
-//	}
+	OS.TXNSetTXNObjectControls (txnObject, false, 1, new int[] {OS.kTXNVisibilityTag}, new int[] {visible ? -1 : 0});
 }
 
 public void showSelection () {
