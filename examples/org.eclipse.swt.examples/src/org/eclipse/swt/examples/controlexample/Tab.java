@@ -69,7 +69,6 @@ abstract class Tab {
 	boolean [] eventsFilter;
 
 	static final String [] EVENT_NAMES = {
-		"", // event types are sequentially numbered from 1, so add placeholder for 0
 		"KeyDown", "KeyUp",
 		"MouseDown", "MouseUp", "MouseMove", "MouseEnter", "MouseExit", "MouseDoubleClick",
 		"Paint", "Move", "Resize", "Dispose",
@@ -365,10 +364,16 @@ abstract class Tab {
 		GridData data = new GridData(GridData.FILL_BOTH);
 		data.verticalSpan = 2;
 		table.setLayoutData(data);
-		for (int i = 1; i < EVENT_NAMES.length; i++) {
+		for (int i = 0; i < EVENT_NAMES.length; i++) {
 			TableItem item = new TableItem (table, SWT.NONE);
 			item.setText (EVENT_NAMES[i]);
 			item.setChecked (eventsFilter[i]);
+		}
+		final String [] customNames = getCustomEventNames ();
+		for (int i = 0; i < customNames.length; i++) {
+			TableItem item = new TableItem (table, SWT.NONE);
+			item.setText (customNames[i]);
+			item.setChecked (eventsFilter[EVENT_NAMES.length + i]);
 		}
 		Button selectAll = new Button (dialog, SWT.PUSH);
 		selectAll.setText(ControlExample.getResourceString ("Select_All"));
@@ -376,8 +381,11 @@ abstract class Tab {
 		selectAll.addSelectionListener (new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				TableItem [] items = table.getItems();
-				for (int i = 1; i < EVENT_NAMES.length; i++) {
-					items[i - 1].setChecked(true);
+				for (int i = 0; i < EVENT_NAMES.length; i++) {
+					items[i].setChecked(true);
+				}
+				for (int i = 0; i < customNames.length; i++) {
+					items[EVENT_NAMES.length + i].setChecked(true);
 				}
 			}
 		});
@@ -387,8 +395,11 @@ abstract class Tab {
 		deselectAll.addSelectionListener (new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				TableItem [] items = table.getItems();
-				for (int i = 1; i < EVENT_NAMES.length; i++) {
-					items[i - 1].setChecked(false);
+				for (int i = 0; i < EVENT_NAMES.length; i++) {
+					items[i].setChecked(false);
+				}
+				for (int i = 0; i < customNames.length; i++) {
+					items[EVENT_NAMES.length + i].setChecked(false);
 				}
 			}
 		});
@@ -400,8 +411,11 @@ abstract class Tab {
 		ok.addSelectionListener (new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				TableItem [] items = table.getItems();
-				for (int i = 1; i < EVENT_NAMES.length; i++) {
-					eventsFilter[i] = items[i - 1].getChecked();
+				for (int i = 0; i < EVENT_NAMES.length; i++) {
+					eventsFilter[i] = items[i].getChecked();
+				}
+				for (int i = 0; i < customNames.length; i++) {
+					eventsFilter[EVENT_NAMES.length + i] = items[EVENT_NAMES.length + i].getChecked();
 				}
 				dialog.dispose();
 			}
@@ -462,8 +476,9 @@ abstract class Tab {
 		});
 		
 		/* Initialize the eventsFilter to log all events. */
-		eventsFilter = new boolean [EVENT_NAMES.length];
-		for (int i = 1; i < EVENT_NAMES.length; i++) {
+		int customEventCount = getCustomEventNames ().length;
+		eventsFilter = new boolean [EVENT_NAMES.length + customEventCount];
+		for (int i = 0; i < EVENT_NAMES.length + customEventCount; i++) {
 			eventsFilter [i] = true;
 		}
 
@@ -609,6 +624,15 @@ abstract class Tab {
 	}
 	
 	/**
+	 * Gets the list of custom event names.
+	 * 
+	 * @return an array containing custom event names
+	 */
+	String [] getCustomEventNames () {
+		return new String [0];
+	}
+	
+	/**
 	 * Gets the default style for a widget
 	 *
 	 * @return the default style bit
@@ -664,7 +688,17 @@ abstract class Tab {
 			for (int i = 0; i < exampleItems.length; i++) {
 				hookListeners (exampleItems [i]);
 			}
+			String [] customNames = getCustomEventNames ();
+			for (int i = 0; i < customNames.length; i++) {
+				if (eventsFilter [EVENT_NAMES.length + i]) hookCustomListener (customNames[i]);
+			}
 		}
+	}
+	
+	/**
+	 * Hooks the custom listener specified by eventName.
+	 */
+	void hookCustomListener (String eventName) {
 	}
 	
 	/**
@@ -677,17 +711,17 @@ abstract class Tab {
 					log (event);
 				}
 			};
-			for (int i = 1; i < EVENT_NAMES.length; i++) {
-				if (eventsFilter [i]) widget.addListener (i, listener);
+			for (int i = 0; i < EVENT_NAMES.length; i++) {
+				if (eventsFilter [i]) widget.addListener (i + 1, listener);
 			}
 		}
 	}
 	
 	/**
-	 * Logs an event to the event console.
+	 * Logs an untyped event to the event console.
 	 */
 	void log(Event event) {
-		String toString = EVENT_NAMES[event.type] + ": ";
+		String toString = EVENT_NAMES[event.type - 1] + ": ";
 		switch (event.type) {
 			case SWT.KeyDown:
 			case SWT.KeyUp: toString += new KeyEvent (event).toString (); break;
@@ -730,6 +764,15 @@ abstract class Tab {
 		eventConsole.append ("\n");
 	}
 
+	/**
+	 * Logs a typed event to the event console.
+	 */
+	void log (String eventName, TypedEvent event) {
+		eventConsole.append (eventName + ": ");
+		eventConsole.append (event.toString ());
+		eventConsole.append ("\n");
+	}
+	
 	/**
 	 * Recreates the "Example" widgets.
 	 */
