@@ -2040,6 +2040,35 @@ public void setTopIndex (int index) {
 	OS.SendMessage (handle, OS.LVM_SCROLL, 0, dy);
 }
 
+void showItem (int index) {
+	/*
+	* Bug in Windows.  For some reason, when there is insufficient space
+	* to show an item, LVM_ENSUREVISIBLE causes blank lines to be
+	* inserted at the top of the widget.  A call to LVM_GETTOPINDEX will
+	* return a negative number (this is an impossible result).  The fix 
+	* is to use LVM_GETCOUNTPERPAGE to detect the case when the number 
+	* of visible items is zero and use LVM_ENSUREVISIBLE with the fPartialOK
+	* flag to scroll the table.
+	*/
+	if (OS.SendMessage (handle, OS.LVM_GETCOUNTPERPAGE, 0, 0) <= 0) {
+		/*
+		* Bug in Windows.  For some reason, LVM_ENSUREVISIBLE can
+		* scroll one item more or one item less when there is not
+		* enough space to show a single table item.  The fix is
+		* to detect the case and call LVM_ENSUREVISIBLE again with
+		* the same arguments.  It seems that once LVM_ENSUREVISIBLE
+		* has scrolled into the general area, it is able to scroll
+		* to the exact item.
+		*/
+		OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 1);
+		if (index != OS.SendMessage (handle, OS.LVM_GETTOPINDEX, 0, 0)) {
+			OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 1);
+		}		
+	} else {
+		OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 0);
+	}
+}
+
 /**
  * Shows the item.  If the item is already showing in the receiver,
  * this method simply returns.  Otherwise, the items are scrolled until
@@ -2062,18 +2091,8 @@ public void showItem (TableItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-	/*
-	* Bug in Windows.  For some reason, when there is insufficient space
-	* to show an item, LVM_ENSUREVISIBLE causes blank lines to be
-	* inserted at the top of the widget.  A call to LVM_GETTOPINDEX will
-	* return a negative number (this is an impossible result).  The fix is to
-	* detect this case and fail to show the selection.
-	*/
-	if (OS.SendMessage (handle, OS.LVM_GETCOUNTPERPAGE, 0, 0) <= 0)  return;
 	int index = indexOf (item);
-	if (index != -1) {
-		OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 0);
-	}
+	if (index != -1) showItem (index);
 }
 
 /**
@@ -2090,16 +2109,8 @@ public void showItem (TableItem item) {
  */
 public void showSelection () {
 	checkWidget (); 
-	/*
-	* Bug in Windows.  For some reason, when there is insufficient space
-	* to show an item, LVM_ENSUREVISIBLE causes blank lines to be
-	* inserted at the top of the widget.  A call to LVM_GETTOPINDEX will
-	* return a negative number (this is an impossible result).  The fix is to
-	* detect this case and fail to show the selection.
-	*/
-	if (OS.SendMessage (handle, OS.LVM_GETCOUNTPERPAGE, 0, 0) <= 0)  return;
 	int index = OS.SendMessage (handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_SELECTED);
-	if (index != -1) OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 0);
+	if (index != -1) showItem (index);
 }
 
 int widgetStyle () {
