@@ -38,7 +38,9 @@ case $OS in
 	"SunOS")
 		JAVA_HOME=/usr/java
 		MOTIF_HOME=/usr/dt
-		CDE_HOME=/usr/dt		
+		CDE_HOME=/usr/dt
+		PATH=/opt/SUNWspro/bin:$PATH
+		export PATH		
 		makefile="make_solaris.mak"
 		echo "Building Solaris version of SWT"
 		;;
