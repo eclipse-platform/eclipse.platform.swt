@@ -404,6 +404,15 @@ int processSelection (int callData) {
 		case OS.XmCR_PAGE_DECREMENT: 	event.detail = SWT.PAGE_UP;  break;
 		case OS.XmCR_PAGE_INCREMENT: 	event.detail = SWT.PAGE_DOWN;  break;
 	}
+	
+	/*
+	* Feature in Motif.  When a scroll bar is selected,
+	* it does not make the shell active.  The fix is to
+	* make the shell active.
+	*/
+	Shell shell = parent.getShell ();
+	shell.bringToTop ();
+	
 	sendEvent (SWT.Selection, event);
 	return 0;
 }

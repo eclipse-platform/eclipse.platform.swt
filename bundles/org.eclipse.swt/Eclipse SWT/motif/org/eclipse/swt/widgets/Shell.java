@@ -534,7 +534,27 @@ public void dispose () {
 //	if (!isValidWidget ()) return;
 //	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 //	Display oldDisplay = display;
+
+	/*
+	* Feature in Motif.  When an override-redirected shell
+	* is disposed, Motif does not assign a new active top
+	* level shell.  The parent shell appears to be active,
+	* but XGetInputFocus returns the root window, not the
+	* parent.  The fix is to make the parent be the active
+	* top level shell when the child shell is disposed.
+	*/
+	Composite parent = this.parent;
+	int [] argList = {OS.XmNoverrideRedirect, 0};
+	OS.XtGetValues (shellHandle, argList, argList.length / 2);
 	super.dispose ();
+	if (parent != null && argList [1] != 0) {
+		Shell shell = parent.getShell ();
+		shell.bringToTop ();
+	}
+	
+	/*
+	* This code intentionally commented.
+	*/
 //	if (oldDisplay != null) oldDisplay.update ();
 }
 void enableWidget (boolean enabled) {

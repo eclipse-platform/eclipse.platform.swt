@@ -1201,10 +1201,8 @@ int processMouseEnter (int callData) {
 	return 0;
 }
 int processMouseMove (int callData) {
-	if (toolTipText != null && toolTipText.length () != 0) {
-		Display display = getDisplay ();
-		display.addMouseHoverTimeOut (handle);
-	}
+	Display display = getDisplay ();
+	display.addMouseHoverTimeOut (handle);
 	XMotionEvent xEvent = new XMotionEvent ();
 	OS.memmove (xEvent, callData, XMotionEvent.sizeof);
 	sendMouseEvent (SWT.MouseMove, 0, xEvent.state, xEvent);

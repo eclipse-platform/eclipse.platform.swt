@@ -708,10 +708,8 @@ int processMouseHover (int id) {
 	return 0;
 }
 int processMouseMove (int callData) {
-	if (toolTipText != null && toolTipText.length () != 0) {
-		Display display = getDisplay ();
-		display.addMouseHoverTimeOut (handle);
-	}
+	Display display = getDisplay ();
+	display.addMouseHoverTimeOut (handle);
 
 	/*
 	* Forward the mouse event to the parent.
@@ -727,8 +725,15 @@ int processMouseMove (int callData) {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	xEvent.window = OS.XtWindow (parent.handle);
 	xEvent.x += argList [1];  xEvent.y += argList [3];
-	OS.memmove (callData, xEvent, XButtonEvent.sizeof);
-	parent.processMouseMove (callData);
+	/*
+	* This code is intentionally commented.
+	* Currently, the implementation of the
+	* mouse move code in the parent interferes
+	* with tool tips for tool items.
+	*/
+//	OS.memmove (callData, xEvent, XButtonEvent.sizeof);
+//	parent.processMouseMove (callData);
+	parent.sendMouseEvent (SWT.MouseMove, 0, xEvent.state, xEvent);
 
 	return 0;
 }
