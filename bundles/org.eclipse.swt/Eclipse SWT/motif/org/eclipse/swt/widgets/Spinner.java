@@ -385,6 +385,10 @@ void hookEvents () {
 	OS.XtAddCallback (textHandle, OS.XmNactivateCallback, windowProc, ACTIVATE_CALLBACK);
 	OS.XtAddCallback (textHandle, OS.XmNvalueChangedCallback, windowProc, VALUE_CHANGED_CALLBACK);
 	OS.XtAddCallback (textHandle, OS.XmNmodifyVerifyCallback, windowProc, MODIFY_VERIFY_CALLBACK);
+	OS.XtAddEventHandler (textHandle, OS.ButtonPressMask, false, windowProc, BUTTON_PRESS);
+	OS.XtAddEventHandler (textHandle, OS.ButtonReleaseMask, false, windowProc, BUTTON_RELEASE);
+	OS.XtAddEventHandler (textHandle, OS.EnterWindowMask, false, windowProc, ENTER_WINDOW);
+	OS.XtAddEventHandler (textHandle, OS.LeaveWindowMask, false, windowProc, LEAVE_WINDOW);
 	OS.XtAddEventHandler (textHandle, OS.KeyPressMask, false, windowProc, KEY_PRESS);
 	OS.XtAddEventHandler (textHandle, OS.KeyReleaseMask, false, windowProc, KEY_RELEASE);
 	OS.XtInsertEventHandler (textHandle, OS.FocusChangeMask, false, windowProc, FOCUS_CHANGE, OS.XtListTail);
