@@ -3,7 +3,6 @@ Bundle-Name: %pluginName
 Bundle-Vendor: %providerName
 Bundle-SymbolicName: org.eclipse.swt; singleton=true
 Bundle-Version: 3.1.0
-Bundle-ClassPath: $ws$/swt.jar
 Bundle-Localization: plugin
 Provide-Package: 
  org.eclipse.swt,
