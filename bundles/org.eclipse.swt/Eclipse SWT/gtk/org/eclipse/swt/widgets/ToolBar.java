@@ -409,9 +409,7 @@ void setFontDescription (int /*long*/ font) {
 	super.setFontDescription (font);
 	ToolItem [] items = getItems ();
 	for (int i = 0; i < items.length; i++) {
-		if (items[i] != null) {
-			items[i].setFontDescription (font);
-		}
+		items[i].setFontDescription (font);
 	}
 	layoutItems ();
 }
@@ -420,9 +418,7 @@ void setForegroundColor (GdkColor color) {
 	super.setForegroundColor (color);
 	ToolItem [] items = getItems ();
 	for (int i = 0; i < items.length; i++) {
-		if (items[i] != null) {
-			items[i].setForegroundColor (color);
-		}
+		items[i].setForegroundColor (color);
 	}
 }
 
