@@ -152,6 +152,8 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	width += Math.max (6, (bounds.right - bounds.left) - (client.right - client.left));
 	height += Math.max (37, (bounds.bottom - bounds.top) - (client.bottom - client.top));
 	Rect inset = getInset ();
+	x -= inset.left;
+	y -= inset.top;
 	width += inset.left + inset.right;
 	height += inset.top + inset.bottom;
 	return new Rectangle (x, y, width, height);
