@@ -12,16 +12,15 @@ package org.eclipse.swt.internal.motif;
 
  
 public class XmDragProcCallback {
-	public int   reason;         // the reason callback was called
-	public int   event;          // event structure that triggered callback
-	public int   timeStamp;      // timestamp of ;logical event
-	public int   dragContext;    // DragContext widget associated with operation
-	public short x;              // x-coordinate of pointer
-	public short y;              // y-coordinate of pointer
-	public byte  dropSiteStatus; // valid or invalid
-	public byte  operation;      // current operation
-	public byte  operations;     // supported operations
-	public byte  animate;        // toolkit or receiver does animation
-
+	public int reason;
+	public int event;
+	public int timeStamp;
+	public int dragContext;
+	public short x;
+	public short y;
+	public byte dropSiteStatus;
+	public byte operation;
+	public byte operations;
+	public byte animate;
 	public static final int sizeof = 24;
 }
