@@ -128,8 +128,7 @@ void addAccelerator () {
 	if ((accelerator & SWT.ALT) != 0) alt = "Meta ";
 	if ((accelerator & SWT.SHIFT) != 0) shift = "Shift ";
 	if ((accelerator & SWT.CONTROL) != 0) ctrl = "Ctrl ";
-	int modifiers = SWT.ALT | SWT.SHIFT | SWT.CONTROL;
-	int keysym = accelerator & ~modifiers;
+	int keysym = accelerator & SWT.KEY_MASK;
 	int newKey = Display.untranslateKey (keysym);
 	if (newKey != 0) {
 		keysym = newKey;
