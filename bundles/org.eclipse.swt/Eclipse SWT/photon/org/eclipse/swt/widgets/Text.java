@@ -724,7 +724,7 @@ int getTabWidth (int tabs) {
  */
 public String getText (int start, int end) {
 	checkWidget ();
-	if (start > end) return "";
+	if (!(start <= end && 0 <= end)) return "";
 	String text = getText ();
 	int length = text.length ();
 	start = Math.max (0, start);
