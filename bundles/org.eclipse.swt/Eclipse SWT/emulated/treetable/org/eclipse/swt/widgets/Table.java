@@ -2460,6 +2460,7 @@ public void setSelection(int [] indices) {
 	}
 	deselectAllExcept(keepSelected);
 	select(indices);
+	showSelection ();
 }
 /**
  * Sets the receiver's selection to be the given array of items.
@@ -2505,6 +2506,7 @@ public void setSelection(int index) {
 	checkWidget();
 	deselectAllExcept(getVisibleItem(index));
 	select(index);
+	showSelection ();
 }
 /**
  * Selects the items at the given zero-relative indices in the receiver. 
@@ -2533,6 +2535,7 @@ public void setSelection(int start, int end) {
 	}	
 	deselectAllExcept(keepSelected);
 	select(start, end);
+	showSelection ();
 }
 /**
  * Sets the zero-relative index of the item which is currently

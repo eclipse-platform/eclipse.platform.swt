@@ -1327,6 +1327,7 @@ public void setItems (String [] items) {
 public void setSelection (int index) {
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (index);
+	showSelection ();
 }
 /**
  * Selects the items at the given zero-relative indices in the receiver. 
@@ -1346,6 +1347,7 @@ public void setSelection (int index) {
 public void setSelection (int start, int end) {
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (start, end);
+	showSelection ();
 }
 /**
  * Selects the items at the given zero-relative indices in the receiver. 
@@ -1367,6 +1369,7 @@ public void setSelection (int start, int end) {
 public void setSelection(int[] indices) {
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (indices);
+	showSelection ();
 }
 /**
  * Sets the receiver's selection to be the given array of items.
@@ -1400,7 +1403,10 @@ public void setSelection (String [] items) {
 					int index = OS.XmListItemPos (handle, xmString);
 					if (index != 0) OS.XmListSelectPos (handle, index, false);
 					OS.XmStringFree (xmString);
-					if ((index != 0) && OS.XmListPosSelected (handle, index)) return;
+					if (index != 0 && OS.XmListPosSelected (handle, index)) {
+						showSelection ();
+						return;
+					}
 				}
 			}
 		}
@@ -1425,6 +1431,7 @@ public void setSelection (String [] items) {
 	for (int i=0; i<length; i++) OS.XmStringFree (table [i]);
 	OS.XtFree (ptr);
 	OS.XmListUpdateSelectedList (handle);
+	if (length > 0) showSelection ();
 }
 /**
  * Sets the zero-relative index of the item which is currently
