@@ -152,18 +152,18 @@ class ButtonTab extends AlignableTab {
 	 * Sets the alignment of the "Example" widgets.
 	 */
 	void setExampleWidgetAlignment () {
-		int allignment = 0;
-		if (leftButton.getSelection ()) allignment = SWT.LEFT;
-		if (centerButton.getSelection ()) allignment = SWT.CENTER;
-		if (rightButton.getSelection ()) allignment = SWT.RIGHT;
-		if (upButton.getSelection ()) allignment = SWT.UP;
-		if (downButton.getSelection ()) allignment = SWT.DOWN;
-		button1.setAlignment (allignment);
-		button2.setAlignment (allignment);
-		button3.setAlignment (allignment);
-		button4.setAlignment (allignment);
-		button5.setAlignment (allignment);
-		button6.setAlignment (allignment);
+		int alignment = 0;
+		if (leftButton.getSelection ()) alignment = SWT.LEFT;
+		if (centerButton.getSelection ()) alignment = SWT.CENTER;
+		if (rightButton.getSelection ()) alignment = SWT.RIGHT;
+		if (upButton.getSelection ()) alignment = SWT.UP;
+		if (downButton.getSelection ()) alignment = SWT.DOWN;
+		button1.setAlignment (alignment);
+		button2.setAlignment (alignment);
+		button3.setAlignment (alignment);
+		button4.setAlignment (alignment);
+		button5.setAlignment (alignment);
+		button6.setAlignment (alignment);
 	}
 	
 	/**

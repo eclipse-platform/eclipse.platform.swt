@@ -19,11 +19,11 @@ import org.eclipse.swt.events.*;
  */
 abstract class AlignableTab extends Tab {
 
-	/* Allignment Controls */
+	/* Alignment Controls */
 	Button leftButton, rightButton, centerButton;
 
 	/* Alignment Group */
-	Group allignmentGroup;
+	Group alignmentGroup;
 
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
@@ -39,18 +39,18 @@ abstract class AlignableTab extends Tab {
 		super.createControlGroup ();
 		
 		/* Create the group */
-		allignmentGroup = new Group (controlGroup, SWT.NONE);
-		allignmentGroup.setLayout (new GridLayout ());
-		allignmentGroup.setLayoutData (new GridData(GridData.HORIZONTAL_ALIGN_FILL |
+		alignmentGroup = new Group (controlGroup, SWT.NONE);
+		alignmentGroup.setLayout (new GridLayout ());
+		alignmentGroup.setLayoutData (new GridData(GridData.HORIZONTAL_ALIGN_FILL |
 			GridData.VERTICAL_ALIGN_FILL));
-		allignmentGroup.setText (ControlExample.getResourceString("Alignment"));
+		alignmentGroup.setText (ControlExample.getResourceString("Alignment"));
 	
 		/* Create the controls */
-		leftButton = new Button (allignmentGroup, SWT.RADIO);
+		leftButton = new Button (alignmentGroup, SWT.RADIO);
 		leftButton.setText (ControlExample.getResourceString("Left"));
-		centerButton = new Button (allignmentGroup, SWT.RADIO);
+		centerButton = new Button (alignmentGroup, SWT.RADIO);
 		centerButton.setText(ControlExample.getResourceString("Center"));
-		rightButton = new Button (allignmentGroup, SWT.RADIO);
+		rightButton = new Button (alignmentGroup, SWT.RADIO);
 		rightButton.setText (ControlExample.getResourceString("Right"));
 	
 		/* Add the listeners */
