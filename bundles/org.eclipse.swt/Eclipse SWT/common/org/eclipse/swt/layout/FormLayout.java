@@ -252,18 +252,20 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 		Control child = children [i];
 		FormData data = (FormData) child.getLayoutData ();
 		if (move) {
+			data.needed = false;
 			FormAttachment left = data.getLeftAttachment (child, spacing, flushCache);
 			FormAttachment right = data.getRightAttachment (child, spacing, flushCache);
 			int x1 = left.solveX (width), x2 = right.solveX (width);
 			if (data.width == SWT.DEFAULT && data.height == SWT.DEFAULT) {
-				if (data.cacheWidth == -1 && (child.getStyle () & SWT.WRAP) != 0) {
-					//width favoured over height (calling getLeftAttachment() does this)
-					//this means that when y1 and y2 are computed, the cached height values
-					//reflect the desired height wrt "x2 - x1" rather than "width".  This
-					//means that the cache is wrong wrt "width" and should be cleared
-					//bug (x2 - x1) needs to get rid of trim
-					//int border = child.getBorderWidth ();
-					//data.computeCache (child, x2 - x1 - border * 2, data.height, flushCache);
+				if (!data.needed && (child.getStyle () & SWT.WRAP) != 0) {
+					int trim = 0;
+					if (child instanceof Scrollable) {
+						Rectangle rect = ((Scrollable) child).computeTrim (0, 0, 0, 0);
+						trim = rect.width;
+					} else {
+						trim = child.getBorderWidth () * 2;
+					}
+					data.computeCache (child, x2 - x1 - trim, data.height, flushCache);
 					if (flush == null) flush = new boolean [children.length];
 					flush [i] = true;
 				}

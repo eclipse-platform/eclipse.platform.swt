@@ -73,7 +73,7 @@ public final class FormData {
 	
 	int cacheWidth = -1, cacheHeight = -1;
 	FormAttachment cacheLeft, cacheRight, cacheTop, cacheBottom;
-	boolean isVisited;
+	boolean isVisited, needed;
 	
 public FormData () {
 	this (SWT.DEFAULT, SWT.DEFAULT);
@@ -93,6 +93,7 @@ void computeCache (Control control, int width, int height, boolean flushCache) {
 }
 
 int getWidth (Control control, boolean flushCache) {
+	needed = true;
 	computeCache (control, width, height, flushCache);
 	return cacheWidth;
 }
