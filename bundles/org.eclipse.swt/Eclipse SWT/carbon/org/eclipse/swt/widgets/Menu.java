@@ -569,6 +569,9 @@ int kEventMenuClosed (int nextHandler, int theEvent, int userData) {
 	if (result == OS.noErr) return result;
 	closed = true;
 	sendEvent (SWT.Hide);
+	if (hooks (SWT.Hide)) {
+		getShell().update (true);
+	}
 	return OS.eventNotHandledErr;
 }
 
@@ -662,6 +665,9 @@ int kEventMenuOpening (int nextHandler, int theEvent, int userData) {
 	closed = false;
 	sendEvent (SWT.Show);
 	modified = false;
+	if (hooks (SWT.Show)) {
+		getShell().update (true);
+	}
 	return OS.eventNotHandledErr;
 }
 
@@ -672,7 +678,12 @@ int kEventMenuTargetItem (int nextHandler, int theEvent, int userData) {
 	short [] index = new short [1];
 	if (OS.GetEventParameter (theEvent, OS.kEventParamMenuItemIndex, OS.typeMenuItemIndex, null, 2, null, index) == OS.noErr) {
 		if (index [0] != 0) lastTarget = items [index [0] - 1];
-		if (lastTarget != null) lastTarget.sendEvent (SWT.Arm);
+		if (lastTarget != null) {
+			lastTarget.sendEvent (SWT.Arm);
+			if (lastTarget.hooks (SWT.Arm)) {
+				getShell().update (true);
+			}
+		}
 	}
 	return OS.eventNotHandledErr;
 }
