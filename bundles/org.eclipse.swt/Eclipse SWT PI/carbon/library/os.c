@@ -1322,6 +1322,16 @@ failTag:
 }
 #endif
 
+#ifndef NO_CGContextSetLineJoin
+JNIEXPORT void JNICALL OS_NATIVE(CGContextSetLineJoin)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, CGContextSetLineJoin_FUNC);
+	CGContextSetLineJoin((CGContextRef)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, CGContextSetLineJoin_FUNC);
+}
+#endif
+
 #ifndef NO_CGContextSetLineWidth
 JNIEXPORT void JNICALL OS_NATIVE(CGContextSetLineWidth)
 	(JNIEnv *env, jclass that, jint arg0, jfloat arg1)
