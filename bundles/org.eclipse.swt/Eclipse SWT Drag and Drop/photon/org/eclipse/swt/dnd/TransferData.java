@@ -28,13 +28,26 @@ public class TransferData {
 	 */
 	public int type;
 	
-	// attributes specific to set/get
-	int pData;
-	int length;
 	/**
-	 * The result field contains the result of converting a java data type into a
-	 * stgmedium value.
+	 * Pointer to the data being transferred.  Data is of size 
+	 * <code>length</code> bytes.
 	 * (Warning: This field is platform dependent)
 	 */
-	int result;
+	public int pData;
+	
+	/**
+	 * Specifies the number of bytes in pValue.
+	 * (Warning: This field is platform dependent)
+	 */
+	public int length;
+	
+	/**
+	 * The result field contains the result of converting a java data type
+	 * into a platform specific value.
+	 * (Warning: This field is platform dependent)
+	 * 
+ 	 * <p>The value of result is 1 if the conversion was successfully.  The value of 
+	 * result is 0 if the conversion failed.</p>
+	 */
+	public int result;
 }
