@@ -1019,6 +1019,7 @@ public void setEnabled (boolean enabled) {
 	enableWidget (enabled);
 	if (enabled) {
 		if (enableWindow != 0) {
+			OS.gdk_window_set_user_data (enableWindow, 0);
 			OS.gdk_window_destroy (enableWindow);
 			enableWindow = 0;
 		}
