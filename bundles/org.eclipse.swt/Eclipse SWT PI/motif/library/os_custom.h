@@ -11,4 +11,4 @@
  
 /* Special sizeof's */
 #define fd_set_sizeof() sizeof(fd_set)
-
+#define localeconv_decimal_point() localeconv()->decimal_point

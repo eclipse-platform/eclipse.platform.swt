@@ -5245,6 +5245,18 @@ fail:
 }
 #endif
 
+#ifndef NO_localeconv_1decimal_1point
+JNIEXPORT jint JNICALL OS_NATIVE(localeconv_1decimal_1point)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, localeconv_1decimal_1point_FUNC);
+	rc = (jint)localeconv_decimal_point();
+	OS_NATIVE_EXIT(env, that, localeconv_1decimal_1point_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_memmove__ILorg_eclipse_swt_internal_motif_XButtonEvent_2I
 JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_motif_XButtonEvent_2I)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)

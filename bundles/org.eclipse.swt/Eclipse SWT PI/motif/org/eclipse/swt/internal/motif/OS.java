@@ -4058,6 +4058,7 @@ public static final native int getenv(byte[] name);
 public static final native int iconv(int cd, int[] inBuf, int[] inBytesLeft, int[] outBuf, int[] outBytesLeft);
 public static final native int iconv_close(int cd);
 public static final native int iconv_open(byte[] tocode, byte[] fromcode);
+public static final native int localeconv_decimal_point();
 public static final native void memmove(int dest, XImage src, int count);
 public static final native void memmove(int dest, XmDragProcCallbackStruct src, int count);
 public static final native void memmove(int dest, XmSpinBoxCallbackStruct src, int count);

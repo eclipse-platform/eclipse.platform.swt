@@ -414,6 +414,7 @@ typedef enum {
 	iconv_FUNC,
 	iconv_1close_FUNC,
 	iconv_1open_FUNC,
+	localeconv_1decimal_1point_FUNC,
 	memmove__ILorg_eclipse_swt_internal_motif_XButtonEvent_2I_FUNC,
 	memmove__ILorg_eclipse_swt_internal_motif_XClientMessageEvent_2I_FUNC,
 	memmove__ILorg_eclipse_swt_internal_motif_XConfigureEvent_2I_FUNC,

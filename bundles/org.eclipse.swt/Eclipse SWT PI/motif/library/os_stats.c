@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 446;
-int OS_nativeFunctionCallCount[446];
+int OS_nativeFunctionCount = 447;
+int OS_nativeFunctionCallCount[447];
 char * OS_nativeFunctionNames[] = {
 	"CODESET",
 	"FD_1ISSET",
@@ -410,6 +410,7 @@ char * OS_nativeFunctionNames[] = {
 	"iconv",
 	"iconv_1close",
 	"iconv_1open",
+	"localeconv_1decimal_1point",
 	"memmove__ILorg_eclipse_swt_internal_motif_XButtonEvent_2I",
 	"memmove__ILorg_eclipse_swt_internal_motif_XClientMessageEvent_2I",
 	"memmove__ILorg_eclipse_swt_internal_motif_XConfigureEvent_2I",
