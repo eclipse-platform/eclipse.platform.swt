@@ -612,7 +612,7 @@ void handleEvents (Event event){
 			focus(event);
 			break;
 		case SWT.KeyDown:
-			keyDown(event);
+			//do nothing - this callback exists so that widget is included in tab order
 			break;
 		default:
 			break;
@@ -703,20 +703,7 @@ void itemChanged(TabItem item) {
 		redrawScrollButtons();
 	}	
 }
-void keyDown(Event e) {
-//	if (e.keyCode == SWT.ARROW_LEFT) {
-//		if (selectedIndex > 0) {
-//			forceFocus();
-//			setSelection(selectedIndex - 1, true);
-//		}
-//	}
-//	if (e.keyCode == SWT.ARROW_RIGHT) {
-//		if (selectedIndex < items.length - 1) {
-//			forceFocus();
-//			setSelection(selectedIndex + 1, true);
-//		}
-//	}
-}
+
 /**
  * Layout the items and store the client area size.
  */
@@ -1056,6 +1043,20 @@ void traversal(Event event) {
 		case SWT.TRAVERSE_PAGE_PREVIOUS:
 			event.doit = pageTraversal(event);
 			if (event.doit) event.detail = SWT.TRAVERSE_NONE;
+			break;
+		case SWT.TRAVERSE_ARROW_NEXT:
+			if (selectedIndex < items.length - 1) {
+				setSelection(selectedIndex + 1, true);
+			}
+			event.doit = true;
+			event.detail = SWT.TRAVERSE_NONE;
+			break;
+		case SWT.TRAVERSE_ARROW_PREVIOUS: 
+			if (selectedIndex > 0) {
+				setSelection(selectedIndex - 1, true);
+			}
+			event.doit = true;
+			event.detail = SWT.TRAVERSE_NONE;
 			break;
 	}
 }
