@@ -274,7 +274,7 @@ public Browser(Composite parent, int style) {
 	* causing the child of the GtkFixed handle to be resized to 1.
 	* The workaround is to embed Mozilla into a GtkHBox handle.
 	*/
-	boxHandle = OS.gtk_hbox_new (false, 0);
+	boxHandle = OS.gtk_hbox_new (false, (int)/*64*/0);
 	OS.gtk_container_add (handle, boxHandle);
 	OS.gtk_widget_show (boxHandle);
 	/*
