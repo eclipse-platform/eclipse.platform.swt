@@ -72,9 +72,8 @@ int actionProc (int theControl, int partCode) {
 	}
 	OS.SetControl32BitValue (handle, value);
 	sendEvent (SWT.Selection, event);
-//	Display display = getDisplay ();
-//	display.update ();
-	parent.update ();
+	Display display = getDisplay ();
+	display.update ();
 	return 0;
 }
 
