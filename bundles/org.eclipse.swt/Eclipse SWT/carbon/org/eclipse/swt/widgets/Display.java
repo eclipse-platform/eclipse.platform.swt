@@ -221,10 +221,10 @@ public class Display extends Device {
 	// callback procs
 	int fApplicationProc;
 	int fWindowProc;
+	int fMouseProc;
 	int fMenuProc;
 	int fControlActionProc;
-	int fUserPaneDrawProc;
-	int fUserPaneHitTestProc;
+	int fUserPaneDrawProc, fUserPaneHitTestProc, fUserPaneTrackingProc;
 	int fDataBrowserDataProc, fDataBrowserCompareProc, fDataBrowserItemNotificationProc;
 	
 	private boolean fMenuIsVisible;
@@ -878,9 +878,11 @@ protected void init () {
 	mouseHoverProc= createCallback("mouseHoverProc", 2);
 
 	fWindowProc= createCallback("handleWindowCallback", 3);
+	fMouseProc= createCallback("handleMouseCallback", 3);
 	fControlActionProc= createCallback("handleControlAction", 2);
 	fUserPaneDrawProc= createCallback("handleUserPaneDraw", 2);
 	fUserPaneHitTestProc= createCallback("handleUserPaneHitTest", 2);
+	fUserPaneTrackingProc= createCallback("handleUserPaneTracking", 3);
 	fDataBrowserDataProc= createCallback("handleDataBrowserDataCallback", 5);
 	fDataBrowserCompareProc= createCallback("handleDataBrowserCompareCallback", 4);
 	fDataBrowserItemNotificationProc= createCallback("handleDataBrowserItemNotificationCallback", 3);
@@ -1051,9 +1053,7 @@ static boolean isValidClass (Class clazz) {
 int mouseHoverProc (int id, int handle) {
 	if (mouseHoverID != 0) OS.RemoveEventLoopTimer(mouseHoverID);
 	mouseHoverID = mouseHoverHandle = 0;
-	Widget widget = WidgetTable.get (handle);
-	if (widget == null) return 0;
-	int rc= widget.processMouseHover(new Integer(id));
+	int rc= windowProc (handle, SWT.MouseHover, new MacMouseEvent());
 	sendUserEvent(54321);
 	return rc;
 }
@@ -1691,10 +1691,35 @@ public void wake () {
 	/* Send a user event to wake up in ReceiveNextEvent */
 	sendUserEvent(54322);
 }
-public int windowProc (int handle, int clientData, Object callData) {
+public int windowProc (int handle, int clientData) {
+	Widget widget = WidgetTable.get (handle);
+	if (widget == null) return 0;
+	return widget.processEvent (clientData);
+}
+public int windowProc (int handle, boolean callData) {
+	Widget widget = WidgetTable.get (handle);
+	if (widget == null) return 0;
+	return widget.processSetFocus (new Boolean(callData));
+}
+public int windowProc (int handle, int clientData, int callData) {
+	Widget widget = WidgetTable.get (handle);
+	if (widget == null) return 0;
+	return widget.processResize (new Integer(callData));
+}
+public int windowProc (int handle, int clientData, MacEvent callData) {
 	Widget widget = WidgetTable.get (handle);
 	if (widget == null) return 0;
 	return widget.processEvent (clientData, callData);
+}
+public int windowProc (int handle, int clientData, MacMouseEvent mme) {
+	Widget widget = WidgetTable.get (handle);
+	if (widget == null) return 0;
+	return widget.processEvent (clientData, mme);
+}
+public int windowProc (int handle, int clientData, MacControlEvent mce) {
+	Widget widget = WidgetTable.get (handle);
+	if (widget == null) return 0;
+	return widget.processEvent (clientData, mce);
 }
 static String convertToLf(String text) {
 	char Cr = '\r';
@@ -1744,6 +1769,8 @@ static String convertToLf(String text) {
 	//---- callbacks
 	
 	private int handleControlAction(int cHandle, int partCode) {
+		if (MacUtil.HIVIEW)
+			System.out.println("Display.handleControlAction: " + cHandle + " " + partCode);
 		return windowProc(cHandle, SWT.Selection, new MacControlEvent(cHandle, partCode, true));
 	}
 
@@ -1761,10 +1788,51 @@ static String convertToLf(String text) {
 	}
 		
 	private int handleUserPaneHitTest(int cHandle, int where) {
+		if (MacUtil.HIVIEW)
+			System.out.println("handleUserPaneHitTest");
 		Widget w= WidgetTable.get(cHandle);
 		if (w instanceof Text || w instanceof Combo)
 			return 112;
 		return 111;
+	}
+		
+	private int handleUserPaneTracking(int cHandle, int where, int actionProc) {
+		
+		MacPoint pt= new MacPoint(OS.HiWord(where), OS.LoWord(where));
+		short[] trackingResult= new short[1];
+		
+		Widget widget = WidgetTable.get (cHandle);
+		if (widget == null) return 0;
+
+		widget.processMouseDown(new MacMouseEvent(1, pt.toPoint()));
+		//System.out.println("V" + pt.toPoint());
+		
+		/*
+		MacRect bounds= new MacRect();
+		OS.GetControlBounds(cHandle, bounds.getData());
+		int x= bounds.getX();
+		int y= bounds.getY();
+		System.out.println("Bounds" + bounds.toRectangle());
+		*/
+		
+		while (true) {
+			OS.TrackMouseLocation(0, pt.getData(), trackingResult);
+			Point p= pt.toPoint();
+			p.x-= 100;
+			p.y-= 100
+			;
+			switch (trackingResult[0]) {
+			case 5: // kMouseTrackingMouseDragged
+				widget.processMouseMove(new MacMouseEvent(1, p));
+				//System.out.println("-" + p);
+				break;
+			case 2: // kMouseTrackingMouseUp
+			case 7: // kMouseTrackingUserCancelled
+				widget.processMouseUp(new MacMouseEvent(1, p));
+				//System.out.println("A" + p);
+				return 0;
+			}
+		}
 	}
 	
 	private int handleDataBrowserDataCallback(int cHandle, int item, int property, int itemData, int setValue) {
@@ -1867,7 +1935,7 @@ static String convertToLf(String text) {
 			switch (eventKind) {
 			case OS.kEventRawKeyDown:
 				if (MacEvent.getKeyCode(eRefHandle) == 122) {	// help key f1
-					windowProc(focus.handle, SWT.Help, null);
+					windowProc(focus.handle, SWT.Help);
 					return OS.kNoErr;
 				}
 				// fall through!
@@ -1890,6 +1958,22 @@ static String convertToLf(String text) {
 		return OS.eventNotHandledErr;
 	}
 	
+	private int handleMouseCallback(int nextHandler, int eRefHandle, int whichWindow) {
+		int eventClass= OS.GetEventClass(eRefHandle);
+		int eventKind= OS.GetEventKind(eRefHandle);
+		
+		switch (eventClass) {
+			
+		case OS.kEventClassMouse:
+			return handleMouseEvent(nextHandler, eRefHandle, eventKind, whichWindow);
+		
+		default:
+			System.out.println("handleMouseCallback: unexpected event class: " + MacUtil.toString(eventClass));
+			break;
+		}
+		return OS.eventNotHandledErr;
+	}
+	
 	private int handleWindowCallback(int nextHandler, int eRefHandle, int whichWindow) {
 		
 		int eventClass= OS.GetEventClass(eRefHandle);
@@ -1906,22 +1990,22 @@ static String convertToLf(String text) {
 				Widget widget = WidgetTable.get(whichWindow);
 				if (widget instanceof Shell)
 					fMenuRootShell= (Shell) widget;
-				windowProc(whichWindow, SWT.FocusIn, new Boolean(true));
+				windowProc(whichWindow, true);
 				break; //return OS.kNoErr;
 				
 			case OS.kEventWindowDeactivated:
 				fMenuRootShell= null;
-				windowProc(whichWindow, SWT.FocusIn, new Boolean(false));
+				windowProc(whichWindow, false);
 				break; // return OS.kNoErr;
 				
 			case OS.kEventWindowBoundsChanged:
 				int[] attr= new int[1];
 				OS.GetEventParameter(eRefHandle, OS.kEventParamAttributes, OS.typeUInt32, null, null, attr);	
-				windowProc(whichWindow, SWT.Resize, new Integer(attr[0]));
+				windowProc(whichWindow, SWT.Resize, attr[0]);
 				return OS.kNoErr;
 				
 			case OS.kEventWindowClose:
-				windowProc(whichWindow, SWT.Dispose, null);
+				windowProc(whichWindow, SWT.Dispose);
 				return OS.kNoErr;
 				
 			case OS.kEventWindowDrawContent:
@@ -2042,6 +2126,9 @@ static String convertToLf(String text) {
 		
 	private int handleMouseEvent(int nextHandler, int eRefHandle, int eventKind, int whichWindow) {
 		
+		if (MacUtil.HIVIEW)
+			return OS.eventNotHandledErr;
+		
 		if (eventKind == OS.kEventMouseDown)
 			fTrackedControl= 0;
 		
@@ -2110,14 +2197,14 @@ static String convertToLf(String text) {
 		
 		case OS.kEventMouseDragged:
 			if (fTrackedControl != 0) {
-				windowProc(fTrackedControl, SWT.MouseMove, me);
+				windowProc(fTrackedControl, SWT.MouseMove, new MacMouseEvent(me));
 				return OS.kNoErr;
 			}
 			break;
 
 		case OS.kEventMouseUp:
 			if (fTrackedControl != 0) {
-				windowProc(fTrackedControl, SWT.MouseUp, me);
+				windowProc(fTrackedControl, SWT.MouseUp, new MacMouseEvent(me));
 				fTrackedControl= 0;
 				return OS.kNoErr;
 			}	
@@ -2134,7 +2221,7 @@ static String convertToLf(String text) {
 			
 				if (fCurrentControl != 0) {
 					fLastHoverHandle= 0;
-					windowProc(fCurrentControl, SWT.MouseExit, me);
+					windowProc(fCurrentControl, SWT.MouseExit, new MacMouseEvent(me));
 				}
 				
 				fCurrentControl= whichControl;
@@ -2149,15 +2236,15 @@ static String convertToLf(String text) {
 				} else
 					setCursor(0);
 				
-				windowProc(fCurrentControl, SWT.MouseMove, me);
+				windowProc(fCurrentControl, SWT.MouseMove, new MacMouseEvent(me));
 				
 				if (fCurrentControl != 0) {
-					windowProc(fCurrentControl, SWT.MouseEnter, me);
+					windowProc(fCurrentControl, SWT.MouseEnter, new MacMouseEvent(me));
 				}
 				return OS.kNoErr;			
 			} else {
 				if (fCurrentControl != 0) {
-					windowProc(fCurrentControl, SWT.MouseMove, me);
+					windowProc(fCurrentControl, SWT.MouseMove, new MacMouseEvent(me));
 					return OS.kNoErr;
 				}
 			}
@@ -2174,7 +2261,7 @@ static String convertToLf(String text) {
 			fFocusControl= focusHandle;
 			
 			if (oldFocus != 0)
-				windowProc(oldFocus, SWT.FocusIn, new Boolean(false));
+				windowProc(oldFocus, false);
 			
 			//fFocusControl= focusHandle;
 			
@@ -2187,7 +2274,7 @@ static String convertToLf(String text) {
 			}
 
 			if (fFocusControl != 0)
-				windowProc(fFocusControl, SWT.FocusIn, new Boolean(true));
+				windowProc(fFocusControl, true);
 		}
 		return true;
 	}
@@ -2199,10 +2286,17 @@ static String convertToLf(String text) {
 				
 		OS.QDGlobalToLocalPoint(OS.GetWindowPort(whichWindow), where.getData());
 		
-		short[] cpart= new short[1];
-		//int whichControl= OS.FindControlUnderMouse(where.getData(), whichWindow, cpart);
-		int whichControl= MacUtil.findControlUnderMouse(where, whichWindow, cpart);				
-						
+		short[] cpart= new short[1];		
+		int whichControl= 0;
+		if (MacUtil.HIVIEW) {
+			int[] ov= new int[1];
+			int root= OS.HIViewGetRoot(whichWindow);
+			OS.HIViewGetViewForMouseEvent(root, me.getEventRef(), ov);
+			whichControl= ov[0];
+		} else {
+			whichControl= MacUtil.findControlUnderMouse(where, whichWindow, cpart);				
+		}
+		
 		// focus change
 		setMacFocusHandle(whichWindow, whichControl);
 								
@@ -2224,6 +2318,11 @@ static String convertToLf(String text) {
 					return false;
 				}
 			}
+			
+			if (MacUtil.HIVIEW) {
+				OS.HIViewClick(whichControl, me.getEventRef());
+				return false;
+			}
 		
 			switch (cpart[0]) {
 			case 0:
@@ -2231,17 +2330,17 @@ static String convertToLf(String text) {
 
 			case 111:	// User pane
 				fTrackedControl= whichControl;	// starts mouse tracking
-				windowProc(whichControl, SWT.MouseDown, me);
+				windowProc(whichControl, SWT.MouseDown, new MacMouseEvent(me));
 				break;
 
 			case 112:	// User pane
-				windowProc(whichControl, SWT.MouseDown, me);
+				windowProc(whichControl, SWT.MouseDown, new MacMouseEvent(me));
 				break;
 				
 			default:
-				windowProc(whichControl, SWT.MouseDown, me);
+				windowProc(whichControl, SWT.MouseDown, new MacMouseEvent(me));
 				
-				if (false) {
+				if (MacUtil.HIVIEW) {
 					// AW: Jaguar:
 					OS.HIViewClick(whichControl, me.getEventRef());
 				} else {
