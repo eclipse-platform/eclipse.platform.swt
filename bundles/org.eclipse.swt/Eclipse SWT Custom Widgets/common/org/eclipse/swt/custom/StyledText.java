@@ -151,11 +151,11 @@ public class StyledText extends Canvas {
 	boolean updateCaretDirection = true;
 
 	final static boolean IS_CARBON;
-	final static boolean DOUBLE_BUFFERED;	
+	final static boolean DOUBLE_BUFFER;
 	static {
 		String platform = SWT.getPlatform();
 		IS_CARBON = "carbon".equals(platform);
-		DOUBLE_BUFFERED = !("carbon".equals(platform) || "gtk".equals(platform));
+		DOUBLE_BUFFER = !IS_CARBON;
 	}
 
 	/**
@@ -5162,7 +5162,7 @@ void handleTextChanged(TextChangedEvent event) {
 		int startLine = content.getLineAtOffset(lastTextChangeStart);
 		int startY = startLine * lineHeight - verticalScrollOffset + topMargin;
 
-		if (DOUBLE_BUFFERED) {
+		if (DOUBLE_BUFFER) {
 			GC gc = getGC();
 			Caret caret = getCaret();
 			boolean caretVisible = false;
@@ -5671,7 +5671,7 @@ void performPaint(GC gc,int startLine,int startY, int renderHeight)	{
 		int paintY, paintHeight;
 		Image lineBuffer;
 		GC lineGC;
-		boolean doubleBuffer = DOUBLE_BUFFERED && lastPaintTopIndex == topIndex;
+		boolean doubleBuffer = DOUBLE_BUFFER && lastPaintTopIndex == topIndex;
 		lastPaintTopIndex = topIndex;
 		if (doubleBuffer) {
 			paintY = 0;

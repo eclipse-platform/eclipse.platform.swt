@@ -225,6 +225,9 @@ void createHandle (int index, boolean scrolled) {
 	if ((style & SWT.NO_REDRAW_RESIZE) != 0) {
 		OS.gtk_widget_set_redraw_on_allocate (handle, false);
 	}
+	if ((style & SWT.NO_BACKGROUND) != 0) {
+		OS.gtk_widget_set_double_buffered (handle, false);
+	}
 }
 
 void deregister () {
