@@ -4,5 +4,6 @@
 	<classpathentry kind="src" path="Preprocessor"/>
 	<classpathentry kind="src" path="JNI Generation"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="src" path="Native Stats"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

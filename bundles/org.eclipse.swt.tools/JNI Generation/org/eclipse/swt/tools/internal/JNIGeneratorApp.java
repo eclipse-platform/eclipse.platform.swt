@@ -110,6 +110,46 @@ void generateSWT_C() {
 	}
 }
 
+void generateSTATS_C() {
+	try {
+		String outputName = getClassName(mainClass).toLowerCase();
+		String inc = 
+			"#include \"swt.h\"\n" +
+			"#include \"" + "os_structs.h\"\n" +
+			"#include \"" + "stats.h\"\n";
+		metaData.setMetaData("swt_includes", inc);
+		StatsGenerator gen = new StatsGenerator();
+		gen.setMetaData(metaData);
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		PrintStream print = new PrintStream(out);
+		gen.setOutput(print);
+		gen.generateSourceFile(getNativesClasses());
+		print.flush();
+		if (out.size() > 0) output(out.toByteArray(), outputDir + outputName + "_stats.c");
+	} catch (Exception e) {
+		System.out.println("Problem");
+		e.printStackTrace(System.out);
+	}
+}
+
+void generateSTATS_H() {
+	try {
+		String outputName = getClassName(mainClass).toLowerCase();
+		String inc = "";
+		metaData.setMetaData("swt_includes", inc);
+		StatsGenerator gen = new StatsGenerator();
+		gen.setMetaData(metaData);
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		PrintStream print = new PrintStream(out);
+		gen.setOutput(print);
+		gen.generateHeaderFile(getNativesClasses());
+		print.flush();
+		if (out.size() > 0) output(out.toByteArray(), outputDir + outputName + "_stats.h");
+	} catch (Exception e) {
+		System.out.println("Problem");
+		e.printStackTrace(System.out);
+	}
+}
 
 void generateAllMetaData() {
 	try {
@@ -136,6 +176,8 @@ public void generate() {
 	generateSTRUCTS_H();
 	generateSTRUCTS_C();
 	generateSWT_C();
+	//generateSTATS_C();
+	//generateSTATS_H();
 	generateAllMetaData();
 }
 
