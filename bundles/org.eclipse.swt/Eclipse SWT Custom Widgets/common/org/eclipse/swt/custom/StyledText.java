@@ -2104,7 +2104,8 @@ void doPageDown(boolean select) {
 	int line = content.getLineAtOffset(caretOffset);
 	int lineCount = content.getLineCount();
 	
-	if (line < lineCount - 1) {
+	// do nothing if in single line mode. fixes 5673	
+	if (line < lineCount - 1 && isSingleLine() == false) {
 		int offsetInLine = caretOffset - content.getOffsetAtLine(line);
 		int verticalMaximum = content.getLineCount() * getVerticalIncrement();
 		int pageSize = getClientArea().height;
@@ -2142,12 +2143,18 @@ void doPageDown(boolean select) {
  * Moves the cursor to the end of the last fully visible line.
  */
 void doPageEnd() {
-	int line = getBottomIndex();
-	int bottomCaretOffset = content.getOffsetAtLine(line) + content.getLine(line).length();
-	
-	if (caretOffset < bottomCaretOffset) {
-		caretOffset = bottomCaretOffset;
-		showCaret();
+	// go to end of line if in single line mode. fixes 5673
+	if (isSingleLine()) {
+		doLineEnd();
+	}
+	else {
+		int line = getBottomIndex();
+		int bottomCaretOffset = content.getOffsetAtLine(line) + content.getLine(line).length();
+		
+		if (caretOffset < bottomCaretOffset) {
+			caretOffset = bottomCaretOffset;
+			showCaret();
+		}
 	}
 }
 /**
@@ -2266,7 +2273,8 @@ void doSelectionCursorNext() {
 		showCaret();
 	}
 	else
-	if (line < content.getLineCount() - 1) {
+	if (line < content.getLineCount() - 1 && isSingleLine() == false) {
+		// only go to next line if not in single line mode. fixes 5673
 		line++;
 		caretOffset = content.getOffsetAtLine(line);
 		showCaret();
@@ -2326,9 +2334,16 @@ void doSelectionLineDown() {
  * Moves the caret to the end of the next word .
  */
 void doSelectionWordNext() {
-	lastCaretDirection = ST.COLUMN_NEXT;
-	caretOffset = getWordEnd(caretOffset);
-	showCaret();
+	int newCaretOffset = getWordEnd(caretOffset);
+	
+	// don't change caret position if in single line mode and the cursor 
+	// would be on a different line. fixes 5673
+	if (isSingleLine() == false || 
+		content.getLineAtOffset(caretOffset) == content.getLineAtOffset(newCaretOffset)) {
+		lastCaretDirection = ST.COLUMN_NEXT;
+		caretOffset = newCaretOffset;
+		showCaret();
+	}
 }
 /**
  * Moves the caret to the start of the previous word.
