@@ -391,6 +391,27 @@ void destroyItem (TreeItem item) {
 	}
 }
 
+boolean fixPinheadScroll (int hItem) {
+	/*
+	* Bug in Windows.  When TVM_ENSUREVISIBLE is used to ensure
+	* that an item is visible and the client area of the tree is
+	* smaller that the size of one item, TVM_ENSUREVISIBLE makes
+	* the next item in the tree visible by making it the top item
+	* instead of making the desired item visible.  The fix is to
+	* detect the case when the client area is too small and make
+	* the desired visible item be the top item in the tree.
+	*/
+	if (OS.SendMessage (handle, OS.TVM_GETVISIBLECOUNT, 0, 0) == 0) {
+		boolean fixScroll = checkScroll (hItem);
+		if (fixScroll) OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
+		OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hItem);
+		OS.SendMessage (handle, OS.WM_HSCROLL, OS.SB_TOP, 0);
+		if (fixScroll) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+		return true;
+	}
+	return false;
+}
+
 int getBackgroundPixel () {
 	if (OS.IsWinCE) return OS.GetSysColor (OS.COLOR_WINDOW);
 	int pixel = OS.SendMessage (handle, OS.TVM_GETBKCOLOR, 0, 0);
@@ -903,19 +924,6 @@ public void selectAll () {
 	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 	if (hItem == 0) {
 		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-		if (hItem != 0) {
-			/*
-			* NOTE: TVM_SELECTITEM will not make an item that is already
-			* focused become selected but this does not matter because
-			* every item is explicilty selected later in this method.
-			*/
-			boolean fixScroll = checkScroll (hItem);
-			if (fixScroll) OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
-			ignoreSelect = true;
-			OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, hItem);
-			ignoreSelect = false;
-			if (fixScroll) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
-		}
 	}
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_STATE;
@@ -1119,7 +1127,7 @@ public void setSelection (TreeItem [] items) {
 		tvItem.hItem = hNewItem;
 		OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
 	}
-	showItem (hNewItem);
+	fixPinheadScroll (hNewItem);
 	if ((style & SWT.SINGLE) != 0) return;
 
 	/* Select/deselect the rest of the items */
@@ -1186,43 +1194,27 @@ public void setTopItem (TreeItem item) {
 }
 
 void showItem (int hItem) {
-	/*
-	* Bug in Windows.  When TVM_ENSUREVISIBLE is used to ensure
-	* that an item is visible and the client area of the tree is
-	* smaller that the size of one item, TVM_ENSUREVISIBLE makes
-	* the next item in the tree visible by making it the top item
-	* instead of making the desired item visible.  The fix is to
-	* detect the case when the client area is too small and make
-	* the desired visible item be the top item in the tree.
-	*/
-	if (OS.SendMessage (handle, OS.TVM_GETVISIBLECOUNT, 0, 0) == 0) {
+	if (fixPinheadScroll (hItem)) return;
+	boolean scroll = true;
+	RECT itemRect = new RECT ();
+	itemRect.left = hItem;
+	if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, itemRect) != 0) {
+		forceResize ();
+		RECT rect = new RECT ();
+		OS.GetClientRect (handle, rect);
+		POINT pt = new POINT ();
+		pt.x = itemRect.left;
+		pt.y = itemRect.top;
+		if (OS.PtInRect (rect, pt)) {
+			pt.y = itemRect.bottom;
+			if (OS.PtInRect (rect, pt)) scroll = false;
+		}
+	}
+	if (scroll) {
 		boolean fixScroll = checkScroll (hItem);
 		if (fixScroll) OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
-		OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hItem);
-		OS.SendMessage (handle, OS.WM_HSCROLL, OS.SB_TOP, 0);
+		OS.SendMessage (handle, OS.TVM_ENSUREVISIBLE, 0, hItem);
 		if (fixScroll) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
-	} else {
-		boolean scroll = true;
-		RECT itemRect = new RECT ();
-		itemRect.left = hItem;
-		if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, itemRect) != 0) {
-			forceResize ();
-			RECT rect = new RECT ();
-			OS.GetClientRect (handle, rect);
-			POINT pt = new POINT ();
-			pt.x = itemRect.left;
-			pt.y = itemRect.top;
-			if (OS.PtInRect (rect, pt)) {
-				pt.y = itemRect.bottom;
-				if (OS.PtInRect (rect, pt)) scroll = false;
-			}
-		}
-		if (scroll) {
-			boolean fixScroll = checkScroll (hItem);
-			if (fixScroll) OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
-			OS.SendMessage (handle, OS.TVM_ENSUREVISIBLE, 0, hItem);
-			if (fixScroll) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
-		}
 	}
 }
 
