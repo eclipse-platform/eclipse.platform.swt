@@ -965,6 +965,29 @@ public class SWT {
 	public static final int CONTROL = CTRL;
 
 	/**
+	 * keyboard and/or mouse event mask indicating that the COMMAND key
+	 * was pushed on the keyboard when the event was generated
+	 * (value is 1&lt;&lt;22)
+	 * 
+	 * @since 2.1
+	 */
+	public static final int COMMAND = 1 << 22;
+	
+	/**
+	 * keyboard and/or mouse event mask indicating all possible
+	 * keyboard modifiers.  To allow for the future, this mask
+	 * is intended to be used in place of code that references
+	 * each individual keyboard mask.  For example, the following
+	 * expression will determine that any modifer is pressed
+	 * and will continue to work as new modifiers are added.
+	 * 
+ 	 * <code>(stateMask & SWT.MODIFIER_MASK) != 0</code>.
+	 * 
+	 * @since 2.1
+	 */
+	public static final int MODIFIER_MASK;
+	
+	/**
 	 * keyboard and/or mouse event mask indicating that mouse button one
 	 * was pushed when the event was generated. (value is 1&lt;&lt;19)
 	 */
@@ -983,11 +1006,18 @@ public class SWT {
 	public static final int BUTTON3 = 1 << 21;
 
 	/**
-	 * keyboard and/or mouse event mask indicating that the COMMAND key
-	 * was pushed on the keyboard when the event was generated
-	 * (value is 1&lt;&lt;22)
+	 * keyboard and/or mouse event mask indicating all possible
+	 * mouse buttons.  To allow for the future, this mask
+	 * is intended to be used in place of code that references
+	 * each individual button mask.  For example, the following
+	 * expression will determine that any button is pressed
+	 * and will continue to work as new buttons are added.
+	 * 
+ 	 * <code>(stateMask & SWT.BUTTON_MASK) != 0</code>.
+	 * 
+	 * @since 2.1
 	 */
-	public static final int COMMAND = 1 << 22;
+	public static final int BUTTON_MASK;
 	
 	/**
 	 * keyboard and/or mouse event mask indicating that the MOD1 key
@@ -1024,130 +1054,161 @@ public class SWT {
 	public static final int MOD4;
 	
 	/**
+	 * accelerator constant used to differentiate a key code from a
+	 * unicode character.  If this bit is set, then the key stroke
+	 * portion of an accelerator represents a key code.  If this bit
+	 * is not set, then the key stroke portion of an accelerator is
+	 * a unicode character.
+	 * 
+	 * The following expression is false:
+	 * 
+	 * <code>((SWT.MOD1 | SWT.MOD2 | 'T') & SWT.KEYCODE_BIT) != 0</code>.
+	 * 
+	 * The following expression is true:
+	 * 
+	 * <code>((SWT.MOD3 | SWT.F2) & SWT.KEYCODE_BIT) != 0</code>.
+	 * 
+	 * (value is (1&lt;&lt;24))
+	 * 
+	 * @since 2.1
+	 */	
+	public static final int KEYCODE_BIT = (1 << 24);
+
+	/**
+	 * accelerator constant used to extract the key stroke portion of
+	 * an accelerator.  The key strike may be a key code or a unicode
+	 * character.  If the key stroke is a key code <code>KEYCODE_BIT</code>
+	 * will be set.
+	 * 
+	 * @since 2.1
+	 */	
+	public static final int KEY_MASK = KEYCODE_BIT + 0xFFFF;
+	
+	/**
 	 * keyboard event constant representing the UP ARROW key
 	 * (value is (1&lt;&lt;24)+1)
 	 */
-	public static final int ARROW_UP = (1 << 24) + 1;
+	public static final int ARROW_UP = KEYCODE_BIT + 1;
 
 	/**
 	 * keyboard event constant representing the DOWN ARROW key
 	 * (value is (1&lt;&lt;24)+2)
 	 */
-	public static final int ARROW_DOWN = (1 << 24) + 2;
+	public static final int ARROW_DOWN = KEYCODE_BIT + 2;
 
 	/**
 	 * keyboard event constant representing the LEFT ARROW key
 	 * (value is (1&lt;&lt;24)+3)
 	 */
-	public static final int ARROW_LEFT = (1 << 24) + 3;
+	public static final int ARROW_LEFT = KEYCODE_BIT + 3;
 
 	/**
 	 * keyboard event constant representing the RIGHT ARROW key
 	 * (value is (1&lt;&lt;24)+4)
 	 */
-	public static final int ARROW_RIGHT = (1 << 24) + 4;
+	public static final int ARROW_RIGHT = KEYCODE_BIT + 4;
 
 	/**
 	 * keyboard event constant representing the PAGE UP key
 	 * (value is (1&lt;&lt;24)+5)
 	 */
-	public static final int PAGE_UP = (1 << 24) + 5;
+	public static final int PAGE_UP = KEYCODE_BIT + 5;
 
 	/**
 	 * keyboard event constant representing the PAGE DOWN key
 	 * (value is (1&lt;&lt;24)+6)
 	 */
-	public static final int PAGE_DOWN = (1 << 24) + 6;
+	public static final int PAGE_DOWN = KEYCODE_BIT + 6;
 
 	/**
 	 * keyboard event constant representing the HOME key
 	 * (value is (1&lt;&lt;24)+7)
 	 */
-	public static final int HOME = (1 << 24) + 7;
+	public static final int HOME = KEYCODE_BIT + 7;
 
 	/**
 	 * keyboard event constant representing the END key
 	 * (value is (1&lt;&lt;24)+8)
 	 */
-	public static final int END = (1 << 24) + 8;
+	public static final int END = KEYCODE_BIT + 8;
 
 	/**
 	 * keyboard event constant representing the INSERT key
 	 * (value is (1&lt;&lt;24)+9)
 	 */
-	public static final int INSERT = (1 << 24) + 9;
+	public static final int INSERT = KEYCODE_BIT + 9;
 
 	/**
 	 * keyboard event constant representing the F1 key
 	 * (value is (1&lt;&lt;24)+10)
 	 */
-	public static final int F1 = (1 << 24) + 10;
+	public static final int F1 = KEYCODE_BIT + 10;
 	
 	/**
 	 * keyboard event constant representing the F2 key
 	 * (value is (1&lt;&lt;24)+11)
 	 */
-	public static final int F2 = (1 << 24) + 11;
+	public static final int F2 = KEYCODE_BIT + 11;
 	
 	/**
 	 * keyboard event constant representing the F3 key
 	 * (value is (1&lt;&lt;24)+12)
 	 */
-	public static final int F3 = (1 << 24) + 12;
+	public static final int F3 = KEYCODE_BIT + 12;
 	
 	/**
 	 * keyboard event constant representing the F4 key
 	 * (value is (1&lt;&lt;24)+13)
 	 */
-	public static final int F4 = (1 << 24) + 13;
+	public static final int F4 = KEYCODE_BIT + 13;
 	
 	/**
 	 * keyboard event constant representing the F5 key
 	 * (value is (1&lt;&lt;24)+14)
 	 */
-	public static final int F5 = (1 << 24) + 14;
+	public static final int F5 = KEYCODE_BIT + 14;
 	
 	/**
 	 * keyboard event constant representing the F6 key
 	 * (value is (1&lt;&lt;24)+15)
 	 */
-	public static final int F6 = (1 << 24) + 15;
+	public static final int F6 = KEYCODE_BIT + 15;
 	
 	/**
 	 * keyboard event constant representing the F7 key
 	 * (value is (1&lt;&lt;24)+16)
 	 */
-	public static final int F7 = (1 << 24) + 16;
+	public static final int F7 = KEYCODE_BIT + 16;
 	
 	/**
 	 * keyboard event constant representing the F8 key
 	 * (value is (1&lt;&lt;24)+17)
 	 */
-	public static final int F8 = (1 << 24) + 17;
+	public static final int F8 = KEYCODE_BIT + 17;
 	
 	/**
 	 * keyboard event constant representing the F9 key
 	 * (value is (1&lt;&lt;24)+18)
 	 */
-	public static final int F9 = (1 << 24) + 18;
+	public static final int F9 = KEYCODE_BIT + 18;
 	
 	/**
 	 * keyboard event constant representing the F10 key
 	 * (value is (1&lt;&lt;24)+19)
 	 */
-	public static final int F10 = (1 << 24) + 19;
+	public static final int F10 = KEYCODE_BIT + 19;
 	
 	/**
 	 * keyboard event constant representing the F11 key
 	 * (value is (1&lt;&lt;24)+20)
 	 */
-	public static final int F11 = (1 << 24) + 20;
+	public static final int F11 = KEYCODE_BIT + 20;
 	
 	/**
 	 * keyboard event constant representing the F12 key
 	 * (value is (1&lt;&lt;24)+21)
 	 */
-	public static final int F12 = (1 << 24) + 21;
+	public static final int F12 = KEYCODE_BIT + 21;
 	
 	/**
 	 * <code>MessageBox</code> style constant for error icon
@@ -2267,6 +2328,19 @@ public static void error (int code, Throwable throwable) {
 }
 
 static {
+	/*
+	* These values represent bit masks that may need to
+	* expand in the future.  Therefore they are not initialized
+	* in the declaration to stop the compiler from inlining.
+	*/
+	BUTTON_MASK = BUTTON1 | BUTTON2 | BUTTON3;
+	MODIFIER_MASK = ALT | SHIFT | CTRL | COMMAND;
+	
+	/*
+	* These values can be different on different platforms.
+	* Therefore they are not initialized in the declaration
+	* to stop the compiler from inlining.
+	*/
 	String platform = getPlatform ();
 	if ("carbon".equals (platform)) {
 		MOD1 = COMMAND;
