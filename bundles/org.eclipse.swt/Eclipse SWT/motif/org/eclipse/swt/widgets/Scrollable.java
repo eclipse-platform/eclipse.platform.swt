@@ -322,6 +322,8 @@ void setScrollbarVisible (int barHandle, boolean visible) {
 	
 	/* Restore the size */
 	OS.XtSetValues (scrolledHandle, argList, argList.length / 2);
+
+	sendEvent (SWT.Resize);
 }
 int topHandle () {
 	if (scrolledHandle != 0) return scrolledHandle;

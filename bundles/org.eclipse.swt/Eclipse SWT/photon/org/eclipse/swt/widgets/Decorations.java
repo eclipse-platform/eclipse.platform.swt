@@ -358,7 +358,7 @@ void resizeBounds (int width, int height) {
 	OS.memmove (ptr, area, PhArea_t.sizeof);
 	OS.PtSetResource (scrolledHandle, OS.Pt_ARG_AREA, ptr, 0);
 	OS.free (ptr);
-	resizeClientArea (width, height);
+	resizeClientArea (width, height, false);
 }
 
 /**

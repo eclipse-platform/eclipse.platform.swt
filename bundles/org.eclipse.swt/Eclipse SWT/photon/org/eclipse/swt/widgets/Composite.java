@@ -589,10 +589,10 @@ void releaseWidget () {
 void resizeClientArea () {
 	int [] args = {OS.Pt_ARG_WIDTH, 0, 0, OS.Pt_ARG_HEIGHT, 0, 0};
 	OS.PtGetResources (scrolledHandle, args.length / 3, args);
-	resizeClientArea (args [1], args [4]);
+	resizeClientArea (args [1], args [4], true);
 }
 
-void resizeClientArea (int width, int height) {
+void resizeClientArea (int width, int height, boolean events) {
 	if (scrolledHandle == 0) return;
 	
 	/* Calculate the insets */
@@ -657,6 +657,10 @@ void resizeClientArea (int width, int height) {
 		OS.PtSetResource (cornerHandle, OS.Pt_ARG_POS, ptr, 0);
 		OS.free (ptr);
 	}
+	
+	if (events) {
+		sendEvent (SWT.Resize);
+	}
 }
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
@@ -665,8 +669,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		if (events) sendEvent (SWT.Move);
 	}
 	if ((result & RESIZED) != 0) {
-		resizeClientArea (width, height);
-		if (events) sendEvent (SWT.Resize);
+		resizeClientArea (width, height, events);
 		if (layout != null) layout (false);
 	}
 	return result;

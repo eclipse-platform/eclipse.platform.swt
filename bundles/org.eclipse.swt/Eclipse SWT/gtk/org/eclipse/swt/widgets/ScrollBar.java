@@ -683,6 +683,14 @@ public void setVisible (boolean visible) {
 		vsp [0] = policy;
 	}
 	OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp [0], vsp [0]);
+	
+	/*
+	* Force the container to allocate the size of its children.
+	*/
+	int parentHandle = parent.scrolledHandle;
+	OS.gtk_container_resize_children (parentHandle);
+
+	parent.sendEvent (SWT.Resize);
 }
 
 }
