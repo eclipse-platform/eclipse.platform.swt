@@ -223,7 +223,7 @@ void createHandle () {
 }
 
 void createItem (TreeItem item, int hParent, int hInsertAfter) {
-	item.foreground = item.background = -1;
+	item.foreground = item.background = item.font = -1;
 	int id = 0;
 	while (id < items.length && items [id] != null) id++;
 	if (id == items.length) {
@@ -1888,11 +1888,14 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					tvItem.hItem = item.handle;
 					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 					if ((tvItem.state & OS.TVIS_SELECTED) != 0) break;
+					int font = item.font;
 					int clrText = item.foreground, clrTextBk = item.background;
-					if (clrText == -1 && clrTextBk == -1) break;
+					if (font == -1 && clrText == -1 && clrTextBk == -1) break;
 					nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
 					nmcd.clrTextBk = clrTextBk == -1 ? getBackgroundPixel () : clrTextBk;
 					OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
+					if (font == -1) font = getFont ().handle;
+					OS.SelectObject(nmcd.hdc, font);
 					return new LRESULT (OS.CDRF_NEWFONT);
 			}
 			break;
