@@ -18,6 +18,21 @@
 #include <stdio.h>
 #include <assert.h>
 
+/*
+ * CTree
+ */
+JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1ctree_1row_1get_1level
+  (JNIEnv *env, jclass that, jint ctree)
+{
+  return (jshort) (((GtkCTreeRow*) ctree)->level);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1ctree_1row_1get_1parent
+  (JNIEnv *env, jclass that, jint ctree)
+{
+  return (jint) (((GtkCTreeRow*) ctree)->parent);
+}
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1ctree_1post_1recursive_1to_1depth
   (JNIEnv *env, jclass that, jint ctree, jint node, jint depth, jint func, jint data)
 {
