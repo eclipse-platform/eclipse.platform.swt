@@ -297,8 +297,16 @@ void setMessage (int dialogHandle) {
 	String text = message;
 	int label = OS.XmMessageBoxGetChild (dialogHandle, OS.XmDIALOG_MESSAGE_LABEL);
 	if (label != 0) {
-//		(fontList := OSWidget resourceAt: XmNfontList handle: widget) == 0 ifFalse: [
-//			text := OSWidget wrapText: message font: fontList width: DisplayWidth * 3 // 5]].
+		int [] argList = {OS.XmNfontList, 0};
+		OS.XtGetValues (label, argList, argList.length / 2);
+		int fontList = argList [1];
+		if (fontList != 0) {
+			Display display = getParent ().getDisplay ();
+			int xDisplay = display.xDisplay;
+			int screen = OS.XDefaultScreen (xDisplay);
+			int width = OS.XDisplayWidth (xDisplay, screen);
+			text = display.wrapText (message, fontList, width * 3 / 5);
+		}
 	}
 	byte [] buffer = Converter.wcsToMbcs (null, text, true);
 	int [] parseTable = Display.getDefault ().parseTable;

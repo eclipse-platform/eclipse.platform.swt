@@ -30,6 +30,7 @@ import org.eclipse.swt.graphics.*;
  */
 
 public /*final*/ class Label extends Control {
+	String text = "";
 	Image image, bitmap, disabled;
 /**
  * Constructs a new instance of this class given its parent
@@ -90,6 +91,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	OS.XtSetValues(handle, argList3, argList3.length / 2);
 	width += result.width;
 	height += result.height;
+
 	/**
 	 * Feature in Motif. If a button's labelType is XmSTRING but it
 	 * has no label set into it yet, recomputing the size will
@@ -98,7 +100,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	 */
 	int [] argList = {OS.XmNlabelType, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
-	if (argList [1] == OS.XmSTRING) {
+	int labelType = argList [1];
+	if (labelType == OS.XmSTRING) {
 		int [] argList1 = {OS.XmNlabelString, 0};
 		OS.XtGetValues (handle, argList1, argList1.length / 2);
 		int xmString = argList1 [1];
@@ -107,7 +110,30 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			width = 0;
 		}
 	}
-	if (wHint != SWT.DEFAULT) width = wHint + (border * 2);
+	if (wHint != SWT.DEFAULT) {
+		width = wHint + (border * 2);
+
+		/**
+		 * If we are wrapping text and there is a wHint,
+		 * recalculate the height based on the wHint.
+		 */
+		if (labelType == OS.XmSTRING && (style & SWT.WRAP) != 0 && text.length () > 0) {
+			int [] argList4 = {
+				OS.XmNfontList, 0,      /* 1 */
+				OS.XmNmarginTop, 0,     /* 3 */
+				OS.XmNmarginBottom, 0,  /* 5 */
+				OS.XmNmarginHeight, 0,  /* 7 */
+			};
+			OS.XtGetValues (handle, argList4, argList4.length / 2);
+			int fontList = argList4 [1];
+			if (fontList == 0) fontList = defaultFont();
+			String string = getDisplay ().wrapText (text, fontList, wHint);
+			GC gc = new GC(this);
+			Point extent = gc.textExtent(string);
+			gc.dispose();
+			height = extent.y + argList4 [3] + argList4 [5] + argList4 [7] * 2 + border * 2;
+		}
+	}
 	if (hHint != SWT.DEFAULT) height = hHint + (border * 2);
 	return new Point (width, height);
 }
@@ -207,51 +233,7 @@ public String getText () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & SWT.SEPARATOR) != 0) return "";
-	int [] argList = {OS.XmNlabelString, 0, OS.XmNmnemonic, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	int xmString = argList [1];
-	int mnemonic = argList [3];
-	if (mnemonic == OS.XK_VoidSymbol) mnemonic = 0;
-	if (xmString == 0) error (SWT.ERROR_CANNOT_GET_TEXT);
-	char [] result = null;
-	int [] parseTable = getDisplay ().parseTable;
-	int address = OS.XmStringUnparse (
-		xmString,
-		null,
-		OS.XmCHARSET_TEXT,
-		OS.XmCHARSET_TEXT,
-		parseTable,
-		parseTable.length,
-		OS.XmOUTPUT_ALL);
-	if (address != 0) {
-		int length = OS.strlen (address);
-		byte [] buffer = new byte [length];
-		OS.memmove (buffer, address, length);
-		OS.XtFree (address);
-		result = Converter.mbcsToWcs (null, buffer);
-	}
-	if (xmString != 0) OS.XmStringFree (xmString);
-	int count = 0;
-	if (mnemonic != 0) count++;
-	for (int i=0; i<result.length-1; i++)
-		if (result [i] == Mnemonic) count++;
-	char [] newResult = result;
-	if ((count != 0) || (mnemonic != 0)) {
-		newResult = new char [result.length + count];
-		int i = 0, j = 0;
-		while (i < result.length) {
-			if ((mnemonic != 0) && (result [i] == mnemonic)) {
-				if (j < newResult.length) newResult [j++] = Mnemonic;
-				mnemonic = 0;
-			}
-			if ((newResult [j++] = result [i++]) == Mnemonic)
-				if (j < newResult.length) newResult [j++] = Mnemonic;
-		}
-	}
-	return new String (newResult);
-}
-boolean getWrap () {
-	return false;
+	return text;
 }
 boolean mnemonicHit () {
 	Composite control = this.parent;
@@ -367,6 +349,14 @@ void setBitmap (Image image) {
 	};
 	OS.XtSetValues (handle, argList, argList.length / 2);
 }
+public void setBounds (int x, int y, int width, int height) {
+	super.setBounds (x, y, width, height);
+	if ((style & SWT.WRAP) != 0) setText (text);
+}
+public void setFont (Font font) {
+	super.setFont (font);
+	if ((style & SWT.WRAP) != 0) setText (text);
+}
 /**
  * Sets the receiver's image to the argument, which may be
  * null indicating that no image should be displayed.
@@ -382,6 +372,10 @@ public void setImage (Image image) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	setBitmap (this.image = image);
+}
+public void setSize (int width, int height) {
+	super.setSize (width, height);
+	if ((style & SWT.WRAP) != 0) setText (text);
 }
 /**
  * Sets the receiver's text.
@@ -405,19 +399,41 @@ public void setText (String string) {
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
-	char [] text = new char [string.length ()];
-	string.getChars (0, text.length, text, 0);
+	text = string;
+	
+	/* Strip out mnemonic marker symbols, and remember the mnemonic. */
+	char [] textBuf = new char [string.length ()];
+	string.getChars (0, textBuf.length, textBuf, 0);
 	int i=0, j=0, mnemonic=0;
-	while (i < text.length) {
-		if ((text [j++] = text [i++]) == Mnemonic) {
-			if (i == text.length) {continue;}
-			if (text [i] == Mnemonic) {i++; continue;}
-			if (mnemonic == 0) mnemonic = text [i];
+	while (i < textBuf.length) {
+		if ((textBuf [j++] = textBuf [i++]) == Mnemonic) {
+			if (i == textBuf.length) {continue;}
+			if (textBuf [i] == Mnemonic) {i++; continue;}
+			if (mnemonic == 0) mnemonic = textBuf [i];
 			j--;
 		}
 	}
-	while (j < text.length) text [j++] = 0;
-	byte [] buffer = Converter.wcsToMbcs (null, text, true);
+	while (j < textBuf.length) textBuf [j++] = 0;
+
+	/* Wrap the text if necessary. */
+	if ((style & SWT.WRAP) != 0) {
+		int [] argList = {
+			OS.XmNfontList, 0,     /* 1 */
+			OS.XmNwidth, 0,        /* 3 */
+			OS.XmNmarginLeft, 0,   /* 5 */
+			OS.XmNmarginRight, 0,  /* 7 */
+			OS.XmNborderWidth, 0,  /* 9 */
+			OS.XmNmarginWidth, 0}; /* 11 */
+		OS.XtGetValues (handle, argList, argList.length / 2);
+		int fontList = argList [1];
+		if (fontList == 0) fontList = defaultFont();
+		int width = argList [3] - argList [5] - argList [7] - argList [9] * 2 - argList [11] * 2;
+		string = getDisplay ().wrapText (new String(textBuf), fontList, width);
+		textBuf = new char [string.length ()];
+		string.getChars (0, textBuf.length, textBuf, 0);
+	}
+	
+	byte [] buffer = Converter.wcsToMbcs (null, textBuf, true);
 	int [] parseTable = getDisplay ().parseTable;
 	int xmString = OS.XmStringParseText (
 		buffer,
@@ -436,8 +452,5 @@ public void setText (String string) {
 	};
 	OS.XtSetValues (handle, argList, argList.length / 2);
 	if (xmString != 0) OS.XmStringFree (xmString);
-}
-void setWrap (boolean wrap) {
-	// NOT DONE
 }
 }

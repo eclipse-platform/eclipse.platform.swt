@@ -244,6 +244,8 @@ public class Display extends Device {
 	String [] keys;
 	Object [] values;
 
+	static final byte[] _MOTIF_DEFAULT_LOCALE = Converter.wcsToMbcs(null, "_MOTIF_DEFAULT_LOCALE");
+
 /**
  * Constructs a new instance of this class.
  * <p>
@@ -363,6 +365,18 @@ void createDisplay (DeviceData data) {
 			OS.XInitThreads ();
 			OS.XtToolkitThreadInitialize ();
 			OS.XtToolkitInitialize ();
+	
+			/* Bug in XpExtention. If XInitThreads is called before
+			* any Xp functions then XpCheckExtInit hangs.  The workaround
+			* is to create the printer display before calling XInitThreads.
+			*/
+//			int xtContext = OS.XtCreateApplicationContext ();
+//			byte[] buffer = Converter.wcsToMbcs ( null, Device.XDefaultPrintServer, true );
+//			xPrinter = OS.XtOpenDisplay (xtContext, buffer, null, null, 0, 0, new int [] {0}, 0);
+//			if (xPrinter != 0) {
+//				OS.XpQueryVersion (xPrinter, new short [1], new short [1]);
+//			}
+//			//OS.XInitThreads ();
 		}
 		XtInitialized = true;
 	}
@@ -1742,6 +1756,14 @@ public void syncExec (Runnable runnable) {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	synchronizer.syncExec (runnable);
 }
+int textWidth (String string, int fontList) {
+	if (string.length () == 0) return 0;
+	byte [] textBuffer = Converter.wcsToMbcs (null, string, true);
+	int xmString = OS.XmStringGenerate (textBuffer, null, OS.XmCHARSET_TEXT, _MOTIF_DEFAULT_LOCALE);
+	int width = OS.XmStringWidth (fontList, xmString);
+	OS.XmStringFree (xmString);
+	return width;
+}
 /**
  * Causes the <code>run()</code> method of the runnable to
  * be invoked by the user-interface thread after the specified
@@ -1832,5 +1854,58 @@ int windowProc (int handle, int clientData, int callData, int unused) {
 	Widget widget = WidgetTable.get (handle);
 	if (widget == null) return 0;
 	return widget.processEvent (clientData, callData);
+}
+String wrapText (String text, int fontList, int width) {
+	String Lf = "\n";
+	int length = text.length ();
+	if (width <= 0 || length == 0 || length == 1) return text;
+	StringBuffer result = new StringBuffer ();
+	int lineStart = 0, lineEnd = 0;
+	while (lineStart < length) {
+		lineEnd = text.indexOf (Lf, lineStart);
+		boolean noLf = lineEnd == -1;
+		if (noLf) lineEnd = length - 1;
+		int nextStart = lineEnd + Lf.length ();
+		while (lineEnd >= 0 && Character.isWhitespace (text.charAt (lineEnd))) {
+			lineEnd--;
+		}
+		int wordStart = lineStart, wordEnd = lineStart;
+		int i = lineStart;
+		while (i < lineEnd) {
+			int lastStart = wordStart, lastEnd = wordEnd;
+			wordStart = i;
+			while (i < lineEnd && !Character.isWhitespace (text.charAt (i))) {
+				i++;
+			}
+			wordEnd = i - 1;
+			String line = text.substring (lineStart, wordEnd + 1);
+			int lineWidth = textWidth (line, fontList);
+			while (i < lineEnd && Character.isWhitespace (text.charAt (i))) {
+				i++;
+			}
+			if (lineWidth > width) {
+				if (lastStart == wordStart) {
+					line = text.substring (lineStart, wordStart + 1);
+					lineWidth = textWidth (line, fontList);
+					while (wordStart < wordEnd && lineWidth < width) {
+						wordStart++;
+					}
+					if (wordStart == lastStart) wordStart++;
+					lastEnd = wordStart - 1;
+				}
+				line = text.substring (lineStart, lastEnd + 1);
+				result.append (line); result.append (Lf);
+				i = wordStart; lineStart = wordStart; wordEnd = wordStart;
+			}
+		}
+		if (lineStart < lineEnd) {
+			result.append (text.substring (lineStart, lineEnd + 1));
+		}
+		if (!noLf) {
+			result.append (Lf);
+		}
+		lineStart = nextStart;
+	}
+	return result.toString ();
 }
 }
