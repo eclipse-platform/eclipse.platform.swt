@@ -356,7 +356,14 @@ void drawRectangles (Rectangle [] rects) {
  */
 public Rectangle [] getRectangles () {
 	checkWidget();
-	return rectangles;
+	int length = 0;
+	if (rectangles != null) length = rectangles.length;
+	Rectangle [] result = new Rectangle [length];
+	for (int i = 0; i < length; i++) {
+		Rectangle current = rectangles [i];
+		result [i] = new Rectangle (current.x, current.y, current.width, current.height);
+	}
+	return result;
 }
 
 /**

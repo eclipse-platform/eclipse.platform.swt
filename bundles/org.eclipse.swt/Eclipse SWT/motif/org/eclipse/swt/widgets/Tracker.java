@@ -311,8 +311,15 @@ void drawRectangles (Rectangle [] rects) {
  * </ul>
  */
 public Rectangle [] getRectangles () {
-	checkWidget ();
-	return rectangles;
+	checkWidget();
+	int length = 0;
+	if (rectangles != null) length = rectangles.length;
+	Rectangle [] result = new Rectangle [length];
+	for (int i = 0; i < length; i++) {
+		Rectangle current = rectangles [i];
+		result [i] = new Rectangle (current.x, current.y, current.width, current.height);
+	}
+	return result;
 }
 /**
  * Returns <code>true</code> if the rectangles are drawn with a stippled line, <code>false</code> otherwise.
