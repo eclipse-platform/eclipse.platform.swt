@@ -163,14 +163,14 @@ void createScrolledHandle (int topHandle) {
 		formHandle = OS.XmCreateForm (scrolledHandle, null, argList1, argList1.length / 2);
 		if (formHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		int [] argList2 = {
-			OS.XmNmarginWidth, 0,
-			OS.XmNmarginHeight, 0,
-			OS.XmNresizePolicy, OS.XmRESIZE_NONE,
 			OS.XmNtopAttachment, OS.XmATTACH_FORM,
 			OS.XmNbottomAttachment, OS.XmATTACH_FORM,
 			OS.XmNleftAttachment, OS.XmATTACH_FORM,
 			OS.XmNrightAttachment, OS.XmATTACH_FORM,
 			OS.XmNresizable, 0,
+			OS.XmNmarginWidth, 0,
+			OS.XmNmarginHeight, 0,
+			OS.XmNresizePolicy, OS.XmRESIZE_NONE,
 			OS.XmNtraversalOn, 0,
 		};
 		handle = OS.XmCreateDrawingArea (formHandle, null, argList2, argList2.length / 2);
