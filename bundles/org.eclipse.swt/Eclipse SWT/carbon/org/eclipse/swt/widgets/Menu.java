@@ -294,16 +294,10 @@ void destroyItem (MenuItem item) {
 		if (items [index] == item) break;
 		index++;
 	}
-	if (index == count) return;	// not found
-	int selectionIndex = OS.GetControl32BitValue (handle) - 1;
-	--count;
-	OS.SetControl32BitMaximum (handle, count);
-	if (count == 0) {
-		items = new MenuItem [4];
-	} else {
-		System.arraycopy (items, index + 1, items, index, count - index);
-		items [count] = null;
-	}
+	if (index == count) return;
+	System.arraycopy (items, index + 1, items, index, --count - index);
+	items [count] = null;
+	if (count == 0) items = new MenuItem [4];
 	modified = true;
 	if ((style & SWT.BAR) != 0) {
 //		int [] outMenuRef = new int [1];
