@@ -51,6 +51,7 @@
 
 /* Optional custom definitions to exclude some types */
 #include "defines.h"
+#include "os_stats.h"
 
 /* Structs excludes */
 #ifdef _WIN32_WCE
@@ -398,9 +399,6 @@
 #endif /* _WIN32_WCE */
 
 #define TrackMouseEvent _TrackMouseEvent
-
-#define NATIVE_ENTER(env,clazz,func)
-#define NATIVE_EXIT(env,clazz,func)
 
 #include "os_custom.h"
 

@@ -38,9 +38,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetLibraryHandle)
 	(JNIEnv *env, jclass that)
 {
 	jint rc;
-	NATIVE_ENTER(env, that, "GetLibraryHandle\n")
+	OS_NATIVE_ENTER(env, that, GetLibraryHandle_FUNC)
 	rc = (jint)g_hInstance;
-	NATIVE_EXIT(env, that, "GetLibraryHandle\n")
+	OS_NATIVE_EXIT(env, that, GetLibraryHandle_FUNC)
 	return rc;
 }
 #endif
@@ -50,13 +50,13 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(IsPPC)
 	(JNIEnv *env, jclass that)
 {
 	jboolean rc;
-	NATIVE_ENTER(env, that, "IsPPC\n")
+	OS_NATIVE_ENTER(env, that, IsPPC_FUNC)
 #ifdef WIN32_PLATFORM_PSPC
 	rc = (jboolean)TRUE;
 #else
 	rc = (jboolean)FALSE;
 #endif
-	NATIVE_EXIT(env, that, "IsPPC\n")
+	OS_NATIVE_EXIT(env, that, IsPPC_FUNC)
 	return rc;
 }
 #endif
@@ -66,13 +66,13 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(IsSP)
 	(JNIEnv *env, jclass that)
 {
 	jboolean rc;
-	NATIVE_ENTER(env, that, "IsSP\n")
+	OS_NATIVE_ENTER(env, that, IsSP_FUNC)
 #ifdef WIN32_PLATFORM_WFSP
 	rc = (jboolean)TRUE;
 #else
 	rc = (jboolean)FALSE;
 #endif
-	NATIVE_EXIT(env, that, "IsSP\n")
+	OS_NATIVE_EXIT(env, that, IsSP_FUNC)
 	return rc;
 }
 #endif
@@ -84,7 +84,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SendMessageW__II_3I_3I)
 	jint *lparg2=NULL;
 	jint *lparg3=NULL;
 	jint rc;
-	NATIVE_ENTER(env, that, "SendMessageW__II_3I_3I\n")
+	OS_NATIVE_ENTER(env, that, SendMessageW__II_3I_3I_FUNC)
 	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
 	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
 #ifdef _WIN32_WCE
@@ -114,7 +114,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SendMessageW__II_3I_3I)
 #endif
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
-	NATIVE_EXIT(env, that, "SendMessageW__II_3I_3I\n")
+	OS_NATIVE_EXIT(env, that, SendMessageW__II_3I_3I_FUNC)
 	return rc;
 }
 #endif

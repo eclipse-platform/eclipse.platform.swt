@@ -26,7 +26,7 @@ WS_PREFIX   = win32
 SWT_VERSION = $(maj_ver)$(min_ver)
 SWT_LIB     = $(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
 SWT_LIBS    = ole32.lib comctl32.lib user32.lib gdi32.lib comdlg32.lib kernel32.lib shell32.lib oleaut32.lib advapi32.lib imm32.lib winspool.lib oleacc.lib usp10.lib
-SWT_OBJS    = os.obj os_structs.obj os_custom.obj callback.obj com_structs.obj com.obj 
+SWT_OBJS    = os.obj os_structs.obj os_custom.obj os_stats.obj callback.obj com_structs.obj com.obj 
 
 AWT_PREFIX = swt-awt
 AWT_LIB    = $(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
@@ -44,6 +44,9 @@ SWT_LDEBUG = #/DEBUG /DEBUGTYPE:both
 CFLAGS = -c -W3 -G6 -GD -O1 $(SWT_CDEBUG) -DSWT_VERSION=$(SWT_VERSION) -DSWT_BUILD_NUM=$(bld_num) -nologo -D_X86_=1 -D_WIN32 -D_WIN95 -D_WIN32_WINDOWS=0x0400 -D_MT -MT -DWIN32 -D_WIN32_DCOM /I$(JAVA_HOME)\include /I$(JAVA_HOME)\include\win32 /I.
 RCFLAGS = -DSWT_FILE_VERSION=\"$(maj_ver).$(min_ver)\" -DSWT_COMMA_VERSION=$(comma_ver)
 LFLAGS = /INCREMENTAL:NO /PDB:NONE /RELEASE /NOLOGO $(SWT_LDEBUG) -entry:_DllMainCRTStartup@12 -dll /BASE:0x10000000 /comment:$(pgm_ver_str) /comment:$(copyright) /DLL
+
+# Uncomment for native stats
+#CFLAGS = $(CFLAGS) -DNATIVE_STATS
 
 MOZILLA_INCLUDES = -I$(MOZILLA_HOME)\include \
 	-I$(MOZILLA_HOME)\include\xpcom \
