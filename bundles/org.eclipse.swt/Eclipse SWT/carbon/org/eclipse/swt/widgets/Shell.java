@@ -994,6 +994,9 @@ public void setMaximized (boolean maximized) {
 public void setMinimized (boolean minimized) {
 	checkWidget();
 	super.setMinimized (minimized);
+	if (!minimized && OS.IsWindowCollapsed (shellHandle)) {
+		 OS.SelectWindow (shellHandle);
+	}
 	OS.CollapseWindow (shellHandle, minimized);
 }
 

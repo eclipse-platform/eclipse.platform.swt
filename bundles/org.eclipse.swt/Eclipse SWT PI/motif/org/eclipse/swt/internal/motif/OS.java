@@ -92,6 +92,7 @@ public class OS {
 	public static final int GrabModeAsync = 1;
 	public static final int GrabSuccess = 0;
 	public static final int GraphicsExpose = 13;
+	public static final int IconicState = 0x3;
 	public static final int IncludeInferiors = 0x1;
 	public static final int IsUnviewable = 0x1;
 	public static final int IsViewable = 0x2;
@@ -121,6 +122,7 @@ public class OS {
 	public static final int Mod1Mask = (1<<3);
 	public static final int MotionNotify = 6;
 	public static final int None = 0;
+	public static final int NormalState = 0x1;
 	public static final int NotifyAncestor = 0x0;
 	public static final int NotifyInferior = 0x2;
 	public static final int NotifyNonlinear = 0x3;
@@ -347,6 +349,7 @@ public class OS {
 	public static final int XmNincrementCallback = malloc ("incrementCallback", 4);
 	public static final int XmNindicatorOn = malloc ("indicatorOn", 1);
 	public static final int XmNindicatorType = malloc ("indicatorType", 1);
+	public static final int XmNinitialState = malloc ("initialState", 4);
 	public static final int XmNitemCount = malloc ("itemCount", 4);
 	public static final int XmNitems = malloc ("items", 4);
 	public static final int XmNlabelInsensitivePixmap = malloc ("labelInsensitivePixmap", 4);

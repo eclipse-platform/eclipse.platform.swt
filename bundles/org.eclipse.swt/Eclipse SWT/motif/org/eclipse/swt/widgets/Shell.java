@@ -1138,6 +1138,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 }
 public void setMinimized (boolean minimized) {
 	checkWidget();
+	if (minimized == this.minimized) return;
 	
 	/* 
 	* Bug in MOTIF.  For some reason, the receiver does not keep the
@@ -1150,20 +1151,37 @@ public void setMinimized (boolean minimized) {
 	* the old value.  The fix is to force XmNiconic to be up to date
 	* before setting the desired value.
 	*/
-	int [] argList = {OS.XmNiconic, 0};
+	int [] argList = {
+		OS.XmNiconic, 0,
+		OS.XmNinitialState, 0,
+	};
 	OS.XtGetValues (shellHandle, argList, argList.length / 2);
 	if ((argList [1] != 0) != this.minimized) {
 		argList [1] = this.minimized ? 1 : 0;
 		OS.XtSetValues (shellHandle, argList, argList.length / 2);
 	}
-	
+
 	/* Minimize or restore the shell */
-	argList [1] = (this.minimized = minimized) ? 1 : 0;
+	this.minimized = minimized;
+	argList [1] = minimized ? 1 : 0;
+	argList [3] = minimized ? OS.IconicState : OS.NormalState;
 	OS.XtSetValues (shellHandle, argList, argList.length / 2);
 
 	/* Force the XWindowAttributes to be up to date */
 	int xDisplay = OS.XtDisplay (handle);
 	if (xDisplay != 0) OS.XSync (xDisplay, false);
+	
+	/* Make the restored shell be the active shell */
+	if (!minimized) {
+		int [] argList2 = {OS.XmNmappedWhenManaged, 0};
+		OS.XtGetValues (shellHandle, argList2, argList2.length / 2);
+		if (argList2 [1] != 0) {
+			do {
+				display.update ();
+			} while (!isVisible ());
+			setActive ();
+		}
+	}
 }
 void setParentTraversal () {
 	/* Do nothing - Child shells do not affect the traversal of their parent shell */
@@ -1228,25 +1246,25 @@ public void setVisible (boolean visible) {
 		adjustTrim ();
 		
 		sendEvent (SWT.Show);
-		return;
-	}
-
-	/* Hide the shell */
-	OS.XtSetMappedWhenManaged (shellHandle, false);
-	if (OS.XtIsTopLevelShell (shellHandle)) {
-		OS.XtUnmapWidget (shellHandle);
 	} else {
-		OS.XtPopdown (shellHandle);
+	
+		/* Hide the shell */
+		OS.XtSetMappedWhenManaged (shellHandle, false);
+		if (OS.XtIsTopLevelShell (shellHandle)) {
+			OS.XtUnmapWidget (shellHandle);
+		} else {
+			OS.XtPopdown (shellHandle);
+		}
+	
+		/* If the shell is iconified, hide the icon */
+		int xDisplay = OS.XtDisplay (shellHandle);
+		if (xDisplay == 0) return;
+		int xWindow = OS.XtWindow (shellHandle);
+		if (xWindow == 0) return;
+		OS.XWithdrawWindow (xDisplay, xWindow, OS.XDefaultScreen (xDisplay));
+	
+		sendEvent (SWT.Hide);
 	}
-
-	/* If the shell is iconified, hide the icon */
-	int xDisplay = OS.XtDisplay (shellHandle);
-	if (xDisplay == 0) return;
-	int xWindow = OS.XtWindow (shellHandle);
-	if (xWindow == 0) return;
-	OS.XWithdrawWindow (xDisplay, xWindow, OS.XDefaultScreen (xDisplay));
-
-	sendEvent (SWT.Hide);
 }
 void setZOrder (Control control, boolean above) {
 	setZOrder (control, above, false);

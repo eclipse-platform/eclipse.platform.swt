@@ -893,11 +893,13 @@ public void setMenuBar (Menu menu) {
 
 public void setMinimized (boolean minimized) {
 	checkWidget();
+	if (this.minimized == minimized) return;
 	super.setMinimized (minimized);
 	if (minimized) {
 		OS.gtk_window_iconify (shellHandle);
 	} else {
 		OS.gtk_window_deiconify (shellHandle);
+		bringToTop (false);
 	}
 }
 
