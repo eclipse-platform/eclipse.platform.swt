@@ -1866,20 +1866,29 @@ public FontMetrics getFontMetrics() {
 						 * Not all fonts have average character width encoded
 						 * in the xlfd. This one doesn't, so do it the hard
 						 * way by averaging all the character widths.
-						 */
-						int sum = 0, count = 0;
-						int cols = fontStruct.max_char_or_byte2 - fontStruct.min_char_or_byte2 + 1;
-						int perCharPtr = fontStruct.per_char;
-						XCharStruct struct = new XCharStruct();
-						for (int index = 0; index < cols; index++) {
-							OS.memmove(struct, perCharPtr + (index * XCharStruct.sizeof), XCharStruct.sizeof);
-							int w = struct.width;
-							if (w != 0) {
-								sum += w;
-								count++;
+						 */						
+						int perCharPtr = fontStruct.per_char;	
+						if (perCharPtr == 0) {
+							/*
+							 * If perCharPtr is 0 then all glyphs in the font have
+							 * the same width as the font's maximum width.  So no
+							 * averaging is required.
+							 */
+							 averageCharWidth = fontStruct.max_bounds_width;
+						} else {
+							int sum = 0, count = 0;
+							int cols = fontStruct.max_char_or_byte2 - fontStruct.min_char_or_byte2 + 1;
+							XCharStruct struct = new XCharStruct();
+							for (int index = 0; index < cols; index++) {
+								OS.memmove(struct, perCharPtr + (index * XCharStruct.sizeof), XCharStruct.sizeof);
+								int w = struct.width;
+								if (w != 0) {
+									sum += w;
+									count++;
+								}
 							}
+							averageCharWidth += sum / count;
 						}
-						averageCharWidth += sum / count;
 					} else {
 						/* Average character width was in the xlfd */
 						averageCharWidth += avg;
@@ -1931,19 +1940,28 @@ public FontMetrics getFontMetrics() {
 							 * in the xlfd. This one doesn't, so do it the hard
 							 * way by averaging all the character widths.
 							 */
-							int sum = 0, count = 0;
-							int cols = fontStruct.max_char_or_byte2 - fontStruct.min_char_or_byte2 + 1;
 							int perCharPtr = fontStruct.per_char;
-							XCharStruct struct = new XCharStruct();
-							for (int index = 0; index < cols; index++) {
-								OS.memmove(struct, perCharPtr + (index * XCharStruct.sizeof), XCharStruct.sizeof);
-								int w = struct.width;
-								if (w != 0) {
-									sum += w;
-									count++;
+							if (perCharPtr == 0) {
+								/*
+								 * If perCharPtr is 0 then all glyphs in the font have
+								 * the same width as the font's maximum width.  So no
+								 * averaging is required.
+								 */
+								 averageCharWidth = fontStruct.max_bounds_width;
+							} else {
+								int sum = 0, count = 0;
+								int cols = fontStruct.max_char_or_byte2 - fontStruct.min_char_or_byte2 + 1;
+								XCharStruct struct = new XCharStruct();
+								for (int index = 0; index < cols; index++) {
+									OS.memmove(struct, perCharPtr + (index * XCharStruct.sizeof), XCharStruct.sizeof);
+									int w = struct.width;
+									if (w != 0) {
+										sum += w;
+										count++;
+									}
 								}
+								averageCharWidth += sum / count;
 							}
-							averageCharWidth += sum / count;
 						} else {
 							/* Average character width was in the xlfd */
 							averageCharWidth += avg;
