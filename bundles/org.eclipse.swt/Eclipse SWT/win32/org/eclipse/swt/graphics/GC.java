@@ -630,8 +630,6 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 	* Optimization.  Recalculate src and dest rectangles so that
 	* only the clipping area is drawn.
 	*/
-	rect.width = Math.max(rect.width, Compatibility.ceil(destWidth, srcWidth));
-	rect.height = Math.max(rect.height, Compatibility.ceil(destHeight, srcHeight));
 	int sx1 = srcX + (((rect.x - destX) * srcWidth) / destWidth);
 	int sx2 = srcX + ((((rect.x + rect.width) - destX) * srcWidth) / destWidth);
 	int sy1 = srcY + (((rect.y - destY) * srcHeight) / destHeight);
@@ -642,8 +640,8 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 	destHeight = rect.height;
 	srcX = sx1;
 	srcY = sy1;
-	srcWidth = sx2 - sx1;
-	srcHeight = sy2 - sy1;
+	srcWidth = Math.max(1, sx2 - sx1);
+	srcHeight = Math.max(1, sy2 - sy1);
 	
 	/* Create resources */
 	int srcHdc = OS.CreateCompatibleDC(handle);
