@@ -194,6 +194,16 @@ public void dispose () {
 public Control getEditor () {
 	return editor;
 }
+/**
+ * Lays out the control within the underlying composite.  This
+ * method should be called after changing one or more fields to
+ * force the Editor to resize.
+ * 
+ * @since 2.1
+ */
+public void layout () {
+	resize();
+}
 void resize () {
 	if (editor == null || editor.isDisposed()) return;
 	if (editor.getVisible ()) {
