@@ -375,6 +375,25 @@ void destroyItem (ToolItem item) {
 	layoutItems ();
 }
 
+void enableWidget (boolean enabled) {
+	super.enableWidget (enabled);
+	/*
+	* Bug in Windows.  When a tool item with the style
+	* BTNS_CHECK or BTNS_CHECKGROUP is selected and then
+	* disabled, the item does not draw using the disabled
+	* image.  The fix is to use the disabled image in all
+	* image lists.
+	*/
+	for (int i=0; i<items.length; i++) {
+		ToolItem item = items [i];
+		if (item != null) {
+			if ((item.style & (SWT.CHECK | SWT.RADIO)) != 0) {
+				item.updateImages (enabled && item.getEnabled ());
+			}
+		}
+	}
+}
+
 ImageList getDisabledImageList () {
 	return disabledImageList;
 }

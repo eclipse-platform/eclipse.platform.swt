@@ -630,7 +630,7 @@ public void setEnabled (boolean enabled) {
 		state |= DISABLED;
 	}
 	OS.SendMessage (hwnd, OS.TB_SETSTATE, id, fsState);
-	if (image != null) updateImages ();
+	if (image != null) updateImages (enabled && parent.getEnabled ());
 }
 
 /**
@@ -655,7 +655,7 @@ public void setDisabledImage (Image image) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	disabledImage = image;
-	updateImages ();
+	updateImages (getEnabled () && parent.getEnabled ());
 }
 
 /**
@@ -680,7 +680,7 @@ public void setHotImage (Image image) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	hotImage = image;
-	updateImages ();
+	updateImages (getEnabled () && parent.getEnabled ());
 }
 
 public void setImage (Image image) {
@@ -688,7 +688,7 @@ public void setImage (Image image) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	super.setImage (image);
-	updateImages ();
+	updateImages (getEnabled () && parent.getEnabled ());
 }
 
 boolean setRadioSelection (boolean value) {
@@ -745,7 +745,9 @@ public void setSelection (boolean selected) {
 	* when the selection changes in a disabled tool item.
 	*/
 	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
-		if (!getEnabled ()) updateImages ();
+		if (!getEnabled () || !parent.getEnabled ()) {
+			updateImages (false);
+		}
 	}
 }
 
@@ -847,7 +849,7 @@ public void setWidth (int width) {
 	parent.layoutItems ();
 }
 
-void updateImages () {
+void updateImages (boolean enabled) {
 	int hwnd = parent.handle;
 	TBBUTTONINFO info = new TBBUTTONINFO ();
 	info.cbSize = TBBUTTONINFO.sizeof;
@@ -872,7 +874,7 @@ void updateImages () {
 			if (disabledImage2 != null) disabledImage2.dispose ();
 			disabledImage2 = null;
 			disabled = image;
-			if (!getEnabled ()) {
+			if (!enabled) {
 				Color color = parent.getBackground ();
 				disabled = disabledImage2 = createDisabledImage (image, color);
 			}
@@ -886,7 +888,7 @@ void updateImages () {
 		*/
 		Image image2 = image, hot = hotImage;
 		if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
-			if (!getEnabled ()) image2 = hot = disabled;
+			if (!enabled) image2 = hot = disabled;
 		}
 		info.iImage = imageList.add (image2);
 		disabledImageList.add (disabled);
@@ -903,7 +905,7 @@ void updateImages () {
 				disabled = disabledImage;
 				if (disabledImage == null) {
 					disabled = image;
-					if (!getEnabled ()) {
+					if (!enabled) {
 						Color color = parent.getBackground ();
 						disabled = disabledImage2 = createDisabledImage (image, color);
 					}
@@ -918,15 +920,13 @@ void updateImages () {
 		* image.  The fix is to use the disabled image in all
 		* image lists.
 		*/
-		Image image2 = image;
+		Image image2 = image, hot = hotImage;
 		if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
-			if (!getEnabled ()) image2 = disabled;
+			if (!enabled) image2 = hot = disabled;
 		}
 		if (imageList != null) imageList.put (info.iImage, image2);
 		if (hotImageList != null) {
-			Image hot = null;
-			if (image2 != null) hot = hotImage != null ? hotImage : image2;
-			hotImageList.put (info.iImage, hot);
+			hotImageList.put (info.iImage, hot != null ? hot : image2);
 		}
 		if (image == null) info.iImage = OS.I_IMAGENONE;
 	}
