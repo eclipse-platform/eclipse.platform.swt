@@ -624,6 +624,9 @@ public class OS {
 	public static final int XmNdragInitiatorProtocolStyle = mallocResource ("dragInitiatorProtocolStyle", 1);
 	public static final int XmNdragReceiverProtocolStyle = mallocResource ("dragReceiverProtocolStyle", 1);
 	public static final int XmNdragOperations = mallocResource ("dragOperations", 1);
+	public static final int XmNdropSiteActivity = mallocResource ("dropSiteActivity", 1);
+	public static final int XmNdropSiteOperations = mallocResource ("dropSiteOperations", 1);
+	public static final int XmNdropSiteType = mallocResource ("dropSiteType", 1);
 	public static final int XmNeditable = mallocResource ("editable", 1);
 	public static final int XmNenableThinThickness = mallocResource ("enableThinThickness", 1);
 	public static final int XmNiconic = mallocResource ("iconic", 1);
@@ -789,11 +792,6 @@ public class OS {
 //	public static final int XNClientWindow = mallocResource ("clientWindow", 4);
 //	public static final int XNQueryInputStyle = mallocResource ("queryInputStyle", 4);
 			
-	/* Unknown */	
-	public static final int XmNdropSiteActivity = mallocResource ("dropSiteActivity", 4);
-	public static final int XmNdropSiteOperations = mallocResource ("dropSiteOperations", 4);
-	public static final int XmNdropSiteType = mallocResource ("dropSiteType", 4);
-
 	public static final int XmNO_LINE = 0x0;
 	public static final int XmONE_OF_MANY = 0x2;
 	public static final int XmOUTPUT_ALL = 0x0;
