@@ -3859,7 +3859,10 @@ LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
 			* Do not allow keyboard traversal of the menu bar
 			* or scrolling when the shell is not enabled.
 			*/
-			if (!menuShell ().isEnabled ()) return LRESULT.ZERO;
+			Decorations shell = menuShell ();
+			if (!shell.isEnabled () || !shell.isActive ()) {
+				return LRESULT.ZERO;
+			}
 			break;
 		case OS.SC_MINIMIZE:
 			/* Save the focus widget when the shell is minimized */
