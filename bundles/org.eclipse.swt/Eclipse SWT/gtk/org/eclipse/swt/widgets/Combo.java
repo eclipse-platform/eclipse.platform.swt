@@ -785,11 +785,12 @@ int gtk_key_press_event (int widget, int event) {
 	if (!hasFocus ()) return 0;
 	GdkEventKey gdkEvent = new GdkEventKey ();
 	OS.memmove (gdkEvent, event, GdkEventKey.sizeof);
-	if (gdkEvent.time == lastEventTime) return 0;
-	lastEventTime = gdkEvent.time;
-	int imContext = imContext ();
-	if (imContext != 0) {
-		if (OS.gtk_im_context_filter_keypress (imContext, event)) return 1;
+	if (gdkEvent.time != lastEventTime) {
+		lastEventTime = gdkEvent.time;
+		int imContext = imContext ();
+		if (imContext != 0) {
+			if (OS.gtk_im_context_filter_keypress (imContext, event)) return 1;
+		}
 	}
 	return super.gtk_key_press_event (widget, event);
 }
