@@ -38,7 +38,7 @@ public class CoolBar extends Composite {
 	static final int ROW_SPACING = 2;
 	static final int CLICK_DISTANCE = 3;
 
-	boolean isLocked = false;	
+	boolean isLocked = false;
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -703,28 +703,50 @@ int layoutItems () {
 	int y = 0, maxWidth = 0, width = getSize().x;
 	for (int row = 0; row < items.length; row++) {
 		int count = items[row].length;
-		int available = width - count * CoolItem.MINIMUM_WIDTH;
-		if (available < 0) available = count * CoolItem.MINIMUM_WIDTH;
 		int x = 0;
 
-		/* determine the height of the row */
+		/* determine the height and the available width for the row */
 		int rowHeight = 0;
+		int available = width;
 		for (int i = 0; i < items[row].length; i++) {
 			CoolItem item = items[row][i];
 			if (item.control != null) {
 				rowHeight = Math.max(rowHeight, item.control.getSize().y);
 			}
+			available -= item.internalGetMinimumWidth();	
+			if (available < 0 && (width > item.internalGetMinimumWidth())) {
+				/* push the next items into the next row */
+				available += item.internalGetMinimumWidth();
+				int amount = items[row].length - i;	
+				CoolItem[] nextRow;
+				if (row + 1 == items.length) { /* Adding a new row */
+					nextRow = new CoolItem [amount];
+					CoolItem[][] newItems = new CoolItem [items.length + 1][];
+					System.arraycopy(items, 0, newItems, 0, items.length);
+					items = newItems;
+				} else {
+					nextRow = new CoolItem [amount + items [row + 1].length];
+					System.arraycopy(items[row+1], 0, nextRow, amount, items [row + 1].length);
+				}
+				System.arraycopy(items[row], i, nextRow, 0, amount);
+				items [row + 1] = nextRow;
+				CoolItem[] thisRow = new CoolItem[i];
+				System.arraycopy(items[row], 0, thisRow, 0, i);
+				items[row] = thisRow;
+				break;			
+			}
 		}
 		rowHeight += 2 * CoolItem.MARGIN_HEIGHT;
 		if (row > 0) y += ROW_SPACING;
 	
+	
 		/* lay the items out */
-		for (int i = 0; i < count; i++) {
+		for (int i = 0; i < items[row].length; i++) {
 			CoolItem child = items[row][i];
-			int newWidth = available + CoolItem.MINIMUM_WIDTH;
+			int newWidth = available + child.internalGetMinimumWidth();
 			if (i + 1 < count) {
 				newWidth = Math.min(newWidth, child.requestedWidth);
-				available -= (newWidth - CoolItem.MINIMUM_WIDTH);
+				available -= (newWidth - child.internalGetMinimumWidth());
 			}
 			Rectangle oldBounds = child.getBounds();
 			Rectangle newBounds = new Rectangle(x, y, newWidth, rowHeight);
