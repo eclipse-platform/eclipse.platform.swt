@@ -110,19 +110,21 @@ public RGB open () {
 	}
 	GtkColorSelectionDialog dialog = new GtkColorSelectionDialog ();
 	OS.memmove(dialog, handle);
+	GdkColor color = new GdkColor();
 	if (rgb != null) {
-		double [] color = new double [4];
-		color [0] = (double)rgb.red / 256;
-		color [1] = (double)rgb.green / 256;
-		color [2] = (double)rgb.blue / 256;
-		OS.gtk_color_selection_set_color (dialog.colorsel, color);
+		color.red = (short)((rgb.red & 0xFF) | ((rgb.red & 0xFF) << 8));
+		color.green = (short)((rgb.green & 0xFF) | ((rgb.green & 0xFF) << 8));
+		color.blue = (short)((rgb.blue & 0xFF) | ((rgb.blue & 0xFF) << 8));
+		OS.gtk_color_selection_set_current_color (dialog.colorsel, color);
 	}
 	rgb = null;
 	int response = OS.gtk_dialog_run(handle);
 	if (response == OS.GTK_RESPONSE_OK) {
-		double [] color = new double [4];
-		OS.gtk_color_selection_get_color (dialog.colorsel, color);
-		rgb = new RGB ((int)(color [0] * 256), (int)(color [1] * 256), (int)(color [2] * 256));
+		OS.gtk_color_selection_get_current_color (dialog.colorsel, color);
+		int red = (color.red >> 8) & 0xFF;
+		int green = (color.green >> 8) & 0xFF;
+		int blue = (color.blue >> 8) & 0xFF;
+		rgb = new RGB (red, green, blue);
 	}
 	OS.gtk_widget_destroy(handle);
 	return rgb;
