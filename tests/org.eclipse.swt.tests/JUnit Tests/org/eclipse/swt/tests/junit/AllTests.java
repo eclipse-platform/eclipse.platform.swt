@@ -214,7 +214,7 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_browser_Browser.suite());
 	addTest(Test_org_eclipse_swt_browser_LocationAdapter.suite());
 	addTest(Test_org_eclipse_swt_browser_LocationListener.suite());
-	addTest(Test_org_eclipse_swt_browser_NewWindowListener.suite());
+	addTest(Test_org_eclipse_swt_browser_OpenWindowListener.suite());
 	addTest(Test_org_eclipse_swt_browser_ProgressAdapter.suite());
 	addTest(Test_org_eclipse_swt_browser_ProgressListener.suite());
 	addTest(Test_org_eclipse_swt_browser_StatusTextListener.suite());

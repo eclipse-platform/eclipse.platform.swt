@@ -14,7 +14,7 @@ import org.eclipse.swt.internal.SWTEventListener;
 
 /**
  * This listener interface may be implemented in order to receive
- * NewWindowEvents.
+ * OpenWindowEvents.
  * 
  * <p>
  * NOTE: The API in the browser package is NOT finalized.
@@ -23,21 +23,21 @@ import org.eclipse.swt.internal.SWTEventListener;
  * other teams can try it out.
  * </p>
  * 
- * @see NewWindowEvent
+ * @see OpenWindowEvent
  * 
  * @since 3.0
  */
-public interface NewWindowListener extends SWTEventListener {
+public interface OpenWindowListener extends SWTEventListener {
 
 /**
- * This method is called when a new window is to be created.
+ * This method is called when a new window needs to be created.
  * <p>
  *
- * @param event.browser the browser to display the navigation request
+ * @param event.browser the browser that will be used to display the navigation request
  *
- * @see NewWindowEvent
+ * @see OpenWindowEvent
  * 
  * @since 3.0
  */ 
-public void newWindow(NewWindowEvent event);
+public void open(OpenWindowEvent event);
 }

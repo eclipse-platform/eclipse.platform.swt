@@ -14,21 +14,21 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.events.*;
 
 /**
- * This event is sent to NewWindowListeners when a new Browser is
+ * This event is sent to OpenWindowListeners when a new Browser is
  * requested.
  * 
  * <p>
  * This event is typically sent when a script requesting a new
  * instance is executed. For example, the javascript command
  * <code>window.open("document.html", "Document")</code> will
- * trigger a NewWindow event when it is run.
+ * trigger an OpenWindow event when it is run.
  * </p>
  * 
  * <p>
  * The default behaviour is to ignore new window requests and cancel
  * the navigation request. To handle new window requests,
  * the application needs to create an instance of Browser and set it
- * into the NewWindowEvent.browser field.
+ * into the OpenWindowEvent.browser field.
  * </p>
  * 
  * <p>
@@ -40,7 +40,7 @@ import org.eclipse.swt.events.*;
  * 
  * @since 3.0
  */
-public class NewWindowEvent extends TypedEvent {
+public class OpenWindowEvent extends TypedEvent {
 	
 	/** 
 	 * Browser provided by the application. Default is null and null
@@ -48,7 +48,7 @@ public class NewWindowEvent extends TypedEvent {
 	 */
 	public Browser browser;
 
-NewWindowEvent(Widget w) {
+OpenWindowEvent(Widget w) {
 	super(w);
 }
 }

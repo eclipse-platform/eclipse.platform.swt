@@ -17,13 +17,13 @@ import org.eclipse.swt.browser.*;
 import org.eclipse.swt.widgets.*;
 
 /**
- * Automated Test Suite for class org.eclipse.swt.browser.NewWindowListener
+ * Automated Test Suite for class org.eclipse.swt.browser.OpenWindowListener
  *
- * @see org.eclipse.swt.browser.NewWindowListener
+ * @see org.eclipse.swt.browser.OpenWindowListener
  */
-public class Test_org_eclipse_swt_browser_NewWindowListener extends SwtTestCase {
+public class Test_org_eclipse_swt_browser_OpenWindowListener extends SwtTestCase {
 
-public Test_org_eclipse_swt_browser_NewWindowListener(String name) {
+public Test_org_eclipse_swt_browser_OpenWindowListener(String name) {
 	super(name);
 }
 
@@ -37,12 +37,12 @@ protected void setUp() {
 protected void tearDown() {
 }
 
-public void test_newWindowLorg_eclipse_swt_browser_NewWindowEvent() {
+public void test_openWindowLorg_eclipse_swt_browser_OpenWindowEvent() {
 	Display display = Display.getCurrent();
 	Shell shell = new Shell(display);
 	Browser browser = new Browser(shell, SWT.NONE);
-	browser.addNewWindowListener(new NewWindowListener() {
-		public void newWindow(NewWindowEvent event) {
+	browser.addOpenWindowListener(new OpenWindowListener() {
+		public void open(OpenWindowEvent event) {
 		}
 	});
 	shell.close();
@@ -54,18 +54,18 @@ public static Test suite() {
 	java.util.Vector methodNames = methodNames();
 	java.util.Enumeration e = methodNames.elements();
 	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_browser_NewWindowListener((String)e.nextElement()));
+		suite.addTest(new Test_org_eclipse_swt_browser_OpenWindowListener((String)e.nextElement()));
 	}
 	return suite;
 }
 
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
-	methodNames.addElement("test_newWindowLorg_eclipse_swt_browser_NewWindowEvent");
+	methodNames.addElement("test_openWindowLorg_eclipse_swt_browser_OpenWindowEvent");
 	return methodNames;
 }
 
 protected void runTest() throws Throwable {
-	if (getName().equals("test_newWindowLorg_eclipse_swt_browser_NewWindowEvent")) test_newWindowLorg_eclipse_swt_browser_NewWindowEvent();
+	if (getName().equals("test_openWindowLorg_eclipse_swt_browser_OpenWindowEvent")) test_openWindowLorg_eclipse_swt_browser_OpenWindowEvent();
 }
 }

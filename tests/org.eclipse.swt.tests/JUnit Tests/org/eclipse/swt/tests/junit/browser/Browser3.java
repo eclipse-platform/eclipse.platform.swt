@@ -17,10 +17,10 @@ import org.eclipse.swt.*;
 
 public class Browser3 {
 	public static boolean passed = false;	
-	public static boolean newWindow, locationChanging, locationChanged, visibilityShow, progressCompleted;
+	public static boolean openWindow, locationChanging, locationChanged, visibilityShow, progressCompleted;
 	
 	public static boolean test1(String url) {
-		System.out.println("javascript window.open - args: "+url+" Expected Event Sequence: Browser1:NewWindow.newWindow > { Browser2:Location.changing, Browser2:Visibility.show, Browser2:Location.changed } > Browser2:Progress.completed");
+		System.out.println("javascript window.open - args: "+url+" Expected Event Sequence: Browser1:OpenWindow.open > { Browser2:Location.changing, Browser2:Visibility.show, Browser2:Location.changed } > Browser2:Progress.completed");
 		passed = false;
 		locationChanging = locationChanged = progressCompleted = false;
 				
@@ -31,9 +31,9 @@ public class Browser3 {
 		final Shell shell2 = new Shell(display);
 		shell2.setLayout(new FillLayout());
 		final Browser browser2 = new Browser(shell2, SWT.NONE);
-		browser1.addNewWindowListener(new NewWindowListener() {
-			public void newWindow(NewWindowEvent event) {
-				newWindow = true;
+		browser1.addOpenWindowListener(new OpenWindowListener() {
+			public void open(OpenWindowEvent event) {
+				openWindow = true;
 				Browser src = (Browser)event.widget;
 				if (src != browser1) {
 					System.out.println("Failure - expected "+browser1+", got "+src);
@@ -52,7 +52,7 @@ public class Browser3 {
 		});
 		browser2.addLocationListener(new LocationListener() {
 			public void changed(LocationEvent event) {
-				if (!newWindow || !locationChanging) {
+				if (!openWindow || !locationChanging) {
 					System.out.println("Failure - LocationEvent.changing received at wrong time");
 					passed = false;
 					shell.close();
@@ -61,7 +61,7 @@ public class Browser3 {
 				locationChanged = true;
 			}
 			public void changing(LocationEvent event) {
-				if (!newWindow) {
+				if (!openWindow) {
 					System.out.println("Failure - LocationEvent.changing received at wrong time");
 					passed = false;
 					shell.close();
@@ -77,7 +77,7 @@ public class Browser3 {
 				shell.close();
 			}
 			public void show(VisibilityEvent event) {
-				if (!newWindow) {
+				if (!openWindow) {
 					System.out.println("Failure - VisibilityEvent.show received at wrong time");
 					passed = false;
 					shell.close();
@@ -150,10 +150,7 @@ public class Browser3 {
 		String pluginPath = System.getProperty("PLUGIN_PATH");
 		System.out.println("PLUGIN_PATH <"+pluginPath+">");
 		if (pluginPath == null) url = Browser3.class.getClassLoader().getResource("browser3.html").toString();
-		else {
- 
-			url = pluginPath + "/data/browser3.html";
-		}
+		else url = pluginPath + "/data/browser3.html";
 		String[] urls = {url};
 		for (int i = 0; i < urls.length; i++) {
 			boolean result = test1(urls[i]); 

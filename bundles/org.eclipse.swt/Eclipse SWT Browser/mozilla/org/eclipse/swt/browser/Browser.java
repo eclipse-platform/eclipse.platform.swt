@@ -56,7 +56,7 @@ public class Browser extends Composite {
 
 	/* External Listener management */
 	LocationListener[] locationListeners = new LocationListener[0];
-	NewWindowListener[] newWindowListeners = new NewWindowListener[0];
+	OpenWindowListener[] openWindowListeners = new OpenWindowListener[0];
 	ProgressListener[] progressListeners = new ProgressListener[0];
 	StatusTextListener[] statusTextListeners = new StatusTextListener[0];
 	VisibilityListener[] visibilityListeners = new VisibilityListener[0];
@@ -289,13 +289,13 @@ public void addLocationListener(LocationListener listener) {
  *
  * @since 3.0
  */
-public void addNewWindowListener(NewWindowListener listener) {
+public void addOpenWindowListener(OpenWindowListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	NewWindowListener[] newNewWindowListeners = new NewWindowListener[newWindowListeners.length + 1];
-	System.arraycopy(newWindowListeners, 0, newNewWindowListeners, 0, newWindowListeners.length);
-	newWindowListeners = newNewWindowListeners;
-	newWindowListeners[newWindowListeners.length - 1] = listener;
+	OpenWindowListener[] newOpenWindowListeners = new OpenWindowListener[openWindowListeners.length + 1];
+	System.arraycopy(openWindowListeners, 0, newOpenWindowListeners, 0, openWindowListeners.length);
+	openWindowListeners = newOpenWindowListeners;
+	openWindowListeners[openWindowListeners.length - 1] = listener;
 }
 
 /**	 
@@ -790,26 +790,26 @@ public void removeLocationListener(LocationListener listener) {
  * 
  * @since 3.0
  */
-public void removeNewWindowListener(NewWindowListener listener) {
+public void removeOpenWindowListener(OpenWindowListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (newWindowListeners.length == 0) return;
+	if (openWindowListeners.length == 0) return;
 	int index = -1;
-	for (int i = 0; i < newWindowListeners.length; i++) {
-		if (listener == newWindowListeners[i]){
+	for (int i = 0; i < openWindowListeners.length; i++) {
+		if (listener == openWindowListeners[i]){
 			index = i;
 			break;
 		}
 	}
 	if (index == -1) return;
-	if (newWindowListeners.length == 1) {
-		newWindowListeners = new NewWindowListener[0];
+	if (openWindowListeners.length == 1) {
+		openWindowListeners = new OpenWindowListener[0];
 		return;
 	}
-	NewWindowListener[] newNewWindowListeners = new NewWindowListener[newWindowListeners.length - 1];
-	System.arraycopy(newWindowListeners, 0, newNewWindowListeners, 0, index);
-	System.arraycopy(newWindowListeners, index + 1, newNewWindowListeners, index, newWindowListeners.length - index - 1);
-	newWindowListeners = newNewWindowListeners;
+	OpenWindowListener[] newOpenWindowListeners = new OpenWindowListener[openWindowListeners.length - 1];
+	System.arraycopy(openWindowListeners, 0, newOpenWindowListeners, 0, index);
+	System.arraycopy(openWindowListeners, index + 1, newOpenWindowListeners, index, openWindowListeners.length - index - 1);
+	openWindowListeners = newOpenWindowListeners;
 }
 
 /**	 
