@@ -392,6 +392,7 @@ public class OS {
 	public static final int XmNarrowSpacing = malloc ("arrowSpacing", 2);
 	public static final int XmNbackground = malloc ("background", 4);
 	public static final int XmNblendModel = malloc ("blendModel", 1);
+	public static final int XmNblinkRate = malloc ("blinkRate", 4);
 	public static final int XmNborderColor = malloc ("borderColor", 4);
 	public static final int XmNborderWidth = malloc ("borderWidth", 2);
 	public static final int XmNbottomAttachment = malloc ("bottomAttachment", 1);

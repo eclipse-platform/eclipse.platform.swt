@@ -129,7 +129,7 @@ public class Display extends Device {
 	int labelBackground, labelForeground, scrollBarBackground, scrollBarForeground;
 	int scrolledInsetX, scrolledInsetY, scrolledMarginX, scrolledMarginY;
 	int defaultBackground, defaultForeground;
-	int textHighlightThickness;
+	int textHighlightThickness, blinkRate;
 	
 	/* System Colors */
 	XColor COLOR_WIDGET_DARK_SHADOW, COLOR_WIDGET_NORMAL_SHADOW, COLOR_WIDGET_LIGHT_SHADOW;
@@ -1135,6 +1135,10 @@ public static synchronized Display findDisplay (Thread thread) {
 		}
 	}
 	return null;
+}
+int getCaretBlinkTime () {
+//	checkDevice ();
+	return blinkRate;
 }
 /**
  * Returns the control which the on-screen pointer is currently
@@ -2198,10 +2202,12 @@ void initializeText () {
 	OS.XtManageChild (widgetHandle);
 	OS.XtSetMappedWhenManaged (shellHandle, false);
 	OS.XtRealizeWidget (shellHandle);
-	int [] argList = {OS.XmNforeground, 0, OS.XmNbackground, 0, OS.XmNfontList, 0, OS.XmNhighlightThickness, 0};
+	int [] argList = {OS.XmNforeground, 0, OS.XmNbackground, 0, OS.XmNfontList, 0, OS.XmNhighlightThickness, 0, OS.XmNblinkRate, 0};
 	OS.XtGetValues (widgetHandle, argList, argList.length / 2);
-	textForeground = argList [1];  textBackground = argList [3];  
+	textForeground = argList [1];
+	textBackground = argList [3];  
 	textHighlightThickness = argList[7];
+	blinkRate = argList[9];
 	/*
 	 * Feature in Motif. Querying the font list from the widget and
 	 * then destroying the shell (and the widget) could cause the
