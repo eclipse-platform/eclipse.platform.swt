@@ -397,11 +397,16 @@ static String getKeyValue (TCHAR key) {
 	String result = null;
 	int [] lpcbData = new int [1];
 	if (OS.RegQueryValueEx (phkResult [0], (TCHAR) null, 0, null, null, lpcbData) == 0) {
-		/* Use the character encoding for the default locale */
-		TCHAR lpData = new TCHAR (0, lpcbData [0] / TCHAR.sizeof);
-		if (OS.RegQueryValueEx (phkResult [0], null, 0, null, lpData, lpcbData) == 0) {
-			int length = Math.max(0, lpData.length () - 1);
-			result = lpData.toString (0, length);
+		int length = lpcbData [0] / TCHAR.sizeof;
+		if (length == 0) {
+			result = "";
+		} else {
+			/* Use the character encoding for the default locale */
+			TCHAR lpData = new TCHAR (0, length);
+			if (OS.RegQueryValueEx (phkResult [0], null, 0, null, lpData, lpcbData) == 0) {
+				length = Math.max(0, lpData.length () - 1);
+				result = lpData.toString (0, length);
+			}
 		}
 	}
 	if (phkResult [0] != 0) OS.RegCloseKey (phkResult [0]);
