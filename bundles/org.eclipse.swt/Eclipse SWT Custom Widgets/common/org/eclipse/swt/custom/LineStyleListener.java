@@ -17,10 +17,14 @@ public interface LineStyleListener extends SWTEventListener {
  * This method is called when a line is about to be drawn in order to get the
  * line's style information.
  * <p>
+ * The following event fields are used:<ul>
+ * <li>event.lineOffset line start offset (input)</li>
+ * <li>event.lineText line text (input)</li>
+ * <li>event.styles array of StyleRanges, need to be in order (output)</li>
+ * </ul>
  *
- * @param event.lineOffset line start offset (input)	
- * @param event.lineText line text (input)
- * @param event.styles array of StyleRanges, need to be in order (output)
+ * @param event the given event
+ * @see LineStyleEvent
  */
 public void lineGetStyle(LineStyleEvent event);
 }

@@ -23,10 +23,14 @@ public interface BidiSegmentListener extends SWTEventListener {
  * This method is called when a line needs to be reordered for 
  * measuring or rendering in a bidi locale. 
  * <p>
+ * The following event fields are used:<ul>
+ * <li>event.lineOffset line start offset (input)</li>
+ * <li>event.lineText line text (input)</li>
+ * <li>event.segments text segments that should be reordered 
+ *	separately. (output)</li> 
+ * </ul>
  *
- * @param event.lineOffset line start offset (input)	
- * @param event.lineText line text (input)
- * @param event.segments text segments that should be reordered 
+ * @param event the given event
  *	separately. (output)
  * @see BidiSegmentEvent
  */

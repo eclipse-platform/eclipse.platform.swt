@@ -18,10 +18,14 @@ public interface LineBackgroundListener extends SWTEventListener {
  * This method is called when a line is about to be drawn in order to get its
  * background color.
  * <p>
+ * The following event fields are used:<ul>
+ * <li>event.lineOffset line start offset (input)</li>
+ * <li>event.lineText line text (input)</li>
+ * <li>event.lineBackground line background color (output)</li>
+ * </ul>
  *
- * @param event.lineOffset line start offset (input)	
- * @param event.lineText line text (input)
- * @param event.lineBackground line background color (output)
+ * @param event the given event
+ * @see LineBackgroundEvent
  */
 public void lineGetBackground(LineBackgroundEvent event);
 }

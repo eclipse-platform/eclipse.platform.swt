@@ -16,10 +16,14 @@ public interface ExtendedModifyListener extends SWTEventListener {
 /**
  * This method is called after a text change occurs.
  * <p>
+ * The following event fields are used:<ul>
+ * <li>event.start the start offset of the new text (input)</li>
+ * <li>event.length the length of the new text (input)</li>
+ * <li>event.replacedText the replaced text (input)</li>
+ * </ul>
  *
- * @param event.start the start offset of the new text (input)
- * @param event.length the length of the new text (input)
- * @param event.replacedText the replaced text (input)
+ * @param event the given event
+ * @see ExtendedModifyEvent
  */
 public void modifyText(ExtendedModifyEvent event);
 }

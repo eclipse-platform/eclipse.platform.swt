@@ -15,10 +15,14 @@ import org.eclipse.swt.internal.SWTEventListener;
 
 public interface VerifyKeyListener extends SWTEventListener {
 /**
- * @param event.character the character that was typed (input)	
- * @param event.keyCode the key code that was typed (input)
- * @param event.stateMask the state of the keyboard (input)
- * @param event.doit processed or not (output)
+ * The following event fields are used:<ul>
+ * <li>event.character is the character that was typed (input)</li>
+ * <li>event.keyCode is the key code that was typed (input)</li>
+ * <li>event.stateMask is the state of the keyboard (input)</li>
+ * <li>event.doit is processed or not (output)</li>
+ * </ul>
+ * @param event the verify event
+ * @see VerifyEvent
  */
 public void verifyKey (VerifyEvent event);
 }
