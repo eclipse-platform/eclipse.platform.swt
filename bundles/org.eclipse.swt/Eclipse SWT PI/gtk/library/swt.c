@@ -548,6 +548,13 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1atom_1intern
 	return rc;
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1atom_1name
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gdk_1atom_1name\n")
+	return (jint)gdk_atom_name((GdkAtom)arg0);
+}
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1beep
 	(JNIEnv *env, jclass that)
 {

@@ -324,6 +324,7 @@ public static final native void g_strfreev(int string_array);
 public static final native int g_utf8_to_utf16(byte[] str, int len, int[] items_read, int[] items_written, int[] error);
 public static final native int g_utf16_to_utf8(char[] str, int len, int[] items_read, int[] items_written, int[] error);
 public static final native int gdk_atom_intern(byte[] atom_name, boolean only_if_exists);
+public static final native int gdk_atom_name(int atom);
 public static final native void gdk_beep();
 public static final native int gdk_bitmap_create_from_data(int window, byte[] data, int width, int height);
 public static final native boolean gdk_color_white(int colormap, GdkColor color);

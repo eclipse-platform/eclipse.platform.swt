@@ -223,7 +223,32 @@ public void setContents(Object[] data, Transfer[] dataTypes){
  * system clipboard
  */
 public String[] getAvailableTypeNames() {
-	return new String[0];
+	byte[] buffer = Converter.wcsToMbcs(null, "TARGETS", true);
+	int typeId = OS.gdk_atom_intern(buffer, false);
+	// first try the primary clipboard
+	int selection_data = OS.gtk_clipboard_wait_for_contents(pGtkPrimary, typeId);
+	if (selection_data == 0) {
+		// try the clipboard selection second
+		selection_data  = OS.gtk_clipboard_wait_for_contents(pGtkClipboard, typeId);
+	}
+	if (selection_data == 0) {
+		return new String[0]; // No types available
+	}
+	GtkSelectionData gtkSelectionData = new GtkSelectionData();
+	OS.memmove(gtkSelectionData, selection_data, GtkSelectionData.sizeof);
+	if (gtkSelectionData.length == 0) return new String[0];
+	int[] atoms = new int[gtkSelectionData.length * 8 / gtkSelectionData.format];
+	OS.memmove(atoms, gtkSelectionData.data, gtkSelectionData.length);
+	String[] result = new String[atoms.length];
+	for (int i = 0; i < atoms.length; i++) {
+		int pName = OS.gdk_atom_name(atoms[i]);
+		buffer = new byte [OS.strlen(pName)];
+		OS.memmove (buffer, pName, buffer.length);
+		OS.g_free (pName);
+		result[i] = new String (Converter.mbcsToWcs (null, buffer));
+	}
+	OS.gtk_selection_data_free(selection_data);
+	return result;
 }
 }
 
