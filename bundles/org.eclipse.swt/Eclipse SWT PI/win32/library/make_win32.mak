@@ -21,30 +21,34 @@ pgm_ver_str="SWT $(maj_ver).$(min_ver) for Windows"
 timestamp_str=__DATE__\" \"__TIME__\" (EST)\"
 copyright = "Copyright (C) 1999, 2003 IBM Corp.  All rights reserved."
 
-SWT_PREFIX=swt
-WS_PREFIX=win32
+SWT_PREFIX  = swt
+WS_PREFIX   = win32
 SWT_VERSION = $(maj_ver)$(min_ver)
 SWT_LIB     = $(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
+SWT_LIBS    = ole32.lib comctl32.lib user32.lib gdi32.lib comdlg32.lib kernel32.lib shell32.lib oleaut32.lib advapi32.lib imm32.lib winspool.lib oleacc.lib
+SWT_OBJS    = os.obj os_structs.obj os_custom.obj callback.obj com_structs.obj com.obj 
 
-LINK_LIBS = ole32.lib comctl32.lib user32.lib gdi32.lib comdlg32.lib kernel32.lib shell32.lib oleaut32.lib advapi32.lib imm32.lib winspool.lib oleacc.lib
+AWT_PREFIX = swt-awt
+AWT_LIB    = $(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
+AWT_LIBS   = $(JAVA_HOME)\jre\bin\jawt.lib
+AWT_OBJS   = swt_awt.obj
 
 # note: thoroughly test all examples after changing any optimization flags
 SWT_CDEBUG = #-Zi -Odi
 SWT_LDEBUG = #/DEBUG /DEBUGTYPE:both
-CFLAGS = -c -W3 -G6 -GD -O1 $(SWT_CDEBUG) -DSWT_VERSION=$(SWT_VERSION) -DSWT_BUILD_NUM=$(bld_num) -nologo -D_X86_=1 -D_WIN32 -D_WIN95 -D_WIN32_WINDOWS=0x0400 -D_MT -MT -DWIN32 -D_WIN32_DCOM /I$(JAVA_HOME)\include /I.
+CFLAGS = -c -W3 -G6 -GD -O1 $(SWT_CDEBUG) -DSWT_VERSION=$(SWT_VERSION) -DSWT_BUILD_NUM=$(bld_num) -nologo -D_X86_=1 -D_WIN32 -D_WIN95 -D_WIN32_WINDOWS=0x0400 -D_MT -MT -DWIN32 -D_WIN32_DCOM /I$(JAVA_HOME)\include /I$(JAVA_HOME)\include\win32 /I.
 RCFLAGS = -DSWT_FILE_VERSION=\"$(maj_ver).$(min_ver)\" -DSWT_COMMA_VERSION=$(comma_ver)
 LFLAGS = /INCREMENTAL:NO /PDB:NONE /RELEASE /NOLOGO $(SWT_LDEBUG) -entry:_DllMainCRTStartup@12 -dll /BASE:0x10000000 /comment:$(pgm_ver_str) /comment:$(copyright) /DLL
 
-SWT_OBJS = os.obj os_structs.obj os_custom.obj callback.obj com_structs.obj com.obj 
 
-all: $(SWT_LIB)
+all: $(SWT_LIB) $(AWT_LIB)
 
 .c.obj:
 	cl $(CFLAGS) $*.c
 
 $(SWT_LIB): $(SWT_OBJS) swt.res
 	echo $(LFLAGS) >templrf
-	echo $(LINK_LIBS) >>templrf
+	echo $(SWT_LIBS) >>templrf
 	echo -machine:IX86 >>templrf
 	echo -subsystem:windows >>templrf
 	echo -out:$(SWT_LIB) >>templrf
@@ -52,9 +56,23 @@ $(SWT_LIB): $(SWT_OBJS) swt.res
 	echo swt.res >>templrf
 	link @templrf
 	del templrf
+
+$(AWT_LIB): $(AWT_OBJS) swt_awt.res
+	echo $(LFLAGS) >templrf
+	echo $(AWT_LIBS) >>templrf
+	echo -machine:IX86 >>templrf
+	echo -subsystem:windows >>templrf
+	echo -out:$(AWT_LIB) >>templrf
+	echo $(AWT_OBJS) >>templrf
+	echo swt_awt.res >>templrf
+	link @templrf
+	del templrf
 	
 swt.res:
 	rc $(RCFLAGS) -DSWT_ORG_FILENAME=\"$(SWT_LIB)\" -r -fo swt.res swt.rc
-	
+
+swt_awt.res:
+	rc $(RCFLAGS) -DSWT_ORG_FILENAME=\"$(AWT_LIB)\" -r -fo swt_awt.res swt_awt.rc
+
 clean:
     del *.obj *.res *.dll *.lib *.exp

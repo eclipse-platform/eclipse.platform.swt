@@ -10,14 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.awt.win32;
 
- 
-import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
-
-/* Win32, SUN AWT */
-//import sun.awt.windows.WEmbeddedFrame;
-//import sun.awt.DrawingSurface;
-//import sun.awt.windows.WDrawingSurfaceInfo;
 
 /* SWT Imports */
 import org.eclipse.swt.*;
@@ -27,6 +20,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.internal.Library;
 
 /* AWT Imports */
 import java.awt.EventQueue;
@@ -40,6 +34,13 @@ import java.awt.event.WindowEvent;
 import java.awt.event.FocusEvent;
 
 public class SWT_AWT {
+	
+	static {
+		System.loadLibrary("jawt");
+		Library.loadLibrary("swt-awt");
+	}
+
+static final native int getAWTHandle(Canvas canvas);
 
 public static Panel new_Panel (final Composite parent) {
 	int handle = parent.handle;
@@ -138,34 +139,13 @@ public static Panel new_Panel (final Composite parent) {
 }
 
 public static Shell new_Shell (Display display, final Canvas parent) {
-	/*
-	* As of JDK 1.4, the DrawingSurface and WDrawingSurfaceInfo no longer exist
-	* so that code that references these classes no longer compiles.  The fix is
-	* to use refection to invoke equivalent code that is commented below.  There
-	* is no fix at this time for the missing WDrawingSurfaceInfo functionality.
-	*/
-//	DrawingSurface ds = (DrawingSurface)parent.getPeer();
-//	WDrawingSurfaceInfo wds = (WDrawingSurfaceInfo)ds.getDrawingSurfaceInfo();
-//	wds.lock ();
-//	int handle = (int) wds.getHWnd ();
-//	wds.unlock ();
-	Integer hwnd = null;
+	int handle = 0;
 	try {
-		Object ds = parent.getPeer ();
-		Class drawingSurfaceClass = Class.forName ("sun.awt.DrawingSurface");  //$NON-NLS-1$
-		Method method = drawingSurfaceClass.getDeclaredMethod ("getDrawingSurfaceInfo", null); //$NON-NLS-1$
-		Object wds = method.invoke (ds, null);
-		Class wDrawingSurfaceClass = Class.forName ("sun.awt.windows.WDrawingSurfaceInfo"); //$NON-NLS-1$
-		method = wDrawingSurfaceClass.getMethod ("lock", null); //$NON-NLS-1$
-		method.invoke (wds, null);
-		method = wDrawingSurfaceClass.getMethod ("getHWnd", null); //$NON-NLS-1$
-		hwnd = (Integer) method.invoke (wds, null);
-		method = wDrawingSurfaceClass.getMethod ("unlock", null); //$NON-NLS-1$
-		method.invoke (wds, null);
-	} catch (Exception e) {
+		handle = getAWTHandle (parent);
+	} catch (Throwable e) {
 		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);
 	}
-	int handle = hwnd.intValue();
+	if (handle == 0) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
 
 	final Shell shell = Shell.win32_new (display, handle);
 	final Display newDisplay = shell.getDisplay ();
@@ -182,4 +162,4 @@ public static Shell new_Shell (Display display, final Canvas parent) {
 	shell.setVisible (true);
 	return shell;
 }
-}
+}

@@ -17,7 +17,7 @@ IF NOT "%JAVA_HOME%"=="" GOTO MAKE
 rem *****
 rem Javah
 rem *****
-set JAVA_HOME=j:\teamswt\swt-builddir\ive\bin
+set JAVA_HOME=j:\teamswt\swt-builddir\ibm-jdk1.4.1
 set path=%JAVA_HOME%;%path%
 
 rem ********
