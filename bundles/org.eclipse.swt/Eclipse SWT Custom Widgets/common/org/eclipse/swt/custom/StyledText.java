@@ -1818,6 +1818,10 @@ public void copy(){
 			// Copy to clipboard failed. This happens when another application 
 			// is accessing the clipboard while we copy. Ignore the error.
 			// Fixes 1GDQAVN
+			// Rethrow all other errors. Fixes bug 17578.
+			if (error.code != DND.ERROR_CANNOT_SET_CLIPBOARD) {
+				throw error;
+			}
 		}
 	}
 }
