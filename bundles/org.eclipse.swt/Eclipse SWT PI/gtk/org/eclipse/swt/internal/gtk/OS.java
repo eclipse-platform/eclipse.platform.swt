@@ -224,6 +224,7 @@ public class OS {
 	public static final int GTK_MESSAGE_WARNING = 1;
 	public static final int GTK_MESSAGE_QUESTION = 2;
 	public static final int GTK_MESSAGE_ERROR = 3;
+	public static final int GTK_NO_WINDOW = 1 << 5;
 	public static final int GTK_ORIENTATION_HORIZONTAL = 0x0;
 	public static final int GTK_ORIENTATION_VERTICAL = 0x1;
 	public static final int GTK_POLICY_ALWAYS = 0x0;

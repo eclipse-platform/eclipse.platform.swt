@@ -182,15 +182,11 @@ void hookEvents () {
 	
 	/* Connect the paint signal */
 	int /*long*/ paintHandle = paintHandle ();
-	/* This code is intentionaly commented */
-//	int paintMask = OS.GDK_EXPOSURE_MASK | OS.GDK_VISIBILITY_NOTIFY_MASK;
-//	OS.gtk_widget_add_events (paintHandle, paintMask);
-//	OS.g_signal_connect (paintHandle, OS.expose_event, windowProc3, -EXPOSE_EVENT);
-//	OS.g_signal_connect_after (paintHandle, OS.expose_event, windowProc3, EXPOSE_EVENT);
-//	OS.g_signal_connect_after (paintHandle, OS.visibility_notify_event, windowProc3, VISIBILITY_NOTIFY_EVENT);
-	int paintMask = OS.GDK_EXPOSURE_MASK;
+	int paintMask = OS.GDK_EXPOSURE_MASK | OS.GDK_VISIBILITY_NOTIFY_MASK;
 	OS.gtk_widget_add_events (paintHandle, paintMask);
+	OS.g_signal_connect (paintHandle, OS.expose_event, windowProc3, -EXPOSE_EVENT);
 	OS.g_signal_connect_after (paintHandle, OS.expose_event, windowProc3, EXPOSE_EVENT);
+	OS.g_signal_connect_after (paintHandle, OS.visibility_notify_event, windowProc3, VISIBILITY_NOTIFY_EVENT);
 
 	/* Connect the Input Method signals */
 	OS.g_signal_connect_after (handle, OS.realize, windowProc2, REALIZE);
@@ -224,7 +220,13 @@ int /*long*/ topHandle() {
 }
 
 int /*long*/ paintHandle () {
-	return handle;
+	int /*long*/ topHandle = topHandle ();
+	int /*long*/ paintHandle = handle;
+	while (paintHandle != topHandle) {
+		if ((OS.GTK_WIDGET_FLAGS (paintHandle) & OS.GTK_NO_WINDOW) == 0) break;
+		paintHandle = OS.gtk_widget_get_parent (paintHandle);
+	};
+	return paintHandle;
 }
 
 int /*long*/ paintWindow () {
@@ -3183,7 +3185,7 @@ void update (boolean all) {
 //	checkWidget();
 	if ((OS.GTK_WIDGET_FLAGS (handle) & OS.GTK_REALIZED) == 0) return;
 	int /*long*/ window = paintWindow ();
-	display.flushExposes ();
+	display.flushExposes (window, all);
 	OS.gdk_window_process_updates (window, all);
 }
 }
