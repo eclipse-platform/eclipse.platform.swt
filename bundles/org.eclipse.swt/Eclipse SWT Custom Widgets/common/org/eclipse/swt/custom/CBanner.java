@@ -54,6 +54,8 @@ public class CBanner extends Composite {
 	int curve_indent = -2;
 	
 	int rightWidth = SWT.DEFAULT;
+	int rightMinWidth = SWT.DEFAULT;
+	int rightMinHeight = SWT.DEFAULT;
 	Cursor resizeCursor;
 	boolean dragging = false;
 	int rightDragDisplacement = 0;
@@ -66,8 +68,6 @@ public class CBanner extends Composite {
 	static final int BEZIER_RIGHT = 30;
 	static final int BEZIER_LEFT = 30;
 	static final int MIN_LEFT = 10;
-	static final int MIN_RIGHT = 160;
-	
 	static int BORDER1 = SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW;
 	
 		
@@ -190,7 +190,11 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 		w += curve_width - 2*curve_indent;
 		h +=  BORDER_TOP + BORDER_BOTTOM + 2*BORDER_STRIPE;
 	}
-	h += left != null ? leftSize.y : rightSize.y;
+	if (left != null) {
+		h += right == null ? leftSize.y : Math.max(leftSize.y, rightMinHeight);
+	} else {
+		h += rightSize.y;
+	}
 	
 	if (wHint != SWT.DEFAULT) w = wHint;
 	if (hHint != SWT.DEFAULT) h = hHint;
@@ -253,6 +257,17 @@ public Control getLeft() {
 public Control getRight() {
 	checkWidget();
 	return right;
+}
+/**
+ * Returns the minimum size of the control that appears on the right of the banner.
+ * 
+ * @return the minimum size of the control that appears on the right of the banner
+ * 
+ * @since 3.1
+ */
+public Point getRightMinimumSize() {
+	checkWidget();
+	return new Point(rightMinWidth, rightMinHeight);
 }
 /**
  * Returns the width of the control that appears on the right of the banner.
@@ -363,8 +378,10 @@ void onMouseMove(int x, int y) {
 	if (dragging) {
 		Point size = getSize();
 		if (!(0 < x && x < size.x)) return;
-		rightWidth = size.x - x - rightDragDisplacement;
-		rightWidth = Math.max(MIN_RIGHT, rightWidth);
+		rightWidth = Math.max(0, size.x - x - rightDragDisplacement);
+		if (rightMinWidth != SWT.DEFAULT) {
+			rightWidth = Math.max(rightMinWidth, rightWidth);
+		}
 		layout();
 		return;
 	}
@@ -558,13 +575,33 @@ public void setRight(Control control) {
 	layout();
 }
 /**
- * Set the width of the control control that appears on the right side of the banner.
+ * Set the minumum height of the control that appears on the right side of the banner.
+ * 
+ * @param size the minimum size of the control on the right
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the size is null or the values of size are less than SWT.DEFAULT</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
+public void setRightMinimumSize(Point size) {
+	checkWidget();
+	if (size == null || size.x < SWT.DEFAULT || size.y < SWT.DEFAULT) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	rightMinWidth = size.x;
+	rightMinHeight = size.y;
+}
+/**
+ * Set the width of the control that appears on the right side of the banner.
  * 
  * @param width the width of the control on the right
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if width is less than SWT.DEFAULT</li>
  * </ul>
  * 
  * @since 3.0
