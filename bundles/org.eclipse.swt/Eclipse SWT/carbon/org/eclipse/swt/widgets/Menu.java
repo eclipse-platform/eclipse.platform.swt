@@ -573,7 +573,6 @@ int kEventMenuDrawItemContent (int nextHandler, int theEvent, int userData) {
 				OS.GetEventParameter (theEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, context);
 
 				/* Draw the key */
-				short left = rect.left;	
 				int modifierIndex = modifierIndex (accelText);
 				char [] buffer = new char [length - modifierIndex - 1];
 				accelText.getChars (modifierIndex + 1, length, buffer, 0);
@@ -589,17 +588,19 @@ int kEventMenuDrawItemContent (int nextHandler, int theEvent, int userData) {
 				OS.GetThemeMetric (OS.kThemeMetricMenuIconTrailingEdgeMargin, metric);
 				rect.left = (short) (rect.right - info.widMax - metric [0]);
 				int str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-				OS.DrawThemeTextBox (str, (short) font, OS.kThemeStateActive, false, rect, (short) OS.teFlushDefault, context [0]);
+				OS.DrawThemeTextBox (str, (short) font, OS.kThemeStateActive, false, rect, (short) OS.teFlushLeft, context [0]);
 				OS.CFRelease (str);
 				
 				/* Draw the modifiers */
 				if (modifierIndex != -1) {
 					buffer = new char [modifierIndex + 1];
 					accelText.getChars (0, buffer.length, buffer, 0);
-					rect.right = rect.left;
-					rect.left = left;
 					str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-					OS.DrawThemeTextBox (str, (short) OS.kThemeMenuItemCmdKeyFont, OS.kThemeStateActive, false, rect, (short) OS.teFlushRight, context [0]);
+					org.eclipse.swt.internal.carbon.Point size1 = new org.eclipse.swt.internal.carbon.Point ();
+					OS.GetThemeTextDimensions (str, (short) OS.kThemeMenuItemCmdKeyFont, 0, false, size1, null);
+					rect.right = rect.left;
+					rect.left = (short) (rect.right - size1.h);
+					OS.DrawThemeTextBox (str, (short) OS.kThemeMenuItemCmdKeyFont, OS.kThemeStateActive, false, rect, (short) OS.teFlushLeft, context [0]);
 					OS.CFRelease (str);
 				}
 				return result;
