@@ -4320,6 +4320,15 @@ public static final int /*long*/ gtk_image_new() {
 		lock.unlock();
 	}
 }
+public static final native int /*long*/ _gtk_image_new_from_pixbuf(int /*long*/ pixbuf); 
+public static final int /*long*/ gtk_image_new_from_pixbuf(int /*long*/ pixbuf) {
+	lock.lock();
+	try {
+		return _gtk_image_new_from_pixbuf(pixbuf);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _gtk_image_new_from_pixmap(int /*long*/ pixmap, int /*long*/ mask);
 public static final int /*long*/ gtk_image_new_from_pixmap(int /*long*/ pixmap, int /*long*/ mask) {
 	lock.lock();

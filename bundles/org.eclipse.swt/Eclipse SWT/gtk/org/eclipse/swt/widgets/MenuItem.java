@@ -640,7 +640,12 @@ public void setImage (Image image) {
 	super.setImage (image);
 	if (!OS.GTK_IS_IMAGE_MENU_ITEM (handle)) return;
 	if (image != null) {
-		int /*long*/ imageHandle = OS.gtk_image_new_from_pixmap (image.pixmap, image.mask);
+		ImageList imageList = parent.imageList;
+		if (imageList == null) imageList = parent.imageList = new ImageList ();
+		int imageIndex = imageList.indexOf (image);
+		if (imageIndex == -1) imageIndex = imageList.add (image);
+		int /*long*/ pixbuf = imageList.getPixbuf (imageIndex);
+		int /*long*/ imageHandle = OS.gtk_image_new_from_pixbuf (pixbuf);
 		OS.gtk_image_menu_item_set_image (handle, imageHandle);
 		OS.gtk_widget_show (imageHandle);
 	} else {

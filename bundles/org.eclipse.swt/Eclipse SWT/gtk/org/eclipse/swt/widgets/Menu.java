@@ -40,6 +40,7 @@ public class Menu extends Widget {
 	MenuItem cascade, selectedItem;
 	Decorations parent;
 	int /*long*/ imItem, imSeparator, imHandle;
+	ImageList imageList;
 
 /**
  * Constructs a new instance of this class given its parent,
@@ -683,6 +684,10 @@ void releaseWidget () {
 	parent = null;
 	cascade = null;
 	imItem = imSeparator = imHandle = 0;
+	if (imageList != null) {
+		imageList.dispose ();
+		imageList = null;
+	}
 }
 
 /**

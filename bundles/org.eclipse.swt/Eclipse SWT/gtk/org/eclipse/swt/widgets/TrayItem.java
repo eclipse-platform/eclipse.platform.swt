@@ -37,6 +37,7 @@ public class TrayItem extends Item {
 	String toolTipText;
 	int /*long*/ imageHandle;
 	int /*long*/ tooltipsHandle;
+	ImageList imageList;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -215,6 +216,10 @@ void releaseWidget () {
 	super.releaseWidget ();
 	if (tooltipsHandle != 0) OS.g_object_unref (tooltipsHandle);
 	imageHandle = tooltipsHandle = 0;
+	if (imageList != null) {
+		imageList.dispose ();
+		imageList = null;
+	}
 	toolTipText = null;
 	if (handle != 0) OS.gtk_widget_destroy (handle);
 	handle = 0;
@@ -265,11 +270,15 @@ public void setImage (Image image) {
 	if (image != null) {
 		Rectangle rect = image.getBounds ();
 		OS.gtk_widget_set_size_request (handle, rect.width, rect.height);
-		OS.gtk_image_set_from_pixmap (imageHandle, image.pixmap, image.mask);
+		if (imageList == null) imageList = new ImageList ();
+		int imageIndex = imageList.indexOf (image);
+		if (imageIndex == -1) imageIndex = imageList.add (image);
+		int /*long*/ pixbuf = imageList.getPixbuf (imageIndex);
+		OS.gtk_image_set_from_pixbuf (imageHandle, pixbuf);
 		OS.gtk_widget_show (imageHandle);
 	} else {
 		OS.gtk_widget_set_size_request (handle, 1, 1);
-		OS.gtk_image_set_from_pixmap (imageHandle, 0, 0);
+		OS.gtk_image_set_from_pixbuf (imageHandle, 0);
 		OS.gtk_widget_hide (imageHandle);
 	}
 }

@@ -43,6 +43,7 @@ import org.eclipse.swt.events.*;
  */
 public class TabFolder extends Composite {
 	TabItem [] items;
+	ImageList imageList;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -524,6 +525,10 @@ void releaseWidget () {
 	}
 	items = null;
 	super.releaseWidget ();
+	if (imageList != null) {
+		imageList.dispose ();
+		imageList = null;
+	}
 }
 
 void removeControl (Control control) {

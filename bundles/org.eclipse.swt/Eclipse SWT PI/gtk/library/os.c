@@ -6506,6 +6506,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1image_1new)
 }
 #endif
 
+#ifndef NO__1gtk_1image_1new_1from_1pixbuf
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1image_1new_1from_1pixbuf)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1image_1new_1from_1pixbuf_FUNC);
+	rc = (jint)gtk_image_new_from_pixbuf((GdkPixbuf *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1image_1new_1from_1pixbuf_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1image_1new_1from_1pixmap
 JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1image_1new_1from_1pixmap)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)

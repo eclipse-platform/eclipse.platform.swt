@@ -512,6 +512,7 @@ typedef enum {
 	_1gtk_1image_1menu_1item_1new_1with_1label_FUNC,
 	_1gtk_1image_1menu_1item_1set_1image_FUNC,
 	_1gtk_1image_1new_FUNC,
+	_1gtk_1image_1new_1from_1pixbuf_FUNC,
 	_1gtk_1image_1new_1from_1pixmap_FUNC,
 	_1gtk_1image_1set_1from_1pixbuf_FUNC,
 	_1gtk_1image_1set_1from_1pixmap_FUNC,
