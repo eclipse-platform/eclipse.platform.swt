@@ -45,6 +45,7 @@ private static int checkStyle(int style) {
 }
 
 public void dispose () {
+	if (isDisposed()) return;
 	super.dispose();
 	parent.destroyItem(this);
 	parent = null;

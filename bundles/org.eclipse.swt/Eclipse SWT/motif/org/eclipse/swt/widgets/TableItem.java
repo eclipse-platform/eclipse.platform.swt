@@ -96,6 +96,7 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 public void dispose() {
+	if (!isValidWidget ()) return;
 	Table parent = getParent();
 	parent.removeItem(this);
 	super.dispose();

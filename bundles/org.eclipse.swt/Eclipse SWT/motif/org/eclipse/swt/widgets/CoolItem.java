@@ -157,6 +157,7 @@ void createHandle (int index) {
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
 public void dispose () {
+	if (!isValidWidget ()) return;
 	CoolBar parent = this.parent;
 	super.dispose ();
 	parent.relayout ();

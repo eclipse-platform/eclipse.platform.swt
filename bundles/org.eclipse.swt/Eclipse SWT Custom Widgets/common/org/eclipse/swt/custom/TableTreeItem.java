@@ -347,6 +347,7 @@ int visibleChildrenCount () {
 }
 
 public void dispose () {
+	if (isDisposed()) return;
 	for (int i = items.length - 1; i >= 0; i--) {
 		items[i].dispose();
 	}

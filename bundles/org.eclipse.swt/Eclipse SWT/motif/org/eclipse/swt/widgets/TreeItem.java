@@ -1089,7 +1089,7 @@ void setTextYPosition(int yPosition) {
 }
 
 public void dispose() {
-	
+	if (!isValidWidget ()) return;
 	// if the tree is being disposed don't bother collapsing the item since all 
 	// items in the tree will be deleted and redraws will not be processed anyway
 	Tree parent = getParent();

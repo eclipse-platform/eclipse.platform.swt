@@ -110,6 +110,7 @@ void deselectAll() {
 	}
 }
 public void dispose() {
+	if (!isValidWidget ()) return;
 	Vector children = getChildren();
 	AbstractTreeItem child;
 	while (children.size() > 0) {		// TreeItem objects are removed from vector during dispose

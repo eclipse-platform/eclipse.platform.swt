@@ -29,6 +29,7 @@ SelectableItem(SelectableItemWidget parent, int style) {
 	setParent(parent);	
 }
 public void dispose() {
+	if (!isValidWidget ()) return;
 	super.dispose();
 	doDispose();
 }

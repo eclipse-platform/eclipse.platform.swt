@@ -55,6 +55,7 @@ protected void checkSubclass () {
 }
 
 public void dispose() {
+	if (!isValidWidget ()) return;
 	super.dispose();
 	parent.destroyChild(this);
 	parent = null;
