@@ -368,43 +368,12 @@ void createHandle (int index) {
 	int type = true || parent == null ? OS.GTK_WINDOW_TOPLEVEL : OS.GTK_WINDOW_DIALOG;
 	shellHandle = OS.gtk_window_new (type);
 	if (shellHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	OS.gtk_window_set_policy (shellHandle, 1, 1, 0);
+	OS.gtk_window_set_title (shellHandle, new byte [1]);
 	if (parent != null) {
 		OS.gtk_window_set_transient_for (shellHandle, parent.topHandle ());
 	}
-	fixedHandle = OS.gtk_fixed_new ();
-	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	int vadj = OS.gtk_adjustment_new(0, 0, 100, 1, 10, 10);
-	if (vadj == 0) error (SWT.ERROR_NO_HANDLES);
-	int hadj = OS.gtk_adjustment_new(0, 0, 100, 1, 10, 10);
-	if (hadj == 0) error (SWT.ERROR_NO_HANDLES);
-	scrolledHandle = OS.gtk_scrolled_window_new (hadj, vadj);
-	if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	handle = OS.gtk_fixed_new ();
-	if (handle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_fixed_set_has_window (handle, true);
-	//??
-	OS.GTK_WIDGET_SET_FLAGS(handle, OS.GTK_CAN_FOCUS);
-	
-	OS.gtk_container_add (shellHandle, fixedHandle);
-	OS.gtk_container_add (fixedHandle, scrolledHandle);
-
-	//COMMENT
-	OS.GTK_BIN_SET_CHILD(scrolledHandle, handle);
-	OS.gtk_widget_set_parent(handle, scrolledHandle);
-	
-	OS.gtk_widget_show (fixedHandle);
-	OS.gtk_widget_show (scrolledHandle);
-	OS.gtk_widget_show (handle);
-	
-	OS.gtk_window_set_policy (shellHandle, 1, 1, 0);
-	
-	int hsp = (style & SWT.H_SCROLL) == 0 ? OS.GTK_POLICY_NEVER : OS.GTK_POLICY_ALWAYS;
-	int vsp = (style & SWT.V_SCROLL) == 0 ? OS.GTK_POLICY_NEVER : OS.GTK_POLICY_ALWAYS;
-	OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
-	
-	accelGroup = OS.gtk_accel_group_new ();
-	OS.gtk_window_add_accel_group (shellHandle, accelGroup);
-	OS.gtk_window_set_title (shellHandle, new byte [1]);
+	createScrolledHandle (shellHandle);
 
 	boolean modal = (style & (SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0;
 	OS.gtk_window_set_modal (shellHandle, modal);	
@@ -428,6 +397,9 @@ void createHandle (int index) {
 	int window = OS.GTK_WIDGET_WINDOW (shellHandle);
 	// TEMPORARY CODE - trim does not work for dialogs
 //	OS.gdk_window_set_decorations (window, decorations);
+	
+	accelGroup = OS.gtk_accel_group_new ();
+	OS.gtk_window_add_accel_group (shellHandle, accelGroup);
 }
 
 void hookEvents () {

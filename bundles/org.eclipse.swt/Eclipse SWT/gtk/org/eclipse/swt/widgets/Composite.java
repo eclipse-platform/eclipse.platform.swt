@@ -69,57 +69,68 @@ public Composite (Composite parent, int style) {
 
 void createHandle (int index) {
 	state |= HANDLE | CANVAS;
-	fixedHandle = OS.gtk_fixed_new ();
-	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_fixed_set_has_window (fixedHandle, true);
-	int vadj = OS.gtk_adjustment_new(0, 0, 100, 1, 10, 10);
-	if (vadj == 0) error (SWT.ERROR_NO_HANDLES);
-	int hadj = OS.gtk_adjustment_new(0, 0, 100, 1, 10, 10);
-	if (hadj == 0) error (SWT.ERROR_NO_HANDLES);
-	scrolledHandle = OS.gtk_scrolled_window_new (hadj, vadj);
+	createScrolledHandle (parent.parentingHandle ());
+}
+
+void createScrolledHandle (int parentHandle) {
+	//TEMPORARY CODE
+//	boolean isScrolled = (style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0;
+	boolean isScrolled = true;
+	if (isScrolled) {
+		fixedHandle = OS.gtk_fixed_new ();
+		if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		OS.gtk_fixed_set_has_window (fixedHandle, true);
+		int vadj = OS.gtk_adjustment_new (0, 0, 100, 1, 10, 10);
+		if (vadj == 0) error (SWT.ERROR_NO_HANDLES);
+		int hadj = OS.gtk_adjustment_new (0, 0, 100, 1, 10, 10);
+		if (hadj == 0) error (SWT.ERROR_NO_HANDLES);
+		scrolledHandle = OS.gtk_scrolled_window_new (hadj, vadj);
+		if (scrolledHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	}
 	handle = OS.gtk_fixed_new ();
 	if (handle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_fixed_set_has_window (handle, true);
-	
-	//??
 	OS.GTK_WIDGET_SET_FLAGS(handle, OS.GTK_CAN_FOCUS);
-	int parentHandle = parent.parentingHandle ();
-	OS.gtk_container_add (parentHandle, fixedHandle);
-	OS.gtk_container_add (fixedHandle, scrolledHandle);
-	
-	/*
-	* Force the scrolledWindow to have a single child that is
-	* not scrolled automatically.  Calling gtk_container_add
-	* seems to add the child correctly but cause a warning.
-	*/
-	//NOT DONE -investigate turning warnings off
-	OS.GTK_BIN_SET_CHILD(scrolledHandle, handle);
-	OS.gtk_widget_set_parent(handle, scrolledHandle);
-//	OS.gtk_container_add (scrolledHandle, handle);
-//	OS.gtk_scrolled_window_add_with_viewport (scrolledHandle, handle);
+	if (isScrolled) {
+		OS.gtk_container_add (parentHandle, fixedHandle);
+		OS.gtk_container_add (fixedHandle, scrolledHandle);
 
-	OS.gtk_widget_show (fixedHandle);
-	OS.gtk_widget_show (scrolledHandle);
-	OS.gtk_widget_show (handle);
-	
-	//CHECK WITH IS THERE ALREADY THEN DON'T SET
-	if ((style & SWT.BORDER) != 0) {
-		OS.gtk_scrolled_window_set_shadow_type(scrolledHandle, OS.GTK_SHADOW_ETCHED_IN);
+//		/*
+//		* Force the scrolledWindow to have a single child that is
+//		* not scrolled automatically.  Calling gtk_container_add
+//		* seems to add the child correctly but cause a warning.
+//		*/
+//		OS.GTK_BIN_SET_CHILD(scrolledHandle, handle);
+//		OS.gtk_widget_set_parent(handle, scrolledHandle);
+		Display display = getDisplay ();
+		boolean warnings = display.getWarnings ();
+		display.setWarnings (false);
+		OS.gtk_container_add (scrolledHandle, handle);
+		display.setWarnings (warnings);
+		
+		OS.gtk_widget_show (fixedHandle);
+		OS.gtk_widget_show (scrolledHandle);
+		int hsp = (style & SWT.H_SCROLL) == 0 ? OS.GTK_POLICY_NEVER : OS.GTK_POLICY_ALWAYS;
+		int vsp = (style & SWT.V_SCROLL) == 0 ? OS.GTK_POLICY_NEVER : OS.GTK_POLICY_ALWAYS;
+		OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
+		//CHECK WITH IS THERE ALREADY THEN DON'T SET
+		if ((style & SWT.BORDER) != 0) {
+			OS.gtk_scrolled_window_set_shadow_type(scrolledHandle, OS.GTK_SHADOW_ETCHED_IN);
+		}
+	} else {
+		OS.gtk_container_add (parentHandle, handle);		
 	}
+	OS.gtk_widget_show (handle);
 	
 	//DOESN'T WORK RIGHT NOW
 	if ((style & SWT.NO_REDRAW_RESIZE) != 0) {
 		OS.gtk_widget_set_redraw_on_allocate (handle, false);
 	}
-	
-	int hsp = (style & SWT.H_SCROLL) == 0 ? OS.GTK_POLICY_NEVER : OS.GTK_POLICY_ALWAYS;
-	int vsp = (style & SWT.V_SCROLL) == 0 ? OS.GTK_POLICY_NEVER : OS.GTK_POLICY_ALWAYS;
-	OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
 }
 
 int parentingHandle () {
-	if ((state & CANVAS) == 0) return fixedHandle;
-	return handle;
+	if ((state & CANVAS) != 0) return handle;
+	return fixedHandle != 0 ? fixedHandle : handle;
 }
 
 boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
@@ -270,16 +281,6 @@ Control [] _getChildren () {
 }
 
 /**
- * Consider the argument a handle of one of the receiver's children.
- * If the argument is not a handle to a widget, or the widget is
- * not our child in SWT (not OS) terminology, return null.
- */
-Control _childFromHandle(int h) {
-	Widget child = WidgetTable.get(h);
-	return (Control)child;
-}
-
-/**
  * If the receiver has a layout, asks the layout to <em>lay out</em>
  * (that is, set the size and location of) the receiver's children. 
  * If the receiver does not have a layout, do nothing.
@@ -413,6 +414,10 @@ public boolean setFocus () {
 }
 
 void setInitialSize () {
+	if (scrolledHandle != 0) {
+		super.setInitialSize ();
+		return;
+	}
 	/*
 	* Bug in GTK. The scrollbars are not visible when a scrolled window
 	* is resize and then shown. The fix is to change the scrolling policy
