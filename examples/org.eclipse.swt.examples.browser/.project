@@ -3,9 +3,6 @@
 	<name>org.eclipse.swt.examples.browser</name>
 	<comment></comment>
 	<projects>
-		<project>org.eclipse.core.runtime</project>
-		<project>org.eclipse.swt</project>
-		<project>org.eclipse.swt.examples</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

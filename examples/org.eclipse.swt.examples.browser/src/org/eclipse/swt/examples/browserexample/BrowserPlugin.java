@@ -11,7 +11,6 @@
 package org.eclipse.swt.examples.browserexample;
 
 
-import org.eclipse.core.runtime.*;
 import org.eclipse.ui.plugin.*;
 
 /**
@@ -21,14 +20,7 @@ public class BrowserPlugin extends AbstractUIPlugin {
 	/**
 	 * The constructor.
 	 */
-	public BrowserPlugin(IPluginDescriptor descriptor) {
-		super(descriptor);
-	}
-	
-	/**
-	 * Clean up
-	 */
-	public void shutdown() throws CoreException {
-		super.shutdown();
+	public BrowserPlugin() {
+		super();
 	}
 }

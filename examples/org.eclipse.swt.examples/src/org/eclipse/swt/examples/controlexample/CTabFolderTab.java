@@ -235,7 +235,7 @@ class CTabFolderTab extends Tab {
 	 */
 	void hookCustomListener (final String eventName) {
 		if (eventName == "CTabFolderEvent") {
-			tabFolder1.addCTabFolderListener (new CTabFolderAdapter () {
+			tabFolder1.addCTabFolder2Listener (new CTabFolder2Adapter () {
 				public void itemClosed (CTabFolderEvent event) {
 					log (eventName, event);
 				}

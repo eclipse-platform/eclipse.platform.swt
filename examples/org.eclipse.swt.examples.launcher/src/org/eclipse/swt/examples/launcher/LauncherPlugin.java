@@ -19,6 +19,7 @@ import java.util.*;
 import org.eclipse.core.runtime.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.ui.plugin.*;
+import org.osgi.framework.*;
 
 /**
  * The main plugin class to be used in the desktop.
@@ -59,18 +60,22 @@ public class LauncherPlugin extends AbstractUIPlugin {
 	/**
 	 * Constructs the LauncherPlugin.
 	 */
-	public LauncherPlugin(IPluginDescriptor descriptor) {
-		super(descriptor);
+	public LauncherPlugin() {
+		super();
 		plugin = this;
-		resourceBundle = descriptor.getResourceBundle();
 	}
 
+    public void start(BundleContext context) throws Exception {
+        super.start(context);
+        resourceBundle = Platform.getResourceBundle(getBundle());
+    }
+    
 	/**
 	 * Clean up
 	 */
-	public void shutdown() throws CoreException {
-		super.shutdown();
+	public void stop(BundleContext context) throws Exception {
 		freeResources();
+		super.stop(context);
 	}
 
 	/**
@@ -88,7 +93,7 @@ public class LauncherPlugin extends AbstractUIPlugin {
 			images = new Image[imageLocations.length];
 				
 			for (int i = 0; i < imageLocations.length; ++i) {
-				images[i] = getImageFromPlugin(plugin.getDescriptor(), imageLocations[i]);
+				images[i] = getImageFromPlugin(plugin.getBundle(), imageLocations[i]);
 				if (images[i] == null) {
 					freeResources();
 					logError(getResourceString("error.CouldNotLoadResources"), null);
@@ -118,8 +123,8 @@ public class LauncherPlugin extends AbstractUIPlugin {
 	 * @param exception the associated exception, or null
 	 */
 	public static void logError(String message, Throwable exception) {
-		plugin.getLog().log(new Status(IStatus.ERROR, plugin.getDescriptor().getUniqueIdentifier(),
-			0, message, exception));
+		plugin.getLog().log(new Status(
+			IStatus.ERROR, plugin.getBundle().getSymbolicName(), 0, message, exception));
 	}
 
 	/**
@@ -162,10 +167,10 @@ public class LauncherPlugin extends AbstractUIPlugin {
 			new ItemTreeNode(new ItemDescriptor("<<Root>>", "<<Root>>", null, null, null, null, null));
 
 		// get the platform's public plugin registry
-		IPluginRegistry pluginRegistry = Platform.getPluginRegistry();
+		IExtensionRegistry extensionRegistry = Platform.getExtensionRegistry();
 		// retrieve all configuration elements registered at our launchItems extension-point
 		IConfigurationElement[] configurationElements =
-			pluginRegistry.getConfigurationElementsFor(LAUNCH_ITEMS_POINT_ID);
+			extensionRegistry.getConfigurationElementsFor(LAUNCH_ITEMS_POINT_ID);
 			
 		if (configurationElements == null || configurationElements.length == 0) {
 			logError(getResourceString("error.CouldNotFindRegisteredExtensions"), null);
@@ -348,8 +353,9 @@ public class LauncherPlugin extends AbstractUIPlugin {
 	private static Image getItemIcon(IConfigurationElement ce) {
 		String iconPath = getItemAttribute(ce, LAUNCH_ITEMS_XML_ITEM_ICON, "");
 		if (iconPath.length() != 0) {
-			Image icon = getImageFromPlugin(ce.getDeclaringExtension().getDeclaringPluginDescriptor(),
-				iconPath);
+			String symbolicName = ce.getDeclaringExtension().getNamespace();
+			Bundle bundle = Platform.getBundle(symbolicName);
+			Image icon = getImageFromPlugin(bundle, iconPath);
 			if (icon != null) {
 				Image[] newImages = new Image[images.length + 1];
 				System.arraycopy(images, 0, newImages, 0, images.length);
@@ -364,14 +370,14 @@ public class LauncherPlugin extends AbstractUIPlugin {
 	/**
 	 * Gets an image from a path relative to the plugin install directory.
 	 *
-	 * @param pd the plugin descriptor for the plugin with the image
+	 * @param bundle the plugin descriptor for the plugin with the image
 	 * @param iconPath the path relative to the install directory
 	 * @return the image, or null if not found
 	 */
-	private static Image getImageFromPlugin(IPluginDescriptor pd, String iconPath) {
+	private static Image getImageFromPlugin(Bundle bundle, String iconPath) {
 		InputStream is = null;
 		try {
-			URL installUrl = pd.getInstallURL();
+			URL installUrl = bundle.getEntry("/");
 			URL url = new URL(installUrl, iconPath);
 			is = url.openConnection().getInputStream();
 			ImageData source = new ImageData(is);

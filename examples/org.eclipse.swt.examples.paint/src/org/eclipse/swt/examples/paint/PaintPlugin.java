@@ -13,6 +13,7 @@ package org.eclipse.swt.examples.paint;
 
 import org.eclipse.core.runtime.*;
 import org.eclipse.ui.plugin.*;
+import org.osgi.framework.BundleContext;
 
 import java.text.*;
 import java.util.*;
@@ -28,10 +29,9 @@ public class PaintPlugin extends AbstractUIPlugin {
 	/**
 	 * Constructs the Paint plugin.
 	 */
-	public PaintPlugin(IPluginDescriptor descriptor) {
-		super(descriptor);
+	public PaintPlugin() {
+		super();
 		plugin = this;
-		resourceBundle = descriptor.getResourceBundle();
 	}
 	
 	/**
@@ -48,8 +48,8 @@ public class PaintPlugin extends AbstractUIPlugin {
 	 * @param exception the associated exception, or null
 	 */
 	public static void logError(String message, Throwable exception) {
-		plugin.getLog().log(new Status(IStatus.ERROR, plugin.getDescriptor().getUniqueIdentifier(),
-			0, message, exception));
+		plugin.getLog().log(
+			new Status(IStatus.ERROR, plugin.getBundle().getSymbolicName(), 0, message, exception));
 	}
 
 	/**
@@ -81,4 +81,9 @@ public class PaintPlugin extends AbstractUIPlugin {
 			return "!" + key + "!";
 		}
 	}
+	
+    public void start(BundleContext context) throws Exception {
+        super.start(context);
+        resourceBundle = Platform.getResourceBundle(getBundle());
+    }
 }

@@ -445,7 +445,7 @@ public class PaintView extends ViewPart {
 			setId(id);
 
 			try {
-				final URL installUrl = PaintPlugin.getDefault().getDescriptor().getInstallURL();
+				final URL installUrl = PaintPlugin.getDefault().getBundle().getEntry("/");
 				final URL imageUrl = new URL(installUrl, PaintPlugin.getResourceString(id + ".image"));
 				setImageDescriptor(ImageDescriptor.createFromURL(imageUrl));
 			} catch (MalformedURLException e) {

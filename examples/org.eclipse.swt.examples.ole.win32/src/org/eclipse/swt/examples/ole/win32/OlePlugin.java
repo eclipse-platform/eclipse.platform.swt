@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.ui.plugin.*;
+import org.osgi.framework.*;
 
 /**
  * The main plugin class to be used in the desktop.
@@ -49,18 +50,22 @@ public class OlePlugin extends AbstractUIPlugin {
 	/**
 	 * Constructs an OLE plugin.
 	 */
-	public OlePlugin(IPluginDescriptor descriptor) {
-		super(descriptor);
+	public OlePlugin() {
+		super();
 		plugin = this;
-		resourceBundle = descriptor.getResourceBundle();
 	}
 	
+    public void start(BundleContext context) throws Exception {
+        super.start(context);
+        resourceBundle = Platform.getResourceBundle(getBundle());
+    }
+    
 	/**
 	 * Clean up
 	 */
-	public void shutdown() throws CoreException {
-		super.shutdown();
+	public void stop(BundleContext context) throws Exception {
 		freeResources();
+		super.stop(context);
 	}
 
 	/**
@@ -107,8 +112,8 @@ public class OlePlugin extends AbstractUIPlugin {
 	 * @param exception the associated exception, or null
 	 */
 	public static void logError(String message, Throwable exception) {
-		plugin.getLog().log(new Status(IStatus.ERROR, plugin.getDescriptor().getUniqueIdentifier(),
-			0, message, exception));
+		plugin.getLog().log(new Status(
+			IStatus.ERROR, plugin.getBundle().getSymbolicName(), 0, message, exception));
 	}
 
 	/**
@@ -119,7 +124,7 @@ public class OlePlugin extends AbstractUIPlugin {
 			images = new Image[imageLocations.length];
 				
 			for (int i = 0; i < imageLocations.length; ++i) {
-				images[i] = getImageFromPlugin(plugin.getDescriptor(), imageLocations[i]);
+				images[i] = getImageFromPlugin(plugin.getBundle(), imageLocations[i]);
 				if (images[i] == null) {
 					freeResources();
 					logError(getResourceString("error.CouldNotLoadResources"), null);
@@ -162,10 +167,10 @@ public class OlePlugin extends AbstractUIPlugin {
 	 * @param iconPath the path relative to the install directory
 	 * @return the image, or null if not found
 	 */
-	private static Image getImageFromPlugin(IPluginDescriptor pd, String iconPath) {
+	private static Image getImageFromPlugin(Bundle bundle, String iconPath) {
 		InputStream is = null;
 		try {
-			URL installUrl = pd.getInstallURL();
+			URL installUrl = bundle.getEntry("/");
 			URL url = new URL(installUrl, iconPath);
 			is = url.openConnection().getInputStream();
 			ImageData source = new ImageData(is);
