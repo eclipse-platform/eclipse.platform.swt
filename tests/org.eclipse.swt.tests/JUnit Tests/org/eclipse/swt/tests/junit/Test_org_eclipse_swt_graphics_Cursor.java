@@ -27,9 +27,6 @@ import org.eclipse.swt.widgets.Display;
  */
 public class Test_org_eclipse_swt_graphics_Cursor extends SwtTestCase {
 
-/* custom */
-Display display;
-
 public Test_org_eclipse_swt_graphics_Cursor(String name) {
 	super(name);
 }
@@ -246,4 +243,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_toString")) test_toString();
 	else if (getName().equals("test_win32_newLorg_eclipse_swt_graphics_DeviceI")) test_win32_newLorg_eclipse_swt_graphics_DeviceI();
 }
+
+/* custom */
+Display display;
 }

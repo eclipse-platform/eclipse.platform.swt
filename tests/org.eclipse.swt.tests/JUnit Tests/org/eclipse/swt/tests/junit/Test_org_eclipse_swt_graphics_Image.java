@@ -26,8 +26,6 @@ import org.eclipse.swt.widgets.*;
  */
 public class Test_org_eclipse_swt_graphics_Image extends SwtTestCase {
 
-Display display;
-
 public Test_org_eclipse_swt_graphics_Image(String name) {
 	super(name);
 }
@@ -175,6 +173,8 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_toString")) test_toString();
 	else if (getName().equals("test_win32_newLorg_eclipse_swt_graphics_DeviceII")) test_win32_newLorg_eclipse_swt_graphics_DeviceII();
 }
+/* custom */
+Display display;
 
 /** Test implementation **/
 
