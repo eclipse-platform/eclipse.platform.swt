@@ -291,7 +291,7 @@ public int indexOf (ToolItem item) {
 	}
 	return -1;
 }
-int [] layoutHorizontal (int nWidth, int nHeight, boolean resize) {
+int [] layoutHorizontal (int width, int height, boolean resize) {
 	int xSpacing = 0, ySpacing = (style & SWT.NO_FOCUS) != 0 ? 4 : 2;
 	int marginWidth = 0, marginHeight = 0;
 	int x = marginWidth, y = marginHeight;
@@ -300,7 +300,7 @@ int [] layoutHorizontal (int nWidth, int nHeight, boolean resize) {
 	for (int i=0; i<itemCount; i++) {
 		ToolItem item = items [i];
 		Rectangle rect = item.getBounds ();
-		if (wrap && i != 0 && x + rect.width > nWidth) {
+		if (wrap && i != 0 && x + rect.width > width) {
 			rows++;
 			x = marginWidth;  y += ySpacing + maxHeight;
 			maxHeight = 0;
@@ -308,13 +308,15 @@ int [] layoutHorizontal (int nWidth, int nHeight, boolean resize) {
 		maxHeight = Math.max (maxHeight, rect.height);
 		if (resize) {
 			item.setBounds (x, y, rect.width, rect.height);
+			boolean visible = x + rect.width <= width && y + rect.height <= height;
+			item.setVisible (visible);
 		}
 		x += xSpacing + rect.width;
 		maxX = Math.max (maxX, x);
 	}
 	return new int [] {rows, maxX, y + maxHeight};
 }
-int [] layoutVertical (int nWidth, int nHeight, boolean resize) {
+int [] layoutVertical (int width, int height, boolean resize) {
 	int xSpacing = (style & SWT.NO_FOCUS) != 0 ? 4 : 2, ySpacing = 0;
 	int marginWidth = 0, marginHeight = 0;
 	int x = marginWidth, y = marginHeight;
@@ -323,7 +325,7 @@ int [] layoutVertical (int nWidth, int nHeight, boolean resize) {
 	for (int i=0; i<itemCount; i++) {
 		ToolItem item = items [i];
 		Rectangle rect = item.getBounds ();
-		if (wrap && i != 0 && y + rect.height > nHeight) {
+		if (wrap && i != 0 && y + rect.height > height) {
 			cols++;
 			x += xSpacing + maxWidth;  y = marginHeight;
 			maxWidth = 0;
@@ -331,6 +333,8 @@ int [] layoutVertical (int nWidth, int nHeight, boolean resize) {
 		maxWidth = Math.max (maxWidth, rect.width);
 		if (resize) {
 			item.setBounds (x, y, rect.width, rect.height);
+			boolean visible = x + rect.width <= width && y + rect.height <= height;
+			item.setVisible (visible);
 		}
 		y += ySpacing + rect.height;
 		maxY = Math.max (maxY, y);
