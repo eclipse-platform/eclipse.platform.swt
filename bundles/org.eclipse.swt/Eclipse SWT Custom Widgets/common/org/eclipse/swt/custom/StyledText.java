@@ -115,6 +115,7 @@ public class StyledText extends Canvas {
 	int caretLine = 0;
 	Point selection = new Point(0, 0);	// x is character offset, y is length
 	int selectionAnchor;				// position of selection anchor. 0 based offset from beginning of text
+	Point doubleClickSelection;			// selection after last mouse double click
 	boolean editable = true;
 	boolean wordWrap = false;
 	boolean doubleClickEnabled = true;	// see getDoubleClickEnabled 
@@ -2163,6 +2164,7 @@ void doAutoScroll(int direction) {
 			public void run() {
 				if (autoScrollDirection == SWT.RIGHT) {
 					doColumnRight();
+					setMouseWordSelectionAnchor();
 					doSelection(SWT.RIGHT);
 					display.timerExec(TIMER_INTERVAL, this);
 				}
@@ -2173,6 +2175,7 @@ void doAutoScroll(int direction) {
 			public void run() {
 				if (autoScrollDirection == SWT.LEFT) {
 					doColumnLeft();
+					setMouseWordSelectionAnchor();
 					doSelection(SWT.LEFT);
 					display.timerExec(TIMER_INTERVAL, this);
 				}
@@ -2211,45 +2214,6 @@ void doBackspace() {
 			event.end = caretOffset;
 		}
 		sendKeyEvent(event);
-	}
-}
-/**
- * Moves the caret to the specified location.
- * <p>
- *
- * @param x	x location of the new caret position
- * @param y	y location of the new caret position
- * @param select the location change is a selection operation.
- * 	include the line delimiter in the selection
- */
-void doBidiMouseLocationChange(int x, int y, boolean select) {
-	int line = (y + verticalScrollOffset) / lineHeight;
-	int lineCount = content.getLineCount();
-	
-	if (line > lineCount - 1) {
-		line = lineCount - 1;
-	}	
-	// allow caret to be placed below first line only if receiver is 
-	// not in single line mode. fixes 4820.
-	if (line == 0 || (isSingleLine() == false && line > 0)) {
-		int newCaretOffset = getBidiOffsetAtMouseLocation(x, line);	
-		if (x >= 0 || 
-			content.getLineAtOffset(newCaretOffset) != content.getLineAtOffset(caretOffset)) {
-			// Only change the caret offset when the mouse is within 
-			// the left client area border or on a different line. 
-			// Otherwise the autoscroll selection may be reset. 
-			// Fixes 1GKM3XS
-			caretOffset = newCaretOffset;
-			caretLine = line;
-			if (select) {
-				doMouseSelection();
-			}
-			setBidiCaretLocation(null);
-			setBidiKeyboardLanguage();
-		}
-		if (select == false) {
-			clearSelection(true);
-		}
 	}
 }
 /**
@@ -2673,26 +2637,45 @@ void doLineUp() {
 void doMouseLocationChange(int x, int y, boolean select) {
 	int line = (y + verticalScrollOffset) / lineHeight;
 	int lineCount = content.getLineCount();
+	int newCaretOffset;
+	int newCaretLine;
 	
 	if (line > lineCount - 1) {
 		line = lineCount - 1;
 	}	
 	// allow caret to be placed below first line only if receiver is 
 	// not in single line mode. fixes 4820.
-	if (line == 0 || (isSingleLine() == false && line > 0)) {
-		int newCaretOffset = getOffsetAtMouseLocation(x, line);
-		
+	if (line < 0 || (isSingleLine() && line > 0)) {
+		return;
+	}
+	if (isBidi()) {
+		newCaretOffset = getBidiOffsetAtMouseLocation(x, line);	
+	}
+	else {
+		newCaretOffset = getOffsetAtMouseLocation(x, line);
+	}
+	if (mouseDoubleClick) {
+		// double click word select the previous/next word. fixes bug 15610
+		newCaretOffset = doMouseWordSelect(x, newCaretOffset, line);
+	}
+	newCaretLine = content.getLineAtOffset(newCaretOffset);
+	if (x >= 0 || 
+		newCaretLine != content.getLineAtOffset(caretOffset)) {
+		// Only change the caret offset when the mouse is within 
+		// the left client area border or on a different line. 
+		// Otherwise the autoscroll selection may be reset. 
+		// Fixes 1GKM3XS
 		if (newCaretOffset != caretOffset) {
 			caretOffset = newCaretOffset;
-			caretLine = line;
+			caretLine = newCaretLine;
 			if (select) {
 				doMouseSelection();
 			}
-			setCaretLocation();
+			showCaret();
 		}
-		if (select == false) {
-			clearSelection(true);
-		}
+	}
+	if (select == false) {
+		clearSelection(true);
 	}
 }
 /**
@@ -2707,6 +2690,48 @@ void doMouseSelection() {
 	else {
 		doSelection(SWT.RIGHT);
 	}
+}
+/**
+ * Returns the offset of the word at the specified offset. 
+ * If the current selection extends from high index to low index 
+ * (i.e., right to left, or caret is at left border of selecton on 
+ * non-bidi platforms) the start offset of the word preceeding the
+ * selection is returned. If the current selection extends from 
+ * low index to high index the end offset of the word following 
+ * the selection is returned.
+ * 
+ * @param x mouse x location
+ * @param newCaretOffset caret offset of the mouse cursor location
+ * @param line line index of the mouse cursor location
+ */
+int doMouseWordSelect(int x, int newCaretOffset, int line) {
+	int wordOffset;
+
+	// flip selection anchor based on word selection direction from 
+	// base double click. Always do this here (and don't rely on doAutoScroll)
+	// because auto scroll only does not cover all possible mouse selections
+	// (e.g., mouse x < 0 && mouse y > caret line y)
+ 	if (newCaretOffset < selectionAnchor && selectionAnchor == selection.x) {
+		selectionAnchor = doubleClickSelection.y;
+	}
+	else
+	if (newCaretOffset > selectionAnchor && selectionAnchor == selection.y) {
+		selectionAnchor = doubleClickSelection.x;
+	}
+	if (x >= 0 && x < getClientArea().width) {
+		// find the previous/next word
+		if (caretOffset == selection.x) {
+			wordOffset = getWordStart(newCaretOffset);
+		}
+		else {
+			wordOffset = getWordEndNoSpaces(newCaretOffset);
+		}
+		// mouse word select only on same line mouse cursor is on
+		if (content.getLineAtOffset(wordOffset) == line) {
+			newCaretOffset = wordOffset;
+		}
+	}
+	return newCaretOffset;
 }
 /**
  * Scrolls one page down so that the last line (truncated or whole)
@@ -2947,6 +2972,7 @@ void doSelectionLineDown() {
 	else {
 		doLineDown();
 	}
+	setMouseWordSelectionAnchor();	
 	// select first and then scroll to reduce flash when key 
 	// repeat scrolls lots of lines
 	doSelection(SWT.RIGHT);
@@ -2973,6 +2999,7 @@ void doSelectionLineUp() {
 	else {
 		doLineUp();
 	}
+	setMouseWordSelectionAnchor();	
 	showCaret();
 	doSelection(SWT.LEFT);
 	// save the original horizontal caret position	
@@ -4654,90 +4681,11 @@ void handleDispose() {
 	}
 }
 /** 
- * Updates the caret location and selection if mouse button 1 has been 
- * pressed.
- */
-void handleMouseDoubleClick(Event event) {
-	if (event.button != 1 || doubleClickEnabled == false) {
-		return;
-	}
-	event.y -= topMargin;
-	mouseDoubleClick = true;
-	caretOffset = getWordEndNoSpaces(caretOffset);
-	resetSelection();
-	caretOffset = getWordStart(caretOffset);
-	caretLine = content.getLineAtOffset(caretOffset);
-	showCaret();
-	doMouseSelection();
-}
-/** 
- * Updates the caret location and selection if mouse button 1 has been 
- * pressed.
- */
-void handleMouseDown(Event event) {
-	boolean select = (event.stateMask & SWT.SHIFT) != 0;
-	
-	if (event.button != 1) {
-		return;
-	}
-	mouseDoubleClick = false;
-	event.y -= topMargin;
-	if (isBidi()) {
-		doBidiMouseLocationChange(event.x, event.y, select);
-	}
-	else {	
-		doMouseLocationChange(event.x, event.y, select);
-	}
-}
-/** 
- * Autoscrolling ends when the mouse button is released.
- */
-void handleMouseUp(Event event) {
-	event.y -= topMargin;
-	endAutoScroll();
-}
-/** 
- * Updates the caret location and selection if mouse button 1 is pressed 
- * during the mouse move.
- */
-void handleMouseMove(Event event) {
-	if (mouseDoubleClick == true || (event.stateMask & SWT.BUTTON1) == 0) {
-		return;
-	}
-	event.y -= topMargin;
-	if (isBidi()) {
-		doBidiMouseLocationChange(event.x, event.y, true);
-	}
-	else {	
-		doMouseLocationChange(event.x, event.y, true);
-	}
-	doAutoScroll(event);
-}
-/** 
  * Scrolls the widget horizontally.
  */
 void handleHorizontalScroll(Event event) {
 	int scrollPixel = getHorizontalBar().getSelection() - horizontalScrollOffset;
 	scrollHorizontal(scrollPixel);
-}
-/**
- * If a VerifyKey listener exists, verify that the key that was entered
- * should be processed.
- * <p>
- *
- * @param event keyboard event
- */
-void handleKeyDown(Event event) {
-	Event verifyEvent = new Event();
-	
-	verifyEvent.character = event.character;
-	verifyEvent.keyCode = event.keyCode;
-	verifyEvent.stateMask = event.stateMask;
-	verifyEvent.doit = true;		
-	notifyListeners(VerifyKey, verifyEvent);
-	if (verifyEvent.doit == true) {
-		handleKey(event);
-	}
 }
 /**
  * If an action has been registered for the key stroke execute the action.
@@ -4771,6 +4719,76 @@ void handleKey(Event event) {
 	else {
 		invokeAction(action);		
 	}
+}
+/**
+ * If a VerifyKey listener exists, verify that the key that was entered
+ * should be processed.
+ * <p>
+ *
+ * @param event keyboard event
+ */
+void handleKeyDown(Event event) {
+	Event verifyEvent = new Event();
+	
+	verifyEvent.character = event.character;
+	verifyEvent.keyCode = event.keyCode;
+	verifyEvent.stateMask = event.stateMask;
+	verifyEvent.doit = true;		
+	notifyListeners(VerifyKey, verifyEvent);
+	if (verifyEvent.doit == true) {
+		handleKey(event);
+	}
+}
+/** 
+ * Updates the caret location and selection if mouse button 1 has been 
+ * pressed.
+ */
+void handleMouseDoubleClick(Event event) {
+	if (event.button != 1 || doubleClickEnabled == false) {
+		return;
+	}
+	event.y -= topMargin;
+	mouseDoubleClick = true;
+	caretOffset = getWordEndNoSpaces(caretOffset);
+	resetSelection();
+	caretOffset = getWordStart(caretOffset);
+	caretLine = content.getLineAtOffset(caretOffset);
+	showCaret();
+	doMouseSelection();
+	doubleClickSelection = new Point(selection.x, selection.y);
+}
+/** 
+ * Updates the caret location and selection if mouse button 1 has been 
+ * pressed.
+ */
+void handleMouseDown(Event event) {
+	boolean select = (event.stateMask & SWT.SHIFT) != 0;
+	
+	if (event.button != 1) {
+		return;
+	}
+	mouseDoubleClick = false;
+	event.y -= topMargin;
+	doMouseLocationChange(event.x, event.y, select);
+}
+/** 
+ * Updates the caret location and selection if mouse button 1 is pressed 
+ * during the mouse move.
+ */
+void handleMouseMove(Event event) {
+	if ((event.stateMask & SWT.BUTTON1) == 0) {
+		return;
+	}
+	event.y -= topMargin;
+	doMouseLocationChange(event.x, event.y, true);
+	doAutoScroll(event);
+}
+/** 
+ * Autoscrolling ends when the mouse button is released.
+ */
+void handleMouseUp(Event event) {
+	event.y -= topMargin;
+	endAutoScroll();
 }
 /**
  * Renders the invalidated area specified in the paint event.
@@ -6799,6 +6817,21 @@ public void setLineBackground(int startLine, int lineCount, Color background) {
 	super.redraw(
 		leftMargin, startLine * lineHeight + topMargin, 
 		getClientArea().width - leftMargin - rightMargin, lineCount * lineHeight, true);
+}
+/**
+ * Flips selection anchor based on word selection direction.
+ */
+void setMouseWordSelectionAnchor() {
+	if (mouseDoubleClick == false) {
+		return;
+	}
+ 	if (caretOffset < doubleClickSelection.x) {
+		selectionAnchor = doubleClickSelection.y;
+	}
+	else
+	if (caretOffset > doubleClickSelection.y) {
+		selectionAnchor = doubleClickSelection.x;
+	}
 }
 /**
  * Adjusts the maximum and the page size of the scroll bars to 
