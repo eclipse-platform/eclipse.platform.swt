@@ -191,7 +191,7 @@ class SliderTab extends RangeTab {
 	 * Gets the text for the tab folder item.
 	 */
 	String getTabText () {
-		if (org.eclipse.swt.internal.Platform.PLATFORM.equals("carbon")) return "S/S";
+		if (SWT.getPlatform().equals("carbon")) return "S/S";
 		return "Slider/Scale";
 	}
 	
