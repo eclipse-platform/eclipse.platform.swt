@@ -158,27 +158,18 @@ void bringToTop (boolean force) {
 	*/
 	if (minimized) return;
 	if (!isVisible ()) return;
-	int display = OS.XtDisplay (handle);
-	if (display == 0) return;
-	int window = OS.XtWindow (handle);
-	if (window == 0) return;
-	
+	int xDisplay = OS.XtDisplay (handle);
+	if (xDisplay == 0) return;
+	int xWindow = OS.XtWindow (handle);
+	if (xWindow == 0) return;
 	if (!force) {
 		int [] buffer1 = new int [1], buffer2 = new int [1];
-		OS.XGetInputFocus (display, buffer1, buffer2);
-		int xWindow = buffer1 [0];
-		if (xWindow == 0) return;
-		int handle = OS.XtWindowToWidget (display, xWindow);
+		OS.XGetInputFocus (xDisplay, buffer1, buffer2);
+		if (buffer1 [0] == 0) return;
+		int handle = OS.XtWindowToWidget (xDisplay, buffer1 [0]);
 		if (handle == 0) return;
-
-		Widget widget = null;
-		do {
-			widget = WidgetTable.get (handle);
-		} while (widget == null && (handle = OS.XtParent (handle)) != 0);
-		if (widget == null) return;
 	}
-	
-	OS.XSetInputFocus (display, window, OS.RevertToParent, OS.CurrentTime);
+	OS.XSetInputFocus (xDisplay, xWindow, OS.RevertToParent, OS.CurrentTime);
 }
 static int checkStyle (int style) {
 	if ((style & (SWT.MENU | SWT.MIN | SWT.MAX | SWT.CLOSE)) != 0) {
