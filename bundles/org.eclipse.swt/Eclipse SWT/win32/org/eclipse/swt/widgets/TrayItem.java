@@ -126,7 +126,7 @@ public void addSelectionListener(SelectionListener listener) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public String getToolTipText (String value) {
+public String getToolTipText () {
 	checkWidget ();
 	return toolTipText;
 }
