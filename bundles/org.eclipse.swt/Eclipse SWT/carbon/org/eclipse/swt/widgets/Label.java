@@ -47,8 +47,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 //		OS.SetControlBounds (handle, rect);
 		short [] base = new short [1];
 		OS.GetBestControlRect (handle, rect, base);
-		width = rect.right - rect.left;
-		height = rect.bottom - rect.top;
+		width = 100;//rect.right - rect.left;
+		height = 30;//rect.bottom - rect.top;
 //		OS.SetControlBounds (handle, saveRect);
 	}
 	if (wHint != SWT.DEFAULT) width = wHint;
@@ -98,7 +98,7 @@ public String getText () {
 
 int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlDraw (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
+//	if (result == OS.noErr) return result;
 	if (isImage) {
 		if (image != null) {
 			GCData data = new GCData ();
@@ -109,7 +109,7 @@ int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 		}
 		return OS.noErr;
 	}
-	return OS.eventNotHandledErr;
+	return result;
 }
 
 public void setAlignment (int alignment) {
@@ -119,6 +119,7 @@ public void setAlignment (int alignment) {
 
 public void setImage (Image image) {
 	checkWidget();
+	if ((style & SWT.SEPARATOR) != 0) return;
 	this.image = image;
 	isImage = true;
 }
