@@ -125,9 +125,7 @@ class CanvasTab extends Tab {
 				}
 				Point size = canvas.getSize ();
 				gc.drawArc(cx + 1, cy + 1, size.x - 2, size.y - 2, 0, 360);
-				String counter = new Integer(paintCount).toString();
-				Point extent = gc.stringExtent(counter);
-				gc.drawString(counter, cx + (size.x - extent.x) / 2, cy + (size.y - extent.y) / 2);
+				gc.drawRectangle(cx + (size.x - 10) / 2, cy + (size.y - 10) / 2, 10, 10);
 			}
 		});
 		canvas.addControlListener(new ControlAdapter() {
