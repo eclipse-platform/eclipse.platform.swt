@@ -1337,10 +1337,12 @@ public FontMetrics getFontMetrics() {
 	int font = OS.pango_context_get_font_description(context);
 	int metrics = OS.pango_context_get_metrics(context, font, null);
 	FontMetrics fm = new FontMetrics();
-	fm.ascent = OS.pango_font_metrics_get_ascent(metrics);
-	fm.descent = OS.pango_font_metrics_get_descent(metrics);
-	fm.averageCharWidth = OS.pango_font_metrics_get_approximate_char_width(metrics);
-	fm.height = fm.ascent + fm.descent;
+	int scale = OS.PANGO_SCALE();
+	fm.ascent = OS.pango_font_metrics_get_ascent(metrics) / scale;
+	fm.descent = OS.pango_font_metrics_get_descent(metrics) / scale;
+	fm.averageCharWidth = OS.pango_font_metrics_get_approximate_char_width(metrics) / scale;
+	//TEMPORARY CODE - why do we have to subtract instead of add???
+	fm.height = fm.ascent - fm.descent;
 	return fm;
 }
 

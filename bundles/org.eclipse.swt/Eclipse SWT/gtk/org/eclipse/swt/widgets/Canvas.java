@@ -29,13 +29,7 @@ import org.eclipse.swt.graphics.*;
  * @see Composite
  */
 public class Canvas extends Composite {
-
 	Caret caret;
-
-/*
- *   ===  CONSTRUCTORS  ===
- */
-
 
 Canvas () {}
 
@@ -167,6 +161,7 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	/* Show the caret */
 	if (isVisible) caret.showCaret ();
 }
+
 /**
  * Sets the receiver's caret.
  * <p>
@@ -198,58 +193,26 @@ public void setCaret (Caret caret) {
 		if (newCaret != null) newCaret.setFocus ();
 	}
 }
+
 public boolean setFocus () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & SWT.NO_FOCUS) != 0) return false;
 	return super.setFocus ();
 }
+
 int processFocusIn (int int0, int int1, int int2) {
 	int result = super.processFocusIn (int0, int1, int2);
 	if (caret != null) caret.setFocus ();
 	return result;
 }
+
 int processFocusOut(int int0, int int1, int int2) {
 	int result = super.processFocusOut (int0, int1, int2);
 	if (caret != null) caret.killFocus ();
 	return result;
 }
-/*
-int processMouseDown (int callData, int arg1, int int2) {
-	if ((UtilFuncs.GTK_WIDGET_GET_FLAGS(handle) & OS.GTK_HAS_FOCUS) == 0)
-		OS.gtk_widget_grab_focus(handle);
-	GdkEventButton gdkEvent = new GdkEventButton ();
-	OS.memmove (gdkEvent, callData, GdkEventButton.sizeof);
-	int eventType = SWT.MouseDown;
-	if (gdkEvent.type == OS.GDK_2BUTTON_PRESS) eventType = SWT.MouseDoubleClick;
-	sendMouseEvent (eventType, gdkEvent.button, gdkEvent.state, gdkEvent.time, (int)gdkEvent.x, (int)gdkEvent.y);
-	if (gdkEvent.button == 3 && menu != null) {
-		menu.setVisible (true);
-	}
-	return 1;
-}
 
-int processMouseUp (int callData, int arg1, int int2) {
-	GdkEventButton gdkEvent = new GdkEventButton ();
-	OS.memmove (gdkEvent, callData, GdkEventButton.sizeof);
-	sendMouseEvent (SWT.MouseUp, gdkEvent.button, gdkEvent.state, gdkEvent.time, (int)gdkEvent.x, (int)gdkEvent.y);
-	return 1;
-}
-*/
-int processPaint (int callData, int arg1, int int2) {
-	//if (!hooks (SWT.Paint)) return 0;
-
-	GdkEventExpose gdkEvent = new GdkEventExpose (callData);
-	Event event = new Event ();
-	event.count = gdkEvent.count;
-	event.x = gdkEvent.x;  event.y = gdkEvent.y;
-	event.width = gdkEvent.width;  event.height = gdkEvent.height;
-	GC gc = event.gc = new GC (this);
-	sendEvent (SWT.Paint, event);
-	gc.dispose ();
-	event.gc = null;
-	return 0;
-}
 void releaseWidget () {
 	if (caret != null) caret.releaseWidget ();
 	caret = null;
