@@ -32,15 +32,15 @@ PATH = /bin:/usr/ccs/bin/:/usr/ucb/:/usr/local/bin
 
 SWT_PREFIX   = swt
 WS_PREFIX    = motif
-SWT_DLL      = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
-SWT_OBJ      = callback.o os.o os_structs.o os_custom.o os_stats.o
-SWT_LIB      = -L$(MOTIF_HOME)/lib -L/usr/lib -R/usr/openwin/lib  \
+SWT_LIB      = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+SWT_OBJS      = swt.o callback.o os.o os_structs.o os_custom.o os_stats.o
+SWT_LIBS      = -L$(MOTIF_HOME)/lib -L/usr/lib -R/usr/openwin/lib  \
 	       -G -lXm -lXt -lX11 -lm -lXp -lXtst
 
 CDE_PREFIX   = swt-cde
-CDE_DLL      = lib$(CDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
-CDE_OBJ      = cde.o
-CDE_LIB      = -G -L$(CDE_HOME)/lib -R$(CDE_HOME)/lib -lDtSvc
+CDE_LIB      = lib$(CDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+CDE_OBJS      = cde.o
+CDE_LIBS      = -G -L$(CDE_HOME)/lib -R$(CDE_HOME)/lib -lDtSvc
 
 
 #
@@ -63,16 +63,16 @@ CFLAGS = -O -s \
 
 all: make_swt make_cde
 
-make_swt: $(SWT_DLL)
+make_swt: $(SWT_LIB)
 
-$(SWT_DLL): $(SWT_OBJ)
-	ld -o $@ $(SWT_OBJ) $(SWT_LIB)
+$(SWT_LIB): $(SWT_OBJS)
+	ld -o $@ $(SWT_OBJS) $(SWT_LIBS)
 
 
-make_cde: $(CDE_DLL)
+make_cde: $(CDE_LIB)
 
-$(CDE_DLL): $(CDE_OBJ)
-	ld -o $@ $(CDE_OBJ) $(CDE_LIB)
+$(CDE_LIB): $(CDE_OBJS)
+	ld -o $@ $(CDE_OBJS) $(CDE_LIBS)
 
 
 clean:
