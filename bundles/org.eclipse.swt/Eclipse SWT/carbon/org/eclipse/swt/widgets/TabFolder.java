@@ -142,11 +142,15 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
-	// NEEDS WORK
-	int TAB_HEIGHT = 32;
-	int TOP_MARGIN = 1;
-	int MARGIN = 4;
-	return new Rectangle (x-MARGIN, y-TOP_MARGIN-TAB_HEIGHT, width+(2*MARGIN), height+TOP_MARGIN+TAB_HEIGHT+MARGIN);
+	Rect bounds = new Rect ();
+	OS.GetControlBounds (handle, bounds);
+	Rect client = new Rect ();
+	OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlTabContentRectTag, Rect.sizeof, client, null);
+	x -= Math.max (3, client.left - bounds.left);
+	y -= Math.max (34, client.top - bounds.top);
+	width += Math.max (6, (bounds.right - bounds.left) - (client.right - client.left));
+	height += Math.max (37, (bounds.bottom - bounds.top) - (client.bottom - client.top));
+	return new Rectangle (x, y, width, height);
 }
 
 void createHandle () {
@@ -219,10 +223,15 @@ void destroyItem (TabItem item) {
 
 public Rectangle getClientArea () {
 	checkWidget ();
-	Rect outData = new Rect();
-	OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlTabContentRectTag, Rect.sizeof, outData, null);
-	toControl (handle, outData);
-	return new Rectangle (outData.left, outData.top, outData.right - outData.left, outData.bottom - outData.top);
+	Rect bounds = new Rect ();
+	OS.GetControlBounds (handle, bounds);
+	Rect client = new Rect ();
+	OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlTabContentRectTag, Rect.sizeof, client, null);
+	int x = Math.max (0, client.left - bounds.left);
+	int y = Math.max (0, client.top - bounds.top);
+	int width = Math.max (0, client.right - client.left);
+	int height = Math.max (0, client.bottom - client.top);
+	return new Rectangle (x, y, width, height);
 }
 
 /**

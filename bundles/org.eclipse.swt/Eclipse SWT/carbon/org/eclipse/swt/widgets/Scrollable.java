@@ -126,7 +126,7 @@ void layoutControl () {
 		if (verticalBar != null) {
 			setBounds (verticalBar.handle, width, 0, vWidth, height, true, true);
 		}
-		setBounds (verticalBar.handle, 0, 0, width, height, true, true);
+		setBounds (handle, 0, 0, width, height, true, true);
 	}	
 }
 

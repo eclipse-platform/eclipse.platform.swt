@@ -186,9 +186,7 @@ public void dispose () {
 
 public Rectangle getBounds () {
 	checkWidget();
-	Rect bounds= new Rect();
-	OS.GetControlBounds(handle, bounds);
-	return new Rectangle(bounds.left, bounds.top, bounds.right-bounds.left, bounds.bottom-bounds.top);
+	return getBounds (handle); 
 }
 
 public Control getControl () {
@@ -235,9 +233,9 @@ public String getToolTipText () {
 
 public int getWidth () {
 	checkWidget();
-	Rect bounds= new Rect();
-	OS.GetControlBounds(handle, bounds);
-	return bounds.right - bounds.left;
+	Rect rect = new Rect ();
+	OS.GetControlBounds (handle, rect);
+	return rect.right - rect.left;
 }
 
 void hookEvents () {
@@ -334,9 +332,7 @@ void selectRadio () {
 
 void setBounds (int x, int y, int width, int height) {
 	if (control != null) control.setBounds (x, y, width, height);
-	Rect rect = new Rect ();
-	OS.SetRect (rect, (short) x, (short) y, (short)(x + width), (short)(y + height));
-	OS.SetControlBounds (handle, rect);
+	setBounds (handle, x, y, width, height, true, true);
 }
 
 public void setControl (Control control) {

@@ -8,7 +8,11 @@ package org.eclipse.swt.widgets;
  */
 
 import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.PixMap;
+import org.eclipse.swt.internal.carbon.BitMap;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
@@ -245,6 +249,22 @@ boolean filters (int eventType) {
 	return display.filters (eventType);
 }
 
+Rectangle getBounds (int control) {
+	Rect rect = new Rect();
+	OS.GetControlBounds (control, rect);
+	int window = OS.GetControlOwner (control);
+	int [] theRoot = new int [1];
+	OS.GetRootControl (window, theRoot);
+	int [] parentHandle = new int [1];
+	OS.GetSuperControl (control, parentHandle);
+	if (parentHandle [0] != theRoot [0]) {
+		Rect parentRect = new Rect ();
+		OS.GetControlBounds (parentHandle [0], parentRect);
+		OS.OffsetRect (rect, (short) -parentRect.left, (short) -parentRect.top);
+	}
+	return new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+}
+
 int getClipping (int control) {
 	int visibleRgn = OS.NewRgn (), childRgn = OS.NewRgn (), tempRgn = OS.NewRgn ();
 	Rect rect = new Rect();
@@ -301,6 +321,23 @@ String getName () {
 	if (index == -1) return string;
 	return string.substring(index + 1, string.length ());
 }
+
+Point getLocation (int control) {
+	Rect rect = new Rect();
+	OS.GetControlBounds (control, rect);
+	int window = OS.GetControlOwner (control);
+	int [] theRoot = new int [1];
+	OS.GetRootControl (window, theRoot);
+	int [] parentHandle = new int [1];
+	OS.GetSuperControl (control, parentHandle);
+	if (parentHandle [0] != theRoot [0]) {
+		Rect parentRect = new Rect ();
+		OS.GetControlBounds (parentHandle [0], parentRect);
+		OS.OffsetRect (rect, (short) -parentRect.left, (short) -parentRect.top);
+	}
+	return new Point (rect.left, rect.top);
+}
+
 
 String getNameText () {
 	return "";
@@ -581,6 +618,24 @@ void sendEvent (int eventType, Event event, boolean send) {
 	} else {
 		display.postEvent (event);
 	}
+}
+
+void setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize) {
+	if (move) {
+		int window = OS.GetControlOwner (control);
+		int [] theRoot = new int [1];
+		OS.GetRootControl (window, theRoot);
+		int [] parentHandle = new int [1];
+		OS.GetSuperControl (control, parentHandle);
+		if (parentHandle [0] != theRoot [0]) {
+			Rect rect = new Rect ();
+			OS.GetControlBounds (parentHandle [0], rect);
+			x += rect.left;
+			y += rect.top;
+		}
+		OS.MoveControl (control, (short) x, (short) y);	
+	}
+	if (resize) OS.SizeControl (control, (short) width, (short) height);
 }
 
 public void setData (Object data) {
