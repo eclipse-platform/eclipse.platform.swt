@@ -144,13 +144,16 @@ void createHandle () {
 			windowClass= OS.kDocumentWindowClass;
 		}
 	}
-	int [] outWindow = new int[1];
+
+	Rectangle bounds = display.getBounds ();
 	Rect rect = new Rect ();
-	OS.SetRect (rect, (short)100, (short)100, (short)400, (short)400);
+	OS.SetRect (rect, (short)0, (short)0, (short) (bounds.width * 5 / 8), (short) (bounds.height * 5 / 8));
+	OS.OffsetRect(rect, (short) 60, (short) 60);
 
 //	int kWindowStandardDocumentAttributes = OS.kWindowCloseBoxAttribute | OS.kWindowFullZoomAttribute | OS.kWindowCollapseBoxAttribute | OS.kWindowResizableAttribute;
 //	int windowAttrs = kWindowStandardDocumentAttributes | OS.kWindowStandardHandlerAttribute;
 //	OS.CreateNewWindow (OS.kDocumentWindowClass, attributes, rect, outWindow);
+	int [] outWindow = new int[1];
 	OS.CreateNewWindow (windowClass, attributes, rect, outWindow);
 
 	if (outWindow [0] == 0) error (SWT.ERROR_NO_HANDLES);
