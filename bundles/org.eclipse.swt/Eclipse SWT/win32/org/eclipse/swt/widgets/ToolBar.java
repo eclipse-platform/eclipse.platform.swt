@@ -219,10 +219,16 @@ void createHandle () {
 	* a flat toolbar, for some reason TBSTYLE_TRANSPARENT is
 	* also set.  This causes the toolbar to flicker when it is
 	* moved or resized.  The fix is to clear TBSTYLE_TRANSPARENT.
+	* 
+	* NOTE:  This work around is unnecessary on XP.  There is no
+	* flickering and clearing the TBSTYLE_TRANSPARENT interferes
+	* with the XP theme.
 	*/
-	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	bits &= ~OS.TBSTYLE_TRANSPARENT;
-	OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+	if (COMCTL32_MAJOR < 6) {
+		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		bits &= ~OS.TBSTYLE_TRANSPARENT;
+		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+	}
 
 	/*
 	* Feature in Windows.  Despite the fact that the
