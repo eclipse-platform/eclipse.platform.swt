@@ -1240,7 +1240,10 @@ public FontMetrics getFontMetrics() {
 	fm.ascent = info.ascent;
 	fm.descent = info.descent;
 	fm.leading = info.leading;
-	fm.averageCharWidth = info.widMax / 2;
+	/* This code is intentionaly comment. Not right for fixed width fonts. */
+	//fm.averageCharWidth = info.widMax / 3;
+	String s = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; 
+	fm.averageCharWidth = stringExtent(s).x / s.length();
 	fm.height = fm.ascent + fm.descent;
 	return fm;
 }
