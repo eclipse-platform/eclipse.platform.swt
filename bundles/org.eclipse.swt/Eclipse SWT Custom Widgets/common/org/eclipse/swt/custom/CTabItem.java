@@ -30,7 +30,7 @@ public class CTabItem extends Item {
 	
 /**
  * Constructs a new instance of this class given its parent
- * (which must be a <code>Table</code>) and a style value
+ * (which must be a <code>CTabFolder</code>) and a style value
  * describing its behavior and appearance. The item is added
  * to the end of the items maintained by its parent.
  * <p>
@@ -61,7 +61,7 @@ public CTabItem (CTabFolder parent, int style) {
 }
 /**
  * Constructs a new instance of this class given its parent
- * (which must be a <code>Table</code>), a style value
+ * (which must be a <code>CTabFolder</code>), a style value
  * describing its behavior and appearance, and the index
  * at which to place it in the items maintained by its parent.
  * <p>
