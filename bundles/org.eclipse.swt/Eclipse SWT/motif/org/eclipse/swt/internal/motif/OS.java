@@ -582,6 +582,7 @@ public class OS {
 //	public static final int XmFRAME_GENERIC_CHILD = 0x0;
 	public static final int XmFRAME_TITLE_CHILD = 0x2;
 //	public static final int XmFRAME_WORKAREA_CHILD = 0x1;
+	public static final int XmHIGHLIGHT_COLOR = -3;
 	public static final int XmHIGHLIGHT_NORMAL = 0x0;
 //	public static final int XmHIGHLIGHT_SECONDARY_SELECTED = 0x2;
 //	public static final int XmHIGHLIGHT_SELECTED = 0x1;
@@ -632,6 +633,7 @@ public class OS {
 	public static final int XmNrightAttachment = malloc ("rightAttachment");
 	public static final int XmNscrollHorizontal = malloc ("scrollHorizontal");
 	public static final int XmNscrollVertical = malloc ("scrollVertical");
+	public static final int XmNselectColor = malloc ("selectColor");
 	public static final int XmNselectionPolicy = malloc ("selectionPolicy");
 	public static final int XmNsensitive = malloc ("sensitive");
 	public static final int XmNseparatorType = malloc ("separatorType");
@@ -792,6 +794,7 @@ public class OS {
 //	public static final int XmRESIZE_GROW = 0x1;
 //	public static final int XmRESIZE_IF_POSSIBLE = 0x2;
 	public static final int XmRESIZE_NONE = 0x0;
+	public static final int XmREVERSED_GROUND_COLORS = -2;
 	public static final int XmSHADOW_ETCHED_IN = 0x5;
 //	public static final int XmSHADOW_ETCHED_IN_DASH = 0x7;
 	public static final int XmSHADOW_ETCHED_OUT = 0x6;

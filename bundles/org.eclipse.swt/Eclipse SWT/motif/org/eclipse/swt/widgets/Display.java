@@ -1139,18 +1139,34 @@ void initializeList () {
 	OS.XtManageChild (widgetHandle);
 	OS.XtSetMappedWhenManaged (shellHandle, false);
 	OS.XtRealizeWidget (shellHandle);
-	int [] argList = {OS.XmNforeground, 0, OS.XmNbackground, 0, OS.XmNfontList, 0, OS.XmNhighlightColor, 0};
+	int [] argList = {OS.XmNforeground, 0, OS.XmNbackground, 0, OS.XmNfontList, 0, OS.XmNselectColor, 0, OS.XmNhighlightColor, 0};
 	OS.XtGetValues (widgetHandle, argList, argList.length / 2);
 	listForeground = argList [1];
 	listBackground = argList [3];
-	listSelect = argList [7];
+	
 	/**
 	 * Feature in Motif. Querying the font list from the widget and
 	 * then destroying the shell (and the widget) could cause the
 	 * font list to be freed as well. The fix is to make a copy of
 	 * the font list, then to free it when the display is disposed.
 	 */ 
-	listFont = OS.XmFontListCopy (argList [5]); 
+	listFont = OS.XmFontListCopy (argList [5]);
+	
+	/**
+	* Feature in Motif.  If the value of resource XmNselectColor is
+	* XmDEFAULT_SELECT_COLOR then querying for this resource gives
+	* the value of the selection color to use, which is between the
+	* background and bottom shadow colors.
+	*/
+	if (argList [7] == OS.XmREVERSED_GROUND_COLORS) {
+		listSelect = listForeground;
+	} else {
+		if (argList [7] == OS.XmHIGHLIGHT_COLOR) {
+			listSelect = argList [9];
+		} else {
+			listSelect = argList[7];	// the middle color to use
+		}
+	}
 	OS.XtDestroyWidget (shellHandle);
 }
 void initializeParseTable () {
