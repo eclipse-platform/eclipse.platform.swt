@@ -317,22 +317,6 @@ public Browser(Composite parent, int style) {
 	GTK.gtk_widget_show(gtkHandle);
 }
 
-static Browser findBrowser(Control control, int gtkHandle) {
-	if (control instanceof Browser) {
-		Browser browser = (Browser)control;
-		if (browser.gtkHandle == gtkHandle) return browser;
-	}
-	if (control instanceof Composite) {
-		Composite composite = (Composite)control;
-		Control[] children = composite.getChildren();
-		for (int i = 0; i < children.length; i++) {
-			Browser browser = findBrowser(children[i], gtkHandle);
-			if (browser != null) return browser;
-		}
-	}
-	return null;
-}
-
 /**	 
  * Adds the listener to receive events.
  * <p>
@@ -704,6 +688,33 @@ void disposeCOMInterfaces() {
 		tooltipListener.dispose();
 		tooltipListener = null;
 	}
+}
+
+static Browser findBrowser(int handle) {
+	Display display = Display.getCurrent();
+	Shell[] shells = display.getShells();
+	Browser browser = null;
+	for (int i = 0; i < shells.length; i++) {
+		browser = Browser.findBrowser(shells[i], handle);
+		if (browser != null) break;
+	}
+	return browser; 
+}
+
+static Browser findBrowser(Control control, int gtkHandle) {
+	if (control instanceof Browser) {
+		Browser browser = (Browser)control;
+		if (browser.gtkHandle == gtkHandle) return browser;
+	}
+	if (control instanceof Composite) {
+		Composite composite = (Composite)control;
+		Control[] children = composite.getChildren();
+		for (int i = 0; i < children.length; i++) {
+			Browser browser = findBrowser(children[i], gtkHandle);
+			if (browser != null) return browser;
+		}
+	}
+	return null;
 }
 
 /**
