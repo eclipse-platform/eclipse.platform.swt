@@ -616,7 +616,7 @@ void updateChevron() {
 		if (width < preferredWidth) {
 			int height = Math.min (control.getSize ().y, itemBounds.height);
 			if (chevron == null) {
-				chevron = new ToolBar (parent, SWT.FLAT);
+				chevron = new ToolBar (parent, SWT.FLAT | SWT.NO_FOCUS);
 				ToolItem toolItem = new ToolItem (chevron, SWT.PUSH);
 				if (height > 6) {
 					toolItem.setImage (getArrowImage ());
