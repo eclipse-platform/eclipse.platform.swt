@@ -148,26 +148,38 @@ public boolean getVisible () {
 }
 
 int messageProc (int hwnd, int msg, int wParam, int lParam) {
+	/*
+	* Feature in Windows.  When the user clicks on the tray
+	* icon, another application may be the foreground window.
+	* This means that the event loop is not running and can
+	* cause problems.  For example, if a menu is shown, when
+	* the user clicks outside of the menu to cancel it, the
+	* menu is not hidden until an event is processed.  If
+	* another application is the foreground window, then the
+	* menu is not hidden.  The fix is to force the tray icon
+	* message window to the foreground when sending an event.
+	*/
 	switch (lParam) {
 		case OS.WM_LBUTTONDOWN:
-			postEvent (SWT.Selection);
+			if (hooks (SWT.Selection)) {
+				OS.SetForegroundWindow (hwnd);
+				postEvent (SWT.Selection);
+			}
 			break;
 		case OS.WM_LBUTTONDBLCLK:
 		case OS.WM_RBUTTONDBLCLK:
-			postEvent (SWT.DefaultSelection);
+			if (hooks (SWT.DefaultSelection)) {
+				OS.SetForegroundWindow (hwnd);
+				postEvent (SWT.DefaultSelection);
+			}
 			break;
 		case OS.WM_RBUTTONUP: {
-			/*
-			* Feature in Windows.  When the user clicks outside of the
-			* menu to cancel it, the menu is not hidden until an event
-			* is processed.  If another application is the foreground
-			* window, then the menu is not hidden.  The fix is to force
-			* the tray icon message window to the foreground.
-			*/
-			OS.SetForegroundWindow (hwnd);
-			sendEvent (SWT.MenuDetect);
-			// widget could be disposed at this point
-			if (isDisposed()) return 0;
+			if (hooks (SWT.MenuDetect)) {
+				OS.SetForegroundWindow (hwnd);
+				sendEvent (SWT.MenuDetect);
+				// widget could be disposed at this point
+				if (isDisposed()) return 0;
+			}
 			break;
 		}
 	}
