@@ -385,7 +385,7 @@ public void drawImage(Image image, int x, int y) {
  *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the given coordinates are outside the bounds of their respective images</li>
  * </ul>
- * @exception SWTError <uo>
+ * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES - if no handles are available to perform the operation</li>
  * </ul>
  * @exception SWTException <ul>
@@ -1552,7 +1552,7 @@ public Color getForeground() {
  * Returns the receiver's line style, which will be one
  * of the constants <code>SWT.LINE_SOLID</code>, <code>SWT.LINE_DASH</code>,
  * <code>SWT.LINE_DOT</code>, <code>SWT.LINE_DASHDOT</code> or
- * <code>SWT.LINE_DASHDOTDOT<code>.
+ * <code>SWT.LINE_DASHDOTDOT</code>.
  *
  * @return the style used for drawing lines
  *
@@ -1841,7 +1841,7 @@ public void setForeground (Color color) {
  * Sets the receiver's line style to the argument, which must be one
  * of the constants <code>SWT.LINE_SOLID</code>, <code>SWT.LINE_DASH</code>,
  * <code>SWT.LINE_DOT</code>, <code>SWT.LINE_DASHDOT</code> or
- * <code>SWT.LINE_DASHDOTDOT<code>.
+ * <code>SWT.LINE_DASHDOTDOT</code>.
  *
  * @param lineStyle the style to be used for drawing lines
  *
