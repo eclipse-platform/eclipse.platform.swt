@@ -28,7 +28,7 @@ public COMObject(int[] argCounts) {
 	int[] callbackAddresses = new int[argCounts.length];
 	for (int i = 0, length = argCounts.length; i < length; i++){
 		if ((Callbacks[i][argCounts[i]]) == null) {
-			Callbacks[i][argCounts[i]] = new Callback(this.getClass(), "callback"+i, argCounts[i] + 1, true); //$NON-NLS-1$
+			Callbacks[i][argCounts[i]] = new Callback(this.getClass(), "callback"+i, argCounts[i] + 1, true, COM.E_FAIL); //$NON-NLS-1$
 		}
 		callbackAddresses[i] = Callbacks[i][argCounts[i]].getAddress();
 	}
