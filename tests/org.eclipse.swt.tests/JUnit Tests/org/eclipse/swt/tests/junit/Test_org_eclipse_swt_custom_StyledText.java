@@ -539,7 +539,7 @@ public void test_appendLjava_lang_String() {
 }
 
 public void test_computeSizeIIZ() {
-	warnUnimpl("Test test_computeSizeIIZ not written");
+	// inherited test is sufficient
 }
 
 public void test_copy() {
@@ -1368,7 +1368,152 @@ public void test_insertLjava_lang_String(){
 }
 
 public void test_invokeActionI() {
-	warnUnimpl("Test test_invokeActionI not written");
+	// invoking actions on an empty text should not crash
+	text.invokeAction(ST.LINE_DOWN);
+	text.invokeAction(ST.LINE_UP);
+	text.invokeAction(ST.LINE_END);
+	text.invokeAction(ST.LINE_START);
+	text.invokeAction(ST.COLUMN_NEXT);
+	text.invokeAction(ST.PAGE_DOWN);
+	text.invokeAction(ST.PAGE_UP);
+	text.invokeAction(ST.WORD_NEXT);
+	text.invokeAction(ST.WORD_PREVIOUS);	
+	text.invokeAction(ST.TEXT_END);	
+	text.invokeAction(ST.TEXT_START);	
+	text.invokeAction(ST.WINDOW_END);	
+	text.invokeAction(ST.WINDOW_START);	
+	text.invokeAction(ST.SELECT_LINE_DOWN);	
+	text.invokeAction(ST.SELECT_LINE_UP);
+	text.invokeAction(ST.SELECT_LINE_START);
+	text.invokeAction(ST.SELECT_LINE_END);
+	text.invokeAction(ST.SELECT_COLUMN_PREVIOUS);
+	text.invokeAction(ST.SELECT_COLUMN_NEXT);
+	text.invokeAction(ST.SELECT_PAGE_UP);
+	text.invokeAction(ST.SELECT_PAGE_DOWN);
+	text.invokeAction(ST.SELECT_WORD_PREVIOUS);
+	text.invokeAction(ST.SELECT_WORD_NEXT);
+	text.invokeAction(ST.SELECT_TEXT_END);
+	text.invokeAction(ST.SELECT_TEXT_START);
+	text.invokeAction(ST.SELECT_WINDOW_START);
+	text.invokeAction(ST.SELECT_WINDOW_END);
+	text.invokeAction(ST.CUT);
+	text.invokeAction(ST.COPY);
+	text.invokeAction(ST.PASTE);
+	text.invokeAction(ST.DELETE_PREVIOUS);
+	text.invokeAction(ST.DELETE_NEXT);
+	text.invokeAction(ST.TOGGLE_OVERWRITE);
+	
+	text.setText("Line1\r\nLine2");		
+	text.invokeAction(ST.LINE_DOWN);
+	assertEquals(7, text.getCaretOffset());
+	
+	text.invokeAction(ST.LINE_UP);
+	assertEquals(0, text.getCaretOffset());
+	
+	text.invokeAction(ST.LINE_END);
+	assertEquals(5, text.getCaretOffset());
+	
+	text.invokeAction(ST.LINE_START);
+	assertEquals(0, text.getCaretOffset());
+
+	text.invokeAction(ST.COLUMN_NEXT);
+	assertEquals(1, text.getCaretOffset());
+
+	text.invokeAction(ST.PAGE_DOWN);
+	assertEquals(8, text.getCaretOffset());
+
+	text.invokeAction(ST.PAGE_UP);
+	assertEquals(1, text.getCaretOffset());
+
+	text.invokeAction(ST.TEXT_START);	
+	text.invokeAction(ST.WORD_NEXT);
+	text.invokeAction(ST.WORD_NEXT);	
+	assertEquals(7, text.getCaretOffset());
+
+	text.invokeAction(ST.WORD_PREVIOUS);	
+	assertEquals(5, text.getCaretOffset());
+
+	text.invokeAction(ST.TEXT_END);	
+	assertEquals(text.getCharCount(), text.getCaretOffset());
+
+	text.invokeAction(ST.TEXT_START);	
+	assertEquals(0, text.getCaretOffset());
+
+	text.invokeAction(ST.WINDOW_END);	
+	assertEquals(5, text.getCaretOffset());
+
+	text.invokeAction(ST.WINDOW_START);	
+	assertEquals(0, text.getCaretOffset());
+	
+	text.invokeAction(ST.SELECT_LINE_DOWN);	
+	assertEquals("Line1\r\n", text.getSelectionText());
+
+	text.invokeAction(ST.LINE_END);
+	text.invokeAction(ST.SELECT_LINE_UP);
+	assertEquals("\r\nLine2", text.getSelectionText());
+
+	text.invokeAction(ST.SELECT_LINE_START);
+	assertEquals("Line1\r\nLine2", text.getSelectionText());
+
+	text.invokeAction(ST.LINE_START);
+	text.invokeAction(ST.SELECT_LINE_END);
+	assertEquals("Line1", text.getSelectionText());
+
+	text.invokeAction(ST.LINE_END);
+	text.invokeAction(ST.SELECT_COLUMN_PREVIOUS);
+	assertEquals("1", text.getSelectionText());
+
+	text.invokeAction(ST.SELECT_COLUMN_NEXT);
+	assertEquals("", text.getSelectionText());
+
+	text.invokeAction(ST.SELECT_PAGE_UP);
+	assertEquals("", text.getSelectionText());
+
+	text.invokeAction(ST.SELECT_PAGE_DOWN);
+	assertEquals("\r\nLine2", text.getSelectionText());
+
+	text.invokeAction(ST.LINE_END);
+	text.invokeAction(ST.SELECT_WORD_PREVIOUS);
+	assertEquals("Line2", text.getSelectionText());
+
+	text.invokeAction(ST.LINE_START);
+	text.invokeAction(ST.SELECT_WORD_NEXT);
+	assertEquals("Line2", text.getSelectionText());
+
+	text.invokeAction(ST.LINE_START);
+	text.invokeAction(ST.SELECT_TEXT_END);
+	assertEquals("Line2", text.getSelectionText());
+
+	text.invokeAction(ST.SELECT_TEXT_START);
+	assertEquals("Line1\r\n", text.getSelectionText());
+
+	text.invokeAction(ST.LINE_START);
+	text.invokeAction(ST.SELECT_WINDOW_START);
+	assertEquals("", text.getSelectionText());
+
+	text.invokeAction(ST.SELECT_WINDOW_END);
+	assertEquals("Line1", text.getSelectionText());
+
+	text.invokeAction(ST.SELECT_LINE_END);
+	text.invokeAction(ST.CUT);
+	assertEquals("\r\nLine2", text.getText());
+
+	text.invokeAction(ST.SELECT_LINE_DOWN);
+	text.invokeAction(ST.COPY);
+	assertEquals("\r\nLine2", text.getText());
+
+	text.invokeAction(ST.LINE_END);
+	text.invokeAction(ST.PASTE);
+	assertEquals("\r\nLine2\r\n", text.getText());
+
+	text.invokeAction(ST.DELETE_PREVIOUS);
+	assertEquals("\r\nLine2", text.getText());
+
+	text.invokeAction(ST.TEXT_START);
+	text.invokeAction(ST.DELETE_NEXT);
+	assertEquals("Line2", text.getText());
+
+	text.invokeAction(ST.TOGGLE_OVERWRITE);
 }
 
 public void test_paste(){
@@ -1462,15 +1607,79 @@ public void test_printLorg_eclipse_swt_printing_Printer() {
 }
 
 public void test_redraw() {
-	warnUnimpl("Test test_redraw not written");
+	// inherited test is sufficient
 }
 
 public void test_redrawIIIIZ() {
-	warnUnimpl("Test test_redrawIIIIZ not written");
+	// inherited test is sufficient
 }
 
 public void test_redrawRangeIIZ() {
-	warnUnimpl("Test test_redrawRangeIIZ not written");
+	boolean exceptionThrown = false;
+
+	text.redrawRange(0, 0, true);
+	text.redrawRange(0, 0, false);
+	
+	try {
+		text.redrawRange(0, 1, true);
+	}
+	catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	}
+	assertTrue(exceptionThrown);
+
+	exceptionThrown = false;
+	try {
+		text.redrawRange(0, 1, false);
+	}
+	catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	}
+	assertTrue(exceptionThrown);
+		
+	exceptionThrown = false;
+	try {
+		text.redrawRange(-1, 2, true);
+	}
+	catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	}
+	assertTrue(exceptionThrown);
+
+	exceptionThrown = false;
+	try {
+		text.redrawRange(-1, 2, false);
+	}
+	catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	}
+	assertTrue(exceptionThrown);
+
+	text.setText("0123456789");
+	text.redrawRange(0, 0, true);
+	text.redrawRange(0, 0, false);	
+	text.redrawRange(0, 1, true);
+	text.redrawRange(0, 1, false);	
+	text.redrawRange(8, 2, true);
+	text.redrawRange(8, 2, false);	
+
+	exceptionThrown = false;
+	try {
+		text.redrawRange(10, 1, true);
+	}
+	catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	}
+	assertTrue(exceptionThrown);
+	
+	exceptionThrown = false;
+	try {
+		text.redrawRange(10, 1, false);
+	}
+	catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	}
+	assertTrue(exceptionThrown);
 }
 
 public void test_removeBidiSegmentListenerLorg_eclipse_swt_custom_BidiSegmentListener() {
