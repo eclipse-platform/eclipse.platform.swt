@@ -108,7 +108,9 @@ public DropTarget(Control control, int style) {
 		OS.XmNdropSiteOperations, opToOsOp(style),
 		OS.XmNdropSiteActivity,   OS.XmDROP_SITE_ACTIVE,
 		OS.XmNdropProc,           dropProc.getAddress(),
-		OS.XmNdragProc,           dragProc.getAddress()
+		OS.XmNdragProc,           dragProc.getAddress(),
+		OS.XmNanimationStyle,     OS.XmDRAG_UNDER_NONE,
+		OS.XmNdropSiteType,       OS.XmDROP_SITE_COMPOSITE,
 	};
 
 	// the OS may have registered this widget as a drop site on creation.

@@ -526,6 +526,7 @@ public class OS {
 //	public static final int XmDOUBLE_DASHED_LINE = 0x4;
 //	public static final int XmDOUBLE_LINE = 0x2;
 	public static final int XmDRAG_DYNAMIC = 5;
+	public static final int XmDRAG_UNDER_NONE = 0;
 	public static final byte XmDROP_COPY = (1 << 1);
 	public static final int XmDROP_DOWN_COMBO_BOX = 0x1;
 	public static final int XmDROP_DOWN_LIST = 0x2;	
@@ -535,6 +536,7 @@ public class OS {
 	public static final int XmDROP_SITE_ACTIVE = 0;
 	public static final int XmDROP_SITE_INVALID = 2;
 	public static final int XmDROP_SITE_VALID = 3;
+	public static final int XmDROP_SITE_COMPOSITE = 1;
 	public static final byte XmDROP = 0;
 	public static final int XmEXTENDED_SELECT = 0x2;
 	public static final int XmFONT_IS_FONT = 0x0;
@@ -559,6 +561,7 @@ public class OS {
 //	public static final int XmNUMERIC = 0x3;
 
 	/* byte */
+	public static final int XmNanimationStyle = malloc ("animationStyle");
 	public static final int XmNalignment = malloc ("alignment");
 	public static final int XmNarrowDirection = malloc ("arrowDirection");
 	public static final int XmNblendModel = malloc ("blendModel");
