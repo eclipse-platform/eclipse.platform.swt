@@ -87,6 +87,15 @@ The StyledText widget now provides bidirectional language support for Hebrew and
 Currently, this support is available only on win32, and has several known problems. It should be
 considered to be a preliminary implementation only.
 
+<h4>
+99.1.8 Cursor constructor arguments</h4>
+
+In the constructor <code>Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int hotspotY)</code>,
+when both a source and mask argument are specified (i.e. mask is not null), the meaning of the two arguments is
+reversed. That is, the "mask" argument should be the source image and the "source" argument should be the
+mask image. This problem was discovered too late in the development cycle to be fixed for R1.0. The intent is to
+fix this in a future release, potentially by introducing a new more general constructor.
+
 <p><a href="hglegal.htm"><img SRC="ngibmcpy.gif" BORDER=0 height=12 width=195></a>
 </body>
 </html>
