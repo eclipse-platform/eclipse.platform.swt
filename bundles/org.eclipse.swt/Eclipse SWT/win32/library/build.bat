@@ -17,7 +17,7 @@ rem ********
 call k:\dev\products\msvc60\vc98\bin\vcvars32.bat
 
 rem ****** 
-rem MS-SDK - TEMPORARY UNTIL TRENT INSTALLS NEW SDK
+rem MS-SDK
 rem ******
 set Mssdk=j:\teamswt\swt-builddir\mssdk
 call %mssdk%\setenv.bat

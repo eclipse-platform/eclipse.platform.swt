@@ -49,6 +49,16 @@ public static byte[] getRenderInfo(GC gc, String text, int[] order, byte[] class
 	return null;
 }
 /*
+ *  Not implemented. Returns null.
+ *
+ *	gc, text & flags are input parameters
+ *  classBuffer is input/output parameter
+ *	order & dx are output parameters
+ */
+public static byte[] getRenderInfo(GC gc, String text, int[] order, byte[] classBuffer, int[] dx, int flags, int[] offsets) {
+	return null;
+}
+/*
  * Not implemented. Returns 0.
  */
 public static int getKeyboardLanguage() {
