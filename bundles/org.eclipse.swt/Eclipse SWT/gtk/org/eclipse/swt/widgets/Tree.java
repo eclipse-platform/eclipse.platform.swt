@@ -635,32 +635,35 @@ int processEvent (int eventNumber, int int0, int int1, int int2) {
 		OS.memmove (gdkEvent, int0, GdkEvent.sizeof);
 		int type = gdkEvent.type;
 		switch (type) {
+			case OS.GDK_BUTTON_PRESS:
 			case OS.GDK_2BUTTON_PRESS: {
+				OS.GTK_CLIST_RESYNC_SELECTION (handle);
+				
 				/*
 				* Feature in GTK.  Double selection can only be implemented
 				* in a mouse down handler for a tree unlike the list, the event
 				* that caused the select signal is not included when the select
 				* signal is issued.
 				*/
-				doubleSelected = true;
-				double[] px = new double [1], py = new double [1];
-				OS.gdk_event_get_coords (int0, px, py);
-				int x = (int)(px[0]), y = (int)(py[0]);	
-				if (!OS.gtk_ctree_is_hot_spot (handle, x, y)) {
-					int [] row = new int [1], column = new int [1];
-					int code = OS.gtk_clist_get_selection_info (handle, x, y, row, column);
-					if (code != 0) {
-						int node = OS.gtk_ctree_node_nth (handle, row [0]);
-						int index = OS.gtk_ctree_node_get_row_data (handle, node) - 1;
-						Event event = new Event ();
-						event.item = items [index];
-						postEvent (SWT.DefaultSelection, event);
+				if (type == OS.GDK_2BUTTON_PRESS) {
+					doubleSelected = true;
+					double[] px = new double [1], py = new double [1];
+					OS.gdk_event_get_coords (int0, px, py);
+					int x = (int)(px[0]), y = (int)(py[0]);	
+					if (!OS.gtk_ctree_is_hot_spot (handle, x, y)) {
+						int [] row = new int [1], column = new int [1];
+						int code = OS.gtk_clist_get_selection_info (handle, x, y, row, column);
+						if (code != 0) {
+							int node = OS.gtk_ctree_node_nth (handle, row [0]);
+							int index = OS.gtk_ctree_node_get_row_data (handle, node) - 1;
+							Event event = new Event ();
+							event.item = items [index];
+							postEvent (SWT.DefaultSelection, event);
+						}
 					}
 				}
-			}  //FALL THROUGH
-			case OS.GDK_BUTTON_PRESS:
-				OS.GTK_CLIST_RESYNC_SELECTION (handle);
 				break;
+			}
 			case OS.GDK_BUTTON_RELEASE: {
 				/*
 				* Feature in GTK.  When an item is reselected in a
