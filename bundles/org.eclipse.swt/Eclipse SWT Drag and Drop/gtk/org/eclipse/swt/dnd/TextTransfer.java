@@ -70,7 +70,9 @@ public Object nativeToJava(TransferData transferData){
 	if (buffer == null) return null;
 	// convert byte array to a string
 	char [] unicode = Converter.mbcsToWcs (null, buffer);
-	return new String (unicode);
+	String string = new String (unicode);
+	int end = string.indexOf('\0');
+	return (end == -1) ? string : string.substring(0, end);
 }
 protected String[] getTypeNames(){
 	return new String[]{TYPENAME1, TYPENAME2, TYPENAME3, TYPENAME4};
