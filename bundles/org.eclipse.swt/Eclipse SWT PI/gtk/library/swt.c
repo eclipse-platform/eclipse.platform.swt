@@ -2746,6 +2746,16 @@ JNIEXPORT jchar JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1entry_1get_1in
 }
 #endif
 
+#ifndef NO_gtk_1entry_1get_1layout
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1entry_1get_1layout
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1entry_1get_1layout\n")
+
+	return (jint) gtk_entry_get_layout((GtkEntry *)arg0);
+}
+#endif
+
 #ifndef NO_gtk_1entry_1get_1max_1length
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1entry_1get_1max_1length
 	(JNIEnv *env, jclass that, jint arg0)
@@ -5517,19 +5527,29 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1add_1ev
 }
 #endif
 
-#ifndef NO_gtk_1widget_1create_1pango_1layout
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1create_1pango_1layout
+#ifndef NO_gtk_1widget_1create_1pango_1layout__I_3B
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1create_1pango_1layout__I_3B
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
 {
 	jbyte *lparg1=NULL;
 	jint rc;
 
-	DEBUG_CALL("gtk_1widget_1create_1pango_1layout\n")
+	DEBUG_CALL("gtk_1widget_1create_1pango_1layout__I_3B\n")
 
 	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
 	rc = (jint)gtk_widget_create_pango_layout((GtkWidget *)arg0, (const gchar *)lparg1);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1widget_1create_1pango_1layout__II
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1create_1pango_1layout__II
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1widget_1create_1pango_1layout__II\n")
+
+	return (jint)gtk_widget_create_pango_layout((GtkWidget *)arg0, (const gchar *)arg1);
 }
 #endif
 
@@ -6788,6 +6808,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1layout_1set_1
 	DEBUG_CALL("pango_1layout_1set_1font_1description\n")
 
 	pango_layout_set_font_description((PangoLayout *)arg0, (PangoFontDescription *)arg1);
+}
+#endif
+
+#ifndef NO_pango_1layout_1set_1width
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1layout_1set_1width
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("pango_1layout_1set_1width\n")
+
+	pango_layout_set_width ((PangoLayout *)arg0, arg1);
 }
 #endif
 
