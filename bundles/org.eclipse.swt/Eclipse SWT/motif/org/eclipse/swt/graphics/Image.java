@@ -836,13 +836,12 @@ public ImageData getImageData() {
 		if (xMaskPtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		XImage xMask = new XImage();
 		OS.memmove(xMask, xMaskPtr, XImage.sizeof);
-		data.maskData = new byte[xMask.bytes_per_line * xMask.height];
+		byte[] maskData = data.maskData = new byte[xMask.bytes_per_line * xMask.height];
 		data.maskPad = xMask.bitmap_pad / 8;
-		OS.memmove(data.maskData, xMask.data, data.maskData.length);
+		OS.memmove(maskData, xMask.data, maskData.length);
 		OS.XDestroyImage(xMaskPtr);
 		/* Bit swap the mask data if necessary */
 		if (xMask.bitmap_bit_order == OS.LSBFirst) {
-			byte[] maskData = data.maskData;
 			for (int i = 0; i < maskData.length; i++) {
 				byte b = maskData[i];
 				maskData[i] = (byte)(((b & 0x01) << 7) | ((b & 0x02) << 5) | 

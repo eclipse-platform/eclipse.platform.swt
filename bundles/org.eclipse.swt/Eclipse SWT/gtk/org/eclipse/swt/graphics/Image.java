@@ -635,12 +635,10 @@ public ImageData getImageData() {
 		if (gdkImagePtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		GdkImage gdkImage = new GdkImage();
 		OS.memmove(gdkImage, gdkImagePtr);
-		byte[] maskData = new byte[gdkImage.bpl * height];
+		byte[] maskData = data.maskData = new byte[gdkImage.bpl * gdkImage.height];
+		data.maskPad = 4;
 		OS.memmove(maskData, gdkImage.mem, maskData.length);
 		OS.g_object_unref(gdkImagePtr);
-
-		data.maskPad = 4;
-		data.maskData = maskData;
 		/* Bit swap the mask data if necessary */
 		if (gdkImage.byte_order == OS.GDK_LSB_FIRST) {
 			for (int i = 0; i < maskData.length; i++) {
