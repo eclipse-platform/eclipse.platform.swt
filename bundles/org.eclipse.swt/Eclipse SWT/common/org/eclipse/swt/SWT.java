@@ -200,6 +200,8 @@ public class SWT {
 	 */
 	public static final int MouseHover = 32;
 
+	public static final int ChildMouseDown = 33;
+	
 	/* Event Details */
 	
 	/**

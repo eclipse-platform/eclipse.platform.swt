@@ -1322,4 +1322,18 @@ private SIZE xFormPixelsToHimetric(SIZE aSize) {
 	size.cy = cy;
 	return size;
 }
+void onClientMouseDown(int message, int lParam, int wParam) {
+	Event event = new Event();
+	event.item = this;
+	event.time = OS.GetMessageTime ();
+	event.x = (short) (lParam & 0xFFFF);
+	event.y = (short) (lParam >> 16);
+	if (message == OS.WM_LBUTTONDOWN) event.button = 1;
+	if (message == OS.WM_MBUTTONDOWN) event.button = 2;
+	if (message == OS.WM_RBUTTONDOWN) event.button = 3;
+	if (OS.GetKeyState (OS.VK_MENU) < 0) event.stateMask |= SWT.ALT;
+	if ((wParam & OS.MK_SHIFT) != 0) event.stateMask |= SWT.SHIFT;
+	if ((wParam & OS.MK_CONTROL) != 0) event.stateMask |= SWT.CONTROL;
+	notifyParentListeners(SWT.ChildMouseDown, event);
+}
 }

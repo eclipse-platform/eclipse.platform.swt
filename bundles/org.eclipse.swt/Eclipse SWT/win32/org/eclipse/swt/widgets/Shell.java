@@ -90,6 +90,10 @@ public class Shell extends Decorations {
 	int [] brushes;
 	boolean showWithParent;
 	int toolTipHandle, lpstrTip;
+	
+	// used for parent notify
+	Control[] lastEventControls;
+	int[] eventTypes;
 
 /**
  * Constructs a new instance of this class. This is equivalent
@@ -941,4 +945,43 @@ LRESULT WM_SHOWWINDOW (int wParam, int lParam) {
 	return result;
 }
 
+Control getLastControl(int eventType){
+	if (eventTypes == null) return null;
+	for (int i=0; i<eventTypes.length; i++) {
+		if (eventTypes [i] == eventType) {
+			if (lastEventControls[i].isDisposed()) {
+				lastEventControls[i] = null;
+			}
+			return lastEventControls[i];
+		}
+	}
+	return null;
+}
+void setLastControl(int eventType, Control control) {
+	if (eventTypes == null) eventTypes = new int [4];
+	if (lastEventControls == null) lastEventControls = new Control [4];
+	// change the value if eventType is already registered
+	for (int i=0; i<eventTypes.length; i++) {
+		if (eventTypes [i] == eventType) {
+			lastEventControls[i] = control;
+			return;
+		}
+	}
+	// look for an empty slot and add a new value if none was registered
+	for (int i=0; i<eventTypes.length; i++) {
+		if (eventTypes [i] == 0) {
+			eventTypes [i] = eventType;
+			lastEventControls[i] = control;
+			return;
+		}
+	}
+	// need to expand the array
+	int size = eventTypes.length;
+	int [] newTypes = new int [size + 4];
+	Control [] newControls = new Control [size + 4];
+	System.arraycopy (eventTypes, 0, newTypes, 0, size);
+	System.arraycopy (lastEventControls, 0, newControls, 0, size);
+	eventTypes = newTypes;  lastEventControls = newControls;
+	eventTypes [size] = eventType;  lastEventControls [size] = control;
+}
 }

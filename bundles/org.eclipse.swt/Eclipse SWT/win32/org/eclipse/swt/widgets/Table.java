@@ -1944,6 +1944,17 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 }
 
 LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
+	Event event = new Event();
+	event.item = this;
+	event.time = OS.GetMessageTime ();
+	event.x = (short) (lParam & 0xFFFF);
+	event.y = (short) (lParam >> 16);
+	event.button = 1;
+	if (OS.GetKeyState (OS.VK_MENU) < 0) event.stateMask |= SWT.ALT;
+	if ((wParam & OS.MK_SHIFT) != 0) event.stateMask |= SWT.SHIFT;
+	if ((wParam & OS.MK_CONTROL) != 0) event.stateMask |= SWT.CONTROL;
+	notifyParentListeners(SWT.ChildMouseDown, event);
+	
 	/*
 	* Feature in Windows.  For some reason, capturing
 	* the mouse after processing the mouse event for the
@@ -2099,6 +2110,18 @@ LRESULT WM_RBUTTONDBLCLK (int wParam, int lParam) {
 }
 
 LRESULT WM_RBUTTONDOWN (int wParam, int lParam) {
+	
+	Event event = new Event();
+	event.item = this;
+	event.time = OS.GetMessageTime ();
+	event.x = (short) (lParam & 0xFFFF);
+	event.y = (short) (lParam >> 16);
+	event.button = 3;
+	if (OS.GetKeyState (OS.VK_MENU) < 0) event.stateMask |= SWT.ALT;
+	if ((wParam & OS.MK_SHIFT) != 0) event.stateMask |= SWT.SHIFT;
+	if ((wParam & OS.MK_CONTROL) != 0) event.stateMask |= SWT.CONTROL;
+	notifyParentListeners(SWT.ChildMouseDown, event);
+	
 	/*
 	* Feature in Windows.  For some reason, capturing
 	* the mouse after processing the mouse event for the

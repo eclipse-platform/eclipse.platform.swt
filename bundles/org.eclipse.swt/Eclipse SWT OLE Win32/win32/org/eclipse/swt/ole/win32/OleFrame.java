@@ -185,6 +185,25 @@ static int getMsgProc(int code, int wParam, int lParam) {
 	MSG msg = new MSG();
 	OS.MoveMemory(msg, lParam, MSG.sizeof);
 	int message = msg.message;
+	if (message == OS.WM_LBUTTONDOWN 
+		|| message == OS.WM_MBUTTONDOWN 
+		|| message == OS.WM_RBUTTONDOWN) {
+		if (display != null) {
+			Widget widget = null;
+			int hwnd = msg.hwnd;
+			while (hwnd != 0) {
+				widget = display.findWidget (hwnd);
+				if (widget != null) break;
+				hwnd = OS.GetParent (hwnd);
+			}
+			if (widget != null && widget instanceof OleClientSite) {
+				OleClientSite site = (OleClientSite)widget;
+				if (site.handle == hwnd) {
+					site.onClientMouseDown(message, msg.lParam, msg.wParam);
+				}
+			}
+		}
+	}
 	if (OS.WM_KEYFIRST <= message && message <= OS.WM_KEYLAST) {		
 		if (display != null) {
 			Widget widget = null;

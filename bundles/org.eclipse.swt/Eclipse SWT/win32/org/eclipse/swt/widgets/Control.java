@@ -2983,6 +2983,18 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 }
 
 LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
+	
+	Event event = new Event();
+	event.item = this;
+	event.time = OS.GetMessageTime ();
+	event.x = (short) (lParam & 0xFFFF);
+	event.y = (short) (lParam >> 16);
+	event.button = 1;
+	if (OS.GetKeyState (OS.VK_MENU) < 0) event.stateMask |= SWT.ALT;
+	if ((wParam & OS.MK_SHIFT) != 0) event.stateMask |= SWT.SHIFT;
+	if ((wParam & OS.MK_CONTROL) != 0) event.stateMask |= SWT.CONTROL;
+	notifyParentListeners(SWT.ChildMouseDown, event);
+	
 	sendMouseEvent (SWT.MouseDown, 1, OS.WM_LBUTTONDOWN, wParam, lParam);
 	int result = callWindowProc (OS.WM_LBUTTONDOWN, wParam, lParam);
 	if (OS.GetCapture () != handle) OS.SetCapture (handle);
@@ -3028,6 +3040,17 @@ LRESULT WM_MBUTTONDBLCLK (int wParam, int lParam) {
 }
 
 LRESULT WM_MBUTTONDOWN (int wParam, int lParam) {
+	Event event = new Event();
+	event.item = this;
+	event.time = OS.GetMessageTime ();
+	event.x = (short) (lParam & 0xFFFF);
+	event.y = (short) (lParam >> 16);
+	event.button = 2;
+	if (OS.GetKeyState (OS.VK_MENU) < 0) event.stateMask |= SWT.ALT;
+	if ((wParam & OS.MK_SHIFT) != 0) event.stateMask |= SWT.SHIFT;
+	if ((wParam & OS.MK_CONTROL) != 0) event.stateMask |= SWT.CONTROL;
+	notifyParentListeners(SWT.ChildMouseDown, event);
+	
 	sendMouseEvent (SWT.MouseDown, 2, OS.WM_MBUTTONDOWN, wParam, lParam);
 	int result = callWindowProc (OS.WM_MBUTTONDOWN, wParam, lParam);
 	if (OS.GetCapture () != handle) OS.SetCapture(handle);
@@ -3336,6 +3359,17 @@ LRESULT WM_RBUTTONDBLCLK (int wParam, int lParam) {
 }
 
 LRESULT WM_RBUTTONDOWN (int wParam, int lParam) {
+	Event event = new Event();
+	event.item = this;
+	event.time = OS.GetMessageTime ();
+	event.x = (short) (lParam & 0xFFFF);
+	event.y = (short) (lParam >> 16);
+	event.button = 3;
+	if (OS.GetKeyState (OS.VK_MENU) < 0) event.stateMask |= SWT.ALT;
+	if ((wParam & OS.MK_SHIFT) != 0) event.stateMask |= SWT.SHIFT;
+	if ((wParam & OS.MK_CONTROL) != 0) event.stateMask |= SWT.CONTROL;
+	notifyParentListeners(SWT.ChildMouseDown, event);
+	
 	sendMouseEvent (SWT.MouseDown, 3, OS.WM_RBUTTONDOWN, wParam, lParam);
 	int result = callWindowProc (OS.WM_RBUTTONDOWN, wParam, lParam);
 	if (OS.GetCapture () != handle) OS.SetCapture (handle);
@@ -3578,5 +3612,27 @@ LRESULT wmScrollChild (int wParam, int lParam) {
 	return null;
 }
 
+protected void notifyParentListeners (int eventType, Event event) {
+	checkWidget();
+	int index = 0;
+	Control [] path = getPath ();
+	Shell shell = getShell();
+	Control lastControl = shell.getLastControl(eventType);
+	shell.setLastControl(eventType, this);
+	if (lastControl != null) {
+		Control [] oldPath = lastControl.getPath ();
+		int length = Math.min (path.length, oldPath.length);
+		while (index < length) {
+			if (path [index] != oldPath [index]) break;
+			index++;
+		}
+	}
+
+	for (int i=path.length-1; i>=index; --i) {
+		if (!path [i].isDisposed () && path[i] != this) {
+			path [i].notifyListeners(eventType, event);
+		}
+	}
 }
 
+}
