@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.carbon.*;
 
 public  class MessageBox extends Dialog {
-	String message;
+	String message = "";
 	
 
 public MessageBox (Shell parent) {
@@ -54,15 +54,20 @@ public int open () {
 	if ((style & SWT.ICON_WARNING) != 0) alertType = OS.kAlertCautionAlert;
 	if ((style & SWT.ICON_WORKING) != 0) alertType = OS.kAlertNoteAlert;
 	
-	String string1 = (title == null) ? "" : title;
-	char [] buffer = new char [string1.length ()];
-	string1.getChars (0, buffer.length, buffer, 0);
-	int error = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length); 
-	
-	String string2 = (message == null) ? "" : message;
-	buffer = new char [string2.length ()];
-	string2.getChars (0, buffer.length, buffer, 0);
-	int explanation = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+	int error = 0;
+	int explanation = 0;
+	String errorString = (title != "") ? title : ((message != "") ? message : null);
+	String explanationString = (title == "") ? null : ((message != "") ? message : null);
+	if (errorString != null) {
+		char [] buffer = new char [errorString.length ()];
+		errorString.getChars (0, buffer.length, buffer, 0);
+		error = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+	} 
+	if (explanationString != null) {
+		char [] buffer = new char [explanationString.length ()];
+		explanationString.getChars (0, buffer.length, buffer, 0);
+		explanation = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);		
+	}
 	
 	AlertStdCFStringAlertParamRec param = new AlertStdCFStringAlertParamRec ();
 	param.version = OS.kStdCFStringAlertVersionOne;
