@@ -314,6 +314,27 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(CloseClipboard)
 }
 #endif
 
+#ifndef NO_CoCreateInstance
+JNIEXPORT jint JNICALL OS_NATIVE(CoCreateInstance)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jint arg2, jbyteArray arg3, jintArray arg4)
+{
+	jbyte *lparg0=NULL;
+	jbyte *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, CoCreateInstance_FUNC);
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)CoCreateInstance((REFCLSID)lparg0, (LPUNKNOWN)arg1, arg2, (REFIID)lparg3, (LPVOID *)lparg4);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, CoCreateInstance_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CombineRgn
 JNIEXPORT jint JNICALL OS_NATIVE(CombineRgn)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
@@ -3925,6 +3946,24 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(HideCaret)
 	OS_NATIVE_ENTER(env, that, HideCaret_FUNC);
 	rc = (jboolean)HideCaret((HWND)arg0);
 	OS_NATIVE_EXIT(env, that, HideCaret_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_IIDFromString
+JNIEXPORT jint JNICALL OS_NATIVE(IIDFromString)
+	(JNIEnv *env, jclass that, jcharArray arg0, jbyteArray arg1)
+{
+	jchar *lparg0=NULL;
+	jbyte *lparg1=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, IIDFromString_FUNC);
+	if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	rc = (jint)IIDFromString((LPOLESTR)lparg0, (LPIID)lparg1);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, IIDFromString_FUNC);
 	return rc;
 }
 #endif
@@ -8746,14 +8785,62 @@ JNIEXPORT jshort JNICALL OS_NATIVE(VkKeyScanW)
 }
 #endif
 
-#ifndef NO_VtblCall
-JNIEXPORT jint JNICALL OS_NATIVE(VtblCall)
+#ifndef NO_VtblCall__II
+JNIEXPORT jint JNICALL OS_NATIVE(VtblCall__II)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, VtblCall__II_FUNC);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)())(*(int **)arg1)[arg0])(arg1);
+	OS_NATIVE_EXIT(env, that, VtblCall__II_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__III
+JNIEXPORT jint JNICALL OS_NATIVE(VtblCall__III)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
 	jint rc;
-	OS_NATIVE_ENTER(env, that, VtblCall_FUNC);
+	OS_NATIVE_ENTER(env, that, VtblCall__III_FUNC);
 	rc = (jint)((jint (STDMETHODCALLTYPE *)())(*(int **)arg1)[arg0])(arg1, arg2);
-	OS_NATIVE_EXIT(env, that, VtblCall_FUNC);
+	OS_NATIVE_EXIT(env, that, VtblCall__III_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__IIIII_3I
+JNIEXPORT jint JNICALL OS_NATIVE(VtblCall__IIIII_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jintArray arg5)
+{
+	jint *lparg5=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, VtblCall__IIIII_3I_FUNC);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)())(*(int **)arg1)[arg0])(arg1, arg2, arg3, arg4, lparg5);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	OS_NATIVE_EXIT(env, that, VtblCall__IIIII_3I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_VtblCall__II_3CII_3I_3I
+JNIEXPORT jint JNICALL OS_NATIVE(VtblCall__II_3CII_3I_3I)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jint arg3, jint arg4, jintArray arg5, jintArray arg6)
+{
+	jchar *lparg2=NULL;
+	jint *lparg5=NULL;
+	jint *lparg6=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, VtblCall__II_3CII_3I_3I_FUNC);
+	if (arg2) lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	if (arg6) lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)())(*(int **)arg1)[arg0])(arg1, lparg2, arg3, arg4, lparg5, lparg6);
+	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, VtblCall__II_3CII_3I_3I_FUNC);
 	return rc;
 }
 #endif

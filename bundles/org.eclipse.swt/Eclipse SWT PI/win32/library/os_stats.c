@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 578;
-int OS_nativeFunctionCallCount[578];
+int OS_nativeFunctionCount = 583;
+int OS_nativeFunctionCallCount[583];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc", 
 	"ActivateKeyboardLayout", 
@@ -40,6 +40,7 @@ char * OS_nativeFunctionNames[] = {
 	"ChooseFontW", 
 	"ClientToScreen", 
 	"CloseClipboard", 
+	"CoCreateInstance", 
 	"CombineRgn", 
 	"CommDlgExtendedError", 
 	"CommandBar_1AddAdornments", 
@@ -268,6 +269,7 @@ char * OS_nativeFunctionNames[] = {
 	"HeapAlloc", 
 	"HeapFree", 
 	"HideCaret", 
+	"IIDFromString", 
 	"ImageList_1Add", 
 	"ImageList_1AddMasked", 
 	"ImageList_1Create", 
@@ -588,7 +590,10 @@ char * OS_nativeFunctionNames[] = {
 	"ValidateRect", 
 	"VkKeyScanA", 
 	"VkKeyScanW", 
-	"VtblCall", 
+	"VtblCall__II", 
+	"VtblCall__III", 
+	"VtblCall__IIIII_3I", 
+	"VtblCall__II_3CII_3I_3I", 
 	"WaitMessage", 
 	"WideCharToMultiByte__II_3CIII_3B_3Z", 
 	"WideCharToMultiByte__II_3CI_3BI_3B_3Z", 

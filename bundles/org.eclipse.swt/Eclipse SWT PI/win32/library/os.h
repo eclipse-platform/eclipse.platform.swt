@@ -133,6 +133,7 @@
 #define NO_ChooseColorA
 #define NO_ChooseFontA
 #define NO_ChooseFontW
+#define NO_CoCreateInstance
 #define NO_CopyImage
 #define NO_CreateAcceleratorTableA
 #define NO_CreateCursor
@@ -226,6 +227,7 @@
 #define NO_GetWindowTextA
 #define NO_GetWindowTextLengthA
 #define NO_GradientFill
+#define NO_IIDFromString
 #define NO_ImmGetCompositionFontA
 #define NO_ImmGetCompositionStringA
 #define NO_ImmSetCompositionFontA

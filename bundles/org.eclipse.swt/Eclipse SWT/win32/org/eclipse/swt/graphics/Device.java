@@ -45,7 +45,6 @@ public abstract class Device implements Drawable {
 
 	/* Scripts */
 	int [] scripts;
-	LOGFONT [] logFontsCache;
 
 	boolean disposed;
 	
@@ -719,7 +718,6 @@ void new_Object (Object object) {
  */
 protected void release () {
 	scripts = null;
-	logFontsCache = null;
 	if (hPalette != 0) OS.DeleteObject (hPalette);
 	hPalette = 0;
 	colorRefCount = null;
