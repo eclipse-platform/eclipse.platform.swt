@@ -103,7 +103,19 @@ void createHandle (int index) {
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		OS.gtk_container_add (parentHandle, fixedHandle);
 		OS.gtk_container_add (fixedHandle, scrolledHandle);
+
+		/*
+		* Feature in GTK.  Calling gtk_container_add to add a
+		* GtkText correctly adds the widget but issues warnings
+		* about horizontal scrolling.  The fix is to hide the
+		* the warnings.
+		*/
+		Display display = getDisplay ();
+		boolean warnings = display.getWarnings ();
+		display.setWarnings (false);
 		OS.gtk_container_add (scrolledHandle, handle);
+		display.setWarnings (warnings);
+
 		OS.gtk_widget_show (fixedHandle);
 		OS.gtk_widget_show (scrolledHandle);
 		OS.gtk_text_set_editable (handle, (style & SWT.READ_ONLY) == 0);

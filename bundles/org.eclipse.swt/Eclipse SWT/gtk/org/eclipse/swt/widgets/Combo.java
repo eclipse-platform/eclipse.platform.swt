@@ -945,9 +945,9 @@ public void setItems (String [] items) {
  */
 public void setSelection (Point selection) {
 	checkWidget();
-	/*if (selection == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (selection == null) error (SWT.ERROR_NULL_ARGUMENT);
 	OS.gtk_editable_set_position (entryHandle, selection.x);
-	OS.gtk_editable_select_region (entryHandle, selection.x, selection.y);*/
+	OS.gtk_editable_select_region (entryHandle, selection.x, selection.y);
 }
 
 /**
@@ -973,13 +973,13 @@ public void setSelection (Point selection) {
  */
 public void setText (String string) {
 	checkWidget();
-	/*if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	OS.gtk_editable_delete_text (entryHandle, 0, -1);
 	int [] position = new int [1];
 	byte [] buffer = Converter.wcsToMbcs (null, string);
 	OS.gtk_editable_insert_text (entryHandle, buffer, buffer.length, position);
-	OS.gtk_editable_set_position (entryHandle, 0);*/
+	OS.gtk_editable_set_position (entryHandle, 0);
 }
 
 /**

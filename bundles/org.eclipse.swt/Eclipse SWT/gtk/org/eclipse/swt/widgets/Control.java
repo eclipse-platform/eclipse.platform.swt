@@ -309,20 +309,39 @@ void moveHandle (int x, int y) {
 
 void resizeHandle (int width, int height) {
 	int topHandle = topHandle ();
-	int flags = OS.GTK_WIDGET_FLAGS (topHandle);
-	OS.GTK_WIDGET_SET_FLAGS(topHandle, OS.GTK_VISIBLE);
 	OS.gtk_widget_set_size_request (topHandle, width, height);
 	if (topHandle != handle) {
 		OS.gtk_widget_set_size_request (handle, width, height);
 	}
-	//FIXME - causes scrollbar problems when button child of table
+
+	/*
+	* Feature in GTK.  Some widgets do not allocate the size
+	* of their internal children in gtk_widget_size_allocate().
+	* Instead this is done in gtk_widget_size_request().  This
+	* means that the client area of the widget is not correct.
+	* The fix is to call gtk_widget_size_request() (and throw
+	* the results away).
+	*
+	* Note: The following widgets rely on this feature:
+	* 	GtkScrolledWindow
+	* 	GtkNotebook
+	* 	GtkFrame
+	* 	GtkCombo
+	*/
+	GtkRequisition requisition = new GtkRequisition ();
+	OS.gtk_widget_size_request (handle, requisition);
+
+	/*
+	* Force the container to allocate the size of its children.
+	*/
+	int flags = OS.GTK_WIDGET_FLAGS (topHandle);
+	OS.GTK_WIDGET_SET_FLAGS(topHandle, OS.GTK_VISIBLE);
 	int parentHandle = parent.parentingHandle ();
 	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.gtk_container_resize_children (parentHandle);
 	display.setWarnings (warnings);
-
 	if ((flags & OS.GTK_VISIBLE) == 0) {
 		OS.GTK_WIDGET_UNSET_FLAGS(topHandle, OS.GTK_VISIBLE);	
 	}

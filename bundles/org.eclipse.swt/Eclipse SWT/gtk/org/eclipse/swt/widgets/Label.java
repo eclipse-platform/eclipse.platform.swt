@@ -252,39 +252,23 @@ void releaseWidget () {
 }
 
 void resizeHandle (int width, int height) {
-	int topHandle = topHandle ();
-	int flags = OS.GTK_WIDGET_FLAGS (topHandle);
-	OS.GTK_WIDGET_SET_FLAGS(topHandle, OS.GTK_VISIBLE);
-	OS.gtk_widget_set_size_request (fixedHandle, width, height);
+	/*
+	* Bug in GTK.  For some reason, when the label is
+	* wrappable and the frame is resized, it does not
+	* cause the label to be wrapped.  The fix is to
+	* determine the size that will wrap the label
+	* and expilictly set that size to force the label
+	* to wrap.
+	* 
+	* This part of the fix causes the label to be
+	* resized to the preferred size but it still
+	* won't draw properly.
+	*/
 	if (frameHandle != 0) {
 		OS.gtk_widget_set_size_request (frameHandle, width, height);
-		/*
-		* Bug in GTK.  For some reason, when the label is
-		* wrappable and the frame is resized, it does not
-		* cause the label to be wrapped.  The fix is to
-		* determine the size that will wrap the label
-		* and expilictly set that size to force the label
-		* to wrap.
-		* 
-		* This part of the fix causes the label to be
-		* resized to the preferred size but it still
-		* won't draw properly.
-		*/
 		OS.gtk_widget_set_size_request (handle, -1, -1);
-	} else {
-		OS.gtk_widget_set_size_request (handle, width, height);
 	}
-
-	//FIXME - causes scrollbar problems when button child of table
-	int parentHandle = parent.parentingHandle ();
-	Display display = getDisplay ();
-	boolean warnings = display.getWarnings ();
-	display.setWarnings (false);
-	OS.gtk_container_resize_children (parentHandle);
-	display.setWarnings (warnings);
-	if ((flags & OS.GTK_VISIBLE) == 0) {
-		OS.GTK_WIDGET_UNSET_FLAGS(topHandle, OS.GTK_VISIBLE);	
-	}
+	super.resizeHandle (width, height);
 	/*
 	* Bug in GTK.  For some reason, when the label is
 	* wrappable and the frame is resized, it does not

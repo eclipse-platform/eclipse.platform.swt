@@ -370,27 +370,6 @@ public boolean setFocus () {
 	return super.setFocus ();
 }
 
-void setInitialSize () {
-	if (scrolledHandle != 0) {
-		super.setInitialSize ();
-		return;
-	}
-	/*
-	* Bug in GTK. The scrollbars are not visible when a scrolled window
-	* is resize and then shown. The fix is to change the scrolling policy
-	* before and after resizing.
-	*/
-	if ((state & CANVAS) != 0) {
-		OS.gtk_scrolled_window_set_policy (scrolledHandle, OS.GTK_POLICY_NEVER, OS.GTK_POLICY_NEVER);
-	}
-	super.setInitialSize ();
-	if ((state & CANVAS) != 0) {
-		int hsp = (style & SWT.H_SCROLL) == 0 ? OS.GTK_POLICY_NEVER : OS.GTK_POLICY_ALWAYS;
-		int vsp = (style & SWT.V_SCROLL) == 0 ? OS.GTK_POLICY_NEVER : OS.GTK_POLICY_ALWAYS;
-		OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
-	}
-}
-
 /**
  * Sets the layout which is associated with the receiver to be
  * the argument which may be null.

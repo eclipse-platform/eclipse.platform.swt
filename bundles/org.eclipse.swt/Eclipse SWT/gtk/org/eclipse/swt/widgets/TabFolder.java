@@ -415,19 +415,6 @@ public void removeSelectionListener (SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
-void resizeHandle (int width, int height) {
-	/*
-	* Feature in GTK.  In order to get the tab folder
-	* to compute the size of the current page, it is
-	* necessary to call gtk_widget_size_request() before
-	* the control is resized.  The fix is to call this
-	* call and throw away the results.
-	*/
-	GtkRequisition requisition = new GtkRequisition ();
-	OS.gtk_widget_size_request (handle, requisition);
-	super.resizeHandle (width, height);
-}
-
 boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	boolean changed = super.setBounds (x, y, width, height, move, resize);
 	if (changed && resize) {

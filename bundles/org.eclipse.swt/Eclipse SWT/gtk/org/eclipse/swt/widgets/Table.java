@@ -131,7 +131,7 @@ int createCheckPixmap(boolean checked) {
 	 * The box will occupy the whole item width.
 	 */
 	GtkCList clist = new GtkCList (handle);
-	int check_height = clist.row_height-1;
+	int check_height = clist.row_height-2;
 	int check_width = check_height;
 
 	GdkVisual visual = new GdkVisual(OS.gdk_visual_get_system());

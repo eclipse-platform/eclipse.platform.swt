@@ -212,23 +212,6 @@ public String getText () {
 	return text;
 }
 
-void resizeHandle (int width, int height) {
-	int topHandle = topHandle ();
-	int flags = OS.GTK_WIDGET_FLAGS (topHandle);
-	OS.GTK_WIDGET_SET_FLAGS(topHandle, OS.GTK_VISIBLE);
-	int parentHandle = parent.parentingHandle ();
-	OS.gtk_widget_set_size_request (fixedHandle, width, height);
-	OS.gtk_widget_set_size_request (handle, width, height);
-	Display display = getDisplay ();
-	boolean warnings = display.getWarnings ();
-	display.setWarnings (false);
-	OS.gtk_container_resize_children (parentHandle);
-	display.setWarnings (warnings);
-	if ((flags & OS.GTK_VISIBLE) == 0) {
-		OS.GTK_WIDGET_UNSET_FLAGS(topHandle, OS.GTK_VISIBLE);	
-	}
-}
-
 /**
  * Sets the receiver's text, which is the string that will
  * be displayed as the receiver's <em>title</em>, to the argument,

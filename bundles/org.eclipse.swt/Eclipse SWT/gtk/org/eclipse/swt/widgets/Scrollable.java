@@ -210,21 +210,41 @@ void releaseWidget () {
 }
 
 void resizeHandle (int width, int height) {
-	int topHandle = topHandle ();
-	int flags = OS.GTK_WIDGET_FLAGS (topHandle);
-	OS.GTK_WIDGET_SET_FLAGS(topHandle, OS.GTK_VISIBLE);
-	int parentHandle = parent.parentingHandle ();
 	if (fixedHandle != 0) {
 		OS.gtk_widget_set_size_request (fixedHandle, width, height);
 	}
+	/*
+	* Feature in GTK.  Some widgets do not allocate the size
+	* of their internal children in gtk_widget_size_allocate().
+	* Instead this is done in gtk_widget_size_request().  This
+	* means that the client area of the widget is not correct.
+	* The fix is to call gtk_widget_size_request() (and throw
+	* the results away).
+	*
+	* Note: The following widgets rely on this feature:
+	* 	GtkScrolledWindow
+	* 	GtkNotebook
+	* 	GtkFrame
+	* 	GtkCombo
+	*/
+	GtkRequisition requisition = new GtkRequisition ();
 	if (scrolledHandle != 0) {
 		OS.gtk_widget_set_size_request (scrolledHandle, width, height);
+		OS.gtk_widget_size_request (scrolledHandle, requisition);
 	} else {
 		OS.gtk_widget_set_size_request (handle, width, height);
+		OS.gtk_widget_size_request (handle, requisition);
 	}
+	/*
+	* Force the container to allocate the size of its children.
+	*/
+	int topHandle = topHandle ();
+	int flags = OS.GTK_WIDGET_FLAGS (topHandle);
+	OS.GTK_WIDGET_SET_FLAGS(topHandle, OS.GTK_VISIBLE);
 	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
+	int parentHandle = parent.parentingHandle ();
 	OS.gtk_container_resize_children (parentHandle);
 	display.setWarnings (warnings);
 	if ((flags & OS.GTK_VISIBLE) == 0) {

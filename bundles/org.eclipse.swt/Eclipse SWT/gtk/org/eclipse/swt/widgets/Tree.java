@@ -182,8 +182,7 @@ void createHandle (int index) {
 	int mode = (style & SWT.MULTI) != 0 ? OS.GTK_SELECTION_EXTENDED : OS.GTK_SELECTION_BROWSE;
 	OS.gtk_clist_set_selection_mode (handle, mode);
 	
-	//BUG - need realize to get scrollbars 
-	OS.gtk_widget_realize (handle);
+	/* Scrolling policy */
 	int hsp = (style & SWT.H_SCROLL) == 0 ? OS.GTK_POLICY_NEVER : OS.GTK_POLICY_ALWAYS;
 	int vsp = (style & SWT.V_SCROLL) == 0 ? OS.GTK_POLICY_NEVER : OS.GTK_POLICY_ALWAYS;
 	OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
@@ -210,7 +209,7 @@ int createCheckPixmap(boolean checked) {
 	 * The box will occupy the whole item width.
 	 */
 	GtkCList clist = new GtkCList (handle);
-	int check_height = clist.row_height-1;
+	int check_height = clist.row_height-2;
 	int check_width = check_height;
 
 	GdkVisual visual = new GdkVisual(OS.gdk_visual_get_system());
