@@ -497,7 +497,7 @@ void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeig
 			int gc = OS.gdk_gc_new(mask);
 			OS.gdk_region_offset(data.clipRgn, -destX + srcX, -destY + srcY);
 			OS.gdk_gc_set_clip_region(gc, data.clipRgn);
-			OS.gdk_region_offset(data.clipRgn, -destX, -destY);
+			OS.gdk_region_offset(data.clipRgn, destX - srcX, destY - srcY);
 			GdkColor color = new GdkColor();
 			color.pixel = 1;
 			OS.gdk_gc_set_foreground(gc, color);
