@@ -1811,6 +1811,7 @@ public void setHeaderVisible (boolean value) {
 	checkWidget ();
 	if (header.getVisible () == value) return;		/* no change */
 	header.setVisible (value);
+	updateVerticalBar ();
 	redraw ();
 }
 void setImageHeight (int value) {

@@ -325,7 +325,7 @@ public void dispose () {
 		parent.reassignFocus ();
 		focusItem = parent.focusItem;
 		if (focusItem != null) {
-			parent.redrawItem (focusItem.availableIndex);
+			parent.redrawItem (focusItem.availableIndex, true);
 		}
 	}
 	if (parentItem != null) {
@@ -333,7 +333,7 @@ public void dispose () {
 	}
 	dispose (true);
 	if (startIndex != -1) {
-		parent.redrawItems (startIndex, endIndex);
+		parent.redrawItems (startIndex, endIndex, false);
 	}
 }
 void dispose (boolean notifyParent) {
@@ -396,7 +396,7 @@ public Rectangle getBounds () {
 	return new Rectangle (
 		focusX,
 		parent.getItemY (this),
-		lastColumn.getX () + lastColumn.getWidth () - focusX,
+		lastColumn.getWidth () - parent.horizontalOffset - focusX,
 		parent.getItemHeight ());
 }
 public Rectangle getBounds (int columnIndex) {
@@ -498,7 +498,7 @@ Rectangle getFocusBounds () {
 	if (parent.getColumnCount () == 0) {
 		width = getTextPaintWidth (0) - 1;
 	} else {
-		width = parent.getColumn (0).getWidth () - x - 2;
+		width = parent.getColumn (0).getWidth () - parent.horizontalOffset - x - 2;
 	}
 	return new Rectangle (x, parent.getItemY (this) + 1, width, parent.getItemHeight () - 1);
 }
@@ -578,8 +578,7 @@ Rectangle getHitBounds () {
 	if (parent.getColumnCount () == 0) {
 		width = getFocusX () + getTextPaintWidth (0) - contentX; 
 	} else {
-		TreeColumn column = parent.getColumn (0);
-		width = column.getX () + column.getWidth () - contentX;
+		width = parent.getColumn (0).getWidth () - parent.horizontalOffset - contentX;
 	}
 	return new Rectangle (contentX, parent.getItemY (this), width, parent.getItemHeight ());
 }
@@ -778,7 +777,7 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 		gc.setBackground (background);
 		if (columnIndex == 0) {
 			int focusX = getFocusX ();
-			gc.fillRectangle (focusX, parent.getItemY (this) + 1, cellRightX - focusX - 1, parent.getItemHeight () - 1);
+			gc.fillRectangle (focusX, parent.getItemY (this) + 1, cellRightX - focusX - 1, itemHeight - 1);
 		} else {
 			gc.fillRectangle (cellBounds.x, cellBounds.y + 1, cellBounds.width - 1, cellBounds.height - 1);
 		}
@@ -1014,7 +1013,7 @@ public void setExpanded (boolean value) {
 			if (isDisposed ()) return;
 			parent.showItem (this);
 		}
-		parent.redrawItems (availableIndex, oldAvailableLength - 1);
+		parent.redrawItems (availableIndex, oldAvailableLength - 1, false);
 	}
 }
 public void setFont (Font value) {
