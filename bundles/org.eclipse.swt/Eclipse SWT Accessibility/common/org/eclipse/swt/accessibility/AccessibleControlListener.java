@@ -39,7 +39,6 @@ public interface AccessibleControlListener extends SWTEventListener {
 	/**
 	 * Sent when an accessibility client requests the identifier
 	 * of the control child at the specified display coordinates.
-	 * The default behavior is to do nothing.
 	 * <p>
 	 * Return the identifier of the child at display point (x, y)
 	 * in the <code>childID</code> field of the event object.
@@ -59,7 +58,6 @@ public interface AccessibleControlListener extends SWTEventListener {
 	/**
 	 * Sent when an accessibility client requests the location
 	 * of the control, or the location of a child of the control.
-	 * The default behavior is to do nothing.
 	 * <p>
 	 * Return a rectangle describing the location of the specified
 	 * control or child in the <code>x, y, width, and height</code>
@@ -76,7 +74,6 @@ public interface AccessibleControlListener extends SWTEventListener {
 	/**
 	 * Sent when an accessibility client requests the accessible object
 	 * for a child of the control.
-	 * The default behavior is to do nothing.
 	 * <p>
 	 * Return an <code>Accessible</code> for the specified control or
 	 * child in the <code>accessible</code> field of the event object.
@@ -94,7 +91,6 @@ public interface AccessibleControlListener extends SWTEventListener {
 	/**
 	 * Sent when an accessibility client requests the number of
 	 * children in the control.
-	 * The default behavior is to do nothing.
 	 * <p>
 	 * Return the number of child items in the <code>count</code>
 	 * field of the event object.
@@ -109,7 +105,6 @@ public interface AccessibleControlListener extends SWTEventListener {
 	/**
 	 * Sent when an accessibility client requests the default action
 	 * of the control, or the default action of a child of the control.
-	 * The default behavior is to do nothing.
 	 * <p>
 	 * This string is typically a verb describing what the user does to it.
 	 * For example, a Push Button's default action is "Press", a Check Button's
@@ -130,7 +125,6 @@ public interface AccessibleControlListener extends SWTEventListener {
 	/**
 	 * Sent when an accessibility client requests the identity of
 	 * the child or control that has keyboard focus.
-	 * The default behavior is to do nothing.
 	 * <p>
 	 * Return the identifier of the child that has focus in the
 	 * <code>childID</code> field of the event object.
@@ -148,7 +142,6 @@ public interface AccessibleControlListener extends SWTEventListener {
 	/**
 	 * Sent when an accessibility client requests the role
 	 * of the control, or the role of a child of the control.
-	 * The default behavior is to do nothing.
 	 * <p>
 	 * Return a role constant (constant defined in ACC beginning with ROLE_)
 	 * that describes the role of the specified control or child in the
@@ -165,7 +158,6 @@ public interface AccessibleControlListener extends SWTEventListener {
 	/**
 	 * Sent when an accessibility client requests the identity of
 	 * the child or control that is currently selected.
-	 * The default behavior is to do nothing.
 	 * <p>
 	 * Return the identifier of the selected child in the
 	 * <code>childID</code> field of the event object.
@@ -184,7 +176,6 @@ public interface AccessibleControlListener extends SWTEventListener {
 	/**
 	 * Sent when an accessibility client requests the state
 	 * of the control, or the state of a child of the control.
-	 * The default behavior is to do nothing.
 	 * <p>
 	 * Return a state constant (constant defined in ACC beginning with STATE_)
 	 * that describes the current state of the specified control or child in the
@@ -201,7 +192,6 @@ public interface AccessibleControlListener extends SWTEventListener {
 	/**
 	 * Sent when an accessibility client requests the value
 	 * of the control, or the value of a child of the control.
-	 * The default behavior is to do nothing.
 	 * <p>
 	 * Many controls do not return a value. Examples of controls
 	 * that do are: Combo returns the text string, Text returns
@@ -223,7 +213,6 @@ public interface AccessibleControlListener extends SWTEventListener {
 	
 	/**
 	 * Sent when an accessibility client requests the children of the control.
-	 * The default behavior is to do nothing.
 	 * <p>
 	 * Return the children as an array of childIDs in the <code>children</code>
 	 * field of the event object.
