@@ -643,6 +643,7 @@ public static final native int RegisterAppearanceClient();
 public static final native void ReleaseEvent(int theEvent);
 public static final native int ReleaseMenu(int mHandle);
 public static final native int RemoveDataBrowserItems(int cHandle, int containerID, int numItems, int[] itemIDs, int preSortProperty);
+public static final native int RemoveEventHandler(int inHandlerRef);
 public static final native int RemoveEventLoopTimer(int inTimer);
 public static final native int RetainMenu(int mHandle);
 public static final native int RevealDataBrowserItem(int cHandle, int itemID, int colID, boolean center);

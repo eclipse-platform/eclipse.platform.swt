@@ -4035,6 +4035,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RemoveDataBrowser
 }
 #endif /* NO_RemoveDataBrowserItems */
 
+#ifndef NO_RemoveEventHandler
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RemoveEventHandler
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("RemoveEventHandler\n")
+
+	return (jint)RemoveEventHandler((EventHandlerRef)arg0);
+}
+#endif
+
 #ifndef NO_RemoveEventLoopTimer
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RemoveEventLoopTimer
 	(JNIEnv *env, jclass that, jint arg0)
