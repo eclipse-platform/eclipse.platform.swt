@@ -44,9 +44,13 @@ public class CBanner extends Composite {
 	Control right;
 	Control bottom;
 	
+	boolean simple = true;
+	
 	int[] curve;
 	int curveStart = 0;
 	Rectangle curveRect = new Rectangle(0, 0, 0, 0);
+	int curve_width = 5;
+	int curve_indent = -2;
 	
 	int rightWidth = SWT.DEFAULT;
 	Cursor resizeCursor;
@@ -57,11 +61,9 @@ public class CBanner extends Composite {
 	static final int BORDER_BOTTOM = 2;
 	static final int BORDER_TOP = 3;
 	static final int BORDER_STRIPE = 1;
-	static final int CURVE_WIDTH = 50;
-	static final int CURVE_INDENT = 5;
-	static final int CURVE_RIGHT = 30;
-	static final int CURVE_LEFT = 30;
 	static final int CURVE_TAIL = 200;
+	static final int BEZIER_RIGHT = 30;
+	static final int BEZIER_LEFT = 30;
 	static final int MIN_LEFT = 10;
 	static final int MIN_RIGHT = 10;
 	
@@ -154,7 +156,7 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 		rightSize = right.computeSize(rightWidth == SWT.DEFAULT ? SWT.DEFAULT : rightWidth - trim.x, rightWidth == SWT.DEFAULT ? SWT.DEFAULT : height);
 		if (width != SWT.DEFAULT) {
 			rightSize.x = Math.min(rightSize.x, width);
-			width -= rightSize.x + CURVE_WIDTH - 2* CURVE_INDENT;
+			width -= rightSize.x + curve_width - 2* curve_indent;
 			width = Math.max(width, MIN_LEFT);
 		}
 	}
@@ -169,7 +171,7 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 	if (bottom != null && (left != null || right != null)) h += BORDER_TOP + BORDER_BOTTOM + BORDER_STRIPE;
 	w += leftSize.x + rightSize.x;
 	if (showCurve) {
-		w += CURVE_WIDTH - 2*CURVE_INDENT;
+		w += curve_width - 2*curve_indent;
 		h +=  BORDER_TOP + BORDER_BOTTOM + 2*BORDER_STRIPE;
 	}
 	h += left != null ? leftSize.y : rightSize.y; 
@@ -273,7 +275,7 @@ public void layout (boolean changed) {
 		trim.x = trim.x - rightWidth;
 		rightSize = right.computeSize(rightWidth == SWT.DEFAULT ? SWT.DEFAULT : rightWidth - trim.x, rightWidth == SWT.DEFAULT ? SWT.DEFAULT : height);
 		rightSize.x = Math.min(rightSize.x, width);
-		width -= rightSize.x + CURVE_WIDTH - 2*CURVE_INDENT;
+		width -= rightSize.x + curve_width - 2*curve_indent;
 		width = Math.max(width, MIN_LEFT); 
 	}
 
@@ -296,19 +298,19 @@ public void layout (boolean changed) {
 	if (showCurve) y += BORDER_TOP + BORDER_STRIPE;
 	if(left != null) {
 		leftRect = new Rectangle(x, y, leftSize.x, leftSize.y);
-		curveStart = x + leftSize.x - CURVE_INDENT;
-		x += leftSize.x + CURVE_WIDTH - 2*CURVE_INDENT;
+		curveStart = x + leftSize.x - curve_indent;
+		x += leftSize.x + curve_width - 2*curve_indent;
 	}
 	if (right != null) {
 		rightRect = new Rectangle(x, y, rightSize.x, rightSize.y);
 	}
 	if (curveStart < oldStart) {
-		redraw(curveStart - CURVE_TAIL, 0, oldStart + CURVE_WIDTH - curveStart + CURVE_TAIL + 5, size.y, false);
+		redraw(curveStart - CURVE_TAIL, 0, oldStart + curve_width - curveStart + CURVE_TAIL + 5, size.y, false);
 	}
 	if (curveStart > oldStart) {
-		redraw(oldStart - CURVE_TAIL, 0, curveStart + CURVE_WIDTH - oldStart + CURVE_TAIL + 5, size.y, false);
+		redraw(oldStart - CURVE_TAIL, 0, curveStart + curve_width - oldStart + CURVE_TAIL + 5, size.y, false);
 	}
-	curveRect = new Rectangle(curveStart, 0, CURVE_WIDTH, size.y);
+	curveRect = new Rectangle(curveStart, 0, curve_width, size.y);
 	update();
 	if (bottomRect != null) bottom.setBounds(bottomRect);
 	if (rightRect != null) right.setBounds(rightRect);
@@ -323,7 +325,7 @@ void onDispose() {
 void onMouseDown (int x, int y) {
 	if (curveRect.contains(x, y)) {
 		dragging = true;
-		rightDragDisplacement = curveStart - x + CURVE_WIDTH - CURVE_INDENT;
+		rightDragDisplacement = curveStart - x + curve_width - curve_indent;
 	}
 }
 void onMouseExit() {
@@ -375,7 +377,7 @@ void onPaint(GC gc) {
 		line1[index++]=x+curve[2*i];
 		line1[index++]=y+curve[2*i+1];
 	}
-	line1[index++] = x + CURVE_WIDTH;
+	line1[index++] = x + curve_width;
 	line1[index++] = 0;
 	line1[index++] = size.x;
 	line1[index++] = 0;
@@ -537,11 +539,41 @@ public void setRightWidth(int width) {
 	rightWidth = width;
 	layout(true);
 }
+/**
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * UNDER CONSTRUCTION
+ * @since 3.0
+ */
+public void setSimple(boolean simple) {
+	checkWidget();
+	if (this.simple != simple) {
+		this.simple = simple;
+		if (simple) {
+			curve_width = 5;
+			curve_indent = -2;
+		} else {
+			curve_width = 50;
+			curve_indent = 5;
+		}
+		updateCurve(getSize().y);
+		layout();
+		redraw();
+	}
+}
 void updateCurve(int height) {
-	curve = bezier(0, height - BORDER_STRIPE + 1,
-	               CURVE_LEFT, height - BORDER_STRIPE + 1,
-			       CURVE_WIDTH-CURVE_RIGHT, 0,
-	               CURVE_WIDTH, 0,
-	               CURVE_WIDTH);
+	int h = height - BORDER_STRIPE;
+	if (simple) {
+		curve = new int[] {0,h, 1,h, 2,h-1, 3,h-2,
+			                       3,2, 4,1, 5,0,};
+	} else {
+		curve = bezier(0, h+1, BEZIER_LEFT, h+1,
+				             curve_width-BEZIER_RIGHT, 0, curve_width, 0,
+		                     curve_width);
+	}
 }
 }
