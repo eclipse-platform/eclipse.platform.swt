@@ -67,7 +67,7 @@ public class Table extends SelectableItemWidget {
  * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * describes the style constants that are applicable to the class.
+ * lists the style constants that are applicable to the class.
  * Style bits are also inherited from superclasses.
  * </p>
  *
