@@ -7,7 +7,6 @@ package org.eclipse.swt.tests.junit;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
 import junit.framework.*;
@@ -82,15 +81,10 @@ public void test_getBounds() {
 	warnUnimpl("Test test_getBounds not written");
 }
 
-public void test_getImageData() {
-	ImageLoader loader = new ImageLoader();
-	ImageData data1 = loader.load(SwtTestCase.class.getResourceAsStream("dot.gif"))[0];
-
-	Image image = new Image(display, data1);
-	ImageData data2 = image.getImageData();
-	
-	assertEquals("Image width should be the same", data1.width, data2.width);
-	assertEquals("Image height should be the same", data1.height, data2.height);
+public void test_getImageData() {	
+	getImageData1();
+	getImageData2(24, new PaletteData(0xff0000, 0xff00, 0xff));		
+	getImageData2(32, new PaletteData(0xff0000, 0xff00, 0xff));
 }
 
 public void test_hashCode() {
@@ -174,4 +168,50 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_toString")) test_toString();
 	else if (getName().equals("test_win32_newLorg_eclipse_swt_graphics_DeviceII")) test_win32_newLorg_eclipse_swt_graphics_DeviceII();
 }
+
+/** Test implementation **/
+
+void getImageData1() {
+	ImageLoader loader = new ImageLoader();
+	ImageData data1 = loader.load(SwtTestCase.class.getResourceAsStream("dot.gif"))[0];
+
+	Image image = new Image(display, data1);
+	ImageData data2 = image.getImageData();
+	
+	assertEquals("Image width should be the same", data1.width, data2.width);
+	assertEquals("Image height should be the same", data1.height, data2.height);
+}
+
+/*
+ * Verify Image.getImageData returns pixels with the same RGB value as the
+ * source image. This test only makes sense with depth of 24 and 32 bits.
+ */
+void getImageData2(int depth, PaletteData palette) {
+	int width = 10;
+	int height = 10;
+	Color color = new Color(display, 0, 0xff, 0);
+	RGB colorRGB = color.getRGB();
+
+	ImageData imageData = new ImageData(width, height, depth, palette);
+	Image image = new Image(display, imageData);
+		
+	GC gc = new GC(image);
+	gc.setBackground(color);
+	gc.setForeground(color);
+	gc.fillRectangle(0, 0, 10, 10);
+		
+	ImageData newData = image.getImageData();
+	PaletteData newPalette = newData.palette;
+	for (int i = 0; i < width; i++) {
+		for (int j = 0; j < height; j++) {
+			int pixel = newData.getPixel(i, j);
+			RGB rgb = newPalette.getRGB(pixel);
+			assertTrue("rgb.equals(colorRGB)", rgb.equals(colorRGB));
+		}
+	}
+	color.dispose();
+	gc.dispose();
+	image.dispose();
+}
+
 }
