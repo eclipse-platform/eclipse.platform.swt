@@ -31,6 +31,7 @@ import org.eclipse.swt.graphics.*;
 public class ProgressBar extends Control {
 	int timerId;
 	static final int DELAY = 100;
+	int lastForeground = -1;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -97,20 +98,17 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 void createHandle (int index) {
 	state |= HANDLE;
-	int background = defaultBackground ();
 	int parentHandle = parent.handle;
 	int [] argList = {
 		OS.XmNshowArrows, 0,
 		OS.XmNsliderSize, 1,
 		OS.XmNtraversalOn, 0,
-		OS.XmNtroughColor, background,
-		OS.XmNtopShadowColor, background,
-		OS.XmNbottomShadowColor, background,
 		OS.XmNshadowThickness, 1,
 		OS.XmNborderWidth, (style & SWT.BORDER) != 0 ? 1 : 0,
 		OS.XmNorientation, ((style & SWT.H_SCROLL) != 0) ? OS.XmHORIZONTAL : OS.XmVERTICAL,
 		OS.XmNprocessingDirection, ((style & SWT.H_SCROLL) != 0) ? OS.XmMAX_ON_RIGHT : OS.XmMAX_ON_TOP,
 		OS.XmNancestorSensitive, 1,
+		OS.XmNsliderVisual, OS.XmFOREGROUND_COLOR,
 	};
 	handle = OS.XmCreateScrollBar (parentHandle, null, argList, argList.length / 2);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -184,11 +182,13 @@ public int getSelection () {
 	int [] argList = {
 		OS.XmNminimum, 0,
 		OS.XmNsliderSize, 0,
-		OS.XmNbackground, 0,
+		OS.XmNforeground, 0,
+		OS.XmNtroughColor, 0
 	};
 	OS.XtGetValues (handle, argList, argList.length / 2);
-	int minimum = argList [1], sliderSize = argList [3], background = argList [5];
-	if (sliderSize == 1 && background == defaultBackground()) sliderSize = 0;
+	int minimum = argList [1], sliderSize = argList [3];
+	int foregroundColor = argList [5], troughColor = argList [7];
+	if (sliderSize == 1 && foregroundColor == troughColor) sliderSize = 0;
 	return minimum + sliderSize;
 }
 int processTimer (int id) {
@@ -300,31 +300,41 @@ public void setSelection (int value) {
 	setThumb(selection - minimum);
 }
 void setThumb (int sliderSize) {
-	Display display = getDisplay ();
-	int backgroundPixel = defaultBackground ();
 	int [] argList1 = new int [] {
-		OS.XmNbackground, 0,
-		OS.XmNminimum, 0};
+		OS.XmNtroughColor, 0,
+		OS.XmNforeground, 0,
+		OS.XmNminimum, 0,
+	};
 	OS.XtGetValues (handle, argList1, argList1.length / 2);
+	int troughColor = argList1 [1], foregroundColor = argList1 [3];
+
 	if (sliderSize == 0) {
-		if (argList1 [1] != backgroundPixel) {
-			OS.XmChangeColor (handle, backgroundPixel);
+		if (troughColor != foregroundColor) {
+			lastForeground = foregroundColor;
+			int [] argList2 = new int [] {
+				OS.XmNforeground, troughColor,
+			};
+			OS.XtSetValues (handle, argList2, argList2.length / 2);
 		}
 	} else {
-		if (argList1 [1] != display.listForeground) {
-			OS.XmChangeColor (handle, display.listForeground);
+		if (troughColor == foregroundColor) {
+			if (lastForeground != -1) {
+				int [] argList2 = new int [] {
+					OS.XmNforeground, lastForeground, 
+				};
+				OS.XtSetValues (handle, argList2, argList2.length / 2);
+			}
 		}
 	}
-	int [] argList2 = new int [] {
+	int [] argList3 = new int [] {
 		OS.XmNsliderSize, (sliderSize == 0) ? 1 : sliderSize,
-		OS.XmNtroughColor, backgroundPixel,
-		OS.XmNtopShadowColor, backgroundPixel,
-		OS.XmNbottomShadowColor, backgroundPixel,
-		OS.XmNvalue, argList1[3]
+		OS.XmNvalue, argList1 [5]
 	};
+	
+	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
-	OS.XtSetValues (handle, argList2, argList2.length / 2);
+	OS.XtSetValues (handle, argList3, argList3.length / 2);
 	display.setWarnings (warnings);
 }
 }

@@ -609,6 +609,7 @@ public class OS {
 	public static final int XmEXTENDED_SELECT = 0x2;
 	public static final int XmFONT_IS_FONT = 0x0;
 	public static final int XmFONT_IS_FONTSET = 0x1;
+	public static final int XmFOREGROUND_COLOR = 0x1;
 //	public static final int XmFRAME_GENERIC_CHILD = 0x0;
 	public static final int XmFRAME_TITLE_CHILD = 0x2;
 //	public static final int XmFRAME_WORKAREA_CHILD = 0x1;
@@ -793,6 +794,7 @@ public class OS {
 	public static final int XmNselectedPosition = malloc ("selectedPosition", 4);
 	public static final int XmNselectionArrayCount = malloc ("selectionArrayCount", 4);
 	public static final int XmNsliderSize = malloc ("sliderSize", 4);
+	public static final int XmNsliderVisual = malloc ("sliderVisual", 4);
 	public static final int XmNsubMenuId = malloc ("subMenuId", 4);
 	public static final int XmNtabList = malloc ("tabList", 4);
 	public static final int XmNtextField = malloc ("textField", 4);
