@@ -362,8 +362,6 @@ public static final native boolean GTK_WIDGET_HAS_GRAB(int wid);
 
 public static final native int GTK_FONT_SELECTION_DIALOG_OK_BUTTON(int handle);
 public static final native int GTK_FONT_SELECTION_DIALOG_CANCEL_BUTTON(int handle);
-public static final native int GTK_FILE_SELECTION_OK_BUTTON(int handle);
-public static final native int GTK_FILE_SELECTION_CANCEL_BUTTON(int handle);
 public static final native int GTK_COLOR_SELECTION_OK_BUTTON(int handle);
 public static final native int GTK_COLOR_SELECTION_CANCEL_BUTTON(int handle);
 public static final native int GTK_COLOR_SELECTION_HELP_BUTTON(int handle);
