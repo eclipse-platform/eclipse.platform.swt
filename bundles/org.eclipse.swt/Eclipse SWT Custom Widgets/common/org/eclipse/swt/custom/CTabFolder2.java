@@ -473,6 +473,9 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener(SWT.DefaultSelection, typedListener);
 }
 void antialias (int[] shape, RGB lineRGB, RGB innerRGB, RGB outerRGB, GC gc){
+	//don't perform anti-aliasing on Mac because the platform
+	// already does it.
+	if ("carbon".equals(SWT.getPlatform())) return;
 	if (outerRGB != null) {
 		int index = 0;
 		boolean left = true;
