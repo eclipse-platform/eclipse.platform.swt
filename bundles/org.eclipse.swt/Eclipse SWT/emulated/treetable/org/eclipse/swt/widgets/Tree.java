@@ -513,7 +513,6 @@ void doPlus() {
  */
 void expand(TreeItem item, boolean notifyListeners) {
 	Event event = new Event();
-	int indexFromTop;
 	boolean nestedExpand = expandingItem != null;
 
 	if (item.getExpanded() == true || item.getExpanding() == true) {
@@ -533,11 +532,9 @@ void expand(TreeItem item, boolean notifyListeners) {
 	item.redrawExpanded(item.getVisibleIndex() - getTopIndex());
 	calculateVerticalScrollbar();
 	if (nestedExpand == false && isVisible() == true) {
-		// Save the index here because showSelectableItem may change it
-		indexFromTop = item.getVisibleIndex() - getTopIndex();		
-		showSelectableItem(item);				// make expanded item visible. Could be invisible if the expand was caused by a key press.		
+		showSelectableItem(item);	// make expanded item visible. Could be invisible if the expand was caused by a key press.		
 		calculateWidestExpandingItem(item);
-		scrollExpandedItemsIntoView(item);		
+		scrollExpandedItemsIntoView(item);
 	}
 	if (nestedExpand == false) {
 		setExpandingItem(null);
