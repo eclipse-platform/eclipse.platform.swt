@@ -9,7 +9,6 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 #include <GL/glx.h>
-#include <string.h>
 #include "swt.h"
 #include "structs.h"
 
@@ -21,20 +20,20 @@ JNIEXPORT jint JNICALL XGL_NATIVE(glXChooseVisual)
 	jint *lparg2=NULL;
 	jint rc;
 
-	NATIVE_ENTER(env, that, "glXChooseVisual\n")
+	DEBUG_CALL("glXChooseVisual\n")
+
 	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
 	rc = (jint)glXChooseVisual((Display *)arg0, arg1, (int *)lparg2);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
-	NATIVE_EXIT(env, that, "glXChooseVisual\n")
 	return rc;
 }
 
 JNIEXPORT void JNICALL XGL_NATIVE(glXCopyContext)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
 {
-	NATIVE_ENTER(env, that, "glXCopyContext\n")
+	DEBUG_CALL("glXCopyContext\n")
+
 	glXCopyContext((Display *)arg0, (GLXContext)arg1, (GLXContext)arg2, arg3);
-	NATIVE_EXIT(env, that, "glXCopyContext\n")
 }
 
 JNIEXPORT jint JNICALL XGL_NATIVE(glXCreateContext)
@@ -43,11 +42,11 @@ JNIEXPORT jint JNICALL XGL_NATIVE(glXCreateContext)
 	XVisualInfo _arg1, *lparg1=NULL;
 	jint rc;
 
-	NATIVE_ENTER(env, that, "glXCreateContext\n")
+	DEBUG_CALL("glXCreateContext\n")
+
 	if (arg1) lparg1 = getXVisualInfoFields(env, arg1, &_arg1);
 	rc = (jint)glXCreateContext((Display *)arg0, lparg1, (GLXContext)arg2, arg3);
 	if (arg1) setXVisualInfoFields(env, arg1, lparg1);
-	NATIVE_EXIT(env, that, "glXCreateContext\n")
 	return rc;
 }
 
@@ -57,38 +56,36 @@ JNIEXPORT jint JNICALL XGL_NATIVE(glXCreateGLXPixmap)
 	XVisualInfo _arg1, *lparg1=NULL;
 	jint rc;
 
-	NATIVE_ENTER(env, that, "glXCreateGLXPixmap\n")
+	DEBUG_CALL("glXCreateGLXPixmap\n")
+
 	if (arg1) lparg1 = getXVisualInfoFields(env, arg1, &_arg1);
 	rc = (jint)glXCreateGLXPixmap((Display *)arg0, lparg1, arg2);
 	if (arg1) setXVisualInfoFields(env, arg1, lparg1);
-	NATIVE_EXIT(env, that, "glXCreateGLXPixmap\n")
 	return rc;
 }
 
 JNIEXPORT void JNICALL XGL_NATIVE(glXDestroyContext)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	NATIVE_ENTER(env, that, "glXDestroyContext\n")
+	DEBUG_CALL("glXDestroyContext\n")
+
 	glXDestroyContext((Display *)arg0, (GLXContext)arg1);
-	NATIVE_EXIT(env, that, "glXDestroyContext\n")
 }
 
 JNIEXPORT void JNICALL XGL_NATIVE(glXDestroyGLXPixmap)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	NATIVE_ENTER(env, that, "glXDestroyGLXPixmap\n")
+	DEBUG_CALL("glXDestroyGLXPixmap\n")
+
 	glXDestroyGLXPixmap((Display *)arg0, arg1);
-	NATIVE_EXIT(env, that, "glXDestroyGLXPixmap\n")
 }
 
 JNIEXPORT jint JNICALL XGL_NATIVE(glXGetClientString)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-    jint rc;
-	NATIVE_ENTER(env, that, "glXGetClientString\n")
-	rc = (jint)glXGetClientString((Display *)arg0, arg1);
-	NATIVE_EXIT(env, that, "glXGetClientString\n")
-	return rc;
+	DEBUG_CALL("glXGetClientString\n")
+
+	return (jint)glXGetClientString((Display *)arg0, arg1);
 }
 
 JNIEXPORT jint JNICALL XGL_NATIVE(glXGetConfig)
@@ -98,54 +95,46 @@ JNIEXPORT jint JNICALL XGL_NATIVE(glXGetConfig)
 	jint *lparg3=NULL;
 	jint rc;
 
-	NATIVE_ENTER(env, that, "glXGetConfig\n")
+	DEBUG_CALL("glXGetConfig\n")
+
 	if (arg1) lparg1 = getXVisualInfoFields(env, arg1, &_arg1);
 	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
 	rc = (jint)glXGetConfig((Display *)arg0, lparg1, arg2, (int *)lparg3);
 	if (arg1) setXVisualInfoFields(env, arg1, lparg1);
 	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
-	NATIVE_EXIT(env, that, "glXGetConfig\n")
 	return rc;
 }
 
 JNIEXPORT jint JNICALL XGL_NATIVE(glXGetCurrentContext)
 	(JNIEnv *env, jclass that)
 {
-    jint rc;
-	NATIVE_ENTER(env, that, "glXGetCurrentContext\n")
-	rc = (jint)glXGetCurrentContext();
-	NATIVE_EXIT(env, that, "glXGetCurrentContext\n")
-	return rc;
+	DEBUG_CALL("glXGetCurrentContext\n")
+
+	return (jint)glXGetCurrentContext();
 }
 
 JNIEXPORT jint JNICALL XGL_NATIVE(glXGetCurrentDrawable)
 	(JNIEnv *env, jclass that)
 {
-    jint rc;
-	NATIVE_ENTER(env, that, "glXGetCurrentDrawable\n")
-	rc = (jint)glXGetCurrentDrawable();
-	NATIVE_EXIT(env, that, "glXGetCurrentDrawable\n")
-	return rc;
+	DEBUG_CALL("glXGetCurrentDrawable\n")
+
+	return (jint)glXGetCurrentDrawable();
 }
 
 JNIEXPORT jboolean JNICALL XGL_NATIVE(glXIsDirect)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-    jboolean result;
-	NATIVE_ENTER(env, that, "glXIsDirect\n")
-	result = (jboolean)glXIsDirect((Display *)arg0, (GLXContext)arg1);
-	NATIVE_EXIT(env, that, "glXIsDirect\n")
-	return result;
+	DEBUG_CALL("glXIsDirect\n")
+
+	return (jboolean)glXIsDirect((Display *)arg0, (GLXContext)arg1);
 }
 
 JNIEXPORT jboolean JNICALL XGL_NATIVE(glXMakeCurrent)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-    jboolean result;
-	NATIVE_ENTER(env, that, "glXMakeCurrent\n")
-	result = (jboolean)glXMakeCurrent((Display *)arg0, (GLXDrawable)arg1, (GLXContext)arg2);
-	NATIVE_EXIT(env, that, "glXMakeCurrent\n")
-	return result;
+	DEBUG_CALL("glXMakeCurrent\n")
+
+	return (jboolean)glXMakeCurrent((Display *)arg0, (GLXDrawable)arg1, (GLXContext)arg2);
 }
 
 JNIEXPORT jboolean JNICALL XGL_NATIVE(glXQueryExtension)
@@ -155,34 +144,30 @@ JNIEXPORT jboolean JNICALL XGL_NATIVE(glXQueryExtension)
 	jint *lparg2=NULL;
 	jboolean rc;
 
-	NATIVE_ENTER(env, that, "glXQueryExtension\n")
+	DEBUG_CALL("glXQueryExtension\n")
+
 	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
 	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
 	rc = (jboolean)glXQueryExtension((Display *)arg0, (int *)lparg1, (int *)lparg2);
 	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
-	NATIVE_EXIT(env, that, "glXQueryExtension\n")
 	return rc;
 }
 
 JNIEXPORT jint JNICALL XGL_NATIVE(glXQueryExtensionsString)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-    jint rc;
-	NATIVE_ENTER(env, that, "glXQueryExtensionsString\n")
-	rc = (jint)glXQueryExtensionsString((Display *)arg0, arg1);
-	NATIVE_EXIT(env, that, "glXQueryExtensionsString\n")
-	return rc;
+	DEBUG_CALL("glXQueryExtensionsString\n")
+
+	return (jint)glXQueryExtensionsString((Display *)arg0, arg1);
 }
 
 JNIEXPORT jint JNICALL XGL_NATIVE(glXQueryServerString)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-    jint rc;
-	NATIVE_ENTER(env, that, "glXQueryServerString\n")
-	rc = (jint)glXQueryServerString((Display *)arg0, arg1, arg2);
-	NATIVE_EXIT(env, that, "glXQueryServerString\n")
-	return rc;
+	DEBUG_CALL("glXQueryServerString\n")
+
+	return (jint)glXQueryServerString((Display *)arg0, arg1, arg2);
 }
 
 JNIEXPORT jboolean JNICALL XGL_NATIVE(glXQueryVersion)
@@ -192,46 +177,46 @@ JNIEXPORT jboolean JNICALL XGL_NATIVE(glXQueryVersion)
 	jint *lparg2=NULL;
 	jboolean rc;
 
-	NATIVE_ENTER(env, that, "glXQueryVersion\n")
+	DEBUG_CALL("glXQueryVersion\n")
+
 	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
 	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
 	rc = (jboolean)glXQueryVersion((Display *)arg0, (int *)lparg1, (int *)lparg2);
 	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
-	NATIVE_EXIT(env, that, "glXQueryVersion\n")
 	return rc;
 }
 
 JNIEXPORT void JNICALL XGL_NATIVE(glXSwapBuffers)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	NATIVE_ENTER(env, that, "glXSwapBuffers\n")
+	DEBUG_CALL("glXSwapBuffers\n")
+
 	glXSwapBuffers((Display *)arg0, (GLXDrawable)arg1);
-	NATIVE_EXIT(env, that, "glXSwapBuffers\n")
 }
 
 JNIEXPORT void JNICALL XGL_NATIVE(glXUseXFont)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
 {
-	NATIVE_ENTER(env, that, "glXUseXFont\n")
+	DEBUG_CALL("glXUseXFont\n")
+
 	glXUseXFont(arg0, arg1, arg2, arg3);
-	NATIVE_EXIT(env, that, "glXUseXFont\n")
 }
 
 JNIEXPORT void JNICALL XGL_NATIVE(glXWaitGL)
 	(JNIEnv *env, jclass that)
 {
-	NATIVE_ENTER(env, that, "glXWaitGL\n")
+	DEBUG_CALL("glXWaitGL\n")
+
 	glXWaitGL();
-	NATIVE_EXIT(env, that, "glXWaitGL\n")
 }
 
 JNIEXPORT void JNICALL XGL_NATIVE(glXWaitX)
 	(JNIEnv *env, jclass that)
 {
-	NATIVE_ENTER(env, that, "glXWaitX\n")
+	DEBUG_CALL("glXWaitX\n")
+
 	glXWaitX();
-	NATIVE_EXIT(env, that, "glXWaitX\n")
 }
 
 JNIEXPORT void JNICALL XGL_NATIVE(memmove__Lorg_eclipse_swt_opengl_internal_gtk_XVisualInfo_2II)
@@ -239,9 +224,9 @@ JNIEXPORT void JNICALL XGL_NATIVE(memmove__Lorg_eclipse_swt_opengl_internal_gtk_
 {
 	XVisualInfo _arg0, *lparg0=NULL;
 
-	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_opengl_internal_gtk_XVisualInfo_2II\n")
+	DEBUG_CALL("memmove__Lorg_eclipse_swt_opengl_internal_gtk_XVisualInfo_2II\n")
+
 	if (arg0) lparg0 = &_arg0;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setXVisualInfoFields(env, arg0, lparg0);
-	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_opengl_internal_gtk_XVisualInfo_2II\n")
 }
