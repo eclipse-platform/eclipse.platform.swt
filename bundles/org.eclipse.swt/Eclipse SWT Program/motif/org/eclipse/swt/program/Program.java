@@ -177,8 +177,8 @@ static boolean cde_init(Display display) {
 				/* This logic assumes that when the corresponding display is
 				 * being disposed, it must be the current one.
 				 */
-				Integer shell = (Integer)Display.getCurrent().getData(CDE_SHELL);
-				if (shell != null) OS.XtDestroyWidget(shell.intValue());
+				Integer shellData = (Integer)Display.getCurrent().getData(CDE_SHELL);
+				if (shellData != null) OS.XtDestroyWidget(shellData.intValue());
 			}
 		});
 	}	

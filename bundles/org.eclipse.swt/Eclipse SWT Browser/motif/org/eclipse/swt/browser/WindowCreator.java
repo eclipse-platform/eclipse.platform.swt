@@ -118,7 +118,7 @@ int CreateChromeWindow(int parent, int chromeFlags, int _retval) {
 		src = Browser.findBrowser(shells[i], aParentNativeWindow[0]);
 		if (src != null) break;
 	}
-	Browser browser;
+	final Browser browser;
 	boolean doit = false;
 	if ((chromeFlags & nsIWebBrowserChrome.CHROME_MODAL) != 0) {
 		/*
@@ -129,15 +129,13 @@ int CreateChromeWindow(int parent, int chromeFlags, int _retval) {
 		* and a Browser to display an emulated HTML based print dialog. For this reason,
 		* modal requests are handled here and not exposed to the user.
 		*/
-		Shell shell = new Shell(src.getShell(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
+		final Shell shell = new Shell(src.getShell(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
 		shell.setLayout(new FillLayout());
 		browser = new Browser(shell, SWT.NONE);
 		browser.addVisibilityWindowListener(new VisibilityWindowListener() {
 			public void hide(WindowEvent event) {
 			}
 			public void show(WindowEvent event) {
-				Browser browser = (Browser)event.widget;
-				Shell shell = browser.getShell();
 				if (event.location != null) shell.setLocation(event.location);
 				if (event.size != null) {
 					Point size = event.size;
@@ -148,8 +146,6 @@ int CreateChromeWindow(int parent, int chromeFlags, int _retval) {
 		});
 		browser.addCloseWindowListener(new CloseWindowListener() {
 			public void close(WindowEvent event) {
-				Browser browser = (Browser)event.widget;
-				Shell shell = browser.getShell();
 				shell.close();
 			}
 		});

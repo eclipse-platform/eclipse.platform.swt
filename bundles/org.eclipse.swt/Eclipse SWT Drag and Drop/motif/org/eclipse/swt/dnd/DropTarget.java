@@ -381,7 +381,7 @@ private void dragProcCallback(int widget, int client_data, int call_data) {
 	
 	DNDEvent event = new DNDEvent();
 	if (!setEventData(callbackData.operations, callbackData.operation, callbackData.dragContext, callbackData.x, callbackData.y, callbackData.timeStamp, event)) {
-		callbackData.dropSiteStatus = OS.XmDROP_SITE_INVALID;
+		callbackData.dropSiteStatus = (byte)OS.XmDROP_SITE_INVALID;
 		callbackData.operation = opToOsOp(DND.DROP_NONE);
 		OS.memmove(call_data, callbackData, XmDragProcCallbackStruct.sizeof);
 		return;
@@ -411,7 +411,7 @@ private void dragProcCallback(int widget, int client_data, int call_data) {
 	try {
 		notifyListeners(event.type, event);
 	} catch (Throwable err) {
-		callbackData.dropSiteStatus = OS.XmDROP_SITE_INVALID;
+		callbackData.dropSiteStatus = (byte)OS.XmDROP_SITE_INVALID;
 		callbackData.operation = opToOsOp(DND.DROP_NONE);
 		OS.memmove(call_data, callbackData, XmDragProcCallbackStruct.sizeof);
 		return;
@@ -438,7 +438,7 @@ private void dragProcCallback(int widget, int client_data, int call_data) {
 	
 	effect.show(event.feedback, event.x, event.y);
 
-	callbackData.dropSiteStatus = OS.XmDROP_SITE_VALID;
+	callbackData.dropSiteStatus = (byte)OS.XmDROP_SITE_VALID;
 	callbackData.operation = opToOsOp(selectedOperation);
 	OS.memmove(call_data, callbackData, XmDragProcCallbackStruct.sizeof);
 	
