@@ -1352,7 +1352,7 @@ public void drawText (String string, int x, int y, int flags) {
     * is used to position the text is different on between Windows
     * versions.  If this value is larger than the maximum, nothing
 	* is drawn.  On Windows 98, the limit is 0x7FFF.  On Windows 2000
-	* and NT, it is 0x6FFFFFF. And on XP, it is 0x7FFFFFFF.  The fix
+	* , NT and CE, it is 0x6FFFFFF. And on XP, it is 0x7FFFFFFF.  The fix
 	* is to use the the smaller limit for Windows 98 and the larger
 	* limit on the other Windows platforms. 
 	*/
