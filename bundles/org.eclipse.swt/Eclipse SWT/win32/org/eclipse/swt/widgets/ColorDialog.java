@@ -151,8 +151,9 @@ public RGB open () {
 		int blue = (rgb.blue << 16) & 0xFF0000;
 		lpcc.rgbResult = red | green | blue;
 	}
-	rgb = null;
+	boolean cancelled = true;
 	if (OS.ChooseColor (lpcc)) {
+		cancelled = false;
 		int red = lpcc.rgbResult & 0xFF;
 		int green = (lpcc.rgbResult >> 8) & 0xFF;
 		int blue = (lpcc.rgbResult >> 16) & 0xFF;
@@ -179,6 +180,7 @@ public RGB open () {
 	*/
 //	if (hwndOwner != 0) OS.UpdateWindow (hwndOwner);
 	
+	if (cancelled) return null;
 	return rgb;
 }
 
