@@ -135,6 +135,7 @@ int eventHandle () {
  */
 public ToolItem getItem (int index) {
 	checkWidget();
+	if (!(0 <= index && index < getItemCount())) error (SWT.ERROR_INVALID_RANGE);
 	return getItems()[index];
 }
 

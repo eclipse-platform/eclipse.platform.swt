@@ -306,6 +306,7 @@ int eventHandle () {
  */
 public TabItem getItem (int index) {
 	checkWidget();
+	if (!(0 <= index && index < getItemCount())) error (SWT.ERROR_INVALID_RANGE);	
 	int list = OS.gtk_container_get_children (handle);
 	if (list == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
 	int itemCount = OS.g_list_length (list);
