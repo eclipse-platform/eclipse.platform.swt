@@ -104,14 +104,7 @@ public void test_isDisposed() {
 }
 
 public void test_notifyListenersILorg_eclipse_swt_widgets_Event() {
-	// this method is further tested in many of the addTypedListener tests
-	try {
-		widget.notifyListeners(0, null);
-		fail("No exception thrown for event == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
-
+	widget.notifyListeners(0, null);
 	Event event = new Event();
 	GC gc = null;
 	if (widget instanceof Control) {
