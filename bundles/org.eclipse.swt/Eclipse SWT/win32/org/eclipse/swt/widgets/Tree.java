@@ -320,10 +320,6 @@ public void deselectAll () {
 
 void destroyItem (TreeItem item) {
 	int hItem = item.handle;
-	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-	releaseItems (item.getItems (), tvItem);
-	releaseItem (item, tvItem);
 	boolean fixRedraw = false;
 	if (drawCount == 0 && OS.IsWindowVisible (handle)) {
 		RECT rect = new RECT ();
@@ -334,6 +330,10 @@ void destroyItem (TreeItem item) {
 		OS.UpdateWindow (handle);
 		OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 	}
+	TVITEM tvItem = new TVITEM ();
+	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+	releaseItems (item.getItems (), tvItem);
+	releaseItem (item, tvItem);
 	OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, hItem);
 	if (fixRedraw) {
 		OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
@@ -1783,6 +1783,17 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				case OS.CDDS_PREPAINT: return new LRESULT (OS.CDRF_NOTIFYITEMDRAW);
 				case OS.CDDS_ITEMPREPAINT:
 					TreeItem item = items [nmcd.lItemlParam];
+					/*
+					* Feature on Windows.  When a new tree item is inserted
+					* using TVM_INSERTITEM and the tree is using custom draw,
+					* a NM_CUSTOMDRAW is sent before TVM_INSERTITEM returns
+					* and before the item is added to the items array.  The
+					* fix is to check for null.
+					* 
+					* NOTE: This only happens on XP with the version 6.00 of
+					* COMCTL32.DLL,
+					*/
+					if (item == null) break;
 					TVITEM tvItem = new TVITEM ();
 					tvItem.mask = OS.TVIF_STATE;
 					tvItem.hItem = item.handle;
@@ -1807,7 +1818,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			lpht.x = pt.x;  lpht.y = pt.y;
 			OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
 			if ((lpht.flags & OS.TVHT_ONITEM) == 0) break;
-			// fall through
+			// FALL THROUGH
 		case OS.NM_RETURN:
 		case OS.TVN_SELCHANGEDA:
 		case OS.TVN_SELCHANGEDW:
