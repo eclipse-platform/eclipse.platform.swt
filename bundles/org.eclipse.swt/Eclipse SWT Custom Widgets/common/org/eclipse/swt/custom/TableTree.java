@@ -441,13 +441,11 @@ void onResize(Event e) {
 void onSelection(Event e) {
 	Event event = new Event();
 	TableItem tableItem = (TableItem)e.item;
-    	TableTreeItem item = getItem(tableItem);
-    	event.item = item;
+	TableTreeItem item = getItem(tableItem);
+    event.item = item;
 
-	if (e.type == SWT.Selection 
-	    && e.detail == SWT.CHECK
-	    && item != null) {
-	    	event.detail = SWT.CHECK;
+	if (e.type == SWT.Selection && e.detail == SWT.CHECK && item != null) {
+		event.detail = SWT.CHECK;
 		item.checked = tableItem.getChecked();
 	}
 	notifyListeners(e.type, event);
