@@ -22,6 +22,9 @@ public class SWT_AWT {
 
 public static Frame new_Frame (final Composite parent) {
 	if (parent == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if ((parent.getStyle () & SWT.EMBEDDED) == 0) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
 	SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
 	return null;
 }
