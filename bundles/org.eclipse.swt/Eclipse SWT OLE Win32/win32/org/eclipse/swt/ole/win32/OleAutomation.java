@@ -102,7 +102,7 @@ OleAutomation(IDispatch idispatch) {
  * @param clientSite the site for the OLE Document or ActiveX Control whose additional functionality 
  *        you need to access
  *
- * @exception SWTError <ul>
+ * @exception IllegalArgumentException <ul>
  *		<li>ERROR_INVALID_INTERFACE_ADDRESS when called with an invalid client site
  *	</ul>
  */
@@ -466,7 +466,7 @@ private int invoke(int dispIdMember, int wFlags, Variant[] rgvarg, int[] rgdispi
  * @param dispIdMember the ID of the method as specified by the IDL of the ActiveX Control; the
  *        value for the ID can be obtained using OleAutomation.getIDsOfNames
  *
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *		<li>ERROR_ACTION_NOT_PERFORMED when method invocation fails
  *	</ul>
  */
@@ -487,7 +487,7 @@ public void invokeNoReply(int dispIdMember) {
  * @param rgvarg an array of arguments for the method.  All arguments are considered to be
  *        read only unless the Variant is a By Reference Variant type.
  *
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *		<li>ERROR_ACTION_NOT_PERFORMED when method invocation fails
  *	</ul>
  */
@@ -515,7 +515,7 @@ public void invokeNoReply(int dispIdMember, Variant[] rgvarg) {
  *        all arguments must have an identifier - identifiers can be obtained using 
  *        OleAutomation.getIDsOfNames
  *
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *		<li>ERROR_ACTION_NOT_PERFORMED when method invocation fails
  *	</ul>
  */

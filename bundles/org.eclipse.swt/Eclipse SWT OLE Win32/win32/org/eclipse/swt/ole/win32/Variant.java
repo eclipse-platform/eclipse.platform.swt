@@ -192,8 +192,9 @@ public void dispose() {
  *
  * @return the OleAutomation object represented by this Variant
  *
- * @exception SWTError
- *		ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into an OleAutomation object
+ * @exception SWTException <ul>
+ *     <li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into an OleAutomation object</li>
+ * </ul>
  */
 public OleAutomation getAutomation() {
 	if (type == COM.VT_EMPTY) {
@@ -234,8 +235,9 @@ public OleAutomation getAutomation() {
  * 
  * @return the IDispatch object represented by this Variant
  *
- * @exception SWTError
- *		ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into an IDispatch object
+ * @exception SWTException <ul>
+ *     <li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into an IDispatch object</li>
+ * </ul>
  */
 public IDispatch getDispatch() {
 	if (type == COM.VT_EMPTY) {
@@ -273,8 +275,9 @@ public IDispatch getDispatch() {
  *
  * @return the Java boolean represented by this Variant
  *
- * @exception SWTError
- * <ul><li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into a boolean</ul>
+ * @exception SWTException <ul>
+ *     <li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into a boolean</li>
+ * </ul>
  *
  */
 public boolean getBoolean() {
@@ -380,8 +383,9 @@ void getData(int pData){
  *
  * @return the Java float represented by this Variant
  *
- * @exception SWTError
- * <ul><li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into a float</ul>
+ * @exception SWTException <ul>
+ *     <li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into a float</li>
+ * </ul>
  */
 public float getFloat() {
 	if (type == COM.VT_EMPTY) {
@@ -418,8 +422,9 @@ public float getFloat() {
  *
  * @return the Java int represented by this Variant
  *
- * @exception SWTError
- * <ul><li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into a int</ul>
+ * @exception SWTException <ul>
+ *     <li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into a int</li>
+ * </ul>
  */
 public int getInt() {
 	if (type == COM.VT_EMPTY) {
@@ -455,8 +460,9 @@ public int getInt() {
  *
  * @return the Java short represented by this Variant
  *
- * @exception SWTError
- * <ul><li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into a short</ul>
+ * @exception SWTException <ul>
+ *     <li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into a short</li>
+ * </ul>
  */
 public short getShort() {
 	if (type == COM.VT_EMPTY) {
@@ -493,8 +499,9 @@ public short getShort() {
  *
  * @return the Java String represented by this Variant
  *
- * @exception SWTError
- * <ul><li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into a String</ul>
+ * @exception SWTException <ul>
+ *     <li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into a String</li>
+ * </ul>
  */
 public String getString() {
 	if (type == COM.VT_EMPTY) {
@@ -545,9 +552,10 @@ public short getType() {
  *
  * @return the IUnknown object represented by this Variant
  *
- * @exception SWTError
- * <ul><li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into 
- *			an IUnknown object</ul>
+ * @exception SWTException <ul>
+ *     <li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into 
+ *			an IUnknown object</li>
+ * </ul>
  */
 public IUnknown getUnknown() {
 	if (type == COM.VT_EMPTY) {
@@ -583,9 +591,10 @@ public IUnknown getUnknown() {
  * 
  * @param val the new boolean value
  * 
- * @exception SWTError
- * <ul><li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant is not 
- *			a (VT_BYREF | VT_BOOL) object</ul>
+ * @exception SWTException <ul>
+ *     <li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant is not 
+ *			a (VT_BYREF | VT_BOOL) object</li>
+ * </ul>
  *
  * @since 2.1
  */
@@ -600,9 +609,10 @@ public void setByRef(boolean val) {
  * 
  * @param val the new float value
  * 
- * @exception SWTError
- * <ul><li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant is not 
- *			a (VT_BYREF | VT_R4) object</ul>
+ * @exception SWTException <ul>
+ *     <li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant is not 
+ *			a (VT_BYREF | VT_R4) object</li>
+ * </ul>
  *
  * @since 2.1
  */
@@ -617,9 +627,9 @@ public void setByRef(float val) {
  * 
  * @param val the new integer value
  * 
- * @exception SWTError
- * <ul><li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant is not 
- *			a (VT_BYREF | VT_I4) object</ul>
+ * @exception SWTException <ul>
+ *     <li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant is not a (VT_BYREF | VT_I4) object</li>
+ * </ul>
  *
  * @since 2.1
  */
@@ -634,9 +644,9 @@ public void setByRef(int val) {
  * 
  * @param val the new short value
  * 
- * @exception SWTError
- * <ul><li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant is not 
- *			a (VT_BYREF | VT_I2) object</ul>
+ * @exception SWTException <ul>
+ *     <li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant is not a (VT_BYREF | VT_I2) object
+ * </ul>
  *
  * @since 2.1
  */

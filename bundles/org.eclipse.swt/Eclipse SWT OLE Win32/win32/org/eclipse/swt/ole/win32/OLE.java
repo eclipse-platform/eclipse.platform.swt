@@ -362,7 +362,7 @@ public static void error (int code, int hresult) {
  * @param extension the program extension
  * @return a string that is the OLE program id or an empty string
  *
- * @exception SWTError <ul>
+ * @exception IllegalArgumentException <ul>
  *		<li>ERROR_NULL_ARGUMENT when extension is null</li>
  *	</ul>
  */

@@ -66,10 +66,12 @@ final public class OleFrame extends Composite
  * @param parent a composite widget (cannot be null)
  * @param style the bitwise OR'ing of widget styles
  *
- * @exception SWTError
- * <ul><li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread
+ * @exception IllegalArgumentException <ul>
  *     <li>ERROR_NULL_ARGUMENT when the parent is null
- *     <li>ERROR_INTERFACES_NOT_INITIALIZED when unable to create callbacks for OLE Interfaces</ul>
+ * </ul>
+ * @exception SWTException <ul>
+ *     <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread
+ * </ul>
  *
  */
 public OleFrame(Composite parent, int style) {

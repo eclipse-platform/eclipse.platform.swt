@@ -132,10 +132,12 @@ private int Invoke(int dispIdMember, int riid, int lcid, int dwFlags, int pDispP
 * @param eventType the desired SWT event
 * @param event the event data
 *
-* @exception SWTError <ul>
+* @exception IllegalArgumentException <ul>
+* 		<li>ERROR_NULL_ARGUMENT when handler is null</li>
+* </ul>
+* @exception SWTException <ul>
 *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
 *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-* 		<li>ERROR_NULL_ARGUMENT when handler is null</li>
 *	</ul>
 */
 private void notifyListener (int eventType, OleEvent event) {

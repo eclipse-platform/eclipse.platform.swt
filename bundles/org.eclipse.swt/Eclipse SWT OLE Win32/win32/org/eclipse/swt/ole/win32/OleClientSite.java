@@ -153,15 +153,16 @@ protected OleClientSite(Composite parent, int style) {
  * @param style the bitwise OR'ing of widget styles
  * @param file the file that is to be opened in this OLE Document
  *
- * @exception SWTError
+ * @exception IllegalArgumentException
+ * <ul><li>ERROR_NULL_ARGUMENT when the parent is null
+ *     <li>ERROR_INVALID_ARGUMENT when the parent is not an OleFrame</ul> 
+ * @exception SWTException
  * <ul><li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread
- *     <li>ERROR_NULL_ARGUMENT when the parent is null</ul>
- * @exception SWTError
- * <ul><li>ERROR_CANNOT_CREATE_OBJECT when failed to create OLE Object
- *     <li>ERROR_INVALID_ARGUMENT when the parent is not an OleFrame
+ *     <li>ERROR_CANNOT_CREATE_OBJECT when failed to create OLE Object
  *     <li>ERROR_CANNOT_OPEN_FILE when failed to open file
- *     <li>ERROR_INTERFACES_NOT_INITIALIZED when unable to create callbacks for OLE Interfaces</ul>
- *
+ *     <li>ERROR_INTERFACE_NOT_FOUND when unable to create callbacks for OLE Interfaces
+ *     <li>ERROR_INVALID_CLASSID
+ * </ul>
  */
 public OleClientSite(Composite parent, int style, File file) {
 	this(parent, style);
@@ -212,14 +213,16 @@ public OleClientSite(Composite parent, int style, File file) {
  *               in the registry for the desired OLE Document (for example, the VersionIndependentProgID
  *               for Word is Word.Document)
  *
- * @exception SWTError
- * <ul><li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread
+ * @exception IllegalArgumentException
+ *<ul>
  *     <li>ERROR_NULL_ARGUMENT when the parent is null
- *     <li>ERROR_INVALID_CLASSID when the progId does not map to a registered CLSID
  *     <li>ERROR_INVALID_ARGUMENT when the parent is not an OleFrame
+ *</ul>
+ * @exception SWTException
+ * <ul><li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread
+ *     <li>ERROR_INVALID_CLASSID when the progId does not map to a registered CLSID
  *     <li>ERROR_CANNOT_CREATE_OBJECT when failed to create OLE Object
- *     <li>ERROR_INTERFACES_NOT_INITIALIZED when unable to create callbacks for OLE Interfaces</ul>
- *
+ * </ul>
  */
 public OleClientSite(Composite parent, int style, String progId) {
 	this(parent, style);
@@ -268,15 +271,15 @@ public OleClientSite(Composite parent, int style, String progId) {
  *               for Word is Word.Document)
  * @param file the file that is to be opened in this OLE Document
  *
- * @exception SWTError
+ * @exception IllegalArgumentException
+ * <ul><li>ERROR_NULL_ARGUMENT when the parent is null
+ *     <li>ERROR_INVALID_ARGUMENT when the parent is not an OleFrame</ul>
+ * @exception SWTException
  * <ul><li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread
- *     <li>ERROR_NULL_ARGUMENT when the parent is null
  *     <li>ERROR_INVALID_CLASSID when the progId does not map to a registered CLSID
  *     <li>ERROR_CANNOT_CREATE_OBJECT when failed to create OLE Object
  *     <li>ERROR_CANNOT_OPEN_FILE when failed to open file
- *     <li>ERROR_INVALID_ARGUMENT when the parent is not an OleFrame
- *     <li>ERROR_INTERFACES_NOT_INITIALIZED when unable to create callbacks for OLE Interfaces</ul>
- *
+ * </ul>
  */
 public OleClientSite(Composite parent, int style, String progId, File file) {
 	this(parent, style);

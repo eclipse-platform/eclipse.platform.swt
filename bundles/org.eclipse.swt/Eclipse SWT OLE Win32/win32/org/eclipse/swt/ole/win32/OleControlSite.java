@@ -69,15 +69,16 @@ public class OleControlSite extends OleClientSite
  *               in the registry for this Control (for example, the VersionIndependentProgID for 
  *               Internet Explorer is Shell.Explorer)
  *
- * @exception SWTError
- * <ul><li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread
+ *@exception IllegalArgumentException <ul>
  *     <li>ERROR_NULL_ARGUMENT when the parent is null
+ *</ul>
+ * @exception SWTException <ul>
+ *     <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread
  *     <li>ERROR_INVALID_CLASSID when the progId does not map to a registered CLSID
  *     <li>ERROR_CANNOT_CREATE_OBJECT when failed to create OLE Object
  *     <li>ERROR_CANNOT_ACCESS_CLASSFACTORY when Class Factory could not be found
  *     <li>ERROR_CANNOT_CREATE_LICENSED_OBJECT when failed to create a licensed OLE Object
- *     <li>ERROR_INTERFACES_NOT_INITIALIZED when unable to create callbacks for OLE Interfaces</ul>
- *
+ * </ul>
  */
 public OleControlSite(Composite parent, int style, String progId) {
 	super(parent, style);
@@ -154,8 +155,9 @@ public OleControlSite(Composite parent, int style, String progId) {
  * 
  * @param listener the listener
  *
- * @exception SWTError 
- *	<ul><li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
+ * @exception IllegalArgumentException <ul> 
+ *	    <li>ERROR_NULL_ARGUMENT when listener is null</li>
+ * </ul>
  */
 public void addEventListener(int eventID, OleListener listener) {
 	if (listener == null) OLE.error (SWT.ERROR_NULL_ARGUMENT);
@@ -238,8 +240,9 @@ static GUID getDefaultEventSinkGUID(IUnknown unknown) {
  * 
  * @param listener the listener
  *
- * @exception SWTError 
- *	<ul><li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
+ * @exception IllegalArgumentException <ul> 
+ *	   <li>ERROR_NULL_ARGUMENT when listener is null</li>
+ * </ul>
  */
 public void addEventListener(OleAutomation automation, int eventID, OleListener listener) {
 	if (listener == null || automation == null) OLE.error (SWT.ERROR_NULL_ARGUMENT);
@@ -310,8 +313,9 @@ protected void addObjectReferences() {
  * @param propertyID the identifier of the property
  * @param listener the listener
  *
- * @exception SWTError 
- *	<ul><li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
+ * @exception IllegalArgumentException <ul> 
+ *	    <li>ERROR_NULL_ARGUMENT when listener is null</li>
+ * </ul>
  */
 public void addPropertyListener(int propertyID, OleListener listener) {
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
@@ -616,8 +620,9 @@ protected void releaseObjectInterfaces() {
  * 
  * @param listener the listener
  *
- * @exception SWTError
- *	<ul><li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
+ * @exception IllegalArgumentException <ul>
+ *	    <li>ERROR_NULL_ARGUMENT when listener is null</li>
+ * </ul>
  */
 public void removeEventListener(int eventID, OleListener listener) {
 	checkWidget();
@@ -642,8 +647,9 @@ public void removeEventListener(int eventID, OleListener listener) {
  * 
  * @param listener the listener
  *
- * @exception SWTError
- *	<ul><li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
+ * @exception IllegalArgumentException <ul>
+ *	    <li>ERROR_NULL_ARGUMENT when listener is null</li>
+ * </ul>
  */
 public void removeEventListener(OleAutomation automation, GUID guid, int eventID, OleListener listener) {
 	checkWidget();
@@ -661,8 +667,9 @@ public void removeEventListener(OleAutomation automation, GUID guid, int eventID
  * 
  * @param listener the listener
  *
- * @exception SWTError
- *	<ul><li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
+ * @exception IllegalArgumentException <ul>
+ *	    <li>ERROR_NULL_ARGUMENT when listener is null</li>
+ * </ul>
  */
 public void removeEventListener(OleAutomation automation, int eventID, OleListener listener) {
 	checkWidget();
@@ -716,8 +723,9 @@ void removeEventListener(int iunknown, GUID guid, int eventID, OleListener liste
  *
  * @param listener the listener
  *
- * @exception SWTError
- *	<ul><li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
+ * @exception IllegalArgumentException <ul>
+ *	    <li>ERROR_NULL_ARGUMENT when listener is null</li>
+ * </ul>
  */
 public void removePropertyListener(int propertyID, OleListener listener) {
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
