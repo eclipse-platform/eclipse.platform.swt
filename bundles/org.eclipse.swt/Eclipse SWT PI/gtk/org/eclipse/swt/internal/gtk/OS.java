@@ -371,7 +371,7 @@ public class OS {
 	public static final byte[] xalign = signal("xalign");
 	public static final byte[] default_border = signal("default_border");
 	
-	public static final int GTK_VERSION = OS.gtk_major_version () * 100 + OS.gtk_minor_version () * 10 + OS.gtk_micro_version();
+	public static final int GTK_VERSION = VERSION(gtk_major_version(), gtk_minor_version(), gtk_micro_version()); 
 	
 protected static byte [] signal (String name) {
 	int length = name.length ();
@@ -384,7 +384,7 @@ protected static byte [] signal (String name) {
 	return buffer;
 }
 
-public static int VERSION (int major, int minor, int micro) {
+public static int VERSION(int major, int minor, int micro) {
 	return major * 100 + minor * 10 + micro;
 }
 
