@@ -93,12 +93,14 @@ int clientHandle () {
  * @see #getClientArea
  */
 public Rectangle computeTrim (int x, int y, int width, int height) {
-	checkWidget ();
-	int hs=0, vs=0;
-	/* FIXME - just measured the width on one particular theme */
-	if ((style&SWT.H_SCROLL)!=0) hs=18;
-	if ((style&SWT.V_SCROLL)!=0) vs=18;	
-	return new Rectangle (x, y, width+vs, height+hs);
+	checkWidget();
+	//FIXME - figure out scrollbar size and border
+	int border = 0;
+	int trimX = x - border, trimY = y - border;
+	int trimWidth = width + (border * 2), trimHeight = height + (border * 2);
+	if (horizontalBar != null) trimHeight += 18;
+	if (verticalBar != null) trimWidth += 18;
+	return new Rectangle (trimX, trimY, trimWidth, trimHeight);
 }
 
 ScrollBar createScrollBar (int style) {

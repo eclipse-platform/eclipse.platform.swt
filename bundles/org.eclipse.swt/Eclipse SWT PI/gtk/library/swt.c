@@ -2449,6 +2449,14 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1frame_1set_1sha
 	gtk_frame_set_shadow_type((GtkFrame *)arg0, (GtkShadowType)arg1);
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1get_1current_1event
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("gtk_1get_1current_1event\n")
+
+	return (jint)gtk_get_current_event();
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1get_1current_1event_1time
 	(JNIEnv *env, jclass that)
 {
@@ -3168,6 +3176,14 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1toggle_1button_
 	gtk_toggle_button_set_active((GtkToggleButton *)arg0, (gboolean)arg1);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1toggle_1button_1set_1mode
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	DEBUG_CALL("gtk_1toggle_1button_1set_1mode\n")
+
+	gtk_toggle_button_set_mode((GtkToggleButton *)arg0, (gboolean)arg1);
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1toolbar_1insert_1element
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3, jbyteArray arg4, jbyteArray arg5, jint arg6, jint arg7, jint arg8, jint arg9)
 {
@@ -3524,6 +3540,21 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1size_1r
 	if (arg1) lparg1 = getGtkRequisitionFields(env, arg1, &_arg1);
 	gtk_widget_size_request((GtkWidget *)arg0, (GtkRequisition *)lparg1);
 	if (arg1) setGtkRequisitionFields(env, arg1, lparg1);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1style_1get
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+
+	DEBUG_CALL("gtk_1widget_1style_1get\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	gtk_widget_style_get((GtkWidget *)arg0, (const gchar *)lparg1, (void *)lparg2, (void *)arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 }
 
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1activate_1default

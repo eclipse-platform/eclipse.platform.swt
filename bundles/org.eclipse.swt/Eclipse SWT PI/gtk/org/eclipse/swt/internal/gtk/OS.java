@@ -21,7 +21,7 @@ public class OS {
 		Library.loadLibrary("swt-pi");
 	}
 	
-	/* Constants */
+	/** Constants */
 	public static final int GDK_2BUTTON_PRESS = 0x5;
 	public static final int GDK_Alt_L = 0xffe9;
 	public static final int GDK_Alt_R = 0xffea;
@@ -197,7 +197,7 @@ public class OS {
 	public static final int PANGO_WEIGHT_BOLD = 0x2bc;
 	public static final int PANGO_WEIGHT_NORMAL = 0x190;
 	
-	/* Signals */
+	/** Signals */
 	public static final byte[] activate = signal("activate");
 	public static final byte[] button_press_event = signal("button_press_event");
 	public static final byte[] button_release_event = signal("button_release_event");
@@ -234,7 +234,7 @@ static byte[] signal (String name) {
 	return Converter.wcsToMbcs(null, name, true);
 }
 
-/* Object private fields accessors */
+/** Object private fields accessors */
 public static final native int GTK_CLIST_CLIST_WINDOW(int clist);
 public static final native int GTK_CLIST_COLUMN(int clist);
 public static final native int GTK_CLIST_COLUMN_TITLE_AREA_HEIGHT(int clist);
@@ -253,7 +253,7 @@ public static final native int GTK_WIDGET_WINDOW(int widget);
 public static final native int GTK_WIDGET_X(int widget);
 public static final native int GTK_WIDGET_Y(int widget);
 
-/* Native methods */
+/** Native methods */
 public static final native int GDK_ROOT_PARENT();
 public static final native boolean GTK_CLIST_SHOW_TITLES(int clist);
 public static final native int GTK_WIDGET_FLAGS(int wid);
@@ -497,6 +497,7 @@ public static final native int gtk_frame_new(byte[] label);
 public static final native void gtk_frame_set_label(int frame, byte[] label);
 public static final native void gtk_frame_set_label_widget(int frame, int label_widget);
 public static final native void gtk_frame_set_shadow_type(int frame, int type);
+public static final native int gtk_get_current_event();
 public static final native int gtk_get_current_event_time();
 public static final native int gtk_hbox_new(boolean homogeneous, int spacing);
 public static final native int gtk_hscale_new(int adjustment);
@@ -579,6 +580,7 @@ public static final native void gtk_timeout_remove(int timeout_handler_id);
 public static final native boolean gtk_toggle_button_get_active(int toggle_button);
 public static final native int gtk_toggle_button_new();
 public static final native void gtk_toggle_button_set_active(int toggle_button, boolean is_active);
+public static final native void gtk_toggle_button_set_mode(int toggle_button, boolean draw_indicator);
 public static final native int gtk_toolbar_insert_element(int toolbar, int type, int widget, byte[] text, byte[] tooltip_text, byte[] tooltip_private_text, int icon, int callback, int user_data, int position);
 public static final native void gtk_toolbar_insert_widget(int toolbar, int widget, byte[] tooltip_text, byte[] tooltip_private_text, int position);
 public static final native int gtk_toolbar_new();
@@ -617,6 +619,7 @@ public static final native void gtk_widget_show_all(int widget);
 public static final native void gtk_widget_show_now(int widget);
 public static final native void gtk_widget_size_allocate(int widget, GtkAllocation allocation);
 public static final native void gtk_widget_size_request(int widget, GtkRequisition requisition);
+public static final native void gtk_widget_style_get(int widget, byte[] property_name, int[] value, int null_terminator);
 public static final native boolean gtk_window_activate_default(int window);
 public static final native void gtk_window_add_accel_group(int window, int accel_group);
 public static final native void gtk_window_deiconify(int handle);
