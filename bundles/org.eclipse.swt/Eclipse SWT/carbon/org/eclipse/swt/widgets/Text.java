@@ -126,6 +126,7 @@ void createHandle () {
 	txnObject = oTXNObject [0];
 	txnFrameID = oTXNFrameID [0];
 	OS.TXNSetTXNObjectControls (txnObject, false, 1, new int[] {OS.kTXNDisableDragAndDropTag}, new int[] {1});
+	OS.TXNSetFrameBounds (txnObject, 0, 0, 0, 0, txnFrameID);
 }
 
 ScrollBar createScrollBar (int type) {
