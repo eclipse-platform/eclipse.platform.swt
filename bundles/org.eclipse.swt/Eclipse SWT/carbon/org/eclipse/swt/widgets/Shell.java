@@ -265,7 +265,9 @@ public boolean getVisible () {
 int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowActivated (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-//	OS.SetRootMenu (outMenuRef [0]);
+	//NOT DONE
+	Display display = getDisplay ();
+	display.setMenuBar (menuBar);
 	sendEvent (SWT.Activate);
 	return OS.eventNotHandledErr;
 }

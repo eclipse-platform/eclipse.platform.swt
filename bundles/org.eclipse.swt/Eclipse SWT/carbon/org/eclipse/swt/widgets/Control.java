@@ -581,23 +581,18 @@ boolean sendMouseEvent (int type, short button, int theEvent) {
 	Event event = new Event ();
 	event.type = type;
 	event.button = button;
-//	CGPoint pt = new CGPoint ();
-//	OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, pt.sizeof, null, pt);
-	short [] pt = new short [2];
-	if (OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeQDPoint, null, pt.length * 2, null, pt) != OS.noErr) {
-		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, pt.length * 2, null, pt);
+	CGPoint pt = new CGPoint ();
+	if (OS.GetEventParameter (theEvent, OS.kEventParamWindowMouseLocation, OS.typeHIPoint, null, pt.sizeof, null, pt) != OS.noErr) {
+		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeHIPoint, null, pt.sizeof, null, pt);
 		Rect rect = new Rect ();
 		int window = OS.GetControlOwner (handle);
 		OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-		pt [1] -= rect.left;
-		pt [0] -= rect.top;
+		pt.x -= rect.left;
+		pt.y -= rect.top;
 	}
-	CGPoint ioPoint = new CGPoint ();
-	ioPoint.x = pt [1];
-	ioPoint.y = pt [0];
-	OS.HIViewConvertPoint (ioPoint, 0, handle);
-	event.x = (int) ioPoint.x;
-	event.y = (int) ioPoint.y;
+	OS.HIViewConvertPoint (pt, 0, handle);
+	event.x = (int) pt.x;
+	event.y = (int) pt.y;
 	setInputState (event, theEvent);
 	postEvent (type, event);
 	return true;
@@ -734,23 +729,23 @@ public Point toControl (Point point) {
 	int window = OS.GetControlOwner (handle);
 	OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
 	CGPoint ioPoint = new CGPoint ();
-	ioPoint.x = (int) (point.x - rect.left);
-	ioPoint.y = (int) (point.y - rect.top);
+	ioPoint.x = point.x - rect.left;
+	ioPoint.y = point.y - rect.top;
 	OS.HIViewConvertPoint (ioPoint, 0, handle); 
-    return new Point ((short)ioPoint.x, (short)ioPoint.y);
+    return new Point ((int) ioPoint.x, (int) ioPoint.y);
 }
 
 public Point toDisplay (Point point) {
 	checkWidget();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	CGPoint ioPoint = new CGPoint ();
-	ioPoint.x = (int) point.x;
-	ioPoint.y = (int) point.y;
+	ioPoint.x = point.x;
+	ioPoint.y = point.y;
 	OS.HIViewConvertPoint (ioPoint, handle, 0);
 	Rect rect = new Rect ();
 	int window = OS.GetControlOwner (handle);
 	OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-    return new Point ((short)(rect.left + ioPoint.x), (short)(rect.top + ioPoint.y));
+    return new Point (rect.left + (int) ioPoint.x, rect.top + (int) ioPoint.y);
 }
 
 boolean traverseMnemonic (char key) {

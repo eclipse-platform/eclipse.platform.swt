@@ -12,6 +12,7 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.CGPoint;
 import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.HICommand;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -40,6 +41,12 @@ public class Display extends Device {
 	/* Grabs */
 	Control grabControl;
 
+	/* Menus */
+	static final int ID_START = 1000;
+	Menu menuBar;
+	Menu [] menus;
+	MenuItem [] items;
+	
 	/* Key Mappings. */
 	static int [] [] KeyTable = {
 
@@ -143,6 +150,38 @@ public void addListener (int eventType, Listener listener) {
 	eventTable.hook (eventType, listener);
 }
 
+void addMenu (Menu menu) {
+	if (menus == null) menus = new Menu [12];
+	for (int i=0; i<menus.length; i++) {
+		if (menus [i] == null) {
+			menu.id = (short)(ID_START + i);
+			menus [i] = menu;
+			return;
+		}
+	}
+	Menu [] newMenus = new Menu [menus.length + 12];
+	menu.id = (short)(ID_START + menus.length);
+	newMenus [menus.length] = menu;
+	System.arraycopy (menus, 0, newMenus, 0, menus.length);
+	menus = newMenus;
+}
+
+void addMenuItem (MenuItem item) {
+	if (items == null) items = new MenuItem [12];
+	for (int i=0; i<items.length; i++) {
+		if (items [i] == null) {
+			item.id = ID_START + i;
+			items [i] = item;
+			return;
+		}
+	}
+	MenuItem [] newItems = new MenuItem [items.length + 12];
+	item.id = ID_START + items.length;
+	newItems [items.length] = item;
+	System.arraycopy (items, 0, newItems, 0, items.length);
+	items = newItems;
+}
+
 public void asyncExec (Runnable runnable) {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	synchronizer.asyncExec (runnable);
@@ -150,6 +189,7 @@ public void asyncExec (Runnable runnable) {
 
 public void beep () {
 	checkDevice ();
+	OS.SysBeep ((short)100);
 }
 
 protected void checkDevice () {
@@ -239,6 +279,20 @@ boolean filters (int eventType) {
 	return filterTable.hooks (eventType);
 }
 
+Menu findMenu (int id) {
+	if (menus == null) return null;
+	id = id - ID_START;
+	if (0 <= id && id < menus.length) return menus [id];
+	return null;
+}
+
+MenuItem findMenuItem (int id) {
+	if (items == null) return null;
+	id = id - ID_START;
+	if (0 <= id && id < items.length) return items [id];
+	return null;
+}
+
 public Widget findWidget (int handle) {
 	checkDevice ();
 	return WidgetTable.get (handle);
@@ -256,6 +310,12 @@ public static synchronized Display findDisplay (Thread thread) {
 
 public Shell getActiveShell () {
 	checkDevice ();
+	int theWindow = OS.FrontWindow ();
+	if (theWindow == 0) return null;
+	int [] theControl = new int [1];
+	OS.GetRootControl (theWindow, theControl);
+	Control control = WidgetTable.get (theControl [0]);
+	if (control instanceof Shell) return (Shell) control;
 	return null;
 }
 
@@ -275,12 +335,33 @@ public static synchronized Display getCurrent () {
 
 public Control getCursorControl () {
 	checkDevice ();
-	return null;
+	org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
+	OS.GetGlobalMouse (where);
+	int [] theWindow = new int [1];
+	//NOT DONE - exclude window trim
+	if (OS.FindWindow (where, theWindow) != OS.inContent) ; //return null;
+	Rect rect = new Rect ();
+	OS.GetWindowBounds (theWindow [0], (short) OS.kWindowStructureRgn, rect);	
+	CGPoint inPoint = new CGPoint ();
+	inPoint.x = where.h - rect.left;
+	inPoint.y = where.v - rect.top;
+	int [] theRoot = new int [1];
+	OS.GetRootControl (theWindow [0], theRoot);
+	OS.HIViewConvertPoint (inPoint, 0, theRoot [0]); 
+	int [] theControl = new int [1];
+	OS.HIViewGetSubviewHit (theRoot [0], inPoint, true, theControl);
+	if (theControl [0] != 0) {
+		//NOT DONE - check for disabled controls
+		 return WidgetTable.get (theControl [0]);
+	}
+	return WidgetTable.get (theRoot [0]);
 }
 
 public Point getCursorLocation () {
 	checkDevice ();
-	return new Point (0, 0);
+	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point();
+	OS.GetGlobalMouse (pt);
+	return new Point (pt.h, pt.v);
 }
 
 public static synchronized Display getDefault () {
@@ -320,6 +401,10 @@ public int getIconDepth () {
 int getLastEventTime () {
 //	return (int) (OS.GetLastUserEventTime () * 1000.0);
 	return (int) System.currentTimeMillis ();
+}
+
+Menu getMenuBar () {
+	return menuBar;
 }
 
 public Shell [] getShells () {
@@ -402,6 +487,7 @@ protected void init () {
 	
 	/* Install Application Event Handlers */
 	int[] mask1 = new int[] {
+		OS.kEventClassCommand, OS.kEventProcessCommand,
 		OS.kEventClassMouse, OS.kEventMouseDown,
 		OS.kEventClassMouse, OS.kEventMouseDragged,
 		OS.kEventClassMouse, OS.kEventMouseEntered,
@@ -499,8 +585,8 @@ public boolean readAndDispatch () {
 					int handle = grabControl.handle;
 					int window = OS.GetControlOwner (handle);
 					OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
-					ioPoint.x = (int) (outPt.h - rect.left);
-					ioPoint.y = (int) (outPt.v - rect.top);
+					ioPoint.x = outPt.h - rect.left;
+					ioPoint.y = outPt.v - rect.top;
 					OS.HIViewConvertPoint (ioPoint, 0, handle); 
 					grabControl.sendMouseEvent (type, (short)0, (short)ioPoint.x, (short)ioPoint.y, outModifiers [0]);
 				}
@@ -567,6 +653,16 @@ public void removeListener (int eventType, Listener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (eventType, listener);
+}
+
+void removeMenu (Menu menu) {
+	if (menus == null) return;
+	menus [menu.id - ID_START] = null;
+}
+
+void removeMenuItem (MenuItem item) {
+	if (items == null) return;
+	items [item.id - ID_START] = null;
 }
 
 boolean runAsyncMessages () {
@@ -716,6 +812,13 @@ public void setSynchronizer (Synchronizer synchronizer) {
 	this.synchronizer = synchronizer;
 }
 
+void setMenuBar (Menu menu) {
+	menuBar = menu;
+	//NOT DONE
+	int inMenu = menuBar != null ? menu.handle : 0; 
+	OS.SetRootMenu (inMenu);
+}
+
 public boolean sleep () {
 	checkDevice ();
 	int status = OS.ReceiveNextEvent (0, null, OS.kEventDurationForever, false, null);
@@ -762,6 +865,34 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 	int eventClass = OS.GetEventClass (theEvent);
 	int eventKind = OS.GetEventKind (theEvent);
 	switch (eventClass) {
+				
+		case OS.kEventClassCommand: {
+			HICommand command = new HICommand ();
+			OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeHICommand, null, HICommand.sizeof, null, command);
+			switch (eventKind) {
+				case OS.kEventProcessCommand: {
+					if (command.commandID == OS.kAEQuitApplication) {
+//						close ();
+						return OS.noErr;
+					}
+					if ((command.attributes & OS.kHICommandFromMenu) != 0) {
+						int menuRef = command.menu_menuRef;
+						short menuID = OS.GetMenuID (menuRef);
+						Menu menu = findMenu (menuID);
+						if (menu != null) {
+							int [] outCommandID = new int [1];
+							short menuIndex = command.menu_menuItemIndex;
+							OS.GetMenuItemCommandID (menuRef, menuIndex, outCommandID);
+							MenuItem item = findMenuItem (outCommandID [0]);
+							return item.kEventProcessCommand (nextHandler, theEvent, userData);
+						}
+						OS.HiliteMenu ((short)0);
+					}
+				}
+			}
+			break;
+		}
+			
 		case OS.kEventClassControl: {
 			int [] theControl = new int [1];
 			OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
@@ -774,6 +905,7 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 			}
 			break;
 		}
+		
 		case OS.kEventClassKeyboard: {
 			int theWindow = OS.FrontWindow ();
 			if (theWindow == 0) return OS.eventNotHandledErr;
@@ -794,14 +926,27 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 			}
 			break;
 		}
+		
+		case OS.kEventClassMenu: {
+			int [] theMenu = new int [1];
+			OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeMenuRef, null, 4, null, theMenu);
+			short menuID = OS.GetMenuID (theMenu [0]);
+			Menu menu = findMenu (menuID);
+			if (menu != null) {
+				switch (eventKind) {
+					case OS.kEventMenuOpening:	return menu.kEventMenuOpening (nextHandler, theEvent, userData);
+					case OS.kEventMenuClosed:	return menu.kEventMenuClosed (nextHandler, theEvent, userData);
+				}
+			}
+			break;
+		}
+		
 		case OS.kEventClassMouse: {
-			short [] pt = new short [2];
-			OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, pt.length * 2, null, pt);
+			org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
+			OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, where.sizeof, null, where);
 			int [] theWindow = new int [1];
 			OS.GetEventParameter (theEvent, OS.kEventParamWindowRef, OS.typeWindowRef, null, 4, null, theWindow);
 			if (theWindow [0] == 0) {
-				org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
-				OS.SetPt (where, pt [1], pt [0]);
 				short part = OS.FindWindow (where, theWindow);
 				if (eventKind == OS.kEventMouseDown && part == OS.inMenuBar) {
 					OS.MenuSelect (where);
@@ -813,14 +958,12 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 			int [] theControl = new int [1];
 			Rect rect = new Rect ();
 			OS.GetWindowBounds (theWindow [0], (short) OS.kWindowStructureRgn, rect);
-			pt [1] -= rect.left;
-			pt [0] -= rect.top;	
 			CGPoint inPoint = new CGPoint ();
-			inPoint.x = pt [1];
-			inPoint.y = pt [0];
+			inPoint.x = where.h - rect.left;
+			inPoint.y = where.v - rect.top;
 			OS.HIViewConvertPoint (inPoint, 0, theRoot [0]); 
 			OS.HIViewGetSubviewHit (theRoot [0], inPoint, true, theControl);
-			//BOGUS
+			//FIXME - look for part code?
 			if (theControl [0] == 0) {
 				if (0 <= inPoint.x && inPoint.x < (rect.right - rect.left)) {
 					if (0 <= inPoint.y && inPoint.y < (rect.bottom - rect.top)) {
@@ -828,7 +971,6 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 					}
 				}
 			}
-//			System.out.println ("CONTROL: " + theControl [0]);
 			Control control = WidgetTable.get (theControl [0]);
 			if (control != null) {
 				switch (eventKind) {
@@ -843,6 +985,7 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 			}
 			break;
 		}
+		
 		case OS.kEventClassWindow: {
 			int [] theWindow = new int [1];
 			OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeWindowRef, null, 4, null, theWindow);
@@ -861,6 +1004,7 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 			}
 			break;
 		}
+		
 	}
 	return OS.eventNotHandledErr;
 }

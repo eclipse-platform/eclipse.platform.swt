@@ -201,6 +201,7 @@ public class OS {
 	public static final int kFloatingWindowClass = 5;
 	public static final int kHIComboBoxAutoSizeListAttribute = (1 << 3);
 	public static final int kHIComboBoxEditTextPart = 5;
+	public static final int kHICommandFromMenu = 1 << 0;
 	public static final int kHIViewZOrderAbove = 1;
 	public static final int kHIViewZOrderBelow = 2;
 	public static final int kHelpWindowClass = 10;
@@ -355,6 +356,8 @@ public class OS {
 	public static final int typeControlRef = ('c'<<24) + ('t'<<16) + ('r'<<8) + 'l';
 	public static final int typeFSRef = ('f'<<24) + ('s'<<16) + ('r'<<8) + 'f';
 	public static final int typeHICommand = ('h'<<24) + ('c'<<16) + ('m'<<8) + 'd';
+	public static final int typeHIPoint = ('h'<<24) + ('i'<<16) + ('p'<<8) + 't';
+	public static final int typeMenuRef = ('m'<<24) + ('e'<<16) + ('n'<<8) + 'u';
 	public static final int typeMouseButton = ('m'<<24) + ('b'<<16) + ('t'<<8) + 'n';
 	public static final int typeQDPoint = ('Q'<<24) + ('D'<<16) + ('p'<<8) + 't';
 	public static final int typeQDRgnHandle= ('r'<<24) + ('g'<<16) + ('n'<<8) + 'h';

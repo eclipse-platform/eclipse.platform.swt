@@ -13,6 +13,7 @@ import org.eclipse.swt.graphics.*;
 
 public class Decorations extends Canvas {
 	Image image;
+	Menu menuBar;
 	String text;
 	boolean minimized, maximized;
 	Button defaultButton, saveDefault;
@@ -63,6 +64,11 @@ public boolean getMaximized () {
 	return maximized;
 }
 
+public Menu getMenuBar () {
+	checkWidget();
+	return menuBar;
+}
+
 public boolean getMinimized () {
 	checkWidget();
 	return minimized;
@@ -107,6 +113,19 @@ public void setImage (Image image) {
 public void setMaximized (boolean maximized) {
 	checkWidget();
 	this.maximized = maximized;
+}
+public void setMenuBar (Menu menu) {
+	checkWidget();
+	if (menuBar == menu) return;
+	if (menu != null) {
+		if (menu.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+		if ((menu.style & SWT.BAR) == 0) error (SWT.ERROR_MENU_NOT_BAR);
+		if (menu.parent != this) error (SWT.ERROR_INVALID_PARENT);
+	}
+	menuBar = menu;
+	//NOT DONE
+	Display display = getDisplay ();
+//	display.setMenuBar (menuBar);
 }
 
 public void setMinimized (boolean minimized) {
