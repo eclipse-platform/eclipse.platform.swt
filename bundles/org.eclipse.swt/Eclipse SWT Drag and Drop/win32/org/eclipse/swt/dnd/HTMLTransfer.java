@@ -54,7 +54,6 @@ public static HTMLTransfer getInstance () {
  *  object will be filled in on return with the platform specific format of the data
  */
 public void javaToNative (Object object, TransferData transferData){
-	transferData.result = COM.E_FAIL;
 	if (!_validate(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
