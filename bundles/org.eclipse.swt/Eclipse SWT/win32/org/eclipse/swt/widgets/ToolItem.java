@@ -377,6 +377,32 @@ void releaseWidget () {
 	disabledImage2 = null;
 }
 
+void releaseImages () {
+	TBBUTTONINFO info = new TBBUTTONINFO ();
+	info.cbSize = TBBUTTONINFO.sizeof;
+	info.dwMask = OS.TBIF_IMAGE | OS.TBIF_STYLE;
+	int hwnd = parent.handle;
+	int index = OS.SendMessage (hwnd, OS.TB_GETBUTTONINFO, id, info);
+	/*
+	* Feature in Windows.  For some reason, a tool item that has
+	* the style BTNS_SEP does not return I_IMAGENONE when queried
+	* for an image index, despite the fact that no attempt has been
+	* made to assign an image to the item.  As a result, operations
+	* on an image list that use the wrong index cause random results.	
+	* The fix is to ensure that the tool item is not a separator
+	* before using the image index.  Since separators cannot have
+	* an image and one is never assigned, this is not a problem.
+	*/
+	if ((info.fsStyle & OS.BTNS_SEP) == 0 && info.iImage != OS.I_IMAGENONE) {
+		ImageList imageList = parent.getImageList ();
+		ImageList hotImageList = parent.getHotImageList ();
+		ImageList disabledImageList = parent.getDisabledImageList();
+		if (imageList != null) imageList.put (info.iImage, null);
+		if (hotImageList != null) hotImageList.put (info.iImage, null);
+		if (disabledImageList != null) disabledImageList.put (info.iImage, null);
+	}
+}
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the control is selected.
