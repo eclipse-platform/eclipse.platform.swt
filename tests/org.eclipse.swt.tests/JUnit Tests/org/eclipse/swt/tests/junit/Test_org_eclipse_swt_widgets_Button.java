@@ -15,7 +15,6 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.test.performance.*;
 
 import junit.framework.*;
 import junit.textui.*;
@@ -257,23 +256,6 @@ public void test_setTextLjava_lang_String() {
 	}
 
 	button.setText("");
-
-	if (performanceTesting) {
-	    Performance perf = Performance.getDefault();
-	    PerformanceMeter meter =
-	       perf.createPerformanceMeter(perf.getDefaultScenarioId(this,"setText*1000"));
-	    try {
-	    	meter.start();
-			for (int i = 0; i < 1000; i++) {
-				button.setText("some name ");
-			}
-			meter.stop();
-			meter.commit();
-			perf.assertPerformance(meter);
-	    } finally {
-	        meter.dispose();
-	    }
-	}
 }
 
 public static Test suite() {

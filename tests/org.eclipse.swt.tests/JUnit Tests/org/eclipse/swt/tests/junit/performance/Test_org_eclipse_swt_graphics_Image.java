@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.*;
  * @see org.eclipse.swt.graphics.Image
  */
 public class Test_org_eclipse_swt_graphics_Image extends SwtPerformanceTestCase {
-	static int COUNT = 1000;
+	static final int COUNT = 1000;
 
 public Test_org_eclipse_swt_graphics_Image(String name) {
 	super(name);

@@ -22,7 +22,7 @@ import junit.textui.*;
  * @see org.eclipse.swt.graphics.PaletteData
  */
 public class Test_org_eclipse_swt_graphics_PaletteData extends SwtPerformanceTestCase {
-	static int COUNT = 0;
+	static final int COUNT = 1000;
 
 public Test_org_eclipse_swt_graphics_PaletteData(String name) {
 	super(name);

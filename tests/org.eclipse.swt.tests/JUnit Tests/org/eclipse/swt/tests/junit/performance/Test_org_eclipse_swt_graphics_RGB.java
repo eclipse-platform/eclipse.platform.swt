@@ -20,7 +20,7 @@ import org.eclipse.swt.graphics.*;
  * @see org.eclipse.swt.graphics.RGB
  */
 public class Test_org_eclipse_swt_graphics_RGB extends SwtPerformanceTestCase {
-	static int COUNT = 1000;
+	static final int COUNT = 10000;
 
 public Test_org_eclipse_swt_graphics_RGB(String name) {
 	super(name);

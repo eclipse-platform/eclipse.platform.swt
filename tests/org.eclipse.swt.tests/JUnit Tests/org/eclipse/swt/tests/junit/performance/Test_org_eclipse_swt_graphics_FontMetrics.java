@@ -1,0 +1,199 @@
+/*******************************************************************************
+ * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials 
+ * are made available under the terms of the Common Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ * 
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.swt.tests.junit.performance;
+
+
+import junit.framework.*;
+import junit.textui.*;
+
+import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.graphics.*;
+
+/**
+ * Automated Performance Test Suite for class org.eclipse.swt.graphics.FontMetrics
+ *
+ * @see org.eclipse.swt.graphics.FontMetrics
+ */
+public class Test_org_eclipse_swt_graphics_FontMetrics extends SwtPerformanceTestCase {
+	static final int COUNT = 1000;
+
+public Test_org_eclipse_swt_graphics_FontMetrics(String name) {
+	super(name);
+}
+
+public static void main(String[] args) {
+	TestRunner.run(suite());
+}
+
+protected void setUp() throws Exception {
+	super.setUp();
+	display = Display.getDefault();
+	shell = new Shell(display);
+	gc = new GC(shell);
+}
+
+protected void tearDown() throws Exception {
+	super.tearDown();
+	gc.dispose();
+	shell.dispose();
+}
+
+public void test_equalsLjava_lang_Object() {
+	FontMetrics fm1 = gc.getFontMetrics();
+	
+	Font oldFont = gc.getFont();
+	FontData newFontData = oldFont.getFontData()[0];
+	newFontData.setHeight(newFontData.getHeight() + 6);
+	
+	Font newFont = new Font(display, newFontData);
+	gc.setFont(newFont);
+	FontMetrics fm2 = gc.getFontMetrics();
+	gc.setFont(oldFont);
+	newFont.dispose();
+	
+	startMeasuring();
+	for (int i = 0; i < COUNT; i++) {
+		fm1.equals(fm1);	// same
+	}
+	stopMeasuring();
+
+	commitMeasurements();
+	assertPerformance();
+	
+	startMeasuring();
+	for (int i = 0; i < COUNT; i++) {
+		fm1.equals(fm2);	// different
+	}
+	stopMeasuring();
+
+	commitMeasurements();
+	assertPerformance();
+}
+
+public void test_getAscent() {
+	FontMetrics fm = gc.getFontMetrics();
+	
+	startMeasuring();
+	for (int i = 0; i < COUNT; i++) {
+		fm.getAscent();
+	}
+	stopMeasuring();
+	
+	commitMeasurements();
+	assertPerformance();
+}
+
+public void test_getAverageCharWidth() {
+	FontMetrics fm = gc.getFontMetrics();
+	
+	startMeasuring();
+	for (int i = 0; i < COUNT; i++) {
+		fm.getAverageCharWidth();
+	}
+	stopMeasuring();
+	
+	commitMeasurements();
+	assertPerformance();
+}
+
+public void test_getDescent() {
+	FontMetrics fm = gc.getFontMetrics();
+	
+	startMeasuring();
+	for (int i = 0; i < COUNT; i++) {
+		fm.getDescent();
+	}
+	stopMeasuring();
+	
+	commitMeasurements();
+	assertPerformance();
+}
+
+public void test_getHeight() {
+	FontMetrics fm = gc.getFontMetrics();
+	
+	startMeasuring();
+	for (int i = 0; i < COUNT; i++) {
+		fm.getHeight();
+	}
+	stopMeasuring();
+	
+	commitMeasurements();
+	assertPerformance();
+}
+
+public void test_getLeading() {
+	FontMetrics fm = gc.getFontMetrics();
+	
+	startMeasuring();
+	for (int i = 0; i < COUNT; i++) {
+		fm.getLeading();
+	}
+	stopMeasuring();
+	
+	commitMeasurements();
+	assertPerformance();
+}
+
+public void test_hashCode() {
+	FontMetrics fm = gc.getFontMetrics();
+	
+	startMeasuring();
+	for (int i = 0; i < COUNT; i++) {
+		fm.hashCode();
+	}
+	stopMeasuring();
+	
+	commitMeasurements();
+	assertPerformance();
+}
+
+public void test_win32_newLorg_eclipse_swt_internal_win32_TEXTMETRIC() {
+	// do not test - Windows only
+}
+
+public static Test suite() {
+	TestSuite suite = new TestSuite();
+	java.util.Vector methodNames = methodNames();
+	java.util.Enumeration e = methodNames.elements();
+	while (e.hasMoreElements()) {
+		suite.addTest(new Test_org_eclipse_swt_graphics_FontMetrics((String)e.nextElement()));
+	}
+	return suite;
+}
+public static java.util.Vector methodNames() {
+	java.util.Vector methodNames = new java.util.Vector();
+	methodNames.addElement("test_equalsLjava_lang_Object");
+	methodNames.addElement("test_getAscent");
+	methodNames.addElement("test_getAverageCharWidth");
+	methodNames.addElement("test_getDescent");
+	methodNames.addElement("test_getHeight");
+	methodNames.addElement("test_getLeading");
+	methodNames.addElement("test_hashCode");
+	methodNames.addElement("test_win32_newLorg_eclipse_swt_internal_win32_TEXTMETRIC");
+	return methodNames;
+}
+protected void runTest() throws Throwable {
+	if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
+	else if (getName().equals("test_getAscent")) test_getAscent();
+	else if (getName().equals("test_getAverageCharWidth")) test_getAverageCharWidth();
+	else if (getName().equals("test_getDescent")) test_getDescent();
+	else if (getName().equals("test_getHeight")) test_getHeight();
+	else if (getName().equals("test_getLeading")) test_getLeading();
+	else if (getName().equals("test_hashCode")) test_hashCode();
+	else if (getName().equals("test_win32_newLorg_eclipse_swt_internal_win32_TEXTMETRIC")) test_win32_newLorg_eclipse_swt_internal_win32_TEXTMETRIC();
+}
+
+/* custom */
+	Display display;
+	Shell shell;
+	GC gc;
+}

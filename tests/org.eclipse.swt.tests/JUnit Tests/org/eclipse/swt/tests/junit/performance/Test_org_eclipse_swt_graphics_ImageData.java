@@ -25,7 +25,7 @@ import junit.textui.*;
  * @see org.eclipse.swt.graphics.ImageData
  */
 public class Test_org_eclipse_swt_graphics_ImageData extends SwtPerformanceTestCase {
-	static int COUNT = 1000;
+	static final int COUNT = 1000;
 
 public Test_org_eclipse_swt_graphics_ImageData(String name) {
 	super(name);

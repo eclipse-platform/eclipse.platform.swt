@@ -23,7 +23,7 @@ import org.eclipse.swt.tests.junit.SwtJunit;
  * @see org.eclipse.swt.graphics.FontData
  */
 public class Test_org_eclipse_swt_graphics_FontData extends SwtPerformanceTestCase {
-	static int COUNT = 1000;
+	static final int COUNT = 10000;
 
 public Test_org_eclipse_swt_graphics_FontData(String name) {
 	super(name);

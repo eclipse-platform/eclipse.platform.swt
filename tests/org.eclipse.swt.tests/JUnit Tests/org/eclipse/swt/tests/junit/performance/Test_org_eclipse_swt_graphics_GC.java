@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.tests.junit;
+package org.eclipse.swt.tests.junit.performance;
 
 import junit.framework.*;
 import junit.textui.*;
@@ -19,11 +19,12 @@ import org.eclipse.swt.printing.*;
 import org.eclipse.swt.widgets.*;
 
 /**
- * Automated Test Suite for class org.eclipse.swt.graphics.GC
+ * Automated Performance Test Suite for class org.eclipse.swt.graphics.GC
  *
  * @see org.eclipse.swt.graphics.GC
  */
-public class Test_org_eclipse_swt_graphics_GC extends SwtTestCase {
+public class Test_org_eclipse_swt_graphics_GC extends SwtPerformanceTestCase {
+	static final int COUNT = 1000;
 
 public Test_org_eclipse_swt_graphics_GC(String name) {
 	super(name);
@@ -33,7 +34,8 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-protected void setUp() {
+protected void setUp() throws Exception {
+	super.setUp();
 	display = Display.getDefault();
 	shell = new Shell(display);
 	shell.setBounds(0,30,240,290);
@@ -41,32 +43,35 @@ protected void setUp() {
 	gc = new GC(image);
 }
 
-protected void tearDown() {
+protected void tearDown() throws Exception {
+	super.tearDown();
 	gc.dispose();
 	image.dispose();
 	shell.dispose();
 }
 public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
-	try {
-		GC gc = new GC(null);
-		gc.dispose();
-		fail("No exception thrown for drawable == null");
-	} catch (IllegalArgumentException e) {
-		assertEquals("Incorrect exception thrown for drawable == null", SWT.ERROR_NULL_ARGUMENT, e);
+	Image[] images = new Image [COUNT];
+	for (int i = 0; i < COUNT; i++) {
+		images[i] = new Image(display, 10, 10);		
 	}
-
-	try {
-		Image image = new Image(display, 10, 10);
-		GC gc1 = new GC(image);
-		GC gc2 = new GC(image);
-		gc1.dispose();
-		gc2.dispose();
-		image.dispose();
-		fail("No exception thrown for more than one GC on one image");
-	} catch (IllegalArgumentException e) {
-		assertEquals("Incorrect exception thrown for more than one GC on one image", SWT.ERROR_INVALID_ARGUMENT, e);
+	GC[] gcs = new GC[COUNT];
+	
+	startMeasuring();
+	for (int i = 0; i < COUNT; i++) {
+		gcs[i] = new GC(images[i]);
 	}
+	stopMeasuring();
 
+	for (int i = 0; i < COUNT; i++) {
+		gcs[i].dispose();
+		images[i].dispose();
+	}
+	
+	commitMeasurements();
+	assertPerformance();
+
+	final int count = COUNT % 100;
+	
 	Class printerClass = null;
 	try {
 		printerClass = Class.forName("org.eclipse.swt.printing.Printer");
@@ -74,53 +79,53 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
 		// Printer class not present (eSWT). Skip test.
 		return;
 	}
+	Object[] printers = new Object[count];
 	try {
-		// Direct instantiation results in a NoClassDefFoundError during class 
-		// loading/initialization. Casting seems to be ok.
-		Object printer = printerClass.newInstance();
-		GC gc1 = new GC((Printer) printer);
-		GC gc2 = new GC((Printer) printer);
-		gc1.dispose();
-		gc2.dispose();
-		((Printer) printer).dispose();
-		fail("No exception thrown for more than one GC on one printer");
-	} catch (IllegalArgumentException e) {
-		assertEquals("Incorrect exception thrown for more than one GC on one printer", SWT.ERROR_INVALID_ARGUMENT, e);
-	} catch (InstantiationException e) {
-		e.printStackTrace();
-	} catch (IllegalAccessException e) {
-		e.printStackTrace();
+		for (int i = 0; i < count; i++) {
+			printers[i] = printerClass.newInstance();
+		}
+	} catch (InstantiationException e1) {
+		return;
+	} catch (IllegalAccessException e1) {
+		return;
 	}
+
+	startMeasuring();
+	for (int i = 0; i < count; i++) {
+		gcs[i] = new GC((Printer) printers[i]);
+	}
+	stopMeasuring();
+
+	for (int i = 0; i < count; i++) {
+		gcs[i].dispose();
+	}
+
+	commitMeasurements();
+	assertPerformance();
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
-	try {
-		GC gc = new GC(null, SWT.LEFT_TO_RIGHT);
-		gc.dispose();
-		fail("No exception thrown for drawable == null");
-	} catch (IllegalArgumentException e) {
-		assertEquals("Incorrect exception thrown for drawable == null", SWT.ERROR_NULL_ARGUMENT, e);
+	Image[] images = new Image[COUNT];
+	for (int i = 0; i < COUNT; i++) {
+		images[i] = new Image(display, 10, 10);
 	}
-
-	try {
-		Image image = new Image(display, 10, 10);
-		GC gc1 = new GC(image, SWT.RIGHT_TO_LEFT);
-		GC gc2 = new GC(image, SWT.LEFT_TO_RIGHT);
-		gc1.dispose();
-		gc2.dispose();
-		image.dispose();
-		fail("No exception thrown for more than one GC on one image");
-	} catch (IllegalArgumentException e) {
-		assertEquals("Incorrect exception thrown for more than one GC on one image", SWT.ERROR_INVALID_ARGUMENT, e);
+	GC[] gcs = new GC[COUNT];
+	
+	startMeasuring();
+	for (int i = 0; i < COUNT; i++) {
+		gcs[i] = new GC(images[i], SWT.RIGHT_TO_LEFT);
 	}
+	stopMeasuring();
 
-	Canvas canvas = new Canvas(shell, SWT.NULL);
-	GC testGC = new GC(canvas, SWT.RIGHT_TO_LEFT);
-	testGC.dispose();
-	testGC = new GC(canvas, SWT.LEFT_TO_RIGHT);
-	testGC.dispose();
-	canvas.dispose();
+	for (int i = 0; i < COUNT; i++) {
+		gcs[i].dispose();
+		images[i].dispose();
+	}
+	
+	commitMeasurements();
+	assertPerformance();
 
+	final int count = COUNT / 100;
 	Class printerClass = null;
 	try {
 		printerClass = Class.forName("org.eclipse.swt.printing.Printer");
@@ -128,109 +133,149 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
 		// Printer class not present (eSWT). Skip test.
 		return;
 	}
+	Object[] printers = new Object[count];
 	try {
-		// Direct instantiation results in a NoClassDefFoundError during class 
-		// loading/initialization. Casting seems to be ok.
-		Object printer = printerClass.newInstance();
-		GC gc1 = new GC((Printer)printer, SWT.RIGHT_TO_LEFT);
-		GC gc2 = new GC((Printer)printer, SWT.LEFT_TO_RIGHT);
-		gc1.dispose();
-		gc2.dispose();
-		((Printer) printer).dispose();
-		fail("No exception thrown for more than one GC on one printer");
-	} catch (IllegalArgumentException e) {
-		assertEquals("Incorrect exception thrown for more than one GC on one printer", SWT.ERROR_INVALID_ARGUMENT, e);
-	} catch (InstantiationException e) {
-		e.printStackTrace();
-	} catch (IllegalAccessException e) {
-		e.printStackTrace();
+		for (int i = 0; i < count; i++) {
+			printers[i] = printerClass.newInstance();
+		}
+	} catch (InstantiationException e1) {
+		return;
+	} catch (IllegalAccessException e1) {
+		return;
 	}
+
+	startMeasuring();
+	for (int i = 0; i < count; i++) {
+		gcs[i] = new GC((Printer) printers[i], SWT.RIGHT_TO_LEFT);
+	}
+	stopMeasuring();
+
+	for (int i = 0; i < count; i++) {
+		gcs[i].dispose();
+	}
+
+	commitMeasurements();
+	assertPerformance();
 }
 
 public void test_copyAreaIIIIII() {
-	Color white = display.getSystemColor(SWT.COLOR_WHITE);
-	Color blue = display.getSystemColor(SWT.COLOR_BLUE);
-	RGB whiteRGB = getRealRGB(white);
-	RGB blueRGB = getRealRGB(blue);
-	int width = 20;
-	int height = 20;
-	int destX = 10;
-	int destY = 50;
-
-	gc.setBackground(white);
-	gc.setForeground(white);
+	gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+	gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
 	gc.fillRectangle(image.getBounds());
-	gc.setForeground(blue);
-	gc.drawLine(5, 0, 10, 0);
-	gc.copyArea(0, 0, width, height, destX, destY);
-
-	ImageData imageData = image.getImageData();
-	PaletteData palette = imageData.palette; 
-	int pixel = imageData.getPixel(destX + 4, destY);
-	assertEquals(":a:", whiteRGB, palette.getRGB(pixel));
-	pixel = imageData.getPixel(destX + 5, destY);
- 	assertEquals(":b:", blueRGB, palette.getRGB(pixel));	
-	pixel = imageData.getPixel(destX + 10, destY);
-	assertEquals(":c:", blueRGB, palette.getRGB(pixel));	
-	pixel = imageData.getPixel(destX + 11, destY);
-	assertEquals(":d:", whiteRGB, palette.getRGB(pixel));
+	gc.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
+	gc.drawLine(5, 5, 10, 10);
+	gc.drawLine(5, 10, 10, 5);
+	Rectangle imageBounds = image.getBounds();
+	
+	startMeasuring();
+	for (int i = 0; i < COUNT; i++) {
+		int pos = i % imageBounds.width;
+		gc.copyArea(pos, pos, 2, 2, pos+2, pos);
+	}
+	stopMeasuring();
+	
+	commitMeasurements();
+	assertPerformance();
 }
 
 public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
-	Color white = display.getSystemColor(SWT.COLOR_WHITE);
-	Color blue = display.getSystemColor(SWT.COLOR_BLUE);
-	RGB whiteRGB = getRealRGB(white);
-	RGB blueRGB = getRealRGB(blue);
-	
-	gc.setBackground(white);
-	gc.setForeground(white);
+	gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+	gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
 	gc.fillRectangle(image.getBounds());
-	gc.setForeground(blue);
-	gc.drawLine(5, 0, 10, 0);
-	Image image = new Image(display, 12, 12);
-	gc.copyArea(image, 0, 0);
-	ImageData imageData = image.getImageData();
-	PaletteData palette = imageData.palette; 
-	int pixel = imageData.getPixel(4, 0);
-	assertEquals(":a:", whiteRGB, palette.getRGB(pixel));
-	pixel = imageData.getPixel(5, 0);
-	assertEquals(":b:", blueRGB, palette.getRGB(pixel));
-	pixel = imageData.getPixel(10, 0);
-	assertEquals(":c:", blueRGB, palette.getRGB(pixel));	
-	pixel = imageData.getPixel(11, 0);
-	assertEquals(":d:", whiteRGB, palette.getRGB(pixel));
-	image.dispose();
+	gc.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
+	gc.drawLine(5, 5, 10, 10);
+	gc.drawLine(5, 10, 10, 5);
+	
+	Image[] images = new Image[COUNT];
+	for (int i = 0; i < COUNT; i++) {
+		images[i] = new Image(display, 15, 15);
+	}
+
+	startMeasuring();
+	for (int i = 0; i < COUNT; i++) {
+		gc.copyArea(images[i], 0, 0);
+	}
+	stopMeasuring();
+
+	for (int i = 0; i < COUNT; i++) {
+		images[i].dispose();
+	}
+
+	commitMeasurements();
+	assertPerformance();
 }
 
 public void test_dispose() {
-	gc.dispose();
+	Image[] images = new Image [COUNT];
+	for (int i = 0; i < COUNT; i++) {
+		images[i] = new Image(display, 10, 10); 
+	}
+	GC[] gcs = new GC [COUNT];
+	for (int i = 0; i < COUNT; i++) {
+		gcs[i] = new GC(images[i]);
+	}
+
+	startMeasuring();
+	for (int i = 0; i < COUNT; i++) {
+		gcs[i].dispose();	// dispose
+	}
+	stopMeasuring();
+
+    for (int i = 0; i < COUNT; i++) {
+    	images[i].dispose();
+    }
+
+    commitMeasurements();
+    assertPerformance();
+
+	startMeasuring();
+	for (int i = 0; i < COUNT; i++) {
+		gcs[i].dispose();	// dispose disposed
+	}
+	stopMeasuring();
+	
+    commitMeasurements();
+    assertPerformance();
 }
 
 public void test_drawArcIIIIII() {
-	gc.drawArc(10, 20, 50, 25, 90, 90);				
+	startMeasuring();
+	for (int i = 0; i < COUNT; i++) {
+		gc.drawArc(10, 20, 50, 25, 90, 90);
+	}
+	stopMeasuring();
+	
+	commitMeasurements();
+	assertPerformance();
 }
 
 public void test_drawFocusIIII() {
-	gc.drawFocus(1, 1, 50, 25);				
+	startMeasuring();
+	for (int i = 0; i < COUNT; i++) {
+		gc.drawFocus(1, 1, 50, 25);
+	}
+	stopMeasuring();
+	
+	commitMeasurements();
+	assertPerformance();
 }
 
 public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
-	Color c1 = new Color(display, 255, 0, 0);
-	Color c2 = new Color(display, 0, 0, 0);
-	Color c3 = new Color(display, 255, 255, 0);
-	
-	PaletteData paletteData = new PaletteData(new RGB[] {c1.getRGB(), c2.getRGB(), c3.getRGB()});
+	Color red = display.getSystemColor(SWT.COLOR_RED);
+	Color black = display.getSystemColor(SWT.COLOR_BLACK);
+	Color green = display.getSystemColor(SWT.COLOR_GREEN);
+	PaletteData paletteData = new PaletteData(new RGB[] {red.getRGB(), black.getRGB(), green.getRGB()});
 	ImageData data = new ImageData(30,30, 8, paletteData);
 	for (int y = 0; y < data.height; y++) {
 		for (int x = 0; x < data.width; x++) {
-			if (x > y) data.setPixel(x, y, paletteData.getPixel(c1.getRGB()));
-			else if (x < y) data.setPixel(x, y, paletteData.getPixel(c2.getRGB()));
-			else data.setPixel(x, y, paletteData.getPixel(c3.getRGB()));
+			if (x > y) data.setPixel(x, y, paletteData.getPixel(red.getRGB()));
+			else if (x < y) data.setPixel(x, y, paletteData.getPixel(black.getRGB()));
+			else data.setPixel(x, y, paletteData.getPixel(green.getRGB()));
 		}
 	}
-	Image image = new Image(display, data);
-	data = image.getImageData();
-	data.transparentPixel = paletteData.getPixel(c1.getRGB());
+	Image imageNormal = new Image(display, data);
+	data = imageNormal.getImageData();
+	data.transparentPixel = paletteData.getPixel(red.getRGB());
 	Image imageTransparent = new Image(display, data);
 	data.transparentPixel = -1;
 	for (int y = 0; y < data.height; y++) {
@@ -239,19 +284,46 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
 		}
 	}		
 	Image imageAlpha = new Image(display, data);
-							
-	gc.drawImage(image, 100, 100);
+	gc.drawImage(imageNormal, 100, 100);
 	gc.drawImage(imageTransparent, 130, 100);
 	gc.drawImage(imageAlpha, 160, 100);
+	
 	try {
-		gc.drawImage(null, 100, 100);
-		fail("No exception thrown");
+		Rectangle bounds = image.getBounds();
+		startMeasuring();
+		for (int i = 0; i < COUNT; i++) {
+			int pos = i % bounds.width;
+			gc.drawImage(imageNormal, pos, pos);	// normal image
+		}
+		stopMeasuring();
+		
+		commitMeasurements();
+		assertPerformance();
+	
+		startMeasuring();
+		for (int i = 0; i < COUNT; i++) {
+			int pos = i % bounds.width;
+			gc.drawImage(imageTransparent, pos, pos);	// transparent image
+		}
+		stopMeasuring();
+		
+		commitMeasurements();
+		assertPerformance();
+	
+		startMeasuring();
+		for (int i = 0; i < COUNT; i++) {
+			int pos = i % bounds.width;
+			gc.drawImage(imageAlpha, pos, pos);	// alpha image
+		}
+		stopMeasuring();
+		
+		commitMeasurements();
+		assertPerformance();
+	} finally {
+		imageNormal.dispose();
+		imageTransparent.dispose();
+		imageAlpha.dispose();
 	}
-	catch (IllegalArgumentException e) {
-	}
-	image.dispose();
-	imageTransparent.dispose();
-	imageAlpha.dispose();
 }
 
 public void test_drawImageLorg_eclipse_swt_graphics_ImageIIIIIIII() {
@@ -441,7 +513,7 @@ public void test_getClipping() {
 }
 
 public void test_getClippingLorg_eclipse_swt_graphics_Region() {
-	warnUnimpl("Test test_getClippingLorg_eclipse_swt_graphics_Region not written");
+	
 }
 
 public void test_getFont() {
@@ -559,7 +631,7 @@ public void test_setClippingLorg_eclipse_swt_graphics_Rectangle() {
 }
 
 public void test_setClippingLorg_eclipse_swt_graphics_Region() {
-	warnUnimpl("Test test_setClippingLorg_eclipse_swt_graphics_Region not written");
+	
 }
 
 public void test_setFontLorg_eclipse_swt_graphics_Font() {

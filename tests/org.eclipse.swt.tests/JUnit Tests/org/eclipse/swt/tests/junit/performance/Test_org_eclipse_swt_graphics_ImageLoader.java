@@ -25,7 +25,7 @@ import org.eclipse.swt.graphics.*;
  * @see org.eclipse.swt.graphics.ImageLoader
  */
 public class Test_org_eclipse_swt_graphics_ImageLoader extends SwtPerformanceTestCase {
-	static int COUNT = 1000;
+	static final int COUNT = 1000;
 
 public Test_org_eclipse_swt_graphics_ImageLoader(String name) {
 	super(name);
@@ -107,10 +107,12 @@ public void test_loadLjava_lang_String() {
 public void test_notifyListenersLorg_eclipse_swt_graphics_ImageLoaderEvent() {
 	ImageLoader loader = new ImageLoader();
 	ImageLoaderEvent event = new ImageLoaderEvent(loader, null, 0, true);
-	ImageLoaderListener loaderListener = new ImageLoaderListener() {
-		public void imageDataLoaded(ImageLoaderEvent e) {
-		};
-	};
+	for (int i = 0; i < COUNT; i++) {
+		loader.addImageLoaderListener(
+			new ImageLoaderListener() {
+				public void imageDataLoaded(ImageLoaderEvent e) {}
+			});
+	}
 	
 	startMeasuring();
 	for (int i = 0; i < COUNT; i++) {
@@ -124,14 +126,17 @@ public void test_notifyListenersLorg_eclipse_swt_graphics_ImageLoaderEvent() {
 
 public void test_removeImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderListener() {
 	ImageLoader loader = new ImageLoader();
-	ImageLoaderListener loaderListener = new ImageLoaderListener() {
-		public void imageDataLoaded(ImageLoaderEvent e) {
+	ImageLoaderListener[] listeners = new ImageLoaderListener[COUNT];
+	for (int i = 0; i < COUNT; i++) {
+		listeners[i] = new ImageLoaderListener() {
+			public void imageDataLoaded(ImageLoaderEvent e) {}
 		};
-	};
+		loader.addImageLoaderListener(listeners[i]);
+	}
 	
 	startMeasuring();
 	for (int i = 0; i < COUNT; i++) {
-		loader.removeImageLoaderListener(loaderListener);
+		loader.removeImageLoaderListener(listeners[i]);
 	}
 	stopMeasuring();
 	

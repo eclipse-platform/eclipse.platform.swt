@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.Display;
  * @see org.eclipse.swt.graphics.Cursor
  */
 public class Test_org_eclipse_swt_graphics_Cursor extends SwtPerformanceTestCase {
-	static int COUNT = 1000;
+	static final int COUNT = 10000;
 
 public Test_org_eclipse_swt_graphics_Cursor(String name) {
 	super(name);

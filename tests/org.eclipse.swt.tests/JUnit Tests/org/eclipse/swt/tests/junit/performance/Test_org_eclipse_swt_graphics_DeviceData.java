@@ -13,18 +13,17 @@ package org.eclipse.swt.tests.junit.performance;
 
 import junit.framework.*;
 import junit.textui.*;
-
 import org.eclipse.swt.graphics.*;
 
 /**
- * Automated Performance Test Suite for class org.eclipse.swt.graphics.ImageLoaderEvent
+ * Automated Performance Test Suite for class org.eclipse.swt.graphics.DeviceData
  *
- * @see org.eclipse.swt.graphics.ImageLoaderEvent
+ * @see org.eclipse.swt.graphics.DeviceData
  */
-public class Test_org_eclipse_swt_graphics_ImageLoaderEvent extends SwtPerformanceTestCase {
+public class Test_org_eclipse_swt_graphics_DeviceData extends SwtPerformanceTestCase {
 	static final int COUNT = 1000;
 
-public Test_org_eclipse_swt_graphics_ImageLoaderEvent(String name) {
+public Test_org_eclipse_swt_graphics_DeviceData(String name) {
 	super(name);
 }
 
@@ -32,12 +31,10 @@ public static void main(String[] args) {
 	TestRunner.run(suite());
 }
 
-public void test_ConstructorLorg_eclipse_swt_graphics_ImageLoaderLorg_eclipse_swt_graphics_ImageDataIZ() {
-	ImageLoader loader = new ImageLoader();
-	
+public void test_Constructor() {
 	startMeasuring();
 	for (int i = 0; i < COUNT; i++) {
-		new ImageLoaderEvent(loader, null, 0, true);
+		new DeviceData();
 	}
 	stopMeasuring();
 	
@@ -50,16 +47,16 @@ public static Test suite() {
 	java.util.Vector methodNames = methodNames();
 	java.util.Enumeration e = methodNames.elements();
 	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_graphics_ImageLoaderEvent((String)e.nextElement()));
+		suite.addTest(new Test_org_eclipse_swt_graphics_DeviceData((String)e.nextElement()));
 	}
 	return suite;
 }
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_ImageLoaderLorg_eclipse_swt_graphics_ImageDataIZ");
+	methodNames.addElement("test_Constructor");
 	return methodNames;
 }
 protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_ImageLoaderLorg_eclipse_swt_graphics_ImageDataIZ")) test_ConstructorLorg_eclipse_swt_graphics_ImageLoaderLorg_eclipse_swt_graphics_ImageDataIZ();
+	if (getName().equals("test_Constructor")) test_Constructor();
 }
 }

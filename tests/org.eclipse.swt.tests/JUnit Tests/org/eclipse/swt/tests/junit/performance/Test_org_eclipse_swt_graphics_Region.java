@@ -22,7 +22,7 @@ import org.eclipse.swt.widgets.*;
  * @see org.eclipse.swt.graphics.Region
  */
 public class Test_org_eclipse_swt_graphics_Region extends SwtPerformanceTestCase {
-	static int COUNT = 1000;
+	static final int COUNT = 1000;
 
 public Test_org_eclipse_swt_graphics_Region(String name) {
 	super(name);

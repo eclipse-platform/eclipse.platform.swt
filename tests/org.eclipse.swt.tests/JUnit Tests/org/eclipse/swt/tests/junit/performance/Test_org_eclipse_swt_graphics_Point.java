@@ -22,7 +22,7 @@ import junit.textui.*;
  * @see org.eclipse.swt.graphics.Point
  */
 public class Test_org_eclipse_swt_graphics_Point extends SwtPerformanceTestCase {
-	static int COUNT = 0;
+	static final int COUNT = 10000;
 
 public Test_org_eclipse_swt_graphics_Point(String name) {
 	super(name);

@@ -15,7 +15,6 @@ import java.io.*;
 import junit.framework.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
-import org.eclipse.test.performance.*;
 
 public class SwtTestCase extends TestCase {
 	/**
@@ -53,9 +52,6 @@ public class SwtTestCase extends TestCase {
 	// used to specify verbose mode, if true unimplemented warning messages will 
 	// be written to System.out
 	public static boolean verbose = false;
-
-	// used to specify that performance measures should be taken
-	public static boolean performanceTesting = false;
 	
 	// allow specific image formats to be tested
 	public static String[] imageFormats = new String[] {"bmp", "jpg", "gif", "png"};
@@ -211,30 +207,6 @@ protected boolean isReparentablePlatform() {
 	return false;
 }
 
-protected void testPerformance (Runnable runnable) {
-	testPerformance (null, runnable);
-}
-protected void testPerformance (String id, Runnable runnable) {
-	if (!performanceTesting) return;
-	Performance perf = Performance.getDefault();
-	PerformanceMeter meter;
-	if (id != null) {
-		meter = perf.createPerformanceMeter(perf.getDefaultScenarioId(this, id));
-	} else {
-		meter = perf.createPerformanceMeter(perf.getDefaultScenarioId(this));
-	}
-	try {
-		meter.start();
-		for (int i = 0; i < 1000; i++) {
-			runnable.run();
-		}
-		meter.stop();
-		meter.commit();
-		perf.assertPerformance(meter);
-	} finally {
-		meter.dispose();
-	}
-}
 protected void warnUnimpl(String message) {
 	if (verbose) {
 		System.out.println(this.getClass() + ": " + message);

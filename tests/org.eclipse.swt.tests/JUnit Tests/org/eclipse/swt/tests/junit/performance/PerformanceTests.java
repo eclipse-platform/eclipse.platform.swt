@@ -58,18 +58,18 @@ public PerformanceTests() {
 
 	addTest(Test_org_eclipse_swt_graphics_Image.suite());
 	addTest(Test_org_eclipse_swt_graphics_Cursor.suite());
-//	addTest(Test_org_eclipse_swt_graphics_DeviceData.suite());
+	addTest(Test_org_eclipse_swt_graphics_DeviceData.suite());
 	addTest(Test_org_eclipse_swt_graphics_ImageLoaderEvent.suite());
 	addTest(Test_org_eclipse_swt_graphics_RGB.suite());
-//	addTest(Test_org_eclipse_swt_graphics_Font.suite());
+	addTest(Test_org_eclipse_swt_graphics_Font.suite());
 	addTest(Test_org_eclipse_swt_graphics_Rectangle.suite());
 	addTest(Test_org_eclipse_swt_graphics_FontData.suite());
-//	addTest(Test_org_eclipse_swt_graphics_GC.suite());
+	addTest(Test_org_eclipse_swt_graphics_GC.suite());
 	addTest(Test_org_eclipse_swt_graphics_ImageData.suite());
 	addTest(Test_org_eclipse_swt_graphics_Region.suite());
 //	addTest(Test_org_eclipse_swt_graphics_GCData.suite());
-//	addTest(Test_org_eclipse_swt_graphics_FontMetrics.suite());
-//	addTest(Test_org_eclipse_swt_graphics_Color.suite());
+	addTest(Test_org_eclipse_swt_graphics_FontMetrics.suite());
+	addTest(Test_org_eclipse_swt_graphics_Color.suite());
 	addTest(Test_org_eclipse_swt_graphics_Point.suite());
 	addTest(Test_org_eclipse_swt_graphics_PaletteData.suite());
 	addTest(Test_org_eclipse_swt_graphics_ImageLoader.suite());
