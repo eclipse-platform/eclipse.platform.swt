@@ -34,28 +34,28 @@ public class CTabFolderEvent extends TypedEvent {
 	 * The widget-relative, x coordinate of the chevron button
 	 * at the time of the event.  Applies to the showList event.
 	 * 
- 	 * @ since 3.0
+ 	 * @since 3.0
 	 */
  	public int x;
  	/**
  	 * The widget-relative, y coordinate of the chevron button
 	 * at the time of the event.  Applies to the showList event.
 	 * 
-	 * @ since 3.0
+	 * @since 3.0
 	 */
 	public int y;
 	/**
 	 * The width of the chevron button at the time of the event.
 	 * Applies to the showList event.  Applies to the showList event.
 	 * 
-	 * @ since 3.0
+	 * @since 3.0
 	 */
 	public int width;
 	/**
 	 * The height of the chevron button at the time of the event.
 	 * Applies to the showList event.
 	 * 
-	 * @ since 3.0
+	 * @since 3.0
 	 */
 	public int height;
 
