@@ -130,6 +130,7 @@ public TransferData[] getSupportedTypes(){
 }
 
 public boolean isSupportedType(TransferData transferData){
+	if (transferData == null) return false;
 	int[] types = getTypeIds();
 	for (int i = 0; i < types.length; i++) {
 		FORMATETC format = transferData.formatetc;
