@@ -415,7 +415,7 @@ int callWindowProc (int msg, int wParam, int lParam) {
  */
 public void close () {
 	checkWidget ();
-	OS.PostMessage (handle, OS.WM_CLOSE, 0, 0);
+	closeWidget ();
 }
 
 void createHandle () {

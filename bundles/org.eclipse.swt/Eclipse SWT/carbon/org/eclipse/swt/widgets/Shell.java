@@ -387,7 +387,6 @@ public void close () {
 }
 
 void closeWidget () {
-	if (!isEnabled ()) return;
 	Event event = new Event ();
 	sendEvent (SWT.Close, event);
 	if (event.doit && !isDisposed ()) dispose ();
@@ -816,7 +815,7 @@ int kEventWindowBoundsChanged (int nextHandler, int theEvent, int userData) {
 int kEventWindowClose (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowClose (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	closeWidget ();
+	if (isEnabled ()) closeWidget ();
 	return OS.noErr;
 }
 

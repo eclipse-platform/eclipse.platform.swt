@@ -233,6 +233,12 @@ int callWindowProc (int msg, int wParam, int lParam) {
 	return OS.DefMDIChildProc (handle, msg, wParam, lParam);
 }
 
+void closeWidget () {
+	Event event = new Event ();
+	sendEvent (SWT.Close, event);
+	if (event.doit && !isDisposed ()) dispose ();
+}
+
 Control computeTabGroup () {
 	return this;
 }
@@ -1444,11 +1450,7 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 LRESULT WM_CLOSE (int wParam, int lParam) {
 	LRESULT result = super.WM_CLOSE (wParam, lParam);
 	if (result != null) return result;
-	if (!isEnabled () || !isActive ()) return LRESULT.ZERO;
-	Event event = new Event ();
-	sendEvent (SWT.Close, event);
-	// the widget could be disposed at this point
-	if (event.doit && !isDisposed ()) dispose ();
+	if (isEnabled () && isActive ()) closeWidget ();
 	return LRESULT.ZERO;
 }
 
