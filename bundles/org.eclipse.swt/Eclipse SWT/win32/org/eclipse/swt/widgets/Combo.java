@@ -370,7 +370,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	pcbi.cbSize = COMBOBOXINFO.sizeof;
 	if (((style & SWT.SIMPLE) == 0) && !OS.IsWinCE && OS.GetComboBoxInfo (handle, pcbi)) {
 		width += pcbi.itemLeft + (pcbi.buttonRight - pcbi.buttonLeft);
-		height = pcbi.buttonTop + (pcbi.buttonBottom - pcbi.buttonTop); 
+		height = (pcbi.buttonBottom - pcbi.buttonTop) + pcbi.buttonTop * 2; 
 	} else {
 		int border = OS.GetSystemMetrics (OS.SM_CXEDGE);
 		width += OS.GetSystemMetrics (OS.SM_CXVSCROLL) + border * 2;		
@@ -700,9 +700,14 @@ public String getText () {
  */
 public int getTextHeight () {
 	checkWidget ();
+	COMBOBOXINFO pcbi = new COMBOBOXINFO ();
+	pcbi.cbSize = COMBOBOXINFO.sizeof;
+	if (((style & SWT.SIMPLE) == 0) && !OS.IsWinCE && OS.GetComboBoxInfo (handle, pcbi)) {
+		return (pcbi.buttonBottom - pcbi.buttonTop) + pcbi.buttonTop * 2; 
+	}
 	int result = OS.SendMessage (handle, OS.CB_GETITEMHEIGHT, -1, 0);
 	if (result == OS.CB_ERR) error (SWT.ERROR_CANNOT_GET_ITEM_HEIGHT);
-	return result + 6;
+	return (style & SWT.DROP_DOWN) != 0 ? result + 6 : result + 10;
 }
 
 /**
@@ -1094,9 +1099,7 @@ void setBounds (int x, int y, int width, int height, int flags) {
 	* items and ignore the height value that the programmer supplies.
 	*/
 	if ((style & SWT.DROP_DOWN) != 0) {
-		int textHeight = OS.SendMessage (handle, OS.CB_GETITEMHEIGHT, -1, 0);
-		int itemHeight = OS.SendMessage (handle, OS.CB_GETITEMHEIGHT, 0, 0);
-		height = textHeight + 6 + (itemHeight * visibleCount) + 2;
+		height = getTextHeight () + (getItemHeight () * visibleCount) + 2;
 		/*
 		* Feature in Windows.  When a drop down combo box is resized,
 		* the combo box resizes the height of the text field and uses
