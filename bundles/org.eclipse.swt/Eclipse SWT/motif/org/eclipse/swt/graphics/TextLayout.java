@@ -34,7 +34,7 @@ public class TextLayout {
 	int[] lineOffset, lineY, lineWidth;
 	int defaultFontHeight;
 	
-	class StyleItem {
+	static class StyleItem {
 		TextStyle style;
 		int start, length, width, height, baseline;
 		boolean lineBreak, softBreak, tab;

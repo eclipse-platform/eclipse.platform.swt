@@ -399,6 +399,7 @@ public class OS {
 	public static final int ES_PASSWORD = 0x20;
 	public static final int ES_READONLY = 0x800;
 	public static final int ES_RIGHT = 0x2;
+	public static final int ETO_CLIPPED = 0x4;	
 	public static final int FALT = 0x10;
 	public static final int FCONTROL = 0x8;
 	public static final int FNERR_INVALIDFILENAME = 0x3002;

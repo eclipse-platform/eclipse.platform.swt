@@ -44,15 +44,9 @@ public class TextLayout {
 	StyleItem[][] runs;
 	int[] lineOffset, lineY, lineWidth;
 	
-	// constants move to OS
-	// which is error 80070057 ?	(-2147024809) E_INVALIDARG
-	final static long E_OUTOFMEMORY = 0x8007000EL;
-	final static long USP_E_SCRIPT_NOT_IN_FONT = 0x80040200;//-2147220992
-	final int ETO_OPAQUE = 0x2;	
-	final int ETO_CLIPPED = 0x4;	
-	final static int  SCRIPT_VISATTR_SIZEOF = 2;
+	static final int SCRIPT_VISATTR_SIZEOF = 2;
 	
-	class StyleItem {
+	static class StyleItem {
 		TextStyle style;
 		int start, length;
 		boolean lineBreak, softBreak, tab;	
@@ -485,7 +479,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 					runX = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - piX[0] : piX[0];
 					rect.right = drawX + runX;
 					rect.bottom = drawY + lineHeight;
-					OS.ScriptTextOut(hdc, run.psc, drawX, drawRunY, ETO_CLIPPED, rect, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, null, run.goffsets);
+					OS.ScriptTextOut(hdc, run.psc, drawX, drawRunY, OS.ETO_CLIPPED, rect, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, null, run.goffsets);
 				}
 			}
 			drawX += run.width;
