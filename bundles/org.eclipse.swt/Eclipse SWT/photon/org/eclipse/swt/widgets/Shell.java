@@ -157,7 +157,7 @@ void createHandle (int index) {
 			if ((style & SWT.TITLE) != 0) decorations |= OS.Ph_WM_RENDER_TITLE;
 		}
 		int notifyFlags =
-			OS.Ph_WM_ICON | OS.Ph_WM_FOCUS | 
+			OS.Ph_WM_ICON | OS.Ph_WM_FOCUS |
 			OS.Ph_WM_MOVE | OS.Ph_WM_RESIZE;
 		int windowState = OS.Ph_WM_STATE_ISFOCUS;
 		if ((style & SWT.ON_TOP) != 0) windowState = OS.Ph_WM_STATE_ISFRONT;
@@ -225,7 +225,8 @@ public Point getLocation () {
 public boolean getMaximized () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	//ONLY WORKS WHEN SET in setMaximized
+	int state = OS.PtWindowGetState (shellHandle);
+	if (state != -1) return (state & (OS.Ph_WM_STATE_ISMAX | OS.Ph_WM_STATE_ISMAXING)) != 0;
 	int [] args = {OS.Pt_ARG_WINDOW_STATE, 0, OS.Ph_WM_STATE_ISMAX};
 	OS.PtGetResources (shellHandle, args.length / 3, args);
 	return (args [1] & OS.Ph_WM_STATE_ISMAX) != 0;
@@ -234,10 +235,11 @@ public boolean getMaximized () {
 public boolean getMinimized () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	//ONLY WORKS WHEN SET in setMinimized
-	int [] args = {OS.Pt_ARG_WINDOW_STATE, 0, OS.Ph_WM_STATE_ISHIDDEN};
+	int state = OS.PtWindowGetState (shellHandle);
+	if (state != -1) return (state & OS.Ph_WM_STATE_ISICONIFIED) != 0;
+	int [] args = {OS.Pt_ARG_WINDOW_STATE, 0, OS.Ph_WM_STATE_ISICONIFIED};
 	OS.PtGetResources (shellHandle, args.length / 3, args);
-	return (args [1] & OS.Ph_WM_STATE_ISHIDDEN) != 0;
+	return (args [1] & OS.Ph_WM_STATE_ISICONIFIED) != 0;
 }
 
 public Shell getShell () {
@@ -348,7 +350,7 @@ int processMove (int info) {
 			break;
 		case OS.Ph_WM_MOVE:
 			sendEvent (SWT.Move);
-			break;	
+			break;
 	}
 	return OS.Pt_CONTINUE;
 }
@@ -484,18 +486,15 @@ public void setImeInputMode (int mode) {
 public void setMaximized (boolean maximized) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	int bits = 0;
+	if (maximized) bits = OS.Ph_WM_STATE_ISMAX;
+	int [] args = {OS.Pt_ARG_WINDOW_STATE, bits, OS.Ph_WM_STATE_ISMAX};
+	OS.PtSetResources (shellHandle, args.length / 3, args);
 	if (OS.PtWidgetIsRealized (shellHandle)) {
-		// RESTORE DOESN'T WORK
 		PhWindowEvent_t event = new PhWindowEvent_t ();
-		event.event_f = maximized ? OS.Ph_WM_MAX : OS.Ph_WM_RESTORE;
-		event.event_state = (short) (maximized ? OS.Ph_WM_EVSTATE_HIDE : OS.Ph_WM_EVSTATE_UNHIDE);
 		event.rid = OS.PtWidgetRid (shellHandle);
+		event.event_f = maximized ? OS.Ph_WM_MAX : OS.Ph_WM_RESTORE;
 		OS.PtForwardWindowEvent (event);
-	} else {
-		int bits = 0;
-		if (maximized) bits = OS.Ph_WM_STATE_ISMAX;
-		int [] args = {OS.Pt_ARG_WINDOW_STATE, bits, OS.Ph_WM_STATE_ISMAX};
-		OS.PtSetResources (shellHandle, args.length / 3, args);
 	}
 }
 
@@ -534,18 +533,16 @@ public void setMenuBar (Menu menu) {
 public void setMinimized (boolean minimized) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	int bits = 0;
+	if (minimized) bits = OS.Ph_WM_STATE_ISICONIFIED;
+	int [] args = {OS.Pt_ARG_WINDOW_STATE, bits, OS.Ph_WM_STATE_ISICONIFIED};
+	OS.PtSetResources (shellHandle, args.length / 3, args);
 	if (OS.PtWidgetIsRealized (shellHandle)) {
-		// RESTORE DOESN'T WORK
 		PhWindowEvent_t event = new PhWindowEvent_t ();
-		event.event_f = minimized ? OS.Ph_WM_HIDE : OS.Ph_WM_RESTORE;
-		event.event_state = (short) (minimized ? OS.Ph_WM_EVSTATE_HIDE : OS.Ph_WM_EVSTATE_UNHIDE);
 		event.rid = OS.PtWidgetRid (shellHandle);
+		event.event_f = OS.Ph_WM_HIDE;
+		event.event_state = (short) (minimized ? OS.Ph_WM_EVSTATE_HIDE : OS.Ph_WM_EVSTATE_UNHIDE);
 		OS.PtForwardWindowEvent (event);
-	} else {
-		int bits = 0;
-		if (minimized) bits = OS.Ph_WM_STATE_ISHIDDEN;
-		int [] args = {OS.Pt_ARG_WINDOW_STATE, bits, OS.Ph_WM_STATE_ISHIDDEN};
-		OS.PtSetResources (shellHandle, args.length / 3, args);
 	}
 }
 
