@@ -527,7 +527,7 @@ void onDispose() {
 	dragCursor.dispose();
 }
 void onMouseDown(Event event) {
-	if (isLocked) return;	
+	if (isLocked || event.button != 1) return;	
 	dragging = getGrabbedItem(event.x, event.y);
 	if (dragging != null) {
 		mouseXOffset = event.x;
