@@ -1397,6 +1397,22 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CopyRgn
 }
 #endif /* NO_CopyRgn */
 
+#ifndef NO_CountDragItems
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CountDragItems
+	(JNIEnv *env, jclass that, jint arg0, jshortArray arg1)
+{
+	jshort *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("CountSubControls\n")
+
+	if (arg1) lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL);
+	rc = (jint)CountDragItems((DragRef)arg0, (UInt16 *)lparg1);
+	if (arg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, 0);
+	return rc;
+}
+#endif /* NO_CountDragItems */
+
 #ifndef NO_CountMenuItems
 JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_CountMenuItems
 	(JNIEnv *env, jclass that, jint arg0)
@@ -3236,6 +3252,95 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDeviceList
 }
 #endif
 
+#ifndef NO_GetDragAllowableActions
+JNIEXPORT jint JNICALL OS_NATIVE(GetDragAllowableActions)
+ 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+	
+	DEBUG_CALL("GetDragAllowableActions\n")
+	
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)GetDragAllowableActions((DragRef)arg0, (DragActions *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetDragItemReferenceNumber
+JNIEXPORT jint JNICALL OS_NATIVE(GetDragItemReferenceNumber)
+ 	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc;
+	
+	DEBUG_CALL("GetDragItemReferenceNumber\n")
+	
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)GetDragItemReferenceNumber((DragRef)arg0,  arg1, (DragItemRef *)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);	
+	return rc;
+}
+#endif
+
+#ifndef NO_GetDragDropAction
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDragDropAction
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+	
+	DEBUG_CALL("GetDragDropAction\n")
+	
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)GetDragDropAction((DragRef)arg0, (DragActions *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	return rc;
+}
+#endif /* NO_GetDragDropAction */
+
+#ifndef NO_GetDragModifiers
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDragModifiers
+	(JNIEnv *env, jclass that, jint arg0, jshortArray arg1, jshortArray arg2, jshortArray arg3)
+{
+	jshort *lparg1=NULL;
+	jshort *lparg2=NULL;
+	jshort *lparg3=NULL;
+	jint rc;
+	
+	DEBUG_CALL("GetDragModifiers\n")
+	
+	if (arg1) lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetShortArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetShortArrayElements(env, arg3, NULL);
+	rc = (jint)GetDragModifiers((DragRef)arg0, (SInt16 *)lparg1, (SInt16 *)lparg2, (SInt16 *)lparg3);
+	if (arg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseShortArrayElements(env, arg1, lparg2, 0);
+	if (arg3) (*env)->ReleaseShortArrayElements(env, arg1, lparg3, 0);
+	return rc;
+}
+#endif /* NO_GetDragModifiers */
+
+#ifndef NO_GetDragMouse
+JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDragMouse
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jobject arg2)
+{
+	Point _arg1, *lparg1=NULL;
+	Point _arg2, *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetDragMouse\n")
+
+	if (arg1) lparg1 = getPointFields(env, arg1, &_arg1);
+	if (arg2) lparg2 = getPointFields(env, arg2, &_arg2);
+	rc = (jint)GetDragMouse((DragRef)arg0, (Point *)lparg1, (Point *)lparg2);
+	if (arg1) setPointFields(env, arg1, lparg1);
+	if (arg2) setPointFields(env, arg2, lparg2);
+	return rc;
+}
+#endif /* NO_GetDragMouse */
+
 #ifndef NO_GetEventClass
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventClass
 	(JNIEnv *env, jclass that, jint arg0)
@@ -3473,6 +3578,66 @@ JNIEXPORT jdouble JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventTime
 	return (jdouble)GetEventTime((EventRef)arg0);
 }
 #endif /* NO_GetEventTime */
+
+#ifndef NO_GetFlavorData
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetFlavorData
+	(JNIEnv *env, jclass that, jint arg0, int arg1, jint arg2, jbyteArray arg3, jintArray arg4, jint arg5)
+{
+	jbyte *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint rc;
+	
+	DEBUG_CALL("GetFlavorData\n")
+	
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	
+	rc = (jint)GetFlavorData((DragRef)arg0, (DragItemRef)arg1, (FlavorType)arg2, (void *)lparg3, (Size *)lparg4, arg5);
+	
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	
+	return rc;
+}
+#endif /* NO_GetFlavorData */
+
+#ifndef NO_GetFlavorDataSize
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetFlavorDataSize
+	(JNIEnv *env, jclass that, jint arg0, int arg1, jint arg2, jintArray arg3)
+{
+	jint *lparg3=NULL;
+	jint rc;
+	
+	DEBUG_CALL("GetFlavorDataSize\n")
+	
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	
+	rc = (jint)GetFlavorDataSize((DragRef)arg0, (DragItemRef)arg1, (FlavorType)arg2, (Size *)lparg3);
+	
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	
+	return rc;
+}
+#endif /* NO_GetFlavorDataSize */
+
+#ifndef NO_GetFlavorType
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetFlavorType
+	(JNIEnv *env, jclass that, jint arg0, int arg1, jshort arg2, jintArray arg3)
+{
+	jint *lparg3=NULL;
+	jint rc;
+	
+	DEBUG_CALL("GetFlavorType\n")
+	
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	
+	rc = (jint)GetFlavorType((DragRef)arg0, (DragItemRef)arg1, arg2, (FlavorType *)lparg3);
+	
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	
+	return rc;
+}
+#endif /* NO_GetFlavorType */
 
 #ifndef NO_GetFontInfo
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetFontInfo
@@ -4903,6 +5068,38 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_InstallEventLoopT
 }
 #endif /* NO_InstallEventLoopTimer */
 
+#ifndef NO_InstallReceiveHandler
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_InstallReceiveHandler
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("InstallReceiveHandler\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)InstallReceiveHandler((DragReceiveHandlerUPP)arg0, (WindowRef)arg1, (void *)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	return rc;
+}
+#endif /* NO_InstallReceiveHandler */
+
+#ifndef NO_InstallTrackingHandler
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_InstallTrackingHandler
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("InstallTrackingHandler\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)InstallTrackingHandler((DragTrackingHandlerUPP)arg0, (WindowRef)arg1, (void *)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	return rc;
+}
+#endif /* NO_InstallTrackingHandler */
+
 #ifndef NO_InvalWindowRect
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_InvalWindowRect
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
@@ -5875,6 +6072,26 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RepositionWindow
 }
 #endif
 
+#ifndef NO_RemoveReceiveHandler
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RemoveReceiveHandler
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("RemoveReceiveHandler\n")
+
+	return (jint)RemoveReceiveHandler((DragReceiveHandlerUPP)arg0, (WindowRef)arg1);
+}
+#endif /* NO_RemoveReceiveHandler */
+
+#ifndef NO_RemoveTrackingHandler
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RemoveTrackingHandler
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("RemoveTrackingHandler\n")
+
+	return (jint)RemoveTrackingHandler((DragTrackingHandlerUPP)arg0, (WindowRef)arg1);
+}
+#endif /* NO_RemoveTrackingHandler */
+
 #ifndef NO_RetainEvent
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RetainEvent
 	(JNIEnv *env, jclass that, jint arg0)
@@ -6503,6 +6720,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserTar
 	return (jint)SetDataBrowserTarget((ControlRef)arg0, (DataBrowserItemID)arg1);
 }
 #endif /* NO_SetDataBrowserTarget */
+
+#ifndef NO_SetDragDropAction
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDragDropAction
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SetDragDropAction\n")
+
+	return (jint)SetDragDropAction((DragRef)arg0, (DragActions)arg1);
+}
+#endif /* NO_SetDragDropAction */
 
 #ifndef NO_SetEventLoopTimerNextFireTime
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetEventLoopTimerNextFireTime
@@ -7855,6 +8082,23 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy__ILjava_la
 }
 #endif
 
+#ifndef NO_memcpy__Lorg_eclipse_swt_internal_carbon_HFSFlavor_2_3BI
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy__Lorg_eclipse_swt_internal_carbon_HFSFlavor_2_3BI
+	(JNIEnv *env, jclass that, jobject arg0, jbyteArray arg1, jint arg2)
+{
+	HFSFlavor _arg0, *lparg0=NULL;
+	jbyte *lparg1=NULL;
+
+	DEBUG_CALL("memcpy__Lorg_eclipse_swt_internal_carbon_HFSFlavor_2_3BI\n")
+
+	if (arg0) lparg0 = getHFSFlavorFields(env, arg0, &_arg0);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	memcpy((void *)lparg0, (const void *)lparg1, (size_t)arg2);
+	if (arg0) setHFSFlavorFields(env, arg0, lparg0);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+}
+#endif
+
 #ifndef NO_memset
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memset
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
@@ -7874,6 +8118,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_X2Fix
 	return (jint)X2Fix(arg0);
 }
 #endif
+
+#ifndef NO_WaitMouseMoved
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_WaitMouseMoved
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	Point _arg0, *lparg0=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("WaitMouseMoved\n")
+
+	if (arg0) lparg0 = getPointFields(env, arg0, &_arg0);
+	rc = (jboolean)WaitMouseMoved((Point)_arg0);
+	if (arg0) setPointFields(env, arg0, lparg0);
+	return rc;
+}
+#endif /* NO_WaitMouseMoved */
 
 #ifndef NO_ZoomWindowIdeal
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ZoomWindowIdeal

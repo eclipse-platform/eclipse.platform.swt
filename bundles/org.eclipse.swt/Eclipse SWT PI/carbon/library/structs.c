@@ -1263,6 +1263,58 @@ void setHMHelpContentRecFields(JNIEnv *env, jobject lpObject, HMHelpContentRec *
 }
 #endif /* NO_HMHelpContentRec */
 
+#ifndef NO_HFSFlavor
+typedef struct HFSFlavor_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID fileType, fileCreator, fdFlags, fileSpec_vRefNum, fileSpec_parID, fileSpec_name;
+} HFSFlavor_FID_CACHE;
+
+HFSFlavor_FID_CACHE HFSFlavorFc;
+
+void cacheHFSFlavorFids(JNIEnv *env, jobject lpObject)
+{
+	if (HFSFlavorFc.cached) return;
+	HFSFlavorFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	HFSFlavorFc.fileType = (*env)->GetFieldID(env, HFSFlavorFc.clazz, "fileType", "I");
+	HFSFlavorFc.fileCreator = (*env)->GetFieldID(env, HFSFlavorFc.clazz, "fileCreator", "I");
+	HFSFlavorFc.fdFlags = (*env)->GetFieldID(env, HFSFlavorFc.clazz, "fdFlags", "S");
+	HFSFlavorFc.fileSpec_vRefNum = (*env)->GetFieldID(env, HFSFlavorFc.clazz, "fileSpec_vRefNum", "S");
+	HFSFlavorFc.fileSpec_parID = (*env)->GetFieldID(env, HFSFlavorFc.clazz, "fileSpec_parID", "I");
+	HFSFlavorFc.fileSpec_name = (*env)->GetFieldID(env, HFSFlavorFc.clazz, "fileSpec_name", "[B");
+	HFSFlavorFc.cached = 1;
+}
+
+HFSFlavor *getHFSFlavorFields(JNIEnv *env, jobject lpObject, HFSFlavor *lpStruct)
+{
+	if (!HFSFlavorFc.cached) cacheHFSFlavorFids(env, lpObject);
+	lpStruct->fileType = (*env)->GetIntField(env, lpObject, HFSFlavorFc.fileType);
+	lpStruct->fileCreator = (*env)->GetIntField(env, lpObject, HFSFlavorFc.fileCreator);
+	lpStruct->fdFlags = (*env)->GetShortField(env, lpObject, HFSFlavorFc.fdFlags);
+	lpStruct->fileSpec.vRefNum = (*env)->GetShortField(env, lpObject, HFSFlavorFc.fileSpec_vRefNum);
+	lpStruct->fileSpec.parID = (*env)->GetIntField(env, lpObject, HFSFlavorFc.fileSpec_parID);
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, HFSFlavorFc.fileSpec_name);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->fileSpec.name), lpStruct->fileSpec.name);
+	}
+	return lpStruct;
+}
+
+void setHFSFlavorFields(JNIEnv *env, jobject lpObject, HFSFlavor *lpStruct)
+{
+	if (!HFSFlavorFc.cached) cacheHFSFlavorFids(env, lpObject);
+	(*env)->SetIntField(env, lpObject, HFSFlavorFc.fileType, (jint)lpStruct->fileType);
+	(*env)->SetIntField(env, lpObject, HFSFlavorFc.fileCreator, (jint)lpStruct->fileCreator);
+	(*env)->SetShortField(env, lpObject, HFSFlavorFc.fdFlags, (jshort)lpStruct->fdFlags);
+	(*env)->SetShortField(env, lpObject, HFSFlavorFc.fileSpec_vRefNum, (jshort)lpStruct->fileSpec.vRefNum);
+	(*env)->SetIntField(env, lpObject, HFSFlavorFc.fileSpec_parID, (jint)lpStruct->fileSpec.parID);
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, HFSFlavorFc.fileSpec_name);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->fileSpec.name), lpStruct->fileSpec.name);
+	}
+}
+#endif /* NO_HFSFlavor */
+
 #ifndef NO_MenuTrackingData
 typedef struct MenuTrackingData_FID_CACHE {
 	int cached;
