@@ -697,6 +697,11 @@ void init(Device device, ImageData image) {
 	this.device = device;
 	int width = image.width;
 	int height = image.height;
+	PaletteData palette = image.palette;
+	if (!(((image.depth == 1 || image.depth == 2 || image.depth == 4 || image.depth == 8) && !palette.isDirect) ||
+			((image.depth == 8) || (image.depth == 16 || image.depth == 24 || image.depth == 32) && palette.isDirect)))
+				SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
+
 	
 	/* Create the image */
 	int dataSize = width * height * 4;
@@ -719,7 +724,6 @@ void init(Device device, ImageData image) {
 	
 	/* Initialize data */
 	int bpr = width * 4;
-	PaletteData palette = image.palette;
 	PaletteData newPalette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
 	byte[] buffer = new byte[dataSize];
 	if (palette.isDirect) {
