@@ -311,10 +311,10 @@ public Browser(Composite parent, int style) {
 			switch (event.type) {
 				case SWT.Dispose: onDispose(); break;
 				case SWT.Resize: onResize(); break;
-				case SWT.FocusIn: onFocusGained(); break;
+				case SWT.FocusIn: Activate(); break;
 				case SWT.Deactivate: {
 					Display display = event.display;
-					if (Browser.this == display.getFocusControl()) onFocusLost();
+					if (Browser.this == display.getFocusControl()) Deactivate();
 					break;
 				}
 				case SWT.Show: {
@@ -933,7 +933,7 @@ void onDispose() {
 //	}
 }
 
-void onFocusGained() {
+void Activate() {
 	int[] result = new int[1];
 	int rc = webBrowser.QueryInterface(nsIWebBrowserFocus.NS_IWEBBROWSERFOCUS_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
@@ -945,7 +945,7 @@ void onFocusGained() {
 	webBrowserFocus.Release();
 }
 	
-void onFocusLost() {
+void Deactivate() {
 	int[] result = new int[1];
 	int rc = webBrowser.QueryInterface(nsIWebBrowserFocus.NS_IWEBBROWSERFOCUS_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
@@ -1300,6 +1300,26 @@ public void removeVisibilityWindowListener(VisibilityWindowListener listener) {
 public boolean setText(String html) {
 	checkWidget();
 	if (html == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	
+	/*
+	*  Feature in Mozilla.  The focus memory of Mozilla must be 
+	*  properly managed through the nsIWebBrowserFocus interface.
+	*  In particular, nsIWebBrowserFocus.deactivate must be called
+	*  when the focus moves from the browser (or one of its children
+	*  managed by Mozilla to another widget.  We currently do not
+	*  get notified when a widget takes focus away from the Browser.
+	*  As a result, deactivate is not properly called. This causes
+	*  Mozilla to retake focus the next time a document is loaded.
+	*  This breaks the case where the HTML loaded in the Browser 
+	*  varies while the user enters characters in a text widget. The text
+	*  widget loses focus every time new content is loaded.
+	*  The current workaround is to call deactivate everytime if 
+	*  the browser currently does not have focus. A better workaround
+	*  would be to have a mean to call deactivate when the Browser
+	*  or one of its children loses focus.
+	*/
+	if (this != getDisplay().getFocusControl()) Deactivate();
+	
 	/* Convert the String containing HTML to an array of
 	 * bytes with UTF-8 data.
 	 */
@@ -1766,6 +1786,11 @@ int SetFocus() {
 	if (rc != XPCOM.NS_OK) error(rc);
 	baseWindow.Release();
 
+	/*
+	* Note. Mozilla notifies here that one of the children took
+	* focus. This could or should be used to fire an SWT.FOCUS_IN
+	* event on Browser focus listeners.
+	*/
 	return XPCOM.NS_OK;     	
 }	
 
