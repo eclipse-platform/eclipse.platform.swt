@@ -1591,7 +1591,7 @@ public StyledText(Composite parent, int style) {
 	super.setForeground(getForeground());
 	super.setBackground(getBackground());
 	Display display = getDisplay();
-	isMirrored = (getStyle() & SWT.MIRRORED) != 0;
+	isMirrored = (super.getStyle() & SWT.MIRRORED) != 0;
 	isBidi = StyledTextBidi.isBidiPlatform() || isMirrored;
 	if ((style & SWT.READ_ONLY) != 0) {
 		setEditable(false);
