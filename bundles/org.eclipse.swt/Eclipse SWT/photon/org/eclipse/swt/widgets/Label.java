@@ -441,6 +441,10 @@ public void setText (String string) {
 	OS.free (ptr2);
 }
 
+int traversalCode (int key_sym, PhKeyEvent_t ke) {
+	return 0;
+}
+
 int widgetClass () {
 	if ((style & SWT.SEPARATOR) != 0) return OS.PtSeparator ();
 	return OS.PtLabel ();

@@ -592,11 +592,8 @@ public void setText (String string) {
 }
 
 int traversalCode (int key_sym, PhKeyEvent_t ke) {
-	int code = super.traversalCode (key_sym , ke);
-	if ((style & (SWT.RADIO | SWT.CHECK)) == 0) {
-		code &= ~(SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS);
-		code |= SWT.TRAVERSE_ARROW_NEXT | SWT.TRAVERSE_ARROW_PREVIOUS | SWT.TRAVERSE_MNEMONIC;
-	}
+	int code = super.traversalCode (key_sym, ke);
+	if ((style & SWT.RADIO) != 0) code |= SWT.TRAVERSE_ARROW_NEXT | SWT.TRAVERSE_ARROW_PREVIOUS;
 	return code;
 }
 
