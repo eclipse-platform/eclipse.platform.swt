@@ -489,7 +489,9 @@ public void setLocation (int x, int y) {
 	checkWidget();
 	Rect rect = new Rect ();
 	OS.GetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
-	OS.SetRect (rect, (short) x, (short) y, rect.right, rect.bottom);
+	int width = rect.right - rect.left;
+	int height = rect.bottom - rect.top;
+	OS.SetRect (rect, (short) x, (short) y, (short) (x + width), (short) (y + height));
 	OS.SetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
 }
 
