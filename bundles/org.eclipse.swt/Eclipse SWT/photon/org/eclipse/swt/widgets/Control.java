@@ -2380,6 +2380,13 @@ public void setVisible (boolean visible) {
 		OS.PtRealizeWidget (topHandle);
 	} else {
 		OS.PtUnrealizeWidget (topHandle);
+		/*
+		 * It is possible (but unlikely), that application
+		 * code could have disposed the widget in the FocusOut
+		 * event that is triggered by PtUnrealizeWidget if the widget
+		 * being hidden has focus.  If this happens, just return.
+		 */
+		if (isDisposed ()) return;
 		sendEvent(SWT.Hide);
 	}
 }
