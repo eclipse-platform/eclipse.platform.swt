@@ -62,6 +62,8 @@ public final class Rectangle implements SerializableCompatibility {
 	 */
 	public int height;
 
+	static final long serialVersionUID = 3256439218279428914L;
+	
 /**
  * Construct a new instance of this class given the 
  * x, y, width and height values.

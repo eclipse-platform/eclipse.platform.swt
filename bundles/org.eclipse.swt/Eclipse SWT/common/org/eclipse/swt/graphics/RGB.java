@@ -54,6 +54,8 @@ public final class RGB implements SerializableCompatibility {
 	 */
 	public int blue;
 	
+	static final long serialVersionUID = 3258415023461249074L;
+	
 /**
  * Constructs an instance of this class with the given
  * red, green and blue values.

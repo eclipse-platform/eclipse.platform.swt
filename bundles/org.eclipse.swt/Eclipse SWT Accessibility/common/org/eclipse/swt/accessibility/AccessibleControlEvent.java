@@ -38,6 +38,8 @@ public class AccessibleControlEvent extends SWTEventObject {
 	public String result;			// OUT
 	public Object children[];		// [OUT]
 	
+	static final long serialVersionUID = 3257281444169529141L;
+	
 /**
  * Constructs a new instance of this class.
  *

@@ -49,6 +49,8 @@ public final class Point implements SerializableCompatibility {
 	 */
 	public int y;
 	
+	static final long serialVersionUID = 3257002163938146354L;
+	
 /**
  * Constructs a new point with the given x and y coordinates.
  *

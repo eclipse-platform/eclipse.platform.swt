@@ -44,6 +44,8 @@ public class AccessibleEvent extends SWTEventObject {
 	 */
 	public String result;
 	
+	static final long serialVersionUID = 3257567304224026934L;
+	
 /**
  * Constructs a new instance of this class.
  *

@@ -33,6 +33,8 @@ public class AccessibleTextEvent extends SWTEventObject {
 	public int childID;				// IN
 	public int offset, length;		// OUT
 	
+	static final long serialVersionUID = 3977019530868308275L;
+	
 /**
  * Constructs a new instance of this class.
  *

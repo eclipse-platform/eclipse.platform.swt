@@ -55,6 +55,8 @@ public class ImageLoaderEvent extends SWTEventObject {
 	 */
 	public boolean endOfImage;
 	
+	static final long serialVersionUID = 3257284738325558065L;
+	
 /**
  * Constructs a new instance of this class given the event source and
  * the values to store in its fields.
