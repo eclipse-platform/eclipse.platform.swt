@@ -627,13 +627,12 @@ int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventControlSetCursor (int nextHandler, int theEvent, int userData) {
-	if (!isEnabled () || !isEnabledModal ()) return OS.noErr;
-	Cursor cursor = findCursor ();
-	if (cursor != null) {
-		setCursor (cursor.handle);
-		return OS.noErr;
+	if (!isEnabled ()) return OS.noErr;
+	Cursor cursor = null;
+	if (isEnabledModal ()) {
+		if ((cursor = findCursor ()) != null) setCursor (cursor.handle);
 	}
-	return OS.eventNotHandledErr;
+	return cursor != null ? OS.noErr : OS.eventNotHandledErr;
 }
 
 int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
