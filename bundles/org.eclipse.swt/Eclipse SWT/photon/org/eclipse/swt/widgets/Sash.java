@@ -369,6 +369,13 @@ boolean translateTraversal (int key_sym, PhKeyEvent_t phEvent) {
 				*/
 				sendEvent (SWT.Selection, event);
 				if (isDisposed ()) return true;
+				if (event.doit) {
+					OS.PtWidgetArea (handle, area);
+					int cursorX = area.size_w / 2, cursorY = area.size_h / 2;
+					short [] absX = new short [1], absY = new short [1];
+					OS.PtGetAbsPosition (handle, absX, absY);
+					OS.PhMoveCursorAbs (OS.PhInputGroup (0), cursorX + absX [0], cursorY + absY [0]);
+				}
 				return result;
 		}
 	}
