@@ -2634,6 +2634,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(PtNextTopLevelWidget)
 }
 #endif
 
+#ifndef NO_PtNumericInteger
+JNIEXPORT jint JNICALL OS_NATIVE(PtNumericInteger)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, PtNumericInteger_FUNC);
+	rc = (jint)PtNumericInteger;
+	OS_NATIVE_EXIT(env, that, PtNumericInteger_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_PtPane
 JNIEXPORT jint JNICALL OS_NATIVE(PtPane)
 	(JNIEnv *env, jclass that)

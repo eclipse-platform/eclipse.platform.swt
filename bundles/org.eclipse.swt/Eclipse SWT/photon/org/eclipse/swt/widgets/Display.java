@@ -239,6 +239,7 @@ public class Display extends Device {
 	int PtSlider;
 	int PtSeparator;
 	int PtToolbar;
+	int PtNumericInteger;
 				
 	/* Colors */
 	int WIDGET_DARK_SHADOW, WIDGET_NORMAL_SHADOW, WIDGET_LIGHT_SHADOW;
@@ -1337,6 +1338,7 @@ void initializeWidgetClasses () {
 		OS.PtCreateWidgetClass (OS.PtSlider (), 0, args.length / 3, args), 0, 0,
 		OS.PtCreateWidgetClass (OS.PtSeparator (), 0, args.length / 3, args), 0, 0,
 		OS.PtCreateWidgetClass (OS.PtToolbar (), 0, args.length / 3, args), 0, 0,
+		OS.PtCreateWidgetClass (OS.PtNumericInteger (), 0, args.length / 3, args), 0, 0,
 	};
 	ClassesPtr = OS.malloc (buffer.length * 4);
 	OS.memmove (ClassesPtr, buffer, buffer.length * 4);
@@ -1358,6 +1360,7 @@ void initializeWidgetClasses () {
 	PtSlider = ClassesPtr + 180;
 	PtSeparator = ClassesPtr + 192;
 	PtToolbar = ClassesPtr + 204;
+	PtNumericInteger = ClassesPtr + 216;
 }
 
 void initializeWidgetColors () {

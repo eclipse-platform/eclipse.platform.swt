@@ -10,10 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
-
-import org.eclipse.swt.*;
+import org.eclipse.swt.internal.photon.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.*;
 
 /**
  * Instances of this class are selectable user interface
@@ -81,6 +81,16 @@ protected void checkSubclass () {
 
 void createHandle (int index) {
 	state |= HANDLE;
+	int parentHandle = parent.parentingHandle ();
+	int [] args = new int [] {
+		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
+		OS.Pt_ARG_NUMERIC_INCREMENT, 1, 0,
+		OS.Pt_ARG_NUMERIC_MIN, 0, 0,
+		OS.Pt_ARG_NUMERIC_MAX, 100, 0,
+	};
+	handle = OS.PtCreateWidget (display.PtNumericInteger, parentHandle, args.length / 3, args);
+	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+
 }
 
 /**
@@ -224,7 +234,9 @@ public void cut () {
  */
 public int getIncrement () {
 	checkWidget ();
-	return 0;
+	int [] args = {OS.Pt_ARG_NUMERIC_INCREMENT, 0, 0};
+	OS.PtGetResources (handle, args.length / 3, args);
+	return args [1];
 }
 
 /**
@@ -239,7 +251,9 @@ public int getIncrement () {
  */
 public int getMaximum () {
 	checkWidget ();
-	return 0;
+	int [] args = {OS.Pt_ARG_NUMERIC_MAX, 0, 0};
+	OS.PtGetResources (handle, args.length / 3, args);
+	return args [1];
 }
 
 /**
@@ -254,7 +268,9 @@ public int getMaximum () {
  */
 public int getMinimum () {
 	checkWidget ();
-	return 0;
+	int [] args = {OS.Pt_ARG_NUMERIC_MIN, 0, 0};
+	OS.PtGetResources (handle, args.length / 3, args);
+	return args [1];
 }
 
 /**
@@ -285,8 +301,16 @@ public int getPageIncrement () {
  * </ul>
  */
 public int getSelection () {
-	checkWidget ();	
-	return 0;
+	checkWidget ();
+	int [] args = {OS.Pt_ARG_NUMERIC_VALUE, 0, 0};
+	OS.PtGetResources (handle, args.length / 3, args);
+	return args [1];
+}
+
+void hookEvents () {
+	super.hookEvents ();
+	int windowProc = display.windowProc;
+	OS.PtAddCallback (handle, OS.Pt_CB_NUMERIC_CHANGED, windowProc, OS.Pt_CB_NUMERIC_CHANGED);
 }
 
 /**
@@ -304,6 +328,23 @@ public int getSelection () {
 public void paste () {
 	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) return;
+}
+
+int Pt_CB_NUMERIC_CHANGED (int widget, int info) {
+	if (info == 0) return OS.Pt_END;
+	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
+	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
+	if (cbinfo.event == 0) return OS.Pt_END;
+	switch (cbinfo.reason_subtype) {
+		case OS.Pt_NUMERIC_CHANGED:
+			sendEvent (SWT.Modify);
+			break;
+		case OS.Pt_NUMERIC_UPDOWN_ACTIVATE:
+		case OS.Pt_NUMERIC_UPDOWN_REPEAT:
+			sendEvent (SWT.Selection);
+			break;	
+	}	
+	return OS.Pt_CONTINUE;
 }
 
 /**
@@ -395,6 +436,7 @@ void removeVerifyListener (VerifyListener listener) {
 public void setIncrement (int value) {
 	checkWidget ();
 	if (value < 1) return;
+	OS.PtSetResource (handle, OS.Pt_ARG_NUMERIC_INCREMENT, value, 0);
 }
 
 /**
@@ -412,6 +454,7 @@ public void setIncrement (int value) {
  */
 public void setMaximum (int value) {
 	checkWidget ();
+	OS.PtSetResource (handle, OS.Pt_ARG_NUMERIC_MAX, value, 0);
 }
 
 /**
@@ -429,6 +472,7 @@ public void setMaximum (int value) {
  */
 public void setMinimum (int value) {
 	checkWidget ();
+	OS.PtSetResource (handle, OS.Pt_ARG_NUMERIC_MIN, value, 0);
 }
 
 /**
@@ -463,6 +507,7 @@ public void setPageIncrement (int value) {
  */
 public void setSelection (int value) {
 	checkWidget ();
+	OS.PtSetResource (handle, OS.Pt_ARG_NUMERIC_VALUE, value, 0);
 }
 
 }

@@ -351,6 +351,10 @@ public class OS extends Platform {
 	public static final int Pt_ARG_MULTITEXT_TABS = 0x1395;
 	public static final int Pt_ARG_MULTITEXT_TOP_LINE = 0x138f;
 	public static final int Pt_ARG_MULTITEXT_WRAP_FLAGS = 0x1389;
+	public static final int Pt_ARG_NUMERIC_INCREMENT = 0xcf0b;
+	public static final int Pt_ARG_NUMERIC_MAX = 0xcf0e;
+	public static final int Pt_ARG_NUMERIC_MIN = 0xcf0d;
+	public static final int Pt_ARG_NUMERIC_VALUE = 0xcf0c;
 	public static final int Pt_ARG_ORIENTATION = 0x520d;
 	public static final int Pt_ARG_OUTLINE_COLOR = 0x7e6;
 	public static final int Pt_ARG_PAGE_INCREMENT = 0x714d;
@@ -410,6 +414,7 @@ public class OS extends Platform {
 	public static final int Pt_CB_GOT_FOCUS = 0x7da;
 	public static final int Pt_CB_LOST_FOCUS = 0x7db;
 	public static final int Pt_CB_MODIFY_VERIFY = 0xfa9;
+	public static final int Pt_CB_NUMERIC_CHANGED = 0xcf17;
 	public static final int Pt_CB_OUTBOUND = 0x3fe;
 	public static final int Pt_CB_PG_PANEL_SWITCHING = 0xfa0a;
 	public static final int Pt_CB_REALIZED = 0x3f4;
@@ -480,6 +485,9 @@ public class OS extends Platform {
 	public static final int Pt_NOLINE = 0x6;
 	public static final int Pt_NO_PARENT = 0x1;
 	public static final int Pt_N_OF_MANY = 0x0;
+	public static final int Pt_NUMERIC_CHANGED = 0x1;
+	public static final int Pt_NUMERIC_UPDOWN_ACTIVATE = 0x8;
+	public static final int Pt_NUMERIC_UPDOWN_REPEAT = 0x4;	
 	public static final int Pt_ONE_OF_MANY = 0x1;
 	public static final int Pt_PG_INVALID = 0xffff;
 	public static final int Pt_PG_SELECTOR_ON_BOTTOM = 0x0001;
@@ -726,6 +734,7 @@ public static final native int PtMenuBar();
 public static final native int PtMenuButton();
 public static final native int PtMultiText();
 public static final native int PtNextTopLevelWidget(int widget);
+public static final native int PtNumericInteger ();
 public static final native int PtPane();
 public static final native int PtPanelGroup();
 public static final native void PtPositionMenu(int widget, PhEvent_t event);

@@ -205,6 +205,7 @@ typedef enum {
 	PtMenuButton_FUNC,
 	PtMultiText_FUNC,
 	PtNextTopLevelWidget_FUNC,
+	PtNumericInteger_FUNC,
 	PtPane_FUNC,
 	PtPanelGroup_FUNC,
 	PtPositionMenu_FUNC,

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 286;
-int OS_nativeFunctionCallCount[286];
+int OS_nativeFunctionCount = 287;
+int OS_nativeFunctionCallCount[287];
 char * OS_nativeFunctionNames[] = {
 	"PfDecomposeStemToID",
 	"PfExtentText__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhPoint_1t_2III",
@@ -201,6 +201,7 @@ char * OS_nativeFunctionNames[] = {
 	"PtMenuButton",
 	"PtMultiText",
 	"PtNextTopLevelWidget",
+	"PtNumericInteger",
 	"PtPane",
 	"PtPanelGroup",
 	"PtPositionMenu",
