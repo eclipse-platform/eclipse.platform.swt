@@ -787,6 +787,7 @@ public boolean getVisible () {
 	if ((style & SWT.POP_UP) != 0) {
 		Display display = getDisplay ();
 		Menu [] popups = display.popups;
+		if (popups == null) return false;
 		for (int i=0; i<popups.length; i++) {
 			if (popups [i] == this) return true;
 		}
