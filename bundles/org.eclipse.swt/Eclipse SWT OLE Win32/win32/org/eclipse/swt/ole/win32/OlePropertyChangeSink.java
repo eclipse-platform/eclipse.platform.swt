@@ -96,7 +96,7 @@ void disconnect(IUnknown objIUnknown) {
 }
 private void disposeCOMInterfaces() {
 
-	if (iUnknown != null);
+	if (iUnknown != null)
 		iUnknown.dispose();
 	iUnknown = null;
 

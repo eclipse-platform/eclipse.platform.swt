@@ -1335,7 +1335,7 @@ void inverseDCT(int[] dataUnit) {
 			 * Odd part per figure 8; the matrix is unitary and hence its
 			 * transpose is its inverse. i0..i3 are y7,y5,y3,y1 respectively.
 			 */
-			tmp0 = dataUnit[c7];;
+			tmp0 = dataUnit[c7];
 			tmp1 = dataUnit[c5];
 			tmp2 = dataUnit[c3];
 			tmp3 = dataUnit[c1];

@@ -14,7 +14,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.internal.win32.OS;
-import org.eclipse.swt.internal.win32.TVITEM;;
+import org.eclipse.swt.internal.win32.TVITEM;
 
 class TreeDragUnderEffect extends DragUnderEffect {
 	private Tree tree;
@@ -79,7 +79,7 @@ private TreeItem findItem(int x, int y){
 		if (item != null) return item;
 	}
 	// Check if we are just below the last item of the tree
-	if (coordinates.y > area.y + area.height - tree.getItemHeight()) {;
+	if (coordinates.y > area.y + area.height - tree.getItemHeight()) {
 		int y1 = area.y + area.height - tree.getItemHeight();
 		Point pt = new Point(coordinates.x, y1);
 		item = tree.getItem(pt);	
