@@ -457,29 +457,28 @@ public int indexOf (TabItem item) {
 }
 
 boolean mnemonicHit (char key) {
-	if (!setFocus ()) return false;
-	for (int i = 0; i < items.length; i++) {
-		if (items[i] != null) {
-			char mnemonic = findMnemonic (items[i].getText ());
-			if (mnemonic != '\0') {
-				if (Character.toUpperCase (key) == Character.toUpperCase (mnemonic)) {
-					setSelection(i);
-					sendEvent(SWT.Selection, new Event());
+	for (int i=0; i<items.length; i++) {
+		TabItem item = items [i];
+		if (item != null) {
+			char ch = findMnemonic (item.getText ());
+			if (Character.toUpperCase (key) == Character.toUpperCase (ch)) {		
+				if (setFocus ()) {
+					setSelection (i, true);
+					return true;
 				}
 			}
 		}
 	}
-	return true;
+	return false;
 }
 
 boolean mnemonicMatch (char key) {
-	for (int i = 0; i < items.length; i++) {
-		if (items[i] != null) {
-			char mnemonic = findMnemonic (items[i].getText ());
-			if (mnemonic != '\0') {
-				if (Character.toUpperCase (key) == Character.toUpperCase (mnemonic)) {
-					return true;
-				}
+	for (int i=0; i<items.length; i++) {
+		TabItem item = items [i];
+		if (item != null) {
+			char ch = findMnemonic (item.getText ());
+			if (Character.toUpperCase (key) == Character.toUpperCase (ch)) {		
+				return true;
 			}
 		}
 	}
@@ -557,6 +556,7 @@ boolean setTabGroupFocus () {
 }
 
 boolean setTabItemFocus () {
+	//????
 	Control [] path = getPath ();
 	for (int i=0; i<path.length; i++) {
 		Point size = path [i].getSize ();
@@ -580,6 +580,10 @@ boolean setTabItemFocus () {
  */
 public void setSelection (int index) {
 	checkWidget ();
+	setSelection (index, false);
+}
+
+public void setSelection (int index, boolean notify) {
 	int oldIndex = OS.SendMessage (handle, OS.TCM_GETCURSEL, 0, 0);
 	if (oldIndex != -1) {
 		TabItem item = items [oldIndex];
@@ -596,6 +600,12 @@ public void setSelection (int index) {
 		if (control != null && !control.isDisposed ()) {
 			control.setBounds (getClientArea ());
 			control.setVisible (true);
+		}
+		if (notify) {
+			Event event = new Event ();
+			event.item = item;
+			///??? post or send
+			postEvent (SWT.Selection, event);
 		}
 	}
 }
@@ -628,7 +638,8 @@ int widgetStyle () {
 	* this cannot happen by setting WS_CLIPCHILDREN.
 	*/
 	int bits = super.widgetStyle () | OS.WS_CLIPCHILDREN;
-	return bits | OS.TCS_TABS /*| OS.TCS_FOCUSNEVER*/ | OS.TCS_TOOLTIPS;
+	if ((style & SWT.NO_FOCUS) != 0) bits |= OS.TCS_FOCUSNEVER;
+	return bits | OS.TCS_TABS | OS.TCS_TOOLTIPS;
 }
 
 TCHAR windowClass () {
@@ -641,7 +652,11 @@ int windowProc () {
 
 LRESULT WM_GETDLGCODE (int wParam, int lParam) {
 	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
-	// ALT Key
+	/*
+	* Return DLGC_BUTTON so that mnemonics will be
+	* processed without needing to press the ALT when
+	* the tab folder has focus.
+	*/
 	if (result != null) return result;
 	return new LRESULT (OS.DLGC_BUTTON);
 }

@@ -29,9 +29,9 @@ import org.eclipse.swt.graphics.*;
  */
 
 public class Composite extends Scrollable {
-	
 	Layout layout;
 	int font, hdwp;
+	Control [] tabList;
 	
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -94,8 +94,44 @@ Control [] _getChildren () {
 	return newChildren;
 }
 
+Control [] _getTabList () {
+	if (tabList == null) return tabList;
+	int index = 0, count = 0;
+	while (index < tabList.length) {
+		if (!tabList [index].isDisposed ()) count++;
+		index++;
+	}
+	if (index == count) return tabList;
+	Control [] newList = new Control [count];
+	index = 0;
+	for (int i=0; i<tabList.length; i++) {
+		if (!tabList [index].isDisposed ()) {
+			newList [index++] = tabList [i];
+		}
+	}
+	tabList = newList;
+	return tabList;
+}
+
 protected void checkSubclass () {
 	/* Do nothing - Subclassing is allowed */
+}
+
+Control [] computeTabList () {
+	Control result [] = super.computeTabList ();
+	if (result.length == 0) return result;
+	Control [] list = tabList != null ? tabList : _getChildren ();
+	for (int i=0; i<list.length; i++) {
+		Control child = list [i];
+		Control [] childList = child.computeTabList ();
+		if (childList.length != 0) {
+			Control [] newResult = new Control [result.length + childList.length];
+			System.arraycopy (result, 0, newResult, 0, result.length);
+			System.arraycopy (childList, 0, newResult, result.length, childList.length);
+			result = newResult;
+		}
+	}
+	return result;
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -181,20 +217,9 @@ public Layout getLayout () {
 	return layout;
 }
 
-Control [] getTabList () {
-	Control result [] = super.getTabList ();
-	Control [] children = _getChildren ();
-	for (int i=0; i<children.length; i++) {
-		Control child = children [i];
-		Control [] list = child.getTabList ();
-		if (list.length != 0) {
-			Control [] newResult = new Control [result.length + list.length];
-			System.arraycopy (result, 0, newResult, 0, result.length);
-			System.arraycopy (list, 0, newResult, result.length, list.length);
-			result = newResult;
-		}
-	}
-	return result;
+public Control [] getTabList () {
+	checkWidget ();
+	return _getTabList ();
 }
 
 /**
@@ -272,6 +297,7 @@ void releaseWidget () {
 	releaseChildren ();
 	super.releaseWidget ();
 	layout = null;
+	tabList = null;
 	int oldHdwp = hdwp;
 	hdwp = 0;
 	if (oldHdwp != 0) OS.EndDeferWindowPos (oldHdwp);
@@ -310,13 +336,46 @@ public void setLayout (Layout layout) {
 	this.layout = layout;
 }
 
+public void setTabList (Control [] tabList) {
+	checkWidget ();
+	if (tabList == null) error (SWT.ERROR_NULL_ARGUMENT);
+	/*
+	* This code is intentionally commented.  It is
+	* not yet clear whether setting the tab list 
+	* should force the widget to be a tab group
+	* instead of a tab item or non-traversable.
+	*/
+//	Control [] children = _getChildren ();
+//	for (int i=0; i<children.length; i++) {
+//		Control control = children [i];
+//		if (control != null) {
+//			if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+//			int index = 0;
+//			while (index < tabList.length) {
+//				if (tabList [index] == control) break;
+//				index++;
+//			}
+//			int hwnd = control.handle;
+//			int bits = OS.GetWindowLong (hwnd, OS.GWL_STYLE);
+//			if (index == tabList.length) {
+//				bits &= ~OS.WS_TABSTOP;
+//			} else {
+//				bits |= OS.WS_TABSTOP;
+//			}
+//			OS.SetWindowLong (hwnd, OS.GWL_STYLE, bits);
+//		}
+//	}
+	this.tabList = tabList;
+}
+
 boolean setTabGroupFocus () {
-	if (!isVisible ()) return false;
 	if (isTabItem ()) return setTabItemFocus ();
-	Control [] children = _getChildren ();
-	if (children.length == 0) {
-		return (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) && setTabItemFocus ();
+	if ((state & CANVAS) != 0) {
+		if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
+			if (setTabItemFocus ()) return true;
+		}
 	}
+	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
 		if (child.isVisible () && child.setRadioFocus ()) return true;
@@ -325,11 +384,21 @@ boolean setTabGroupFocus () {
 		Control child = children [i];
 		if (child.isTabItem () && child.setTabItemFocus ()) return true;
 	}
-	for (int i=0; i<children.length; i++) {
-		Control child = children [i];
-		if (child.isTabGroup () && child.setTabGroupFocus ()) return true;
-	}
 	return false;
+}
+
+boolean setTabItemFocus () {
+	Control [] path = getPath ();
+	for (int i=0; i<path.length; i++) {
+		Point size = path [i].getSize ();
+		if (size.x == 0 || size.y == 0) return false;
+	}
+	if ((state & CANVAS) != 0) {
+		if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
+			return forceFocus ();
+		}
+	}
+	return setFocus ();
 }
 
 String toolTipText (NMTTDISPINFO hdr) {
@@ -343,12 +412,12 @@ String toolTipText (NMTTDISPINFO hdr) {
 	return control.toolTipText;
 }
 
-boolean traverseMnemonic (char key) {
-	if (super.traverseMnemonic (key)) return true;
+boolean translateMnemonic (char key) {
+	if (super.translateMnemonic (key)) return true;
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
-		if (child.traverseMnemonic (key)) return true;
+		if (child.translateMnemonic (key)) return true;
 	}
 	return false;
 }

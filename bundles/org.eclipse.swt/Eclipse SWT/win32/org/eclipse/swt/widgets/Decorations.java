@@ -84,7 +84,6 @@ import org.eclipse.swt.graphics.*;
  */
 
 public class Decorations extends Canvas {
-	
 	Image image;
 	Menu menuBar;
 	Menu [] menus;
@@ -196,6 +195,14 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+Control computeTabGroup () {
+	return this;
+}
+
+Control computeTabRoot () {
+	return this;
+}
+
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
 
@@ -260,10 +267,6 @@ void createWidget () {
 	super.createWidget ();
 	swFlags = OS.SW_SHOWNOACTIVATE;
 	hAccel = -1;
-}
-
-Control currentTabGroup () {
-	return this;
 }
 
 void destroyAcceleratorTable () {

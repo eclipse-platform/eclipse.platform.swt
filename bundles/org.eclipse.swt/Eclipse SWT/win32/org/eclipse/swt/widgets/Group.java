@@ -192,7 +192,7 @@ public String getText () {
 	return buffer.toString (0, length);
 }
 
-boolean mnemonicHit () {
+boolean mnemonicHit (char key) {
 	return setFocus ();
 }
 

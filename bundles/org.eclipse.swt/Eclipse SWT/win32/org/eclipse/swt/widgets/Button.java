@@ -321,7 +321,7 @@ public String getText () {
 	return buffer.toString (0, length);
 }
 
-boolean mnemonicHit () {
+boolean mnemonicHit (char ch) {
 	if (!setFocus ()) return false;
 	/*
 	* Feature in Windows.  When a radio button gets focus, 

@@ -391,6 +391,35 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
+Control computeTabGroup () {
+	if (isTabGroup ()) return this;
+	return parent.computeTabGroup ();
+}
+
+Control computeTabRoot () {
+	Control [] tabList = parent._getTabList ();
+	if (tabList != null) {
+		int index = 0;
+		while (index < tabList.length) {
+			if (tabList [index] == this) break;
+			index++;
+		}
+		if (index == tabList.length) {
+			if (isTabGroup ()) return this;
+		}
+	}
+	return parent.computeTabRoot ();
+}
+
+Control [] computeTabList () {
+	if (isTabGroup ()) {
+		if (getVisible () && getEnabled ()) {
+			return new Control [] {this};
+		}
+	}
+	return new Control [0];
+}
+
 void createHandle () {
 	int hwndParent = 0;
 	if (handle != 0) {
@@ -422,11 +451,6 @@ void createWidget () {
 	register ();
 	subclass ();
 	setDefaultFont ();
-}
-
-Control currentTabGroup () {
-	if (isTabGroup ()) return this;
-	return parent.currentTabGroup ();
 }
 
 int defaultBackground () {
@@ -802,15 +826,6 @@ public Point getSize () {
 	return new Point (width, height);
 }
 
-Control [] getTabList () {
-	if (isTabGroup ()) {
-		if (getVisible () && getEnabled ()) {
-			return new Control [] {this};
-		}
-	}
-	return new Control [0];
-}
-
 /**
  * Returns the receiver's tool tip text, or null if it has
  * not been set.
@@ -1051,7 +1066,7 @@ Decorations menuShell () {
 	return parent.menuShell ();
 }
 
-boolean mnemonicHit () {
+boolean mnemonicHit (char key) {
 	return false;
 }
 
@@ -2180,6 +2195,33 @@ boolean translateAccelerator (MSG msg) {
 	return menuShell ().translateAccelerator (msg);
 }
 
+boolean translateMnemonic (char key) {
+	if (!isVisible () || !isEnabled ()) return false;
+	boolean doit = mnemonicMatch (key);
+	if (hooks (SWT.Traverse)) {
+		Event event = new Event ();
+		event.doit = doit;
+		event.detail = SWT.TRAVERSE_MNEMONIC;
+		Display display = getDisplay ();
+		display.lastKey = display.lastAscii = key;
+		display.lastVirtual = false;
+		if (!setKeyState (event, SWT.Traverse)) {
+			return false;
+		}
+		/*
+		* It is possible (but unlikely), that application
+		* code could have disposed the widget in the traverse
+		* event.  If this happens, return true to stop further
+		* event processing.
+		*/
+		sendEvent (SWT.Traverse, event);
+		if (isDisposed ()) return true;
+		doit = event.doit;
+	}
+	if (doit) return mnemonicHit (key);
+	return false;
+}
+
 boolean translateMnemonic (MSG msg) {
 	int hwnd = msg.hwnd;
 	if (OS.GetKeyState (OS.VK_MENU) >= 0) {
@@ -2188,9 +2230,11 @@ boolean translateMnemonic (MSG msg) {
 		if ((code & OS.DLGC_BUTTON) == 0) return false;
 	}
 	Decorations shell = menuShell ();
-	if (!shell.isVisible () || !shell.isEnabled ()) return false;
-	char ch = mbcsToWcs ((char) msg.wParam);
-	return ch != 0 && shell.traverseMnemonic (ch);
+	if (shell.isVisible () && shell.isEnabled ()) {
+		char ch = mbcsToWcs ((char) msg.wParam);
+		return ch != 0 && shell.translateMnemonic (ch);
+	}
+	return false;
 }
 
 boolean translateTraversal (MSG msg) {
@@ -2291,12 +2335,13 @@ public boolean traverse (int traversal) {
 	checkWidget ();
 	if (!isFocusControl () && !setFocus ()) return false;
 	switch (traversal) {
-		case SWT.TRAVERSE_ESCAPE:		return traverseEscape ();
-		case SWT.TRAVERSE_RETURN:		return traverseReturn ();
-		case SWT.TRAVERSE_TAB_NEXT:		return traverseGroup (true);
-		case SWT.TRAVERSE_TAB_PREVIOUS:	return traverseGroup (false);
+		case SWT.TRAVERSE_ESCAPE:			return traverseEscape ();
+		case SWT.TRAVERSE_RETURN:			return traverseReturn ();
+		case SWT.TRAVERSE_TAB_NEXT:			return traverseGroup (true);
+		case SWT.TRAVERSE_TAB_PREVIOUS:		return traverseGroup (false);
 		case SWT.TRAVERSE_ARROW_NEXT:		return traverseItem (true);
-		case SWT.TRAVERSE_ARROW_PREVIOUS:	return traverseItem (false);	
+		case SWT.TRAVERSE_ARROW_PREVIOUS:	return traverseItem (false);
+//		case SWT.TRAVERSE_MNEMONIC:			return traverseMnemonic (??);	
 	}
 	return false;
 }
@@ -2310,8 +2355,9 @@ boolean traverseEscape () {
 }
 
 boolean traverseGroup (boolean next) {
-	Control group = currentTabGroup ();
-	Control [] list = menuShell ().getTabList ();
+	Control root = computeTabRoot ();
+	Control group = computeTabGroup ();
+	Control [] list = root.computeTabList ();
 	int length = list.length;
 	int index = 0;
 	while (index < length) {
@@ -2362,7 +2408,7 @@ boolean traverseItem (boolean next) {
 
 boolean traverseMnemonic (char key) {
 	if (!isVisible () || !isEnabled ()) return false;
-	return mnemonicMatch (key) && mnemonicHit ();
+	return mnemonicHit (key);
 }
 
 boolean traverseReturn () {

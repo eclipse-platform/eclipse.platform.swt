@@ -539,10 +539,8 @@ public void open () {
 	checkWidget ();
 	bringToTop ();
 	setVisible (true);
-	if (savedFocus == null) {
-		setTabGroupFocus ();
-	} else {
-		restoreFocus ();
+	if (!restoreFocus ()) {
+		traverseGroup (true);
 	}
 }
 
