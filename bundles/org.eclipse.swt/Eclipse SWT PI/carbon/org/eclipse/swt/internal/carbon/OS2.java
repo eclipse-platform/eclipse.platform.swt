@@ -12,7 +12,6 @@ class OS2 {
 /** Custom natives - misc */	
 public static final native void AEProcessAppleEvent(int[] theEventRecord);
 public static final native boolean ConvertEventRefToEventRecord(int eHandle, int[] outEvent);
-public static final native int DrawThemeButton(Rect bounds, short kind, short[] newInfo, short[] prevInfo, int eraseProc, int labelProc, int userData);
 public static final native boolean GetNextEvent(short eventMask, int[] eventData);
 public static final native boolean IsShowContextualMenuClick(int[] eventData);
 public static final native int MenuEvent(int[] eventData);
@@ -23,7 +22,6 @@ public static final native int createDataBrowserControl(int wHandle);
 public static final native int newColumnDesc(int propertyID, int propertyType, int propertyFlags, short minimumWidth, short maximumWidth);
 public static final native void setDataBrowserCallbacks(int cHandle, int dataCallbackUPP, int compareCallbackUPP, int itemNotificationCallbackUPP);
 public static final native void setTXNMargins(int txHandle, short margin);
-public static final native int setTabIcon(int cHandle, int index, int iconHandle);
 public static final native void getHandleData(int handle, char[] data);
 public static final native void getHandleData(int handle, int[] data);
 

@@ -64,52 +64,6 @@ static void copyEventData(JNIEnv *env, EventRecord *event, jintArray eData) {
 	}
 }
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_DrawThemeButton(JNIEnv *env, jclass zz,
-				jobject bounds, jshort kind, jshortArray newInfoArray, jshortArray prevInfoArray, jint eraseProc,
-					jint labelProc, jint userData) {
-	ThemeButtonDrawInfo info;
-	ThemeButtonDrawInfo newInfo, *prevInfo= NULL;	
-	jint status= 0;
-	Rect sa;
-	jshort *sb= (*env)->GetShortArrayElements(env, newInfoArray, 0);
-	jshort *sc= NULL;
-	
-	newInfo.state= sb[0];
-	newInfo.value= sb[1];
-	newInfo.adornment= sb[2];
-	
-	if (prevInfoArray != NULL) {
-		sc= (*env)->GetShortArrayElements(env, prevInfoArray, 0);
-		info.state= sc[0];
-		info.value= sc[1];
-		info.adornment= sc[2];
-		prevInfo= &info;
-	}
-	
-	getRectFields(env, bounds, &sa);
-
-	status= (jint) RC(DrawThemeButton(&sa, (ThemeButtonKind)kind, &newInfo, prevInfo, (ThemeEraseUPP)eraseProc,
-						(ThemeButtonDrawUPP) labelProc, (UInt32)userData));
-						
-	(*env)->ReleaseShortArrayElements(env, newInfoArray, sb, 0);
-	if (sc != NULL)
-		(*env)->ReleaseShortArrayElements(env, prevInfoArray, sc, 0);
-	
-	return status;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_setTabIcon(JNIEnv *env, jclass zz,
-				jint cHandle, jint index, jint iconHandle) {
-	ControlButtonContentInfo tab;
-	CIconHandle ih= (CIconHandle) iconHandle;
-			
-	tab.contentType= kControlContentCIconHandle;
-	tab.u.cIconHandle= ih;
-	
-	return RC(SetControlData((ControlRef)cHandle, index, kControlTabImageContentTag, sizeof(ControlButtonContentInfo), &tab));
-}
-
-
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_createDataBrowserControl(JNIEnv *env, jclass zz, jint wHandle) {
 	ControlRef controlRef;
 	DataBrowserCallbacks callbacks;

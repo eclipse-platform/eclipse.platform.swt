@@ -13,6 +13,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.ThemeButtonDrawInfo;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -39,7 +40,7 @@ public class ToolItem extends Item {
 	
 	// AW
 	private boolean fPressed;
-	private short[] fPrevInfo;
+	private ThemeButtonDrawInfo fPrevInfo;
 	private int fBackground;
 	// AW
 	
@@ -1016,26 +1017,23 @@ int processPaint (Object callData) {
 			Image currentImage = image;
 			boolean enabled = getEnabled();
 		
-			short[] newInfo= new short[3];
-					
-			newInfo[1]= (short)(set ? OS.kThemeButtonOn : OS.kThemeButtonOff);
+			ThemeButtonDrawInfo newInfo= new ThemeButtonDrawInfo();
+			newInfo.value= (short)(set ? OS.kThemeButtonOn : OS.kThemeButtonOff);
 			
 			if ((parent.style & SWT.FLAT) != 0) {
 				
 				if (hasCursor && enabled) {
-					if (OS.StillDown())
-						newInfo[0]= (short)OS.kThemeStatePressed;
-					else
-						newInfo[0]= (short)OS.kThemeStateActive;
-				} else
+					newInfo.state= (short)(OS.StillDown() ? OS.kThemeStatePressed : OS.kThemeStateActive);
+				} else {
 					newInfo= null;
+				}
 				
 				/* Determine if hot image should be used */
 				if (enabled && hasCursor && hotImage != null) {
 					currentImage = hotImage;
 				}
 			} else {
-				newInfo[0]= (short)((hasCursor && OS.StillDown()) ? OS.kThemeStatePressed : OS.kThemeStateActive);
+				newInfo.state= (short)((hasCursor && OS.StillDown()) ? OS.kThemeStatePressed : OS.kThemeStateActive);
 			}
 	
 			if (newInfo != null) {

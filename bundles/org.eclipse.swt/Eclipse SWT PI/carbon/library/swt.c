@@ -678,6 +678,28 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DrawText
 }
 #endif /* NO_DrawText */
 
+#ifndef NO_DrawThemeButton
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_DrawThemeButton
+	(JNIEnv *env, jclass that, jobject arg0, jshort arg1, jobject arg2, jobject arg3, jint arg4, jint arg5, jint arg6)
+{
+	Rect _arg0, *lparg0=NULL;
+	ThemeButtonDrawInfo _arg2, *lparg2=NULL;
+	ThemeButtonDrawInfo _arg3, *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("DrawThemeButton\n")
+
+	if (arg0) lparg0 = getRectFields(env, arg0, &_arg0);
+	if (arg2) lparg2 = getThemeButtonDrawInfoFields(env, arg2, &_arg2);
+	if (arg3) lparg3 = getThemeButtonDrawInfoFields(env, arg3, &_arg3);
+	rc = (jint)DrawThemeButton((Rect *)lparg0, (ThemeButtonKind)arg1, (const ThemeButtonDrawInfo *)lparg2, (const ThemeButtonDrawInfo *)lparg3, (ThemeEraseUPP)arg4, (ThemeButtonDrawUPP)arg5, (UInt32)arg6);
+	if (arg0) setRectFields(env, arg0, lparg0);
+	if (arg2) setThemeButtonDrawInfoFields(env, arg2, lparg2);
+	if (arg3) setThemeButtonDrawInfoFields(env, arg3, lparg3);
+	return rc;
+}
+#endif /* NO_DrawThemeButton */
+
 #ifndef NO_DrawThemeEditTextFrame
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_DrawThemeEditTextFrame
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1)

@@ -122,3 +122,11 @@ void setRectFields(JNIEnv *env, jobject lpObject, Rect *lpStruct);
 #define getRectFields(a,b,c) NULL
 #define setRectFields(a,b,c)
 #endif /* NO_Rect */
+
+#ifndef NO_ThemeButtonDrawInfo
+ThemeButtonDrawInfo *getThemeButtonDrawInfoFields(JNIEnv *env, jobject lpObject, ThemeButtonDrawInfo *lpStruct);
+void setThemeButtonDrawInfoFields(JNIEnv *env, jobject lpObject, ThemeButtonDrawInfo *lpStruct);
+#else
+#define getThemeButtonDrawInfoFields(a,b,c) NULL
+#define setThemeButtonDrawInfoFields(a,b,c)
+#endif /* NO_ThemeButtonDrawInfo */

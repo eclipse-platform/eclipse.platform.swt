@@ -659,3 +659,39 @@ void setRectFields(JNIEnv *env, jobject lpObject, Rect *lpStruct)
 }
 #endif /* NO_Rect */
 
+#ifndef NO_ThemeButtonDrawInfo
+typedef struct ThemeButtonDrawInfo_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID state, value, adornment;
+} ThemeButtonDrawInfo_FID_CACHE;
+
+ThemeButtonDrawInfo_FID_CACHE ThemeButtonDrawInfoFc;
+
+void cacheThemeButtonDrawInfoFids(JNIEnv *env, jobject lpObject)
+{
+	if (ThemeButtonDrawInfoFc.cached) return;
+	ThemeButtonDrawInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	ThemeButtonDrawInfoFc.state = (*env)->GetFieldID(env, ThemeButtonDrawInfoFc.clazz, "state", "I");
+	ThemeButtonDrawInfoFc.value = (*env)->GetFieldID(env, ThemeButtonDrawInfoFc.clazz, "value", "S");
+	ThemeButtonDrawInfoFc.adornment = (*env)->GetFieldID(env, ThemeButtonDrawInfoFc.clazz, "adornment", "S");
+	ThemeButtonDrawInfoFc.cached = 1;
+}
+
+ThemeButtonDrawInfo *getThemeButtonDrawInfoFields(JNIEnv *env, jobject lpObject, ThemeButtonDrawInfo *lpStruct)
+{
+	if (!ThemeButtonDrawInfoFc.cached) cacheThemeButtonDrawInfoFids(env, lpObject);
+	lpStruct->state = (ThemeDrawState)(*env)->GetIntField(env, lpObject, ThemeButtonDrawInfoFc.state);
+	lpStruct->value = (ThemeButtonValue)(*env)->GetShortField(env, lpObject, ThemeButtonDrawInfoFc.value);
+	lpStruct->adornment = (ThemeButtonAdornment)(*env)->GetShortField(env, lpObject, ThemeButtonDrawInfoFc.adornment);
+	return lpStruct;
+}
+
+void setThemeButtonDrawInfoFields(JNIEnv *env, jobject lpObject, ThemeButtonDrawInfo *lpStruct)
+{
+	if (!ThemeButtonDrawInfoFc.cached) cacheThemeButtonDrawInfoFids(env, lpObject);
+	(*env)->SetIntField(env, lpObject, ThemeButtonDrawInfoFc.state, (jint)lpStruct->state);
+	(*env)->SetShortField(env, lpObject, ThemeButtonDrawInfoFc.value, (jshort)lpStruct->value);
+	(*env)->SetShortField(env, lpObject, ThemeButtonDrawInfoFc.adornment, (jshort)lpStruct->adornment);
+}
+#endif /* NO_ThemeButtonDrawInfo */

@@ -370,6 +370,7 @@ public static final native void DisposeRgn(int rgnHandle);
 public static final native void DisposeWindow(int wHandle);
 public static final native void DrawMenuBar();
 public static final native void DrawText(byte[] textBuf, short firstByte, short byteCount);
+public static final native int DrawThemeButton(Rect inBounds, short inKind, ThemeButtonDrawInfo inNewInfo, ThemeButtonDrawInfo inPrevInfo, int inEraseProc, int inLabelProc, int inUserData);
 public static final native int DrawThemeEditTextFrame(Rect bounds, int state);
 public static final native int DrawThemeFocusRect(Rect bounds, boolean hasFocus);
 public static final native int DrawThemeSeparator(Rect bounds, int state);
