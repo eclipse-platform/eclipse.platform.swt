@@ -28,7 +28,8 @@ import org.eclipse.swt.graphics.*;
 public class CoolItem extends Item {
 	Control control;
 	CoolBar parent;
-	int preferredWidth = -1, requestedWidth;
+	int preferredWidth, requestedWidth;
+	boolean ideal;
 	Point minimumSize = new Point (MINIMUM_WIDTH, 2 * MARGIN_HEIGHT);
 	Rectangle itemBounds = new Rectangle(0, 0, 0, 0);
 	
@@ -379,7 +380,7 @@ public Point getSize () {
 int internalGetMinimumWidth () {
 	int width = minimumSize.x;
 	width += MINIMUM_WIDTH + MARGIN_WIDTH;
-	if (width < preferredWidth) {
+	if ((style & SWT.DROP_DOWN) != 0 && width < preferredWidth) {
 		width += CHEVRON_IMAGE_WIDTH + CHEVRON_HORIZONTAL_TRIM + CHEVRON_LEFT_MARGIN;
 	}
 	return width;
@@ -429,7 +430,7 @@ void setBounds (int x, int y, int width, int height) {
 	if (control != null) {
 		int controlHeight = Math.min (height, control.getSize().y);
 		int controlWidth = width - MINIMUM_WIDTH - MARGIN_WIDTH;
-		if (width < preferredWidth) {
+		if ((style & SWT.DROP_DOWN) != 0 && width < preferredWidth) {
 			controlWidth -= CHEVRON_IMAGE_WIDTH + CHEVRON_HORIZONTAL_TRIM + CHEVRON_LEFT_MARGIN;
 		}
 		control.setBounds (
@@ -460,6 +461,9 @@ public void setControl (Control control) {
 	if (control != null) {
 		if (control.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 		if (control.parent != parent) error (SWT.ERROR_INVALID_PARENT);
+	}
+	if (this.control != null && this.control.isDisposed ()) {
+		this.control = null;
 	}
 	Control oldControl = this.control;
 	if (oldControl != null) oldControl.setVisible(false);
@@ -526,6 +530,7 @@ public void setMinimumSize (Point size) {
  */
 public void setPreferredSize (int width, int height) {
 	checkWidget();
+	ideal = true;
 	preferredWidth = Math.max (width, MINIMUM_WIDTH);
 	Rectangle bounds = getBounds();
 	setBounds(bounds.x, bounds.y, bounds.width, height);
@@ -570,11 +575,11 @@ public void setSize (int width, int height) {
 	checkWidget();
 	int newWidth = Math.max (width, MINIMUM_WIDTH);
 	itemBounds.width = requestedWidth = newWidth;
-	if (preferredWidth == -1) preferredWidth = newWidth;
+	if (!ideal) preferredWidth = newWidth;
 	itemBounds.height = height;
 	if (control != null) {
 		int controlWidth = newWidth - MINIMUM_WIDTH - MARGIN_WIDTH;
-		if (width < preferredWidth) {
+		if ((style & SWT.DROP_DOWN) != 0 && width < preferredWidth) {
 			controlWidth -= CHEVRON_IMAGE_WIDTH + CHEVRON_HORIZONTAL_TRIM + CHEVRON_LEFT_MARGIN;
 		}
 		int controlHeight = height - (2 * MARGIN_HEIGHT);
@@ -610,7 +615,7 @@ public void setSize (Point size) {
 void updateChevron() {
 	if (control != null) {
 		int width = itemBounds.width;
-		if (width < preferredWidth) {
+		if ((style & SWT.DROP_DOWN) != 0 && width < preferredWidth) {
 			int height = Math.min (control.getSize ().y, itemBounds.height);
 			if (chevron == null) {
 				chevron = new ToolBar (parent, SWT.FLAT | SWT.NO_FOCUS);

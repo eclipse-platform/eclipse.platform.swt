@@ -343,7 +343,7 @@ void createItem (CoolItem item, int index) {
 		// and add the new one just to it's right
 		int lastIndex = items[row].length - 1;
 		CoolItem lastItem = items[row][lastIndex];
-		if (lastItem.preferredWidth != -1) {
+		if (lastItem.ideal) {
 			Rectangle bounds = lastItem.getBounds();
 			bounds.width = lastItem.preferredWidth;
 			lastItem.requestedWidth = lastItem.preferredWidth;
