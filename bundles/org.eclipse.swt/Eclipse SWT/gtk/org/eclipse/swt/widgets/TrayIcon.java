@@ -17,12 +17,12 @@ public class TrayIcon extends Widget {
 	String toolTipText;
 
 public TrayIcon (Display display) {
-	if (display == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (display == null) display = Display.getCurrent ();
+	if (display == null) display = Display.getDefault ();
 	if (!display.isValidThread ()) {
 		error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	}
 	this.display = display;
-	display.addTrayIcon (this);
 	createWidget (0);
 
 	int monitor = 0;
