@@ -61,6 +61,7 @@ public TableItem (Table parent, int style) {
 	super (parent, style);
 	this.parent = parent;
 	parent.createItem (this, parent.getItemCount ());
+	_setChecked(false);
 }
 /**
  * Constructs a new instance of this class given its parent
@@ -97,6 +98,7 @@ public TableItem (Table parent, int style, int index) {
 	super (parent, style);
 	this.parent = parent;
 	parent.createItem (this, index);
+	_setChecked(false);
 }
 /**
  * Returns a rectangle describing the receiver's size and location
@@ -132,6 +134,15 @@ public Rectangle getBounds (int index) {
 	int y=table.column_title_area_height+height*row+(row+2)*CELL_SPACING-(int)vaj;
 	return new Rectangle (x, y, width, height);
 }
+
+/**
+ * Return whether or not the receiver has a check box and can 
+ * be checked.
+ */
+boolean isCheckable() {
+	return (parent.style & SWT.CHECK) != 0;
+}
+
 /**
  * Returns <code>true</code> if the receiver is checked,
  * and false otherwise.  When the parent does not have
@@ -145,8 +156,7 @@ public Rectangle getBounds (int index) {
  * </ul>
  */
 public boolean getChecked () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((parent.style & SWT.CHECK) == 0) return false;
 	int index = parent.indexOf (this);
 	if (index == -1) return false;
@@ -295,16 +305,20 @@ void releaseWidget () {
  * </ul>
  */
 public void setChecked (boolean checked) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	if ((parent.style & SWT.CHECK) == 0) return;
-	int index = parent.indexOf (this);
-	if (index == -1) return;
-	if (checked)
-		OS.gtk_clist_select_row(parent.handle, index, 0);
-	else
-		OS.gtk_clist_unselect_row(parent.handle, index, 0);			
+	checkWidget();
+	_setChecked (checked);
 }
+void _setChecked (boolean checked) {
+	if ((parent.style & SWT.CHECK) == 0) return;  /* needed here because we don't verify in the constructor */
+
+	int row = parent.indexOf (this);
+	if (row == -1) return;
+	int ctable = parent.handle;
+	byte [] buffer = Converter.wcsToMbcs (null, text, true);
+	if (checked) OS.gtk_clist_set_pixtext (ctable, row, 0, buffer, (byte) 2, parent.check, 0);
+		else OS.gtk_clist_set_pixtext (ctable, row, 0, buffer, (byte) 2, parent.uncheck, 0);
+}
+
 /**
  * Sets the grayed state of the receiver.
  *
@@ -316,8 +330,7 @@ public void setChecked (boolean checked) {
  * </ul>
  */
 public void setGrayed (boolean grayed) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 }
 /**
  * Sets the receiver's image at a column.

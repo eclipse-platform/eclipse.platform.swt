@@ -38,6 +38,8 @@ public class Table extends Composite {
 	TableColumn [] columns;
 	TableItem itemBeingSelected;
 	TableItem[] selection = new TableItem[0];
+	int check, uncheck;
+	int check_width, check_height;
 	public static int MAX_COLUMNS = 32;
 
 
@@ -145,6 +147,56 @@ void showHandle() {
 	OS.gtk_widget_show (scrolledHandle);
 	OS.gtk_widget_show (handle);
 	OS.gtk_widget_realize (handle);
+	
+	if ((style & SWT.CHECK) != 0) {
+		uncheck = createCheckPixmap(false);
+		check = createCheckPixmap(true);
+	}
+}
+
+int createCheckPixmap(boolean checked) {
+		/*
+		 * The box will occupy the whole item width.
+		 */
+		GtkCList clist = new GtkCList ();
+		OS.memmove (clist, handle, GtkCList.sizeof);
+		check_height = clist.row_height-1;
+		check_width = check_height;
+
+		GdkVisual visual = new GdkVisual();
+		OS.memmove(visual, OS.gdk_visual_get_system(), GdkVisual.sizeof);
+		int pixmap = OS.gdk_pixmap_new(0, check_width, check_height, visual.depth);
+		
+		int gc = OS.gdk_gc_new(pixmap);
+		
+		GdkColor fgcolor = new GdkColor();
+		fgcolor.pixel = 0xFFFFFFFF;
+		fgcolor.red = (short) 0xFFFF;
+		fgcolor.green = (short) 0xFFFF;
+		fgcolor.blue = (short) 0xFFFF;
+		OS.gdk_gc_set_foreground(gc, fgcolor);
+		OS.gdk_draw_rectangle(pixmap, gc, 1, 0,0, check_width,check_height);
+
+		fgcolor = new GdkColor();
+		fgcolor.pixel = 0;
+		fgcolor.red = (short) 0;
+		fgcolor.green = (short) 0;
+		fgcolor.blue = (short) 0;
+		OS.gdk_gc_set_foreground(gc, fgcolor);
+		
+		OS.gdk_draw_line(pixmap, gc, 0,0, 0,check_height-1);
+		OS.gdk_draw_line(pixmap, gc, 0,check_height-1, check_width-1,check_height-1);
+		OS.gdk_draw_line(pixmap, gc, check_width-1,check_height-1, check_width-1,0);
+		OS.gdk_draw_line(pixmap, gc, check_width-1,0, 0,0);
+
+		/* now the cross check */
+		if (checked) {
+			OS.gdk_draw_line(pixmap, gc, 0,0, check_width-1,check_height-1);
+			OS.gdk_draw_line(pixmap, gc, 0,check_height-1, check_width-1,0);
+		}
+		
+		OS.gdk_gc_destroy(gc);
+		return pixmap;
 }
 
 void hookEvents () {
@@ -828,6 +880,9 @@ void releaseWidget () {
 	}
 	items = null;
 	itemBeingSelected = null;
+	if (check != 0) OS.gdk_pixmap_unref (check);
+	if (uncheck != 0) OS.gdk_pixmap_unref (uncheck);
+	check = uncheck = 0;
 	super.releaseWidget ();
 }
 /**
