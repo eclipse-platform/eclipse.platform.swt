@@ -450,7 +450,6 @@ public void setPageIncrement (int value) {
  */
 public void setSelection (int value) {
 	checkWidget ();
-	value = Math.max(value, getMinimum());
 	int maxSelection = getMaximum() - getThumb();
 	value = Math.min (value, maxSelection);
 	int hAdjustment = OS.gtk_range_get_adjustment (handle);
