@@ -17,13 +17,6 @@ import org.eclipse.swt.internal.SWTEventListener;
  * a {@link LocationEvent} notification when a {@link Browser}
  * navigates to a different URL.
  * 
- * <p>
- * NOTE: The API in the browser package is NOT finalized.
- * Use at your own risk, because it will most certainly change.
- * The only reason this API is being released at this time is so that 
- * other teams can try it out.
- * </p>
- * 
  * @see Browser#addLocationListener(LocationListener)
  * @see Browser#removeLocationListener(LocationListener)
  * 

@@ -18,13 +18,6 @@ import org.eclipse.swt.events.*;
  * {@link TitleListener}'s when the title of the current document
  * is available or when it is modified.
  * 
- * <p>
- * NOTE: The API in the browser package is NOT finalized.
- * Use at your own risk, because it will most certainly change.
- * The only reason this API is being released at this time is so that 
- * other teams can try it out.
- * </p>
- * 
  * @since 3.0
  */
 public class TitleEvent extends TypedEvent {

@@ -18,13 +18,6 @@ import org.eclipse.swt.internal.SWTEventListener;
  * makes a progress in loading the current URL or when the
  * current URL has been loaded.
  * 
- * <p>
- * NOTE: The API in the browser package is NOT finalized.
- * Use at your own risk, because it will most certainly change.
- * The only reason this API is being released at this time is so that 
- * other teams can try it out.
- * </p>
- * 
  * @see Browser#addProgressListener(ProgressListener)
  * @see Browser#removeProgressListener(ProgressListener)
  * @see Browser#getUrl()

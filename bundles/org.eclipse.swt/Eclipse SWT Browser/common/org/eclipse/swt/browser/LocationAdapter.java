@@ -17,11 +17,6 @@ package org.eclipse.swt.browser;
  * Classes that wish to deal with {@link LocationEvent}'s can
  * extend this class and override only the methods which they are
  * interested in.
- * </p><p>
- * NOTE: The API in the browser package is NOT finalized.
- * Use at your own risk, because it will most certainly change.
- * The only reason this API is being released at this time is so that 
- * other teams can try it out.
  * </p>
  * 
  * @since 3.0

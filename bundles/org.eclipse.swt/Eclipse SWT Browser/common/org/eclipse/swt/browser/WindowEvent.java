@@ -80,13 +80,6 @@ import org.eclipse.swt.graphics.*;
  *	}
  * </pre></code>
  * 
- * <p>
- * NOTE: The API in the browser package is NOT finalized.
- * Use at your own risk, because it will most certainly change.
- * The only reason this API is being released at this time is so that 
- * other teams can try it out.
- * </p>
- * 
  * @see CloseWindowListener
  * @see OpenWindowListener
  * @see VisibilityWindowListener
