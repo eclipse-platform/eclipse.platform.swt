@@ -31,7 +31,7 @@ public final class Color {
 	public GdkColor handle;
 
 	/**
-	 * The device where this image was created.
+	 * The device where this color was created.
 	 */
 	Device device;
 
