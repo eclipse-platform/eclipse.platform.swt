@@ -423,7 +423,7 @@ public class OS {
 	public static final int kTXNQDFontFamilyIDAttributeSize = 2;
 	public static final int kTXNQDFontSizeAttributeSize = 2;
 	public static final int kTXNQDFontStyleAttributeSize = 2;
-	public static final int kTXNQDFontColorAttributeSize = 12;
+	public static final int kTXNQDFontColorAttributeSize = 6;
 	public static final int kTXNReadOnlyMask = 1 << 5;
 	public static final int kTXNSingleLineOnlyMask = 1 << 14;
 	public static final int kTXNStartOffset = 0;
