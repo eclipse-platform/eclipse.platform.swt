@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-import org.eclipse.swt.internal.Converter;
 import org.eclipse.swt.internal.gtk.*;
  
 /**
