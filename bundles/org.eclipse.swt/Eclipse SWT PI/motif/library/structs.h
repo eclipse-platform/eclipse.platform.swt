@@ -24,6 +24,10 @@
 #include <X11/keysym.h>
 #include <X11/extensions/Print.h>
 
+#ifndef NO_XINERAMA_EXTENSIONS
+#include <X11/extensions/Xinerama.h>
+#endif /* NO_XINERAMA_EXTENSIONS */
+
 #include <Xm/XmAll.h>
 #include <Mrm/MrmPublic.h>
 
@@ -172,6 +176,18 @@ typedef struct XIMAGE_FID_CACHE {
 } XIMAGE_FID_CACHE;
 
 typedef XIMAGE_FID_CACHE *PXIMAGE_FID_CACHE;
+
+#ifndef NO_XINERAMA_EXTENSIONS
+/* XINERAMASCREENINFO struct */
+typedef struct XINERAMASCREENINFO_FID_CACHE {
+
+	int cached;
+	jclass clazz;
+	jfieldID height, width, y_org, x_org, screen_number;
+} XINERAMASCREENINFO_FID_CACHE;
+
+typedef XINERAMASCREENINFO_FID_CACHE *PXINERAMASCREENINFO_FID_CACHE;
+#endif /* NO_XINERAMA_EXTENSIONS */
 
 /* XKEYEVENT struct */
 typedef struct XKEYEVENT_FID_CACHE {
@@ -375,6 +391,9 @@ void cacheXcrossingeventFids(JNIEnv *env, jobject lpXcrossingevent, PXCROSSINGEV
 void cacheXexposeeventFids(JNIEnv *env, jobject lpXevent, PXEXPOSEEVENT_FID_CACHE lpCache);
 void cacheXfocuschangeeventFids(JNIEnv *env, jobject lpXevent, PXFOCUSCHANGEEVENT_FID_CACHE lpCache);
 void cacheXfontstructFids(JNIEnv *env, jobject lpXfontstruct, PXFONTSTRUCT_FID_CACHE lpCache);
+#ifndef NO_XINERAMA_EXTENSIONS
+void cacheXineramascreeninfoFids(JNIEnv *env, jobject lpObject, PXINERAMASCREENINFO_FID_CACHE lpCache);
+#endif /* NO_XINERAMA_EXTENSIONS */
 void cacheXkeyeventFids(JNIEnv *env, jobject lpXevent, PXKEYEVENT_FID_CACHE lpCache);
 void cacheXmotioneventFids(JNIEnv *env, jobject lpXevent, PXMOTIONEVENT_FID_CACHE lpCache);
 void cacheXanyeventFids(JNIEnv *env, jobject lpXevent, PXANYEVENT_FID_CACHE lpCache);
@@ -421,6 +440,10 @@ void getXfontstructFields(JNIEnv *env, jobject lpObject, XFontStruct *lpXfontstr
 void setXfontstructFields(JNIEnv *env, jobject lpObject, XFontStruct *lpXfontstruct, XFONTSTRUCT_FID_CACHE *lpXfontstructFc);
 void getXimageFields(JNIEnv *env, jobject lpObject, XImage *lpXimage, XIMAGE_FID_CACHE *lpXimageFc);
 void setXimageFields(JNIEnv *env, jobject lpObject, XImage *lpXimage, XIMAGE_FID_CACHE *lpXimageFc);
+#ifndef NO_XINERAMA_EXTENSIONS
+void getXineramascreeninfoFields(JNIEnv *env, jobject lpObject, XineramaScreenInfo *lpStruct, PXINERAMASCREENINFO_FID_CACHE lpCache);
+void setXineramaScreenInfoFields(JNIEnv *env, jobject lpObject, XineramaScreenInfo *lpStruct, PXINERAMASCREENINFO_FID_CACHE lpCache);
+#endif /* NO_XINERAMA_EXTENSIONS */
 void getXkeyeventFields(JNIEnv *env, jobject lpObject, XEvent *lpXevent, XKEYEVENT_FID_CACHE *lpXkeyeventFc);
 void setXkeyeventFields(JNIEnv *env, jobject lpObject, XEvent *lpXevent, XKEYEVENT_FID_CACHE *lpXkeyeventFc);
 void getXmotioneventFields(JNIEnv *env, jobject lpObject, XEvent *lpXevent, XMOTIONEVENT_FID_CACHE *lpXmotioneventFc);
@@ -466,6 +489,9 @@ extern XFOCUSCHANGEEVENT_FID_CACHE XfocuschangeeventFc;
 extern XFONTSTRUCT_FID_CACHE XfontstructFc;
 extern XGCVALUES_FID_CACHE XgcvaluesFc;
 extern XIMAGE_FID_CACHE XimageFc;
+#ifndef NO_XINERAMA_EXTENSIONS
+extern XINERAMASCREENINFO_FID_CACHE XineramascreeninfoFc;
+#endif /* NO_XINERAMA_EXTENSIONS */
 extern XKEYEVENT_FID_CACHE XkeyeventFc;
 extern XMANYCALLBACKSTRUCT_FID_CACHE XmanycallbackstructFc;
 extern XMDRAGPROCCALLBACK_FID_CACHE XmdragproccallbackFc;

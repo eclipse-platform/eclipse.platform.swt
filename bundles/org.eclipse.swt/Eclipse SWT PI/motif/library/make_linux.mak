@@ -30,7 +30,7 @@ WS_PREFIX    = motif
 SWT_DLL      = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 SWT_OBJ      = callback.o structs.o swt.o
 SWT_LIB      = -L$(MOTIF_HOME)/lib -lXm -L/usr/lib -L/usr/X11R6/lib \
-	           -rpath . -x -shared -lX11 -lm -lXext -lXt -lXp -ldl
+	           -rpath . -x -shared -lX11 -lm -lXext -lXt -lXp -ldl -lXinerama
 
 GNOME_PREFIX = swt-gnome
 GNOME_DLL    = lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so

@@ -1008,6 +1008,8 @@ public static final synchronized native int XGrabPointer (
 	int confineToWindow,
 	int cursor,
 	int time);
+public static final synchronized native boolean XineramaIsActive (int dpy);
+public static final synchronized native int XineramaQueryScreens (int dpy, int [] number);
 public static final synchronized native int XInitThreads ();	
 public static final synchronized native int XInternAtom( int display, byte [] name, boolean ifExists );
 public static final synchronized native int XKeysymToString (int keysym);
@@ -1318,6 +1320,7 @@ public static final native void memmove (XExposeEvent dest, int src, int count);
 public static final native void memmove (XFocusChangeEvent dest, int src, int count);
 public static final native void memmove (XFontStruct dest, int src, int count);
 public static final native void memmove (XImage dest, int src, int count);
+public static final native void memmove (XineramaScreenInfo dest, int src, int count);
 public static final native void memmove (XKeyEvent dest, int src, int count);
 public static final native void memmove (XKeyEvent dest, XAnyEvent src, int count);
 public static final native void memmove (XMotionEvent dest, int src, int count);

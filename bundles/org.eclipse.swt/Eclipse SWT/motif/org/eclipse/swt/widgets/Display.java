@@ -1081,6 +1081,80 @@ int getLastEventTime () {
 	return OS.XtLastTimestampProcessed (xDisplay);
 }
 /**
+ * Returns an array of monitors attached to the device.
+ * 
+ * @return the array of monitors
+ * 
+ * @since 2.2
+ */
+public Monitor [] getMonitors () {
+	Monitor [] monitors = null;
+	if (OS.IsLinux) {
+		boolean result = OS.XineramaIsActive (xDisplay);
+		if (result) {
+			int [] number = new int [1];
+			int ptr = OS.XineramaQueryScreens (xDisplay, number);
+			int monitorCount = number [0];
+			if (ptr != 0 && monitorCount > 0) {
+				monitors = new Monitor [monitorCount];
+				XineramaScreenInfo info = new XineramaScreenInfo ();
+				int address = ptr;
+				for (int i = 0; i < monitorCount; i++) {
+					Monitor monitor = new Monitor ();
+					OS.memmove (info, address, XineramaScreenInfo.sizeof);
+					address += XineramaScreenInfo.sizeof;
+					monitor.screen_number = info.screen_number;
+					monitor.bounds = new Rectangle (info.x_org, info.y_org, info.width, info.height);
+					monitors [i] = monitor;
+				}
+			}
+			if (ptr != 0) OS.XFree (ptr);
+		}
+	}
+	if (monitors == null) {
+		/* No multimonitor support detected, default to one monitor */
+		Monitor monitor = new Monitor ();
+		monitor.screen_number = 0;
+		monitor.bounds = getBounds ();
+		monitors = new Monitor [] { monitor };			
+	}
+	return monitors;
+}
+/**
+ * Returns the primary monitor for that device.
+ * 
+ * @return the primary monitor
+ * 
+ * @since 2.2
+ */
+public Monitor getPrimaryMonitor () {
+	Monitor monitor = null;
+	if (OS.IsLinux) {
+		boolean result = OS.XineramaIsActive (xDisplay);
+		if (result) {
+			int[] number = new int [1];
+			/* Assume first monitor returned is the primary one */
+			int ptr = OS.XineramaQueryScreens (xDisplay, number);
+			int monitorCount = number [0];
+			if (ptr != 0 && monitorCount >= 1) {
+				monitor = new Monitor ();
+				XineramaScreenInfo info = new XineramaScreenInfo ();
+				OS.memmove (info, ptr, XineramaScreenInfo.sizeof);
+				monitor.screen_number = info.screen_number;
+				monitor.bounds = new Rectangle (info.x_org, info.y_org, info.width, info.height);
+			}
+			if (ptr != 0) OS.XFree (ptr);
+		}
+	}
+	if (monitor == null) {
+		/* No multimonitor support detected, default to one monitor */
+		monitor = new Monitor ();
+		monitor.screen_number = 0;
+		monitor.bounds = getBounds ();
+	}
+	return monitor;		
+}
+/**
  * Returns an array containing all shells which have not been
  * disposed and have the receiver as their display.
  *

@@ -7773,6 +7773,67 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XSetIOErrorHandler
 }
 
 /*
+ * ======== Start xinerama functions ========
+ */
+ 
+#ifndef NO_XINERAMA_EXTENSIONS
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    memmove
+ * Signature: (Lorg/eclipse/swt/internal/motif/XineramaScreenInfo;II)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__Lorg_eclipse_swt_internal_motif_XineramaScreenInfo_2II
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	XineramaScreenInfo _arg0, *lparg0=NULL;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_motif_XineramaScreenInfo_2II\n");
+#endif
+	memmove(lparg0, (void *)arg1, arg2);
+	if (arg0) {
+		lparg0 = &_arg0;
+		cacheXineramascreeninfoFids(env, arg0, &XineramascreeninfoFc);
+		setXineramascreeninfoFields(env, arg0, lparg0, &XineramascreeninfoFc);
+	}
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    XineramaIsActive
+ * Signature: (I)B
+ */
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_motif_OS_XineramaIsActive
+	(JNIEnv *env, jclass that, jint arg0)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "XineramaIsActive\n");
+#endif
+	return (jboolean)XineramaIsActive((Display *)arg0);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    XineramaQueryScreens
+ * Signature: (I[I)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XineramaQueryScreens
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "XineramaQueryScreens\n");
+#endif
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)XineramaQueryScreens((Display *)arg0, lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	return rc;
+}
+
+#endif /* ! NO_XINERAMA_EXTENSIONS */
+ 
+/*
  * ======== Start printing functions ========
  */
  

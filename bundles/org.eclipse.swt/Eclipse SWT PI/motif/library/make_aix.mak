@@ -45,7 +45,8 @@ CDE_LIB      = -L$(CDE_HOME)/lib -bnoentry -bexpall -lDtSvc -lc
 #
 CFLAGS = -O -s \
 	-DSWT_VERSION=$(SWT_VERSION) \
-	-DAIX -DMOTIF -DCDE -DNO_XPRINTING_EXTENSIONS \
+	-DAIX -DMOTIF -DCDE \
+	-DNO_XPRINTING_EXTENSIONS -DNO_XINERAMA_EXTENSIONS \
 	-q mbcs -qlanglvl=extended -qmaxmem=8192 \
 	-I$(JAVA_HOME)/include \
 	-I$(MOTIF_HOME)/include \

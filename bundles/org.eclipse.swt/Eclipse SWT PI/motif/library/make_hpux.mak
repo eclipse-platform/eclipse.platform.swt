@@ -49,6 +49,7 @@ CDE_LIB      = -G -L$(CDE_HOME)/lib -lDtSvc
 #
 CFLAGS = -Ae +z \
 	-DSWT_VERSION=$(SWT_VERSION) \
+	-DNO_XINERAMA_EXTENSIONS \
 	-D_HPUX -D_POSIX_C_SOURCE=199506L -DMOTIF -DCDE \
 	-I./ \
 	-I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/hp-ux \

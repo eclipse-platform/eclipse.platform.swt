@@ -51,6 +51,7 @@ CDE_LIB      = -G -L$(CDE_HOME)/lib -R$(CDE_HOME)/lib -lDtSvc
 CFLAGS = -O -s \
 	-xarch=generic \
 	-DSWT_VERSION=$(SWT_VERSION) \
+	-DNO_XINERAMA_EXTENSIONS \
 	-DSOLARIS -DMOTIF -DCDE \
 	-KPIC \
 	-I./ \

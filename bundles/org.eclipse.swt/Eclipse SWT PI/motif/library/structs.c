@@ -44,6 +44,10 @@ XTWIDGETGEOMETRY_FID_CACHE XtwidgetgeometryFc;
 XWINDOWATTRIBUTES_FID_CACHE XwindowattributesFc;
 XWINDOWCHANGES_FID_CACHE XwindowchangesFc;
 
+#ifndef NO_XINERAMA_EXTENSIONS
+XINERAMASCREENINFO_FID_CACHE XineramascreeninfoFc;
+#endif /* NO_XINERAMA_EXTENSIONS */
+
 /* ----------- fid and class caches  ----------- */
 /*
  * Used for Java objects passed into JNI that are
@@ -288,6 +292,21 @@ void cacheXfontstructFids(JNIEnv *env, jobject lpXfontstruct, PXFONTSTRUCT_FID_C
     lpCache->descent = (*env)->GetFieldID(env,lpCache->xfontstructClass,"descent","I");
     lpCache->cached = 1;
 }
+
+#ifndef NO_XINERAMA_EXTENSIONS
+void cacheXineramascreeninfoFids(JNIEnv *env, jobject lpObject, PXINERAMASCREENINFO_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->height = (*env)->GetFieldID(env, lpCache->clazz, "height", "S");
+	lpCache->width = (*env)->GetFieldID(env, lpCache->clazz, "width", "S");
+	lpCache->y_org = (*env)->GetFieldID(env, lpCache->clazz, "y_org", "S");
+	lpCache->x_org = (*env)->GetFieldID(env, lpCache->clazz, "x_org", "S");
+	lpCache->screen_number = (*env)->GetFieldID(env, lpCache->clazz, "screen_number", "I");
+	lpCache->cached = 1;
+}
+#endif /* NO_XINERAMA_EXTENSIONS */
 
 void cacheXkeyeventFids(JNIEnv *env, jobject lpXevent, PXKEYEVENT_FID_CACHE lpCache)
 {
@@ -1130,6 +1149,26 @@ void setXgcvaluesFields(JNIEnv *env, jobject lpObject, XGCValues *lpXgcvalues, P
 
     (*env)->SetByteField(env,lpObject,lpXgcvaluesFc->dashes, lpXgcvalues->dashes);
 }
+
+#ifndef NO_XINERAMA_EXTENSIONS
+void getXineramascreeninfoFields(JNIEnv *env, jobject lpObject, XineramaScreenInfo *lpStruct, PXINERAMASCREENINFO_FID_CACHE lpCache)
+{
+	lpStruct->height = (*env)->GetShortField(env, lpObject, lpCache->height);
+	lpStruct->width = (*env)->GetShortField(env, lpObject, lpCache->width);
+	lpStruct->y_org = (*env)->GetShortField(env, lpObject, lpCache->y_org);
+	lpStruct->x_org = (*env)->GetShortField(env, lpObject, lpCache->x_org);
+	lpStruct->screen_number = (*env)->GetIntField(env, lpObject, lpCache->screen_number);
+}
+
+void setXineramascreeninfoFields(JNIEnv *env, jobject lpObject, XineramaScreenInfo *lpStruct, PXINERAMASCREENINFO_FID_CACHE lpCache)
+{
+	(*env)->SetShortField(env, lpObject, lpCache->height, (jshort)lpStruct->height);
+	(*env)->SetShortField(env, lpObject, lpCache->width, (jshort)lpStruct->width);
+	(*env)->SetShortField(env, lpObject, lpCache->y_org, (jshort)lpStruct->y_org);
+	(*env)->SetShortField(env, lpObject, lpCache->x_org, (jshort)lpStruct->x_org);
+	(*env)->SetIntField(env, lpObject, lpCache->screen_number, (jint)lpStruct->screen_number);
+}
+#endif /* NO_XINERAMA_EXTENSIONS */
 
 void getXmanycallbackstructFields(JNIEnv *env, jobject lpObject, XmAnyCallbackStruct *lpXmanycallbackstruct, PXMANYCALLBACKSTRUCT_FID_CACHE lpXmanycallbackstructFc)
 {
