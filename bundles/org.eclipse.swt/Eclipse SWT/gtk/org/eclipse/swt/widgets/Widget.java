@@ -39,7 +39,12 @@ import org.eclipse.swt.events.*;
  * @see #checkSubclass
  */
 public abstract class Widget {
+	/**
+	 * the handle to the OS resource 
+	 * (Warning: This field is platform dependent)
+	 */
 	public int handle;
+	
 	int style, state;
 	EventTable eventTable;
 	Object data;
@@ -703,7 +708,7 @@ boolean isValidThread () {
 	return getDisplay ().isValidThread ();
 }
 
-public boolean isValidWidget () {
+boolean isValidWidget () {
 	if (handle != 0) return true;
 	if ((state & HANDLE) != 0) return false;
 	return (state & DISPOSED) == 0;
