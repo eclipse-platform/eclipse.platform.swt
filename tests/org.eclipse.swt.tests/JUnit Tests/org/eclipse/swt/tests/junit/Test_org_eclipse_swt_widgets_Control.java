@@ -264,6 +264,37 @@ public void test_getMenu() {
 	// tested in test_setMenuLorg_eclipse_swt_widgets_Menu
 }
 
+public void test_getMonitor() {
+	Monitor monitor = control.getMonitor();
+	assertNotNull(monitor);
+	Display display = control.getDisplay();
+	Monitor[] monitors = display.getMonitors();
+	int i;
+	/* monitor must be listed in Display.getMonitors */
+	for (i = 0; i < monitors.length; i++) {
+		if (monitor.equals(monitors[i])) break;
+	}
+	if (i == monitors.length) {
+		fail("Control.getMonitor does not return a monitor listed in Display.getMonitors");
+	}
+	
+	/* set control into each monitor and check getMonitor returns the right monitor */
+	Rectangle oldBounds = control.getBounds();
+	for (i = 0; i < monitors.length; i++) {
+		Monitor src = monitors[i];
+		control.setBounds(src.getBounds());
+		Monitor target = control.getMonitor();
+		assertTrue(target.equals(src));
+	}
+	for (i = 0; i < monitors.length; i++) {
+		Monitor src = monitors[i];
+		control.setBounds(src.getClientArea());
+		Monitor target = control.getMonitor();
+		assertTrue(target.equals(src));
+	}
+	control.setBounds(oldBounds);
+}
+
 public void test_getParent() {
 	assertEquals(shell, control.getParent());
 }
@@ -706,6 +737,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getLayoutData");
 	methodNames.addElement("test_getLocation");
 	methodNames.addElement("test_getMenu");
+	methodNames.addElement("test_getMonitor");
 	methodNames.addElement("test_getParent");
 	methodNames.addElement("test_getShell");
 	methodNames.addElement("test_getSize");
@@ -784,6 +816,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getLayoutData")) test_getLayoutData();
 	else if (getName().equals("test_getLocation")) test_getLocation();
 	else if (getName().equals("test_getMenu")) test_getMenu();
+	else if (getName().equals("test_getMonitor")) test_getMonitor();
 	else if (getName().equals("test_getParent")) test_getParent();
 	else if (getName().equals("test_getShell")) test_getShell();
 	else if (getName().equals("test_getSize")) test_getSize();

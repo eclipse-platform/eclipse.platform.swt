@@ -110,7 +110,7 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_widgets_DirectoryDialog.suite());
 	addTest(Test_org_eclipse_swt_widgets_FontDialog.suite());
 	addTest(Test_org_eclipse_swt_widgets_MessageBox.suite());
-
+	addTest(Test_org_eclipse_swt_widgets_Monitor.suite());
 	addTest(Test_org_eclipse_swt_layout_GridData.suite());
 	addTest(Test_org_eclipse_swt_layout_RowData.suite());
 	addTest(Test_org_eclipse_swt_layout_GridLayout.suite());
