@@ -33,7 +33,7 @@ public class TableItem extends Item {
 	Table parent;
 	String [] strings;
 	Image [] images;
-	boolean checked, grayed, requested;
+	boolean checked, grayed, cached;
 	int background = -1, foreground = -1, font = -1, imageIndent;
 	int [] cellBackground, cellForeground, cellFont;
 
@@ -119,6 +119,18 @@ static Table checkNull (Table control) {
 
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
+void clear () {
+	text = "";
+	image = null;
+	strings = null;
+	images = null;
+	imageIndent = 0;
+	checked = grayed = false;
+	background = foreground = font = -1;
+	cellBackground = cellForeground = cellFont = null;
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = false;
 }
 
 /**
@@ -216,7 +228,7 @@ public Rectangle getBounds (int index) {
 /**
  * Returns <code>true</code> if the receiver is checked,
  * and false otherwise.  When the parent does not have
- * the <code>CHECK style, return false.
+ * the <code>CHECK</code> style, return false.
  *
  * @return the checked state of the checkbox
  *
@@ -466,12 +478,13 @@ public String getText (int index) {
 }
 
 void redraw () {
-	if (parent.ignoreRedraw) return;
-	if (parent.drawCount > 0) return;
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
+	if (parent.ignoreRedraw || parent.drawCount != 0) return;
 	int hwnd = parent.handle;
-	if (!OS.IsWindowVisible (hwnd)) return;
-	int index = parent.indexOf (this);
-	OS.SendMessage (hwnd, OS.LVM_REDRAWITEMS, index, index);
+	if (OS.IsWindowVisible (hwnd)) {
+		int index = parent.indexOf (this);
+		OS.SendMessage (hwnd, OS.LVM_REDRAWITEMS, index, index);
+	}
 }
 
 void releaseChild () {
@@ -800,15 +813,6 @@ public void setImage (int index, Image image) {
 		error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (index == 0) {
-		/*
-		* Feature in Windows.  When LVM_SETITEM is used to set
-		* an image for an item, the item redraws.  This happens
-		* because there is no easy way to know when a program
-		* has drawn on an image that is already in the control.
-		* However, an image that is an icon cannot be modified.
-		* The fix is to check for the same image when the image
-		* is an icon.
-		*/
 		if (image != null && image.type == SWT.ICON) {
 			if (image.equals (this.image)) return;
 		}
@@ -817,6 +821,9 @@ public void setImage (int index, Image image) {
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 <= index && index < count) {
 		if (images == null) images = new Image [count];
+		if (image != null && image.type == SWT.ICON) {
+			if (image.equals (images [index])) return;
+		}
 		images [index] = image;	
 	}
 	
@@ -846,8 +853,8 @@ public void setImage (Image image) {
 public void setImageIndent (int indent) {
 	checkWidget();
 	if (indent < 0) return;
+	if (imageIndent == indent) return;
 	imageIndent = indent;
-	if (parent.ignoreRedraw) return;
 	if ((parent.style & SWT.VIRTUAL) == 0) {
 		int index = parent.indexOf (this);
 		if (index != -1) {
@@ -903,21 +910,15 @@ public void setText (int index, String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (index == 0) {
-		/*
-		* Feature in Windows.  When LVM_SETITEM is used to set
-		* a string for an item that is equal to the string that
-		* is already there, the item redraws.  The fix is to
-		* check for this case and do nothing.
-		*/
 		if (string.equals (text)) return;
 		super.setText (string);
 	}
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 <= index && index < count) {
 		if (strings == null) strings = new String [count];
+		if (string.equals (strings [index])) return;
 		strings [index] = string;
 	}
-	if (parent.ignoreRedraw) return;
 	if (index == 0) {
 		/*
 		* Bug in Windows.  Despite the fact that every item in the
@@ -930,7 +931,7 @@ public void setText (int index, String string) {
 		* even though it has not changed, causing Windows to flush
 		* cached bounds.
 		*/
-		if (requested && (parent.style & SWT.VIRTUAL) == 0) {
+		if ((parent.style & SWT.VIRTUAL) == 0 && cached) {
 			int itemIndex = parent.indexOf (this);
 			if (itemIndex != -1) {
 				int hwnd = parent.handle;
@@ -939,6 +940,7 @@ public void setText (int index, String string) {
 				lvItem.iItem = itemIndex;
 				lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
 				OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, lvItem);
+				cached = false;
 			}
 		}
 		parent.setScrollWidth (this, false);

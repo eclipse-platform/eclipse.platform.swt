@@ -94,7 +94,7 @@ public Table (Composite parent, int style) {
 
 TableItem _getItem (int index) {
 	if (items [index] != null) return items [index];
-	return items [index] = new TableItem (this, SWT.NONE, index, false);
+	return items [index] = new TableItem (this, SWT.NONE, -1, false);
 }
 
 /**
@@ -151,6 +151,259 @@ static int checkStyle (int style) {
 
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
+/**
+ * Clears the item at the given zero-relative index in the receiver.
+ * The text, icon and other attribues of the item are set to the default
+ * value.  If the table was created with the SWT.VIRTUAL style, these
+ * attributes are requested again as needed.
+ *
+ * @param index the index of the item to clear
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see SWT#VIRTUAL
+ * @see SWT#SetData
+ * 
+ * @since 3.0
+ */
+public void clear (int index) {
+	checkWidget ();
+	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
+	TableItem item = items [index];
+	if (item != null) {
+		item.clear ();
+		/*
+		* Bug in Windows.  Despite the fact that every item in the
+		* table always has LPSTR_TEXTCALLBACK, Windows caches the
+		* bounds for the selected items.  This means that 
+		* when you change the string to be something else, Windows
+		* correctly asks you for the new string but when the item
+		* is selected, the selection draws using the bounds of the
+		* previous item.  The fix is to reset LPSTR_TEXTCALLBACK
+		* even though it has not changed, causing Windows to flush
+		* cached bounds.
+		*/
+		if ((style & SWT.VIRTUAL) == 0 && item.cached) {
+			int hwnd = parent.handle;
+			LVITEM lvItem = new LVITEM ();
+			lvItem.mask = OS.LVIF_TEXT | OS.LVIF_INDENT;
+			lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
+			lvItem.iItem = index;
+			OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
+			item.cached = false;
+		}
+		if (!ignoreRedraw && drawCount == 0 && OS.IsWindowVisible (handle)) {
+			OS.SendMessage (handle, OS.LVM_REDRAWITEMS, index, index);
+		}
+		setScrollWidth (item, false);
+	}
+}
+
+/**
+ * Removes the items from the receiver which are between the given
+ * zero-relative start and end indices (inclusive).  The text, icon
+ * and other attribues of the items are set to their default values.
+ * If the table was created with the SWT.VIRTUAL style, these attributes
+ * are requested again as needed.
+ *
+ * @param start the start index of the item to clear
+ * @param end the end index of the item to clear
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if either the start or end are not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see SWT#VIRTUAL
+ * @see SWT.SetData
+ * 
+ * @since 3.0
+ */
+public void clear (int start, int end) {
+	checkWidget ();
+	if (start > end) return;
+	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+	if (!(0 <= start && start <= end && end < count)) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
+	if (start == 0 && end == count - 1) {
+		clearAll ();
+	} else {
+		LVITEM lvItem = null;
+		boolean cleared = false;
+		for (int i=start; i<=end; i++) {
+			TableItem item = items [i];
+			if (item != null) {
+				cleared = true;
+				item.clear ();
+				/*
+				* Bug in Windows.  Despite the fact that every item in the
+				* table always has LPSTR_TEXTCALLBACK, Windows caches the
+				* bounds for the selected items.  This means that 
+				* when you change the string to be something else, Windows
+				* correctly asks you for the new string but when the item
+				* is selected, the selection draws using the bounds of the
+				* previous item.  The fix is to reset LPSTR_TEXTCALLBACK
+				* even though it has not changed, causing Windows to flush
+				* cached bounds.
+				*/
+				if ((style & SWT.VIRTUAL) == 0 && item.cached) {
+					if (lvItem == null) {
+						lvItem = new LVITEM ();
+						lvItem.mask = OS.LVIF_TEXT | OS.LVIF_INDENT;
+						lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
+					}
+					lvItem.iItem = i;
+					OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
+					item.cached = false;
+				}
+			}
+		}
+		if (cleared) {
+			if (!ignoreRedraw && drawCount == 0 && OS.IsWindowVisible (handle)) {
+				OS.SendMessage (handle, OS.LVM_REDRAWITEMS, start, end);
+			}
+			TableItem item = start == end ? items [start] : null; 
+			setScrollWidth (item, false);
+		}
+	}
+}
+
+/**
+ * Clears the items at the given zero-relative indices in the receiver.
+ * The text, icon and other attribues of the items are set to their default
+ * values.  If the table was created with the SWT.VIRTUAL style, these
+ * attributes are requested again as needed.
+ *
+ * @param indices the array of indices of the items
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the indices array is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see SWT#VIRTUAL
+ * @see SWT.SetData
+ * 
+ * @since 3.0
+ */
+public void clear (int [] indices) {
+	checkWidget ();
+	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (indices.length == 0) return;
+	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+	for (int i=0; i<indices.length; i++) {
+		if (!(0 <= indices [i] && indices [i] < count)) {
+			error (SWT.ERROR_INVALID_RANGE);
+		}
+	}
+	LVITEM lvItem = null;
+	boolean cleared = false;
+	for (int i=0; i<indices.length; i++) {
+		int index = indices [i];
+		TableItem item = items [index];
+		if (item != null) {
+			cleared = true;
+			item.clear ();
+			/*
+			* Bug in Windows.  Despite the fact that every item in the
+			* table always has LPSTR_TEXTCALLBACK, Windows caches the
+			* bounds for the selected items.  This means that 
+			* when you change the string to be something else, Windows
+			* correctly asks you for the new string but when the item
+			* is selected, the selection draws using the bounds of the
+			* previous item.  The fix is to reset LPSTR_TEXTCALLBACK
+			* even though it has not changed, causing Windows to flush
+			* cached bounds.
+			*/
+			if ((style & SWT.VIRTUAL) == 0 && item.cached) {
+				if (lvItem == null) {
+					lvItem = new LVITEM ();
+					lvItem.mask = OS.LVIF_TEXT | OS.LVIF_INDENT;
+					lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
+				}
+				lvItem.iItem = i;
+				OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
+				item.cached = false;
+			}
+			if (!ignoreRedraw && drawCount == 0 && OS.IsWindowVisible (handle)) {
+				OS.SendMessage (handle, OS.LVM_REDRAWITEMS, index, index);
+			}
+		}
+	}
+	if (cleared) setScrollWidth (null, false);
+}
+
+/**
+ * Clears all the items in the receiver. The text, icon and other
+ * attribues of the items are set to their default values. If the
+ * table was created with the SWT.VIRTUAL style, these attributes
+ * are requested again as needed.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see SWT#VIRTUAL
+ * @see SWT.SetData
+ * 
+ * @since 3.0
+ */
+public void clearAll () {
+	checkWidget ();
+	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+	LVITEM lvItem = null;
+	boolean cleared = false;
+	for (int i=0; i<count; i++) {
+		TableItem item = items [i];
+		if (item != null) {
+			item.clear ();
+			/*
+			* Bug in Windows.  Despite the fact that every item in the
+			* table always has LPSTR_TEXTCALLBACK, Windows caches the
+			* bounds for the selected items.  This means that 
+			* when you change the string to be something else, Windows
+			* correctly asks you for the new string but when the item
+			* is selected, the selection draws using the bounds of the
+			* previous item.  The fix is to reset LPSTR_TEXTCALLBACK
+			* even though it has not changed, causing Windows to flush
+			* cached bounds.
+			*/
+			if ((style & SWT.VIRTUAL) == 0 && item.cached) {
+				if (lvItem == null) {
+					lvItem = new LVITEM ();
+					lvItem.mask = OS.LVIF_TEXT | OS.LVIF_INDENT;
+					lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
+				}
+				lvItem.iItem = i;
+				OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
+				item.cached = false;
+			}
+		}
+	}
+	if (cleared) {
+		if (!ignoreRedraw && drawCount == 0 && OS.IsWindowVisible (handle)) {
+			OS.SendMessage (handle, OS.LVM_REDRAWITEMS, 0, count - 1);
+		}
+		setScrollWidth (null, false);
+	}
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -461,6 +714,7 @@ int defaultBackground () {
 public void deselect (int [] indices) {
 	checkWidget ();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (indices.length == 0) return;
 	LVITEM lvItem = new LVITEM ();
 	lvItem.stateMask = OS.LVIS_SELECTED;
 	for (int i=0; i<indices.length; i++) {
@@ -519,17 +773,22 @@ public void deselect (int index) {
  */
 public void deselect (int start, int end) {
 	checkWidget ();
-	LVITEM lvItem = new LVITEM ();
-	lvItem.stateMask = OS.LVIS_SELECTED;
-	/*
-	* An index of -1 will apply the change to all
-	* items.  Ensure that indices are greater than -1.
-	*/
-	start = Math.max (0, start);
-	for (int i=start; i<=end; i++) {
-		ignoreSelect = true;
-		OS.SendMessage (handle, OS.LVM_SETITEMSTATE, i, lvItem);
-		ignoreSelect = false;
+	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+	if (start == 0 && end == count - 1) {
+		deselectAll ();
+	} else {
+		LVITEM lvItem = new LVITEM ();
+		lvItem.stateMask = OS.LVIS_SELECTED;
+		/*
+		* An index of -1 will apply the change to all
+		* items.  Ensure that indices are greater than -1.
+		*/
+		start = Math.max (0, start);
+		for (int i=start; i<=end; i++) {
+			ignoreSelect = true;
+			OS.SendMessage (handle, OS.LVM_SETITEMSTATE, i, lvItem);
+			ignoreSelect = false;
+		}
 	}
 }
 
@@ -985,7 +1244,7 @@ public TableItem [] getItems () {
 	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	TableItem [] result = new TableItem [count];
 	if ((style & SWT.VIRTUAL) != 0) {
-		for (int i=0; i<items.length; i++) {
+		for (int i=0; i<count; i++) {
 			result [i] = _getItem (i);
 		}
 	} else {
@@ -1399,20 +1658,20 @@ public void remove (int start, int end) {
 	}
 	if (start == 0 && end == count - 1) {
 		removeAll ();
-		return;
-	} 
-	int index = start;
-	while (index <= end) {
-		ignoreSelect = true;
-		int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, start, 0);
-		ignoreSelect = false;
-		if (code == 0) break;
-		if (items [index] != null) items [index].releaseResources ();
-		index++;
+	} else {
+		int index = start;
+		while (index <= end) {
+			ignoreSelect = true;
+			int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, start, 0);
+			ignoreSelect = false;
+			if (code == 0) break;
+			if (items [index] != null) items [index].releaseResources ();
+			index++;
+		}
+		System.arraycopy (items, index, items, start, count - index);
+		for (int i=count-(index-start); i<count; i++) items [i] = null;
+		if (index <= end) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	}
-	System.arraycopy (items, index, items, start, count - index);
-	for (int i=count-(index-start); i<count; i++) items [i] = null;
-	if (index <= end) error (SWT.ERROR_ITEM_NOT_REMOVED);
 }
 
 /**
@@ -1622,18 +1881,21 @@ public void select (int start, int end) {
 	if (count == 0 || start >= count) return;
 	start = Math.max (0, start);
 	end = Math.min (end, count - 1);
-
-	/*
-	* An index of -1 will apply the change to all
-	* items.  Indices must be greater than -1.
-	*/
-	LVITEM lvItem = new LVITEM ();
-	lvItem.state = OS.LVIS_SELECTED;
-	lvItem.stateMask = OS.LVIS_SELECTED;
-	for (int i=start; i<=end; i++) {
-		ignoreSelect = true;
-		OS.SendMessage (handle, OS.LVM_SETITEMSTATE, i, lvItem);
-		ignoreSelect = false;
+	if (start == 0 && end == count - 1) {
+		selectAll ();
+	} else {
+		/*
+		* An index of -1 will apply the change to all
+		* items.  Indices must be greater than -1.
+		*/
+		LVITEM lvItem = new LVITEM ();
+		lvItem.state = OS.LVIS_SELECTED;
+		lvItem.stateMask = OS.LVIS_SELECTED;
+		for (int i=start; i<=end; i++) {
+			ignoreSelect = true;
+			OS.SendMessage (handle, OS.LVM_SETITEMSTATE, i, lvItem);
+			ignoreSelect = false;
+		}
 	}
 }
 
@@ -1934,11 +2196,19 @@ public void setItemCount (int count) {
 	if (isVirtual) {
 		OS.SendMessage (handle, OS.LVM_SETITEMCOUNT, count, 0);
 		count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+		/*
+		* Bug in Windows.  When LVM_SETITEMCOUNT is sent to a table
+		* that is too small to show a single item, when the table is
+		* resized to be larger, it is scrolled to the second item.
+		* The fix is to use LVM_ENSUREVISIBLE to scroll the table to
+		* the first item.
+		*/
+		OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, 0, 1);
 	} 
 	items = new TableItem [(count + 3) / 4 * 4];
 	if (!isVirtual) {
 		for (int i=0; i<count; i++) {
-			items [i] = new TableItem (this, SWT.NONE, i, false);
+			items [i] = new TableItem (this, SWT.NONE, i, true);
 		}
 	}
 	setRedraw (true);
@@ -2881,16 +3151,19 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			OS.MoveMemory (plvfi, lParam, NMLVDISPINFO.sizeof);
 			lastIndexOf = plvfi.iItem;
 			TableItem item = _getItem (plvfi.iItem);
-			item.requested = true;
-			if ((style & SWT.VIRTUAL) != 0) {
-				Event event = new Event ();
-				event.item = item;
-				ignoreRedraw = true;
-				sendEvent (SWT.SetData, event);
-				//widget could be disposed at this point
-				if (isDisposed ()) break;
-				ignoreRedraw = false;
-				if (setScrollWidth (item, true)) redraw ();
+			if (!item.cached) {
+				if ((style & SWT.VIRTUAL) != 0) {
+					Event event = new Event ();
+					event.item = item;
+					ignoreRedraw = true;
+					sendEvent (SWT.SetData, event);
+					//widget could be disposed at this point
+					if (isDisposed ()) break;
+					ignoreRedraw = false;
+					TableItem newItem = fixScrollWidth ? null : item;
+					if (setScrollWidth (newItem, true)) redraw ();
+				}
+				item.cached = true;
 			}
 			if ((plvfi.mask & OS.LVIF_TEXT) != 0) {
 				String string = null;
