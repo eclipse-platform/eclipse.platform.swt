@@ -38,7 +38,8 @@ import org.eclipse.swt.graphics.*;
 
 public class Composite extends Scrollable {
 	Layout layout;
-	int font, hdwp;
+	int font;
+	WINDOWPOS [] lpwp;
 	Control [] tabList;
 	
 /**
@@ -288,15 +289,9 @@ public void layout () {
 public void layout (boolean changed) {
 	checkWidget ();
 	if (layout == null) return;
-	int count = getChildrenCount ();
-	if (count == 0) return;
-	if (count > 1 && hdwp == 0) {
-		hdwp = OS.BeginDeferWindowPos (count);
-	}
+	setResizeChildren (false);
 	layout.layout (this, changed);
-	int oldHdwp = hdwp;
-	hdwp = 0;
-	if (oldHdwp != 0) OS.EndDeferWindowPos (oldHdwp);
+	setResizeChildren (true);
 }
 
 Point minimumSize () {
@@ -318,14 +313,55 @@ void releaseChildren () {
 	}
 }
 
+void resizeChildren () {
+	if (lpwp == null) return;
+	do {
+		WINDOWPOS [] oldLpwp = lpwp;
+		lpwp = null;
+		if (!resizeChildren (true, oldLpwp)) {
+			resizeChildren (false, oldLpwp);
+		}
+	} while (lpwp != null);
+}
+
+boolean resizeChildren (boolean defer, WINDOWPOS [] pwp) {
+	if (pwp == null) return true;
+	int hdwp = 0;
+	if (defer) {
+		hdwp = OS.BeginDeferWindowPos (pwp.length);
+		if (hdwp == 0) return false;
+	}
+	for (int i=0; i<pwp.length; i++) {
+		WINDOWPOS wp = pwp [i];
+		if (wp != null) {
+			/*
+			* This code is intentionally commented.  All widgets that
+			* are created by SWT have WS_CLIPSIBLINGS to ensure that
+			* application code does not draw outside of the control.
+			*/
+//			int count = parent.getChildrenCount ();
+//			if (count > 1) {
+//				int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+//				if ((bits & OS.WS_CLIPSIBLINGS) == 0) wp.flags |= OS.SWP_NOCOPYBITS;
+//			}
+			if (defer) {
+				hdwp = OS.DeferWindowPos (hdwp, wp.hwnd, 0, wp.x, wp.y, wp.cx, wp.cy, wp.flags);
+				if (hdwp == 0) return false;
+			} else {
+				OS.SetWindowPos (wp.hwnd, 0, wp.x, wp.y, wp.cx, wp.cy, wp.flags);
+			}
+		}
+	}
+	if (defer) return OS.EndDeferWindowPos (hdwp);
+	return true;
+}
+
 void releaseWidget () {
 	releaseChildren ();
 	super.releaseWidget ();
 	layout = null;
 	tabList = null;
-	int oldHdwp = hdwp;
-	hdwp = 0;
-	if (oldHdwp != 0) OS.EndDeferWindowPos (oldHdwp);
+	lpwp = null;
 }
 
 public boolean setFocus () {
@@ -400,6 +436,17 @@ public void setTabList (Control [] tabList) {
 	this.tabList = tabList;
 }
 
+void setResizeChildren (boolean resize) {
+	if (resize) {
+		resizeChildren ();
+	} else {
+		int count = getChildrenCount ();
+		if (count > 1 && lpwp == null) {
+			lpwp = new WINDOWPOS [count];
+		}
+	}
+}
+
 boolean setTabGroupFocus () {
 	if (isTabItem ()) return setTabItemFocus ();
 	if ((style & SWT.NO_FOCUS) == 0) {
@@ -469,7 +516,7 @@ void updateFont (Font oldFont, Font newFont) {
 }
 
 int widgetStyle () {
-	/* Force strict clipping by setting WS_CLIPCHILDREN */
+	/* Force clipping of children by setting WS_CLIPCHILDREN */
 	return super.widgetStyle () | OS.WS_CLIPCHILDREN;
 }
 
@@ -685,18 +732,12 @@ LRESULT WM_SETFONT (int wParam, int lParam) {
 }
 
 LRESULT WM_SIZE (int wParam, int lParam) {
-	/*
-	* Begin deferred window positioning
-	*/
-	int count = getChildrenCount ();
-	if (count > 1 && hdwp == 0) {
-		hdwp = OS.BeginDeferWindowPos (count);
-	}
 	
-	/* Layout and resize */
-	if (layout != null) layout.layout (this, false);
+	/* Begin deferred window positioning */
+	setResizeChildren (false);
+	
+	/* Resize and Layout */
 	LRESULT result = super.WM_SIZE (wParam, lParam);
-	
 	/*
 	* It is possible (but unlikely), that application
 	* code could have disposed the widget in the resize
@@ -705,11 +746,10 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	* WM_SIZE message.
 	*/
 	if (isDisposed ()) return result;
-	
+	if (layout != null) layout.layout (this, false);
+
 	/* End deferred window positioning */
-	int oldHdwp = hdwp;
-	hdwp = 0;
-	if (oldHdwp != 0) OS.EndDeferWindowPos (oldHdwp);
+	setResizeChildren (true);
 	
 	/* Damage the widget to cause a repaint */
 	if ((state & CANVAS) != 0) {

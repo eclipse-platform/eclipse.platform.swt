@@ -522,6 +522,10 @@ public void forceActive () {
 	OS.SetForegroundWindow (handle);
 }
 
+void forceResize () {
+	/* Do nothing */
+}
+
 public Rectangle getBounds () {
 	checkWidget ();
 	if (!OS.IsWinCE) {
@@ -821,7 +825,7 @@ void setBounds (int x, int y, int width, int height, int flags) {
 	if (OS.IsWinCE) {
 		swFlags = OS.SW_RESTORE;
 		if ((style & SWT.NO_TRIM) == 0) {
-			/* insert caption when no longer maximized */
+			/* Set the WS_CAPTION bits when no longer maximized */
 			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 			if ((bits & OS.WS_CAPTION) != OS.WS_CAPTION) {
 				bits |= OS.WS_CAPTION;
@@ -830,7 +834,7 @@ void setBounds (int x, int y, int width, int height, int flags) {
 		}
 	} else {
 		if (OS.IsIconic (handle) || OS.IsZoomed (handle)) {
-			super.setBounds (x, y, width, height, flags);
+			setPlacement (x, y, width, height, flags);
 			return;
 		}
 	}

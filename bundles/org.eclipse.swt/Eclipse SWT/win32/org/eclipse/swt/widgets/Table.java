@@ -1747,17 +1747,12 @@ public void setRedraw (boolean redraw) {
 			ignoreResize = true;
 			OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
 			if (!ignoreResize) {
-				int count = getChildrenCount ();
-				if (count > 1 && hdwp == 0) {
-					hdwp = OS.BeginDeferWindowPos (count);
-				}
-				if (layout != null) layout.layout (this, false);
+				setResizeChildren (false);
 				sendEvent (SWT.Resize);
 				// widget may be disposed at this point
 				if (isDisposed ()) return;
-				int oldHdwp = hdwp;
-				hdwp = 0;
-				if (oldHdwp != 0) OS.EndDeferWindowPos (oldHdwp);
+				if (layout != null) layout.layout (this, false);
+				setResizeChildren (true);
 			}
 			ignoreResize = false;
 			

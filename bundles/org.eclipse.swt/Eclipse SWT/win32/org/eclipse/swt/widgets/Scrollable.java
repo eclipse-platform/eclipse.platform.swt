@@ -139,13 +139,7 @@ void createWidget () {
  */
 public Rectangle getClientArea () {
 	checkWidget ();
-	if (parent != null && parent.hdwp != 0) {
-		int oldHdwp = parent.hdwp;
-		parent.hdwp = 0;
-		OS.EndDeferWindowPos (oldHdwp);
-		int count = parent.getChildrenCount ();
-		parent.hdwp = OS.BeginDeferWindowPos (count);
-	}
+	forceResize ();
 	RECT rect = new RECT ();
 	OS.GetClientRect (handle, rect);
 	return new Rectangle (0, 0, rect.right, rect.bottom);

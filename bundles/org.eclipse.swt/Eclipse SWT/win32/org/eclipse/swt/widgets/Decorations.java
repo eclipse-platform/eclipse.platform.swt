@@ -592,12 +592,21 @@ void releaseWidget () {
 	if (menuBar != null) menuBar.releaseResources ();
 	menuBar = null;
 	if (menus != null) {
-		for (int i=0; i<menus.length; i++) {
-			Menu menu = menus [i];
-			if (menu != null && !menu.isDisposed ()) {
-				menu.dispose ();
+		do {
+			int index = 0;
+			while (index < menus.length) {
+				Menu menu = menus [index];
+				if (menu != null && !menu.isDisposed ()) {
+					while (menu.getParentMenu () != null) {
+						menu = menu.getParentMenu ();
+					}
+					menu.dispose ();
+					break;
+				}
+				index++;
 			}
-		}
+			if (index == menus.length) break;
+		} while (true);
 	}
 	menus = null;
 	super.releaseWidget ();
@@ -651,26 +660,7 @@ void setBounds (int x, int y, int width, int height, int flags) {
 		super.setBounds (x, y, width, height, flags);
 	}
 	if (OS.IsIconic (handle) || OS.IsZoomed (handle)) {
-		WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
-		lpwndpl.length = WINDOWPLACEMENT.sizeof;
-		OS.GetWindowPlacement (handle, lpwndpl);
-		lpwndpl.showCmd = OS.SW_SHOWNA;
-		if (OS.IsIconic (handle)) {
-			lpwndpl.showCmd = OS.SW_SHOWMINNOACTIVE;
-		} else {
-			if (OS.IsZoomed (handle)) {
-				lpwndpl.showCmd = OS.SW_SHOWMAXIMIZED;
-			}
-		}
-		if ((flags & OS.SWP_NOMOVE) == 0) {
-			lpwndpl.left = x;
-			lpwndpl.top = y;
-		}
-		if ((flags & OS.SWP_NOSIZE) == 0) {
-			lpwndpl.right = x + width;
-			lpwndpl.bottom = y + height;
-		}
-		OS.SetWindowPlacement (handle, lpwndpl);
+		setPlacement (x, y, width, height, flags);
 		return;
 	}
 	super.setBounds (x, y, width, height, flags);
@@ -1009,6 +999,29 @@ void setParent () {
 		OS.ShowWindow (handle, OS.SW_SHOWNA);
 	}
 	display.lockActiveWindow = false;
+}
+
+void setPlacement (int x, int y, int width, int height, int flags) {
+	WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
+	lpwndpl.length = WINDOWPLACEMENT.sizeof;
+	OS.GetWindowPlacement (handle, lpwndpl);
+	lpwndpl.showCmd = OS.SW_SHOWNA;
+	if (OS.IsIconic (handle)) {
+		lpwndpl.showCmd = OS.SW_SHOWMINNOACTIVE;
+	} else {
+		if (OS.IsZoomed (handle)) {
+			lpwndpl.showCmd = OS.SW_SHOWMAXIMIZED;
+		}
+	}
+	if ((flags & OS.SWP_NOMOVE) == 0) {
+		lpwndpl.left = x;
+		lpwndpl.top = y;
+	}
+	if ((flags & OS.SWP_NOSIZE) == 0) {
+		lpwndpl.right = x + width;
+		lpwndpl.bottom = y + height;
+	}
+	OS.SetWindowPlacement (handle, lpwndpl);
 }
 
 void setSavedFocus (Control control) {

@@ -519,19 +519,15 @@ public boolean getLocked () {
  */
 public int [] getWrapIndices () {
 	checkWidget ();
-	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
-	int [] indices = new int [count];
-	REBARBANDINFO rbBand = new REBARBANDINFO ();
-	rbBand.cbSize = REBARBANDINFO.sizeof;
-	rbBand.fMask = OS.RBBIM_STYLE;
-	int wrapCount = 0;
-	for (int i=0; i<count; i++) {
-		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
-		if ((rbBand.fStyle & OS.RBBS_BREAK) != 0) indices [wrapCount++] = i;	
+	CoolItem [] items = getItems ();
+	int [] indices = new int [items.length];
+	int count = 0;
+	for (int i=0; i<items.length; i++) {
+		if (items [i].getWrap ()) indices [count++] = i;	
 	}
-	int [] answer = new int [wrapCount];
-	System.arraycopy(indices, 0, answer, 0, wrapCount);
-	return answer;
+	int [] result = new int [count];
+	System.arraycopy (indices, 0, result, 0, count);
+	return result;
 }
 
 /**
@@ -664,9 +660,11 @@ void setItemColors (int foreColor, int backColor) {
  */
 public void setItemLayout (int [] itemOrder, int [] wrapIndices, Point [] sizes) {
 	checkWidget ();
+	setRedraw (false);
 	setItemOrder (itemOrder);
 	setWrapIndices (wrapIndices);
-	setItemSizes (sizes); 
+	setItemSizes (sizes);
+	setRedraw (true);
 }
 
 /*
@@ -810,38 +808,31 @@ public void setLocked (boolean locked) {
 public void setWrapIndices (int [] indices) {
 	checkWidget ();
 	if (indices == null) indices = new int [0];
-	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	int count = getItemCount ();
 	for (int i=0; i<indices.length; i++) {
 		if (indices [i] < 0 || indices [i] >= count) {
 			error (SWT.ERROR_INVALID_RANGE);
 		}	
 	}
-	REBARBANDINFO rbBand = new REBARBANDINFO ();
-	rbBand.cbSize = REBARBANDINFO.sizeof;
-	rbBand.fMask = OS.RBBIM_STYLE;
-	for (int i=0; i<count; i++) {
-		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
-		if ((rbBand.fStyle & OS.RBBS_BREAK) != 0) {
+	setRedraw (false);
+	CoolItem [] items = getItems ();
+	for (int i=0; i<items.length; i++) {
+		CoolItem item = items [i];
+		if (item.getWrap ()) {
 			resizeToPreferredWidth (i - 1);
-			rbBand.fStyle &= ~OS.RBBS_BREAK;
-			OS.SendMessage (handle, OS.RB_SETBANDINFO, i, rbBand);
+			item.setWrap (false);
 		}
 	}
-	/*
-	* Resize the last item in the row to the maximum size.
-	*/
 	resizeToMaximumWidth (count - 1);
-
 	for (int i=0; i<indices.length; i++) {
-		rbBand.fMask = OS.RBBIM_STYLE;		
-		OS.SendMessage (handle, OS.RB_GETBANDINFO, indices [i], rbBand);
-		rbBand.fStyle |= OS.RBBS_BREAK;
-		OS.SendMessage (handle, OS.RB_SETBANDINFO, indices [i], rbBand);
-		/*
-		* Ensure that the last item in the previous row is at the maximum size.
-		*/
-		resizeToMaximumWidth (indices [i] - 1);
+		int index = indices [i];
+		if (0 <= index && index < items.length) {
+			CoolItem item = items [index];
+			item.setWrap (true);
+			resizeToMaximumWidth (index - 1);
+		}
 	}
+	setRedraw (true);
 }
 
 int widgetStyle () {

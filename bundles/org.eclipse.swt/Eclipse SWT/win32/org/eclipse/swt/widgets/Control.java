@@ -580,6 +580,30 @@ public boolean forceFocus () {
 	return isFocusControl ();
 }
 
+void forceResize () {
+	if (parent == null) return;
+	WINDOWPOS [] lpwp = parent.lpwp;
+	if (lpwp == null) return;
+	for (int i=0; i<lpwp.length; i++) {
+		WINDOWPOS wp = lpwp [i];
+		if (wp != null && wp.hwnd == handle) {
+			/*
+			* This code is intentionally commented.  All widgets that
+			* are created by SWT have WS_CLIPSIBLINGS to ensure that
+			* application code does not draw outside of the control.
+			*/	
+//			int count = parent.getChildrenCount ();
+//			if (count > 1) {
+//				int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+//				if ((bits & OS.WS_CLIPSIBLINGS) == 0) wp.flags |= OS.SWP_NOCOPYBITS;
+//			}
+			OS.SetWindowPos (wp.hwnd, 0, wp.x, wp.y, wp.cx, wp.cy, wp.flags);
+			lpwp [i] = null;
+			return;
+		}	
+	}
+}
+
 /**
  * Returns the accessible object for the receiver.
  * If this is the first time this object is requested,
@@ -654,19 +678,10 @@ public int getBorderWidth () {
  */
 public Rectangle getBounds () {
 	checkWidget ();
-	int hwndParent = 0;
-	if (parent != null) {
-		hwndParent = parent.handle;
-		if (parent.hdwp != 0) {
-			int oldHdwp = parent.hdwp;
-			parent.hdwp = 0;
-			OS.EndDeferWindowPos (oldHdwp);
-			int count = parent.getChildrenCount ();
-			parent.hdwp = OS.BeginDeferWindowPos (count);
-		}
-	}
+	forceResize ();
 	RECT rect = new RECT ();
 	OS.GetWindowRect (handle, rect);
+	int hwndParent = parent == null ? 0 : parent.handle;
 	OS.MapWindowPoints (0, hwndParent, rect, 2);
 	int width = rect.right - rect.left;
 	int height =  rect.bottom - rect.top;
@@ -786,19 +801,10 @@ public Object getLayoutData () {
  */
 public Point getLocation () {
 	checkWidget ();
-	int hwndParent = 0;
-	if (parent != null) {
-		hwndParent = parent.handle;
-		if (parent.hdwp != 0) {
-			int oldHdwp = parent.hdwp;
-			parent.hdwp = 0;
-			OS.EndDeferWindowPos (oldHdwp);
-			int count = parent.getChildrenCount ();
-			parent.hdwp = OS.BeginDeferWindowPos (count);
-		}
-	}
+	forceResize ();
 	RECT rect = new RECT ();
 	OS.GetWindowRect (handle, rect);
+	int hwndParent = parent == null ? 0 : parent.handle;
 	OS.MapWindowPoints (0, hwndParent, rect, 2);
 	return new Point (rect.left, rect.top);
 }
@@ -892,13 +898,7 @@ public Shell getShell () {
  */
 public Point getSize () {
 	checkWidget ();
-	if (parent != null && parent.hdwp != 0) {
-		int oldHdwp = parent.hdwp;
-		parent.hdwp = 0;
-		OS.EndDeferWindowPos (oldHdwp);
-		int count = parent.getChildrenCount ();
-		parent.hdwp = OS.BeginDeferWindowPos (count);
-	}
+	forceResize ();
 	RECT rect = new RECT ();
 	OS.GetWindowRect (handle, rect);
 	int width = rect.right - rect.left;
@@ -1748,23 +1748,40 @@ void setBounds (int x, int y, int width, int height, int flags) {
 		OS.SetWindowPos (handle, 0, x, y, width, height, flags);
 		return;
 	}
-	int count = parent.getChildrenCount ();
-	if (parent.hdwp == 0) {
-		if (count > 1) {
-			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-			if ((bits & OS.WS_CLIPSIBLINGS) == 0) flags |= OS.SWP_NOCOPYBITS;
-		}
+	if (parent.lpwp == null) {
+		/*
+		* This code is intentionally commented.  All widgets that
+		* are created by SWT have WS_CLIPSIBLINGS to ensure that
+		* application code does not draw outside of the control.
+		*/
+//		int count = parent.getChildrenCount ();
+//		if (count > 1) {
+//			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+//			if ((bits & OS.WS_CLIPSIBLINGS) == 0) flags |= OS.SWP_NOCOPYBITS;
+//		}
 		OS.SetWindowPos (handle, 0, x, y, width, height, flags);
 		return;
 	}
-	int hdwp = OS.DeferWindowPos (parent.hdwp, handle, 0, x, y, width, height, flags);
-	if (hdwp == 0) {
-		int oldHdwp = parent.hdwp;
-		parent.hdwp = 0;
-		OS.EndDeferWindowPos (oldHdwp);
-		if (count > 1) hdwp = OS.BeginDeferWindowPos (count);
+	forceResize ();
+	WINDOWPOS [] lpwp = parent.lpwp;
+	int index = 0;
+	while (index < lpwp.length) {
+		if (lpwp [index] == null) break;
+		index ++;
 	}
-	parent.hdwp = hdwp;
+	if (index == lpwp.length) {
+		WINDOWPOS [] newLpwp = new WINDOWPOS [lpwp.length + 4];
+		System.arraycopy (lpwp, 0, newLpwp, 0, lpwp.length);
+		parent.lpwp = lpwp = newLpwp;
+	}
+	WINDOWPOS wp = new WINDOWPOS ();
+	wp.hwnd = handle;
+	wp.x = x;
+	wp.y = y;
+	wp.cx = width;
+	wp.cy = height;
+	wp.flags = flags;
+	lpwp [index] = wp;
 }
 
 /**
@@ -2604,14 +2621,14 @@ int widgetExtStyle () {
 }
 
 int widgetStyle () {
-	/* Force strict clipping by setting WS_CLIPSIBLINGS */
+	/* Force clipping of siblings by setting WS_CLIPSIBLINGS */
 	return OS.WS_CHILD | OS.WS_VISIBLE | OS.WS_CLIPSIBLINGS;
 	
 	/*
-	* This code is intentionally commented.  When strict
-	* clipping (clipping of both siblings and children)
-	* was not enforced on all widgets, poorly written
-	* application code could draw outside of the control.
+	* This code is intentionally commented.  When clipping
+	* of both siblings and children is not enforced, it is
+	* possible for application code to draw outside of the
+	* control.
 	*/
 //	int bits = OS.WS_CHILD | OS.WS_VISIBLE;
 //	if ((style & SWT.CLIP_SIBLINGS) != 0) bits |= OS.WS_CLIPSIBLINGS;
@@ -3011,6 +3028,7 @@ LRESULT WM_INITMENUPOPUP (int wParam, int lParam) {
 }
 
 LRESULT WM_KEYDOWN (int wParam, int lParam) {
+	
 	/* Ignore repeating modifier keys by testing key down state */
 	switch (wParam) {
 		case OS.VK_SHIFT:
@@ -3055,7 +3073,7 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	* is that the high bit on Windows NT is bit 32 while the high bit on
 	* Windows 95 is bit 16.  They should both be bit 32.
 	* 
-	* NOTE: This code is avoiding a call to ToAscii ().
+	* NOTE: This code is used to avoid a call to ToAscii ().
 	*/
 	if (OS.IsWinNT) {
 		if ((mapKey & 0x80000000) != 0) return null;
@@ -3073,7 +3091,7 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	* been generated using an international keyboard and calling ToAscii ()
 	* will clear the accent state.
 	* 
-	* NOTE: This code is avoiding a call to ToAscii ().
+	* NOTE: This code is used to avoid a call to ToAscii ().
 	*/
 	if (!OS.IsWinCE) {
 		for (int i=0; i<ACCENTS.length; i++) {
@@ -3121,6 +3139,7 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 		*/
 		if (OS.VK_NUMPAD0 <= display.lastKey && display.lastKey <= OS.VK_DIVIDE) {
 			if (display.asciiKey (display.lastKey) != 0) return null;
+			display.lastAscii = display.numpadKey (display.lastKey);
 		}
 	} else {
 		/*
@@ -3144,20 +3163,20 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 		* WM_CHAR.  If this is the case, issue the key down event from
 		* inside WM_CHAR.
 		*/
-		int newKey = display.asciiKey (wParam);
-		if (newKey != 0) {
+		int asciiKey = display.asciiKey (wParam);
+		if (asciiKey != 0) {
 			/*
 			* When the user types Ctrl+Space, ToAscii () maps this to
 			* Space.  Normally, ToAscii () maps a key to a different
 			* key if both a WM_KEYDOWN and a WM_CHAR will be issued.
-			* To avoid the extra OSxKeyDown, look for VK_SPACE and
+			* To avoid the extra SWT.KeyDown, look for VK_SPACE and
 			* issue the event from WM_CHAR.
 			*/
-			if (newKey == OS.VK_SPACE) {
+			if (asciiKey == OS.VK_SPACE) {
 				display.lastVirtual = true;
 				return null;
 			}
-			if (newKey != wParam) return null;
+			if (asciiKey != wParam) return null;
 		}
 			
 		/*
@@ -3177,7 +3196,7 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 		* LastKey to see if it is virtual.  This happens when the user types
 		* Ctrl+Tab.
 		*/
-		display.lastVirtual = display.isVirtualKey (display.lastKey);
+		display.lastVirtual = display.isVirtualKey (wParam);
 		display.lastAscii = display.controlKey (display.lastKey);
 		display.lastNull = display.lastAscii == 0 && display.lastKey == '@';
 	}
@@ -3234,7 +3253,8 @@ LRESULT WM_KEYUP (int wParam, int lParam) {
 	* is that the high bit on Windows NT is bit 32 while the high bit on
 	* Windows 95 is bit 16.  They should both be bit 32.
 	* 
-	* NOTE: This code is avoiding a call to ToAscii ().
+	* NOTE: This code is used to avoid a call to ToAscii ().
+	* 
 	*/
 	if (OS.IsWinNT) {
 		if ((mapKey & 0x80000000) != 0) return null;
@@ -3249,10 +3269,9 @@ LRESULT WM_KEYUP (int wParam, int lParam) {
 	* The fix is to iterate through all known accent, mapping them back to
 	* their corresponding virtual key and key state.  If the virtual key
 	* and key state match the current key, then this is an accent that has
-	* been generated using an international keyboard and calling ToAscii ()
-	* will clear the accent state.
+	* been generated using an international keyboard.
 	* 
-	* NOTE: This code is avoiding a call to ToAscii ().
+	* NOTE: This code is used to avoid a call to ToAscii ().
 	*/
 	if (!OS.IsWinCE) {
 		for (int i=0; i<ACCENTS.length; i++) {
@@ -3858,7 +3877,7 @@ LRESULT WM_SYSCHAR (int wParam, int lParam) {
 
 	/* Set last key and last ascii because a new key has been typed */
 	display.lastAscii = display.lastKey = wParam;
-	display.lastVirtual = display.isVirtualKey (display.lastKey);
+	display.lastVirtual = display.isVirtualKey (wParam);
 	display.lastNull = false;
 
 	/* Do not issue a key down if a menu bar mnemonic was invoked */

@@ -197,13 +197,7 @@ void createHandle () {
 
 public Rectangle getClientArea () {
 	checkWidget ();
-	if (parent.hdwp != 0) {
-		int oldHdwp = parent.hdwp;
-		parent.hdwp = 0;
-		OS.EndDeferWindowPos (oldHdwp);
-		int count = parent.getChildrenCount ();
-		parent.hdwp = OS.BeginDeferWindowPos (count);
-	}
+	forceResize ();
 	RECT rect = new RECT ();
 	OS.GetClientRect (handle, rect);
 	int newFont, oldFont = 0;

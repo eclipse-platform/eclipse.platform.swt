@@ -177,7 +177,7 @@ public class Display extends Device {
 		{OS.VK_RETURN,	SWT.CR},
 		{OS.VK_DELETE,	SWT.DEL},
 		{OS.VK_ESCAPE,	SWT.ESC},
-//		{OS.VK_????,	SWT.LF},
+		{OS.VK_RETURN,	SWT.LF},
 		{OS.VK_TAB,		SWT.TAB},
 	
 		/* Functions Keys */
@@ -195,23 +195,22 @@ public class Display extends Device {
 		{OS.VK_F12,	SWT.F12},
 		
 		/* Numeric Keypad Keys */
-		/* NOT CURRENTLY USED */
-//		{OS.VK_ADD,		SWT.KP_PLUS},
+//		{OS.VK_ADD,			SWT.KP_PLUS},
 //		{OS.VK_SUBTRACT,	SWT.KP_MINUS},
 //		{OS.VK_MULTIPLY,	SWT.KP_TIMES},
-//		{OS.VK_DIVIDE,	SWT.KP_DIVIDE},
-//		{OS.VK_DECIMAL,	SWT.KP_PERIOD},
-//		{OS.VK_RETURN,	SWT.KP_ENTER},
-//		{OS.VK_NUMPAD0,	SWT.KP_0},
-//		{OS.VK_NUMPAD1,	SWT.KP_1},
-//		{OS.VK_NUMPAD2,	SWT.KP_2},
-//		{OS.VK_NUMPAD3,	SWT.KP_3},
-//		{OS.VK_NUMPAD4,	SWT.KP_4},
-//		{OS.VK_NUMPAD5,	SWT.KP_5},
-//		{OS.VK_NUMPAD6,	SWT.KP_6},
-//		{OS.VK_NUMPAD7,	SWT.KP_7},
-//		{OS.VK_NUMPAD8,	SWT.KP_8},
-//		{OS.VK_NUMPAD9,	SWT.KP_9},
+//		{OS.VK_DIVIDE,		SWT.KP_DIVIDE},
+//		{OS.VK_DECIMAL,		SWT.KP_DECIMAL},
+//		{OS.VK_RETURN,		SWT.KP_CR},
+//		{OS.VK_NUMPAD0,		SWT.KP_0},
+//		{OS.VK_NUMPAD1,		SWT.KP_1},
+//		{OS.VK_NUMPAD2,		SWT.KP_2},
+//		{OS.VK_NUMPAD3,		SWT.KP_3},
+//		{OS.VK_NUMPAD4,		SWT.KP_4},
+//		{OS.VK_NUMPAD5,		SWT.KP_5},
+//		{OS.VK_NUMPAD6,		SWT.KP_6},
+//		{OS.VK_NUMPAD7,		SWT.KP_7},
+//		{OS.VK_NUMPAD8,		SWT.KP_8},
+//		{OS.VK_NUMPAD9,		SWT.KP_9},
 
 	};
 
@@ -1248,11 +1247,12 @@ boolean isValidThread () {
 boolean isVirtualKey (int key) {
 	switch (key) {
 		case OS.VK_TAB:
-		case OS.VK_MENU:
 		case OS.VK_RETURN:
 		case OS.VK_BACK:
-		case OS.VK_SPACE:
 		case OS.VK_ESCAPE:
+//		case OS.VK_DELETE:
+		case OS.VK_SPACE:
+		case OS.VK_MENU:
 		case OS.VK_SHIFT:
 		case OS.VK_CONTROL:
 			return true;
@@ -1289,6 +1289,28 @@ int msgFilterProc (int code, int wParam, int lParam) {
 		if (hookMsg.message == OS.WM_NULL) runAsyncMessages ();
 	}
 	return OS.CallNextHookEx (hHook, code, wParam, lParam);
+}
+
+int numpadKey (int key) {
+	switch (key) {
+		case OS.VK_NUMPAD0:	return '0';
+		case OS.VK_NUMPAD1:	return '1';
+		case OS.VK_NUMPAD2:	return '2';
+		case OS.VK_NUMPAD3:	return '3';
+		case OS.VK_NUMPAD4:	return '4';
+		case OS.VK_NUMPAD5:	return '5';
+		case OS.VK_NUMPAD6:	return '6';
+		case OS.VK_NUMPAD7:	return '7';
+		case OS.VK_NUMPAD8:	return '8';
+		case OS.VK_NUMPAD9:	return '9';
+		case OS.VK_MULTIPLY:	return '*';
+		case OS.VK_ADD: 		return '+';
+		case OS.VK_SEPARATOR:	return '\0';
+		case OS.VK_SUBTRACT:	return '-';
+		case OS.VK_DECIMAL:	return '.';
+		case OS.VK_DIVIDE:		return '/';
+	}
+	return 0;
 }
 
 void postEvent (Event event) {

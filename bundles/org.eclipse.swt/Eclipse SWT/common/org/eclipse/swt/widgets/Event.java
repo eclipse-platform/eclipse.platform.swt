@@ -68,6 +68,7 @@ public class Event {
 public Rectangle getBounds () {
 	return new Rectangle (x, y, width, height);
 }
+
 /**
 * Sets the bounds.
 * <p>
@@ -82,6 +83,7 @@ public void setBounds (Rectangle rect) {
 	this.width = rect.width;
 	this.height = rect.height;
 }
+
 /**
 * Returns a string representation of the object.
 *

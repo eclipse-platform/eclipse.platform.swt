@@ -1109,7 +1109,7 @@ void setBounds (int x, int y, int width, int height, int flags) {
 	* and is resized, the list does not redraw properly.  The fix
 	* is to redraw the receiver.
 	*/
-	if ((parent.hdwp != 0) || ((flags & OS.SWP_NOSIZE) != 0)) {	
+	if (parent.lpwp != null || (flags & OS.SWP_NOSIZE) != 0) {	
 		super.setBounds (x, y, width, height, flags);
 		return;
 	}

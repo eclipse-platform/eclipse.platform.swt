@@ -1029,7 +1029,7 @@ void setBounds (int x, int y, int width, int height, int flags) {
 	* combo box is resized.  The fix is to force a redraw when
 	* the size has changed.
 	*/
-	if (parent.hdwp != 0 || (flags & OS.SWP_NOSIZE) != 0 || !OS.IsWindowVisible (handle)) {
+	if (parent.lpwp != null || (flags & OS.SWP_NOSIZE) != 0 || !OS.IsWindowVisible (handle)) {
 		super.setBounds (x, y, width, height, flags);
 		return;
 	}

@@ -299,13 +299,7 @@ void destroyItem (TabItem item) {
 
 public Rectangle getClientArea () {
 	checkWidget ();
-	if (parent.hdwp != 0) {
-		int oldHdwp = parent.hdwp;
-		parent.hdwp = 0;
-		OS.EndDeferWindowPos (oldHdwp);
-		int count = parent.getChildrenCount ();
-		parent.hdwp = OS.BeginDeferWindowPos (count);
-	}
+	forceResize ();
 	RECT rect = new RECT ();
 	OS.GetClientRect (handle, rect);
 	OS.SendMessage (handle, OS.TCM_ADJUSTRECT, 0, rect);
