@@ -227,7 +227,7 @@ public void test_setImageLorg_eclipse_swt_graphics_Image() {
 
 public void test_setTextLjava_lang_String() {
 	try {
-		treeItem.setText(null);		
+		treeItem.setText((String)null);		
 		fail("No exception thrown for string == null");
 	}
 	catch (IllegalArgumentException e) {
