@@ -20,7 +20,11 @@
 #include <X11/Intrinsic.h>
 #include <X11/Shell.h>
 #include <X11/keysym.h>
+#include <X11/extensions/shape.h>
 #include <X11/extensions/Print.h>
+#if !(defined _HPUX || defined SOLARIS)
+#include <X11/extensions/XTest.h>
+#endif
 
 #ifdef NO_XINERAMA_EXTENSIONS
 #define NO_XineramaScreenInfo
@@ -40,6 +44,7 @@
 #include <locale.h>
 #include <iconv.h>
 #include <stdlib.h>
+#include <unistd.h>
 #ifdef	_HPUX
 #include <sys/time.h>
 #else
