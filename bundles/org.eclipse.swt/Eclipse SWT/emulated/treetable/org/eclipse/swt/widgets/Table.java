@@ -1902,7 +1902,7 @@ void removeColumnVisual(TableColumn column) {
 	int columnWidth = column.getWidth();
 		
 	// move following columns to the left
-	moveColumns(column.getIndex() + 1, columnWidth * -1);
+	moveColumns(column.getIndex(), columnWidth * -1);
 	redraw();
 	getHeader().redraw();
 }
