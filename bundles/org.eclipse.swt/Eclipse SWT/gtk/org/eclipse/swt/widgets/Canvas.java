@@ -273,6 +273,12 @@ public boolean setFocus () {
 	return super.setFocus ();
 }
 
+public void setFont (Font font) {
+	checkWidget();
+	super.setFont (font);
+	if (caret != null) caret.setFont (font);
+}
+	
 void updateCaret () {
 	int imHandle = imHandle ();
 	if (imHandle == 0) return;
