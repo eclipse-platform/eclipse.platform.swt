@@ -148,7 +148,7 @@ public Cursor(Device device, int style) {
 		case SWT.CURSOR_ARROW: 		handle = OS.kThemeArrowCursor; break;
 		case SWT.CURSOR_WAIT: 			handle = OS.kThemeSpinningCursor; break;
 		case SWT.CURSOR_CROSS: 		handle = OS.kThemeCrossCursor; break;
-		case SWT.CURSOR_APPSTARTING: 	handle = OS.kThemeWatchCursor; break;
+		case SWT.CURSOR_APPSTARTING: 	handle = OS.kThemeArrowCursor; break;
 		case SWT.CURSOR_HELP: 			handle = OS.kThemeCrossCursor; break;
 		case SWT.CURSOR_SIZEALL: 		handle = OS.kThemeCrossCursor; break;
 		case SWT.CURSOR_SIZENESW: 		handle = OS.kThemeCrossCursor; break;
