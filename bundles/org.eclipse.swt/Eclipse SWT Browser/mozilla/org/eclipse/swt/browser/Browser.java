@@ -73,6 +73,7 @@ public class Browser extends Composite {
 	static int BrowserCount;
 	static boolean mozilla;
 	static boolean IsWindows;
+	static boolean IsLinux;
 
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
@@ -80,6 +81,7 @@ public class Browser extends Composite {
 	static {
 		String osName = System.getProperty("os.name").toLowerCase(); //$NON-NLS-1$
 		IsWindows = osName.startsWith("windows");
+		IsLinux = osName.startsWith("linux");
 	}
 
 /**
@@ -1620,6 +1622,17 @@ int OnStateChange(int aWebProgress, int aRequest, int aStateFlags, int aStatus) 
 			}
 		}
 
+		/*
+		* Bug on Mozilla Linux GTK.  The Mozilla browser is embedded into
+		* a GtkFixed handle. The Flash plug-in causes the GtkFixed handle
+		* to be reset to 1 pixel wide when a Flash document is loaded.  
+		* A workaround specific to Linux GTK would be to resize Mozilla on 
+		* the size-allocate callback for that GtkFixed handle.  This would
+		* add a dependency on the GTK API.  The workaround is to resize 
+		* Mozilla after every document complete.
+		*/
+		if (IsLinux) onResize();
+		
 		/*
 		* Feature on Mozilla.  When a request is redirected (STATE_REDIRECTING),
 		* it never reaches the state STATE_STOP and it is replaced with a new request.
