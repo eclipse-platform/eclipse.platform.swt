@@ -18,43 +18,49 @@ Create a Java Project to contain the examples.&nbsp; Call it <b>SWT Examples</b>
 </p>
 
 <li><p>
-Make sure the <b>swt.jar</b> file is on the java classpath.<br>
+Make sure the <b>swt.jar</b> file is on the java classpath, by doing the following:<br>
 Select the SWT Examples Project and bring up the Properties dialog.<br>
-On the Java Build Path page, select the Libraries tab, click on the Add External JARs button and find <b>swt.jar</b>.<br>
-Next, click on the Attach Source button and find <b>swtsrc.jar</b>.<br>
-Click OK to save the Project properties.<br>
+On the Java Build Path page, select the Libraries tab, click on the Add External JARs button and select <b>swt.jar</b>.<br>
+Next, click on the Attach Source button, then click on the Browse File System button and select <b>swtsrc.zip</b>.<br>
 The files can be found in the following directory, depending one which Operating System you are using to run Eclipse:
 <ul>
 <li>Windows - &lt;install-dir&gt;\eclipse\plugins\org.eclipse.swt\
 <li>Motif - &lt;install-dir&gt;/eclipse/plugins/org.eclipse.swt/
 </ul>
+Click OK to save the Project properties.<br>
 </p>
 
 <li><p>
-Make sure the <b>swtexamples.jar</b> is on the java classpath.<br>
+Make sure the <b>swtexamples.jar</b> is on the java classpath, by doing the following:<br>
 Select the SWT Examples Project and bring up the Properties dialog.<br>
-On the Java Build Path page, select the Libraries tab, click on the Add External JARs button and find <b>swtexamples.jar</b>.<br>
-Next, click on the Attach Source button and find <b>swtexamplessrc.zip</b>.<br>
-Click OK to save the Project properties.<br>
+On the Java Build Path page, select the Libraries tab, click on the Add External JARs button and select <b>swtexamples.jar</b>.<br>
+Next, click on the Attach Source button, then click on the Browse File System button and select <b>swtexamplessrc.zip</b>.<br>
 The files can be found in the following directory, depending one which Operating System you are using to run Eclipse:
 <ul>
 <li>Windows - &lt;install-dir&gt;\eclipse\plugins\org.eclipse.swt.examples\
 <li>Motif - &lt;install-dir&gt;/eclipse/plugins/org.eclipse.swt.examples/
 </ul>
+Click OK to save the Project properties.<br>
 </p>
 
 <li><p>
-Make sure the <b>SWT runtime library</b> is in the library search path.<br>
+Make sure that referenced libraries are visible in the Packages view, by doing the following:<br>
+In the Packages view of the Java Perspective, drop down the View menu.<br>
+Ensure that <b>Show Referenced Libraries</b> is checked.
+</p>
+
+<li><p>
+Make sure the <b>SWT runtime library</b> is in the library search path, by doing the following:<br>
 In the Packages view of the Java Perspective, expand <b>swtexamples.jar</b>.<br>
 You will see all of the packages and other resource files present in the jar file, including the executable class for each example.<br>
 Select the executable class (the one containing the main() method) for the particular example that you wish to run and bring up the Properties dialog.<br>
 On the Execution Arguments page, select the VM arguments field and enter <b>-Djava.library.path=&lt;runtime-library-path&gt;</b>.<br>
-Click OK to save the Project properties.<br>
 The runtime library path is the following directory, depending one which Operating System you are using to run Eclipse:
 <ul>
 <li>Windows - &lt;install-dir&gt;\eclipse\plugins\org.eclipse.swt\ws\win32
 <li>Motif - &lt;install-dir&gt;/eclipse/plugins/org.eclipse.swt/ws/motif
 </ul>
+Click OK to save the Java Resource properties.<br>
 </p>
 
 </ul>
