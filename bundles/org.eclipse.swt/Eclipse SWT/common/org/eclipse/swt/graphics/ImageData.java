@@ -1612,6 +1612,34 @@ static int closestMatch(int depth, byte red, byte green, byte blue, int redMask,
 	return nearestPixel;
 }
 
+static final ImageData convertMask(ImageData mask) {
+	if (mask.depth == 1) return mask;
+	PaletteData palette = new PaletteData(new RGB[] {new RGB(0, 0, 0), new RGB(255,255,255)});
+	ImageData tempMask = new ImageData(mask.width, mask.height, 1, palette);
+	/* Find index of black in mask palette */
+	int blackIndex = 0;
+	RGB[] rgbs = mask.getRGBs();
+	if (rgbs != null) {
+		while (blackIndex < rgbs.length) {
+			if (rgbs[blackIndex].equals(palette.colors[0])) break;
+			blackIndex++;
+		}
+	}
+	int[] pixels = new int[mask.width];
+	for (int y = 0; y < mask.height; y++) {
+		mask.getPixels(0, y, mask.width, pixels, 0);
+		for (int i = 0; i < pixels.length; i++) {
+			if (pixels[i] == blackIndex) {
+				pixels[i] = 0;
+			} else {
+				pixels[i] = 1;
+			}
+		}
+		tempMask.setPixels(0, y, mask.width, pixels, 0);
+	}
+	return tempMask;
+}
+
 static final byte[] convertPad(byte[] data, int width, int height, int depth, int pad, int newPad) {
 	if (pad == newPad) return data;
 	int stride = (width * depth + 7) / 8;
