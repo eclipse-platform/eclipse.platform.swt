@@ -246,9 +246,6 @@ void columnMouseDoubleClick(Event event) {
 				notifyListeners(SWT.DefaultSelection, columnDblClickEvent);
 			}
 		}
-		else {
-			deselectAll();
-		}
 	}
 }
 /**
@@ -281,9 +278,6 @@ void columnMouseDown(Event event) {
 			if (hitItem.isCheckHit(new Point(event.x, event.y)) == true) {
 				doCheckItem(hitItem);
 			}
-		}
-		else {
-			deselectAll();
 		}
 	}
 }
