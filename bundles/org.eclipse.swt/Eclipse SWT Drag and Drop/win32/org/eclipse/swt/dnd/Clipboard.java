@@ -124,6 +124,7 @@ protected void checkSubclass () {
  * </ul>
  */
 protected void checkWidget () {
+	Display display = this.display;
 	if (display == null) DND.error (SWT.ERROR_WIDGET_DISPOSED);
 	if (display.getThread() != Thread.currentThread ()) DND.error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (display.isDisposed()) DND.error(SWT.ERROR_WIDGET_DISPOSED);
