@@ -443,4 +443,13 @@ class DialogTab extends Tab {
 	String getTabText () {
 		return "Dialog";
 	}
+	
+	/**
+	 * Recreates the "Example" widgets.
+	 */
+	void recreateExampleWidgets () {
+		if (textWidget == null) {
+			super.recreateExampleWidgets ();
+		} 
+	}
 }
