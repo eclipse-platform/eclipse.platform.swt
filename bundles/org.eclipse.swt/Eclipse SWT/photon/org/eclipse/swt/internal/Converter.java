@@ -1,4 +1,7 @@
 package org.eclipse.swt.internal;
+
+import java.io.UnsupportedEncodingException;
+
 /*
  * Copyright (c) 2000, 2002 IBM Corp.  All rights reserved.
  * This file is made available under the terms of the Common Public License v1.0
@@ -17,7 +20,6 @@ package org.eclipse.swt.internal;
  
 public final class Converter {
 	public static final byte [] NullByteArray = new byte [1];
-	public static final char [] NullCharArray = new char [1];
 	public static final byte [] EmptyByteArray = new byte [0];
 	public static final char [] EmptyCharArray = new char [0];
 /**
@@ -27,26 +29,35 @@ public final class Converter {
  * @return the default code page
  */
 public static String defaultCodePage () {
-	return null;
+	return "UTF8";
 }
 public static char [] mbcsToWcs (String codePage, byte [] buffer) {
-	//SLOW AND BOGUS
-	return new String (buffer).toCharArray ();
+	try {
+		return new String (buffer, defaultCodePage ()).toCharArray ();
+	} catch (UnsupportedEncodingException e) {
+		return EmptyCharArray;
+	}
 }
 public static byte [] wcsToMbcs (String codePage, String string, boolean terminate) {
-	//SLOW AND BOGUS
-	if (!terminate) return string.getBytes ();
-	byte [] buffer1 = string.getBytes ();
-	byte [] buffer2 = new byte [buffer1.length + 1];
-	System.arraycopy (buffer1, 0, buffer2, 0, buffer1.length);
-	return buffer2;
+	try {
+		if (!terminate) return string.getBytes (defaultCodePage ());
+		byte [] buffer1 = string.getBytes (defaultCodePage ());
+		byte [] buffer2 = new byte [buffer1.length + 1];
+		System.arraycopy (buffer1, 0, buffer2, 0, buffer1.length);
+		return buffer2;
+	} catch (UnsupportedEncodingException e) {
+		return terminate ? NullByteArray : EmptyByteArray;
+	}
 }
 public static byte [] wcsToMbcs (String codePage, char [] buffer, boolean terminate) {
-	//SLOW AND BOGUS
-	if (!terminate) return new String (buffer).getBytes ();
-	byte [] buffer1 = new String (buffer).getBytes ();
-	byte [] buffer2 = new byte [buffer1.length + 1];
-	System.arraycopy (buffer1, 0, buffer2, 0, buffer1.length);
-	return buffer2;
+	try {
+		if (!terminate) return new String (buffer).getBytes (defaultCodePage ());
+		byte [] buffer1 = new String (buffer).getBytes (defaultCodePage ());
+		byte [] buffer2 = new byte [buffer1.length + 1];
+		System.arraycopy (buffer1, 0, buffer2, 0, buffer1.length);
+		return buffer2;
+	} catch (UnsupportedEncodingException e) {
+		return terminate ? NullByteArray : EmptyByteArray;
+	}
 }
 }
