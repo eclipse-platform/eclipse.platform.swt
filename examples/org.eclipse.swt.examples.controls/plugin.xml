@@ -9,7 +9,9 @@
 <!-- Runtime -->
 <!-- Runtime -->
    <runtime>
-      <library name="controls.jar"/>
+      <library name="controls.jar">
+            <packages prefixes="org.eclipse.swt.examples.controls"/>
+      </library>
    </runtime>
 <!-- Required plugins -->
    <requires>

@@ -17,7 +17,9 @@
 <!-- Runtime -->
 <!-- Runtime -->
 <runtime>
-   <library name="olewin32.jar"/>
+   <library name="olewin32.jar">
+      <packages prefixes="org.eclipse.swt.examples.ole"/>
+   </library>
 </runtime>
 
 <!-- Extensions -->

@@ -9,7 +9,9 @@
 <!-- Runtime -->
 <!-- Runtime -->
    <runtime>
-      <library name="layouts.jar"/>
+      <library name="layouts.jar">
+            <packages prefixes="org.eclipse.swt.examples.layouts"/>
+      </library>
    </runtime>
 <!-- Required plugins -->
    <requires>
