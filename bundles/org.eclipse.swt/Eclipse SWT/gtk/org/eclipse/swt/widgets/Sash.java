@@ -131,11 +131,8 @@ void createHandle (int index) {
 	OS.gtk_widget_show (handle);
 	int type = (style & SWT.VERTICAL) != 0 ? OS.GDK_SB_H_DOUBLE_ARROW : OS.GDK_SB_V_DOUBLE_ARROW;
 	cursor = OS.gdk_cursor_new (type);
-	int flags = OS.GTK_WIDGET_FLAGS (handle);
-	if ((flags & OS.GTK_REALIZED) != 0) { 
-		int window = OS.GTK_WIDGET_WINDOW (handle);
-		OS.gdk_window_set_cursor (window, cursor);
-	}
+	int window = OS.GTK_WIDGET_WINDOW (handle);
+	if (window != 0) OS.gdk_window_set_cursor (window, cursor);
 }
 
 void drawBand (int x, int y, int width, int height) {
