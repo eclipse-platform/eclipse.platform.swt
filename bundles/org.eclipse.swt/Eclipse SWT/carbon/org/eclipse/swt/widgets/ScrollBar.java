@@ -175,7 +175,8 @@ int actionProc (int theControl, int partCode) {
 	return 0;
 }
 
-void destroyWidget (Display display) {
+void destroyWidget () {
+	Display display = this.display;
 	int theControl = handle;
 	releaseHandle ();
 	if (theControl != 0) {

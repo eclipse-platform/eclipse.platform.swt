@@ -270,7 +270,8 @@ void deregister () {
 	if (arrowHandle != 0) WidgetTable.remove (arrowHandle);
 }
 
-void destroyWidget (Display display) {
+void destroyWidget () {
+	Display display = this.display;
 	int theControl = handle;
 	releaseHandle ();
 	if (theControl != 0) {

@@ -469,7 +469,8 @@ void deregister () {
 	WidgetTable.remove (theRoot [0]);
 }
 
-void destroyWidget (Display display) {
+void destroyWidget () {
+	Display display = this.display;
 	int theWindow = shellHandle;
 //	OS.HideWindow (shellHandle);
 	releaseHandle ();

@@ -498,7 +498,8 @@ void deregister () {
 	WidgetTable.remove (handle);
 }
 
-void destroyWidget (Display display) {
+void destroyWidget () {
+	Display display = this.display;
 	int theControl = topHandle ();
 	releaseHandle ();
 	if (theControl != 0) {

@@ -413,7 +413,7 @@ void releaseChild () {
 void releaseWidget () {
 	if (menu != null) {
 		menu.releaseWidget ();
-		menu.destroyWidget (display);
+		menu.destroyWidget ();
 	} else {
 		if ((parent.style & SWT.BAR) != 0) {
 //			short [] outIndex = new short [1];

@@ -384,7 +384,7 @@ int commandProc (int nextHandler, int theEvent, int userData) {
 void deregister () {
 }
 
-void destroyWidget (Display display) {
+void destroyWidget () {
 	releaseHandle ();
 }
 
@@ -445,7 +445,7 @@ public void dispose () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	releaseChild ();
 	releaseWidget ();
-	destroyWidget (display);
+	destroyWidget ();
 }
 
 void drawBackground (int control) {
