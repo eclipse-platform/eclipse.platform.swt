@@ -543,7 +543,7 @@ boolean mnemonicMatch (char ch) {
 	*/
 	int index = OS.SendMessage (handle, OS.TB_COMMANDTOINDEX, id [0], 0);
 	if (index == -1) return false;
-	return items [id [0]].text.indexOf ('&') != -1;
+	return findMnemonic (items [id [0]].text) != '\0';
 }
 
 void releaseWidget () {
