@@ -1000,7 +1000,7 @@ public boolean getVisible () {
 boolean hasCursor () {
 	RECT rect = new RECT ();
 	if (!OS.GetClientRect (handle, rect)) return false;
-	if (OS.MapWindowPoints (handle, 0, rect, 2) == 0) return false;
+	OS.MapWindowPoints (handle, 0, rect, 2);
 	POINT pt = new POINT ();
 	return OS.GetCursorPos (pt) && OS.PtInRect (rect, pt);
 }
