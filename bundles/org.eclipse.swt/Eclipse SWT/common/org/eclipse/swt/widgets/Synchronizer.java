@@ -93,7 +93,9 @@ RunnableLock removeFirst () {
 		RunnableLock lock = messages [0];
 		System.arraycopy (messages, 1, messages, 0, --messageCount);
 		messages [messageCount] = null;
-		if (messageCount == 0) messages = null;
+		if (messageCount == 0) {
+			if (messages.length > 64) messages = null;
+		}
 		return lock;
 	}
 }
