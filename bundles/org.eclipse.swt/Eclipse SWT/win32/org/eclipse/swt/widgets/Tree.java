@@ -964,7 +964,7 @@ public void setSelection (TreeItem [] items) {
 			tvItem.hItem = hNewItem;
 			OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
 		}
-		if ((style & SWT.SINGLE) != 0) showSelection ();
+		showItem (hNewItem);
 	}
 	if ((style & SWT.SINGLE) != 0) return;
 
@@ -997,7 +997,6 @@ public void setSelection (TreeItem [] items) {
 			}
 		}
 	}
-	if (items.length > 0) showSelection ();
 	OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldProc);
 }
 
@@ -1060,7 +1059,35 @@ public void showItem (TreeItem item) {
  */
 public void showSelection () {
 	checkWidget ();
-	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+	int hItem = 0;
+	if ((style & SWT.SINGLE) != 0) {	
+		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+		if (hItem == 0) return;
+		TVITEM tvItem = new TVITEM ();
+		tvItem.mask = OS.TVIF_STATE;
+		tvItem.hItem = hItem;
+		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+		if ((tvItem.state & OS.TVIS_SELECTED) == 0) return;
+	} else {
+		TVITEM tvItem = new TVITEM ();
+		tvItem.mask = OS.TVIF_STATE;
+		int oldProc = OS.GetWindowLong (handle, OS.GWL_WNDPROC);
+		OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);
+		int index = 0;
+		while (index <items.length) {
+			TreeItem item = items [index];
+			if (item != null) {
+				tvItem.hItem = item.handle;
+				OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+				if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
+					hItem = tvItem.hItem;
+					break;
+				}
+			}
+			index++;
+		}
+		OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldProc);
+	}
 	if (hItem != 0) showItem (hItem);
 }
 
