@@ -184,8 +184,8 @@ public Rectangle getBounds (int index) {
 		OS.SendMessage (hwnd, OS.LVM_GETSUBITEMRECT, itemIndex, iconRect);	
 		rect.left = iconRect.left - gridWidth;
 	}
-	int width = rect.right - rect.left - gridWidth;
-	int height = rect.bottom - rect.top - gridWidth;
+	int width = rect.right - rect.left - gridWidth * 2;
+	int height = rect.bottom - rect.top - gridWidth * 2;
 	/*
 	* Bug in Windows.  In version 5.80 of COMCTL32.DLL, the top
 	* of the rectangle returned by LVM_GETSUBITEMRECT is off by
@@ -350,13 +350,19 @@ public Rectangle getImageBounds (int index) {
 	rect.left = OS.LVIR_ICON;
 	OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, itemIndex, rect);
 	if (index == 0) {
-		RECT iconRect = new RECT ();
-		iconRect.left = OS.LVIR_ICON;
-		OS.SendMessage (hwnd, OS.LVM_GETSUBITEMRECT, itemIndex, iconRect);	
-		rect.left = iconRect.left - gridWidth;
+		rect.left -= gridWidth;
 	}
-	int width = rect.right - rect.left - gridWidth;
-	int height = rect.bottom - rect.top - gridWidth;
+	int width = rect.right - rect.left - gridWidth * 2;
+	int height = rect.bottom - rect.top - gridWidth * 2;
+	if (index != 0) {
+		LVITEM lvItem = new LVITEM ();
+		lvItem.mask = OS.LVIF_IMAGE;
+		lvItem.iItem = itemIndex;
+		lvItem.iSubItem = index;
+		if (OS.SendMessage (hwnd, OS.LVM_GETITEM, 0, lvItem) == 0 || lvItem.iImage < 0) {
+			width = 0;
+		}
+	}
 	/*
 	* Bug in Windows.  In version 5.80 of COMCTL32.DLL, the top
 	* of the rectangle returned by LVM_GETSUBITEMRECT is off by
