@@ -42,7 +42,6 @@ public class SashForm extends Composite {
 	Control maxControl = null;
 	Listener sashListener;
 	static final int DRAG_MINIMUM = 20;
-	static final String LAYOUT_RATIO = "layout ratio"; //$NON-NLS-1$
 
 /**
  * Constructs a new instance of this class given its parent
@@ -133,9 +132,9 @@ public int[] getWeights() {
 	Control[] cArray = getControls(false);
 	int[] ratios = new int[cArray.length];
 	for (int i = 0; i < cArray.length; i++) {
-		Long ratio = (Long)cArray[i].getData(LAYOUT_RATIO);
-		if (ratio != null) {
-			ratios[i] = (int)(ratio.longValue() * 1000 >> 16);
+		Object data = cArray[i].getLayoutData();
+		if (data != null && data instanceof SashFormData) {
+			ratios[i] = (int)(((SashFormData)data).weight * 1000 >> 16);
 		} else {
 			ratios[i] = 200;
 		}
@@ -184,8 +183,18 @@ void onDragSash(Event event) {
 			event.doit = false;
 			return;
 		}
-		c1.setData(LAYOUT_RATIO, new Long((((long)b1.width << 16) + area.width - 1) / area.width));
-		c2.setData(LAYOUT_RATIO, new Long((((long)b2.width << 16) + area.width - 1) / area.width));		
+		Object data1 = c1.getLayoutData();
+		if (data1 == null || !(data1 instanceof SashFormData)) {
+			data1 = new SashFormData();
+			c1.setLayoutData(data1);
+		}
+		Object data2 = c2.getLayoutData();
+		if (data2 == null || !(data2 instanceof SashFormData)) {
+			data2 = new SashFormData();
+			c2.setLayoutData(data2);
+		}
+		((SashFormData)data1).weight = (((long)b1.width << 16) + area.width - 1) / area.width;
+		((SashFormData)data2).weight = (((long)b2.width << 16) + area.width - 1) / area.width;
 	} else {
 		int shift = event.y - sashBounds.y;
 		b1.height += shift;
@@ -196,8 +205,18 @@ void onDragSash(Event event) {
 			event.doit = false;
 			return;
 		}
-		c1.setData(LAYOUT_RATIO, new Long((((long)b1.height << 16) + area.height - 1) / area.height));
-		c2.setData(LAYOUT_RATIO, new Long((((long)b2.height << 16) + area.height - 1) / area.height));
+		Object data1 = c1.getLayoutData();
+		if (data1 == null || !(data1 instanceof SashFormData)) {
+			data1 = new SashFormData();
+			c1.setLayoutData(data1);
+		}
+		Object data2 = c2.getLayoutData();
+		if (data2 == null || !(data2 instanceof SashFormData)) {
+			data2 = new SashFormData();
+			c2.setLayoutData(data2);
+		}
+		((SashFormData)data1).weight = (((long)b1.height << 16) + area.height - 1) / area.height;
+		((SashFormData)data2).weight = (((long)b2.height << 16) + area.height - 1) / area.height;
 	}
 	if (event.detail != SWT.DRAG) {
 		c1.setBounds(b1);
@@ -335,7 +354,12 @@ public void setWeights(int[] weights) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	for (int i = 0; i < cArray.length; i++) {
-		cArray[i].setData(LAYOUT_RATIO, new Long((((long)weights[i] << 16) + total - 1) / total));
+		Object data = cArray[i].getLayoutData();
+		if (data == null || !(data instanceof SashFormData)) {
+			data = new SashFormData();
+			cArray[i].setLayoutData(data);
+		}
+		((SashFormData)data).weight = (((long)weights[i] << 16) + total - 1) / total;
 	}
 
 	layout(false);

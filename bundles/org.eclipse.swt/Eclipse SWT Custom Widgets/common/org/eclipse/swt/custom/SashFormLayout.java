@@ -55,11 +55,14 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 	long[] ratios = new long[cArray.length];
 	long total = 0;
 	for (int i = 0; i < cArray.length; i++) {
-		Long ratio = (Long)cArray[i].getData(SashForm.LAYOUT_RATIO);
-		if (ratio != null) {
-			ratios[i] = ratio.longValue();
+		Object data = cArray[i].getLayoutData();
+		if (data != null && data instanceof SashFormData) {
+			ratios[i] = ((SashFormData)data).weight;
 		} else {
-			ratios[i] = ((200 << 16) + 999) / 1000;
+			data = new SashFormData();
+			cArray[i].setLayoutData(data);
+			((SashFormData)data).weight = ratios[i] = ((200 << 16) + 999) / 1000;
+			
 		}
 		total += ratios[i];
 	}
@@ -135,11 +138,14 @@ protected void layout(Composite composite, boolean flushCache) {
 	long[] ratios = new long[controls.length];
 	long total = 0;
 	for (int i = 0; i < controls.length; i++) {
-		Long ratio = (Long)controls[i].getData(SashForm.LAYOUT_RATIO);
-		if (ratio != null) {
-			ratios[i] = ratio.longValue();
+		Object data = controls[i].getLayoutData();
+		if (data != null && data instanceof SashFormData) {
+			ratios[i] = ((SashFormData)data).weight;
 		} else {
-			ratios[i] = ((200 << 16) + 999) / 1000;
+			data = new SashFormData();
+			controls[i].setLayoutData(data);
+			((SashFormData)data).weight = ratios[i] = ((200 << 16) + 999) / 1000;
+			
 		}
 		total += ratios[i];
 	}
