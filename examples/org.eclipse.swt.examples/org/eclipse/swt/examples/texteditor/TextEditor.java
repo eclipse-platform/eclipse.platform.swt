@@ -16,7 +16,7 @@ import java.io.*;
 
 /**
 */
-public class ColorTextEditor {  
+public class TextEditor {  
 	Shell shell;
 	ToolBar toolBar;
 	StyledText text;	
@@ -294,7 +294,7 @@ void handleVerifyKey(VerifyEvent event) {
 }
 
 public static void main (String [] args) {
-	ColorTextEditor example = new ColorTextEditor ();
+	TextEditor example = new TextEditor ();
 	example.open ();
 	example.run ();
 	example.close ();

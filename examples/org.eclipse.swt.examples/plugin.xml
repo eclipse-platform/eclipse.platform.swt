@@ -117,7 +117,7 @@
    </programItem>
    <programItem
          pluginId="org.eclipse.swt.examples"
-         mainClass="org.eclipse.swt.examples.texteditor.ColorTextEditor"
+         mainClass="org.eclipse.swt.examples.texteditor.TextEditor"
          name="%launchitem.TextEditor.name"
          description="%launchitem.TextEditor.description"
          category="org.eclipse.swt.examples.launchStandaloneCategory"
