@@ -135,9 +135,9 @@ public FontData open () {
 		OS.g_free (fontName);
 		OS.gtk_font_selection_dialog_set_font_name (handle, buffer);
 	}
-	fontData = null;
 	int response = OS.gtk_dialog_run(handle);
-	if (response == OS.GTK_RESPONSE_OK) {
+	boolean success = response == OS.GTK_RESPONSE_OK; 
+	if (success) {
 		int fontName = OS.gtk_font_selection_dialog_get_font_name (handle);
 		int length = OS.strlen (fontName);
 		byte [] buffer = new byte [length + 1];
@@ -149,6 +149,7 @@ public FontData open () {
 		OS.pango_font_description_free (fontDesc);		
 	}
 	OS.gtk_widget_destroy(handle);
+	if (!success) return null;
 	return fontData;
 }
 /**
