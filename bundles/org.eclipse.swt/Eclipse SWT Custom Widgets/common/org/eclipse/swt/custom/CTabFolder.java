@@ -2640,7 +2640,8 @@ boolean setItemLocation() {
 		for (int i = firstIndex; i < items.length; i++) {
 			// continue laying out remaining, visible items left to right 
 			CTabItem item = items[i];
- 			item.x = x;
+			if (i > 0 && !simple && i-1 == selectedIndex) x -= curveIndent;
+			item.x = x;
 			item.y = y;
 			if (i == selectedIndex) {
 				int deadSpace = simple ? 0 : curveWidth - curveIndent;
