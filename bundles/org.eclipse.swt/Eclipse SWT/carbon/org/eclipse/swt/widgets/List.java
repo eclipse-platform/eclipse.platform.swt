@@ -99,7 +99,7 @@ public void add (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int [] id = new int [] {itemCount + 1};
-	if (OS.AddDataBrowserItems (handle, OS.kDataBrowserNoItem, 1, id, 0) != OS.noErr) {
+	if (OS.AddDataBrowserItems (handle, OS.kDataBrowserNoItem, 1, id, OS.kDataBrowserItemNoProperty) != OS.noErr) {
 		error (SWT.ERROR_ITEM_NOT_ADDED);
 	}
 	if (itemCount == items.length) {
@@ -141,7 +141,7 @@ public void add (String string, int index) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_INVALID_RANGE);
 	int [] id = new int [] {itemCount + 1};
-	if (OS.AddDataBrowserItems (handle, OS.kDataBrowserNoItem, 1, id, 0) != OS.noErr) {
+	if (OS.AddDataBrowserItems (handle, OS.kDataBrowserNoItem, 1, id, OS.kDataBrowserItemNoProperty) != OS.noErr) {
 		error (SWT.ERROR_ITEM_NOT_ADDED);
 	}
 	if (itemCount == items.length) {
@@ -1238,7 +1238,7 @@ public void setItems (String [] items) {
 	checkWidget();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
 	OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, 0, null, 0);
-	if (OS.AddDataBrowserItems(handle, OS.kDataBrowserNoItem, items.length, null, 0) != OS.noErr) {
+	if (OS.AddDataBrowserItems(handle, OS.kDataBrowserNoItem, items.length, null, OS.kDataBrowserItemNoProperty) != OS.noErr) {
 		error (SWT.ERROR_ITEM_NOT_ADDED);
 	}
 	this.items = new String [items.length];

@@ -185,7 +185,7 @@ void checkItems (boolean setScrollWidth) {
 			for (int i=0; i<ids.length; i++) {
 				ids [i] = count [0] + i + 1;
 			}
-			if (OS.AddDataBrowserItems (handle, OS.kDataBrowserNoItem, ids.length, ids, 0) != OS.noErr) {
+			if (OS.AddDataBrowserItems (handle, OS.kDataBrowserNoItem, ids.length, ids, OS.kDataBrowserItemNoProperty) != OS.noErr) {
 				error (SWT.ERROR_ITEM_NOT_ADDED);
 			}
 			OS.UpdateDataBrowserItems (handle, 0, 0, null, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
@@ -454,7 +454,7 @@ void createItem (TableItem item, int index) {
 	boolean add = drawCount == 0 || index != itemCount;
 	if (add) {
 		int [] id = new int [] {itemCount + 1};
-		if (OS.AddDataBrowserItems (handle, OS.kDataBrowserNoItem, 1, id, 0) != OS.noErr) {
+		if (OS.AddDataBrowserItems (handle, OS.kDataBrowserNoItem, 1, id, OS.kDataBrowserItemNoProperty) != OS.noErr) {
 			error (SWT.ERROR_ITEM_NOT_ADDED);
 		}
 	}

@@ -333,7 +333,7 @@ void createItem (TreeItem item, TreeItem parentItem, int index) {
 		expanded = parentItem.getExpanded ();
 	}
 	if (expanded) {
-		if (OS.AddDataBrowserItems (handle, parentID, 1, new int[] {item.id}, 0) != OS.noErr) {
+		if (OS.AddDataBrowserItems (handle, parentID, 1, new int[] {item.id}, OS.kDataBrowserItemNoProperty) != OS.noErr) {
 			items [id] = null;
 			error (SWT.ERROR_ITEM_NOT_ADDED);
 		}
@@ -873,7 +873,7 @@ int itemNotificationProc (int browser, int id, int message) {
 					newItems [items [i].index] = items [i];
 				}
 			}
-			OS.AddDataBrowserItems (handle, id, ids.length, ids, 0);
+			OS.AddDataBrowserItems (handle, id, ids.length, ids, OS.kDataBrowserItemNoProperty);
 			setScrollWidth (newItems, false);
 			break;
 		}
