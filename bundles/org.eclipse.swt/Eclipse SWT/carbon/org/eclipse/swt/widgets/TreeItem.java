@@ -196,9 +196,10 @@ static TreeItem checkNull (TreeItem item) {
 
 int calculateWidth (GC gc) {
 	if (width != -1) return width;
+	width = 0;
 	Image image = getImage ();
 	String text = getText ();
-	if (image != null) width = image.getBounds ().width + 2;
+	if (image != null) width += image.getBounds ().width + 2;
 	if (text != null && text.length () > 0) width += gc.stringExtent (text).x;
 	return width;
 }
