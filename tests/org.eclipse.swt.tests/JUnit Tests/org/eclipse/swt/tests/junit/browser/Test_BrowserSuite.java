@@ -37,27 +37,38 @@ protected void tearDown() {
 }
 
 public void Browser1() {
+	System.out.println("** Browser1 **");
 	boolean result = Browser1.test();
 	assertTrue(result);
 }
 
 public void Browser2() {
+	System.out.println("** Browser2 **");
 	boolean result = Browser2.test();
 	assertTrue(result);
 }
 
 public void Browser3() {
+	System.out.println("** Browser3 **");
 	boolean result = Browser3.test();
 	assertTrue(result);
 }
 
 public void Browser4() {
+	System.out.println("** Browser4 **");
 	boolean result = Browser4.test();
 	assertTrue(result);
 }
 
 public void Browser5() {
+	System.out.println("** Browser5 **");
 	boolean result = Browser5.test();
+	assertTrue(result);
+}
+
+public void Browser6() {
+	System.out.println("** Browser6 **");
+	boolean result = Browser6.test();
 	assertTrue(result);
 }
 
@@ -78,6 +89,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("Browser3");
 	methodNames.addElement("Browser4");
 	methodNames.addElement("Browser5");
+	methodNames.addElement("Browser6");
 	return methodNames;
 }
 

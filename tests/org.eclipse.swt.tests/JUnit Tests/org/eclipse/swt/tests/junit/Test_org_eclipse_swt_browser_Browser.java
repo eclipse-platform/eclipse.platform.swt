@@ -144,6 +144,23 @@ public void test_addStatusTextListenerLorg_eclipse_swt_browser_StatusTextListene
 	for (int i = 0; i < 100; i++) browser.removeStatusTextListener(listener);
 }
 
+public void test_addTitleListenerLorg_eclipse_swt_browser_TitleListener() {
+	shell.setText("test_addTitleLorg_eclipse_swt_browser_TitleListener");
+	try {
+		browser.addTitleListener(null);
+		fail("No exception thrown for listener == null");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	
+	TitleListener listener = new TitleListener() {
+		public void changed(TitleEvent event) {
+		}
+	};
+	for (int i = 0; i < 100; i++) browser.addTitleListener(listener);
+	for (int i = 0; i < 100; i++) browser.removeTitleListener(listener);
+}
+
 public void test_addVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityWindowListener() {
 	shell.setText("test_addVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityWindowListener");
 	try {
@@ -189,6 +206,36 @@ public void test_getUrl() {
 	shell.setText("test_getUrl");
 	String string = browser.getUrl();
 	assertTrue(string != null);
+}
+
+public void test_isBackEnabled() {
+	shell.setText("test_isBackEnabled");
+	
+	/* back should return the same value that isBackEnabled previously returned */
+	assertEquals(browser.isBackEnabled(), browser.back());
+	
+	for (int i = 0; i < 10; i++) {
+		browser.back();
+		runLoopTimer(1);
+	}
+	/* going back 10 times in history - expecting false is returned */
+	boolean result = browser.isBackEnabled();
+	assertFalse(result);
+}
+
+public void test_isForwardEnabled() {
+	shell.setText("test_isForwardEnabled");
+	
+	/* forward should return the same value that isForwardEnabled previously returned */
+	assertEquals(browser.isForwardEnabled(), browser.forward());
+	
+	for (int i = 0; i < 10; i++) {
+		browser.forward();
+		runLoopTimer(1);
+	}
+	/* going forward 10 times in history - expecting false is returned */
+	boolean result = browser.isForwardEnabled();
+	assertFalse(result);
 }
 
 public void test_refresh() {
@@ -247,6 +294,16 @@ public void test_removeStatusTextListenerLorg_eclipse_swt_browser_StatusTextList
 	catch (IllegalArgumentException e) {
 	}
 	// tested in addStatusTextListener
+}
+
+public void test_removeTitleListenerLorg_eclipse_swt_browser_TitleListener() {
+	try {
+		browser.removeTitleListener(null);
+		fail("No exception thrown for listener == null");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	// tested in addTitleListener
 }
 
 public void test_removeVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityWindowListener() {
@@ -322,16 +379,20 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_addOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListener");
 	methodNames.addElement("test_addProgressListenerLorg_eclipse_swt_browser_ProgressListener");
 	methodNames.addElement("test_addStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener");
+	methodNames.addElement("test_addTitleListenerLorg_eclipse_swt_browser_TitleListener");
 	methodNames.addElement("test_addVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityWindowListener");
 	methodNames.addElement("test_back");
 	methodNames.addElement("test_forward");
 	methodNames.addElement("test_getUrl");
+	methodNames.addElement("test_isBackEnabled");
+	methodNames.addElement("test_isForwardEnabled");
 	methodNames.addElement("test_refresh");
 	methodNames.addElement("test_removeCloseWindowListenerLorg_eclipse_swt_browser_CloseWindowListener");
 	methodNames.addElement("test_removeLocationListenerLorg_eclipse_swt_browser_LocationListener");
 	methodNames.addElement("test_removeOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListener");
 	methodNames.addElement("test_removeProgressListenerLorg_eclipse_swt_browser_ProgressListener");
 	methodNames.addElement("test_removeStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener");
+	methodNames.addElement("test_removeTitleListenerLorg_eclipse_swt_browser_TitleListener");
 	methodNames.addElement("test_removeVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityWindowListener");
 	methodNames.addElement("test_setTextLjava_lang_String");
 	methodNames.addElement("test_setUrlLjava_lang_String");
@@ -347,16 +408,20 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_addOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListener")) test_addOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListener();
 	else if (getName().equals("test_addProgressListenerLorg_eclipse_swt_browser_ProgressListener")) test_addProgressListenerLorg_eclipse_swt_browser_ProgressListener();
 	else if (getName().equals("test_addStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener")) test_addStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener();
+	else if (getName().equals("test_addTitleListenerLorg_eclipse_swt_browser_TitleListener")) test_addTitleListenerLorg_eclipse_swt_browser_TitleListener();
 	else if (getName().equals("test_addVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityWindowListener")) test_addVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityWindowListener();
 	else if (getName().equals("test_back")) test_back();
 	else if (getName().equals("test_forward")) test_forward();
 	else if (getName().equals("test_getUrl")) test_getUrl();
+	else if (getName().equals("test_isBackEnabled")) test_isBackEnabled();
+	else if (getName().equals("test_isForwardEnabled")) test_isForwardEnabled();
 	else if (getName().equals("test_refresh")) test_refresh();
 	else if (getName().equals("test_removeCloseWindowListenerLorg_eclipse_swt_browser_CloseWindowListener")) test_removeCloseWindowListenerLorg_eclipse_swt_browser_CloseWindowListener();
 	else if (getName().equals("test_removeLocationListenerLorg_eclipse_swt_browser_LocationListener")) test_removeLocationListenerLorg_eclipse_swt_browser_LocationListener();
 	else if (getName().equals("test_removeOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListener")) test_removeOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListener();
 	else if (getName().equals("test_removeProgressListenerLorg_eclipse_swt_browser_ProgressListener")) test_removeProgressListenerLorg_eclipse_swt_browser_ProgressListener();
 	else if (getName().equals("test_removeStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener")) test_removeStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener();
+	else if (getName().equals("test_removeTitleListenerLorg_eclipse_swt_browser_TitleListener")) test_removeTitleListenerLorg_eclipse_swt_browser_TitleListener();
 	else if (getName().equals("test_removeVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityWindowListener")) test_removeVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityWindowListener();
 	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
 	else if (getName().equals("test_setUrlLjava_lang_String")) test_setUrlLjava_lang_String();

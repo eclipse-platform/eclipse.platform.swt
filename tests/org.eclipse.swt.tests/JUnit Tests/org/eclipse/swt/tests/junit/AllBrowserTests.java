@@ -33,6 +33,7 @@ public static Test suite() {
 	suite.addTest(Test_org_eclipse_swt_browser_ProgressAdapter.suite());
 	suite.addTest(Test_org_eclipse_swt_browser_ProgressListener.suite());
 	suite.addTest(Test_org_eclipse_swt_browser_StatusTextListener.suite());
+	suite.addTest(Test_org_eclipse_swt_browser_TitleListener.suite());
 	suite.addTest(Test_org_eclipse_swt_browser_VisibilityWindowAdapter.suite());
 	suite.addTest(Test_org_eclipse_swt_browser_VisibilityWindowListener.suite());
 	suite.addTest(org.eclipse.swt.tests.junit.browser.Test_BrowserSuite.suite());
