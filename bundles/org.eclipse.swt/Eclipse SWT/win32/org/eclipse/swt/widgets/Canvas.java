@@ -109,7 +109,7 @@ public Caret getCaret () {
 }
 
 void releaseWidget () {
-	if (caret != null) caret.releaseWidget ();
+	if (caret != null) caret.releaseResources ();
 	caret = null;
 	super.releaseWidget ();
 }
