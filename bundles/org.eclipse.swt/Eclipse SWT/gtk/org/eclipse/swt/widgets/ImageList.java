@@ -17,6 +17,7 @@ import org.eclipse.swt.graphics.*;
 
 class ImageList {
 	int /*long*/ [] pixbufs;
+	int width = -1, height = -1;
 	Image [] images;
 	
 public ImageList() {
@@ -39,22 +40,21 @@ public int add (Image image) {
 	}
 	int [] w = new int [1], h = new int [1];
  	OS.gdk_drawable_get_size (image.pixmap, w, h);
-	int width = w [0], height = h [0]; 	
 	boolean hasMask = image.mask != 0;
-	int /*long*/ pixbuf = OS.gdk_pixbuf_new (OS.GDK_COLORSPACE_RGB, hasMask, 8, width, height);
+	int /*long*/ pixbuf = OS.gdk_pixbuf_new (OS.GDK_COLORSPACE_RGB, hasMask, 8, w [0], h [0]);
 	if (pixbuf == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	int /*long*/ colormap = OS.gdk_colormap_get_system ();
-	OS.gdk_pixbuf_get_from_drawable (pixbuf, image.pixmap, colormap, 0, 0, 0, 0, width, height);
+	OS.gdk_pixbuf_get_from_drawable (pixbuf, image.pixmap, colormap, 0, 0, 0, 0, w [0], h [0]);
 	if (hasMask) {
-		int /*long*/ gdkMaskImagePtr = OS.gdk_drawable_get_image (image.mask, 0, 0, width, height);
+		int /*long*/ gdkMaskImagePtr = OS.gdk_drawable_get_image (image.mask, 0, 0, w [0], h [0]);
 		if (gdkMaskImagePtr == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 		int stride = OS.gdk_pixbuf_get_rowstride (pixbuf);
 		int /*long*/ pixels = OS.gdk_pixbuf_get_pixels (pixbuf);
 		byte [] line = new byte [stride];
-		for (int y=0; y<height; y++) {
+		for (int y=0; y<h[0]; y++) {
 			int /*long*/ offset = pixels + (y * stride);
 			OS.memmove (line, offset, stride);
-			for (int x=0; x<width; x++) {
+			for (int x=0; x<w[0]; x++) {
 				if (OS.gdk_image_get_pixel (gdkMaskImagePtr, x, y) == 0) {
 					line[x*4+3] = 0;
 				}
@@ -62,6 +62,15 @@ public int add (Image image) {
 			OS.memmove (offset, line, stride);
 		}
 		OS.g_object_unref (gdkMaskImagePtr);
+	}
+	if (width == -1 || height == -1) {
+		width = w [0];
+		height = h [0];
+	}
+	if (w [0] != width || h [0] != height) {
+		int /*long*/ scaledPixbuf = OS.gdk_pixbuf_scale_simple(pixbuf, width, height, OS.GDK_INTERP_BILINEAR);
+		OS.g_object_unref (pixbuf);
+		pixbuf = scaledPixbuf;
 	}
 	if (index == images.length) {
 		Image [] newImages = new Image [images.length + 4];
