@@ -16,6 +16,19 @@ SWT</h1>
 <h2> SWT Build 3.0 019 - Wednesday August 20, 2003 </h2>
 
 <h3>
+<a NAME="Breaking Changes"></a>Breaking Changes</h3>
+
+<p>Keydown events now run before the work is done in the Operating System.  This means, for example, 
+that if you hook a key down event in a text widget and inside the key down event, get the content of 
+the text widget (Text.getText()), the content will not contain the key that was just typed.  
+To get the content with the latest character you can use Display.asyncExec - this will run after 
+the Operating System has processed the key down.  Note: in this case you probably should 
+have been using the SWT.Modify or SWT.Verify event.</p>
+
+<p>This change was made to support key bindings in Eclipse so that they could intercept
+key events before any widget had a chance to process the character.</p>
+
+<h3>
 <a NAME="New APIs"></a>New APIs</h3>
 <blockquote>
 Region(Device) added
