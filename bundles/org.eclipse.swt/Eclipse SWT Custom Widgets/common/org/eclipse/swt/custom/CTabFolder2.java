@@ -1824,8 +1824,12 @@ void onMouse(Event event) {
 				chevronImageState = HOT;
 				redraw(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, false);
 				Rectangle rect = new Rectangle(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height);
+				if (single && selectedIndex != -1){
+					rect = items[selectedIndex].getBounds();	
+				}
+				rect.y += onBottom ? -HIGHLIGHT_HEADER :HIGHLIGHT_HEADER;
 				if (listListeners.length == 0) {
-					showList(rect, SWT.RIGHT);
+					showList(rect, single ? SWT.LEFT : SWT.RIGHT);
 				} else {
 					CTabFolderEvent e = new CTabFolderEvent(this);
 					e.widget = this;
@@ -1862,6 +1866,7 @@ void onMouse(Event event) {
 					Rectangle bounds = items[i].getBounds();
 					if (bounds.contains(x, y)) {
 						Rectangle rect = new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height);
+						rect.y += onBottom ? -HIGHLIGHT_HEADER :HIGHLIGHT_HEADER;
 						if (listListeners.length == 0) {
 							showList(rect, SWT.LEFT);
 						} else {
@@ -2379,15 +2384,23 @@ boolean setButtonBounds() {
 	oldHeight = chevronRect.height;
 	chevronRect.x = chevronRect.y = chevronRect.height = chevronRect.width = 0;
 	if (items.length > 1) {
-		CTabItem2 item = items[items.length-1];
-		int rightEdge = getRightItemEdge();
-		if (single || topTabIndex > 0 || item.x + item.width >= rightEdge) {
-			chevronRect.x = size.x - borderRight - closeRect.width - expandRect.width - decoratorWidth;
+		if (single && selectedIndex != -1){
+			CTabItem2 item = items[selectedIndex];
+			chevronRect.x = Math.min(item.x +item.width + CURVE_WIDTH/2 - decoratorWidth, size.x - borderRight - closeRect.width - expandRect.width - decoratorWidth - 3);
 			if (borderRight > 0) chevronRect.x += 1;
-			if (single) chevronRect.x -= 3;
 			chevronRect.y = onBottom ? size.y - borderBottom - tabHeight: borderTop + 1;
 			chevronRect.width = decoratorWidth;
 			chevronRect.height = tabHeight;
+		} else {
+			int rightEdge = getRightItemEdge();
+			CTabItem2 item = items[items.length-1];
+			if (topTabIndex > 0 || item.x + item.width >= rightEdge) {
+				chevronRect.x = size.x - borderRight - closeRect.width - expandRect.width - decoratorWidth;
+				if (borderRight > 0) chevronRect.x += 1;
+				chevronRect.y = onBottom ? size.y - borderBottom - tabHeight: borderTop + 1;
+				chevronRect.width = decoratorWidth;
+				chevronRect.height = tabHeight;
+			}
 		}
 	}
 	if (oldX != chevronRect.x || oldWidth != chevronRect.width ||
@@ -2861,7 +2874,6 @@ public void setTabHeight(int height) {
  *    <li>ERROR_INVALID_ARGUMENT - if the control is not a child of this CTabFolder</li>
  * </ul>
  * 
- * @deprecated
  */
 public void setTopRight(Control control) {
 	checkWidget();
