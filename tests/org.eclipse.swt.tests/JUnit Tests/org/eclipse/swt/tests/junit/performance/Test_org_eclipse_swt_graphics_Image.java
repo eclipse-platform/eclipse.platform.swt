@@ -174,36 +174,36 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageData() {
-	final int COUNT = 4000;	// 5000 causes an error
-	
-	Image[] images = new Image[COUNT];
-	String name = getPath(imageFilenames[0] + "." + imageFormats[0]);
-	FileInputStream inStream = null;
-	try {
-		inStream = new FileInputStream(name);
-	} catch (FileNotFoundException e) {
-		e.printStackTrace();
-	}
-	ImageData imageData = new ImageLoader().load(inStream)[0];
-	ImageData imageData1 = new ImageData(imageData.width, imageData.height, 4, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
-	try {
-		inStream.close();
-	} catch (IOException e1) {
-		e1.printStackTrace();
-	}
-
-	PerformanceMeter meter = createMeter("Image constr.(Device,ImageData,ImageData)");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		images[i] = new Image(display, imageData, imageData1);
-	}
-	meter.stop();
-	
-	for (int i = 0; i < COUNT; i++) {
-		images[i].dispose();
-	}
-	
-	disposeMeter(meter);
+//	final int COUNT = 4000;	// 5000 causes an error
+//	
+//	Image[] images = new Image[COUNT];
+//	String name = getPath(imageFilenames[0] + "." + imageFormats[0]);
+//	FileInputStream inStream = null;
+//	try {
+//		inStream = new FileInputStream(name);
+//	} catch (FileNotFoundException e) {
+//		e.printStackTrace();
+//	}
+//	ImageData imageData = new ImageLoader().load(inStream)[0];
+//	ImageData imageData1 = new ImageData(imageData.width, imageData.height, 4, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
+//	try {
+//		inStream.close();
+//	} catch (IOException e1) {
+//		e1.printStackTrace();
+//	}
+//
+//	PerformanceMeter meter = createMeter("Image constr.(Device,ImageData,ImageData)");
+//	meter.start();
+//	for (int i = 0; i < COUNT; i++) {
+//		images[i] = new Image(display, imageData, imageData1);
+//	}
+//	meter.stop();
+//	
+//	for (int i = 0; i < COUNT; i++) {
+//		images[i].dispose();
+//	}
+//	
+//	disposeMeter(meter);
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream() {

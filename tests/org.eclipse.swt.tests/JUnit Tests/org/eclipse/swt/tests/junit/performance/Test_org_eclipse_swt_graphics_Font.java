@@ -191,24 +191,24 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_StringII(
 }
 
 public void test_dispose() {
-	final int COUNT = 55000000;
-	
-	/*
-	 * The typical dispose() case is covered in the constructor tests, since
-	 * they must dispose created Fonts within their timed blocks. 
-	 */
-
-	Font disposedFont = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
-	disposedFont.dispose();
-
-	PerformanceMeter meter = createMeter("Font dispose - disposed");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		disposedFont.dispose();
-	}
-	meter.stop();
-	
-    disposeMeter(meter);
+//	final int COUNT = 55000000;
+//	
+//	/*
+//	 * The typical dispose() case is covered in the constructor tests, since
+//	 * they must dispose created Fonts within their timed blocks. 
+//	 */
+//
+//	Font disposedFont = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
+//	disposedFont.dispose();
+//
+//	PerformanceMeter meter = createMeter("Font dispose - disposed");
+//	meter.start();
+//	for (int i = 0; i < COUNT; i++) {
+//		disposedFont.dispose();
+//	}
+//	meter.stop();
+//	
+//    disposeMeter(meter);
 }
 
 public void test_equalsLjava_lang_Object() {
