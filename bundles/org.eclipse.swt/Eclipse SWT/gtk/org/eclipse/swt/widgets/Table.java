@@ -593,30 +593,7 @@ void destroyItem (TableItem item) {
 	item.handle = 0;
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
-	
-	if (itemCount == 0) {
-		if (columnCount == 0) {
-			int column = OS.gtk_tree_view_get_column (handle, 0);
-			int list = OS.gtk_tree_view_column_get_cell_renderers (column);
-			int length = OS.g_list_length (list);
-			int renderer = OS.g_list_nth_data (list, length - 1);
-			OS.g_list_free (list);
-			OS.gtk_tree_view_column_set_cell_data_func (column, renderer, 0, 0, 0);
-			firstCustomDraw = false;
-		} else {
-			for (int i = 0; i < columnCount; i++) {
-				if (columns [i].customDraw) {
-					int column = OS.gtk_tree_view_get_column (handle, i);
-					int list = OS.gtk_tree_view_column_get_cell_renderers (column);
-					int length = OS.g_list_length (list);
-					int renderer = OS.g_list_nth_data (list, length - 1);
-					OS.g_list_free (list);
-					OS.gtk_tree_view_column_set_cell_data_func (column, renderer, 0, 0, 0);
-					columns [i].customDraw = false;
-				}
-			}
-		}
-	}
+	if (itemCount == 0) resetCustomDraw ();
 }
 
 void enableWidget (boolean enabled) {
@@ -1433,27 +1410,7 @@ public void removeAll () {
 	}
 	items = new TableItem [4];
 	itemCount = 0;
-	if (columnCount == 0) {
-		int column = OS.gtk_tree_view_get_column (handle, 0);
-		int list = OS.gtk_tree_view_column_get_cell_renderers (column);
-		int length = OS.g_list_length (list);
-		int renderer = OS.g_list_nth_data (list, length - 1);
-		OS.g_list_free (list);
-		OS.gtk_tree_view_column_set_cell_data_func (column, renderer, 0, 0, 0);
-		firstCustomDraw = false;
-	} else {
-		for (int i = 0; i < columnCount; i++) {
-			if (columns [i].customDraw) {
-				int column = OS.gtk_tree_view_get_column (handle, i);
-				int list = OS.gtk_tree_view_column_get_cell_renderers (column);
-				int length = OS.g_list_length (list);
-				int renderer = OS.g_list_nth_data (list, length - 1);
-				OS.g_list_free (list);
-				OS.gtk_tree_view_column_set_cell_data_func (column, renderer, 0, 0, 0);
-				columns [i].customDraw = false;
-			}
-		}
-	}
+	resetCustomDraw ();
 }
 
 /**
@@ -1479,6 +1436,32 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
 	eventTable.unhook (SWT.DefaultSelection,listener);	
+}
+
+void resetCustomDraw () {
+	if (columnCount == 0) {
+		if (firstCustomDraw) {
+			int column = OS.gtk_tree_view_get_column (handle, 0);
+			int list = OS.gtk_tree_view_column_get_cell_renderers (column);
+			int length = OS.g_list_length (list);
+			int renderer = OS.g_list_nth_data (list, length - 1);
+			OS.g_list_free (list);
+			OS.gtk_tree_view_column_set_cell_data_func (column, renderer, 0, 0, 0);
+			firstCustomDraw = false;
+		}
+	} else {
+		for (int i = 0; i < columnCount; i++) {
+			if (columns [i].customDraw) {
+				int column = OS.gtk_tree_view_get_column (handle, i);
+				int list = OS.gtk_tree_view_column_get_cell_renderers (column);
+				int length = OS.g_list_length (list);
+				int renderer = OS.g_list_nth_data (list, length - 1);
+				OS.g_list_free (list);
+				OS.gtk_tree_view_column_set_cell_data_func (column, renderer, 0, 0, 0);
+				columns [i].customDraw = false;
+			}
+		}
+	}
 }
 
 /**
