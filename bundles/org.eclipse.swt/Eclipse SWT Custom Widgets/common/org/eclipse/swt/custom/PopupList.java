@@ -133,7 +133,7 @@ public int getMinimumWidth () {
 */
 public String open (Rectangle rect) {
 
-	Point listSize = list.computeSize (rect.width, SWT.DEFAULT);
+	Point listSize = list.computeSize (rect.width, SWT.DEFAULT, false);
 	Rectangle screenSize = shell.getDisplay().getBounds();
 
 	// Position the dialog so that it does not run off the screen and the largest number of items are visible

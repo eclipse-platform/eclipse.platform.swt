@@ -96,24 +96,24 @@ public class ViewForm extends Composite {
 	public static RGB borderOutsideRGB = new RGB (171, 168, 165);
 	
 	// SWT widgets
-	private Control topLeft;
-	private Control topCenter;
-	private Control topRight;
-	private Control content;
+	Control topLeft;
+	Control topCenter;
+	Control topRight;
+	Control content;
 	
 	// Configuration and state info
-	private boolean separateTopCenter = false;
-	private boolean showBorder = false;
+	boolean separateTopCenter = false;
+	boolean showBorder = false;
 	
-	private int separator = -1;
-	private int borderTop = 0;
-	private int borderBottom = 0;
-	private int borderLeft = 0;
-	private int borderRight = 0;
-	private int highlight = 0;
-	private Rectangle oldArea;
+	int separator = -1;
+	int borderTop = 0;
+	int borderBottom = 0;
+	int borderLeft = 0;
+	int borderRight = 0;
+	int highlight = 0;
+	Point oldSize;
 	
-	private Color selectionBackground;
+	Color selectionBackground;
 	
 	static final int OFFSCREEN = -200;
 	static final int BORDER1_COLOR = SWT.COLOR_WIDGET_NORMAL_SHADOW;
@@ -147,6 +147,7 @@ public class ViewForm extends Composite {
  */		
 public ViewForm(Composite parent, int style) {
 	super(parent, checkStyle(style));
+	super.setLayout(new ViewFormLayout());
 	
 	setBorderVisible((style & SWT.BORDER) != 0);
 	
@@ -180,61 +181,6 @@ static int checkStyle (int style) {
 //	}
 //}
 
-public Point computeSize(int wHint, int hHint, boolean changed) {
-	checkWidget();
-	// size of title bar area
-	Point leftSize = new Point(0, 0);
-	if (topLeft != null) {
-		leftSize = topLeft.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-	}
-	Point centerSize = new Point(0, 0);
-	if (topCenter != null) {
-		 centerSize = topCenter.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-	}
-	Point rightSize = new Point(0, 0);
-	if (topRight != null) {
-		 rightSize = topRight.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-	}
-	Point size = new Point(0, 0);
-	// calculate width of title bar
-	if (separateTopCenter ||
-	    (wHint != SWT.DEFAULT &&  leftSize.x + centerSize.x + rightSize.x > wHint)) {
-		size.x = leftSize.x + rightSize.x;
-		if (leftSize.x > 0 && rightSize.x > 0) size.x += horizontalSpacing;
-		size.x = Math.max(centerSize.x, size.x);
-		size.y = Math.max(leftSize.y, rightSize.y);
-		if (topCenter != null){
-			size.y += centerSize.y;
-			if (topLeft != null ||topRight != null)size.y += verticalSpacing;
-		}	
-	} else {
-		size.x = leftSize.x + centerSize.x + rightSize.x;
-		int count = -1;
-		if (leftSize.x > 0) count++;
-		if (centerSize.x > 0) count++;
-		if (rightSize.x > 0) count++;
-		if (count > 0) size.x += count * horizontalSpacing;
-		size.y = Math.max(leftSize.y, Math.max(centerSize.y, rightSize.y));
-	}
-	
-	if (content != null) {
-		if (topLeft != null || topRight != null || topCenter != null) size.y += 1; // allow space for a vertical separator
-		Point contentSize = new Point(0, 0);
-		contentSize = content.computeSize(SWT.DEFAULT, SWT.DEFAULT); 
-		size.x = Math.max (size.x, contentSize.x);
-		size.y += contentSize.y;
-		if (size.y > contentSize.y) size.y += verticalSpacing;
-	}
-	
-	size.x += 2*marginWidth;
-	size.y += 2*marginHeight;
-	
-	if (wHint != SWT.DEFAULT) size.x  = wHint;
-	if (hHint != SWT.DEFAULT) size.y = hHint;
-	
-	Rectangle trim = computeTrim(0, 0, size.x, size.y);
-	return new Point (trim.width, trim.height);
-}
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
 	int trimX = x - borderLeft - highlight;
@@ -291,98 +237,12 @@ public Control getTopRight() {
 	//checkWidget();
 	return topRight;
 }
-public void layout (boolean changed) {
-	checkWidget();
-	Rectangle rect = getClientArea();
-	
-	Point leftSize = new Point(0, 0);
-	if (topLeft != null && !topLeft.isDisposed()) {
-		leftSize = topLeft.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-	}
-	Point centerSize = new Point(0, 0);
-	if (topCenter != null && !topCenter.isDisposed()) {
-		 centerSize = topCenter.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-	}
-	Point rightSize = new Point(0, 0);
-	if (topRight != null && !topRight.isDisposed()) {
-		 rightSize = topRight.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-	}
-	
-	int minTopWidth = leftSize.x + centerSize.x + rightSize.x + 2*marginWidth + 2*highlight;
-	int count = -1;
-	if (leftSize.x > 0) count++;
-	if (centerSize.x > 0) count++;
-	if (rightSize.x > 0) count++;
-	if (count > 0) minTopWidth += count * horizontalSpacing;
-		
-	int x = rect.x + rect.width - marginWidth - highlight;
-	int y = rect.y + marginHeight + highlight;
-	
-	boolean top = false;
-	if (separateTopCenter || minTopWidth > rect.width) {
-		int topHeight = Math.max(rightSize.y, leftSize.y);
-		if (topRight != null && !topRight.isDisposed()) {
-			top = true;
-			x -= rightSize.x;
-			topRight.setBounds(x, y, rightSize.x, topHeight);
-			x -= horizontalSpacing;
-		}
-		if (topLeft != null && !topLeft.isDisposed()) {
-			top = true;
-			leftSize = topLeft.computeSize(x - rect.x - marginWidth - highlight, SWT.DEFAULT);
-			topLeft.setBounds(rect.x + marginWidth + highlight, y, leftSize.x, topHeight);
-		}
-		if (top) y += topHeight + verticalSpacing;
-		if (topCenter != null && !topCenter.isDisposed()) {
-			top = true;
-			int w = rect.width - 2*marginWidth - 2*highlight;
-			int trim = topCenter.computeSize(w, SWT.DEFAULT).x - w;
-			centerSize = topCenter.computeSize(w - trim, SWT.DEFAULT);
-			topCenter.setBounds(rect.x + rect.width - marginWidth - highlight - centerSize.x, y, centerSize.x, centerSize.y);
-			y += centerSize.y + verticalSpacing;
-		}		
-	} else {
-		int topHeight = Math.max(rightSize.y, Math.max(centerSize.y, leftSize.y));
-		if (topRight != null && !topRight.isDisposed()) {
-			top = true;
-			x -= rightSize.x;
-			topRight.setBounds(x, y, rightSize.x, topHeight);
-			x -= horizontalSpacing;
-		}
-		if (topCenter != null && !topCenter.isDisposed()) {
-			top = true;
-			x -= centerSize.x;
-			topCenter.setBounds(x, y, centerSize.x, topHeight);
-			x -= horizontalSpacing;
-		}
-		if (topLeft != null && !topLeft.isDisposed()) {
-			top = true;
-			leftSize = topLeft.computeSize(x - rect.x - marginWidth - highlight, topHeight);
-			topLeft.setBounds(rect.x + marginWidth + highlight, y, leftSize.x, topHeight);
-		}
-		if (top)y += topHeight + verticalSpacing;
-	}
-	int oldSeperator = separator;
-	separator = -1;
-	if (content != null && !content.isDisposed()) {
-		if (topLeft != null || topRight!= null || topCenter != null){
-			separator = y;
-			y++;
-		}
-		 content.setBounds(rect.x + marginWidth + highlight, y, rect.width - 2 * marginWidth - 2*highlight, rect.y + rect.height - y - marginHeight - highlight);
-	}
-	if (oldSeperator != -1 && separator != -1) {
-		int t = Math.min(separator, oldSeperator);
-		int b = Math.max(separator, oldSeperator);
-		redraw(borderLeft, t, getSize().x - borderLeft - borderRight, b - t, false);
-	}
-}
 void onDispose() {
 	topLeft = null;
 	topCenter = null;
 	topRight = null;
 	content = null;
-	oldArea = null;
+	oldSize = null;
 	selectionBackground = null;
 }
 void onPaint(GC gc) {
@@ -412,30 +272,28 @@ void onPaint(GC gc) {
 	gc.setForeground(gcForeground);
 }
 void onResize() {
-	layout();
-	
-	Rectangle area = super.getClientArea();
-	if (oldArea == null || oldArea.width == 0 || oldArea.height == 0) {
+	Point size = getSize();
+	if (oldSize == null || oldSize.x == 0 || oldSize.y == 0) {
 		redraw();
 	} else {
 		int width = 0;
-		if (oldArea.width < area.width) {
-			width = area.width - oldArea.width + borderRight + highlight;
-		} else if (oldArea.width > area.width) {
+		if (oldSize.x < size.x) {
+			width = size.x - oldSize.x + borderRight + highlight;
+		} else if (oldSize.x > size.x) {
 			width = borderRight + highlight;			
 		}
-		redraw(area.x + area.width - width, area.y, width, area.height, false);
+		redraw(size.x - width, 0, width, size.y, false);
 		
 		int height = 0;
-		if (oldArea.height < area.height) {
-			height = area.height - oldArea.height + borderBottom + highlight;		
+		if (oldSize.y < size.y) {
+			height = size.y - oldSize.y + borderBottom + highlight;		
 		}
-		if (oldArea.height > area.height) {
+		if (oldSize.y > size.y) {
 			height = borderBottom + highlight;		
 		}
-		redraw(area.x, area.y + area.height - height, area.width, height, false);
+		redraw(0, size.y - height, size.x, height, false);
 	}
-	oldArea = area;
+	oldSize = size;
 }
 /**
 * Sets the content.
@@ -459,7 +317,7 @@ public void setContent(Control content) {
 		this.content.setBounds(OFFSCREEN, OFFSCREEN, 0, 0);
 	}
 	this.content = content;
-	layout();
+	layout(false);
 }
 
 public void setFont(Font f) {
@@ -467,13 +325,13 @@ public void setFont(Font f) {
 	if (topLeft != null && !topLeft.isDisposed()) topLeft.setFont(f);
 	if (topCenter != null && !topCenter.isDisposed()) topCenter.setFont(f);
 	if (topRight != null && !topRight.isDisposed()) topRight.setFont(f);
-	layout();
 }
 /**
  * Sets the layout which is associated with the receiver to be
  * the argument which may be null.
  * <p>
- * Note : ViewForm does not use a layout class to size and position its children.
+ * Note : No Layout can be set on this Control because it already
+ * manages the size and position its children
  * </p>
  *
  * @param layout the receiver's new layout or null
@@ -518,7 +376,7 @@ public void setTopCenter(Control topCenter) {
 		this.topCenter.setLocation(OFFSCREEN - size.x, OFFSCREEN - size.y);
 	}
 	this.topCenter = topCenter;
-	layout();
+	layout(false);
 }
 /**
 * Set the control that appears in the top left corner of the pane.
@@ -544,7 +402,7 @@ public void setTopLeft(Control c) {
 		this.topLeft.setLocation(OFFSCREEN - size.x, OFFSCREEN - size.y);
 	}
 	this.topLeft = c;
-	layout();
+	layout(false);
 }
 /**
 * Set the control that appears in the top right corner of the pane.
@@ -570,7 +428,7 @@ public void setTopRight(Control c) {
 		this.topRight.setLocation(OFFSCREEN - size.x, OFFSCREEN - size.y);
 	}
 	this.topRight = c;
-	layout();
+	layout(false);
 }
 /**
 * Specify whether the border should be displayed or not.
@@ -594,7 +452,7 @@ public void setBorderVisible(boolean show) {
 		borderBottom = borderTop = borderLeft = borderRight = 0;
 		highlight = 0;
 	}
-	layout();
+	layout(false);
 	redraw();
 }
 /**
@@ -612,7 +470,6 @@ public void setBorderVisible(boolean show) {
 public void setTopCenterSeparate(boolean show) {
 	checkWidget();
 	separateTopCenter = show;
-	layout();
+	layout(false);
 }
-
 }

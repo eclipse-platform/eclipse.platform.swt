@@ -253,6 +253,7 @@ public class CTabFolder extends Composite {
  */
 public CTabFolder(Composite parent, int style) {
 	super(parent, checkStyle (parent, style));
+	super.setLayout(new CTabFolderLayout());
 	int style2 = super.getStyle();
 	oldFont = getFont();
 	onBottom = (style2 & SWT.BOTTOM) != 0;
@@ -517,49 +518,6 @@ void antialias (int[] shape, RGB lineRGB, RGB innerRGB, RGB outerRGB, GC gc){
 		gc.drawPolyline(inner);
 		color.dispose();
 	}
-}
-public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget();	
-	// preferred width of tab area to show all tabs
-	int tabW = 0;
-	GC gc = new GC(this);
-	for (int i = 0; i < items.length; i++) {
-		if (single) {
-			tabW = Math.max(tabW, items[i].preferredWidth(gc, true, false));
-		} else {
-			tabW += items[i].preferredWidth(gc, i == selectedIndex, false);
-		}
-	}
-	gc.dispose();
-	tabW += 3;
-	if (showMax) tabW += BUTTON_SIZE;
-	if (showMin) tabW += BUTTON_SIZE;
-	if (single) tabW += 3*BUTTON_SIZE/2; //chevron
-	if (topRight != null) tabW += topRight.computeSize(SWT.DEFAULT, tabHeight).x;
-	if (!single && !simple) tabW += curveWidth - 2*curveIndent;
-	
-	int controlW = 0;
-	int controlH = 0;
-	// preferred size of controls in tab items
-	for (int i = 0; i < items.length; i++) {
-		Control control = items[i].getControl();
-		if (control != null && !control.isDisposed()){
-			Point size = control.computeSize (wHint, hHint);
-			controlW = Math.max (controlW, size.x);
-			controlH = Math.max (controlH, size.y);
-		}
-	}
-
-	int minWidth = Math.max(tabW, controlW);
-	int minHeight = (minimized) ? 0 : controlH;
-	if (minWidth == 0) minWidth = DEFAULT_WIDTH;
-	if (minHeight == 0) minHeight = DEFAULT_HEIGHT;
-	
-	if (wHint != SWT.DEFAULT) minWidth  = wHint;
-	if (hHint != SWT.DEFAULT) minHeight = hHint;
-
-	Rectangle trim = computeTrim(0, 0, minWidth, minHeight);
-	return new Point (trim.width, trim.height);
 }
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
@@ -2252,14 +2210,6 @@ void onResize() {
 		}
 	}
 	oldSize = size;
-	
-	// resize content
-	if (selectedIndex != -1) {
-		Control control = items[selectedIndex].getControl();
-		if (control != null && !control.isDisposed()) {
-			control.setBounds(getClientArea());
-		}
-	}
 }
 void onTraverse (Event event) {
 	switch (event.detail) {
@@ -2647,7 +2597,7 @@ void setButtonBounds() {
 				break;
 			}
 			case SWT.RIGHT: {
-				Point topRightSize = topRight.computeSize(SWT.DEFAULT, tabHeight);
+				Point topRightSize = topRight.computeSize(SWT.DEFAULT, tabHeight, false);
 				int rightEdge = size.x - borderRight - 3 - maxRect.width - minRect.width;
 				topRightRect.x = rightEdge - topRightSize.x;
 				topRightRect.width = topRightSize.x;
@@ -2873,7 +2823,10 @@ boolean setItemSize() {
 		int tabAreaWidth = size.x - borderLeft - borderRight - 3;
 		if (showMin) tabAreaWidth -= BUTTON_SIZE;
 		if (showMax) tabAreaWidth -= BUTTON_SIZE;
-		if (topRightAlignment == SWT.RIGHT && topRight != null) tabAreaWidth -= topRight.computeSize(SWT.DEFAULT, SWT.DEFAULT).x + 3;
+		if (topRightAlignment == SWT.RIGHT && topRight != null) {
+			Point rightSize = topRight.computeSize(SWT.DEFAULT, SWT.DEFAULT, false);
+			tabAreaWidth -= rightSize.x + 3;
+		}
 		if (!simple) tabAreaWidth -= curveWidth - 2*curveIndent;
 		tabAreaWidth = Math.max(0, tabAreaWidth);
 		int count = items.length;
@@ -2967,6 +2920,25 @@ public void setMaximizeVisible(boolean visible) {
 	showMax = visible;
 	updateItems();
 	redraw();
+}
+/**
+ * Sets the layout which is associated with the receiver to be
+ * the argument which may be null.
+ * <p>
+ * Note : No Layout can be set on this Control because it already
+ * manages the size and position its children
+ * </p>
+ *
+ * @param layout the receiver's new layout or null
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setLayout (Layout layout) {
+	checkWidget();
+	return;
 }
 /**
  * Sets the maximized state of the receiver.
@@ -3777,7 +3749,7 @@ boolean updateToolTip (int x, int y) {
 	if (tooltip.equals(toolTipLabel.getText())) return true;
 	
 	toolTipLabel.setText(tooltip);
-	Point labelSize = toolTipLabel.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+	Point labelSize = toolTipLabel.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
 	labelSize.x += 2; labelSize.y += 2;
 	toolTipLabel.setSize(labelSize);
 	toolTipShell.pack();

@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
@@ -100,15 +99,14 @@ import org.eclipse.swt.widgets.*;
  */
 public class ScrolledComposite extends Composite {
 
-	private Control content;
-	private Listener contentListener;
+	Control content;
+	Listener contentListener;
 	
-	private int minHeight = 0;
-	private int minWidth = 0;
-	private boolean expandHorizontal = false;
-	private boolean expandVertical = false;
-	private boolean alwaysShowScroll = false;
-	private boolean inResize = false;
+	int minHeight = 0;
+	int minWidth = 0;
+	boolean expandHorizontal = false;
+	boolean expandVertical = false;
+	boolean alwaysShowScroll = false;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -139,7 +137,7 @@ public class ScrolledComposite extends Composite {
  */	
 public ScrolledComposite(Composite parent, int style) {
 	super(parent, checkStyle(style));
-	
+	super.setLayout(new ScrolledCompositeLayout());
 	ScrollBar hBar = getHorizontalBar ();
 	if (hBar != null) {
 		hBar.addListener (SWT.Selection, new Listener () {
@@ -158,44 +156,17 @@ public ScrolledComposite(Composite parent, int style) {
 		});
 	}
 	
-	addListener (SWT.Resize,  new Listener () {
-		public void handleEvent (Event e) {
-			resize();
-		}
-	});
-	
 	contentListener = new Listener() {
 		public void handleEvent(Event e) {
 			if (e.type != SWT.Resize) return;
-			resize();
+			layout(false);
 		}
 	};
 }
 
-private static int checkStyle (int style) {
+static int checkStyle (int style) {
 	int mask = SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 	return style & mask;
-}
-
-public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget ();
-	/*
-	* When a composite does layout without using a layout
-	* manager, it must take into account the preferred size
-	* of it's children when computing it's preferred size in
-	* the same way that a layout manager would.  In particular,
-	* when a scrolled composite hides the scroll bars and
-	* places a child to fill the client area, then repeated
-	* calls to compute the preferred size of the scrolled
-	* composite should not keep adding in the space used by
-	* the scroll bars.
-	*/
-	if (content == null) {
-		return super.computeSize (wHint, hHint, changed);
-	}
-	Point size = content.computeSize (wHint, hHint, changed);
-	Rectangle trim = computeTrim (0, 0, size.x, size.y);
-	return new Point (trim.width, trim.height);
 }
 
 /**
@@ -229,61 +200,7 @@ void hScroll() {
 	int hSelection = hBar.getSelection ();
 	content.setLocation (-hSelection, location.y);
 }
-
-public void layout(boolean changed) {
-	checkWidget();
-	if (content == null) return;
-	Rectangle contentRect = content.getBounds();
-	ScrollBar hBar = getHorizontalBar ();
-	ScrollBar vBar = getVerticalBar ();
-	if (!alwaysShowScroll) {
-		boolean hVisible = needHScroll(contentRect, false);
-		boolean vVisible = needVScroll(contentRect, hVisible);
-		if (!hVisible && vVisible) hVisible = needHScroll(contentRect, vVisible);
-		if (hBar != null) hBar.setVisible(hVisible);
-		if (vBar != null) vBar.setVisible(vVisible);
-	}
-
-	Rectangle hostRect = getClientArea();
-	if (expandHorizontal) {
-		contentRect.width = Math.max(minWidth, hostRect.width);	
-	}
-	if (expandVertical) {
-		contentRect.height = Math.max(minHeight, hostRect.height);
-	}
-
-	if (hBar != null) {
-		hBar.setMaximum (contentRect.width);
-		hBar.setThumb (Math.min (contentRect.width, hostRect.width));
-		int hPage = contentRect.width - hostRect.width;
-		int hSelection = hBar.getSelection ();
-		if (hSelection >= hPage) {
-			if (hPage <= 0) {
-				hSelection = 0;
-				hBar.setSelection(0);
-			}
-			contentRect.x = -hSelection;
-		}
-	}
-
-	if (vBar != null) {
-		vBar.setMaximum (contentRect.height);
-		vBar.setThumb (Math.min (contentRect.height, hostRect.height));
-		int vPage = contentRect.height - hostRect.height;
-		int vSelection = vBar.getSelection ();
-		if (vSelection >= vPage) {
-			if (vPage <= 0) {
-				vSelection = 0;
-				vBar.setSelection(0);
-			}
-			contentRect.y = -vSelection;
-		}
-	}
-	
-	content.setBounds (contentRect);
-}
-
-private boolean needHScroll(Rectangle contentRect, boolean vVisible) {
+boolean needHScroll(Rectangle contentRect, boolean vVisible) {
 	ScrollBar hBar = getHorizontalBar();
 	if (hBar == null) return false;
 	
@@ -298,7 +215,7 @@ private boolean needHScroll(Rectangle contentRect, boolean vVisible) {
 	return false;
 }
 
-private boolean needVScroll(Rectangle contentRect, boolean hVisible) {
+boolean needVScroll(Rectangle contentRect, boolean hVisible) {
 	ScrollBar vBar = getVerticalBar();
 	if (vBar == null) return false;
 	
@@ -313,12 +230,6 @@ private boolean needVScroll(Rectangle contentRect, boolean hVisible) {
 	return false;
 }
 
-void resize() {
-	if (inResize) return;
-	inResize = true;
-	layout();
-	inResize = false;
-}
 /**
  * Return the point in the content that currenly appears in the top left 
  * corner of the scrolled composite.
@@ -418,7 +329,7 @@ public void setAlwaysShowScrollBars(boolean show) {
 	if (hBar != null && alwaysShowScroll) hBar.setVisible(true);
 	ScrollBar vBar = getVerticalBar ();
 	if (vBar != null && alwaysShowScroll) vBar.setVisible(true);
-	layout();
+	layout(false);
 }
 
 /**
@@ -453,7 +364,7 @@ public void setContent(Control content) {
 			hBar.setSelection(0);
 		}
 		content.setLocation(0, 0);
-		layout();
+		layout(false);
 		this.content.addListener(SWT.Resize, contentListener);
 	} else {
 		if (hBar != null) hBar.setVisible(alwaysShowScroll);
@@ -479,7 +390,7 @@ public void setExpandHorizontal(boolean expand) {
 	checkWidget();
 	if (expand == expandHorizontal) return;
 	expandHorizontal = expand;
-	layout();
+	layout(false);
 }
 /**
  * Configure the ScrolledComposite to resize the content object to be as tall as the 
@@ -500,10 +411,24 @@ public void setExpandVertical(boolean expand) {
 	checkWidget();
 	if (expand == expandVertical) return;
 	expandVertical = expand;
-	layout();
+	layout(false);
 }
+/**
+ * Sets the layout which is associated with the receiver to be
+ * the argument which may be null.
+ * <p>
+ * Note : No Layout can be set on this Control because it already
+ * manages the size and position its children
+ * </p>
+ *
+ * @param layout the receiver's new layout or null
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setLayout (Layout layout) {
-	// do not allow a layout to be set on this class because layout is being handled by the resize listener
 	checkWidget();
 	return;
 }
@@ -559,7 +484,7 @@ public void setMinSize(int width, int height) {
 	if (width == minWidth && height == minHeight) return;
 	minWidth = Math.max(0, width);
 	minHeight = Math.max(0, height);
-	layout();
+	layout(false);
 }
 /**
  * Specify the minimum width at which the ScrolledComposite will begin scrolling the

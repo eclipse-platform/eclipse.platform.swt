@@ -29,21 +29,20 @@ import org.eclipse.swt.graphics.*;
 public class SashForm extends Composite {
 
 	public int SASH_WIDTH = 3;
-
-	private static final int DRAG_MINIMUM = 20;
 	
-	private int orientation = SWT.HORIZONTAL;
-	private Sash[] sashes = new Sash[0];
+	int orientation = SWT.HORIZONTAL;
+	Sash[] sashes = new Sash[0];
 	// Remember background and foreground
 	// colors to determine whether to set
 	// sashes to the default color (null) or
 	// a specific color
-	private Color background = null;
-	private Color foreground = null;
-	private Control[] controls = new Control[0];
-	private Control maxControl = null;
-	private Listener sashListener;
-	private final static String LAYOUT_RATIO = "layout ratio"; //$NON-NLS-1$
+	Color background = null;
+	Color foreground = null;
+	Control[] controls = new Control[0];
+	Control maxControl = null;
+	Listener sashListener;
+	static final int DRAG_MINIMUM = 20;
+	static final String LAYOUT_RATIO = "layout ratio"; //$NON-NLS-1$
 
 /**
  * Constructs a new instance of this class given its parent
@@ -74,15 +73,10 @@ public class SashForm extends Composite {
  */
 public SashForm(Composite parent, int style) {
 	super(parent, checkStyle(style));
+	super.setLayout(new SashFormLayout());
 	if ((style & SWT.VERTICAL) != 0){
 		orientation = SWT.VERTICAL;
 	}
-	
-	this.addListener(SWT.Resize, new Listener() {
-		public void handleEvent(Event e) {
-			layout(true);
-		}
-	});
 	
 	sashListener = new Listener() {
 		public void handleEvent(Event e) {
@@ -90,39 +84,9 @@ public SashForm(Composite parent, int style) {
 		}
 	};
 }
-private static int checkStyle (int style) {
+static int checkStyle (int style) {
 	int mask = SWT.BORDER | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 	return style & mask;
-}
-public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget();
-	Control[] cArray = getControls(true);
-	if (cArray.length == 0) return new Point(wHint, hHint);
-	
-	int sashwidth = sashes.length > 0 ? SASH_WIDTH + sashes [0].getBorderWidth() * 2 : SASH_WIDTH;
-	int width = 0;
-	int height = 0;
-	boolean vertical = (orientation == SWT.VERTICAL);
-	if (vertical) {
-		height += (cArray.length - 1) * sashwidth;
-	} else {
-		width += (cArray.length - 1) * sashwidth;
-	}
-	for (int i = 0; i < cArray.length; i++) {
-		if (vertical) {
-			Point size = cArray[i].computeSize(wHint, SWT.DEFAULT);
-			height += size.y;	
-			width = Math.max(width, size.x);
-		} else {
-			Point size = cArray[i].computeSize(SWT.DEFAULT, hHint);
-			width += size.x;
-			height = Math.max(height, size.y);
-		}
-	}
-	if (wHint != SWT.DEFAULT) width = wHint;
-	if (hHint != SWT.DEFAULT) height = hHint;
-	
-	return new Point(width, height);
 }
 /**
  * Returns SWT.HORIZONTAL if the controls in the SashForm are laid out side by side
@@ -186,117 +150,6 @@ Control[] getControls(boolean onlyVisible) {
 		result = newResult;
 	}
 	return result;
-}
-public void layout(boolean changed) {
-	checkWidget();
-	Rectangle area = getClientArea();
-	if (area.width == 0 || area.height == 0) return;
-	
-	Control[] newControls = getControls(true);
-	if (controls.length == 0 && newControls.length == 0) return;
-	controls = newControls;
-	
-	if (maxControl != null && !maxControl.isDisposed()) {
-		for (int i= 0; i < controls.length; i++){
-			if (controls[i] != maxControl) {
-				controls[i].setBounds(-200, -200, 0, 0);
-			} else {
-				controls[i].setBounds(area);
-			}
-		}
-		return;
-	}
-	
-	// keep just the right number of sashes
-	if (sashes.length < controls.length - 1) {
-		Sash[] newSashes = new Sash[controls.length - 1];
-		System.arraycopy(sashes, 0, newSashes, 0, sashes.length);
-		int sashStyle = (orientation == SWT.HORIZONTAL) ? SWT.VERTICAL : SWT.HORIZONTAL;
-		if ((getStyle() & SWT.BORDER) != 0) sashStyle |= SWT.BORDER;
-		for (int i = sashes.length; i < newSashes.length; i++) {
-			newSashes[i] = new Sash(this, sashStyle);
-			newSashes[i].setBackground(background);
-			newSashes[i].setForeground(foreground);
-			newSashes[i].addListener(SWT.Selection, sashListener);
-		}
-		sashes = newSashes;
-	}
-	if (sashes.length > controls.length - 1) {
-		if (controls.length == 0) {
-			for (int i = 0; i < sashes.length; i++) {
-				sashes[i].dispose();
-			}
-			sashes = new Sash[0];
-		} else {
-			Sash[] newSashes = new Sash[controls.length - 1];
-			System.arraycopy(sashes, 0, newSashes, 0, newSashes.length);
-			for (int i = controls.length - 1; i < sashes.length; i++) {
-				sashes[i].dispose();
-			}
-			sashes = newSashes;
-		}
-	}
-	
-	if (controls.length == 0) return;
-	
-	int sashwidth = sashes.length > 0 ? SASH_WIDTH + sashes [0].getBorderWidth() * 2 : SASH_WIDTH;
-	// get the ratios
-	long[] ratios = new long[controls.length];
-	long total = 0;
-	for (int i = 0; i < controls.length; i++) {
-		Long ratio = (Long)controls[i].getData(LAYOUT_RATIO);
-		if (ratio != null) {
-			ratios[i] = ratio.longValue();
-		} else {
-			ratios[i] = ((200 << 16) + 999) / 1000;
-		}
-		total += ratios[i];
-	}
-	
-	if (orientation == SWT.HORIZONTAL) {
-		total += (((long)(sashes.length * sashwidth) << 16) + area.width - 1) / area.width;
-	} else {
-		total += (((long)(sashes.length * sashwidth) << 16) + area.height - 1) / area.height;
-	}
-
-	if (orientation == SWT.HORIZONTAL) {
-		int width = (int)(ratios[0] * area.width / total);
-		int x = area.x;
-		controls[0].setBounds(x, area.y, width, area.height);
-		x += width;
-		for (int i = 1; i < controls.length - 1; i++) {
-			sashes[i - 1].setBounds(x, area.y, sashwidth, area.height);
-			x += sashwidth;
-			width = (int)(ratios[i] * area.width / total);
-			controls[i].setBounds(x, area.y, width, area.height);
-			x += width;
-		}
-		if (controls.length > 1) {
-			sashes[sashes.length - 1].setBounds(x, area.y, sashwidth, area.height);
-			x += sashwidth;
-			width = area.width - x;
-			controls[controls.length - 1].setBounds(x, area.y, width, area.height);
-		}
-	} else {
-		int height = (int)(ratios[0] * area.height / total);
-		int y = area.y;
-		controls[0].setBounds(area.x, y, area.width, height);
-		y += height;
-		for (int i = 1; i < controls.length - 1; i++) {
-			sashes[i - 1].setBounds(area.x, y, area.width, sashwidth);
-			y += sashwidth;
-			height = (int)(ratios[i] * area.height / total);
-			controls[i].setBounds(area.x, y, area.width, height);
-			y += height;
-		}
-		if (controls.length > 1) {
-			sashes[sashes.length - 1].setBounds(area.x, y, area.width, sashwidth);
-			y += sashwidth;
-			height = area.height - y;
-			controls[controls.length - 1].setBounds(area.x, y, area.width, height);
-		}
-
-	}
 }
 void onDragSash(Event event) {
   if (event.detail == SWT.DRAG) {
@@ -383,7 +236,7 @@ public void setOrientation(int orientation) {
 		sashes[i].setForeground(foreground);
 		sashes[i].addListener(SWT.Selection, sashListener);
 	}
-	layout();
+	layout(false);
 }
 public void setBackground (Color color) {
 	super.setBackground(color);
@@ -399,8 +252,24 @@ public void setForeground (Color color) {
 		sashes[i].setForeground(foreground);
 	}
 }
+/**
+ * Sets the layout which is associated with the receiver to be
+ * the argument which may be null.
+ * <p>
+ * Note : No Layout can be set on this Control because it already
+ * manages the size and position its children
+ * </p>
+ *
+ * @param layout the receiver's new layout or null
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setLayout (Layout layout) {
 	checkWidget();
+	return;
 }
 /**
  * Specify the control that should take up the entire client area of the SashForm.  
@@ -421,7 +290,7 @@ public void setMaximizedControl(Control control){
 	if (control == null) {
 		if (maxControl != null) {
 			this.maxControl = null;
-			layout();
+			layout(false);
 			for (int i= 0; i < sashes.length; i++){
 				sashes[i].setVisible(true);
 			}
@@ -433,7 +302,7 @@ public void setMaximizedControl(Control control){
 		sashes[i].setVisible(false);
 	}
 	maxControl = control;
-	layout();
+	layout(false);
 }
 
 /**
@@ -472,6 +341,6 @@ public void setWeights(int[] weights) {
 		cArray[i].setData(LAYOUT_RATIO, new Long((((long)weights[i] << 16) + total - 1) / total));
 	}
 
-	layout();
+	layout(false);
 }
 }

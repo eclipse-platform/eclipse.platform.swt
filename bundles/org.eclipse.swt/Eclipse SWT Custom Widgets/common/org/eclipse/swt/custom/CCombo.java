@@ -293,7 +293,7 @@ void comboEvent (Event event) {
 			dropDown(false);
 			break;
 		case SWT.Resize:
-			internalLayout();
+			internalLayout(false);
 			break;
 	}
 }
@@ -387,7 +387,7 @@ void dropDown (boolean drop) {
 	int itemCount = list.getItemCount();
 	itemCount = (itemCount == 0) ? visibleItemCount : Math.min(visibleItemCount, itemCount);
 	int itemHeight = list.getItemHeight () * itemCount;
-	Point listSize = list.computeSize (SWT.DEFAULT, itemHeight);
+	Point listSize = list.computeSize (SWT.DEFAULT, itemHeight, false);
 	list.setBounds (1, 1, Math.max (size.x - 2, listSize.x), listSize.y);
 	
 	int index = list.getSelectionIndex ();
@@ -808,13 +808,12 @@ public boolean isFocusControl () {
 	} 
 	return super.isFocusControl();
 }
-void internalLayout () {
+void internalLayout (boolean changed) {
 	if (isDropped ()) dropDown (false);
-	
 	Rectangle rect = getClientArea();
 	int width = rect.width;
 	int height = rect.height;
-	Point arrowSize = arrow.computeSize(SWT.DEFAULT, height);
+	Point arrowSize = arrow.computeSize(SWT.DEFAULT, height, changed);
 	text.setBounds (0, 0, width - arrowSize.x, height);
 	arrow.setBounds (width - arrowSize.x, 0, arrowSize.x, arrowSize.y);
 }
@@ -1123,7 +1122,7 @@ public void setFont (Font font) {
 	this.font = font;
 	text.setFont (font);
 	list.setFont (font);
-	internalLayout ();
+	internalLayout (true);
 }
 public void setForeground (Color color) {
 	super.setForeground(color);
