@@ -743,7 +743,7 @@ public void setToolTipText (String string) {
 }
 
 /**
- * Sets the width of the receiver.
+ * Sets the width of the receiver, for <code>SEPARATOR</code> ToolItems.
  *
  * @param width the new width
  *
