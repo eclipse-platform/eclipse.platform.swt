@@ -29,7 +29,7 @@ public /*final*/ class ToolItem extends Item {
 	Image hotImage, disabledImage;
 	String toolTipText;
 	Control control;
-	boolean set, drawHotImage;
+	boolean set, hasCursor;
 
 /**
 * Creates a new instance of the widget.
@@ -389,6 +389,14 @@ public boolean isEnabled () {
 void manageChildren () {
 	OS.XtManageChild (handle);
 }
+void redraw () {
+	if (parent.drawCount > 0) return;
+	int display = OS.XtDisplay (handle);
+	if (display == 0) return;
+	int window = OS.XtWindow (handle);
+	if (window == 0) return;
+	OS.XClearArea (display, window, 0, 0, 0, 0, true);
+}
 void releaseChild () {
 	super.releaseChild ();
 	parent.destroyItem (this);
@@ -496,6 +504,7 @@ public void setEnabled (boolean enabled) {
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int [] argList = {OS.XmNsensitive, enabled ? 1 : 0};
 	OS.XtSetValues (handle, argList, argList.length / 2);
+	hasCursor = false;
 }
 /**
  * Sets the receiver's disabled image to the argument, which may be
@@ -516,6 +525,7 @@ public void setDisabledImage (Image image) {
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	disabledImage = image;
+	if (!getEnabled ()) redraw ();
 }
 /**
  * Sets the receiver's hot image to the argument, which may be
@@ -536,20 +546,16 @@ public void setHotImage (Image image) {
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	hotImage = image;
+	if (hasCursor && (parent.style & SWT.FLAT) != 0) redraw ();
 }
 public void setImage (Image image) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setImage (image);
-
-	/* Resize */	
-	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	Point size = computeSize ();
-	if (argList [1] != size.x || argList [3] != size.y) {
-		OS.XtResizeWidget (handle, size.x, size.y, 0);
-	}
-	parent.relayout ();
+	Point size = computeSize();
+	setSize(size.x, size.y);
+	redraw();
 }
 
 /**
@@ -574,11 +580,13 @@ public void setSelection (boolean selected) {
 	if (selected == set) return;
 	set = selected;
 	setDrawPressed(set);
-	if ((parent.style & SWT.FLAT) != 0) {
-		Display display = getDisplay ();
-		int thickness = set ? Math.min (2, display.buttonShadowThickness) : 0;
-		int [] argList = {OS.XmNshadowThickness, thickness};
-		OS.XtSetValues (handle, argList, argList.length / 2);
+}
+void setSize (int width, int height) {
+	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	if (argList [1] != width || argList [3] != height) {
+		OS.XtResizeWidget (handle, width, height, 0);
+		parent.relayout ();
 	}
 }
 public void setText (String string) {
@@ -587,15 +595,9 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setText (string);
-
-	/* Resize */
-	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
 	Point size = computeSize();
-	if (argList[1] != size.x || argList[3] != size.y) {
-		OS.XtResizeWidget (handle, size.x, size.y, 0);
-	}
-	parent.relayout ();
+	setSize(size.x, size.y);
+	redraw();
 }
 
 /**
@@ -631,8 +633,7 @@ public void setWidth (int width) {
 	if (width < 0) return;
 	int [] argList = {OS.XmNheight, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
-	OS.XtResizeWidget (handle, width, argList [1], 0);
-	parent.relayout ();
+	setSize (width, argList [1]);
 	if (control != null && !control.isDisposed ()) {
 		control.setBounds (getBounds ());
 	}
@@ -645,11 +646,33 @@ void setDrawPressed (boolean value) {
 int processMouseDown (int callData) {
 	Display display = getDisplay ();
 	display.hideToolTip();
-	if (set && (style & SWT.RADIO) != 0) return 0;
-	setDrawPressed(!set);
+	XButtonEvent xEvent = new XButtonEvent ();
+	OS.memmove (xEvent, callData, XButtonEvent.sizeof);
+	if (xEvent.button == 1) {
+		if (!set && (style & SWT.RADIO) == 0) {
+			setDrawPressed(!set);
+		}
+	}
+	
+	/*
+	* Forward the mouse event to the parent.
+	* This is necessary so that mouse listeners
+	* in the parent will be called, despite the
+	* fact that the event did not really occur
+	* in X in the parent.  This is done to be
+	* compatible with Windows.
+	*/
+	int [] argList = {OS.XmNx, 0, OS.XmNy, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	xEvent.window = OS.XtWindow (parent.handle);
+	xEvent.x += argList [1];  xEvent.y += argList [3];
+	OS.memmove (callData, xEvent, XButtonEvent.sizeof);
+	parent.processMouseDown (callData);
+
 	return 0;
 }
 int processMouseEnter (int callData) {
+	hasCursor = true;
 	if ((parent.style & SWT.FLAT) != 0) {
 		Display display = getDisplay ();
 		int thickness = Math.min (2, display.buttonShadowThickness);
@@ -662,13 +685,13 @@ int processMouseEnter (int callData) {
 	if (button1Pressed) {
 		setDrawPressed(!set);
 	}
-	drawHotImage = (parent.style & SWT.FLAT) != 0 && hotImage != null;
-	if (drawHotImage) { 
+	if ((parent.style & SWT.FLAT) != 0 && hotImage != null) { 
 		OS.XClearArea (xEvent.display, xEvent.window, 0, 0, 0, 0, true);
 	}
 	return 0;
 }
 int processMouseExit (int callData) {
+	hasCursor = false;
 	Display display = getDisplay ();
 	display.removeMouseHoverTimeOut ();
 	display.hideToolTip ();
@@ -682,8 +705,7 @@ int processMouseExit (int callData) {
 	if (button1Pressed) {
 		setDrawPressed(set);
 	}
-	if (drawHotImage) {
-		drawHotImage = false;
+	if ((parent.style & SWT.FLAT) != 0 && hotImage != null) {
 		OS.XClearArea (xEvent.display, xEvent.window, 0, 0, 0, 0, true);
 	}
 	return 0;
@@ -702,6 +724,24 @@ int processMouseHover (int id) {
 int processMouseMove (int callData) {
 	Display display = getDisplay ();
 	display.addMouseHoverTimeOut (handle);
+
+	/*
+	* Forward the mouse event to the parent.
+	* This is necessary so that mouse listeners
+	* in the parent will be called, despite the
+	* fact that the event did not really occur
+	* in X in the parent.  This is done to be
+	* compatible with Windows.
+	*/
+	XButtonEvent xEvent = new XButtonEvent ();
+	OS.memmove (xEvent, callData, XButtonEvent.sizeof);
+	int [] argList = {OS.XmNx, 0, OS.XmNy, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	xEvent.window = OS.XtWindow (parent.handle);
+	xEvent.x += argList [1];  xEvent.y += argList [3];
+	OS.memmove (callData, xEvent, XButtonEvent.sizeof);
+	parent.processMouseMove (callData);
+
 	return 0;
 }
 int processMouseUp (int callData) {
@@ -709,22 +749,40 @@ int processMouseUp (int callData) {
 	display.hideToolTip(); 
 	XButtonEvent xEvent = new XButtonEvent ();
 	OS.memmove (xEvent, callData, XButtonEvent.sizeof);
-	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	int width = argList [1], height = argList [3];
-	if (0 <= xEvent.x && xEvent.x < width && 0 <= xEvent.y && xEvent.y < height) {
-		if ((style & SWT.RADIO) != 0) {
-			selectRadio ();
-		} else {
-			if ((style & SWT.CHECK) != 0) setSelection(!set);			
+	if (xEvent.button == 1) {
+		int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
+		OS.XtGetValues (handle, argList, argList.length / 2);
+		int width = argList [1], height = argList [3];
+		if (0 <= xEvent.x && xEvent.x < width && 0 <= xEvent.y && xEvent.y < height) {
+			if ((style & SWT.RADIO) != 0) {
+				selectRadio ();
+			} else {
+				if ((style & SWT.CHECK) != 0) setSelection(!set);			
+			}
+			Event event = new Event ();
+			if ((style & SWT.DROP_DOWN) != 0) {
+				if (xEvent.x > width - 12) event.detail = SWT.ARROW;
+			}
+			postEvent (SWT.Selection, event);
 		}
-		Event event = new Event ();
-		if ((style & SWT.DROP_DOWN) != 0) {
-			if (xEvent.x > width - 12) event.detail = SWT.ARROW;
-		}
-		postEvent (SWT.Selection, event);
+		setDrawPressed(set);
 	}
-	setDrawPressed(set);	
+
+	/*
+	* Forward the mouse event to the parent.
+	* This is necessary so that mouse listeners
+	* in the parent will be called, despite the
+	* fact that the event did not really occur
+	* in X in the parent.  This is done to be
+	* compatible with Windows.
+	*/
+	int [] argList = {OS.XmNx, 0, OS.XmNy, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	xEvent.window = OS.XtWindow (parent.handle);
+	xEvent.x += argList [1];  xEvent.y += argList [3];
+	OS.memmove (callData, xEvent, XButtonEvent.sizeof);
+	parent.processMouseUp (callData);
+
 	return 0;
 }
 int processPaint (int callData) {
@@ -740,6 +798,14 @@ int processPaint (int callData) {
 	};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	int width = argList [3], height = argList [5];
+	
+	boolean enabled = getEnabled();
+	if ((parent.style & SWT.FLAT) != 0) {
+		Display display = getDisplay ();
+		int thickness = set || hasCursor ? Math.min (2, display.buttonShadowThickness) : 0;
+		argList = new int [] {OS.XmNshadowThickness, thickness};
+		OS.XtSetValues (handle, argList, argList.length / 2);
+	}
 
 	ToolDrawable wrapper = new ToolDrawable ();
 	wrapper.device = getDisplay ();
@@ -758,8 +824,11 @@ int processPaint (int callData) {
 		gc.setClipping (rect);
 	}
 	
-	Image currentImage = drawHotImage ? hotImage : image;
-	if (!getEnabled()) {
+	Image currentImage =  image;
+	if (hasCursor && (parent.style & SWT.FLAT) != 0 &&  hotImage != null) {
+		currentImage = hotImage;
+	}
+	if (!enabled) {
 		Display display = getDisplay ();
 		currentImage = disabledImage;
 		if (currentImage == null) {
@@ -813,7 +882,7 @@ int processPaint (int callData) {
 	}
 	gc.dispose ();
 	
-	if (!getEnabled() && disabledImage == null) {
+	if (!enabled && disabledImage == null) {
 		if (currentImage != null) currentImage.dispose ();
 	}
 	return 0;
