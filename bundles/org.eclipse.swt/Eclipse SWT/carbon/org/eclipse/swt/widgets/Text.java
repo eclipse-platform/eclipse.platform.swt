@@ -496,7 +496,7 @@ int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
 			}
 		}
 	}
-	if ((style & SWT.SINGLE) != 0) return OS.noErr;
+	if ((style & SWT.READ_ONLY) != 0) return OS.noErr;
 	return result;
 }
 
