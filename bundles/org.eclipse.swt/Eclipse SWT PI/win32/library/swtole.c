@@ -3254,3 +3254,158 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_ole_win32_COM_CoGetInstance
 }
 */
 
+/****************** ACCESSIBILITY ****************/
+/*
+ * Class:     org_eclipse_swt_internal_ole_win32_COM
+ * Method:    CreateStdAccessibleObject
+ * Signature: (IILorg/eclipse/swt/internal/ole/win32/GUID;[I)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_ole_win32_COM_CreateStdAccessibleObject
+  (JNIEnv *env, jclass that, jint hwnd, jint idObject, jobject riidInterface, jintArray ppvObject)
+{
+	DECL_GLOB(pGlob)
+    LPVOID *ppvObject1=NULL;
+	GUID guid, *riidInterface1=NULL;
+	jint rc = E_NOTIMPL;
+    HMODULE hm;
+    FARPROC fp;
+	
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "CreateStdAccessibleObject\n");
+#endif
+    
+    if (riidInterface) {
+        riidInterface1=&guid;
+        cacheGuidFids(env, riidInterface, &PGLOB(GuidFc));
+        getGuidFields(env, riidInterface, riidInterface1, &PGLOB(GuidFc));
+    }
+
+	if (ppvObject)
+        ppvObject1 = (LPVOID *)(*env)->GetIntArrayElements(env, ppvObject, NULL);
+
+    /*
+    *  CreateStdAccessibleObject is an oleacc specific call.
+    *  If you link it into swt.dll, a system modal entry point not found dialog will
+    *  appear as soon as swt.dll is loaded. Here we check for the entry point and
+    *  only do the call if it exists.
+    */
+    if (!(hm = GetModuleHandle("oleacc.dll"))) hm = LoadLibrary("oleacc.dll");
+    if (hm && (fp = GetProcAddress(hm, "CreateStdAccessibleObject"))) {
+		rc = (jint)fp((HWND)hwnd, idObject, riidInterface1, ppvObject1);
+	}
+    
+    if (riidInterface) {
+        setGuidFields(env, riidInterface, riidInterface1, &PGLOB(GuidFc));
+    }
+    
+    if (ppvObject)
+        (*env)->ReleaseIntArrayElements(env, ppvObject, (jint *)ppvObject1, 0);
+        
+    return rc;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_ole_win32_COM
+ * Method:    LresultFromObject
+ * Signature: (Lorg/eclipse/swt/internal/ole/win32/GUID;II)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_ole_win32_COM_LresultFromObject
+  (JNIEnv *env, jclass that, jobject riid, jint wParam, jint pAcc)
+{
+    GUID guid, *riid1=NULL;
+    jint rc = E_NOTIMPL;
+    HMODULE hm;
+    FARPROC fp;
+
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "LresultFromObject\n");
+#endif
+
+    if (riid) {
+        riid1=&guid;
+        cacheGuidFids(env, riid, &PGLOB(GuidFc));
+        getGuidFields(env, riid, riid1, &PGLOB(GuidFc));
+    }
+    /*
+    *  LresultFromObject is an oleacc specific call.
+    *  If you link it into swt.dll, a system modal entry point not found dialog will
+    *  appear as soon as swt.dll is loaded. Here we check for the entry point and
+    *  only do the call if it exists.
+    */
+    if (!(hm = GetModuleHandle("oleacc.dll"))) hm = LoadLibrary("oleacc.dll");
+    if (hm && (fp = GetProcAddress(hm, "LresultFromObject"))) {
+		rc = (jint)fp(riid1, wParam, (LPUNKNOWN)pAcc);
+	}
+    if (riid) {
+        setGuidFields(env, riid, riid1, &PGLOB(GuidFc));
+    }
+    return rc;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_ole_win32_COM
+ * Method:    VtblCall
+ * Signature: (IIIIII)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_ole_win32_COM_VtblCall__IIIIII
+  (JNIEnv *env, jclass that, jint fnNumber, jint ppVtbl, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+    P_OLE_FN_5 fn; /* this is a function that returns int */
+
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "COM_VtblCall__IIIIII\n");
+#endif
+    fn = (P_OLE_FN_5)(*(int **)ppVtbl)[fnNumber];
+    return fn(ppVtbl, arg0, arg1, arg2, arg3); /* cast it to an OLE function returning int */
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_ole_win32_COM
+ * Method:    VtblCall
+ * Signature: (IIIIIII)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_ole_win32_COM_VtblCall__IIIIIII
+  (JNIEnv *env, jclass that, jint fnNumber, jint ppVtbl, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+    P_OLE_FN_6 fn; /* this is a function that returns int */
+
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "COM_VtblCall__IIIIIII\n");
+#endif
+    fn = (P_OLE_FN_6)(*(int **)ppVtbl)[fnNumber];
+    return fn(ppVtbl, arg0, arg1, arg2, arg3, arg4); /* cast it to an OLE function returning int */
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_ole_win32_COM
+ * Method:    VtblCall
+ * Signature: (IIIIIIII)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_ole_win32_COM_VtblCall__IIIIIIII
+  (JNIEnv *env, jclass that, jint fnNumber, jint ppVtbl, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
+{
+    P_OLE_FN_7 fn; /* this is a function that returns int */
+
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "COM_VtblCall__IIIIIIII\n");
+#endif
+    fn = (P_OLE_FN_7)(*(int **)ppVtbl)[fnNumber];
+    return fn(ppVtbl, arg0, arg1, arg2, arg3, arg4, arg5); /* cast it to an OLE function returning int */
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_ole_win32_COM
+ * Method:    VtblCall
+ * Signature: (IIIIIIIIII)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_ole_win32_COM_VtblCall__IIIIIIIIII
+  (JNIEnv *env, jclass that, jint fnNumber, jint ppVtbl, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7)
+{
+    P_OLE_FN_9 fn; /* this is a function that returns int */
+
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "COM_VtblCall__IIIIIIIIII\n");
+#endif
+    fn = (P_OLE_FN_9)(*(int **)ppVtbl)[fnNumber];
+    return fn(ppVtbl, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7); /* cast it to an OLE function returning int */
+}

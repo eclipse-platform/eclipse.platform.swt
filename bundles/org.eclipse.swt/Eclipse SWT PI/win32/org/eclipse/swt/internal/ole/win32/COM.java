@@ -26,7 +26,10 @@ public class COM extends OS {
 	public static final GUID IIDIEditorService = IIDFromString("{BEE283FE-7B42-4FF3-8232-0F07D43ABCF1}");
 	public static final GUID IIDIEditorManager = IIDFromString("{EFDE08C4-BE87-4B1A-BF84-15FC30207180}");
 	
-		
+	public static final GUID IIDIAccessible = IIDFromString("{618736E0-3C3D-11CF-810C-00AA00389B71}");
+	//public static final GUID IIDIAccessibleHandler = IIDFromString("{03022430-ABC4-11D0-BDE2-00AA001A1953}");
+	//public static final GUID IIDIAccessor = IIDFromString("{0C733A8C-2A1C-11CE-ADE5-00AA0044773D}");
+
 	public static final GUID IIDIAdviseSink = IIDFromString("{0000010F-0000-0000-C000-000000000046}");
 	//public static final GUID IIDIAdviseSink2 = IIDFromString("{00000125-0000-0000-C000-000000000046}");
 	//public static final GUID IIDIBindCtx = IIDFromString("{0000000E-0000-0000-C000-000000000046}");
@@ -51,7 +54,7 @@ public class COM extends OS {
 	//public static final GUID IIDIEnumSTATSTG = IIDFromString("{0000000D-0000-0000-C000-000000000046}");
 	//public static final GUID IIDIEnumString = IIDFromString("{00000101-0000-0000-C000-000000000046}");
 	//public static final GUID IIDIEnumUnknown = IIDFromString("{00000100-0000-0000-C000-000000000046}");
-	//public static final GUID IIDIEnumVARIANT = IIDFromString("{00020404-0000-0000-C000-000000000046}");
+	public static final GUID IIDIEnumVARIANT = IIDFromString("{00020404-0000-0000-C000-000000000046}");
 	//public static final GUID IIDIErrorInfo = IIDFromString("{1CF2B120-547D-101B-8E65-08002B2BD119}");
 	//public static final GUID IIDIErrorLog = IIDFromString("{3127CA40-446E-11CE-8135-00AA004BB851}");
 	//public static final GUID IIDIExternalConnection = IIDFromString("{00000019-0000-0000-C000-000000000046}");
@@ -538,4 +541,16 @@ public static final native int VtblCall(int fnNumber, int ppVtbl, int arg0, int[
 public static final native int VtblCall(int fnNumber, int ppVtbl, int arg0, int[] arg1, int arg2, int[] arg3);
 
 public static final native int WriteClassStg(int pStg, GUID rclsid);
+
+/* VtblCalls added for accessibility (definitions belong here in COM, not in ACC) */
+public static final native int VtblCall(int fnNumber, int ppVtbl, int arg0, int arg1, int arg2, int arg3);
+public static final native int VtblCall(int fnNumber, int ppVtbl, int arg0, int arg1, int arg2, int arg3, int arg4);
+public static final native int VtblCall(int fnNumber, int ppVtbl, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5);
+public static final native int VtblCall(int fnNumber, int ppVtbl, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7);
+/* End of VtblCalls added for accessibility */
+
+/* these are only here temporarily until I figure out how to move them into ACC */
+	public static final native int CreateStdAccessibleObject (int hwnd, int idObject, GUID riidInterface, int[] ppvObject);
+	public static final native int LresultFromObject (GUID riid, int wParam, int pAcc);
+
 }
