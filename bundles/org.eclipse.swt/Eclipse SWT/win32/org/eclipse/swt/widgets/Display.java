@@ -1797,6 +1797,7 @@ void updateFont () {
  */
 public void wake () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+	if (thread == Thread.currentThread ()) return;
 	OS.PostThreadMessage (threadId, OS.WM_NULL, 0, 0);
 }
 

@@ -1486,6 +1486,7 @@ public void update () {
 public void wake () {
 	/* NOT IMPLEMENTED - Need to wake up the event loop */
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+	if (thread == Thread.currentThread ()) return;
 }
 
 int windowProc (int handle, int user_data) {
