@@ -46,14 +46,17 @@ public static PrinterData[] getPrinterList() {
 	return printerList;
 }
 
-static PrinterData getDefaultPrinterData() {
-	/* Use the first printer in the list as the default */
-	PrinterData[] list = getPrinterList();
-	if (list.length == 0) {
-		/* no printers */
-		SWT.error(SWT.ERROR_NO_HANDLES);
-	}
-	return list[0];
+/**
+ * Returns a <code>PrinterData</code> object representing
+ * the default printer or <code>null</code> if there is no 
+ * printer available on the System.
+ *
+ * @return the default printer data or null
+ * 
+ * @since 2.1
+ */
+public static PrinterData getDefaultPrinterData() {
+	return null;
 }
 
 /**

@@ -37,7 +37,7 @@ public final class Printer extends Device {
 
 	static String APP_NAME = "SWT_Printer";
 	
-	public static String XDefaultPrintServer = ":1";
+//	public static String XDefaultPrintServer = ":1";
 /**
  * Returns an array of <code>PrinterData</code> objects
  * representing all available printers.
@@ -95,24 +95,17 @@ public static PrinterData[] getPrinterList() {
 	return null;
 }
 
-/*
+/**
  * Returns a <code>PrinterData</code> object representing
- * the default printer.
+ * the default printer or <code>null</code> if there is no 
+ * printer available on the System.
  *
- * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES - if an error occurred constructing the default printer data</li>
- * </ul>
- *
- * @return the default printer data
+ * @return the default printer data or null
+ * 
+ * @since 2.1
  */
-static PrinterData getDefaultPrinterData() {
-	/* Use the first printer in the list as the default */
-	PrinterData[] list = getPrinterList();
-	if (list.length == 0) {
-		/* no printers */
-		SWT.error(SWT.ERROR_NO_HANDLES);
-	}
-	return list[0];
+public static PrinterData getDefaultPrinterData() {
+	return null;
 }
 
 /**
