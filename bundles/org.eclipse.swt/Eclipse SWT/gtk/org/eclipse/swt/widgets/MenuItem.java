@@ -21,7 +21,7 @@ import org.eclipse.swt.events.*;
  * <dd>Arm, Help, Selection</dd>
  * </dl>
  * <p>
- * Note: Only one of the styles CHECK, CASCADE, PUSH, RADIO, and SEPARATOR 
+ * Note: Only one of the styles CHECK, CASCADE, PUSH, RADIO and SEPARATOR
  * may be specified.
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
@@ -43,11 +43,11 @@ public class MenuItem extends Item {
  * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  *
- * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param parent a menu control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
  *
  * @exception IllegalArgumentException <ul>
@@ -58,7 +58,11 @@ public class MenuItem extends Item {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#CHECK
+ * @see SWT#CASCADE
+ * @see SWT#PUSH
+ * @see SWT#RADIO
+ * @see SWT#SEPARATOR
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -79,11 +83,11 @@ public MenuItem (Menu parent, int style) {
  * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  *
- * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param parent a menu control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
  * @param index the index to store the receiver in its parent
  *
@@ -95,7 +99,11 @@ public MenuItem (Menu parent, int style) {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#CHECK
+ * @see SWT#CASCADE
+ * @see SWT#PUSH
+ * @see SWT#RADIO
+ * @see SWT#SEPARATOR
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -514,6 +522,19 @@ public void setEnabled (boolean enabled) {
 	OS.gtk_widget_set_sensitive (handle, enabled);
 }
 
+/**
+ * Sets the image the receiver will display to the argument.
+ * <p>
+ * Note: This feature is not available on all window systems (for example, Window NT),
+ * in which case, calling this method will silently do nothing.
+ *
+ * @param menu the image to display
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setImage (Image image) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
