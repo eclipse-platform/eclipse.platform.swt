@@ -99,6 +99,7 @@ public Dialog (Shell parent) {
  */
 public Dialog (Shell parent, int style) {
 	checkSubclass ();
+	checkParent (parent);
 	this.parent = parent;
 	this.style = style;
 	title = "";
@@ -120,6 +121,24 @@ protected void checkSubclass () {
 	if (!Display.isValidClass (getClass ())) {
 		error (SWT.ERROR_INVALID_SUBCLASS);
 	}
+}
+
+/**
+ * Throws an exception if the specified widget can not be
+ * used as a parent for the receiver.
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the parent is disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ * </ul>
+ */
+void checkParent (Shell parent) {
+	if (parent == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (!parent.isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (parent.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 }
 
 /**
