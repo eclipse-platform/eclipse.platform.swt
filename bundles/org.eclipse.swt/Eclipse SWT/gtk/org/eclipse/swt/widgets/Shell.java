@@ -991,7 +991,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 			moved = true;
 			oldX = x;
 			oldY = y;
-			sendEvent(SWT.Move);
+			sendEvent (SWT.Move);
 			result |= MOVED;
 		}
 	}
