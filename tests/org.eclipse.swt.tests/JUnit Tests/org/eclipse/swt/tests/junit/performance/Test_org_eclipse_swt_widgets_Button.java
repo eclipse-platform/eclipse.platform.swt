@@ -45,33 +45,43 @@ protected void tearDown() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
+	// TODO
 }
 
 public void test_getAlignment() {
+	// TODO
 }
 
 public void test_getImage() {
+	// TODO
 }
 
 public void test_getSelection() {
+	// TODO
 }
 
 public void test_getText() {
+	// TODO
 }
 
 public void test_setAlignmentI() {
+	// TODO
 }
 
 public void test_setFocus() {
+	// TODO
 }
 
 public void test_setImageLorg_eclipse_swt_graphics_Image() {
+	// TODO
 }
 
 public void test_setSelectionZ() {
+	// TODO
 }
 
 public void test_setTextLjava_lang_String() {
+	// TODO
 }
 
 public static Test suite() {
