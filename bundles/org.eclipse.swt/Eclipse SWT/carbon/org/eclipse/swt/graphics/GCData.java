@@ -26,7 +26,6 @@ public final class GCData {
 	public Image image;
 	public int foreground = -1;
 	public int background = -1;
-	public MacFont font;
 	public int clipRgn;
 	public int lineStyle = SWT.LINE_SOLID;
 	
