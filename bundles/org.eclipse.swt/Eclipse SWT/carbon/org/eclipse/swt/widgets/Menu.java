@@ -590,7 +590,7 @@ int kEventMenuClosed (int nextHandler, int theEvent, int userData) {
 //	width = height = 0;
 	int count = OS.CountMenuItems (handle);
 	for (int i=0; i<count; i++) {
-		MenuItem item = items [i];
+//		MenuItem item = items [i];
 //		item.x = item.y = item.width = item.height = 0;
 	}
 	sendEvent (SWT.Hide);
@@ -619,7 +619,7 @@ int kEventMenuDrawItem (int nextHandler, int theEvent, int userData) {
 	if (result == OS.noErr) return result;
 	short [] index = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamMenuItemIndex, OS.typeMenuItemIndex, null, 2, null, index);
-	MenuItem item = items [index [0] - 1];
+//	MenuItem item = items [index [0] - 1];
 	Rect rect = new Rect ();
 	OS.GetEventParameter (theEvent, OS.kEventParamMenuItemBounds, OS.typeQDRectangle, null, Rect.sizeof, null, rect);
 //	item.x = rect.left - x;
