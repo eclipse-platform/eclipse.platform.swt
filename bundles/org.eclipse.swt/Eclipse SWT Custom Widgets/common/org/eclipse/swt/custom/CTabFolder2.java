@@ -1721,11 +1721,7 @@ void onMouseDoubleClick(Event event) {
 				minmaxListeners[i].maximize(e);
 			}
 		}
-		if (e.doit) {
-			maximized = !restore;
-			redraw(maxRect.x, maxRect.y, maxRect.width, maxRect.height, false);
-			update();
-		}
+		if (e.doit) setMaximized(!restore);
 	}
 		
 	
@@ -1935,11 +1931,7 @@ void onMouse(Event event) {
 						minmaxListeners[i].minimize(e);
 					}
 				}
-				if (e.doit) {
-					minimized = !restore;
-					redraw(minRect.x, minRect.y, minRect.width, minRect.height, false);
-					update();
-				}
+				if (e.doit) setMinimized(!restore);
 				return;
 			}
 			if (maxRect.contains(x, y)) {
@@ -1958,11 +1950,7 @@ void onMouse(Event event) {
 						minmaxListeners[i].maximize(e);
 					}
 				}
-				if (e.doit) {
-					maximized = !restore;
-					redraw(maxRect.x, maxRect.y, maxRect.width, maxRect.height, false);
-					update();
-				}
+				if (e.doit) setMaximized(!restore);
 				return;
 			}
 			for (int i=0; i<items.length; i++) {
