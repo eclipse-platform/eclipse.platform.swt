@@ -1088,12 +1088,16 @@ public void setSelection (TreeItem [] items) {
 	}
 		
 	/* Select/deselect the first item */
-	int hOldItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-	
 	TreeItem item = items [0];
 	if (item != null) {
 		if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+		int hOldItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 		int hNewItem = hAnchor = item.handle;
+		boolean fixScroll = checkScroll (hNewItem);
+		if (fixScroll) OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
+		ignoreSelect = true;
+		OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, hNewItem);
+		ignoreSelect = false;
 		
 		/*
 		* Bug in Windows.  When TVM_SELECTITEM is used to ensure
@@ -1104,11 +1108,6 @@ public void setSelection (TreeItem [] items) {
 		* detect the case when the client area is too small and make
 		* the desired visible item be the top item in the tree.
 		*/
-		boolean fixScroll = checkScroll (hNewItem);
-		if (fixScroll) OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
-		ignoreSelect = true;
-		OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, hNewItem);
-		ignoreSelect = false;
 		if (OS.SendMessage (handle, OS.TVM_GETVISIBLECOUNT, 0, 0) == 0) {
 			OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hNewItem);
 		}
