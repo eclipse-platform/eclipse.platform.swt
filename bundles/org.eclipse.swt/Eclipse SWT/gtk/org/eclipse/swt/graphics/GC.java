@@ -1903,16 +1903,16 @@ public void setLineStyle(int lineStyle) {
 			line_style = OS.GDK_LINE_SOLID;
 			break;
 		case SWT.LINE_DASH:
-			OS.gdk_gc_set_dashes(handle, 0, new byte[] {6, 2}, 2);
+			OS.gdk_gc_set_dashes(handle, 0, new byte[] {18, 6}, 2);
 			break;
 		case SWT.LINE_DOT:
-			OS.gdk_gc_set_dashes(handle, 0, new byte[] {3, 1}, 2);
+			OS.gdk_gc_set_dashes(handle, 0, new byte[] {3, 3}, 2);
 			break;
 		case SWT.LINE_DASHDOT:
-			OS.gdk_gc_set_dashes(handle, 0, new byte[] {6, 2, 3, 1}, 4);
+			OS.gdk_gc_set_dashes(handle, 0, new byte[] {9, 6, 3, 6}, 4);
 			break;
 		case SWT.LINE_DASHDOTDOT:
-			OS.gdk_gc_set_dashes(handle, 0, new byte[] {6, 2, 3, 1, 3, 1}, 6);
+			OS.gdk_gc_set_dashes(handle, 0, new byte[] {9, 3, 3, 3, 3, 3}, 6);
 			break;
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);

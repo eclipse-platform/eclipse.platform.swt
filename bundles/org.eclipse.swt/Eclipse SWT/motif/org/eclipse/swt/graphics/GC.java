@@ -2616,16 +2616,16 @@ public void setLineStyle(int lineStyle) {
 			line_style = OS.LineSolid;
 			break;
 		case SWT.LINE_DASH:
-			OS.XSetDashes(xDisplay, handle, 0, new byte[]{6, 2}, 2);
+			OS.XSetDashes(xDisplay, handle, 0, new byte[]{18, 6}, 2);
 			break;
 		case SWT.LINE_DOT:
-			OS.XSetDashes(xDisplay, handle, 0, new byte[]{3, 1}, 2);
+			OS.XSetDashes(xDisplay, handle, 0, new byte[]{3, 3}, 2);
 			break;
 		case SWT.LINE_DASHDOT:
-			OS.XSetDashes(xDisplay, handle, 0, new byte[]{6, 2, 3, 1}, 4);
+			OS.XSetDashes(xDisplay, handle, 0, new byte[]{9, 6, 3, 6}, 4);
 			break;
 		case SWT.LINE_DASHDOTDOT:
-			OS.XSetDashes(xDisplay, handle, 0, new byte[]{6, 2, 3, 1, 3, 1}, 6);
+			OS.XSetDashes(xDisplay, handle, 0, new byte[]{9, 3, 3, 3, 3, 3}, 6);
 			break;
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
