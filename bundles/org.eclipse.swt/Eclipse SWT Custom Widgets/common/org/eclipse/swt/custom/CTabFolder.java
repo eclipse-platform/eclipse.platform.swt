@@ -104,7 +104,7 @@ public class CTabFolder extends Composite {
 	int xClient, yClient;
 	boolean onBottom = false;
 	boolean single = false;
-	boolean simple = true;
+	boolean simple = false;
 	boolean fixedTabHeight;
 	int tabHeight;
 	
