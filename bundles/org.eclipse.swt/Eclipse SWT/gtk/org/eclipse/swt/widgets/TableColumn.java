@@ -311,7 +311,14 @@ void hookEvents () {
  */
 public void pack () {
 	checkWidget();
+	/*
+	* Feature in GTK.  Calling gtk_tree_view_column_set_sizing() with 
+	* GTK_TREE_VIEW_COLUMN_AUTOSIZE causes the tree view
+	* column to be not resizable.  The fix is to reset this afterawards.
+	*/ 
+	boolean resizable = OS.gtk_tree_view_column_get_resizable (handle);
 	OS.gtk_tree_view_column_set_sizing (handle, OS.GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+	OS.gtk_tree_view_column_set_resizable (handle, resizable);
 }
 
 void register () {
@@ -407,6 +414,17 @@ public void setImage (Image image) {
 		OS.gtk_image_set_from_pixmap (imageHandle, 0, 0);
 		OS.gtk_widget_hide (imageHandle);
 	}
+
+	/*
+	* Bug in GTK.  For some reason, the column button does not allocate the size 
+	* of its internal children if its bounds is set before the image is set.  The fix is to
+	* force this by calling gtk_widget_size_request() (and throw the results away).
+	*/
+	int parentHandle = OS.gtk_widget_get_parent (boxHandle);
+	if (parentHandle != 0) {
+		GtkRequisition requisition = new GtkRequisition ();
+		OS.gtk_widget_size_request (parentHandle, requisition);
+	}
 }
 
 /**
@@ -437,6 +455,17 @@ public void setText (String string) {
 		OS.gtk_widget_show (labelHandle);
 	} else {
 		OS.gtk_widget_hide (labelHandle);
+	}
+
+	/*
+	* Bug in GTK.  For some reason, the column button does not allocate the size
+	* of its internal children if its bounds is set before the text is set.  The fix is to 
+	* force this by calling gtk_widget_size_request() (and throw the results away).
+	*/
+	int parentHandle = OS.gtk_widget_get_parent (boxHandle);
+	if (parentHandle != 0) {
+		GtkRequisition requisition = new GtkRequisition ();
+		OS.gtk_widget_size_request (parentHandle, requisition);
 	}
 }
 
