@@ -357,7 +357,7 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean full) {
 				if (getImage) rect.right = rect.left;
 			}
 		}
-	}		
+	}
 	int gridWidth = parent.getLinesVisible () ? Tree.GRID_WIDTH : 0;
 	if (getText || !getImage) {
 		rect.right = Math.max (rect.left, rect.right - gridWidth);
@@ -601,7 +601,7 @@ public Image getImage (int index) {
  */
 public Rectangle getImageBounds (int index) {
 	checkWidget();
-	RECT rect = getBounds (index, false, true, true);
+	RECT rect = getBounds (index, false, true, false);
 	int width = rect.right - rect.left, height = rect.bottom - rect.top;
 	return new Rectangle (rect.left, rect.top, width, height);
 }
@@ -694,7 +694,7 @@ void redraw (int column, boolean drawText, boolean drawImage) {
 	if (parent.drawCount > 0) return;
 	int hwnd = parent.handle;
 	if (!OS.IsWindowVisible (hwnd)) return;
-	RECT rect = getBounds (column, drawText, drawImage, false);
+	RECT rect = getBounds (column, drawText, drawImage, true);
 	OS.InvalidateRect (hwnd, rect, true);
 }
 
