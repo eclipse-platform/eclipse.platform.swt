@@ -915,7 +915,7 @@ public String getToolTipText () {
  */
 public boolean getVisible () {
 	checkWidget();
-	return visible && !getBounds().isEmpty();
+	return visible;
 }
 boolean hasFocus () {
 	return (this == getDisplay ().getFocusControl ());
