@@ -38,7 +38,7 @@ import org.eclipse.swt.*;
  * @see FormLayout
  * @see FormAttachment
  */
-public class FormData {
+public final class FormData {
 	/**
 	 * height specifies the desired height in pixels given
 	 * by the user

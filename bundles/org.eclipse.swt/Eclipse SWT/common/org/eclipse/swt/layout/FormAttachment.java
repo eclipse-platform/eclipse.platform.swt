@@ -43,7 +43,7 @@ import org.eclipse.swt.widgets.*;
  * @see FormLayout
  * @see FormData
  */
-public class FormAttachment {
+public final class FormAttachment {
 	/**
 	 * numerator specifies the numerator of the "a" term in the
 	 * equation, y = ax + b, which defines the attachment.
