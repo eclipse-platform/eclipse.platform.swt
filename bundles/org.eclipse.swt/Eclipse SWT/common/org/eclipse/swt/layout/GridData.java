@@ -279,17 +279,14 @@ public final class GridData {
 	 */	
 	public static final int FILL_BOTH = FILL_VERTICAL | FILL_HORIZONTAL;
 
-	// Private
-	int childIndex;
-	boolean isItemData = true;
-	int hSpan;
-	
+	int cacheWidth = -1, cacheHeight = -1;
+
 /**
  * Constructs a new instance of GridData using
  * default values.
  */
-public GridData() {
-	super();
+public GridData () {
+	super ();
 }
 
 /**
@@ -298,36 +295,18 @@ public GridData() {
  * 
  * @param style the GridData style
  */
-public GridData(int style) {
-	super();
-
-	if ((style & VERTICAL_ALIGN_BEGINNING) != 0)
-		verticalAlignment = BEGINNING;
-	if ((style & VERTICAL_ALIGN_CENTER) != 0)
-		verticalAlignment = CENTER;
-	if ((style & VERTICAL_ALIGN_FILL) != 0)
-		verticalAlignment = FILL;
-	if ((style & VERTICAL_ALIGN_END) != 0)
-		verticalAlignment = END;
-		
-	if ((style & HORIZONTAL_ALIGN_BEGINNING) != 0)
-		horizontalAlignment = BEGINNING;
-	if ((style & HORIZONTAL_ALIGN_CENTER) != 0)
-		horizontalAlignment = CENTER;
-	if ((style & HORIZONTAL_ALIGN_FILL) != 0)
-		horizontalAlignment = FILL;
-	if ((style & HORIZONTAL_ALIGN_END) != 0)
-		horizontalAlignment = END;
-		
-	if ((style & GRAB_HORIZONTAL) != 0)
-		grabExcessHorizontalSpace = true;
-	else
-		grabExcessHorizontalSpace = false;
-	if ((style & GRAB_VERTICAL) != 0)
-		grabExcessVerticalSpace = true;
-	else
-		grabExcessVerticalSpace = false;
-		
+public GridData (int style) {
+	super ();
+	if ((style & VERTICAL_ALIGN_BEGINNING) != 0) verticalAlignment = BEGINNING;
+	if ((style & VERTICAL_ALIGN_CENTER) != 0) verticalAlignment = CENTER;
+	if ((style & VERTICAL_ALIGN_FILL) != 0) verticalAlignment = FILL;
+	if ((style & VERTICAL_ALIGN_END) != 0) verticalAlignment = END;
+	if ((style & HORIZONTAL_ALIGN_BEGINNING) != 0) horizontalAlignment = BEGINNING;
+	if ((style & HORIZONTAL_ALIGN_CENTER) != 0) horizontalAlignment = CENTER;
+	if ((style & HORIZONTAL_ALIGN_FILL) != 0) horizontalAlignment = FILL;
+	if ((style & HORIZONTAL_ALIGN_END) != 0) horizontalAlignment = END;
+	grabExcessHorizontalSpace = (style & GRAB_HORIZONTAL) != 0;
+	grabExcessVerticalSpace = (style & GRAB_VERTICAL) != 0;
 }
 
 /**
@@ -340,8 +319,8 @@ public GridData(int style) {
  * 
  * @since 3.0
  */
-public GridData(int horizontalAlignment, int verticalAlignment, boolean grabExcessHorizontalSpace, boolean grabExcessVerticalSpace) {
-	this(horizontalAlignment, verticalAlignment, grabExcessHorizontalSpace, grabExcessVerticalSpace, 1, 1);
+public GridData (int horizontalAlignment, int verticalAlignment, boolean grabExcessHorizontalSpace, boolean grabExcessVerticalSpace) {
+	this (horizontalAlignment, verticalAlignment, grabExcessHorizontalSpace, grabExcessVerticalSpace, 1, 1);
 }
 
 /**
@@ -356,8 +335,8 @@ public GridData(int horizontalAlignment, int verticalAlignment, boolean grabExce
  * 
  * @since 3.0
  */
-public GridData(int horizontalAlignment, int verticalAlignment, boolean grabExcessHorizontalSpace, boolean grabExcessVerticalSpace, int horizontalSpan, int verticalSpan) {
-	super();
+public GridData (int horizontalAlignment, int verticalAlignment, boolean grabExcessHorizontalSpace, boolean grabExcessVerticalSpace, int horizontalSpan, int verticalSpan) {
+	super ();
 	this.horizontalAlignment = horizontalAlignment;
 	this.verticalAlignment = verticalAlignment;
 	this.grabExcessHorizontalSpace = grabExcessHorizontalSpace;
@@ -377,22 +356,18 @@ public GridData(int horizontalAlignment, int verticalAlignment, boolean grabExce
  * @since 3.0
  */
 public GridData (int width, int height) {
-	super();
+	super ();
 	this.widthHint = width;
 	this.heightHint = height;
 }
+
 String getName () {
 	String string = getClass ().getName ();
 	int index = string.lastIndexOf ('.');
 	if (index == -1) return string;
 	return string.substring (index + 1, string.length ());
 }
-boolean isItemData() {
-	return isItemData;
-}
-boolean isSpacerData() {
-	return !isItemData;
-}
+
 public String toString () {
 	String hAlign = "";
 	switch (horizontalAlignment) {
