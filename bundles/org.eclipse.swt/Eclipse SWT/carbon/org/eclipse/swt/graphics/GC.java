@@ -1230,9 +1230,9 @@ public void fillRectangle (int x, int y, int width, int height) {
 				short depth= getCurrentScreenDepth();
 				int[] state= new int[1];
 				OS.GetThemeDrawingState(state);
-				OS.SetThemeBackground(OS.kThemeBrushDialogBackgroundActive, depth, true);
-				//if (data.controlHandle != 0)
-				//	OS.SetUpControlBackground(data.controlHandle, depth, true);
+				//OS.SetThemeBackground(OS.kThemeBrushDialogBackgroundActive, depth, true);
+				if (data.controlHandle != 0)
+					OS.SetUpControlBackground(data.controlHandle, depth, true);
 				OS.EraseRect(fRect.getData());
 				OS.SetThemeDrawingState(state[0], true);
 			}
