@@ -387,6 +387,7 @@ private void setVisualLine(int visualLineIndex, int visualLineOffset, int visual
 	}
 	visualLines[visualLineIndex][LINE_OFFSET] = visualLineOffset;
 	visualLines[visualLineIndex][LINE_LENGTH] = visualLineLength;
+	visualLineCount++;
 }
 /** 
  * Recalculates the line wrap for the lines affected by the 
@@ -605,7 +606,6 @@ private int wrapLineRange(int startLine, int endLine, int visualLineIndex, int w
 
    		if (lineLength == 0) {
 			setVisualLine(visualLineIndex, lineOffset, 0);
-			visualLineCount++;
 			visualLineIndex++;
 			continue;
    		}
@@ -623,7 +623,6 @@ private int wrapLineRange(int startLine, int endLine, int visualLineIndex, int w
 			setVisualLine(visualLineIndex, lineOffset + startOffset, result[WRAP_LINE_LENGTH]);
 			startOffset += result[WRAP_LINE_LENGTH];
 			startX += result[WRAP_LINE_WIDTH];
-			visualLineCount++;
 			visualLineIndex++;
 		}
 	}
