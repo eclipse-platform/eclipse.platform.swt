@@ -74,7 +74,7 @@ static int checkStyle (int style) {
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	//NOT DONE
-	Rectangle rect = computeTrim (0, 0, 100, 100);
+	Rectangle rect = computeTrim (0, 0, Math.max (wHint, 100), Math.max (hHint, 100));
 	return new Point (rect.width, rect.height);
 }
 
@@ -137,14 +137,17 @@ int defaultThemeFont () {
 
 public void deselect (int index) {
 	checkWidget();
-	ignoreSelect = true;
-	int [] id = new int [] {index + 1};
-	OS.SetDataBrowserSelectedItems (handle, id.length, id, OS.kDataBrowserItemsRemove);
-	ignoreSelect = false;
+	if (0 < index && index < itemCount) {
+		ignoreSelect = true;
+		int [] id = new int [] {index + 1};
+		OS.SetDataBrowserSelectedItems (handle, id.length, id, OS.kDataBrowserItemsRemove);
+		ignoreSelect = false;
+	}
 }
 
 public void deselect (int start, int end) {
 	checkWidget();
+	//NOT DONE - range check
 	int length = end - start + 1;
 	if (length <= 0) return;
 	int [] ids = new int [length];
@@ -157,6 +160,7 @@ public void deselect (int start, int end) {
 public void deselect (int [] indices) {
 	checkWidget();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
+	//NOT DONE - range check
 	int length = indices.length;
 	int [] ids = new int [length];
 	for (int i=0; i<length; i++) ids [i] = indices [length - i - 1] + 1;
@@ -321,6 +325,46 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	return result;
 }
 
+int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventRawKeyDown (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	int [] keyCode = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
+	switch (keyCode [0]) {
+		case 125: {
+			int index = getSelectionIndex ();
+			setSelection (Math.min (itemCount - 1, index + 1));
+			return OS.noErr;
+		}
+		case 126: {
+			int index = getSelectionIndex ();
+			setSelection (Math.max (0, index - 1));
+			return OS.noErr;
+		}
+	}
+	return OS.eventNotHandledErr;
+}
+
+int kEventRawKeyRepeat (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventRawKeyRepeat (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	int [] keyCode = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
+	switch (keyCode [0]) {
+		case 125: {
+			int index = getSelectionIndex ();
+			setSelection (Math.min (itemCount - 1, index + 1));
+			return OS.noErr;
+		}
+		case 126: {
+			int index = getSelectionIndex ();
+			setSelection (Math.max (0, index - 1));
+			return OS.noErr;
+		}
+	}
+	return OS.eventNotHandledErr;
+}
+
 int itemNotificationProc (int browser, int id, int message) {
 	switch (message) {
 		case OS.kDataBrowserItemSelected:
@@ -444,15 +488,18 @@ public void removeSelectionListener(SelectionListener listener) {
 
 public void select (int index) {
 	checkWidget();
-	int [] id = new int [] {index + 1};
-	ignoreSelect = true;
-	int operation = (style & SWT.SINGLE) != 0 ? OS.kDataBrowserItemsAssign: OS.kDataBrowserItemsAdd;
-	OS.SetDataBrowserSelectedItems (handle, id.length, id, operation);
-	ignoreSelect = false;
+	if (0 <= index && index < itemCount) {
+		int [] id = new int [] {index + 1};
+		ignoreSelect = true;
+		int operation = (style & SWT.SINGLE) != 0 ? OS.kDataBrowserItemsAssign: OS.kDataBrowserItemsAdd;
+		OS.SetDataBrowserSelectedItems (handle, id.length, id, operation);
+		ignoreSelect = false;
+	}
 }
 
 public void select (int start, int end) {
 	checkWidget();
+	//NOT DONE - range check
 	int length = end - start + 1;
 	if (length <= 0) return;
 	int [] ids = new int [length];
@@ -466,6 +513,7 @@ public void select (int start, int end) {
 public void select (int [] indices) {
 	checkWidget();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
+	//NOT DONE - range check
 	int length = indices.length;
 	int [] ids = new int [length];
 	for (int i=0; i<length; i++) ids [i] = indices [length - i - 1] + 1;
@@ -478,6 +526,7 @@ public void select (int [] indices) {
 void select (String [] items) {
 	checkWidget();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
+	//NOT DONE - range check
 	int length = items.length;
 	int [] ids = new int [length];
 	for (int i=0; i<length; i++) ids [i] = indexOf (items [length - i - 1]) + 1;
@@ -518,11 +567,13 @@ public void setItems (String [] items) {
 
 public void setSelection (int index) {
 	checkWidget();
-	int [] id = new int [] {index + 1};
-	ignoreSelect = true;
-	OS.SetDataBrowserSelectedItems (handle, id.length, id, OS.kDataBrowserItemsAssign);
-	ignoreSelect = false;
-	showIndex (index);
+	if (0 <= index && index < itemCount) {
+		int [] id = new int [] {index + 1};
+		ignoreSelect = true;
+		OS.SetDataBrowserSelectedItems (handle, id.length, id, OS.kDataBrowserItemsAssign);
+		ignoreSelect = false;
+		showIndex (index);
+	}
 }
 
 public void setSelection (int start, int end) {
@@ -583,10 +634,16 @@ public void setTopIndex (int index) {
 }
 
 void showIndex (int index) {
-	OS.RevealDataBrowserItem (handle, index + 1, COLUMN_ID, (byte) OS.kDataBrowserRevealWithoutSelecting);
-    int [] top = new int [1], left = new int [1];
-    OS.GetDataBrowserScrollPosition (handle, top, left);
-    OS.SetDataBrowserScrollPosition (handle, top [0], 0);
+	if (0 <= index && index < itemCount) {
+		short [] width = new short [1];
+		OS.GetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, width);
+		Rect rect = new Rect (), inset = new Rect ();
+		OS.GetControlBounds (handle, rect);
+		OS.GetDataBrowserScrollBarInset (handle, inset);
+		OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short)(rect.right - rect.left - inset.left - inset.right));
+		OS.RevealDataBrowserItem (handle, index + 1, COLUMN_ID, (byte) OS.kDataBrowserRevealWithoutSelecting);
+		OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short)width [0]);
+	}
 }
 
 public void showSelection () {
