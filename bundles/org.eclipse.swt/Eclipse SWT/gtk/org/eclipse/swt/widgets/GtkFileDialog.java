@@ -22,12 +22,8 @@ void createGtkDialog() {
 	/* create */
 	byte [] titleBytes = Converter.wcsToMbcs (null, title, true);
 	handle = OS.gtk_file_selection_new (titleBytes);
-	
-	/* buttons */
-	GtkFileSelection dialog = new GtkFileSelection ();
-	OS.memmove (dialog, handle, GtkFileSelection.sizeof);
-	okButtonHandle = dialog.ok_button;
-	cancelButtonHandle = dialog.cancel_button;
+	okButtonHandle = OS.GTK_FILE_SELECTION_OK_BUTTON(handle);
+	cancelButtonHandle = OS.GTK_FILE_SELECTION_OK_BUTTON(handle);
 }
 
 /**
