@@ -20,7 +20,7 @@ HRESULT DllGetVersion(DLLVERSIONINFO *dvi)
 {
      dvi->dwMajorVersion = SWT_VERSION / 1000;
      dvi->dwMinorVersion = SWT_VERSION % 1000;
-     dvi->dwBuildNumber = SWT_BUILD_NUM;
+     dvi->dwBuildNumber = 0;
      dvi->dwPlatformID = DLLVER_PLATFORM_WINDOWS;
      return 1;
 }
