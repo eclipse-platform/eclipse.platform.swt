@@ -870,14 +870,16 @@ boolean isSelectionHit(int xPosition) {
 void notifyImageChanged(int columnIndex, boolean imageWasNull) {	
 	Table parent = getParent();
 	Rectangle changedColumnBounds;
+	Image currentImage;
 	int redrawStartX = 0;
 	int redrawWidth = 0;
 	int columnCount = parent.internalGetColumnCount();	
 
 	if (columnIndex >= 0 && columnIndex < columnCount && parent.getVisibleRedrawY(this) != -1) {
 		changedColumnBounds = parent.internalGetColumn(columnIndex).getBounds();
+		currentImage = getImage(columnIndex);		
 		redrawStartX = Math.max(0, getImageBounds(columnIndex).x);
-		if (parent.getImageExtent() != null && imageWasNull == false) {
+		if (parent.getImageExtent() != null && imageWasNull == false && currentImage != null) {
 			redrawWidth = getImageStopX(columnIndex);
 		}
 		else {
