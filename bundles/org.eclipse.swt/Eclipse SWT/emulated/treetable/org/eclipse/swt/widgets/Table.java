@@ -405,7 +405,7 @@ void columnMouseDoubleClick(Event event) {
 			if (hitItem.isSelectionHit(event.x) == true) {
 				Event columnDblClickEvent = new Event();
 				columnDblClickEvent.item = hitItem;
-				notifyListeners(SWT.DefaultSelection, columnDblClickEvent);
+				postEvent(SWT.DefaultSelection, columnDblClickEvent);
 			}
 		}
 	}
