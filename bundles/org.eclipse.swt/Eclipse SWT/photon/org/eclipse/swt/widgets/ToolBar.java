@@ -15,6 +15,20 @@ public /*final*/ class ToolBar extends Composite {
 
 public ToolBar (Composite parent, int style) {
 	super (parent, checkStyle (style));
+
+	/*
+	* Ensure that either of HORIZONTAL or VERTICAL is set.
+	* NOTE: HORIZONTAL and VERTICAL have the same values
+	* as H_SCROLL and V_SCROLL so it is necessary to first
+	* clear these bits to avoid scroll bars and then reset
+	* the bits using the original style supplied by the
+	* programmer.
+	*/
+	this.style = checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
+	int [] args = {
+		OS.Pt_ARG_ORIENTATION, (style & SWT.VERTICAL) == 0 ? OS.Pt_HORIZONTAL : OS.Pt_VERTICAL, 0,
+	};
+	OS.PtSetResources(handle, args.length / 3, args);
 }
 static int checkStyle (int style) {
 	/*
@@ -57,7 +71,8 @@ void createHandle (int index) {
 	int parentHandle = parent.handle;
 	
 	int [] args = {
-//		OS.Pt_ARG_ORIENTATION, (style & SWT.WRAP) == 0 ? OS.Pt_HORIZONTAL : OS.Pt_VERTICAL, 0,
+//		OS.Pt_ARG_ORIENTATION, (style & SWT.VERTICAL) == 0 ? OS.Pt_HORIZONTAL : OS.Pt_VERTICAL, 0,
+		OS.Pt_ARG_TOOLBAR_FLAGS, 0, OS.Pt_TOOLBAR_DRAGGABLE | OS.Pt_TOOLBAR_END_SEPARATOR,
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 	};
 	handle = OS.PtCreateWidget (OS.PtToolbar (), parentHandle, args.length / 3, args);
