@@ -1337,6 +1337,13 @@ public class SWT {
 	public static final int ERROR_FAILED_LOAD_LIBRARY = 47;
 	
 	/**
+	 * traversal event detail field value indicating that no 
+	 * traversal action should be taken.
+	 * (value is 0)
+	 */
+	public static final int TRAVERSE_NONE = 0;
+	
+	/**
 	 * traversal event detail field value indicating that the 
 	 * key which designates that a dialog should be cancelled was
 	 * pressed; typically, this is the ESC key
