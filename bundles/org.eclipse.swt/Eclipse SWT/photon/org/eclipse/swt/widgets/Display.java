@@ -822,6 +822,10 @@ public int getIconDepth () {
 	return getDepth ();
 }
 
+int getMessageCount () {
+	return synchronizer.getMessageCount ();
+}
+
 /**
  * Returns an array of monitors attached to the device.
  * 
@@ -1899,6 +1903,7 @@ public void setSynchronizer (Synchronizer synchronizer) {
  */
 public boolean sleep () {
 	checkDevice ();
+	if (getMessageCount () != 0) return true;
 	OS.PtFlush ();
 	OS.PtHold ();
 	OS.PtAppProcessEvent (app_context);
