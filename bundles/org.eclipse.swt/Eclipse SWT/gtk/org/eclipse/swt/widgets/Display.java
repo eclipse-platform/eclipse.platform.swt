@@ -841,10 +841,9 @@ public Point getCursorLocation () {
 	return new Point (x [0], y [0]);
 }
 
-public Point getCursorSize () {
+public Point [] getCursorSizes () {
 	checkDevice ();
-	/* Standard cursor size is defined in documentation for gdk_cursor_new_from_pixmap */
-	return new Point (16, 16);
+	return new Point [] {new Point (16, 16), new Point (32, 32)}; 
 }
 
 /**
@@ -1038,6 +1037,11 @@ public int getDepth () {
 public int getIconDepth () {
 	checkDevice ();
 	return getDepth ();
+}
+
+public Point [] getIconSizes () {
+	checkDevice ();
+	return new Point [] {new Point (16, 16), new Point (32, 32)}; 
 }
 
 int getLastEventTime () {
