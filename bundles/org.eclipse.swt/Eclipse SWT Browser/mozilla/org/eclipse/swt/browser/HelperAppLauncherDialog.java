@@ -100,8 +100,34 @@ public int Show(int aLauncher, int aContext, int aForced) {
 	return helperAppLauncher.SaveToDisk(0, false);
 }
 
-public int PromptForSaveToFile(int aLauncher, int aWindowContext, int aDefaultFile, int aSuggestedFileExtension, int _retval) {
-	nsIHelperAppLauncher helperAppLauncher = new nsIHelperAppLauncher(aLauncher);
+public int PromptForSaveToFile(int arg0, int arg1, int arg2, int arg3, int arg4) {
+	nsIHelperAppLauncher helperAppLauncher = null;
+	int aDefaultFile, aSuggestedFileExtension, _retval;
+	/*
+	* Feature in Mozilla.  The nsIHelperAppLauncherDialog interface is not frozen 
+	* despite being the only way to download files when embedding Mozilla.  Starting 
+	* with Mozilla 1.5, the method PromptForSaveToFile takes an extra argument and 
+	* previous arguments are shifted by one position.  The workaround is to provide 
+	* an XPCOMObject that fits the newer API.  In all cases the first argument is a 
+	* nsISupports reference. In the newer versions, that argument is nsIHelperAppLauncher,
+	* a subclass of nsISupports.  The ordering of the arguments is inferred from the 
+	* type of the first argument. 
+	*/
+	nsISupports support = new nsISupports(arg0);
+	int[] result = new int[1];
+	int rc = support.QueryInterface(nsIHelperAppLauncher.NS_IHELPERAPPLAUNCHER_IID, result);
+	if (rc != XPCOM.NS_OK || result[0] != arg0) { 
+		aDefaultFile = arg1;
+		aSuggestedFileExtension = arg2;
+		_retval = arg3;
+	}
+	else {
+		helperAppLauncher = new nsIHelperAppLauncher(arg0);
+		aDefaultFile = arg2;
+		aSuggestedFileExtension = arg3;
+		_retval = arg4;
+	}
+	result[0] = 0;
 	int length = XPCOM.nsCRT_strlen_PRUnichar(aDefaultFile);
 	char[] dest = new char[length];
 	XPCOM.memmove(dest, aDefaultFile, length * 2);
@@ -119,13 +145,15 @@ public int PromptForSaveToFile(int aLauncher, int aWindowContext, int aDefaultFi
 	String name = fileDialog.open();
 	shell.close();
 	if (name == null) {
-		int rc = helperAppLauncher.Cancel();
-		if (rc != XPCOM.NS_OK) Browser.error(rc);
-		return XPCOM.NS_OK;
+		if (helperAppLauncher != null) {
+			rc = helperAppLauncher.Cancel();
+			if (rc != XPCOM.NS_OK) Browser.error(rc);
+			return XPCOM.NS_OK;
+		}
+		return XPCOM.NS_ERROR_FAILURE;
 	}
-	int[] result = new int[1];
 	nsString path = new nsString(name);
-	int rc = XPCOM.NS_NewLocalFile(path.getAddress(), true, result);
+	rc = XPCOM.NS_NewLocalFile(path.getAddress(), true, result);
 	path.dispose();
 	if (rc != XPCOM.NS_OK) Browser.error(rc);
 	if (result[0] == 0) Browser.error(XPCOM.NS_ERROR_NULL_POINTER);

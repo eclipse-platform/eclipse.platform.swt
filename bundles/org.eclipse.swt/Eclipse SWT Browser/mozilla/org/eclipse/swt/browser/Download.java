@@ -323,6 +323,7 @@ int OnProgressChange(int aWebProgress, int aRequest, int aCurSelfProgress, int a
 	if (shell != null & !shell.isDisposed()) {
 		status.setText(DOWNLOAD+currentBytes+KO+OF+totalBytes+KO);
 		shell.layout(true);
+		shell.getDisplay().update();
 	}
 	return XPCOM.NS_OK;
 }		
