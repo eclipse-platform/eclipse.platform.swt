@@ -69,6 +69,7 @@ abstract class Tab {
 	boolean [] eventsFilter;
 
 	static final String [] EVENT_NAMES = {
+		"None",
 		"KeyDown", "KeyUp",
 		"MouseDown", "MouseUp", "MouseMove", "MouseEnter", "MouseExit", "MouseDoubleClick",
 		"Paint", "Move", "Resize", "Dispose",
@@ -81,7 +82,9 @@ abstract class Tab {
 		"Activate", "Deactivate",
 		"Help", "DragDetect", "Arm", "Traverse", "MouseHover",
 		"HardKeyDown", "HardKeyUp",
-		"MenuDetect"
+		"MenuDetect",
+		"SetData",
+		"MouseWheel",
 	};
 
 	/**
@@ -773,6 +776,14 @@ abstract class Tab {
 		eventConsole.append (toString);
 		eventConsole.append ("\n");
 	}
+	
+	/**
+	 * Logs a string to the event console.
+	 */
+	void log (String string) {
+		eventConsole.append (string);
+		eventConsole.append ("\n");
+	}
 
 	/**
 	 * Logs a typed event to the event console.
@@ -934,6 +945,10 @@ abstract class Tab {
 		setExampleWidgetForeground ();
 		setExampleWidgetFont ();
 		setExampleWidgetSize ();
+		Control [] controls = getExampleWidgets ();
+		for (int i=0; i<controls.length; i++) {
+			log ("Control=" + controls [i] + ", border width=" + controls [i].getBorderWidth ());
+		}
 	}
 	
 	/**
