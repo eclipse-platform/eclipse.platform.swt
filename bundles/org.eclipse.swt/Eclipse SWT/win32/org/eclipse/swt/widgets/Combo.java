@@ -682,15 +682,6 @@ public String getText () {
 	return buffer.toString (0, length);
 }
 
-String getText (int start, int stop) {
-	/*
-	 * NOTE: The current implementation uses substring ()
-	 * which can reference a potentially large character
-	 * array.
-	 */
-	return getText ().substring (start, stop - 1);
-}
-
 /**
  * Returns the height of the receivers's text field.
  *
