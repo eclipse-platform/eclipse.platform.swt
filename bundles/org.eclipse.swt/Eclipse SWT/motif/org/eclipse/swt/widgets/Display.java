@@ -596,7 +596,7 @@ boolean filterEvent (XAnyEvent event) {
 
 	/* Check the event and find the widget */
 	if (event.type != OS.KeyPress) return false;
-	if (!OS.IsLinux && OS.XFilterEvent(event, OS.None)) return true;
+	if (!OS.IsLinux && OS.XFilterEvent (event, OS.None)) return true;
 	
 	/* Move the any event into the key event */
 	OS.memmove (keyEvent, event, XKeyEvent.sizeof);
