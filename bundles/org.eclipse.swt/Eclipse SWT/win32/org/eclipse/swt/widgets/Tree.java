@@ -1301,8 +1301,27 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 	* proc in these cases.
 	*/
 	switch (wParam) {
-		case OS.VK_ESCAPE:
 		case OS.VK_RETURN:
+			/*
+			* Feature in Windows.  Windows sends NM_RETURN from WM_KEYDOWN
+			* instead of using WM_CHAR.  This means that application code
+			* that expects to consume the key press and therefore avoid the
+			* SWT.DefaultSelection event from WM_CHAR will fail.  The fix
+			* is to implement SWT.DefaultSelection in WM_CHAR instead of
+			* using NM_RETURN.
+			*/
+			Event event = new Event ();
+			int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+			if (hItem != 0) {
+				TVITEM tvItem = new TVITEM ();
+				tvItem.hItem = hItem;
+				tvItem.mask = OS.TVIF_PARAM;
+				OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+				event.item = items [tvItem.lParam];
+			}
+			postEvent (SWT.DefaultSelection, event);
+			//FALL THROUGH
+		case OS.VK_ESCAPE:
 		case OS.VK_SPACE: return LRESULT.ZERO;
 	}
 	return result;
@@ -1890,7 +1909,6 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
 			if ((lpht.flags & OS.TVHT_ONITEM) == 0) break;
 			// FALL THROUGH
-		case OS.NM_RETURN:
 		case OS.TVN_SELCHANGEDA:
 		case OS.TVN_SELCHANGEDW:
 			if (!ignoreSelect) {
