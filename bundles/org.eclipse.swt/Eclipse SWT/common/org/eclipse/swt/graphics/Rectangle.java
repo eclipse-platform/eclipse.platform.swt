@@ -174,6 +174,7 @@ public int hashCode () {
 public Rectangle intersection (Rectangle rect) {
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (this == rect) return new Rectangle (x, y, width, height);
+	if (!intersects (rect)) return new Rectangle (0, 0, 0, 0);
 	int left = x > rect.x ? x : rect.x;
 	int top = y > rect.y ? y : rect.y;
 	int lhs = x + width;
