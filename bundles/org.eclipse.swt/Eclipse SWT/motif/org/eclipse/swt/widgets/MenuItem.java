@@ -834,7 +834,7 @@ public void setText (String string) {
 		if (xmString2 == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 	} else {
 		/*
-		* Bug in motif.  In some versions of linux motif, setting a menu item's
+		* Bug in linux.  In some versions of linux motif setting a menu item's
 		* accelerator to NULL will cause a GP.  The workaround is to instead
 		* set these accelerators to a functionally equivalent non-null value.
 		*/
