@@ -20,7 +20,7 @@ class StyledTextBidi {
 	int[] dx;
 	byte[] classBuffer;
 	byte[] glyphBuffer;
-
+	
 	class DirectionRun {
 		int logicalStart;
 		int logicalEnd;
@@ -248,9 +248,10 @@ public int[] getCaretOffsetAndDirectionAtX(int x) {
 	int halfway = renderPositions[visualIndex] + (dx[visualIndex] / 2);
 	boolean visualLeft = (x <= halfway);
 	int direction;
+	offset = getLogicalOffset(visualIndex);
+
 	// handle visual beginning
 	if (visualIndex == 0) {
-		offset = order[0];
 		if (isRightToLeft(offset)) {
 			if (visualLeft) {
 				offset = getLigatureOffset(offset);
@@ -273,7 +274,6 @@ public int[] getCaretOffsetAndDirectionAtX(int x) {
 		return new int[] {offset, direction};
 	}	
 
-	offset = getLogicalOffset(visualIndex);
 	// handle visual end
 	if (visualIndex == renderPositions.length - 1) {
 		if (isRightToLeft(offset)) {
