@@ -189,7 +189,7 @@ public Point computeSize (int wHint, int hHint) {
 	int hwnd = parent.handle;
 	RECT rect = new RECT ();
 	OS.SendMessage (hwnd, OS.RB_GETBANDBORDERS, index, rect);
-	width += rect.left + rect.right + 2;
+	width += rect.left + rect.right + CoolBar.INSET;
 	return new Point (width, height);
 }
 
@@ -363,7 +363,7 @@ public Point getPreferredSize () {
 	OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
 	RECT rect = new RECT ();
 	OS.SendMessage (hwnd, OS.RB_GETBANDBORDERS, index, rect);
-	int width = rbBand.cxIdeal + rect.left + rect.right + 2;
+	int width = rbBand.cxIdeal + rect.left + rect.right + CoolBar.INSET;
 	return new Point (width, rbBand.cyMinChild);
 }
 
@@ -382,6 +382,8 @@ public void setPreferredSize (int width, int height) {
 	checkWidget ();
 	int index = parent.indexOf (this);
 	if (index == -1) return;
+	width = Math.max (0, width);
+	height = Math.max (0, height);
 	ideal = true;
 	int hwnd = parent.handle;
 	RECT rect = new RECT ();
@@ -395,7 +397,7 @@ public void setPreferredSize (int width, int height) {
 	
 	/* Set the size fields we are currently modifying. */
 	rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_IDEALSIZE;
-	rbBand.cxIdeal = width - rect.left - rect.right - 2;
+	rbBand.cxIdeal = Math.max (0, width - rect.left - rect.right - CoolBar.INSET);
 	rbBand.cyMaxChild = height;
 	if (!minimum) rbBand.cyMinChild = height;
 	OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, rbBand);
@@ -466,6 +468,8 @@ public void setSize (int width, int height) {
 	checkWidget ();
 	int index = parent.indexOf (this);
 	if (index == -1) return;
+	width = Math.max (0, width);
+	height = Math.max (0, height);
 	int hwnd = parent.handle;
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
@@ -493,7 +497,7 @@ public void setSize (int width, int height) {
 	if (!ideal) {
 		RECT rect = new RECT ();
 		OS.SendMessage (hwnd, OS.RB_GETBANDBORDERS, index, rect);
-		rbBand.cxIdeal = width - rect.left - rect.right - 2;
+		rbBand.cxIdeal = Math.max (0, width - rect.left - rect.right - CoolBar.INSET);
 	}
 	if (!minimum) rbBand.cyMinChild = height;
 	rbBand.cyChild = rbBand.cyMaxChild = height;
@@ -571,6 +575,8 @@ public void setMinimumSize (int width, int height) {
 	checkWidget ();
 	int index = parent.indexOf (this);
 	if (index == -1) return;
+	width = Math.max (0, width);
+	height = Math.max (0, height);
 	minimum = true;
 	int hwnd = parent.handle;
 	REBARBANDINFO rbBand = new REBARBANDINFO ();

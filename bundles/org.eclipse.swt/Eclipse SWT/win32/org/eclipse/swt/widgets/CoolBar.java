@@ -53,6 +53,7 @@ public class CoolBar extends Composite {
 		OS.GetClassInfo (0, ReBarClass, lpWndClass);
 		ReBarProc = lpWndClass.lpfnWndProc;
 	}
+	static final int INSET = 4;
 	static final int MAX_WIDTH = 0x7FFF;
 
 /**
@@ -152,7 +153,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 				width = Math.max(width, rowWidth);
 				rowWidth = 0;
 			}
-			rowWidth += rbBand.cxIdeal + rect.left + rect.right + 2;
+			rowWidth += rbBand.cxIdeal + rect.left + rect.right + INSET;
 		}
 		width = Math.max(width, rowWidth);
 		if (redraw) {
