@@ -1637,7 +1637,7 @@ void showIMWindow (Control control) {
 	OS.gtk_im_context_get_preedit_string (imHandle, preeditString, pangoAttrs, null);
 	if (preeditString [0] != 0 && OS.strlen (preeditString [0]) > 0) {
 		OS.gtk_widget_modify_bg (preeditWindow, 0, control.getBackgroundColor ());
-		OS.gtk_widget_modify_fg (preeditWindow, 0, control.getForegroundColor ());		
+		OS.gtk_widget_modify_fg (preeditLabel, 0, control.getForegroundColor ());		
 		OS.gtk_widget_modify_font (preeditLabel, control.getFontDescription ());
 		if (pangoAttrs [0] != 0) OS.gtk_label_set_attributes (preeditLabel, pangoAttrs[0]);
 		OS.gtk_label_set_text (preeditLabel, preeditString [0]);
