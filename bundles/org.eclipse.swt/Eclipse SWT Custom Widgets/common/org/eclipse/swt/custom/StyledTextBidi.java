@@ -228,11 +228,11 @@ int[] getCaretOffsetAndDirectionAtX(int x) {
 		return new int[] {0, 0};
 	}	
 	int eol = renderPositions[renderPositions.length - 1] + dx[dx.length - 1];
-	if (x > eol) {
+	if (x >= eol) {
 		return new int[] {lineLength, ST.COLUMN_NEXT};
 	}
 	// get the index visually clicked character
-	int visualIndex = getVisualOffsetAtX(x);	
+	int visualIndex = getVisualOffsetAtX(x);
 	// figure out if the character was clicked on the right or left
 	int halfway = renderPositions[visualIndex] + (dx[visualIndex] / 2);
 	boolean visualLeft = (x <= halfway);
@@ -462,7 +462,7 @@ int getOffsetAtX(int x) {
 	if (getTextLength() == 0) {
 		return 0;
 	}
-	if (x > renderPositions[renderPositions.length - 1] + dx[dx.length - 1]) {
+	if (x >= renderPositions[renderPositions.length - 1] + dx[dx.length - 1]) {
 		// Return when x is past the end of the line. Fixes 1GLADBK.
 		return -1;
 	}
