@@ -26,6 +26,7 @@ import java.awt.EventQueue;
 import java.awt.Canvas;
 import java.awt.Frame;
 import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowEvent;
@@ -34,6 +35,7 @@ import java.awt.event.FocusEvent;
 public class SWT_AWT {
 	
 	static {
+		Toolkit.getDefaultToolkit();
 		System.loadLibrary("jawt");
 		Library.loadLibrary("swt-awt");
 	}
