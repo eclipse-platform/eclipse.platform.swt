@@ -38,6 +38,7 @@ public class XPCOM {
 	public static final String NS_GRE_DIR = "GreD"; //$NON-NLS-1$
 	public static final String NS_GRE_COMPONENT_DIR = "GreComsD"; //$NON-NLS-1$
 	public static final String NS_APP_PLUGINS_DIR_LIST = "APluginsDL"; //$NON-NLS-1$
+	public static final String NS_APP_USER_PROFILE_50_DIR = "ProfD"; //$NON-NLS-1$
 	public static final String PLUGINS_DIR_NAME = "plugins"; //$NON-NLS-1$
 	public static final String COMPONENTS_DIR_NAME = "components"; //$NON-NLS-1$
 	public static final String NS_XPCOM_INIT_CURRENT_PROCESS_DIR = "MozBinD"; //$NON-NLS-1$
