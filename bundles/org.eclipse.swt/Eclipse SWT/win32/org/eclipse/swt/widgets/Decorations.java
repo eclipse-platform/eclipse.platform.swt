@@ -91,7 +91,7 @@ public class Decorations extends Canvas {
 	MenuItem [] items;
 	Control savedFocus;
 	Button defaultButton, saveDefault;
-	int swFlags, hAccel;
+	int swFlags, hAccel, nAccel;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -188,9 +188,8 @@ protected void checkSubclass () {
 }
 
 void createAcceleratorTable () {
-	hAccel = 0;
-	if ((menuBar == null) || (items == null)) return;
-	int nAccel = 0;
+	hAccel = nAccel = 0;
+	if (menuBar == null || items == null) return;
 	int size = ACCEL.sizeof;
 	ACCEL accel = new ACCEL ();
 	byte [] buffer1 = new byte [size];
@@ -237,7 +236,7 @@ Control currentTabGroup () {
 }
 
 void destroyAcceleratorTable () {
-	if ((hAccel != 0) && (hAccel != -1)) OS.DestroyAcceleratorTable (hAccel);
+	if (hAccel != 0 && hAccel != -1) OS.DestroyAcceleratorTable (hAccel);
 	hAccel = -1;
 }
 
@@ -252,7 +251,7 @@ Menu findMenu (int hMenu) {
 
 MenuItem findMenuItem (int id) {
 	if (items == null) return null;
-	if ((0 <= id) && (id < items.length)) return items [id];
+	if (0 <= id && id < items.length) return items [id];
 	return null;
 }
 
@@ -907,6 +906,16 @@ int widgetStyle () {
 	}
 	
 	return bits;
+}
+
+int windowProc (int msg, int wParam, int lParam) {
+	switch (msg) {
+		case OS.WM_APP:
+		case OS.WM_APP+1:
+			if (hAccel == -1) createAcceleratorTable ();
+			return msg == OS.WM_APP ? nAccel : hAccel;
+	}
+	return super.windowProc (msg, wParam, lParam);
 }
 
 LRESULT WM_ACTIVATE (int wParam, int lParam) {
