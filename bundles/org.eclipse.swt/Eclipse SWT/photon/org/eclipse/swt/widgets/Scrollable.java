@@ -188,6 +188,11 @@ public ScrollBar getVerticalBar () {
 	return verticalBar;
 }
 
+boolean isTabGroup () {
+	if ((state & CANVAS) != 0) return true;
+	return super.isTabGroup ();
+}
+
 void releaseHandle () {
 	super.releaseHandle ();
 	scrolledHandle = 0;
