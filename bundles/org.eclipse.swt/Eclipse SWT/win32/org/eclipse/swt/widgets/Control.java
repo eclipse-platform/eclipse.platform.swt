@@ -1036,7 +1036,7 @@ public boolean isFocusControl () {
 	return hasFocus ();
 }
 
-public boolean isFocusAncestor () {
+boolean isFocusAncestor () {
 	Display display = getDisplay ();
 	Control control = display.getFocusControl ();
 	while (control != null && control != this) {
