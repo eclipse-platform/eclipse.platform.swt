@@ -644,8 +644,7 @@ void onPaint(Event event) {
 		for (int i = 0; i < items[row].length; i++) {
 			bounds = items[row][i].getBounds();
 			if (!gc.getClipping().intersects(bounds)) continue;
-			int grabberHeight = bounds.height - (2 * CoolItem.MARGIN_HEIGHT) - 1;
-	
+
 			/* Draw separator. */
 			gc.setForeground(shadowColor);
 			gc.drawLine(bounds.x, bounds.y, bounds.x, bounds.y + bounds.height - 1);
@@ -654,23 +653,25 @@ void onPaint(Event event) {
 		
 			/* Draw grabber. */
 			if (!isLocked) {
+				int grabberTrim = 2; 
+				int grabberHeight = bounds.height - (2 * CoolItem.MARGIN_HEIGHT) - (2 * grabberTrim) - 1;				
 				gc.setForeground(shadowColor);
 				gc.drawRectangle(
 					bounds.x + CoolItem.MARGIN_WIDTH, 
-					bounds.y + CoolItem.MARGIN_HEIGHT, 
+					bounds.y + CoolItem.MARGIN_HEIGHT + grabberTrim, 
 					2, 
 					grabberHeight);
 				gc.setForeground(highlightColor);
 				gc.drawLine(
 					bounds.x + CoolItem.MARGIN_WIDTH, 
-					bounds.y + CoolItem.MARGIN_HEIGHT + 1, 
+					bounds.y + CoolItem.MARGIN_HEIGHT + grabberTrim + 1, 
 					bounds.x + CoolItem.MARGIN_WIDTH, 
-					bounds.y + CoolItem.MARGIN_HEIGHT + grabberHeight - 1);
+					bounds.y + CoolItem.MARGIN_HEIGHT + grabberTrim + grabberHeight - 1);
 				gc.drawLine(
 					bounds.x + CoolItem.MARGIN_WIDTH, 
-					bounds.y + CoolItem.MARGIN_HEIGHT, 
+					bounds.y + CoolItem.MARGIN_HEIGHT + grabberTrim, 
 					bounds.x + CoolItem.MARGIN_WIDTH + 1, 
-					bounds.y + CoolItem.MARGIN_HEIGHT);
+					bounds.y + CoolItem.MARGIN_HEIGHT + grabberTrim);
 			}	
 		}
 		if (row + 1 < items.length) {
@@ -682,8 +683,6 @@ void onPaint(Event event) {
 			gc.drawLine(0, separatorY + 1, stopX, separatorY + 1);			
 		}
 	}
-	gc.setForeground(getForeground());
-	gc.setBackground(getBackground());	
 }
 /**
  * Remove the item from the row. Adjust the x and width values
@@ -818,8 +817,8 @@ int layoutItems () {
 void relayout() {
 	Point size = getSize();
 	int height = layoutItems();
-	height += 2 * getBorderWidth();
-	if (height != size.y) super.setSize(size.x, height);
+	Rectangle trim = computeTrim (0, 0, 0, height);
+	if (height != size.y) super.setSize(size.x, trim.height);
 }
 public void setBounds (int x, int y, int width, int height) {
 	super.setBounds (x, y, width, height);

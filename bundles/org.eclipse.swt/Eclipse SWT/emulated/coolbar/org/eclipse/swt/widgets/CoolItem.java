@@ -34,7 +34,7 @@ public class CoolItem extends Item {
 	Rectangle itemBounds = new Rectangle(0, 0, 0, 0);
 	
 	static final int MARGIN_WIDTH = 4;
-	static final int MARGIN_HEIGHT = 2;
+	static final int MARGIN_HEIGHT = 0;
 	static final int GRABBER_WIDTH = 2;
 	
 	private int CHEVRON_HORIZONTAL_TRIM = -1;			//platform dependent values
