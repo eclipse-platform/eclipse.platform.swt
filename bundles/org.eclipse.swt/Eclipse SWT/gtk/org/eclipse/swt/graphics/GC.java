@@ -1766,6 +1766,14 @@ void setClipping(int /*long*/ clipRgn) {
  */
 public void setClipping(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (width < 0) {
+		x = x + width;
+		width = -width;
+	}
+	if (height < 0) {
+		y = y + height;
+		height = -height;
+	}
 	GdkRectangle rect = new GdkRectangle();
 	rect.x = x;
 	rect.y = y;
