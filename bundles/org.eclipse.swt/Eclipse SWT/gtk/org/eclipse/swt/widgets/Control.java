@@ -1602,7 +1602,10 @@ int gtk_button_press_event (int widget, int event) {
 	display.dragging = false;
 	int result = 0;
 	if (gdkEvent.button == 3 && gdkEvent.type == OS.GDK_BUTTON_PRESS) {
-		if (showMenu ((int)gdkEvent.x, (int)gdkEvent.y)) {
+		int window = OS.GTK_WIDGET_WINDOW (widget);
+		int [] origin_x = new int [1], origin_y = new int [1];
+		OS.gdk_window_get_origin (window, origin_x, origin_y);
+		if (showMenu (origin_x [0] + (int)gdkEvent.x, origin_y [0] + (int)gdkEvent.y)) {
 			result = 1;
 		}
 	}
