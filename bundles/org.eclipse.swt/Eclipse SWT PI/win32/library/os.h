@@ -58,6 +58,7 @@
 #define NO_GCP_RESULTS
 #define NO_GRADIENT_RECT
 #define NO_HELPINFO
+#define NO_HIGHCONTRAST
 #define NO_MENUBARINFO
 #define NO_MENUINFO
 #define NO_NMREBARCHEVRON
@@ -297,10 +298,12 @@
 #define NO_StartDocA
 #define NO_StartDocW
 #define NO_StartPage
+#define NO_SystemParametersInfoA__II_3II
 #define NO_SystemParametersInfoA__IILorg_eclipse_swt_internal_win32_RECT_2I
 #define NO_SystemParametersInfoA__IILorg_eclipse_swt_internal_win32_NONCLIENTMETRICSA_2I
-#define NO_SystemParametersInfoA__II_3II
 #define NO_SystemParametersInfoW__IILorg_eclipse_swt_internal_win32_NONCLIENTMETRICSW_2I
+#define NO_SystemParametersInfoA__IILorg_eclipse_swt_internal_win32_HIGHCONTRAST_2I
+#define NO_SystemParametersInfoW__IILorg_eclipse_swt_internal_win32_HIGHCONTRAST_2I
 #define NO_ToAscii
 #define NO_ToUnicode
 #define NO_TrackMouseEvent

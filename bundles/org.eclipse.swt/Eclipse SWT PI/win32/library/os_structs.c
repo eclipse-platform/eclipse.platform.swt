@@ -1042,7 +1042,7 @@ HIGHCONTRAST *getHIGHCONTRASTFields(JNIEnv *env, jobject lpObject, HIGHCONTRAST 
 	if (!HIGHCONTRASTFc.cached) cacheHIGHCONTRASTFields(env, lpObject);
 	lpStruct->cbSize = (*env)->GetIntField(env, lpObject, HIGHCONTRASTFc.cbSize);
 	lpStruct->dwFlags = (*env)->GetIntField(env, lpObject, HIGHCONTRASTFc.dwFlags);
-	lpStruct->lpszDefaultScheme = (*env)->GetIntField(env, lpObject, HIGHCONTRASTFc.lpszDefaultScheme);
+	lpStruct->lpszDefaultScheme = (LPTSTR)(*env)->GetIntField(env, lpObject, HIGHCONTRASTFc.lpszDefaultScheme);
 	return lpStruct;
 }
 

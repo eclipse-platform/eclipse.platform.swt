@@ -4018,12 +4018,10 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(IntersectRect)
 	RECT _arg2, *lparg2=NULL;
 	jboolean rc;
 	NATIVE_ENTER(env, that, "IntersectRect\n")
-	if (arg0) lparg0 = getRECTFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	if (arg1) lparg1 = getRECTFields(env, arg1, &_arg1);
 	if (arg2) lparg2 = getRECTFields(env, arg2, &_arg2);
 	rc = (jboolean)IntersectRect(lparg0, lparg1, lparg2);
-	if (arg2) setRECTFields(env, arg2, lparg2);
-	if (arg1) setRECTFields(env, arg1, lparg1);
 	if (arg0) setRECTFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "IntersectRect\n")
 	return rc;
