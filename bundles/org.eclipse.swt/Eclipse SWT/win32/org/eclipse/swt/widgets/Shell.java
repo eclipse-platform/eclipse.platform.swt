@@ -1146,7 +1146,7 @@ public void setVisible (boolean visible) {
 	if ((style & mask) != 0) {
 		if (visible) {
 			display.setModalShell (this);
-			Control control = display.getFocusControl ();
+			Control control = display._getFocusControl ();
 			if (control != null && !control.isActive ()) bringToTop ();
 			int hwndShell = OS.GetActiveWindow ();
 			if (hwndShell == 0) {
@@ -1416,7 +1416,7 @@ LRESULT WM_MOUSEACTIVATE (int wParam, int lParam) {
 		case OS.HTNOWHERE:
 			break;
 		default: {
-			Control control = display.getFocusControl ();
+			Control control = display._getFocusControl ();
 			if (control != null) {
 				Decorations decorations = control.menuShell ();
 				if (decorations.getShell () == this && decorations != this) {

@@ -1685,6 +1685,16 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 			postEvent (SWT.Selection);
 			break;
 		case OS.CBN_SETFOCUS:
+			/*
+			* It is possible (but unlikely), that application
+			* code could have disposed the widget in the focus
+			* event.  If this happens, end the processing of the
+			* Windows message by returning zero as the result of
+			* the window proc.
+			*/
+			sendFocusEvent (SWT.FocusIn, OS.GetFocus ());
+			if (isDisposed ()) return LRESULT.ZERO;
+			break;
 		case OS.CBN_KILLFOCUS:
 			/*
 			* It is possible (but unlikely), that application
@@ -1693,7 +1703,7 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 			* Windows message by returning zero as the result of
 			* the window proc.
 			*/
-			sendFocusEvent (code == OS.CBN_SETFOCUS ? SWT.FocusIn : SWT.FocusOut, -1);
+			sendFocusEvent (SWT.FocusOut, OS.GetFocus ());
 			if (isDisposed ()) return LRESULT.ZERO;
 			break;
 	}

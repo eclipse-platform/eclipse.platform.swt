@@ -115,6 +115,10 @@ public class Display extends Device {
 	Control [] controlTable;
 	final static int GROW_SIZE = 1024;
 	
+	/* Focus */
+	int focusEvent;
+	Control focusControl;
+	
 	/* Menus */
 	Menu [] bars, popups;
 	MenuItem [] items;
@@ -355,22 +359,48 @@ public Display (DeviceData data) {
 	super (data);
 }
 
-int asciiKey (int key) {
-	if (OS.IsWinCE) return 0;
-	
-	/* Get the current keyboard. */
-	for (int i=0; i<keyboard.length; i++) keyboard [i] = 0;
-	if (!OS.GetKeyboardState (keyboard)) return 0;
-		
-	/* Translate the key to ASCII or UNICODE using the virtual keyboard */
-	if (OS.IsUnicode) {
-		char [] result = new char [1];
-		if (OS.ToUnicode (key, key, keyboard, result, 1, 0) == 1) return result [0];
-	} else {
-		short [] result = new short [1];
-		if (OS.ToAscii (key, key, keyboard, result, 0) == 1) return result [0];
+public Control _getFocusControl () {
+	checkDevice ();
+	return findControl (OS.GetFocus ());
+}
+
+void addBar (Menu menu) {
+	if (bars == null) bars = new Menu [4];
+	int length = bars.length;
+	for (int i=0; i<length; i++) {
+		if (bars [i] == menu) return;
 	}
-	return 0;
+	int index = 0;
+	while (index < length) {
+		if (bars [index] == null) break;
+		index++;
+	}
+	if (index == length) {
+		Menu [] newBars = new Menu [length + 4];
+		System.arraycopy (bars, 0, newBars, 0, length);
+		bars = newBars;
+	}
+	bars [index] = menu;
+}
+
+void addControl (int handle, Control control) {
+	if (handle == 0) return;
+	if (freeSlot == -1) {
+		int length = (freeSlot = indexTable.length) + GROW_SIZE;
+		int [] newIndexTable = new int [length];
+		Control [] newControlTable = new Control [length];
+		System.arraycopy (indexTable, 0, newIndexTable, 0, freeSlot);
+		System.arraycopy (controlTable, 0, newControlTable, 0, freeSlot);
+		for (int i=freeSlot; i<length-1; i++) newIndexTable [i] = i + 1;
+		newIndexTable [length - 1] = -1;
+		indexTable = newIndexTable;
+		controlTable = newControlTable;
+	}
+	OS.SetWindowLong (handle, OS.GWL_USERDATA, freeSlot + 1);
+	int oldSlot = freeSlot;
+	freeSlot = indexTable [oldSlot];
+	indexTable [oldSlot] = -2;
+	controlTable [oldSlot] = control;
 }
 
 /**
@@ -432,45 +462,6 @@ public void addListener (int eventType, Listener listener) {
 	eventTable.hook (eventType, listener);
 }
 
-void addBar (Menu menu) {
-	if (bars == null) bars = new Menu [4];
-	int length = bars.length;
-	for (int i=0; i<length; i++) {
-		if (bars [i] == menu) return;
-	}
-	int index = 0;
-	while (index < length) {
-		if (bars [index] == null) break;
-		index++;
-	}
-	if (index == length) {
-		Menu [] newBars = new Menu [length + 4];
-		System.arraycopy (bars, 0, newBars, 0, length);
-		bars = newBars;
-	}
-	bars [index] = menu;
-}
-
-void addControl (int handle, Control control) {
-	if (handle == 0) return;
-	if (freeSlot == -1) {
-		int length = (freeSlot = indexTable.length) + GROW_SIZE;
-		int [] newIndexTable = new int [length];
-		Control [] newControlTable = new Control [length];
-		System.arraycopy (indexTable, 0, newIndexTable, 0, freeSlot);
-		System.arraycopy (controlTable, 0, newControlTable, 0, freeSlot);
-		for (int i=freeSlot; i<length-1; i++) newIndexTable [i] = i + 1;
-		newIndexTable [length - 1] = -1;
-		indexTable = newIndexTable;
-		controlTable = newControlTable;
-	}
-	OS.SetWindowLong (handle, OS.GWL_USERDATA, freeSlot + 1);
-	int oldSlot = freeSlot;
-	freeSlot = indexTable [oldSlot];
-	indexTable [oldSlot] = -2;
-	controlTable [oldSlot] = control;
-}
-
 void addMenuItem (MenuItem item) {
 	if (items == null) items = new MenuItem [64];
 	for (int i=0; i<items.length; i++) {
@@ -504,6 +495,24 @@ void addPopup (Menu menu) {
 		popups = newPopups;
 	}
 	popups [index] = menu;
+}
+
+int asciiKey (int key) {
+	if (OS.IsWinCE) return 0;
+	
+	/* Get the current keyboard. */
+	for (int i=0; i<keyboard.length; i++) keyboard [i] = 0;
+	if (!OS.GetKeyboardState (keyboard)) return 0;
+		
+	/* Translate the key to ASCII or UNICODE using the virtual keyboard */
+	if (OS.IsUnicode) {
+		char [] result = new char [1];
+		if (OS.ToUnicode (key, key, keyboard, result, 1, 0) == 1) return result [0];
+	} else {
+		short [] result = new short [1];
+		if (OS.ToAscii (key, key, keyboard, result, 0) == 1) return result [0];
+	}
+	return 0;
 }
 
 /**
@@ -1118,7 +1127,10 @@ public int getDoubleClickTime () {
  */
 public Control getFocusControl () {
 	checkDevice ();
-	return findControl (OS.GetFocus ());
+	if (focusControl != null && !focusControl.isDisposed ()) {
+		return focusControl;
+	}
+	return _getFocusControl ();
 }
 
 /**

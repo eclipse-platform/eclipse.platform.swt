@@ -584,6 +584,7 @@ void fixFocus (Control focusControl) {
  */
 public boolean forceFocus () {
 	checkWidget ();
+	if (display.focusEvent == SWT.FocusOut) return false;
 	Decorations shell = menuShell ();
 	shell.setSavedFocus (this);
 	if (!isEnabled () || !isVisible () || !isActive ()) return false;
@@ -1748,41 +1749,41 @@ boolean sendFocusEvent (int type, int hwnd) {
 	Shell shell = getShell ();
 	
 	/*
-	* It is possible (but unlikely), that application
-	* code could have disposed the widget in the focus
-	* out event.  If this happens keep going to send
-	* the deactivate events.
+	* Feature in Windows.  During the processing of WM_KILLFOCUS,
+	* when the focus window is queried using GetFocus(), it has
+	* already been assigned to the new window.  The fix is to
+	* remember the control that is losing or gaining focus and
+	* answer it during WM_KILLFOCUS.  If a WM_SETFOCUS occurs
+	* during WM_KILLFOCUS, the focus control needs to be updated
+	* to the current control.  At any other time, the focus
+	* control matches Windows.
 	*/
+	Display display = this.display;
+	display.focusEvent = type;
+	display.focusControl = this;
 	sendEvent (type);
 	// widget could be disposed at this point
-	
-	switch (type) {
-		case SWT.FocusIn:
-			/*
-			* It is possible that the shell may be
-			* disposed at this point.  If this happens
-			* don't send the activate and deactivate
-			* events.
-			*/	
-			if (!shell.isDisposed ()) {
+	display.focusEvent = SWT.None;
+	display.focusControl = null;
+
+	/*
+	* It is possible that the shell may be
+	* disposed at this point.  If this happens
+	* don't send the activate and deactivate
+	* events.
+	*/	
+	if (!shell.isDisposed ()) {
+		switch (type) {
+			case SWT.FocusIn:
 				shell.setActiveControl (this);
-			}
-			break;
-		case SWT.FocusOut:
-			/*
-			* It is possible that the shell may be
-			* disposed at this point.  If this happens
-			* don't send the activate and deactivate
-			* events.
-			*/
-			if (!shell.isDisposed ()) {
-				Display display = shell.display;
-				Control control = hwnd != -1 ? display.findControl (hwnd) : display.getFocusControl ();
+				break;
+			case SWT.FocusOut:
+				Control control = display.findControl (hwnd);
 				if (control == null || shell != control.getShell ()) {
 					shell.setActiveControl (null);
 				}
-			}
-			break;
+				break;
+		}
 	}
 	return true;
 }
@@ -2027,8 +2028,10 @@ public void setEnabled (boolean enabled) {
 	Control control = null;
 	boolean fixFocus = false;
 	if (!enabled) {
-		control = display.getFocusControl ();
-		fixFocus = isFocusAncestor (control);
+		if (display.focusEvent != SWT.FocusOut) {
+			control = display.getFocusControl ();
+			fixFocus = isFocusAncestor (control);
+		}
 	}
 	enableWidget (enabled);
 	if (fixFocus) fixFocus (control);
@@ -2395,8 +2398,10 @@ public void setVisible (boolean visible) {
 	Control control = null;
 	boolean fixFocus = false;
 	if (!visible) {
-		control = display.getFocusControl ();
-		fixFocus = isFocusAncestor (control);
+		if (display.focusEvent != SWT.FocusOut) {
+			control = display.getFocusControl ();
+			fixFocus = isFocusAncestor (control);
+		}
 	}
 	if (drawCount != 0) {
 		state = visible ? state & ~HIDDEN : state | HIDDEN;
@@ -4247,7 +4252,7 @@ LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
 				Decorations shell = menuShell ();
 				Menu menu = shell.getMenuBar ();
 				if (menu == null) {
-					Control control = display.getFocusControl ();
+					Control control = display._getFocusControl ();
 					if (control != null) {
 						if (control.hooks (SWT.KeyDown) || control.hooks (SWT.KeyUp)) {
 							display.mnemonicKeyHit = false;
