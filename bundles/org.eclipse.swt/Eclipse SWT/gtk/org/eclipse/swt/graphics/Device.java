@@ -320,7 +320,7 @@ public Point getDPI () {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public FontData[] getFontList (String faceName, boolean scalable) {	
+public FontData[] getFontList (String faceName, boolean scalable) {
 	checkDevice ();
 	if (!scalable) return new FontData[0];
 	int /*long*/[] family = new int /*long*/[1];
@@ -335,23 +335,32 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 	FontData[] fds = new FontData[faceName != null ? 4 : n_families[0]];
 	for (int i=0; i<n_families[0]; i++) {
 		OS.memmove(family, families[0] + i * OS.PTR_SIZEOF, OS.PTR_SIZEOF);
-		OS.pango_font_family_list_faces(family[0], faces, n_faces);
-		for (int j=0; j<n_faces[0]; j++) {
-			OS.memmove(face, faces[0] + j * OS.PTR_SIZEOF, OS.PTR_SIZEOF);
-			int /*long*/ fontDesc = OS.pango_font_face_describe(face[0]);
-			Font font = Font.gtk_new(this, fontDesc);
-			FontData data = font.getFontData()[0];
-			if (faceName == null || Compatibility.equalsIgnoreCase(faceName, data.name)) {
+		boolean match = true;
+		if (faceName != null) {
+			int /*long*/ familyName = OS.pango_font_family_get_name (family[0]);
+			int length = OS.strlen(familyName);
+			byte[] buffer = new byte[length];
+			OS.memmove(buffer, familyName, length);
+			String name = new String(Converter.mbcsToWcs(null, buffer));
+			match = Compatibility.equalsIgnoreCase(faceName, name);
+		}
+		if (match) {
+		    OS.pango_font_family_list_faces(family[0], faces, n_faces);
+		    for (int j=0; j<n_faces[0]; j++) {
+		        OS.memmove(face, faces[0] + j * OS.PTR_SIZEOF, OS.PTR_SIZEOF);
+		        int /*long*/ fontDesc = OS.pango_font_face_describe(face[0]);
+		        Font font = Font.gtk_new(this, fontDesc);
+		        FontData data = font.getFontData()[0];
 				if (nFds == fds.length) {
 					FontData[] newFds = new FontData[fds.length + n_families[0]];
 					System.arraycopy(fds, 0, newFds, 0, nFds);
 					fds = newFds;
 				}
 				fds[nFds++] = data;
-			}
-			OS.pango_font_description_free(fontDesc);
+				OS.pango_font_description_free(fontDesc);
+		    }
+		    OS.g_free(faces[0]);
 		}
-		OS.g_free(faces[0]);
 	}
 	OS.g_free(families[0]);
 	OS.g_object_unref(context);
