@@ -68,86 +68,86 @@ void addStatusTextListener(StatusTextListener listener) {
 void createCOMInterfaces() {
 	// Create each of the interfaces that this object implements
 	supports = new XPCOMObject(new int[]{2, 0, 0}){
-		public int method0(int[] args) {return queryInterface(args[0], args[1]);}
+		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
 		public int method1(int[] args) {return AddRef();}
 		public int method2(int[] args) {return Release();}
 	};
 	
 	weakReference = new XPCOMObject(new int[]{2, 0, 0, 2}){
-		public int method0(int[] args) {return queryInterface(args[0], args[1]);}
+		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
 		public int method1(int[] args) {return AddRef();}
 		public int method2(int[] args) {return Release();}
 		public int method3(int[] args) {return QueryReferent(args[0], args[1]);}
 	};
 
 	webProgressListener = new XPCOMObject(new int[]{2, 0, 0, 4, 6, 3, 4, 3}){
-		public int method0(int[] args) {return queryInterface(args[0], args[1]);}
+		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
 		public int method1(int[] args) {return AddRef();}
 		public int method2(int[] args) {return Release();}
-		public int method3(int[] args) {return onStateChange(args[0], args[1], args[2],args[3]);}
-		public int method4(int[] args) {return onProgressChange(args[0], args[1], args[2],args[3],args[4],args[5]);}
-		public int method5(int[] args) {return onLocationChange(args[0], args[1], args[2]);}
-		public int method6(int[] args) {return onStatusChange(args[0], args[1], args[2],args[3]);}
-		public int method7(int[] args) {return onSecurityChange(args[0], args[1], args[2]);}
+		public int method3(int[] args) {return OnStateChange(args[0], args[1], args[2],args[3]);}
+		public int method4(int[] args) {return OnProgressChange(args[0], args[1], args[2],args[3],args[4],args[5]);}
+		public int method5(int[] args) {return OnLocationChange(args[0], args[1], args[2]);}
+		public int method6(int[] args) {return OnStatusChange(args[0], args[1], args[2],args[3]);}
+		public int method7(int[] args) {return OnSecurityChange(args[0], args[1], args[2]);}
 	};
 	
 	webBrowserChrome = new XPCOMObject(new int[]{2, 0, 0, 2, 1, 1, 1, 1, 0, 2, 0, 1, 1}){
-		public int method0(int[] args) {return queryInterface(args[0], args[1]);}
+		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
 		public int method1(int[] args) {return AddRef();}
 		public int method2(int[] args) {return Release();}
-		public int method3(int[] args) {return setStatus(args[0], args[1]);}
-		public int method4(int[] args) {return getWebBrowser(args[0]);}
-		public int method5(int[] args) {return setWebBrowser(args[0]);}
-		public int method6(int[] args) {return getChromeFlags(args[0]);}
-		public int method7(int[] args) {return setChromeFlags(args[0]);}
-		public int method8(int[] args) {return destroyBrowserWindow();}
-		public int method9(int[] args) {return sizeBrowserTo(args[0], args[1]);}
-		public int method10(int[] args) {return showAsModal();}
-		public int method11(int[] args) {return isWindowModal(args[0]);}
-		public int method12(int[] args) {return exitModalEventLoop(args[0]);}
+		public int method3(int[] args) {return SetStatus(args[0], args[1]);}
+		public int method4(int[] args) {return GetWebBrowser(args[0]);}
+		public int method5(int[] args) {return SetWebBrowser(args[0]);}
+		public int method6(int[] args) {return GetChromeFlags(args[0]);}
+		public int method7(int[] args) {return SetChromeFlags(args[0]);}
+		public int method8(int[] args) {return DestroyBrowserWindow();}
+		public int method9(int[] args) {return SizeBrowserTo(args[0], args[1]);}
+		public int method10(int[] args) {return ShowAsModal();}
+		public int method11(int[] args) {return IsWindowModal(args[0]);}
+		public int method12(int[] args) {return ExitModalEventLoop(args[0]);}
 	};
 	
 	webBrowserChromeFocus = new XPCOMObject(new int[]{2, 0, 0, 0, 0}){
-		public int method0(int[] args) {return queryInterface(args[0], args[1]);}
+		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
 		public int method1(int[] args) {return AddRef();}
 		public int method2(int[] args) {return Release();}
-		public int method3(int[] args) {return focusNextElement();}
-		public int method4(int[] args) {return focusPrevElement();}
+		public int method3(int[] args) {return FocusNextElement();}
+		public int method4(int[] args) {return FocusPrevElement();}
 	};
 		
 	embeddingSiteWindow = new XPCOMObject(new int[]{2, 0, 0, 5, 5, 0, 1, 1, 1, 1, 1}){
-		public int method0(int[] args) {return queryInterface(args[0], args[1]);}
+		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
 		public int method1(int[] args) {return AddRef();}
 		public int method2(int[] args) {return Release();}
-		public int method3(int[] args) {return setDimensions(args[0], args[1], args[2], args[3], args[4]);}
-		public int method4(int[] args) {return getDimensions(args[0], args[1], args[2], args[3], args[4]);}
-		public int method5(int[] args) {return setFocus();}
-		public int method6(int[] args) {return getVisibility(args[0]);}
-		public int method7(int[] args) {return setVisibility(args[0]);}
-		public int method8(int[] args) {return getTitle(args[0]);}
-		public int method9(int[] args) {return setTitle(args[0]);}
-		public int method10(int[] args) {return getSiteWindow(args[0]);}
+		public int method3(int[] args) {return SetDimensions(args[0], args[1], args[2], args[3], args[4]);}
+		public int method4(int[] args) {return GetDimensions(args[0], args[1], args[2], args[3], args[4]);}
+		public int method5(int[] args) {return SetFocus();}
+		public int method6(int[] args) {return GetVisibility(args[0]);}
+		public int method7(int[] args) {return SetVisibility(args[0]);}
+		public int method8(int[] args) {return GetTitle(args[0]);}
+		public int method9(int[] args) {return SetTitle(args[0]);}
+		public int method10(int[] args) {return GetSiteWindow(args[0]);}
 	};
 	
 	interfaceRequestor = new XPCOMObject(new int[]{2, 0, 0, 2}){
-		public int method0(int[] args) {return queryInterface(args[0], args[1]);}
+		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
 		public int method1(int[] args) {return AddRef();}
 		public int method2(int[] args) {return Release();}
-		public int method3(int[] args) {return getInterface(args[0], args[1]);}
+		public int method3(int[] args) {return GetInterface(args[0], args[1]);}
 	};
 		
 	supportsWeakReference = new XPCOMObject(new int[]{2, 0, 0, 1}){
-		public int method0(int[] args) {return queryInterface(args[0], args[1]);}
+		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
 		public int method1(int[] args) {return AddRef();}
 		public int method2(int[] args) {return Release();}
-		public int method3(int[] args) {return getWeakReference(args[0]);}
+		public int method3(int[] args) {return GetWeakReference(args[0]);}
 	};
 	
 	contextMenuListener = new XPCOMObject(new int[]{2, 0, 0, 3}){
-		public int method0(int[] args) {return queryInterface(args[0], args[1]);}
+		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
 		public int method1(int[] args) {return AddRef();}
 		public int method2(int[] args) {return Release();}
-		public int method3(int[] args) {return onShowContextMenu(args[0],args[1],args[2]);}
+		public int method3(int[] args) {return OnShowContextMenu(args[0],args[1],args[2]);}
 	};
 }
 
@@ -190,7 +190,7 @@ void disposeCOMInterfaces() {
 	}
 }
 
-int queryInterface(int riid, int ppvObject) {
+int QueryInterface(int riid, int ppvObject) {
 	if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
 
 	nsID guid = new nsID();
@@ -315,14 +315,14 @@ void removeStatusTextListener(StatusTextListener listener) {
 /* nsIWeakReference implementation */	
 	
 int QueryReferent(int riid, int ppvObject) {
-	return queryInterface(riid,ppvObject);
+	return QueryInterface(riid,ppvObject);
 }
 	
-int getInterface(int riid,int ppvObject) {
-  	return queryInterface(riid,ppvObject);
+int GetInterface(int riid,int ppvObject) {
+  	return QueryInterface(riid,ppvObject);
 }
 
-int getWeakReference(int ppvObject) {
+int GetWeakReference(int ppvObject) {
 	XPCOM.memmove(ppvObject, new int[] {weakReference.getAddress()}, 4);
 	AddRef();
 	return XPCOM.NS_OK;
@@ -330,7 +330,7 @@ int getWeakReference(int ppvObject) {
 
 /* nsIWebProgressListener implementation */
 
-int onStateChange(int aWebProgress, int aRequest, int aStateFlags, int aStatus) {
+int OnStateChange(int aWebProgress, int aRequest, int aStateFlags, int aStatus) {
 	if (((aStateFlags & nsIWebProgressListener.STATE_STOP) != 0) && ((aStateFlags & nsIWebProgressListener.STATE_IS_DOCUMENT) != 0)) {
 		/* navigation completed */
 		ProgressEvent event = new ProgressEvent(browser);
@@ -345,7 +345,7 @@ int onStateChange(int aWebProgress, int aRequest, int aStateFlags, int aStatus) 
 	return XPCOM.NS_OK;
 }	
 
-int onProgressChange(int aWebProgress, int aRequest, int aCurSelfProgress, int aMaxSelfProgress, int aCurTotalProgress, int aMaxTotalProgress) {
+int OnProgressChange(int aWebProgress, int aRequest, int aCurSelfProgress, int aMaxSelfProgress, int aCurTotalProgress, int aMaxTotalProgress) {
 	if (progressListeners.length == 0) return XPCOM.NS_OK;
 	
 	int total = aMaxTotalProgress;
@@ -358,7 +358,7 @@ int onProgressChange(int aWebProgress, int aRequest, int aCurSelfProgress, int a
    	return XPCOM.NS_OK;
 }		
 
-int onLocationChange(int aWebProgress, int aRequest, int aLocation) {
+int OnLocationChange(int aWebProgress, int aRequest, int aLocation) {
 	if (locationListeners.length == 0) return XPCOM.NS_OK;
 	
 	nsIURI location = new nsIURI(aLocation);
@@ -378,7 +378,7 @@ int onLocationChange(int aWebProgress, int aRequest, int aLocation) {
 	return XPCOM.NS_OK;
 }
   
-int onStatusChange(int aWebProgress, int aRequest, int aStatus, int aMessage) {
+int OnStatusChange(int aWebProgress, int aRequest, int aStatus, int aMessage) {
 	if (statusTextListeners.length == 0) return XPCOM.NS_OK;
 	
 	StatusTextEvent event = new StatusTextEvent(browser);
@@ -392,13 +392,13 @@ int onStatusChange(int aWebProgress, int aRequest, int aStatus, int aMessage) {
 	return XPCOM.NS_OK;
 }		
 
-int onSecurityChange(int aWebProgress, int aRequest, int state) {
+int OnSecurityChange(int aWebProgress, int aRequest, int state) {
 	return XPCOM.NS_OK;
 }
 
 /* nsIWebBrowserChrome implementation */
 
-int setStatus(int statusType, int status) {
+int SetStatus(int statusType, int status) {
 	StatusTextEvent event = new StatusTextEvent(browser);
 	int length = XPCOM.nsCRT_strlen_PRUnichar(status);
 	char[] dest = new char[length];
@@ -411,7 +411,7 @@ int setStatus(int statusType, int status) {
 	return XPCOM.NS_OK;
 }		
 
-int getWebBrowser(int aWebBrowser) {
+int GetWebBrowser(int aWebBrowser) {
 	int[] ret = new int[1];
 	nsIWebBrowser  wb = (nsIWebBrowser) browser.getWebBrowser();
 	if (wb != null) ret[0] = wb.getAddress();	
@@ -419,7 +419,7 @@ int getWebBrowser(int aWebBrowser) {
    	return XPCOM.NS_OK;
 }
    
-int setWebBrowser(int aWebBrowser) {
+int SetWebBrowser(int aWebBrowser) {
 	if (aWebBrowser == 0) {
 		browser.setWebBrowser(null);
    		return XPCOM.NS_OK;	
@@ -428,87 +428,87 @@ int setWebBrowser(int aWebBrowser) {
 	return XPCOM.NS_OK;
 }
    
-int getChromeFlags(int aChromeFlags) {
+int GetChromeFlags(int aChromeFlags) {
 	int[] ret = new int[1];
 	ret[0] = chromeFlags;
 	XPCOM.memmove(aChromeFlags, ret, 4);
 	return XPCOM.NS_OK;
 }
 
-int setChromeFlags(int aChromeFlags) {
+int SetChromeFlags(int aChromeFlags) {
 	chromeFlags = aChromeFlags;
 	return XPCOM.NS_OK;
 }
    
-int destroyBrowserWindow() {
+int DestroyBrowserWindow() {
 	return XPCOM.NS_OK;
 }
    	
-int sizeBrowserTo(int aCX, int aCY) {
+int SizeBrowserTo(int aCX, int aCY) {
 	return XPCOM.NS_OK;
 }
 
-int showAsModal() {
+int ShowAsModal() {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
    
-int isWindowModal(int retval) {
+int IsWindowModal(int retval) {
 	// no modal loop
 	XPCOM.memmove(retval, new int[] {0}, 4);
 	return XPCOM.NS_OK;
 }
    
-int exitModalEventLoop(int aStatus) {
+int ExitModalEventLoop(int aStatus) {
 	return XPCOM.NS_OK;
 }
 
-/* nsIEmbeddingSite implementation */ 
+/* nsIEmbeddingSiteWindow implementation */ 
    
-int setDimensions(int flags, int x, int y, int cx, int cy) {
+int SetDimensions(int flags, int x, int y, int cx, int cy) {
 	return XPCOM.NS_OK;   	
 }	
 
-int getDimensions(int flags, int x, int y, int cx, int cy) {
+int GetDimensions(int flags, int x, int y, int cx, int cy) {
 	return XPCOM.NS_OK;     	
 }	
 
-int setFocus() {
+int SetFocus() {
 	return XPCOM.NS_OK;     	
 }	
 
-int getVisibility(int value) {
+int GetVisibility(int value) {
 	return XPCOM.NS_OK;     	
 }
    
-int setVisibility(int value) {
+int SetVisibility(int value) {
 	return XPCOM.NS_OK;     	
 }
 
-int getTitle(int value) {
+int GetTitle(int value) {
 	return XPCOM.NS_OK;     	
 }
  
-int setTitle(int value) {
+int SetTitle(int value) {
 	return XPCOM.NS_OK;     	
 }
 
-int getSiteWindow(int siteWindow) {
+int GetSiteWindow(int siteWindow) {
 	return XPCOM.NS_OK;     	
 }  
  
 /* nsIWebBrowserChromeFocus implementation */
 
-int focusNextElement() {
+int FocusNextElement() {
 	browser.traverse(SWT.TRAVERSE_TAB_NEXT);
    	return XPCOM.NS_OK;  
 }
 
-int focusPrevElement() {
+int FocusPrevElement() {
 	browser.traverse(SWT.TRAVERSE_TAB_PREVIOUS);
    	return XPCOM.NS_OK;     	
 }
 
-int onShowContextMenu(int aContextFlags, int aEvent, int aNode) {
+int OnShowContextMenu(int aContextFlags, int aEvent, int aNode) {
 	return XPCOM.NS_OK;     	
 }	
 }
