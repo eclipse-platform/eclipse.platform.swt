@@ -534,6 +534,11 @@ void postEvent (int eventType, Event event) {
 }
 
 int processEvent (int eventNumber, int int0, int int1, int int2) {
+	/*
+	* Fetuare in GTK.  Events will propagate up the hierarchy. The
+	* fix is to detect this and stop the propagation.
+	*/
+	if (eventNumber < 0) return 1;
 	switch (eventNumber) {
 		case SWT.Arm:				return processArm           	(int0, int1, int2);
 		case SWT.Collapse:			return processCollapse      	(int0, int1, int2);
@@ -549,13 +554,12 @@ int processEvent (int eventNumber, int int0, int int1, int int2) {
 		case SWT.Iconify:			return processIconify         	(int0, int1, int2);
 		case SWT.Deiconify:			return processDeiconify       	(int0, int1, int2);
 		case SWT.Modify:			return processModify          	(int0, int1, int2);
-//		case SWT.MouseDown:			return processMouseDown       	(int0, int1, int2);
-		case SWT.MouseDown:			return processMouse		       	(int0, int1, int2);
+		case SWT.MouseDown:			return processMouseDown       	(int0, int1, int2);
 		case SWT.MouseEnter:		return processMouseEnter      	(int0, int1, int2);
 		case SWT.MouseExit:			return processMouseExit       	(int0, int1, int2);
 		case SWT.MouseHover:		return processMouseHover      	(int0, int1, int2);
 		case SWT.MouseMove:			return processMouseMove       	(int0, int1, int2);
-//		case SWT.MouseUp:			return processMouseUp         	(int0, int1, int2);
+		case SWT.MouseUp:			return processMouseUp         	(int0, int1, int2);
 		case SWT.Move:				return processMove		       	(int0, int1, int2);
 		case SWT.Paint:				return processPaint           	(int0, int1, int2);
 		case SWT.Resize:			return processResize          	(int0, int1, int2);
@@ -617,16 +621,6 @@ int processKeyUp (int arg0, int arg1, int int2) {
 	return 0;
 }
 int processModify (int arg0, int arg1, int int2) {
-	return 0;
-}
-int processMouse (int callData, int arg1, int int2) {
-	switch (OS.GDK_EVENT_TYPE(callData)) {
-		case OS.GDK_KEY_PRESS: return processKeyDown (callData, arg1, int2);
-		case OS.GDK_KEY_RELEASE: return processKeyUp (callData, arg1, int2);
-		case OS.GDK_BUTTON_PRESS:
-		case OS.GDK_2BUTTON_PRESS: return processMouseDown (callData, arg1, int2);
-		case OS.GDK_BUTTON_RELEASE: return processMouseUp (callData, arg1, int2);
-	}
 	return 0;
 }
 int processMouseDown (int arg0, int arg1, int int2) {

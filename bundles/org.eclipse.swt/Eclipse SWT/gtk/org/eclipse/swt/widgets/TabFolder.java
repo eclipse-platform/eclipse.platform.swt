@@ -224,6 +224,10 @@ void destroyItem (TabItem item) {
 	items [itemCount] = null;
 	item.handle = 0;
 }
+
+int eventHandle () {
+	return fixedHandle;
+}
 		
 /**
  * Returns the item at the given, zero-relative index in the

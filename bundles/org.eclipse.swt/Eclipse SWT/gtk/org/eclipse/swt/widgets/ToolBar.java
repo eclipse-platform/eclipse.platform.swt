@@ -96,6 +96,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return computeNativeSize(handle, wHint, hHint, changed);
 }
 
+int eventHandle () {
+	return fixedHandle;
+}
+
 /**
  * Returns the item at the given, zero-relative index in the
  * receiver. Throws an exception if the index is out of range.

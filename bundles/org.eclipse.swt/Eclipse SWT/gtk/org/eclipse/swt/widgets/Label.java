@@ -133,6 +133,10 @@ void deregister () {
 	WidgetTable.remove (frameHandle);
 }
 
+int eventHandle () {
+	return fixedHandle;
+}
+
 void releaseWidget () {
 	super.releaseWidget ();
 	image = null;

@@ -114,29 +114,31 @@ int fontHandle () {
  */
 void hookEvents () {
 	int eventHandle = eventHandle ();
-	signal_connect_after (eventHandle, "expose_event", SWT.Paint, 3);
-	//TEMPORARY CODE - always attempt to add events
-	if (true || !OS.GTK_WIDGET_NO_WINDOW (eventHandle)) {
-		int mask =
-//			OS.GDK_EXPOSURE_MASK | 
-			OS.GDK_POINTER_MOTION_MASK | 
-			OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK | 
-			OS.GDK_ENTER_NOTIFY_MASK | OS.GDK_LEAVE_NOTIFY_MASK | 
-			OS.GDK_KEY_PRESS_MASK | OS.GDK_KEY_RELEASE_MASK |
-			OS.GDK_FOCUS_CHANGE_MASK;
-		OS.gtk_widget_add_events (eventHandle, mask);
-	}
-	//TEMPORARY CODE
-	signal_connect_after (eventHandle, "event-after", SWT.MouseDown, 3);
-//	signal_connect_after (eventHandle, "button_press_event", SWT.MouseDown, 3);
-//	signal_connect_after (eventHandle, "button_release_event", SWT.MouseUp, 3);
-//	signal_connect_after (eventHandle, "key_press_event", SWT.KeyDown, 3);
-//	signal_connect_after (eventHandle, "key_release_event", SWT.KeyUp, 3);
-	signal_connect_after (eventHandle, "motion_notify_event", SWT.MouseMove, 3);
+	int mask =
+		OS.GDK_EXPOSURE_MASK | 
+		OS.GDK_POINTER_MOTION_MASK | 
+		OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK | 
+		OS.GDK_ENTER_NOTIFY_MASK | OS.GDK_LEAVE_NOTIFY_MASK | 
+		OS.GDK_KEY_PRESS_MASK | OS.GDK_KEY_RELEASE_MASK |
+		OS.GDK_FOCUS_CHANGE_MASK;
+	OS.gtk_widget_add_events (eventHandle, mask);
+
+	signal_connect (eventHandle, "button_press_event", SWT.MouseDown, 3);
+	signal_connect (eventHandle, "button_release_event", SWT.MouseUp, 3);
+	signal_connect (eventHandle, "key_press_event", SWT.KeyDown, 3);
+	signal_connect (eventHandle, "key_release_event", SWT.KeyUp, 3);
+	signal_connect (eventHandle, "motion_notify_event", SWT.MouseMove, 3);
+	signal_connect_after (eventHandle, "button_press_event", -SWT.MouseDown, 3);
+	signal_connect_after (eventHandle, "button_release_event", -SWT.MouseUp, 3);
+	signal_connect_after (eventHandle, "key_press_event", -SWT.KeyDown, 3);
+	signal_connect_after (eventHandle, "key_release_event", -SWT.KeyUp, 3);
+	signal_connect_after (eventHandle, "motion_notify_event", -SWT.MouseMove, 3);
+	
 	signal_connect_after (eventHandle, "enter_notify_event", SWT.MouseEnter, 3);
 	signal_connect_after (eventHandle, "leave_notify_event", SWT.MouseExit, 3);
 	signal_connect_after (eventHandle, "focus_in_event", SWT.FocusIn, 3);
 	signal_connect_after (eventHandle, "focus_out_event", SWT.FocusOut, 3);
+	signal_connect_after (eventHandle, "expose_event", SWT.Paint, 3);
 }
 
 int topHandle() {
@@ -1521,12 +1523,12 @@ int processKeyDown (int callData, int arg1, int int2) {
 	int shellHandle = _getShell ().topHandle ();
 	boolean accelResult = OS.gtk_accel_groups_activate (shellHandle, keyval, state [0]);
 	if (!accelResult) sendKeyEvent (SWT.KeyDown, callData);
-	return 1;
+	return 0;
 }
 
 int processKeyUp (int callData, int arg1, int int2) {
 	sendKeyEvent (SWT.KeyUp, callData);
-	return 1;
+	return 0;
 }
 
 int processMouseDown (int callData, int arg1, int int2) {
@@ -1537,15 +1539,13 @@ int processMouseDown (int callData, int arg1, int int2) {
 	return 0;
 }
 
-int processMouseEnter (int arg0, int arg1, int int2) {
-	//NOT IMPLEMENTED - event state
-	sendEvent (SWT.MouseEnter);
-	return 1;
+int processMouseEnter (int callData, int arg1, int int2) {
+	sendMouseEvent(SWT.MouseEnter, 0, callData);
+	return 0;
 }
-int processMouseExit (int arg0, int arg1, int int2) {
-	//NOT IMPLEMENTED - event state
-	sendEvent (SWT.MouseExit);
-	return 1;
+int processMouseExit (int callData, int arg1, int int2) {
+	sendMouseEvent(SWT.MouseExit, 0, callData);
+	return 0;
 }
 
 int processMouseUp (int callData, int arg1, int int2) {

@@ -374,14 +374,8 @@ int processMouseDown (int callData, int arg1, int int2) {
 			int count = list != 0 ? OS.g_list_length (list) : 0;
 			if (count == 0) OS.gtk_widget_grab_focus (handle);
 		}
-		return 1;
 	}
 	return result;
-}
-
-int processMouseMove (int callData, int arg1, int int2) {
-	int result = super.processMouseMove (callData, arg1, int2);
-	return (state & CANVAS) != 0 ? 1 : result;
 }
 
 int processMouseUp (int callData, int arg1, int int2) {
@@ -389,17 +383,14 @@ int processMouseUp (int callData, int arg1, int int2) {
 	//NOT DONE - only release when last button goes up
 	if ((state & CANVAS) != 0) {
 		OS.gtk_grab_remove (handle);
-		return 1;
 	}
 	return result;
 }
 
 int processFocusIn(int int0, int int1, int int2) {
-	OS.GTK_WIDGET_SET_FLAGS(handle, OS.GTK_HAS_FOCUS);
 	return super.processFocusIn(int0, int1, int2);
 }
 int processFocusOut(int int0, int int1, int int2) {
-	OS.GTK_WIDGET_UNSET_FLAGS(handle, OS.GTK_HAS_FOCUS);
 	return super.processFocusOut(int0, int1, int2);
 }
 

@@ -307,16 +307,17 @@ void hookEvents () {
 	int [] handles = new int [] {entryHandle, listHandle, /*combo.button*/};
 	for (int i=0; i<handles.length; i++) {
 		int handle = handles [i];
-		if (!OS.GTK_WIDGET_NO_WINDOW (handle)) {
-			OS.gtk_widget_add_events (handle, mask);
-		}
-		//TEMPORARY CODE
-		signal_connect_after (handle, "event-after", SWT.MouseDown, 3);
-//		signal_connect_after (handle, "button_press_event", SWT.MouseDown, 3);
-//		signal_connect_after (handle, "button_release_event", SWT.MouseUp, 3);
-//		signal_connect_after (handle, "key_press_event", SWT.KeyDown, 3);
-//		signal_connect_after (handle, "key_release_event", SWT.KeyUp, 3);
-		signal_connect_after (handle, "motion_notify_event", SWT.MouseMove, 3);
+		OS.gtk_widget_add_events (handle, mask);
+		signal_connect (handle, "button_press_event", SWT.MouseDown, 3);
+		signal_connect (handle, "button_release_event", SWT.MouseUp, 3);
+		signal_connect (handle, "key_press_event", SWT.KeyDown, 3);
+		signal_connect (handle, "key_release_event", SWT.KeyUp, 3);
+		signal_connect (handle, "motion_notify_event", SWT.MouseMove, 3);
+		signal_connect_after (handle, "button_press_event", -SWT.MouseDown, 3);
+		signal_connect_after (handle, "button_release_event", -SWT.MouseUp, 3);
+		signal_connect_after (handle, "key_press_event", -SWT.KeyDown, 3);
+		signal_connect_after (handle, "key_release_event", -SWT.KeyUp, 3);
+		signal_connect_after (handle, "motion_notify_event", -SWT.MouseMove, 3);
 	}
 }
 

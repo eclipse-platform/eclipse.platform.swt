@@ -126,6 +126,10 @@ void deregister () {
 	WidgetTable.remove (clientHandle);
 }
 
+int eventHandle () {
+	return fixedHandle;
+}
+
 int parentingHandle() {
 	return clientHandle;
 }
