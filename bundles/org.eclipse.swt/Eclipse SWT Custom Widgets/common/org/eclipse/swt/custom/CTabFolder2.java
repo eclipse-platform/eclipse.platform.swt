@@ -465,6 +465,50 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener(SWT.Selection, typedListener);
 	addListener(SWT.DefaultSelection, typedListener);
 }
+void antialias (int[] shape, RGB lineRGB, RGB innerRGB, RGB outerRGB, GC gc){
+	int[] outer = new int[shape.length];
+	int index = 0;
+	boolean left = true;
+	int oldY = onBottom ? 0 : getSize().y;
+	for (int i = 0; i < shape.length/2; i++) {
+		if (left && (index + 3 < shape.length)) {
+			left = onBottom ? oldY <= shape[index+3] : oldY >= shape[index+3];
+			oldY = shape[index+1];
+		}
+		outer[index] = shape[index++] + (left ? -1 : +1);
+		outer[index] = shape[index++];
+	}
+	RGB from = lineRGB;
+	RGB to = outerRGB;
+	int red = from.red + 4*(to.red - from.red)/5;
+	int green = from.green + 4*(to.green - from.green)/5;
+	int blue = from.blue + 4*(to.blue - from.blue)/5;
+	Color color = new Color(getDisplay(), red, green, blue);
+	gc.setForeground(color);
+	gc.drawPolyline(outer);
+	color.dispose();
+	int[] inner = new int[shape.length];
+	index = 0;
+	left = true;
+	oldY = onBottom ? 0 : getSize().y;
+	for (int i = 0; i < shape.length/2; i++) {
+		if (left && (index + 3 < shape.length)) {
+			left = onBottom ? oldY <= shape[index+3] : oldY >= shape[index+3];
+			oldY = shape[index+1];
+		}
+		inner[index] = shape[index++] + (left ? +1 : -1);
+		inner[index] = shape[index++];
+	}
+	from = lineRGB;
+	to = innerRGB;
+	red = from.red + 4*(to.red - from.red)/5;
+	green = from.green + 4*(to.green - from.green)/5;
+	blue = from.blue + 4*(to.blue - from.blue)/5;
+	color = new Color(getDisplay(), red, green, blue);
+	gc.setForeground(color);
+	gc.drawPolyline(inner);
+	color.dispose();
+}
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int minWidth = 0;
@@ -714,43 +758,12 @@ void drawBorder(GC gc) {
 			}
 		}
 
-		// Anti- aliasing
-		int[] shape2 = new int[shape.length];
-		int index = 0;
-		boolean left = true;
-		for (int i = 0; i < shape.length/2; i++) { 
-			shape2[index] = shape[index++] + (left ? -1 : +1);
-			shape2[index] = shape[index++];
-			if (left && (index + 1 < shape.length)) left = onBottom ? shape[index+1] < itemY +itemH - 1 : shape[index+1] > itemY;
-		}
-		RGB from = CTabFolder2.borderColor1.getRGB();
-		RGB to = single ? getBackground().getRGB() : getParent().getBackground().getRGB();
-		int red = from.red + 3*(to.red - from.red)/4;
-		int green = from.green + 3*(to.green - from.green)/4;
-		int blue = from.blue + 3*(to.blue - from.blue)/4;
-		Color color = new Color(getDisplay(), red, green, blue);
-		gc.setForeground(color);
-		gc.drawPolyline(shape2);
-		color.dispose();
-		int[] shape3 = new int[shape.length];
-		index = 0;
-		left = true;
-		for (int i = 0; i < shape.length/2; i++) {
-			shape3[index] = shape[index++] + (left ? +1 : -1);
-			shape3[index] = shape[index++];
-			if (left && (index + 1 < shape.length)) left = onBottom ? shape[index+1] < itemY +itemH - 1 : shape[index+1] > itemY;
-		}
-		from = CTabFolder2.borderColor1.getRGB();
-		to = selectionBackground == null ? getBackground().getRGB() : selectionBackground.getRGB();
-		red = from.red + 3*(to.red - from.red)/4;
-		green = from.green + 3*(to.green - from.green)/4;
-		blue = from.blue + 3*(to.blue - from.blue)/4;
-		color = new Color(getDisplay(), red, green, blue);
-		gc.setForeground(color);
-		gc.drawPolyline(shape3);
-		color.dispose();
-		
 		// draw line
+		antialias(shape, 
+				  borderColor1.getRGB(),  
+				  selectionBackground == null ? getBackground().getRGB() : selectionBackground.getRGB(), 
+				  single ? getBackground().getRGB() : getParent().getBackground().getRGB(),
+				  gc);
 		gc.setForeground(borderColor1);
 		gc.drawPolyline(shape);
 	}
@@ -765,6 +778,7 @@ void drawBorder(GC gc) {
 }
 void drawFlatBorder(GC gc) {
 	Point size = getSize();
+	Color parentBackground = getParent().getBackground();
 	Color color = borderColor1;
 	gc.setForeground(color);
 	if (onBottom) {
@@ -794,7 +808,8 @@ void drawFlatBorder(GC gc) {
 			}
 			shape[index++] = x+width;
 			shape[index++] = y-1;
-			
+		
+			antialias(shape, borderColor1.getRGB(), getBackground().getRGB(), parentBackground.getRGB(), gc);
 			gc.setForeground(borderColor1);
 			gc.drawPolyline(shape);
 		}
@@ -826,6 +841,7 @@ void drawFlatBorder(GC gc) {
 			shape[index++] = x+width;
 			shape[index++] = y+height+1;
 			
+			antialias(shape, borderColor1.getRGB(), getBackground().getRGB(), parentBackground.getRGB(), gc);
 			gc.setForeground(borderColor1);
 			gc.drawPolyline(shape);
 		}
@@ -857,6 +873,7 @@ void draw3DBorder(GC gc) {
 			shape[index++] = x+width;
 			shape[index++] = y-1;
 			
+			antialias(shape, borderColor1.getRGB(), getBackground().getRGB(), parentBackground.getRGB(), gc);
 			gc.setForeground(borderColor1);
 			gc.drawPolyline(shape);
 		} else { // single top border
@@ -880,6 +897,8 @@ void draw3DBorder(GC gc) {
 			}
 			shape[index++] = x+width;
 			shape[index++] = y+height+1;
+			
+			antialias(shape, borderColor1.getRGB(), getBackground().getRGB(), parentBackground.getRGB(), gc);
 			gc.setForeground(borderColor1);
 			gc.drawPolyline(shape);
 		}
