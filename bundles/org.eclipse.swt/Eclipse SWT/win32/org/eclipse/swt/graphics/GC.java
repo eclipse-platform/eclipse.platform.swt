@@ -1124,13 +1124,7 @@ public void drawRoundRectangle (int x, int y, int width, int height, int arcWidt
  * </ul>
  */
 public void drawString (String string, int x, int y) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-//	TCHAR buffer = new TCHAR (getCodePage(), string, false);
-	int length = string.length();
-	char[] buffer = new char [length];
-	string.getChars(0, length, buffer, 0);
-	OS.ExtTextOutW(handle, x, y, 0, null, buffer, length, null);
+	drawString(string, x, y, false);
 }
 
 /** 
@@ -1160,13 +1154,9 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 	int length = string.length();
 	char[] buffer = new char [length];
 	string.getChars(0, length, buffer, 0);
-	if (isTransparent) {
-		int oldBkMode = OS.SetBkMode(handle, OS.TRANSPARENT);
-		OS.ExtTextOutW(handle, x, y, 0, null, buffer, length, null);
-		OS.SetBkMode(handle, oldBkMode);
-	} else {
-		OS.ExtTextOutW(handle, x, y, 0, null, buffer, length, null);
-	}
+	int oldBkMode = OS.SetBkMode(handle, isTransparent ? OS.TRANSPARENT : OS.OPAQUE);
+	OS.ExtTextOutW(handle, x, y, 0, null, buffer, length, null);
+	OS.SetBkMode(handle, oldBkMode);
 }
 
 /** 
@@ -1261,13 +1251,9 @@ public void drawText (String string, int x, int y, int flags) {
 	if ((flags & SWT.DRAW_DELIMITER) == 0) uFormat |= OS.DT_SINGLELINE;
 	if ((flags & SWT.DRAW_TAB) != 0) uFormat |= OS.DT_EXPANDTABS;
 	if ((flags & SWT.DRAW_MNEMONIC) == 0) uFormat |= OS.DT_NOPREFIX;	
-	if ((flags & SWT.DRAW_TRANSPARENT) != 0) {
-		int oldBkMode = OS.SetBkMode(handle, OS.TRANSPARENT);
-		OS.DrawText(handle, buffer, buffer.length(), rect, uFormat);
-		OS.SetBkMode(handle, oldBkMode);
-	} else {
-		OS.DrawText(handle, buffer, buffer.length(), rect, uFormat);
-	}
+	int oldBkMode = OS.SetBkMode(handle, (flags & SWT.DRAW_TRANSPARENT) != 0 ? OS.TRANSPARENT : OS.OPAQUE);
+	OS.DrawText(handle, buffer, buffer.length(), rect, uFormat);
+	OS.SetBkMode(handle, oldBkMode);
 }
 
 /**
@@ -2132,6 +2118,7 @@ public void setLineStyle(int lineStyle) {
 	LOGPEN logPen = new LOGPEN();
 	OS.GetObject(hPen, LOGPEN.sizeof, logPen);
 	if (logPen.lopnStyle == style) return;
+	OS.SetBkMode (handle, style == OS.PS_SOLID ? OS.OPAQUE : OS.TRANSPARENT);
 	int newPen = OS.CreatePen(style, logPen.x, logPen.lopnColor);
 	int oldPen = OS.SelectObject(handle, newPen);
 	OS.DeleteObject(oldPen);

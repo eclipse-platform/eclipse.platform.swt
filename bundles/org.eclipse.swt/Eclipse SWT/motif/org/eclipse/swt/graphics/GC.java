@@ -2343,7 +2343,7 @@ public void setLineStyle(int lineStyle) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	data.lineStyle = lineStyle;
-	OS.XSetLineAttributes(xDisplay, handle, 0, OS.LineDoubleDash, OS.CapButt, OS.JoinMiter);
+	OS.XSetLineAttributes(xDisplay, handle, 0, OS.LineOnOffDash, OS.CapButt, OS.JoinMiter);
 	
 }
 /** 

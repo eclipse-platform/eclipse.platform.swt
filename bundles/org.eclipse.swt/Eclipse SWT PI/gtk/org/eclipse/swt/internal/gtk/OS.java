@@ -112,6 +112,7 @@ public class OS {
 	public static final int GDK_LEFT_PTR = 0x44;
 	public static final int GDK_LEFT_SIDE = 0x46;
 	public static final int GDK_LINE_DOUBLE_DASH = 0x2;
+	public static final int GDK_LINE_ON_OFF_DASH = 0x1;
 	public static final int GDK_LINE_SOLID = 0x0;
 	public static final int GDK_Linefeed = 0xff0A;
 	public static final int GDK_LSB_FIRST = 0x0;

@@ -1671,7 +1671,7 @@ public void setLineStyle(int lineStyle) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	data.lineStyle = lineStyle;
-	OS.gdk_gc_set_line_attributes(handle, 0, OS.GDK_LINE_DOUBLE_DASH, OS.GDK_CAP_BUTT, OS.GDK_JOIN_MITER);
+	OS.gdk_gc_set_line_attributes(handle, 0, OS.GDK_LINE_ON_OFF_DASH, OS.GDK_CAP_BUTT, OS.GDK_JOIN_MITER);
 }
 
 /** 
