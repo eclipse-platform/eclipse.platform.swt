@@ -2190,30 +2190,34 @@ public void setHeaderVisible (boolean show) {
 public void setItemCount (int count) {
 	checkWidget ();
 	count = Math.max (0, count);
+	int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+	if (count == itemCount) return;
 	boolean isVirtual = (style & SWT.VIRTUAL) != 0;
-	setRedraw (false);
-	removeAll ();
+	if (!isVirtual) setRedraw (false);
+	int index = count;
+	while (index < itemCount) {
+		if (!isVirtual) {
+			ignoreSelect = true;
+			int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, count, 0);
+			ignoreSelect = false;
+			if (code == 0) break;
+		}
+		if (items [index] != null) items [index].releaseResources ();
+		index++;
+	}
+	if (index < itemCount) error (SWT.ERROR_ITEM_NOT_REMOVED);
+	TableItem [] newItems =  new TableItem [(count + 3) / 4 * 4];
+	System.arraycopy (items, 0, newItems, 0, Math.min (count, itemCount));
+	items = newItems;
 	if (isVirtual) {
-		int flags = 0;
-//		int flags = OS.LVSICF_NOINVALIDATEALL | OS.LVSICF_NOSCROLL;
+		int flags = OS.LVSICF_NOINVALIDATEALL | OS.LVSICF_NOSCROLL;
 		OS.SendMessage (handle, OS.LVM_SETITEMCOUNT, count, flags);
-		count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-		/*
-		* Bug in Windows.  When LVM_SETITEMCOUNT is sent to a table
-		* that is too small to show a single item, when the table is
-		* resized to be larger, it is scrolled to the second item.
-		* The fix is to use LVM_ENSUREVISIBLE to scroll the table to
-		* the first item.
-		*/
-		OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, 0, 1);
-	} 
-	items = new TableItem [(count + 3) / 4 * 4];
-	if (!isVirtual) {
-		for (int i=0; i<count; i++) {
+	} else {
+		for (int i=itemCount; i<count; i++) {
 			items [i] = new TableItem (this, SWT.NONE, i, true);
 		}
 	}
-	setRedraw (true);
+	if (!isVirtual) setRedraw (true);
 }
 
 /**
