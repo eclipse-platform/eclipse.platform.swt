@@ -1557,11 +1557,19 @@ public class StyledText extends Canvas {
 	 */  
 	public void textChanged(int startOffset, int newLineCount, int replaceLineCount, int newCharCount, int replaceCharCount) {
 		int startLine = visualContent.getLineAtOffset(startOffset);
-		
 		visualContent.textChanged(startOffset, newLineCount, replaceLineCount, newCharCount, replaceCharCount);
+
+		// if we are wrapping then it is possible for a deletion on the last
+		// line of text to shorten the total text length by a line.  If this
+		// occurs then the startIndex must be adjusted such that a redraw will
+		// be performed if a visible region is affected.  fixes bug 42947.
+		if (wordWrap) {
+			int lineCount = content.getLineCount();
+			if (startLine >= lineCount) startLine = lineCount - 1;  
+		}
 		if (startLine <= getPartialBottomIndex()) {
-			// only redraw if the text change is inside or above the 
-			// visible lines. if it is below the visible lines it will
+			// only redraw if the text change affects text inside or above 
+			// the visible lines. if it is below the visible lines it will
 			// not affect the word wrapping. fixes bug 14047.
 			parent.internalRedraw();
 		}
