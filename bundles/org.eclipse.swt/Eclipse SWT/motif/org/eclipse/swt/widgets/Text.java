@@ -1507,6 +1507,7 @@ int XmNmodifyVerifyCallback (int w, int client_data, int call_data) {
 			newText = new String (charBuffer);
 		}
 		if (newText != text) {
+			OS.XtFree(textBlock.ptr);
 			byte [] buffer2 = Converter.wcsToMbcs (codePage, newText, true);
 			int length = buffer2.length;
 			int ptr = OS.XtMalloc (length);
