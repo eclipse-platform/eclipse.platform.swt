@@ -1,9 +1,9 @@
-package org.eclipse.swt.examples.launcher;/* * (c) Copyright IBM Corp. 2000, 2001. * All Rights Reserved */import java.io.*;import java.util.*;import org.eclipse.core.boot.*;import org.eclipse.core.runtime.*;import org.eclipse.debug.core.*;import org.eclipse.debug.core.model.*;import org.eclipse.jdt.launching.*;/** * ApplicationRunner provides an interface to run registered Eclipse Platform applications * standalone in their own VM. */
+package org.eclipse.swt.examples.launcher;/* * (c) Copyright IBM Corp. 2000, 2001. * All Rights Reserved */import java.io.*;import java.net.*;import java.util.*;import org.eclipse.core.boot.*;import org.eclipse.core.runtime.*;import org.eclipse.debug.core.*;import org.eclipse.debug.core.model.*;import org.eclipse.jdt.launching.*;/** * ApplicationRunner provides an interface to run registered Eclipse Platform applications * standalone in their own VM. */
 public class ApplicationRunner {
 	protected String   appName;
 	protected String[] appArgs;
 	protected String   appStatePath = null;
-	protected String[] appPluginsPath = null;
+	protected URL[]    appPluginsPath = null;
 	
 	/**
 	 * Constructs an ApplicationRunner
@@ -25,13 +25,12 @@ public class ApplicationRunner {
 	 * specified by <code>org.eclipse.core.boot.BootLoader</code> when no -plugins argument is
 	 * supplied to startup().  Generally, this means it will look in the current working directory
 	 * for either a directory of plugins, or a file telling it where to find these directories.
-	 * </p>
-	 * 
-	 * @param pluginPath an array of absolute filesystem paths to the plugins directories,
+	 * </p><p>	 * Each entry either points to a specific plugin manifest file (e.g. plugin.xml) or	 * to a directory containing whose subdirectories contain plugin manifest files.	 * </p>	 * 
+	 * @param pluginPath an array of fully-qualified URLs to the plugins directories,
 	 *        or null for the default
 	 * @see #getCurrentPluginsPath
 	 */
-	public void setPluginsPath(String[] pluginsPath) {
+	public void setPluginsPath(URL[] pluginsPath) {
 		this.appPluginsPath = pluginsPath;
 	}
 
@@ -54,15 +53,12 @@ public class ApplicationRunner {
 	}
 	
 	/**
-	 * Returns the plugins directory path in the current Eclipse Platform instance.
-	 * <p>
-	 * Not implemented.  Returns null which is usually good enough.
-	 * </p>
+	 * Returns the plugins directory path in the current Eclipse Platform instance.	 * <p>	 * Each entry either points to a specific plugin manifest file (e.g. plugin.xml) or	 * to a directory containing whose subdirectories contain plugin manifest files.	 * </p>
 	 * 
 	 * @return the current plugins directory absolute filesystem paths array
 	 */
-	public static String[] getCurrentPluginsPath() {
-		return null;
+	public static URL[] getCurrentPluginsPath() {		Set /* of URL */ paths = new HashSet();		// get the platform's public plugin registry		IPluginRegistry pluginRegistry = Platform.getPluginRegistry();				// retrieve plugin descriptors for all plugins		// [array may contain multiple versions of a given plugin]		IPluginDescriptor[] pluginDescriptors = pluginRegistry.getPluginDescriptors();		for (int i = 0; i < pluginDescriptors.length; ++i) {			final IPluginDescriptor pd = pluginDescriptors[i];			try {				// getInstallUrl() returns the path of the directory with the plugin manifest file(s)				// for a specific plugin				final URL installUrl = Platform.resolve(pd.getInstallURL());				// Add the parent directory of the plugin's install location to our Set				String path = installUrl.toString();				URL url = new URL(path.substring(0, path.lastIndexOf('/')));				url = new URL(url.getPath());				paths.add(url);			} catch (IOException e) {				// Ignore invalid paths			}		}
+		return (URL[]) paths.toArray(new URL[paths.size()]);
 	}
 
 	/**
@@ -101,7 +97,7 @@ public class ApplicationRunner {
 			// Plugin path information must be stored on disk in a Properties file for some reason...
 			Properties properties = new Properties();
 			for (int i = 0; i < appPluginsPath.length; ++i) {
-				properties.setProperty("pluginPathEntry" + i, appPluginsPath[i]);
+				properties.setProperty("pluginPathEntry" + i, appPluginsPath[i].toString());
 			}
 
 			try {
@@ -113,7 +109,7 @@ public class ApplicationRunner {
 				os.close();
 
 				launcherArgs[arg++] = "-plugins";  // tell Eclipse where its plugins are stored
-				launcherArgs[arg++] = pathFile.getAbsoluteFile().toURL().getFile();
+				launcherArgs[arg++] = pathFile.getAbsoluteFile().toURL().toString();
 			} catch (IOException e) {
 				return null;
 			}

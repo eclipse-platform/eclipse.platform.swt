@@ -9,7 +9,7 @@ import java.io.*;import java.text.*;import java.util.*;import org.eclipse.sw
 /**
  * File Viewer example
  */
-public class FileViewer implements ShellContents { 
+public class FileViewer { 
  	private static ResourceBundle resourceBundle;
 	private static final String
 		COMBODATA_PREVIOUS_INDEX = "Combo.previousIndex", // Integer: last selected combo index so we can revoke a selection
@@ -26,7 +26,6 @@ public class FileViewer implements ShellContents {
 	private final static String DRIVE_B = "b:"+File.separator;
 
 	/* Important UI elements */ 	  
-	private ShellContainer shellContainer;
  	private Display display;
 	private Shell   shell;
 	private Combo   combo;
@@ -52,7 +51,35 @@ public class FileViewer implements ShellContents {
 	 */
 	public static void main (String [] args) {
 		resourceBundle = ResourceBundle.getBundle("examples_explorer");
-		new ShellContainer(new FileViewer()).run();
+		new FileViewer().open();
+	}
+	
+	/**
+	 * Opens the main program.
+	 */
+	public void open() {		
+		// Create the window
+		display = new Display();
+		Images.loadAll(display);
+		shell = new Shell();
+		createShellContents();
+		shell.open();
+
+		// Event loop
+		while (! shell.isDisposed()) {
+			if (! display.readAndDispatch()) display.sleep();
+		}
+		// Cleanup
+		tableUpdateWorker.syncStop();
+		Images.freeAll();
+		display.dispose();
+	}
+
+	/**
+	 * Closes the main program.
+	 */
+	public void close() {
+		shell.close();
 	}
 	
 	/**
@@ -86,24 +113,11 @@ public class FileViewer implements ShellContents {
 	}
 
 	/**
-	 * Dispose of allocated platform and operating system resources
-	 */
-	public void dispose() {
-		tableUpdateWorker.syncStop();
-		Images.freeAll();
-	}
-
-	/**
 	 * Construct the UI
 	 * 
 	 * @param container the ShellContainer managing the Shell we are rendering inside
 	 */
-	public void createShellContents(ShellContainer container) {
-		this.shellContainer = container;
-		this.shell = container.getShell();
-		this.display = shell.getDisplay();
-		Images.loadAll(display);
-
+	public void createShellContents() {
 		shell.setText(getResourceString("Title", new Object[] { "" }));	
 		shell.setImage(Images.ShellIcon);
 		Menu bar = new Menu(shell, SWT.BAR);
@@ -191,7 +205,7 @@ public class FileViewer implements ShellContents {
 		item.setText(getResourceString("Close_menuitem"));
 		item.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
-				shellContainer.close();
+				close();
 			}
 		});
 	}
