@@ -57,22 +57,24 @@ public final class Printer extends Device {
  * @return the list of available printers
  */
 public static PrinterData[] getPrinterList() {
+	PrinterData[] result = null;
 	int[] printSession = new int[1];
 	OS.PMCreateSession(printSession);
 	if (printSession[0] != 0) {
 		int[] printerList = new int[1], currentIndex = new int[1], currentPrinter = new int[1];
 		OS.PMSessionCreatePrinterList(printSession[0], printerList, currentIndex, currentPrinter);
-		int count = OS.CFArrayGetCount(printerList[0]);
-		PrinterData[] result = new PrinterData[count];
-		for (int i=0; i<count; i++) {
-			String name = getString(OS.CFArrayGetValueAtIndex(printerList[0], i));
-			PrinterData data = result[i] = new PrinterData(DRIVER, name);
+		if (printerList[0] != 0) {
+			int count = OS.CFArrayGetCount(printerList[0]);
+			result = new PrinterData[count];
+			for (int i=0; i<count; i++) {
+				String name = getString(OS.CFArrayGetValueAtIndex(printerList[0], i));
+				PrinterData data = result[i] = new PrinterData(DRIVER, name);
+			}
+			OS.CFRelease(printerList[0]);
 		}
-		OS.CFRelease(printerList[0]);
 		OS.PMRelease(printSession[0]);
-		return result;
 	}
-	return new PrinterData[0];
+	return result == null ? new PrinterData[0] : result;
 }
 
 /**
@@ -99,11 +101,13 @@ static String getCurrentPrinterName(int printSession) {
 	String result = null;
 	int[] printerList = new int[1], currentIndex = new int[1], currentPrinter = new int[1];
 	OS.PMSessionCreatePrinterList(printSession, printerList, currentIndex, currentPrinter);
-	int count = OS.CFArrayGetCount(printerList[0]);
-	if (currentIndex[0] >= 0 && currentIndex[0] < count) {
-		result = getString(OS.CFArrayGetValueAtIndex(printerList[0], currentIndex[0]));
+	if (printerList[0] != 0) {
+		int count = OS.CFArrayGetCount(printerList[0]);
+		if (currentIndex[0] >= 0 && currentIndex[0] < count) {
+			result = getString(OS.CFArrayGetValueAtIndex(printerList[0], currentIndex[0]));
+		}
+		OS.CFRelease(printerList[0]);
 	}
-	OS.CFRelease(printerList[0]);
 	return result;
 }
 static String getString(int ptr) {
