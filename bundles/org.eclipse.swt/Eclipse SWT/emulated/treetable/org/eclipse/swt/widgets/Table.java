@@ -33,17 +33,13 @@ import java.util.Vector;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
-public class Table extends SelectableItemWidget {
+public /*final*/ class Table extends SelectableItemWidget {
 	private static final int COLUMN_RESIZE_OFFSET = 7;	// offset from the start and end of each 
 														// column at which the resize cursor is displayed 
 														// if the mouse is in the column header
 	static final String DOT_STRING = "...";				// used to indicate truncated item labels
 
 	private Header tableHeader;
-	private Control focusProxy;							// used as a proxy to take focus in place of the table. 
-														// The latter can't get focus because it has a child 
-														// (the header widget). The header widget can't be used 
-														// as a focus widget because it may be hidden.
 	private Vector items;
 	private Vector columns;
 	private boolean drawGridLines = false;
@@ -230,12 +226,12 @@ void columnMouseDoubleClick(Event event) {
 	int itemHeight = getItemHeight();
 	int itemIndex;
 	TableItem hitItem;
-	TableColumn hitColumn = getColumnAtX(event.x);
+	TableColumn hitColumn = getColumnAtX (event.x);
 	Event columnDblClickEvent;
-	boolean isFullSelection = (getStyle() & SWT.FULL_SELECTION) != 0;
+	boolean isFullSelection = (getStyle () & SWT.FULL_SELECTION) != 0;
 
-	if (isFocusControl() == false) {
-		setFocus();									// focus proxy gets focus here because it's the first child of the receiver
+	if (isFocusControl () == false) {
+		forceFocus ();
 	}
 	if (hitColumn != null) {
 		itemIndex = (event.y - getHeaderHeight()) / itemHeight + getTopIndex();
@@ -263,10 +259,10 @@ void columnMouseDown(Event event) {
 	int itemHeight = getItemHeight();
 	int itemIndex;
 	TableItem hitItem;
-	TableColumn hitColumn = getColumnAtX(event.x);
+	TableColumn hitColumn = getColumnAtX (event.x);
 
-	if (isFocusControl() == false) {
-		setFocus();									// focus proxy gets focus here because it's the first child of the receiver
+	if (isFocusControl () == false) {
+		forceFocus ();
 	}
 	if (hitColumn != null) {
 		itemIndex = (event.y - getHeaderHeight()) / itemHeight + getTopIndex();
@@ -559,8 +555,7 @@ void focusChange(Event event) {
 	TableColumn focusColumn = getColumnAtX(event.x);
 	Control focusWindow = getDisplay().getFocusControl();
 
-	if (focusWindow == getFocusWindow() && 
-		focusColumn != null && 
+	if (focusColumn != null && 
 		focusColumn.getIndex() == TableColumn.FIRST) {
 		hasColumnFocus = true;
 	}
@@ -769,13 +764,6 @@ int getDotsWidth(GC gc) {
  */
 TableColumn getFillColumn() {
 	return fillColumn;
-}
-/**
- * Answer the widget that is used to hold focus for the receiver.
- * The receiver can not get focus itself because it has children.
- */
-Control getFocusWindow() {
-	return focusProxy;
 }
 /**
  * Returns the width in pixels of a grid line.
@@ -1413,8 +1401,6 @@ public int indexOf(TableItem item) {
 void initialize() {
 	columns = new Vector();
 	setItemVector(new Vector());
-	focusProxy = new Button(this, SWT.NULL);
-	focusProxy.setBounds(0, 0, 0, 0);				// make the focus proxy invisible
 	tableHeader = new Header(this);
 	tableHeader.setVisible(false);					// SWT table header is invisible by default, too
 	fillColumn = TableColumn.createFillColumn(this);
@@ -1459,7 +1445,6 @@ void insertColumnVisual(TableColumn column) {
  */
 void installListeners() {
 	Header tableHeader = getHeader();
-	Control focusWindow = getFocusWindow();
 	Listener listener = getListener();
 
 	super.installListeners();	
@@ -1467,16 +1452,8 @@ void installListeners() {
 	tableHeader.addListener(SWT.MouseDown, listener);
 	tableHeader.addListener(SWT.MouseUp, listener);
 	
-	// HACK: All we're really interested in is focus change and key down
-	// for the table itself. Doesn't work that way because setFocus sets 
-	// focus to the first child of the receiver (which is our focus window)
 	removeListener(SWT.FocusOut, listener);
 	removeListener(SWT.FocusIn, listener);	
-	focusWindow.addListener(SWT.FocusOut, listener);
-	focusWindow.addListener(SWT.FocusIn, listener);
-	focusWindow.addListener(SWT.KeyDown, listener);		
-	focusWindow.addListener(SWT.Traverse, listener);		
-	
 	addListener(SWT.MouseMove, listener);
 	addListener(SWT.MouseDown, listener);
 	addListener(SWT.MouseDoubleClick, listener);
