@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="lib" path="/bluebird/teamswt/swt-builddir/jre/lib/rt.jar"/>
-	<classpathentry kind="src" path="Eclipse SWT/motif"/>
+    <classpathentry kind="lib" path="/bluebird/teamswt/swt-builddir/jre/lib/rt.jar"/>
+    <classpathentry kind="src" path="Eclipse SWT/motif"/>
     <classpathentry kind="src" path="Eclipse SWT/common"/>
     <classpathentry kind="src" path="Eclipse SWT Printing/motif"/>
     <classpathentry kind="src" path="Eclipse SWT Printing/common"/>
@@ -10,5 +10,5 @@
     <classpathentry kind="src" path="Eclipse SWT Drag and Drop/motif"/>
     <classpathentry kind="src" path="Eclipse SWT Drag and Drop/common"/>
     <classpathentry kind="src" path="Eclipse SWT Custom Widgets/common"/>
-        <classpathentry kind="output" path=""/>
+    <classpathentry kind="output" path="bin"/>
 </classpath>
