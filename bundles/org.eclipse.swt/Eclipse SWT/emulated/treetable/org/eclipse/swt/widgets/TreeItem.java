@@ -672,6 +672,11 @@ public TreeItem getParentItem () {
 	checkWidget ();
 	return parentItem;
 }
+int getPreferredWidth (int columnIndex) {
+	int result = getTextX (columnIndex) + getTextPaintWidth (columnIndex);
+	if (columnIndex > 0) result -= parent.getColumn (columnIndex).getX ();
+	return result;
+}
 public String getText () {
 	checkWidget ();
 	return getText (0);

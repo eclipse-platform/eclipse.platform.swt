@@ -146,7 +146,14 @@ void paint (GC gc) {
 }
 public void pack () {
 	checkWidget ();
-	
+	TreeItem[] availableItems = parent.availableItems;
+	if (availableItems.length == 0) return;
+	int index = getIndex ();
+	int width = -1;
+	for (int i = 0; i < availableItems.length; i++) {
+		width = Math.max (width, availableItems [i].getPreferredWidth (index));
+	}
+	setWidth (width);
 }
 public void removeControlListener (ControlListener listener) {
 	checkWidget ();
