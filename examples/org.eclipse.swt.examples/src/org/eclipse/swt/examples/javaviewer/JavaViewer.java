@@ -23,6 +23,7 @@ public class JavaViewer {
 	Shell shell;
 	StyledText text;
 	JavaLineStyler lineStyler = new JavaLineStyler();
+	FileDialog fileDialog;
 	static ResourceBundle resources = ResourceBundle.getBundle("examples_javaviewer");
 
 Menu createFileMenu() {
@@ -113,7 +114,9 @@ public Shell open (Display display) {
 
 void openFile() {	
 	final String textString;
-	FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
+	if (fileDialog == null) {
+		fileDialog = new FileDialog(shell, SWT.OPEN);
+	}
 
 	fileDialog.setFilterExtensions(new String[] {"*.java", "*.*"});
 	fileDialog.open();
