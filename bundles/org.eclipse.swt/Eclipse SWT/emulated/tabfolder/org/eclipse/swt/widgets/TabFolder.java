@@ -35,7 +35,7 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 public class TabFolder extends Composite {
-	TabItem items[];
+	TabItem items[] = new TabItem [0];
 	int selectedIndex = -1;
 	int xClient, yClient;
 	int imageHeight = -1;									// all images have the height of the first image ever set
@@ -143,7 +143,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int width = CLIENT_MARGIN_WIDTH * 2 + TabItem.SHADOW_WIDTH * 2;
 	int height = 0;
 
-	if (items != null && items.length > 0) {
+	if (items.length > 0) {
 		TabItem lastItem = items[items.length-1];
 		width = Math.max (width, lastItem.x + lastItem.width);
 	}
@@ -169,7 +169,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	int trimX = x - border - CLIENT_MARGIN_WIDTH - TabItem.SHADOW_WIDTH;
 	int trimY = y - border - CLIENT_MARGIN_WIDTH - TabItem.SHADOW_WIDTH;
 	int tabHeight = 0;
-	if (items != null && items.length > 0) {
+	if (items.length > 0) {
 		TabItem item = items [0];
 		tabHeight = item.y + item.height;	// only use height of the first item because all items should be the same height
 	}
@@ -185,18 +185,15 @@ void createChild (TabItem item, int index) {
 	
 	if (!(0 <= index && index <= getItemCount ())) error (SWT.ERROR_INVALID_RANGE);
 	item.parent = this;
-	if (items == null) {
-		items = new TabItem[1];
-		items[0] = item;
-	} else {
-		// grow by one and rearrange the array.
-		TabItem[] newItems = new TabItem [items.length + 1];
-		System.arraycopy(items, 0, newItems, 0, index);
-		newItems[index] = item;
-		System.arraycopy(items, index, newItems, index + 1, items.length - index);
-		items = newItems;
-		if (selectedIndex >= index) selectedIndex ++;
-	}
+
+	// grow by one and rearrange the array.
+	TabItem[] newItems = new TabItem [items.length + 1];
+	System.arraycopy(items, 0, newItems, 0, index);
+	newItems[index] = item;
+	System.arraycopy(items, index, newItems, index + 1, items.length - index);
+	items = newItems;
+	if (selectedIndex >= index) selectedIndex ++;
+
 	layoutItems();
 	redrawTabs();
 	// redraw scroll buttons if they just became visible
@@ -217,7 +214,7 @@ void destroyChild (TabItem item) {
 	int index = indexOf(item);
 	if (index == -1) return; 	// should trigger an error?
 	if (items.length == 1) {
-		items = null;
+		items = new TabItem [0];
 		selectedIndex = -1;
 		topTabIndex = 0;
 		if (!inDispose){
@@ -267,8 +264,8 @@ void destroyChild (TabItem item) {
 void doDispose() {
 	inDispose = true;
 	// items array is resized during TabItem.dispose
-	// it is set to null if the last item is removed
-	while (items != null) {						
+	// it is length 0 if the last item is removed
+	while (items.length > 0) {						
 		if (items[items.length-1] != null) {
 			items[items.length-1].dispose();
 		}
@@ -445,7 +442,7 @@ void ensureRightFreeSpaceUsed() {
  * the tab is scrolled to the left to make it fully visible.
  */
 void ensureVisible(int tabIndex) {
-	if (items == null || tabIndex < 0 || tabIndex >= items.length) return;
+	if (tabIndex < 0 || tabIndex >= items.length) return;
 	if (!isTabScrolling()) return;
 	if (tabIndex < topTabIndex) {
 		topTabIndex = tabIndex;
@@ -519,7 +516,7 @@ public TabItem getItem (int index) {
  */
 public int getItemCount(){
 	checkWidget();
-	return items == null ? 0 : items.length;
+	return items.length;
 }
 /**
  * Returns an array of <code>TabItem</code>s which are the items
@@ -539,7 +536,6 @@ public int getItemCount(){
  */
 public TabItem [] getItems() {
 	checkWidget();
-	if (items == null) return new TabItem[0];
 	TabItem[] tabItems = new TabItem [items.length];
 	System.arraycopy(items, 0, tabItems, 0, items.length);
 	return tabItems;
@@ -651,10 +647,8 @@ public int indexOf(TabItem item) {
 	if (item == null) {
 		error(SWT.ERROR_NULL_ARGUMENT);
 	}
-	if (items != null) {
-		for (int i = 0; i < items.length; i++) {
-			if (items[i] == item) return i;
-		}
+	for (int i = 0; i < items.length; i++) {
+		if (items[i] == item) return i;
 	}
 	return -1;
 }
@@ -685,7 +679,7 @@ boolean isRightButtonHit(Event event) {
 boolean isTabScrolling() {
 	boolean isVisible = false;
 	
-	if (items != null && items.length > 0) {
+	if (items.length > 0) {
 		TabItem tabItem = items[items.length-1];
 		int tabStopX = tabItem.x + tabItem.width;
 		tabItem = items[0];
@@ -723,29 +717,27 @@ void layoutItems() {
 	int y = SELECTED_TAB_TOP_EXPANSION;
 	int tabHeight = 0;
 	
-	if (items != null) {
-		GC gc = new GC(this);
-		for (int i=topTabIndex - 1; i>=0; i--) {			// if the first visible tab is not the first tab
-			TabItem tab = items[i];
-			tab.width = tab.preferredWidth(gc);
-			tab.height = tab.preferredHeight(gc);
-			x -= tab.width;									// layout tab items from right to left thus making them invisible
-			tab.x = x;
-			tab.y = y;
-			if (tab.height > tabHeight) tabHeight = tab.height;
-		}
-		x = SELECTED_TAB_HORIZONTAL_EXPANSION;
-		for (int i=topTabIndex; i<items.length; i++) {		// continue laying out remaining, visible items left to right 
-			TabItem tab = items[i];
-			tab.x = x;
-			tab.y = y;
-			tab.width = tab.preferredWidth(gc);
-			tab.height = tab.preferredHeight(gc);
-			x = x + tab.width;
-			if (tab.height > tabHeight) tabHeight = tab.height;
-		}
-		gc.dispose();
+	GC gc = new GC(this);
+	for (int i=topTabIndex - 1; i>=0; i--) {			// if the first visible tab is not the first tab
+		TabItem tab = items[i];
+		tab.width = tab.preferredWidth(gc);
+		tab.height = tab.preferredHeight(gc);
+		x -= tab.width;									// layout tab items from right to left thus making them invisible
+		tab.x = x;
+		tab.y = y;
+		if (tab.height > tabHeight) tabHeight = tab.height;
 	}
+	x = SELECTED_TAB_HORIZONTAL_EXPANSION;
+	for (int i=topTabIndex; i<items.length; i++) {		// continue laying out remaining, visible items left to right 
+		TabItem tab = items[i];
+		tab.x = x;
+		tab.y = y;
+		tab.width = tab.preferredWidth(gc);
+		tab.height = tab.preferredHeight(gc);
+		x = x + tab.width;
+		if (tab.height > tabHeight) tabHeight = tab.height;
+	}
+	gc.dispose();
 	xClient = CLIENT_MARGIN_WIDTH;
 	yClient = CLIENT_MARGIN_WIDTH + tabHeight;
 	TabItem selection[] = getSelection();
@@ -759,7 +751,6 @@ void layoutItems() {
  * If a tab was hit select the tab.
  */
 void mouseDown(Event event) {
-	if (items == null) return;
 	if (isLeftButtonHit(event)) {
 		scrollButtonDown = true;
 		redrawHitButton(event);
@@ -784,16 +775,14 @@ void mouseDown(Event event) {
 void mouseHover(Event event) {
 	String current = super.getToolTipText();
 	if (toolTipText == null) {
-		if (items != null) {
-			Point point = new Point(event.x, event.y);
-			for (int i=0; i<items.length; i++) {
-				if (items[i].getBounds().contains(point)) {
-					String string = items[i].getToolTipText();
-					if (string != null && !string.equals(current)) {
-						super.setToolTipText(string);
-					}
-					return;
+		Point point = new Point(event.x, event.y);
+		for (int i=0; i<items.length; i++) {
+			if (items[i].getBounds().contains(point)) {
+				String string = items[i].getToolTipText();
+				if (string != null && !string.equals(current)) {
+					super.setToolTipText(string);
 				}
+				return;
 			}
 		}
 		if (current != null) super.setToolTipText(null);
@@ -967,7 +956,7 @@ void scrollLeft() {
  * Scroll the tab items to the right.
  */
 void scrollRight() {
-	if (items != null && items.length > 0 && topTabIndex < items.length - 1) {
+	if (items.length > 0 && topTabIndex < items.length - 1) {
 		TabItem lastTabItem = items[items.length-1];
 		int tabStopX = lastTabItem.x + lastTabItem.width;
 		if (tabStopX > super.getClientArea().width - SCROLL_BUTTON_SIZE * 2) {
@@ -1113,7 +1102,6 @@ boolean pageTraversal(Event event) {
 }
 
 boolean mnemonicTraversal (Event event) {
-	if (items == null) return false;
 	char key = event.character;
 	for (int i = 0; i < items.length; i++) {
 		if (items[i] != null) {
