@@ -154,11 +154,37 @@ public void setSize (int width, int height) {
 	super.setSize(width, height);
 	layout();
 }
+Point getScrollableTrim() {
+	/*
+	 * This is very tricky.
+	 * In SWT/GTK, layout is not managed by the GtkContainers.
+	 * Therefore, the native preferred minimum sizes are
+	 * generally ignored.  This allows us to set the native
+	 * size of the fixed to whatever value we want, and it is
+	 * guaranteed to be disregarded by the layout code.
+	 * At this point, that size is requested by the Scrollable,
+	 * gets added to by whatever is between the scrollable
+	 * and the fixed, and serves as the basis for the native
+	 * Scrollable size requisition (which is also guaranteed
+	 * to be thrown away).
+	 */
+	OS.GTK_WIDGET_SET_FLAGS(parentingHandle(), OS.GTK_VISIBLE);
+	OS.GTK_WIDGET_SET_FLAGS(boxHandle, OS.GTK_VISIBLE);
+	GtkRequisition clientReq = new GtkRequisition();
+	GtkRequisition req = new GtkRequisition();
+	OS.gtk_widget_size_request(parentingHandle(), clientReq);
+	OS.gtk_widget_size_request(scrolledHandle, req);
+	if ((style&SWT.H_SCROLL&SWT.V_SCROLL)!=0) return new Point (req.width-clientReq.width, req.height-clientReq.height);
+	if ((style&SWT.H_SCROLL)!=0) return new Point (0, req.height-clientReq.height);
+	if ((style&SWT.V_SCROLL)!=0) return new Point (req.width-clientReq.width, 0);
+	return new Point (0,0);
+}
 void _setSize(int width, int height) {
 	OS.eclipse_fixed_set_size(parent.parentingHandle(), topHandle(), width, height);
-	/* FIXME */
-	if ((style&SWT.V_SCROLL) != 0) width  -= 18;  width  = Math.max(width, 0);
-	if ((style&SWT.H_SCROLL) != 0) height -= 18;  height = Math.max(height, 0);
+	/* This is the trim on the right caused by the scrollbars */
+	Point st = getScrollableTrim();
+	if ((style&SWT.V_SCROLL) != 0) width  -= st.x;  width  = Math.max(width, 0);
+	if ((style&SWT.H_SCROLL) != 0) height -= st.y;  height = Math.max(height, 0);
 	OS.eclipse_fixed_set_size(fixedHandle, handle, width, height);
 }
 
