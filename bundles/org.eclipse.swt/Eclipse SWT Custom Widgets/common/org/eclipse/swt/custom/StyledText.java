@@ -1609,15 +1609,17 @@ public StyledText(Composite parent, int style) {
 	}	
 	if (isBidi) createCaretBitmaps();
 	new Caret(this, SWT.NULL);
-	Runnable runnable = new Runnable() {
-		public void run() {
-			int direction = BidiUtil.getKeyboardLanguage() == BidiUtil.KEYBOARD_BIDI ? SWT.RIGHT : SWT.LEFT;
-			if (direction == caretDirection) return;
-			int newCaretX = direction == SWT.LEFT ? columnX + getCaretWidth() - 1 : columnX;
-			setCaretLocation(newCaretX, getCaretLine(), direction);
-		}
-	};
-	BidiUtil.addLanguageListener(handle, runnable);
+	if (isBidi) {
+		Runnable runnable = new Runnable() {
+			public void run() {
+				int direction = BidiUtil.getKeyboardLanguage() == BidiUtil.KEYBOARD_BIDI ? SWT.RIGHT : SWT.LEFT;
+				if (direction == caretDirection) return;
+				int newCaretX = direction == SWT.LEFT ? columnX + getCaretWidth() - 1 : columnX;
+				setCaretLocation(newCaretX, getCaretLine(), direction);
+			}
+		};
+		BidiUtil.addLanguageListener(handle, runnable);
+	}
 	calculateScrollBars();
 	createKeyBindings();
 	ibeamCursor = new Cursor(display, SWT.CURSOR_IBEAM);
