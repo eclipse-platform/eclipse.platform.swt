@@ -120,8 +120,7 @@ void paint (GC gc) {
 	startX = Math.max (startX, padding);
 	int headerHeight = parent.getHeaderHeight ();
 
-	/* while painting the header's contents restrict the clipping region */
-	Rectangle oldClipping = gc.getClipping ();
+	/* restrict the clipping region to the header cell */
 	gc.setClipping (
 		x + padding,
 		padding,
@@ -141,11 +140,8 @@ void paint (GC gc) {
 	}
 	if (text.length () > 0) {
 		int fontHeight = parent.fontHeight;
-		gc.drawText (text, startX, (headerHeight - fontHeight) / 2);
+		gc.drawString (text, startX, (headerHeight - fontHeight) / 2, true);
 	}
-	
-	/* restore the original clipping */
-	gc.setClipping (oldClipping);
 }
 public void removeControlListener (ControlListener listener) {
 	checkWidget ();

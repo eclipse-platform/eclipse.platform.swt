@@ -653,9 +653,10 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 		columnIndex = column.getIndex ();
 		x = column.getX ();
 	}
-	int y = parent.getItemY (this);
-	int padding = parent.getCellPadding ();
-	int itemHeight = parent.getItemHeight ();
+	/* if this cell is completely to the right of the client area then there's no need to paint it */
+	Rectangle clientArea = parent.getClientArea ();
+	if (clientArea.x + clientArea.width < x) return;
+
 	Rectangle cellBounds = getBounds (columnIndex);
 	int cellRightX = 0;
 	if (column != null) {
@@ -663,9 +664,20 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 	} else {
 		cellRightX = cellBounds.x + cellBounds.width;
 	}
+
+	/* if this cell is completely to the left of the client area then there's no need to paint it */
+	if (cellRightX < 0) return;
+
+	/* restrict the clipping region to the full cell */
+	gc.setClipping (x, cellBounds.y, cellRightX - x, cellBounds.height);
 	
+	int y = parent.getItemY (this);
+	int padding = parent.getCellPadding ();
+	int itemHeight = parent.getItemHeight ();
+
 	/* draw the background color if this item has a custom color set */
-	if (background != null && !background.equals (parent.getBackground ())) {
+	Color background = getBackground (columnIndex);
+	if (background != parent.getBackground ()) {
 		Color oldBackground = gc.getBackground ();
 		gc.setBackground (background);
 		if (columnIndex == 0) {
@@ -691,19 +703,14 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 	}
 		
 	if (!paintCellContent) return;
- 
-	Rectangle oldClipping = gc.getClipping ();
-		
+
 	/* Draw column 0 decorations */
 	if (columnIndex == 0) {
-		/* while painting the cell's contents restrict the clipping region */
-		gc.setClipping (x, cellBounds.y, cellRightX - x, cellBounds.height);
-
 		/* Draw hierarchy connector lines */
 		Rectangle expanderBounds = getExpanderBounds ();
 		Color oldForeground = gc.getForeground ();
 		gc.setForeground (LinesColor);
-		
+
 		/* Draw vertical line above expander */
 		int lineX = expanderBounds.x + expanderBounds.width / 2;
 		int itemCount = getItemCount ();
@@ -716,7 +723,7 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 		if (!isRoot () || getIndex () != 0) {
 			gc.drawLine (lineX, y, lineX, y2);
 		}
-		
+
 		/* Draw vertical line below expander if the receiver has lower siblings */
 		if (!isLastChild ()) {
 			if (itemCount != 0) y2 += expanderBounds.height;
@@ -768,7 +775,7 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 	Rectangle imageArea = getImageBounds (columnIndex);
 	int startX = imageArea.x;
 	
-	/* while painting the cell's contents restrict the clipping region */
+	/* while painting the cell's content restrict the clipping region */
 	gc.setClipping (
 		startX,
 		cellBounds.y + padding,
@@ -782,15 +789,16 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 			image,
 			0, 0,									/* source x, y */
 			imageBounds.width, imageBounds.height,	/* source width, height */
-			imageArea.x, imageArea.y,	/* dest x, y */
-			imageArea.width, imageArea.height);					/* dest width, height */
+			imageArea.x, imageArea.y,				/* dest x, y */
+			imageArea.width, imageArea.height);		/* dest width, height */
 	}
 	
 	/* draw the text */
-	if (text.length() > 0) {
+	if (text.length () > 0) {
 		int fontHeight;
 		Font oldFont = null;
-		if (font != null) {
+		Font font = getFont (columnIndex);
+		if (font != parent.getFont ()) {
 			oldFont = gc.getFont ();
 			gc.setFont (font);
 			fontHeight = this.fontHeight;
@@ -802,26 +810,31 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 			oldForeground = gc.getForeground ();
 			gc.setForeground (SelectionForegroundColor);
 		} else {
-			if (foreground != null) {
+			Color foreground = getForeground (columnIndex);
+			if (foreground != parent.getForeground ()) {
 				oldForeground = gc.getForeground ();
 				gc.setForeground (foreground);
 			}
 		}
-		gc.drawText (text, getTextX (columnIndex), y + (itemHeight - fontHeight) / 2, true);
+		gc.drawString (text, getTextX (columnIndex), y + (itemHeight - fontHeight) / 2, true);
 		if (oldForeground != null) gc.setForeground (oldForeground);
 		if (oldFont != null) gc.setFont (oldFont);
 	}
-	
-	/* restore the original clipping */
-	gc.setClipping (oldClipping);
 }
 void recomputeTextWidths (GC gc) {
-	textWidths = new int[texts.length];
-	if (font != null) gc.setFont (font);
+	textWidths = new int [texts.length];
+	Font oldFont = gc.getFont ();
 	for (int i = 0; i < texts.length; i++) {
-		String value = texts[i];
+		String value = texts [i];
 		if (value != null) {
+			boolean fontChanged = false;
+			Font font = getFont (i);
+			if (!font.equals (oldFont)) {
+				gc.setFont (font);
+				fontChanged = true;
+			}
 			textWidths[i] = gc.textExtent (value).x;
+			if (fontChanged) gc.setFont (oldFont);
 		}
 	}
 }
@@ -919,7 +932,7 @@ public void setFont (Font value) {
 	font = value;
 	/* recompute cached values for string measurements */
 	GC gc = new GC (parent);
-	if (font != null) gc.setFont (font);
+	gc.setFont (getFont ());
 	recomputeTextWidths (gc);
 	fontHeight = gc.getFontMetrics ().getHeight ();
 	gc.dispose ();

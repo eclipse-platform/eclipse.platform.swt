@@ -37,68 +37,68 @@ public class Tree2 extends Composite {
 	static final int WIDTH_CELL_HIGHLIGHT = 1;
 
 public Tree2 (Composite parent, int style) {
-	super(parent, checkStyle (style | SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_REDRAW_RESIZE));
-	Display display = getDisplay();
-	setForeground(display.getSystemColor(SWT.COLOR_LIST_FOREGROUND));
-	setBackground(display.getSystemColor(SWT.COLOR_LIST_BACKGROUND));
-	GC gc = new GC(this);
-	fontHeight = gc.getFontMetrics().getHeight();
-	gc.dispose();
+	super (parent, checkStyle (style | SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_REDRAW_RESIZE));
+	Display display = getDisplay ();
+	setForeground (display.getSystemColor (SWT.COLOR_LIST_FOREGROUND));
+	setBackground (display.getSystemColor (SWT.COLOR_LIST_BACKGROUND));
+	GC gc = new GC (this);
+	fontHeight = gc.getFontMetrics ().getHeight ();
+	gc.dispose ();
 	itemHeight = fontHeight + (2 * getCellPadding ());
 	if (LineColor == null) {
-		LineColor = display.getSystemColor(SWT.COLOR_BLACK);
-		HighlightShadowColor = display.getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW);
-		NormalShadowColor = display.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
-		ResizeCursor = display.getSystemCursor(SWT.CURSOR_SIZEWE);
+		LineColor = display.getSystemColor (SWT.COLOR_BLACK);
+		HighlightShadowColor = display.getSystemColor (SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW);
+		NormalShadowColor = display.getSystemColor (SWT.COLOR_WIDGET_NORMAL_SHADOW);
+		ResizeCursor = display.getSystemCursor (SWT.CURSOR_SIZEWE);
 	}
 
-	Listener listener = new Listener() {
-		public void handleEvent(Event event) {
-			handleEvents(event);
+	Listener listener = new Listener () {
+		public void handleEvent (Event event) {
+			handleEvents (event);
 		}
 	};
-	addListener(SWT.Paint, listener);
-	addListener(SWT.MouseDown, listener);
-	addListener(SWT.MouseUp, listener);
-	addListener(SWT.MouseDoubleClick, listener);
-	addListener(SWT.Dispose, listener);	
-	addListener(SWT.Resize, listener);
-	addListener(SWT.KeyDown, listener);
-	addListener(SWT.FocusOut, listener);
-	addListener(SWT.FocusIn, listener);
-	addListener(SWT.Traverse, listener);
-	header = new Canvas(this, SWT.NO_REDRAW_RESIZE | SWT.NO_FOCUS);
-	header.setVisible(false);
-	header.setLocation(0,0);
-	header.addListener(SWT.Paint, listener);
-	header.addListener(SWT.MouseDown, listener);
-	header.addListener(SWT.MouseUp, listener);
-	header.addListener(SWT.MouseMove, listener);
-	header.addListener(SWT.MouseExit, listener);
+	addListener (SWT.Paint, listener);
+	addListener (SWT.MouseDown, listener);
+	addListener (SWT.MouseUp, listener);
+	addListener (SWT.MouseDoubleClick, listener);
+	addListener (SWT.Dispose, listener);	
+	addListener (SWT.Resize, listener);
+	addListener (SWT.KeyDown, listener);
+	addListener (SWT.FocusOut, listener);
+	addListener (SWT.FocusIn, listener);
+	addListener (SWT.Traverse, listener);
+	header = new Canvas (this, SWT.NO_REDRAW_RESIZE | SWT.NO_FOCUS);
+	header.setVisible (false);
+	header.setLocation (0,0);
+	header.addListener (SWT.Paint, listener);
+	header.addListener (SWT.MouseDown, listener);
+	header.addListener (SWT.MouseUp, listener);
+	header.addListener (SWT.MouseMove, listener);
+	header.addListener (SWT.MouseExit, listener);
 
-	ScrollBar vBar = getVerticalBar();
-	vBar.setMaximum(1);
-	vBar.addListener(SWT.Selection, listener);
-	ScrollBar hBar = getHorizontalBar();
-	hBar.addListener(SWT.Selection, listener);
-	hBar.setMaximum(1);
+	ScrollBar vBar = getVerticalBar ();
+	vBar.setMaximum (1);
+	vBar.addListener (SWT.Selection, listener);
+	ScrollBar hBar = getHorizontalBar ();
+	hBar.addListener (SWT.Selection, listener);
+	hBar.setMaximum (1);
 }
-void addColumn(TreeColumn column, int index) {
+void addColumn (TreeColumn column, int index) {
 	/* insert column into the columns collection */
 	TreeColumn[] newColumns = new TreeColumn [columns.length + 1];
-	System.arraycopy(columns, 0, newColumns, 0, index);
+	System.arraycopy (columns, 0, newColumns, 0, index);
 	newColumns[index] = column;
-	System.arraycopy(columns, index, newColumns, index + 1, columns.length - index);
+	System.arraycopy (columns, index, newColumns, index + 1, columns.length - index);
 	columns = newColumns;
 
 	/* no visual update needed because column's initial width is 0 */
 }
-void addItem(TreeItem2 item, int index) {
+void addItem (TreeItem2 item, int index) {
 	/* insert item into the root items collection */
 	TreeItem2[] newItems = new TreeItem2 [items.length + 1];
-	System.arraycopy(items, 0, newItems, 0, index);
+	System.arraycopy (items, 0, newItems, 0, index);
 	newItems[index] = item;
-	System.arraycopy(items, index, newItems, index + 1, items.length - index);
+	System.arraycopy (items, index, newItems, index + 1, items.length - index);
 	items = newItems;
 
 	/* determine the item's availability index */
@@ -111,9 +111,9 @@ void addItem(TreeItem2 item, int index) {
 	
 	/* root items are always available so insert into available items collection */
 	TreeItem2[] newAvailableItems = new TreeItem2[availableItems.length + 1];
-	System.arraycopy(availableItems, 0, newAvailableItems, 0, startIndex);
+	System.arraycopy (availableItems, 0, newAvailableItems, 0, startIndex);
 	newAvailableItems[startIndex] = item;
-	System.arraycopy(availableItems, startIndex, newAvailableItems, startIndex + 1, newAvailableItems.length - startIndex - 1);
+	System.arraycopy (availableItems, startIndex, newAvailableItems, startIndex + 1, newAvailableItems.length - startIndex - 1);
 	availableItems = newAvailableItems;
 	
 	/* update the availableIndex for items bumped down by this new item */
@@ -121,25 +121,25 @@ void addItem(TreeItem2 item, int index) {
 		availableItems[i].availableIndex = i;
 	}
 
-	updateVerticalBar();
-	updateHorizontalBar();
+	updateVerticalBar ();
+	updateHorizontalBar ();
 	int redrawIndex = index;
 	if (redrawIndex > 0) redrawIndex--;
-	redrawFromItemDownwards(items[redrawIndex].availableIndex);
+	redrawFromItemDownwards (items[redrawIndex].availableIndex);
 }
-public void addSelectionListener(SelectionListener listener) {
-	checkWidget();
-	if (listener == null) error(SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener(listener);	
-	addListener(SWT.Selection, typedListener);
-	addListener(SWT.DefaultSelection, typedListener);
+public void addSelectionListener (SelectionListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);	
+	addListener (SWT.Selection, typedListener);
+	addListener (SWT.DefaultSelection, typedListener);
 }
-public void addTreeListener(TreeListener listener) {
-	checkWidget();
-	if (listener == null) error(SWT.ERROR_NULL_ARGUMENT);
-	TypedListener typedListener = new TypedListener(listener);	
-	addListener(SWT.Expand, typedListener);
-	addListener(SWT.Collapse, typedListener);
+public void addTreeListener (TreeListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);	
+	addListener (SWT.Expand, typedListener);
+	addListener (SWT.Collapse, typedListener);
 }
 static int checkStyle (int style) {
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
@@ -148,23 +148,23 @@ static int checkStyle (int style) {
  * Returns the index of the column that the specified x falls within, or
  * -1 if the x lies to the right of the last column.
  */
-int computeColumnIntersect(int x, int startColumn) {
-	int numColumns = getColumnCount();
+int computeColumnIntersect (int x, int startColumn) {
+	int numColumns = getColumnCount ();
 	for (int i = startColumn; i < numColumns; i++) {
-		int endX = columns[i].getX() + columns[i].width;
+		int endX = columns[i].getX () + columns[i].width;
 		if (x <= endX) return i;
 	}
 	return -1;
 }
-public void deselectAll() {
-	checkWidget();
+public void deselectAll () {
+	checkWidget ();
 	TreeItem2[] oldSelection = selectedItems;
 	selectedItems = new TreeItem2[0];
 	for (int i = 0; i < oldSelection.length; i++) {
-		redrawItem(oldSelection[i].availableIndex);
+		redrawItem (oldSelection[i].availableIndex);
 	}
 }
-void doArrowDown(int stateMask) {
+void doArrowDown (int stateMask) {
 	if ((stateMask & SWT.SHIFT) == 0 && (stateMask & SWT.CTRL) == 0) {
 		int newFocusIndex = focusItem.availableIndex + 1;
 		if (newFocusIndex == availableItems.length) return; 	/* at bottom */
@@ -912,7 +912,7 @@ void doPaint (Event event) {
 	} else {
 		startColumn = endColumn = 0;
 	}
-	
+
 	/* repaint grid lines if necessary */
 	if (linesVisible) {
 		Color oldForeground = gc.getForeground();
@@ -959,6 +959,7 @@ void doPaint (Event event) {
 		if (isFocusControl()) {
 			if (focusItem == item) {
 				Rectangle focusBounds = item.getFocusBounds();
+				gc.setClipping (focusBounds);
 				int oldStyle = gc.getLineStyle();
 				gc.setLineStyle(SWT.LINE_DOT);
 				gc.drawFocus(focusBounds.x, focusBounds.y, focusBounds.width, focusBounds.height);
@@ -966,6 +967,7 @@ void doPaint (Event event) {
 			}
 			if (insertMarkItem == item) {
 				Rectangle focusBounds = item.getFocusBounds();
+				gc.setClipping (focusBounds);
 				if (insertMarkPrecedes) {
 					gc.drawLine(focusBounds.x, focusBounds.y, focusBounds.x + focusBounds.width, focusBounds.y);
 				} else {
@@ -989,6 +991,7 @@ void doResize (Event event) {
 	header.setSize(clientArea.width, headerHeight);
 }
 void doScrollHorizontal(Event event) {
+	update();
 	int newSelection = getHorizontalBar().getSelection();
 	Rectangle clientArea = getClientArea();
 	GC gc = new GC(this);
@@ -998,6 +1001,7 @@ void doScrollHorizontal(Event event) {
 		horizontalOffset - newSelection, 0);
 	gc.dispose();
 	if (header.isVisible()) {
+		header.update();
 		clientArea = header.getClientArea();
 		gc = new GC(header);
 		gc.copyArea(
@@ -1009,6 +1013,7 @@ void doScrollHorizontal(Event event) {
 	horizontalOffset = newSelection;
 }
 void doScrollVertical(Event event) {
+	update();
 	int newSelection = getVerticalBar().getSelection();
 	Rectangle clientArea = getClientArea();
 	GC gc = new GC(this);
@@ -1889,10 +1894,8 @@ void updateHorizontalBar() {
 	}
 	
 	/* 
-	 * The following is intentionally commented; it may be useful for writing a
-	 * less naive implementation.
+	 * The following is intentionally commented, for future reference
 	 */
-	
 //		if (nowAvailable) {
 //			if (rightX <= hBar.getMaximum()) return;
 //			int maximum = Math.max(1, rightX);
