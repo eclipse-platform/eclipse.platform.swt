@@ -30,6 +30,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(GDK_1DISPLAY)
 }
 #endif
 
+#ifndef NO_GDK_1PIXMAP_1XID
+JNIEXPORT jint JNICALL OS_NATIVE(GDK_1PIXMAP_1XID)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, GDK_1PIXMAP_1XID_FUNC);
+	rc = (jint)GDK_PIXMAP_XID((GdkPixmap *)arg0);
+	OS_NATIVE_EXIT(env, that, GDK_1PIXMAP_1XID_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GDK_1ROOT_1PARENT
 JNIEXPORT jint JNICALL OS_NATIVE(GDK_1ROOT_1PARENT)
 	(JNIEnv *env, jclass that)
@@ -692,6 +704,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(GtkAllocation_1sizeof)
 	OS_NATIVE_ENTER(env, that, GtkAllocation_1sizeof_FUNC);
 	rc = (jint)GtkAllocation_sizeof();
 	OS_NATIVE_EXIT(env, that, GtkAllocation_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GtkBorder_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GtkBorder_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, GtkBorder_1sizeof_FUNC);
+	rc = (jint)GtkBorder_sizeof();
+	OS_NATIVE_EXIT(env, that, GtkBorder_1sizeof_FUNC);
 	return rc;
 }
 #endif
@@ -3834,6 +3858,25 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1get_1frame_1extents)
 	gdk_window_get_frame_extents((GdkWindow *)arg0, (GdkRectangle *)lparg1);
 	if (arg1) setGdkRectangleFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, gdk_1window_1get_1frame_1extents_FUNC);
+}
+#endif
+
+#ifndef NO_gdk_1window_1get_1internal_1paint_1info
+JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1get_1internal_1paint_1info)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2, jintArray arg3)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	OS_NATIVE_ENTER(env, that, gdk_1window_1get_1internal_1paint_1info_FUNC);
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	gdk_window_get_internal_paint_info((GdkWindow *)arg0, (GdkDrawable **)lparg1, (gint *)lparg2, (gint *)lparg3);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, gdk_1window_1get_1internal_1paint_1info_FUNC);
 }
 #endif
 
@@ -9734,6 +9777,19 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkAdjus
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkAdjustment_2I_FUNC);
 	if (arg0) setGtkAdjustmentFields(env, arg0, (GtkAdjustment *)arg1);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkAdjustment_2I_FUNC);
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_GtkBorder_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkBorder_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	GtkBorder _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkBorder_2II_FUNC);
+	if (arg0) lparg0 = &_arg0;
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setGtkBorderFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkBorder_2II_FUNC);
 }
 #endif
 

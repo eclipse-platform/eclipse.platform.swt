@@ -25,6 +25,7 @@ char* OS_nativeFunctionNames[];
 
 typedef enum {
 	GDK_1DISPLAY_FUNC,
+	GDK_1PIXMAP_1XID_FUNC,
 	GDK_1ROOT_1PARENT_FUNC,
 	GDK_1TYPE_1COLOR_FUNC,
 	GDK_1TYPE_1PIXBUF_FUNC,
@@ -82,6 +83,7 @@ typedef enum {
 	GdkWindowAttr_1sizeof_FUNC,
 	GtkAdjustment_1sizeof_FUNC,
 	GtkAllocation_1sizeof_FUNC,
+	GtkBorder_1sizeof_FUNC,
 	GtkColorSelectionDialog_1sizeof_FUNC,
 	GtkCombo_1sizeof_FUNC,
 	GtkFileSelection_1sizeof_FUNC,
@@ -313,6 +315,7 @@ typedef enum {
 	gdk_1window_1get_1children_FUNC,
 	gdk_1window_1get_1events_FUNC,
 	gdk_1window_1get_1frame_1extents_FUNC,
+	gdk_1window_1get_1internal_1paint_1info_FUNC,
 	gdk_1window_1get_1origin_FUNC,
 	gdk_1window_1get_1parent_FUNC,
 	gdk_1window_1get_1pointer_FUNC,
@@ -806,6 +809,7 @@ typedef enum {
 	memmove__Lorg_eclipse_swt_internal_gtk_GdkRectangle_2II_FUNC,
 	memmove__Lorg_eclipse_swt_internal_gtk_GdkVisual_2I_FUNC,
 	memmove__Lorg_eclipse_swt_internal_gtk_GtkAdjustment_2I_FUNC,
+	memmove__Lorg_eclipse_swt_internal_gtk_GtkBorder_2II_FUNC,
 	memmove__Lorg_eclipse_swt_internal_gtk_GtkColorSelectionDialog_2I_FUNC,
 	memmove__Lorg_eclipse_swt_internal_gtk_GtkCombo_2I_FUNC,
 	memmove__Lorg_eclipse_swt_internal_gtk_GtkFileSelection_2I_FUNC,

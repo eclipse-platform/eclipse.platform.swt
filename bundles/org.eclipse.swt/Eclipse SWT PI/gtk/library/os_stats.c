@@ -18,10 +18,11 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 882;
-int OS_nativeFunctionCallCount[882];
+int OS_nativeFunctionCount = 886;
+int OS_nativeFunctionCallCount[886];
 char * OS_nativeFunctionNames[] = {
 	"GDK_1DISPLAY", 
+	"GDK_1PIXMAP_1XID", 
 	"GDK_1ROOT_1PARENT", 
 	"GDK_1TYPE_1COLOR", 
 	"GDK_1TYPE_1PIXBUF", 
@@ -79,6 +80,7 @@ char * OS_nativeFunctionNames[] = {
 	"GdkWindowAttr_1sizeof", 
 	"GtkAdjustment_1sizeof", 
 	"GtkAllocation_1sizeof", 
+	"GtkBorder_1sizeof", 
 	"GtkColorSelectionDialog_1sizeof", 
 	"GtkCombo_1sizeof", 
 	"GtkFileSelection_1sizeof", 
@@ -310,6 +312,7 @@ char * OS_nativeFunctionNames[] = {
 	"gdk_1window_1get_1children", 
 	"gdk_1window_1get_1events", 
 	"gdk_1window_1get_1frame_1extents", 
+	"gdk_1window_1get_1internal_1paint_1info", 
 	"gdk_1window_1get_1origin", 
 	"gdk_1window_1get_1parent", 
 	"gdk_1window_1get_1pointer", 
@@ -803,6 +806,7 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkRectangle_2II", 
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkVisual_2I", 
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkAdjustment_2I", 
+	"memmove__Lorg_eclipse_swt_internal_gtk_GtkBorder_2II", 
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkColorSelectionDialog_2I", 
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkCombo_2I", 
 	"memmove__Lorg_eclipse_swt_internal_gtk_GtkFileSelection_2I", 

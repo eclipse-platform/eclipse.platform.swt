@@ -1248,6 +1248,46 @@ void setGtkAllocationFields(JNIEnv *env, jobject lpObject, GtkAllocation *lpStru
 }
 #endif
 
+#ifndef NO_GtkBorder
+typedef struct GtkBorder_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID left, right, top, bottom;
+} GtkBorder_FID_CACHE;
+
+GtkBorder_FID_CACHE GtkBorderFc;
+
+void cacheGtkBorderFields(JNIEnv *env, jobject lpObject)
+{
+	if (GtkBorderFc.cached) return;
+	GtkBorderFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	GtkBorderFc.left = (*env)->GetFieldID(env, GtkBorderFc.clazz, "left", "I");
+	GtkBorderFc.right = (*env)->GetFieldID(env, GtkBorderFc.clazz, "right", "I");
+	GtkBorderFc.top = (*env)->GetFieldID(env, GtkBorderFc.clazz, "top", "I");
+	GtkBorderFc.bottom = (*env)->GetFieldID(env, GtkBorderFc.clazz, "bottom", "I");
+	GtkBorderFc.cached = 1;
+}
+
+GtkBorder *getGtkBorderFields(JNIEnv *env, jobject lpObject, GtkBorder *lpStruct)
+{
+	if (!GtkBorderFc.cached) cacheGtkBorderFields(env, lpObject);
+	lpStruct->left = (*env)->GetIntField(env, lpObject, GtkBorderFc.left);
+	lpStruct->right = (*env)->GetIntField(env, lpObject, GtkBorderFc.right);
+	lpStruct->top = (*env)->GetIntField(env, lpObject, GtkBorderFc.top);
+	lpStruct->bottom = (*env)->GetIntField(env, lpObject, GtkBorderFc.bottom);
+	return lpStruct;
+}
+
+void setGtkBorderFields(JNIEnv *env, jobject lpObject, GtkBorder *lpStruct)
+{
+	if (!GtkBorderFc.cached) cacheGtkBorderFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, GtkBorderFc.left, (jint)lpStruct->left);
+	(*env)->SetIntField(env, lpObject, GtkBorderFc.right, (jint)lpStruct->right);
+	(*env)->SetIntField(env, lpObject, GtkBorderFc.top, (jint)lpStruct->top);
+	(*env)->SetIntField(env, lpObject, GtkBorderFc.bottom, (jint)lpStruct->bottom);
+}
+#endif
+
 #ifndef NO_GtkColorSelectionDialog
 typedef struct GtkColorSelectionDialog_FID_CACHE {
 	int cached;

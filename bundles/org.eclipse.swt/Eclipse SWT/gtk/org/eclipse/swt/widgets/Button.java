@@ -145,7 +145,22 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	OS.gtk_widget_set_size_request (handle, width, height);
 	width = wHint == SWT.DEFAULT ? requisition.width : wHint;
 	height = hHint == SWT.DEFAULT ? requisition.height : hHint;
-	return new Point (width, height);	
+	if (wHint != SWT.DEFAULT || hHint != SWT.DEFAULT) {
+		if ((OS.GTK_WIDGET_FLAGS (handle) & OS.GTK_CAN_DEFAULT) != 0) {
+			int /*long*/ [] buffer = new int /*long*/ [1];
+			GtkBorder border = new GtkBorder ();
+			OS.gtk_widget_style_get (handle, OS.default_border, buffer, 0);
+			if (buffer[0] != 0) {
+				OS.memmove (border, buffer[0], GtkBorder.sizeof);
+			} else {
+				/* Use the GTK+ default value of 1 for each. */
+				border.left = border.right = border.top = border.bottom = 1;
+			}
+			if (wHint != SWT.DEFAULT) width += border.left + border.right;
+			if (hHint != SWT.DEFAULT) height += border.top + border.bottom;
+		}
+	}
+	return new Point (width, height);
 }
 
 void createHandle (int index) {

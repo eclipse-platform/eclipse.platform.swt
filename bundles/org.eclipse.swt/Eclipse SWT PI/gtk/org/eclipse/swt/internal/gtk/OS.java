@@ -369,6 +369,7 @@ public class OS {
 	public static final byte[] pixbuf = signal("pixbuf");
 	public static final byte[] text = signal("text");
 	public static final byte[] xalign = signal("xalign");
+	public static final byte[] default_border = signal("default_border");
 	
 protected static byte [] signal (String name) {
 	int length = name.length ();
@@ -406,6 +407,7 @@ public static final synchronized native int GdkVisual_sizeof();
 public static final synchronized native int GdkWindowAttr_sizeof();
 public static final synchronized native int GtkAdjustment_sizeof();
 public static final synchronized native int GtkAllocation_sizeof();
+public static final synchronized native int GtkBorder_sizeof();
 public static final synchronized native int GtkColorSelectionDialog_sizeof();
 public static final synchronized native int GtkCombo_sizeof();
 public static final synchronized native int GtkFileSelection_sizeof();
@@ -470,6 +472,7 @@ public static final int VisibilityFullyObscured = 2;
 public static final int VisibilityNotify = 15;
 public static final int SYSTEM_TRAY_REQUEST_DOCK = 0;
 public static final native boolean GDK_WINDOWING_X11();
+public static final native int /*long*/ GDK_PIXMAP_XID(int /*long*/ pixmap);
 public static final synchronized native boolean XCheckMaskEvent(int /*long*/ display, int /*long*/ event_mask, int /*long*/ event_return);
 public static final synchronized native boolean XCheckWindowEvent(int /*long*/ display, int /*long*/ window, int /*long*/ event_mask, int /*long*/ event_return);
 public static final synchronized native boolean XCheckIfEvent(int /*long*/ display, int /*long*/ event_return, int /*long*/ predicate, int /*long*/ arg);
@@ -489,7 +492,7 @@ public static final synchronized native void XTestFakeButtonEvent(int /*long*/ d
 public static final synchronized native void XTestFakeKeyEvent(int /*long*/ display, int keycode, boolean is_press, int /*long*/ delay);
 public static final synchronized native void XTestFakeMotionEvent(int /*long*/ display, int screen_number, int x, int y, int /*long*/ delay);
 public static final synchronized native int XWarpPointer(int /*long*/ display, int /*long*/ sourceWindow, int /*long*/ destWindow, int sourceX, int sourceY, int sourceWidth, int sourceHeight, int destX, int destY);
-public static final synchronized native int /*long*/gdk_x11_atom_to_xatom(int /*long*/ atom);
+public static final synchronized native int /*long*/ gdk_x11_atom_to_xatom(int /*long*/ atom);
 public static final synchronized native int /*long*/ gdk_x11_drawable_get_xdisplay(int /*long*/ drawable);
 public static final synchronized native int /*long*/ gdk_x11_drawable_get_xid(int /*long*/ drawable);
 public static final synchronized native int /*long*/ gdk_pixmap_foreign_new(int /*long*/ anid);
@@ -712,6 +715,7 @@ public static final synchronized native int gdk_window_get_events(int /*long*/ w
 public static final synchronized native void gdk_window_focus(int /*long*/ window, int timestamp);
 public static final synchronized native void gdk_window_freeze_updates(int /*long*/ window);
 public static final synchronized native void gdk_window_get_frame_extents(int /*long*/ window, GdkRectangle rect);
+public static final synchronized native void gdk_window_get_internal_paint_info(int /*long*/ window, int /*long*/ [] real_drawable, int[] x_offset, int[] y_offset);
 public static final synchronized native int gdk_window_get_origin(int /*long*/ window, int[] x, int[] y);
 public static final synchronized native int /*long*/ gdk_window_get_parent(int /*long*/ window);
 public static final synchronized native int /*long*/ gdk_window_get_pointer(int /*long*/ window, int[] x, int[] y, int[] mask);
@@ -1187,6 +1191,7 @@ public static final native void memmove(GtkWidgetClass dest, int /*long*/ src);
 public static final native void memmove(GtkTargetPair dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(GtkCombo dest, int /*long*/ src);
 public static final native void memmove(GtkAdjustment dest, int /*long*/ src);
+public static final native void memmove(GtkBorder dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(GdkColor dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(GdkEvent dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(GdkEventButton dest, int /*long*/ src, int /*long*/ size);
@@ -1247,7 +1252,7 @@ public static final synchronized native void pango_font_description_set_style(in
 public static final synchronized native void pango_font_description_set_weight(int /*long*/ desc, int weight);
 public static final synchronized native int /*long*/ pango_font_description_to_string(int /*long*/ desc);
 public static final synchronized native int /*long*/ pango_font_face_describe(int /*long*/ face);
-public static final synchronized native int /*long*/ pango_font_family_get_name (int /*long*/ family);
+public static final synchronized native int /*long*/ pango_font_family_get_name(int /*long*/ family);
 public static final synchronized native void pango_font_family_list_faces(int /*long*/ family, int /*long*/[] faces, int[] n_faces);
 public static final synchronized native int /*long*/ pango_font_get_metrics(int /*long*/ font, int /*long*/ language);
 public static final synchronized native int pango_font_metrics_get_approximate_char_width(int /*long*/ metrics);

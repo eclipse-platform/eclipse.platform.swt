@@ -291,6 +291,18 @@ void setGtkAllocationFields(JNIEnv *env, jobject lpObject, GtkAllocation *lpStru
 #define GtkAllocation_sizeof() 0
 #endif
 
+#ifndef NO_GtkBorder
+void cacheGtkBorderFields(JNIEnv *env, jobject lpObject);
+GtkBorder *getGtkBorderFields(JNIEnv *env, jobject lpObject, GtkBorder *lpStruct);
+void setGtkBorderFields(JNIEnv *env, jobject lpObject, GtkBorder *lpStruct);
+#define GtkBorder_sizeof() sizeof(GtkBorder)
+#else
+#define cacheGtkBorderFields(a,b)
+#define getGtkBorderFields(a,b,c) NULL
+#define setGtkBorderFields(a,b,c)
+#define GtkBorder_sizeof() 0
+#endif
+
 #ifndef NO_GtkColorSelectionDialog
 void cacheGtkColorSelectionDialogFields(JNIEnv *env, jobject lpObject);
 GtkColorSelectionDialog *getGtkColorSelectionDialogFields(JNIEnv *env, jobject lpObject, GtkColorSelectionDialog *lpStruct);
