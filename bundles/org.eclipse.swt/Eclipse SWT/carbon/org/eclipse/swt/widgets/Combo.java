@@ -323,13 +323,21 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, ptr, null);
 	}
 	if (ptr [0] != 0) {
-		org.eclipse.swt.internal.carbon.Point bounds = new org.eclipse.swt.internal.carbon.Point ();
-		// NEEDS work - only works for default font
-		short [] baseLine = new short [1];
-		if (OS.GetThemeTextDimensions (ptr [0], (short)OS.kThemeSystemFont, OS.kThemeStateActive, false, bounds, baseLine) == OS.noErr) {
-			width = Math.max (width, bounds.h);
-			height = Math.max (height, bounds.v);
+		org.eclipse.swt.internal.carbon.Point ioBounds = new org.eclipse.swt.internal.carbon.Point ();
+		if (font == null) {
+			OS.GetThemeTextDimensions (ptr [0], (short)OS.kThemeSystemFont, OS.kThemeStateActive, false, ioBounds, null);
+		} else {
+			int [] currentPort = new int [1];
+			OS.GetPort (currentPort);
+			OS.SetPortWindowPort (OS.GetControlOwner (handle));
+			OS.TextFont (font.id);
+			OS.TextFace (font.style);
+			OS.TextSize (font.size);
+			OS.GetThemeTextDimensions (ptr [0], (short) OS.kThemeCurrentPortFont, OS.kThemeStateActive, false, ioBounds, null);
+			OS.SetPort (currentPort [0]);
 		}
+		width = Math.max (width, ioBounds.h);
+		height = Math.max (height, ioBounds.v);
 		OS.CFRelease (ptr [0]);
 	}
 	Rect inset = getInset ();
