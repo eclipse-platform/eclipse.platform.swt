@@ -56,6 +56,7 @@ import org.eclipse.swt.events.*;
 public class Combo extends Composite {
 	int arrowHandle, entryHandle, listHandle;
 	String [] items = new String [0];
+	static final int INNER_BORDER = 2;
 	/**
 	 * the operating system limit for the number of characters
 	 * that the text field in an instance of this class can hold
@@ -281,20 +282,33 @@ public void clearSelection () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	int width = OS.GTK_WIDGET_WIDTH (fixedHandle);
-	int height = OS.GTK_WIDGET_HEIGHT (fixedHandle);
-	OS.gtk_widget_set_size_request (handle, wHint, hHint);
-	GtkRequisition requisition = new GtkRequisition ();
-	OS.gtk_widget_size_request (handle, requisition);
-	GtkRequisition entryRequesition = new GtkRequisition ();
-	OS.gtk_widget_size_request (entryHandle, entryRequesition);
+	int[] w = new int [1], h = new int [1];
+	int layout = OS.gtk_entry_get_layout (entryHandle);
+	OS.pango_layout_get_size (layout, w, h);
+	int xborder = INNER_BORDER, yborder = INNER_BORDER;
+	GtkStyle style = new GtkStyle (); 
+	OS.memmove (style, OS.gtk_widget_get_style (entryHandle));
+	xborder += style.xthickness;
+	yborder += style.ythickness;
+	int [] property = new int [1];
+	OS.gtk_widget_style_get (entryHandle, OS.interior_focus, property, 0);
+	if (property [0] != 0) {
+		OS.gtk_widget_style_get (entryHandle, OS.focus_line_width, property, 0);
+		xborder += property [0];
+		yborder += property [0];
+	}
+	int width = OS.PANGO_PIXELS (w [0]) + xborder  * 2;
+	int height = OS.PANGO_PIXELS (h [0]) + yborder  * 2;
+
+	GtkRequisition arrowRequesition = new GtkRequisition ();
+	OS.gtk_widget_size_request (arrowHandle, arrowRequesition);
 	GtkRequisition listRequesition = new GtkRequisition ();
 	int listParent = OS.gtk_widget_get_parent (listHandle);
 	OS.gtk_widget_size_request (listParent != 0 ? listParent : listHandle, listRequesition);
-	OS.gtk_widget_set_size_request (handle, width, height);
-	width = (requisition.width - entryRequesition.width) + listRequesition.width + 2;
+	
+	width = Math.max (listRequesition.width, width) + arrowRequesition.width + 4;
 	width = wHint == SWT.DEFAULT ? width : wHint;
-	height = hHint == SWT.DEFAULT ? requisition.height : hHint;
+	height = hHint == SWT.DEFAULT ? height : hHint;
 	return new Point (width, height);
 }
 
