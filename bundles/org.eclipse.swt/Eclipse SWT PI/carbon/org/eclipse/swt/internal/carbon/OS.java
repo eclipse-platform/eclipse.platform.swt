@@ -322,6 +322,9 @@ public class OS {
 	public static final boolean kScrollBarsSyncWithFocus = false;
 	public static final int kSheetWindowClass = 11;
 	public static final int kControlSliderDoesNotPoint = 2;
+	public static final int kThemeMetricHSliderHeight = 41;
+	public static final int kThemeMetricScrollBarWidth = 0;
+	public static final int kThemeMetricVSliderWidth = 45;
 	public static final int kTXNAlwaysWrapAtViewEdgeMask = 1 << 11;
 	public static final int kTXNDisableDragAndDropTag = ('d'<<24) + ('r'<<16) + ('a'<<8) + 'g';
 	public static final int kTXNDoFontSubstitution = ('f'<<24) + ('s'<<16) + ('u'<<8) + 'b';
@@ -528,6 +531,7 @@ public static final native int CreateSeparatorControl(int window, Rect boundsRec
 public static final native int CreateStandardAlert(short alertType, int errorSHandle, int explanationSHandle, int alertParamHandle, int[] dialogHandle);
 public static final native int CreateStaticTextControl(int window, Rect boundsRect, int text, ControlFontStyleRec style, int [] outControl);    
 public static final native int CreateTabsControl(int window, Rect boundsRect, short size, short direction, short numTabs, int tabArray, int[] outControl);
+public static final native int CreateEditUnicodeTextControl(int window, Rect boundsRect, int text, boolean isPassword, ControlFontStyleRec style, int [] outControl);
 public static final native int CreateUserPaneControl(int window, Rect boundsRect, int features, int [] outControl);
 public static final native void DeleteMenu(short menuID);
 public static final native void DeleteMenuItem(int mHandle, short index);
@@ -656,6 +660,7 @@ public static final native int GetScrapFlavorSize(int scrap, int flavorType, int
 public static final native int GetSuperControl(int cHandle, int[] parentHandle);
 public static final native int GetThemeDrawingState(int[] state);
 public static final native int GetThemeFont(short themeFontId, short scriptCode, byte[] fontName, short[] fontSize, byte[] style);
+public static final native int GetThemeMetric(int inMetric, int [] outMetric);
 public static final native int GetThemeTextDimensions(int sHandle, short fontID, int state, boolean wrapToWidth, short[] ioBounds, short[] baseLine);
 public static final native int GetUserFocusEventTarget();
 public static final native int GetWRefCon(int wHandle);

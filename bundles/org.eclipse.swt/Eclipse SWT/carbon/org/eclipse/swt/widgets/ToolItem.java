@@ -77,7 +77,8 @@ Point computeSize () {
 		height = Math.min (DEFAULT_HEIGHT, rect.bottom - rect.top);
 	}
 	//WRONG
-	if (image != null) return new Point (24, 22);
+//	if (image != null) return new Point (24, 22);
+	if (image != null) return new Point (24+26, 22+ 26);
 	return new Point (width, height);
 }
 
@@ -151,6 +152,13 @@ void createWidget (int index) {
 		};
 		int controlTarget = OS.GetControlEventTarget (handle);
 		OS.InstallEventHandler (controlTarget, controlProc, mask.length / 2, mask, parent.handle, null);
+		//FIX ME	
+		int kControlBevelButtonTextPlaceTag = ('t'<<24) + ('p'<<16) + ('l'<<8) + 'c';
+		int placement = 3; // kControlBevelButtonPlaceBelowGraphic
+		if ((parent.style & SWT.RIGHT) != 0) {
+			placement = 1; //kControlBevelButtonPlaceToRightOfGraphic
+		}
+		OS.SetControlData (handle, OS.kControlEntireControl, kControlBevelButtonTextPlaceTag, 2, new short [] {(short) placement});
 	}
 	OS.HIViewAddSubview (parent.handle, handle);
 	OS.HIViewSetZOrder (handle, OS.kHIViewZOrderBelow, 0);

@@ -1492,6 +1492,28 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateTabsControl
 }
 #endif
 
+#ifndef NO_CreateEditUnicodeTextControl
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateEditUnicodeTextControl
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jboolean arg3, jobject arg4, jintArray arg5)
+{
+	Rect _arg1, *lparg1=NULL;
+	ControlFontStyleRec _arg4, *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint rc;
+
+	DEBUG_CALL("CreateEditUnicodeTextControl\n")
+
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	if (arg4) lparg4 = getControlFontStyleRecFields(env, arg4, &_arg4);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	rc = (jint)CreateEditUnicodeTextControl((WindowRef)arg0, (const Rect *)lparg1, (CFStringRef)arg2, (Boolean) arg3, (const ControlFontStyleRec *)lparg4, (ControlRef *)lparg5);
+	if (arg1) setRectFields(env, arg1, lparg1);
+	if (arg4) setControlFontStyleRecFields(env, arg4, lparg4);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	return rc;
+}
+#endif /* NO_CreateEditUnicodeTextControl */
+
 #ifndef NO_CreateUserPaneControl
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateUserPaneControl
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jintArray arg3)
@@ -3231,6 +3253,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetThemeFont
 	return rc;
 }
 #endif /* NO_GetThemeFont */
+
+#ifndef NO_GetThemeMetric
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetThemeMetric
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetThemeTextDimensions\n")
+
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)GetThemeMetric((ThemeMetric)arg0, (SInt32 *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	return rc;
+}
+#endif /* NO_GetThemeMetric */
 
 #ifndef NO_GetThemeTextDimensions
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetThemeTextDimensions

@@ -239,6 +239,7 @@ public void setAccelerator (int accelerator) {
 		inKey = accelerator & ~(SWT.SHIFT | SWT.CONTROL | SWT.ALT | SWT.COMMAND);
 		inGlyph = keyGlyph (inKey);
 		int virtualKey = Display.untranslateKey (inKey);
+		if (inKey == ' ') virtualKey = 49;
 		if (virtualKey != 0) {
 			inSetVirtualKey = true;
 			inKey = virtualKey;

@@ -347,6 +347,8 @@ int kEventControlDeactivate (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
 	short [] part = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
 	OS.TXNFocus (txnObject, part [0] != 0);
@@ -502,6 +504,21 @@ public void setTopIndex (int index) {
 	checkWidget();
 	if ((style & SWT.SINGLE) != 0) return;
 	//NOT DONE
+//	Rect oViewRect = new Rect ();
+//	TXNLongRect oDestinationRect = new TXNLongRect ();
+//	TXNLongRect oTextRect = new TXNLongRect ();
+//	OS.TXNGetRectBounds (txnObject, oViewRect, oDestinationRect, oTextRect);
+//	int topPixel = oDestinationRect.top - oTextRect.top;
+//	int [] oOffset = new int [1];
+//	org.eclipse.swt.internal.carbon.Point iPoint = new org.eclipse.swt.internal.carbon.Point ();
+//	OS.SetPt (iPoint, (short)0, (short)(-topPixel + (index * getLineHeight ())));
+//	OS.TXNPointToOffset (txnObject, iPoint, oOffset);
+//	System.out.println (oOffset [0]);
+//	int [] oStartOffset = new int [1], oEndOffset = new int [1];
+//	OS.TXNGetSelection (txnObject, oStartOffset, oEndOffset);
+//	OS.TXNSetSelection (txnObject, oOffset [0], oOffset [0]);
+//	OS.TXNShowSelection (txnObject, false);
+//	OS.TXNSetSelection (txnObject, oStartOffset [0], oEndOffset [0]);
 }
 
 public void setVisible (boolean visible) {
