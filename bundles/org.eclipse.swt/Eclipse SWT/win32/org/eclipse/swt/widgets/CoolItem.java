@@ -439,6 +439,9 @@ public Point getMinimumSize () {
  * 
  * @param size a point representing the minimum width and height of the cool item, in pixels
  * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -448,6 +451,7 @@ public Point getMinimumSize () {
  */
 public void setMinimumSize (Point size) {
 	checkWidget ();
+	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setMinimumSize (size.x, size.y);
 }
 
@@ -482,21 +486,6 @@ public void setMinimumSize (int width, int height) {
 	rbBand.cxMinChild = width;
 	rbBand.cyMinChild = height;
 	OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, rbBand);
-}
-
-/**
- * @deprecated use getMinimumSize
- */
-public int getMinimumWidth () {
-	return getMinimumSize().x;
-}
-
-/**
- * @deprecated use setMinimumSize
- */
-public void setMinimumWidth (int width) {
-	checkWidget ();
-	setMinimumSize (width, getMinimumSize().y);
 }
 
 boolean getWrap() {
