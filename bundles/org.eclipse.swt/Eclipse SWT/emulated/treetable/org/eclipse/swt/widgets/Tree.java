@@ -2430,6 +2430,14 @@ void reassignFocus () {
 		setFocusItem (null, false);		/* no items left */
 	}
 }
+public void redraw () {
+	checkWidget ();
+	if (drawCount == 0) super.redraw ();
+}
+public void redraw (int x, int y, int width, int height, boolean all) {
+	checkWidget ();
+	if (drawCount == 0) super.redraw (x, y, width, height, all);
+}
 /* 
  * Redraws from the specified index down to the last available item inclusive.  Note
  * that the redraw bounds do not extend beyond the current last item, so clients
