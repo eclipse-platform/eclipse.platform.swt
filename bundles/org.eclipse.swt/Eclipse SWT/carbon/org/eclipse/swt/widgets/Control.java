@@ -410,23 +410,24 @@ public int internal_new_GC (GCData data) {
 
 public void internal_dispose_GC (int context, GCData data) {
 	checkWidget ();
-	int paintContext = 0, paintRgn = 0;
-	if (data.paintEvent != 0) {
-		int theEvent = data.paintEvent;
-		int [] buffer = new int [1];
-		OS.GetEventParameter (theEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, buffer);
-		paintContext = buffer [0];	
-		OS.GetEventParameter (theEvent, OS.kEventParamRgnHandle, OS.typeQDRgnHandle, null, 4, null, buffer);
-		paintRgn = buffer [0];
+	if (data != null) {
+		int paintContext = 0, paintRgn = 0;
+		if (data.paintEvent != 0) {
+			int theEvent = data.paintEvent;
+			int [] buffer = new int [1];
+			OS.GetEventParameter (theEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, buffer);
+			paintContext = buffer [0];	
+			OS.GetEventParameter (theEvent, OS.kEventParamRgnHandle, OS.typeQDRgnHandle, null, 4, null, buffer);
+			paintRgn = buffer [0];
+		}
+		if (data.visibleRgn != 0 && data.visibleRgn != paintRgn) {
+			OS.DisposeRgn (data.visibleRgn);
+			data.visibleRgn = 0;
+		}
+		if (paintContext == context) return;
 	}
-	if (data.visibleRgn != paintRgn) {
-		OS.DisposeRgn (data.visibleRgn);
-		data.visibleRgn = 0;
-	}
-	if (paintContext != context) {
-		OS.CGContextFlush (context);
-		OS.CGContextRelease (context);
-	}
+	OS.CGContextFlush (context);
+	OS.CGContextRelease (context);
 }
 
 public boolean isEnabled () {
