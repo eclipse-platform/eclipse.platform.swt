@@ -31,11 +31,12 @@ import org.eclipse.swt.internal.carbon.*;
 public class Text extends Scrollable {
 	// AW
 	private static final int FOCUS_BORDER= 3;
+	private static final int MARGIN= 0; // 2;
 
 	private int fTextLimit= LIMIT;
 	private int fTX;
 	private int fFrameID;
-	private Rectangle fFrameRect;
+	private Rectangle fFrameBounds;
 	// AW
 	
 	char echoCharacter;
@@ -383,11 +384,8 @@ void createHandle (int index) {
 	
 	int status= OS.TXNNewObject(0, wHandle, bounds.getData(), frameOptions, frameType, iFileType, iPermanentEncoding,
 						tnxObject, frameID, handle);
-	if (status == OS.kNoErr) {		 
-		fTX= tnxObject[0];
-		fFrameID= frameID[0];
-		OS.TXNActivate(fTX, fFrameID, OS.kScrollBarsSyncWithFocus);
-	}
+	if (status != OS.kNoErr)
+		error(SWT.ERROR_NO_HANDLES);
 	
 	// AW: HACK ALERT!
 	// determine how many controls were created by TXNNewObject under the root control;
@@ -401,6 +399,22 @@ void createHandle (int index) {
 		OS.GetIndexedSubControl(root, i, child);
 		MacUtil.embedControl(child[0], handle);
 	}
+	
+	fTX= tnxObject[0];
+	fFrameID= frameID[0];
+	OS.TXNActivate(fTX, fFrameID, OS.kScrollBarsSyncWithFocus);
+	
+	OS.TXNFocus(fTX, false);
+	/*
+	 * If the widget remains empty the caret will be too short.
+	 * As a workaround initialize the widget with a single character
+	 * and immediately remove it afterwards.
+	 */
+	OS.TXNSetData(fTX, new char[] { ' ' }, 0, 0);
+	OS.TXNSetData(fTX, new char[0], 0, 1);
+	
+	OS.setTXNMargins(fTX, (short)MARGIN);
+
 	OS.TXNSetTXNObjectControls(fTX, false, 1, new int[] { OS.kTXNDoFontSubstitution }, new int[] { 1 });
 }	
 ScrollBar createScrollBar (int type) {
@@ -1389,11 +1403,11 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		s.getChars(0, l, chars, 0); 
 		OS.TXNSetData(fTX, chars, start, end);
 		
-		syncBounds(null);
+		//syncBounds(null);
 		
 		sendEvent (SWT.Modify);
 	}
-	
+		
 	private String getTXNText(int start, int end) {
 		int[] dataHandle= new int[1];
 		OS.TXNGetData(fTX, start, end, dataHandle);
@@ -1482,6 +1496,11 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		return status;
 	}
 
+	void handleResize(int hndl, MacRect bounds) {
+		super.handleResize(hndl, bounds);
+		syncBounds(bounds);
+	}
+	
 	private void syncBounds(MacRect b) {
 		
 		if (fTX == 0)
@@ -1504,18 +1523,13 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 			h-= 2*FOCUS_BORDER;
 		}
 		
-		Rectangle oldRect= fFrameRect;
-		fFrameRect= new Rectangle(x, y, w, h);
-		if (oldRect == null || !oldRect.equals(fFrameRect)) {
+		Rectangle oldRect= fFrameBounds;
+		fFrameBounds= new Rectangle(x, y, w, h);
+		if (oldRect == null || !oldRect.equals(fFrameBounds)) {
 			OS.TXNSetFrameBounds(fTX, y, x, y+h, x+w, fFrameID);
 		}
 		
 		OS.TXNDraw(fTX, 0);
-	}
-	
-	void handleResize(int hndl, MacRect bounds) {
-		super.handleResize(hndl, bounds);
-		syncBounds(bounds);
 	}
 	
 	private void drawFrame(Object callData) {
@@ -1533,16 +1547,44 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 				MacRect bounds= new MacRect();
 				OS.GetControlBounds(handle, bounds.getData());
 				bounds.setLocation(0, 0);
-				bounds.inset(FOCUS_BORDER, FOCUS_BORDER, FOCUS_BORDER, FOCUS_BORDER);
-				OS.DrawThemeEditTextFrame(bounds.getData(), OS.kThemeStateActive);
+				int m= FOCUS_BORDER;
+				bounds.inset(m, m, m, m+1);
+				
+				MacRect fbounds= new MacRect();
+				OS.GetControlBounds(handle, fbounds.getData());
+				fbounds.setLocation(0, 0);
+				int fm= FOCUS_BORDER;
+				fbounds.inset(fm, fm+1, fm, fm+1);
+				
+				
 				if ((style & SWT.READ_ONLY) == 0) {
-					OS.DrawThemeFocusRect(bounds.getData(), false);
-					if (getDisplay().getFocusControl() == this)
-						OS.DrawThemeFocusRect(bounds.getData(), true);
+					if (getDisplay().getFocusControl() == this) {
+						OS.DrawThemeEditTextFrame(bounds.getData(), OS.kThemeStateActive);
+						OS.DrawThemeFocusRect(fbounds.getData(), true);
+					} else {
+						OS.DrawThemeFocusRect(fbounds.getData(), false);
+						OS.DrawThemeEditTextFrame(bounds.getData(), OS.kThemeStateActive);
+					}
+				} else {
+					OS.DrawThemeEditTextFrame(bounds.getData(), OS.kThemeStateActive);
 				}
+				
 			}
 		} finally {
 			gc.carbon_unfocus();
+		}
+		showBeginning();
+	}
+	
+	private void showBeginning() {
+		int[] start= new int[1], end= new int [1];
+		OS.TXNGetSelection(fTX, start, end);
+		if (start[0] != 0 || end[0] != 0) {
+			OS.TXNSetSelection(fTX, 0, 0);
+			OS.TXNShowSelection(fTX, false);
+			OS.TXNSetSelection(fTX, start[0], end[0]);
+		} else {
+			OS.TXNShowSelection(fTX, false);
 		}
 	}
 }
