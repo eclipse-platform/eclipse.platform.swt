@@ -259,7 +259,7 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 				OS.memcpy (helpContent, ioHelpContent, HMHelpContentRec.sizeof);
 		        helpContent.version = OS.kMacHelpVersion;
 		        helpContent.tagSide = OS.kHMDefaultSide;
-				display.hoverControl = null;
+				display.helpControl = null;
 		        helpContent.absHotRect_left = (short) 0;
 		     	helpContent.absHotRect_top = (short) 0;
 		        helpContent.absHotRect_right = (short) 0;

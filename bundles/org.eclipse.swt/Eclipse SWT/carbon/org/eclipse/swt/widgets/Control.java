@@ -323,18 +323,18 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 		        helpContent.tagSide = OS.kHMAbsoluteCenterAligned;
 				int x = (short) (inGlobalMouse & 0xFFFF);
 				int y = (short) (inGlobalMouse >> 16);
-				if (display.hoverControl != this) {
-					display.lastHoverX = x + cursorHeight / 2;
-					display.lastHoverY = y + cursorHeight + cursorHeight / 2;			
+				if (display.helpControl != this) {
+					display.lastHelpX = x + cursorHeight / 2;
+					display.lastHelpY = y + cursorHeight + cursorHeight / 2;			
 				}
 				int jitter = 4;
-				int deltaX = Math.abs (display.lastHoverX - x) + jitter;
-				int deltaY = Math.abs (display.lastHoverY - y) + jitter;
-				x = display.lastHoverX - deltaX;
-				y = display.lastHoverY - deltaY;
+				int deltaX = Math.abs (display.lastHelpX - x) + jitter;
+				int deltaY = Math.abs (display.lastHelpY - y) + jitter;
+				x = display.lastHelpX - deltaX;
+				y = display.lastHelpY - deltaY;
 				int width = deltaX * 2;
 				int height = deltaY * 2;
-				display.hoverControl = this;
+				display.helpControl = this;
 		        helpContent.absHotRect_left = (short) x;
 		     	helpContent.absHotRect_top = (short) y;
 		        helpContent.absHotRect_right = (short) (x + width);

@@ -21,8 +21,14 @@ public class Display extends Device {
 
 	/* Windows and Events */
 	Event [] eventQueue;
-	Callback actionCallback, commandCallback, controlCallback, itemDataCallback, itemNotificationCallback, helpCallback, keyboardCallback, menuCallback, mouseCallback, windowCallback;
-	int actionProc, commandProc, controlProc, itemDataProc, itemNotificationProc, helpProc, keyboardProc, menuProc, mouseProc, windowProc;
+	Callback actionCallback, commandCallback, controlCallback;
+	Callback itemDataCallback, itemNotificationCallback, helpCallback;
+	Callback keyboardCallback, menuCallback, mouseHoverCallback;
+	Callback mouseCallback, windowCallback;
+	int actionProc, commandProc, controlProc;
+	int itemDataProc, itemNotificationProc, helpProc;
+	int keyboardProc, menuProc, mouseHoverProc;
+	int mouseProc, windowProc;
 	EventTable eventTable, filterTable;
 	int queue, lastModifiers;
 	
@@ -49,8 +55,15 @@ public class Display extends Device {
 
 	/* Hover Help */
 	int helpString;
+	Control helpControl;
+	int lastHelpX, lastHelpY;
+	
+	/* Mouse Enter/Exit */
+	Control currentControl;
+	
+	/* Mouse Hover */
 	Control hoverControl;
-	int lastHoverX, lastHoverY;
+	int mouseHoverID;
 	
 	/* Menus */
 	Menu menuBar;
@@ -606,6 +619,9 @@ protected void init () {
 	menuCallback = new Callback (this, "menuProc", 3);
 	menuProc = menuCallback.getAddress ();
 	if (menuProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	mouseHoverCallback = new Callback (this, "mouseHoverProc", 2);
+	mouseHoverProc = mouseHoverCallback.getAddress ();
+	if (mouseHoverProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	mouseCallback = new Callback (this, "mouseProc", 3);
 	mouseProc = mouseCallback.getAddress ();
 	if (mouseProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -742,11 +758,12 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 			break;
 		}
 		case OS.inContent: {
-			Rect rect = new Rect ();
-			OS.GetWindowBounds (theWindow [0], (short) OS.kWindowContentRgn, rect);
+			int eventKind = OS.GetEventKind (theEvent);
+			Rect windowRect = new Rect ();
+			OS.GetWindowBounds (theWindow [0], (short) OS.kWindowContentRgn, windowRect);
 			CGPoint inPoint = new CGPoint ();
-			inPoint.x = where.h - rect.left;
-			inPoint.y = where.v - rect.top;
+			inPoint.x = where.h - windowRect.left;
+			inPoint.y = where.v - windowRect.top;
 			int [] theRoot = new int [1];
 			OS.GetRootControl (theWindow [0], theRoot);
 			int [] theControl = new int [1];
@@ -754,25 +771,65 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 			//TEMPOARY CODE
 			if (theControl [0] == 0) theControl [0] = theRoot [0];
 			Widget widget = WidgetTable.get (theControl [0]);
-//			if (control != null && control.handle == theControl [0]) {
 			if (widget != null) {
+				switch (eventKind) {
+					case OS.kEventMouseDragged:
+					case OS.kEventMouseMoved: {
+						if (widget == hoverControl) {
+							int [] outDelay = new int [1];
+							OS.HMGetTagDelay (outDelay);
+							if (mouseHoverID != 0) {
+								OS.SetEventLoopTimerNextFireTime (mouseHoverID, outDelay [0] / 1000.0);
+							}
+						} else {
+							//NOT DONE - get rid of instanceof test
+							if (widget instanceof Control) {
+								if (mouseHoverID != 0) OS.RemoveEventLoopTimer (mouseHoverID);
+								hoverControl = (Control) widget;
+								int [] id = new int [1], outDelay = new int [1];
+								OS.HMGetTagDelay (outDelay);
+								int handle = hoverControl.handle;
+								int eventLoop = OS.GetCurrentEventLoop ();
+								OS.InstallEventLoopTimer (eventLoop, outDelay [0] / 1000.0, 0.0, mouseHoverProc, handle, id);
+								if ((mouseHoverID = id [0]) == 0) hoverControl = null;
+							}
+						}
+					}
+				}
 				return widget.mouseProc (nextHandler, theEvent, userData);
 			}
 			break;
 		}
 	}
+	if (mouseHoverID != 0) OS.RemoveEventLoopTimer (mouseHoverID);
+	mouseHoverID = 0;
+	hoverControl = null;
 	return OS.eventNotHandledErr;
+}
+
+int mouseHoverProc (int id, int handle) {
+	if (hoverControl == null) return 0;
+	if (hoverControl.handle == handle && !hoverControl.isDisposed ()) {
+		//OPTIMIZE - use OS calls
+		int chord = OS.GetCurrentEventButtonState ();
+		int modifiers = OS.GetCurrentEventKeyModifiers ();
+		Point pt = currentControl.toControl (getCursorLocation ());
+		hoverControl.sendMouseEvent (SWT.MouseHover, (short)0, chord, (short)pt.x, (short)pt.y, modifiers);
+	}
+	hoverControl = null;
+	return 0;
 }
 
 public boolean readAndDispatch () {
 	checkDevice ();
+	runEnterExit ();
 	int [] outEvent = new int [1];
 	int status = OS.ReceiveNextEvent (0, null, OS.kEventDurationNoWait, true, outEvent);
 	if (status == OS.noErr) {
 		OS.SendEventToEventTarget (outEvent [0], OS.GetEventDispatcherTarget ());
 		OS.ReleaseEvent (outEvent [0]);
 		runDeferredEvents ();
-		if (runPopups ()) grabControl = null;
+		runPopups ();
 		runGrabs ();
 		return true;
 	}
@@ -823,13 +880,21 @@ void releaseDisplay () {
 	helpCallback.dispose ();
 	keyboardCallback.dispose ();
 	menuCallback.dispose ();
+	mouseHoverCallback.dispose ();
 	mouseCallback.dispose ();
 	windowCallback.dispose ();
-	actionCallback = caretCallback = commandCallback = controlCallback = itemDataCallback = itemNotificationCallback = helpCallback = keyboardCallback = menuCallback = mouseCallback = windowCallback = null;
-	actionProc = caretProc = commandProc = controlProc = itemDataProc = itemNotificationProc = helpProc = keyboardProc = menuProc = mouseProc = windowProc = 0;
+	actionCallback = caretCallback = commandCallback = null;
+	controlCallback = itemDataCallback = itemNotificationCallback = null;
+	helpCallback = keyboardCallback = menuCallback = null;
+	mouseHoverCallback = mouseCallback = windowCallback = null;
+	actionProc = caretProc = commandProc = 0;
+	controlProc = itemDataProc = itemNotificationProc = 0;
+	helpProc = keyboardProc = menuProc = 0;
+	mouseHoverProc = mouseProc = windowProc = 0;
 	timerCallback.dispose ();
 	timerCallback = null;
 	timerProc = 0;
+	grabControl = helpControl = currentControl = null;
 	if (helpString != 0) OS.CFRelease (helpString);
 	helpString = 0;
 	//NOT DONE - call terminate TXN if this is the last display 
@@ -875,6 +940,32 @@ void removePopup (Menu menu) {
 
 boolean runAsyncMessages () {
 	return synchronizer.runAsyncMessages ();
+}
+
+boolean runEnterExit () {
+	//OPTIMIZE - use OS calls, no garbage, widget already hit tested in mouse move
+	Point point = null;
+	int chord = 0, modifiers = 0;
+	Control control = getCursorControl ();
+	if (control != currentControl) {
+		if (currentControl != null && !currentControl.isDisposed ()) {
+			point = getCursorLocation ();
+			chord = OS.GetCurrentEventButtonState ();
+			modifiers = OS.GetCurrentEventKeyModifiers ();
+			Point pt = currentControl.toControl (point);
+			currentControl.sendMouseEvent (SWT.MouseExit, (short)0, chord, (short)pt.x, (short)pt.y, modifiers);
+		}
+		if ((currentControl = control) != null) {
+			if (point == null) {
+				point = getCursorLocation ();
+				chord = OS.GetCurrentEventButtonState ();
+				modifiers = OS.GetCurrentEventKeyModifiers ();
+			}
+			Point pt = currentControl.toControl (point);
+			currentControl.sendMouseEvent (SWT.MouseEnter, (short)0, chord, (short)pt.x, (short)pt.y, modifiers);
+		}
+	}
+	return point != null;
 }
 
 boolean runDeferredEvents () {
@@ -971,6 +1062,7 @@ void runGrabs () {
 
 boolean runPopups () {
 	if (popups == null) return false;
+	grabControl = null;
 	boolean result = false;
 	while (popups != null) {
 		Menu menu = popups [0];
@@ -1111,6 +1203,7 @@ void setMenuBar (Menu menu) {
 
 public boolean sleep () {
 	checkDevice ();
+	//NOT DONE - timers shouldn't run here
 	return OS.ReceiveNextEvent (0, null, OS.kEventDurationForever, false, null) == OS.noErr;
 }
 
