@@ -90,7 +90,7 @@ class PromptDialog extends Dialog {
 	public void prompt(String title, String text, String check, final String[] value, final int[] checkValue, final int[] result) {
 		Shell parent = getParent();
 		final Shell shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
-		shell.setText(title);
+		if (title != null) shell.setText(title);
 		GridLayout gridLayout = new GridLayout();
 		shell.setLayout(gridLayout);
 		Label label = new Label(shell, SWT.WRAP);

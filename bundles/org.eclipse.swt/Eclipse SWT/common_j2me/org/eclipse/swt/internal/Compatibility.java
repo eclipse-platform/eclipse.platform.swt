@@ -349,7 +349,6 @@ public static String getMessage(String key) {
 	if (key.equals("SWT_InputMethods")) return "Input Methods"; //$NON-NLS-1$
 	if (key.equals("SWT_Password")) return "Password:"; //$NON-NLS-1$
 	if (key.equals("SWT_Username")) return "User Name:"; //$NON-NLS-1$
-	if (key.equals("SWT_Prompt")) return "Prompt"; //$NON-NLS-1$
 	if (key.equals("SWT_Close")) return "Close"; //$NON-NLS-1$
 	if (key.equals("SWT_Minimize")) return "Minimize"; //$NON-NLS-1$
 	if (key.equals("SWT_Maximize")) return "Maximize"; //$NON-NLS-1$
