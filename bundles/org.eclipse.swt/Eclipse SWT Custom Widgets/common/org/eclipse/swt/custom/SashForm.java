@@ -28,7 +28,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class SashForm extends Composite {
 
-	public int SASH_WIDTH = 3;
+	public int SASH_WIDTH = 4;
 
 	private static final int DRAG_MINIMUM = 20;
 	
@@ -204,9 +204,10 @@ public void layout(boolean changed) {
 	if (sashes.length < controls.length - 1) {
 		Sash[] newSashes = new Sash[controls.length - 1];
 		System.arraycopy(sashes, 0, newSashes, 0, sashes.length);
-		int sashOrientation = (orientation == SWT.HORIZONTAL) ? SWT.VERTICAL : SWT.HORIZONTAL;
+		int sashStyle = (orientation == SWT.HORIZONTAL) ? SWT.VERTICAL : SWT.HORIZONTAL;
+		if ((getStyle() & SWT.BORDER) != 0) sashStyle |= SWT.BORDER;
 		for (int i = sashes.length; i < newSashes.length; i++) {
-			newSashes[i] = new Sash(this, sashOrientation);
+			newSashes[i] = new Sash(this, sashStyle);
 			newSashes[i].addListener(SWT.Selection, sashListener);
 		}
 		sashes = newSashes;
@@ -363,10 +364,11 @@ public void setOrientation(int orientation) {
 	}
 	this.orientation = orientation;
 	
-	int sashOrientation = (orientation == SWT.HORIZONTAL) ? SWT.VERTICAL : SWT.HORIZONTAL;
+	int sashStyle = (orientation == SWT.HORIZONTAL) ? SWT.VERTICAL : SWT.HORIZONTAL;
+	if ((getStyle() & SWT.BORDER) != 0) sashStyle |= SWT.BORDER;
 	for (int i = 0; i < sashes.length; i++) {
 		sashes[i].dispose();
-		sashes[i] = new Sash(this, sashOrientation);
+		sashes[i] = new Sash(this, sashStyle);
 		sashes[i].addListener(SWT.Selection, sashListener);
 	}
 	layout();
