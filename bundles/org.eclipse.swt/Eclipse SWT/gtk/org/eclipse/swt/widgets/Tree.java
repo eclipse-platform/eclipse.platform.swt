@@ -249,38 +249,12 @@ void createItem (TreeItem item, int node, int index) {
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
 	}
-
-	/* Feature in GTK.
-	 * When the selection policy is BROWSE (which is what we use for SINGLE),
-	 * the first item added gets automatically selected.  This leads to some
-	 * nontrivial complications which one better avoid.  The hack is to
-	 * temporarily put a value other than GTK_SELECTION_BROWSE into the
-	 * selectionMode field just for the insertion.  Do not use the policy
-	 * changing API because this will cause a selection callback.
-	 */ 
-////	GtkCTree ctree = new GtkCTree ();
-////	OS.memmove (ctree, handle, GtkCTree.sizeof);
-////	int selection_mode = ctree.selection_mode;
-////	ctree.selection_mode = OS.GTK_SELECTION_MULTIPLE;
-////	OS.memmove (handle, ctree, GtkCTree.sizeof);
-//	int [] sm = new int [1];
-//	OS.memmove (sm, handle+148, 1);
-//	int selectionMode = sm[0];
-//	sm [0] = OS.GTK_SELECTION_MULTIPLE;
-//	OS.memmove (handle+148, sm, 1);
-//// FIXME		
 	int sibling = index == -1 ? 0 : findSibling (node, index);
 	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
 	item.handle = OS.gtk_ctree_insert_node (handle, node, sibling, null, (byte) 2, uncheck, 0, uncheck, 0, false, false);
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 	if (item.handle == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 	OS.gtk_ctree_node_set_row_data (handle, item.handle, id + 1);
-
-//	OS.memmove (ctree, handle, GtkCTree.sizeof);
-//	ctree.selection_mode = selection_mode;
-//	OS.memmove (handle, ctree, GtkCTree.sizeof);
-//	sm [0] = selectionMode;
-//	OS.memmove (handle+148, sm, 1);
 	items [id] = item;
 }
 
@@ -334,14 +308,6 @@ int findSibling (int node, int index) {
 	return Sibling;
 }
 
-public boolean forceFocus () {
-	checkWidget ();
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
-	boolean result = super.forceFocus ();
-	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
-	return result;
-}
-
 /**
  * Returns the item at the given point in the receiver
  * or null if no such item exists. The point is in the
@@ -361,8 +327,9 @@ public boolean forceFocus () {
 public TreeItem getItem (Point point) {
 	checkWidget ();
 	int [] row = new int [1], column = new int [1];
-	int code = OS.gtk_clist_get_selection_info (handle, point.x, point.y, row, column);
-	if (code == 0) return null;
+	if (OS.gtk_clist_get_selection_info (handle, point.x, point.y, row, column) == 0) {
+		return null;
+	}
 	int node = OS.gtk_ctree_node_nth (handle, row [0]);
 	int index = OS.gtk_ctree_node_get_row_data (handle, node) - 1;
 	return items [index];
@@ -624,8 +591,7 @@ int processMouseDown (int callData, int arg1, int int2) {
 	if ((style & SWT.CHECK) != 0) {
 		if (!OS.gtk_ctree_is_hot_spot (handle, x, y)) {
 			int [] row = new int [1], column = new int [1];
-			int code = OS.gtk_clist_get_selection_info (handle, x, y, row, column);
-			if (code != 0) {
+			if (OS.gtk_clist_get_selection_info (handle, x, y, row, column) != 0) {
 				int node = OS.gtk_ctree_node_nth (handle, row [0]);
 				int crow = OS.g_list_nth_data (node, 0);
 				GtkCTreeRow row_data = new GtkCTreeRow (crow);
@@ -633,8 +599,6 @@ int processMouseDown (int callData, int arg1, int int2) {
 				GtkCList clist = new GtkCList (handle);
 				int nX = clist.hoffset + ctree.tree_indent * row_data.level - 2;
 				int nY = clist.voffset + (clist.row_height + 1) * row [0] + 2;
-//				int [] unused = new int [1], check_width = new int [1], check_height = new int [1];
-//				OS.gdk_window_get_geometry (check, unused, unused, check_width, check_height, unused);
 				int [] check_width = new int [1], check_height = new int [1];
 				OS.gdk_drawable_get_size (check, check_width, check_height);
 				if (nX <= x && x <= nX + check_width [0]) {
@@ -659,8 +623,9 @@ int processMouseDown (int callData, int arg1, int int2) {
 	if (OS.GDK_EVENT_TYPE (callData) == OS.GDK_2BUTTON_PRESS) {
 		if (!OS.gtk_ctree_is_hot_spot (handle, x, y)) {
 			int [] row = new int [1], column = new int [1];
-			int code = OS.gtk_clist_get_selection_info (handle, x, y, row, column);
-			if (code != 0) doubleSelected = true;
+			if (OS.gtk_clist_get_selection_info (handle, x, y, row, column) != 0) {
+				doubleSelected = true;
+			}
 		}
 	}
 	return result;
@@ -846,6 +811,15 @@ public void selectAll () {
 	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
 	OS.gtk_ctree_select_recursive (handle, root);
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);	
+}
+
+public void setRedraw (boolean redraw) {
+	checkWidget ();
+	if (redraw) {
+		OS.gtk_clist_thaw (handle);
+	} else {
+		OS.gtk_clist_freeze (handle);
+	}
 }
 
 /**

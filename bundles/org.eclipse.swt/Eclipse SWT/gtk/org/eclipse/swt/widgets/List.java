@@ -430,8 +430,8 @@ public String [] getItems () {
  */
 public String [] getSelection () {
 	checkWidget();
-	GtkCList widget = new GtkCList (handle);
-	int list = widget.selection;
+	GtkCList clist = new GtkCList (handle);
+	int list = clist.selection;
 	if (list == 0) return new String [0];
 	int length = OS.g_list_length (list);
 	String [] items = new String [length];
@@ -510,8 +510,8 @@ public int getSelectionIndex () {
  */
 public int [] getSelectionIndices () {
 	checkWidget();
-	GtkCList widget = new GtkCList (handle);
-	int list = widget.selection;
+	GtkCList clist = new GtkCList (handle);
+	int list = clist.selection;
 	if (list == 0) return new int [0];
 	int length = OS.g_list_length (list);
 	int [] indices = new int [length];
@@ -664,8 +664,7 @@ int processMouseUp (int callData, int arg1, int int2) {
 		OS.gdk_event_get_coords(callData, px, py);
 		int x = (int) (px[0]), y = (int) (py[0]);
 		int [] row = new int [1], column = new int [1];
-		int code = OS.gtk_clist_get_selection_info (handle, x, y, row, column);
-		if (code != 0) {
+		if (OS.gtk_clist_get_selection_info (handle, x, y, row, column) != 0) {
 			GtkCList clist = new GtkCList (handle);
 			if (selected && clist.selection != 0) {
 				int list = clist.selection;
@@ -1008,6 +1007,15 @@ public void setSelection (int index) {
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (index);
 	showSelection ();
+}
+
+public void setRedraw (boolean redraw) {
+	checkWidget ();
+	if (redraw) {
+		OS.gtk_clist_thaw (handle);
+	} else {
+		OS.gtk_clist_freeze (handle);
+	}
 }
 
 /**

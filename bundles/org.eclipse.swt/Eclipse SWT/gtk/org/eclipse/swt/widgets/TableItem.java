@@ -454,9 +454,9 @@ public void setImage (int index, Image image) {
 	if (image == null) {
 		OS.gtk_clist_set_text (clist, row, 0, buffer);
 	} else {
-		byte [] spacing = new byte [1];
-		OS.gtk_clist_get_pixtext(clist, row, index, null, spacing, null, null);
-		OS.gtk_clist_set_pixtext(clist, row, index, buffer, spacing [0], image.pixmap, image.mask);
+		byte [] spacing = new byte [] {2};
+//		OS.gtk_clist_get_pixtext (clist, row, index, null, spacing, null, null);
+		OS.gtk_clist_set_pixtext (clist, row, index, buffer, spacing [0], image.pixmap, image.mask);
 	}
 }
 
@@ -471,9 +471,9 @@ public void setImage (Image image) {
 	if (image == null) {
 		OS.gtk_clist_set_text (clist, row, 0, buffer);
 	} else {
-		byte [] spacing = new byte [1];
-		OS.gtk_clist_get_pixtext(clist, row, 0, null, spacing, null, null);
-		OS.gtk_clist_set_pixtext(clist, row, 0, buffer, spacing [0], image.pixmap, image.mask);
+		byte [] spacing = new byte [] {2};
+//		OS.gtk_clist_get_pixtext (clist, row, 0, null, spacing, null, null);
+		OS.gtk_clist_set_pixtext (clist, row, 0, buffer, spacing [0], image.pixmap, image.mask);
 	}
 }
 
