@@ -615,6 +615,29 @@ void setDisabledImageList (ImageList imageList) {
 	OS.SendMessage (handle, OS.TB_SETDISABLEDIMAGELIST, 0, hImageList);
 }
 
+public void setFont (Font font) {
+	checkWidget ();
+	super.setFont (font);
+	/*
+	* Bug in Windows.  When WM_SETFONT is sent to a tool bar
+	* that contains only separators, causes the bitmap and button
+	* sizes to be set.  The fix is to reset these sizes after the font
+	* has been changed when the tool bar contains only separators.
+	*/
+	int index = 0;
+	int mask = SWT.PUSH | SWT.CHECK | SWT.RADIO | SWT.DROP_DOWN;
+	while (index < items.length) {
+		ToolItem item = items [index];
+		if (item != null && (item.style & mask) != 0) break;		
+		index++;
+	}
+	if (index == items.length) {
+		OS.SendMessage (handle, OS.TB_SETBITMAPSIZE, 0, 0);
+		OS.SendMessage (handle, OS.TB_SETBUTTONSIZE, 0, 0);
+	}
+	layoutItems ();
+}
+
 void setHotImageList (ImageList imageList) {
 	if (hotImageList == imageList) return;
 	int hImageList = 0;
