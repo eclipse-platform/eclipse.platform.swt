@@ -1118,7 +1118,7 @@ public void setImage(Image newImage) {
 
 	super.setImage(newImage);	
 	if (newImage != null && oldImage != null) {
-		isSameImage = newImage.equals(oldImage);
+		isSameImage = newImage.equals(oldImage) && newImage.type == SWT.ICON;
 	}
 	else {
 		isSameImage = newImage == oldImage;

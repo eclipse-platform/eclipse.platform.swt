@@ -734,6 +734,18 @@ public void setImage (int index, Image image) {
 	int itemIndex = parent.indexOf (this);
 	if (itemIndex == -1) return;
 	if (index == 0) {
+		/*
+		* Feature in Windows.  When LVM_SETITEM is used to set
+		* an image for an item, the item redraws.  This happens
+		* because there is no easy way to know when a program
+		* has drawn on an image that is already in the control.
+		* However, an image that is an icon cannot be modified.
+		* The fix is to check for the same image when the image
+		* is an icon.
+		*/
+		if (image != null && image.type == SWT.ICON) {
+			if (image.equals (this.image)) return;
+		}
 		super.setImage (image);
 	}
 	int hwnd = parent.handle;
@@ -821,8 +833,8 @@ public void setText (int index, String string) {
 		/*
 		* Feature in Windows.  When LVM_SETITEM is used to set
 		* a string for an item that is equal to the string that
-		* is already there, the item redraws.  The fix is to check
-		* for this case and do nothing.
+		* is already there, the item redraws.  The fix is to
+		* check for this case and do nothing.
 		*/
 		if (string.equals (text)) return;
 		super.setText (string);

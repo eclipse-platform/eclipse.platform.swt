@@ -874,10 +874,12 @@ void internalSetImage(int columnIndex, Image image) {
 		if (columnIndex >= images.size()) {
 			growVectors(columnIndex + 1);
 		}
-		if (((Image) images.elementAt(columnIndex)) == null && image != null) {
+		Image oldImage = (Image) images.elementAt(columnIndex);
+		if (oldImage == null && image != null) {
 			imageWasNull = true;
 		}
 		if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+		if (image != null && image.type == SWT.ICON && image.equals (oldImage)) return;
 		images.setElementAt(image, columnIndex);
 		reset(columnIndex);						// new image may cause text to no longer fit in the column
 		notifyImageChanged(columnIndex, imageWasNull);

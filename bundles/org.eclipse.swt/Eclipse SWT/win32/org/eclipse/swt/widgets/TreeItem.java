@@ -633,6 +633,18 @@ public void setGrayed (boolean grayed) {
 
 public void setImage (Image image) {
 	checkWidget ();
+	/*
+	* Feature in Windows.  When TVM_SETITEM is used to set
+	* an image for an item, the item redraws.  This happens
+	* because there is no easy way to know when a program
+	* has drawn on an image that is already in the control.
+	* However, an image that is an icon cannot be modified.
+	* The fix is to check for the same image when the image
+	* is an icon.
+	*/
+	if (image != null && image.type == SWT.ICON) {
+		if (image.equals (this.image)) return;
+	}
 	super.setImage (image);
 	int hwnd = parent.handle;
 	TVITEM tvItem = new TVITEM ();
@@ -646,6 +658,13 @@ public void setImage (Image image) {
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	/*
+	* Feature in Windows.  When TVM_SETITEM is used to set
+	* a string for an item that is equal to the string that
+	* is already there, the item redraws.  The fix is to
+	* check for this case and do nothing.
+	*/
+	if (string.equals (text)) return;
 	super.setText (string);
 	int hwnd = parent.handle;
 	int hHeap = OS.GetProcessHeap ();
