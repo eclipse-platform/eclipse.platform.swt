@@ -519,23 +519,10 @@ String getClipboardText() {
 	int [] scrap = new int [1];
 	OS.GetCurrentScrap (scrap);
 	int [] size = new int [1];
-	if (OS.GetScrapFlavorSize (scrap [0], OS.kScrapFlavorTypeText, size) != OS.noErr || size [0] == 0) return "";
-	byte [] buffer = new byte [size [0]];
-	if (OS.GetScrapFlavorData (scrap [0], OS.kScrapFlavorTypeText, size, buffer) != OS.noErr) return "";
-	int encoding = OS.CFStringGetSystemEncoding ();
-	int cfstring = OS.CFStringCreateWithBytes (OS.kCFAllocatorDefault, buffer, buffer.length, encoding, true);
-	if (cfstring == 0) return "";
-	String string = "";
-	int length = OS.CFStringGetLength (cfstring);
-	if (length != 0) {
-		char [] chars = new char [length];
-		CFRange range = new CFRange ();
-		range.length = length;
-		OS.CFStringGetCharacters (cfstring, range, chars);
-		string = new String (chars);
-	}
-	OS.CFRelease(cfstring);
-	return string;
+	if (OS.GetScrapFlavorSize (scrap [0], OS.kScrapFlavorTypeUnicode, size) != OS.noErr || size [0] == 0) return "";
+	char [] buffer = new char [size [0] / 2];
+	if (OS.GetScrapFlavorData (scrap [0], OS.kScrapFlavorTypeUnicode, size, buffer) != OS.noErr) return "";
+	return new String (buffer);
 }
 
 /**

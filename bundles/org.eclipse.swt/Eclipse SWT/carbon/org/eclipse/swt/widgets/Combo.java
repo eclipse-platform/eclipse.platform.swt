@@ -889,11 +889,11 @@ public int indexOf (String string, int start) {
 }
 
 String getClipboardText () {
-	int[] scrap = new int [1];
+	int [] scrap = new int [1];
 	OS.GetCurrentScrap (scrap);
 	int [] size = new int [1];
 	if (OS.GetScrapFlavorSize (scrap [0], OS.kScrapFlavorTypeUnicode, size) != OS.noErr || size [0] == 0) return "";
-	char [] buffer = new char [size [0]];
+	char [] buffer = new char [size [0] / 2];
 	if (OS.GetScrapFlavorData (scrap [0], OS.kScrapFlavorTypeUnicode, size, buffer) != OS.noErr) return "";
 	return new String (buffer);
 }
