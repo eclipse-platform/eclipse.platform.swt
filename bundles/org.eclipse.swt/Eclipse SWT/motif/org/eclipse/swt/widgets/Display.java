@@ -1756,8 +1756,8 @@ void showToolTip (int handle, String toolTipText) {
 		* The fix is to use the default cursor size which is 16x16.
 		*/
 		int xWindow = OS.XDefaultRootWindow (xDisplay);
-		int [] rootX = new int [1], rootY = new int [1], unused = new int [1];
-		OS.XQueryPointer (xDisplay, xWindow, unused, unused, rootX, rootY, unused, unused, unused);
+		int [] rootX = new int [1], rootY = new int [1], unused = new int [1], mask = new int [1];
+		OS.XQueryPointer (xDisplay, xWindow, unused, unused, rootX, rootY, unused, unused, mask);
 		int x = rootX [0] + 16, y = rootY [0] + 16;
 		
 		/*
@@ -1771,7 +1771,8 @@ void showToolTip (int handle, String toolTipText) {
 		x = Math.max (0, Math.min (x, width - argList4 [1]));
 		y = Math.max (0, Math.min (y, height - argList4 [3]));
 		OS.XtMoveWidget (shellHandle, x, y);
-		OS.XtPopup (shellHandle, OS.XtGrabNone);
+		int flags = OS.Button1Mask | OS.Button2Mask | OS.Button3Mask;
+		if ((mask [0] & flags) == 0) OS.XtPopup (shellHandle, OS.XtGrabNone);
 	}
 }
 /**
