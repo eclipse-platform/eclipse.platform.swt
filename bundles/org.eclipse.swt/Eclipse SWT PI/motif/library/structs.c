@@ -1048,7 +1048,7 @@ void cacheXTextPropertyFields(JNIEnv *env, jobject lpObject)
 XTextProperty *getXTextPropertyFields(JNIEnv *env, jobject lpObject, XTextProperty *lpStruct)
 {
 	if (!XTextPropertyFc.cached) cacheXTextPropertyFields(env, lpObject);
-	lpStruct->value = (char *)(*env)->GetIntField(env, lpObject, XTextPropertyFc.value);
+	lpStruct->value = (unsigned char *)(*env)->GetIntField(env, lpObject, XTextPropertyFc.value);
 	lpStruct->encoding = (*env)->GetIntField(env, lpObject, XTextPropertyFc.encoding);
 	lpStruct->format = (*env)->GetIntField(env, lpObject, XTextPropertyFc.format);
 	lpStruct->nitems = (*env)->GetIntField(env, lpObject, XTextPropertyFc.nitems);
