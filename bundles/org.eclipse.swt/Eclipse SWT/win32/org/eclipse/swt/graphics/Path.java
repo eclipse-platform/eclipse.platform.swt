@@ -95,6 +95,8 @@ public void addString(String string, float x, float y, Font font) {
 public void close() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	Gdip.GraphicsPath_CloseFigure(handle);
+	//TODO - last point is wrong?
+	//Gdip.GraphicsPath_GetLastPoint(handle, currentPoint);
 }
 
 public boolean contains(float x, float y, GC gc, boolean outline) {
@@ -112,7 +114,7 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
 	}
 }
 
-public void curveTo(float cx1, float cy1, float cx2, float cy2, float x, float y) {
+public void cubicTo(float cx1, float cy1, float cx2, float cy2, float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	Gdip.GraphicsPath_AddBezier(handle, currentPoint.X, currentPoint.Y, cx1, cy1, cx2, cy2, x, y);
 	Gdip.GraphicsPath_GetLastPoint(handle, currentPoint);
@@ -145,6 +147,52 @@ public void getCurrentPoint(float[] point) {
 	if (point.length < 2) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	point[0] = currentPoint.X;
 	point[1] = currentPoint.Y;
+}
+
+public PathData getPathData() {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	int count = Gdip.GraphicsPath_GetPointCount(handle);
+	byte[] gdipTypes = new byte[count];
+	float[] points = new float[count * 2];
+	Gdip.GraphicsPath_GetPathTypes(handle, gdipTypes, count);
+	Gdip.GraphicsPath_GetPathPoints(handle, points, count);
+	byte[] types = new byte[count * 2];
+	int index = 0, typesIndex = 0;
+	while (index < count) {
+		byte type = gdipTypes[index];
+		boolean close = false;
+		switch (type & Gdip.PathPointTypePathTypeMask) {
+			case Gdip.PathPointTypeStart:
+				types[typesIndex++] = SWT.PATH_MOVE_TO;
+				close = (type & Gdip.PathPointTypeCloseSubpath) != 0;
+				index += 1;
+				break;
+			case Gdip.PathPointTypeLine:
+				types[typesIndex++] = SWT.PATH_LINE_TO;
+				close = (type & Gdip.PathPointTypeCloseSubpath) != 0;
+				index += 1;
+				break;
+			case Gdip.PathPointTypeBezier:
+				types[typesIndex++] = SWT.PATH_CUBIC_TO;
+				close = (gdipTypes[index + 2] & Gdip.PathPointTypeCloseSubpath) != 0;
+				index += 3;
+				break;
+			default:
+				index++;
+		}
+		if (close) {
+			types[typesIndex++] = SWT.PATH_CLOSE;
+		}
+	}
+	if (typesIndex != types.length) {
+		byte[] newTypes = new byte[typesIndex];
+		System.arraycopy(types, 0, newTypes, 0, typesIndex);
+		types = newTypes;
+	}
+	PathData result = new PathData();
+	result.types = types;
+	result.points = points;
+	return result;
 }
 
 public void lineTo(float x, float y) {

@@ -2555,6 +2555,41 @@ public class SWT {
 	public static final int LINE_CUSTOM = 6;
 	
 	/**
+	 * Path constant that represents a "move to" operation (value is 1).
+	 * 
+	 * @since 3.1
+	 */
+	public static final int PATH_MOVE_TO = 1;
+
+	/**
+	 * Path constant that represents a "line to" operation (value is 2).
+	 * 
+	 * @since 3.1
+	 */
+	public static final int PATH_LINE_TO = 2;
+
+	/**
+	 * Path constant that represents a "quadratic curve to" operation (value is 3).
+	 * 
+	 * @since 3.1
+	 */
+	public static final int PATH_QUAD_TO = 3;
+
+	/**
+	 * Path constant that represents a "cubic curve to" operation (value is 4).
+	 * 
+	 * @since 3.1
+	 */
+	public static final int PATH_CUBIC_TO = 4;
+
+	/**
+	 * Path constant that represents a "close" operation (value is 5).
+	 * 
+	 * @since 3.1
+	 */
+	public static final int PATH_CLOSE = 5;
+
+	/**
 	 * Even odd rule for filling operations (value is 1).
 	 * 
 	 * @since 3.1
