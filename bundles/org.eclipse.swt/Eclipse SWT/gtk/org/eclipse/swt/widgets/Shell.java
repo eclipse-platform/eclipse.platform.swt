@@ -1086,6 +1086,7 @@ public void setVisible (boolean visible) {
 			OS.GDK_UNMAP,
 			OS.GDK_NO_EXPOSE,
 		};
+		display.putGdkEvents();
 		while (!isDisposed () && !mapped) {
 			OS.gtk_main_iteration ();
 		}

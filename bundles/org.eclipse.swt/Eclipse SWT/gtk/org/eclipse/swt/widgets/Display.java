@@ -837,16 +837,7 @@ int /*long*/ eventProc (int /*long*/ event, int /*long*/ data) {
 		}
 	}
 	OS.gtk_main_do_event (event);
-	if (dispatchEvents == null && gdkEventCount != 0) {
-		for (int i = 0; i < gdkEventCount; i++) {
-			if (gdkEventWidgets [i] == null || !gdkEventWidgets [i].isDisposed ()) {
-				OS.gdk_event_put (gdkEvents [i]);
-				OS.gdk_event_free (gdkEvents [i]);
-			}
-		}
-		gdkEventCount = 0;
-		gdkEvents = null;
-	}
+	if (dispatchEvents == null) putGdkEvents();
 	if (control != null ) {
 		if (shell != null && !shell.isDisposed () && (shell.style & SWT.ON_TOP) != 0) {
 			OS.gtk_grab_remove (shell.shellHandle);
@@ -859,6 +850,19 @@ int /*long*/ eventProc (int /*long*/ event, int /*long*/ data) {
 		}
 	}
 	return 0;
+}
+
+void putGdkEvents () {
+	if (gdkEventCount != 0) {
+		for (int i = 0; i < gdkEventCount; i++) {
+			if (gdkEventWidgets [i] == null || !gdkEventWidgets [i].isDisposed ()) {
+				OS.gdk_event_put (gdkEvents [i]);
+				OS.gdk_event_free (gdkEvents [i]);
+			}
+		}
+		gdkEventCount = 0;
+		gdkEvents = null;
+	}
 }
 
 /**
