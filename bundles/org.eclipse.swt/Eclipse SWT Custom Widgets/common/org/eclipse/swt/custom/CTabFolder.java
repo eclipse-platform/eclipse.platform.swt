@@ -808,7 +808,7 @@ void drawChevron(GC gc) {
 	fd.setHeight(fd.getHeight() - 1);
 	Font f = new Font(getDisplay(), fd);
 	int fHeight = f.getFontData()[0].getHeight() * getDisplay().getDPI().y / 72;
-	int indent = Math.max(1, (BUTTON_SIZE - fHeight - 4) /2);
+	int indent = Math.max(1, (chevronRect.height - fHeight - 4) /2);
 	int x = chevronRect.x + indent;
 	int y = chevronRect.y + indent;
 	int count;
@@ -2478,7 +2478,7 @@ boolean setButtonBounds() {
 	if (single) {
 		if (selectedIndex == -1 || items.length > 1){
 			chevronRect.width = 3*BUTTON_SIZE/2;
-			chevronRect.height = BUTTON_SIZE;
+			chevronRect.height = BUTTON_SIZE + 2;
 			chevronRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - chevronRect.height)/2 : borderTop + (tabHeight - chevronRect.height)/2;
 			if (selectedIndex > -1) {
 				CTabItem item = items[selectedIndex];				
@@ -2493,7 +2493,7 @@ boolean setButtonBounds() {
 			int lastIndex = getLastIndex();
 			if (firstIndex > 0 || lastIndex < items.length - 1) {
 				chevronRect.width = 3*BUTTON_SIZE/2;
-				chevronRect.height = BUTTON_SIZE;
+				chevronRect.height = BUTTON_SIZE + 2;
 				lastIndex = getLastIndex(); // last index may change when chevron is present
 				CTabItem lastItem = items[lastIndex];
 				chevronRect.x = Math.min(lastItem.x +lastItem.width + 3, size.x - borderRight - minRect.width - maxRect.width - topRightRect.width - chevronRect.width);
