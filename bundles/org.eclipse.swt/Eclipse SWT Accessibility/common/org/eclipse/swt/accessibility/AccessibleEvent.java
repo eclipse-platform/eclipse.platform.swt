@@ -17,6 +17,8 @@ import org.eclipse.swt.internal.SWTEventObject;
  * </p>
  *
  * @see AccessibleListener
+ * 
+ * @since 2.0
  */
 public class AccessibleEvent extends SWTEventObject {
 	public int childID;	// IN - can be CHILDID_SELF or a positive integer

@@ -31,6 +31,8 @@ import org.eclipse.swt.internal.SWTEventListener;
  *
  * @see AccessibleControlAdapter
  * @see AccessibleControlEvent
+ * 
+ * @since 2.0
  */
 public interface AccessibleControlListener extends SWTEventListener {
 

@@ -21,6 +21,8 @@ package org.eclipse.swt.accessibility;
  *
  * @see AccessibleListener
  * @see AccessibleEvent
+ * 
+ * @since 2.0
  */
 public abstract class AccessibleAdapter implements AccessibleListener {
 

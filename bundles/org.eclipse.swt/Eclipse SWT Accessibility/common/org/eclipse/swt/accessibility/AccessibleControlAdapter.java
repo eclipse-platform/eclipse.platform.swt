@@ -27,6 +27,8 @@ package org.eclipse.swt.accessibility;
  *
  * @see AccessibleControlListener
  * @see AccessibleControlEvent
+ * 
+ * @since 2.0
  */
 public abstract class AccessibleControlAdapter implements AccessibleControlListener {
 

@@ -9,8 +9,10 @@ import org.eclipse.swt.internal.ole.win32.COM;
 
 /**
  * Class OSACC contains all of the OS constants needed for accessibility.
+ * 
+ * @since 2.0
  */
-public class OSACC extends COM {
+class OSACC extends COM {
 	public static final int OBJID_CLIENT = 0xfffffffc;
 	public static final int WM_GETOBJECT = 0x3d;
 	public static final int CO_E_OBJNOTCONNECTED = 0x800401FD;

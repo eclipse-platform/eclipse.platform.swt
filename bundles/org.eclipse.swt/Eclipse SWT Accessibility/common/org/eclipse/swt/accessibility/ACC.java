@@ -8,6 +8,8 @@ package org.eclipse.swt.accessibility;
 /**
  * Class ACC contains all the constants used in defining an
  * Accessible object.
+ * 
+ * @since 2.0
  */
 public class ACC {
 	public static final int STATE_SYSTEM_NORMAL = 0x00000000;

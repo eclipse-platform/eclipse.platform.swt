@@ -5,7 +5,6 @@ package org.eclipse.swt.accessibility;
  * All Rights Reserved
  */
 
-import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.Control;
 
 /**
@@ -15,6 +14,8 @@ import org.eclipse.swt.widgets.Control;
  * in AccessibleControlListener, however please take nothing for
  * granted. The only reason this API is being released at this
  * time is so that other teams can try it out.
+ * 
+ * @since 2.0
  */
 public class Accessible {
 
@@ -26,14 +27,18 @@ public class Accessible {
 	}
 
 	public void addAccessibleListener(AccessibleListener listener) {
+		checkWidget();
 	}
 	
 	public void removeAccessibleListener(AccessibleListener listener) {
+		checkWidget();
 	}
 	
 	public void addAccessibleControlListener(AccessibleControlListener listener) {
+		checkWidget();
 	}
 
 	public void removeAccessibleControlListener(AccessibleControlListener listener) {
+		checkWidget();
 	}
 }

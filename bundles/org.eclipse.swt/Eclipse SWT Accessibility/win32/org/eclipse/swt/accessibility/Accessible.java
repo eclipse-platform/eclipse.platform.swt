@@ -19,6 +19,8 @@ import org.eclipse.swt.internal.ole.win32.*;
  * in AccessibleControlListener, however please take nothing for
  * granted. The only reason this API is being released at this
  * time is so that other teams can try it out.
+ * 
+ * @since 2.0
  */
 public class Accessible {
 	static final boolean debug = false;

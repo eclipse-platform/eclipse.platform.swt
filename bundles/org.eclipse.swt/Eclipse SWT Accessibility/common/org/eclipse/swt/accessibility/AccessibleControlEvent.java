@@ -20,6 +20,8 @@ import org.eclipse.swt.widgets.*;
  * </p>
  *
  * @see AccessibleControlListener
+ * 
+ * @since 2.0
  */
 public class AccessibleControlEvent extends SWTEventObject {
 	public int childID;			// IN/OUT
