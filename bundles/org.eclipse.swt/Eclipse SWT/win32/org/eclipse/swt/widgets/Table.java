@@ -185,7 +185,7 @@ void createHandle () {
 //	OS.SendMessage (handle, OS.LVM_SETITEMCOUNT, 1024 * 2, 0);
 
 	/* Set the checkbox image list */
-	if ((style & SWT.CHECK) != 0) setCheckboxImageList ();
+	if ((style & SWT.CHECK) != 0) setCheckboxImageList (true);
 
 	/*
 	* Feature in Windows.  When the control is created,
@@ -1472,7 +1472,7 @@ void setBackgroundPixel (int pixel) {
 	if (pixel == -1) pixel = defaultBackground ();
 	OS.SendMessage (handle, OS.LVM_SETBKCOLOR, 0, pixel);
 	OS.SendMessage (handle, OS.LVM_SETTEXTBKCOLOR, 0, pixel);
-	if ((style & SWT.CHECK) != 0) setCheckboxImageList ();
+	if ((style & SWT.CHECK) != 0) setCheckboxImageList (true);
 	
 	/*
 	* Feature in Windows.  When the background color is
@@ -1482,13 +1482,27 @@ void setBackgroundPixel (int pixel) {
 	OS.InvalidateRect (handle, null, true);
 }
 
-void setCheckboxImageList () {
+void setCheckboxImageList (boolean force) {
 	if ((style & SWT.CHECK) == 0) return;
+	int height = 0, width = 0;
+	int hImageList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_SMALL, 0);
+	if (hImageList != 0) {
+		int [] cx = new int [1], cy = new int [1];
+		OS.ImageList_GetIconSize (hImageList, cx, cy);
+		height = width = cy [0];
+	} else {
+		int empty = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 0, 0);
+		int oneItem = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 1, 0);
+		height = width = (oneItem >> 16) - (empty >> 16);
+	}
+	int hOldStateList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
+	if (!force && hOldStateList != 0) {
+		int [] cx = new int [1], cy = new int [1];
+		OS.ImageList_GetIconSize (hOldStateList, cx, cy);
+		if (height == cx [0] && width == cy [0]) return;
+	}
 	int count = 4;
-	int empty = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 0, 0);
-	int oneItem = OS.SendMessage (handle, OS.LVM_APPROXIMATEVIEWRECT, 1, 0);
-	int height = (oneItem >> 16) - (empty >> 16), width = height;
-	int hImageList = OS.ImageList_Create (width, height, OS.ILC_COLOR, count, count);
+	int hStateList = OS.ImageList_Create (width, height, OS.ILC_COLOR, count, count);
 	int hDC = OS.GetDC (handle);
 	int memDC = OS.CreateCompatibleDC (hDC);
 	int hBitmap = OS.CreateCompatibleBitmap (hDC, width * count, height);
@@ -1516,11 +1530,10 @@ void setCheckboxImageList () {
 	OS.SelectObject (memDC, hOldBitmap);
 	OS.DeleteDC (memDC);
 	OS.ReleaseDC (handle, hDC);
-	OS.ImageList_AddMasked (hImageList, hBitmap, 0);
+	OS.ImageList_AddMasked (hStateList, hBitmap, 0);
 	OS.DeleteObject (hBitmap);
-	int hOldList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
-	OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_STATE, hImageList);
-	if (hOldList != 0) OS.ImageList_Destroy (hOldList);
+	OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_STATE, hStateList);
+	if (hOldStateList != 0) OS.ImageList_Destroy (hOldStateList);
 }
 
 void setFocusIndex (int index) {
@@ -2253,7 +2266,7 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
 	LRESULT result = super.WM_SYSCOLORCHANGE (wParam, lParam);
 	if (result != null) return result;
-	if ((style & SWT.CHECK) != 0) setCheckboxImageList ();
+	if ((style & SWT.CHECK) != 0) setCheckboxImageList (true);
 	return result;
 }
 
