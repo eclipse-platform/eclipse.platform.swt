@@ -5611,7 +5611,7 @@ void performPaint(GC gc,int startLine,int startY, int renderHeight)	{
 			String line = content.getLine(i);
 			renderer.drawLine(line, i, paintY, lineGC, background, foreground, true);
 		}
-		if (paintY < paintHeight) {
+		if (paintY < renderHeight) {
 			lineGC.setBackground(background);
 			lineGC.fillRectangle(0, paintY, clientArea.width, renderHeight - paintY);
 		}
