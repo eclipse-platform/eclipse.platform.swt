@@ -7,10 +7,8 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
  
-import org.eclipse.swt.internal.carbon.GDevice;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.MenuTrackingData;
-import org.eclipse.swt.internal.carbon.Rect;
  
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -18,7 +16,7 @@ import org.eclipse.swt.graphics.*;
 
 public class Menu extends Widget {
 	int handle;
-	short id, lastIndex;
+	short id;
 	int x, y;
 	boolean hasLocation, modified, closed;
 	MenuItem cascade, defaultItem, lastTarget;
@@ -70,29 +68,7 @@ public void _setVisible (boolean visible) {
 		OS.GetGlobalMouse (where);
 		left = where.h; top = where.v;
 	}
-	int index = defaultItem != null ? indexOf (defaultItem) + 1 : lastIndex;
-	
-	int h= OS.GetMenuHeight(handle);
-	if (h != -1) {
-		int gdevice = OS.DMGetFirstScreenDevice(true);
-		while (gdevice != 0) {
-			int[] ptr = new int[1];
-			OS.memcpy(ptr, gdevice, 4);
-			GDevice device = new GDevice();
-			OS.memcpy(device, ptr[0], GDevice.sizeof);
-			Rect rect = new Rect();
-			OS.GetPixBounds(device.gdPMap, rect);
-			Rectangle r= new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
-			if (r.contains(left, top)) {
-				int s= top+h+10 - r.height;	// 10 keeps a margin between menu and screen border
-				if (s > 0) top -= s;
-			}
-			gdevice = OS.DMGetNextScreenDevice(gdevice, true);
-		}
-	}
-	
-	int result = OS.PopUpMenuSelect (handle, (short)top, (short)left, (short)(index));
-	lastIndex = OS.LoWord (result);
+	OS.PopUpMenuSelect (handle, (short)top, (short)left, (short)-1);
 }
 
 public void addHelpListener (HelpListener listener) {
