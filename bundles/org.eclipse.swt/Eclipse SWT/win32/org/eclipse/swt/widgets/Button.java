@@ -382,13 +382,27 @@ public void removeSelectionListener (SelectionListener listener) {
 }
 
 void selectRadio () {
-	int index = 0;
+	/*
+	* This code is intentionally commented.  When two groups
+	* of radio buttons with the same parent are separated by
+	* another control, the correct behavior should be that
+	* the two groups act independently.  This is consistent
+	* with radio tool and menu items.  The commented code
+	* implements this behavior.
+	*/
+//	int index = 0;
+//	Control [] children = parent._getChildren ();
+//	while (index < children.length && children [index] != this) index++;
+//	int i = index - 1;
+//	while (i >= 0 && children [i].setRadioSelection (false)) --i;
+//	int j = index + 1;
+//	while (j < children.length && children [j].setRadioSelection (false)) j++;
+//	setSelection (true);
 	Control [] children = parent._getChildren ();
-	while (index < children.length && children [index] != this) index++;
-	int i = index - 1;
-	while (i >= 0 && children [i].setRadioSelection (false)) --i;
-	int j = index + 1;
-	while (j < children.length && children [j].setRadioSelection (false)) j++;
+	for (int i=0; i<children.length; i++) {
+		Control child = children [i];
+		if (this != child) child.setRadioSelection (false);
+	}
 	setSelection (true);
 }
 
@@ -499,7 +513,7 @@ boolean setRadioFocus () {
 }
 
 boolean setRadioSelection (boolean value) {
-	if ((style & SWT.RADIO) == 0) return true;
+	if ((style & SWT.RADIO) == 0) return false;
 	if (getSelection () != value) {
 		setSelection (value);
 		postEvent (SWT.Selection);
