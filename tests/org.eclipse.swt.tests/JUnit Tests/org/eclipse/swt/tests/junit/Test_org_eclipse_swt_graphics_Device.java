@@ -35,63 +35,77 @@ protected void tearDown() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceData() {
+	// Device is abstract - test in subclasses
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DeviceData not written");
 }
 
 public void test_dispose() {
+	// Device is abstract - test in subclasses
 	warnUnimpl("Test test_dispose not written");
 }
 
 public void test_getBounds() {
+	// Device is abstract - test in subclasses
 	warnUnimpl("Test test_getBounds not written");
 }
 
 public void test_getClientArea() {
+	// Device is abstract - test in subclasses
 	warnUnimpl("Test test_getClientArea not written");
 }
 
 public void test_getDPI() {
+	// Device is abstract - test in subclasses
 	warnUnimpl("Test test_getDPI not written");
 }
 
 public void test_getDepth() {
+	// Device is abstract - test in subclasses
 	warnUnimpl("Test test_getDepth not written");
 }
 
 public void test_getDeviceData() {
+	// Device is abstract - test in subclasses
 	warnUnimpl("Test test_getDeviceData not written");
 }
 
 public void test_getFontListLjava_lang_StringZ() {
+	// Device is abstract - test in subclasses
 	warnUnimpl("Test test_getFontListLjava_lang_StringZ not written");
 }
 
 public void test_getSystemColorI() {
+	// Device is abstract - test in subclasses
 	warnUnimpl("Test test_getSystemColorI not written");
 }
 
 public void test_getSystemFont() {
+	// Device is abstract - test in subclasses
 	warnUnimpl("Test test_getSystemFont not written");
 }
 
 public void test_getWarnings() {
+	// Device is abstract - test in subclasses
 	warnUnimpl("Test test_getWarnings not written");
 }
 
 public void test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData() {
+	// Device is abstract - test in subclasses
 	warnUnimpl("Test test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData not written");
 }
 
 public void test_internal_new_GCLorg_eclipse_swt_graphics_GCData() {
+	// Device is abstract - test in subclasses
 	warnUnimpl("Test test_internal_new_GCLorg_eclipse_swt_graphics_GCData not written");
 }
 
-
 public void test_isDisposed() {
+	// Device is abstract - test in subclasses
 	warnUnimpl("Test test_isDisposed not written");
 }
 
 public void test_setWarningsZ() {
+	// Device is abstract - test in subclasses
 	warnUnimpl("Test test_setWarningsZ not written");
 }
 
