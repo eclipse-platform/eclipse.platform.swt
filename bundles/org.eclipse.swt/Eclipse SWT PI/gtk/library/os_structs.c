@@ -1213,6 +1213,46 @@ void setPangoAttributeFields(JNIEnv *env, jobject lpObject, PangoAttribute *lpSt
 }
 #endif
 
+#ifndef NO_PangoRectangle
+typedef struct PangoRectangle_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID x, y, width, height;
+} PangoRectangle_FID_CACHE;
+
+PangoRectangle_FID_CACHE PangoRectangleFc;
+
+void cachePangoRectangleFields(JNIEnv *env, jobject lpObject)
+{
+	if (PangoRectangleFc.cached) return;
+	PangoRectangleFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PangoRectangleFc.x = (*env)->GetFieldID(env, PangoRectangleFc.clazz, "x", "I");
+	PangoRectangleFc.y = (*env)->GetFieldID(env, PangoRectangleFc.clazz, "y", "I");
+	PangoRectangleFc.width = (*env)->GetFieldID(env, PangoRectangleFc.clazz, "width", "I");
+	PangoRectangleFc.height = (*env)->GetFieldID(env, PangoRectangleFc.clazz, "height", "I");
+	PangoRectangleFc.cached = 1;
+}
+
+PangoRectangle *getPangoRectangleFields(JNIEnv *env, jobject lpObject, PangoRectangle *lpStruct)
+{
+	if (!PangoRectangleFc.cached) cachePangoRectangleFields(env, lpObject);
+	lpStruct->x = (*env)->GetIntField(env, lpObject, PangoRectangleFc.x);
+	lpStruct->y = (*env)->GetIntField(env, lpObject, PangoRectangleFc.y);
+	lpStruct->width = (*env)->GetIntField(env, lpObject, PangoRectangleFc.width);
+	lpStruct->height = (*env)->GetIntField(env, lpObject, PangoRectangleFc.height);
+	return lpStruct;
+}
+
+void setPangoRectangleFields(JNIEnv *env, jobject lpObject, PangoRectangle *lpStruct)
+{
+	if (!PangoRectangleFc.cached) cachePangoRectangleFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, PangoRectangleFc.x, (jint)lpStruct->x);
+	(*env)->SetIntField(env, lpObject, PangoRectangleFc.y, (jint)lpStruct->y);
+	(*env)->SetIntField(env, lpObject, PangoRectangleFc.width, (jint)lpStruct->width);
+	(*env)->SetIntField(env, lpObject, PangoRectangleFc.height, (jint)lpStruct->height);
+}
+#endif
+
 #ifndef NO_XWindowChanges
 typedef struct XWindowChanges_FID_CACHE {
 	int cached;

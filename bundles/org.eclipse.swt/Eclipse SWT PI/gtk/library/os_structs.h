@@ -207,6 +207,14 @@ void setPangoAttributeFields(JNIEnv *env, jobject lpObject, PangoAttribute *lpSt
 #define setPangoAttributeFields(a,b,c)
 #endif
 
+#ifndef NO_PangoRectangle
+PangoRectangle *getPangoRectangleFields(JNIEnv *env, jobject lpObject, PangoRectangle *lpStruct);
+void setPangoRectangleFields(JNIEnv *env, jobject lpObject, PangoRectangle *lpStruct);
+#else
+#define getPangoRectangleFields(a,b,c) NULL
+#define setPangoRectangleFields(a,b,c)
+#endif
+
 #ifndef NO_XWindowChanges
 XWindowChanges *getXWindowChangesFields(JNIEnv *env, jobject lpObject, XWindowChanges *lpStruct);
 void setXWindowChangesFields(JNIEnv *env, jobject lpObject, XWindowChanges *lpStruct);
