@@ -2990,42 +2990,8 @@ public void update () {
 
 void update (boolean all) {
 //	checkWidget();
-	if (all) {
-		display.update ();
-	} else {
-		OS.gdk_flush ();
-		int pendingCount = 0;
-		int /*long*/ eventPtr = 0;
-		int /*long*/ [] pendingEvents = new int [4];
-		int /*long*/ window = paintWindow ();
-		GdkEventExpose event = new GdkEventExpose ();
-		while ((eventPtr = OS.gdk_event_get ()) != 0) {
-			OS.memmove (event, eventPtr, GdkEventExpose.sizeof);
-			switch (event.type) {
-				case OS.GDK_EXPOSE:
-				case OS.GDK_NO_EXPOSE:
-					if (event.window == window) {
-						/* Note: does not call eventProc() */
-						OS.gtk_main_do_event (eventPtr);
-						OS.gdk_event_free (eventPtr);
-						break;
-					}
-					//FALL THROUGH
-				default:
-					if (pendingCount == pendingEvents.length) {
-						int[] newEvents = new int [pendingCount + 4];
-						System.arraycopy (pendingEvents, 0, newEvents, 0, pendingCount);
-						pendingEvents = newEvents;
-					}
-					pendingEvents [pendingCount++] = eventPtr;
-			}
-		}
-		for (int i=pendingCount - 1; i>=0; i--) {
-			eventPtr = pendingEvents [i];
-			OS.gdk_event_put (eventPtr);
-			OS.gdk_event_free (eventPtr);
-		}
-		OS.gdk_window_process_updates (window, all);
-	}
+	display.flushExposes ();
+	int /*long*/ window = paintWindow ();
+	OS.gdk_window_process_updates (window, all);
 }
 }

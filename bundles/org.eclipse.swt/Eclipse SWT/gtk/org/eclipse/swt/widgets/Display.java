@@ -777,7 +777,27 @@ public Widget findWidget (int /*long*/ handle) {
 	checkDevice ();
 	return getWidget (handle);
 }
- 
+
+void flushExposes () {
+	OS.gdk_flush ();
+	int pendingCount = 0;
+	int /*long*/ eventPtr = 0;
+	int /*long*/ [] pendingEvents = new int /*long*/ [4];
+	while ((eventPtr = OS.gdk_event_get ()) != 0) {
+		if (pendingCount == pendingEvents.length) {
+			int /*long*/ [] newEvents = new int /*long*/ [pendingCount + 4];
+			System.arraycopy (pendingEvents, 0, newEvents, 0, pendingCount);
+			pendingEvents = newEvents;
+		}
+		pendingEvents [pendingCount++] = eventPtr;
+	}
+	for (int i=pendingCount - 1; i>=0; i--) {
+		eventPtr = pendingEvents [i];
+		OS.gdk_event_put (eventPtr);
+		OS.gdk_event_free (eventPtr);
+	}
+}
+
 /**
  * Returns the currently active <code>Shell</code>, or null
  * if no shell belonging to the currently running application
@@ -2425,34 +2445,7 @@ static int untranslateKey (int key) {
  */
 public void update () {
 	checkDevice ();
-	OS.gdk_flush ();
-	int pendingCount = 0;
-	int /*long*/ eventPtr = 0;
-	int /*long*/ [] pendingEvents = new int [4];
-	GdkEvent event = new GdkEvent ();
-	while ((eventPtr = OS.gdk_event_get ()) != 0) {
-		OS.memmove (event, eventPtr, GdkEvent.sizeof);
-		switch (event.type) {
-			case OS.GDK_EXPOSE:
-			case OS.GDK_NO_EXPOSE:
-				/* Note: does not call eventProc() */
-				OS.gtk_main_do_event (eventPtr);
-				OS.gdk_event_free (eventPtr);
-				break;
-			default:
-				if (pendingCount == pendingEvents.length) {
-					int[] newEvents = new int [pendingCount + 4];
-					System.arraycopy (pendingEvents, 0, newEvents, 0, pendingCount);
-					pendingEvents = newEvents;
-				}
-				pendingEvents [pendingCount++] = eventPtr;
-		}
-	}
-	for (int i=pendingCount - 1; i>=0; i--) {
-		eventPtr = pendingEvents [i];
-		OS.gdk_event_put (eventPtr);
-		OS.gdk_event_free (eventPtr);
-	}
+	flushExposes ();
 	OS.gdk_window_process_all_updates ();
 }
 
