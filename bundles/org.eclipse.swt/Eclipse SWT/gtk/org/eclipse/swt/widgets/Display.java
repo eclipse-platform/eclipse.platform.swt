@@ -813,6 +813,11 @@ public Control getCursorControl () {
 	return null;
 }
 
+public Point getCursorSize () {
+	/* Standard cursor size is defined in documentation for gdk_cursor_new_from_pixmap */
+	return new Point (16, 16);
+}
+
 boolean filterEvent (Event event) {
 	if (filterTable != null) filterTable.sendEvent (event);
 	return false;

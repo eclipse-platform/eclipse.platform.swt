@@ -1314,6 +1314,12 @@ public Monitor [] getMonitors () {
 	}
 	return monitors;
 }
+public Point getCursorSize () {
+	int xDrawable = OS.XDefaultRootWindow (xDisplay);
+	int [] width_return = new int [1], height_return = new int [1];
+	OS.XQueryBestCursor (xDisplay, xDrawable, 1024, 1024, width_return, height_return);
+	return new Point (width_return [0], height_return [0]);
+}
 /**
  * Returns the primary monitor for that device.
  * 

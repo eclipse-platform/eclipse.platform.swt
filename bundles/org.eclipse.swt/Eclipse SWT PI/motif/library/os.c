@@ -1172,6 +1172,24 @@ JNIEXPORT jint JNICALL OS_NATIVE(XPutImage)
 }
 #endif
 
+#ifndef NO_XQueryBestCursor
+JNIEXPORT jint JNICALL OS_NATIVE(XQueryBestCursor)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jintArray arg4, jintArray arg5)
+{
+	jint *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XQueryBestCursor\n")
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	rc = (jint)XQueryBestCursor((Display *)arg0, arg1, arg2, arg3, (int *)lparg4, (int *)lparg5);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	NATIVE_EXIT(env, that, "XQueryBestCursor\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_XQueryColor
 JNIEXPORT jint JNICALL OS_NATIVE(XQueryColor)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)

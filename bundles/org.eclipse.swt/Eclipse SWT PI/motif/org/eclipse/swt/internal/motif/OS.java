@@ -693,6 +693,7 @@ public static final synchronized native boolean XPointInRegion(int region, int x
 public static final synchronized native int XPolygonRegion(short[] points, int n, int fill_rule);
 public static final synchronized native int XPutImage(int display, int drawable, int gc, int image, int srcX, int srcY, int destX, int destY, int width, int height);
 public static final synchronized native int XQueryColor(int display, int colormap, XColor color);
+public static final synchronized native int XQueryBestCursor(int display, int d, int width, int height, int[] width_return, int[] height_return);
 public static final synchronized native int XQueryPointer(int display, int window, int[] root, int[] child, int[] rootX, int[] rootY, int[] windowX, int[] windowY, int[] mask);
 public static final synchronized native int XQueryTree(int display, int window, int[] root_return, int[] parent_return, int[] children_return, int[] nChildren_return);
 public static final synchronized native int XRaiseWindow(int display, int window);
