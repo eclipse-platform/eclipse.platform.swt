@@ -153,6 +153,22 @@ public void addControlListener(ControlListener listener) {
 	addListener (SWT.Move, typedListener);
 }
 
+void adjustResizeOrientation (int xChange, int yChange) {
+	/*
+	* If the cursor orientation has not been set in the orientation of
+	* this change then try to set it here.
+	*/
+	if (xChange < 0 && ((style & SWT.LEFT) != 0) && ((cursorOrientation & SWT.RIGHT) == 0)) {
+		cursorOrientation |= SWT.LEFT;
+	} else if (xChange > 0 && ((style & SWT.RIGHT) != 0) && ((cursorOrientation & SWT.LEFT) == 0)) {
+		cursorOrientation |= SWT.RIGHT;
+	} else if (yChange < 0 && ((style & SWT.UP) != 0) && ((cursorOrientation & SWT.DOWN) == 0)) {
+		cursorOrientation |= SWT.UP;
+	} else if (yChange > 0 && ((style & SWT.DOWN) != 0) && ((cursorOrientation & SWT.UP) == 0)) {
+		cursorOrientation |= SWT.DOWN;
+	}
+}
+
 /**
  * Stops displaying the tracker rectangles.  Note that this is not considered
  * to be a cancelation by the user.
@@ -214,7 +230,8 @@ Rectangle [] computeProportions (Rectangle [] rects) {
 	return result;
 }
 
-void drawRectangles () {
+void drawRectangles (Rectangle [] rects) {
+	Rectangle a = rects[0];
 	if (parent != null) {
 		if (parent.isDisposed ()) return;
 		parent.getShell ().update ();
@@ -234,8 +251,8 @@ void drawRectangles () {
 	OS.gdk_gc_set_foreground (gc, color);
 	OS.gdk_gc_set_subwindow (gc, OS.GDK_INCLUDE_INFERIORS);
 	OS.gdk_gc_set_function (gc, OS.GDK_XOR);
-	for (int i=0; i<rectangles.length; i++) {
-		Rectangle rect = rectangles [i];
+	for (int i=0; i<rects.length; i++) {
+		Rectangle rect = rects [i];
 		OS.gdk_draw_rectangle (window, gc, 0, rect.x, rect.y, rect.width, rect.height);
 	}
 	OS.g_object_unref (gc);
@@ -306,7 +323,7 @@ public boolean open () {
 	if (window == 0) return false;
 	boolean cancelled = false;
 	tracking = true;
-	drawRectangles ();
+	drawRectangles (rectangles);
 	int [] oldX = new int [1], oldY = new int [1], state = new int [1];
 	OS.gdk_window_get_pointer (window, oldX, oldY, state);
 
@@ -374,7 +391,12 @@ public boolean open () {
 			case OS.GDK_BUTTON_RELEASE:
 				OS.gdk_window_get_pointer (window, newX,newY, null);
 				if (oldX [0] != newX [0] || oldY [0] != newY [0]) {
-					drawRectangles ();
+					Rectangle [] oldRectangles = rectangles;
+					Rectangle [] rectsToErase = new Rectangle [rectangles.length];
+					for (int i = 0; i < rectangles.length; i++) {
+						Rectangle current = rectangles [i];
+						rectsToErase [i] = new Rectangle (current.x, current.y, current.width, current.height);
+					}
 					Event event = new Event ();
 					event.x = newX [0];
 					event.y = newY [0];
@@ -382,28 +404,89 @@ public boolean open () {
 						resizeRectangles (newX [0] - oldX [0], newY [0] - oldY [0]);
 						sendEvent (SWT.Resize, event);
 						/*
+						* It is possible (but unlikely), that application
+						* code could have disposed the widget in the resize
+						* event.  If this happens, return false to indicate
+						* that the tracking has failed.
+						*/
+						if (isDisposed ()) {
+							cancelled = true;
+							break;
+						}
+						boolean draw = false;
+						/*
+						 * It is possible that application code could have
+						 * changed the rectangles in the resize event.  If this
+						 * happens then only redraw the tracker if the rectangle
+						 * values have changed.
+						 */
+						if (rectangles != oldRectangles) {
+							int length = rectangles.length;
+							if (length != rectsToErase.length) {
+								draw = true;
+							} else {
+								for (int i = 0; i < length; i++) {
+									if (!rectangles [i].equals (rectsToErase [i])) {
+										draw = true;
+										break;
+									}
+								}
+							}
+							adjustResizeOrientation (newX [0] - oldX [0], newY [0] - oldY [0]);
+						} else {
+							draw = true;
+						}
+						if (draw) {
+							drawRectangles (rectsToErase);
+							drawRectangles (rectangles);
+						}
+						/*
 						 * The following is intentionally commented.  Since gtk does not currently
 						 * support pointer warping, the resize cursor cannot be adjusted.  If this
 						 * capability is added in the future then the following should be uncommented,
 						 * and the #adjustResizeCursor method can be copied from another platform.
 						 */
 //						Point cursorPos = adjustResizeCursor ();
-//						newX [0] = cursorPos.x; newY [0] = cursorPos.y;
 					} else {
 						moveRectangles (newX [0] - oldX [0], newY [0] - oldY [0]);
 						sendEvent (SWT.Move, event);
+						/*
+						* It is possible (but unlikely), that application
+						* code could have disposed the widget in the move
+						* event.  If this happens, return false to indicate
+						* that the tracking has failed.
+						*/
+						if (isDisposed ()) {
+							cancelled = true;
+							break;
+						}
+						boolean draw = false;
+						/*
+						 * It is possible that application code could have
+						 * changed the rectangles in the move event.  If this
+						 * happens then only redraw the tracker if the rectangle
+						 * values have changed.
+						 */
+						if (rectangles != oldRectangles) {
+							int length = rectangles.length;
+							if (length != rectsToErase.length) {
+								draw = true;
+							} else {
+								for (int i = 0; i < length; i++) {
+									if (!rectangles [i].equals (rectsToErase [i])) {
+										draw = true;
+										break;
+									}
+								}
+							}
+						} else {
+							draw = true;
+						}
+						if (draw) {
+							drawRectangles (rectsToErase);
+							drawRectangles (rectangles);
+						}
 					}
-					/*
-					 * It is possible (but unlikely) that application code
-					 * could have disposed the widget in the move/resize
-					 * event.  If this happens then return false to indicate
-					 * that the move failed.
-					 */
-					if (isDisposed ()) {
-						cancelled = true;
-						break;
-					}
-					drawRectangles ();
 					oldX [0] = newX [0];  oldY [0] = newY [0];
 				}
 				tracking = eventType != OS.GDK_BUTTON_RELEASE;
@@ -433,13 +516,55 @@ public boolean open () {
 						break;
 				}
 				if (xChange != 0 || yChange != 0) {
-					drawRectangles ();
+					Rectangle [] oldRectangles = rectangles;
+					Rectangle [] rectsToErase = new Rectangle [rectangles.length];
+					for (int i = 0; i < rectangles.length; i++) {
+						Rectangle current = rectangles [i];
+						rectsToErase [i] = new Rectangle (current.x, current.y, current.width, current.height);
+					}
 					Event event = new Event ();
-					event.x = oldX[0] + xChange;
-					event.y = oldY[0] + yChange;
+					event.x = oldX [0] + xChange;
+					event.y = oldY [0] + yChange;
 					if ((style & SWT.RESIZE) != 0) {
 						resizeRectangles (xChange, yChange);
 						sendEvent (SWT.Resize, event);
+						/*
+						* It is possible (but unlikely) that application
+						* code could have disposed the widget in the resize
+						* event.  If this happens return false to indicate
+						* that the tracking has failed.
+						*/
+						if (isDisposed ()) {
+							cancelled = true;
+							break;
+						}
+						boolean draw = false;
+						/*
+						 * It is possible that application code could have
+						 * changed the rectangles in the resize event.  If this
+						 * happens then only redraw the tracker if the rectangle
+						 * values have changed.
+						 */
+						if (rectangles != oldRectangles) {
+							int length = rectangles.length;
+							if (length != rectsToErase.length) {
+								draw = true;
+							} else {
+								for (int i = 0; i < length; i++) {
+									if (!rectangles [i].equals (rectsToErase [i])) {
+										draw = true;
+										break;
+									}
+								}
+							}
+							adjustResizeOrientation (xChange, yChange);
+						} else {
+							draw = true;
+						}
+						if (draw) {
+							drawRectangles (rectsToErase);
+							drawRectangles (rectangles);
+						}
 						/*
 						 * The following is intentionally commented.  Since gtk does not currently
 						 * support pointer warping, the resize cursor cannot be adjusted.  If this
@@ -452,6 +577,42 @@ public boolean open () {
 						moveRectangles (xChange, yChange);
 						sendEvent (SWT.Move, event);
 						/*
+						* It is possible (but unlikely) that application
+						* code could have disposed the widget in the move
+						* event.  If this happens return false to indicate
+						* that the tracking has failed.
+						*/
+						if (isDisposed ()) {
+							cancelled = true;
+							break;
+						}
+						boolean draw = false;
+						/*
+						 * It is possible that application code could have
+						 * changed the rectangles in the move event.  If this
+						 * happens then only redraw the tracker if the rectangle
+						 * values have changed.
+						 */
+						if (rectangles != oldRectangles) {
+							int length = rectangles.length;
+							if (length != rectsToErase.length) {
+								draw = true;
+							} else {
+								for (int i = 0; i < length; i++) {
+									if (!rectangles [i].equals (rectsToErase [i])) {
+										draw = true;
+										break;
+									}
+								}
+							}
+						} else {
+							draw = true;
+						}
+						if (draw) {
+							drawRectangles (rectsToErase);
+							drawRectangles (rectangles);
+						}
+						/*
 						 * The following is intentionally commented.  Since gtk does not currently
 						 * support pointer warping, the move cursor cannot be adjusted.  If this
 						 * capability is added in the future then the following should be uncommented,
@@ -460,24 +621,13 @@ public boolean open () {
 //						cursorPos = adjustMoveCursor (xDisplay, xWindow);
 //						oldX[0] = cursorPos.x;  oldY[0] = cursorPos.y;
 					}
-					/*
-					 * It is possible (but unlikely) that application code
-					 * could have disposed the widget in the move/resize
-					 * event.  If this happens then return false to indicate
-					 * that the move failed.
-					 */
-					if (isDisposed ()) {
-						cancelled = true;
-						break;
-					}
-					drawRectangles ();
 				}
 				break;
 			default:
 		}
 		OS.gdk_event_free (eventPtr);
 	}
-	if (!isDisposed ()) drawRectangles ();
+	if (!isDisposed ()) drawRectangles (rectangles);
 	if (ptrGrabResult == OS.GDK_GRAB_SUCCESS) OS.gdk_pointer_ungrab (OS.GDK_CURRENT_TIME);
 	return !cancelled;
 }
@@ -508,19 +658,7 @@ public void removeControlListener (ControlListener listener) {
 }
 
 void resizeRectangles (int xChange, int yChange) {
-	/*
-	* If the cursor orientation has not been set in the orientation of
-	* this change then try to set it here.
-	*/
-	if (xChange < 0 && ((style & SWT.LEFT) != 0) && ((cursorOrientation & SWT.RIGHT) == 0)) {
-		cursorOrientation |= SWT.LEFT;
-	} else if (xChange > 0 && ((style & SWT.RIGHT) != 0) && ((cursorOrientation & SWT.LEFT) == 0)) {
-		cursorOrientation |= SWT.RIGHT;
-	} else if (yChange < 0 && ((style & SWT.UP) != 0) && ((cursorOrientation & SWT.DOWN) == 0)) {
-		cursorOrientation |= SWT.UP;
-	} else if (yChange > 0 && ((style & SWT.DOWN) != 0) && ((cursorOrientation & SWT.UP) == 0)) {
-		cursorOrientation |= SWT.DOWN;
-	}
+	adjustResizeOrientation (xChange, yChange);
 	
 	/*
 	 * If the bounds will flip about the x or y axis then apply the adjustment
