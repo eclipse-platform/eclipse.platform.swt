@@ -870,6 +870,7 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 	switch (part) {
 		case OS.inMenuBar: {
 			if (eventKind == OS.kEventMouseDown) {
+				//WRONG - doesn't work for nested modal windows and modal windows with menu bars
 				boolean modal = false;
 				int activeWindow = OS.ActiveNonFloatingWindow ();
 				if (activeWindow != 0) {
