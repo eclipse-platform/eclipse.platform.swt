@@ -278,8 +278,8 @@ public String open () {
 	}
 
 	/* Set the new path, file name and filter */
-	String fullPath = null;
 	fileNames = null;
+	String fullPath = null;
 	if (success) {
 		
 		/* Use the character encoding for the default locale */
