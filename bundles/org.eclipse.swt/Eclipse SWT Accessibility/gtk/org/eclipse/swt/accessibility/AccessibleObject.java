@@ -321,7 +321,7 @@ class AccessibleObject {
 		return parentResult;
 	}	
 
-	static int /*long*/ atkHypertext_get_link (int /*long*/ atkObject, int link_index) {
+	static int /*long*/ atkHypertext_get_link (int /*long*/ atkObject, int /*long*/ link_index) {
 		if (DEBUG) System.out.println ("-->atkHypertext_get_link");
 		return 0;
 	}
@@ -331,7 +331,7 @@ class AccessibleObject {
 		return 1;
 	}
 
-	static int /*long*/ atkHypertext_get_link_index (int /*long*/ atkObject, int char_index) {
+	static int /*long*/ atkHypertext_get_link_index (int /*long*/ atkObject, int /*long*/ char_index) {
 		if (DEBUG) System.out.println ("-->atkHypertext_get_link_index");
 		return 0;
 	}
