@@ -386,47 +386,99 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 	}
 	int dwRop = rop2 == OS.R2_XORPEN ? OS.PATINVERT : OS.PATCOPY;
 	OS.SetBkMode(hdc, OS.TRANSPARENT);
+	Rectangle clip = gc.getClipping();
 	for (int line=0; line<runs.length; line++) {
 		int drawX = x, drawY = y + lineY[line];
-		StyleItem[] lineRuns = runs[line];
-		FontMetrics metrics = getLineMetrics(line);
-		int baseline = metrics.getAscent() + metrics.getLeading();
-		int lineHeight = metrics.getHeight();
 		if (wrapWidth != -1) {
 			switch (alignment) {
 				case SWT.CENTER: drawX += (wrapWidth - lineWidth[line]) / 2; break;
 				case SWT.RIGHT: drawX += wrapWidth - lineWidth[line]; break;
 			}
 		}
+		if (drawX > clip.x + clip.width) continue;
+		if (drawX + lineWidth[line] < clip.x) continue;
+		StyleItem[] lineRuns = runs[line];
+		FontMetrics metrics = getLineMetrics(line);
+		int baseline = metrics.getAscent() + metrics.getLeading();
+		int lineHeight = metrics.getHeight();
 		int alignmentX = drawX;
 		for (int i = 0; i < lineRuns.length; i++) {
 			StyleItem run = lineRuns[i];
 			if (run.length == 0) continue;
-			if (!run.lineBreak || run.softBreak) {
-				int end = run.start + run.length - 1;
-				boolean fullSelection = hasSelection && selectionStart <= run.start && selectionEnd >= end;
-				if (fullSelection) {
-					OS.SelectObject(hdc, selBrush);
-					OS.PatBlt(hdc, drawX, drawY, run.width, lineHeight, dwRop);
-				} else {
-					if (run.style != null && run.style.background != null) {
-						int bg = run.style.background.handle;
-						Font font = null;
-						if (run.style != null) font = run.style.font;
-						if (font == null) font = this.font;
-						if (font == null) font = device.getSystemFont();
-						OS.SelectObject(hdc, font.handle);
-						OS.GetTextMetrics(hdc, lptm);
-						int drawRunY = drawY + (baseline - lptm.tmAscent);
-						int hBrush = OS.CreateSolidBrush (bg);
-						int oldBrush = OS.SelectObject(hdc, hBrush);
-						OS.PatBlt(hdc, drawX, drawRunY, run.width, run.height, dwRop);
-						OS.SelectObject(hdc, oldBrush);
-						OS.DeleteObject(hBrush);
-					}
-					boolean partialSelection = hasSelection && !(selectionStart > end || run.start > selectionEnd);
-					if (partialSelection) {
+			if (drawX > clip.x + clip.width) break;
+			if (drawX + run.width >= clip.x) {
+				if (!run.lineBreak || run.softBreak) {
+					int end = run.start + run.length - 1;
+					boolean fullSelection = hasSelection && selectionStart <= run.start && selectionEnd >= end;
+					if (fullSelection) {
 						OS.SelectObject(hdc, selBrush);
+						OS.PatBlt(hdc, drawX, drawY, run.width, lineHeight, dwRop);
+					} else {
+						if (run.style != null && run.style.background != null) {
+							int bg = run.style.background.handle;
+							Font font = null;
+							if (run.style != null) font = run.style.font;
+							if (font == null) font = this.font;
+							if (font == null) font = device.getSystemFont();
+							OS.SelectObject(hdc, font.handle);
+							OS.GetTextMetrics(hdc, lptm);
+							int drawRunY = drawY + (baseline - lptm.tmAscent);
+							int hBrush = OS.CreateSolidBrush (bg);
+							int oldBrush = OS.SelectObject(hdc, hBrush);
+							OS.PatBlt(hdc, drawX, drawRunY, run.width, run.height, dwRop);
+							OS.SelectObject(hdc, oldBrush);
+							OS.DeleteObject(hBrush);
+						}
+						boolean partialSelection = hasSelection && !(selectionStart > end || run.start > selectionEnd);
+						if (partialSelection) {
+							OS.SelectObject(hdc, selBrush);
+							int selStart = Math.max(selectionStart, run.start) - run.start;
+							int selEnd = Math.min(selectionEnd, end) - run.start;
+							int cChars = run.length;
+							int gGlyphs = run.glyphCount;
+							int[] piX = new int[1];
+							OS.ScriptCPtoX(selStart, false, cChars, gGlyphs, run.clusters, run.visAttrs, run.advances, run.analysis, piX);
+							int runX = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - piX[0] : piX[0];
+							rect.left = drawX + runX;
+							rect.top = drawY;
+							OS.ScriptCPtoX(selEnd, true, cChars, gGlyphs, run.clusters, run.visAttrs, run.advances, run.analysis, piX);
+							runX = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - piX[0] : piX[0];
+							rect.right = drawX + runX;
+							rect.bottom = drawY + lineHeight;
+							OS.PatBlt(hdc, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, dwRop);
+						}
+					}
+				}
+			}
+			drawX += run.width;
+		}
+		drawX = alignmentX;
+		for (int i = 0; i < lineRuns.length; i++) {
+			StyleItem run = lineRuns[i];
+			if (run.length == 0) continue;
+			if (drawX > clip.x + clip.width) break;
+			if (drawX + run.width >= clip.x) {
+				if (!run.tab && (!run.lineBreak || run.softBreak)) {
+					int end = run.start + run.length - 1;
+					int fg = foreground;
+					boolean fullSelection = hasSelection && selectionStart <= run.start && selectionEnd >= end;
+					if (fullSelection) {
+						fg = selectionForeground.handle;
+					} else {
+						if (run.style != null && run.style.foreground != null) fg = run.style.foreground.handle;
+					}
+					OS.SetTextColor(hdc, fg);
+					Font font = null;
+					if (run.style != null) font = run.style.font;
+					if (font == null) font = this.font;
+					if (font == null) font = device.getSystemFont();
+					OS.SelectObject(hdc, font.handle);
+					OS.GetTextMetrics(hdc, lptm);
+					int drawRunY = drawY + (baseline - lptm.tmAscent);
+					OS.ScriptTextOut(hdc, run.psc, drawX, drawRunY, 0, null, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, null, run.goffsets);
+					boolean partialSelection = hasSelection && !(selectionStart > end || run.start > selectionEnd);
+					if (!fullSelection && partialSelection && fg != selectionForeground.handle) {
+						OS.SetTextColor(hdc, selectionForeground.handle);
 						int selStart = Math.max(selectionStart, run.start) - run.start;
 						int selEnd = Math.min(selectionEnd, end) - run.start;
 						int cChars = run.length;
@@ -440,51 +492,8 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 						runX = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - piX[0] : piX[0];
 						rect.right = drawX + runX;
 						rect.bottom = drawY + lineHeight;
-						OS.PatBlt(hdc, rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top, dwRop);
+						OS.ScriptTextOut(hdc, run.psc, drawX, drawRunY, OS.ETO_CLIPPED, rect, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, null, run.goffsets);
 					}
-				}
-			}
-			drawX += run.width;
-		}
-		drawX = alignmentX;
-		for (int i = 0; i < lineRuns.length; i++) {
-			StyleItem run = lineRuns[i];
-			if (run.length == 0) continue;
-			if (!run.tab && (!run.lineBreak || run.softBreak)) {
-				int end = run.start + run.length - 1;
-				int fg = foreground;
-				boolean fullSelection = hasSelection && selectionStart <= run.start && selectionEnd >= end;
-				if (fullSelection) {
-					fg = selectionForeground.handle;
-				} else {
-					if (run.style != null && run.style.foreground != null) fg = run.style.foreground.handle;
-				}
-				OS.SetTextColor(hdc, fg);
-				Font font = null;
-				if (run.style != null) font = run.style.font;
-				if (font == null) font = this.font;
-				if (font == null) font = device.getSystemFont();
-				OS.SelectObject(hdc, font.handle);
-				OS.GetTextMetrics(hdc, lptm);
-				int drawRunY = drawY + (baseline - lptm.tmAscent);
-				OS.ScriptTextOut(hdc, run.psc, drawX, drawRunY, 0, null, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, null, run.goffsets);
-				boolean partialSelection = hasSelection && !(selectionStart > end || run.start > selectionEnd);
-				if (!fullSelection && partialSelection && fg != selectionForeground.handle) {
-					OS.SetTextColor(hdc, selectionForeground.handle);
-					int selStart = Math.max(selectionStart, run.start) - run.start;
-					int selEnd = Math.min(selectionEnd, end) - run.start;
-					int cChars = run.length;
-					int gGlyphs = run.glyphCount;
-					int[] piX = new int[1];
-					OS.ScriptCPtoX(selStart, false, cChars, gGlyphs, run.clusters, run.visAttrs, run.advances, run.analysis, piX);
-					int runX = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - piX[0] : piX[0];
-					rect.left = drawX + runX;
-					rect.top = drawY;
-					OS.ScriptCPtoX(selEnd, true, cChars, gGlyphs, run.clusters, run.visAttrs, run.advances, run.analysis, piX);
-					runX = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - piX[0] : piX[0];
-					rect.right = drawX + runX;
-					rect.bottom = drawY + lineHeight;
-					OS.ScriptTextOut(hdc, run.psc, drawX, drawRunY, OS.ETO_CLIPPED, rect, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, null, run.goffsets);
 				}
 			}
 			drawX += run.width;
@@ -1283,6 +1292,8 @@ public void setAlignment (int alignment) {
  */
 public void setFont (Font font) {
 	if (font != null && font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (this.font == font) return;
+	if (font != null && font.equals(this.font)) return;
 	freeRuns();
 	this.font = font;
 }
@@ -1309,6 +1320,7 @@ public void setOrientation (int orientation) {
 public void setSpacing (int spacing) {
 	checkLayout();
 	if (spacing < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (this.lineSpacing == spacing) return;
 	freeRuns();
 	this.lineSpacing = spacing;
 }
@@ -1324,31 +1336,50 @@ public void setStyle (TextStyle style, int start, int end) {
 	if (start > end) return;
 	start = Math.min(Math.max(0, start), length - 1);
 	end = Math.min(Math.max(0, end), length - 1);
+	int low = -1;
+	int high = styles.length;
+	while (high - low > 1) {
+		int index = (high + low) / 2;
+		if (start <= styles[index].start) {
+			high = index;
+		} else {
+			low = index;
+		}
+	}
+	if (0 <= high && high < styles.length) {
+		StyleItem item = styles[high];
+		if (item.start == start && styles[high + 1].start - 1 == end) {
+			if (style == item.style) return;
+			if (style != null && style.equals(item.style)) return;
+		}
+	}
 	freeRuns();
 	int count = 0, i;
 	StyleItem[] newStyles = new StyleItem[styles.length + 2];
-	StyleItem previousStyle = null;
 	for (i = 0; i < styles.length; i++) {
 		StyleItem item = styles[i];
-		if (item.start >= start) {
-			if (item.start == start) previousStyle = item;
-			break;
-		}
+		if (item.start >= start) break;
 		newStyles[count++] = item;
 	}
 	StyleItem newItem = new StyleItem();
 	newItem.start = start;
 	newItem.style = style;
 	newStyles[count++] = newItem;
-	for (; i<styles.length; i++) {
-		StyleItem item = styles[i];
-		if (item.start >= end) break;
-		previousStyle = null;
+	if (styles[i].start > end) {
+		newItem = new StyleItem();
+		newItem.start = end + 1;
+		newItem.style = styles[i -1].style;
+		newStyles[count++] = newItem;
+	} else {
+		for (; i<styles.length; i++) {
+			StyleItem item = styles[i];
+			if (item.start > end) break;
+		}
+		if (end != styles[i].start - 1) {
+			i--;
+			styles[i].start = end + 1;
+		}
 	}
-	newItem = new StyleItem();
-	newItem.style = previousStyle != null ? previousStyle.style : styles[Math.max(0, i - 1)].style;
-	newItem.start = end + 1;
-	newStyles[count++] = newItem;
 	for (; i<styles.length; i++) {
 		StyleItem item = styles[i];
 		if (item.start > end) newStyles[count++] = item;
@@ -1369,6 +1400,16 @@ public void setStyle (TextStyle style, int start, int end) {
  */
 public void setTabs (int[] tabs) {
 	checkLayout();
+	if (this.tabs == null && tabs == null) return;
+	if (this.tabs != null && tabs !=null) {
+		if (this.tabs.length == tabs.length) {
+			int i;
+			for (i = 0; i <tabs.length; i++) {
+				if (this.tabs[i] != tabs[i]) break;
+			}
+			if (i == tabs.length) return;
+		}
+	}
 	freeRuns();
 	this.tabs = tabs;
 } 
@@ -1381,6 +1422,7 @@ public void setTabs (int[] tabs) {
 public void setText (String text) {
 	checkLayout();
 	if (text == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (text.equals(this.text)) return;
 	freeRuns();
 	this.text = text;
 	styles = new StyleItem[2];
@@ -1398,6 +1440,7 @@ public void setText (String text) {
 public void setWidth (int width) {
 	checkLayout();
 	if (width < -1 || width == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (this.wrapWidth == width) return;
 	freeRuns();
 	this.wrapWidth = width;
 }

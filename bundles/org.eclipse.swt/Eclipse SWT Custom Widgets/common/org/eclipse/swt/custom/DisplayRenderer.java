@@ -19,6 +19,8 @@ import org.eclipse.swt.graphics.*;
  */
 class DisplayRenderer extends StyledTextRenderer {
 	private StyledText parent;			// used to get content and styles during rendering
+	private int topIndex = -1;
+	private TextLayout[] layouts;
 	
 /**
  * Creates an instance of <class>DisplayRenderer</class>.
@@ -35,6 +37,17 @@ DisplayRenderer(Device device, Font regularFont, StyledText parent, int tabLengt
 	this.parent = parent;
 	calculateLineHeight();
 	setTabLength(tabLength);
+}
+void dispose() {
+	super.dispose();
+	if (layouts != null) {
+		for (int i = 0; i < layouts.length; i++) {
+			TextLayout layout = layouts[i];
+			if (layout != null) super.disposeTextLayout(layout);
+		}
+		topIndex = -1;
+		layouts = null;
+	}
 }
 /**
  * Dispose the specified GC.
@@ -198,5 +211,50 @@ protected boolean getWordWrap() {
  */
 protected boolean isFullLineSelection() {
 	return (parent.getStyle() & SWT.FULL_SELECTION) != 0;
+}
+TextLayout createTextLayout(int lineIndex) {
+	if (!parent.internalGetWordWrap()) {
+		updateTopIndex();
+		if (layouts != null) {
+			int layoutIndex = lineIndex - topIndex;
+			if (0 <= layoutIndex && layoutIndex < layouts.length) {
+				TextLayout layout = layouts[layoutIndex];
+				if (layout != null) return layout;
+				return layouts[layoutIndex] = super.createTextLayout(lineIndex); 
+			}
+		}
+	}
+	return super.createTextLayout(lineIndex);
+}
+void disposeTextLayout (TextLayout layout) {
+	if (layouts != null) {
+		for (int i=0; i<layouts.length; i++) {
+			if (layouts[i] == layout) return;
+		}
+	}
+	super.disposeTextLayout(layout);
+}
+void updateTopIndex() {
+	int verticalIncrement = parent.getVerticalIncrement();
+	int topIndex = verticalIncrement == 0 ? 0 : parent.verticalScrollOffset / verticalIncrement;
+	int newLength = Math.max(1 , parent.getPartialBottomIndex() - topIndex + 1);
+	if (layouts == null || topIndex != this.topIndex || newLength != layouts.length) {
+		TextLayout[] newLayouts = new TextLayout[newLength];
+		if (layouts != null) {
+			for(int i=0; i<layouts.length; i++) {
+				TextLayout layout = layouts[i];
+				if (layout != null) {
+					int layoutIndex = (i + this.topIndex) - topIndex;
+					if (0 <= layoutIndex && layoutIndex < newLayouts.length) {
+						newLayouts[layoutIndex] = layout;
+					} else {
+						super.disposeTextLayout(layout);
+					}
+				}
+			}
+		}
+		this.topIndex = topIndex;
+		layouts = newLayouts;
+	}
 }
 }

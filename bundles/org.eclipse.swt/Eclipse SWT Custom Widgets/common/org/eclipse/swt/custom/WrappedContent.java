@@ -443,15 +443,14 @@ private int wrapLineRange(int startLine, int endLine, int visualLineIndex, int w
 			visualLineIndex++;
 			continue;
    		}
-		StyledTextEvent event = renderer.getLineStyleData(lineOffset, line);
-		TextLayout layout = renderer.getTextLayout(line, lineOffset, event);
+		TextLayout layout = renderer.getTextLayout(line, lineOffset);
 		layout.setWidth(Math.max(1, width));
 		int lineCount = layout.getLineCount();
 		for (int j = 0; j < lineCount; j++) {
 			Point lineOffsets = layout.getLineOffsets(j);
 			setVisualLine(visualLineIndex++, lineOffset + lineOffsets.x, lineOffsets.y - lineOffsets.x + 1);
 		}
-		renderer.disposeTextLayout(layout, event); 
+		renderer.disposeTextLayout(layout); 
 	}
 	return visualLineIndex;
 }

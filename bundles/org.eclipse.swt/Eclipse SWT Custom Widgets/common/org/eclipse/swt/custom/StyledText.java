@@ -563,7 +563,9 @@ public class StyledText extends Canvas {
 			int segmentWidth;
 			int drawX = 0;
 			int drawY = 0;
-			TextLayout layout = renderer.getTextLayout(segment, 0, null);
+			TextLayout layout = new TextLayout(printer);
+			layout.setText(segment);
+			layout.setFont(printerFont);
 			segmentWidth = layout.getLineBounds(0).width;
 			if (header) {
 				drawY = clientArea.y - renderer.getLineHeight() * 2;
@@ -583,7 +585,7 @@ public class StyledText extends Canvas {
 				drawX = clientArea.x + clientArea.width - segmentWidth;
 			}
 			layout.draw(gc, drawX, drawY);
-			renderer.disposeTextLayout(layout, null);
+			layout.dispose();
 		}
 	}
 	/**
@@ -1248,10 +1250,9 @@ public class StyledText extends Canvas {
 	 * @return the width of the given line
 	 */
 	int contentWidth(String line, int lineOffset) {
-		StyledTextEvent event = getLineStyleData(lineOffset, line);
-		TextLayout layout = renderer.getTextLayout(line, lineOffset, event);
+		TextLayout layout = renderer.getTextLayout(line, lineOffset);
 		Rectangle rect = layout.getLineBounds(0);
-		renderer.disposeTextLayout(layout, event);
+		renderer.disposeTextLayout(layout);
 		return rect.x + rect.width + leftMargin + rightMargin;
 	}
 	/**
@@ -2469,9 +2470,9 @@ void doBackspace() {
 		}
 		else {
 			String lineText = content.getLine(line);
-			TextLayout layout = renderer.getTextLayout(lineText, lineOffset, null);
+			TextLayout layout = renderer.getTextLayout(lineText, lineOffset);
 			int start = layout.getPreviousOffset(caretOffset - lineOffset, TextLayout.MOVEMENT_CLUSTER);
-			renderer.disposeTextLayout(layout, null); 
+			renderer.disposeTextLayout(layout); 
 			event.start = start + lineOffset;
 			event.end = caretOffset;
 		}
@@ -3360,9 +3361,8 @@ int getOffsetAtX(String line, int lineOffset, int lineXOffset) {
 	int offset;
 	int[] trailing;
 	TextLayout layout;
-	StyledTextEvent event = renderer.getLineStyleData(lineOffset, line);
 	int x = lineXOffset - leftMargin + horizontalScrollOffset;
-	layout = renderer.getTextLayout(line, lineOffset, event);
+	layout = renderer.getTextLayout(line, lineOffset);
 	Rectangle rect = layout.getLineBounds(0);
 	if (x < rect.x) {
 		offset = 0;
@@ -3379,7 +3379,7 @@ int getOffsetAtX(String line, int lineOffset, int lineXOffset) {
 			advancing  = (level ^ trailingLevel) != 0;
 		} 
 	}
-	renderer.disposeTextLayout(layout, event);
+	renderer.disposeTextLayout(layout);
 	return offset;
 }
 /**
@@ -3396,21 +3396,21 @@ int getCaretWidth() {
 int getClusterNext(int offset, int lineIndex) {
 	String line = content.getLine(lineIndex);
 	int lineOffset = content.getOffsetAtLine(lineIndex);	
-	TextLayout layout = renderer.getTextLayout(line, lineOffset, null);
+	TextLayout layout = renderer.getTextLayout(line, lineOffset);
 	offset -= lineOffset;
 	offset = layout.getNextOffset(offset, TextLayout.MOVEMENT_CLUSTER);
 	offset += lineOffset;
-	renderer.disposeTextLayout(layout, null);
+	renderer.disposeTextLayout(layout);
 	return offset;
 }
 int getClusterPrevious(int offset, int lineIndex) {
 	String line = content.getLine(lineIndex);
 	int lineOffset = content.getOffsetAtLine(lineIndex);	
-	TextLayout layout = renderer.getTextLayout(line, lineOffset, null);
+	TextLayout layout = renderer.getTextLayout(line, lineOffset);
 	offset -= lineOffset;
 	offset = layout.getPreviousOffset(offset, TextLayout.MOVEMENT_CLUSTER);
 	offset += lineOffset;
-	renderer.disposeTextLayout(layout, null);
+	renderer.disposeTextLayout(layout);
 	return offset;
 }
 /**
@@ -3872,17 +3872,16 @@ public int getOffsetAtLocation(Point point) {
 	lineOffset = content.getOffsetAtLine(line);	
 	
 	int x = point.x - leftMargin + horizontalScrollOffset;
-	StyledTextEvent event = renderer.getLineStyleData(lineOffset, lineText);
-	layout = renderer.getTextLayout(lineText, lineOffset, event);
+	layout = renderer.getTextLayout(lineText, lineOffset);
 	Rectangle rect = layout.getLineBounds(0);
 	if (x > rect.x + rect.width) {
-		renderer.disposeTextLayout(layout, event);
+		renderer.disposeTextLayout(layout);
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	int[] trailing = new int[1];
 	offsetInLine = layout.getOffset(x, 0, trailing);
 	if ((offsetInLine != lineText.length() - 1) && (trailing[0] & SWT.TRAIL) != 0) offsetInLine++;
-	renderer.disposeTextLayout(layout, event);
+	renderer.disposeTextLayout(layout);
 	return lineOffset + offsetInLine;
 }
 /**
@@ -4458,11 +4457,11 @@ int getCaretDirection() {
 	int offset = caretOffset - lineOffset;
 	int lineLength = line.length();
 	if (lineLength == 0) return isMirrored() ? SWT.RIGHT : SWT.LEFT;
-	TextLayout layout = renderer.getTextLayout(line, lineOffset, null);
+	TextLayout layout = renderer.getTextLayout(line, lineOffset);
 	if (advancing && offset > 0) offset--;
 	int level = layout.getLevel(offset);
 	while (offset > 0 && level > 1) level = layout.getLevel(--offset);
-	renderer.disposeTextLayout(layout, null);
+	renderer.disposeTextLayout(layout);
 	if (offset == 0 && level > 1) return isMirrored() ? SWT.RIGHT : SWT.LEFT;
 	int direction = SWT.LEFT;
 	if ((level & 1) != 0) direction = SWT.RIGHT;
@@ -4519,11 +4518,11 @@ int getWordEnd(int offset) {
 		offset = logicalContent.getOffsetAtLine(line);
 	}
 	else {
-		TextLayout layout = renderer.getTextLayout(lineText, lineOffset, null);
+		TextLayout layout = renderer.getTextLayout(lineText, lineOffset);
 		offset -= lineOffset;
 		offset = layout.getNextOffset(offset, TextLayout.MOVEMENT_WORD);
 		offset += lineOffset;
-		renderer.disposeTextLayout(layout, null);
+		renderer.disposeTextLayout(layout);
 	}
 	return offset;
 }
@@ -4600,11 +4599,11 @@ int getWordStart(int offset) {
 		offset = logicalContent.getOffsetAtLine(line) + lineText.length();
 	}
 	else {
-		TextLayout layout = renderer.getTextLayout(lineText, lineOffset, null);
+		TextLayout layout = renderer.getTextLayout(lineText, lineOffset);
 		offset -= lineOffset;
 		offset = layout.getPreviousOffset(offset, TextLayout.MOVEMENT_WORD);
 		offset += lineOffset;
-		renderer.disposeTextLayout(layout, null); 
+		renderer.disposeTextLayout(layout); 
 	}
 	return offset;
 }
@@ -4637,14 +4636,13 @@ int getXAtOffset(String line, int lineIndex, int offsetInLine) {
 	}
 	if (lineLength != 0  && offsetInLine <= lineLength) {
 		int lineOffset = content.getOffsetAtLine(lineIndex);
-		StyledTextEvent event = renderer.getLineStyleData(lineOffset, line);
-		TextLayout layout = renderer.getTextLayout(line, lineOffset, event);
+		TextLayout layout = renderer.getTextLayout(line, lineOffset);
 		if (!advancing || offsetInLine == 0) {
 			x = layout.getLocation(offsetInLine, SWT.LEAD).x;
 		} else {
 			x = layout.getLocation(offsetInLine - 1, SWT.TRAIL).x;
 		}
-		renderer.disposeTextLayout(layout, event);
+		renderer.disposeTextLayout(layout);
 	}
 	return x + leftMargin - horizontalScrollOffset;
 }
@@ -5835,21 +5833,19 @@ void redrawLines(int firstLine, int offsetInFirstLine, int lastLine, int endOffs
 	String line = content.getLine(firstLine);
 	int lineCount = lastLine - firstLine + 1;
 	int redrawY, redrawWidth;
-	int firstLineOffset = content.getOffsetAtLine(firstLine);
+	int lineOffset = content.getOffsetAtLine(firstLine);
 	boolean fullLineRedraw;
-	StyledTextEvent event;
 	Rectangle clientArea = getClientArea();
 	
 	fullLineRedraw = ((getStyle() & SWT.FULL_SELECTION) != 0 && lastLine > firstLine);
 	// if redraw range includes last character on the first line, 
 	// clear background to right widget border. fixes bug 19595.
-	if (clearBackground && endOffset - firstLineOffset >= line.length()) {
+	if (clearBackground && endOffset - lineOffset >= line.length()) {
 		fullLineRedraw = true;
 	}	
-	event = renderer.getLineStyleData(firstLineOffset, line);
-	TextLayout layout = renderer.getTextLayout(line, firstLineOffset, event);
+	TextLayout layout = renderer.getTextLayout(line, lineOffset);
 	Rectangle rect = layout.getBounds(offsetInFirstLine, Math.min(endOffset, line.length()) - 1);
-	renderer.disposeTextLayout(layout, event);
+	renderer.disposeTextLayout(layout);
 	rect.x -= horizontalScrollOffset;
 	rect.intersect(clientArea);
 	redrawY = firstLine * lineHeight - verticalScrollOffset;
@@ -5858,7 +5854,8 @@ void redrawLines(int firstLine, int offsetInFirstLine, int lastLine, int endOffs
 	
 	// redraw last line if more than one line needs redrawing 
 	if (lineCount > 1) {
-		int offsetInLastLine = endOffset - content.getOffsetAtLine(lastLine);	
+		lineOffset = content.getOffsetAtLine(lastLine);
+		int offsetInLastLine = endOffset - lineOffset;	
 		// no redraw necessary if redraw offset is 0
 		if (offsetInLastLine > 0) {
 			line = content.getLine(lastLine);
@@ -5868,10 +5865,9 @@ void redrawLines(int firstLine, int offsetInFirstLine, int lastLine, int endOffs
 				fullLineRedraw = true;
 			}
 			line = content.getLine(lastLine);
-			event = renderer.getLineStyleData(offsetInLastLine, line);
-			layout = renderer.getTextLayout(line, endOffset, event);
+			layout = renderer.getTextLayout(line, lineOffset);
 			rect = layout.getBounds(0, offsetInLastLine - 1);
-			renderer.disposeTextLayout(layout, event);
+			renderer.disposeTextLayout(layout);
 			rect.x -= horizontalScrollOffset;
 			rect.intersect(clientArea);
 			redrawY = lastLine * lineHeight - verticalScrollOffset;
@@ -7501,10 +7497,11 @@ boolean setVerticalScrollOffset(int pixelOffset, boolean adjustScrollBar) {
 
 	verticalScrollOffset = pixelOffset;
 	calculateTopIndex();
-	int oldColumnX = columnX;
-	setCaretLocation();
-	// restore the original horizontal caret index
-	columnX = oldColumnX;
+	Caret caret = getCaret();
+	if (caret != null) {
+		int line = getCaretLine();
+		caret.setLocation(caret.getLocation().x, line * lineHeight - verticalScrollOffset);
+	}
 	return true;
 }
 /**

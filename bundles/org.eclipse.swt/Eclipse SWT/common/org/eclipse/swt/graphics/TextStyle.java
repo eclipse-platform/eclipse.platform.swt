@@ -14,34 +14,41 @@ import org.eclipse.swt.*;
 
 public class TextStyle {
 
-	Device device;
 	Font font;
 	Color foreground;
 	Color background;
 
-public TextStyle (Device device, Font font, Color foreground, Color background) {
-	if (device == null) device = Device.getDevice();
-	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+public TextStyle (Font font, Color foreground, Color background) {
 	if (font != null && font.isDisposed()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	if (foreground != null && foreground.isDisposed()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	if (background != null && background.isDisposed()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);	
-	this.device = device;
 	this.font = font;
 	this.foreground = foreground;
 	this.background = background;
-	if (device.tracking) device.new_Object(this);
 }
 
-public void dispose() {
-	if (device == null) return;
-	font = null;
-	foreground = null;
-	background = null;
-	if (device.tracking) device.dispose_Object(this);
-	device = null;
+public boolean equals(Object object) {
+	if (object == this) return true;
+	if (object == null) return false;
+	if (!(object instanceof TextStyle)) return false;
+	TextStyle style = (TextStyle)object;	
+	if (this.foreground != null) {
+		if (!this.foreground.equals(style.foreground)) return false;
+	} else if (style.foreground != null) return false;
+	if (this.background != null) {
+		if (!this.background.equals(style.background)) return false;
+	} else if (style.background != null) return false;
+	if (this.font != null) {
+		if (!this.font.equals(style.font)) return false;
+	} else if (style.font != null) return false;	
+	return true;
 }
 
-public boolean isDisposed() {
-	return device == null;
+public int hashCode() {
+	int hash = hashCode();
+	if (font != null) hash ^= font.hashCode();
+	if (foreground != null) hash ^= foreground.hashCode();
+	if (background != null) hash ^= background.hashCode();
+	return hash;
 }
 }

@@ -100,10 +100,9 @@ void drawLine(String line, int lineIndex, int paintY, GC gc, Color widgetBackgro
 	int selectionEnd = selection.y;
 	int leftMargin = getLeftMargin();
 	Color lineBackground = null;
-	StyledTextEvent event = getLineStyleData(lineOffset, line);
-	TextLayout layout = getTextLayout(line, lineOffset, event);
+	TextLayout layout = getTextLayout(line, lineOffset);
 	Rectangle client = getClientArea();
-	event = getLineBackgroundData(lineOffset, line);
+	StyledTextEvent event = getLineBackgroundData(lineOffset, line);
 	if (event != null) {
 		lineBackground = event.lineBackground;
 	}
@@ -136,7 +135,7 @@ void drawLine(String line, int lineIndex, int paintY, GC gc, Color widgetBackgro
 		int end = Math.min(lineLength, selectionEnd - lineOffset);
 		layout.draw(gc, paintX, paintY, start, end - 1, getSelectionForeground(), getSelectionBackground());
 	}
-	disposeTextLayout(layout, event);
+	disposeTextLayout(layout);
 }
 /** 
  * Draws the background of the line selection.
@@ -367,62 +366,46 @@ void setTabLength(int tabLength) {
 /**
  *  Returns TextLayout given a line index and an array of styles 
  */
-TextLayout getTextLayout(String line, int lineOffset, StyledTextEvent event) {
-	TextLayout layout = new TextLayout(device);
+TextLayout getTextLayout(String line, int lineOffset) {
+	int lineIndex = getContent().getLineAtOffset(lineOffset);
+	TextLayout layout = createTextLayout(lineIndex);
 	layout.setFont(regularFont);
 	layout.setText(line);
 	layout.setOrientation(getOrientation());
 	layout.setTabs(new int[]{tabWidth});
 	int length = line.length();
+	StyledTextEvent event = getLineStyleData(lineOffset, line);
 	StyleRange[] styles = event != null ? event.styles : null;
+	int lastOffset = 0;
 	if (styles != null) {
-		int lastOffset = 0;
 		for (int styleIndex = 0; styleIndex < styles.length; styleIndex++) {
 			StyleRange style = styles[styleIndex];
-			// do not create unnecessary style in the text layout (optimization only)
 			if (style.isUnstyled()) continue;
-			
 			int start, end; 
-			if (lineOffset > style.start) {//style starts in a previous line
+			if (lineOffset > style.start) {
 				start = 0;
-				end = Math.min (length, style.length - lineOffset + style.start);//consider only length in the current line
+				end = Math.min (length, style.length - lineOffset + style.start);
 			} else {
 				start = style.start - lineOffset;
 				end = Math.min(length, start + style.length);
 			}
 			if (start >= length) break;
-			if (lastOffset >= end) continue;//do not overlap style
-			TextStyle textStyle = null;
-			for (int i = 0; i < styleIndex; i++) {
-				if (style.similarTo(styles[i])) {
-					if (styles[i].textStyle != null) {
-						textStyle = styles[i].textStyle;
-						break;
-					}
-				}
-			}
-			if (textStyle == null) {
-				Font font = style.fontStyle == SWT.NORMAL ? regularFont : boldFont;
-				textStyle = new TextStyle(device, font, style.foreground, style.background);
-				style.textStyle = textStyle;
-			}
+			if (lastOffset != start) {
+				layout.setStyle(null, lastOffset, start - 1);				
+			}	
+			Font font = style.fontStyle == SWT.NORMAL ? regularFont : boldFont;
+			TextStyle textStyle = new TextStyle(font, style.foreground, style.background);
 			layout.setStyle(textStyle, start, end - 1);
 			lastOffset = end;
 		}
 	}
+	if (lastOffset != length) layout.setStyle(null, lastOffset, length);
 	return layout;
 }
-void disposeTextLayout (TextLayout layout, StyledTextEvent event) {
-	StyleRange[] styles = event != null ? event.styles : null;
-	if (styles != null) {
-		for (int styleIndex = 0; styleIndex < styles.length; styleIndex++) {
-			StyleRange style = styles[styleIndex];
-			if (style.textStyle != null) {
-				style.textStyle.dispose();
-				style.textStyle = null;
-			}
-		}
-	}
+TextLayout createTextLayout(int lineIndex) {
+	return new TextLayout(device);
+}
+void disposeTextLayout (TextLayout layout) {
 	layout.dispose();
 }
 }
