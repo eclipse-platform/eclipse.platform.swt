@@ -514,6 +514,25 @@ Point drawVerticalItemConnector(GC gc, Point position) {
 }
 
 /**
+ * Returns the receiver's background color.
+ *
+ * @return the background color
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.0
+ * 
+ */
+public Color getBackground () {
+	checkWidget ();
+	Tree parent = getParent();
+	return parent.getBackground();
+}
+
+/**
  * Returns a rectangle describing the receiver's size and location
  * relative to its parent.
  *
@@ -551,6 +570,24 @@ int getDecorationsWidth() {
 		width -= indicatorWidth / 2;
 	}
 	return width;
+}
+/**
+ * Returns the foreground color that the receiver will use to draw.
+ *
+ * @return the receiver's foreground color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.0
+ * 
+ */
+public Color getForeground () {
+	checkWidget ();
+	Tree parent = getParent();
+	return parent.getForeground();
 }
 /**
  * Answer the index of the receiver relative to the first root 
@@ -1254,6 +1291,29 @@ public boolean getGrayed() {
 	return super.getGrayed();
 }
 /**
+ * Sets the receiver's background color to the color specified
+ * by the argument, or to the default system color for the item
+ * if the argument is null.
+ *
+ * @param color the new color (or null)
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.0
+ * 
+ */
+public void setBackground (Color color) {
+	checkWidget ();
+	if (color != null && color.isDisposed ())
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+}
+/**
  * Sets the checked state of the receiver.
  * <p>
  *
@@ -1270,6 +1330,31 @@ public void setChecked(boolean checked) {
 }
 void setExpanding(boolean expanding){
 	isExpanding = expanding;
+}
+/**
+ * Sets the receiver's foreground color to the color specified
+ * by the argument, or to the default system color for the item
+ * if the argument is null.
+ *
+ * @param color the new color (or null)
+ *
+ * @since 2.0
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.0
+ * 
+ */
+public void setForeground (Color color) {
+	checkWidget ();
+	if (color != null && color.isDisposed ())
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 }
 /**
  * Sets the grayed state of the receiver.

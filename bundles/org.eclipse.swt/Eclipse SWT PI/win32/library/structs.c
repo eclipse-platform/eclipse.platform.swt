@@ -33,6 +33,9 @@ MEASUREITEMSTRUCT_FID_CACHE MEASUREITEMSTRUCTFc;
 MENUITEMINFO_FID_CACHE MENUITEMINFOFc;
 MSG_FID_CACHE MSGFc;
 NMHDR_FID_CACHE NMHDRFc;
+NMCUSTOMDRAW_FID_CACHE NMCUSTOMDRAWFc;
+NMLVCUSTOMDRAW_FID_CACHE NMLVCUSTOMDRAWFc;
+NMTVCUSTOMDRAW_FID_CACHE NMTVCUSTOMDRAWFc;
 NMHEADER_FID_CACHE NMHEADERFc;
 NMLISTVIEW_FID_CACHE NMLISTVIEWFc;
 NMTOOLBAR_FID_CACHE NMTOOLBARFc;
@@ -1518,6 +1521,195 @@ void setNMHDRFields(JNIEnv *env, jobject lpObject, NMHDR *lpStruct, PNMHDR_FID_C
 	(*env)->SetIntField(env, lpObject, lpCache->idFrom, lpStruct->idFrom);
 	(*env)->SetIntField(env, lpObject, lpCache->code, lpStruct->code);
 }
+
+void cacheNMCUSTOMDRAWFids(JNIEnv *env, jobject lpObject, PNMCUSTOMDRAW_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->hwndFrom = (*env)->GetFieldID(env, lpCache->clazz, "hwndFrom", "I");
+	lpCache->idFrom = (*env)->GetFieldID(env, lpCache->clazz, "idFrom", "I");
+	lpCache->code = (*env)->GetFieldID(env, lpCache->clazz, "code", "I");
+	lpCache->dwDrawStage = (*env)->GetFieldID(env, lpCache->clazz, "dwDrawStage", "I");
+	lpCache->hdc = (*env)->GetFieldID(env, lpCache->clazz, "hdc", "I");
+	lpCache->left = (*env)->GetFieldID(env, lpCache->clazz, "left", "I");
+	lpCache->top = (*env)->GetFieldID(env, lpCache->clazz, "top", "I");
+	lpCache->right = (*env)->GetFieldID(env, lpCache->clazz, "right", "I");
+	lpCache->bottom = (*env)->GetFieldID(env, lpCache->clazz, "bottom", "I");
+	lpCache->dwItemSpec = (*env)->GetFieldID(env, lpCache->clazz, "dwItemSpec", "I");
+	lpCache->uItemState = (*env)->GetFieldID(env, lpCache->clazz, "uItemState", "I");
+	lpCache->lItemlParam = (*env)->GetFieldID(env, lpCache->clazz, "lItemlParam", "I");		
+	lpCache->cached = 1;
+}
+
+
+NMCUSTOMDRAW* getNMCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMCUSTOMDRAW *lpStruct, PNMCUSTOMDRAW_FID_CACHE lpCache)
+{
+	if (!lpCache->cached) cacheNMCUSTOMDRAWFids(env, lpObject, lpCache);
+	lpStruct->hdr.hwndFrom = (HWND)(*env)->GetIntField(env, lpObject, lpCache->hwndFrom);
+	lpStruct->hdr.idFrom = (*env)->GetIntField(env, lpObject, lpCache->idFrom);
+	lpStruct->hdr.code = (*env)->GetIntField(env, lpObject, lpCache->code);
+	lpStruct->dwDrawStage = (*env)->GetIntField(env, lpObject, lpCache->dwDrawStage);
+	lpStruct->hdc = (HDC)(*env)->GetIntField(env, lpObject, lpCache->hdc);
+	lpStruct->rc.left = (*env)->GetIntField(env, lpObject, lpCache->left);
+	lpStruct->rc.top  = (*env)->GetIntField(env, lpObject, lpCache->top);
+	lpStruct->rc.right = (*env)->GetIntField(env, lpObject, lpCache->right);
+	lpStruct->rc.bottom = (*env)->GetIntField(env, lpObject, lpCache->bottom);
+	lpStruct->dwItemSpec = (*env)->GetIntField(env, lpObject, lpCache->dwItemSpec);
+	lpStruct->uItemState = (*env)->GetIntField(env, lpObject, lpCache->uItemState);
+	lpStruct->lItemlParam = (*env)->GetIntField(env, lpObject, lpCache->lItemlParam);
+	return lpStruct;
+}
+
+void setNMCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMCUSTOMDRAW *lpStruct, PNMCUSTOMDRAW_FID_CACHE lpCache)
+{
+	if (!lpCache->cached) cacheNMCUSTOMDRAWFids(env, lpObject, lpCache);
+	(*env)->SetIntField(env, lpObject, lpCache->hwndFrom, (jint)lpStruct->hdr.hwndFrom);
+	(*env)->SetIntField(env, lpObject, lpCache->idFrom, lpStruct->hdr.idFrom);
+	(*env)->SetIntField(env, lpObject, lpCache->code, lpStruct->hdr.code);
+	(*env)->SetIntField(env, lpObject, lpCache->dwDrawStage, lpStruct->dwDrawStage);	
+	(*env)->SetIntField(env, lpObject, lpCache->hdc, (jint)lpStruct->hdc);		
+	(*env)->SetIntField(env, lpObject, lpCache->left, lpStruct->rc.left);	
+	(*env)->SetIntField(env, lpObject, lpCache->top, lpStruct->rc.top);
+	(*env)->SetIntField(env, lpObject, lpCache->right, lpStruct->rc.right);
+	(*env)->SetIntField(env, lpObject, lpCache->bottom, lpStruct->rc.bottom);
+	(*env)->SetIntField(env, lpObject, lpCache->dwItemSpec, lpStruct->dwItemSpec);
+	(*env)->SetIntField(env, lpObject, lpCache->uItemState, lpStruct->uItemState);
+	(*env)->SetIntField(env, lpObject, lpCache->lItemlParam, lpStruct->lItemlParam);
+}
+
+void cacheNMLVCUSTOMDRAWFids(JNIEnv *env, jobject lpObject, PNMLVCUSTOMDRAW_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->hwndFrom = (*env)->GetFieldID(env, lpCache->clazz, "hwndFrom", "I");
+	lpCache->idFrom = (*env)->GetFieldID(env, lpCache->clazz, "idFrom", "I");
+	lpCache->code = (*env)->GetFieldID(env, lpCache->clazz, "code", "I");
+	lpCache->dwDrawStage = (*env)->GetFieldID(env, lpCache->clazz, "dwDrawStage", "I");
+	lpCache->hdc = (*env)->GetFieldID(env, lpCache->clazz, "hdc", "I");
+	lpCache->left = (*env)->GetFieldID(env, lpCache->clazz, "left", "I");
+	lpCache->top = (*env)->GetFieldID(env, lpCache->clazz, "top", "I");
+	lpCache->right = (*env)->GetFieldID(env, lpCache->clazz, "right", "I");
+	lpCache->bottom = (*env)->GetFieldID(env, lpCache->clazz, "bottom", "I");
+	lpCache->dwItemSpec = (*env)->GetFieldID(env, lpCache->clazz, "dwItemSpec", "I");
+	lpCache->uItemState = (*env)->GetFieldID(env, lpCache->clazz, "uItemState", "I");
+	lpCache->lItemlParam = (*env)->GetFieldID(env, lpCache->clazz, "lItemlParam", "I");		
+	lpCache->clrText = (*env)->GetFieldID(env, lpCache->clazz, "clrText", "I");	
+	lpCache->clrTextBk = (*env)->GetFieldID(env, lpCache->clazz, "clrTextBk", "I");	
+	lpCache->iSubItem = (*env)->GetFieldID(env, lpCache->clazz, "iSubItem", "I");				
+	lpCache->cached = 1;
+}
+
+NMLVCUSTOMDRAW* getNMLVCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMLVCUSTOMDRAW *lpStruct, PNMLVCUSTOMDRAW_FID_CACHE lpCache)
+{
+	if (!lpCache->cached) cacheNMLVCUSTOMDRAWFids(env, lpObject, lpCache);
+	lpStruct->nmcd.hdr.hwndFrom = (HWND)(*env)->GetIntField(env, lpObject, lpCache->hwndFrom);
+	lpStruct->nmcd.hdr.idFrom = (*env)->GetIntField(env, lpObject, lpCache->idFrom);
+	lpStruct->nmcd.hdr.code = (*env)->GetIntField(env, lpObject, lpCache->code);
+	lpStruct->nmcd.dwDrawStage = (*env)->GetIntField(env, lpObject, lpCache->dwDrawStage);
+	lpStruct->nmcd.hdc = (HDC)(*env)->GetIntField(env, lpObject, lpCache->hdc);
+	lpStruct->nmcd.rc.left = (*env)->GetIntField(env, lpObject, lpCache->left);
+	lpStruct->nmcd.rc.top  = (*env)->GetIntField(env, lpObject, lpCache->top);
+	lpStruct->nmcd.rc.right = (*env)->GetIntField(env, lpObject, lpCache->right);
+	lpStruct->nmcd.rc.bottom = (*env)->GetIntField(env, lpObject, lpCache->bottom);
+	lpStruct->nmcd.dwItemSpec = (*env)->GetIntField(env, lpObject, lpCache->dwItemSpec);
+	lpStruct->nmcd.uItemState = (*env)->GetIntField(env, lpObject, lpCache->uItemState);
+	lpStruct->nmcd.lItemlParam = (*env)->GetIntField(env, lpObject, lpCache->lItemlParam);
+	lpStruct->clrText = (*env)->GetIntField(env, lpObject, lpCache->clrText);
+	lpStruct->clrTextBk = (*env)->GetIntField(env, lpObject, lpCache->clrTextBk);
+	lpStruct->iSubItem = (*env)->GetIntField(env, lpObject, lpCache->iSubItem);			
+	return lpStruct;
+}
+
+void setNMLVCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMLVCUSTOMDRAW *lpStruct, PNMLVCUSTOMDRAW_FID_CACHE lpCache)
+{
+	if (!lpCache->cached) cacheNMLVCUSTOMDRAWFids(env, lpObject, lpCache);
+	(*env)->SetIntField(env, lpObject, lpCache->hwndFrom, (jint)lpStruct->nmcd.hdr.hwndFrom);
+	(*env)->SetIntField(env, lpObject, lpCache->idFrom, lpStruct->nmcd.hdr.idFrom);
+	(*env)->SetIntField(env, lpObject, lpCache->code, lpStruct->nmcd.hdr.code);
+	(*env)->SetIntField(env, lpObject, lpCache->dwDrawStage, lpStruct->nmcd.dwDrawStage);	
+	(*env)->SetIntField(env, lpObject, lpCache->hdc, (jint)lpStruct->nmcd.hdc);		
+	(*env)->SetIntField(env, lpObject, lpCache->left, lpStruct->nmcd.rc.left);	
+	(*env)->SetIntField(env, lpObject, lpCache->top, lpStruct->nmcd.rc.top);
+	(*env)->SetIntField(env, lpObject, lpCache->right, lpStruct->nmcd.rc.right);
+	(*env)->SetIntField(env, lpObject, lpCache->bottom, lpStruct->nmcd.rc.bottom);
+	(*env)->SetIntField(env, lpObject, lpCache->dwItemSpec, lpStruct->nmcd.dwItemSpec);
+	(*env)->SetIntField(env, lpObject, lpCache->uItemState, lpStruct->nmcd.uItemState);
+	(*env)->SetIntField(env, lpObject, lpCache->lItemlParam, lpStruct->nmcd.lItemlParam);
+	(*env)->SetIntField(env, lpObject, lpCache->clrText, lpStruct->clrText);
+	(*env)->SetIntField(env, lpObject, lpCache->clrTextBk, lpStruct->clrTextBk);
+	(*env)->SetIntField(env, lpObject, lpCache->iSubItem, lpStruct->iSubItem);
+}
+
+void cacheNMTVCUSTOMDRAWFids(JNIEnv *env, jobject lpObject, PNMTVCUSTOMDRAW_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->hwndFrom = (*env)->GetFieldID(env, lpCache->clazz, "hwndFrom", "I");
+	lpCache->idFrom = (*env)->GetFieldID(env, lpCache->clazz, "idFrom", "I");
+	lpCache->code = (*env)->GetFieldID(env, lpCache->clazz, "code", "I");
+	lpCache->dwDrawStage = (*env)->GetFieldID(env, lpCache->clazz, "dwDrawStage", "I");
+	lpCache->hdc = (*env)->GetFieldID(env, lpCache->clazz, "hdc", "I");
+	lpCache->left = (*env)->GetFieldID(env, lpCache->clazz, "left", "I");
+	lpCache->top = (*env)->GetFieldID(env, lpCache->clazz, "top", "I");
+	lpCache->right = (*env)->GetFieldID(env, lpCache->clazz, "right", "I");
+	lpCache->bottom = (*env)->GetFieldID(env, lpCache->clazz, "bottom", "I");
+	lpCache->dwItemSpec = (*env)->GetFieldID(env, lpCache->clazz, "dwItemSpec", "I");
+	lpCache->uItemState = (*env)->GetFieldID(env, lpCache->clazz, "uItemState", "I");
+	lpCache->lItemlParam = (*env)->GetFieldID(env, lpCache->clazz, "lItemlParam", "I");		
+	lpCache->clrText = (*env)->GetFieldID(env, lpCache->clazz, "clrText", "I");	
+	lpCache->clrTextBk = (*env)->GetFieldID(env, lpCache->clazz, "clrTextBk", "I");	
+#ifndef _WIN32_WCE
+	lpCache->iLevel = (*env)->GetFieldID(env, lpCache->clazz, "iLevel", "I");		
+#endif // _WIN32_WCE
+	lpCache->cached = 1;
+}
+
+NMTVCUSTOMDRAW* getNMTVCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMTVCUSTOMDRAW *lpStruct, PNMTVCUSTOMDRAW_FID_CACHE lpCache)
+{
+	if (!lpCache->cached) cacheNMTVCUSTOMDRAWFids(env, lpObject, lpCache);
+	lpStruct->nmcd.hdr.hwndFrom = (HWND)(*env)->GetIntField(env, lpObject, lpCache->hwndFrom);
+	lpStruct->nmcd.hdr.idFrom = (*env)->GetIntField(env, lpObject, lpCache->idFrom);
+	lpStruct->nmcd.hdr.code = (*env)->GetIntField(env, lpObject, lpCache->code);
+	lpStruct->nmcd.dwDrawStage = (*env)->GetIntField(env, lpObject, lpCache->dwDrawStage);
+	lpStruct->nmcd.hdc = (HDC)(*env)->GetIntField(env, lpObject, lpCache->hdc);
+	lpStruct->nmcd.rc.left = (*env)->GetIntField(env, lpObject, lpCache->left);
+	lpStruct->nmcd.rc.top  = (*env)->GetIntField(env, lpObject, lpCache->top);
+	lpStruct->nmcd.rc.right = (*env)->GetIntField(env, lpObject, lpCache->right);
+	lpStruct->nmcd.rc.bottom = (*env)->GetIntField(env, lpObject, lpCache->bottom);
+	lpStruct->nmcd.dwItemSpec = (*env)->GetIntField(env, lpObject, lpCache->dwItemSpec);
+	lpStruct->nmcd.uItemState = (*env)->GetIntField(env, lpObject, lpCache->uItemState);
+	lpStruct->nmcd.lItemlParam = (*env)->GetIntField(env, lpObject, lpCache->lItemlParam);
+	lpStruct->clrText = (*env)->GetIntField(env, lpObject, lpCache->clrText);
+	lpStruct->clrTextBk = (*env)->GetIntField(env, lpObject, lpCache->clrTextBk);
+#ifndef _WIN32_WCE
+	lpStruct->iLevel = (*env)->GetIntField(env, lpObject, lpCache->iLevel);			
+#endif // _WIN32_WCE
+	return lpStruct;
+}
+
+void setNMTVCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMTVCUSTOMDRAW *lpStruct, PNMTVCUSTOMDRAW_FID_CACHE lpCache)
+{
+	if (!lpCache->cached) cacheNMTVCUSTOMDRAWFids(env, lpObject, lpCache);
+	(*env)->SetIntField(env, lpObject, lpCache->hwndFrom, (jint)lpStruct->nmcd.hdr.hwndFrom);
+	(*env)->SetIntField(env, lpObject, lpCache->idFrom, lpStruct->nmcd.hdr.idFrom);
+	(*env)->SetIntField(env, lpObject, lpCache->code, lpStruct->nmcd.hdr.code);
+	(*env)->SetIntField(env, lpObject, lpCache->dwDrawStage, lpStruct->nmcd.dwDrawStage);	
+	(*env)->SetIntField(env, lpObject, lpCache->hdc, (jint)lpStruct->nmcd.hdc);		
+	(*env)->SetIntField(env, lpObject, lpCache->left, lpStruct->nmcd.rc.left);	
+	(*env)->SetIntField(env, lpObject, lpCache->top, lpStruct->nmcd.rc.top);
+	(*env)->SetIntField(env, lpObject, lpCache->right, lpStruct->nmcd.rc.right);
+	(*env)->SetIntField(env, lpObject, lpCache->bottom, lpStruct->nmcd.rc.bottom);
+	(*env)->SetIntField(env, lpObject, lpCache->dwItemSpec, lpStruct->nmcd.dwItemSpec);
+	(*env)->SetIntField(env, lpObject, lpCache->uItemState, lpStruct->nmcd.uItemState);
+	(*env)->SetIntField(env, lpObject, lpCache->lItemlParam, lpStruct->nmcd.lItemlParam);
+	(*env)->SetIntField(env, lpObject, lpCache->clrText, lpStruct->clrText);
+	(*env)->SetIntField(env, lpObject, lpCache->clrTextBk, lpStruct->clrTextBk);
+#ifndef _WIN32_WCE
+	(*env)->SetIntField(env, lpObject, lpCache->iLevel, lpStruct->iLevel);
+#endif // _WIN32_WCE
+}
+
+
 
 void cacheNMHEADERFids(JNIEnv *env, jobject lpObject, PNMHEADER_FID_CACHE lpCache)
 {
