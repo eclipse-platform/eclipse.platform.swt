@@ -1204,6 +1204,7 @@ public class Accessible {
 		if ((state & ACC.STATE_INVISIBLE) != 0) osState |= COM.STATE_SYSTEM_INVISIBLE;
 		if ((state & ACC.STATE_OFFSCREEN) != 0) osState |= COM.STATE_SYSTEM_OFFSCREEN;
 		if ((state & ACC.STATE_SIZEABLE) != 0) osState |= COM.STATE_SYSTEM_SIZEABLE;
+		if ((state & ACC.STATE_LINKED) != 0) osState |= COM.STATE_SYSTEM_LINKED;
 		return osState;
 	}
 	
@@ -1224,6 +1225,7 @@ public class Accessible {
 		if ((osState & COM.STATE_SYSTEM_INVISIBLE) != 0) state |= ACC.STATE_INVISIBLE;
 		if ((osState & COM.STATE_SYSTEM_OFFSCREEN) != 0) state |= ACC.STATE_OFFSCREEN;
 		if ((osState & COM.STATE_SYSTEM_SIZEABLE) != 0) state |= ACC.STATE_SIZEABLE;
+		if ((osState & COM.STATE_SYSTEM_LINKED) != 0) state |= ACC.STATE_LINKED;
 		return state;
 	}
 
@@ -1257,6 +1259,7 @@ public class Accessible {
 			case ACC.ROLE_TABITEM: return COM.ROLE_SYSTEM_PAGETAB;
 			case ACC.ROLE_PROGRESSBAR: return COM.ROLE_SYSTEM_PROGRESSBAR;
 			case ACC.ROLE_SLIDER: return COM.ROLE_SYSTEM_SLIDER;
+			case ACC.ROLE_LINK: return COM.ROLE_SYSTEM_LINK;
 		}
 		return COM.ROLE_SYSTEM_CLIENT;
 	}
@@ -1292,6 +1295,7 @@ public class Accessible {
 			case COM.ROLE_SYSTEM_PAGETAB: return ACC.ROLE_TABITEM;
 			case COM.ROLE_SYSTEM_PROGRESSBAR: return ACC.ROLE_PROGRESSBAR;
 			case COM.ROLE_SYSTEM_SLIDER: return ACC.ROLE_SLIDER;
+			case COM.ROLE_SYSTEM_LINK: return ACC.ROLE_LINK;
 		}
 		return role;
 	}

@@ -34,6 +34,7 @@ public class ACC {
 	public static final int STATE_INVISIBLE = 0x8000;
 	public static final int STATE_OFFSCREEN = 0x10000;
 	public static final int STATE_SIZEABLE = 0x20000;
+	public static final int STATE_LINKED = 0x400000;
 
 	public static final int ROLE_CLIENT_AREA = 0xa;
 	public static final int ROLE_WINDOW = 0x9;
@@ -65,6 +66,7 @@ public class ACC {
 	public static final int ROLE_TABITEM = 0x25;
 	public static final int ROLE_PROGRESSBAR = 0x30;
 	public static final int ROLE_SLIDER = 0x33;
+	public static final int ROLE_LINK = 0x1e;
 
 	public static final int CHILDID_SELF = -1;
 	public static final int CHILDID_NONE = -2;
