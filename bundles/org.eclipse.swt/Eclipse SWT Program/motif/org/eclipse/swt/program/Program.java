@@ -126,7 +126,7 @@ boolean cde_execute(String fileName) {
 	byte[] action = Converter.wcsToMbcs(null, command, true);
 	byte[] fileArg = Converter.wcsToMbcs(null, fileName, true);
 	Integer shell = (Integer)display.getData(SHELL_HANDLE_KEY);
-	int actionID = 0;
+	long actionID = 0;
 	if (shell != null) {
 		int ptr = OS.XtMalloc(fileArg.length);
 		OS.memmove(ptr, fileArg, fileArg.length);
