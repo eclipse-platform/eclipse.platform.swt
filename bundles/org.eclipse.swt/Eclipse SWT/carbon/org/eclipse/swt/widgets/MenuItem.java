@@ -661,7 +661,12 @@ public void setText (String string) {
 	if (index[0] >= 1) {
 		int sHandle= 0;
 		try {
-			sHandle= OS.CFStringCreateWithCharacters(removeMnemonicsAndShortcut(text));
+			String s= removeMnemonicsAndShortcut(text);
+			if ("Exit".equals(s)) {
+				getParent().getParent().fExitMenuItemId= id;
+				System.out.println("Exit: " + id);
+			}
+			sHandle= OS.CFStringCreateWithCharacters(s);
 			OS.SetMenuItemTextWithCFString(hMenu, index[0], sHandle);
 		} finally {
 			OS.CFRelease(sHandle);
@@ -726,6 +731,13 @@ private static void setAccelerator(int menu, short index, int accelerator) {
 	}
 	
 	int key= accelerator & ~(SWT.SHIFT | SWT.CONTROL | SWT.ALT);
+
+	if (MacUtil.KEEP_MAC_SHORTCUTS) {
+		if ((accelerator & SWT.CONTROL) != 0)
+			if (key == 'H' || key == 'Q')
+				return;
+	}
+	
 	int macKey= 0;
 	switch (key) {
 	case ' ':

@@ -210,7 +210,7 @@ public class Display extends Device {
 	private static final int HOVER_TIMEOUT= 500;	// in milli seconds
 	private static final int SWT_USER_EVENT= ('S'<<24) + ('W'<<16) + ('T'<<8) + '1';
 
-	int fMenuId= 5000;
+	private int fMenuId= 5000;
 	
 	// callback procs
 	int fApplicationProc;
@@ -232,6 +232,7 @@ public class Display extends Device {
 	private int fLastHoverHandle;
 	private boolean fInContextMenu;	// true while tracking context menu
 	public int fCurrentCursor;
+	private Shell fMenuRootShell;
 	
 	private static boolean fgCarbonInitialized;
 	private static boolean fgInitCursorCalled;
@@ -860,10 +861,10 @@ protected void init () {
 	if (fApplicationProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 		
 	int[] mask2= new int[] {
-		OS.kEventClassCommand, 1,
+		OS.kEventClassCommand, OS.kEventProcessCommand,
 		
-		OS.kEventClassAppleEvent, OS.kEventParamAEEventID,
-			
+		//OS.kEventClassAppleEvent, OS.kAEQuitApplication,
+		
 		// we track down events here because we need to know when the user 
 		// clicked in the menu bar
 		OS.kEventClassMouse, OS.kEventMouseDown,
@@ -932,7 +933,7 @@ protected void init () {
 	//scrolledInsetX = scrolledInsetY = 15;
 	scrolledMarginX= scrolledMarginY= 15;
 	compositeForeground = 0x000000;
-	compositeBackground = 0xEEEEEE;
+	compositeBackground = -1; // 0xEEEEEE;
 	
 	groupFont = Font.carbon_new (this, getThemeFont(OS.kThemeSmallEmphasizedSystemFont));
 	
@@ -1120,6 +1121,7 @@ public boolean readAndDispatch () {
 	switch (rc) {
 	case OS.kNoErr:
 		int event= evt[0];		
+		//System.out.println("event: " + MacUtil.toString(OS.GetEventClass(event)));
 		OS.SendEventToEventTarget(event, OS.GetEventDispatcherTarget());
 		OS.ReleaseEvent(event);
 		runDeferredEvents();
@@ -1881,10 +1883,13 @@ static String convertToLf(String text) {
 		case OS.kEventClassWindow:
 			switch (eventKind) {
 			case OS.kEventWindowActivated:
+				Widget widget = WidgetTable.get(whichWindow);
+				if (widget instanceof Shell)
+					fMenuRootShell= (Shell) widget;
 				windowProc(whichWindow, SWT.FocusIn, new Boolean(true));
 				return OS.kNoErr;
 			case OS.kEventWindowDeactivated:
-				//System.out.println("-kEventWindowDeactivated");
+				fMenuRootShell= null;
 				windowProc(whichWindow, SWT.FocusIn, new Boolean(false));
 				return OS.kNoErr;
 			case OS.kEventWindowBoundsChanged:
@@ -1923,19 +1928,28 @@ static String convertToLf(String text) {
 		int eventKind= OS.GetEventKind(eRefHandle);
 		
 		switch (eventClass) {
-		
+			
 		case OS.kEventClassAppleEvent:
 			System.out.println("kEventClassAppleEvent");
+			OS.AEProcessAppleEvent(mEvent.toOldMacEvent());
 			break;
 			
 		case OS.kEventClassCommand:
 		
-			if (eventKind == 1) {
+			if (eventKind == OS.kEventProcessCommand) {
 				int[] rc= new int[4];
 				OS.GetEventHICommand(eRefHandle, rc);
 				
-				//System.out.println("kEventClassCommand: " + rc[3]);
-						
+				if (rc[1] == OS.kAEQuitApplication) {
+					if (fMenuRootShell != null) {
+						MenuItem mi= fMenuRootShell.findMenuItem(fMenuRootShell.fExitMenuItemId);
+						if (mi != null)
+							mi.handleMenuSelect();
+					}				
+					OS.HiliteMenu((short)0);	// unhighlight what MenuSelect (or MenuKey) hilited
+					return OS.kNoErr;
+				}
+				
 				// try to map the MenuRef to a SWT Menu
 				Widget w= findWidget (rc[2]);
 				if (w instanceof Menu) {
@@ -1944,6 +1958,8 @@ static String convertToLf(String text) {
 					OS.HiliteMenu((short)0);	// unhighlight what MenuSelect (or MenuKey) hilited
 					return OS.kNoErr;
 				}
+				
+				
 				OS.HiliteMenu((short)0);	// unhighlight what MenuSelect (or MenuKey) hilited
 				// we do not return kNoErr here so that the default handler
 				// takes care of special menus like the Combo menu.

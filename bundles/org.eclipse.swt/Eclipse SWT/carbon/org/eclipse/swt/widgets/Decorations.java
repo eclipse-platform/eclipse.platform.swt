@@ -88,6 +88,10 @@ public class Decorations extends Canvas {
 	/* AW
 	int dialogHandle;
 	*/
+	// AW
+	private static final int FIRST_MENU_ITEM_ID= 1000;
+	int fExitMenuItemId= -1;
+	// AW
 	boolean minimized, maximized;
 	Menu menuBar;
 	Menu [] menus;
@@ -155,13 +159,13 @@ void add (MenuItem item) {
 	if (items == null) items = new MenuItem [12];
 	for (int i=0; i<items.length; i++) {
 		if (items [i] == null) {
-			item.id = 1000+i;
+			item.id = FIRST_MENU_ITEM_ID + i;
 			items [i] = item;
 			return;
 		}
 	}
 	MenuItem [] newItems = new MenuItem [items.length + 12];
-	item.id = 1000+items.length;
+	item.id = FIRST_MENU_ITEM_ID + items.length;
 	newItems [items.length] = item;
 	System.arraycopy (items, 0, newItems, 0, items.length);
 	items = newItems;
@@ -223,7 +227,7 @@ Menu findMenu (int id) {
 // AW
 MenuItem findMenuItem (int id) {
 	if (items == null) return null;
-	id-= 1000;
+	id-= FIRST_MENU_ITEM_ID;
 	if (0 <= id && id < items.length) return items [id];
 	return null;
 }
@@ -397,7 +401,7 @@ void remove (Menu menu) {
 }
 void remove (MenuItem item) {
 	if (items == null) return;
-	items [item.id-1000] = null;
+	items [item.id - FIRST_MENU_ITEM_ID] = null;
 	item.id = -1;
 }
 

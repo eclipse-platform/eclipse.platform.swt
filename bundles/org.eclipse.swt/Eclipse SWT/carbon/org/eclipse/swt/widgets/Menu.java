@@ -374,15 +374,6 @@ public boolean getEnabled () {
  */
 public MenuItem getItem (int index) {
 	checkWidget ();
-	/* AW
-	MENUITEMINFO info = new MENUITEMINFO ();
-	info.cbSize = MENUITEMINFO.sizeof;
-	info.fMask = OS.MIIM_ID;
-	if (!OS.GetMenuItemInfo (handle, index, true, info)) {
-		error (SWT.ERROR_INVALID_RANGE);
-	}
-	return parent.findMenuItem (info.wID);
-	*/
 	int[] commandID= new int[1];
 	if (OS.GetMenuItemCommandID(handle, (short)(index+1), commandID) != OS.kNoErr)
 		error (SWT.ERROR_INVALID_RANGE);
