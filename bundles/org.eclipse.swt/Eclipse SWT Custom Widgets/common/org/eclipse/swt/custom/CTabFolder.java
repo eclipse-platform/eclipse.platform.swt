@@ -336,12 +336,10 @@ static int checkStyle (Composite parent, int style) {
 	style = style & mask;
 	// TOP and BOTTOM are mutually exlusive.
 	// TOP is the default
-	if ((style & SWT.TOP) != 0) 
-		style = style & ~(SWT.TOP | SWT.BOTTOM) | SWT.TOP;
+	if ((style & SWT.TOP) != 0) style = style & ~SWT.BOTTOM;
 	// SINGLE and MULTI are mutually exlusive.
 	// MULTI is the default
-	if ((style & SWT.MULTI) != 0) 
-		style = style & ~(SWT.SINGLE | SWT.MULTI) | SWT.MULTI;
+	if ((style & SWT.MULTI) != 0) style = style & ~SWT.SINGLE;
 	// reduce the flash by not redrawing the entire area on a Resize event
 	style |= SWT.NO_REDRAW_RESIZE;
 	//TEMPORARY CODE
