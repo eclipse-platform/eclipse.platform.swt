@@ -1534,12 +1534,7 @@ Decorations menuShell () {
 }
 
 int processKeyDown (int callData, int arg1, int int2) {
-	int keyval = OS.gdk_event_key_get_keyval (callData);
-	int [] state = new int [1];
-	OS.gdk_event_get_state (callData, state);
-	int shellHandle = _getShell ().topHandle ();
-	boolean accelResult = OS.gtk_accel_groups_activate (shellHandle, keyval, state [0]);
-	if (!accelResult) sendKeyEvent (SWT.KeyDown, callData);
+	sendKeyEvent (SWT.KeyDown, callData);
 	return 0;
 }
 
