@@ -1223,19 +1223,19 @@ public static final int Pg_BITMAP_TRANSPARENT                                 = 
 //public static final int Pk_Begin               = 0xF058;  /* BOL */
 //
 //public static final int Pk_Select              = 0xF060;  /* Select, mark */
-//public static final int Pk_Print               = 0xF061;
+	public static final int Pk_Print               = 0xF061;
 //public static final int Pk_Execute             = 0xF062;  /* Execute, run, do */
 	public static final int Pk_Insert              = 0xF063;  /* Insert, insert here */
 //public static final int Pk_Undo                = 0xF065;  /* Undo, oops */
 //public static final int Pk_Redo                = 0xF066;  /* redo, again */
-//public static final int Pk_Menu                = 0xF067;
+	public static final int Pk_Menu                = 0xF067;
 //public static final int Pk_Find                = 0xF068;  /* Find, search */
 	public static final int Pk_Cancel              = 0xF069;  /* Cancel, stop, abort, exit */
 //public static final int Pk_Help                = 0xF06A;  /* Help, ? */
 //public static final int Pk_Break               = 0xF06B;
 //public static final int Pk_Mode_switch         = 0xF07E;  /* Character set switch */
 //public static final int Pk_script_switch       = 0xF07E; /* Alias for mode_switch */
-//public static final int Pk_Num_Lock            = 0xF07F;
+	public static final int Pk_Num_Lock            = 0xF07F;
 //
 //public static final int Pk_KP_Space            = 0xF080;  /* space */
 	public static final int Pk_KP_Tab              = 0xF089;
@@ -1275,12 +1275,15 @@ public static final int Pg_BITMAP_TRANSPARENT                                 = 
 	public static final int Pk_F10                 = 0xF0C7;
 	public static final int Pk_F11                 = 0xF0C8;
 	public static final int Pk_F12                 = 0xF0C9;
+	
+	public static final int Pk_Hyper_L           = 0xF0ED;  /* Left hyper */
+	public static final int Pk_Hyper_R           = 0xF0EE;  /* Right hyper */
 //
 	public static final int Pk_Shift_L             = 0xF0E1;  /* Left shift */
 	public static final int Pk_Shift_R             = 0xF0E2;  /* Right shift */
 	public static final int Pk_Control_L           = 0xF0E3;  /* Left control */
 	public static final int Pk_Control_R           = 0xF0E4;  /* Right control */
-//public static final int Pk_Caps_Lock           = 0xF0E5;  /* Caps lock */
+	public static final int Pk_Caps_Lock           = 0xF0E5;  /* Caps lock */
 //public static final int Pk_Shift_Lock          = 0xF0E6;  /* Shift lock */
 //
 //public static final int Pk_Meta_L              = 0xF0E7;  /* Left meta */
