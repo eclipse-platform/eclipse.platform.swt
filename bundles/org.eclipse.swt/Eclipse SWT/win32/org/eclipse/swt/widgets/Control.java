@@ -3781,6 +3781,16 @@ LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 				lpEventTrack.hwndTrack = handle;
 				OS.TrackMouseEvent (lpEventTrack);
 				if (mouseEnter) {
+					/*
+					* Force all outstanding WM_MOUSELEAVE messages to be dispatched before
+					* issuing a mouse enter.  This causes mouse exit events to be processed
+					* before mouse enter events.
+					*/
+					MSG msg = new MSG ();
+					while (OS.PeekMessage (msg, 0, OS.WM_MOUSELEAVE, OS.WM_MOUSELEAVE, OS.PM_REMOVE)) {
+						OS.TranslateMessage (msg);
+						OS.DispatchMessage (msg);
+					}
 					sendMouseEvent (SWT.MouseEnter, 0, OS.WM_MOUSEMOVE, wParam, lParam);
 				}
 			} else {
