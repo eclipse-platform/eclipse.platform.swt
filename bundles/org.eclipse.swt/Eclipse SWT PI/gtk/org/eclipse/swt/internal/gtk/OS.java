@@ -251,8 +251,6 @@ public class OS {
 	public static final byte[] size_allocate = signal("size_allocate");
 	public static final byte[] switch_page = signal("switch_page");
 	public static final byte[] toggled = signal("toggled");
-	public static final byte[] tree_collapse = signal("tree_collapse");
-	public static final byte[] tree_expand = signal("tree_expand");
 	public static final byte[] unmap_event = signal("unmap_event");
 	public static final byte[] value_changed = signal("value_changed");
 	
