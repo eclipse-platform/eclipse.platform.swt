@@ -14,39 +14,9 @@
 *******************************************************************************/
 
 #include "swt.h"
-#include "os.h"
-
-#include <stdio.h>
-#include <assert.h>
-
-#include <gtk/gtk.h>
-#include <gdk/gdk.h>
+#include "gtk_structs.h"
 
 #define GTK_NATIVE(func) Java_org_eclipse_swt_internal_gtk_GTK_##func
-
-#ifndef NO_GTK_1WIDGET_1HEIGHT
-JNIEXPORT jint JNICALL GTK_NATIVE(GTK_1WIDGET_1HEIGHT)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jint rc;
-	NATIVE_ENTER(env, that, "GTK_1WIDGET_1HEIGHT\n")
-	rc = (jint)GTK_WIDGET_HEIGHT(arg0);
-	NATIVE_EXIT(env, that, "GTK_1WIDGET_1HEIGHT\n")
-	return rc;
-}
-#endif
-
-#ifndef NO_GTK_1WIDGET_1WIDTH
-JNIEXPORT jint JNICALL GTK_NATIVE(GTK_1WIDGET_1WIDTH)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jint rc;
-	NATIVE_ENTER(env, that, "GTK_1WIDGET_1WIDTH\n")
-	rc = (jint)GTK_WIDGET_WIDTH(arg0);
-	NATIVE_EXIT(env, that, "GTK_1WIDGET_1WIDTH\n")
-	return rc;
-}
-#endif
 
 #ifndef NO_g_1signal_1connect
 JNIEXPORT jint JNICALL GTK_NATIVE(g_1signal_1connect)
