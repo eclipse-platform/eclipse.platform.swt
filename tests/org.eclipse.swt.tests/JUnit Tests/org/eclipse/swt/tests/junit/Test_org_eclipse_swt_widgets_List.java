@@ -1275,10 +1275,7 @@ public void test_selectII() {
 	assertEquals(0, list.getSelectionCount());
 	
 	list.select(1000, 2000);
-	if (fCheckOutOfRangeBehaviour) {
-		assertEquals(0, list.getSelectionCount());
-	}
-
+	assertEquals(0, list.getSelectionCount());
 	
 	list.deselectAll();
 	assertEquals(0, list.getSelectionCount());
@@ -1693,9 +1690,7 @@ public void test_setSelectionII() {
 	list.setSelection(2, 5);
 	assertSame(list.getSelectionIndices(), new int[] { 2, 3 });
 	list.setSelection(-2, 500);
-	if (fCheckOutOfRangeBehaviour)
-		assertSame(list.getSelectionIndices(), new int[] { 0, 1, 2, 3 });
-
+	assertSame(list.getSelectionIndices(), new int[] { 0, 1, 2, 3 });
 	
 	setSingleList();
 
