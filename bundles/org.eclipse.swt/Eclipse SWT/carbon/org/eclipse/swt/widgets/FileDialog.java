@@ -134,20 +134,67 @@ public String [] getFilterExtensions () {
 public String [] getFilterNames () {
 	return filterNames;
 }
-
 /**
- * Returns the directory path that the dialog will use.
- * File names in this path will appear in the dialog,
- * filtered according to the filter extensions.
+ * Returns the path which the dialog will use to filter
+ * the directories it shows.
  *
- * @return the directory path string
- * 
- * @see #setFilterExtensions
+ * @return the filter path
  */
 public String getFilterPath () {
 	return filterPath;
 }
+private String interpretOsAnswer(int dialog) {
+	String separator = System.getProperty ("file.separator");
+	
+	String firstResult= null;
 
+	int[] tmp= new int[1];
+	OS.NavDialogGetReply(dialog, tmp);
+	int reply= tmp[0];
+	
+	int selection= OS.NavReplyRecordGetSelection(reply);
+	OS.AECountItems(selection, tmp);
+	int count= tmp[0];
+	
+	String commonPath= null;
+	if (count > 0) {
+		String fileName= null;
+		fileNames= new String[count];
+		for (int i= 0; i < count; i++) {
+			OS.AEGetNthPtr(selection, i+1, tmp);
+			String fullPath= MacUtil.getStringAndRelease(tmp[0]);
+			if (firstResult == null)
+				firstResult= fullPath;
+			if (fullPath != null && fullPath.length() > 0) {
+				int separatorIndex= fullPath.lastIndexOf(separator);
+				if (separatorIndex >= 0) {
+					fileName= fullPath.substring(separatorIndex+separator.length());
+					String fp= fullPath.substring(0, separatorIndex);
+					if (commonPath == null)
+						commonPath= fp;	// remember common filterPath
+					else {
+						if (!commonPath.equals(fp))	// verify that filterPath is in fact common
+							System.out.println("FileDialog.getPaths: mismatch in filterPaths");
+					}
+				} else {
+					fileName= fullPath;
+				}
+				fileNames[i]= fileName;
+			}
+		}
+	} else {
+		fileNames= null;
+	}
+	
+	if (commonPath != null)
+		filterPath= commonPath;
+	else
+		filterPath= "";
+	
+	OS.NavDialogDisposeReply(reply);
+	
+	return firstResult;
+}
 /**
  * Makes the dialog visible and brings it to the front
  * of the display.
@@ -217,9 +264,7 @@ public String open () {
 				
 			case OS.kNavUserActionOpen:
 			case OS.kNavUserActionChoose:			
-				fileNames= getPaths(dialog);
-				if (fileNames.length > 0)
-					result= fileNames[0];
+				result= interpretOsAnswer(dialog);
 				break;
 				
 			case OS.kNavUserActionSaveAs:
@@ -273,43 +318,14 @@ public void setFilterExtensions (String [] extensions) {
 public void setFilterNames (String [] names) {
 	filterNames = names;
 }
-
 /**
- * Sets the directory path that the dialog will use
- * to the argument, which may be null. File names in this
- * path will appear in the dialog, filtered according
- * to the filter extensions.
+ * Sets the path which the dialog will use to filter
+ * the directories it shows to the argument, which may be
+ * null.
  *
- * @param string the directory path
- * 
- * @see #setFilterExtensions
+ * @param string the filter path
  */
 public void setFilterPath (String string) {
 	filterPath = string;
 }
-
-////////////////////
-// Mac stuff
-////////////////////
-
-	static String[] getPaths(int dialog) {
-		int[] tmp= new int[1];
-		OS.NavDialogGetReply(dialog, tmp);
-		int reply= tmp[0];
-		
-		int selection= OS.NavReplyRecordGetSelection(reply);
-		OS.AECountItems(selection, tmp);
-		int count= tmp[0];
-		
-		String[] result= new String[count];
-		for (int i= 0; i < count; i++) {
-			OS.AEGetNthPtr(selection, i+1, tmp);
-			result[i]= MacUtil.getStringAndRelease(tmp[0]);
-		}
-		
-		OS.NavDialogDisposeReply(reply);
-		
-		return result;
-	}
-
 }

@@ -99,6 +99,21 @@ public String getFilterPath () {
 public String getMessage () {
 	return message;
 }
+private String interpretOsAnswer(int dialog) {
+	int[] tmp= new int[1];
+	OS.NavDialogGetReply(dialog, tmp);
+	int reply= tmp[0];
+	
+	int selection= OS.NavReplyRecordGetSelection(reply);
+	OS.AECountItems(selection, tmp);
+	int count= tmp[0];
+	
+	if (count > 0) {
+		OS.AEGetNthPtr(selection, 1, tmp);
+		return MacUtil.getStringAndRelease(tmp[0]);
+	}
+	return null;
+}
 /**
  * Makes the dialog visible and brings it to the front
  * of the display.
@@ -112,10 +127,7 @@ public String getMessage () {
  * </ul>
  */
 public String open () {
-
 	int dialog= 0;
-	String result= null;
-	
 	int titleHandle= 0;
 	int messageHandle= 0;
 	try {
@@ -142,12 +154,11 @@ public String open () {
 				
 			case OS.kNavUserActionOpen:
 			case OS.kNavUserActionChoose:			
-				String[] directories= FileDialog.getPaths(dialog);
-				if (directories.length > 0)
-					result= directories[0];
-				break;
+				return interpretOsAnswer(dialog);
 			}
 		}
+		
+		return null;
 
 	} finally {
 		if (titleHandle != 0)
@@ -157,18 +168,6 @@ public String open () {
 		if (dialog != 0)
 			OS.NavDialogDispose(dialog);
 	}
-
-	return result;
-}
-/**
- * Sets the path which the dialog will use to filter
- * the directories it shows to the argument, which may be
- * null.
- *
- * @param string the filter path
- */
-public void setFilterPath (String string) {
-	filterPath = string;
 }
 /**
  * Sets the dialog's message, which is a description of
@@ -179,5 +178,15 @@ public void setFilterPath (String string) {
  */
 public void setMessage (String string) {
 	message = string;
+}
+/**
+ * Sets the path which the dialog will use to filter
+ * the directories it shows to the argument, which may be
+ * null.
+ *
+ * @param string the filter path
+ */
+public void setFilterPath (String string) {
+	filterPath = string;
 }
 }
