@@ -163,8 +163,8 @@ public String open () {
 		OS.g_free (utf16Ptr);
 		OS.g_free (utf8Ptr);
 		if (osAnswer != null) {
-			// remove trailing separator
-			if (osAnswer.endsWith (SEPARATOR)) {
+			/* remove trailing separator, unless root directory */
+			if (!osAnswer.equals (SEPARATOR) && osAnswer.endsWith (SEPARATOR)) {
 				osAnswer = osAnswer.substring (0, osAnswer.length () - 1);
 			}
 			answer = filterPath = osAnswer;
