@@ -213,6 +213,11 @@ class MenuTab extends Tab {
 				closeAllShells ();
 			};
 		});
+		subMenuButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				subSubMenuButton.setEnabled (subMenuButton.getSelection ());
+			};
+		});
 	
 		/* Set the default state */
 		barButton.setSelection (true);
@@ -223,6 +228,7 @@ class MenuTab extends Tab {
 		pushButton.setSelection (true);
 		radioButton.setSelection (true);
 		separatorButton.setSelection (true);
+		subSubMenuButton.setEnabled (subMenuButton.getSelection ());
 	}
 	
 	/* Create various menu items, depending on selections. */
@@ -263,7 +269,7 @@ class MenuTab extends Tab {
 			hookListeners(item);
 		}
 
-		if (createSubMenu) {
+		if (createSubMenu && cascadeButton.getSelection()) {
 			/* Create cascade button and drop-down menu for the sub-menu. */
 			item = new MenuItem(menu, SWT.CASCADE);
 			item.setText(getMenuItemText("Cascade"));
