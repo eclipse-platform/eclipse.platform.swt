@@ -574,6 +574,10 @@ void fixFocus (Control focusControl) {
 	OS.ClearKeyboardFocus (window);
 }
 
+int focusHandle () {
+	return handle;
+}
+
 /**
  * Forces the receiver to have the <em>keyboard focus</em>, causing
  * all keyboard events to be delivered to it.
@@ -597,8 +601,9 @@ public boolean forceFocus () {
 	shell.setSavedFocus (null);
 	shell.bringToTop (false);
 	if (isDisposed ()) return false;
-	int window = OS.GetControlOwner (handle);
-	OS.SetKeyboardFocus (window, handle, (short) OS.kControlFocusNextPart);
+	int focusHandle = focusHandle ();
+	int window = OS.GetControlOwner (focusHandle);
+	OS.SetKeyboardFocus (window, focusHandle, (short) OS.kControlFocusNextPart);
 	if (isDisposed ()) return false;
 	shell.setSavedFocus (this);
 	return hasFocus ();
