@@ -55,6 +55,7 @@ public class ControlExample {
 			shellTab = new ShellTab(this),
 			new SliderTab (this),
 			new TableTab (this),
+			new TableTreeTab (this),
 			new TextTab (this),
 			new ToolBarTab (this),
 			new TreeTab (this),
