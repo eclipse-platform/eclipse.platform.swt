@@ -35,7 +35,7 @@ import org.eclipse.swt.events.*;
 public class Link extends Control {
 	String text;
 	TextLayout layout;
-	Color linkColor;
+	Color linkColor, linkDisabledColor;
 	Point [] offsets;
 	Point selection;
 	String [] ids;
@@ -54,6 +54,7 @@ public class Link extends Control {
 			LinkProc = 0;
 		}
 	}
+	static final RGB LINK_FOREGROUND = new RGB (0, 51, 153);
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -174,7 +175,8 @@ void createHandle () {
 	super.createHandle ();
 	if (OS.COMCTL32_MAJOR < 6) {
 		layout = new TextLayout (display);
-		linkColor = new Color (display, 0, 51, 153);
+		linkColor = new Color (display, LINK_FOREGROUND);
+		linkDisabledColor = Color.win32_new (display, OS.GetSysColor (OS.COLOR_GRAYTEXT));
 		offsets = new Point [0];
 		ids = new String [0];
 		mnemonics = new int [0];
@@ -234,6 +236,14 @@ void enableWidget (boolean enabled) {
 		while (OS.SendMessage (handle, OS.LM_SETITEM, 0, item) != 0) {
 			item.iLink++;
 		}
+	} else {
+		TextStyle linkStyle = new TextStyle (null, enabled ? linkColor : linkDisabledColor, null);
+		linkStyle.underline = true;
+		for (int i = 0; i < offsets.length; i++) {
+			Point point = offsets [i];
+			layout.setStyle (linkStyle, point.x, point.y);
+		}
+		redraw ();
 	}
 }
 
@@ -442,6 +452,7 @@ void releaseWidget () {
 	layout = null;
 	if (linkColor != null) linkColor.dispose ();
 	linkColor = null;
+	linkDisabledColor = null;
 	offsets = null;
 	ids = null;
 	mnemonics = null;
@@ -516,7 +527,8 @@ public void setText (String string) {
 			bits &= ~OS.WS_TABSTOP;
 		}
 		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
-		TextStyle linkStyle = new TextStyle (null, linkColor, null);
+		boolean enabled = OS.IsWindowEnabled (handle);
+		TextStyle linkStyle = new TextStyle (null, enabled ? linkColor : linkDisabledColor, null);
 		linkStyle.underline = true;
 		for (int i = 0; i < offsets.length; i++) {
 			Point point = offsets [i];
