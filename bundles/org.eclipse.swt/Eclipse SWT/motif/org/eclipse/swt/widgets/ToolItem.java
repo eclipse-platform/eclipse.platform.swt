@@ -236,7 +236,7 @@ public Control getControl () {
 * @exception SWTError(ERROR_WIDGET_DISPOSED)
 *	when the widget has been disposed
 */
-public Image getDisabledmage () {
+public Image getDisabledImage () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return disabledImage;
