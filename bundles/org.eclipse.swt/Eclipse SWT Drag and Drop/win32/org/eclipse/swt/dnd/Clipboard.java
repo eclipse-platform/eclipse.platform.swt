@@ -252,7 +252,25 @@ public void setContents(Object[] data, Transfer[] dataTypes) {
 	if (COM.OleIsCurrentClipboard(this.iDataObject.getAddress()) != COM.S_OK) {
 		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
 	}
-	if (COM.OleFlushClipboard() != COM.S_OK) {
+	
+	int result = COM.OleFlushClipboard();
+	/*
+	* Bug in Windows. When a new application takes control
+	* of the clipboard, other applications may open the 
+	* clipboard to determine if they want to record the 
+	* clipoard updates.  When this happens, the clipboard 
+	* can not be flushed until the other aplication
+	* is finished.
+	* The fix is to call PeekMessage() with the flag 
+	* PM_NOREMOVE to touch the event queue but not 
+	* dispatch events.
+	*/
+	if (result != COM.S_OK) {
+		MSG msg = new MSG();
+		COM.PeekMessage (msg, 0, 0, 0, OS.PM_NOREMOVE);
+		result = COM.OleFlushClipboard();
+	}
+	if (result != COM.S_OK) {
 		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
 	}
 	this.data = new Object[0];
@@ -269,7 +287,7 @@ private void createCOMInterfaces() {
 		public int method1(int[] args) {return AddRef();}
 		public int method2(int[] args) {return Release();}
 		public int method3(int[] args) {return GetData(args[0], args[1]);}
-		// method4 GetDataHere - not implemented
+		// method4 GetDataHere - not implemented 
 		public int method5(int[] args) {return QueryGetData(args[0]);}
 		// method6 GetCanonicalFormatEtc - not implemented
 		// method7 SetData - not implemented
