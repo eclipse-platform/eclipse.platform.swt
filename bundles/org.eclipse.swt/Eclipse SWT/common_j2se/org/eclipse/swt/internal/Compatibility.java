@@ -40,12 +40,7 @@ import org.eclipse.swt.SWT;
  */
 public final class Compatibility {
 
-/**
- * Returns the PI constant as a double.
- */
-public static double PI = Math.PI;
-
-static double toRadians = PI / 180;
+static double toRadians = Math.PI / 180;
 
 /**
  * Answers the length of the side adjacent to the given angle
@@ -92,19 +87,6 @@ public static int sin(int angle, int length) {
  */
 public static int ceil(int p, int q) {
 	return (int)Math.ceil((float)p / q);
-}
-
-/**
- * Answers the most positive (i.e. closest to positive infinity)
- * integer value which is less than the number obtained by dividing
- * the first argument p by the second argument q.
- *
- * @param p numerator
- * @param q denominator (must be different from zero)
- * @return the floor of the rational number p / q.
- */
-public static int floor(int p, int q) {
-	return (int)Math.floor((double)p / q);
 }
 
 /**
@@ -223,24 +205,6 @@ public static void exec(String prog) throws java.io.IOException {
 	Runtime.getRuntime().exec(prog);
 }
 
-/**
- * Execute progArray[0] in a separate platform process if the
- * underlying platform support this.
- * <p>
- * The new process inherits the environment of the caller.
- * <p>
- *
- * @param progArray array containing the program to execute and its arguments
- *
- * @exception IOException
- *  if the program cannot be executed
- * @exception	SecurityException
- *  if the current SecurityManager disallows program execution
- */
-public static void exec(String[] progArray) throws java.io.IOException{
-	Runtime.getRuntime().exec(progArray);
-}
-
 private static ResourceBundle msgs = null;
 
 /**
@@ -282,17 +246,4 @@ public static String getMessage(String key) {
 public static void interrupt() {
 	Thread.currentThread().interrupt();
 }
-
-/**
- * Compares two instances of class String ignoring the case of the
- * characters and answers if they are equal.
- *
- * @param s1 string
- * @param s2 string
- * @return true if the two instances of class String are equal
- */
-public static boolean equalsIgnoreCase(String s1, String s2) {
-	return s1.equalsIgnoreCase(s2);
-}
-
 }

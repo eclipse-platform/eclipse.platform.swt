@@ -37,11 +37,6 @@ import java.io.*;
  * </ul>
  */
 public final class Compatibility {
-
-/**
- * Returns the PI constant as a double.
- */
-public static double PI = (double)3.141592653589793;
 	
 /** 
  * Sine table
@@ -130,25 +125,6 @@ public static int ceil(int p, int q) {
 		return res;
 	else
 		return res + 1;
-}
-
-/**
- * Answers the most positive (i.e. closest to positive infinity)
- * integer value which is less than the number obtained by dividing
- * the first argument p by the second argument q.
- *
- * @param p numerator
- * @param q denominator (must be different from zero)
- * @return the floor of the rational number p / q.
- */
-public static int floor(int p, int q) {
-	int res = p / q;
-	if ((p % q == 0) ||
-		(res > 0) ||
-		((res == 0) && ((p > 0 && q > 0) || (p < 0 && q < 0))))
-		return res;
-	else
-		return res - 1;
 }
 
 /**
@@ -272,24 +248,6 @@ public static void exec(String prog) throws java.io.IOException {
 }
 
 /**
- * Execute progArray[0] in a separate platform process if the
- * underlying platform support this.
- * <p>
- * The new process inherits the environment of the caller.
- * <p>
- *
- * @param progArray array containing the program to execute and its arguments
- *
- * @exception IOException
- *  if the program cannot be executed
- * @exception	SecurityException
- *  if the current SecurityManager disallows program execution
- */
-public static void exec(String[] progArray) throws java.io.IOException{
-	throw new IOException();
-}
-
-/**
  * Returns the NLS'ed message for the given argument. This is only being
  * called from SWT.
  * 
@@ -356,34 +314,4 @@ public static String getMessage(String key) {
  */
 public static void interrupt() {
 }
-
-/**
- * Compares two instances of class String ignoring the case of the
- * characters and answers if they are equal.
- *
- * @param s1 string
- * @param s2 string
- * @return true if the two instances of class String are equal
- */
-public static boolean equalsIgnoreCase(String s1, String s2) {
-	if (s1 == s2) return true;
-	if (s2 == null || s1.length() != s2.length()) return false;
-
-	char[] cArray1 = s1.toCharArray();
-	char[] cArray2 = s2.toCharArray();
-	int length = s1.length();
-	char c1, c2;
-
-	for (int index = 0; index < length; index++) {
-		c1 = cArray1[index];
-		c2 = cArray2[index];
-		if (c1 != c2 && 
-			Character.toUpperCase(c1) != Character.toUpperCase(c2) &&
-			Character.toLowerCase(c1) != Character.toLowerCase(c2)) {
-			return false;
-		}
-	}
-	return true;
-}
-
 }
