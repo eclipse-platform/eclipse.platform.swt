@@ -97,7 +97,7 @@ void createHandle (int index) {
 	state |= HANDLE;
 	Display display = getDisplay ();
 	int clazz = display.PtProgress;
-	int parentHandle = parent.handle;
+	int parentHandle = parent.parentingHandle ();
 	int [] args = {
 		OS.Pt_ARG_FLAGS, 0, OS.Pt_GETS_FOCUS,
 //		OS.Pt_ARG_GAUGE_FLAGS, OS.Pt_GAUGE_LIVE, OS.Pt_GAUGE_LIVE,

@@ -137,7 +137,7 @@ public void clearSelection () {
 void createHandle (int index) {
 	state |= HANDLE;
 	Display display = getDisplay ();
-	int parentHandle = parent.handle;
+	int parentHandle = parent.parentingHandle ();
 	boolean hasBorder = (style & SWT.BORDER) != 0;
 	int textFlags = (style & SWT.READ_ONLY) != 0 ? 0 : OS.Pt_EDITABLE;
 	if ((style & SWT.SINGLE) != 0) {

@@ -120,7 +120,7 @@ void createHandle (int index) {
 	state |= HANDLE;
 	Display display = getDisplay ();
 	int clazz = display.PtContainer;
-	int parentHandle = parent.handle;
+	int parentHandle = parent.parentingHandle ();
 	int cursor = ((style & SWT.HORIZONTAL) != 0) ? OS.Ph_CURSOR_DRAG_VERTICAL : OS.Ph_CURSOR_DRAG_HORIZONTAL;
 	int [] args = {
 		OS.Pt_ARG_FLAGS, 0, OS.Pt_GETS_FOCUS,

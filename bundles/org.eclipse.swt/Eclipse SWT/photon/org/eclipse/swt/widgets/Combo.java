@@ -176,7 +176,7 @@ void createHandle (int index) {
 	state |= HANDLE;
 	Display display = getDisplay ();
 	int clazz = display.PtComboBox;
-	int parentHandle = parent.handle;
+	int parentHandle = parent.parentingHandle ();
 	int textFlags = (style & SWT.READ_ONLY) != 0 ? 0 : OS.Pt_EDITABLE;
 	int [] args = {
 		OS.Pt_ARG_TEXT_FLAGS, textFlags, OS.Pt_EDITABLE,

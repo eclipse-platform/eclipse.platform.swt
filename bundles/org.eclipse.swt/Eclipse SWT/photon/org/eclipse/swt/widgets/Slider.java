@@ -160,7 +160,7 @@ void createHandle (int index) {
 	state |= HANDLE;
 	Display display = getDisplay ();
 	int clazz = display.PtScrollbar;
-	int parentHandle = parent.handle;
+	int parentHandle = parent.parentingHandle ();
 	int [] args = {
 		OS.Pt_ARG_MAXIMUM, 100, 0,
 		OS.Pt_ARG_PAGE_INCREMENT, 10, 0,

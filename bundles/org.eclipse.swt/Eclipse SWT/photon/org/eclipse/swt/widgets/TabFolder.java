@@ -35,6 +35,7 @@ import org.eclipse.swt.events.*;
  * </p>
  */
 public class TabFolder extends Composite {
+	int parentingHandle;
 	TabItem [] items;
 	int itemCount;
 
@@ -117,15 +118,6 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
-int childrenParent () {
-	/*
-	* Feature in Photon.  Tabfolders have an extra widget which
-	* is the parent of all tab items. PtValidParent() can not be
-	* used, since it does not return that widget.
-	*/
-	return OS.PtWidgetChildBack (handle);
-}
-
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	PhDim_t dim = new PhDim_t();
@@ -172,12 +164,17 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 void createHandle (int index) {
 	state |= HANDLE;
 	Display display = getDisplay ();
-	int clazz = display.PtPanelGroup;
-	int parentHandle = parent.handle;
+	int parentHandle = parent.parentingHandle ();
 	int [] args = {
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 	};
-	handle = OS.PtCreateWidget (clazz, parentHandle, args.length / 3, args);
+	parentingHandle = OS.PtCreateWidget (OS.PtContainer (), parentHandle, args.length / 3, args);
+	if (parentingHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	int clazz = display.PtPanelGroup;
+	args = new int []{
+		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
+	};
+	handle = OS.PtCreateWidget (clazz, parentingHandle, args.length / 3, args);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
 
@@ -187,8 +184,6 @@ void createWidget (int index) {
 }
 
 void createItem (TabItem item, int index) {
-	int [] args = {OS.Pt_ARG_PG_PANEL_TITLES, 0, 0};
-	OS.PtGetResources (handle, args.length / 3, args);
 	int count = itemCount;
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
 	if (count == items.length) {
@@ -196,6 +191,8 @@ void createItem (TabItem item, int index) {
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
 	}
+	int [] args = {OS.Pt_ARG_PG_PANEL_TITLES, 0, 0};
+	OS.PtGetResources (handle, args.length / 3, args);
 	int oldPtr = args [1];
 	int newPtr = OS.malloc ((count + 1) * 4);
 	if (newPtr == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
@@ -225,15 +222,20 @@ void createItem (TabItem item, int index) {
 	itemCount++;
 }
 
+void deregister () {
+	super.deregister ();
+	if (parentingHandle != 0) WidgetTable.remove (parentingHandle);
+}
+
 void destroyItem (TabItem item) {
-	int [] args = {OS.Pt_ARG_PG_PANEL_TITLES, 0, 0};
-	OS.PtGetResources (handle, args.length / 3, args);
 	int count = itemCount;
 	int index = 0;
 	while (index < count) {
 		if (items [index] == item) break;
 		index++;
 	}
+	int [] args = {OS.Pt_ARG_PG_PANEL_TITLES, 0, 0};
+	OS.PtGetResources (handle, args.length / 3, args);
 	int oldPtr = args [1];
 	int newPtr = OS.malloc ((count - 1) * 4);
 	if (newPtr == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
@@ -263,6 +265,15 @@ void destroyItem (TabItem item) {
 	}
 	items [count] = null;
 	itemCount--;
+}
+
+public Rectangle getClientArea () {
+	checkWidget();
+	PhArea_t area = new PhArea_t ();
+	if (!OS.PtWidgetIsRealized (handle)) OS.PtExtentWidgetFamily (handle);
+	int clientHandle = OS.PtWidgetChildBack (handle);
+	OS.PtWidgetArea (clientHandle, area);
+	return new Rectangle (area.pos_x, area.pos_y, area.size_w, area.size_h);
 }
 
 /**
@@ -391,11 +402,18 @@ void hookEvents () {
 public int indexOf (TabItem item) {
 	checkWidget();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int count = getItemCount ();
-	for (int i=0; i<count; i++) {
+	for (int i=0; i<itemCount; i++) {
 		if (items [i] == item) return i;
 	}
 	return -1;
+}
+
+void moveToBack (int child) {
+	OS.PtWidgetInsert (child, handle, 0);
+}
+
+int parentingHandle () {
+	return parentingHandle;
 }
 
 int processPaint (int damage) {
@@ -429,6 +447,16 @@ int processSelection (int info) {
 	event.item = newItem;
 	postEvent (SWT.Selection, event);
 	return OS.Pt_CONTINUE;
+}
+
+void register () {
+	super.register ();
+	if (parentingHandle != 0) WidgetTable.put (parentingHandle, this);
+}
+
+void releaseHandle () {
+	super.releaseHandle ();
+	parentingHandle = 0;
 }
 
 void releaseWidget () {
@@ -471,7 +499,10 @@ public void removeSelectionListener (SelectionListener listener) {
 boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	boolean changed = super.setBounds (x, y, width, height, move, resize);
 	if (changed && resize) {
-		int [] args = {OS.Pt_ARG_PG_CURRENT_INDEX, 0, 0};
+		int [] args = {OS.Pt_ARG_WIDTH, 0, 0, OS.Pt_ARG_HEIGHT, 0, 0};
+		OS.PtGetResources (parentingHandle, args.length / 3, args);
+		OS.PtSetResources (handle, args.length / 3, args);
+		args = new int [] {OS.Pt_ARG_PG_CURRENT_INDEX, 0, 0};
 		OS.PtGetResources (handle, args.length / 3, args);
 		int index = args [1];
 		if (index != OS.Pt_PG_INVALID) {
@@ -515,10 +546,10 @@ void setSelection (int index, boolean notify) {
 		}
 	}
 	OS.PtSetResource (handle, OS.Pt_ARG_PG_CURRENT_INDEX, index, 0);	
-	args = new int[]{OS.Pt_ARG_PG_CURRENT_INDEX, 0, 0};
+	args [1] = 0;
 	OS.PtGetResources (handle, args.length / 3, args);
 	int newIndex = args [1];
-	if (newIndex != -1) {
+	if (newIndex != OS.Pt_PG_INVALID) {
 		TabItem item = items [newIndex];
 		Control control = item.control;
 		if (control != null && !control.isDisposed ()) {
@@ -570,6 +601,10 @@ boolean traversePage (boolean next) {
 	}
 	setSelection (index, true);
 	return true;
+}
+
+int topHandle () {
+	return parentingHandle;
 }
 
 }

@@ -33,6 +33,7 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 public class ToolBar extends Composite {
+	int parentingHandle;
 	int itemCount;
 	ToolItem [] items;
 
@@ -83,6 +84,7 @@ public ToolBar (Composite parent, int style) {
 	int orientation = (style & SWT.VERTICAL) == 0 ? OS.Pt_HORIZONTAL : OS.Pt_VERTICAL;
 	OS.PtSetResource (handle, OS.Pt_ARG_ORIENTATION, orientation, 0);
 }
+
 static int checkStyle (int style) {
 	/*
 	* Even though it is legal to create this widget
@@ -96,15 +98,6 @@ static int checkStyle (int style) {
 
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
-}
-
-int childrenParent () {
-	/*
-	* Feature in Photon.  Toolbars have an extra widget which
-	* is the parent of all tool items. PtValidParent() can not be
-	* used, since it does not return that widget.
-	*/
-	return OS.PtWidgetChildBack (handle);
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -131,15 +124,19 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle (int index) {
 	state |= HANDLE;
 	Display display = getDisplay ();
-	int parentHandle = parent.handle;
-	
+	int parentHandle = parent.parentingHandle ();
 	int [] args = {
+		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
+	};
+	parentingHandle = OS.PtCreateWidget (OS.PtContainer (), parentHandle, args.length / 3, args);
+	if (parentingHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	args = new int [] {
 		OS.Pt_ARG_FLAGS, (style & SWT.NO_FOCUS) != 0 ? 0 : OS.Pt_GETS_FOCUS, OS.Pt_GETS_FOCUS,
 		OS.Pt_ARG_FLAGS, hasBorder () ? OS.Pt_HIGHLIGHTED : 0, OS.Pt_HIGHLIGHTED,
 		OS.Pt_ARG_TOOLBAR_FLAGS, 0, OS.Pt_TOOLBAR_DRAGGABLE | OS.Pt_TOOLBAR_END_SEPARATOR,
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 	};
-	handle = OS.PtCreateWidget (OS.PtToolbar (), parentHandle, args.length / 3, args);
+	handle = OS.PtCreateWidget (OS.PtToolbar (), parentingHandle, args.length / 3, args);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
 
@@ -159,6 +156,11 @@ void createWidget (int index) {
 	super.createWidget (index);
 	items = new ToolItem [4];
 	itemCount = 0;
+}
+
+void deregister () {
+	super.deregister ();
+	if (parentingHandle != 0) WidgetTable.remove (parentingHandle);
 }
 
 void destroyItem (ToolItem item) {
@@ -314,6 +316,14 @@ public int indexOf (ToolItem item) {
 	return -1;
 }
 
+void moveToBack (int child) {
+	OS.PtWidgetInsert (child, handle, 0);
+}
+
+int parentingHandle () {
+	return parentingHandle;
+}
+
 int processMouseEnter (int info) {
 	if (info == 0) return OS.Pt_END;
 	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
@@ -329,6 +339,16 @@ int processMouseEnter (int info) {
 	return super.processMouseEnter (info);
 }
 
+void register () {
+	super.register ();
+	if (parentingHandle != 0) WidgetTable.put (parentingHandle, this);
+}
+
+void releaseHandle () {
+	super.releaseHandle ();
+	parentingHandle = 0;
+}
+
 void releaseWidget () {
 	for (int i=0; i<items.length; i++) {
 		ToolItem item = items [i];
@@ -341,6 +361,16 @@ void releaseWidget () {
 	super.releaseWidget ();
 }
 
+boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	boolean changed = super.setBounds (x, y, width, height, move, resize);
+	if (changed && resize) {
+		int [] args = {OS.Pt_ARG_WIDTH, 0, 0, OS.Pt_ARG_HEIGHT, 0, 0};
+		OS.PtGetResources (parentingHandle, args.length / 3, args);
+		OS.PtSetResources (handle, args.length / 3, args);
+	}
+	return changed;
+}
+
 boolean setTabGroupFocus () {
 	for (int i=0; i<itemCount;i++) {
 		ToolItem item = items [i];
@@ -351,6 +381,10 @@ boolean setTabGroupFocus () {
 		if (OS.PtIsFocused(item.handle) != 0) return true;
 	}
 	return super.setTabGroupFocus ();
+}
+
+int topHandle () {
+	return parentingHandle;
 }
 
 }

@@ -148,9 +148,9 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 public Rectangle getClientArea () {
 	checkWidget();
 	PhRect_t rect = new PhRect_t ();
-	int vParent = OS.PtValidParent (handle, OS.PtContainer ());
+	int validParent = OS.PtValidParent (handle, OS.PtContainer ());
 	if (!OS.PtWidgetIsRealized (handle)) OS.PtExtentWidgetFamily (handle);
-	OS.PtCalcCanvas (vParent, rect);
+	OS.PtCalcCanvas (validParent, rect);
 	int width = rect.lr_x - rect.ul_x + 1;
 	int height = rect.lr_y - rect.ul_y + 1;
 	return new Rectangle (0, 0, width, height);

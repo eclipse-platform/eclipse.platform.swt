@@ -1037,7 +1037,7 @@ public void moveBelow (Control control) {
 	checkWidget();
 	int topHandle1 = topHandle ();
 	if (control == null) {
-		OS.PtWidgetToBack (topHandle1);
+		if (parent != null) parent.moveToBack (topHandle1);
 		OS.PtWindowToBack (topHandle1);
 		return;
 	}
@@ -2251,7 +2251,7 @@ public void setToolTipText (String string) {
 }
 
 void setZOrder() {
-	OS.PtWidgetToBack (topHandle ());
+	if (parent != null) parent.moveToBack (topHandle ());
 }
 
 void sort (int [] items) {

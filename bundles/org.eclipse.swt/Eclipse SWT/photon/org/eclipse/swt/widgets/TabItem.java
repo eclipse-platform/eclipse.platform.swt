@@ -213,9 +213,10 @@ public void setImage (Image image) {
 	//NOT SUPPORTED
 }
 
-public void setText (String text) {
+public void setText (String string) {
 	checkWidget();
-	super.setText (text);
+	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	super.setText (string);
 	int index = parent.indexOf (this);
 	int [] args = {OS.Pt_ARG_PG_PANEL_TITLES, 0, 0};
 	OS.PtGetResources (parent.handle, args.length / 3, args);
@@ -225,7 +226,7 @@ public void setText (String text) {
 	for (int i=0; i<count; i++) {
 		int str;
 		if (i == index) {
-			byte [] buffer = Converter.wcsToMbcs (null, text);
+			byte [] buffer = Converter.wcsToMbcs (null, string);
 			str = OS.malloc (buffer.length + 1);
 			OS.memmove (str, buffer, buffer.length);
 		} else {

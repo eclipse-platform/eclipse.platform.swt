@@ -583,7 +583,7 @@ public void setControl (Control control) {
 	Control oldControl = this.control;
 	this.control = control;
 	if (oldControl != null) {
-		OS.PtReParentWidget(oldControl.handle, parent.handle);
+		OS.PtReParentWidget(oldControl.handle, parent.parentingHandle ());
 	}
 	if (control != null && !control.isDisposed ()) {
 		OS.PtReParentWidget(control.handle, handle);

@@ -69,15 +69,15 @@ public Composite (Composite parent, int style) {
 	
 Control [] _getChildren () {
 	int count = 0;
-	int validParent = childrenParent ();
-	int child = OS.PtWidgetChildFront (validParent);
+	int parentHandle = parentingHandle ();
+	int child = OS.PtWidgetChildFront (parentHandle);
 	while (child != 0) {
 		child = OS.PtWidgetBrotherBehind (child);
 		count++;
 	}
 	Control [] children = new Control [count];
 	int i = 0, j = 0;
-	child = OS.PtWidgetChildFront (validParent);
+	child = OS.PtWidgetChildFront (parentHandle);
 	while (i < count) {
 		Widget widget = WidgetTable.get (child);
 		if (widget != null && widget != this) {
@@ -114,10 +114,6 @@ Control [] _getTabList () {
 
 protected void checkSubclass () {
 	/* Do nothing - Subclassing is allowed */
-}
-
-int childrenParent () {
-	return handle;
 }
 
 Control [] computeTabList () {
@@ -159,7 +155,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle (int index) {
 	state |= HANDLE | CANVAS;
-	int parentHandle = parent.handle;
+	int parentHandle = parent.parentingHandle ();
 	createScrolledHandle (parentHandle);
 }
 
@@ -322,8 +318,8 @@ public Control [] getChildren () {
 
 int getChildrenCount () {
 	int count = 0;
-	int validParent = childrenParent ();
-	int child = OS.PtWidgetChildFront (validParent);
+	int parentHandle = parentingHandle ();
+	int child = OS.PtWidgetChildFront (parentHandle);
 	while (child != 0) {
 		child = OS.PtWidgetBrotherBehind (child);
 		count++;
@@ -416,6 +412,10 @@ Point minimumSize () {
 	return new Point (width, height);
 }
 
+void moveToBack (int child) {
+	OS.PtWidgetToBack (child);
+}
+
 /**
  * If the receiver has a layout, asks the layout to <em>lay out</em>
  * (that is, set the size and location of) the receiver's children. 
@@ -439,6 +439,10 @@ public void layout (boolean changed) {
 	int count = getChildrenCount ();
 	if (count == 0) return;
 	layout.layout (this, changed);
+}
+
+int parentingHandle () {
+	return handle;
 }
 
 int processMouse (int info) {

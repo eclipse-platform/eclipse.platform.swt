@@ -104,7 +104,7 @@ void createHandle (int index) {
 	state |= HANDLE;
 	Display display = getDisplay ();
 	int clazz = display.PtPane;
-	int parentHandle = parent.handle;
+	int parentHandle = parent.parentingHandle ();
 	int [] args = {
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 	};
