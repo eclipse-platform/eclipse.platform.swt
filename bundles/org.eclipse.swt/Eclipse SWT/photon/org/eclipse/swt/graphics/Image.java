@@ -593,6 +593,39 @@ public boolean isDisposed() {
 	return handle == 0;
 }
 
+/**
+ * Sets the color to which to map the transparent pixel.
+ * <p>
+ * There are certain uses of <code>Images</code> that do not support
+ * transparency (for example, setting an image into a button or label).
+ * In these cases, it may be desired to simulate transparency by using
+ * the background color of the widget to paint the transparent pixels
+ * of the image. This method specifies the color that will be used in
+ * these cases. For example:
+ * <pre>
+ *    Button b = new Button();
+ *    image.setBackground(b.getBackground());>
+ *    b.setImage(image);
+ * </pre>
+ * </p><p>
+ * The image may be modified by this operation (in effect, the
+ * transparent regions may be filled with the supplied color).  Hence
+ * this operation is not reversible so a null argument is illegal.
+ * </p><p>
+ * This method has no effect if the receiver does not have a transparent
+ * pixel value.
+ * </p>
+ *
+ * @param color the color to use when a transparent pixel is specified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the color is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the color has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
 public void setBackground(Color color) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);

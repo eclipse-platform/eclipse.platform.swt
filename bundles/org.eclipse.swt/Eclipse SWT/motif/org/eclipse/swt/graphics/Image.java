@@ -1205,8 +1205,14 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
  *    image.setBackground(b.getBackground());>
  *    b.setImage(image);
  * </pre>
+ * </p><p>
+ * The image may be modified by this operation (in effect, the
+ * transparent regions may be filled with the supplied color).  Hence
+ * this operation is not reversible so a null argument is illegal.
+ * </p><p>
  * This method has no effect if the receiver does not have a transparent
  * pixel value.
+ * </p>
  *
  * @param color the color to use when a transparent pixel is specified
  *
