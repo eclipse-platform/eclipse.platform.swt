@@ -230,6 +230,7 @@ public void setImage (Image image) {
 		OS.gtk_widget_hide (pixmapHandle);
 	}
 	if (oldImage == image) OS.gtk_widget_queue_draw (pixmapHandle);
+	parent.fixPage ();
 }
 
 public void setText (String string) {
