@@ -50,7 +50,7 @@ public static void setDragDrop (final Label label) {
 	source.addDragListener (new DragSourceListener () {
 		public void dragStart(DragSourceEvent event) {
 			event.doit = (label.getText ().length () != 0);
-		};
+		}
 		public void dragSetData (DragSourceEvent event) {
 			event.data = label.getText ();
 		}
