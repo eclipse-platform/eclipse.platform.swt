@@ -33,6 +33,12 @@ public class FileViewer {
 	private Label diskSpaceLabel;
 	
 	private File currentDirectory = null;
+	
+	/* Drag and drop optimizations -- avoid redundant updates */
+	private File[] deferredRefreshFiles = null;
+	private boolean deferredRefreshRequested = false;
+	private boolean isDragging = false; // don't refresh during drag and drop  
+	private boolean isDropping = false; // don't refresh during drag and drop
 
 	/* Combo view */
 	private static final String COMBODATA_ROOTS = "Combo.roots";
@@ -424,11 +430,14 @@ public class FileViewer {
 				dndSelection = tree.getSelection();
 				sourceNames = null;
 				event.doit = dndSelection.length > 0;
+				isDragging = true;
 			}
 			public void dragFinished(DragSourceEvent event){
 				dragSourceHandleDragFinished(event, sourceNames);
 				dndSelection = null;
 				sourceNames = null;
+				isDragging = false;
+				handleDeferredRefresh();
 			}
 			public void dragSetData(DragSourceEvent event){
 				if (dndSelection == null || dndSelection.length == 0) return;
@@ -455,6 +464,13 @@ public class FileViewer {
 		dropTarget.setTransfer(new Transfer[] { FileTransfer.getInstance() });
 		dropTarget.addDropListener(new TreeDropFeedbackListener(tree));
 		dropTarget.addDropListener(new DropTargetAdapter() {
+			public void dragEnter(DropTargetEvent event) {
+				isDropping = true;
+			}
+			public void dragLeave(DropTargetEvent event) {
+				isDropping = false;
+				handleDeferredRefresh();
+			}
 			public void dragOver(DropTargetEvent event) {
 				dropTargetValidate(event, getTargetFile(event));
 			}
@@ -625,11 +641,14 @@ public class FileViewer {
 				dndSelection = table.getSelection();
 				sourceNames = null;
 				event.doit = dndSelection.length > 0;
+				isDragging = true;
 			}
 			public void dragFinished(DragSourceEvent event){
 				dragSourceHandleDragFinished(event, sourceNames);
 				dndSelection = null;
 				sourceNames = null;
+				isDragging = false;
+				handleDeferredRefresh();
 			}
 			public void dragSetData(DragSourceEvent event){
 				if (dndSelection == null || dndSelection.length == 0) return;
@@ -655,6 +674,13 @@ public class FileViewer {
 		DropTarget dropTarget = new DropTarget(table, DND.DROP_MOVE | DND.DROP_COPY);
 		dropTarget.setTransfer(new Transfer[] { FileTransfer.getInstance() });
 		dropTarget.addDropListener(new DropTargetAdapter() {
+			public void dragEnter(DropTargetEvent event) {
+				isDropping = true;
+			}
+			public void dragLeave(DropTargetEvent event) {
+				isDropping = false;
+				handleDeferredRefresh();
+			}
 			public void dragOver(DropTargetEvent event) {
 				dropTargetValidate(event, getTargetFile(event));
 			}
@@ -793,6 +819,30 @@ public class FileViewer {
 	 */
 	void notifyRefreshFiles(File[] files) {
 		if (files != null && files.length == 0) return;
+
+		if ((deferredRefreshRequested) && (deferredRefreshFiles != null) && (files != null)) {
+			// merge requests
+			File[] newRequest = new File[deferredRefreshFiles.length + files.length];
+			System.arraycopy(deferredRefreshFiles, 0, newRequest, 0, deferredRefreshFiles.length);
+			System.arraycopy(files, 0, newRequest, deferredRefreshFiles.length, files.length);
+			deferredRefreshFiles = newRequest;
+		} else {
+			deferredRefreshFiles = files;
+			deferredRefreshRequested = true;
+		}
+		handleDeferredRefresh();
+	}
+
+	/**
+	 * Handles deferred Refresh notifications (due to Drag & Drop)
+	 */
+	void handleDeferredRefresh() {
+		if (isDragging || isDropping || ! deferredRefreshRequested) return;
+		deferredRefreshRequested = false;
+		File[] files = deferredRefreshFiles;
+		deferredRefreshFiles = null;
+		
+		// Does not refresh very intelligently at the moment.
 
 		/* Table view:
 		 * Refreshes information about any files in the list and their children.
@@ -1019,7 +1069,25 @@ public class FileViewer {
 			searchFile = searchFile.getParentFile();
 		} while (searchFile != null);
 		
-		if (oldFile.isFile()) {
+		if (oldFile.isDirectory()) {
+			/*
+			 * Copy a directory
+			 */
+			if (simulateOnly) {
+				System.out.println(getResourceString("simulate.DirectoriesCreated.text",
+					new Object[] { newFile.getPath() }));
+			} else {
+				if (! newFile.mkdirs()) return false;
+			}
+			File[] subFiles = oldFile.listFiles();
+			if (subFiles != null) {
+				for (int i = 0; i < subFiles.length; i++) {
+					File oldSubFile = subFiles[i];
+					File newSubFile = new File(newFile, oldSubFile.getName());
+					if (! copyFileStructure(oldSubFile, newSubFile)) return false;
+				}
+			}
+		} else {
 			/*
 			 * Copy a file
 			 */
@@ -1048,36 +1116,8 @@ public class FileViewer {
 					}
 				}
 			}
-			return true;
-		} else if (oldFile.isDirectory()) {
-			/*
-			 * Copy a directory
-			 */
-			if (simulateOnly) {
-				System.out.println(getResourceString("simulate.DirectoriesCreated.text",
-					new Object[] { newFile.getPath() }));
-			} else {
-				if (! newFile.mkdirs()) return false;
-			}
-			File[] subFiles = oldFile.listFiles();
-			if (subFiles != null) {
-				for (int i = 0; i < subFiles.length; i++) {
-					File oldSubFile = subFiles[i];
-					File newSubFile = new File(newFile, oldSubFile.getName());
-					if (! copyFileStructure(oldSubFile, newSubFile)) return false;
-				}
-			}
-			return true;
-		} else {
-			/*
-			 * Unknown type
-			 */
-			if (simulateOnly) {
-				System.out.println(getResourceString("simulate.UnknownResource.text",
-					new Object[] { oldFile.getPath() }));
-			}
-			return false; // error we don't know how to copy this
 		}
+		return true;
 	}
 
 	/**
