@@ -2690,7 +2690,7 @@ int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatc
 	display.lastTime = eventTime == 0 ? 1 : eventTime;
 	display.lastButton = eventButton;
 	
-	/*
+	/* 
 	* It is possible that the shell may be
 	* disposed at this point.  If this happens
 	* don't send the activate and deactivate
