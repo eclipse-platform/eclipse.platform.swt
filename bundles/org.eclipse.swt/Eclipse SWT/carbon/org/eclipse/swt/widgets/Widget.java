@@ -653,7 +653,10 @@ void redrawWidget (int control) {
 	Rect rect = new Rect ();
 	OS.GetControlBounds (control, rect);
 	int window = OS.GetControlOwner (control);
-	OS.InvalWindowRect (window, rect);
+	int visibleRgn = getVisibleRegion (control);
+	OS.InvalWindowRgn (window, visibleRgn);
+	OS.DisposeRgn (visibleRgn);
+//	OS.InvalWindowRect (window, rect);
 }
 
 void register () {
