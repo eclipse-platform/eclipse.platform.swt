@@ -88,16 +88,14 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
 	int trimX, trimY, trimWidth, trimHeight;	
 	int [] argList = {
-		OS.XmNwidth, 0, 
-		OS.XmNheight, 0, 
 		OS.XmNshadowThickness, 0, 
 		OS.XmNmarginWidth, 0, 
 		OS.XmNmarginHeight, 0
 	};
 	OS.XtGetValues (handle, argList, argList.length / 2);
-	int thickness = argList [5];
-	int marginWidth = argList [7];
-	int marginHeight = argList [9];
+	int thickness = argList [1];
+	int marginWidth = argList [3];
+	int marginHeight = argList [5];
 	int borderWidth = getBorderWidth ();
 	trimX = x - marginWidth + thickness - borderWidth;
 	trimY = y - marginHeight + thickness - borderWidth;
