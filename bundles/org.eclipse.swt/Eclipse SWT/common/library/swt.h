@@ -57,7 +57,7 @@ extern int IS_JNI_1_2;
 
 #endif
 
-void throwOutOfMemory();
+void throwOutOfMemory(JNIEnv *env);
 
 #define CHECK_NULL_VOID(ptr) \
 	if ((ptr) == NULL) { \
