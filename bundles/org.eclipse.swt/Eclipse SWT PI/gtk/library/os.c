@@ -1299,6 +1299,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(gdk_1event_1get_1coords)
 }
 #endif
 
+#ifndef NO_gdk_1event_1get_1graphics_1expose
+JNIEXPORT jint JNICALL OS_NATIVE(gdk_1event_1get_1graphics_1expose)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "gdk_1event_1get_1graphics_1expose\n")
+	rc = (jint)gdk_event_get_graphics_expose((GdkWindow *)arg0);
+	NATIVE_EXIT(env, that, "gdk_1event_1get_1graphics_1expose\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_gdk_1event_1get_1state
 JNIEXPORT jboolean JNICALL OS_NATIVE(gdk_1event_1get_1state)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)

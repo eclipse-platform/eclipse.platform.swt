@@ -2816,6 +2816,15 @@ public void update () {
 	checkWidget ();
 	OS.gdk_flush ();
 	int window = paintWindow ();
+	int gc = OS.gdk_gc_new (window);
+	OS.gdk_gc_set_exposures (gc, true);
+	OS.gdk_draw_drawable (window, gc, window, 0, 0, 0, 0, 0, 0);
+	OS.g_object_unref (gc);
+	int event = 0;
+	while ((event = OS.gdk_event_get_graphics_expose (window)) != 0) {
+		OS.gtk_main_do_event (event);
+		OS.gdk_event_free (event);	
+	}
 	OS.gdk_window_process_updates (window, false);
 }
 }

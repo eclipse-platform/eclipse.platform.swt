@@ -393,6 +393,7 @@ public static final synchronized native int gdk_event_copy(int event);
 public static final synchronized native void gdk_event_free(int event);
 public static final synchronized native int gdk_event_get();
 public static final synchronized native boolean gdk_event_get_coords(int event, double[] px, double[] py);
+public static final synchronized native int gdk_event_get_graphics_expose(int window);
 public static final synchronized native boolean gdk_event_get_state(int event, int[] pmod);
 public static final synchronized native int gdk_event_get_time(int event);
 public static final synchronized native void gdk_event_handler_set(int func, int data, int notify);
