@@ -61,7 +61,17 @@ See org.eclipse.swt.printing for more information.
 <h4>
 99.1.6 Drag and Drop on Motif</h4>
 
-Dragging a file between Eclipse and the Linux File Manager will cause Eclipse to hang.  
+On Motif, SWT only supports dragging between windows running on the same system process.  In particular, 
+dragging a file between Eclipse and another application will cause the drop target application to hang.  This is a result of 
+a bug in the Motif libraries for applications that are running multi-threaded (i.e. XInitThreads), which we have not yet been
+able to workaround.
+
+<h4>
+99.1.7  Disposing in a Focus Event</h4>
+
+Applications should not dispose widgets in focus changing events.  Doing so  on Motif may cause Eclipse to terminate,
+since Motif accesses the disposed widget within their internal focus change event handler.
+Similar but less serious issues exist on Windows such that occasionally an SWT exception can be thrown.
 
 <p><a href="hglegal.htm"><img SRC="ngibmcpy.gif" BORDER=0 height=12 width=195></a>
 </body>
