@@ -192,7 +192,11 @@ void doArrowDown(int stateMask) {
 	}
 	if ((style & SWT.SINGLE) != 0) {
 		if ((stateMask & SWT.CTRL) != 0) {
-			// TODO scroll tree down
+			int visibleItemCount = (getClientArea().height - getHeaderHeight()) / itemHeight;
+			if (availableItems.length <= topIndex + visibleItemCount) return;	/* at bottom */
+			topIndex++;
+			getVerticalBar().setSelection(topIndex);
+			redraw();
 			return;
 		} else {
 			int newFocusIndex = focusItem.getAvailableIndex() + 1;
@@ -207,11 +211,23 @@ void doArrowDown(int stateMask) {
 			return;
 		}
 	}
+	/* SWT.MULTI */
 	if ((stateMask & SWT.CTRL) != 0) {
 		if ((stateMask & SWT.SHIFT) != 0) {
-			// TODO scroll tree down
+			int visibleItemCount = (getClientArea().height - getHeaderHeight()) / itemHeight;
+			if (availableItems.length <= topIndex + visibleItemCount) return;	/* at bottom */
+			topIndex++;
+			getVerticalBar().setSelection(topIndex);
+			redraw();
+			return;
 		} else {
-			// TODO move focus but not selection
+			int focusIndex = focusItem.getAvailableIndex(); 
+			if (focusIndex == availableItems.length - 1) return;	/* at bottom */
+			TreeItem2 newFocusItem = availableItems[focusIndex + 1];
+			setFocusItem(newFocusItem, true);
+			showItem(newFocusItem);
+			redrawItem(newFocusItem.getAvailableIndex());
+			return;
 		}
 	} else {
 		// TODO study Shift behaviour
@@ -283,7 +299,10 @@ void doArrowUp(int stateMask) {
 	}
 	if ((style & SWT.SINGLE) != 0) {
 		if ((stateMask & SWT.CTRL) != 0) {
-			// TODO scroll tree up
+			if (topIndex == 0) return;	/* at top */
+			topIndex--;
+			getVerticalBar().setSelection(topIndex);
+			redraw();
 			return;
 		} else {
 			int newFocusIndex = focusItem.getAvailableIndex() - 1;
@@ -299,11 +318,22 @@ void doArrowUp(int stateMask) {
 			return;
 		}
 	}
+	/* SWT.MULTI */
 	if ((stateMask & SWT.CTRL) != 0) {
 		if ((stateMask & SWT.SHIFT) != 0) {
-			// TODO scroll tree down
+			if (topIndex == 0) return;	/* at top */
+			topIndex--;
+			getVerticalBar().setSelection(topIndex);
+			redraw();
+			return;
 		} else {
-			// TODO move focus but not selection
+			int focusIndex = focusItem.getAvailableIndex(); 
+			if (focusIndex == 0) return;	/* at top */
+			TreeItem2 newFocusItem = availableItems[focusIndex - 1];
+			setFocusItem(newFocusItem, true);
+			showItem(newFocusItem);
+			redrawItem(newFocusItem.getAvailableIndex());
+			return;
 		}
 	} else {
 		// TODO study Shift behaviour

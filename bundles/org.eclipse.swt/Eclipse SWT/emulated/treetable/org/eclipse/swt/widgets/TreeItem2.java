@@ -810,8 +810,9 @@ public void setExpanded(boolean value) {
 		parent.redrawFromItemDownwards(availableIndex);
 	} else {
 		int oldAvailableLength = parent.getAvailableItemsCount();
+		TreeItem2[] descendents = computeAvailableDescendents();
 		isExpanded = value;
-		parent.makeDescendentsUnavailable(this, computeAvailableDescendents());
+		parent.makeDescendentsUnavailable(this, descendents);
 		/* move focus (and selection if SWT.SINGLE) to item if a descendent had focus */
 		TreeItem2 focusItem = parent.getFocusItem();
 		if (focusItem != null && focusItem != this && focusItem.hasAncestor(this)) {
