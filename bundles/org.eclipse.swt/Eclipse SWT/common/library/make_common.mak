@@ -1,4 +1,4 @@
 maj_ver=2
-min_ver=023
+min_ver=024
 bld_num=0
-comma_ver=2,0,2,3
+comma_ver=2,0,2,4
