@@ -460,7 +460,7 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
 }
 
 int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*long*/ new_text_length, int /*long*/ position) {
-	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
+//	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	if (new_text == 0 || new_text_length == 0) return 0;
 	byte [] buffer = new byte [(int)/*64*/new_text_length];
 	OS.memmove (buffer, new_text, buffer.length);
@@ -791,6 +791,12 @@ String verifyText (String string, int start, int end) {
 		}
 		OS.gdk_event_free (eventPtr);
 	}
+	int index = 0;
+	while (index < string.length ()) {
+		if (!Character.isDigit (string.charAt (index))) break;
+		index++;
+	}
+	event.doit = index == string.length ();
 	/*
 	 * It is possible (but unlikely), that application
 	 * code could have disposed the widget in the verify

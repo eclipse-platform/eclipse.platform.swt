@@ -37,6 +37,11 @@ import java.io.*;
  * </ul>
  */
 public final class Compatibility {
+
+/**
+ * Returns the PI constant as a double.
+ */
+public static double PI = (double)3.141592653589793;
 	
 /** 
  * Sine table
@@ -125,6 +130,25 @@ public static int ceil(int p, int q) {
 		return res;
 	else
 		return res + 1;
+}
+
+/**
+ * Answers the most positive (i.e. closest to positive infinity)
+ * integer value which is less than the number obtained by dividing
+ * the first argument p by the second argument q.
+ *
+ * @param p numerator
+ * @param q denominator (must be different from zero)
+ * @return the floor of the rational number p / q.
+ */
+public static int floor(int p, int q) {
+	int res = p / q;
+	if ((p % q == 0) ||
+		(res > 0) ||
+		((res == 0) && ((p > 0 && q > 0) || (p < 0 && q < 0))))
+		return res;
+	else
+		return res - 1;
 }
 
 /**

@@ -40,7 +40,12 @@ import org.eclipse.swt.SWT;
  */
 public final class Compatibility {
 
-static double toRadians = Math.PI / 180;
+/**
+ * Returns the PI constant as a double.
+ */
+public static double PI = Math.PI;
+
+static double toRadians = PI / 180;
 
 /**
  * Answers the length of the side adjacent to the given angle
@@ -87,6 +92,19 @@ public static int sin(int angle, int length) {
  */
 public static int ceil(int p, int q) {
 	return (int)Math.ceil((float)p / q);
+}
+
+/**
+ * Answers the most positive (i.e. closest to positive infinity)
+ * integer value which is less than the number obtained by dividing
+ * the first argument p by the second argument q.
+ *
+ * @param p numerator
+ * @param q denominator (must be different from zero)
+ * @return the floor of the rational number p / q.
+ */
+public static int floor(int p, int q) {
+	return (int)Math.floor((double)p / q);
 }
 
 /**
