@@ -515,6 +515,7 @@ public void setBackground (Color color) {
 		parent.customDraw = true;
 		pixel = color.handle;
 	}
+	if (background == pixel) return;
 	background = pixel;
 	redraw ();
 }
@@ -556,6 +557,7 @@ public void setBackground (int index, Color color) {
 			cellBackground [i] = -1;
 		}
 	}
+	if (cellBackground [index] == pixel) return;
 	cellBackground [index] = pixel;
 	redraw ();
 }
@@ -615,6 +617,7 @@ public void setFont (Font font){
 		parent.customDraw = true;
 		hFont = font.handle;
 	}
+	if (this.font == hFont) return;
 	this.font = hFont;
 	redraw ();
 }
@@ -656,6 +659,7 @@ public void setFont (int index, Font font) {
 			cellFont [i] = -1;
 		}
 	}
+	if (cellFont [index] == hFont) return;
 	cellFont [index] = hFont;
 	redraw ();
 }
@@ -687,6 +691,7 @@ public void setForeground (Color color){
 		parent.customDraw = true;
 		pixel = color.handle;
 	}
+	if (foreground == pixel) return;
 	foreground = pixel;
 	redraw ();
 }
@@ -728,6 +733,7 @@ public void setForeground (int index, Color color){
 			cellForeground [i] = -1;
 		}
 	}
+	if (cellForeground [index] == pixel) return;
 	cellForeground [index] = pixel;
 	redraw ();
 }

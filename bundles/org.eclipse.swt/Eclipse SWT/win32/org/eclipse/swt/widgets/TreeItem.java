@@ -506,6 +506,7 @@ public void setBackground (Color color) {
 		parent.customDraw = true;
 		pixel = color.handle;
 	}
+	if (background == pixel) return;
 	background = pixel;
 	redraw ();
 }
@@ -612,6 +613,7 @@ public void setFont (Font font){
 		parent.customDraw = true;
 		hFont = font.handle;
 	}
+	if (this.font == hFont) return;
 	this.font = hFont;
 	redraw ();
 }
@@ -646,6 +648,7 @@ public void setForeground (Color color) {
 		parent.customDraw = true;
 		pixel = color.handle;
 	}
+	if (foreground == pixel) return;
 	foreground = pixel;
 	redraw ();
 }
