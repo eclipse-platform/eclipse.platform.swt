@@ -202,6 +202,11 @@ public void setFilterPath (String string) {
 	filterPath = string;
 }
 void preset() {
+	if ((style & SWT.MULTI) != 0) {
+		OS.gtk_file_selection_set_select_multiple(handle, true);
+	} else {
+		OS.gtk_file_selection_set_select_multiple(handle, false);
+	}
 	/* Calculate the fully-specified file name and convert to bytes */
 	StringBuffer stringBuffer = new StringBuffer ();
 	if (filterPath == null) {

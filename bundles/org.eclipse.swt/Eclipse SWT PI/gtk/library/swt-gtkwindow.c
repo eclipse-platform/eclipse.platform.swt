@@ -302,6 +302,11 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1FILE_1SELECTION
     return (jint) (((GtkFileSelection*)fsd)->cancel_button);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1file_1selection_1set_1select_1multiple
+  (JNIEnv *env, jclass that, jint filesel, jboolean select_multiple)
+{
+	gtk_file_selection_set_select_multiple((GtkFileSelection*)filesel, (gboolean)select_multiple);
+}
 
 
 /*
