@@ -23,16 +23,21 @@ SWT_VERSION=$(maj_ver)$(min_ver)
 #    JAVA_HOME   - IBM's version of Java (J9)
 JAVA_HOME   = /bluebird/teamswt/swt-builddir/ive/bin
 
+#  mozilla source distribution folder
+MOZILLA_HOME = /mozilla/mozilla/1.4/linux_gtk2/mozilla/dist
+
 # Define the various shared libraries to be build.
 WS_PREFIX    		= gtk
 SWT_PREFIX   		= swt
 SWTPI_PREFIX   	= swt-pi
 ATK_PREFIX   		= swt-atk
 GNOME_PREFIX	= swt-gnome
+MOZILLA_PREFIX = swt-mozilla
 SWT_LIB			= lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 SWTPI_LIB		= lib$(SWTPI_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 ATK_LIB				= lib$(ATK_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 GNOME_LIB		= lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+MOZILLA_LIB 	= lib$(MOZILLA_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 
 GTKCFLAGS = `pkg-config --cflags gtk+-2.0`
 GTKLIBS = `pkg-config --libs gtk+-2.0 gthread-2.0`
@@ -43,10 +48,27 @@ ATKLIBS = `pkg-config --libs atk gtk+-2.0`
 GNOMECFLAGS = `pkg-config --cflags gnome-vfs-module-2.0`
 GNOMELIBS = `pkg-config --libs gnome-vfs-module-2.0`
 
+MOZILLACFLAGS = -O \
+	-fno-rtti	\
+	-Wall	\
+	-I./ \
+	-I$(JAVA_HOME)	\
+	-include $(MOZILLA_HOME)/include/mozilla-config.h \
+	-I$(MOZILLA_HOME)/include \
+	-I$(MOZILLA_HOME)/include/xpcom \
+	-I$(MOZILLA_HOME)/include/string \
+	-I$(MOZILLA_HOME)/include/nspr \
+	-I$(MOZILLA_HOME)/include/embed_base \
+	-I$(MOZILLA_HOME)/include/gfx
+MOZILLALIBS = -L$(MOZILLA_HOME)/lib -lembed_base_s -lxpcom
+# Specify the default location of supported Mozilla versions
+MOZILLALDFLAGS = -s -Xlinker -rpath -Xlinker /usr/lib/mozilla-1.4
+
 SWT_OBJECTS		= callback.o
 SWTPI_OBJECTS	= os.o os_structs.o os_custom.o
 ATK_OBJECTS			= atk.o atk_structs.o atk_custom.o
 GNOME_OBJECTS	= gnome.o
+MOZILLA_OBJECTS = xpcom.o
 
 CFLAGS = -O -Wall												\
 		-DSWT_VERSION=$(SWT_VERSION)		\
@@ -59,7 +81,7 @@ LIBS = -shared -fpic -fPIC
 #  Target Rules
 #
 
-all: make_swt make_atk make_gnome
+all: make_swt make_atk make_gnome make_mozilla
 
 #
 # SWT libs
@@ -107,6 +129,17 @@ $(GNOME_LIB): $(GNOME_OBJECTS)
 
 gnome.o: gnome.c 
 	$(CC) $(CFLAGS) $(GNOMECFLAGS) -c gnome.c
+
+#
+# Mozilla lib
+#
+make_mozilla:$(MOZILLA_LIB)
+
+$(MOZILLA_LIB): $(MOZILLA_OBJECTS)
+	$(CXX) $(LIBS) $(MOZILLALDFLAGS) -o $(MOZILLA_LIB) $(MOZILLA_OBJECTS) $(MOZILLALIBS)
+
+xpcom.o: xpcom.cpp
+	$(CXX) $(MOZILLACFLAGS) -c xpcom.cpp	
 
 #
 # Clean
