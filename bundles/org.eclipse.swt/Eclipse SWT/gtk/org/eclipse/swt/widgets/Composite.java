@@ -225,6 +225,7 @@ void createScrolledHandle (int parentHandle) {
 }
 
 void enableWidget (boolean enabled) {
+	//NOT DONE - take into account current enabled scroll bar state
 	if (scrolledHandle != 0) {
 		if (horizontalBar != null) {
 			int barHandle = OS.GTK_SCROLLED_WINDOW_HSCROLLBAR (scrolledHandle);
