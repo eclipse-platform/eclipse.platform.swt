@@ -257,9 +257,6 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 				yChange = keyval == OS.GDK_Up ? -stepSize : stepSize;
 			}
 			
-			int border = 0;
-			int x = OS.GTK_WIDGET_X (handle);
-			int y = OS.GTK_WIDGET_Y (handle);
 			int width = OS.GTK_WIDGET_WIDTH (handle);
 			int height = OS.GTK_WIDGET_HEIGHT (handle);
 			int parentBorder = 0;
