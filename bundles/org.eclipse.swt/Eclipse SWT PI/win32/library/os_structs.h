@@ -59,6 +59,18 @@ void setBROWSEINFOFields(JNIEnv *env, jobject lpObject, BROWSEINFO *lpStruct);
 #define BROWSEINFO_sizeof() 0
 #endif
 
+#ifndef NO_BUTTON_IMAGELIST
+void cacheBUTTON_IMAGELISTFields(JNIEnv *env, jobject lpObject);
+BUTTON_IMAGELIST *getBUTTON_IMAGELISTFields(JNIEnv *env, jobject lpObject, BUTTON_IMAGELIST *lpStruct);
+void setBUTTON_IMAGELISTFields(JNIEnv *env, jobject lpObject, BUTTON_IMAGELIST *lpStruct);
+#define BUTTON_IMAGELIST_sizeof() sizeof(BUTTON_IMAGELIST)
+#else
+#define cacheBUTTON_IMAGELISTFields(a,b)
+#define getBUTTON_IMAGELISTFields(a,b,c) NULL
+#define setBUTTON_IMAGELISTFields(a,b,c)
+#define BUTTON_IMAGELIST_sizeof() 0
+#endif
+
 #ifndef NO_CHOOSECOLOR
 void cacheCHOOSECOLORFields(JNIEnv *env, jobject lpObject);
 CHOOSECOLOR *getCHOOSECOLORFields(JNIEnv *env, jobject lpObject, CHOOSECOLOR *lpStruct);

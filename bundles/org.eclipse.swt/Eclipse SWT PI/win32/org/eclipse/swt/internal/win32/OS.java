@@ -165,6 +165,13 @@ public class OS extends Platform {
 	public static final int BI_BITFIELDS = 3;
 	public static final int BI_RGB = 0;
 	public static final int BLACKNESS = 0x42;
+	public static final int BCM_FIRST = 0x1600;
+	public static final int BCM_GETIDEALSIZE = BCM_FIRST + 0x1;
+	public static final int BCM_GETIMAGELIST = BCM_FIRST + 0x3;
+	public static final int BCM_SETIMAGELIST = BCM_FIRST + 0x2;
+	public static final int BUTTON_IMAGELIST_ALIGN_LEFT = 0;
+	public static final int BUTTON_IMAGELIST_ALIGN_RIGHT = 1;
+	public static final int BUTTON_IMAGELIST_ALIGN_CENTER = 4;
 	public static final int BM_CLICK = 0xf5;
 	public static final int BM_GETCHECK = 0xf0;
 	public static final int BM_SETCHECK = 0xf1;
@@ -2110,6 +2117,11 @@ public static final int SendMessage (int hWnd, int Msg, int [] wParam, int [] lP
 	return SendMessageA (hWnd, Msg, wParam, lParam);
 }
 
+public static final int SendMessage (int hWnd, int Msg, int wParam, SIZE lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
 public static final int SendMessage (int hWnd, int Msg, int [] wParam, int lParam) {
 	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
 	return SendMessageA (hWnd, Msg, wParam, lParam);
@@ -2206,6 +2218,11 @@ public static final int SendMessage (int hWnd, int Msg, int wParam, HDITEM lPara
 }
 
 public static final int SendMessage (int hWnd, int Msg, int wParam, HDLAYOUT lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final int SendMessage (int hWnd, int Msg, int wParam, BUTTON_IMAGELIST lParam) {
 	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
 	return SendMessageA (hWnd, Msg, wParam, lParam);
 }
@@ -2806,6 +2823,8 @@ public static final native int SendMessageW (int hWnd, int Msg, int wParam, TVIT
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, UDACCEL lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, HDITEM lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, HDLAYOUT lParam);
+public static final native int SendMessageW (int hWnd, int Msg, int wParam, BUTTON_IMAGELIST lParam);
+public static final native int SendMessageW (int hWnd, int Msg, int wParam, SIZE lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int [] wParam, int [] lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int [] wParam, int lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, byte [] lParam);
@@ -2828,6 +2847,8 @@ public static final native int SendMessageA (int hWnd, int Msg, int wParam, TVIT
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, UDACCEL lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, HDITEM lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, HDLAYOUT lParam);
+public static final native int SendMessageA (int hWnd, int Msg, int wParam, BUTTON_IMAGELIST lParam);
+public static final native int SendMessageA (int hWnd, int Msg, int wParam, SIZE lParam);
 public static final native int SetActiveWindow (int hWnd);
 public static final native int SetBkColor (int hdc, int colorRef);
 public static final native int SetBkMode (int hdc, int mode);

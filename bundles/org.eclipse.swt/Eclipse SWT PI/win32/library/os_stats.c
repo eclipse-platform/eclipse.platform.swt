@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 623;
-int OS_nativeFunctionCallCount[623];
+int OS_nativeFunctionCount = 627;
+int OS_nativeFunctionCallCount[627];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateKeyboardLayout",
@@ -505,6 +505,7 @@ char * OS_nativeFunctionNames[] = {
 	"SelectPalette",
 	"SendInput",
 	"SendMessageA__IIII",
+	"SendMessageA__IIILorg_eclipse_swt_internal_win32_BUTTON_1IMAGELIST_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_HDITEM_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_HDLAYOUT_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_LVCOLUMN_2",
@@ -513,6 +514,7 @@ char * OS_nativeFunctionNames[] = {
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_MARGINS_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_REBARBANDINFO_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_RECT_2",
+	"SendMessageA__IIILorg_eclipse_swt_internal_win32_SIZE_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_TBBUTTONINFO_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_TBBUTTON_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_TCITEM_2",
@@ -527,6 +529,7 @@ char * OS_nativeFunctionNames[] = {
 	"SendMessageA__II_3II",
 	"SendMessageA__II_3I_3I",
 	"SendMessageW__IIII",
+	"SendMessageW__IIILorg_eclipse_swt_internal_win32_BUTTON_1IMAGELIST_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_HDITEM_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_HDLAYOUT_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_LVCOLUMN_2",
@@ -535,6 +538,7 @@ char * OS_nativeFunctionNames[] = {
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_MARGINS_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_REBARBANDINFO_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_RECT_2",
+	"SendMessageW__IIILorg_eclipse_swt_internal_win32_SIZE_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_TBBUTTONINFO_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_TBBUTTON_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_TCITEM_2",

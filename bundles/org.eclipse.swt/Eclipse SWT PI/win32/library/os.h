@@ -12,15 +12,6 @@
 #ifndef INC_os_H
 #define INC_os_H
 
-#define WINVER 0x0500
-#define _WIN32_IE 0x0500
-
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
-#define VC_EXTRALEAN
-
 #include <windows.h>
 #include <winuser.h>
 #include <commctrl.h>
@@ -55,6 +46,7 @@
 /* Structs excludes */
 #ifdef _WIN32_WCE
 #define NO_BROWSEINFO
+#define NO_BUTTON_IMAGELIST
 #define NO_CHOOSEFONT
 #define NO_COMBOBOXINFO
 #define NO_DOCINFO
@@ -315,6 +307,7 @@
 #define NO_SHBrowseForFolderW
 #define NO_SHGetPathFromIDListA
 #define NO_SHGetPathFromIDListW
+#define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_BUTTON_1IMAGELIST_2
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_TVITEM_2
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_TVINSERTSTRUCT_2
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_TVHITTESTINFO_2
@@ -331,12 +324,14 @@
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_UDACCEL_2
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_HDITEM_2
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_HDLAYOUT_2
+#define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_SIZE_2
 #define NO_SendMessageA__IIII
 #define NO_SendMessageA__III_3S
 #define NO_SendMessageA__III_3I
 #define NO_SendMessageA__III_3B
 #define NO_SendMessageA__II_3II
 #define NO_SendMessageA__II_3I_3I
+#define NO_SendMessageW__IIILorg_eclipse_swt_internal_win32_BUTTON_1IMAGELIST_2
 #define NO_SendMessageW__IIILorg_eclipse_swt_internal_win32_MARGINS_2
 #define NO_SendMessageW__IIILorg_eclipse_swt_internal_win32_TOOLINFO_2
 #define NO_SetDIBColorTable

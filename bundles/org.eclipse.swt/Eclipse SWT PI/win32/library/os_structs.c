@@ -211,6 +211,52 @@ void setBROWSEINFOFields(JNIEnv *env, jobject lpObject, BROWSEINFO *lpStruct)
 }
 #endif
 
+#ifndef NO_BUTTON_IMAGELIST
+typedef struct BUTTON_IMAGELIST_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID himl, margin_left, margin_top, margin_right, margin_bottom, uAlign;
+} BUTTON_IMAGELIST_FID_CACHE;
+
+BUTTON_IMAGELIST_FID_CACHE BUTTON_IMAGELISTFc;
+
+void cacheBUTTON_IMAGELISTFields(JNIEnv *env, jobject lpObject)
+{
+	if (BUTTON_IMAGELISTFc.cached) return;
+	BUTTON_IMAGELISTFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	BUTTON_IMAGELISTFc.himl = (*env)->GetFieldID(env, BUTTON_IMAGELISTFc.clazz, "himl", "I");
+	BUTTON_IMAGELISTFc.margin_left = (*env)->GetFieldID(env, BUTTON_IMAGELISTFc.clazz, "margin_left", "I");
+	BUTTON_IMAGELISTFc.margin_top = (*env)->GetFieldID(env, BUTTON_IMAGELISTFc.clazz, "margin_top", "I");
+	BUTTON_IMAGELISTFc.margin_right = (*env)->GetFieldID(env, BUTTON_IMAGELISTFc.clazz, "margin_right", "I");
+	BUTTON_IMAGELISTFc.margin_bottom = (*env)->GetFieldID(env, BUTTON_IMAGELISTFc.clazz, "margin_bottom", "I");
+	BUTTON_IMAGELISTFc.uAlign = (*env)->GetFieldID(env, BUTTON_IMAGELISTFc.clazz, "uAlign", "I");
+	BUTTON_IMAGELISTFc.cached = 1;
+}
+
+BUTTON_IMAGELIST *getBUTTON_IMAGELISTFields(JNIEnv *env, jobject lpObject, BUTTON_IMAGELIST *lpStruct)
+{
+	if (!BUTTON_IMAGELISTFc.cached) cacheBUTTON_IMAGELISTFields(env, lpObject);
+	lpStruct->himl = (HIMAGELIST)(*env)->GetIntField(env, lpObject, BUTTON_IMAGELISTFc.himl);
+	lpStruct->margin.left = (LONG)(*env)->GetIntField(env, lpObject, BUTTON_IMAGELISTFc.margin_left);
+	lpStruct->margin.top = (LONG)(*env)->GetIntField(env, lpObject, BUTTON_IMAGELISTFc.margin_top);
+	lpStruct->margin.right = (LONG)(*env)->GetIntField(env, lpObject, BUTTON_IMAGELISTFc.margin_right);
+	lpStruct->margin.bottom = (LONG)(*env)->GetIntField(env, lpObject, BUTTON_IMAGELISTFc.margin_bottom);
+	lpStruct->uAlign = (UINT)(*env)->GetIntField(env, lpObject, BUTTON_IMAGELISTFc.uAlign);
+	return lpStruct;
+}
+
+void setBUTTON_IMAGELISTFields(JNIEnv *env, jobject lpObject, BUTTON_IMAGELIST *lpStruct)
+{
+	if (!BUTTON_IMAGELISTFc.cached) cacheBUTTON_IMAGELISTFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, BUTTON_IMAGELISTFc.himl, (jint)lpStruct->himl);
+	(*env)->SetIntField(env, lpObject, BUTTON_IMAGELISTFc.margin_left, (jint)lpStruct->margin.left);
+	(*env)->SetIntField(env, lpObject, BUTTON_IMAGELISTFc.margin_top, (jint)lpStruct->margin.top);
+	(*env)->SetIntField(env, lpObject, BUTTON_IMAGELISTFc.margin_right, (jint)lpStruct->margin.right);
+	(*env)->SetIntField(env, lpObject, BUTTON_IMAGELISTFc.margin_bottom, (jint)lpStruct->margin.bottom);
+	(*env)->SetIntField(env, lpObject, BUTTON_IMAGELISTFc.uAlign, (jint)lpStruct->uAlign);
+}
+#endif
+
 #ifndef NO_CHOOSECOLOR
 typedef struct CHOOSECOLOR_FID_CACHE {
 	int cached;
