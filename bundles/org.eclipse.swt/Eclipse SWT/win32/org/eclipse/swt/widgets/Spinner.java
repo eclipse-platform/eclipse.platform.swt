@@ -16,25 +16,23 @@ import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
-/* DO NOT USE - UNDER CONSTRUCTION */
-
 /**
  * Instances of this class are selectable user interface
- * objects that allow the user to enter and modify number
+ * objects that allow the user to enter and modify numeric
+ * values.
  * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>READ_ONLY, WRAP</dd>
+ * <dd>READ_ONLY</dd>
  * <dt><b>Events:</b></dt>
- * <dd>Selection, Modify</dd>
+ * <dd>Selection, Modify, Verify</dd>
  * </dl>
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
 class Spinner extends Composite {
-	int hwndText;
-	int hwndUpDown;
+	int hwndText, hwndUpDown;
 	boolean ignoreModify;
 	int increment, pageIncrement;
 	static final int EditProc;
@@ -104,10 +102,8 @@ static int checkStyle (int style) {
 	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
 }
 
-boolean checkHandle (int handle) {
-	if (hwndText == handle) return true;
-	if (hwndUpDown == handle) return true;
-	return super.checkHandle (handle);
+boolean checkHandle (int hwnd) {
+	return hwnd == hwndText || hwnd == hwndUpDown || hwnd == handle;
 }
 
 protected void checkSubclass () {
@@ -117,8 +113,7 @@ protected void checkSubclass () {
 void createHandle () {
 	super.createHandle ();
 	state &= ~CANVAS;
-	int hwndParent = handle;
-	int hInstance = OS.GetModuleHandle(null);
+	int hInstance = OS.GetModuleHandle (null);
 	int textExStyle = (style & SWT.BORDER) != 0 ? OS.WS_EX_CLIENTEDGE : 0;
 	int textStyle = OS.WS_CHILD | OS.WS_VISIBLE | OS.ES_AUTOHSCROLL;
 	if ((style & SWT.READ_ONLY) != 0) textStyle |= OS.ES_READONLY;
@@ -128,20 +123,19 @@ void createHandle () {
         null,
         textStyle,
         0, 0, 0, 0,
-        hwndParent,
+        handle,
         0,
         hInstance,
         null);
 	if (hwndText == 0) error (SWT.ERROR_NO_HANDLES);
-	int upDownStyle = OS.WS_CHILD | OS.WS_VISIBLE | OS.UDS_AUTOBUDDY;
-	if ((style & SWT.WRAP) != 0) upDownStyle |= OS.UDS_WRAP;
+	int upDownStyle = OS.WS_CHILD | OS.WS_VISIBLE | OS.UDS_AUTOBUDDY | OS.UDS_WRAP;
 	hwndUpDown = OS.CreateWindowEx (
         0,
         UpDownClass,
         null,
         upDownStyle,
         0, 0, 0, 0,
-        hwndParent,
+        handle,
         0,
         hInstance,
         null);
@@ -249,15 +243,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
 		OS.GetTextMetrics (hDC, tm);
 		height = tm.tmHeight;
-		int length = OS.GetWindowTextLength (hwndText);
-		if (length != 0) {
-			RECT rect = new RECT ();
-			TCHAR buffer = new TCHAR (getCodePage (), length + 1);
-			OS.GetWindowText (hwndText, buffer, length + 1);
-			int flags = OS.DT_CALCRECT | OS.DT_EDITCONTROL | OS.DT_NOPREFIX;
-			OS.DrawText (hDC, buffer, length, rect, flags);
-			width = rect.right - rect.left;
-		}
+		RECT rect = new RECT ();
+		int [] max = new int [1];
+		OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, null, max);
+		TCHAR buffer = new TCHAR (getCodePage (), String.valueOf (max [0]), false);
+		int flags = OS.DT_CALCRECT | OS.DT_EDITCONTROL | OS.DT_NOPREFIX;
+		OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
+		width = rect.right - rect.left;
 		if (newFont != 0) OS.SelectObject (hDC, oldFont);
 		OS.ReleaseDC (hwndText, hDC);
 	}
@@ -267,18 +259,20 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (hHint != SWT.DEFAULT) height = hHint;
 	Rectangle trim = computeTrim (0, 0, width, height);
 	if (hHint == SWT.DEFAULT) {
-		trim.height = Math.max (trim.height, OS.GetSystemMetrics(OS.SM_CYVSCROLL));
+		trim.height = Math.max (trim.height, OS.GetSystemMetrics (OS.SM_CYVSCROLL));
 	}
 	return new Point (trim.width, trim.height);
 }
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
-	/* Do not use super.computeTrim (), it operates on the wrong handle */
+	
+	/* Get the trim of the text control */
 	RECT rect = new RECT ();
 	OS.SetRect (rect, x, y, x + width, y + height);
-	int bits = OS.GetWindowLong (hwndText, OS.GWL_STYLE);
-	OS.AdjustWindowRectEx (rect, bits, false, OS.GetWindowLong (hwndText, OS.GWL_EXSTYLE));
+	int bits0 = OS.GetWindowLong (hwndText, OS.GWL_STYLE);
+	int bits1 = OS.GetWindowLong (hwndText, OS.GWL_EXSTYLE);
+	OS.AdjustWindowRectEx (rect, bits0, false, bits1);
 	width = rect.right - rect.left;
 	height = rect.bottom - rect.top;
 	
@@ -345,14 +339,6 @@ void deregister () {
 	display.removeControl (hwndUpDown);
 }
 
-void destroyWidget () {
-	int handleText = hwndText;
-	int handleUpDown = hwndUpDown;
-	super.destroyWidget ();
-	if (handleText != 0) OS.DestroyWindow (handleText);
-	if (handleUpDown != 0) OS.DestroyWindow (handleUpDown);
-}
-
 boolean hasFocus () {
 	int hwndFocus = OS.GetFocus ();
 	if (hwndFocus == handle) return true;
@@ -389,8 +375,8 @@ public int getIncrement () {
  */
 public int getMaximum () {
 	checkWidget ();
-	int [] max = new int [1], min = new int [1];
-	OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, min, max);
+	int [] max = new int [1];
+	OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, null, max);
 	return max [0];
 }
 
@@ -406,8 +392,8 @@ public int getMaximum () {
  */
 public int getMinimum () {
 	checkWidget ();
-	int [] max = new int [1], min = new int [1];
-	OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, min, max);
+	int [] min = new int [1];
+	OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, min, null);
 	return min [0];
 }
 
@@ -440,13 +426,11 @@ public int getPageIncrement () {
  */
 public int getSelection () {
 	checkWidget ();
-	int pos;
 	if (OS.IsWinCE) {
-		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xffff;
+		return OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xFFFF;
 	} else {
-		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
+		return OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 	}
-	return pos;
 }
 
 int mbcsToWcsPos (int mbcsPos) {
@@ -572,7 +556,7 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 		return true;
 	}
 	if (event.character == 0) return true;
-	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return true;
+//	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return true;
 	char key = event.character;
 	int stateMask = event.stateMask;
 	
@@ -636,7 +620,7 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 			oldText = new String (new char [] {key});
 			break;
 	}
-	String newText = verifyText (oldText, start [0], end [0], event);
+	String newText = verifyText (oldText, start [0], end [0], event, true);
 	if (newText == null) return false;
 	if (newText == oldText) return true;
 	TCHAR buffer = new TCHAR (getCodePage (), newText, true);
@@ -691,17 +675,18 @@ public void setIncrement (int value) {
  */
 public void setMaximum (int value) {
 	checkWidget ();
-	int [] max = new int [1], min = new int [1];
-	OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, min, max);
+	if (value < 0) return;
+	int [] min = new int [1];
+	OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, min, null);
 	if (value <= min [0]) return;
 	OS.SendMessage (hwndUpDown , OS.UDM_SETRANGE32, min [0], value);	
 	int pos;
 	if (OS.IsWinCE) {
-		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xffff;
+		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xFFFF;
 	} else {
 		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 	}
-	update (pos, false, false);
+	if (pos > value) setSelection (value, false, false);
 }
 
 /**
@@ -719,17 +704,18 @@ public void setMaximum (int value) {
  */
 public void setMinimum (int value) {
 	checkWidget ();
-	int [] max = new int [1], min = new int [1];
-	OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, min, max);
+	if (value < 0) return;
+	int [] max = new int [1];
+	OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, null, max);
 	if (value >= max [0]) return;
 	OS.SendMessage (hwndUpDown , OS.UDM_SETRANGE32, value, max [0]);
 	int pos;
 	if (OS.IsWinCE) {
-		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xffff;
+		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xFFFF;
 	} else {
 		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 	}
-	update (pos, false, false);
+	if (pos < value) setSelection (value, false, false);
 }
 
 /**
@@ -765,7 +751,25 @@ public void setPageIncrement (int value) {
  */
 public void setSelection (int value) {
 	checkWidget ();
-	update (value, false, false);
+	setSelection (value, true, false);
+}
+
+int setSelection (int value, boolean clamp, boolean notify) {
+	if (clamp) {
+		int [] max = new int [1], min = new int [1];
+		OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, min, max);
+		value = Math.min (Math.max (min [0], value), max [0]);
+	}
+	OS.SendMessage (hwndUpDown , OS.IsWinCE ? OS.UDM_SETPOS : OS.UDM_SETPOS32, 0, value);
+	String oldText = String.valueOf (value);
+	int length = OS.GetWindowTextLength (hwndText);
+	String newText = verifyText (oldText, 0, length, null, false);
+	if (newText != null) {
+		TCHAR buffer = new TCHAR (getCodePage (), newText, true);
+		OS.SetWindowText (hwndText, buffer);
+	}
+	if (notify) postEvent (SWT.Selection);
+	return value;
 }
 
 void subclass () {
@@ -781,38 +785,7 @@ void unsubclass () {
 	OS.SetWindowLong (hwndUpDown, OS.GWL_WNDPROC, UpDownProc);
 }
 
-int update (int value, boolean notify, boolean force) {
-	int [] max = new int [1], min = new int [1];
-	OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, min, max);
-	if (value < min [0]) {
-		value = (style & SWT.WRAP) != 0 ? max [0] : min [0];
-	}
-	if (value > max [0]) {
-		value = (style & SWT.WRAP) != 0 ? min [0] : max [0];
-	}
-	int pos;
-	if (OS.IsWinCE) {
-		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xffff;
-	} else {
-		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
-	}
-	if (pos != value || force) {
-		OS.SendMessage (hwndUpDown , OS.IsWinCE ? OS.UDM_SETPOS : OS.UDM_SETPOS32, 0, value);
-		String string = String.valueOf (value);
-		int length = OS.GetWindowTextLength (hwndText);
-		string = verifyText (string, 0, length, null);
-		if (string != null) {
-			TCHAR buffer = new TCHAR (getCodePage (), string, true);
-			OS.SetWindowText (hwndText, buffer);
-		}
-		if (notify) {
-			postEvent (SWT.Selection);
-		}
-	}
-	return value;
-}
-
-String verifyText (String string, int start, int end, Event keyEvent) {
+String verifyText (String string, int start, int end, Event keyEvent, boolean empty) {
 	Event event = new Event ();
 	event.text = string;
 	event.start = start;
@@ -826,21 +799,33 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		event.start = mbcsToWcsPos (start);
 		event.end = mbcsToWcsPos (end);
 	}
-	/*
-	* It is possible (but unlikely), that application
-	* code could have disposed the widget in the verify
-	* event.  If this happens, answer null to cancel
-	* the operation.
-	*/
+
+	/* Set the doit flag */
+	int length = OS.GetWindowTextLength (hwndText);
+	TCHAR buffer = new TCHAR (getCodePage (), length + 1);
+	OS.GetWindowText (hwndText, buffer, length + 1);
+	String oldText = buffer.toString (0, length);
+	String leftText = oldText.substring (0, start);
+	String rightText = oldText.substring (end, oldText.length ());
+	String newText = leftText + event.text + rightText;
+	if (!empty || newText.length () != 0) {
+		try {
+			int value = Integer.parseInt (newText);
+			int [] max = new int [1], min = new int [1];
+			OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, min, max);
+			event.doit = min [0] <= value && value <= max [0];
+		} catch (NumberFormatException e) {
+			event.doit = false;
+		}
+	}
+	
 	sendEvent (SWT.Verify, event);
 	if (!event.doit || isDisposed ()) return null;
 	return event.text;
 }
 
 int widgetExtStyle () {
-	int bits = super.widgetExtStyle();
-	/* Set border only around the edit control */
-	return bits & ~OS.WS_EX_CLIENTEDGE;
+	return super.widgetExtStyle () & ~OS.WS_EX_CLIENTEDGE;
 }
 
 int windowProc (int hwnd, int msg, int wParam, int lParam) {
@@ -866,7 +851,7 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 			case OS.WM_MOUSEHOVER:		result = wmMouseHover (hwnd, wParam, lParam); break;
 			case OS.WM_MOUSELEAVE:		result = wmMouseLeave (hwnd, wParam, lParam); break;
 			case OS.WM_MOUSEMOVE:		result = wmMouseMove (hwnd, wParam, lParam); break;
-	//		case OS.WM_MOUSEWHEEL:		result = wmMouseWheel (hwnd, wParam, lParam); break;
+//			case OS.WM_MOUSEWHEEL:		result = wmMouseWheel (hwnd, wParam, lParam); break;
 			case OS.WM_RBUTTONDBLCLK:	result = wmRButtonDblClk (hwnd, wParam, lParam); break;
 			case OS.WM_RBUTTONDOWN:		result = wmRButtonDown (hwnd, wParam, lParam); break;
 			case OS.WM_RBUTTONUP:		result = wmRButtonUp (hwnd, wParam, lParam); break;
@@ -880,8 +865,6 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 	
 			/* Menu messages */
 			case OS.WM_CONTEXTMENU:		result = wmContextMenu (hwnd, wParam, lParam);
-	//		case OS.WM_MENUCHAR:		result = WM_MENUCHAR (wParam, lParam); break;
-	//		case OS.WM_MENUSELECT:		result = WM_MENUSELECT (wParam, lParam); break;
 				
 			/* Clipboard messages */
 			case OS.WM_CLEAR:
@@ -889,7 +872,6 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 			case OS.WM_PASTE:
 			case OS.WM_UNDO:
 			case OS.EM_UNDO:
-			case OS.WM_SETTEXT:
 				if (hwnd == hwndText) {
 					result = wmClipboard (hwnd, msg, wParam, lParam);
 				}
@@ -899,6 +881,13 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 		return callWindowProc (hwnd, msg, wParam, lParam);
 	}
 	return super.windowProc (hwnd, msg, wParam, lParam);
+}
+
+LRESULT WM_ERASEBKGND (int wParam, int lParam) {
+	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
+	if (result != null) return result;
+	drawBackground (wParam);
+	return LRESULT.ONE;
 }
 
 LRESULT WM_KILLFOCUS (int wParam, int lParam) {
@@ -919,17 +908,8 @@ LRESULT WM_SETFONT (int wParam, int lParam) {
 
 LRESULT WM_SIZE (int wParam, int lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
-	/*
-	* It is possible (but unlikely), that application
-	* code could have disposed the widget in the resize
-	* event.  If this happens, end the processing of the
-	* Windows message by returning the result of the
-	* WM_SIZE message.
-	*/
 	if (isDisposed ()) return result;
-	
-	int width = lParam & 0xFFFF;
-	int height = lParam >> 16;
+	int width = lParam & 0xFFFF, height = lParam >> 16;
     int upDownWidth = OS.GetSystemMetrics (OS.SM_CXVSCROLL);
     int textWidth = width - upDownWidth;
     int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;    
@@ -960,7 +940,7 @@ LRESULT wmChar (int hwnd, int wParam, int lParam) {
 
 LRESULT wmClipboard (int hwndText, int msg, int wParam, int lParam) {
 	if ((style & SWT.READ_ONLY) != 0) return null;
-	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return null;
+//	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return null;
 	boolean call = false;
 	int [] start = new int [1], end = new int [1];
 	String oldText = null, newText = null;
@@ -987,7 +967,6 @@ LRESULT wmClipboard (int hwndText, int msg, int wParam, int lParam) {
 					end [0] = mbcsToWcsPos (end [0]);
 				}
 				OS.CallWindowProc (EditProc, hwndText, msg, wParam, lParam);
-//				newText = getSelectionText ();
 				int length = OS.GetWindowTextLength (hwndText);
 				if (length != 0 && start [0] != end [0]) {
 					TCHAR buffer = new TCHAR (getCodePage (), length + 1);
@@ -1000,26 +979,10 @@ LRESULT wmClipboard (int hwndText, int msg, int wParam, int lParam) {
 				ignoreModify = false;
 			}
 			break;
-		case OS.WM_SETTEXT:
-			end [0] = OS.GetWindowTextLength (hwndText);
-			//oldText = getText ();
-			if (end [0] != 0) {
-				TCHAR buffer = new TCHAR (getCodePage (), end [0] + 1);
-				OS.GetWindowText (hwndText, buffer, end [0] + 1);
-				oldText = buffer.toString (0, end [0]);
-			} else {
-				oldText = "";
-			}
-			int length = OS.IsUnicode ? OS.wcslen (lParam) : OS.strlen (lParam);
-			TCHAR buffer = new TCHAR (getCodePage (), length);
-			int byteCount = buffer.length () * TCHAR.sizeof;
-			OS.MoveMemory (buffer, lParam, byteCount);
-			newText = buffer.toString (0, length);
-			break;
 	}
 	if (newText != null && !newText.equals (oldText)) {
 		oldText = newText;
-		newText = verifyText (newText, start [0], end [0], null);
+		newText = verifyText (newText, start [0], end [0], null, false);
 		if (newText == null) return LRESULT.ZERO;
 		if (!newText.equals (oldText)) {
 			if (call) {
@@ -1048,13 +1011,6 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 	switch (code) {
 		case OS.EN_CHANGE:
 			if (ignoreModify) break;
-			/*
-			* It is possible (but unlikely), that application
-			* code could have disposed the widget in the modify
-			* event.  If this happens, end the processing of the
-			* Windows message by returning zero as the result of
-			* the window proc.
-			*/
 			sendEvent (SWT.Modify);
 			if (isDisposed ()) return LRESULT.ZERO;
 			break;
@@ -1067,25 +1023,35 @@ LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
 	if (result != null) return result;
 	int pos;
 	if (OS.IsWinCE) {
-		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xffff;
+		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xFFFF;
 	} else {
 		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 	}
 	switch (wParam) {
 		case OS.VK_UP:
-			update (pos + increment, true, false);
+			setSelection (pos + increment, true, true);
 			break;
 		case OS.VK_DOWN:
-			update (pos - increment, true, false);
+			setSelection (pos - increment, true, true);
 			break;
 		case OS.VK_PRIOR:
-			update (pos + pageIncrement, true, false);
+			setSelection (pos + pageIncrement, true, true);
 			break;
 		case OS.VK_NEXT:
-			update (pos - pageIncrement, true, false);
+			setSelection (pos - pageIncrement, true, true);
 			break;
 	}
 	return result;
+}
+
+LRESULT wmKillFocus (int hwnd, int wParam, int lParam) {
+	int length = OS.GetWindowTextLength (hwndText);
+	if (length == 0) {
+		int [] min = new int [1];
+		OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, min, null);
+		setSelection (min [0], false, true);
+	}
+	return super.wmKillFocus (hwnd, wParam, lParam);
 }
 
 LRESULT wmScrollChild (int wParam, int lParam) {
@@ -1094,11 +1060,11 @@ LRESULT wmScrollChild (int wParam, int lParam) {
 		case OS.SB_THUMBPOSITION:
 			int pos;
 			if (OS.IsWinCE) {
-				pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xffff;
+				pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xFFFF;
 			} else {
 				pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 			}
-			update (pos, true, true);
+			setSelection (pos, true, true);
 			break;
 	}
 	return super.wmScrollChild (wParam, lParam);
