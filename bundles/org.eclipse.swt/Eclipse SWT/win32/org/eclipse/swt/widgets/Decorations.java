@@ -1481,7 +1481,7 @@ LRESULT WM_HOTKEY (int wParam, int lParam) {
 }
 
 LRESULT WM_KILLFOCUS (int wParam, int lParam) {
-	LRESULT result  = super.WM_KILLFOCUS (wParam, lParam);
+	LRESULT result = super.WM_KILLFOCUS (wParam, lParam);
 	saveFocus ();
 	return result;
 }
