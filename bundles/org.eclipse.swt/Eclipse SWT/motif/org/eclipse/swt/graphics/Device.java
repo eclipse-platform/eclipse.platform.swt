@@ -666,7 +666,7 @@ public void setWarnings (boolean warnings) {
 }
 
 int xErrorProc (int xDisplay, int xErrorEvent) {
-	if (debug && warnings) {
+	if (DEBUG || (debug && warnings)) {
 		new SWTError ().printStackTrace ();
 		OS.Call (xErrorProc, xDisplay, xErrorEvent);
 	}
@@ -674,7 +674,7 @@ int xErrorProc (int xDisplay, int xErrorEvent) {
 }
 
 int xIOErrorProc (int xDisplay) {
-	if (debug) {
+	if (DEBUG || debug) {
 		new SWTError ().printStackTrace ();
 		OS.Call (xIOErrorProc, xDisplay, 0);
 	}
@@ -682,7 +682,7 @@ int xIOErrorProc (int xDisplay) {
 }
 
 int xtErrorProc (int message) {
-	if (debug) {
+	if (DEBUG || debug) {
 		new SWTError ().printStackTrace ();
 		OS.Call (xtErrorProc, message, 0);
 	}
@@ -690,7 +690,7 @@ int xtErrorProc (int message) {
 }
 
 int xtWarningProc (int message) {
-	if (debug && warnings) {
+	if (DEBUG || (debug && warnings)) {
 		new SWTError ().printStackTrace ();
 		OS.Call (xtWarningProc, message, 0);
 	}
