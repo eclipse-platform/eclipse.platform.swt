@@ -193,8 +193,8 @@ void createScrolledHandle (int parentHandle) {
 		
 		OS.gtk_widget_show (fixedHandle);
 		OS.gtk_widget_show (scrolledHandle);
-		int hsp = (style & SWT.H_SCROLL) == 0 ? OS.GTK_POLICY_NEVER : OS.GTK_POLICY_ALWAYS;
-		int vsp = (style & SWT.V_SCROLL) == 0 ? OS.GTK_POLICY_NEVER : OS.GTK_POLICY_ALWAYS;
+		int hsp = (style & SWT.H_SCROLL) != 0 ? OS.GTK_POLICY_ALWAYS : OS.GTK_POLICY_NEVER;
+		int vsp = (style & SWT.V_SCROLL) != 0 ? OS.GTK_POLICY_ALWAYS : OS.GTK_POLICY_NEVER;
 		OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
 		//CHECK WIDTH IS THERE ALREADY THEN DON'T SET
 		if ((style & SWT.BORDER) != 0) {

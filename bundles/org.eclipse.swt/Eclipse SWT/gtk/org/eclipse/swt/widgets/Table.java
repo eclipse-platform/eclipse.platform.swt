@@ -203,9 +203,9 @@ void createHandle (int index) {
 	}
 
 	/* Scrolling policy */
-	int hscrollbar_policy = (style & SWT.H_SCROLL) != 0 ? OS.GTK_POLICY_ALWAYS : OS.GTK_POLICY_AUTOMATIC;
-	int vscrollbar_policy = (style & SWT.V_SCROLL) != 0 ? OS.GTK_POLICY_ALWAYS : OS.GTK_POLICY_AUTOMATIC;
-	OS.gtk_scrolled_window_set_policy (scrolledHandle, hscrollbar_policy, vscrollbar_policy);		
+	int hsp = (style & SWT.H_SCROLL) != 0 ? OS.GTK_POLICY_AUTOMATIC : OS.GTK_POLICY_NEVER;
+	int vsp = (style & SWT.V_SCROLL) != 0 ? OS.GTK_POLICY_AUTOMATIC : OS.GTK_POLICY_NEVER;
+	OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
 
 	if ((style & SWT.CHECK) != 0) {
 		OS.gtk_widget_realize (handle);
