@@ -171,8 +171,15 @@ void createWidget () {
 
 void destroyWidget () {
 	int hwnd = hwndScrollBar (), type = scrollBarType ();
-	if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
-	OS.ShowScrollBar (hwnd, type, false);
+	if (OS.IsWinCE) {
+		/*
+		* This line is intentionally commented.  Currently
+		* always show scrollbar as being enabled and visible.
+		*/
+		// error (SWT.ERROR_NOT_IMPLEMENTED);
+	} else {
+		OS.ShowScrollBar (hwnd, type, false);
+	}
 }
 
 /*
@@ -519,8 +526,15 @@ public void setEnabled (boolean enabled) {
 	int hwnd = hwndScrollBar (), type = scrollBarType ();
 	int flags = OS.ESB_DISABLE_BOTH;
 	if (enabled) flags = OS.ESB_ENABLE_BOTH;
-	if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
-	OS.EnableScrollBar (hwnd, type, flags);
+	if (OS.IsWinCE) {
+		/*
+		* This line is intentionally commented.  Currently
+		* always show scrollbar as being enabled and visible.
+		*/
+		// error (SWT.ERROR_NOT_IMPLEMENTED);
+	} else {
+		OS.EnableScrollBar (hwnd, type, flags);
+	}
 	state &= ~DISABLED;
 	if (!enabled) state |= DISABLED;
 }
@@ -578,8 +592,15 @@ public void setMaximum (int value) {
 	* to hide the scroll bar (again) when already hidden.
 	*/
 	if ((state & HIDDEN) != 0) {
-		if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
-		OS.ShowScrollBar (hwnd, type, false);
+		if (OS.IsWinCE) {
+			/*
+			* This line is intentionally commented.  Currently
+			* always show scrollbar as being enabled and visible.
+			*/
+			// error (SWT.ERROR_NOT_IMPLEMENTED);
+		} else {
+			OS.ShowScrollBar (hwnd, type, false);
+		}
 	}
 		
 	/*
@@ -591,8 +612,15 @@ public void setMaximum (int value) {
 	* the application has disabled the scroll bar.
 	*/
 	if ((state & DISABLED) != 0) {
-		if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
-		OS.EnableScrollBar (hwnd, type, OS.ESB_DISABLE_BOTH);
+		if (OS.IsWinCE) {
+			/*
+			* This line is intentionally commented.  Currently
+			* always show scrollbar as being enabled and visible.
+			*/
+			// error (SWT.ERROR_NOT_IMPLEMENTED);
+		} else {
+			OS.EnableScrollBar (hwnd, type, OS.ESB_DISABLE_BOTH);
+		}
 	}
 }
 
@@ -630,8 +658,15 @@ public void setMinimum (int value) {
 	* to hide the scroll bar (again) when already hidden.
 	*/
 	if ((state & HIDDEN) != 0) {
-		if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
-		OS.ShowScrollBar (hwnd, type, false);
+		if (OS.IsWinCE) {
+			/*
+			* This line is intentionally commented.  Currently
+			* always show scrollbar as being enabled and visible.
+			*/
+			// error (SWT.ERROR_NOT_IMPLEMENTED);
+		} else {
+			OS.ShowScrollBar (hwnd, type, false);
+		}
 	}
 		
 	/*
@@ -643,8 +678,15 @@ public void setMinimum (int value) {
 	* the application has disabled the scroll bar.
 	*/
 	if ((state & DISABLED) != 0) {
-		if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
-		OS.EnableScrollBar (hwnd, type, OS.ESB_DISABLE_BOTH);
+		if (OS.IsWinCE) {
+			/*
+			* This line is intentionally commented.  Currently
+			* always show scrollbar as being enabled and visible.
+			*/
+			// error (SWT.ERROR_NOT_IMPLEMENTED);
+		} else {
+			OS.EnableScrollBar (hwnd, type, OS.ESB_DISABLE_BOTH);
+		}
 	}
 }
 
@@ -729,8 +771,15 @@ public void setThumb (int value) {
 	* to hide the scroll bar (again) when already hidden.
 	*/
 	if ((state & HIDDEN) != 0) {
-		if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
-		OS.ShowScrollBar (hwnd, type, false);
+		if (OS.IsWinCE) {
+			/*
+			* This line is intentionally commented.  Currently
+			* always show scrollbar as being enabled and visible.
+			*/
+			// error (SWT.ERROR_NOT_IMPLEMENTED);
+		} else {
+			OS.ShowScrollBar (hwnd, type, false);
+		}
 	}
 		
 	/*
@@ -742,8 +791,15 @@ public void setThumb (int value) {
 	* the application has disabled the scroll bar.
 	*/
 	if ((state & DISABLED) != 0) {
-		if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
-		OS.EnableScrollBar (hwnd, type, OS.ESB_DISABLE_BOTH);
+		if (OS.IsWinCE) {
+			/*
+			* This line is intentionally commented.  Currently
+			* always show scrollbar as being enabled and visible.
+			*/
+			// error (SWT.ERROR_NOT_IMPLEMENTED);
+		} else {
+			OS.EnableScrollBar (hwnd, type, OS.ESB_DISABLE_BOTH);
+		}
 	}
 }
 
@@ -800,8 +856,15 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	* to hide the scroll bar (again) when already hidden.
 	*/
 	if ((state & HIDDEN) != 0) {
-		if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
-		OS.ShowScrollBar (hwnd, type, false);
+		if (OS.IsWinCE) {
+			/*
+			* This line is intentionally commented.  Currently
+			* always show scrollbar as being enabled and visible.
+			*/
+			// error (SWT.ERROR_NOT_IMPLEMENTED);
+		} else {
+			OS.ShowScrollBar (hwnd, type, false);
+		}
 	}
 		
 	/*
@@ -813,8 +876,15 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	* the application has disabled the scroll bar.
 	*/
 	if ((state & DISABLED) != 0) {
-		if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
-		OS.EnableScrollBar (hwnd, type, OS.ESB_DISABLE_BOTH);
+		if (OS.IsWinCE) {
+			/*
+			* This line is intentionally commented.  Currently
+			* always show scrollbar as being enabled and visible.
+			*/
+			// error (SWT.ERROR_NOT_IMPLEMENTED);
+		} else {
+			OS.EnableScrollBar (hwnd, type, OS.ESB_DISABLE_BOTH);
+		}
 	}
 }
 
@@ -837,26 +907,36 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 public void setVisible (boolean visible) {
 	checkWidget();
 	int hwnd = hwndScrollBar (), type = scrollBarType ();
-	if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
-	if (OS.ShowScrollBar (hwnd, type, visible)) {
+	if (OS.IsWinCE) {
 		/*
-		* Bug in Windows.  For some reason, when the widget
-		* is a standard scroll bar, and SetScrollInfo () is
-		* called with SIF_RANGE or SIF_PAGE while the widget
-		* is not visible, the widget is incorrectly disabled
-		* even though the values for SIF_RANGE and SIF_PAGE,
-		* when set for a visible scroll bar would not disable
-		* the scroll bar.  The fix is to enable the scroll bar
-		* when already enabled after showing the scroll bar.
+		* This line is intentionally commented.  Currently
+		* always show scrollbar as being enabled and visible.
 		*/
-		if ((state & DISABLED) == 0) {
-			if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
-			OS.EnableScrollBar (hwnd, type, OS.ESB_ENABLE_BOTH);
-		}
+		// error (SWT.ERROR_NOT_IMPLEMENTED);
 		state &= ~HIDDEN;
 		if (!visible) state |= HIDDEN;
 		sendEvent (visible ? SWT.Show : SWT.Hide);
 		// widget could be disposed at this point
+	} else {
+		if (OS.ShowScrollBar (hwnd, type, visible)) {
+			/*
+			* Bug in Windows.  For some reason, when the widget
+			* is a standard scroll bar, and SetScrollInfo () is
+			* called with SIF_RANGE or SIF_PAGE while the widget
+			* is not visible, the widget is incorrectly disabled
+			* even though the values for SIF_RANGE and SIF_PAGE,
+			* when set for a visible scroll bar would not disable
+			* the scroll bar.  The fix is to enable the scroll bar
+			* when already enabled after showing the scroll bar.
+			*/
+			if ((state & DISABLED) == 0) {
+				OS.EnableScrollBar (hwnd, type, OS.ESB_ENABLE_BOTH);
+			}
+			state &= ~HIDDEN;
+			if (!visible) state |= HIDDEN;
+			sendEvent (visible ? SWT.Show : SWT.Hide);
+			// widget could be disposed at this point
+		}
 	}
 }
 
