@@ -1268,7 +1268,9 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 					}
 				}
 			}
-			break;
+			int code = callWindowProc (OS.WM_KEYDOWN, wParam, lParam);
+			hAnchor = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+			return new LRESULT (code);
 		}
 	}
 	return result;
