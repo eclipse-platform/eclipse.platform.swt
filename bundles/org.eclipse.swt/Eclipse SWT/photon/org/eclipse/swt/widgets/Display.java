@@ -1400,6 +1400,32 @@ static boolean isValidClass (Class clazz) {
 	return name.substring (0, index + 1).equals (PACKAGE_NAME);
 }
 
+public Point map (Control from, Control to, Point point) {
+	checkDevice ();
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);	
+	return map (from, to, point.x, point.y);
+}
+
+public Point map (Control from, Control to, int x, int y) {
+	checkDevice ();
+	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	Point point = new Point (x, y);
+	if (from != null) {
+		short [] position_x = new short [1], position_y = new short [1];
+		OS.PtGetAbsPosition (from.handle, position_x, position_y);
+		point.x += position_x [0];
+		point.y += position_y [0];
+	}
+	if (to != null) {
+		short [] position_x = new short [1], position_y = new short [1];
+		OS.PtGetAbsPosition (to.handle, position_x, position_y);
+		point.x -= position_x [0];
+		point.y -= position_y [0];
+	}
+	return point;
+}
+
 public Rectangle map (Control from, Control to, Rectangle rectangle) {
 	checkDevice ();
 	if (rectangle == null) error (SWT.ERROR_NULL_ARGUMENT);	

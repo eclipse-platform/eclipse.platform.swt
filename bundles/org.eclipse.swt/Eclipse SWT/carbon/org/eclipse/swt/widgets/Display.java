@@ -1687,6 +1687,40 @@ void postEvent (Event event) {
 	eventQueue [index] = event;
 }
 
+public Point map (Control from, Control to, Point point) {
+	checkDevice ();
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);	
+	return map (from, to, point.x, point.y);
+}
+
+public Point map (Control from, Control to, int x, int y) {
+	checkDevice ();
+	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	Point point = new Point (x, y);
+	if (from != null) {
+		Rect rect = new Rect ();
+		OS.GetControlBounds (from.handle, rect);
+		point.x += rect.left; 
+		point.y += rect.top;
+		int window = OS.GetControlOwner (from.handle);
+		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+		point.x += rect.left;
+		point.y += rect.top;
+	}
+	if (to != null) {
+		Rect rect = new Rect ();
+		OS.GetControlBounds (to.handle, rect);
+		point.x -= rect.left; 
+		point.y -= rect.top;
+		int window = OS.GetControlOwner (to.handle);
+		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+		point.x -= rect.left;
+		point.y -= rect.top;
+	}
+	return point;
+}
+
 public Rectangle map (Control from, Control to, Rectangle rectangle) {
 	checkDevice ();
 	if (rectangle == null) error (SWT.ERROR_NULL_ARGUMENT);	

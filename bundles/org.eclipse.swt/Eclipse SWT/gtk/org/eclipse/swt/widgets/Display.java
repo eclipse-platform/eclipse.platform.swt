@@ -1445,6 +1445,38 @@ boolean isValidThread () {
 	return thread == Thread.currentThread ();
 }
 
+public Point map (Control from, Control to, Point point) {
+	checkDevice ();
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);	
+	return map (from, to, point.x, point.y);
+}
+
+public Point map (Control from, Control to, int x, int y) {
+	checkDevice ();
+	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	Point point = new Point (x, y);
+	if (from != null) {
+		int eventHandle = from.eventHandle ();
+		OS.gtk_widget_realize (eventHandle);
+		int window = OS.GTK_WIDGET_WINDOW (eventHandle);
+		int [] origin_x = new int [1], origin_y = new int [1];
+		OS.gdk_window_get_origin (window, origin_x, origin_y);
+		point.x += origin_x [0];
+		point.y += origin_y [0];
+	}
+	if (to != null) {
+		int eventHandle = to.eventHandle ();
+		OS.gtk_widget_realize (eventHandle);
+		int window = OS.GTK_WIDGET_WINDOW (eventHandle);
+		int [] origin_x = new int [1], origin_y = new int [1];
+		OS.gdk_window_get_origin (window, origin_x, origin_y);
+		point.x -= origin_x [0];
+		point.y -= origin_y [0];
+	}
+	return point;
+}
+
 public Rectangle map (Control from, Control to, Rectangle rectangle) {
 	checkDevice();
 	if (rectangle == null) error (SWT.ERROR_NULL_ARGUMENT);

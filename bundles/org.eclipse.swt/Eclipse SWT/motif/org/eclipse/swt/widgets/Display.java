@@ -1823,6 +1823,30 @@ static boolean isValidClass (Class clazz) {
 	int index = name.lastIndexOf ('.');
 	return name.substring (0, index + 1).equals (PACKAGE_PREFIX);
 }
+public Point map (Control from, Control to, Point point) {
+	checkDevice ();
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);	
+	return map (from, to, point.x, point.y);
+}
+public Point map (Control from, Control to, int x, int y) {
+	checkDevice ();
+	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	Point point = new Point (x, y);
+	if (from != null) {
+		short [] root_x = new short [1], root_y = new short [1];
+		OS.XtTranslateCoords (from.handle, (short) x, (short) y, root_x, root_y);
+		point.x = root_x [0];
+		point.y = root_y [0];
+	}
+	if (to != null) {
+		short [] root_x = new short [1], root_y = new short [1];
+		OS.XtTranslateCoords (to.handle, (short) 0, (short) 0, root_x, root_y);
+		point.x -= root_x [0];
+		point.y -= root_y [0];
+	}
+	return point;
+}
 public Rectangle map (Control from, Control to, Rectangle rectangle) {
 	checkDevice();
 	if (rectangle == null) error (SWT.ERROR_NULL_ARGUMENT);
