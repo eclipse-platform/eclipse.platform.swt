@@ -641,6 +641,27 @@ public int getGridLineWidth () {
 }
 
 /**
+ * Returns the height of the receiver's header 
+ *
+ * @return the height of the header or zero if the header is not visible
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.0 
+ */
+public int getHeaderHeight () {
+	checkWidget ();
+	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+	if (hwndHeader == 0) return 0;
+	RECT rect = new RECT ();					
+	OS.GetWindowRect (hwndHeader, rect);
+	return rect.bottom - rect.top;
+}
+
+/**
  * Returns <code>true</code> if the receiver's header is visible,
  * and <code>false</code> otherwise.
  * <p>
