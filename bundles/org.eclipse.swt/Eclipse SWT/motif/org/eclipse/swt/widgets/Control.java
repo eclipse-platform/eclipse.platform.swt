@@ -1162,7 +1162,10 @@ boolean mnemonicMatch (char key) {
  */
 public void moveAbove (Control control) {
 	checkWidget();
-	if (control != null && control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
+	if (control != null) {
+		if (control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
+		if (parent != control.parent) return;
+	}
 	setZOrder (control, true);
 }
 /**
@@ -1184,7 +1187,10 @@ public void moveAbove (Control control) {
  */
 public void moveBelow (Control control) {
 	checkWidget();
-	if (control != null && control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
+	if (control != null) {
+		if (control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
+		if (parent != control.parent) return;
+	}
 	setZOrder (control, false);
 }
 /**
@@ -2370,6 +2376,9 @@ public void setVisible (boolean visible) {
 	sendEvent (visible ? SWT.Show : SWT.Hide);
 }
 void setZOrder (Control control, boolean above) {
+	setZOrder (control, above, true);
+}
+void setZOrder (Control control, boolean above, boolean fixChildren) {
 	/*
 	* Feature in Xt.  We cannot use XtMakeGeometryRequest() to
 	* restack widgets because this call can fail under certain
@@ -2390,10 +2399,10 @@ void setZOrder (Control control, boolean above) {
 	if (control == null) {
 		if (above) {
 			OS.XRaiseWindow (display, window1);
-			if (parent != null) parent.moveAbove (topHandle1, 0);
+			if (fixChildren) parent.moveAbove (topHandle1, 0);
 		} else {
 			OS.XLowerWindow (display, window1);
-			if (parent != null) parent.moveBelow (topHandle1, 0);
+			if (fixChildren) parent.moveBelow (topHandle1, 0);
 		}
 		return;
 	}
@@ -2421,9 +2430,9 @@ void setZOrder (Control control, boolean above) {
 	int flags = OS.CWStackMode | OS.CWSibling;
 	OS.XReconfigureWMWindow (display, window1, screen, flags, struct);
 	if (above) {
-		if (parent != null) parent.moveAbove (topHandle1, topHandle2);
+		if (fixChildren) parent.moveAbove (topHandle1, topHandle2);
 	} else {
-		if (parent != null) parent.moveBelow (topHandle1, topHandle2);
+		if (fixChildren) parent.moveBelow (topHandle1, topHandle2);
 	}
 }
 /**

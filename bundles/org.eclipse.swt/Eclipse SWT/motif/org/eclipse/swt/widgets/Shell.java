@@ -1193,6 +1193,9 @@ public void setVisible (boolean visible) {
 
 	sendEvent (SWT.Hide);
 }
+void setZOrder (Control control, boolean above) {
+	setZOrder (control, above, false);
+}
 int topHandle () {
 	return shellHandle;
 }
