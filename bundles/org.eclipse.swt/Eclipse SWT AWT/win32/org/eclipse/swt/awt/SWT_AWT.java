@@ -49,13 +49,46 @@ public class SWT_AWT {
 	 */
 	public static String embeddedFrameClass;
 
-	static final boolean JDK1_3;
+	static final int JAVA_VERSION;
 	static boolean loaded, swingInitialized;
 	static Object menuSelectionManager;
 	static Method clearSelectionPath;
 
 static {
-	JDK1_3 = "1.3".equals(System.getProperty("java.specification.version"));
+	JAVA_VERSION = parseVersion(System.getProperty("java.version"));
+}
+
+static int parseVersion(String version) {
+	if (version == null) return 0;
+	int major = 0, minor = 0, micro = 0;
+	int length = version.length(), index = 0, start = 0;
+	while (index < length && Character.isDigit(version.charAt(index))) index++;
+	try {
+		if (start < length) major = Integer.parseInt(version.substring(start, index));
+	} catch (Exception e) {}
+	start = ++index;
+	while (index < length && Character.isDigit(version.charAt(index))) index++;
+	try {
+		if (start < length) minor = Integer.parseInt(version.substring(start, index));
+	} catch (Exception e) {}
+	start = ++index;
+	while (index < length && Character.isDigit(version.charAt(index))) index++;
+	try {
+		if (start < length) micro = Integer.parseInt(version.substring(start, index));
+	} catch (Exception e) {}
+	return JAVA_VERSION(major, minor, micro);
+}
+
+/**
+ * Returns the Java version number as an integer.
+ * 
+ * @param major
+ * @param minor
+ * @param micro
+ * @return the version
+ */
+static int JAVA_VERSION (int major, int minor, int micro) {
+	return (major << 16) + (minor << 8) + micro;
 }
 
 static native final int getAWTHandle (Canvas canvas);
@@ -165,7 +198,7 @@ public static Frame new_Frame (final Composite parent) {
 		public void handleEvent (Event e) {
 			EventQueue.invokeLater(new Runnable () {
 				public void run () {
-					if (JDK1_3) {
+					if (JAVA_VERSION < JAVA_VERSION(1, 4, 0)) {
 						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ACTIVATED));
 						frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_GAINED));
 					} else {
@@ -180,17 +213,19 @@ public static Frame new_Frame (final Composite parent) {
 		public void handleEvent (Event e) {
 			EventQueue.invokeLater(new Runnable () {
 				public void run () {
-					if (JDK1_3) {
+					if (JAVA_VERSION < JAVA_VERSION(1, 4, 0)) {
 						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEACTIVATED));
 						frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_LOST));
 					} else {
 						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_LOST_FOCUS));
 						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEACTIVATED));
 					}
-					if (menuSelectionManager != null && clearSelectionPath != null) {
-						try {
-							clearSelectionPath.invoke(menuSelectionManager, new Object[0]);
-						} catch (Throwable e) {}
+					if (JAVA_VERSION >= JAVA_VERSION(1, 4, 2)) {
+						if (menuSelectionManager != null && clearSelectionPath != null) {
+							try {
+								clearSelectionPath.invoke(menuSelectionManager, new Object[0]);
+							} catch (Throwable e) {}
+						}
 					}
 				}
 			});
