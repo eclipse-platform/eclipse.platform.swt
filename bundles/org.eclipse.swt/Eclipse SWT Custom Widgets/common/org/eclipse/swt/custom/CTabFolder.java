@@ -2461,8 +2461,12 @@ boolean setButtonBounds() {
 				} else {
 					// fill size is 0 if chevron showing
 					if (showChevron) break;
-					CTabItem item = items[items.length - 1];
-					topRightRect.x = item.x + item.width;
+					if (items.length == 0) {
+						topRightRect.x = borderLeft + 3;
+					} else {
+						CTabItem item = items[items.length - 1];
+						topRightRect.x = item.x + item.width;
+					}
 					topRightRect.width = rightEdge - topRightRect.x;
 				}
 				topRightRect.y = onBottom ? size.y - borderBottom - tabHeight: borderTop + 1;
