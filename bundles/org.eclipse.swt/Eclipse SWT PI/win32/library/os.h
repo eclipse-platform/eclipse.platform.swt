@@ -56,10 +56,12 @@
 #define NO_GUITHREADINFO
 #define NO_HELPINFO
 #define NO_HIGHCONTRAST
+#define NO_LITEM
 #define NO_MARGINS
 #define NO_MENUBARINFO
 #define NO_MENUINFO
 #define NO_MINMAXINFO
+#define NO_NMLINK
 #define NO_NMREBARCHEVRON
 #define NO_NMREBARCHILDSIZE
 #define NO_NMTBHOTITEM
@@ -269,6 +271,7 @@
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_HELPINFO_2II
 #define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_TRIVERTEX_2I
 #define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_GRADIENT_1RECT_2I
+#define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_NMLINK_2II
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_NMTBHOTITEM_2II
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTDISPINFOA_2II
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTDISPINFOW_2II
@@ -309,6 +312,7 @@
 #define NO_SHGetPathFromIDListA
 #define NO_SHGetPathFromIDListW
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_BUTTON_1IMAGELIST_2
+#define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_LITEM_2
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_TVITEM_2
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_TVINSERTSTRUCT_2
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_TVHITTESTINFO_2
@@ -333,6 +337,7 @@
 #define NO_SendMessageA__II_3II
 #define NO_SendMessageA__II_3I_3I
 #define NO_SendMessageW__IIILorg_eclipse_swt_internal_win32_BUTTON_1IMAGELIST_2
+#define NO_SendMessageW__IIILorg_eclipse_swt_internal_win32_LITEM_2
 #define NO_SendMessageW__IIILorg_eclipse_swt_internal_win32_MARGINS_2
 #define NO_SendMessageW__IIILorg_eclipse_swt_internal_win32_TOOLINFO_2
 #define NO_SetDIBColorTable

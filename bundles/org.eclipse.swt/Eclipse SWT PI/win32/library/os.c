@@ -5984,6 +5984,20 @@ fail:
 }
 #endif
 
+#ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_win32_NMLINK_2II
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_NMLINK_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	NMLINK _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_NMLINK_2II_FUNC);
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+fail:
+	if (arg0 && lparg0) setNMLINKFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_NMLINK_2II_FUNC);
+}
+#endif
+
 #ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_win32_NMLISTVIEW_2II
 JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_NMLISTVIEW_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
@@ -7952,6 +7966,22 @@ fail:
 }
 #endif
 
+#ifndef NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_LITEM_2
+JNIEXPORT jint JNICALL OS_NATIVE(SendMessageA__IIILorg_eclipse_swt_internal_win32_LITEM_2)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	LITEM _arg3, *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SendMessageA__IIILorg_eclipse_swt_internal_win32_LITEM_2_FUNC);
+	if (arg3) if ((lparg3 = getLITEMFields(env, arg3, &_arg3)) == NULL) goto fail;
+	rc = (jint)SendMessageA((HWND)arg0, arg1, (WPARAM)arg2, (LPARAM)lparg3);
+fail:
+	if (arg3 && lparg3) setLITEMFields(env, arg3, lparg3);
+	OS_NATIVE_EXIT(env, that, SendMessageA__IIILorg_eclipse_swt_internal_win32_LITEM_2_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_LVCOLUMN_2
 JNIEXPORT jint JNICALL OS_NATIVE(SendMessageA__IIILorg_eclipse_swt_internal_win32_LVCOLUMN_2)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
@@ -8331,6 +8361,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(SendMessageW__IIILorg_eclipse_swt_internal_win3
 fail:
 	if (arg3 && lparg3) setHDLAYOUTFields(env, arg3, lparg3);
 	OS_NATIVE_EXIT(env, that, SendMessageW__IIILorg_eclipse_swt_internal_win32_HDLAYOUT_2_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SendMessageW__IIILorg_eclipse_swt_internal_win32_LITEM_2
+JNIEXPORT jint JNICALL OS_NATIVE(SendMessageW__IIILorg_eclipse_swt_internal_win32_LITEM_2)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	LITEM _arg3, *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SendMessageW__IIILorg_eclipse_swt_internal_win32_LITEM_2_FUNC);
+	if (arg3) if ((lparg3 = getLITEMFields(env, arg3, &_arg3)) == NULL) goto fail;
+	rc = (jint)SendMessageW((HWND)arg0, arg1, (WPARAM)arg2, (LPARAM)lparg3);
+fail:
+	if (arg3 && lparg3) setLITEMFields(env, arg3, lparg3);
+	OS_NATIVE_EXIT(env, that, SendMessageW__IIILorg_eclipse_swt_internal_win32_LITEM_2_FUNC);
 	return rc;
 }
 #endif

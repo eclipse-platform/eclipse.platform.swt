@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 630;
-int OS_nativeFunctionCallCount[630];
+int OS_nativeFunctionCount = 633;
+int OS_nativeFunctionCallCount[633];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateKeyboardLayout",
@@ -397,6 +397,7 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMCUSTOMDRAW_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMHDR_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMHEADER_2II",
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMLINK_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMLISTVIEW_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVCUSTOMDRAW_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVDISPINFO_2II",
@@ -510,6 +511,7 @@ char * OS_nativeFunctionNames[] = {
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_BUTTON_1IMAGELIST_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_HDITEM_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_HDLAYOUT_2",
+	"SendMessageA__IIILorg_eclipse_swt_internal_win32_LITEM_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_LVCOLUMN_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_LVHITTESTINFO_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_LVITEM_2",
@@ -534,6 +536,7 @@ char * OS_nativeFunctionNames[] = {
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_BUTTON_1IMAGELIST_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_HDITEM_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_HDLAYOUT_2",
+	"SendMessageW__IIILorg_eclipse_swt_internal_win32_LITEM_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_LVCOLUMN_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_LVHITTESTINFO_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_LVITEM_2",

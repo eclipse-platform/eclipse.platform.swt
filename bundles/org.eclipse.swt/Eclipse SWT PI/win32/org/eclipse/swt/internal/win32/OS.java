@@ -590,6 +590,7 @@ public class OS extends Platform {
 	public static final int KEY_QUERY_VALUE = 0x1;
 	public static final int KEY_READ = 0x20019;
 	public static final int KEYEVENTF_KEYUP = 0x0002;
+	public static final int L_MAX_URL_LENGTH = 2084;
 	public static final int LANG_NEUTRAL = 0x0;
 	public static final int LANG_USER_DEFAULT = 1 << 10;
 	public static final int LAYOUT_RTL = 0x1;
@@ -630,6 +631,13 @@ public class OS extends Platform {
 	public static final int LGRPID_ARABIC = 0xd;
 	public static final int LGRPID_HEBREW = 0xc;
 	public static final int LGRPID_INSTALLED = 1;
+	public static final int LIF_ITEMINDEX = 0x1;
+	public static final int LIF_STATE = 0x2;
+	public static final int LIS_FOCUSED = 0x1;
+	public static final int LIS_ENABLED = 0x2;
+	public static final int LM_GETIDEALHEIGHT = 0x701;
+	public static final int LM_SETITEM = 0x702;
+	public static final int LM_GETITEM = 0x703;
 	public static final int LCID_SUPPORTED = 0x2;
 	public static final int LOCALE_IDEFAULTANSICODEPAGE = 0x1004;
 	public static final int LOCALE_SISO3166CTRYNAME = 0x5a;
@@ -742,6 +750,7 @@ public class OS extends Platform {
 	public static final int LVS_SHAREIMAGELISTS = 0x40;
 	public static final int LVS_SHOWSELALWAYS = 0x8;
 	public static final int LVS_SINGLESEL = 0x4;
+	public static final int MAX_LINKID_TEXT = 48;
 	public static final int MAX_PATH = 260;
 	public static final int MA_NOACTIVATE = 0x3;
 	public static final int MB_ABORTRETRYIGNORE = 0x2;
@@ -2172,6 +2181,11 @@ public static final int SendMessage (int hWnd, int Msg, int wParam, int lParam) 
 	return SendMessageA (hWnd, Msg, wParam, lParam);
 }
 
+public static final int SendMessage (int hWnd, int Msg, int wParam, LITEM lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
 public static final int SendMessage (int hWnd, int Msg, int wParam, LVCOLUMN lParam) {
 	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
 	return SendMessageA (hWnd, Msg, wParam, lParam);
@@ -2741,6 +2755,7 @@ public static final native void MoveMemory (NMLVDISPINFO Destination, int Source
 public static final native void MoveMemory (NMTVDISPINFO Destination, int Source, int Length);
 public static final native void MoveMemory (NMLVFINDITEM Destination, int Source, int Length);
 public static final native void MoveMemory (NMHEADER Destination, int Source, int Length);
+public static final native void MoveMemory (NMLINK Destination, int Source, int Length);
 public static final native void MoveMemory (NMLISTVIEW Destination, int Source, int Length);
 public static final native void MoveMemory (NMREBARCHILDSIZE Destination, int Source, int Length);
 public static final native void MoveMemory (NMREBARCHEVRON Destination, int Source, int Length);
@@ -2841,6 +2856,7 @@ public static final native int SendMessageW (int hWnd, int Msg, int wParam, shor
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, int lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, LVCOLUMN lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, LVHITTESTINFO lParam);
+public static final native int SendMessageW (int hWnd, int Msg, int wParam, LITEM lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, LVITEM lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, MARGINS lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, REBARBANDINFO lParam);
@@ -2865,6 +2881,7 @@ public static final native int SendMessageA (int hWnd, int Msg, int wParam, shor
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, int lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, LVCOLUMN lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, LVHITTESTINFO lParam);
+public static final native int SendMessageA (int hWnd, int Msg, int wParam, LITEM lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, LVITEM lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, MARGINS lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, REBARBANDINFO lParam);

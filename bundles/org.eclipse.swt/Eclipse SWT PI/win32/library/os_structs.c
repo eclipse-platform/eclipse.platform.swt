@@ -1405,6 +1405,64 @@ void setKEYBDINPUTFields(JNIEnv *env, jobject lpObject, KEYBDINPUT *lpStruct)
 }
 #endif
 
+#ifndef NO_LITEM
+typedef struct LITEM_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID mask, iLink, state, stateMask, szID, szUrl;
+} LITEM_FID_CACHE;
+
+LITEM_FID_CACHE LITEMFc;
+
+void cacheLITEMFields(JNIEnv *env, jobject lpObject)
+{
+	if (LITEMFc.cached) return;
+	LITEMFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	LITEMFc.mask = (*env)->GetFieldID(env, LITEMFc.clazz, "mask", "I");
+	LITEMFc.iLink = (*env)->GetFieldID(env, LITEMFc.clazz, "iLink", "I");
+	LITEMFc.state = (*env)->GetFieldID(env, LITEMFc.clazz, "state", "I");
+	LITEMFc.stateMask = (*env)->GetFieldID(env, LITEMFc.clazz, "stateMask", "I");
+	LITEMFc.szID = (*env)->GetFieldID(env, LITEMFc.clazz, "szID", "[C");
+	LITEMFc.szUrl = (*env)->GetFieldID(env, LITEMFc.clazz, "szUrl", "[C");
+	LITEMFc.cached = 1;
+}
+
+LITEM *getLITEMFields(JNIEnv *env, jobject lpObject, LITEM *lpStruct)
+{
+	if (!LITEMFc.cached) cacheLITEMFields(env, lpObject);
+	lpStruct->mask = (*env)->GetIntField(env, lpObject, LITEMFc.mask);
+	lpStruct->iLink = (*env)->GetIntField(env, lpObject, LITEMFc.iLink);
+	lpStruct->state = (*env)->GetIntField(env, lpObject, LITEMFc.state);
+	lpStruct->stateMask = (*env)->GetIntField(env, lpObject, LITEMFc.stateMask);
+	{
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, LITEMFc.szID);
+	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szID) / 2, (jchar *)lpStruct->szID);
+	}
+	{
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, LITEMFc.szUrl);
+	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szUrl) / 2, (jchar *)lpStruct->szUrl);
+	}
+	return lpStruct;
+}
+
+void setLITEMFields(JNIEnv *env, jobject lpObject, LITEM *lpStruct)
+{
+	if (!LITEMFc.cached) cacheLITEMFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, LITEMFc.mask, (jint)lpStruct->mask);
+	(*env)->SetIntField(env, lpObject, LITEMFc.iLink, (jint)lpStruct->iLink);
+	(*env)->SetIntField(env, lpObject, LITEMFc.state, (jint)lpStruct->state);
+	(*env)->SetIntField(env, lpObject, LITEMFc.stateMask, (jint)lpStruct->stateMask);
+	{
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, LITEMFc.szID);
+	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szID) / 2, (jchar *)lpStruct->szID);
+	}
+	{
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, LITEMFc.szUrl);
+	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szUrl) / 2, (jchar *)lpStruct->szUrl);
+	}
+}
+#endif
+
 #ifndef NO_LOGBRUSH
 typedef struct LOGBRUSH_FID_CACHE {
 	int cached;
@@ -2431,6 +2489,67 @@ void setNMHEADERFields(JNIEnv *env, jobject lpObject, NMHEADER *lpStruct)
 	(*env)->SetIntField(env, lpObject, NMHEADERFc.iItem, (jint)lpStruct->iItem);
 	(*env)->SetIntField(env, lpObject, NMHEADERFc.iButton, (jint)lpStruct->iButton);
 	(*env)->SetIntField(env, lpObject, NMHEADERFc.pitem, (jint)lpStruct->pitem);
+}
+#endif
+
+#ifndef NO_NMLINK
+typedef struct NMLINK_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID mask, iLink, state, stateMask, szID, szUrl;
+} NMLINK_FID_CACHE;
+
+NMLINK_FID_CACHE NMLINKFc;
+
+void cacheNMLINKFields(JNIEnv *env, jobject lpObject)
+{
+	if (NMLINKFc.cached) return;
+	cacheNMHDRFields(env, lpObject);
+	NMLINKFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	NMLINKFc.mask = (*env)->GetFieldID(env, NMLINKFc.clazz, "mask", "I");
+	NMLINKFc.iLink = (*env)->GetFieldID(env, NMLINKFc.clazz, "iLink", "I");
+	NMLINKFc.state = (*env)->GetFieldID(env, NMLINKFc.clazz, "state", "I");
+	NMLINKFc.stateMask = (*env)->GetFieldID(env, NMLINKFc.clazz, "stateMask", "I");
+	NMLINKFc.szID = (*env)->GetFieldID(env, NMLINKFc.clazz, "szID", "[C");
+	NMLINKFc.szUrl = (*env)->GetFieldID(env, NMLINKFc.clazz, "szUrl", "[C");
+	NMLINKFc.cached = 1;
+}
+
+NMLINK *getNMLINKFields(JNIEnv *env, jobject lpObject, NMLINK *lpStruct)
+{
+	if (!NMLINKFc.cached) cacheNMLINKFields(env, lpObject);
+	getNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
+	lpStruct->item.mask = (*env)->GetIntField(env, lpObject, NMLINKFc.mask);
+	lpStruct->item.iLink = (*env)->GetIntField(env, lpObject, NMLINKFc.iLink);
+	lpStruct->item.state = (*env)->GetIntField(env, lpObject, NMLINKFc.state);
+	lpStruct->item.stateMask = (*env)->GetIntField(env, lpObject, NMLINKFc.stateMask);
+	{
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, NMLINKFc.szID);
+	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->item.szID) / 2, (jchar *)lpStruct->item.szID);
+	}
+	{
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, NMLINKFc.szUrl);
+	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->item.szUrl) / 2, (jchar *)lpStruct->item.szUrl);
+	}
+	return lpStruct;
+}
+
+void setNMLINKFields(JNIEnv *env, jobject lpObject, NMLINK *lpStruct)
+{
+	if (!NMLINKFc.cached) cacheNMLINKFields(env, lpObject);
+	setNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
+	(*env)->SetIntField(env, lpObject, NMLINKFc.mask, (jint)lpStruct->item.mask);
+	(*env)->SetIntField(env, lpObject, NMLINKFc.iLink, (jint)lpStruct->item.iLink);
+	(*env)->SetIntField(env, lpObject, NMLINKFc.state, (jint)lpStruct->item.state);
+	(*env)->SetIntField(env, lpObject, NMLINKFc.stateMask, (jint)lpStruct->item.stateMask);
+	{
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, NMLINKFc.szID);
+	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->item.szID) / 2, (jchar *)lpStruct->item.szID);
+	}
+	{
+	jcharArray lpObject1 = (jcharArray)(*env)->GetObjectField(env, lpObject, NMLINKFc.szUrl);
+	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->item.szUrl) / 2, (jchar *)lpStruct->item.szUrl);
+	}
 }
 #endif
 

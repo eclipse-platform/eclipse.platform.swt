@@ -347,6 +347,18 @@ void setKEYBDINPUTFields(JNIEnv *env, jobject lpObject, KEYBDINPUT *lpStruct);
 #define KEYBDINPUT_sizeof() 0
 #endif
 
+#ifndef NO_LITEM
+void cacheLITEMFields(JNIEnv *env, jobject lpObject);
+LITEM *getLITEMFields(JNIEnv *env, jobject lpObject, LITEM *lpStruct);
+void setLITEMFields(JNIEnv *env, jobject lpObject, LITEM *lpStruct);
+#define LITEM_sizeof() sizeof(LITEM)
+#else
+#define cacheLITEMFields(a,b)
+#define getLITEMFields(a,b,c) NULL
+#define setLITEMFields(a,b,c)
+#define LITEM_sizeof() 0
+#endif
+
 #ifndef NO_LOGBRUSH
 void cacheLOGBRUSHFields(JNIEnv *env, jobject lpObject);
 LOGBRUSH *getLOGBRUSHFields(JNIEnv *env, jobject lpObject, LOGBRUSH *lpStruct);
@@ -585,6 +597,18 @@ void setNMHEADERFields(JNIEnv *env, jobject lpObject, NMHEADER *lpStruct);
 #define getNMHEADERFields(a,b,c) NULL
 #define setNMHEADERFields(a,b,c)
 #define NMHEADER_sizeof() 0
+#endif
+
+#ifndef NO_NMLINK
+void cacheNMLINKFields(JNIEnv *env, jobject lpObject);
+NMLINK *getNMLINKFields(JNIEnv *env, jobject lpObject, NMLINK *lpStruct);
+void setNMLINKFields(JNIEnv *env, jobject lpObject, NMLINK *lpStruct);
+#define NMLINK_sizeof() sizeof(NMLINK)
+#else
+#define cacheNMLINKFields(a,b)
+#define getNMLINKFields(a,b,c) NULL
+#define setNMLINKFields(a,b,c)
+#define NMLINK_sizeof() 0
 #endif
 
 #ifndef NO_NMLISTVIEW
