@@ -40,6 +40,8 @@ public class SWTException extends RuntimeException {
 	 */
 	public Throwable throwable;
 	
+	static final long serialVersionUID = 3257282552304842547L;
+	
 /**
  * Constructs a new instance of this class with its 
  * stack trace filled in. The error code is set to an
@@ -90,11 +92,9 @@ public SWTException (int code, String message) {
  *  </p>
  *  @return the error message string of this SWTException object
  */
-public String getMessage() {
-	if (throwable == null)
-		return super.getMessage();
-	else
-		return super.getMessage() + " (" + throwable.toString() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+public String getMessage () {
+	if (throwable == null) return super.getMessage ();
+	return super.getMessage () + " (" + throwable.toString () + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 }
 
 /**
@@ -105,11 +105,11 @@ public String getMessage() {
  * are not provided in order to maintain compatibility with CLDC.
  * </p>
  */
-public void printStackTrace() {
-	super.printStackTrace();
+public void printStackTrace () {
+	super.printStackTrace ();
 	if (throwable != null) {
-		System.err.println("*** Stack trace of contained exception ***"); //$NON-NLS-1$
-		throwable.printStackTrace();
+		System.err.println ("*** Stack trace of contained exception ***"); //$NON-NLS-1$
+		throwable.printStackTrace ();
 	}
 }
 

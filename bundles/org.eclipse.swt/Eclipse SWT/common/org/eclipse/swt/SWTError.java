@@ -49,6 +49,8 @@ public class SWTError extends Error {
 	 */
 	public Throwable throwable;
 
+    static final long serialVersionUID = 3833467327105808433L;
+    
 /**
  * Constructs a new instance of this class with its 
  * stack trace filled in. The error code is set to an
@@ -99,11 +101,9 @@ public SWTError (int code, String message) {
  *  </p>
  *  @return the error message string of this SWTError object
  */
-public String getMessage() {
-	if (throwable == null)
-		return super.getMessage();
-	else
-		return super.getMessage() + " (" + throwable.toString() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
+public String getMessage () {
+	if (throwable == null) return super.getMessage ();
+	return super.getMessage () + " (" + throwable.toString () + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 }
 
 /**
@@ -114,11 +114,11 @@ public String getMessage() {
  * are not provided in order to maintain compatibility with CLDC.
  * </p>
  */
-public synchronized void printStackTrace() {
-	super.printStackTrace();
+public synchronized void printStackTrace () {
+	super.printStackTrace ();
 	if (throwable != null) {
-		System.err.println("*** Stack trace of contained error ***"); //$NON-NLS-1$
-		throwable.printStackTrace();
+		System.err.println ("*** Stack trace of contained error ***"); //$NON-NLS-1$
+		throwable.printStackTrace ();
 	}
 }
 
