@@ -36,6 +36,7 @@ public class TableItem extends Item {
 	Image [] images;
 	boolean checked, grayed;
 	Color foreground, background;
+	int width = -1;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -115,11 +116,13 @@ protected void checkSubclass () {
 }
 
 int calculateWidth (int index, GC gc) {
+	if (index == 0 && this.width != -1) return this.width;
 	int width = 0;
 	Image image = getImage (index);
 	String text = getText (index);
 	if (image != null) width = image.getBounds ().width + 2;
 	if (text != null && text.length () > 0) width += gc.stringExtent (text).x;
+	if (index == 0) this.width = width;
 	return width;
 }
 
@@ -500,7 +503,10 @@ public void setImage (int index, Image image) {
 	}
 	int itemIndex = parent.indexOf (this);
 	if (itemIndex == -1) return;
-	if (index == 0) super.setImage (image);
+	if (index == 0)  {
+		width = -1;
+		super.setImage (image);
+	}
 	int columnCount = parent.columnCount;
 	if (0 <= index && index < columnCount) {
 		if (images == null) images = new Image [columnCount];
@@ -580,7 +586,10 @@ public void setText (int index, String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int itemIndex = parent.indexOf (this);
 	if (itemIndex == -1) return;
-	if (index == 0) super.setText (string);
+	if (index == 0) {
+		width = -1;
+		super.setText (string);
+	}
 	int columnCount = parent.columnCount;
 	if (0 <= index && index < columnCount) {
 		if (strings == null) strings = new String [columnCount];

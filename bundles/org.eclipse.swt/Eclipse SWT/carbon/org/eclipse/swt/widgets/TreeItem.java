@@ -34,7 +34,7 @@ import org.eclipse.swt.graphics.*;
 public class TreeItem extends Item {
 	Tree parent;
 	TreeItem parentItem;
-	int id, index = -1;
+	int id, index = -1, width = -1;
 	boolean checked, grayed;
 	Color foreground, background;
 
@@ -194,7 +194,7 @@ static TreeItem checkNull (TreeItem item) {
 }
 
 int calculateWidth (GC gc) {
-	int width = 0;
+	if (width != -1) return width;
 	Image image = getImage ();
 	String text = getText ();
 	if (image != null) width = image.getBounds ().width + 2;
@@ -544,6 +544,7 @@ public void setGrayed (boolean grayed) {
 public void setImage (Image image) {
 	checkWidget ();
 	super.setImage (image);
+	width = -1;
 	parent.setScrollWidth (this);
 	redraw ();
 }
@@ -552,6 +553,7 @@ public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	super.setText (string);
+	width = -1;
 	parent.setScrollWidth (this);
 	redraw ();
 }

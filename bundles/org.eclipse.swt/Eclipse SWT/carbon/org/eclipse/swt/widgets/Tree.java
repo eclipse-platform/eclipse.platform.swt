@@ -150,7 +150,19 @@ public void addTreeListener(TreeListener listener) {
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Expand, typedListener);
 	addListener (SWT.Collapse, typedListener);
-} 
+}
+
+int calculateWidth (TreeItem [] items, GC gc) {
+	int width = 0;
+	for (int i = 0; i < items.length; i++) {
+		TreeItem item = items [i];
+		width = Math.max (width, item.calculateWidth (gc));
+		if (item.getExpanded ()) {			
+			width = Math.max (width, calculateWidth (item.getItems (), gc));
+		}
+	}
+	return width;
+}
 
 static int checkStyle (int style) {
 	/*
@@ -1055,16 +1067,12 @@ int setBounds (int control, int x, int y, int width, int height, boolean move, b
 	return result;
 }
 
-int calculateWidth (TreeItem [] items, GC gc) {
-	int width = 0;
+void setFontStyle (Font font) {
+	super.setFontStyle (font);
 	for (int i = 0; i < items.length; i++) {
 		TreeItem item = items [i];
-		width = Math.max (width, item.calculateWidth (gc));
-		if (item.getExpanded ()) {			
-			width = Math.max (width, calculateWidth (item.getItems (), gc));
-		}
-	}
-	return width;
+		if (item != null) item.width = -1;
+	}	
 }
 
 void setScrollWidth () {

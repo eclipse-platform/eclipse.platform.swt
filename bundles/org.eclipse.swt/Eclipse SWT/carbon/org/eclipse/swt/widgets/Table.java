@@ -1515,6 +1515,14 @@ int setBounds (int control, int x, int y, int width, int height, boolean move, b
 	return result;
 }
 
+void setFontStyle (Font font) {
+	super.setFontStyle (font);
+	for (int i = 0; i < items.length; i++) {
+		TableItem item = items [i];
+		if (item != null) item.width = -1;
+	}	
+}
+
 /**
  * Marks the receiver's header as visible if the argument is <code>true</code>,
  * and marks it invisible otherwise. 
