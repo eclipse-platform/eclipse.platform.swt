@@ -2338,11 +2338,16 @@ public void setBackground (Color color) {
 		if (color.isDisposed ()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		gdkColor = color.handle;
 	}
-	GdkColor oldColor = new GdkColor ();
-	OS.gtk_style_get_bg (OS.gtk_widget_get_style (fontHandle ()), OS.GTK_STATE_NORMAL, oldColor);
-	if (gdkColor == null || oldColor.pixel != gdkColor.pixel) {
-		setBackgroundColor (gdkColor);
+	boolean set = false;
+	if (gdkColor == null) {
+		int /*long*/ style = OS.gtk_widget_get_modifier_style (handle);
+		set = (OS.gtk_rc_style_get_color_flags (style, OS.GTK_STATE_NORMAL) & OS.GTK_RC_BG) != 0;
+	} else {
+		GdkColor oldColor = new GdkColor ();
+		OS.gtk_style_get_fg (OS.gtk_widget_get_style (handle), OS.GTK_STATE_NORMAL, oldColor);
+		set = oldColor.pixel != gdkColor.pixel;
 	}
+	if (set) setBackgroundColor (gdkColor);
 }
 
 void setBackgroundColor (int /*long*/ handle, GdkColor color) {
@@ -2356,9 +2361,9 @@ void setBackgroundColor (int /*long*/ handle, GdkColor color) {
 	OS.memmove (ptr, buffer, buffer.length);
 	OS.gtk_rc_style_set_bg_pixmap_name (style, index, ptr);
 	OS.gtk_rc_style_set_bg (style, index, color);
-	int flag = OS.gtk_rc_style_get_color_flags(style, index);
-	flag = (color == null) ? flag & ~OS.GTK_RC_BG : flag | OS.GTK_RC_BG;
-	OS.gtk_rc_style_set_color_flags(style, index, flag);
+	int flags = OS.gtk_rc_style_get_color_flags (style, index);
+	flags = (color == null) ? flags & ~OS.GTK_RC_BG : flags | OS.GTK_RC_BG;
+	OS.gtk_rc_style_set_color_flags (style, index, flags);
 	OS.gtk_widget_modify_style (handle, style);
 }
 void setBackgroundColor (GdkColor color) {
@@ -2519,11 +2524,16 @@ public void setForeground (Color color) {
 		if (color.isDisposed ()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		gdkColor = color.handle;
 	}
-	GdkColor oldColor = new GdkColor ();
-	OS.gtk_style_get_fg (OS.gtk_widget_get_style (fontHandle ()), OS.GTK_STATE_NORMAL, oldColor);
-	if (gdkColor == null || oldColor.pixel != gdkColor.pixel) {
-		setForegroundColor (gdkColor);
+	boolean set = false;
+	if (gdkColor == null) {
+		int /*long*/ style = OS.gtk_widget_get_modifier_style (handle);
+		set = (OS.gtk_rc_style_get_color_flags (style, OS.GTK_STATE_NORMAL) & OS.GTK_RC_FG) != 0;
+	} else {
+		GdkColor oldColor = new GdkColor ();
+		OS.gtk_style_get_fg (OS.gtk_widget_get_style (handle), OS.GTK_STATE_NORMAL, oldColor);
+		set = oldColor.pixel != gdkColor.pixel;
 	}
+	if (set) setForegroundColor (gdkColor);
 }
 
 void setForegroundColor (GdkColor color) {
