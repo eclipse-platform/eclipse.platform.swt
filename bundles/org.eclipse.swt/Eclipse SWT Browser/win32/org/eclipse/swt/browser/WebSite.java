@@ -234,8 +234,8 @@ int ShowMessage(int hwnd, int lpstrText, int lpstrCaption, int dwType, int lpstr
 			*/
 			OS.MoveMemory(buffer, lpstrText, cnt * 2);
 			String text = new String(buffer);
-			/* provide a buffer large enough to hold the string to compare to */
-			int length = OS.IsUnicode ? cnt : OS.WideCharToMultiByte (OS.CP_ACP, 0, buffer, cnt, 0, 0, null, null) + 1;
+			/* provide a buffer large enough to hold the string to compare to and a null terminated character */
+			int length = (OS.IsUnicode ? cnt : OS.WideCharToMultiByte (OS.CP_ACP, 0, buffer, cnt, 0, 0, null, null)) + 1;
 
 			TCHAR lpBuffer = new TCHAR(0, length);
 			int result = OS.LoadString(hModule, IDS_MESSAGE_BOX_CAPTION, lpBuffer, length);
