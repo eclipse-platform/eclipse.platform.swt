@@ -5243,7 +5243,6 @@ void handleHorizontalScroll(Event event) {
 void handleKey(Event event) {
 	int action;
 	
-	mouseDoubleClick = false;
 	if (event.keyCode != 0) {
 		// special key pressed (e.g., F1)
 		action = getKeyBinding(event.keyCode | event.stateMask);
@@ -5358,6 +5357,7 @@ void handleMouseMove(Event event) {
  * Autoscrolling ends when the mouse button is released.
  */
 void handleMouseUp(Event event) {
+	mouseDoubleClick = false;
 	event.y -= topMargin;
 	endAutoScroll();
 }
