@@ -1278,10 +1278,11 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 		// Index display
 		redBits = greenBits = blueBits = 0;
 	}
+
 	ImageData.fillGradientRectangle(this, data.device,
 		x, y, width, height, vertical, fromRGB, toRGB,
 		redBits, greenBits, blueBits);
-		
+
 	unfocus(true);
 }
 
