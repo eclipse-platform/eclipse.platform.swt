@@ -5511,12 +5511,21 @@ void handleTextSet(TextChangedEvent event) {
  * @param event the event
  */
 void handleTraverse(Event event) {
-	int style = getStyle();
-	boolean ignoreTab = (style & SWT.MULTI) != 0 && !editable || isSingleLine();
-	
-	if ((event.detail == SWT.TRAVERSE_TAB_NEXT || 
-		 event.detail == SWT.TRAVERSE_RETURN) && ignoreTab) {
-		event.doit = true;
+	switch (event.detail) {
+		case SWT.TRAVERSE_ESCAPE:
+			event.doit = true;
+			break;
+		case SWT.TRAVERSE_RETURN:
+		case SWT.TRAVERSE_TAB_NEXT:
+		case SWT.TRAVERSE_TAB_PREVIOUS:
+			if ((getStyle() & SWT.SINGLE) != 0) {
+				event.doit = true;
+			} else {
+				if (!editable || (event.stateMask & SWT.MODIFIER_MASK) != 0) {
+					event.doit = true;
+				}
+			}
+			break;
 	}
 }
 /** 

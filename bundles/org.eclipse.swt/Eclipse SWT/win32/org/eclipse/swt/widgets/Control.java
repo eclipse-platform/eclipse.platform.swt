@@ -2560,20 +2560,25 @@ boolean translateTraversal (MSG msg) {
 			break;
 		}
 		case OS.VK_TAB: {
-			/*
-			* NOTE: This code causes Shift+Tab and Ctrl+Tab to
-			* always attempt traversal which is not correct.
-			* The default should be the same as a plain Tab key.
-			* This behavior is currently relied on by StyledText.
-			*
-			* The correct behavior is to give every key to a
-			* control that answers DLGC_WANTALLKEYS.
-			*/
 			lastAscii = '\t';
 			boolean next = OS.GetKeyState (OS.VK_SHIFT) >= 0;
 			int code = OS.SendMessage (hwnd, OS.WM_GETDLGCODE, 0, 0);
 			if ((code & (OS.DLGC_WANTTAB | OS.DLGC_WANTALLKEYS)) != 0) {
-				if (next && OS.GetKeyState (OS.VK_CONTROL) >= 0) doit = false;
+				/*
+				* Use DLGC_HASSETSEL to determine that the control is a
+				* text widget.  If the control is a text widget, then
+				* Ctrl+Tab and Shift+Tab should traverse out of the widget.
+				* If the control is not a text widget, the correct behavior
+				* is to give every character, including Tab, Ctrl+Tab and
+				* Shift+Tab to the control.
+				*/
+				if ((code & OS.DLGC_HASSETSEL) != 0) {
+					if (next && OS.GetKeyState (OS.VK_CONTROL) >= 0) {
+						doit = false;
+					}
+				} else {
+					doit = false;
+				}
 			}
 			if (parent != null && (parent.style & SWT.MIRRORED) != 0) {
 				if (key == OS.VK_LEFT || key == OS.VK_RIGHT) next = !next;
@@ -2656,7 +2661,7 @@ boolean traverse (Event event) {
 	* event processing.
 	*/	
 	sendEvent (SWT.Traverse, event);
-	if (isDisposed ()) return false;
+	if (isDisposed ()) return true;
 	if (!event.doit) return false;
 	switch (event.detail) {
 		case SWT.TRAVERSE_NONE:			return true;
