@@ -249,6 +249,7 @@ public class OS {
 	public static final int GTK_VISIBLE = 0x100;
 	public static final int GTK_WINDOW_POPUP = 0x1;
 	public static final int GTK_WINDOW_TOPLEVEL = 0x0;
+	public static final int GDK_WINDOW_TYPE_HINT_DIALOG = 1;
 	public static final int GTK_WRAP_NONE = 0;
 	public static final int GTK_WRAP_WORD = 2;
 	public static final int G_LOG_FLAG_FATAL = 0x2;
@@ -1038,6 +1039,7 @@ public static final synchronized native void gtk_window_set_destroy_with_parent(
 public static final synchronized native void gtk_window_set_modal(int /*long*/ window, boolean modal);
 public static final synchronized native void gtk_window_set_resizable(int /*long*/ window, boolean resizable);
 public static final synchronized native void gtk_window_set_title(int /*long*/ window, byte[] title);
+public static final synchronized native void gtk_window_set_type_hint(int /*long*/ window, int hint);
 public static final synchronized native void gtk_window_set_transient_for(int /*long*/ window, int /*long*/ parent);
 public static final synchronized native void gtk_window_unmaximize(int /*long*/ handle);
 public static final native void memmove(int /*long*/ dest, GtkTargetEntry src, int /*long*/ size);

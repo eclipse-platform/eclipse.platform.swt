@@ -8299,6 +8299,16 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1window_1set_1transient_1for)
 }
 #endif
 
+#ifndef NO_gtk_1window_1set_1type_1hint
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1window_1set_1type_1hint)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "gtk_1window_1set_1type_1hint\n")
+	gtk_window_set_type_hint((GtkWindow *)arg0, arg1);
+	NATIVE_EXIT(env, that, "gtk_1window_1set_1type_1hint\n")
+}
+#endif
+
 #ifndef NO_gtk_1window_1unmaximize
 JNIEXPORT void JNICALL OS_NATIVE(gtk_1window_1unmaximize)
 	(JNIEnv *env, jclass that, jint arg0)
