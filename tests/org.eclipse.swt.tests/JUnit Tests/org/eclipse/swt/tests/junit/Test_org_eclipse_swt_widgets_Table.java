@@ -230,27 +230,91 @@ public void test_deselectII() {
 }
 
 public void test_getColumnCount() {
-	warnUnimpl("Test test_getColumnCount not written");
+	assertEquals(0, table.getColumnCount());
+	TableColumn column0 = new TableColumn(table, SWT.NONE);
+	assertEquals(1, table.getColumnCount());
+	TableColumn column1 = new TableColumn(table, SWT.NONE);
+	assertEquals(2, table.getColumnCount());
+	TableColumn column2 = new TableColumn(table, SWT.NONE);
+	assertEquals(3, table.getColumnCount());
+	column0.dispose();
+	assertEquals(2, table.getColumnCount());
+	column1.dispose();
+	assertEquals(1, table.getColumnCount());
+	column2.dispose();
+	assertEquals(0, table.getColumnCount());
 }
 
 public void test_getColumnI() {
-	warnUnimpl("Test test_getColumnI not written");
+	try {
+		table.getColumn(0);
+		fail("No exception thrown for index out of range");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	TableColumn column0 = new TableColumn(table, SWT.LEFT);
+	try {
+		table.getColumn(1);
+		fail("No exception thrown for index out of range");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	assertEquals(column0, table.getColumn(0));
+	TableColumn column1 = new TableColumn(table, SWT.LEFT);
+	assertEquals(column1, table.getColumn(1));
+	column1.dispose();
+	try {
+		table.getColumn(1);
+		fail("No exception thrown for index out of range");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	column0.dispose();
+	try {
+		table.getColumn(0);
+		fail("No exception thrown for index out of range");
+	}
+	catch (IllegalArgumentException e) {
+	}
 }
 
 public void test_getColumns() {
-	warnUnimpl("Test test_getColumns not written");
+	assertEquals(0, table.getColumns().length);
+	TableColumn column0 = new TableColumn(table, SWT.LEFT);
+	TableColumn[] columns = table.getColumns();
+	assertEquals(1, columns.length);
+	assertEquals(column0, columns[0]);
+	column0.dispose();
+	assertEquals(0, table.getColumns().length);
+	column0 = new TableColumn(table, SWT.LEFT);
+	TableColumn column1 = new TableColumn(table, SWT.RIGHT, 1);
+	columns = table.getColumns();
+	assertEquals(2, columns.length);
+	assertEquals(column0, columns[0]);
+	assertEquals(column1, columns[1]);
+	column0.dispose();
+	columns = table.getColumns();
+	assertEquals(1, columns.length);
+	assertEquals(column1, columns[0]);
+	column1.dispose();
+	assertEquals(0, table.getColumns().length);
 }
 
 public void test_getGridLineWidth() {
+	// execute method but there is no way to check the value since it may be anything including 0
 	table.getGridLineWidth();
 }
 
 public void test_getHeaderHeight() {
-	warnUnimpl("Test test_getHeaderHeight not written");
+	assertEquals(0, table.getHeaderHeight());
+	table.setHeaderVisible(true);
+	assertTrue(table.getHeaderHeight() > 0);
+	table.setHeaderVisible(false);
+	assertEquals(0, table.getHeaderHeight());
 }
 
 public void test_getHeaderVisible() {
-	warnUnimpl("Test test_getHeaderVisible not written");
+	// tested in test_setHeaderVisibleZ
 }
 
 public void test_getItemCount() {
@@ -378,7 +442,7 @@ public void test_getItems() {
 }
 
 public void test_getLinesVisible() {
-	warnUnimpl("Test test_getLinesVisible not written");
+	// tested in test_setLinesVisibleZ
 }
 
 public void test_getSelection() {
@@ -1182,19 +1246,26 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 }
 
 public void test_setHeaderVisibleZ() {
+	assertFalse(table.getHeaderVisible());
 	table.setHeaderVisible(true);
 	assertTrue(table.getHeaderVisible());
-
 	table.setHeaderVisible(false);
-	assertTrue(!table.getHeaderVisible());
+	assertFalse(table.getHeaderVisible());
 }
 
 public void test_setLinesVisibleZ() {
+	if (SwtJunit.isCarbon) {
+		// carbon does not support lines
+		assertFalse(table.getLinesVisible());
+		table.setLinesVisible(true);
+		assertFalse(table.getLinesVisible());
+		return;
+	}
+	assertFalse(table.getLinesVisible());
 	table.setLinesVisible(true);
 	assertTrue(table.getLinesVisible());
-
 	table.setLinesVisible(false);
-	assertTrue(!table.getLinesVisible());
+	assertFalse(table.getLinesVisible());
 }
 
 public void test_setRedrawZ() {
@@ -1481,6 +1552,10 @@ public void test_setTopIndexI() {
 	warnUnimpl("Test test_setTopIndexI not written");
 }
 
+public void test_showColumnLorg_eclipse_swt_widgets_TableColumn() {
+	warnUnimpl("Test test_showColumnLorg_eclipse_swt_widgets_TableColumn not written");
+}
+
 public void test_showItemLorg_eclipse_swt_widgets_TableItem() {
 	warnUnimpl("Test test_showItemLorg_eclipse_swt_widgets_TableItem not written");
 }
@@ -1545,6 +1620,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_setSelectionI");
 	methodNames.addElement("test_setSelectionII");
 	methodNames.addElement("test_setTopIndexI");
+	methodNames.addElement("test_showColumnLorg_eclipse_swt_widgets_TableColumn");
 	methodNames.addElement("test_showItemLorg_eclipse_swt_widgets_TableItem");
 	methodNames.addElement("test_showSelection");
 	methodNames.addElement("test_consistency_KeySelection");
@@ -1602,6 +1678,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setSelectionI")) test_setSelectionI();
 	else if (getName().equals("test_setSelectionII")) test_setSelectionII();
 	else if (getName().equals("test_setTopIndexI")) test_setTopIndexI();
+	else if (getName().equals("test_showColumnLorg_eclipse_swt_widgets_TableColumn")) test_showColumnLorg_eclipse_swt_widgets_TableColumn();
 	else if (getName().equals("test_showItemLorg_eclipse_swt_widgets_TableItem")) test_showItemLorg_eclipse_swt_widgets_TableItem();
 	else if (getName().equals("test_showSelection")) test_showSelection();
 	else if (getName().equals("test_consistency_KeySelection")) test_consistency_KeySelection();
@@ -1616,12 +1693,10 @@ protected void runTest() throws Throwable {
 /* custom */
 protected Table table;
 
-private void makeCleanEnvironment(boolean singleMode) {
+private void makeCleanEnvironment(boolean single) {
 // this method must be private or protected so the auto-gen tool keeps it
-	if ( singleMode == false )
-		table = new Table(shell, SWT.MULTI);
-	else
-		table = new Table(shell, SWT.SINGLE);
+	if (table != null) table.dispose();
+	table = new Table(shell, single?SWT.SINGLE:SWT.MULTI);
 	setWidget(table);	
 }
 
