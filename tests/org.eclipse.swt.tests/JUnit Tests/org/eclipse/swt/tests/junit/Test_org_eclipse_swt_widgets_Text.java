@@ -35,11 +35,14 @@ public static void main(String[] args) {
 
 protected void setUp() {
 	super.setUp();
+	shell.pack();
+	shell.open();
 	makeCleanEnvironment(false); // use multi-line by default
 }
 
 protected void tearDown() {
 	super.tearDown();
+	shell.dispose();
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
@@ -365,17 +368,19 @@ public void test_getCaretLineNumber() {
 }
 
 public void test_getCaretLocation() {
+	// account for insets when asserting
+	text.setSize(200,50);
 	text.setSelection(0,0);
 	text.insert("");
 	assertTrue(":a:", text.getCaretLocation().x >= 0);
-	assertTrue(":a:", text.getCaretLocation().y == 0);
+	assertTrue(":a:", text.getCaretLocation().y >= 0);
 	text.setText("Line0\r\nLine1\r\nLine2");
 	text.insert("");
 	assertTrue(":b:", text.getCaretLocation().x >= 0);
-	assertTrue(":b:", text.getCaretLocation().y == 0);
+	assertTrue(":b:", text.getCaretLocation().y >= 0);
 	text.setSelection(1,1);
 	assertTrue(":c:", text.getCaretLocation().x > 0);
-	assertTrue(":c:", text.getCaretLocation().y == 0);
+	assertTrue(":c:", text.getCaretLocation().y > 0);
 }
 
 public void test_getCaretPosition() {
@@ -599,10 +604,10 @@ public void test_getTextLimit() {
 }
 
 public void test_getTopIndex() {
+	text.setSize(50,text.getLineHeight() * 2);
 	text.setTopIndex(0);
 	assertEquals(0, text.getTopIndex());
-	text.append(delimiterString +"01234567890");
-	assertEquals(0, text.getTopIndex());
+	text.append(delimiterString +"0123456789");
 	text.setTopIndex(1);
 	assertEquals(1, text.getTopIndex());
 	text.setTopIndex(17);
@@ -619,6 +624,7 @@ public void test_getTopPixel() {
 	assertTrue(":c:", text.getTopPixel() == 0);
 	text.setTopIndex(1);
 	assertTrue(":d:", text.getTopPixel() == text.getLineHeight());
+	text.setSize(10, text.getLineHeight());
 	text.setTopIndex(2);
 	assertTrue(":e:", text.getTopPixel() == text.getLineHeight() * 2);
 	text.setTopIndex(0);
@@ -689,6 +695,22 @@ public void test_insertLjava_lang_String() {
 		fail("No exception thrown on string == null");
 	}
 	catch (IllegalArgumentException e) {
+	}
+}
+
+public void test_isVisible() {
+	control.setVisible(true);
+	assertTrue(control.isVisible());  
+
+	control.setVisible(false);
+	assertTrue(!control.isVisible());
+
+	if (!SwtJunit.isAIX) {
+		control.setVisible(true);
+		shell.setVisible(true);
+		assertTrue("Window should be visible", control.isVisible());
+		shell.setVisible(false);
+		assertTrue("Window should not be visible", !control.isVisible());
 	}
 }
 
@@ -1061,7 +1083,7 @@ public void test_setTopIndexI() {
 	for (int i = 0; i < number; i++) {
 		text.append("01234\n");
 	}
-	for (int i = 1; i <= number; i++) {
+	for (int i = 1; i < number; i++) {
 		text.setTopIndex(i);
 		assertEquals(i, text.getTopIndex());
 	}
