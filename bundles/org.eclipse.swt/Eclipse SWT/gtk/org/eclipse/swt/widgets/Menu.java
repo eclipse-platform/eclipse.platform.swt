@@ -136,8 +136,6 @@ void createHandle (int index) {
 		OS.gtk_container_add (parentHandle, handle);
 	} else {
 		handle = OS.gtk_menu_new ();
-		OS.g_object_ref (handle);
-		OS.gtk_object_sink (handle);
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
@@ -452,11 +450,6 @@ void releaseWidget () {
 	super.releaseWidget ();
 	parent = null;
 	cascade = null;
-	if ((style & SWT.BAR) == 0) {
-		OS.g_object_unref (handle);
-		//FIXME - this is just avoiding the call to gtk_widget_destroy ()
-		handle = 0;
-	}
 }
 
 /**

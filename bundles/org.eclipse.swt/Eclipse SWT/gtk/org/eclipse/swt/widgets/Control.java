@@ -1702,6 +1702,11 @@ int processMouseHover (int id) {
 	OS.gdk_window_get_pointer (0, x, y, null);
 	event.x = x [0];
 	event.y = y [0];
+	int eventHandle = eventHandle ();
+	int window = OS.GTK_WIDGET_WINDOW (eventHandle);
+	OS.gdk_window_get_origin (window, x, y);
+	event.x -= x [0];
+	event.y -= y [0];
 	postEvent (SWT.MouseHover, event);
 	return 0;
 }
