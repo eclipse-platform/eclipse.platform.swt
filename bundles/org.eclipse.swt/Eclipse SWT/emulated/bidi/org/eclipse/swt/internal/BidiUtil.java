@@ -45,11 +45,6 @@ public static void addLanguageListener(int hwnd, Runnable runnable) {
 }
 /*
  * Not implemented.
- */
-public static void addOrientationListener(int hwnd, Runnable LTRRunnable, Runnable RTLRunnable) {
-}
-/*
- * Not implemented.
  *
  */
 public static void drawGlyphs(GC gc, char[] renderBuffer, int[] renderDx, int x, int y) {
@@ -100,16 +95,11 @@ public static void removeLanguageListener(int hwnd) {
 /*
  * Not implemented.
  */
-public static void removeOrientationListener(int hwnd) {
-}
-/*
- * Not implemented.
- */
 public static void setKeyboardLanguage(int language) {
 }
 /*
  * Not implemented.
  */
-public static void setOrientation(int hwnd, int orientation) {
+public static boolean setOrientation(int hwnd, int orientation) {
 }
 }

@@ -1647,18 +1647,6 @@ public StyledText(Composite parent, int style) {
 	String platform= SWT.getPlatform();
 	isCarbon = "carbon".equals(platform);	
 	
-	StyledTextBidi.addOrientationListener(this,
-		new Runnable() {
-			public void run() {
-				setOrientation(SWT.LEFT_TO_RIGHT);
-			}
-		},
-		new Runnable() {
-			public void run() {
-				setOrientation(SWT.RIGHT_TO_LEFT);
-			}
-		}
-	);	
 	// set the caret width, the height of the caret will default to the line height
 	calculateScrollBars();
 	createKeyBindings();
@@ -5136,7 +5124,6 @@ void handleDispose() {
 	if (isBidi()) {
 		StyledTextBidi.removeLanguageListener(this);
 	}
-	StyledTextBidi.removeOrientationListener(this);
 }
 /** 
  * Scrolls the widget horizontally.
@@ -7479,18 +7466,16 @@ void setOrientation(int orientation) {
 	if ((orientation & SWT.RIGHT_TO_LEFT) != 0 && (orientation & SWT.LEFT_TO_RIGHT) != 0) {
 		return;	
 	}
-	if ((orientation & SWT.RIGHT_TO_LEFT) != 0) {
-		if (isMirrored()) {
-			return;	
-		}
-		isMirrored = true;
-	} else {
-		if (isMirrored() == false) {
-			return;
-		}
-		isMirrored = false;
-	}	
-	StyledTextBidi.setOrientation(this, orientation);
+	if ((orientation & SWT.RIGHT_TO_LEFT) != 0 && isMirrored()) {
+		return;	
+	} 
+	if ((orientation & SWT.LEFT_TO_RIGHT) != 0 && isMirrored() == false) {
+		return;
+	}
+	if (StyledTextBidi.setOrientation(this, orientation) == false) {
+		return;
+	}
+	isMirrored = (orientation & SWT.RIGHT_TO_LEFT) != 0;
 	isBidi = StyledTextBidi.isBidiPlatform() || isMirrored();
 	initializeRenderer();
 	if (isBidi()) {

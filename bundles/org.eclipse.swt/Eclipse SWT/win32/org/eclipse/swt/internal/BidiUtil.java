@@ -109,22 +109,6 @@ public static void addLanguageListener(int hwnd, Runnable runnable) {
 	subclass(hwnd);
 }
 /**
- * Adds a widget orientation (writing order) listener. The listener will get notified 
- * when the user switches the writing order using Ctrl-Shift.
- * <p>
- *
- * @param hwnd the handle of the Control that is listening for widget orientation 
- *  changes
- * @param LTRRunnable the listener that is called when writing order is 
- * 	switched to "left to right" (left oriented text).
- * @param RTLRunnable the listener that is called when writing order is 
- * 	switched to "right to left" (right oriented text).
- */
-public static void addOrientationListener(int hwnd, Runnable LTRRunnable, Runnable RTLRunnable) {
-	keyMap.put(new Integer(hwnd), new Runnable[] {LTRRunnable, RTLRunnable});
-	subclass(hwnd);
-}
-/**
  * Proc used for OS.EnumSystemLanguageGroups call during isBidiPlatform test.
  */
 static int EnumSystemLanguageGroupsProc(int lpLangGrpId, int lpLangGrpIdString, int lpLangGrpName, int options, int lParam) {
@@ -499,18 +483,6 @@ public static void removeLanguageListener(int hwnd) {
 	unsubclass(hwnd);
 }		
 /**
- * Removes the widget orientation (writing order) listener for the specified 
- * control.  
- * <p>
- *
- * @param hwnd the handle of the Control that is listening for widget  
- *  orientation changes
- */
-public static void removeOrientationListener(int hwnd) {
-	keyMap.remove(new Integer(hwnd));
-	unsubclass(hwnd);
-}
-/**
  * Switch the keyboard language to the specified language type.  We do
  * not distinguish between mulitple bidi or multiple non-bidi languages, so
  * set the keyboard to the first language of the given type.
@@ -555,8 +527,11 @@ public static void setKeyboardLanguage(int language) {
  * 
  * @param hwnd the handle of the Control to change the orientation of
  * @param orientation one of SWT.RIGHT_TO_LEFT or SWT.LEFT_TO_RIGHT
+ * @return true if the orientation was changed, false if the orientation 
+ * 	could not be changed
  */
-public static void setOrientation (int hwnd, int orientation) {
+public static boolean setOrientation (int hwnd, int orientation) {
+	if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) return false;
 	int bits = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
 	if ((orientation & SWT.RIGHT_TO_LEFT) != 0) {
 		bits |= OS.WS_EX_LAYOUTRTL; 
@@ -564,6 +539,7 @@ public static void setOrientation (int hwnd, int orientation) {
 		bits &= ~OS.WS_EX_LAYOUTRTL;
 	} 
 	OS.SetWindowLong (hwnd, OS.GWL_EXSTYLE, bits);
+	return true;
 }
 /**
  * Override the window proc.
@@ -653,19 +629,6 @@ static int windowProc (int hwnd, int msg, int wParam, int lParam) {
 		case 0x51 /*OS.WM_INPUTLANGCHANGE*/:
 			Runnable runnable = (Runnable) languageMap.get (key);
 			if (runnable != null) runnable.run ();
-			break;
-		case OS.WM_KEYDOWN:
-			if (wParam == OS.VK_SHIFT) {
-				if (OS.GetKeyState (OS.VK_CONTROL) < 0) {
-					Runnable[] runnables = (Runnable[]) keyMap.get (key);
-					if (runnables == null) break;					
-					if (OS.GetKeyState (0xA0 /* VK_LSHIFT */) < 0) {
-						if (runnables[0] != null) runnables[0].run ();
-					} else {
-						if (runnables[1] != null) runnables[1].run ();
-					}
-				}
-			}
 			break;
 	}
 	Integer oldProc = (Integer)oldProcMap.get(key);
