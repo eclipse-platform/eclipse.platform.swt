@@ -1,7 +1,7 @@
 package org.eclipse.swt.graphics;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -20,14 +20,12 @@ import org.eclipse.swt.*;
  *
  * @see RGB
  */
-
 public final class Color {
 
 	/**
 	 * the handle to the OS color resource 
 	 * (Warning: This field is platform dependent)
 	 */
-
 	public int handle;
 
 	/**
@@ -61,7 +59,6 @@ Color() {
  *
  * @see #dispose
  */
-
 public Color (Device device, int red, int green, int blue) {
 	init(device, red, green, blue);
 }
@@ -87,7 +84,6 @@ public Color (Device device, int red, int green, int blue) {
  *
  * @see #dispose
  */
-
 public Color (Device device, RGB rgb) {
 	if (rgb == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(device, rgb.red, rgb.green, rgb.blue);
@@ -178,7 +174,6 @@ public RGB getRGB () {
  *
  * @see #equals
  */
-
 public int hashCode () {
 	if (isDisposed()) return 0;
 	return handle;

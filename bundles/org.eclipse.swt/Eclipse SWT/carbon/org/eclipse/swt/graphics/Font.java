@@ -1,7 +1,7 @@
 package org.eclipse.swt.graphics;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -21,7 +21,6 @@ import org.eclipse.swt.*;
  *
  * @see FontData
  */
-
 public final class Font {
 	
 	/**
@@ -59,7 +58,6 @@ Font() {
  *    <li>ERROR_NO_HANDLES - if a font could not be created from the given font data</li>
  * </ul>
  */
-
 public Font(Device device, FontData fd) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -89,7 +87,6 @@ public Font(Device device, FontData fd) {
  *    <li>ERROR_NO_HANDLES - if a font could not be created from the given arguments</li>
  * </ul>
  */
-
 public Font(Device device, String name, int height, int style) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);

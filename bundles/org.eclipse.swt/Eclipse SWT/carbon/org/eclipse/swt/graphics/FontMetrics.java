@@ -1,7 +1,7 @@
 package org.eclipse.swt.graphics;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -44,7 +44,6 @@ public boolean equals (Object object) {
  *
  * @return the ascent of the font
  */
-
 public int getAscent() {
 	return ascent;
 }
@@ -79,7 +78,6 @@ public int getDescent() {
  * @see #getDescent
  * @see #getLeading
  */
-
 public int getHeight() {
 	return height;
 }
@@ -103,7 +101,6 @@ public int getLeading() {
  *
  * @see #equals
  */
-
 public int hashCode() {
 	return ascent ^ descent ^ averageCharWidth ^ leading ^ height;
 }

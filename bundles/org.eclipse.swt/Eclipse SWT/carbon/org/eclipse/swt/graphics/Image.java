@@ -1,7 +1,7 @@
 package org.eclipse.swt.graphics;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -56,7 +56,6 @@ import java.io.*;
  * @see ImageData
  * @see ImageLoader
  */
-
 public final class Image implements Drawable {
 
     static class XImage {
@@ -186,7 +185,6 @@ Image() {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
  */
-
 public Image(Device device, int width, int height) {
 	init(device, width, height);
 }
@@ -221,7 +219,6 @@ public Image(Device device, int width, int height) {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
  */
-
 public Image(Device device, Image srcImage, int flag) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -308,7 +305,7 @@ public Image(Device device, Image srcImage, int flag) {
 
 			switch (srcXImage.bits_per_pixel) {
 				case 1:
-					/**
+					/*
 					 * Nothing we can reasonably do here except copy
 					 * the bitmap; we can't make it a higher color depth.
 					 * Short-circuit the rest of the code and return.
@@ -577,7 +574,6 @@ public Image(Device device, Image srcImage, int flag) {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
  */
-
 public Image(Device device, Rectangle bounds) {
 	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(device, bounds.width, bounds.height);
@@ -597,7 +593,6 @@ public Image(Device device, Rectangle bounds) {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
  */
-
 public Image(Device device, ImageData image) {
 	init(device, image);
 }
@@ -630,7 +625,6 @@ public Image(Device device, ImageData image) {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
  */
-
 public Image(Device device, ImageData source, ImageData mask) {
 	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (mask == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -675,7 +669,6 @@ public Image(Device device, ImageData source, ImageData mask) {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
  */
-
 public Image(Device device, InputStream stream) {
 	init(device, new ImageData(stream));
 }
@@ -704,7 +697,6 @@ public Image(Device device, InputStream stream) {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
  * </ul>
  */
-
 public Image(Device device, String filename) {
 	init(device, new ImageData(filename));
 }
@@ -884,7 +876,7 @@ public ImageData getImageData() {
 			});
 			break;
 		case 4:
-			/**
+			/*
 			 * We currently don't run on a 4-bit server, so 4-bit images
 			 * should not exist.
 			 */
@@ -932,7 +924,7 @@ public ImageData getImageData() {
 			palette = new PaletteData(rgbs);
 			break;
 		case 16:
-			/**
+			/*
 			 * For some reason, the XImage does not have the mask information.
 			 * We must get it from the visual.
 			 */
@@ -963,7 +955,7 @@ public ImageData getImageData() {
 	ImageData data = new ImageData(width, height, xSrcImage.depth, palette);
 	data.data = srcData;
 	if (xSrcImage.bits_per_pixel == 32) {
-		/**
+		/*
 		 * If bits per pixel is 32, scale the data down to 24, since we do not
 		 * support 32-bit images
 		 */
@@ -1101,7 +1093,6 @@ static boolean getOffsetForMask(int bitspp, int mask, int byteOrder, int[] poff)
  *
  * @see #equals
  */
-
 public int hashCode () {
 	return pixmap;
 }
@@ -1240,7 +1231,6 @@ void init(Device device, ImageData image) {
  *
  * @private
  */
-
 public int internal_new_GC (GCData data) {
 	if (pixmap == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (type != SWT.BITMAP || memGC != null) {
@@ -1284,7 +1274,6 @@ public int internal_new_GC (GCData data) {
  *
  * @private
  */
-
 public void internal_dispose_GC (int gc, GCData data) {
     /* AW
 	int xDisplay = 0;

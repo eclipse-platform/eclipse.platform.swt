@@ -1,7 +1,7 @@
 package org.eclipse.swt.graphics;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
  
@@ -31,7 +31,6 @@ public final class Region {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for region creation</li>
  * </ul>
  */
-
 public Region () {
 	handle= OS.NewRgn();
 }

@@ -1,7 +1,7 @@
 package org.eclipse.swt.graphics;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -32,7 +32,6 @@ import org.eclipse.swt.*;
  * Note: Only one of the above styles may be specified.
  * </p>
  */
-
 public final class Cursor {
 	/**
 	 * the handle to the OS cursor resource
@@ -88,7 +87,6 @@ Cursor () {
  * @see SWT#CURSOR_NO
  * @see SWT#CURSOR_HAND
  */
-
 public Cursor (Device device, int style) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -143,7 +141,6 @@ public boolean isDisposed() {
  * the cursor. Applications must dispose of all cursors which
  * they allocate.
  */
-
     public void dispose()  {
     }
 

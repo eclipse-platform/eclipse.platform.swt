@@ -1,7 +1,7 @@
 package org.eclipse.swt.graphics;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -48,7 +48,6 @@ public final class FontData {
 	 * The height of the font data in points
 	 * (Warning: This field is platform dependent)
 	 */
-
 	public int height;
 	/**
 	 * The font style.
@@ -66,7 +65,6 @@ public final class FontData {
 /**	 
  * Constructs a new un-initialized font data.
  */
-
 public FontData () {
 }
 /**
