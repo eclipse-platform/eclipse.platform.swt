@@ -458,12 +458,10 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
 }
 
 /**
- * Returns an array of <code>FontData</code>s representing the receiver.
- * On Windows, only one FontData will be returned per font. On X however, 
- * a <code>Font</code> object <em>may</em> be composed of multiple X 
- * fonts. To support this case, we return an array of font data objects.
- *
- * @return an array of font data objects describing the receiver
+ * Returns a <code>PrinterData</code> object representing the
+ * target printer for this print job.
+ * 
+ * @return a PrinterData object describing the receiver
  */
 public PrinterData getPrinterData() {
 	return data;
