@@ -17,15 +17,13 @@ import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
-/* DO NOT USE - UNDER CONSTRUCTION */
-	
 /**
  * Instances of this class are selectable user interface
  * objects that allow the user to enter and modify number
  * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>READ_ONLY, WRAP</dd>
+ * <dd>READ_ONLY</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection, Modify</dd>
  * </dl>
@@ -37,7 +35,6 @@ class Spinner extends Composite {
 	static final int INNER_BORDER = 2;
 	static final int MIN_ARROW_WIDTH = 6;
 	int lastEventTime = 0;
-	boolean ignoreOutput;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -64,7 +61,6 @@ class Spinner extends Composite {
  * </ul>
  *
  * @see SWT#READ_ONLY
- * @see SWT#WRAP
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -149,7 +145,7 @@ public void addSelectionListener(SelectionListener listener) {
  * @see VerifyListener
  * @see #removeVerifyListener
  */
-public void addVerifyListener (VerifyListener listener) {
+void addVerifyListener (VerifyListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
@@ -244,9 +240,7 @@ void createHandle (int index) {
 	OS.gtk_container_add (fixedHandle, handle);
 	OS.gtk_editable_set_editable (handle, (style & SWT.READ_ONLY) == 0);
 	OS.gtk_entry_set_has_frame (handle, (style & SWT.BORDER) != 0);
-	OS.gtk_spin_button_set_wrap (handle, (style & SWT.WRAP) != 0);	
-	byte [] buffer = Converter.wcsToMbcs (null, "", true);
-	OS.gtk_entry_set_text (handle, buffer);
+	OS.gtk_spin_button_set_wrap (handle, true);	
 }
 
 /**
@@ -394,10 +388,6 @@ public int getSelection () {
 }
 
 int gtk_activate (int widget) {
-	//TODO FIND A BETTER SOLUTION FOR THIS PROBLEM
-	if (OS.gtk_editable_get_editable (handle)) {
-		ignoreOutput = true;
-	}
 	postEvent (SWT.DefaultSelection);
 	return 0;
 }
@@ -458,26 +448,6 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
 	return super.gtk_event_after (widget, gdkEvent);
 }
 
-int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
-	//TODO FIND A BETTER SOLUTION FOR THIS PROBLEM
-	/* Feature in gtk, GtkSpinButton internally call gtk_spin_button_update() 
-	 * during focus_out events. This is the correct GTK behavior but not correct
-	 * for SWT.  The fix is to ignore the output callback. 
-	 */
-	if (OS.gtk_editable_get_editable (handle)) {
-		ignoreOutput = true;
-	}
-	return super.gtk_focus_out_event (widget, event);
-}
-
-int /*long*/ gtk_input (int /*long*/ widget, int /*long*/ arg1) {
-	int /*long*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
-	GtkAdjustment adjustment = new GtkAdjustment ();
-	OS.memmove (adjustment, hAdjustment);
-	OS.memmove (arg1, new double [] {adjustment.value},   8);
-	return 1;
-}
-
 int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*long*/ new_text_length, int /*long*/ position) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	if (new_text == 0 || new_text_length == 0) return 0;
@@ -506,35 +476,6 @@ int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*
 	return 0;
 }
 
-int /*long*/ gtk_output (int /*long*/ widget) {
-	if (ignoreOutput) {
-		ignoreOutput = false;
-		return 1;
-	}
-	int /*long*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
-	GtkAdjustment adjustment = new GtkAdjustment ();
-	OS.memmove (adjustment, hAdjustment);
-	String value = String.valueOf ((int)adjustment.value);
-	int /*long*/ ptr = OS.gtk_entry_get_text (handle);
-	if (ptr != 0) {
-		int length = OS.strlen (ptr);
-		if (length > 0) {
-			byte [] buffer = new byte [length];
-			OS.memmove (buffer, ptr, length);			
-			String text = new String (Converter.mbcsToWcs (null, buffer));
-			if (value.equals(text)) return 1;
-		}
-	}
-	byte [] buffer = Converter.wcsToMbcs (null, value, false);	
-	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
-	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-	OS.gtk_editable_delete_text (handle, 0, -1);
-	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
-	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);	
-	OS.gtk_editable_insert_text (handle, buffer, buffer.length, new int[] {0});
-	return 1;
-}
-
 int /*long*/ gtk_popup_menu (int /*long*/ widget) {
 	int [] x = new int [1], y = new int [1];
 	OS.gdk_window_get_pointer (0, x, y, null);
@@ -557,8 +498,6 @@ void hookEvents () {
 	OS.g_signal_connect (handle, OS.delete_text, windowProc4, DELETE_TEXT);
 	OS.g_signal_connect (handle, OS.value_changed, windowProc2, VALUE_CHANGED);
 	OS.g_signal_connect (handle, OS.activate, windowProc2, ACTIVATE);
-	OS.g_signal_connect (handle, OS.input, windowProc3, INPUT);
-	OS.g_signal_connect (handle, OS.output, windowProc2, OUTPUT);
 	int /*long*/ imContext = imContext ();
 	if (imContext != 0) {
 		OS.g_signal_connect (imContext, OS.commit, windowProc3, COMMIT);
@@ -669,7 +608,7 @@ public void removeSelectionListener(SelectionListener listener) {
  * @see VerifyListener
  * @see #addVerifyListener
  */
-public void removeVerifyListener (VerifyListener listener) {
+void removeVerifyListener (VerifyListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
@@ -733,6 +672,7 @@ public void setIncrement (int value) {
  */
 public void setMaximum (int value) {
 	checkWidget ();
+	if (value < 0) return;
 	int minimum = getMinimum();
 	if (value <= minimum) return;
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
@@ -755,6 +695,7 @@ public void setMaximum (int value) {
  */
 public void setMinimum (int value) {
 	checkWidget ();
+	if (value < 0) return;
 	int maximum = getMaximum ();
 	if (value >= maximum) return;
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);

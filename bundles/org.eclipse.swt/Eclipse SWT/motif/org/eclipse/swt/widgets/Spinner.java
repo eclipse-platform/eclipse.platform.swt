@@ -17,15 +17,13 @@ import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
-/* DO NOT USE - UNDER CONSTRUCTION */
-
 /**
  * Instances of this class are selectable user interface
  * objects that allow the user to enter and modify number
  * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>READ_ONLY, WRAP</dd>
+ * <dd>READ_ONLY</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection, Modify</dd>
  * </dl>
@@ -60,7 +58,6 @@ class Spinner extends Composite {
  * </ul>
  *
  * @see SWT#READ_ONLY
- * @see SWT#WRAP
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -142,7 +139,7 @@ public void addSelectionListener(SelectionListener listener) {
  * @see VerifyListener
  * @see #removeVerifyListener
  */
-public void addVerifyListener (VerifyListener listener) {
+void addVerifyListener (VerifyListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
@@ -490,7 +487,7 @@ public void removeSelectionListener(SelectionListener listener) {
  * @see VerifyListener
  * @see #addVerifyListener
  */
-public void removeVerifyListener (VerifyListener listener) {
+void removeVerifyListener (VerifyListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
@@ -569,7 +566,8 @@ public void setIncrement (int value) {
  * </ul>
  */
 public void setMaximum (int value) {
-	checkWidget ();	
+	checkWidget ();
+	if (value < 0) return;
 	int [] argList1 = {OS.XmNminimumValue, 0, OS.XmNposition, 0};
 	OS.XtGetValues (handle, argList1, argList1.length / 2);	
 	if (value <= argList1 [1]) return;
@@ -593,13 +591,14 @@ public void setMaximum (int value) {
  */
 public void setMinimum (int value) {
 	checkWidget ();
+	if (value < 0) return;
 	int [] argList1 = {OS.XmNmaximumValue, 0, OS.XmNposition, 0};
-	OS.XtGetValues (handle, argList1, argList1.length / 2);	
+	OS.XtGetValues (handle, argList1, argList1.length / 2);
 	if (value >= argList1 [1]) return;
 	int position = argList1 [3];
 	if (value > position) position = value;
 	int [] argList2 = {OS.XmNposition, position, OS.XmNminimumValue, value};
-	OS.XtSetValues (handle, argList2, argList2.length / 2);	
+	OS.XtSetValues (handle, argList2, argList2.length / 2);
 }
 /**
  * Sets the amount that the receiver's value will be
@@ -635,9 +634,47 @@ public void setSelection (int value) {
 	int [] argList = {OS.XmNposition, value};
 	OS.XtSetValues (handle, argList, argList.length / 2);	
 }
+void updateText () {
+	int [] argList = {
+			OS.XmNtextField, 0,		/* 1 */
+			OS.XmNminimumValue, 0,	/* 3 */
+			OS.XmNmaximumValue, 0,	/* 5 */
+			OS.XmNposition, 0};		/* 7 */
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	int ptr = OS.XmTextGetString (argList [1]);
+	int position;
+	if (ptr != 0) {
+		int length = OS.strlen (ptr);
+		byte [] buffer = new byte [length];
+		OS.memmove (buffer, ptr, length);
+		OS.XtFree (ptr);
+		String string = new String (Converter.mbcsToWcs (getCodePage (), buffer));
+		try {
+			int value = Integer.parseInt (string);			
+			if (argList [3] <= value && value <= argList [5]) {
+				position = value;
+			} else {
+				position = argList [3];
+			}
+		} catch (NumberFormatException e) {
+			position = argList [7];
+			int [] argList2 = {OS.XmNposition, position + 1};
+			OS.XtSetValues (handle, argList2, argList2.length / 2);
+		}
+	} else {
+		position = argList [3];
+	}
+	int [] argList2 = {OS.XmNposition, position};
+	OS.XtSetValues (handle, argList2, argList2.length / 2);	
+}
 int XmNactivateCallback (int w, int client_data, int call_data) {
 	postEvent (SWT.DefaultSelection);
+	updateText ();
 	return 0;
+}
+int xFocusOut (XFocusChangeEvent xEvent) {
+	updateText ();
+	return super.xFocusOut (xEvent);
 }
 int XmNmodifyVerifyCallback (int w, int client_data, int call_data) {
 	int result = super.XmNmodifyVerifyCallback (w, client_data, call_data);
