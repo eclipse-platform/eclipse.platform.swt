@@ -26,43 +26,10 @@ public final class Converter {
 	
 	static String CodePage;
 	static byte[] Unicode;
-	
-	/* Converter cache */
-	static String LastMBToWCCodePage;
-	static String LastWCToMBCodePage;
-	static int LastWCToMB;
-	static int LastMBToWC;
-	
-	/* Buffers cache */
-	static int BufferSize;
-	static int BufferTimes2;
-	static int BufferTimes4;
+		
 	
 	static {	
 		Unicode = getAsciiBytes("UCS-2");
-
-		/* AW
-		int length, item = OS.nl_langinfo (OS.CODESET);
-		if (item != 0 && (length = OS.strlen (item)) > 0) {
-			byte [] buffer = new byte [length];
-			OS.memmove (buffer, item, length);
-			CodePage = new String (buffer);
-			if (OS.IsSunOS) {
-				if (length > 3 && CodePage.indexOf ("ISO") == 0) {
-					CodePage = CodePage.substring (3, length - 3);
-				}
-			}
-		} else {
-			if (OS.IsLinux) CodePage = "ISO-8859-1";
-			else if (OS.IsAIX) CodePage = "ISO8859-1";
-			else if (OS.IsSunOS) CodePage = "8859-1";
-			else CodePage = "iso8859_1";
-		}
-		
-		BufferSize = 512;
-		BufferTimes2 = OS.XtMalloc (BufferSize * 2);
-		BufferTimes4 = OS.XtMalloc (BufferSize * 4);
-		*/
 	}
 
 /**
@@ -113,74 +80,17 @@ public static char [] mbcsToWcs (String codePage, byte [] buffer) {
 		return EMPTY_CHAR_ARRAY;
 	}
 	
-	/*
-	 * Optimize for English ASCII encoding.  If no conversion is
-	 * performed, it is safe to return any object that will also not
-	 * be converted if this routine is called again with the result.
-	 * This ensures that double conversion will not be performed
-	 * on the same bytes.  Note that this relies on the fact that
-	 * lead bytes are never in the range 0..0x7F.
-	 */
-	char [] wideCharStr = new char [length];
-	/* AW
-	for (int i=0; i<length; i++) {
-		if ((buffer [i] & 0xFF) <= 0x7F) {
-			wideCharStr [i] = (char) buffer [i]; // all bytes <= 0x7F, so no ((char) (buffer[i]&0xFF)) needed
-		} else {
-			synchronized (Converter.class) {
-				String cp = codePage != null ? codePage : CodePage;
-				if (LastMBToWC != 0 && !cp.equals (LastMBToWCCodePage)) {
-					OS.iconv_close (LastMBToWC);
-					LastMBToWC = 0;
-				}
-				if (LastMBToWC == 0) {
-					LastMBToWCCodePage = cp;
-					LastMBToWC = OS.iconv_open (Unicode, getAsciiBytes (cp));
-				}
-				int cd = LastMBToWC;
-				if (cd == 0) return EMPTY_CHAR_ARRAY;
-				int inBytes = length;
-				int outBytes = length * 2;
-				int ptr1, ptr2;
-				if (length <= BufferSize * 2) {
-					ptr1 = BufferTimes2;
-					ptr2 = BufferTimes4;
-				} else {
-					ptr1 = OS.XtMalloc (inBytes);
-					ptr2 = OS.XtMalloc (outBytes);
-				}
-				int [] inBuf = {ptr1};
-				int [] inBytesLeft = {inBytes};
-				int [] outBuf = {ptr2};
-				int [] outBytesLeft = {outBytes};
-				OS.memmove (ptr1, buffer, inBytes);
-				int result = OS.iconv (cd, inBuf, inBytesLeft, outBuf, outBytesLeft);
-				outBytes = outBuf [0] - ptr2;
-				wideCharStr = new char [outBytes / 2];
-				OS.memmove (wideCharStr, ptr2, outBytes);
-				if (ptr1 != BufferTimes2) OS.XtFree (ptr1);
-				if (ptr2 != BufferTimes4) OS.XtFree (ptr2);
-			}
-			return wideCharStr;
-		}
-	}
-	*/
-	return wideCharStr;
+	String s= new String(buffer);
+	int n= s.length();
+	char[] chars= new char[n];
+	s.getChars(0, n, chars, 0);
+	return chars;
 }
 
 /**
  * Free any cached resources.
  */	
 public static void release () {
-	/* AW
-	synchronized (Converter.class) {
-		if (BufferTimes2 != 0) OS.XtFree (BufferTimes2);
-		if (BufferTimes4 != 0) OS.XtFree (BufferTimes4);
-		if (LastWCToMB != 0) OS.iconv_close (LastWCToMB);
-		if (LastMBToWC != 0) OS.iconv_close (LastMBToWC);
-		LastMBToWC = LastWCToMB = BufferTimes4 = BufferTimes2 = 0;
-	}
-	*/
 }
 
 /**
@@ -218,56 +128,14 @@ public static byte [] wcsToMbcs (String codePage, char [] buffer, boolean termin
 		return (terminate) ? NULL_BYTE_ARRAY : EMPTY_BYTE_ARRAY;
 	}
 
-	/*
-	 * Optimize for English ASCII encoding.  This optimization
-	 * relies on the fact that lead bytes can never be in the
-	 * range 0..0x7F.
-	 */
-	byte [] mbcs = new byte [(terminate) ? length + 1 : length];
-	/* AW
-	for (int i=0; i<length; i++) {
-		if ((buffer [i] & 0xFFFF) <= 0x7F) {
-			mbcs [i] = (byte) buffer [i];
-		} else {
-			synchronized (Converter.class) {
-				String cp = codePage != null ? codePage : CodePage;
-				if (LastWCToMB != 0 && !cp.equals (LastWCToMBCodePage)) {
-					OS.iconv_close (LastWCToMB);
-					LastWCToMB = 0;
-				}
-				if (LastWCToMB == 0) {
-					LastWCToMBCodePage = cp;
-					LastWCToMB = OS.iconv_open (getAsciiBytes (cp), Unicode);
-				}
-				int cd = LastWCToMB;
-				if (cd == 0) return (terminate) ? NULL_BYTE_ARRAY : EMPTY_BYTE_ARRAY;
-				int inBytes = length * 2;
-				int outBytes = length * 4;
-				int ptr1, ptr2;
-				if (length <= BufferSize) {
-					ptr1 = BufferTimes2;
-					ptr2 = BufferTimes4;
-				} else {
-					ptr1 = OS.XtMalloc (inBytes);
-					ptr2 = OS.XtMalloc (outBytes);
-				}
-				int [] inBuf = {ptr1};
-				int [] inBytesLeft = {inBytes};
-				int [] outBuf = {ptr2};
-				int [] outBytesLeft = {outBytes};
-				OS.memmove (ptr1, buffer, inBytes);
-				int result = OS.iconv (cd, inBuf, inBytesLeft, outBuf, outBytesLeft);
-				outBytes = outBuf [0] - ptr2;
-				mbcs = new byte [outBytes];
-				OS.memmove (mbcs, ptr2, outBytes);
-				if (ptr1 != BufferTimes2) OS.XtFree (ptr1);
-				if (ptr2 != BufferTimes4) OS.XtFree (ptr2);
-			}
-			return mbcs;
-		}
-	}
-	*/
-	return mbcs;
+	String s= new String(buffer);
+	byte[] b= s.getBytes();
+	if (!terminate)
+		return b;
+		
+	byte[] b2= new byte[b.length+1];
+	System.arraycopy(b, 0, b2, 0, b.length);
+	return b2;
 }
 
 /**
