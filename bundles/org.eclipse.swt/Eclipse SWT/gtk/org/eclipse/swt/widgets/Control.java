@@ -1656,19 +1656,21 @@ int gtk_expose_event (int widget, int eventPtr) {
 }
 
 int gtk_focus_in_event (int widget, int event) {
+	Shell shell = _getShell ();
 	sendEvent (SWT.FocusIn);
 	// widget could be disposed at this point
-	if (handle == 0) return 0;
-	Control oldControl = display.imControl;
-	if (oldControl != this)  {
-		if (oldControl != null && !oldControl.isDisposed ()) {
-			int oldIMHandle = oldControl.imHandle ();
-			if (oldIMHandle != 0) OS.gtk_im_context_reset (oldIMHandle);
+	if (handle != 0) {
+		Control oldControl = display.imControl;
+		if (oldControl != this)  {
+			if (oldControl != null && !oldControl.isDisposed ()) {
+				int oldIMHandle = oldControl.imHandle ();
+				if (oldIMHandle != 0) OS.gtk_im_context_reset (oldIMHandle);
+			}
 		}
-	}
-	if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
-		int imHandle = imHandle ();
-		if (imHandle != 0) OS.gtk_im_context_focus_in (imHandle);
+		if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
+			int imHandle = imHandle ();
+			if (imHandle != 0) OS.gtk_im_context_focus_in (imHandle);
+		}
 	}
 
 	/*
@@ -1676,8 +1678,7 @@ int gtk_focus_in_event (int widget, int event) {
 	* disposed at this point.  If this happens
 	* don't send the activate and deactivate
 	* events.
-	*/	
-	Shell shell = _getShell ();
+	*/
 	if (!shell.isDisposed ()) {
 		shell.setActiveControl (this);
 	}
@@ -1685,13 +1686,15 @@ int gtk_focus_in_event (int widget, int event) {
 }
 
 int gtk_focus_out_event (int widget, int event) {
+	Shell shell = _getShell ();
 	sendEvent (SWT.FocusOut);
 	// widget could be disposed at this point
-	if (handle == 0) return 0;
-	if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
-		int imHandle = imHandle ();
-		if (imHandle != 0) {
-			OS.gtk_im_context_focus_out (imHandle);
+	if (handle != 0) {
+		if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
+			int imHandle = imHandle ();
+			if (imHandle != 0) {
+				OS.gtk_im_context_focus_out (imHandle);
+			}
 		}
 	}
 	
@@ -1701,7 +1704,6 @@ int gtk_focus_out_event (int widget, int event) {
 	* don't send the activate and deactivate
 	* events.
 	*/
-	Shell shell = _getShell ();
 	if (!shell.isDisposed ()) {
 		Display display = shell.display;
 		Control control = display.getFocusControl ();

@@ -1492,6 +1492,7 @@ int Pt_CB_LOST_FOCUS (int widget, int info) {
 	* events.
 	*/
 	if (!shell.isDisposed ()) {
+		Display display = shell.display;
 		Control control = display.getFocusControl ();
 		if (control == null || shell != control.getShell () ) {
 			shell.setActiveControl (null);
