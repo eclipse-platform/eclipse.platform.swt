@@ -722,10 +722,10 @@ void drawBitmapTransparent(Image srcImage, int srcX, int srcY, int srcWidth, int
 
 	/* Create the mask for the source image */
 	int maskHdc = OS.CreateCompatibleDC(hDC);
-	int maskBitmap = OS.CreateBitmap(srcWidth, srcHeight, 1, 1, null);
+	int maskBitmap = OS.CreateBitmap(imgWidth, imgHeight, 1, 1, null);
 	int oldMaskBitmap = OS.SelectObject(maskHdc, maskBitmap);
 	OS.SetBkColor(srcHdc, (transBlue << 16) | (transGreen << 8) | transRed);
-	OS.BitBlt(maskHdc, 0, 0, srcWidth, srcHeight, srcHdc, 0, 0, OS.SRCCOPY);
+	OS.BitBlt(maskHdc, 0, 0, imgWidth, imgHeight, srcHdc, 0, 0, OS.SRCCOPY);
 	if (originalColors != null) OS.SetDIBColorTable(srcHdc, 0, 1 << bm.bmBitsPixel, originalColors);
 
 	/* Draw the source bitmap transparently using invert/and mask/invert */
