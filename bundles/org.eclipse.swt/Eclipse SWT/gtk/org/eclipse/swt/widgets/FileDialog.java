@@ -279,7 +279,7 @@ void interpretOsAnswer(String osAnswer) {
 			OS.memmove(bytes, bytesPtr, bytes.length);
 			// The better way to do it would be:
 			// fileNames[i] = new String(bytes);
-			fileNames[i] = new String(Converter.mbcsToWcs("UTF8", bytes));
+			fileNames[i] = new String(Converter.mbcsToWcs(null, bytes));
 			/*
 			 * NB:  Unlike other similar functions (e.g., g_convert), the glib
 			 * documentation does not say the resulting UTF8 string should be
