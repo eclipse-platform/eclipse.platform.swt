@@ -19,7 +19,7 @@ public class TextTransfer extends ByteArrayTransfer {
 	private static final String TYPENAME3 = "text/text";
 	private static final int TYPEID3 = registerType(TYPENAME3);
 	private static final String TYPENAME4 = "TEXT";
-	private static final int TYPEID4 = registerType(TYPENAME3);
+	private static final int TYPEID4 = registerType(TYPENAME4);
 
 private TextTransfer() {
 }
