@@ -534,52 +534,61 @@ void createItem (TableColumn column, int index) {
 		System.arraycopy (columns, 0, newColumns, 0, columns.length);
 		columns = newColumns;
 	}
-	if (count != 0) {
-		int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-		for (int i=0; i<itemCount; i++) {
-			TableItem item = items [i];
-			if (item != null) {
-				String [] strings = item.strings;
-				if (strings != null) {
-					String [] temp = new String [columnCount];
-					System.arraycopy (strings, 0, temp, 0, index);
-					System.arraycopy (strings, index, temp, index+1, columnCount-index-1);
-					temp [index] = "";
-					item.strings = temp;
+	int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+	for (int i=0; i<itemCount; i++) {
+		TableItem item = items [i];
+		if (item != null) {
+			String [] strings = item.strings;
+			if (strings != null) {
+				String [] temp = new String [columnCount];
+				System.arraycopy (strings, 0, temp, 0, index);
+				System.arraycopy (strings, index, temp, index+1, columnCount-index-1);
+				item.strings = temp;
+			}
+			Image [] images = item.images;
+			if (images != null) {
+				Image [] temp = new Image [columnCount];
+				System.arraycopy (images, 0, temp, 0, index);
+				System.arraycopy (images, index, temp, index+1, columnCount-index-1);
+				item.images = temp;
+			}
+			if (index == 0) {
+				if (count != 0) {
+					if (strings == null) {
+						item.strings = new String [columnCount];
+						item.strings [1] = item.text;
+					}
+					item.text = "";
+					if (images == null) {
+						item.images = new Image [columnCount];
+						item.images [1] = item.image;
+					}
+					item.image = null;
 				}
-				if (index == 0) item.text = "";
-				Image [] images = item.images;
-				if (images != null) {
-					Image [] temp = new Image [columnCount];
-					System.arraycopy (images, 0, temp, 0, index);
-					System.arraycopy (images, index, temp, index+1, columnCount-index-1);
-					item.images = temp;
-				}
-				if (index == 0) item.image = null;
-				if (item.cellBackground != null) {
-					int [] cellBackground = item.cellBackground;
-					int [] temp = new int [columnCount];
-					System.arraycopy (cellBackground, 0, temp, 0, index);
-					System.arraycopy (cellBackground, index, temp, index+1, columnCount-index-1);
-					temp [index] = -1;
-					item.cellBackground = temp;
-				}
-				if (item.cellForeground != null) {
-					int [] cellForeground = item.cellForeground;
-					int [] temp = new int [columnCount];
-					System.arraycopy (cellForeground, 0, temp, 0, index);
-					System.arraycopy (cellForeground, index, temp, index+1, columnCount-index-1);
-					temp [index] = -1;
-					item.cellForeground = temp;
-				}
-				if (item.cellFont != null) {
-					int [] cellFont = item.cellFont;
-					int [] temp = new int [columnCount];
-					System.arraycopy (cellFont, 0, temp, 0, index);
-					System.arraycopy (cellFont, index, temp, index+1, columnCount-index-1);
-					temp [index] = -1;
-					item.cellFont = temp;
-				}
+			}
+			if (item.cellBackground != null) {
+				int [] cellBackground = item.cellBackground;
+				int [] temp = new int [columnCount];
+				System.arraycopy (cellBackground, 0, temp, 0, index);
+				System.arraycopy (cellBackground, index, temp, index+1, columnCount-index-1);
+				temp [index] = -1;
+				item.cellBackground = temp;
+			}
+			if (item.cellForeground != null) {
+				int [] cellForeground = item.cellForeground;
+				int [] temp = new int [columnCount];
+				System.arraycopy (cellForeground, 0, temp, 0, index);
+				System.arraycopy (cellForeground, index, temp, index+1, columnCount-index-1);
+				temp [index] = -1;
+				item.cellForeground = temp;
+			}
+			if (item.cellFont != null) {
+				int [] cellFont = item.cellFont;
+				int [] temp = new int [columnCount];
+				System.arraycopy (cellFont, 0, temp, 0, index);
+				System.arraycopy (cellFont, index, temp, index+1, columnCount-index-1);
+				temp [index] = -1;
+				item.cellFont = temp;
 			}
 		}
 	}
@@ -624,7 +633,6 @@ void createItem (TableColumn column, int index) {
 			lvItem.mask = OS.LVIF_TEXT | OS.LVIF_IMAGE;
 			lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
 			lvItem.iImage = OS.I_IMAGECALLBACK;
-			int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 			for (int i=0; i<itemCount; i++) {
 				lvItem.iItem = i;
 				OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
