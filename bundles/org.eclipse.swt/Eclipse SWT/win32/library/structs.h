@@ -403,7 +403,7 @@ void cacheGCP_RESULTSFids(JNIEnv *env, jobject lpObject, PGCP_RESULTS_FID_CACHE 
 void getGCP_RESULTSFields(JNIEnv *env, jobject lpObject, GCP_RESULTS *lpStruct, PGCP_RESULTS_FID_CACHE lpCache);
 void setGCP_RESULTSFields(JNIEnv *env, jobject lpObject, GCP_RESULTS *lpStruct, PGCP_RESULTS_FID_CACHE lpCache);
 
-#endif
+#endif // _WIN32_WCE
 
 /* OSVERSIONINFO struct */
 typedef struct OSVERSIONINFO_FID_CACHE {
