@@ -49,11 +49,15 @@ public class IconExe {
 	 * its corruption. 
 	 */
 	public static void main(String[] args) {
-		if (args.length != 2) return;
+		if (args.length != 2) {
+			System.err.println("Usage: IconExe <windows executable> <ico file>");
+			return;
+		}
 		ImageLoader loader = new ImageLoader();
 		try {
 			ImageData[] data = loader.load(args[1]);
-			unloadIcons(args[0], data);
+			int nMissing = unloadIcons(args[0], data);
+			if (nMissing != 0) System.err.println("Error - "+nMissing+" icon(s) not replaced in "+args[0]+" using "+args[1]);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -113,7 +117,7 @@ public class IconExe {
 	 * 
 	 * @param program the Windows executable e.g c:/eclipse/eclipse.exe
 	 * @param icons to write to the given executable
-	 * @return the number of icons written to the program
+	 * @return the number of icons from the original program that were not successfully replaced (0 if success)
 	 */	
 	static int unloadIcons(String program, ImageData[] icons) throws FileNotFoundException, IOException {
 		RandomAccessFile raf = new RandomAccessFile(program, "rw");
@@ -131,17 +135,16 @@ public class IconExe {
 			}
 		}
 		raf.close();
-		return cnt;
+		return iconInfo.length - cnt;
 	}
 	
-	public static final String VERSION = "20050111";
+	public static final String VERSION = "20050118";
 	
 	static final boolean DEBUG = false;
 	public static class IconResInfo {
 		ImageData data;
 		int offset;
 		int size;
-		IconResInfo next;
 	}
 	
 	IconResInfo[] iconInfo = null;
@@ -4911,24 +4914,10 @@ public ImageData[] loadFromStream(LEDataInputStream stream) {
 }
 
 public static ImageData[] load(InputStream is, ImageLoader loader) {
-	FileFormat fileFormat = null;
 	LEDataInputStream stream = new LEDataInputStream(is);
 	boolean isSupported = false;	
-	for (int i = 1; i < FORMATS.length; i++) {
-		if (FORMATS[i] != null) {
-			try {
-				Class clazz = Class.forName(FORMAT_PACKAGE + '.' + FORMATS[i] + FORMAT_SUFFIX);
-				fileFormat = (FileFormat) clazz.newInstance();
-				if (fileFormat.isFileFormat(stream)) {
-					isSupported = true;
-					break;
-				}
-			} catch (ClassNotFoundException e) {
-				FORMATS[i] = null;
-			} catch (Exception e) {
-			}
-		}
-	}
+	WinICOFileFormat fileFormat = new WinICOFileFormat();
+	if (fileFormat.isFileFormat(stream)) isSupported = true;
 	if (!isSupported) SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
 	fileFormat.loader = loader;
 	return fileFormat.loadFromStream(stream);
