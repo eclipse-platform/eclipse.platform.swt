@@ -867,6 +867,52 @@ void setXGCValuesFields(JNIEnv *env, jobject lpObject, XGCValues *lpStruct)
 }
 #endif
 
+#ifndef NO_XIconSize
+typedef struct XIconSize_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID min_width, min_height, max_width, max_height, width_inc, height_inc;
+} XIconSize_FID_CACHE;
+
+XIconSize_FID_CACHE XIconSizeFc;
+
+void cacheXIconSizeFields(JNIEnv *env, jobject lpObject)
+{
+	if (XIconSizeFc.cached) return;
+	XIconSizeFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XIconSizeFc.min_width = (*env)->GetFieldID(env, XIconSizeFc.clazz, "min_width", "I");
+	XIconSizeFc.min_height = (*env)->GetFieldID(env, XIconSizeFc.clazz, "min_height", "I");
+	XIconSizeFc.max_width = (*env)->GetFieldID(env, XIconSizeFc.clazz, "max_width", "I");
+	XIconSizeFc.max_height = (*env)->GetFieldID(env, XIconSizeFc.clazz, "max_height", "I");
+	XIconSizeFc.width_inc = (*env)->GetFieldID(env, XIconSizeFc.clazz, "width_inc", "I");
+	XIconSizeFc.height_inc = (*env)->GetFieldID(env, XIconSizeFc.clazz, "height_inc", "I");
+	XIconSizeFc.cached = 1;
+}
+
+XIconSize *getXIconSizeFields(JNIEnv *env, jobject lpObject, XIconSize *lpStruct)
+{
+	if (!XIconSizeFc.cached) cacheXIconSizeFields(env, lpObject);
+	lpStruct->min_width = (*env)->GetIntField(env, lpObject, XIconSizeFc.min_width);
+	lpStruct->min_height = (*env)->GetIntField(env, lpObject, XIconSizeFc.min_height);
+	lpStruct->max_width = (*env)->GetIntField(env, lpObject, XIconSizeFc.max_width);
+	lpStruct->max_height = (*env)->GetIntField(env, lpObject, XIconSizeFc.max_height);
+	lpStruct->width_inc = (*env)->GetIntField(env, lpObject, XIconSizeFc.width_inc);
+	lpStruct->height_inc = (*env)->GetIntField(env, lpObject, XIconSizeFc.height_inc);
+	return lpStruct;
+}
+
+void setXIconSizeFields(JNIEnv *env, jobject lpObject, XIconSize *lpStruct)
+{
+	if (!XIconSizeFc.cached) cacheXIconSizeFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, XIconSizeFc.min_width, (jint)lpStruct->min_width);
+	(*env)->SetIntField(env, lpObject, XIconSizeFc.min_height, (jint)lpStruct->min_height);
+	(*env)->SetIntField(env, lpObject, XIconSizeFc.max_width, (jint)lpStruct->max_width);
+	(*env)->SetIntField(env, lpObject, XIconSizeFc.max_height, (jint)lpStruct->max_height);
+	(*env)->SetIntField(env, lpObject, XIconSizeFc.width_inc, (jint)lpStruct->width_inc);
+	(*env)->SetIntField(env, lpObject, XIconSizeFc.height_inc, (jint)lpStruct->height_inc);
+}
+#endif
+
 #ifndef NO_XImage
 typedef struct XImage_FID_CACHE {
 	int cached;

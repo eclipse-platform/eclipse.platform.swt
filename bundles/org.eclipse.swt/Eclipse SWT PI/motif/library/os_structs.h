@@ -131,6 +131,14 @@ void setXGCValuesFields(JNIEnv *env, jobject lpObject, XGCValues *lpStruct);
 #define setXGCValuesFields(a,b,c)
 #endif
 
+#ifndef NO_XIconSize
+XIconSize *getXIconSizeFields(JNIEnv *env, jobject lpObject, XIconSize *lpStruct);
+void setXIconSizeFields(JNIEnv *env, jobject lpObject, XIconSize *lpStruct);
+#else
+#define getXIconSizeFields(a,b,c) NULL
+#define setXIconSizeFields(a,b,c)
+#endif
+
 #ifndef NO_XImage
 XImage *getXImageFields(JNIEnv *env, jobject lpObject, XImage *lpStruct);
 void setXImageFields(JNIEnv *env, jobject lpObject, XImage *lpStruct);
