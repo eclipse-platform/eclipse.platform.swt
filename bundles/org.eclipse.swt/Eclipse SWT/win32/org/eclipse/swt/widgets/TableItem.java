@@ -731,8 +731,6 @@ public void setImage (int index, Image image) {
 	if (image != null && image.isDisposed ()) {
 		error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int itemIndex = parent.indexOf (this);
-	if (itemIndex == -1) return;
 	if (index == 0) {
 		/*
 		* Feature in Windows.  When LVM_SETITEM is used to set
@@ -748,6 +746,8 @@ public void setImage (int index, Image image) {
 		}
 		super.setImage (image);
 	}
+	int itemIndex = parent.indexOf (this);
+	if (itemIndex == -1) return;
 	int hwnd = parent.handle;
 	LVITEM lvItem = new LVITEM ();
 	lvItem.mask = OS.LVIF_IMAGE;
@@ -827,8 +827,6 @@ public void setText (String [] strings) {
 public void setText (int index, String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int itemIndex = parent.indexOf (this);
-	if (itemIndex == -1) return;
 	if (index == 0) {
 		/*
 		* Feature in Windows.  When LVM_SETITEM is used to set
@@ -839,6 +837,8 @@ public void setText (int index, String string) {
 		if (string.equals (text)) return;
 		super.setText (string);
 	}
+	int itemIndex = parent.indexOf (this);
+	if (itemIndex == -1) return;
 	int hwnd = parent.handle;
 	int hHeap = OS.GetProcessHeap ();	
 	TCHAR buffer = new TCHAR (parent.getCodePage (), string, true);
