@@ -1855,7 +1855,7 @@ int setString(String string, int flags) {
 				j--;
 				if (breaks == null) {
 					breaks = new int[4];
-				} else {
+				} else if (breakCount == breaks.length) {
 					int[] newBreaks = new int[breaks.length + 4];
 					System.arraycopy(breaks, 0, newBreaks, 0, breaks.length);
 					breaks = newBreaks;
