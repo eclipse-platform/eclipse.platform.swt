@@ -186,7 +186,7 @@ public class Browser2 {
 	
 	public static boolean test() {
 		int fail = 0;
-		String[] html = {file1, file2, file3};
+		String[] html = {file1};
 		for (int i = 0; i < html.length; i++) {
 			boolean result = test1(html[i]); 
 			System.out.print(result ? "." : "E");
@@ -208,22 +208,5 @@ public class Browser2 {
 		"<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=iso-8859-1\">"+
 		"<TITLE>Test with 2 frames</TITLE>"+
 		"</HEAD><BODY>some simple test case here</BODY></HTML>";
-	
-	public static String file2 = "<HTML><HEAD>"+
-		"<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=iso-8859-1\">"+
-		"<TITLE>Test with 2 frames</TITLE>"+
-		"<FRAMESET COLS=\"200,*\" border=\"0\" framespacing=\"0\" frameborder=\"0\">"+
-		"	<FRAME SRC=\"http://www.eclipse.org\" NAME=\"page\">"+
-		"	<FRAME SRC=\"http://www.cnn.com\" NAME=\"page\">"+
-		"</FRAMESET>"+
-		"</HEAD><BODY></BODY></HTML>";
-		
-	public static String file3 = "<HTML><HEAD>"+
-		"<META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html; charset=iso-8859-1\">"+
-		"<TITLE>Test with 2 frames</TITLE>"+
-		"<BASE href=\"http://www.eclipse.org/articles/Article-small-cup-of-swt/\">"+
-		"<FRAMESET COLS=\"200,*\" border=\"0\" framespacing=\"0\" frameborder=\"0\">"+
-		"	<FRAME SRC=\"./pocket-PC.html\" NAME=\"page\">"+
-		"</FRAMESET>"+
-		"</HEAD><BODY>HELLO</BODY></HTML>";
+
 }

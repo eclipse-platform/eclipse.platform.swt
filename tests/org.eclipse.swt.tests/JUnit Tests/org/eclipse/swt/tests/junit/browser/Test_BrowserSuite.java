@@ -42,7 +42,7 @@ public void Browser1() {
 }
 
 public void Browser2() {
-	boolean result = Browser1.test();
+	boolean result = Browser2.test();
 	assertTrue(result);
 }
 
@@ -74,7 +74,7 @@ protected void runTest() throws Throwable {
 	if (display != null) display.dispose();
 	
 	if (getName().equals("Browser1")) Browser1();
-	if (getName().equals("Browser2")) Browser1();
+	if (getName().equals("Browser2")) Browser2();
 
 	/*
 	 * Ensure we don't leave a Display from the tests we run.
