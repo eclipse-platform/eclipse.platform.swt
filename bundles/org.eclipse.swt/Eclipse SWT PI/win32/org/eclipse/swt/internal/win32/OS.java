@@ -1154,6 +1154,8 @@ public class OS {
 	public static final int TVM_GETVISIBLECOUNT = TV_FIRST + 16;
 	public static final int TVM_HITTEST = 0x1111;
 	public static final int TVM_INSERTITEM = IsUnicode ? 0x1132 : 0x1100;
+	public static final int TVM_MAPACCIDTOHTREEITEM = TV_FIRST + 42;
+	public static final int TVM_MAPHTREEITEMTOACCID = TV_FIRST + 43;
 	public static final int TVM_SELECTITEM = 0x110b;
 	public static final int TVM_SETBKCOLOR = 0x111d;
 	public static final int TVM_SETIMAGELIST = 0x1109;

@@ -355,7 +355,17 @@ public class Accessible {
 		checkWidget();
 		int id;
 		if (childID == ACC.CHILDID_SELF) id = COM.CHILDID_SELF;
-		else if (control instanceof Tree) id = childID; // Tree item childIDs are pointers
+		else if (control instanceof Tree) {
+			id = childID; // Tree item childIDs are pointers
+			/*
+			* Feature of Windows XP: The following line is intentionally commented.
+			* In Windows XP tree item ids are 1-based indices. Previous versions of
+			* Windows use the tree item handle for the accessible child ID. Despite
+			* this, the call to NotifyWinEvent still takes the handle, so we will
+            * not do the mapping from handle to 1-based index.
+			*/
+			//if (OS.COMCTL32_MAJOR >= 6) id = OS.SendMessage (control.handle, OS.TVM_MAPACCIDTOHTREEITEM, childID, 0);
+		}
 		else id = childID + 1; // All other childIDs are 1-based indices
 		COM.NotifyWinEvent (COM.EVENT_OBJECT_FOCUS, control.handle, COM.OBJID_CLIENT, id);
 	}
@@ -990,8 +1000,12 @@ public class Accessible {
 				int hwnd = control.handle;
 				TVITEM tvItem = new TVITEM ();
 				tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
-				tvItem.hItem = varChild_lVal;
 				tvItem.stateMask = OS.TVIS_STATEIMAGEMASK;
+				if (OS.COMCTL32_MAJOR >= 6) {
+					tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_MAPACCIDTOHTREEITEM, varChild_lVal, 0);
+				} else {
+					tvItem.hItem = varChild_lVal;
+				}
 				int result = OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
 				boolean checked = (result != 0) && (((tvItem.state >> 12) & 1) == 0);
 				if (checked) event.detail |= ACC.STATE_CHECKED;
