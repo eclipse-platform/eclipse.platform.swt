@@ -162,7 +162,7 @@
   <target name="bin" depends="init">
     <property name="destroot" value="${basedir}"/>
     <ant antfile="${template}" target="bin">
-      <property name="includes" value="plugin.xml, about.html,plugin.properties,ws/,*.jar"/>
+      <property name="includes" value="plugin.xml,about.html,plugin.properties,ws/,*.jar"/>
       <property name="excludes" value="Eclipse SWT Printing/common/,Eclipse SWT Printing/motif/,Eclipse SWT Printing/photon/,Eclipse SWT Printing/win32/,Eclipse SWT Printing/gtk/,Eclipse SWT Drag and Drop/common/,Eclipse SWT Drag and Drop/motif/,Eclipse SWT Drag and Drop/photon/,Eclipse SWT Drag and Drop/win32/,Eclipse SWT Drag and Drop/gtk/,Eclipse SWT Program/common/,Eclipse SWT Program/motif/,Eclipse SWT Program/photon/,Eclipse SWT Program/win32/,Eclipse SWT Program/gtk/,Eclipse SWT/common/,Eclipse SWT/common_j2se/,Eclipse SWT/motif/,Eclipse SWT/photon/,Eclipse SWT/win32/,Eclipse SWT/gtk/,Eclipse SWT/common_j2se/,Eclipse SWT PI/common_j2se/,Eclipse SWT PI/motif/,Eclipse SWT PI/photon/,Eclipse SWT PI/win32/,Eclipse SWT PI/gtk/,Eclipse SWT Custom Widgets/common/,Eclipse SWT AWT/win32/,Eclipse SWT OLE Win32/win32/,Eclipse SWT/emulated/"/>
       <property name="dest" value="${destroot}"/>
     </ant>
