@@ -892,6 +892,23 @@ int widgetStyle () {
 	return bits | OS.WS_OVERLAPPED | OS.WS_CAPTION;
 }
 
+LRESULT WM_ACTIVATE (int wParam, int lParam) {
+	if (OS.IsWinCE) {
+		/*
+		* Note: this does not work when we get WM_ACTIVATE prior
+		* to adding a listener.
+		*/
+		if (hooks (SWT.HardKey)) {
+			int fActive = wParam & 0xFFFF;
+			int hwnd = fActive != 0 ? handle : 0;
+			for (int bVk=OS.VK_APP1; bVk<=OS.VK_APP6; bVk++) {
+				OS.SHSetAppKeyWndAssoc ((byte) bVk, hwnd);
+			}
+		}
+	}
+	return super.WM_ACTIVATE (wParam, lParam);
+}
+
 LRESULT WM_CLOSE (int wParam, int lParam) {
 	if ((display.TrimEnabled && !isEnabled ()) || !isActive ()) {
 		return LRESULT.ZERO;

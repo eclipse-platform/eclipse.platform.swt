@@ -964,6 +964,12 @@ public class OS {
 	public static final int VK_SPACE = 0x20;
 	public static final int VK_TAB = 0x9;
 	public static final int VK_UP = 0x26;
+	public static final int VK_APP1 = 0xc1;
+	public static final int VK_APP2 = 0xc2;
+	public static final int VK_APP3 = 0xc3;
+	public static final int VK_APP4 = 0xc4;
+	public static final int VK_APP5 = 0xc5;
+	public static final int VK_APP6 = 0xc6;
 	public static final String WC_LISTVIEW = "SysListView32";
 	public static final String WC_TABCONTROL = "SysTabControl32";
 	public static final String WC_TREEVIEW = "SysTreeView32";
@@ -2175,6 +2181,7 @@ public static final native boolean ShellExecuteExA (SHELLEXECUTEINFO lpExecInfo)
 public static final native int SHGetMalloc (int [] ppMalloc);
 public static final native boolean SHGetPathFromIDListW (int pidl, char [] pszPath);
 public static final native boolean SHGetPathFromIDListA (int pidl, byte [] pszPath);
+public static final native boolean SHSetAppKeyWndAssoc(byte bVk, int hwnd);
 public static final native boolean ShowCaret (int hWnd);
 public static final native boolean ShowOwnedPopups (int hWnd, boolean fShow);
 public static final native boolean ShowScrollBar (int hWnd, int wBar, boolean bShow);

@@ -199,6 +199,11 @@ public class SWT {
 	 */
 	public static final int MouseHover = 32;
 
+	/**
+	 * hardware key event type (value is 33)
+	 */
+	public static final int HardKey = 33;
+
 	/* Event Details */
 	
 	/**

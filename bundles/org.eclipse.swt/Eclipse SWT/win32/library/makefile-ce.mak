@@ -40,7 +40,7 @@ $(LIBPATH)$(LIBNAME):\
 
 $(DLLNAME): $(LIBPATH)$(LIBNAME) \
 	$(BUILDFILES1) $(VIRTFILES1)
-	link $(dlllflags) /BASE:0x10100000 -machine:$(CPU) \
+	link $(dlllflags) -machine:$(CPU) \
 	-subsystem:windowsce -out:$(DLLNAME) -map:$(LIBNAME).map \
 	$(BUILDFILES1) $(VIRTFILES1) \
-	/dll  /entry:"_DllMainCRTStartup" /NODEFAULTLIB:libc.lib /nodefaultlib:oldnames.lib corelibc.lib coredll.lib commdlg.lib commctrl.lib ceshell.lib
+	/dll  /entry:"_DllMainCRTStartup" /NODEFAULTLIB:libc.lib /nodefaultlib:oldnames.lib aygshell.lib corelibc.lib coredll.lib commdlg.lib commctrl.lib ceshell.lib

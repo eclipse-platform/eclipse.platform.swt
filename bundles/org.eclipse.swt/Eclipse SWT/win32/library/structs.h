@@ -32,6 +32,10 @@
 #include <shellapi.h>
 
 #ifdef _WIN32_WCE
+#include <aygshell.h>
+#endif // _WIN_32_WCE
+
+#ifdef _WIN32_WCE
 #define NOT_IN_WCE_FID_CACHE_GLOBALS
 #else
 #define NOT_IN_WCE_FID_CACHE_GLOBALS \

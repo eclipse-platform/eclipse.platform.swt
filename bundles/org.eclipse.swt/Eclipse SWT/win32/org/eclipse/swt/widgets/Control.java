@@ -3062,6 +3062,16 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 
 LRESULT WM_KEYUP (int wParam, int lParam) {
 	
+	/* Check for hardware keys */
+	if (OS.IsWinCE) {
+		if (OS.VK_APP1 <= wParam && wParam <= OS.VK_APP6) {
+			Event event = new Event ();
+			event.detail = wParam - OS.VK_APP1 + 1;
+			sendEvent (SWT.HardKey, event);
+			return null;
+		}
+	}
+	
 	/*
 	* If the key up is not hooked, reset last key
 	* and last ascii in case the key down is hooked.
