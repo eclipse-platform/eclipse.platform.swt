@@ -29,6 +29,7 @@ public class TableTreeItem extends Item {
 	Image[] images = TableTree.EMPTY_IMAGES;
 	Color background;
 	Color foreground;
+	Font font;
 	boolean expanded;
 	boolean checked;
 	boolean grayed;
@@ -309,6 +310,22 @@ public boolean getExpanded () {
 }
 
 /**
+ * Returns the font that the receiver will use to paint textual information for this item.
+ *
+ * @return the receiver's font
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.0
+ */
+public Font getFont () {
+	checkWidget ();
+	return (font == null) ? parent.getFont() : font;
+}
+/**
  * Returns the foreground color that the receiver will use to draw.
  *
  * @return the receiver's foreground color
@@ -528,6 +545,7 @@ public void dispose () {
 	tableItem = null;
 	foreground = null;
 	background = null;
+	font = null;
 }
 
 void removeItem(TableTreeItem item) {
@@ -640,6 +658,33 @@ public void setExpanded (boolean expanded) {
 	parent.setRedraw(true);
 }
 
+/**
+ * Sets the font that the receiver will use to paint textual information
+ * for this item to the font specified by the argument, or to the default font
+ * for that kind of control if the argument is null.
+ *
+ * @param font the new font (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public void setFont (Font font){
+	checkWidget ();
+	if (font != null && font.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	if (tableItem != null) {
+		tableItem.setFont(font);
+	}
+	this.font = font;
+}
 /**
  * Sets the receiver's foreground color to the color specified
  * by the argument, or to the default system color for the item
@@ -766,6 +811,7 @@ void setVisible (boolean show) {
 		tableItem.setImageIndent(getIndent());
 		if (background != null) tableItem.setBackground(background);
 		if (foreground != null) tableItem.setForeground(foreground);
+		if (font != null) tableItem.setFont(font);
 		addCheck();
 
 		// restore fields to item
