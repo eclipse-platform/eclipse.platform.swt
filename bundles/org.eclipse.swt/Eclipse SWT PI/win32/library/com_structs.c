@@ -197,8 +197,8 @@ DVTARGETDEVICE *getDVTARGETDEVICEFields(JNIEnv *env, jobject lpObject, DVTARGETD
 	lpStruct->tdPortNameOffset = (*env)->GetShortField(env, lpObject, DVTARGETDEVICEFc.tdPortNameOffset);
 	lpStruct->tdExtDevmodeOffset = (*env)->GetShortField(env, lpObject, DVTARGETDEVICEFc.tdExtDevmodeOffset);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, DVTARGETDEVICEFc.tdData);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->tdData[0]), (void *)lpStruct->tdData[0]);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, DVTARGETDEVICEFc.tdData);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->tdData[0]), (jbyte *)lpStruct->tdData[0]);
 	}
 	return lpStruct;
 }
@@ -212,8 +212,8 @@ void setDVTARGETDEVICEFields(JNIEnv *env, jobject lpObject, DVTARGETDEVICE *lpSt
 	(*env)->SetShortField(env, lpObject, DVTARGETDEVICEFc.tdPortNameOffset, (jshort)lpStruct->tdPortNameOffset);
 	(*env)->SetShortField(env, lpObject, DVTARGETDEVICEFc.tdExtDevmodeOffset, (jshort)lpStruct->tdExtDevmodeOffset);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, DVTARGETDEVICEFc.tdData);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->tdData[0]), (void *)lpStruct->tdData[0]);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, DVTARGETDEVICEFc.tdData);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->tdData[0]), (jbyte *)lpStruct->tdData[0]);
 	}
 }
 #endif
@@ -416,8 +416,8 @@ GUID *getGUIDFields(JNIEnv *env, jobject lpObject, GUID *lpStruct)
 	lpStruct->Data2 = (*env)->GetShortField(env, lpObject, GUIDFc.Data2);
 	lpStruct->Data3 = (*env)->GetShortField(env, lpObject, GUIDFc.Data3);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, GUIDFc.Data4);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->Data4), (void *)lpStruct->Data4);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, GUIDFc.Data4);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->Data4), (jbyte *)lpStruct->Data4);
 	}
 	return lpStruct;
 }
@@ -429,8 +429,8 @@ void setGUIDFields(JNIEnv *env, jobject lpObject, GUID *lpStruct)
 	(*env)->SetShortField(env, lpObject, GUIDFc.Data2, (jshort)lpStruct->Data2);
 	(*env)->SetShortField(env, lpObject, GUIDFc.Data3, (jshort)lpStruct->Data3);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, GUIDFc.Data4);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->Data4), (void *)lpStruct->Data4);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, GUIDFc.Data4);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->Data4), (jbyte *)lpStruct->Data4);
 	}
 }
 #endif
@@ -533,8 +533,8 @@ OLECMDTEXT *getOLECMDTEXTFields(JNIEnv *env, jobject lpObject, OLECMDTEXT *lpStr
 	lpStruct->cwActual = (*env)->GetIntField(env, lpObject, OLECMDTEXTFc.cwActual);
 	lpStruct->cwBuf = (*env)->GetIntField(env, lpObject, OLECMDTEXTFc.cwBuf);
 	{
-	jshortArray lpObject1 = (*env)->GetObjectField(env, lpObject, OLECMDTEXTFc.rgwz);
-	(*env)->GetShortArrayRegion(env, lpObject1, 0, sizeof(lpStruct->rgwz[0]) / 2, (void *)lpStruct->rgwz[0]);
+	jshortArray lpObject1 = (jshortArray)(*env)->GetObjectField(env, lpObject, OLECMDTEXTFc.rgwz);
+	(*env)->GetShortArrayRegion(env, lpObject1, 0, sizeof(lpStruct->rgwz[0]) / 2, (jshort *)lpStruct->rgwz[0]);
 	}
 	return lpStruct;
 }
@@ -546,8 +546,8 @@ void setOLECMDTEXTFields(JNIEnv *env, jobject lpObject, OLECMDTEXT *lpStruct)
 	(*env)->SetIntField(env, lpObject, OLECMDTEXTFc.cwActual, (jint)lpStruct->cwActual);
 	(*env)->SetIntField(env, lpObject, OLECMDTEXTFc.cwBuf, (jint)lpStruct->cwBuf);
 	{
-	jshortArray lpObject1 = (*env)->GetObjectField(env, lpObject, OLECMDTEXTFc.rgwz);
-	(*env)->SetShortArrayRegion(env, lpObject1, 0, sizeof(lpStruct->rgwz[0]) / 2, (void *)lpStruct->rgwz[0]);
+	jshortArray lpObject1 = (jshortArray)(*env)->GetObjectField(env, lpObject, OLECMDTEXTFc.rgwz);
+	(*env)->SetShortArrayRegion(env, lpObject1, 0, sizeof(lpStruct->rgwz[0]) / 2, (jshort *)lpStruct->rgwz[0]);
 	}
 }
 #endif
@@ -646,8 +646,8 @@ STATSTG *getSTATSTGFields(JNIEnv *env, jobject lpObject, STATSTG *lpStruct)
 	lpStruct->clsid.Data2 = (*env)->GetShortField(env, lpObject, STATSTGFc.clsid_Data2);
 	lpStruct->clsid.Data3 = (*env)->GetShortField(env, lpObject, STATSTGFc.clsid_Data3);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, STATSTGFc.clsid_Data4);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->clsid.Data4), (void *)lpStruct->clsid.Data4);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, STATSTGFc.clsid_Data4);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->clsid.Data4), (jbyte *)lpStruct->clsid.Data4);
 	}
 	lpStruct->grfStateBits = (*env)->GetIntField(env, lpObject, STATSTGFc.grfStateBits);
 	lpStruct->reserved = (*env)->GetIntField(env, lpObject, STATSTGFc.reserved);
@@ -672,8 +672,8 @@ void setSTATSTGFields(JNIEnv *env, jobject lpObject, STATSTG *lpStruct)
 	(*env)->SetShortField(env, lpObject, STATSTGFc.clsid_Data2, (jshort)lpStruct->clsid.Data2);
 	(*env)->SetShortField(env, lpObject, STATSTGFc.clsid_Data3, (jshort)lpStruct->clsid.Data3);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, STATSTGFc.clsid_Data4);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->clsid.Data4), (void *)lpStruct->clsid.Data4);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, STATSTGFc.clsid_Data4);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->clsid.Data4), (jbyte *)lpStruct->clsid.Data4);
 	}
 	(*env)->SetIntField(env, lpObject, STATSTGFc.grfStateBits, (jint)lpStruct->grfStateBits);
 	(*env)->SetIntField(env, lpObject, STATSTGFc.reserved, (jint)lpStruct->reserved);
@@ -763,8 +763,8 @@ TYPEATTR *getTYPEATTRFields(JNIEnv *env, jobject lpObject, TYPEATTR *lpStruct)
 	lpStruct->guid.Data2 = (*env)->GetShortField(env, lpObject, TYPEATTRFc.guid_Data2);
 	lpStruct->guid.Data3 = (*env)->GetShortField(env, lpObject, TYPEATTRFc.guid_Data3);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, TYPEATTRFc.guid_Data4);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->guid.Data4), (void *)lpStruct->guid.Data4);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, TYPEATTRFc.guid_Data4);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->guid.Data4), (jbyte *)lpStruct->guid.Data4);
 	}
 	lpStruct->lcid = (*env)->GetIntField(env, lpObject, TYPEATTRFc.lcid);
 	lpStruct->dwReserved = (*env)->GetIntField(env, lpObject, TYPEATTRFc.dwReserved);
@@ -795,8 +795,8 @@ void setTYPEATTRFields(JNIEnv *env, jobject lpObject, TYPEATTR *lpStruct)
 	(*env)->SetShortField(env, lpObject, TYPEATTRFc.guid_Data2, (jshort)lpStruct->guid.Data2);
 	(*env)->SetShortField(env, lpObject, TYPEATTRFc.guid_Data3, (jshort)lpStruct->guid.Data3);
 	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, TYPEATTRFc.guid_Data4);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->guid.Data4), (void *)lpStruct->guid.Data4);
+	jbyteArray lpObject1 = (jbyteArray)(*env)->GetObjectField(env, lpObject, TYPEATTRFc.guid_Data4);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->guid.Data4), (jbyte *)lpStruct->guid.Data4);
 	}
 	(*env)->SetIntField(env, lpObject, TYPEATTRFc.lcid, (jint)lpStruct->lcid);
 	(*env)->SetIntField(env, lpObject, TYPEATTRFc.dwReserved, (jint)lpStruct->dwReserved);
