@@ -282,15 +282,18 @@ void releaseWidget () {
 }
 void setBackgroundPixel (int pixel) {
 	super.setBackgroundPixel (pixel);
-	if (scrolledHandle != 0) {
-		int [] argList1 = {
-			OS.XmNhorizontalScrollBar, 0,
-			OS.XmNverticalScrollBar, 0,
-		};
-		OS.XtGetValues (scrolledHandle, argList1, argList1.length / 2);
-		if (argList1 [1] != 0) OS.XmChangeColor (argList1 [1], pixel);
-		if (argList1 [3] != 0) OS.XmChangeColor (argList1 [3], pixel);
-	}
+	/*
+	* Uncomment this code to force scrollbars to change color.
+	*/
+//	if (scrolledHandle != 0) {
+//		int [] argList1 = {
+//			OS.XmNhorizontalScrollBar, 0,
+//			OS.XmNverticalScrollBar, 0,
+//		};
+//		OS.XtGetValues (scrolledHandle, argList1, argList1.length / 2);
+//		if (argList1 [1] != 0) OS.XmChangeColor (argList1 [1], pixel);
+//		if (argList1 [3] != 0) OS.XmChangeColor (argList1 [3], pixel);
+//	}
 }
 boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 	if (scrolledHandle == 0) return false;
