@@ -785,6 +785,13 @@ public void setVisible (boolean visible) {
 				int [] argList = {OS.XmNx, rootX [0], OS.XmNy, rootY [0]};
 				OS.XtSetValues (handle, argList, argList.length / 2);
 			}
+			/*
+			* Feature in Motif.  If an X grab is active, then
+			* the menu pops us but issues and error message an
+			* fails to grab the pointer.  The fix is to ensure
+			* that no grab is active before showing the menu.
+			*/
+			OS.XUngrabPointer (xDisplay, OS.CurrentTime);
 			OS.XtManageChild (handle);
 			/*
 			* Feature in Motif.  There is no API to force the menu
