@@ -86,9 +86,19 @@ boolean drawCaret () {
 	if (window == 0) return false;
 	int xDisplay = OS.XtDisplay (handle);
 	int gc = OS.XCreateGC (xDisplay, window, 0, null);
-	int screenNum = OS.XDefaultScreen (xDisplay);	
+	int color;
+	if (OS.IsSunOS) {
+		int [] argList = {OS.XmNforeground, 0, OS.XmNbackground, 0};
+		OS.XtGetValues (handle, argList, argList.length / 2);
+		int foreground = argList [1];
+		int background = argList [3];
+		color = foreground ^ background;
+	} else {
+		int screenNum = OS.XDefaultScreen (xDisplay);	
+		color = OS.XWhitePixel(xDisplay, screenNum);
+	}
+	OS.XSetForeground (xDisplay, gc, color);
 	OS.XSetFunction (xDisplay, gc, OS.GXxor);
-	OS.XSetForeground (xDisplay, gc, OS.XWhitePixel(xDisplay, screenNum));
 	int nWidth = width, nHeight = height;
 	if (image != null) {
 		Rectangle rect = image.getBounds ();
