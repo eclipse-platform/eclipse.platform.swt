@@ -1101,13 +1101,12 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 					tvItem.state |= OS.TVIS_SELECTED;
 				}
 				OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
-				TreeItem item = items [tvItem.lParam];
 				Event event = new Event ();
-				event.item = item;
+				event.item = items [tvItem.lParam];
 				postEvent (SWT.Selection, event);
 				if ((style & SWT.CHECK) != 0) {
 					event = new Event ();
-					event.item = item;
+					event.item = items [tvItem.lParam];
 					event.detail = SWT.CHECK;
 					postEvent (SWT.Selection, event);
 				}
@@ -1161,13 +1160,11 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 					}
 					tvItem.hItem = hNewItem;
 					OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
-					tvItem.mask = OS.TVIF_STATE | OS.TVIF_PARAM;
+					tvItem.mask = OS.TVIF_PARAM;
 					tvItem.hItem = hNewItem;
 					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 					Event event = new Event ();
-					if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
-						event.item = items [tvItem.lParam];
-					}
+					event.item = items [tvItem.lParam];
 					postEvent (SWT.Selection, event);
 					return new LRESULT (code);
 				}
@@ -1488,12 +1485,10 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 			
 	/* Issue notification */
 	tvItem.hItem = hNewItem;
-	tvItem.mask = OS.TVIF_STATE | OS.TVIF_PARAM;
+	tvItem.mask = OS.TVIF_PARAM;
 	OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 	Event event = new Event ();
-	if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
-		event.item = items [tvItem.lParam];
-	}
+	event.item = items [tvItem.lParam];
 	postEvent (SWT.Selection, event);
 	
 	/*
@@ -1614,25 +1609,21 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					OS.MoveMemory (tvItem, lParam + offset, TVITEM.sizeof);
 				} else {
 					int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-					if (hItem == 0) {
+					if (hItem != 0) {
 						tvItem = new TVITEM ();
 						tvItem.hItem = hItem;
-						tvItem.mask = OS.TVIF_PARAM | OS.TVIF_STATE;
+						tvItem.mask = OS.TVIF_PARAM;
 						OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 					}
 				}
-				TreeItem item = null;
+				Event event = new Event ();
 				if (tvItem != null) {
 					/*
 					* This code is intentionally commented.
 					*/
 //					hAnchor = tvItem.hItem;
-					if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
-						item = items [tvItem.lParam];
-					}
+					event.item = items [tvItem.lParam];
 				}
-				Event event = new Event ();
-				event.item = item;
 				if (code == OS.TVN_SELCHANGED) {
 					postEvent (SWT.Selection, event);
 				} else {
