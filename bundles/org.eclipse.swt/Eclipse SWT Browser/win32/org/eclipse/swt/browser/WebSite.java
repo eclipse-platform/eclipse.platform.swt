@@ -48,12 +48,12 @@ protected void createCOMInterfaces () {
 		public int method16(int[] args) {return TranslateUrl(args[0], args[1], args[2]);}		
 		public int method17(int[] args) {return FilterDataObject(args[0], args[1]);}
 	};
-	iDocHostShowUI = new COMObject(new int[]{2, 0, 0, 7, 6}){
+	iDocHostShowUI = new COMObject(new int[]{2, 0, 0, 7, 7}){
 		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
 		public int method1(int[] args) {return AddRef();}
 		public int method2(int[] args) {return Release();}
 		public int method3(int[] args) {return ShowMessage(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);}
-		public int method4(int[] args) {return ShowHelp(args[0], args[1], args[2], args[3], args[4], args[5]);}
+		public int method4(int[] args) {return ShowHelp(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);}
 	};
 	iServiceProvider = new COMObject(new int[]{2, 0, 0, 3}){
 		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
@@ -273,8 +273,13 @@ int ShowMessage(int hwnd, int lpstrText, int lpstrCaption, int dwType, int lpstr
 	return COM.S_FALSE;
 }
 
-int ShowHelp(int hwnd, int pszHelpFile, int uCommand, int dwData, int ptMouse, int pDispatchObjectHit) {
-	return COM.E_NOTIMPL;
+/* Note.  One of the arguments of ShowHelp is a POINT struct and not a pointer to a POINT struct. Because
+ * of the way Callback gets int parameters from a va_list of C arguments 2 integer arguments must be declared,
+ * ptMouse_x and ptMouse_y. Otherwise the Browser crashes when the user presses F1 to invoke
+ * the help.
+ */
+int ShowHelp(int hwnd, int pszHelpFile, int uCommand, int dwData, int ptMouse_x, int ptMouse_y, int pDispatchObjectHit) {
+	return COM.S_OK;
 }
 
 /* IServiceProvider */
