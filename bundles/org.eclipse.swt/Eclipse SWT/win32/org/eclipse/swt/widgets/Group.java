@@ -76,6 +76,8 @@ public class Group extends Composite {
 			}
 		}
 	}
+	
+	static final int INSET = 3; // number of pixels between client area and border
 
 /**
  * Constructs a new instance of this class given its parent
@@ -157,6 +159,15 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	OS.GetWindowText (handle, buffer1, length + 1);
 	int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE;
 	OS.DrawText (hDC, buffer1, length, rect, flags);
+	int textInset = 0;
+	if (length > 0) {
+		/* In the (rare) case where the text is wider than the client area,
+		 * allow room for one average character to the right of the text.
+		 */
+		TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
+		OS.GetTextMetrics (hDC, tm);
+		textInset = tm.tmAveCharWidth;
+	}
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (handle, hDC);
 	Point size;
@@ -171,8 +182,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	Rectangle trim = computeTrim (0, 0, width, height);
-	width = Math.max (trim.width, rect.right - rect.left + 6);
+	width = Math.max (trim.width, rect.right - rect.left + INSET * 2 + textInset);
 	height = trim.height;
+	int border = getBorderWidth ();
+	width += border * 2; height += border * 2;
 	return new Point (width, height);
 }
 
@@ -187,9 +200,8 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	OS.GetTextMetrics (hDC, tm);
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (handle, hDC);
-	int inset = 3;
-	trim.x -= inset;  trim.y -= tm.tmHeight;
-	trim.width += (inset * 2);  trim.height += tm.tmHeight + inset;
+	trim.x -= INSET;  trim.y -= tm.tmHeight;
+	trim.width += INSET * 2;  trim.height += tm.tmHeight + INSET;
 	return trim;
 }
 
@@ -211,8 +223,8 @@ public Rectangle getClientArea () {
 	OS.GetTextMetrics (hDC, tm);
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (handle, hDC);
-	int inset = 3, x = inset, y = tm.tmHeight;
-	return new Rectangle (x, y, rect.right - (inset * 2), rect.bottom - y - inset);
+	int x = INSET, y = tm.tmHeight;
+	return new Rectangle (x, y, rect.right - INSET * 2, rect.bottom - y - INSET);
 }
 
 String getNameText () {
