@@ -219,10 +219,22 @@ int createDIB(int width, int height) {
 	bmi[36] = bmi[37] = bmi[38] = bmi[39] = 0;
 	/* Set the rgb colors into the bitmap info */
 	if (OS.IsWinCE) {
-		/* the 32 bit masks are 0xFF000000, 0xFF0000, 0xFF00 */
-		bmi[40] = (byte)0xFF; bmi[41] = bmi[42] = bmi[43] = 0;
-		bmi[44] = 0; bmi[45] = (byte)0xFF; bmi[46] = bmi[47] = 0;
-		bmi[48] = bmi[49] = 0; bmi[50] = (byte)0xFF; bmi[51] = 0;
+		int redMask = 0xFF00;
+		int greenMask = 0xFF0000;
+		int blueMask = 0xFF000000;
+		/* big endian */
+		bmi[40] = (byte)((redMask & 0xFF000000) >> 24);
+		bmi[41] = (byte)((redMask & 0xFF0000) >> 16);
+		bmi[42] = (byte)((redMask & 0xFF00) >> 8);
+		bmi[43] = (byte)((redMask & 0xFF) >> 0);
+		bmi[44] = (byte)((greenMask & 0xFF000000) >> 24);
+		bmi[45] = (byte)((greenMask & 0xFF0000) >> 16);
+		bmi[46] = (byte)((greenMask & 0xFF00) >> 8);
+		bmi[47] = (byte)((greenMask & 0xFF) >> 0);
+		bmi[48] = (byte)((blueMask & 0xFF000000) >> 24);
+		bmi[49] = (byte)((blueMask & 0xFF0000) >> 16);
+		bmi[50] = (byte)((blueMask & 0xFF00) >> 8);
+		bmi[51] = (byte)((blueMask & 0xFF) >> 0);
 	}
 
 	int[] pBits = new int[1];

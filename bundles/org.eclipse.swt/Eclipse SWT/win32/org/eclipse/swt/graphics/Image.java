@@ -852,32 +852,41 @@ int createDIBFromDDB(int hDC, int hBitmap, int width, int height) {
 					redMask = 0x7C00;
 					greenMask = 0x3E0;
 					blueMask = 0x1F;
-					break;
-				case 24: 
-					redMask = 0xFF;
-					greenMask = 0xFF00;
-					blueMask = 0xFF0000;
+					/* little endian */
+					bmi[40] = (byte)((redMask & 0xFF) >> 0);
+					bmi[41] = (byte)((redMask & 0xFF00) >> 8);
+					bmi[42] = (byte)((redMask & 0xFF0000) >> 16);
+					bmi[43] = (byte)((redMask & 0xFF000000) >> 24);
+					bmi[44] = (byte)((greenMask & 0xFF) >> 0);
+					bmi[45] = (byte)((greenMask & 0xFF00) >> 8);
+					bmi[46] = (byte)((greenMask & 0xFF0000) >> 16);
+					bmi[47] = (byte)((greenMask & 0xFF000000) >> 24);
+					bmi[48] = (byte)((blueMask & 0xFF) >> 0);
+					bmi[49] = (byte)((blueMask & 0xFF00) >> 8);
+					bmi[50] = (byte)((blueMask & 0xFF0000) >> 16);
+					bmi[51] = (byte)((blueMask & 0xFF000000) >> 24);
 					break;
 				case 32: 
 					redMask = 0xFF00;
 					greenMask = 0xFF0000;
 					blueMask = 0xFF000000;
+					/* big endian */
+					bmi[40] = (byte)((redMask & 0xFF000000) >> 24);
+					bmi[41] = (byte)((redMask & 0xFF0000) >> 16);
+					bmi[42] = (byte)((redMask & 0xFF00) >> 8);
+					bmi[43] = (byte)((redMask & 0xFF) >> 0);
+					bmi[44] = (byte)((greenMask & 0xFF000000) >> 24);
+					bmi[45] = (byte)((greenMask & 0xFF0000) >> 16);
+					bmi[46] = (byte)((greenMask & 0xFF00) >> 8);
+					bmi[47] = (byte)((greenMask & 0xFF) >> 0);
+					bmi[48] = (byte)((blueMask & 0xFF000000) >> 24);
+					bmi[49] = (byte)((blueMask & 0xFF0000) >> 16);
+					bmi[50] = (byte)((blueMask & 0xFF00) >> 8);
+					bmi[51] = (byte)((blueMask & 0xFF) >> 0);
 					break;
 				default:
 					SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
 			}
-			bmi[40] = (byte)((redMask & 0xFF) >> 0);
-			bmi[41] = (byte)((redMask & 0xFF00) >> 8);
-			bmi[42] = (byte)((redMask & 0xFF0000) >> 16);
-			bmi[43] = (byte)((redMask & 0xFF000000) >> 24);
-			bmi[44] = (byte)((greenMask & 0xFF) >> 0);
-			bmi[45] = (byte)((greenMask & 0xFF00) >> 8);
-			bmi[46] = (byte)((greenMask & 0xFF0000) >> 16);
-			bmi[47] = (byte)((greenMask & 0xFF000000) >> 24);
-			bmi[48] = (byte)((blueMask & 0xFF) >> 0);
-			bmi[49] = (byte)((blueMask & 0xFF00) >> 8);
-			bmi[50] = (byte)((blueMask & 0xFF0000) >> 16);
-			bmi[51] = (byte)((blueMask & 0xFF000000) >> 24);
 		}
 	} else {
 		for (int j = 0; j < rgbs.length; j++) {
@@ -1584,9 +1593,18 @@ static int[] init(Device device, Image image, ImageData i) {
 	/*
 	 * Windows supports 16-bit mask of (0x7C00, 0x3E0, 0x1F),
 	 * 24-bit mask of (0xFF0000, 0xFF00, 0xFF) and 32-bit mask
-	 * (0xFF000000, 0xFF0000, 0xFF00).  Make sure the image is
+	 * (0x00FF0000, 0x0000FF00, 0x000000FF) as documented in 
+	 * MSDN BITMAPINFOHEADER.  Make sure the image is 
 	 * Windows-supported.
 	 */
+	/*
+	* Note on WinCE.  CreateDIBSection requires the biCompression
+	* field of the BITMAPINFOHEADER to be set to BI_BITFIELDS for
+	* 16 and 32 bit direct images (see MSDN for CreateDIBSection).
+	* In this case, the color mask can be set to any value.  For
+	* consistency, it is set to the same mask used by non WinCE
+	* platforms in BI_RGB mode.
+	*/
 	if (i.palette.isDirect) {
 		final PaletteData palette = i.palette;
 		final int redMask = palette.redMask;
@@ -1697,18 +1715,36 @@ static int[] init(Device device, Image image, ImageData i) {
 			int redMask = palette.redMask;
 			int greenMask = palette.greenMask;
 			int blueMask = palette.blueMask;
-			bmi[40] = (byte)((redMask & 0xFF) >> 0);
-			bmi[41] = (byte)((redMask & 0xFF00) >> 8);
-			bmi[42] = (byte)((redMask & 0xFF0000) >> 16);
-			bmi[43] = (byte)((redMask & 0xFF000000) >> 24);
-			bmi[44] = (byte)((greenMask & 0xFF) >> 0);
-			bmi[45] = (byte)((greenMask & 0xFF00) >> 8);
-			bmi[46] = (byte)((greenMask & 0xFF0000) >> 16);
-			bmi[47] = (byte)((greenMask & 0xFF000000) >> 24);
-			bmi[48] = (byte)((blueMask & 0xFF) >> 0);
-			bmi[49] = (byte)((blueMask & 0xFF00) >> 8);
-			bmi[50] = (byte)((blueMask & 0xFF0000) >> 16);
-			bmi[51] = (byte)((blueMask & 0xFF000000) >> 24);
+			/*
+			 * The color masks must be written based on the
+			 * endianness of the ImageData.			 */
+			if (i.getByteOrder() == ImageData.LSB_FIRST) {
+				bmi[40] = (byte)((redMask & 0xFF) >> 0);
+				bmi[41] = (byte)((redMask & 0xFF00) >> 8);
+				bmi[42] = (byte)((redMask & 0xFF0000) >> 16);
+				bmi[43] = (byte)((redMask & 0xFF000000) >> 24);
+				bmi[44] = (byte)((greenMask & 0xFF) >> 0);
+				bmi[45] = (byte)((greenMask & 0xFF00) >> 8);
+				bmi[46] = (byte)((greenMask & 0xFF0000) >> 16);
+				bmi[47] = (byte)((greenMask & 0xFF000000) >> 24);
+				bmi[48] = (byte)((blueMask & 0xFF) >> 0);
+				bmi[49] = (byte)((blueMask & 0xFF00) >> 8);
+				bmi[50] = (byte)((blueMask & 0xFF0000) >> 16);
+				bmi[51] = (byte)((blueMask & 0xFF000000) >> 24);
+			} else {
+				bmi[40] = (byte)((redMask & 0xFF000000) >> 24);
+				bmi[41] = (byte)((redMask & 0xFF0000) >> 16);
+				bmi[42] = (byte)((redMask & 0xFF00) >> 8);
+				bmi[43] = (byte)((redMask & 0xFF) >> 0);
+				bmi[44] = (byte)((greenMask & 0xFF000000) >> 24);
+				bmi[45] = (byte)((greenMask & 0xFF0000) >> 16);
+				bmi[46] = (byte)((greenMask & 0xFF00) >> 8);
+				bmi[47] = (byte)((greenMask & 0xFF) >> 0);
+				bmi[48] = (byte)((blueMask & 0xFF000000) >> 24);
+				bmi[49] = (byte)((blueMask & 0xFF0000) >> 16);
+				bmi[50] = (byte)((blueMask & 0xFF00) >> 8);
+				bmi[51] = (byte)((blueMask & 0xFF) >> 0);
+			}
 		}
 	} else {
 		for (int j = 0; j < rgbs.length; j++) {
