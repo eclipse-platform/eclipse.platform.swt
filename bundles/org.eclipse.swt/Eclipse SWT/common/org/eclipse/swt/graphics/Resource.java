@@ -33,7 +33,7 @@ package org.eclipse.swt.graphics;
 public abstract class Resource {
     
 	/**
-	 * the device where this font was created
+	 * the device where this resource was created
 	 */
 	Device device;
 
