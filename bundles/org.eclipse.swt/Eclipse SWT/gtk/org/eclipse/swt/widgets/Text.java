@@ -753,7 +753,12 @@ public String getText (int start, int end) {
 	String text = getText ();
 	int length = text.length ();
 	if (length <= end) error (SWT.ERROR_INVALID_RANGE);
-	return text.substring (start, end);
+	/*
+	* NOTE: The current implementation uses substring ()
+	* which can reference a potentially large character
+	* array.
+	*/
+	return text.substring (start, end + 1);
 }
 
 /**
