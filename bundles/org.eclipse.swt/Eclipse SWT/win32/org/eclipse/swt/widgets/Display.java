@@ -1951,12 +1951,13 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 			Control control = findControl (keyMsg.hwnd);
 			if (control != null) {
 				keyMsg.hwnd = control.handle;
+				int flags = OS.PM_REMOVE | OS.PM_NOYIELD;
 				do {
 					if (!(consumed |= filterMessage (keyMsg))) {
 						OS.TranslateMessage (keyMsg);
 						consumed |= OS.DispatchMessage (keyMsg) == 1;	
 					}
-				} while (OS.PeekMessage (keyMsg, keyMsg.hwnd, OS.WM_KEYFIRST, OS.WM_KEYLAST, OS.PM_REMOVE));
+				} while (OS.PeekMessage (keyMsg, keyMsg.hwnd, OS.WM_KEYFIRST, OS.WM_KEYLAST, flags));
 			}
 			if (consumed) {
 				int hHeap = OS.GetProcessHeap ();
