@@ -138,7 +138,7 @@ public class Display extends Device {
 	int errorMask, infoMask, questionMask, warningMask, workingMask;
 
 	/* System Cursors */
-	Cursor[] cursors = new Cursor [22];
+	Cursor [] cursors = new Cursor [SWT.CURSOR_HAND + 1];
 
 	/* Initial Guesses for Shell Trimmings. */
 	int leftBorderWidth = 2, rightBorderWidth = 2;

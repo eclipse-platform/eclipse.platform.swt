@@ -255,7 +255,7 @@ public class Display extends Device {
 	byte [] TEXT_FONT, LIST_FONT, TITLE_FONT, GAUGE_FONT, GROUP_FONT;
 
 	/* System Cursors */
-	Cursor[] cursors = new Cursor [22];
+	Cursor [] cursors = new Cursor [SWT.CURSOR_HAND + 1];
 	
 	/* Images */
 	int nullImage;

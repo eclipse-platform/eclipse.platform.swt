@@ -186,7 +186,7 @@ public class Display extends Device {
 	int /*long*/ errorImage, infoImage, questionImage, warningImage;
 	
 	/* System Cursors */
-	Cursor[] cursors = new Cursor [22];
+	Cursor [] cursors = new Cursor [SWT.CURSOR_HAND + 1];
 
 	/* Colors */
 	GdkColor COLOR_WIDGET_DARK_SHADOW, COLOR_WIDGET_NORMAL_SHADOW, COLOR_WIDGET_LIGHT_SHADOW;
