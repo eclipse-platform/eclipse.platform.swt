@@ -25,15 +25,15 @@ class CComboTab extends Tab {
 	/* Style widgets added to the "Style" group */
 	Button flatButton, readOnlyButton;
 	
-	static String [] ListData = {ControlExample.getResourceString("ListData0_0"),
-								 ControlExample.getResourceString("ListData0_1"),
-								 ControlExample.getResourceString("ListData0_2"),
-								 ControlExample.getResourceString("ListData0_3"),
-								 ControlExample.getResourceString("ListData0_4"),
-								 ControlExample.getResourceString("ListData0_5"),
-								 ControlExample.getResourceString("ListData0_6"),
-								 ControlExample.getResourceString("ListData0_7"),
-								 ControlExample.getResourceString("ListData0_8")};
+	static String [] ListData = {ControlExample.getResourceString("ListData1_0"),
+								 ControlExample.getResourceString("ListData1_1"),
+								 ControlExample.getResourceString("ListData1_2"),
+								 ControlExample.getResourceString("ListData1_3"),
+								 ControlExample.getResourceString("ListData1_4"),
+								 ControlExample.getResourceString("ListData1_5"),
+								 ControlExample.getResourceString("ListData1_6"),
+								 ControlExample.getResourceString("ListData1_7"),
+								 ControlExample.getResourceString("ListData1_8")};
 
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
