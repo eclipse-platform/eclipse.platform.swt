@@ -7,7 +7,6 @@
    provider-name="Object Technology International, Inc.">
 
 <!-- Runtime -->
-<!-- Runtime -->
 <runtime>
    <library name="$ws$/swt.jar">
       <export name="*"/>
