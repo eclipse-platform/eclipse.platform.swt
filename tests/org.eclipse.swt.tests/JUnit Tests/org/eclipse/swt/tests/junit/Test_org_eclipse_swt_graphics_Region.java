@@ -388,14 +388,13 @@ public void test_intersectLorg_eclipse_swt_graphics_Rectangle() {
 	
 	reg = new Region(display);
 	reg.intersect(rect1);
-	Rectangle box = reg.getBounds();
-	if (!box.isEmpty()) {
+	if (!reg.isEmpty()) {
 		reg.dispose();
 		fail("intersect failed for empty region");
 	}
 	reg.add(rect1);
 	reg.intersect(rect2);
-	box = reg.getBounds();
+	Rectangle box = reg.getBounds();
 	if (!box.equals(rect1)) {
 		reg.dispose();
 		fail("intersect failed 1");
@@ -407,8 +406,7 @@ public void test_intersectLorg_eclipse_swt_graphics_Rectangle() {
 		fail("intersect failed 2");
 	}
 	reg.intersect(rect4);
-	box = reg.getBounds();
-	if (!box.isEmpty()) {
+	if (!reg.isEmpty()) {
 		reg.dispose();
 		fail("intersect failed 3");
 	}
@@ -449,8 +447,7 @@ public void test_intersectLorg_eclipse_swt_graphics_Region() {
 	
 	reg = new Region(display);
 	reg.intersect(reg1);
-	Rectangle box = reg.getBounds();
-	if (!box.isEmpty()) {
+	if (!reg.isEmpty()) {
 		reg.dispose();
 		reg1.dispose();
 		fail("intersect failed for empty region");
@@ -461,7 +458,7 @@ public void test_intersectLorg_eclipse_swt_graphics_Region() {
 
 	reg.add(reg1);
 	reg.intersect(reg2);
-	box = reg.getBounds();
+	Rectangle box = reg.getBounds();
 	if (!box.equals(reg1.getBounds())) {
 		reg.dispose();
 		reg1.dispose();
@@ -487,8 +484,7 @@ public void test_intersectLorg_eclipse_swt_graphics_Region() {
 	reg4.add(new Rectangle(50,25,10,10));
 
 	reg.intersect(reg4);
-	box = reg.getBounds();
-	if (!box.isEmpty()) {
+	if (!reg.isEmpty()) {
 		reg.dispose();
 		reg1.dispose();
 		reg4.dispose();
@@ -724,21 +720,19 @@ public void test_subtractLorg_eclipse_swt_graphics_Rectangle() {
 	
 	reg = new Region(display);
 	reg.subtract(rect1);
-	Rectangle box = reg.getBounds();
-	if (!box.isEmpty()) {
+	if (!reg.isEmpty()) {
 		reg.dispose();
 		fail("subtract failed for empty region");
 	}
 	reg.add(rect1);
 	reg.subtract(rect2);
-	box = reg.getBounds();
-	if (!box.isEmpty()) {
+	if (!reg.isEmpty()) {
 		reg.dispose();
 		fail("subtract failed 1");
 	}
 	reg.add(rect1);
 	reg.subtract(rect3);
-	box = reg.getBounds();
+	Rectangle box = reg.getBounds();
 	if (!box.equals(rect1)) {
 		reg.dispose();
 		fail("subtract failed 2");
@@ -786,8 +780,7 @@ public void test_subtractLorg_eclipse_swt_graphics_Region() {
 	
 	reg = new Region(display);
 	reg.subtract(reg1);
-	Rectangle box = reg.getBounds();
-	if (!box.isEmpty()) {
+	if (!reg.isEmpty()) {
 		reg.dispose();
 		reg1.dispose();
 		fail("subtract failed for empty region");
@@ -798,8 +791,7 @@ public void test_subtractLorg_eclipse_swt_graphics_Region() {
 	
 	reg.add(reg1);
 	reg.subtract(reg2);
-	box = reg.getBounds();
-	if (!box.isEmpty()) {
+	if (!reg.isEmpty()) {
 		reg.dispose();
 		reg1.dispose();
 		reg2.dispose();
@@ -812,7 +804,7 @@ public void test_subtractLorg_eclipse_swt_graphics_Region() {
 	
 	reg.add(reg1);
 	reg.subtract(reg3);
-	box = reg.getBounds();
+	Rectangle box = reg.getBounds();
 	if (!box.equals(reg1.getBounds())) {
 		reg.dispose();
 		reg1.dispose();
