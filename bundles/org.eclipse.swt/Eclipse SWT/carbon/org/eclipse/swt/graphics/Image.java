@@ -798,7 +798,7 @@ public ImageData getImageData() {
 	
 	ImageData data = new ImageData(width, height, srcDepth, palette);
 	data.data = srcData;
-	if (srcBitsPerPixel == 32) {
+	if (false && srcBitsPerPixel == 32) {
 		/*
 		 * If bits per pixel is 32, scale the data down to 24, since we do not
 		 * support 32-bit images
