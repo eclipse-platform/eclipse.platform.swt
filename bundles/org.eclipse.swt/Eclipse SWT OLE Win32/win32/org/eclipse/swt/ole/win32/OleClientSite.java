@@ -46,6 +46,7 @@ public class OleClientSite extends Composite {
 	private COMObject  iOleClientSite;
 	private COMObject  iAdviseSink;
 	private COMObject  iOleInPlaceSite;
+	private COMObject  iOleDocumentSite;
 
 	protected GUID appClsid;
 	private GUID objClsid;
@@ -55,11 +56,12 @@ public class OleClientSite extends Composite {
 	protected OleFrame frame;
 	
 	// Access to the embedded/linked Ole Object 
-	protected IUnknown          objIUnknown;
-	protected IOleObject        objIOleObject;
-	protected IViewObject2      objIViewObject2;
-	protected IOleInPlaceObject objIOleInPlaceObject;
+	protected IUnknown                  objIUnknown;
+	protected IOleObject                 objIOleObject;
+	protected IViewObject2             objIViewObject2;
+	protected IOleInPlaceObject     objIOleInPlaceObject;
 	protected IOleCommandTarget objIOleCommandTarget;
+	protected IOleDocumentView    objDocumentView;
 		   
 	// Related storage information
 	protected IStorage tempStorage;     // IStorage interface of the receiver
@@ -75,7 +77,7 @@ public class OleClientSite extends Composite {
 	private boolean inInit = true;
 	private boolean inDispose = false;
 		
-	private static final String WORDPROGID = "Word.Document";
+	private static final String WORDPROGID = "Word.Document"; //$NON-NLS-1$
 
 	private Listener listener;
 	
@@ -299,9 +301,9 @@ public OleClientSite(Composite parent, int style, String progId, File file) {
 			
 			// Word does not follow the standard and does not use "CONTENTS" as the name of
 			// its primary stream
-			String contentStream = "CONTENTS";
+			String contentStream = "CONTENTS"; //$NON-NLS-1$
 			GUID wordGUID = getClassID(WORDPROGID);
-			if (COM.IsEqualGUID(appClsid, wordGUID)) contentStream = "WordDocument";
+			if (COM.IsEqualGUID(appClsid, wordGUID)) contentStream = "WordDocument"; //$NON-NLS-1$
 
 			// Copy over the contents of the file into a new temporary storage object
 			OleFile oleFile = new OleFile(file, contentStream, OleFile.READ);
@@ -385,7 +387,7 @@ protected void addObjectReferences() {
 	objIOleObject.SetClientSite(iOleClientSite.getAddress());
 	int[] pdwConnection = new int[1];
 	objIOleObject.Advise(iAdviseSink.getAddress(), pdwConnection);
-	objIOleObject.SetHostNames("main", "main");
+	objIOleObject.SetHostNames("main", "main");  //$NON-NLS-1$ //$NON-NLS-2$
 
 	// Notify the control object that it is embedded in an OLE container
 	COM.OleSetContainedObject(objIUnknown.getAddress(), true);
@@ -466,6 +468,13 @@ protected void createCOMInterfaces() {
 		// method12 DiscardUndoState - not implemented
 		// method13 DeactivateAndUndoChange - not implemented
 		public int method14(int[] args) {return OnPosRectChange(args[0]);}
+	};
+	
+	iOleDocumentSite = new COMObject(new int[]{2, 0, 0, 1}){
+		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
+		public int method1(int[] args) {return AddRef();}
+		public int method2(int[] args) {return Release();}
+		public int method3(int[] args) {return ActivateMe(args[0]);}
 	};	
 }
 protected IStorage createTempStorage() {
@@ -507,6 +516,10 @@ protected void disposeCOMInterfaces() {
 	if (iOleInPlaceSite != null)
 		iOleInPlaceSite.dispose();
 	iOleInPlaceSite = null;
+	
+	if (iOleDocumentSite != null)
+		iOleDocumentSite.dispose();
+	iOleDocumentSite = null;
 }
 /**
  * Requests that the OLE Document or ActiveX Control perform an action; actions are almost always
@@ -658,6 +671,25 @@ public String getProgramID(){
 	}
 	return null;
 }
+int ActivateMe(int pViewToActivate) {
+	if (pViewToActivate == 0) {
+		int[] ppvObject = new int[1];
+		if (objIUnknown.QueryInterface(COM.IIDIOleDocument, ppvObject) != COM.S_OK) return COM.E_FAIL;
+		IOleDocument objOleDocument = new IOleDocument(ppvObject[0]);
+		if (objOleDocument.CreateView(iOleInPlaceSite.getAddress(), 0, 0, ppvObject) != COM.S_OK) return COM.E_FAIL;
+		objOleDocument.Release();
+		objDocumentView = new IOleDocumentView(ppvObject[0]);
+	} else {
+		objDocumentView = new IOleDocumentView(pViewToActivate);
+		objDocumentView.AddRef();
+		objDocumentView.SetInPlaceSite(iOleInPlaceSite.getAddress());
+	}
+	objDocumentView.UIActivate(1);//TRUE
+	RECT rect = getRect();
+	objDocumentView.SetRect(rect);
+	objDocumentView.Show(1);//TRUE
+	return COM.S_OK;
+}
 protected int GetWindow(int phwnd) {
 	if (phwnd == 0)
 		return COM.E_INVALIDARG;
@@ -670,6 +702,16 @@ protected int GetWindow(int phwnd) {
 	COM.MoveMemory(phwnd, new int[] {frame.handle}, 4);
 	return COM.S_OK;
 }
+RECT getRect() {
+	Point location = this.getLocation();
+	Rectangle area = frame.getClientArea();
+	RECT rect = new RECT();
+	rect.left   = location.x;
+	rect.top    = location.y;
+	rect.right  = location.x + area.width - borderWidths.left - borderWidths.right;
+	rect.bottom = location.y + area.height - borderWidths.top - borderWidths.bottom;
+	return rect;
+}
 private int GetWindowContext(int ppFrame, int ppDoc, int lprcPosRect, int lprcClipRect, int lpFrameInfo) {	
 	if (frame == null || ppFrame == 0)
 		return COM.E_NOTIMPL;
@@ -680,34 +722,12 @@ private int GetWindowContext(int ppFrame, int ppDoc, int lprcPosRect, int lprcCl
 	frame.AddRef();
 
 	// null out document handle
-	if (ppDoc != 0) {
-		COM.MoveMemory(ppDoc, new int[] {0}, 4);
-	}
+	if (ppDoc != 0) COM.MoveMemory(ppDoc, new int[] {0}, 4);
 
 	// fill in position and clipping info
-	Rectangle clientArea = this.getClientArea();
-	Point clientLocation = this.getLocation();
-	setExtent(clientArea.width - indent.left - indent.right, clientArea.height - indent.top - indent.bottom);
-	
-	RECT posRect = new RECT();
-	posRect.left   = clientLocation.x + indent.left;
-	posRect.top    = clientLocation.y + indent.top;
-	posRect.right  = clientLocation.x + clientArea.width - indent.right;
-	posRect.bottom = clientLocation.y + clientArea.height - indent.bottom;
-
-	RECT clipRect = new RECT();
-	Rectangle frameArea  = frame.getClientArea();
-	clipRect.left   = frameArea.x;
-	clipRect.top    = frameArea.y;
-	clipRect.right  = frameArea.x + frameArea.width;
-	clipRect.bottom = frameArea.y + frameArea.height;
-	
-	if (lprcPosRect != 0) {
-		OS.MoveMemory(lprcPosRect, posRect, RECT.sizeof);
-	}
-	if (lprcClipRect != 0) {
-		OS.MoveMemory(lprcClipRect, clipRect, RECT.sizeof);
-	}
+	RECT rect = getRect();
+	if (lprcPosRect != 0) OS.MoveMemory(lprcPosRect, rect, RECT.sizeof);
+	if (lprcClipRect != 0) OS.MoveMemory(lprcClipRect, rect, RECT.sizeof);
 
 	// get frame info
 	OLEINPLACEFRAMEINFO frameInfo = new OLEINPLACEFRAMEINFO();
@@ -821,8 +841,8 @@ private int OnInPlaceDeactivate() {
 	return COM.S_OK;
 }
 private int OnPosRectChange(int lprcPosRect) {
-	// Not resetting object rects because this causes Word to loose its scrollbars
-	//setObjectRects();
+	Point size = getSize();
+	setExtent(size.x, size.y);
 	return COM.S_OK;
 }
 private void onPaint(Event e) {
@@ -859,6 +879,7 @@ private int OnShowWindow(int fShow) {
 	return COM.S_OK;
 }
 private int OnUIActivate() {
+	if (objIOleInPlaceObject == null) return COM.E_FAIL;
 	state = STATE_UIACTIVE;
 	int[] phwnd = new int[1];
 	if (objIOleInPlaceObject.GetWindow(phwnd) == COM.S_OK) {
@@ -938,6 +959,14 @@ protected int QueryInterface(int riid, int ppvObject) {
 		AddRef();
 		return COM.S_OK;
 	}
+	if (COM.IsEqualGUID(guid, COM.IIDIOleDocumentSite )) {
+		String progID = getProgramID();
+		if (!progID.startsWith("PowerPoint")) {
+			COM.MoveMemory(ppvObject, new int[] {iOleDocumentSite.getAddress()}, 4);
+			AddRef();
+			return COM.S_OK;
+		}
+	}
 	COM.MoveMemory(ppvObject, new int[] {0}, 4);
 	return COM.E_NOINTERFACE;
 }
@@ -990,6 +1019,11 @@ protected void releaseObjectInterfaces() {
 		objIOleObject.Release();
 	}
 	objIOleObject = null;
+	
+	if (objDocumentView != null){
+		objDocumentView.Release();
+	}
+	objDocumentView = null;
 	
 	if (objIViewObject2 != null) {
 		objIViewObject2.SetAdvise(aspect, 0, 0);
@@ -1153,11 +1187,11 @@ private boolean saveToTraditionalFile(File file) {
 	
 	int[] address = new int[1];
 	// Look for a CONTENTS stream
-	if (tempStorage.OpenStream("CONTENTS", 0, COM.STGM_DIRECT | COM.STGM_READ | COM.STGM_SHARE_EXCLUSIVE, 0, address) == COM.S_OK)
+	if (tempStorage.OpenStream("CONTENTS", 0, COM.STGM_DIRECT | COM.STGM_READ | COM.STGM_SHARE_EXCLUSIVE, 0, address) == COM.S_OK) //$NON-NLS-1$
 		return saveFromContents(address[0], file);
 		
 	// Look for Ole 1.0 object stream
-	if (tempStorage.OpenStream("\1Ole10Native", 0, COM.STGM_DIRECT | COM.STGM_READ | COM.STGM_SHARE_EXCLUSIVE, 0, address) == COM.S_OK)
+	if (tempStorage.OpenStream("\1Ole10Native", 0, COM.STGM_DIRECT | COM.STGM_READ | COM.STGM_SHARE_EXCLUSIVE, 0, address) == COM.S_OK) //$NON-NLS-1$
 		return saveFromOle10Native(address[0], file);
 		
 	return false;
@@ -1167,23 +1201,18 @@ private int Scroll(int scrollExtant) {
 }
 void setBorderSpace(RECT newBorderwidth) {
 	borderWidths = newBorderwidth;
-
 	// readjust size and location of client site
 	Rectangle area = frame.getClientArea();
 	setBounds(borderWidths.left, borderWidths.top, 
 				area.width - borderWidths.left - borderWidths.right, 
 				area.height - borderWidths.top - borderWidths.bottom);
-
 	setObjectRects();
 }
 private void setExtent(int width, int height){
 	// Resize the width and height of the embedded/linked OLENatives object
 	// to the specified values.
 
-	if (objIOleObject == null || isStatic) return;
-
-	if (inUpdate) return;
-	
+	if (objIOleObject == null || isStatic || inUpdate) return;
 	SIZE currentExtent = getExtent();
 	if (width == currentExtent.cx && height == currentExtent.cy) return;
 
@@ -1204,7 +1233,6 @@ private void setExtent(int width, int height){
 			// Close server if it wasn't already running upon entering this method.
 			objIOleObject.Close(COM.OLECLOSE_SAVEIFDIRTY);
 	}
-
 }
 public void setIndent(Rectangle newIndent) {
 	indent = new RECT();
@@ -1214,28 +1242,11 @@ public void setIndent(Rectangle newIndent) {
 	indent.bottom = newIndent.height;
 }
 private void setObjectRects() {
-	if (objIOleInPlaceObject == null) return;
-
+	if (objIOleInPlaceObject == null) return;	
 	// size the object to fill the available space
 	// leave a border
-	Rectangle clientArea = this.getClientArea();
-	Point clientLocation = this.getLocation();
-	setExtent(clientArea.width - indent.left - indent.right, clientArea.height - indent.top - indent.bottom);
-	
-	RECT posRect = new RECT();
-	posRect.left   = clientLocation.x + indent.left;
-	posRect.top    = clientLocation.y + indent.top;
-	posRect.right  = clientLocation.x + clientArea.width - indent.right;
-	posRect.bottom = clientLocation.y + clientArea.height - indent.bottom;
-
-	RECT clipRect = new RECT();
-	Rectangle frameArea  = frame.getClientArea();
-	clipRect.left   = frameArea.x;
-	clipRect.top    = frameArea.y;
-	clipRect.right  = frameArea.x + frameArea.width;
-	clipRect.bottom = frameArea.y + frameArea.height;
-
-	objIOleInPlaceObject.SetObjectRects(posRect, clipRect);	
+	RECT rect = getRect();
+	objIOleInPlaceObject.SetObjectRects(rect, rect);
 }
 
 private int ShowObject() {
