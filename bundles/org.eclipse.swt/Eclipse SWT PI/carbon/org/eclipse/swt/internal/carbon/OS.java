@@ -327,6 +327,7 @@ public class OS extends OS2 {
 public static final native int kHIViewWindowContentID();
 public static final native int AECountItems(AEDesc theAEDescList, int[] theCount);
 public static final native int AEGetNthPtr(AEDesc theAEDescList, int index, int desiredType, int[] theAEKeyword, int[] typeCode, int dataPtr, int maximumSize, int[] actualSize);
+public static final native int AEProcessAppleEvent(EventRecord theEventRecord);
 public static final native int AddDataBrowserItems(int cHandle, int containerID, int numItems, int[] itemIDs, int preSortProperty);
 public static final native int AddDataBrowserListViewColumn(int browser, DataBrowserListViewColumnDesc columnDesc, int position);  
 public static final native int AppendMenuItemTextWithCFString(int mHandle, int sHandle, int attributes, int commandID, short[] outItemIndex);
@@ -348,6 +349,7 @@ public static final native int ClipCGContextToRegion(int inContext, Rect portRec
 public static final native int CloseDataBrowserContainer(int cHandle, int container);
 public static final native void ClosePoly();
 public static final native int CollapseWindow(int wHandle, boolean collapse);
+public static final native boolean ConvertEventRefToEventRecord(int inEvent, EventRecord outEvent);
 public static final native void CopyBits(int srcPixMapHandle, int dstPixMapHandle, Rect srcRect, Rect dstRect, short mode, int maskRgn);
 public static final native int CopyControlTitleAsCFString(int cHandle, int[] sHandle);
 public static final native void CopyDeepMask(int srcPixMapHandle, int maskPixMapHandle, int dstPixMapHandle, Rect srcRect, Rect maskRect, Rect dstRect, short mode, int maskRgn);
@@ -661,6 +663,7 @@ public static final native void SizeWindow(int wHandle, short w, short h, boolea
 public static final native boolean StillDown();
 public static final native void SysBeep(short duration);
 public static final native int TXNActivate(int txHandle, int frameID, boolean scrollBarState);
+public static final native void TXNClick(int iTXNObject, EventRecord iEvent);
 public static final native int TXNCopy(int txHandle);
 public static final native int TXNCut(int txHandle);
 public static final native int TXNDataSize(int txHandle);

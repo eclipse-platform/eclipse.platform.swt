@@ -84,20 +84,6 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_GetEventHIComman
 	return status;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS2_GetNextEvent(JNIEnv *env, jclass zz, jshort mask, jintArray eData) {
-	EventRecord event;
-	jboolean rc= GetNextEvent(mask, &event);
-	copyEvent(env, eData, &event);
-	return rc;
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS2_AEProcessAppleEvent(JNIEnv *env, jclass zz,
-				jintArray eventData) {
-	EventRecord event;
-	copyEventData(env, &event, eventData);
-	AEProcessAppleEvent(&event);
-}
-
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_MenuEvent(JNIEnv *env, jclass zz,
 				jintArray eventData) {
 	EventRecord event;
@@ -109,13 +95,6 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS2_IsShowContex
 	EventRecord event;
 	copyEventData(env, &event, eventData);
 	return (jboolean) IsShowContextualMenuClick(&event);
-}
-
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS2_ConvertEventRefToEventRecord(JNIEnv *env, jclass zz, jint eHandle, jintArray data) {
-	EventRecord event;
-	jboolean rc= ConvertEventRefToEventRecord((EventRef) eHandle, &event);
-	copyEvent(env, data, &event);
-	return rc;
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_NewCursor(JNIEnv *env, jclass zz,
@@ -439,13 +418,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS2_getHandleData__I
 	int length= (*env)->GetArrayLength(env, data);
 	memcpy(sa, *handle, length*sizeof(jint));
 	(*env)->ReleaseIntArrayElements(env, data, sa, 0);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS2_TXNClick(JNIEnv *env, jclass zz,	
-					jint txHandle, jintArray eventData) {
-	EventRecord event;
-	copyEventData(env, &event, eventData);
-	TXNClick((TXNObject)txHandle, &event);
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_TXNGetRectBounds(JNIEnv *env, jclass zz,

@@ -12,6 +12,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.EventRecord;
 
 /**
  * Instances of this class are selectable user interface
@@ -959,9 +960,9 @@ int processFocusOut () {
 }
 int processMouseDown (MacMouseEvent mmEvent) {
 	if (isEnabled()) {
-		int macEvent[]= mmEvent.toOldMacEvent();
-		if (macEvent != null)
-			OS.TXNClick(fTX, macEvent);
+		EventRecord eventRecord = mmEvent.toOldMacEvent();
+		if (eventRecord != null) 
+			OS.TXNClick(fTX, eventRecord);
 	}
 	return 0;
 }

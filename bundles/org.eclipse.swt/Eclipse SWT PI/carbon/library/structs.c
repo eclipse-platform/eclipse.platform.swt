@@ -549,6 +549,52 @@ void setDataBrowserListViewColumnDescFields(JNIEnv *env, jobject lpObject, DataB
 }
 #endif /* NO_DataBrowserListViewColumnDesc */
 
+#ifndef NO_EventRecord
+typedef struct EventRecord_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID what, message, when, where_v, where_h, modifiers;
+} EventRecord_FID_CACHE;
+
+EventRecord_FID_CACHE EventRecordFc;
+
+void cacheEventRecordFids(JNIEnv *env, jobject lpObject)
+{
+	if (EventRecordFc.cached) return;
+	EventRecordFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	EventRecordFc.what = (*env)->GetFieldID(env, EventRecordFc.clazz, "what", "S");
+	EventRecordFc.message = (*env)->GetFieldID(env, EventRecordFc.clazz, "message", "I");
+	EventRecordFc.when = (*env)->GetFieldID(env, EventRecordFc.clazz, "when", "I");
+	EventRecordFc.where_v = (*env)->GetFieldID(env, EventRecordFc.clazz, "where_v", "S");
+	EventRecordFc.where_h = (*env)->GetFieldID(env, EventRecordFc.clazz, "where_h", "S");
+	EventRecordFc.modifiers = (*env)->GetFieldID(env, EventRecordFc.clazz, "modifiers", "S");
+	EventRecordFc.cached = 1;
+}
+
+EventRecord *getEventRecordFields(JNIEnv *env, jobject lpObject, EventRecord *lpStruct)
+{
+	if (!EventRecordFc.cached) cacheEventRecordFids(env, lpObject);
+	lpStruct->what = (EventKind)(*env)->GetShortField(env, lpObject, EventRecordFc.what);
+	lpStruct->message = (*env)->GetIntField(env, lpObject, EventRecordFc.message);
+	lpStruct->when = (*env)->GetIntField(env, lpObject, EventRecordFc.when);
+	lpStruct->where.v = (*env)->GetShortField(env, lpObject, EventRecordFc.where_v);
+	lpStruct->where.h = (*env)->GetShortField(env, lpObject, EventRecordFc.where_h);
+	lpStruct->modifiers = (EventModifiers)(*env)->GetShortField(env, lpObject, EventRecordFc.modifiers);
+	return lpStruct;
+}
+
+void setEventRecordFields(JNIEnv *env, jobject lpObject, EventRecord *lpStruct)
+{
+	if (!EventRecordFc.cached) cacheEventRecordFids(env, lpObject);
+	(*env)->SetShortField(env, lpObject, EventRecordFc.what, (jshort)lpStruct->what);
+	(*env)->SetIntField(env, lpObject, EventRecordFc.message, (jint)lpStruct->message);
+	(*env)->SetIntField(env, lpObject, EventRecordFc.when, (jint)lpStruct->when);
+	(*env)->SetShortField(env, lpObject, EventRecordFc.where_v, (jshort)lpStruct->where.v);
+	(*env)->SetShortField(env, lpObject, EventRecordFc.where_h, (jshort)lpStruct->where.h);
+	(*env)->SetShortField(env, lpObject, EventRecordFc.modifiers, (jshort)lpStruct->modifiers);
+}
+#endif /* NO_EventRecord */
+
 #ifndef NO_NavDialogCreationOptions
 typedef struct NavDialogCreationOptions_FID_CACHE {
 	int cached;

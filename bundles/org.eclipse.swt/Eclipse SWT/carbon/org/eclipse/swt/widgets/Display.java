@@ -15,6 +15,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.Callback;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.EventRecord;
 
 /**
  * Instances of this class are responsible for managing the
@@ -2075,7 +2076,9 @@ static String convertToLf(String text) {
 				}
 			}
 			
-			OS.AEProcessAppleEvent(new MacEvent(eRefHandle).toOldMacEvent());
+			EventRecord eventRecord= new EventRecord();
+			OS.ConvertEventRefToEventRecord(eRefHandle, eventRecord);
+			OS.AEProcessAppleEvent(eventRecord);
 			break;
 			
 		case OS.kEventClassCommand:

@@ -92,6 +92,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AEGetNthPtr
 }
 #endif /* NO_AEGetNthPtr */
 
+#ifndef NO_AEProcessAppleEvent
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AEProcessAppleEvent
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	EventRecord _arg0, *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("AEProcessAppleEvent\n")
+
+	if (arg0) lparg0 = getEventRecordFields(env, arg0, &_arg0);
+	rc = (jint)AEProcessAppleEvent((const EventRecord *)lparg0);
+	if (arg0) setEventRecordFields(env, arg0, lparg0);
+	return rc;
+}
+#endif /* NO_AEProcessAppleEvent */
+
 #ifndef NO_AppendMenuItemTextWithCFString
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AppendMenuItemTextWithCFString
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jshortArray arg4)
@@ -312,6 +328,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CollapseWindow
 	return (jint)CollapseWindow((WindowRef)arg0, (Boolean)arg1);
 }
 #endif /* NO_CollapseWindow */
+
+#ifndef NO_ConvertEventRefToEventRecord
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_ConvertEventRefToEventRecord
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	EventRecord _arg1, *lparg1=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("ConvertEventRefToEventRecord\n")
+
+	if (arg1) lparg1 = getEventRecordFields(env, arg1, &_arg1);
+	rc = (jboolean)ConvertEventRefToEventRecord((EventRef)arg0, (EventRecord *)lparg1);
+	if (arg1) setEventRecordFields(env, arg1, lparg1);
+	return rc;
+}
+#endif /* NO_ConvertEventRefToEventRecord */
 
 #ifndef NO_CopyBits
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CopyBits
@@ -4266,6 +4298,20 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNActivate
 	return (jint)TXNActivate((TXNObject)arg0, (TXNFrameID)arg1, (TXNScrollBarState)arg2);
 }
 #endif /* NO_TXNActivate */
+
+#ifndef NO_TXNClick
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNClick
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	EventRecord _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("TXNClick\n")
+
+	if (arg1) lparg1 = getEventRecordFields(env, arg1, &_arg1);
+	TXNClick((TXNObject)arg0, (const EventRecord *)lparg1);
+	if (arg1) setEventRecordFields(env, arg1, lparg1);
+}
+#endif /* NO_TXNClick */
 
 #ifndef NO_TXNCopy
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNCopy

@@ -10,12 +10,8 @@ package org.eclipse.swt.internal.carbon;
 class OS2 {
 
 /** Custom natives - misc */	
-public static final native void AEProcessAppleEvent(int[] theEventRecord);
-public static final native boolean ConvertEventRefToEventRecord(int eHandle, int[] outEvent);
-public static final native boolean GetNextEvent(short eventMask, int[] eventData);
 public static final native boolean IsShowContextualMenuClick(int[] eventData);
 public static final native int MenuEvent(int[] eventData);
-public static final native void TXNClick(int txHandle, int[] eventData);
 public static final native int TXNGetRectBounds(int txHandle, short[] viewRect, int[] destinationRect, int[] textRect);
 public static final native int GetEventHICommand(int eRefHandle, int[] outParamType);
 public static final native void setTXNMargins(int txHandle, short margin);

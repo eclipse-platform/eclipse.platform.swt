@@ -11,6 +11,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.EventRecord;
 
 class MacEvent {
 
@@ -42,11 +43,11 @@ class MacEvent {
 		return fNextHandler;
 	}
 	
-	public int[] toOldMacEvent() {
+	public EventRecord toOldMacEvent() {
 		if (fEventRef != -1) {
-			int macEvent[]= new int[6];
-			if (OS.ConvertEventRefToEventRecord(fEventRef, macEvent))
-				return macEvent;
+			EventRecord eventRecord = new EventRecord();
+			if (OS.ConvertEventRefToEventRecord(fEventRef, eventRecord))
+				return eventRecord;
 		}
 		System.out.println("MacEvent.toOldMacEvent: can't convert event");
 		return null;

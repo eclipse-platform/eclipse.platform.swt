@@ -10,6 +10,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.internal.carbon.EventRecord;
 
 class MacMouseEvent {
 	
@@ -52,7 +53,7 @@ class MacMouseEvent {
 		return fButton;
 	}
 	
-	public int[] toOldMacEvent() {
+	public EventRecord toOldMacEvent() {
 		if (fMacEvent != null)
 			return fMacEvent.toOldMacEvent();
 		System.err.println("MacMouseEvent.toOldMacEvent: nyi");
