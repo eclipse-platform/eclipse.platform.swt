@@ -7,14 +7,15 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
 
-public /*final*/ class Button extends Control {
+import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+
+public  class Button extends Control {
+	String text;
 
 public Button (Composite parent, int style) {
 	super (parent, checkStyle (style));
@@ -44,18 +45,21 @@ static int checkStyle (int style) {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
-	return new Point(0, 0);
+	Rect rect = new Rect();
+	short [] base= new short [1];
+	OS.GetBestControlRect (handle, rect, base);
+	return new Point (rect.right - rect.left, rect.bottom - rect.top);
 }
 
 void createHandle () {
-	int window = parent.getShell ().shellHandle;
 	int [] outControl = new int [1];
-	if (OS.CreatePushButtonControl (window, new Rect (), 0, outControl) != OS.noErr) {
-		error (SWT.ERROR_NO_HANDLES);
-	}
+//	int window = OS.GetControlOwner (parent.handle);
+	int window = getShell ().shellHandle;
+	OS.CreatePushButtonControl (window, null, 0, outControl);
+	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];
-	OS.HIViewAddSubview(parent.handle, handle);
-	//OS.HIViewSetZOrder(controlHandle, OS.kHIViewZOrderAbove, where[0]
+	OS.HIViewAddSubview (parent.handle, handle);
+	OS.HIViewSetZOrder (handle, OS.kHIViewZOrderBelow, 0);
 }
 
 public int getAlignment () {
@@ -79,7 +83,7 @@ public boolean getSelection () {
 
 public String getText () {
 	checkWidget();
-	return "";
+	return "text";
 }
 
 public void removeSelectionListener(SelectionListener listener) {
@@ -104,6 +108,23 @@ public void setSelection (boolean selected) {
 
 public void setText (String string) {
 	checkWidget();
+	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if ((style & SWT.ARROW) != 0) return;
+	text = string;
+	char [] buffer = new char [text.length ()];
+	int i=0, j=0;
+	while (i < buffer.length) {
+		if ((buffer [j++] = buffer [i++]) == Mnemonic) {
+			if (i == buffer.length) {continue;}
+			if (buffer [i] == Mnemonic) {i++; continue;}
+			j--;
+		}
+	}
+	text.getChars (0, buffer.length, buffer, 0);
+	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, j);
+	if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+	OS.SetControlTitleWithCFString (handle, ptr);
+	OS.CFRelease (ptr);
 }
 
 }
