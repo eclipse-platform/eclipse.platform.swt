@@ -5767,7 +5767,26 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageW__II_3
 	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
 	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
 
+#ifdef _WIN32_WCE
+	/*
+	* Bug on WinCE.  SendMessage can fail (return 0) when being passed references
+	* to parameters allocated from the heap. The workaround is to allocate
+	* the parameters on the stack and to copy them back to the java array.
+	* Observed on Pocket PC WinCE 3.0 with EM_GETSEL and CB_GETEDITSEL messages.
+	*/
+	switch (arg1) {
+		case EM_GETSEL:
+		case CB_GETEDITSEL: {
+			jint wParam = 0, lParam = 0;
+			rc = (jint)SendMessageW((HWND)arg0, arg1, (WPARAM)&wParam, (LPARAM)&lParam);
+			lparg2[0] = wParam;  lparg3[0] = lParam;
+		}
+		default:
+			rc = (jint)SendMessageW((HWND)arg0, arg1, (WPARAM)lparg2, (LPARAM)lparg3);
+	}
+#else
 	rc = (jint)SendMessageW((HWND)arg0, arg1, (WPARAM)lparg2, (LPARAM)lparg3);
+#endif /* _WIN32_WCE */
 
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
