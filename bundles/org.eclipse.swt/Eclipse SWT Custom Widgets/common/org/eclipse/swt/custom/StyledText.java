@@ -90,7 +90,7 @@ public class StyledText extends Canvas {
 	DefaultLineStyler defaultLineStyler;// used for setStyles API when no LineStyleListener is registered
 	ContentWidthCache contentWidth;
 	boolean userLineStyle = false;		// true=widget is using a user defined line style listener for line styles. false=widget is using the default line styler to store line styles
-	boolean userLineBackground = false;// true=widget is using a user defined line background listener for line backgrounds. false=widget is using the default line styler to store line backgrounds
+	boolean userLineBackground = false;	// true=widget is using a user defined line background listener for line backgrounds. false=widget is using the default line styler to store line backgrounds
 	int verticalScrollOffset = 0;		// pixel based
 	int horizontalScrollOffset = 0;		// pixel based
 	int topIndex = 0;					// top visible line
@@ -111,17 +111,19 @@ public class StyledText extends Canvas {
 	Hashtable keyActionMap = new Hashtable();
 	Font boldFont;
 	Font regularFont;
+	Color background = null;			// workaround for bug 4791
+	Color foreground = null;			//
 	Clipboard clipboard;
-	boolean mouseDoubleClick = false;			// true=a double click ocurred. Don't do mouse swipe selection.
-	int autoScrollDirection = SWT.NULL;			// the direction of autoscrolling (up, down, right, left)
-	int lastTextChangeStart;					// cache data of the 
-	int lastTextChangeNewLineCount;				// last text changing 
-	int lastTextChangeNewCharCount;				// event for use in the 
-	int lastTextChangeReplaceLineCount;			// text changed handler
+	boolean mouseDoubleClick = false;	// true=a double click ocurred. Don't do mouse swipe selection.
+	int autoScrollDirection = SWT.NULL;	// the direction of autoscrolling (up, down, right, left)
+	int lastTextChangeStart;			// cache data of the 
+	int lastTextChangeNewLineCount;		// last text changing 
+	int lastTextChangeNewCharCount;		// event for use in the 
+	int lastTextChangeReplaceLineCount;	// text changed handler
 	int lastTextChangeReplaceCharCount;	
 
 	boolean isBidi;
-	boolean bidiColoring = false;	// apply the BIDI algorithm on text segments of the same color
+	boolean bidiColoring = false;		// apply the BIDI algorithm on text segments of the same color
 	Image leftCaretBitmap = null;
 	Image rightCaretBitmap = null;
 	int caretDirection = SWT.NULL;
@@ -844,8 +846,6 @@ public class StyledText extends Canvas {
 	}
 
 public StyledText(Composite parent, int style) {
-	// use NO_BACKGROUND style when implemented by SWT.
-	// always need to draw background in drawLine when using NO_BACKGROUND!
 	super(parent, checkStyle(style | SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND));
 	Display display = getDisplay();
 	String codePage = System.getProperty("file.encoding").toUpperCase();
@@ -861,8 +861,6 @@ public StyledText(Composite parent, int style) {
 	calculateLineHeight();
 	calculateTabWidth();	
 	installDefaultContent();
-	setForeground(display.getSystemColor(SWT.COLOR_LIST_FOREGROUND));
-	setBackground(display.getSystemColor(SWT.COLOR_LIST_BACKGROUND));	
 	initializeFonts();
 	contentWidth = new ContentWidthCache(this, content.getLineCount());
 	if (isBidi() == false) {
@@ -2766,6 +2764,16 @@ StyleRange[] filterLineStyles(StyleRange[] styles) {
 	return styles;
 }
 /**
+ * @see org.eclipse.swt.widgets.Control#getBackground
+ */
+public Color getBackground () {
+	checkWidget();
+	if (background == null) {
+		return getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND);
+	}
+	return background;
+}
+/**
  * Gets the BIDI coloring mode.  When true the BIDI text display
  * algorithm is applied to segments of text that are the same
  * color.
@@ -2979,6 +2987,16 @@ public boolean getEditable() {
 	checkWidget();
 
 	return editable;
+}
+/**
+ * @see org.eclipse.swt.widgets.Control#getForeground
+ */
+public Color getForeground() {
+	checkWidget();
+	if (foreground == null) {
+		return getDisplay().getSystemColor(SWT.COLOR_LIST_FOREGROUND);
+	}
+	return foreground;
 }
 /** 
  * Returns the horizontal scroll increment.
@@ -5764,6 +5782,14 @@ public void setCaret(Caret caret) {
 	}		
 }
 /**
+ * @see org.eclipse.swt.widgets.Control#setBackground
+ */
+public void setBackground(Color color) {
+	checkWidget();
+	background = color;
+	redraw();
+}
+/**
  * Moves the Caret to the current caret offset.
  * <p>
  * 
@@ -6039,6 +6065,14 @@ public void setFont(Font font) {
 		}
 	}
 	super.redraw();
+}
+/**
+ * @see org.eclipse.swt.widgets.Control#setForeground
+ */
+public void setForeground(Color color) {
+	checkWidget();
+	foreground = color;
+	redraw();
 }
 /** 
  * Sets the horizontal scroll offset relative to the start of the line.
