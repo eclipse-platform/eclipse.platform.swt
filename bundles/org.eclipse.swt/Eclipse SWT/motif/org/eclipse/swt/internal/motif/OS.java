@@ -155,7 +155,7 @@ public class OS {
 //	public static final int KeymapStateMask = 1 << 14;
 	public static final int KeyPress = 2;
 	public static final int KeyPressMask = 1 << 0;
-//	public static final int KeyRelease = 3;
+	public static final int KeyRelease = 3;
 	public static final int KeyReleaseMask = 1 << 1;
 //	public static final int LeaveNotify = 8;
 	public static final int LeaveWindowMask	= 1 << 5;
@@ -558,7 +558,7 @@ public class OS {
 	public static final int XmNONE = 0x0;
 //	public static final int XmNUMERIC = 0x3;
 
-	/* char */
+	/* byte */
 	public static final int XmNalignment = malloc ("alignment");
 	public static final int XmNarrowDirection = malloc ("arrowDirection");
 	public static final int XmNblendModel = malloc ("blendModel");
@@ -572,6 +572,7 @@ public class OS {
 	public static final int XmNdragReceiverProtocolStyle = malloc ("dragReceiverProtocolStyle");
 	public static final int XmNdragOperations = malloc ("dragOperations");
 	public static final int XmNeditable = malloc ("editable");
+	public static final int XmNenableThinThickness = malloc ("enableThinThickness");
 	public static final int XmNiconic = malloc ("iconic");
 	public static final int XmNlabelType = malloc ("labelType");
 	public static final int XmNleftAttachment = malloc ("leftAttachment");
@@ -728,7 +729,7 @@ public class OS {
 	public static final int XmNdropTransfers  = malloc ("dropTransfers");
 	public static final int XmNshowArrows = malloc ("showArrows");
 			
-/* Unknown */	
+	/* Unknown */	
 	public static final int XmNdropSiteActivity = malloc("dropSiteActivity");
 	public static final int XmNdropSiteOperations = malloc("dropSiteOperations");
 	public static final int XmNdropSiteType = malloc("dropSiteType");

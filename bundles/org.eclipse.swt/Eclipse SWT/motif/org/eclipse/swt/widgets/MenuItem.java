@@ -432,7 +432,27 @@ int processHelp (int callData) {
 	return 0;
 }
 int processSelection (int callData) {
-	postEvent (SWT.Selection);
+	XmAnyCallbackStruct struct = new XmAnyCallbackStruct ();
+	OS.memmove (struct, callData, XmAnyCallbackStruct.sizeof);
+	Event event = new Event ();
+	if (struct.event != 0) {
+		XButtonEvent xEvent = new XButtonEvent ();
+		OS.memmove (xEvent, struct.event, XAnyEvent.sizeof);
+		event.time = xEvent.time;
+		switch (xEvent.type) {
+			case OS.ButtonPress:
+			case OS.ButtonRelease:
+			case OS.KeyPress:
+			case OS.KeyRelease:
+				if ((xEvent.state & OS.Mod1Mask) != 0) event.stateMask |= SWT.ALT;
+				if ((xEvent.state & OS.ShiftMask) != 0) event.stateMask |= SWT.SHIFT;
+				if ((xEvent.state & OS.ControlMask) != 0) event.stateMask |= SWT.CONTROL;
+				if ((xEvent.state & OS.Button1Mask) != 0) event.stateMask |= SWT.BUTTON1;
+				if ((xEvent.state & OS.Button2Mask) != 0) event.stateMask |= SWT.BUTTON2;
+				if ((xEvent.state & OS.Button3Mask) != 0) event.stateMask |= SWT.BUTTON3;
+		}
+	}
+	sendEvent (SWT.Selection, event);
 	return 0;
 }
 void releaseChild () {
