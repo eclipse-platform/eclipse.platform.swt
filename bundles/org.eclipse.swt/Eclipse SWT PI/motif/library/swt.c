@@ -8360,7 +8360,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmImRegister
  * Method:    XmImSetFocusValues
  * Signature: (I[II)V
  */
-/*
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmImSetFocusValues
   (JNIEnv *env, jclass that, jint widget, jintArray args, jint num_args)
 {
@@ -8374,7 +8373,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmImSetFocusValues
     if (args)
     	(*env)->ReleaseIntArrayElements(env, args, args1, 0);
 }
-*/
 
 /*
  * Class:     org_eclipse_swt_internal_motif_OS
