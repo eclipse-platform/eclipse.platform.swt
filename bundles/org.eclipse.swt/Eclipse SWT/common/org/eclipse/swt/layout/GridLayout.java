@@ -406,7 +406,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 			if (data != null) {
 				int vSpan = Math.max (1, Math.min (data.verticalSpan, rowCount));
 				if (vSpan == 1) {
-					int h = data.cacheHeight; // + data.verticalIndent;
+					int h = data.cacheHeight + data.verticalIndent;
 					heights [i] = Math.max (heights [i], h);
 					if (data.grabExcessVerticalSpace) {
 						if (!expandRow [i]) expandCount++;
@@ -433,7 +433,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 						expandCount++;
 						expandRow [i] = true;
 					}
-					int h = data.cacheHeight - spanHeight - (vSpan - 1) * verticalSpacing; // + data.verticalalIndent
+					int h = data.cacheHeight + data.verticalIndent - spanHeight - (vSpan - 1) * verticalSpacing;
 					if (h > 0) {
 						if (spanExpandCount == 0) {
 							heights [i] += h;
@@ -449,7 +449,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 						}
 					}
 					if (data.heightHint != SWT.DEFAULT || !data.grabExcessVerticalSpace) {
-						h = data.cacheHeight - spanMinHeight - (vSpan - 1) * verticalSpacing; // + data.verticalIndent
+						h = data.cacheHeight + data.verticalIndent - spanMinHeight - (vSpan - 1) * verticalSpacing;
 						if (h > 0) {
 							if (spanExpandCount == 0) {
 								minHeights [i] += h;
@@ -504,7 +504,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 									spanHeight += heights [i-k];
 									if (expandRow [i-k]) spanExpandCount++;
 								}
-								int h = data.cacheHeight - spanHeight - (vSpan - 1) * verticalSpacing; // + data.verticalIndent
+								int h = data.cacheHeight + data.verticalIndent - spanHeight - (vSpan - 1) * verticalSpacing;
 								if (h > 0) {
 									if (spanExpandCount == 0) {
 										heights [i] += h;
@@ -570,7 +570,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 							break;
 					}
 					cellHeight += verticalSpacing * (vSpan - 1);
-					int childY = gridY; // + data.verticalIndent;
+					int childY = gridY + data.verticalIndent;
 					int childHeight = Math.min (data.cacheHeight, cellHeight);
 					switch (data.verticalAlignment) {
 						case SWT.CENTER:
@@ -583,7 +583,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 							childY = gridY + Math.max (0, cellHeight - childHeight);
 							break;
 						case SWT.FILL:
-							childHeight = cellHeight; // - data.verticalIndent;
+							childHeight = cellHeight - data.verticalIndent;
 							break;
 					}
 					Control child = grid [i][j];

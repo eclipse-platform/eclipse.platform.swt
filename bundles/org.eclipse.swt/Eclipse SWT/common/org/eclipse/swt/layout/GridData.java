@@ -107,6 +107,14 @@ public final class GridData {
 	public int horizontalSpan = 1;
 	
 	/**
+	 * verticalIndent specifies the number of pixels of indentation
+	 * that will be placed along the top side of the cell.
+	 *
+	 * The default value is 0.
+	 */
+	public int verticalIndent = 0;
+	
+	/**
 	 * verticalSpan specifies the number of row cells that the control
 	 * will take up.
 	 *
