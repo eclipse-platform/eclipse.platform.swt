@@ -2549,21 +2549,6 @@ boolean translateTraversal (int key, XKeyEvent xEvent) {
 		}
 		case OS.XK_Tab: {
 			boolean next = (xEvent.state & OS.ShiftMask) == 0;
-			/*
-			* NOTE: This code causes Shift+Tab and Ctrl+Tab to
-			* always attempt traversal which is not correct.
-			* The default should be the same as a plain Tab key.
-			* This behavior is currently relied on by StyledText.
-			* 
-			* The correct behavior is to give every key to any
-			* control that wants to see every key.  The default
-			* behavior for a Canvas should be to see every key.
-			*/
-			switch (xEvent.state) {
-				case OS.ControlMask:
-				case OS.ShiftMask:
-					code |= SWT.TRAVERSE_TAB_PREVIOUS | SWT.TRAVERSE_TAB_NEXT;
-			}
 			detail = next ? SWT.TRAVERSE_TAB_NEXT : SWT.TRAVERSE_TAB_PREVIOUS;
 			break;
 		}
@@ -2626,7 +2611,7 @@ int traversalCode (int key, XKeyEvent xEvent) {
 }
 boolean traverse (Event event) {
 	sendEvent (SWT.Traverse, event);
-	if (isDisposed ()) return false;
+	if (isDisposed ()) return true;
 	if (!event.doit) return false;
 	switch (event.detail) {
 		case SWT.TRAVERSE_NONE:				return true;
