@@ -12,7 +12,7 @@ import java.io.*;
 final class GIFFileFormat extends FileFormat {
 	String signature, version;
 	boolean sorted;
-	int screenWidth, screenHeight, backgroundPixel, aspect, bitsPerPixel;
+	int screenWidth, screenHeight, backgroundPixel, aspect, bitsPerPixel, defaultDepth;
 	boolean userInput = false;
 	int disposalMethod = 0;
 	int delayTime = 0;
@@ -85,17 +85,17 @@ final class GIFFileFormat extends FileFormat {
 		backgroundPixel = block[5] & 0xFF;
 		aspect = block[6] & 0xFF;
 		bitsPerPixel = ((bitField >> 4) & 0x07) + 1;
-		int depth = (bitField & 0x7) + 1;
+		defaultDepth = (bitField & 0x7) + 1;
 		PaletteData palette = null;
 		if ((bitField & 0x80) != 0) {
 			// Global palette.
 			sorted = (bitField & 0x8) != 0;
-			palette = readPalette(1 << depth);
+			palette = readPalette(1 << defaultDepth);
 		} else {
 			// No global palette.
 			sorted = false;
 			backgroundPixel = -1;
-			depth = bitsPerPixel;
+			defaultDepth = bitsPerPixel;
 		}
 		loader.backgroundPixel = backgroundPixel;
 
@@ -103,7 +103,7 @@ final class GIFFileFormat extends FileFormat {
 		int id = readID();
 		ImageData[] images = new ImageData[0];
 		while (id == GIF_IMAGE_BLOCK_ID) {
-			ImageData image = readImageBlock(depth, palette);
+			ImageData image = readImageBlock(palette);
 			if (loader.hasListeners()) {
 				loader.notifyListeners(new ImageLoaderEvent(loader, image, 3, true));
 			}
@@ -271,10 +271,18 @@ final class GIFFileFormat extends FileFormat {
 			// Store the delay time.
 			delayTime = (controlBlock[1] & 0xFF) | ((controlBlock[2] & 0xFF) << 8);
 			// Store the transparent color.
-			if ((bitField & 0x01) != 0)
-				transparentPixel = controlBlock[3] & 0xFF;
-			else
+			if ((bitField & 0x01) != 0) {
+				int colorIndex = controlBlock[3] & 0xFF;
+				/* Work around: a customer has a GIF that specifies an
+				 * invalid color index that is larger than the number
+				 * of entries in the palette. Detect this case, and
+				 * ignore the specified color index. */
+				if (colorIndex <= 1 << defaultDepth) {
+					transparentPixel = colorIndex;
+				}
+			} else {
 				transparentPixel = -1;
+			}
 			// Read block terminator.
 			inputStream.read();
 			return controlBlock;
@@ -329,7 +337,7 @@ final class GIFFileFormat extends FileFormat {
 	 * image block at the current position in the input stream.
 	 * Throw an error if an error occurs.
 	 */
-	ImageData readImageBlock(int defaultDepth, PaletteData defaultPalette) {
+	ImageData readImageBlock(PaletteData defaultPalette) {
 		int depth;
 		PaletteData palette;
 		byte[] block = new byte[9];
