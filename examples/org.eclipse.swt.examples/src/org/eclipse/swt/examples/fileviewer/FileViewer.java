@@ -1245,6 +1245,7 @@ public class FileViewer {
 			File root = new File(File.separator);
 			if (initial) {
 				currentDirectory = root;
+				initial = false;
 			}
 			return new File[] { root };
 		}
