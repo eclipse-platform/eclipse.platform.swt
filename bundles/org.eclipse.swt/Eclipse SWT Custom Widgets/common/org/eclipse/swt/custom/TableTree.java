@@ -507,7 +507,8 @@ void onKeyDown (Event e) {
 	TableTreeItem item = selection[0];
 	int type = 0;
 	if (e.keyCode == SWT.ARROW_RIGHT || e.keyCode == SWT.ARROW_LEFT) {
-		if (e.keyCode == SWT.ARROW_RIGHT) {
+		int trailKey = (getStyle() & SWT.MIRRORED) != 0 ? SWT.ARROW_LEFT : SWT.ARROW_RIGHT;
+		if (e.keyCode == trailKey) {
 			if (item.getItemCount() == 0) return;
 			if (item.getExpanded()) {
 				TableTreeItem newSelection = item.getItems()[0];
