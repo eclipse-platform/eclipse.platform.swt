@@ -2,9 +2,16 @@
 <!-- File written by PDE 1.0 -->
 <plugin
    id="org.eclipse.swt.examples"
-   name="Eclipse SWT Examples"
-   version="0.9"
-   provider-name="OTI">
+   name="%plugin.SWTStandaloneExampleSet.name"
+   version="1.0.0"
+   provider-name="IBM"
+   class="">
+
+<!-- Required plugins -->
+
+<requires>
+   <import plugin="org.eclipse.swt"/>
+</requires>
 
 <!-- Runtime -->
 
@@ -15,4 +22,92 @@
 
 
 <!-- Extensions -->
+<extension
+      point="org.eclipse.swt.examples.launcher.launchItems">
+   <category
+         name="%launchcategory.SWTExamples.name"
+         description="%launchcategory.SWTExamples.description"
+         id="org.eclipse.swt.examples.launchcategory">
+   </category>
+   <programItem
+         pluginId="org.eclipse.swt.examples"
+         mainClass="org.eclipse.swt.examples.addressbook.AddressBook"
+         name="%launchitem.AddressBook.name"
+         category="org.eclipse.swt.examples.launchcategory"
+         description="%launchitem.AddressBook.description"
+         id="org.eclipse.swt.examples.addressbook.launcher">
+   </programItem>
+   <programItem
+         pluginId="org.eclipse.swt.examples"
+         mainClass="org.eclipse.swt.examples.explorer.Explorer"
+         name="%launchitem.ExplorerExample.name"
+         category="org.eclipse.swt.examples.launchcategory"
+         description="%launchitem.ExplorerExample.description"
+         id="org.eclipse.swt.examples.explorer.launcher">
+   </programItem>
+   <programItem
+         pluginId="org.eclipse.swt.examples"
+         mainClass="org.eclipse.swt.examples.helloworld.HelloWorld1"
+         name="%launchitem.HelloWorld1.name"
+         category="org.eclipse.swt.examples.launchcategory"
+         description="%launchitem.HelloWorld1.description"
+         id="org.eclipse.swt.examples.helloworld1.launcher">
+   </programItem>
+   <programItem
+         pluginId="org.eclipse.swt.examples"
+         mainClass="org.eclipse.swt.examples.helloworld.HelloWorld2"
+         name="%launchitem.HelloWorld2.name"
+         category="org.eclipse.swt.examples.launchcategory"
+         description="%launchitem.HelloWorld2.description"
+         id="org.eclipse.swt.examples.helloworld2.launcher">
+   </programItem>
+   <programItem
+         pluginId="org.eclipse.swt.examples"
+         mainClass="org.eclipse.swt.examples.helloworld.HelloWorld3"
+         name="%launchitem.HelloWorld3.name"
+         category="org.eclipse.swt.examples.launchcategory"
+         description="%launchitem.HelloWorld3.description"
+         id="org.eclipse.swt.examples.helloworld3.launcher">
+   </programItem>
+   <programItem
+         pluginId="org.eclipse.swt.examples"
+         mainClass="org.eclipse.swt.examples.helloworld.HelloWorld4"
+         name="%launchitem.HelloWorld4.name"
+         category="org.eclipse.swt.examples.launchcategory"
+         description="%launchitem.HelloWorld4.description"
+         id="org.eclipse.swt.examples.helloworld4.launcher">
+   </programItem>
+   <programItem
+         pluginId="org.eclipse.swt.examples"
+         mainClass="org.eclipse.swt.examples.helloworld.HelloWorld5"
+         name="%launchitem.HelloWorld5.name"
+         category="org.eclipse.swt.examples.launchcategory"
+         description="%launchitem.HelloWorld5.description"
+         id="org.eclipse.swt.examples.helloworld5.launcher">
+   </programItem>
+   <programItem
+         pluginId="org.eclipse.swt.examples"
+         mainClass="org.eclipse.swt.examples.imageexample.ImageAnalyzer"
+         name="%launchitem.ImageAnalyzer.name"
+         category="org.eclipse.swt.examples.launchcategory"
+         description="%launchitem.ImageAnalyzer.description"
+         id="org.eclipse.swt.examples.imageanalyzer.launcher">
+   </programItem>
+   <programItem
+         pluginId="org.eclipse.swt.examples"
+         mainClass="org.eclipse.swt.examples.javaviewer.JavaViewer"
+         name="%launchitem.JavaViewer.name"
+         category="org.eclipse.swt.examples.launchcategory"
+         description="%launchitem.JavaViewer.description"
+         id="org.eclipse.swt.examples.javaviewer.launcher">
+   </programItem>
+   <programItem
+         pluginId="org.eclipse.swt.examples"
+         mainClass="org.eclipse.swt.examples.texteditor.ColorTextEditor"
+         name="%launchitem.TextEditor.name"
+         category="org.eclipse.swt.examples.launchcategory"
+         description="%launchitem.TextEditor.description"
+         id="org.eclipse.swt.examples.texteditor.launcher">
+   </programItem>
+</extension>
 </plugin>
