@@ -1070,10 +1070,10 @@ int _getOffset(int offset, int movement, boolean forward) {
 							if (!logAttr.fInvalid && logAttr.fWordStop) return untranslateOffset(offset);
 						} else {
 							if (offset > 0) {
-								boolean letterOrDigit = Compatibility.isLetterOrDigit(text.charAt(offset));
-								boolean previousLetterOrDigit = Compatibility.isLetterOrDigit(text.charAt(offset - 1));
+								boolean letterOrDigit = Compatibility.isLetterOrDigit(segmentsText.charAt(offset));
+								boolean previousLetterOrDigit = Compatibility.isLetterOrDigit(segmentsText.charAt(offset - 1));
 								if (letterOrDigit != previousLetterOrDigit || !letterOrDigit) {
-									if (!Compatibility.isWhitespace(text.charAt(offset))) {
+									if (!Compatibility.isWhitespace(segmentsText.charAt(offset))) {
 										return untranslateOffset(offset);
 									}
 								}
