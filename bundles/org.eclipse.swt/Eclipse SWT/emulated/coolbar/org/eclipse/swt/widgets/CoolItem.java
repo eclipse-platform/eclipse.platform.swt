@@ -439,19 +439,13 @@ public void setControl (Control control) {
 		if (control.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 		if (control.parent != parent) error (SWT.ERROR_INVALID_PARENT);
 	}
-	if (this.control != null && this.control.isDisposed ()) {
-		this.control = null;
-	}
-	Control oldControl = this.control;
-	if (oldControl != null) oldControl.setVisible(false);
 	this.control = control;
-	if (control != null && !control.isDisposed ()) {
+	if (control != null) {
 		int controlWidth = itemBounds.width - MINIMUM_WIDTH;
 		if ((style & SWT.DROP_DOWN) != 0 && itemBounds.width < preferredWidth) {
 			controlWidth -= CHEVRON_IMAGE_WIDTH + CHEVRON_HORIZONTAL_TRIM + CHEVRON_LEFT_MARGIN;
 		}
-		control.setBounds (itemBounds.x + MINIMUM_WIDTH,	itemBounds.y, controlWidth, itemBounds.height);
-		control.setVisible(true);
+		control.setBounds (itemBounds.x + MINIMUM_WIDTH, itemBounds.y, controlWidth, itemBounds.height);
 	}
 }
 /**
