@@ -130,7 +130,7 @@ public String toString() {
 	if (isDisposed()) return "Transform {*DISPOSED*}";
 	float[] elements = new float[6];
 	getElements(elements);
-	return "Transform {" + elements [0] + "," + elements [1] + "," +elements [2] + "," +elements [3] + "," +elements [4] + "," +elements [5] + "}";
+	return "Transform {" + elements [0] + ", " + elements [1] + ", " +elements [2] + ", " +elements [3] + ", " +elements [4] + ", " +elements [5] + "}";
 }
 
 }
