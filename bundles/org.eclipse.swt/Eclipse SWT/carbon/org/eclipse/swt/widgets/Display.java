@@ -172,7 +172,7 @@ public class Display extends Device {
 	boolean dragging = false;
 	
 	/* Insets */
-	Rect buttonInset, tabFolderNorthInset, tabFolderSouthInset, comboInset;
+	Rect buttonInset, tabFolderNorthInset, tabFolderSouthInset, comboInset, spinnerInset;
 	
 	/* Fonts */
 	boolean smallFonts;
@@ -1890,6 +1890,10 @@ void initializeInsets () {
 
 	OS.CreateTabsControl (0, rect, (short)OS.kControlTabSizeLarge, (short)OS.kControlTabDirectionSouth, (short) 0, 0, outControl);
 	tabFolderSouthInset = computeInset (outControl [0]);
+	OS.DisposeControl (outControl [0]);
+	
+	OS.CreateEditUnicodeTextControl (0, rect, 0, false, null, outControl);
+	spinnerInset = computeInset (outControl [0]);
 	OS.DisposeControl (outControl [0]);
 	
 	CGRect cgRect = new CGRect ();
