@@ -1272,7 +1272,7 @@ void onDispose() {
 	selectionBackground = null;
 	selectionForeground = null;
 }
-void onFocus(Event e) {
+void onFocus(Event event) {
 	checkWidget();
 	if (selectedIndex >= 0) {
 		redrawTabArea();
@@ -1337,7 +1337,7 @@ void onMouseUp(Event event) {
 		for (int i = 0; i < closeListeners.length; i++) {
 			closeListeners[i].itemClosed(e);
 		}
-		if (event.doit) item.dispose();
+		if (e.doit) item.dispose();
 		return;
 	}
 	if (chevronRect.contains(x, y)) {
@@ -1364,7 +1364,7 @@ void onMouseUp(Event event) {
 				expandListeners[i].expand(e);
 			}
 		}
-		if (event.doit) {
+		if (e.doit) {
 			expanded = !expanded;
 			redraw(expandRect.x, expandRect.y, expandRect.width, expandRect.height, false);
 		}
