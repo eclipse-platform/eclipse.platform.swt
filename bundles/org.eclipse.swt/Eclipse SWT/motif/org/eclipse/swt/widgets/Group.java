@@ -252,7 +252,19 @@ void releaseHandle () {
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
+	char [] text = new char [string.length ()];
+	string.getChars (0, text.length, text, 0);
+	int i=0, j=0, mnemonic=0;
+	while (i < text.length) {
+		if ((text [j++] = text [i++]) == Mnemonic) {
+			if (i == text.length) {continue;}
+			if (text [i] == Mnemonic) {i++; continue;}
+			if (mnemonic == 0) mnemonic = text [i];
+			j--;
+		}
+	}
+	while (j < text.length) text [j++] = 0;
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), text, true);
 	int xmString = OS.XmStringParseText (
 		buffer,
 		0,
@@ -260,10 +272,16 @@ public void setText (String string) {
 		OS.XmCHARSET_TEXT, 
 		null,
 		0,
-		0);
-	int [] argList = {OS.XmNlabelString, xmString};
+		0);	
+	if (xmString == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+	if (mnemonic == 0) mnemonic = OS.XK_VoidSymbol;
+	int [] argList = {
+		OS.XmNlabelType, OS.XmSTRING,
+		OS.XmNlabelString, xmString,
+		OS.XmNmnemonic, mnemonic,
+	};
 	OS.XtSetValues (labelHandle, argList, argList.length / 2);
-	OS.XmStringFree (xmString);
+	if (xmString != 0) OS.XmStringFree (xmString);
 	if (string.length () == 0) {
 		OS.XtUnmanageChild (labelHandle);
 	} else {
