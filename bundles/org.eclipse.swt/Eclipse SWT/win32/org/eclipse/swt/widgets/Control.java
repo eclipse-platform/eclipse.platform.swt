@@ -2933,6 +2933,7 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 		case OS.WM_DESTROY:			result = WM_DESTROY (wParam, lParam); break;
 		case OS.WM_DRAWITEM:			result = WM_DRAWITEM (wParam, lParam); break;
 		case OS.WM_ENDSESSION:			result = WM_ENDSESSION (wParam, lParam); break;
+		case OS.WM_ENTERIDLE:			result = WM_ENTERIDLE (wParam, lParam); break;
 		case OS.WM_ERASEBKGND:			result = WM_ERASEBKGND (wParam, lParam); break;
 		case OS.WM_GETDLGCODE:			result = WM_GETDLGCODE (wParam, lParam); break;
 		case OS.WM_HELP:				result = WM_HELP (wParam, lParam); break;
@@ -3116,6 +3117,10 @@ LRESULT WM_DRAWITEM (int wParam, int lParam) {
 }
 
 LRESULT WM_ENDSESSION (int wParam, int lParam) {
+	return null;
+}
+
+LRESULT WM_ENTERIDLE (int wParam, int lParam) {
 	return null;
 }
 
