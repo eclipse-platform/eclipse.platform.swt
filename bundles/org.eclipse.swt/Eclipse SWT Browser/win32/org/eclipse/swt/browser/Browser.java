@@ -11,6 +11,7 @@
 package org.eclipse.swt.browser;
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.ole.win32.COM;
 import org.eclipse.swt.ole.win32.*;
 import org.eclipse.swt.widgets.*;
 
@@ -46,6 +47,7 @@ public class Browser extends Composite {
 	ProgressListener[] progressListeners = new ProgressListener[0];
 	StatusTextListener[] statusTextListeners = new StatusTextListener[0];
 	
+	static final int BeforeNavigate2 = 250;
 	static final int CommandStateChange = 105;
 	static final int NavigateComplete2 = 259;
 	static final int ProgressChange = 108;
@@ -106,6 +108,24 @@ public Browser(Composite parent, int style) {
 	OleListener listener = new OleListener() {
 		public void handleEvent(OleEvent event) {
 			switch (event.type) {
+				case BeforeNavigate2 : {
+					Variant varResult = event.arguments[1];
+					if (varResult != null) {
+						String url = varResult.getString();
+						LocationEvent newEvent = new LocationEvent(Browser.this);
+						newEvent.location = url;
+						if (locationListeners != null) {
+							for (int i = 0; i < locationListeners.length; i++)
+								locationListeners[i].changing(newEvent);
+						}						
+						Variant cancel = event.arguments[6];
+						if (cancel != null){
+							int pCancel = cancel.getByRef();
+							COM.MoveMemory(pCancel, new short[]{newEvent.cancel ? COM.VARIANT_TRUE : COM.VARIANT_FALSE}, 2);
+					   }
+					}
+					return;
+				}
 				case CommandStateChange : {
 					int command = 0;
 					boolean enabled = false;
@@ -168,6 +188,7 @@ public Browser(Composite parent, int style) {
 			}
 		}
 	};
+	site.addEventListener(BeforeNavigate2, listener);
 	site.addEventListener(CommandStateChange, listener);
 	site.addEventListener(NavigateComplete2, listener);
 	site.addEventListener(ProgressChange, listener);

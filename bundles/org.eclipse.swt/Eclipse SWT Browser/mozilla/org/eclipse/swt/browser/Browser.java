@@ -46,7 +46,8 @@ public class Browser extends Composite {
 	XPCOMObject embeddingSiteWindow;
 	XPCOMObject interfaceRequestor;
 	XPCOMObject supportsWeakReference;
-	XPCOMObject contextMenuListener;		
+	XPCOMObject contextMenuListener;	
+	XPCOMObject uriContentListener;
 	int chromeFlags = nsIWebBrowserChrome.CHROME_DEFAULT;
 	int refCount = 0;
 
@@ -167,6 +168,9 @@ public Browser(Composite parent, int style) {
 	baseWindow.Release();
 
 	rc = webBrowser.AddWebBrowserListener(weakReference.getAddress(), nsIWebProgressListener.NS_IWEBPROGRESSLISTENER_IID);
+	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
+
+	rc = webBrowser.SetParentURIContentListener(uriContentListener.getAddress());
 	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
 
 	Listener listener = new Listener() {
@@ -379,6 +383,20 @@ void createCOMInterfaces() {
 		public int method2(int[] args) {return Release();}
 		public int method3(int[] args) {return OnShowContextMenu(args[0],args[1],args[2]);}
 	};
+	
+	uriContentListener = new XPCOMObject(new int[]{2, 0, 0, 2, 5, 3, 4, 1, 1, 1, 1}) {
+		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
+		public int method1(int[] args) {return AddRef();}
+		public int method2(int[] args) {return Release();}
+		public int method3(int[] args) {return OnStartURIOpen(args[0], args[1]);}
+		public int method4(int[] args) {return DoContent(args[0], args[1], args[2], args[3], args[4]);}
+		public int method5(int[] args) {return IsPreferred(args[0], args[1], args[2]);}
+		public int method6(int[] args) {return CanHandleContent(args[0], args[1], args[2], args[3]);}
+		public int method7(int[] args) {return GetLoadCookie(args[0]);}
+		public int method8(int[] args) {return SetLoadCookie(args[0]);}
+		public int method9(int[] args) {return GetParentContentListener(args[0]);}
+		public int method10(int[] args) {return SetParentContentListener(args[0]);}		
+	};
 }
 
 void disposeCOMInterfaces() {
@@ -417,6 +435,10 @@ void disposeCOMInterfaces() {
 	if (contextMenuListener != null) {
 		contextMenuListener.dispose();
 		contextMenuListener = null;
+	}
+	if (uriContentListener != null) {
+		uriContentListener.dispose();
+		uriContentListener = null;
 	}
 }
 
@@ -795,7 +817,11 @@ int QueryInterface(int riid, int ppvObject) {
 		AddRef();
 		return XPCOM.NS_OK;
 	}
-			
+	if (guid.Equals(nsIURIContentListener.NS_IURICONTENTLISTENER_IID)) {
+		XPCOM.memmove(ppvObject, new int[] {uriContentListener.getAddress()}, 4);
+		AddRef();
+		return XPCOM.NS_OK;
+	}			
 	XPCOM.memmove(ppvObject, new int[] {0}, 4);
 	return XPCOM.NS_ERROR_NO_INTERFACE;
 }
@@ -816,7 +842,9 @@ int Release() {
 int QueryReferent(int riid, int ppvObject) {
 	return QueryInterface(riid,ppvObject);
 }
-	
+
+/* nsIInterfaceRequestor */
+
 int GetInterface(int riid,int ppvObject) {
 	return QueryInterface(riid,ppvObject);
 }
@@ -1006,7 +1034,62 @@ int FocusPrevElement() {
 	return XPCOM.NS_OK;     	
 }
 
+/* nsIContextMenuListener */
+
 int OnShowContextMenu(int aContextFlags, int aEvent, int aNode) {
 	return XPCOM.NS_OK;     	
+}
+
+/* nsIURIContentListener */
+
+int OnStartURIOpen(int aURI, int retval) {
+	if (locationListeners.length == 0) return XPCOM.NS_OK;
+	
+	nsIURI location = new nsIURI(aURI);
+	int aSpec = XPCOM.nsCString_new();
+	location.GetSpec(aSpec);
+	int length = XPCOM.nsCString_Length(aSpec);
+	int buffer = XPCOM.nsCString_get(aSpec);
+	buffer = XPCOM.nsCString_get(aSpec);
+	byte[] dest = new byte[length];
+	XPCOM.memmove(dest, buffer, length);
+	XPCOM.nsCString_delete(aSpec);
+	
+	LocationEvent event = new LocationEvent(this);
+	event.location = new String(dest);
+	for (int i = 0; i < locationListeners.length; i++)
+		locationListeners[i].changing(event);
+		
+	XPCOM.memmove(retval, new int[] {event.cancel ? 1 : 0}, 4);
+	return XPCOM.NS_OK;
+}
+
+int DoContent(int aContentType, int aIsContentPreferred, int aRequest, int aContentHandler, int retval) {
+	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
+}
+
+int IsPreferred(int aContentType, int aDesiredContentType, int retval) {
+	XPCOM.memmove(retval, new int[] {1}, 4);
+	return XPCOM.NS_OK;
+}
+
+int CanHandleContent(int aContentType, int aIsContentPreferred, int aDesiredContentType, int retval) {
+	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
+}
+
+int GetLoadCookie(int aLoadCookie) {
+	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
+}
+
+int SetLoadCookie(int aLoadCookie) {
+	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
+}
+
+int GetParentContentListener(int aParentContentListener) {
+	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
+}
+	
+int SetParentContentListener(int aParentContentListener) {
+	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 }
