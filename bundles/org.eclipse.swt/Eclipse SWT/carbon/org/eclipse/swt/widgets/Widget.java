@@ -1457,12 +1457,13 @@ void setKeyState (Event event, int theEvent) {
 	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
 	event.keyCode = Display.translateKey (keyCode [0]);
 	switch (event.keyCode) {
-		case 0:
-		case SWT.BS:
-		case SWT.CR:
-		case SWT.DEL:
-		case SWT.ESC:
-		case SWT.TAB: {
+		case SWT.LF: event.character = '\n'; break;
+		case SWT.BS: event.character = '\b'; break;
+		case SWT.CR: event.character = '\r'; break;
+		case SWT.DEL: event.character = 0x7F; break;
+		case SWT.ESC: event.character = 0x1B; break;
+		case SWT.TAB: event.character = '\t'; break;
+		case 0: {
 			int [] length = new int [1];
 			int status = OS.GetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, null, 4, length, (char[])null);
 			if (status == OS.noErr && length [0] > 0) {
@@ -1485,9 +1486,6 @@ void setKeyState (Event event, int theEvent) {
 			}
 			break;
 		}
-		case SWT.LF:
-			event.character = '\n';
-			break;
 	}
 	setInputState (event, theEvent);
 }
