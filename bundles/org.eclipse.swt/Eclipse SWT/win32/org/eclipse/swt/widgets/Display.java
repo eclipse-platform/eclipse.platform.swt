@@ -2151,7 +2151,9 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 			}
 			break;
 		case OS.WM_NULL:
-			if (runAsyncMessages ()) wakeThread ();
+			if (OS.IsWinCE) {
+				if (runAsyncMessages ()) wakeThread ();
+			}
 			break;
 		case OS.WM_QUERYENDSESSION:
 			Event event = new Event ();
