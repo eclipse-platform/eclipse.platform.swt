@@ -236,6 +236,8 @@ public Image getImage () {
  */
 public Image getImage (int index) {
 	checkWidget ();
+	if (!(0 <= index && index <= parent.columnCount )) return null;
+	if (index == 0) return super.getImage ();
 	int parentHandle = parent.handle;
 	int column = OS.gtk_tree_view_get_column (parentHandle, index);
 	if (column == 0) return null;
@@ -359,13 +361,15 @@ public String getText () {
  */
 public String getText (int index) {
 	checkWidget ();
+	if (!(0 <= index && index <= parent.columnCount )) return "";
+	if (index == 0) return super.getText();
 	int parentHandle = parent.handle;
 	int column = OS.gtk_tree_view_get_column (parentHandle, index);
 	if (column == 0) error(SWT.ERROR_CANNOT_GET_TEXT);
 	int [] ptr = new int [1];
 	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + 1, ptr, -1);
-	if (ptr [0] == 0) return null;
+	if (ptr [0] == 0) return "";
 	int length = OS.strlen (ptr [0]);
 	byte[] buffer = new byte [length];
 	OS.memmove (buffer, ptr [0], length);
@@ -492,6 +496,10 @@ public void setImage (int index, Image image) {
 	if (image != null && image.isDisposed()) {
 		error(SWT.ERROR_INVALID_ARGUMENT);
 	}
+	if (!(0 <= index && index <= parent.columnCount )) return;
+	if (index == 0) {
+		super.setImage (image);
+	}
 	int parentHandle = parent.handle;
 	int column = OS.gtk_tree_view_get_column (parentHandle, index);
 	if (column == 0) return;
@@ -567,6 +575,10 @@ public void setImageIndent (int indent) {
 public void setText (int index, String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (!(0 <= index && index <= parent.columnCount )) return;
+	if (index == 0) {
+		super.setText (string);
+	}
 	int parentHandle = parent.handle;
 	int column = OS.gtk_tree_view_get_column (parentHandle, index);
 	if (column == 0) return;
