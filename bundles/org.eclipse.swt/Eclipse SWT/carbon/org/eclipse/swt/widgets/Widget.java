@@ -742,8 +742,7 @@ int setBounds (int control, int x, int y, int width, int height, boolean move, b
 	oldBounds.bottom += inset.bottom;
 	boolean visible = OS.IsControlVisible (control);
 	int window = OS.GetControlOwner (control);
-	int drawCount = getDrawCount ();
-	if (visible && drawCount > 0) OS.InvalWindowRect (window, oldBounds);
+	if (visible) OS.InvalWindowRect (window, oldBounds);
 	x += inset.left;
 	y += inset.top;
 	width -= (inset.left + inset.right);
@@ -777,7 +776,7 @@ int setBounds (int control, int x, int y, int width, int height, boolean move, b
 	newBounds.right = (short) (x + width);
 	newBounds.bottom = (short) (y + height);
 	OS.SetControlBounds (control, newBounds);
-	if (visible && drawCount > 0) OS.InvalWindowRect (window, newBounds);
+	if (visible) OS.InvalWindowRect (window, newBounds);
 	int result = 0;
 	if (move && !sameOrigin) {
 		if (events) sendEvent (SWT.Move);
