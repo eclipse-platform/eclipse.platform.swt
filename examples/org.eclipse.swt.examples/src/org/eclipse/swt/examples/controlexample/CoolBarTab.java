@@ -384,6 +384,7 @@ class CoolBarTab extends Tab {
 								if (text.length() != 0) {
 									MenuItem mi = new MenuItem(m, SWT.NONE);
 									mi.setText(text);
+									/* Application code to perform the action for the submenu item would go here. */
 								} else {
 									new MenuItem(m, SWT.SEPARATOR);
 								}
