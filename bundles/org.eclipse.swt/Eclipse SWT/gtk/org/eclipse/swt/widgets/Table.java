@@ -1830,7 +1830,7 @@ void resetCustomDraw () {
  */
 public void select (int index) {
 	checkWidget();
-	if (index <0 || index >= itemCount) return;
+	if (!(0 <= index && index < itemCount))  return;
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	TableItem item = _getItem (index);
@@ -1916,14 +1916,13 @@ public void select (int [] indices) {
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	for (int i=0; i<length; i++) {
 		int index = indices [i];
-		if (index < 0 || index >= itemCount) continue;
+		if (!(0 <= index && index < itemCount)) continue;
 		TableItem item = _getItem (index);
 		OS.gtk_tree_selection_select_iter (selection, item.handle);
 		if ((style & SWT.SINGLE) != 0) {
 			int /*long*/ path = OS.gtk_tree_model_get_path (modelHandle, item.handle);
 			OS.gtk_tree_view_set_cursor (handle, path, 0, false);
 			OS.gtk_tree_path_free (path);
-			break;
 		}
 	}
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
@@ -1946,6 +1945,22 @@ public void selectAll () {
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.gtk_tree_selection_select_all (selection);
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+}
+
+void selectFocusIndex (int index) {
+	/*
+	 * Note that this method both selects and sets the focus to the
+	 * specified index, so any previous selection in the list will be lost.
+	 * gtk does not provide a way to just set focus to a specified list item.
+	 */
+	if (!(0 <= index && index < itemCount))  return;
+	TableItem item = _getItem (index);
+	int /*long*/ path = OS.gtk_tree_model_get_path (modelHandle, item.handle);
+	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
+	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	OS.gtk_tree_view_set_cursor (handle, path, 0, false);
+	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	OS.gtk_tree_path_free (path);
 }
 
 void setBackgroundColor (GdkColor color) {
@@ -2129,8 +2144,8 @@ void setScrollWidth (int /*long*/ column, int /*long*/ iter) {
  */
 public void setSelection (int index) {
 	checkWidget ();
-	if ((style & SWT.MULTI) != 0) deselectAll ();
-	select (index);
+	deselectAll ();
+	selectFocusIndex (index);
 	showSelection ();
 }
 
@@ -2162,7 +2177,10 @@ public void setSelection (int start, int end) {
 	if (itemCount == 0 || start >= itemCount) return;
 	start = Math.max (0, start);
 	end = Math.min (end, itemCount - 1);
-	select (start, end);
+	selectFocusIndex (start);
+	if ((style & SWT.MULTI) != 0) {
+		select (start, end);
+	}
 	showSelection ();
 }
 
@@ -2193,7 +2211,10 @@ public void setSelection (int [] indices) {
 	deselectAll ();
 	int length = indices.length;
 	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
-	select (indices);
+	selectFocusIndex (indices [0]);
+	if ((style & SWT.MULTI) != 0) {
+		select (indices);
+	}
 	showSelection ();
 }
 
@@ -2226,9 +2247,17 @@ public void setSelection (TableItem [] items) {
 	deselectAll ();
 	int length = items.length;
 	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
-	for (int i=length-1; i>=0; --i) {
+	boolean first = true;
+	for (int i = 0; i < length; i++) {
 		int index = indexOf (items [i]);
-		if (index != -1) select (index);
+		if (index != -1) {
+			if (first) {
+				first = false;
+				selectFocusIndex (index);
+			} else {
+				select (index);
+			}
+		}
 	}
 	showSelection ();
 }

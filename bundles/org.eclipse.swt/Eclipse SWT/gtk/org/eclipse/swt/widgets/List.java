@@ -1114,14 +1114,13 @@ public void select (int [] indices) {
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	for (int i=0; i<length; i++) {
 		int index = indices [i];
-		if (index < 0 || index > count - 1) continue;
+		if (!(0 <= index && index < count)) continue;
 		OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
 		OS.gtk_tree_selection_select_iter (selection, iter); 
 		if ((style & SWT.SINGLE) != 0) {
 			int /*long*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
 			OS.gtk_tree_view_set_cursor (handle, path, 0, false);
 			OS.gtk_tree_path_free (path);
-			break;
 		}
 	}
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
@@ -1158,7 +1157,10 @@ void selectFocusIndex (int index) {
 	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
 	int /*long*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
+	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
+	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.gtk_tree_view_set_cursor (handle, path, 0, false);
+	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.gtk_tree_path_free (path);
 	OS.g_free (iter);
 }
@@ -1276,13 +1278,9 @@ public void setItems (String [] items) {
  * @see List#select(int)
  */
 public void setSelection (int index) {
-	checkWidget();
-	if ((style & SWT.MULTI) != 0) {
-		deselectAll ();
-		if (index >= 0) selectFocusIndex (index);
-	} else {
-		select (index);
-	}
+	checkWidget ();
+	deselectAll ();
+	selectFocusIndex (index);
 	showSelection ();
 }
 
@@ -1309,23 +1307,16 @@ public void setSelection (int index) {
  */
 public void setSelection (int start, int end) {
 	checkWidget ();
-	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) {
-		deselectAll ();
-		return;
-	}
+	deselectAll ();
+	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) return;
 	int count = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
-	if (count == 0 || start >= count) {
-		deselectAll ();
-		return;
-	}
+	if (count == 0 || start >= count) return;
 	start = Math.max (0, start);
 	end = Math.min (end, count - 1);
+	selectFocusIndex (start);
 	if ((style & SWT.MULTI) != 0) {
-		deselectAll ();
-		selectFocusIndex (start);
-		start++;
+		select (start, end);
 	}
-	select (start, end);
 	showSelection ();
 }
 
@@ -1356,16 +1347,10 @@ public void setSelection(int[] indices) {
 	deselectAll ();
 	int length = indices.length;
 	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
+	selectFocusIndex (indices [0]);
 	if ((style & SWT.MULTI) != 0) {
-		int focusIndex = indices [0];
-		if (focusIndex >= 0) {
-			selectFocusIndex (focusIndex);
-			int [] temp = indices;
-			indices = new int [length - 1];
-			System.arraycopy (temp, 1, indices, 0, length - 1);
-		}
+		select (indices);
 	}
-	select (indices);
 	showSelection ();
 }
 
@@ -1394,39 +1379,28 @@ public void setSelection(int[] indices) {
 public void setSelection (String [] items) {
 	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
+	deselectAll ();
 	int length = items.length;
-	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) {
-		deselectAll ();
-		return;
-	}
-	if ((style & SWT.MULTI) != 0) deselectAll ();
-	boolean firstSelect = true;
-	int singleSelectIndex = -1;
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
+	boolean first = true;
 	for (int i = 0; i < length; i++) {
 		int index = 0;
 		String string = items [i];
 		if (string != null) {
 			while ((index = indexOf (string, index)) != -1) {
 				if ((style & SWT.MULTI) != 0) {
-					if (firstSelect) {
-						firstSelect = false;
+					if (first) {
+						first = false;
 						selectFocusIndex (index);
 					} else {
 						select (index);
 					}
-				} else {	/* SINGLE */
-					singleSelectIndex = index;
+				} else {
+					selectFocusIndex (index);
 					break;
 				}
 				index++;
 			}
-		}
-	}
-	if ((style & SWT.SINGLE) != 0) {
-		if (singleSelectIndex == -1) {
-			deselectAll ();
-		} else {
-			select (singleSelectIndex);
 		}
 	}
 	showSelection ();

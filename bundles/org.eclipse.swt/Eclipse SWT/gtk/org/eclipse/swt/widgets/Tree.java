@@ -1014,14 +1014,11 @@ void setForegroundColor (GdkColor color) {
 public void setSelection (TreeItem [] items) {
 	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
+	deselectAll ();
 	int length = items.length;
-	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) {
-		deselectAll ();
-		return;
-	}
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-	OS.gtk_tree_selection_unselect_all (selection);
 	boolean first = true;
 	for (int i = 0; i < length; i++) {
 		TreeItem item = items [i];
@@ -1030,10 +1027,10 @@ public void setSelection (TreeItem [] items) {
 		if (item.parent != this) continue;
 		int /*long*/ path = OS.gtk_tree_model_get_path (modelHandle, item.handle);
 		showItem (path, first);
-		OS.gtk_tree_selection_select_iter (selection, item.handle);
-		if ((style & SWT.SINGLE) != 0) {
+		if (first) {
 			OS.gtk_tree_view_set_cursor (handle, path, 0, false);
 		}
+		OS.gtk_tree_selection_select_iter (selection, item.handle);
 		OS.gtk_tree_path_free (path);
 		first = false;
 	}
