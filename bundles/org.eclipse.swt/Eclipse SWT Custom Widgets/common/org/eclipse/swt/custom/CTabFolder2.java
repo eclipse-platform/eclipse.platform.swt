@@ -165,10 +165,10 @@ public class CTabFolder2 extends Composite {
 	static final int CURVE_RIGHT = 30;
 	static final int CURVE_LEFT = 30;
 	static final int BUTTON_SIZE = 16;
-	static final int[] TOP_LEFT_CORNER = new int[] {0,5, 1,4, 1,3, 2,2, 3,1, 4,1, 5,0,};
+	static final int[] TOP_LEFT_CORNER = new int[] {0,5, 1,4, 1,3, 2,2, 3,1, 4,1, 5,0};
 	static final int[] TOP_RIGHT_CORNER = new int[] {-5,0, -4,1, -3,1, -2,2, -1,3, -1,4, 0,5};
-	static final int[] BOTTOM_LEFT_CORNER = new int[] {0,-5, 1,-5, 1,-4, 4,-1, 5,-1, 5,0};
-	static final int[] BOTTOM_RIGHT_CORNER = new int[] {-5,0, -5,-1, -4,-1, -1,-4, -1,-5, 0,-5};
+	static final int[] BOTTOM_LEFT_CORNER = new int[] {0,-5, 1,-4, 1,-3, 2,-2, 3,-1, 4,-1, 5,0};
+	static final int[] BOTTOM_RIGHT_CORNER = new int[] {-5,0, -4,-1, -3,-1, -2,-2, -1,-3, -1,-4, 0,-5};
 	static final int[] TOP_LEFT_OUTSIDE_CORNER = new int[] {0,6, 1,5, 1,4, 4,1, 5,1, 6,0};
 	static final int[] TOP_RIGHT_OUTSIDE_CORNER = new int[] {-6,0, -5,1, -4,1, -1,4, -1,5, 0,6};
 	static final int[] BOTTOM_LEFT_OUTSIDE_CORNER = new int[] {0,-6, 1,-5, 1,-4, 4,-1, 5,-1, 6,0};
