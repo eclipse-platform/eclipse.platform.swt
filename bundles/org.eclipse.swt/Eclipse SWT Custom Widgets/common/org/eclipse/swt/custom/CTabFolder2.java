@@ -164,9 +164,10 @@ public class CTabFolder2 extends Composite {
 	static final int CURVE_WIDTH = 50;
 	static final int CURVE_RIGHT = 30;
 	static final int CURVE_LEFT = 30;
+	static final int BUTTON_SIZE = 16;
 	static final int[] TOP_LEFT_CORNER = new int[] {0,5, 1,4, 1,3, 2,2, 3,1, 4,1, 5,0,};
 	static final int[] TOP_RIGHT_CORNER = new int[] {-5,0, -4,1, -3,1, -2,2, -1,3, -1,4, 0,5};
-	static final int[] BOTTOM_LEFT_CORNER = new int[] {0,-5, 1,-5, 1,-3, 2,-3, 2,-2, 3,-2, 3,-1, 5,-1, 5,0};
+	static final int[] BOTTOM_LEFT_CORNER = new int[] {0,-5, 1,-5, 1,-4, 4,-1, 5,-1, 5,0};
 	static final int[] BOTTOM_RIGHT_CORNER = new int[] {-5,0, -5,-1, -4,-1, -1,-4, -1,-5, 0,-5};
 	static final int[] TOP_LEFT_OUTSIDE_CORNER = new int[] {0,6, 1,5, 1,4, 4,1, 5,1, 6,0};
 	static final int[] TOP_RIGHT_OUTSIDE_CORNER = new int[] {-6,0, -5,1, -4,1, -1,4, -1,5, 0,6};
@@ -355,7 +356,7 @@ public void addCTabFolderCloseListener(CTabFolderCloseListener listener) {
 	if (closeListeners.length == 0) {
 		// display close button
 		showClose = true;
-		setButtonBounds();
+		updateItems();
 		redraw();
 	}
 	// add to array
@@ -1704,6 +1705,13 @@ void onMouse(Event event) {
 			for (int i=0; i<items.length; i++) {
 				CTabItem2 item = items[i];
 				Rectangle bounds = item.getBounds();
+				if (item.closeRect.contains(x,y)){
+					if (event.button != 1) return;
+					item.closeImageState = SELECTED;
+					redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
+					update();
+					return;
+				}
 				if (bounds.contains(x, y)) {
 					if (!single && i != topTabIndex && bounds.x + bounds.width >= getRightItemEdge())return;
 					setSelection(i, true);
@@ -1747,6 +1755,23 @@ void onMouse(Event event) {
 			if (chevronImageState == HOT && !chevron) {
 				chevronImageState = NORMAL;
 				redraw(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, false);
+			}
+			if (showClose && !single) {
+				for (int i=0; i<items.length; i++) {
+					CTabItem2 item = items[i];
+					close = false;
+					if (item.closeRect.contains(x, y)) {
+						close = true;
+						if (item.closeImageState != HOT) {
+							item.closeImageState = HOT;
+							redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
+						}
+					} 
+					if (item.closeImageState == HOT && !close) {
+						item.closeImageState = NORMAL;
+						redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
+					}
+				}
 			}
 			break;
 		}
@@ -1835,6 +1860,23 @@ void onMouse(Event event) {
 							}
 						}
 					});
+				}
+			}
+			for (int i=0; i<items.length; i++) {
+				CTabItem2 item = items[i];
+				if (item.closeRect.contains(x,y)){
+					item.closeImageState = HOT;
+					redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
+					CTabFolderEvent e = new CTabFolderEvent(this);
+					e.widget = this;
+					e.time = event.time;
+					e.item = item;
+					e.doit = true;
+					for (int j = 0; j < closeListeners.length; j++) {
+						closeListeners[j].itemClosed(e);
+					}
+					if (e.doit) item.dispose();
+					return;
 				}
 			}
 			break;
@@ -2144,7 +2186,8 @@ public void removeCTabFolderCloseListener(CTabFolderCloseListener listener) {
 		// hide close button
 		closeListeners = new CTabFolderCloseListener[0];
 		showClose = false;
-		if (setButtonBounds()) redraw();
+		updateItems();
+		redraw();
 		return;
 	}
 	CTabFolderCloseListener[] newTabListeners = new CTabFolderCloseListener[closeListeners.length - 1];
@@ -2180,7 +2223,8 @@ public void removeCTabFolderExpandListener(CTabFolderExpandListener listener) {
 		// hide expand button
 		expandListeners = new CTabFolderExpandListener[0];
 		showExpand = false;
-		if (setButtonBounds()) redraw();
+		updateItems();
+		redraw();
 		return;
 	}
 	CTabFolderExpandListener[] newListeners = new CTabFolderExpandListener[expandListeners.length - 1];
@@ -2285,7 +2329,6 @@ public void setBorderVisible(boolean show) {
 	redraw();
 }
 boolean setButtonBounds() {
-	int decoratorWidth = 16;
 	int oldX, oldY, oldWidth, oldHeight;
 	boolean changed = false;
 	Point size = getSize();
@@ -2295,12 +2338,12 @@ boolean setButtonBounds() {
 	oldWidth = closeRect.width;
 	oldHeight = closeRect.height;
 	closeRect.x = closeRect.y = closeRect.height = closeRect.width = 0;
-	if (showClose && selectedIndex != -1) {
-		closeRect.x = size.x - borderRight - decoratorWidth;
+	if (showClose && single && selectedIndex != -1) {
+		closeRect.x = size.x - borderRight - BUTTON_SIZE;
 		if (borderRight > 0) closeRect.x += 1; // align with first line of trim
 		if (single) closeRect.x -= 3;
 		closeRect.y = onBottom ? size.y - borderBottom - tabHeight : borderTop + 1;
-		closeRect.width = decoratorWidth;
+		closeRect.width = BUTTON_SIZE;
 		closeRect.height = tabHeight;
 	}
 	if (oldX != closeRect.x || oldWidth != closeRect.width ||
@@ -2312,11 +2355,11 @@ boolean setButtonBounds() {
 	oldHeight = expandRect.height;
 	expandRect.x = expandRect.y = expandRect.width = expandRect.height = 0;
 	if (showExpand) {
-		expandRect.x = size.x - borderRight - closeRect.width - decoratorWidth;
+		expandRect.x = size.x - borderRight - closeRect.width - BUTTON_SIZE;
 		if (borderRight > 0) expandRect.x += 1;
 		if (single) expandRect.x -= 3;
 		expandRect.y = onBottom ? size.y - borderBottom - tabHeight: borderTop + 1;
-		expandRect.width = decoratorWidth;
+		expandRect.width = BUTTON_SIZE;
 		expandRect.height = tabHeight;
 	}
 	if (oldX != expandRect.x || oldWidth != expandRect.width ||
@@ -2331,7 +2374,7 @@ boolean setButtonBounds() {
 		Point topRightSize = topRight.computeSize(SWT.DEFAULT, tabHeight);
 		if (single && selectedIndex > -1) {
 			CTabItem2 item = items[selectedIndex];
-			topRightRect.x = Math.min(item.x +item.width + decoratorWidth, size.x - borderRight - closeRect.width - expandRect.width - topRightSize.x - 3);
+			topRightRect.x = Math.min(item.x +item.width + BUTTON_SIZE, size.x - borderRight - closeRect.width - expandRect.width - topRightSize.x - 3);
 		} else {
 			topRightRect.x = size.x - borderRight - closeRect.width - expandRect.width - topRightSize.x;
 		}
@@ -2353,19 +2396,19 @@ boolean setButtonBounds() {
 	if (items.length > 1) {
 		if (single && selectedIndex != -1){
 			CTabItem2 item = items[selectedIndex];
-			chevronRect.x = Math.min(item.x +item.width - 3, size.x - borderRight - closeRect.width - expandRect.width - topRightRect.width - decoratorWidth - 3);
+			chevronRect.x = Math.min(item.x +item.width - 3, size.x - borderRight - closeRect.width - expandRect.width - topRightRect.width - BUTTON_SIZE - 3);
 			if (borderRight > 0) chevronRect.x += 1;
 			chevronRect.y = onBottom ? size.y - borderBottom - tabHeight: borderTop + 1;
-			chevronRect.width = decoratorWidth;
+			chevronRect.width = BUTTON_SIZE;
 			chevronRect.height = tabHeight;
 		} else {
 			int rightEdge = getRightItemEdge();
 			CTabItem2 item = items[items.length-1];
 			if (topTabIndex > 0 || item.x + item.width >= rightEdge) {
-				chevronRect.x = size.x - borderRight - closeRect.width - expandRect.width - topRightRect.width - decoratorWidth;
+				chevronRect.x = size.x - borderRight - closeRect.width - expandRect.width - topRightRect.width - BUTTON_SIZE;
 				if (borderRight > 0) chevronRect.x += 1;
 				chevronRect.y = onBottom ? size.y - borderBottom - tabHeight: borderTop + 1;
-				chevronRect.width = decoratorWidth;
+				chevronRect.width = BUTTON_SIZE;
 				chevronRect.height = tabHeight;
 			}
 		}
@@ -2501,6 +2544,9 @@ boolean setItemLocation() {
 			// layout tab items from right to left thus making them invisible
 			tab.x = x;
 			tab.y = y;
+			tab.closeRect.x = tab.x + tab.width - BUTTON_SIZE - CTabItem2.RIGHT_MARGIN;
+			if (i == selectedIndex) tab.closeRect.x -= 8;
+			tab.closeRect.y = onBottom ? y : y + CTabItem2.TOP_MARGIN;
 		}
 		
 		x = borderLeft <= 1 ? 0 : HIGHLIGHT_MARGIN;
@@ -2509,6 +2555,9 @@ boolean setItemLocation() {
 			CTabItem2 tab = items[i];
 			tab.x = x;
 			tab.y = y;
+			tab.closeRect.x = tab.x + tab.width - BUTTON_SIZE - CTabItem2.RIGHT_MARGIN;
+			if (i == selectedIndex) tab.closeRect.x -= 8;
+			tab.closeRect.y = onBottom ? y : y + CTabItem2.TOP_MARGIN;
 			x = x + tab.width;
 		}
 
@@ -2576,6 +2625,11 @@ boolean setItemSize() {
 		if (tab.height != tabHeight || tab.width != widths[i]) changed = true;
 		tab.height = tabHeight;
 		tab.width = widths[i];
+		tab.closeRect.width = tab.closeRect.height = 0;
+		if (showClose && !single) {
+			tab.closeRect.width = BUTTON_SIZE;
+			tab.closeRect.height = BUTTON_SIZE;
+		}
 		totalWidth += widths[i];
 	}
 	if (totalWidth <= tabAreaWidth) {
