@@ -691,6 +691,8 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 				selStart = selection.y;
 				selEnd = selection.x;
 			}
+			// temporary code to disable text selection
+			selStart = selEnd = -1;
 			layout.draw (gc, 0, 0, selStart, selEnd, null, null);
 			if (hasFocus () && focusIndex != -1) {
 				Rectangle [] rects = getRectangles (focusIndex);

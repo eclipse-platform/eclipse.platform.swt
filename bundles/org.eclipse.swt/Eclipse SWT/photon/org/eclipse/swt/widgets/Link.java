@@ -154,6 +154,8 @@ void drawWidget(int widget, int damage) {
 		selStart = selection.y;
 		selEnd = selection.x;
 	}
+	// temporary code to disable text selection
+	selStart = selEnd = -1;
 	GCData data = new GCData();
 	if (OS.QNX_MAJOR > 6 || (OS.QNX_MAJOR == 6 && (OS.QNX_MINOR > 2 || (OS.QNX_MINOR == 2 && OS.QNX_MICRO >= 1)))) {
 		data.paint = true;

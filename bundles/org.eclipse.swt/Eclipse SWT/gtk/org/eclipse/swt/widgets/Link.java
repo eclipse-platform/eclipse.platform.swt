@@ -261,6 +261,8 @@ int /*long*/ gtk_expose_event (/*long*/ int widget, /*long*/ int eventPtr) {
 		selStart = selection.y;
 		selEnd = selection.x;
 	}
+	// temporary code to disable text selection
+	selStart = selEnd = -1;
 	layout.draw (gc, 0, 0, selStart, selEnd, null, null);
 	if (hasFocus () && focusIndex != -1) {
 		Rectangle [] rects = getRectangles (focusIndex);

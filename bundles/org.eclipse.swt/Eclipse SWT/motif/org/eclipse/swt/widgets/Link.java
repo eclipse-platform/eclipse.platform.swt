@@ -496,6 +496,8 @@ int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) 
 		selStart = selection.y;
 		selEnd = selection.x;
 	}
+	// temporary code to disable text selection
+	selStart = selEnd = -1;
 	layout.draw (gc, 0, 0, selStart, selEnd, null, null);
 	if (hasFocus () && focusIndex != -1) {
 		Rectangle [] rects = getRectangles (focusIndex);
