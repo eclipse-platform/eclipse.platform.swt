@@ -1826,11 +1826,11 @@ public int getCharWidth(char ch) {
 	}
 	
 	/* It wasn't a truetype font */
-	TEXTMETRICW tm = new TEXTMETRICW();
-	OS.GetTextMetricsW(handle, tm);
+	TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
+	OS.GetTextMetrics(handle, lptm);
 	SIZE size = new SIZE();
 	OS.GetTextExtentPoint32W(handle, new char[]{ch}, 1, size);
-	return size.cx - tm.tmOverhang;
+	return size.cx - lptm.tmOverhang;
 }
 
 /** 
