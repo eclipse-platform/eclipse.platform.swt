@@ -84,6 +84,7 @@ public CCombo (Composite parent, int style) {
 	
 	int listStyle = SWT.SINGLE | SWT.V_SCROLL;
 	if ((style & SWT.FLAT) != 0) listStyle |= SWT.FLAT;
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) listStyle |= SWT.RIGHT_TO_LEFT;
 	list = new List (popup, listStyle);
 	
 	int arrowStyle = SWT.ARROW | SWT.DOWN;
