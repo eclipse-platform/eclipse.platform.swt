@@ -184,7 +184,7 @@ int computePixels(int height) {
 	return pixels;
 }
 
-int computePoints(LOGFONT logFont) {
+int computePoints(LOGFONT logFont, int hFont) {
 	int hDC = internal_new_GC (null);
 	int logPixelsY = OS.GetDeviceCaps(hDC, OS.LOGPIXELSY);
 	int pixels = 0; 
@@ -194,15 +194,12 @@ int computePoints(LOGFONT logFont) {
 		 * is positive, the lfHeight measures the height of the entire
 		 * cell, including internal leading, in logical units. Since the
 		 * height of a font in points does not include the internal leading,
-		 * we must subtract the internal leading, which requires a TEXTMETRIC,
-		 * which in turn requires font creation.
+		 * we must subtract the internal leading, which requires a TEXTMETRIC.
 		 */
-		int hFont = OS.CreateFontIndirect(logFont);
 		int oldFont = OS.SelectObject(hDC, hFont);
 		TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
 		OS.GetTextMetrics(hDC, lptm);
 		OS.SelectObject(hDC, oldFont);
-		OS.DeleteObject(hFont);
 		pixels = logFont.lfHeight - lptm.tmInternalLeading;
 	} else {
 		pixels = -logFont.lfHeight;

@@ -190,7 +190,7 @@ public FontData[] getFontData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	LOGFONT logFont = OS.IsUnicode ? (LOGFONT)new LOGFONTW() : new LOGFONTA();
 	OS.GetObject(handle, LOGFONT.sizeof, logFont);
-	return new FontData[] {FontData.win32_new(logFont, device.computePoints(logFont))};
+	return new FontData[] {FontData.win32_new(logFont, device.computePoints(logFont, handle))};
 }
 
 /**
