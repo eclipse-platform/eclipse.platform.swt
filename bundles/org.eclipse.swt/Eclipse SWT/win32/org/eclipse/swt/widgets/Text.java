@@ -635,8 +635,7 @@ public char getEchoChar () {
  */
 public boolean getEditable () {
 	checkWidget ();
-	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	return (bits & OS.ES_READONLY) == 0;
+	return (style & SWT.READ_ONLY) == 0;
 }
 
 /**
@@ -890,8 +889,7 @@ public int getTextLimit () {
  */
 public int getTopIndex () {
 	checkWidget ();
-	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE); 
-	if ((bits & OS.ES_MULTILINE) == 0) return 0;
+	if ((style & SWT.MULTI) == 0) return 0;
 	return OS.SendMessage (handle, OS.EM_GETFIRSTVISIBLELINE, 0, 0);
 }
 
@@ -1189,8 +1187,7 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 			}
 			break;
 		case '\r':	/* Return */
-			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE); 
-			if ((bits & OS.ES_MULTILINE) == 0) return true;
+			if ((style & SWT.MULTI) == 0) return true;
 			oldText = DELIMITER;
 			break;
 		default:	/* Tab and other characters */
@@ -1593,8 +1590,7 @@ public void setTextLimit (int limit) {
  */
 public void setTopIndex (int index) {
 	checkWidget ();
-	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE); 
-	if ((bits & OS.ES_MULTILINE) == 0) return;
+	if ((style & SWT.MULTI) == 0) return;
 	int count = OS.SendMessage (handle, OS.EM_GETLINECOUNT, 0, 0);
 	index = Math.min (Math.max (index, 0), count - 1);
 	int topIndex = OS.SendMessage (handle, OS.EM_GETFIRSTVISIBLELINE, 0, 0);
@@ -1722,8 +1718,7 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 	* The fix is to look for these keys and not call
 	* the window proc.
 	*/
-	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE); 
-	if ((bits & OS.ES_MULTILINE) == 0) {
+	if ((style & SWT.MULTI) == 0) {
 		switch (wParam) {
 			case OS.VK_RETURN:
 				postEvent (SWT.DefaultSelection);
@@ -1739,8 +1734,7 @@ LRESULT WM_CLEAR (int wParam, int lParam) {
 	LRESULT result = super.WM_CLEAR (wParam, lParam);
 	if (result != null) return result;
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return result;
-	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	if ((bits & OS.ES_READONLY) != 0) return result;
+	if ((style & SWT.READ_ONLY) != 0) return result;
 	int [] start = new int [1], end = new int [1];
 	OS.SendMessage (handle, OS.EM_GETSEL, start, end);
 	if (start [0] == end [0]) return result;
@@ -1772,8 +1766,7 @@ LRESULT WM_CUT (int wParam, int lParam) {
 	LRESULT result = super.WM_CUT (wParam, lParam);
 	if (result != null) return result;
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return result;
-	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	if ((bits & OS.ES_READONLY) != 0) return result;
+	if ((style & SWT.READ_ONLY) != 0) return result;
 	int [] start = new int [1], end = new int [1];
 	OS.SendMessage (handle, OS.EM_GETSEL, start, end);
 	if (start [0] == end [0]) return result;
@@ -1901,8 +1894,7 @@ LRESULT WM_PASTE (int wParam, int lParam) {
 	LRESULT result = super.WM_PASTE (wParam, lParam);
 	if (result != null) return result;
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return result;
-	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	if ((bits & OS.ES_READONLY) != 0) return result;
+	if ((style & SWT.READ_ONLY) != 0) return result;
 	String oldText = getClipboardText ();
 	if (oldText == null) return result;
 	int [] start = new int [1], end = new int [1];
