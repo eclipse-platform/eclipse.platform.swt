@@ -59,6 +59,7 @@ void checkLayout () {
 }
 
 int stringWidth (StyleItem run, char[] ch) {
+	if (ch.length == 0) return 0;
 	int fontList = getItemFont(run).handle;
 	byte[] buffer = Converter.wcsToMbcs(null, ch, true);
 	int xmString = OS.XmStringCreateLocalized(buffer);
@@ -505,7 +506,6 @@ public Point getLocation (int offset, int trailing) {
 					if (isTrailing) offset++;
 					char[] chars = new char[offset - run.start];
 					text.getChars(run.start, offset, chars, 0);
-//					String string = text.substring(run.start, offset);
 					width += stringWidth(run, chars);
 				}
 				result = new Point(width, lineY[line]);
