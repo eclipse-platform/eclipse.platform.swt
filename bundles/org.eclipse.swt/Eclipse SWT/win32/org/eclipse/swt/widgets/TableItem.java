@@ -509,6 +509,7 @@ void releaseChild () {
 void releaseWidget () {
 	super.releaseWidget ();
 	parent = null;
+	cellBackground = cellForeground = cellFont = null;
 }
 
 /**
