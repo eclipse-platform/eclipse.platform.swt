@@ -14,7 +14,9 @@ import org.eclipse.swt.internal.SWTEventListener;
 
 /**
  * This listener interface may be implemented in order to receive
- * WindowEvents.
+ * a {@link WindowEvent} notification when a {@link Browser} is 
+ * about to be closed and when its host window should be closed
+ * by the application.
  * 
  * <p>
  * NOTE: The API in the browser package is NOT finalized.
@@ -23,21 +25,30 @@ import org.eclipse.swt.internal.SWTEventListener;
  * other teams can try it out.
  * </p>
  * 
- * @see WindowEvent
+ * @see Browser#addCloseWindowListener(CloseWindowListener)
+ * @see Browser#removeCloseWindowListener(CloseWindowListener)
+ * @see OpenWindowListener
+ * @see VisibilityWindowListener
  * 
  * @since 3.0
  */
 public interface CloseWindowListener extends SWTEventListener {
 
 /**
- * This method is called when the window hosting a browser should be closed.
- * Application would typically close the Shell that hosts the browser.
- * The browser is disposed after this notification.
- * <p>
+ * This method is called when the window hosting a {@link Browser} should be closed.
+ * Application would typically close the {@link org.eclipse.swt.widgets.Shell} that
+ * hosts the <code>Browser</code>. The <code>Browser</code> is disposed after this
+ * notification.
  *
- * @param event.widget the browser that is going to be disposed
+ * <p>The following fields in the <code>WindowEvent</code> apply:
+ * <ul>
+ * <li>(in) widget the <code>Browser</code> that is going to be disposed
+ * </ul></p>
  *
- * @see WindowEvent
+ * @param event the <code>WindowEvent</code> that specifies the <code>Browser</code>
+ * that is going to be disposed
+ * 
+ * @see org.eclipse.swt.widgets.Shell#close()
  * 
  * @since 3.0
  */ 

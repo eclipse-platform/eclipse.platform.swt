@@ -12,9 +12,10 @@ package org.eclipse.swt.browser;
 
 import org.eclipse.swt.internal.SWTEventListener;
 
-/**
+/** 
  * This listener interface may be implemented in order to receive
- * WindowEvents.
+ * a {@link WindowEvent} notification when a window hosting a
+ * {@link Browser} needs to be displayed or hidden.
  * 
  * <p>
  * NOTE: The API in the browser package is NOT finalized.
@@ -23,33 +24,60 @@ import org.eclipse.swt.internal.SWTEventListener;
  * other teams can try it out.
  * </p>
  * 
- * @see WindowEvent
+ * @see Browser#addVisibilityWindowListener(VisibilityWindowListener)
+ * @see Browser#removeVisibilityWindowListener(VisibilityWindowListener)
+ * @see OpenWindowListener
+ * @see CloseWindowListener
  * 
  * @since 3.0
  */
 public interface VisibilityWindowListener extends SWTEventListener {
 	
 /**
- * This method is called when the Browser is requested to be hidden.
+ * This method is called when the window hosting a <code>Browser</code> 
+ * is requested to be hidden. Application would typically hide the
+ * {@link org.eclipse.swt.widgets.Shell} that hosts the <code>Browser</code>.
  * <p>
  *
- * @param event.widget the browser to hide
+ * <p>The following fields in the <code>WindowEvent</code> apply:
+ * <ul>
+ * <li>(in) widget the <code>Browser</code> that needs to be hidden
+ * </ul>
  *
- * @see WindowEvent
+ * @param event the <code>WindowEvent</code> that specifies the
+ * <code>Browser</code> that needs to be hidden
+ * 
+ * @see org.eclipse.swt.widgets.Shell#setVisible(boolean)
  * 
  * @since 3.0
  */ 
 public void hide(WindowEvent event);
 
 /**
- * This method is called when the Browser is requested to be displayed.
+ * This method is called when the window hosting a <code>Browser</code>
+ * is requested to be displayed. Application would typically set the 
+ * location and the size of the {@link org.eclipse.swt.widgets.Shell} 
+ * that hosts the <code>Browser</code>, if a particular location and size
+ * are specified. The application would then open that <code>Shell</code>.
  * <p>
  *
- * @param event.widget the browser to display
- * @param event.location if not null, the requested location for the Shell hosting the browser
- * @param event.size if not null, the requested size for the Shell hosting the browser
+ * <p>The following fields in the <code>WindowEvent</code> apply:
+ * <ul>
+ * <li>(in) widget the <code>Browser</code> to display
+ * <li>(in) location the requested location for the <code>Shell</code> 
+ * hosting the browser. It is <code>null</code> if no location is set. 
+ * <li>(in) size the requested size for the <code>Browser</code>.
+ * The client area of the <code>Shell</code> hosting the
+ * <code>Browser</code> should be large enough to accomodate that size.
+ * It is <code>null</code> if no size is set.
+ * </ul>
  *
- * @see WindowEvent
+ * @param event the <code>WindowEvent</code> that specifies the
+ * <code>Browser</code> that needs to be displayed
+ * 
+ * @see org.eclipse.swt.widgets.Control#setLocation(org.eclipse.swt.graphics.Point)
+ * @see org.eclipse.swt.widgets.Control#setSize(org.eclipse.swt.graphics.Point)
+ * @see org.eclipse.swt.widgets.Shell#open()
  * 
  * @since 3.0
  */ 
