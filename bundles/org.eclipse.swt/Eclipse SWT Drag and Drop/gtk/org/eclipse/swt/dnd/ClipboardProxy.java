@@ -36,18 +36,17 @@ class ClipboardProxy {
 	
 	static String ID = "CLIPBOARD PROXY OBJECT";
 
-static ClipboardProxy _getInstance(Display display) {
+static ClipboardProxy _getInstance(final Display display) {
 	ClipboardProxy proxy = (ClipboardProxy) display.getData(ID);
 	if (proxy != null) return proxy;
 	proxy = new ClipboardProxy(display);
 	display.setData(ID, proxy);
 	display.addListener(SWT.Dispose, new Listener() {
 		public void handleEvent(Event event) {
-			Display display = event.display;
-			ClipboardProxy proxy = (ClipboardProxy)display.getData(ID);
-			if (proxy == null) return;
+			ClipboardProxy clipbordProxy = (ClipboardProxy)display.getData(ID);
+			if (clipbordProxy == null) return;
 			display.setData(ID, null);
-			proxy.dispose();
+			clipbordProxy.dispose();
 		}
 	});
 	return proxy;
