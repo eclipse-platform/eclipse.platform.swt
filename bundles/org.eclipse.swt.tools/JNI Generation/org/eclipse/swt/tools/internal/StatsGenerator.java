@@ -141,7 +141,9 @@ public void generateSourceFile(Class clazz) {
 }
 
 void generateStringArray(Method method) {	
-	output("\t\"" + getFunctionName(method) + "\", ");
+	output("\t\"");
+	output(getFunctionName(method));
+	output("\", ");
 	outputDelimiter();
 }
 
@@ -150,7 +152,10 @@ void generateDefines(Method[] methods) {
 	for (int i = 0; i < methods.length; i++) {
 		Method method = methods[i];
 		if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
-		output("#define " +  getFunctionName(method) + "_FUNC " + methodCount);
+		output("#define ");
+		output(getFunctionName(method));
+		output("_FUNC ");
+		output(String.valueOf(methodCount));
 		methodCount++;
 		outputDelimiter();
 	}	
