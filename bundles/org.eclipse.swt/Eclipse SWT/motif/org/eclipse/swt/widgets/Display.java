@@ -705,7 +705,15 @@ int createImage (String name) {
 	if (pixmap == OS.XmUNSPECIFIED_PIXMAP) {
 		buffer = Converter.wcsToMbcs (null, "default_" + name, true);
 		pixmap = OS.XmGetPixmap (screen, buffer, fgPixel, bgPixel);
-		if (pixmap == OS.XmUNSPECIFIED_PIXMAP) pixmap = 0;
+		if (pixmap == OS.XmUNSPECIFIED_PIXMAP) {
+			if (OS.IsSunOS) {
+				buffer = Converter.wcsToMbcs (null, "/usr/dt/share/include/bitmaps/" + name, true);
+				pixmap = OS.XmGetPixmap (screen, buffer, fgPixel, bgPixel);
+				if (pixmap == OS.XmUNSPECIFIED_PIXMAP) pixmap = 0;
+			} else {
+				pixmap = 0;
+			}
+		}
 	}
 	return pixmap;
 }
@@ -1621,7 +1629,6 @@ public Image getSystemImage (int style) {
 			mask = workingMask;
 			break;
 		}
-		default: return null;
 	}
 	if (image == 0) return null;
 	return Image.motif_new (this, SWT.ICON, image, mask);
