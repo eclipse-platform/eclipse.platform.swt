@@ -276,6 +276,78 @@ JNIEXPORT jint JNICALL ATK_NATIVE(atk_1state_1set_1new)
 }
 #endif
 
+#ifndef NO_call__II
+JNIEXPORT jint JNICALL ATK_NATIVE(call__II)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "call__II\n")
+	rc = (jint)((jint (*)())arg0)(arg1);
+	NATIVE_EXIT(env, that, "call__II\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_call__III
+JNIEXPORT jint JNICALL ATK_NATIVE(call__III)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "call__III\n")
+	rc = (jint)((jint (*)())arg0)(arg1, arg2);
+	NATIVE_EXIT(env, that, "call__III\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_call__IIII
+JNIEXPORT jint JNICALL ATK_NATIVE(call__IIII)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "call__IIII\n")
+	rc = (jint)((jint (*)())arg0)(arg1, arg2, arg3);
+	NATIVE_EXIT(env, that, "call__IIII\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_call__IIIII
+JNIEXPORT jint JNICALL ATK_NATIVE(call__IIIII)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "call__IIIII\n")
+	rc = (jint)((jint (*)())arg0)(arg1, arg2, arg3, arg4);
+	NATIVE_EXIT(env, that, "call__IIIII\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_call__IIIIII
+JNIEXPORT jint JNICALL ATK_NATIVE(call__IIIIII)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "call__IIIIII\n")
+	rc = (jint)((jint (*)())arg0)(arg1, arg2, arg3, arg4, arg5);
+	NATIVE_EXIT(env, that, "call__IIIIII\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_call__IIIIIII
+JNIEXPORT jint JNICALL ATK_NATIVE(call__IIIIIII)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "call__IIIIIII\n")
+	rc = (jint)((jint (*)())arg0)(arg1, arg2, arg3, arg4, arg5, arg6);
+	NATIVE_EXIT(env, that, "call__IIIIIII\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_g_1object_1new
 JNIEXPORT jint JNICALL ATK_NATIVE(g_1object_1new)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
