@@ -80,6 +80,7 @@ public class OS {
 	public static final int GDK_INCLUDE_INFERIORS = 0x1;
 	public static final int GDK_INTERP_BILINEAR = 0x2;
 	public static final int GDK_Insert = 0xff63;
+	public static final int GDK_ISO_Left_Tab = 0xfe20;
 	public static final int GDK_JOIN_MITER = 0x0;
 	public static final int GDK_KEY_PRESS = 0x8;
 	public static final int GDK_KEY_PRESS_MASK = 0x400;
@@ -130,6 +131,7 @@ public class OS {
 	public static final int GDK_STIPPLED = 0x2;
 	public static final int GDK_Shift_L = 0xffe1;
 	public static final int GDK_Shift_R = 0xffe2;
+	public static final int GDK_Scroll_Lock = 0xff14;
 	public static final int GDK_TOP_LEFT_CORNER = 0x86;
 	public static final int GDK_TOP_RIGHT_CORNER = 0x88;
 	public static final int GDK_TOP_SIDE = 0x8a;
