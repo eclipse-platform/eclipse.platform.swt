@@ -57,6 +57,9 @@ GC() {
  *          - if the drawable is an image or printer that is already selected
  *            into another graphics context</li>
  * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for gc creation</li>
+ * </ul>
  */
 public GC(Drawable drawable) {
 	if (drawable == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);

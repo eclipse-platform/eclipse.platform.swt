@@ -143,8 +143,32 @@ Cursor() {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - when an unknown style is specified</li>
  * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES - if a handle could not be obtained for cursor creation</li>
+ * </ul>
  *
- * @see Cursor for the supported style values
+ * @see SWT#CURSOR_ARROW
+ * @see SWT#CURSOR_WAIT
+ * @see SWT#CURSOR_CROSS
+ * @see SWT#CURSOR_APPSTARTING
+ * @see SWT#CURSOR_HELP
+ * @see SWT#CURSOR_SIZEALL
+ * @see SWT#CURSOR_SIZENESW
+ * @see SWT#CURSOR_SIZENS
+ * @see SWT#CURSOR_SIZENWSE
+ * @see SWT#CURSOR_SIZEWE
+ * @see SWT#CURSOR_SIZEN
+ * @see SWT#CURSOR_SIZES
+ * @see SWT#CURSOR_SIZEE
+ * @see SWT#CURSOR_SIZEW
+ * @see SWT#CURSOR_SIZENE
+ * @see SWT#CURSOR_SIZESE
+ * @see SWT#CURSOR_SIZESW
+ * @see SWT#CURSOR_SIZENW
+ * @see SWT#CURSOR_UPARROW
+ * @see SWT#CURSOR_IBEAM
+ * @see SWT#CURSOR_NO
+ * @see SWT#CURSOR_HAND
  */
 public Cursor(Device device, int style) {
 	if (device == null) device = Device.getDevice();
@@ -223,7 +247,7 @@ public Cursor(Device device, int style) {
  *          the bounds of the image</li>
  * </ul>
  * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES - if an error occurred constructing the cursor</li>
+ *    <li>ERROR_NO_HANDLES - if a handle could not be obtained for cursor creation</li>
  * </ul>
  */
 public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int hotspotY) {

@@ -29,9 +29,14 @@ public final class Region {
 
 /**
  * Constructs a new empty region.
+ * 
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for region creation</li>
+ * </ul>
  */
 public Region () {
 	handle = OS.CreateRectRgn (0, 0, 0, 0);
+	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 }
 
 /**
