@@ -56,10 +56,17 @@ public class CBanner extends Composite {
 	static final int BORDER_RIGHT = 2;
 	static final int BORDER_STRIPE = 3;
 	
+	static final int FOREGROUND = SWT.COLOR_TITLE_BACKGROUND;
+	static final int BACKGROUND = SWT.COLOR_TITLE_BACKGROUND_GRADIENT;
+	
 		
 public CBanner(Composite parent, int style) {
 	super(parent, checkStyle(style));
 
+	Display display = getDisplay();
+	setForeground(display.getSystemColor(FOREGROUND));
+	setBackground(display.getSystemColor(BACKGROUND));
+	
 	addPaintListener(new PaintListener() {
 		public void paintControl(PaintEvent event) {
 			onPaint(event.gc);
@@ -242,6 +249,17 @@ private void onResize() {
 	layout();
 }
 
+public void setBackground (Color color) {
+	if (color == null) color = getDisplay().getSystemColor(BACKGROUND);
+	super.setBackground(color);
+	redraw();
+}
+
+public void setForeground (Color color) {
+	if (color == null) color = getDisplay().getSystemColor(FOREGROUND);
+	super.setForeground(color);
+	redraw();
+}
 /**
  * Sets the layout which is associated with the receiver to be
  * the argument which may be null.
