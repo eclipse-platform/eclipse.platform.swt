@@ -413,7 +413,7 @@ protected static byte [] ascii (String name) {
 }
 
 public static int VERSION(int major, int minor, int micro) {
-	return major << 16 + minor << 8 + micro;
+	return (major << 16) + (minor << 8) + micro;
 }
 
 /** 64 bit */
