@@ -4031,7 +4031,7 @@ public String getTextRange(int start, int length) {
 	int contentLength = getCharCount();
 	int end = start + length;
 	
-	if (start < 0 || start > contentLength || end < 0 || end > contentLength || start > end) {
+	if (start > end || start < 0 || end > contentLength) {
 		SWT.error(SWT.ERROR_INVALID_RANGE);
 	}	
 	return content.getTextRange(start, length);
@@ -5358,12 +5358,26 @@ void redrawMultiLineChange(int y, int newLineCount, int replacedLineCount) {
  *	of change that has taken place.  If font styles or background colors for the redraw
  *	area have changed, clearBackground should be set to true.  If only foreground colors 
  *	have changed for the redraw area, clearBackground can be set to false. 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *   <li>ERROR_INVALID_RANGE when start and/or end are outside the widget content</li> 
+ * </ul>
  */
 public void redrawRange(int start, int length, boolean clearBackground) {
 	checkWidget();
-	int firstLine = content.getLineAtOffset(start);
-	int lastLine = content.getLineAtOffset(start + length);
+	int end = start + length;
+	int contentLength = content.getCharCount();
+	int firstLine;
+	int lastLine;
 	
+	if (start > end || start < 0 || end > contentLength) {
+		SWT.error(SWT.ERROR_INVALID_RANGE);
+	}	
+	firstLine = content.getLineAtOffset(start);
+	lastLine = content.getLineAtOffset(end);
 	// reset all affected lines but let the redraw recalculate only 
 	// those that are visible.
 	contentWidth.reset(firstLine, lastLine - firstLine + 1, true);
@@ -5571,7 +5585,7 @@ public void replaceTextRange(int start, int length, String text) {
 	int end = start + length;
 	Event event = new Event();
 	
-	if (start < 0 || start > contentLength || end < 0 || end > contentLength || start > end) {
+	if (start > end || start < 0 || end > contentLength) {
 		SWT.error(SWT.ERROR_INVALID_RANGE);
 	}	
 	if (text == null) {
