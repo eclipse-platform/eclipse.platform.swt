@@ -24,6 +24,9 @@ JAVA_HOME  = /tools/java1.3
 MOTIF_HOME = /usr/dt
 CDE_HOME   = /usr/dt
 
+# Compiler (Solaris 9, using GNU GCC)
+CC = gcc
+PATH = /bin:/usr/ccs/bin/:/usr/ucb/:/usr/local/bin
 
 # Define the various DLL (shared) libraries to be made.
 
@@ -32,7 +35,7 @@ WS_PREFIX    = motif
 SWT_DLL      = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 SWT_OBJ      = callback.o os.o os_structs.o os_custom.o
 SWT_LIB      = -L$(MOTIF_HOME)/lib -L/usr/lib  \
-	       -G -lXm -lXt -lX11 -lm
+	       -G -lXm -lXt -lX11 -lm -lXp
 
 CDE_PREFIX   = swt-cde
 CDE_DLL      = lib$(CDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
@@ -49,11 +52,9 @@ CDE_LIB      = -G -L$(CDE_HOME)/lib -R$(CDE_HOME)/lib -lDtSvc
 #   for 32-bit architectures. If this flag is not
 #
 CFLAGS = -O -s \
-	-xarch=generic \
 	-DSWT_VERSION=$(SWT_VERSION) \
 	-DNO_XINERAMA_EXTENSIONS \
 	-DSOLARIS -DMOTIF -DCDE \
-	-KPIC \
 	-I./ \
 	-I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/solaris \
 	-I$(MOTIF_HOME)/include \
