@@ -20,7 +20,7 @@ SWT_VERSION=$(maj_ver)$(min_ver)
 #    JAVA_HOME  - The JDK > 1.3
 #    MOTIF_HOME - Motif includes and libraries
 #    CDE_HOME - CDE includes and libraries
-JAVA_HOME  = /tools/java1.3
+JAVA_HOME  = /usr/java
 MOTIF_HOME = /usr/dt
 CDE_HOME   = /usr/dt
 
