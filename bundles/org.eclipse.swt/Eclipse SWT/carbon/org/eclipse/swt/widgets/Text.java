@@ -658,6 +658,34 @@ void setTXNBounds () {
 	rect.right -= inset.right;
 	rect.bottom -= inset.bottom;
 	OS.TXNSetFrameBounds (txnObject, rect.top, rect.left, rect.bottom, rect.right, txnFrameID);
+
+	/*
+	* Bug in the Macintosh.  When the caret is moved,
+	* the text widget scrolls to show the new location.
+	* This means that the text widget may be scrolled
+	* to the left in order to show the caret when the
+	* widget is not large enough to show both the caret
+	* location and all the text.  Unfortunately, when
+	* the widget is resized such that all the text and
+	* the caret could be visible, the Macintosh does not
+	* scroll the widget back.  The fix is to save the 
+	* current selection, set the selection to the start
+	* of the text and then restore the selection.  This
+	* will cause the widget text widget to recompute the
+	* left scroll position.
+	* 
+	* NOTE: Currently, this work around is only applied
+	* to text widgets that are not visible.  If the widget
+	* is resized when it is visible, this is fine because
+	* the user has already seen that the text is scrolled.
+	*/
+	if (OS.IsControlVisible (handle)) return;
+	int [] oStartOffset = new int [1], oEndOffset = new int [1];
+	OS.TXNGetSelection (txnObject, oStartOffset, oEndOffset);
+	OS.TXNSetSelection (txnObject, OS.kTXNStartOffset, OS.kTXNStartOffset);
+	OS.TXNShowSelection (txnObject, false);
+	OS.TXNSetSelection (txnObject, oStartOffset [0], oEndOffset [0]);
+	OS.TXNShowSelection (txnObject, false);
 }
 
 void setTXNText (int iStartOffset, int iEndOffset, String string) {
