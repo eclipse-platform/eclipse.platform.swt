@@ -639,7 +639,7 @@ void initSizeCombo () {
 		 * Add the scalable sizes.
 		 */
 		for (int i = 0; i < SCALABLE_SIZES.length; i++) {
-			allSizes.addElement (new Integer (SCALABLE_SIZES [i]));
+			allSizes.addElement (Integer.valueOf (SCALABLE_SIZES [i]));
 		}
 		/*
 		 * Add the provided sizes.
