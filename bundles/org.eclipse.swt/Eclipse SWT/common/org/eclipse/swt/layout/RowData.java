@@ -34,16 +34,25 @@ import org.eclipse.swt.graphics.*;
  */
 public final class RowData {
 	/**
-	 * width specifies the width of the cell in pixels.
+	 * width specifies the desired width in pixels. This value
+	 * is the wHint passed into Control#computeSize(int, int, boolean) 
+	 * to determine the preferred size of the control.
+	 *
+	 * The default value is SWT.DEFAULT.
+	 *
 	 */
-	public int width;
+	public int width = SWT.DEFAULT;
 	/**
-	 * height specifies the height of the cell in pixels.
+	 * height specifies the preferred height in pixels. This value
+	 * is the hHint passed into Control#computeSize(int, int, boolean) 
+	 * to determine the preferred size of the control.
+	 *
+	 * The default value is SWT.DEFAULT.
+	 *
 	 */
-	public int height;
+	public int height = SWT.DEFAULT;
 	
 public RowData () {
-	this (SWT.DEFAULT, SWT.DEFAULT);
 }
 
 public RowData (int width, int height) {

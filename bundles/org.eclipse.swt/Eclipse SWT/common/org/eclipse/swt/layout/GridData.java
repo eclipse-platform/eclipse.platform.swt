@@ -75,7 +75,7 @@ public final class GridData {
 	public int horizontalAlignment = BEGINNING;
 	
 	/**
-	 * widthHint specifies the desired width in pixels. This value
+	 * widthHint specifies the preferred width in pixels. This value
 	 * is the wHint passed into Control#computeSize(int, int, boolean) 
 	 * to determine the preferred size of the control.
 	 *
@@ -101,20 +101,22 @@ public final class GridData {
 	public int horizontalIndent = 0;
 	
 	/**
+	 * verticalIndent specifies the number of pixels of indentation
+	 * that will be placed along the top side of the cell.
+	 *
+	 * The default value is 0.
+	 * 
+	 * @since 3.1
+	 */
+	public int verticalIndent = 0;
+	
+	/**
 	 * horizontalSpan specifies the number of column cells that the control
 	 * will take up.
 	 *
 	 * The default value is 1.
 	 */
 	public int horizontalSpan = 1;
-	
-	/**
-	 * verticalIndent specifies the number of pixels of indentation
-	 * that will be placed along the top side of the cell.
-	 *
-	 * The default value is 0.
-	 */
-	public int verticalIndent = 0;
 	
 	/**
 	 * verticalSpan specifies the number of row cells that the control
@@ -141,19 +143,6 @@ public final class GridData {
 	public boolean grabExcessVerticalSpace = false;
 
 	/**
-	 * minimumHeight specifies the minimum height in pixels.  This value
-	 * applies only if grabExcessVerticalSpace is true.  A value of 
-	 * SWT#DEFAULT means that the minimum height will be the result
-	 * of Control#computeSize(int, int, boolean) where hHint is 
-	 * determined by GridData#heightHint.
-	 *
-	 * The default value is 0.
-	 *
-	 * @since 3.1
-	 */
-	public int minimumHeight = 0;
-	
-	/**
 	 * minimumWidth specifies the minimum desired width in pixels.  This value
 	 * applies only if grabExcessHorizontalSpace is true. A value of 
 	 * SWT#DEFAULT means that the minimum width will be the result
@@ -165,6 +154,19 @@ public final class GridData {
 	 * @since 3.1
 	 */
 	public int minimumWidth = 0;
+	
+	/**
+	 * minimumHeight specifies the minimum height in pixels.  This value
+	 * applies only if grabExcessVerticalSpace is true.  A value of 
+	 * SWT#DEFAULT means that the minimum height will be the result
+	 * of Control#computeSize(int, int, boolean) where hHint is 
+	 * determined by GridData#heightHint.
+	 *
+	 * The default value is 0.
+	 *
+	 * @since 3.1
+	 */
+	public int minimumHeight = 0;
 	
 	/**
 	 * Value for horizontalAlignment or verticalAlignment.
@@ -472,6 +474,7 @@ public String toString () {
  	if (widthHint != SWT.DEFAULT) string += "widthHint="+widthHint+" ";
  	if (minimumWidth != 0) string += "minimumWidth="+minimumWidth+" ";
  	string += "verticalAlignment="+vAlign+" ";
+ 	if (verticalIndent != 0) string += "verticalIndent="+verticalIndent+" ";
 	if (verticalSpan != 1) string += "verticalSpan="+verticalSpan+" ";
  	if (grabExcessVerticalSpace) string += "grabExcessVerticalSpace="+grabExcessVerticalSpace+" ";
  	if (heightHint != SWT.DEFAULT) string += "heightHint="+heightHint+" ";

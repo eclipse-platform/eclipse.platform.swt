@@ -44,13 +44,23 @@ import org.eclipse.swt.widgets.*;
  */
 public final class FormData {
 	/**
-	 * height specifies the desired height in pixels
+	 * width specifies the preferred width in pixels. This value
+	 * is the wHint passed into Control#computeSize(int, int, boolean) 
+	 * to determine the preferred size of the control.
+	 *
+	 * The default value is SWT.DEFAULT.
+	 *
 	 */
-	public int height;
+	public int width = SWT.DEFAULT;
 	/**
-	 * width specifies the desired width in pixels
+	 * height specifies the preferred height in pixels. This value
+	 * is the hHint passed into Control#computeSize(int, int, boolean) 
+	 * to determine the preferred size of the control.
+	 *
+	 * The default value is SWT.DEFAULT.
+	 *
 	 */
-	public int width;
+	public int height = SWT.DEFAULT;
 	/**
 	 * left specifies the attachment of the left side of 
 	 * the control.
@@ -78,7 +88,6 @@ public final class FormData {
 	boolean isVisited, needed;
 	
 public FormData () {
-	this (SWT.DEFAULT, SWT.DEFAULT);
 }
 	
 public FormData (int width, int height) {
@@ -268,8 +277,8 @@ FormAttachment getTopAttachment (Control control, int spacing, boolean flushCach
 
 public String toString () {
  	String string = getName()+" {";
-	if (height != SWT.DEFAULT) string += "height="+height+" ";
  	if (width != SWT.DEFAULT) string += "width="+width+" ";
+	if (height != SWT.DEFAULT) string += "height="+height+" ";
  	if (left != null) string += "left="+left+" ";
  	if (right != null) string += "right="+right+" ";
  	if (top != null) string += "top="+top+" ";
