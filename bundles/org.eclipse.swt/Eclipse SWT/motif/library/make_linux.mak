@@ -18,7 +18,7 @@ DLL_VERSION=$(MAJOR_VER)$(MINOR_VER)
 #    QT_HOME    - identifier namespace package (used by KDE)
 IVE_HOME   = /bluebird/teamswt/swt-builddir/ive/bin
 MOTIF_HOME = /bluebird/teamswt/swt-builddir/motif21
-QT_HOME    = /usr/lib/qt-2.2.4
+QT_HOME    = /usr/lib/qt-2.3.0
 
 
 # Define the various DLL (shared) libraries to be made.
