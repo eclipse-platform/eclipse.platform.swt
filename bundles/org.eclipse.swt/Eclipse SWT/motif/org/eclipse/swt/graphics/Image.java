@@ -1051,7 +1051,7 @@ public static Image motif_new(Device device, int type, int pixmap, int mask) {
 static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, int display, int visual, int screenDepth, XColor[] xcolors, int[] transparentPixel, int drawable, int gc) {
 	PaletteData palette = image.palette;
 	if (!(((image.depth == 1 || image.depth == 2 || image.depth == 4 || image.depth == 8) && !palette.isDirect) ||
-		((image.depth == 16 || image.depth == 24) && palette.isDirect)))
+		((image.depth == 16 || image.depth == 24 || image.depth == 32) && palette.isDirect)))
 			return SWT.ERROR_UNSUPPORTED_DEPTH;
 
 	boolean flipX = destWidth < 0;
