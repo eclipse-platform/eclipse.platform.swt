@@ -35,6 +35,7 @@
 #include "prenv.h"
 #include "nsString.h"
 #include "nsEnumeratorUtils.h"
+#include "nsRect.h"
 #include "jni.h"
 
 extern "C" {
@@ -50,6 +51,7 @@ typedef NS_CALLBACK_(jint, P_OLE_FN_9S)(jint, jint, jint, jint, jint, jint, jint
 typedef NS_CALLBACK_(jint, P_OLE_FN_9) (jint, jint, jint, jint, jint, jint, jint, jint, jint);
 typedef NS_CALLBACK_(jint, P_OLE_FN_8) (jint, jint, jint, jint, jint, jint, jint, jint);
 typedef NS_CALLBACK_(jint, P_OLE_FN_7) (jint, jint, jint, jint, jint, jint, jint);
+typedef NS_CALLBACK_(jint, P_OLE_FN_6SSS) (jint, jint, jshort, jshort, jshort, jint);
 typedef NS_CALLBACK_(jint, P_OLE_FN_6) (jint, jint, jint, jint, jint, jint);
 typedef NS_CALLBACK_(jint, P_OLE_FN_5) (jint, jint, jint, jint, jint);
 typedef NS_CALLBACK_(jint, P_OLE_FN_4) (jint, jint, jint, jint);
@@ -61,6 +63,7 @@ typedef NS_CALLBACK_(jint, P_OLE_FN_2F)(jint, jfloat);
 typedef NS_CALLBACK_(jint, P_OLE_FN_2D)(jint, jdouble);
 typedef NS_CALLBACK_(jint, P_OLE_FN_2) (jint, jint);
 typedef NS_CALLBACK_(void, P_OLE_FNNORET_2)(jint, jint);
+typedef NS_CALLBACK_(void, P_OLE_FNNORET_3)(jint, jint, jint);
 typedef NS_CALLBACK_(jint, P_OLE_FN_1) (jint);
 typedef NS_CALLBACK_(jint, P_OLE_FN_0) (void);
 
@@ -185,6 +188,18 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(nsCString_1new)
 	(JNIEnv *env, jclass)
 {
 	return (jint)new nsCString();
+}
+
+JNIEXPORT void JNICALL XPCOM_NATIVE(nsRect_1delete)
+	(JNIEnv *, jclass, jint arg0)
+{
+	delete (nsRect*)arg0;
+}
+
+JNIEXPORT jint JNICALL XPCOM_NATIVE(nsRect_1new)
+	(JNIEnv *env, jclass, int arg0, int arg1, int arg2, int arg3)
+{
+	return (jint)new nsRect(arg0, arg1, arg2, arg3);
 }
 
 JNIEXPORT void JNICALL XPCOM_NATIVE(nsString_1delete)
@@ -554,12 +569,32 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III)
     return fn(ppVtbl, arg0); 
 }
 
-JNIEXPORT void JNICALL XPCOM_NATIVE(VtblCallNoRet)
+JNIEXPORT void JNICALL XPCOM_NATIVE(VtblCallNoRet__II)
 	(JNIEnv *env, jclass, jint fnNumber, jint ppVtbl, jint arg0)
 {
     P_OLE_FNNORET_2 fn = (P_OLE_FNNORET_2)(*(int **)ppVtbl)[fnNumber];
 
     fn(ppVtbl, arg0); 
+}
+
+JNIEXPORT void JNICALL XPCOM_NATIVE(VtblCallNoRet__III)
+	(JNIEnv *env, jclass, jint fnNumber, jint ppVtbl, jint arg0, jint arg1)
+{
+    P_OLE_FNNORET_3 fn = (P_OLE_FNNORET_3)(*(int **)ppVtbl)[fnNumber];
+
+    fn(ppVtbl, arg0, arg1); 
+}
+
+JNIEXPORT void JNICALL XPCOM_NATIVE(VtblCallNoRet__I_3I_3I)
+	(JNIEnv *env, jclass, jint fnNumber, jint ppVtbl, jintArray arg0, jintArray arg1)
+{
+	P_OLE_FNNORET_3 fn = (P_OLE_FNNORET_3)(*(int **)ppVtbl)[fnNumber];
+	jint *lparg0 = NULL, *lparg1 = NULL;
+	if (arg0) lparg0 = env->GetIntArrayElements(arg0, NULL);
+	if (arg1) lparg1 = env->GetIntArrayElements(arg1, NULL);
+    fn(ppVtbl, (jint)lparg0, (jint)lparg1);
+    if (arg0) env->ReleaseIntArrayElements(arg0, lparg0, 0);
+    if (arg1) env->ReleaseIntArrayElements(arg1, lparg1, 0);
 }
 
 JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3C)
@@ -2681,6 +2716,70 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3BLorg_eclipse_swt_internal_moz
 	if (arg1) setnsIDFields(env, arg1, lparg1);
 	if (arg2) env->ReleaseBooleanArrayElements(arg2, lparg2, 0);
 	return rc;
+}
+
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3I_3I)
+	(JNIEnv *env, jclass, jint fnNumber, jint ppVtbl, jint arg0, jintArray arg1, jintArray arg2)
+{
+	P_OLE_FN_4 fn = (P_OLE_FN_4)(*(int **)ppVtbl)[fnNumber];
+
+	jint *lparg1=NULL, *lparg2=NULL;
+	jint rc;
+	if (arg1) lparg1 = env->GetIntArrayElements(arg1, NULL);
+	if (arg2) lparg2 = env->GetIntArrayElements(arg2, NULL);
+	rc = fn(ppVtbl, arg0, (jint)lparg1, (jint)lparg2); 
+    if (arg1) env->ReleaseIntArrayElements(arg1, lparg1, 0);
+	if (arg2) env->ReleaseIntArrayElements(arg2, lparg2, 0);
+    return rc;
+}
+
+JNIEXPORT jint JNICALL JNICALL XPCOM_NATIVE(VtblCall__IISSS_3Z)
+	(JNIEnv *env, jclass, jint fnNumber, jint ppVtbl, jint arg0, jshort arg1, jshort arg2, jshort arg3, jbooleanArray arg4)
+{
+    P_OLE_FN_6SSS fn = (P_OLE_FN_6SSS)(*(int **)ppVtbl)[fnNumber];
+	jboolean *lparg4 = NULL;
+	jint rc;
+	if (arg4) lparg4 = env->GetBooleanArrayElements(arg4, NULL);
+	rc = fn(ppVtbl, arg0, arg1, arg2, arg3, (jint)lparg4);
+	if (arg4) env->ReleaseBooleanArrayElements(arg4, lparg4, 0);
+    return rc;
+}
+
+JNIEXPORT jint JNICALL JNICALL XPCOM_NATIVE(VtblCall__IZSSS_3Z)
+	(JNIEnv *env, jclass, jint fnNumber, jint ppVtbl, jboolean arg0, jshort arg1, jshort arg2, jshort arg3, jbooleanArray arg4)
+{
+    P_OLE_FN_6SSS fn = (P_OLE_FN_6SSS)(*(int **)ppVtbl)[fnNumber];
+	jboolean *lparg4 = NULL;
+	jint rc;
+	if (arg4) lparg4 = env->GetBooleanArrayElements(arg4, NULL);
+	rc = fn(ppVtbl, (jint)arg0, arg1, arg2, arg3, (jint)lparg4);
+	if (arg4) env->ReleaseBooleanArrayElements(arg4, lparg4, 0);
+    return rc;
+}
+
+JNIEXPORT jint JNICALL JNICALL XPCOM_NATIVE(VtblCall__IIIIIIIII)
+	(JNIEnv *env, jclass, jint fnNumber, jint ppVtbl, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6)
+{
+    P_OLE_FN_8 fn = (P_OLE_FN_8)(*(int **)ppVtbl)[fnNumber];
+
+  	jint rc = fn(ppVtbl, arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+
+    return rc;
+}
+
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIZI_3Z)
+	(JNIEnv *env, jclass, jint fnNumber, jint ppVtbl, jboolean arg0, jint arg1, jbooleanArray arg2)
+{
+    P_OLE_FN_4 fn = (P_OLE_FN_4)(*(int **)ppVtbl)[fnNumber];
+
+	jboolean *lparg2 = NULL;
+    if (arg2) lparg2 = env->GetBooleanArrayElements(arg2, NULL);
+
+	jint rc = fn(ppVtbl, (jint)arg0, arg1, (jint)lparg2); 
+
+	if (arg2) env->ReleaseBooleanArrayElements(arg2, lparg2, 0);
+
+    return rc;
 }
 
 JNIEXPORT jint JNICALL XPCOM_NATIVE(nsCRT_1strlen_1PRUnichar)
