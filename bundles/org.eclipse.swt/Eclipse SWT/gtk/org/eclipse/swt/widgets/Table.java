@@ -349,9 +349,9 @@ void createItem (TableColumn column, int index) {
 	if (columnCount == 0) {
 		column.handle = OS.gtk_tree_view_get_column (handle, 0);
 		column.modelIndex = FIRST_COLUMN;
+		createRenderers (column.handle, column.modelIndex, true, column.style);
 		column.customDraw = firstCustomDraw;
 		firstCustomDraw = false;
-		createRenderers (column.handle, column.modelIndex, true, column.style);
 	} else {
 		createColumn (column, index);
 	}
