@@ -36,4 +36,5 @@ public final class GCData {
 	public int layout;
 	public int clipRgn;
 	public int lineStyle = SWT.LINE_SOLID;
+	public boolean xorMode;
 }

@@ -765,11 +765,33 @@ public void drawString (String string, int x, int y) {
 public void drawString(String string, int x, int y, boolean isTransparent) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	//FIXME - need to avoid delimiter and tabs
+	//FIXME - need to avoid delimiter and tabs, background color
 	int layout = data.layout;
 	byte[] buffer = Converter.wcsToMbcs(null, string, false);
 	OS.pango_layout_set_text(layout, buffer, buffer.length);
-	OS.gdk_draw_layout(data.drawable, handle, x, y, layout);
+	if (!data.xorMode) {
+		OS.gdk_draw_layout(data.drawable, handle, x, y, layout);
+	} else {
+		int[] w = new int[1], h = new int[1];
+		OS.pango_layout_get_size(layout, w, h);
+		int width = OS.PANGO_PIXELS(w[0]);
+		int height = OS.PANGO_PIXELS(h[0]);
+		int pixmap = OS.gdk_pixmap_new(OS.GDK_ROOT_PARENT(), width, height, -1);
+		if (pixmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		int gdkGC = OS.gdk_gc_new(pixmap);
+		if (gdkGC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		GdkColor foreground = new GdkColor();
+		OS.gdk_gc_set_foreground(gdkGC, foreground);
+		OS.gdk_draw_rectangle(pixmap, gdkGC, 1, 0, 0, width, height);
+		GdkGCValues values = new GdkGCValues();
+		OS.gdk_gc_get_values(handle, values);
+		foreground.pixel = values.foreground_pixel;
+		OS.gdk_gc_set_foreground(gdkGC, foreground);
+		OS.gdk_draw_layout(pixmap, gdkGC, 0, 0, layout);
+		OS.g_object_unref(gdkGC);
+		OS.gdk_draw_drawable(data.drawable, handle, pixmap, 0, 0, x, y, width, height);
+		OS.g_object_unref(pixmap);
+	}
 }
 
 /** 
@@ -857,11 +879,33 @@ public void drawText(String string, int x, int y, boolean isTransparent) {
 public void drawText (String string, int x, int y, int flags) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	//FIXME - check flags
+	//FIXME - check flags, background color
 	int layout = data.layout;
 	byte[] buffer = Converter.wcsToMbcs(null, string, false);
 	OS.pango_layout_set_text(layout, buffer, buffer.length);
-	OS.gdk_draw_layout(data.drawable, handle, x, y, layout);
+	if (!data.xorMode) {
+		OS.gdk_draw_layout(data.drawable, handle, x, y, layout);
+	} else {
+		int[] w = new int[1], h = new int[1];
+		OS.pango_layout_get_size(layout, w, h);
+		int width = OS.PANGO_PIXELS(w[0]);
+		int height = OS.PANGO_PIXELS(h[0]);
+		int pixmap = OS.gdk_pixmap_new(OS.GDK_ROOT_PARENT(), width, height, -1);
+		if (pixmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		int gdkGC = OS.gdk_gc_new(pixmap);
+		if (gdkGC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		GdkColor foreground = new GdkColor();
+		OS.gdk_gc_set_foreground(gdkGC, foreground);
+		OS.gdk_draw_rectangle(pixmap, gdkGC, 1, 0, 0, width, height);
+		GdkGCValues values = new GdkGCValues();
+		OS.gdk_gc_get_values(handle, values);
+		foreground.pixel = values.foreground_pixel;
+		OS.gdk_gc_set_foreground(gdkGC, foreground);
+		OS.gdk_draw_layout(pixmap, gdkGC, 0, 0, layout);
+		OS.g_object_unref(gdkGC);
+		OS.gdk_draw_drawable(data.drawable, handle, pixmap, 0, 0, x, y, width, height);
+		OS.g_object_unref(pixmap);
+	}
 }
 
 /**
@@ -1744,6 +1788,7 @@ public void setLineWidth(int width) {
 public void setXORMode(boolean xor) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	OS.gdk_gc_set_function(handle, xor ? OS.GDK_XOR : OS.GDK_COPY);
+	data.xorMode = xor;
 }
 
 /**
@@ -1772,8 +1817,7 @@ public Point stringExtent(String string) {
 	int layout = data.layout;
 	byte[] buffer = Converter.wcsToMbcs(null, string, false);
 	OS.pango_layout_set_text(layout, buffer, buffer.length);
-	int[] width = new int[1];
-	int[] height = new int[1];
+	int[] width = new int[1], height = new int[1];
 	OS.pango_layout_get_size(layout, width, height);
 	return new Point(OS.PANGO_PIXELS(width[0]), OS.PANGO_PIXELS(height[0]));
 }
@@ -1839,8 +1883,7 @@ public Point textExtent(String string, int flags) {
 	int layout = data.layout;
 	byte[] buffer = Converter.wcsToMbcs(null, string, false);
 	OS.pango_layout_set_text(layout, buffer, buffer.length);
-	int[] width = new int[1];
-	int[] height = new int[1];
+	int[] width = new int[1], height = new int[1];
 	OS.pango_layout_get_size(layout, width, height);
 	return new Point(OS.PANGO_PIXELS(width[0]), OS.PANGO_PIXELS(height[0]));
 }

@@ -134,6 +134,10 @@ public class OS {
 //	public static final int Pt_FSR_CONFIRM_EXISTING  		= 0x100000;
 //	public static final int Pt_FSR_CENTER					= 0x200000;
 			
+
+	public static final int Pg_DrawModeS = 0xCC80;
+	public static final int Pg_DrawModeDSx = 0x6680;
+
 	public static final int Pt_ARG_BEVEL_WIDTH                                   = ( 1 * 1000 + 1 );
 	public static final int Pt_ARG_INLINE_COLOR                                  = ( 2 * 1000 + 23 );
 	public static final int Pt_ARG_OUTLINE_COLOR                                  = ( 2 * 1000 + 22 );
@@ -2645,6 +2649,7 @@ public static final native int PgFlush ();
 public static final native int PgSetFillColor (int color);
 public static final native int PgSetStrokeColor (int color);
 public static final native int PgSetTextColor (int color);
+public static final native int PgSetTextXORColor (int frgd, int bkgd);
 public static final native void PgSetFont (byte[] ff);
 public static final native int PgSetStrokeDash (byte[] DashList, int ListLen, int DashScale);
 public static final native int PgSetStrokeWidth (int width);

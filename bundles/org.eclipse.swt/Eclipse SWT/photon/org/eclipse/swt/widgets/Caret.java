@@ -97,7 +97,7 @@ boolean drawCaret () {
 	if (phGC == 0) return false;
 	int prevContext = OS.PgSetGC (phGC);
 	OS.PgSetRegion (OS.PtWidgetRid (handle));
-	OS.PgSetDrawMode (OS.Pg_DRAWMODE_XOR);
+	OS.PgSetDrawMode (OS.Pg_DrawModeDSx);
 	OS.PgSetFillColor (0xFFFFFF);
 	int nWidth = width, nHeight = height;
 	if (image != null) {

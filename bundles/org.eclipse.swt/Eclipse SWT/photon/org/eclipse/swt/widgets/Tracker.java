@@ -315,7 +315,7 @@ void drawRectangles (Rectangle [] rects) {
 	if (phGC == 0) return;
 	int prevContext = OS.PgSetGC (phGC);
 	OS.PgSetRegion (rid);
-	OS.PgSetDrawMode (OS.Pg_DRAWMODE_XOR);
+	OS.PgSetDrawMode (OS.Pg_DrawModeDSx);
 	OS.PgSetFillColor (0xffffff);
 	
 	int bandWidth = 0;

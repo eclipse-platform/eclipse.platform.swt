@@ -353,6 +353,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgSetTextColor
 	return (jint)PgSetTextColor(color);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_PgSetTextXORColor
+  (JNIEnv *env, jobject that, jint frgd, jint bkgd)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "PgSetTextXORColor\n");
+#endif
+	
+	PgSetTextXORColor(frgd, bkgd);
+}
+
 /*
  * Class:     org_eclipse_swt_internal_photon_OS
  * Method:    PgSetFont

@@ -155,7 +155,7 @@ void drawBand (int x, int y, int width, int height) {
 	int color = foreground ^ ~background;
 	int prevContext = OS.PgSetGC (phGC);
 	OS.PgSetRegion (OS.PtWidgetRid (parentHandle));
-	OS.PgSetDrawMode (OS.Pg_DRAWMODE_XOR);
+	OS.PgSetDrawMode (OS.Pg_DrawModeDSx);
 	OS.PgSetFillColor (color);
 	OS.PgDrawIRect (x, y, x + width - 1, y + height - 1, OS.Pg_DRAW_FILL);
 	OS.PgSetGC (prevContext);	
