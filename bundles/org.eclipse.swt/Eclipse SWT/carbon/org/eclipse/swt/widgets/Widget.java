@@ -26,8 +26,8 @@ public abstract class Widget {
 //	static final int MULTIEXPOSE	= 1 << 3;
 //	static final int RESIZEREDRAW	= 1 << 4;
 //	static final int WRAP			= 1 << 5;
-//	static final int DISABLED		= 1 << 6;
-//	static final int HIDDEN		= 1 << 7;
+	static final int DISABLED	= 1 << 6;
+	static final int HIDDEN		= 1 << 7;
 //	static final int FOREGROUND		= 1 << 8;
 //	static final int BACKGROUND		= 1 << 9;
 	static final int DISPOSED	= 1 << 10;

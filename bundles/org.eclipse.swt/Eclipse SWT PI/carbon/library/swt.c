@@ -3109,6 +3109,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewGetViewForM
 }
 #endif /* NO_HIViewGetViewForMouseEvent */
 
+#ifndef NO_HIViewIsVisible
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewIsVisible
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("HIViewIsVisible\n")
+
+	return (jboolean) HIViewIsVisible((HIViewRef)arg0);
+}
+#endif /* NO_HIViewIsVisible */
+
 #ifndef NO_HIViewRemoveFromSuperview
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewRemoveFromSuperview
 	(JNIEnv *env, jclass that, jint arg0)

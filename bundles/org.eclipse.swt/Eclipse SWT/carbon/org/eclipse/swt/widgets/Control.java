@@ -208,7 +208,7 @@ public Display getDisplay () {
 
 public boolean getEnabled () {
 	checkWidget();
-	return OS.IsControlEnabled (handle);
+	return (state & DISABLED) == 0;
 }
 
 public Font getFont () {
@@ -275,7 +275,7 @@ public String getToolTipText () {
 
 public boolean getVisible () {
 	checkWidget();
-	return OS.IsControlVisible (handle);
+	return (state & HIDDEN) == 0;
 }
 
 boolean hasFocus () {
@@ -326,7 +326,7 @@ boolean isTabItem () {
 
 public boolean isVisible () {
 	checkWidget();
-	return false;
+	return OS.HIViewIsVisible (handle);
 }
 
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
@@ -640,6 +640,15 @@ public void setCursor (Cursor cursor) {
 
 public void setEnabled (boolean enabled) {
 	checkWidget();
+	if (enabled) {
+		if ((state & DISABLED) == 0) return;
+		state &= ~DISABLED;
+		OS.EnableControl(handle);
+	} else {
+		if ((state & DISABLED) != 0) return;
+		state |= DISABLED;
+		OS.DisableControl(handle);
+	}
 }
 
 public boolean setFocus () {
@@ -720,6 +729,15 @@ public void setToolTipText (String string) {
 
 public void setVisible (boolean visible) {
 	checkWidget();
+	if (visible) {
+		if ((state & HIDDEN) == 0) return;
+		state &= ~HIDDEN;
+	} else {
+		if ((state & HIDDEN) != 0) return;
+		state |= HIDDEN;
+	}
+	OS.HIViewSetVisible (handle, visible);
+	sendEvent (visible ? SWT.Show : SWT.Hide);
 }
 
 public Point toControl (Point point) {
