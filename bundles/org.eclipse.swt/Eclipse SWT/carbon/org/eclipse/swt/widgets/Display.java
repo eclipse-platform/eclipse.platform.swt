@@ -2902,9 +2902,13 @@ boolean runGrabs () {
 			int handle = grabControl.handle;
 			int window = OS.GetControlOwner (handle);
 			int port = OS.GetWindowPort (window);
-			OS.TrackMouseLocationWithOptions (port, OS.kTrackMouseLocationOptionDontConsumeMouseUp, OS.kEventDurationForever, outPt, outModifiers, outResult);
+			OS.TrackMouseLocationWithOptions (port, OS.kTrackMouseLocationOptionDontConsumeMouseUp, 50 / 1000.0, outPt, outModifiers, outResult);
 			int type = 0, button = 0;
 			switch ((int) outResult [0]) {
+				case OS.kMouseTrackingTimedOut: {
+					runAsyncMessages ();
+					break;
+				}
 				case OS.kMouseTrackingMouseDown: {
 					type = SWT.MouseDown;
 					int newState = OS.GetCurrentEventButtonState ();
@@ -2929,14 +2933,14 @@ boolean runGrabs () {
 					break;
 				}
 				case OS.kMouseTrackingMouseKeyModifiersChanged:	break;
-				case OS.kMouseTrackingUserCancelled:			break;
-				case OS.kMouseTrackingTimedOut: 				break;
+				case OS.kMouseTrackingUserCancelled:	 break;
 				case OS.kMouseTrackingMouseMoved: {
 					type = SWT.MouseMove;
 					break;
 				}
 			}
-			runEnterExit ();
+			boolean events = type != 0;
+			events |= runEnterExit ();
 			if (type != 0) {
 				OS.GetControlBounds (handle, rect);
 				int x = outPt.h - rect.left;
@@ -2950,6 +2954,7 @@ boolean runGrabs () {
 					}
 				}
 			}
+			if (events) runDeferredEvents ();
 		}
 	} finally {
 		grabbing = false;
