@@ -57,6 +57,7 @@ static String getFunctionName(Method method) {
 }
 
 static String getFunctionName(Method method, Class[] paramTypes) {
+	if ((method.getModifiers() & Modifier.NATIVE) == 0) return method.getName();
 	String function = toC(method.getName());
 	if (!isNativeUnique(method)) {
 		StringBuffer buffer = new StringBuffer();
@@ -175,6 +176,7 @@ static HashMap uniqueCache = new HashMap();
 static Class uniqueClassCache;
 static Method[] uniqueMethodsCache;
 static synchronized boolean isNativeUnique(Method method) {
+	if ((method.getModifiers() & Modifier.NATIVE) == 0) return false;
 	Object unique = uniqueCache.get(method);
 	if (unique != null) return ((Boolean)unique).booleanValue();
 	boolean result = true;
@@ -184,8 +186,9 @@ static synchronized boolean isNativeUnique(Method method) {
 	if (clazz.equals(uniqueClassCache)) {
 		methods = uniqueMethodsCache;
 	} else {
+		methods = clazz.getDeclaredMethods();
 		uniqueClassCache = clazz;
-		uniqueMethodsCache = methods = clazz.getDeclaredMethods();
+		uniqueMethodsCache = methods;
 	}
 	for (int i = 0; i < methods.length; i++) {
 		Method mth = methods[i];
