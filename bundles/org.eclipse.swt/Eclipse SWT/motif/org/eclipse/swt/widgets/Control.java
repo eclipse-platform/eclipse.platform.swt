@@ -644,7 +644,7 @@ int getFontAscent () {
 }
 
 int getFontHeight () {
-	
+
 	/* Create a font context to iterate over each element in the font list */
 	int [] buffer = new int [1];
 	if (!OS.XmFontListInitFontContext (buffer, fontList)) {
