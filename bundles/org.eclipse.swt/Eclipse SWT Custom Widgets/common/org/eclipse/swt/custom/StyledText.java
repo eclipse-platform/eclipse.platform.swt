@@ -1030,7 +1030,7 @@ public class StyledText extends Canvas {
 			if (event != null) {
 				styles = renderer.filterLineStyles(event.styles);
 			}
-			width = renderer.textWidth(line, lineOffset, 0, line.length(), styles, 0, gc, currentFont);
+			width = renderer.getTextWidth(line, lineOffset, 0, line.length(), styles, 0, gc, currentFont);
 		}
 		return width + leftMargin;
 	}
@@ -1637,31 +1637,6 @@ public void append(String string) {
 	}
 	int lastChar = Math.max(getCharCount(), 0);
 	replaceTextRange(lastChar, 0, string);
-}
-/**
- * Returns the width of the specified text. 
- * </p>
- *
- * @param text text to be measured.
- * @param startOffset offset of the character to start measuring.
- * @param length number of characters to measure. Tabs are counted 
- * 	as one character in this parameter.
- * @param startXOffset x position of "startOffset" in "text". Used for
- * 	calculating tab stops
- * @param bidi the bidi object to use for measuring text in bidi locales. 
- * @return width of the text with tabs expanded to tab stops or 0 if the 
- * 	startOffset or length is outside the specified text.
- */
-int bidiTextWidth(String text, int startOffset, int length, int startXOffset, StyledTextBidi bidi) {
-	int endOffset = startOffset + length;
-	int textLength = text.length();
-	
-	if (startOffset < 0 || startOffset >= textLength || endOffset > textLength) {
-		return 0;
-	}
-	// Use lastCaretDirection in order to get same results as during
-	// caret positioning (setBidiCaretLocation). Fixes 1GKU4C5.
-	return bidi.getCaretPosition(endOffset, lastCaretDirection) - startXOffset;
 }
 /**
  * Calculates the width of the widest visible line.
@@ -2295,7 +2270,7 @@ void doColumnLeft() {
 				}
 				// end of R2L segment reached (visual left side)?
 				if (bidi.isRightToLeft(caretOffset - lineOffset) == false) {
-					if (bidi.getCaretPosition(caretOffset - lineOffset) < horizontalScrollOffset) {
+					if (bidi.getTextPosition(caretOffset - lineOffset) < horizontalScrollOffset) {
 						// make beginning of R2L segment visible before going 
 						// left, to L2R segment important if R2L segment ends 
 						// at visual left in order to scroll all the way to the
@@ -2313,7 +2288,7 @@ void doColumnLeft() {
 			}
 			else
 			if (offsetInLine == lineLength && 
-				bidi.getCaretPosition(lineLength) != XINSET) {
+				bidi.getTextPosition(lineLength) != XINSET) {
 				// at logical line end in R2L segment but there's more text (a
 				// L2R segment) go to end of R2L segment (visually left of next
 				// L2R segment)/end of line
@@ -2342,7 +2317,7 @@ void doColumnLeft() {
 				}
 			}
 			// if new caret position is to the left of the client area
-			if (bidi.getCaretPosition(caretOffset - lineOffset) < horizontalScrollOffset) {
+			if (bidi.getTextPosition(caretOffset - lineOffset) < horizontalScrollOffset) {
 				// scroll to the caret position
 				showCaret();
 			}
@@ -2422,7 +2397,7 @@ void doColumnRight() {
 				}
 			}
 			else
-			if (offsetInLine == 0 && bidi.getCaretPosition(0) != bidi.getTextWidth()) {
+			if (offsetInLine == 0 && bidi.getTextPosition(0) != bidi.getTextWidth()) {
 				// at logical line start in R2L segment but there's more text (a L2R
 				// segment) go to end of R2L segment (visually left of next L2R
 				// segment)/end of line
@@ -2434,7 +2409,7 @@ void doColumnRight() {
 			}
 			offsetInLine = caretOffset - lineOffset;
 			// if new caret position is to the right of the client area
-			if (bidi.getCaretPosition(offsetInLine) >= horizontalScrollOffset) {
+			if (bidi.getTextPosition(offsetInLine) >= horizontalScrollOffset) {
 				// scroll to the caret position
 				showCaret();
 			}
@@ -2452,8 +2427,8 @@ void doColumnRight() {
 				// but visual line end is not left of right border
 				if (directionChange && 
 					bidi.isRightToLeft(offsetInLine + 1) &&
-					bidi.getCaretPosition(offsetInLine + 1) + leftMargin < clientAreaEnd && 
-					bidi.getCaretPosition(lineLength) + leftMargin < clientAreaEnd && textWidth > clientAreaEnd) {
+					bidi.getTextPosition(offsetInLine + 1) + leftMargin < clientAreaEnd && 
+					bidi.getTextPosition(lineLength) + leftMargin < clientAreaEnd && textWidth > clientAreaEnd) {
 					// make visual line end visible
 					scrollHorizontalBar(textWidth - clientAreaEnd);
 				}
@@ -3138,6 +3113,26 @@ int getBidiOffsetAtMouseLocation(int x, int line) {
 	
 	return lineOffset + offsetInLine;
 }
+/**
+ * Returns the x position of the character at the specified offset 
+ * relative to the first character in the line.
+ * </p>
+ *
+ * @param text text to be measured.
+ * @param endOffset offset of the character
+ * @param bidi the bidi object to use for measuring text in bidi
+ *	locales. 
+ * @return x position of the character at the specified offset. 
+ * 	0 if the length is outside the specified text.
+ */
+int getBidiTextPosition(String text, int endOffset, StyledTextBidi bidi) {
+	if (endOffset > text.length()) {
+		return 0;
+	}
+	// Use lastCaretDirection in order to get same results as during
+	// caret positioning (setBidiCaretLocation). Fixes 1GKU4C5.
+	return bidi.getTextPosition(endOffset, lastCaretDirection);
+}
 /** 
  * Returns the index of the last fully visible line.
  * <p>
@@ -3220,8 +3215,8 @@ int getCaretOffsetAtX(String line, int lineOffset, int lineXOffset) {
 	int high = line.length();
 	while (high - low > 1) {
 		offset = (high + low) / 2;
-		int x = renderer.textWidth(line, lineOffset, 0, offset, styles, 0, gc, currentFont) + leftMargin;
-		int charWidth = renderer.textWidth(line, lineOffset, 0, offset + 1, styles, 0, gc, currentFont) + leftMargin - x;
+		int x = renderer.getTextPosition(line, lineOffset, offset, styles, gc, currentFont) + leftMargin;
+		int charWidth = renderer.getTextPosition(line, lineOffset, offset + 1, styles, gc, currentFont) + leftMargin - x;
 		if (lineXOffset <= x + charWidth / 2) {
 			high = offset;			
 		}
@@ -3744,7 +3739,7 @@ int getOffsetAtX(String line, int lineOffset, int lineXOffset) {
 			offset = (high + low) / 2;
 			// Restrict right/high search boundary only if x is within searched text segment.
 			// Fixes 1GL4ZVE.			
-			if (lineXOffset < renderer.textWidth(line, lineOffset, 0, offset + 1, styles, 0, gc, currentFont)) {
+			if (lineXOffset < renderer.getTextPosition(line, lineOffset, offset + 1, styles, gc, currentFont)) {
 				high = offset;			
 			}
 			else 
@@ -4148,6 +4143,43 @@ public int getTextLimit() {
 	return textLimit;
 }
 /**
+ * Returns the x position of the character at the specified offset 
+ * relative to the first character in the line.
+ * Expands tabs to tab stops using the widget tab width.
+ * <p>
+ *
+ * @param line line to be measured.
+ * @param lineIndex index of the line relative to the first kine of the 
+ * 	document
+ * @param length number of characters to measure. Tabs are counted 
+ * 	as one character in this parameter.
+ * @param gc GC to use for measuring text
+ * @return x position of the character at the specified offset 
+ * 	with tabs expanded to tab stops. 0 if the length is outside the 
+ * 	specified text.
+ */
+int getTextPosition(String line, int lineIndex, int length, GC gc) {
+	int lineOffset = content.getOffsetAtLine(lineIndex);
+	int lineLength = line.length();
+	int width;
+	if (lineLength == 0 || length > lineLength) {
+		return 0;
+	}	
+	if (isBidi()) {
+		StyledTextBidi bidi = getStyledTextBidi(line, lineOffset, gc, null);
+		width = getBidiTextPosition(line, length, bidi);
+	}
+	else {
+		StyledTextEvent event = renderer.getLineStyleData(lineOffset, line);
+		StyleRange[] styles = null;
+		if (event != null) {
+			styles = renderer.filterLineStyles(event.styles);
+		}
+		width = renderer.getTextPosition(line, lineOffset, length, styles, gc, gc.getFont().getFontData()[0]);
+	}
+	return width;
+}
+/**
  * Gets the top index.  The top index is the index of the fully visible line that
  * is currently at the top of the widget.  The top index changes when the widget 
  * is scrolled. Indexing is zero based.
@@ -4364,7 +4396,7 @@ int getXAtOffset(String line, int lineIndex, int lineOffset) {
 	}
 	else {
 		GC gc = new GC(this);		
-		x = textWidth(line, lineIndex, Math.min(line.length(), lineOffset), gc) + leftMargin;
+		x = getTextPosition(line, lineIndex, Math.min(line.length(), lineOffset), gc) + leftMargin;
 		gc.dispose();
 		if (lineOffset > line.length()) {
 			// offset is not on the line. return an x location one character 
@@ -6205,7 +6237,7 @@ void showBidiCaret() {
 	GC gc = new GC(this);
 	StyledTextBidi bidi = getStyledTextBidi(lineText, lineOffset, gc);
 	// getXAtOffset, inlined for better performance
-	xAtOffset = bidiTextWidth(lineText, 0, offsetInLine, 0, bidi) + leftMargin;
+	xAtOffset = getBidiTextPosition(lineText, offsetInLine, bidi) + leftMargin;
 	if (offsetInLine > lineText.length()) {
 		// offset is not on the line. return an x location one character 
 		// after the line to indicate the line delimiter.
@@ -6273,9 +6305,9 @@ void setBidiCaretLocation(StyledTextBidi bidi) {
 			bidi = getStyledTextBidi(lineText, lineStartOffset, gc);
 		}		
 		if (lastCaretDirection == SWT.NULL) {
-			caretX = bidi.getCaretPosition(offsetInLine) + leftMargin;
+			caretX = bidi.getTextPosition(offsetInLine) + leftMargin;
 		} else {
-			caretX = bidi.getCaretPosition(offsetInLine, lastCaretDirection) + leftMargin;
+			caretX = bidi.getTextPosition(offsetInLine, lastCaretDirection) + leftMargin;
 		}
 		caretX = caretX - horizontalScrollOffset;
 		if (StyledTextBidi.getKeyboardLanguageDirection() == SWT.RIGHT) {
@@ -7347,41 +7379,6 @@ public void showSelection() {
 	checkWidget();
 	showOffset(selection.x);
 	showOffset(selection.y);
-}
-/**
- * Returns the width of the specified text. Expand tabs to tab stops using
- * the widget tab width.
- * <p>
- *
- * @param line line to be measured.
- * @param lineIndex	index of the line relative to the first kine of the 
- * 	document
- * @param length number of characters to measure. Tabs are counted 
- * 	as one character in this parameter.
- * @param gc GC to use for measuring text
- * @return width of the text with tabs expanded to tab stops or 0 if the 
- * 	length is beyond the text length.
- */
-int textWidth(String line, int lineIndex, int length, GC gc) {
-	int lineOffset = content.getOffsetAtLine(lineIndex);
-	int lineLength = line.length();
-	int width;
-	if (lineLength == 0 || length > lineLength) {
-		return 0;
-	}	
-	if (isBidi()) {
-		StyledTextBidi bidi = getStyledTextBidi(line, lineOffset, gc, null);
-		width = bidiTextWidth(line, 0, length, 0, bidi);
-	}
-	else {
-		StyledTextEvent event = renderer.getLineStyleData(lineOffset, line);
-		StyleRange[] styles = null;
-		if (event != null) {
-			styles = renderer.filterLineStyles(event.styles);
-		}
-		width = renderer.textWidth(line, lineOffset, 0, length, styles, 0, gc, gc.getFont().getFontData()[0]);
-	}
-	return width;
 }
 /**
  * Updates the caret direction when a delete operation occured based on 

@@ -79,10 +79,10 @@ protected void drawLineSelectionBackground(String line, int lineOffset, StyleRan
 		return;
 	}
 	if (bidi != null) {
-		paintX = parent.bidiTextWidth(line, 0, selectionStart, 0, bidi);
+		paintX = parent.getBidiTextPosition(line, selectionStart, bidi);
 	}
 	else {
-		paintX = textWidth(line, lineOffset, 0, selectionStart, filterLineStyles(styles), 0, gc, currentFont);
+		paintX = getTextPosition(line, lineOffset, selectionStart, filterLineStyles(styles), gc, currentFont);
 	}
 	// selection extends past end of line?
 	if (selectionEnd > lineLength) {
@@ -112,10 +112,10 @@ protected void drawLineSelectionBackground(String line, int lineOffset, StyleRan
 			}
 		}
 		if (bidi != null) {
-			selectionBackgroundWidth = parent.bidiTextWidth(line, selectionStart, selectionLength, paintX, bidi);
+			selectionBackgroundWidth = parent.getBidiTextPosition(line, selectionStart + selectionLength, bidi) - paintX;
 		}
 		else {
-			selectionBackgroundWidth = textWidth(line, lineOffset, selectionStart, selectionLength, styles, paintX, gc, currentFont);
+			selectionBackgroundWidth = getTextWidth(line, lineOffset, selectionStart, selectionLength, styles, paintX, gc, currentFont);
 		}
 		if (selectionBackgroundWidth < 0) {
 			// width can be negative when in R2L bidi segment

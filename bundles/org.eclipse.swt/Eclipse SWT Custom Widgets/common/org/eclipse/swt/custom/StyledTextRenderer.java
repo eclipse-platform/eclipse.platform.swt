@@ -228,7 +228,7 @@ private void drawStyledLine(String line, int lineOffset, int renderOffset, Style
 				bidi.fillBackground(renderOffset, styleLineLength, leftMargin - horizontalScrollOffset, paintY, lineHeight);
 			}
 			else {
-				int fillWidth = textWidth(line, lineOffset, renderOffset, styleLineLength, filteredStyles, paintX, gc, currentFont);
+				int fillWidth = getTextWidth(line, lineOffset, renderOffset, styleLineLength, filteredStyles, paintX, gc, currentFont);
 				gc.fillRectangle(paintX - horizontalScrollOffset + leftMargin, paintY, fillWidth, lineHeight);
 			}
 		}
@@ -587,6 +587,56 @@ StyledTextBidi getStyledTextBidi(String lineText, int lineOffset, GC gc, StyleRa
 	return new StyledTextBidi(gc, tabWidth, lineText, fontStyles, boldFont, getBidiSegments(lineOffset, lineText));
 }	
 /**
+ * Returns the width of the specified text segment. 
+ * Expands tabs to tab stops using the widget tab width.
+ * </p>
+ *
+ * @param text text to measure
+ * @param textStartOffset offset of the first character in text relative 
+ * 	to the first character in the document
+ * @param lineStyles styles of the line
+ * @param paintX x location to start drawing at
+ * @param gc GC to measure with
+ * @param fontData the font data of the font currently set in gc
+ * @return the width of the specified text segment.
+ */
+private int getStyledTextWidth(String text, int textStartOffset, StyleRange[] lineStyles, int paintX, GC gc, FontData fontData) {
+	String textSegment;
+	int textLength = text.length();
+	int textIndex = 0;
+
+	for (int styleIndex = 0; styleIndex < lineStyles.length; styleIndex++) {
+		StyleRange style = lineStyles[styleIndex];
+		int textEnd;
+		int styleSegmentStart = style.start - textStartOffset;
+		if (styleSegmentStart + style.length < 0) {
+			continue;
+		}
+		if (styleSegmentStart >= textLength) {
+			break;
+		}
+		// is there a style for the current string position?
+		if (textIndex < styleSegmentStart) {
+			setLineFont(gc, fontData, SWT.NORMAL);
+			textSegment = text.substring(textIndex, styleSegmentStart);
+			paintX += gc.stringExtent(textSegment).x;
+			textIndex = styleSegmentStart;
+		}
+		textEnd = Math.min(textLength, styleSegmentStart + style.length);
+		setLineFont(gc, fontData, style.fontStyle);
+		textSegment = text.substring(textIndex, textEnd);
+		paintX += gc.stringExtent(textSegment).x;
+		textIndex = textEnd;
+	}
+	// is there unmeasured and unstyled text?
+	if (textIndex < textLength) {
+		setLineFont(gc, fontData, SWT.NORMAL);
+		textSegment = text.substring(textIndex, textLength);
+		paintX += gc.stringExtent(textSegment).x;
+	}
+	return paintX;
+}
+/**
  * Returns the next tab stop for the specified x location.
  * </p>
  *
@@ -604,6 +654,81 @@ private int getTabStop(int x) {
 	x += tabWidth;
 	x -= x % tabWidth;
 	return x;
+}
+/**
+ * Returns the x position of the character at the specified offset 
+ * relative to the first character in the line.
+ * Expands tabs to tab stops using the widget tab width.
+ * </p>
+ *
+ * @param text text to be measured.
+ * @param lineOffset offset of the first character in the line. 
+ * @param length number of characters to measure. Tabs are counted 
+ * 	as one character in this parameter.
+ * @param styles line styles
+ * @param gc GC to use for measuring text
+ * @param fontData the font currently set in gc. Cached for better 
+ * 	performance.
+ * @return x position of the character at the specified offset 
+ * 	with tabs expanded to tab stops. 0 if the length is outside the 
+ * 	specified text.
+ */
+int getTextPosition(String text, int lineOffset, int length, StyleRange[] lineStyles, GC gc, FontData fontData) {
+	return getTextWidth(text, lineOffset, 0, length, lineStyles, 0, gc, fontData);
+}
+/**
+ * Returns the width of the specified text range. Expand tabs to tab stops using
+ * the widget tab width.
+ * </p>
+ *
+ * @param text text to be measured.
+ * @param lineOffset offset of the first character in the line. 
+ * @param startOffset offset of the character to start measuring and 
+ * 	expand tabs.
+ * @param length number of characters to measure. Tabs are counted 
+ * 	as one character in this parameter.
+ * @param styles line styles
+ * @param startXOffset x position of "startOffset" in "text". Used for
+ * 	calculating tab stops
+ * @param gc GC to use for measuring text
+ * @param fontData the font currently set in gc. Cached for better performance.
+ * @return width of the text range with tabs expanded to tab stops or 0 if the 
+ * 	startOffset or length is outside the specified text.
+ */
+int getTextWidth(String text, int lineOffset, int startOffset, int length, StyleRange[] lineStyles, int startXOffset, GC gc, FontData fontData) {
+	int paintX = 0;
+	int endOffset = startOffset + length;
+	int textLength = text.length();
+	
+	if (startOffset < 0 || startOffset >= textLength || endOffset > textLength) {
+		return paintX;
+	}
+	for (int i = startOffset; i < endOffset; i++) {
+		int tabIndex = text.indexOf(StyledText.TAB, i);
+		// is tab not present or past the rendering range?
+		if (tabIndex == -1 || tabIndex > endOffset) {
+			tabIndex = endOffset;
+		}
+		if (tabIndex != i) {
+			String tabSegment = text.substring(i, tabIndex);
+			if (lineStyles != null) {
+				paintX = getStyledTextWidth(tabSegment, lineOffset + i, lineStyles, paintX, gc, fontData);
+			}
+			else {
+				setLineFont(gc, fontData, SWT.NORMAL);
+				paintX += gc.stringExtent(tabSegment).x;
+			}
+			if (tabIndex != endOffset && tabWidth > 0) {
+				paintX = getTabStop(startXOffset + paintX) - startXOffset;
+			}
+			i = tabIndex;
+		}
+		else 		
+		if (tabWidth > 0) {
+			paintX = getTabStop(startXOffset + paintX) - startXOffset;
+		}
+	}
+	return paintX;
 }
 /**
  * Returns styles for the specified visual (wrapped) line.
@@ -728,110 +853,5 @@ void setTabLength(int tabLength) {
 	}
 	tabWidth = gc.stringExtent(tabBuffer.toString()).x;
 	disposeGC(gc);
-}
-/**
- * Measures the text as rendered at the specified location. Expand tabs to tab stops using
- * the widget tab width.
- * </p>
- *
- * @param text text to draw 
- * @param textStartOffset offset of the first character in text relative 
- * 	to the first character in the document
- * @param lineStyles styles of the line
- * @param paintX x location to start drawing at
- * @param gc GC to draw on
- * @param fontData the font data of the font currently set in gc
- * @return x location where drawing stopped or 0 if the startOffset or 
- * 	length is outside the specified text.
- */
-private int styledTextWidth(String text, int textStartOffset, StyleRange[] lineStyles, int paintX, GC gc, FontData fontData) {
-	String textSegment;
-	int textLength = text.length();
-	int textIndex = 0;
-
-	for (int styleIndex = 0; styleIndex < lineStyles.length; styleIndex++) {
-		StyleRange style = lineStyles[styleIndex];
-		int textEnd;
-		int styleSegmentStart = style.start - textStartOffset;
-		if (styleSegmentStart + style.length < 0) {
-			continue;
-		}
-		if (styleSegmentStart >= textLength) {
-			break;
-		}
-		// is there a style for the current string position?
-		if (textIndex < styleSegmentStart) {
-			setLineFont(gc, fontData, SWT.NORMAL);
-			textSegment = text.substring(textIndex, styleSegmentStart);
-			paintX += gc.stringExtent(textSegment).x;
-			textIndex = styleSegmentStart;
-		}
-		textEnd = Math.min(textLength, styleSegmentStart + style.length);
-		setLineFont(gc, fontData, style.fontStyle);
-		textSegment = text.substring(textIndex, textEnd);
-		paintX += gc.stringExtent(textSegment).x;
-		textIndex = textEnd;
-	}
-	// is there unmeasured and unstyled text?
-	if (textIndex < textLength) {
-		setLineFont(gc, fontData, SWT.NORMAL);
-		textSegment = text.substring(textIndex, textLength);
-		paintX += gc.stringExtent(textSegment).x;
-	}
-	return paintX;
-}
-/**
- * Returns the width of the specified text. Expand tabs to tab stops using
- * the widget tab width.
- * </p>
- *
- * @param text text to be measured.
- * @param lineOffset offset of the first character in the line. 
- * @param startOffset offset of the character to start measuring and 
- * 	expand tabs.
- * @param length number of characters to measure. Tabs are counted 
- * 	as one character in this parameter.
- * @param styles line styles
- * @param startXOffset x position of "startOffset" in "text". Used for
- * 	calculating tab stops
- * @param gc GC to use for measuring text
- * @param fontData the font currently set in gc. Cached for better performance.
- * @return width of the text with tabs expanded to tab stops or 0 if the 
- * 	startOffset or length is outside the specified text.
- */
-int textWidth(String text, int lineOffset, int startOffset, int length, StyleRange[] lineStyles, int startXOffset, GC gc, FontData fontData) {
-	int paintX = 0;
-	int endOffset = startOffset + length;
-	int textLength = text.length();
-	
-	if (startOffset < 0 || startOffset >= textLength || endOffset > textLength) {
-		return paintX;
-	}
-	for (int i = startOffset; i < endOffset; i++) {
-		int tabIndex = text.indexOf(StyledText.TAB, i);
-		// is tab not present or past the rendering range?
-		if (tabIndex == -1 || tabIndex > endOffset) {
-			tabIndex = endOffset;
-		}
-		if (tabIndex != i) {
-			String tabSegment = text.substring(i, tabIndex);
-			if (lineStyles != null) {
-				paintX = styledTextWidth(tabSegment, lineOffset + i, lineStyles, paintX, gc, fontData);
-			}
-			else {
-				setLineFont(gc, fontData, SWT.NORMAL);
-				paintX += gc.stringExtent(tabSegment).x;
-			}
-			if (tabIndex != endOffset && tabWidth > 0) {
-				paintX = getTabStop(startXOffset + paintX) - startXOffset;
-			}
-			i = tabIndex;
-		}
-		else 		
-		if (tabWidth > 0) {
-			paintX = getTabStop(startXOffset + paintX) - startXOffset;
-		}
-	}
-	return paintX;
 }
 }

@@ -393,32 +393,32 @@ int[] getCaretOffsetAndDirectionAtX(int x) {
 	return new int[] {offset, direction};		
 }
 /**
- * Returns the caret position at the specified offset in the line.
+ * Returns the x position at the specified offset in the line.
  * <p>
  * @param logicalOffset offset of the character in the line
- * @return the caret position at the specified offset in the line.
+ * @return the x position at the specified offset in the line.
  */
-int getCaretPosition(int logicalOffset) {
-	return getCaretPosition(logicalOffset, ST.COLUMN_NEXT);
+int getTextPosition(int logicalOffset) {
+	return getTextPosition(logicalOffset, ST.COLUMN_NEXT);
 }
 /**
- * Returns the caret position at the specified offset in the line.
- * The direction parameter is used to determine the caret position 
+ * Returns the x position at the specified offset in the line.
+ * The direction parameter is used to determine the position 
  * at direction boundaries.  If the logical offset is between a R2L 
  * and a L2R segment, pressing cursor left in the L2R segment places
- * the cursor in front of the first character of the L2R segment; whereas
- * pressing cursor right in the R2L segment places the cursor behind 
- * the last character of the R2L segment. However, both caret positions
+ * the position in front of the first character of the L2R segment; whereas
+ * pressing cursor right in the R2L segment places the position behind 
+ * the last character of the R2L segment. However, both x positions
  * are at the same logical offset.
  * <p>
  * 
  * @param logicalOffset offset of the character in the line
  * @param direction direction the caret moved to the specified location.
  * 	 either ST.COLUMN_NEXT (right cursor key) or ST.COLUMN_PREVIOUS (left cursor key) .
- * @return the caret position at the specified offset in the line, 
+ * @return the x position at the specified offset in the line, 
  * 	taking the direction into account as described above.
  */
-int getCaretPosition(int logicalOffset, int direction) {
+int getTextPosition(int logicalOffset, int direction) {
 	int caretX;
 	
 	if (getTextLength() == 0 || logicalOffset < 0) {
