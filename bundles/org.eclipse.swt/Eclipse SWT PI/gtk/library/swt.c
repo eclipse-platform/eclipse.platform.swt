@@ -240,6 +240,26 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1WIDGET_1X
 }
 #endif
 
+#ifndef NO_GTK_1ENTRY_1IM_1CONTEXT
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1ENTRY_1IM_1CONTEXT
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GTK_1ENTRY_1IM_1CONTEXT\n")
+
+	return (jint)((GtkEntry *)arg0)->im_context;
+}
+#endif
+
+#ifndef NO_GTK_1TEXTVIEW_1IM_1CONTEXT
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1TEXTVIEW_1IM_1CONTEXT
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GTK_1TEXTVIEW_1IM_1CONTEXT\n")
+
+	return (jint)((GtkTextView *)arg0)->im_context;
+}
+#endif
+
 #ifndef NO_GTK_1WIDGET_1Y
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1WIDGET_1Y
 	(JNIEnv *env, jclass that, jint arg0)
@@ -2844,6 +2864,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1get_1current_1e
 }
 #endif
 
+#ifndef NO_gtk_1get_1default_1language
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1get_1default_1language
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("gtk_1get_1default_1language\n")
+
+	return (jint)gtk_get_default_language();
+}
+#endif
+
 #ifndef NO_gtk_1grab_1get_1current
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1grab_1get_1current
 	(JNIEnv *env, jclass that)
@@ -2931,6 +2961,36 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1im_1context_1fo
 	DEBUG_CALL("gtk_1im_1context_1focus_1out\n")
 
 	gtk_im_context_focus_out((GtkIMContext *)arg0);
+}
+#endif
+
+#ifndef NO_gtk_1im_1context_1get_1preedit_1string
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1im_1context_1get_1preedit_1string
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2, jintArray arg3)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+
+	DEBUG_CALL("gtk_1im_1context_1get_1preedit_1string\n")
+
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	gtk_im_context_get_preedit_string((GtkIMContext *)arg0, (gchar **)lparg1, (PangoAttrList **)lparg2, (gint *)lparg3);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+}
+#endif
+
+#ifndef NO_gtk_1im_1context_1reset
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1im_1context_1reset
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1im_1context_1reset\n")
+
+	gtk_im_context_reset((GtkIMContext *)arg0);
 }
 #endif
 
@@ -3045,16 +3105,16 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1init_1check
 
 #ifndef NO_gtk_1label_1new
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1label_1new
-	(JNIEnv *env, jclass that, jobject arg0)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
 {
-	const jbyte *lparg0= NULL;
+	jbyte *lparg0= NULL;
 	jint rc;
 
 	DEBUG_CALL("gtk_1label_1new\n")
 
-	if (arg0) lparg0 = (*env)->GetStringUTFChars(env, arg0, NULL);
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
 	rc = (jint)gtk_label_new((const gchar *)lparg0);
-	if (arg0) (*env)->ReleaseStringUTFChars(env, arg0, lparg0);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	return rc;
 }
 #endif
@@ -3072,6 +3132,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1label_1new_1wit
 	rc = (jint)gtk_label_new_with_mnemonic((const gchar *)lparg0);
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1label_1set_1attributes
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1label_1set_1attributes
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1label_1set_1attributes\n")
+
+	gtk_label_set_attributes((GtkLabel *)arg0, (PangoAttrList *)arg1);
 }
 #endif
 
@@ -3097,15 +3167,11 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1label_1set_1lin
 
 #ifndef NO_gtk_1label_1set_1text
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1label_1set_1text
-	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-	jbyte *lparg1=NULL;
-
 	DEBUG_CALL("gtk_1label_1set_1text\n")
 
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
-	gtk_label_set_text((GtkLabel *)arg0, (const gchar *)lparg1);
-	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	gtk_label_set_text((GtkLabel *)arg0, (const gchar *)arg1);
 }
 #endif
 
@@ -6039,6 +6105,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove___3III
 }
 #endif
 
+#ifndef NO_pango_1attr_1list_1unref
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1attr_1list_1unref
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("pango_1attr_1list_1unref\n")
+
+	pango_attr_list_unref((PangoAttrList *)arg0);
+}
+#endif
+
 #ifndef NO_pango_1context_1get_1language
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1context_1get_1language
 	(JNIEnv *env, jclass that, jint arg0)
@@ -6073,6 +6149,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1context_1list
 	pango_context_list_families((PangoContext *)arg0, (PangoFontFamily ***)lparg1, (int *)lparg2);
 	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+}
+#endif
+
+#ifndef NO_pango_1context_1set_1language
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1context_1set_1language
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("pango_1context_1set_1language\n")
+
+	pango_context_set_language((PangoContext *)arg0, (PangoLanguage *)arg1);
 }
 #endif
 

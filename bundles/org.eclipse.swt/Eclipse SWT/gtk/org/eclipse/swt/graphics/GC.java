@@ -1316,10 +1316,7 @@ public Font getFont() {
 public FontMetrics getFontMetrics() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int context = data.context;
-	//FIXME - figure out correct language
-	byte[] buffer = Converter.wcsToMbcs(null, "en_US", true);
-	int lang = OS.pango_language_from_string(buffer);
-//	int lang = OS.pango_context_get_language(context);
+	int lang = OS.pango_context_get_language(context);
 	int metrics = OS.pango_context_get_metrics(context, data.font, lang);
 	FontMetrics fm = new FontMetrics();
 	fm.ascent = OS.PANGO_PIXELS(OS.pango_font_metrics_get_ascent(metrics));
@@ -1428,6 +1425,7 @@ public int hashCode() {
 void init(Drawable drawable, GCData data, int gdkGC) {
 	int context = OS.gdk_pango_context_get();
 	if (context == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	OS.pango_context_set_language(context, OS.gtk_get_default_language());
 	data.context = context;	
 	int layout = OS.pango_layout_new(context);
 	if (layout == 0) SWT.error(SWT.ERROR_NO_HANDLES);
