@@ -93,21 +93,22 @@ import org.eclipse.swt.internal.win32.*;
  * </dl>
  */
 public class DragSource extends Widget {
-	
-	// ole interfaces
-	private COMObject iDropSource;
-	private COMObject iDataObject;
-	private int refCount;
 
 	// info for registering as a drag source
 	private Control control;
 	private Listener controlListener;
 	private Transfer[] transferAgents = new Transfer[0];
 	
-	private int dataEffect;
+	// ole interfaces
+	private COMObject iDropSource;
+	private COMObject iDataObject;
+	private int refCount;
+	
+	//workaround - track the operation performed by the drop target for DragEnd event
+	private int dataEffect = DND.DROP_NONE;
 	
 	private static final String DRAGSOURCEID = "DragSource"; //$NON-NLS-1$
-	private static int CFSTR_PERFORMEDDROPEFFECT  = Transfer.registerType("Performed DropEffect");	 //$NON-NLS-1$
+	private static final int CFSTR_PERFORMEDDROPEFFECT  = Transfer.registerType("Performed DropEffect");	 //$NON-NLS-1$
 
 /**
  * Creates a new <code>DragSource</code> to handle dragging from the specified <code>Control</code>.
@@ -137,8 +138,9 @@ public class DragSource extends Widget {
 public DragSource(Control control, int style) {
 	super (control, checkStyle(style));
 	this.control = control;
-	if (control.getData(DRAGSOURCEID) != null)
+	if (control.getData(DRAGSOURCEID) != null) {
 		DND.error(DND.ERROR_CANNOT_INIT_DRAG);
+	}
 	control.setData(DRAGSOURCEID, this);
 	createCOMInterfaces();
 	this.AddRef();
@@ -165,6 +167,11 @@ public DragSource(Control control, int style) {
 			onDispose();
 		}
 	});
+}
+
+static int checkStyle (int style) {
+	if (style == SWT.NONE) return DND.DROP_MOVE;
+	return style;
 }
 
 /**
@@ -203,14 +210,12 @@ public void addDragListener(DragSourceListener listener) {
 	addListener (DND.DragSetData, typedListener);
 	addListener (DND.DragEnd, typedListener);
 }
+
 private int AddRef() {
 	refCount++;
 	return refCount;
 }
-static int checkStyle (int style) {
-	if (style == SWT.NONE) return DND.DROP_MOVE;
-	return style;
-}
+
 private void createCOMInterfaces() {
 	// register each of the interfaces that this object implements
 	iDropSource = new COMObject(new int[]{2, 0, 0, 2, 1}){
@@ -254,43 +259,42 @@ private void disposeCOMInterfaces() {
 		iDataObject.dispose();
 	iDataObject = null;
 }
+
 private void drag() {
 	DNDEvent event = new DNDEvent();
 	event.widget = this;
 	event.time = OS.GetMessageTime();
 	event.doit = true;
-	
 	try {
 		notifyListeners(DND.DragStart,event);
 	} catch (Throwable e) {
 		return;
 	}
+	if (!event.doit || transferAgents == null || transferAgents.length == 0 ) return;
 	
-	if (!event.doit) return;
-	if (transferAgents == null || transferAgents.length == 0 ) return;
-	
-	dataEffect = DND.DROP_NONE; //dataEffect will be updated in SetData callback
 	int[] pdwEffect = new int[1];
 	int operations = opToOs(getStyle());
 	int result = COM.DoDragDrop(iDataObject.getAddress(), iDropSource.getAddress(), operations, pdwEffect);
 	int operation = osToOp(pdwEffect[0]);
+	if (dataEffect == DND.DROP_MOVE) {
+		operation = (operation == DND.DROP_NONE || operation == DND.DROP_COPY) ? DND.DROP_TARGET_MOVE : DND.DROP_MOVE;
+	} else {
+		if (dataEffect != DND.DROP_NONE) {
+			operation = dataEffect;
+		}
+	}
 	event = new DNDEvent();
 	event.widget = this;
 	event.time = OS.GetMessageTime();
-	if (dataEffect == DND.DROP_MOVE && (operation == DND.DROP_NONE || operation == DND.DROP_COPY)) {
-		dataEffect = DND.DROP_TARGET_MOVE;
-	}
-	if (dataEffect == DND.DROP_NONE) {
-		dataEffect = operation;
-	}
-	event.detail = dataEffect;
 	event.doit = (result == COM.DRAGDROP_S_DROP);
+	event.detail = operation;
 
 	try {
 		notifyListeners(DND.DragEnd,event);
-	} catch (Throwable e) {
-	}
+	} catch (Throwable e) {}
+	dataEffect = DND.DROP_NONE;
 }
+
 private int EnumFormatEtc(int dwDirection, int ppenumFormatetc) {
 	// only allow getting of data - SetData is not currently supported
 	if (dwDirection == COM.DATADIR_SET) return COM.E_NOTIMPL;
@@ -326,6 +330,7 @@ private int EnumFormatEtc(int dwDirection, int ppenumFormatetc) {
 public Control getControl () {
 	return control;
 }
+
 private int GetData(int pFormatetc, int pmedium) {
 	/* Called by a data consumer to obtain data from a source data object. 
 	   The GetData method renders the data described in the specified FORMATETC 
@@ -358,17 +363,19 @@ private int GetData(int pFormatetc, int pmedium) {
 	// get matching transfer agent to perform conversion
 	Transfer transfer = null;
 	for (int i = 0; i < transferAgents.length; i++){
-		if (transferAgents[i].isSupportedType(event.dataType )){
+		if (transferAgents[i].isSupportedType(transferData)){
 			transfer = transferAgents[i];
 			break;
 		}
 	}
-	if (transfer == null) return COM.DV_E_FORMATETC;
 	
+	if (transfer == null) return COM.DV_E_FORMATETC;
 	transfer.javaToNative(event.data, transferData);
+	if (transferData.result != COM.S_OK) return transferData.result;
 	COM.MoveMemory(pmedium, transferData.stgmedium, STGMEDIUM.sizeof);
 	return transferData.result;
 }
+
 /**
  * Returns the list of data types that can be transferred by this DragSource.
  *
@@ -377,17 +384,19 @@ private int GetData(int pFormatetc, int pmedium) {
 public Transfer[] getTransfer(){
 	return transferAgents;
 }
+
 private int GiveFeedback(int dwEffect) {
 	return COM.DRAGDROP_S_USEDEFAULTCURSORS;
 }
+
 private int QueryContinueDrag(int fEscapePressed, int grfKeyState) {
 	if (fEscapePressed != 0)
 		return COM.DRAGDROP_S_CANCEL;
 	if ((grfKeyState & (OS.MK_LBUTTON | OS.MK_MBUTTON | OS.MK_RBUTTON)) == 0)
 		return COM.DRAGDROP_S_DROP;
-
 	return COM.S_OK;
 }
+
 private void onDispose() {
 	if (control == null) return;
 	this.Release();
@@ -400,6 +409,7 @@ private void onDispose() {
 	control = null;
 	transferAgents = null;
 }
+
 private int opToOs(int operation) {
 	int osOperation = 0;
 	if ((operation & DND.DROP_COPY) != 0){
@@ -413,6 +423,7 @@ private int opToOs(int operation) {
 	}
 	return osOperation;
 }
+
 private int osToOp(int osOperation){
 	int operation = 0;
 	if ((osOperation & COM.DROPEFFECT_COPY) != 0){
@@ -426,6 +437,7 @@ private int osToOp(int osOperation){
 	}
 	return operation;
 }
+
 private int QueryGetData(int pFormatetc) {
 	if (transferAgents == null) return COM.E_FAIL;
 	TransferData transferData = new TransferData();
@@ -441,6 +453,7 @@ private int QueryGetData(int pFormatetc) {
 	
 	return COM.DV_E_FORMATETC;
 }
+
 private int QueryInterface(int riid, int ppvObject) {
 	if (riid == 0 || ppvObject == 0)
 		return COM.E_INVALIDARG;
@@ -462,6 +475,7 @@ private int QueryInterface(int riid, int ppvObject) {
 	COM.MoveMemory(ppvObject, new int[] {0}, 4);
 	return COM.E_NOINTERFACE;
 }
+
 private int Release() {
 	refCount--;
 	if (refCount == 0) {
@@ -470,6 +484,7 @@ private int Release() {
 	}
 	return refCount;
 }
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when a drag and drop operation is in progress.
@@ -493,6 +508,7 @@ public void removeDragListener(DragSourceListener listener) {
 	removeListener (DND.DragSetData, listener);
 	removeListener (DND.DragEnd, listener);
 }
+
 private int SetData(int pFormatetc, int pmedium, int fRelease) {
 	if (pFormatetc == 0 || pmedium == 0) return COM.E_INVALIDARG;
 	FORMATETC formatetc = new FORMATETC();
@@ -511,6 +527,7 @@ private int SetData(int pFormatetc, int pmedium, int fRelease) {
 	}
 	return COM.S_OK;
 }
+
 /**
  * Specifies the list of data types that can be transferred by this DragSource.
  * The application must be able to provide data to match each of these types when
