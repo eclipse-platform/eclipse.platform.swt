@@ -17,7 +17,7 @@
 
 #include "swt.h"
 
-#if defined (WIN32) || defined (_WIN32_WCE)
+#if defined (_WIN32) || defined (_WIN32_WCE)
 #include "windows.h"
 #define RETURN_TYPE LRESULT CALLBACK
 #define RETURN_CAST (LRESULT)
