@@ -999,15 +999,14 @@ boolean layoutItems() {
 			averageWidth = width / count;
 		}
 	}
-	if (averageWidth > MIN_TAB_WIDTH * tabHeight) {
-		for (int i = 0; i < items.length; i++) {
-			if (widths[i] > averageWidth) {
-				widths[i] = averageWidth;
-			}
+	averageWidth = Math.max(averageWidth, MIN_TAB_WIDTH * tabHeight);
+	for (int i = 0; i < items.length; i++) {
+		if (widths[i] > averageWidth) {
+			widths[i] = averageWidth;
 		}
-		topTabIndex = 0;
-		shortenedTabs = true;
 	}
+	topTabIndex = 0;
+	shortenedTabs = true;
 
 	boolean changed = false;
 	int totalWidth = 0;
