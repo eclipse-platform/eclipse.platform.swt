@@ -979,9 +979,21 @@ void showItem (int path, boolean scroll) {
 	if (scroll) {
 		GdkRectangle rect = new GdkRectangle ();
 		OS.gtk_tree_view_get_cell_area (handle, path, 0, rect);
+		boolean isHidden = false;
 		if (rect.y == 0 && rect.height == 0) {
-			OS.gtk_tree_view_scroll_to_cell (handle, path, 0, depth != 1, 0.5f, 0.5f);
+			isHidden = true;
+		} else {
+			int [] tx = new int [1];
+			int [] ty = new int [1];
+			OS.gtk_tree_view_widget_to_tree_coords (handle, rect.x, rect.y, tx, ty);
+			rect.y = ty[0];
+			GdkRectangle visRect = new GdkRectangle ();
+			OS.gtk_tree_view_get_visible_rect (handle, visRect);
+			if (rect.y < visRect.y || rect.y + rect.height > visRect.y + visRect.height) {
+				isHidden = true;
+				} 
 		}
+		if (isHidden) OS.gtk_tree_view_scroll_to_cell (handle, path, 0, depth != 1, 0.5f, 0.0f);	
 	}
 }
 
