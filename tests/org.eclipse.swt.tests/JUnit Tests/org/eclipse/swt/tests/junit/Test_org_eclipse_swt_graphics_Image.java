@@ -82,33 +82,11 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceII() {
 
 	image = new Image(display, 10, 10);
 	image.dispose();
-
-	testPerformance(new Runnable() {
-		public void run() {
-			new Image(display, 10, 10).dispose();
-		}
-	});
+		
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageI() {
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageI not written");
-	
-	final Image image = new Image (display, 10, 10);
-	testPerformance("copy", new Runnable() {
-		public void run() {
-			new Image(display, image, SWT.IMAGE_COPY).dispose();
-		}
-	});
-	testPerformance("disable", new Runnable() {
-		public void run() {
-			new Image(display, image, SWT.IMAGE_DISABLE).dispose();
-		}
-	});
-	testPerformance("gray", new Runnable() {
-		public void run() {
-			new Image(display, image, SWT.IMAGE_GRAY).dispose();
-		}
-	});
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_Rectangle() {
@@ -170,14 +148,6 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	
 	image = new Image(display, bounds);
 	image.dispose();
-
-	testPerformance(new Runnable() {
-		public void run() {
-			new Image(display, new Rectangle(0, 0, 10, 10)).dispose();
-		}
-	});
-	
-
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageData() {
@@ -222,13 +192,6 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	gc.dispose();
 	gcImage.dispose();
 	image.dispose();
-
-	final ImageData imageData = new ImageData(10, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
-	testPerformance(new Runnable() {
-		public void run() {
-			new Image(display, imageData).dispose();
-		}
-	});
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageData() {
@@ -299,14 +262,6 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	gc.dispose();
 	gcImage.dispose();
 	image.dispose();
-	
-	final ImageData imageData = new ImageData(10, 10, 8, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
-	final ImageData imageData1 = new ImageData(10, 10, 8, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
-	testPerformance(new Runnable() {
-		public void run() {
-			new Image(display, imageData, imageData1).dispose();
-		}
-	});
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream() {
@@ -371,14 +326,15 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream
 
 		// create valid images
 		for (int j = 0; j < displays.length; j++) {
-			final Display tempDisplay = displays[j];
+			Display tempDisplay = displays[j];
 			int numFileNames = SwtTestCase.imageFilenames.length;
 			for (int k=0; k<numFileNames; k++) {
 				fileName = SwtTestCase.imageFilenames[k];		
 				for (int i=0; i<numFormats; i++) {
 					String format = SwtTestCase.imageFormats[i];
 					stream = SwtTestCase.class.getResourceAsStream(fileName + "." + format);
-					new Image(tempDisplay, stream).dispose();
+					image = new Image(tempDisplay, stream);
+					image.dispose();
 					try {
 						stream.close();
 					} catch (IOException e) {}
@@ -459,16 +415,9 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() 
 				fileName = SwtTestCase.imageFilenames[k];
 				for (int i=0; i<numFormats; i++) {
 					String format = SwtTestCase.imageFormats[i];
-					final String pathName = getPath(fileName + "." + format);
-					if (!performanceTesting) {
-						new Image(display, pathName).dispose();
-					} else {
-						testPerformance("image format " + j + k + i, new Runnable() {
-							public void run() {
-								new Image(display, pathName).dispose();
-							}
-						});
-					}
+					String pathName = getPath(fileName + "." + format);
+					Image image = new Image(display, pathName);
+					image.dispose();
 				}
 			}
 		}
@@ -477,19 +426,6 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() 
 
 public void test_dispose() {
 	// tested in isDisposed() method
-	
-	testPerformance("dispose()", new Runnable() {
-		public void run() {
-			new Image(display, 10, 10).dispose();
-		}
-	});
-	final Image image = new Image(display, 10, 10);
-	image.dispose();
-	testPerformance("dispose disposed()", new Runnable() {
-		public void run() {
-			image.dispose();
-		}
-	});
 }
 
 public void test_equalsLjava_lang_Object() {
@@ -509,19 +445,6 @@ public void test_equalsLjava_lang_Object() {
 		image = new Image(display, imageData);
 		image1 = new Image(display, imageData);
 		assertFalse(":c:", image.equals(image1));
-		
-		final Image testImage = image;
-		final Image testImage1 = image1;
-		testPerformance("equals same", new Runnable() {
-			public void run() {
-				testImage.equals(testImage);
-			}
-		});
-		testPerformance("equals different", new Runnable() {
-			public void run() {
-				testImage.equals(testImage1);
-			}
-		});
 	} finally {
 		image.dispose();
 		image1.dispose();
@@ -529,14 +452,7 @@ public void test_equalsLjava_lang_Object() {
 }
 
 public void test_getBackground() {
-	final Image image = new Image(display, 10, 10);
-	
-	testPerformance(new Runnable() {
-		public void run() {
-			image.getBackground();
-		}
-	});
-	
+	Image image = new Image(display, 10, 10);
 	image.dispose();
 	try {
 		image.getBackground();
@@ -550,14 +466,6 @@ public void test_getBackground() {
 public void test_getBounds() {
 	Rectangle bounds = new Rectangle(0, 0, 10, 20);
 	Image image = new Image(display, bounds.width, bounds.height);
-	
-	final Image testImage = image;
-	testPerformance(new Runnable() {
-		public void run() {
-			testImage.getBounds();
-		}
-	});
-
 	image.dispose();
 	try {
 		image.getBounds();
@@ -607,13 +515,6 @@ public void test_hashCode() {
 		image1 = new Image(display, imageData);
 		boolean equals = (image1.hashCode() == image.hashCode());
 		assertFalse(":b:", equals);
-		
-		final Image testImage = image;
-		testPerformance(new Runnable() {
-			public void run() {
-				testImage.hashCode();
-			}
-		});
 	} finally {
 		image.dispose();
 		image1.dispose();
@@ -633,20 +534,10 @@ public void test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData() {
 }
 
 public void test_isDisposed() {
-	final Image image = new Image(display, 10, 10);
-	testPerformance("isDisposed()", new Runnable() {
-		public void run() {
-			image.isDisposed();
-		}
-	});
+	Image image = new Image(display, 10, 10);
 	assertFalse(":a:", image.isDisposed());
 	image.dispose();
 	assertTrue(":b:", image.isDisposed());
-	testPerformance("disposed isDisposed()", new Runnable() {
-		public void run() {
-			image.isDisposed();
-		}
-	});
 }
 
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {

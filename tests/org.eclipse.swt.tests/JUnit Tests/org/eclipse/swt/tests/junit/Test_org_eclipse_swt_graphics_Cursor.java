@@ -131,12 +131,6 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceI() {
 		fail("No exception thrown for style < 0");
 	} catch (IllegalArgumentException e) {
 	}
-	
-	testPerformance(new Runnable() {
-		public void run() {
-			new Cursor(display, SWT.CURSOR_ARROW).dispose();
-		}
-	});
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataII() {
@@ -151,20 +145,11 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 		String format = SwtTestCase.imageFormats[i];
 		ImageLoader loader = new ImageLoader();
 		InputStream stream = SwtTestCase.class.getResourceAsStream(fileName + "." + format);
-		final ImageData source = loader.load(stream)[0];
-		final ImageData mask = source.getTransparencyMask();
+		ImageData source = loader.load(stream)[0];
+		ImageData mask = source.getTransparencyMask();
 		if (mask != null && (source.depth == 1)) {
-			Runnable runnable = new Runnable () {
-				public void run() {
-					Cursor cursor = new Cursor(display, source, mask, 0, 0);
-					cursor.dispose();
-				}
-			};
-			if (performanceTesting) {
-				testPerformance(runnable);
-			} else {
-				runnable.run();
-			}
+			Cursor cursor = new Cursor(display, source, mask, 0, 0);
+			cursor.dispose();
 		}
 		try {
 			stream.close();
@@ -182,8 +167,8 @@ public void test_equalsLjava_lang_Object() {
 	 * So since Windows reuses cursor handles, and other platforms do not,
 	 * it does not make sense to test whether cursor.equals(sameCursor).
 	 */
-	final Cursor cursor = new Cursor(display, SWT.CURSOR_WAIT);
-	final Cursor otherCursor = new Cursor(display, SWT.CURSOR_CROSS);
+	Cursor cursor = new Cursor(display, SWT.CURSOR_WAIT);
+	Cursor otherCursor = new Cursor(display, SWT.CURSOR_CROSS);
 	try {
 		// Test Cursor.equals(Object)
 		assertTrue("!cursor.equals((Object)null)", !cursor.equals((Object)null));
@@ -192,16 +177,6 @@ public void test_equalsLjava_lang_Object() {
 		assertTrue("!cursor.equals((Cursor)null)", !cursor.equals((Cursor)null));
 		assertTrue("cursor.equals(cursor)", cursor.equals(cursor));
 		assertTrue("!cursor.equals(otherCursor)", !cursor.equals(otherCursor));
-		testPerformance ("equals same", new Runnable () {
-			public void run() {
-				cursor.equals(cursor);
-			}
-		});
-		testPerformance ("equals different", new Runnable () {
-			public void run() {
-				cursor.equals(otherCursor);
-			}
-		});
 	} finally {
 		cursor.dispose();
 		otherCursor.dispose();
@@ -210,43 +185,24 @@ public void test_equalsLjava_lang_Object() {
 
 public void test_hashCode() {
 	warnUnimpl("Test test_hashCode not written");
-
-	final Cursor cursor = new Cursor(display, SWT.CURSOR_WAIT);
-	testPerformance (new Runnable () {
-		public void run() {
-			cursor.hashCode();
-		}
-	});
-	cursor.dispose();
 }
 
 public void test_isDisposed() {
 	// Test Cursor.isDisposed() false
-	final Cursor cursor = new Cursor(display, SWT.CURSOR_WAIT);
+	Cursor cursor = new Cursor(display, SWT.CURSOR_WAIT);
 	try {
 		assertTrue("Cursor should not be disposed", !cursor.isDisposed());
-		testPerformance("isDisposed()", new Runnable() {
-			public void run() {
-				cursor.isDisposed();
-			}
-		});
 	} finally {
 		// Test Cursor.isDisposed() true
 		cursor.dispose();
 		assertTrue("Cursor should be disposed", cursor.isDisposed());
 	}
-	testPerformance("disposed isDisposed()", new Runnable() {
-		public void run() {
-			cursor.isDisposed();
-		}
-	});
 }
 
 public void test_toString() {
 	Cursor cursor = new Cursor(display, SWT.CURSOR_WAIT);
 	assertNotNull(cursor.toString());
 	assertTrue(cursor.toString().length() > 0);
-	cursor.dispose();
 }
 
 public void test_win32_newLorg_eclipse_swt_graphics_DeviceI() {

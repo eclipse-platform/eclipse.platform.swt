@@ -40,23 +40,13 @@ protected void tearDown() {
 public void test_Constructor() {
 	// Test new FontData()
 	FontData fd = new FontData();
-	testPerformance (new Runnable() {
-		public void run() {
-			new FontData();
-		}
-	});
 }
 
 public void test_ConstructorLjava_lang_String() {
 	// Test new FontData(String string)
-	final FontData fd = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
+	FontData fd = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
 	FontData reconstructedFontData = new FontData(fd.toString());
 	assertEquals(fd, reconstructedFontData);
-	testPerformance(new Runnable() {
-		public void run() {
-			new FontData(fd.toString());
-		}
-	});
 }
 
 public void test_ConstructorLjava_lang_StringII() {
@@ -98,84 +88,38 @@ public void test_ConstructorLjava_lang_StringII() {
 		fail("No exception thrown for height < 0");
 	} catch (IllegalArgumentException e) {
 	}
-
-	testPerformance(new Runnable() {
-		public void run() {
-			// valid normal 10-point font data
-			new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
-		}
-	});
 }
 
 public void test_equalsLjava_lang_Object() {
-	final FontData fd1 = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
-	final FontData fd2 = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
+	FontData fd1 = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
+	FontData fd2 = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
 	assertEquals(fd1,fd1);
 	assertEquals(fd1,fd2);
-	testPerformance("equals same", new Runnable() {
-		public void run() {
-			assertEquals(fd1,fd1);
-		}
-	});
-	testPerformance("equals different", new Runnable() {
-		public void run() {
-			assertEquals(fd1,fd2);
-		}
-	});
 }
 
 public void test_getHeight() {
 	// Font.getHeight() tested in test_setHeightI
-	final FontData data = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
-	testPerformance(new Runnable() {
-		public void run() {
-			data.getHeight();
-		}
-	});
 }
 
 public void test_getLocale() {
 	// FontData.getLocale() tested in test_setLocaleLjava_lang_String
-	final FontData data = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
-	testPerformance(new Runnable() {
-		public void run() {
-			data.getLocale();
-		}
-	});
 }
 
 public void test_getName() {
 	// Font.getName() tested in test_setNameLjava_lang_String
-	final FontData data = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
-	testPerformance(new Runnable() {
-		public void run() {
-			data.getName();
-		}
-	});
 }
 
 public void test_getStyle() {
 	// Font.getStyle() tested in test_setStyleI
-	final FontData data = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
-	testPerformance(new Runnable() {
-		public void run() {
-			data.getStyle();
-		}
-	});
 }
 
 public void test_hashCode() {
-	final FontData fd1 = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
+	FontData fd1 = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
 	FontData fd2 = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
 	assertEquals(fd1,fd2);
 	assertEquals(fd1.hashCode(),fd2.hashCode());
 	FontData fd3 = new FontData(SwtJunit.testFontName, 10, SWT.BOLD);
 	assertFalse(fd1.hashCode() == fd3.hashCode());
-	testPerformance(new Runnable() {
-		public void run() {
-			fd1.hashCode();
-		}
-	});
 }
 
 public void test_setHeightI() {
@@ -207,13 +151,6 @@ public void test_setHeightI() {
 		fontData.setHeight(height);
 		assertEquals("Wrong height", fontData.getHeight(), height);
 	}
-	
-	final FontData data = new FontData();
-	testPerformance(new Runnable() {
-		public void run() {
-			data.setHeight(10);
-		}
-	});
 }
 
 public void test_setLocaleLjava_lang_String() {
@@ -221,12 +158,6 @@ public void test_setLocaleLjava_lang_String() {
 	Locale locale = Locale.ENGLISH;
 	fd.setLocale(locale.toString());
 	assertEquals(Locale.ENGLISH.toString(),fd.getLocale());
-	final FontData data = new FontData();
-	testPerformance(new Runnable() {
-		public void run() {
-			data.setLocale(Locale.ENGLISH.toString());
-		}
-	});
 }
 
 public void test_setNameLjava_lang_String() {
@@ -255,13 +186,6 @@ public void test_setNameLjava_lang_String() {
 		fail("No exception thrown for name == null");
 	} catch (IllegalArgumentException e) {
 	}
-	
-	final FontData data = new FontData();
-	testPerformance(new Runnable() {
-		public void run() {
-			data.setName("name");
-		}
-	});
 }
 
 public void test_setStyleI() {
@@ -287,12 +211,6 @@ public void test_setStyleI() {
 		fontData.setStyle(SWT.NORMAL);
 		assertEquals("Wrong style", fontData.getStyle(), SWT.NORMAL);
 	}
-	final FontData data = new FontData();
-	testPerformance(new Runnable() {
-		public void run() {
-			data.setStyle(SWT.ITALIC);
-		}
-	});
 }
 
 public void test_toString() {
