@@ -945,9 +945,10 @@ private void setButtonBounds() {
 			closeBar.setVisible(false);
 		} else {
 			int toolbarHeight = tabHeight - CTabItem.TOP_MARGIN - CTabItem.BOTTOM_MARGIN + 2; // +2 to ignore gab between focus rectangle
-			int x = item.x + item.width - toolbarHeight - 1;
+			Point size = closeBar.computeSize(SWT.DEFAULT, toolbarHeight);
+			int x = item.x + item.width - size.x - 1;
 			int y = item.y + Math.max(0, (item.height - toolbarHeight)/2);		
-				closeBar.setBounds(x, y, toolbarHeight, toolbarHeight);
+			closeBar.setBounds(x, y, size.x, toolbarHeight);
 			if (arrowBar.isVisible()) {
 				Rectangle arrowRect = arrowBar.getBounds();
 				arrowRect.width += borderRight;
@@ -1845,7 +1846,8 @@ private void onMouseMove(Event event) {
 	if (item == null || item == getSelection()) return;
 
 	int toolbarHeight = getTabHeight() - CTabItem.TOP_MARGIN - CTabItem.BOTTOM_MARGIN + 2; // +2 to ignore gab between focus rectangle
-	int x = item.x + item.width - toolbarHeight;
+	Point size = inactiveCloseBar.computeSize(SWT.DEFAULT, toolbarHeight);
+	int x = item.x + item.width - size.x;
 	int y = item.y + Math.max(0, (item.height - toolbarHeight)/2);		
 			
 	if (arrowBar.isVisible()) {
@@ -1854,7 +1856,7 @@ private void onMouseMove(Event event) {
 		if (scrollArea.contains(x, y)) return;
 	}
 	
-	inactiveCloseBar.setBounds(x, y, toolbarHeight,toolbarHeight);
+	inactiveCloseBar.setBounds(x, y, size.x, toolbarHeight);
 	inactiveCloseBar.setVisible(true);
 	inactiveItem = item;
 }
