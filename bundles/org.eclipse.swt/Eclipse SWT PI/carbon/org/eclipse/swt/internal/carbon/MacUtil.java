@@ -15,13 +15,25 @@ import org.eclipse.swt.graphics.*;
 public class MacUtil {
 
 	public static boolean DEBUG;
-	public static boolean REVERSE;
+	public static boolean JAGUAR;
 	
 	static final char MNEMONIC = '&';
 	
 	static {
 		DEBUG= false;
-		REVERSE= !System.getProperty("os.version").startsWith("10.2");
+		JAGUAR= System.getProperty("os.version").startsWith("10.2");
+	}
+	
+	public static int OSEmbedControl(int controlHandle, int parentControlHandle) {
+		if (JAGUAR) {
+			int[] root= new int[1];
+			int wHandle= OS.GetControlOwner(parentControlHandle);
+			OS.GetRootControl(wHandle, root);
+			int rc= OS.EmbedControl(controlHandle, root[0]);
+			if (rc != OS.kNoErr)
+				return rc;
+		}
+		return OS.EmbedControl(controlHandle, parentControlHandle);
 	}
 	
 	/**
@@ -30,36 +42,26 @@ public class MacUtil {
 	 */
 	public static void embedControl(int controlHandle, int parentControlHandle, int pos) {
 		
+		int n= countSubControls(parentControlHandle);
+		
 		// add at end
-		if (OS.EmbedControl(controlHandle, parentControlHandle) != OS.kNoErr)
+		if (OSEmbedControl(controlHandle, parentControlHandle) != OS.kNoErr)
 			System.out.println("MacUtil.embedControl: could not embed control in parent");
 			
-		int n= countSubControls(parentControlHandle)-1;
-		
 		if (pos < 0 || pos > n)
 			pos= n;
 		
 		int[] outControl= new int[1];
-		if (REVERSE) {
-			for (int i= 0; i < pos; i++) {
-				if (OS.GetIndexedSubControl(parentControlHandle, (short)(n-pos+1), outControl) == 0)
-					if (OS.EmbedControl(outControl[0], parentControlHandle) != OS.kNoErr)
-						System.out.println("MacUtil.embedControl: couldn't move control to end");
-			}
-			
-		} else {
-			int count= n-pos;
-			for (int i= 0; i < count; i++) {
-				if (OS.GetIndexedSubControl(parentControlHandle, (short)(pos+1), outControl) == 0)
-					if (OS.EmbedControl(outControl[0], parentControlHandle) != OS.kNoErr)
-						System.out.println("MacUtil.embedControl: couldn't move control to end");
-			}
+		for (int i= 0; i < pos; i++) {
+			if (OS.GetIndexedSubControl(parentControlHandle, (short)(n-pos+1), outControl) == 0)
+				if (OSEmbedControl(outControl[0], parentControlHandle) != OS.kNoErr)
+					System.out.println("MacUtil.embedControl: couldn't move control to end");
 		}
 		
 		// verify correct position
 		n++;
 		for (int i= 0; i < n; i++) {
-			int index= REVERSE ? (n-i) : (i+1);
+			int index= (n-i);
 			int[] outHandle= new int[1];
 			if (OS.GetIndexedSubControl(parentControlHandle, (short)index, outHandle) == 0) {	// indices are 1 based
 				if (outHandle[0] == controlHandle) {

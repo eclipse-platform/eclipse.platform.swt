@@ -85,7 +85,7 @@ Control [] _getChildren () {
 	int[] outHandle= new int[1];
 	
 	for (int i= 0; i < count; i++) {
-		int index= MacUtil.REVERSE ? (count-i) : (i+1);
+		int index= (count-i);
 		if (OS.GetIndexedSubControl(handle, (short)index, outHandle) == 0)	// indices are 1 based
 			handles[i]= outHandle[0];
 		else

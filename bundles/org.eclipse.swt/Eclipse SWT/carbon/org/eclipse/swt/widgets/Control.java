@@ -2413,7 +2413,7 @@ void setZOrder (Control control, boolean above) {
 	children[pos]= thisHandle;
 		
 	for (int i= 0; i < children.length; i++)
-		OS.EmbedControl(children[i], destHandle);
+		MacUtil.OSEmbedControl(children[i], destHandle);
 }
 /**
  * Returns a point which is the result of converting the
