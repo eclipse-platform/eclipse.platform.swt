@@ -586,7 +586,7 @@ void setChecked (boolean checked, boolean notify) {
 		Event event = new Event();
 		event.item = this;
 		event.detail = SWT.CHECK;
-		postEvent (SWT.Selection, event);
+		parent.postEvent (SWT.Selection, event);
 	}
 	redraw ();
 }
