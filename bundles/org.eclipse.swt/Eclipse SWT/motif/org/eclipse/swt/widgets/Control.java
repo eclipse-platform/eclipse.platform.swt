@@ -1650,10 +1650,10 @@ byte [] sendKeyEvent (int type, XKeyEvent xEvent) {
 	/* Look up the keysym and character(s) */
 	byte [] buffer;
 	boolean isVirtual = false;
-	int [] keysym = new int [1], status = new int [1];
+	int [] keysym = new int [1];
 	if (xEvent.keycode != 0) {
 		buffer = new byte [1];
-		isVirtual = OS.XLookupString (xEvent, buffer, buffer.length, keysym, status) == 0;
+		isVirtual = OS.XLookupString (xEvent, buffer, buffer.length, keysym, null) == 0;
 	} else {
 		/*
 		* Bug in Motif. On Linux only, XmImMbLookupString() does not return 
@@ -1661,6 +1661,7 @@ byte [] sendKeyEvent (int type, XKeyEvent xEvent) {
 		* to pass a bigger buffer.
 		*/
 		buffer = new byte [512];
+		int [] status = new int [1];
 		int size = OS.XmImMbLookupString (handle, xEvent, buffer, buffer.length, keysym, status);
 		if (status [0] == OS.XBufferOverflow) {
 			buffer = new byte [size];
@@ -2033,8 +2034,8 @@ void setKeyState (Event event, XKeyEvent xEvent) {
 	if (xEvent.keycode != 0) {
 		event.time = xEvent.time;
 		byte [] buffer1 = new byte [1];
-		int [] keysym = new int [1], status = new int [1];
-		if (OS.XLookupString (xEvent, buffer1, buffer1.length, keysym, status) == 0) {
+		int [] keysym = new int [1];
+		if (OS.XLookupString (xEvent, buffer1, buffer1.length, keysym, null) == 0) {
 			event.keyCode = Display.translateKey (keysym [0] & 0xFFFF);
 		} else {
 			event.character = (char) buffer1 [0];

@@ -260,7 +260,7 @@ public boolean open () {
 				OS.memmove (keyEvent, xEvent, XKeyEvent.sizeof);
 				if (keyEvent.keycode != 0) {
 					int [] keysym = new int [1];
-					OS.XLookupString (keyEvent, null, 0, keysym, unused);
+					OS.XLookupString (keyEvent, null, 0, keysym, null);
 					keysym [0] &= 0xFFFF;
 					tracking = keysym [0] != OS.XK_Escape && keysym [0] != OS.XK_Cancel;
 					cancelled = !tracking;
