@@ -291,27 +291,13 @@ JNIEXPORT jstring JNICALL XPCOM_NATIVE(PR_1GetEnv)
 }
 
 JNIEXPORT jint JNICALL XPCOM_NATIVE(NS_1NewLocalFile)
- 	(JNIEnv *env, jclass, jstring arg0, jboolean arg1, jintArray arg2)
+ 	(JNIEnv *env, jclass, jint arg0, jboolean arg1, jintArray arg2)
 {
-	const char* path = (const char *)env->GetStringUTFChars(arg0,NULL);
-
-	NS_ConvertASCIItoUCS2 str(path);
-  	nsILocalFile *pLocalFile = NULL;
-    nsresult rc = NS_NewLocalFile(str,arg1,&pLocalFile);
-
-	env->ReleaseStringUTFChars(arg0, path);
-
-	if (NS_SUCCEEDED(rc)) {
-		jint *arg21 = NULL; 
-		if (arg2)
-			arg21 = env->GetIntArrayElements(arg2, NULL);
-
-		arg21[0] = (jint)pLocalFile; 
-
-		if (arg2)
-			env->ReleaseIntArrayElements(arg2, arg21, 0);
-	}
-
+	jint *lparg2=NULL;
+	jint rc;
+	if (arg2) lparg2 = env->GetIntArrayElements(arg2, NULL);
+    rc = NS_NewLocalFile((nsAString &)(*(nsAString *)arg0), arg1, (nsILocalFile**)lparg2);
+	if (arg2) env->ReleaseIntArrayElements(arg2, lparg2, 0);
 	return rc;
 }
 

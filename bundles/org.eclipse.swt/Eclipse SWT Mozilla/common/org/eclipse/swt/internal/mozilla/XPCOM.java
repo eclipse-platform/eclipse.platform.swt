@@ -31,7 +31,7 @@ public class XPCOM {
 	
 	/* Mozilla version */
 	static final int MAJOR = 1;
-	static final int MINOR = 4;
+	static final int MINOR = 5;
 	static final String SUPPORTED_VERSION = MAJOR + "." + MINOR; //$NON-NLS-1$
 
 	/* nsDirectoryServiceDefs constants */
@@ -88,7 +88,7 @@ public static final native void memmove(int dest, byte[] src, int nbytes);
 public static final native int NS_GetComponentManager(int[] result);
 public static final native int NS_GetServiceManager(int[] result);
 public static final native int NS_InitEmbedding(int aMozBinDirectory, int aAppFileLocProvider);
-public static final native int NS_NewLocalFile(String path, boolean followLinks, int[] nsILocalFile);
+public static final native int NS_NewLocalFile(int path, boolean followLinks, int[] result);
 public static final native int NS_NewSingletonEnumerator(int localFile,int[] enum);
 public static final native int NS_TermEmbedding();
 public static final native int nsCRT_strlen_PRUnichar(int s);

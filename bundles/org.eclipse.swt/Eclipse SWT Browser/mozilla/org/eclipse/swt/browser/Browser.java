@@ -118,7 +118,9 @@ public Browser(Composite parent, int style) {
 		LocProvider.AddRef();
 
 		int[] retVal = new int[1];
-		int rc = XPCOM.NS_NewLocalFile(mozillaPath, true, retVal);
+		nsString path = new nsString(mozillaPath);
+		int rc = XPCOM.NS_NewLocalFile(path.getAddress(), true, retVal);
+		path.dispose();
 		if (rc != XPCOM.NS_OK) error(rc);
 		if (retVal[0] == 0) error(XPCOM.NS_ERROR_NULL_POINTER);
 			
