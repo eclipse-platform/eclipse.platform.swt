@@ -266,12 +266,27 @@ public void clearSelection () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	if ((style & SWT.SINGLE) != 0) return super.computeSize (wHint, hHint, changed);
-	Point size = computeNativeSize(handle, wHint, hHint, changed);
-	Rectangle trim = computeTrim (0, 0, size.x, size.y);
-	size.x = trim.width;
-	size.y = trim.height;
-	return size;
+	if ((style & SWT.SINGLE) != 0) {
+		return super.computeSize (wHint, hHint, changed);
+	}
+	boolean fixWrap = (style & SWT.WRAP) != 0 && wHint == SWT.DEFAULT;
+	if (fixWrap) OS.gtk_text_view_set_wrap_mode (handle, OS.GTK_WRAP_NONE);
+	int width = OS.GTK_WIDGET_WIDTH (handle);
+	int height = OS.GTK_WIDGET_HEIGHT (handle);
+	OS.gtk_widget_set_size_request (handle, wHint, hHint); 
+	if ((style & SWT.WRAP) != 0) {
+		while (OS.gtk_events_pending () != 0) {
+			OS.gtk_main_iteration ();
+		}
+	}
+	GtkRequisition requisition = new GtkRequisition ();
+	OS.gtk_widget_size_request (handle, requisition);
+	OS.gtk_widget_set_size_request (handle, width, height);
+	width = wHint == SWT.DEFAULT ? requisition.width : wHint;
+	height = hHint == SWT.DEFAULT ? requisition.height : hHint;
+	if (fixWrap) OS.gtk_text_view_set_wrap_mode (handle, OS.GTK_WRAP_WORD);
+	Rectangle trim = computeTrim (0, 0, width, height);
+	return new Point (trim.width, trim.height);
 }
 
 /**
@@ -811,8 +826,7 @@ public void insert (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	byte [] buffer = Converter.wcsToMbcs (null, string, false);
 	if ((style & SWT.SINGLE) != 0) {
-		int [] start = new int [1];
-		int [] end = new int [1];
+		int [] start = new int [1], end = new int [1];
 		OS.gtk_editable_get_selection_bounds (handle, start, end);
 		OS.gtk_editable_delete_selection (handle);
 		OS.gtk_editable_insert_text (handle, buffer, buffer.length, start);
@@ -829,9 +843,7 @@ public void insert (String string) {
 
 int paintWindow () {
 	OS.gtk_widget_realize (handle);
-	if ((style & SWT.SINGLE) != 0) {
-		return OS.GTK_WIDGET_WINDOW (handle);
-	}
+	if ((style & SWT.SINGLE) != 0)  return OS.GTK_WIDGET_WINDOW (handle);
 	return OS.gtk_text_view_get_window (handle, OS.GTK_TEXT_WINDOW_TEXT);
 }
 
@@ -1271,7 +1283,6 @@ public void setTabs (int tabs) {
 	
 void setTabStops (int tabs) {
 	if ((style & SWT.SINGLE) != 0) return;
-	if (tabs < 0) return;
 	int tabWidth = getTabWidth (tabs);
 	int tabArray = OS.pango_tab_array_new (1, false);
 	OS.pango_tab_array_set_tab (tabArray, 0, OS.PANGO_TAB_LEFT, tabWidth);
