@@ -18,12 +18,12 @@ import org.eclipse.swt.graphics.*;
 class ImageList {
 	int handle, refCount;
 	Image [] images;
-	static final int CREATE_FLAGS;
+	static final int COLOR_FLAGS;
 	static {
 		if (OS.IsWinCE) {
-			CREATE_FLAGS = OS.ILC_MASK | OS.ILC_COLOR;
+			COLOR_FLAGS = OS.ILC_COLOR;
 		} else {
-			int flags = OS.ILC_MASK;
+			int flags = 0;
 			if (OS.COMCTL32_MAJOR >= 6) {
 				flags |= OS.ILC_COLOR32;
 			} else {
@@ -52,12 +52,12 @@ class ImageList {
 						flags |= OS.ILC_COLOR;
 				}
 			}
-			CREATE_FLAGS = flags;
+			COLOR_FLAGS = flags;
 		}
 	}
 	
 public ImageList () {
-	handle = OS.ImageList_Create (32, 32, CREATE_FLAGS, 16, 16);
+	handle = OS.ImageList_Create (32, 32, COLOR_FLAGS | OS.ILC_MASK, 16, 16);
 	images = new Image [4];
 }
 
