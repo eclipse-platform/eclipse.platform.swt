@@ -357,21 +357,35 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 }
 
 public void test_setClippingIIII() {
-//	gc.setClipping(0,5,10,20);
-//	Rectangle rect = gc.getClipping();
-//	assertTrue(rect.x == 0);
-//	assertTrue(rect.y == 5);
-//	assertTrue(rect.width == 10);
-//	assertTrue(rect.height == 20);
+	Canvas canvas = new Canvas(shell, SWT.BORDER);
+	shell.setSize(110,110);
+	canvas.setSize(100,100);
+	shell.open();
+	GC testGc = new GC(canvas);
+	testGc.setClipping(0,5,10,20);
+	Rectangle rect = testGc.getClipping();
+	assertTrue(rect.x == 0);
+	assertTrue(rect.y == 5);
+	assertTrue(rect.width == 10);
+	assertTrue(rect.height == 20);
+	testGc.dispose();
+	canvas.dispose();
 }
 
 public void test_setClippingLorg_eclipse_swt_graphics_Rectangle() {
-//	gc.setClipping(new Rectangle(0,5,10,20));
-//	Rectangle rect = gc.getClipping();
-//	assertTrue(rect.x == 0);
-//	assertTrue(rect.y == 5);
-//	assertTrue(rect.width == 10);
-//	assertTrue(rect.height == 20);
+	Canvas canvas = new Canvas(shell, SWT.BORDER);
+	shell.setSize(110,110);
+	canvas.setSize(100,100);
+	shell.open();
+	GC testGc = new GC(canvas);
+	testGc.setClipping(new Rectangle(0,5,10,20));
+	Rectangle rect = testGc.getClipping();
+	assertTrue(rect.x == 0);
+	assertTrue(rect.y == 5);
+	assertTrue(rect.width == 10);
+	assertTrue(rect.height == 20);
+	testGc.dispose();
+	canvas.dispose();
 }
 
 public void test_setClippingLorg_eclipse_swt_graphics_Region() {
