@@ -420,6 +420,10 @@ public int getSelectionIndex () {
 	return OS.gtk_notebook_get_current_page (handle);
 }
 
+int gtk_focus (int widget, int directionType) {
+	return 0;
+}
+
 int gtk_switch_page (int widget, int page, int page_num) {
 	int index = OS.gtk_notebook_get_current_page (handle);
 	if (index != -1) {

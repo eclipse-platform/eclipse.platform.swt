@@ -1700,7 +1700,7 @@ int gtk_expose_event (int widget, int eventPtr) {
 	return 0;
 }
 
-int gtk_focus (int widget, int event) {
+int gtk_focus (int widget, int directionType) {
 	/* Stop GTK traversal for every widget */
 	return 1;
 }
