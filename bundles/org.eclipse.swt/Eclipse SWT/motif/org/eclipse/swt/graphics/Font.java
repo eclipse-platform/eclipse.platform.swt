@@ -552,9 +552,11 @@ int wildcardXfld(FontData[] fds, int index) {
 	while (index < fds.length) {
 		FontData fd = fds[index];
 		
-		/* Bug in XLib. In Japanese AIX only, in some cases attempting to load a
-		* bold font might take a very long time if there are no Japanese bold fonts
-		* available. The fix is to wildcard the fields slant, setWidth, and weight first.
+		/*
+		* Bug in Motif. In Japanese AIX only, in some cases loading a
+		* bold Japanese font takes a very long time (10 minutes) when
+		* there are no Japanese bold fonts available. The fix is to
+		* wildcard the fields slant, setWidth, and weight first.
 		*/
 		if (OS.IsDBLocale && OS.IsAIX) {
 			fd.slant = null;
