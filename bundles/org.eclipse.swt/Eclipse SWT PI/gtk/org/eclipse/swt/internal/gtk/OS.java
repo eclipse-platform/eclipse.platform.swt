@@ -260,14 +260,14 @@ public class OS {
 	public static final byte[] preedit_changed = signal("preedit_changed");
 	public static final byte[] realize = signal("realize");
 	public static final byte[] row_activated = signal("row_activated");
-	public static final byte[] row_collapsed = signal("row_collapsed");
-	public static final byte[] row_expanded = signal("row_expanded");
 	public static final byte[] select = signal("select");
 	public static final byte[] select_child = signal("select_child");
 	public static final byte[] show = signal("show");
 	public static final byte[] show_help = signal("show_help");
 	public static final byte[] size_allocate = signal("size_allocate");
 	public static final byte[] switch_page = signal("switch_page");
+	public static final byte[] test_collapse_row = signal("test_collapse_row");
+	public static final byte[] test_expand_row = signal("test_expand_row");
 	public static final byte[] toggled = signal("toggled");
 	public static final byte[] unmap_event = signal("unmap_event");
 	public static final byte[] unrealize = signal("unrealize");

@@ -641,7 +641,7 @@ int gtk_row_activated (int tree, int path, int column) {
 	return 0;
 }
 
-int gtk_row_collapsed (int tree, int iter, int path) {
+int gtk_test_collapse_row (int tree, int iter, int path) {
 	int [] index = new int [1];
 	OS.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, index, -1);
 	Event event = new Event ();
@@ -650,16 +650,12 @@ int gtk_row_collapsed (int tree, int iter, int path) {
 	return 0;
 }
 
-int gtk_row_expanded (int tree, int iter, int path) {
+int gtk_test_expand_row (int tree, int iter, int path) {
 	int [] index = new int [1];
 	OS.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, index, -1);
 	Event event = new Event ();
 	event.item = items [index [0]];
 	sendEvent (SWT.Expand, event);
-	int selection = OS.gtk_tree_view_get_selection (handle);
-	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-	OS.gtk_tree_view_expand_row (handle, path, false);
-	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	return 0;
 }
 
@@ -715,8 +711,8 @@ void hookEvents () {
 	int selection = OS.gtk_tree_view_get_selection(handle);
 	OS.g_signal_connect_after (selection, OS.changed, display.windowProc2, CHANGED);
 	OS.g_signal_connect (handle, OS.row_activated, display.windowProc4, ROW_ACTIVATED);
-	OS.g_signal_connect (handle, OS.row_expanded, display.windowProc4, ROW_EXPANDED);
-	OS.g_signal_connect (handle, OS.row_collapsed, display.windowProc4, ROW_COLLAPSED);
+	OS.g_signal_connect (handle, OS.test_expand_row, display.windowProc4, TEST_EXPAND_ROW);
+	OS.g_signal_connect (handle, OS.test_collapse_row, display.windowProc4, TEST_COLLAPSE_ROW);
 	if (checkRenderer != 0) {
 		OS.g_signal_connect (checkRenderer, OS.toggled, display.windowProc3, TOGGLED);
 	}

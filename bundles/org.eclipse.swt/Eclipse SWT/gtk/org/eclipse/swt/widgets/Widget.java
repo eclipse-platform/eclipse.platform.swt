@@ -105,14 +105,14 @@ public abstract class Widget {
 	static final int PREEDIT_CHANGED = 26;
 	static final int REALIZE = 40;
 	static final int ROW_ACTIVATED = 27;
-	static final int ROW_COLLAPSED = 28;
-	static final int ROW_EXPANDED = 29;
 	static final int SELECT = 30;
 	static final int SELECT_CHILD = 31;
 	static final int SHOW = 32;
 	static final int SHOW_HELP = 33;
 	static final int SIZE_ALLOCATE = 34;
 	static final int SWITCH_PAGE = 35;
+	static final int TEST_COLLAPSE_ROW = 28;
+	static final int TEST_EXPAND_ROW = 29;
 	static final int TOGGLED = 36;
 	static final int UNMAP_EVENT = 37;
 	static final int UNREALIZE = 38;
@@ -616,14 +616,6 @@ int gtk_row_activated (int tree, int path, int column) {
 	return 0;
 }
 
-int gtk_row_collapsed (int tree, int iter, int path) {
-	return 0;
-}
-
-int gtk_row_expanded (int tree, int iter, int path) {
-	return 0;
-}
-
 int gtk_select (int item) {
 	return 0;
 }
@@ -645,6 +637,14 @@ int gtk_size_allocate (int widget, int allocation) {
 }
 
 int gtk_switch_page (int widget, int page, int page_num) {
+	return 0;
+}
+
+int gtk_test_collapse_row (int tree, int iter, int path) {
+	return 0;
+}
+
+int gtk_test_expand_row (int tree, int iter, int path) {
 	return 0;
 }
 
@@ -1217,9 +1217,9 @@ int windowProc (int handle, int arg0, int arg1, int user_data) {
 		case DELETE_RANGE: return gtk_delete_range (handle, arg0, arg1);
 		case DELETE_TEXT: return gtk_delete_text (handle, arg0, arg1);
 		case ROW_ACTIVATED: return gtk_row_activated (handle, arg0, arg1);
-		case ROW_COLLAPSED: return gtk_row_collapsed (handle, arg0, arg1);
-		case ROW_EXPANDED: return gtk_row_expanded(handle, arg0, arg1);
 		case SWITCH_PAGE: return gtk_switch_page (handle, arg0, arg1);
+		case TEST_COLLAPSE_ROW: return gtk_test_collapse_row (handle, arg0, arg1);
+		case TEST_EXPAND_ROW: return gtk_test_expand_row(handle, arg0, arg1);
 		default: return 0;
 	}
 }

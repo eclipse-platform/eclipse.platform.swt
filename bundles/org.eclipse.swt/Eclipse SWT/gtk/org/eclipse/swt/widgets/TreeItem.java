@@ -486,14 +486,14 @@ public void setExpanded (boolean expanded) {
 	checkWidget();
 	int path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
 	if (expanded) {
-		OS.g_signal_handlers_block_matched (parent.handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, ROW_EXPANDED);
+		OS.g_signal_handlers_block_matched (parent.handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_EXPAND_ROW);
 		OS.gtk_tree_view_expand_row (parent.handle, path, false);
-		OS.g_signal_handlers_unblock_matched (parent.handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, ROW_EXPANDED);
+		OS.g_signal_handlers_unblock_matched (parent.handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_EXPAND_ROW);
 	} else {
-		OS.g_signal_handlers_block_matched (parent.handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, ROW_COLLAPSED);
+		OS.g_signal_handlers_block_matched (parent.handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_COLLAPSE_ROW);
 		OS.gtk_widget_realize (parent.handle);
 		OS.gtk_tree_view_collapse_row (parent.handle, path);
-		OS.g_signal_handlers_unblock_matched (parent.handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, ROW_COLLAPSED);
+		OS.g_signal_handlers_unblock_matched (parent.handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_COLLAPSE_ROW);
 	}
 	OS.gtk_tree_path_free (path);
 }
