@@ -326,6 +326,9 @@ public void test_getDoubleClickEnabled(){
 }
 
 public void test_getEchoChar(){
+	// tests a SINGLE line text editor
+	makeCleanEnvironment(true);
+	
 	text.setEchoChar('a');
 	assertEquals('a', text.getEchoChar());
 }
@@ -606,6 +609,9 @@ public void test_setDoubleClickEnabledZ(){
 }
 
 public void test_setEchoCharC(){
+	// tests a SINGLE line text editor
+	makeCleanEnvironment(true);
+	
 	for (int i=0; i<128; i++){
 		text.setEchoChar((char) i);
 		assertEquals((char)i, text.getEchoChar());
