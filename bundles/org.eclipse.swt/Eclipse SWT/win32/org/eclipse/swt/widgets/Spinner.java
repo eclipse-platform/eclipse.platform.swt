@@ -25,7 +25,7 @@ import org.eclipse.swt.events.*;
  * <dt><b>Styles:</b></dt>
  * <dd>READ_ONLY</dd>
  * <dt><b>Events:</b></dt>
- * <dd>Selection, Modify, Verify</dd>
+ * <dd>Selection, Modify</dd>
  * </dl>
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
@@ -72,7 +72,6 @@ class Spinner extends Composite {
  * </ul>
  *
  * @see SWT#READ_ONLY
- * @see SWT#WRAP
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -128,7 +127,7 @@ void createHandle () {
         hInstance,
         null);
 	if (hwndText == 0) error (SWT.ERROR_NO_HANDLES);
-	int upDownStyle = OS.WS_CHILD | OS.WS_VISIBLE | OS.UDS_AUTOBUDDY | OS.UDS_WRAP;
+	int upDownStyle = OS.WS_CHILD | OS.WS_VISIBLE | OS.UDS_AUTOBUDDY | OS.UDS_WRAP | OS.UDS_SETBUDDYINT;
 	hwndUpDown = OS.CreateWindowEx (
         0,
         UpDownClass,
@@ -225,7 +224,7 @@ public void addSelectionListener(SelectionListener listener) {
  * @see VerifyListener
  * @see #removeVerifyListener
  */
-public void addVerifyListener (VerifyListener listener) {
+void addVerifyListener (VerifyListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
@@ -433,6 +432,25 @@ public int getSelection () {
 	}
 }
 
+int getSelectionText () {
+	int length = OS.GetWindowTextLength (hwndText);
+	TCHAR buffer = new TCHAR (getCodePage (), length + 1);
+	OS.GetWindowText (hwndText, buffer, length + 1);
+	String string = buffer.toString (0, length);
+	try {
+		int value = Integer.parseInt (string);
+		int [] max = new int [1], min = new int [1];
+		OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, min, max);
+		if (min [0] <= value && value <= max [0]) return value;
+	} catch (NumberFormatException e) {
+	}
+	if (OS.IsWinCE) {
+		return OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xFFFF;
+	} else {
+		return OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
+	}
+}
+
 int mbcsToWcsPos (int mbcsPos) {
 	if (mbcsPos <= 0) return 0;
 	if (OS.IsUnicode) return mbcsPos;
@@ -539,7 +557,7 @@ public void removeSelectionListener(SelectionListener listener) {
  * @see VerifyListener
  * @see #addVerifyListener
  */
-public void removeVerifyListener (VerifyListener listener) {
+void removeVerifyListener (VerifyListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
@@ -556,6 +574,7 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 		return true;
 	}
 	if (event.character == 0) return true;
+	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return true;
 	char key = event.character;
 	int stateMask = event.stateMask;
 	
@@ -756,17 +775,17 @@ public void setSelection (int value) {
 	setSelection (value, false);
 }
 
-int setSelection (int value, boolean notify) {
+void setSelection (int value, boolean notify) {
 	OS.SendMessage (hwndUpDown , OS.IsWinCE ? OS.UDM_SETPOS : OS.UDM_SETPOS32, 0, value);
-	String oldText = String.valueOf (value);
-	int length = OS.GetWindowTextLength (hwndText);
-	String newText = verifyText (oldText, 0, length, null, false);
-	if (newText != null) {
-		TCHAR buffer = new TCHAR (getCodePage (), newText, true);
-		OS.SetWindowText (hwndText, buffer);
+	String string = String.valueOf (value);
+	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+		int length = OS.GetWindowTextLength (hwndText);
+		string = verifyText (string, 0, length, null, false);
+		if (string == null) return;
 	}
+	TCHAR buffer = new TCHAR (getCodePage (), string, true);
+	OS.SetWindowText (hwndText, buffer);
 	if (notify) postEvent (SWT.Selection);
-	return value;
 }
 
 void subclass () {
@@ -927,6 +946,8 @@ LRESULT wmChar (int hwnd, int wParam, int lParam) {
 	*/
 	switch (wParam) {
 		case SWT.CR:
+			int value = getSelectionText ();
+			setSelection (value, true);
 			postEvent (SWT.DefaultSelection);
 			// FALL THROUGH		
 		case SWT.TAB:
@@ -937,6 +958,7 @@ LRESULT wmChar (int hwnd, int wParam, int lParam) {
 
 LRESULT wmClipboard (int hwndText, int msg, int wParam, int lParam) {
 	if ((style & SWT.READ_ONLY) != 0) return null;
+	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return null;
 	boolean call = false;
 	int [] start = new int [1], end = new int [1];
 	String oldText = null, newText = null;
@@ -1027,18 +1049,12 @@ LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
 		case OS.VK_NEXT: delta = -pageIncrement; break;
 	}
 	if (delta != 0) {
-		int pos;
-		if (OS.IsWinCE) {
-			pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xFFFF;
-		} else {
-			pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
-		}
-		pos += delta;
+		int value = getSelectionText () + delta;
 		int [] max = new int [1], min = new int [1];
 		OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, min, max);
-		if (pos < min [0]) pos = max [0];
-		if (pos > max [0]) pos = min [0];
-		setSelection (pos, true);
+		if (value < min [0]) value = max [0];
+		if (value > max [0]) value = min [0];
+		setSelection (value, true);
 	}
 	
 	/*  Stop the edit control from moving the caret */
@@ -1051,12 +1067,8 @@ LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
 }
 
 LRESULT wmKillFocus (int hwnd, int wParam, int lParam) {
-	int length = OS.GetWindowTextLength (hwndText);
-	if (length == 0) {
-		int [] min = new int [1];
-		OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, min, null);
-		setSelection (min [0], true);
-	}
+	int value = getSelectionText ();
+	setSelection (value, true);
 	return super.wmKillFocus (hwnd, wParam, lParam);
 }
 
@@ -1064,13 +1076,7 @@ LRESULT wmScrollChild (int wParam, int lParam) {
 	int code = wParam & 0xFFFF;
 	switch (code) {
 		case OS.SB_THUMBPOSITION:
-			int pos;
-			if (OS.IsWinCE) {
-				pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xFFFF;
-			} else {
-				pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
-			}
-			setSelection (pos, true);
+			postEvent (SWT.Selection);
 			break;
 	}
 	return super.wmScrollChild (wParam, lParam);

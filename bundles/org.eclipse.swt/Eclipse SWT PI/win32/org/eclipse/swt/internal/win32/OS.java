@@ -1224,6 +1224,7 @@ public class OS extends Platform {
 	public static final int UDM_SETPOS = 0x467;
 	public static final int UDM_SETPOS32 = 0x0471;
 	public static final int UDS_AUTOBUDDY = 0x0010;
+	public static final int UDS_SETBUDDYINT = 0x0002;
 	public static final int UDS_WRAP = 0x0001;
 	public static final int UIS_INITIALIZE = 3;
 	public static final String UPDOWN_CLASS = "msctls_updown32"; //$NON-NLS-1$
