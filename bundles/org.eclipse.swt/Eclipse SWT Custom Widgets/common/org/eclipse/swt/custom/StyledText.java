@@ -605,7 +605,7 @@ public class StyledText extends Canvas {
 		this.lineCount = lineCount;
 		this.parent = parent;
 		lineWidth = new int[lineCount];
-		reset(0, lineCount);
+		reset(0, lineCount, false);
 	}
 	/**
 	 * Calculates the width of each line in the given range if it has
@@ -701,7 +701,7 @@ public class StyledText extends Canvas {
 		int[] newLines = new int[Math.max(size * 2, size + numLines)];
 		System.arraycopy(lineWidth, 0, newLines, 0, size);
 		lineWidth = newLines;
-		reset(size, lineWidth.length - size);
+		reset(size, lineWidth.length - size, false);
 	}
 	/**
 	 * Returns the width of the longest measured line.
@@ -764,8 +764,12 @@ public class StyledText extends Canvas {
 	 *
 	 * @param startLine	the first line to reset
 	 * @param lineCount the number of lines to reset
+	 * @param calculateMaxWidth true=if the widest line is being 
+	 * 	reset the maximum width of all remaining cached lines is 
+	 * 	calculated. false=the maximum width is set to 0 if the 
+	 * 	widest line is being reset.
 	 */
-	public void reset(int startLine, int lineCount) {
+	public void reset(int startLine, int lineCount, boolean calculateMaxWidth) {
 		int endLine = startLine + lineCount;
 		
 		if (startLine < 0 || endLine > lineWidth.length) {
@@ -779,6 +783,14 @@ public class StyledText extends Canvas {
 		if (maxWidthLineIndex >= startLine && maxWidthLineIndex < endLine) {
 			maxWidth = 0;
 			maxWidthLineIndex = -1;
+			if (calculateMaxWidth) {
+				for (int i = 0; i < lineCount; i++) {
+					if (lineWidth[i] > maxWidth) {
+						maxWidth = lineWidth[i];
+						maxWidthLineIndex = i;
+					}
+				}			
+			}
 		}
 	}
 	/** 
@@ -797,7 +809,7 @@ public class StyledText extends Canvas {
 		if (startLine == 0 && replaceLineCount == lineCount) {
 			lineCount = newLineCount;
 			lineWidth = new int[lineCount];
-			reset(0, lineCount);
+			reset(0, lineCount, false);
 			maxWidth = 0;
 		}
 		else {
@@ -4982,7 +4994,7 @@ public void redraw() {
 	
 	super.redraw();
 	itemCount = getPartialBottomIndex() - topIndex + 1;
-	contentWidth.reset(topIndex, itemCount);
+	contentWidth.reset(topIndex, itemCount, true);
 	contentWidth.calculate(topIndex, itemCount);
 	setHorizontalScrollBar();
 }
@@ -5027,7 +5039,7 @@ public void redraw(int x, int y, int width, int height, boolean all) {
 		// reset all lines in the redraw rectangle
 		startLine = Math.min(startLine, lineCount);				
 		itemCount = Math.min(endLine, lineCount) - startLine;		
-		contentWidth.reset(startLine, itemCount);		
+		contentWidth.reset(startLine, itemCount, true);
 		// only calculate the visible lines
 		itemCount = getPartialBottomIndex() - topIndex + 1;
 		contentWidth.calculate(topIndex, itemCount);
@@ -5217,7 +5229,7 @@ public void redrawRange(int start, int length, boolean clearBackground) {
 	
 	// reset all affected lines but let the redraw recalculate only 
 	// those that are visible.
-	contentWidth.reset(firstLine, lastLine - firstLine);
+	contentWidth.reset(firstLine, lastLine - firstLine, true);
 	internalRedrawRange(start, length, clearBackground);
 }
 /**
@@ -6257,7 +6269,7 @@ public void setStyleRange(StyleRange range) {
 	
 		// reset all lines affected by the style change but let the redraw
 		// recalculate only those that are visible.
-		contentWidth.reset(firstLine, lastLine - firstLine);
+		contentWidth.reset(firstLine, lastLine - firstLine, true);
 		internalRedrawRange(range.start, range.length, true);
 		if (redrawFirstLine) {
 			// redraw starting at the style change start offset since
@@ -6278,7 +6290,7 @@ public void setStyleRange(StyleRange range) {
 	else {
 		// reset all lines but let the redraw recalculate only those that 
 		// are visible.
-		contentWidth.reset(0, content.getLineCount());
+		contentWidth.reset(0, content.getLineCount(), false);
 		redraw();
 	}
 	// make sure that the caret is positioned correctly.
@@ -6328,11 +6340,11 @@ public void setStyleRanges(StyleRange[] ranges) {
 		} 	
 		lastLine = content.getLineAtOffset(lastEnd);
 		// reset all lines affected by the style change
-		contentWidth.reset(firstLine, lastLine - firstLine);
+		contentWidth.reset(firstLine, lastLine - firstLine, true);
  	}
  	else {
 		// reset all lines
-		contentWidth.reset(0, content.getLineCount());
+		contentWidth.reset(0, content.getLineCount(), false);
  	}
 	defaultLineStyler.setStyleRanges(ranges);
 	redraw(); // should only redraw affected area to avoid flashing
