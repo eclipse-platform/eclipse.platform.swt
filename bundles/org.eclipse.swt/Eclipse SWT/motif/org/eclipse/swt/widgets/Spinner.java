@@ -187,8 +187,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	}
 	if (hHint == SWT.DEFAULT) {
 		height = getFontHeight (font.handle);
-	}	
+	}
 	Rectangle trim = computeTrim (0, 0, width, height);
+	if (hHint == SWT.DEFAULT) {
+		int [] argList = {OS.XmNarrowSize, 0};
+		OS.XtGetValues (handle, argList, argList.length / 2);
+		trim.height = Math.max (trim.height, argList [1] * 2);
+	}
 	return new Point (trim.width, trim.height);
 }
 public Rectangle computeTrim (int x, int y, int width, int height) {
@@ -209,7 +214,6 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	y -= argList1 [7] + argList2 [1] + argList2 [3] + rect.y;
 	width += (argList1 [5] + argList2 [1] + argList2 [3] + rect.x) * 2 + argList1 [3];
 	height += (argList1 [7] + argList2 [1] + argList2 [3] + rect.y) * 2;
-	height = Math.max (height, argList1 [3] * 2);
 	return new Rectangle (x, y, width, height);
 }
 /**
