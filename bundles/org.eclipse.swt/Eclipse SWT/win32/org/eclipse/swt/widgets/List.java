@@ -976,25 +976,16 @@ public void removeSelectionListener(SelectionListener listener) {
 public void select (int [] indices) {
 	checkWidget ();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if ((style & SWT.SINGLE) != 0) {
-		int count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
-		for (int i=0; i<indices.length; i++) {
-			int index = indices [i];
-			if (0 <= index && index < count) {
-				select (index);
-				return;
-			}
-		}
-		return;
-	}
-	int focusIndex = getFocusIndex ();
 	for (int i=0; i<indices.length; i++) {
 		int index = indices [i];
 		if (index != -1) {
-			OS.SendMessage (handle, OS.LB_SETSEL, 1, index);
+			select (index);
+			if ((style & SWT.SINGLE) != 0) {
+				int count = getItemCount ();
+				if (0 <= index && index < count) return;
+			}
 		}
 	}
-	if (focusIndex != -1) setFocusIndex (focusIndex);
 }
 
 /**
@@ -1032,6 +1023,11 @@ public void select (int index) {
 		focusIndex = OS.SendMessage (handle, OS.LB_GETCARETINDEX, 0, 0);
 		OS.SendMessage (handle, OS.LB_SETSEL, 1, index);
 	}
+	if ((style & SWT.MULTI) != 0) {
+		if (focusIndex != -1) {
+			OS.SendMessage (handle, OS.LB_SETCARETINDEX, index, 0);
+		}
+	}
 	OS.SendMessage (handle, OS.LB_SETTOPINDEX, topIndex, 0);
 	if (redraw) {
 		OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
@@ -1039,11 +1035,6 @@ public void select (int index) {
 		OS.InvalidateRect (handle, itemRect, true);
 		if (selectedRect != null) {
 			OS.InvalidateRect (handle, selectedRect, true);
-		}
-	}
-	if ((style & SWT.MULTI) != 0) {
-		if (focusIndex != -1) {
-			OS.SendMessage (handle, OS.LB_SETCARETINDEX, index, 0);
 		}
 	}
 }
@@ -1355,6 +1346,7 @@ public void setSelection (String [] items) {
 					* for single-select lists clears the previous
 					* selection.
 					*/
+					showSelection ();
 					return;
 				}
 				index++;
@@ -1506,5 +1498,7 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 	}
 	return super.wmCommandChild (wParam, lParam);
 }
+
+
 
 }
