@@ -307,6 +307,11 @@ void deregister () {
 	WidgetTable.remove (listHandle);
 }
 
+int fontHandle () {
+	if (entryHandle != 0) return entryHandle;
+	return super.fontHandle ();
+}
+
 void hookEvents () {
 	// TO DO - expose, enter/exit, focus in/out
 	super.hookEvents ();
@@ -383,6 +388,30 @@ public void deselect (int index) {
 public void deselectAll () {
 	checkWidget();
 	setItems (getItems ());
+}
+
+GdkColor getBackgroundColor () {
+	int fontHandle = fontHandle ();
+	GtkStyle style = new GtkStyle ();
+	OS.memmove(style, OS.gtk_widget_get_style (fontHandle));
+	GdkColor color = new GdkColor ();
+	color.pixel = style.base0_pixel;
+	color.red = style.base0_red;
+	color.green = style.base0_green;
+	color.blue = style.base0_blue;
+	return color;
+}
+
+GdkColor getForegroundColor () {
+	int fontHandle = fontHandle ();
+	GtkStyle style = new GtkStyle ();
+	OS.memmove(style, OS.gtk_widget_get_style (fontHandle));
+	GdkColor color = new GdkColor ();
+	color.pixel = style.text0_pixel;
+	color.red = style.text0_red;
+	color.green = style.text0_green;
+	color.blue = style.text0_blue;
+	return color;
 }
 
 /**

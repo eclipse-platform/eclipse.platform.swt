@@ -1336,6 +1336,7 @@ public FontMetrics getFontMetrics() {
 	fm.descent = OS.PANGO_PIXELS(OS.pango_font_metrics_get_descent(metrics));
 	fm.averageCharWidth = OS.PANGO_PIXELS(OS.pango_font_metrics_get_approximate_char_width(metrics));
 	fm.height = fm.ascent + fm.descent;
+	OS.pango_font_metrics_unref(metrics);
 	return fm;
 }
 

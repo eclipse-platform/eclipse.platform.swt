@@ -1877,7 +1877,6 @@ public void setBackground (Color color) {
 }
 
 void setBackgroundColor (GdkColor color) {
-	if (fixedHandle != 0) OS.gtk_widget_modify_bg (fixedHandle, 0, color);
 	OS.gtk_widget_modify_bg (handle, 0, color);
 }
 
@@ -2035,7 +2034,6 @@ public void setForeground (Color color) {
 }
 
 void setForegroundColor (GdkColor color) {
-	if (fixedHandle != 0) OS.gtk_widget_modify_fg (fixedHandle, 0, color);
 	OS.gtk_widget_modify_fg (handle, 0, color);
 }
 

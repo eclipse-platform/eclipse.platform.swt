@@ -424,6 +424,7 @@ public void setAlignment (int alignment) {
 
 void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
+	OS.gtk_widget_modify_bg (fixedHandle, 0, color);
 	OS.gtk_widget_modify_bg (labelHandle, 0, color);
 	OS.gtk_widget_modify_bg (pixmapHandle, 0, color);
 }
@@ -436,6 +437,7 @@ void setFontDescription (int font) {
 
 void setForegroundColor (GdkColor color) {
 	super.setForegroundColor (color);
+	OS.gtk_widget_modify_fg (fixedHandle, 0, color);
 	OS.gtk_widget_modify_fg (labelHandle, 0, color);
 	OS.gtk_widget_modify_fg (pixmapHandle, 0, color);
 }

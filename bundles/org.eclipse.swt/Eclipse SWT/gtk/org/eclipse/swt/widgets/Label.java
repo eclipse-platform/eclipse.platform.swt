@@ -324,6 +324,16 @@ public void setAlignment (int alignment) {
 	}
 }
 
+void setBackgroundColor (GdkColor color) {
+	super.setBackgroundColor (color);
+	OS.gtk_widget_modify_bg (fixedHandle, 0, color);
+}
+
+void setForegroundColor (GdkColor color) {
+	super.setForegroundColor (color);
+	OS.gtk_widget_modify_fg (fixedHandle, 0, color);
+}
+
 /**
  * Sets the receiver's image to the argument, which may be
  * null indicating that no image should be displayed.

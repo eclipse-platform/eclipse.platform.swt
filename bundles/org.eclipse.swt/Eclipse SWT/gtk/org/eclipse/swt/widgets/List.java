@@ -198,8 +198,8 @@ void createHandle (int index) {
 	if ((style & SWT.BORDER) != 0) {
 		OS.gtk_clist_set_shadow_type(handle, OS.GTK_SHADOW_ETCHED_IN);
 	}
-	int hsp = (style & SWT.H_SCROLL) == 0 ? OS.GTK_POLICY_NEVER : OS.GTK_POLICY_AUTOMATIC;
-	int vsp = (style & SWT.V_SCROLL) == 0 ? OS.GTK_POLICY_NEVER : OS.GTK_POLICY_AUTOMATIC;
+	int hsp = (style & SWT.H_SCROLL) != 0 ? OS.GTK_POLICY_AUTOMATIC : OS.GTK_POLICY_NEVER;
+	int vsp = (style & SWT.V_SCROLL) != 0 ? OS.GTK_POLICY_AUTOMATIC : OS.GTK_POLICY_NEVER;
 	OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
 }
 
@@ -310,6 +310,18 @@ public void deselectAll () {
 	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
 	OS.gtk_clist_unselect_all (handle);
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
+}
+
+GdkColor getBackgroundColor () {
+	int fontHandle = fontHandle ();
+	GtkStyle style = new GtkStyle ();
+	OS.memmove(style, OS.gtk_widget_get_style (fontHandle));
+	GdkColor color = new GdkColor ();
+	color.pixel = style.base0_pixel;
+	color.red = style.base0_red;
+	color.green = style.base0_green;
+	color.blue = style.base0_blue;
+	return color;
 }
 
 /**

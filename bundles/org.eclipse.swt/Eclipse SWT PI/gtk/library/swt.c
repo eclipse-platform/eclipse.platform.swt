@@ -366,6 +366,20 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1strfreev
 	g_strfreev((gchar **)arg0);
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1atom_1intern
+	(JNIEnv *env, jclass that, jbyteArray arg0, jboolean arg1)
+{
+	jbyte *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("gdk_1atom_1intern\n")
+
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	rc = (jint)gdk_atom_intern((const gchar *)lparg0, (gboolean)arg1);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	return rc;
+}
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1beep
 	(JNIEnv *env, jclass that)
 {
@@ -1302,20 +1316,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1arrow_1set
 	gtk_arrow_set((GtkArrow *)arg0, (GtkArrowType)arg1, (GtkArrowType)arg2);
 }
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1atom_1intern
-	(JNIEnv *env, jclass that, jbyteArray arg0, jboolean arg1)
-{
-	jbyte *lparg0=NULL;
-	jint rc;
-
-	DEBUG_CALL("gtk_1atom_1intern\n")
-
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
-	rc = (jint)gtk_atom_intern((const gchar *)lparg0, (gboolean)arg1);
-	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	return rc;
-}
-
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1box_1pack_1end
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jboolean arg3, jint arg4)
 {
@@ -2177,12 +2177,36 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1entry_1append_1
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 }
 
+JNIEXPORT jchar JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1entry_1get_1invisible_1char
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1entry_1get_1invisible_1char\n")
+
+	return (jchar)gtk_entry_get_invisible_char((GtkEntry *)arg0);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1entry_1get_1max_1length
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1entry_1get_1max_1length\n")
+
+	return (jint)gtk_entry_get_max_length((GtkEntry *)arg0);
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1entry_1get_1text
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	DEBUG_CALL("gtk_1entry_1get_1text\n")
 
 	return (jint)gtk_entry_get_text((GtkEntry *)arg0);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1entry_1get_1visibility
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1entry_1get_1visibility\n")
+
+	return (jboolean)gtk_entry_get_visibility((GtkEntry *)arg0);
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1entry_1new
@@ -2199,6 +2223,14 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1entry_1set_1edi
 	DEBUG_CALL("gtk_1entry_1set_1editable\n")
 
 	gtk_entry_set_editable((GtkEntry *)arg0, (gboolean)arg1);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1entry_1set_1invisible_1char
+	(JNIEnv *env, jclass that, jint arg0, jchar arg1)
+{
+	DEBUG_CALL("gtk_1entry_1set_1invisible_1char\n")
+
+	gtk_entry_set_invisible_char((GtkEntry *)arg0, (gint)arg1);
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1entry_1set_1max_1length
@@ -3270,6 +3302,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1get_1de
 	return (jint)gtk_widget_get_default_style();
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1get_1pango_1context
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1widget_1get_1pango_1context\n")
+
+	return (jint)gtk_widget_get_pango_context((GtkWidget *)arg0);
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1get_1parent
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -4130,6 +4170,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1font_1metrics
 	DEBUG_CALL("pango_1font_1metrics_1get_1descent\n")
 
 	return (jint)pango_font_metrics_get_descent((PangoFontMetrics *)arg0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1font_1metrics_1unref
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("pango_1font_1metrics_1unref\n")
+
+	pango_font_metrics_unref((PangoFontMetrics *)arg0);
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1language_1from_1string
