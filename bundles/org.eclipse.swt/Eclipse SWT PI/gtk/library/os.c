@@ -5425,6 +5425,16 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1view_1column_1set_1alignment)
 }
 #endif
 
+#ifndef NO_gtk_1tree_1view_1column_1set_1cell_1data_1func
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1view_1column_1set_1cell_1data_1func)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	NATIVE_ENTER(env, that, "gtk_1tree_1view_1column_1set_1cell_1data_1func\n")
+	gtk_tree_view_column_set_cell_data_func((GtkTreeViewColumn *)arg0, (GtkCellRenderer *)arg1, (GtkTreeCellDataFunc)arg2, (gpointer)arg3, (GtkDestroyNotify)arg4);
+	NATIVE_EXIT(env, that, "gtk_1tree_1view_1column_1set_1cell_1data_1func\n")
+}
+#endif
+
 #ifndef NO_gtk_1tree_1view_1column_1set_1clickable
 JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1view_1column_1set_1clickable)
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)

@@ -277,8 +277,10 @@ public class OS {
 	public static final byte[] window_state_event = signal("window_state_event");
 	
 	/** Properties */
+	public static final byte[] background_gdk = signal("background-gdk");
 	public static final byte[] button_relief = signal("button_relief");
 	public static final byte[] focus_line_width = signal("focus_line_width");
+	public static final byte[] foreground_gdk = signal("foreground-gdk");
 	public static final byte[] interior_focus = signal("interior_focus");
 	public static final byte[] mode = signal("mode");
 	public static final byte[] xalign = signal("xalign");
@@ -770,6 +772,7 @@ public static final synchronized native int gtk_tree_view_column_new();
 public static final synchronized native void gtk_tree_view_column_pack_start(int tree_column, int cell_renderer, boolean expand);
 public static final synchronized native void gtk_tree_view_column_pack_end(int tree_column, int cell_renderer, boolean expand);
 public static final synchronized native void gtk_tree_view_column_set_alignment(int tree_column, float xalign);
+public static final synchronized native void gtk_tree_view_column_set_cell_data_func(int tree_column, int cell_renderer, int func, int func_data, int destroy);
 public static final synchronized native void gtk_tree_view_column_set_clickable(int column, boolean clickable);
 public static final synchronized native void gtk_tree_view_column_set_fixed_width(int column, int fixed_width);
 public static final synchronized native void gtk_tree_view_column_set_resizable(int column, boolean resizable);
