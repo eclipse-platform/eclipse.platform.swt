@@ -153,22 +153,6 @@ public void addControlListener(ControlListener listener) {
 	addListener (SWT.Move, typedListener);
 }
 
-void adjustResizeOrientation (int xChange, int yChange) {
-	/*
-	* If the cursor orientation has not been set in the orientation of
-	* this change then try to set it here.
-	*/
-	if (xChange < 0 && ((style & SWT.LEFT) != 0) && ((cursorOrientation & SWT.RIGHT) == 0)) {
-		cursorOrientation |= SWT.LEFT;
-	} else if (xChange > 0 && ((style & SWT.RIGHT) != 0) && ((cursorOrientation & SWT.LEFT) == 0)) {
-		cursorOrientation |= SWT.RIGHT;
-	} else if (yChange < 0 && ((style & SWT.UP) != 0) && ((cursorOrientation & SWT.DOWN) == 0)) {
-		cursorOrientation |= SWT.UP;
-	} else if (yChange > 0 && ((style & SWT.DOWN) != 0) && ((cursorOrientation & SWT.UP) == 0)) {
-		cursorOrientation |= SWT.DOWN;
-	}
-}
-
 /**
  * Stops displaying the tracker rectangles.  Note that this is not considered
  * to be a cancelation by the user.
@@ -432,7 +416,6 @@ public boolean open () {
 									}
 								}
 							}
-							adjustResizeOrientation (newX [0] - oldX [0], newY [0] - oldY [0]);
 						} else {
 							draw = true;
 						}
@@ -557,7 +540,6 @@ public boolean open () {
 									}
 								}
 							}
-							adjustResizeOrientation (xChange, yChange);
 						} else {
 							draw = true;
 						}
@@ -658,7 +640,19 @@ public void removeControlListener (ControlListener listener) {
 }
 
 void resizeRectangles (int xChange, int yChange) {
-	adjustResizeOrientation (xChange, yChange);
+	/*
+	* If the cursor orientation has not been set in the orientation of
+	* this change then try to set it here.
+	*/
+	if (xChange < 0 && ((style & SWT.LEFT) != 0) && ((cursorOrientation & SWT.RIGHT) == 0)) {
+		cursorOrientation |= SWT.LEFT;
+	} else if (xChange > 0 && ((style & SWT.RIGHT) != 0) && ((cursorOrientation & SWT.LEFT) == 0)) {
+		cursorOrientation |= SWT.RIGHT;
+	} else if (yChange < 0 && ((style & SWT.UP) != 0) && ((cursorOrientation & SWT.DOWN) == 0)) {
+		cursorOrientation |= SWT.UP;
+	} else if (yChange > 0 && ((style & SWT.DOWN) != 0) && ((cursorOrientation & SWT.UP) == 0)) {
+		cursorOrientation |= SWT.DOWN;
+	}
 	
 	/*
 	 * If the bounds will flip about the x or y axis then apply the adjustment
