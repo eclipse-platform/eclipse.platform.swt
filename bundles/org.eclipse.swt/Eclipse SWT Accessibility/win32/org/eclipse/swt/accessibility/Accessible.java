@@ -83,7 +83,7 @@ public class Accessible {
 		AddRef();
 	}
 	
-	/**	 
+	/**
 	 * Invokes platform specific functionality to allocate a new accessible object.
 	 * <p>
 	 * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -219,16 +219,14 @@ public class Accessible {
 	 */
 	public void setFocus(int childID) {
 		checkWidget();
-		int id = (childID == ACC.CHILDID_SELF) ? COM.CHILDID_SELF : childID + 1;
-		// TEMP CODE
-//		if (childID == ACC.CHILDID_SELF) {
-//			COM.NotifyWinEvent (COM.EVENT_OBJECT_FOCUS, control.handle, COM.OBJID_WINDOW, id);
-//		}
-		// END TEMP
+		int id;
+		if (childID == ACC.CHILDID_SELF) id = COM.CHILDID_SELF;
+		else if (control instanceof Tree) id = childID; // Tree item childIDs are pointers
+		else id = childID + 1; // All other childIDs are 1-based indices
 		COM.NotifyWinEvent (COM.EVENT_OBJECT_FOCUS, control.handle, COM.OBJID_CLIENT, id);
 	}
 
-	/**	 
+	/**
 	 * Invokes platform specific functionality to dispose an accessible object.
 	 * <p>
 	 * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -247,7 +245,7 @@ public class Accessible {
 		Release();
 	}
 	
-	/**	 
+	/**
 	 * Invokes platform specific functionality to handle a window message.
 	 * <p>
 	 * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
@@ -349,8 +347,10 @@ public class Accessible {
 		if (childID == ACC.CHILDID_NONE) {
 			return iaccessible.accHitTest(xLeft, yTop, pvarChild);
 		}
+		if (childID == ACC.CHILDID_SELF) childID = COM.CHILDID_SELF;
+		else if (!(control instanceof Tree)) childID++; // Tree item childIDs are pointers (not 1-based indices)
 		COM.MoveMemory(pvarChild, new short[] { COM.VT_I4 }, 2);
-		COM.MoveMemory(pvarChild + 8, new int[] { childID + 1 }, 4);
+		COM.MoveMemory(pvarChild + 8, new int[] { childID }, 4);
 		return COM.S_OK;
 	}
 	
@@ -373,7 +373,9 @@ public class Accessible {
 		}
 
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
-		event.childID = (varChild_lVal == COM.CHILDID_SELF) ? ACC.CHILDID_SELF : varChild_lVal - 1;
+		if (varChild_lVal == COM.CHILDID_SELF) event.childID = ACC.CHILDID_SELF;
+		else if (control instanceof Tree) event.childID = varChild_lVal; // Tree item childIDs are pointers
+		else event.childID = varChild_lVal - 1; // All other childIDs are 1-based indices
 		event.x = osLeft;
 		event.y = osTop;
 		event.width = osWidth;
@@ -415,7 +417,9 @@ public class Accessible {
 		}
 
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
-		event.childID = (varChild_lVal == COM.CHILDID_SELF) ? ACC.CHILDID_SELF : varChild_lVal - 1;
+		if (varChild_lVal == COM.CHILDID_SELF) event.childID = ACC.CHILDID_SELF;
+		else if (control instanceof Tree) event.childID = varChild_lVal; // Tree item childIDs are pointers
+		else event.childID = varChild_lVal - 1; // All other childIDs are 1-based indices
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
 			listener.getChild(event);
@@ -474,7 +478,9 @@ public class Accessible {
 		}
 
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
-		event.childID = (varChild_lVal == COM.CHILDID_SELF) ? ACC.CHILDID_SELF : varChild_lVal - 1;
+		if (varChild_lVal == COM.CHILDID_SELF) event.childID = ACC.CHILDID_SELF;
+		else if (control instanceof Tree) event.childID = varChild_lVal; // Tree item childIDs are pointers
+		else event.childID = varChild_lVal - 1; // All other childIDs are 1-based indices
 		event.result = osDefaultAction;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
@@ -508,7 +514,9 @@ public class Accessible {
 		}
 		
 		AccessibleEvent event = new AccessibleEvent(this);
-		event.childID = (varChild_lVal == COM.CHILDID_SELF) ? ACC.CHILDID_SELF : varChild_lVal - 1;
+		if (varChild_lVal == COM.CHILDID_SELF) event.childID = ACC.CHILDID_SELF;
+		else if (control instanceof Tree) event.childID = varChild_lVal; // Tree item childIDs are pointers
+		else event.childID = varChild_lVal - 1; // All other childIDs are 1-based indices
 		event.result = osDescription;
 		for (int i = 0; i < accessibleListeners.size(); i++) {
 			AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
@@ -586,7 +594,9 @@ public class Accessible {
 		}
 
 		AccessibleEvent event = new AccessibleEvent(this);
-		event.childID = (varChild_lVal == COM.CHILDID_SELF) ? ACC.CHILDID_SELF : varChild_lVal - 1;
+		if (varChild_lVal == COM.CHILDID_SELF) event.childID = ACC.CHILDID_SELF;
+		else if (control instanceof Tree) event.childID = varChild_lVal; // Tree item childIDs are pointers
+		else event.childID = varChild_lVal - 1; // All other childIDs are 1-based indices
 		event.result = osHelp;
 		for (int i = 0; i < accessibleListeners.size(); i++) {
 			AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
@@ -628,7 +638,9 @@ public class Accessible {
 		}
 
 		AccessibleEvent event = new AccessibleEvent(this);
-		event.childID = (varChild_lVal == COM.CHILDID_SELF) ? ACC.CHILDID_SELF : varChild_lVal - 1;
+		if (varChild_lVal == COM.CHILDID_SELF) event.childID = ACC.CHILDID_SELF;
+		else if (control instanceof Tree) event.childID = varChild_lVal; // Tree item childIDs are pointers
+		else event.childID = varChild_lVal - 1; // All other childIDs are 1-based indices
 		event.result = osKeyboardShortcut;
 		for (int i = 0; i < accessibleListeners.size(); i++) {
 			AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
@@ -662,7 +674,9 @@ public class Accessible {
 		}
 
 		AccessibleEvent event = new AccessibleEvent(this);
-		event.childID = (varChild_lVal == COM.CHILDID_SELF) ? ACC.CHILDID_SELF : varChild_lVal - 1;
+		if (varChild_lVal == COM.CHILDID_SELF) event.childID = ACC.CHILDID_SELF;
+		else if (control instanceof Tree) event.childID = varChild_lVal; // Tree item childIDs are pointers
+		else event.childID = varChild_lVal - 1; // All other childIDs are 1-based indices
 		event.result = osName;
 		for (int i = 0; i < accessibleListeners.size(); i++) {
 			AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
@@ -689,7 +703,8 @@ public class Accessible {
 		int osRole = COM.ROLE_SYSTEM_CLIENT;
 		int code = iaccessible.get_accRole(varChild_vt, varChild_reserved1, varChild_lVal, varChild_reserved2, pvarRole);
 		if (code == COM.E_INVALIDARG) code = COM.S_FALSE; // proxy doesn't know about app childID
-		if (!(control instanceof Tree) && !(control instanceof Table) && accessibleControlListeners.size() == 0) return code;
+		// TEMPORARY CODE - process tree and table even if there are no apps listening
+		if (accessibleControlListeners.size() == 0 && !(control instanceof Tree || control instanceof Table)) return code;
 		if (code == COM.S_OK) {
 			short[] pvt = new short[1];
 			COM.MoveMemory(pvt, pvarRole, 2);
@@ -795,7 +810,8 @@ public class Accessible {
 		int osState = 0;
 		int code = iaccessible.get_accState(varChild_vt, varChild_reserved1, varChild_lVal, varChild_reserved2, pvarState);
 		if (code == COM.E_INVALIDARG) code = COM.S_FALSE; // proxy doesn't know about app childID
-		if (!(control instanceof Tree) && !(control instanceof Table) && accessibleControlListeners.size() == 0) return code;
+		// TEMPORARY CODE - process tree and table even if there are no apps listening
+		if (accessibleControlListeners.size() == 0 && !(control instanceof Tree || control instanceof Table)) return code;
 		if (code == COM.S_OK) {
 			short[] pvt = new short[1];
 			COM.MoveMemory(pvt, pvarState, 2);
@@ -872,7 +888,9 @@ public class Accessible {
 		}
 
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
-		event.childID = (varChild_lVal == COM.CHILDID_SELF) ? ACC.CHILDID_SELF : varChild_lVal - 1;
+		if (varChild_lVal == COM.CHILDID_SELF) event.childID = ACC.CHILDID_SELF;
+		else if (control instanceof Tree) event.childID = varChild_lVal; // Tree item childIDs are pointers
+		else event.childID = varChild_lVal - 1; // All other childIDs are 1-based indices
 		event.result = osValue;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
@@ -904,13 +922,27 @@ public class Accessible {
 	}
 
 	/* IEnumVARIANT methods: Next, Skip, Reset */
+	/* Retrieve the next celt items in the enumeration sequence. 
+	 * If there are fewer than the requested number of elements left
+	 * in the sequence, retrieve the remaining elements.
+	 * The number of elements actually retrieved is returned in pceltFetched 
+	 * (unless the caller passed in NULL for that parameter).
+	 */
 	int Next(int celt, int rgvar, int pceltFetched) {
-		/* Retrieve the next celt items in the enumeration sequence. 
-		 * If there are fewer than the requested number of elements left
-		 * in the sequence, retrieve the remaining elements.
-		 * The number of elements actually retrieved is returned in pceltFetched 
-		 * (unless the caller passed in NULL for that parameter).
+		/* If there are no listeners, query the proxy for
+		 * its IEnumVariant, and get the Next items from it.
 		 */
+		if (accessibleControlListeners.size() == 0) {
+			int[] ppvObject = new int[1];
+			int code = iaccessible.QueryInterface(COM.IIDIEnumVARIANT, ppvObject);
+			if (code != COM.S_OK) return code;
+			IEnumVARIANT ienumvariant = new IEnumVARIANT(ppvObject[0]);
+			int[] celtFetched = new int[1];
+			code = ienumvariant.Next(celt, rgvar, celtFetched);
+			COM.MoveMemory(pceltFetched, celtFetched, 4);
+			return code;
+		}
+
 		if (rgvar == 0) return COM.E_INVALIDARG;
 		if (pceltFetched == 0 && celt != 1) return COM.E_INVALIDARG;
 		if (enumIndex == 0) {
@@ -962,8 +994,20 @@ public class Accessible {
 		return COM.S_FALSE;
 	}
 	
+	/* Skip over the specified number of elements in the enumeration sequence. */
 	int Skip(int celt) {
-		/* Skip over the specified number of elements in the enumeration sequence. */
+		/* If there are no listeners, query the proxy
+		 * for its IEnumVariant, and tell it to Skip.
+		 */
+		if (accessibleControlListeners.size() == 0) {
+			int[] ppvObject = new int[1];
+			int code = iaccessible.QueryInterface(COM.IIDIEnumVARIANT, ppvObject);
+			if (code != COM.S_OK) return code;
+			IEnumVARIANT ienumvariant = new IEnumVARIANT(ppvObject[0]);
+			code = ienumvariant.Skip(celt);
+			return code;
+		}
+
 		if (celt < 1 ) return COM.E_INVALIDARG;
 		enumIndex += celt;
 		if (enumIndex > (variants.length - 1)) {
@@ -973,8 +1017,20 @@ public class Accessible {
 		return COM.S_OK;
 	}
 	
+	/* Reset the enumeration sequence to the beginning. */
 	int Reset() {
-		/* Reset the enumeration sequence to the beginning. */
+		/* If there are no listeners, query the proxy
+		 * for its IEnumVariant, and tell it to Reset.
+		 */
+		if (accessibleControlListeners.size() == 0) {
+			int[] ppvObject = new int[1];
+			int code = iaccessible.QueryInterface(COM.IIDIEnumVARIANT, ppvObject);
+			if (code != COM.S_OK) return code;
+			IEnumVARIANT ienumvariant = new IEnumVARIANT(ppvObject[0]);
+			code = ienumvariant.Reset();
+			return code;
+		}
+		
 		enumIndex = 0;
 		return COM.S_OK;
 	}
