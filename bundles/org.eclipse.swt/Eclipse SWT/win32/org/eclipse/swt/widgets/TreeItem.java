@@ -211,11 +211,6 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
-void destroyWidget () {
-	super.destroyWidget ();
-	releaseHandle ();
-}
-
 /**
  * Returns the receiver's background color.
  *

@@ -321,6 +321,7 @@ protected void checkWidget () {
  * @see #releaseHandle
  */
 void destroyWidget () {
+	releaseHandle ();
 }
 
 /**

@@ -176,6 +176,7 @@ void createWidget () {
 
 void destroyWidget () {
 	int hwnd = hwndScrollBar (), type = scrollBarType ();
+	releaseHandle ();
 	if (OS.IsWinCE) {
 		/*
 		* This line is intentionally commented.  Currently
