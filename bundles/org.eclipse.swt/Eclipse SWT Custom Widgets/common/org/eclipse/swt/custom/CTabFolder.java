@@ -106,7 +106,7 @@ public class CTabFolder extends Composite {
 	boolean onBottom = false;
 	boolean single = false;
 	boolean simple = true;
-	boolean fixedTabHeight;
+	int fixedTabHeight = SWT.DEFAULT;
 	int tabHeight;
 	
 	/* item management */
@@ -579,7 +579,7 @@ void createItem (CTabItem item, int index) {
 	}
 	if (items.length == 1) {
 		firstIndex = 0;
-		if (!updateTabHeight(tabHeight, false)) updateItems();
+		if (!updateTabHeight(false)) updateItems();
 		redraw();
 	} else {
 		updateItems();
@@ -602,7 +602,7 @@ void destroyItem (CTabItem item) {
 		if (control != null && !control.isDisposed()) {
 			control.setVisible(false);
 		}
-		if (!fixedTabHeight) tabHeight = 0;
+		if (fixedTabHeight == SWT.DEFAULT) tabHeight = 0;
 		hideToolTip();
 		redraw();
 		return;
@@ -1440,7 +1440,8 @@ public int getStyle() {
  */
 public int getTabHeight(){
 	checkWidget();
-	return tabHeight == 0 ? 0 : tabHeight - 1; // -1 for line drawn across top of tab
+	if (fixedTabHeight != SWT.DEFAULT) return fixedTabHeight;
+	return tabHeight - 1; // -1 for line drawn across top of tab
 }
 /**
  * Returns the position of the tab.  Possible values are SWT.TOP or SWT.BOTTOM.
@@ -2023,7 +2024,7 @@ void onPaint(Event event) {
 	if (oldFont == null || !oldFont.equals(font)) {
 		// handle case where  default font changes
 		oldFont = font;
-		if (!updateTabHeight(tabHeight, false)) {
+		if (!updateTabHeight(false)) {
 			updateItems();
 			redraw();
 			return;
@@ -2526,7 +2527,7 @@ public void setFont(Font font) {
 	if (font != null && font.equals(getFont())) return;
 	super.setFont(font);
 	oldFont = getFont();
-	if (!updateTabHeight(tabHeight, false)) {
+	if (!updateTabHeight(false)) {
 		updateItems();
 		redraw();
 	}
@@ -3151,10 +3152,8 @@ public void setTabHeight(int height) {
 	if (height < -1) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	fixedTabHeight = height > -1;
-	int oldHeight = tabHeight;
-	tabHeight = height == 0 ? 0 : height + 1; // +1 for line drawn across top of tab
-	updateTabHeight(oldHeight, false);
+	fixedTabHeight = height;
+	updateTabHeight(false);
 }
 /**
  * 
@@ -3176,7 +3175,7 @@ public void setTabPosition(int position) {
 		onBottom = position == SWT.BOTTOM;
 		borderTop = onBottom ? borderLeft : 0;
 		borderBottom = onBottom ? 0 : borderRight;
-		updateTabHeight(tabHeight, true);
+		updateTabHeight(true);
 		Rectangle rectBefore = getClientArea();
 		updateItems();
 		Rectangle rectAfter = getClientArea();
@@ -3382,8 +3381,11 @@ boolean updateItems() {
 	}
 	return changed;
 }
-boolean updateTabHeight(int oldHeight, boolean force){
-	if (!fixedTabHeight) {
+boolean updateTabHeight(boolean force){
+	int oldHeight = tabHeight;
+	if (fixedTabHeight != SWT.DEFAULT) {
+		tabHeight = fixedTabHeight == 0 ? 0 : fixedTabHeight + 1; // +1 for line drawn across top of tab
+	} else {
 		int tempHeight = 0;
 		GC gc = new GC(this);
 		for (int i=0; i < items.length; i++) {

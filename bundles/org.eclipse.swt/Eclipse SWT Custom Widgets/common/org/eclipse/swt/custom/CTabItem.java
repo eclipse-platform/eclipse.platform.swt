@@ -638,7 +638,7 @@ public void setFont (Font font){
 	}
 	if (font != null && font.equals(this.font)) return;
 	this.font = font;
-	if (!parent.updateTabHeight(parent.tabHeight, false)) {
+	if (!parent.updateTabHeight(false)) {
 		parent.updateItems();
 		parent.redraw();
 	}
@@ -650,7 +650,7 @@ public void setImage (Image image) {
 	}
 	if (image != null && image.equals(getImage())) return;
 	super.setImage(image);
-	if (!parent.updateTabHeight(parent.tabHeight, false)) {
+	if (!parent.updateTabHeight(false)) {
 		parent.updateItems();
 	}
 	parent.redraw();
