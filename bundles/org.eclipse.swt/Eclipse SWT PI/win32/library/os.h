@@ -335,6 +335,8 @@
 #endif /* WIN32_PLATFORM_WFSP */
 
 #ifndef WIN32_PLATFORM_PSPC
+#define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_NMRGINFO_2II
+#define NO_NMRGINFO
 #define NO_SHHandleWMSettingChange
 #define NO_SHRecognizeGesture
 #define NO_SHSipPreference
