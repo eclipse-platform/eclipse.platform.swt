@@ -265,8 +265,9 @@ void deregister () {
  */
 public Rectangle getBounds () {
 	checkWidget();
+	int topHandle = topHandle ();
 	PhArea_t area = new PhArea_t ();
-	OS.PtWidgetArea (handle, area);
+	OS.PtWidgetArea (topHandle, area);
 	return new Rectangle (area.pos_x, area.pos_y, area.size_w, area.size_h);
 }
 
@@ -415,8 +416,9 @@ public String getToolTipText () {
  */
 public int getWidth () {
 	checkWidget();
+	int topHandle = topHandle ();
 	int [] args = {OS.Pt_ARG_WIDTH, 0, 0};
-	OS.PtGetResources (handle, args.length / 3, args);
+	OS.PtGetResources (topHandle, args.length / 3, args);
 	return args [1];
 }
 
@@ -562,10 +564,8 @@ public void removeSelectionListener(SelectionListener listener) {
 
 void setBackgroundPixel (int pixel) {
 	OS.PtSetResource (handle, OS.Pt_ARG_FILL_COLOR, pixel, 0);
-	if (button != 0 && button != handle) {
+	if ((style & SWT.DROP_DOWN) != 0) {
 		OS.PtSetResource (button, OS.Pt_ARG_FILL_COLOR, pixel, 0);
-	}
-	if (arrow != 0) {
 		OS.PtSetResource (arrow, OS.Pt_ARG_FILL_COLOR, pixel, 0);
 	}
 }
@@ -648,6 +648,10 @@ public void setEnabled (boolean enabled) {
 	int topHandle = topHandle ();
 	int flags = enabled ? 0 : OS.Pt_BLOCKED | OS.Pt_GHOST;
 	OS.PtSetResource (topHandle, OS.Pt_ARG_FLAGS, flags, OS.Pt_BLOCKED | OS.Pt_GHOST);
+	if ((style & SWT.DROP_DOWN) != 0) {
+		OS.PtSetResource (button, OS.Pt_ARG_FLAGS, flags, OS.Pt_BLOCKED | OS.Pt_GHOST);
+		OS.PtSetResource (arrow, OS.Pt_ARG_FLAGS, flags, OS.Pt_BLOCKED | OS.Pt_GHOST);
+	}
 }
 
 void setFont (int font) {
@@ -657,17 +661,16 @@ void setFont (int font) {
 		OS.Pt_ARG_TITLE_FONT, font, 0,
 	};
 	OS.PtSetResources (handle, args.length / 3, args);
-	if (button != 0 && button != handle) {
+	if ((style & SWT.DROP_DOWN) != 0) {
 		OS.PtSetResources (button, args.length / 3, args);
+		OS.PtSetResources (arrow, args.length / 3, args);
 	}
 }
 
 void setForegroundPixel (int pixel) {
 	OS.PtSetResource (handle, OS.Pt_ARG_COLOR, pixel, 0);
-	if (button != 0 && button != handle) {
+	if ((style & SWT.DROP_DOWN) != 0) {
 		OS.PtSetResource (button, OS.Pt_ARG_COLOR, pixel, 0);
-	}
-	if (arrow != 0) {
 		OS.PtSetResource (arrow, OS.Pt_ARG_COLOR, pixel, 0);
 	}
 }
@@ -817,7 +820,8 @@ public void setWidth (int width) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) == 0) return;
 	if (width < 0) return;
-	OS.PtSetResource (handle, OS.Pt_ARG_WIDTH, width, 0);
+	int topHandle = topHandle ();
+	OS.PtSetResource (topHandle, OS.Pt_ARG_WIDTH, width, 0);
 	if (control != null && !control.isDisposed ()) {
 		control.setBounds (getBounds ());
 	}
