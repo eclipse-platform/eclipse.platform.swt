@@ -1006,7 +1006,6 @@ private void prepareFontStyledText(String textline, int logicalStart, int length
  */
 void redrawRange(Control parent, int logicalStart, int length, int xOffset, int yOffset, int height) {
 	Enumeration directionRuns;
-
 	if (logicalStart < 0 || logicalStart + length > getTextLength()) {
 		return;
 	}
@@ -1014,8 +1013,22 @@ void redrawRange(Control parent, int logicalStart, int length, int xOffset, int 
 	while (directionRuns.hasMoreElements()) {
 		DirectionRun run = (DirectionRun) directionRuns.nextElement();
 		int startX = run.getRenderStartX();
+		int endX = run.getRenderStopX();
+		int runStartOffset = run.getVisualStart();
+		int runEndOffset = run.getVisualEnd();
 
-		parent.redraw(xOffset + startX, yOffset, run.getRenderStopX() - startX, height, true);
+		// expand the redraw area by one character in both directions.
+		// fixes bug 40019 		
+		if (runStartOffset > 0) {
+			startX = renderPositions[runStartOffset - 1];
+		}
+		else {
+			startX = 0;
+		}
+		if (runEndOffset < renderPositions.length - 1) {
+			endX = renderPositions[runEndOffset + 1] + dx[runEndOffset + 1];
+		}
+		parent.redraw(xOffset + startX, yOffset, endX - startX, height, true);
 	}				
 }
 /**
