@@ -343,6 +343,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 	OS.DeleteObject(hBitmap);
 	OS.DeleteObject(hMask);
 	isIcon = true;
+	if (device.tracking) device.new_Object(this);
 }
 
 /**
