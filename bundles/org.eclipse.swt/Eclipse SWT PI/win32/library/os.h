@@ -68,6 +68,7 @@
 #define NO_MENUINFO
 #define NO_MINMAXINFO
 #define NO_NMREBARCHEVRON
+#define NO_NMTBHOTITEM
 #define NO_NMTTDISPINFO
 #define NO_NMTTDISPINFOA
 #define NO_NMTTDISPINFOW
@@ -254,6 +255,7 @@
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_HELPINFO_2II
 #define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_TRIVERTEX_2I
 #define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_GRADIENT_1RECT_2I
+#define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_NMTBHOTITEM_2II
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTDISPINFOA_2II
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTDISPINFOW_2II
 #define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_NMTTDISPINFOA_2I

@@ -1010,6 +1010,24 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					return null;
 			}
 			break;
+		case OS.TBN_HOTITEMCHANGE:
+			if (!OS.IsWinCE) {
+				NMTBHOTITEM lpnmhi = new NMTBHOTITEM ();
+				OS.MoveMemory (lpnmhi, lParam, NMTBHOTITEM.sizeof);
+				switch (lpnmhi.dwFlags) {
+					case OS.HICF_ARROWKEYS:
+			        	RECT client = new RECT ();
+			        	OS.GetClientRect (handle, client);
+			        	int index = OS.SendMessage (handle, OS.TB_COMMANDTOINDEX, lpnmhi.idNew, 0);
+			        	RECT rect = new RECT ();
+			        	OS.SendMessage (handle, OS.TB_GETITEMRECT, index, rect);
+			            if (rect.left >= client.right || rect.top >= client.bottom) {
+		                	return LRESULT.ONE;
+		                }
+					break;
+				}
+			}
+			break;
 	}
 	return super.wmNotifyChild (wParam, lParam);
 }

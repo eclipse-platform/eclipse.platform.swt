@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 585;
-int OS_nativeFunctionCallCount[585];
+int OS_nativeFunctionCount = 586;
+int OS_nativeFunctionCallCount[586];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc", 
 	"ActivateKeyboardLayout", 
@@ -381,6 +381,7 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVFINDITEM_2II", 
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMREBARCHEVRON_2II", 
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMRGINFO_2II", 
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTBHOTITEM_2II", 
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTOOLBAR_2II", 
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTDISPINFOA_2II", 
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTDISPINFOW_2II", 

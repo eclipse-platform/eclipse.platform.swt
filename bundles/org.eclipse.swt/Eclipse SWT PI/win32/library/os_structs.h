@@ -623,6 +623,18 @@ void setNMRGINFOFields(JNIEnv *env, jobject lpObject, NMRGINFO *lpStruct);
 #define NMRGINFO_sizeof() 0
 #endif
 
+#ifndef NO_NMTBHOTITEM
+void cacheNMTBHOTITEMFields(JNIEnv *env, jobject lpObject);
+NMTBHOTITEM *getNMTBHOTITEMFields(JNIEnv *env, jobject lpObject, NMTBHOTITEM *lpStruct);
+void setNMTBHOTITEMFields(JNIEnv *env, jobject lpObject, NMTBHOTITEM *lpStruct);
+#define NMTBHOTITEM_sizeof() sizeof(NMTBHOTITEM)
+#else
+#define cacheNMTBHOTITEMFields(a,b)
+#define getNMTBHOTITEMFields(a,b,c) NULL
+#define setNMTBHOTITEMFields(a,b,c)
+#define NMTBHOTITEM_sizeof() 0
+#endif
+
 #ifndef NO_NMTOOLBAR
 void cacheNMTOOLBARFields(JNIEnv *env, jobject lpObject);
 NMTOOLBAR *getNMTOOLBARFields(JNIEnv *env, jobject lpObject, NMTOOLBAR *lpStruct);

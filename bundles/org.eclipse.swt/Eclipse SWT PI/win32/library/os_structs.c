@@ -2602,6 +2602,46 @@ void setNMRGINFOFields(JNIEnv *env, jobject lpObject, NMRGINFO *lpStruct)
 }
 #endif
 
+#ifndef NO_NMTBHOTITEM
+typedef struct NMTBHOTITEM_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID idOld, idNew, dwFlags;
+} NMTBHOTITEM_FID_CACHE;
+
+NMTBHOTITEM_FID_CACHE NMTBHOTITEMFc;
+
+void cacheNMTBHOTITEMFields(JNIEnv *env, jobject lpObject)
+{
+	if (NMTBHOTITEMFc.cached) return;
+	cacheNMHDRFields(env, lpObject);
+	NMTBHOTITEMFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	NMTBHOTITEMFc.idOld = (*env)->GetFieldID(env, NMTBHOTITEMFc.clazz, "idOld", "I");
+	NMTBHOTITEMFc.idNew = (*env)->GetFieldID(env, NMTBHOTITEMFc.clazz, "idNew", "I");
+	NMTBHOTITEMFc.dwFlags = (*env)->GetFieldID(env, NMTBHOTITEMFc.clazz, "dwFlags", "I");
+	NMTBHOTITEMFc.cached = 1;
+}
+
+NMTBHOTITEM *getNMTBHOTITEMFields(JNIEnv *env, jobject lpObject, NMTBHOTITEM *lpStruct)
+{
+	if (!NMTBHOTITEMFc.cached) cacheNMTBHOTITEMFields(env, lpObject);
+	getNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
+	lpStruct->idOld = (*env)->GetIntField(env, lpObject, NMTBHOTITEMFc.idOld);
+	lpStruct->idNew = (*env)->GetIntField(env, lpObject, NMTBHOTITEMFc.idNew);
+	lpStruct->dwFlags = (*env)->GetIntField(env, lpObject, NMTBHOTITEMFc.dwFlags);
+	return lpStruct;
+}
+
+void setNMTBHOTITEMFields(JNIEnv *env, jobject lpObject, NMTBHOTITEM *lpStruct)
+{
+	if (!NMTBHOTITEMFc.cached) cacheNMTBHOTITEMFields(env, lpObject);
+	setNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
+	(*env)->SetIntField(env, lpObject, NMTBHOTITEMFc.idOld, (jint)lpStruct->idOld);
+	(*env)->SetIntField(env, lpObject, NMTBHOTITEMFc.idNew, (jint)lpStruct->idNew);
+	(*env)->SetIntField(env, lpObject, NMTBHOTITEMFc.dwFlags, (jint)lpStruct->dwFlags);
+}
+#endif
+
 #ifndef NO_NMTOOLBAR
 typedef struct NMTOOLBAR_FID_CACHE {
 	int cached;

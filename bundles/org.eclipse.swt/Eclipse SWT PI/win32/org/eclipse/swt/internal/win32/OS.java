@@ -456,6 +456,7 @@ public class OS {
 	public static final int HDN_ITEMDBLCLICK = IsUnicode ? HDN_ITEMDBLCLICKW : HDN_ITEMDBLCLICKA;
 	public static final int HEAP_ZERO_MEMORY = 0x8;
 	public static final int HELPINFO_MENUITEM = 0x2;
+	public static final int HICF_ARROWKEYS = 0x2;
 	public static final int HINST_COMMCTRL = 0xffffffff;
 	public static final int HKEY_CLASSES_ROOT = 0x80000000;
 	public static final int HKEY_CURRENT_USER = 0x80000001;
@@ -1028,6 +1029,7 @@ public class OS {
 	public static final int TBM_SETTICFREQ = 0x414;
 	public static final int TBN_DROPDOWN = 0xfffffd3a;
 	public static final int TBN_FIRST = 0xfffffd44;
+	public static final int TBN_HOTITEMCHANGE = 0xFFFFFD37;
 	public static final int TBSTATE_CHECKED = 0x1;
 	public static final int TBSTYLE_CUSTOMERASE = 0x2000;
 	public static final int TBSTYLE_DROPDOWN = 0x8;
@@ -2535,6 +2537,7 @@ public static final native void MoveMemory (NMHDR Destination, int Source, int L
 public static final native void MoveMemory (NMRGINFO Destination, int Source, int Length);
 public static final native void MoveMemory (NMCUSTOMDRAW Destination, int Source, int Length);
 public static final native void MoveMemory (NMLVCUSTOMDRAW Destination, int Source, int Length);
+public static final native void MoveMemory (NMTBHOTITEM Destination, int Source, int Length);
 public static final native void MoveMemory (NMTVCUSTOMDRAW Destination, int Source, int Length);
 public static final native void MoveMemory (int Destination, NMLVCUSTOMDRAW Source, int Length);
 public static final native void MoveMemory (int Destination, NMTVCUSTOMDRAW Source, int Length);
