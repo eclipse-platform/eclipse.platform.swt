@@ -28,7 +28,7 @@ public class FileDialog extends GtkFileDialog {
 	String [] filterExtensions = new String [0];
 	String filterPath = "";
 	String fileName = "";
-	String[] fileNames;
+	String[] fileNames = new String[0];
 	String fullPath = "";
 	
 /**
