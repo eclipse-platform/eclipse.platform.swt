@@ -18,6 +18,7 @@ public final class Converter {
 	public static final char [] NullCharArray = new char [1];
 	public static final byte [] EmptyByteArray = new byte [0];
 	public static final char [] EmptyCharArray = new char [0];
+
 /**
  * Returns the default code page for the platform where the
  * application is currently running.
@@ -25,43 +26,24 @@ public final class Converter {
  * @return the default code page
  */
 public static String defaultCodePage () {
-	/*
-	| ptr cp |
-	DefaultCodePage == nil ifFalse: [^DefaultCodePage].
-	cp := ''. "$NON-NLS$"
-	(ptr := OSStringZ address: (NlLanginfo callWith: 49)) isNull
-		ifFalse: [cp := String copyFromOSMemory: ptr].
-	cp isEmpty ifFalse: [
-		IsSunOS ifTrue: [
-			(cp size > 3 and: [(cp copyFrom: 1 to: 3) = 'ISO'])
-				ifTrue: [cp := cp copyFrom: 4 to: cp size]].
-		^DefaultCodePage := cp].
-	IsAIX ifTrue: [^DefaultCodePage := 'ISO8859-1'].
-	IsSunOS ifTrue: [^DefaultCodePage := '8859-1'].
-	^DefaultCodePage := 'iso8859_1'
-	*/
-	return null;
+	return "UTF8";
 }
-static boolean is7BitAscii (byte [] buffer) {
-	for (int i=0; i<buffer.length; i++) {
-		if ((buffer [i] & 0xFF) > 0x7F) return false;
-	}
-	return true;
-}
-static boolean is7BitAscii (char [] buffer) {
-	for (int i=0; i<buffer.length; i++) {
-		if (buffer [i] > 0x7F) return false;
-	}
-	return true;
-}
+
 public static char [] mbcsToWcs (String codePage, byte [] buffer) {
 	//SLOW AND BOGUS
-	return new String (buffer).toCharArray ();
+	String cp = codePage == null ? defaultCodePage () : codePage;
+	try {
+		return new String (buffer, cp).toCharArray ();
+	} catch (Exception e) {
+		return NullCharArray;
+	}
 }
+
 /* TEMPORARY CODE */
 public static byte [] wcsToMbcs (String codePage, String string) {
 	return wcsToMbcs (codePage, string, false);
 }
+
 public static byte [] wcsToMbcs (String codePage, String string, boolean terminate) {
 	//SLOW AND BOGUS
 	int count = string.length ();
@@ -70,16 +52,24 @@ public static byte [] wcsToMbcs (String codePage, String string, boolean termina
 	string.getChars (0, string.length (), buffer, 0);
 	return wcsToMbcs (codePage, buffer, false);
 }
+
 /* TEMPORARY CODE */
 public static byte [] wcsToMbcs (String codePage, char [] buffer) {
 	return wcsToMbcs (codePage, buffer, false);
 }
+
 public static byte [] wcsToMbcs (String codePage, char [] buffer, boolean terminate) {
 	//SLOW AND BOGUS
-	if (!terminate) return new String (buffer).getBytes ();
-	byte [] buffer1 = new String (buffer).getBytes ();
-	byte [] buffer2 = new byte [buffer1.length + 1];
-	System.arraycopy (buffer1, 0, buffer2, 0, buffer1.length);
-	return buffer2;
+	String cp = codePage == null ? defaultCodePage () : codePage;
+	try {
+		if (!terminate) return new String (buffer).getBytes (cp);
+		byte [] buffer1 = new String (buffer).getBytes (cp);
+		byte [] buffer2 = new byte [buffer1.length + 1];
+		System.arraycopy (buffer1, 0, buffer2, 0, buffer1.length);
+		return buffer2;
+	} catch (Exception e) {
+		return terminate ? NullByteArray : EmptyByteArray;
+	}
 }
+
 }
