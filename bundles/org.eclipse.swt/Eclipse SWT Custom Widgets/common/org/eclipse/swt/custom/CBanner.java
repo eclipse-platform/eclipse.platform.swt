@@ -217,7 +217,7 @@ public void layout (boolean changed) {
 		x += curveWidth - 2*curveIndent;
 	}
 	if (right != null) {
-		int height = Math.min(noCurve ? size.y : size.y - BORDER_TOP - BORDER_BOTTOM - 2*BORDER_STRIPE, rightSize.y);
+		int height = noCurve ? size.y : size.y - BORDER_TOP - BORDER_BOTTOM - 2*BORDER_STRIPE;
 		int y = noCurve ? 0 : BORDER_TOP + BORDER_STRIPE;
 		rightRect = new Rectangle(x, y, rightSize.x, height);
 	}
