@@ -2584,9 +2584,17 @@ public int getStyle () {
  */
 public void getTransform(Transform transform) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	float[] xform = new float[6];
-	OS.GetWorldTransform(handle, xform);
-	transform.setElements(xform[0], xform[1], xform[2], xform[3], xform[4], xform[5]);
+	if (transform == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	int gdipGraphics = data.gdipGraphics;
+	if (gdipGraphics != 0) {
+		Gdip.Graphics_GetTransform(gdipGraphics, transform.handle);
+	} else {
+		float[] xform = new float[6];
+		if (OS.GetWorldTransform(handle, xform)) {
+			transform.setElements(xform[0], xform[1], xform[2], xform[3], xform[4], xform[5]);
+		}
+	}
 }
 
 /** 
@@ -2779,9 +2787,17 @@ public void setBackground (Color color) {
 
 void setClipping(int clipRgn) {
 	int hRgn = clipRgn;
+	int gdipGraphics = data.gdipGraphics;
 	if (hRgn != 0) {
 		float[] xform = new float[6];
-		OS.GetWorldTransform(handle, xform);
+		if (gdipGraphics != 0) {
+			int matrix = Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
+			Gdip.Graphics_GetTransform(gdipGraphics, matrix);
+			Gdip.Matrix_GetElements(matrix, xform);
+			Gdip.Matrix_delete(matrix);
+		} else {
+			OS.GetWorldTransform(handle, xform);
+		}
 		if (!isIdentity(xform)) {
 			int count = OS.GetRegionData(hRgn, 0, null);
 			int[] lpRgnData = new int[count / 4];
@@ -2790,11 +2806,11 @@ void setClipping(int clipRgn) {
 		}
 	}
 	OS.SelectClipRgn (handle, hRgn);
-	if (data.gdipGraphics != 0) {
+	if (gdipGraphics != 0) {
 		if (hRgn != 0) {
-			Gdip.Graphics_SetClip(data.gdipGraphics, hRgn, Gdip.CombineModeReplace);
+			Gdip.Graphics_SetClip(gdipGraphics, hRgn, Gdip.CombineModeReplace);
 		} else {
-			Gdip.Graphics_ResetClip(data.gdipGraphics);
+			Gdip.Graphics_ResetClip(gdipGraphics);
 		}
 	}
 	if (hRgn != 0 && hRgn != clipRgn) {
@@ -3195,6 +3211,7 @@ public void setTransform(Transform transform) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (transform == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (OS.IsWin95) initGdip(false, false);
 	int gdipGraphics = data.gdipGraphics;
 	if (gdipGraphics == 0) {
 		OS.SetGraphicsMode(handle, OS.GM_ADVANCED);

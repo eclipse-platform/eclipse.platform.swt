@@ -63,6 +63,7 @@ typedef enum {
 	Graphics_1GetClipBounds__ILorg_eclipse_swt_internal_gdip_RectF_2_FUNC,
 	Graphics_1GetClipBounds__ILorg_eclipse_swt_internal_gdip_Rect_2_FUNC,
 	Graphics_1GetInterpolationMode_FUNC,
+	Graphics_1GetTransform_FUNC,
 	Graphics_1ResetClip_FUNC,
 	Graphics_1SetClip__II_FUNC,
 	Graphics_1SetClip__III_FUNC,

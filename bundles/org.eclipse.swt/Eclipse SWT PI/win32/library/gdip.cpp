@@ -525,6 +525,18 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetInterpolationMode)
 }
 #endif
 
+#ifndef NO_Graphics_1GetTransform
+JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetTransform)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Graphics_1GetTransform_FUNC);
+	rc = (jint)((Graphics *)arg0)->GetTransform((Matrix *)arg1);
+	Gdip_NATIVE_EXIT(env, that, Graphics_1GetTransform_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Graphics_1ResetClip
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1ResetClip)
 	(JNIEnv *env, jclass that, jint arg0)

@@ -72,6 +72,7 @@ public static final native int Graphics_FillRectangle(int graphics, int brush, i
 public static final native int Graphics_GetClipBounds(int graphics, RectF rect);
 public static final native int Graphics_GetClipBounds(int graphics, Rect rect);
 public static final native int Graphics_GetInterpolationMode(int graphics);
+public static final native int Graphics_GetTransform(int graphics, int matrix);
 public static final native int Graphics_ResetClip(int graphics);
 public static final native int Graphics_SetClip(int graphics, int hrgn, int combineMode);
 public static final native int Graphics_SetClip(int graphics, int path);
