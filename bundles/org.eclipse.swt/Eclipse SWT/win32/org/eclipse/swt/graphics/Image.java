@@ -1571,7 +1571,7 @@ static int[] init(Device device, Image image, ImageData i) {
 		/* Release the HDC for the device */	
 		device.internal_dispose_GC(hDC, null);
 			
-		/* Create the mask */
+		/* Create the mask. Windows requires icon masks to have a scanline pad of 2. */
 		byte[] maskData = ImageData.convertPad(i.maskData, i.width, i.height, 1, i.maskPad, 2);
 		int hMask = OS.CreateBitmap(i.width, i.height, 1, 1, i.maskData);
 		if (hMask == 0) SWT.error(SWT.ERROR_NO_HANDLES);	
@@ -1686,13 +1686,6 @@ static int[] init(Device device, Image image, ImageData source, ImageData mask) 
 			imageData.setPixels(0, y, source.width, imagePixels, 0);
 		}
 	}
-	/*
-	 * Make sure the mask is padded properly. Windows requires icon masks
-	 * to have a scanline pad of 2.
-	 */
-	imageData.maskPad = 2;
-	imageData.maskData = ImageData.convertPad(mask.data, mask.width, mask.height, mask.depth, mask.scanlinePad, imageData.maskPad);
-	
 	return init(device, image, imageData);
 }
 void init(Device device, ImageData i) {
