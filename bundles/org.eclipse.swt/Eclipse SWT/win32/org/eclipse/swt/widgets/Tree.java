@@ -333,9 +333,9 @@ void createHandle () {
 
 void createItem (TreeColumn column, int index) {
 	if (hwndHeader == 0) createParent ();
-	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
-	if (count == columns.length) {
+	int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+	if (!(0 <= index && index <= columnCount)) error (SWT.ERROR_INVALID_RANGE);
+	if (columnCount == columns.length) {
 		TreeColumn [] newColumns = new TreeColumn [columns.length + 4];
 		System.arraycopy (columns, 0, newColumns, 0, columns.length);
 		columns = newColumns;
@@ -345,27 +345,27 @@ void createItem (TreeColumn column, int index) {
 		if (item != null) {
 			String [] strings = item.strings;
 			if (strings != null) {
-				String [] temp = new String [count + 1];
+				String [] temp = new String [columnCount + 1];
 				System.arraycopy (strings, 0, temp, 0, index);
-				System.arraycopy (strings, index, temp, index + 1, count - index);
+				System.arraycopy (strings, index, temp, index + 1, columnCount - index);
 				item.strings = temp;
 			}
 			Image [] images = item.images;
 			if (images != null) {
-				Image [] temp = new Image [count + 1];
+				Image [] temp = new Image [columnCount + 1];
 				System.arraycopy (images, 0, temp, 0, index);
-				System.arraycopy (images, index, temp, index + 1, count - index);
+				System.arraycopy (images, index, temp, index + 1, columnCount - index);
 				item.images = temp;
 			}
 			if (index == 0) {
-				if (count != 0) {
+				if (columnCount != 0) {
 					if (strings == null) {
-						item.strings = new String [count + 1];
+						item.strings = new String [columnCount + 1];
 						item.strings [1] = item.text;
 					}
 					item.text = "";
 					if (images == null) {
-						item.images = new Image [count + 1];
+						item.images = new Image [columnCount + 1];
 						item.images [1] = item.image;
 					}
 					item.image = null;
@@ -373,31 +373,31 @@ void createItem (TreeColumn column, int index) {
 			}
 			if (item.cellBackground != null) {
 				int [] cellBackground = item.cellBackground;
-				int [] temp = new int [count + 1];
+				int [] temp = new int [columnCount + 1];
 				System.arraycopy (cellBackground, 0, temp, 0, index);
-				System.arraycopy (cellBackground, index, temp, index + 1, count - index);
+				System.arraycopy (cellBackground, index, temp, index + 1, columnCount - index);
 				temp [index] = -1;
 				item.cellBackground = temp;
 			}
 			if (item.cellForeground != null) {
 				int [] cellForeground = item.cellForeground;
-				int [] temp = new int [count + 1];
+				int [] temp = new int [columnCount + 1];
 				System.arraycopy (cellForeground, 0, temp, 0, index);
-				System.arraycopy (cellForeground, index, temp, index + 1, count - index);
+				System.arraycopy (cellForeground, index, temp, index + 1, columnCount - index);
 				temp [index] = -1;
 				item.cellForeground = temp;
 			}
 			if (item.cellFont != null) {
 				int [] cellFont = item.cellFont;
-				int [] temp = new int [count + 1];
+				int [] temp = new int [columnCount + 1];
 				System.arraycopy (cellFont, 0, temp, 0, index);
-				System.arraycopy (cellFont, index, temp, index + 1, count- index);
+				System.arraycopy (cellFont, index, temp, index + 1, columnCount- index);
 				temp [index] = -1;
 				item.cellFont = temp;
 			}
 		}
 	}
-	System.arraycopy (columns, index, columns, index + 1, count - index);
+	System.arraycopy (columns, index, columns, index + 1, columnCount - index);
 	columns [index] = column;
 	
 	/*
@@ -417,17 +417,25 @@ void createItem (TreeColumn column, int index) {
 	OS.SendMessage (hwndHeader, OS.HDM_INSERTITEM, index, hdItem);
 	if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
 	
-	/* Update the scroll bars */
-	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	if  ((bits & OS.TVS_NOHSCROLL) == 0) {
+	/*
+	* When the first column is created, get rid of the horizontal
+	* scroll bar from the tree and clear TVS_FULLROWSELECT.  Due
+	* to drawing problems, TVS_FULLROWSELECT is not used when a
+	* tree has columns.
+	*/
+	if (columnCount == 0) {
+		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 		bits |= OS.TVS_NOHSCROLL;
+		if ((style & SWT.FULL_SELECTION) != 0) {
+			bits &= ~OS.TVS_FULLROWSELECT;
+		}
 		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 	}
 	setScrollWidth ();
 	updateScrollBar ();
 	
 	/* Redraw to hide the items when the first column is created */
-	if (count == 0 && OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0) != 0) {
+	if (columnCount == 0 && OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0) != 0) {
 		OS.InvalidateRect (handle, null, true);
 	}
 }
@@ -681,12 +689,21 @@ void destroyItem (TreeColumn column) {
 			}
 		}
 	}
+
+	/*
+	* When the last column is deleted, put back the horizontal
+	* scroll bar in the tree and TVS_FULLROWSELECT.  Due to
+	* drawing problems, TVS_FULLROWSELECT is not used when a
+	* tree has columns.  Otherwise, left align the first column
+	* and redraw the columns to the right.
+	*/
 	if (columnCount == 0) {
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		if  ((bits & OS.TVS_NOHSCROLL) != 0) {
-			bits &= ~OS.TVS_NOHSCROLL;
-			OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+		bits &= ~OS.TVS_NOHSCROLL;
+		if ((style & SWT.FULL_SELECTION) != 0) {
+			bits |= OS.TVS_FULLROWSELECT;
 		}
+		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 	    OS.InvalidateRect (handle, null, true);
 	} else {
 		if (index == 0) {
@@ -2542,8 +2559,10 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 						if (!newSelected && drawCount == 0) {
 							RECT rect1 = new RECT (), rect2 = new RECT ();
 							rect1.left = hItem;  rect2.left = hNewItem;
-							OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, rect1);
-							OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, rect2);
+							int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+							int fItemRect = (bits & OS.TVS_FULLROWSELECT) != 0 ? 0 : 1;
+							OS.SendMessage (handle, OS.TVM_GETITEMRECT, fItemRect, rect1);
+							OS.SendMessage (handle, OS.TVM_GETITEMRECT, fItemRect, rect2);
 							/*
 							* This code is intentionally commented.
 							*/
@@ -2628,51 +2647,39 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 
 LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	/*
-	* Feature in Windows.  When a tree item is
-	* reselected, Windows does not issue a WM_NOTIFY.
-	* This is inconsistent with the list widget and
-	* other widgets in Windows.  The fix is to detect
-	* the case when an item is reselected and issue
-	* the notification.  The first part of this work
-	* around is to ensure that the user has selected
-	* an item.
+	* In a multi-select tree, if the user is collapsing a subtree that
+	* contains selected items, clear the selection from these items and
+	* issue a selection event.  Only items that are selected and visible
+	* are cleared.  This code also runs in the case when no item is selected.
 	*/
 	TVHITTESTINFO lpht = new TVHITTESTINFO ();
 	lpht.x = (short) (lParam & 0xFFFF);
 	lpht.y = (short) (lParam >> 16);
 	OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
-	if (lpht.hItem == 0 || (lpht.flags & OS.TVHT_ONITEM) == 0) {
+	if (lpht.hItem == 0 || (lpht.flags & OS.TVHT_ONITEMBUTTON) != 0) {
 		sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam);
-		/*
-		* In a multi-select tree, if the user is collapsing a subtree that
-		* contains selected items, clear the selection from these items and
-		* issue a selection event.  Only items that are selected and visible
-		* are cleared.
-		*/
 		boolean fixSelection = false, deselected = false;
-		if ((style & SWT.MULTI) != 0) {
-			if (lpht.hItem != 0 && (lpht.flags & OS.TVHT_ONITEMBUTTON) != 0) {
-				int hSelection = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-				if (hSelection != 0) {
-					TVITEM tvItem = new TVITEM ();
-					tvItem.mask = OS.TVIF_STATE | OS.TVIF_PARAM;
-					tvItem.hItem = lpht.hItem;
-					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-					if ((tvItem.state & OS.TVIS_EXPANDED) != 0) {
-						fixSelection = true;
-						tvItem.stateMask = OS.TVIS_SELECTED;
-						int hParent = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, lpht.hItem);
-						int hLast = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_LASTVISIBLE, lpht.hItem);
-						int hNext = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, lpht.hItem);
-						while (hNext != 0 && hNext != hLast) {
-							tvItem.hItem = hNext;
-							OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-							if ((tvItem.state & OS.TVIS_SELECTED) != 0) deselected = true;
-							tvItem.state = 0;
-							OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
-							if ((hNext = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, hNext)) == 0) break;
-							if (hParent == OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hNext)) break;
-						}
+		if (lpht.hItem != 0 && (style & SWT.MULTI) != 0) {
+			int hSelection = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+			if (hSelection != 0) {
+				TVITEM tvItem = new TVITEM ();
+				tvItem.mask = OS.TVIF_STATE | OS.TVIF_PARAM;
+				tvItem.hItem = lpht.hItem;
+				OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+				if ((tvItem.state & OS.TVIS_EXPANDED) != 0) {
+					fixSelection = true;
+					tvItem.stateMask = OS.TVIS_SELECTED;
+					int hParent = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, lpht.hItem);
+					int hLast = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_LASTVISIBLE, lpht.hItem);
+					int hNext = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, lpht.hItem);
+					while (hNext != 0 && hNext != hLast) {
+						tvItem.hItem = hNext;
+						OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+						if ((tvItem.state & OS.TVIS_SELECTED) != 0) deselected = true;
+						tvItem.state = 0;
+						OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+						if ((hNext = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, hNext)) == 0) break;
+						if (hParent == OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hNext)) break;
 					}
 				}
 			}
@@ -2764,6 +2771,18 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	dragStarted = gestureCompleted = false;
 	ignoreDeselect = ignoreSelect = true;
 	int code = callWindowProc (handle, OS.WM_LBUTTONDOWN, wParam, lParam);
+	/*
+	* Determine whether the full line should be selected.
+	* Note that mouse selection for a tree with columns
+	* does not currently use TVS_FULLROWSELECT to do the
+	* selection because it does not draw properly.
+	*/
+	if ((style & SWT.FULL_SELECTION) != 0) {
+		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		if ((bits & OS.TVS_FULLROWSELECT) == 0) {
+			OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, lpht.hItem);
+		}
+	}
 	ignoreDeselect = ignoreSelect = false;
 	if (dragStarted && OS.GetCapture () != handle) OS.SetCapture (handle);
 	int hNewItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
@@ -2813,8 +2832,10 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 			if (drawCount == 0) {
 				RECT rect1 = new RECT (), rect2 = new RECT ();
 				rect1.left = hOldItem;  rect2.left = hNewItem;
-				OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, rect1);
-				OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, rect2);
+				int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+				int fItemRect = (bits & OS.TVS_FULLROWSELECT) != 0 ? 0 : 1;
+				OS.SendMessage (handle, OS.TVM_GETITEMRECT, fItemRect, rect1);
+				OS.SendMessage (handle, OS.TVM_GETITEMRECT, fItemRect, rect2);
 				/*
 				* This code is intentionally commented.
 				*/
@@ -3314,24 +3335,30 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					}
 					if (linesVisible) {
 						RECT rect = new RECT ();
-						rect.left = item.handle;
-						if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, rect) != 0) {
-							int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-							if (hItem == item.handle) {
-								OS.SetRect (rect, rect.right, nmcd.top, nmcd.right, nmcd.bottom);
-							} else {
-								TVITEM tvItem = new TVITEM ();
-								tvItem.mask = OS.TVIF_STATE;
-								tvItem.hItem = item.handle;
-								OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-								if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
+						if (OS.COMCTL32_MAJOR < 6) {
+							OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+						} else {
+							rect.left = item.handle;
+							if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, rect) != 0) {
+								int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+								if (hItem == item.handle || OS.COMCTL32_MAJOR < 6) {
 									OS.SetRect (rect, rect.right, nmcd.top, nmcd.right, nmcd.bottom);
 								} else {
-									OS.SetRect (rect, rect.left, nmcd.top, nmcd.right, nmcd.bottom);
+									TVITEM tvItem = new TVITEM ();
+									tvItem.mask = OS.TVIF_STATE;
+									tvItem.hItem = item.handle;
+									OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+									if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
+										OS.SetRect (rect, rect.right, nmcd.top, nmcd.right, nmcd.bottom);
+									} else {
+										OS.SetRect (rect, rect.left, nmcd.top, nmcd.right, nmcd.bottom);
+									}
 								}
+							} else {
+								rect.left = 0;
 							}
-							OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
-						} 
+						}
+						OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
 					}
 					return new LRESULT (OS.CDRF_DODEFAULT);
 				}
