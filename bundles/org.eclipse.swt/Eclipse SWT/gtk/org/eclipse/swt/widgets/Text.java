@@ -90,6 +90,7 @@ static int checkStyle (int style) {
 	style = checkBits (style, SWT.LEFT, SWT.CENTER, SWT.RIGHT, 0, 0, 0);
 	if ((style & SWT.SINGLE) != 0) style &= ~(SWT.H_SCROLL | SWT.V_SCROLL | SWT.WRAP);
 	if ((style & SWT.WRAP) != 0) style |= SWT.MULTI;
+	if ((style & SWT.MULTI) != 0) style &= ~SWT.PASSWORD;
 	if ((style & (SWT.SINGLE | SWT.MULTI)) != 0) return style;
 	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
 		return style | SWT.MULTI;
@@ -106,6 +107,7 @@ void createHandle (int index) {
 		OS.gtk_container_add (parentHandle, handle);
 		OS.gtk_editable_set_editable (handle, (style & SWT.READ_ONLY) == 0);
 		OS.gtk_entry_set_has_frame (handle, (style & SWT.BORDER) != 0);
+		OS.gtk_entry_set_visibility (handle, (style & SWT.PASSWORD) == 0);
 	} else {
 		fixedHandle = OS.gtk_fixed_new ();
 		if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
