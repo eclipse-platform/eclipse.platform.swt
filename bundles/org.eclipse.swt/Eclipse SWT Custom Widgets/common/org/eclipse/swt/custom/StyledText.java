@@ -4637,7 +4637,7 @@ void handlePaint(Event event) {
 	if (clientArea.width == 0 || event.height == 0) {		
 		return;
 	}
-	performPaint(event.gc, startLine, startY, renderHeight, false);	
+	performPaint(event.gc, startLine, startY, renderHeight);	
 }	
 /**
  * Render the specified area.  Broken out as its own method to support
@@ -4648,9 +4648,8 @@ void handlePaint(Event event) {
  * @param startLine first line to render
  * @param startY y pixel location to start rendering at
  * @param renderHeight renderHeight widget area that needs to be filled with lines
- * @param drawDirect rendering is done directly without invalidating the paint area
  */
-void performPaint(GC gc,int startLine,int startY, int renderHeight, boolean drawDirect)	{
+void performPaint(GC gc,int startLine,int startY, int renderHeight)	{
 	int lineCount = content.getLineCount();
 	int paintY = topMargin;	
 	Rectangle clientArea = getClientArea();
@@ -4670,37 +4669,24 @@ void performPaint(GC gc,int startLine,int startY, int renderHeight, boolean draw
 			startLine = 1;
 		}
 	}
-	// Do double buffering on direct draw operations only
-	if (drawDirect || SWT.getPlatform().equals("win32")) {
-		Image lineBuffer = new Image(getDisplay(), clientArea.width, renderHeight);
-		GC lineGC = new GC(lineBuffer);	
+	Image lineBuffer = new Image(getDisplay(), clientArea.width, renderHeight);
+	GC lineGC = new GC(lineBuffer);	
 
-		lineGC.setFont(font);
-		lineGC.setForeground(foreground);
-		lineGC.setBackground(background);
-		for (int i = startLine; paintY < renderHeight && i < lineCount; i++, paintY += lineHeight) {
-			String line = content.getLine(i);
-			renderer.drawLine(line, i, paintY, lineGC, background, foreground, fontData, true);
-		}
-		if (paintY < renderHeight) {
-			lineGC.setBackground(background);
-			lineGC.setForeground(background);
-			lineGC.fillRectangle(0, paintY, clientArea.width, renderHeight - paintY);
-		}
-		gc.drawImage(lineBuffer, 0, startY);
-		lineGC.dispose();
-		lineBuffer.dispose();
-	} else {
-		for (int i = startLine; paintY < renderHeight && i < lineCount; i++, paintY += lineHeight) {
-			String line = content.getLine(i);
-			renderer.drawLine(line, i, paintY + startY, gc, background, foreground, fontData, true);
-		}
-		if (paintY < renderHeight) {
-			gc.setBackground(background);
-			gc.setForeground(background);
-			gc.fillRectangle(0, paintY + startY, clientArea.width, renderHeight - paintY);
-		}
+	lineGC.setFont(font);
+	lineGC.setForeground(foreground);
+	lineGC.setBackground(background);
+	for (int i = startLine; paintY < renderHeight && i < lineCount; i++, paintY += lineHeight) {
+		String line = content.getLine(i);
+		renderer.drawLine(line, i, paintY, lineGC, background, foreground, fontData, true);
 	}
+	if (paintY < renderHeight) {
+		lineGC.setBackground(background);
+		lineGC.setForeground(background);
+		lineGC.fillRectangle(0, paintY, clientArea.width, renderHeight - paintY);
+	}
+	gc.drawImage(lineBuffer, 0, startY);
+	lineGC.dispose();
+	lineBuffer.dispose();
 	clearMargin(gc, background, clientArea, renderHeight);
 }
 /**
@@ -4780,7 +4766,7 @@ void handleTextChanged(TextChangedEvent event) {
 		boolean caretVisible = caret.getVisible();
 		
 		caret.setVisible(false);
-		performPaint(gc, startLine, startY, lineHeight, true);
+		performPaint(gc, startLine, startY, lineHeight);
 		caret.setVisible(caretVisible);
 		gc.dispose();
 	}
