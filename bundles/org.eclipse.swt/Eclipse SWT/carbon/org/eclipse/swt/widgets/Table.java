@@ -635,14 +635,10 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		if (isDisposed ()) return OS.noErr;
 		ignoreRedraw = false;
 		if (setScrollWidth (item)) {
-			//TODO - TEMPORARY CODE
-			display.asyncExec (new Runnable () {
-				public void run () {
-					if (item.isDisposed()) return;
-					// damage instead of redraw
-					item.redraw ();
-				}
-			});
+			Rect rect = new Rect();
+			if (OS.GetDataBrowserItemPartBounds (handle, id, property, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+				redrawWidget (handle, rect.left, rect.top, rect.right, rect.bottom, false);
+			}
 			return OS.noErr;
 		}
 	}
