@@ -757,6 +757,7 @@ void setKeyState (Event event, XKeyEvent xEvent) {
 		byte [] buffer = new byte [1];
 		int [] keysym = new int [1];
 		OS.XLookupString (xEvent, buffer, buffer.length, keysym, null);
+		
 		/*
 		* Bug in MOTIF.  On Solaris only, XK_F11 and XK_F12 are not
 		* translated correctly by XLookupString().  They are mapped
@@ -782,6 +783,30 @@ void setKeyState (Event event, XKeyEvent xEvent) {
 			*/
 			keysym [0] &= 0xFFFF;
 		}
+		
+		/*
+		* Feature in MOTIF. For some reason, XLookupString() fails 
+		* to translate both the keysym and the character when the
+		* control key is down.  For example, Ctrl+2 has the correct
+		* keysym value (50) but no character value, while Ctrl+/ has
+		* the keysym value (2F) but an invalid character value
+		* (1F).  It seems that Motif is applying the algorithm to
+		* convert a character to a control character for characters
+		* that are not valid control characters.  The fix is to test
+		* for 7-bit ASCII keysym, ignoring the valid control character
+		* range, and use the keysym value as the character.
+		* 
+		* Some other cases include Ctrl+3..Ctr+8, Ctrl+[.
+		*/
+		if ((xEvent.state & OS.ControlMask) != 0) {
+			if (0 <= keysym [0] && keysym [0] <= 0x7F) {
+				if (!(64 <= keysym [0] && keysym [0] <= 95)) {
+					buffer [0] = (byte) keysym [0];
+				}
+			}
+		}
+		
+		/* Fill in the event keyCode or character */
 		if (buffer [0] == 0) {
 			event.keyCode = Display.translateKey (keysym [0]);
 			/*
