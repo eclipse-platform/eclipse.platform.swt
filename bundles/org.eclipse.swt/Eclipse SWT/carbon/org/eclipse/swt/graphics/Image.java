@@ -67,12 +67,16 @@ public final class Image implements Drawable{
 	public int type;
 	
 	/**
-	 * The handle to the OS pixmap resource.
+	 * The handle to the OS image resource.
 	 * Warning: This field is platform dependent.
 	 */
 	public int handle;
 
-	int data;
+	/**
+	 * The data to the OS image resource.
+	 * Warning: This field is platform dependent.
+	 */
+	public int data;
 
 	/**
 	 * The device where this image was created.

@@ -27,6 +27,14 @@ void setATSTrapezoidFields(JNIEnv *env, jobject lpObject, ATSTrapezoid *lpStruct
 #define setATSTrapezoidFields(a,b,c)
 #endif /* NO_ATSTrapezoid */
 
+#ifndef NO_BitMap
+BitMap *getBitMapFields(JNIEnv *env, jobject lpObject, BitMap *lpStruct);
+void setBitMapFields(JNIEnv *env, jobject lpObject, BitMap *lpStruct);
+#else
+#define getBitMapFields(a,b,c) NULL
+#define setBitMapFields(a,b,c)
+#endif /* NO_BitMap */
+
 #ifndef NO_CFRange
 CFRange *getCFRangeFields(JNIEnv *env, jobject lpObject, CFRange *lpStruct);
 void setCFRangeFields(JNIEnv *env, jobject lpObject, CFRange *lpStruct);
@@ -146,6 +154,14 @@ void setNavDialogCreationOptionsFields(JNIEnv *env, jobject lpObject, NavDialogC
 #define getNavDialogCreationOptionsFields(a,b,c) NULL
 #define setNavDialogCreationOptionsFields(a,b,c)
 #endif /* NO_NavDialogCreationOptions */
+
+#ifndef NO_PixMap
+PixMap *getPixMapFields(JNIEnv *env, jobject lpObject, PixMap *lpStruct);
+void setPixMapFields(JNIEnv *env, jobject lpObject, PixMap *lpStruct);
+#else
+#define getPixMapFields(a,b,c) NULL
+#define setPixMapFields(a,b,c)
+#endif /* NO_PixMap */
 
 #ifndef NO_NavReplyRecord
 NavReplyRecord *getNavReplyRecordFields(JNIEnv *env, jobject lpObject, NavReplyRecord *lpStruct);

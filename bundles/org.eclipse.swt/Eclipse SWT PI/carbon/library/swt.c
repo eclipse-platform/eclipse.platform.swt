@@ -5989,6 +5989,48 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy__I_3II)
 }
 #endif
 
+#ifndef NO_memcpy__ILorg_eclipse_swt_internal_carbon_BitMap_2I
+JNIEXPORT void JNICALL OS_NATIVE(memcpy__ILorg_eclipse_swt_internal_carbon_BitMap_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	BitMap _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("memcpy__ILorg_eclipse_swt_internal_carbon_BitMap_2I\n")
+
+	if (arg1) lparg1 = getBitMapFields(env, arg1, &_arg1);
+	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	if (arg1) setBitMapFields(env, arg1, lparg1);
+}
+#endif
+
+#ifndef NO_memcpy__ILorg_eclipse_swt_internal_carbon_PixMap_2I
+JNIEXPORT void JNICALL OS_NATIVE(memcpy__ILorg_eclipse_swt_internal_carbon_PixMap_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	PixMap _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("memcpy__ILorg_eclipse_swt_internal_carbon_PixMap_2I\n")
+
+	if (arg1) lparg1 = getPixMapFields(env, arg1, &_arg1);
+	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	if (arg1) setPixMapFields(env, arg1, lparg1);
+}
+#endif
+
+#ifndef NO_memcpy__Lorg_eclipse_swt_internal_carbon_PixMap_2II
+JNIEXPORT void JNICALL OS_NATIVE(memcpy__Lorg_eclipse_swt_internal_carbon_PixMap_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	PixMap _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("memcpy__Lorg_eclipse_swt_internal_carbon_PixMap_2II\n")
+
+	if (arg0) lparg0 = getPixMapFields(env, arg0, &_arg0);
+	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setPixMapFields(env, arg0, lparg0);
+}
+#endif
+
 #ifndef NO_memcpy__ILorg_eclipse_swt_internal_carbon_Rect_2I
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy__ILorg_eclipse_swt_internal_carbon_Rect_2I
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)

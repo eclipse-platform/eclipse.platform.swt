@@ -91,8 +91,107 @@ protected void checkWidget () {
 	if (isDisposed ()) error (SWT.ERROR_WIDGET_DISPOSED);
 }
 
+int createCIcon (org.eclipse.swt.graphics.Image image) {
+	int imageHandle = image.handle;
+	int width = OS.CGImageGetWidth(imageHandle);
+	int height = OS.CGImageGetHeight(imageHandle);
+	int bpr = OS.CGImageGetBytesPerRow(imageHandle);
+	int bpp = OS.CGImageGetBitsPerPixel(imageHandle);
+	int bpc = OS.CGImageGetBitsPerComponent(imageHandle);
+	int alphaInfo = OS.CGImageGetAlphaInfo(imageHandle);
+	
+	int maskBpl = (((width + 7) / 8) + 3) / 4 * 4;
+	int maskSize = height * maskBpl;
+	int pixmapSize = height * bpr;
+	
+	/* Create the icon */
+	int iconSize = PixMap.sizeof + BitMap.sizeof * 2 + 4 + maskSize;
+	int iconHandle = OS.NewHandleClear(iconSize);
+	if (iconHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	OS.HLock(iconHandle);
+	int[] iconPtr = new int[1];
+	OS.memcpy(iconPtr, iconHandle, 4);
+
+	/* Initialize the pixmap */
+	PixMap iconPMap = new PixMap();
+	iconPMap.rowBytes = (short)(bpr | 0x8000);
+	iconPMap.right = (short)width;
+	iconPMap.bottom = (short)height;
+	iconPMap.cmpCount = 3;
+	iconPMap.cmpSize = (short)bpc;
+	iconPMap.pmTable = OS.NewHandle(0);
+	iconPMap.hRes = 72 << 16;
+	iconPMap.vRes = 72 << 16;
+	iconPMap.pixelType = (short)OS.RGBDirect;
+	iconPMap.pixelSize = (short)bpp;
+	iconPMap.pixelFormat = (short)bpp;
+	OS.memcpy(iconPtr[0], iconPMap, PixMap.sizeof);
+
+	/* Initialize the mask */
+	BitMap iconMask = new BitMap();
+	iconMask.rowBytes = (short)maskBpl;
+	iconMask.right = (short)width;
+	iconMask.bottom = (short)height;
+	OS.memcpy(iconPtr[0] + PixMap.sizeof, iconMask, BitMap.sizeof);
+
+	/* Initialize the icon data */
+	int iconData = OS.NewHandle(pixmapSize);
+	OS.HLock(iconData);
+	int[] iconDataPtr = new int[1];
+	OS.memcpy(iconDataPtr, iconData, 4);
+	OS.memcpy(iconDataPtr[0], image.data, pixmapSize);
+	OS.HUnlock(iconData);
+	OS.memcpy(iconPtr[0] + PixMap.sizeof + 2 * BitMap.sizeof, new int[]{iconData}, 4);
+
+	/* Initialize the mask data */
+	if (alphaInfo != OS.kCGImageAlphaFirst) {
+		OS.memset(iconPtr[0] + PixMap.sizeof + 2 * BitMap.sizeof + 4, -1, maskSize);
+	} else {
+		byte[] srcData = new byte[pixmapSize];
+		OS.memcpy(srcData, image.data, pixmapSize);
+		byte[] maskData = new byte[maskSize];
+		int offset = 0, maskOffset = 0;
+		for (int y = 0; y<height; y++) {
+			for (int x = 0; x<width; x++) {
+				if ((srcData[offset] & 0xFF) > 128) {
+					maskData[maskOffset + (x >> 3)] |= (1 << (7 - (x & 0x7)));
+				} else {
+					maskData[maskOffset + (x >> 3)] &= ~(1 << (7 - (x & 0x7)));
+				}
+				offset += 4;
+			}
+			maskOffset += maskBpl;
+		}
+		OS.memcpy(iconPtr[0] + PixMap.sizeof + 2 * BitMap.sizeof + 4, maskData, maskData.length);
+	}
+	
+	OS.HUnlock(iconHandle);	
+	return iconHandle;
+}
+
 void destroyWidget () {
 	releaseHandle ();
+}
+
+void destroyCIcon (int iconHandle) {
+	OS.HLock(iconHandle);
+	
+	/* Dispose the ColorTable */
+	int[] iconPtr = new int[1];
+	OS.memcpy(iconPtr, iconHandle, 4);	
+	PixMap iconPMap = new PixMap();
+	OS.memcpy(iconPMap, iconPtr[0], PixMap.sizeof);
+	if (iconPMap.pmTable != 0) OS.DisposeHandle(iconPMap.pmTable);
+
+	/* Dispose the icon data */
+	int[] iconData = new int[1];
+	OS.memcpy(iconData, iconPtr[0] + PixMap.sizeof + 2 * BitMap.sizeof, 4);
+	if (iconData[0] != 0) OS.DisposeHandle(iconData[0]);
+	
+	OS.HUnlock(iconHandle);
+	
+	/* Dispose the icon */
+	OS.DisposeHandle(iconHandle);
 }
 
 public void dispose () {

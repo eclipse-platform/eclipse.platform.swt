@@ -13,14 +13,6 @@
 #include "structs.h"
 
 #ifndef NO_AEDesc
-AEDesc *getAEDescFields(JNIEnv *env, jobject lpObject, AEDesc *lpStruct);
-void setAEDescFields(JNIEnv *env, jobject lpObject, AEDesc *lpStruct);
-#else
-#define getAEDescFields(a,b,c) NULL
-#define setAEDescFields(a,b,c)
-#endif /* NO_AEDesc */
-
-#ifndef NO_AEDesc
 typedef struct AEDesc_FID_CACHE {
 	int cached;
 	jclass clazz;
@@ -105,6 +97,52 @@ void setATSTrapezoidFields(JNIEnv *env, jobject lpObject, ATSTrapezoid *lpStruct
 	(*env)->SetIntField(env, lpObject, ATSTrapezoidFc.lowerLeft_y, (jint)lpStruct->lowerLeft.y);
 }
 #endif /* NO_ATSTrapezoid */
+
+#ifndef NO_BitMap
+typedef struct BitMap_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID baseAddr, rowBytes, top, left, bottom, right;
+} BitMap_FID_CACHE;
+
+BitMap_FID_CACHE BitMapFc;
+
+void cacheBitMapFids(JNIEnv *env, jobject lpObject)
+{
+	if (BitMapFc.cached) return;
+	BitMapFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	BitMapFc.baseAddr = (*env)->GetFieldID(env, BitMapFc.clazz, "baseAddr", "I");
+	BitMapFc.rowBytes = (*env)->GetFieldID(env, BitMapFc.clazz, "rowBytes", "S");
+	BitMapFc.top = (*env)->GetFieldID(env, BitMapFc.clazz, "top", "S");
+	BitMapFc.left = (*env)->GetFieldID(env, BitMapFc.clazz, "left", "S");
+	BitMapFc.bottom = (*env)->GetFieldID(env, BitMapFc.clazz, "bottom", "S");
+	BitMapFc.right = (*env)->GetFieldID(env, BitMapFc.clazz, "right", "S");
+	BitMapFc.cached = 1;
+}
+
+BitMap *getBitMapFields(JNIEnv *env, jobject lpObject, BitMap *lpStruct)
+{
+	if (!BitMapFc.cached) cacheBitMapFids(env, lpObject);
+	lpStruct->baseAddr = (void *)(*env)->GetIntField(env, lpObject, BitMapFc.baseAddr);
+	lpStruct->rowBytes = (*env)->GetShortField(env, lpObject, BitMapFc.rowBytes);
+	lpStruct->bounds.top = (*env)->GetShortField(env, lpObject, BitMapFc.top);
+	lpStruct->bounds.left = (*env)->GetShortField(env, lpObject, BitMapFc.left);
+	lpStruct->bounds.bottom = (*env)->GetShortField(env, lpObject, BitMapFc.bottom);
+	lpStruct->bounds.right = (*env)->GetShortField(env, lpObject, BitMapFc.right);
+	return lpStruct;
+}
+
+void setBitMapFields(JNIEnv *env, jobject lpObject, BitMap *lpStruct)
+{
+	if (!BitMapFc.cached) cacheBitMapFids(env, lpObject);
+	(*env)->SetIntField(env, lpObject, BitMapFc.baseAddr, (jint)lpStruct->baseAddr);
+	(*env)->SetShortField(env, lpObject, BitMapFc.rowBytes, (jshort)lpStruct->rowBytes);
+	(*env)->SetShortField(env, lpObject, BitMapFc.top, (jshort)lpStruct->bounds.top);
+	(*env)->SetShortField(env, lpObject, BitMapFc.left, (jshort)lpStruct->bounds.left);
+	(*env)->SetShortField(env, lpObject, BitMapFc.bottom, (jshort)lpStruct->bounds.bottom);
+	(*env)->SetShortField(env, lpObject, BitMapFc.right, (jshort)lpStruct->bounds.right);
+}
+#endif /* NO_BitMap */
 
 #ifndef NO_CFRange
 typedef struct CFRange_FID_CACHE {
@@ -889,14 +927,6 @@ void setNavDialogCreationOptionsFields(JNIEnv *env, jobject lpObject, NavDialogC
 #endif /* NO_NavDialogCreationOptions */
 
 #ifndef NO_NavReplyRecord
-NavReplyRecord *getNavReplyRecordFields(JNIEnv *env, jobject lpObject, NavReplyRecord *lpStruct);
-void setNavReplyRecordFields(JNIEnv *env, jobject lpObject, NavReplyRecord *lpStruct);
-#else
-#define getNavReplyRecordFields(a,b,c) NULL
-#define setNavReplyRecordFields(a,b,c)
-#endif /* NO_NavReplyRecord */
-
-#ifndef NO_NavReplyRecord
 typedef struct NavReplyRecord_FID_CACHE {
 	int cached;
 	jclass clazz;
@@ -971,6 +1001,73 @@ void setNavReplyRecordFields(JNIEnv *env, jobject lpObject, NavReplyRecord *lpSt
 	}
 }
 #endif /* NO_NavReplyRecord */
+
+#ifndef NO_PixMap
+typedef struct PixMap_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID pmVersion, packType, packSize, hRes, vRes, pixelType, pixelSize, cmpCount, cmpSize, pixelFormat, pmTable, pmExt;
+} PixMap_FID_CACHE;
+
+PixMap_FID_CACHE PixMapFc;
+
+void cachePixMapFids(JNIEnv *env, jobject lpObject)
+{
+	if (PixMapFc.cached) return;
+	cacheBitMapFids(env, lpObject);
+	PixMapFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PixMapFc.pmVersion = (*env)->GetFieldID(env, PixMapFc.clazz, "pmVersion", "S");
+	PixMapFc.packType = (*env)->GetFieldID(env, PixMapFc.clazz, "packType", "S");
+	PixMapFc.packSize = (*env)->GetFieldID(env, PixMapFc.clazz, "packSize", "I");
+	PixMapFc.hRes = (*env)->GetFieldID(env, PixMapFc.clazz, "hRes", "I");
+	PixMapFc.vRes = (*env)->GetFieldID(env, PixMapFc.clazz, "vRes", "I");
+	PixMapFc.pixelType = (*env)->GetFieldID(env, PixMapFc.clazz, "pixelType", "S");
+	PixMapFc.pixelSize = (*env)->GetFieldID(env, PixMapFc.clazz, "pixelSize", "S");
+	PixMapFc.cmpCount = (*env)->GetFieldID(env, PixMapFc.clazz, "cmpCount", "S");
+	PixMapFc.cmpSize = (*env)->GetFieldID(env, PixMapFc.clazz, "cmpSize", "S");
+	PixMapFc.pixelFormat = (*env)->GetFieldID(env, PixMapFc.clazz, "pixelFormat", "I");
+	PixMapFc.pmTable = (*env)->GetFieldID(env, PixMapFc.clazz, "pmTable", "I");
+	PixMapFc.pmExt = (*env)->GetFieldID(env, PixMapFc.clazz, "pmExt", "I");
+	PixMapFc.cached = 1;
+}
+
+PixMap *getPixMapFields(JNIEnv *env, jobject lpObject, PixMap *lpStruct)
+{
+	if (!PixMapFc.cached) cachePixMapFids(env, lpObject);
+	getBitMapFields(env, lpObject, (BitMap *)lpStruct);
+	lpStruct->pmVersion = (*env)->GetShortField(env, lpObject, PixMapFc.pmVersion);
+	lpStruct->packType = (*env)->GetShortField(env, lpObject, PixMapFc.packType);
+	lpStruct->packSize = (*env)->GetIntField(env, lpObject, PixMapFc.packSize);
+	lpStruct->hRes = (*env)->GetIntField(env, lpObject, PixMapFc.hRes);
+	lpStruct->vRes = (*env)->GetIntField(env, lpObject, PixMapFc.vRes);
+	lpStruct->pixelType = (*env)->GetShortField(env, lpObject, PixMapFc.pixelType);
+	lpStruct->pixelSize = (*env)->GetShortField(env, lpObject, PixMapFc.pixelSize);
+	lpStruct->cmpCount = (*env)->GetShortField(env, lpObject, PixMapFc.cmpCount);
+	lpStruct->cmpSize = (*env)->GetShortField(env, lpObject, PixMapFc.cmpSize);
+	lpStruct->pixelFormat = (*env)->GetIntField(env, lpObject, PixMapFc.pixelFormat);
+	lpStruct->pmTable = (CTabHandle)(*env)->GetIntField(env, lpObject, PixMapFc.pmTable);
+	lpStruct->pmExt = (void *)(*env)->GetIntField(env, lpObject, PixMapFc.pmExt);
+	return lpStruct;
+}
+
+void setPixMapFields(JNIEnv *env, jobject lpObject, PixMap *lpStruct)
+{
+	if (!PixMapFc.cached) cachePixMapFids(env, lpObject);
+	setBitMapFields(env, lpObject, (BitMap *)lpStruct);
+	(*env)->SetShortField(env, lpObject, PixMapFc.pmVersion, (jshort)lpStruct->pmVersion);
+	(*env)->SetShortField(env, lpObject, PixMapFc.packType, (jshort)lpStruct->packType);
+	(*env)->SetIntField(env, lpObject, PixMapFc.packSize, (jint)lpStruct->packSize);
+	(*env)->SetIntField(env, lpObject, PixMapFc.hRes, (jint)lpStruct->hRes);
+	(*env)->SetIntField(env, lpObject, PixMapFc.vRes, (jint)lpStruct->vRes);
+	(*env)->SetShortField(env, lpObject, PixMapFc.pixelType, (jshort)lpStruct->pixelType);
+	(*env)->SetShortField(env, lpObject, PixMapFc.pixelSize, (jshort)lpStruct->pixelSize);
+	(*env)->SetShortField(env, lpObject, PixMapFc.cmpCount, (jshort)lpStruct->cmpCount);
+	(*env)->SetShortField(env, lpObject, PixMapFc.cmpSize, (jshort)lpStruct->cmpSize);
+	(*env)->SetIntField(env, lpObject, PixMapFc.pixelFormat, (jint)lpStruct->pixelFormat);
+	(*env)->SetIntField(env, lpObject, PixMapFc.pmTable, (jint)lpStruct->pmTable);
+	(*env)->SetIntField(env, lpObject, PixMapFc.pmExt, (jint)lpStruct->pmExt);
+}
+#endif /* NO_PixMap */
 
 #ifndef NO_Point
 typedef struct Point_FID_CACHE {
