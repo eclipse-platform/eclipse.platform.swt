@@ -134,8 +134,8 @@ public class Display extends Device {
 	/* Display Shutdown */
 	Runnable [] disposeList;
 	
-	/* TrayIcons */
-	TrayIcon [] trayIcons;
+	/* System Tray */
+	Tray tray;
 	int nextTrayId = 0;
 	
 	/* Timers */
@@ -470,26 +470,6 @@ void addPopup (Menu menu) {
 		popups = newPopups;
 	}
 	popups [index] = menu;
-}
-
-void addTrayIcon (TrayIcon icon) {
-	if (trayIcons == null) trayIcons = new TrayIcon [4];
-	int length = trayIcons.length;
-	for (int i = 0; i < length; i++) {
-		if (trayIcons [i] == icon) return;
-	}
-	int index = 0;
-	while (index < length) {
-		if (trayIcons [index] == null) break;
-		index++;
-	}
-	if (index == length) {
-		TrayIcon [] newTrayIcons = new TrayIcon [length + 4];
-		System.arraycopy (trayIcons, 0, newTrayIcons, 0, length);
-		trayIcons = newTrayIcons;
-	}
-	trayIcons [index] = icon;
-	icon.id = nextTrayId++;
 }
 
 /**
@@ -1107,6 +1087,25 @@ public Control getFocusControl () {
 }
 
 /**
+ * Returns true when the high contrast mode is enabled.
+ * Otherwise, false is returned.
+ *
+ * @return the high contrast mode
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public boolean getHighContrast () {
+	checkDevice ();
+	HIGHCONTRAST pvParam = new HIGHCONTRAST ();
+	pvParam.cbSize = HIGHCONTRAST.sizeof;
+	OS.SystemParametersInfo (OS.SPI_GETHIGHCONTRAST, 0, pvParam, 0);
+	return (pvParam.dwFlags & OS.HCF_HIGHCONTRASTON) != 0;
+}
+
+/**
  * Returns the maximum allowed depth of icons on this display.
  * On some platforms, this may be different than the actual
  * depth of the display.
@@ -1544,6 +1543,23 @@ public Font getSystemFont () {
 }
 
 /**
+ * Returns the single instance of the system tray.
+ *
+ * @return the receiver's user-interface thread
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ *
+ * @since 3.0
+ * </ul>
+ */
+public Tray getSystemTray () {
+	checkDevice ();
+	if (tray != null) return tray;
+	return tray = new Tray (this, SWT.NONE);
+}
+
+/**
  * Returns the user-interface thread for the receiver.
  *
  * @return the receiver's user-interface thread
@@ -1555,15 +1571,6 @@ public Font getSystemFont () {
 public Thread getThread () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	return thread;
-}
-
-TrayIcon getTrayIcon (int id) {
-	if (trayIcons == null) return null;
-	for (int i = 0; i < trayIcons.length; i++) {
-		TrayIcon current = trayIcons [i]; 
-		if (current != null && current.id == id) return current;
-	}
-	return null;
 }
 
 /**	 
@@ -1911,8 +1918,16 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 			}
 			return 0;
 		case SWT_TRAYICONMSG:
-			TrayIcon trayIcon = getTrayIcon (wParam);
-			return trayIcon != null ? trayIcon.messageProc (hwnd, msg, wParam, lParam) : 0;
+			if (tray != null) {
+				TrayItem [] items = tray.items;
+				for (int i=0; i<items.length; i++) {
+					TrayItem item = items [i];
+					if (item != null && item.id == wParam) {
+						return item.messageProc (hwnd, msg, wParam, lParam);
+					}
+				}
+			}
+			return 0;
 		case OS.WM_ACTIVATEAPP:
 			/*
 			* Feature in Windows.  When multiple shells are
@@ -2132,13 +2147,13 @@ protected void release () {
 		Shell shell = shells [i];
 		if (!shell.isDisposed ()) shell.dispose ();
 	}
-	/* Release the tray icons*/
-	if (trayIcons != null) {
-		for (int i = 0; i < trayIcons.length; i++) {
-			if (trayIcons [i] != null) trayIcons [i].dispose ();
+	if (tray != null) {
+		TrayItem [] items = tray.items;
+		for (int i=0; i<items.length; i++) {
+			if (items [i] != null) items [i].dispose (); 
 		}
 	}
-	trayIcons = null;
+	tray = null;
 	while (readAndDispatch ()) {}
 	if (disposeList != null) {
 		for (int i=0; i<disposeList.length; i++) {
@@ -2379,16 +2394,6 @@ void removePopup (Menu menu) {
 	for (int i=0; i<popups.length; i++) {
 		if (popups [i] == menu) {
 			popups [i] = null;
-			return;
-		}
-	}
-}
-
-void removeTrayIcon (TrayIcon icon) {
-	if (trayIcons == null) return;
-	for (int i = 0; i < trayIcons.length; i++) {
-		if (trayIcons [i] == icon) {
-			trayIcons [i] = null;
 			return;
 		}
 	}
