@@ -1513,7 +1513,9 @@ void doBidiMouseLocationChange(int x, int y, boolean select) {
 	if (line > lineCount - 1) {
 		line = lineCount - 1;
 	}	
-	if (line >= 0) {
+	// allow caret to be placed below first line only if receiver is 
+	// not in single line mode. fixes 4820.
+	if (line == 0 || (isSingleLine() == false && line > 0)) {
 		int newCaretOffset = getBidiOffsetAtMouseLocation(x, line);	
 		if (x >= horizontalScrollOffset || content.getLineAtOffset(newCaretOffset) != content.getLineAtOffset(caretOffset)) {
 			// Only change the caret offset when the mouse is within the left client area border
@@ -1815,11 +1817,17 @@ void doContent(char key) {
  * Moves the caret after the last character of the widget content.
  */
 void doContentEnd() {
-	int length = content.getCharCount();
-	
-	if (caretOffset < length) {
-		caretOffset = length;
-		showCaret();
+	// place caret at end of first line if receiver is in single 
+	// line mode. fixes 4820.
+	if (isSingleLine()) {
+		doLineEnd();
+	}
+	else {
+		int length = content.getCharCount();		
+		if (caretOffset < length) {
+			caretOffset = length;
+			showCaret();
+		}
 	}
 }
 /**
@@ -1977,7 +1985,9 @@ void doMouseLocationChange(int x, int y, boolean select) {
 	if (line > lineCount - 1) {
 		line = lineCount - 1;
 	}	
-	if (line >= 0) {
+	// allow caret to be placed below first line only if receiver is 
+	// not in single line mode. fixes 4820.
+	if (line == 0 || (isSingleLine() == false && line > 0)) {
 		int newCaretOffset = getOffsetAtMouseLocation(x, line);
 		
 		if (newCaretOffset != caretOffset) {
@@ -2114,7 +2124,9 @@ void doPageUp() {
 void doSelectionLineDown() {
 	int line = content.getLineAtOffset(caretOffset);
 	
-	if (line < content.getLineCount() - 1) {
+	// allow line down action only if receiver is not in single line mode.
+	// fixes 4820.
+	if (isSingleLine() == false && line < content.getLineCount() - 1) {
 		String lineText = content.getLine(line);
 		int lineOffset = content.getOffsetAtLine(line);
 		int offsetInLine = caretOffset - lineOffset;		
