@@ -303,11 +303,10 @@ public void clearSelection () {
 	if ((style & SWT.READ_ONLY) != 0) {
 		OS.SetControl32BitValue (handle, 0);
 	} else {
-		char [] buffer = new char [0];
-		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-		if (ptr == 0) return;	
-		OS.SetControlData (handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, new int[] {ptr});
-		OS.CFRelease (ptr);
+		short [] selection = new short [2];
+		OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, 4, selection, null);
+		selection [1] = selection [0];
+		OS.SetControlData (handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, 4, selection);
 	}
 }
 
@@ -974,6 +973,17 @@ int kEventRawKey (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	if ((style & SWT.READ_ONLY) == 0) {
+		short [] part = new short [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
+		if (part [0] != OS.kControlFocusNoPart) display.focusCombo = this;
+	}
+	return result;
+}
+
 /**
  * Pastes text from clipboard.
  * <p>
@@ -1038,6 +1048,7 @@ public void paste () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	if (display.focusCombo == this) display.focusCombo = null;
 	if (menuHandle != 0) {
 		OS.DeleteMenu (OS.GetMenuID (menuHandle));
 		OS.DisposeMenu (menuHandle);

@@ -1368,6 +1368,7 @@ int kEventControlSetCursor (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
+	display.focusCombo = null;
 	if (!display.ignoreFocus) {
 		short [] part = new short [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);

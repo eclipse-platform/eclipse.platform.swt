@@ -129,6 +129,7 @@ public class Display extends Device {
 	/* Focus */
 	int focusEvent;
 	Control focusControl;
+	Combo focusCombo;
 	boolean ignoreFocus;
 
 	/* Menus */
@@ -2525,10 +2526,23 @@ public boolean readAndDispatch () {
 	int status = OS.ReceiveNextEvent (0, null, OS.kEventDurationNoWait, true, outEvent);
 	if (status == OS.noErr) {
 		events = true;
+
+//		String text = null;
+//		if (focusCombo != null && !focusCombo.isDisposed ()) {
+//			text = focusCombo.getText();
+//		}
+
 		int eventClass = OS.GetEventClass (outEvent [0]);
 		int eventKind = OS.GetEventKind (outEvent [0]);
 		OS.SendEventToEventTarget (outEvent [0], OS.GetEventDispatcherTarget ());
 		OS.ReleaseEvent (outEvent [0]);
+
+//		if (focusCombo != null && !focusCombo.isDisposed ()) {
+//			if (!focusCombo.getText ().equals (text)) {
+//				focusCombo.postEvent (SWT.Selection);
+//			}
+//		}
+
 		/*
 		* Feature in the Macintosh.  When an indeterminate progress
 		* bar is running, it floods the event queue with messages in
@@ -2643,9 +2657,11 @@ void releaseDisplay () {
 	timerCallback.dispose ();
 	timerCallback = null;
 	timerProc = 0;
-	grabControl = helpControl = currentControl = null;
+	grabControl = helpControl = currentControl = mouseUpControl = focusControl = focusCombo = null;
 	if (helpString != 0) OS.CFRelease (helpString);
 	helpString = 0;
+	menus = popups = null;
+	menuBar = null;
 
 	/* Release the System Images */
 	if (errorImage != 0) OS.CGImageRelease (errorImage);
