@@ -5634,19 +5634,6 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1file_1filter_1set_1name)
 }
 #endif
 
-#ifndef NO_gtk_1file_1selection_1complete
-JNIEXPORT void JNICALL OS_NATIVE(gtk_1file_1selection_1complete)
-	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
-{
-	jbyte *lparg1=NULL;
-	OS_NATIVE_ENTER(env, that, gtk_1file_1selection_1complete_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
-	gtk_file_selection_complete((GtkFileSelection *)arg0, (const gchar *)lparg1);
-	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, gtk_1file_1selection_1complete_FUNC);
-}
-#endif
-
 #ifndef NO_gtk_1file_1selection_1get_1filename
 JNIEXPORT jint JNICALL OS_NATIVE(gtk_1file_1selection_1get_1filename)
 	(JNIEnv *env, jclass that, jint arg0)

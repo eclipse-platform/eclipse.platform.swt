@@ -446,7 +446,6 @@ typedef enum {
 	gtk_1file_1filter_1add_1pattern_FUNC,
 	gtk_1file_1filter_1new_FUNC,
 	gtk_1file_1filter_1set_1name_FUNC,
-	gtk_1file_1selection_1complete_FUNC,
 	gtk_1file_1selection_1get_1filename_FUNC,
 	gtk_1file_1selection_1get_1selections_FUNC,
 	gtk_1file_1selection_1hide_1fileop_1buttons_FUNC,

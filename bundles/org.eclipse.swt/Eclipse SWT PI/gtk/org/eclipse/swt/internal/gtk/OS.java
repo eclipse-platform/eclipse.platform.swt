@@ -851,7 +851,6 @@ public static final synchronized native void gtk_file_chooser_set_select_multipl
 public static final synchronized native void gtk_file_filter_add_pattern(int /*long*/ filter, byte[] pattern);
 public static final synchronized native int /*long*/ gtk_file_filter_new();
 public static final synchronized native void gtk_file_filter_set_name(int /*long*/ filter, byte[] name);
-public static final synchronized native void gtk_file_selection_complete(int /*long*/ filesel, byte[] pattern);
 public static final synchronized native int /*long*/ gtk_file_selection_get_filename(int /*long*/ filesel);
 public static final synchronized native int /*long*/ gtk_file_selection_get_selections(int /*long*/ filesel);
 public static final synchronized native void gtk_file_selection_hide_fileop_buttons(int /*long*/ filesel);

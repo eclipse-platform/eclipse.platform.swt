@@ -429,14 +429,8 @@ void presetClassicDialog () {
 	OS.g_free (utf8Ptr);
 	OS.g_free (fileNamePtr);
 				
-	/* Set the extension */
 	if (filterNames == null) filterNames = new String [0];
 	if (filterExtensions == null) filterExtensions = new String [0];
-	if (filterExtensions.length == 1) {
-		String ext = filterExtensions [0];
-		byte [] extBytes = Converter.wcsToMbcs (null, ext, true);
-		OS.gtk_file_selection_complete (handle, extBytes);
-	}	
 	fullPath = null;
 	fileNames = new String [0];
 }
