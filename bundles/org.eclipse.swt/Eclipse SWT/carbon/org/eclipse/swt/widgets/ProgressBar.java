@@ -244,7 +244,7 @@ void handleResize(int hndl, MacRect bounds) {
 }
 
 void internalGetControlBounds(int hndl, MacRect bounds) {
-	OS.GetControlBounds(hndl, bounds.getData());
+	super.internalGetControlBounds(hndl, bounds);
 	if ((style & SWT.HORIZONTAL) != 0) { 	// horizontal
 		bounds.inset(0, -fTopMargin, 0, -fBottomMargin);
 	} else {	// vertical

@@ -171,7 +171,7 @@ void createHandle (int index) {
 		OS.XmNancestorSensitive, 1,
 	};
 	*/
-	handle = MacUtil.createDrawingArea(parent.handle, 0, 0, border);
+	handle = MacUtil.createDrawingArea(parent.handle, -1, true, 0, 0, border);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
 int defaultBackground () {
