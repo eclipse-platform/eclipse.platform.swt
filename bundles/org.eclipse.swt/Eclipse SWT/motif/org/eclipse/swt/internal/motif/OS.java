@@ -14,6 +14,15 @@ public class OS {
 		Callback.loadLibrary ();
 	}
 
+	/* BEGIN Visual classes */
+	//public static final int StaticGray = 0;
+	//public static final int GrayScale = 1;
+	//public static final int StaticColor = 2;
+	//public static final int PseudoColor = 3;
+	//public static final int TrueColor = 4;
+	//public static final int DirectColor = 5;
+	/* END Visual clases */
+
 	/* X/Xt/Xm Constants */
 	public static final byte [] XmFONTLIST_DEFAULT_TAG = {0x46, 0x4F, 0x4E, 0x54, 0x4C, 0x49, 0x53, 0x54, 0x5F, 0x44, 0x45, 0x46, 0x41, 0x55, 0x4C, 0x54, 0x5F, 0x54, 0x41, 0x47, 0x5F, 0x53, 0x54, 0x52, 0x49, 0x4E, 0x47, 0x0};
 	public static final int Above = 0;

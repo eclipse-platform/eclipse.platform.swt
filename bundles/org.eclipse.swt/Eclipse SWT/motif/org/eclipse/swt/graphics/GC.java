@@ -1121,6 +1121,105 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int end
 	OS.XFillArc(xDisplay,data.drawable,handle,x,y,width,height,startAngle * 64 ,endAngle * 64);
 	OS.XSetForeground (xDisplay, handle, values.foreground);
 }
+
+/**
+ * Fills the interior of the specified rectangle with a gradient
+ * sweeping from left to right or top to bottom progressing
+ * from the receiver's foreground color to its background color.
+ *
+ * @param x the x coordinate of the rectangle to be filled
+ * @param y the y coordinate of the rectangle to be filled
+ * @param width the width of the rectangle to be filled, may be negative
+ *        (inverts direction of gradient if horizontal)
+ * @param height the height of the rectangle to be filled, may be negative
+ *        (inverts direction of gradient if vertical)
+ * @param vertical if true sweeps from top to bottom, else 
+ *        sweeps from left to right
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see #drawRectangle
+ */
+public void fillGradientRectangle(int x, int y, int width, int height, boolean vertical) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if ((width == 0) || (height == 0)) return;
+	int xDisplay = data.display;
+	int xScreenNum = OS.XDefaultScreen(xDisplay);
+	XGCValues values = new XGCValues();
+	int fromColor, toColor;
+	OS.XGetGCValues(xDisplay, handle, OS.GCForeground | OS.GCBackground, values);
+	fromColor = values.foreground;
+	toColor = values.background;
+	boolean swapColors = false;
+	if (width < 0) {
+		x += width; width = -width;
+		if (! vertical) swapColors = true;
+	}
+	if (height < 0) {
+		y += height; height = -height;
+		if (vertical) swapColors = true;
+	}
+	if (swapColors) {
+		final int t = fromColor;
+		fromColor = toColor;
+		toColor = t;
+	}
+	if (fromColor == toColor) {
+		OS.XFillRectangle(xDisplay, data.drawable, handle, x, y, width, height);
+		return;
+	}
+	/* X Window deals with a virtually limitless array of color formats
+	 * but we only distinguish between paletted and direct modes
+	 */	
+	final int xScreen = OS.XDefaultScreenOfDisplay(xDisplay);
+	final int xVisual = OS.XDefaultVisual(xDisplay, xScreenNum);
+	Visual visual = new Visual();
+	OS.memmove(visual, xVisual, visual.sizeof);
+	final int depth = OS.XDefaultDepthOfScreen(xScreen);
+	final boolean directColor = (depth > 8);
+
+	// This code is intentionally commented since elsewhere in SWT we
+	// assume that depth <= 8 means we are in a paletted mode though
+	// this is not always the case.
+	//final boolean directColor = (visual.c_class == OS.TrueColor) || (visual.c_class == OS.DirectColor);
+
+	XColor xColor = new XColor();
+	xColor.pixel = fromColor;
+	OS.XQueryColor(xDisplay, data.colormap, xColor);
+	final RGB fromRGB = new RGB((xColor.red & 0xffff) >>> 8, (xColor.green & 0xffff) >>> 8, (xColor.blue & 0xffff) >>> 8);
+	xColor.pixel = toColor;
+	OS.XQueryColor(xDisplay, data.colormap, xColor);
+	final RGB toRGB = new RGB((xColor.red & 0xffff) >>> 8, (xColor.green & 0xffff) >>> 8, (xColor.blue & 0xffff) >>> 8);
+
+	final int redBits, greenBits, blueBits;
+	if (directColor) {
+		// RGB mapped display
+		redBits = getChannelWidth(visual.red_mask);
+		greenBits = getChannelWidth(visual.green_mask);
+		blueBits = getChannelWidth(visual.blue_mask);
+	} else {
+		// Index display
+		redBits = greenBits = blueBits = 0;
+	}
+	ImageData.fillGradientRectangle(this, data.device,
+		x, y, width, height, vertical, fromRGB, toRGB,
+		redBits, greenBits, blueBits);
+}
+
+/**
+ * Computes the required channel width (depth) from a mask.
+ */
+static int getChannelWidth(int mask) {
+	int width = 0;
+	while (mask != 0) {
+		width += (mask & 1);
+		mask >>>= 1;
+	}
+	return width;
+}
+
 /** 
  * Fills the interior of an oval, within the specified
  * rectangular area, with the receiver's background
@@ -1427,11 +1526,7 @@ public Color getBackground() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int xDisplay = data.display;
 	XGCValues values = new XGCValues();
-	if (OS.XGetGCValues(xDisplay, handle, OS.GCBackground, values) == 0) {
-		// Check error case here. If a palette has been set we may be able
-		// to do a better job. 
-		return null;
-	}
+	OS.XGetGCValues(xDisplay, handle, OS.GCBackground, values);
 	XColor xColor = new XColor();
 	xColor.pixel = values.background;
 	OS.XQueryColor(xDisplay,data.colormap,xColor);
@@ -1831,11 +1926,7 @@ public Color getForeground() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int xDisplay = data.display;
 	XGCValues values = new XGCValues();
-	if (OS.XGetGCValues(xDisplay, handle, OS.GCForeground, values) == 0) {
-		// Check error case here. If a palette has been set we may be able
-		// to do a better job. 
-		return null;
-	}
+	OS.XGetGCValues(xDisplay, handle, OS.GCForeground, values);
 	XColor xColor = new XColor();
 	xColor.pixel = values.foreground;
 	OS.XQueryColor(xDisplay,data.colormap,xColor);
@@ -1896,6 +1987,7 @@ public boolean getXORMode() {
 	OS.XGetGCValues (data.display, handle, OS.GCFunction, values);
 	return values.function == OS.GXxor;
 }
+
 /**
  * Returns an integer hash code for the receiver. Any two 
  * objects which return <code>true</code> when passed to 
