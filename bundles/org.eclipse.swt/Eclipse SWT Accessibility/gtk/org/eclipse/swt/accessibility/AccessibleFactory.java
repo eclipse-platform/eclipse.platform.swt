@@ -34,16 +34,16 @@ class AccessibleFactory {
 		byte[] factoryName = concat (FACTORY_NAME, widgetTypeName);
 		if (OS.g_type_from_name (factoryName) == 0) {
 			// register the factory
-			int registry = OS.atk_get_default_registry ();
-			previousFactory = OS.atk_registry_get_factory (registry, widgetType);
-			parentType = OS.atk_object_factory_get_accessible_type (previousFactory);
+			int registry = ATK.atk_get_default_registry ();
+			previousFactory = ATK.atk_registry_get_factory (registry, widgetType);
+			parentType = ATK.atk_object_factory_get_accessible_type (previousFactory);
 			if (parentType == 0) {
 				parentType = OS.g_type_from_name (Converter.wcsToMbcs (null, DEFAULT_PARENT_TYPE, true));
 			}
 			// the following line is intentionally commented
 			// OS.g_object_ref(previousFactory);
 			int swtFactory = createFactory (factoryName);
-			OS.atk_registry_set_factory_type (registry, widgetType, swtFactory);
+			ATK.atk_registry_set_factory_type (registry, widgetType, swtFactory);
 		}
 	}
 	
@@ -71,20 +71,20 @@ class AccessibleFactory {
 		gTypeInfoCB_base_init  = new Callback (this, "gTypeInfo_base_init", 1);
 		GTypeInfo typeInfo = new GTypeInfo ();
 		typeInfo.base_init = gTypeInfoCB_base_init.getAddress ();
-		typeInfo.class_size = OS.AtkObjectFactoryClass_sizeof ();
-		typeInfo.instance_size = OS.AtkObjectFactory_sizeof ();
+		typeInfo.class_size = ATK.AtkObjectFactoryClass_sizeof ();
+		typeInfo.instance_size = ATK.AtkObjectFactory_sizeof ();
 		handle = OS.g_malloc (GTypeInfo.sizeof); 
 		OS.memmove (handle, typeInfo, GTypeInfo.sizeof); 
 		return OS.g_type_register_static (parent, name, handle, 0);
 	}
 
 	int gTypeInfo_base_init (int klass) {
-		int atkObjectFactoryClass = OS.ATK_OBJECT_FACTORY_CLASS (klass);
+		int atkObjectFactoryClass = ATK.ATK_OBJECT_FACTORY_CLASS (klass);
 		AtkObjectFactoryClass objectFactoryClassStruct = new AtkObjectFactoryClass ();
-		OS.memmove (objectFactoryClassStruct, atkObjectFactoryClass);
+		ATK.memmove (objectFactoryClassStruct, atkObjectFactoryClass);
 		atkObjectFactoryCB_create_accessible = new Callback (this, "atkObjectFactory_create_accessible", 1);
 		objectFactoryClassStruct.create_accessible = atkObjectFactoryCB_create_accessible.getAddress ();
-		OS.memmove (atkObjectFactoryClass, objectFactoryClassStruct); 
+		ATK.memmove (atkObjectFactoryClass, objectFactoryClassStruct); 
 		return 0;
 	}
 	

@@ -32,6 +32,7 @@ WS_PREFIX    = gtk
 GNOME_PREFIX = swt-gnome
 SWT_DLL      = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 SWTPI_DLL    = lib$(SWT_PREFIX)-pi-$(WS_PREFIX)-$(SWT_VERSION).so
+SWTATK_DLL  = lib$(SWT_PREFIX)-atk-$(WS_PREFIX)-$(SWT_VERSION).so
 GNOME_DLL    = lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 
 GNOME_CFLAGS = `pkg-config --cflags gnome-vfs-2.0`
@@ -49,9 +50,11 @@ CFLAGS = -shared -O -DSWT_VERSION=$(SWT_VERSION) \
 #  Target Rules
 #
 
-all: make_swt  make_gnome
+all: make_swt make_atk make_gnome
 
 make_swt: $(SWT_DLL) $(SWTPI_DLL)
+
+make_atk: $(SWTATK_DLL)
 
 make_gnome: $(GNOME_DLL)
 
@@ -60,6 +63,9 @@ $(GNOME_DLL): gnome.c
 
 $(SWT_DLL): callback.c callback.h
 	gcc  $(CFLAGS) -o $(SWT_DLL) callback.c
+
+$(SWTATK_DLL): atk_structs.c atk_structs.h atk.c atk.h atk_custom.c
+	gcc  $(CFLAGS) $(GTKCFLAGS) $(GTKLIBS) -o $(SWTATK_DLL) atk_structs.c atk.c atk_custom.c
 
 $(SWTPI_DLL): os_structs.c os_structs.h os.c swt.h os_custom.c
 	gcc  $(CFLAGS) $(GTKCFLAGS) $(GTKLIBS) -o $(SWTPI_DLL) os_structs.c os.c os_custom.c

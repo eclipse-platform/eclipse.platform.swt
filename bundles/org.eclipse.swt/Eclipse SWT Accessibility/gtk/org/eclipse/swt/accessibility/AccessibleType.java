@@ -59,7 +59,7 @@ class AccessibleType {
 	int selectionIfaceDefinition = -1;
 	int textIfaceDefinition = -1;
 
-	static AccessibleType instance = new AccessibleType ();
+	static AccessibleType instance;
 	static boolean DEBUG = Display.DEBUG;
 	static final String ACCESSIBLE_TYPE_NAME = "SWTAccessible";
 	static final String PARENT_TYPE_NAME = "GtkAccessible";
@@ -67,6 +67,10 @@ class AccessibleType {
 	static final int ATK_COMPONENT_TYPE = OS.g_type_from_name (Converter.wcsToMbcs (null, "AtkComponent", true));
 	static final int ATK_SELECTION_TYPE = OS.g_type_from_name (Converter.wcsToMbcs (null, "AtkSelection", true));		
 	static final int ATK_TEXT_TYPE = OS.g_type_from_name (Converter.wcsToMbcs (null, "AtkText", true));
+	
+	static {
+		 instance = new AccessibleType ();
+	}
 	
 	private AccessibleType () {
 		super ();
@@ -85,20 +89,20 @@ class AccessibleType {
 		OS.memmove (objectDefinition, typeInfo, GTypeInfo.sizeof);
 		byte[] name = Converter.wcsToMbcs (null, ACCESSIBLE_TYPE_NAME, true);
 		handle = OS.g_type_register_static (parentType, name, objectDefinition, 0);
-		// add Component interface
-		GInterfaceInfo interfaceInfo = new GInterfaceInfo ();
-		initComponentIfaceCB = new Callback (this, "initComponentIfaceCB", 1);
-		interfaceInfo.interface_init = initComponentIfaceCB.getAddress ();
-		componentIfaceDefinition = OS.g_malloc (GInterfaceInfo.sizeof);
-		OS.memmove (componentIfaceDefinition, interfaceInfo, GInterfaceInfo.sizeof);
-		OS.g_type_add_interface_static (handle, ATK_COMPONENT_TYPE, componentIfaceDefinition);
 		// add Action interface
-		interfaceInfo = new GInterfaceInfo ();
+		GInterfaceInfo interfaceInfo = new GInterfaceInfo ();
 		initActionIfaceCB = new Callback (this, "initActionIfaceCB", 1);
 		interfaceInfo.interface_init = initActionIfaceCB.getAddress ();
 		actionIfaceDefinition = OS.g_malloc (GInterfaceInfo.sizeof);  
 		OS.memmove (actionIfaceDefinition, interfaceInfo, GInterfaceInfo.sizeof);
 		OS.g_type_add_interface_static (handle, ATK_ACTION_TYPE, actionIfaceDefinition);
+		// add Component interface
+		interfaceInfo = new GInterfaceInfo ();
+		initComponentIfaceCB = new Callback (this, "initComponentIfaceCB", 1);
+		interfaceInfo.interface_init = initComponentIfaceCB.getAddress ();
+		componentIfaceDefinition = OS.g_malloc (GInterfaceInfo.sizeof);
+		OS.memmove (componentIfaceDefinition, interfaceInfo, GInterfaceInfo.sizeof);
+		OS.g_type_add_interface_static (handle, ATK_COMPONENT_TYPE, componentIfaceDefinition);
 		// add Selection interface
 		interfaceInfo = new GInterfaceInfo ();
 		initSelectionIfaceCB = new Callback (this, "initSelectionIfaceCB", 1);
@@ -281,7 +285,7 @@ class AccessibleType {
 			// type so that its accessibility callbacks will not pass though here
 			type = OS.g_type_parent (type);
 			int result = OS.g_object_new (type, 0);
-			OS.atk_object_initialize (result, widget);
+			ATK.atk_object_initialize (result, widget);
 			return result;
 		}
 		AccessibleObject object = new AccessibleObject (type, widget, acc, parentType);
@@ -314,7 +318,7 @@ class AccessibleType {
 
 	int gTypeInfo_base_init (int klass) {
 		AtkObjectClass objectClass = new AtkObjectClass ();
-		OS.memmove (objectClass, klass);
+		ATK.memmove (objectClass, klass);
 		atkObjectCB_get_name = new Callback (this, "atkObject_get_name", 1);
 		objectClass.get_name = atkObjectCB_get_name.getAddress ();
 		atkObjectCB_get_description = new Callback (this, "atkObject_get_description", 1);
@@ -337,24 +341,24 @@ class AccessibleType {
 		gObjectClass_finalize = new Callback (this, "gObjectClass_finalize", 1);
 		objectClassStruct.finalize = gObjectClass_finalize.getAddress ();
 		OS.memmove (gObjectClass, objectClassStruct); 
-		OS.memmove (klass, objectClass);
+		ATK.memmove (klass, objectClass);
 		return 0;
 	}	
 
 	int initActionIfaceCB (int iface) {
 		AtkActionIface actionIface = new AtkActionIface ();
-		OS.memmove (actionIface, iface);
+		ATK.memmove (actionIface, iface);
 		atkActionCB_get_keybinding = new Callback (this, "atkAction_get_keybinding", 2);
 		actionIface.get_keybinding = atkActionCB_get_keybinding.getAddress (); 
 		atkActionCB_get_name = new Callback (this, "atkAction_get_name", 2);
 		actionIface.get_name = atkActionCB_get_name.getAddress ();
-		OS.memmove (iface, actionIface);
+		ATK.memmove (iface, actionIface);
 		return 0;
 	}
 	
 	int initComponentIfaceCB (int iface) {
 		AtkComponentIface componentIface = new AtkComponentIface ();
-		OS.memmove (componentIface, iface);
+		ATK.memmove (componentIface, iface);
 		atkComponentCB_get_extents = new Callback (this, "atkComponent_get_extents", 6);
 		componentIface.get_extents = atkComponentCB_get_extents.getAddress ();
 		atkComponentCB_get_position = new Callback (this, "atkComponent_get_position", 4);
@@ -363,24 +367,24 @@ class AccessibleType {
 		componentIface.get_size = atkComponentCB_get_size.getAddress ();
 		atkComponentCB_ref_accessible_at_point = new Callback (this, "atkComponent_ref_accessible_at_point", 4);
 		componentIface.ref_accessible_at_point = atkComponentCB_ref_accessible_at_point.getAddress ();
-		OS.memmove (iface, componentIface);
+		ATK.memmove (iface, componentIface);
 		return 0;
 	}
 
 	int initSelectionIfaceCB (int iface) {
 		AtkSelectionIface selectionIface = new AtkSelectionIface ();
-		OS.memmove (selectionIface, iface);
+		ATK.memmove (selectionIface, iface);
 		atkSelectionCB_is_child_selected = new Callback (this, "atkSelection_is_child_selected", 2);
 		selectionIface.is_child_selected = atkSelectionCB_is_child_selected.getAddress ();
 		atkSelectionCB_ref_selection = new Callback (this, "atkSelection_ref_selection", 2);
 		selectionIface.ref_selection = atkSelectionCB_ref_selection.getAddress ();
-		OS.memmove (iface, selectionIface);
+		ATK.memmove (iface, selectionIface);
 		return 0;
 	}
 		
 	int initTextIfaceCB (int iface) {
 		AtkTextIface textInterface = new AtkTextIface ();
-		OS.memmove (textInterface, iface);
+		ATK.memmove (textInterface, iface);
 		atkTextCB_get_text = new Callback (this, "atkText_get_text", 3);
 		textInterface.get_text = atkTextCB_get_text.getAddress ();
 		atkTextCB_get_text_after_offset = new Callback (this, "atkText_get_text_after_offset", 5);
@@ -393,7 +397,7 @@ class AccessibleType {
 		textInterface.get_character_at_offset = atkTextCB_get_character_at_offset.getAddress ();
 		atkTextCB_get_character_count = new Callback (this, "atkText_get_character_count", 1);
 		textInterface.get_character_count = atkTextCB_get_character_count.getAddress ();
-		OS.memmove (iface, textInterface);
+		ATK.memmove (iface, textInterface);
 		return 0;
 	}
 }
