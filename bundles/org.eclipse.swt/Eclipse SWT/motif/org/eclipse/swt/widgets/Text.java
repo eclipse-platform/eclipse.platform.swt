@@ -775,20 +775,19 @@ public String getText () {
  */
 public String getText (int start, int end) {
 	checkWidget();
-	int numChars = end - start + 1;
-	if (numChars < 0 || start < 0) return "";
+	if (!(0 <= start && start <= end)) error (SWT.ERROR_INVALID_RANGE);
 	if (echoCharacter != '\0') {
-		return hiddenText.substring (start, Math.min (hiddenText.length (), end));
+		if (hiddenText.length () <= end) error (SWT.ERROR_INVALID_RANGE);
+		return hiddenText.substring (start, end);
 	}
-	int length = (numChars * 4 /* MB_CUR_MAX */) + 1;
+	int ptr = OS.XmTextGetString (handle);
+	if (ptr == 0) return "";
+	int length = OS.strlen (ptr);
 	byte [] buffer = new byte [length];
-	int code = OS.XmTextGetSubstring (handle, start, numChars, length, buffer);
-	if (code == OS.XmCOPY_FAILED) return "";
-	char [] unicode = Converter.mbcsToWcs (getCodePage (), buffer);
-	if (code == OS.XmCOPY_TRUNCATED) {
-		numChars = OS.XmTextGetLastPosition (handle) - start;
-	}
-	return new String (unicode, 0, numChars);
+	OS.memmove (buffer, ptr, length);
+	OS.XtFree (ptr);
+	if (length <= end) error (SWT.ERROR_INVALID_RANGE);
+	return new String (Converter.mbcsToWcs (getCodePage (), buffer));
 }
 /**
  * Returns the maximum number of characters that the receiver is capable of holding. 
