@@ -337,8 +337,7 @@ void dropDown (boolean drop) {
 	int index = list.getSelectionIndex ();
 	if (index != -1) list.setTopIndex (index);
 	Rectangle listRect = list.getBounds ();
-	int borderWidth = getBorderWidth();
-	Point point = toDisplay (new Point (0 - borderWidth, 0 - borderWidth));
+	Point point = getParent().toDisplay (getLocation ());
 	Point comboSize = getSize();
 	int width = Math.max (comboSize.x, listRect.width + 2);
 	popup.setBounds (point.x, point.y + comboSize.y, width, listRect.height + 2);
