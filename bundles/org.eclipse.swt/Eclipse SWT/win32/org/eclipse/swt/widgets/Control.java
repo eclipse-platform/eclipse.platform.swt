@@ -4338,32 +4338,21 @@ LRESULT WM_SYSKEYDOWN (int wParam, int lParam) {
 		/*
 		* Feature in Windows.  The virtual key VK_DELETE is not
 		* treated as both a virtual key and an ASCII key by Windows.
-		* Therefore, we will not receive a WM_CHAR for this key.
+		* Therefore, we will not receive a WM_SYSCHAR for this key.
 		* The fix is to treat VK_DELETE as a special case and map
 		* the ASCII value explictly (Delete is 0x7F).
 		*/
 		if (display.lastKey == OS.VK_DELETE) display.lastAscii = 0x7F;
 
-		/*
-		* It is possible to get a WM_CHAR for a virtual key when
-		* Num Lock is on.  If the user types Home while Num Lock 
-		* is down, a WM_CHAR is issued with WPARM=55 (for the
-		* character 7).  If we are going to get a WM_CHAR we need
-		* to ensure that the last key has the correct value.  Note
-		* that Ctrl+Home does not issue a WM_CHAR when Num Lock is
-		* down.
-		* 
-		* NOTE: This only happens on Windows 98.
-		*/
+		/* When a keypad key is typed, a WM_SYSCHAR is not issued */
 		if (OS.VK_NUMPAD0 <= display.lastKey && display.lastKey <= OS.VK_DIVIDE) {
-			if (display.asciiKey (display.lastKey) != 0) return null;
 			display.lastAscii = display.numpadKey (display.lastKey);
 		}
 	} else {
 		/*
 		* Convert LastKey to lower case because Windows non-virtual
 		* keys that are also ASCII keys, such as like VK_A, are have
-		* upper case values in WM_KEYDOWN despite the fact that the 
+		* upper case values in WM_SYSKEYDOWN despite the fact that the 
 		* Shift was not pressed.
 		*/
 	 	display.lastKey = OS.CharLower ((short) mapKey);
