@@ -189,9 +189,13 @@ public Rectangle getBounds (int index) {
 	if (OS.GetDataBrowserItemPartBounds (parent.handle, id, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) != OS.noErr) {
 		return new Rectangle (0, 0, 0, 0);
 	}
-	int x = rect.left, y = rect.top;
-	int width = rect.right - rect.left;
-	int height = rect.bottom - rect.top;
+	Rect rect2 = new Rect();
+	if (OS.GetDataBrowserItemPartBounds (parent.handle, id, columnId, OS.kDataBrowserPropertyContentPart, rect2) != OS.noErr) {
+		return new Rectangle (0, 0, 0, 0);
+	}
+	int x = rect2.left, y = rect2.top;
+	int width = rect.right - rect2.left - 1;
+	int height = rect2.bottom - rect2.top - 1;
 	OS.GetControlBounds (parent.handle, rect);
 	x -= rect.left;
 	y -= rect.top;
@@ -320,11 +324,15 @@ public Rectangle getImageBounds (int index) {
 	}
 	int x = rect.left, y = rect.top;
 	int width = 0;
-	if (image != null) {
+	if (index == 0 && image != null) {
 		Rectangle bounds = image.getBounds ();
-		width += bounds.width + 2;
+		width += bounds.width - 1;
 	}
-	int height = rect.bottom - rect.top;
+	if (index != 0 && images != null && images[index] != null) {
+		Rectangle bounds = images [index].getBounds ();
+		width += bounds.width - 1;
+	}
+	int height = rect.bottom - rect.top - 1;
 	OS.GetControlBounds (parent.handle, rect);
 	x -= rect.left;
 	y -= rect.top;
