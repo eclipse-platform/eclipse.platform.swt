@@ -118,9 +118,11 @@ public DropTarget(Control control, int style) {
 		OS.XmNdropSiteType,       OS.XmDROP_SITE_COMPOSITE,
 	};
 
+	// This code is intentionally commented.
 	// the OS may have registered this widget as a drop site on creation.
 	// Remove the registered drop site because it has preconfigured values which we do not want.
 	//OS.XmDropSiteUnregister(control.handle);
+	
 	// Register drop site with our own values
 	OS.XmDropSiteRegister(control.handle, args, args.length / 2);
 
@@ -229,7 +231,18 @@ private int dragProcCallback(int widget, int client_data, int call_data) {
 			}
 		}
 	}
+	
+	if (dataTypes == null || dataTypes.length == 0) {
+		callbackData.dropSiteStatus = OS.XmDROP_SITE_INVALID;
+		callbackData.operation = opToOsOp(DND.DROP_NONE);
+		OS.memmove(call_data, callbackData, XmDragProcCallback.sizeof);
+		return 0;
+	}
 
+	if (selectedDataType == null) {
+		selectedDataType = dataTypes[0];
+	}
+	
 	DNDEvent event = new DNDEvent();
 	event.widget     = this.control;
 	event.time       = callbackData.timeStamp;
@@ -247,15 +260,15 @@ private int dragProcCallback(int widget, int client_data, int call_data) {
 	try {
 		switch (callbackData.reason) {
 			case OS.XmCR_DROP_SITE_ENTER_MESSAGE :
-				if (dataTypes.length > 0) {
-					event.dataType = dataTypes[0];
-				}
 				dragOverHeartbeat = new Runnable() {
 					public void run() {
 						if (control.isDisposed() || dragOverStart == 0) return;
 						long time = System.currentTimeMillis();
 						int delay = DRAGOVER_HYSTERESIS;
 						if (time >= dragOverStart) {
+							if (selectedDataType == null) {
+								selectedDataType = dragOverEvent.dataTypes[0];
+							}
 							DNDEvent event = new DNDEvent();
 							event.widget = control;
 							event.time = (int)time;
@@ -264,7 +277,7 @@ private int dragProcCallback(int widget, int client_data, int call_data) {
 							event.dataTypes  = dragOverEvent.dataTypes;
 							event.feedback = DND.FEEDBACK_SELECT;
 							event.operations = dragOverEvent.operations;
-							event.dataType  = dragOverEvent.dataType;
+							event.dataType  = selectedDataType;
 							event.detail  = dragOverEvent.detail;
 							notifyListeners(DND.DragOver, event);
 							effect.show(event.feedback, event.x, event.y);

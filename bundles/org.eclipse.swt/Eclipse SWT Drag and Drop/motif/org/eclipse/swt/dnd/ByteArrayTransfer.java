@@ -28,6 +28,7 @@ public TransferData[] getSupportedTypes(){
 	return data;
 }
 public boolean isSupportedType(TransferData transferData){
+	if (transferData == null) return false;
 	int[] types = getTypeIds();
 	for (int i = 0; i < types.length; i++) {
 		if (transferData.type == types[i]) return true;
@@ -47,9 +48,7 @@ protected void javaToNative (Object object, TransferData transferData){
 	transferData.result = 1;
 }
 protected Object nativeToJava(TransferData transferData){
-
-	if (transferData.pValue == 0 || !(isSupportedType(transferData))) return null;
-	
+	if (transferData == null || transferData.pValue == 0 || !(isSupportedType(transferData))) return null;
 	int size = transferData.format * transferData.length / 8;
 	byte[] buffer = new byte[size];
 	OS.memmove(buffer, transferData.pValue, size);
