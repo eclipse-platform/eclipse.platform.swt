@@ -800,7 +800,7 @@ public void setWarnings (boolean warnings) {
 	_setWarnings(warnings);
 }
 
-synchronized void _setWarnings (boolean warnings) {
+void _setWarnings (boolean warnings) {
 	this.warnings = warnings;
 }
 
