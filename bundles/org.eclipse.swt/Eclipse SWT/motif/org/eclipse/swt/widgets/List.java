@@ -1300,6 +1300,7 @@ public void setItem (int index, String string) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the items array is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if an item in the items array is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1312,6 +1313,9 @@ public void setItem (int index, String string) {
 public void setItems (String [] items) {
 	checkWidget();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
+	for (int i=0; i<items.length; i++) {
+		if (items [i] == null) error (SWT.ERROR_INVALID_ARGUMENT);
+	}
 	/*
 	* Bug in AIX.  When all list items are replaced
 	* in a scrolled list that is currently showing a
@@ -1331,7 +1335,6 @@ public void setItems (String [] items) {
 	String codePage = getCodePage ();
 	while (index < items.length) {
 		String string = items [index];
-		if (string == null) break; 
 		byte [] buffer = Converter.wcsToMbcs (codePage, string, true);
 		int xmString = OS.XmStringCreateLocalized (buffer);
 		if (xmString == 0) break;
