@@ -11,6 +11,8 @@ package org.eclipse.swt.custom;
  * StyledText.print(Printer, StyledTextPrintOptions) API.
  * 
  * This class is experimental API and subject to change.
+ * 
+ * @since 2.1
  */
 public class StyledTextPrintOptions {
 	public static final String PAGE_TAG = "<page>";
