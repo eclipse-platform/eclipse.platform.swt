@@ -297,7 +297,7 @@ void createItem (TableColumn column, int index) {
 				lvItem.pszText = lvItem.cchTextMax = 0;
 				lvItem.iImage = OS.I_IMAGENONE;
 				OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
-				items [i].text = "";
+				items [i].text = ""; //$NON-NLS-1$
 				items [i].image = null;
 			}
 			lvColumn.mask = OS.LVCF_TEXT | OS.LVCF_IMAGE | OS.LVCF_WIDTH | OS.LVCF_FMT;

@@ -238,7 +238,7 @@ public boolean isEmpty () {
  * @return a string representation of the rectangle
  */
 public String toString () {
-	return "Rectangle {" + x + ", " + y + ", " + width + ", " + height + "}";
+	return "Rectangle {" + x + ", " + y + ", " + width + ", " + height + "}"; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 }
 
 /**

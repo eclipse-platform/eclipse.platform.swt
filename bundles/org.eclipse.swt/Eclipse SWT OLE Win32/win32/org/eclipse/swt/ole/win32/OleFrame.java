@@ -51,9 +51,9 @@ final public class OleFrame extends Composite
 
 	private Listener listener;
 	
-	private static String CHECK_FOCUS = "OLE_CHECK_FOCUS";
-	private static String HHOOK = "OLE_HHOOK";
-	private static String HHOOKMSG = "OLE_HHOOK_MSG";
+	private static String CHECK_FOCUS = "OLE_CHECK_FOCUS"; //$NON-NLS-1$
+	private static String HHOOK = "OLE_HHOOK"; //$NON-NLS-1$
+	private static String HHOOKMSG = "OLE_HHOOK_MSG"; //$NON-NLS-1$
 	
 /**
  * Create an OleFrame child widget using style bits
@@ -149,7 +149,7 @@ private static void initCheckFocus (final Display display) {
 }
 private static void initMsgHook(Display display) {
 	if (display.getData(HHOOK) != null) return;
-	final Callback callback = new Callback(OleFrame.class, "getMsgProc", 3);
+	final Callback callback = new Callback(OleFrame.class, "getMsgProc", 3); //$NON-NLS-1$
 	int address = callback.getAddress();
 	int threadId = OS.GetCurrentThreadId();
 	final int hHook = OS.SetWindowsHookEx(OS.WH_GETMESSAGE, address, 0, threadId);

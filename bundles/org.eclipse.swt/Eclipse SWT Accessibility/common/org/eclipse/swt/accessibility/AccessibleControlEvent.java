@@ -39,14 +39,14 @@ public AccessibleControlEvent(Object source) {
 }
 
 public String toString () {
-	return "AccessibleControlEvent {childID=" + childID + 
-		" accessible=" + accessible + 
-		" x=" + x + 
-		" y=" + y + 
-		" width=" + width + 
-		" height=" + height + 
-		" detail=" + detail + 
-		" result=" + result + 
-		"}";
+	return "AccessibleControlEvent {childID=" + childID +  //$NON-NLS-1$
+		" accessible=" + accessible +  //$NON-NLS-1$
+		" x=" + x +  //$NON-NLS-1$
+		" y=" + y +  //$NON-NLS-1$
+		" width=" + width +  //$NON-NLS-1$
+		" height=" + height +  //$NON-NLS-1$
+		" detail=" + detail +  //$NON-NLS-1$
+		" result=" + result +  //$NON-NLS-1$
+		"}"; //$NON-NLS-1$
 }	
 }

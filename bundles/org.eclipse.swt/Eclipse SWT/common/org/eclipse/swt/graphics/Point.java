@@ -88,7 +88,7 @@ public int hashCode () {
  * @return a string representation of the point
  */
 public String toString () {
-	return "Point {" + x + ", " + y + "}";
+	return "Point {" + x + ", " + y + "}"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 }
 
 }

@@ -104,7 +104,7 @@ public int hashCode () {
  * @return a string representation of the <code>RGB</code>
  */
 public String toString () {
-	return "RGB {" + red + ", " + green + ", " + blue + "}";
+	return "RGB {" + red + ", " + green + ", " + blue + "}"; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 }
 
 }

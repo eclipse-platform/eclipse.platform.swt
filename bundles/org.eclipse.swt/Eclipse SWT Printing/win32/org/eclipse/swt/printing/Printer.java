@@ -56,9 +56,9 @@ public final class Printer extends Device {
 	static TCHAR appName;
 	static TCHAR keyName;
 	static {
-		profile = new TCHAR(0, "PrinterPorts", true);
-		appName = new TCHAR(0, "windows", true);
-		keyName = new TCHAR(0, "device", true);
+		profile = new TCHAR(0, "PrinterPorts", true); //$NON-NLS-1$
+		appName = new TCHAR(0, "windows", true); //$NON-NLS-1$
+		keyName = new TCHAR(0, "device", true); //$NON-NLS-1$
 	}
 	
 /**
@@ -92,7 +92,7 @@ public static PrinterData[] getPrinterList() {
 	PrinterData printerList[] = new PrinterData[nameCount];
 	for (int p = 0; p < nameCount; p++) {
 		String device = deviceNames[p];
-		String driver = "";
+		String driver = ""; //$NON-NLS-1$
 		if (OS.GetProfileString(profile, new TCHAR(0, device, true), nullBuf, buf, length) > 0) {
 			int commaIndex = 0;
 			while (buf.tcharAt(commaIndex) != ',' && commaIndex < length) commaIndex++;
@@ -127,7 +127,7 @@ public static PrinterData getDefaultPrinterData() {
 	if (commaIndex < length) {
 		deviceName = buf.toString(0, commaIndex);		
 	}
-	String driver = "";
+	String driver = ""; //$NON-NLS-1$
 	if (OS.GetProfileString(profile, new TCHAR(0, deviceName, true), nullBuf, buf, length) > 0) {
 		commaIndex = 0;
 		while (buf.tcharAt(commaIndex) != ',' && commaIndex < length) commaIndex++;

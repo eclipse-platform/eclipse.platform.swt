@@ -45,6 +45,6 @@ public AccessibleEvent(Object source) {
 }
 
 public String toString () {
-	return "AccessibleEvent {childID=" + childID + " result=" + result + "}";
+	return "AccessibleEvent {childID=" + childID + " result=" + result + "}"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 }	
 }

@@ -29,8 +29,8 @@ public class OLE extends SWT {
 	public static final int E_NOINTERFACE = -2147467262;  // QueryInterface did not recognize the requested interface.
 	public static final int E_NOTIMPL = -2147467263; // Not implemented
 	
-	public static final String IID_IUNKNOWN = "{00000000-0000-0000-C000-000000000046}";
-	public static final String IID_IDISPATCH = "{00020400-0000-0000-C000-000000000046}";
+	public static final String IID_IUNKNOWN = "{00000000-0000-0000-C000-000000000046}"; //$NON-NLS-1$
+	public static final String IID_IDISPATCH = "{00020400-0000-0000-C000-000000000046}"; //$NON-NLS-1$
 	
 	// Verbs that can be invoked on this client
 	public static final int OLEIVERB_DISCARDUNDOSTATE = -6; // close the OLE object and discard the undo state

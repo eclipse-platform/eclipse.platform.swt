@@ -1195,7 +1195,7 @@ public void showSelection () {
 
 String toolTipText (NMTTDISPINFO hdr) {
 	int hwndToolTip = OS.SendMessage (handle, OS.TVM_GETTOOLTIPS, 0, 0);
-	if (hwndToolTip == hdr.hwndFrom && toolTipText != null) return "";
+	if (hwndToolTip == hdr.hwndFrom && toolTipText != null) return ""; //$NON-NLS-1$
 	return super.toolTipText (hdr);
 }
 

@@ -454,7 +454,7 @@ public boolean open () {
 				return OS.CallWindowProc (oldProc, hwnd, msg, wParam, lParam);
 			}
 		};
-		newProc = new Callback (windowProc, "windowProc", 4);
+		newProc = new Callback (windowProc, "windowProc", 4); //$NON-NLS-1$
 		OS.SetWindowLong (hwndTransparent, OS.GWL_WNDPROC, newProc.getAddress ());
 	}
 

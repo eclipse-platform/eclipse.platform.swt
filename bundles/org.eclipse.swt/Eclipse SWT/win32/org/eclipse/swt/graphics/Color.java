@@ -300,8 +300,8 @@ public boolean isDisposed() {
  * @return a string representation of the receiver
  */
 public String toString () {
-	if (isDisposed()) return "Color {*DISPOSED*}";
-	return "Color {" + getRed() + ", " + getGreen() + ", " + getBlue() + "}";
+	if (isDisposed()) return "Color {*DISPOSED*}"; //$NON-NLS-1$
+	return "Color {" + getRed() + ", " + getGreen() + ", " + getBlue() + "}"; //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 }
 
 /**	 

@@ -76,10 +76,10 @@ public abstract class Widget {
 		dvi.cbSize = DLLVERSIONINFO.sizeof;
 		dvi.dwMajorVersion = 4;
 		dvi.dwMinorVersion = 0;
-		TCHAR lpLibFileName = new TCHAR (0, "comctl32.dll", true);
+		TCHAR lpLibFileName = new TCHAR (0, "comctl32.dll", true); //$NON-NLS-1$
 		int hModule = OS.LoadLibrary (lpLibFileName);
 		if (hModule != 0) {
-			String name = "DllGetVersion\0";
+			String name = "DllGetVersion\0"; //$NON-NLS-1$
 			byte [] lpProcName = new byte [name.length ()];
 			for (int i=0; i<lpProcName.length; i++) {
 				lpProcName [i] = (byte) name.charAt (i);
@@ -92,8 +92,8 @@ public abstract class Widget {
 		COMCTL32_MINOR = dvi.dwMinorVersion;
 		if (!OS.IsWinCE) {
 			if ((COMCTL32_MAJOR << 16 | COMCTL32_MINOR) < (MAJOR << 16 | MINOR)) {
-				System.out.println ("***WARNING: SWT requires comctl32.dll version " + MAJOR + "." + MINOR + " or greater");
-				System.out.println ("***WARNING: Detected: " + COMCTL32_MAJOR + "." + COMCTL32_MINOR);
+				System.out.println ("***WARNING: SWT requires comctl32.dll version " + MAJOR + "." + MINOR + " or greater"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				System.out.println ("***WARNING: Detected: " + COMCTL32_MAJOR + "." + COMCTL32_MINOR); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 		
@@ -489,7 +489,7 @@ String getName () {
  * @see #toString
  */
 String getNameText () {
-	return "";
+	return ""; //$NON-NLS-1$
 }
 
 /**
@@ -1016,12 +1016,12 @@ boolean setKeyState (Event event, int type) {
  * @return a string representation of the receiver
  */
 public String toString () {
-	String string = "*Disposed*";
+	String string = "*Disposed*"; //$NON-NLS-1$
 	if (!isDisposed ()) {
-		string = "*Wrong Thread*";
+		string = "*Wrong Thread*"; //$NON-NLS-1$
 		if (isValidThread ()) string = getNameText ();
 	}
-	return getName () + " {" + string + "}";
+	return getName () + " {" + string + "}"; //$NON-NLS-1$ //$NON-NLS-2$
 }
 
 /*

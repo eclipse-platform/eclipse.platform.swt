@@ -48,7 +48,7 @@ final class GIFFileFormat extends FileFormat {
 			byte[] signature = new byte[3];
 			stream.read(signature);
 			stream.unread(signature);
-			return new String(signature).equals("GIF");
+			return new String(signature).equals("GIF"); //$NON-NLS-1$
 		} catch (Exception e) {
 			return false;
 		}
@@ -65,7 +65,7 @@ final class GIFFileFormat extends FileFormat {
 		try {
 			inputStream.read(signatureBytes);
 			signature = new String(signatureBytes);
-			if (!signature.equals("GIF"))
+			if (!signature.equals("GIF")) //$NON-NLS-1$
 				SWT.error(SWT.ERROR_INVALID_IMAGE);
 
 			inputStream.read(versionBytes);
@@ -319,7 +319,7 @@ final class GIFFileFormat extends FileFormat {
 				size = inputStream.read();
 			}
 			// Look for the NETSCAPE 'repeat count' field for an animated GIF.
-			if (application.equals("NETSCAPE") && authentication.equals("2.0") && data[0] == 01) {
+			if (application.equals("NETSCAPE") && authentication.equals("2.0") && data[0] == 01) { //$NON-NLS-1$ //$NON-NLS-2$
 				repeatCount = (data[1] & 0xFF) | ((data[2] & 0xFF) << 8);
 				loader.repeatCount = repeatCount;
 			}

@@ -39,7 +39,7 @@ public class OS {
 	static {
 		
 		/* Load the SWT library */
-		Library.loadLibrary ("swt");
+		Library.loadLibrary ("swt"); //$NON-NLS-1$
 
 		/*
 		* Try the UNICODE version of GetVersionEx first
@@ -57,7 +57,7 @@ public class OS {
 		OSVERSIONINFO info = new OSVERSIONINFO ();
 		
 		// TEMPORARY CODE
-		String MBCS = System.getProperty ("MBCS");
+		String MBCS = System.getProperty ("MBCS"); //$NON-NLS-1$
 		if (MBCS != null) {
 			info.dwOSVersionInfoSize = OSVERSIONINFO.sizeofA;
 			OS.GetVersionExA (info);
@@ -83,7 +83,7 @@ public class OS {
 		// TEMPORARY CODE
 		if (MBCS != null) {
 			IsUnicode = false;
-			System.out.println ("*** SWT - Warning: Unicode disabled");
+			System.out.println ("*** SWT - Warning: Unicode disabled"); //$NON-NLS-1$
 		} else {
 			IsUnicode = !IsWin32s && !IsWin95;
 		}
@@ -676,7 +676,7 @@ public class OS {
 	public static final int PLANES = 0xe;
 	public static final int PM_NOREMOVE = 0x0;
 	public static final int PM_REMOVE = 0x1;
-	public static final String PROGRESS_CLASS = "msctls_progress32";
+	public static final String PROGRESS_CLASS = "msctls_progress32"; //$NON-NLS-1$
 	public static final int PS_DASH = 0x1;
 	public static final int PS_DASHDOT = 0x3;
 	public static final int PS_DASHDOTDOT = 0x4;
@@ -740,7 +740,7 @@ public class OS {
 	public static final int RDW_INVALIDATE = 0x1;
 	public static final int RDW_UPDATENOW = 0x100;
 	public static final int READ_CONTROL = 0x20000;
-	public static final String REBARCLASSNAME = "ReBarWindow32";
+	public static final String REBARCLASSNAME = "ReBarWindow32"; //$NON-NLS-1$
 	public static final int RGN_OR = 0x2;
 	public static final int SBS_HORZ = 0x0;
 	public static final int SBS_VERT = 0x1;
@@ -945,13 +945,13 @@ public class OS {
 	public static final int TME_LEAVE = 0x2;
 	public static final int TME_QUERY = 0x40000000;
 	public static final int TMPF_VECTOR = 0x2;
-	public static final String TOOLBARCLASSNAME = "ToolbarWindow32";
-	public static final String TOOLTIPS_CLASS = "tooltips_class32";
+	public static final String TOOLBARCLASSNAME = "ToolbarWindow32"; //$NON-NLS-1$
+	public static final String TOOLTIPS_CLASS = "tooltips_class32"; //$NON-NLS-1$
 	public static final int TPM_LEFTALIGN = 0x0;
 	public static final int TPM_LEFTBUTTON = 0x0;
 	public static final int TPM_RIGHTBUTTON = 0x2;
 	public static final int TPM_RIGHTALIGN = 0x8;
-	public static final String TRACKBAR_CLASS = "msctls_trackbar32";
+	public static final String TRACKBAR_CLASS = "msctls_trackbar32"; //$NON-NLS-1$
 	public static final int TRANSPARENT = 0x1;
 	public static final int TTF_IDISHWND = 0x1;
 	public static final int TTF_SUBCLASS = 0x10;
@@ -1101,9 +1101,9 @@ public class OS {
 	public static final int VK_APP4 = 0xc4;
 	public static final int VK_APP5 = 0xc5;
 	public static final int VK_APP6 = 0xc6;
-	public static final String WC_LISTVIEW = "SysListView32";
-	public static final String WC_TABCONTROL = "SysTabControl32";
-	public static final String WC_TREEVIEW = "SysTreeView32";
+	public static final String WC_LISTVIEW = "SysListView32"; //$NON-NLS-1$
+	public static final String WC_TABCONTROL = "SysTabControl32"; //$NON-NLS-1$
+	public static final String WC_TREEVIEW = "SysTreeView32"; //$NON-NLS-1$
 	public static final int WH_GETMESSAGE = 0x3;
 	public static final int WH_MSGFILTER = 0xFFFFFFFF;
 	public static final int WHEEL_DELTA = 120;

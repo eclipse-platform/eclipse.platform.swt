@@ -43,15 +43,15 @@ public static int getVersion () {
  * @return the platform name of the currently running SWT
  */
 static String getPlatform () {
-	String [] names = new String [] {"motif", "gtk", "win32", "photon", "carbon"};
+	String [] names = new String [] {"motif", "gtk", "win32", "photon", "carbon"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 	for (int i = 0; i < names.length; i++) {
 		try {
-			Class.forName("org.eclipse.swt.internal."+names[i]+".OS");
+			Class.forName("org.eclipse.swt.internal."+names[i]+".OS"); //$NON-NLS-1$ //$NON-NLS-2$
 			return names[i];
 		} catch (ClassNotFoundException e) {
 		}
 	}
-	return "unknown";
+	return "unknown"; //$NON-NLS-1$
 }
 
 /**
@@ -85,27 +85,27 @@ public static void loadLibrary (String name) {
 	/*
 	 * Get version qualifier.
 	 */
-	String version = System.getProperty ("swt.version");
+	String version = System.getProperty ("swt.version"); //$NON-NLS-1$
 	if (version == null) {
-		version = "" + MAJOR_VERSION;
+		version = "" + MAJOR_VERSION; //$NON-NLS-1$
 		/* Force 3 digits in minor version number */
 		if (MINOR_VERSION < 10) {
-			version += "00";
+			version += "00"; //$NON-NLS-1$
 		} else {
-			if (MINOR_VERSION < 100) version += "0";
+			if (MINOR_VERSION < 100) version += "0"; //$NON-NLS-1$
 		}
 		version += MINOR_VERSION;		
 		/* No "r" until first revision */
-		if (REVISION > 0) version += "r" + REVISION;
+		if (REVISION > 0) version += "r" + REVISION; //$NON-NLS-1$
 	}
 
 	try {
-		String newName = name + "-" + platform + "-" + version;		
+		String newName = name + "-" + platform + "-" + version; //$NON-NLS-1$ //$NON-NLS-2$
 		System.loadLibrary (newName);
 		return;
 	} catch (UnsatisfiedLinkError e1) {		
 		try {
-			String newName = name + "-" + platform;
+			String newName = name + "-" + platform; //$NON-NLS-1$
 			System.loadLibrary (newName);
 			return;
 		} catch (UnsatisfiedLinkError e2) {

@@ -648,7 +648,7 @@ String toolTipText (NMTTDISPINFO hdr) {
 	int index = hdr.idFrom;
 	int hwndToolTip = OS.SendMessage (handle, OS.TB_GETTOOLTIPS, 0, 0);
 	if (hwndToolTip == hdr.hwndFrom) {
-		if (toolTipText != null) return "";
+		if (toolTipText != null) return ""; //$NON-NLS-1$
 		if (0 <= index && index < items.length) {
 			ToolItem item = items [index];
 			if (item != null) return item.toolTipText;

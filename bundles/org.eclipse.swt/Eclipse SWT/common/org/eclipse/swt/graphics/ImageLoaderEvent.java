@@ -74,7 +74,7 @@ public ImageLoaderEvent(ImageLoader source, ImageData imageData, int incrementCo
  * @return a string representation of the event
  */
 public String toString () {
-	return "ImageLoaderEvent {source=" + source + " imageData=" + imageData + " incrementCount=" + incrementCount + " endOfImage=" + endOfImage + "}";
+	return "ImageLoaderEvent {source=" + source + " imageData=" + imageData + " incrementCount=" + incrementCount + " endOfImage=" + endOfImage + "}"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 }
 
 }
