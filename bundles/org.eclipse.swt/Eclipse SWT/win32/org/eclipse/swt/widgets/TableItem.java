@@ -384,6 +384,7 @@ public Rectangle getImageBounds (int index) {
 	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 	if (!(0 <= index && index < count)) return new Rectangle (0, 0, 0, 0);
 	int gridWidth = parent.getLinesVisible () ? parent.getGridLineWidth () : 0;
+	
 	/*
 	* Feature in Windows.  Calling LVM_GETSUBITEMRECT with LVIR_ICON and
 	* zero for the column number gives the bounds of the icon (despite the
@@ -399,15 +400,16 @@ public Rectangle getImageBounds (int index) {
 	}
 	int width = Math.max (0, rect.right - rect.left - gridWidth);
 	int height = Math.max (0, rect.bottom - rect.top - gridWidth);
-	if (index != 0) {
-		LVITEM lvItem = new LVITEM ();
-		lvItem.mask = OS.LVIF_IMAGE;
-		lvItem.iItem = itemIndex;
-		lvItem.iSubItem = index;
-		if (OS.SendMessage (hwnd, OS.LVM_GETITEM, 0, lvItem) == 0 || lvItem.iImage < 0) {
-			width = 0;
-		}
+	
+	/*
+	* Feature in Windows.  LVM_GETSUBITEMRECT returns a small width
+	* value even when the subitem does not contain an image.  The
+	* fix is to set the width to zero.
+	*/
+	if (index != 0 && images != null & images [index] == null) {
+		width = 0;
 	}
+
 	/*
 	* Bug in Windows.  In version 5.80 of COMCTL32.DLL, the top
 	* of the rectangle returned by LVM_GETSUBITEMRECT is off by
@@ -496,7 +498,7 @@ void redraw (int column, boolean drawText, boolean drawImage) {
 			} else {
 				rect.top = column;
 				if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, index, rect) != 0) {
-					if (drawText && !drawImage) {
+					if (drawText && !drawImage && images != null && images [column] != null) {
 						RECT iconRect = new RECT ();
 						iconRect.left = OS.LVIR_ICON;
 						iconRect.top = column;
@@ -582,7 +584,7 @@ public void setBackground (int index, Color color) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	int count = Math.max (1, parent.getColumnCount ());
-	if (0 > index || index > count -1) return;
+	if (0 > index || index > count - 1) return;
 	int pixel = -1;
 	if (color != null) {
 		parent.customDraw = true;
@@ -893,14 +895,13 @@ public void setImage (int index, Image image) {
 		super.setImage (image);
 	}
 	int count = Math.max (1, parent.getColumnCount ());
-	if (0 <= index && index < count) {
-		if (images == null && index != 0) images = new Image [count];
-		if (images != null) {
-			if (image != null && image.type == SWT.ICON) {
-				if (image.equals (images [index])) return;
-			}
-			images [index] = image;
+	if (0 > index || index > count - 1) return;
+	if (images == null && index != 0) images = new Image [count];
+	if (images != null) {
+		if (image != null && image.type == SWT.ICON) {
+			if (image.equals (images [index])) return;
 		}
+		images [index] = image;
 	}
 	
 	/* Ensure that the image list is created */
@@ -990,12 +991,11 @@ public void setText (int index, String string) {
 		super.setText (string);
 	}
 	int count = Math.max (1, parent.getColumnCount ());
-	if (0 <= index && index < count) {
-		if (strings == null && index != 0) strings = new String [count];
-		if (strings != null) {
-			if (string.equals (strings [index])) return;
-			strings [index] = string;
-		}
+	if (0 > index || index > count - 1) return;
+	if (strings == null && index != 0) strings = new String [count];
+	if (strings != null) {
+		if (string.equals (strings [index])) return;
+		strings [index] = string;
 	}
 	if (index == 0) {
 		/*
