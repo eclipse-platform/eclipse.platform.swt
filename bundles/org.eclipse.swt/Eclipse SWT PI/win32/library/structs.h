@@ -46,8 +46,8 @@
 #include <tpcshell.h>
 #endif /* WIN32_PLATFORM_WFSP */
 
-/* Optional custom rules to exclude some types */
-#include "rules.h"
+/* Optional custom definitions to exclude some types */
+#include "defines.h"
 
 #ifdef _WIN32_WCE
 #define NO_BROWSEINFO
