@@ -73,10 +73,13 @@ static public void assertSame(String message, Object expected[], Object actual[]
 		for (int i = 0; i < actual.length; i++) {
 			boolean match = false;
 			for (int j = 0; j < expected.length; j++) {
-				if (!matched[j] && actual[i] == expected[j]) {
-					match = true;
-					matched[j] = true;
-					break;
+				if (!matched[j]) {
+					if ((actual[i] == null && expected [j] == null) ||
+					    (actual[i] != null && actual[i].equals(expected[j]))) {
+						match = true;
+						matched[j] = true;
+						break;
+					}
 				}
 			}
 			if (!match) {
