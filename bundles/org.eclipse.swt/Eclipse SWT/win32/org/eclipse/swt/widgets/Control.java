@@ -1955,43 +1955,6 @@ void setForegroundPixel (int pixel) {
 	OS.InvalidateRect (handle, null, true);
 }
 
-boolean setInputState (Event event, int type) {
-	if (OS.GetKeyState (OS.VK_MENU) < 0) event.stateMask |= SWT.ALT;
-	if (OS.GetKeyState (OS.VK_SHIFT) < 0) event.stateMask |= SWT.SHIFT;
-	if (OS.GetKeyState (OS.VK_CONTROL) < 0) event.stateMask |= SWT.CONTROL;
-	if (OS.GetKeyState (OS.VK_LBUTTON) < 0) event.stateMask |= SWT.BUTTON1;
-	if (OS.GetKeyState (OS.VK_MBUTTON) < 0) event.stateMask |= SWT.BUTTON2;
-	if (OS.GetKeyState (OS.VK_RBUTTON) < 0) event.stateMask |= SWT.BUTTON3;
-	switch (type) {
-		case SWT.KeyDown:
-		case SWT.Traverse:
-			if (event.keyCode == SWT.ALT) event.stateMask &= ~SWT.ALT;
-			if (event.keyCode == SWT.SHIFT) event.stateMask &= ~SWT.SHIFT;
-			if (event.keyCode == SWT.CONTROL) event.stateMask &= ~SWT.CONTROL;
-			break;
-		case SWT.KeyUp:
-			if (event.keyCode == SWT.ALT) event.stateMask |= SWT.ALT;
-			if (event.keyCode == SWT.SHIFT) event.stateMask |= SWT.SHIFT;
-			if (event.keyCode == SWT.CONTROL) event.stateMask |= SWT.CONTROL;
-			break;
-	}		
-	return true;
-}
-
-boolean setKeyState (Event event, int type) {
-	Display display = getDisplay ();
-	if (display.lastAscii != 0) {
-		event.character = mbcsToWcs ((char) display.lastAscii);
-	}
-	if (display.lastVirtual) {
-		event.keyCode = Display.translateKey (display.lastKey);
-	}
-	if (event.keyCode == 0 && event.character == 0) {
-		return false;
-	}
-	return setInputState (event, type);
-}
-
 /**
  * Sets the layout data associated with the receiver to the argument.
  * 
@@ -3037,11 +3000,15 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	}
 	
 	/* Ignore repeating modifier keys by testing key down state */
-	if ((wParam == OS.VK_SHIFT) || (wParam == OS.VK_MENU) ||
-		(wParam == OS.VK_CONTROL) || (wParam == OS.VK_CAPITAL) ||
-		(wParam == OS.VK_NUMLOCK) || (wParam == OS.VK_SCROLL)) {
+	switch (wParam) {
+		case OS.VK_SHIFT:
+		case OS.VK_MENU:
+		case OS.VK_CONTROL:
+		case OS.VK_CAPITAL:
+		case OS.VK_NUMLOCK:
+		case OS.VK_SCROLL:
 			if ((lParam & 0x40000000) != 0) return null;
-		}
+	}
 
 	/* Set last key and clear last ascii because a new key has been typed */
 	display.lastAscii = 0;
@@ -3956,10 +3923,15 @@ LRESULT WM_SYSKEYDOWN (int wParam, int lParam) {
 	if (OS.MapVirtualKey (wParam, 2) != 0) return null;
 	
 	/* Ignore repeating keys for modifiers by testing key down state. */
-	if ((wParam == OS.VK_SHIFT) || (wParam == OS.VK_MENU) ||
-		(wParam == OS.VK_CONTROL) || (wParam == OS.VK_CAPITAL) ||
-		(wParam == OS.VK_NUMLOCK) || (wParam == OS.VK_SCROLL))
+	switch (wParam) {
+		case OS.VK_SHIFT:
+		case OS.VK_MENU:
+		case OS.VK_CONTROL:
+		case OS.VK_CAPITAL:
+		case OS.VK_NUMLOCK:
+		case OS.VK_SCROLL:
 			if ((lParam & 0x40000000) != 0) return null;
+	}
 
 	/* Set last key and clear last ascii because a new key has been typed. */
 	display.lastAscii = 0;

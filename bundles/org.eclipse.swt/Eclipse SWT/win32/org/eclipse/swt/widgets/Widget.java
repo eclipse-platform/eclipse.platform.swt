@@ -945,6 +945,43 @@ public void setData (String key, Object value) {
 	values = newValues;
 }
 
+boolean setInputState (Event event, int type) {
+	if (OS.GetKeyState (OS.VK_MENU) < 0) event.stateMask |= SWT.ALT;
+	if (OS.GetKeyState (OS.VK_SHIFT) < 0) event.stateMask |= SWT.SHIFT;
+	if (OS.GetKeyState (OS.VK_CONTROL) < 0) event.stateMask |= SWT.CONTROL;
+	if (OS.GetKeyState (OS.VK_LBUTTON) < 0) event.stateMask |= SWT.BUTTON1;
+	if (OS.GetKeyState (OS.VK_MBUTTON) < 0) event.stateMask |= SWT.BUTTON2;
+	if (OS.GetKeyState (OS.VK_RBUTTON) < 0) event.stateMask |= SWT.BUTTON3;
+	switch (type) {
+		case SWT.KeyDown:
+		case SWT.Traverse:
+			if (event.keyCode == SWT.ALT) event.stateMask &= ~SWT.ALT;
+			if (event.keyCode == SWT.SHIFT) event.stateMask &= ~SWT.SHIFT;
+			if (event.keyCode == SWT.CONTROL) event.stateMask &= ~SWT.CONTROL;
+			break;
+		case SWT.KeyUp:
+			if (event.keyCode == SWT.ALT) event.stateMask |= SWT.ALT;
+			if (event.keyCode == SWT.SHIFT) event.stateMask |= SWT.SHIFT;
+			if (event.keyCode == SWT.CONTROL) event.stateMask |= SWT.CONTROL;
+			break;
+	}		
+	return true;
+}
+
+boolean setKeyState (Event event, int type) {
+	Display display = getDisplay ();
+	if (display.lastAscii != 0) {
+		event.character = mbcsToWcs ((char) display.lastAscii);
+	}
+	if (display.lastVirtual) {
+		event.keyCode = Display.translateKey (display.lastKey);
+	}
+	if (event.keyCode == 0 && event.character == 0) {
+		return false;
+	}
+	return setInputState (event, type);
+}
+
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.
