@@ -308,6 +308,16 @@ void createWidget () {
 	columns = new TableColumn [4];
 }
 
+Color defaultBackground () {
+	Display display = getDisplay ();
+	return display.getSystemColor (SWT.COLOR_LIST_BACKGROUND);
+}
+
+Color defaultForeground () {
+	Display display = getDisplay ();
+	return display.getSystemColor (SWT.COLOR_LIST_FOREGROUND);
+}
+
 int defaultThemeFont () {	
 	return OS.kThemeViewsFont;
 }
@@ -490,7 +500,7 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
 		gc.fillRectangle(itemRect.left, itemRect.top, itemRect.right - itemRect.left, itemRect.bottom - itemRect.top);
 	} else {
-		gc.setBackground (item.background != null ? item.background : display.getSystemColor (SWT.COLOR_LIST_BACKGROUND));
+		gc.setBackground (item.getBackground ());
 		gc.fillRectangle (itemRect.left, itemRect.top, itemRect.right - itemRect.left, itemRect.bottom - itemRect.top);
 	}
 	int rectRgn = OS.NewRgn ();
@@ -515,7 +525,7 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 			gc.fillRectangle (x - 1, y, extent.x + 2, height);
 		}
 	} else {
-		Color foreground = item.foreground != null ? item.foreground : display.getSystemColor (SWT.COLOR_LIST_FOREGROUND);
+		Color foreground = item.getForeground ();
 		gc.setForeground (foreground);
 	}
 	gc.drawString (text, x, y + (height - extent.y) / 2);

@@ -277,6 +277,16 @@ ScrollBar createScrollBar (int style) {
 	return createStandardBar (style);
 }
 
+Color defaultBackground () {
+	Display display = getDisplay ();
+	return display.getSystemColor (SWT.COLOR_LIST_BACKGROUND);
+}
+
+Color defaultForeground () {
+	Display display = getDisplay ();
+	return display.getSystemColor (SWT.COLOR_LIST_FOREGROUND);
+}
+
 int defaultThemeFont () {	
 	return OS.kThemeViewsFont;
 }

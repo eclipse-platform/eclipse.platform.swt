@@ -465,6 +465,11 @@ void createWidget () {
 	setZOrder ();
 }
 
+Color defaultBackground () {
+	Display display = getDisplay ();
+	return display.getSystemColor (SWT.COLOR_WHITE);
+}
+
 Font defaultFont () {
 	byte [] family = new byte [256];
 	short [] size = new short [1];
@@ -474,6 +479,11 @@ Font defaultFont () {
 	int [] font = new int [1]; 
 	OS.FMGetFontFromFontFamilyInstance (id, style [0], font, null);
 	return Font.carbon_new (getDisplay (), font [0], id, style [0], size [0]);
+}
+
+Color defaultForeground () {
+	Display display = getDisplay ();
+	return display.getSystemColor (SWT.COLOR_BLACK);
 }
 
 int defaultThemeFont () {	
@@ -609,9 +619,8 @@ public Accessible getAccessible () {
 public Color getBackground () {
 	checkWidget();
 	//NOT DONE - get default colors
-	Display display = getDisplay ();
-	if (background == null) return display.getSystemColor (SWT.COLOR_WHITE);
-	return Color.carbon_new (display, background);
+	if (background == null) return defaultBackground ();
+	return Color.carbon_new (getDisplay (), background);
 }
 
 /**
@@ -715,9 +724,8 @@ public Font getFont () {
 public Color getForeground () {
 	checkWidget();
 	//NOT DONE - get default colors
-	Display display = getDisplay ();
-	if (foreground == null) return display.getSystemColor (SWT.COLOR_BLACK);
-	return Color.carbon_new (display, foreground);
+	if (foreground == null) return defaultForeground ();
+	return Color.carbon_new (getDisplay (), foreground);
 }
 
 /**

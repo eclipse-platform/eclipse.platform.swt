@@ -306,6 +306,16 @@ void createWidget () {
 	items = new TreeItem [4];
 }
 
+Color defaultBackground () {
+	Display display = getDisplay ();
+	return display.getSystemColor (SWT.COLOR_LIST_BACKGROUND);
+}
+
+Color defaultForeground () {
+	Display display = getDisplay ();
+	return display.getSystemColor (SWT.COLOR_LIST_FOREGROUND);
+}
+
 int defaultThemeFont () {	
 	return OS.kThemeViewsFont;
 }
@@ -368,8 +378,7 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	OS.OffsetRgn (clip, (short)-controlRect.left, (short)-controlRect.top);
 	gc.setClipping (Region.carbon_new (clip));
 	OS.DisposeRgn (clip);
-	Display display = getDisplay ();
-	Color background = item.background != null ? item.background : display.getSystemColor (SWT.COLOR_LIST_BACKGROUND);
+	Color background = item.getBackground ();
 	gc.setBackground (background);
 	gc.fillRectangle (x, y, width, height);
 	Image image = item.image;
@@ -380,11 +389,12 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	}
 	Point extent = gc.stringExtent (item.text);
 	if ((itemState & OS.kDataBrowserItemIsSelected) != 0) {
+		Display display = getDisplay ();
 		gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
 		gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
 		gc.fillRectangle (x - 1, y, extent.x + 2, height);
 	} else {
-		Color foreground = item.foreground != null ? item.foreground : display.getSystemColor (SWT.COLOR_LIST_FOREGROUND);
+		Color foreground = item.getForeground ();
 		gc.setForeground (foreground);
 	}
 	gc.drawString (item.text, x, y + (height - extent.y) / 2);
