@@ -652,7 +652,7 @@ void updateCarbon(int startIndex) {
 		if (item != null) {
 			int sHandle= 0;
 			try {
-				String t= removeMnemonics(item.getText());
+				String t= MacUtil.removeMnemonics(item.getText());
 				//System.out.println("  "+i+": " + t);
 				sHandle= OS.CFStringCreateWithCharacters(t);
 				OS.setTabText(handle, i+1, sHandle);
