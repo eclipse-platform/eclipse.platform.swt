@@ -162,6 +162,23 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtSetResources
 
 /*
  * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PtSetResource
+ * Signature: (IIII)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtSetResource
+  (JNIEnv *env, jobject that, jint widget, jint type, jint value, jint length)
+{
+    jint result;
+
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "PtSetResource\n");
+#endif
+
+	return (jint)PtSetResource((PtWidget_t *)widget, type, value, length);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
  * Method:    PtRealizeWidget
  * Signature: (I)I
  */

@@ -2650,6 +2650,7 @@ public static final native int PtLeave (int flags);
 public static final native int PtCreateWidget (int clazz, int parent, int n_args, int [] args);
 public static final native int PtGetResources (int widget, int n_args, int [] args);
 public static final native int PtSetResources (int widget, int n_args, int [] args);
+public static final native int PtSetResource (int widget, int type, int value, int length);
 public static final native int PtRealizeWidget (int widget);
 public static final native void PtAddEventHandler (int widget, int event_mask, int callback, int data);
 public static final native int PtWidgetRid (int widget);
