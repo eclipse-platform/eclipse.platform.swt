@@ -863,6 +863,7 @@ void setInitialSize () {
 
 public void setMaximized (boolean maximized) {
 	checkWidget();
+	super.setMaximized (maximized);
 	if (maximized) {
 		OS.gtk_window_maximize (shellHandle);
 	} else {
@@ -897,6 +898,7 @@ public void setMenuBar (Menu menu) {
 
 public void setMinimized (boolean minimized) {
 	checkWidget();
+	super.setMinimized (minimized);
 	if (minimized) {
 		OS.gtk_window_iconify (shellHandle);
 	} else {
