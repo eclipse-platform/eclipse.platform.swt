@@ -612,7 +612,11 @@ public class OS {
 		return result;
 	}
 	static final native int setResourceMem (int start, int end);
-	
+
+/** JNI native methods */
+public static final native int MonitorEnter(Object object);
+public static final native int MonitorExit(Object object);
+
 /** Natives */
 public static final synchronized native int Call(int proc, int arg1, int arg2);
 public static final synchronized native int ConnectionNumber(int display);

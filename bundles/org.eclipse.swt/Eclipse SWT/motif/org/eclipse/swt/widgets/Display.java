@@ -2001,7 +2001,8 @@ void initializeDisplay () {
 	/* Create and install the pipe used to wake up from sleep */
 	int [] filedes = new int [2];
 	if (OS.pipe (filedes) != 0) error (SWT.ERROR_NO_HANDLES);
-	read_fd = filedes [0];  write_fd = filedes [1];
+	read_fd = filedes [0];
+	write_fd = filedes [1];
 	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
 	inputID = OS.XtAppAddInput (xtContext, read_fd, OS.XtInputReadMask, wakeProc, 0);
 	fd_set = new byte [OS.fd_set_sizeof ()];
@@ -3287,35 +3288,34 @@ public boolean sleep () {
 //	if (sleepID != 0) OS.XtRemoveTimeOut (sleepID);
 //	return result;
 	
-//	int display_fd = OS.ConnectionNumber (xDisplay);
-//	int max_fd = display_fd > read_fd ? display_fd : read_fd;
-//	do {
-//		OS.FD_ZERO (fd_set);
-//		OS.FD_SET (display_fd, fd_set);
-//		OS.FD_SET (read_fd, fd_set);
-//		timeout [0] = 0;
-//		timeout [1] = 100000;
-//		if (OS.select (max_fd + 1, fd_set, null, null, timeout) != 0) break;
-//		if (getMessageCount () != 0) return true;
-//		int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
-//		if (OS.XtAppPending (xtContext) != 0) return true;
-//	} while (true);
-//	return OS.FD_ISSET (display_fd, fd_set);
-
-	//TODO need to sleep waiting for the next event
+	int result;
+	int display_fd = OS.ConnectionNumber (xDisplay);
+	int max_fd = display_fd > read_fd ? display_fd : read_fd;
 	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
 	do {
-		if (getMessageCount () != 0) break;
-		if (OS.XtAppPending (xtContext) != 0) return true;
-		try {
+		OS.FD_ZERO (fd_set);
+		OS.FD_SET (display_fd, fd_set);
+		OS.FD_SET (read_fd, fd_set);
+		timeout [0] = 0;
+		timeout [1] = 100000;
+		/* Exit the OS lock to allow other threads to enter GTK */
+		int count = Callback.getEntryCount ();
+		for (int i = 0; i < count; i++) {
 			synchronized (OS_LOCK) {
-				OS_LOCK.wait (50);
+				OS.MonitorExit (OS_LOCK);
 			}
-		} catch (Exception e) {
-			return false;
 		}
-	} while (true);
-	return true;
+		try {
+			result = OS.select (max_fd + 1, fd_set, null, null, timeout);
+		} finally {
+			for (int i = 0; i < count; i++) {
+				synchronized (OS_LOCK) {
+					OS.MonitorEnter (OS_LOCK);
+				}
+			}
+		}
+	} while (result == 0 && OS.XtAppPending (xtContext) == 0 && getMessageCount () == 0);
+	return OS.FD_ISSET (display_fd, fd_set);
 }
 /**
  * Causes the <code>run()</code> method of the runnable to
@@ -3466,10 +3466,6 @@ public void wake () {
 void wakeThread () {
 	/* Write a single byte to the wake up pipe */
 	while (OS.write (write_fd, wake_buffer, 1) != 1);
- 	//TEMPORARY CODE
-//	synchronized (OS_LOCK) {
-//		OS_LOCK.notifyAll ();
-//	}
 }
 int wakeProc (int closure, int source, int id) {
 	/* Read a single byte from the wake up pipe */

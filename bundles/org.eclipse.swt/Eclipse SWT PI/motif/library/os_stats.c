@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 436;
-int OS_nativeFunctionCallCount[436];
+int OS_nativeFunctionCount = 438;
+int OS_nativeFunctionCallCount[438];
 char * OS_nativeFunctionNames[] = {
 	"CODESET", 
 	"Call", 
@@ -25,6 +25,8 @@ char * OS_nativeFunctionNames[] = {
 	"FD_1ZERO", 
 	"LC_1CTYPE", 
 	"MB_1CUR_1MAX", 
+	"MonitorEnter", 
+	"MonitorExit", 
 	"XAllocColor", 
 	"XBell", 
 	"XBlackPixel", 

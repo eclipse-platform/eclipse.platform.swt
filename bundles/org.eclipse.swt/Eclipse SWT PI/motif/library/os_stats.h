@@ -29,6 +29,8 @@ typedef enum {
 	FD_1ZERO_FUNC,
 	LC_1CTYPE_FUNC,
 	MB_1CUR_1MAX_FUNC,
+	MonitorEnter_FUNC,
+	MonitorExit_FUNC,
 	XAllocColor_FUNC,
 	XBell_FUNC,
 	XBlackPixel_FUNC,
