@@ -159,7 +159,7 @@ static DeviceData checkNull (PrinterData data) {
  * You must dispose the printer when it is no longer required. 
  * </p>
  *
- * @exception IllegalArgumentException <ul>
+ * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES - if there are no valid printers
  * </ul>
  *
@@ -180,6 +180,8 @@ public Printer() {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the specified printer data does not represent a valid printer
+ * </ul>
+ * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES - if there are no valid printers
  * </ul>
  *

@@ -142,7 +142,7 @@ public final class PrinterData extends DeviceData {
 	 * @param driver the printer driver for the printer
 	 * @param name the name of the printer
 	 *
-	 * @exception IllegalArgumentException <ul>
+	 * @exception SWTError <ul>
 	 *    <li>ERROR_NO_HANDLES - if there are no valid printers
 	 * </ul>
 	 *
