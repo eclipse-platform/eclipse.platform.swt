@@ -38,6 +38,7 @@ import org.eclipse.swt.*;
  */
 public class Group extends Composite {
 	int labelHandle;
+	String text = "";
 
 /**
  * Constructs a new instance of this class given its parent
@@ -205,24 +206,7 @@ public Rectangle getClientArea () {
  */
 public String getText () {
 	checkWidget();
-	int [] argList = {OS.XmNlabelString, 0};
-	OS.XtGetValues (labelHandle, argList, 1);
-	int xmString = argList [1];
-	int address = OS.XmStringUnparse (
-		xmString,
-		null,
-		OS.XmCHARSET_TEXT,
-		OS.XmCHARSET_TEXT,
-		null,
-		0,
-		OS.XmOUTPUT_ALL);
-	if (address == 0) return "";
-	int length = OS.strlen (address);
-	byte [] buffer = new byte [length];
-	OS.memmove (buffer, address, length);
-	OS.XtFree (address);
-	OS.XmStringFree (xmString);
-	return new String (Converter.mbcsToWcs (getCodePage (), buffer));
+	return text;
 }
 boolean mnemonicHit (char key) {
 	Control [] children = _getChildren ();
@@ -233,11 +217,9 @@ boolean mnemonicHit (char key) {
 	return false;
 }
 boolean mnemonicMatch (char key) {
-	int [] argList = {OS.XmNmnemonic, 0,};
-	OS.XtGetValues (labelHandle, argList, argList.length / 2);
-	int mnemonic = argList [1];
-	if (mnemonic == OS.XK_VoidSymbol) return false;
-	return Character.toUpperCase (key) == Character.toUpperCase ((char) mnemonic);
+	char mnemonic = findMnemonic (getText ());
+	if (mnemonic == '\0') return false;
+	return Character.toUpperCase (key) == Character.toUpperCase (mnemonic);
 }
 void propagateWidget (boolean enabled) {
 	super.propagateWidget (enabled);
@@ -282,6 +264,7 @@ void releaseHandle () {
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	text = string;
 	char [] text = new char [string.length ()];
 	string.getChars (0, text.length, text, 0);
 	int mnemonic = fixMnemonic (text);
