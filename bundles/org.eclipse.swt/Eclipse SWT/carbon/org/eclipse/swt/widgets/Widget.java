@@ -514,7 +514,12 @@ void drawFocus (int control, boolean hasFocus, boolean hasBorder, float[] backgr
 		if (hasBorder) OS.DrawThemeEditTextFrame (rect, state);
 		OS.DrawThemeFocusRect (rect, true);
 	} else {
-		OS.DrawThemeFocusRect (rect, false);
+		/*
+		* This code is intentionaly commented.
+		*  
+		* NOTE: the focus ring is erased by drawBackground() above. 
+		*/
+//		OS.DrawThemeFocusRect (rect, false);
 		if (hasBorder) OS.DrawThemeEditTextFrame (rect, state);
 	}
 }
