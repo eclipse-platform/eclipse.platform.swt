@@ -5333,11 +5333,11 @@ void handleMouseDoubleClick(Event event) {
  * pressed.
  */
 void handleMouseDown(Event event) {
+	mouseDoubleClick = false;
 	if ((event.button != 1) || (isCarbon && (event.stateMask & SWT.MOD4) != 0)) {
 		return;	
 	}
 	boolean select = (event.stateMask & SWT.MOD2) != 0;	
-	mouseDoubleClick = false;
 	event.y -= topMargin;
 	doMouseLocationChange(event.x, event.y, select);
 }
