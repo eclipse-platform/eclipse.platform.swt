@@ -30,7 +30,7 @@ public class Tracker extends Widget {
 	Display display;
 	boolean tracking, stippled;
 	Rectangle [] rectangles, proportions;
-	int cursor, cursorOrientation = SWT.NONE;
+	int resizeCursor, clientCursor, cursorOrientation = SWT.NONE;
 	boolean inEvent = false;
 
 	/*
@@ -184,41 +184,47 @@ Point adjustResizeCursor () {
 	}
 	OS.SetCursorPos (pt.x, pt.y);
 
-	int newCursor = 0;
-	switch (cursorOrientation) {
-		case SWT.UP:
-			newCursor = OS.LoadCursor (0, OS.IDC_SIZENS);
-			break;
-		case SWT.DOWN:
-			newCursor = OS.LoadCursor (0, OS.IDC_SIZENS);
-			break;
-		case SWT.LEFT:
-			newCursor = OS.LoadCursor (0, OS.IDC_SIZEWE);
-			break;
-		case SWT.RIGHT:
-			newCursor = OS.LoadCursor (0, OS.IDC_SIZEWE);
-			break;
-		case SWT.LEFT | SWT.UP:
-			newCursor = OS.LoadCursor (0, OS.IDC_SIZENWSE);
-			break;
-		case SWT.RIGHT | SWT.DOWN:
-			newCursor = OS.LoadCursor (0, OS.IDC_SIZENWSE);
-			break;
-		case SWT.LEFT | SWT.DOWN:
-			newCursor = OS.LoadCursor (0, OS.IDC_SIZENESW);
-			break;
-		case SWT.RIGHT | SWT.UP:
-			newCursor = OS.LoadCursor (0, OS.IDC_SIZENESW);
-			break;
-		default:
-			newCursor = OS.LoadCursor (0, OS.IDC_SIZEALL);
-			break;
+	/*
+	* If the client has not provided a custom cursor then determine
+	* the appropriate resize cursor.
+	*/
+	if (clientCursor == 0) {
+		int newCursor = 0;
+		switch (cursorOrientation) {
+			case SWT.UP:
+				newCursor = OS.LoadCursor (0, OS.IDC_SIZENS);
+				break;
+			case SWT.DOWN:
+				newCursor = OS.LoadCursor (0, OS.IDC_SIZENS);
+				break;
+			case SWT.LEFT:
+				newCursor = OS.LoadCursor (0, OS.IDC_SIZEWE);
+				break;
+			case SWT.RIGHT:
+				newCursor = OS.LoadCursor (0, OS.IDC_SIZEWE);
+				break;
+			case SWT.LEFT | SWT.UP:
+				newCursor = OS.LoadCursor (0, OS.IDC_SIZENWSE);
+				break;
+			case SWT.RIGHT | SWT.DOWN:
+				newCursor = OS.LoadCursor (0, OS.IDC_SIZENWSE);
+				break;
+			case SWT.LEFT | SWT.DOWN:
+				newCursor = OS.LoadCursor (0, OS.IDC_SIZENESW);
+				break;
+			case SWT.RIGHT | SWT.UP:
+				newCursor = OS.LoadCursor (0, OS.IDC_SIZENESW);
+				break;
+			default:
+				newCursor = OS.LoadCursor (0, OS.IDC_SIZEALL);
+				break;
+		}
+		OS.SetCursor (newCursor);
+		if (resizeCursor != 0) {
+			OS.DestroyCursor (resizeCursor);
+		}
+		resizeCursor = newCursor;
 	}
-	OS.SetCursor (newCursor);
-	if (cursor != 0) {
-		OS.DestroyCursor (cursor);
-	}
-	cursor = newCursor;
 		
 	return new Point (pt.x, pt.y);
 }
@@ -397,7 +403,6 @@ public boolean open () {
 		Object windowProc = new Object () {
 			public int windowProc (int hwnd, int msg, int wParam, int lParam) {
 				switch (msg) {
-					case OS.WM_MOVE:
 					/*
 					* We typically do not want to answer that the transparent window is
 					* transparent to hits since doing so negates the effect of having it
@@ -408,18 +413,16 @@ public boolean open () {
 					* the client.
 					*/
 					case OS.WM_NCHITTEST:
-						if (inEvent) {
-							return OS.HTTRANSPARENT;
-						}
-						break;
-					case OS.WM_SIZE:
-						OS.InvalidateRect (hwnd, null, true);
-						OS.UpdateWindow (hwnd);
+						if (inEvent) return OS.HTTRANSPARENT;
 						break;
 					case OS.WM_SETCURSOR:
-						if (cursor != 0) {
-							OS.SetCursor(cursor);
-							return LRESULT.ONE.value;
+						if (clientCursor != 0) {
+							OS.SetCursor(clientCursor);
+							return 1;
+						}
+						if (resizeCursor != 0) {
+							OS.SetCursor(resizeCursor);
+							return 1;
 						}
 				}
 				return OS.CallWindowProc (oldProc, hwnd, msg, wParam, lParam);
@@ -564,8 +567,8 @@ public boolean open () {
 	* Cleanup: If this tracker was resizing then the last cursor that it created
 	* needs to be destroyed.
 	*/
-	if ((style & SWT.RESIZE) != 0 && cursor != 0) {
-		OS.DestroyCursor (cursor);
+	if (resizeCursor != 0) {
+		OS.DestroyCursor (resizeCursor);
 	}
 	tracking = false;
 	return !cancelled;
@@ -640,12 +643,11 @@ void resizeRectangles (int xChange, int yChange) {
 }
 
 public void setCursor(Cursor newCursor) {
-	/*
-	* Check for NOT resizing (ie.- moving)
-	*/
-	if ((style & SWT.RESIZE) == 0) {
-		cursor = newCursor.handle;
-		OS.SetCursor(cursor);
+	checkWidget();
+	clientCursor = 0;
+	if (newCursor != null) {
+		clientCursor = newCursor.handle;
+		if (inEvent) OS.SetCursor(clientCursor);
 	}
 }
 /**
