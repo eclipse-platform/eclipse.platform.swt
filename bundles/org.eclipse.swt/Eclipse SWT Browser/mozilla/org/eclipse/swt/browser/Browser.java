@@ -17,12 +17,15 @@ import org.eclipse.swt.internal.mozilla.*;
 
 public class Browser extends Composite {
 	
+	BrowserSite browserSite;
+	nsIWebBrowser webBrowser;
+
 	static nsIAppShell appShell;
 	static AppFileLocProvider locProvider; 
 	static int browserCount;
 
-	BrowserSite browserSite;
-	nsIWebBrowser webBrowser;
+	/* Package Name */
+	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
 
 public Browser(Composite parent, int style) { 
 	super(parent,style);
@@ -157,6 +160,14 @@ public boolean back() {
 	webNavigation.Release();
 	
 	return rc == XPCOM.NS_OK;
+}
+
+protected void checkSubclass() {
+	String name = getClass().getName();
+	int index = name.lastIndexOf('.');
+	if (!name.substring(0, index + 1).equals(PACKAGE_PREFIX)) {
+		SWT.error(SWT.ERROR_INVALID_SUBCLASS);
+	}
 }
 
 public boolean forward() {

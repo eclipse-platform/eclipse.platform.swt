@@ -17,6 +17,8 @@ import org.eclipse.swt.events.*;
  * This event is sent to StatusTextListeners when the status text
  * is changed.  The status text is typically displayed in the status
  * bar of a browser.
+ * 
+ * @since 3.0
  */
 public class StatusTextEvent extends TypedEvent {
 	/** status text */

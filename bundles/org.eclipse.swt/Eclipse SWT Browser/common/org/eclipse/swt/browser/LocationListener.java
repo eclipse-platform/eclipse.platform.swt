@@ -17,6 +17,8 @@ import org.eclipse.swt.internal.SWTEventListener;
  * LocationEvents.
  * 
  * @see LocationEvent
+ * 
+ * @since 3.0
  */
 public interface LocationListener extends SWTEventListener {
 
@@ -27,6 +29,8 @@ public interface LocationListener extends SWTEventListener {
 	 * @param event.location the current location 
 	 *
 	 * @see LocationEvent
+	 * 
+	 * @since 3.0
 	 */ 
 	public void changed(LocationEvent event);
 }

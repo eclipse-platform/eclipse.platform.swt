@@ -15,6 +15,7 @@ import org.eclipse.swt.internal.SWTEventListener;
 /**
  * This listener interface may be implemented in order to receive
  * StatusTextEvents.
+ * 
  * @see StatusTextEvent
  */
 public interface StatusTextListener extends SWTEventListener {
@@ -27,6 +28,8 @@ public interface StatusTextListener extends SWTEventListener {
  * @param event.text the modified status text	
  *
  * @see StatusTextEvent
+ * 
+ * @since 3.0
  */
 public void changed(StatusTextEvent event);
 }

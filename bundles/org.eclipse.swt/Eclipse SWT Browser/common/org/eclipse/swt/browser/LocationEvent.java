@@ -16,6 +16,8 @@ import org.eclipse.swt.events.*;
 /**
  * This event is sent to LocationListeners when the location
  * is changed.
+ * 
+ * @since 3.0
  */
 public class LocationEvent extends TypedEvent {
 	/** current location */

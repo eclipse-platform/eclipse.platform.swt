@@ -15,7 +15,10 @@ import org.eclipse.swt.internal.SWTEventListener;
 /**
  * This listener interface may be implemented in order to receive
  * ProgressEvents.
+ * 
  * @see ProgressEvent
+ * 
+ * @since 3.0
  */
 public interface ProgressListener extends SWTEventListener {
 	
@@ -27,6 +30,8 @@ public interface ProgressListener extends SWTEventListener {
 	 * @param event.total the maximum progress for the location currently being loaded
 	 *
 	 * @see ProgressEvent
+	 * 
+	 * @since 3.0
 	 */   
 	public void changed(ProgressEvent event);
 	
@@ -35,6 +40,8 @@ public interface ProgressListener extends SWTEventListener {
 	 * <p>
 	 *
 	 * @see ProgressEvent
+	 * 
+	 * @since 3.0
 	 */
 	public void completed(ProgressEvent event);
 }

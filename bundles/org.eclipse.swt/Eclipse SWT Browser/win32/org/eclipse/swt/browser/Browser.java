@@ -24,6 +24,8 @@ import org.eclipse.swt.widgets.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ * 
+ * @since 3.0
  */
 public class Browser extends Composite {
 
@@ -75,6 +77,8 @@ public class Browser extends Composite {
  * </ul>
  *
  * @see #getStyle
+ * 
+ * @since 3.0
  */
 public Browser(Composite parent, int style) {
 	super(parent, style);
@@ -166,17 +170,19 @@ public Browser(Composite parent, int style) {
 }
 
 /**	 
-* Adds the listener to receive events.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError <ul>
-*		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-*		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-* 		<li>ERROR_NULL_ARGUMENT when listener is null</li>
-*	</ul>
-*/
+ * Adds the listener to receive events.
+ * <p>
+ *
+ * @param listener the listener
+ *
+ * @exception SWTError <ul>
+ *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * 		<li>ERROR_NULL_ARGUMENT when listener is null</li>
+ *	</ul>
+ *
+ * @since 3.0
+ */
 public void addLocationListener(LocationListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);	
@@ -187,17 +193,19 @@ public void addLocationListener(LocationListener listener) {
 }
 
 /**	 
-* Adds the listener to receive events.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError <ul>
-*		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-*		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-* 		<li>ERROR_NULL_ARGUMENT when listener is null</li>
-*	</ul>
-*/
+ * Adds the listener to receive events.
+ * <p>
+ *
+ * @param listener the listener
+ *
+ * @exception SWTError <ul>
+ *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * 		<li>ERROR_NULL_ARGUMENT when listener is null</li>
+ *	</ul>
+ *
+ * @since 3.0
+ */
 public void addProgressListener(ProgressListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -208,17 +216,19 @@ public void addProgressListener(ProgressListener listener) {
 }
 
 /**	 
-* Adds the listener to receive events.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError <ul>
-*		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-*		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-* 		<li>ERROR_NULL_ARGUMENT when listener is null</li>
-*	</ul>
-*/
+ * Adds the listener to receive events.
+ * <p>
+ *
+ * @param listener the listener
+ *
+ * @exception SWTError <ul>
+ *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ * 		<li>ERROR_NULL_ARGUMENT when listener is null</li>
+ *	</ul>
+ *
+ * @since 3.0
+ */
 public void addStatusTextListener(StatusTextListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -239,6 +249,8 @@ public void addStatusTextListener(StatusTextListener listener) {
  *	</ul>
  *
  * @see #forward
+ * 
+ * @since 3.0
  */
 public boolean back() {
 	checkWidget();
@@ -268,6 +280,8 @@ protected void checkSubclass() {
  *	</ul>
  * 
  * @see #back
+ * 
+ * @since 3.0
  */
 public boolean forward() {
 	checkWidget();
@@ -288,6 +302,8 @@ public boolean forward() {
  *	</ul>
  *
  * @see #setUrl
+ * 
+ * @since 3.0
  */
 public String getUrl() {
 	checkWidget();
@@ -306,6 +322,7 @@ public String getUrl() {
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
  *
+ * @since 3.0
  */
 public void refresh() {
 	checkWidget();
@@ -322,6 +339,8 @@ public void refresh() {
  *	<ul><li>ERROR_THREAD_INVALID_ACCESS	when called from the wrong thread</li>
  * 		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * 		<li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
+ * 
+ * @since 3.0
  */
 public void removeLocationListener(LocationListener listener) {
 	checkWidget();
@@ -354,6 +373,8 @@ public void removeLocationListener(LocationListener listener) {
  *	<ul><li>ERROR_THREAD_INVALID_ACCESS	when called from the wrong thread</li>
  * 		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * 		<li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
+ * 
+ * @since 3.0
  */
 public void removeProgressListener(ProgressListener listener) {
 	checkWidget();
@@ -386,6 +407,8 @@ public void removeProgressListener(ProgressListener listener) {
  *	<ul><li>ERROR_THREAD_INVALID_ACCESS	when called from the wrong thread</li>
  * 		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * 		<li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
+ * 
+ * @since 3.0
  */
 public void removeStatusTextListener(StatusTextListener listener) {
 	checkWidget();
@@ -422,6 +445,8 @@ public void removeStatusTextListener(StatusTextListener listener) {
  *	</ul>
  *  
  * @see #getUrl
+ * 
+ * @since 3.0
  */
 public boolean setUrl(String url) {
 	checkWidget();
@@ -443,6 +468,7 @@ public boolean setUrl(String url) {
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
  *
+ * @since 3.0
  */
 public void stop() {
 	checkWidget();

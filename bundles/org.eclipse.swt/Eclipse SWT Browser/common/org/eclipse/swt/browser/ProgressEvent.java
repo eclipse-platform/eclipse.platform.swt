@@ -17,6 +17,8 @@ import org.eclipse.swt.events.*;
  * This event is sent to ProgressListeners when a progress is made
  * during the loading of the current URI or when the loading of the
  * current URI has been completed.
+ * 
+ * @since 3.0
  */
 public class ProgressEvent extends TypedEvent {
 	/** current value */
