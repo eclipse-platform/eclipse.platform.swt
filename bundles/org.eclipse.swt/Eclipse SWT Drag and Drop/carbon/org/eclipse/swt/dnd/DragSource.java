@@ -292,7 +292,9 @@ private void drag(Event dragEvent) {
 	int operations = opToOsOp(getStyle());
 	//set operations twice - local and not local
 	OS.SetDragAllowableActions(theDrag[0], operations, true);
-	OS.SetDragAllowableActions(theDrag[0], operations, false);
+	// until the interaction with Finder is understood, only allow data to be
+	// transferred internally
+	OS.SetDragAllowableActions(theDrag[0], OS.kDragActionNothing, false);
 	
 	int result = OS.TrackDrag(theDrag[0], theEvent, theRegion);
 	
@@ -357,6 +359,9 @@ private int opToOsOp(int operation) {
 		osOperation |= OS.kDragActionAlias;
 	}
 	if ((operation & DND.DROP_MOVE) != 0) {
+		osOperation |= OS.kDragActionMove;
+	}
+	if ((operation & DND.DROP_TARGET_MOVE) != 0) {
 		osOperation |= OS.kDragActionDelete;
 	}
 	return osOperation;
@@ -371,6 +376,9 @@ private int osOpToOp(int osOperation){
 		operation |= DND.DROP_LINK;
 	}
 	if ((osOperation & OS.kDragActionDelete) != 0) {
+		operation |= DND.DROP_TARGET_MOVE;
+	}
+	if ((osOperation & OS.kDragActionMove) != 0) {
 		operation |= DND.DROP_MOVE;
 	}
 	if (osOperation == OS.kDragActionAll) {
