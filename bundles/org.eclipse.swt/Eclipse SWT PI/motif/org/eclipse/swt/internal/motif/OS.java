@@ -632,7 +632,7 @@ public static final synchronized native int XCreateImage(int display, int visual
 public static final synchronized native int XCreatePixmap(int display, int drawable, int width, int height, int depth);
 public static final synchronized native int XCreatePixmapCursor(int display, int source, int mask, XColor foreground_color, XColor background_color, int x, int y);
 public static final synchronized native int XCreateRegion();
-public static final synchronized native int XCreateWindow(int display, int parent, int x, int y, int width, int height, int border_width, int depth, int clazz, int visual, long value_mask, int attributes);
+public static final synchronized native int XCreateWindow(int display, int parent, int x, int y, int width, int height, int border_width, int depth, int clazz, int visual, long value_mask, XSetWindowAttributes attributes);
 public static final synchronized native int XDefaultColormap(int display, int screen_number);
 public static final synchronized native int XDefaultColormapOfScreen(int screen);
 public static final synchronized native int XDefaultDepthOfScreen(int screen);

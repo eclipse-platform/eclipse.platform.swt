@@ -377,11 +377,14 @@ JNIEXPORT jint JNICALL OS_NATIVE(XCreateRegion)
 
 #ifndef NO_XCreateWindow
 JNIEXPORT jint JNICALL OS_NATIVE(XCreateWindow)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jlong arg10, jint arg11)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jlong arg10, jobject arg11)
 {
+	XSetWindowAttributes _arg11, *lparg11=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, XCreateWindow_FUNC);
-	rc = (jint)XCreateWindow((Display *)arg0, (Window)arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, (Visual *)arg9, arg10, (XSetWindowAttributes *)arg11);
+	if (arg11) lparg11 = getXSetWindowAttributesFields(env, arg11, &_arg11);
+	rc = (jint)XCreateWindow((Display *)arg0, (Window)arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, (Visual *)arg9, arg10, (XSetWindowAttributes *)lparg11);
+	if (arg11) setXSetWindowAttributesFields(env, arg11, lparg11);
 	OS_NATIVE_EXIT(env, that, XCreateWindow_FUNC);
 	return rc;
 }

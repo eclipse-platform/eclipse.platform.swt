@@ -328,7 +328,7 @@ protected void init() {
 	OS.XpGetPageDimensions(xDisplay, printContext, width, height, rect);
 	xDrawable = OS.XCreateWindow(xDisplay, OS.XRootWindowOfScreen(xScreen), 
 		0, 0, rect.width, rect.height, 0,
-		OS.CopyFromParent, OS.CopyFromParent, OS.CopyFromParent, 0, 0);
+		OS.CopyFromParent, OS.CopyFromParent, OS.CopyFromParent, 0, null);
 	if (xDrawable == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 
 	/* Initialize the default font */
