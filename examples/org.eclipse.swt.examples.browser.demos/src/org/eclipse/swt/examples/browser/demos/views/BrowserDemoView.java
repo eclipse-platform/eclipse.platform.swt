@@ -18,7 +18,7 @@ public class BrowserDemoView extends ViewPart {
 
 	final static String URL = "http://www.org.eclipse.swt.examples.browser.demos.pawns/";
 	static String PLUGIN_PATH = BrowserDemoPlugin.PLUGIN_PATH;
-	static String CSS_FOLDER = "css1";
+	static String CSS_FOLDER = "css2";
 	static String URL_CSS = PLUGIN_PATH+CSS_FOLDER+"/style.css";
 	static String URL_WELCOME =PLUGIN_PATH+CSS_FOLDER+"/welcome.html";
 
@@ -40,6 +40,7 @@ public class BrowserDemoView extends ViewPart {
 	
 	static Pawns ttr = null;
 	static int[] move = new int[2];
+	static Menu menu = null;
 	
 	public BrowserDemoView() {
 	}
@@ -50,9 +51,25 @@ public class BrowserDemoView extends ViewPart {
 			e.printStackTrace();
 			return;
 		}
+		
+		menu = new Menu(parent.getShell(), SWT.POP_UP);
+		MenuItem item = new MenuItem(menu, SWT.PUSH);
+		item.setText("End Game");
+		item.addListener(SWT.Selection, new Listener() {
+			public void handleEvent(Event e) {
+				game = null;
+				isWhite = true;
+				cntWhite = 0; cntBlack = 0;
+				ttr = null;
+				browser.setUrl(URL_WELCOME);
+			}
+		});
+		browser.setMenu(menu);
+		
 		reversiListener = new ReversiListener();
 		browser.addLocationListener(reversiListener);
 		browser.setUrl(URL_WELCOME);
+		
 
 	}
 	private void showMessage(String message) {
