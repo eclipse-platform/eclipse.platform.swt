@@ -65,9 +65,7 @@ public class TableItem extends Item {
  * @see Widget#getStyle
  */
 public TableItem (Table parent, int style, int index) {
-	super (parent, style);
-	this.parent = parent;
-	parent.createItem (this, index);
+	this (parent, style, index, true);
 }
 
 /**
@@ -101,9 +99,24 @@ public TableItem (Table parent, int style, int index) {
  * @see Widget#getStyle
  */
 public TableItem (Table parent, int style) {
+	this (parent, style, checkNull (parent).getItemCount (), true);
+}
+
+
+TableItem (Table parent, int style, int index, boolean create) {
 	super (parent, style);
 	this.parent = parent;
-	parent.createItem (this, parent.getItemCount ());
+	if (create) {
+		parent.createItem (this, index);
+	} else {
+		handle = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+		OS.gtk_tree_model_iter_nth_child (parent.modelHandle, handle, 0, index);
+	}
+}
+
+static Table checkNull (Table control) {
+	if (control == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	return control;
 }
 
 void clear () {
