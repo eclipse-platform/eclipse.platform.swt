@@ -162,8 +162,6 @@ public class Display extends Device {
 		{OS.XK_Shift_R,		SWT.SHIFT},
 		{OS.XK_Control_L,	SWT.CONTROL},
 		{OS.XK_Control_R,	SWT.CONTROL},
-		{OS.XK_Control_L,	SWT.COMMAND},
-		{OS.XK_Control_R,	SWT.COMMAND},
 		
 //		{OS.VK_LBUTTON, SWT.BUTTON1},
 //		{OS.VK_MBUTTON, SWT.BUTTON3},

@@ -685,7 +685,6 @@ boolean translateAccelerator (int key, int keysym, XKeyEvent xEvent) {
 			if ((xEvent.state & OS.Mod1Mask) != 0) accelerator |= SWT.ALT;
 			if ((xEvent.state & OS.ShiftMask) != 0) accelerator |= SWT.SHIFT;
 			if ((xEvent.state & OS.ControlMask) != 0) accelerator |= SWT.CONTROL;
-			if ((xEvent.state & OS.ControlMask) != 0) accelerator |= SWT.COMMAND;
 			return menuBar.translateAccelerator (accelerator);
 		}
 	}
