@@ -366,13 +366,20 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			width += marginWidth + 3;
 		}
 	}
-	int border = OS.GetSystemMetrics (OS.SM_CXEDGE);
-	width += OS.GetSystemMetrics (OS.SM_CXVSCROLL) + border * 2;
-	int textHeight = OS.SendMessage (handle, OS.CB_GETITEMHEIGHT, -1, 0);
-	if ((style & SWT.DROP_DOWN) != 0) {
-		height = textHeight + 6;
+	COMBOBOXINFO pcbi = new COMBOBOXINFO ();
+	pcbi.cbSize = COMBOBOXINFO.sizeof;
+	if (((style & SWT.SIMPLE) == 0) && OS.GetComboBoxInfo (handle, pcbi)) {
+		width += pcbi.itemLeft + (pcbi.buttonRight - pcbi.buttonLeft);
+		height = pcbi.buttonTop + (pcbi.buttonBottom - pcbi.buttonTop); 
 	} else {
-		height += textHeight + 10;
+		int border = OS.GetSystemMetrics (OS.SM_CXEDGE);
+		width += OS.GetSystemMetrics (OS.SM_CXVSCROLL) + border * 2;		
+		int textHeight = OS.SendMessage (handle, OS.CB_GETITEMHEIGHT, -1, 0);
+		if ((style & SWT.DROP_DOWN) != 0) {
+			height = textHeight + 6;
+		} else {
+			height += textHeight + 10;
+		}
 	}
 	return new Point (width, height);
 }
