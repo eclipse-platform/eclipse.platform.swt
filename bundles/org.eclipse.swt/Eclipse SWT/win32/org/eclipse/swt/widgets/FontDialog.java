@@ -19,6 +19,12 @@ import org.eclipse.swt.internal.Compatibility;
 /**
  * Instances of this class allow the user to select a font
  * from all available fonts in the system.
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>(none)</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>(none)</dd>
+ * </dl>
  * <p>
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.

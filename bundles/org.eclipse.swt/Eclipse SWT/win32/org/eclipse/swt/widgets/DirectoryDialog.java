@@ -18,6 +18,12 @@ import org.eclipse.swt.*;
 /**
  * Instances of this class allow the user to navigate
  * the file system and select a directory.
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>(none)</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>(none)</dd>
+ * </dl>
  * <p>
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.

@@ -61,7 +61,7 @@ import org.eclipse.swt.*;
  * and behavior of the instance, including its modality.
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>APPLICATION_MODAL, MODELESS, PRIMARY_MODAL, SYSTEM_MODAL</dd>
+ * <dd>APPLICATION_MODAL, PRIMARY_MODAL, SYSTEM_MODAL</dd>
  * <dt><b>Events:</b></dt>
  * <dd>(none)</dd>
  * </dl>
@@ -88,7 +88,7 @@ public abstract class Dialog {
  * </ul>
  */
 public Dialog (Shell parent) {
-	this (parent, 0);
+	this (parent, SWT.PRIMARY_MODAL);
 }
 
 /**
