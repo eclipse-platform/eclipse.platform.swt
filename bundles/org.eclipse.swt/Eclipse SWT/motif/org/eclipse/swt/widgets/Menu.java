@@ -715,7 +715,7 @@ public void setVisible (boolean visible) {
 			 * the menu. By offsetting the start location by a pixel, it
 			 * causes highlighting to work if you wait for the menu to
 			 * pop up before you start moving.(Except for the bottom
-			 * right corner. *sigh*.)
+			 * right corner.)
 			 */
 			rootX[0] += 1;
 			rootY[0] += 1;
