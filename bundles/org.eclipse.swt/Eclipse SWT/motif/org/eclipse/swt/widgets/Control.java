@@ -1128,10 +1128,27 @@ public boolean isVisible () {
 }
 void manageChildren () {
 	OS.XtSetMappedWhenManaged (handle, false);
-	OS.XtManageChild (handle);
-	int [] argList1 = {OS.XmNborderWidth, 0};
+	/*
+	* Feature in Motif.  When a widget is managed and an
+	* ancestor in the widget hierarchy has focus, Motif
+	* assigns focus to another widget in the shell.  This
+	* happens because Motif does not expect a non-leaf
+	* widget to have the focus.  The fix is to save the
+	* current value of XmNtraversalOn, set the new value
+	* to false, then manage the widget and restore the
+	* value.  This relies on the fact that Motif will
+	* not reassign focus when the new widget is not
+	* traversable.
+	*/
+	int [] argList1 = {OS.XmNtraversalOn, 0};
 	OS.XtGetValues (handle, argList1, argList1.length / 2);
-	OS.XtResizeWidget (handle, 1, 1, argList1 [1]);
+	int [] argList2 = {OS.XmNtraversalOn, 0};
+	OS.XtSetValues (handle, argList2, argList2.length / 2);
+	OS.XtManageChild (handle);
+	OS.XtSetValues (handle, argList1, argList1.length / 2);
+	int [] argList3 = {OS.XmNborderWidth, 0};
+	OS.XtGetValues (handle, argList3, argList3.length / 2);
+	OS.XtResizeWidget (handle, 1, 1, argList3 [1]);
 	OS.XtSetMappedWhenManaged (handle, true);
 }
 Decorations menuShell () {

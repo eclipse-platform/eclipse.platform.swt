@@ -1080,7 +1080,11 @@ int processSetFocus (int callData) {
 	xEvent.window = OS.XtWindow (parent.handle);
 //	TEMPORARY CODE - need to fix the window field in xEvent
 //	OS.memmove (callData, xEvent, XFocusChangeEvent.sizeof);
-	parent.processSetFocus (callData);
+
+	/*
+	* This code is intentionally commented.
+	*/
+//	parent.processSetFocus (callData);
 	return 0;
 }
 void propagateWidget (boolean enabled) {
