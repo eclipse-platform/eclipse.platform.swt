@@ -865,7 +865,7 @@ public void removeSelectionListener(SelectionListener listener) {
 
 public void select (int index) {
 	checkWidget();
-	if (0 <- index && index < itemCount) {
+	if (0 <= index && index < itemCount) {
 		int [] id = new int [] {index + 1};
 		ignoreSelect = true;
 		int operation = (style & SWT.SINGLE) != 0 ? OS.kDataBrowserItemsAssign: OS.kDataBrowserItemsAdd;
