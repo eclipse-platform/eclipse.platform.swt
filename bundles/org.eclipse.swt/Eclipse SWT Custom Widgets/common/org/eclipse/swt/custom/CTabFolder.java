@@ -804,7 +804,6 @@ void drawBody(Event event) {
 void drawChevron(GC gc) {
 	if (chevronRect.width == 0 || chevronRect.height == 0) return;
 	// draw chevron (10x7)
-	Color chevronBorder = single ? getSelectionForeground() : getForeground();
 	FontData fd = getFont().getFontData()[0];
 	fd.setHeight(fd.getHeight() - 1);
 	Font f = new Font(getDisplay(), fd);
@@ -821,6 +820,7 @@ void drawChevron(GC gc) {
 	}
 	switch (chevronImageState) {
 		case NORMAL: {
+			Color chevronBorder = single ? getSelectionForeground() : getForeground();
 			gc.setForeground(chevronBorder);
 			gc.drawLine(x,y,     x+2,y+2);
 			gc.drawLine(x+2,y+2, x,y+4);
@@ -835,7 +835,12 @@ void drawChevron(GC gc) {
 			break;
 		}
 		case HOT: {
-			gc.setForeground(chevronBorder);
+			Display display = getDisplay();
+			gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+			gc.fillRoundRectangle(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, 6, 6);
+			gc.setForeground(borderColor);
+			gc.drawRoundRectangle(chevronRect.x, chevronRect.y, chevronRect.width - 1, chevronRect.height - 1, 6, 6);
+			gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
 			gc.drawLine(x,y,     x+2,y+2);
 			gc.drawLine(x+2,y+2, x,y+4);
 			gc.drawLine(x+1,y,   x+3,y+2);
@@ -849,7 +854,12 @@ void drawChevron(GC gc) {
 			break;
 		}
 		case SELECTED: {
-			gc.setForeground(chevronBorder);
+			Display display = getDisplay();
+			gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+			gc.fillRoundRectangle(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, 6, 6);
+			gc.setForeground(borderColor);
+			gc.drawRoundRectangle(chevronRect.x, chevronRect.y, chevronRect.width - 1, chevronRect.height - 1, 6, 6);
+			gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
 			gc.drawLine(x+1,y+1, x+3,y+3);
 			gc.drawLine(x+3,y+3, x+1,y+5);
 			gc.drawLine(x+2,y+1, x+4,y+3);
@@ -859,7 +869,7 @@ void drawChevron(GC gc) {
 			gc.drawLine(x+6,y+1, x+8,y+3);
 			gc.drawLine(x+8,y+3, x+5,y+5);
 			gc.setFont(f);
-			gc.drawString(String.valueOf(count), x+7, y+4, true);
+			gc.drawString(String.valueOf(count), x+8, y+5, true);
 			break;
 		}
 	}
