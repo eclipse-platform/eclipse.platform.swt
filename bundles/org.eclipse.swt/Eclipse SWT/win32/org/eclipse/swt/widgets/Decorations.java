@@ -185,11 +185,18 @@ void bringToTop () {
 }
 
 static int checkStyle (int style) {
-	if (!OS.IsWinCE) {
-		if ((style & (SWT.MENU | SWT.MIN | SWT.MAX | SWT.CLOSE)) != 0) {
-			style |= SWT.TITLE;
-		}
+	if (OS.IsWinCE) {
+		/*
+		* Feature in WinCE PPC.  WS_MINIMIZEBOX or WS_MAXIMIZEBOX
+		* are not supposed to be used.  If they are, the result
+		* is a button which does not repaint correctly.  The fix
+		* is to remove this style.
+		*/
+		if ((style & SWT.MIN) != 0) style &= ~SWT.MIN;
+		if ((style & SWT.MAX) != 0) style &= ~SWT.MAX;
+		return style;
 	}
+
 	/*
 	* If either WS_MINIMIZEBOX or WS_MAXIMIZEBOX are set,
 	* we must also set WS_SYSMENU or the buttons will not
@@ -1130,6 +1137,7 @@ boolean traverseItem (boolean next) {
 
 int widgetExtStyle () {
 	int bits = 0;
+	if ((style & SWT.NO_TRIM) != 0) return bits;
 	if (OS.IsWinCE) {
 		if ((style & SWT.CLOSE) != 0) bits |= OS.WS_EX_CAPTIONOKBTN;
 	}
