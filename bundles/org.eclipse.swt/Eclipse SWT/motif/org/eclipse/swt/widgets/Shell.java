@@ -849,7 +849,9 @@ public Point getMinimumSize () {
 	checkWidget ();
 	int [] argList = {OS.XmNminWidth, 0, OS.XmNminHeight, 0};
 	OS.XtGetValues (shellHandle, argList, argList.length / 2);
-	return new Point (Math.max (0, argList [1]) + trimWidth (), Math.max (0, argList [3]) + trimHeight ());
+	int width = Math.max (1, Math.max (0, argList [1]) + trimWidth ());
+	int height = Math.max (1, Math.max (0, argList [3]) + trimHeight ());
+	return new Point (width, height);
 }
 /** 
  * Returns the region that defines the shape of the shell,
@@ -1280,10 +1282,16 @@ public void setMinimized (boolean minimized) {
 }
 public void setMinimumSize (int width, int height) {
 	checkWidget ();
-	int [] argList = {
-		OS.XmNminWidth, Math.max (0, width - trimWidth ()),
-		OS.XmNminHeight, Math.max (0, height - trimHeight ()),
-	};
+	int minWidth = 0, minHeight = 0;
+	if (width != SWT.DEFAULT) {
+		width = Math.max (width, trimWidth ());
+		minWidth = width - trimWidth ();
+	}
+	if (height != SWT.DEFAULT) {
+		height = Math.max (height, trimHeight ());
+		minHeight = height - trimHeight ();
+	}
+	int [] argList = {OS.XmNminWidth, minWidth, OS.XmNminHeight, minHeight};
 	OS.XtSetValues (shellHandle, argList, argList.length / 2);
 }
 public void setMinimumSize (Point size) {

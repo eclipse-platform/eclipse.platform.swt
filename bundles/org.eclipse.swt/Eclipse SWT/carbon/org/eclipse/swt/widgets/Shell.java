@@ -110,8 +110,8 @@ public class Shell extends Decorations {
 	Region region;
 	Rect rgnRect;
 
-	static int DEFAULT_SHELL_WIDTH = -1;
-	static int DEFAULT_SHELL_HEIGHT = 0;
+	static int DEFAULT_CLIENT_WIDTH = -1;
+	static int DEFAULT_CLIENT_HEIGHT = -1;
 
 /**
  * Constructs a new instance of this class. This is equivalent
@@ -471,7 +471,8 @@ void createHandle () {
 	OS.SetWindowGroupOwner (windowGroup, shellHandle);
 	CGPoint inMinLimits = new CGPoint (), inMaxLimits = new CGPoint ();
 	OS.GetWindowResizeLimits (shellHandle, inMinLimits, inMaxLimits);
-	if (DEFAULT_SHELL_WIDTH == -1) DEFAULT_SHELL_WIDTH = (int) inMinLimits.x;
+	if (DEFAULT_CLIENT_WIDTH == -1) DEFAULT_CLIENT_WIDTH = (int) inMinLimits.x;
+	if (DEFAULT_CLIENT_HEIGHT == -1) DEFAULT_CLIENT_HEIGHT = 0;
 	inMinLimits.y = (int) 0;
 	int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX;
 	if ((style & SWT.NO_TRIM) != 0 || (style & trim) == 0) {
@@ -1247,21 +1248,28 @@ public void setMinimized (boolean minimized) {
 
 public void setMinimumSize (int width, int height) {
 	checkWidget();
+	int clientWidth = 0, clientHeight = 0;
+	int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX;
+	if ((style & SWT.NO_TRIM) == 0 && (style & trim) != 0) {
+		clientWidth = DEFAULT_CLIENT_WIDTH;
+		clientHeight = DEFAULT_CLIENT_HEIGHT;
+	}
 	Rect rect = new Rect ();
 	OS.GetWindowStructureWidths (shellHandle, rect);
 	CGPoint inMinLimits = new CGPoint (), inMaxLimits = new CGPoint ();
 	OS.GetWindowResizeLimits (shellHandle, inMinLimits, inMaxLimits);
-	if (width == SWT.DEFAULT) {
-		int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX;
-		if ((style & SWT.NO_TRIM) == 0 && (style & trim) != 0) {
-			width = DEFAULT_SHELL_WIDTH;
-		} else {
-			width = 0;
-		}
+	if (width != SWT.DEFAULT) {
+		width = Math.max (width, clientWidth + rect.left + rect.right);
+		inMinLimits.x = width - (rect.left + rect.right);
+	} else {
+		inMinLimits.x = clientWidth;
 	}
-	if (height == SWT.DEFAULT) height = DEFAULT_SHELL_HEIGHT;
-	inMinLimits.x = Math.max (0, (int) width - (rect.left + rect.right));
-	inMinLimits.y = Math.max (0, (int) height - (rect.top + rect.bottom));
+	if (height != SWT.DEFAULT) {
+		height = Math.max (height, clientHeight + rect.top + rect.bottom);
+		inMinLimits.y = height - (rect.top + rect.bottom);
+	} else {
+		inMinLimits.y = clientHeight;
+	}
 	OS.SetWindowResizeLimits (shellHandle, inMinLimits, inMaxLimits);
 	Point size = getSize ();
 	int newWidth = Math.max (size.x, width), newHeight = Math.max (size.y, height);
