@@ -1023,7 +1023,7 @@ public static final native void memmove(GdkVisual dest, int /*long*/ src);
 public static final native void memmove(GdkImage dest, int /*long*/ src);
 public static final native void memmove(GdkRectangle dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(PangoAttribute dest, int /*long*/ src, int /*long*/ size);
-public static final native void memmove(int /*long*/ dest, int /*long*/[] src, int /*long*/ size);
+public static final native void memmove(int /*long*/ dest, int[] src, int /*long*/ size);
 public static final native void memmove(int /*long*/ dest, byte[] src, int /*long*/ size);
 public static final native void memmove(int[] dest, byte[] src, int /*long*/ size);
 public static final native void memmove(byte[] dest, int /*long*/ src, int /*long*/ size);
