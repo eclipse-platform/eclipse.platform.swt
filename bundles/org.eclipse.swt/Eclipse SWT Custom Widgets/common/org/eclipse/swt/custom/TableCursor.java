@@ -1,15 +1,161 @@
 package org.eclipse.swt.custom;
 
+/*
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
+ */
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.events.*;
 
+/**
+ * A TableCursor provides a way for the user to navigate around a Table
+ * using the keyboard.  It also provides a mechanism for selecting an
+ * individual cell in a table.
+ * 
+ * <p> Here is an example of using a TableCursor to navigate to a cell and then edit it.
+ * 
+ * <code><pre>
+ *  public static void main(String[] args) {
+ *		Display display = new Display();
+ *		Shell shell = new Shell(display);
+ *		shell.setLayout(new GridLayout());
+ *	
+ *		// create a a table with 3 columns and fill with data
+ *		final Table table = new Table(shell, SWT.BORDER | SWT.MULTI | SWT.FULL_SELECTION);
+ *		table.setLayoutData(new GridData(GridData.FILL_BOTH));
+ *		TableColumn column1 = new TableColumn(table, SWT.NONE);
+ *		TableColumn column2 = new TableColumn(table, SWT.NONE);
+ *		TableColumn column3 = new TableColumn(table, SWT.NONE);
+ *		for (int i = 0; i < 100; i++) {
+ *			TableItem item = new TableItem(table, SWT.NONE);
+ *			item.setText(new String[] { "cell "+i+" 0", "cell "+i+" 1", "cell "+i+" 2"});
+ *		}
+ *		column1.pack();
+ *		column2.pack();
+ *		column3.pack();
+ *	
+ *		// create a TableCursor to navigate around the table
+ *		final TableCursor cursor = new TableCursor(table, SWT.NONE);
+ *		// create an editor to edit the cell when the user hits "ENTER" 
+ *		// while over a cell in the table
+ *		final ControlEditor editor = new ControlEditor(cursor);
+ *		editor.grabHorizontal = true;
+ *		editor.grabVertical = true;
+ *	
+ *		cursor.addSelectionListener(new SelectionAdapter() {
+ *			// when the TableEditor is over a cell, select the corresponding row in 
+ *			// the table
+ *			public void widgetSelected(SelectionEvent e) {
+ *				table.setSelection(new TableItem[] {cursor.getRow()});
+ *			}
+ *			// when the user hits "ENTER" in the TableCursor, pop up a text editor so that 
+ *			// they can change the text of the cell
+ *			public void widgetDefaultSelected(SelectionEvent e){
+ *				final Text text = new Text(cursor, SWT.NONE);
+ *				TableItem row = cursor.getRow();
+ *				int column = cursor.getColumn();
+ *				text.setText(row.getText(column));
+ *				text.addKeyListener(new KeyAdapter() {
+ *					public void keyPressed(KeyEvent e) {
+ *						// close the text editor and copy the data over 
+ *						// when the user hits "ENTER"
+ *						if (e.character == SWT.CR) {
+ *							TableItem row = cursor.getRow();
+ *							int column = cursor.getColumn();
+ *							row.setText(column, text.getText());
+ *							text.dispose();
+ *						}
+ *						// close the text editor when the user hits "ESC"
+ *						if (e.character == SWT.ESC) {
+ *							text.dispose();
+ *						}
+ *					}
+ *				});
+ *				editor.setEditor(text);
+ *				text.setFocus();
+ *			}
+ *		});
+ *		// Hide the TableCursor when the user hits the "CTRL" or "SHIFT" key.
+ *		// This alows the user to select multiple items in the table.
+ *		cursor.addKeyListener(new KeyAdapter() {
+ *			public void keyPressed(KeyEvent e) {
+ *				if (e.keyCode == SWT.CTRL || 
+ *				    e.keyCode == SWT.SHIFT || 
+ *				    (e.stateMask & SWT.CONTROL) != 0 || 
+ *				    (e.stateMask & SWT.SHIFT) != 0) {
+ *					cursor.setVisible(false);
+ *				}
+ *			}
+ *		});
+ *		// Show the TableCursor when the user releases the "SHIFT" or "CTRL" key.
+ *		// This signals the end of the multiple selection task.
+ *		table.addKeyListener(new KeyAdapter() {
+ *			public void keyReleased(KeyEvent e) {
+ *				if (e.keyCode == SWT.CONTROL && (e.stateMask & SWT.SHIFT) != 0) return;
+ *				if (e.keyCode == SWT.SHIFT && (e.stateMask & SWT.CONTROL) != 0) return;
+ *				if (e.keyCode != SWT.CONTROL && (e.stateMask & SWT.CONTROL) != 0) return;
+ *				if (e.keyCode != SWT.SHIFT && (e.stateMask & SWT.SHIFT) != 0) return;
+ *			
+ *				TableItem[] selection = table.getSelection();
+ *				TableItem row = (selection.length == 0) ? table.getItem(table.getTopIndex()) : selection[0];
+ *				table.showItem(row);
+ *				cursor.setSelection(row, 0);
+ *				cursor.setVisible(true);
+ *				cursor.setFocus();
+ *			}
+ *		});
+ *	
+ *		shell.open();
+ *		while (!shell.isDisposed()) {
+ *			if (!display.readAndDispatch())
+ *				display.sleep();
+ *		}
+ *		display.dispose();
+ *	}
+ * </pre></code>
+ * 
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>BORDER</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>Selection, DefaultSelection</dd>
+ * </dl>
+ */
 public class TableCursor extends Canvas {
 	Table table;
 	int row, column;
 	Listener tableListener, resizeListener;
 
+/**
+ * Constructs a new instance of this class given its parent
+ * table and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a Table control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public TableCursor(Table parent, int style) {
 	super(parent, style);
 	table = parent;
@@ -281,6 +427,7 @@ void setRowColumn(int row, int column, boolean notify) {
 }
 
 public void setVisible(boolean visible) {
+	checkWidget();
 	if (visible)
 		resize();
 	super.setVisible(visible);
@@ -290,20 +437,74 @@ void resize() {
 	TableItem item = table.getItem(row);
 	setBounds(item.getBounds(column));
 }
-
+/**
+ * Returns the column over which the TableCursor is positioned.
+ *
+ * @return the column for the current position
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getColumn() {
+	checkWidget();
 	return column;
 }
+/**
+ * Returns the row over which the TableCursor is positioned.
+ *
+ * @return the item for the current position
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public TableItem getRow() {
+	checkWidget();
 	return table.getItem(row);
 }
+/**
+ * Positions the TableCursor over the cell at the given row and column in the parent table. 
+ *
+ * @param row the index of the row for the cell to select
+ * @param column the index of column for the cell to select
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ */
+public void setSelection(int row, int column) {
+	checkWidget();
+	if (row < 0
+	    || row >= table.getItemCount()
+		|| column < 0
+		|| column >= table.getColumnCount())
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	setRowColumn(row, column, false);
+}
+/**
+ * Positions the TableCursor over the cell at the given row and column in the parent table. 
+ *
+ * @param row the TableItem of the row for the cell to select
+ * @param column the index of column for the cell to select
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ */
 public void setSelection(TableItem row, int column) {
+	checkWidget();
 	if (row == null
 		|| row.isDisposed()
 		|| column < 0
 		|| column >= table.getColumnCount())
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	setRowColumn(table.indexOf(row), column, false);
-
 }
 }
