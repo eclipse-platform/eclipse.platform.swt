@@ -94,9 +94,9 @@ import org.eclipse.swt.graphics.*;
 public class Display extends Device {
 
 	/* Events Dispatching and Callback */
-	Event [] eventQueue;
 	int gdkEventCount;
 	int /*long*/ [] gdkEvents;
+	Event [] eventQueue;
 	Callback eventCallback;
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	int /*long*/ eventProc, windowProc2, windowProc3, windowProc4, windowProc5;
@@ -1768,15 +1768,18 @@ void postEvent (Event event) {
 public boolean readAndDispatch () {
 	checkDevice ();
 	runPopups ();
-	int status = OS.gtk_events_pending ();
-	if (status != 0) {
+	if (gdkEventCount != 0) {
 		int /*long*/ event = removeGdkEvent ();
 		if (event != 0) {
 			eventProc (event, 0);
 			OS.gdk_event_free (event);
-		} else {
-			OS.gtk_main_iteration ();
 		}
+		runDeferredEvents ();
+		return true;
+	}
+	int status = OS.gtk_events_pending ();
+	if (status != 0) {
+		OS.gtk_main_iteration ();
 		runDeferredEvents ();
 		return true;
 	}
