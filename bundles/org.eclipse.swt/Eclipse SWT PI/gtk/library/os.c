@@ -7242,6 +7242,37 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(gtk_1tree_1selection_1get_1selected)
 }
 #endif
 
+#ifndef NO_gtk_1tree_1selection_1get_1selected_1rows
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1tree_1selection_1get_1selected_1rows)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, gtk_1tree_1selection_1get_1selected_1rows_FUNC);
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+/*
+	rc = (jint)gtk_tree_selection_get_selected_rows((GtkTreeSelection *)arg0, (GtkTreeModel **)lparg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		static jint (*fptr)(GtkTreeSelection *, GtkTreeModel **);
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gtk_tree_selection_get_selected_rows_LIB, RTLD_LAZY);
+			if (handle) fptr = dlsym(handle, "gtk_tree_selection_get_selected_rows");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)((GtkTreeSelection *)arg0, (GtkTreeModel **)lparg1);
+		}
+	}
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, gtk_1tree_1selection_1get_1selected_1rows_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1tree_1selection_1path_1is_1selected
 JNIEXPORT jboolean JNICALL OS_NATIVE(gtk_1tree_1selection_1path_1is_1selected)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
