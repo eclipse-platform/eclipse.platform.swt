@@ -24,6 +24,7 @@ public class JNIGeneratorAppUI {
 	Display display;
 	Shell shell;
 	
+	Composite actionsPanel;
 	Combo mainClassCb, outputDirCb;
 	Table classesLt, membersLt, paramsLt;
 	FileDialog fileDialog;
@@ -126,6 +127,37 @@ void generateNatives () {
 	Method[] methods = getSelectedMethods();
 	if (methods.length != 0) gen.generate(methods);
 	else gen.generate(getSelectedClasses());
+}
+
+void generateAll() {
+	if (!updateOutputDir()) return;
+	Cursor cursor = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+	shell.setCursor(cursor);
+	shell.setEnabled(false);
+	Control[] children = actionsPanel.getChildren();
+	for (int i = 0; i < children.length; i++) {
+		children[i].setEnabled(false);				
+	}
+	final boolean[] done = new boolean[1];
+	new Thread() {
+		public void run() {
+			try {
+				app.generate();
+			} finally {
+				done[0] = true;
+				display.wake();
+			}
+		}
+	}.start();
+	while (!done[0]) {
+		if (!display.readAndDispatch()) display.sleep();
+	}
+	for (int i = 0; i < children.length; i++) {
+		children[i].setEnabled(true);				
+	}
+	shell.setEnabled(true);
+	shell.setCursor(null);
+	cursor.dispose();
 }
 
 void generateConstants () {
@@ -749,7 +781,7 @@ Button createActionButton(Composite parent, String text, Listener listener) {
 }
 
 void createActionButtons(Composite parent) {		
-	Composite actionsPanel = new Composite(parent, SWT.NONE);
+	actionsPanel = new Composite(parent, SWT.NONE);
 
 	GridData data = new GridData(GridData.FILL_VERTICAL);
 	actionsPanel.setLayoutData(data);
@@ -760,26 +792,7 @@ void createActionButtons(Composite parent) {
 	
 	createActionButton(actionsPanel, "Generate &All", new Listener() {
 		public void handleEvent(Event e) {
-			if (!updateOutputDir()) return;
-			Cursor cursor = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
-			shell.setCursor(cursor);
-			shell.setEnabled(false);
-			final boolean[] done = new boolean[1];
-			new Thread() {
-				public void run() {
-					try {
-						app.generate();
-					} finally {
-						done[0] = true;
-					}
-				}
-			}.start();
-			while (!done[0]) {
-				if (!display.readAndDispatch()) display.sleep();
-			}
-			shell.setEnabled(true);
-			shell.setCursor(null);
-			cursor.dispose();
+			generateAll();
 		}
 	});
 	
