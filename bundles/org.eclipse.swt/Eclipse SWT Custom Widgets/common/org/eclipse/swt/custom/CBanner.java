@@ -126,7 +126,7 @@ public CBanner(Composite parent, int style) {
 }
 static int[] bezier(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int y3, int count) {
 	// The parametric equations for a Bezier curve for x[t] and y[t] where  0 <= t <=1 are:
-	// x[t] = x0+3(x1-x0)t+3(x0+x2-2x1)t^3+(x3-x0+3x1-3x2)t^3
+	// x[t] = x0+3(x1-x0)t+3(x0+x2-2x1)t^2+(x3-x0+3x1-3x2)t^3
 	// y[t] = y0+3(y1-y0)t+3(y0+y2-2y1)t^2+(y3-y0+3y1-3y2)t^3
 	double a0 = x0;
 	double a1 = 3*(x1 - x0);
