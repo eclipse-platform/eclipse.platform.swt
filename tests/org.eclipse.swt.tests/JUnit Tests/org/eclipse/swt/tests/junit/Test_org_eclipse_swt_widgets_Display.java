@@ -688,15 +688,6 @@ public void test_mapLorg_eclipse_swt_widgets_ControlLorg_eclipse_swt_widgets_Con
 }
 
 public void test_postLorg_eclipse_swt_widgets_Event() {
-	boolean success;
-	final boolean verifiedEvent[] = new boolean[5];
-	
-	final int KEYUP = 0;
-	final int KEYDOWN = 1;
-	final int MOUSEUP = 2;
-	final int MOUSEDOWN = 3;
-	final int MOUSEMOVE = 4;
-	final int CHARACTER = ' '; 	// space character works both in bidi language and western
 	final int KEYCODE = SWT.SHIFT;
 	
 	Display display = new Display();
@@ -711,37 +702,7 @@ public void test_postLorg_eclipse_swt_widgets_Event() {
 		Shell shell = new Shell(display, SWT.NO_TRIM);
 		shell.setBounds(display.getBounds());
 		shell.open();
-		
-		shell.addKeyListener(new KeyListener() {
-			public void keyPressed(KeyEvent e) {
-				if (e.character == CHARACTER)
-					verifiedEvent[KEYDOWN] = true;
-			}
-			
-			public void keyReleased(KeyEvent e) {
-				if (e.keyCode == KEYCODE)
-					verifiedEvent[KEYUP] = true;
-			}
-		});
-		shell.addMouseListener(new MouseListener() {
-			public void mouseDoubleClick(MouseEvent e) {
-				fail("Unsupported mouse double-click event was received");
-			}
-			public void mouseDown(MouseEvent e) {
-				if (e.button == 1)
-					verifiedEvent[MOUSEDOWN] = true;
-			}
-			public void mouseUp(MouseEvent e) {
-				if (e.button == 1)
-					verifiedEvent[MOUSEUP] = true;
-			}
-		});
-		shell.addMouseMoveListener(new MouseMoveListener() {
-			public void mouseMove(MouseEvent e) {
-				verifiedEvent[MOUSEMOVE] = true;
-			}
-		});
-		
+
 		Event event;
 		
 		// Test key events (down/up)
@@ -749,12 +710,8 @@ public void test_postLorg_eclipse_swt_widgets_Event() {
 		event.type = SWT.KeyDown;
 		event.character = (char) -1;  	// bogus character
 		assertFalse(display.post(event));
-		event.character = CHARACTER;
-		shell.setFocus();
-		assertTrue(display.post(event));
-		event.type = SWT.KeyUp;
-		shell.setFocus();
-		assertTrue(display.post(event));
+		// don't test KeyDown/KeyUp with a character to avoid sending to 
+		// random window if test shell looses focus
 		
 		event = new Event();
 		event.type = SWT.KeyUp;
@@ -772,6 +729,13 @@ public void test_postLorg_eclipse_swt_widgets_Event() {
 		
 		// Test mouse events (down/up/move)
 		event = new Event();
+		event.type = SWT.MouseMove;
+		event.x = 0;
+		event.y = 0;
+		shell.setFocus();
+		assertTrue(display.post(event));
+		
+		event = new Event();
 		event.type = SWT.MouseDown;
 		assertFalse(display.post(event));  // missing button
 		event.button = 1;
@@ -785,27 +749,17 @@ public void test_postLorg_eclipse_swt_widgets_Event() {
 		shell.setFocus();
 		assertTrue(display.post(event));
 		
-		event = new Event();
-		event.type = SWT.MouseMove;
-		event.x = 50;
-		event.y = 100;
-		shell.setFocus();
-		assertTrue(display.post(event));
-		
 		// Test unsupported event
 		event = new Event();
 		event.type = SWT.MouseDoubleClick;
 		assertFalse(display.post(event));
 		
-		// Verify expected events were posted
-		while (display.readAndDispatch()) {}
 		shell.dispose();
 		
-		assertTrue("posted KeyDown event not received", verifiedEvent[KEYDOWN]);
-		assertTrue("posted KeyUp event not received", verifiedEvent[KEYUP]);
-		assertTrue("posted MouseDown event not received", verifiedEvent[MOUSEDOWN]);
-		assertTrue("posted MouseUp event not received", verifiedEvent[MOUSEUP]);
-		assertTrue("posted MouseMove event not received", verifiedEvent[MOUSEMOVE]);
+		// can't verify that the events were actually sent to a listener.
+		// the test shell won't receive any events if it has lost focus, 
+		// e.g., due to user intervention or another process popping up 
+		// a window. 
 	} finally {
 		display.dispose();
 	}
