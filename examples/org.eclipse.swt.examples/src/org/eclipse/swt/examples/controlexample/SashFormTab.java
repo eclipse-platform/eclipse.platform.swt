@@ -18,32 +18,32 @@ import org.eclipse.swt.widgets.*;
 
 class SashFormTab extends Tab {
 	/* Example widgets and groups that contain them */
-	SashForm fullForm, topForm;
-	List list1, list2, list3;
+	Group sashFormGroup;
+	SashForm form;
+	List list1, list2;
 	Text text;
+	
+	/* Style widgets added to the "Style" group */
+	Button horizontalButton, verticalButton;
 
-	static String [] ListData0 = {ControlExample.getResourceString("ListData0_0"),
-								  ControlExample.getResourceString("ListData0_1"),
-								  ControlExample.getResourceString("ListData0_2"),
-								  ControlExample.getResourceString("ListData0_3"),
-								  ControlExample.getResourceString("ListData0_4"),
-								  ControlExample.getResourceString("ListData0_5"),
-								  ControlExample.getResourceString("ListData0_6"),
-								  ControlExample.getResourceString("ListData0_7"),
-								  ControlExample.getResourceString("ListData0_8")};
+	static String [] ListData0 = {ControlExample.getResourceString("ListData0_0"), //$NON-NLS-1$
+								  ControlExample.getResourceString("ListData0_1"), //$NON-NLS-1$
+								  ControlExample.getResourceString("ListData0_2"), //$NON-NLS-1$
+								  ControlExample.getResourceString("ListData0_3"), //$NON-NLS-1$
+								  ControlExample.getResourceString("ListData0_4"), //$NON-NLS-1$
+								  ControlExample.getResourceString("ListData0_5"), //$NON-NLS-1$
+								  ControlExample.getResourceString("ListData0_6"), //$NON-NLS-1$
+								  ControlExample.getResourceString("ListData0_7")}; //$NON-NLS-1$
 								  
-	static String [] ListData1 = {ControlExample.getResourceString("ListData1_0"),
-								  ControlExample.getResourceString("ListData1_1"),
-								  ControlExample.getResourceString("ListData1_2"),
-								  ControlExample.getResourceString("ListData1_3"),
-								  ControlExample.getResourceString("ListData1_4"),
-								  ControlExample.getResourceString("ListData1_5"),
-								  ControlExample.getResourceString("ListData1_6"),
-								  ControlExample.getResourceString("ListData1_7"),
-								  ControlExample.getResourceString("ListData1_8")};
+	static String [] ListData1 = {ControlExample.getResourceString("ListData1_0"), //$NON-NLS-1$
+								  ControlExample.getResourceString("ListData1_1"), //$NON-NLS-1$
+								  ControlExample.getResourceString("ListData1_2"), //$NON-NLS-1$
+								  ControlExample.getResourceString("ListData1_3"), //$NON-NLS-1$
+								  ControlExample.getResourceString("ListData1_4"), //$NON-NLS-1$
+								  ControlExample.getResourceString("ListData1_5"), //$NON-NLS-1$
+								  ControlExample.getResourceString("ListData1_6"), //$NON-NLS-1$
+								  ControlExample.getResourceString("ListData1_7")}; //$NON-NLS-1$
 
-	/* Constants */
-	static final int SASH_WIDTH = 3;
 
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
@@ -56,45 +56,81 @@ class SashFormTab extends Tab {
 	 * Creates the tab folder page.
 	 */
 	Composite createTabFolderPage (TabFolder tabFolder) {
-		tabFolderPage = new Composite(tabFolder, SWT.BORDER);
-		tabFolderPage.setLayout(new FillLayout());
+		/*
+		* Create a two column page.
+		*/
+		tabFolderPage = new Composite (tabFolder, SWT.NONE);
+		tabFolderPage.setLayout (new GridLayout (2, false));
+	
+		/* Create the "Example" and "Control" groups. */
+		createExampleGroup ();
+		createControlGroup ();
 		
-		fullForm = new SashForm (tabFolderPage, SWT.HORIZONTAL);
-		fullForm.setLayout(new FillLayout());
-		topForm = new SashForm (fullForm, SWT.VERTICAL);
-		topForm.setLayout(new FillLayout());
+		/* Create and initialize the example and control widgets. */
+		createExampleWidgets ();
+		return tabFolderPage;
+	}
+	void createExampleGroup () {
+		super.createExampleGroup ();
 		
-		list1 = new List (topForm, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
+		/* Create a group for the sashform widget */
+		sashFormGroup = new Group (exampleGroup, SWT.NONE);
+		sashFormGroup.setLayout (new GridLayout ());
+		sashFormGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		sashFormGroup.setText ("SashForm");
+	}
+	void createExampleWidgets () {
+		
+		/* Compute the widget style */
+		int style = getDefaultStyle();
+		if (horizontalButton.getSelection ()) style |= SWT.H_SCROLL;
+		if (verticalButton.getSelection ()) style |= SWT.V_SCROLL;
+		
+		/* Create the example widgets */
+		form = new SashForm (sashFormGroup, style);
+		list1 = new List (form, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
 		list1.setItems (ListData0);
-		list2 = new List (topForm, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
+		list2 = new List (form, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
 		list2.setItems (ListData1);
-		text = new Text (fullForm, SWT.MULTI | SWT.BORDER);
-		text.setText (ControlExample.getResourceString("Multi_line"));
-
-		fullForm.setWeights(new int[] {50, 50});
-		topForm.setWeights(new int[] {50, 50});
-		
-		return tabFolderPage; 
+		text = new Text (form, SWT.MULTI | SWT.BORDER);
+		text.setText (ControlExample.getResourceString("Multi_line")); //$NON-NLS-1$
+		form.setWeights(new int[] {1, 1, 1});
+	}
+	/**
+	 * Creates the "Style" group.
+	 */
+	void createStyleGroup() {
+		super.createStyleGroup();
+	
+		/* Create the extra widgets */
+		horizontalButton = new Button (styleGroup, SWT.RADIO);
+		horizontalButton.setText ("SWT.H_SCROLL");
+		horizontalButton.setSelection(true);
+		verticalButton = new Button (styleGroup, SWT.RADIO);
+		verticalButton.setText ("SWT.V_SCROLL");
+		verticalButton.setSelection(false);
 	}
 	
 	/**
 	 * Gets the "Example" widget children.
 	 */
 	Control [] getExampleWidgets () {
-		return new Control [] {fullForm, topForm};
+		return new Control [] {form};
 	}
 	
 	/**
 	 * Gets the text for the tab folder item.
 	 */
 	String getTabText () {
-		return "SashForm";
+		return "SashForm"; //$NON-NLS-1$
 	}
 	
-	/**
-	 * Recreates the "Example" widgets.
+		/**
+	 * Sets the state of the "Example" widgets.
 	 */
-	void recreateExampleWidgets () {
-		// this tab does not use this framework mechanism
+	void setExampleWidgetState () {
+		super.setExampleWidgetState ();
+		horizontalButton.setSelection ((form.getStyle () & SWT.H_SCROLL) != 0);
+		verticalButton.setSelection ((form.getStyle () & SWT.V_SCROLL) != 0);
 	}
 }
