@@ -254,7 +254,7 @@ public Rectangle getBounds () {
 	int width = 0;
 	if (image != null) {
 		Rectangle bounds = image.getBounds ();
-		width += bounds.width + 2;
+		x += bounds.width + 2;
 	}
 	GC gc = new GC (parent);
 	Point extent = gc.stringExtent (text);
