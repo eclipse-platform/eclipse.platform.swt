@@ -356,6 +356,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	trim.height += 2 * yborder;
 	return new Rectangle (trim.x, trim.y, trim.width, trim.height);
 }
+
 /**
  * Copies the selected text.
  * <p>
