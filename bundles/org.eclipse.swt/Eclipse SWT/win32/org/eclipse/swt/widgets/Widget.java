@@ -813,7 +813,7 @@ protected void removeListener (int eventType, SWTEventListener listener) {
  * </ul>
  *
  * @see DisposeListener
- * @see #removeDisposeListener
+ * @see #addDisposeListener
  */
 public void removeDisposeListener (DisposeListener listener) {
 	checkWidget();
