@@ -693,7 +693,7 @@ public void setImage (Image image) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setImage (image);
 	Point size = computeSize ();
-	setSize (size.x, size.y);
+	setSize (size.x, size.y, true);
 	redraw ();
 }
 
@@ -720,12 +720,12 @@ public void setSelection (boolean selected) {
 	setDrawPressed (set);
 }
 
-void setSize (int width, int height) {
+void setSize (int width, int height, boolean layout) {
 	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	if (argList [1] != width || argList [3] != height) {
 		OS.XtResizeWidget (handle, width, height, 0);
-		parent.relayout ();
+		if (layout) parent.relayout ();
 	}
 }
 public void setText (String string) {
@@ -734,7 +734,7 @@ public void setText (String string) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setText (string);
 	Point size = computeSize ();
-	setSize (size.x, size.y);
+	setSize (size.x, size.y, true);
 	redraw ();
 }
 
@@ -769,7 +769,7 @@ public void setWidth (int width) {
 	if (width < 0) return;
 	int [] argList = {OS.XmNheight, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
-	setSize (width, argList [1]);
+	setSize (width, argList [1], true);
 	if (control != null && !control.isDisposed ()) {
 		control.setBounds (getBounds ());
 	}

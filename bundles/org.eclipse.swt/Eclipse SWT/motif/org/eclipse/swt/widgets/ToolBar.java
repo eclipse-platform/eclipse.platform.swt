@@ -397,6 +397,18 @@ public void setBounds (int x, int y, int width, int height) {
 	Rectangle rect = getClientArea ();
 	relayout (rect.width, rect.height);
 }
+public void setFont (Font font) {
+	checkWidget();
+	super.setFont (font);
+	for (int i=0; i<items.length; i++) {
+		ToolItem item = items [i];
+		if (item != null) {
+			Point size = item.computeSize ();
+			item.setSize (size.x, size.y, false);
+		}
+	}
+	relayout ();
+}
 public void setRedraw (boolean redraw) {
 	checkWidget();
 	if (redraw) {
