@@ -28,6 +28,7 @@ class StyledTextPrinter implements Runnable {
 	GC gc;
 	String rtf;
 	StringBuffer wordBuffer;
+	int startPage, endPage, currentPage;
 	int index, end;
 	String tabs = "";
 	int tabWidth = 0;
@@ -61,6 +62,13 @@ class StyledTextPrinter implements Runnable {
 	
 	StyledTextPrinter(StyledText styledText, Printer printer) {
 		this.printer = printer;
+		PrinterData data = printer.getPrinterData();
+		startPage = 1;
+		endPage = Integer.MAX_VALUE;
+		if (data.scope == PrinterData.PAGE_RANGE) {
+			startPage = data.startPage;
+			endPage = data.endPage;
+		}
 
 		/* Create a buffer for computing tab width. */
 		int tabSize = styledText.getTabs();
@@ -86,7 +94,10 @@ class StyledTextPrinter implements Runnable {
 			gc = new GC(printer);
 			x = leftMargin;
 			y = topMargin;
-			printer.startPage();
+			currentPage = 1;
+			if (startPage == 1) {
+				printer.startPage();
+			}
 			end = rtf.length();
 			index = 0;
 			wordBuffer = new StringBuffer();
@@ -211,7 +222,9 @@ class StyledTextPrinter implements Runnable {
 				/* word doesn't fit on current line, so wrap */
 				newline();
 			}
-			gc.drawString(word, x, y, true);
+			if (currentPage >= startPage && currentPage <= endPage) {
+				gc.drawString(word, x, y, true);
+			}
 			x += wordWidth;
 			wordBuffer = new StringBuffer();
 		}
@@ -325,7 +338,10 @@ class StyledTextPrinter implements Runnable {
 			printer.endPage();
 			if (index + 1 < end) {
 				y = topMargin;
-				printer.startPage();
+				currentPage++;
+				if (currentPage >= startPage && currentPage <= endPage) {
+					printer.startPage();
+				}
 			}
 		}
 	}
