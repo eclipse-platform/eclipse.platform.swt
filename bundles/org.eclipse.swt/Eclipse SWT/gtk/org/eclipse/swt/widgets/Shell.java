@@ -544,7 +544,8 @@ void hookEvents () {
 	OS.g_signal_connect (shellHandle, OS.size_allocate, windowProc3, SIZE_ALLOCATE);
 	OS.g_signal_connect (shellHandle, OS.configure_event, windowProc3, CONFIGURE_EVENT);
 	OS.g_signal_connect (shellHandle, OS.delete_event, windowProc3, DELETE_EVENT);
-	OS.g_signal_connect (shellHandle, OS.event_after, windowProc3, EVENT_AFTER);
+	OS.g_signal_connect (shellHandle, OS.focus_in_event, windowProc3, FOCUS_IN_EVENT);
+	OS.g_signal_connect (shellHandle, OS.focus_out_event, windowProc3, FOCUS_OUT_EVENT);
 	OS.g_signal_connect (shellHandle, OS.map_event, shellMapProc, 0);
 }
 
@@ -694,27 +695,6 @@ int /*long*/ gtk_delete_event (int /*long*/ widget, int /*long*/ event) {
 	return 1;
 }
 
-int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ event) {
-	int /*long*/ result = super.gtk_event_after (widget, event);
-	if (widget == shellHandle) {
-		GdkEvent gdkEvent = new GdkEvent ();
-		OS.memmove (gdkEvent, event, GdkEvent.sizeof);
-		if (gdkEvent.type == OS.GDK_FOCUS_CHANGE) {
-			GdkEventFocus focusEvent = new GdkEventFocus ();
-			OS.memmove (focusEvent, event, GdkEventFocus.sizeof);
-			hasFocus = focusEvent.in != 0;
-			if (hasFocus) {
-				postEvent (SWT.Activate);
-				if (tooltipsHandle != 0) OS.gtk_tooltips_enable (tooltipsHandle);
-			} else {
-				postEvent (SWT.Deactivate);
-				if (tooltipsHandle != 0) OS.gtk_tooltips_disable (tooltipsHandle);
-			}
-		}
-	}
-	return result;
-}
-
 int /*long*/ gtk_focus (int /*long*/ widget, int /*long*/ directionType) {
 	switch ((int)/*64*/directionType) {
 		case OS.GTK_DIR_TAB_FORWARD:
@@ -730,6 +710,32 @@ int /*long*/ gtk_focus (int /*long*/ widget, int /*long*/ directionType) {
 			break;
 	}
 	return super.gtk_focus (widget, directionType);
+}
+
+int /*long*/ gtk_focus_in_event (int /*long*/ widget, int /*long*/ event) {
+	int /*long*/ result = super.gtk_focus_in_event (widget, event);
+	// widget could be disposed at this point
+	if (handle == 0) return 0;
+	if (widget == shellHandle) {
+		if (tooltipsHandle != 0) OS.gtk_tooltips_enable (tooltipsHandle);
+		hasFocus = true;
+		sendEvent (SWT.Activate);
+		return 0;
+	}
+	return result;
+}
+
+int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
+	int /*long*/ result = super.gtk_focus_out_event (widget, event);
+	// widget could be disposed at this point
+	if (handle == 0) return 0;
+	if (widget == shellHandle) {
+		if (tooltipsHandle != 0) OS.gtk_tooltips_disable (tooltipsHandle);
+		hasFocus = false;
+		sendEvent (SWT.Deactivate);
+		return 0;
+	}
+	return result;
 }
 
 int /*long*/ gtk_map_event (int /*long*/ widget, int /*long*/ event) {

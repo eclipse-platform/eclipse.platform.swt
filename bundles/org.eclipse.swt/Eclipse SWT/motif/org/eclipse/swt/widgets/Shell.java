@@ -1510,10 +1510,18 @@ int XFocusChange (int w, int client_data, int call_data, int continue_to_dispatc
 		case OS.NotifyNonlinearVirtual: {
 			switch (xEvent.type) {
 				case OS.FocusIn:
-					postEvent (SWT.Activate);
+					if (display.postFocusOut) {
+						postEvent (SWT.Activate);
+					} else {
+						sendEvent (SWT.Activate);
+					}
 					break;
 				case OS.FocusOut:
-					postEvent (SWT.Deactivate);
+					if (display.postFocusOut) {
+						postEvent (SWT.Deactivate);
+					} else {
+						sendEvent (SWT.Deactivate);
+					}
 					break;
 			}
 		}
