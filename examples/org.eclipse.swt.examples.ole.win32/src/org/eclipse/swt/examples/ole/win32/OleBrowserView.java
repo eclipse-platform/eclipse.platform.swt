@@ -36,6 +36,9 @@ public class OleBrowserView extends ViewPart {
 	
 	private boolean activated = false;
 
+	private static final int DISPID_AMBIENT_DLCONTROL = -5512;
+	private static final int DLCTL_NO_SCRIPTS = 0x80;
+	
 	/**
 	 * Constructs the OLE browser view.
 	 */
@@ -253,6 +256,11 @@ public class OleBrowserView extends ViewPart {
 		try {
 			// Create an Automation object for access to extended capabilities
 			webControlSite = new OleControlSite(webFrame, SWT.NONE, "Shell.Explorer");
+			Variant download = new Variant(DLCTL_NO_SCRIPTS);
+			webControlSite.setSiteProperty(DISPID_AMBIENT_DLCONTROL, download);
+			webControlSite.setSiteProperty(DISPID_AMBIENT_DLCONTROL, download);
+			webControlSite.setSiteProperty(DISPID_AMBIENT_DLCONTROL, null);
+			webControlSite.setSiteProperty(DISPID_AMBIENT_DLCONTROL, download);
 			OleAutomation oleAutomation = new OleAutomation(webControlSite);
 			webBrowser = new OleWebBrowser(oleAutomation);
 		} catch (SWTException ex) {

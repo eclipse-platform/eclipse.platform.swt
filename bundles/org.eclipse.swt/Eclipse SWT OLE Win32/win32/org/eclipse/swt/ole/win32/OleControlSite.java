@@ -52,6 +52,8 @@ public class OleControlSite extends OleClientSite
 	// supporting information for the Control COM object
 	private CONTROLINFO currentControlInfo;
 	private String licenseInfo;
+	private int[] sitePropertyIds = new int[0];
+	private Variant[] sitePropertyValues = new Variant[0];
 	
 /**
  * Create an OleControlSite child widget using style bits
@@ -129,6 +131,10 @@ public OleControlSite(Composite parent, int style, String progId) {
 	
 		// Init sinks
 		addObjectReferences();
+		
+		// Init site properties
+		setSiteProperty(COM.DISPID_AMBIENT_USERMODE, new Variant(true));
+		setSiteProperty(COM.DISPID_AMBIENT_UIDEAD, new Variant(false));
 			
 		if (COM.OleRun(objIUnknown.getAddress()) == OLE.S_OK) state= STATE_RUNNING;
 
@@ -454,6 +460,21 @@ protected int getLicenseInfo(GUID clsid) {
 	classFactory.Release();
 	return 0;
 }
+/**
+ * 
+ * Get the control site property specified by the dispIdMember.
+ * 
+ * @since 2.1
+ * 
+ */
+public Variant getSiteProperty(int dispId){
+	for (int i = 0; i < sitePropertyIds.length; i++) {
+		if (sitePropertyIds[i] == dispId) {
+			return sitePropertyValues[i];
+		}
+	}
+	return null;
+}
 protected int GetWindow(int phwnd) {
 
 	if (phwnd == 0)
@@ -473,17 +494,12 @@ private int Invoke(int dispIdMember, int riid, int lcid, int dwFlags, int pDispP
 		if (pArgErr != 0) COM.MoveMemory(pArgErr, new int[] {0}, 4);
 		return COM.DISP_E_MEMBERNOTFOUND;
 	}
+	Variant result = getSiteProperty(dispIdMember);
+	if (result != null) {
+		if (pVarResult != 0) result.getData(pVarResult);
+		return COM.S_OK;
+	}
 	switch (dispIdMember) {
-		case COM.DISPID_AMBIENT_USERMODE :
-			Variant usermode = new Variant(true);
-			if (pVarResult != 0) usermode.getData(pVarResult);
-			return COM.S_OK;
-			
-		case COM.DISPID_AMBIENT_UIDEAD :
-			Variant uidead = new Variant(false);
-			if (pVarResult != 0) uidead.getData(pVarResult);
-			return COM.S_OK;
-
 			// indicate a false result
 		case COM.DISPID_AMBIENT_SUPPORTSMNEMONICS :
 		case COM.DISPID_AMBIENT_SHOWGRABHANDLES :
@@ -568,6 +584,17 @@ protected int QueryInterface(int riid, int ppvObject) {
 	}
 	COM.MoveMemory(ppvObject, new int[] {0}, 4);
 	return COM.E_NOINTERFACE;
+}
+protected int Release() {
+	int result = super.Release();
+	if (result == 0) {
+		for (int i = 0; i < sitePropertyIds.length; i++) {
+			sitePropertyValues[i].dispose();
+		}
+		sitePropertyIds = new int[0];
+		sitePropertyValues = new Variant[0];
+	}
+	return result;
 }
 protected void releaseObjectInterfaces() {
 	
@@ -735,5 +762,47 @@ public void setForeground (Color color) {
 		oleObject.setProperty(COM.DISPID_FORECOLOR, new Variant(color.handle));
 		oleObject.dispose();
 	}
+}
+/**
+ * Sets the control site property specified by the dispIdMember to a new value.
+ * The value will be disposed by the control site when it is no longer required
+ * using Variant.dispose.
+ * 
+ * @param dispId the ID of the property as specified by the IDL of the ActiveX Control
+ * @param value The new value for the property as expressed in a Variant.  
+ *
+ * @since 2.1
+ */
+public void setSiteProperty(int dispId, Variant value){
+	for (int i = 0; i < sitePropertyIds.length; i++) {
+		if (sitePropertyIds[i] == dispId) {
+			if (sitePropertyValues[i] != null) {
+				sitePropertyValues[i].dispose();
+			}
+			if (value != null) {
+				sitePropertyValues[i] = value;
+			} else {
+				int oldLength = sitePropertyIds.length;
+				int[] newSitePropertyIds = new int[oldLength - 1];
+				Variant[] newSitePropertyValues = new Variant[oldLength - 1];
+				System.arraycopy(sitePropertyIds, 0, newSitePropertyIds, 0, i);
+				System.arraycopy(sitePropertyIds, i + 1, newSitePropertyIds, i, oldLength - i - 1);
+				System.arraycopy(sitePropertyValues, 0, newSitePropertyValues, 0, i);
+				System.arraycopy(sitePropertyValues, i + 1, newSitePropertyValues, i, oldLength - i - 1);
+				sitePropertyIds = newSitePropertyIds;
+				sitePropertyValues = newSitePropertyValues;
+			}
+			return;
+		}
+	}
+	int oldLength = sitePropertyIds.length;
+	int[] newSitePropertyIds = new int[oldLength + 1];
+	Variant[] newSitePropertyValues = new Variant[oldLength + 1];
+	System.arraycopy(sitePropertyIds, 0, newSitePropertyIds, 0, oldLength);
+	System.arraycopy(sitePropertyValues, 0, newSitePropertyValues, 0, oldLength);
+	newSitePropertyIds[oldLength] = dispId;
+	newSitePropertyValues[oldLength] = value;
+	sitePropertyIds = newSitePropertyIds;
+	sitePropertyValues = newSitePropertyValues;
 }
 }
