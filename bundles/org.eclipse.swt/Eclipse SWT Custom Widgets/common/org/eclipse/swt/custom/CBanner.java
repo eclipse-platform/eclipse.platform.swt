@@ -138,7 +138,7 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 	if (right != null) {
 		Point trim = right.computeSize(rightWidth, height);
 		trim.x = trim.x - rightWidth;
-		rightSize = right.computeSize(rightWidth == SWT.DEFAULT ? SWT.DEFAULT : rightWidth - trim.x, height);
+		rightSize = right.computeSize(rightWidth == SWT.DEFAULT ? SWT.DEFAULT : rightWidth - trim.x, rightWidth == SWT.DEFAULT ? SWT.DEFAULT : height);
 		if (width != SWT.DEFAULT) {
 			rightSize.x = Math.min(rightSize.x, width);
 			width = Math.max(CURVE_TAIL, width - rightSize.x - curveWidth + 2* curveIndent);
@@ -239,7 +239,7 @@ public void layout (boolean changed) {
 	if (right != null) {
 		Point trim = right.computeSize(rightWidth, height);
 		trim.x = trim.x - rightWidth;
-		rightSize = right.computeSize(rightWidth == SWT.DEFAULT ? SWT.DEFAULT : rightWidth - trim.x, height);
+		rightSize = right.computeSize(rightWidth == SWT.DEFAULT ? SWT.DEFAULT : rightWidth - trim.x, rightWidth == SWT.DEFAULT ? SWT.DEFAULT : height);
 		rightSize.x = Math.min(rightSize.x, width);
 		width -= rightSize.x + curveWidth - 2* curveIndent;
 		width = Math.max(width, CURVE_TAIL); 
