@@ -2362,9 +2362,7 @@ boolean translateTraversal (int key_sym, PhKeyEvent_t phEvent) {
 }
 
 int traversalCode (int key_sym, PhKeyEvent_t ke) {
-	int [] args = {OS.Pt_ARG_FLAGS, 0, 0};
-	OS.PtGetResources (handle, args.length / 3, args);
-//	if ((args [1] & OS.Pt_GETS_FOCUS) == 0) return 0;	
+//	if ((OS.PtWidgetFlags (handle) & OS.Pt_GETS_FOCUS) == 0) return 0;	
 	int code = SWT.TRAVERSE_RETURN | SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS;
 	Shell shell = getShell ();
 	if (shell.parent != null) code |= SWT.TRAVERSE_ESCAPE;
