@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 844;
-int OS_nativeFunctionCallCount[844];
+int OS_nativeFunctionCount = 845;
+int OS_nativeFunctionCallCount[845];
 char * OS_nativeFunctionNames[] = {
 	"GDK_1DISPLAY", 
 	"GDK_1ROOT_1PARENT", 
@@ -820,6 +820,7 @@ char * OS_nativeFunctionNames[] = {
 	"pango_1font_1description_1set_1weight", 
 	"pango_1font_1description_1to_1string", 
 	"pango_1font_1face_1describe", 
+	"pango_1font_1family_1get_1name", 
 	"pango_1font_1family_1list_1faces", 
 	"pango_1font_1get_1metrics", 
 	"pango_1font_1metrics_1get_1approximate_1char_1width", 

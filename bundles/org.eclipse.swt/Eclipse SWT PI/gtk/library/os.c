@@ -10022,6 +10022,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(pango_1font_1face_1describe)
 }
 #endif
 
+#ifndef NO_pango_1font_1family_1get_1name
+JNIEXPORT jint JNICALL OS_NATIVE(pango_1font_1family_1get_1name)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, pango_1font_1family_1get_1name_FUNC);
+	rc = (jint)pango_font_family_get_name((PangoFontFamily *)arg0);
+	OS_NATIVE_EXIT(env, that, pango_1font_1family_1get_1name_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_pango_1font_1family_1list_1faces
 JNIEXPORT void JNICALL OS_NATIVE(pango_1font_1family_1list_1faces)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
