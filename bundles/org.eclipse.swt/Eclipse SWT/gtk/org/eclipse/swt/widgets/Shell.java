@@ -1003,7 +1003,6 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		width = Math.max (1, Math.max (minWidth, width - trimWidth ()));
 		height = Math.max (1, Math.max (minHeight, height - trimHeight ()));
 		OS.gtk_window_resize (shellHandle, width, height);
-		if (isDisposed ()) return 0;
 		boolean changed = width != oldWidth || height != oldHeight;
 		if (changed) {
 			oldWidth = width;

@@ -823,13 +823,13 @@ int kEventWindowBoundsChanged (int nextHandler, int theEvent, int userData) {
 	if ((attributes [0] & OS.kWindowBoundsChangeOriginChanged) != 0) {
 		moved = true;
 		sendEvent (SWT.Move);
-		if (isDisposed ()) return 0;
+		if (isDisposed ()) return OS.noErr;
 	}
 	if ((attributes [0] & OS.kWindowBoundsChangeSizeChanged) != 0) {
 		resized = true;
 		resizeBounds ();
 		sendEvent (SWT.Resize);
-		if (isDisposed ()) return 0;
+		if (isDisposed ()) return OS.noErr;
 		if (layout != null) layout.layout (this, false);
 		if (region != null && !region.isDisposed()) {
 			OS.GetEventParameter (theEvent, OS.kEventParamCurrentBounds, OS.typeQDRectangle, null, Rect.sizeof, null, rgnRect);
