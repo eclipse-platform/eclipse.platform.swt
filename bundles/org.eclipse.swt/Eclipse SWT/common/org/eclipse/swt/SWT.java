@@ -824,7 +824,7 @@ public class SWT {
 
 	/**
 	 * <code>MessageBox</code> style constant for "working" icon
-	 * behavior (value is 1<<1)
+	 * behavior (value is 1<<4)
 	 */
 	public static final int ICON_WORKING = 1 << 4;
 
