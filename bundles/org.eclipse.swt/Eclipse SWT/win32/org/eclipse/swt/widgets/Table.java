@@ -280,6 +280,8 @@ void createItem (TableColumn column, int index) {
 				lvItem.pszText = lvItem.cchTextMax = 0;
 				lvItem.iImage = OS.I_IMAGENONE;
 				OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
+				items [i].text = "";
+				items [i].image = null;
 			}
 			lvColumn.mask = OS.LVCF_TEXT | OS.LVCF_IMAGE | OS.LVCF_WIDTH | OS.LVCF_FMT;
 			lvColumn.pszText = pszText;
@@ -493,6 +495,10 @@ void destroyItem (TableColumn column) {
 				OS.SendMessage (handle, OS.LVM_GETITEM, 0, lvItem);
 				lvItem.iSubItem = 0;
 				OS.SendMessage (handle, OS.LVM_SETITEM, 0, lvItem);
+				TCHAR buffer = new TCHAR (getCodePage (), cchTextMax);
+				OS.MoveMemory (buffer, pszText, byteCount);
+				items [i].text = buffer.toString (0, buffer.strlen ());
+				items [i].image = imageList.get (lvItem.iImage);
 			}
 			if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
 		} else {
