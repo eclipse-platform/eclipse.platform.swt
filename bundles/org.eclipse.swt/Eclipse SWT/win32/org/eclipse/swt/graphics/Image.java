@@ -717,6 +717,134 @@ public Image (Device device, String filename) {
 	if (device.tracking) device.new_Object(this);	
 }
 
+/* Create a DIB from a DDB without using GetDIBits */
+int createDIBFromDDB(int hDC, int hBitmap, int width, int height) {
+	
+	/* Determine the DDB depth */
+	byte[] bmi;
+	int bits = OS.GetDeviceCaps (hDC, OS.BITSPIXEL);
+	int planes = OS.GetDeviceCaps (hDC, OS.PLANES);
+	int depth = bits * planes;
+	
+	/* Determine the DIB palette */
+	boolean isDirect = depth <= 8;
+	RGB[] rgbs = null;
+	if (!isDirect) {
+		int numColors = 1 << depth;
+		byte[] logPalette = new byte[4 * numColors];
+		OS.GetPaletteEntries(device.hPalette, 0, numColors, logPalette);
+		rgbs = new RGB[numColors];
+		for (int i = 0; i < numColors; i++) {
+			rgbs[i] = new RGB(logPalette[i] & 0xFF, logPalette[i + 1] & 0xFF, logPalette[i + 2] & 0xFF);
+		}
+	}
+	
+	int biClrUsed = 0;
+	boolean useBitfields = OS.IsWinCE && (depth == 16 || depth == 32);
+	if (isDirect) bmi = new byte[40 + (useBitfields ? 12 : 0)];
+	else  bmi = new byte[40 + rgbs.length * 4];
+	/* DWORD biSize = 40 */
+	bmi[0] = 40; bmi[1] = 0; bmi[2] = 0; bmi[3] = 0;
+	/* LONG biWidth = width */
+	bmi[4] = (byte)(width & 0xFF);
+	bmi[5] = (byte)((width >> 8) & 0xFF);
+	bmi[6] = (byte)((width >> 16) & 0xFF);
+	bmi[7] = (byte)((width >> 24) & 0xFF);
+	/* LONG biHeight = height */
+	int height2 = -height;
+	bmi[8] = (byte)(height2 & 0xFF);
+	bmi[9] = (byte)((height2 >> 8) & 0xFF);
+	bmi[10] = (byte)((height2 >> 16) & 0xFF);
+	bmi[11] = (byte)((height2 >> 24) & 0xFF);
+	/* WORD biPlanes = 1 */
+	bmi[12] = 1;
+	bmi[13] = 0;
+	/* WORD biBitCount = depth */
+	bmi[14] = (byte)(depth & 0xFF);
+	bmi[15] = (byte)((depth >> 8) & 0xFF);
+	if (useBitfields) {
+		/* DWORD biCompression = BI_BITFIELDS = 3 */
+		bmi[16] = 3; bmi[17] = bmi[18] = bmi[19] = 0;
+	} else {
+		/* DWORD biCompression = BI_RGB = 0 */
+		bmi[16] = bmi[17] = bmi[18] = bmi[19] = 0;
+	}
+	/* DWORD biSizeImage = 0 (default) */
+	bmi[20] = bmi[21] = bmi[22] = bmi[23] = 0;
+	/* LONG biXPelsPerMeter = 0 */
+	bmi[24] = bmi[25] = bmi[26] = bmi[27] = 0;
+	/* LONG biYPelsPerMeter = 0 */
+	bmi[28] = bmi[29] = bmi[30] = bmi[31] = 0;
+	/* DWORD biClrUsed */
+	bmi[32] = bmi[33] = bmi[34] = bmi[35] = 0;
+	/* DWORD biClrImportant = 0 */
+	bmi[36] = bmi[37] = bmi[38] = bmi[39] = 0;
+	/* Set the rgb colors into the bitmap info */
+	int offset = 40;
+	if (isDirect) {
+		if (useBitfields) {
+			int redMask = 0;
+			int greenMask = 0;
+			int blueMask = 0;
+			switch (depth) {
+				case 16:
+					redMask = 0x7C00;
+					greenMask = 0x3E0;
+					blueMask = 0x1F;
+					break;
+				case 24: 
+					redMask = 0xFF;
+					greenMask = 0xFF00;
+					blueMask = 0xFF0000;
+					break;
+				case 32: 
+					redMask = 0xFF00;
+					greenMask = 0xFF0000;
+					blueMask = 0xFF000000;
+					break;
+				default:
+					SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
+			}
+			bmi[40] = (byte)((redMask & 0xFF) >> 0);
+			bmi[41] = (byte)((redMask & 0xFF00) >> 8);
+			bmi[42] = (byte)((redMask & 0xFF0000) >> 16);
+			bmi[43] = (byte)((redMask & 0xFF000000) >> 24);
+			bmi[44] = (byte)((greenMask & 0xFF) >> 0);
+			bmi[45] = (byte)((greenMask & 0xFF00) >> 8);
+			bmi[46] = (byte)((greenMask & 0xFF0000) >> 16);
+			bmi[47] = (byte)((greenMask & 0xFF000000) >> 24);
+			bmi[48] = (byte)((blueMask & 0xFF) >> 0);
+			bmi[49] = (byte)((blueMask & 0xFF00) >> 8);
+			bmi[50] = (byte)((blueMask & 0xFF0000) >> 16);
+			bmi[51] = (byte)((blueMask & 0xFF000000) >> 24);
+		}
+	} else {
+		for (int j = 0; j < rgbs.length; j++) {
+			bmi[offset] = (byte)rgbs[j].blue;
+			bmi[offset + 1] = (byte)rgbs[j].green;
+			bmi[offset + 2] = (byte)rgbs[j].red;
+			bmi[offset + 3] = 0;
+			offset += 4;
+		}
+	}
+	int[] pBits = new int[1];
+	int hDib = OS.CreateDIBSection(0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
+	if (hDib == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	
+	/* Bitblt DDB into DIB */	
+	int hdcSource = OS.CreateCompatibleDC(hDC);
+	int hdcDest = OS.CreateCompatibleDC(hDC);
+	int hOldSrc = OS.SelectObject(hdcSource, hBitmap);
+	int hOldDest = OS.SelectObject(hdcDest, hDib);
+	OS.BitBlt(hdcDest, 0, 0, width, height, hdcSource, 0, 0, OS.SRCCOPY);
+	OS.SelectObject(hdcSource, hOldSrc);
+	OS.SelectObject(hdcDest, hOldDest);
+	OS.DeleteDC(hdcSource);
+	OS.DeleteDC(hdcDest);
+	
+	return hDib;
+}
+
 /**
  * Disposes of the operating system resources associated with
  * the image. Applications must dispose of all images which
@@ -1098,6 +1226,21 @@ public ImageData getImageData() {
 			height = bm.bmHeight;
 			/* Find out whether this is a DIB or a DDB. */
 			boolean isDib = (bm.bmBits != 0);
+			/* Get the HDC for the device */
+			int hDC = device.internal_new_GC(null);
+
+			/*
+			* Feature in WinCE.  GetDIBits is not available in WinCE.  The
+			* workaround is to create a temporary DIB from the DDB and use
+			* the bmBits field of DIBSECTION to retrieve the image data.
+			*/
+			int handle = this.handle;
+			if (OS.IsWinCE) {
+				if (!isDib) {
+					handle = createDIBFromDDB(hDC, handle, width, height);
+					isDib = true;
+				}
+			}
 			DIBSECTION dib = null;
 			if (isDib) {
 				dib = new DIBSECTION();
@@ -1147,8 +1290,6 @@ public ImageData getImageData() {
 				/* DWORD biClrImportant = 0 */
 				bmi[36] = bmi[37] = bmi[38] = bmi[39] = 0;
 			}
-			/* Get the HDC for the device */
-			int hDC = device.internal_new_GC(null);
 			
 			/* Create the DC and select the bitmap */
 			int hBitmapDC = OS.CreateCompatibleDC(hDC);
@@ -1175,7 +1316,12 @@ public ImageData getImageData() {
 			byte[] data = new byte[imageSize];
 			/* Get the bitmap data */
 			if (isDib) {
-				OS.MoveMemory(data, bm.bmBits, imageSize);
+				if (OS.IsWinCE && this.handle != handle) {
+					/* get image data from the temporary DIB */
+					OS.MoveMemory(data, dib.bmBits, imageSize);
+				} else {
+					OS.MoveMemory(data, bm.bmBits, imageSize);
+				}
 			} else {
 				int hHeap = OS.GetProcessHeap();
 				int lpvBits = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, imageSize);		
@@ -1253,6 +1399,12 @@ public ImageData getImageData() {
 			if (oldPalette != 0) {
 				OS.SelectPalette(hBitmapDC, oldPalette, false);
 				OS.RealizePalette(hBitmapDC);
+			}
+			if (OS.IsWinCE) {
+				if (handle != this.handle) {
+					/* free temporary DIB */
+					OS.DeleteObject (handle);					
+				}
 			}
 			OS.DeleteDC(hBitmapDC);
 			
