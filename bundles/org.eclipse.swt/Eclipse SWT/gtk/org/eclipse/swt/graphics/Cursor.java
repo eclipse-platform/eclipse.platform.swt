@@ -243,7 +243,6 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 			((s & 0x04) << 3) |
 			((s & 0x02) << 5) |
 			((s & 0x01) << 7));
-		sourceData[i] = (byte) ~sourceData[i];
 	}
 	data = mask.data;
 	for (int i = 0; i < data.length; i++) {
@@ -256,7 +255,6 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 			((s & 0x04) << 3) |
 			((s & 0x02) << 5) |
 			((s & 0x01) << 7));
-		maskData[i] = (byte) ~maskData[i];
 	}
 
 	int sourcePixmap = OS.gdk_bitmap_create_from_data(0, sourceData, source.width, source.height);
@@ -275,8 +273,7 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 	background.blue = (short)65535;
 
 	/* Create the cursor */
-	/* For some reason, mask and source take reverse roles, both here and on Motif */
-	handle = OS.gdk_cursor_new_from_pixmap (maskPixmap, sourcePixmap, foreground, background, hotspotX, hotspotY);
+	handle = OS.gdk_cursor_new_from_pixmap (sourcePixmap, maskPixmap, foreground, background, hotspotX, hotspotY);
 	/* Dispose the pixmaps */
 	OS.g_object_unref (sourcePixmap);
 	OS.g_object_unref (maskPixmap);
