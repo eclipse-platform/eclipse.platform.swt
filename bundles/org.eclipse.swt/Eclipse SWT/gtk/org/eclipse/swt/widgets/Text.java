@@ -246,6 +246,7 @@ public void append (String string) {
 	byte [] buffer = Converter.wcsToMbcs (null, string, false);
 	if ((style & SWT.SINGLE) != 0) {
 		OS.gtk_editable_insert_text (handle, buffer, buffer.length, new int[]{-1});
+		OS.gtk_editable_set_position (handle, -1);
 	} else {
 		byte [] position =  new byte [ITER_SIZEOF];
 		OS.gtk_text_buffer_get_end_iter (bufferHandle, position);
