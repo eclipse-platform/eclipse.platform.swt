@@ -361,8 +361,6 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
 		count /= 100;
 		
 		meter = createMeter("GC drawImage - transparent");
-		Performance performance = Performance.getDefault();
-		performance.tagAsGlobalSummary(meter, "GC.drawImage() transparent * " + count, Dimension.CPU_TIME);
 		meter.start();
 		for (int i = 0; i < count; i++) {
 			gc.drawImage(imageTransparent, coords[i][0], coords[i][1]);	// transparent image
