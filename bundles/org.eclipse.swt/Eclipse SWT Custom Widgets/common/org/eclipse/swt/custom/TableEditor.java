@@ -168,6 +168,12 @@ public int getColumn () {
 public TableItem getItem () {
 	return item;
 }
+
+/**
+* Sets the zero based index of the column of the cell being tracked by this editor.
+* 
+* @param column the zero based index of the column of the cell being tracked by this editor 
+*/
 public void setColumn(int column) {
 	int columnCount = table.getColumnCount();
 	// Separately handle the case where the table has no TableColumns.
