@@ -786,8 +786,10 @@ void draw3DBorder(GC gc) {
 	if (single) {
 		if (onBottom) { // single bottom border
 			int x = Math.max(0, borderLeft - 1);
+			if (borderLeft > 1 & showHighlight) x -= HIGHLIGHT_MARGIN;
 			int y = size.y - borderBottom - tabHeight;
 			int width = size.x - borderLeft - borderRight + 1;
+			if (borderRight > 1 & showHighlight) width += 2*HIGHLIGHT_MARGIN;
 			int height = tabHeight - 1;
 			int[] shape = new int[BOTTOM_LEFT_OUTSIDE_CORNER.length + BOTTOM_RIGHT_OUTSIDE_CORNER.length + 4];
 			int index = 0;
@@ -808,8 +810,10 @@ void draw3DBorder(GC gc) {
 			gc.drawPolyline(shape);
 		} else { // single top border
 			int x = borderLeft - 1;
+			if (borderLeft > 1 & showHighlight) x -= HIGHLIGHT_MARGIN;
 			int y = borderTop;
 			int width = size.x - borderLeft - borderRight + 1;
+			if (borderRight > 1 & showHighlight) width += 2*HIGHLIGHT_MARGIN;
 			int height = tabHeight - 1;
 			int[] shape = new int[TOP_LEFT_OUTSIDE_CORNER.length + TOP_RIGHT_OUTSIDE_CORNER.length + 4];
 			int index = 0;
@@ -864,9 +868,11 @@ void draw3DBorder(GC gc) {
 		}
 	} else {
 		if (onBottom) { // on bottom border showing
-			gc.setBackground(parentBackground);
-			gc.fillRectangle(0, size.y - borderBottom - tabHeight + 1, HIGHLIGHT_MARGIN, borderBottom + tabHeight);
-			gc.fillRectangle(size.x - borderRight + 1, size.y - borderBottom - tabHeight + 1, borderRight, borderTop + tabHeight);	
+			if (!single) {
+				gc.setBackground(parentBackground);
+				gc.fillRectangle(0, size.y - borderBottom - tabHeight + 1, HIGHLIGHT_MARGIN, borderBottom + tabHeight);
+				gc.fillRectangle(size.x - borderRight + 1, size.y - borderBottom - tabHeight + 1, borderRight, borderTop + tabHeight);	
+			}
 			
 			int x1 = 0;
 			int x2 = size.x - 3;
@@ -925,7 +931,7 @@ void draw3DBorder(GC gc) {
 			gc.drawLine(x1, y2, gapStart, y2); //bottom 1 left
 			gc.drawLine(gapEnd, y2, x2, y2); //bottom 1 right
 			gc.setForeground(parentBackground);
-			gc.drawPoint(0, y2); // bottom left
+			if (!single) gc.drawPoint(0, y2); // bottom left
 			gc.drawPoint(x2, 0); // top right
 
 			x1 = 2;
@@ -937,7 +943,7 @@ void draw3DBorder(GC gc) {
 			gc.drawLine(x1, y2, gapStart, y2); //bottom 2 left
 			gc.drawLine(gapEnd, y2, x2, y2); //bottom 2 right
 			gc.setForeground(parentBackground);
-			gc.drawLine(0, y2, 1, y2); // bottom left
+			if (!single)gc.drawLine(0, y2, 1, y2); // bottom left
 			gc.drawLine(x2, 0, x2, 1); // top right
 			
 			x1 = 1;
@@ -948,9 +954,11 @@ void draw3DBorder(GC gc) {
 			drawSelectionBackground(gc, shape);
 			
 		} else { // on top and border showing
-			gc.setBackground(parentBackground);
-			gc.fillRectangle(0, 0, HIGHLIGHT_MARGIN, borderTop + tabHeight); //left
-			gc.fillRectangle(size.x - borderRight + 1, 0, borderRight, borderTop + tabHeight);//right
+			if (!single) {
+				gc.setBackground(parentBackground);
+				gc.fillRectangle(0, 0, HIGHLIGHT_MARGIN, borderTop + tabHeight); //left
+				gc.fillRectangle(size.x - borderRight + 1, 0, borderRight, borderTop + tabHeight);//right
+			}
 			
 			int x1 = 0;
 			int x2 = size.x - 3;
@@ -972,7 +980,7 @@ void draw3DBorder(GC gc) {
 			gc.drawLine(x1, y2, x2, y2); //bottom 1
 			gc.setForeground(parentBackground);
 			gc.drawPoint(0, y2); // bottom left
-			gc.drawPoint(x2, 0); // top right
+			gc.drawLine(x2, 0, x2, y1-1); // top right
 			
 			x1 = 2;
 			x2 = size.x - 1;
@@ -1866,6 +1874,7 @@ void onPaint(Event event) {
 			int[] shapeRight = null;
 			if (onBottom) {
 				int x = Math.max(0, borderLeft - 1);
+				if (borderLeft > 1 & showHighlight) x -= HIGHLIGHT_MARGIN;
 				int y = size.y - borderBottom - tabHeight;
 				int width = item.x - x;
 				int height = tabHeight;
@@ -1885,6 +1894,7 @@ void onPaint(Event event) {
 				
 				x = item.x + item.width;
 				width = size.x - borderRight - x;
+				if (borderRight > 1 & showHighlight) width += HIGHLIGHT_MARGIN;
 				if (borderRight > 0) width += 1; // +1 overlap with border
 				shapeRight = new int[BOTTOM_RIGHT_OUTSIDE_CORNER.length+6];
 				index = 0;
@@ -1900,6 +1910,7 @@ void onPaint(Event event) {
 				shapeRight[index++] = y;
 			} else { // tabs on top
 				int x = Math.max(0, borderLeft - 1);
+				if (borderLeft > 1 & showHighlight) x -= HIGHLIGHT_MARGIN;
 				int y = borderTop;
 				int width = item.x - x;
 				int height = tabHeight;
@@ -1918,6 +1929,7 @@ void onPaint(Event event) {
 				
 				x = item.x + item.width;
 				width = size.x - borderRight - x;
+				if (borderRight > 1 & showHighlight) width += HIGHLIGHT_MARGIN;
 				if (borderRight > 0) width += 1; // +1 overlap with border
 				shapeRight = new int[TOP_RIGHT_OUTSIDE_CORNER.length+6];
 				index = 0;
@@ -1935,6 +1947,7 @@ void onPaint(Event event) {
 			// Shape is non-rectangular, fill in gaps with parent colours	
 			Region r = new Region();
 			int x = Math.max(0, borderLeft - 1);
+			if (borderLeft > 1 & showHighlight) x -= HIGHLIGHT_MARGIN;
 			int y = onBottom ? size.y - borderBottom - tabHeight : borderTop;
 			int width = item.x - x;
 			int height = tabHeight;
@@ -1947,6 +1960,7 @@ void onPaint(Event event) {
 			
 			x = item.x + item.width;
 			width = size.x - borderRight - x;
+			if (borderRight > 1 & showHighlight) width += borderRight;
 			if (width > 0) {
 				if (borderRight > 0) width += 1; // +1 overlap with border
 				r.subtract(r); // clear region
