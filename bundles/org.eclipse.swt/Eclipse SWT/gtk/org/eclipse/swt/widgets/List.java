@@ -252,11 +252,11 @@ public void deselect (int index) {
 	checkWidget();
 	if (!(0 <= index && index < OS.gtk_tree_model_iter_n_children (modelHandle, 0)))  return;
 	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
-	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	int selection = OS.gtk_tree_view_get_selection (handle);
+	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index); 
 	OS.gtk_tree_selection_unselect_iter (selection, iter);
-	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.g_free (iter);
 }
 
@@ -281,13 +281,13 @@ public void deselect (int start, int end) {
 	start = Math.min (count - 1, Math.max (0, start));
 	end = Math.min (count - 1, Math.max (0, end));
 	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
-	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	int selection = OS.gtk_tree_view_get_selection (handle);
+	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	for (int index=start; index<=end; index++) {
 		OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index); 
 		OS.gtk_tree_selection_unselect_iter (selection, iter);
 	}
-	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.g_free (iter);
 }
 
@@ -313,15 +313,15 @@ public void deselect (int [] indices) {
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	int count = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
-	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	int selection = OS.gtk_tree_view_get_selection (handle);
+	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	for (int i=0; i<indices.length; i++) {
 		int index = indices [i];
 		if (index < 0 || index > count) continue;
 		OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index); 
 		OS.gtk_tree_selection_unselect_iter (selection, iter);
 	}
-	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.g_free (iter);
 }
 
@@ -335,10 +335,10 @@ public void deselect (int [] indices) {
  */
 public void deselectAll () {
 	checkWidget();
-	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	int selection = OS.gtk_tree_view_get_selection (handle);
+	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.gtk_tree_selection_unselect_all (selection);
-	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 }
 
 GdkColor getBackgroundColor () {
@@ -786,9 +786,10 @@ public void remove (int index) {
 	}
 	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
-	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	int selection = OS.gtk_tree_view_get_selection (handle);
+	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.gtk_list_store_remove (modelHandle, iter);
-	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.g_free (iter);
 }
 
@@ -818,12 +819,13 @@ public void remove (int start, int end) {
 		 error (SWT.ERROR_INVALID_RANGE);
 	}
 	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
-	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	int selection = OS.gtk_tree_view_get_selection (handle);
+	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	for (int index=start; index<=end; index++) {
 		OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
 		OS.gtk_list_store_remove (modelHandle, iter);
 	}
-	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.g_free (iter);
 }
 
@@ -877,7 +879,8 @@ public void remove (int [] indices) {
 	System.arraycopy (indices, 0, newIndices, 0, indices.length);
 	sort (newIndices);
 	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
-	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	int selection = OS.gtk_tree_view_get_selection (handle);
+	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	int last = -1;
 	for (int i=0; i<newIndices.length; i++) {
 		int index = newIndices [i];
@@ -887,7 +890,7 @@ public void remove (int [] indices) {
 			last = index;
 		}
 	}
-	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.g_free (iter);
 }
 
@@ -901,9 +904,10 @@ public void remove (int [] indices) {
  */
 public void removeAll () {
 	checkWidget();
-	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	int selection = OS.gtk_tree_view_get_selection (handle);
+	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.gtk_list_store_clear (modelHandle);
-	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 }
 
 /**
@@ -947,11 +951,11 @@ public void select (int index) {
 	checkWidget();
 	if (!(0 <= index && index < OS.gtk_tree_model_iter_n_children (modelHandle, 0)))  return;
 	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
-	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	int selection = OS.gtk_tree_view_get_selection (handle);
+	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index); 
 	OS.gtk_tree_selection_select_iter (selection, iter);
-	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.g_free (iter);
 }
 
@@ -975,13 +979,13 @@ public void select (int start, int end) {
 	start = Math.min (count - 1, Math.max (0, start));
 	end = Math.min (count - 1, Math.max (0, end));
 	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
-	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	int selection = OS.gtk_tree_view_get_selection (handle);
+	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	for (int index=start; index<=end; index++) {
 		OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index); 
 		OS.gtk_tree_selection_select_iter (selection, iter);
 	}
-	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.g_free (iter);
 }
 
@@ -1007,15 +1011,15 @@ public void select (int [] indices) {
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	int count = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
-	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	int selection = OS.gtk_tree_view_get_selection (handle);
+	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	for (int i=0; i<indices.length; i++) {
 		int index = indices [i];
 		if (index < 0 || index > count) continue;
 		OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index); 
 		OS.gtk_tree_selection_select_iter (selection, iter);
 	}
-	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.g_free (iter);
 }
 
@@ -1029,10 +1033,10 @@ public void select (int [] indices) {
  */
 public void selectAll () {
 	checkWidget();
-	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	int selection = OS.gtk_tree_view_get_selection (handle);
+	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.gtk_tree_selection_select_all (selection);
-	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 }
 
 void setBackgroundColor (GdkColor color) {
@@ -1096,9 +1100,10 @@ public void setItem (int index, String string) {
 public void setItems (String [] items) {
 	checkWidget();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
-	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	int selection = OS.gtk_tree_view_get_selection (handle);
+	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.gtk_list_store_clear (modelHandle);
-	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	if (iter == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 	for (int i=0; i<items.length; i++) {

@@ -870,9 +870,9 @@ int gtk_insert_text (int widget, int int0, int int1, int int2) {
 		}
 		if (newText != oldText) {
 			byte [] buffer1 = Converter.wcsToMbcs (null, newText, false);
-			OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+			OS.g_signal_handlers_block_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 			OS.gtk_text_buffer_insert (bufferHandle, iter, buffer1, buffer1.length);
-			OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+			OS.g_signal_handlers_unblock_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 			OS.g_signal_stop_emission_by_name (bufferHandle, OS.insert_text);
 			return 0;
 		}
