@@ -747,6 +747,7 @@ public void setEnabled (boolean enabled) {
 
 boolean setFocus () {
 	if ((style & SWT.SEPARATOR) != 0) return false;
+	if (!OS.gtk_widget_get_child_visible (handle)) return false;
 	OS.GTK_WIDGET_SET_FLAGS (handle, OS.GTK_CAN_FOCUS);
 	OS.gtk_widget_grab_focus (handle);
 	boolean result = OS.gtk_widget_is_focus (handle);

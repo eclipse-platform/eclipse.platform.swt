@@ -305,7 +305,7 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 	int start = index, offset = next ? 1 : -1;
 	while ((index = (index + offset + length) % length) != start) {
 		ToolItem item = items [index];
-		if (OS.gtk_widget_get_child_visible (item.handle) && item.setFocus ()) return result;
+		if (item.setFocus ()) return result;
 	}
 	return result;
 }
