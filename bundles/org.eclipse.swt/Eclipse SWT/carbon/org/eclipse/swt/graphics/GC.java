@@ -1607,6 +1607,7 @@ public void setFont(Font font) {
 	FontInfo info = new FontInfo();
 	OS.FetchFontInfo(font.id, font.size, font.style, info);
 	data.fontAscent = info.ascent;
+	data.fontDescent = info.descent;
 }
 
 /**
@@ -1728,6 +1729,7 @@ public Point stringExtent(String string) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	int length = string.length();
+	if (length == 0) return new Point (0, data.fontAscent + data.fontDescent);
 	char[] buffer = new char[length];
 	string.getChars(0, length, buffer, 0);
 	int ptr1 = OS.NewPtr(length * 2);

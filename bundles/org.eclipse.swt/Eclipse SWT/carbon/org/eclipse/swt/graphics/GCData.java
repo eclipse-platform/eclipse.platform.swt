@@ -34,6 +34,7 @@ public final class GCData {
 	
 	public Font font;
 	public int fontAscent;
+	public int fontDescent;
 	public int layout;
 	public int style;
 	
