@@ -695,7 +695,7 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>StyledText</code></li>
 	 * <li><code>Table</code></li>
-	 * <li><code>TableTree</code></li>
+	 * <li><code>Tree</code></li>
 	 * </ul></p>
 	 */
 	public static final int FULL_SELECTION = 1 << 16;
