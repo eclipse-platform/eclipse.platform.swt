@@ -86,7 +86,7 @@ private TreeItem findItem(int x, int y){
 		if (item != null) return item;
 	}
 	// Check if we are just below the last item of the tree
-	if (coordinates.y > area.y + area.height - tree.getItemHeight()) {;
+	if (coordinates.y > area.y + area.height - tree.getItemHeight()) {
 		int y1 = area.y + area.height - tree.getItemHeight();
 		Point pt = new Point(coordinates.x, y1);
 		item = tree.getItem(pt);	

@@ -809,7 +809,7 @@ public void setText (String string) {
 	boolean accel = false;
 	int i=0, j=0, mnemonic=0;
 	while (i < text.length) {
-		if (text [i] == '\t') {accel = true; break;};
+		if (text [i] == '\t') {accel = true; break;}
 		if ((text [j++] = text [i++]) == '&') {
 			if (i == text.length) {continue;}
 			if (text [i] == '&') {i++; continue;}

@@ -207,7 +207,7 @@ public int open () {
 		if (button == OS.XmDIALOG_OK_BUTTON) return SWT.YES;
 		if (button == OS.XmDIALOG_CANCEL_BUTTON) return SWT.NO;
 		return SWT.CANCEL;
-	};
+	}
 	if ((style & (SWT.YES | SWT.NO)) == (SWT.YES | SWT.NO)) {
 		return (button == OS.XmDIALOG_OK_BUTTON) ? SWT.YES : SWT.NO;
 	}
