@@ -102,7 +102,8 @@ public class StyledText extends Canvas {
 	int lastTextChangeNewCharCount;				// event for use in the 
 	int lastTextChangeReplaceLineCount;			// text changed handler
 	int lastTextChangeReplaceCharCount;	
-	
+
+	static final int BIDI_CARET_WIDTH = 4;		
 	Image leftCaretBitmap = null;
 	Image rightCaretBitmap = null;
 	int caretDirection = SWT.NULL;
@@ -592,6 +593,13 @@ public StyledText(Composite parent, int style) {
 	else {
 		createCaretBitmaps();
 		createBidiCaret();
+		Runnable runnable = new Runnable() {
+			public void run() {
+				createBidiCaret();
+				setBidiCaret();
+			}
+		};
+		StyledTextBidi.addLanguageListener(this.handle, runnable);
 	}
 	// set the caret width, the height of the caret will default to the line height
 	calculateScrollBars();
@@ -1189,34 +1197,22 @@ void createKeyBindings() {
  * mode.
  */
 void createBidiCaret() {
-
-Caret caret = getCaret();
-if (caret == null) {
-	caret = new Caret(this, SWT.NULL);
-	caret.setSize(1, caret.getSize().y);
-} else {
-	caret.setSize(caret.getSize().x, lineHeight);
-}
-
-// UNCOMMENT WHEN SWT SUPPORTS BITMAP FOR CARET	
-/*	Caret oldCaret = getCaret();
+	Caret caret = getCaret();
+	if (caret == null) {
+		caret = new Caret(this, SWT.NULL);			
+	}
 	int direction = StyledTextBidi.getKeyboardLanguageDirection();
-
 	if (direction == caretDirection) {
 		return;
 	}
 	caretDirection = direction;
-	if (oldCaret != null) {
-		oldCaret.dispose();
-	}
 	if (caretDirection == SWT.LEFT) {
-		new Caret(this, SWT.NULL, leftCaretBitmap);			
+		caret.setImage(leftCaretBitmap);			
 	} 
 	else 
 	if (caretDirection == SWT.RIGHT) {
-		new Caret(this, SWT.NULL, rightCaretBitmap);			
-	}
-*/	
+		caret.setImage(rightCaretBitmap);			
+	}	
 }
 /**
  * Create the bitmaps to use for the caret in bidi mode.  This
@@ -1224,7 +1220,7 @@ if (caret == null) {
  * font changes (the caret bitmap height needs to match font height).
  */
 void createCaretBitmaps() {
-	int caretWidth = 4;
+	int caretWidth = BIDI_CARET_WIDTH;
 	
 	Display display = getDisplay();	
 	if (caretPalette == null) {
@@ -1234,7 +1230,7 @@ void createCaretBitmaps() {
 	if (leftCaretBitmap != null) {
 		leftCaretBitmap.dispose();
 	}
-	ImageData imageData = new ImageData(caretWidth, lineHeight, 2, caretPalette);
+	ImageData imageData = new ImageData(caretWidth, lineHeight, 1, caretPalette);
 
 	leftCaretBitmap = new Image(display, imageData);
 	GC gc = new GC (leftCaretBitmap);
@@ -3852,6 +3848,9 @@ void handleDispose() {
 	}
 	if (rightCaretBitmap != null) {
 		rightCaretBitmap.dispose();
+	}
+	if (isBidi()) {
+		StyledTextBidi.removeLanguageListener(this.handle);
 	}
 }
 /** 

@@ -20,6 +20,7 @@ class StyledTextBidi {
 	int[] dx;
 	byte[] classBuffer;
 	byte[] glyphBuffer;
+	int xInset = StyledText.BIDI_CARET_WIDTH - 1;
 	class DirectionRun {
 		int logicalStart;
 		int logicalEnd;
@@ -84,10 +85,13 @@ public StyledTextBidi(GC gc, int tabWidth, String text, int[] boldRanges, Font b
 		calculateRenderPositions();
 	}
 }
+public static void addLanguageListener (int hwnd, Runnable runnable) {
+	BidiText.addLanguageListener(hwnd, runnable);
+}
 void adjustTabStops(String text) {
 	int tabIndex = text.indexOf('\t', 0);
 	int logicalIndex = 0;
-	int x = 0;
+	int x = xInset;
 				
 	while (tabIndex != -1) {
 		for (; logicalIndex < tabIndex; logicalIndex++) {
@@ -101,7 +105,7 @@ void adjustTabStops(String text) {
 }
 void calculateRenderPositions() {
 	renderPositions = new int[dx.length];	
-	renderPositions[0] = 0;
+	renderPositions[0] = xInset;
 	for (int i = 0; i < dx.length - 1; i++) {
 		renderPositions[i + 1] = renderPositions[i] + dx[i];
 	}
@@ -274,7 +278,7 @@ public int getCaretPosition(int logicalOffset) {
 	int caretX;
 
 	if (getTextLength() == 0) {
-		return 0;
+		return xInset;
 	}
 	// at or past end of line?
 	if (logicalOffset >= order.length) {
@@ -491,6 +495,9 @@ public void redrawRange(Control parent, int logicalStart, int length, int xOffse
 
 		parent.redraw(xOffset + startX, yOffset, run.getRenderStopX() - startX, height, true);
 	}				
+}
+public static void removeLanguageListener (int hwnd) {
+	BidiText.removeLanguageListener(hwnd);
 }
 void setGC(GC gc) {
 	this.gc = gc;
