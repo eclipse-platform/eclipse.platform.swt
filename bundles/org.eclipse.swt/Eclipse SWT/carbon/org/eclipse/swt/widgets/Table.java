@@ -52,7 +52,7 @@ public class Table extends Composite {
 	TableColumn [] columns;
 	GC paintGC;
 	int itemCount, columnCount, column_id, idCount, anchorFirst, anchorLast, headerHeight;
-	boolean ignoreSelect, wasSelected;
+	boolean ignoreRedraw, ignoreSelect, wasSelected;
 	int showIndex, lastHittest;
 	static final int CHECK_COLUMN_ID = 1024;
 	static final int EXTRA_WIDTH = 25;
@@ -139,6 +139,22 @@ static int checkStyle (int style) {
 	*/
 	style |= SWT.H_SCROLL | SWT.V_SCROLL;
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
+}
+
+int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEvent, int nextHandler) {
+	GC currentGC = paintGC;
+	if (currentGC == null) {
+		GCData data = new GCData ();
+		data.paintEvent = theEvent;
+		data.visibleRgn = visibleRgn;
+		paintGC = GC.carbon_new (this, data);
+	} 
+	int result = super.callPaintEventHandler (control, damageRgn, visibleRgn, theEvent, nextHandler);
+	if (currentGC == null) {
+		paintGC.dispose ();
+		paintGC = null;
+	}
+	return result;
 }
 
 void checkItems (boolean setScrollWidth) {
@@ -608,7 +624,28 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		}
 		if (columnIndex == columnCount) return OS.noErr;
 	}
-	TableItem item = items [index];
+	lastIndexOf = index;
+	final TableItem item = items [index];
+	if ((style & SWT.VIRTUAL) != 0) {
+		Event event = new Event ();
+		event.item = item;
+		ignoreRedraw = true;
+		sendEvent (SWT.SetData, event);
+		//widget could be disposed at this point
+		if (isDisposed ()) return OS.noErr;
+		ignoreRedraw = false;
+		if (setScrollWidth (item)) {
+			//TODO - TEMPORARY CODE
+			display.asyncExec (new Runnable () {
+				public void run () {
+					if (item.isDisposed()) return;
+					// damage instead of redraw
+					item.redraw ();
+				}
+			});
+			return OS.noErr;
+		}
+	}
 	Rect rect = new Rect ();
 	OS.memcpy (rect, theRect, Rect.sizeof);
 	int x = rect.left;
@@ -671,21 +708,6 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	gc.drawString (text, x, y + (height - extent.y) / 2);
 	if (gc != paintGC) gc.dispose ();
 	return OS.noErr;
-}
-
-void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
-	GC currentGC = paintGC;
-	if (currentGC == null) {
-		GCData data = new GCData ();
-		data.paintEvent = theEvent;
-		data.visibleRgn = visibleRgn;
-		paintGC = GC.carbon_new (this, data);
-	} 
-	super.drawWidget (control, damageRgn, visibleRgn, theEvent);
-	if (currentGC == null) {
-		paintGC.dispose ();
-		paintGC = null;
-	}
 }
 
 public Rectangle getClientArea () {
@@ -1171,6 +1193,11 @@ public int indexOf (TableColumn column) {
 public int indexOf (TableItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (1 <= lastIndexOf && lastIndexOf < itemCount - 1) {
+		if (items [lastIndexOf] == item) return lastIndexOf;
+		if (items [lastIndexOf + 1] == item) return ++lastIndexOf;
+		if (items [lastIndexOf - 1] == item) return --lastIndexOf;
+	}
 	if (lastIndexOf < itemCount / 2) {
 		for (int i=0; i<itemCount; i++) {
 			if (items [i] == item) return lastIndexOf = i;
@@ -1704,6 +1731,19 @@ public void setHeaderVisible (boolean show) {
 	OS.SetDataBrowserListViewHeaderBtnHeight (handle, (short)height);
 }
 
+public void setItemCount (int count) {
+	checkWidget ();
+	setRedraw (false);
+	removeAll ();
+	itemCount = Math.max (0, count);
+	items = new TableItem [(itemCount + 3) / 4 * 4];
+	for (int i=0; i<itemCount; i++) {
+		items [i] = new TableItem (this, SWT.NONE, -1, false);
+	}
+	OS.AddDataBrowserItems (handle, 0, itemCount, null, OS.kDataBrowserItemNoProperty);
+	setRedraw (true);
+}
+
 /**
  * Marks the receiver's lines as visible if the argument is <code>true</code>,
  * and marks it invisible otherwise. 
@@ -1762,8 +1802,8 @@ void setScrollWidth (TableItem [] items, boolean set) {
 	OS.SetDataBrowserTableViewNamedColumnWidth (handle, column_id, (short) newWidth);
 }
 
-void setScrollWidth (TableItem item) {
-	if (columnCount != 0) return;
+boolean setScrollWidth (TableItem item) {
+	if (columnCount != 0) return false;
 	GC gc = new GC (this);
 	int newWidth = item.calculateWidth (0, gc);
 	gc.dispose ();
@@ -1772,7 +1812,9 @@ void setScrollWidth (TableItem item) {
 	OS.GetDataBrowserTableViewNamedColumnWidth (handle, column_id, width);
 	if (width [0] < newWidth) {
 		OS.SetDataBrowserTableViewNamedColumnWidth (handle, column_id, (short) newWidth);
+		return true;
 	}
+	return false;
 }
 
 /**
@@ -2031,8 +2073,8 @@ void showIndex (int index) {
 		*/
 		int [] newTop = new int [1], newLeft = new int [1];
 		OS.GetDataBrowserScrollPosition (handle, newTop, newLeft);
-		if (horizontalBar != null && newLeft [0] != left [0]) redraw ();
-		if (verticalBar != null && newTop [0] != top [0]) redraw ();
+		if (horizontalBar != null && newLeft [0] != left [0]) horizontalBar.redraw ();
+		if (verticalBar != null && newTop [0] != top [0]) verticalBar.redraw ();
 	}
 }
 

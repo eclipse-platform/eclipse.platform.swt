@@ -72,9 +72,7 @@ public class TableItem extends Item {
  * @see Widget#getStyle
  */
 public TableItem (Table parent, int style) {
-	super (parent, style);
-	this.parent = parent;
-	parent.createItem (this, parent.getItemCount ());
+	this (parent, style, checkNull (parent).getItemCount (), true);
 }
 
 /**
@@ -109,9 +107,18 @@ public TableItem (Table parent, int style) {
  * @see Widget#getStyle
  */
 public TableItem (Table parent, int style, int index) {
+	this (parent, style, index, true);
+}
+
+TableItem (Table parent, int style, int index, boolean create) {
 	super (parent, style);
 	this.parent = parent;
-	parent.createItem (this, index);
+	if (create) parent.createItem (this, index);
+}
+
+static Table checkNull (Table control) {
+	if (control == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	return control;
 }
 
 protected void checkSubclass () {
@@ -438,11 +445,11 @@ public String getText (int index) {
 }
 
 void redraw () {
-	if (parent.drawCount == 0) {
-		int itemIndex = parent.indexOf (this);
-		int [] id = new int [] {itemIndex + 1};
-		OS.UpdateDataBrowserItems (parent.handle, 0, id.length, id, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
-	}
+	if (parent.ignoreRedraw) return;
+	if (parent.drawCount > 0) return;
+	int itemIndex = parent.indexOf (this);
+	int [] id = new int [] {itemIndex + 1};
+	OS.UpdateDataBrowserItems (parent.handle, 0, id.length, id, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
 }
 
 void releaseChild () {
@@ -452,11 +459,13 @@ void releaseChild () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	parent = null;
+	strings = null;
+	images = null;
 	background = foreground = null;
 	font = null;
 	cellBackground = cellForeground = null;
 	cellFont = null;
-	parent = null;
 }
 
 /**
@@ -725,6 +734,7 @@ public void setImage (int index, Image image) {
 		if (images == null) images = new Image [columnCount];
 		images [index] = image;	
 	}
+	if (parent.ignoreRedraw) return;
 	if (parent.drawCount == 0) {
 		if (index == 0) parent.setScrollWidth (this);
 		int [] id = new int [] {itemIndex + 1};
@@ -803,6 +813,7 @@ public void setText (int index, String string) {
 		if (strings == null) strings = new String [columnCount];
 		strings [index] = string;
 	}
+	if (parent.ignoreRedraw) return;
 	if (parent.drawCount == 0) {
 		if (index == 0) parent.setScrollWidth (this);
 		int [] id = new int [] {itemIndex + 1};

@@ -4472,6 +4472,19 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_NML
 }
 #endif
 
+#ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVFINDITEM_2II
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVFINDITEM_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	NMLVFINDITEM _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVFINDITEM_2II\n")
+	if (arg0) lparg0 = &_arg0;
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+	if (arg0) setNMLVFINDITEMFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVFINDITEM_2II\n")
+}
+#endif
+
 #ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_win32_NMREBARCHEVRON_2II
 JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_NMREBARCHEVRON_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
@@ -5342,18 +5355,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(ReleaseDC)
 }
 #endif
 
-#ifndef NO_RestoreDC
-JNIEXPORT jboolean JNICALL OS_NATIVE(RestoreDC)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	jboolean rc;
-	NATIVE_ENTER(env, that, "RestoreDC\n")
-	rc = (jboolean)RestoreDC((HDC)arg0, (int)arg1);
-	NATIVE_EXIT(env, that, "RestoreDC\n")
-	return rc;
-}
-#endif
-
 #ifndef NO_RemoveMenu
 JNIEXPORT jboolean JNICALL OS_NATIVE(RemoveMenu)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
@@ -5362,6 +5363,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(RemoveMenu)
 	NATIVE_ENTER(env, that, "RemoveMenu\n")
 	rc = (jboolean)RemoveMenu((HMENU)arg0, arg1, arg2);
 	NATIVE_EXIT(env, that, "RemoveMenu\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_RestoreDC
+JNIEXPORT jboolean JNICALL OS_NATIVE(RestoreDC)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jboolean rc;
+	NATIVE_ENTER(env, that, "RestoreDC\n")
+	rc = (jboolean)RestoreDC((HDC)arg0, (int)arg1);
+	NATIVE_EXIT(env, that, "RestoreDC\n")
 	return rc;
 }
 #endif

@@ -283,13 +283,33 @@ public void pack () {
 		Rectangle rect = image.getBounds ();
 		headerWidth += rect.width + margin * 2;
 	}
-	OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, OS.LVSCW_AUTOSIZE);
-	int columnWidth = OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
-	if (headerWidth > columnWidth) {
+	if ((parent.style & SWT.VIRTUAL) != 0) {
 		if (image == null) {
 			OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, OS.LVSCW_AUTOSIZE_USEHEADER);
 		} else {
 			OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, headerWidth);
+		}		
+	} else {
+		OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, OS.LVSCW_AUTOSIZE);
+		int columnWidth = OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
+		/*
+		* Bug in Windows.  When LVM_SETCOLUMNWIDTH is used with LVSCW_AUTOSIZE
+		* where each item has I_IMAGECALLBACK but there are no images in the
+		* table, the size computed by LVM_SETCOLUMNWIDTH is to small for the
+		* first column, causing long items to be clipped with '...'.  The fix
+		* is to increase the value by a small amount. 
+		*/
+		if (index == 0 && parent.imageList == null) columnWidth += 2;
+		if (headerWidth > columnWidth) {
+			if (image == null) {
+				OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, OS.LVSCW_AUTOSIZE_USEHEADER);
+			} else {
+				OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, headerWidth);
+			}
+		} else {
+			if (index == 0) {
+				OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, columnWidth);
+			}
 		}
 	}
 }

@@ -2136,6 +2136,58 @@ void setNMLVDISPINFOFields(JNIEnv *env, jobject lpObject, NMLVDISPINFO *lpStruct
 }
 #endif
 
+#ifndef NO_NMLVFINDITEM
+typedef struct NMLVFINDITEM_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID iStart, flags, psz, lParam, x, y, vkDirection;
+} NMLVFINDITEM_FID_CACHE;
+
+NMLVFINDITEM_FID_CACHE NMLVFINDITEMFc;
+
+void cacheNMLVFINDITEMFields(JNIEnv *env, jobject lpObject)
+{
+	if (NMLVFINDITEMFc.cached) return;
+	cacheNMHDRFields(env, lpObject);
+	NMLVFINDITEMFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	NMLVFINDITEMFc.iStart = (*env)->GetFieldID(env, NMLVFINDITEMFc.clazz, "iStart", "I");
+	NMLVFINDITEMFc.flags = (*env)->GetFieldID(env, NMLVFINDITEMFc.clazz, "flags", "I");
+	NMLVFINDITEMFc.psz = (*env)->GetFieldID(env, NMLVFINDITEMFc.clazz, "psz", "I");
+	NMLVFINDITEMFc.lParam = (*env)->GetFieldID(env, NMLVFINDITEMFc.clazz, "lParam", "I");
+	NMLVFINDITEMFc.x = (*env)->GetFieldID(env, NMLVFINDITEMFc.clazz, "x", "I");
+	NMLVFINDITEMFc.y = (*env)->GetFieldID(env, NMLVFINDITEMFc.clazz, "y", "I");
+	NMLVFINDITEMFc.vkDirection = (*env)->GetFieldID(env, NMLVFINDITEMFc.clazz, "vkDirection", "I");
+	NMLVFINDITEMFc.cached = 1;
+}
+
+NMLVFINDITEM *getNMLVFINDITEMFields(JNIEnv *env, jobject lpObject, NMLVFINDITEM *lpStruct)
+{
+	if (!NMLVFINDITEMFc.cached) cacheNMLVFINDITEMFields(env, lpObject);
+	getNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
+	lpStruct->iStart = (*env)->GetIntField(env, lpObject, NMLVFINDITEMFc.iStart);
+	lpStruct->lvfi.flags = (*env)->GetIntField(env, lpObject, NMLVFINDITEMFc.flags);
+	lpStruct->lvfi.psz = (LPCTSTR)(*env)->GetIntField(env, lpObject, NMLVFINDITEMFc.psz);
+	lpStruct->lvfi.lParam = (*env)->GetIntField(env, lpObject, NMLVFINDITEMFc.lParam);
+	lpStruct->lvfi.pt.x = (*env)->GetIntField(env, lpObject, NMLVFINDITEMFc.x);
+	lpStruct->lvfi.pt.y = (*env)->GetIntField(env, lpObject, NMLVFINDITEMFc.y);
+	lpStruct->lvfi.vkDirection = (*env)->GetIntField(env, lpObject, NMLVFINDITEMFc.vkDirection);
+	return lpStruct;
+}
+
+void setNMLVFINDITEMFields(JNIEnv *env, jobject lpObject, NMLVFINDITEM *lpStruct)
+{
+	if (!NMLVFINDITEMFc.cached) cacheNMLVFINDITEMFields(env, lpObject);
+	setNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
+	(*env)->SetIntField(env, lpObject, NMLVFINDITEMFc.iStart, (jint)lpStruct->iStart);
+	(*env)->SetIntField(env, lpObject, NMLVFINDITEMFc.flags, (jint)lpStruct->lvfi.flags);
+	(*env)->SetIntField(env, lpObject, NMLVFINDITEMFc.psz, (jint)lpStruct->lvfi.psz);
+	(*env)->SetIntField(env, lpObject, NMLVFINDITEMFc.lParam, (jint)lpStruct->lvfi.lParam);
+	(*env)->SetIntField(env, lpObject, NMLVFINDITEMFc.x, (jint)lpStruct->lvfi.pt.x);
+	(*env)->SetIntField(env, lpObject, NMLVFINDITEMFc.y, (jint)lpStruct->lvfi.pt.y);
+	(*env)->SetIntField(env, lpObject, NMLVFINDITEMFc.vkDirection, (jint)lpStruct->lvfi.vkDirection);
+}
+#endif
+
 #ifndef NO_NMREBARCHEVRON
 typedef struct NMREBARCHEVRON_FID_CACHE {
 	int cached;

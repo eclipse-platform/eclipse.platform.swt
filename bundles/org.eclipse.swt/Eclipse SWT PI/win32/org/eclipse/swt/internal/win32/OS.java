@@ -594,6 +594,8 @@ public class OS {
 	public static final int LVN_ITEMACTIVATE = 0xffffff8e;
 	public static final int LVN_ITEMCHANGED = 0xffffff9b;
 	public static final int LVN_MARQUEEBEGIN = 0xffffff64;
+	public static final int LVN_ODFINDITEMA = LVN_FIRST - 52;
+	public static final int LVN_ODFINDITEMW = LVN_FIRST - 79;
 	public static final int LVSCW_AUTOSIZE = 0xffffffff;
 	public static final int LVSCW_AUTOSIZE_USEHEADER = 0xfffffffe;
 	public static final int LVSICF_NOINVALIDATEALL = 0x1;
@@ -2348,6 +2350,7 @@ public static final native void MoveMemory (int Destination, NMLVCUSTOMDRAW Sour
 public static final native void MoveMemory (int Destination, NMTVCUSTOMDRAW Source, int Length);
 public static final native void MoveMemory (int Destination, NMLVDISPINFO Source, int Length);
 public static final native void MoveMemory (NMLVDISPINFO Destination, int Source, int Length);
+public static final native void MoveMemory (NMLVFINDITEM Destination, int Source, int Length);
 public static final native void MoveMemory (NMHEADER Destination, int Source, int Length);
 public static final native void MoveMemory (NMLISTVIEW Destination, int Source, int Length);
 public static final native void MoveMemory (NMREBARCHEVRON Destination, int Source, int Length);

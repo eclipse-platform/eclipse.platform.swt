@@ -31,7 +31,10 @@ import org.eclipse.swt.graphics.*;
 
 public class TableItem extends Item {
 	Table parent;
-	int background, foreground, font;
+	String [] strings;
+	Image [] images;
+	boolean checked, grayed, requested;
+	int background = -1, foreground = -1, font = -1, imageIndent;
 	int [] cellBackground, cellForeground, cellFont;
 
 /**
@@ -65,9 +68,7 @@ public class TableItem extends Item {
  * @see Widget#getStyle
  */
 public TableItem (Table parent, int style) {
-	super (parent, style);
-	this.parent = parent;
-	parent.createItem (this, parent.getItemCount ());
+	this (parent, style, checkNull (parent).getItemCount (), true);
 }
 
 /**
@@ -102,9 +103,18 @@ public TableItem (Table parent, int style) {
  * @see Widget#getStyle
  */
 public TableItem (Table parent, int style, int index) {
+	this (parent, style, index, true);
+}
+
+TableItem (Table parent, int style, int index, boolean create) {
 	super (parent, style);
 	this.parent = parent;
-	parent.createItem (this, index);
+	if (create) parent.createItem (this, index);
+}
+
+static Table checkNull (Table control) {
+	if (control == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	return control;
 }
 
 protected void checkSubclass () {
@@ -218,15 +228,7 @@ public Rectangle getBounds (int index) {
 public boolean getChecked () {
 	checkWidget();
 	if ((parent.style & SWT.CHECK) == 0) return false;
-	int index = parent.indexOf (this);
-	if (index == -1) return false;
-	int hwnd = parent.handle;
-	LVITEM lvItem = new LVITEM ();
-	lvItem.mask = OS.LVIF_STATE;
-	lvItem.stateMask = OS.LVIS_STATEIMAGEMASK;
-	lvItem.iItem = index;
-	int result = OS.SendMessage (hwnd, OS.LVM_GETITEM, 0, lvItem);
-	return (result != 0) && (((lvItem.state >> 12) & 1) == 0);
+	return checked;
 }
 
 /**
@@ -324,15 +326,7 @@ public Color getForeground (int index) {
 public boolean getGrayed () {
 	checkWidget();
 	if ((parent.style & SWT.CHECK) == 0) return false;
-	int index = parent.indexOf (this);
-	if (index == -1) return false;
-	int hwnd = parent.handle;
-	LVITEM lvItem = new LVITEM ();
-	lvItem.mask = OS.LVIF_STATE;
-	lvItem.stateMask = OS.LVIS_STATEIMAGEMASK;
-	lvItem.iItem = index;
-	int result = OS.SendMessage (hwnd, OS.LVM_GETITEM, 0, lvItem);
-	return (result != 0) && ((lvItem.state >> 12) > 2);
+	return grayed;
 }
 
 /**
@@ -350,17 +344,8 @@ public boolean getGrayed () {
 public Image getImage (int index) {
 	checkWidget();
 	if (index == 0) return super.getImage ();
-	int itemIndex = parent.indexOf (this);
-	if (itemIndex == -1) return null;
-	int hwnd = parent.handle;
-	LVITEM lvItem = new LVITEM ();
-	lvItem.mask = OS.LVIF_IMAGE;
-	lvItem.iItem = itemIndex;
-	lvItem.iSubItem = index;
-	if (OS.SendMessage (hwnd, OS.LVM_GETITEM, 0, lvItem) == 0) return null;
-	if (lvItem.iImage >= 0) {
-		ImageList imageList = parent.imageList;
-		if (imageList != null) return imageList.get (lvItem.iImage);
+	if (images != null) {
+		if (0 <= index && index < images.length) return images [index];
 	}
 	return null;
 }
@@ -435,14 +420,7 @@ public Rectangle getImageBounds (int index) {
  */
 public int getImageIndent () {
 	checkWidget();
-	int index = parent.indexOf (this);
-	if (index == -1) return 0;
-	int hwnd = parent.handle;
-	LVITEM lvItem = new LVITEM ();
-	lvItem.mask = OS.LVIF_INDENT;
-	lvItem.iItem = index;
-	OS.SendMessage (hwnd, OS.LVM_GETITEM, 0, lvItem);
-	return lvItem.iIndent;
+	return imageIndent;
 }
 
 /**
@@ -478,37 +456,22 @@ public Table getParent () {
 public String getText (int index) {
 	checkWidget();
 	if (index == 0) return super.getText ();
-	int itemIndex = parent.indexOf (this);
-	if (itemIndex == -1) error (SWT.ERROR_CANNOT_GET_TEXT);
-	int cchTextMax = 1024;
-	int hwnd = parent.handle;
-	int hHeap = OS.GetProcessHeap ();
-	int byteCount = cchTextMax * TCHAR.sizeof;
-	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-	LVITEM lvItem = new LVITEM ();
-	lvItem.mask = OS.LVIF_TEXT;
-	lvItem.iItem = itemIndex;
-	lvItem.iSubItem = index;
-	lvItem.pszText = pszText;
-	lvItem.cchTextMax = cchTextMax;
-	int result = OS.SendMessage (hwnd, OS.LVM_GETITEM, 0, lvItem);
-	TCHAR buffer = new TCHAR (parent.getCodePage (), cchTextMax);
-	OS.MoveMemory (buffer, pszText, byteCount);
-	OS.HeapFree (hHeap, 0, pszText);
-	if (result == 0) error (SWT.ERROR_CANNOT_GET_TEXT);
-	return buffer.toString (0, buffer.strlen ());
+	if (strings != null) {
+		if (0 <= index && index < strings.length) {
+			String string = strings [index];
+			return string != null ? string : "";
+		}
+	}
+	return "";
 }
 
 void redraw () {
+	if (parent.ignoreRedraw) return;
 	if (parent.drawCount > 0) return;
 	int hwnd = parent.handle;
 	if (!OS.IsWindowVisible (hwnd)) return;
 	int index = parent.indexOf (this);
-	RECT rect = new RECT ();
-	rect.left = OS.LVIR_BOUNDS;
-	if (OS.SendMessage (hwnd, OS.LVM_GETITEMRECT, index, rect) != 0) {	
-		OS.InvalidateRect (hwnd, rect, true);
-	}
+	OS.SendMessage (hwnd, OS.LVM_REDRAWITEMS, index, index);
 }
 
 void releaseChild () {
@@ -519,6 +482,8 @@ void releaseChild () {
 void releaseWidget () {
 	super.releaseWidget ();
 	parent = null;
+	strings = null;
+	images = null;
 	cellBackground = cellForeground = cellFont = null;
 }
 
@@ -609,24 +574,8 @@ public void setBackground (int index, Color color) {
 public void setChecked (boolean checked) {
 	checkWidget();
 	if ((parent.style & SWT.CHECK) == 0) return;
-	int index = parent.indexOf (this);
-	if (index == -1) return;
-	int hwnd = parent.handle;
-	LVITEM lvItem = new LVITEM ();
-	lvItem.mask = OS.LVIF_STATE;
-	lvItem.stateMask = OS.LVIS_STATEIMAGEMASK;
-	lvItem.iItem = index;
-	OS.SendMessage (hwnd, OS.LVM_GETITEM, 0, lvItem);
-	int state = lvItem.state >> 12;
-	if (checked) {
-		if ((state & 0x1) != 0) state++;
-	} else {
-		if ((state & 0x1) == 0) --state;
-	}
-	lvItem.state = state << 12;
-	parent.ignoreSelect = true;
-	OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, lvItem);
-	parent.ignoreSelect = false;
+	this.checked = checked;
+	redraw ();
 }
 
 /**
@@ -787,24 +736,8 @@ public void setForeground (int index, Color color){
 public void setGrayed (boolean grayed) {
 	checkWidget();
 	if ((parent.style & SWT.CHECK) == 0) return;
-	int index = parent.indexOf (this);
-	if (index == -1) return;
-	int hwnd = parent.handle;
-	LVITEM lvItem = new LVITEM ();
-	lvItem.mask = OS.LVIF_STATE;
-	lvItem.stateMask = OS.LVIS_STATEIMAGEMASK;
-	lvItem.iItem = index;
-	OS.SendMessage (hwnd, OS.LVM_GETITEM, 0, lvItem);
-	int state = lvItem.state >> 12;
-	if (grayed) {
-		if (state <= 2) state +=2;
-	} else {
-		if (state > 2) state -=2;
-	}
-	lvItem.state = state << 12;
-	parent.ignoreSelect = true;
-	OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, lvItem);
-	parent.ignoreSelect = false;
+	this.grayed = grayed;
+	redraw ();
 }
 
 /**
@@ -863,17 +796,17 @@ public void setImage (int index, Image image) {
 		}
 		super.setImage (image);
 	}
-	int itemIndex = parent.indexOf (this);
-	if (itemIndex == -1) return;
-	int hwnd = parent.handle;
-	LVITEM lvItem = new LVITEM ();
-	lvItem.mask = OS.LVIF_IMAGE;
-	lvItem.iItem = itemIndex;
-	lvItem.iSubItem = index;
-	lvItem.iImage = parent.imageIndex (image);
-	OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, lvItem);
-	if (index == 0) parent.setScrollWidth (false);
-	parent.fixCheckboxImageList ();
+	int count = Math.max (1, parent.getColumnCount ());
+	if (0 <= index && index < count) {
+		if (images == null) images = new Image [count];
+		images [index] = image;	
+	}
+	
+	/* Ensure that the image list is created */
+	parent.imageIndex (image);
+	
+	if (index == 0) parent.setScrollWidth (this, false);
+	redraw ();
 }
 
 public void setImage (Image image) {
@@ -895,14 +828,21 @@ public void setImage (Image image) {
 public void setImageIndent (int indent) {
 	checkWidget();
 	if (indent < 0) return;
-	int index = parent.indexOf (this);
-	if (index == -1) return;
-	int hwnd = parent.handle;
-	LVITEM lvItem = new LVITEM ();
-	lvItem.mask = OS.LVIF_INDENT;
-	lvItem.iItem = index;
-	lvItem.iIndent = indent;
-	OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, lvItem);
+	imageIndent = indent;
+	if (parent.ignoreRedraw) return;
+	if ((parent.style & SWT.VIRTUAL) != 0) {
+		int index = parent.indexOf (this);
+		if (index != -1) {
+			int hwnd = parent.handle;
+			LVITEM lvItem = new LVITEM ();
+			lvItem.mask = OS.LVIF_INDENT;
+			lvItem.iItem = index;
+			lvItem.iIndent = indent;
+			OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, lvItem);
+		}
+	}
+	parent.setScrollWidth (this, false);
+	redraw ();
 }
 
 /**
@@ -954,22 +894,38 @@ public void setText (int index, String string) {
 		if (string.equals (text)) return;
 		super.setText (string);
 	}
-	int itemIndex = parent.indexOf (this);
-	if (itemIndex == -1) return;
-	int hwnd = parent.handle;
-	int hHeap = OS.GetProcessHeap ();	
-	TCHAR buffer = new TCHAR (parent.getCodePage (), string, true);
-	int byteCount = buffer.length () * TCHAR.sizeof;
-	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-	OS.MoveMemory (pszText, buffer, byteCount); 
-	LVITEM lvItem = new LVITEM ();
-	lvItem.mask = OS.LVIF_TEXT;
-	lvItem.iItem = itemIndex;
-	lvItem.pszText = pszText;
-	lvItem.iSubItem = index;
-	OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, lvItem);
-	if (index == 0) parent.setScrollWidth (false);
-	OS.HeapFree (hHeap, 0, pszText);
+	int count = Math.max (1, parent.getColumnCount ());
+	if (0 <= index && index < count) {
+		if (strings == null) strings = new String [count];
+		strings [index] = string;
+	}
+	if (parent.ignoreRedraw) return;
+	if (index == 0) {
+		/*
+		* Bug in Windows.  Despite the fact that every item in the
+		* table always has LPSTR_TEXTCALLBACK, Windows caches the
+		* bounds for the selected items.  This means that 
+		* when you change the string to be something else, Windows
+		* correctly asks you for the new string but when the item
+		* is selected, the selection draws using the bounds of the
+		* previous item.  The fix is to reset LPSTR_TEXTCALLBACK
+		* even though it has not changed, causing Windows to flush
+		* cached bounds.
+		*/
+		if (requested && (parent.style & SWT.VIRTUAL) == 0) {
+			int itemIndex = parent.indexOf (this);
+			if (itemIndex != -1) {
+				int hwnd = parent.handle;
+				LVITEM lvItem = new LVITEM ();
+				lvItem.mask = OS.LVIF_TEXT;
+				lvItem.iItem = itemIndex;
+				lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
+				OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, lvItem);
+			}
+		}
+		parent.setScrollWidth (this, false);
+	}
+	redraw ();
 }
 
 public void setText (String string) {
