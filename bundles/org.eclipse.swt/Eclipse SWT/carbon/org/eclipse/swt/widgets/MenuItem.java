@@ -382,7 +382,7 @@ void releaseWidget () {
 	parent = null;
 	if (fCIconHandle != 0) {
 		
-		Image.DisposeCIcon(fCIconHandle);
+		Image.disposeCIcon(fCIconHandle);
 		fCIconHandle= 0;
     }
 
@@ -529,7 +529,7 @@ public void setImage (Image image) {
 	
 	if (MacUtil.USE_MENU_ICONS) {
 		if (fCIconHandle != 0)
-			Image.DisposeCIcon(fCIconHandle);
+			Image.disposeCIcon(fCIconHandle);
 		fCIconHandle= Image.carbon_createCIcon(image);
 		if (fCIconHandle != 0) {
 			int hMenu = parent.handle;
@@ -697,12 +697,19 @@ void handleMenuSelect () {
 static String removeMnemonicsAndShortcut(String s) {
 	if (s.indexOf('&') >= 0 || s.indexOf('\t') >= 0) {
 		StringBuffer sb= new StringBuffer();
-		for (int i= 0; i < s.length(); i++) {
+		int l= s.length();
+		for (int i= 0; i < l; i++) {
 			char c= s.charAt(i);
 			if (c == '\t')
 				break;
-			if (c != '&')
+			if (c == '&') {
+				if (i+2 < l && s.charAt(i+2) == ' ') {
+					if (Character.isDigit(s.charAt(i+1)))
+						i+= 2;
+				}
+			} else {
 				sb.append(c);
+			}
 		}
 		s= sb.toString();
 	}
@@ -732,7 +739,7 @@ private static void setAccelerator(int menu, short index, int accelerator) {
 		break;
 	}
 
-	// use SetMenuItemData instead!
+	// AW todo: use SetMenuItemData instead?
 
 	if (macKey == 0) {
 		char c= new String(new char[] { (char)(key & 0xff) } ).toUpperCase().charAt(0);
