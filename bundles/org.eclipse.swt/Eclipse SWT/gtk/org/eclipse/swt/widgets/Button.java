@@ -546,7 +546,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	* alignment to fail. The fix is to set the child size to all available space
 	* excluding trimmings.
 	*/
-	if (result && (style & (SWT.CHECK | SWT.RADIO)) != 0) {
+	if (resize && result && (style & (SWT.CHECK | SWT.RADIO)) != 0) {
 		int childHeight = 0, buttonWidth = 0, buttonHeight = 0;
 		GtkRequisition requisition = new GtkRequisition ();
 		OS.gtk_widget_size_request (handle, requisition);
