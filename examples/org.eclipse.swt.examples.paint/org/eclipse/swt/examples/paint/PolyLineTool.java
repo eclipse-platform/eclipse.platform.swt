@@ -11,9 +11,7 @@ import org.eclipse.swt.graphics.*;
  * A polyline drawing tool.
  */
 public class PolyLineTool extends SegmentedPaintSession implements PaintTool {
-	private Color drawFGColor;
-	private Color drawBGColor;
-	private int fillType;
+	private ToolSettings settings;
 
 	/**
 	 * Constructs a PolyLineTool.
@@ -32,9 +30,7 @@ public class PolyLineTool extends SegmentedPaintSession implements PaintTool {
 	 * @param toolSettings the new tool settings
 	 */
 	public void set(ToolSettings toolSettings) {
-		drawFGColor = toolSettings.commonForegroundColor;
-		drawBGColor = toolSettings.commonBackgroundColor;
-		fillType = toolSettings.commonFillType;
+		settings = toolSettings;
 	}
 
 	/**
@@ -51,19 +47,21 @@ public class PolyLineTool extends SegmentedPaintSession implements PaintTool {
 	 */
 	protected Figure createFigure(Point[] points, int numPoints, boolean closed) {
 		ContainerFigure container = new ContainerFigure();
-		if (closed && fillType != ToolSettings.ftNone && numPoints >= 3) {
-			container.add(new SolidPolygonFigure(drawBGColor, points, numPoints));
+		if (closed && settings.commonFillType != ToolSettings.ftNone && numPoints >= 3) {
+			container.add(new SolidPolygonFigure(settings.commonBackgroundColor, points, numPoints));
 		}
-		if (! closed || fillType != ToolSettings.ftSolid || numPoints < 3) {
+		if (! closed || settings.commonFillType != ToolSettings.ftSolid || numPoints < 3) {
 			for (int i = 0; i < numPoints - 1; ++i) {
 				final Point a = points[i];
 				final Point b = points[i + 1];
-				container.add(new LineFigure(drawFGColor, a.x, a.y, b.x, b.y));
+				container.add(new LineFigure(settings.commonForegroundColor, settings.commonLineStyle,
+					a.x, a.y, b.x, b.y));
 			}
 			if (closed) {
 				final Point a = points[points.length - 1];
 				final Point b = points[0];
-				container.add(new LineFigure(drawFGColor, a.x, a.y, b.x, b.y));
+				container.add(new LineFigure(settings.commonForegroundColor, settings.commonLineStyle,
+					a.x, a.y, b.x, b.y));
 			}
 		}
 		return container;

@@ -33,18 +33,18 @@ public class PaintView extends ViewPart {
 	// paint surface for drawing
 	private PaintSurface paintSurface;
 
-	// status information
-	private PaintStatus paintStatus;
-
 	// map action ids to useful data
 	private HashMap /* of String to PaintTool */ paintToolMap;
 	private HashMap /* of String to Integer */ paintFillTypeMap;
+	private HashMap /* of String to Integer */ paintLineStyleMap;
 	
 	/** UI data **/
 	// handle of currently active tool IAction on the UI
 	private IAction activeToolAction;
 	// handle of currently active filltype IAction on the UI
 	private IAction activeFillTypeAction;
+	// handle of currently active linetype IAction on the UI
+	private IAction activeLineStyleAction;
 
 	// handle of active foreground color box Canvas widget
 	private Canvas activeForegroundColorCanvas;
@@ -87,7 +87,7 @@ public class PaintView extends ViewPart {
 	 * 
 	 * @see org.eclipse.ui.part.ViewPart#setFocus
 	 */
-	public void setFocus()  {
+	public void setFocus() {
 		paintSurface.setFocus();
 	}
 
@@ -132,11 +132,18 @@ public class PaintView extends ViewPart {
 		toolbarManager.appendToGroup("group.tools", new SelectPaintToolAction("tool.Ellipse"));
 		toolbarManager.appendToGroup("group.tools", new SelectPaintToolAction("tool.Text"));
 		toolbarManager.add(new Separator());
-		toolbarManager.add(new GroupMarker("group.options"));
-		toolbarManager.appendToGroup("group.options", new SelectFillTypeAction("fill.None"));
-		toolbarManager.appendToGroup("group.options", new SelectFillTypeAction("fill.Outline"));
-		toolbarManager.appendToGroup("group.options", new SelectFillTypeAction("fill.Solid"));
+		toolbarManager.add(new GroupMarker("group.options.fill"));
+		toolbarManager.appendToGroup("group.options.fill", new SelectFillTypeAction("fill.None"));
+		toolbarManager.appendToGroup("group.options.fill", new SelectFillTypeAction("fill.Outline"));
+		toolbarManager.appendToGroup("group.options.fill", new SelectFillTypeAction("fill.Solid"));
 		toolbarManager.add(new Separator());
+		toolbarManager.add(new GroupMarker("group.options.linestyle"));
+		toolbarManager.appendToGroup("group.options.linestyle", new SelectLineStyleAction("linestyle.Solid"));
+		toolbarManager.appendToGroup("group.options.linestyle", new SelectLineStyleAction("linestyle.Dash"));
+		toolbarManager.appendToGroup("group.options.linestyle", new SelectLineStyleAction("linestyle.Dot"));
+		toolbarManager.appendToGroup("group.options.linestyle", new SelectLineStyleAction("linestyle.DashDot"));
+		toolbarManager.add(new Separator());
+		toolbarManager.add(new GroupMarker("group.options"));
 		toolbarManager.appendToGroup("group.options", new SelectFontAction("options.Font"));
 		actionBars.updateActionBars();
 
@@ -146,6 +153,7 @@ public class PaintView extends ViewPart {
 		/*** Set defaults ***/
 		setPaintToolByID("tool.Pencil");
 		setFillTypeByID("fill.None");
+		setLineStyleByID("linestyle.Solid");
 		setForegroundColor(paintColorBlack);
 		setBackgroundColor(paintColorWhite);
 	}
@@ -172,7 +180,7 @@ public class PaintView extends ViewPart {
 		
 		// paint canvas
 		final Canvas paintCanvas = new Canvas(displayArea, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL |
-			SWT.NO_REDRAW_RESIZE);
+			SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND);
 		gridData = new GridData(GridData.FILL_HORIZONTAL | GridData.FILL_VERTICAL);
 		paintCanvas.setLayoutData(gridData);
 		paintCanvas.setBackground(paintColorWhite);
@@ -193,11 +201,8 @@ public class PaintView extends ViewPart {
 		statusText.setLayoutData(gridData);
 
 		/*** Create the remaining application elements inside the principal GUI layout elements ***/	
-		// paintStatus
-		paintStatus = new PaintStatus(statusText);
-
 		// paintSurface
-		paintSurface = new PaintSurface(paintCanvas, paintStatus);
+		paintSurface = new PaintSurface(paintCanvas, statusText);
 
 		// paintToolMap
 		paintToolMap = new HashMap();
@@ -216,6 +221,13 @@ public class PaintView extends ViewPart {
 		paintFillTypeMap.put("fill.None", new Integer(ToolSettings.ftNone));
 		paintFillTypeMap.put("fill.Outline", new Integer(ToolSettings.ftOutline));
 		paintFillTypeMap.put("fill.Solid", new Integer(ToolSettings.ftSolid));
+
+		// paintLineStyleMap
+		paintLineStyleMap = new HashMap();
+		paintLineStyleMap.put("linestyle.Solid", new Integer(SWT.LINE_SOLID));
+		paintLineStyleMap.put("linestyle.Dash", new Integer(SWT.LINE_DASH));
+		paintLineStyleMap.put("linestyle.Dot", new Integer(SWT.LINE_DOT));
+		paintLineStyleMap.put("linestyle.DashDot", new Integer(SWT.LINE_DASHDOT));
 
 		// colorFrame		
 		gridLayout = new GridLayout();
@@ -238,7 +250,7 @@ public class PaintView extends ViewPart {
 		activeBackgroundColorCanvas.setLayoutData(gridData);
 
 		// paletteCanvas
-		final Canvas paletteCanvas = new Canvas(colorFrame, SWT.BORDER);
+		final Canvas paletteCanvas = new Canvas(colorFrame, SWT.BORDER | SWT.NO_BACKGROUND);
 		gridData = new GridData(GridData.FILL_HORIZONTAL);
 		gridData.heightHint = 24;
 		paletteCanvas.setLayoutData(gridData);
@@ -355,12 +367,7 @@ public class PaintView extends ViewPart {
 	 * Selects a tool given its ID.
 	 */
 	public void setPaintToolByID(String id) {
-		if (activeToolAction != null) activeToolAction.setChecked(false);
-		IAction action = getActionByID(id);
-		if (action != null) {
-			activeToolAction = action;
-			if (! action.isChecked()) action.setChecked(true);
-		}
+		activeToolAction = handleRadioAction(activeToolAction, id);
 		
 		final PaintTool paintTool = (PaintTool) paintToolMap.get(id);
 		paintSurface.setPaintSession(paintTool);
@@ -371,16 +378,36 @@ public class PaintView extends ViewPart {
 	 * Selects a filltype given its ID.
 	 */
 	public void setFillTypeByID(String id) {
-		if (activeFillTypeAction != null) activeFillTypeAction.setChecked(false);
-		IAction action = getActionByID(id);
-		if (action != null) {
-			activeFillTypeAction = action;
-			if (! action.isChecked()) action.setChecked(true);
-		}
+		activeFillTypeAction = handleRadioAction(activeFillTypeAction, id);
 		
 		final Integer fillType = (Integer) paintFillTypeMap.get(id);
 		toolSettings.commonFillType = fillType.intValue();
 		updateToolSettings();		
+	}
+
+	/**
+	 * Selects line type given its ID.
+	 */
+	public void setLineStyleByID(String id) {
+		activeLineStyleAction = handleRadioAction(activeLineStyleAction, id);
+		
+		final Integer lineType = (Integer) paintLineStyleMap.get(id);
+		toolSettings.commonLineStyle = lineType.intValue();
+		updateToolSettings();		
+	}
+
+	/**
+	 * Gets the IAction for an ID belonging to a set of mutually exclusive actions, and
+	 * toggles the old action off if necessary.
+	 */
+	private IAction handleRadioAction(IAction oldAction, String id) {
+		IAction action = getActionByID(id);
+		if (action != null) {
+			if (oldAction != null) oldAction.setChecked(false);
+			if (! action.isChecked()) action.setChecked(true);
+			return action;
+		}
+		return oldAction;
 	}
 
 	/**
@@ -434,6 +461,11 @@ public class PaintView extends ViewPart {
 		public SelectFillTypeAction(String id) { super(id); }
 		public int getStyle() { return IAction.AS_CHECK_BOX; }
 		public void run() { setFillTypeByID(getId()); }
+	}
+	class SelectLineStyleAction extends PaintAction {
+		public SelectLineStyleAction(String id) { super(id); }
+		public int getStyle() { return IAction.AS_CHECK_BOX; }
+		public void run() { setLineStyleByID(getId()); }
 	}
 	class SelectFontAction extends PaintAction {
 		public SelectFontAction(String id) { super(id); }

@@ -11,7 +11,7 @@ import java.util.Random;import org.eclipse.swt.graphics.*;
  * A pencil tool.
  */
 public class PencilTool extends ContinuousPaintSession implements PaintTool {
-	private Color drawColor;
+	private ToolSettings settings;
 	
 	/**
 	 * Constructs a pencil tool.
@@ -30,7 +30,7 @@ public class PencilTool extends ContinuousPaintSession implements PaintTool {
 	 * @param toolSettings the new tool settings
 	 */
 	public void set(ToolSettings toolSettings) {
-		drawColor = toolSettings.commonForegroundColor;		
+		settings = toolSettings;
 	}
 
 	/**
@@ -47,13 +47,6 @@ public class PencilTool extends ContinuousPaintSession implements PaintTool {
 	 */
 	public void render(final Point point) {
 		final PaintSurface ps = getPaintSurface();
-		final GC    igc  = ps.getImageGC();
-		final Point ioff = ps.getImageOffset();
-		final GC    dgc  = ps.getDisplayGC();
-		final Point doff = ps.getDisplayOffset();
-		igc.setBackground(drawColor);
-		igc.fillRectangle(point.x + ioff.x, point.y + ioff.y, 1, 1);  
-		dgc.setBackground(drawColor);
-		dgc.fillRectangle(point.x + doff.x, point.y + doff.y, 1, 1);  
+		ps.drawFigure(new PointFigure(settings.commonForegroundColor, point.x, point.y));
 	}
 }

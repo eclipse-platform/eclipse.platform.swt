@@ -13,8 +13,7 @@ import org.eclipse.swt.graphics.*;
  * A text drawing tool.
  */
 public class TextTool extends BasicPaintSession implements PaintTool {
-	private Color  drawColor;
-	private Font   drawFont;
+	private ToolSettings settings;
 	private String drawText = PaintPlugin.getResourceString("tool.Text.settings.defaulttext");
 
 	/**
@@ -34,8 +33,7 @@ public class TextTool extends BasicPaintSession implements PaintTool {
 	 * @param toolSettings the new tool settings
 	 */
 	public void set(ToolSettings toolSettings) {
-		drawColor = toolSettings.commonForegroundColor;
-		drawFont = toolSettings.commonFont;
+		settings = toolSettings;
 	}
 	
 	/**
@@ -51,7 +49,7 @@ public class TextTool extends BasicPaintSession implements PaintTool {
 	 * Activates the tool.
 	 */
 	public void beginSession() {
-		getPaintSurface().getPaintStatus().setMessage(PaintPlugin.getResourceString(
+		getPaintSurface().setStatusMessage(PaintPlugin.getResourceString(
 			"session.Text.message"));
 	}
 	
@@ -114,9 +112,11 @@ public class TextTool extends BasicPaintSession implements PaintTool {
 	 * @param event the mouse event detail information
 	 */
 	public void mouseMove(MouseEvent event) {
-		getPaintSurface().showCurrentPositionStatus();
-		getPaintSurface().clearRubberbandSelection();
-		getPaintSurface().addRubberbandSelection(
-			new TextFigure(drawColor, drawFont, drawText, event.x, event.y));
+		final PaintSurface ps = getPaintSurface();
+		ps.setStatusCoord(ps.getCurrentPosition());
+		ps.clearRubberbandSelection();
+		ps.addRubberbandSelection(
+			new TextFigure(settings.commonForegroundColor, settings.commonFont,
+				drawText, event.x, event.y));
 	}
 }

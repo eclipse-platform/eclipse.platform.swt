@@ -57,8 +57,8 @@ public abstract class ContinuousPaintSession extends BasicPaintSession {
 	 * Activates the tool.
 	 */
 	public void beginSession() {
-		getPaintSurface().getPaintStatus().
-			setMessage(PaintPlugin.getResourceString("session.ContinuousPaint.message"));
+		getPaintSurface().
+			setStatusMessage(PaintPlugin.getResourceString("session.ContinuousPaint.message"));
 		dragInProgress = false;
 	}
 	
@@ -119,7 +119,8 @@ public abstract class ContinuousPaintSession extends BasicPaintSession {
 	 * @param event the mouse event detail information
 	 */
 	public final void mouseMove(MouseEvent event) {
-		getPaintSurface().showCurrentPositionStatus();
+		final PaintSurface ps = getPaintSurface();
+		ps.setStatusCoord(ps.getCurrentPosition());
 		if (! dragInProgress) return;
 		mouseSegmentFinished(event);
 		prepareRetrigger();

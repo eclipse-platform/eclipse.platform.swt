@@ -27,31 +27,17 @@ public class TextFigure extends Figure {
 	public TextFigure(Color color, Font font, String text, int x, int y) {
 		this.color = color; this.font = font; this.text = text; this.x = x; this.y = y;
 	}
-	public void draw(GC gc, Point offset) {
-		gc.setFont(font);
-		gc.setForeground(color);
-		gc.drawText(text, x + offset.x, y + offset.y, true);
+	public void draw(FigureDrawContext fdc) {
+		Point p = fdc.toClientPoint(x, y);
+		fdc.gc.setFont(font);
+		fdc.gc.setForeground(color);
+		fdc.gc.drawText(text, p.x, p.y, true);
 	}
-	public Object drawPreview(GC gc, Point offset) {
-		Color oldColor = gc.getForeground();
-		gc.setFont(font);
-		gc.setForeground(color);
-		gc.setXORMode(false);
-
-		Point textExtent = gc.textExtent(text);
-		Image backingStore = new Image(null, textExtent.x, textExtent.y);
-		gc.copyArea(backingStore, x + offset.x, y + offset.y);	
-
-		gc.drawText(text, x + offset.x, y + offset.y, true);
-		gc.setForeground(oldColor);
-		gc.setXORMode(true);
-		return backingStore;
-	}
-	public void erasePreview(GC gc, Point offset, Object rememberedData) {
-		Image backingStore = (Image) rememberedData;
-		gc.setXORMode(false);
-		gc.drawImage(backingStore, x + offset.x, y + offset.y);
-		gc.setXORMode(true);
-		backingStore.dispose();
+	public void addDamagedRegion(FigureDrawContext fdc, Region region) {
+		Font oldFont = fdc.gc.getFont();
+		fdc.gc.setFont(font);
+		Point textExtent = fdc.gc.textExtent(text);
+		fdc.gc.setFont(oldFont);
+		region.add(fdc.toClientRectangle(x, y, x + textExtent.x, y + textExtent.y));
 	}
 }

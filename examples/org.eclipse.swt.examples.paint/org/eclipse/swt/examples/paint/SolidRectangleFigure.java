@@ -10,7 +10,7 @@ import org.eclipse.swt.graphics.*;
 /**
  * 2D SolidRectangle object
  */
-public class SolidRectangleFigure extends StatelessXORFigureHelper {
+public class SolidRectangleFigure extends Figure {
 	private Color color;
 	private int x1, y1, x2, y2;
 	/**
@@ -26,12 +26,12 @@ public class SolidRectangleFigure extends StatelessXORFigureHelper {
 	public SolidRectangleFigure(Color color, int x1, int y1, int x2, int y2) {
 		this.color = color; this.x1 = x1; this.y1 = y1; this.x2 = x2; this.y2 = y2;
 	}
-	public void draw(GC gc, Point offset) {
-		gc.setBackground(color);
-		gcDraw(gc, offset);
+	public void draw(FigureDrawContext fdc) {
+		Rectangle r = fdc.toClientRectangle(x1, y1, x2, y2);
+		fdc.gc.setBackground(color);
+		fdc.gc.fillRectangle(r.x, r.y, r.width, r.height);
 	}
-	protected void gcDraw(GC gc, Point offset) {
-		gc.fillRectangle(Math.min(x1, x2) + offset.x, Math.min(y1, y2) + offset.y,
-			Math.abs(x2 - x1) + 1, Math.abs(y2 - y1) + 1);
-	}			
+	public void addDamagedRegion(FigureDrawContext fdc, Region region) {
+		region.add(fdc.toClientRectangle(x1, y1, x2, y2));
+	}
 }

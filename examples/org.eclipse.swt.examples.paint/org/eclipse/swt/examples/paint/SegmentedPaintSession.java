@@ -43,7 +43,7 @@ public abstract class SegmentedPaintSession extends BasicPaintSession {
 	 * Activates the tool.
 	 */
 	public void beginSession() {
-		getPaintSurface().getPaintStatus().setMessage(PaintPlugin.getResourceString(
+		getPaintSurface().setStatusMessage(PaintPlugin.getResourceString(
 			"session.SegmentedInteractivePaint.message.anchorMode"));
 		previousFigure = null;
 		currentFigure = null;
@@ -66,7 +66,7 @@ public abstract class SegmentedPaintSession extends BasicPaintSession {
 		getPaintSurface().clearRubberbandSelection();
 		if (previousFigure != null) getPaintSurface().drawFigure(previousFigure);
 		
-		getPaintSurface().getPaintStatus().setMessage(PaintPlugin.getResourceString(
+		getPaintSurface().setStatusMessage(PaintPlugin.getResourceString(
 			"session.SegmentedInteractivePaint.message.anchorMode"));
 		previousFigure = null;
 		currentFigure = null;
@@ -81,7 +81,7 @@ public abstract class SegmentedPaintSession extends BasicPaintSession {
 	public void mouseDown(MouseEvent event) {
 		if (event.button != 1) return;
 
-		getPaintSurface().getPaintStatus().setMessage(PaintPlugin.getResourceString(
+		getPaintSurface().setStatusMessage(PaintPlugin.getResourceString(
 			"session.SegmentedInteractivePaint.message.interactiveMode"));
 		previousFigure = currentFigure;
 
@@ -128,10 +128,11 @@ public abstract class SegmentedPaintSession extends BasicPaintSession {
 	public void mouseMove(MouseEvent event) {
 		final PaintSurface ps = getPaintSurface();
 		if (controlPoints.size() == 0) {
-			ps.showCurrentPositionStatus();
+			ps.setStatusCoord(ps.getCurrentPosition());
 			return; // spurious event
 		} else {
-			ps.showCurrentRangeStatus((Point) controlPoints.elementAt(controlPoints.size() - 1));
+			ps.setStatusCoordRange((Point) controlPoints.elementAt(controlPoints.size() - 1),
+				ps.getCurrentPosition());
 		}
 
 		ps.clearRubberbandSelection();

@@ -11,11 +11,10 @@ import java.util.Random;import org.eclipse.swt.graphics.*;
  * An airbrush tool.
  */
 public class AirbrushTool extends ContinuousPaintSession implements PaintTool {
+	private ToolSettings settings;
 	private Random random;
-	private int airbrushRadius;
 	private int cachedRadiusSquared;
 	private int cachedNumPoints;
-	private Color airbrushColor;
 	
 	/**
 	 * Constructs a Tool.
@@ -26,8 +25,8 @@ public class AirbrushTool extends ContinuousPaintSession implements PaintTool {
 	public AirbrushTool(ToolSettings toolSettings, PaintSurface paintSurface) {
 		super(paintSurface);
 		random = new Random();
-		set(toolSettings);
 		setRetriggerTimer(10);
+		set(toolSettings);
 	}
 	
 	/**
@@ -36,13 +35,11 @@ public class AirbrushTool extends ContinuousPaintSession implements PaintTool {
 	 * @param toolSettings the new tool settings
 	 */
 	public void set(ToolSettings toolSettings) {
-		airbrushRadius = toolSettings.airbrushRadius;
-		airbrushColor = toolSettings.commonForegroundColor;
-
 		// compute things we need to know for drawing
-		cachedRadiusSquared = toolSettings.airbrushRadius * toolSettings.airbrushRadius;
-		cachedNumPoints = 314 * toolSettings.airbrushIntensity * cachedRadiusSquared / 250000;
-		if (cachedNumPoints == 0 && toolSettings.airbrushIntensity != 0)
+		settings = toolSettings;
+		cachedRadiusSquared = settings.airbrushRadius * settings.airbrushRadius;
+		cachedNumPoints = 314 * settings.airbrushIntensity * cachedRadiusSquared / 250000;
+		if (cachedNumPoints == 0 && settings.airbrushIntensity != 0)
 			cachedNumPoints = 1;
 	}
 
@@ -60,22 +57,16 @@ public class AirbrushTool extends ContinuousPaintSession implements PaintTool {
 	 */
 	protected void render(Point point) {
 		// Draws a bunch (cachedNumPoints) of random pixels within a specified circle (cachedRadiusSquared).
-		final PaintSurface ps = getPaintSurface();
-		final GC    igc  = ps.getImageGC();
-		final Point ioff = ps.getImageOffset();
-		final int x = point.x + ioff.x, y = point.y + ioff.y;
-		
-		igc.setBackground(airbrushColor);
+		ContainerFigure cfig = new ContainerFigure();
+
 		for (int i = 0; i < cachedNumPoints; ++i) {
 			int randX, randY;
 			do {
-				randX = (int) ((random.nextDouble() - 0.5) * airbrushRadius * 2.0);
-				randY = (int) ((random.nextDouble() - 0.5) * airbrushRadius * 2.0);
+				randX = (int) ((random.nextDouble() - 0.5) * settings.airbrushRadius * 2.0);
+				randY = (int) ((random.nextDouble() - 0.5) * settings.airbrushRadius * 2.0);
 			} while (randX * randX + randY * randY > cachedRadiusSquared);
-			
-			igc.fillRectangle(x + randX, y + randY, 1, 1);
+			cfig.add(new PointFigure(settings.commonForegroundColor, point.x + randX, point.y + randY));
 		}
-		ps.redrawArea(point.x - airbrushRadius, point.y - airbrushRadius,
-			airbrushRadius * 2, airbrushRadius * 2);
+		getPaintSurface().drawFigure(cfig);
 	}
 }

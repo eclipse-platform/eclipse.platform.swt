@@ -11,10 +11,7 @@ import org.eclipse.swt.graphics.*;
  * A drawing tool.
  */
 public class RoundedRectangleTool extends DragPaintSession implements PaintTool {
-	private Color drawFGColor;
-	private Color drawBGColor;
-	private int   fillType;
-	private int   cornerDiameter;
+	private ToolSettings settings;
 
 	/**
 	 * Constructs a RoundedRectangleTool.
@@ -33,10 +30,7 @@ public class RoundedRectangleTool extends DragPaintSession implements PaintTool 
 	 * @param toolSettings the new tool settings
 	 */
 	public void set(ToolSettings toolSettings) {
-		drawFGColor = toolSettings.commonForegroundColor;
-		drawBGColor = toolSettings.commonBackgroundColor;
-		fillType = toolSettings.commonFillType;
-		cornerDiameter = toolSettings.roundedRectangleCornerDiameter;
+		settings = toolSettings;
 	}
 	
 	/**
@@ -53,10 +47,12 @@ public class RoundedRectangleTool extends DragPaintSession implements PaintTool 
 	 */
 	protected Figure createFigure(Point a, Point b) {
 		ContainerFigure container = new ContainerFigure();
-		if (fillType != ToolSettings.ftNone)
-			container.add(new SolidRoundedRectangleFigure(drawBGColor, a.x, a.y, b.x, b.y, cornerDiameter));
-		if (fillType != ToolSettings.ftSolid)
-			container.add(new RoundedRectangleFigure(drawFGColor, a.x, a.y, b.x, b.y, cornerDiameter));
+		if (settings.commonFillType != ToolSettings.ftNone)
+			container.add(new SolidRoundedRectangleFigure(settings.commonBackgroundColor,
+				a.x, a.y, b.x, b.y, settings.roundedRectangleCornerDiameter));
+		if (settings.commonFillType != ToolSettings.ftSolid)
+			container.add(new RoundedRectangleFigure(settings.commonForegroundColor,
+				settings.commonLineStyle, a.x, a.y, b.x, b.y, settings.roundedRectangleCornerDiameter));
 		return container;
 	}
 }

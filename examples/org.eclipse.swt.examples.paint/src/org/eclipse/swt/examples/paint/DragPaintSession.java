@@ -40,8 +40,8 @@ public abstract class DragPaintSession extends BasicPaintSession {
 	 * Activates the tool.
 	 */
 	public void beginSession() {
-		getPaintSurface().getPaintStatus().
-			setMessage(PaintPlugin.getResourceString("session.DragInteractivePaint.message"));
+		getPaintSurface().
+			setStatusMessage(PaintPlugin.getResourceString("session.DragInteractivePaint.message"));
 		anchorPosition.x = -1;
 		dragInProgress = false;
 	}
@@ -109,10 +109,10 @@ public abstract class DragPaintSession extends BasicPaintSession {
 	public void mouseMove(MouseEvent event) {
 		final PaintSurface ps = getPaintSurface();
 		if (! dragInProgress) {
-			ps.showCurrentPositionStatus();
+			ps.setStatusCoord(ps.getCurrentPosition());
 			return;
 		}
-		ps.showCurrentRangeStatus(anchorPosition);
+		ps.setStatusCoordRange(anchorPosition, ps.getCurrentPosition());
 		ps.clearRubberbandSelection();
 		tempPosition.x = event.x;
 		tempPosition.y = event.y;

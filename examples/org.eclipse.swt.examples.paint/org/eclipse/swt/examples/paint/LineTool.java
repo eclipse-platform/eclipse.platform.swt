@@ -11,8 +11,7 @@ import org.eclipse.swt.graphics.*;
  * A line drawing tool
  */
 public class LineTool extends DragPaintSession implements PaintTool {
-	private Color temporaryColor;
-	private Color drawColor;
+	private ToolSettings settings;
 
 	/**
 	 * Constructs a LineTool.
@@ -23,7 +22,6 @@ public class LineTool extends DragPaintSession implements PaintTool {
 	public LineTool(ToolSettings toolSettings, PaintSurface paintSurface) {
 		super(paintSurface);
 		set(toolSettings);
-		temporaryColor = new Color(null, 255, 255, 255);
 	}
 	
 	/**
@@ -32,7 +30,7 @@ public class LineTool extends DragPaintSession implements PaintTool {
 	 * @param toolSettings the new tool settings
 	 */
 	public void set(ToolSettings toolSettings) {
-		drawColor = toolSettings.commonForegroundColor;
+		settings = toolSettings;
 	}
 	
 	/**
@@ -48,6 +46,7 @@ public class LineTool extends DragPaintSession implements PaintTool {
 	 * Template methods for drawing
 	 */
 	protected Figure createFigure(Point a, Point b) {
-		return new LineFigure(drawColor, a.x, a.y, b.x, b.y);
+		return new LineFigure(settings.commonForegroundColor, settings.commonLineStyle,
+			a.x, a.y, b.x, b.y);
 	}
 }

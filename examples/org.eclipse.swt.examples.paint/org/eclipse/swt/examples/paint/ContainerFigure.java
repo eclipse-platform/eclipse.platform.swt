@@ -38,6 +38,13 @@ public class ContainerFigure extends Figure {
 		++nextIndex;
 	}
 	/**
+	 * Determines if the container is empty.
+	 * @return true if the container is empty
+	 */
+	public boolean isEmpty() {
+		return nextIndex == 0;
+	}
+	/**
 	 * Adds an object to the container and draws its preview then updates the supplied preview state.
 	 * 
 	 * @param object the object to add to the drawing list
@@ -47,19 +54,19 @@ public class ContainerFigure extends Figure {
 	 *        using this Container, may be null if there was no such previous call
 	 * @return object state that must be passed to erasePreview() later to erase this object
 	 */
-	public Object addAndPreview(Figure object, GC gc, Point offset, Object rememberedState) {
-		Object[] stateStack = (Object[]) rememberedState;
-		if (stateStack == null) {
-			stateStack = new Object[INITIAL_ARRAY_SIZE];
-		} else if (stateStack.length <= nextIndex) {
-			Object[] newStateStack = new Object[stateStack.length * 2];
-			System.arraycopy(stateStack, 0, newStateStack, 0, stateStack.length);
-			stateStack = newStateStack;
-		}
-		add(object);
-		stateStack[nextIndex - 1] = object.drawPreview(gc, offset);
-		return stateStack;
-	}
+//	public Object addAndPreview(Figure object, GC gc, Point offset, Object rememberedState) {
+//		Object[] stateStack = (Object[]) rememberedState;
+//		if (stateStack == null) {
+//			stateStack = new Object[INITIAL_ARRAY_SIZE];
+//		} else if (stateStack.length <= nextIndex) {
+//			Object[] newStateStack = new Object[stateStack.length * 2];
+//			System.arraycopy(stateStack, 0, newStateStack, 0, stateStack.length);
+//			stateStack = newStateStack;
+//		}
+//		add(object);
+//		stateStack[nextIndex - 1] = object.drawPreview(gc, offset);
+//		return stateStack;
+//	}
 	/**
 	 * Clears the container.
 	 * <p>
@@ -71,24 +78,10 @@ public class ContainerFigure extends Figure {
 		while (--nextIndex > 0) objectStack[nextIndex] = null;
 		nextIndex = 0;
 	}
-	public void draw(GC gc, Point offset) {
-		for (int i = 0; i < nextIndex; ++i) objectStack[i].draw(gc, offset);
+	public void draw(FigureDrawContext fdc) {
+		for (int i = 0; i < nextIndex; ++i) objectStack[i].draw(fdc);
 	}
-	public Object drawPreview(GC gc, Point offset) {
-		if (nextIndex == 0) return null;
-		
-		Object[] stateStack = new Object[nextIndex];
-		for (int i = 0; i < nextIndex; ++i) stateStack[i] = objectStack[i].drawPreview(gc, offset);
-		return stateStack;
+	public void addDamagedRegion(FigureDrawContext fdc, Region region) {
+		for (int i = 0; i < nextIndex; ++i) objectStack[i].addDamagedRegion(fdc, region);
 	}
-	public void erasePreview(GC gc, Point offset, Object rememberedState) {
-		if (rememberedState == null) return;
-		
-		final Object[] stateStack = (Object[]) rememberedState;
-		int i = nextIndex;
-		while (--i >= 0) {
-			objectStack[i].erasePreview(gc, offset, stateStack[i]);
-			stateStack[i] = null;
-		}
-	}	
 }

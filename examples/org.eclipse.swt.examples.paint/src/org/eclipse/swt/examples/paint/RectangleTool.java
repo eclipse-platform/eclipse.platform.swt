@@ -11,9 +11,7 @@ import org.eclipse.swt.graphics.*;
  * A drawing tool.
  */
 public class RectangleTool extends DragPaintSession implements PaintTool {
-	private Color drawFGColor;
-	private Color drawBGColor;
-	private int   fillType;
+	private ToolSettings settings;
 
 	/**
 	 * Constructs a RectangleTool.
@@ -32,9 +30,7 @@ public class RectangleTool extends DragPaintSession implements PaintTool {
 	 * @param toolSettings the new tool settings
 	 */
 	public void set(ToolSettings toolSettings) {
-		drawFGColor = toolSettings.commonForegroundColor;
-		drawBGColor = toolSettings.commonBackgroundColor;
-		fillType = toolSettings.commonFillType;
+		settings = toolSettings;
 	}
 	
 	/**
@@ -50,18 +46,18 @@ public class RectangleTool extends DragPaintSession implements PaintTool {
 	 * Template method for drawing
 	 */
 	protected Figure createFigure(Point a, Point b) {
-		switch (fillType) {
+		switch (settings.commonFillType) {
 			default:
 			case ToolSettings.ftNone:
-				return new RectangleFigure(drawFGColor, a.x, a.y, b.x, b.y);
+				return new RectangleFigure(settings.commonForegroundColor, settings.commonLineStyle,
+					a.x, a.y, b.x, b.y);
 			case ToolSettings.ftSolid:
-				return new SolidRectangleFigure(drawBGColor, a.x, a.y, b.x, b.y);
+				return new SolidRectangleFigure(settings.commonBackgroundColor, a.x, a.y, b.x, b.y);
 			case ToolSettings.ftOutline: {
 				ContainerFigure container = new ContainerFigure();
-				container.add(new RectangleFigure(drawFGColor, a.x, a.y, b.x, b.y));
-				container.add(new SolidRectangleFigure(drawBGColor,
-					Math.min(a.x, b.x) + 1, Math.min(a.y, b.y) + 1,
-					Math.max(a.x, b.x) - 1, Math.max(a.y, b.y) - 1));
+				container.add(new SolidRectangleFigure(settings.commonBackgroundColor, a.x, a.y, b.x, b.y));
+				container.add(new RectangleFigure(settings.commonForegroundColor, settings.commonLineStyle,
+					a.x, a.y, b.x, b.y));
 				return container;
 			}
 		}

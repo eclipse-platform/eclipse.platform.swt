@@ -11,9 +11,7 @@ import org.eclipse.swt.graphics.*;
  * A drawing tool.
  */
 public class EllipseTool extends DragPaintSession implements PaintTool {
-	private Color drawFGColor;
-	private Color drawBGColor;
-	private int   fillType;
+	private ToolSettings settings;
 
 	/**
 	 * Constructs a EllipseTool.
@@ -25,18 +23,16 @@ public class EllipseTool extends DragPaintSession implements PaintTool {
 		super(paintSurface);
 		set(toolSettings);
 	}
-	
+
 	/**
 	 * Sets the tool's settings.
 	 * 
 	 * @param toolSettings the new tool settings
 	 */
 	public void set(ToolSettings toolSettings) {
-		drawFGColor = toolSettings.commonForegroundColor;
-		drawBGColor = toolSettings.commonBackgroundColor;
-		fillType = toolSettings.commonFillType;
+		settings = toolSettings;
 	}
-	
+
 	/**
 	 * Returns name associated with this tool.
 	 * 
@@ -51,10 +47,11 @@ public class EllipseTool extends DragPaintSession implements PaintTool {
 	 */
 	protected Figure createFigure(Point a, Point b) {
 		ContainerFigure container = new ContainerFigure();
-		if (fillType != ToolSettings.ftNone)
-			container.add(new SolidEllipseFigure(drawBGColor, a.x, a.y, b.x, b.y));
-		if (fillType != ToolSettings.ftSolid)
-			container.add(new EllipseFigure(drawFGColor, a.x, a.y, b.x, b.y));
+		if (settings.commonFillType != ToolSettings.ftNone)
+			container.add(new SolidEllipseFigure(settings.commonBackgroundColor, a.x, a.y, b.x, b.y));
+		if (settings.commonFillType != ToolSettings.ftSolid)
+			container.add(new EllipseFigure(settings.commonForegroundColor, settings.commonLineStyle,
+				a.x, a.y, b.x, b.y));
 		return container;
 	}
 }
