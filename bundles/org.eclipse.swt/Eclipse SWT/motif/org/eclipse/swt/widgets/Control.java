@@ -1093,7 +1093,6 @@ void manageChildren () {
 	OS.XtGetValues (handle, argList1, argList1.length / 2);
 	OS.XtResizeWidget (handle, 1, 1, argList1 [1]);
 	OS.XtSetMappedWhenManaged (handle, true);
-	if (parent != null) parent.enableTraversal (true);
 }
 Decorations menuShell () {
 	return parent.menuShell ();
@@ -1247,6 +1246,15 @@ int processKeyDown (int callData) {
 int processKeyUp (int callData) {
 	XKeyEvent xEvent = new XKeyEvent ();
 	OS.memmove (xEvent, callData, XKeyEvent.sizeof);
+	if (menu != null && xEvent.state == OS.ShiftMask) {
+		byte [] buffer = new byte [1];
+		int [] keysym = new int [1];	
+		OS.XLookupString (xEvent, buffer, buffer.length, keysym, null);
+		if (keysym [0] == OS.XK_F10) {
+			menu.setVisible (true);
+			return 0;
+		}
+	}
 	sendKeyEvent (SWT.KeyUp, xEvent);
 	return 0;
 }
@@ -1434,6 +1442,7 @@ int processSetFocus (int callData) {
 	}
 	return 0;
 }
+
 void propagateChildren (boolean enabled) {
 	propagateWidget (enabled);
 }

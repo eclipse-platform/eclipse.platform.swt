@@ -109,15 +109,6 @@ Control [] _getTabList () {
 	tabList = newList;
 	return tabList;
 }
-public void addListener (int eventType, Listener handler) {
-	checkWidget();
-	super.addListener (eventType, handler);
-	if ((state & CANVAS) != 0) {
-		if (eventType == SWT.KeyDown || eventType == SWT.KeyUp) {
-			enableTraversal (true);
-		}
-	}
-}
 /**
 * Computes the preferred size.
 */
@@ -170,7 +161,7 @@ void createHandle (int index) {
 			OS.XmNmarginWidth, 0,
 			OS.XmNmarginHeight, 0,
 			OS.XmNresizePolicy, OS.XmRESIZE_NONE,
-			OS.XmNtraversalOn, 0,
+			OS.XmNtraversalOn, (style & SWT.NO_FOCUS) != 0 ? 0 : 1,
 		};
 		handle = OS.XmCreateDrawingArea (parentHandle, null, argList, argList.length / 2);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -213,7 +204,7 @@ void createScrolledHandle (int topHandle) {
 			OS.XmNmarginWidth, 0,
 			OS.XmNmarginHeight, 0,
 			OS.XmNresizePolicy, OS.XmRESIZE_NONE,
-			OS.XmNtraversalOn, 0,
+			OS.XmNtraversalOn, (style & SWT.NO_FOCUS) != 0 ? 0 : 1,
 		};
 		handle = OS.XmCreateDrawingArea (scrolledHandle, null, argList3, argList3.length / 2);
 	}
@@ -226,13 +217,6 @@ int defaultBackground () {
 }
 int defaultForeground () {
 	return getDisplay ().compositeForeground;
-}
-void enableTraversal (boolean enable) {
-	if ((state & CANVAS) != 0) {
-		if ((style & SWT.NO_FOCUS) != 0) return;
-		int [] argList = {OS.XmNtraversalOn, enable ? 1 : 0};
-		OS.XtSetValues (handle, argList, argList.length / 2);
-	}
 }
 public boolean forceFocus () {
 	checkWidget();
@@ -536,15 +520,6 @@ void redrawWidget (int x, int y, int width, int height, boolean all) {
 		Control child = children [i];
 		Point location = child.getClientLocation ();
 		child.redrawWidget (x - location.x, y - location.y, width, height, all);
-	}
-}
-public void removeListener (int eventType, Listener handler) {
-	checkWidget();
-	super.removeListener (eventType, handler);
-	if ((state & CANVAS) != 0) {
-		if (eventType == SWT.KeyDown || eventType == SWT.KeyUp) {
-			enableTraversal (!(hooks (SWT.KeyDown) || hooks (SWT.KeyUp)));
-		}
 	}
 }
 void releaseChildren () {

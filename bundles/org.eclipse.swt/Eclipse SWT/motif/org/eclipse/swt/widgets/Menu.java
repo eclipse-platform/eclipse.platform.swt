@@ -158,10 +158,11 @@ void createHandle (int index) {
 	* shell.  Menus created this way are automatically destroyed
 	* when the shell is destroyed.
 	*/
+	byte [] buffer = new byte [1];
+	int [] argList = {OS.XmNancestorSensitive, 1};
 	if ((style & SWT.POP_UP) != 0) {
 		int parentHandle = parent.dialogHandle ();
-		int [] argList = {OS.XmNancestorSensitive, 1};
-		handle = OS.XmCreatePopupMenu (parentHandle, new byte [1], argList, argList.length / 2);
+		handle = OS.XmCreatePopupMenu (parentHandle, buffer, argList, argList.length / 2);
 	} else {
 		/*
 		* Bug in Linux.  For some reason, when the parent of the pulldown
@@ -170,8 +171,7 @@ void createHandle (int index) {
 		* that the parent is the main window.
 		*/
 		int parentHandle = parent.scrolledHandle;
-		int [] argList = {OS.XmNancestorSensitive, 1};
-		handle = OS.XmCreatePulldownMenu (parentHandle, new byte [1], argList, argList.length / 2);
+		handle = OS.XmCreatePulldownMenu (parentHandle, buffer, argList, argList.length / 2);
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 
@@ -422,7 +422,7 @@ public boolean getVisible () {
 	return OS.XtIsManaged (handle);
 }
 void hookEvents () {
-	int windowProc = parent.getShell ().getDisplay ().windowProc;
+	int windowProc = getDisplay ().windowProc;
 	OS.XtAddCallback (handle, OS.XmNhelpCallback, windowProc, SWT.Help);
 	OS.XtAddCallback (handle, OS.XmNmapCallback, windowProc, SWT.Show);
 	OS.XtAddCallback (handle, OS.XmNunmapCallback, windowProc, SWT.Hide);
@@ -683,33 +683,36 @@ public void setVisible (boolean visible) {
 	checkWidget();
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
 	if (visible) {
+		int xDisplay = OS.XtDisplay (handle);
+		if (xDisplay == 0) return;
+		int xWindow = OS.XDefaultRootWindow (xDisplay);
+		if (xWindow == 0) return;
+		int [] rootX = new int [1], rootY = new int [1], unused = new int [1], mask = new int [1];
+		if (OS.XQueryPointer (xDisplay, xWindow, unused, unused, rootX, rootY, unused, unused, mask) == 0) {
+			return;
+		}
 		if (!hasLocation) {
-			int xDisplay = OS.XtDisplay (handle);
-			if (xDisplay == 0) return;
-			int xWindow = OS.XDefaultRootWindow (xDisplay);
-			if (xWindow == 0) return;
-			int [] unused = new int [1];
-			int [] rootX = new int [1], rootY = new int [1];
-			if (OS.XQueryPointer (
-				xDisplay, xWindow, unused, unused,
-				rootX, rootY,
-				unused, unused, unused) == 0) return;
-				
-			/* Bug in Motif: 
-			 * You *must* start outside the menu or it will not show you
-			 * highlighting until you move the cursor out of and back into
-			 * the menu. By offsetting the start location by a pixel, it
-			 * causes highlighting to work if you wait for the menu to
-			 * pop up before you start moving.(Except for the bottom
-			 * right corner.)
-			 */
-			rootX[0] += 1;
-			rootY[0] += 1;
-
+			/*
+			* Bug in Motif.  For some reason, when a menu is popped up
+			* under the mouse, the menu will not highlight until the
+			* mouse exits and then enters the menu again.  The fix is
+			* to pop the menu up outside the current mouse position
+			* causing highlighting to work properly when the user
+			* waits for the menu to appear.
+			*/
+			rootX[0] += 1;  rootY[0] += 1;
 			int [] argList = {OS.XmNx, rootX [0], OS.XmNy, rootY [0]};
 			OS.XtSetValues (handle, argList, argList.length / 2);
 		}
 		OS.XtManageChild (handle);
+		/*
+		* Feature in Motif.  There is no API to force the menu
+		* to accept keyboard traversal when popped up using
+		* XtManageChild.  The fix is to call undocumented API
+		* to do this.
+		*/
+		int flags = OS.Button1Mask | OS.Button2Mask | OS.Button3Mask;
+		if ((mask [0] & flags) == 0) OS._XmSetMenuTraversal (handle, true);
 	} else {
 		OS.XtUnmanageChild (handle);
 	}

@@ -1412,7 +1412,10 @@ public boolean readAndDispatch () {
 	checkDevice ();
 	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
 	int status = OS.XtAppPending (xtContext);
-	if (status != 0) {
+	if (status == 0) {
+		OS.XtAppAddTimeOut (xtContext, 1, 0, 0);
+		OS.XtAppProcessEvent (xtContext, OS.XtIMTimer);
+	} else {
 		if ((status & OS.XtIMTimer) != 0) {
 			OS.XtAppProcessEvent (xtContext, OS.XtIMTimer);
 			status = OS.XtAppPending (xtContext);
