@@ -356,15 +356,13 @@ public class Accessible {
 		int id;
 		if (childID == ACC.CHILDID_SELF) id = COM.CHILDID_SELF;
 		else if (control instanceof Tree) {
-			id = childID; // Tree item childIDs are pointers
 			/*
-			* Feature of Windows XP: The following line is intentionally commented.
-			* In Windows XP tree item ids are 1-based indices. Previous versions of
-			* Windows use the tree item handle for the accessible child ID. Despite
-			* this, the call to NotifyWinEvent on XP still takes the handle, so we
-            * do not map from id to handle.
+			* Feature of Windows:
+			* In versions of Windows prior to XP, the childID of a tree item
+			* is the tree item handle. On XP, the childID is a 1-based index.
 			*/
-			//if (OS.COMCTL32_MAJOR >= 6) id = OS.SendMessage (control.handle, OS.TVM_MAPACCIDTOHTREEITEM, childID, 0);
+			id = childID;
+			if (OS.COMCTL32_MAJOR >= 6) id++;
 		}
 		else id = childID + 1; // All other childIDs are 1-based indices
 		COM.NotifyWinEvent (COM.EVENT_OBJECT_FOCUS, control.handle, COM.OBJID_CLIENT, id);
