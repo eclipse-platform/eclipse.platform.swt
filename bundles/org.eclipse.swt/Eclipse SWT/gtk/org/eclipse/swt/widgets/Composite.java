@@ -337,15 +337,14 @@ int processFocusOut(int int0, int int1, int int2) {
 int processMouseDown (int callData, int arg1, int int2) {
 	int result = super.processMouseDown (callData, arg1, int2);
 	if ((state & CANVAS) != 0) {
-		//NOT DONE - only grab when not already grabbing
-		OS.gtk_grab_add (handle);
 		if ((style & SWT.NO_FOCUS) == 0) {
+			int count = 0;
 			int list = OS.gtk_container_get_children (handle);
 			if (list != 0) {
-				int count = OS.g_list_length (list);
-				if (count == 0) OS.gtk_widget_grab_focus (handle);
+				count = OS.g_list_length (list);
 				OS.g_list_free (list);
 			}
+			if (count == 0) OS.gtk_widget_grab_focus (handle);
 		}
 	}
 	return result;
@@ -353,10 +352,6 @@ int processMouseDown (int callData, int arg1, int int2) {
 
 int processMouseUp (int callData, int arg1, int int2) {
 	int result = super.processMouseUp (callData, arg1, int2);
-	//NOT DONE - only release when last button goes up
-	if ((state & CANVAS) != 0) {
-		OS.gtk_grab_remove (handle);
-	}
 	return result;
 }
 
