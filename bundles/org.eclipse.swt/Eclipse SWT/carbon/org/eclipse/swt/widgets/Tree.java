@@ -333,7 +333,7 @@ void createItem (TreeItem item, TreeItem parentItem, int index) {
 			error (SWT.ERROR_ITEM_NOT_ADDED);
 		}
 	} else {
-		if (count == 0 && parentItem != null) parentItem.redraw ();
+		if (count == 0 && parentItem != null) parentItem.redraw (COLUMN_ID);
 	}
 }
 
@@ -1096,11 +1096,20 @@ void setFontStyle (Font font) {
 	}	
 }
 
+public void setRedraw (boolean redraw) {
+	checkWidget();
+	super.setRedraw (redraw);
+	if (redraw && drawCount == 0) {
+		setScrollWidth ();
+	}
+}
+
 void setScrollWidth () {
 	setScrollWidth (getItems (), true);
 }
 
 void setScrollWidth (TreeItem item) {
+	if (drawCount != 0) return;
 	TreeItem parentItem = item.parentItem;
 	if (parentItem != null && !parentItem.getExpanded ()) return;
 	GC gc = new GC (this);
@@ -1114,6 +1123,7 @@ void setScrollWidth (TreeItem item) {
 }
 
 void setScrollWidth (TreeItem [] items, boolean set) {
+	if (drawCount != 0) return;
 	GC gc = new GC (this);
 	int newWidth = calculateWidth (items, gc);
 	gc.dispose ();

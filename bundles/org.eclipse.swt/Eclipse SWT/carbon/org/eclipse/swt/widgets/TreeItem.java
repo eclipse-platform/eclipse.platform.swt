@@ -420,9 +420,10 @@ public TreeItem getParentItem () {
 	return parentItem;
 }
 
-void redraw () {
+void redraw (int propertyID) {
+	if (parent.drawCount != 0) return;
 	int parentID = parentItem == null ? OS.kDataBrowserNoItem : parentItem.id;
-	OS.UpdateDataBrowserItems (parent.handle, parentID, 1, new int[] {id}, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
+	OS.UpdateDataBrowserItems (parent.handle, parentID, 1, new int[] {id}, OS.kDataBrowserItemNoProperty, propertyID);
 }
 
 void releaseChild () {
@@ -465,7 +466,7 @@ public void setBackground (Color color) {
 	}
 	if (background != null && background.equals (color)) return;
 	background = color;
-	redraw ();
+	redraw (Tree.COLUMN_ID);
 }
 
 /**
@@ -484,7 +485,7 @@ public void setChecked (boolean checked) {
 	if ((parent.style & SWT.CHECK) == 0) return;
 	if (this.checked == checked) return;
 	this.checked = checked;
-	redraw ();
+	redraw (Tree.CHECK_COLUMN_ID);
 }
 
 /**
@@ -531,7 +532,7 @@ public void setFont (Font font) {
 	}
 	if (this.font != null && this.font.equals (font)) return;
 	this.font = font;
-	redraw ();
+	redraw (Tree.COLUMN_ID);
 }
 
 /**
@@ -561,7 +562,7 @@ public void setForeground (Color color) {
 	}
 	if (foreground != null && foreground.equals (color)) return;
 	foreground = color;
-	redraw ();
+	redraw (Tree.COLUMN_ID);
 }
 
 /**
@@ -580,7 +581,7 @@ public void setGrayed (boolean grayed) {
 	if ((parent.style & SWT.CHECK) == 0) return;
 	if (this.grayed == grayed) return;
 	this.grayed = grayed;
-	redraw ();
+	redraw (Tree.CHECK_COLUMN_ID);
 }
 
 public void setImage (Image image) {
@@ -588,7 +589,7 @@ public void setImage (Image image) {
 	super.setImage (image);
 	width = -1;
 	parent.setScrollWidth (this);
-	redraw ();
+	redraw (Tree.COLUMN_ID);
 }
 
 public void setText (String string) {
@@ -598,7 +599,7 @@ public void setText (String string) {
 	super.setText (string);
 	width = -1;
 	parent.setScrollWidth (this);
-	redraw ();
+	redraw (Tree.COLUMN_ID);
 }
 
 }
