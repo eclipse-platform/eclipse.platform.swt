@@ -578,8 +578,10 @@ int getCodePage () {
 	OS.GetObject (hFont, LOGFONT.sizeof, logFont);
 	int cs = logFont.lfCharSet & 0xFF;
 	int [] lpCs = new int [8];
-	OS.TranslateCharsetInfo (cs, lpCs, OS.TCI_SRCCHARSET);
-	return lpCs [1];
+	if (OS.TranslateCharsetInfo (cs, lpCs, OS.TCI_SRCCHARSET)) {
+		return lpCs [1];
+	}
+	return OS.GetACP ();
 }
 
 /**
