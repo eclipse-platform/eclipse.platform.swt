@@ -30,7 +30,7 @@ import org.eclipse.swt.graphics.*;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
- 
+
 public class CoolBar extends Composite {
 	
 	CoolItem [] items;
@@ -100,19 +100,27 @@ protected void checkSubclass () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	int height = 0, width = 0;
+	int width = 0, rowWidth = 0, height = 0, rowHeight = 0;
 	RECT rect = new RECT ();
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
-	rbBand.fMask = OS.RBBIM_IDEALSIZE;
+	rbBand.fMask = OS.RBBIM_SIZE | OS.RBBIM_CHILDSIZE | OS.RBBIM_STYLE;
 	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
 	for (int i=0; i<count; i++) {
-		OS.SendMessage (handle, OS.RB_GETRECT, i, rect);
-		height = Math.max (height, rect.bottom - rect.top);
 		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
-		width += rbBand.cxIdeal;
+		OS.SendMessage (handle, OS.RB_GETBANDBORDERS, i, rect);
+		if ((rbBand.fStyle & OS.RBBS_BREAK) != 0) {
+			width = Math.max (width, rowWidth);
+			height += rowHeight;
+			rowWidth = rowHeight = 0;
+		} else if (i != 0) {
+			rowWidth += 2;
+		}
+		rowWidth += rbBand.cx;
+		rowHeight = Math.max (rowHeight, rbBand.cyMinChild + rect.top + rect.bottom);
 	}
-	if (count != 0) width += 4;
+	width = Math.max (width, rowWidth);
+	height += rowHeight - rect.top - rect.bottom;
 	if (width == 0) width = DEFAULT_WIDTH;
 	if (height == 0) height = DEFAULT_HEIGHT;
 	if (wHint != SWT.DEFAULT) width = wHint;

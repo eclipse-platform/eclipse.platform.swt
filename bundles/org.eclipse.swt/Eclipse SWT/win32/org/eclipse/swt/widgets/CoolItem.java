@@ -140,14 +140,6 @@ public Point computeSize (int wHint, int hHint) {
 	RECT rect = new RECT ();
 	OS.SendMessage (hwnd, OS.RB_GETBANDBORDERS, index, rect);
 	width += rect.left + rect.right;
-	height += rect.top + rect.bottom;
-	if (index == 0) {
-		REBARBANDINFO rbBand = new REBARBANDINFO ();
-		rbBand.cbSize = REBARBANDINFO.sizeof;
-		rbBand.fMask = OS.RBBIM_HEADERSIZE;
-		OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
-		width = width - rbBand.cxHeader + 1;
-	}
 	return new Point (width, height);
 }
 
@@ -296,13 +288,16 @@ public void setControl (Control control) {
 public Point getPreferredSize () {
 	checkWidget ();
 	int index = parent.indexOf (this);
-	if (index == -1) return null;
+	if (index == -1) return new Point (0, 0);
 	int hwnd = parent.handle;
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_IDEALSIZE;
 	OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
-	return new Point (rbBand.cxIdeal, rbBand.cyMinChild);
+	RECT rect = new RECT ();
+	OS.SendMessage (hwnd, OS.RB_GETBANDBORDERS, index, rect);
+	int width = rbBand.cxIdeal + rect.left + rect.right;
+	return new Point (width, rbBand.cyMinChild);
 }
 
 public void setPreferredSize (int width, int height) {
@@ -310,10 +305,13 @@ public void setPreferredSize (int width, int height) {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	int hwnd = parent.handle;
+	RECT rect = new RECT ();
+	OS.SendMessage (hwnd, OS.RB_GETBANDBORDERS, index, rect);
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_IDEALSIZE | OS.RBBIM_SIZE;
-	rbBand.cx = rbBand.cxIdeal = width;
+	rbBand.cxIdeal = width - rect.left - rect.right;
+	rbBand.cx = width;
 	rbBand.cyMinChild = rbBand.cyMaxChild = height;
 	OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, rbBand);
 }
@@ -327,7 +325,7 @@ public void setPreferredSize (Point size) {
 public Point getSize() {
 	checkWidget ();
 	int index = parent.indexOf (this);
-	if (index == -1) return null;
+	if (index == -1) new Point (0, 0);
 	int hwnd = parent.handle;
 	RECT rect = new RECT ();
 	OS.SendMessage (hwnd, OS.RB_GETRECT, index, rect);
@@ -345,14 +343,8 @@ public void setSize (int width, int height) {
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_SIZE;
 	rbBand.cx = width;
-	rbBand.cyChild = height;
-	Point preferred = getPreferredSize();
-	if (preferred != null) {
-		rbBand.cyMinChild = rbBand.cyMaxChild = preferred.y;
-	} else {
-		rbBand.cyMinChild = rbBand.cyMaxChild = height;
-	}
-	OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, rbBand);	
+	rbBand.cyChild = rbBand.cyMinChild = rbBand.cyMaxChild = height;
+	OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, rbBand);
 }
 
 public void setSize (Point size) {
