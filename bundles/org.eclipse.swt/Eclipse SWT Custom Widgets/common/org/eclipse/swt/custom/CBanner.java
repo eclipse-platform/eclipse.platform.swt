@@ -432,7 +432,7 @@ void updateCurve () {
 	               CURVE_LEFT, size.y - BORDER_STRIPE + 1,
 			       CURVE_WIDTH-CURVE_RIGHT, 0,
 	               CURVE_WIDTH, 0,
-	               CURVE_WIDTH);
+	               CURVE_WIDTH * 2);
 	// workaround to get rid of blip at end of bezier
 	int index = -1;
 	for (int i = 0; i < curve.length/2; i++) {
