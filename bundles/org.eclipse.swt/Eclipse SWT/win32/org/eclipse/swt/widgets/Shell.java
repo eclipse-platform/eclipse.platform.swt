@@ -448,12 +448,6 @@ void createHandle () {
 	}
 }
 
-void createWidget () {
-	super.createWidget ();
-	if (!display.TrimEnabled) return;
-	if (!isActive ()) setItemEnabled (OS.SC_CLOSE, false);
-}
-
 public void dispose () {
 	/*
 	* This code is intentionally commented.  On some
@@ -545,7 +539,6 @@ public Display getDisplay () {
 
 public boolean getEnabled () {
 	checkWidget ();
-	if (!display.TrimEnabled) return super.getEnabled ();
 	return (state & DISABLED) == 0;
 }
 
@@ -844,11 +837,11 @@ void setBounds (int x, int y, int width, int height, int flags) {
 
 public void setEnabled (boolean enabled) {
 	checkWidget ();
+	state &= ~DISABLED;
+	if (!enabled) state |= DISABLED;
 	if (!display.TrimEnabled) {
 		super.setEnabled (enabled);
 	} else {
-		state &= ~DISABLED;
-		if (!enabled) state |= DISABLED;
 		if (isActive ()) setItemEnabled (OS.SC_CLOSE, enabled);
 	}
 }
@@ -1028,6 +1021,8 @@ public void setVisible (boolean visible) {
 		} else {
 			display.clearModal (this);
 		}
+	} else {
+		updateModal ();
 	}
 }
 
@@ -1039,8 +1034,11 @@ boolean traverseEscape () {
 }
 
 void updateModal () {
-	if (!display.TrimEnabled) return;
-	setItemEnabled (OS.SC_CLOSE, isActive ());
+	if (!display.TrimEnabled) {
+		super.setEnabled (isActive ());
+	} else {
+		setItemEnabled (OS.SC_CLOSE, isActive ());
+	}
 }
 
 int widgetExtStyle () {
@@ -1221,6 +1219,7 @@ LRESULT WM_MOUSEACTIVATE (int wParam, int lParam) {
 }
 
 LRESULT WM_NCHITTEST (int wParam, int lParam) {
+	if (!OS.IsWindowEnabled (handle)) return null;
 	if (!isEnabled () || !isActive ()) {
 		if (!display.TrimEnabled) return new LRESULT (OS.HTNOWHERE);
 		int hittest = callWindowProc (OS.WM_NCHITTEST, wParam, lParam);
@@ -1263,7 +1262,10 @@ LRESULT WM_SETCURSOR (int wParam, int lParam) {
 		if (!display.TrimEnabled) {
 			Shell modalShell = display.getModalShell ();
 			if (modalShell != null && !isActive ()) {
-				OS.SetActiveWindow (modalShell.handle);
+				int hwndModal = modalShell.handle;
+				if (OS.IsWindowEnabled (hwndModal)) {
+					OS.SetActiveWindow (hwndModal);
+				}
 			}
 		}
 		if (!OS.IsWindowEnabled (handle)) {
@@ -1271,7 +1273,9 @@ LRESULT WM_SETCURSOR (int wParam, int lParam) {
 				int hwndPopup = OS.GetLastActivePopup (handle);
 				if (hwndPopup != 0 && hwndPopup != handle) {
 					if (WidgetTable.get (hwndPopup) == null) {
-						OS.SetActiveWindow (hwndPopup);
+						if (OS.IsWindowEnabled (hwndPopup)) {
+							OS.SetActiveWindow (hwndPopup);
+						}
 					}
 				}
 			}

@@ -219,7 +219,7 @@ public class Display extends Device {
 	static Display [] Displays = new Display [4];
 
 	/* Modality */
-	Shell [] ModalWidgets;
+	Shell [] modalWidgets;
 	static boolean TrimEnabled = false;
 
 	/* Package Name */
@@ -407,18 +407,17 @@ static synchronized void checkDisplay (Thread thread) {
 }
 
 void clearModal (Shell shell) {
-	if (ModalWidgets == null) return;
-	int index = 0, length = ModalWidgets.length;
+	if (modalWidgets == null) return;
+	int index = 0, length = modalWidgets.length;
 	while (index < length) {
-		if (ModalWidgets [index] == shell) break;
-		if (ModalWidgets [index] == null) return;
+		if (modalWidgets [index] == shell) break;
+		if (modalWidgets [index] == null) return;
 		index++;
 	}
 	if (index == length) return;
-	System.arraycopy (ModalWidgets, index + 1, ModalWidgets, index, --length - index);
-	ModalWidgets [length] = null;
-	if (index == 0 && ModalWidgets [0] == null) ModalWidgets = null;
-	if (!TrimEnabled) return;
+	System.arraycopy (modalWidgets, index + 1, modalWidgets, index, --length - index);
+	modalWidgets [length] = null;
+	if (index == 0 && modalWidgets [0] == null) modalWidgets = null;
 	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) shells [i].updateModal ();
 }
@@ -964,10 +963,10 @@ ImageList getToolDisabledImageList (Point size) {
 }
 
 Shell getModalShell () {
-	if (ModalWidgets == null) return null;
-	int index = ModalWidgets.length;
+	if (modalWidgets == null) return null;
+	int index = modalWidgets.length;
 	while (--index >= 0) {
-		Shell shell = ModalWidgets [index];
+		Shell shell = modalWidgets [index];
 		if (shell != null) return shell;
 	}
 	return null;
@@ -1478,7 +1477,7 @@ void releaseDisplay () {
 	thread = null;
 	msg = null;
 	keyboard = null;
-	ModalWidgets = null;
+	modalWidgets = null;
 	data = null;
 	keys = null;
 	values = null;
@@ -1809,20 +1808,19 @@ public static void setAppName (String name) {
 }
 
 void setModal (Shell shell) {
-	if (ModalWidgets == null) ModalWidgets = new Shell [4];
-	int index = 0, length = ModalWidgets.length;
+	if (modalWidgets == null) modalWidgets = new Shell [4];
+	int index = 0, length = modalWidgets.length;
 	while (index < length) {
-		if (ModalWidgets [index] == shell) return;
-		if (ModalWidgets [index] == null) break;
+		if (modalWidgets [index] == shell) return;
+		if (modalWidgets [index] == null) break;
 		index++;
 	}
 	if (index == length) {
 		Shell [] newModalWidgets = new Shell [length + 4];
-		System.arraycopy (ModalWidgets, 0, newModalWidgets, 0, length);
-		ModalWidgets = newModalWidgets;
+		System.arraycopy (modalWidgets, 0, newModalWidgets, 0, length);
+		modalWidgets = newModalWidgets;
 	}
-	ModalWidgets [index] = shell;
-	if (!TrimEnabled) return;
+	modalWidgets [index] = shell;
 	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) shells [i].updateModal ();
 }
