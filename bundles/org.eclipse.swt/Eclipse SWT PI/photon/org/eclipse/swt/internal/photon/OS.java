@@ -377,6 +377,7 @@ public class OS {
 	public static final int Pt_ARG_USER_DATA = 0x3f6;
 	public static final int Pt_ARG_VERTICAL_ALIGNMENT = 0xbc7;
 	public static final int Pt_ARG_VISIBLE_COUNT = 0x59e1;
+	public static final int Pt_ARG_WEB_DATA = 0x186B6;
 	public static final int Pt_ARG_WEB_GET_URL = 0x186A0;
 	public static final int Pt_ARG_WEB_NAVIGATE_PAGE = 0x186A1;
 	public static final int Pt_ARG_WEB_OPTION = 0x186AC;
@@ -415,6 +416,7 @@ public class OS {
 	public static final int Pt_CB_TIMER_ACTIVATE = 0xa02a;
 	public static final int Pt_CB_UNREALIZED = 0x3f5;
 	public static final int Pt_CB_WEB_COMPLETE = 0x18704;
+	public static final int Pt_CB_WEB_DATA_REQ = 0x1870F;
 	public static final int Pt_CB_WEB_START = 0x1870B;
 	public static final int Pt_CB_WEB_STATUS = 0x18708;
 	public static final int Pt_CB_WEB_URL = 0x18706;
@@ -517,6 +519,9 @@ public class OS {
 	public static final int Pt_TOP_OUTLINE = 0x10;
 	public static final int Pt_VERTICAL = 0x0;
 	public static final int Pt_WEB_ACTION_DISPLAY = 0x1;
+	public static final int Pt_WEB_DATA_HEADER = 1;
+	public static final int Pt_WEB_DATA_BODY = 2;
+	public static final int Pt_WEB_DATA_CLOSE = 3;
 	public static final int Pt_WEB_DIRECTION_BACK = 6;
 	public static final int Pt_WEB_DIRECTION_CANCEL = 7;
 	public static final int Pt_WEB_DIRECTION_FWD = 5;
@@ -527,9 +532,6 @@ public class OS {
 	public static final int Pt_WEB_STATUS_PROGRESS = 3;
 	public static final int Pt_WEB_STATUS_PRINT = 5;
 	public static final int Pt_Z_STRING = 0x1;
-	public static final int WWW_DIRECTION_BACK = 6;
-	public static final int WWW_DIRECTION_FWD = 5;
-
 
 /** Natives */
 public static final native int PfDecomposeStemToID(byte[] pkszStem);
@@ -809,6 +811,8 @@ public static final native void memmove(int dest, PhCursorDef_t src, int size);
 public static final native void memmove(PhClipHeader dest, int src, int size);
 public static final native void memmove(byte[] dest, PhClipHeader src, int size);
 public static final native void memmove(PtWebStatusCallback_t dest, int src, int size);
+public static final native void memmove(PtWebDataReqCallback_t dest, int src, int size);
+public static final native void memmove(int dest, PtWebClientData_t src, int size);
 public static final native void memset(int dest, int c, int length);
 public static final native int strdup(int string);
 public static final native int strlen(int string);

@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.*;
 public class Browser extends Composite {	
 	int webHandle;
 	String url = ""; //$NON-NLS-1$
+	String text = ""; //$NON-NLS-1$
 	int currentProgress;
 	int totalProgress = 25;
 	
@@ -100,14 +101,14 @@ public Browser(Composite parent, int style) {
 	}
 
 	/* configure the widget with a specific server */
-	File netfront = new File("/usr/photon/bin/netfront");
+	File netfront = new File("/usr/photon/bin/netfront"); //$NON-NLS-1$
 	String name, server;
 	if (netfront.exists() || (OS.QNX_MAJOR >= 6 && OS.QNX_MINOR >= 3 && OS.QNX_MICRO >= 0)) {
-		name = "NetfrontServer";
-		server = "netfront";
+		name = "NetfrontServer"; //$NON-NLS-1$
+		server = "netfront"; //$NON-NLS-1$
 	} else {
-		name = "VoyagerServer-2";
-		server = "vserver";
+		name = "VoyagerServer-2"; //$NON-NLS-1$
+		server = "vserver"; //$NON-NLS-1$
 	}
 	/* set client name */
 	byte[] nameBuffer = Converter.wcsToMbcs(null, name, true);
@@ -123,9 +124,10 @@ public Browser(Composite parent, int style) {
 	OS.PtSetResource(webHandle, OS.Pt_ARG_WEB_SERVER, serverPtr, 0);
 	OS.free(serverPtr);
 	
-	if (callback == null) callback = new Callback(this.getClass(), "webProc", 3, false);
+	if (callback == null) callback = new Callback(this.getClass(), "webProc", 3, false); //$NON-NLS-1$
 	int webProc = callback.getAddress();
 	OS.PtAddCallback(webHandle,OS.Pt_CB_WEB_COMPLETE, webProc, OS.Pt_CB_WEB_COMPLETE);
+	OS.PtAddCallback(webHandle,OS.Pt_CB_WEB_DATA_REQ, webProc, OS.Pt_CB_WEB_DATA_REQ);
 	OS.PtAddCallback(webHandle,OS.Pt_CB_WEB_START, webProc, OS.Pt_CB_WEB_START);
 	OS.PtAddCallback(webHandle,OS.Pt_CB_WEB_STATUS, webProc, OS.Pt_CB_WEB_STATUS);
 	OS.PtAddCallback(webHandle,OS.Pt_CB_WEB_URL, webProc, OS.Pt_CB_WEB_URL);
@@ -315,7 +317,7 @@ public boolean back() {
 	OS.memmove(result, ptr, 4);
 	OS.memmove(result, result[0], 4);
 	OS.free(ptr);
-	if ((result[0] & (1 << OS.WWW_DIRECTION_BACK)) == 0) return false;
+	if ((result[0] & (1 << OS.Pt_WEB_DIRECTION_BACK)) == 0) return false;
 	OS.PtSetResource(webHandle, OS.Pt_ARG_WEB_NAVIGATE_PAGE, OS.Pt_WEB_DIRECTION_BACK, 0);
 	return true;
 }
@@ -326,6 +328,7 @@ int webProc(int data, int info) {
 		case OS.Pt_CB_WEB_START:	return Pt_CB_WEB_START(info);
 		case OS.Pt_CB_WEB_STATUS:	return Pt_CB_WEB_STATUS(info);
 		case OS.Pt_CB_WEB_URL:		return Pt_CB_WEB_URL(info);
+		case OS.Pt_CB_WEB_DATA_REQ: return Pt_CB_WEB_DATA_REQ(info);
 	}
 	return OS.Pt_CONTINUE;
 }
@@ -361,7 +364,7 @@ public boolean forward() {
 	OS.memmove(result, ptr, 4);
 	OS.memmove(result, result[0], 4);
 	OS.free(ptr);
-	if ((result[0] & (1 << OS.WWW_DIRECTION_FWD)) == 0) return false;
+	if ((result[0] & (1 << OS.Pt_WEB_DIRECTION_FWD)) == 0) return false;
 	OS.PtSetResource(webHandle, OS.Pt_ARG_WEB_NAVIGATE_PAGE, OS.Pt_WEB_DIRECTION_FWD, 0);
 	return true;
 }
@@ -415,6 +418,45 @@ int Pt_CB_WEB_COMPLETE(int info) {
 	statusevent.text = ""; //$NON-NLS-1$
 	for (int i = 0; i < statusTextListeners.length; i++)
 		statusTextListeners[i].changed(statusevent);
+	return OS.Pt_CONTINUE;
+}
+
+int Pt_CB_WEB_DATA_REQ(int info) {
+	PtCallbackInfo_t cbinfo_t = new PtCallbackInfo_t();
+	OS.memmove(cbinfo_t, info, PtCallbackInfo_t.sizeof);
+	PtWebDataReqCallback_t dataReq = new PtWebDataReqCallback_t();
+	OS.memmove(dataReq, cbinfo_t.cbdata, PtWebDataReqCallback_t.sizeof);
+	PtWebClientData_t clientData = new PtWebClientData_t();
+	clientData.type = dataReq.type;
+	clientData.data = 0;
+	String data = null;
+	switch (clientData.type) {
+		case OS.Pt_WEB_DATA_HEADER:
+			StringBuffer sb = new StringBuffer("Content-Type: text/html\n"); //$NON-NLS-1$
+			sb.append("Content-Length: "); //$NON-NLS-1$
+			sb.append(text.length());
+			sb.append("\n"); //$NON-NLS-1$
+			data = sb.toString();
+			break;
+		case OS.Pt_WEB_DATA_BODY:
+			data = text;
+			break;
+		case OS.Pt_WEB_DATA_CLOSE:
+			text = ""; //$NON-NLS-1$
+			break;
+	}
+	if (data != null ) {
+		byte[] buffer = Converter.wcsToMbcs(null, data, true);
+		clientData.data = OS.malloc(buffer.length);
+		OS.memmove(clientData.data, buffer, buffer.length);
+		clientData.length = buffer.length - 1;
+	}
+	System.arraycopy(dataReq.url, 0, clientData.url, 0, dataReq.url.length);
+	int ptr = OS.malloc(PtWebClientData_t.sizeof);
+	OS.memmove(ptr, clientData, PtWebClientData_t.sizeof);
+	OS.PtSetResource(webHandle, OS.Pt_ARG_WEB_DATA, clientData.data, ptr);
+	OS.free(ptr);
+	if( clientData.data != 0 ) OS.free(clientData.data);
 	return OS.Pt_CONTINUE;
 }
 
@@ -707,7 +749,13 @@ public void removeVisibilityListener(VisibilityListener listener) {
 public boolean setText(String html) {
 	checkWidget();
 	if (html == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	return false;
+	text = html;
+	byte[] buffer = Converter.wcsToMbcs(null, "client:", true); //$NON-NLS-1$
+	int ptr = OS.malloc(buffer.length);
+	OS.memmove(ptr, buffer, buffer.length);
+	OS.PtSetResource(webHandle, OS.Pt_ARG_WEB_GET_URL, ptr, OS.Pt_WEB_ACTION_DISPLAY);
+	OS.free(ptr);
+	return true;
 }
 
 /**

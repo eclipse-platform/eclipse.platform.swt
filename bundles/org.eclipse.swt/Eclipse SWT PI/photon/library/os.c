@@ -3444,6 +3444,18 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_photon_PtTe
 }
 #endif
 
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_photon_PtWebClientData_1t_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_photon_PtWebClientData_1t_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	PtWebClientData_t _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PtWebClientData_1t_2I\n")
+	if (arg1) lparg1 = getPtWebClientData_tFields(env, arg1, &_arg1);
+	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_photon_PtWebClientData_1t_2I\n")
+}
+#endif
+
 #ifndef NO_memmove__I_3BI
 JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3BI)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
@@ -3652,6 +3664,19 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_PtTex
 }
 #endif
 
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_photon_PtWebDataReqCallback_1t_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_PtWebDataReqCallback_1t_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	PtWebDataReqCallback_t _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PtWebDataReqCallback_1t_2II\n")
+	if (arg0) lparg0 = getPtWebDataReqCallback_tFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, arg2);
+	if (arg0) setPtWebDataReqCallback_tFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PtWebDataReqCallback_1t_2II\n")
+}
+#endif
+
 #ifndef NO_memmove__Lorg_eclipse_swt_internal_photon_PtWebStatusCallback_1t_2II
 JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_PtWebStatusCallback_1t_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
@@ -3659,7 +3684,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_PtWeb
 	PtWebStatusCallback_t _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PtWebStatusCallback_1t_2II\n")
 	if (arg0) lparg0 = getPtWebStatusCallback_tFields(env, arg0, &_arg0);
-	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	memmove((void *)lparg0, (const void *)arg1, arg2);
 	if (arg0) setPtWebStatusCallback_tFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PtWebStatusCallback_1t_2II\n")
 }

@@ -211,6 +211,22 @@ void setPtTextCallback_tFields(JNIEnv *env, jobject lpObject, PtTextCallback_t *
 #define setPtTextCallback_tFields(a,b,c)
 #endif
 
+#ifndef NO_PtWebClientData_t
+PtWebClientData_t *getPtWebClientData_tFields(JNIEnv *env, jobject lpObject, PtWebClientData_t *lpStruct);
+void setPtWebClientData_tFields(JNIEnv *env, jobject lpObject, PtWebClientData_t *lpStruct);
+#else
+#define getPtWebClientData_tFields(a,b,c) NULL
+#define setPtWebClientData_tFields(a,b,c)
+#endif
+
+#ifndef NO_PtWebDataReqCallback_t
+PtWebDataReqCallback_t *getPtWebDataReqCallback_tFields(JNIEnv *env, jobject lpObject, PtWebDataReqCallback_t *lpStruct);
+void setPtWebDataReqCallback_tFields(JNIEnv *env, jobject lpObject, PtWebDataReqCallback_t *lpStruct);
+#else
+#define getPtWebDataReqCallback_tFields(a,b,c) NULL
+#define setPtWebDataReqCallback_tFields(a,b,c)
+#endif
+
 #ifndef NO_PtWebStatusCallback_t
 PtWebStatusCallback_t *getPtWebStatusCallback_tFields(JNIEnv *env, jobject lpObject, PtWebStatusCallback_t *lpStruct);
 void setPtWebStatusCallback_tFields(JNIEnv *env, jobject lpObject, PtWebStatusCallback_t *lpStruct);
