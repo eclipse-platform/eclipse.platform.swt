@@ -98,6 +98,10 @@ public class OS {
 	public static native int DrawThemeButton(short[] bounds, short kind, short[] newInfo, short[] prevInfo,
 				int eraseProc, int labelProc, int userData);
 				
+	public static native int SetThemeBackground(short inBrush, short depth, boolean isColorDevice);
+	public static native int GetThemeDrawingState(int[] state);
+	public static native int SetThemeDrawingState(int state, boolean disposeNow);
+				
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Event Manager
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -154,7 +158,8 @@ public class OS {
 	public static final double kEventDurationForever	= -1.0;
 	public static final double kEventDurationNoWait		= 0.0;
 	
-	public static final int eventLoopTimedOutErr	= -9875;
+	public static final int eventNotHandledErr	= -9874;
+	public static final int eventLoopTimedOutErr= -9875;
 
 	public static final int kEventAttributeNone			= 0;
 	public static final int kEventAttributeUserEvent	= 1 << 0;
@@ -174,6 +179,11 @@ public class OS {
 	
 	public static final int typeUnicodeText= ('u'<<24) + ('t'<<16) + ('x'<<8) + 't';
 	public static final int typeWindowRef= ('w'<<24) + ('i'<<16) + ('n'<<8) + 'd';
+	public static final int typeWindowDefPartCode= ('w'<<24) + ('d'<<16) + ('p'<<8) + 't';
+	public static final int typeControlRef= ('c'<<24) + ('t'<<16) + ('r'<<8) + 'l';
+	
+	public static final int kEventParamWindowDefPart= ('w'<<24) + ('d'<<16) + ('p'<<8) + 'c';
+	public static final int kEventParamControlRef= ('c'<<24) + ('t'<<16) + ('r'<<8) + 'l';
 	
 	public static final int kEventTextInputUnicodeForKeyEvent = 2;
 
@@ -203,9 +213,9 @@ public class OS {
 	public static final int kWindowBoundsChangeSizeChanged = (1 << 2);
 	public static final int kWindowBoundsChangeOriginChanged = (1 << 3);
 
+	public static final int kEventMenuBeginTracking = 1;
+	public static final int kEventMenuEndTracking = 2;
 		
-	public static final int eventNotHandledErr	= -9874;
-	
 	public static final int typeUInt32	= ('m'<<24) + ('a'<<16) + ('g'<<8) + 'n';
 
 	public static final int kEventParamDirectObject	= ('-'<<24) + ('-'<<16) + ('-'<<8) + '-'; /* type varies depending on event*/
@@ -217,6 +227,8 @@ public class OS {
 	
 	public static native int GetEventParameter(int eRefHandle, int paramName, int paramType, int[] outParamType,
 			int[] outActualSize, char[] data);			
+	public static native int GetEventParameter(int eRefHandle, int paramName, int paramType, int[] outParamType,
+			int[] outActualSize, short[] data);			
 	public static native int GetEventParameter(int eRefHandle, int paramName, int paramType, int[] outParamType,
 			int[] outActualSize, int[] data);			
 	public static native int SetEventParameter(int eRefHandle, int paramName, int paramType, char[] data);
@@ -306,8 +318,8 @@ public class OS {
 	public static native void TextSize(short size);
 	public static native void TextFace(short face);
 	public static native void TextMode(short mode);
-	public static native void DrawText(String s);
-	public static native short TextWidth(String s);
+	public static native void DrawText(String s, short font, short size, short face);
+	public static native short TextWidth(String s, short font, short size, short face);
 	public static native short CharWidth(byte c);
 	public static native void GetFontInfo(short[] info);	// FontInfo: short[4]
 	public static native void SetFractEnable(boolean enable);
@@ -361,6 +373,7 @@ public class OS {
     // PixMaps
 	public static native int NewPixMap(short w, short h, short depth, short pad, short[] reds, short[] greens, short[] blues);
 	public static native int duplicatePixMap(int srcPixmap);
+	public static native int copyPixmpaData(byte[] srcData, int pixmap, int length);
 
 	public static native void DisposePixMap(int pHandle);
 	public static native void GetPixBounds(int pHandle, short[] bounds);
@@ -695,6 +708,11 @@ public class OS {
 	// Control Manager
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+	// err codes
+	public static final int errCouldntSetFocus            	= -30585;
+	public static final int errControlIsNotEmbedder			= -30590;
+	public static final int errCantEmbedRoot				= -30595;
+
 	// control proc IDs
 	public static final short kControlBevelButtonSmallBevelProc= 32;
 	public static final short kControlBevelButtonNormalBevelProc= 33;
@@ -771,10 +789,10 @@ public class OS {
 	public static native int NewControl(int windowHandle, boolean initiallyVisible, short initial, short min, short max, short procID);
 	public static native void DisposeControl(int cHandle);
 	
-	public static native int GetRootControl(int windowHandle);
-	public static native int CreateRootControl(int windowHandle);
-	public static native void EmbedControl(int cHandle, int parentControlHandle);
-	public static native short CountSubControls(int cHandle);
+	public static native int GetRootControl(int windowHandle, int[] cHandle);
+	public static native int CreateRootControl(int windowHandle, int[] cHandle);
+	public static native int EmbedControl(int cHandle, int parentControlHandle);
+	public static native int CountSubControls(int cHandle, short[] count);
 	public static native int GetIndexedSubControl(int cHandle, short index, int[] outHandle);
 	public static native int GetSuperControl(int cHandle, int[] parentHandle);
 
@@ -789,17 +807,17 @@ public class OS {
 	public static native boolean IsValidControlHandle(int cHandle);
 	public static native void SetControlReference(int cHandle, int data);
 	public static native int GetControlReference(int cHandle);
-	public static native void SetControlTitleWithCFString(int cHandle, int sHandle);
+	public static native int SetControlTitleWithCFString(int cHandle, int sHandle);
 	public static native int GetControlTitleAsCFString(int cHandle, int[] sHandle);
 	public static native int setControlToolTipText(int cHandle, short[] bounds, int sHandle);
 	public static native void GetControlBounds(int cHandle, short[] bounds);
 	public static native void SetControlBounds(int cHandle, short[] bounds);
 	public static native int CreateUserPaneControl(int windowHandle, short[] bounds, int features, int[] cHandle);
 	public static native boolean IsControlVisible(int cHandle);
-	public static native void SetControlVisibility(int cHandle, boolean inIsVisible, boolean inDoDraw);
+	public static native int SetControlVisibility(int cHandle, boolean inIsVisible, boolean inDoDraw);
 	public static native boolean IsControlActive(int cHandle);
-	public static native void EnableControl(int cHandle);
-	public static native void DisableControl(int cHandle);
+	public static native int EnableControl(int cHandle);
+	public static native int DisableControl(int cHandle);
 	public static native boolean IsControlEnabled(int cHandle);
 	public static native int GetControl32BitMinimum(int cHandle);
 	public static native void SetControl32BitMinimum(int cHandle, int minimum);
@@ -812,8 +830,8 @@ public class OS {
 	public static native int GetControlViewSize(int cHandle);
 	public static native void SetControlViewSize(int cHandle, int viewSize);
 	public static native void IdleControls(int wHandle);
-	public static native void GetBestControlRect(int cHandle, short[] outRect, short[] outBaseLineOffset);
-	public static native void GetControlKind(int cHandle, int[] outControlKind);
+	public static native int GetBestControlRect(int cHandle, short[] outRect, short[] outBaseLineOffset);
+	public static native int GetControlKind(int cHandle, int[] outControlKind);
 	public static native int GetControlData(int cHandle, short part, int tag, short[] data);
 	public static native int GetControlData(int cHandle, short part, int tag, int[] data);
 	public static native int SetControlData(int cHandle, short part, int tag, int data);
@@ -823,7 +841,8 @@ public class OS {
 	public static native int NewUserPaneHitTestUPP(Object target, String method);
 	public static native short HandleControlKey(int cHandle, short keyCode, char charCode, int modifiers);
 	public static native int SetControlFontStyle(int cHandle, short font, short size, short style);
-	
+	public static native int SetUpControlBackground(int cHandle, short depth, boolean isColorDevice);
+
 	public static native int GetControlRegion(int cHandle, short inPart, int rgnHandle);
 	
 	public static short kControlContentCIconHandle= 130;
@@ -949,7 +968,8 @@ public class OS {
 	
 	public static final int kTXNWordWrapStateTag          = ('w'<<24) + ('w'<<16) + ('r'<<8) + 's';
 	public static final int kTXNTabSettingsTag            = ('t'<<24) + ('a'<<16) + ('b'<<8) + 's';
-
+	public static final int kTXNDoFontSubstitution        = ('f'<<24) + ('s'<<16) + ('u'<<8) + 'b';
+	
 	/* kTXNWordWrapStateTag */
 	public static final boolean kTXNAutoWrap                  = false;
 	public static final boolean kTXNNoAutoWrap                = true;
@@ -993,8 +1013,8 @@ public class OS {
 	public static native void TXNGetViewRect(int txHandle, short[] viewRect);
 	public static native int TXNGetLineMetrics(int txHandle, int lineNumber, int[] lineWidth, int[] lineHeight);
 	public static native void TXNForceUpdate(int txHandle);
+	public static native int TXNSetTXNObjectControls(int txHandle, boolean clearAll, int controlCount, int[] controlTags, int[] controlData);
 	//public static native int TXNSetBackground(int txHandle, TXNBackground *iBackgroundInfo);
-	//public static native void setTXNWordWrap(int txHandle, boolean wrap);
 
 	// TabFolder
 	public static final int kControlTabInfoTag= OSType("tabi");	/* ControlTabInfoRec*/
@@ -1097,7 +1117,18 @@ public class OS {
 	public static native int GetCaretTime();
 	public static native int GetMainDevice();
 	public static native int GetAvailableWindowPositioningBounds(int gHandle, short[] mainScreenRect);
-
+	
+	/*
+	// desktop
+	//short kOnSystemDisk
+	//public static native int GetIconRef(SInt16 vRefNum, OSType creator, OSType iconType, IconRef *theIconRef);
+	//public static native int ReleaseIconRef(IconRef theIconRef);
+OSErr GetIconRefFromFile (
+    const FSSpec *theFile, 
+    IconRef *theIconRef, 
+    SInt16 *theLabel
+);
+	*/
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 	// some helpers
