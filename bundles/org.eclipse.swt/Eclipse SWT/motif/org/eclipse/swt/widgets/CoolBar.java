@@ -537,18 +537,20 @@ Point layout (int widthHint) {
 	boolean resize = !(widthHint == SWT.DEFAULT);
 	int y = 0, maxWidth = 0;
 	for (int i = 0; i < rows.size(); i++) {
-		y += ROW_SPACING;
 		Vector row = (Vector) rows.elementAt(i);
-		int x = 0, rowHeight = getRowHeight(i);
-		for (int j = 0; j < row.size(); j++) {
-			CoolItem child = (CoolItem) row.elementAt(j);
-			int childWidth = child.getSize().x;
-			if (resize) child.setBounds(x, y, childWidth, rowHeight);
-			x += childWidth;
-		}
-		maxWidth = Math.max(maxWidth, x);
-		if (resize) adjustItemWidths(row, widthHint);
-		y += rowHeight;	
+		if (row.size() > 0) {
+			y += ROW_SPACING;
+			int x = 0, rowHeight = getRowHeight(i);
+			for (int j = 0; j < row.size(); j++) {
+				CoolItem child = (CoolItem) row.elementAt(j);
+				int childWidth = child.getSize().x;
+				if (resize) child.setBounds(x, y, childWidth, rowHeight);
+				x += childWidth;
+			}
+			maxWidth = Math.max(maxWidth, x);
+			if (resize) adjustItemWidths(row, widthHint);
+			y += rowHeight;
+		}	
 	}
 	int borders = getBorderWidth() * 2;
 	return new Point(maxWidth + borders, y + borders);
