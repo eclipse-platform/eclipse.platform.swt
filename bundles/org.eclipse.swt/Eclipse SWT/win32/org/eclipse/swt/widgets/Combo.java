@@ -1008,20 +1008,20 @@ void setBounds (int x, int y, int width, int height, int flags) {
 		height = textHeight + 6 + (itemHeight * 5) + 2;
 		/*
 		* Feature in Windows.  When a drop down combo box is resized,
-		* the combo box resizes the height of the text field and uses the height
-		* provided in SetWindowPos () to determine the height of the drop down
-		* list.  For some reason, the combo box redraws the whole area, not just
-		* the text field.  The fix is to set the SWP_NOSIZE bits when the height
-		* of text field and the drop down list is the same as the requested
-		* height.
-		* Note.  Setting the width of a combobox to 0 with SetWindowPos does
-		* not update the width of its drop down state as returned by
-		* CB_GETDROPPEDCONTROLRECT.  Verify that the current width is not 0
-		* prior to relying on the value returned by CB_GETDROPPEDCONTROLRECT.
+		* the combo box resizes the height of the text field and uses
+		* the height provided in SetWindowPos () to determine the height
+		* of the drop down list.  For some reason, the combo box redraws
+		* the whole area, not just the text field.  The fix is to set the
+		* SWP_NOSIZE bits when the height of text field and the drop down
+		* list is the same as the requested height.
+		* 
+		* NOTE:  Setting the width of a combo box to zero does not update
+		* the width of the drop down control rect.  If the width of the
+		* combo box is zero, then do not set SWP_NOSIZE.
 		*/
 		RECT rect = new RECT ();
 		OS.GetWindowRect (handle, rect);
-		if (rect.right != rect.left) {
+		if (rect.right - rect.left == 0) {
 			if (OS.SendMessage (handle, OS.CB_GETDROPPEDCONTROLRECT, 0, rect) != 0) {
 				int oldWidth = rect.right - rect.left, oldHeight = rect.bottom - rect.top;
 				if (oldWidth == width && oldHeight == height) flags |= OS.SWP_NOSIZE;
@@ -1277,10 +1277,11 @@ boolean translateTraversal (MSG msg) {
 			case OS.VK_RETURN:
 				boolean translated = super.translateTraversal (msg);
 				if (!translated) {
-					sendKeyEvent (SWT.KeyDown, msg.message, msg.wParam, msg.lParam);
-					if (msg.wParam == OS.VK_RETURN) {
-						sendEvent (SWT.DefaultSelection);
-						// widget could be disposed at this point
+					if (sendKeyEvent (SWT.KeyDown, msg.message, msg.wParam, msg.lParam)) {
+						if (msg.wParam == OS.VK_RETURN) {
+							sendEvent (SWT.DefaultSelection);
+							// widget could be disposed at this point
+						}
 					}
 				}
 				return true;
