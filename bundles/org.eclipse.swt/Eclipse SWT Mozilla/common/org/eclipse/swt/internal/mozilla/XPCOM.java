@@ -40,7 +40,11 @@ public class XPCOM {
 		/* Load the SWT Mozilla library */
 		Library.loadLibrary ("swt-mozilla"); //$NON-NLS-1$
 	}
-		
+
+	/* NsWidgetCID constants */
+	public static final nsID NS_APPSHELL_CID =	new nsID("2d96b3df-c051-11d1-a827-0040959a28c9"); //$NON-NLS-1$
+
+	/* XPCOM constants */
 	public static final int NS_OK =  0;
 	public static final int NS_COMFALSE = 1;
 	public static final int NS_ERROR_BASE = 0xc1f30000;

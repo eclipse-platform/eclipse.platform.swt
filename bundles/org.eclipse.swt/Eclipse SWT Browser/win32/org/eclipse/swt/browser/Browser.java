@@ -134,9 +134,10 @@ public Browser(Composite parent, int style) {
 					newEvent.current = nProgress;
 					newEvent.total = nProgressMax;
 					if (progressListeners != null) {
-						for (int i = 0; i < progressListeners.length; i++)
-							progressListeners[i].changed(newEvent);
-						if (nProgress == -1) {
+						if (nProgress != -1) {
+							for (int i = 0; i < progressListeners.length; i++)
+								progressListeners[i].changed(newEvent);
+						} else {
 							for (int i = 0; i < progressListeners.length; i++)
 								progressListeners[i].completed(newEvent);
 						}
