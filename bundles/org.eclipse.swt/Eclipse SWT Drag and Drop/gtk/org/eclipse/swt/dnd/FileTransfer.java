@@ -63,7 +63,7 @@ public static FileTransfer getInstance () {
  */
 public void javaToNative(Object object, TransferData transferData) {
 	transferData.result = 0;
-	if (!validate(object) || !isSupportedType(transferData)) {
+	if (!_validate(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
 	String[] files = (String[])object;
@@ -186,12 +186,16 @@ protected String[] getTypeNames(){
 	return new String[]{URI_LIST};
 }
 
-protected boolean validate(Object object) {
+boolean _validate(Object object) {
 	if (object == null || !(object instanceof String[]) || ((String[])object).length == 0) return false;
 	String[] strings = (String[])object;
 	for (int i = 0; i < strings.length; i++) {
 		if (strings[i] == null || strings[i].length() == 0) return false;
 	}
 	return true;
+}
+
+protected boolean validate(Object object) {
+	return _validate(object);
 }
 }
