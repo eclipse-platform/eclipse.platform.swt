@@ -8,7 +8,7 @@
     <classpathentry kind="src" path="Eclipse SWT/common_j2se"/>
     <classpathentry kind="src" path="Eclipse SWT PI/gtk"/>
     <classpathentry kind="src" path="Eclipse SWT PI/common_j2se"/>
-    <classpathentry kind="src" path="Eclipse SWT Accessibility/emulated"/>
+    <classpathentry kind="src" path="Eclipse SWT Accessibility/gtk"/>
     <classpathentry kind="src" path="Eclipse SWT Accessibility/common"/>
     <classpathentry kind="src" path="Eclipse SWT Drag and Drop/gtk"/>
     <classpathentry kind="src" path="Eclipse SWT Drag and Drop/common"/>
