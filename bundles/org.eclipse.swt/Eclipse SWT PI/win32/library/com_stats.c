@@ -118,4 +118,24 @@ char * COM_nativeFunctionNames[] = {
 	"WriteClassStg", 
 };
 
+#define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
+
+JNIEXPORT jint JNICALL STATS_NATIVE(COM_1GetFunctionCount)
+	(JNIEnv *env, jclass that)
+{
+	return COM_nativeFunctionCount;
+}
+
+JNIEXPORT jstring JNICALL STATS_NATIVE(COM_1GetFunctionName)
+	(JNIEnv *env, jclass that, jint index)
+{
+	return (*env)->NewStringUTF(env, COM_nativeFunctionNames[index]);
+}
+
+JNIEXPORT jint JNICALL STATS_NATIVE(COM_1GetFunctionCallCount)
+	(JNIEnv *env, jclass that, jint index)
+{
+	return COM_nativeFunctionCallCount[index];
+}
+
 #endif
