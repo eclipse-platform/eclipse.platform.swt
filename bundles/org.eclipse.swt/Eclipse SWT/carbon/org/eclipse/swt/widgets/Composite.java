@@ -339,9 +339,9 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	}
 	return result;
 }
-int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventRawKeyDown (nextHandler, theEvent, userData);
-	//TEMPORARY CODE - need to revisit when traversal fully implemented
+
+int kEventRawKey (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventRawKey (nextHandler, theEvent, userData);
 	if ((state & CANVAS) != 0) {
 		int [] keyCode = new int [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
@@ -357,6 +357,7 @@ int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
 	}
 	return result;
 }
+
 boolean hooksKeys () {
 	return hooks (SWT.KeyDown) || hooks (SWT.KeyUp);
 }
@@ -462,6 +463,33 @@ public void setLayout (Layout layout) {
 	this.layout = layout;
 }
 
+boolean setTabItemFocus () {
+	if ((style & SWT.NO_FOCUS) == 0) {
+		boolean takeFocus = true;
+		if ((state & CANVAS) != 0) takeFocus = hooksKeys ();
+		if (takeFocus) {
+			if (!isShowing ()) return false;
+			if (forceFocus ()) return true;
+		}
+	}
+	return super.setTabItemFocus ();
+}
+
+boolean setTabGroupFocus () {
+	if (isTabItem ()) return setTabItemFocus ();
+	if ((style & SWT.NO_FOCUS) == 0) {
+		boolean takeFocus = true;
+		if ((state & CANVAS) != 0) takeFocus = hooksKeys ();
+		if (takeFocus && setTabItemFocus ()) return true;
+	}
+	Control [] children = _getChildren ();
+	for (int i=0; i<children.length; i++) {
+		Control child = children [i];
+		if (child.isTabItem () && child.setTabItemFocus ()) return true;
+	}
+	return false;
+}
+
 /**
  * Sets the tabbing order for the specified controls to
  * match the order that they occur in the argument list.
@@ -506,6 +534,14 @@ public void setTabList (Control [] tabList) {
 void setZOrder () {
 	super.setZOrder ();
 	if (scrolledHandle != 0) OS.HIViewAddSubview (scrolledHandle, handle);
+}
+
+int traversalCode (int key, int theEvent) {
+	if ((state & CANVAS) != 0) {
+		if ((style & SWT.NO_FOCUS) != 0) return 0;
+		if (hooksKeys ()) return 0;
+	}
+	return super.traversalCode (key, theEvent);
 }
 
 }

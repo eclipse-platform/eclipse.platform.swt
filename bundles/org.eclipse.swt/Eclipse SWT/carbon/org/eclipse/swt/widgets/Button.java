@@ -135,6 +135,10 @@ static int checkStyle (int style) {
 	return style;
 }
 
+void click () {
+	postEvent (SWT.Selection);
+}
+
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	// NEEDS WORK - empty string
@@ -692,6 +696,10 @@ public void setText (String string) {
 	OS.SetControlTitleWithCFString (handle, ptr);
 	OS.CFRelease (ptr);
 	redraw ();
+}
+
+int traversalCode (int key, int theEvent) {
+	return super.traversalCode (key, theEvent) | SWT.TRAVERSE_MNEMONIC;
 }
 
 }

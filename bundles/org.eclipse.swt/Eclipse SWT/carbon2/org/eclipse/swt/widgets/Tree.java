@@ -858,22 +858,8 @@ int itemNotificationProc (int browser, int id, int message) {
 	return OS.noErr;
 }
 
-int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventRawKeyDown (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	int [] keyCode = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
-	switch (keyCode [0]) {
-		case 36: { /* Return */
-			postEvent (SWT.DefaultSelection);
-			break;
-		}
-	}
-	return result;
-}
-
-int kEventRawKeyRepeat (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventRawKeyRepeat (nextHandler, theEvent, userData);
+int kEventRawKey (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventRawKey (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	int [] keyCode = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);

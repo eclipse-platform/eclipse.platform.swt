@@ -1078,4 +1078,11 @@ void setZOrder (Control control, boolean above) {
 	}
 }
 
+boolean traverseEscape () {
+	if (parent == null) return false;
+	if (!isVisible () || !isEnabled ()) return false;
+	close ();
+	return true;
+}
+
 }

@@ -255,4 +255,9 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook(SWT.Selection, listener);
 	eventTable.unhook(SWT.DefaultSelection,listener);
 }
+
+int traversalCode (int key, int theEvent) {
+	return 0;
+}
+
 }

@@ -868,8 +868,8 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	return OS.noErr;
 }
 
-int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventRawKeyDown (nextHandler, theEvent, userData);
+int kEventRawKey (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventRawKey (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	int [] modifiers = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
@@ -892,27 +892,16 @@ int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
 		int [] keyCode = new int [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
 		switch (keyCode [0]) {
+			/*
+			* Feature in the Macintosh.  Tab and Return characters are inserted into a
+			* single line TXN Object.  While this may be correct platform behavior, it is
+			* unexpected.  The fix is to avoid calling the default handler. 
+			*/
 			case 36: { /* Return */
-				/*
-				* Bug in the Macintosh.  When the default handler calls TXNKeyDown()
-				* for a single line TXN Object, it does not check for the return key
-				* or the default button.  The result is that a garbage character (the
-				* CR) is entered into the TXN Object.  The fix is to temporarily take
-				* focus away from the TXN Object, call the default handler to process
-				* the return key and reset the focus.
-				*/
-				OS.TXNFocus (txnObject, false);
-				result = OS.CallNextEventHandler (nextHandler, theEvent);
-				OS.TXNFocus (txnObject, true);
 				postEvent (SWT.DefaultSelection);
-				break;
+				return OS.noErr;
 			}
 			case 48: { /* Tab */
-				/*
-				* Feature in the Macintosh.  Tab characters are inserted into a single
-				* line TXN Object.  While this may be correct platform behavior, it is
-				* unexpected.  The fix is to avoid calling the default handler. 
-				*/
 				return OS.noErr;
 			}
 		}
@@ -1475,6 +1464,23 @@ public void setVisible (boolean visible) {
 public void showSelection () {
 	checkWidget();
 	OS.TXNShowSelection (txnObject, false);
+}
+
+int traversalCode (int key, int theEvent) {
+	int bits = super.traversalCode (key, theEvent);
+	if ((style & SWT.READ_ONLY) != 0) return bits;
+	if ((style & SWT.MULTI) != 0) {
+		bits &= ~SWT.TRAVERSE_RETURN;
+		if (key == 48 /* Tab */ && theEvent != 0) {
+			int [] modifiers = new int [1];
+			OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
+			boolean next = (modifiers [0] & OS.shiftKey) == 0;
+			if (next && (modifiers [0] & OS.controlKey) == 0) {
+				bits &= ~(SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS);
+			}
+		}
+	}
+	return bits;
 }
 
 String verifyText (String string, int start, int end) {

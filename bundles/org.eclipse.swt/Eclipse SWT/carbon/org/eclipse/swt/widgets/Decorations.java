@@ -520,4 +520,15 @@ public void setText (String string) {
 	text = string;
 }
 
+boolean traverseItem (boolean next) {
+	return false;
+}
+
+boolean traverseReturn () {
+	if (defaultButton == null || defaultButton.isDisposed ()) return false;
+	if (!defaultButton.isVisible () || !defaultButton.isEnabled ()) return false;
+	defaultButton.click ();
+	return true;
+}
+
 }

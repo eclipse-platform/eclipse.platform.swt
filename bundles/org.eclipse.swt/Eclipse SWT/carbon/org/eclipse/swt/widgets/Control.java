@@ -582,6 +582,9 @@ public boolean forceFocus () {
 	if (!isEnabled () || !isVisible ()/* || !isActive ()*/) return false;
 	if (isFocusControl ()) return true;
 	shell.bringToTop ();
+	int [] features = new int [1];
+	OS.GetControlFeatures (handle, features);
+	if ((features [0] & OS.kControlSupportsFocus) == 0) return false;
 	int window = OS.GetControlOwner (handle);
 	return OS.SetKeyboardFocus (window, handle, (short)OS.kControlFocusNextPart) == OS.noErr;
 }
@@ -1178,12 +1181,44 @@ public boolean isReparentable () {
 	return false;
 }
 
+boolean isShowing () {
+	/*
+	* This is not complete.  Need to check if the
+	* widget is obscurred by a parent or sibling.
+	*/
+	if (!isVisible ()) return false;
+	Control control = this;
+	while (control != null) {
+		Point size = control.getSize ();
+		if (size.x == 0 || size.y == 0) {
+			return false;
+		}
+		control = control.parent;
+	}
+	return true;
+}
+
 boolean isTabGroup () {
-	return false;
+	Control [] tabList = parent._getTabList ();
+	if (tabList != null) {
+		for (int i=0; i<tabList.length; i++) {
+			if (tabList [i] == this) return true;
+		}
+	}
+	int code = traversalCode (0, 0);
+	if ((code & (SWT.TRAVERSE_ARROW_PREVIOUS | SWT.TRAVERSE_ARROW_NEXT)) != 0) return false;
+	return (code & (SWT.TRAVERSE_TAB_PREVIOUS | SWT.TRAVERSE_TAB_NEXT)) != 0;
 }
 
 boolean isTabItem () {
-	return false;
+	Control [] tabList = parent._getTabList ();
+	if (tabList != null) {
+		for (int i=0; i<tabList.length; i++) {
+			if (tabList [i] == this) return false;
+		}
+	}
+	int code = traversalCode (0, 0);
+	return (code & (SWT.TRAVERSE_ARROW_PREVIOUS | SWT.TRAVERSE_ARROW_NEXT)) != 0;
 }
 
 /**
@@ -1294,9 +1329,10 @@ int kEventMouseUp (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
-int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
+int kEventRawKey (int nextHandler, int theEvent, int userData) {
 	int [] keyCode = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
+	if (translateTraversal (keyCode [0], theEvent)) return OS.noErr;	
 	if (keyCode [0] == 114) { /* Help */
 		Control control = this;
 		while (control != null) {
@@ -1309,6 +1345,10 @@ int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
 	}
 	if (!sendKeyEvent (SWT.KeyDown, theEvent)) return OS.noErr;
 	return OS.eventNotHandledErr;
+}
+
+int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
+	return kEventRawKey (nextHandler, theEvent, userData);
 }
 
 int kEventRawKeyModifiersChanged (int nextHandler, int theEvent, int userData) {
@@ -1327,8 +1367,7 @@ int kEventRawKeyModifiersChanged (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventRawKeyRepeat (int nextHandler, int theEvent, int userData) {
-	if (!sendKeyEvent (SWT.KeyDown, theEvent)) return OS.noErr;
-	return OS.eventNotHandledErr;
+	return kEventRawKey (nextHandler, theEvent, userData);
 }
 
 int kEventRawKeyUp (int nextHandler, int theEvent, int userData) {
@@ -2313,11 +2352,12 @@ public void setSize (Point size) {
 }
 
 boolean setTabGroupFocus () {
-	return false;
+	return setTabItemFocus ();
 }
 
 boolean setTabItemFocus () {
-	return false;
+	if (!isShowing ()) return false;
+	return setFocus ();
 }
 
 /**
@@ -2547,6 +2587,102 @@ int topHandle () {
 	return handle;
 }
 
+boolean translateTraversal (int key, int theEvent) {
+	int detail = SWT.TRAVERSE_NONE;
+	int code = traversalCode (key, theEvent);
+	boolean all = false;
+	switch (key) {
+		case 53: /* Esc */ {
+			all = true;
+			detail = SWT.TRAVERSE_ESCAPE;
+			break;
+		}
+		case 36: /* Return */ {
+			all = true;
+			detail = SWT.TRAVERSE_RETURN;
+			break;
+		}
+		case 48: /* Tab */ {
+			int [] modifiers = new int [1];
+			OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
+			boolean next = (modifiers [0] & OS.shiftKey) == 0;
+			/*
+			* NOTE: This code causes Shift+Tab and Ctrl+Tab to
+			* always attempt traversal which is not correct.
+			* The default should be the same as a plain Tab key.
+			* This behavior is currently relied on by StyledText.
+			* 
+			* The correct behavior is to give every key to any
+			* control that wants to see every key.  The default
+			* behavior for a Canvas should be to see every key.
+			*/
+			switch (modifiers [0]) {
+				case OS.controlKey:
+				case OS.shiftKey:
+					code |= SWT.TRAVERSE_TAB_PREVIOUS | SWT.TRAVERSE_TAB_NEXT;
+			}
+			detail = next ? SWT.TRAVERSE_TAB_NEXT : SWT.TRAVERSE_TAB_PREVIOUS;
+			break;
+		}
+		case 126: /* Up arrow */
+		case 123: /* Left arrow */
+		case 125: /* Down arrow */
+		case 124: /* Right arrow */ {
+			boolean next = key == 125 /* Down arrow */ || key == 124 /* Right arrow */;
+			detail = next ? SWT.TRAVERSE_ARROW_NEXT : SWT.TRAVERSE_ARROW_PREVIOUS;
+			break;
+		}
+		case 116: /* Page up */
+		case 121: /* Page down */ {
+			all = true;
+			int [] modifiers = new int [1];
+			OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
+			if ((modifiers [0] & OS.controlKey) == 0) return false;
+			/*
+			* NOTE: This code causes Ctrl+PgUp and Ctrl+PgDn to always
+			* attempt traversal which is not correct.  This behavior is
+			* currently relied on by StyledText.
+			* 
+			* The correct behavior is to give every key to any
+			* control that wants to see every key.  The default
+			* behavior for a Canvas should be to see every key.
+			*/
+			code |= SWT.TRAVERSE_PAGE_NEXT | SWT.TRAVERSE_PAGE_PREVIOUS;
+			detail = key == 121 /* Page down */ ? SWT.TRAVERSE_PAGE_NEXT : SWT.TRAVERSE_PAGE_PREVIOUS;
+			break;
+		}
+		default:
+			return false;
+	}
+	Event event = new Event ();
+	event.doit = (code & detail) != 0;
+	event.detail = detail;
+	setKeyState (event, theEvent);
+	Shell shell = getShell ();
+	Control control = this;
+	do {
+		if (control.traverse (event)) return true;
+		if (!event.doit && control.hooks (SWT.Traverse)) {
+			return false;
+		}
+		if (control == shell) return false;
+		control = control.parent;
+	} while (all && control != null);
+	return false;
+}
+
+int traversalCode (int key, int theEvent) {
+	int [] features = new int [1];
+	OS.GetControlFeatures (handle, features);
+	if ((features [0] & (OS.kControlSupportsEmbedding | OS.kControlSupportsFocus)) == 0) {
+		return 0;
+	}
+	int code = SWT.TRAVERSE_RETURN | SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS;
+	Shell shell = getShell ();
+	if (shell.parent != null) code |= SWT.TRAVERSE_ESCAPE;
+	return code;
+}
+
 boolean traverseMnemonic (char key) {
 	return false;
 }
@@ -2599,10 +2735,54 @@ boolean traverseEscape () {
 }
 
 boolean traverseGroup (boolean next) {
-	return false;
+	Control root = computeTabRoot ();
+	Control group = computeTabGroup ();
+	Control [] list = root.computeTabList ();
+	int length = list.length;
+	int index = 0;
+	while (index < length) {
+		if (list [index] == group) break;
+		index++;
+	}
+	/*
+	* It is possible (but unlikely), that application
+	* code could have disposed the widget in focus in
+	* or out events.  Ensure that a disposed widget is
+	* not accessed.
+	*/
+	if (index == length) return false;
+	int start = index, offset = (next) ? 1 : -1;
+	while ((index = ((index + offset + length) % length)) != start) {
+		Control control = list [index];
+		if (!control.isDisposed () && control.setTabGroupFocus ()) {
+			if (!isDisposed () && !isFocusControl ()) return true;
+		}
+	}
+	if (group.isDisposed ()) return false;
+	return group.setTabGroupFocus ();
 }
 
 boolean traverseItem (boolean next) {
+	Control [] children = parent._getChildren ();
+	int length = children.length;
+	int index = 0;
+	while (index < length) {
+		if (children [index] == this) break;
+		index++;
+	}
+	/*
+	* It is possible (but unlikely), that application
+	* code could have disposed the widget in focus in
+	* or out events.  Ensure that a disposed widget is
+	* not accessed.
+	*/
+	int start = index, offset = (next) ? 1 : -1;
+	while ((index = (index + offset + length) % length) != start) {
+		Control child = children [index];
+		if (!child.isDisposed () && child.isTabItem ()) {
+			if (child.setTabItemFocus ()) return true;
+		}
+	}
 	return false;
 }
 
