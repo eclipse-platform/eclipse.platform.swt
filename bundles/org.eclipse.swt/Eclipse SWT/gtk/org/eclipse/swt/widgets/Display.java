@@ -94,6 +94,7 @@ public class Display extends Device {
 	int windowProc2, windowProc3, windowProc4, windowProc5;
 	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5;
 	EventTable eventTable, filterTable;
+	static String APP_NAME = "SWT";
 
 	/* Input method resources */
 	int preeditWindow, preeditLabel;
@@ -443,6 +444,8 @@ synchronized void createDisplay (DeviceData data) {
 		OS.memmove (buffer, ptr, length);
 		System.out.println ("***WARNING: " + new String (Converter.mbcsToWcs (null, buffer)));
 	}
+	byte [] buffer = Converter.wcsToMbcs (null, APP_NAME, true);
+	OS.gdk_set_program_class(buffer);
 }
 
 synchronized void deregister () {
@@ -1478,7 +1481,7 @@ boolean runDeferredEvents () {
  * @param name the new app name
  */
 public static void setAppName (String name) {
-	/* Do nothing - Gtk doesn't have the concept of application name. */
+	APP_NAME = name;
 }
 
 /**

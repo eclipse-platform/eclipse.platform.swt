@@ -1287,6 +1287,20 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1gc_1set_1values
 }
 #endif
 
+#ifndef NO_gdk_1set_1program_1class
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1set_1program_1class
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+
+	DEBUG_CALL("gdk_1set_1program_1class\n")
+
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	gdk_set_program_class((char *)lparg0);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+}
+#endif
+
 #ifndef NO_gdk_1image_1get
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1image_1get
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
@@ -6499,5 +6513,4 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_strlen
 	return (jint)strlen((const char *)arg0);
 }
 #endif
-
 

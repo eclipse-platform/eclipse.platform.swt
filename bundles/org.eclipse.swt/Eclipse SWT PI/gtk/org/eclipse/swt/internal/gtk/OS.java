@@ -418,6 +418,7 @@ public static final native void gdk_rgb_init();
 public static final native int gdk_screen_height();
 public static final native int gdk_screen_width();
 public static final native int gdk_screen_width_mm();
+public static final native void gdk_set_program_class(byte[] program_class);
 public static final native void gdk_threads_enter();
 public static final native void gdk_threads_init();
 public static final native void gdk_threads_leave();
