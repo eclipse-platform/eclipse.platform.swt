@@ -1716,6 +1716,7 @@ void sendHelpEvent (int callData) {
 	}
 }
 boolean sendMouseEvent (int type) {
+	if (!hooks (type) && !filters (type)) return true;
 	int xDisplay = OS.XtDisplay (handle), xWindow = OS.XtWindow (handle);
 	int [] windowX = new int [1], windowY = new int [1], mask = new int [1], unused = new int [1];
 	OS.XQueryPointer (xDisplay, xWindow, unused, unused, unused, unused, windowX, windowY, mask);
@@ -1739,9 +1740,6 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
 	return event.doit;
 }
 boolean sendMouseEvent (int type, XButtonEvent xEvent) {
-	short [] x_root = new short [1], y_root = new short [1];
-	OS.XtTranslateCoords (handle, (short) 0, (short) 0, x_root, y_root);
-	int x = xEvent.x_root - x_root [0], y = xEvent.y_root - y_root [0];
 	int count = 0, detail = 0, button = xEvent.button;
 	boolean send = false;
 	switch (button) {
@@ -1762,6 +1760,10 @@ boolean sendMouseEvent (int type, XButtonEvent xEvent) {
 			button = 5;
 			break;
 	}
+	if (!hooks (type) && !filters (type)) return true;
+	short [] x_root = new short [1], y_root = new short [1];
+	OS.XtTranslateCoords (handle, (short) 0, (short) 0, x_root, y_root);
+	int x = xEvent.x_root - x_root [0], y = xEvent.y_root - y_root [0];
 	if (type == SWT.MouseWheel) {
 		Control control = this;
 		Shell shell = getShell ();
@@ -1781,12 +1783,14 @@ boolean sendMouseEvent (int type, XButtonEvent xEvent) {
 	return true;	
 }
 boolean sendMouseEvent (int type, XCrossingEvent xEvent) {
+	if (!hooks (type) && !filters (type)) return true;
 	short [] x_root = new short [1], y_root = new short [1];
 	OS.XtTranslateCoords (handle, (short) 0, (short) 0, x_root, y_root);
 	int x = xEvent.x_root - x_root [0], y = xEvent.y_root - y_root [0];
 	return sendMouseEvent (type, 0, 0, 0, false, xEvent.time, x, y, xEvent.state);
 }
-boolean sendMouseEvent (int type, XMotionEvent xEvent) {	
+boolean sendMouseEvent (int type, XMotionEvent xEvent) {
+	if (!hooks (type) && !filters (type)) return true;
 	short [] x_root = new short [1], y_root = new short [1];
 	OS.XtTranslateCoords (handle, (short) 0, (short) 0, x_root, y_root);
 	int x = xEvent.x_root - x_root [0], y = xEvent.y_root - y_root [0];
