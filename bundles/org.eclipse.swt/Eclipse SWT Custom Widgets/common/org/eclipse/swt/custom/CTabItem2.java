@@ -138,7 +138,7 @@ public void dispose () {
 void drawSelected(GC gc ) {
 	Display display = getDisplay();
 	int[] shape = null;
-	int extra = parent.CURVE_WIDTH/2;
+	int extra = CTabFolder2.CURVE_WIDTH/2;
 	if (this.parent.onBottom) {
 		int[] left = parent.bottomLeftCorner;
 		int[] right = parent.curve;
@@ -193,12 +193,6 @@ void drawSelected(GC gc ) {
 	}
 	CTabFolder2.fillRegion(gc, r);
 	r.dispose();
-
-	// draw border
-	Color c = new Color(getDisplay(), parent.borderRGB);
-	gc.setForeground(c);
-	gc.drawPolyline(shape);
-	c.dispose();
 	
 	// draw Image
 	int xDraw = x + LEFT_MARGIN;
