@@ -2030,6 +2030,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1set_1ov
 }
 #endif
 
+#ifndef NO_gdk_1window_1show
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1show
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gdk_1window_1show\n")
+
+	gdk_window_show((GdkWindow *)arg0);
+}
+#endif
+
 #ifndef NO_gtk_1accel_1group_1new
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1accel_1group_1new
 	(JNIEnv *env, jclass that)

@@ -446,6 +446,7 @@ public static final native void gdk_window_set_cursor(int window, int cursor);
 public static final native void gdk_window_set_decorations(int window, int decorations);
 public static final native void gdk_window_set_icon(int window, int icon_window, int pixmap, int mask);
 public static final native void gdk_window_set_override_redirect(int window, boolean override_redirect);
+public static final native void gdk_window_show(int window);
 public static final native int gtk_accel_group_new();
 public static final native boolean gtk_accel_groups_activate(int accelGroup, int accelKey, int accelMods);
 public static final native void gtk_accel_label_set_accel_widget(int accel_label, int accel_widget);
