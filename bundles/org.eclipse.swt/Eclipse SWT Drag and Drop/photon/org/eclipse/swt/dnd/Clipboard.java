@@ -87,7 +87,7 @@ public void setContents(Object[] data, Transfer[] transferAgents){
 		DND.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	
-	byte[] clips = new byte[0];
+	PhClipHeader[] clips = new PhClipHeader[0];
 	int count = 0;
 	for (int i = 0; i < transferAgents.length; i++) {
 		String[] names = transferAgents[i].getTypeNames();
@@ -110,21 +110,30 @@ public void setContents(Object[] data, Transfer[] transferAgents){
 			clip.type_5 = type[5];
 			clip.type_6 = type[6];
 			clip.type_7 = type[7];
-			byte[] buffer = new byte[PhClipHeader.sizeof];
-			OS.memmove(buffer, clip, PhClipHeader.sizeof);
-			byte[] newClips = new byte[clips.length + buffer.length];
+			PhClipHeader[] newClips = new PhClipHeader[count + 1];
 			System.arraycopy(clips, 0, newClips, 0, clips.length);
-			System.arraycopy(buffer, 0, newClips, clips.length, buffer.length);
 			clips = newClips;
-			count++;
+			clips[count++] = clip;
 		}
 	}
 	
-	if (count > 0){
-		int ig = OS.PhInputGroup(0);
-		if (OS.PhClipboardCopy((short)ig, count, clips) != 0) {
-			DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
-		}
+	if (count == 0) return;
+
+	// Copy data to clipboard
+	byte[] buffer = new byte[count * PhClipHeader.sizeof];
+	byte[] temp = new byte[PhClipHeader.sizeof];
+	for (int i = 0; i < count; i++) {
+		OS.memmove(temp, clips[i], PhClipHeader.sizeof);
+		System.arraycopy(temp, 0, buffer, i * PhClipHeader.sizeof, temp.length);
+	}	
+	int ig = OS.PhInputGroup(0);
+	if (OS.PhClipboardCopy((short)ig, count, buffer) != 0) {
+		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
+	}
+	
+	// Free allocated data
+	for (int i = 0; i < count; i++) {
+		OS.free(clips[i].data);
 	}
 }
 /*
