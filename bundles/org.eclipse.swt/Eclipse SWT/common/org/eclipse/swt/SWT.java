@@ -85,7 +85,7 @@ public class SWT {
 	public static final int Paint = 9;	
 	
 	/**
-	 * pove event type (value is 10)
+	 * move event type (value is 10)
 	 */
 	public static final int Move = 10;
 	
