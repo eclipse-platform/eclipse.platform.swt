@@ -718,6 +718,7 @@ public void setFont (Font font){
 	if (font != null && font.isDisposed ()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
+	if (font == null && this.font == null) return;
 	if (font != null && font.equals(this.font)) return;
 	this.font = font;
 	if (!parent.updateTabHeight(false)) {
@@ -730,7 +731,9 @@ public void setImage (Image image) {
 	if (image != null && image.isDisposed ()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (image != null && image.equals(getImage())) return;
+	Image oldImage = getImage();
+	if (image == null && oldImage == null) return;
+	if (image != null && image.equals(oldImage)) return;
 	super.setImage(image);
 	if (!parent.updateTabHeight(false)) {
 		parent.updateItems();
