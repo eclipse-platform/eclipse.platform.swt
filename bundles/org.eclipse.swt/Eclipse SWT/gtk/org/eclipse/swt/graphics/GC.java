@@ -129,8 +129,8 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 	OS.gdk_gc_set_exposures(handle, false);
 	if (data.image != null) return;
 	boolean disjoint = (destX + width < srcX) || (srcX + width < destX) || (destY + height < srcY) || (srcY + height < destY);
+	GdkRectangle rect = new GdkRectangle ();
 	if (disjoint) {
-		GdkRectangle rect = new GdkRectangle ();
 		rect.x = srcX;
 		rect.y = srcY;
 		rect.width = width;
@@ -141,7 +141,6 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 		if (deltaX != 0) {
 			int newX = destX - deltaX;
 			if (deltaX < 0) newX = destX + width;
-			GdkRectangle rect = new GdkRectangle ();
 			rect.x = newX;
 			rect.y = srcY;
 			rect.width = Math.abs(deltaX);
@@ -152,7 +151,6 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 		if (deltaY != 0) {
 			int newY = destY - deltaY;
 			if (deltaY < 0) newY = destY + height;
-			GdkRectangle rect = new GdkRectangle ();
 			rect.x = srcX;
 			rect.y = newY;
 			rect.width = width;
