@@ -10,8 +10,6 @@ public class TrayIcon extends Widget {
 	int /*long*/ id;
 	int /*long*/ imageHandle;
 	int /*long*/ tooltipsHandle;
-	int /*long*/ trayWindow;
-	int xMessageAtom;
 	Image image;
 	Menu menu;
 	String toolTipText;
@@ -35,10 +33,10 @@ public TrayIcon (Display display) {
 	int /*long*/ trayAtom = OS.gdk_atom_intern (trayBuffer, true);
 	int /*long*/ xTrayAtom = OS.gdk_x11_atom_to_xatom (trayAtom);
 	int /*long*/ xDisplay = OS.GDK_DISPLAY ();
-	trayWindow = OS.XGetSelectionOwner (xDisplay, xTrayAtom);
+	int /*long*/ trayWindow = OS.XGetSelectionOwner (xDisplay, xTrayAtom);
 	byte [] messageBuffer = Converter.wcsToMbcs (null, "_NET_SYSTEM_TRAY_OPCODE", true);
 	int /*long*/ messageAtom = OS.gdk_atom_intern (messageBuffer, true);
-	xMessageAtom = OS.gdk_x11_atom_to_xatom (messageAtom);
+	int xMessageAtom = OS.gdk_x11_atom_to_xatom (messageAtom);
 
 	XClientMessageEvent event = new XClientMessageEvent ();
 	event.type = OS.ClientMessage;
@@ -126,6 +124,8 @@ public boolean getVisible () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	if (tooltipsHandle != 0) OS.g_object_unref (tooltipsHandle);
+	imageHandle = tooltipsHandle = 0;
 	image = null;
 	toolTipText = null;
 	menu = null;
