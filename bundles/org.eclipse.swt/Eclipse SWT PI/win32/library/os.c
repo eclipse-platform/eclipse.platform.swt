@@ -2479,6 +2479,21 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetFontLanguageInfo)
 }
 #endif
 
+#ifndef NO_GetGUIThreadInfo
+JNIEXPORT jboolean JNICALL OS_NATIVE(GetGUIThreadInfo)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	GUITHREADINFO _arg1, *lparg1=NULL;
+	jboolean rc;
+	OS_NATIVE_ENTER(env, that, GetGUIThreadInfo_FUNC);
+	if (arg1) lparg1 = getGUITHREADINFOFields(env, arg1, &_arg1);
+	rc = (jboolean)GetGUIThreadInfo((DWORD)arg0, (LPGUITHREADINFO)lparg1);
+	if (arg1) setGUITHREADINFOFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, GetGUIThreadInfo_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetIconInfo
 JNIEXPORT jboolean JNICALL OS_NATIVE(GetIconInfo)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)

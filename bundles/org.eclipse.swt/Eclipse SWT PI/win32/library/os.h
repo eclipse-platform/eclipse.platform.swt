@@ -61,6 +61,7 @@
 #define NO_DOCINFO
 #define NO_GCP_RESULTS
 #define NO_GRADIENT_RECT
+#define NO_GUITHREADINFO
 #define NO_HELPINFO
 #define NO_HIGHCONTRAST
 #define NO_MARGINS
@@ -184,6 +185,7 @@
 #define NO_GetDIBColorTable
 #define NO_GetDIBits
 #define NO_GetFontLanguageInfo
+#define NO_GetGUIThreadInfo
 #define NO_GetIconInfo
 #define NO_GetKeyboardLayout
 #define NO_GetKeyboardLayoutList

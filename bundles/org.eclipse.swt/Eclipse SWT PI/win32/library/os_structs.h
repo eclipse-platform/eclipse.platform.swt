@@ -215,6 +215,18 @@ void setGRADIENT_RECTFields(JNIEnv *env, jobject lpObject, GRADIENT_RECT *lpStru
 #define GRADIENT_RECT_sizeof() 0
 #endif
 
+#ifndef NO_GUITHREADINFO
+void cacheGUITHREADINFOFields(JNIEnv *env, jobject lpObject);
+GUITHREADINFO *getGUITHREADINFOFields(JNIEnv *env, jobject lpObject, GUITHREADINFO *lpStruct);
+void setGUITHREADINFOFields(JNIEnv *env, jobject lpObject, GUITHREADINFO *lpStruct);
+#define GUITHREADINFO_sizeof() sizeof(GUITHREADINFO)
+#else
+#define cacheGUITHREADINFOFields(a,b)
+#define getGUITHREADINFOFields(a,b,c) NULL
+#define setGUITHREADINFOFields(a,b,c)
+#define GUITHREADINFO_sizeof() 0
+#endif
+
 #ifndef NO_HDITEM
 void cacheHDITEMFields(JNIEnv *env, jobject lpObject);
 HDITEM *getHDITEMFields(JNIEnv *env, jobject lpObject, HDITEM *lpStruct);
