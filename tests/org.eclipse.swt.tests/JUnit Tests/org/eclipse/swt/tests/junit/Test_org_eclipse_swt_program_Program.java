@@ -76,10 +76,6 @@ public void test_executeLjava_lang_String() {
 		}
 	} catch (IllegalArgumentException e) {
 		assertEquals("Failed to throw ERROR_NULL_ARGUMENT", SWT.ERROR_NULL_ARGUMENT, e);
-	} catch (Exception e) {
-		fail("Invalid Exception thrown of type "+e.getClass());
-	} catch (Error e) {
-		fail("Invalid Error thrown of type "+e.getClass());
 	}
 }
 
@@ -187,10 +183,6 @@ public void test_launchLjava_lang_String() {
 		fail("Failed to throw ERROR_NULL_ARGUMENT");
 	} catch (IllegalArgumentException e) {
 		assertEquals("Failed to throw ERROR_NULL_ARGUMENT", SWT.ERROR_NULL_ARGUMENT, e);
-	} catch (Exception e) {
-		fail("Invalid Exception thrown of type "+e.getClass());
-	} catch (Error e) {
-		fail("Invalid Error thrown of type "+e.getClass());
 	}
 }
 
