@@ -2,7 +2,13 @@
 
 <project default="build_motif_lib" basedir="../../..">
 
-<target name="build_motif_lib">
+<target name="init">
+	<eclipse.refreshLocal resource="org.eclipse.swt" depth="infinite" />
+	<eclipse.refreshLocal resource="org.eclipse.swt.tools" depth="infinite" />
+   	<eclipse.incrementalBuild project="org.eclipse.swt" kind="incr" />
+</target>
+	
+<target name="build_motif_lib" depends="init">
 	<exec dir="./bin/library" executable="sh">
 		<arg line="${basedir}/bin/library/build.sh"/>
 		<arg line="install"/>
@@ -11,7 +17,6 @@
 </target>
 
 <target name="clean">
-	<tstamp/>
 	<exec dir="./bin/library" executable="sh">
 		<arg line="${basedir}/bin/library/build.sh"/>
 		<arg line="clean"/>
