@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 583;
-int OS_nativeFunctionCallCount[583];
+int OS_nativeFunctionCount = 584;
+int OS_nativeFunctionCallCount[584];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc", 
 	"ActivateKeyboardLayout", 
@@ -176,6 +176,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetDoubleClickTime", 
 	"GetFocus", 
 	"GetFontLanguageInfo", 
+	"GetGUIThreadInfo", 
 	"GetIconInfo", 
 	"GetKeyNameTextA", 
 	"GetKeyNameTextW", 

@@ -179,6 +179,7 @@ typedef enum {
 	GetDoubleClickTime_FUNC,
 	GetFocus_FUNC,
 	GetFontLanguageInfo_FUNC,
+	GetGUIThreadInfo_FUNC,
 	GetIconInfo_FUNC,
 	GetKeyNameTextA_FUNC,
 	GetKeyNameTextW_FUNC,

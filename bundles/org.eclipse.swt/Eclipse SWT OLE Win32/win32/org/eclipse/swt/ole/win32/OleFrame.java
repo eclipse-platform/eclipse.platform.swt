@@ -193,13 +193,17 @@ static int getMsgProc(int code, int wParam, int lParam) {
 			if (widget != null && widget instanceof OleClientSite) {
 				OleClientSite site = (OleClientSite)widget;
 				if (site.handle == hwnd) {
-					OleFrame frame = site.frame;
 					/*
-					 * Do not allow the activeX control to translate key down arrow 
-					 * events because this interferes with context menu traversal.
+					 * Do not allow the activeX control to translate events 
+					 * when a menu is active.
 					 */
-					if (message != OS.WM_KEYDOWN ||
-						(msg.wParam != OS.VK_UP && msg.wParam != OS.VK_DOWN && msg.wParam != OS.VK_LEFT && msg.wParam != OS.VK_RIGHT)) {
+					int thread = OS.GetWindowThreadProcessId(msg.hwnd, null);
+					GUITHREADINFO  lpgui = new GUITHREADINFO();
+					lpgui.cbSize = GUITHREADINFO.sizeof;
+					boolean rc = OS.GetGUIThreadInfo(thread, lpgui);
+					int mask = OS.GUI_INMENUMODE | OS.GUI_INMOVESIZE | OS.GUI_POPUPMENUMODE | OS.GUI_SYSTEMMENUMODE;
+					if (!rc || (lpgui.flags & mask) == 0) {
+						OleFrame frame = site.frame;
 						if (frame.translateOleAccelerator(msg)) {
 							// In order to prevent this message from also being processed
 							// by the application, zero out message, wParam and lParam
