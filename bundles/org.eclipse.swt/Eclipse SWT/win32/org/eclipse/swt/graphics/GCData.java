@@ -34,5 +34,5 @@ public final class GCData {
 	public int hNullBitmap;
 	public int hwnd;
 	public PAINTSTRUCT ps;
-	public int layout;
+	public int layout = -1;
 }
