@@ -907,9 +907,9 @@ public void drawText (String string, int x, int y, int flags) {
 	OS.CGContextSaveGState(handle);
 	OS.CGContextScaleCTM(handle, 1, -1);
 	if (data.layout == 0) createLayout ();
-	int layout = data.layout;
 	length = setString(string, flags);
 	if ((flags & SWT.DRAW_DELIMITER) != 0) {
+		int layout = data.layout;
 		int[] breakCount = new int[1];
 		OS.ATSUGetSoftLineBreaks(layout, 0, length, 0, null, breakCount);
 		int[] breaks = new int[breakCount[0] + 1];
@@ -917,18 +917,19 @@ public void drawText (String string, int x, int y, int flags) {
 		breaks[breakCount[0]] = length;
 		for (int i=0, start=0; i<breaks.length; i++) {
 			int lineBreak = breaks[i];
-			drawText(layout, x, y, start, lineBreak - start, flags);
+			drawText(x, y, start, lineBreak - start, flags);
 			y += data.fontAscent + data.fontDescent;
 			start = lineBreak;
 		}
 	} else {
-		drawText(layout, x, y, 0, length, flags);
+		drawText(x, y, 0, length, flags);
 	}
 	OS.CGContextRestoreGState(handle);
 	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
 }
 
-void drawText(int layout, int x, int y, int start, int length, int flags) {
+void drawText(int x, int y, int start, int length, int flags) {
+	int layout = data.layout;
 	if ((flags & SWT.DRAW_TRANSPARENT) == 0) {
 		ATSTrapezoid trapezoid = new ATSTrapezoid();
 		OS.ATSUGetGlyphBounds(layout, 0, 0, start, length, (short)OS.kATSUseDeviceOrigins, 1, trapezoid, null);
