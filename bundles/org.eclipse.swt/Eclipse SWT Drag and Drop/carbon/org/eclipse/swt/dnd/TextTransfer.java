@@ -58,7 +58,7 @@ public void javaToNative (Object object, TransferData transferData) {
 	transferData.result = -1;
 	if (object == null || !(object instanceof String) || !isSupportedType(transferData)) return;
 	String string = (String)object;
-	if (string.length == 0) return;
+	if (string.length() == 0) return;
 	
 	char[] chars = new char[string.length()];
 	string.getChars (0, chars.length, chars, 0);
