@@ -1485,13 +1485,10 @@ void setTXNBounds () {
 	* of the text and then restore the selection.  This
 	* will cause the widget text widget to recompute the
 	* left scroll position.
-	* 
-	* NOTE: Currently, this work around is only applied
-	* to text widgets that are not visible.  If the widget
-	* is resized when it is visible, this is fine because
-	* the user has already seen that the text is scrolled.
 	*/
-	if ((viewRect.left  - viewRect.right) <= 0 && (viewRect.bottom  - viewRect.top) <= 0) {
+	int width = viewRect.left - viewRect.right;
+	int height = viewRect.bottom - viewRect.top;
+	if (width <= (inset.left + inset.right) && height <= (inset.top + inset.bottom)) {
 		int [] oStartOffset = new int [1], oEndOffset = new int [1];
 		OS.TXNGetSelection (txnObject, oStartOffset, oEndOffset);
 		OS.TXNSetSelection (txnObject, OS.kTXNStartOffset, OS.kTXNStartOffset);
