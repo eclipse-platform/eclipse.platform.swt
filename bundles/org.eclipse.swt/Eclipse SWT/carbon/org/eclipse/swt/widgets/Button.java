@@ -594,8 +594,7 @@ public void setImage (Image image) {
 	}
 
 	if (text.length () > 0) {
-		char [] buffer = new char [] {' '};
-		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, null, 0);
 		if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 		OS.SetControlTitleWithCFString (handle, ptr);
 		OS.CFRelease (ptr);
@@ -679,9 +678,8 @@ public void setText (String string) {
 	}
 	isImage = false;
 	int length = text.length ();
-	String s = (length == 0) ? " ": text;
 	char [] buffer = new char [length];
-	s.getChars (0, buffer.length, buffer, 0);
+	text.getChars (0, buffer.length, buffer, 0);
 	int i=0, j=0;
 	while (i < buffer.length) {
 		if ((buffer [j++] = buffer [i++]) == Mnemonic) {
