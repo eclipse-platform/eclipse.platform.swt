@@ -35,14 +35,24 @@ public SwtPerformanceTestCase(String name) {
 	super(name);
 }
 
-static public boolean isJ2ME() {
+protected PerformanceMeter createMeter() {
+	return createMeter(null);
+}
+
+protected PerformanceMeter createMeter(String id) {
+	Performance performance = Performance.getDefault();
+	String scenarioId = performance.getDefaultScenarioId(this);
+	if (id != null) scenarioId += ": " + id;
+	return performance.createPerformanceMeter(scenarioId);
+}
+
+protected void disposeMeter(PerformanceMeter meter) {
 	try {
-		Compatibility.newFileInputStream("");
-	} catch (FileNotFoundException e) {
-		return false;
-	} catch (IOException e) {
+		meter.commit();
+		Performance.getDefault().assertPerformance(meter);
+	} finally {
+		meter.dispose();
 	}
-	return true;
 }
 
 protected String getPath(String fileName) {
@@ -72,21 +82,14 @@ protected String getPath(String fileName) {
 	return urlPath;
 }
 
-protected PerformanceMeter createMeter() {
-	return createMeter(null);
-}
-protected PerformanceMeter createMeter(String id) {
-	Performance performance = Performance.getDefault();
-	String scenarioId = performance.getDefaultScenarioId(this);
-	if (id != null) scenarioId += ": " + id;
-	return performance.createPerformanceMeter(scenarioId);
-}
-protected void disposeMeter(PerformanceMeter meter) {
+protected boolean isJ2ME() {
 	try {
-		meter.commit();
-		Performance.getDefault().assertPerformance(meter);
-	} finally {
-		meter.dispose();
+		Compatibility.newFileInputStream("");
+	} catch (FileNotFoundException e) {
+		return false;
+	} catch (IOException e) {
 	}
+	return true;
 }
+
 }

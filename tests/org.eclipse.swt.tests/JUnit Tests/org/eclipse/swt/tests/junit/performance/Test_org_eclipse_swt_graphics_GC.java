@@ -25,7 +25,7 @@ import org.eclipse.test.performance.PerformanceMeter;
  * @see org.eclipse.swt.graphics.GC
  */
 public class Test_org_eclipse_swt_graphics_GC extends SwtPerformanceTestCase {
-	static final int COUNT = 1000;
+	static final int COUNT = 10000;
 
 public Test_org_eclipse_swt_graphics_GC(String name) {
 	super(name);
@@ -51,27 +51,28 @@ protected void tearDown() throws Exception {
 	shell.dispose();
 }
 public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
-	Image[] images = new Image [COUNT];
-	for (int i = 0; i < COUNT; i++) {
+	final int count = COUNT / 10;
+	Image[] images = new Image [count];
+	for (int i = 0; i < count; i++) {
 		images[i] = new Image(display, 10, 10);		
 	}
-	GC[] gcs = new GC[COUNT];
+	GC[] gcs = new GC[count];
 	
 	PerformanceMeter meter = createMeter("image");
 	meter.start();
-	for (int i = 0; i < COUNT; i++) {
+	for (int i = 0; i < count; i++) {
 		gcs[i] = new GC(images[i]);
 	}
 	meter.stop();
 
-	for (int i = 0; i < COUNT; i++) {
+	for (int i = 0; i < count; i++) {
 		gcs[i].dispose();
 		images[i].dispose();
 	}
 	
 	disposeMeter(meter);
 
-	final int count = COUNT % 100;
+	final int count2 = COUNT % 100;
 	
 	Class printerClass = null;
 	try {
@@ -80,9 +81,9 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
 		// Printer class not present (eSWT). Skip test.
 		return;
 	}
-	Object[] printers = new Object[count];
+	Object[] printers = new Object[count2];
 	try {
-		for (int i = 0; i < count; i++) {
+		for (int i = 0; i < count2; i++) {
 			printers[i] = printerClass.newInstance();
 		}
 	} catch (InstantiationException e1) {
@@ -93,12 +94,12 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
 
 	meter = createMeter("printer");
 	meter.start();
-	for (int i = 0; i < count; i++) {
+	for (int i = 0; i < count2; i++) {
 		gcs[i] = new GC((Printer) printers[i]);
 	}
 	meter.stop();
 
-	for (int i = 0; i < count; i++) {
+	for (int i = 0; i < count2; i++) {
 		gcs[i].dispose();
 	}
 
@@ -160,19 +161,27 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
 }
 
 public void test_copyAreaIIIIII() {
+	// precompute points
+	Rectangle bounds = gc.getClipping();
+	final int[][] coords = new int[COUNT][];
+	int y = 0;
+	for (int i = 0; i < COUNT; i++) {
+		int x = i % bounds.width;
+		coords[i] = new int[] {x,y};
+		if (x == 0) y += 3;
+	}
+
 	gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
 	gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
 	gc.fillRectangle(image.getBounds());
 	gc.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
 	gc.drawLine(5, 5, 10, 10);
 	gc.drawLine(5, 10, 10, 5);
-	Rectangle imageBounds = image.getBounds();
 	
 	PerformanceMeter meter = createMeter();
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
-		int pos = i % imageBounds.width;
-		gc.copyArea(pos, pos, 2, 2, pos+2, pos);
+		gc.copyArea(5, 5, 10, 10, coords[i][0], coords[i][1]);
 	}
 	meter.stop();
 	
@@ -180,6 +189,16 @@ public void test_copyAreaIIIIII() {
 }
 
 public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
+	// precompute points
+	Rectangle bounds = gc.getClipping();
+	final int[][] coords = new int[COUNT][];
+	int y = 0;
+	for (int i = 0; i < COUNT; i++) {
+		int x = i % bounds.width;
+		coords[i] = new int[] {x,y};
+		if (x == 0) y += 3;
+	}
+
 	gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
 	gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
 	gc.fillRectangle(image.getBounds());
@@ -195,7 +214,7 @@ public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
 	PerformanceMeter meter = createMeter();
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
-		gc.copyArea(images[i], 0, 0);
+		gc.copyArea(images[i], coords[i][0], coords[i][1]);
 	}
 	meter.stop();
 
@@ -240,10 +259,20 @@ public void test_dispose() {
 }
 
 public void test_drawArcIIIIII() {
+	// precompute points
+	Rectangle bounds = gc.getClipping();
+	final int[][] coords = new int[COUNT][];
+	int y = 0;
+	for (int i = 0; i < COUNT; i++) {
+		int x = i % bounds.width;
+		coords[i] = new int[] {x,y};
+		if (x == 0) y += 3;
+	}
+
 	PerformanceMeter meter = createMeter();
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
-		gc.drawArc(10, 20, 50, 25, 90, 90);
+		gc.drawArc(coords[i][0], coords[i][1], 50, 25, 90, 90);
 	}
 	meter.stop();
 	
@@ -251,10 +280,20 @@ public void test_drawArcIIIIII() {
 }
 
 public void test_drawFocusIIII() {
+	// precompute points
+	Rectangle bounds = gc.getClipping();
+	final int[][] coords = new int[COUNT][];
+	int y = 0;
+	for (int i = 0; i < COUNT; i++) {
+		int x = i % bounds.width;
+		coords[i] = new int[] {x,y};
+		if (x == 0) y += 3;
+	}
+
 	PerformanceMeter meter = createMeter();
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
-		gc.drawFocus(1, 1, 50, 25);
+		gc.drawFocus(coords[i][0], coords[i][1], 30, 20);
 	}
 	meter.stop();
 	
@@ -368,231 +407,715 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageIIIIIIII() {
 }
 
 public void test_drawLineIIII() {
-	gc.drawLine(0,0,0,20);
+	// precompute points
+	Rectangle bounds = gc.getClipping();
+	final int[][] coords = new int[COUNT][];
+	int y = 0;
+	for (int i = 0; i < COUNT; i++) {
+		int x = i % bounds.width;
+		coords[i] = new int[] {x,y, x+5,y+5};
+		if (x == 0) y += 3;
+	}
+
+	PerformanceMeter meter = createMeter();
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.drawLine(coords[i][0],coords[i][1], coords[i][2],coords[i][3]);
+	}
+	meter.stop();
+	
+	disposeMeter(meter);
 }
 
 public void test_drawOvalIIII() {
-	gc.drawOval(10, 0, 20, 30);				
+	// precompute points
+	Rectangle bounds = gc.getClipping();
+	final int[][] coords = new int[COUNT][];
+	int y = 0;
+	for (int i = 0; i < COUNT; i++) {
+		int x = i % bounds.width;
+		coords[i] = new int[] {x,y};
+		if (x == 0) y += 3;
+	}
+
+	PerformanceMeter meter = createMeter();
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.drawOval(coords[i][0], coords[i][1], 20, 30);				
+	}
+	meter.stop();
+	
+	disposeMeter(meter);
 }
 
 public void test_drawPointII() {
-	gc.drawPoint(10, 10);
+	// precompute points
+	Rectangle bounds = gc.getClipping();
+	final int[][] coords = new int[COUNT][];
+	int y = 0;
+	for (int i = 0; i < COUNT; i++) {
+		int x = i % bounds.width;
+		coords[i] = new int[] {x,y};
+		if (x == 0) y += 3;
+	}
+
+	PerformanceMeter meter = createMeter();
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.drawPoint(coords[i][0], coords[i][1]);
+	}
+	meter.stop();
+	
+	disposeMeter(meter);
 }
 
 public void test_drawPolygon$I() {
-	gc.drawPolygon(new int[] {0,0, 5,10, 0,20});				
-	gc.drawPolygon(new int[] {0,0});				
+	// precompute points
+	Rectangle bounds = gc.getClipping();
+	final int[][] coords = new int[COUNT][];
+	int y = 0;
+	for (int i = 0; i < COUNT; i++) {
+		int x = i % bounds.width;
+		coords[i] = new int[] {x,y, x+5,y+10, x,y+20};
+		if (x == 0) y += 3;
+	}
+
+	PerformanceMeter meter = createMeter();
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.drawPolygon(coords[i]);				
+	}
+	meter.stop();
+	
+	disposeMeter(meter);				
 }
 
 public void test_drawPolyline$I() {
-	gc.drawPolyline(new int[] {0,0, 5,10, 0,20});				
-	gc.drawPolyline(new int[] {0,0});				
+	// precompute points
+	Rectangle bounds = gc.getClipping();
+	final int[][] coords = new int[COUNT][];
+	int y = 0;
+	for (int i = 0; i < COUNT; i++) {
+		int x = i % bounds.width;
+		coords[i] = new int[] {x,y, x+5,y+10, x,y+20};
+		if (x == 0) y += 3;
+	}
+
+	PerformanceMeter meter = createMeter();
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.drawPolyline(coords[i]);				
+	}
+	meter.stop();
+	
+	disposeMeter(meter);
 }
 
 public void test_drawRectangleIIII() {
-	gc.drawRectangle(10, 0, 20, 30);				
-	gc.drawRectangle(0, 0, 0, 0);				
+	// precompute points
+	Rectangle bounds = gc.getClipping();
+	final int[][] coords = new int[COUNT][];
+	int y = 0;
+	for (int i = 0; i < COUNT; i++) {
+		int x = i % bounds.width;
+		coords[i] = new int[] {x,y};
+		if (x == 0) y += 3;
+	}
+	
+	PerformanceMeter meter = createMeter();
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.drawRectangle(coords[i][0], coords[i][1], 20, 30);				
+	}
+	meter.stop();
+	
+	disposeMeter(meter);			
 }
 
 public void test_drawRectangleLorg_eclipse_swt_graphics_Rectangle() {
-	gc.drawRectangle(new Rectangle(10, 0, 20, 30));				
-	gc.drawRectangle(new Rectangle(0, 0, 0, 0));				
+	// precompute points
+	Rectangle bounds = gc.getClipping();
+	final Rectangle[] coords = new Rectangle[COUNT];
+	int y = 0;
+	for (int i = 0; i < COUNT; i++) {
+		int x = i % bounds.width;
+		coords[i] = new Rectangle (x, y, 20, 30);
+		if (x == 0) y += 3;
+	}
+
+	PerformanceMeter meter = createMeter();
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.drawRectangle(coords[i]);
+	}
+	meter.stop();
+	
+	disposeMeter(meter);
 }
 
 public void test_drawRoundRectangleIIIIII() {
-	gc.drawRoundRectangle(10, 0, 20, 30, 3, 3);				
-	gc.drawRoundRectangle(0, 0, 0, 0, 0, 0);				
+	// precompute points
+	Rectangle bounds = gc.getClipping();
+	final int[][] coords = new int[COUNT][];
+	int y = 0;
+	for (int i = 0; i < COUNT; i++) {
+		int x = i % bounds.width;
+		coords[i] = new int[] {x,y};
+		if (x == 0) y += 3;
+	}
+	
+	PerformanceMeter meter = createMeter();
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.drawRoundRectangle(coords[i][0], coords[i][1], 20, 30, 3, 3);				
+	}
+	meter.stop();
+	
+	disposeMeter(meter);
 }
 
 public void test_drawStringLjava_lang_StringII() {
-	gc.drawString("test", 5, 5);				
+	// precompute points
+	Rectangle bounds = gc.getClipping();
+	final int[][] coords = new int[COUNT][];
+	int y = 0;
+	for (int i = 0; i < COUNT; i++) {
+		int x = i % bounds.width;
+		coords[i] = new int[] {x,y};
+		if (x == 0) y += 3;
+	}
+	
+	PerformanceMeter meter = createMeter();
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.drawString("test string", coords[i][0], coords[i][1]);				
+	}
+	meter.stop();
+	
+	disposeMeter(meter);
 }
 
 public void test_drawStringLjava_lang_StringIIZ() {
-	gc.drawString("test", 5, 5, true);				
-	gc.drawString("test", 5, 5, false);				
+	// precompute points
+	Rectangle bounds = gc.getClipping();
+	final int[][] coords = new int[COUNT][];
+	int y = 0;
+	for (int i = 0; i < COUNT; i++) {
+		int x = i % bounds.width;
+		coords[i] = new int[] {x,y};
+		if (x == 0) y += 3;
+	}
+	
+	PerformanceMeter meter = createMeter("transparent");
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.drawString("test string", coords[i][0], coords[i][1], true);				
+	}
+	meter.stop();
+	
+	disposeMeter(meter);
+	
+	meter = createMeter("not transparent");
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.drawString("test string", coords[i][0], coords[i][1], false);				
+	}
+	meter.stop();
+	
+	disposeMeter(meter);
 }
 
 public void test_drawTextLjava_lang_StringII() {
-	gc.drawText("test", 5, 5);				
-	gc.drawText("", 0, 0);				
+	// precompute points
+	Rectangle bounds = gc.getClipping();
+	final int[][] coords = new int[COUNT][];
+	int y = 0;
+	for (int i = 0; i < COUNT; i++) {
+		int x = i % bounds.width;
+		coords[i] = new int[] {x,y};
+		if (x == 0) y += 3;
+	}
+	
+	PerformanceMeter meter = createMeter();
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.drawString("test string", coords[i][0], coords[i][1], true);				
+	}
+	meter.stop();
+	
+	disposeMeter(meter);			
 }
 
-public void test_drawTextLjava_lang_StringIII() {			
-	gc.drawText("abc", 5, 5, 0);
-	gc.drawText("abc", 5, 5, SWT.DRAW_TRANSPARENT);
-	gc.drawText("abc", 5, 5, SWT.DRAW_DELIMITER);
-	gc.drawText("abc", 5, 5, SWT.DRAW_MNEMONIC);
-	gc.drawText("abc", 5, 5, SWT.DRAW_TAB);
-	gc.drawText("", 0, 0, 0);
-	gc.drawText("", 0, 0, SWT.DRAW_TRANSPARENT);				
-	gc.drawText("", 0, 0, SWT.DRAW_DELIMITER);				
-	gc.drawText("", 0, 0, SWT.DRAW_MNEMONIC);				
-	gc.drawText("", 0, 0, SWT.DRAW_TAB);				
-	gc.drawText("\t\r\na&bc&", 5, 5, 0);
-	gc.drawText("\t\r\na&bc&", 5, 5, SWT.DRAW_TRANSPARENT);
-	gc.drawText("\t\r\na&bc&", 5, 5, SWT.DRAW_DELIMITER);
-	gc.drawText("\t\r\na&bc&", 5, 5, SWT.DRAW_MNEMONIC);
-	gc.drawText("\t\r\na&bc&", 5, 5, SWT.DRAW_TAB);
-	gc.drawText("\r", 5, 5, SWT.DRAW_DELIMITER);
-	gc.drawText("\n", 5, 5, SWT.DRAW_DELIMITER);
-	gc.drawText("&", 5, 5, SWT.DRAW_MNEMONIC);
-	gc.drawText("\t", 5, 5, SWT.DRAW_TAB);
+public void test_drawTextLjava_lang_StringIII() {
+	// precompute points
+	Rectangle bounds = gc.getClipping();
+	final int[][] coords = new int[COUNT][];
+	int y = 0;
+	for (int i = 0; i < COUNT; i++) {
+		int x = i % bounds.width;
+		coords[i] = new int[] {x,y};
+		if (x == 0) y += 3;
+	}
+	
+	PerformanceMeter meter = createMeter("transparent");
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.drawText("\t\r\na&bc&", coords[i][0], coords[i][1], SWT.DRAW_TRANSPARENT);				
+	}
+	meter.stop();
+	
+	disposeMeter(meter);
+
+	meter = createMeter("delimiter");
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.drawText("\t\r\na&bc&", coords[i][0], coords[i][1], SWT.DRAW_DELIMITER);				
+	}
+	meter.stop();
+	
+	disposeMeter(meter);
+
+	meter = createMeter("mnemonic");
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.drawText("\t\r\na&bc&", coords[i][0], coords[i][1], SWT.DRAW_MNEMONIC);				
+	}
+	meter.stop();
+	
+	disposeMeter(meter);
+
+	meter = createMeter("tab");
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.drawText("\t\r\na&bc&", coords[i][0], coords[i][1], SWT.DRAW_TAB);				
+	}
+	meter.stop();
+	
+	disposeMeter(meter);
+	
+	meter = createMeter("no flags");
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.drawText("\t\r\na&bc&", coords[i][0], coords[i][1], SWT.NONE);				
+	}
+	meter.stop();
+	
+	disposeMeter(meter);
 }
 
 public void test_drawTextLjava_lang_StringIIZ() {
-	gc.drawText("abc", 5, 5, true);				
-	gc.drawText("abc", 5, 5, false);				
-	gc.drawText("", 0, 0, true);				
-	gc.drawText("", 0, 0, false);				
+	// precompute points
+	Rectangle bounds = gc.getClipping();
+	final int[][] coords = new int[COUNT][];
+	int y = 0;
+	for (int i = 0; i < COUNT; i++) {
+		int x = i % bounds.width;
+		coords[i] = new int[] {x,y};
+		if (x == 0) y += 3;
+	}
+	
+	PerformanceMeter meter = createMeter("transparent");
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.drawText("test string", coords[i][0], coords[i][1], true);				
+	}
+	meter.stop();
+	
+	disposeMeter(meter);
+	
+	meter = createMeter("not transparent");
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.drawText("test string", coords[i][0], coords[i][1], false);				
+	}
+	meter.stop();
+	
+	disposeMeter(meter);				
 }
 
 public void test_equalsLjava_lang_Object() {
-	assertTrue(gc.equals(gc));
-	Canvas canvas = new Canvas(shell, SWT.NULL);
-	GC testGC = new GC(canvas);
-	assertFalse(testGC.equals(gc));
-	testGC.dispose();
+	GC gc1 = new GC(display);
+	
+	PerformanceMeter meter = createMeter("equal");
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc1.equals(gc1);	// equal
+	}
+	meter.stop();
+	
+	gc1.dispose();
+	
+	disposeMeter(meter);
+		
+	gc1 = new GC(display);
+	Color gc2 = new Color(display, 128, 255, 0);
+	
+	meter = createMeter("not equal");
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc1.equals(gc2);	// not equal
+	}
+	meter.stop();
+	
+	gc1.dispose();
+	gc2.dispose();
+	
+	disposeMeter(meter);
 }
 
 public void test_fillArcIIIIII() {
-	gc.fillArc(10, 20, 50, 25, 90, 90);				
-	gc.fillArc(10, 20, 50, 25, -10, -10);				
+	// precompute points
+	Rectangle bounds = gc.getClipping();
+	final int[][] coords = new int[COUNT][];
+	int y = 0;
+	for (int i = 0; i < COUNT; i++) {
+		int x = i % bounds.width;
+		coords[i] = new int[] {x,y};
+		if (x == 0) y += 10;
+	}
+
+	PerformanceMeter meter = createMeter();
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.drawArc(coords[i][0], coords[i][1], 20, 10, 90, 90);
+	}
+	meter.stop();
+	
+	disposeMeter(meter);				
 }
 
 public void test_fillGradientRectangleIIIIZ() {
-	gc.fillGradientRectangle(10, 0, 20, 30, true);				
-	gc.fillGradientRectangle(0, 0, 0, 0, true);				
-	gc.fillGradientRectangle(10, 0, 20, 30, false);				
-	gc.fillGradientRectangle(0, 0, 0, 0, false);				
+	// precompute points
+	Rectangle bounds = gc.getClipping();
+	final int[][] coords = new int[COUNT][];
+	int y = 0;
+	for (int i = 0; i < COUNT; i++) {
+		int x = i % bounds.width;
+		coords[i] = new int[] {x,y};
+		if (x == 0) y += 10;
+	}
+	
+	PerformanceMeter meter = createMeter("vertical");
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.fillGradientRectangle(coords[i][0], coords[i][1], 20, 10, true);				
+	}
+	meter.stop();
+	
+	disposeMeter(meter);
+	
+	meter = createMeter("horizontal");
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.fillGradientRectangle(coords[i][0], coords[i][1], 20, 10, false);				
+	}
+	meter.stop();
+	
+	disposeMeter(meter);
 }
 
 public void test_fillOvalIIII() {
-	gc.fillOval(10, 0, 20, 30);				
-	gc.fillOval(-1, -1, -1, -1);				
+	// precompute points
+	Rectangle bounds = gc.getClipping();
+	final int[][] coords = new int[COUNT][];
+	int y = 0;
+	for (int i = 0; i < COUNT; i++) {
+		int x = i % bounds.width;
+		coords[i] = new int[] {x,y};
+		if (x == 0) y += 10;
+	}
+
+	PerformanceMeter meter = createMeter();
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.fillOval(coords[i][0], coords[i][1], 20, 10);				
+	}
+	meter.stop();
+	
+	disposeMeter(meter);				
 }
 
 public void test_fillPolygon$I() {
-	gc.fillPolygon(new int[] {0,0, 5,10, 0,20});				
-	gc.fillPolygon(new int[] {0,0});				
-	gc.fillPolygon(new int[] {-1, -1});				
+	// precompute points
+	Rectangle bounds = gc.getClipping();
+	final int[][] coords = new int[COUNT][];
+	int y = 0;
+	for (int i = 0; i < COUNT; i++) {
+		int x = i % bounds.width;
+		coords[i] = new int[] {x,y, x+5,y+5, x,y+10};
+		if (x == 0) y += 10;
+	}
+
+	PerformanceMeter meter = createMeter();
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.fillPolygon(coords[i]);				
+	}
+	meter.stop();
+	
+	disposeMeter(meter);				
 }
 
 public void test_fillRectangleIIII() {
-	gc.fillRectangle(new Rectangle(10, 0, 20, 30));				
-	gc.fillRectangle(new Rectangle(0, 0, 0, 0));				
-	gc.fillRectangle(new Rectangle(-1, -1, -1, -1));				
+	// precompute points
+	Rectangle bounds = gc.getClipping();
+	final int[][] coords = new int[COUNT][];
+	int y = 0;
+	for (int i = 0; i < COUNT; i++) {
+		int x = i % bounds.width;
+		coords[i] = new int[] {x,y};
+		if (x == 0) y += 10;
+	}
+	
+	PerformanceMeter meter = createMeter();
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.fillRectangle(coords[i][0], coords[i][1], 20, 10);				
+	}
+	meter.stop();
+	
+	disposeMeter(meter);				
 }
 
 public void test_fillRectangleLorg_eclipse_swt_graphics_Rectangle() {
-	gc.fillRectangle(10, 0, 20, 30);				
-	gc.fillRectangle(0, 0, 0, 0);				
+	// precompute points
+	Rectangle bounds = gc.getClipping();
+	final Rectangle[] coords = new Rectangle[COUNT];
+	int y = 0;
+	for (int i = 0; i < COUNT; i++) {
+		int x = i % bounds.width;
+		coords[i] = new Rectangle (x, y, 20, 10);
+		if (x == 0) y += 10;
+	}
+
+	PerformanceMeter meter = createMeter();
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.drawRectangle(coords[i]);
+	}
+	meter.stop();
+	
+	disposeMeter(meter);				
 }
 
 public void test_fillRoundRectangleIIIIII() {
-	gc.fillRoundRectangle(10, 0, 20, 30, 3, 3);				
-	gc.fillRoundRectangle(0, 0, 0, 0, 0, 0);				
-	gc.fillRoundRectangle(10, 0, 20, 30, -10, -10);				
+	// precompute points
+	Rectangle bounds = gc.getClipping();
+	final int[][] coords = new int[COUNT][];
+	int y = 0;
+	for (int i = 0; i < COUNT; i++) {
+		int x = i % bounds.width;
+		coords[i] = new int[] {x,y};
+		if (x == 0) y += 3;
+	}
+	
+	PerformanceMeter meter = createMeter();
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.fillRoundRectangle(coords[i][0], coords[i][1], 20, 30, 3, 3);				
+	}
+	meter.stop();
+	
+	disposeMeter(meter);			
 }
 
 public void test_getAdvanceWidthC() {
-	int w = gc.getAdvanceWidth('a');
-	assertTrue(w > 0);
+	PerformanceMeter meter = createMeter();
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.getAdvanceWidth('a');
+	}
+	meter.stop();
+	
+	disposeMeter(meter);
 }
 
 public void test_getBackground() {
-	// tested in setBackground method
+	PerformanceMeter meter = createMeter();
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.getBackground();
+	}
+	meter.stop();
+	
+	disposeMeter(meter);
 }
 
 public void test_getCharWidthC() {
-	int w = gc.getCharWidth('a');
-	assertTrue(w > 0);
+	PerformanceMeter meter = createMeter();
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.getCharWidth('a');
+	}
+	meter.stop();
+	
+	disposeMeter(meter);
 }
 
 public void test_getClipping() {
-	// tested in setClipping methods
+	PerformanceMeter meter = createMeter();
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.getClipping();
+	}
+	meter.stop();
+	
+	disposeMeter(meter);
 }
 
 public void test_getClippingLorg_eclipse_swt_graphics_Region() {
+	Region[] regions = new Region[COUNT];
+	for (int i = 0; i < COUNT; i++) {
+		regions[i] = new Region(display);
+	}
 	
+	PerformanceMeter meter = createMeter();
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.getClipping(regions[i]);
+	}
+	meter.stop();
+	
+	for (int i = 0; i < COUNT; i++) {
+		regions[i].dispose();
+	}
+	
+	disposeMeter(meter);
 }
 
 public void test_getFont() {
-	// tested in setFont method
+	PerformanceMeter meter = createMeter();
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.getFont();
+	}
+	meter.stop();
+	
+	disposeMeter(meter);
 }
 
 public void test_getFontMetrics() {
-	FontMetrics fm = gc.getFontMetrics();
-	assertTrue(fm.getHeight() > 0);
+	PerformanceMeter meter = createMeter();
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.getFontMetrics();
+	}
+	meter.stop();
+	
+	disposeMeter(meter);
 }
 
 public void test_getForeground() {
-	// tested in setForeground method
+	PerformanceMeter meter = createMeter();
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.getForeground();
+	}
+	meter.stop();
+	
+	disposeMeter(meter);
 }
 
 public void test_getLineStyle() {
-	// tested in setLineStyle method
+	PerformanceMeter meter = createMeter();
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.getLineStyle();
+	}
+	meter.stop();
+	
+	disposeMeter(meter);
 }
 
 public void test_getLineWidth() {
-	// tested in setLineWidth method
+	PerformanceMeter meter = createMeter();
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.getLineWidth();
+	}
+	meter.stop();
+	
+	disposeMeter(meter);
 }
 
 public void test_getStyle() {
-	Canvas canvas = new Canvas(shell, SWT.NULL);
-	GC testGC = new GC(canvas, SWT.LEFT_TO_RIGHT);
-	int style = testGC.getStyle();
-	assertTrue((style & SWT.LEFT_TO_RIGHT) != 0);
-	testGC.dispose();
-	testGC = new GC(canvas);
-	style = testGC.getStyle();
-	assertTrue((style & SWT.LEFT_TO_RIGHT) != 0);
-	testGC.dispose();
-	testGC = new GC(canvas, SWT.RIGHT_TO_LEFT);
-	style = testGC.getStyle();
-	assertTrue((style &  SWT.RIGHT_TO_LEFT) != 0);
-	testGC.dispose();
+	PerformanceMeter meter = createMeter();
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.getStyle();
+	}
+	meter.stop();
+	
+	disposeMeter(meter);
 }
 
 public void test_getXORMode() {
-	// tested in setXORMode method
+	PerformanceMeter meter = createMeter();
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.getXORMode();
+	}
+	meter.stop();
+	
+	disposeMeter(meter);
 }
 
 public void test_hashCode() {
-	assertTrue(gc.hashCode() == gc.hashCode());
-	GC gc2 = new GC(shell);
-	assertFalse(gc.hashCode() == gc2.hashCode());
-	gc2.dispose();
+	PerformanceMeter meter = createMeter();
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.hashCode();
+	}
+	meter.stop();
+	
+	disposeMeter(meter);
 }
 
 public void test_isClipped() {
-	assertFalse(gc.isClipped());
-	gc.setClipping(5,10,15,20);
-	assertTrue(gc.isClipped());
+	PerformanceMeter meter = createMeter();
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.isClipped();
+	}
+	meter.stop();
+	
+	disposeMeter(meter);
 }
 
 public void test_isDisposed() {
-	assertFalse(gc.isDisposed());
+	GC gc = new GC(display);
+	
+	PerformanceMeter meter = createMeter("not disposed");
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.isDisposed();	// not disposed
+	}
+	meter.stop();
+	
 	gc.dispose();
-	assertTrue(gc.isDisposed());
+	
+	disposeMeter(meter);
+	
+	meter = createMeter("disposed");
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
+		gc.isDisposed();	// disposed
+	}
+	meter.stop();
+	
+	disposeMeter(meter);
 }
 
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
-	Color color = new Color(shell.getDisplay(), 255, 0, 0);
-	gc.setBackground(color);
-	assertEquals(color, gc.getBackground());
-	try { 
-		gc.setBackground(null);
-		fail("No exception thrown for null color");		
-	} catch (IllegalArgumentException e) {
-	}
-	assertEquals(gc.getBackground(),gc.getBackground());
-	color.dispose();
-	try { 
+	final Color color = display.getSystemColor(SWT.COLOR_RED);
+	PerformanceMeter meter = createMeter();
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
 		gc.setBackground(color);
-		fail("No exception thrown for color disposed");		
-	} catch (IllegalArgumentException e) {
 	}
+	meter.stop();
+	
+	disposeMeter(meter);
 }
 
 public void test_setClippingIIII() {
@@ -642,21 +1165,16 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 }
 
 public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
-	Color color = new Color(shell.getDisplay(), 255, 0, 0);
-	gc.setForeground(color);
-	assertEquals(color, gc.getForeground());
-	try { 
-		gc.setForeground(null);
-		fail("No exception thrown for null color");		
-	} catch (IllegalArgumentException e) {
-	}
-	assertEquals(gc.getForeground(),gc.getForeground());
-	color.dispose();
-	try { 
+	final Color color = display.getSystemColor(SWT.COLOR_RED);
+	PerformanceMeter meter = createMeter();
+	meter.start();
+	for (int i = 0; i < COUNT; i++) {
 		gc.setForeground(color);
-		fail("No exception thrown for color disposed");		
-	} catch (IllegalArgumentException e) {
 	}
+	meter.stop();
+	
+	disposeMeter(meter);
+
 }
 
 public void test_setLineStyleI() {
@@ -704,12 +1222,6 @@ public void test_textExtentLjava_lang_StringI() {
 	assertTrue(pt.y > 0);
 }
 
-public void test_toString() {
-	String s = gc.toString();
-	assertNotNull(s);
-	assertTrue(s.length() > 0);
-}
-
 public void test_win32_newILorg_eclipse_swt_graphics_GCData() {
 	// do not test - Windows only
 }
@@ -730,65 +1242,64 @@ public static Test suite() {
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_Drawable");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DrawableI");
-	methodNames.addElement("test_copyAreaIIIIII");
-	methodNames.addElement("test_copyAreaLorg_eclipse_swt_graphics_ImageII");
-	methodNames.addElement("test_dispose");
-	methodNames.addElement("test_drawArcIIIIII");
-	methodNames.addElement("test_drawFocusIIII");
-	methodNames.addElement("test_drawImageLorg_eclipse_swt_graphics_ImageII");
-	methodNames.addElement("test_drawImageLorg_eclipse_swt_graphics_ImageIIIIIIII");
-	methodNames.addElement("test_drawLineIIII");
-	methodNames.addElement("test_drawOvalIIII");
-	methodNames.addElement("test_drawPointII");
-	methodNames.addElement("test_drawPolygon$I");
-	methodNames.addElement("test_drawPolyline$I");
-	methodNames.addElement("test_drawRectangleIIII");
-	methodNames.addElement("test_drawRectangleLorg_eclipse_swt_graphics_Rectangle");
-	methodNames.addElement("test_drawRoundRectangleIIIIII");
-	methodNames.addElement("test_drawStringLjava_lang_StringII");
-	methodNames.addElement("test_drawStringLjava_lang_StringIIZ");
-	methodNames.addElement("test_drawTextLjava_lang_StringII");
-	methodNames.addElement("test_drawTextLjava_lang_StringIII");
-	methodNames.addElement("test_drawTextLjava_lang_StringIIZ");
-	methodNames.addElement("test_equalsLjava_lang_Object");
-	methodNames.addElement("test_fillArcIIIIII");
-	methodNames.addElement("test_fillGradientRectangleIIIIZ");
-	methodNames.addElement("test_fillOvalIIII");
-	methodNames.addElement("test_fillPolygon$I");
-	methodNames.addElement("test_fillRectangleIIII");
-	methodNames.addElement("test_fillRectangleLorg_eclipse_swt_graphics_Rectangle");
-	methodNames.addElement("test_fillRoundRectangleIIIIII");
-	methodNames.addElement("test_getAdvanceWidthC");
-	methodNames.addElement("test_getBackground");
-	methodNames.addElement("test_getCharWidthC");
-	methodNames.addElement("test_getClipping");
-	methodNames.addElement("test_getClippingLorg_eclipse_swt_graphics_Region");
-	methodNames.addElement("test_getFont");
-	methodNames.addElement("test_getFontMetrics");
-	methodNames.addElement("test_getForeground");
-	methodNames.addElement("test_getLineStyle");
-	methodNames.addElement("test_getLineWidth");
-	methodNames.addElement("test_getStyle");
-	methodNames.addElement("test_getXORMode");
-	methodNames.addElement("test_hashCode");
-	methodNames.addElement("test_isClipped");
-	methodNames.addElement("test_isDisposed");
-	methodNames.addElement("test_setBackgroundLorg_eclipse_swt_graphics_Color");
-	methodNames.addElement("test_setClippingIIII");
-	methodNames.addElement("test_setClippingLorg_eclipse_swt_graphics_Rectangle");
-	methodNames.addElement("test_setClippingLorg_eclipse_swt_graphics_Region");
-	methodNames.addElement("test_setFontLorg_eclipse_swt_graphics_Font");
-	methodNames.addElement("test_setForegroundLorg_eclipse_swt_graphics_Color");
-	methodNames.addElement("test_setLineStyleI");
-	methodNames.addElement("test_setLineWidthI");
-	methodNames.addElement("test_setXORModeZ");
-	methodNames.addElement("test_stringExtentLjava_lang_String");
-	methodNames.addElement("test_textExtentLjava_lang_String");
-	methodNames.addElement("test_textExtentLjava_lang_StringI");
-	methodNames.addElement("test_toString");
-	methodNames.addElement("test_win32_newILorg_eclipse_swt_graphics_GCData");
-	methodNames.addElement("test_win32_newLorg_eclipse_swt_graphics_DrawableLorg_eclipse_swt_graphics_GCData");
+//	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DrawableI");
+//	methodNames.addElement("test_copyAreaIIIIII");
+//	methodNames.addElement("test_copyAreaLorg_eclipse_swt_graphics_ImageII");
+//	methodNames.addElement("test_dispose");
+//	methodNames.addElement("test_drawArcIIIIII");
+//	methodNames.addElement("test_drawFocusIIII");
+//	methodNames.addElement("test_drawImageLorg_eclipse_swt_graphics_ImageII");
+//	methodNames.addElement("test_drawImageLorg_eclipse_swt_graphics_ImageIIIIIIII");
+//	methodNames.addElement("test_drawLineIIII");
+//	methodNames.addElement("test_drawOvalIIII");
+//	methodNames.addElement("test_drawPointII");
+//	methodNames.addElement("test_drawPolygon$I");
+//	methodNames.addElement("test_drawPolyline$I");
+//	methodNames.addElement("test_drawRectangleIIII");
+//	methodNames.addElement("test_drawRectangleLorg_eclipse_swt_graphics_Rectangle");
+//	methodNames.addElement("test_drawRoundRectangleIIIIII");
+//	methodNames.addElement("test_drawStringLjava_lang_StringII");
+//	methodNames.addElement("test_drawStringLjava_lang_StringIIZ");
+//	methodNames.addElement("test_drawTextLjava_lang_StringII");
+//	methodNames.addElement("test_drawTextLjava_lang_StringIII");
+//	methodNames.addElement("test_drawTextLjava_lang_StringIIZ");
+//	methodNames.addElement("test_equalsLjava_lang_Object");
+//	methodNames.addElement("test_fillArcIIIIII");
+//	methodNames.addElement("test_fillGradientRectangleIIIIZ");
+//	methodNames.addElement("test_fillOvalIIII");
+//	methodNames.addElement("test_fillPolygon$I");
+//	methodNames.addElement("test_fillRectangleIIII");
+//	methodNames.addElement("test_fillRectangleLorg_eclipse_swt_graphics_Rectangle");
+//	methodNames.addElement("test_fillRoundRectangleIIIIII");
+//	methodNames.addElement("test_getAdvanceWidthC");
+//	methodNames.addElement("test_getBackground");
+//	methodNames.addElement("test_getCharWidthC");
+//	methodNames.addElement("test_getClipping");
+//	methodNames.addElement("test_getClippingLorg_eclipse_swt_graphics_Region");
+//	methodNames.addElement("test_getFont");
+//	methodNames.addElement("test_getFontMetrics");
+//	methodNames.addElement("test_getForeground");
+//	methodNames.addElement("test_getLineStyle");
+//	methodNames.addElement("test_getLineWidth");
+//	methodNames.addElement("test_getStyle");
+//	methodNames.addElement("test_getXORMode");
+//	methodNames.addElement("test_hashCode");
+//	methodNames.addElement("test_isClipped");
+//	methodNames.addElement("test_isDisposed");
+//	methodNames.addElement("test_setBackgroundLorg_eclipse_swt_graphics_Color");
+//	methodNames.addElement("test_setClippingIIII");
+//	methodNames.addElement("test_setClippingLorg_eclipse_swt_graphics_Rectangle");
+//	methodNames.addElement("test_setClippingLorg_eclipse_swt_graphics_Region");
+//	methodNames.addElement("test_setFontLorg_eclipse_swt_graphics_Font");
+//	methodNames.addElement("test_setForegroundLorg_eclipse_swt_graphics_Color");
+//	methodNames.addElement("test_setLineStyleI");
+//	methodNames.addElement("test_setLineWidthI");
+//	methodNames.addElement("test_setXORModeZ");
+//	methodNames.addElement("test_stringExtentLjava_lang_String");
+//	methodNames.addElement("test_textExtentLjava_lang_String");
+//	methodNames.addElement("test_textExtentLjava_lang_StringI");
+//	methodNames.addElement("test_win32_newILorg_eclipse_swt_graphics_GCData");
+//	methodNames.addElement("test_win32_newLorg_eclipse_swt_graphics_DrawableLorg_eclipse_swt_graphics_GCData");
 	return methodNames;
 }
 protected void runTest() throws Throwable {
@@ -849,7 +1360,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_stringExtentLjava_lang_String")) test_stringExtentLjava_lang_String();
 	else if (getName().equals("test_textExtentLjava_lang_String")) test_textExtentLjava_lang_String();
 	else if (getName().equals("test_textExtentLjava_lang_StringI")) test_textExtentLjava_lang_StringI();
-	else if (getName().equals("test_toString")) test_toString();
 	else if (getName().equals("test_win32_newILorg_eclipse_swt_graphics_GCData")) test_win32_newILorg_eclipse_swt_graphics_GCData();
 	else if (getName().equals("test_win32_newLorg_eclipse_swt_graphics_DrawableLorg_eclipse_swt_graphics_GCData")) test_win32_newLorg_eclipse_swt_graphics_DrawableLorg_eclipse_swt_graphics_GCData();
 }
