@@ -49,7 +49,33 @@ public final class Cursor {
 	 * The device where this cursor was created.
 	 */
 	Device device;
-	
+
+	static final byte[] APPSTARTING_SRC = {
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00,
+		0x0c, 0x00, 0x00, 0x00, 0x1c, 0x00, 0x00, 0x00, 0x3c, 0x00, 0x00, 0x00,
+		0x7c, 0x00, 0x00, 0x00, (byte)0xfc, 0x00, 0x00, 0x00, (byte)0xfc, 0x01, 0x00, 0x00,
+		(byte)0xfc, 0x3b, 0x00, 0x00, 0x7c, 0x38, 0x00, 0x00, 0x6c, 0x54, 0x00, 0x00,
+		(byte)0xc4, (byte)0xdc, 0x00, 0x00, (byte)0xc0, 0x44, 0x00, 0x00, (byte)0x80, 0x39, 0x00, 0x00,
+		(byte)0x80, 0x39, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+
+	static final byte[] APPSTARTING_MASK = {
+		0x00, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x0e, 0x00, 0x00, 0x00,
+		0x1e, 0x00, 0x00, 0x00, 0x3e, 0x00, 0x00, 0x00, 0x7e, 0x00, 0x00, 0x00,
+		(byte)0xfe, 0x00, 0x00, 0x00, (byte)0xfe, 0x01, 0x00, 0x00, (byte)0xfe, 0x3b, 0x00, 0x00,
+		(byte)0xfe, 0x7f, 0x00, 0x00, (byte)0xfe, 0x7f, 0x00, 0x00, (byte)0xfe, (byte)0xfe, 0x00, 0x00,
+		(byte)0xee, (byte)0xff, 0x01, 0x00, (byte)0xe4, (byte)0xff, 0x00, 0x00, (byte)0xc0, 0x7f, 0x00, 0x00,
+		(byte)0xc0, 0x7f, 0x00, 0x00, (byte)0x80, 0x39, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+
 Cursor () {
 }
 /**	 
@@ -103,7 +129,7 @@ public Cursor (Device device, int style) {
 		case SWT.CURSOR_WAIT: shape = OS.XC_watch; break;
 		case SWT.CURSOR_HAND: shape = OS.XC_hand2; break;
 		case SWT.CURSOR_CROSS: shape = OS.XC_cross; break;
-		case SWT.CURSOR_APPSTARTING: shape = OS.XC_left_ptr; break;
+		case SWT.CURSOR_APPSTARTING: break;
 		case SWT.CURSOR_HELP: shape = OS.XC_question_arrow; break;
 		case SWT.CURSOR_SIZEALL: shape = OS.XC_fleur; break;
 		case SWT.CURSOR_SIZENESW: shape = OS.XC_sizing; break;
@@ -124,7 +150,12 @@ public Cursor (Device device, int style) {
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	this.handle = OS.XCreateFontCursor(device.xDisplay, shape);
+	if (shape == 0 && style == SWT.CURSOR_APPSTARTING) {
+		handle = createCursor(APPSTARTING_SRC, APPSTARTING_MASK, 32, 32, 2, 2);
+	} else {
+		handle = OS.XCreateFontCursor(device.xDisplay, shape);
+	}
+	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (device.tracking) device.new_Object(this);
 }
 /**	 
@@ -213,24 +244,7 @@ public Cursor (Device device, ImageData source, ImageData mask, int hotspotX, in
 		maskData[i] = (byte) ~maskData[i];
 	}
 	maskData = ImageData.convertPad(maskData, mask.width, mask.height, mask.depth, mask.scanlinePad, 1);
-	/* Create bitmaps */
-	int xDisplay = device.xDisplay;
-	int drawable = OS.XDefaultRootWindow(xDisplay);
-	int sourcePixmap = OS.XCreateBitmapFromData(xDisplay, drawable, sourceData, source.width, source.height);
-	int maskPixmap = OS.XCreateBitmapFromData(xDisplay, drawable, maskData, source.width, source.height);
-	/* Get the colors */
-	int screenNum = OS.XDefaultScreen(xDisplay);
-	XColor foreground = new XColor();
-	foreground.pixel = OS.XBlackPixel(xDisplay, screenNum);
-	foreground.red = foreground.green = foreground.blue = 0;
-	XColor background = new XColor();
-	background.pixel = OS.XWhitePixel(xDisplay, screenNum);
-	background.red = background.green = background.blue = (short)0xFFFF;
-	/* Create the cursor */
-	handle = OS.XCreatePixmapCursor(xDisplay, maskPixmap, sourcePixmap, foreground, background, hotspotX, hotspotY);
-	/* Dispose the pixmaps */
-	OS.XFreePixmap(xDisplay, sourcePixmap);
-	OS.XFreePixmap(xDisplay, maskPixmap);
+	handle = createCursor(sourceData, maskData, source.width, source.height, hotspotX, hotspotY);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (device.tracking) device.new_Object(this);
 }
@@ -324,11 +338,15 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 			((s & 0x01) << 7));
 	}
 	maskData = ImageData.convertPad(maskData, mask.width, mask.height, mask.depth, mask.scanlinePad, 1);
-	/* Create bitmaps */
+	handle = createCursor(sourceData, maskData, source.width, source.height, hotspotX, hotspotY);
+	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	if (device.tracking) device.new_Object(this);
+}
+int createCursor(byte[] sourceData, byte[] maskData, int width, int height, int hotspotX, int hotspotY) {
 	int xDisplay = device.xDisplay;
 	int drawable = OS.XDefaultRootWindow(xDisplay);
-	int sourcePixmap = OS.XCreateBitmapFromData(xDisplay, drawable, sourceData, source.width, source.height);
-	int maskPixmap = OS.XCreateBitmapFromData(xDisplay, drawable, maskData, source.width, source.height);
+	int sourcePixmap = OS.XCreateBitmapFromData(xDisplay, drawable, sourceData, width, height);
+	int maskPixmap = OS.XCreateBitmapFromData(xDisplay, drawable, maskData, width, height);
 	/* Get the colors */
 	int screenNum = OS.XDefaultScreen(xDisplay);
 	XColor foreground = new XColor();
@@ -337,12 +355,11 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 	XColor background = new XColor();
 	background.pixel = OS.XBlackPixel(xDisplay, screenNum);
 	/* Create the cursor */
-	handle = OS.XCreatePixmapCursor(xDisplay, sourcePixmap, maskPixmap, foreground, background, hotspotX, hotspotY);
+	int cursor = OS.XCreatePixmapCursor(xDisplay, sourcePixmap, maskPixmap, foreground, background, hotspotX, hotspotY);
 	/* Dispose the pixmaps */
 	OS.XFreePixmap(xDisplay, sourcePixmap);
 	OS.XFreePixmap(xDisplay, maskPixmap);
-	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (device.tracking) device.new_Object(this);
+	return cursor;
 }
 /**
  * Disposes of the operating system resources associated with

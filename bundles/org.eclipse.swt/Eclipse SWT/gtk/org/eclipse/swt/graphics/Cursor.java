@@ -50,6 +50,32 @@ public final class Cursor {
 	 */
 	Device device;
 
+	static final byte[] APPSTARTING_SRC = {
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00,
+		0x0c, 0x00, 0x00, 0x00, 0x1c, 0x00, 0x00, 0x00, 0x3c, 0x00, 0x00, 0x00,
+		0x7c, 0x00, 0x00, 0x00, (byte)0xfc, 0x00, 0x00, 0x00, (byte)0xfc, 0x01, 0x00, 0x00,
+		(byte)0xfc, 0x3b, 0x00, 0x00, 0x7c, 0x38, 0x00, 0x00, 0x6c, 0x54, 0x00, 0x00,
+		(byte)0xc4, (byte)0xdc, 0x00, 0x00, (byte)0xc0, 0x44, 0x00, 0x00, (byte)0x80, 0x39, 0x00, 0x00,
+		(byte)0x80, 0x39, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+
+	static final byte[] APPSTARTING_MASK = {
+		0x00, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x0e, 0x00, 0x00, 0x00,
+		0x1e, 0x00, 0x00, 0x00, 0x3e, 0x00, 0x00, 0x00, 0x7e, 0x00, 0x00, 0x00,
+		(byte)0xfe, 0x00, 0x00, 0x00, (byte)0xfe, 0x01, 0x00, 0x00, (byte)0xfe, 0x3b, 0x00, 0x00,
+		(byte)0xfe, 0x7f, 0x00, 0x00, (byte)0xfe, 0x7f, 0x00, 0x00, (byte)0xfe, (byte)0xfe, 0x00, 0x00,
+		(byte)0xee, (byte)0xff, 0x01, 0x00, (byte)0xe4, (byte)0xff, 0x00, 0x00, (byte)0xc0, 0x7f, 0x00, 0x00,
+		(byte)0xc0, 0x7f, 0x00, 0x00, (byte)0x80, 0x39, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+
 Cursor () {
 }
 
@@ -98,34 +124,38 @@ public Cursor(Device device, int style) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
-	int osFlag = 0;
+	int shape = 0;
 	switch (style) {
-		case SWT.CURSOR_ARROW:				osFlag = OS.GDK_LEFT_PTR; break;
-		case SWT.CURSOR_WAIT:						osFlag = OS.GDK_WATCH; break;
-		case SWT.CURSOR_CROSS:				osFlag = OS.GDK_CROSS; break;
-		case SWT.CURSOR_APPSTARTING:	osFlag = OS.GDK_LEFT_PTR; break;
-		case SWT.CURSOR_HAND:					osFlag = OS.GDK_HAND1; break;
-		case SWT.CURSOR_HELP:					osFlag = OS.GDK_QUESTION_ARROW; break;
-		case SWT.CURSOR_SIZEALL:				osFlag = OS.GDK_FLEUR; break;
-		case SWT.CURSOR_SIZENESW:			osFlag = OS.GDK_SIZING; break;
-		case SWT.CURSOR_SIZENS:				osFlag = OS.GDK_DOUBLE_ARROW; break;
-		case SWT.CURSOR_SIZENWSE:			osFlag = OS.GDK_SIZING; break;
-		case SWT.CURSOR_SIZEWE:				osFlag = OS.GDK_SB_H_DOUBLE_ARROW; break;
-		case SWT.CURSOR_SIZEN:					osFlag = OS.GDK_TOP_SIDE; break;
-		case SWT.CURSOR_SIZES:					osFlag = OS.GDK_BOTTOM_SIDE; break;
-		case SWT.CURSOR_SIZEE:					osFlag = OS.GDK_RIGHT_SIDE; break;
-		case SWT.CURSOR_SIZEW:					osFlag = OS.GDK_LEFT_SIDE; break;
-		case SWT.CURSOR_SIZENE:				osFlag = OS.GDK_TOP_RIGHT_CORNER; break;
-		case SWT.CURSOR_SIZESE:					osFlag = OS.GDK_BOTTOM_RIGHT_CORNER; break;
-		case SWT.CURSOR_SIZESW:				osFlag = OS.GDK_BOTTOM_LEFT_CORNER; break;
-		case SWT.CURSOR_SIZENW:				osFlag = OS.GDK_TOP_LEFT_CORNER; break;
-		case SWT.CURSOR_UPARROW:			osFlag = OS.GDK_SB_UP_ARROW; break;
-		case SWT.CURSOR_IBEAM:					osFlag = OS.GDK_XTERM; break;
-		case SWT.CURSOR_NO:						osFlag = OS.GDK_X_CURSOR; break;
+		case SWT.CURSOR_ARROW:			shape = OS.GDK_LEFT_PTR; break;
+		case SWT.CURSOR_WAIT:			shape = OS.GDK_WATCH; break;
+		case SWT.CURSOR_CROSS:			shape = OS.GDK_CROSS; break;
+		case SWT.CURSOR_APPSTARTING:	break;
+		case SWT.CURSOR_HAND:			shape = OS.GDK_HAND1; break;
+		case SWT.CURSOR_HELP:			shape = OS.GDK_QUESTION_ARROW; break;
+		case SWT.CURSOR_SIZEALL:		shape = OS.GDK_FLEUR; break;
+		case SWT.CURSOR_SIZENESW:		shape = OS.GDK_SIZING; break;
+		case SWT.CURSOR_SIZENS:			shape = OS.GDK_DOUBLE_ARROW; break;
+		case SWT.CURSOR_SIZENWSE:		shape = OS.GDK_SIZING; break;
+		case SWT.CURSOR_SIZEWE:			shape = OS.GDK_SB_H_DOUBLE_ARROW; break;
+		case SWT.CURSOR_SIZEN:			shape = OS.GDK_TOP_SIDE; break;
+		case SWT.CURSOR_SIZES:			shape = OS.GDK_BOTTOM_SIDE; break;
+		case SWT.CURSOR_SIZEE:			shape = OS.GDK_RIGHT_SIDE; break;
+		case SWT.CURSOR_SIZEW:			shape = OS.GDK_LEFT_SIDE; break;
+		case SWT.CURSOR_SIZENE:			shape = OS.GDK_TOP_RIGHT_CORNER; break;
+		case SWT.CURSOR_SIZESE:			shape = OS.GDK_BOTTOM_RIGHT_CORNER; break;
+		case SWT.CURSOR_SIZESW:			shape = OS.GDK_BOTTOM_LEFT_CORNER; break;
+		case SWT.CURSOR_SIZENW:			shape = OS.GDK_TOP_LEFT_CORNER; break;
+		case SWT.CURSOR_UPARROW:		shape = OS.GDK_SB_UP_ARROW; break;
+		case SWT.CURSOR_IBEAM:			shape = OS.GDK_XTERM; break;
+		case SWT.CURSOR_NO:				shape = OS.GDK_X_CURSOR; break;
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	this.handle = OS.gdk_cursor_new(osFlag);
+	if (shape == 0 && style == SWT.CURSOR_APPSTARTING) {
+		handle = createCursor(APPSTARTING_SRC, APPSTARTING_MASK, 32, 32, 2, 2);		
+	} else {
+		handle = OS.gdk_cursor_new(shape);
+	}
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (device.tracking) device.new_Object(this);
 }
@@ -215,27 +245,7 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 		maskData[i] = (byte) ~maskData[i];
 	}
 	maskData = ImageData.convertPad(maskData, mask.width, mask.height, mask.depth, mask.scanlinePad, 1);
-
-	/* Create bitmaps */
-	int /*long*/ sourcePixmap = OS.gdk_bitmap_create_from_data(0, sourceData, source.width, source.height);
-	if (sourcePixmap==0) SWT.error(SWT.ERROR_NO_HANDLES);
-	int /*long*/ maskPixmap = OS.gdk_bitmap_create_from_data(0, maskData, source.width, source.height);
-	if (maskPixmap==0) SWT.error(SWT.ERROR_NO_HANDLES);
-
-	/* Get the colors */
-	GdkColor foreground = new GdkColor();
-	GdkColor background = new GdkColor();
-	background.red = (short)65535;
-	background.green = (short)65535;
-	background.blue = (short)65535;
-
-	/* Create the cursor */
-	/* For some reason, mask and source take reverse roles, both here and on Motif */
-	handle = OS.gdk_cursor_new_from_pixmap (maskPixmap, sourcePixmap, foreground, background, hotspotX, hotspotY);
-
-	/* Dispose the pixmaps */
-	OS.g_object_unref (sourcePixmap);
-	OS.g_object_unref (maskPixmap);
+	handle = createCursor(sourceData, maskData, source.width, source.height, hotspotX, hotspotY);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (device.tracking) device.new_Object(this);
 }
@@ -330,12 +340,17 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 			((s & 0x01) << 7));
 	}
 	maskData = ImageData.convertPad(maskData, mask.width, mask.height, mask.depth, mask.scanlinePad, 1);
-	
+	handle = createCursor(sourceData, maskData, source.width, source.height, hotspotX, hotspotY);
+	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	if (device.tracking) device.new_Object(this);
+}
+
+int /*long*/ createCursor(byte[] sourceData, byte[] maskData, int width, int height, int hotspotX, int hotspotY) {
 	/* Create bitmaps */
-	int /*long*/ sourcePixmap = OS.gdk_bitmap_create_from_data(0, sourceData, source.width, source.height);
-	if (sourcePixmap==0) SWT.error(SWT.ERROR_NO_HANDLES);
-	int /*long*/ maskPixmap = OS.gdk_bitmap_create_from_data(0, maskData, source.width, source.height);
-	if (maskPixmap==0) SWT.error(SWT.ERROR_NO_HANDLES);
+	int /*long*/ sourcePixmap = OS.gdk_bitmap_create_from_data(0, sourceData, width, height);
+	if (sourcePixmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	int /*long*/ maskPixmap = OS.gdk_bitmap_create_from_data(0, maskData, width, height);
+	if (maskPixmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 
 	/* Get the colors */
 	GdkColor foreground = new GdkColor();
@@ -345,13 +360,12 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 	GdkColor background = new GdkColor();
 
 	/* Create the cursor */
-	handle = OS.gdk_cursor_new_from_pixmap (sourcePixmap, maskPixmap, foreground, background, hotspotX, hotspotY);
+	int /*long*/ cursor = OS.gdk_cursor_new_from_pixmap (sourcePixmap, maskPixmap, foreground, background, hotspotX, hotspotY);
 	
 	/* Dispose the pixmaps */
 	OS.g_object_unref (sourcePixmap);
 	OS.g_object_unref (maskPixmap);
-	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	if (device.tracking) device.new_Object(this);
+	return cursor;
 }
 
 /**
