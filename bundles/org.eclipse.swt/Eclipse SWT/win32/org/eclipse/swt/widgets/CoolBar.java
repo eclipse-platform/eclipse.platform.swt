@@ -28,7 +28,7 @@ import org.eclipse.swt.graphics.*;
  * </p><p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>(none)</dd>
+ * <dd>FLAT</dd>
  * <dt><b>Events:</b></dt>
  * <dd>(none)</dd>
  * </dl>
@@ -153,7 +153,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 				width = Math.max(width, rowWidth);
 				rowWidth = 0;
 			}
-			rowWidth += rbBand.cxIdeal + rect.left + rect.right + INSET;
+			rowWidth += rbBand.cxIdeal + rect.left + INSET;
+			if ((style & SWT.FLAT) == 0) rowWidth += rect.right;
 		}
 		width = Math.max(width, rowWidth);
 		if (redraw) {
@@ -877,7 +878,8 @@ public void setWrapIndices (int [] indices) {
 
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.CCS_NODIVIDER | OS.CCS_NORESIZE;
-	bits |= OS.RBS_VARHEIGHT | OS.RBS_BANDBORDERS | OS.RBS_DBLCLKTOGGLE;
+	bits |= OS.RBS_VARHEIGHT | OS.RBS_DBLCLKTOGGLE;
+	if ((style & SWT.FLAT) == 0) bits |= OS.RBS_BANDBORDERS; 
 	return bits;
 }
 

@@ -18,7 +18,7 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.events.*;
 
 class CoolBarTab extends Tab {
-	Button dropDownButton, lockedButton;
+	Button dropDownButton, lockedButton, flatButton;
 
 	/* Example widgets and group that contains them */
 	CoolBar coolBar;
@@ -74,6 +74,7 @@ class CoolBarTab extends Tab {
 		/* Compute the widget style */
 		int toolBarStyle = SWT.FLAT;
 		if (borderButton.getSelection()) style |= SWT.BORDER;
+		if (flatButton.getSelection()) style |= SWT.FLAT;
 		if (dropDownButton.getSelection()) itemStyle |= SWT.DROP_DOWN;
 	
 		/*
@@ -201,6 +202,8 @@ class CoolBarTab extends Tab {
 		/* Create the extra widget */
 		borderButton = new Button (styleGroup, SWT.CHECK);
 		borderButton.setText ("SWT.BORDER");
+		flatButton = new Button (styleGroup, SWT.CHECK);
+		flatButton.setText ("SWT.FLAT");
 		Group itemGroup = new Group(styleGroup, SWT.NONE);
 		itemGroup.setLayout (new GridLayout ());
 		itemGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
@@ -256,6 +259,7 @@ class CoolBarTab extends Tab {
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
 		borderButton.setSelection ((coolBar.getStyle () & SWT.BORDER) != 0);
+		flatButton.setSelection ((coolBar.getStyle () & SWT.FLAT) != 0);
 		dropDownButton.setSelection ((coolBar.getItem(0).getStyle () & SWT.DROP_DOWN) != 0);
 		setWidgetLocked ();
 	}
