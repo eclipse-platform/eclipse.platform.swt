@@ -13,6 +13,7 @@ package org.eclipse.swt.browser;
 import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.ole.win32.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.internal.win32.*;
 
 class WebSite extends OleControlSite {
 	COMObject iDocHostUIHandler;
@@ -119,7 +120,24 @@ int ShowUI(int dwID, int pActiveObject, int pCommandTarget, int pFrame, int pDoc
 }
 
 int TranslateAccelerator(int lpMsg, int pguidCmdGroup, int nCmdID) {
-	return COM.E_NOTIMPL;
+	/*
+	* Feature on Internet Explorer.  By default the embedded Internet Explorer control runs
+	* the Internet Explorer shortcuts (e.g. F5 for refresh).  This overrides the shortcuts
+	* defined by SWT.  The workaround is to forward the accelerator keys to the parent window
+	* and have Internet Explorer ignore the ones handled by the parent window.
+	*/
+	Menu menubar = getShell().getMenuBar();
+	if (menubar != null && !menubar.isDisposed() && menubar.isEnabled()) {
+		Shell shell = menubar.getShell();
+		int hwnd = shell.handle;
+		int hAccel = OS.SendMessage(hwnd, OS.WM_APP+1, 0, 0);
+		if (hAccel != 0) {
+			MSG msg = new MSG();
+			OS.MoveMemory(msg, lpMsg, MSG.sizeof);
+			if (OS.TranslateAccelerator(hwnd, hAccel, msg) != 0) return COM.S_OK;
+		}
+	}
+	return COM.S_FALSE;
 }
 
 int TranslateUrl(int dwTranslate, int pchURLIn, int ppchURLOut) {
