@@ -112,8 +112,8 @@ class ShellTab extends Tab {
 	void createControlGroup () {
 		/*
 		 * Create the "Control" group.  This is the group on the
-		 * left half of each example tab.  It consists of the
-		 * style group, the display group and the size group.
+		 * right half of each example tab.  It consists of the
+		 * style group, the 'other' group and the size group.
 		 */		
 		controlGroup = new Group (tabFolderPage, SWT.NONE);
 		GridLayout gridLayout= new GridLayout ();
