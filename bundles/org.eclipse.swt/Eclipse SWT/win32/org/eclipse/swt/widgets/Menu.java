@@ -135,9 +135,21 @@ void createItem (MenuItem item, int index) {
 	parent.add (item);
 	boolean success = false;
 	if (OS.IsWinCE) {
-		int flags = OS.MF_BYPOSITION;
-		if ((style & SWT.SEPARATOR) != 0) flags |= OS.MF_SEPARATOR;
-		success = OS.InsertMenu (handle, index, flags, item.id, null); 
+		int uFlags = OS.MF_BYPOSITION;
+		TCHAR lpNewItem = null;
+		if ((item.style & SWT.SEPARATOR) != 0) {
+			uFlags |= OS.MF_SEPARATOR;
+		} else {
+			lpNewItem = new TCHAR (0, "", true);
+		}
+		success = OS.InsertMenu (handle, index, uFlags, item.id, lpNewItem);
+		if (success) {
+			MENUITEMINFO info = new MENUITEMINFO ();
+			info.cbSize = MENUITEMINFO.sizeof;
+			info.fMask = OS.MIIM_DATA;
+			info.dwItemData = item.id;
+			success = OS.SetMenuItemInfo (handle, index, true, info);
+		}
 	} else {
 		/*
 		* Bug in Windows.  For some reason, when InsertMenuItem ()
@@ -149,8 +161,8 @@ void createItem (MenuItem item, int index) {
 		int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, TCHAR.sizeof);
 		MENUITEMINFO info = new MENUITEMINFO ();
 		info.cbSize = MENUITEMINFO.sizeof;
-		info.fMask = OS.MIIM_ID | OS.MIIM_TYPE;
-		info.wID = item.id;
+		info.fMask = OS.MIIM_ID | OS.MIIM_TYPE | OS.MIIM_DATA;
+		info.wID = info.dwItemData = item.id;
 		info.fType = item.widgetStyle ();
 		info.dwTypeData = pszText;
 		success = OS.InsertMenuItem (handle, index, true, info);
@@ -187,8 +199,25 @@ void destroyAcceleratorTable () {
 }
 
 void destroyItem (MenuItem item) {
-	if (!OS.RemoveMenu (handle, item.id, OS.MF_BYCOMMAND)) {
-		error (SWT.ERROR_ITEM_NOT_REMOVED);
+	if (OS.IsWinCE) {
+		int index = 0;
+		MENUITEMINFO info = new MENUITEMINFO ();
+		info.cbSize = MENUITEMINFO.sizeof;
+		info.fMask = OS.MIIM_DATA;
+		while (OS.GetMenuItemInfo (handle, index, true, info)) {
+			if (info.dwItemData == item.id) break;
+			index++;
+		}
+		if (info.dwItemData != item.id) {
+			error (SWT.ERROR_ITEM_NOT_REMOVED);
+		}	
+		if (!OS.RemoveMenu (handle, index, OS.MF_BYPOSITION)) {
+			error (SWT.ERROR_ITEM_NOT_REMOVED);
+		}
+	} else {
+		if (!OS.RemoveMenu (handle, item.id, OS.MF_BYCOMMAND)) {
+			error (SWT.ERROR_ITEM_NOT_REMOVED);
+		}
 	}
 	redraw ();
 }
@@ -270,11 +299,11 @@ public MenuItem getItem (int index) {
 	checkWidget ();
 	MENUITEMINFO info = new MENUITEMINFO ();
 	info.cbSize = MENUITEMINFO.sizeof;
-	info.fMask = OS.MIIM_ID;
+	info.fMask = OS.MIIM_DATA;
 	if (!OS.GetMenuItemInfo (handle, index, true, info)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	return parent.findMenuItem (info.wID);
+	return parent.findMenuItem (info.dwItemData);
 }
 
 /**
@@ -316,18 +345,18 @@ public MenuItem [] getItems () {
 	MenuItem [] items = new MenuItem [length];
 	MENUITEMINFO info = new MENUITEMINFO ();
 	info.cbSize = MENUITEMINFO.sizeof;
-	info.fMask = OS.MIIM_ID;
+	info.fMask = OS.MIIM_DATA;
 	while (OS.GetMenuItemInfo (handle, index, true, info)) {
 		if (index == items.length) {
 			MenuItem [] newItems = new MenuItem [index + 4];
-			System.arraycopy (newItems, 0, items, 0, index);
+			System.arraycopy (items, 0, newItems, 0, index);
 			items = newItems;
 		}
-		items [index++] = parent.findMenuItem (info.wID);
+		items [index++] = parent.findMenuItem (info.dwItemData);
 	}
 	if (index == items.length) return items;
 	MenuItem [] result = new MenuItem [index];
-	System.arraycopy (result, 0, items, 0, index);
+	System.arraycopy (items, 0, result, 0, index);
 	return result;
 }
 
@@ -471,9 +500,9 @@ public int indexOf (MenuItem item) {
 	int index = 0;
 	MENUITEMINFO info = new MENUITEMINFO ();
 	info.cbSize = MENUITEMINFO.sizeof;
-	info.fMask = OS.MIIM_ID;
+	info.fMask = OS.MIIM_DATA;
 	while (OS.GetMenuItemInfo (handle, index, true, info)) {
-		if (info.wID == item.id) return index;
+		if (info.dwItemData == item.id) return index;
 		index++;
 	}
 	return -1;
@@ -522,9 +551,17 @@ public boolean isVisible () {
 }
 
 void redraw () {
-	if ((style & SWT.BAR) != 0) {
-		OS.DrawMenuBar (parent.handle);
-		return;
+	/*
+	* Feature in WinCE.  Each time a menu has been modified, we need
+	* to redraw the command bar.
+	*/
+	if (OS.IsWinCE) {
+		OS.CommandBar_DrawMenuBar (parent.handleCB, 0);
+	} else {
+		if ((style & SWT.BAR) != 0) {
+			OS.DrawMenuBar (parent.handle);
+			return;
+		}
 	}
 	if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) {
 		return;

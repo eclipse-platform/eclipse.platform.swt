@@ -91,6 +91,9 @@ public class Decorations extends Canvas {
 	Control savedFocus;
 	Button defaultButton, saveDefault;
 	int swFlags, hAccel, nAccel;
+	
+	// WinCE: handle to the CommandBar
+	int handleCB;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -318,6 +321,17 @@ public Rectangle getClientArea () {
 			OS.SendMessage (handle, OS.WM_NCCALCSIZE, 0, rect);
 			return new Rectangle (0, 0, rect.right, rect.bottom);
 		}
+	}
+	/* 
+	* Feature in WinCE.  CommandBar is part of the client area. The fix
+	* is to return a client area excluding the command bar.
+	*/
+	if (OS.IsWinCE && handleCB != 0) {
+		Rectangle rect = super.getClientArea ();
+		int height = OS.CommandBar_Height(handleCB);
+		rect.y += height;
+		rect.height -= height;
+		return rect;
 	}
 	return super.getClientArea ();
 }
@@ -758,8 +772,20 @@ public void setMenuBar (Menu menu) {
 	menuBar = menu;
 	int hMenu = 0;
 	if (menuBar != null) hMenu = menuBar.handle;
-	if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
-	OS.SetMenu (handle, hMenu);
+	if (OS.IsWinCE) {
+		if (handleCB != 0) {
+			// not implemented - switch to a new menu bar
+			SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
+		}
+		if (hMenu != 0) {		
+			handleCB = OS.CommandBar_Create(OS.GetModuleHandle(null), handle, 1);
+			OS.CommandBar_InsertMenubarEx(handleCB, 0, hMenu, 0);
+		} else {
+			handleCB = 0;
+		}
+	} else {
+		OS.SetMenu (handle, hMenu);
+	}
 	destroyAcceleratorTable ();
 }
 
@@ -898,7 +924,8 @@ public void setVisible (boolean visible) {
 		*/
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
-		OS.DrawMenuBar (handle);
+		if (OS.IsWinCE) OS.CommandBar_DrawMenuBar (handleCB, 0);
+		else OS.DrawMenuBar (handle);
 		OS.ShowWindow (handle, swFlags);
 		OS.UpdateWindow (handle);
 	} else {

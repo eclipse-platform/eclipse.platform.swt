@@ -493,15 +493,22 @@ public void setAccelerator (int accelerator) {
 public void setEnabled (boolean enabled) {
 	checkWidget ();
 	int hMenu = parent.handle;
-	MENUITEMINFO info = new MENUITEMINFO ();
-	info.cbSize = MENUITEMINFO.sizeof;
-	info.fMask = OS.MIIM_STATE;
-	boolean success = OS.GetMenuItemInfo (hMenu, id, false, info);
-	if (!success) error (SWT.ERROR_CANNOT_SET_ENABLED);
-	info.fState &= ~(OS.MFS_DISABLED | OS.MFS_GRAYED);
-	if (!enabled) info.fState |= (OS.MFS_DISABLED | OS.MFS_GRAYED);
-	success = OS.SetMenuItemInfo (hMenu, id, false, info);
-	if (!success) error (SWT.ERROR_CANNOT_SET_ENABLED);
+	if (OS.IsWinCE) {
+		int index = parent.indexOf (this);
+		if (index == -1) return;
+		int uEnable = OS.MF_BYPOSITION | (enabled ? OS.MF_ENABLED : OS.MF_GRAYED);
+		OS.EnableMenuItem (hMenu, index, uEnable);
+	} else {
+		MENUITEMINFO info = new MENUITEMINFO ();
+		info.cbSize = MENUITEMINFO.sizeof;
+		info.fMask = OS.MIIM_STATE;
+		boolean success = OS.GetMenuItemInfo (hMenu, id, false, info);
+		if (!success) error (SWT.ERROR_CANNOT_SET_ENABLED);
+		info.fState &= ~(OS.MFS_DISABLED | OS.MFS_GRAYED);
+		if (!enabled) info.fState |= (OS.MFS_DISABLED | OS.MFS_GRAYED);
+		success = OS.SetMenuItemInfo (hMenu, id, false, info);
+		if (!success) error (SWT.ERROR_CANNOT_SET_ENABLED);
+	}
 	parent.redraw ();
 }
 
@@ -509,6 +516,7 @@ public void setImage (Image image) {
 	checkWidget ();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setImage (image);
+	if (OS.IsWinCE) return;
 	if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) {
 		return;
 	}
@@ -582,18 +590,18 @@ public void setMenu (Menu menu) {
 	int hMenu = parent.handle;
 	MENUITEMINFO info = new MENUITEMINFO ();
 	info.cbSize = MENUITEMINFO.sizeof;
-	info.fMask = OS.MIIM_ID;
+	info.fMask = OS.MIIM_DATA;
 	int index = 0;
 	while (OS.GetMenuItemInfo (hMenu, index, true, info)) {
-		if (info.wID == id) break;
+		if (info.dwItemData == id) break;
 		index++;
 	}
-	if (info.wID != id) return;
+	if (info.dwItemData != id) return;
 	int cch = 128;
 	int hHeap = OS.GetProcessHeap ();
 	int byteCount = cch * TCHAR.sizeof;
 	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-	info.fMask = OS.MIIM_STATE | OS.MIIM_ID | OS.MIIM_TYPE;
+	info.fMask = OS.MIIM_STATE | OS.MIIM_ID | OS.MIIM_TYPE | OS.MIIM_DATA;
 	info.dwTypeData = pszText;
 	info.cch = cch;
 	boolean success = OS.GetMenuItemInfo (hMenu, index, true, info);
@@ -604,8 +612,30 @@ public void setMenu (Menu menu) {
 	}
 	OS.RemoveMenu (hMenu, index, OS.MF_BYPOSITION);
 	if (OS.IsWinCE) {
-		success = OS.InsertMenu (hMenu, index, OS.MF_BYPOSITION, id, null); 
-		if (success) success = OS.SetMenuItemInfo (hMenu, index, true, info);
+		/*
+		* Feature in WinCE.  InsertMenuItem is not available. SetMenuItemInfo
+		* cannot set the menu item state and submenu. The fix is to use InsertMenu
+		* to set those, and SetMenuItemInfo to set the application data field.
+		*/
+		int uIDNewItem = id;
+		int uFlags = OS.MF_BYPOSITION;
+		if (menu != null) {
+			uFlags |= OS.MF_POPUP;
+			uIDNewItem = menu.handle;
+		}
+		TCHAR lpNewItem = new TCHAR (0, "", true);
+		success = OS.InsertMenu (hMenu, index, uFlags, uIDNewItem, lpNewItem);
+		if (success) {
+			info.fMask = OS.MIIM_DATA | OS.MIIM_TYPE;
+			success = OS.SetMenuItemInfo (hMenu, index, true, info);
+			if ((info.fState & (OS.MFS_DISABLED | OS.MFS_GRAYED)) != 0) {
+				OS.EnableMenuItem (hMenu, index, OS.MF_BYPOSITION | OS.MF_GRAYED);
+			}
+			if ((info.fState & OS.MFS_CHECKED) != 0) {
+				OS.CheckMenuItem (hMenu, index, OS.MF_BYPOSITION | OS.MF_CHECKED);
+			}
+		}
+		
 	} else {
 		success = OS.InsertMenuItem (hMenu, index, true, info);
 	}
@@ -631,15 +661,22 @@ public void setSelection (boolean selected) {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
 	int hMenu = parent.handle;
-	MENUITEMINFO info = new MENUITEMINFO ();
-	info.cbSize = MENUITEMINFO.sizeof;
-	info.fMask = OS.MIIM_STATE;
-	boolean success = OS.GetMenuItemInfo (hMenu, id, false, info);
-	if (!success) error (SWT.ERROR_CANNOT_SET_SELECTION);
-	info.fState &= ~OS.MFS_CHECKED;
-	if (selected) info.fState |= OS.MFS_CHECKED;
-	success = OS.SetMenuItemInfo (hMenu, id, false, info);
-	if (!success) error (SWT.ERROR_CANNOT_SET_SELECTION);
+	if (OS.IsWinCE) {
+		int index = parent.indexOf (this);
+		if (index == -1) return;
+		int uCheck = OS.MF_BYPOSITION | (selected ? OS.MF_CHECKED : OS.MF_UNCHECKED);
+		OS.CheckMenuItem (hMenu, index, uCheck);
+	} else {
+		MENUITEMINFO info = new MENUITEMINFO ();
+		info.cbSize = MENUITEMINFO.sizeof;
+		info.fMask = OS.MIIM_STATE;
+		boolean success = OS.GetMenuItemInfo (hMenu, id, false, info);
+		if (!success) error (SWT.ERROR_CANNOT_SET_SELECTION);
+		info.fState &= ~OS.MFS_CHECKED;
+		if (selected) info.fState |= OS.MFS_CHECKED;
+		success = OS.SetMenuItemInfo (hMenu, id, false, info);
+		if (!success) error (SWT.ERROR_CANNOT_SET_SELECTION);
+	}
 	parent.redraw ();
 }
 
