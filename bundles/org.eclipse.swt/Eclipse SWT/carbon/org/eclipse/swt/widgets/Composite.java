@@ -358,6 +358,20 @@ public Control [] getTabList () {
 	return tabList;
 }
 
+void handleResize(int handle, Rect bounds) {
+	super.handleResize(handle, bounds);
+	
+	/*
+	 * Bug in compositing mode: after a resize some children of a Composite
+	 * are not redrawn properly. The fix is to make the composite temporarily
+	 * one pixel larger and thereby forcing a relayout.
+	 */
+	bounds.right--;
+	OS.SetControlBounds(handle, bounds);
+	bounds.right++;
+	OS.SetControlBounds(handle, bounds);
+}
+	
 void hookEvents () {
 	super.hookEvents ();
 	if ((state & CANVAS) != 0) {
