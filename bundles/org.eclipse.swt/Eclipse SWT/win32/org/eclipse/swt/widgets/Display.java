@@ -119,7 +119,16 @@ public class Display extends Device {
 	int freeSlot;
 	int [] indexTable;
 	Control [] controlTable;
-	final static int GROW_SIZE = 1024;
+	static final int GROW_SIZE = 1024;
+	static final int SWT_OBJECT_INDEX;
+	static final boolean USE_PROPERTY = !OS.IsWinCE;
+	static {
+		if (USE_PROPERTY) {
+			SWT_OBJECT_INDEX = OS.GlobalAddAtom (new TCHAR (0, "SWT_OBJECT_INDEX", true)); //$NON-NLS-1$
+		} else {
+			SWT_OBJECT_INDEX = 0;
+		}
+	}
 	
 	/* Focus */
 	int focusEvent;
@@ -405,7 +414,11 @@ void addControl (int handle, Control control) {
 		indexTable = newIndexTable;
 		controlTable = newControlTable;
 	}
-	OS.SetWindowLong (handle, OS.GWL_USERDATA, freeSlot + 1);
+	if (USE_PROPERTY) {
+		OS.SetProp (handle, SWT_OBJECT_INDEX, freeSlot + 1);
+	} else {
+		OS.SetWindowLong (handle, OS.GWL_USERDATA, freeSlot + 1);
+	}
 	int oldSlot = freeSlot;
 	freeSlot = indexTable [oldSlot];
 	indexTable [oldSlot] = -2;
@@ -916,7 +929,12 @@ public Rectangle getClientArea () {
 
 Control getControl (int handle) {
 	if (handle == 0) return null;
-	int index = OS.GetWindowLong (handle, OS.GWL_USERDATA) - 1;
+	int index;
+	if (USE_PROPERTY) {
+		index = OS.GetProp (handle, SWT_OBJECT_INDEX) - 1;
+	} else {
+		index = OS.GetWindowLong (handle, OS.GWL_USERDATA) - 1;
+	}
 	if (0 <= index && index < controlTable.length) {
 		Control control = controlTable [index];
 		/*
@@ -2756,13 +2774,20 @@ void removeBar (Menu menu) {
 Control removeControl (int handle) {
 	if (handle == 0) return null;
 	Control control = null;
-	int index = OS.GetWindowLong (handle, OS.GWL_USERDATA) - 1;
+	int index;
+	if (USE_PROPERTY) {
+		index = OS.RemoveProp (handle, SWT_OBJECT_INDEX) - 1;
+	} else {
+		index = OS.GetWindowLong (handle, OS.GWL_USERDATA) - 1;
+	}
 	if (0 <= index && index < controlTable.length) {
 		control = controlTable [index];
 		controlTable [index] = null;
 		indexTable [index] = freeSlot;
 		freeSlot = index;
-		OS.SetWindowLong (handle, OS.GWL_USERDATA, 0);
+		if (!USE_PROPERTY) {
+			OS.SetWindowLong (handle, OS.GWL_USERDATA, 0);
+		}
 	}
 	return control;
 }
@@ -3370,7 +3395,12 @@ static int wcsToMbcs (char ch) {
 }
 
 int windowProc (int hwnd, int msg, int wParam, int lParam) {
-	int index = OS.GetWindowLong (hwnd, OS.GWL_USERDATA) - 1;
+	int index;
+	if (USE_PROPERTY) {
+		index = OS.GetProp (hwnd, SWT_OBJECT_INDEX) - 1;
+	} else {
+		index = OS.GetWindowLong (hwnd, OS.GWL_USERDATA) - 1;
+	}
 	if (0 <= index && index < controlTable.length) {
 		Control control = controlTable [index];
 		if (control != null) {
