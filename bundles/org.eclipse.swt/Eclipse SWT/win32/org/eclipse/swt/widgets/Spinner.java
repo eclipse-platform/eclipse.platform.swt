@@ -30,6 +30,8 @@ import org.eclipse.swt.events.*;
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
+ * 
+ * @since 3.1
  */
 public class Spinner extends Composite {
 	int hwndText, hwndUpDown;
