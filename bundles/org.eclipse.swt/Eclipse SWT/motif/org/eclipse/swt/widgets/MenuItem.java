@@ -230,6 +230,10 @@ void createHandle (int index) {
 	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
 		handle = OS.XmCreateToggleButtonGadget (parentHandle, null, argList, argList.length / 2);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+		int indicatorType = OS.XmONE_OF_MANY;
+		if ((style & SWT.CHECK) != 0) indicatorType = OS.XmN_OF_MANY;
+		int [] argList2 = {OS.XmNindicatorType, indicatorType};
+		OS.XtSetValues (handle, argList2, argList2.length / 2);
 		return;
 	}
 	handle = OS.XmCreateCascadeButtonGadget (parentHandle, null, argList, argList.length / 2);
@@ -346,78 +350,6 @@ public boolean getSelection () {
 	int [] argList = {OS.XmNset, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1] != 0;
-}
-/**
-* Returns the button label.  The label may
-* include the mnemonic character but must not contain line
-* delimiters.
-*/
-String getText2 () {
-	checkWidget();
-	if ((style & SWT.ARROW) != 0) return "";
-	int [] argList = {OS.XmNlabelString, 0, OS.XmNmnemonic, 0, OS.XmNacceleratorText, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	int xmString1 = argList [1], xmString2 = argList [5];
-	int mnemonic = argList [3];
-	if (mnemonic == OS.XK_VoidSymbol) mnemonic = 0;
-	if (xmString1 == 0) error (SWT.ERROR_CANNOT_GET_TEXT);
-	char [] result = null;	
-	int address = OS.XmStringUnparse (
-		xmString1,
-		null,
-		OS.XmCHARSET_TEXT,
-		OS.XmCHARSET_TEXT,
-		null,
-		0,
-		OS.XmOUTPUT_ALL);
-	if (address != 0) {
-		int length = OS.strlen (address);
-		byte [] buffer = new byte [length];
-		OS.memmove (buffer, address, length);
-		OS.XtFree (address);
-		/* Use the character encoding for the default locale */
-		result = Converter.mbcsToWcs (null, buffer);
-	}
-	String accelText = "";
-	if (xmString1 != 0) OS.XmStringFree (xmString1);
-	if (xmString2 != 0) {
-		address = OS.XmStringUnparse (
-			xmString2,
-			null,
-			OS.XmCHARSET_TEXT,
-			OS.XmCHARSET_TEXT,
-			null,
-			0,
-			OS.XmOUTPUT_ALL);
-		if (address != 0) {
-			int length = OS.strlen (address);
-			byte [] buffer = new byte [length];
-			OS.memmove (buffer, address, length);
-			OS.XtFree (address);
-			/* Use the character encoding for the default locale */
-			accelText = '\t' + new String (Converter.mbcsToWcs (null, buffer));
-		}
-	}
-	if (xmString2 != 0) OS.XmStringFree (xmString2);
-	if (result == null) return accelText;
-	int count = 0;
-	if (mnemonic != 0) count++;
-	for (int i=0; i<result.length-1; i++)
-		if (result [i] == Mnemonic) count++;
-	char [] newResult = result;
-	if ((count != 0) || (mnemonic != 0)) {
-		newResult = new char [result.length + count];
-		int i = 0, j = 0;
-		while (i < result.length) {
-			if ((mnemonic != 0) && (result [i] == mnemonic)) {
-				if (j < newResult.length) newResult [j++] = Mnemonic;
-				mnemonic = 0;
-			}
-			if ((newResult [j++] = result [i++]) == Mnemonic)
-				if (j < newResult.length) newResult [j++] = Mnemonic;
-		}
-	}
-	return new String (newResult) + accelText;
 }
 void hookEvents () {
 	if ((style & SWT.SEPARATOR) != 0) return;
@@ -758,6 +690,15 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	super.setText (string);
 	if ((style & (SWT.ARROW | SWT.SEPARATOR)) != 0) return;
+	/*
+	 * Bug in Linux.  In certain contexts setting the label of a
+	 * CHECK or RADIO menu item to the empty string can cause a
+	 * GP.  The fix is to set the menu label to a space in such
+	 * cases since it displays equivalently.
+	 */
+	if (OS.IsLinux && (style & (SWT.CHECK | SWT.RADIO)) != 0) {
+		if (string.equals ("")) string = " ";
+	}
 	char [] text = new char [string.length ()];
 	string.getChars (0, text.length, text, 0);
 	boolean accel = false;
