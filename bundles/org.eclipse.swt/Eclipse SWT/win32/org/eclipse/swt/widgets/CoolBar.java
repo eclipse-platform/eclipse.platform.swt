@@ -274,29 +274,7 @@ void destroyItem (CoolItem item) {
 			 * so that it occupies all the available space to the right in the row.
 			 */
 			resizeToMaximumWidth (lastIndex - 1);
-		} else if (index != 0) {
-			/*
-			* Feature in Windows.   Consider a coolbar with two rows; row A and row B.
-			* The last item of each row is sized so that it occupies all the space to the right.
-			* Thus, the last item in row A and the last item in row B will occupy all the space to the right.  
-			* When  the  first item in a row is removed all the remaining items on the same 
-			* row are moved to the previous row.  Thus if the first item in row B is removed, all 
-			* the remaining items in row B will move to row A.  However, the item that was previously
-			* the last item in row A is still occupying all the space to the right.  In order for the items from
-			* row B to be visible in row A, the item that was previously the last item in row A must 
-			* be resized to have its ideal size.
-			* 
-			* Note: this does not apply to the very first item in the very first row which is the 
-			* item with index 0.
-			*/
-			REBARBANDINFO rbBand = new REBARBANDINFO ();
-			rbBand.cbSize = REBARBANDINFO.sizeof;
-			rbBand.fMask = OS.RBBIM_STYLE;
-			OS.SendMessage (handle, OS.RB_GETBANDINFO, index, rbBand);
-			if ((rbBand.fStyle & OS.RBBS_BREAK) != 0) {
-				resizeToPreferredWidth (index - 1);
-			}			
-		}							
+		}						
 	}	
 		
 	/*
@@ -312,6 +290,12 @@ void destroyItem (CoolItem item) {
 	}
 	items [item.id] = null;
 	item.id = -1;
+	if (wasWrap) {
+		if (0 <= index && index < getItemCount ()) {
+			getItem (index).setWrap (true);
+		}
+	}
+	if (wasVisible) control.setVisible (true);
 	index = 0;
 	while (index < originalItems.length) {
 		if (originalItems [index] == item) break;
@@ -322,12 +306,6 @@ void destroyItem (CoolItem item) {
 	System.arraycopy (originalItems, 0, newOriginals, 0, index);
 	System.arraycopy (originalItems, index + 1, newOriginals, index, length - index);
 	originalItems = newOriginals;
-	if (wasWrap) {
-		if (0 <= index && index < getItemCount ()) {
-			getItem (index).setWrap (true);
-		}
-	}
-	if (wasVisible) control.setVisible (true);
 }
 
 /**
@@ -569,18 +547,23 @@ public int indexOf (CoolItem item) {
 }
 
 void resizeToPreferredWidth (int index) {
-	//wrong index will cause GP
+	/*
+	* Bug in Windows.  When RB_GETBANDBORDERS is sent
+	* with an index out of range, Windows GP's.  The
+	* fix is to ensure the index is in range.
+	*/
 	int count = OS.SendMessage(handle, OS.RB_GETBANDCOUNT, 0, 0);
-	if (index < 0 || index >= count) return;
-	REBARBANDINFO rbBand = new REBARBANDINFO();
-	rbBand.cbSize = REBARBANDINFO.sizeof;
-	rbBand.fMask = OS.RBBIM_IDEALSIZE;
-	OS.SendMessage(handle, OS.RB_GETBANDINFO, index, rbBand);
-	RECT rect = new RECT();
-	OS.SendMessage(handle, OS.RB_GETBANDBORDERS, index, rect);
-	rbBand.cx = rbBand.cxIdeal + rect.left + rect.right;
-	rbBand.fMask = OS.RBBIM_SIZE;
-	OS.SendMessage(handle, OS.RB_SETBANDINFO, index, rbBand);
+	if (0 <= index && index < count) {
+		REBARBANDINFO rbBand = new REBARBANDINFO();
+		rbBand.cbSize = REBARBANDINFO.sizeof;
+		rbBand.fMask = OS.RBBIM_IDEALSIZE;
+		OS.SendMessage (handle, OS.RB_GETBANDINFO, index, rbBand);
+		RECT rect = new RECT ();
+		OS.SendMessage (handle, OS.RB_GETBANDBORDERS, index, rect);
+		rbBand.cx = rbBand.cxIdeal + rect.left + rect.right;
+		rbBand.fMask = OS.RBBIM_SIZE;
+		OS.SendMessage (handle, OS.RB_SETBANDINFO, index, rbBand);
+	}
 }
 
 void resizeToMaximumWidth (int index) {
