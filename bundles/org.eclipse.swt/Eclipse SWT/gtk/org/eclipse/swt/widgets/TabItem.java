@@ -115,6 +115,7 @@ protected void checkSubclass () {
 
 void createWidget (int index) {
 	parent.createItem (this, index);
+	setOrientation ();
 	hookEvents ();
 	register ();
 	text = "";
@@ -265,6 +266,15 @@ public void setImage (Image image) {
 	} else {
 		OS.gtk_image_set_from_pixbuf (imageHandle, 0);
 		OS.gtk_widget_hide (imageHandle);
+	}
+}
+
+void setOrientation () {
+	if ((parent.style & SWT.RIGHT_TO_LEFT) != 0) {
+		if (handle != 0) OS.gtk_widget_set_direction (handle, OS.GTK_TEXT_DIR_RTL);
+		if (labelHandle != 0) OS.gtk_widget_set_direction (labelHandle, OS.GTK_TEXT_DIR_RTL);
+		if (imageHandle != 0) OS.gtk_widget_set_direction (imageHandle, OS.GTK_TEXT_DIR_RTL);
+		if (pageHandle != 0) OS.gtk_widget_set_direction (pageHandle, OS.GTK_TEXT_DIR_RTL);
 	}
 }
 
