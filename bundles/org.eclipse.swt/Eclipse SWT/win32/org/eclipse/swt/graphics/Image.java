@@ -1693,7 +1693,7 @@ static int[] init(Device device, Image image, ImageData source, ImageData mask) 
 	}
 	if (blackIndex == -1) {
 		/* There was no black in the palette, so just copy the data over */
-		System.arraycopy(source.data, 0, image.data, 0, imageData.data.length);
+		System.arraycopy(source.data, 0, imageData.data, 0, imageData.data.length);
 	} else {
 		/* Modify the source image to contain black wherever the mask is 0 */
 		int[] imagePixels = new int[imageData.width];
