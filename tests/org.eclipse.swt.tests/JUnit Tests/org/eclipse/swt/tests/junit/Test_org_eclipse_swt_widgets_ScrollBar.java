@@ -40,7 +40,9 @@ protected void setUp() {
 protected void tearDown() {
 	super.tearDown();
 }
-
+protected String valueString(int[] intArray) {
+	return " ("+intArray[1]+","+intArray[2]+","+intArray[3]+","+intArray[4]+")";
+}
 public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
 	warnUnimpl("Test test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
 }
@@ -125,7 +127,8 @@ public void test_setMaximumI(){
 		int[] intArray = testValues[i];
 		setDefaults();
 		scrollBar.setMaximum(intArray[0]);
-		report("setMaximum", intArray[0], intArray[1], intArray[2], intArray[3], intArray[4]);
+		String valueString = valueString(intArray);
+		report("setMax "+intArray[0]+ valueString, intArray[0], intArray[1], intArray[2], intArray[3], intArray[4]);
 	}
 }
 
@@ -136,7 +139,8 @@ public void test_setMinimumI(){
 		int[] intArray = testValues[i];
 		setDefaults();
 		scrollBar.setMinimum(intArray[0]);
-		report("setMinimum", intArray[0], intArray[1], intArray[2], intArray[3], intArray[4]);
+		String valueString = valueString(intArray);
+		report("setMin "+intArray[0]+valueString, intArray[0], intArray[1], intArray[2], intArray[3], intArray[4]);
 	}
 }
 
@@ -159,7 +163,8 @@ public void test_setSelectionI(){
 		int[] intArray = testValues[i];
 		setDefaults();
 		scrollBar.setSelection(intArray[0]);
-		report("setSelection", intArray[0], intArray[1], intArray[2], intArray[3], intArray[4]);
+		String valueString = valueString(intArray);
+		report("setSel "+intArray[0]+valueString,intArray[0], intArray[1], intArray[2], intArray[3], intArray[4]);
 	}
 }
 
@@ -169,7 +174,8 @@ public void test_setThumbI(){
 		int[] intArray = testValues[i];
 		setDefaults();
 		scrollBar.setThumb(intArray[0]);
-		report("setThumb", intArray[0], intArray[1], intArray[2], intArray[3], intArray[4]);
+		String valueString = valueString(intArray);
+		report("setThmb "+intArray[0]+valueString,intArray[0], intArray[1], intArray[2], intArray[3], intArray[4]);
 	}
 }
 
@@ -255,23 +261,26 @@ Canvas canvas;
 private void report(String call, int set, int minExpected, int maxExpected, int selectionExpected, int thumbExpected) {
 	// Uncomment these lines and comment out call to check() if you want the test to report all errors without
 	// stopping.
-
-	//if (scrollBar.getMinimum() != minExpected)
-		//System.out.println(call + "(" + set + "): Minimum Expected: " + minExpected + "  Actual: " + scrollBar.getMinimum());
-	//if (scrollBar.getMaximum() != maxExpected)
-		//System.out.println(call + "(" + set + "): Maximum Expected: " + maxExpected + "  Actual: " + scrollBar.getMaximum());
-	//if (scrollBar.getSelection() != selectionExpected)
-		//System.out.println(call + "(" + set + "): Selection Expected: " + selectionExpected + "  Actual: " + scrollBar.getSelection());
-	//if (scrollBar.getThumb() != thumbExpected)
-		//System.out.println(call + "(" + set + "): Thumb Expected: " + thumbExpected + "  Actual: " + scrollBar.getThumb());
-	check(minExpected, maxExpected, selectionExpected, thumbExpected);
+//	if (scrollBar.getMinimum() != minExpected) {
+//		System.out.println(call + " : Minimum Expected: " + minExpected + "  Actual: " + scrollBar.getMinimum());
+//	}
+//	if (scrollBar.getMaximum() != maxExpected){
+//		System.out.println(call + " : Maximum Expected: " + maxExpected + "  Actual: " + scrollBar.getMaximum());
+//	}
+//	if (scrollBar.getSelection() != selectionExpected) {
+//		System.out.println(call + " : Selection Expected: " + selectionExpected + "  Actual: " + scrollBar.getSelection());
+//	}
+//	if (scrollBar.getThumb() != thumbExpected) {
+//		System.out.println(call + " : Thumb Expected: " + thumbExpected + "  Actual: " + scrollBar.getThumb());
+//	}
+	check(call, minExpected, maxExpected, selectionExpected, thumbExpected);
 }
 // this method must be private or protected so the auto-gen tool keeps it
-private void check(int minExpected, int maxExpected, int selectionExpected, int thumbExpected) {
-	assertEquals(scrollBar.getMaximum(), maxExpected);
-	assertEquals(scrollBar.getMinimum(), minExpected);
-	assertEquals(scrollBar.getSelection(), selectionExpected);
-	assertEquals(scrollBar.getThumb(), thumbExpected);
+private void check(String call, int minExpected, int maxExpected, int selectionExpected, int thumbExpected) {
+	assertEquals(call+" max ", maxExpected, scrollBar.getMaximum());
+	assertEquals(call+" min ", minExpected, scrollBar.getMinimum());
+	assertEquals(call+" sel ", selectionExpected, scrollBar.getSelection());
+	assertEquals(call+" thmb ", thumbExpected, scrollBar.getThumb());
 }
 // this method must be private or protected so the auto-gen tool keeps it
 private int[][] getSetThumbValues() {
