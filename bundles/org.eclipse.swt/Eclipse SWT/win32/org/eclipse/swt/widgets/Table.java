@@ -515,7 +515,9 @@ void destroyItem (TableColumn column) {
 				TCHAR buffer = new TCHAR (getCodePage (), cchTextMax);
 				OS.MoveMemory (buffer, pszText, byteCount);
 				items [i].text = buffer.toString (0, buffer.strlen ());
-				items [i].image = imageList.get (lvItem.iImage);
+				if (imageList != null) {
+					items [i].image = imageList.get (lvItem.iImage);
+				}
 			}
 			if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
 		} else {
