@@ -846,6 +846,8 @@ public Shell getShell () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @since 3.0
  */
 public Point getSize () {
 	checkWidget ();
