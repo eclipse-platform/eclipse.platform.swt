@@ -529,24 +529,36 @@ public void removeSelectionListener(SelectionListener listener) {
  * </ul>
  */
 public void setControl (Control control) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
+	if (control != null) {
+		if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+		if (control.parent != parent) error (SWT.ERROR_INVALID_PARENT);
+	}
 	if ((style & SWT.SEPARATOR) == 0) return;
-
-	this.control = control;
-	if (control==null) return;
-
-	// first, remove the current control from the box and throw it away
-	WidgetTable.remove(handle);
-	OS.gtk_widget_destroy(handle);
-	WidgetTable.remove(boxHandle);
-	
-	// put the specified control in the box
-	handle = control.topHandle();
-	OS.gtk_widget_reparent(handle, boxHandle);
-	OS.gtk_widget_show(handle);
-	WidgetTable.put(handle, control);
-	WidgetTable.put(boxHandle, control);
+	Control newControl = control;
+	Control oldControl = this.control;
+	if (oldControl == newControl) return;
+	if (oldControl != null) {
+		int topHandle = control.topHandle ();
+		int tempHandle = parent.tempHandle;
+		OS.gtk_widget_reparent (topHandle, tempHandle);
+	}
+	this.control = newControl;
+	if (newControl != null) {
+		if (handle != boxHandle) {
+			WidgetTable.remove (handle);
+			OS.gtk_widget_destroy (handle);
+			handle = boxHandle;
+		}
+		int topHandle = control.topHandle ();
+		OS.gtk_widget_reparent (topHandle, boxHandle);
+		//OS.gtk_widget_show (topHandle);
+	} else {		
+		boolean isVertical = (parent.getStyle () & SWT.VERTICAL) != 0;
+		handle = isVertical ? OS.gtk_hseparator_new () : OS.gtk_vseparator_new ();
+		if (handle == 0) error(SWT.ERROR_NO_HANDLES);
+		OS.gtk_container_add (boxHandle, handle);
+	}
 }
 /**
  * Sets the receiver's disabled image to the argument, which may be
