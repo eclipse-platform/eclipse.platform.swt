@@ -881,7 +881,7 @@ public void disposeExec (Runnable runnable) {
 }
 
 void dragDetect (Control control) {
-	if (!dragging && control.hooks (SWT.DragDetect)) {
+	if (!dragging && control.hooks (SWT.DragDetect) && dragMouseStart != null) {
 		if (OS.WaitMouseMoved (dragMouseStart)) {
 			dragging = true;
 			Rect rect = new Rect ();
@@ -897,6 +897,7 @@ void dragDetect (Control control) {
 			event.y = y;
 			//control.postEvent (SWT.DragDetect, event);
 			control.sendEvent (SWT.DragDetect, event);
+			dragMouseStart = null;
 		}
 	}
 }
