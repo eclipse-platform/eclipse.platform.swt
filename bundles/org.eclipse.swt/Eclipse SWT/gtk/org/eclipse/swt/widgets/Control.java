@@ -27,6 +27,7 @@ import org.eclipse.swt.accessibility.*;
  * within the SWT implementation.
  * </p>
  */
+
 public abstract class Control extends Widget implements Drawable {
 	int fixedHandle;
 	Composite parent;
@@ -47,8 +48,8 @@ Control () {
  * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
@@ -62,7 +63,7 @@ Control () {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#BORDER
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -153,7 +154,7 @@ int paintWindow () {
 /**
  * Returns the preferred size of the receiver.
  * <p>
- * The <em>prefered size</em> of a control is the size that it would
+ * The <em>preferred size</em> of a control is the size that it would
  * best be displayed at. The width hint and height hint arguments
  * allow the caller to ask a control questions such as "Given a particular
  * width, how high does the control need to be to show all of the contents?"
@@ -171,6 +172,11 @@ int paintWindow () {
  * </ul>
  *
  * @see Layout
+ * @see #getBorderWidth
+ * @see #getBounds
+ * @see #getSize
+ * @see #pack
+ * @see "computeTrim, getClientArea for controls that implement them"
  */
 public Point computeSize (int wHint, int hHint) {
 	return computeSize (wHint, hHint, true);
@@ -214,7 +220,7 @@ void createWidget (int index) {
 /**
  * Returns the preferred size of the receiver.
  * <p>
- * The <em>prefered size</em> of a control is the size that it would
+ * The <em>preferred size</em> of a control is the size that it would
  * best be displayed at. The width hint and height hint arguments
  * allow the caller to ask a control questions such as "Given a particular
  * width, how high does the control need to be to show all of the contents?"
@@ -239,6 +245,11 @@ void createWidget (int index) {
  * </ul>
  *
  * @see Layout
+ * @see #getBorderWidth
+ * @see #getBounds
+ * @see #getSize
+ * @see #pack
+ * @see "computeTrim, getClientArea for controls that implement them"
  */
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
@@ -269,8 +280,10 @@ Point computeNativeSize (int h, int wHint, int hHint, boolean changed) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
- * @see addAccessibleListener
- * @see addAccessibleControlListener
+ * @see Accessible#addAccessibleListener
+ * @see Accessible#addAccessibleControlListener
+ * 
+ * @since 2.0
  */
 public Accessible getAccessible () {
 	checkWidget ();
@@ -470,6 +483,7 @@ public void setLocation (Point location) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void setLocation(int x, int y) {
 	checkWidget();
 	setBounds (x, y, 0, 0, true, false);
@@ -515,6 +529,7 @@ public Point getSize () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void setSize (Point size) {
 	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -559,6 +574,7 @@ public void setSize (int width, int height) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
+
 public void moveAbove (Control control) {
 	checkWidget();
 	if (control != null) {
@@ -760,9 +776,9 @@ public void addFocusListener(FocusListener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the help events are generated for the control, by sending
- * it one of the messages defined in the <code>HelpListener</code>
- * interface.
+ * be notified when help events are generated for the control,
+ * by sending it one of the messages defined in the
+ * <code>HelpListener</code> interface.
  *
  * @param listener the listener which should be notified
  *
@@ -803,6 +819,7 @@ public void addHelpListener (HelpListener listener) {
  * @see KeyListener
  * @see #removeKeyListener
  */
+
 public void addKeyListener(KeyListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);

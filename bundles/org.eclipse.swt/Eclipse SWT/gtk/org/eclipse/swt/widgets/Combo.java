@@ -51,6 +51,10 @@ import org.eclipse.swt.events.*;
 public class Combo extends Composite {
 	int entryHandle, listHandle;
 	int glist;
+	/**
+	 * the operating system limit for the number of characters
+	 * that the text field in an instance of this class can hold
+	 */
 	public final static int LIMIT;
 	
 	/*
@@ -71,8 +75,8 @@ public class Combo extends Composite {
  * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
@@ -86,7 +90,9 @@ public class Combo extends Composite {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#DROP_DOWN
+ * @see SWT#READ_ONLY
+ * @see SWT#SIMPLE
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
