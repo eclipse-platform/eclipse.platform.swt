@@ -15,4 +15,7 @@ Export-Package:
  org.eclipse.swt.layout,
  org.eclipse.swt.printing,
  org.eclipse.swt.program,
- org.eclipse.swt.widgets
+ org.eclipse.swt.widgets,
+ org.eclipse.swt.internal.ole.win32,
+ org.eclipse.swt.internal.win32,
+ org.eclipse.swt.ole.win32
