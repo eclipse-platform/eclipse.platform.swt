@@ -477,12 +477,14 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 		int alphaInfo = OS.CGImageGetAlphaInfo(imageHandle);
 		int data = srcImage.data + (srcY * bpr) + srcX * 4;
 		int provider = OS.CGDataProviderCreateWithData(0, data, srcHeight * bpr, 0);
-		if (provider == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		int subImage = OS.CGImageCreate(srcWidth, srcHeight, bpc, bpp, bpr, colorspace, alphaInfo, provider, null, false, 0);
-		OS.CGDataProviderRelease(provider);
-		if (subImage == 0) SWT.error(SWT.ERROR_NO_HANDLES);
- 		OS.CGContextDrawImage(handle, rect, subImage);
- 		OS.CGImageRelease(subImage);
+		if (provider != 0) {
+			int subImage = OS.CGImageCreate(srcWidth, srcHeight, bpc, bpp, bpr, colorspace, alphaInfo, provider, null, false, 0);
+			OS.CGDataProviderRelease(provider);
+			if (subImage != 0) {
+		 		OS.CGContextDrawImage(handle, rect, subImage);
+ 				OS.CGImageRelease(subImage);
+			}
+		}
  	}
  	OS.CGContextRestoreGState(handle);
 	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
