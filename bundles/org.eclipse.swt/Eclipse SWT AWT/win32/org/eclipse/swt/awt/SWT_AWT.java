@@ -168,17 +168,6 @@ public static Frame new_Frame (final Composite parent) {
 		}
 	});
 
-	parent.getShell ().addListener (SWT.Move, new Listener () {
-		public void handleEvent (Event e) {
-			Display display = parent.getDisplay();
-			final Point location = display.map(parent, null, 0, 0);
-			EventQueue.invokeLater(new Runnable () {
-				public void run () {
-					frame.setLocation (location.x, location.y);
-				}
-			});
-		}
-	});
 	parent.addListener (SWT.Dispose, new Listener () {
 		public void handleEvent (Event event) {
 			parent.setVisible(false);
@@ -192,12 +181,10 @@ public static Frame new_Frame (final Composite parent) {
 	parent.getDisplay().asyncExec(new Runnable() {
 		public void run () {
 			if (parent.isDisposed()) return;
-			Display display = parent.getDisplay();
-			Rectangle clientArea = parent.getClientArea();
-			final Rectangle bounds = display.map(parent, null, clientArea);
+			final Rectangle clientArea = parent.getClientArea();
 			EventQueue.invokeLater(new Runnable () {
 				public void run () {
-					frame.setBounds (bounds.x, bounds.y, bounds.width, bounds.height);
+					frame.setSize (clientArea.width, clientArea.height);
 					frame.validate ();
 				}
 			});
