@@ -160,7 +160,7 @@ static DeviceData checkNull (PrinterData data) {
  * </p>
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_UNSPECIFIED - if there are no valid printers
+ *    <li>ERROR_NO_HANDLES - if there are no valid printers
  * </ul>
  *
  * @see #dispose
@@ -180,7 +180,7 @@ public Printer() {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the specified printer data does not represent a valid printer
- *    <li>ERROR_UNSPECIFIED - if there are no valid printers
+ *    <li>ERROR_NO_HANDLES - if there are no valid printers
  * </ul>
  *
  * @see #dispose
