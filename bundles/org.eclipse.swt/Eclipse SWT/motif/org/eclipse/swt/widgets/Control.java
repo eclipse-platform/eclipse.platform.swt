@@ -2514,15 +2514,12 @@ boolean translateTraversal (int key, XKeyEvent xEvent) {
 	switch (key) {
 		case OS.XK_Escape:
 		case OS.XK_Cancel: {
-			Shell shell = getShell ();
-			if (!shell.isVisible () || !shell.isEnabled ()) return false;
+			all = true;
 			detail = SWT.TRAVERSE_ESCAPE;
 			break;
 		}
 		case OS.XK_Return: {
-			Button button = menuShell ().getDefaultButton ();
-			if (button == null || button.isDisposed ()) return false;
-			if (!button.isVisible () || !button.isEnabled ()) return false;
+			all = true;
 			detail = SWT.TRAVERSE_RETURN;
 			break;
 		}
@@ -2628,11 +2625,7 @@ public boolean traverse (int traversal) {
 	return traverse (event);
 }
 boolean traverseEscape () {
-	Shell shell = getShell ();
-	if (shell.parent == null) return false;
-	if (!shell.isVisible () || !shell.isEnabled ()) return false;
-	shell.close ();
-	return true;
+	return false;
 }
 boolean traverseGroup (boolean next) {
 	Control root = computeTabRoot ();
@@ -2691,11 +2684,7 @@ boolean traverseMnemonic (char key) {
 	return mnemonicHit (key);
 }
 boolean traverseReturn () {
-	Button button = menuShell ().getDefaultButton ();
-	if (button == null || button.isDisposed ()) return false;
-	if (!button.isVisible () || !button.isEnabled ()) return false;
-	button.click ();
-	return true;
+	return false;
 }
 /**
  * Forces all outstanding paint requests for the widget tree

@@ -903,6 +903,13 @@ public void setVisible (boolean visible) {
 	}
 }
 
+boolean traverseEscape () {
+	if (parent == null) return false;
+	if (!isVisible () || !isEnabled ()) return false;
+	close ();
+	return true;
+}
+
 void updateModal () {
 	if (!display.TrimEnabled) return;
 	setItemEnabled (OS.SC_CLOSE, isActive ());

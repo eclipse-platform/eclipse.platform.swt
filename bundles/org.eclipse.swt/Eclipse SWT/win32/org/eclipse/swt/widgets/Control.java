@@ -2353,20 +2353,16 @@ boolean translateTraversal (MSG msg) {
 	int lastKey = key, lastAscii = 0;
 	switch (key) {
 		case OS.VK_ESCAPE: {
+			all = true;
 			lastAscii = 27;
-			Shell shell = getShell ();
-			if (!shell.isVisible () || !shell.isEnabled ()) return false;
 			int code = OS.SendMessage (hwnd, OS.WM_GETDLGCODE, 0, 0);
 			if ((code & OS.DLGC_WANTALLKEYS) != 0) doit = false;
-			if (shell.parent == null) doit = false;
 			detail = SWT.TRAVERSE_ESCAPE;
 			break;
 		}
 		case OS.VK_RETURN: {
+			all = true;
 			lastAscii = '\r';
-			Button button = menuShell ().getDefaultButton ();
-			if (button == null || button.isDisposed ()) return false;
-			if (!button.isVisible () || !button.isEnabled ()) return false;
 			int code = OS.SendMessage (hwnd, OS.WM_GETDLGCODE, 0, 0);
 			if ((code & OS.DLGC_WANTALLKEYS) != 0) doit = false;
 			detail = SWT.TRAVERSE_RETURN;
@@ -2375,7 +2371,8 @@ boolean translateTraversal (MSG msg) {
 		case OS.VK_TAB: {
 			/*
 			* NOTE: This code causes Shift+Tab and Ctrl+Tab to
-			* always attempt traversal which is not the correct.
+			* always attempt traversal which is not correct.
+			* The default should the same as a plain Tab key.
 			* This behavior is currently relied on by StyledText.
 			*/
 			lastAscii = '\t';
@@ -2442,14 +2439,14 @@ boolean traverse (Event event) {
 	if (isDisposed ()) return false;
 	if (!event.doit) return false;
 	switch (event.detail) {
-		case SWT.TRAVERSE_NONE:				return true;
+		case SWT.TRAVERSE_NONE:			return true;
 		case SWT.TRAVERSE_ESCAPE:			return traverseEscape ();
 		case SWT.TRAVERSE_RETURN:			return traverseReturn ();
-		case SWT.TRAVERSE_TAB_NEXT:			return traverseGroup (true);
-		case SWT.TRAVERSE_TAB_PREVIOUS:		return traverseGroup (false);
+		case SWT.TRAVERSE_TAB_NEXT:		return traverseGroup (true);
+		case SWT.TRAVERSE_TAB_PREVIOUS:	return traverseGroup (false);
 		case SWT.TRAVERSE_ARROW_NEXT:		return traverseItem (true);
 		case SWT.TRAVERSE_ARROW_PREVIOUS:	return traverseItem (false);
-		case SWT.TRAVERSE_MNEMONIC:			return traverseMnemonic (event.character);	
+		case SWT.TRAVERSE_MNEMONIC:		return traverseMnemonic (event.character);	
 		case SWT.TRAVERSE_PAGE_NEXT:		return traversePage (true);
 		case SWT.TRAVERSE_PAGE_PREVIOUS:	return traversePage (false);
 	}
@@ -2481,11 +2478,7 @@ public boolean traverse (int traversal) {
 }
 
 boolean traverseEscape () {
-	Shell shell = getShell ();
-	if (shell.parent == null) return false;
-	if (!shell.isVisible () || !shell.isEnabled ()) return false;
-	shell.close ();
-	return true;
+	return false;
 }
 
 boolean traverseGroup (boolean next) {
@@ -2549,11 +2542,7 @@ boolean traversePage (boolean next) {
 }
 
 boolean traverseReturn () {
-	Button button = menuShell ().getDefaultButton ();
-	if (button == null || button.isDisposed ()) return false;
-	if (!button.isVisible () || !button.isEnabled ()) return false;
-	button.click ();
-	return true;
+	return false;
 }
 
 void unsubclass () {
@@ -2853,9 +2842,7 @@ LRESULT WM_GETFONT (int wParam, int lParam) {
 LRESULT WM_GETOBJECT (int wParam, int lParam) {
 	if (accessible != null) {
 		int result = accessible.internal_WM_GETOBJECT (wParam, lParam);
-		if (result != 0) {
-			return new LRESULT(result);
-		}
+		if (result != 0) return new LRESULT (result);
 	}
 	return null;
 }

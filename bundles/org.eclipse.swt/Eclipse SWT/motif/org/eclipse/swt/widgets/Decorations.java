@@ -588,9 +588,13 @@ public void setVisible (boolean visible) {
 	}
 	savedFocus = null;
 }
-
 boolean traverseItem (boolean next) {
 	return false;
 }
-
+boolean traverseReturn () {
+	if (defaultButton == null || defaultButton.isDisposed ()) return false;
+	if (!defaultButton.isVisible () || !defaultButton.isEnabled ()) return false;
+	defaultButton.click ();
+	return true;
+}
 }
