@@ -284,7 +284,7 @@ int processPaint (Object callData) {
 				just= 2;
 			else if ((style & SWT.CENTER) != 0)
 				just= 1;
-			OS.RGBForeColor(enabled ? 0x000000 : 0x808080);
+			MacUtil.RGBForeColor(enabled ? 0x000000 : 0x808080);
 			gc.installFont();
 			bounds.set(borderWidth, borderWidth, w-2*borderWidth, h-2*borderWidth);
 			OS.DrawThemeTextBox(sHandle, OS.kThemeCurrentPortFont, OS.kThemeStateActive, wrap, bounds.getData(), just, 0);
