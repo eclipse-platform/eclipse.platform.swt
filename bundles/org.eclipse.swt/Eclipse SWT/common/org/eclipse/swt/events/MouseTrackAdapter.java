@@ -24,7 +24,7 @@ package org.eclipse.swt.events;
  * @see MouseTrackListener
  * @see MouseEvent
  */
-public class MouseTrackAdapter implements MouseTrackListener {
+public abstract class MouseTrackAdapter implements MouseTrackListener {
 
 /**
  * Sent when the mouse pointer passes into the area of
