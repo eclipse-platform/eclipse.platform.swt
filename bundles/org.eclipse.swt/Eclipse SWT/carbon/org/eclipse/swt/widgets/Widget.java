@@ -929,19 +929,52 @@ int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
-int kEventRawKeyUp (int nextHandler, int theEvent, int userData) {
+int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
+	return kEventRawKeyPressed (nextHandler, theEvent, userData);
+}
+
+int kEventRawKeyModifiersChanged (int nextHandler, int theEvent, int userData) {
+	Display display = this.display;
+	int [] modifiers = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, modifiers.length * 4, null, modifiers);
+	int lastModifiers = display.lastModifiers;
+	int chord = OS.GetCurrentEventButtonState ();
+	int type = SWT.KeyUp;
+	if ((modifiers [0] & OS.alphaLock) != 0 && (lastModifiers & OS.alphaLock) == 0) type = SWT.KeyDown;
+	if ((modifiers [0] & OS.shiftKey) != 0 && (lastModifiers & OS.shiftKey) == 0) type = SWT.KeyDown;
+	if ((modifiers [0] & OS.controlKey) != 0 && (lastModifiers & OS.controlKey) == 0) type = SWT.KeyDown;
+	if ((modifiers [0] & OS.cmdKey) != 0 && (lastModifiers & OS.cmdKey) == 0) type = SWT.KeyDown;
+	if ((modifiers [0] & OS.optionKey) != 0 && (lastModifiers & OS.optionKey) == 0) type = SWT.KeyDown;
+	if (type == SWT.KeyUp && (modifiers [0] & OS.alphaLock) == 0 && (lastModifiers & OS.alphaLock) != 0) {
+		Event event = new Event ();
+		event.keyCode = SWT.CAPS_LOCK;
+		setInputState (event, SWT.KeyDown, chord, modifiers [0]);
+		sendKeyEvent (SWT.KeyDown, event);
+	}
+	Event event = new Event ();
+	setInputState (event, type, chord, modifiers [0]);
+	if (event.keyCode == 0 && event.character == 0) return OS.eventNotHandledErr;
+	boolean result = sendKeyEvent (type, event);
+	if (type == SWT.KeyDown && (modifiers [0] & OS.alphaLock) != 0 && (lastModifiers & OS.alphaLock) == 0) {
+		event = new Event ();
+		event.keyCode = SWT.CAPS_LOCK;
+		setInputState (event, SWT.KeyUp, chord, modifiers [0]);
+		sendKeyEvent (SWT.KeyUp, event);
+	}
+	display.lastModifiers = modifiers [0];
+	return result ? OS.eventNotHandledErr : OS.noErr;
+}
+
+int kEventRawKeyPressed (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
 int kEventRawKeyRepeat (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
+	return kEventRawKeyPressed (nextHandler, theEvent, userData);
 }
 
-int kEventRawKeyModifiersChanged (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
+int kEventRawKeyUp (int nextHandler, int theEvent, int userData) {
+	if (!sendKeyEvent (SWT.KeyUp, theEvent)) return OS.noErr;
 	return OS.eventNotHandledErr;
 }
 
@@ -1221,6 +1254,50 @@ void sendEvent (int eventType, Event event, boolean send) {
 	} else {
 		display.postEvent (event);
 	}
+}
+
+
+boolean sendKeyEvent (int type, int theEvent) {
+	int [] length = new int [1];
+	int status = OS.GetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, null, 4, length, (char[])null);
+	if (status == OS.noErr && length [0] > 2) {
+		int count = 0;
+		int [] chord = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamMouseChord, OS.typeUInt32, null, 4, null, chord);
+		int [] modifiers = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
+		char [] chars = new char [length [0] / 2];
+		OS.GetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, null, chars.length * 2, null, chars);
+		for (int i=0; i<chars.length; i++) {
+			Event event = new Event ();
+			event.character = chars [i];
+			setInputState (event, type, chord [0], modifiers [0]);
+			if (sendKeyEvent (type, event)) chars [count++] = chars [i];
+		}
+		if (count == 0) return false;
+		if (count != chars.length - 1) {
+			OS.SetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, count * 2, chars);
+		}
+		return true;
+	} else {
+		Event event = new Event ();
+		if (!setKeyState (event, type, theEvent)) return true;
+		return sendKeyEvent (type, event);
+	}
+}
+
+boolean sendKeyEvent (int type, Event event) {
+	sendEvent (type, event);
+	// widget could be disposed at this point
+	
+	/*
+	* It is possible (but unlikely), that application
+	* code could have disposed the widget in the key
+	* events.  If this happens, end the processing of
+	* the key by returning false.
+	*/
+	if (isDisposed ()) return false;
+	return event.doit;
 }
 
 int setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
