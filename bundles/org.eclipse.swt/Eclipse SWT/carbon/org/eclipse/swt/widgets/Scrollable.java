@@ -352,14 +352,13 @@ int topHandle () {
 	
 	void _relayout() {
 		
-		int hndl= scrolledHandle;
-		if (hndl == 0)
+		if (scrolledHandle == 0)
 			return;
 		
 		Rect bounds= new Rect();
-		OS.GetControlBounds(hndl, bounds);
+		OS.GetControlBounds(scrolledHandle, bounds);
 		
-		boolean visible= OS.IsControlVisible(hndl);
+		boolean visible= OS.IsControlVisible(scrolledHandle);
 		
 		int x= 0;
 		int y= 0;
