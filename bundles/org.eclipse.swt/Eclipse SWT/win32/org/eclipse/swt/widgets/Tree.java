@@ -468,7 +468,7 @@ public int getItemHeight () {
 }
 
 /**
- * Returns the number of items contained in the receiver
+ * Returns the items contained in the receiver
  * that are direct item children of the receiver.  These
  * are the roots of the tree.
  * <p>
@@ -477,7 +477,7 @@ public int getItemHeight () {
  * not affect the receiver. 
  * </p>
  *
- * @return the number of items
+ * @return the items
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
