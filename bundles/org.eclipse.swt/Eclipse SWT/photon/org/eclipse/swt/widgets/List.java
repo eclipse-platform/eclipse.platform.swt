@@ -658,6 +658,7 @@ void hookEvents () {
  */
 public int indexOf (String string) {
 	checkWidget();
+	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
 	return OS.PtListItemPos (handle, buffer) - 1;
 }
@@ -798,7 +799,7 @@ public void remove (int index) {
 public void remove (String string) {
 	checkWidget();
 	int index = indexOf (string, 0);
-	if (index == -1) error (SWT.ERROR_ITEM_NOT_REMOVED);
+	if (index == -1) error (SWT.ERROR_INVALID_ARGUMENT);
 	remove (index);
 }
 
@@ -931,22 +932,22 @@ public void removeSelectionListener(SelectionListener listener) {
  * </ul>
  */
 public void select (int start, int end) {
-	checkWidget();
-	if (start > end) return;
+	checkWidget ();
+	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) return;
 	int [] args = new int [] {OS.Pt_ARG_LIST_ITEM_COUNT, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	int count = args [1];
+	if (count == 0 || start >= count) return;
+	start = Math.max (0, start);
+	end = Math.min (end, count - 1);
 	if ((style & SWT.SINGLE) != 0) {
-		int index = Math.min (count - 1, end);
-		if (index >= start) select (index);
+		select (start);
 		return;
 	}
 	int gotoIndex = -1;
 	for (int index=end; index>=start; index--) {
-		if (0 <= index && index < count) {
-			gotoIndex = index;
-			OS.PtListSelectPos (handle, index + 1);
-		}
+		gotoIndex = index;
+		OS.PtListSelectPos (handle, index + 1);
 	}
 	if (gotoIndex != -1) OS.PtListGotoPos (handle, gotoIndex + 1);
 }
@@ -969,14 +970,15 @@ public void select (int start, int end) {
  * </ul>
  */
 public void select (int [] indices) {
-	checkWidget();
+	checkWidget ();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (indices.length == 0) return;
+	int length = indices.length;
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
 	int [] args = new int [] {OS.Pt_ARG_LIST_ITEM_COUNT, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	int count = args [1];
 	int gotoIndex = -1;
-	for (int i=0; i<indices.length; i++) {
+	for (int i=0; i<length; i++) {
 		int index = indices [i];
 		if (0 <= index && index < count) {
 			gotoIndex = index;
@@ -1116,6 +1118,20 @@ public void setItems (String [] items) {
  * @see Table#select(int,int)
  */
 public void setSelection (int start, int end) {
+	checkWidget ();
+	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) {
+		deselectAll ();
+		return;
+	}
+	int [] args = new int [] {OS.Pt_ARG_LIST_ITEM_COUNT, 0, 0};
+	OS.PtGetResources (handle, args.length / 3, args);
+	int count = args [1];
+	if (count == 0 || start >= count) {
+		deselectAll ();
+		return;
+	}
+	start = Math.max (0, start);
+	end = Math.min (end, count - 1);
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (start, end);
 }
@@ -1158,7 +1174,11 @@ public void setSelection (int index) {
  * @see List#select(int[])
  */
 public void setSelection(int[] indices) {
+	checkWidget ();
+	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	deselectAll ();
+	int length = indices.length;
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
 	select (indices);
 }
 
@@ -1181,16 +1201,21 @@ public void setSelection(int[] indices) {
  * @see List#select(int)
  */
 public void setSelection (String [] items) {
-	checkWidget();
+	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int length = items.length;
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) {
+		deselectAll ();
+		return;
+	}
 	if ((style & SWT.MULTI) != 0) deselectAll ();
-	for (int i=items.length-1; i>=0; --i) {
+	for (int i=length-1; i>=0; --i) {
 		int index = 0;
 		String string = items [i];
 		if (string != null) {
 			while ((index = indexOf (string, index)) != -1) {
 				select (index);
-				if (((style & SWT.SINGLE) != 0) && isSelected (index)) return;
+				if ((style & SWT.SINGLE) != 0) return;
 				index++;
 			}
 		}
