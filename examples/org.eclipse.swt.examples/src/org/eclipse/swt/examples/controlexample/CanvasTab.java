@@ -279,6 +279,16 @@ class CanvasTab extends Tab {
 	}
 	
 	/**
+	 * Sets the enabled state of the "Example" widgets.
+	 */
+	void setExampleWidgetEnabled () {
+		super.setExampleWidgetEnabled();
+		if (caretButton.getSelection ()) {
+			canvas.setFocus();
+		}
+	}
+	
+	/**
 	 * Sets the state of the "Example" widgets.
 	 */
 	void setExampleWidgetState () {
