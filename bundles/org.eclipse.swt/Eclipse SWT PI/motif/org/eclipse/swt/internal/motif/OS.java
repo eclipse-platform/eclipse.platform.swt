@@ -17,18 +17,19 @@ public class OS {
 	}
 
 	/* OS and locale Constants*/
-	public static final boolean IsAIX, IsSunOS, IsLinux;
+	public static final boolean IsAIX, IsSunOS, IsLinux, IsHPUX;
 	public static final boolean IsDBLocale;
 	static {
 		
 		/* Initialize the OS flags and locale constants */
 		String osName = System.getProperty ("os.name");
-		boolean isAIX = false, isSunOS = false, isLinux = false;
+		boolean isAIX = false, isSunOS = false, isLinux = false, isHPUX = false;
 		if (osName.equals ("Linux")) isLinux = true;
 		if (osName.equals ("AIX")) isAIX = true;
 		if (osName.equals ("Solaris")) isSunOS = true;
 		if (osName.equals ("SunOS")) isSunOS = true;
-		IsAIX = isAIX;  IsSunOS = isSunOS;  IsLinux = isLinux;
+		if (osName.equals ("HP-UX")) isHPUX = true;
+		IsAIX = isAIX;  IsSunOS = isSunOS;  IsLinux = isLinux;  IsHPUX = isHPUX;
 		IsDBLocale = OS.MB_CUR_MAX () != 1;
 	}
 	public static final int CODESET = OS.IsLinux ? 14 : 49;

@@ -811,6 +811,27 @@ void setKeyState (Event event, XKeyEvent xEvent) {
 		}
 		
 		/*
+		* Bug in Motif.  On HP-UX only, Shift+F9, Shift+F10, Shift+F11
+		* and Shift+F12 are not translated correctly by XLookupString.
+		* The fix is to look for these values explicitly and correct them.		*/
+		if (OS.IsHPUX && keysym [0] != 0) {
+			switch (keysym [0]) {
+				case 0xFF91:
+					keysym [0] = OS.XK_F9;
+					break;
+				case 0xFF92:
+					keysym [0] = OS.XK_F10;
+					break;
+				case 0xFF93:
+					keysym [0] = OS.XK_F11;
+					break;
+				case 0xFF94:
+					keysym [0] = OS.XK_F12;
+					break;
+			}
+		}
+		
+		/*
 		* Bug in Motif.  There are some keycodes for which 
 		* XLookupString() does not translate the character.
 		* Some of examples are Shift+Tab and Ctrl+Space.
