@@ -106,6 +106,10 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener (SWT.DefaultSelection, typedListener);
 }
 
+protected void checkSubclass () {
+	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
 void createWidget (int index) {
 	super.createWidget (index);
 	parent.createItem (this, index);

@@ -155,6 +155,10 @@ static int checkStyle (int style) {
 	return style;
 }
 
+protected void checkSubclass () {
+	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
 void _setImages (Image [] images) {
 	int /*long*/ pixbufs = 0;
 	if (images != null) {

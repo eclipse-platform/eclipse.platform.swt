@@ -119,6 +119,10 @@ static Table checkNull (Table control) {
 	return control;
 }
 
+protected void checkSubclass () {
+	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
 void clear () {
 	if (cached || (parent.style & SWT.VIRTUAL) == 0) {
 		int columnCount = OS.gtk_tree_model_get_n_columns (parent.modelHandle);

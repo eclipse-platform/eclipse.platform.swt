@@ -109,6 +109,10 @@ public TabItem (TabFolder parent, int style, int index) {
 	createWidget (index);
 }
 
+protected void checkSubclass () {
+	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
 void createWidget (int index) {
 	parent.createItem (this, index);
 	hookEvents ();

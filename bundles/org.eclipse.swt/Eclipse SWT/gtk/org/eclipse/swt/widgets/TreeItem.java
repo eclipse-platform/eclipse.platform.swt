@@ -187,6 +187,10 @@ static TreeItem checkNull (TreeItem item) {
 	return item;
 }
 
+protected void checkSubclass () {
+	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
 /**
  * Returns the receiver's background color.
  *

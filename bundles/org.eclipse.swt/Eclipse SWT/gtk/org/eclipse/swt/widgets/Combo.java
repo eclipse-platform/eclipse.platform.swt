@@ -262,6 +262,10 @@ static int checkStyle (int style) {
 	return style;
 }
 
+protected void checkSubclass () {
+	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
 /**
  * Sets the selection in the receiver's text field to an empty
  * selection starting just before the first character. If the
