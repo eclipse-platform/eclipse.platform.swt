@@ -195,7 +195,7 @@ void bringToTop () {
 	* This code is intentionally commented.  On some platforms,
 	* the ON_TOP style creates a shell that will stay on top
 	* of every other shell on the desktop.  Using SetWindowPos ()
-	* with HWND_TOP caused problems on Windows so this code is
+	* with HWND_TOP caused problems on Windows 98 so this code is
 	* commented out until this functionality is specified and
 	* the problems are fixed.
 	*/

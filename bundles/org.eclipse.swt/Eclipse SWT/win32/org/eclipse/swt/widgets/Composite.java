@@ -626,9 +626,23 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 				* Bug in Windows 98 and NT.  Setting the tool tip to be the
 				* top most window using HWND_TOPMOST can result in a parent
 				* dialog shell being moved behind its parent if the dialog
-				* has a sibling that is currently on top.  The fix is to lock
-				* the z-order of the active window.
+				* has a sibling that is currently on top.  The fix is to
+				* lock the z-order of the active window.
+				* 
+				* Feature in Windows.  Using SetWindowPos() to with HWND_NOTOPMOST
+				* to clear the top most state of a window whose parent is already
+				* a top most clears the top most state of the parent.  The fix is
+				* to check if the parent is already on top and neither set or clear
+				* the top most status of the tool tip.
 				*/
+				int hwndParent = 0;
+				do {
+					hwndParent = OS.GetParent (hdr.hwndFrom);
+					if (hwndParent == 0) break;
+					int style = OS.GetWindowLong (hwndParent, OS.GWL_EXSTYLE);
+					if ((style & OS.WS_EX_TOPMOST) != 0) break;
+				} while (true);
+				if (hwndParent != 0) break;
 				display.lockActiveWindow = true;
 				int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOSIZE;
 				int hwndInsertAfter = hdr.code == OS.TTN_SHOW ? OS.HWND_TOPMOST : OS.HWND_NOTOPMOST;
