@@ -208,7 +208,7 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	int deltaX = destX - x, deltaY = destY - y;
 	if (deltaX == 0 && deltaY == 0) return;
 	if (!isVisible ()) return;
-	boolean isVisible = (caret != null) && (caret.isVisible ());
+	boolean isVisible = caret != null && caret.isVisible ();
 	if (isVisible) caret.hideCaret ();
 	GC gc = new GC (this);
 	gc.copyArea (x, y, width, height, destX, destY);
