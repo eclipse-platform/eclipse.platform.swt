@@ -542,15 +542,39 @@ public static final native int VtblCall(int fnNumber, int ppVtbl, int arg0, int[
 
 public static final native int WriteClassStg(int pStg, GUID rclsid);
 
-/* VtblCalls added for accessibility (definitions belong here in COM, not in ACC) */
+/* Start ACCESSIBILITY */
 public static final native int VtblCall(int fnNumber, int ppVtbl, int arg0, int arg1, int arg2, int arg3);
 public static final native int VtblCall(int fnNumber, int ppVtbl, int arg0, int arg1, int arg2, int arg3, int arg4);
 public static final native int VtblCall(int fnNumber, int ppVtbl, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5);
 public static final native int VtblCall(int fnNumber, int ppVtbl, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7);
-/* End of VtblCalls added for accessibility */
 
-/* these are only here temporarily until I figure out how to move them into ACC */
-	public static final native int CreateStdAccessibleObject (int hwnd, int idObject, GUID riidInterface, int[] ppvObject);
-	public static final native int LresultFromObject (GUID riid, int wParam, int pAcc);
+public static final native int CreateStdAccessibleObject (int hwnd, int idObject, GUID riidInterface, int[] ppvObject);
+public static final native int LresultFromObject (GUID riid, int wParam, int pAcc);
+
+public static final int WM_GETOBJECT = 0x3d;
+public static final int OBJID_CLIENT = 0xfffffffc;
+public static final int CO_E_OBJNOTCONNECTED = 0x800401FD;
+
+public static final int STATE_SYSTEM_NORMAL = 0x00000000;
+public static final int STATE_SYSTEM_SELECTED = 0x00000002;
+public static final int STATE_SYSTEM_SELECTABLE = 0x00200000;
+public static final int STATE_SYSTEM_FOCUSED = 0x00000004;
+public static final int STATE_SYSTEM_FOCUSABLE = 0x00100000;
+
+public static final int ROLE_SYSTEM_CLIENT = 0xa;
+public static final int ROLE_SYSTEM_PUSHBUTTON = 0x2b;
+public static final int ROLE_SYSTEM_PAGETAB = 0x25;
+public static final int ROLE_SYSTEM_PAGETABLIST = 0x3c;
+public static final int ROLE_SYSTEM_STATICTEXT = 0x29;
+
+public static final int NAVDIR_UP = 0x1;
+public static final int NAVDIR_DOWN = 0x2;
+public static final int NAVDIR_LEFT = 0x3;
+public static final int NAVDIR_RIGHT = 0x4;
+public static final int NAVDIR_NEXT = 0x5;
+public static final int NAVDIR_PREVIOUS = 0x6;
+public static final int NAVDIR_FIRSTCHILD = 0x7;
+public static final int NAVDIR_LASTCHILD = 0x8;
+/* End ACCESSIBILITY */
 
 }
