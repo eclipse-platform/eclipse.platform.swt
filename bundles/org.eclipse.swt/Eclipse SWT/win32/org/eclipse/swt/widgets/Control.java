@@ -2377,7 +2377,7 @@ boolean translateTraversal (MSG msg) {
 			/*
 			* NOTE: This code causes Shift+Tab and Ctrl+Tab to
 			* always attempt traversal which is not correct.
-			* The default should the same as a plain Tab key.
+			* The default should be the same as a plain Tab key.
 			* This behavior is currently relied on by StyledText.
 			*
 			* The correct behavior is to give every key to a
@@ -2411,8 +2411,7 @@ boolean translateTraversal (MSG msg) {
 			/*
 			* The fact that this code is commented causes Ctrl+PgUp
 			* and Ctrl+PgDn to always attempt traversal which is not
-			* correct.  The default should false, just like RETURN
-			* and ESC.  This behavior is relied on by StyledText.
+			* correct.  This behavior is relied on by StyledText.
 			* 
 			* The correct behavior is to give every key to a control
 			* that answers DLGC_WANTALLKEYS.
