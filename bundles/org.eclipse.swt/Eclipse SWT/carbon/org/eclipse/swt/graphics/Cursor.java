@@ -187,8 +187,8 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 	org.eclipse.swt.internal.carbon.Cursor cursor = new org.eclipse.swt.internal.carbon.Cursor();
 	int width = Math.min(16, source.width);
 	int height = Math.min(16, source.height);
-	short[] srcData= cursor.data;
-	short[] maskData= cursor.mask;
+	short[] srcData = cursor.data;
+	short[] maskData = cursor.mask;
 	for (int y= 0; y < height; y++) {
 		short d = 0, m = 0;
 		for (int x= 0; x < width; x++) {
@@ -196,8 +196,8 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 			if (source.getPixel(x, y) != 0) d |= bit;
 			if (mask.getPixel(x, y) != 0) m |= bit;
 		}
-		srcData[y]= d;
-		maskData[y]= m;
+		srcData[y] = d;
+		maskData[y] = m;
 	}
 	cursor.hotSpot_h = (short)Math.min(16, hotspotX);
 	cursor.hotSpot_v = (short)Math.min(16, hotspotY);
