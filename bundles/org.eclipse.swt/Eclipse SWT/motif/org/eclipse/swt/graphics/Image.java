@@ -688,14 +688,13 @@ public ImageData getImageData() {
 	if (xSrcImagePtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	XImage xSrcImage = new XImage();
 	OS.memmove(xSrcImage, xSrcImagePtr, XImage.sizeof);
-	/* Calculate the palette depending on the display attributes */
-	PaletteData palette = null;
 	
-	/* Get the data for the source image. */
+	/* Get the data and palette of the source image. */
+	PaletteData palette = null;
 	int length = xSrcImage.bytes_per_line * xSrcImage.height;
 	byte[] srcData = new byte[length];
 	OS.memmove(srcData, xSrcImage.data, length);
-	switch (xSrcImage.depth) {
+	switch (xSrcImage.bits_per_pixel) {
 		case 1:
 			palette = new PaletteData(new RGB[] {
 				new RGB(0, 0, 0),
@@ -703,98 +702,91 @@ public ImageData getImageData() {
 			});
 			break;
 		case 4:
-			/**
-			 * We currently don't run on a 4-bit server, so 4-bit images
-			 * should not exist.
-			 */
+			/*
+			* We currently don't run on a 4-bit server, so 4-bit images
+			* should not exist.
+			*/
 			SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
 		case 8:
 			/* Normalize the pixels in the source image data (by making the 
-			 * pixel values sequential starting at pixel 0). Reserve normalized 
-			 * pixel 0 so that it maps to real pixel 0. This assumes pixel 0 is 
-			 * always used in the image.
-			 */
-			byte[] normPixel = new byte[ 256 ];
+			* pixel values sequential starting at pixel 0). Reserve normalized 
+			* pixel 0 so that it maps to real pixel 0. This assumes pixel 0 is 
+			* always used in the image.
+			*/
+			byte[] normPixel = new byte[256];
 			for (int index = 0; index < normPixel.length; index++) {
-				normPixel[ index ] = 0;
+				normPixel[index] = 0;
 			}
 			int numPixels = 1;
 			int index = 0;
 			for (int y = 0; y < xSrcImage.height; y++) {
 				for (int x = 0; x < xSrcImage.bytes_per_line; x++) {
-					int srcPixel = srcData[ index + x ] & 0xFF;
-					if (srcPixel != 0 && normPixel[ srcPixel ] == 0) {
-						normPixel[ srcPixel ] = (byte)numPixels++;
+					int srcPixel = srcData[index + x] & 0xFF;
+					if (srcPixel != 0 && normPixel[srcPixel] == 0) {
+						normPixel[srcPixel] = (byte)numPixels++;
 					}
-					srcData[ index + x ] = normPixel[ srcPixel ];
+					srcData[index + x] = normPixel[srcPixel];
 				}
 				index += xSrcImage.bytes_per_line;
 			}
 			
 			/* Create a palette with only the RGB values used in the image. */
 			int colormap = OS.XDefaultColormap(xDisplay, OS.XDefaultScreen(xDisplay));
-			RGB[] rgbs = new RGB[ numPixels ];
+			RGB[] rgbs = new RGB[numPixels];
 			XColor color = new XColor();
 			for (int srcPixel = 0; srcPixel < normPixel.length; srcPixel++) {
-				// If the pixel value was used in the image, get its RGB values.
-				if (srcPixel == 0 || normPixel[ srcPixel ] != 0) {
+				/* If the pixel value was used in the image, get its RGB values. */
+				if (srcPixel == 0 || normPixel[srcPixel] != 0) {
 					color.pixel = srcPixel;
 					OS.XQueryColor(xDisplay, colormap, color);
-					int rgbIndex = normPixel[ srcPixel ] & 0xFF;
-					rgbs[ rgbIndex ] = new RGB((color.red >> 8) & 0xFF, (color.green >> 8) & 0xFF, (color.blue >> 8) & 0xFF);
+					int rgbIndex = normPixel[srcPixel] & 0xFF;
+					rgbs[rgbIndex] = new RGB((color.red >> 8) & 0xFF, (color.green >> 8) & 0xFF, (color.blue >> 8) & 0xFF);
 				}
 			}
 			palette = new PaletteData(rgbs);
 			break;
 		case 16:
-			/**
-			 * For some reason, the XImage does not have the mask information.
-			 * We must get it from the visual.
-			 */
-			int visual = OS.XDefaultVisual(xDisplay, OS.XDefaultScreen(xDisplay));
-			Visual v = new Visual();
-			OS.memmove(v, visual, Visual.sizeof);
-			palette = new PaletteData(v.red_mask, v.green_mask, v.blue_mask);
+			/* Byte swap the data if necessary */
+			if (xSrcImage.byte_order == OS.MSBFirst) {
+				for (int i = 0; i < srcData.length; i += 2) {
+					byte b = srcData[i];
+					srcData[i] = srcData[i+1];
+					srcData[i+1] = b;
+				}
+			}
 			break;
 		case 24:
-			/* We always create 24-bit ImageData with the following palette */
-			palette = new PaletteData(0xFF, 0xFF00, 0xFF0000);
+			break;
+		case 32:
+			/* Byte swap the data if necessary */
+			if (xSrcImage.byte_order == OS.LSBFirst) {
+				for (int i = 0; i < srcData.length; i += 4) {
+					byte b = srcData[i];
+					srcData[i] = srcData[i+3];
+					srcData[i+3] = b;
+					b = srcData[i+1];
+					srcData[i+1] = srcData[i+2];
+					srcData[i+2] = b;
+				}
+			}
 			break;
 		default:
 			SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
 	}
-	ImageData data = new ImageData(width, height, xSrcImage.depth, palette);
+	if (palette == null) {
+		/*
+		* For some reason, the XImage does not have the mask information.
+		* We must get it from the defualt visual.
+		*/
+		int visual = OS.XDefaultVisual(xDisplay, OS.XDefaultScreen(xDisplay));
+		Visual v = new Visual();
+		OS.memmove(v, visual, Visual.sizeof);
+		palette = new PaletteData(v.red_mask, v.green_mask, v.blue_mask);
+	}	
+	ImageData data = new ImageData(width, height, xSrcImage.bits_per_pixel, palette);
 	data.data = srcData;
-	if (xSrcImage.bits_per_pixel == 32) {
-		/**
-		 * If bits per pixel is 32, scale the data down to 24, since we do not
-		 * support 32-bit images
-		 */
-		byte[] oldData = data.data;
-		int bytesPerLine = (xSrcImage.width * xSrcImage.depth + 7) / 8;
-		bytesPerLine = (bytesPerLine + 3) / 4 * 4;
-		byte[] newData = new byte[bytesPerLine * xSrcImage.height];
-		int destIndex = 0;
-		int srcIndex = 0;
-		int rOffset = 0, gOffset = 1, bOffset = 2;
-		if (xSrcImage.byte_order == OS.MSBFirst) {
-			rOffset = 3; gOffset = 2; bOffset = 1;
-		}
-		for (int y = 0; y < height; y++) {
-			destIndex = y * bytesPerLine;
-			srcIndex = y * xSrcImage.bytes_per_line;
-			for (int x = 0; x < width; x++) {
-				newData[destIndex] = oldData[srcIndex + rOffset];
-				newData[destIndex + 1] = oldData[srcIndex + gOffset];
-				newData[destIndex + 2] = oldData[srcIndex + bOffset];
-				srcIndex += 4;
-				destIndex += 3;
-			}
-		}
-		data.data = newData;
-	}
 	if (transparentPixel == -1 && type == SWT.ICON && mask != 0) {
-		/* Get the icon data */
+		/* Get the icon mask data */
 		data.maskPad = 4;
 		int xMaskPtr = OS.XGetImage(xDisplay, mask, 0, 0, width, height, OS.AllPlanes, OS.ZPixmap);
 		if (xMaskPtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
