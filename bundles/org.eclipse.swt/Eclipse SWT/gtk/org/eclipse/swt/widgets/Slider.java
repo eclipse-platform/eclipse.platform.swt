@@ -361,7 +361,9 @@ public void setIncrement (int value) {
 	OS.memmove (adjustment, hAdjustment, GtkAdjustment.sizeof);
 	adjustment.step_increment = (float) value;
 	OS.memmove (hAdjustment, adjustment, GtkAdjustment.sizeof);
+	OS.gtk_signal_handler_block_by_data (hAdjustment, SWT.Selection);
 	OS.gtk_adjustment_changed (hAdjustment);
+	OS.gtk_signal_handler_unblock_by_data (hAdjustment, SWT.Selection);
 }
 
 /**
@@ -384,7 +386,9 @@ public void setMaximum (int value) {
 	OS.memmove (adjustment, hAdjustment, GtkAdjustment.sizeof);
 	adjustment.upper = (float) value;
 	OS.memmove (hAdjustment, adjustment, GtkAdjustment.sizeof);
+	OS.gtk_signal_handler_block_by_data (hAdjustment, SWT.Selection);
 	OS.gtk_adjustment_changed (hAdjustment);
+	OS.gtk_signal_handler_unblock_by_data (hAdjustment, SWT.Selection);
 }
 
 /**
@@ -407,7 +411,9 @@ public void setMinimum (int value) {
 	OS.memmove (adjustment, hAdjustment, GtkAdjustment.sizeof);
 	adjustment.lower = (float) value;
 	OS.memmove (hAdjustment, adjustment, GtkAdjustment.sizeof);
+	OS.gtk_signal_handler_block_by_data (hAdjustment, SWT.Selection);
 	OS.gtk_adjustment_changed (hAdjustment);
+	OS.gtk_signal_handler_unblock_by_data (hAdjustment, SWT.Selection);
 }
 
 /**
@@ -431,7 +437,9 @@ public void setPageIncrement (int value) {
 	OS.memmove (adjustment, hAdjustment, GtkAdjustment.sizeof);
 	adjustment.page_increment = (float) value;
 	OS.memmove (hAdjustment, adjustment, GtkAdjustment.sizeof);
+	OS.gtk_signal_handler_block_by_data (hAdjustment, SWT.Selection);
 	OS.gtk_adjustment_changed (hAdjustment);
+	OS.gtk_signal_handler_unblock_by_data (hAdjustment, SWT.Selection);
 }
 
 /**
@@ -477,7 +485,9 @@ public void setThumb (int value) {
 	OS.memmove (adjustment, hAdjustment, GtkAdjustment.sizeof);
 	adjustment.page_size = (float) value;
 	OS.memmove (hAdjustment, adjustment, GtkAdjustment.sizeof);
+	OS.gtk_signal_handler_block_by_data (hAdjustment, SWT.Selection);
 	OS.gtk_adjustment_changed (hAdjustment);
+	OS.gtk_signal_handler_unblock_by_data (hAdjustment, SWT.Selection);
 }
 
 /**
@@ -520,8 +530,10 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	adjustment.step_increment = (float) increment;
 	adjustment.page_increment = (float) pageIncrement;
 	OS.memmove (hAdjustment, adjustment, GtkAdjustment.sizeof);
+	OS.gtk_signal_handler_block_by_data (hAdjustment, SWT.Selection);
 	OS.gtk_adjustment_changed (hAdjustment);
 	OS.gtk_adjustment_value_changed (hAdjustment);
+	OS.gtk_signal_handler_unblock_by_data (hAdjustment, SWT.Selection);
 }
 
 }

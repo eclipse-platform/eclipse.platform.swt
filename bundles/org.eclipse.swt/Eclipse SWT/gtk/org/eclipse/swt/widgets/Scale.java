@@ -284,7 +284,9 @@ public void setIncrement (int value) {
 	OS.memmove (adjustment, hAdjustment, GtkAdjustment.sizeof);
 	adjustment.step_increment = (float) value;
 	OS.memmove (hAdjustment, adjustment, GtkAdjustment.sizeof);
+	OS.gtk_signal_handler_block_by_data (hAdjustment, SWT.Selection);
 	OS.gtk_adjustment_changed (hAdjustment);
+	OS.gtk_signal_handler_unblock_by_data (hAdjustment, SWT.Selection);
 }
 
 /**
@@ -307,7 +309,9 @@ public void setMaximum (int value) {
 	OS.memmove (adjustment, hAdjustment, GtkAdjustment.sizeof);
 	adjustment.upper = (float) value;
 	OS.memmove (hAdjustment, adjustment, GtkAdjustment.sizeof);
+	OS.gtk_signal_handler_block_by_data (hAdjustment, SWT.Selection);
 	OS.gtk_adjustment_changed (hAdjustment);
+	OS.gtk_signal_handler_unblock_by_data (hAdjustment, SWT.Selection);
 }
 
 /**
@@ -330,8 +334,11 @@ public void setMinimum (int value) {
 	OS.memmove (adjustment, hAdjustment, GtkAdjustment.sizeof);
 	adjustment.lower = (float) value;
 	OS.memmove (hAdjustment, adjustment, GtkAdjustment.sizeof);
+	OS.gtk_signal_handler_block_by_data (hAdjustment, SWT.Selection);
 	OS.gtk_adjustment_changed (hAdjustment);
+	OS.gtk_signal_handler_unblock_by_data (hAdjustment, SWT.Selection);
 }
+
 /**
  * Sets the amount that the receiver's value will be
  * modified by when the page increment/decrement areas
@@ -353,7 +360,9 @@ public void setPageIncrement (int value) {
 	OS.memmove (adjustment, hAdjustment, GtkAdjustment.sizeof);
 	adjustment.page_increment = (float) value;
 	OS.memmove (hAdjustment, adjustment, GtkAdjustment.sizeof);
+	OS.gtk_signal_handler_block_by_data (hAdjustment, SWT.Selection);
 	OS.gtk_adjustment_changed (hAdjustment);
+	OS.gtk_signal_handler_unblock_by_data (hAdjustment, SWT.Selection);
 }
 
 /**

@@ -74,8 +74,10 @@ import org.eclipse.swt.events.*;
 
 public class ScrollBar extends Widget {
 	Scrollable parent;
+	
 ScrollBar () {
 }
+
 /**
 * Creates a new instance of the widget.
 */
@@ -84,6 +86,7 @@ ScrollBar (Scrollable parent, int style) {
 	this.parent = parent;
 	createWidget (0);
 }
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the receiver's value changes, by sending
@@ -117,21 +120,23 @@ ScrollBar (Scrollable parent, int style) {
  * @see SelectionEvent
  */
 public void addSelectionListener (SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener(listener);
 	addListener (SWT.Selection,typedListener);
 	addListener (SWT.DefaultSelection,typedListener);
 }
+
 static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
+
 public Display getDisplay () {
 	Scrollable parent = this.parent;
 	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getDisplay ();
 }
+
 /**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise. A disabled control is typically
@@ -146,10 +151,10 @@ public Display getDisplay () {
  * </ul>
  */
 public boolean getEnabled () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	return true;
 }
+
 /**
  * Returns the amount that the receiver's value will be
  * modified by when the up/down (or right/left) arrows
@@ -163,12 +168,12 @@ public boolean getEnabled () {
  * </ul>
  */
 public int getIncrement () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, handle, GtkAdjustment.sizeof);
 	return (int) adjustment.step_increment;
 }
+
 /**
  * Returns the maximum value which the receiver will allow.
  *
@@ -180,12 +185,12 @@ public int getIncrement () {
  * </ul>
  */
 public int getMaximum () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, handle, GtkAdjustment.sizeof);
 	return (int) adjustment.upper;
 }
+
 /**
  * Returns the minimum value which the receiver will allow.
  *
@@ -197,12 +202,12 @@ public int getMaximum () {
  * </ul>
  */
 public int getMinimum () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, handle, GtkAdjustment.sizeof);
 	return (int) adjustment.lower;
 }
+
 /**
  * Returns the amount that the receiver's value will be
  * modified by when the page increment/decrement areas
@@ -216,12 +221,12 @@ public int getMinimum () {
  * </ul>
  */
 public int getPageIncrement () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, handle, GtkAdjustment.sizeof);
 	return (int) adjustment.page_increment;
 }
+
 /**
  * Returns the receiver's parent, which must be scrollable.
  *
@@ -233,10 +238,10 @@ public int getPageIncrement () {
  * </ul>
  */
 public Scrollable getParent () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	return parent;
 }
+
 /**
  * Returns the single <em>selection</em> that is the receiver's value.
  *
@@ -248,12 +253,12 @@ public Scrollable getParent () {
  * </ul>
  */
 public int getSelection () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, handle, GtkAdjustment.sizeof);
 	return (int) adjustment.value;
 }
+
 /**
  * For horizontal scroll bars, returns the height of the 
  * instance, and for vertical scroll bars, returns the width
@@ -267,12 +272,12 @@ public int getSelection () {
  * </ul>
  */
 public Point getSize () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	GtkWidget widget = new GtkWidget ();
 	OS.memmove (widget, handle, GtkWidget.sizeof);
 	return new Point (widget.alloc_width, widget.alloc_height);
 }
+
 /**
  * Answers the size of the receiver's thumb relative to the
  * difference between its maximum and minimum values.
@@ -287,12 +292,12 @@ public Point getSize () {
  * @see ScrollBar
  */
 public int getThumb () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, handle, GtkAdjustment.sizeof);
 	return (int) adjustment.page_size;
 }
+
 /**
  * Returns <code>true</code> if the receiver is visible, and
  * <code>false</code> otherwise.
@@ -311,10 +316,14 @@ public int getThumb () {
  * </ul>
  */
 public boolean getVisible () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	return true;
 }
+
+void hookEvents () {
+	signal_connect (handle, "value_changed",  SWT.Selection, 2);
+}
+
 /**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise. A disabled control is typically
@@ -334,10 +343,10 @@ public boolean getVisible () {
  * </ul>
  */
 public boolean isEnabled () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	return getEnabled () && getParent ().getEnabled ();
 }
+
 /**
  * Returns <code>true</code> if the receiver is visible, and
  * <code>false</code> otherwise.
@@ -356,23 +365,26 @@ public boolean isEnabled () {
  * </ul>
  */
 public boolean isVisible () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	return getVisible () && getParent ().isVisible ();
 }
+
 int processSelection (int int0, int int1, int int2) {
 	postEvent (SWT.Selection);
 	return 0;
 }
+
 void releaseChild () {
 	super.releaseChild ();
 	if (parent.horizontalBar == this) parent.horizontalBar = null;
 	if (parent.verticalBar == this) parent.verticalBar = null;
 }
+
 void releaseWidget () {
 	super.releaseWidget ();
 	parent = null;
 }
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the receiver's value changes.
@@ -391,13 +403,13 @@ void releaseWidget () {
  * @see #addSelectionListener
  */
 public void removeSelectionListener (SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
+
 /**
  * Enables the receiver if the argument is <code>true</code>,
  * and disables it otherwise. A disabled control is typically
@@ -412,9 +424,9 @@ public void removeSelectionListener (SelectionListener listener) {
  * </ul>
  */
 public void setEnabled (boolean enabled) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 }
+
 /**
  * Sets the amount that the receiver's value will be
  * modified by when the up/down (or right/left) arrows
@@ -429,15 +441,17 @@ public void setEnabled (boolean enabled) {
  * </ul>
  */
 public void setIncrement (int value) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	if (value < 1) return;
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, handle, GtkAdjustment.sizeof);
 	adjustment.step_increment = (float) value;
 	OS.memmove (handle, adjustment, GtkAdjustment.sizeof);
+	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
 	OS.gtk_adjustment_changed (handle);
+	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 }
+
 /**
  * Sets the maximum value which the receiver will allow
  * to be the argument which must be greater than or
@@ -451,15 +465,17 @@ public void setIncrement (int value) {
  * </ul>
  */
 public void setMaximum (int value) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	if (value < 0) return;
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, handle, GtkAdjustment.sizeof);
 	adjustment.upper = (float) value;
 	OS.memmove (handle, adjustment, GtkAdjustment.sizeof);
+	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
 	OS.gtk_adjustment_changed (handle);
+	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 }
+
 /**
  * Sets the minimum value which the receiver will allow
  * to be the argument which must be greater than or
@@ -473,15 +489,17 @@ public void setMaximum (int value) {
  * </ul>
  */
 public void setMinimum (int value) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	if (value < 0) return;
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, handle, GtkAdjustment.sizeof);
 	adjustment.lower = (float) value;
 	OS.memmove (handle, adjustment, GtkAdjustment.sizeof);
+	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
 	OS.gtk_adjustment_changed (handle);
+	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 }
+
 /**
  * Sets the amount that the receiver's value will be
  * modified by when the page increment/decrement areas
@@ -496,15 +514,17 @@ public void setMinimum (int value) {
  * </ul>
  */
 public void setPageIncrement (int value) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	if (value < 1) return;
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, handle, GtkAdjustment.sizeof);
 	adjustment.page_increment = (float) value;
 	OS.memmove (handle, adjustment, GtkAdjustment.sizeof);
+	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
 	OS.gtk_adjustment_changed (handle);
+	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 }
+
 /**
  * Sets the single <em>selection</em> that is the receiver's
  * value to the argument which must be greater than or equal
@@ -518,11 +538,13 @@ public void setPageIncrement (int value) {
  * </ul>
  */
 public void setSelection (int value) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	if (value < 0) return;
+	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
 	OS.gtk_adjustment_set_value (handle, value);
+	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 }
+
 /**
  * Sets the size of the receiver's thumb relative to the
  * difference between its maximum and minimum values to the
@@ -538,14 +560,15 @@ public void setSelection (int value) {
  * @see ScrollBar
  */
 public void setThumb (int value) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	if (value < 1) return;
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, handle, GtkAdjustment.sizeof);
 	adjustment.page_size = (float) value;
 	OS.memmove (handle, adjustment, GtkAdjustment.sizeof);
+	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
 	OS.gtk_adjustment_changed (handle);
+	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 }
 
 /**
@@ -570,8 +593,7 @@ public void setThumb (int value) {
  * </ul>
  */
 public void setValues (int selection, int minimum, int maximum, int thumb, int increment, int pageIncrement) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	if (selection < 0) return;
 	if (minimum < 0) return;
 	if (maximum < 0) return;
@@ -588,9 +610,10 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	adjustment.page_size = thumb;
 	adjustment.value = selection;
 	OS.memmove (handle, adjustment, GtkAdjustment.sizeof);
+	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
 	OS.gtk_adjustment_changed (handle);
 	OS.gtk_adjustment_value_changed (handle);
-//	error(SWT.ERROR_NOT_IMPLEMENTED);
+	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 }
 
 /**
@@ -610,12 +633,7 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
  * </ul>
  */
 public void setVisible (boolean visible) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 }
 
-void hookEvents () {
-	signal_connect(handle, "value_changed",  SWT.Selection, 2);
-//	signal_connect(handle, "changed",  SWT.Selection, 2);
-}
 }
