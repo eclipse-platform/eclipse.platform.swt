@@ -144,6 +144,21 @@ void createWidget () {
 
 void drawBackground (int control) {
 	drawBackground (control, background);
+	if (!hasFocus () || !drawFocusRing () || focusIndex == -1) return;
+	int [] outMetric = new int [1];
+	OS.GetThemeMetric (OS.kThemeMetricFocusRectOutset, outMetric);
+	outMetric[0]--;
+	Rect r = new Rect (), bounds = new Rect();
+	OS.GetControlBounds (control, bounds);
+	Rectangle [] rects = getRectangles (focusIndex);
+	for (int i = 0; i < rects.length; i++) {
+		Rectangle rect = rects [i];
+		r.left = (short) (bounds.left + rect.x + outMetric[0]);
+		r.top = (short) (bounds.top + rect.y + outMetric[0]);
+		r.right = (short) (r.left + rect.width - (outMetric[0] * 2));
+		r.bottom = (short) (r.top + rect.height - (outMetric[0] * 2));
+		OS.DrawThemeFocusRect (r, true);
+	}
 }
 
 void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
@@ -160,14 +175,6 @@ void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
 	// temporary code to disable text selection
 	selStart = selEnd = -1;
 	layout.draw (gc, 0, 0, selStart, selEnd, null, null);
-	if (hasFocus () && focusIndex != -1) {
-		Rectangle [] rects = getRectangles (focusIndex);
-		for (int i = 0; i < rects.length; i++) {
-			Rectangle rect = rects [i];
-//			gc.drawFocus (rect.x, rect.y, rect.width, rect.height);					
-			gc.drawRectangle (rect.x, rect.y, rect.width, rect.height);
-		}
-	}
 	gc.dispose ();
 }
 
@@ -234,7 +241,6 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	int [] clickCount = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamClickCount, OS.typeUInt32, null, 4, null, clickCount);
 	if (button [0] == 1 && clickCount [0] == 1) {
-		if (focusIndex != -1) setFocus ();
 		int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
 		org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
 		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
@@ -265,7 +271,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 			for (int i = 0; i < rects.length; i++) {
 				Rectangle rectangle = rects [i];
 				if (rectangle.contains (x, y)) {
-					focusIndex = j;						
+					focusIndex = j;
 					redraw ();
 					return result;
 				}
@@ -304,9 +310,9 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 						}
 						Rectangle rectangle = layout.getBounds (oldSelection, newSelection);
 						redraw (rectangle.x, rectangle.y, rectangle.width, rectangle.height, false);
-						update (); //CAUSING PROBLEMS
+						update ();
 					}
-				}					
+				}
 				break;
 			}
 			default:
