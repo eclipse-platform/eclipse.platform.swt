@@ -152,7 +152,7 @@ void addAccelerators (int accelGroup) {
 	MenuItem [] items = getItems ();
 	for (int i = 0; i < items.length; i++) {
 		MenuItem item = items[i];
-		item.addAccelerator (accelGroup);
+		item.addAccelerators (accelGroup);
 	}
 }
 
@@ -625,7 +625,7 @@ void removeAccelerators (int accelGroup) {
 	MenuItem [] items = getItems ();
 	for (int i = 0; i < items.length; i++) {
 		MenuItem item = items[i];
-		item.removeAccelerator (accelGroup);
+		item.removeAccelerators (accelGroup);
 	}
 }
 
