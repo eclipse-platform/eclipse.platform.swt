@@ -1033,8 +1033,8 @@ public void setBackground (Color color) {
 	}
 }
 /**
- * Specify a gradiant of colours to be draw in the background of the selected tab.
- * For example to draw a gradiant that varies from dark blue to blue and then to
+ * Specify a gradient of colours to be draw in the background of the selected tab.
+ * For example to draw a gradient that varies from dark blue to blue and then to
  * white, use the following call to setBackground:
  * <pre>
  *	cfolder.setBackground(new Color[]{display.getSystemColor(SWT.COLOR_DARK_BLUE), 
@@ -1044,9 +1044,9 @@ public void setBackground (Color color) {
  *		               new int[] {25, 50, 100});
  * </pre>
  *
- * @param colors an array of Color that specifies the colors to appear in the gradiant 
+ * @param colors an array of Color that specifies the colors to appear in the gradient 
  *               in order of appearance left to right.  The value <code>null</code> clears the
- *               background gradiant. The value <code>null</code> can be used inside the array of 
+ *               background gradient. The value <code>null</code> can be used inside the array of 
  *               Color to specify the background color.
  * @param percents an array of integers between 0 and 100 specifying the percent of the width 
  *                 of the widget at which the color should change.  The size of the percents array must be one 
