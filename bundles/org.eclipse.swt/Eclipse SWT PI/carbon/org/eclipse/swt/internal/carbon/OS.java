@@ -241,6 +241,7 @@ public class OS {
 	public static final int kEventWindowFocusAcquired = 200;
 	public static final int kEventWindowFocusRelinquish = 201;
 	public static final int kFloatingWindowClass = 5;
+	public static final int kHIComboBoxAutoCompletionAttribute = (1 << 0);	
 	public static final int kHIComboBoxAutoSizeListAttribute = (1 << 3);
 	public static final int kHIComboBoxEditTextPart = 5;
 	public static final int kHICommandFromMenu = 1 << 0;
@@ -407,6 +408,7 @@ public class OS {
 	public static final int typeChar = ('T'<<24) + ('E'<<16) + ('X'<<8) + 'T';
 	public static final int typeControlPartCode = ('c'<<24) + ('p'<<16) + ('r'<<8) + 't';
 	public static final int typeControlRef = ('c'<<24) + ('t'<<16) + ('r'<<8) + 'l';
+	public static final int typeFileURL= ('f'<<24) + ('u'<<16) + ('r'<<8) + 'l';	
 	public static final int typeFSRef = ('f'<<24) + ('s'<<16) + ('r'<<8) + 'f';
 	public static final int typeHICommand = ('h'<<24) + ('c'<<16) + ('m'<<8) + 'd';
 	public static final int typeHIPoint = ('h'<<24) + ('i'<<16) + ('p'<<8) + 't';
@@ -449,6 +451,9 @@ public static final native int CFStringCreateWithCharacters(int alloc, char[] ch
 public static final native void CFStringGetCharacters(int theString, CFRange range, char[] buffer);
 public static final native int CFStringGetLength(int theString);
 public static final native int CFURLCopyFileSystemPath(int anURL, int pathStyle);
+public static final native int CFURLCopyLastPathComponent(int url);
+public static final native int CFURLCreateCopyAppendingPathComponent(int allocator, int url, int pathComponent, boolean isDirectory);
+public static final native int CFURLCreateCopyDeletingLastPathComponent(int allocator, int url);
 public static final native int CFURLCreateFromFSRef(int allocator, byte[] fsRef);
 public static final native void CGContextScaleCTM(int inContext, float sx, float sy);
 public static final native void CGContextTranslateCTM(int inContext, float tx, float ty);

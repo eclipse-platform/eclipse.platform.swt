@@ -357,6 +357,36 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CFURLCopyFileSyst
 }
 #endif /* NO_CFURLCopyFileSystemPath */
 
+#ifndef NO_CFURLCopyLastPathComponent
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CFURLCopyLastPathComponent
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("CFURLCopyLastPathComponent\n")
+
+	return (jint)CFURLCopyLastPathComponent((CFURLRef)arg0);
+}
+#endif
+
+#ifndef NO_CFURLCreateCopyAppendingPathComponent
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CFURLCreateCopyAppendingPathComponent
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3)
+{
+	DEBUG_CALL("CFURLCreateCopyAppendingPathComponent\n")
+
+	return (jint)CFURLCreateCopyAppendingPathComponent((CFAllocatorRef)arg0, (CFURLRef)arg1, (CFStringRef)arg2, (Boolean)arg3);
+}
+#endif
+
+#ifndef NO_CFURLCreateCopyDeletingLastPathComponent
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CFURLCreateCopyDeletingLastPathComponent
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("CFURLCreateCopyDeletingLastPathComponent\n")
+
+	return (jint)CFURLCreateCopyDeletingLastPathComponent((CFAllocatorRef)arg0, (CFURLRef)arg1);
+}
+#endif
+
 #ifndef NO_CFURLCreateFromFSRef
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CFURLCreateFromFSRef
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)

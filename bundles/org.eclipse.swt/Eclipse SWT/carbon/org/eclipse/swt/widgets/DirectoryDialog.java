@@ -79,6 +79,7 @@ public String open () {
 						OS.memcpy (fsRef, dataPtr, actualSize [0]);
 						int anURL = OS.CFURLCreateFromFSRef (OS.kCFAllocatorDefault, fsRef);
 						int ptr = OS.CFURLCopyFileSystemPath(anURL, OS.kCFURLPOSIXPathStyle);
+						OS.CFRelease (anURL);						
 						int length = OS.CFStringGetLength (ptr);
 						char [] buffer= new char [length];
 						CFRange range = new CFRange ();
