@@ -18,6 +18,7 @@ public class Shell extends Decorations {
 	Display display;
 	int shellHandle;
 	boolean resized;
+	Control lastActive;
 
 public Shell () {
 	this ((Display) null);
@@ -418,6 +419,11 @@ void releaseHandle () {
 	shellHandle = 0;
 }
 
+void releaseWidget () {
+	super.releaseWidget ();
+	lastActive = null;
+}
+
 public void removeShellListener(ShellListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -432,6 +438,43 @@ public void removeShellListener(ShellListener listener) {
 public void setActive () {
 	checkWidget ();
 	OS.SelectWindow (shellHandle);
+}
+
+void setActiveControl (Control control) {
+	if (control != null && control.isDisposed ()) control = null;
+	if (lastActive != null && lastActive.isDisposed ()) lastActive = null;
+	if (lastActive == control) return;
+	
+	/*
+	* Compute the list of controls to be activated and
+	* deactivated by finding the first common parent
+	* control.
+	*/
+	Control [] activate = (control == null) ? new Control[0] : control.getPath ();
+	Control [] deactivate = (lastActive == null) ? new Control[0] : lastActive.getPath ();
+	lastActive = control;
+	int index = 0, length = Math.min (activate.length, deactivate.length);
+	while (index < length) {
+		if (activate [index] != deactivate [index]) break;
+		index++;
+	}
+	
+	/*
+	* It is possible (but unlikely), that application
+	* code could have destroyed some of the widgets. If
+	* this happens, keep processing those widgets that
+	* are not disposed.
+	*/
+	for (int i=deactivate.length-1; i>=index; --i) {
+		if (!deactivate [i].isDisposed ()) {
+			deactivate [i].sendEvent (SWT.Deactivate);
+		}
+	}
+	for (int i=activate.length-1; i>=index; --i) {
+		if (!activate [i].isDisposed ()) {
+			activate [i].sendEvent (SWT.Activate);
+		}
+	}
 }
 
 public void setBounds (int x, int y, int width, int height) {

@@ -17,6 +17,7 @@ import org.eclipse.swt.internal.carbon.Rect;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.accessibility.Accessible;
 
 public abstract class Control extends Widget implements Drawable {
 	/**
@@ -32,6 +33,7 @@ public abstract class Control extends Widget implements Drawable {
 	float [] foreground, background;
 	Font font;
 	Cursor cursor;
+	Accessible accessible;
 
 Control () {
 	/* Do nothing */
@@ -205,6 +207,14 @@ public boolean forceFocus () {
 	return OS.SetKeyboardFocus (window, handle, (short)OS.kControlFocusNextPart) == OS.noErr;
 }
 
+public Accessible getAccessible () {
+	checkWidget ();
+	if (accessible == null) {
+		accessible = Accessible.internal_new_Accessible (this);
+	}
+	return accessible;
+}
+	
 public Color getBackground () {
 	checkWidget();
 	//WRONG
@@ -536,6 +546,21 @@ int kEventControlDeactivate (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+int kEventControlHit (int nextHandler, int theEvent, int userData) {
+	Shell shell = getShell ();
+	int result = super.kEventControlHit (nextHandler, theEvent, userData);
+	/*
+	* It is possible that the shell may be
+	* disposed at this point.  If this happens
+	* don't send the activate and deactivate
+	* events.
+	*/	
+	if (!shell.isDisposed ()) {
+		shell.setActiveControl (this);
+	}
+	return result;
+}
+
 int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 	int [] theControl = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
@@ -582,6 +607,8 @@ int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
+	Shell shell = getShell ();
+	Display display = getDisplay ();
 	short [] part = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
 	if (part [0] != 0) {
@@ -589,6 +616,26 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	} else {
 		sendEvent (SWT.FocusOut);
 	}
+	
+	/*
+	* It is possible that the shell may be
+	* disposed at this point.  If this happens
+	* don't send the activate and deactivate
+	* events.
+	*/
+	if (part [0] != 0) {
+		if (!shell.isDisposed ()) {
+			shell.setActiveControl (this);
+		}
+	} else {
+		if (!shell.isDisposed ()) {
+			Control control = display.getFocusControl ();
+			if (control == null || shell != control.getShell () ) {
+				shell.setActiveControl (null);
+			}
+		}
+	}	
+ 
 	return OS.eventNotHandledErr;
 }
 
