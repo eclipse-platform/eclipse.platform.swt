@@ -27,6 +27,7 @@ public class DNDExample {
 	private DragSource dragSource;
 	private String dragDataText;
 	private String dragDataRTF;
+	private String dragDataHTML;
 	private String[] dragDataFiles;
 	private List fileList;
 	private boolean dragEnabled = false;
@@ -154,7 +155,7 @@ private void createDragSource() {
 		public void dragFinished(org.eclipse.swt.dnd.DragSourceEvent event) {
 			dragConsole.append(">>dragFinished\n");
 			printEvent(event);
-			dragDataText = dragDataRTF = null;
+			dragDataText = dragDataRTF = dragDataHTML = null;
 			dragDataFiles = null;
 			if (event.detail == DND.DROP_MOVE) {
 				switch(dragControlType) {
@@ -213,6 +214,9 @@ private void createDragSource() {
 			}
 			if (RTFTransfer.getInstance().isSupportedType(event.dataType)) {
 				event.data = dragDataRTF;
+			}
+			if (HTMLTransfer.getInstance().isSupportedType(event.dataType)) {
+				event.data = dragDataHTML;
 			}
 			if (FileTransfer.getInstance().isSupportedType(event.dataType)) {
 				event.data = dragDataFiles;
@@ -322,6 +326,7 @@ private void createDragSource() {
 			}
 			if (dragDataText != null) {
 				dragDataRTF = "{\\rtf1{\\colortbl;\\red255\\green0\\blue0;}\\cf1\\b "+dragDataText+"}";
+				dragDataHTML = "<b>"+dragDataText+"</b>";
 			}
 			
 			for (int i = 0; i < dragTypes.length; i++) {
@@ -329,6 +334,9 @@ private void createDragSource() {
 					event.doit = false;
 				}
 				if (dragTypes[i] instanceof RTFTransfer && dragDataRTF == null) {
+					event.doit = false;
+				}
+				if (dragTypes[i] instanceof HTMLTransfer && dragDataHTML == null) {
 					event.doit = false;
 				}
 				if (dragTypes[i] instanceof FileTransfer && (dragDataFiles == null || dragDataFiles.length == 0)) {
@@ -363,6 +371,19 @@ private void createDragTypes(Composite parent) {
 				addDragTransfer(RTFTransfer.getInstance());			
 			} else {
 				removeDragTransfer(RTFTransfer.getInstance());
+			}
+		}
+	});
+	
+	b = new Button(parent, SWT.CHECK);
+	b.setText("HTML Transfer");
+	b.addSelectionListener(new SelectionAdapter() {
+		public void widgetSelected(SelectionEvent e) {
+			Button b = (Button)e.widget;
+			if (b.getSelection()) {
+				addDragTransfer(HTMLTransfer.getInstance());			
+			} else {
+				removeDragTransfer(HTMLTransfer.getInstance());
 			}
 		}
 	});
@@ -655,7 +676,8 @@ private void createDropTarget() {
 			printEvent(event);
 			String[] strings = null;
 			if (TextTransfer.getInstance().isSupportedType(event.currentDataType) ||
-			    RTFTransfer.getInstance().isSupportedType(event.currentDataType)) {
+			    RTFTransfer.getInstance().isSupportedType(event.currentDataType) ||
+			    HTMLTransfer.getInstance().isSupportedType(event.currentDataType)) {
 			    strings = new String[] {(String)event.data};
 			}
 			if (FileTransfer.getInstance().isSupportedType(event.currentDataType)) {
@@ -778,6 +800,20 @@ private void createDropTypes(Composite parent) {
 				addDropTransfer(RTFTransfer.getInstance());			
 			} else {
 				removeDropTransfer(RTFTransfer.getInstance());
+			}
+		}
+	});
+	
+	
+	b = new Button(parent, SWT.CHECK);
+	b.setText("HTML Transfer");
+	b.addSelectionListener(new SelectionAdapter() {
+		public void widgetSelected(SelectionEvent e) {
+			Button b = (Button)e.widget;
+			if (b.getSelection()) {
+				addDropTransfer(HTMLTransfer.getInstance());			
+			} else {
+				removeDropTransfer(HTMLTransfer.getInstance());
 			}
 		}
 	});
