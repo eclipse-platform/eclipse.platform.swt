@@ -151,19 +151,23 @@ public void test_setNameLjava_lang_String() {
 	assertEquals("Wrong name", fontData.getName(), "bad-font");
 
 	// valid name (empty string, but valid)
-	fontData.setName("");
-	assertEquals("Wrong name", fontData.getName(), "");
+	// only on windows since motif supports separate font foundries
+	if (SwtJunit.isWindows) {
+		fontData.setName("");
+		assertEquals("Wrong name", fontData.getName(), "");
+	}
 
 	// valid name
 	fontData.setName(SwtJunit.testFontName);	
 	assertEquals("Wrong name", fontData.getName(), SwtJunit.testFontName);
-
+System.out.println(4);
 	// illegal argument, name == null
 	try {
 		fontData.setName(null);
 		fail("No exception thrown for name == null");
 	} catch (IllegalArgumentException e) {
 	}
+System.out.println(5);
 }
 
 public void test_setStyleI() {
