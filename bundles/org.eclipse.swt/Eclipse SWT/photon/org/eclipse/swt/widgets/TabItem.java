@@ -193,7 +193,10 @@ public void setControl (Control control) {
 	Control oldControl = this.control, newControl = control;
 	this.control = control;
 	int index = parent.indexOf (this);
-	if (index != parent.getSelectionIndex ()) return;
+	if (index != parent.getSelectionIndex ()) {
+		if (newControl != null) newControl.setVisible (false);
+		return;
+	}
 	if (newControl != null) {
 		newControl.setBounds (parent.getClientArea ());
 		newControl.setVisible (true);
