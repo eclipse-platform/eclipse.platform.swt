@@ -91,6 +91,12 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	Rect bounds = new Rect ();
 	OS.GetControlBounds (handle, bounds);
 	//NEEDS WORK
+//	int kControlGroupBoxTitleRectTag = ('t'<<24) + ('r'<<16) + ('e'<<8) + 'c';
+//	Rect inBuffer = new Rect ();
+//	int [] actualSize = new int [1];
+//	OS.GetControlData (handle, (short)OS.kControlEntireControl, kControlGroupBoxTitleRectTag, Rect.sizeof, inBuffer, actualSize);
+//	int h = inBuffer.right - inBuffer.left;
+//	int v = inBuffer.bottom - inBuffer.top; // gives a negative result ???
 	int h = 8;
 	int v = 22;
 	if (bounds.right - bounds.left != 0 && bounds.bottom - bounds.top != 0) {
