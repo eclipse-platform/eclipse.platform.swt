@@ -17,7 +17,8 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 
 public  class Button extends Control {
-
+	String text;
+	
 public Button (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
@@ -150,16 +151,7 @@ public boolean getSelection () {
 
 public String getText () {
 	checkWidget ();
-	int sHandle []= new int [1];
-    OS.CopyControlTitleAsCFString (handle, sHandle);
-    if (sHandle [0] == 0) return "";
-	int length = OS.CFStringGetLength (sHandle [0]);
-	char [] buffer= new char [length];
-	CFRange range = new CFRange ();
-	range.length = length;
-	OS.CFStringGetCharacters (sHandle [0], range, buffer);
-	OS.CFRelease (sHandle [0]);
-	return new String (buffer);
+	return text;
 }
 
 int kEventControlHit (int nextHandler, int theEvent, int userData) {
@@ -194,16 +186,17 @@ public void setAlignment (int alignment) {
 		textAlignment = OS.kControlBevelButtonAlignTextFlushLeft;
 		graphicAlignment = OS.kControlBevelButtonAlignLeft;
 	}
-	if ((style & SWT.CENTER) != 0) {
-		textAlignment = OS.kControlBevelButtonAlignTextFlushRight;
-		graphicAlignment = OS.kControlBevelButtonAlignRight;
-	}
 	if ((style & SWT.RIGHT) != 0) {
 		textAlignment = OS.kControlBevelButtonAlignTextCenter;
 		graphicAlignment = OS.kControlBevelButtonAlignCenter;
 	}
+	if ((style & SWT.CENTER) != 0) {
+		textAlignment = OS.kControlBevelButtonAlignTextFlushRight;
+		graphicAlignment = OS.kControlBevelButtonAlignRight;
+	}
 	OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonTextAlignTag, 2, new short [] {(short)textAlignment});
 	OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonGraphicAlignTag, 2, new short [] {(short)graphicAlignment});
+	OS.HIViewSetNeedsDisplay (handle, true);
 }
 
 public boolean setFocus () {
@@ -227,7 +220,7 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.ARROW) != 0) return;
-	String text = string;
+	text = string;
 	char [] buffer = new char [text.length ()];
 	int i=0, j=0;
 	while (i < buffer.length) {
