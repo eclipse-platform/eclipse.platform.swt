@@ -387,16 +387,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_newColumnDesc(JNI
 
 	DataBrowserListViewColumnDesc *columnDesc= (DataBrowserListViewColumnDesc*) calloc(sizeof(DataBrowserListViewColumnDesc), 1);
 			
-	columnDesc->propertyDesc.propertyID= propertyID;
-	columnDesc->propertyDesc.propertyType= propertyType;
-	columnDesc->propertyDesc.propertyFlags= propertyFlags;
-	
 	columnDesc->headerBtnDesc.version= kDataBrowserListViewLatestHeaderDesc;
 	columnDesc->headerBtnDesc.minimumWidth= minimumWidth;
 	columnDesc->headerBtnDesc.maximumWidth= maximumWidth;
-	
+
 	columnDesc->headerBtnDesc.titleOffset= 0;
 	columnDesc->headerBtnDesc.titleString= NULL;
+	
+	columnDesc->propertyDesc.propertyID= propertyID;
+	columnDesc->propertyDesc.propertyType= propertyType;
+	columnDesc->propertyDesc.propertyFlags= propertyFlags;
 	
 	/*
 	columnDesc.headerBtnDesc.titleAlignment= teCenter;
@@ -479,6 +479,12 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserIte
 	OSStatus status= RC(GetDataBrowserItemCount((ControlRef)cHandle, (DataBrowserItemID)container, recurse, state, sa));
 	(*env)->ReleaseIntArrayElements(env, numItems, sa, 0);
 	return status;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserItems(JNIEnv *env, jclass zz,
+				jint cHandle, jint container, jboolean recurse, jint state, jint items) {
+	return RC(GetDataBrowserItems((ControlRef)cHandle, (DataBrowserItemID)container, recurse, 
+						(DataBrowserItemState)state, (Handle)items));
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserSelectedItems(JNIEnv *env, jclass zz,
@@ -3104,13 +3110,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_MemError(JNIEnv *
 }
 */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_getHandleData(JNIEnv *env, jclass zz,
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_getHandleData__I_3C(JNIEnv *env, jclass zz,
 				jint hndl, jcharArray data) {
 	Handle handle= (Handle)hndl;
-        jchar *sa= (*env)->GetCharArrayElements(env, data, 0);
+	jchar *sa= (*env)->GetCharArrayElements(env, data, 0);
 	int length= (*env)->GetArrayLength(env, data);
 	memcpy(sa, *handle, length*sizeof(jchar));
 	(*env)->ReleaseCharArrayElements(env, data, sa, 0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_getHandleData__I_3I(JNIEnv *env, jclass zz,
+				jint hndl, jintArray data) {
+	Handle handle= (Handle)hndl;
+	jint *sa= (*env)->GetIntArrayElements(env, data, 0);
+	int length= (*env)->GetArrayLength(env, data);
+	memcpy(sa, *handle, length*sizeof(jint));
+	(*env)->ReleaseIntArrayElements(env, data, sa, 0);
 }
 
 // mem functions
