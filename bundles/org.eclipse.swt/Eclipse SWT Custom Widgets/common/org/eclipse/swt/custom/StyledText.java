@@ -435,7 +435,8 @@ public class StyledText extends Canvas {
 		final int DEFAULT_FOREGROUND = 0;
 		final int DEFAULT_BACKGROUND = 1;
 		Vector colorTable = new Vector();
-	
+		boolean WriteUnicode;
+		
 	/**
 	 * Creates a RTF writer that writes content starting at offset "start"
 	 * in the document.  <code>start</code> and <code>length</code>can be set to specify partial 
@@ -449,7 +450,8 @@ public class StyledText extends Canvas {
 	public RTFWriter(int start, int length) {
 		super(start, length);
 		colorTable.addElement(getForeground());
-		colorTable.addElement(getBackground());
+		colorTable.addElement(getBackground());		
+		setUnicode();
 	}
 	/**
 	 * Closes the RTF writer. Once closed no more content can be written.
@@ -488,21 +490,94 @@ public class StyledText extends Canvas {
 		return index;
 	}
 	/**
+	 * Determines if Unicode RTF should be written.
+	 * Don't write Unicode RTF on Windows 95/98/ME or NT.
+	 */
+	void setUnicode() {
+		final String Win95 = "windows 95";
+		final String Win98 = "windows 98";
+		final String WinME = "windows me";		
+		final String WinNT = "windows nt";
+		String osName = System.getProperty("os.name").toLowerCase();
+		String osVersion = System.getProperty("os.version");
+		int majorVersion = 0;
+		
+		if (osVersion != null) {
+			int majorIndex = osVersion.indexOf('.');
+			if (majorIndex != -1) {
+				osVersion = osVersion.substring(0, majorIndex);
+				majorVersion = Integer.parseInt(osVersion);
+			}
+		}
+		if (osName != null &&
+			osName.startsWith(Win95) == false &&
+			osName.startsWith(Win98) == false &&
+			osName.startsWith(WinME) == false &&
+			(osName.startsWith(WinNT) == false || majorVersion > 4)) {
+			WriteUnicode = true;
+		}
+		else {
+			WriteUnicode = false;
+		}
+	}
+	/**
+	 * Appends the specified segment of "string" to the RTF data.
+	 * Copy from <code>start</code> up to, but excluding, <code>end</code>.
+	 * <p>
+	 *
+	 * @param string string to copy a segment from. Must not contain
+	 * 	line breaks. Line breaks should be written using writeLineDelimiter()
+	 * @param start start offset of segment. 0 based.
+	 * @param end end offset of segment
+	 */
+	void write(String string, int start, int end) {
+		for (int index = start; index < end; index++) {
+			char ch = string.charAt(index);
+			if (ch > 0xFF && WriteUnicode) {
+				// write the sub string from the last escaped character 
+				// to the current one. Fixes bug 21698.
+				if (index > start) {
+					write(string.substring(start, index));
+				}
+				write("\\u");
+				write(Integer.toString((short) ch));
+				write(' ');						// control word delimiter
+				start = index + 1;
+			}
+			else
+			if (ch == '}' || ch == '{' || ch == '\\') {
+				// write the sub string from the last escaped character 
+				// to the current one. Fixes bug 21698.
+				if (index > start) {
+					write(string.substring(start, index));
+				}
+				write('\\');
+				write(ch);
+				start = index + 1;
+			}
+		}
+		// write from the last escaped character to the end.
+		// Fixes bug 21698.
+		if (start < end) {
+			write(string.substring(start, end));
+		}
+	}	
+	/**
 	 * Writes the RTF header including font table and color table.
 	 */
 	void writeHeader() {
 		StringBuffer header = new StringBuffer();
 		FontData fontData = getFont().getFontData()[0];
-		header.append("{\\rtf1\\ansi\\deff0{\\fonttbl{\\f0\\fnil");
+		header.append("{\\rtf1\\ansi");
 		// specify code page, necessary for copy to work in bidi 
-		// systems
-		String cpg = System.getProperty("file.encoding");
-		if (cpg.startsWith("Cp") || cpg.startsWith("MS")) {
+		// systems that don't support Unicode RTF.
+		String cpg = System.getProperty("file.encoding").toLowerCase();
+		if (cpg.startsWith("cp") || cpg.startsWith("ms")) {
 			cpg = cpg.substring(2, cpg.length());
-			header.append("\\cpg");
+			header.append("\\ansicpg");
 			header.append(cpg);
 		}
-		header.append(" ");
+		header.append("\\uc0\\deff0{\\fonttbl{\\f0\\fnil ");
 		header.append(fontData.getName());
 		header.append(";}}\n{\\colortbl");
 		for (int i = 0; i < colorTable.size(); i++) {
@@ -575,44 +650,6 @@ public class StyledText extends Canvas {
 		write(lineDelimiter, 0, lineDelimiter.length());
 		write("\\par ");
 	}
-	/**
-	 * Appends the specified segment of "string" to the RTF data.
-	 * Copy from <code>start</code> up to, but excluding, <code>end</code>.
-	 * <p>
-	 *
-	 * @param string string to copy a segment from. Must not contain
-	 * 	line breaks. Line breaks should be written using writeLineDelimiter()
-	 * @param start start offset of segment. 0 based.
-	 * @param end end offset of segment
-	 */
-	void write(String string, int start, int end) {
-		int index;
-		
-		for (index = start; index < end; index++) {
-			char c = string.charAt(index);
-			if (c == '}' || c == '{' || c == '\\') {
-				break;
-			}
-		}
-		if (index == end) {
-			write(string.substring(start, end));	// string doesn't contain RTF formatting characters, write as is
-		}
-		else {										// string needs to be transformed
-			char[] text = new char[end - start];
-			
-			string.getChars(start, end, text, 0);
-			for (index = 0; index < text.length; index++) {
-				switch (text[index]) {
-					case '}':
-					case '{':
-					case '\\':
-						write("\\");
-					default:
-						write(text[index]);
-				}			
-			}			
-		}
-	}	
 	/**
 	 * Appends the specified line text to the RTF data.
 	 * Use the colors and font styles specified in "styles" and "lineBackground".
@@ -701,7 +738,7 @@ public class StyledText extends Canvas {
 		// write unstyled text at the end of the line
 		if (lineIndex < lineEndOffset) {
 			write(line, lineIndex, lineEndOffset);
-		}		
+		}
 		if (lineBackground != null) {
 			write("}");
 		}
