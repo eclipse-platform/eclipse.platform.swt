@@ -453,6 +453,28 @@ void adjustTrim () {
 		return;
 	}
 }
+void bringToTop (boolean force) {
+	/*
+	* Feature in X.  Calling XSetInputFocus() when the
+	* widget is not viewable causes an X bad match error.
+	* The fix is to call XSetInputFocus() when the widget
+	* is viewable.
+	*/
+	if (minimized) return;
+	if (!isVisible ()) return;
+	int xDisplay = OS.XtDisplay (shellHandle);
+	if (xDisplay == 0) return;
+	int xWindow = OS.XtWindow (shellHandle);
+	if (xWindow == 0) return;
+	if (!force) {
+		int [] buffer1 = new int [1], buffer2 = new int [1];
+		OS.XGetInputFocus (xDisplay, buffer1, buffer2);
+		if (buffer1 [0] == 0) return;
+		int handle = OS.XtWindowToWidget (xDisplay, buffer1 [0]);
+		if (handle == 0) return;
+	}
+	OS.XSetInputFocus (xDisplay, xWindow, OS.RevertToParent, OS.CurrentTime);
+}
 /**
  * Requests that the window manager close the receiver in
  * the same way it would be closed when the user clicks on

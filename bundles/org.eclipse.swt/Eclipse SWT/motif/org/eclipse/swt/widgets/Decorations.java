@@ -150,26 +150,7 @@ void add (Menu menu) {
 	menus = newMenus;
 }
 void bringToTop (boolean force) {
-	/*
-	* Feature in X.  Calling XSetInputFocus() when the
-	* widget is not viewable causes an X bad match error.
-	* The fix is to call XSetInputFocus() when the widget
-	* is viewable.
-	*/
-	if (minimized) return;
-	if (!isVisible ()) return;
-	int xDisplay = OS.XtDisplay (handle);
-	if (xDisplay == 0) return;
-	int xWindow = OS.XtWindow (handle);
-	if (xWindow == 0) return;
-	if (!force) {
-		int [] buffer1 = new int [1], buffer2 = new int [1];
-		OS.XGetInputFocus (xDisplay, buffer1, buffer2);
-		if (buffer1 [0] == 0) return;
-		int handle = OS.XtWindowToWidget (xDisplay, buffer1 [0]);
-		if (handle == 0) return;
-	}
-	OS.XSetInputFocus (xDisplay, xWindow, OS.RevertToParent, OS.CurrentTime);
+	moveAbove (null);
 }
 static int checkStyle (int style) {
 	if ((style & (SWT.MENU | SWT.MIN | SWT.MAX | SWT.CLOSE)) != 0) {
