@@ -1162,7 +1162,7 @@ public boolean getBorderVisible() {
  */
 public Rectangle getChevronBounds() {
 	checkWidget();
-	return chevronRect;
+	return new Rectangle(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height);
 }
 public Rectangle getClientArea() {
 	checkWidget();
@@ -1277,7 +1277,7 @@ char getMnemonic (String string) {
  */
 public Rectangle getMinimizeBounds() {
 	checkWidget();
-	return minRect;
+	return new Rectangle(minRect.x, minRect.y, minRect.width, minRect.height);
 }
 /**
  * Returns <code>true</code> if the receiver is minimized,
@@ -1312,7 +1312,7 @@ public boolean getMinimizeVisible() {
  */
 public Rectangle getMaximizeBounds() {
 	checkWidget();
-	return maxRect;
+	return new Rectangle(maxRect.x, maxRect.y, maxRect.width, maxRect.height);
 }
 /**
  * Returns <code>true</code> if the receiver is maximized,

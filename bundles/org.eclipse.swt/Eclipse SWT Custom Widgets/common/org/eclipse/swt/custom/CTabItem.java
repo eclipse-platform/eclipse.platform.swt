@@ -468,7 +468,7 @@ public Rectangle getBounds () {
  */
 public Rectangle getCloseBounds() {
 	checkWidget();
-	return closeRect;
+	return new Rectangle(closeRect.x, closeRect.y, closeRect.width, closeRect.height);
 }
 
 /**
