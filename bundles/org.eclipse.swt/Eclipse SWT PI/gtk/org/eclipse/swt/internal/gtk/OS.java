@@ -413,6 +413,7 @@ public static final synchronized native int XKeysymToKeycode(int /*long*/ displa
 public static final synchronized native int XReconfigureWMWindow(int /*long*/ display, int /*long*/ window, int screen, int valueMask, XWindowChanges values);
 public static final synchronized native int XSendEvent(int /*long*/ display, int /*long*/ w, boolean propogate, int /*long*/ event_mask, int /*long*/ event_send);
 public static final synchronized native int XSetInputFocus(int /*long*/ display, int /*long*/ window, int revert, int time);
+public static final synchronized native int XSynchronize(int /*long*/ display, boolean onoff);
 public static final synchronized native void XTestFakeButtonEvent(int /*long*/ display, int button, boolean is_press, int /*long*/ delay);
 public static final synchronized native void XTestFakeKeyEvent(int /*long*/ display, int keycode, boolean is_press, int /*long*/ delay);
 public static final synchronized native void XTestFakeMotionEvent(int /*long*/ display, int screen_number, int x, int y, int /*long*/ delay);

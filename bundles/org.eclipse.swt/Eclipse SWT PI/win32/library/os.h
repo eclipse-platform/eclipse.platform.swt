@@ -170,6 +170,7 @@
 #define NO_ExtractIconExA
 #define NO_FindWindowA
 #define NO_FormatMessageA
+#define NO_GdiSetBatchLimit
 #define NO_GetCharABCWidthsA
 #define NO_GetCharABCWidthsW
 #define NO_GetCharWidthA

@@ -567,6 +567,9 @@ public boolean getWarnings () {
  * @see #create
  */
 protected void init () {
+	if (debug) {
+		if (!OS.IsWinCE) OS.GdiSetBatchLimit(1);
+	}
 	
 	/*
 	 * If we're not on a device which supports palettes,

@@ -456,6 +456,12 @@ public boolean getWarnings () {
  * @see #create
  */
 protected void init () {
+	if (debug) {
+		if (OS.GDK_WINDOWING_X11()) {
+			int /*long*/ xDisplay = OS.GDK_DISPLAY ();
+			OS.XSynchronize (xDisplay, true);
+		}
+	}
 	
 	/* Create GTK warnings and error callbacks */
 	logCallback = new Callback (this, "logProc", 4);

@@ -2247,6 +2247,7 @@ public static final native int FindWindowW (char [] lpClassName, char [] lpWindo
 public static final native int FormatMessageA(int dwFlags, int lpSource, int dwMessageId, int dwLanguageId, int[] lpBuffer, int nSize, int Arguments);
 public static final native int FormatMessageW(int dwFlags, int lpSource, int dwMessageId, int dwLanguageId, int[] lpBuffer, int nSize, int Arguments);
 public static final native boolean FreeLibrary (int hLibModule);
+public static final native int GdiSetBatchLimit (int dwLimit);
 public static final native int GetACP ();
 public static final native int GetActiveWindow ();
 public static final native int GetBkColor (int hDC);

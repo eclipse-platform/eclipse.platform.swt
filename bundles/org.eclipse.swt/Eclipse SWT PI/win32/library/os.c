@@ -1724,6 +1724,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(FreeLibrary)
 }
 #endif
 
+#ifndef NO_GdiSetBatchLimit
+JNIEXPORT jint JNICALL OS_NATIVE(GdiSetBatchLimit)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "GdiSetBatchLimit\n")
+	rc = (jint)GdiSetBatchLimit((DWORD)arg0);
+	NATIVE_EXIT(env, that, "GdiSetBatchLimit\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_GetACP
 JNIEXPORT jint JNICALL OS_NATIVE(GetACP)
 	(JNIEnv *env, jclass that)

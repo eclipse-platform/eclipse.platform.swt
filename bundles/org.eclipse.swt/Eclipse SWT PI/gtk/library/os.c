@@ -879,6 +879,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(XSetInputFocus)
 }
 #endif
 
+#ifndef NO_XSynchronize
+JNIEXPORT jint JNICALL OS_NATIVE(XSynchronize)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XSynchronize\n")
+	rc = (jint)XSynchronize((Display *)arg0, arg1);
+	NATIVE_EXIT(env, that, "XSynchronize\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_XTestFakeButtonEvent
 JNIEXPORT void JNICALL OS_NATIVE(XTestFakeButtonEvent)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jint arg3)
