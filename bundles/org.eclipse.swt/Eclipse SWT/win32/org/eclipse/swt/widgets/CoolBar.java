@@ -183,14 +183,16 @@ void createItem (CoolItem item, int index) {
 	* item to the ideal size and resize the new items to the maximum
 	* size.
 	*/
-	int lastIndex = getLastIndexOfRow (index);	
-	if (index == lastIndex + 1) {  	
+	int lastIndex = getLastIndexOfRow (index);
+	if (lastIndex != -1 && index == lastIndex + 1) {  	
 		REBARBANDINFO rbBand2 = new REBARBANDINFO ();
 		rbBand2.cbSize = REBARBANDINFO.sizeof;
 		rbBand2.fMask = OS.RBBIM_IDEALSIZE;
 		OS.SendMessage (handle, OS.RB_GETBANDINFO, lastIndex, rbBand2);
 		rbBand2.fMask = OS.RBBIM_SIZE;
-		rbBand2.cx = rbBand2.cxIdeal;
+		RECT rect = new RECT ();
+		OS.SendMessage (handle, OS.RB_GETBANDBORDERS, lastIndex, rect);
+		rbBand2.cx = rbBand2.cxIdeal + rect.left + rect.right;
 		OS.SendMessage (handle, OS.RB_SETBANDINFO, lastIndex, rbBand2);
 		rbBand.fMask |= OS.RBBIM_SIZE;
 		rbBand.cx = MAX_WIDTH; 
@@ -224,14 +226,16 @@ void destroyItem (CoolItem item) {
 	* bar.  The fix is to resize the next to last item to be the
 	* maximum size.
 	*/
-	int lastIndex = getLastIndexOfRow (index);
 	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
-	if (count > 1 && index == lastIndex) {
-		REBARBANDINFO rbBand = new REBARBANDINFO ();
-		rbBand.cbSize = REBARBANDINFO.sizeof;
-		rbBand.fMask = OS.RBBIM_SIZE;			
-		rbBand.cx = MAX_WIDTH;
-		OS.SendMessage (handle, OS.RB_SETBANDINFO, lastIndex - 1, rbBand);								
+	if (count != 0) {
+		int lastIndex = getLastIndexOfRow (index);
+		if (index == lastIndex) {
+			REBARBANDINFO rbBand = new REBARBANDINFO ();
+			rbBand.cbSize = REBARBANDINFO.sizeof;
+			rbBand.fMask = OS.RBBIM_SIZE;			
+			rbBand.cx = MAX_WIDTH;
+			OS.SendMessage (handle, OS.RB_SETBANDINFO, lastIndex - 1, rbBand);
+		}							
 	}	
 		
 	/*
@@ -407,6 +411,21 @@ public Point [] getItemSizes () {
 		sizes [i] = new Point (rect.right - rect.left, rect.bottom - rect.top);
 	}
 	return sizes;
+}
+
+int getLastIndexOfRow (int index) {
+	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	if (count == 0) return -1;
+	REBARBANDINFO rbBand = new REBARBANDINFO ();	
+	rbBand.cbSize = REBARBANDINFO.sizeof;
+	rbBand.fMask = OS.RBBIM_STYLE;
+	for (int i=index; i<count; i++) {
+		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
+		if ((rbBand.fStyle & OS.RBBS_BREAK) != 0) {
+			return i - 1;
+		}
+	}
+	return count - 1;
 }
 
 /**
@@ -587,7 +606,9 @@ void setItemOrder (int [] itemOrder) {
 			if (index == lastItemSrcRow) {
 				rbBand.fMask = OS.RBBIM_IDEALSIZE;
 				OS.SendMessage (handle, OS.RB_GETBANDINFO, index, rbBand);
-				rbBand.cx = rbBand.cxIdeal;
+				RECT rect = new RECT ();
+				OS.SendMessage (handle, OS.RB_GETBANDBORDERS, index, rect);
+				rbBand.cx = rbBand.cxIdeal + rect.left + rect.right;
 				rbBand.fMask = OS.RBBIM_SIZE;
 				OS.SendMessage (handle, OS.RB_SETBANDINFO, index, rbBand);
 				if (index - 1 >= 0) {
@@ -823,20 +844,6 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			break;
 	}
 	return super.wmNotifyChild (wParam, lParam);
-}
-
-int getLastIndexOfRow (int index) {
-	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
-	REBARBANDINFO rbBand = new REBARBANDINFO ();	
-	rbBand.cbSize = REBARBANDINFO.sizeof;
-	rbBand.fMask = OS.RBBIM_STYLE;
-	for (int i=index; i<count; i++) {
-		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
-		if ((rbBand.fStyle & OS.RBBS_BREAK) != 0) {
-			return i - 1;
-		}
-	}
-	return count - 1;
 }
 
 }
