@@ -348,6 +348,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(PgDrawILine)
 }
 #endif
 
+#ifndef NO_PgDrawIPixel
+JNIEXPORT jint JNICALL OS_NATIVE(PgDrawIPixel)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PgDrawIPixel\n")
+	rc = (jint)PgDrawIPixel(arg0, arg1);
+	NATIVE_EXIT(env, that, "PgDrawIPixel\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_PgDrawIRect
 JNIEXPORT jint JNICALL OS_NATIVE(PgDrawIRect)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)

@@ -553,6 +553,7 @@ public static final native int PgDrawBitmap(int ptr, int flags, PhPoint_t pos, P
 public static final native int PgDrawEllipse(PhPoint_t center, PhPoint_t radii, int flags);
 public static final native int PgDrawGradient(PhPoint_t ul, PhPoint_t lr, int gradient_type, int transition_type, int num_color_pts, int color1, int color2, int color3, int color4, int table_size, byte[] transition_table);
 public static final native int PgDrawILine(int x1, int y1, int x2, int y2);
+public static final native int PgDrawIPixel(int x,int y);
 public static final native int PgDrawIRect(int ulx, int uly, int lrx, int lry, int flags);
 public static final native int PgDrawImage(int ptr, int type, PhPoint_t pos, PhDim_t size, int bpl, int tag);
 public static final native int PgDrawMultiTextArea(byte[] text, int len, PhRect_t canvas, int text_flags, int canvas_flags, int linespacing);
