@@ -59,6 +59,7 @@ public void test_add$I() {
 	Region reg = new Region(display);
 	try {
 		reg.add((int[])null);
+		reg.dispose();
 		fail("no exception thrown for adding a null rectangle");
 	}
 	catch (IllegalArgumentException e) {
@@ -66,40 +67,40 @@ public void test_add$I() {
 	reg.dispose();
 	try {
 		reg.add(new int[]{});
+		reg.dispose();
 		fail("no exception thrown on disposed region");
 	}
 	catch (SWTException e) {
 	}
+	reg.dispose();
+	
 	reg = new Region(display);
-	reg.add(new int[] {
-		0,0, 50,0, 0,25, 50,25, 
-		10,10, 20,10, 10,20, 20,20}
-	);
+	reg.add(new int[] {0,0, 50,0, 50,25, 0,25});
 	Rectangle box = reg.getBounds();
-	if (!box.equals(new Rectangle (0,0,50,25))) {
-		reg.dispose();
-		fail("add 1 failed");
-	}
 	reg.dispose();
+	Rectangle expected = new Rectangle (0,0,50,25);
+	if (!box.equals(expected)) {
+		fail("add 1 failed - expected: "+expected+" actual: "+box);
+	}
 	
 	reg = new Region(display);
-	reg.add(new int[] {0,0, 50,0, 0,25, 50,25});
-	reg.add(new int[] {0,25, 50,25, 0,40, 50,40});
+	reg.add(new int[] {0,0, 50,0, 50,25, 0,25});
+	reg.add(new int[] {0,25, 50,25, 50,40, 0,40});
 	box = reg.getBounds();
-	if (!box.equals(new Rectangle (0,0,50,40))) {
-		reg.dispose();
-		fail("add 2 failed");
-	}
 	reg.dispose();
+	expected = new Rectangle (0,0,50,40);
+	if (!box.equals(expected)) {
+		fail("add 2 failed - expected: "+expected+" actual: "+box);
+	}
 	
 	reg = new Region(display);
-	reg.add(new int[] {0,0, 5,0, 10,10, 0,10});
+	reg.add(new int[] {10,10, 60,40, 70,20, 70,60, 0,60, 20,20});
 	box = reg.getBounds();
-	if (!box.equals(new Rectangle (0,0,10,10))) {
-		reg.dispose();
-		fail("add 3 failed");
-	}
 	reg.dispose();
+	expected = new Rectangle (1,11,69,49);
+	if (!box.equals(expected)) {
+		fail("add 3 failed - expected: "+expected+" actual: "+box);
+	}
 }
 
 public void test_addLorg_eclipse_swt_graphics_Rectangle() {
@@ -669,6 +670,7 @@ public void test_subtract$I() {
 	Region reg = new Region(display);
 	try {
 		reg.subtract((int[])null);
+		reg.dispose();
 		fail("no exception thrown for subtract a null array");
 	}
 	catch (IllegalArgumentException e) {
@@ -676,30 +678,34 @@ public void test_subtract$I() {
 	reg.dispose();
 	try {
 		reg.subtract(new int[]{});
+		reg.dispose();
 		fail("no exception thrown on disposed region");
 	}
 	catch (SWTException e) {
 	}
+	reg.dispose();
+	
 	reg = new Region(display);
 	reg.add(new int[] {0,0, 50,0, 50,25, 0,25});
 	reg.subtract(new int[] {0,0, 50,0, 50,20, 0,20});
 	Rectangle box = reg.getBounds();
-	if (!box.equals(new Rectangle (0,20,50,5))) {
-		reg.dispose();
-		fail("subtract 1 failed");
-	}
 	reg.dispose();
+	Rectangle expected = new Rectangle (0,20,50,5);
+	if (!box.equals(expected)) {
+		fail("subtract 1 failed - expected: "+expected+" actual: "+box);
+	}
+	
 	
 	reg = new Region(display);
-	reg.add(new int[] {0,0, 50,0, 0,25, 50,25});
-	reg.add(new int[] {0,25, 50,25, 0,40, 50,40});
-	reg.subtract(new int[] {0,25, 50,25, 0,40, 50,40});
+	reg.add(new int[] {0,0, 50,0, 50,25, 0,25});
+	reg.add(new int[] {0,25, 50,25, 50,40, 0,40});
+	reg.subtract(new int[] {0,25, 50,25, 50,40, 0,40});
 	box = reg.getBounds();
-	if (!box.equals(new Rectangle (0,0,50,25))) {
-		reg.dispose();
-		fail("subtract 2 failed");
-	}
 	reg.dispose();
+	expected = new Rectangle (0,0,50,25);
+	if (!box.equals(expected)) {
+		fail("subtract 2 failed - expected: "+expected+" actual: "+box);
+	}
 }
 
 public void test_subtractLorg_eclipse_swt_graphics_Rectangle() {
