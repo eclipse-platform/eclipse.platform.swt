@@ -6,33 +6,52 @@ package org.eclipse.swt.dnd;
  */
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
 
 class TreeDragUnderEffect extends DragUnderEffect {
 
 	private Tree tree;
 	private int currentEffect = DND.FEEDBACK_NONE;
-	private TreeItem currentItem;
 	private TreeItem[] selection = new TreeItem[0];
 	private TreeItem dropSelection = null;
+	private TreeItem insertMark = null;
+	private boolean insertBefore = false;
+	
+	private TreeItem scrollItem;
+	private long scrollBeginTime;
+	private static final int SCROLL_HYSTERESIS = 400; // milli seconds
+	private static final int SCROLL_WIDTH = 100; // pixels
+	
+	private TreeItem expandItem;
+	private long expandBeginTime;
+	private static final int EXPAND_HYSTERESIS = 1000; // milli seconds
 
 TreeDragUnderEffect(Tree tree) {
 	this.tree = tree;
 }
 void show(int effect, int x, int y) {
+	effect = checkEffect(effect);
 	TreeItem item = findItem(x, y);
 	if (item == null) effect = DND.FEEDBACK_NONE;
-	if (effect == currentEffect && item == currentItem) return;
-	currentItem = item;
 	if (currentEffect == DND.FEEDBACK_NONE && effect != DND.FEEDBACK_NONE) {
 		selection = tree.getSelection();
 		tree.deselectAll();
 	}
-	int previousEffect = currentEffect;
+	scrollHover(effect, item, x, y);
+	expandHover(effect, item, x, y);
 	setDragUnderEffect(effect, item);
-	if (previousEffect != DND.FEEDBACK_NONE && currentEffect == DND.FEEDBACK_NONE) {
+	if (currentEffect != DND.FEEDBACK_NONE && effect == DND.FEEDBACK_NONE) {
 		tree.setSelection(selection);
 		selection = new TreeItem[0];
 	}
+	currentEffect = effect;
+}
+private int checkEffect(int effect) {
+	// Some effects are mutually exclusive.  Make sure that only one of the mutually exclusive effects has been specified.
+	int mask = DND.FEEDBACK_INSERT_AFTER | DND.FEEDBACK_INSERT_BEFORE | DND.FEEDBACK_SELECT;
+	int bits = effect & mask;
+	if (bits == DND.FEEDBACK_INSERT_AFTER || bits == DND.FEEDBACK_INSERT_BEFORE || bits == DND.FEEDBACK_SELECT) return effect;
+	return (effect & ~mask);
 }
 private TreeItem findItem(int x , int y){
 	Point coordinates = new Point(x, y);
@@ -69,39 +88,127 @@ private TreeItem findItem(int x , int y){
 	return null;
 }
 private void setDragUnderEffect(int effect, TreeItem item) {
-	switch (effect) {				
-		case DND.FEEDBACK_SELECT:
-			if (currentEffect == DND.FEEDBACK_INSERT_AFTER ||
-			    currentEffect == DND.FEEDBACK_INSERT_BEFORE) {
-				tree.setInsertMark(null, false);
-			}
-			setDropSelection(item); 
-			currentEffect = DND.FEEDBACK_SELECT;
-			break;
-		case DND.FEEDBACK_INSERT_AFTER:
-		case DND.FEEDBACK_INSERT_BEFORE:
-			if (currentEffect == DND.FEEDBACK_SELECT) {
-				setDropSelection(null);
-			}
-			tree.setInsertMark(item, effect == DND.FEEDBACK_INSERT_BEFORE);
-			currentEffect = effect;
-			break;			
-		default :
-			if (currentEffect == DND.FEEDBACK_INSERT_AFTER ||
-			    currentEffect == DND.FEEDBACK_INSERT_BEFORE) {
-				tree.setInsertMark(null, false);
-			}
-			if (currentEffect == DND.FEEDBACK_SELECT) {
-				setDropSelection(null);
-			}
-			currentEffect = DND.FEEDBACK_NONE;
-			break;
+	if ((effect & DND.FEEDBACK_SELECT) != 0) {
+		if ((currentEffect & DND.FEEDBACK_INSERT_AFTER) != 0 ||
+		    (currentEffect & DND.FEEDBACK_INSERT_BEFORE) != 0) {
+			tree.setInsertMark(null, false);
+		}
+		setDropSelection(item); 
+		return;
 	}
+	if ((effect & DND.FEEDBACK_INSERT_AFTER) != 0 ||
+		(effect & DND.FEEDBACK_INSERT_BEFORE) != 0) {
+		if ((currentEffect & DND.FEEDBACK_SELECT) != 0) {
+			setDropSelection(null);
+		}
+		setInsertMark(item, (effect & DND.FEEDBACK_INSERT_BEFORE) != 0);
+		return;
+	}
+	
+	setInsertMark(null, false);
+	setDropSelection(null);
 }
 private void setDropSelection (TreeItem item) {	
 	if (item == dropSelection) return;
 	if (dropSelection != null) tree.deselectAll();
 	dropSelection = item;
 	if (dropSelection != null) tree.setSelection(new TreeItem[]{dropSelection});
+}
+private void setInsertMark(TreeItem item, boolean before) {
+	if (item == insertMark && before == insertBefore) return;
+	insertMark = item;
+	insertBefore = before;
+	tree.setInsertMark(item, before);
+}
+private void scrollHover (int effect, TreeItem item, int x, int y) {
+	if ((effect & DND.FEEDBACK_SCROLL) == 0) {
+		scrollBeginTime = 0;
+		scrollItem = null;
+		return;
+	}
+	if (scrollItem == item && scrollBeginTime != 0) {
+		if (System.currentTimeMillis() >= scrollBeginTime) {
+			scroll(item, x, y);
+			scrollBeginTime = 0;
+			scrollItem = null;
+		}
+		return;
+	}
+	scrollBeginTime = System.currentTimeMillis() + SCROLL_HYSTERESIS;
+	scrollItem = item;
+}
+private void scroll(TreeItem item, int x, int y) {
+	if (item == null) return;
+	Point coordinates = new Point(x, y);
+	coordinates = tree.toControl(coordinates);
+	Rectangle area = tree.getClientArea();
+	TreeItem showItem = null;
+	if (coordinates.y - area.y < SCROLL_WIDTH) {
+		showItem = getPreviousVisibleItem(item);
+	} else if ((area.y + area.height - coordinates.y) < SCROLL_WIDTH) {
+		showItem = getNextVisibleItem(item, true);
+	}
+	if (showItem != null) {
+		tree.showItem(showItem);
+	}		
+}
+private void expandHover (int effect, TreeItem item, int x, int y) {
+	if ((effect & DND.FEEDBACK_EXPAND) == 0) {
+		expandBeginTime = 0;
+		expandItem = null;
+		return;
+	}
+	if (expandItem == item && expandBeginTime != 0) {
+		if (System.currentTimeMillis() >= expandBeginTime) {
+			expand(item, x, y);
+			expandBeginTime = 0;
+			expandItem = null;
+		}
+		return;
+	}
+	expandBeginTime = System.currentTimeMillis() + EXPAND_HYSTERESIS;
+	expandItem = item;
+}
+private void expand(TreeItem item, int x, int y) {
+	if (item == null || item.getExpanded()) return;
+	Event event = new Event();
+	event.x = x;
+	event.y = y;
+	event.item = item;
+	event.time = (int) System.currentTimeMillis();
+	tree.notifyListeners(SWT.Expand, event);
+	if (item.isDisposed()) return;
+	item.setExpanded(true);
+}
+private TreeItem getNextVisibleItem(TreeItem item, boolean includeChildren) {
+	// look down
+	// neccesary on the first pass only
+	if (includeChildren && item.getItemCount() > 0 && item.getExpanded()) {
+		return item.getItems()[0];
+	}
+	// look sideways
+	TreeItem parent = item.getParentItem();
+	TreeItem[] peers = (parent != null) ? parent.getItems() : tree.getItems();
+	for (int i = 0; i < peers.length - 1; i++) {
+		if (peers[i] == item) return peers[i + 1];
+	}
+	// look up
+	if (parent != null) return getNextVisibleItem(parent, false);
+	return null;
+}
+private TreeItem getPreviousVisibleItem(TreeItem item) {
+	// look sideways
+	TreeItem parent = item.getParentItem();
+	TreeItem[] peers = (parent != null) ? parent.getItems() : tree.getItems();
+	for (int i = peers.length - 1; i > 0; i--) {
+		if (peers[i] == item) {
+			TreeItem peer = peers[i-1];
+			if (!peer.getExpanded() || peer.getItemCount() == 0) return peer;
+			TreeItem[] peerItems = peer.getItems();
+			return peerItems[peerItems.length - 1];
+		}
+	}
+	// look up
+	return parent;
 }
 }

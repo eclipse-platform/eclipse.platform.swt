@@ -81,6 +81,11 @@ public class DropTarget extends Widget {
 	
 	private DragUnderEffect effect;
 	
+	private static final int DRAGOVER_HYSTERESIS = 50;
+	private long dragOverStart;
+	private Runnable dragOverHeartbeat;
+	private DNDEvent dragOverEvent;
+	
 /**
  * Creates a new <code>DropTarget</code> to handle dropping on the specified <code>Control</code>.
  * 
@@ -167,6 +172,22 @@ static int checkStyle (int style) {
 	if (style == SWT.NONE) return DND.DROP_MOVE;
 	return style;
 }
+private void updateDragOverHover(long delay, DNDEvent event) {
+	if (delay == 0) {
+		dragOverStart = 0;
+		dragOverEvent = null;
+		dragOverHeartbeat = null;
+		return;
+	}
+	dragOverStart = System.currentTimeMillis() + delay;
+	if (dragOverEvent == null) dragOverEvent = new DNDEvent();
+	dragOverEvent.x = event.x;
+	dragOverEvent.y = event.y;
+	dragOverEvent.dataTypes  = event.dataTypes;
+	dragOverEvent.operations = event.operations;
+	dragOverEvent.dataType  = event.dataType;
+	dragOverEvent.detail  = event.detail;
+}
 private int dragProcCallback(int widget, int client_data, int call_data) {
 
 	XmDragProcCallback callbackData = new XmDragProcCallback();
@@ -229,20 +250,50 @@ private int dragProcCallback(int widget, int client_data, int call_data) {
 				if (dataTypes.length > 0) {
 					event.dataType = dataTypes[0];
 				}
+				dragOverHeartbeat = new Runnable() {
+					public void run() {
+						if (control.isDisposed() || dragOverStart == 0) return;
+						long time = System.currentTimeMillis();
+						int delay = DRAGOVER_HYSTERESIS;
+						if (time >= dragOverStart) {
+							DNDEvent event = new DNDEvent();
+							event.widget = control;
+							event.time = (int)time;
+							event.x = dragOverEvent.x;
+							event.y = dragOverEvent.y;
+							event.dataTypes  = dragOverEvent.dataTypes;
+							event.feedback = DND.FEEDBACK_SELECT;
+							event.operations = dragOverEvent.operations;
+							event.dataType  = dragOverEvent.dataType;
+							event.detail  = dragOverEvent.detail;
+							notifyListeners(DND.DragOver, event);
+							effect.show(event.feedback, event.x, event.y);
+						} else {
+							delay = (int)(dragOverStart - time);
+						}
+						control.getDisplay().timerExec(delay, dragOverHeartbeat);
+					}
+				};
+				updateDragOverHover(DRAGOVER_HYSTERESIS, event);
+				
 				notifyListeners(DND.DragEnter, event);
 				effect.show(event.feedback, event.x, event.y);
+				dragOverHeartbeat.run();
 				break;
 			
 			case OS.XmCR_DROP_SITE_MOTION_MESSAGE :
+				updateDragOverHover(DRAGOVER_HYSTERESIS, event);
 				notifyListeners(DND.DragOver, event);
 				effect.show(event.feedback, event.x, event.y);
 				break;
 			case OS.XmCR_OPERATION_CHANGED :
+				updateDragOverHover(DRAGOVER_HYSTERESIS, event);
 				notifyListeners(DND.DragOperationChanged, event);
 				effect.show(event.feedback, event.x, event.y);
 				break;
 			case OS.XmCR_DROP_SITE_LEAVE_MESSAGE :
 				event.detail  = DND.DROP_NONE;
+				updateDragOverHover(0, null);
 				notifyListeners(DND.DragLeave, event);
 				effect.show(DND.FEEDBACK_NONE, 0, 0);
 				return 0;
@@ -273,7 +324,7 @@ private int dragProcCallback(int widget, int client_data, int call_data) {
 	return 0;
 }
 private int dropProcCallback(int widget, int client_data, int call_data) {
-
+	updateDragOverHover(0, null);
 	effect.show(DND.FEEDBACK_NONE, 0, 0);
 	
 	droppedEventData = new XmDropProcCallback();

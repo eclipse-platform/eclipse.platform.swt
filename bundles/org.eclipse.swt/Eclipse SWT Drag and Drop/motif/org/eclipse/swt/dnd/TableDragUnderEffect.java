@@ -11,28 +11,30 @@ import org.eclipse.swt.widgets.*;
 class TableDragUnderEffect extends DragUnderEffect {
 	private Table table;
 	private TableItem[] selection = new TableItem[0];
-	int currentEffect = DND.FEEDBACK_NONE;
-	private TableItem currentItem;
+	private int currentEffect = DND.FEEDBACK_NONE;
 	private TableItem dropSelection;
-	
+	private TableItem scrollItem;
+	private long scrollBeginTime;
+	private static final int SCROLL_HYSTERESIS = 400; // milli seconds
+	private static final int SCROLL_WIDTH = 100; // pixels
+
 TableDragUnderEffect(Table table) {
 	this.table = table;
 }
 void show(int effect, int x, int y) {
 	TableItem item = findItem(x, y);
 	if (item == null) effect = DND.FEEDBACK_NONE;
-	if (effect == currentEffect && item == currentItem) return;
-	currentItem = item;
 	if (currentEffect == DND.FEEDBACK_NONE && effect != DND.FEEDBACK_NONE) {
 		selection = table.getSelection();
 		table.deselectAll();
 	}
-	int previousEffect = currentEffect;
+	scrollHover(effect, item, x, y);
 	setDragUnderEffect(effect, item);
-	if (previousEffect != DND.FEEDBACK_NONE && currentEffect == DND.FEEDBACK_NONE) {
+	if (currentEffect != DND.FEEDBACK_NONE && effect == DND.FEEDBACK_NONE) {
 		table.setSelection(selection);
 		selection = new TableItem[0];
 	}
+	currentEffect = effect;
 }
 private TableItem findItem(int x, int y){
 	if (table == null) return null;
@@ -49,26 +51,51 @@ private TableItem findItem(int x, int y){
 		if (item != null) return item;
 	}
 	return null;
-
 }
 private void setDragUnderEffect(int effect, TableItem item) {	
-	switch (effect) {				
-		case DND.FEEDBACK_SELECT:
-			setDropSelection(item); 
-			currentEffect = DND.FEEDBACK_SELECT;
-			break;		
-		default:
-			if (currentEffect == DND.FEEDBACK_SELECT) {
-				setDropSelection(null);
-			}
-			currentEffect = DND.FEEDBACK_NONE;
-			break;
+	if ((effect & DND.FEEDBACK_SELECT) != 0) {
+		setDropSelection(item); 
+		return;
 	}
+	if ((currentEffect & DND.FEEDBACK_SELECT) != 0) setDropSelection(null);
 }
 private void setDropSelection (TableItem item) {
 	if (item == dropSelection) return;
 	if (dropSelection != null) table.deselectAll();
 	dropSelection = item;
 	if (dropSelection != null) table.setSelection(new TableItem[]{dropSelection});
+}
+private void scrollHover (int effect, TableItem item, int x, int y) {
+	if ((effect & DND.FEEDBACK_SCROLL) == 0) {
+		scrollBeginTime = 0;
+		scrollItem = null;
+		return;
+	}
+	if (scrollItem == item && scrollBeginTime != 0) {
+		if (System.currentTimeMillis() >= scrollBeginTime) {
+			scroll(item, x, y);
+			scrollBeginTime = 0;
+			scrollItem = null;
+		}
+		return;
+	}
+	scrollBeginTime = System.currentTimeMillis() + SCROLL_HYSTERESIS;
+	scrollItem = item;
+}
+private void scroll(TableItem item, int x, int y) {
+	if (item == null) return;
+	Point coordinates = new Point(x, y);
+	coordinates = table.toControl(coordinates);
+	Rectangle area = table.getClientArea();
+	TableItem showItem = null;
+	int itemIndex = table.indexOf(item);
+	if (coordinates.y - area.y < SCROLL_WIDTH) {
+		showItem = table.getItem(Math.max(0, itemIndex - 1));
+	} else if ((area.y + area.height - coordinates.y) < SCROLL_WIDTH) {
+		showItem = table.getItem(Math.min(table.getItemCount() - 1, itemIndex + 1));
+	}
+	if (showItem != null) {
+		table.showItem(showItem);
+	}	
 }
 }
