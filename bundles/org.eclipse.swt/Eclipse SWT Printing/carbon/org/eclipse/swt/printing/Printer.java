@@ -322,7 +322,7 @@ protected void destroy() {
  * @return the platform specific GC handle
  */
 public int internal_new_GC(GCData data) {
-	checkDevice();
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	setupNewPage();
 	if (data != null) {
 		if (isGCCreated) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -354,7 +354,6 @@ protected void init () {
  * @param data the platform specific GC data 
  */
 public void internal_dispose_GC(int context, GCData data) {
-	checkDevice();
 	if (data != null) isGCCreated = false;
 }
 
