@@ -98,6 +98,12 @@ public int getOrientation() {
 	//checkWidget();
 	return orientation;
 }
+public int getStyle() {
+	int style = super.getStyle();
+	if (orientation == SWT.HORIZONTAL) style |= SWT.HORIZONTAL;
+	if (orientation == SWT.VERTICAL) style |= SWT.VERTICAL;
+	return style;
+}
 /**
  * Answer the control that currently is maximized in the SashForm.  
  * This value may be null.
