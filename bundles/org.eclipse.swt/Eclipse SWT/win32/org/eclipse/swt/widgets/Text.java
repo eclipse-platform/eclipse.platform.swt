@@ -430,9 +430,11 @@ char [] getClipboardData () {
 		if (hMem != 0) {
 			int ptr = OS.GlobalLock (hMem);
 			if (ptr != 0) {
-				int cchWideChar = OS.MultiByteToWideChar (OS.CP_ACP, OS.MB_PRECOMPOSED, ptr, -1, null, 0);
+				/* Use the character encoding for the default locale */
+				int cp = OS.CP_ACP;
+				int cchWideChar = OS.MultiByteToWideChar (cp, OS.MB_PRECOMPOSED, ptr, -1, null, 0);
 				lpWideCharStr = new char [--cchWideChar];
-				OS.MultiByteToWideChar (OS.CP_ACP, OS.MB_PRECOMPOSED, ptr, -1, lpWideCharStr, cchWideChar);
+				OS.MultiByteToWideChar (cp, OS.MB_PRECOMPOSED, ptr, -1, lpWideCharStr, cchWideChar);
 			}
 		}
 		OS.CloseClipboard ();
@@ -811,7 +813,7 @@ public void insert (String string) {
 
 int mbcsToWcsPos (int mbcsPos) {
 	if (mbcsPos == 0) return 0;
-	int cp = OS.GetACP ();
+	int cp = getCodePage ();
 	int wcsTotal = 0, mbcsTotal = 0;
 	byte [] buffer = new byte [128];
 	String delimiter = getLineDelimiter();
@@ -822,7 +824,9 @@ int mbcsToWcsPos (int mbcsPos) {
 		int linePos = OS.SendMessage (handle, OS.EM_LINEINDEX, line, 0);
 		int mbcsSize = OS.SendMessage (handle, OS.EM_LINELENGTH, linePos, 0);
 		if (mbcsSize != 0) {
-			if (mbcsSize > buffer.length) buffer = new byte [mbcsSize + delimiterSize];
+			if (mbcsSize + delimiterSize > buffer.length) {
+				buffer = new byte [mbcsSize + delimiterSize];
+			}
 			buffer [0] = (byte) (mbcsSize & 0xFF);
 			buffer [1] = (byte) (mbcsSize >> 8);
 			mbcsSize = OS.SendMessage (handle, OS.EM_GETLINE, line, buffer);
@@ -1410,7 +1414,7 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 
 int wcsToMbcsPos (int wcsPos) {
 	if (wcsPos == 0) return 0;
-	int cp = OS.GetACP ();
+	int cp = getCodePage ();
 	int wcsTotal = 0, mbcsTotal = 0;
 	byte [] buffer = new byte [128];
 	String delimiter = getLineDelimiter ();
@@ -1421,7 +1425,9 @@ int wcsToMbcsPos (int wcsPos) {
 		int linePos = OS.SendMessage (handle, OS.EM_LINEINDEX, line, 0);
 		int mbcsSize = OS.SendMessage (handle, OS.EM_LINELENGTH, linePos, 0);
 		if (mbcsSize != 0) {
-			if (mbcsSize > buffer.length) buffer = new byte [mbcsSize + delimiterSize];
+			if (mbcsSize + delimiterSize > buffer.length) {
+				buffer = new byte [mbcsSize + delimiterSize];
+			}
 			buffer [0] = (byte) (mbcsSize & 0xFF);
 			buffer [1] = (byte) (mbcsSize >> 8);
 			mbcsSize = OS.SendMessage (handle, OS.EM_GETLINE, line, buffer);
