@@ -12,7 +12,6 @@ package org.eclipse.swt.tools.internal;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.Properties;
 
 public class MetaData {
@@ -114,7 +113,7 @@ public void setMetaData(Field field, FieldData value) {
 public void setMetaData(Method method, MethodData value) {
 	String key;
 	String className = JNIGenerator.getClassName(method.getDeclaringClass());
-	if (JNIGenerator.isUnique(method, Modifier.NATIVE)) {
+	if (JNIGenerator.isNativeUnique(method)) {
 		key = className + "_" + method.getName ();
 	} else {
 		key = className + "_" + JNIGenerator.getFunctionName(method);
@@ -125,7 +124,7 @@ public void setMetaData(Method method, MethodData value) {
 public void setMetaData(Method method, int arg, ParameterData value) {
 	String key;
 	String className = JNIGenerator.getClassName(method.getDeclaringClass());
-	if (JNIGenerator.isUnique(method, Modifier.NATIVE)) {
+	if (JNIGenerator.isNativeUnique(method)) {
 		key = className + "_" + method.getName () + "_" + arg;
 	} else {
 		key = className + "_" + JNIGenerator.getFunctionName(method) + "_" + arg;

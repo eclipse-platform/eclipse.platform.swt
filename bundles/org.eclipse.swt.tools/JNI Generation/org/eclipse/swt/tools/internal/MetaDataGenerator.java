@@ -67,7 +67,7 @@ public void generate(Method method) {
 	StringBuffer buffer = new StringBuffer();
 	buffer.append(getClassName(method.getDeclaringClass()));
 	buffer.append("_");
-	if (isUnique(method, Modifier.NATIVE)) {
+	if (isNativeUnique(method)) {
 		buffer.append(method.getName());
 	} else {
 		buffer.append(getFunctionName(method));

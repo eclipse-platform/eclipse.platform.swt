@@ -58,7 +58,7 @@ static String getFunctionName(Method method) {
 
 static String getFunctionName(Method method, Class[] paramTypes) {
 	String function = toC(method.getName());
-	if (!isUnique(method, Modifier.NATIVE)) {
+	if (!isNativeUnique(method)) {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append(function);
 		buffer.append("__");
@@ -186,13 +186,13 @@ static String getTypeSignature3(Class clazz) {
 	return clazz.getName();
 }
 
-static boolean isUnique(Method method, int modifierMask) {
+static boolean isNativeUnique(Method method) {
 	Class clazz = method.getDeclaringClass();
 	Method[] methods = clazz.getDeclaredMethods();
 	for (int i = 0; i < methods.length; i++) {
 		Method mth = methods[i];
-		if ((method.getModifiers() & modifierMask) ==  0) continue;
-		if (method.equals(mth)) continue;
+		if ((method.getModifiers() & Modifier.NATIVE) ==  0) continue;
+		if (method == mth || method.equals(mth)) continue;
 		if (method.getName().equals(mth.getName())) return false;
 	}
 	return true;
