@@ -536,7 +536,7 @@ public void open () {
 	bringToTop ();
 	setVisible (true);
 	if (savedFocus == null) {
-		setFocus ();
+		setTabGroupFocus ();
 	} else {
 		restoreFocus ();
 	}
