@@ -17,6 +17,7 @@ public class TrayIcon extends Widget {
 	String toolTipText;
 
 public TrayIcon (Display display) {
+//	checkSubclass();
 	if (display == null) display = Display.getCurrent ();
 	if (display == null) display = Display.getDefault ();
 	if (!display.isValidThread ()) {
@@ -80,7 +81,7 @@ public Image getImage () {
 	return image;
 }
 
-public Menu getMenu () {
+Menu getMenu () {
 	checkWidget ();
 	return menu;
 }
@@ -148,7 +149,7 @@ public void setImage (Image image) {
 	OS.gtk_widget_show (imageHandle);
 }
 
-public void setMenu (Menu menu) {
+void setMenu (Menu menu) {
 	checkWidget ();
 	if (menu != null && menu.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	this.menu = menu;

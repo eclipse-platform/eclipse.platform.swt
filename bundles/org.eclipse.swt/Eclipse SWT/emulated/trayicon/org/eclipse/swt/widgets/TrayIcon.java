@@ -25,7 +25,7 @@ public void addSelectionListener(SelectionListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 }
 
-public Image getImage () {
+Image getImage () {
 	checkWidget ();
 	return image;
 }
@@ -56,7 +56,7 @@ public void setImage (Image image) {
 	this.image = image;
 }
 
-public void setMenu (Menu menu) {
+void setMenu (Menu menu) {
 	checkWidget ();
 	if (menu != null && menu.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	this.menu = menu;
