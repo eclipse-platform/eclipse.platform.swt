@@ -493,7 +493,7 @@ class GridLayoutTab extends Tab {
 		Control [] children = layoutComposite.getChildren ();
 		TableItem [] items = table.getItems ();
 		GridData data;
-		int width, height, hIndent, hSpan, vSpan;
+		int hIndent, hSpan, vSpan;
 		String vAlign, hAlign, vGrab, hGrab;
 		for (int i = 0; i < children.length; i++) {
 			data = new GridData ();

@@ -205,7 +205,7 @@ class ToolBarTab extends Tab {
 							}
 						});
 					} else {
-						MenuItem menuItem = new MenuItem(menu, SWT.SEPARATOR);
+						new MenuItem(menu, SWT.SEPARATOR);
 					}
 				}
 			}

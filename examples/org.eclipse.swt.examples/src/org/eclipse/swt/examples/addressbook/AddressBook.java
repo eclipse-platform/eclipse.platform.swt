@@ -151,7 +151,6 @@ private String[] decodeLine(String line) {
 	
 	String[] parsedLine = new String[table.getColumnCount()];
 	for(int i = 0; i < parsedLine.length - 1; i++) {
-		String newString = "";
 		int index = line.indexOf(DELIMITER);
 		if (index > -1) {
 			parsedLine[i] = line.substring(0, index);
@@ -454,7 +453,7 @@ private void createFileMenu(Menu menuBar) {
 	//File -> New Contact
 	MenuItem subItem = new MenuItem(menu, SWT.NULL);
 	subItem.setText(resAddressBook.getString("New_contact"));
-	subItem.setAccelerator(SWT.CTRL + 'N');
+	subItem.setAccelerator(SWT.MOD1 + 'N');
 	subItem.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent e) {
 			newEntry();
@@ -462,7 +461,7 @@ private void createFileMenu(Menu menuBar) {
 	});
 	subItem = new MenuItem(menu, SWT.NULL);
 	subItem.setText(resAddressBook.getString("Edit_contact"));
-	subItem.setAccelerator(SWT.CTRL + 'E');
+	subItem.setAccelerator(SWT.MOD1 + 'E');
 	subItem.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent e) {
 			TableItem[] items = table.getSelection();
@@ -477,7 +476,7 @@ private void createFileMenu(Menu menuBar) {
 	//File -> New Address Book
 	subItem = new MenuItem(menu, SWT.NULL);
 	subItem.setText(resAddressBook.getString("New_address_book"));
-	subItem.setAccelerator(SWT.CTRL + 'B');
+	subItem.setAccelerator(SWT.MOD1 + 'B');
 	subItem.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent e) {
 			closeAddressBook();
@@ -488,7 +487,7 @@ private void createFileMenu(Menu menuBar) {
 	//File -> Open
 	subItem = new MenuItem(menu, SWT.NULL);
 	subItem.setText(resAddressBook.getString("Open_address_book"));
-	subItem.setAccelerator(SWT.CTRL + 'O');
+	subItem.setAccelerator(SWT.MOD1 + 'O');
 	subItem.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent e) {
 			closeAddressBook();
@@ -499,7 +498,7 @@ private void createFileMenu(Menu menuBar) {
 	//File -> Save.
 	subItem = new MenuItem(menu, SWT.NULL);
 	subItem.setText(resAddressBook.getString("Save_address_book"));
-	subItem.setAccelerator(SWT.CTRL + 'S');
+	subItem.setAccelerator(SWT.MOD1 + 'S');
 	subItem.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent e) {
 			save();
@@ -566,7 +565,7 @@ private MenuItem createEditMenu(Menu menuBar) {
 	//Edit -> Edit
 	MenuItem subItem = new MenuItem(menu, SWT.CASCADE);
 	subItem.setText(resAddressBook.getString("Edit"));
-	subItem.setAccelerator(SWT.CTRL + 'E');
+	subItem.setAccelerator(SWT.MOD1 + 'E');
 	subItem.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent e) {
 			TableItem[] items = table.getSelection();
@@ -578,7 +577,7 @@ private MenuItem createEditMenu(Menu menuBar) {
 	//Edit -> Copy
 	subItem = new MenuItem(menu, SWT.NULL);
 	subItem.setText(resAddressBook.getString("Copy"));
-	subItem.setAccelerator(SWT.CTRL + 'C');
+	subItem.setAccelerator(SWT.MOD1 + 'C');
 	subItem.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent e) {
 			TableItem[] items = table.getSelection();
@@ -593,7 +592,7 @@ private MenuItem createEditMenu(Menu menuBar) {
 	//Edit -> Paste
 	subItem = new MenuItem(menu, SWT.NULL);
 	subItem.setText(resAddressBook.getString("Paste"));
-	subItem.setAccelerator(SWT.CTRL + 'V');
+	subItem.setAccelerator(SWT.MOD1 + 'V');
 	subItem.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent e) {
 			if (copyBuffer == null) return;
@@ -671,7 +670,7 @@ private void createSearchMenu(Menu menuBar) {
 	//Search -> Find...
 	item = new MenuItem(searchMenu, SWT.NULL);
 	item.setText(resAddressBook.getString("Find"));
-	item.setAccelerator(SWT.CTRL + 'F');
+	item.setAccelerator(SWT.MOD1 + 'F');
 	item.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent e) {
 			searchDialog.setMatchCase(false);

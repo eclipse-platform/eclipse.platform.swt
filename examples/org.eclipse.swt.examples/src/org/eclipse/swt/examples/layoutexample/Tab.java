@@ -251,7 +251,7 @@ abstract class Tab {
 				Menu menu = new Menu (bar);
 				MenuItem select = new MenuItem (menu, SWT.PUSH);
 				select.setText (LayoutExample.getResourceString ("Select_All"));
-				select.setAccelerator (SWT.CTRL + 'A');
+				select.setAccelerator (SWT.MOD1 + 'A');
 				select.addSelectionListener (new SelectionAdapter () {
 					public void widgetSelected (SelectionEvent e) {
 						text.selectAll ();
@@ -259,7 +259,7 @@ abstract class Tab {
 				});
 				MenuItem copy = new MenuItem (menu, SWT.PUSH);
 				copy.setText (LayoutExample.getResourceString ("Copy"));
-				copy.setAccelerator (SWT.CTRL + 'C');
+				copy.setAccelerator (SWT.MOD1 + 'C');
 				copy.addSelectionListener (new SelectionAdapter () {
 					public void widgetSelected (SelectionEvent e) {
 						text.copy ();

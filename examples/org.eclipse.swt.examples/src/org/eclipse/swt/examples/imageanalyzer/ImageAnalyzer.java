@@ -188,7 +188,7 @@ public class ImageAnalyzer {
 		crossCursor = new Cursor(display, SWT.CURSOR_CROSS);
 		
 		// Add a menu bar and widgets.
-		Menu menuBar = createMenuBar();
+		createMenuBar();
 		createWidgets();
 		shell.pack();
 		
@@ -621,7 +621,7 @@ public class ImageAnalyzer {
 		// File -> Open File...
 		item = new MenuItem(fileMenu, SWT.NULL);
 		item.setText(bundle.getString("OpenFile"));
-		item.setAccelerator(SWT.CTRL + 'O');
+		item.setAccelerator(SWT.MOD1 + 'O');
 		item.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
 				menuOpenFile();
@@ -631,7 +631,7 @@ public class ImageAnalyzer {
 		// File -> Open URL...
 		item = new MenuItem(fileMenu, SWT.NULL);
 		item.setText(bundle.getString("OpenURL"));
-		item.setAccelerator(SWT.CTRL + 'U');
+		item.setAccelerator(SWT.MOD1 + 'U');
 		item.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
 				menuOpenURL();
@@ -652,7 +652,7 @@ public class ImageAnalyzer {
 		// File -> Save
 		item = new MenuItem(fileMenu, SWT.NULL);
 		item.setText(bundle.getString("Save"));
-		item.setAccelerator(SWT.CTRL + 'S');
+		item.setAccelerator(SWT.MOD1 + 'S');
 		item.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
 				menuSave();
@@ -682,7 +682,7 @@ public class ImageAnalyzer {
 		// File -> Print
 		item = new MenuItem(fileMenu, SWT.NULL);
 		item.setText(bundle.getString("Print"));
-		item.setAccelerator(SWT.CTRL + 'P');
+		item.setAccelerator(SWT.MOD1 + 'P');
 		item.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
 				menuPrint();

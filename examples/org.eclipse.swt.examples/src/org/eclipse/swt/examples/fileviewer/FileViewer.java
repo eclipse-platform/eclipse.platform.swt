@@ -1506,35 +1506,15 @@ public class FileViewer {
 				tableContentsOfLabel.setText(FileViewer.getResourceString("details.ContentsOf.text",
 					new Object[] { workerStateDir.getPath() }));
 				table.removeAll();
-				table.setRedraw(false);
 				table.setData(TABLEDATA_DIR, workerStateDir);
 			}
 		});
 		dirList = getDirectoryList(workerStateDir);
 		
 		for (int i = 0; (! workerCancelled) && (i < dirList.length); i++) {
-			final File theFile = dirList[i];
 			workerAddFileDetails(dirList[i]);
-			
-			final boolean doIncrementalRefresh = ((i & 127) == 127);
-			if (doIncrementalRefresh) display.syncExec(new Runnable() {
-				public void run () {
-					// guard against the shell being closed before this runs
-					if (shell.isDisposed()) return;
-					table.setRedraw(true);
-					table.setRedraw(false);
-				}
-			});
 		}
 
-		// Allow the table to refresh itself
-		display.syncExec(new Runnable() {
-			public void run() {
-				// guard against the shell being closed before this runs
-				if (shell.isDisposed()) return;
-				table.setRedraw(true);
-			}
-		});
 	}
 		
 	/**
@@ -1654,7 +1634,6 @@ public class FileViewer {
 		 * @param operation one of COPY, DELETE
 		 */
 		public void setDetailFile(File file, int operation) {
-			String filename = file.getName();
 			detailLabel.setText(getResourceString("progressDialog." + operationKeyName[operation] + ".operation",
 				new Object[] { file }));
 		}
