@@ -1590,9 +1590,7 @@ void showSelectableItem(SelectableItem item) {
  */
 public TreeItem getItem(Point point) {
 	checkWidget();
-	if (point == null)  {
-		error(SWT.ERROR_NULL_ARGUMENT);
-	}
+	if (point == null) error(SWT.ERROR_NULL_ARGUMENT);
 	int itemHeight;
 	int hitItemIndex;
 	TreeItem hitItem;
