@@ -622,6 +622,8 @@ public class OS {
 	public static final int XmN_OF_MANY = 0x1;
 	public static final int XmNONE = 0x0;
 //	public static final int XmNUMERIC = 0x3;
+	public static final int XmPATH_MODE_FULL = 0x0;
+//	public static final int XmPATH_MODE_RELATIVE = 0x1;
 
 	/* byte */
 	public static final int XmNancestorSensitive = malloc ("ancestorSensitive", 1);
@@ -772,6 +774,7 @@ public class OS {
 	public static final int XmNpageDecrementCallback = malloc ("pageDecrementCallback", 4);
 	public static final int XmNpageIncrement = malloc ("pageIncrement", 4);
 	public static final int XmNpageIncrementCallback = malloc ("pageIncrementCallback", 4);
+	public static final int XmNpathMode = malloc ("pathMode", 4);
 	public static final int XmNpattern = malloc ("pattern", 4);
 //	public static final int XmNpopupEnabled = malloc ("popupEnabled", 4);
 //	public static final int XmNpopupHandlerCallback = malloc ("popupHandlerCallback", 4);
