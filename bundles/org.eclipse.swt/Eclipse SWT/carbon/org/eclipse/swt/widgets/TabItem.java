@@ -9,6 +9,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.carbon.OS;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -216,13 +217,7 @@ public void setImage (Image image) {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	super.setImage (image);
-	/* AW
-	int hwnd = parent.handle;
-	TCITEM tcItem = new TCITEM ();
-	tcItem.mask = OS.TCIF_IMAGE;
-	tcItem.iImage = parent.imageIndex (image);
-	OS.SendMessage (hwnd, OS.TCM_SETITEM, index, tcItem);
-	*/
+	getParent().setTabImage(index, image);
 }
 
 public void setText (String string) {
@@ -231,7 +226,8 @@ public void setText (String string) {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	super.setText (string);
-	getParent().updateCarbon(index);
+	//getParent().updateCarbon(index);
+	getParent().setTabText(index, string);
 }
 
 /**
