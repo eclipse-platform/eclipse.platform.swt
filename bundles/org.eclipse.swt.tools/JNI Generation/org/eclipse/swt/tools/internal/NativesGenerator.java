@@ -14,8 +14,6 @@ import java.lang.reflect.*;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import org.eclipse.swt.internal.Platform;
-
 public class NativesGenerator extends JNIGenerator {
 	
 boolean nativeMacro, enterExitMacro;
@@ -388,8 +386,8 @@ void generateDynamicFunctionCall(Method method, MethodData methodData, Class[] p
 	output("\t");
 	output("{");
 	outputDelimiter();
-	
-	if (Platform.PLATFORM.equals("win32")) {
+
+	if (getPlatform().equals("win32")) {
 		output("\t\tstatic int initialized = 0;");
 		outputDelimiter();
 		output("\t\tstatic HMODULE hm = NULL;");

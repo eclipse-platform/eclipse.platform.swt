@@ -18,7 +18,7 @@ import java.util.Properties;
 import java.util.zip.*;
 import java.util.Arrays;
 
-import org.eclipse.swt.internal.Platform;
+import org.eclipse.swt.SWT;
 
 public class JNIGeneratorApp {
 
@@ -361,11 +361,15 @@ public void setOutputDir(String str) {
 }
 
 public static String getDefaultMainClass() {
-	return "org.eclipse.swt.internal." + Platform.PLATFORM + ".OS";
+	return "org.eclipse.swt.internal." + getDefaultPlatform() + ".OS";
 }
 
 public static String getDefaultOutputDir() {
-	return "../org.eclipse.swt/Eclipse SWT PI/" + Platform.PLATFORM + "/library/";
+	return "../org.eclipse.swt/Eclipse SWT PI/" + getDefaultPlatform() + "/library/";
+}
+
+public static String getDefaultPlatform() {
+	return SWT.getPlatform();
 }
 
 public static void main(String[] args) {
