@@ -929,7 +929,7 @@ int processMouseDown (Object callData) {
 	return 0;
 }
 int processPaint (Object callData) {
-	syncBounds();
+	syncBounds(null);
 	drawFrame(callData);
 	return 0;
 }
@@ -1457,36 +1457,14 @@ void enableWidget (boolean enabled) {
 // Mac stuff
 ////////////////////////////////////////////////////////
 
-	private void syncBounds() {
-		
-		if (fTX == 0)
-			return;
-	
-		MacRect b= new MacRect();
-		OS.GetControlBounds(handle, b.getData());
-	
-		int[] textBounds= new int[4];
-		OS.TXNGetRectBounds(fTX, null, null, textBounds);
-		int h= textBounds[2]-textBounds[0];
-		int x= b.getX() + FOCUS_BORDER;
-		int y= b.getY() + (b.getHeight()-h)/2;
-		int w= b.getWidth()-BUTTON_WIDTH-2*FOCUS_BORDER-3;
-	
-		Rectangle oldRect= fFrameRect;
-		fFrameRect= new Rectangle(x, y, w, h);
-		if (oldRect == null || !oldRect.equals(fFrameRect)) {
-			OS.TXNSetFrameBounds(fTX, y, x, y+h, x+w, fFrameID);
-		}
-	
-		OS.TXNDraw(fTX, 0);
-	}
-	
 	/**
 	 * Overridden from Control. Takes care of shadow
 	 * x and y are relative to window!
 	 */
 	void handleResize(int hndl, MacRect bounds) {
 		super.handleResize(hndl, bounds);
+		
+		// place the pulldown menu
 		int x= bounds.getX();
 		int y= bounds.getY();
 		int width= bounds.getWidth();
@@ -1497,8 +1475,65 @@ void enableWidget (boolean enabled) {
 			OS.SetControlBounds(fPopupButton, new MacRect(x, y, BUTTON_WIDTH, BUTTON_WIDTH).getData());
 		} else
 			OS.SetControlBounds(fPopupButton, new MacRect(x, y, width, height).getData());
+		
+		// place the text field
+		syncBounds(bounds);
+	}
+
+	private void syncBounds(MacRect b) {
+		
+		if (fTX == 0)
+			return;
+	
+		if (b == null) {
+			b= new MacRect();
+			OS.GetControlBounds(handle, b.getData());
+		}
+	
+		int[] textBounds= new int[4];
+		OS.TXNGetRectBounds(fTX, null, null, textBounds);
+		int h= textBounds[2]-textBounds[0];
+		int x= b.getX() + FOCUS_BORDER + 1;
+		int y= b.getY() + (b.getHeight()-h)/2;
+		int w= b.getWidth() - BUTTON_WIDTH - 2*FOCUS_BORDER - 4;
+	
+		Rectangle oldRect= fFrameRect;
+		fFrameRect= new Rectangle(x, y, w, h);
+		if (oldRect == null || !oldRect.equals(fFrameRect)) {
+			OS.TXNSetFrameBounds(fTX, y, x, y+h, x+w, fFrameID);
+		}
+	
+		OS.TXNDraw(fTX, 0);
+	}
+	
+	private void drawFrame(Object callData) {
+		if (fFrameRect != null) {
 			
-		syncBounds();
+			GC gc= new GC(this);
+			
+			int damageRegion= 0;
+			if (callData instanceof MacControlEvent)
+				damageRegion= ((MacControlEvent)callData).getDamageRegionHandle();
+				
+			try {
+				Rectangle r= gc.carbon_focus(damageRegion);
+				if (!r.isEmpty()) {
+					MacRect br= new MacRect();
+					OS.GetControlBounds(handle, br.getData());
+					
+					MacRect bounds= new MacRect(fFrameRect.x-br.getX(), fFrameRect.y-br.getY(),
+												fFrameRect.width, fFrameRect.height);
+					bounds.inset(-1, -1, -1, -1);
+					OS.DrawThemeEditTextFrame(bounds.getData(), OS.kThemeStateActive);
+					
+					OS.DrawThemeFocusRect(bounds.getData(), false);	// clear the background first
+					if (getDisplay().getFocusControl() == this)
+						OS.DrawThemeFocusRect(bounds.getData(), true);
+				}
+			} finally {
+				gc.carbon_unfocus();
+			}
+		}
 	}
 	
 	int sendKeyEvent(int type, int nextHandler, int eRefHandle) {
@@ -1530,30 +1565,5 @@ void enableWidget (boolean enabled) {
 		int status= OS.CallNextEventHandler(nextHandler, eRefHandle);
 		sendEvent (SWT.Modify);
 		return status;
-	}
-
-	private void drawFrame(Object callData) {
-		if (fFrameRect != null) {
-			GC gc= new GC(this);
-			int damageRegion= 0;
-			if (callData instanceof MacControlEvent)
-				damageRegion= ((MacControlEvent)callData).getDamageRegionHandle();
-			try {
-				Rectangle r= gc.carbon_focus(damageRegion);
-				if (!r.isEmpty()) {
-					MacRect bounds= new MacRect(fFrameRect);
-					short[] b= bounds.getData();
-					b[0]--;
-					b[1]--;
-					b[2]++;
-					b[3]++;
-					OS.DrawThemeEditTextFrame(b, OS.kThemeStateActive);
-					Control focus= getDisplay().getFocusControl();
-					OS.DrawThemeFocusRect(b, focus == this);
-				}
-			} finally {
-				gc.carbon_unfocus();
-			}
-		}
 	}
 }

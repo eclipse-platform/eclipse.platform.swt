@@ -31,7 +31,9 @@ import org.eclipse.swt.graphics.*;
 public /*final*/ class ProgressBar extends Control {
 	
 	// AW
-	private int fInset;
+	private static final int SIZE= 12;
+	private int fTopMargin;
+	private int fBottomMargin;
 	// AW
 
 /**
@@ -74,29 +76,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int border = getBorderWidth ();
 	int width = border * 2, height = border * 2;
-	/* AW
-	Display display = getDisplay ();
-	int hScroll = display.scrolledMarginX;
-	int vScroll = display.scrolledMarginY;
-	*/
-	//Point e= MacUtil.computeSize(handle);
-	int size= 12;
 	if ((style & SWT.HORIZONTAL) != 0) {
-		width += size * 10;
-		height += size;
+		width += SIZE * 10;
+		height += SIZE;
 	} else {
-		width += size;
-		height += size * 10;
+		width += SIZE;
+		height += SIZE * 10;
 	}
-	/* AW
-	if ((style & SWT.HORIZONTAL) != 0) {
-		width += hScroll * 10;
-		height += vScroll;
-	} else {
-		width += hScroll;
-		height += vScroll * 10;
-	}
-	*/
 	if (wHint != SWT.DEFAULT) width = wHint + (border * 2);
 	if (hHint != SWT.DEFAULT) height = hHint + (border * 2);
 	return new Point (width, height);
@@ -242,23 +228,17 @@ public void setSelection (int value) {
 /**
  * Overridden from Control since we want to center the bar within its area. 
  */
-void handleResize(int hndl, MacRect bounds) {
-	
-	Point e= MacUtil.computeSize(hndl);
-	final int WIDTH= Math.max(e.x, e.y);
-	
+void handleResize(int hndl, MacRect bounds) {	
 	if ((style & SWT.HORIZONTAL) != 0) { 	// horizontal
-		int height= bounds.getHeight();
-		fInset= (height-WIDTH)/2;
-		if (fInset < 0)
-			fInset= 0;
-		bounds.inset(0, fInset, 0, fInset);
+		int diff= bounds.getHeight()-SIZE;
+		fTopMargin= diff/2;
+		fBottomMargin= diff-fTopMargin;
+		bounds.inset(0, fTopMargin, 0, fBottomMargin);
 	} else {	// vertical
-		int width= bounds.getWidth();
-		fInset= (width-WIDTH)/2;
-		if (fInset < 0)
-			fInset= 0;
-		bounds.inset(fInset, 0, fInset, 0);
+		int diff= bounds.getWidth()-SIZE;
+		fTopMargin= diff/2;
+		fBottomMargin= diff-fTopMargin;
+		bounds.inset(fTopMargin, 0, fBottomMargin, 0);
 	}
 	super.handleResize(hndl, bounds);
 }
@@ -266,9 +246,9 @@ void handleResize(int hndl, MacRect bounds) {
 void internalGetControlBounds(int hndl, MacRect bounds) {
 	OS.GetControlBounds(hndl, bounds.getData());
 	if ((style & SWT.HORIZONTAL) != 0) { 	// horizontal
-		bounds.inset(0, fInset, 0, fInset);
+		bounds.inset(0, -fTopMargin, 0, -fBottomMargin);
 	} else {	// vertical
-		bounds.inset(fInset, 0, fInset, 0);
+		bounds.inset(-fTopMargin, 0, -fBottomMargin, 0);
 	}
 }
 

@@ -42,10 +42,8 @@ public /*final*/ class Button extends Control {
 	private boolean fImageMode;
 	private int fAlignment;
 	private int fCIconHandle;
-	private int fVerticalMargin;
-	
-	private static final int SHADOW_WIDTH;
-	private static final int SHADOW_HEIGHT;
+	private int fTopMargin;
+	private int fBottomMargin;
 	
 	private static final int MARGIN= 3;	// correct value would be 6; however the shadow is only 2
 	private static final int SPACE= 9;	// min is 8 or may be 9
@@ -53,15 +51,6 @@ public /*final*/ class Button extends Control {
 	private static final int BOTTOM_MARGIN= 5;	// 
 	// AW
 	
-	static {
-		if (! MacUtil.JAGUAR) {
-			SHADOW_WIDTH= 3;
-			SHADOW_HEIGHT= 3;
-		} else {
-			SHADOW_WIDTH= 0;
-			SHADOW_HEIGHT= 0;
-		}
-	}
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -172,23 +161,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	*/
 	Point result= MacUtil.computeSize(handle);
 	if ((style & SWT.PUSH) != 0) {
-		if (image != null) {	// not a real pushbutton!
+		if (image != null) {	// is a Bevel button!
 			Rectangle bounds= image.getBounds();
 			result.x= 4 + bounds.width + 4;
 			result.y= 4 + bounds.height + 4;
 		} else {
 			String s= getText();
 			if (s != null && s.length() > 0) {
-				/*
-				GC gc= new GC(this);
-				result= gc.textExtent(s);
-				gc.dispose();
-				result.y= 16;
-				//result.x= SHADOW_WIDTH + 16 + result.x + 16 + SHADOW_WIDTH;
-				//result.y= SHADOW_HEIGHT + 4 + result.y + 4 + SHADOW_HEIGHT;
-				*/
-				//result.x= 69;
-				//result.y= 23;
 				result.x= result.x - 2*SPACE + 2*MARGIN;
 				result.y= result.y + TOP_MARGIN + BOTTOM_MARGIN;
 			}
@@ -227,14 +206,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		if (wHint != SWT.DEFAULT) width = wHint + left + right;
 		if (hHint != SWT.DEFAULT) height = hHint + top + bottom;
 	}
-	
-	/*
-	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
-		size.x -= 14;
-		size.y += 6;
-	}
-	*/
-	
+		
 	return new Point(width, height);
 }
 void createHandle (int index) {
@@ -715,14 +687,18 @@ private void setMode(int icon) {
  * x and y are relative to window!
  */
 void handleResize(int hndl, MacRect bounds) {
+	fTopMargin= fBottomMargin= 0;
 	if ((style & SWT.PUSH) != 0 && image == null) {	// for push buttons
 		if (MacUtil.JAGUAR) {
 			Point result= MacUtil.computeSize(hndl);
-			fVerticalMargin= (bounds.getHeight()-result.y)/2;
-			bounds.inset(MARGIN, fVerticalMargin, MARGIN, fVerticalMargin);
+			int diff= bounds.getHeight()-result.y;
+			fTopMargin= diff/2;
+			fBottomMargin= diff-fTopMargin;
 		} else {
-			bounds.inset(SHADOW_WIDTH, SHADOW_HEIGHT, SHADOW_WIDTH, SHADOW_HEIGHT);
+			fTopMargin= MARGIN;
+			fBottomMargin= MARGIN;
 		}
+		bounds.inset(MARGIN, fTopMargin, MARGIN, fBottomMargin);
 	}
 	super.handleResize(hndl, bounds);
 }
@@ -730,7 +706,7 @@ void handleResize(int hndl, MacRect bounds) {
 void internalGetControlBounds(int hndl, MacRect bounds) {
 	OS.GetControlBounds(hndl, bounds.getData());
 	if ((style & SWT.PUSH) != 0 && image == null)
-		bounds.inset(-MARGIN, -fVerticalMargin, -MARGIN, -fVerticalMargin);
+		bounds.inset(-MARGIN, -fTopMargin, -MARGIN, -fBottomMargin);
 }
 
 public void setFont (Font font) {
