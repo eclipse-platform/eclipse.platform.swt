@@ -64,16 +64,12 @@ public final class Printer extends Device {
  * Returns an array of <code>PrinterData</code> objects
  * representing all available printers.
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_UNSPECIFIED - if there are no valid printers
- * </ul>
- *
  * @return the list of available printers
  */
 public static PrinterData[] getPrinterList() {
 	byte[] buf = new byte[1024];
 	int n = OS.GetProfileString(profile, null, new byte[] {0}, buf, buf.length);
-	if (n == 0) SWT.error(SWT.ERROR_UNSPECIFIED);
+	if (n == 0) return new PrinterData[0];
 	byte[][] deviceNames = new byte[5][];
 	int nameCount = 0;
 	int index = 0;
@@ -112,17 +108,13 @@ public static PrinterData[] getPrinterList() {
  * Returns a <code>PrinterData</code> object representing
  * the default printer.
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_UNSPECIFIED - if there are no valid printers
- * </ul>
- *
- * @return the default printer
+ * @return the default printer or null if there is no default printer
  */
 static PrinterData getDefaultPrinterData() {
 	byte [] deviceName = null;
 	byte[] buf = new byte[1024];
 	int n = OS.GetProfileString(appName, keyName, new byte[] {0}, buf, buf.length);
-	if (n == 0) SWT.error(SWT.ERROR_UNSPECIFIED);
+	if (n == 0) return null;
 	int commaIndex = 0;
 	while(buf[commaIndex] != ',' && commaIndex < buf.length) commaIndex++;
 	if (commaIndex < buf.length) {
