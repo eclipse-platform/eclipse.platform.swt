@@ -595,7 +595,9 @@ public void setImage (Image image) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setImage (image);
-	if ((style & SWT.PUSH) == 0) return;
+	//TEMPORARY CODE
+	if (true) return;
+	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) return;
 	int imageHandle = 0;
 	int type = OS.Pt_Z_STRING;
 	if (image != null) {
