@@ -256,6 +256,26 @@ public String getText () {
 	return text;
 }
 
+void onPaint (GC gc, RECT rect) {
+	drawBackground (gc.handle, rect);
+	int selStart = selection.x;
+	int selEnd = selection.y;
+	if (selStart > selEnd) {
+		selStart = selection.y;
+		selEnd = selection.x;
+	}
+	// temporary code to disable text selection
+	selStart = selEnd = -1;
+	layout.draw (gc, 0, 0, selStart, selEnd, null, null);
+	if (hasFocus () && focusIndex != -1) {
+		Rectangle [] rects = getRectangles (focusIndex);
+		for (int i = 0; i < rects.length; i++) {
+			Rectangle rectangle = rects [i];
+			gc.drawFocus (rectangle.x, rectangle.y, rectangle.width, rectangle.height);					
+		}
+	}
+}
+
 String parse (String string) {
 	int length = string.length ();
 	offsets = new Point [length / 4];
@@ -703,23 +723,7 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 		if (width != 0 && height != 0) {
 			RECT rect = new RECT ();
 			OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
-			drawBackground (gc.handle, rect);
-			int selStart = selection.x;
-			int selEnd = selection.y;
-			if (selStart > selEnd) {
-				selStart = selection.y;
-				selEnd = selection.x;
-			}
-			// temporary code to disable text selection
-			selStart = selEnd = -1;
-			layout.draw (gc, 0, 0, selStart, selEnd, null, null);
-			if (hasFocus () && focusIndex != -1) {
-				Rectangle [] rects = getRectangles (focusIndex);
-				for (int i = 0; i < rects.length; i++) {
-					Rectangle rectangle = rects [i];
-					gc.drawFocus (rectangle.x, rectangle.y, rectangle.width, rectangle.height);					
-				}
-			}
+			onPaint (gc, rect);
 			if (hooks (SWT.Paint) || filters (SWT.Paint)) {
 				Event event = new Event ();
 				event.gc = gc;
@@ -734,6 +738,20 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 		gc.dispose ();
 	}
 	return LRESULT.ZERO;
+}
+
+LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
+	LRESULT result = super.WM_PRINTCLIENT (wParam, lParam);
+	if (OS.COMCTL32_MAJOR < 6) {
+		RECT rect = new RECT ();
+	    OS.GetClientRect (handle, rect);
+	    GCData data = new GCData ();
+	    data.device = display;
+	    GC gc = GC.win32_new (wParam, data);
+	    onPaint (gc, rect);
+	    gc.dispose ();
+	}
+	return result;
 }
 
 LRESULT WM_SETFOCUS (int wParam, int lParam) {
