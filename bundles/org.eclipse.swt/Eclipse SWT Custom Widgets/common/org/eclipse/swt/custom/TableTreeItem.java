@@ -19,6 +19,8 @@ import org.eclipse.swt.widgets.*;
  * A TableTreeItem is a selectable user interface object
  * that represents an item in a heirarchy of items in a
  * TableTree.
+ * 
+ * @deprecated As of 3.1 use Tree, TreeItem and TreeColumn
  */
 public class TableTreeItem extends Item {
 	TableItem tableItem;
@@ -61,8 +63,6 @@ public class TableTreeItem extends Item {
  *
  * @see SWT
  * @see Widget#getStyle()
- * 
- * @deprecated @deprecated As of 3.1 use Tree, TreeItem and TreeColumn
  */
 public TableTreeItem(TableTree parent, int style) {
 	this (parent, style, parent.getItemCount());
