@@ -123,6 +123,7 @@ void createHandle(int index) {
 	OS.gtk_object_sink (labelHandle);
 	clientHandle = OS.gtk_fixed_new();
 	if (clientHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.gtk_fixed_set_has_window (clientHandle, true);
 	int /*long*/ parentHandle = parent.parentingHandle ();
 	OS.gtk_container_add (parentHandle, fixedHandle);
 	OS.gtk_container_add (fixedHandle, handle);
