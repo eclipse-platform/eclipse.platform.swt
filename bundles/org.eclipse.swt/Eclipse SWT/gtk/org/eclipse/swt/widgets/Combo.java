@@ -1083,13 +1083,35 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 void setFontDescription (int font) {
 	super.setFontDescription (font);
 	if (entryHandle != 0) OS.gtk_widget_modify_font (entryHandle, font);
-	if (listHandle != 0) OS.gtk_widget_modify_font (listHandle, font);
+	if (listHandle != 0) {
+		OS.gtk_widget_modify_font (listHandle, font);
+		int itemsList = OS.gtk_container_get_children (listHandle);
+		if (itemsList != 0) {
+			int count = OS.g_list_length (itemsList);
+			for (int i=count - 1; i>=0; i--) {
+				int widget = OS.gtk_bin_get_child (OS.g_list_nth_data (itemsList, i));
+				OS.gtk_widget_modify_font (widget, font);
+			}
+			OS.g_list_free (itemsList);
+		}
+	}
 }
 
 void setForegroundColor (GdkColor color) {
 	super.setForegroundColor (color);
 	if (entryHandle != 0) OS.gtk_widget_modify_text (entryHandle, 0, color);
-	if (listHandle != 0) OS.gtk_widget_modify_text (listHandle, 0, color);
+	if (listHandle != 0) {
+		OS.gtk_widget_modify_text (listHandle, 0, color);
+		int itemsList = OS.gtk_container_get_children (listHandle);
+		if (itemsList != 0) {
+			int count = OS.g_list_length (itemsList);
+			for (int i=count - 1; i>=0; i--) {
+				int widget = OS.gtk_bin_get_child (OS.g_list_nth_data (itemsList, i));
+				OS.gtk_widget_modify_fg (widget, 0, color);
+			}
+			OS.g_list_free (itemsList);
+		}
+	}
 }
 
 /**
@@ -1175,6 +1197,18 @@ void setItems (String [] items, boolean keepText, boolean keepSelection) {
 				if (data != 0) OS.g_free (data);
 			}
 			OS.g_list_free (glist);
+		}
+		int itemsList = OS.gtk_container_get_children (listHandle);
+		if (itemsList != 0) {
+			int font = getFontDescription ();
+			GdkColor color = getForegroundColor ();
+			int count = OS.g_list_length (itemsList);
+			for (int i=count - 1; i>=0; i--) {
+				int widget = OS.gtk_bin_get_child (OS.g_list_nth_data (itemsList, i));
+				OS.gtk_widget_modify_fg (widget, 0, color);
+				OS.gtk_widget_modify_font (widget, font);
+			}
+			OS.g_list_free (itemsList);
 		}
 	}
 	OS.gtk_entry_set_text (entryHandle, Converter.wcsToMbcs (null, selectedIndex != -1 ? items [selectedIndex] : text, true));
