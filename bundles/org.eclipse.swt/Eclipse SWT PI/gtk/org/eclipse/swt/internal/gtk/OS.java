@@ -457,18 +457,18 @@ public static final native int /*long*/ getenv(byte[] name);
 public static final native int strlen(int /*long*/ str);
 
 /** Object private fields accessors */
-public static final synchronized native int GTK_WIDGET_HEIGHT(int /*long*/ widget);
-public static final synchronized native int GTK_WIDGET_WIDTH(int /*long*/ widget);
-public static final synchronized native int /*long*/ GTK_WIDGET_WINDOW(int /*long*/ widget);
-public static final synchronized native int GTK_WIDGET_X(int /*long*/ widget);
-public static final synchronized native int GTK_WIDGET_Y(int /*long*/ widget);
-public static final synchronized native int /*long*/ GTK_SCROLLED_WINDOW_HSCROLLBAR(int /*long*/ widget);
-public static final synchronized native int /*long*/ GTK_SCROLLED_WINDOW_VSCROLLBAR(int /*long*/ widget);
-public static final synchronized native int GTK_SCROLLED_WINDOW_SCROLLBAR_SPACING(int /*long*/ widget);
-public static final synchronized native void GTK_ACCEL_LABEL_SET_ACCEL_STRING(int /*long*/ acce_label, int /*long*/ string);
-public static final synchronized native int /*long*/ GTK_ACCEL_LABEL_GET_ACCEL_STRING(int /*long*/ acce_label);
-public static final synchronized native int /*long*/ GTK_ENTRY_IM_CONTEXT(int /*long*/ widget);
-public static final synchronized native int /*long*/ GTK_TEXTVIEW_IM_CONTEXT(int /*long*/ widget);
+public static final native int GTK_WIDGET_HEIGHT(int /*long*/ widget);
+public static final native int GTK_WIDGET_WIDTH(int /*long*/ widget);
+public static final native int /*long*/ GTK_WIDGET_WINDOW(int /*long*/ widget);
+public static final native int GTK_WIDGET_X(int /*long*/ widget);
+public static final native int GTK_WIDGET_Y(int /*long*/ widget);
+public static final native int /*long*/ GTK_SCROLLED_WINDOW_HSCROLLBAR(int /*long*/ widget);
+public static final native int /*long*/ GTK_SCROLLED_WINDOW_VSCROLLBAR(int /*long*/ widget);
+public static final native int GTK_SCROLLED_WINDOW_SCROLLBAR_SPACING(int /*long*/ widget);
+public static final native void GTK_ACCEL_LABEL_SET_ACCEL_STRING(int /*long*/ acce_label, int /*long*/ string);
+public static final native int /*long*/ GTK_ACCEL_LABEL_GET_ACCEL_STRING(int /*long*/ acce_label);
+public static final native int /*long*/ GTK_ENTRY_IM_CONTEXT(int /*long*/ widget);
+public static final native int /*long*/ GTK_TEXTVIEW_IM_CONTEXT(int /*long*/ widget);
 
 /** X11 Native methods and constants */
 public static final int Above = 0;
