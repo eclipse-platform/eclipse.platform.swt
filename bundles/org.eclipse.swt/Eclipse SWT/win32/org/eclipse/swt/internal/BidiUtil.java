@@ -391,7 +391,7 @@ public static int getKeyboardLanguage() {
  *
  * @return integer array with an entry for each installed language
  */
-static int[] getKeyboardLanguageList() {
+public static int[] getKeyboardLanguageList() {
 	int maxSize = 10;
 	int[] tempList = new int[maxSize];
 	int size = OS.GetKeyboardLayoutList(maxSize, tempList);
