@@ -7,7 +7,9 @@ package org.eclipse.swt.custom;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
  
-import java.util.*;
+import java.util.Hashtable;
+
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
 
 /**
@@ -78,7 +80,7 @@ protected void disposeGC(GC gc) {
  * Do not print the selection.
  * @see StyledTextRenderer#drawLineSelectionBackground
  */
-protected void drawLineSelectionBackground(String line, int lineOffset, StyleRange[] styles, int paintY, GC gc, FontData currentFont, StyledTextBidi bidi) {
+protected void drawLineSelectionBackground(String line, int lineOffset, StyleRange[] styles, int paintY, GC gc, StyledTextBidi bidi) {
 }
 /**
  * Returns from cache the text segments that should be treated as 
@@ -230,6 +232,55 @@ protected StyledTextEvent getLineStyleData(int lineOffset, String line) {
  */
 protected Point getSelection() {
 	return new Point(0, 0);
+}
+/**
+ * Returns the width of the specified text segment. 
+ * Expands tabs to tab stops using the widget tab width.
+ * </p>
+ *
+ * @param text text to measure
+ * @param textStartOffset offset of the first character in text relative 
+ * 	to the first character in the document
+ * @param lineStyles styles of the line
+ * @param paintX x location to start drawing at
+ * @param gc GC to measure with
+ * @return the width of the specified text segment.
+ */
+protected int getStyledTextWidth(String text, int textStartOffset, StyleRange[] lineStyles, int paintX, GC gc) {
+	String textSegment;
+	int textLength = text.length();
+	int textIndex = 0;
+
+	for (int styleIndex = 0; styleIndex < lineStyles.length; styleIndex++) {
+		StyleRange style = lineStyles[styleIndex];
+		int textEnd;
+		int styleSegmentStart = style.start - textStartOffset;
+		if (styleSegmentStart + style.length < 0) {
+			continue;
+		}
+		if (styleSegmentStart >= textLength) {
+			break;
+		}
+		// is there a style for the current string position?
+		if (textIndex < styleSegmentStart) {
+			textSegment = text.substring(textIndex, styleSegmentStart);
+			setLineFont(gc, SWT.NORMAL);
+			paintX += gc.stringExtent(textSegment).x;
+			textIndex = styleSegmentStart;
+		}
+		textEnd = Math.min(textLength, styleSegmentStart + style.length);
+		textSegment = text.substring(textIndex, textEnd);
+		setLineFont(gc, style.fontStyle);
+		paintX += gc.stringExtent(textSegment).x;
+		textIndex = textEnd;
+	}
+	// is there unmeasured and unstyled text?
+	if (textIndex < textLength) {
+		textSegment = text.substring(textIndex, textLength);
+		setLineFont(gc, SWT.NORMAL);
+		paintX += gc.stringExtent(textSegment).x;
+	}
+	return paintX;
 }
 /**
  * Do not print the selection. Returns the styles that were passed into

@@ -455,7 +455,6 @@ public class StyledText extends Canvas {
 	 */
 	void print() {
 		StyledTextContent content = renderer.getContent();
-		FontData printerFontData = gc.getFont().getFontData()[0];
 		Color background = gc.getBackground();
 		Color foreground = gc.getForeground();
 		int lineHeight = renderer.getLineHeight();
@@ -473,7 +472,7 @@ public class StyledText extends Canvas {
 				startPage(page);
 			}
 			renderer.drawLine(
-				line, i, paintY, gc, background, foreground, printerFontData, true);
+				line, i, paintY, gc, background, foreground, true);
 			if (paintY + lineHeight * 2 > clientArea.y + clientArea.height) {
 				endPage(page);
 				paintY = clientArea.y;
@@ -1191,7 +1190,6 @@ public class StyledText extends Canvas {
 	 */
 	public void calculate(int startLine, int lineCount) {
 		GC gc = null;
-		FontData currentFont = null;
 		int caretWidth = 0;
 		int stopLine = startLine + lineCount;
 			
@@ -1201,13 +1199,10 @@ public class StyledText extends Canvas {
 				int lineOffset = content.getOffsetAtLine(i);
 		
 				if (gc == null) {
-					gc = new GC(parent);
+					gc = parent.getGC();
 					caretWidth = getCaretWidth();
-					if (isBidi() == false) {
-						currentFont = gc.getFont().getFontData()[0];
-					}
 				}		
-				lineWidth[i] = contentWidth(line, lineOffset, gc, currentFont) + caretWidth;
+				lineWidth[i] = contentWidth(line, lineOffset, gc) + caretWidth;
 			}
 			if (lineWidth[i] > maxWidth) {
 				maxWidth = lineWidth[i];
@@ -1245,7 +1240,7 @@ public class StyledText extends Canvas {
 	 * 	performance. Null when running in a bidi locale.
 	 * @return the width of the given line
 	 */
-	int contentWidth(String line, int lineOffset, GC gc, FontData currentFont) {
+	int contentWidth(String line, int lineOffset, GC gc) {
 		int width;
 		
 		if (isBidi()) {
@@ -1258,7 +1253,7 @@ public class StyledText extends Canvas {
 			if (event != null) {
 				styles = renderer.filterLineStyles(event.styles);
 			}
-			width = renderer.getTextWidth(line, lineOffset, 0, line.length(), styles, 0, gc, currentFont);
+			width = renderer.getTextWidth(line, lineOffset, 0, line.length(), styles, 0, gc);
 		}
 		return width + leftMargin;
 	}
@@ -2442,7 +2437,7 @@ void doColumnLeft() {
 	if (isBidi()) {
 		String lineText = content.getLine(line);
 		int lineLength = lineText.length();
-		GC gc = new GC(this);
+		GC gc = getGC();
 		StyledTextBidi bidi = getStyledTextBidi(lineText, lineOffset, gc);
 		
 		if (horizontalScrollOffset > 0 || offsetInLine > 0) {
@@ -2543,7 +2538,7 @@ void doColumnRight() {
 	int lineLength = lineText.length();
 	
 	if (isBidi()) {
-		GC gc = new GC(this);
+		GC gc = getGC();
 		StyledTextBidi bidi = getStyledTextBidi(lineText, lineOffset, gc);
 		if (bidi.getTextWidth() + leftMargin > horizontalScrollOffset + getClientArea().width || 
 			offsetInLine < lineLength) {
@@ -3334,8 +3329,7 @@ void draw(int x, int y, int width, int height, boolean clearBackground) {
 		int lineCount = content.getLineCount();
 		Color background = getBackground();
 		Color foreground = getForeground();
-		GC gc = new GC(this);
-		FontData fontData = gc.getFont().getFontData()[0];
+		GC gc = getGC();
 	
 		if (isSingleLine()) {
 			lineCount = 1;
@@ -3345,7 +3339,7 @@ void draw(int x, int y, int width, int height, boolean clearBackground) {
 		}
 		for (int i = startLine; paintY < endY && i < lineCount; i++, paintY += lineHeight) {
 			String line = content.getLine(i);
-			renderer.drawLine(line, i, paintY, gc, background, foreground, fontData, clearBackground);
+			renderer.drawLine(line, i, paintY, gc, background, foreground, clearBackground);
 		}
 		gc.dispose();	
 	}
@@ -3398,7 +3392,7 @@ public boolean getBidiColoring() {
 int getBidiOffsetAtMouseLocation(int x, int line) {
 	String lineText = content.getLine(line);
 	int lineOffset = content.getOffsetAtLine(line);
-	GC gc = new GC(this);
+	GC gc = getGC();
 	StyledTextBidi bidi = getStyledTextBidi(lineText, lineOffset, gc);
 	int[] values;
 	int offsetInLine;
@@ -3480,8 +3474,7 @@ public int getCaretOffset() {
  */
 int getCaretOffsetAtX(String line, int lineOffset, int lineXOffset) {
 	int offset = 0;
-	GC gc = new GC(this);
-	FontData currentFont = gc.getFont().getFontData()[0];
+	GC gc = getGC();
 	StyleRange[] styles = null;
 	StyledTextEvent event = renderer.getLineStyleData(lineOffset, line);
 	
@@ -3493,8 +3486,8 @@ int getCaretOffsetAtX(String line, int lineOffset, int lineXOffset) {
 	int high = line.length();
 	while (high - low > 1) {
 		offset = (high + low) / 2;
-		int x = renderer.getTextPosition(line, lineOffset, offset, styles, gc, currentFont) + leftMargin;
-		int charWidth = renderer.getTextPosition(line, lineOffset, offset + 1, styles, gc, currentFont) + leftMargin - x;
+		int x = renderer.getTextPosition(line, lineOffset, offset, styles, gc) + leftMargin;
+		int charWidth = renderer.getTextPosition(line, lineOffset, offset + 1, styles, gc) + leftMargin - x;
 		if (lineXOffset <= x + charWidth / 2) {
 			high = offset;			
 		}
@@ -3574,13 +3567,24 @@ public Color getForeground() {
 	return foreground;
 }
 /** 
+ * Return a GC to use for rendering and update the cached font style to
+ * represent the current style.
+ * <p>
+ *
+ * @return GC.
+ */
+GC getGC() {
+	renderer.setCurrentFontStyle(SWT.NORMAL);
+	return new GC(this);
+}
+/** 
  * Returns the horizontal scroll increment.
  * <p>
  *
  * @return horizontal scroll increment.
  */
 int getHorizontalIncrement() {
-	GC gc = new GC(this);
+	GC gc = getGC();
 	int increment = gc.getFontMetrics().getAverageCharWidth();
 	
 	gc.dispose();
@@ -3995,7 +3999,7 @@ int getOffsetAtMouseLocation(int x, int line) {
  * 	of the line. -1 if the x location is past the end if the line.
  */
 int getOffsetAtX(String line, int lineOffset, int lineXOffset) {
-	GC gc = new GC(this);
+	GC gc = getGC();
 	int offset;	
 	
 	lineXOffset += (horizontalScrollOffset - leftMargin);
@@ -4004,7 +4008,6 @@ int getOffsetAtX(String line, int lineOffset, int lineXOffset) {
 		offset = bidi.getOffsetAtX(lineXOffset);
 	}		
 	else {
-		FontData currentFont = gc.getFont().getFontData()[0];
 		StyleRange[] styles = null;
 		StyledTextEvent event = renderer.getLineStyleData(lineOffset, line);
 					
@@ -4017,7 +4020,7 @@ int getOffsetAtX(String line, int lineOffset, int lineXOffset) {
 			offset = (high + low) / 2;
 			// Restrict right/high search boundary only if x is within searched text segment.
 			// Fixes 1GL4ZVE.			
-			if (lineXOffset < renderer.getTextPosition(line, lineOffset, offset + 1, styles, gc, currentFont)) {
+			if (lineXOffset < renderer.getTextPosition(line, lineOffset, offset + 1, styles, gc)) {
 				high = offset;			
 			}
 			else 
@@ -4497,7 +4500,7 @@ int getTextPosition(String line, int lineIndex, int length, GC gc) {
 		if (event != null) {
 			styles = renderer.filterLineStyles(event.styles);
 		}
-		width = renderer.getTextPosition(line, lineOffset, length, styles, gc, gc.getFont().getFontData()[0]);
+		width = renderer.getTextPosition(line, lineOffset, length, styles, gc);
 	}
 	return width;
 }
@@ -4740,7 +4743,7 @@ int getXAtOffset(String line, int lineIndex, int lineOffset) {
 		x = leftMargin;
 	}
 	else {
-		GC gc = new GC(this);		
+		GC gc = getGC();		
 		x = getTextPosition(line, lineIndex, Math.min(line.length(), lineOffset), gc) + leftMargin;
 		gc.dispose();
 		if (lineOffset > line.length()) {
@@ -5210,7 +5213,7 @@ void handleTextChanged(TextChangedEvent event) {
 		int startLine = content.getLineAtOffset(lastTextChangeStart);
 		int startY = startLine * lineHeight - verticalScrollOffset + topMargin;
 
-		GC gc = new GC(this);
+		GC gc = getGC();
 		Caret caret = getCaret();
 		boolean caretVisible = false;
 		
@@ -5625,7 +5628,7 @@ void modifyContent(Event event, boolean updateCaret) {
 			int lineStartOffset = content.getOffsetAtLine(line);		
 			int offsetInLine = caretOffset - lineStartOffset;
 			String lineText = content.getLine(line);
-			GC gc = new GC(this);
+			GC gc = getGC();
 			StyledTextBidi bidi = new StyledTextBidi(gc, lineText, getBidiSegments(lineStartOffset, lineText));			
 			if (isBackspace) {
 				if (offsetInLine > 0) {
@@ -5731,8 +5734,6 @@ void performPaint(GC gc,int startLine,int startY, int renderHeight)	{
 	}
 	if (renderHeight > 0) {
 		// renderHeight will be negative when only top margin needs redrawing
-		Font font = gc.getFont();
-		FontData fontData = font.getFontData()[0];
 		Color foreground = getForeground();
 		int lineCount = content.getLineCount();
 		int paintY = 0;
@@ -5746,12 +5747,14 @@ void performPaint(GC gc,int startLine,int startY, int renderHeight)	{
 		Image lineBuffer = new Image(getDisplay(), clientArea.width, renderHeight);
 		GC lineGC = new GC(lineBuffer);	
 	
-		lineGC.setFont(font);
+		lineGC.setFont(getFont());
+		renderer.setCurrentFontStyle(SWT.NORMAL);
 		lineGC.setForeground(foreground);
 		lineGC.setBackground(background);
+		
 		for (int i = startLine; paintY < renderHeight && i < lineCount; i++, paintY += lineHeight) {
 			String line = content.getLine(i);
-			renderer.drawLine(line, i, paintY, lineGC, background, foreground, fontData, true);
+			renderer.drawLine(line, i, paintY, lineGC, background, foreground, true);
 		}
 		if (paintY < renderHeight) {
 			lineGC.setBackground(background);
@@ -5930,7 +5933,7 @@ void redrawBidiLines(int firstLine, int offsetInFirstLine, int lastLine, int end
 	int redrawY = firstLine * lineHeight - verticalScrollOffset;
 	int firstLineOffset = content.getOffsetAtLine(firstLine);
 	String line = content.getLine(firstLine);
-	GC gc = new GC(this);
+	GC gc = getGC();
 	StyledTextBidi bidi = getStyledTextBidi(line, firstLineOffset, gc);
 		
 	bidi.redrawRange(
@@ -6642,7 +6645,7 @@ void showBidiCaret() {
 	String lineText = content.getLine(line);
 	int xAtOffset = 0;
 	boolean scrolled = false;		
-	GC gc = new GC(this);
+	GC gc = getGC();
 	StyledTextBidi bidi = getStyledTextBidi(lineText, lineOffset, gc);
 	// getXAtOffset, inlined for better performance
 	xAtOffset = getBidiTextPosition(lineText, offsetInLine, bidi) + leftMargin;
@@ -6745,7 +6748,7 @@ void setBidiCaretLocation(StyledTextBidi bidi, int caretLine) {
 	GC gc = null;
 	
 	if (bidi == null) {
-		gc = new GC(this);
+		gc = getGC();
 		bidi = getStyledTextBidi(lineText, lineStartOffset, gc);
 	}		
 	if (lastCaretDirection == SWT.NULL) {
@@ -6793,7 +6796,7 @@ void setBidiKeyboardLanguage() {
 	int lineStartOffset = content.getOffsetAtLine(caretLine);
 	int offsetInLine = caretOffset - lineStartOffset;
 	String lineText = content.getLine(caretLine);
-	GC gc = new GC(this);
+	GC gc = getGC();
 	StyledTextBidi bidi;
 	int lineLength = lineText.length();
 	

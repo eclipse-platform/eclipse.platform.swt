@@ -460,10 +460,8 @@ void textChanged(int startOffset, int newLineCount, int replaceLineCount, int ne
  * @param startX x position of the visual line relative to the start
  * 	of the logical line
  * @param gc GC to use for measuring
- * @param fontData FontData currently set in gc. Used to reduce calls
- * 	to gc.getFont().getFontData()
  */
-private int getTextWidth(String line, int logicalLineOffset, int visualLineOffset, int visualLineLength, StyleRange[] styles, int startX, GC gc, FontData fontData) {
+private int getTextWidth(String line, int logicalLineOffset, int visualLineOffset, int visualLineLength, StyleRange[] styles, int startX, GC gc) {
 	int width;
 	
 	if (styles != null) {
@@ -478,7 +476,7 @@ private int getTextWidth(String line, int logicalLineOffset, int visualLineOffse
 		width = bidi.getTextWidth();
 	}				
 	else {
-		width = renderer.getTextWidth(line, logicalLineOffset, visualLineOffset, visualLineLength, styles, startX, gc, fontData);
+		width = renderer.getTextWidth(line, logicalLineOffset, visualLineOffset, visualLineLength, styles, startX, gc);
 	}
 	return width;
 }
@@ -499,12 +497,10 @@ private int getTextWidth(String line, int logicalLineOffset, int visualLineOffse
  * @param numChars average number of characters that fit into width
  * @param styles StyleRanges to use for measuring the wrapped line
  * @param gc GC to use for measuring
- * @param fontData FontData currently set in gc. Used to reduce calls to
- * 	gc.getFont().getFontData()
- * @return int[0]=length of the new visual line, int[1]=width in pixels
- * 	of the new visual line
+ * @return int[0]=length of the new visual line, int[1]=width in pixels 	of
+ * the new visual line
  */
-private int[] wrapLine(String line, int logicalLineOffset, int visualLineOffset, int startX, int width, int numChars, StyleRange[] styles, GC gc, FontData fontData) {
+private int[] wrapLine(String line, int logicalLineOffset, int visualLineOffset, int startX, int width, int numChars, StyleRange[] styles, GC gc) {
 	int lineLength = line.length();
 	int lineWidth = 0;
 	int visualLineLength;
@@ -514,18 +510,18 @@ private int[] wrapLine(String line, int logicalLineOffset, int visualLineOffset,
 	// find a word that is within the client area. make sure at least one 
 	// character is on each line so that line wrap algorithm terminates.
     if (visualLineLength > 0) {
-		lineWidth = getTextWidth(line, logicalLineOffset, visualLineOffset, visualLineLength, styles, startX, gc, fontData);
+		lineWidth = getTextWidth(line, logicalLineOffset, visualLineOffset, visualLineLength, styles, startX, gc);
 		if (lineWidth >= width) {		
 			while (visualLineLength > 1 && lineWidth >= width) {
 			    visualLineLength = getWordStart(line, visualLineOffset, visualLineLength);
-			    lineWidth = getTextWidth(line, logicalLineOffset, visualLineOffset, visualLineLength, styles, startX, gc, fontData);
+			    lineWidth = getTextWidth(line, logicalLineOffset, visualLineOffset, visualLineLength, styles, startX, gc);
 			}
 		}
 		else
 		if (lineWidth < width) {
 			while (visualLineOffset + visualLineLength < lineLength) {
 			    int newLineLength = getWordEnd(line, visualLineOffset, visualLineLength);
-			    int newLineWidth = getTextWidth(line, logicalLineOffset, visualLineOffset, newLineLength, styles, startX, gc, fontData);
+			    int newLineWidth = getTextWidth(line, logicalLineOffset, visualLineOffset, newLineLength, styles, startX, gc);
 			    // would next word be beyond client area?
 			    if (newLineWidth >= width) {
 			        break;
@@ -542,17 +538,17 @@ private int[] wrapLine(String line, int logicalLineOffset, int visualLineOffset,
         // estimated number of characters or it was beyond the line width even 
         // though it was within numChars.
         visualLineLength = numChars;
-        lineWidth = getTextWidth(line, logicalLineOffset, visualLineOffset, visualLineLength, styles, startX, gc, fontData);
+        lineWidth = getTextWidth(line, logicalLineOffset, visualLineOffset, visualLineLength, styles, startX, gc);
         if (lineWidth >= width) {
 		    while (visualLineLength > 1 && lineWidth >= width) {
     	    	visualLineLength--;
-	    	    lineWidth = getTextWidth(line, logicalLineOffset, visualLineOffset, visualLineLength, styles, startX, gc, fontData);
+	    	    lineWidth = getTextWidth(line, logicalLineOffset, visualLineOffset, visualLineLength, styles, startX, gc);
 		    }
         }
         else
         if (lineWidth < width) {
 			while (visualLineOffset + visualLineLength < lineLength) {
-	   			int newLineWidth = getTextWidth(line, logicalLineOffset, visualLineOffset, visualLineLength + 1, styles, startX, gc, fontData);
+	   			int newLineWidth = getTextWidth(line, logicalLineOffset, visualLineOffset, visualLineLength + 1, styles, startX, gc);
 			    if (newLineWidth >= width) {
 			        break;
 			    }
@@ -615,7 +611,6 @@ private int wrapLineRange(int startLine, int endLine, int visualLineIndex, int w
 	}
 
     GC gc = renderer.getGC();
-    FontData fontData = gc.getFont().getFontData()[0];
 	int numChars = Math.max(1, width / gc.getFontMetrics().getAverageCharWidth());
 
 	for (int i = startLine; i < endLine; i++) {
@@ -637,7 +632,7 @@ private int wrapLineRange(int startLine, int endLine, int visualLineIndex, int w
 			styles = renderer.filterLineStyles(event.styles);
 		}
 		while (startOffset < lineLength) {	
-		    int[] result = wrapLine(line, lineOffset, startOffset, startX, width, numChars, styles, gc, fontData);
+		    int[] result = wrapLine(line, lineOffset, startOffset, startX, width, numChars, styles, gc);
 
 			setVisualLine(visualLineIndex, lineOffset + startOffset, result[WRAP_LINE_LENGTH]);
 			startOffset += result[WRAP_LINE_LENGTH];

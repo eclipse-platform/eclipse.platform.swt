@@ -54,12 +54,10 @@ protected void disposeGC(GC gc) {
  * @param styles line styles
  * @param paintY y location to draw at
  * @param gc GC to draw on
- * @param currentFont the font currently set in gc. Cached for 
- * 	better performance.
- * @param bidi the bidi object to use for measuring and rendering 
- * 	text in bidi locales. null when not in bidi mode.
+ * @param bidi the bidi object to use for measuring and rendering 	text in bidi
+ * locales. null when not in bidi mode.
  */
-protected void drawLineSelectionBackground(String line, int lineOffset, StyleRange[] styles, int paintY, GC gc, FontData currentFont, StyledTextBidi bidi) {
+protected void drawLineSelectionBackground(String line, int lineOffset, StyleRange[] styles, int paintY, GC gc, StyledTextBidi bidi) {
 	Point selection = parent.internalGetSelection();
 	LineCache lineCache = parent.internalGetLineCache();
 	StyledTextContent content = getContent();
@@ -82,7 +80,7 @@ protected void drawLineSelectionBackground(String line, int lineOffset, StyleRan
 		paintX = parent.getBidiTextPosition(line, selectionStart, bidi);
 	}
 	else {
-		paintX = getTextPosition(line, lineOffset, selectionStart, filterLineStyles(styles), gc, currentFont);
+		paintX = getTextPosition(line, lineOffset, selectionStart, filterLineStyles(styles), gc);
 	}
 	// selection extends past end of line?
 	if (selectionEnd > lineLength) {
@@ -115,7 +113,7 @@ protected void drawLineSelectionBackground(String line, int lineOffset, StyleRan
 			selectionBackgroundWidth = parent.getBidiTextPosition(line, selectionStart + selectionLength, bidi) - paintX;
 		}
 		else {
-			selectionBackgroundWidth = getTextWidth(line, lineOffset, selectionStart, selectionLength, styles, paintX, gc, currentFont);
+			selectionBackgroundWidth = getTextWidth(line, lineOffset, selectionStart, selectionLength, styles, paintX, gc);
 		}
 		if (selectionBackgroundWidth < 0) {
 			// width can be negative when in R2L bidi segment
@@ -224,6 +222,83 @@ protected StyledTextEvent getLineStyleData(int lineOffset, String line) {
  */
 protected Point getSelection() {
 	return parent.internalGetSelection();
+}
+/**
+ * Returns the width of the specified text segment. 
+ * Expands tabs to tab stops using the widget tab width.
+ * </p>
+ *
+ * @param text text to measure
+ * @param textStartOffset offset of the first character in text relative 
+ * 	to the first character in the document
+ * @param lineStyles styles of the line
+ * @param paintX x location to start drawing at
+ * @param gc GC to measure with
+ * @return the width of the specified text segment.
+ */
+protected  int getStyledTextWidth(String text, int textStartOffset, StyleRange[] lineStyles, int paintX, GC gc) {
+	String textSegment;
+	int textLength = text.length();
+	int textIndex = 0;
+	GC boldGC = null;
+	GC normalGC = null;
+	int fontStyle = getCurrentFontStyle();
+	
+	// Use two gcs for performance reasons (i.e., minimize number of times setFont gets called).
+	if (fontStyle == SWT.NORMAL) normalGC = gc;
+	else boldGC = gc;
+	for (int styleIndex = 0; styleIndex < lineStyles.length; styleIndex++) {
+		StyleRange style = lineStyles[styleIndex];
+		int textEnd;
+		int styleSegmentStart = style.start - textStartOffset;
+		if (styleSegmentStart + style.length < 0) {
+			continue;
+		}
+		if (styleSegmentStart >= textLength) {
+			break;
+		}
+		// is there a style for the current string position?
+		if (textIndex < styleSegmentStart) {
+			textSegment = text.substring(textIndex, styleSegmentStart);
+			if (normalGC == null) {
+				normalGC = getGC();
+				normalGC.setFont(regularFont);
+			}
+			paintX += normalGC.stringExtent(textSegment).x;
+			textIndex = styleSegmentStart;
+		}
+		textEnd = Math.min(textLength, styleSegmentStart + style.length);
+		textSegment = text.substring(textIndex, textEnd);
+		if (style.fontStyle == SWT.NORMAL) {
+			if (normalGC == null) {
+				normalGC = getGC();
+				normalGC.setFont(regularFont);
+			}
+			paintX += normalGC.stringExtent(textSegment).x;
+		} else {
+			if (boldGC == null) {
+				boldGC = getGC();
+				boldGC.setFont(boldFont);
+			}
+			paintX += boldGC.stringExtent(textSegment).x;
+		} 
+		textIndex = textEnd;
+	}
+	// is there unmeasured and unstyled text?
+	if (textIndex < textLength) {
+		textSegment = text.substring(textIndex, textLength);
+		if (normalGC == null) {
+			normalGC = getGC();
+			normalGC.setFont(regularFont);
+		}
+		paintX += normalGC.stringExtent(textSegment).x;
+	}
+	if (fontStyle == SWT.NORMAL) {
+		if (boldGC != null) disposeGC(boldGC);
+	} else {
+		if (normalGC != null) disposeGC(normalGC);
+	}
+	return paintX;
 }
 /**
  * @see StyledTextRenderer#getSelectionLineStyles
