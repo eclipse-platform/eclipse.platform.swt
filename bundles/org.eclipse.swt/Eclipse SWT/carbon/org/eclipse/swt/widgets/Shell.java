@@ -726,7 +726,9 @@ int kEventWindowCollapsed (int nextHandler, int theEvent, int userData) {
 int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowDeactivated (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	sendEvent (SWT.Deactivate);
+	//TEMPORARY CODE - Sending event from here causes a GP if Window is disposed (bug 34036)
+	//sendEvent (SWT.Deactivate);
+	postEvent (SWT.Deactivate);
 	if (isDisposed ()) return result;
 	saveFocus ();
 	if (savedFocus != null) {

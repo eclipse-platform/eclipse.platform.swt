@@ -299,50 +299,52 @@ int appleEventProc (int nextHandler, int theEvent, int userData) {
 }
 
 void addDisposeControl (int control) {
-	if (Callback.getEntryCount () == 0) {
+	//TEMPORARY CODE
+//	if (Callback.getEntryCount () == 0) {
 		OS.DisposeControl (control);
-		return;
-	}
-	OS.SetControlVisibility (control, false, false);
-	if (disposeControls == null) disposeControls = new int [4];
-	int length = disposeControls.length;
-	for (int i=0; i<length; i++) {
-		if (disposeControls [i] == control) return;
-	}
-	int index = 0;
-	while (index < length) {
-		if (disposeControls [index] == 0) break;
-		index++;
-	}
-	if (index == length) {
-		int [] newControls = new int [length + 4];
-		System.arraycopy (disposeControls, 0, newControls, 0, length);
-		disposeControls = newControls;
-	}
-	disposeControls [index] = control;
+//		return;
+//	}
+//	OS.SetControlVisibility (control, false, false);
+//	if (disposeControls == null) disposeControls = new int [4];
+//	int length = disposeControls.length;
+//	for (int i=0; i<length; i++) {
+//		if (disposeControls [i] == control) return;
+//	}
+//	int index = 0;
+//	while (index < length) {
+//		if (disposeControls [index] == 0) break;
+//		index++;
+//	}
+//	if (index == length) {
+//		int [] newControls = new int [length + 4];
+//		System.arraycopy (disposeControls, 0, newControls, 0, length);
+//		disposeControls = newControls;
+//	}
+//	disposeControls [index] = control;
 }
 
 void addDisposeWindow (int window) {
-	if (Callback.getEntryCount () == 0) {
+	//TEMPORARY CODE
+//	if (Callback.getEntryCount () == 0) {
 		OS.DisposeWindow (window);
-		return;
-	}
-	if (disposeWindows == null) disposeWindows = new int [4];
-	int length = disposeWindows.length;
-	for (int i=0; i<length; i++) {
-		if (disposeWindows [i] == window) return;
-	}
-	int index = 0;
-	while (index < length) {
-		if (disposeWindows [index] == 0) break;
-		index++;
-	}
-	if (index == length) {
-		int [] newWindows = new int [length + 4];
-		System.arraycopy (disposeWindows, 0, newWindows, 0, length);
-		disposeWindows = newWindows;
-	}
-	disposeWindows [index] = window;
+//		return;
+//	}
+//	if (disposeWindows == null) disposeWindows = new int [4];
+//	int length = disposeWindows.length;
+//	for (int i=0; i<length; i++) {
+//		if (disposeWindows [i] == window) return;
+//	}
+//	int index = 0;
+//	while (index < length) {
+//		if (disposeWindows [index] == 0) break;
+//		index++;
+//	}
+//	if (index == length) {
+//		int [] newWindows = new int [length + 4];
+//		System.arraycopy (disposeWindows, 0, newWindows, 0, length);
+//		disposeWindows = newWindows;
+//	}
+//	disposeWindows [index] = window;
 }
 
 void addFilter (int eventType, Listener listener) {
