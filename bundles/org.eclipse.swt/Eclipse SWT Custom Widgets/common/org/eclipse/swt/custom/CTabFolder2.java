@@ -1185,7 +1185,7 @@ void drawTabArea(Event event) {
 		shape = new int[TOP_LEFT_CORNER.length + TOP_RIGHT_CORNER.length + 4];
 		int index = 0;
 		shape[index++] = x;
-		shape[index++] = y+height;
+		shape[index++] = y+height+1;
 		for (int i = 0; i < TOP_LEFT_CORNER.length/2; i++) {
 			shape[index++] = x+TOP_LEFT_CORNER[2*i];
 			shape[index++] = y+TOP_LEFT_CORNER[2*i+1];
