@@ -111,6 +111,18 @@ void setGdkEventKeyFields(JNIEnv *env, jobject lpObject, GdkEventKey *lpStruct);
 #define GdkEventKey_sizeof() 0
 #endif
 
+#ifndef NO_GdkEventVisibility
+void cacheGdkEventVisibilityFields(JNIEnv *env, jobject lpObject);
+GdkEventVisibility *getGdkEventVisibilityFields(JNIEnv *env, jobject lpObject, GdkEventVisibility *lpStruct);
+void setGdkEventVisibilityFields(JNIEnv *env, jobject lpObject, GdkEventVisibility *lpStruct);
+#define GdkEventVisibility_sizeof() sizeof(GdkEventVisibility)
+#else
+#define cacheGdkEventVisibilityFields(a,b)
+#define getGdkEventVisibilityFields(a,b,c) NULL
+#define setGdkEventVisibilityFields(a,b,c)
+#define GdkEventVisibility_sizeof() 0
+#endif
+
 #ifndef NO_GdkEventWindowState
 void cacheGdkEventWindowStateFields(JNIEnv *env, jobject lpObject);
 GdkEventWindowState *getGdkEventWindowStateFields(JNIEnv *env, jobject lpObject, GdkEventWindowState *lpStruct);

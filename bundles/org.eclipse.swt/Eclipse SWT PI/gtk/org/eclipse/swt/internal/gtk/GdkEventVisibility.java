@@ -8,41 +8,13 @@
  * the LGPL accompanying this distribution and there is any conflict
  * between the two license versions, the terms of the LGPL accompanying
  * this distribution shall govern.
- * 
- * Contributors:
- *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-  
-#ifndef INC_os_H
-#define INC_os_H
+package org.eclipse.swt.internal.gtk;
 
-#define NDEBUG
 
-/*
-#define G_DISABLE_DEPRECATED
-#define GTK_DISABLE_DEPRECATED
-*/
-
-#include <gtk/gtk.h>
-#include <gdk/gdk.h>
-#include <pango/pango.h>
-#include <pango/pango-font.h>
-#include <string.h>
-#include <dlfcn.h>
-
-#ifndef GDK_WINDOWING_X11
-#define NO_XWindowChanges
-#define NO_XDefaultScreen
-#define NO_XReconfigureWMWindow
-#define NO_XSetInputFocus
-#define NO_gdk_1x11_1drawable_1get_1xdisplay
-#define NO_gdk_1x11_1drawable_1get_1xid
-#else
-#include <gdk/gdkx.h>
-#include <X11/extensions/XTest.h>
-#endif
-
-#include "os_stats.h"
-#include "os_custom.h"
-
-#endif /* INC_os_H */
+public class GdkEventVisibility extends GdkEvent {
+	public int /*long*/ window;
+	public byte send_event; 
+	public int state;
+	public static final int sizeof = OS.GdkEventVisibility_sizeof();
+}

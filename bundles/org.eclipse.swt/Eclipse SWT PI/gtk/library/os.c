@@ -468,6 +468,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(GdkEventKey_1sizeof)
 }
 #endif
 
+#ifndef NO_GdkEventVisibility_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GdkEventVisibility_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, GdkEventVisibility_1sizeof_FUNC);
+	rc = (jint)GdkEventVisibility_sizeof();
+	OS_NATIVE_EXIT(env, that, GdkEventVisibility_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GdkEventWindowState_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(GdkEventWindowState_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -5860,16 +5872,6 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1progress_1bar_1pulse)
 }
 #endif
 
-#ifndef NO_gtk_1progress_1bar_1set_1bar_1style
-JNIEXPORT void JNICALL OS_NATIVE(gtk_1progress_1bar_1set_1bar_1style)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	OS_NATIVE_ENTER(env, that, gtk_1progress_1bar_1set_1bar_1style_FUNC);
-	gtk_progress_bar_set_bar_style((GtkProgressBar *)arg0, (GtkProgressBarStyle)arg1);
-	OS_NATIVE_EXIT(env, that, gtk_1progress_1bar_1set_1bar_1style_FUNC);
-}
-#endif
-
 #ifndef NO_gtk_1progress_1bar_1set_1fraction
 JNIEXPORT void JNICALL OS_NATIVE(gtk_1progress_1bar_1set_1fraction)
 	(JNIEnv *env, jclass that, jint arg0, jdouble arg1)
@@ -9055,6 +9057,19 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setGdkEventKeyFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventKey_2II_FUNC);
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventVisibility_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEventVisibility_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	GdkEventVisibility _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventVisibility_2II_FUNC);
+	if (arg0) lparg0 = &_arg0;
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setGdkEventVisibilityFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventVisibility_2II_FUNC);
 }
 #endif
 

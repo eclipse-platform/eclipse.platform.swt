@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 829;
-int OS_nativeFunctionCallCount[829];
+int OS_nativeFunctionCount = 830;
+int OS_nativeFunctionCallCount[830];
 char * OS_nativeFunctionNames[] = {
 	"GDK_1DISPLAY", 
 	"GDK_1ROOT_1PARENT", 
@@ -60,6 +60,7 @@ char * OS_nativeFunctionNames[] = {
 	"GdkEventExpose_1sizeof", 
 	"GdkEventFocus_1sizeof", 
 	"GdkEventKey_1sizeof", 
+	"GdkEventVisibility_1sizeof", 
 	"GdkEventWindowState_1sizeof", 
 	"GdkEvent_1sizeof", 
 	"GdkGCValues_1sizeof", 
@@ -485,7 +486,6 @@ char * OS_nativeFunctionNames[] = {
 	"gtk_1plug_1new", 
 	"gtk_1progress_1bar_1new", 
 	"gtk_1progress_1bar_1pulse", 
-	"gtk_1progress_1bar_1set_1bar_1style", 
 	"gtk_1progress_1bar_1set_1fraction", 
 	"gtk_1progress_1bar_1set_1orientation", 
 	"gtk_1radio_1button_1get_1group", 
@@ -749,6 +749,7 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventExpose_2II", 
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventFocus_2II", 
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventKey_2II", 
+	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventVisibility_2II", 
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventWindowState_2II", 
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent_2II", 
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkImage_2I", 

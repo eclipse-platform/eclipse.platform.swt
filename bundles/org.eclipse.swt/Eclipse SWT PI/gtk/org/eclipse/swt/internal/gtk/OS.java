@@ -196,6 +196,8 @@ public class OS {
 	public static final int GDK_XOR = 0x2;
 	public static final int GDK_XTERM = 0x98;
 	public static final int GDK_X_CURSOR = 0x0;
+	public static final int GDK_VISIBILITY_FULLY_OBSCURED = 2;
+	public static final int GDK_VISIBILITY_NOTIFY_MASK = 1 << 17;
 	public static final int GDK_WINDOW_CHILD = 2;
 	public static final int GDK_WINDOW_STATE_ICONIFIED  = 1 << 1;
 	public static final int GDK_WINDOW_STATE_MAXIMIZED  = 1 << 2;
@@ -337,6 +339,7 @@ public class OS {
 	public static final byte[] unmap_event = signal("unmap_event");
 	public static final byte[] unrealize = signal("unrealize");
 	public static final byte[] value_changed = signal("value_changed");
+	public static final byte[] visibility_notify_event = signal("visibility_notify_event");
 	public static final byte[] window_state_event = signal("window_state_event");
 	
 	/** Properties */
@@ -377,6 +380,7 @@ public static final synchronized native int GdkEventCrossing_sizeof();
 public static final synchronized native int GdkEventExpose_sizeof();
 public static final synchronized native int GdkEventFocus_sizeof();
 public static final synchronized native int GdkEventKey_sizeof();
+public static final synchronized native int GdkEventVisibility_sizeof();
 public static final synchronized native int GdkEventWindowState_sizeof();
 public static final synchronized native int GdkGCValues_sizeof();
 public static final synchronized native int GdkImage_sizeof();
@@ -850,7 +854,6 @@ public static final synchronized native int /*long*/ gtk_plug_get_id(int /*long*
 public static final synchronized native int /*long*/ gtk_plug_new(int /*long*/ socket_id);
 public static final synchronized native int /*long*/ gtk_progress_bar_new();
 public static final synchronized native void gtk_progress_bar_pulse(int /*long*/ pbar);
-public static final synchronized native void gtk_progress_bar_set_bar_style(int /*long*/ pbar, int style);
 public static final synchronized native void gtk_progress_bar_set_fraction(int /*long*/ pbar, double fraction);
 public static final synchronized native void gtk_progress_bar_set_orientation(int /*long*/ pbar, int orientation);
 public static final synchronized native int /*long*/ gtk_radio_button_get_group(int /*long*/ radio_button);
@@ -1117,6 +1120,7 @@ public static final native void memmove(GdkEventCrossing dest, int /*long*/ src,
 public static final native void memmove(GdkEventExpose dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(GdkEventFocus dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(GdkEventKey dest, int /*long*/ src, int /*long*/ size);
+public static final native void memmove(GdkEventVisibility dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(GdkEventWindowState dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(GtkFixed dest, int /*long*/ src);
 public static final native void memmove(int /*long*/ dest, GtkFixed src);
