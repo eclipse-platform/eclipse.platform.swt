@@ -84,7 +84,7 @@ public final class Image implements Drawable{
 
 	/**
 	 * The data to the OS image resource.
-	 * Warning: This field is platform dependent.
+	 * (Warning: This field is platform dependent)
 	 * <p>
 	 * <b>IMPORTANT:</b> This field is <em>not</em> part of the SWT
 	 * public API. It is marked public only so that it can be shared
@@ -107,25 +107,25 @@ public final class Image implements Drawable{
 	
 	/**
 	 * The GC the image is currently selected in.
-	 * Warning: This field is platform dependent.
+	 * (Warning: This field is platform dependent)
 	 */
 	GC memGC;
 
 	/**
 	 * The alpha data of the image.
-	 * Warning: This field is platform dependent.
+	 * (Warning: This field is platform dependent)
 	 */
 	byte[] alphaData;
 	
 	/**
 	 * The global alpha value to be used for every pixel.
-	 * Warning: This field is platform dependent.
+	 * (Warning: This field is platform dependent)
 	 */
 	int alpha = -1;
 	
 	/**
 	 * Specifies the default scanline padding.
-	 * Warning: This field is platform dependent.
+	 * (Warning: This field is platform dependent)
 	 */
 	static final int DEFAULT_SCANLINE_PAD = 4;
 
