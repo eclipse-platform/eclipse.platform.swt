@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
- 
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 
@@ -65,8 +65,16 @@ import org.eclipse.swt.widgets.*;
  *                             DND.DropAccept, DND.Drop </dd>
  * </dl>
  */
-public final class DropTarget extends Widget {
-	
+public class DropTarget extends Widget {
+
+	// info for registering as a droptarget	
+	private Control control;
+	private Listener controlListener;
+	private Transfer[] transferAgents = new Transfer[0];
+	private DragUnderEffect effect;
+
+	private static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
+
 /**
  * Creates a new <code>DropTarget</code> to allow data to be dropped on the specified 
  * <code>Control</code>.
@@ -93,7 +101,34 @@ public final class DropTarget extends Widget {
  * @see DND#DROP_LINK
  */
 public DropTarget(Control control, int style) {
-	super(control, style);
+	super (control, checkStyle(style));
+	this.control = control;
+	if (control.getData(DROPTARGETID) != null)
+		DND.error(DND.ERROR_CANNOT_INIT_DROP);
+	control.setData(DROPTARGETID, this);
+
+	controlListener = new Listener () {
+		public void handleEvent (Event event) {
+			if (!DropTarget.this.isDisposed()){
+				DropTarget.this.dispose();
+			}
+		}
+	};
+	control.addListener (SWT.Dispose, controlListener);
+	
+	this.addListener(SWT.Dispose, new Listener() {
+		public void handleEvent (Event event) {
+			onDispose();
+		}
+	});
+
+	if (control instanceof Tree) {
+		effect = new TreeDragUnderEffect((Tree)control);
+	} else if (control instanceof Table) {
+		effect = new TableDragUnderEffect((Table)control);
+	} else {
+		effect = new NoDragUnderEffect(control);
+	}
 }
 
 /**
@@ -128,7 +163,20 @@ public DropTarget(Control control, int style) {
  * @see #removeDropListener
  * @see DropTargetEvent
  */
-public void addDropListener(DropTargetListener listener) {	
+public void addDropListener(DropTargetListener listener) {
+	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
+	DNDListener typedListener = new DNDListener (listener);
+	addListener (DND.DragEnter, typedListener);
+	addListener (DND.DragLeave, typedListener);
+	addListener (DND.DragOver, typedListener);
+	addListener (DND.DragOperationChanged, typedListener);
+	addListener (DND.Drop, typedListener);
+	addListener (DND.DropAccept, typedListener);
+}
+
+static int checkStyle (int style) {
+	if (style == SWT.NONE) return DND.DROP_MOVE;
+	return style;
 }
 
 protected void checkSubclass () {
@@ -138,7 +186,7 @@ protected void checkSubclass () {
 		DND.error (SWT.ERROR_INVALID_SUBCLASS);
 	}
 }
-	
+
 /**
  * Returns the Control which is registered for this DropTarget.  This is the control over which the 
  * user positions the cursor to drop the data.
@@ -146,20 +194,33 @@ protected void checkSubclass () {
  * @return the Control which is registered for this DropTarget
  */
 public Control getControl () {
-	return null;
+	return control;
 }
 
 public Display getDisplay () {
-	return null;
+	if (control == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
+	return control.getDisplay ();
 }
+
 /**
  * Returns a list of the data types that can be transferred to this DropTarget.
  *
  * @return a list of the data types that can be transferred to this DropTarget
  */
-public Transfer[] getTransfer() { return null; }
+public Transfer[] getTransfer() {
+	return transferAgents;
+}
 
-public void notifyListener (int eventType, Event event) {}
+private void onDispose () {	
+	if (control == null)
+		return;
+	if (controlListener != null)
+		control.removeListener(SWT.Dispose, controlListener);
+	controlListener = null;
+	control.setData(DROPTARGETID, null);
+	transferAgents = null;
+	control = null;
+}
 
 /**
  * Removes the listener from the collection of listeners who will
@@ -178,7 +239,16 @@ public void notifyListener (int eventType, Event event) {}
  * @see DropTargetListener
  * @see #addDropListener
  */
-public void removeDropListener(DropTargetListener listener) {}
+public void removeDropListener(DropTargetListener listener) {	
+	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
+	removeListener (DND.DragEnter, listener);
+	removeListener (DND.DragLeave, listener);
+	removeListener (DND.DragOver, listener);
+	removeListener (DND.DragOperationChanged, listener);
+	removeListener (DND.Drop, listener);
+	removeListener (DND.DropAccept, listener);
+}
+
 /**
  * Specifies the data types that can be transferred to this DropTarget.  If data is 
  * being dragged that does not match one of these types, the drop target will be notified of 
@@ -194,6 +264,7 @@ public void removeDropListener(DropTargetListener listener) {}
  */
 public void setTransfer(Transfer[] transferAgents){
 	if (transferAgents == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
+	this.transferAgents = transferAgents;
 }
 
 }

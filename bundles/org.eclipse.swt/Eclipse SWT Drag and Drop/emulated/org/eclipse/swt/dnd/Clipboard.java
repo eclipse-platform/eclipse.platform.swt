@@ -21,7 +21,7 @@ import org.eclipse.swt.widgets.*;
  * <p>IMPORTANT: This class is <em>not</em> intended to be subclassed.</p>
  */
 public class Clipboard {
-	
+
 	private Display display;
 
 /**
@@ -44,11 +44,11 @@ public Clipboard(Display display) {
 	if (display == null) {
 		display = Display.getCurrent();
 		if (display == null) {
-			display =  Display.getDefault();
+			display = Display.getDefault();
 		}
 	}
 	if (display.getThread() != Thread.currentThread()) {
-		SWT.error(SWT.ERROR_THREAD_INVALID_ACCESS);
+		DND.error(SWT.ERROR_THREAD_INVALID_ACCESS);
 	}
 	this.display = display;
 }
@@ -97,6 +97,7 @@ protected void checkSubclass () {
  * has exited or the display has been disposed.</p>
  */
 public void dispose () {
+	if (display == null) return;
 	display = null;
 }
 
@@ -124,11 +125,11 @@ public void dispose () {
  * @return the data obtained from the clipboard or null if no data of this type is available
  */
 public Object getContents(Transfer transfer) {
-	if (display == null) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
-	if (display.isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
-	if (transfer == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (display == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
+	if (display.isDisposed()) DND.error(SWT.ERROR_DEVICE_DISPOSED);
+	if (transfer == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
 	if (!(transfer instanceof TextTransfer)) return null;
-	return display.getData("TextTransfer");
+	return display.getData("TextTransfer"); //$NON-NLS-1$
 }
 
 /**
@@ -167,16 +168,16 @@ public Object getContents(Transfer transfer) {
  *         otherwise unavailable</li>
  * </ul>
  */
-public void setContents(Object[] data, Transfer[] dataTypes){
-	if (display == null) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
-	if (display.isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
+public void setContents(Object[] data, Transfer[] dataTypes) {
+	if (display == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
+	if (display.isDisposed()) DND.error(SWT.ERROR_DEVICE_DISPOSED);
 	if (data == null || dataTypes == null || data.length != dataTypes.length) {
 		DND.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	
 	for (int i = 0; i < dataTypes.length; i++) {
 		if (dataTypes[i] instanceof TextTransfer && data[i] instanceof String){
-			display.setData("TextTransfer", data[i]);
+			display.setData("TextTransfer", data[i]); //$NON-NLS-1$
 			return;
 		}
 	}
@@ -194,8 +195,8 @@ public void setContents(Object[] data, Transfer[] dataTypes){
  * system clipboard
  */
 public String[] getAvailableTypeNames() {
-	if (display == null) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
-	if (display.isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
+	if (display == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
+	if (display.isDisposed()) DND.error(SWT.ERROR_DEVICE_DISPOSED);
 	return null;
 }
 }
