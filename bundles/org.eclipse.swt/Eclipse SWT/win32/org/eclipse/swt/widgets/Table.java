@@ -2536,6 +2536,7 @@ LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 	gc.setClipping (region);
 	drawBackground (wParam);
 	gc.setClipping ((Region) null);
+	region.dispose ();
 	gc.dispose ();
 	return LRESULT.ONE;
 }
