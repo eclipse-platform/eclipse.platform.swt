@@ -364,7 +364,9 @@ void addItem (TreeItem item, int index) {
 	 */
 	if (item.availableIndex < parent.topIndex) {
 		parent.topIndex++;
-		parent.getVerticalBar ().setSelection (parent.topIndex);
+		if (parent.drawCount == 0) {
+			parent.getVerticalBar ().setSelection (parent.topIndex);
+		}
 		return;
 	}
 	
@@ -1727,13 +1729,15 @@ public void setExpanded (boolean value) {
 			Rectangle clientArea = parent.getClientArea ();
 			int y = parent.getItemY (this) + parent.itemHeight;
 			if (0 < y && y < clientArea.height) {
-				parent.update ();
-				GC gc = new GC (parent);
-				gc.copyArea (
-					0, y,
-					clientArea.width, clientArea.height - y,
-					0, y + ((descendentsCount - 1) * parent.itemHeight));				
-				gc.dispose ();
+				if (parent.drawCount == 0) {
+					parent.update ();
+					GC gc = new GC (parent);
+					gc.copyArea (
+						0, y,
+						clientArea.width, clientArea.height - y,
+						0, y + ((descendentsCount - 1) * parent.itemHeight));				
+					gc.dispose ();
+				}
 			}
 		}
 
@@ -1753,7 +1757,9 @@ public void setExpanded (boolean value) {
 		 */
 		if (availableIndex < parent.topIndex) {
 			parent.topIndex += descendentsCount - 1;
-			parent.getVerticalBar ().setSelection (parent.topIndex);
+			if (parent.drawCount == 0) {
+				parent.getVerticalBar ().setSelection (parent.topIndex);
+			}
 			return;
 		}
 
@@ -1769,12 +1775,14 @@ public void setExpanded (boolean value) {
 		int y = parent.getItemY (this) + parent.itemHeight;
 		int startY = y + (descendents.length - 1) * parent.itemHeight;
 		if (y < clientArea.height && 0 < startY) {	/* determine whether any some visual update is actually needed */
-			parent.update ();
-			GC gc = new GC (parent);
-			gc.copyArea (0, startY, clientArea.width, clientArea.height - startY, 0, y);
-			gc.dispose ();
-			int redrawY = clientArea.height - startY + y;
-			parent.redraw (0, redrawY, clientArea.width, clientArea.height - redrawY, false);
+			if (parent.drawCount == 0) {
+				parent.update ();
+				GC gc = new GC (parent);
+				gc.copyArea (0, startY, clientArea.width, clientArea.height - startY, 0, y);
+				gc.dispose ();
+				int redrawY = clientArea.height - startY + y;
+				parent.redraw (0, redrawY, clientArea.width, clientArea.height - redrawY, false);
+			}
 		}
 
 		parent.makeDescendentsUnavailable (this, descendents);
@@ -1786,7 +1794,9 @@ public void setExpanded (boolean value) {
 		int bottomIndex = availableIndex + descendents.length - 1;
 		if (bottomIndex < parent.topIndex) {
 			parent.topIndex = parent.topIndex - descendents.length + 1;
-			parent.getVerticalBar ().setSelection (parent.topIndex);
+			if (parent.drawCount == 0) {
+				parent.getVerticalBar ().setSelection (parent.topIndex);
+			}
 		}
 		
 		parent.updateHorizontalBar ();
