@@ -209,7 +209,7 @@ protected void createCOMInterfaces () {
 		// method9 ShowPropertyFrame - not implemented
 	};
 	
-	iDispatch = new COMObject(new int[]{2, 0, 0, 1, 3, 4, 8}){
+	iDispatch = new COMObject(new int[]{2, 0, 0, 1, 3, 5, 8}){
 		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
 		public int method1(int[] args) {return AddRef();}
 		public int method2(int[] args) {return Release();}
