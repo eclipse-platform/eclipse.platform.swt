@@ -402,12 +402,9 @@ void releaseWidget () {
 
 void removeControl (Control control) {
 	super.removeControl (control);
-	ToolItem [] items = getItems ();
-	for (int i=0; i<items.length; i++) {
+	for (int i=0; i<itemCount; i++) {
 		ToolItem item = items [i];
-		if (item != null && item.control == control) {
-			item.setControl (null);
-		}
+		if (item.control == control) item.setControl (null);
 	}
 }
 
