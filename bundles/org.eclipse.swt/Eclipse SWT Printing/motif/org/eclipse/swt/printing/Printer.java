@@ -264,6 +264,11 @@ public Printer(PrinterData data) {
 	super(checkNull(data));
 }
 
+/**	 
+ * Creates the printer handle.
+ * This method is called internally by the instance creation
+ * mechanism of the <code>Device</code> class.
+ */
 protected void create(DeviceData deviceData) {
 	data = (PrinterData)deviceData;
 	/* Use the character encoding for the default locale */
@@ -329,6 +334,11 @@ protected void init() {
 	defaultFont = Font.motif_new(this, defaultFontList);
 }
 
+/**	 
+ * Destroys the printer handle.
+ * This method is called internally by the dispose
+ * mechanism of the <code>Device</code> class.
+ */
 protected void destroy() {
 	if (xtContext != 0) OS.XtDestroyApplicationContext (xtContext);
 }
@@ -645,10 +655,22 @@ public Font getSystemFont () {
 	return defaultFont;
 }
 
+/**
+ * Checks the validity of this device.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
 protected void checkDevice() {
 	if (xDisplay == 0) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
 }
 
+/**	 
+ * Releases any internal state prior to destroying this printer.
+ * This method is called internally by the dispose
+ * mechanism of the <code>Device</code> class.
+ */
 protected void release() {
 	super.release();
 	if (defaultFont != null) {
