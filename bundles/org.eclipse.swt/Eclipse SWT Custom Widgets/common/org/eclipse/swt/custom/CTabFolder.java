@@ -134,7 +134,12 @@ public class CTabFolder extends Composite {
 	int[] topLeftCorner = new int[] {0,5, 1,4, 1,3, 2,2, 3,1, 4,1, 5,0,};
 	int[] topRightCorner = new int[] {-5,0, -4,1, -3,1, -2,2, -1,3, -1,4, 0,5};
 	int[] bottomLeftCorner = new int[] {0,-5, 1,-5, 1,-3, 2,-3, 2,-2, 3,-2, 3,-2, 5,-1, 5,0};
-	int[] bottomRightCorner = new int[] {-5,0, -4,-1, -3,-1, -2,-2, -1,-3, -1,-4, 0,-5};
+	int[] bottomRightCorner = new int[] {-5,0, -5,-1, -4,-1, -1,-4, -1,-5, 0,-5};
+	int[] topLeftOutsideCorner = new int[] {0,8, 1,8, 1,6, 2,5, 3,4, 4,3, 5,2, 6,1, 8,1, 8,0};
+	int[] topRightOutsideCorner = new int[] {-8,0, -8,1, -6,1, -6,2, -5,2, -5,3, -4,3, -4,4, -3,4, -3,5, -2,5, -2,6, -1, 6, -1,8, 0,8};
+	int[] bottomLeftOutsideCorner = new int[] {0,-8, 1,-8, 1,-6, 2,-6, 2,-5, 3,-5, 3,-4, 4,-4, 4,-3, 5,-3, 5,-2, 6,-2, 6,-1, 8,-1, 8,0};
+	int[] bottomRightOutsideCorner = new int[] {-8,0, -8,-1, -6,-1, -6,-2, -5,-2, -5,-3, -4,-3, -4,-4, -3,-4, -3,-5, -2,-5, -2,-6, -1,-6, -1,-8, 0,-8};
+
 	int[] curve;
 	int curveWidth = 50;
 	int curveS = 35;
@@ -584,21 +589,21 @@ void drawBorder(GC gc) {
 			inside[index++] = border;
 			inside[index++] = border;
 			
-			outside = new int[bottomLeftCorner.length+bottomRightCorner.length+4];
+			outside = new int[bottomLeftOutsideCorner.length+bottomRightOutsideCorner.length+4];
 			index = 0;
-			for (int i = 0; i < bottomLeftCorner.length/2; i++) {
-				outside[index++] = bottomLeftCorner[2*i];
-				outside[index++] = size.y+bottomLeftCorner[2*i+1];
+			for (int i = 0; i < bottomLeftOutsideCorner.length/2; i++) {
+				outside[index++] = bottomLeftOutsideCorner[2*i];
+				outside[index++] = size.y+bottomLeftOutsideCorner[2*i+1];
 			}
-			for (int i = 0; i < bottomRightCorner.length/2; i++) {
-				outside[index++] = size.x+bottomRightCorner[2*i];
-				outside[index++] = size.y+bottomRightCorner[2*i+1];
+			for (int i = 0; i < bottomRightOutsideCorner.length/2; i++) {
+				outside[index++] = size.x+bottomRightOutsideCorner[2*i];
+				outside[index++] = size.y+bottomRightOutsideCorner[2*i+1];
 			}
 			outside[index++] = size.x;
 			outside[index++] = 0;
 			outside[index++] = 0;
 			outside[index++] = 0;
-		} else {
+		} else { // on top
 			inside = new int[topLeftCorner.length+topRightCorner.length+4];
 			int index = 0;
 			for (int i = 0; i < topLeftCorner.length/2; i++) {
@@ -614,15 +619,15 @@ void drawBorder(GC gc) {
 			inside[index++] = border;
 			inside[index++] = size.y-border;
 			
-			outside = new int[topLeftCorner.length+topRightCorner.length+4];
+			outside = new int[topLeftOutsideCorner.length+topRightOutsideCorner.length+4];
 			index = 0;
-			for (int i = 0; i < topLeftCorner.length/2; i++) {
-				outside[index++] = topLeftCorner[2*i];
-				outside[index++] = topLeftCorner[2*i+1];
+			for (int i = 0; i < topLeftOutsideCorner.length/2; i++) {
+				outside[index++] = topLeftOutsideCorner[2*i];
+				outside[index++] = topLeftOutsideCorner[2*i+1];
 			}
-			for (int i = 0; i < topRightCorner.length/2; i++) {
-				outside[index++] = size.x+topRightCorner[2*i];
-				outside[index++] = topRightCorner[2*i+1];
+			for (int i = 0; i < topRightOutsideCorner.length/2; i++) {
+				outside[index++] = size.x+topRightOutsideCorner[2*i];
+				outside[index++] = topRightOutsideCorner[2*i+1];
 			}
 			outside[index++] = size.x;
 			outside[index++] = size.y;
