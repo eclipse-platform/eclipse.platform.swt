@@ -3364,7 +3364,6 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 		}
 		case OS.NM_CUSTOMDRAW: {
 			if (!customDraw) break;
-			if (!OS.IsWindowEnabled (handle)) break;
 			NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
 			OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
 			switch (nmcd.dwDrawStage) {
@@ -3394,10 +3393,12 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 						}
 					}
 					if (hFont == -1) hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-					OS.SelectObject(nmcd.hdc, hFont);
-					nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
-					nmcd.clrTextBk = clrTextBk == -1 ? getBackgroundPixel () : clrTextBk;
-					OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
+					OS.SelectObject (nmcd.hdc, hFont);
+					if (OS.IsWindowEnabled (handle)) {
+						nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
+						nmcd.clrTextBk = clrTextBk == -1 ? getBackgroundPixel () : clrTextBk;
+						OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);
+					}
 					return new LRESULT (OS.CDRF_NEWFONT);
 				}
 			}
