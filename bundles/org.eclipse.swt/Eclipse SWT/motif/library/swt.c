@@ -1613,6 +1613,34 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XFreeCursor
 
 /*
  * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    XFreeFont
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XFreeFont
+  (JNIEnv *env, jclass that, jint display, jint font_struct)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "XFreeFont\n");
+#endif
+	XFreeFont((Display *)display, (XFontStruct *)font_struct);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    XFreeFontSet
+ * Signature: (II)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XFreeFontSet
+  (JNIEnv *env, jclass that, jint display, jint font_set)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "XFreeFontSet\n");
+#endif
+	XFreeFontSet((Display *)display, (XFontSet)font_set);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
  * Method:    XFreeFontNames
  * Signature: (I)V
  */

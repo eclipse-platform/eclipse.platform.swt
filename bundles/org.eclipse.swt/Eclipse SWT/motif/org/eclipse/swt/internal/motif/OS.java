@@ -889,6 +889,8 @@ public static final native int XFree (int address);
 public static final native int XFreeColors (int display, int colormap, int [] pixels, int npixels, int planes);
 public static final native void XFreeCursor (int display, int pixmap);
 public static final native void XFreeFontNames(int list);
+public static final native void XFreeFont(int display, int font_struct);
+public static final native void XFreeFontSet(int display, int font_set);
 public static final native void XFreeGC (int display, int gc);
 public static final native void XFreePixmap (int display, int pixmap);
 public static final native int XGetGCValues (int display, int gc, int valuemask, XGCValues values);
