@@ -51,6 +51,7 @@ void addLast (RunnableLock lock) {
 			messages = newMessages;
 		}
 		messages [messageCount++] = lock;
+		if (messageCount == 1) display.wake ();
 	}
 }
 
@@ -66,16 +67,15 @@ void addLast (RunnableLock lock) {
  * @see #syncExec
  */
 protected void asyncExec (Runnable runnable) {
-	if (runnable != null) addLast (new RunnableLock (runnable));
-	display.wake ();
+	if (runnable == null) {
+		display.wake ();
+		return;
+	}
+	addLast (new RunnableLock (runnable));
 }
 
 int getMessageCount () {
 	return messageCount;
-}
-
-Object getMessageLock () {
-	return messageLock;
 }
 
 void releaseSynchronizer () {
@@ -146,7 +146,6 @@ protected void syncExec (Runnable runnable) {
 	lock.thread = Thread.currentThread();
 	synchronized (lock) {
 		addLast (lock);
-		display.wake ();
 		boolean interrupted = false;
 		while (!lock.done ()) {
 			try {
