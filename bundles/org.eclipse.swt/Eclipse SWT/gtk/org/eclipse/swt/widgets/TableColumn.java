@@ -35,7 +35,7 @@ public class TableColumn extends Item {
 	int /*long*/ labelHandle, imageHandle, buttonHandle;
 	Table parent;
 	int modelIndex, lastButton, lastTime, lastX, lastWidth;
-	boolean customDraw;
+	boolean customDraw, useFixedWidth;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -262,11 +262,8 @@ public int getWidth () {
 	if (!OS.gtk_tree_view_column_get_visible (handle)) {
 		return 0;
 	}
-	int width = OS.gtk_tree_view_column_get_width (handle);
-	if (width == 0) {
-		width = OS.gtk_tree_view_column_get_fixed_width (handle);
-	}
-	return width;
+	if (useFixedWidth) return OS.gtk_tree_view_column_get_fixed_width (handle);
+	return OS.gtk_tree_view_column_get_width (handle);
 }
 
 int /*long*/ gtk_clicked (int /*long*/ widget) {
@@ -304,16 +301,17 @@ int /*long*/ gtk_mnemonic_activate (int /*long*/ widget, int /*long*/ arg1) {
 }
 
 int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
+	useFixedWidth = false;
 	boolean mapped = OS.GTK_WIDGET_MAPPED (widget); 
 	int x = OS.GTK_WIDGET_X (widget);
 	int width = OS.GTK_WIDGET_WIDTH (widget);
-	if (width != lastWidth) {
-		lastWidth = width;
-		if (mapped) sendEvent (SWT.Resize);
-	}
 	if (x != lastX) {
 		lastX = x;
 		if (mapped) sendEvent (SWT.Move);
+	}
+	if (width != lastWidth) {
+		lastWidth = width;
+		if (mapped) sendEvent (SWT.Resize);
 	}
 	return 0;
 }
@@ -533,6 +531,7 @@ public void setText (String string) {
 public void setWidth (int width) {
 	checkWidget();
 	if (width > 0) {
+		useFixedWidth = true;
 		OS.gtk_tree_view_column_set_fixed_width (handle, width);
 		OS.gtk_tree_view_column_set_visible (handle, true);
 	} else {

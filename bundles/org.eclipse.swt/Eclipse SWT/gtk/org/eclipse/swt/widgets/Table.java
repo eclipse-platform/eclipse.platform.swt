@@ -375,7 +375,7 @@ void createColumn (TableColumn column, int index) {
 		OS.gtk_tree_view_column_set_sizing (columnHandle, OS.GTK_TREE_VIEW_COLUMN_AUTOSIZE);
 	} else {
 		OS.gtk_tree_view_column_set_sizing (columnHandle, OS.GTK_TREE_VIEW_COLUMN_FIXED);
-		OS.gtk_tree_view_column_set_fixed_width (columnHandle, 10);
+		if (columnCount != 0) OS.gtk_tree_view_column_set_visible (columnHandle, false);
 	}
 	OS.gtk_tree_view_column_set_resizable (columnHandle, true);
 	OS.gtk_tree_view_column_set_clickable (columnHandle, true);
@@ -430,7 +430,7 @@ void createItem (TableColumn column, int index) {
 	if (columnCount == 0) {
 		column.handle = OS.gtk_tree_view_get_column (handle, 0);
 		OS.gtk_tree_view_column_set_sizing (column.handle, OS.GTK_TREE_VIEW_COLUMN_FIXED);
-		OS.gtk_tree_view_column_set_fixed_width (column.handle, 10);
+		OS.gtk_tree_view_column_set_visible (column.handle, false);
 		column.modelIndex = FIRST_COLUMN;
 		createRenderers (column.handle, column.modelIndex, true, column.style);
 		column.customDraw = firstCustomDraw;
