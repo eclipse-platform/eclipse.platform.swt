@@ -9,6 +9,7 @@ package org.eclipse.swt.widgets;
  
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.ControlButtonContentInfo;
+import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
 import org.eclipse.swt.internal.carbon.HMHelpContentRec;
 import org.eclipse.swt.internal.carbon.Rect;
 
@@ -411,6 +412,15 @@ public void setEnabled (boolean enabled) {
 		OS.DisableControl (handle);
 	}
 }
+
+void setFontStyle (Font font) {
+	ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
+	fontStyle.flags |= OS.kControlUseFontMask | OS.kControlUseSizeMask | OS.kControlUseFaceMask;
+	fontStyle.font = font.id;
+	fontStyle.style = font.style;
+	fontStyle.size = font.size;
+	OS.SetControlFontStyle (handle, fontStyle);
+} 
 
 public void setDisabledImage (Image image) {
 	checkWidget();

@@ -77,6 +77,7 @@ void createItem (ToolItem item, int index) {
 	item.createWidget ();
 	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
 	items [index] = item;
+	if (parent.font != null) item.setFontStyle (parent.font);
 }
 
 void createWidget () {
@@ -236,11 +237,11 @@ public void setBounds (int x, int y, int width, int height) {
 	relayout (rect.width, rect.height);
 }
 
-public void setFont (Font font) {
-	checkWidget();
-	super.setFont (font);
+void setFontStyle (Font font) {
+	super.setFontStyle (font);
 	for (int i=0; i<itemCount; i++) {
 		ToolItem item = items [i];
+		item.setFontStyle (font);
 		Point size = item.computeSize ();
 		item.setSize (size.x, size.y, false);
 	}

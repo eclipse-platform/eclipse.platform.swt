@@ -898,11 +898,10 @@ public void setFont (Font font) {
 		if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	this.font = font;
-	setFontStyle (font);
+	setFontStyle (font != null ? font : defaultFont ());
 }
 
 void setFontStyle (Font font) {
-	if (font == null) font = defaultFont ();
 	ControlFontStyleRec fontStyle = new ControlFontStyleRec ();
 	fontStyle.flags |= OS.kControlUseFontMask | OS.kControlUseSizeMask | OS.kControlUseFaceMask;
 	fontStyle.font = font.id;
