@@ -600,4 +600,26 @@ StyleRange getStyleRangeAtOffset(int offset) {
 	newStyle.length = 1;
 	return newStyle;
 }
+/** 
+ * Returns the styles for the given range. Returns the existing styles,
+ * so be careful not to modify the return value.  Styles are not cloned
+ * in order to make this method as efficient as possible. 
+ * <p>
+ *
+ * @param offset the start position of the text range
+ * @param length the length of the text range
+ * @return a StyleRange array or null if no styles are specified for the text
+ * 	range
+ */ 
+StyleRange[] getStyleRangesFor(int offset, int length) {
+	if (styleCount == 0) return null;
+	Point pt = getOverlappingStyles(offset, length);
+	if (pt == null || pt.y == 0) return null;
+	StyleRange[] ranges = new StyleRange[pt.y];
+	for (int i=0; i<pt.y; i++) {
+		StyleRange newStyle = styles[pt.x + i];
+		ranges[i]=newStyle;
+	}
+	return ranges;
+}
 }
