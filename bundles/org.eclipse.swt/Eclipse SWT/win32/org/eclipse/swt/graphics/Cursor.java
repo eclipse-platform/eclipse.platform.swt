@@ -284,41 +284,15 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 		hotspotY >= source.height || hotspotY < 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	/*
-	 * Make sure the source is padded properly. Windows requires the cursor's source
-	 * to have a scanline pad of 1.
-	 */
-	if (source.scanlinePad != 1) {
-		int bytesPerLine = (source.width + 7) / 8;
-		byte[] newSourceData = new byte[bytesPerLine * source.height];
-		ImageData newSource = new ImageData(source.width, source.height, 1, source.palette, 1, newSourceData);
-		int[] sourcePixels = new int[source.width];
-		for (int y = 0; y < source.height; y++) {
-			source.getPixels(0, y, source.width, sourcePixels, 0);
-			newSource.setPixels(0, y, newSource.width, sourcePixels, 0);
-		}
-		source = newSource;
-	}
-	/*
-	 * Make sure the mask is padded properly. Windows requires the cursor's mask
-	 * to have a scanline pad of 1.
-	 */
-	if (mask.scanlinePad != 1) {
-		int bytesPerLine = (mask.width + 7) / 8;
-		byte[] newMaskData = new byte[bytesPerLine * mask.height];
-		ImageData newMask = new ImageData(mask.width, mask.height, 1, mask.palette, 1, newMaskData);
-		int[] maskPixels = new int[mask.width];
-		for (int y = 0; y < mask.height; y++) {
-			mask.getPixels(0, y, mask.width, maskPixels, 0);
-			newMask.setPixels(0, y, newMask.width, maskPixels, 0);
-		}
-		mask = newMask;
-	}
+
+	/* Make sure source and mask scanline pad is 2 */
+	byte[] sourceData = ImageData.convertPad(source.data, source.width, source.height, source.depth, source.scanlinePad, 2);
+	byte[] maskData = ImageData.convertPad(mask.data, mask.width, mask.height, mask.depth, mask.scanlinePad, 2);
 	
 	/* Create the cursor */
 	int hInst = OS.GetModuleHandle(null);
 	if (OS.IsWinCE) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
-	handle = OS.CreateCursor(hInst, hotspotX, hotspotY, source.width, source.height, source.data, mask.data);
+	handle = OS.CreateCursor(hInst, hotspotX, hotspotY, source.width, source.height, sourceData, maskData);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (device.tracking) device.new_Object(this);
 }

@@ -861,10 +861,13 @@ public ImageData getImageData() {
 		if (xMaskPtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		XImage xMask = new XImage();
 		OS.memmove(xMask, xMaskPtr, XImage.sizeof);
-		byte[] maskData = data.maskData = new byte[xMask.bytes_per_line * xMask.height];
-		data.maskPad = xMask.bitmap_pad / 8;
+		byte[] maskData = new byte[xMask.bytes_per_line * xMask.height];
 		OS.memmove(maskData, xMask.data, maskData.length);
 		OS.XDestroyImage(xMaskPtr);
+		int maskPad = xMask.bitmap_pad / 8;
+		/* Make mask scanline pad equals to 2 */
+		data.maskPad = 2;
+		maskData = ImageData.convertPad(maskData, width, height, 1, maskPad, data.maskPad);
 		/* Bit swap the mask data if necessary */
 		if (xMask.bitmap_bit_order == OS.LSBFirst) {
 			for (int i = 0; i < maskData.length; i++) {
@@ -874,6 +877,7 @@ public ImageData getImageData() {
 					((b & 0x20) >> 3) |	((b & 0x40) >> 5) | ((b & 0x80) >> 7));
 			}
 		}
+		data.maskData = maskData;
 	}
 	data.transparentPixel = transparentPixel;
 	data.alpha = alpha;

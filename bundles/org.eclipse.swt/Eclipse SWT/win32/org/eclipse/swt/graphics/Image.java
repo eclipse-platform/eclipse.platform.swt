@@ -1111,20 +1111,13 @@ public ImageData getImageData() {
 					maskData[i] ^= -1;
 				}
 				/* Make sure mask scanlinePad is 2 */
-				int desiredScanline = (width + 7) / 8;
-				desiredScanline = desiredScanline + (desiredScanline % 2);
-				int realScanline = imageSize / height;
-				if (realScanline != desiredScanline) {
-					byte[] newData = new byte[desiredScanline * height];
-					int srcIndex = 0;
-					int destIndex = 0;
-					for (int i = 0; i < height; i++) {
-						System.arraycopy(maskData, srcIndex, newData, destIndex, desiredScanline);
-						destIndex += desiredScanline;
-						srcIndex += realScanline;
-					}
-					maskData = newData;
+				int maskPad;
+				int bpl = imageSize / height;
+				for (maskPad = 1; maskPad < 128; maskPad++) {
+					int calcBpl = (((width + 7) / 8) + (maskPad - 1)) / maskPad * maskPad;
+					if (calcBpl == bpl) break;
 				}
+				maskData = ImageData.convertPad(maskData, width, height, 1, maskPad, 2);
 			}
 			/* Clean up */
 			OS.HeapFree(hHeap, 0, lpvBits);
@@ -1143,7 +1136,6 @@ public ImageData getImageData() {
 			/* Construct and return the ImageData */
 			ImageData imageData = new ImageData(width, height, depth, palette, 4, data);
 			imageData.maskData = maskData;
-//			imageData.maskPad = 4;
 			imageData.maskPad = 2;
 			return imageData;
 		}
@@ -1558,16 +1550,7 @@ static int[] init(Device device, Image image, ImageData i) {
 	/* In case of a scanline pad other than 4, do the work to convert it */
 	byte[] data = i.data;
 	if (i.scanlinePad != 4 && (i.bytesPerLine % 4 != 0)) {
-		int newBpl = i.bytesPerLine + (4 - (i.bytesPerLine % 4));
-		byte[] newData = new byte[i.height * newBpl];
-		int srcPtr = 0;
-		int destPtr = 0;
-		for (int y = 0; y < i.height; y++) {
-			System.arraycopy(data, srcPtr, newData, destPtr, i.bytesPerLine);
-			srcPtr += i.bytesPerLine;
-			destPtr += newBpl;
-		}
-		data = newData;
+		data = ImageData.convertPad(data, i.width, i.height, i.depth, i.scanlinePad, 4);
 	}
 	OS.MoveMemory(pBits[0], data, data.length);
 	
@@ -1589,18 +1572,7 @@ static int[] init(Device device, Image image, ImageData i) {
 		device.internal_dispose_GC(hDC, null);
 			
 		/* Create the mask */
-//		int hHeap = OS.GetProcessHeap();
-//		int bmBits = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, i.maskData.length);
-//		OS.MoveMemory(bmBits, i.maskData, i.maskData.length);
-//		BITMAP bm = new BITMAP();
-//		bm.bmWidth = i.width;
-//		bm.bmHeight = i.height;
-//		bm.bmWidthBytes = (((i.width + 7) / 8) + 3) / 4 * 4;
-//		bm.bmPlanes = 1;
-//		bm.bmBitsPixel = 1;
-//		bm.bmBits = bmBits;
-//		int hMask = OS.CreateBitmapIndirect(bm);
-//		OS.HeapFree(hHeap, 0, bmBits);
+		byte[] maskData = ImageData.convertPad(i.maskData, i.width, i.height, 1, i.maskPad, 2);
 		int hMask = OS.CreateBitmap(i.width, i.height, 1, 1, i.maskData);
 		if (hMask == 0) SWT.error(SWT.ERROR_NO_HANDLES);	
 		OS.SelectObject(hdcSrc, hMask);
@@ -1718,17 +1690,8 @@ static int[] init(Device device, Image image, ImageData source, ImageData mask) 
 	 * Make sure the mask is padded properly. Windows requires icon masks
 	 * to have a scanline pad of 2.
 	 */
-	int bytesPerLine = (((mask.width + 7) / 8) + 1) / 2 * 2;
-	byte[] newMaskData = new byte[bytesPerLine * mask.height];
-	ImageData newMask = new ImageData(mask.width, mask.height, 1, mask.palette, 2, newMaskData);
-	int[] maskPixels = new int[mask.width];
-	for (int y = 0; y < mask.height; y++) {
-		mask.getPixels(0, y, mask.width, maskPixels, 0);
-		newMask.setPixels(0, y, newMask.width, maskPixels, 0);
-	}
-	/* Set the fields and create the icon */
-	imageData.maskPad = newMask.scanlinePad;
-	imageData.maskData = newMask.data;
+	imageData.maskPad = 2;
+	imageData.maskData = ImageData.convertPad(mask.data, mask.width, mask.height, mask.depth, mask.scanlinePad, imageData.maskPad);
 	
 	return init(device, image, imageData);
 }

@@ -182,25 +182,9 @@ public Cursor (Device device, ImageData source, ImageData mask, int hotspotX, in
 		hotspotY >= source.height || hotspotY < 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	/* Swap the bits if necessary */
 	byte[] sourceData = new byte[source.data.length];
 	byte[] maskData = new byte[mask.data.length];
-	/*
-	 * Make sure the source is padded properly. Unix requires icon sources
-	 * to have a scanline pad of 1.
-	 */
-	if (source.scanlinePad != 1) {
-		int bytesPerLine = (source.width + 7) / 8;
-		byte[] newSourceData = new byte[bytesPerLine * source.height];
-		ImageData newSource = new ImageData(source.width, source.height, 1, source.palette, 1, newSourceData);
-		int[] sourcePixels = new int[source.width];
-		for (int y = 0; y < source.height; y++) {
-			source.getPixels(0, y, source.width, sourcePixels, 0);
-			newSource.setPixels(0, y, newSource.width, sourcePixels, 0);
-		}
-		source = newSource;
-	}
-	/* Swap the bits in each byte */
+	/* Swap the bits in each byte and convert scanline pad to 2 */
 	byte[] data = source.data;
 	for (int i = 0; i < data.length; i++) {
 		byte s = data[i];
@@ -214,21 +198,7 @@ public Cursor (Device device, ImageData source, ImageData mask, int hotspotX, in
 			((s & 0x01) << 7));
 		sourceData[i] = (byte) ~sourceData[i];
 	}
-	/*
-	 * Make sure the mask is padded properly. Unix requires icon masks
-	 * to have a scanline pad of 1.
-	 */
-	if (mask.scanlinePad != 1) {
-		int bytesPerLine = (mask.width + 7) / 8;
-		byte[] newMaskData = new byte[bytesPerLine * mask.height];
-		ImageData newMask = new ImageData(mask.width, mask.height, 1, mask.palette, 1, newMaskData);
-		int[] maskPixels = new int[mask.width];
-		for (int y = 0; y < mask.height; y++) {
-			mask.getPixels(0, y, mask.width, maskPixels, 0);
-			newMask.setPixels(0, y, newMask.width, maskPixels, 0);
-		}
-		mask = newMask;
-	}
+	sourceData = ImageData.convertPad(sourceData, source.width, source.height, source.depth, source.scanlinePad, 2);
 	data = mask.data;
 	for (int i = 0; i < data.length; i++) {
 		byte s = data[i];
@@ -242,6 +212,8 @@ public Cursor (Device device, ImageData source, ImageData mask, int hotspotX, in
 			((s & 0x01) << 7));
 		maskData[i] = (byte) ~maskData[i];
 	}
+	maskData = ImageData.convertPad(maskData, mask.width, mask.height, mask.depth, mask.scanlinePad, 2);
+	/* Create bitmaps */
 	int xDisplay = device.xDisplay;
 	int drawable = OS.XDefaultRootWindow(xDisplay);
 	int sourcePixmap = OS.XCreateBitmapFromData(xDisplay, drawable, sourceData, source.width, source.height);
@@ -273,8 +245,8 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 	}
 	ImageData mask = source.getTransparencyMask();
 
-	/* Ensure depth and scanline pad are equal to 1 */
-	if (source.depth > 1 || source.scanlinePad != 1) {
+	/* Ensure depth is equal to 1 */
+	if (source.depth > 1) {
 		/* Create a destination image with no data */
 		ImageData newSource = new ImageData(
 			source.width, source.height, 1, ImageData.bwPalette(),
@@ -295,24 +267,8 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 			false, false);
 		source = newSource;
 	}
-	
-	/*
-	 * Make sure the mask is padded properly. Unix requires icon masks
-	 * to have a scanline pad of 1.
-	 */
-	if (mask.scanlinePad != 1) {
-		int bytesPerLine = (mask.width + 7) / 8;
-		byte[] newMaskData = new byte[bytesPerLine * mask.height];
-		ImageData newMask = new ImageData(mask.width, mask.height, 1, mask.palette, 1, newMaskData);
-		int[] maskPixels = new int[mask.width];
-		for (int y = 0; y < mask.height; y++) {
-			mask.getPixels(0, y, mask.width, maskPixels, 0);
-			newMask.setPixels(0, y, newMask.width, maskPixels, 0);
-		}
-		mask = newMask;
-	}
 
-	/* Swap the bits in each byte */
+	/* Swap the bits in each byte and convert scanline pad to 2 */
 	byte[] sourceData = new byte[source.data.length];
 	byte[] maskData = new byte[mask.data.length];
 	byte[] data = source.data;
@@ -327,6 +283,7 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 			((s & 0x02) << 5) |
 			((s & 0x01) << 7));
 	}
+	sourceData = ImageData.convertPad(sourceData, source.width, source.height, source.depth, source.scanlinePad, 2);
 	data = mask.data;
 	for (int i = 0; i < data.length; i++) {
 		byte s = data[i];
@@ -339,6 +296,8 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 			((s & 0x02) << 5) |
 			((s & 0x01) << 7));
 	}
+	maskData = ImageData.convertPad(maskData, mask.width, mask.height, mask.depth, mask.scanlinePad, 2);
+	/* Create bitmaps */
 	int xDisplay = device.xDisplay;
 	int drawable = OS.XDefaultRootWindow(xDisplay);
 	int sourcePixmap = OS.XCreateBitmapFromData(xDisplay, drawable, sourceData, source.width, source.height);
