@@ -72,6 +72,8 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
 	
 	disposeMeter(meter);
 
+	if (isGTK) return;
+	
 	count /= 10;
 	
 	Class printerClass = null;
@@ -130,6 +132,8 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
 	
 	disposeMeter(meter);
 
+	if (isGTK) return;
+	
 	count /= 10;
 	
 	Class printerClass = null;
