@@ -17,7 +17,7 @@ import org.eclipse.swt.internal.Library;
 
 public class OS {
 	static {
-		Library.loadLibrary("swt-pi");
+		Library.loadLibrary("swt-pi-1x");
 	}
 	
 		

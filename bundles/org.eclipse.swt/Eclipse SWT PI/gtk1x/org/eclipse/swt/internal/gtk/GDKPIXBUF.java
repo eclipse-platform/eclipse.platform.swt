@@ -220,6 +220,6 @@ public static final native int gdk_pixbuf_get_from_drawable (
 /* LOAD THE DLL */
 
 static {
-	Library.loadLibrary ("swt-pixbuf");
+	Library.loadLibrary ("swt-pixbuf-1x");
 }
 }

@@ -32,17 +32,17 @@ SWT_PREFIX   = swt
 WS_PREFIX    = gtk
 SWT_DLL      = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 
-PI_PREFIX   = swt-pi
+PI_PREFIX   = swt-pi-1x
 SWTPI_DLL   = lib$(PI_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 
-GNOME_PREFIX = swt-gnome
+GNOME_PREFIX = swt-gnome-1x
 GNOME_DLL    = lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 GNOME_LIB    = -x -shared \
     -L/usr/lib \
    -lgnome -lglib \
     -lm -ldl
 
-PIXBUF_PREFIX = swt-pixbuf
+PIXBUF_PREFIX = swt-pixbuf-1x
 PIXBUF_DLL    = lib$(PIXBUF_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 
 
