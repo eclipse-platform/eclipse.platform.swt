@@ -175,6 +175,7 @@ public class OS {
 	public static final int kDataBrowserRevealWithoutSelecting = 1 << 1;
 	public static final int kDataBrowserSelectOnlyOne = 1 << 1;
 	public static final int kDataBrowserTextType = ('t'<<24) + ('e'<<16) + ('x'<<8) + 't';
+	public static final int kDataBrowserTableViewFillHilite = 1;
 	public static final int kDataBrowserViewSpecificFlagsOffset = 16;
 	public static final int kDocumentWindowClass = 6;
 	public static final int kEventAppleEvent = 1;
@@ -960,6 +961,7 @@ public static final native int SetDataBrowserScrollPosition(int cHandle, int top
 public static final native int SetDataBrowserSelectedItems(int cHandle, int numItems, int[] items, int operation);
 public static final native int SetDataBrowserSelectionFlags(int cHandle, int selectionFlags);
 public static final native int SetDataBrowserTableViewColumnPosition(int browser, int column, int position);
+public static final native int SetDataBrowserTableViewHiliteStyle(int browser, int hiliteStyle);  
 public static final native int SetDataBrowserTableViewItemRow(int browser, int item, int row);
 public static final native int SetDataBrowserTableViewNamedColumnWidth(int browser, int column, short width);
 public static final native int SetDataBrowserTarget(int cHandle, int rootID);

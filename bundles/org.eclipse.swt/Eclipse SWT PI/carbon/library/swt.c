@@ -6128,6 +6128,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserTab
 }
 #endif /* NO_SetDataBrowserTableViewItemRow */
 
+#ifndef NO_SetDataBrowserTableViewHiliteStyle
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserTableViewHiliteStyle
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SetDataBrowserTableViewHiliteStyle\n")
+
+	return (jint)SetDataBrowserTableViewHiliteStyle(arg0, arg1);
+}
+#endif
+
 #ifndef NO_SetDataBrowserTarget
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserTarget
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
