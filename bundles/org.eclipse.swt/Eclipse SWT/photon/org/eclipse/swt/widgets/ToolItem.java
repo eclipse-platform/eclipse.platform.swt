@@ -448,12 +448,12 @@ void hookEvents () {
 	super.hookEvents ();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	int windowProc = getDisplay ().windowProc;
-	OS.PtAddEventHandler (handle, OS.Ph_EV_BOUNDARY, windowProc, SWT.MouseEnter);	
-	OS.PtAddCallback (button, OS.Pt_CB_ACTIVATE, windowProc, SWT.Selection);
+	OS.PtAddEventHandler (handle, OS.Ph_EV_BOUNDARY, windowProc, OS.Ph_EV_BOUNDARY);	
+	OS.PtAddCallback (button, OS.Pt_CB_ACTIVATE, windowProc, OS.Pt_CB_ACTIVATE);
 	if ((style & SWT.DROP_DOWN) != 0) {
-		OS.PtAddCallback (arrow, OS.Pt_CB_ACTIVATE, windowProc, SWT.Selection);
+		OS.PtAddCallback (arrow, OS.Pt_CB_ACTIVATE, windowProc, OS.Pt_CB_ACTIVATE);
 	}
-	OS.PtAddCallback (handle, OS.Pt_CB_LOST_FOCUS, windowProc, SWT.FocusOut);
+	OS.PtAddCallback (handle, OS.Pt_CB_LOST_FOCUS, windowProc,  OS.Pt_CB_LOST_FOCUS);
 }
 
 /**
@@ -476,29 +476,14 @@ public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();
 }
 
-int processEvent (int widget, int data, int info) {
-	if (widget == arrow && data == SWT.Selection) {
-		Event event = new Event ();
-		event.detail = SWT.ARROW;
-		postEvent (SWT.Selection, event);
-		return OS.Pt_CONTINUE;
-	}
-	return super.processEvent (widget, data, info);
-}
-
-int processFocusOut (int info) {
-	parent.lastFocus = this;
-	return OS.Pt_CONTINUE;
-}
-
-int processMouseEnter (int info) {
+int Ph_EV_BOUNDARY (int widget, int info) {
 	if (info == 0) return OS.Pt_END;
 	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
 	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
 	if (cbinfo.event == 0) return OS.Pt_END;
 	PhEvent_t ev = new PhEvent_t ();
 	OS.memmove (ev, cbinfo.event, PhEvent_t.sizeof);
-	switch (ev.subtype) {
+	switch ((int) ev.subtype) {
 		case OS.Ph_EV_PTR_STEADY:
 			int [] args = {OS.Pt_ARG_TEXT_FONT, 0, 0};
 			OS.PtGetResources (button, args.length / 3, args);
@@ -516,13 +501,23 @@ int processMouseEnter (int info) {
 	return OS.Pt_END;
 }
 
-int processSelection (int info) {
-	if ((style & SWT.RADIO) != 0) {
-		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
-			selectRadio ();
+int Pt_CB_ACTIVATE (int widget, int info) {
+	Event event = new Event ();
+	if (widget == arrow) {
+		event.detail = SWT.ARROW;
+	} else {
+		if ((style & SWT.RADIO) != 0) {
+			if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
+				selectRadio ();
+			}
 		}
 	}
-	postEvent (SWT.Selection);
+	postEvent (SWT.Selection, event);
+	return OS.Pt_CONTINUE;
+}
+
+int Pt_CB_LOST_FOCUS (int widget, int info) {
+	parent.lastFocus = this;
 	return OS.Pt_CONTINUE;
 }
 

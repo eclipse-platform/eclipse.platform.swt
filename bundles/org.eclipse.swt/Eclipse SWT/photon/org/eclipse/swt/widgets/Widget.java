@@ -46,9 +46,22 @@ public abstract class Widget {
 	String [] keys;
 	Object [] values;
 	
-	static final int DISPOSED		= 0x00000001;
-	static final int HANDLE			= 0x00000002;
-	static final int CANVAS			= 0x00000004;
+	/* Global state flags */
+//	static final int AUTOMATIC		= 1 << 0;
+//	static final int ACTIVE			= 1 << 1;
+	static final int GRAB		= 1 << 2;
+//	static final int MULTIEXPOSE	= 1 << 3;
+//	static final int RESIZEREDRAW	= 1 << 4;
+//	static final int WRAP			= 1 << 5;
+	static final int DISABLED	= 1 << 6;
+//	static final int HIDDEN		= 1 << 7;
+//	static final int FOREGROUND		= 1 << 8;
+//	static final int BACKGROUND		= 1 << 9;
+	static final int DISPOSED	= 1 << 10;
+	static final int HANDLE		= 1 << 11;
+	static final int CANVAS		= 1 << 12;
+	static final int MOVED		= 1 << 13;
+	static final int RESIZED	= 1 << 14;
 	
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT = 64;
@@ -382,6 +395,10 @@ public void dispose () {
 	destroyWidget ();
 }
 
+int drawProc (int widget, int damage) {
+	return OS.Pt_CONTINUE;
+}
+
 static void error (int code) {
 	SWT.error(code);
 }
@@ -511,6 +528,10 @@ boolean hooks (int eventType) {
 	return eventTable.hooks (eventType);
 }
 
+int hotkeyProc (int widget, int data, int info) {
+	return OS.Pt_CONTINUE;
+}
+
 void hookEvents () {
 	/* Do nothing */
 }
@@ -575,99 +596,87 @@ void postEvent (int eventType, Event event) {
 	sendEvent (eventType, event, false);
 }
 
-int processActivate (int info) {
+int Ph_EV_BOUNDARY (int widget, int info) {
 	return OS.Pt_CONTINUE;
 }
 
-int processArm (int info) {
+int Ph_EV_BUT_PRESS (int widget, int info) {
 	return OS.Pt_CONTINUE;
 }
 
-int processDefaultSelection (int info) {
+int Ph_EV_BUT_RELEASE (int widget, int info) {
 	return OS.Pt_CONTINUE;
 }
 
-int processFocusIn (int info) {
+int Ph_EV_DRAG (int widget, int info) {
 	return OS.Pt_CONTINUE;
 }
 
-int processFocusOut (int info) {
+int Ph_EV_KEY (int widget, int info) {
 	return OS.Pt_CONTINUE;
 }
 
-int processHide (int info) {
+int Ph_EV_PTR_MOTION (int widget, int info) {
 	return OS.Pt_CONTINUE;
 }
 
-int processHotkey (int data, int info) {
+int Pt_CB_ACTIVATE (int widget, int info) {
 	return OS.Pt_CONTINUE;
 }
 
-int processKey (int info) {
+int Pt_CB_ARM (int widget, int info) {
 	return OS.Pt_CONTINUE;
 }
 
-int processEvent (int widget, int data, int info) {
-	switch (data) {
-		case SWT.Activate:			return processActivate (info);
-		case SWT.Arm:				return processArm (info);
-//		case SWT.Dispose:			return processDispose (info);
-		case SWT.DefaultSelection:	return processDefaultSelection (info);
-		case SWT.FocusIn:			return processFocusIn (info);
-		case SWT.FocusOut:			return processFocusOut (info);
-//		case SWT.Help:				return processHelp (info);
-		case SWT.Hide:				return processHide (info);
-		case SWT.KeyDown:			
-		case SWT.KeyUp:				return processKey (info);
-		case SWT.Modify:			return processModify (info);
-		case SWT.MouseDown:			
-		case SWT.MouseMove:
-		case SWT.MouseUp:			return processMouse (info);
-		case SWT.MouseEnter:		return processMouseEnter (info);
-//		case SWT.MouseExit:			return processMouseOut (info);
-		case SWT.Move:				return processMove (info);
-//		case SWT.Paint:				return processPaint (info);
-		case SWT.Resize:			return processResize (info);
-		case SWT.Show:				return processShow (info);
-		case SWT.Selection:			return processSelection (info);
-		case SWT.Verify:			return processVerify (info);
-	}
+int Pt_CB_GOT_FOCUS (int widget, int info) {
 	return OS.Pt_CONTINUE;
 }
 
-int processModify (int info) {
+int Pt_CB_LOST_FOCUS (int widget, int info) {
 	return OS.Pt_CONTINUE;
 }
 
-int processMouse (int info) {
+int Pt_CB_MODIFY_VERIFY (int widget, int info) {
 	return OS.Pt_CONTINUE;
 }
 
-int processMouseEnter (int info) {
+int Pt_CB_PG_PANEL_SWITCHING (int widget, int info) {
 	return OS.Pt_CONTINUE;
 }
 
-int processMove (int info) {
+int Pt_CB_REALIZED (int widget, int info) {
 	return OS.Pt_CONTINUE;
 }
 
-int processPaint (int damage) {
+int Pt_CB_RESIZE (int widget, int info) {
 	return OS.Pt_CONTINUE;
 }
 
-int processResize (int info) {
+int Pt_CB_SCROLL_MOVE (int widget, int info) {
 	return OS.Pt_CONTINUE;
 }
 
-int processShow (int info) {
+int Pt_CB_SLIDER_MOVE (int widget, int info) {
 	return OS.Pt_CONTINUE;
 }
 
-int processSelection (int info) {
+int Pt_CB_SELECTION (int widget, int info) {
 	return OS.Pt_CONTINUE;
 }
 
-int processVerify (int info) {
+int Pt_CB_TEXT_CHANGED (int widget, int info) {
+	return OS.Pt_CONTINUE;
+}
+
+int Pt_CB_TIMER_ACTIVATE (int widget, int info) {
+	return OS.Pt_CONTINUE;
+}
+
+int Pt_CB_UNREALIZED (int widget, int info) {
+	return OS.Pt_CONTINUE;
+}
+
+int Pt_CB_WINDOW (int widget, int info) {
 	return OS.Pt_CONTINUE;
 }
 
@@ -796,7 +805,7 @@ void replaceMnemonic (int mnemonic, boolean normal, boolean alt) {
 //					OS.PtRemoveHotkeyHandler (handle, key, 0, (short)0, SWT.Activate, display.windowProc);
 				}
 				if (alt) {
-					OS.PtRemoveHotkeyHandler (handle, key, OS.Pk_KM_Alt, (short)0, SWT.Activate, display.windowProc);
+					OS.PtRemoveHotkeyHandler (handle, key, OS.Pk_KM_Alt, (short)0, handle, display.hotkeyProc);
 				}
 			}
 		}
@@ -808,7 +817,7 @@ void replaceMnemonic (int mnemonic, boolean normal, boolean alt) {
 //		OS.PtAddHotkeyHandler (handle, key, 0, (short)0, SWT.Activate, display.windowProc);
 	}
 	if (alt) {
-		OS.PtAddHotkeyHandler (handle, key, OS.Pk_KM_Alt, (short)0, SWT.Activate, display.windowProc);
+		OS.PtAddHotkeyHandler (handle, key, OS.Pk_KM_Alt, (short)0, handle, display.hotkeyProc);
 	}
 }
 
@@ -1029,6 +1038,10 @@ void setMouseState(Event event, PhPointerEvent_t pe, PhEvent_t ev) {
 	}
 }
 
+int topHandle () {
+	return handle;
+}
+
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.
@@ -1044,8 +1057,31 @@ public String toString () {
 	return getName () + " {" + string + "}";
 }
 
-int topHandle () {
-	return handle;
+int windowProc (int handle, int data, int info) {
+	switch (data) {
+		case OS.Ph_EV_BOUNDARY:			return Ph_EV_BOUNDARY (handle, info);
+		case OS.Ph_EV_BUT_PRESS:			return Ph_EV_BUT_PRESS (handle, info);
+		case OS.Ph_EV_BUT_RELEASE:			return Ph_EV_BUT_RELEASE (handle, info);
+		case OS.Ph_EV_DRAG:			return Ph_EV_DRAG (handle, info);
+		case OS.Ph_EV_KEY:			return Ph_EV_KEY (handle, info);
+		case OS.Ph_EV_PTR_MOTION:			return Ph_EV_PTR_MOTION (handle, info);
+		case OS.Pt_CB_ACTIVATE:			return Pt_CB_ACTIVATE (handle, info);
+		case OS.Pt_CB_ARM:			return Pt_CB_ARM (handle, info);
+		case OS.Pt_CB_GOT_FOCUS:			return Pt_CB_GOT_FOCUS (handle, info);
+		case OS.Pt_CB_LOST_FOCUS:			return Pt_CB_LOST_FOCUS (handle, info);
+		case OS.Pt_CB_MODIFY_VERIFY:			return Pt_CB_MODIFY_VERIFY (handle, info);
+		case OS.Pt_CB_PG_PANEL_SWITCHING:			return Pt_CB_PG_PANEL_SWITCHING (handle, info);
+		case OS.Pt_CB_REALIZED:			return Pt_CB_REALIZED (handle, info);
+		case OS.Pt_CB_RESIZE:			return Pt_CB_RESIZE (handle, info);
+		case OS.Pt_CB_SCROLL_MOVE:			return Pt_CB_SCROLL_MOVE (handle, info);
+		case OS.Pt_CB_SLIDER_MOVE:			return Pt_CB_SLIDER_MOVE (handle, info);
+		case OS.Pt_CB_SELECTION:			return Pt_CB_SELECTION (handle, info);
+		case OS.Pt_CB_TEXT_CHANGED:			return Pt_CB_TEXT_CHANGED (handle, info);
+		case OS.Pt_CB_TIMER_ACTIVATE:			return Pt_CB_TIMER_ACTIVATE (handle, info);
+		case OS.Pt_CB_UNREALIZED:			return Pt_CB_UNREALIZED (handle, info);
+		case OS.Pt_CB_WINDOW:			return Pt_CB_WINDOW (handle, info);
+	}
+	return OS.Pt_CONTINUE;
 }
 
 }

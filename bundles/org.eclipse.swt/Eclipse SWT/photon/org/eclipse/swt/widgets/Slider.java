@@ -293,17 +293,14 @@ public int getThumb () {
 	OS.PtGetResources (handle, args.length / 3, args);
 	return args [1];
 }
+
 void hookEvents () {
 	super.hookEvents ();
 	int windowProc = getDisplay ().windowProc;
-	OS.PtAddCallback (handle, OS.Pt_CB_SCROLL_MOVE, windowProc, SWT.Selection);
-}
-int processPaint (int damage) {
-	OS.PtSuperClassDraw (OS.PtScrollbar (), handle, damage);
-	return super.processPaint (damage);
+	OS.PtAddCallback (handle, OS.Pt_CB_SCROLL_MOVE, windowProc, OS.Pt_CB_SCROLL_MOVE);
 }
 
-int processSelection (int info) {
+int Pt_CB_SCROLL_MOVE (int widget, int info) {
 	if (info == 0) return OS.Pt_CONTINUE;
 	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
 	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
@@ -508,6 +505,10 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 		OS.Pt_ARG_MAXIMUM, maximum - 1, 0,
 	};
 	OS.PtSetResources (handle, args.length / 3, args);
+}
+
+int widgetClass () {
+	return OS.PtScrollbar ();
 }
 
 }

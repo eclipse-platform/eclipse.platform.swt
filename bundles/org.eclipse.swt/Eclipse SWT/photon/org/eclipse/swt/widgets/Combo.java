@@ -740,8 +740,8 @@ boolean hasFocus () {
 void hookEvents () {
 	super.hookEvents ();
 	int windowProc = getDisplay ().windowProc;
-	OS.PtAddCallback (handle, OS.Pt_CB_SELECTION, windowProc, SWT.Selection);
-	OS.PtAddCallback (handle, OS.Pt_CB_TEXT_CHANGED, windowProc, SWT.Modify);
+	OS.PtAddCallback (handle, OS.Pt_CB_SELECTION, windowProc, OS.Pt_CB_SELECTION);
+	OS.PtAddCallback (handle, OS.Pt_CB_TEXT_CHANGED, windowProc, OS.Pt_CB_TEXT_CHANGED);
 }
 
 /**
@@ -838,23 +838,18 @@ public void paste () {
 	OS.free(ptr);
 }
 
-int processModify (int info) {
-	sendEvent (SWT.Modify);
-	return OS.Pt_CONTINUE;
-}
-
-int processPaint (int damage) {
-	OS.PtSuperClassDraw (OS.PtComboBox (), handle, damage);
-	return super.processPaint (damage);
-}
-
-int processSelection (int info) {
+int Pt_CB_SELECTION (int widget, int info) {
 	if (info == 0) return OS.Pt_CONTINUE;
 	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
 	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
 	if (cbinfo.reason_subtype == OS.Pt_LIST_SELECTION_FINAL) {
 		postEvent(SWT.Selection);
 	}
+	return OS.Pt_CONTINUE;
+}
+
+int Pt_CB_TEXT_CHANGED (int widget, int info) {
+	sendEvent (SWT.Modify);
 	return OS.Pt_CONTINUE;
 }
 
@@ -1035,10 +1030,10 @@ public void select (int index) {
 	OS.PtSetResource (handle, OS.Pt_ARG_CBOX_SELECTION_ITEM, index + 1, 0);
 }
 
-boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
 	checkWidget();
 	int newHeight = (resize && (style & SWT.DROP_DOWN) != 0) ? getTextHeight() : height;
-	return super.setBounds (x, y, width, newHeight, move, resize);
+	return super.setBounds (x, y, width, newHeight, move, resize, events);
 }
 
 /**
@@ -1211,6 +1206,10 @@ boolean translateTraversal (int key_sym, PhKeyEvent_t phEvent) {
 		return false;
 	}
 	return translated;
+}
+
+int widgetClass () {
+	return OS.PtComboBox ();
 }
 
 }

@@ -643,8 +643,19 @@ public Point getSize () {
 void hookEvents () {
 	super.hookEvents ();
 	int windowProc = getDisplay ().windowProc;
-	OS.PtAddCallback (shellHandle, OS.Pt_CB_WINDOW, windowProc, SWT.Move);
-	OS.PtAddCallback (shellHandle, OS.Pt_CB_RESIZE, windowProc, SWT.Resize);
+	OS.PtAddCallback (shellHandle, OS.Pt_CB_WINDOW, windowProc, OS.Pt_CB_WINDOW);
+	OS.PtAddCallback (shellHandle, OS.Pt_CB_RESIZE, windowProc, OS.Pt_CB_RESIZE);
+}
+
+int hotkeyProc (int w, int data, int info) {
+	if (data != 0) {
+		Widget widget = WidgetTable.get (data);
+		if (widget instanceof MenuItem) {
+			MenuItem item = (MenuItem) widget;
+			if (item.isEnabled ()) item.Pt_CB_ACTIVATE (data, info);
+		}
+	}
+	return OS.Pt_CONTINUE;
 }
 
 /**
@@ -675,18 +686,20 @@ public void open () {
 	traverseGroup (true);
 }
 
-int processHotkey (int data, int info) {
-	if (data != 0) {
-		Widget widget = WidgetTable.get (data);
-		if (widget instanceof MenuItem) {
-			MenuItem item = (MenuItem) widget;
-			if (item.isEnabled ()) item.processSelection (info);
-		}
-	}
+int Pt_CB_RESIZE (int widget, int info) {
+	if (info == 0) return OS.Pt_CONTINUE;
+	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
+	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
+	if (cbinfo.cbdata == 0) return OS.Pt_CONTINUE;
+	int [] args = {OS.Pt_ARG_WIDTH, 0, 0, OS.Pt_ARG_HEIGHT, 0, 0};
+	OS.PtGetResources (shellHandle, args.length / 3, args);
+	resizeBounds (args [1], args [4]);
+	sendEvent(SWT.Resize);
+	if (layout != null) layout (false);
 	return OS.Pt_CONTINUE;
 }
 
-int processMove (int info) {
+int Pt_CB_WINDOW (int widget, int info) {
 	if (info == 0) return OS.Pt_CONTINUE;
 	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
 	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
@@ -705,7 +718,7 @@ int processMove (int info) {
 			}
 			break;
 		case OS.Ph_WM_FOCUS:
-			switch (we.event_state) {
+			switch ((int) we.event_state) {
 				case OS.Ph_WM_EVSTATE_FOCUS: sendEvent (SWT.Activate); break;
 				case OS.Ph_WM_EVSTATE_FOCUSLOST: sendEvent (SWT.Deactivate); break;
 			}
@@ -714,19 +727,6 @@ int processMove (int info) {
 			sendEvent (SWT.Move);
 			break;
 	}
-	return OS.Pt_CONTINUE;
-}
-
-int processResize (int info) {
-	if (info == 0) return OS.Pt_CONTINUE;
-	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
-	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
-	if (cbinfo.cbdata == 0) return OS.Pt_CONTINUE;
-	int [] args = {OS.Pt_ARG_WIDTH, 0, 0, OS.Pt_ARG_HEIGHT, 0, 0};
-	OS.PtGetResources (shellHandle, args.length / 3, args);
-	resizeBounds (args [1], args [4]);
-	sendEvent(SWT.Resize);
-	if (layout != null) layout (false);
 	return OS.Pt_CONTINUE;
 }
 
@@ -865,12 +865,12 @@ void setActiveControl (Control control) {
 	}
 }
 
-boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
 	checkWidget();
 	if (OS.PtWidgetClass (shellHandle) != OS.PtWindow ()) {
-		boolean changed = super.setBounds (x, y, width, height, move, resize);
-		if (changed && resize) resizeBounds (width, height);
-		return changed;
+		int result = super.setBounds (x, y, width, height, move, resize, events);
+		if ((result & RESIZED) != 0) resizeBounds (width, height);
+		return result;
 	}
 	
 	boolean isFocus = caret != null && caret.isFocusCaret ();
@@ -939,7 +939,8 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	
 	if (isFocus) caret.setFocus ();
 	
-	return move || resize;
+	/* Always return 0 */
+	return 0;
 }
 
 /**
@@ -1000,7 +1001,7 @@ public void setMenuBar (Menu menu) {
 		OS.PtSetResources (menuHandle, args.length / 3, args);	
 		OS.PtRealizeWidget (menuHandle);
 	}
-	resizeBounds(width, height);
+	resizeBounds (width, height);
 }
 
 public void setMinimized (boolean minimized) {

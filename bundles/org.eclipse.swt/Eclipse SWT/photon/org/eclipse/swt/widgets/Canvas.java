@@ -91,21 +91,22 @@ public Caret getCaret () {
 	return caret;
 }
 
-int processFocusIn (int info) {
-	int result = super.processFocusIn (info);
+int Pt_CB_GOT_FOCUS (int widget, int info) {
+	int result = super.Pt_CB_GOT_FOCUS (widget, info);
 	if (caret != null) caret.setFocus ();
 	return result;
 }
-int processFocusOut (int info) {
-	int result = super.processFocusOut (info);
+
+int Pt_CB_LOST_FOCUS (int widget, int info) {
+	int result = super.Pt_CB_LOST_FOCUS (widget, info);
 	if (caret != null) caret.killFocus ();
 	return result;
 }
 
-int processPaint (int callData) {
+int drawProc (int widget, int damage) {
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
-	int result = super.processPaint (callData);
+	int result = super.drawProc (widget, damage);
 	if (isFocus) caret.setFocus ();
 	return result;
 }
@@ -168,13 +169,13 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	if (isFocus) caret.setFocus ();
 }
 
-boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
 	checkWidget();
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
-	boolean changed = super.setBounds (x, y, width, height, move, resize);
+	int result = super.setBounds (x, y, width, height, move, resize, events);
 	if (isFocus) caret.setFocus ();
-	return changed;
+	return result;
 }
 
 /**

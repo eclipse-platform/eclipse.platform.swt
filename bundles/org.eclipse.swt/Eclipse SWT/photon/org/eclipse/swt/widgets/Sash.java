@@ -120,7 +120,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle (int index) {
-	state |= HANDLE;
+	state |= GRAB | HANDLE;
 	Display display = getDisplay ();
 	int clazz = display.PtContainer;
 	int parentHandle = parent.parentingHandle ();
@@ -160,26 +160,43 @@ void drawBand (int x, int y, int width, int height) {
 	OS.PgDestroyGC (phGC);
 }
 
-void hookEvents () {
-	super.hookEvents ();
-	int windowProc = getDisplay ().windowProc;
-	OS.PtAddEventHandler (handle, OS.Ph_EV_DRAG, windowProc, SWT.MouseMove);
+int Ph_EV_BUT_PRESS (int widget, int info) {
+	int result = super.Ph_EV_BUT_PRESS (widget, info);
+	if (result != OS.Pt_CONTINUE)return result;
+	processMouse (info);
+	return result;
 }
 
-int processMouse (int info) {
-	int result = super.processMouse (info);
-	
-	if (info == 0) return OS.Pt_END;
+int Ph_EV_BUT_RELEASE (int widget, int info) {
+	int result = super.Ph_EV_BUT_RELEASE (widget, info);
+	if (result != OS.Pt_CONTINUE)return result;
+	processMouse (info);
+	return result;
+}
+
+int Ph_EV_DRAG (int widget, int info) {
+	int result = super.Ph_EV_DRAG (widget, info);
+	if (result != OS.Pt_CONTINUE)return result;
+	processMouse (info);
+	return result;
+}
+
+int Ph_EV_PTR_MOTION (int widget, int info) {
+	int result = super.Ph_EV_PTR_MOTION (widget, info);
+	if (result != OS.Pt_CONTINUE)return result;
+	processMouse (info);
+	return result;
+}
+
+void processMouse (int info) {	
 	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
 	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
-	if (cbinfo.event == 0) return OS.Pt_END;
 	PhEvent_t ev = new PhEvent_t ();
 	OS.memmove (ev, cbinfo.event, PhEvent_t.sizeof);
 	int data = OS.PhGetData (cbinfo.event);
-	if (data == 0) return OS.Pt_END;
 	PhPointerEvent_t pe = new PhPointerEvent_t ();
 	OS.memmove (pe, data, PhPointerEvent_t.sizeof);
-	if (pe.buttons != OS.Ph_BUTTON_SELECT) return result;
+	if (pe.buttons != OS.Ph_BUTTON_SELECT) return;
 
 	int x = pe.pos_x + ev.translation_x;
 	int y = pe.pos_y + ev.translation_y;
@@ -219,7 +236,7 @@ int processMouse (int info) {
 			* the window proc.
 			*/
 			sendEvent (SWT.Selection, event);
-			if (isDisposed ()) return OS.Pt_END;
+			if (isDisposed ()) return;
 			
 			/* Draw the banding rectangle */
 			if (event.doit) {
@@ -231,10 +248,10 @@ int processMouse (int info) {
 			break;
 		case OS.Ph_EV_BUT_RELEASE:
 			if (ev.subtype != OS.Ph_EV_RELEASE_PHANTOM) {
-				return result;
+				return;
 			}
 			/* Compute the banding rectangle */
-			if (!dragging) return result;
+			if (!dragging) return;
 			dragging = false;
 			
 			/* The event must be sent because doit flag is used */
@@ -247,9 +264,9 @@ int processMouse (int info) {
 		case OS.Ph_EV_PTR_MOTION_NOBUTTON:
 		case OS.Ph_EV_DRAG:
 			if (ev.subtype != OS.Ph_EV_DRAG_MOTION_EVENT) {
-				return result;
+				return;
 			}
-			if (!dragging) return result;
+			if (!dragging) return;
 		
 			/* Compute the banding rectangle */
 			x += area.pos_x;
@@ -263,7 +280,7 @@ int processMouse (int info) {
 			} else {
 				newY = Math.min (Math.max (0, y - startY), clientHeight - height);
 			}
-			if ((newX == lastX) && (newY == lastY)) return result;
+			if ((newX == lastX) && (newY == lastY)) return;
 			drawBand (lastX, lastY, width, height);
 		
 			/* The event must be sent because doit flag is used */
@@ -278,7 +295,7 @@ int processMouse (int info) {
 			* the window proc.
 			*/
 			sendEvent (SWT.Selection, event);
-			if (isDisposed ()) return OS.Pt_END;
+			if (isDisposed ()) return;
 		
 			/* Draw the banding rectangle */
 			if (event.doit) {
@@ -288,12 +305,6 @@ int processMouse (int info) {
 			}
 			break;
 	}
-	return result;
-}
-
-int processPaint (int damage) {
-	OS.PtSuperClassDraw (OS.PtContainer (), handle, damage);
-	return super.processPaint (damage);
 }
 
 /**
@@ -387,6 +398,10 @@ boolean translateTraversal (int key_sym, PhKeyEvent_t phEvent) {
 		}
 	}
 	return result;
+}
+
+int widgetClass () {
+	return OS.PtContainer ();
 }
 
 }

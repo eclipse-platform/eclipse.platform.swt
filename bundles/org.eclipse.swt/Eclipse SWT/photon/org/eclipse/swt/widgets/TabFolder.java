@@ -379,8 +379,8 @@ public int getSelectionIndex () {
 void hookEvents () {
 	super.hookEvents ();
 	int windowProc = getDisplay ().windowProc;
-	OS.PtAddCallback (handle, OS.Pt_CB_PG_PANEL_SWITCHING, windowProc, SWT.Selection);
-	OS.PtAddCallback (handle, OS.Pt_CB_REALIZED, windowProc, SWT.Show);
+	OS.PtAddCallback (handle, OS.Pt_CB_PG_PANEL_SWITCHING, windowProc, OS.Pt_CB_PG_PANEL_SWITCHING);
+	OS.PtAddCallback (handle, OS.Pt_CB_REALIZED, windowProc, OS.Pt_CB_REALIZED);
 }
 
 /**
@@ -417,12 +417,7 @@ int parentingHandle () {
 	return parentingHandle;
 }
 
-int processPaint (int damage) {
-	OS.PtSuperClassDraw (OS.PtPanelGroup (), handle, damage);
-	return super.processPaint (damage);
-}
-
-int processSelection (int info) {
+int Pt_CB_PG_PANEL_SWITCHING (int widget, int info) {
 	if (info == 0) return OS.Pt_CONTINUE;
 	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
 	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
@@ -449,8 +444,8 @@ int processSelection (int info) {
 	return OS.Pt_CONTINUE;
 }
 
-int processShow (int info) {
-	int result = super.processShow (info);
+int Pt_CB_REALIZED (int widget, int info) {
+	int result = super.Pt_CB_REALIZED (widget, info);
 	if (currentIndex != OS.Pt_PG_INVALID) {
 		if (info == 0) return OS.Pt_END;
 		PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
@@ -507,9 +502,9 @@ public void removeSelectionListener (SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
-boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
-	boolean changed = super.setBounds (x, y, width, height, move, resize);
-	if (changed && resize) {
+int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
+	int result = super.setBounds (x, y, width, height, move, resize, events);
+	if ((result & RESIZED) != 0) {
 		int [] args = {OS.Pt_ARG_WIDTH, 0, 0, OS.Pt_ARG_HEIGHT, 0, 0};
 		OS.PtGetResources (parentingHandle, args.length / 3, args);
 		OS.PtSetResources (handle, args.length / 3, args);
@@ -522,7 +517,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 			}
 		}
 	}
-	return changed;
+	return result;
 }
 
 /**
@@ -623,6 +618,10 @@ boolean traversePage (boolean next) {
 
 int topHandle () {
 	return parentingHandle;
+}
+
+int widgetClass () {
+	return OS.PtPanelGroup ();
 }
 
 }

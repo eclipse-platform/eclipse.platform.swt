@@ -516,7 +516,7 @@ int drawProc (int handle, int damage) {
 	if (thread != Thread.currentThread()) return 0;
 	Widget widget = WidgetTable.get (handle);
 	if (widget == null) return 0;
-	return widget.processPaint (damage);
+	return widget.drawProc (handle, damage);
 }
 
 void error (int code) {
@@ -901,7 +901,7 @@ public Thread getThread () {
 int hotkeyProc (int handle, int data, int info) {
 	Widget widget = WidgetTable.get (handle);
 	if (widget == null) return OS.Pt_CONTINUE;
-	return widget.processHotkey (data, info);
+	return widget.hotkeyProc (handle, data, info);
 }
 
 protected void init () {
@@ -1826,7 +1826,7 @@ public void wake () {
 int windowProc (int handle, int data, int info) {
 	Widget widget = WidgetTable.get (handle);
 	if (widget == null) return OS.Pt_CONTINUE;
-	return widget.processEvent (handle, data, info);
+	return widget.windowProc (handle, data, info);
 }
 
 int workProc (int data) {

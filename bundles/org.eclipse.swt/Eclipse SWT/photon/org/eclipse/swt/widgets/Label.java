@@ -266,14 +266,7 @@ public String getText () {
 	return text;
 }
 
-int processPaint (int damage) {
-	int clazz = OS.PtLabel ();
-	if ((style & SWT.SEPARATOR) != 0) clazz = OS.PtSeparator ();
-	OS.PtSuperClassDraw (clazz, handle, damage);
-	return super.processPaint (damage);
-}
-
-int processActivate (int info) {
+int hotkeyProc (int widget, int data, int info) {
 	Composite control = this.parent;
 	while (control != null) {
 		Control [] children = control._getChildren ();
@@ -322,10 +315,10 @@ public void setAlignment (int alignment) {
 	OS.PtSetResource (handle, OS.Pt_ARG_HORIZONTAL_ALIGNMENT, align, 0);
 }
 
-boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
-	boolean changed = super.setBounds (x, y, width, height, move, resize);
-	if (changed && resize && (style & SWT.WRAP) != 0) setText (text);
-	return changed;
+int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
+	int result = super.setBounds (x, y, width, height, move, resize, events);
+	if ((result & RESIZED) != 0 && (style & SWT.WRAP) != 0) setText (text);
+	return result;
 }
 
 public boolean setFocus () {
@@ -446,6 +439,11 @@ public void setText (String string) {
 	OS.PtSetResources (handle, args.length / 3, args);
 	OS.free (ptr);
 	OS.free (ptr2);
+}
+
+int widgetClass () {
+	if ((style & SWT.SEPARATOR) != 0) return OS.PtSeparator ();
+	return OS.PtLabel ();
 }
 
 }

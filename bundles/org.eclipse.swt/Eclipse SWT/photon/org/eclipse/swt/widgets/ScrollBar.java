@@ -361,7 +361,7 @@ public boolean getVisible () {
 
 void hookEvents () {
 	int windowProc = getDisplay ().windowProc;
-	OS.PtAddCallback (handle, OS.Pt_CB_SCROLL_MOVE, windowProc, SWT.Selection);
+	OS.PtAddCallback (handle, OS.Pt_CB_SCROLL_MOVE, windowProc, OS.Pt_CB_SCROLL_MOVE);
 }
 
 /**
@@ -403,7 +403,7 @@ public boolean isVisible () {
 	return OS.PtWidgetIsRealized (handle);
 }
 
-int processSelection (int info) {
+int Pt_CB_SCROLL_MOVE (int widget, int info) {
 	if (info == 0) return OS.Pt_CONTINUE;
 	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
 	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);

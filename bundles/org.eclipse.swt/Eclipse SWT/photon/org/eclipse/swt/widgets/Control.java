@@ -473,6 +473,69 @@ int defaultForeground () {
 	return display.WIDGET_FOREGROUND;
 }
 
+int drawProc (int widget, int damage) {
+	drawWidget (widget, damage);
+	if (!hooks(SWT.Paint) && !filters (SWT.Paint)) return OS.Pt_CONTINUE;
+	
+	/* Translate the damage to widget coordinates */
+	short [] widgetX = new short [1];
+	short [] widgetY = new short [1];
+	OS.PtGetAbsPosition (handle, widgetX, widgetY);
+	short [] shellX = new short [1];
+	short [] shellY = new short [1];
+	int shellHandle = OS.PtFindDisjoint (handle);
+	OS.PtGetAbsPosition (shellHandle, shellX, shellY);
+	PhPoint_t pt = new PhPoint_t ();
+	pt.x = (short) (shellX [0] - widgetX [0]);
+	pt.y = (short) (shellY [0] - widgetY [0]);
+	damage = OS.PhCopyTiles (damage);
+	damage = OS.PhTranslateTiles (damage, pt);
+	
+	/* Send the paint event */
+	PhTile_t tile = new PhTile_t ();
+	OS.memmove (tile, damage, PhTile_t.sizeof);
+	boolean noMerge = (style & SWT.NO_MERGE_PAINTS) != 0 && (state & CANVAS) != 0;
+	if (tile.next != 0 && noMerge) {
+		while (tile.next != 0) {
+			OS.memmove (tile, tile.next, PhTile_t.sizeof);
+			if (tile.rect_ul_x != tile.rect_lr_x || tile.rect_ul_y != tile.rect_lr_y) {
+				Event event = new Event ();
+				event.x = tile.rect_ul_x;
+				event.y = tile.rect_ul_y;
+				event.width = tile.rect_lr_x - tile.rect_ul_x + 1;
+				event.height = tile.rect_lr_y - tile.rect_ul_y + 1;
+				GC gc = event.gc = new GC (this);
+				gc.setClipping (event.x, event.y, event.width, event.height);
+				sendEvent (SWT.Paint, event);
+				if (isDisposed ()) break;
+				gc.dispose ();
+				event.gc = null;
+			}
+		}
+	} else {
+		if (tile.rect_ul_x != tile.rect_lr_x || tile.rect_ul_y != tile.rect_lr_y) {
+			Event event = new Event ();
+			event.x = tile.rect_ul_x;
+			event.y = tile.rect_ul_y;
+			event.width = tile.rect_lr_x - tile.rect_ul_x + 1;
+			event.height = tile.rect_lr_y - tile.rect_ul_y + 1;
+			Region region = Region.photon_new (tile.next);
+			GC gc = event.gc = new GC (this);
+			gc.setClipping (region);
+			sendEvent (SWT.Paint, event);
+			gc.dispose ();
+			event.gc = null;
+		}
+	}
+	OS.PhFreeTiles (damage);
+	return OS.Pt_CONTINUE;
+}
+
+void drawWidget (int widget, int damage) {
+	int widgetClass = widgetClass ();
+	if (widgetClass != 0) OS.PtSuperClassDraw (widgetClass, handle, damage);
+}
+
 /**
  * Returns the accessible object for the receiver.
  * If this is the first time this object is requested,
@@ -824,13 +887,16 @@ boolean hasFocus () {
 void hookEvents () {
 	int windowProc = getDisplay ().windowProc;
 	int focusHandle = focusHandle ();
-	OS.PtAddFilterCallback (handle, OS.Ph_EV_KEY, windowProc, SWT.KeyDown);
-	OS.PtAddEventHandler (handle, OS.Ph_EV_BUT_PRESS, windowProc, SWT.MouseDown);
-	OS.PtAddEventHandler (handle, OS.Ph_EV_BUT_RELEASE, windowProc, SWT.MouseUp);
-	OS.PtAddEventHandler (handle, OS.Ph_EV_PTR_MOTION, windowProc, SWT.MouseMove);
-	OS.PtAddEventHandler (handle, OS.Ph_EV_BOUNDARY, windowProc, SWT.MouseEnter);	
-	OS.PtAddCallback (focusHandle, OS.Pt_CB_GOT_FOCUS, windowProc, SWT.FocusIn);
-	OS.PtAddCallback (focusHandle, OS.Pt_CB_LOST_FOCUS, windowProc, SWT.FocusOut);
+	OS.PtAddFilterCallback (handle, OS.Ph_EV_KEY, windowProc, OS.Ph_EV_KEY);
+	OS.PtAddEventHandler (handle, OS.Ph_EV_BUT_PRESS, windowProc, OS.Ph_EV_BUT_PRESS);
+	OS.PtAddEventHandler (handle, OS.Ph_EV_BUT_RELEASE, windowProc, OS.Ph_EV_BUT_RELEASE);
+	OS.PtAddEventHandler (handle, OS.Ph_EV_PTR_MOTION, windowProc, OS.Ph_EV_PTR_MOTION);
+	OS.PtAddEventHandler (handle, OS.Ph_EV_BOUNDARY, windowProc, OS.Ph_EV_BOUNDARY);
+	if ((state & GRAB) != 0) {
+		OS.PtAddEventHandler (handle, OS.Ph_EV_DRAG, windowProc, OS.Ph_EV_DRAG);
+	}
+	OS.PtAddCallback (focusHandle, OS.Pt_CB_GOT_FOCUS, windowProc, OS.Pt_CB_GOT_FOCUS);
+	OS.PtAddCallback (focusHandle, OS.Pt_CB_LOST_FOCUS, windowProc, OS.Pt_CB_LOST_FOCUS);
 }
 
 int focusHandle () {
@@ -1124,60 +1190,142 @@ public void pack (boolean changed) {
 	setSize (computeSize (SWT.DEFAULT, SWT.DEFAULT, changed));
 }
 
-int processPaint (int damage) {
-	sendPaintEvent (damage);
-	return OS.Pt_CONTINUE;
+int Ph_EV_BOUNDARY (int widget, int info) {
+	if (info == 0) return OS.Pt_END;
+	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
+	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
+	if (cbinfo.event == 0) return OS.Pt_END;
+	PhEvent_t ev = new PhEvent_t ();
+	OS.memmove (ev, cbinfo.event, PhEvent_t.sizeof);
+	int data = OS.PhGetData (cbinfo.event);
+	if (data == 0) return OS.Pt_END;
+	PhPointerEvent_t pe = new PhPointerEvent_t ();
+	OS.memmove (pe, data, PhPointerEvent_t.sizeof);
+	Event event = new Event ();
+	event.time = ev.timestamp;
+	setMouseState (event, pe, ev);
+	switch ((int) ev.subtype) {
+		case OS.Ph_EV_PTR_ENTER:
+		case OS.Ph_EV_PTR_ENTER_FROM_CHILD:
+			sendEvent (SWT.MouseEnter, event);
+			break;
+		case OS.Ph_EV_PTR_LEAVE:
+		case OS.Ph_EV_PTR_LEAVE_TO_CHILD:
+			sendEvent (SWT.MouseExit, event);
+			break;
+		case OS.Ph_EV_PTR_STEADY:
+			postEvent (SWT.MouseHover, event);
+			destroyToolTip (toolTipHandle);
+			toolTipHandle = createToolTip (toolTipText, handle, getFont ().handle);
+			break;
+		case OS.Ph_EV_PTR_UNSTEADY:
+			destroyToolTip (toolTipHandle);
+			toolTipHandle = 0;
+			break;		
+	}
+	return OS.Pt_END;
 }
 
-int processFocusIn (int info) {
-	Shell shell = getShell ();
-	sendEvent (SWT.FocusIn);
-	if (isDisposed ()) return OS.Pt_CONTINUE;
-
+int Ph_EV_BUT_PRESS (int widget, int info) {
+	if (info == 0) return OS.Pt_END;
+	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
+	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
+	if (cbinfo.event == 0) return OS.Pt_END;
+	PhEvent_t ev = new PhEvent_t ();
+	OS.memmove (ev, cbinfo.event, PhEvent_t.sizeof);
+	if ((ev.processing_flags & OS.Ph_FAKE_EVENT) != 0) {
+		return OS.Pt_CONTINUE;
+	}
+	ev.processing_flags |= OS.Ph_CONSUMED;
+	OS.memmove (cbinfo.event, ev, PhEvent_t.sizeof);
+	int data = OS.PhGetData (cbinfo.event);
+	if (data == 0) return OS.Pt_END;
+	PhPointerEvent_t pe = new PhPointerEvent_t ();
+	OS.memmove (pe, data, PhPointerEvent_t.sizeof);
+	Event event = new Event ();
+	event.time = ev.timestamp;
+	setMouseState (event, pe, ev);
+	postEvent (SWT.MouseDown, event);
+	if (pe.click_count == 2) {
+		Event clickEvent = new Event ();
+		clickEvent.time = event.time;
+		clickEvent.x = event.x;
+		clickEvent.y = event.y;
+		clickEvent.button = event.button;
+		clickEvent.stateMask = event.stateMask;
+		postEvent (SWT.MouseDoubleClick, clickEvent);
+	}
+	if (event.button == 3) {
+		if (menu != null && !menu.isDisposed ()) {
+			Display display = getDisplay ();
+			display.runDeferredEvents ();
+			menu.setVisible (true);
+		}
+	}
 	/*
 	* It is possible that the shell may be
 	* disposed at this point.  If this happens
 	* don't send the activate and deactivate
 	* events.
-	*/	
+	*/
+	Shell shell = getShell ();
 	if (!shell.isDisposed ()) {
 		shell.setActiveControl (this);
 	}
-
-	/*
-	* Feature in Photon.  Cannot return Pt_END
-	* or the text widget will not take focus.
-	*/
 	return OS.Pt_CONTINUE;
 }
 
-int processFocusOut (int info) {
-	Shell shell = getShell ();
-	sendEvent (SWT.FocusOut);
-	if (isDisposed ()) return OS.Pt_CONTINUE;
-
-	/*
-	* It is possible that the shell may be
-	* disposed at this point.  If this happens
-	* don't send the activate and deactivate
-	* events.
-	*/
-	if (!shell.isDisposed ()) {
-		Display display = shell.getDisplay ();
-		Control control = display.getFocusControl ();
-		if (control == null || shell != control.getShell () ) {
-			shell.setActiveControl (null);
-		}
+int Ph_EV_BUT_RELEASE (int widget, int info) {
+	if (info == 0) return OS.Pt_END;
+	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
+	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
+	if (cbinfo.event == 0) return OS.Pt_END;
+	PhEvent_t ev = new PhEvent_t ();
+	OS.memmove (ev, cbinfo.event, PhEvent_t.sizeof);
+	if ((ev.processing_flags & OS.Ph_FAKE_EVENT) != 0) {
+		return OS.Pt_CONTINUE;
 	}
-
-	/*
-	* Feature in Photon.  Cannot return Pt_END
-	* or the text widget will not take focus.
-	*/
+	ev.processing_flags |= OS.Ph_CONSUMED;
+	OS.memmove (cbinfo.event, ev, PhEvent_t.sizeof);
+	if (ev.subtype != OS.Ph_EV_RELEASE_PHANTOM) {
+		return OS.Pt_CONTINUE;
+	}
+	int data = OS.PhGetData (cbinfo.event);
+	if (data == 0) return OS.Pt_END;
+	PhPointerEvent_t pe = new PhPointerEvent_t ();
+	OS.memmove (pe, data, PhPointerEvent_t.sizeof);
+	Event event = new Event ();
+	event.time = ev.timestamp;
+	setMouseState (event, pe, ev);
+	postEvent (SWT.MouseUp, event);
 	return OS.Pt_CONTINUE;
 }
 
-int processKey (int info) {
+int Ph_EV_DRAG (int widget, int info) {
+	if (info == 0) return OS.Pt_END;
+	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
+	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
+	if (cbinfo.event == 0) return OS.Pt_END;
+	PhEvent_t ev = new PhEvent_t ();
+	OS.memmove (ev, cbinfo.event, PhEvent_t.sizeof);
+	if ((ev.processing_flags & OS.Ph_FAKE_EVENT) != 0) {
+		return OS.Pt_CONTINUE;
+	}
+	if (ev.subtype != OS.Ph_EV_DRAG_MOTION_EVENT) {
+		return OS.Pt_CONTINUE;
+	}
+	int data = OS.PhGetData (cbinfo.event);
+	if (data == 0) return OS.Pt_END;
+	PhPointerEvent_t pe = new PhPointerEvent_t ();
+	OS.memmove (pe, data, PhPointerEvent_t.sizeof);
+	Event event = new Event ();
+	event.time = ev.timestamp;
+	setMouseState (event, pe, ev);
+	postEvent (SWT.MouseMove, event);
+	return OS.Pt_CONTINUE;
+}
+
+int Ph_EV_KEY (int widget, int info) {
 	if (!hasFocus ()) return OS.Pt_PROCESS;
 	if (info == 0) return OS.Pt_PROCESS;
 	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
@@ -1284,7 +1432,7 @@ int processKey (int info) {
 	return OS.Pt_PROCESS;
 }
 
-int processMouse (int info) {
+int Ph_EV_PTR_MOTION (int widget, int info) {
 	if (info == 0) return OS.Pt_END;
 	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
 	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
@@ -1294,34 +1442,10 @@ int processMouse (int info) {
 	if ((ev.processing_flags & OS.Ph_FAKE_EVENT) != 0) {
 		return OS.Pt_CONTINUE;
 	}
-	if (ev.type != OS.Ph_EV_DRAG) {
-		ev.processing_flags |= OS.Ph_CONSUMED;
-		OS.memmove (cbinfo.event, ev, PhEvent_t.sizeof);
-	}
-	int type = 0;
-	switch (ev.type) {
-		case OS.Ph_EV_BUT_PRESS:
-			type = SWT.MouseDown;
-			break;
-		case OS.Ph_EV_BUT_RELEASE:
-			if (ev.subtype != OS.Ph_EV_RELEASE_PHANTOM) {
-				return OS.Pt_CONTINUE;
-			}
-			type = SWT.MouseUp;
-			break;
-		case OS.Ph_EV_PTR_MOTION_BUTTON:
-			if ((state & CANVAS) != 0) return OS.Pt_CONTINUE;
-		case OS.Ph_EV_PTR_MOTION_NOBUTTON:
-			type = SWT.MouseMove;
-			break;
-		case OS.Ph_EV_DRAG:
-			if (ev.subtype != OS.Ph_EV_DRAG_MOTION_EVENT) {
-				return OS.Pt_CONTINUE;
-			}
-			type = SWT.MouseMove;
-			break;
-		default:
-			return OS.Pt_CONTINUE;
+	ev.processing_flags |= OS.Ph_CONSUMED;
+	OS.memmove (cbinfo.event, ev, PhEvent_t.sizeof);
+	if (ev.type == OS.Ph_EV_PTR_MOTION_BUTTON) {
+		if ((state & CANVAS) != 0) return OS.Pt_CONTINUE;
 	}
 	int data = OS.PhGetData (cbinfo.event);
 	if (data == 0) return OS.Pt_END;
@@ -1330,77 +1454,56 @@ int processMouse (int info) {
 	Event event = new Event ();
 	event.time = ev.timestamp;
 	setMouseState (event, pe, ev);
-	postEvent (type, event);
-	if (type == SWT.MouseDown) {
-		if (event.button == 3) {
-			if (menu != null && !menu.isDisposed ()) {
-				Display display = getDisplay ();
-				display.runDeferredEvents ();
-				menu.setVisible (true);
-			}
-		}
-		if (pe.click_count == 2) {
-			Event clickEvent = new Event ();
-			clickEvent.time = event.time;
-			clickEvent.x = event.x;
-			clickEvent.y = event.y;
-			clickEvent.button = event.button;
-			clickEvent.stateMask = event.stateMask;
-			postEvent (SWT.MouseDoubleClick, clickEvent);
-		}
-		/*
-		* It is possible that the shell may be
-		* disposed at this point.  If this happens
-		* don't send the activate and deactivate
-		* events.
-		*/
-		Shell shell = getShell ();
-		if (!shell.isDisposed ()) {
-			shell.setActiveControl (this);
-		}
-	}
+	postEvent (SWT.MouseMove, event);
 	return OS.Pt_CONTINUE;
 }
 
-int processMouseEnter (int info) {
-	if (info == 0) return OS.Pt_END;
-	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
-	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
-	if (cbinfo.event == 0) return OS.Pt_END;
-	PhEvent_t ev = new PhEvent_t ();
-	OS.memmove (ev, cbinfo.event, PhEvent_t.sizeof);
-	int rects = OS.PhGetRects (cbinfo.event);
-	PhRect_t rect = new PhRect_t ();
-	OS.memmove (rect, rects, PhRect_t.sizeof);
-	Event event = new Event ();
-	event.time = ev.timestamp;
-	event.x = rect.ul_x;
-	event.y = rect.ul_y;
-	int data = OS.PhGetData (cbinfo.event);
-	if (data == 0) return OS.Pt_END;
-	PhPointerEvent_t pe = new PhPointerEvent_t ();
-	OS.memmove (pe, data, PhPointerEvent_t.sizeof);
-	setMouseState (event, pe, ev);
-	switch (ev.subtype) {
-		case OS.Ph_EV_PTR_ENTER:
-		case OS.Ph_EV_PTR_ENTER_FROM_CHILD:
-			sendEvent (SWT.MouseEnter, event);
-			break;
-		case OS.Ph_EV_PTR_LEAVE:
-		case OS.Ph_EV_PTR_LEAVE_TO_CHILD:
-			sendEvent (SWT.MouseExit, event);
-			break;
-		case OS.Ph_EV_PTR_STEADY:
-			postEvent (SWT.MouseHover, event);
-			destroyToolTip (toolTipHandle);
-			toolTipHandle = createToolTip (toolTipText, handle, getFont ().handle);
-			break;
-		case OS.Ph_EV_PTR_UNSTEADY:
-			destroyToolTip (toolTipHandle);
-			toolTipHandle = 0;
-			break;		
+int Pt_CB_GOT_FOCUS (int widget, int info) {
+	Shell shell = getShell ();
+	sendEvent (SWT.FocusIn);
+	if (isDisposed ()) return OS.Pt_CONTINUE;
+
+	/*
+	* It is possible that the shell may be
+	* disposed at this point.  If this happens
+	* don't send the activate and deactivate
+	* events.
+	*/	
+	if (!shell.isDisposed ()) {
+		shell.setActiveControl (this);
 	}
-	return OS.Pt_END;
+
+	/*
+	* Feature in Photon.  Cannot return Pt_END
+	* or the text widget will not take focus.
+	*/
+	return OS.Pt_CONTINUE;
+}
+
+int Pt_CB_LOST_FOCUS (int widget, int info) {
+	Shell shell = getShell ();
+	sendEvent (SWT.FocusOut);
+	if (isDisposed ()) return OS.Pt_CONTINUE;
+
+	/*
+	* It is possible that the shell may be
+	* disposed at this point.  If this happens
+	* don't send the activate and deactivate
+	* events.
+	*/
+	if (!shell.isDisposed ()) {
+		Display display = shell.getDisplay ();
+		Control control = display.getFocusControl ();
+		if (control == null || shell != control.getShell () ) {
+			shell.setActiveControl (null);
+		}
+	}
+
+	/*
+	* Feature in Photon.  Cannot return Pt_END
+	* or the text widget will not take focus.
+	*/
+	return OS.Pt_CONTINUE;
 }
 
 void realizeWidget() {
@@ -1696,7 +1799,7 @@ public void removeTraverseListener(TraverseListener listener) {
 	eventTable.unhook (SWT.Traverse, listener);
 }
 
-boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
 	int topHandle = topHandle ();
 	PhArea_t area = new PhArea_t ();
 	OS.PtWidgetArea (topHandle, area);
@@ -1705,7 +1808,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	boolean sameOrigin = x == area.pos_x && y == area.pos_y;
 	boolean sameExtent = width == area.size_w && height == area.size_h;
 	if (move && resize) {
-		if (sameOrigin && sameExtent) return false;
+		if (sameOrigin && sameExtent) return 0;
 		area.pos_x = (short) x;
 		area.pos_y = (short) y;
 		area.size_w = (short) width;
@@ -1716,7 +1819,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		OS.free (ptr);
 	} else {
 		if (move) {
-			if (sameOrigin) return false;
+			if (sameOrigin) return 0;
 			PhPoint_t pt = new PhPoint_t ();
 			pt.x = (short) x;
 			pt.y = (short) y;
@@ -1725,7 +1828,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 			OS.PtSetResource (topHandle, OS.Pt_ARG_POS, ptr, 0);
 			OS.free (ptr);
 		} else if (resize) {
-			if (sameExtent) return false;
+			if (sameExtent) return 0;
 			int [] args = {
 				OS.Pt_ARG_WIDTH, width, 0,
 				OS.Pt_ARG_HEIGHT, height, 0,
@@ -1736,9 +1839,16 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	if (!OS.PtWidgetIsRealized (topHandle)) {
 		OS.PtExtentWidgetFamily (topHandle);
 	}
-	if (!sameOrigin & move) sendEvent (SWT.Move);
-	if (!sameExtent & resize & sendResize()) sendEvent (SWT.Resize);
-	return true;
+	int result = 0;
+	if (move && !sameOrigin) {
+		sendEvent (SWT.Move);
+		result |= MOVED;
+	}
+	if (resize && !sameExtent) {
+		sendEvent (SWT.Resize);
+		result |= RESIZED;
+	}
+	return result;
 }
 
 /**
@@ -1764,7 +1874,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
  */
 public void setBounds (int x, int y, int width, int height) {
 	checkWidget();
-	setBounds (x, y, width, height, true, true);
+	setBounds (x, y, width, height, true, true, true);
 }
 
 /**
@@ -1888,66 +1998,6 @@ public void setEnabled (boolean enabled) {
 public boolean setFocus () {
 	checkWidget();
 	return forceFocus ();
-}
-
-void sendPaintEvent (int damage) {
-	if (!hooks(SWT.Paint) && !filters (SWT.Paint)) return;
-	
-	/* Translate the damage to widget coordinates */
-	short [] widgetX = new short [1];
-	short [] widgetY = new short [1];
-	OS.PtGetAbsPosition (handle, widgetX, widgetY);
-	short [] shellX = new short [1];
-	short [] shellY = new short [1];
-	int shellHandle = OS.PtFindDisjoint (handle);
-	OS.PtGetAbsPosition (shellHandle, shellX, shellY);
-	PhPoint_t pt = new PhPoint_t ();
-	pt.x = (short) (shellX [0] - widgetX [0]);
-	pt.y = (short) (shellY [0] - widgetY [0]);
-	damage = OS.PhCopyTiles (damage);
-	damage = OS.PhTranslateTiles (damage, pt);
-	
-	/* Send the paint event */
-	PhTile_t tile = new PhTile_t ();
-	OS.memmove (tile, damage, PhTile_t.sizeof);
-	boolean noMerge = (style & SWT.NO_MERGE_PAINTS) != 0 && (state & CANVAS) != 0;
-	if (tile.next != 0 && noMerge) {
-		while (tile.next != 0) {
-			OS.memmove (tile, tile.next, PhTile_t.sizeof);
-			if (tile.rect_ul_x != tile.rect_lr_x || tile.rect_ul_y != tile.rect_lr_y) {
-				Event event = new Event ();
-				event.x = tile.rect_ul_x;
-				event.y = tile.rect_ul_y;
-				event.width = tile.rect_lr_x - tile.rect_ul_x + 1;
-				event.height = tile.rect_lr_y - tile.rect_ul_y + 1;
-				GC gc = event.gc = new GC (this);
-				gc.setClipping (event.x, event.y, event.width, event.height);
-				sendEvent (SWT.Paint, event);
-				if (isDisposed ()) break;
-				gc.dispose ();
-				event.gc = null;
-			}
-		}
-	} else {
-		if (tile.rect_ul_x != tile.rect_lr_x || tile.rect_ul_y != tile.rect_lr_y) {
-			Event event = new Event ();
-			event.x = tile.rect_ul_x;
-			event.y = tile.rect_ul_y;
-			event.width = tile.rect_lr_x - tile.rect_ul_x + 1;
-			event.height = tile.rect_lr_y - tile.rect_ul_y + 1;
-			Region region = Region.photon_new (tile.next);
-			GC gc = event.gc = new GC (this);
-			gc.setClipping (region);
-			sendEvent (SWT.Paint, event);
-			gc.dispose ();
-			event.gc = null;
-		}
-	}
-	OS.PhFreeTiles (damage);
-}
-
-boolean sendResize () {
-	return true;
 }
 
 /**
@@ -2091,7 +2141,7 @@ public void setLayoutData (Object layoutData) {
  */
 public void setLocation (int x, int y) {
 	checkWidget();
-	setBounds (x, y, 0, 0, true, false);
+	setBounds (x, y, 0, 0, true, false, true);
 }
 
 /**
@@ -2251,7 +2301,7 @@ public void setRedraw (boolean redraw) {
  */
 public void setSize (int width, int height) {
 	checkWidget();
-	setBounds (0, 0, width, height, false, true);
+	setBounds (0, 0, width, height, false, true, true);
 }
 
 /**
@@ -2564,6 +2614,10 @@ boolean traverseReturn () {
 public void update () {
 	checkWidget();
 	OS.PtFlush ();
+}
+
+int widgetClass () {
+	return 0;
 }
 
 }

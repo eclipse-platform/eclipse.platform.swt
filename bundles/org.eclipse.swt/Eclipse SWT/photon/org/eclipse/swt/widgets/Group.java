@@ -171,11 +171,6 @@ Point getTitleSize() {
 	return new Point(width, height);
 }
 
-int processPaint (int damage) {
-	OS.PtSuperClassDraw (OS.PtPane (), handle, damage);
-	return super.processPaint (damage);
-}
-
 /**
  * Sets the receiver's text, which is the string that will
  * be displayed as the receiver's <em>title</em>, to the argument,
@@ -204,6 +199,10 @@ public void setText (String string) {
 	};
 	OS.PtSetResources (handle, args.length / 3, args);
 	OS.free (ptr);
+}
+
+int widgetClass () {
+	return OS.PtContainer ();
 }
 
 }

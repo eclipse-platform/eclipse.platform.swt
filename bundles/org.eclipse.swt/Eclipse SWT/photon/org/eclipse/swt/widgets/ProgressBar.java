@@ -118,11 +118,6 @@ byte [] defaultFont () {
 	return display.GAUGE_FONT;
 }
 
-int processPaint (int damage) {
-	OS.PtSuperClassDraw (OS.PtProgress (), handle, damage);
-	return super.processPaint (damage);
-}
-
 /**
  * Returns the maximum value which the receiver will allow.
  *
@@ -234,6 +229,10 @@ public void setSelection (int value) {
 
 int traversalCode (int key_sym, PhKeyEvent_t ke) {
 	return 0;
+}
+
+int widgetClass () {
+	return OS.PtProgress ();
 }
 
 }

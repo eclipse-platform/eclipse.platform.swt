@@ -815,8 +815,8 @@ public int getTopPixel () {
 void hookEvents () {
 	super.hookEvents ();
 	int windowProc = getDisplay ().windowProc;
-	OS.PtAddCallback (handle, OS.Pt_CB_MODIFY_VERIFY, windowProc, SWT.Verify); 
-	OS.PtAddCallback (handle, OS.Pt_CB_TEXT_CHANGED, windowProc, SWT.Modify);
+	OS.PtAddCallback (handle, OS.Pt_CB_MODIFY_VERIFY, windowProc, OS.Pt_CB_MODIFY_VERIFY); 
+	OS.PtAddCallback (handle, OS.Pt_CB_TEXT_CHANGED, windowProc, OS.Pt_CB_TEXT_CHANGED);
 }
 
 /**
@@ -875,7 +875,7 @@ public void paste () {
 	OS.free(ptr);
 }
 
-int processEvent (int widget, int data, int info) {
+int Pt_CB_GOT_FOCUS (int widget, int info) {
 	
 	/*
 	* Bug in Photon. Even though the Pt_CB_GOT_FOCUS callback
@@ -886,32 +886,12 @@ int processEvent (int widget, int data, int info) {
 	* Pt_CB_LOST_FOCUS callbacks.
 	*/
 	if ((style & SWT.MULTI) != 0) {
-		if (widget != handle && data == SWT.FocusOut) {
-			return OS.Pt_CONTINUE;
-		}
+		if (widget != handle) return OS.Pt_CONTINUE;
 	}
-	return super.processEvent (widget, data, info);
+	return super.Pt_CB_GOT_FOCUS (widget, info);
 }
 
-int processModify (int info) {
-	if (lastModifiedText != 0) {
-		OS.free (lastModifiedText);
-		lastModifiedText = 0;
-	}
-	if (!ignoreChange) sendEvent (SWT.Modify);
-	return OS.Pt_CONTINUE;
-}
-
-int processPaint (int damage) {
-	if ((style & SWT.SINGLE) != 0) {
-		OS.PtSuperClassDraw (OS.PtText (), handle, damage);
-	} else {
-		OS.PtSuperClassDraw (OS.PtMultiText (), handle, damage);
-	}
-	return super.processPaint (damage);
-}
-
-int processVerify (int info) {
+int Pt_CB_MODIFY_VERIFY (int widget, int info) {
 	if (lastModifiedText != 0) {
 		OS.free (lastModifiedText);
 		lastModifiedText = 0;
@@ -973,6 +953,15 @@ int processVerify (int info) {
 	}
 	OS.memmove (cbinfo.cbdata, textVerify, PtTextCallback_t.sizeof);
 	textVerify = null;
+	return OS.Pt_CONTINUE;
+}
+
+int Pt_CB_TEXT_CHANGED (int widget, int info) {
+	if (lastModifiedText != 0) {
+		OS.free (lastModifiedText);
+		lastModifiedText = 0;
+	}
+	if (!ignoreChange) sendEvent (SWT.Modify);
 	return OS.Pt_CONTINUE;
 }
 
@@ -1419,6 +1408,11 @@ boolean translateTraversal (int key_sym, PhKeyEvent_t phEvent) {
 		return false;
 	}
 	return translated;
+}
+
+int widgetClass () {
+	if ((style & SWT.SINGLE) != 0) return OS.PtText ();
+	return OS.PtMultiText ();
 }
 
 }

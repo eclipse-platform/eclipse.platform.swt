@@ -32,7 +32,6 @@ import org.eclipse.swt.events.*;
 public class MenuItem extends Item {
 	Menu parent, menu;
 	int accelerator;
-	boolean enabled = true;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -303,7 +302,7 @@ public boolean getEnabled () {
 	*/
 //	int topHandle = topHandle ();
 //	return (OS.PtWidgetFlags (topHandle) & OS.Pt_BLOCKED) == 0;
-	return enabled;
+	return (state & DISABLED) == 0;
 }
 
 /**
@@ -369,12 +368,17 @@ void hookEvents () {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	int windowProc = getDisplay ().windowProc;
 	if ((style & SWT.CASCADE) != 0) {
-		OS.PtAddCallback (handle, OS.Pt_CB_ARM, windowProc, SWT.Arm);
+		OS.PtAddCallback (handle, OS.Pt_CB_ARM, windowProc, OS.Pt_CB_ARM);
 	}
-	OS.PtAddCallback (handle, OS.Pt_CB_ACTIVATE, windowProc, SWT.Selection);
+	OS.PtAddCallback (handle, OS.Pt_CB_ACTIVATE, windowProc, OS.Pt_CB_ACTIVATE);
 	if ((parent.style & SWT.BAR) == 0) {
-		OS.PtAddCallback (handle, OS.Pt_CB_REALIZED, windowProc, SWT.Show);
+		OS.PtAddCallback (handle, OS.Pt_CB_REALIZED, windowProc, OS.Pt_CB_REALIZED);
 	}
+}
+
+int hotkeyProc (int widget, int data, int info) {
+	showMenu ();
+	return OS.Pt_CONTINUE;
 }
 
 /**
@@ -396,12 +400,7 @@ public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();
 }
 
-int processActivate (int info) {
-	showMenu ();
-	return OS.Pt_CONTINUE;
-}
-
-int processSelection (int info) {
+int Pt_CB_ACTIVATE (int widget, int info) {
 	if ((style & SWT.CASCADE) != 0 && menu != null) {
 		return OS.Pt_CONTINUE;
 	}
@@ -439,21 +438,22 @@ int processSelection (int info) {
 	return OS.Pt_CONTINUE;
 }
 
-int processShow (int info) {
+int Pt_CB_ARM (int widget, int info) {
+	postEvent (SWT.Arm);
+	showMenu ();
+	return OS.Pt_CONTINUE;
+}
+
+int Pt_CB_REALIZED (int widget, int info) {
 	/*
 	* Bug in Photon. The Pt_BLOCKED flag of a menu item is cleared
 	* when its parent menu is realized. The fix is to remember
 	* the menu item state and reset it when the menu item is
 	* realized.
 	*/
-	int flags = enabled ? 0 : OS.Pt_BLOCKED | OS.Pt_GHOST;
+	int topHandle = topHandle ();
+	int flags = (state & DISABLED) != 0 ? OS.Pt_BLOCKED | OS.Pt_GHOST : 0;
 	OS.PtSetResource (handle, OS.Pt_ARG_FLAGS, flags, OS.Pt_BLOCKED | OS.Pt_GHOST);
-	return OS.Pt_CONTINUE;
-}
-
-int processArm(int info) {
-	postEvent (SWT.Arm);
-	showMenu ();
 	return OS.Pt_CONTINUE;
 }
 
@@ -607,9 +607,13 @@ public void setAccelerator (int accelerator) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget ();
-	this.enabled = enabled;
+	if (enabled) {
+		state &= ~DISABLED;
+	} else {
+		state |= DISABLED;
+	}
 	int topHandle = topHandle ();
-	int flags = enabled ? 0 : OS.Pt_BLOCKED | OS.Pt_GHOST;
+	int flags = (state & DISABLED) != 0 ? OS.Pt_BLOCKED | OS.Pt_GHOST : 0;
 	OS.PtSetResource (topHandle, OS.Pt_ARG_FLAGS, flags, OS.Pt_BLOCKED | OS.Pt_GHOST);
 }
 

@@ -164,7 +164,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle (int index) {
-	state |= HANDLE | CANVAS;
+	state |= HANDLE | GRAB | CANVAS;
 	int parentHandle = parent.parentingHandle ();
 	createScrolledHandle (parentHandle);
 }
@@ -216,6 +216,47 @@ void createScrolledHandle (int parentHandle) {
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	createScrollBars ();
 }
+
+void drawWidget (int widget, int damage) {
+	if ((state & CANVAS) != 0) {
+		if ((style & SWT.NO_BACKGROUND) == 0) {
+			
+			/* Get the clipping tiles for children and siblings */
+			int clip_tile = getClipping (handle, topHandle (), true, true);
+
+			/* Translate the clipping to the current GC coordinates */
+			short [] abs_x = new short [1], abs_y = new short [1];
+			OS.PtGetAbsPosition (handle, abs_x, abs_y);
+			short [] dis_abs_x = new short [1], dis_abs_y = new short [1];
+			OS.PtGetAbsPosition (OS.PtFindDisjoint (handle), dis_abs_x, dis_abs_y);
+			PhPoint_t delta = new PhPoint_t ();
+			delta.x = (short) (abs_x [0] - dis_abs_x [0]);
+			delta.y = (short) (abs_y [0] - dis_abs_y [0]);
+			OS.PhTranslateTiles(clip_tile, delta);
+
+			/* Set the clipping */
+			int[] clip_rects_count = new int [1];
+			int clip_rects = OS.PhTilesToRects (clip_tile, clip_rects_count);
+			OS.PhFreeTiles (clip_tile);	
+			if (clip_rects_count [0] == 0) {
+				clip_rects_count [0] = 1;
+				OS.free (clip_rects);
+				clip_rects = OS.malloc (PhRect_t.sizeof);
+			}
+			OS.PgSetMultiClip (clip_rects_count[0], clip_rects);
+			OS.free (clip_rects);
+			
+			/* Draw the widget */
+			super.drawWidget (widget, damage);
+			
+			/* Reset the clipping */
+			OS.PgSetMultiClip (0, 0);
+		}
+	} else {
+		super.drawWidget (widget, damage);
+	}
+}
+
 
 public boolean forceFocus () {
 	checkWidget();
@@ -368,14 +409,6 @@ boolean hasFocus () {
 	return OS.PtIsFocused (handle) == 2;
 }
 
-void hookEvents () {
-	super.hookEvents ();
-	if ((state & CANVAS) != 0) {
-		int windowProc = getDisplay ().windowProc;
-		OS.PtAddEventHandler (handle, OS.Ph_EV_DRAG, windowProc, SWT.MouseMove);
-	}
-}
-
 boolean hooksKeys () {
 	return hooks (SWT.KeyDown) || hooks (SWT.KeyUp) || hooks (SWT.Traverse);
 }
@@ -474,7 +507,7 @@ int parentingHandle () {
 	return handle;
 }
 
-int processMouse (int info) {
+int Ph_EV_BUT_PRESS (int widget, int info) {
 	if ((state & CANVAS) != 0) {
 		if (info == 0) return OS.Pt_END;
 		PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
@@ -482,81 +515,40 @@ int processMouse (int info) {
 		if (cbinfo.event == 0) return OS.Pt_END;
 		PhEvent_t ev = new PhEvent_t ();
 		OS.memmove (ev, cbinfo.event, PhEvent_t.sizeof);
-		if (ev.type == OS.Ph_EV_BUT_PRESS) {
-			int data = OS.PhGetData (cbinfo.event);
-			if (data == 0) return OS.Pt_END;
-			PhPointerEvent_t pe = new PhPointerEvent_t ();
-			OS.memmove (pe, data, PhPointerEvent_t.sizeof);
+		int data = OS.PhGetData (cbinfo.event);
+		if (data == 0) return OS.Pt_END;
+		PhPointerEvent_t pe = new PhPointerEvent_t ();
+		OS.memmove (pe, data, PhPointerEvent_t.sizeof);
 	
-			/* Grab pointer */
-			if (!(menu != null && pe.buttons == OS.Ph_BUTTON_MENU)) {
-				if (pe.click_count == 1) {
-					PhRect_t rect = new PhRect_t ();
-					PhPoint_t pos = new PhPoint_t();
-					pos.x = pe.pos_x;
-					pos.y = pe.pos_y;
-					rect.ul_x = rect.lr_x = (short) (pos.x + ev.translation_x);
-					rect.ul_y = rect.lr_y = (short) (pos.y + ev.translation_y);
-					int rid = OS.PtWidgetRid (handle);
-					int input_group = OS.PhInputGroup (0);
-					int flags = OS.Ph_DRAG_KEY_MOTION | OS.Ph_DRAG_TRACK | OS.Ph_TRACK_DRAG;
-					OS.PhInitDrag (rid, flags, rect, null, input_group, null, null, null, pos, null);
+		/* Grab pointer */
+		if (!(menu != null && pe.buttons == OS.Ph_BUTTON_MENU)) {
+			if (pe.click_count == 1) {
+				PhRect_t rect = new PhRect_t ();
+				PhPoint_t pos = new PhPoint_t();
+				pos.x = pe.pos_x;
+				pos.y = pe.pos_y;
+				rect.ul_x = rect.lr_x = (short) (pos.x + ev.translation_x);
+				rect.ul_y = rect.lr_y = (short) (pos.y + ev.translation_y);
+				int rid = OS.PtWidgetRid (handle);
+				int input_group = OS.PhInputGroup (0);
+				int flags = OS.Ph_DRAG_KEY_MOTION | OS.Ph_DRAG_TRACK | OS.Ph_TRACK_DRAG;
+				OS.PhInitDrag (rid, flags, rect, null, input_group, null, null, null, pos, null);
+			}
+		}
+	
+		int result = super.Ph_EV_BUT_PRESS (widget, info);
+	
+		/* Set focus for the a CANVAS with no children */
+		if ((style & SWT.NO_FOCUS) == 0) {
+			if (pe.buttons == OS.Ph_BUTTON_SELECT) {
+				if (OS.PtWidgetChildFront (handle) == 0) {
+					setFocus ();
 				}
 			}
-	
-			int result = super.processMouse (info);
-	
-			/* Set focus for the a CANVAS with no children */
-			if ((style & SWT.NO_FOCUS) == 0) {
-				if (pe.buttons == OS.Ph_BUTTON_SELECT) {
-					if (OS.PtWidgetChildFront (handle) == 0) {
-						setFocus ();
-					}
-				}
-			}
-			return result;
 		}
+		return result;
 	}
-	return super.processMouse (info);
-}
-
-int processPaint (int damage) {
-	if ((state & CANVAS) != 0) {
-		if ((style & SWT.NO_BACKGROUND) == 0) {
-			
-			/* Get the clipping tiles for children and siblings */
-			int clip_tile = getClipping (handle, topHandle (), true, true);
-
-			/* Translate the clipping to the current GC coordinates */
-			short [] abs_x = new short [1], abs_y = new short [1];
-			OS.PtGetAbsPosition (handle, abs_x, abs_y);
-			short [] dis_abs_x = new short [1], dis_abs_y = new short [1];
-			OS.PtGetAbsPosition (OS.PtFindDisjoint (handle), dis_abs_x, dis_abs_y);
-			PhPoint_t delta = new PhPoint_t ();
-			delta.x = (short) (abs_x [0] - dis_abs_x [0]);
-			delta.y = (short) (abs_y [0] - dis_abs_y [0]);
-			OS.PhTranslateTiles(clip_tile, delta);
-
-			/* Set the clipping */
-			int[] clip_rects_count = new int [1];
-			int clip_rects = OS.PhTilesToRects (clip_tile, clip_rects_count);
-			OS.PhFreeTiles (clip_tile);	
-			if (clip_rects_count [0] == 0) {
-				clip_rects_count [0] = 1;
-				OS.free (clip_rects);
-				clip_rects = OS.malloc (PhRect_t.sizeof);
-			}
-			OS.PgSetMultiClip (clip_rects_count[0], clip_rects);
-			OS.free (clip_rects);
-			
-			/* Draw the widget */
-			OS.PtSuperClassDraw (OS.PtContainer (), handle, damage);
-			
-			/* Reset the clipping */
-			OS.PgSetMultiClip (0, 0);
-		}
-	}
-	return super.processPaint (damage);
+	return super.Ph_EV_BUT_PRESS (widget, info);
 }
 
 void releaseChildren () {
@@ -652,18 +644,17 @@ void resizeClientArea (int width, int height) {
 	}
 }
 
-boolean sendResize () {
-	return scrolledHandle == 0;
-}
-
-boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
-	boolean changed = super.setBounds (x, y, width, height, move, resize);
-	if (changed && resize) {
+int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
+	int result = super.setBounds (x, y, width, height, move, resize, false);
+	if ((result & MOVED) != 0) {
+		if (events) sendEvent (SWT.Move);
+	}
+	if ((result & RESIZED) != 0) {
 		resizeClientArea (width, height);
-		sendEvent(SWT.Resize);
+		if (events) sendEvent (SWT.Resize);
 		if (layout != null) layout (false);
 	}
-	return changed;
+	return result;
 }
 
 public boolean setFocus () {
@@ -752,6 +743,11 @@ int traversalCode (int key_sym, PhKeyEvent_t ke) {
 		if (hooksKeys ()) return 0;
 	}
 	return super.traversalCode (key_sym, ke);
+}
+
+int widgetClass () {
+	if ((state & CANVAS) != 0) return OS.PtContainer ();
+	return super.widgetClass ();
 }
 
 }

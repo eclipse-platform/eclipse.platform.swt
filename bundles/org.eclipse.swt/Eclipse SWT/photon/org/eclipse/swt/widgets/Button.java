@@ -248,6 +248,20 @@ void createHandle (int index) {
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
 
+void drawWidget (int widget, int damage) {
+	super.drawWidget (widget, damage);
+	if ((style & SWT.ARROW) != 0) {
+		PhRect_t rect = new PhRect_t ();
+		OS.PtCalcCanvas (handle, rect);
+		int flags = 0;
+		if ((style & SWT.RIGHT) != 0) flags = 2;
+		if ((style & SWT.LEFT) != 0) flags = 1;
+		if ((style & SWT.DOWN) != 0) flags = 8;
+		if ((style & SWT.UP) != 0) flags = 4;
+		OS.PgDrawArrow (rect, (short)0, 0x000000, flags);
+	}
+}
+
 /**
  * Returns a value which describes the position of the
  * text or image in the receiver. The value will be one of
@@ -385,54 +399,15 @@ public String getText () {
 void hookEvents () {
 	super.hookEvents ();
 	int windowProc = getDisplay ().windowProc;
-	OS.PtAddCallback (handle, OS.Pt_CB_ACTIVATE, windowProc, SWT.Selection);
+	OS.PtAddCallback (handle, OS.Pt_CB_ACTIVATE, windowProc, OS.Pt_CB_ACTIVATE);
 }
 
-int processActivate (int info) {
+int hotkeyProc (int widget, int data, int info) {
 	if (setFocus ()) click ();
 	return OS.Pt_CONTINUE;
 }
 
-int processFocusIn (int info) {
-	int result = super.processFocusIn (info);
-	// widget could be disposed at this point
-	if (handle == 0) return result;
-	if ((style & SWT.PUSH) == 0) return result;
-	getShell ().setDefaultButton (this, false);
-	return result;
-}
-
-int processFocusOut (int info) {
-	int result = super.processFocusOut (info);
-	// widget could be disposed at this point
-	if (handle == 0) return result;
-	if ((style & SWT.PUSH) == 0) return result;
-	if (getDefault ()) {
-		getShell ().setDefaultButton (null, false);
-	}
-	return result;
-}
-
-int processPaint (int damage) {
-	if ((style & SWT.ARROW) != 0) {
-		OS.PtSuperClassDraw (OS.PtButton (), handle, damage);
-		PhRect_t rect = new PhRect_t ();
-		OS.PtCalcCanvas (handle, rect);
-		int flags = 0;
-		if ((style & SWT.RIGHT) != 0) flags = 2;
-		if ((style & SWT.LEFT) != 0) flags = 1;
-		if ((style & SWT.DOWN) != 0) flags = 8;
-		if ((style & SWT.UP) != 0) flags = 4;
-		OS.PgDrawArrow (rect, (short)0, 0x000000, flags);
-	} else if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
-		OS.PtSuperClassDraw (OS.PtToggleButton (), handle, damage);
-	} else {
-		OS.PtSuperClassDraw (OS.PtButton (), handle, damage);
-	}
-	return super.processPaint (damage);
-}
-
-int processSelection (int info) {
+int Pt_CB_ACTIVATE (int widget, int info) {
 	if ((style & SWT.RADIO) != 0) {
 		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
 			selectRadio ();
@@ -440,6 +415,26 @@ int processSelection (int info) {
 	}
 	postEvent (SWT.Selection);
 	return OS.Pt_CONTINUE;
+}
+
+int Pt_CB_GOT_FOCUS (int widget, int info) {
+	int result = super.Pt_CB_GOT_FOCUS (widget, info);
+	// widget could be disposed at this point
+	if (handle == 0) return result;
+	if ((style & SWT.PUSH) == 0) return result;
+	getShell ().setDefaultButton (this, false);
+	return result;
+}
+
+int Pt_CB_LOST_FOCUS (int widget, int info) {
+	int result = super.Pt_CB_LOST_FOCUS (widget, info);
+	// widget could be disposed at this point
+	if (handle == 0) return result;
+	if ((style & SWT.PUSH) == 0) return result;
+	if (getDefault ()) {
+		getShell ().setDefaultButton (null, false);
+	}
+	return result;
 }
 
 void releaseWidget () {
@@ -657,6 +652,11 @@ int traversalCode (int key_sym, PhKeyEvent_t ke) {
 	int code = super.traversalCode (key_sym , ke);
 	code |= SWT.TRAVERSE_ARROW_NEXT | SWT.TRAVERSE_ARROW_PREVIOUS | SWT.TRAVERSE_MNEMONIC;
 	return code;
+}
+
+int widgetClass () {
+	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) return OS.PtToggleButton ();
+	return OS.PtButton ();
 }
 
 }

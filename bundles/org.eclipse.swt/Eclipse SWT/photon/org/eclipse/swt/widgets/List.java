@@ -632,8 +632,8 @@ public int getTopIndex () {
 void hookEvents () {
 	super.hookEvents ();
 	int windowProc = getDisplay ().windowProc;
-	OS.PtAddCallback (handle, OS.Pt_CB_SELECTION, windowProc, SWT.Selection);
-	OS.PtAddCallback (handle, OS.Pt_CB_ACTIVATE, windowProc, SWT.DefaultSelection);
+	OS.PtAddCallback (handle, OS.Pt_CB_SELECTION, windowProc, OS.Pt_CB_SELECTION);
+	OS.PtAddCallback (handle, OS.Pt_CB_ACTIVATE, windowProc, OS.Pt_CB_ACTIVATE);
 }
 
 /**
@@ -733,7 +733,7 @@ public boolean isSelected (int index) {
 	return false;
 }
 
-int processDefaultSelection (int info) {
+int Pt_CB_ACTIVATE (int widget, int info) {
 	if (info == 0) return OS.Pt_END;
 	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
 	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
@@ -744,12 +744,7 @@ int processDefaultSelection (int info) {
 	return OS.Pt_CONTINUE;
 }
 
-int processPaint (int damage) {
-	OS.PtSuperClassDraw (OS.PtList (), handle, damage);
-	return super.processPaint (damage);
-}
-
-int processSelection (int info) {
+int Pt_CB_SELECTION (int widget, int info) {
 	postEvent (SWT.Selection);
 	return OS.Pt_CONTINUE;
 }
@@ -1235,6 +1230,10 @@ public void showSelection () {
 	int lastIndex = Math.max (1, count - visibleCount + 1);
 	int newTop = Math.min (Math.max (index - (visibleCount / 2), 1), lastIndex);
 	OS.PtSetResource (handle, OS.Pt_ARG_TOP_ITEM_POS, newTop, 0);
+}
+
+int widgetClass () {
+	return OS.PtList ();
 }
 
 }

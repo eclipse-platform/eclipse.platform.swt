@@ -238,15 +238,10 @@ public int getSelection () {
 void hookEvents () {
 	super.hookEvents ();
 	int windowProc = getDisplay ().windowProc;
-	OS.PtAddCallback (handle, OS.Pt_CB_SLIDER_MOVE, windowProc, SWT.Selection);
+	OS.PtAddCallback (handle, OS.Pt_CB_SLIDER_MOVE, windowProc, OS.Pt_CB_SLIDER_MOVE);
 }
 
-int processPaint (int damage) {
-	OS.PtSuperClassDraw (OS.PtSlider (), handle, damage);
-	return super.processPaint (damage);
-}
-
-int processSelection (int info) {
+int Pt_CB_SLIDER_MOVE (int widget, int info) {
 	if (info == 0) return OS.Pt_CONTINUE;
 	sendEvent(SWT.Selection);
 	return OS.Pt_CONTINUE;
@@ -362,6 +357,10 @@ public void setPageIncrement (int value) {
 public void setSelection (int value) {
 	checkWidget();
 	OS.PtSetResource (handle, OS.Pt_ARG_GAUGE_VALUE, value, 0);
+}
+
+int widgetClass () {
+	return OS.PtSlider ();
 }
 
 }

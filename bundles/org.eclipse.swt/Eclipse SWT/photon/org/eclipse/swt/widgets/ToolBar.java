@@ -342,24 +342,19 @@ int parentingHandle () {
 	return parentingHandle;
 }
 
-int processMouseEnter (int info) {
+int Ph_EV_BOUNDARY (int widget, int info) {
 	if (info == 0) return OS.Pt_END;
 	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
 	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
 	if (cbinfo.event == 0) return OS.Pt_END;
 	PhEvent_t ev = new PhEvent_t ();
 	OS.memmove (ev, cbinfo.event, PhEvent_t.sizeof);
-	switch (ev.subtype) {
+	switch ((int) ev.subtype) {
 		case OS.Ph_EV_PTR_ENTER_FROM_CHILD:
 		case OS.Ph_EV_PTR_LEAVE_TO_CHILD:
 			return OS.Pt_CONTINUE;
 	}
-	return super.processMouseEnter (info);
-}
-
-int processPaint (int damage) {
-	OS.PtSuperClassDraw (OS.PtToolbar (), handle, damage);
-	return super.processPaint (damage);
+	return super.Ph_EV_BOUNDARY (widget, info);
 }
 
 void register () {
@@ -389,14 +384,14 @@ void setBackgroundPixel (int pixel) {
 	}
 }
 
-boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
-	boolean changed = super.setBounds (x, y, width, height, move, resize);
-	if (changed && resize) {
+int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
+	int result = super.setBounds (x, y, width, height, move, resize, events);
+	if ((result & RESIZED) != 0) {
 		int [] args = {OS.Pt_ARG_WIDTH, 0, 0, OS.Pt_ARG_HEIGHT, 0, 0};
 		OS.PtGetResources (parentingHandle, args.length / 3, args);
 		OS.PtSetResources (handle, args.length / 3, args);
 	}
-	return changed;
+	return result;
 }
 
 void setFont (int font) {
@@ -448,6 +443,10 @@ boolean translateTraversal (int key_sym, PhKeyEvent_t phEvent) {
 		if (item.setFocus ()) return false;
 	}
 	return false;
+}
+
+int widgetClass () {
+	return OS.PtToolbar ();
 }
 
 }

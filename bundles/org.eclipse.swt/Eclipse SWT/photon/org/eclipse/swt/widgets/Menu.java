@@ -478,8 +478,8 @@ public boolean getVisible () {
 
 void hookEvents () {
 	int windowProc = getDisplay ().windowProc;
-	OS.PtAddCallback (handle, OS.Pt_CB_REALIZED, windowProc, SWT.Show);
-	OS.PtAddCallback (handle, OS.Pt_CB_UNREALIZED, windowProc, SWT.Hide);
+	OS.PtAddCallback (handle, OS.Pt_CB_REALIZED, windowProc, OS.Pt_CB_REALIZED);
+	OS.PtAddCallback (handle, OS.Pt_CB_UNREALIZED, windowProc, OS.Pt_CB_UNREALIZED);
 }
 
 /**
@@ -555,7 +555,15 @@ public boolean isVisible () {
 	return getVisible ();
 }
 
-int processHide (int info) {
+int Pt_CB_REALIZED (int widget, int info) {
+	if ((style & SWT.BAR) == 0) {
+		Shell shell = getShell ();
+		shell.activeMenu = this;
+	}
+	return OS.Pt_CONTINUE;
+}
+
+int Pt_CB_UNREALIZED (int widget, int info) {
 	if (cascade != null) {
 		OS.PtSetResource (handle, OS.Pt_ARG_MENU_FLAGS, 0, OS.Pt_MENU_CHILD);
 		int shellHandle = parent.topHandle ();
@@ -573,14 +581,6 @@ int processHide (int info) {
 				}
 			}
 		}
-	}
-	return OS.Pt_CONTINUE;
-}
-
-int processShow (int info) {
-	if ((style & SWT.BAR) == 0) {
-		Shell shell = getShell ();
-		shell.activeMenu = this;
 	}
 	return OS.Pt_CONTINUE;
 }
