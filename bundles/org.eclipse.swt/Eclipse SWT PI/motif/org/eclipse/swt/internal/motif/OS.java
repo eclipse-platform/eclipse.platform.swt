@@ -331,6 +331,7 @@ public class OS {
 	public static final int XmCR_DROP_SITE_ENTER_MESSAGE = 0x2;
 	public static final int XmCR_DROP_SITE_LEAVE_MESSAGE = 0x1;
 	public static final int XmCR_DROP_SITE_MOTION_MESSAGE = 0x3;
+	public static final int XmCR_OK = 0x1F;
 	public static final int XmCR_OPERATION_CHANGED = 0x8;
 	public static final int XmClipboardSuccess = 0x1;
 	public static final int XmDEFAULT_SELECT_COLOR = -1;
@@ -406,9 +407,11 @@ public class OS {
 	public static final int XmNchildren = malloc ("children", 4);
 	public static final int XmNclientData = malloc ("clientData", 4);
 	public static final int XmNcolormap = malloc ("colormap", 4);
+	public static final int XmNcolumns = malloc ("columns", 2);
 	public static final int XmNcomboBoxType = malloc ("comboBoxType", 1);
 	public static final int XmNconvertProc = malloc ("convertProc", 4);
 	public static final int XmNcursorPositionVisible = malloc ("cursorPositionVisible", 1);
+	public static final int XmNdecimalPoints = malloc ("decimalPoints", 2);
 	public static final int XmNdecrementCallback = malloc ("decrementCallback", 4);
 	public static final int XmNdefaultActionCallback = malloc ("defaultActionCallback", 4);
 	public static final int XmNdefaultButtonShadowThickness = malloc ("defaultButtonShadowThickness", 4);
@@ -454,6 +457,7 @@ public class OS {
 	public static final int XmNiconic = malloc ("iconic", 1);
 	public static final int XmNimportTargets = malloc("importTargets", 4);
 	public static final int XmNincrement = malloc ("increment", 4);
+	public static final int XmNincrementValue = malloc ("incrementValue", 4);
 	public static final int XmNincrementCallback = malloc ("incrementCallback", 4);
 	public static final int XmNindicatorOn = malloc ("indicatorOn", 1);
 	public static final int XmNindicatorType = malloc ("indicatorType", 1);
@@ -479,9 +483,11 @@ public class OS {
 	public static final int XmNmarginTop = malloc ("marginTop", 2);
 	public static final int XmNmarginWidth = malloc ("marginWidth", 2);
 	public static final int XmNmaximum = malloc ("maximum", 4);
+	public static final int XmNmaximumValue = malloc ("maximumValue", 4);	
 	public static final int XmNmenuBar = malloc ("menuBar", 4);
 	public static final int XmNmessageString = malloc ("messageString", 4);
 	public static final int XmNminimum = malloc ("minimum", 4);
+	public static final int XmNminimumValue = malloc ("minimumValue", 4);
 	public static final int XmNminHeight = malloc ("minHeight", 4);
 	public static final int XmNminWidth = malloc ("minWidth", 4);
 	public static final int XmNmnemonic = malloc ("mnemonic", 4);
@@ -505,6 +511,7 @@ public class OS {
 	public static final int XmNpageIncrementCallback = malloc ("pageIncrementCallback", 4);
 	public static final int XmNpathMode = malloc ("pathMode", 4);
 	public static final int XmNpattern = malloc ("pattern", 4);
+	public static final int XmNposition = malloc ("position", 4);
 	public static final int XmNpositionIndex = malloc ("positionIndex", 2);
 	public static final int XmNprocessingDirection = malloc ("processingDirection", 1);
 	public static final int XmNrecomputeSize = malloc ("recomputeSize", 1);
@@ -531,6 +538,7 @@ public class OS {
 	public static final int XmNsliderSize = malloc ("sliderSize", 4);
 	public static final int XmNsliderVisual = malloc ("sliderVisual", 4);
 	public static final int XmNsourceCursorIcon = malloc ("sourceCursorIcon", 4);
+	public static final int XmNspinBoxChildType = malloc ("spinBoxChildType", 2);
 	public static final int XmNspotLocation = malloc ("spotLocation", 4);
 	public static final int XmNstateCursorIcon = malloc ("stateCursorIcon", 4);
 	public static final int XmNsubMenuId = malloc ("subMenuId", 4);
@@ -555,6 +563,7 @@ public class OS {
 	public static final int XmNverifyBell = malloc ("verifyBell", 1);
 	public static final int XmNverticalScrollBar = malloc ("verticalScrollBar", 4);
 	public static final int XmNvisibleItemCount = malloc ("visibleItemCount", 4);
+	public static final int XmNUMERIC = 0x3;
 	public static final int XmNwidth = malloc ("width", 2);
 	public static final int XmNwordWrap = malloc ("wordWrap", 1);
 	public static final int XmNx = malloc ("x", 2);
@@ -806,6 +815,7 @@ public static final synchronized native int XmCreateScrolledList(int parent, byt
 public static final synchronized native int XmCreateScrolledText(int parent, byte[] name, int[] arglist, int argcount);
 public static final synchronized native int XmCreateSeparator(int parent, byte[] name, int[] arglist, int argcount);
 public static final synchronized native int XmCreateSeparatorGadget(int parent, byte[] name, int[] arglist, int argcount);
+public static final synchronized native int XmCreateSimpleSpinBox(int parent, byte[] name, int[] arglist, int argcount);
 public static final synchronized native int XmCreateTextField(int parent, byte[] name, int[] arglist, int argcount);
 public static final synchronized native int XmCreateToggleButton(int parent, byte[] name, int[] arglist, int argcount);
 public static final synchronized native int XmCreateToggleButtonGadget(int parent, byte[] name, int[] arglist, int argcount);

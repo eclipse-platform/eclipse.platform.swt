@@ -1153,12 +1153,14 @@ JNIEXPORT void JNICALL OS_NATIVE(XMoveResizeWindow)
 #endif
 
 #ifndef NO_XOffsetRegion
-JNIEXPORT void JNICALL OS_NATIVE(XOffsetRegion)
+JNIEXPORT jint JNICALL OS_NATIVE(XOffsetRegion)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
+	jint rc;
 	OS_NATIVE_ENTER(env, that, XOffsetRegion_FUNC);
-	XOffsetRegion((Region)arg0, arg1, arg2);
+	rc = (jint)XOffsetRegion((Region)arg0, arg1, arg2);
 	OS_NATIVE_EXIT(env, that, XOffsetRegion_FUNC);
+	return rc;
 }
 #endif
 
@@ -2493,6 +2495,24 @@ JNIEXPORT jint JNICALL OS_NATIVE(XmCreateSeparatorGadget)
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, XmCreateSeparatorGadget_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_XmCreateSimpleSpinBox
+JNIEXPORT jint JNICALL OS_NATIVE(XmCreateSimpleSpinBox)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, XmCreateSimpleSpinBox_FUNC);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)XmCreateSimpleSpinBox((Widget)arg0, (String)lparg1, (ArgList)lparg2, arg3);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, XmCreateSimpleSpinBox_FUNC);
 	return rc;
 }
 #endif

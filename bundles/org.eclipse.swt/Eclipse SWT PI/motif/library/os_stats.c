@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 439;
-int OS_nativeFunctionCallCount[439];
+int OS_nativeFunctionCount = 440;
+int OS_nativeFunctionCallCount[440];
 char * OS_nativeFunctionNames[] = {
 	"CODESET", 
 	"Call", 
@@ -202,6 +202,7 @@ char * OS_nativeFunctionNames[] = {
 	"XmCreateScrolledText", 
 	"XmCreateSeparator", 
 	"XmCreateSeparatorGadget", 
+	"XmCreateSimpleSpinBox", 
 	"XmCreateTextField", 
 	"XmCreateToggleButton", 
 	"XmCreateToggleButtonGadget", 

@@ -206,6 +206,7 @@ typedef enum {
 	XmCreateScrolledText_FUNC,
 	XmCreateSeparator_FUNC,
 	XmCreateSeparatorGadget_FUNC,
+	XmCreateSimpleSpinBox_FUNC,
 	XmCreateTextField_FUNC,
 	XmCreateToggleButton_FUNC,
 	XmCreateToggleButtonGadget_FUNC,
