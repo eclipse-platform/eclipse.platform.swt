@@ -33,11 +33,11 @@ public static char [] mbcsToWcs (String codePage, byte [] buffer) {
 }
 public static byte [] wcsToMbcs (String codePage, String string, boolean terminate) {
 	//SLOW AND BOGUS
-	int count = string.length ();
-	if (terminate) count++;
-	char [] buffer = new char [count];
-	string.getChars (0, string.length (), buffer, 0);
-	return wcsToMbcs (codePage, buffer, false);
+	if (!terminate) return string.getBytes ();
+	byte [] buffer1 = string.getBytes ();
+	byte [] buffer2 = new byte [buffer1.length + 1];
+	System.arraycopy (buffer1, 0, buffer2, 0, buffer1.length);
+	return buffer2;
 }
 public static byte [] wcsToMbcs (String codePage, char [] buffer, boolean terminate) {
 	//SLOW AND BOGUS
