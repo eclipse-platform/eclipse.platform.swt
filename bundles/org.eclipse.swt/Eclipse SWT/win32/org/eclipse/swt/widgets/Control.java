@@ -3514,6 +3514,16 @@ LRESULT WM_KEYUP (int wParam, int lParam) {
 	if (!sendKeyEvent (SWT.KeyUp, OS.WM_KEYUP, wParam, lParam)) {
 		result = LRESULT.ZERO;
 	}
+	// widget could be disposed at this point
+
+	/*
+	* It is possible (but unlikely), that application
+	* code could have disposed the widget in the
+	* key up event.  If this happens, end the
+	* processing of the Windows message by returning
+	* zero as the result of the window proc.
+	*/
+	if (isDisposed ()) return LRESULT.ZERO;
 	display.lastKey = display.lastAscii = 0;
 	display.lastVirtual = display.lastNull = false;
 	return result;
