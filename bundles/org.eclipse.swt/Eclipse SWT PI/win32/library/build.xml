@@ -2,6 +2,12 @@
 
 <project default="build_dll" basedir="../../..">
 
+<target name="init">
+	<eclipse.refreshLocal resource="org.eclipse.swt" depth="infinite" />
+	<eclipse.refreshLocal resource="org.eclipse.swt.tools" depth="infinite" />	
+   	<eclipse.incrementalBuild project="${plugin}" kind="incr" />
+</target>
+	
 <!-- Build swt.dll for Windows -->
 <target name="build_win32_dll">
 	<exec dir="./bin/library" executable="${basedir}\bin\library\build.bat">
@@ -19,7 +25,7 @@
 <!-- Build Windows and Pocket PC swt dlls -->
 <!-- Output .dlls for these platforms into the org.eclipse.swt.win32/os directory -->
 <!--        .log files from the compilers in the org.eclipse.swt/ directory       -->  
-<target name="build_dll" depends="build">
+<target name="build_dll" depends="init">
 	<antcall target="build_win32_dll"/>
 	<antcall target="clean"/>
 	<antcall target="build_wince_dll"/>
@@ -30,10 +36,6 @@
 	<exec dir="./bin/library" executable="${basedir}\bin\library\build.bat">
 		<arg line="clean"/>
 	</exec>
-</target>
-
-<target name="build">
-   	<eclipse.incrementalBuild project="${plugin}" kind="incr" />
 </target>
     
 </project>
