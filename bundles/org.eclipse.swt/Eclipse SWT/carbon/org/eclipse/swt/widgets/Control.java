@@ -1286,17 +1286,7 @@ int processMouseDown (MacMouseEvent mmEvent) {
 	return OS.noErr;
 }
 int processMouseEnter (MacMouseEvent mme) {
-    /* AW
-	XCrossingEvent xEvent = new XCrossingEvent ();
-	OS.memmove (xEvent, callData, XCrossingEvent.sizeof);
-	if (xEvent.mode != OS.NotifyNormal) return 0;
-	if (xEvent.subwindow != 0) return 0;
-    */
-	Event event = new Event ();
-	Point p= MacUtil.toControl(handle, mme.getWhere());
-	event.x = p.x;
-	event.y = p.y;
-	postEvent (SWT.MouseEnter, event);
+	sendMouseEvent (SWT.MouseEnter, 0, mme);
 	return OS.noErr;
 }
 int processMouseMove (MacMouseEvent mme) {
@@ -1309,26 +1299,13 @@ int processMouseExit (MacMouseEvent mme) {
 	Display display = getDisplay ();
 	display.removeMouseHoverTimeOut ();
 	display.hideToolTip ();
-    /* AW
-	XCrossingEvent xEvent = new XCrossingEvent ();
-	OS.memmove (xEvent, callData, XCrossingEvent.sizeof);
-	if (xEvent.mode != OS.NotifyNormal) return 0;
-	if (xEvent.subwindow != 0) return 0;
-	*/
-	Event event = new Event ();
-	Point p= MacUtil.toControl(handle, mme.getWhere());
-	event.x = p.x;
-	event.y = p.y;
-	postEvent (SWT.MouseExit, event);
+	sendMouseEvent (SWT.MouseExit, 0, mme);
 	return OS.noErr;
 }
 int processMouseHover (MacMouseEvent mme) {
 	Display display = getDisplay ();
-	Event event = new Event ();
-	Point local = toControl (display.getCursorLocation ());
-	event.x = local.x; event.y = local.y;
-	postEvent (SWT.MouseHover, event);
 	display.showToolTip (handle, toolTipText);
+	sendMouseEvent (SWT.MouseHover, 0, mme);
 	return OS.noErr;
 }
 int processMouseUp (MacMouseEvent mmEvent) {
@@ -2668,4 +2645,19 @@ public void update () {
 	void internalGetControlBounds(int hndl, Rect bounds) {
 		OS.GetControlBounds(hndl, bounds);
 	}
+
+	/**
+	 * Hook (overwritten in Text and Combo)
+	 */
+	/*
+	final int sendKeyEvent(int type, int nextHandler, int eRefHandle) {
+		
+		MacEvent mEvent= new MacEvent(eRefHandle);
+		if (translateTraversal(mEvent))
+			return 0;
+
+		processEvent (type, new MacEvent(eRefHandle));
+		return OS.kNoErr;
+	}
+	*/
 }

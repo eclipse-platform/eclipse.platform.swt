@@ -246,6 +246,7 @@ public class Display extends Device {
 	public int fCurrentCursor;
 	private Shell fMenuRootShell;
 	int fLastModifiers;
+	MacMouseEvent fLastMouseEvent;
 	
 	private static boolean fgCarbonInitialized;
 	private static boolean fgInitCursorCalled;
@@ -1116,7 +1117,8 @@ static boolean isValidClass (Class clazz) {
 int mouseHoverProc (int id, int handle) {
 	if (mouseHoverID != 0) OS.RemoveEventLoopTimer(mouseHoverID);
 	mouseHoverID = mouseHoverHandle = 0;
-	int rc= windowProc (handle, SWT.MouseHover, new MacMouseEvent());
+	if (fLastMouseEvent == null) return OS.noErr;
+	int rc= windowProc (handle, SWT.MouseHover, fLastMouseEvent);
 	sendUserEvent(54321);
 	return rc;
 }
@@ -2250,7 +2252,7 @@ static String convertToLf(String text) {
 		int whichControl= MacUtil.findControlUnderMouse(whichWindow, me, cpart);				
 		Widget widget= WidgetTable.get(whichControl);
 		
-		MacMouseEvent mme= new MacMouseEvent(me);
+		MacMouseEvent mme= fLastMouseEvent = new MacMouseEvent(me);
 		
 		switch (eventKind) {
 		
