@@ -637,9 +637,6 @@ boolean isValidThread () {
  * @param eventType the type of event which has occurred
  * @param event the event data
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the event is null</li>
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -647,7 +644,7 @@ boolean isValidThread () {
  */
 public void notifyListeners (int eventType, Event event) {
 	checkWidget();
-	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (event == null) event = new Event ();
 	sendEvent (eventType, event);
 }
 
