@@ -1300,21 +1300,21 @@ public class SWT {
 	
 	/**
 	 * Keyboard event constant representing the numeric key
-	 * pad times key (value is (1&lt;&lt;24)+42).
+	 * pad multiply key (value is (1&lt;&lt;24)+42).
 	 */
-	public static final int KEYPAD_TIMES = KEYCODE_BIT + 42;
+	public static final int KEYPAD_MULTIPLY = KEYCODE_BIT + 42;
 	
 	/**
 	 * Keyboard event constant representing the numeric key
-	 * pad plus key (value is (1&lt;&lt;24)+43).
+	 * pad add key (value is (1&lt;&lt;24)+43).
 	 */
-	public static final int KEYPAD_PLUS = KEYCODE_BIT + 43;
+	public static final int KEYPAD_ADD = KEYCODE_BIT + 43;
 	
 	/**
 	 * Keyboard event constant representing the numeric key
-	 * pad minus key (value is (1&lt;&lt;24)+45).
+	 * pad subtract key (value is (1&lt;&lt;24)+45).
 	 */
-	public static final int KEYPAD_MINUS = KEYCODE_BIT + 45;
+	public static final int KEYPAD_SUBTRACT = KEYCODE_BIT + 45;
 
 	/**
 	 * Keyboard event constant representing the numeric key
