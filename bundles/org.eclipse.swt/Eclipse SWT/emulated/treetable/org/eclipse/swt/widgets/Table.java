@@ -46,7 +46,7 @@ public class Table extends Composite {
 	TableItem[] items = new TableItem [0];
 	TableItem[] selectedItems = new TableItem [0];
 	TableItem focusItem, anchorItem, lastClickedItem;
-	boolean linesVisible;
+	boolean linesVisible, redraw = true;
 	int itemsCount = 0;
 	int topIndex = 0, horizontalOffset = 0;
 	int fontHeight = 0, imageHeight = 0, itemHeight = 0;
@@ -391,7 +391,8 @@ void createItem (TableColumn column, int index) {
 void createItem (TableItem item) {
 	int index = item.index;
 	if (itemsCount == items.length) {
-		TableItem[] newItems = new TableItem [items.length + 4];
+		int grow = redraw ? 4 : 1000;
+		TableItem[] newItems = new TableItem [items.length + grow];
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
 	}
@@ -604,7 +605,7 @@ void destroyItem (TableItem item) {
 	}
 	itemsCount--;
 	
-	if (items.length - itemsCount == 4) {
+	if (redraw && items.length - itemsCount == 4) {
 		/* shrink the items array */
 		TableItem[] newItems = new TableItem [itemsCount];
 		System.arraycopy (items, 0, newItems, 0, newItems.length);
@@ -3009,6 +3010,18 @@ public void setLinesVisible (boolean value) {
 	if (linesVisible == value) return;		/* no change */
 	linesVisible = value;
 	redraw ();
+}
+public void setRedraw (boolean value) {
+	checkWidget();
+	redraw = value;
+	super.setRedraw (value);
+	if (!value) {
+		if (items.length - itemsCount > 3) {
+			TableItem[] newItems = new TableItem [itemsCount];
+			System.arraycopy (items, 0, newItems, 0, itemsCount);
+			items = newItems;
+		}
+	}
 }
 /**
  * Sets the receiver's selection to be the given array of items.
