@@ -4588,6 +4588,21 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetSuperControl)
 }
 #endif
 
+#ifndef NO_GetTabContentRect
+JNIEXPORT jint JNICALL OS_NATIVE(GetTabContentRect)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	Rect _arg1, *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "GetTabContentRect\n")
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	rc = (jint)GetTabContentRect((ControlRef)arg0, lparg1);
+	if (arg1) setRectFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "GetTabContentRect\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_GetThemeBrushAsColor
 JNIEXPORT jint JNICALL OS_NATIVE(GetThemeBrushAsColor)
 	(JNIEnv *env, jclass that, jshort arg0, jshort arg1, jboolean arg2, jobject arg3)

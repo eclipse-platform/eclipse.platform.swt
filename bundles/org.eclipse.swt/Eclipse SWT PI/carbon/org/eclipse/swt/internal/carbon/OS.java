@@ -513,6 +513,7 @@ public class OS {
 	public static final int kThemeEmphasizedSystemFont = 4;
 	public static final int kThemeIBeamCursor = 4;
 	public static final int kThemeMenuItemCmdKeyFont = 103;
+	public static final int kThemeMenuItemFont = 101;
 	public static final int kThemeMenuItemHierarchical = 1;
 	public static final int kThemeMetricDisclosureTriangleHeight = 25;
 	public static final int kThemeMetricCheckBoxWidth = 50;
@@ -520,6 +521,8 @@ public class OS {
 	public static final int kThemeMetricEditTextFrameOutset = 5;
 	public static final int kThemeMetricFocusRectOutset = 7;
 	public static final int kThemeMetricHSliderHeight = 41;
+	public static final int kThemeMetricMenuTextTrailingEdgeMargin = 67;
+	public static final int kThemeMetricMenuIconTrailingEdgeMargin = 69;
 	public static final int kThemeMetricNormalProgressBarThickness = 58;
 	public static final int kThemeMetricScrollBarWidth = 0;
 	public static final int kThemeMetricVSliderWidth = 45;
@@ -959,6 +962,7 @@ public static final native int GetScrapFlavorInfoList(int scrap, int[] infoCount
 public static final native int GetScrapFlavorSize(int scrap, int flavorType, int[] byteCount);
 public static final native int GetScriptManagerVariable(short selector);
 public static final native int GetSuperControl(int cHandle, int[] parentHandle);
+public static final native int GetTabContentRect(int theControl, Rect rect);
 public static final native int GetThemeBrushAsColor(short inBrush, short inDepth, boolean inColorDev, RGBColor outColor);
 public static final native int GetThemeDrawingState(int[] state);
 public static final native int GetThemeFont(short themeFontId, short scriptCode, byte[] fontName, short[] fontSize, byte[] style);
