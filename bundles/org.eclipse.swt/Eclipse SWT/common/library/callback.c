@@ -15,7 +15,6 @@
 /* --------------- callback globals ----------------- */
 
 static JavaVM *jvm = NULL;
-static SWT_CALLBACKINFO dllCallbackInfo[MAX_CALLBACKS];
 static jfieldID objectID = NULL;
 static jfieldID addressID = NULL;
 static jfieldID methodID = NULL;
@@ -23,8 +22,9 @@ static jfieldID signatureID = NULL;
 static jfieldID isStaticID = NULL;
 static jfieldID argCountID = NULL;
 static jfieldID isArrayBasedID = NULL;
+static CALLBACK_DATA callbackData[MAX_CALLBACKS];
 static int callbackIDsCached = 0;
-static int callbacksEnabled = 1;
+static int callbackEnabled = 1;
 static int initialized = 0;
 
 #ifdef DEBUG_CALL_PRINTS
@@ -32,6 +32,8 @@ static int counter = 0;
 #endif
 
 /* --------------- callback functions --------------- */
+
+int callback(int index, ...);
 
 /* Function name from index and number of arguments */
 #define FN(index, args) fn##index##_##args
@@ -144,17 +146,8 @@ int * fnx_array[MAX_ARGS+1][MAX_CALLBACKS] = {
 
 /* --------------- callback class calls --------------- */
 
-/*
- * Class:     org_eclipse_swt_internal_Callback
- * Method:    bind
- * Signature: (Lorg/eclipse/swt/internal/Callback;)I
- */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_Callback_bind
   (JNIEnv *env, jclass that, jobject lpCallback)
-/*
-** The methodID is computed once during the bind and will be valid
-** unless the Callback class is reloaded. 
-*/
 {
 	int i;
 	jclass javaClass;
@@ -166,42 +159,45 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_Callback_bind
 	
 	if (jvm == NULL) (*env)->GetJavaVM(env, &jvm);
 
+	/*
+	* The methodID and fieldID are computed once and will be valid
+	* unless the class is unloaded.
+	*/
     javaClass = that;
     if (!callbackIDsCached) {
-        objectID = (*env)->GetFieldID(env,javaClass,"object","Ljava/lang/Object;");
-        addressID = (*env)->GetFieldID(env,javaClass,"address","I");
-        methodID = (*env)->GetFieldID(env,javaClass,"method","Ljava/lang/String;");
-        signatureID = (*env)->GetFieldID(env,javaClass,"signature","Ljava/lang/String;");
-        isStaticID = (*env)->GetFieldID(env,javaClass,"isStatic","Z");
-        argCountID = (*env)->GetFieldID(env,javaClass,"argCount","I");
-        isArrayBasedID = (*env)->GetFieldID(env,javaClass,"isArrayBased","Z");
+        objectID = (*env)->GetFieldID(env, javaClass, "object", "Ljava/lang/Object;");
+        addressID = (*env)->GetFieldID(env, javaClass, "address", "I");
+        methodID = (*env)->GetFieldID(env, javaClass, "method", "Ljava/lang/String;");
+        signatureID = (*env)->GetFieldID(env, javaClass, "signature", "Ljava/lang/String;");
+        isStaticID = (*env)->GetFieldID(env, javaClass, "isStatic", "Z");
+        argCountID = (*env)->GetFieldID(env, javaClass, "argCount", "I");
+        isArrayBasedID = (*env)->GetFieldID(env, javaClass, "isArrayBased", "Z");
         callbackIDsCached = 1;
     }
-    javaObject = (*env)->GetObjectField(env,lpCallback,objectID);
-    javaMethod = (*env)->GetObjectField(env,lpCallback,methodID);
-    javaSignature = (*env)->GetObjectField(env,lpCallback,signatureID);
-    isStatic = (*env)->GetBooleanField(env,lpCallback,isStaticID);
-    argCount = (*env)->GetIntField(env,lpCallback,argCountID);
-    isArrayBased = (*env)->GetBooleanField(env,lpCallback,isArrayBasedID);
+    javaObject = (*env)->GetObjectField(env, lpCallback, objectID);
+    javaMethod = (*env)->GetObjectField(env, lpCallback, methodID);
+    javaSignature = (*env)->GetObjectField(env, lpCallback, signatureID);
+    isStatic = (*env)->GetBooleanField(env, lpCallback, isStaticID);
+    argCount = (*env)->GetIntField(env, lpCallback, argCountID);
+    isArrayBased = (*env)->GetBooleanField(env, lpCallback, isArrayBasedID);
     methodString = (const char *) (*env)->GetStringUTFChars(env, javaMethod, NULL);
     sigString = (const char *) (*env)->GetStringUTFChars(env, javaSignature, NULL);
     if (isStatic) {
         mid = (*env)->GetStaticMethodID(env, javaObject, methodString, sigString);
     } else {
-        javaClass = (*env)->GetObjectClass(env,javaObject);	    
-        /* note that this call is reusing javaClass */
+        javaClass = (*env)->GetObjectClass(env, javaObject);    
         mid = (*env)->GetMethodID(env, javaClass, methodString, sigString);
     }
     (*env)->ReleaseStringUTFChars(env, javaMethod, methodString);
     (*env)->ReleaseStringUTFChars(env, javaSignature, sigString);
     if (initialized==0) {
-        memset((void *)&dllCallbackInfo, 0, sizeof(dllCallbackInfo));
+        memset((void *)&callbackData, 0, sizeof(callbackData));
         initialized = 1;
     }
     for (i=0; i<MAX_CALLBACKS; i++) {
-        if (!dllCallbackInfo[i].callin) {
-            dllCallbackInfo[i].callin = (*env)->NewGlobalRef(env,lpCallback);
-            dllCallbackInfo[i].methodID = mid;
+        if (!callbackData[i].callin) {
+            callbackData[i].callin = (*env)->NewGlobalRef(env, lpCallback);
+            callbackData[i].methodID = mid;
             return (jint) fnx_array[argCount][i];
         }
     }
@@ -209,142 +205,117 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_Callback_bind
     return 0; /* this means there was no free callback slot */
 }
 
-/*
- * Class:     org_eclipse_swt_internal_Callback
- * Method:    unbind
- * Signature: (Lorg/eclipse/swt/internal/Callback;)V
- */
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_Callback_unbind
   (JNIEnv *env, jclass that, jobject lpCallback)
 {
 	int i, address, argCount;
 	if (!callbackIDsCached) return;
 
-    address = (*env)->GetIntField(env,lpCallback,addressID);
-    argCount = (*env)->GetIntField(env,lpCallback,argCountID);
+    address = (*env)->GetIntField(env, lpCallback, addressID);
+    argCount = (*env)->GetIntField(env, lpCallback, argCountID);
     
     for (i=0; i<MAX_CALLBACKS; i++) {        
         if ((int)fnx_array[argCount][i] == address) {
-            (*env)->DeleteGlobalRef(env, dllCallbackInfo[i].callin);
-            dllCallbackInfo[i].callin = 0;      
-            dllCallbackInfo[i].methodID = 0;
+            (*env)->DeleteGlobalRef(env, callbackData[i].callin);
+            callbackData[i].callin = 0;      
+            callbackData[i].methodID = 0;
         }
     }
 }
 
-/*
- * Class:     org_eclipse_swt_internal_Callback
- * Method:    setEnabled
- * Signature: (Z)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_Callback_setEnabled
-  (JNIEnv *env, jclass that, jboolean enable)
-{
-	callbacksEnabled = enable;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_Callback
- * Method:    getEnabled
- * Signature: ()Z
- */
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_Callback_getEnabled
   (JNIEnv *env, jclass that, jboolean enable)
 {
-	return (jboolean)callbacksEnabled;
+	return (jboolean)callbackEnabled;
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_Callback_setEnabled
+  (JNIEnv *env, jclass that, jboolean enable)
+{
+	callbackEnabled = enable;
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_Callback_reset
+  (JNIEnv *env, jclass that)
+{
+    memset((void *)&callbackData, 0, sizeof(callbackData));
+}
+
+JNIEXPORT jstring JNICALL Java_org_eclipse_swt_internal_Callback_getPlatform
+  (JNIEnv *env, jclass that)
+{
+	return (*env)->NewStringUTF(env, PLATFORM);
 }
 
 int callback(int index, ...)
 {
-	if (!callbacksEnabled)  {
+	if (!callbackEnabled) return 0;
+
+	{
+	jobject callback = callbackData[index].callin;
+	jmethodID mid = callbackData[index].methodID;
+	JNIEnv *env;
+	jobject javaObject;
+	jboolean isStatic, isArrayBased;
+	int result = 0;
+	va_list vl;
+
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "* callback starting %d\n", counter++);
+#endif
+
+	(*jvm)->GetEnv(jvm, (void **)&env, JNI_VERSION_1_1);
+
+	/* An exception has already occurred. Allow the stack to unwind so that
+	the exception will be thrown in Java */
+	if ((*env)->ExceptionOccurred(env)) {
+#ifdef DEBUG_CALL_PRINTS
+		fprintf(stderr, "************ java exception occurred\n");
+#endif
 		return 0;
-	} else {
-		JNIEnv *env;
-		jobject callback = dllCallbackInfo[index].callin;
-		jmethodID mid = dllCallbackInfo[index].methodID;
-		jobject javaObject;
-		jboolean isStatic, isArrayBased;
-		int result = 0;
-		va_list vl;
-
-#ifdef DEBUG_CALL_PRINTS
-		fprintf(stderr, "* callback starting %d\n", counter++);
-#endif
-
-		(*jvm)->GetEnv(jvm, (void **)&env, JNI_VERSION_1_1);
-
-		/* An exception has already occurred. Allow the stack to unwind so that
-		the exception will be thrown in Java */
-		if ((*env)->ExceptionOccurred(env)) {
-
-#ifdef DEBUG_CALL_PRINTS
-			fprintf(stderr, "************ java exception occurred\n");
-#endif
-
-			return 0;
-		}
-
-		javaObject = (*env)->GetObjectField(env,callback,objectID);
-		isStatic = ((*env)->GetBooleanField(env,callback,isStaticID)) != 0;
-		isArrayBased = ((*env)->GetBooleanField(env,callback,isArrayBasedID)) != 0;
-
-		va_start(vl, index);
-		if (isArrayBased) {
-			int i;
-			jint argCount = (*env)->GetIntField(env,callback,argCountID);
-			jintArray javaArray = (*env)->NewIntArray(env,argCount);
-			jint *elements = (*env)->GetIntArrayElements(env,javaArray,NULL);
-			for (i=0; i<argCount; i++) {
-				elements[i] = va_arg(vl, jint); 
-			}
-			(*env)->ReleaseIntArrayElements(env, javaArray, elements, 0);
-			if (isStatic) {
-				result = (*env)->CallStaticIntMethod(env, javaObject, mid, javaArray);
-			} else {
-				result = (*env)->CallIntMethod(env, javaObject, mid, javaArray);
-			}
-			(*env)->DeleteLocalRef(env, javaArray);
-		} else {
-			if (isStatic) {
-				result = (*env)->CallStaticIntMethodV(env, javaObject, mid, vl);
-			} else {
-				result = (*env)->CallIntMethodV(env, javaObject, mid, vl);
-			}
-		}
-		va_end(vl);
-		/* This call may be called many times before we return to Java.
-		 We have to explicitly delete local references to avoid GP's
-		 in the JDK and IBM Hursley VM.
-		*/
-		(*env)->DeleteLocalRef(env,javaObject);
-
-#ifdef DEBUG_CALL_PRINTS
-		fprintf(stderr, "* callback exiting %d\n", --counter);
-#endif
-		return result;
 	}
-}
 
-/*
- * Class:     org_eclipse_swt_internal_Callback
- * Method:    reset
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_Callback_reset
-  (JNIEnv *env, jclass that)
-{
-    memset((void *)&dllCallbackInfo, 0, sizeof(dllCallbackInfo));
-}
+	javaObject = (*env)->GetObjectField(env,callback, objectID);
+	isStatic = ((*env)->GetBooleanField(env,callback, isStaticID)) != 0;
+	isArrayBased = ((*env)->GetBooleanField(env,callback, isArrayBasedID)) != 0;
 
-/*
- * Class:     org_eclipse_swt_internal_Callback
- * Method:    getPlatform
- * Signature: ()Ljava/lang/String;
- */
-JNIEXPORT jstring JNICALL Java_org_eclipse_swt_internal_Callback_getPlatform
-  (JNIEnv *env, jclass that)
-{
-  return (*env)->NewStringUTF(env, PLATFORM);
+	va_start(vl, index);
+	if (isArrayBased) {
+		int i;
+		jint argCount = (*env)->GetIntField(env, callback, argCountID);
+		jintArray javaArray = (*env)->NewIntArray(env, argCount);
+		jint *elements = (*env)->GetIntArrayElements(env, javaArray, NULL);
+		for (i=0; i<argCount; i++) {
+			elements[i] = va_arg(vl, jint); 
+		}
+		(*env)->ReleaseIntArrayElements(env, javaArray, elements, 0);
+		if (isStatic) {
+			result = (*env)->CallStaticIntMethod(env, javaObject, mid, javaArray);
+		} else {
+			result = (*env)->CallIntMethod(env, javaObject, mid, javaArray);
+		}
+		(*env)->DeleteLocalRef(env, javaArray);
+	} else {
+		if (isStatic) {
+			result = (*env)->CallStaticIntMethodV(env, javaObject, mid, vl);
+		} else {
+			result = (*env)->CallIntMethodV(env, javaObject, mid, vl);
+		}
+	}
+	va_end(vl);
+	
+	/*
+	* This function may be called many times before we return to Java.
+	* We have to explicitly delete local references to avoid GP's
+	* in the JDK and IBM Hursley VM.
+	*/
+	(*env)->DeleteLocalRef(env, javaObject);
+
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "* callback exiting %d\n", --counter);
+#endif
+	return result;
+	}
 }
 
 /* ------------- callback class calls end --------------- */
