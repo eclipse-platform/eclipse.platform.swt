@@ -1441,7 +1441,7 @@ void init(Drawable drawable, GCData data, int gdkGC) {
 	GdkColor foreground = data.foreground;
 	if (foreground != null) OS.gdk_gc_set_foreground(gdkGC, foreground);
 	GdkColor background = data.background;
-	if (background != null) OS.gdk_gc_set_background (gdkGC, background);	
+	if (background != null) OS.gdk_gc_set_background(gdkGC, background);	
 	int font = data.font;
 	if (font != 0) OS.pango_layout_set_font_description(layout, font);
 
