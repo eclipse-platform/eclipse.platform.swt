@@ -32,6 +32,7 @@ public final class Program {
 	String name;
 	String extension;
 	String command;
+	ImageData imageData;
 	Display display;
 
 	/* Gnome specific
@@ -260,7 +261,10 @@ private static Program[] getPrograms( Display display ) {
 			Program program   = new Program ();
 			program.name      = mimeType;
 			program.command   = command;
-			if (desktop == DESKTOP_GNOME) program.gnomeExpectUri = gnomeExpectUri[0];
+			if (desktop == DESKTOP_GNOME) {
+				program.gnomeExpectUri = gnomeExpectUri[0];
+				program.imageData = gnome_getMimeIcon(mimeType);
+			}
 			program.extension = extension;
 			program.display   = display;
 			programs.addElement( program );
@@ -340,6 +344,39 @@ private static String gnome_getMimeTypeCommand(String mimeType, boolean gnomeExp
 		GNOME.gnome_vfs_mime_application_free(ptr);
 	}
 	return command;
+}
+
+private static ImageData gnome_getMimeIcon(String mimeType) {
+	byte[] app_id = Converter.wcsToMbcs(null, "swt", true);
+	int ptr = GNOME.g_malloc(app_id.length);
+	OS.memmove(ptr, app_id, app_id.length);
+	int[] argv =  {ptr, 0};
+	/* 
+	* Note.  gnome_program_locate_file requires gnome_program_init to have been called at least
+	* once otherwise it outputs an error message.  The workaround is to call gnome_program_init
+	* with the minimal amount of arguments required to register as a Gnome application. 
+	*/
+	int program = GNOME.gnome_program_init(app_id, app_id, GNOME.LIBGNOME_MODULE(), 1, argv, GNOME.GNOME_PARAM_NONE);
+	GNOME.g_free(ptr);
+	byte[] mimeTypeBuffer = Converter.wcsToMbcs(null, mimeType, true);
+	ptr = GNOME.gnome_vfs_mime_get_icon(mimeTypeBuffer);
+	if (ptr == 0) return null;
+	int path = GNOME.gnome_program_locate_file(program, GNOME.GNOME_FILE_DOMAIN_PIXMAP, ptr, true, 0);
+	GNOME.g_free(ptr);
+	GNOME.g_free(program);
+	if (path == 0) return null;
+	int length = OS.strlen(path);
+	if (length == 0) return null;
+	byte[] buffer = new byte[length];
+	OS.memmove(buffer, path, length);
+	GNOME.g_free(path);
+	String result = new String(Converter.mbcsToWcs(null, buffer));
+	ImageData data = null;
+	try {
+		data = new ImageData(result);
+	} catch (Exception e) {
+	}
+	return data;
 }
 
 // Private method for parsing a command line into its arguments.
@@ -653,7 +690,7 @@ public ImageData getImageData () {
 		}
 		
 		case DESKTOP_GNOME: {
-			return null;
+			return imageData;
 		}
 		
 		case DESKTOP_CDE: {

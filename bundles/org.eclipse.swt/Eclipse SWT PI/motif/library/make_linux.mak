@@ -38,8 +38,8 @@ SWT_LIB      = -L$(MOTIF_HOME)/lib -lXm -L/usr/lib -L/usr/X11R6/lib \
 GNOME_PREFIX = swt-gnome
 GNOME_DLL    = lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 GNOME_OBJ    = gnome.o 
-GNOME_CFLAGS = `pkg-config --cflags gnome-vfs-2.0`
-GNOME_LIB = -x -shared `pkg-config --libs-only-l --libs-only-L gnome-vfs-2.0`
+GNOME_CFLAGS = `pkg-config --cflags gnome-vfs-2.0 libgnome-2.0`
+GNOME_LIB = -x -shared `pkg-config --libs-only-l --libs-only-L gnome-vfs-2.0 libgnome-2.0`
 
 KDE_PREFIX   = swt-kde
 KDE_DLL      = lib$(KDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
