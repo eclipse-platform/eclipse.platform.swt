@@ -116,6 +116,7 @@ public class FileViewer {
 		while (! shell.isDisposed()) {
 			if (! display.readAndDispatch()) display.sleep();
 		}
+		application.close();
 		display.dispose();
 	}
 
@@ -129,13 +130,6 @@ public class FileViewer {
 		shell = new Shell();
 		createShellContents();
 		notifyRefreshFiles(null);
-		shell.addDisposeListener(new DisposeListener () {
-			public void widgetDisposed(DisposeEvent e) {
-				// Cleanup
-				workerStop();
-				iconCache.freeResources();
-			}
-		});
 		shell.open();
 		return shell;
 	}
@@ -143,8 +137,8 @@ public class FileViewer {
 	 * Closes the main program.
 	 */
 	void close() {
-		workerStop(); // be polite
-		shell.close();
+		workerStop();
+		iconCache.freeResources();
 	}
 	
 	/**
@@ -246,7 +240,7 @@ public class FileViewer {
 		item.setText(getResourceString("menu.File.Close.text"));
 		item.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
-				close();
+				shell.close();
 			}
 		});
 	}
@@ -1534,7 +1528,7 @@ public class FileViewer {
 		}
 
 		// Allow the table to refresh itself
-		display.asyncExec(new Runnable() {
+		display.syncExec(new Runnable() {
 			public void run() {
 				// guard against the shell being closed before this runs
 				if (shell.isDisposed()) return;
@@ -1579,7 +1573,7 @@ public class FileViewer {
 		}
 		final String[] strings = new String[] { nameString, sizeString, typeString, dateString };
 
-		display.asyncExec(new Runnable() {
+		display.syncExec(new Runnable() {
 			public void run () {
 				// guard against the shell being closed before this runs
 				if (shell.isDisposed()) return;
