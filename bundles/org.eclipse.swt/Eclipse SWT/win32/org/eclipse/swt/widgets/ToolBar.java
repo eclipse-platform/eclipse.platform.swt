@@ -678,17 +678,6 @@ int windowProc () {
 	return ToolBarProc;
 }
 
-LRESULT WM_GETDLGCODE (int wParam, int lParam) {
-	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
-	/*
-	* Return DLGC_BUTTON so that mnemonics will be
-	* processed without needing to press the ALT key
-	* when the widget has focus.
-	*/
-	if (result != null) return result;
-	return new LRESULT (OS.DLGC_BUTTON);
-}
-
 LRESULT WM_COMMAND (int wParam, int lParam) {
 	/*
 	* Feature in Windows.  When the toolbar window
@@ -711,6 +700,27 @@ LRESULT WM_COMMAND (int wParam, int lParam) {
 	LRESULT result = super.WM_COMMAND (wParam, lParam);
 	if (result != null) return result;
 	return LRESULT.ZERO;
+}
+
+LRESULT WM_ERASEBKGND (int wParam, int lParam) {
+	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
+	if (result != null) return result;
+	if (background != -1) {
+		drawBackground (wParam);
+		return LRESULT.ONE;
+	}
+	return result;
+}
+
+LRESULT WM_GETDLGCODE (int wParam, int lParam) {
+	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
+	/*
+	* Return DLGC_BUTTON so that mnemonics will be
+	* processed without needing to press the ALT key
+	* when the widget has focus.
+	*/
+	if (result != null) return result;
+	return new LRESULT (OS.DLGC_BUTTON);
 }
 
 LRESULT WM_KEYDOWN (int wParam, int lParam) {
