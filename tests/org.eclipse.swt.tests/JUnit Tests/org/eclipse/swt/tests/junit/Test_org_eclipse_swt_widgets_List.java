@@ -71,9 +71,12 @@ public void test_addLjava_lang_String() {
 	} catch (IllegalArgumentException e) {
 	}
 	list.add("");
+	assertSame(":a:", new String[] {""}, list.getItems());
 	list.add("some \n text");
+	assertSame(":b:", new String[] {"", "some \n text"}, list.getItems());
 	list.add("some text");
-
+	assertSame(":c:", new String[] {"", "some \n text", "some text"}, list.getItems());
+	
 	// test single-selection list
 
 	setSingleList();
@@ -83,9 +86,13 @@ public void test_addLjava_lang_String() {
 		fail("No exception thrown");
 	} catch (IllegalArgumentException e) {
 	}
+	
 	list.add("");
+	assertSame(":a:", new String[] {""}, list.getItems());
 	list.add("some \n text");
+	assertSame(":b:", new String[] {"", "some \n text"}, list.getItems());
 	list.add("some text");
+	assertSame(":c:", new String[] {"", "some \n text", "some text"}, list.getItems());
 }
 
 public void test_addLjava_lang_StringI() {
@@ -96,6 +103,25 @@ public void test_addLjava_lang_StringI() {
 	}
 	assertEquals(0, list.getItemCount());
 
+	list.add("", 0);
+	assertSame(":a:", new String[] {""}, list.getItems());
+	list.add("some \n text", 1);
+	assertSame(":b:", new String[] {"", "some \n text"}, list.getItems());
+	list.add("some text", 0);
+	assertSame(":c:", new String[] {"some text", "", "some \n text" }, list.getItems());
+	
+	try {
+		list.add(null, 0);
+		fail("No exception thrown string == null");
+	} catch (IllegalArgumentException e) {
+	}
+
+	try {
+		list.add("string", -1);
+		fail("No exception thrown index < 0");
+	} catch (IllegalArgumentException e) {
+	}
+	
 	// test single-selection list
 
 	setSingleList();
@@ -107,6 +133,25 @@ public void test_addLjava_lang_StringI() {
 	}
 
 	assertEquals(0, list.getItemCount());
+	
+	list.add("", 0);
+	assertSame(":a:", new String[] {""}, list.getItems());
+	list.add("some \n text", 1);
+	assertSame(":b:", new String[] {"", "some \n text"}, list.getItems());
+	list.add("some text", 0);
+	assertSame(":c:", new String[] {"some text", "", "some \n text" }, list.getItems());
+	
+	try {
+		list.add(null, 0);
+		fail("No exception thrown string == null");
+	} catch (IllegalArgumentException e) {
+	}
+
+	try {
+		list.add("string", -1);
+		fail("No exception thrown index < 0");
+	} catch (IllegalArgumentException e) {
+	}
 }
 
 public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
@@ -125,16 +170,48 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	catch (IllegalArgumentException e) {
 		exceptionThrown = true;
 	}
+	assertTrue("Expected exception not thrown for listener == null", exceptionThrown);
+	
 	list.addSelectionListener(listener);
 	list.select(0);
 	assertTrue(":a:", listenerCalled == false);
 	list.removeSelectionListener(listener);
+	exceptionThrown = false;
 	try {
 		list.removeSelectionListener(null);
 	}
 	catch (IllegalArgumentException e) {
 		exceptionThrown = true;
 	}
+	assertTrue("Expected exception not thrown for listener == null", exceptionThrown);
+	
+	// test single-selection list
+
+	setSingleList();
+	
+	listenerCalled = false;
+	exceptionThrown = false;
+	try {
+		list.addSelectionListener(null);
+	}
+	catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	}
+	assertTrue("Expected exception not thrown for listener == null", exceptionThrown);
+	
+	list.addSelectionListener(listener);
+	list.select(0);
+	assertTrue(":a:", listenerCalled == false);
+	list.removeSelectionListener(listener);
+	exceptionThrown = false;
+	try {
+		list.removeSelectionListener(null);
+	}
+	catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	}
+	assertTrue("Expected exception not thrown for listener == null", exceptionThrown);
+	
 }
 
 public void test_computeSizeIIZ() {
@@ -415,6 +492,13 @@ public void test_getItemI() {
 		fail("No exception thrown");
 	} catch (IllegalArgumentException e) {
 	}
+
+	try {
+		item = list.getItem(-1);
+		fail("No exception thrown for index < 0");
+	} catch (IllegalArgumentException e) {
+	}
+	
 	assertEquals(list.getItem(3), "item3");
 
 	
@@ -425,6 +509,13 @@ public void test_getItemI() {
 		fail("No exception thrown");
 	} catch (IllegalArgumentException e) {
 	}
+	
+	try {
+		item = list.getItem(-1);
+		fail("No exception thrown for index < 0");
+	} catch (IllegalArgumentException e) {
+	}
+	
 	//assert(":a:", list.getItem(5)==null);
 	assertEquals("item3", list.getItem(3));
 
@@ -651,6 +742,11 @@ public void test_indexOfLjava_lang_StringI() {
 	list.setItems(items2);
 	assertEquals(list.indexOf("text2", 2), 2);
 
+	try {
+		 list.indexOf(null, 0);
+		fail("No exception thrown for string == null");
+	} catch (IllegalArgumentException e) {
+	}
 	
 	setSingleList();
 
@@ -659,6 +755,12 @@ public void test_indexOfLjava_lang_StringI() {
 	assertEquals(1, list.indexOf("text2", 0));
 	assertEquals(1, list.indexOf("text2", 1));
 	assertEquals(2, list.indexOf("text2", 2));
+
+	try {
+		list.indexOf(null, 0);
+		fail("No exception thrown for string == null");
+	} catch (IllegalArgumentException e) {
+	}
 }
 
 public void test_isSelectedI() {
@@ -686,6 +788,12 @@ public void test_isSelectedI() {
 }
 
 public void test_remove$I() {
+	try {
+		list.remove((int[]) null);
+		fail("No exception thrown for indices == null");
+	} catch (IllegalArgumentException e) {
+	}
+	
 	String[] items = { "text0", "text1", "text2", "text3" };
 
 	list.setItems(items);
@@ -696,6 +804,14 @@ public void test_remove$I() {
 	assertEquals(list.getItemCount(), 2);
 
 	list.setItems(items);
+
+	// index > number of elements in list
+	try {
+		list.remove(new int[] { 4, 1});
+		fail("No exception thrown");
+	} catch (IllegalArgumentException e) {
+	}
+	assertEquals(":a:", list.getItems(), items);
 
 	try {
 		list.remove(new int[] { 3, 1, -1 });
@@ -738,6 +854,13 @@ public void test_remove$I() {
 	
 	setSingleList();
 
+	try {
+		int[] indices = null;
+		list.remove(indices);
+		fail("No exception thrown for indices == null");
+	} catch (IllegalArgumentException e) {
+	}
+	
 	list.setItems(items);
 	assertEquals(4, list.getItemCount());
 
@@ -754,6 +877,14 @@ public void test_remove$I() {
 	
 	list.setItems(items);
 	assertEquals(4, list.getItemCount());
+
+	// index > number of elements in list
+	try {
+		list.remove(new int[] { 4, 1});
+		fail("No exception thrown");
+	} catch (IllegalArgumentException e) {
+	} 
+	assertEquals(":h:", list.getItems(), items);
 
 	try {
 		list.remove(new int[] { 3, 1, -1 });
@@ -853,6 +984,15 @@ public void test_removeI() {
 
 	assertEquals(list.getItemCount(), 3);
 
+	list.remove(0);
+	assertEquals(list.getItemCount(), 2);
+	list.remove(0);
+	assertEquals(list.getItemCount(), 1);
+	assertEquals(list.getItem(0), "text3");
+	list.remove(0);
+	assertEquals(list.getItemCount(), 0);
+	
+	list.setItems(items);
 	list.remove(1, 2);
 	assertEquals(list.getItemCount(), 1);
 	assertEquals(list.getItem(0), "text1");
@@ -881,6 +1021,17 @@ public void test_removeI() {
 	//////////////////////////////////////////////////////
 	assertTrue(list.getItem(1).equals("text3"));
 
+	list.setItems(items);
+	assertEquals(list.getItemCount(), 3);
+
+	list.remove(0);
+	assertEquals(list.getItemCount(), 2);
+	list.remove(0);
+	assertEquals(list.getItemCount(), 1);
+	assertEquals(list.getItem(0), "text3");
+	list.remove(0);
+	assertEquals(list.getItemCount(), 0);
+	
 }
 
 public void test_removeII() {
@@ -909,6 +1060,13 @@ public void test_removeII() {
 	assertEquals("text3", list.getItem(1));
 
 	list.setItems(items);
+	assertEquals(3, list.getItemCount());
+
+	try {
+		list.remove(-1, 1);
+		fail("No exception thrown for start index < 0");
+	} catch (IllegalArgumentException e) {
+	}
 	assertEquals(3, list.getItemCount());
 
 	try {
@@ -956,6 +1114,14 @@ public void test_removeII() {
 
 	assertEquals(3, list.getItemCount());
 	//////////////////////////////////////////////////////////////
+	
+	try {
+		list.remove(-1, 1);
+		fail("No exception thrown for start index < 0");
+	} catch (IllegalArgumentException e) {
+	}
+	assertEquals(3, list.getItemCount());
+	
 	list.remove(1, 2);
 	assertEquals(1, list.getItemCount());
 	assertEquals("text1", list.getItem(0));
@@ -1040,6 +1206,12 @@ public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListene
 }
 
 public void test_select$I() {
+	try {
+		list.select((int[]) null);
+		fail("No exception thrown");
+	} catch (IllegalArgumentException e) {
+	}
+	
 	String[] items = { "item0", "item1", "item2", "item3" };
 	list.setItems(items);
 
@@ -1319,6 +1491,8 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 }
 
 public void test_setItemILjava_lang_String() {
+	String[] items = { "item0", "item1", "item2", "item3" };
+	
 	assertEquals(list.getItemCount(), 0);
 	int[] cases = { -10, 0, 10 };
 	for (int i = 0; i < cases.length; i++) {
@@ -1349,6 +1523,9 @@ public void test_setItemILjava_lang_String() {
 		assertEquals(list.getItemCount(), 0);
 	}
 
+	list.setItems(items);
+	list.setItem(1, "new1");
+	assertEquals(new String[] { "item0", "new1", "item2", "item3" }, list.getItems());
 	
 	setSingleList();
 	assertEquals(0, list.getItemCount());
@@ -1384,7 +1561,11 @@ public void test_setItemILjava_lang_String() {
 
 		assertEquals(0, list.getItemCount());
 	}
-
+	
+	list.setItems(items);
+	list.setItem(1, "new1");
+	assertEquals(new String[] { "item0", "new1", "item2", "item3" }, list.getItems());
+	
 }
 
 public void test_setItems$Ljava_lang_String() {
