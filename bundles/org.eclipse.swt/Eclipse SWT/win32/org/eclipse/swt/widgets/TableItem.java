@@ -894,11 +894,13 @@ public void setImage (int index, Image image) {
 	}
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 <= index && index < count) {
-		if (images == null) images = new Image [count];
-		if (image != null && image.type == SWT.ICON) {
-			if (image.equals (images [index])) return;
+		if (images == null && index != 0) images = new Image [count];
+		if (images != null) {
+			if (image != null && image.type == SWT.ICON) {
+				if (image.equals (images [index])) return;
+			}
+			images [index] = image;
 		}
-		images [index] = image;	
 	}
 	
 	/* Ensure that the image list is created */
@@ -989,9 +991,11 @@ public void setText (int index, String string) {
 	}
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 <= index && index < count) {
-		if (strings == null) strings = new String [count];
-		if (string.equals (strings [index])) return;
-		strings [index] = string;
+		if (strings == null && index != 0) strings = new String [count];
+		if (strings != null) {
+			if (string.equals (strings [index])) return;
+			strings [index] = string;
+		}
 	}
 	if (index == 0) {
 		/*
