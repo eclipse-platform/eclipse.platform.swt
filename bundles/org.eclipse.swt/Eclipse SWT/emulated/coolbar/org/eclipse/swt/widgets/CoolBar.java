@@ -31,6 +31,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class CoolBar extends Composite {
 	CoolItem[][] items = new CoolItem[0][0];
+	CoolItem[] originalItems = new CoolItem[0];
 	Cursor hoverCursor, dragCursor;
 	CoolItem dragging = null;
 	int mouseXOffset, itemXOffset;
@@ -74,12 +75,12 @@ public CoolBar (Composite parent, int style) {
 	Listener listener = new Listener() {
 		public void handleEvent(Event event) {
 			switch (event.type) {
-				case SWT.Dispose:	onDispose();		break;
-				case SWT.MouseDown:	onMouseDown(event);	break;
-				case SWT.MouseExit:	onMouseExit();		break;
-				case SWT.MouseMove:	onMouseMove(event);	break;
-				case SWT.MouseUp:	onMouseUp(event);	break;
-				case SWT.Paint:		onPaint(event);		break;
+				case SWT.Dispose:      onDispose();        break;
+				case SWT.MouseDown:    onMouseDown(event); break;
+				case SWT.MouseExit:    onMouseExit();      break;
+				case SWT.MouseMove:    onMouseMove(event); break;
+				case SWT.MouseUp:      onMouseUp(event);   break;
+				case SWT.Paint:        onPaint(event);     break;
 			}
 		}
 	};
@@ -184,15 +185,11 @@ public CoolItem getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget();
-	int itemCount = 0;
-	for (int row = 0; row < items.length; row++) {
-		itemCount += items[row].length;
-	}
-	return itemCount;
+	return originalItems.length;
 }
 /**
  * Returns an array of <code>CoolItems</code>s which are the
- * items in the receiver in the order those items were added. 
+ * items in the receiver. 
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
@@ -318,7 +315,6 @@ void insertItemIntoRow(CoolItem item, int rowIndex, int x_root) {
 void createItem (CoolItem item, int index) {
 	int itemCount = getItemCount(), row = 0;
 	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_INVALID_RANGE);
-	item.id = itemCount;
 	if (items.length == 0) {
 		items = new CoolItem[1][1];
 		items[0][0] = item;	
@@ -345,22 +341,29 @@ void createItem (CoolItem item, int index) {
 	}
 	item.requestedWidth = CoolItem.MINIMUM_WIDTH;
 	layoutItems();
+
+	int length = originalItems.length;
+	CoolItem [] newOriginals = new CoolItem [length + 1];
+	System.arraycopy (originalItems, 0, newOriginals, 0, index);
+	System.arraycopy (originalItems, index, newOriginals, index + 1, length - index);
+	newOriginals [index] = item;
+	originalItems = newOriginals;
 }
 void destroyItem(CoolItem item) {
-	int row = findItem(item).y;
+	Point location = findItem(item);
+	int row = location.y;
+	int index = location.x;
 	if (row == -1) return;
 	Rectangle bounds = item.getBounds();
 	removeItemFromRow(item, row);
 	redraw(bounds.x, bounds.y, CoolItem.MINIMUM_WIDTH, bounds.height, false);
-	
-	/* Fix the id of each remaining item. */
-	for (row = 0; row < items.length; row++) {
-		for (int i = 0; i < items[row].length; i++) {
-			CoolItem next = items[row][i];
-			if (next.id > item.id) --next.id; 	
-		}	
-	}
 	layoutItems();
+
+	int length = originalItems.length - 1;
+	CoolItem [] newOriginals = new CoolItem [length];
+	System.arraycopy (originalItems, 0, newOriginals, 0, index);
+	System.arraycopy (originalItems, index + 1, newOriginals, index, length - index);
+	originalItems = newOriginals;	
 }
 void moveDown(CoolItem item, int x_root) {
 	int oldRowIndex = findItem(item).y;
@@ -754,19 +757,9 @@ public void setSize (int width, int height) {
 	super.setSize (width, height);
 	layoutItems();
 }
-CoolItem getChild (int id) {
-	for (int row = 0; row < items.length; row++) {
-		for (int i = 0; i < items[row].length; i++) {
-			CoolItem child = items[row][i];
-			if (child.id == id) return child;
-		}
-	}
-	return null;
-}
 /**
  * Returns an array of zero-relative indices which map the order
- * that the items in the receiver were added in (which is the
- * order that they are returned by <code>getItems()</code>) to
+ * that the items in the receiver were added in to
  * the order which they are currently being displayed.
  * <p>
  * Note: This is not the actual structure used by the receiver
@@ -786,30 +779,38 @@ CoolItem getChild (int id) {
  */
 public int[] getItemOrder () {
 	checkWidget();
-	CoolItem[] items = getItems();
-	int[] ids = new int[items.length];
-	for (int i = 0; i < items.length; i++) {
-		ids[i] = items[i].id;
+	int[] indices = new int[originalItems.length];
+	for (int i = 0; i < originalItems.length; i++) {
+		int index = indexOf(originalItems[i]);
+		if (index < 0 || index >= indices.length) error(SWT.ERROR_CANNOT_GET_ITEM);
+		indices [index] = i;
 	}
-	return ids;
+	return indices;	
 }
 void setItemOrder (int[] itemOrder) {
 	if (itemOrder == null) error(SWT.ERROR_NULL_ARGUMENT);
-	int count = getItemCount();
+	int count = originalItems.length;
 	if (itemOrder.length != count) error(SWT.ERROR_INVALID_ARGUMENT);
+
+	/* Ensure that itemOrder does not contain any duplicates. */	
+	boolean [] set = new boolean [count];
+	for (int i = 0; i < set.length; i++) set [i] = false;
+	for (int i = 0; i < itemOrder.length; i++) {
+		if (itemOrder [i] < 0 || itemOrder [i] >= count) error (SWT.ERROR_INVALID_ARGUMENT);
+		if (set [itemOrder [i]]) error (SWT.ERROR_INVALID_ARGUMENT);
+		set [itemOrder [i]] = true;
+	}
+	
 	CoolItem[] row = new CoolItem[count];
 	for (int i = 0; i < count; i++) {
-		CoolItem child = getChild(itemOrder[i]);
-		if (child == null) error(SWT.ERROR_INVALID_ARGUMENT);
-		row[i] = child;
+		row[i] = originalItems[itemOrder[i]];
 	}
 	items = new CoolItem[1][count];
 	items[0] = row;
 }
 /**
  * Returns an array of points whose x and y coordinates describe
- * the widths and heights (respectively) of the items in the receiver
- * in the order the items were added.
+ * the widths and heights (respectively) of the items in the receiver.
  *
  * @return the receiver's item sizes
  *
@@ -832,14 +833,13 @@ void setItemSizes (Point[] sizes) {
 	CoolItem[] items = getItems();
 	if (sizes.length != items.length) error(SWT.ERROR_INVALID_ARGUMENT);
 	for (int i = 0; i < items.length; i++) {
-		Rectangle bounds = items[i].getBounds();
 		items[i].setSize(sizes[i]);
 	}
 }
 /**
  * Returns an array of ints which describe the zero-relative
  * row number of the row which each of the items in the 
- * receiver occurs in, in the order the items were added.
+ * receiver occurs in.
  *
  * @return the receiver's wrap indices
  *
@@ -862,8 +862,8 @@ public int[] getWrapIndices () {
 /**
  * Sets the row that each of the receiver's items will be
  * displayed in to the given array of ints which describe
- * the zero-relative row number of the row for each item 
- * in the order the items were added.
+ * the zero-relative row number of the row for each item.
+ * If indices is null, the items will be placed on one line.
  *
  * @param indices the new wrap indices
  *
@@ -874,7 +874,10 @@ public int[] getWrapIndices () {
  */
 public void setWrapIndices (int[] data) {
 	checkWidget();
-	if (data == null) error(SWT.ERROR_NULL_ARGUMENT);
+	if (data == null) data = new int[0];
+	for (int i=0; i<data.length; i++) {
+		if (data[i] < 0 || data[i] >= originalItems.length) error (SWT.ERROR_INVALID_ARGUMENT);	
+	}	
 	if (items.length == 0) return;
 
 	CoolItem[] allItems = getItems();

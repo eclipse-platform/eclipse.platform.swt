@@ -28,7 +28,6 @@ public class CoolItem extends Item {
 	CoolBar parent;
 	int preferredWidth, requestedWidth;
 	Rectangle itemBounds = new Rectangle(0, 0, 0, 0);
-	int id;
 	
 	static final int MARGIN_WIDTH = 4;
 	static final int MARGIN_HEIGHT = 2;

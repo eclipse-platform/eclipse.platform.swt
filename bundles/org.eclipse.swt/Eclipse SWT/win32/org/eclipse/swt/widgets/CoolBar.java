@@ -34,6 +34,7 @@ import org.eclipse.swt.graphics.*;
 public class CoolBar extends Composite {
 	
 	CoolItem [] items;
+	CoolItem [] originalItems;
 	static final int ReBarProc;
 	static final TCHAR ReBarClass = new TCHAR (0, OS.REBARCLASSNAME, true);
 	static {
@@ -174,11 +175,18 @@ void createItem (CoolItem item, int index) {
 	}
 	OS.HeapFree (hHeap, 0, lpText);
 	items [item.id = id] = item;
+	int length = originalItems.length;
+	CoolItem [] newOriginals = new CoolItem [length + 1];
+	System.arraycopy (originalItems, 0, newOriginals, 0, index);
+	System.arraycopy (originalItems, index, newOriginals, index + 1, length - index);
+	newOriginals [index] = item;
+	originalItems = newOriginals;
 }
 
 void createWidget () {
 	super.createWidget ();
 	items = new CoolItem [4];
+	originalItems = new CoolItem [0];
 }
 
 void destroyItem (CoolItem item) {
@@ -195,7 +203,12 @@ void destroyItem (CoolItem item) {
 	}
 	items [item.id] = null;
 	item.id = -1;
-	if (wasVisible) control.setVisible (true);	
+	if (wasVisible) control.setVisible (true);
+	int length = originalItems.length - 1;
+	CoolItem [] newOriginals = new CoolItem [length];
+	System.arraycopy (originalItems, 0, newOriginals, 0, index);
+	System.arraycopy (originalItems, index + 1, newOriginals, index, length - index);
+	originalItems = newOriginals;
 }
 
 /**
@@ -247,7 +260,7 @@ public int getItemCount () {
 
 /**
  * Returns an array of <code>CoolItems</code>s which are the
- * items in the receiver in the order those items were added. 
+ * items in the receiver. 
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
@@ -405,8 +418,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 
 /**
  * Returns an array of zero-relative indices which map the order
- * that the items in the receiver were added in (which is the
- * order that they are returned by <code>getItems()</code>) to
+ * that the items in the receiver were added in to
  * the order which they are currently being displayed.
  * <p>
  * Note: This is not the actual structure used by the receiver
@@ -426,18 +438,18 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
  */
 public int [] getItemOrder () {
 	checkWidget ();
-	CoolItem [] items = getItems ();
-	int [] indices = new int [items.length];
-	for (int i = 0; i < items.length; i++) {
-		indices [i] = items [i].id;
+	int [] indices = new int [originalItems.length];
+	for (int i=0; i<originalItems.length; i++) {
+		int index = OS.SendMessage (handle, OS.RB_IDTOINDEX, originalItems [i].id, 0);
+		if (index < 0 || index >= indices.length) error (SWT.ERROR_CANNOT_GET_ITEM);
+		indices [index] = i;
 	}
 	return indices;
 }
 
 /**
  * Returns an array of points whose x and y coordinates describe
- * the widths and heights (respectively) of the items in the receiver
- * in the order the items were added.
+ * the widths and heights (respectively) of the items in the receiver.
  *
  * @return the receiver's item sizes
  *
@@ -448,10 +460,12 @@ public int [] getItemOrder () {
  */
 public Point [] getItemSizes () {
 	checkWidget ();	
-	CoolItem [] items = getItems ();
-	Point [] sizes = new Point [items.length];
-	for (int i = 0; i < items.length; i++) {
-		sizes [i] = items [i].getSize ();
+	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	Point [] sizes = new Point [count];
+	for (int i=0; i<count; i++) {
+		RECT rect = new RECT ();
+		OS.SendMessage (handle, OS.RB_GETRECT, i, rect);
+		sizes [i] = new Point (rect.right - rect.left, rect.bottom - rect.top);
 	}
 	return sizes;
 }
@@ -459,7 +473,7 @@ public Point [] getItemSizes () {
 /**
  * Returns an array of ints which describe the zero-relative
  * row number of the row which each of the items in the 
- * receiver occurs in, in the order the items were added.
+ * receiver occurs in.
  *
  * @return the receiver's wrap indices
  *
@@ -470,17 +484,18 @@ public Point [] getItemSizes () {
  */
 public int [] getWrapIndices () {
 	checkWidget ();
-	CoolItem [] items = getItems ();
-	int [] indices = new int [items.length];
-	int count = 0;
-	for (int i = 0; i < items.length; i++) {
-		if (items [i].getWrap ()) {
-			indices [count] = i;
-			count++;
-		}
+	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	int [] indices = new int [count];
+	REBARBANDINFO rbBand = new REBARBANDINFO ();
+	rbBand.cbSize = REBARBANDINFO.sizeof;
+	rbBand.fMask = OS.RBBIM_STYLE;
+	int wrapCount = 0;
+	for (int i=0; i<count; i++) {
+		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
+		if ((rbBand.fStyle & OS.RBBS_BREAK) != 0) indices [wrapCount++] = i;	
 	}
-	int [] answer = new int [count];
-	System.arraycopy(indices, 0, answer, 0, count);
+	int [] answer = new int [wrapCount];
+	System.arraycopy(indices, 0, answer, 0, wrapCount);
 	return answer;
 }
 
@@ -503,10 +518,20 @@ public int [] getWrapIndices () {
 void setItemOrder (int [] itemOrder) {
 	if (itemOrder == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int itemCount = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
-	if (itemOrder.length != itemCount) error (SWT.ERROR_INVALID_ARGUMENT);	
+	if (itemOrder.length != itemCount) error (SWT.ERROR_INVALID_ARGUMENT);
+	
+	/* Ensure that itemOrder does not contain any duplicates. */	
+	boolean [] set = new boolean [itemCount];
+	for (int i = 0; i < set.length; i++) set [i] = false;
+	for (int i = 0; i < itemOrder.length; i++) {
+		if (itemOrder [i] < 0 || itemOrder [i] >= itemCount) error (SWT.ERROR_INVALID_ARGUMENT);
+		if (set [itemOrder [i]]) error (SWT.ERROR_INVALID_ARGUMENT);
+		set [itemOrder [i]] = true;
+	}
+	
 	for (int i = 0; i < itemCount; i++) {
 		int currentIndex = OS.SendMessage (handle, OS.RB_IDTOINDEX, itemOrder [i], 0);
-		OS.SendMessage (handle, OS.RB_MOVEBAND, currentIndex, i);				
+		OS.SendMessage (handle, OS.RB_MOVEBAND, currentIndex, i);
 	}
 }
 
@@ -526,18 +551,27 @@ void setItemOrder (int [] itemOrder) {
  */
 void setItemSizes (Point [] sizes) {
 	if (sizes == null) error (SWT.ERROR_NULL_ARGUMENT);
-	CoolItem [] items = getItems ();
-	if (sizes.length != items.length) error (SWT.ERROR_INVALID_ARGUMENT);
-	for (int i = 0; i < items.length; i++) {
-		items [i].setSize(sizes [i]);
+	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	if (sizes.length != count) error (SWT.ERROR_NULL_ARGUMENT);
+	for (int i=0; i<count; i++) {
+		RECT rect = new RECT ();
+		OS.SendMessage (handle, OS.RB_GETBANDBORDERS, i, rect);
+		REBARBANDINFO rbBand = new REBARBANDINFO ();
+		rbBand.cbSize = REBARBANDINFO.sizeof;
+		rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_SIZE | OS.RBBIM_IDEALSIZE;
+		int width = sizes [i].x, height = sizes [i].y;
+		rbBand.cx = width;
+		rbBand.cxIdeal = width - rect.left - rect.right;
+		rbBand.cyChild = rbBand.cyMinChild = rbBand.cyMaxChild = height;
+		OS.SendMessage (handle, OS.RB_SETBANDINFO, i, rbBand);
 	}
 }
 
 /**
  * Sets the row that each of the receiver's items will be
  * displayed in to the given array of ints which describe
- * the zero-relative row number of the row for each item 
- * in the order the items were added.
+ * the zero-relative row number of the row for each item.
+ * If indices is null, the items will be placed on one line.
  *
  * @param indices the new wrap indices
  *
@@ -548,14 +582,23 @@ void setItemSizes (Point [] sizes) {
  */
 public void setWrapIndices (int [] indices) {
 	checkWidget ();
-	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
-	CoolItem [] items = getItems ();
-	for (int i = 0; i < items.length; i++) {
-		items [i].setWrap (false);
+	if (indices == null) indices = new int [0];
+	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	for (int i=0; i<indices.length; i++) {
+		if (indices [i] < 0 || indices [i] >= count) error (SWT.ERROR_INVALID_ARGUMENT);	
 	}
-	for (int i = 0; i < indices.length; i++) {
-		int index = indices [i];
-		items [index].setWrap (true);
+	REBARBANDINFO rbBand = new REBARBANDINFO ();
+	rbBand.cbSize = REBARBANDINFO.sizeof;
+	rbBand.fMask = OS.RBBIM_STYLE;
+	for (int i=0; i<count; i++) {
+		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
+		rbBand.fStyle &= ~OS.RBBS_BREAK;
+		OS.SendMessage (handle, OS.RB_SETBANDINFO, i, rbBand);
+	}
+	for (int i=0; i<indices.length; i++) {
+		OS.SendMessage (handle, OS.RB_GETBANDINFO, indices [i], rbBand);
+		rbBand.fStyle |= OS.RBBS_BREAK;
+		OS.SendMessage (handle, OS.RB_SETBANDINFO, indices [i], rbBand);
 	}
 }
 
