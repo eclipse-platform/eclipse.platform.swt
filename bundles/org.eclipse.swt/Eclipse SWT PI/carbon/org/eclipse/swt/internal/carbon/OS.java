@@ -130,6 +130,7 @@ public class OS extends OS2 {
 	public static final int kEventControlAddedSubControl = 152;
 	public static final int kEventControlBoundsChanged = 154;
 	public static final int kEventControlDraw = 4;
+	public static final int kEventControlHit = 1;
 	public static final int kEventControlRemovingSubControl = 153;
 	public static final double kEventDurationForever = -1.0;
 	public static final double kEventDurationNoWait = 0.0;
@@ -260,6 +261,7 @@ public class OS extends OS2 {
 	public static final int kTXNUnicodeTextData = ('u'<<24) + ('t'<<16) + ('x'<<8) + 't';
 	public static final int kTXNUnicodeTextFile = ('u'<<24) + ('t'<<16) + ('x'<<8) + 't';
 	public static final int kTXNUseCurrentSelection = -1;
+	public static final int kTXNVisibilityTag = ('v'<<24) + ('i'<<16) + ('s'<<8) + 'b';
 	public static final int kTXNWantHScrollBarMask = 1 << 2;
 	public static final int kTXNWantVScrollBarMask = 1 << 3;
 	public static final int kThemeArrowCursor = 0;
