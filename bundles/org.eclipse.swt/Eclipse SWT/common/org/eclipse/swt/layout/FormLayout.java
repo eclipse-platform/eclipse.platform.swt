@@ -151,7 +151,11 @@ public FormLayout () {
  * 		(1 - C)X. Since the height of a fraction of the form is 
  * 		known, the height of the entire form can be found by setting
  * 		(1 - C)X = D.  We solve this equation for X in terms of U 
- * 		and V, giving us X = (U * D) / (U - V)
+ * 		and V, giving us X = (U * D) / (U - V). Similarily, if the 
+ * 		offset D is	negative, the control is positioned above CX.
+ * 		The offset -B is the distance from the top edge of the control
+ * 		to CX. We can find the height of the entire form by setting 
+ * 		CX = -B. Solving in terms of U and V gives us X = (-B * V) / U.
  */
 int computeHeight (FormData data) {
 	FormAttachment top = data.getTopAttachment ();
@@ -160,6 +164,9 @@ int computeHeight (FormData data) {
 	if (height.numerator == 0) {
 		if (bottom.numerator == 0) return bottom.offset;
 		if (top.numerator == top.denominator) return -top.offset;
+		if (bottom.offset <= 0) {
+			return -top.offset * top.denominator / bottom.numerator;
+		}
 		int divider = bottom.denominator - bottom.numerator; 
 		return bottom.denominator * bottom.offset / divider;
 	}
@@ -184,6 +191,9 @@ int computeWidth (FormData data) {
 	if (width.numerator == 0) {
 		if (right.numerator == 0) return right.offset;
 		if (left.numerator == left.denominator) return -left.offset;
+		if (right.offset <= 0) {
+			return -left.offset * left.denominator / left.numerator;
+		}
 		int divider = right.denominator - right.numerator; 
 		return right.denominator * right.offset / divider;
 	}
