@@ -162,19 +162,25 @@ String openChooserDialog () {
 	int response = OS.gtk_dialog_run (handle);	
 	if (response == OS.GTK_RESPONSE_OK) {
 		int /*long*/ folder = OS.gtk_file_chooser_get_current_folder (handle);
-		if (folder == 0) {
-			OS.gtk_widget_destroy (handle);
-			return null;
-		}
-		int length = OS.strlen (folder);
-		byte [] buffer = new byte [length];
-		OS.memmove (buffer, folder, length);
+		OS.gtk_widget_destroy (handle);
+		if (folder == 0) return null;
+		int /*long*/ utf8Ptr = OS.g_filename_to_utf8 (folder, -1, null, null, null);
 		OS.g_free (folder);
-		answer = new String (Converter.mbcsToWcs (null, buffer));
+		if (utf8Ptr == 0) return null;
+		int /*long*/ [] items_written = new int /*long*/ [1];
+		int /*long*/ utf16Ptr = OS.g_utf8_to_utf16 (utf8Ptr, -1, null, items_written, null);
+		OS.g_free (utf8Ptr);
+		if (utf16Ptr == 0) return null;
+		int clength = (int)/*64*/items_written [0];
+		char [] chars = new char [clength];
+		OS.memmove (chars, utf16Ptr, clength * 2);
+		OS.g_free (utf16Ptr);
+		answer = new String (chars);
 		filterPath = answer;
+		return answer;
 	}
 	OS.gtk_widget_destroy (handle);
-	return answer;
+	return null;
 }
 String openClassicDialog () {
 	byte [] titleBytes = Converter.wcsToMbcs (null, title, true);
