@@ -111,8 +111,7 @@ public TableItem(Table parent, int style) {
  */
 public TableItem(Table parent, int style, int index) {
 	super(parent, style);
-	// columnCount will be 0 if table has no user created columns
-	trimmedLabels = new String[Math.max(1, parent.getColumnCount())];
+	trimmedLabels = new String[parent.internalGetColumnCount()];
 	parent.addItem(this, index);
 }
 
