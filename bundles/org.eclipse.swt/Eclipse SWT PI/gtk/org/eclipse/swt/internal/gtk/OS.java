@@ -114,7 +114,7 @@ public class OS extends Platform {
 	public static final int GDK_GC_CLIP_X_ORIGIN = 0x800;
 	public static final int GDK_GC_CLIP_Y_ORIGIN = 0x1000;
 	public static final int GDK_GRAB_SUCCESS = 0x0;
-	public static final int GDK_HAND1 = 0x3a;
+	public static final int GDK_HAND2 = 0x3c;
 	public static final int GDK_Help = 0xFF6A;
 	public static final int GDK_HINT_MIN_SIZE = 1 << 1;
 	public static final int GDK_Home = 0xff50;

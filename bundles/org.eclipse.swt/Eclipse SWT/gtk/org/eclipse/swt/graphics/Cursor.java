@@ -136,7 +136,7 @@ public Cursor(Device device, int style) {
 		case SWT.CURSOR_ARROW:			shape = OS.GDK_LEFT_PTR; break;
 		case SWT.CURSOR_WAIT:			shape = OS.GDK_WATCH; break;
 		case SWT.CURSOR_CROSS:			shape = OS.GDK_CROSS; break;
-		case SWT.CURSOR_HAND:			shape = OS.GDK_HAND1; break;
+		case SWT.CURSOR_HAND:			shape = OS.GDK_HAND2; break;
 		case SWT.CURSOR_HELP:			shape = OS.GDK_QUESTION_ARROW; break;
 		case SWT.CURSOR_SIZEALL:		shape = OS.GDK_FLEUR; break;
 		case SWT.CURSOR_SIZENESW:		shape = OS.GDK_SIZING; break;
