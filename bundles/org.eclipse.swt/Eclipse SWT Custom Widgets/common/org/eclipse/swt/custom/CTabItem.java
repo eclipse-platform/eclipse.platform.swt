@@ -379,20 +379,20 @@ public void setControl (Control control) {
  *	when the widget has been disposed
  */
 public void setImage (Image image) {
-	Image oldImage = getImage();
-		
+	if (image != null && image.equals(getImage())) return;
+	int oldHeight = parent.getTabHeight();
 	super.setImage(image);
-	if (image == null || !image.equals(oldImage)) {
-		parent.itemChanged(this);
+	if (oldHeight != parent.getTabHeight()) {
+		parent.notifyListeners(SWT.Resize, new Event());
+	} else {
+		parent.layoutItems();
+		parent.redraw();
 	}
 }
 public void setDisabledImage (Image image) {
-	Image oldImage = getDisabledImage();
-	
+	if (image != null && image.equals(getDisabledImage())) return;
 	disabledImage = image;
-	if (disabledImage == null || !disabledImage.equals(oldImage)) {
-		parent.itemChanged(this);
-	}
+	parent.redraw();
 }
 
 /**
@@ -405,12 +405,10 @@ public void setDisabledImage (Image image) {
  *
  */
 public void setText (String string) {
-	String oldText = getText();
-
+	if (string.equals(getText())) return;
 	super.setText(string);
-	if (!string.equals(oldText)) {
-		parent.itemChanged(this);
-	}	
+	parent.layoutItems();
+	parent.redraw();	
 }
 
 /**

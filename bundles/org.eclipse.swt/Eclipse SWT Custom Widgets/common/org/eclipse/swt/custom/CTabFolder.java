@@ -655,13 +655,7 @@ public int indexOf(CTabItem item) {
 	}
 	return -1;
 }
-/**
- * 'item' has changed.
- */
-void itemChanged(CTabItem item) {								
-	layoutItems();
-	redrawTabArea(-1);
-}
+
 private void layoutButtons() {
 	
 	updateArrowBar();
@@ -710,7 +704,7 @@ private void layoutButtons() {
 /**
  * Layout the items and store the client area size.
  */
-private void layoutItems() {
+ void layoutItems() {
 	if (isDisposed()) return;
 
 	Rectangle area = super.getClientArea();
@@ -1134,14 +1128,12 @@ public void setBorderVisible(boolean show) {
 	} else {
 		borderBottom = borderTop = borderLeft = borderRight = 0;
 	}
-	layoutItems();
-	redraw();
+	notifyListeners(SWT.Resize, new Event());
 }
 public void setFont(Font font) {
 	if (font != null && font.equals(getFont())) return;
 	super.setFont(font);	
-	layoutItems();
-	redrawTabArea(-1);
+	notifyListeners(SWT.Resize, new Event());
 }
 public void setSelectionForeground (Color color) {
 	if (selectionForeground == color) return;
@@ -1553,7 +1545,6 @@ public void setTabHeight(int height) {
 	}
 	if (fixedTabHeight == height) return;
 	fixedTabHeight = height;
-	layoutItems();
-	redrawTabArea(-1);
+	notifyListeners(SWT.Resize, new Event());
 }
 }
