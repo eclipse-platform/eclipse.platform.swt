@@ -420,14 +420,16 @@ int processPaint (int callData) {
 	XExposeEvent xEvent = new XExposeEvent ();
 	OS.memmove (xEvent, callData, XExposeEvent.sizeof);
 	int exposeCount = xEvent.count;
-	if (damagedRegion == 0 && exposeCount == 0) {
+	if (exposeCount == 0) {
 		XAnyEvent event = new XAnyEvent ();
 		Display display = getDisplay ();
 		display.exposeCount = 0;
 		int checkExposeProc = display.checkExposeProc;
 		OS.XCheckIfEvent (xEvent.display, event, checkExposeProc, xEvent.window);
-		if (display.exposeCount == 0) return super.processPaint (callData);
 		exposeCount = display.exposeCount;
+	}
+	if (exposeCount == 0 && damagedRegion == 0) {
+		return super.processPaint (callData);
 	}
 	if (damagedRegion == 0) damagedRegion = OS.XCreateRegion ();
 	OS.XtAddExposureToRegion (callData, damagedRegion);
