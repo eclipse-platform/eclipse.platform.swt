@@ -388,7 +388,7 @@ public boolean open () {
 					 * If this happens then return false to indicate that
 					 * the move failed.
 					 */
-					if (isDisposed()) return false;
+					if (isDisposed ()) return false;
 					drawRectangles ();
 					oldX [0] = newX [0];  oldY [0] = newY [0];
 				}
@@ -440,11 +440,11 @@ public boolean open () {
 						event.y = oldY[0] + yChange;
 						if ((style & SWT.RESIZE) != 0) {
 							resizeRectangles (xChange, yChange);
-							sendEvent (SWT.Resize,event);
+							sendEvent (SWT.Resize, event);
 							cursorPos = adjustResizeCursor (xDisplay, xWindow);
 						} else {
 							moveRectangles (xChange, yChange);
-							sendEvent (SWT.Move,event);
+							sendEvent (SWT.Move, event);
 							cursorPos = adjustMoveCursor (xDisplay, xWindow);
 						}
 						/*
@@ -453,18 +453,18 @@ public boolean open () {
 						 * If this happens then return false to indicate that
 						 * the move failed.
 						 */
-						if (isDisposed()) return false;
+						if (isDisposed ()) return false;
 						drawRectangles ();
 						oldX[0] = cursorPos.x;  oldY[0] = cursorPos.y;
 					}
 				}
 				break;
-				case OS.EnterNotify:
-				case OS.LeaveNotify:
-					/*
-					 * Do not dispatch these
-					 */
-					break;
+			case OS.EnterNotify:
+			case OS.LeaveNotify:
+				/*
+				 * Do not dispatch these
+				 */
+				break;
 			default:
 				OS.XtDispatchEvent (xEvent);
 		}
