@@ -561,8 +561,10 @@ public void deselect (int index) {
 	int /*long*/ children = OS.gtk_container_get_children (listHandle);
 	int /*long*/ item = OS.g_list_nth_data (children, index);
 	boolean selected = OS.GTK_WIDGET_STATE (item) == OS.GTK_STATE_SELECTED;
-	OS.gtk_list_unselect_all (listHandle);
-	if (selected) OS.gtk_entry_set_text (entryHandle, new byte[1]);
+	if (selected) {
+		OS.gtk_list_unselect_all (listHandle);
+		OS.gtk_entry_set_text (entryHandle, new byte[1]);
+	}
 	OS.g_list_free (children);
 	ignoreSelect = false;
 }
