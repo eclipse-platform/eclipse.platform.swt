@@ -367,14 +367,6 @@ int topHandle () {
 		relayout123();
 	}
 	
-	//public void handleResizeScrollView(int scrolledHandle) {
-		/*
-		System.out.println("Scrollable.handleResizeScrollView");
-		if (scrolledHandle != 0)
-			relayout123();
-		*/
-	//}
-	
 	void relayout123() {
 		
 		int hndl= scrolledHandle;
