@@ -605,7 +605,7 @@ void doMouseSelect(SelectableItem item, int itemIndex, int eventStateMask, int b
 		setCtrlSelection(true);
 	}
 	else
-	if (button != 3 || item.isSelected() == false) {
+	if (((eventStateMask & (SWT.MOD3 | SWT.MOD4)) == 0) && (button != 3 || item.isSelected() == false)) {
 		// only select the item (and deselect all others) if the mouse click is 
 		// not a button 3 click or if a previously unselected item was clicked.
 		// Fixes 1G97L65
