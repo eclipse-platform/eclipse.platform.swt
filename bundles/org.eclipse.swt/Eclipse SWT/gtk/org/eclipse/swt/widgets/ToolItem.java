@@ -658,6 +658,7 @@ public void removeSelectionListener(SelectionListener listener) {
 
 void resizeControl () {
 	if (control != null && !control.isDisposed ()) {
+		if (separatorHandle != 0) OS.gtk_widget_hide (separatorHandle);
 		/*
 		* Set the size and location of the control
 		* separately to minimize flashing in the
@@ -672,6 +673,8 @@ void resizeControl () {
 		rect.x = itemRect.x + (itemRect.width - rect.width) / 2;
 		rect.y = itemRect.y + (itemRect.height - rect.height) / 2;
 		control.setLocation (rect.x, rect.y);
+	} else {
+		if (separatorHandle != 0) OS.gtk_widget_show (separatorHandle);
 	}
 }
 
