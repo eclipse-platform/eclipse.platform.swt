@@ -8,7 +8,6 @@ package org.eclipse.swt.printing;
  */
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 // AW import org.eclipse.swt.internal.carbon.*;
 

@@ -30,6 +30,10 @@
 #define PLATFORM "photon"
 #endif
 
+#ifdef CARBON
+#define PLATFORM "carbon"
+#endif
+
 #ifndef PLATFORM
 #define PLATFORM "unknown"
 #endif
