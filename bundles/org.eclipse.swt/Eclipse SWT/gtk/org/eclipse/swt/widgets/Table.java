@@ -1553,7 +1553,7 @@ public void remove (int index) {
 		OS.gtk_list_store_remove (modelHandle, item.handle);
 		item.releaseResources ();
 	} else {
-		int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+		int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 		OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
 		OS.gtk_list_store_remove (modelHandle, iter);
 		OS.g_free (iter);
@@ -1587,7 +1587,7 @@ public void remove (int start, int end) {
 	if (!(0 <= start && start <= end && end < itemCount)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, start);
 	int index = start;
 	while (index <= end) {
@@ -1632,7 +1632,7 @@ public void remove (int [] indices) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
 	int last = -1;
-	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	for (int i=0; i<newIndices.length; i++) {
 		int index = newIndices [i];
 		if (index != last) {
@@ -1942,7 +1942,7 @@ public void setItemCount (int count) {
 	System.arraycopy (items, 0, newItems, 0, itemCount);
 	items = newItems;
 	if (isVirtual) {
-		int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+		int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 		if (iter == 0) error (SWT.ERROR_NO_HANDLES);
 		for (int i=itemCount; i<count; i++) {
 			OS.gtk_list_store_append (modelHandle, iter);
