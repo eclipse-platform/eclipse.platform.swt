@@ -1029,76 +1029,90 @@ int indexOf (TreeColumn column) {
 	return column.getIndex ();
 }
 static void initImages (final Display display) {
-	if (display.getData (ID_CHECKMARK) != null) return;
-	
 	PaletteData fourBit = new PaletteData (new RGB[] {
 		new RGB (0, 0, 0), new RGB (128, 0, 0), new RGB (0, 128, 0), new RGB (128, 128, 0),
 		new RGB (0, 0, 128), new RGB (128, 0, 128), new RGB (0, 128, 128), new RGB (128, 128, 128),
 		new RGB (192, 192, 192), new RGB (255, 0, 0), new RGB (0, 255, 0), new RGB (255, 255, 0),
-		new RGB (0, 0, 255), new RGB (255, 0, 255), new RGB (0, 255, 255), new RGB (255, 255, 255)});	
-	ImageData collapsed = new ImageData (
-		9, 9, 4, 										/* width, height, depth */
-		fourBit, 4,
-		new byte[] {
-			119, 119, 119, 119, 112, 0, 0, 0, 127, -1, -1, -1,
-			112, 0, 0, 0, 127, -1, 15, -1, 112, 0, 0, 0,
-			127, -1, 15, -1, 112, 0, 0, 0, 127, 0, 0, 15,
-			112, 0, 0, 0, 127, -1, 15, -1, 112, 0, 0, 0,
-			127, -1, 15, -1, 112, 0, 0, 0, 127, -1, -1, -1,
-			112, 0, 0, 0, 119, 119, 119, 119, 112, 0, 0, 0});
-	collapsed.transparentPixel = 15;			/* white for transparency */
-	ImageData expanded = new ImageData (
-		9, 9, 4, 										/* width, height, depth */
-		fourBit, 4,
-		new byte[] {
-			119, 119, 119, 119, 112, 0, 0, 0, 127, -1, -1, -1,
-			112, 0, 0, 0, 127, -1, -1, -1, 112, 0, 0, 0,
-			127, -1, -1, -1, 112, 0, 0, 0, 127, 0, 0, 15,
-			112, 0, 0, 0, 127, -1, -1, -1, 112, 0, 0, 0,
-			127, -1, -1, -1, 112, 0, 0, 0, 127, -1, -1, -1,
-			112, 0, 0, 0, 119, 119, 119, 119, 112, 0, 0, 0});
-	expanded.transparentPixel = 15;			/* use white for transparency */
-		
-	PaletteData uncheckedPalette = new PaletteData (	
-		new RGB[] {new RGB (128, 128, 128), new RGB (255, 255, 255)});
-	PaletteData grayUncheckedPalette = new PaletteData (	
-		new RGB[] {new RGB (128, 128, 128), new RGB (192, 192, 192)});
+		new RGB (0, 0, 255), new RGB (255, 0, 255), new RGB (0, 255, 255), new RGB (255, 255, 255)});
+
+	if (display.getData (ID_EXPANDED) == null) {
+		ImageData expanded = new ImageData (
+			9, 9, 4, 										/* width, height, depth */
+			fourBit, 4,
+			new byte[] {
+				119, 119, 119, 119, 112, 0, 0, 0, 127, -1, -1, -1,
+				112, 0, 0, 0, 127, -1, -1, -1, 112, 0, 0, 0,
+				127, -1, -1, -1, 112, 0, 0, 0, 127, 0, 0, 15,
+				112, 0, 0, 0, 127, -1, -1, -1, 112, 0, 0, 0,
+				127, -1, -1, -1, 112, 0, 0, 0, 127, -1, -1, -1,
+				112, 0, 0, 0, 119, 119, 119, 119, 112, 0, 0, 0});
+		expanded.transparentPixel = 15;			/* use white for transparency */
+		display.setData (ID_EXPANDED, new Image (display, expanded));
+	}
+
+	if (display.getData (ID_COLLAPSED) == null) {
+		ImageData collapsed = new ImageData (
+			9, 9, 4, 										/* width, height, depth */
+			fourBit, 4,
+			new byte[] {
+				119, 119, 119, 119, 112, 0, 0, 0, 127, -1, -1, -1,
+				112, 0, 0, 0, 127, -1, 15, -1, 112, 0, 0, 0,
+				127, -1, 15, -1, 112, 0, 0, 0, 127, 0, 0, 15,
+				112, 0, 0, 0, 127, -1, 15, -1, 112, 0, 0, 0,
+				127, -1, 15, -1, 112, 0, 0, 0, 127, -1, -1, -1,
+				112, 0, 0, 0, 119, 119, 119, 119, 112, 0, 0, 0});
+		collapsed.transparentPixel = 15;		/* use white for transparency */
+		display.setData (ID_COLLAPSED, new Image (display, collapsed));
+	}
+
 	PaletteData checkMarkPalette = new PaletteData (	
 		new RGB[] {new RGB (0, 0, 0), new RGB (252, 3, 251)});
 	byte[] checkbox = new byte[] {0, 0, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 0, 0};
-	ImageData unchecked = new ImageData (11, 11, 1, uncheckedPalette, 2, checkbox);
-	ImageData grayUnchecked = new ImageData (11, 11, 1, grayUncheckedPalette, 2, checkbox);
 	ImageData checkmark = new ImageData (7, 7, 1, checkMarkPalette, 1, new byte[] {-4, -8, 112, 34, 6, -114, -34});
 	checkmark.transparentPixel = 1;
-
-	display.setData (ID_EXPANDED, new Image (display, expanded));
-	display.setData (ID_COLLAPSED, new Image (display, collapsed));
-	display.setData (ID_UNCHECKED, new Image (display, unchecked));
-	display.setData (ID_GRAYUNCHECKED, new Image (display, grayUnchecked));
-	display.setData (ID_CHECKMARK, new Image (display, checkmark));
-	display.setData (ID_CONNECTOR_COLOR, new Color (display, 170, 170, 170));
+	if (display.getData (ID_CHECKMARK) == null) {
+		display.setData (ID_CHECKMARK, new Image (display, checkmark));
+	}
 	
+	if (display.getData (ID_UNCHECKED) == null) {
+		PaletteData uncheckedPalette = new PaletteData (	
+			new RGB[] {new RGB (128, 128, 128), new RGB (255, 255, 255)});
+		ImageData unchecked = new ImageData (11, 11, 1, uncheckedPalette, 2, checkbox);
+		display.setData (ID_UNCHECKED, new Image (display, unchecked));
+	}
+	
+	if (display.getData (ID_GRAYUNCHECKED) == null) {
+		PaletteData grayUncheckedPalette = new PaletteData (	
+			new RGB[] {new RGB (128, 128, 128), new RGB (192, 192, 192)});
+		ImageData grayUnchecked = new ImageData (11, 11, 1, grayUncheckedPalette, 2, checkbox);
+		display.setData (ID_GRAYUNCHECKED, new Image (display, grayUnchecked));
+	}
+	
+	if (display.getData (ID_CONNECTOR_COLOR) == null) {
+		display.setData (ID_CONNECTOR_COLOR, new Color (display, 170, 170, 170));
+	}
+
 	display.disposeExec (new Runnable () {
 		public void run() {
 			Image expanded = (Image) display.getData (ID_EXPANDED);
 			if (expanded != null) expanded.dispose ();
 			Image collapsed = (Image) display.getData (ID_COLLAPSED);
 			if (collapsed != null) collapsed.dispose ();
+			Color connectorColor = (Color) display.getData (ID_CONNECTOR_COLOR);
+			if (connectorColor != null) connectorColor.dispose ();
 			Image unchecked = (Image) display.getData (ID_UNCHECKED);
 			if (unchecked != null) unchecked.dispose ();
 			Image grayUnchecked = (Image) display.getData (ID_GRAYUNCHECKED);
 			if (grayUnchecked != null) grayUnchecked.dispose ();
 			Image checkmark = (Image) display.getData (ID_CHECKMARK);
 			if (checkmark != null) checkmark.dispose ();
-			Color connectorColor = (Color) display.getData (ID_CONNECTOR_COLOR);
-			if (connectorColor != null) connectorColor.dispose ();
 
 			display.setData (ID_EXPANDED, null);
 			display.setData (ID_COLLAPSED, null);
+			display.setData (ID_CONNECTOR_COLOR, null);
 			display.setData (ID_UNCHECKED, null);
 			display.setData (ID_GRAYUNCHECKED, null);
 			display.setData (ID_CHECKMARK, null);
-			display.setData (ID_CONNECTOR_COLOR, null);
 		}
 	});
 }
