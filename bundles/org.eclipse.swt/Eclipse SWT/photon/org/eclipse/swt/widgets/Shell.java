@@ -577,7 +577,7 @@ public void setVisible (boolean visible) {
 		Shell shell = parent.getShell ();
 		int parentHandle = shell.shellHandle;
 		if (!OS.PtWidgetIsRealized (parentHandle)) {
-			OS.PtReParentWidget (shellHandle, visible ? 0 : parentHandle);
+			OS.PtReParentWidget (shellHandle, visible ? OS.Pt_NO_PARENT : parentHandle);
 		}
 	}
 	

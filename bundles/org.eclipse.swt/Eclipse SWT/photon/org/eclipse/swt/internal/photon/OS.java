@@ -179,6 +179,8 @@ public class OS {
 
 	public static final int Pt_ARG_BEVEL_CONTRAST                                    = ( 2 * 1000 + 20 );
 
+	public static final int Pt_NO_PARENT	                                    = 1;
+
 /*** END MANUALLY ADDED/FIXED ***/
 
 //public static final int Aw_ARG_ONOFF_STATE                                    = ( 5 * 1000 + 1 );
