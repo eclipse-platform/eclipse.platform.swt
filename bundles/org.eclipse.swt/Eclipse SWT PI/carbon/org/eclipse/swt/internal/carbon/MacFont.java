@@ -27,7 +27,6 @@ public class MacFont {
 		if ((face & SWT.ITALIC) !=  0)
 			fFace |= OS.italic;
 
-
 		if ("Courier".equals(name)) {
 			name= "Monaco";
 		}
@@ -39,8 +38,8 @@ public class MacFont {
 			return;
 		}
 		
-		if (size < 9)
-			size= 9;
+		if (size < 10)
+			size= 10;
 
 		short id= OS.FMGetFontFamilyFromName(MacUtil.Str255(name));
 		//System.out.print("MacFont(" + name + ", " + size + ", " + face + "): ");
