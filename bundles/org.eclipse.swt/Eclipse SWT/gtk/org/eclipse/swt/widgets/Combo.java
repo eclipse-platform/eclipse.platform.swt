@@ -126,7 +126,7 @@ public void add (String string) {
 	String [] newItems = new String [items.length + 1];
 	System.arraycopy (items, 0, newItems, 0, items.length);
 	newItems [items.length] = string;
-	setItems (newItems);
+	setItems (newItems, true, true);
 }
 
 /**
@@ -165,7 +165,7 @@ public void add (String string, int index) {
 	String [] newItems = new String [items.length + 1];
 	System.arraycopy (items, 0, newItems, 0, items.length);
 	newItems [index] = string;
-	setItems (newItems);
+	setItems (newItems, true, true);
 }
 
 /**
@@ -436,7 +436,7 @@ void hookEvents () {
  */
 public void deselect (int index) {
 	checkWidget();
-	setItems (getItems ());
+	setItems (getItems (), true, getSelectionIndex () != index);
 }
 
 /**
@@ -455,7 +455,7 @@ public void deselect (int index) {
  */
 public void deselectAll () {
 	checkWidget();
-	setItems (getItems ());
+	setItems (getItems (), true, false);
 }
 
 GdkColor getBackgroundColor () {
@@ -829,7 +829,7 @@ public void remove (int index) {
 	String [] newItems = new String [oldItems.length - 1];
 	System.arraycopy (oldItems, 0, newItems, 0, index);
 	System.arraycopy (oldItems, index + 1, newItems, index, oldItems.length - index - 1);
-	setItems (newItems);
+	setItems (newItems, true, true);
 }
 
 /**
@@ -860,7 +860,7 @@ public void remove (int start, int end) {
 	String [] newItems = new String [oldItems.length - (end - start + 1)];
 	System.arraycopy (oldItems, 0, newItems, 0, start);
 	System.arraycopy (oldItems, end + 1, newItems, start, oldItems.length - end - 1);
-	setItems (newItems);
+	setItems (newItems, true, true);
 }
 
 /**
@@ -898,7 +898,7 @@ public void remove (String string) {
  */
 public void removeAll () {
 	checkWidget();
-	setItems (new String [0]);
+	setItems (new String [0], false, false);
 }
 
 /**
@@ -964,12 +964,9 @@ public void removeSelectionListener (SelectionListener listener) {
  */
 public void select (int index) {
 	checkWidget();
-	if (index >= getItemCount ()) return;
-	String [] items = getItems ();
-	String selectedText = items [index];
+	if (index < 0 || index >= getItemCount ()) return;
 	OS.gtk_signal_handler_block_by_data (listHandle, SWT.Selection);
 	OS.gtk_list_select_item (listHandle, index);
-	OS.gtk_entry_set_text (entryHandle, Converter.wcsToMbcs (null, selectedText, true));
 	OS.gtk_signal_handler_unblock_by_data (listHandle, SWT.Selection);
 }
 
@@ -1025,7 +1022,7 @@ public void setItem (int index, String string) {
 	}
 	String [] items = getItems ();
 	items [index] = string;
-	setItems (items);
+	setItems (items, true, true);
 }
 
 /**
@@ -1044,6 +1041,12 @@ public void setItem (int index, String string) {
 public void setItems (String [] items) {
 	checkWidget();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
+	setItems (items, false, false);
+}
+	
+void setItems (String [] items, boolean keepText, boolean keepSelection) {
+	int selectedIndex = -1;
+	if (keepSelection) selectedIndex = getSelectionIndex();
 	if (items.length == 0) {
 		OS.gtk_list_clear_items (listHandle, 0, -1);
 		//LEAK
@@ -1074,7 +1077,8 @@ public void setItems (String [] items) {
 		}
 		glist = new_glist;
 	}
-	OS.gtk_editable_delete_text (entryHandle, 0, -1);
+	if (keepSelection) select (selectedIndex);
+	if (!keepText) OS.gtk_editable_delete_text (entryHandle, 0, -1);
 }
 
 /**
