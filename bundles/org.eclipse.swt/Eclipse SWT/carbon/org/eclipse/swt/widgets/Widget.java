@@ -139,6 +139,10 @@ public void addListener (int eventType, Listener handler) {
 	eventTable.hook (eventType, handler);
 }
 
+int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEvent, int nextHandler) {
+	return OS.CallNextEventHandler (nextHandler, theEvent);
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notifed when the widget is disposed. When the widget is
@@ -854,7 +858,7 @@ int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 		OS.GetClip (oldClip);
 		OS.SetClip (visibleRgn);
 		drawBackground (theControl [0]);
-		OS.CallNextEventHandler (nextHandler, theEvent);
+		callPaintEventHandler (theControl [0], region [0], visibleRgn, theEvent, nextHandler);
 		drawWidget (theControl [0], region [0], visibleRgn, theEvent);
 		OS.SetClip (oldClip);
 		OS.DisposeRgn (oldClip);

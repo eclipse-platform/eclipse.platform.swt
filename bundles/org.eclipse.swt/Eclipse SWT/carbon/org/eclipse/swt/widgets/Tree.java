@@ -164,6 +164,22 @@ int calculateWidth (TreeItem [] items, GC gc) {
 	return width;
 }
 
+int callPaintEventHandler (int control, int damageRgn, int visibleRgn, int theEvent, int nextHandler) {
+	GC currentGC = paintGC;
+	if (currentGC == null) {
+		GCData data = new GCData ();
+		data.paintEvent = theEvent;
+		data.visibleRgn = visibleRgn;
+		paintGC = GC.carbon_new (this, data);
+	} 
+	int result = super.callPaintEventHandler (control, damageRgn, visibleRgn, theEvent, nextHandler);
+	if (currentGC == null) {
+		paintGC.dispose ();
+		paintGC = null;
+	}
+	return result;
+}
+
 static int checkStyle (int style) {
 	/*
 	* Feature in Windows.  It is not possible to create
@@ -432,21 +448,6 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	gc.drawString (item.text, x, y + (height - extent.y) / 2);
 	if (gc != paintGC) gc.dispose ();
 	return OS.noErr;
-}
-
-void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
-	GC currentGC = paintGC;
-	if (currentGC == null) {
-		GCData data = new GCData ();
-		data.paintEvent = theEvent;
-		data.visibleRgn = visibleRgn;
-		paintGC = GC.carbon_new (this, data);
-	} 
-	super.drawWidget (control, damageRgn, visibleRgn, theEvent);
-	if (currentGC == null) {
-		paintGC.dispose ();
-		paintGC = null;
-	}
 }
 
 public Rectangle getClientArea () {
