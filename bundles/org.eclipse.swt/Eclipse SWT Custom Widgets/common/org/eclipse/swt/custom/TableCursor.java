@@ -435,12 +435,17 @@ void traverse(Event event) {
 }
 
 void setRowColumn(int row, int column, boolean notify) {
-	if (0 <= row && row < table.getItemCount()) {
-		if (0 <= column && column < table.getColumnCount()) {
+	int itemCount = table.getItemCount();
+	int columnCount = table.getColumnCount();
+	if (0 <= row && row < itemCount) {
+		if (0 <= column && column < columnCount) {
 			this.row = row;
 			this.column = column;
 			TableItem item = table.getItem(row);
 			table.showItem(item);
+			if (columnCount > 1) {
+				table.showColumn(table.getColumn(column));
+			}
 			setBounds(item.getBounds(column));
 			redraw();
 			if (notify) {
