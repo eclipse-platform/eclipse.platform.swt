@@ -236,172 +236,192 @@ public class SWT {
 
 	/**
 	 * style constant for menu bar behavior (value is 1&lt;&lt;1)
-	 * <br>Used by:
-	 * <br><code>Menu</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Menu</code></li>
+	 * </ul></p>
 	 */
 	public static final int BAR = 1 << 1;
 
 	/**
 	 * style constant for drop down menu/list behavior (value is 1&lt;&lt;2)
-	 * <br>Used by:
-	 * <br><code>Menu</code>
-	 * <br><code>ToolItem</code>
-	 * <br><code>CoolItem</code>
-	 * <br><code>Combo</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Menu</code></li>
+	 * <li><code>ToolItem</code></li>
+	 * <li><code>CoolItem</code></li>
+	 * <li><code>Combo</code></li>
+	 * </ul></p>
 	 */
 	public static final int DROP_DOWN = 1 << 2;
 
 	/**
 	 * style constant for pop up menu behavior (value is 1&lt;&lt;3)
-	 * <br>Used by:
-	 * <br><code>Menu</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Menu</code></li>
+	 * </ul></p>
 	 */
 	public static final int POP_UP = 1 << 3;
 
 	/**
 	 * style constant for line separator behavior (value is 1&lt;&lt;1)
-	 * <br>Used by:
-	 * <br><code>Label</code>
-	 * <br><code>MenuItem</code>
-	 * <br><code>ToolItem</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Label</code></li>
+	 * <li><code>MenuItem</code></li>
+	 * <li><code>ToolItem</code></li>
+	 * </ul></p>
 	 */
 	public static final int SEPARATOR = 1 << 1;
 
 	/**
 	 * style constant for toggle button behavior (value is 1&lt;&lt;1)
-	 * <br>Used by:
-	 * <br><code>Button</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Button</code></li>
+	 * </ul></p>
 	 */
 	public static final int TOGGLE = 1 << 1;
 
 	/**
 	 * style constant for arrow button behavior (value is 1&lt;&lt;2)
-	 * <br>Used by:
-	 * <br><code>Button</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Button</code></li>
+	 * </ul></p>
 	 */
 	public static final int ARROW = 1 << 2;
 
 	/**
 	 * style constant for push button behavior (value is 1&lt;&lt;3)
-	 * <br>Used by:
-	 * <br><code>Button</code>
-	 * <br><code>MenuItem</code>
-	 * <br><code>ToolItem</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Button</code></li>
+	 * <li><code>MenuItem</code></li>
+	 * <li><code>ToolItem</code></li>
+	 * </ul></p>
 	 */
 	public static final int PUSH = 1 << 3;
 
 	/**
 	 * style constant for radio button behavior (value is 1&lt;&lt;4)
-	 * <br>Used by:
-	 * <br><code>Button</code>
-	 * <br><code>MenuItem</code>
-	 * <br><code>ToolItem</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Button</code></li>
+	 * <li><code>MenuItem</code></li>
+	 * <li><code>ToolItem</code></li>
+	 * </ul></p>
 	 */
 	public static final int RADIO = 1 << 4;
 
 	/**
 	 * style constant for check box behavior (value is 1&lt;&lt;5)
-	 * <br>Used by:
-	 * <br><code>Button</code>
-	 * <br><code>MenuItem</code>
-	 * <br><code>ToolItem</code>
-	 * <br><code>Table</code>
-	 * <br><code>Tree</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Button</code></li>
+	 * <li><code>MenuItem</code></li>
+	 * <li><code>ToolItem</code></li>
+	 * <li><code>Table</code></li>
+	 * <li><code>Tree</code></li>
+	 * </ul></p>
 	 */
 	public static final int CHECK = 1 << 5;
 
 	/**
 	 * style constant for cascade behavior (value is 1&lt;&lt;6)
-	 * <br>Used by:
-	 * <br><code>MenuItem</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>MenuItem</code></li>
+	 * </ul></p>
 	 */
 	public static final int CASCADE = 1 << 6;
 
 	/**
 	 * style constant for multi-selection behavior in lists
 	 * and multiple line support on text fields (value is 1&lt;&lt;1)
-	 * <br>Used by:
-	 * <br><code>Text</code>
-	 * <br><code>List</code>
-	 * <br><code>FileDialog</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Text</code></li>
+	 * <li><code>List</code></li>
+	 * <li><code>FileDialog</code></li>
+	 * </ul></p>
 	 */
 	public static final int MULTI = 1 << 1;
 
 	/**
 	 * style constant for single selection behavior in lists
 	 * and single line support on text fields (value is 1&lt;&lt;2)
-	 * <br>Used by:
-	 * <br><code>Text</code>
-	 * <br><code>List</code>
-	 * <br><code>Table</code>
-	 * <br><code>Tree</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Text</code></li>
+	 * <li><code>List</code></li>
+	 * <li><code>Table</code></li>
+	 * <li><code>Tree</code></li>
+	 * </ul></p>
 	 */
 	public static final int SINGLE = 1 << 2;
 
 	/**
 	 * style constant for read-only behavior (value is 1&lt;&lt;3)
-	 * <br>Used by:
-	 * <br><code>Combo</code>
-	 * <br><code>Text</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Combo</code></li>
+	 * <li><code>Text</code></li>
+	 * </ul></p>
 	 */
 	public static final int READ_ONLY = 1 << 3;
 
 	/**
 	 * style constant for automatic line wrap behavior (value is 1&lt;&lt;6)
-	 * <br>Used by:
-	 * <br><code>Label</code>
-	 * <br><code>Text</code>
-	 * <br><code>ToolBar</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Label</code></li>
+	 * <li><code>Text</code></li>
+	 * <li><code>ToolBar</code></li>
+	 * </ul></p>
 	 */
 	public static final int WRAP = 1 << 6;
 
 	/**
 	 * style constant for simple (not drop down) behavior (value is 1&lt;&lt;6)
-	 * <br>Used by:
-	 * <br><code>Combo</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Combo</code></li>
+	 * </ul></p>
 	 */
 	public static final int SIMPLE = 1 << 6;
 
 	/**
 	 * style constant for shadow in behavior (value is 1&lt;&lt;2)
 	 * <br>Note that this is a <em>HINT</em>.
-	 * <br>Used by:
-	 * <br><code>Label</code>
-	 * <br><code>Group</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Label</code></li>
+	 * <li><code>Group</code></li>
+	 * </ul></p>
 	 */
 	public static final int SHADOW_IN = 1 << 2;
 
 	/**
 	 * style constant for shadow out behavior (value is 1&lt;&lt;3)
 	 * <br>Note that this is a <em>HINT</em>.
-	 * <br>Used by:
-	 * <br><code>Label</code>
-	 * <br><code>Group</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Label</code></li>
+	 * <li><code>Group</code></li>
+	 * </ul></p>
 	 */
 	public static final int SHADOW_OUT = 1 << 3;
 
 	/**
 	 * style constant for shadow etched in behavior (value is 1&lt;&lt;4)
 	 * <br>Note that this is a <em>HINT</em>. It is ignored on all platforms except Motif.
-	 * <br>Used by:
-	 * <br><code>Group</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Group</code></li>
+	 * </ul></p>
 	 */
 	public static final int SHADOW_ETCHED_IN = 1 << 4;
 
 	/**
 	 * style constant for shadow etched out behavior (value is 1&lt;&lt;6)
 	 * <br>Note that this is a <em>HINT</em>. It is ignored on all platforms except Motif.
-	 * <br>Used by:
-	 * <br><code>Group</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Group</code></li>
+	 * </ul></p>
 	 */
 	public static final int SHADOW_ETCHED_OUT = 1 << 6;
 
 	/**
 	 * style constant for no shadow behavior (value is 1&lt;&lt;5)
 	 * <br>Note that this is a <em>HINT</em>.
-	 * <br>Used by:
-	 * <br><code>Label</code>
-	 * <br><code>Group</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Label</code></li>
+	 * <li><code>Group</code></li>
+	 * </ul></p>
 	 */
 	public static final int SHADOW_NONE = 1 << 5;
 
@@ -411,83 +431,93 @@ public class SWT {
 	 * A tool window is a window intended to be used as a floating toolbar.
 	 * It typically has a title bar that is shorter than a normal title bar,
 	 * and the window title is typically drawn using a smaller font.
-	 * </p>
-	 * <br>Used by:
-	 * <br><code>Shell</code>
+	 * </p><p><b>Used By:</b><ul>
+	 * <li><code>Shell</code></li>
+	 * </ul></p>
 	 */
 	public static final int TOOL = 1 << 2; 
 
 	/**
 	 * style constant to ensure no trimmings are used (value is 1&lt;&lt;3)
 	 * <br>Note that this overrides all other trim styles.
-	 * <br>Used by:
-	 * <br><code>Shell</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Shell</code></li>
+	 * </ul></p>
 	 */
 	public static final int NO_TRIM = 1 << 3;
 	
 	/**
 	 * style constant for resize box trim (value is 1&lt;&lt;4)
-	 * <br>Used by:
-	 * <br><code>Shell</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Shell</code></li>
+	 * </ul></p>
 	 */
 	public static final int RESIZE = 1 << 4;
 
 	/**
 	 * style constant for title area trim (value is 1&lt;&lt;5)
-	 * <br>Used by:
-	 * <br><code>Shell</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Shell</code></li>
+	 * </ul></p>
 	 */
 	public static final int TITLE = 1 << 5;
 
 	/**
 	 * style constant for close box trim (value is 1&lt;&lt;6,
 	 * since we do not distinguish between CLOSE style and MENU style)
-	 * <br>Used by:
-	 * <br><code>Shell</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Shell</code></li>
+	 * </ul></p>
 	 */
 	public static final int CLOSE = 1 << 6;
 
 	/**
 	 * style constant for shell menu trim (value is 1&lt;&lt;6,
 	 * since we do not distinguish between CLOSE style and MENU style)
-	 * <br>Used by:
-	 * <br><code>Shell</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Shell</code></li>
+	 * </ul></p>
 	 */
 	public static final int MENU = CLOSE;
 
 	/**
 	 * style constant for minimize box trim (value is 1&lt;&lt;7)
-	 * <br>Used by:
-	 * <br><code>Shell</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Shell</code></li>
+	 * </ul></p>
 	 */
 	public static final int MIN = 1 << 7;
 
 	/**
 	 * style constant for maximize box trim (value is 1&lt;&lt;10)
-	 * <br>Used by:
-	 * <br><code>Shell</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Shell</code></li>
+	 * </ul></p>
 	 */
 	public static final int MAX = 1 << 10;
 
 	/**
 	 * style constant for horizontal scrollbar behavior (value is 1&lt;&lt;8)
-	 * <br>Used by:
-	 * <br><code>Scrollable</code> and subclasses
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Scrollable</code> and subclasses</li>
+	 * </ul></p>
 	 */
 	public static final int H_SCROLL = 1 << 8;
 
 	/**
 	 * style constant for vertical scrollbar behavior (value is 1&lt;&lt;9)
-	 * <br>Used by:
-	 * <br><code>Scrollable</code> and subclasses
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Scrollable</code> and subclasses</li>
+	 * </ul></p>
 	 */
 	public static final int V_SCROLL = 1 << 9;
 
 	/**
 	 * style constant for bordered behavior (value is 1&lt;&lt;11)
 	 * <br>Note that this is a <em>HINT</em>.
-	 * <br>Used by:
-	 * <br><code>Control</code> and subclasses
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Control</code> and subclasses</li>
+	 * </ul></p>
 	 */
 	public static final int BORDER = 1 << 11;
 
@@ -495,8 +525,9 @@ public class SWT {
 	 * style constant indicating that the window manager should clip
 	 * a widget's children with respect to its viewable area. (value is 1&lt;&lt;12)
 	 * <br>Note that this is a <em>HINT</em>.
-	 * <br>Used by:
-	 * <br><code>Control</code> and subclasses
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Control</code> and subclasses</li>
+	 * </ul></p>
 	 */
 	public static final int CLIP_CHILDREN = 1 << 12; 
 
@@ -504,71 +535,80 @@ public class SWT {
 	 * style constant indicating that the window manager should clip
 	 * a widget's siblings with respect to its viewable area. (value is 1&lt;&lt;13)
 	 * <br>Note that this is a <em>HINT</em>.
-	 * <br>Used by:
-	 * <br><code>Control</code> and subclasses
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Control</code> and subclasses</li>
+	 * </ul></p>
 	 */
 	public static final int CLIP_SIBLINGS = 1 << 13;
 
 	/**
 	 * style constant for always on top behavior (value is 1&lt;&lt;14)
-	 * <br>Used by:
-	 * <br><code>Shell</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Shell</code></li>
+	 * </ul></p>
 	 */
 	public static final int ON_TOP = 1 << 14;
 
 	/**
 	 * trim style convenience constant for the most common top level shell appearance
 	 * (value is CLOSE|TITLE|MIN|MAX|RESIZE)
-	 * <br>Used by:
-	 * <br><code>Shell</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Shell</code></li>
+	 * </ul></p>
 	 */
 	public static final int SHELL_TRIM = CLOSE | TITLE | MIN | MAX | RESIZE;
 
 	/**
 	 * trim style convenience constant for the most common dialog shell appearance
 	 * (value is CLOSE|TITLE|BORDER)
-	 * <br>Used by:
-	 * <br><code>Shell</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Shell</code></li>
+	 * </ul></p>
 	 */
 	public static final int DIALOG_TRIM = TITLE | CLOSE | BORDER;
 
 	/**
 	 * style constant for modeless behavior (value is 0)
 	 * <br>Note that this is a <em>HINT</em>.
-	 * <br>Used by:
-	 * <br><code>Shell</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Shell</code></li>
+	 * </ul></p>
 	 */
 	public static final int MODELESS = 0;
 
 	/**
 	 * style constant for primary modal behavior (value is 1&lt;&lt;15)
 	 * <br>Note that this is a <em>HINT</em>.
-	 * <br>Used by:
-	 * <br><code>Shell</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Shell</code></li>
+	 * </ul></p>
 	 */
 	public static final int PRIMARY_MODAL = 1 << 15;
 
 	/**
 	 * style constant for application modal behavior (value is 1&lt;&lt;16)
 	 * <br>Note that this is a <em>HINT</em>.
-	 * <br>Used by:
-	 * <br><code>Shell</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Shell</code></li>
+	 * </ul></p>
 	 */
 	public static final int APPLICATION_MODAL = 1 << 16;
 
 	/**
 	 * style constant for system modal behavior (value is 1&lt;&lt;17)
 	 * <br>Note that this is a <em>HINT</em>.
-	 * <br>Used by:
-	 * <br><code>Shell</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Shell</code></li>
+	 * </ul></p>
 	 */
 	public static final int SYSTEM_MODAL = 1 << 17;
 
 	/**
 	 * style constant for selection hiding behavior. (value is 1&lt;&lt;15)
 	 * <br>Note that this is a <em>HINT</em>.
-	 * <br>Used by:
-	 * <br><code>Table</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Table</code></li>
+	 * </ul></p>
 	 */
 	public static final int HIDE_SELECTION = 1 << 15;
 
@@ -577,17 +617,19 @@ public class SWT {
 	 * since FULL_SELECTION and SMOOTH share the same value, but 
 	 * are implemented on non-intersecting sets of widgets)
 	 * <br>Note that this is a <em>HINT</em>.
-	 * <br>Used by:
-	 * <br><code>Table</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Table</code></li>
+	 * </ul></p>
 	 */
 	public static final int FULL_SELECTION = 1 << 16;
 
 	/**
 	 * style constant for flat appearance. (value is 1&lt;&lt;23)
 	 * <br>Note that this is a <em>HINT</em>.
-	 * <br>Used by:
-	 * <br><code>Button</code>
-	 * <br><code>ToolBar</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Button</code></li>
+	 * <li><code>ToolBar</code></li>
+	 * </ul></p>
 	 */
 	public static final int FLAT = 1 << 23;
 
@@ -596,8 +638,9 @@ public class SWT {
 	 * since FULL_SELECTION and SMOOTH share the same value, but 
 	 * are implemented on non-intersecting sets of widgets)
 	 * <br>Note that this is a <em>HINT</em>.
-	 * <br>Used by:
-	 * <br><code>ProgressBar</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>ProgressBar</code></li>
+	 * </ul></p>
 	 */
 	public static final int SMOOTH = FULL_SELECTION;
 
@@ -609,17 +652,18 @@ public class SWT {
 	 * for filling every pixel of the client area.
 	 * This style might be used as an alternative to "double-buffering" in order to reduce flicker.
 	 * This style does not mean "transparent" - widgets that are obscured will not draw through.
-	 * </p>
-	 * <br>Used by:
-	 * <br><code>Canvas</code>
+	 * </p><p><b>Used By:</b><ul>
+	 * <li><code>Canvas</code></li>
+	 * </ul></p>
 	 */
 	public static final int NO_BACKGROUND = 1 << 18;
 
 	/**
 	 * style constant for does not take focus behavior (value is 1&lt;&lt;19)
 	 * <br>Note that this is a <em>HINT</em>.
-	 * <br>Used by:
-	 * <br><code>Canvas</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Canvas</code></li>
+	 * </ul></p>
 	 */
 	public static final int NO_FOCUS = 1 << 19;
 
@@ -629,120 +673,132 @@ public class SWT {
 	 * This style stops the entire client area from being invalidated when the size
 	 * of the Canvas changes. Specifically, when the size of the Canvas gets smaller,
 	 * the SWT.Paint event is not sent. When it gets bigger, an SWT.Paint event is
-	 * sent with a GC clipped to only the new areas that are exposed.
-	 * </p>
-	 * <br>Used by:
-	 * <br><code>Canvas</code>
+	 * sent with a GC clipped to only the new areas to be painted. Without this
+	 * style, the entire client area will be repainted.
+	 * </p><p><b>Used By:</b><ul>
+	 * <li><code>Canvas</code></li>
+	 * </ul></p>
 	 */
 	public static final int NO_REDRAW_RESIZE = 1 << 20;
 
 	/**
 	 * style constant for no paint event merging behavior (value is 1&lt;&lt;21)
-	 * <br>Used by:
-	 * <br><code>Canvas</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Canvas</code></li>
+	 * </ul></p>
 	 */
 	public static final int NO_MERGE_PAINTS = 1 << 21;
 
 	/**
 	 * style constant for preventing child radio group behavior (value is 1&lt;&lt;22)
-	 * <br>Used by:
-	 * <br><code>Canvas</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Canvas</code></li>
+	 * </ul></p>
 	 */
 	public static final int NO_RADIO_GROUP = 1 << 22;
 
 	/**
 	 * style constant for align up behavior (value is 1&lt;&lt;7,
 	 * since align UP and align TOP are considered the same)
-	 * <br>Used by:
-	 * <br><code>Button</code> with <code>ARROW</code> style
-	 * <br><code>Tracker</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Button</code> with <code>ARROW</code> style</li>
+	 * <li><code>Tracker</code></li>
+	 * </ul></p>
 	 */
 	public static final int UP = 1 << 7;
 
 	/**
 	 * style constant for align top behavior (value is 1&lt;&lt;7,
 	 * since align UP and align TOP are considered the same)
-	 * <br>Used by:
-	 * <br><code>FormAttachment</code> in a <code>FormLayout</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>FormAttachment</code> in a <code>FormLayout</code></li>
+	 * </ul></p>
 	 */
 	public static final int TOP = UP;
 
 	/**
 	 * style constant for align down behavior (value is 1&lt;&lt;10,
 	 * since align DOWN and align BOTTOM are considered the same)
-	 * <br>Used by:
-	 * <br><code>Button</code> with <code>ARROW</code> style
-	 * <br><code>Tracker</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Button</code> with <code>ARROW</code> style</li>
+	 * <li><code>Tracker</code></li>
+	 * </ul></p>
 	 */
 	public static final int DOWN               = 1 << 10;
 
 	/**
 	 * style constant for align bottom behavior (value is 1&lt;&lt;10,
 	 * since align DOWN and align BOTTOM are considered the same)
-	 * <br>Used by:
-	 * <br><code>FormAttachment</code> in a <code>FormLayout</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>FormAttachment</code> in a <code>FormLayout</code></li>
+	 * </ul></p>
 	 */
 	public static final int BOTTOM             = DOWN;
 
 	/**
 	 * style constant for align left behavior (value is 1&lt;&lt;14)
-	 * <br>Used by:
-	 * <br><code>Button</code>
-	 * <br><code>Label</code>
-	 * <br><code>TableColumn</code>
-	 * <br><code>Tracker</code>
-	 * <br><code>FormAttachment</code> in a <code>FormLayout</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Button</code></li>
+	 * <li><code>Label</code></li>
+	 * <li><code>TableColumn</code></li>
+	 * <li><code>Tracker</code></li>
+	 * <li><code>FormAttachment</code> in a <code>FormLayout</code></li>
+	 * </ul></p>
 	 */
 	public static final int LEFT               = 1 << 14;
 
 	/**
 	 * style constant for align right behavior (value is 1&lt;&lt;17)
-	 * <br>Used by:
-	 * <br><code>Button</code>
-	 * <br><code>Label</code>
-	 * <br><code>TableColumn</code>
-	 * <br><code>Tracker</code>
-	 * <br><code>FormAttachment</code> in a <code>FormLayout</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Button</code></li>
+	 * <li><code>Label</code></li>
+	 * <li><code>TableColumn</code></li>
+	 * <li><code>Tracker</code></li>
+	 * <li><code>FormAttachment</code> in a <code>FormLayout</code></li>
+	 * </ul></p>
 	 */
 	public static final int RIGHT              = 1 << 17;
 
 	/**
 	 * style constant for align center behavior (value is 1&lt;&lt;24)
-	 * <br>Used by:
-	 * <br><code>Button</code>
-	 * <br><code>Label</code>
-	 * <br><code>TableColumn</code>
-	 * <br><code>FormAttachment</code> in a <code>FormLayout</code>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Button</code></li>
+	 * <li><code>Label</code></li>
+	 * <li><code>TableColumn</code></li>
+	 * <li><code>FormAttachment</code> in a <code>FormLayout</code></li>
+	 * </ul></p>
 	 */
 	public static final int CENTER             = 1 << 24;
 
 	/**
 	 * style constant for horizontal alignment or orientation behavior (value is 1&lt;&lt;8)
-	 * <br>Used by:
-	 * <br><code>Label</code>
-	 * <br><code>ProgressBar</code>
-	 * <br><code>Sash</code>
-	 * <br><code>Scale</code>
-	 * <br><code>ScrollBar</code>
-	 * <br><code>Slider</code>
-	 * <br><code>ToolBar</code>
-	 * <br><code>FillLayout</code> type
-	 * <br><code>RowLayout</code> type
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Label</code></li>
+	 * <li><code>ProgressBar</code></li>
+	 * <li><code>Sash</code></li>
+	 * <li><code>Scale</code></li>
+	 * <li><code>ScrollBar</code></li>
+	 * <li><code>Slider</code></li>
+	 * <li><code>ToolBar</code></li>
+	 * <li><code>FillLayout</code> type</li>
+	 * <li><code>RowLayout</code> type</li>
+	 * </ul></p>
 	 */
 	public static final int HORIZONTAL = H_SCROLL;
 
 	/**
 	 * style constant for vertical alignment or orientation behavior (value is 1&lt;&lt;9)
-	 * <br>Used by:
-	 * <br><code>Label</code>
-	 * <br><code>ProgressBar</code>
-	 * <br><code>Sash</code>
-	 * <br><code>Scale</code>
-	 * <br><code>ScrollBar</code>
-	 * <br><code>Slider</code>
-	 * <br><code>ToolBar</code>
-	 * <br><code>FillLayout</code> type
-	 * <br><code>RowLayout</code> type
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Label</code></li>
+	 * <li><code>ProgressBar</code></li>
+	 * <li><code>Sash</code></li>
+	 * <li><code>Scale</code></li>
+	 * <li><code>ScrollBar</code></li>
+	 * <li><code>Slider</code></li>
+	 * <li><code>ToolBar</code></li>
+	 * <li><code>FillLayout</code> type</li>
+	 * <li><code>RowLayout</code> type</li>
+	 * </ul></p>
 	 */
 	public static final int VERTICAL = V_SCROLL;
 
