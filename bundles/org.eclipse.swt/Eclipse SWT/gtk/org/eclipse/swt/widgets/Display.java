@@ -2325,8 +2325,8 @@ void putGdkEvents () {
 		for (int i = 0; i < gdkEventCount; i++) {
 			if (gdkEventWidgets [i] == null || !gdkEventWidgets [i].isDisposed ()) {
 				OS.gdk_event_put (gdkEvents [i]);
-				OS.gdk_event_free (gdkEvents [i]);
 			}
+			OS.gdk_event_free (gdkEvents [i]);
 		}
 		gdkEvents = null;
 		gdkEventWidgets = null;
