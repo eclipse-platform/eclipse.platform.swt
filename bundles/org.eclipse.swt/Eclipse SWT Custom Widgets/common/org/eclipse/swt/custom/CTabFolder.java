@@ -80,7 +80,8 @@ public class CTabFolder extends Composite {
 	/* sizing, positioning */
 	int xClient, yClient;
 	boolean onBottom = false;
-	int fixedTabHeight = 0;
+	boolean fixedTabHeight;
+	int tabHeight;
 	
 	/* item management */
 	private CTabItem items[] = new CTabItem[0];
@@ -105,7 +106,9 @@ public class CTabFolder extends Composite {
 	private ToolBar arrowBar;
 	private Image arrowLeftImage;
 	private Image arrowRightImage;
-	
+
+	private Control topRight;
+
 	// close button
 	boolean showClose = false;
 	private Image closeImage;
@@ -179,7 +182,6 @@ public CTabFolder(Composite parent, int style) {
 	borderColor3 = new Color(getDisplay(), borderOutsideRGB);
 
 	// tool tip support
-	Display display = getDisplay();
 	tip = new Shell (getShell(), SWT.ON_TOP);
 	label = new Label (tip, SWT.CENTER);
 	
@@ -287,10 +289,6 @@ public void addCTabFolderListener(CTabFolderListener listener) {
 	showClose = true;
 	setButtonBounds();
 }
-void onClientAreaChange() {
-	oldSize = null;
-	notifyListeners(SWT.Resize, new Event());
-}
 private void closeNotify(CTabItem item, int time) {
 	if (item == null) return;
 	
@@ -348,7 +346,6 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 		int trimHeight = height + borderBottom + 2;
 		return new Rectangle (trimX, trimY, trimWidth, trimHeight);
 	} else {
-		int tabHeight = getTabHeight();
 		int trimX = x - marginWidth - borderLeft;
 		int trimY = y - marginHeight - tabHeight - borderTop - 1;
 		// -1 is for the line at the bottom of the tabs
@@ -381,9 +378,11 @@ void createItem (CTabItem item, int index) {
 	}
 	if (items.length == 1) {
 		topTabIndex = 0;
+		resetTabSize(true);
+	} else {
+		setItemBounds();
+		showItem(item);
 	}
-	setItemBounds();
-	showItem(item);
 	
 	if (items.length == 1) {
 		redraw();
@@ -474,6 +473,8 @@ void destroyItem (CTabItem item) {
 			control.setVisible(false);
 		}
 		closeBar.setVisible(false);
+		if (topRight != null) topRight.setVisible(false);
+		if (!fixedTabHeight) tabHeight = 0;
 		redraw();
 		return;
 	} 
@@ -607,7 +608,6 @@ private void drawBorder(GC gc) {
 
 	// draw a separator line
 	if (items.length > 0) {	
-		int tabHeight = getTabHeight();
 		int lineY = d.y + borderTop + tabHeight;
 		if (onBottom) {
 			lineY = d.y + d.height - borderBottom - tabHeight - 1;
@@ -628,7 +628,7 @@ public Rectangle getClientArea() {
 		return new Rectangle(borderRight + 1, borderBottom + 1, width, height);	
 	} else {
 		int width = size.x - 2*marginWidth - borderLeft - borderRight;
-		int height = size.y - 2*marginHeight - borderTop - borderBottom - getTabHeight() - 1;
+		int height = size.y - 2*marginHeight - borderTop - borderBottom - tabHeight - 1;
 		return new Rectangle(xClient, yClient, width, height);
 	}
 }
@@ -644,16 +644,9 @@ public Rectangle getClientArea() {
  */
 public int getTabHeight(){
 	checkWidget();
-	if (fixedTabHeight > 0) return fixedTabHeight;
-
-	int tempHeight = 0;
-	GC gc = new GC(this);
-	for (int i=0; i < items.length; i++) { 
-		tempHeight = Math.max(tempHeight, items[i].preferredHeight(gc));
-	}
-	gc.dispose();
-	return tempHeight;
+	return tabHeight;
 }
+
 /**
  * Return the tab that is located at the specified index.
  * 
@@ -702,12 +695,14 @@ public CTabItem [] getItems() {
 	System.arraycopy(items, 0, tabItems, 0, items.length);
 	return tabItems;
 }
+
 private int getLastItem(){
 	if (items.length == 0) return -1;
-	if (!scroll_leftVisible() && !scroll_rightVisible()) return items.length -1;
 	Rectangle area = getClientArea();
 	if (area.width <= 0) return 0;
-	int width = area.width - arrowBar.getSize().x;
+	Rectangle toolspace = getToolSpace();
+	if (toolspace.width == 0) return items.length -1;
+	int width = area.width - toolspace.width;
 	int index = topTabIndex;
 	int tabWidth = items[index].width;
 	while (index < items.length - 1) {
@@ -737,6 +732,37 @@ public CTabItem getSelection() {
 public int getSelectionIndex() {
 	//checkWidget();
 	return selectedIndex;
+}
+private Rectangle getToolSpace() {
+	boolean showArrows = scroll_leftVisible() || scroll_rightVisible();
+	if (!showArrows && topRight == null) return new Rectangle(0, 0, 0, 0);
+	Rectangle toolspace;
+	if (showArrows) {
+		toolspace = arrowBar.getBounds();
+		toolspace.width += borderRight;
+		if (topRight != null) toolspace.width += topRight.getSize().x;
+	} else {
+		toolspace = topRight.getBounds();
+		toolspace.width += borderRight;
+	}
+	return toolspace;
+}
+/**
+ * Returns the control in the top right corner of the tab folder. 
+ * Typically this is a close button or a composite with a menu and close button.
+ *
+ * @since 2.1
+ *
+ * @return the control in the top right corner of the tab folder or null
+ * 
+ * @exception  SWTError <ul>
+ *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ *	</ul>
+ */
+public Control getTopRight() {
+	checkWidget();
+	return topRight;
 }
 
 /**
@@ -938,15 +964,23 @@ private void setButtonBounds() {
 	
 	updateArrowBar();
 	updateCloseBar();
-	
-	int tabHeight = getTabHeight();
+
 	Rectangle area = super.getClientArea();
-	
+
+	int offset = 0;
+	if (topRight != null) {
+		Point size = topRight.computeSize(SWT.DEFAULT, tabHeight);
+		int x = area.x + area.width - borderRight - size.x;
+		int y = onBottom ? area.y + area.height - borderBottom - size.y : area.y + borderTop;
+		topRight.setBounds(x, y, size.x, size.y);
+		offset = size.x;
+		topRight.setVisible(true);
+	}
 	boolean leftVisible = scroll_leftVisible();
 	boolean rightVisible = scroll_rightVisible();
 	if (leftVisible || rightVisible) {
 		Point size = arrowBar.computeSize(SWT.DEFAULT, tabHeight);
-		int x = area.x + area.width - borderRight - size.x;
+		int x = area.x + area.width - borderRight - size.x - offset;
 		int y = (onBottom) ? area.y + area.height - borderBottom - size.y : area.y + borderTop;
 		
 		arrowBar.setBounds(x, y, size.x, size.y);
@@ -971,13 +1005,8 @@ private void setButtonBounds() {
 			int x = item.x + item.width - size.x - 2; // -2 to not overlap focus rectangle and trim
 			int y = item.y + Math.max(0, (item.height - toolbarHeight)/2);		
 			closeBar.setBounds(x, y, size.x, toolbarHeight);
-			if (scroll_leftVisible() || scroll_rightVisible()) {
-				Rectangle arrowRect = arrowBar.getBounds();
-				arrowRect.width += borderRight;
-				closeBar.setVisible(!arrowRect.contains(x, y));
-			} else {
-				closeBar.setVisible(true);
-			}
+			Rectangle toolspace = getToolSpace();
+			closeBar.setVisible(!toolspace.contains(x, y));
 		}
 	}
 }
@@ -986,10 +1015,8 @@ private boolean setItemLocation() {
 	Rectangle area = super.getClientArea();
 	int x = area.x;
 	int y = area.y + borderTop;
-	if (onBottom) {
-		int tabHeight = getTabHeight();
-		y = Math.max(0, area.y + area.height - borderBottom - tabHeight);
-	}
+	if (onBottom) y = Math.max(0, area.y + area.height - borderBottom - tabHeight);
+	
 	boolean changed = false;
 	for (int i = topTabIndex - 1; i>=0; i--) { 
 		// if the first visible tab is not the first tab
@@ -1016,16 +1043,16 @@ private void setLastItem(int index) {
 	if (index < 0 || index > items.length - 1) return;
 	Rectangle area = getClientArea();
 	if (area.width <= 0) return;
-	if (scroll_leftVisible() || scroll_rightVisible()) {
-		int maxWidth = area.width - arrowBar.getSize().x;
-		int tabWidth = items[index].width;
-		while (index > 0) {
-			tabWidth += items[index - 1].width;
-			if (tabWidth > maxWidth) break;
-			index--;
-		}
-	} else {
-		index = 0;
+	int maxWidth = area.width;
+	Rectangle toolspace = getToolSpace();
+	if (toolspace.width > 0){
+		maxWidth -= toolspace.width;
+	}
+	int tabWidth = items[index].width;
+	while (index > 0) {
+		tabWidth += items[index - 1].width;
+		if (tabWidth > maxWidth) break;
+		index--;
 	}
 	topTabIndex = index;
 	setItemLocation();
@@ -1038,8 +1065,7 @@ boolean setItemBounds() {
 	boolean changed = false;
 	if (isDisposed()) return changed;
 	Rectangle area = super.getClientArea();
-	
-	int tabHeight = getTabHeight();
+
 	xClient = area.x + borderLeft + marginWidth;
 	if (onBottom) {
 		yClient = area.y + borderTop + marginHeight; 
@@ -1190,7 +1216,7 @@ private void redrawTabArea(int index) {
 		Rectangle area = super.getClientArea();
 		if (area.width == 0 || area.height == 0) return;
 		width = area.x + area.width - borderLeft - borderRight;
-		height = getTabHeight() + 1; // +1 causes top line between content and tabs to be redrawn
+		height = tabHeight + 1; // +1 causes top line between content and tabs to be redrawn
 		x = area.x + borderLeft;
 		y = area.y + borderTop; 
 		if (onBottom) {
@@ -1309,7 +1335,11 @@ public void setBackground (Color color) {
 	
 	// init scroll buttons
 	arrowBar.setBackground(color);
-	
+
+	//init topRight control
+	if (topRight != null)
+		topRight.setBackground(color);
+
 	// init close button
 	if (gradientColors == null) {
 		closeBar.setBackground(color);
@@ -1451,19 +1481,14 @@ public void setBorderVisible(boolean show) {
 	} else {
 		borderBottom = borderTop = borderLeft = borderRight = 0;
 	}
-	onClientAreaChange();
+	oldSize = null;
+	notifyListeners(SWT.Resize, new Event());
 }
 public void setFont(Font font) {
 	checkWidget();
 	if (font != null && font.equals(getFont())) return;
-	int oldHeight = getTabHeight();
 	super.setFont(font);
-	if (oldHeight != getTabHeight()){
-		onClientAreaChange();
-	} else {
-		setItemBounds();
-		redraw();
-	}
+	resetTabSize(true);
 }
 /**
  * Set the foreground color of the selected tab.
@@ -1571,6 +1596,33 @@ public void setSelection(int index) {
 	setButtonBounds();
 	redrawTabArea(-1);
 }
+/**
+ * Set the control that appears in the top right corner of the tab folder.
+ * Typically this is a close button or a composite with a Menu and close button. 
+ * The topRight control is optional.  Setting the top right control to null will remove it from the tab folder.
+ *
+ * @since 2.1
+ * 
+ * @param control the control to be displayed in the top right corner or null
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the control is not a child of this CTabFolder</li>
+ * </ul>
+ */
+public void setTopRight(Control control) {
+	checkWidget();
+	if (control != null && control.getParent() != this) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	if (topRight != null) {
+		topRight.setVisible (false);
+	}
+	topRight = control;
+	resetTabSize(true);
+}
+
 /**
  * Shows the item.  If the item is already showing in the receiver,
  * this method simply returns.  Otherwise, the items are scrolled until
@@ -1683,8 +1735,8 @@ private void setSelection(int index, boolean notify) {
 }
 
 private void updateCloseBar() {
-	int imageHeight = getTabHeight() - CTabItem.TOP_MARGIN - CTabItem.BOTTOM_MARGIN - 6;
-	if (imageHeight < 4) return;
+	int imageHeight = tabHeight - CTabItem.TOP_MARGIN - CTabItem.BOTTOM_MARGIN - 2;
+	if (imageHeight < 8) return;
 	
 	if (closeImage != null && closeImage.getBounds().height == imageHeight) return;
 	
@@ -1713,11 +1765,13 @@ private void updateCloseBar() {
 	gc.fillRectangle(0, 0, imageHeight, imageHeight);
 	gc.setForeground(black);
 	
-	int h = (imageHeight /2 )* 2;
-	gc.drawLine( 0, 0,     h - 2, h - 2);
-	gc.drawLine( 1, 0,     h - 1, h - 2);
-	gc.drawLine( 0, h - 2, h - 2, 0);
-	gc.drawLine( 1, h - 2, h - 1, 0);
+	//draw an 8x7 'x' centered in image
+	int h = (imageHeight / 2 )* 2;
+	int inset = (h - 8) / 2;
+	gc.drawLine( inset, inset, h - inset - 1, h - inset - 1);
+	gc.drawLine( inset + 1, inset, h - inset, h - inset - 1);
+	gc.drawLine( inset, h - inset - 1, h - inset - 1, inset);
+	gc.drawLine( inset + 1, h - inset - 1, h - inset, inset);
 	
 	gc.dispose();
 	
@@ -1726,8 +1780,8 @@ private void updateCloseBar() {
 }
 private void updateArrowBar() {
 	
-	int imageHeight = getTabHeight() - CTabItem.TOP_MARGIN - CTabItem.BOTTOM_MARGIN - 6;
-	if (imageHeight < 4) return;
+	int imageHeight = tabHeight - 2;
+	if (imageHeight < 10) return;
 	
 	if (arrowLeftImage != null && arrowLeftImage.getBounds().height == imageHeight) return;	
 	
@@ -1747,33 +1801,34 @@ private void updateArrowBar() {
 	Color background = getBackground();
 	
 	PaletteData palette = new PaletteData(new RGB[]{foreground.getRGB(), background.getRGB(), black.getRGB()});
-	ImageData imageData = new ImageData(imageHeight, imageHeight, 4, palette);
+	ImageData imageData = new ImageData(7, imageHeight, 4, palette);
 	imageData.transparentPixel = 1;
 	arrowLeftImage = new Image(display, imageData);
 	GC gc = new GC(arrowLeftImage);
 	gc.setBackground(background);
-	gc.fillRectangle(0, 0, imageHeight, imageHeight);
+	gc.fillRectangle(0, 0, 7, imageHeight);
 	gc.setBackground(black);
-	int indent = 0;
-	int midpoint = (imageHeight - 2*indent)/2;
-	int height = 2 * midpoint;
-	int[] pointArr = new int[] {indent, indent + midpoint, 
-		                        indent + height, indent, 
-		                        indent + height,  indent + height};
+	//draw a 10x5 '<' centered vertically in image
+	int h = (imageHeight / 2 )* 2;
+	int midpoint = h / 2;
+	int[] pointArr = new int[] {6, midpoint - 5,
+                                         1, midpoint, 
+		                                 6,  midpoint + 5,};
 	gc.fillPolygon(pointArr);
 	gc.dispose();
 	
 	palette = new PaletteData(new RGB[]{foreground.getRGB(), background.getRGB(), black.getRGB()});
-	imageData = new ImageData(imageHeight, imageHeight, 4, palette);
+	imageData = new ImageData(7, imageHeight, 4, palette);
 	imageData.transparentPixel = 1;
 	arrowRightImage = new Image(display, imageData);
 	gc = new GC(arrowRightImage);
 	gc.setBackground(background);
-	gc.fillRectangle(0, 0, imageHeight, imageHeight);
+	gc.fillRectangle(0, 0, 7, imageHeight);
 	gc.setBackground(black);
-	pointArr = new int[] {indent, indent, 
-		                  indent, indent + height,
-		                  indent + height, indent + midpoint};
+	//draw a 10x5 '>' centered vertically in image
+	pointArr = new int[] {1, midpoint - 5, 
+                                  6, midpoint,
+		                          1, midpoint + 5,};
 	gc.fillPolygon(pointArr);
 	gc.dispose();
 	
@@ -1882,20 +1937,17 @@ private void onMouseMove(Event event) {
 		
 	if (item == null || item == getSelection()) return;
 
-	int toolbarHeight = getTabHeight() - CTabItem.TOP_MARGIN - CTabItem.BOTTOM_MARGIN + 2; // +2 to ignore gab between focus rectangle
+	int toolbarHeight = tabHeight - CTabItem.TOP_MARGIN - CTabItem.BOTTOM_MARGIN + 2; // +2 to ignore gab between focus rectangle
 	Point size = inactiveCloseBar.computeSize(SWT.DEFAULT, toolbarHeight);
 	int x = item.x + item.width - size.x;
-	int y = item.y + Math.max(0, (item.height - toolbarHeight)/2);		
-			
-	if (scroll_leftVisible() || scroll_rightVisible()) {
-		Rectangle scrollArea = arrowBar.getBounds();
-		scrollArea.width += borderRight;
-		if (scrollArea.contains(x, y)) return;
-	}
+	int y = item.y + Math.max(0, (item.height - toolbarHeight)/2);
 	
-	inactiveCloseBar.setBounds(x, y, size.x, toolbarHeight);
-	inactiveCloseBar.setVisible(true);
-	inactiveItem = item;
+	Rectangle toolspace = getToolSpace(); 
+	if (!toolspace.contains(x + size.x - 5, y)) {
+		inactiveCloseBar.setBounds(x, y, size.x, toolbarHeight);
+		inactiveCloseBar.setVisible(true);
+		inactiveItem = item;
+	}
 }
 private void onTraverse (Event event) {
 	switch (event.detail) {
@@ -1953,6 +2005,8 @@ private boolean scroll_rightVisible() {
 	if (rightEdge <= 0) return false;
 	if (topTabIndex > 0) {
 		rightEdge -=  arrowBar.getSize().x;
+		if (topRight != null)
+			rightEdge -= topRight.getSize().x;
 	}
 	CTabItem item = items[items.length-1];
 	return (item.x + item.width > rightEdge);
@@ -1980,8 +2034,9 @@ private boolean correctLastItem() {
 	Rectangle area = getClientArea();
 	int rightEdge = area.x + area.width;
 	if (rightEdge <= 0) return false;
-	if (scroll_leftVisible() || scroll_rightVisible()) {
-		rightEdge -= arrowBar.getSize().x;
+	Rectangle toolspace = getToolSpace();
+	if (toolspace.width > 0) {
+		rightEdge -= toolspace.width;
 	}
 	CTabItem item = items[items.length - 1];
 	if (item.x + item.width < rightEdge) {
@@ -2008,10 +2063,31 @@ public void setTabHeight(int height) {
 	if (height < 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (fixedTabHeight == height) return;
-	fixedTabHeight = height;
-	setItemBounds();
-	redraw();
-	onClientAreaChange();
+	fixedTabHeight = true;
+	if (tabHeight == height) return;
+	tabHeight = height;
+	oldSize = null;
+	notifyListeners(SWT.Resize, new Event());
+}
+void resetTabSize(boolean checkHeight){
+	int oldHeight = tabHeight;
+	if (!fixedTabHeight && checkHeight) {
+		int tempHeight = 0;
+		GC gc = new GC(this);
+		for (int i=0; i < items.length; i++) {
+			tempHeight = Math.max(tempHeight, items[i].preferredHeight(gc));
+		}
+		gc.dispose();
+		if (topRight != null) tempHeight = Math.max(tempHeight, topRight.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
+		tabHeight =  tempHeight;
+	}
+		
+	if (tabHeight != oldHeight){
+		oldSize = null;
+		notifyListeners(SWT.Resize, new Event());
+	} else {
+		setItemBounds();
+		redraw();
+	}
 }
 }
