@@ -455,7 +455,6 @@ void hookEvents () {
 	OS.XtAddEventHandler (handle, OS.EnterWindowMask, false, windowProc, SWT.MouseEnter);
 	OS.XtAddEventHandler (handle, OS.LeaveWindowMask, false, windowProc, SWT.MouseExit);
 	OS.XtAddCallback (handle, OS.XmNexposeCallback, windowProc, SWT.Paint);
-	OS.XtInsertEventHandler (handle, OS.FocusChangeMask, false, windowProc, SWT.FocusIn, OS.XtListTail);
 }
 /**
  * Returns <code>true</code> if the receiver is enabled, and
@@ -1064,23 +1063,6 @@ int processPaint (int callData) {
 	if (!enabled && disabledImage == null) {
 		if (currentImage != null) currentImage.dispose ();
 	}
-	return 0;
-}
-int processSetFocus (int callData) {
-	/*
-	* Forward the focus event to the parent.
-	* This is necessary so that focus listeners
-	* in the parent will be called, despite the
-	* fact that the event did not really occur
-	* in X in the parent.  This is done to be
-	* compatible with Windows.
-	*/
-	XFocusChangeEvent xEvent = new XFocusChangeEvent ();
-	OS.memmove (xEvent, callData, XFocusChangeEvent.sizeof);
-	xEvent.window = OS.XtWindow (parent.handle);
-//	TEMPORARY CODE - need to fix the window field in xEvent
-//	OS.memmove (callData, xEvent, XFocusChangeEvent.sizeof);
-	parent.processSetFocus (callData);
 	return 0;
 }
 void propagateWidget (boolean enabled) {
