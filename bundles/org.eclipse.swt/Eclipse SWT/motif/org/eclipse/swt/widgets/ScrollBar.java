@@ -114,8 +114,7 @@ ScrollBar (Scrollable parent, int style) {
  * @see SelectionEvent
  */
 public void addSelectionListener(SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener(listener);
 	addListener(SWT.Selection,typedListener);
@@ -157,8 +156,7 @@ public Display getDisplay () {
  * </ul>
  */
 public boolean getEnabled () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {OS.XmNsensitive, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1] != 0;
@@ -176,8 +174,7 @@ public boolean getEnabled () {
  * </ul>
  */
 public int getIncrement () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {OS.XmNincrement, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1];
@@ -193,8 +190,7 @@ public int getIncrement () {
  * </ul>
  */
 public int getMaximum () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {OS.XmNmaximum, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1];
@@ -210,8 +206,7 @@ public int getMaximum () {
  * </ul>
  */
 public int getMinimum () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {OS.XmNminimum, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1];
@@ -229,8 +224,7 @@ public int getMinimum () {
  * </ul>
  */
 public int getPageIncrement () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {OS.XmNpageIncrement, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1];
@@ -246,8 +240,7 @@ public int getPageIncrement () {
  * </ul>
  */
 public Scrollable getParent () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return parent;
 }
 /**
@@ -261,8 +254,7 @@ public Scrollable getParent () {
  * </ul>
  */
 public int getSelection () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {OS.XmNvalue, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1];
@@ -280,8 +272,7 @@ public int getSelection () {
  * </ul>
  */
 public Point getSize () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	int borders = argList [5] * 2;
@@ -301,8 +292,7 @@ public Point getSize () {
  * @see ScrollBar
  */
 public int getThumb () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {OS.XmNsliderSize, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1];
@@ -325,8 +315,7 @@ public int getThumb () {
  * </ul>
  */
 public boolean getVisible () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return OS.XtIsManaged (handle);
 }
 void hookEvents () {
@@ -359,8 +348,7 @@ void hookEvents () {
  * </ul>
  */
 public boolean isEnabled () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return getEnabled () && parent.isEnabled ();
 }
 /**
@@ -381,8 +369,7 @@ public boolean isEnabled () {
  * </ul>
  */
 public boolean isVisible () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return getVisible () && parent.isVisible ();
 }
 void manageChildren () {
@@ -445,8 +432,7 @@ void releaseWidget () {
  * @see #addSelectionListener
  */
 public void removeSelectionListener(SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.Selection, listener);
@@ -466,8 +452,7 @@ public void removeSelectionListener(SelectionListener listener) {
  * </ul>
  */
 public void setEnabled (boolean enabled) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {OS.XmNsensitive, enabled ? 1 : 0};
 	OS.XtSetValues (handle, argList, argList.length / 2);
 }
@@ -485,8 +470,7 @@ public void setEnabled (boolean enabled) {
  * </ul>
  */
 public void setIncrement (int value) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (value < 1) return;
 	int [] argList = {OS.XmNincrement, value};
 	OS.XtSetValues (handle, argList, argList.length / 2);
@@ -504,8 +488,7 @@ public void setIncrement (int value) {
  * </ul>
  */
 public void setMaximum (int value) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (value < 0) return;
 	int [] argList = {OS.XmNmaximum, value};
 	Display display = getDisplay ();
@@ -527,8 +510,7 @@ public void setMaximum (int value) {
  * </ul>
  */
 public void setMinimum (int value) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (value < 0) return;
 	int [] argList = {
 		OS.XmNminimum, 0,
@@ -570,8 +552,7 @@ public void setMinimum (int value) {
  * </ul>
  */
 public void setPageIncrement (int value) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (value < 1) return;
 	int [] argList = {OS.XmNpageIncrement, value};
 	OS.XtSetValues (handle, argList, argList.length / 2);
@@ -589,8 +570,7 @@ public void setPageIncrement (int value) {
  * </ul>
  */
 public void setSelection (int selection) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (selection < 0) return;
 	int [] argList = {OS.XmNvalue, selection};
 	Display display = getDisplay ();
@@ -614,8 +594,7 @@ public void setSelection (int selection) {
  * @see ScrollBar
  */
 public void setThumb (int value) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (value < 1) return;
 	int [] argList = {OS.XmNsliderSize, value};
 	Display display = getDisplay ();
@@ -646,8 +625,7 @@ public void setThumb (int value) {
  * </ul>
  */
 public void setValues (int selection, int minimum, int maximum, int thumb, int increment, int pageIncrement) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (selection < 0) return;
 	if (minimum < 0) return;
 	if (maximum < 0) return;
@@ -686,8 +664,7 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
  * </ul>
  */
 public void setVisible (boolean visible) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	/*
 	* Feature in Motif.  Hiding or showing a scroll bar
 	* can cause the widget to automatically resize in

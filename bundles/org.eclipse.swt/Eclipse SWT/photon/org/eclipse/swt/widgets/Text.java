@@ -43,8 +43,7 @@ static int checkStyle (int style) {
 	return style | SWT.SINGLE;
 }
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	PhDim_t dim = new PhDim_t ();
 	if (!OS.PtWidgetIsRealized (handle)) OS.PtExtentWidgetFamily (handle);
 	OS.PtWidgetPreferredSize (handle, dim);
@@ -74,8 +73,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point(width, height);
 }
 public void clearSelection () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	OS.PtTextSetSelection (handle, new int [] {0}, new int [] {0});
 }
 void createHandle (int index) {
@@ -119,16 +117,14 @@ void createWidget (int index) {
 }
 
 public void addModifyListener (ModifyListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Modify, typedListener);
 }
 
 public void addSelectionListener (SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Selection,typedListener);
@@ -136,24 +132,21 @@ public void addSelectionListener (SelectionListener listener) {
 }
 
 public void addVerifyListener (VerifyListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Verify, typedListener);
 }
 
 public void append (String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	byte [] buffer = Converter.wcsToMbcs (null, string, false);
 	OS.PtTextModifyText (handle, 0, 0, -1, buffer, buffer.length);
 }
 
 public void copy () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 
 	int [] start = new int [1], end = new int [1];
 	int length = OS.PtTextGetSelection (handle, start, end);
@@ -167,8 +160,7 @@ public void copy () {
 }
 
 public void cut () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 
 	int [] start = new int [1], end = new int [1];
 	int length = OS.PtTextGetSelection (handle, start, end);
@@ -199,30 +191,26 @@ void deregister () {
 }
 
 public int getCaretLineNumber () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	//NOT DONE - NOT NEEDED
 	return 0;
 }
 
 public Point getCaretLocation () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	//NOT DONE - NOT NEEDED
 	return null;
 }
 
 public int getCaretPosition () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] args = {OS.Pt_ARG_CURSOR_POSITION, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	return args [1];
 }
 
 public int getCharCount () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] args = {OS.Pt_ARG_TEXT_STRING, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	if (args [1] == 0) return 0;
@@ -230,29 +218,25 @@ public int getCharCount () {
 }
 
 public boolean getDoubleClickEnabled () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);	
+	checkWidget();
 	//NOT DONE - NOT NEEDED
 	return false;
 }
 
 public char getEchoChar () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return echoCharacter;
 }
 
 public boolean getEditable () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] args = {OS.Pt_ARG_TEXT_FLAGS, 0, 0};
 	OS.PtGetResources(handle, args.length / 3, args);
 	return (args [1] & OS.Pt_EDITABLE) != 0;
 }
 
 public int getLineCount () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & SWT.SINGLE) != 0) return 1;
 	int [] args = {OS.Pt_ARG_MULTITEXT_NUM_LINES, 0, 0};
 	OS.PtGetResources(handle, args.length / 3, args);
@@ -260,8 +244,7 @@ public int getLineCount () {
 }
 
 public String getLineDelimiter () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return "\n";
 }
 
@@ -298,8 +281,7 @@ String getNameText () {
 }
 
 public Point getSelection () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (textVerify != null) {
 		return new Point (textVerify.start_pos, textVerify.end_pos);
 	}
@@ -314,15 +296,13 @@ public Point getSelection () {
 }
 
 public int getSelectionCount () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Point selection = getSelection ();
 	return selection.y - selection.x;
 }
 
 public String getSelectionText () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	/*
 	* NOTE: The current implementation uses substring ()
 	* which can reference a potentially large character
@@ -333,8 +313,7 @@ public String getSelectionText () {
 }
 
 public int getTabs () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return tabs;
 }
 
@@ -351,8 +330,7 @@ int getTabWidth (int tabs) {
 }
 
 public String getText (int start, int end) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	/*
 	* NOTE: The current implementation uses substring ()
 	* which can reference a potentially large character
@@ -363,8 +341,7 @@ public String getText (int start, int end) {
 }
 
 public String getText () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (echoCharacter != '\0') return hiddenText;
 	int [] args = {OS.Pt_ARG_TEXT_STRING, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
@@ -377,16 +354,14 @@ public String getText () {
 }
 
 public int getTextLimit () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] args = new int [] {OS.Pt_ARG_MAX_LENGTH, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	return args [1];
 }
 
 public int getTopIndex () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & SWT.SINGLE) != 0) return 0;
 	int [] args = {OS.Pt_ARG_MULTITEXT_TOP_LINE, 0, 0};
 	OS.PtGetResources(handle, args.length / 3, args);
@@ -394,8 +369,7 @@ public int getTopIndex () {
 }
 
 public int getTopPixel () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 
 	//NOT DONE - NOT NEEDED
 	return 0;
@@ -409,8 +383,7 @@ void hookEvents () {
 }
 
 public void insert (String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	byte [] buffer = Converter.wcsToMbcs (null, string, false);
 	int [] start = new int [1], end = new int [1];
@@ -424,8 +397,7 @@ public void insert (String string) {
 }
 
 public void paste () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 
 	int ig = OS.PhInputGroup (0);
 	int ptr = OS.PhClipboardPasteString((short)ig);
@@ -558,16 +530,14 @@ void releaseWidget () {
 }
 
 public void removeModifyListener (ModifyListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Modify, listener);	
 }
 
 public void removeSelectionListener (SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
@@ -575,22 +545,19 @@ public void removeSelectionListener (SelectionListener listener) {
 }
 
 public void removeVerifyListener (VerifyListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Verify, listener);	
 }
 
 public void selectAll () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	OS.PtTextSetSelection (handle, new int [0], new int [] {-1});
 }
 
 public void setEchoChar (char echo) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (echoCharacter == echo) return;
 	String newText;
 	if (echo == 0) {
@@ -609,15 +576,13 @@ public void setEchoChar (char echo) {
 }
 
 public void setDoubleClickEnabled (boolean doubleClick) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	
 	//NOT DONE - NOT NEEDED
 }
 
 public void setEditable (boolean editable) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	style &= ~SWT.READ_ONLY;
 	if (!editable) style |= SWT.READ_ONLY; 
 	int [] args = {OS.Pt_ARG_TEXT_FLAGS, editable ? OS.Pt_EDITABLE : 0, OS.Pt_EDITABLE};
@@ -630,8 +595,7 @@ public void setFont (Font font) {
 }
 
 public void setSelection (int position) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] args = {OS.Pt_ARG_CURSOR_POSITION, position, 0};
 	OS.PtSetResources (handle, args.length / 3, args);
 
@@ -648,21 +612,18 @@ public void setSelection (int position) {
 }
 
 public void setSelection (Point selection) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (selection == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setSelection (selection.x, selection.y);
 }
 
 public void setSelection (int start, int end) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	OS.PtTextSetSelection (handle, new int [] {start}, new int [] {end});
 }
 
 public void setTabs (int tabs) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (tabs < 0) return;
 	setTabStops (this.tabs = tabs);
 }
@@ -678,8 +639,7 @@ void setTabStops (int tabs) {
 }
 
 public void setText (String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
 	int ptr = OS.malloc (buffer.length);
@@ -690,24 +650,21 @@ public void setText (String string) {
 }
 
 public void setTextLimit (int limit) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
 	int [] args = new int [] {OS.Pt_ARG_MAX_LENGTH, limit, 0};
 	OS.PtSetResources (handle, args.length / 3, args);
 }
 
 public void setTopIndex (int index) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & SWT.SINGLE) != 0) return;
 	int [] args = {OS.Pt_ARG_MULTITEXT_TOP_LINE, index + 1, 0};
 	OS.PtSetResources(handle, args.length / 3, args);
 }
 
 public void showSelection () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	
 	//NOT DONE - NOT NEEDED
 }

@@ -60,8 +60,7 @@ public static Shell photon_new (Display display, int handle) {
 }
 
 public void addShellListener (ShellListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Close,typedListener);
@@ -93,14 +92,12 @@ void closeWidget () {
 }
 
 public void close () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	closeWidget ();
 }
 
 public Rectangle computeTrim (int x, int y, int width, int height) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] args = {OS.Pt_ARG_WINDOW_RENDER_FLAGS, 0, 0};
 	OS.PtGetResources (shellHandle, args.length / 3, args);
 	int flags = args [1];
@@ -204,27 +201,23 @@ public Display getDisplay () {
 }
 
 public int getImeInputMode () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return 0;
 }
 
 public boolean isEnabled () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return getEnabled ();
 }
 
 public Point getLocation () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	//NOT DONE - shell location is 0,0 when queried before event loop
 	return super.getLocation ();
 }
 
 public boolean getMaximized () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int state = OS.PtWindowGetState (shellHandle);
 	if (state != -1) return (state & (OS.Ph_WM_STATE_ISMAX | OS.Ph_WM_STATE_ISMAXING)) != 0;
 	int [] args = {OS.Pt_ARG_WINDOW_STATE, 0, OS.Ph_WM_STATE_ISMAX};
@@ -233,8 +226,7 @@ public boolean getMaximized () {
 }
 
 public boolean getMinimized () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int state = OS.PtWindowGetState (shellHandle);
 	if (state != -1) return (state & OS.Ph_WM_STATE_ISICONIFIED) != 0;
 	int [] args = {OS.Pt_ARG_WINDOW_STATE, 0, OS.Ph_WM_STATE_ISICONIFIED};
@@ -243,14 +235,12 @@ public boolean getMinimized () {
 }
 
 public Shell getShell () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return this;
 }
 
 public Shell [] getShells () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int count = 0;
 	Shell [] shells = display.getShells ();
 	for (int i=0; i<shells.length; i++) {
@@ -275,8 +265,7 @@ public Shell [] getShells () {
 }
 
 public Point getSize () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] args = {
 		OS.Pt_ARG_WINDOW_RENDER_FLAGS, 0, 0,
 		OS.Pt_ARG_WIDTH, 0, 0,
@@ -300,8 +289,7 @@ void hookEvents () {
 }
 
 public void open () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	bringToTop ();
 	setVisible (true);
 }
@@ -412,8 +400,7 @@ void releaseWidget () {
 }
 
 public void removeShellListener (ShellListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Close, listener);
@@ -424,8 +411,7 @@ public void removeShellListener (ShellListener listener) {
 }
 
 void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (OS.PtWidgetClass (shellHandle) != OS.PtWindow ()) {
 		super.setBounds (x, y, width, height, move, resize);
 		if (resize) resizeBounds (width, height);
@@ -479,13 +465,11 @@ public void setImage (Image image) {
 }
 
 public void setImeInputMode (int mode) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 }
 
 public void setMaximized (boolean maximized) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int bits = 0;
 	if (maximized) bits = OS.Ph_WM_STATE_ISMAX;
 	int [] args = {OS.Pt_ARG_WINDOW_STATE, bits, OS.Ph_WM_STATE_ISMAX};
@@ -499,8 +483,7 @@ public void setMaximized (boolean maximized) {
 }
 
 public void setMenuBar (Menu menu) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (menuBar == menu) return;
 	if (menu != null) {
 		if ((menu.style & SWT.BAR) == 0) error (SWT.ERROR_MENU_NOT_BAR);
@@ -531,8 +514,7 @@ public void setMenuBar (Menu menu) {
 }
 
 public void setMinimized (boolean minimized) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int bits = 0;
 	if (minimized) bits = OS.Ph_WM_STATE_ISICONIFIED;
 	int [] args = {OS.Pt_ARG_WINDOW_STATE, bits, OS.Ph_WM_STATE_ISICONIFIED};
@@ -547,8 +529,7 @@ public void setMinimized (boolean minimized) {
 }
 
 public void setText (String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	text = string;
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
@@ -560,8 +541,7 @@ public void setText (String string) {
 }
 
 public void setVisible (boolean visible) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (visible == OS.PtWidgetIsRealized (shellHandle)) return;
 
 	/*

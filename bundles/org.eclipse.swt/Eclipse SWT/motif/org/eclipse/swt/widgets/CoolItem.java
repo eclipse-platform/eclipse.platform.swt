@@ -136,8 +136,7 @@ protected void checkSubclass () {
  * @see Layout
  */
 public Point computeSize (int wHint, int hHint) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (preferredWidth > -1) return new Point(preferredWidth, preferredHeight);
 	int width = MINIMUM_WIDTH;
 	int height = DEFAULT_HEIGHT;
@@ -159,7 +158,7 @@ void createHandle (int index) {
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
 public void dispose () {
-	if (!isValidWidget ()) return;
+	if (isDisposed()) return;
 	CoolBar parent = this.parent;
 	super.dispose ();
 	parent.relayout ();
@@ -176,8 +175,7 @@ public void dispose () {
  * </ul>
  */
 public Rectangle getBounds () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {OS.XmNx, 0, OS.XmNy, 0, OS.XmNwidth, 0, OS.XmNheight, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return new Rectangle ((short) argList [1], (short) argList [3], argList [5], argList [7]);
@@ -193,8 +191,7 @@ public Rectangle getBounds () {
  * </ul>
  */
 public Control getControl () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return control;
 }
 public Display getDisplay () {
@@ -218,8 +215,7 @@ Rectangle getGrabberArea () {
  * </ul>
  */
 public CoolBar getParent () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return parent;
 }
 Point getSize () {
@@ -338,8 +334,7 @@ int processPaint (int callData) {
  * </ul>
  */
 public void setControl (Control control) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (control != null && control.parent != parent) {
 		error (SWT.ERROR_INVALID_PARENT);
 	}
@@ -367,8 +362,7 @@ public void setControl (Control control) {
 	}
 }
 public void setSize (int width, int height) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	width = Math.max (width, MINIMUM_WIDTH);
 	height = Math.max (height, DEFAULT_HEIGHT);
 	OS.XtResizeWidget (handle, width, height, 0);			
@@ -425,13 +419,11 @@ void setBounds (int x, int y, int width, int height) {
 	}
 }
 public Point getPreferredSize () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return new Point(preferredWidth, preferredHeight);
 }
 public void setPreferredSize (int width, int height) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	preferredWidth = Math.max (width, MINIMUM_WIDTH);
 	preferredHeight = Math.max (height, DEFAULT_HEIGHT);
 	OS.XtResizeWidget (handle, preferredWidth, preferredHeight, 0);

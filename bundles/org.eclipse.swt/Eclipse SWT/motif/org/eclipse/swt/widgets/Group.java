@@ -51,8 +51,7 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 public Rectangle computeTrim (int x, int y, int width, int height) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int trimX, trimY, trimWidth, trimHeight;	
 	int [] argList = {
 		OS.XmNwidth, 0, 
@@ -127,8 +126,7 @@ int fontHandle () {
 	return labelHandle;
 }
 public Rectangle getClientArea () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {
 		OS.XmNwidth, 0, 
 		OS.XmNheight, 0, 
@@ -165,8 +163,7 @@ public Rectangle getClientArea () {
  * </ul>
  */
 public String getText () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {OS.XmNlabelString, 0};
 	OS.XtGetValues (labelHandle, argList, 1);
 	int xmString = argList [1];
@@ -226,8 +223,7 @@ void releaseHandle () {
  * </ul>
  */
 public void setText (String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
 	int xmString = OS.XmStringParseText (

@@ -97,8 +97,7 @@ public Button (Composite parent, int style) {
  * @see SelectionEvent
  */
 public void addSelectionListener(SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener(listener);
 	addListener(SWT.Selection,typedListener);
@@ -124,8 +123,7 @@ void click () {
 * Computes the preferred size.
 */
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int border = getBorderWidth ();
 	int width = border * 2, height = border * 2;
 	if ((style & SWT.ARROW) != 0) {
@@ -300,8 +298,7 @@ int defaultForeground () {
  * </ul>
  */
 public int getAlignment () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & SWT.ARROW) != 0) {
 		int [] argList = {OS.XmNarrowDirection, 0};
 		OS.XtGetValues (handle, argList, argList.length / 2);
@@ -338,8 +335,7 @@ boolean getDefault () {
  * </ul>
  */
 public Image getImage () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return image;
 }
 String getNameText () {
@@ -361,8 +357,7 @@ String getNameText () {
  * </ul>
  */
 public boolean getSelection () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return false;
 	int [] argList = {OS.XmNset, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
@@ -380,8 +375,7 @@ public boolean getSelection () {
  * </ul>
  */
 public String getText () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & SWT.ARROW) != 0) return "";
 	int [] argList = {OS.XmNlabelString, 0, OS.XmNmnemonic, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
@@ -495,8 +489,7 @@ void releaseWidget () {
  * @see #addSelectionListener
  */
 public void removeSelectionListener(SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.Selection, listener);
@@ -535,8 +528,7 @@ void selectRadio () {
  * </ul>
  */
 public void setAlignment (int alignment) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & SWT.ARROW) != 0) {
 		int [] argList = {OS.XmNarrowDirection, OS.XmARROW_UP};
 		if ((alignment & SWT.UP) != 0) argList [1] = OS.XmARROW_UP;
@@ -613,8 +605,7 @@ void setDefault (boolean value) {
  * </ul>
  */
 public void setImage (Image image) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	setBitmap (this.image = image);
 }
 /**
@@ -632,8 +623,7 @@ public void setImage (Image image) {
  * </ul>
  */
 public void setSelection (boolean selected) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
 	int [] argList = {OS.XmNset, selected ? 1 : 0};
 	OS.XtSetValues (handle, argList, argList.length / 2);
@@ -656,8 +646,7 @@ public void setSelection (boolean selected) {
  * </ul>
  */
 public void setText (String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.ARROW) != 0) return;
 	char [] text = new char [string.length ()];

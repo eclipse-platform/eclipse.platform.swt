@@ -43,7 +43,7 @@ void calculateVisibleItemCount() {
 void calculateVisibleItemCountParent() {}
 
 public void dispose() {
-	if (!isValidWidget ()) return;
+	if (isDisposed()) return;
 	Tree parent = (Tree) getSelectableParent();
 	
 	// all tree items are removed so we don't need to do

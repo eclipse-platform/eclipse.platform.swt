@@ -700,6 +700,7 @@ int inputProc (int data, int rcvid, int message, int size) {
 }
 
 public int internal_new_GC (GCData data) {
+	if (isDisposed()) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
 	int phGC = OS.PgCreateGC(0); // NOTE: PgCreateGC ignores the parameter
 	if (phGC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 

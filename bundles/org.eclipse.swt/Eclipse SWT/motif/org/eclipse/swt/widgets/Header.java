@@ -38,8 +38,7 @@ Header(Table parent) {
  * Answer the size of the receiver needed to display all items.
  */
 public Point computeSize(int wHint, int hHint, boolean changed) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int width = 0;
 	int height = 0;
 
@@ -286,8 +285,7 @@ void redraw(int itemIndex) {
  * Set a new font. Recalculate the header height and redraw the header.
  */
 public void setFont(Font font) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 
 	if (font == null || font.equals(getFont()) == true) {
 		return;

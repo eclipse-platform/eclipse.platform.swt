@@ -30,8 +30,7 @@ protected void checkSubclass () {
 }
 
 public Control getControl () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return control;
 }
 
@@ -42,14 +41,12 @@ public Display getDisplay () {
 }
 
 public TabFolder getParent () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return parent;
 }
 
 public String getToolTipText () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return toolTipText;
 }
 
@@ -66,8 +63,7 @@ void releaseWidget () {
 }
 
 public void setControl (Control control) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (control != null && control.parent != parent) {
 		error (SWT.ERROR_INVALID_PARENT);
 	}
@@ -83,14 +79,12 @@ public void setControl (Control control) {
 }
 
 public void setImage (Image image) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	//NOT SUPPORTED
 }
 
 public void setText (String text) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	super.setText (text);
 	int index = parent.indexOf (this);
 	int [] args = {OS.Pt_ARG_PG_PANEL_TITLES, 0, 0};
@@ -124,8 +118,7 @@ public void setText (String text) {
 }
 
 public void setToolTipText (String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	toolTipText = string;
 }
 }

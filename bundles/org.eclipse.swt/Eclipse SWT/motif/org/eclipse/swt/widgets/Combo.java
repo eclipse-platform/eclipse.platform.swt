@@ -110,8 +110,7 @@ public Combo (Composite parent, int style) {
  * @see #add(String,int)
  */
 public void add (String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 
 	byte [] buffer = Converter.wcsToMbcs (null, encodeString(string), true);
@@ -147,8 +146,7 @@ public void add (String string) {
  * @see #add(String)
  */
 public void add (String string, int index) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (index == -1) error (SWT.ERROR_INVALID_RANGE);
 	
@@ -189,8 +187,7 @@ public void add (String string, int index) {
  * @see #removeModifyListener
  */
 public void addModifyListener (ModifyListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Modify, typedListener);
@@ -220,8 +217,7 @@ public void addModifyListener (ModifyListener listener) {
  * @see SelectionEvent
  */
 public void addSelectionListener(SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Selection,typedListener);
@@ -275,8 +271,7 @@ protected void checkSubclass () {
  * @see #deselectAll
  */
 public void clearSelection () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int xDisplay = OS.XtDisplay (handle);
 	if (xDisplay == 0) return;
 	int [] argList = {OS.XmNtextField, 0};
@@ -285,8 +280,7 @@ public void clearSelection () {
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {
 		OS.XmNlist, 0, 
 		OS.XmNtextField, 0,
@@ -365,8 +359,7 @@ void createHandle (int index) {
  * </ul>
  */
 public void deselect (int index) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (index == -1) return;
 	int [] argList = {OS.XmNtextField, 0, OS.XmNlist, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
@@ -396,8 +389,7 @@ public void deselect (int index) {
  * @see #clearSelection
  */
 public void deselectAll () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {OS.XmNtextField, 0, OS.XmNlist, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	Display display = getDisplay ();
@@ -430,8 +422,7 @@ public void deselectAll () {
  * </ul>
  */
 public String getItem (int index) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {OS.XmNitemCount, 0, OS.XmNitems, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	if (!(0 <= index && index < argList [1])) {
@@ -471,8 +462,7 @@ public String getItem (int index) {
  * </ul>
  */
 public int getItemCount () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {OS.XmNitemCount, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1];
@@ -492,8 +482,7 @@ public int getItemCount () {
  * </ul>
  */
 public int getItemHeight () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] listHandleArgs = {OS.XmNlist, 0};
 	OS.XtGetValues (handle, listHandleArgs, listHandleArgs.length / 2);
 	int [] argList = {OS.XmNlistSpacing, 0, OS.XmNhighlightThickness, 0};
@@ -522,8 +511,7 @@ public int getItemHeight () {
  * </ul>
  */
 public String [] getItems () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {OS.XmNitems, 0, OS.XmNitemCount, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	int items = argList [1], itemCount = argList [3];
@@ -565,8 +553,7 @@ public String [] getItems () {
  * </ul>
  */
 public Point getSelection () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] start = new int [1], end = new int [1];
 	int [] argList = {OS.XmNtextField, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
@@ -588,9 +575,7 @@ public Point getSelection () {
  * </ul>
  */
 public int getSelectionIndex () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	
+	checkWidget();
 	int [] argList = {OS.XmNlist, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	
@@ -617,9 +602,7 @@ public int getSelectionIndex () {
  * </ul>
  */
 public String getText () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	
+	checkWidget();
 	int [] argList = {OS.XmNtextField, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	
@@ -645,9 +628,7 @@ public String getText () {
  * </ul>
  */
 public int getTextHeight () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	
+	checkWidget();
 	if ((style & SWT.DROP_DOWN) != 0) {
 		/*
 		* Bug in MOTIF.  For some reason, XtQueryGeometry ()
@@ -693,9 +674,7 @@ public int getTextHeight () {
  * </ul>
  */
 public int getTextLimit () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	
+	checkWidget();
 	int [] argList = {OS.XmNtextField, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return OS.XmTextGetMaxLength (argList[1]);
@@ -727,8 +706,7 @@ void hookEvents () {
  * </ul>
  */
 public int indexOf (String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 
 	byte [] buffer = Converter.wcsToMbcs (null, encodeString(string), true);
@@ -761,8 +739,7 @@ public int indexOf (String string) {
  * </ul>
  */
 public int indexOf (String string, int start) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int [] argList = {OS.XmNitems, 0, OS.XmNitemCount, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
@@ -801,8 +778,7 @@ public int indexOf (String string, int start) {
  * </ul>
  */
 public void remove (int index) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (index == -1) error (SWT.ERROR_INVALID_RANGE);
 	/*
 	* Feature in Motif.  An index out of range handled
@@ -837,8 +813,7 @@ public void remove (int index) {
  * </ul>
  */
 public void remove (int start, int end) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (start > end) return;
 	/*
 	* Feature in Motif.  An index out of range handled
@@ -883,8 +858,7 @@ void register () {
  * </ul>
  */
 public void remove (String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 
 	byte [] buffer = Converter.wcsToMbcs (null, encodeString(string), true);
@@ -908,8 +882,7 @@ public void remove (String string) {
  * </ul>
  */
 public void removeAll () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {OS.XmNtextField, 0, OS.XmNlist, 0, OS.XmNitemCount, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	
@@ -943,8 +916,7 @@ public void removeAll () {
  * @see #addModifyListener
  */
 public void removeModifyListener (ModifyListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Modify, listener);	
@@ -967,8 +939,7 @@ public void removeModifyListener (ModifyListener listener) {
  * @see #addSelectionListener
  */
 public void removeSelectionListener (SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
@@ -987,8 +958,7 @@ public void removeSelectionListener (SelectionListener listener) {
  * </ul>
  */
 public void select (int index) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (index == -1) {
 		int [] argList = {OS.XmNtextField, 0, OS.XmNlist, 0};
 		OS.XtGetValues (handle, argList, argList.length / 2);
@@ -1013,8 +983,7 @@ public void select (int index) {
 * Sets the widget bounds.
 */
 public void setBounds (int x, int y, int width, int height) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int newHeight = ((style & SWT.DROP_DOWN) != 0) ? getTextHeight() : height;
 	super.setBounds (x, y, width, newHeight);
 }
@@ -1040,8 +1009,7 @@ public void setBounds (int x, int y, int width, int height) {
  * </ul>
  */
 public void setItem (int index, String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (index == -1) error (SWT.ERROR_INVALID_RANGE);
 	int [] argList = {OS.XmNlist, 0, OS.XmNitemCount, 0};
@@ -1071,8 +1039,7 @@ public void setItem (int index, String string) {
  * </ul>
  */
 public void setItems (String [] items) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
 
 	if (items.length == 0) {
@@ -1115,8 +1082,7 @@ public void setItems (String [] items) {
  * </ul>
  */
 public void setSelection (Point selection) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	
 	int [] argList = {OS.XmNtextField, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
@@ -1152,8 +1118,7 @@ public void setSelection (Point selection) {
 * Sets the widget size.
 */
 public void setSize (int width, int height) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int newHeight = ((style & SWT.DROP_DOWN) != 0) ? getTextHeight () : height;
 	super.setSize (width, newHeight);
 }
@@ -1179,8 +1144,7 @@ public void setSize (int width, int height) {
  * </ul>
  */
 public void setText (String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 
 	if ((style & SWT.READ_ONLY) == 0) {
@@ -1226,8 +1190,7 @@ public void setText (String string) {
  * </ul>
  */
 public void setTextLimit (int limit) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
 	int [] argList = {OS.XmNtextField, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);

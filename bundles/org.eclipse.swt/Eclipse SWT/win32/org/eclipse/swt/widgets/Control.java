@@ -880,7 +880,7 @@ boolean hasFocus () {
  * @private
  */
 public int internal_new_GC (GCData data) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	checkWidget();
 	int hDC;
 	if (data == null || data.ps == null) {
 		hDC = OS.GetDC (handle);
@@ -1187,6 +1187,7 @@ public void redraw () {
  */
 public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget ();
+	if (width <= 0 || height <= 0) return;
 	if (!OS.IsWindowVisible (handle)) return;
 	RECT rect = new RECT ();
 	int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE;
@@ -1492,6 +1493,9 @@ boolean sendMouseEvent (int type, int msg, int wParam, int lParam, Event event) 
  *
  * @param color the new color (or null)
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1501,6 +1505,7 @@ public void setBackground (Color color) {
 	checkWidget ();
 	int pixel = -1;
 	if (color != null) {
+		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		pixel = color.handle;
 	}
 	setBackgroundPixel (pixel);
@@ -1621,6 +1626,9 @@ public void setCapture (boolean capture) {
  *
  * @param cursor the new cursor (or null)
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1629,7 +1637,10 @@ public void setCapture (boolean capture) {
 public void setCursor (Cursor cursor) {
 	checkWidget ();
 	hCursor = 0;
-	if (cursor != null) hCursor = cursor.handle;
+	if (cursor != null) {
+		if (cursor.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		hCursor = cursor.handle;
+	}
 	int hwndCursor = OS.GetCapture ();
 	if (hwndCursor == 0) {
 		POINT pt = new POINT ();
@@ -1718,6 +1729,9 @@ public boolean setFocus () {
  *
  * @param font the new font (or null)
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1726,7 +1740,10 @@ public boolean setFocus () {
 public void setFont (Font font) {
 	checkWidget ();
 	int hFont = 0;
-	if (font != null) hFont = font.handle;
+	if (font != null) { 
+		if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		hFont = font.handle;
+	}
 	if (hFont == 0) hFont = defaultFont ();
 	OS.SendMessage (handle, OS.WM_SETFONT, hFont, 1);
 }
@@ -1738,6 +1755,9 @@ public void setFont (Font font) {
  *
  * @param color the new color (or null)
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1747,6 +1767,7 @@ public void setForeground (Color color) {
 	checkWidget ();
 	int pixel = -1;
 	if (color != null) {
+		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		pixel = color.handle;
 	}
 	setForegroundPixel (pixel);
@@ -1859,6 +1880,7 @@ public void setLocation (Point location) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_MENU_NOT_POP_UP - the menu is not a pop up menu</li>
  *    <li>ERROR_INVALID_PARENT - if the menu is not in the same widget tree</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the menu has been disposed</li> 
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1868,6 +1890,7 @@ public void setLocation (Point location) {
 public void setMenu (Menu menu) {
 	checkWidget ();
 	if (menu != null) {
+		if (menu.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		if ((menu.style & SWT.POP_UP) == 0) {
 			error (SWT.ERROR_MENU_NOT_POP_UP);
 		}
@@ -2361,6 +2384,9 @@ int widgetStyle () {
  * @param parent the new parent for the control.
  * @return <code>true</code> if the parent is changed and <code>false</code> otherwise.
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
  * @exception SWTError <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
@@ -2369,6 +2395,7 @@ int widgetStyle () {
 public boolean setParent (Composite parent) {
 	checkWidget ();
 	if (parent == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (parent.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (OS.SetParent (handle, parent.handle) == 0) {
 		return false;
 	}

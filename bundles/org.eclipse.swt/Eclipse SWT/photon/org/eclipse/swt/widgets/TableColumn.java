@@ -95,8 +95,7 @@ public TableColumn(Table parent, int style, int index) {
  * @see #removeControlListener
  */
 public void addControlListener(ControlListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Resize,typedListener);
@@ -127,8 +126,7 @@ public void addControlListener(ControlListener listener) {
  * @see SelectionEvent
  */
 public void addSelectionListener (SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Selection,typedListener);
@@ -192,8 +190,7 @@ void disposeColumn() {
  * </ul>
  */
 public int getAlignment () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & SWT.LEFT) != 0) return SWT.LEFT;
 	if ((style & SWT.CENTER) != 0) return SWT.CENTER;
 	if ((style & SWT.RIGHT) != 0) return SWT.RIGHT;
@@ -230,8 +227,7 @@ int getIndex() {
  * </ul>
  */
 public Table getParent() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	
 	return parent;
 }
@@ -248,8 +244,7 @@ public Table getParent() {
  * </ul>
  */
 public boolean getResizable() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	
 	return resize;
 }
@@ -264,8 +259,7 @@ public boolean getResizable() {
  * </ul>
  */
 public int getWidth () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 
 	return getBounds().width;
 }
@@ -297,8 +291,7 @@ boolean isDefaultWidth() {
  *
  */
 public void pack() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Table parent = getParent();
 	int index = parent.indexOf(this);
 
@@ -336,8 +329,7 @@ void paint(TableItem item, GC gc, int yPosition) {
  * @see #addControlListener
  */
 public void removeControlListener (ControlListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Move, listener);
@@ -361,9 +353,7 @@ public void removeControlListener (ControlListener listener) {
  * @see #addSelectionListener
  */
 public void removeSelectionListener(SelectionListener listener) {
-	if (!isValidThread ()) error(SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error(SWT.ERROR_WIDGET_DISPOSED);
-	
+	checkWidget();
 	if (listener == null) {
 		error(SWT.ERROR_NULL_ARGUMENT);
 	}
@@ -383,8 +373,7 @@ public void removeSelectionListener(SelectionListener listener) {
  * </ul>
  */
 public void setAlignment(int alignment) {
-	if (!isValidThread ()) error(SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error(SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int index = getIndex();
 	
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) != 0 && index != 0) { // ignore calls for the first column to match Windows behavior
@@ -444,14 +433,12 @@ void setIndex(int newIndex) {
  * </ul>
  */
 public void setResizable(boolean resize) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 
 	this.resize = resize;
 }
 public void setText(String newText) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int index = getIndex();
 	
 	if (newText == null) {
@@ -473,8 +460,7 @@ public void setText(String newText) {
  * </ul>
  */
 public void setWidth(int width) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Table parent = getParent();
 	Rectangle bounds = getBounds();
 	int oldWidth = bounds.width;

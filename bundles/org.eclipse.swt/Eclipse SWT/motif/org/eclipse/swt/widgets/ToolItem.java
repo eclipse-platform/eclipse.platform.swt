@@ -76,8 +76,7 @@ public ToolItem (ToolBar parent, int style, int index) {
  * @see SelectionEvent
  */
 public void addSelectionListener(SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener(listener);
 	addListener(SWT.Selection,typedListener);
@@ -188,7 +187,7 @@ void createWidget (int index) {
 	parent.relayout ();
 }
 public void dispose () {
-	if (!isValidWidget ()) return;
+	if (isDisposed()) return;
 	ToolBar parent = this.parent;
 	super.dispose ();
 	parent.relayout ();
@@ -205,8 +204,7 @@ public void dispose () {
  * </ul>
  */
 public Rectangle getBounds () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {OS.XmNx, 0, OS.XmNy, 0, OS.XmNwidth, 0, OS.XmNheight, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return new Rectangle ((short) argList [1], (short) argList [3], argList [5], argList [7]);
@@ -223,8 +221,7 @@ public Rectangle getBounds () {
  * </ul>
  */
 public Control getControl () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return control;
 }
 /**
@@ -238,8 +235,7 @@ public Control getControl () {
 *	when the widget has been disposed
 */
 public Image getDisabledmage () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return disabledImage;
 }
 /**
@@ -258,8 +254,7 @@ public Image getDisabledmage () {
  * </ul>
  */
 public boolean getEnabled () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {OS.XmNsensitive, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1] != 0;
@@ -284,8 +279,7 @@ public Display getDisplay () {
  * </ul>
  */
 public Image getHotImage () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return hotImage;
 }
 /**
@@ -299,8 +293,7 @@ public Image getHotImage () {
  * </ul>
  */
 public ToolBar getParent () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return parent;
 }
 /**
@@ -320,8 +313,7 @@ public ToolBar getParent () {
  * </ul>
  */
 public boolean getSelection () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return false;
 	return set;
 }
@@ -336,8 +328,7 @@ public boolean getSelection () {
  * </ul>
  */
 public String getToolTipText () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return toolTipText;
 }
 /**
@@ -351,8 +342,7 @@ public String getToolTipText () {
  * </ul>
  */
 public int getWidth () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {OS.XmNwidth, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1];
@@ -396,8 +386,7 @@ void hookEvents () {
  * </ul>
  */
 public boolean isEnabled () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return getEnabled () && parent.isEnabled ();
 }
 void manageChildren () {
@@ -441,8 +430,7 @@ void releaseWidget () {
  * @see #addSelectionListener
  */
 public void removeSelectionListener(SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.Selection, listener);
@@ -485,8 +473,7 @@ void setBounds (int x, int y, int width, int height) {
  * </ul>
  */
 public void setControl (Control control) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (control != null && control.parent != parent) {
 		error (SWT.ERROR_INVALID_PARENT);
 	}
@@ -513,8 +500,7 @@ public void setControl (Control control) {
  * </ul>
  */
 public void setEnabled (boolean enabled) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {OS.XmNsensitive, enabled ? 1 : 0};
 	OS.XtSetValues (handle, argList, argList.length / 2);
 }
@@ -533,8 +519,7 @@ public void setEnabled (boolean enabled) {
  * </ul>
  */
 public void setDisabledImage (Image image) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	disabledImage = image;
 	if (!getEnabled ()) redraw ();
@@ -554,15 +539,13 @@ public void setDisabledImage (Image image) {
  * </ul>
  */
 public void setHotImage (Image image) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	hotImage = image;
 	if ((parent.style & SWT.FLAT) != 0) redraw ();
 }
 public void setImage (Image image) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setImage (image);
 	Point size = computeSize ();
@@ -586,8 +569,7 @@ public void setImage (Image image) {
  * </ul>
  */
 public void setSelection (boolean selected) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
 	if (selected == set) return;
 	set = selected;
@@ -602,8 +584,7 @@ void setSize (int width, int height) {
 	}
 }
 public void setText (String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	// Strip out mnemonics
@@ -642,8 +623,7 @@ public void setText (String string) {
  * </ul>
  */
 public void setToolTipText (String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	toolTipText = string;
 }
 /**
@@ -657,8 +637,7 @@ public void setToolTipText (String string) {
  * </ul>
  */
 public void setWidth (int width) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & SWT.SEPARATOR) == 0) return;
 	if (width < 0) return;
 	int [] argList = {OS.XmNheight, 0};
@@ -878,7 +857,7 @@ int processPaint (int callData) {
 			Point textExtent = gc.textExtent (text);
 			textWidth = textExtent.x;
 			textHeight = textExtent.y;
-		}
+		}	
 	}	
 	int imageX = 0, imageY = 0, imageWidth = 0, imageHeight = 0;
 	if (currentImage != null) {

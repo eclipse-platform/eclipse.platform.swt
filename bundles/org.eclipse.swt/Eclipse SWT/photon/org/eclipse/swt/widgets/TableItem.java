@@ -96,7 +96,7 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 public void dispose() {
-	if (!isValidWidget ()) return;
+	if (isDisposed()) return;
 	Table parent = getParent();
 	parent.removeItem(this);
 	super.dispose();
@@ -193,8 +193,7 @@ void drawText(String label, GC gc, Point position, int index) {
  * </ul>
  */
 public Rectangle getBounds(int index) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Rectangle itemBounds;
 	Rectangle columnBounds;
 	Rectangle checkboxBounds;
@@ -241,9 +240,7 @@ public Rectangle getBounds(int index) {
  * </ul>
  */
 public boolean getChecked() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	
+	checkWidget();
 	return super.getChecked();
 }
 /**
@@ -308,15 +305,11 @@ int getDotStartX(int columnIndex, int columnWidth) {
  * </ul>
  */
 public boolean getGrayed() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	
+	checkWidget();
 	return super.getGrayed();
 }
 public Image getImage() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-
+	checkWidget();
 	return getImage(0);
 }
 /**
@@ -327,8 +320,7 @@ public Image getImage() {
  * @return the item image
  */
 public Image getImage(int columnIndex) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Image image = null;
 	Vector images = getImages();
 	int itemIndex = getParent().indexOf(this);
@@ -352,8 +344,7 @@ public Image getImage(int columnIndex) {
  * </ul>
  */
 public Rectangle getImageBounds(int index) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Table parent = getParent();
 	int itemIndex = parent.indexOf (this);
 	int imageWidth = 0;
@@ -384,8 +375,7 @@ public Rectangle getImageBounds(int index) {
  * </ul>
  */
 public int getImageIndent() {
-	if (isValidThread() == false) error(SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (isValidWidget() == false) error(SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int index = getParent().indexOf(this);
 	
 	if (index == -1) {
@@ -493,9 +483,7 @@ int getMaxTextWidth(int columnIndex, int columnWidth) {
  * </ul>
  */
 public Table getParent() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-
+	checkWidget();
 	return (Table) super.getSelectableParent();
 }
 /**
@@ -539,9 +527,7 @@ int getSelectionX() {
 	return getImageStopX(TableColumn.FIRST) + getParent().getHorizontalOffset();
 }
 public String getText() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-
+	checkWidget();
 	return getText(0);
 }
 /**
@@ -552,8 +538,7 @@ public String getText() {
  *	@return the item text or null if no text has been set for that column.
  */
 public String getText(int columnIndex) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int itemIndex = getParent().indexOf(this);
 	Vector labels = getDataLabels();
 	String label = null;
@@ -884,9 +869,7 @@ void reset(int index) {
  * </ul>
  */
 public void setImage(Image [] images) {
-	if (!isValidThread()) error(SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget()) error(SWT.ERROR_WIDGET_DISPOSED);
-	
+	checkWidget();
 	if (images == null) {
 		error(SWT.ERROR_NULL_ARGUMENT);
 	}
@@ -912,17 +895,13 @@ public void setImage(Image [] images) {
  * </ul>
  */
 public void setImage(int columnIndex, Image image) {
-	if (!isValidThread()) error(SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget()) error(SWT.ERROR_WIDGET_DISPOSED);
-	
+	checkWidget();
 	if (getParent().indexOf(this) != -1) {
 		internalSetImage(columnIndex, image);
 	}
 }
 public void setImage(Image image) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-
+	checkWidget();
 	setImage(0, image);
 }
 /**
@@ -937,8 +916,7 @@ public void setImage(Image image) {
  * </ul>
  */
 public void setImageIndent(int indent) {
-	if (!isValidThread()) error(SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget()) error(SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Table parent = getParent();
 	TableColumn column;
 	int index = parent.indexOf(this);
@@ -965,9 +943,7 @@ public void setImageIndent(int indent) {
  * </ul>
  */
 public void setText(String [] strings) {
-	if (!isValidThread()) error(SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget()) error(SWT.ERROR_WIDGET_DISPOSED);
-	
+	checkWidget();
 	if (strings == null) {
 		error(SWT.ERROR_NULL_ARGUMENT);
 	}
@@ -996,9 +972,7 @@ public void setText(String [] strings) {
  * </ul>
  */
 public void setText (int columnIndex, String string) {
-	if (!isValidThread()) error(SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget()) error(SWT.ERROR_WIDGET_DISPOSED);
-	
+	checkWidget();	
 	if (string == null) {
 		error(SWT.ERROR_NULL_ARGUMENT);
 	}
@@ -1007,9 +981,7 @@ public void setText (int columnIndex, String string) {
 	}
 }
 public void setText(String text) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-
+	checkWidget();
 	if (text == null) {
 		error(SWT.ERROR_NULL_ARGUMENT);
 	}
@@ -1043,9 +1015,7 @@ void setTrimmedText(String label, int columnIndex) {
  * </ul>
  */
 public void setChecked(boolean checked) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	
+	checkWidget();
 	super.setChecked(checked);
 }
 /**
@@ -1059,9 +1029,7 @@ public void setChecked(boolean checked) {
  * </ul>
  */
 public void setGrayed (boolean grayed) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	
+	checkWidget();
 	super.setGrayed(grayed);
 }
 /**

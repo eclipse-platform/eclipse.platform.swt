@@ -197,10 +197,6 @@ void disposeColors() {
 		}
 	}
 }
-/**
- * Insert the method's description here.
- * Creation date: (7/6/99 5:07:09 PM)
- */
 void drawColor(int xIndex, int yIndex, Color color, GC gc) {
 	int colorSwatchExtent = getColorSwatchExtent();
 	int colorExtent = colorSwatchExtent - COLOR_SWATCH_BORDER;
@@ -210,31 +206,15 @@ void drawColor(int xIndex, int yIndex, Color color, GC gc) {
 		xIndex * colorSwatchExtent, yIndex * colorSwatchExtent, 
 		colorExtent, colorExtent);
 }
-/**
- * Insert the method's description here.
- * Creation date: (7/6/99 5:07:09 PM)
- */
 Canvas getColorCanvas() {
 	return colorsCanvas;
 }
-/**
- * Insert the method's description here.
- * Creation date: (7/6/99 5:07:09 PM)
- */
 int getColorDepth() {
 	return colorDepth;
 }
-/**
- * Insert the method's description here.
- * Creation date: (7/6/99 5:07:09 PM)
- */
 Color [][] getColorGrid() {
 	return colorGrid;
 }
-/**
- * Insert the method's description here.
- * Creation date: (7/6/99 5:07:09 PM)
- */
 int getColorSwatchExtent() {
 	return colorSwatchExtent;
 }
@@ -248,31 +228,15 @@ int getColorSwatchExtent() {
 public RGB getRGB() {
 	return dialogResult;
 }
-/**
- * Insert the method's description here.
- * Creation date: (7/6/99 5:07:09 PM)
- */
 Canvas getSampleCanvas() {
 	return sampleCanvas;
 }
-/**
- * Insert the method's description here.
- * Creation date: (7/6/99 5:07:09 PM)
- */
 Label getSampleText() {
 	return sampleLabel;
 }
-/**
- * Insert the method's description here.
- * Creation date: (7/6/99 5:07:09 PM)
- */
 Canvas getSelectionCanvas() {
 	return selectionCanvas;
 }
-/**
- * Insert the method's description here.
- * Creation date: (7/6/99 5:07:09 PM)
- */
 Label getSelectionText() {
 	return selectionLabel;
 }
@@ -303,10 +267,6 @@ void handleEvents(Event event) {
 		}
 	}	
 }
-/**
- * Insert the method's description here.
- * Creation date: (7/6/99 5:07:09 PM)
- */
 void initialize4BitColors() {
 	Display display = getDialogShell().getDisplay();
 	
@@ -330,10 +290,6 @@ void initialize4BitColors() {
 	colorGrid[7][0] = new Color(display, 128, 0, 128);
 	colorGrid[7][1] = new Color(display, 255, 0, 255);
 }
-/**
- * Insert the method's description here.
- * Creation date: (7/6/99 5:07:09 PM)
- */
 void initialize8BitColors() {
 	Display display = getDialogShell().getDisplay();	
 	int numColumns = colorGrid.length;
@@ -388,10 +344,6 @@ void installListeners() {
 	colorCanvas.addListener(SWT.MouseDown, listener);
 	colorCanvas.addListener(SWT.MouseMove, listener);
 }
-/**
- * Insert the method's description here.
- * Creation date: (7/19/99 7:13:21 PM)
- */
 void mouseDown(Event event) {
 	int swatchExtent = getColorSwatchExtent();
 	Color colorGrid[][] = getColorGrid();
@@ -400,10 +352,6 @@ void mouseDown(Event event) {
 	getSelectionCanvas().setBackground(color);
 	getSelectionText().setBackground(color);	
 }
-/**
- * Insert the method's description here.
- * Creation date: (7/19/99 7:13:21 PM)
- */
 void mouseMove(Event event) {
 	int swatchExtent = getColorSwatchExtent();
 	Color colorGrid[][] = getColorGrid();
@@ -521,12 +469,6 @@ Button getOKButton() {
 	return ok;
 }
 
-
-/**
- * Insert the method's description here.
- * Creation date: (08/05/99 12:34:43)
- * @return boolean
- */
 boolean isOkSelected() {
 	return okSelected;
 }
@@ -572,12 +514,6 @@ void openModal() {
 	}
 }
 
-
-/**
- * Insert the method's description here.
- * Creation date: (08/05/99 12:34:43)
- * @param newOkSelected boolean
- */
 void setOkSelected(boolean newOkSelected) {
 	okSelected = newOkSelected;
 }
@@ -587,7 +523,5 @@ void setOkSelected(boolean newOkSelected) {
 void setDialogShell(Shell shell) {
 	this.shell = shell;
 }
-
-
 
 }

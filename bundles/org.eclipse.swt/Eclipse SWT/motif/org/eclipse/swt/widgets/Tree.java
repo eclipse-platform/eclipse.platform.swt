@@ -128,8 +128,7 @@ void addItem(TreeItem item, int index) {
  * @see SelectionEvent
  */
 public void addSelectionListener(SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	TypedListener typedListener;
 
 	if (listener == null) {
@@ -159,8 +158,7 @@ public void addSelectionListener(SelectionListener listener) {
  * @see #removeTreeListener
  */
 public void addTreeListener(TreeListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	TypedListener typedListener;
 
 	if (listener == null) {
@@ -345,8 +343,7 @@ void collapseNoRedraw(TreeItem item) {
 }
 
 public Point computeSize(int wHint, int hHint, boolean changed) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Point size = super.computeSize(wHint, hHint, changed);
 	GC gc;
 	final int WidthCalculationCount = 50;		// calculate item width for the first couple of items only
@@ -391,9 +388,7 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
  * </ul>
  */
 public void deselectAll() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-
+	checkWidget();
 	getRoot().deselectAll();
 	getSelectionVector().removeAllElements();
 	redraw();
@@ -642,9 +637,7 @@ int getIndex(SelectableItem item) {
  * </ul>
  */
 public int getItemCount() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-
+	checkWidget();
 	return getRoot().getItemCount();
 }
 /**
@@ -659,9 +652,7 @@ public int getItemCount() {
  * </ul>
  */
 public int getItemHeight() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	
+	checkWidget();
 	return super.getItemHeight();
 }
 /**
@@ -682,8 +673,7 @@ public int getItemHeight() {
  * </ul>
  */
 public TreeItem [] getItems() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	TreeItem childrenArray[] = new TreeItem[getItemCount()];
 
 	getRoot().getChildren().copyInto(childrenArray);
@@ -713,9 +703,7 @@ int getOffScreenItemCount(TreeItem item) {
  * </ul>
  */
 public TreeItem getParentItem() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-
+	checkWidget();
 	return null;
 }
 /**
@@ -741,8 +729,7 @@ TreeRoots getRoot() {
  * </ul>
  */
 public TreeItem [] getSelection() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Vector selectionVector = getSelectionVector();
 	TreeItem[] selectionArray = new TreeItem[selectionVector.size()];
 
@@ -1179,9 +1166,7 @@ boolean redrawParentItem(SelectableItem item) {
  * </ul>
  */
 public void removeAll() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-
+	checkWidget();
 	setRedraw(false);
 	getRoot().dispose();
 	resetRoot();
@@ -1216,9 +1201,7 @@ void removeItem(TreeItem item) {
  * @see #addSelectionListener
  */
 public void removeSelectionListener(SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-
+	checkWidget();
 	if (listener == null) {
 		error(SWT.ERROR_NULL_ARGUMENT);
 	}	
@@ -1243,9 +1226,7 @@ public void removeSelectionListener(SelectionListener listener) {
  * @see #addTreeListener
  */
 public void removeTreeListener(TreeListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-
+	checkWidget();
 	if (listener == null) {
 		error(SWT.ERROR_NULL_ARGUMENT);
 	}
@@ -1434,8 +1415,7 @@ void scrollVertical(int scrollIndexCount) {
  * </ul>
  */
 public void selectAll() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Vector selection = getSelectionVector();
 
 	if (isMultiSelect() == true) {
@@ -1451,8 +1431,7 @@ void setExpandingItem(TreeItem item) {
 	expandingItem = item;
 }
 public void setFont(Font font) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Stack children = new Stack();						// traverse the tree depth first
 	Enumeration elements;
 	AbstractTreeItem item;
@@ -1494,9 +1473,7 @@ public void setFont(Font font) {
  * </ul>
  */
 public void setInsertMark(TreeItem item, boolean before){
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-
+	checkWidget();
 	motif_setInsertMark(item, !before);
 }
 /**
@@ -1517,9 +1494,7 @@ public void setInsertMark(TreeItem item, boolean before){
  * @see Tree#deselectAll()
  */
 public void setSelection(TreeItem selectionItems[]) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	
+	checkWidget();
 	if (selectionItems == null)  {
 		error(SWT.ERROR_NULL_ARGUMENT);
 	}	
@@ -1559,9 +1534,7 @@ void setTopIndex(int index, boolean adjustScrollbar) {
  * @see Tree#showSelection()
  */
 public void showItem(TreeItem item) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-
+	checkWidget();
 	if (item == null)  {
 		error(SWT.ERROR_NULL_ARGUMENT);
 	}	
@@ -1631,9 +1604,7 @@ public TreeItem getItem(Point point) {
  * </ul>
  */
 public int getSelectionCount() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-
+	checkWidget();
 	return super.getSelectionCount();
 }
 /**
@@ -1652,9 +1623,7 @@ public int getSelectionCount() {
  * @see Tree#showItem(TreeItem)
  */
 public void showSelection() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	
+	checkWidget();
 	super.showSelection();
 }
 

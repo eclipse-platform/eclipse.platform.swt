@@ -110,8 +110,7 @@ public TabFolder(Composite parent, int style) {
  * @see SelectionEvent
  */
 public void addSelectionListener(SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);	
+	checkWidget();
 	TypedListener typedListener;
 
 	if (listener == null) {
@@ -135,8 +134,7 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int width = CLIENT_MARGIN_WIDTH * 2 + TabItem.SHADOW_WIDTH * 2;
 	int height = 0;
 
@@ -161,8 +159,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (trim.width, trim.height);
 }
 public Rectangle computeTrim (int x, int y, int width, int height) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int border = getBorderWidth ();
 	int trimX = x - border - CLIENT_MARGIN_WIDTH - TabItem.SHADOW_WIDTH;
 	int trimY = y - border - CLIENT_MARGIN_WIDTH - TabItem.SHADOW_WIDTH;
@@ -452,8 +449,7 @@ void ensureVisible(int tabIndex) {
 	}
 }
 public Rectangle getClientArea() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Rectangle clientArea = super.getClientArea();
 	
 	if (yClient == 0) {					// position not calculated yet
@@ -488,8 +484,7 @@ int getImageHeight() {
  * </ul>
  */
 public TabItem getItem (int index) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 
 	if (!(0 <= index && index < getItemCount())) error(SWT.ERROR_INVALID_RANGE);
 	return items [index];
@@ -505,8 +500,7 @@ public TabItem getItem (int index) {
  * </ul>
  */
 public int getItemCount(){
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 
 	if (items == null) 
 		return 0;
@@ -529,8 +523,7 @@ public int getItemCount(){
  * </ul>
  */
 public TabItem [] getItems() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 
 	if (items == null) return new TabItem[0];
 	TabItem[] tabItems = new TabItem [items.length];
@@ -562,8 +555,7 @@ Rectangle getScrollButtonArea() {
  * </ul>
  */
 public TabItem [] getSelection() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 
 	if (selectedIndex == -1) return new TabItem [0];
 	return new TabItem [] {items[selectedIndex]};
@@ -580,8 +572,7 @@ public TabItem [] getSelection() {
  * </ul>
  */
 public int getSelectionIndex() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 
 	return selectedIndex;
 }
@@ -627,8 +618,7 @@ void handleEvents (Event event){
  * </ul>
  */
 public int indexOf(TabItem item) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 
 	if (item == null) {
 		error(SWT.ERROR_NULL_ARGUMENT);
@@ -891,8 +881,7 @@ void redrawTabs() {
  * @see #addSelectionListener
  */
 public void removeSelectionListener(SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 
 	if (listener == null) {
 		error(SWT.ERROR_NULL_ARGUMENT);
@@ -938,8 +927,7 @@ void scrollRight() {
 	}	
 }
 public void setFont(Font font) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 
 	if (font != null && font.equals(getFont())) return;
 	super.setFont(font);	
@@ -960,8 +948,7 @@ public void setFont(Font font) {
  * </ul>
  */
 public void setSelection(int index) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int oldIndex = selectedIndex;
 	
 	if (selectedIndex == index || index >= getItemCount()) return;
@@ -999,8 +986,7 @@ public void setSelection(int index) {
  * </ul>
  */
 public void setSelection(TabItem selectedItems[]) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 
 	if (selectedItems == null) error(SWT.ERROR_NULL_ARGUMENT);
 	int index = -1;

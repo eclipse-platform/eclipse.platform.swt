@@ -28,8 +28,7 @@ public Control (Composite parent, int style) {
 }
 
 public void addControlListener(ControlListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Resize,typedListener);
@@ -37,8 +36,7 @@ public void addControlListener(ControlListener listener) {
 }
 
 public void addFocusListener (FocusListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.FocusIn,typedListener);
@@ -46,16 +44,14 @@ public void addFocusListener (FocusListener listener) {
 }
 
 public void addHelpListener (HelpListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Help, typedListener);
 }
 
 public void addKeyListener (KeyListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.KeyUp,typedListener);
@@ -63,8 +59,7 @@ public void addKeyListener (KeyListener listener) {
 }
 
 public void addMouseListener (MouseListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.MouseDown,typedListener);
@@ -73,8 +68,7 @@ public void addMouseListener (MouseListener listener) {
 }
 
 public void addMouseTrackListener (MouseTrackListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.MouseEnter,typedListener);
@@ -83,32 +77,28 @@ public void addMouseTrackListener (MouseTrackListener listener) {
 }
 
 public void addMouseMoveListener (MouseMoveListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.MouseMove,typedListener);
 }
 
 public void addPaintListener (PaintListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Paint,typedListener);
 }
 
 public void addTraverseListener (TraverseListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Traverse,typedListener);
 }
 
 public boolean forceFocus () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int shellHandle = OS.PtFindDisjoint (handle);
 	OS.PtWindowToFront (shellHandle);
 	OS.PtContainerGiveFocus (handle, null);
@@ -120,8 +110,7 @@ public Point computeSize (int wHint, int hHint) {
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int width = DEFAULT_WIDTH;
 	int height = DEFAULT_HEIGHT;
 	if (wHint != SWT.DEFAULT) width = wHint;
@@ -144,16 +133,14 @@ byte [] defaultFont () {
 }
 
 public Color getBackground () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] args = {OS.Pt_ARG_FILL_COLOR, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	return Color.photon_new (getDisplay (), args [1]);
 }
 
 public Font getFont () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] args = {
 		OS.Pt_ARG_TEXT_FONT, 0, 0,
 		OS.Pt_ARG_LIST_FONT, 0, 0,
@@ -175,16 +162,14 @@ public Font getFont () {
 }
 
 public Color getForeground () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] args = {OS.Pt_ARG_COLOR, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	return Color.photon_new (getDisplay (), args [1]);
 }
 
 public int getBorderWidth () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int topHandle = topHandle ();
 	int [] args = {
 		OS.Pt_ARG_BASIC_FLAGS, 0, 0,
@@ -203,8 +188,7 @@ public int getBorderWidth () {
 }
 
 public Rectangle getBounds () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int topHandle = topHandle ();
 	PhArea_t area = new PhArea_t ();
 	OS.PtWidgetArea (topHandle, area);
@@ -218,22 +202,19 @@ public Display getDisplay () {
 }
 
 public boolean getEnabled () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] args = {OS.Pt_ARG_FLAGS, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	return (args [1] & OS.Pt_BLOCKED) == 0;
 }
 
 public Object getLayoutData () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return layoutData;
 }
 
 public Point getLocation () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int topHandle = topHandle ();
 	PhArea_t area = new PhArea_t ();
 	OS.PtWidgetArea (topHandle, area);
@@ -241,14 +222,12 @@ public Point getLocation () {
 }
 
 public Menu getMenu () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return null;
 }
 
 public Composite getParent () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return parent;
 }
 
@@ -270,8 +249,7 @@ Control [] getPath () {
 }
 
 public Point getSize () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int topHandle = topHandle ();
 	PhArea_t area = new PhArea_t ();
 	OS.PtWidgetArea (topHandle, area);
@@ -279,20 +257,17 @@ public Point getSize () {
 }
 
 public String getToolTipText () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return toolTipText;
 }
 
 public Shell getShell () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return parent.getShell ();
 }
 
 public boolean getVisible () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int topHandle = topHandle ();
 	int [] args = {OS.Pt_ARG_FLAGS, 0, 0};
 	OS.PtGetResources (topHandle, args.length / 3, args);
@@ -321,7 +296,7 @@ int focusHandle () {
 }
 
 public int internal_new_GC (GCData data) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	checkWidget();
 	int phGC = OS.PgCreateGC(0); // NOTE: PgCreateGC ignores the parameter
 	if (phGC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 
@@ -342,26 +317,22 @@ public void internal_dispose_GC (int phGC, GCData data) {
 }
 
 public boolean isEnabled () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return getEnabled () && parent.isEnabled ();
 }
 
 public boolean isFocusControl () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return hasFocus ();
 }
 
 public boolean isReparentable () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return false;
 }
 
 public boolean isVisible () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return OS.PtWidgetIsRealized (handle);
 }
 
@@ -370,8 +341,7 @@ Decorations menuShell () {
 }
 
 public void moveAbove (Control control) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int topHandle1 = topHandle ();
 	if (control == null) {
 		OS.PtWidgetToFront (topHandle1);
@@ -383,8 +353,7 @@ public void moveAbove (Control control) {
 }
 
 public void moveBelow (Control control) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int topHandle1 = topHandle ();
 	if (control == null) {
 		OS.PtWidgetToBack (topHandle1);
@@ -396,14 +365,13 @@ public void moveBelow (Control control) {
 }
 
 public void pack () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
+
 	pack (true);
 }
 
 public void pack (boolean changed) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	setSize (computeSize (SWT.DEFAULT, SWT.DEFAULT, changed));
 }
 
@@ -711,14 +679,13 @@ void releaseWidget () {
 }
 
 public void redraw () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	OS.PtDamageWidget (handle);
 }
 
 public void redraw (int x, int y, int width, int height, boolean allChildren) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
+	if (width <= 0 || height <= 0) return;
 	PhRect_t rect = new PhRect_t ();
 	rect.ul_x = (short) x;
 	rect.ul_y = (short) y;
@@ -728,8 +695,7 @@ public void redraw (int x, int y, int width, int height, boolean allChildren) {
 }
 
 public void removeControlListener (ControlListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Move, listener);
@@ -737,8 +703,7 @@ public void removeControlListener (ControlListener listener) {
 }
 
 public void removeFocusListener(FocusListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.FocusIn, listener);
@@ -746,16 +711,14 @@ public void removeFocusListener(FocusListener listener) {
 }
 
 public void removeHelpListener (HelpListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Help, listener);
 }
 
 public void removeKeyListener(KeyListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.KeyUp, listener);
@@ -763,8 +726,7 @@ public void removeKeyListener(KeyListener listener) {
 }
 
 public void removeMouseTrackListener(MouseTrackListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.MouseEnter, listener);
@@ -773,8 +735,7 @@ public void removeMouseTrackListener(MouseTrackListener listener) {
 }
 
 public void removeMouseListener (MouseListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.MouseDown, listener);
@@ -783,24 +744,21 @@ public void removeMouseListener (MouseListener listener) {
 }
 
 public void removeMouseMoveListener(MouseMoveListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.MouseMove, listener);
 }
 
 public void removePaintListener(PaintListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.Paint, listener);
 }
 
 public void removeTraverseListener(TraverseListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Traverse, listener);
@@ -849,29 +807,26 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 }
 
 public void setBounds (int x, int y, int width, int height) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	setBounds (x, y, width, height, true, true);
 }
 
 public void setBounds (Rectangle rect) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setBounds (rect.x, rect.y, rect.width, rect.height);
 }
 
 public void setCapture (boolean capture) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 }
 
 public void setCursor (Cursor cursor) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int type = OS.Ph_CURSOR_INHERIT;
 	int bitmap = 0;
 	if (cursor != null) {
+		if (cursor.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		type = cursor.type;
 		bitmap = cursor.bitmap;
 	}
@@ -895,8 +850,7 @@ public void setCursor (Cursor cursor) {
 }
 
 public void setEnabled (boolean enabled) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] args = {
 		OS.Pt_ARG_FLAGS, enabled ? 0 : OS.Pt_BLOCKED, OS.Pt_BLOCKED,
 		OS.Pt_ARG_FLAGS, enabled ? 0 : OS.Pt_GHOST, OS.Pt_GHOST,
@@ -905,8 +859,7 @@ public void setEnabled (boolean enabled) {
 }
 
 public boolean setFocus () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return forceFocus ();
 }
 
@@ -952,18 +905,25 @@ boolean sendResize () {
 }
 
 public void setBackground (Color color) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int pixel = OS.Pt_DEFAULT_COLOR;
-	if (color != null) pixel = color.handle;
+	if (color != null) {
+		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		pixel = color.handle;
+	}
 	int [] args = {OS.Pt_ARG_FILL_COLOR, pixel, 0};
 	OS.PtSetResources (handle, args.length / 3, args);
 }
 
 public void setFont (Font font) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	byte [] buffer = (font != null) ? font.handle : defaultFont (); 
+	checkWidget();
+	byte[] buffer;
+	if (font != null) {
+		if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		buffer = font.handle;
+	} else {
+		buffer = defaultFont();
+	}
 	int ptr = OS.malloc (buffer.length);
 	OS.memmove (ptr, buffer, buffer.length);
 	int [] args = {
@@ -976,10 +936,12 @@ public void setFont (Font font) {
 }
 
 public void setForeground (Color color) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int pixel = OS.Pt_DEFAULT_COLOR;
-	if (color != null) pixel = color.handle;
+	if (color != null) {
+		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		pixel = color.handle;
+	}
 	int [] args = {OS.Pt_ARG_COLOR, pixel, 0};
 	OS.PtSetResources (handle, args.length / 3, args);
 }
@@ -1013,28 +975,28 @@ void setKeyState(Event event, PhKeyEvent_t ke) {
 }
 
 public void setLayoutData (Object layoutData) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	this.layoutData = layoutData;
 }
 
 public void setLocation (int x, int y) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	setBounds (x, y, 0, 0, true, false);
 }
 
 public void setLocation (Point location) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setLocation (location.x, location.y);
 }
 
 public void setMenu (Menu menu) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	int flags = menu != null ? OS.Pt_MENUABLE : 0;
+	checkWidget();
+	int flags = 0;
+	if (menu != null) {
+		if (menu.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		flags = OS.Pt_MENUABLE;
+	}
 	int [] args = {
 		OS.Pt_ARG_FLAGS, flags, OS.Pt_ALL_BUTTONS | OS.Pt_MENUABLE,
 	};
@@ -1064,20 +1026,18 @@ void setMouseState(int type, Event event, PhPointerEvent_t pe) {
 }
 
 public boolean setParent (Composite parent) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
+	if (parent.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	return false;
 }
 
 public void setSize (Point size) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setSize (size.x, size.y);
 }
 public void setRedraw (boolean redraw) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (redraw) {
 		OS.PtContainerRelease (handle);
 	} else {
@@ -1085,14 +1045,12 @@ public void setRedraw (boolean redraw) {
 	}
 }
 public void setSize (int width, int height) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	setBounds (0, 0, width, height, false, true);
 }
 
 public void setVisible (boolean visible) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int topHandle = topHandle ();
 	int [] args = {
 		OS.Pt_ARG_FLAGS, visible ? 0 : OS.Pt_DELAY_REALIZE, OS.Pt_DELAY_REALIZE,
@@ -1108,8 +1066,7 @@ public void setVisible (boolean visible) {
 }
 
 public void setToolTipText (String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	toolTipText = string;
 }
 
@@ -1134,16 +1091,14 @@ void sort (int [] items) {
 }
 
 public Point toControl (Point point) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	short [] x = new short [1], y = new short [1];
 	OS.PtGetAbsPosition (handle, x, y);
 	return new Point (point.x - x [0], point.y - y [0]);
 }
 
 public Point toDisplay (Point point) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	short [] x = new short [1], y = new short [1];
 	OS.PtGetAbsPosition (handle, x, y);
 	return new Point (point.x + x [0], point.y + y [0]);
@@ -1218,8 +1173,7 @@ int traversalCode (int key_sym, PhKeyEvent_t ke) {
 }
 
 public boolean traverse (int traversal) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (!isFocusControl () && !setFocus ()) return false;
 	switch (traversal) {
 		case SWT.TRAVERSE_ESCAPE:		return traverseEscape ();
@@ -1263,8 +1217,7 @@ boolean traverseReturn () {
 }
 
 public void update () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	OS.PtFlush ();
 }
 

@@ -170,8 +170,7 @@ void addItem(TableItem item, int index) {
  * @see SelectionEvent
  */
 public void addSelectionListener (SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	TypedListener typedListener;
 
 	if (listener == null) {
@@ -298,8 +297,7 @@ void columnMouseMove(Event event) {
 	}
 }
 public Point computeSize(int wHint, int hHint, boolean changed) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Point size = super.computeSize(wHint, hHint, changed);
 	Point headerSize;
 	GC gc;
@@ -357,8 +355,7 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
  * </ul>
  */
 public void deselect(int indices[]) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);	
+	checkWidget();
 	SelectableItem item = null;
 	
 	if (indices == null) {
@@ -387,8 +384,7 @@ public void deselect(int indices[]) {
  * </ul>
  */
 public void deselect(int index) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	SelectableItem item = getVisibleItem(index);
 
 	if (item != null) {
@@ -412,8 +408,7 @@ public void deselect(int index) {
  * </ul>
  */
 public void deselect(int start, int end) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	SelectableItem item = null;
 
 	for (int i=start; i<=end; i++) {
@@ -435,8 +430,7 @@ public void deselect(int start, int end) {
  * </ul>
  */
 public void deselectAll() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	
 	deselectAllExcept((SelectableItem) null);
 }
@@ -629,8 +623,7 @@ void focusOut(Event event) {
  * </ul>
  */
 public TableColumn getColumn(int index) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Vector columns = getColumnVector();
 	
 	if (columns == null) error(SWT.ERROR_CANNOT_GET_ITEM);
@@ -687,8 +680,7 @@ TableColumn getColumnAtX(int xPosition) {
  * </ul>
  */
 public int getColumnCount() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Vector columns = getColumnVector();
 	int count = 0;
 	
@@ -737,8 +729,7 @@ int getColumnResizeX() {
  * </ul>
  */
 public TableColumn [] getColumns() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Vector columns = getColumnVector();
 	TableColumn columnArray[] = new TableColumn[columns.size()];
 
@@ -796,8 +787,7 @@ Control getFocusWindow() {
  * </ul>
  */
 public int getGridLineWidth () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	
 	return 1;
 }
@@ -837,8 +827,7 @@ int getHeaderHeight() {
  * </ul>
  */
 public boolean getHeaderVisible() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	
 	return getHeader().getVisible();
 }
@@ -887,8 +876,7 @@ int getIndex(SelectableItem item) {
  * </ul>
  */
 public TableItem getItem(int index) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	
 	if (!(0 <= index && index < getItemCount())) {
 		error(SWT.ERROR_INVALID_RANGE);
@@ -940,8 +928,7 @@ public TableItem getItem(Point point) {
  * </ul>
  */
 public int getItemCount() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	
 	return getItemVector().size();
 }
@@ -966,8 +953,7 @@ int getItemCountWhole() {
  * </ul>
  */
 public int getItemHeight() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	
 	return super.getItemHeight();
 }
@@ -994,8 +980,7 @@ int getItemPadding() {
  * </ul>
  */
 public TableItem [] getItems() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Vector items = getItemVector();
 	TableItem itemArray[] = new TableItem[items.size()];
 
@@ -1026,8 +1011,7 @@ Vector getItemVector() {
  * </ul>
  */
 public boolean getLinesVisible() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	
 	return drawGridLines;
 }
@@ -1139,8 +1123,7 @@ int [] getResizeRedrawX(int columnIndex, int columnWidth) {
  * </ul>
  */
 public TableItem [] getSelection() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Vector selectionVector = getSelectionVector();
 	TableItem[] selectionArray = new TableItem[selectionVector.size()];
 
@@ -1160,8 +1143,7 @@ public TableItem [] getSelection() {
  * </ul>
  */
 public int getSelectionCount() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 
 	return super.getSelectionCount();
 }
@@ -1198,8 +1180,7 @@ Point getFullSelectionExtent(TableItem item) {
  * </ul>
  */
 public int getSelectionIndex() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int index = -1;
 	
 	if (getSelectionCount() > 0) {
@@ -1223,8 +1204,7 @@ public int getSelectionIndex() {
  * </ul>
  */
 public int [] getSelectionIndices() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	TableItem[] items = getSelection();
 	int indices[] = new int[items.length];
 
@@ -1246,8 +1226,7 @@ public int [] getSelectionIndices() {
  * </ul>
  */
 public int getTopIndex() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 
 	return super.getTopIndex();
 }
@@ -1398,8 +1377,7 @@ void headerMouseMove(Event event) {
  * </ul>
  */
 public int indexOf(TableColumn column) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 
 	if (column == null) {
 		error(SWT.ERROR_NULL_ARGUMENT);
@@ -1424,8 +1402,7 @@ public int indexOf(TableColumn column) {
  * </ul>
  */
 public int indexOf(TableItem item) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 
 	if (item == null) {
 		error(SWT.ERROR_NULL_ARGUMENT);
@@ -1614,8 +1591,7 @@ boolean isColumnResizeStarted() {
  * </ul>
  */
 public boolean isSelected(int index) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	TableItem item = getItem(index);
 
 	return (item != null && item.isSelected() == true);
@@ -1839,8 +1815,7 @@ void reindexColumns(int startIndex) {
  * </ul>
  */
 public void remove(int indices[]) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	SelectableItem item;
 	int [] sortedIndices;
 	int last = -1;
@@ -1882,8 +1857,7 @@ public void remove(int indices[]) {
  * </ul>
  */
 public void remove(int index) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	SelectableItem item = getVisibleItem(index);
 
 	if (item != null) {
@@ -1913,8 +1887,7 @@ public void remove(int index) {
  * </ul>
  */
 public void remove(int start, int end) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	SelectableItem item;
 	
 	for (int i = end; i >= start; i--) {
@@ -1936,8 +1909,7 @@ public void remove(int start, int end) {
  * </ul>
  */
 public void removeAll() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Vector items = getItemVector();
 
 	setRedraw(false);
@@ -2053,8 +2025,7 @@ void removeItem(TableItem item) {
  * @see #addSelectionListener
  */
 public void removeSelectionListener(SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) {
 		error(SWT.ERROR_NULL_ARGUMENT);
 	}
@@ -2231,8 +2202,7 @@ void scrollVerticalRemovedItem(int index) {
  * </ul>
  */
 public void select(int indices[]) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	SelectableItem item = null;
 	int selectionCount;
 
@@ -2267,8 +2237,7 @@ public void select(int indices[]) {
  * </ul>
  */
 public void select(int index) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	SelectableItem item = getVisibleItem(index);
 	
 	if (isMultiSelect() == false) {
@@ -2294,8 +2263,7 @@ public void select(int index) {
  * </ul>
  */
 public void select(int start, int end) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	SelectableItem item = null;
 	int selectionCount = 1;
 	
@@ -2328,8 +2296,7 @@ public void select(int start, int end) {
  * </ul>
  */
 public void selectAll() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Enumeration items = getItemVector().elements();
 	TableItem item = null;
 
@@ -2415,8 +2382,7 @@ void setFirstColumnWidth(TableItem item) {
 	}
 }
 public void setFont(Font font) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	SelectableItem item;
 	int itemCount = getItemCount();
 
@@ -2449,8 +2415,7 @@ public void setFont(Font font) {
  * </ul>
  */
 public void setHeaderVisible(boolean headerVisible) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 
 	if (headerVisible != getHeaderVisible()) {
 		getHeader().setLocation(0, 0);
@@ -2488,8 +2453,7 @@ void setItemVector(Vector newVector) {
  * </ul>
  */
 public void setLinesVisible(boolean drawGridLines) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 
 	if (this.drawGridLines != drawGridLines) {
 		this.drawGridLines = drawGridLines;
@@ -2497,8 +2461,7 @@ public void setLinesVisible(boolean drawGridLines) {
 	}
 }
 public void setRedraw(boolean redraw) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 
 	super.setRedraw(redraw);
 	getHeader().setRedraw(redraw);
@@ -2530,8 +2493,7 @@ void setResizeColumn(TableColumn column) {
  * @see Table#select(int[])
  */
 public void setSelection(int [] indices) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Vector keepSelected;
 	
 	if (indices == null)  {
@@ -2566,8 +2528,7 @@ public void setSelection(int [] indices) {
  * @see Table#select(int)
  */
 public void setSelection(TableItem selectionItems[]) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 
 	if (selectionItems == null)  {
 		error(SWT.ERROR_NULL_ARGUMENT);
@@ -2589,8 +2550,7 @@ public void setSelection(TableItem selectionItems[]) {
  * @see Table#select(int)
  */
 public void setSelection(int index) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	
 	deselectAllExcept(getVisibleItem(index));
 	select(index);
@@ -2611,8 +2571,7 @@ public void setSelection(int index) {
  * @see Table#select(int,int)
  */
 public void setSelection(int start, int end) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Vector keepSelected = new Vector(end - start + 1);
 	
 	for (int i = start; i <= end; i++) {
@@ -2637,8 +2596,7 @@ public void setSelection(int start, int end) {
  * </ul>
  */
 public void setTopIndex(int index) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int itemCount = getItemCount();
 	int itemCountWhole = getItemCountWhole();
 	
@@ -2681,8 +2639,7 @@ void setTopIndexNoScroll(int index, boolean adjustScrollbar) {
  * @see Table#showSelection()
  */
 public void showItem(TableItem item) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 
 	if (item == null)  {
 		error(SWT.ERROR_NULL_ARGUMENT);
@@ -2705,8 +2662,7 @@ public void showItem(TableItem item) {
  * @see Table#showItem(TableItem)
  */
 public void showSelection() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	
 	super.showSelection();
 }

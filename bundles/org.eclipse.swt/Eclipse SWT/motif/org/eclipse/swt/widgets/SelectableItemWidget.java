@@ -202,8 +202,7 @@ void calculateVerticalScrollbar() {
  * width.
  */
 public Point computeSize(int wHint, int hHint, boolean changed) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);	
+	checkWidget();
 	int width = getContentWidth();
 	int height = getItemCount() * getItemHeight();
 	int style = getStyle();
@@ -968,8 +967,7 @@ int getItemCountWhole() {
  * no item height has been calculated yet.
  */
 public int getItemHeight() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	GC gc;
 	if (itemHeight == 0) {
 		gc = new GC(this);
@@ -1025,8 +1023,7 @@ int getRedrawY(SelectableItem item) {
  * Answer the number of selected items in the receiver.
  */
 public int getSelectionCount() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 
 	return getSelectionVector().size();
 }
@@ -1381,8 +1378,7 @@ void motif_setInsertMark(SelectableItem item, boolean after) {
  * set to false.
  */
 public void redraw () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 
 	if (drawCount == 0) {
 		super.redraw();
@@ -1393,8 +1389,7 @@ public void redraw () {
  * set to false.
  */
 public void redraw (int x, int y, int width, int height, boolean all) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 
 	if (drawCount == 0) {
 		super.redraw(x, y, width, height, all);
@@ -1747,8 +1742,7 @@ void setCtrlSelection(boolean isCtrlSelection) {
  * recalculation during itemChanged().
  */
 public void setFont(Font font) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 
 	super.setFont(font);
 	textHeight = -1;
@@ -1837,8 +1831,7 @@ void setLastSelection(SelectableItem selectedItem, boolean showItem) {
  * 	false = redraw and scroll operations are ignored
  */
 public void setRedraw (boolean redraw) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	
 	if (redraw) {
 		if (--drawCount == 0) redraw();
@@ -1998,8 +1991,7 @@ void showSelectableItem(SelectableItem item) {
  * widget is changed such that the selection becomes visible.
  */
 public void showSelection() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Vector selection = getSelectionVector();
 	SelectableItem selectionItem;
 

@@ -419,8 +419,7 @@ Point drawVerticalItemConnector(GC gc, Point position) {
  * </ul>
  */
 public Rectangle getBounds() {
-	if (!isValidThread()) error(SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget()) error(SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Tree parent = getParent();
 	Point extent = getItemExtent();
 	int x = getTextXPos() - TEXT_INDENT;
@@ -519,9 +518,7 @@ int getItemConnectorWidth() {
  * </ul>
  */
 public int getItemCount() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-
+	checkWidget();
 	return super.getItemCount();
 }
 /**
@@ -577,8 +574,7 @@ int getItemStartX() {
  * </ul>
  */
 public TreeItem [] getItems() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	TreeItem childrenArray[] = new TreeItem[getItemCount()];
 
 	getChildren().copyInto(childrenArray);
@@ -632,9 +628,7 @@ int getPaintStopX() {
  * </ul>
  */
 public Tree getParent() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-
+	checkWidget();
 	return (Tree) super.getSelectableParent();
 }
 /**
@@ -650,9 +644,7 @@ public Tree getParent() {
  * </ul>
  */
 public TreeItem getParentItem() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-
+	checkWidget();
 	return parentItem;
 }
 /**
@@ -982,9 +974,7 @@ void reset() {
  * </ul>
  */
 public void setExpanded(boolean expand) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-
+	checkWidget();
 	if (isLeaf() == false && expand == true) {
 		getParent().expand(this, false);
 	}
@@ -993,8 +983,7 @@ public void setExpanded(boolean expand) {
 	}
 }
 public void setImage(Image newImage) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Tree parent = getParent();
 	Image oldImage = getImage();
 	boolean isSameImage;
@@ -1062,8 +1051,7 @@ void setParentItem(TreeItem parentItem) {
  * the horizontal hierarchy connector line.
  */
 public void setText(String newText) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Tree parent = getParent();	
 	String oldText = getText();
 	int redrawX = 0;
@@ -1089,7 +1077,7 @@ void setTextYPosition(int yPosition) {
 }
 
 public void dispose() {
-	if (!isValidWidget ()) return;
+	if (isDisposed()) return;
 	// if the tree is being disposed don't bother collapsing the item since all 
 	// items in the tree will be deleted and redraws will not be processed anyway
 	Tree parent = getParent();
@@ -1133,9 +1121,7 @@ void doDispose() {
  * </ul>
  */
 public boolean getChecked() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	
+	checkWidget();
 	return super.getChecked();
 }
 public Display getDisplay() {
@@ -1155,9 +1141,7 @@ public Display getDisplay() {
  * </ul>
  */
 public boolean getGrayed() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	
+	checkWidget();
 	return super.getGrayed();
 }
 /**
@@ -1172,9 +1156,7 @@ public boolean getGrayed() {
  * </ul>
  */
 public void setChecked(boolean checked) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	
+	checkWidget();
 	super.setChecked(checked);
 }
 /**
@@ -1189,9 +1171,7 @@ public void setChecked(boolean checked) {
  * </ul>
  */
 public void setGrayed (boolean grayed) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	
+	checkWidget();
 	super.setGrayed(grayed);
 }
 

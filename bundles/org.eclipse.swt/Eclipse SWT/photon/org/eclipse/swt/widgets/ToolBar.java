@@ -47,8 +47,7 @@ protected void checkSubclass () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 //	if (layout != null) return super.computeSize (wHint, hHint, changed);
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	PhDim_t dim = new PhDim_t();
 	if (!OS.PtWidgetIsRealized (handle)) OS.PtExtentWidgetFamily (handle);
 	OS.PtWidgetPreferredSize(handle, dim);
@@ -109,30 +108,26 @@ void destroyItem (ToolItem item) {
 }
 
 public int getItemCount () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return itemCount;
 }
 
 public ToolItem [] getItems () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	ToolItem [] result = new ToolItem [itemCount];
 	System.arraycopy (items, 0, result, 0, itemCount);
 	return result;
 }
 
 public ToolItem getItem (int index) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int count = itemCount;
 	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);	
 	return items [index];
 }
 
 public ToolItem getItem (Point pt) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	ToolItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
 		Rectangle rect = items [i].getBounds ();
@@ -142,14 +137,12 @@ public ToolItem getItem (Point pt) {
 }
 
 public int getRowCount () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return 1;
 }
 
 public int indexOf (ToolItem item) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int count = itemCount;
 	for (int i=0; i<count; i++) {

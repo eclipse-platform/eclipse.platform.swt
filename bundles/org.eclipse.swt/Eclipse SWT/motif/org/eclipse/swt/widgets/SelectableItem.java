@@ -29,7 +29,7 @@ SelectableItem(SelectableItemWidget parent, int style) {
 	setParent(parent);	
 }
 public void dispose() {
-	if (!isValidWidget ()) return;
+	if (isDisposed()) return;
 	super.dispose();
 	doDispose();
 }
@@ -122,8 +122,7 @@ abstract int getCheckboxXPosition();
  * have the CHECK style.
  */
 public boolean getChecked() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	boolean checked = false;
 	
 	if (isCheckable() == true) {
@@ -154,8 +153,7 @@ public Display getDisplay() {
  *	</ul>
  */
 public boolean getGrayed () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	boolean grayed = false;
 	
 	if (isCheckable() == true) {
@@ -266,8 +264,7 @@ void redrawSelection(int yPosition) {
  * receiver has the CHECK style.
  */
 public void setChecked(boolean checked) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	SelectableItemWidget parent = getSelectableParent();
 	Rectangle redrawRectangle = getCheckboxBounds();
 
@@ -290,8 +287,7 @@ public void setChecked(boolean checked) {
  *	</ul>
  */
 public void setGrayed (boolean grayed) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	SelectableItemWidget parent = getSelectableParent();
 	Rectangle redrawRectangle = getCheckboxBounds();
 

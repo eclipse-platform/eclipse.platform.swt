@@ -45,8 +45,7 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int border = getBorderWidth ();
 	int width = border * 2, height = border * 2;
 	Display display = getDisplay ();
@@ -108,8 +107,7 @@ void disableTraversal () {
  * </ul>
  */
 public int getMaximum () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {OS.XmNmaximum, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1];
@@ -125,8 +123,7 @@ public int getMaximum () {
  * </ul>
  */
 public int getMinimum () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {OS.XmNminimum, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1];
@@ -142,8 +139,7 @@ public int getMinimum () {
  * </ul>
  */
 public int getSelection () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {
 		OS.XmNminimum, 0,
 		OS.XmNsliderSize, 0,
@@ -182,8 +178,7 @@ void realizeChildren () {
  * </ul>
  */
 public void setMaximum (int value) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (value < 0) return;
 	int [] argList = {OS.XmNmaximum, value, OS.XmNvalue, 0};
 	Display display = getDisplay ();
@@ -205,8 +200,7 @@ public void setMaximum (int value) {
  * </ul>
  */
 public void setMinimum (int value) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (value < 0) return;
 	int [] argList = {
 		OS.XmNminimum, 0,
@@ -244,8 +238,7 @@ public void setMinimum (int value) {
  * </ul>
  */
 public void setSelection (int value) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (value < 0) return;
 	int [] argList = {
 		OS.XmNminimum, 0,

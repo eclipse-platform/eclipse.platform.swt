@@ -55,7 +55,7 @@ protected void checkSubclass () {
 }
 
 public void dispose() {
-	if (!isValidWidget ()) return;
+	if (isDisposed()) return;
 	super.dispose();
 	parent.destroyChild(this);
 	parent = null;
@@ -93,8 +93,7 @@ Rectangle getBounds () {
  * </ul>
  */
 public Control getControl () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return control;
 }
 public Display getDisplay() {
@@ -112,8 +111,7 @@ public Display getDisplay() {
  * </ul>
  */
 public TabFolder getParent () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 
 	return parent;
 }
@@ -129,8 +127,7 @@ public TabFolder getParent () {
  * </ul>
  */
 public String getToolTipText () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return toolTipText;
 }
 /**
@@ -245,8 +242,7 @@ int preferredWidth(GC gc) {
  * </ul>
  */
 public void setControl (Control control) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (control != null && control.parent != parent) {
 		error (SWT.ERROR_INVALID_PARENT);
 	}
@@ -274,8 +270,7 @@ public void setControl (Control control) {
 *	when the widget has been disposed
 */
 public void setImage (Image image) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Image oldImage = this.image;
 	
 	super.setImage(image);
@@ -297,8 +292,7 @@ public void setImage (Image image) {
  * </ul>
  */
 public void setText (String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	String oldText = text;
 	
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -319,8 +313,7 @@ public void setText (String string) {
  * </ul>
  */
 public void setToolTipText (String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	toolTipText = string;
 }
 /**

@@ -95,8 +95,7 @@ public Text (Composite parent, int style) {
  * @see #removeModifyListener
  */
 public void addModifyListener (ModifyListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Modify, typedListener);
@@ -126,8 +125,7 @@ public void addModifyListener (ModifyListener listener) {
  * @see SelectionEvent
  */
 public void addSelectionListener(SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener(listener);
 	addListener(SWT.Selection,typedListener);
@@ -153,8 +151,7 @@ public void addSelectionListener(SelectionListener listener) {
  * @see #removeVerifyListener
  */
 public void addVerifyListener (VerifyListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Verify, typedListener);
@@ -177,8 +174,7 @@ public void addVerifyListener (VerifyListener listener) {
  * </ul>
  */
 public void append (String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int position = OS.XmTextGetLastPosition (handle);
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
@@ -208,15 +204,13 @@ static int checkStyle (int style) {
  * </ul>
  */
 public void clearSelection () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int xDisplay = OS.XtDisplay (handle);
 	if (xDisplay == 0) return;
 	OS.XmTextClearSelection (handle, OS.XtLastTimestampProcessed (xDisplay));
 }
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int width = wHint;
 	int height = hHint;
 	if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
@@ -276,8 +270,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 public Rectangle computeTrim (int x, int y, int width, int height) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Rectangle trim = super.computeTrim(x, y, width, height);
 	XRectangle rect = new XRectangle ();
 	OS.XmWidgetGetDisplayRect (handle, rect);
@@ -300,8 +293,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
  * </ul>
  */
 public void copy () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int xDisplay = OS.XtDisplay (handle);
 	if (xDisplay == 0) return;
 	OS.XmTextCopy (handle, OS.XtLastTimestampProcessed (xDisplay));
@@ -358,8 +350,7 @@ ScrollBar createScrollBar (int type) {
  * </ul>
  */
 public void cut () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int xDisplay = OS.XtDisplay (handle);
 	if (xDisplay == 0) return;
 	OS.XmTextCut (handle, OS.XtLastTimestampProcessed (xDisplay));
@@ -390,8 +381,7 @@ int defaultForeground () {
  * </ul>
  */
 public int getCaretLineNumber () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return getLineNumber (OS.XmTextGetInsertionPosition (handle));
 }
 /**
@@ -408,8 +398,7 @@ public int getCaretLineNumber () {
  * </ul>
  */
 public Point getCaretLocation () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int position;
 	if (textVerify != null) {
 		position = textVerify.currInsert;
@@ -434,8 +423,7 @@ public Point getCaretLocation () {
  * </ul>
  */
 public int getCaretPosition () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return OS.XmTextGetInsertionPosition (handle);
 }
 /**
@@ -449,8 +437,7 @@ public int getCaretPosition () {
  * </ul>
  */
 public int getCharCount () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return OS.XmTextGetLastPosition (handle);
 }
 /**
@@ -467,8 +454,7 @@ public int getCharCount () {
  * </ul>
  */
 public boolean getDoubleClickEnabled () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {OS.XmNselectionArrayCount, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1] != 1;
@@ -487,8 +473,7 @@ public boolean getDoubleClickEnabled () {
  * </ul>
  */
 public char getEchoChar () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return echoCharacter;
 }
 /**
@@ -500,8 +485,7 @@ public char getEchoChar () {
  * </ul>
  */
 public boolean getEditable () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	/*
 	* Bug in MOTIF.  For some reason, when XmTextGetEditable () is called
 	* from inside an XmNvalueChangedCallback or XmNModifyVerifyCallback,
@@ -524,8 +508,7 @@ public boolean getEditable () {
  * </ul>
  */
 public int getLineCount () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return getLineNumber (echoCharacter != '\0' ? hiddenText.length () : OS.XmTextGetLastPosition (handle));
 }
 /**
@@ -539,8 +522,7 @@ public int getLineCount () {
  * </ul>
  */
 public String getLineDelimiter () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return "\n";
 }
 /**
@@ -554,8 +536,7 @@ public String getLineDelimiter () {
  * </ul>
  */
 public int getLineHeight () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return getFontHeight ();
 }
 int getLineNumber (int position) {
@@ -609,8 +590,7 @@ int getLineNumber (int position) {
  * </ul>
  */
 public Point getSelection () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (textVerify != null) {
 		return new Point (textVerify.startPos, textVerify.endPos);
 	}
@@ -632,8 +612,7 @@ public Point getSelection () {
  * </ul>
  */
 public int getSelectionCount () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (textVerify != null) {
 		return textVerify.endPos - textVerify.startPos;
 	}
@@ -652,8 +631,7 @@ public int getSelectionCount () {
  * </ul>
  */
 public String getSelectionText () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (echoCharacter != '\0' || textVerify != null) {
 		Point selection = getSelection ();
 		return getText (selection.x, selection.y);
@@ -682,8 +660,7 @@ public String getSelectionText () {
  * </ul>
  */
 public int getTabs () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	/* Tabs are not supported in MOTIF. */
 	return 8;
 }
@@ -701,8 +678,7 @@ public int getTabs () {
  * </ul>
  */
 public String getText () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (echoCharacter != '\0') return hiddenText;
 	int ptr = OS.XmTextGetString (handle);
 	if (ptr == 0) return "";
@@ -730,8 +706,7 @@ public String getText () {
  * </ul>
  */
 public String getText (int start, int end) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int numChars = end - start + 1;
 	if (numChars < 0 || start < 0) return "";
 	if (echoCharacter != '\0') {
@@ -762,8 +737,7 @@ public String getText (int start, int end) {
  * </ul>
  */
 public int getTextLimit () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return OS.XmTextGetMaxLength (handle);
 }
 /**
@@ -781,8 +755,7 @@ public int getTextLimit () {
  * </ul>
  */
 public int getTopIndex () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & SWT.SINGLE) != 0) return 0;
 	if (scrolledHandle == 0) return 0;
 	int [] argList1 = {OS.XmNverticalScrollBar, 0};
@@ -813,13 +786,11 @@ public int getTopIndex () {
  * </ul>
  */
 public int getTopPixel () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return getTopIndex () * getLineHeight ();
 }
 boolean getWrap () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {OS.XmNwordWrap, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1] != 0;
@@ -849,8 +820,7 @@ int inputContext () {
  * </ul>
  */
 public void insert (String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int [] start = new int [1], end = new int [1];
 	OS.XmTextGetSelectionPosition (handle, start, end);
@@ -879,8 +849,7 @@ public void insert (String string) {
  * </ul>
  */
 public void paste () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
@@ -990,8 +959,7 @@ int processVerify (int callData) {
  * @see #addModifyListener
  */
 public void removeModifyListener (ModifyListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Modify, listener);	
@@ -1014,8 +982,7 @@ public void removeModifyListener (ModifyListener listener) {
  * @see #addSelectionListener
  */
 public void removeSelectionListener(SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.Selection, listener);
@@ -1039,8 +1006,7 @@ public void removeSelectionListener(SelectionListener listener) {
  * @see #addVerifyListener
  */
 public void removeVerifyListener (VerifyListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Verify, listener);	
@@ -1054,8 +1020,7 @@ public void removeVerifyListener (VerifyListener listener) {
  * </ul>
  */
 public void selectAll () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	
 	/* Clear the highlight before setting the selection. */
 	int position = OS.XmTextGetLastPosition (handle);
@@ -1119,8 +1084,7 @@ public void setBounds (int x, int y, int width, int height) {
  * </ul>
  */
 public void setDoubleClickEnabled (boolean doubleClick) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {OS.XmNselectionArrayCount, doubleClick ? 4 : 1};
 	OS.XtSetValues (handle, argList, argList.length / 2);
 }
@@ -1140,8 +1104,7 @@ public void setDoubleClickEnabled (boolean doubleClick) {
  * </ul>
  */
 public void setEchoChar (char echo) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (echoCharacter == echo) return;
 	String newText;
 	if (echo == 0) {
@@ -1169,8 +1132,7 @@ public void setEchoChar (char echo) {
  * </ul>
  */
 public void setEditable (boolean editable) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	OS.XmTextSetEditable (handle, editable);
 	style &= ~SWT.READ_ONLY;
 	if (!editable) style |= SWT.READ_ONLY;
@@ -1182,8 +1144,7 @@ public void setEditable (boolean editable) {
 * Sets the redraw flag.
 */
 public void setRedraw (boolean redraw) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & SWT.SINGLE) != 0) return;
 	if (redraw) {
 		if (--drawCount == 0) OS.XmTextEnableRedisplay(handle);
@@ -1218,8 +1179,7 @@ public void setRedraw (boolean redraw) {
  * </ul>
  */
 public void setSelection (int start) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	
 	/* Clear the selection and highlight before moving the i-beam. */
 	int xDisplay = OS.XtDisplay (handle);
@@ -1264,8 +1224,7 @@ public void setSelection (int start) {
  * </ul>
  */
 public void setSelection (int start, int end) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	
 	/* Clear the highlight before setting the selection. */
 	int position = OS.XmTextGetLastPosition (handle);
@@ -1322,8 +1281,7 @@ public void setSelection (int start, int end) {
  * </ul>
  */
 public void setSelection (Point selection) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (selection == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setSelection (selection.x, selection.y);
 }
@@ -1361,8 +1319,7 @@ public void setSize (int width, int height) {
  * </ul>
 */
 public void setTabs (int tabs) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	/* Do nothing.  Tabs are not supported in MOTIF. */
 }
 /**
@@ -1379,8 +1336,7 @@ public void setTabs (int tabs) {
  * </ul>
  */
 public void setText (String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
 	Display display = getDisplay ();
@@ -1411,8 +1367,7 @@ public void setText (String string) {
  * </ul>
  */
 public void setTextLimit (int limit) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
 	OS.XmTextSetMaxLength (handle, limit);
 }
@@ -1429,8 +1384,7 @@ public void setTextLimit (int limit) {
  * </ul>
  */
 public void setTopIndex (int index) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & SWT.SINGLE) != 0) return;
 	if (scrolledHandle == 0) return;
 	int [] argList1 = {OS.XmNverticalScrollBar, 0};
@@ -1441,8 +1395,7 @@ public void setTopIndex (int index) {
 	OS.XmTextScroll (handle, index - argList2 [1]);
 }
 void setWrap (boolean wrap) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {OS.XmNwordWrap, wrap ? 1 : 0};
 	OS.XtSetValues (handle, argList, argList.length / 2);
 }
@@ -1463,8 +1416,7 @@ void setWrap (boolean wrap) {
  * </ul>
  */
 public void showSelection () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);

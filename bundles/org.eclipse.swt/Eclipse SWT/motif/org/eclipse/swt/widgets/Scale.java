@@ -78,8 +78,7 @@ public Scale (Composite parent, int style) {
  * @see #removeSelectionListener
  */
 public void addSelectionListener(SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener(listener);
 	addListener(SWT.Selection,typedListener);
@@ -89,8 +88,7 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int border = getBorderWidth ();
 	int width = border * 2, height = border * 2;
 	Display display = getDisplay ();
@@ -133,8 +131,7 @@ void createHandle (int index) {
  * </ul>
  */
 public int getIncrement () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return 1;
 }
 /**
@@ -148,8 +145,7 @@ public int getIncrement () {
  * </ul>
  */
 public int getMaximum () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {OS.XmNmaximum, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1];
@@ -165,8 +161,7 @@ public int getMaximum () {
  * </ul>
  */
 public int getMinimum () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {OS.XmNminimum, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1];
@@ -184,8 +179,7 @@ public int getMinimum () {
  * </ul>
  */
 public int getPageIncrement () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {OS.XmNscaleMultiple, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1];
@@ -201,8 +195,7 @@ public int getPageIncrement () {
  * </ul>
  */
 public int getSelection () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int [] argList = {OS.XmNvalue, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1];
@@ -231,8 +224,7 @@ void hookEvents () {
  * @see #addSelectionListener
  */
 public void removeSelectionListener(SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.Selection, listener);
@@ -252,8 +244,7 @@ public void removeSelectionListener(SelectionListener listener) {
  * </ul>
  */
 public void setIncrement (int increment) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 }
 /**
  * Sets the maximum value which the receiver will allow
@@ -268,8 +259,7 @@ public void setIncrement (int increment) {
  * </ul>
  */
 public void setMaximum (int value) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (value < 0) return;
 	int [] argList = {OS.XmNmaximum, value};
 	Display display = getDisplay ();
@@ -291,8 +281,7 @@ public void setMaximum (int value) {
  * </ul>
  */
 public void setMinimum (int value) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (value < 0) return;
 	int [] argList = {OS.XmNminimum, value};
 	Display display = getDisplay ();
@@ -315,8 +304,7 @@ public void setMinimum (int value) {
  * </ul>
  */
 public void setPageIncrement (int pageIncrement) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (pageIncrement < 1) return;
 	int [] argList = {OS.XmNscaleMultiple, pageIncrement};
 	Display display = getDisplay ();
@@ -338,8 +326,7 @@ public void setPageIncrement (int pageIncrement) {
  * </ul>
  */
 public void setSelection (int selection) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (selection < 0) return;
 	int [] argList = {OS.XmNvalue, selection};
 	Display display = getDisplay ();
