@@ -170,186 +170,6 @@ int processFocusOut () {
 	OS.XtSetValues (handle, argList, argList.length / 2);
 	return result;
 }
-	
-int processKeyDown (int callData) {
-	super.processKeyDown (callData);
-	XKeyEvent xEvent = new XKeyEvent ();
-	OS.memmove (xEvent, callData, XKeyEvent.sizeof);
-	byte [] buffer = new byte [1];
-	int [] keysym = new int [1];
-	OS.XLookupString (xEvent, buffer, buffer.length, keysym, null);
-	
-	switch (keysym [0]) {
-		case OS.XK_Left:
-		case OS.XK_Right:
-		case OS.XK_Up:
-		case OS.XK_Down:
-			int xChange = 0, yChange = 0;
-			int stepSize = PAGE_INCREMENT;
-			if ((xEvent.state & OS.ControlMask) != 0) stepSize = INCREMENT;
-			if ((style & SWT.VERTICAL) != 0) {
-				if (keysym [0] == OS.XK_Up || keysym [0] == OS.XK_Down) break;
-				xChange = keysym [0] == OS.XK_Left ? -stepSize : stepSize;
-			} else {
-				if (keysym [0] == OS.XK_Left || keysym [0] == OS.XK_Right) break;
-				yChange = keysym [0] == OS.XK_Up ? -stepSize : stepSize;
-			}
-			
-			int [] argList1 = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
-			OS.XtGetValues (handle, argList1, argList1.length / 2);
-			int border = argList1 [5];
-			int width = argList1 [1] + (border * 2), height = argList1 [3] + (border * 2);
-			int [] argList2 = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
-			OS.XtGetValues (parent.handle, argList2, argList2.length / 2);
-			int parentBorder = argList2 [5];
-			int parentWidth = argList2 [1] + (parentBorder * 2);
-			int parentHeight = argList2 [3] + (parentBorder * 2);
-			int newX = lastX, newY = lastY;
-			if ((style & SWT.VERTICAL) != 0) {
-				newX = Math.min (Math.max (0, lastX + xChange - parentBorder - startX), parentWidth - width);
-			} else {
-				newY = Math.min (Math.max (0, lastY + yChange - parentBorder - startY), parentHeight - height);
-			}
-			if (newX == lastX && newY == lastY) return 0;
-			
-			/* Ensure that the pointer image does not change */
-			int xDisplay = getDisplay().xDisplay;
-			int xWindow = OS.XtWindow (parent.handle);
-			int ptrGrabResult = OS.XGrabPointer (
-				xDisplay,
-				xWindow,
-				1,
-				OS.None,
-				OS.GrabModeAsync,
-				OS.GrabModeAsync,
-				OS.None,
-				cursor,
-				OS.CurrentTime);
-
-			/* The event must be sent because its doit flag is used. */
-			Event event = new Event ();
-			event.time = xEvent.time;
-			event.x = newX;  event.y = newY;
-			event.width = width;  event.height = height;
-			sendEvent (SWT.Selection, event);
-			if (ptrGrabResult == OS.GrabSuccess) OS.XUngrabPointer (xDisplay, OS.CurrentTime);
-					
-			/*
-			 * It is possible (but unlikely) that client code could have disposed
-			 * the widget in the selection event.  If this happens end the processing
-			 * of this message by returning.
-			 */
-			if (isDisposed ()) break;
-			if (event.doit) {
-				lastX = event.x;  lastY = event.y;
-				/* Adjust the pointer position */
-				int cursorX = newX;  int cursorY = newY;
-				if ((style & SWT.VERTICAL) != 0) {
-					cursorY += height / 2;
-				} else {
-					cursorX += width / 2;
-				}
-				OS.XWarpPointer (xDisplay, OS.None, xWindow, 0, 0, 0, 0, cursorX, cursorY);
-			}
-			break;
-	}
-
-	return 0;
-}
-
-int processMouseDown (int callData) {
-	super.processMouseDown (callData);
-	XButtonEvent xEvent = new XButtonEvent ();
-	OS.memmove (xEvent, callData, XButtonEvent.sizeof);
-	if (xEvent.button != 1) return 0;
-	startX = xEvent.x;  startY = xEvent.y;
-	int [] argList = {OS.XmNx, 0, OS.XmNy, 0, OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	int border = argList [9], width = argList [5] + (border * 2), height = argList [7] + (border * 2);
-	lastX = ((short) argList [1]) - border;  lastY = ((short) argList [3]) - border;
-	/* The event must be sent because its doit flag is used. */
-	Event event = new Event ();
-	event.detail = SWT.DRAG;
-	event.time = xEvent.time;
-	event.x = lastX;  event.y = lastY;
-	event.width = width;  event.height = height;
-	/*
-	 * It is possible (but unlikely) that client code could have disposed
-	 * the widget in the selection event.  If this happens end the processing
-	 * of this message by returning.
-	 */
-	sendEvent (SWT.Selection, event);
-	if (isDisposed ()) return 0;
-	if (event.doit) {
-		dragging = true;
-		OS.XmUpdateDisplay (handle);
-		drawBand (lastX = event.x, lastY = event.y, width, height);
-	}
-	return 0;
-}
-int processMouseMove (int callData) {
-	super.processMouseMove (callData);
-	XMotionEvent xEvent = new XMotionEvent ();
-	OS.memmove (xEvent, callData, XMotionEvent.sizeof);
-	if (!dragging || (xEvent.state & OS.Button1Mask) == 0) return 0;
-	int [] argList1 = {OS.XmNx, 0, OS.XmNy, 0, OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
-	OS.XtGetValues (handle, argList1, argList1.length / 2);
-	int border = argList1 [9], x = ((short) argList1 [1]) - border, y = ((short) argList1 [3]) - border;
-	int width = argList1 [5] + (border * 2), height = argList1 [7] + (border * 2);
-	int [] argList2 = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
-	OS.XtGetValues (parent.handle, argList2, argList2.length / 2);
-	int parentBorder = argList2 [5];
-	int parentWidth = argList2 [1] + (parentBorder * 2);
-	int parentHeight = argList2 [3] + (parentBorder * 2);
-	int newX = lastX, newY = lastY;
-	if ((style & SWT.VERTICAL) != 0) {
-		newX = Math.min (Math.max (0, xEvent.x + x - startX - parentBorder), parentWidth - width);
-	} else {
-		newY = Math.min (Math.max (0, xEvent.y + y - startY - parentBorder), parentHeight - height);
-	}
-	if (newX == lastX && newY == lastY) return 0;
-	drawBand (lastX, lastY, width, height);
-	/* The event must be sent because its doit flag is used. */
-	Event event = new Event ();
-	event.detail = SWT.DRAG;
-	event.time = xEvent.time;
-	event.x = newX;  event.y = newY;
-	event.width = width;  event.height = height;
-	/*
-	 * It is possible (but unlikely) that client code could have disposed
-	 * the widget in the selection event.  If this happens end the processing
-	 * of this message by returning.
-	 */
-	sendEvent (SWT.Selection, event);
-	if (isDisposed ()) return 0;
-	if (event.doit) {
-		lastX = event.x;  lastY = event.y;
-		OS.XmUpdateDisplay (handle);
-		drawBand (lastX, lastY, width, height);
-	}
-	return 0;
-}
-int processMouseUp (int callData) {
-	super.processMouseUp (callData);
-	XButtonEvent xEvent = new XButtonEvent ();
-	OS.memmove (xEvent, callData, XButtonEvent.sizeof);
-	if (xEvent.button != 1) return 0;
-	if (!dragging) return 0;
-	dragging = false;
-	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	int border = argList [5];
-	int width = argList [1] + (border * 2), height = argList [3] + (border * 2);
-	/* The event must be sent because its doit flag is used. */
-	Event event = new Event ();
-	event.time = xEvent.time;
-	event.x = lastX;  event.y = lastY;
-	event.width = width;  event.height = height;
-	drawBand (lastX, lastY, width, height);
-	sendEvent (SWT.Selection, event);
-	/* widget could be disposed here */
-	return 0;
-}
 void realizeChildren () {
 	super.realizeChildren ();
 	int window = OS.XtWindow (handle);
@@ -404,5 +224,187 @@ public boolean setFocus () {
 	argList [1] = 0;
 	OS.XtSetValues (handle, argList, argList.length / 2);
 	return false;
+}
+int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatch) {
+	int result = super.XButtonPress (w, client_data, call_data, continue_to_dispatch);
+	if (result != 0) return result;
+	XButtonEvent xEvent = new XButtonEvent ();
+	OS.memmove (xEvent, call_data, XButtonEvent.sizeof);
+	if (xEvent.button != 1) return result;
+	startX = xEvent.x;  startY = xEvent.y;
+	int [] argList = {OS.XmNx, 0, OS.XmNy, 0, OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	int border = argList [9], width = argList [5] + (border * 2), height = argList [7] + (border * 2);
+	lastX = ((short) argList [1]) - border;  lastY = ((short) argList [3]) - border;
+	/* The event must be sent because its doit flag is used. */
+	Event event = new Event ();
+	event.detail = SWT.DRAG;
+	event.time = xEvent.time;
+	event.x = lastX;  event.y = lastY;
+	event.width = width;  event.height = height;
+	/*
+	 * It is possible (but unlikely) that client code could have disposed
+	 * the widget in the selection event.  If this happens end the processing
+	 * of this message by returning.
+	 */
+	sendEvent (SWT.Selection, event);
+	if (isDisposed ()) return result;
+	if (event.doit) {
+		dragging = true;
+		OS.XmUpdateDisplay (handle);
+		drawBand (lastX = event.x, lastY = event.y, width, height);
+	}
+	return result;
+}
+int XButtonRelease (int w, int client_data, int call_data, int continue_to_dispatch) {
+	int result = super.XButtonRelease (w, client_data, call_data, continue_to_dispatch);
+	if (result != 0) return result;
+	XButtonEvent xEvent = new XButtonEvent ();
+	OS.memmove (xEvent, call_data, XButtonEvent.sizeof);
+	if (xEvent.button != 1) return result;
+	if (!dragging) return result;
+	dragging = false;
+	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	int border = argList [5];
+	int width = argList [1] + (border * 2), height = argList [3] + (border * 2);
+	/* The event must be sent because its doit flag is used. */
+	Event event = new Event ();
+	event.time = xEvent.time;
+	event.x = lastX;  event.y = lastY;
+	event.width = width;  event.height = height;
+	drawBand (lastX, lastY, width, height);
+	sendEvent (SWT.Selection, event);
+	/* widget could be disposed here */
+	return result;
+}
+int XKeyPress (int w, int client_data, int call_data, int continue_to_dispatch) {	
+	int result = super.XKeyPress (w, client_data, call_data, continue_to_dispatch);
+	if (result != 0) return result;
+	XKeyEvent xEvent = new XKeyEvent ();
+	OS.memmove (xEvent, call_data, XKeyEvent.sizeof);
+	byte [] buffer = new byte [1];
+	int [] keysym = new int [1];
+	OS.XLookupString (xEvent, buffer, buffer.length, keysym, null);
+	
+	switch (keysym [0]) {
+		case OS.XK_Left:
+		case OS.XK_Right:
+		case OS.XK_Up:
+		case OS.XK_Down:
+			int xChange = 0, yChange = 0;
+			int stepSize = PAGE_INCREMENT;
+			if ((xEvent.state & OS.ControlMask) != 0) stepSize = INCREMENT;
+			if ((style & SWT.VERTICAL) != 0) {
+				if (keysym [0] == OS.XK_Up || keysym [0] == OS.XK_Down) break;
+				xChange = keysym [0] == OS.XK_Left ? -stepSize : stepSize;
+			} else {
+				if (keysym [0] == OS.XK_Left || keysym [0] == OS.XK_Right) break;
+				yChange = keysym [0] == OS.XK_Up ? -stepSize : stepSize;
+			}
+			
+			int [] argList1 = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
+			OS.XtGetValues (handle, argList1, argList1.length / 2);
+			int border = argList1 [5];
+			int width = argList1 [1] + (border * 2), height = argList1 [3] + (border * 2);
+			int [] argList2 = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
+			OS.XtGetValues (parent.handle, argList2, argList2.length / 2);
+			int parentBorder = argList2 [5];
+			int parentWidth = argList2 [1] + (parentBorder * 2);
+			int parentHeight = argList2 [3] + (parentBorder * 2);
+			int newX = lastX, newY = lastY;
+			if ((style & SWT.VERTICAL) != 0) {
+				newX = Math.min (Math.max (0, lastX + xChange - parentBorder - startX), parentWidth - width);
+			} else {
+				newY = Math.min (Math.max (0, lastY + yChange - parentBorder - startY), parentHeight - height);
+			}
+			if (newX == lastX && newY == lastY) return result;
+			
+			/* Ensure that the pointer image does not change */
+			int xDisplay = getDisplay().xDisplay;
+			int xWindow = OS.XtWindow (parent.handle);
+			int ptrGrabResult = OS.XGrabPointer (
+				xDisplay,
+				xWindow,
+				1,
+				OS.None,
+				OS.GrabModeAsync,
+				OS.GrabModeAsync,
+				OS.None,
+				cursor,
+				OS.CurrentTime);
+
+			/* The event must be sent because its doit flag is used. */
+			Event event = new Event ();
+			event.time = xEvent.time;
+			event.x = newX;  event.y = newY;
+			event.width = width;  event.height = height;
+			sendEvent (SWT.Selection, event);
+			if (ptrGrabResult == OS.GrabSuccess) OS.XUngrabPointer (xDisplay, OS.CurrentTime);
+					
+			/*
+			 * It is possible (but unlikely) that client code could have disposed
+			 * the widget in the selection event.  If this happens end the processing
+			 * of this message by returning.
+			 */
+			if (isDisposed ()) break;
+			if (event.doit) {
+				lastX = event.x;  lastY = event.y;
+				/* Adjust the pointer position */
+				int cursorX = newX;  int cursorY = newY;
+				if ((style & SWT.VERTICAL) != 0) {
+					cursorY += height / 2;
+				} else {
+					cursorX += width / 2;
+				}
+				OS.XWarpPointer (xDisplay, OS.None, xWindow, 0, 0, 0, 0, cursorX, cursorY);
+			}
+			break;
+	}
+
+	return result;
+}
+int XPointerMotion (int w, int client_data, int call_data, int continue_to_dispatch) {
+	int result = super.XPointerMotion (w, client_data, call_data, continue_to_dispatch);
+	if (result != 0) return result;
+	XMotionEvent xEvent = new XMotionEvent ();
+	OS.memmove (xEvent, call_data, XMotionEvent.sizeof);
+	if (!dragging || (xEvent.state & OS.Button1Mask) == 0) return result;
+	int [] argList1 = {OS.XmNx, 0, OS.XmNy, 0, OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
+	OS.XtGetValues (handle, argList1, argList1.length / 2);
+	int border = argList1 [9], x = ((short) argList1 [1]) - border, y = ((short) argList1 [3]) - border;
+	int width = argList1 [5] + (border * 2), height = argList1 [7] + (border * 2);
+	int [] argList2 = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
+	OS.XtGetValues (parent.handle, argList2, argList2.length / 2);
+	int parentBorder = argList2 [5];
+	int parentWidth = argList2 [1] + (parentBorder * 2);
+	int parentHeight = argList2 [3] + (parentBorder * 2);
+	int newX = lastX, newY = lastY;
+	if ((style & SWT.VERTICAL) != 0) {
+		newX = Math.min (Math.max (0, xEvent.x + x - startX - parentBorder), parentWidth - width);
+	} else {
+		newY = Math.min (Math.max (0, xEvent.y + y - startY - parentBorder), parentHeight - height);
+	}
+	if (newX == lastX && newY == lastY) return result;
+	drawBand (lastX, lastY, width, height);
+	/* The event must be sent because its doit flag is used. */
+	Event event = new Event ();
+	event.detail = SWT.DRAG;
+	event.time = xEvent.time;
+	event.x = newX;  event.y = newY;
+	event.width = width;  event.height = height;
+	/*
+	 * It is possible (but unlikely) that client code could have disposed
+	 * the widget in the selection event.  If this happens end the processing
+	 * of this message by returning.
+	 */
+	sendEvent (SWT.Selection, event);
+	if (isDisposed ()) return result;
+	if (event.doit) {
+		lastX = event.x;  lastY = event.y;
+		OS.XmUpdateDisplay (handle);
+		drawBand (lastX, lastY, width, height);
+	}
+	return result;
 }
 }

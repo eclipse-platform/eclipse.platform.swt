@@ -735,14 +735,14 @@ public int getTextLimit () {
 void hookEvents () {
 	super.hookEvents ();
 	int windowProc = getDisplay ().windowProc;
-	OS.XtAddCallback (handle, OS.XmNselectionCallback, windowProc, SWT.Selection);
+	OS.XtAddCallback (handle, OS.XmNselectionCallback, windowProc, SELECTION_CALLBACK);
 	int [] argList = {OS.XmNtextField, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
-	OS.XtAddCallback (argList[1], OS.XmNactivateCallback, windowProc, SWT.DefaultSelection);
-	OS.XtAddCallback (argList[1], OS.XmNvalueChangedCallback, windowProc, SWT.Modify);
-	OS.XtAddEventHandler (argList[1], OS.KeyPressMask, false, windowProc, SWT.KeyDown);
-	OS.XtAddEventHandler (argList[1], OS.KeyReleaseMask, false, windowProc, SWT.KeyUp);
-	OS.XtInsertEventHandler (argList[1], OS.FocusChangeMask, false, windowProc, SWT.FocusIn, OS.XtListTail);
+	OS.XtAddCallback (argList[1], OS.XmNactivateCallback, windowProc, ACTIVATE_CALLBACK);
+	OS.XtAddCallback (argList[1], OS.XmNvalueChangedCallback, windowProc, VALUE_CHANGED_CALLBACK);
+	OS.XtAddEventHandler (argList[1], OS.KeyPressMask, false, windowProc, KEY_PRESS);
+	OS.XtAddEventHandler (argList[1], OS.KeyReleaseMask, false, windowProc, KEY_RELEASE);
+	OS.XtInsertEventHandler (argList[1], OS.FocusChangeMask, false, windowProc, FOCUS_CHANGE, OS.XtListTail);
 }
 /**
  * Searches the receiver's list starting at the first item
@@ -839,19 +839,6 @@ public void paste () {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	OS.XmTextFieldPaste (argList [1]);
 	display.setWarnings (warnings);
-}
-int processSelection (int callData) {
-	/*
-	* Bug in MOTIF.  If items have been added and removed from a
-	* combo then users are able to select an empty drop-down item
-	* in the combo once and force a resulting callback.  In such
-	* cases we want to eat this callback so that listeners are not
-	* notified.
-	*/
-	if (ignoreSelect || getSelectionIndex() == -1)
-		return 0;
-
-	return super.processSelection(callData);
 }
 /**
  * Removes the item from the receiver's list at the given
@@ -1393,5 +1380,25 @@ String decodeString(String string) {
 		}
 	}
 	return string.substring(0, string.length() - 1);
+}
+int XmNactivateCallback (int w, int client_data, int call_data) {
+	postEvent (SWT.DefaultSelection);
+	return 0;
+}
+int XmNselectionCallback (int w, int client_data, int call_data) {
+	/*
+	* Bug in MOTIF.  If items have been added and removed from a
+	* combo then users are able to select an empty drop-down item
+	* in the combo once and force a resulting callback.  In such
+	* cases we want to eat this callback so that listeners are not
+	* notified.
+	*/
+	if (ignoreSelect || getSelectionIndex() == -1) return 0;
+	postEvent (SWT.Selection);
+	return 0;
+}
+int XmNvalueChangedCallback (int w, int client_data, int call_data) {
+	sendEvent (SWT.Modify);
+	return 0;
 }
 }

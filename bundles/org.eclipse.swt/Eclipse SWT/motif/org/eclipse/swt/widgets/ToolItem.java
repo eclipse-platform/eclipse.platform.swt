@@ -456,15 +456,24 @@ void hookEvents () {
 	super.hookEvents ();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	int windowProc = getDisplay ().windowProc;
-	OS.XtAddEventHandler (handle, OS.KeyPressMask, false, windowProc, SWT.KeyDown);
-	OS.XtAddEventHandler (handle, OS.KeyReleaseMask, false, windowProc, SWT.KeyUp);
-	OS.XtAddEventHandler (handle, OS.ButtonPressMask, false, windowProc, SWT.MouseDown);
-	OS.XtAddEventHandler (handle, OS.ButtonReleaseMask, false, windowProc, SWT.MouseUp);
-	OS.XtAddEventHandler (handle, OS.PointerMotionMask, false, windowProc, SWT.MouseMove);
-	OS.XtAddEventHandler (handle, OS.EnterWindowMask, false, windowProc, SWT.MouseEnter);
-	OS.XtAddEventHandler (handle, OS.LeaveWindowMask, false, windowProc, SWT.MouseExit);
-	OS.XtAddCallback (handle, OS.XmNexposeCallback, windowProc, SWT.Paint);
-	OS.XtInsertEventHandler (handle, OS.FocusChangeMask, false, windowProc, SWT.FocusIn, OS.XtListTail);
+	OS.XtAddEventHandler (handle, OS.KeyPressMask, false, windowProc, KEY_PRESS);
+	OS.XtAddEventHandler (handle, OS.KeyReleaseMask, false, windowProc, KEY_RELEASE);
+	OS.XtAddEventHandler (handle, OS.ButtonPressMask, false, windowProc, BUTTON_PRESS);
+	OS.XtAddEventHandler (handle, OS.ButtonReleaseMask, false, windowProc, BUTTON_RELEASE);
+	OS.XtAddEventHandler (handle, OS.PointerMotionMask, false, windowProc, POINTER_MOTION);
+	OS.XtAddEventHandler (handle, OS.EnterWindowMask, false, windowProc, ENTER_WINDOW);
+	OS.XtAddEventHandler (handle, OS.LeaveWindowMask, false, windowProc, LEAVE_WINDOW);
+	OS.XtAddCallback (handle, OS.XmNexposeCallback, windowProc, EXPOSURE);
+	OS.XtInsertEventHandler (handle, OS.FocusChangeMask, false, windowProc, SWT.FocusIn, FOCUS_CHANGE);
+}
+int hoverProc (int id) {
+	boolean showTip = toolTipText != null;
+	parent.processMouseHover (id, !showTip);
+	if (showTip) {
+		Display display = getDisplay ();
+		display.showToolTip (handle, toolTipText);
+	}
+	return 0;
 }
 /**
  * Returns <code>true</code> if the receiver is enabled and all
@@ -780,57 +789,24 @@ void setDrawPressed (boolean value) {
 	int [] argList = {OS.XmNshadowType, shadowType};
 	OS.XtSetValues(handle, argList, argList.length / 2);
 }
-int processKeyDown (int callData) {
-	XKeyEvent xEvent = new XKeyEvent ();
-	OS.memmove (xEvent, callData, XKeyEvent.sizeof);
-	int [] keysym = new int [1];
-	OS.XLookupString (xEvent, null, 0, keysym, null);
-	keysym [0] &= 0xFFFF;
-	switch (keysym [0]) {
-		case OS.XK_space:
-			click (false, xEvent);
-			break;
-		case OS.XK_KP_Enter:
-		case OS.XK_Return:
-			click (true, xEvent);
-			break;
-	}
-	/*
-	* Forward the key event to the parent.
-	* This is necessary so that key listeners
-	* in the parent will be called, despite the
-	* fact that the event did not really occur
-	* in X in the parent.  This is done to be
-	* compatible with Windows.
-	*/
-	xEvent.window = OS.XtWindow (parent.handle);
-//	OS.memmove (callData, xEvent, XKeyEvent.sizeof);
-	parent.processKeyDown (callData);
-	return 0;
+boolean translateAccelerator (int key, int keysym, XKeyEvent xEvent) {
+	return parent.translateAccelerator (key, keysym, xEvent);
 }
-int processKeyUp (int callData) {
-	XKeyEvent xEvent = new XKeyEvent ();
-	OS.memmove (xEvent, callData, XKeyEvent.sizeof);
-
-	/*
-	* Forward the key event to the parent.
-	* This is necessary so that key listeners
-	* in the parent will be called, despite the
-	* fact that the event did not really occur
-	* in X in the parent.  This is done to be
-	* compatible with Windows.
-	*/
-	xEvent.window = OS.XtWindow (parent.handle);
-//	OS.memmove (callData, xEvent, XKeyEvent.sizeof);
-	parent.processKeyUp (callData);
-	return 0;
+boolean translateMnemonic (int key, XKeyEvent xEvent) {
+	return parent.translateMnemonic (key, xEvent);
 }
-int processMouseDown (int callData) {
+boolean translateTraversal (int key, XKeyEvent xEvent) {
+	return parent.translateTraversal (key, xEvent);
+}
+void propagateWidget (boolean enabled) {
+	propagateHandle (enabled, handle);
+}
+int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatch) {
 	Display display = getDisplay ();
 //	Shell shell = parent.getShell ();
 	display.hideToolTip ();
 	XButtonEvent xEvent = new XButtonEvent ();
-	OS.memmove (xEvent, callData, XButtonEvent.sizeof);
+	OS.memmove (xEvent, call_data, XButtonEvent.sizeof);
 	if (xEvent.button == 1) {
 		if (!set && (style & SWT.RADIO) == 0) {
 			setDrawPressed (!set);
@@ -849,8 +825,8 @@ int processMouseDown (int callData) {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	xEvent.window = OS.XtWindow (parent.handle);
 	xEvent.x += argList [1];  xEvent.y += argList [3];
-	OS.memmove (callData, xEvent, XButtonEvent.sizeof);
-	parent.processMouseDown (callData);
+	OS.memmove (call_data, xEvent, XButtonEvent.sizeof);
+	parent.XButtonPress (w, client_data, call_data, continue_to_dispatch);
 
 	/*
 	* It is possible that the shell may be
@@ -863,82 +839,11 @@ int processMouseDown (int callData) {
 //	}
 	return 0;
 }
-int processMouseEnter (int callData) {
-	XCrossingEvent xEvent = new XCrossingEvent ();
-	OS.memmove (xEvent, callData, XCrossingEvent.sizeof);
-	if ((xEvent.state & OS.Button1Mask) != 0) {
-		setDrawPressed (!set);
-	} else {
-		if ((parent.style & SWT.FLAT) != 0) redraw ();
-	}
-	return 0;
-}
-int processMouseExit (int callData) {
-	Display display = getDisplay ();
-	display.removeMouseHoverTimeOut ();
-	display.hideToolTip ();
-	XCrossingEvent xEvent = new XCrossingEvent ();
-	OS.memmove (xEvent, callData, XCrossingEvent.sizeof);
-	if ((xEvent.state & OS.Button1Mask) != 0) {
-		setDrawPressed (set);
-	} else {
-		if ((parent.style & SWT.FLAT) != 0) redraw ();
-	}
-	return 0;
-}
-boolean translateAccelerator (int key, int keysym, XKeyEvent xEvent) {
-	return parent.translateAccelerator (key, keysym, xEvent);
-}
-boolean translateMnemonic (int key, XKeyEvent xEvent) {
-	return parent.translateMnemonic (key, xEvent);
-}
-boolean translateTraversal (int key, XKeyEvent xEvent) {
-	return parent.translateTraversal (key, xEvent);
-}
-int processMouseHover (int id) {
-	boolean showTip = toolTipText != null;
-	parent.processMouseHover (id, !showTip);
-	if (showTip) {
-		Display display = getDisplay ();
-		display.showToolTip (handle, toolTipText);
-	}
-	return 0;
-}
-int processMouseMove (int callData) {
-	Display display = getDisplay ();
-	display.addMouseHoverTimeOut (handle);
-
-	/*
-	* Forward the mouse event to the parent.
-	* This is necessary so that mouse listeners
-	* in the parent will be called, despite the
-	* fact that the event did not really occur
-	* in X in the parent.  This is done to be
-	* compatible with Windows.
-	*/
-	XButtonEvent xEvent = new XButtonEvent ();
-	OS.memmove (xEvent, callData, XButtonEvent.sizeof);
-	int [] argList = {OS.XmNx, 0, OS.XmNy, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	xEvent.window = OS.XtWindow (parent.handle);
-	xEvent.x += argList [1];  xEvent.y += argList [3];
-	/*
-	* This code is intentionally commented.
-	* Currently, the implementation of the
-	* mouse move code in the parent interferes
-	* with tool tips for tool items.
-	*/
-//	OS.memmove (callData, xEvent, XButtonEvent.sizeof);
-//	parent.processMouseMove (callData);
-	parent.sendMouseEvent (SWT.MouseMove, 0, xEvent);
-
-	return 0;
-}
-int processMouseUp (int callData) {
+int XButtonRelease (int w, int client_data, int call_data, int continue_to_dispatch) {
 	Display display = getDisplay ();
 	display.hideToolTip(); 
 	XButtonEvent xEvent = new XButtonEvent ();
-	OS.memmove (xEvent, callData, XButtonEvent.sizeof);
+	OS.memmove (xEvent, call_data, XButtonEvent.sizeof);
 	if (xEvent.button == 1) {
 		int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
 		OS.XtGetValues (handle, argList, argList.length / 2);
@@ -961,12 +866,22 @@ int processMouseUp (int callData) {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	xEvent.window = OS.XtWindow (parent.handle);
 	xEvent.x += argList [1];  xEvent.y += argList [3];
-	OS.memmove (callData, xEvent, XButtonEvent.sizeof);
-	parent.processMouseUp (callData);
+	OS.memmove (call_data, xEvent, XButtonEvent.sizeof);
+	parent.XButtonRelease (w, client_data, call_data, continue_to_dispatch);
 
 	return 0;
 }
-int processPaint (int callData) {
+int XEnterWindow (int w, int client_data, int call_data, int continue_to_dispatch) {
+	XCrossingEvent xEvent = new XCrossingEvent ();
+	OS.memmove (xEvent, call_data, XCrossingEvent.sizeof);
+	if ((xEvent.state & OS.Button1Mask) != 0) {
+		setDrawPressed (!set);
+	} else {
+		if ((parent.style & SWT.FLAT) != 0) redraw ();
+	}
+	return 0;
+}
+int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) {
 	if ((style & SWT.SEPARATOR) != 0) return 0;
 	int xDisplay = OS.XtDisplay (handle);
 	if (xDisplay == 0) return 0;
@@ -1010,7 +925,7 @@ int processPaint (int callData) {
 	GC gc = new GC (wrapper);
 	
 	XmAnyCallbackStruct cb = new XmAnyCallbackStruct ();
-	OS.memmove (cb, callData, XmAnyCallbackStruct.sizeof);
+	OS.memmove (cb, call_data, XmAnyCallbackStruct.sizeof);
 	if (cb.event != 0) {
 		XExposeEvent xEvent = new XExposeEvent ();
 		OS.memmove (xEvent, cb.event, XExposeEvent.sizeof);
@@ -1081,7 +996,7 @@ int processPaint (int callData) {
 	}
 	return 0;
 }
-int processSetFocus (int callData) {
+int XFocusChange (int w, int client_data, int call_data, int continue_to_dispatch) {
 	/*
 	* Forward the focus event to the parent.
 	* This is necessary so that focus listeners
@@ -1091,7 +1006,7 @@ int processSetFocus (int callData) {
 	* compatible with Windows.
 	*/
 	XFocusChangeEvent xEvent = new XFocusChangeEvent ();
-	OS.memmove (xEvent, callData, XFocusChangeEvent.sizeof);
+	OS.memmove (xEvent, call_data, XFocusChangeEvent.sizeof);
 	xEvent.window = OS.XtWindow (parent.handle);
 //	TEMPORARY CODE - need to fix the window field in xEvent
 //	OS.memmove (callData, xEvent, XFocusChangeEvent.sizeof);
@@ -1102,7 +1017,92 @@ int processSetFocus (int callData) {
 //	parent.processSetFocus (callData);
 	return 0;
 }
-void propagateWidget (boolean enabled) {
-	propagateHandle (enabled, handle);
+int XKeyPress (int w, int client_data, int call_data, int continue_to_dispatch) {
+	XKeyEvent xEvent = new XKeyEvent ();
+	OS.memmove (xEvent, call_data, XKeyEvent.sizeof);
+	int [] keysym = new int [1];
+	OS.XLookupString (xEvent, null, 0, keysym, null);
+	keysym [0] &= 0xFFFF;
+	switch (keysym [0]) {
+		case OS.XK_space:
+			click (false, xEvent);
+			break;
+		case OS.XK_KP_Enter:
+		case OS.XK_Return:
+			click (true, xEvent);
+			break;
+	}
+	/*
+	* Forward the key event to the parent.
+	* This is necessary so that key listeners
+	* in the parent will be called, despite the
+	* fact that the event did not really occur
+	* in X in the parent.  This is done to be
+	* compatible with Windows.
+	*/
+	xEvent.window = OS.XtWindow (parent.handle);
+//	OS.memmove (callData, xEvent, XKeyEvent.sizeof);
+	parent.XKeyPress (w, client_data, call_data, continue_to_dispatch);
+	return 0;
+}
+int XKeyRelease (int w, int client_data, int call_data, int continue_to_dispatch) {
+	XKeyEvent xEvent = new XKeyEvent ();
+	OS.memmove (xEvent, call_data, XKeyEvent.sizeof);
+
+	/*
+	* Forward the key event to the parent.
+	* This is necessary so that key listeners
+	* in the parent will be called, despite the
+	* fact that the event did not really occur
+	* in X in the parent.  This is done to be
+	* compatible with Windows.
+	*/
+	xEvent.window = OS.XtWindow (parent.handle);
+//	OS.memmove (callData, xEvent, XKeyEvent.sizeof);
+	parent.XKeyRelease (w, client_data, call_data, continue_to_dispatch);
+	return 0;
+}
+int XLeaveWindow (int w, int client_data, int call_data, int continue_to_dispatch) {
+	Display display = getDisplay ();
+	display.removeMouseHoverTimeOut ();
+	display.hideToolTip ();
+	XCrossingEvent xEvent = new XCrossingEvent ();
+	OS.memmove (xEvent, call_data, XCrossingEvent.sizeof);
+	if ((xEvent.state & OS.Button1Mask) != 0) {
+		setDrawPressed (set);
+	} else {
+		if ((parent.style & SWT.FLAT) != 0) redraw ();
+	}
+	return 0;
+}
+int XPointerMotion (int w, int client_data, int call_data, int continue_to_dispatch) {
+	Display display = getDisplay ();
+	display.addMouseHoverTimeOut (handle);
+
+	/*
+	* Forward the mouse event to the parent.
+	* This is necessary so that mouse listeners
+	* in the parent will be called, despite the
+	* fact that the event did not really occur
+	* in X in the parent.  This is done to be
+	* compatible with Windows.
+	*/
+	XButtonEvent xEvent = new XButtonEvent ();
+	OS.memmove (xEvent, call_data, XButtonEvent.sizeof);
+	int [] argList = {OS.XmNx, 0, OS.XmNy, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	xEvent.window = OS.XtWindow (parent.handle);
+	xEvent.x += argList [1];  xEvent.y += argList [3];
+	/*
+	* This code is intentionally commented.
+	* Currently, the implementation of the
+	* mouse move code in the parent interferes
+	* with tool tips for tool items.
+	*/
+//	OS.memmove (callData, xEvent, XButtonEvent.sizeof);
+//	parent.XPointerMotion (w, client_data, call_data, continue_to_dispatch);
+	parent.sendMouseEvent (SWT.MouseMove, 0, xEvent);
+
+	return 0;
 }
 }

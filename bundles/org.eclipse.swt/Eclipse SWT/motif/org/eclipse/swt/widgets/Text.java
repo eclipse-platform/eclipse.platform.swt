@@ -838,9 +838,9 @@ boolean getWrap () {
 void hookEvents () {
 	super.hookEvents ();
 	int windowProc = getDisplay ().windowProc;
-	OS.XtAddCallback (handle, OS.XmNactivateCallback, windowProc, SWT.DefaultSelection);
-	OS.XtAddCallback (handle, OS.XmNvalueChangedCallback, windowProc, SWT.Modify);
-	OS.XtAddCallback (handle, OS.XmNmodifyVerifyCallback, windowProc, SWT.Verify);
+	OS.XtAddCallback (handle, OS.XmNactivateCallback, windowProc, ACTIVATE_CALLBACK);
+	OS.XtAddCallback (handle, OS.XmNvalueChangedCallback, windowProc, VALUE_CHANGED_CALLBACK);
+	OS.XtAddCallback (handle, OS.XmNmodifyVerifyCallback, windowProc, MODIFY_VERIFY_CALLBACK);
 }
 int inputContext () {
 	/* Answer zero.  The text widget uses the default MOTIF input context.  */
@@ -936,63 +936,6 @@ int processIMEFocusIn () {
 	return 0;
 }
 int processIMEFocusOut () {
-	return 0;
-}
-int processModify (int callData) {
-	if (!ignoreChange) super.processModify (callData);
-	return 0;
-}
-int processVerify (int callData) {
-	super.processVerify (callData);
-	if (echoCharacter == '\0' && !hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
-	XmTextVerifyCallbackStruct textVerify = new XmTextVerifyCallbackStruct ();
-	OS.memmove (textVerify, callData, XmTextVerifyCallbackStruct.sizeof);
-	XmTextBlockRec textBlock = new XmTextBlockRec ();
-	OS.memmove (textBlock, textVerify.text, XmTextBlockRec.sizeof);
-	byte [] buffer = new byte [textBlock.length];
-	OS.memmove (buffer, textBlock.ptr, textBlock.length);
-	String codePage = getCodePage ();
-	String text = new String (Converter.mbcsToWcs (codePage, buffer));
-	String newText = text;
-	if (!ignoreChange) {
-		Event event = new Event ();
-		if (textVerify.event != 0) {
-			XKeyEvent xEvent = new XKeyEvent ();
-			OS.memmove (xEvent, textVerify.event, XKeyEvent.sizeof);
-			event.time = xEvent.time;
-			setKeyState (event, xEvent);
-		}
-		event.start = textVerify.startPos;
-		event.end = textVerify.endPos;
-		event.doit = textVerify.doit == 1;
-		event.text = text;
-		sendEvent (SWT.Verify, event);
-		newText = event.text;
-		textVerify.doit = (byte) ((event.doit && newText != null) ? 1 : 0);
-	}
-	if (newText != null) {
-		if (echoCharacter != '\0' && (textVerify.doit != 0)) {
-			String prefix = hiddenText.substring (0, textVerify.startPos);
-			String suffix = hiddenText.substring (textVerify.endPos, hiddenText.length ());
-			hiddenText = prefix + newText + suffix;
-			char [] charBuffer = new char [newText.length ()];
-			for (int i=0; i<charBuffer.length; i++) {
-				charBuffer [i] = echoCharacter;
-			}
-			newText = new String (charBuffer);
-		}
-		if (newText != text) {
-			byte [] buffer2 = Converter.wcsToMbcs (codePage, newText, true);
-			int length = buffer2.length;
-			int ptr = OS.XtMalloc (length);
-			OS.memmove (ptr, buffer2, length);
-			textBlock.ptr = ptr;
-			textBlock.length = buffer2.length - 1;
-			OS.memmove (textVerify.text, textBlock, XmTextBlockRec.sizeof);
-		}
-	}
-	OS.memmove (callData, textVerify, XmTextVerifyCallbackStruct.sizeof);
-	textVerify = null;
 	return 0;
 }
 void releaseWidget () {
@@ -1517,5 +1460,67 @@ int traversalCode (int key, XKeyEvent xEvent) {
 		}
 	}
 	return bits;
+}
+int XmNactivateCallback (int w, int client_data, int call_data) {
+	postEvent (SWT.DefaultSelection);
+	return 0;
+}
+int XmNmodifyVerifyCallback (int w, int client_data, int call_data) {
+	int result = super.XmNmodifyVerifyCallback (w, client_data, call_data);
+	if (result != 0) return result;
+	if (echoCharacter == '\0' && !hooks (SWT.Verify) && !filters (SWT.Verify)) return result;
+	XmTextVerifyCallbackStruct textVerify = new XmTextVerifyCallbackStruct ();
+	OS.memmove (textVerify, call_data, XmTextVerifyCallbackStruct.sizeof);
+	XmTextBlockRec textBlock = new XmTextBlockRec ();
+	OS.memmove (textBlock, textVerify.text, XmTextBlockRec.sizeof);
+	byte [] buffer = new byte [textBlock.length];
+	OS.memmove (buffer, textBlock.ptr, textBlock.length);
+	String codePage = getCodePage ();
+	String text = new String (Converter.mbcsToWcs (codePage, buffer));
+	String newText = text;
+	if (!ignoreChange) {
+		Event event = new Event ();
+		if (textVerify.event != 0) {
+			XKeyEvent xEvent = new XKeyEvent ();
+			OS.memmove (xEvent, textVerify.event, XKeyEvent.sizeof);
+			event.time = xEvent.time;
+			setKeyState (event, xEvent);
+		}
+		event.start = textVerify.startPos;
+		event.end = textVerify.endPos;
+		event.doit = textVerify.doit == 1;
+		event.text = text;
+		sendEvent (SWT.Verify, event);
+		newText = event.text;
+		textVerify.doit = (byte) ((event.doit && newText != null) ? 1 : 0);
+	}
+	if (newText != null) {
+		if (echoCharacter != '\0' && (textVerify.doit != 0)) {
+			String prefix = hiddenText.substring (0, textVerify.startPos);
+			String suffix = hiddenText.substring (textVerify.endPos, hiddenText.length ());
+			hiddenText = prefix + newText + suffix;
+			char [] charBuffer = new char [newText.length ()];
+			for (int i=0; i<charBuffer.length; i++) {
+				charBuffer [i] = echoCharacter;
+			}
+			newText = new String (charBuffer);
+		}
+		if (newText != text) {
+			byte [] buffer2 = Converter.wcsToMbcs (codePage, newText, true);
+			int length = buffer2.length;
+			int ptr = OS.XtMalloc (length);
+			OS.memmove (ptr, buffer2, length);
+			textBlock.ptr = ptr;
+			textBlock.length = buffer2.length - 1;
+			OS.memmove (textVerify.text, textBlock, XmTextBlockRec.sizeof);
+		}
+	}
+	OS.memmove (call_data, textVerify, XmTextVerifyCallbackStruct.sizeof);
+	textVerify = null;
+	return result;
+}
+int XmNvalueChangedCallback (int w, int client_data, int call_data) {
+	if (!ignoreChange) sendEvent (SWT.Modify);
+	return 0;
 }
 }

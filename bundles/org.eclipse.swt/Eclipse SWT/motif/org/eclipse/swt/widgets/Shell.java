@@ -848,16 +848,15 @@ public boolean getVisible () {
 void hookEvents () {
 	super.hookEvents ();
 	int windowProc = display.windowProc;
-//	OS.XtAddEventHandler (shellHandle, OS.StructureNotifyMask, false, windowProc, SWT.Resize);
-	OS.XtInsertEventHandler (shellHandle, OS.StructureNotifyMask, false, windowProc, SWT.Resize, OS.XtListTail);
+	OS.XtInsertEventHandler (shellHandle, OS.StructureNotifyMask, false, windowProc, STRUCTURE_NOTIFY, OS.XtListTail);
 	if (OS.XtIsSubclass (shellHandle, OS.OverrideShellWidgetClass ())) return;
-	OS.XtInsertEventHandler (shellHandle, OS.FocusChangeMask, false, windowProc, SWT.FocusIn, OS.XtListTail);
+	OS.XtInsertEventHandler (shellHandle, OS.FocusChangeMask, false, windowProc, FOCUS_CHANGE, OS.XtListTail);
 	int [] argList = {OS.XmNdeleteResponse, OS.XmDO_NOTHING};
 	OS.XtSetValues (shellHandle, argList, argList.length / 2);
 	int xDisplay = OS.XtDisplay (shellHandle);
 	if (xDisplay != 0) {
 		int atom = OS.XmInternAtom (xDisplay, WM_DELETE_WINDOW, false);	
-		OS.XmAddWMProtocolCallback (shellHandle, atom, windowProc, SWT.Dispose);
+		OS.XmAddWMProtocolCallback (shellHandle, atom, windowProc, DELETE_WINDOW);
 	}
 }
 int imeHeight () {
@@ -916,87 +915,6 @@ public void open () {
 	checkWidget();
 	setVisible (true);
 	if (!restoreFocus ()) traverseGroup (true);
-}
-int processDispose (int callData) {
-	closeWidget ();
-	return 0;
-}
-
-int processResize (int callData) {
-	XConfigureEvent xEvent = new XConfigureEvent ();
-	OS.memmove (xEvent, callData, XConfigureEvent.sizeof);
-	switch (xEvent.type) {
-		case OS.ReparentNotify: {
-			if (reparented) return 0;
-			reparented = true;
-			short [] root_x = new short [1], root_y = new short [1];
-			OS.XtTranslateCoords (shellHandle, (short) 0, (short) 0, root_x, root_y);
-			int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
-			OS.XtGetValues (shellHandle, argList, argList.length / 2);	
-			xEvent.x = root_x [0];  xEvent.y = root_y [0];
-			xEvent.width = argList [1];  xEvent.height = argList [3];
-			// FALL THROUGH
-		}
-		case OS.ConfigureNotify:
-			if (!reparented) return 0;
-			configured = false;
-			if (oldX != xEvent.x || oldY != xEvent.y) sendEvent (SWT.Move);
-			if (oldWidth != xEvent.width || oldHeight != xEvent.height) {
-				XAnyEvent event = new XAnyEvent ();
-				display.resizeWindow = xEvent.window;
-				display.resizeWidth = xEvent.width;
-				display.resizeHeight = xEvent.height;
-				display.resizeCount = 0;
-				int checkResizeProc = display.checkResizeProc;
-				OS.XCheckIfEvent (xEvent.display, event, checkResizeProc, 0);
-				if (display.resizeCount == 0) {
-					sendEvent (SWT.Resize);
-					if (layout != null) layout (false);
-				}
-			}
-			if (xEvent.x != 0) oldX = xEvent.x;
-			if (xEvent.y != 0) oldY = xEvent.y;
-			oldWidth = xEvent.width;
-			oldHeight = xEvent.height;
-			return 0;
-		case OS.UnmapNotify:
-			int [] argList = {OS.XmNmappedWhenManaged, 0};
-			OS.XtGetValues (shellHandle, argList, argList.length / 2);
-			if (argList [1] != 0) {
-				minimized = true;
-				sendEvent (SWT.Iconify);
-			}
-			return 0;
-		case OS.MapNotify:
-			if (minimized) {
-				minimized = false;
-				sendEvent (SWT.Deiconify);
-			}
-			return 0;
-	}
-	return 0;
-}
-
-int processSetFocus (int callData) {
-	XFocusChangeEvent xEvent = new XFocusChangeEvent ();
-	OS.memmove (xEvent, callData, XFocusChangeEvent.sizeof);
-	int handle = OS.XtWindowToWidget (xEvent.display, xEvent.window);
-	if (handle != shellHandle) return super.processSetFocus (callData);
-	if (xEvent.mode != OS.NotifyNormal) return 0;
-	switch (xEvent.detail) {
-		case OS.NotifyNonlinear:
-		case OS.NotifyNonlinearVirtual: {
-			switch (xEvent.type) {
-				case OS.FocusIn: 
-					postEvent (SWT.Activate);
-					break;
-				case OS.FocusOut:
-					postEvent (SWT.Deactivate);
-					break;
-			}
-		}
-	}
-	return 0;
 }
 void propagateWidget (boolean enabled) {
 	super.propagateWidget (enabled);
@@ -1376,6 +1294,85 @@ int trimWidth () {
 	}
 	if (hasBorder) {
 		return display.leftBorderWidth + display.rightBorderWidth;
+	}
+	return 0;
+}
+int WM_DELETE_WINDOW (int w, int client_data, int call_data) {
+	closeWidget ();
+	return 0;
+}
+int XFocusChange (int w, int client_data, int call_data, int continue_to_dispatch) {
+	XFocusChangeEvent xEvent = new XFocusChangeEvent ();
+	OS.memmove (xEvent, call_data, XFocusChangeEvent.sizeof);
+	int handle = OS.XtWindowToWidget (xEvent.display, xEvent.window);
+	if (handle != shellHandle) return super.XFocusChange (w, client_data, call_data, continue_to_dispatch);
+	if (xEvent.mode != OS.NotifyNormal) return 0;
+	switch (xEvent.detail) {
+		case OS.NotifyNonlinear:
+		case OS.NotifyNonlinearVirtual: {
+			switch (xEvent.type) {
+				case OS.FocusIn: 
+					postEvent (SWT.Activate);
+					break;
+				case OS.FocusOut:
+					postEvent (SWT.Deactivate);
+					break;
+			}
+		}
+	}
+	return 0;
+}
+int XStructureNotify (int w, int client_data, int call_data, int continue_to_dispatch) {
+	XConfigureEvent xEvent = new XConfigureEvent ();
+	OS.memmove (xEvent, call_data, XConfigureEvent.sizeof);
+	switch (xEvent.type) {
+		case OS.ReparentNotify: {
+			if (reparented) return 0;
+			reparented = true;
+			short [] root_x = new short [1], root_y = new short [1];
+			OS.XtTranslateCoords (shellHandle, (short) 0, (short) 0, root_x, root_y);
+			int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
+			OS.XtGetValues (shellHandle, argList, argList.length / 2);	
+			xEvent.x = root_x [0];  xEvent.y = root_y [0];
+			xEvent.width = argList [1];  xEvent.height = argList [3];
+			// FALL THROUGH
+		}
+		case OS.ConfigureNotify:
+			if (!reparented) return 0;
+			configured = false;
+			if (oldX != xEvent.x || oldY != xEvent.y) sendEvent (SWT.Move);
+			if (oldWidth != xEvent.width || oldHeight != xEvent.height) {
+				XAnyEvent event = new XAnyEvent ();
+				display.resizeWindow = xEvent.window;
+				display.resizeWidth = xEvent.width;
+				display.resizeHeight = xEvent.height;
+				display.resizeCount = 0;
+				int checkResizeProc = display.checkResizeProc;
+				OS.XCheckIfEvent (xEvent.display, event, checkResizeProc, 0);
+				if (display.resizeCount == 0) {
+					sendEvent (SWT.Resize);
+					if (layout != null) layout (false);
+				}
+			}
+			if (xEvent.x != 0) oldX = xEvent.x;
+			if (xEvent.y != 0) oldY = xEvent.y;
+			oldWidth = xEvent.width;
+			oldHeight = xEvent.height;
+			return 0;
+		case OS.UnmapNotify:
+			int [] argList = {OS.XmNmappedWhenManaged, 0};
+			OS.XtGetValues (shellHandle, argList, argList.length / 2);
+			if (argList [1] != 0) {
+				minimized = true;
+				sendEvent (SWT.Iconify);
+			}
+			return 0;
+		case OS.MapNotify:
+			if (minimized) {
+				minimized = false;
+				sendEvent (SWT.Deiconify);
+			}
+			return 0;
 	}
 	return 0;
 }

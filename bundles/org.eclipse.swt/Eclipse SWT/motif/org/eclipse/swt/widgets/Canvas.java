@@ -106,15 +106,6 @@ int processFocusOut () {
 	if (caret != null) caret.killFocus ();
 	return result;
 }
-
-int processPaint (int callData) {
-	boolean isFocus = caret != null && caret.isFocusCaret ();
-	if (isFocus) caret.killFocus ();
-	int result = super.processPaint (callData);
-	if (isFocus) caret.setFocus ();
-	return result;
-}
-
 void redrawWidget (int x, int y, int width, int height, boolean all) {
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
@@ -249,5 +240,12 @@ void updateCaret () {
 	int[] argList = {OS.XmNspotLocation, ptr};
 	OS.XmImSetValues (handle, argList, argList.length / 2);
 	if (ptr != 0) OS.XtFree (ptr);
+}
+int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) {
+	boolean isFocus = caret != null && caret.isFocusCaret ();
+	if (isFocus) caret.killFocus ();
+	int result = super.XExposure (w, client_data, call_data, continue_to_dispatch);
+	if (isFocus) caret.setFocus ();
+	return result;
 }
 }

@@ -270,39 +270,18 @@ public int getThumb () {
 void hookEvents () {
 	super.hookEvents ();
 	int windowProc = getDisplay ().windowProc;
-	OS.XtAddCallback (handle, OS.XmNvalueChangedCallback, windowProc, SWT.Selection);
-	OS.XtAddCallback (handle, OS.XmNdragCallback, windowProc, SWT.Selection);
-	OS.XtAddCallback (handle, OS.XmNtoBottomCallback, windowProc, SWT.Selection);
-	OS.XtAddCallback (handle, OS.XmNincrementCallback, windowProc, SWT.Selection);
-	OS.XtAddCallback (handle, OS.XmNdecrementCallback, windowProc, SWT.Selection);
-	OS.XtAddCallback (handle, OS.XmNpageIncrementCallback, windowProc, SWT.Selection);
-	OS.XtAddCallback (handle, OS.XmNpageDecrementCallback, windowProc, SWT.Selection);
-	OS.XtAddCallback (handle, OS.XmNtoTopCallback, windowProc, SWT.Selection);
+	OS.XtAddCallback (handle, OS.XmNvalueChangedCallback, windowProc, VALUE_CHANGED_CALLBACK);
+	OS.XtAddCallback (handle, OS.XmNdragCallback, windowProc, DRAG_CALLBACK);
+	OS.XtAddCallback (handle, OS.XmNtoBottomCallback, windowProc, TO_BOTTOM_CALLBACK);
+	OS.XtAddCallback (handle, OS.XmNtoTopCallback, windowProc, TO_TOP_CALLBACK);	
+	OS.XtAddCallback (handle, OS.XmNincrementCallback, windowProc, INCREMENT_CALLBACK);
+	OS.XtAddCallback (handle, OS.XmNdecrementCallback, windowProc, DECREMENT_CALLBACK);
+	OS.XtAddCallback (handle, OS.XmNpageIncrementCallback, windowProc, PAGE_INCREMENT_CALLBACK);
+	OS.XtAddCallback (handle, OS.XmNpageDecrementCallback, windowProc, PAGE_DECREMENT_CALLBACK);
 }
 void overrideTranslations () {
 	Display display = getDisplay ();
 	OS.XtOverrideTranslations (handle, display.tabTranslations);
-}
-int processSelection (int callData) {
-	XmAnyCallbackStruct struct = new XmAnyCallbackStruct ();
-	OS.memmove (struct, callData, XmAnyCallbackStruct.sizeof);
-	Event event = new Event ();
-	switch (struct.reason) {
-		case OS.XmCR_DRAG:		event.detail = SWT.DRAG;  break;
-		/*
-		* Do not set the detail field to SWT.DRAG 
-		* to indicate that the dragging has ended.
-		*/
-//		case OS.XmCR_VALUE_CHANGED:	break; 
-		case OS.XmCR_TO_TOP:		event.detail = SWT.HOME;  break;
-		case OS.XmCR_TO_BOTTOM:		event.detail = SWT.END;  break;
-		case OS.XmCR_DECREMENT:		event.detail = SWT.ARROW_UP;  break;
-		case OS.XmCR_INCREMENT:		event.detail = SWT.ARROW_DOWN;  break;
-		case OS.XmCR_PAGE_DECREMENT: 	event.detail = SWT.PAGE_UP;  break;
-		case OS.XmCR_PAGE_INCREMENT: 	event.detail = SWT.PAGE_DOWN;  break;
-	}
-	sendEvent (SWT.Selection, event);
-	return 0;
 }
 /**
  * Removes the listener from the collection of listeners who will
@@ -518,5 +497,51 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	display.setWarnings (false);
 	OS.XtSetValues (handle, argList, argList.length / 2);
 	display.setWarnings (warnings);
+}
+int XmNdecrementCallback (int w, int client_data, int call_data) {
+	Event event = new Event ();
+	event.detail = SWT.ARROW_UP;
+	sendEvent (SWT.Selection, event);
+	return 0;
+}
+int XmNdragCallback (int w, int client_data, int call_data) {
+	Event event = new Event ();
+	event.detail = SWT.DRAG;
+	sendEvent (SWT.Selection, event);
+	return 0;
+}
+int XmNincrementCallback (int w, int client_data, int call_data) {
+	Event event = new Event ();
+	event.detail = SWT.ARROW_DOWN;
+	sendEvent (SWT.Selection, event);
+	return 0;
+}
+int XmNpageDecrementCallback (int w, int client_data, int call_data) {
+	Event event = new Event ();
+	event.detail = SWT.PAGE_UP;
+	sendEvent (SWT.Selection, event);
+	return 0;
+}
+int XmNpageIncrementCallback (int w, int client_data, int call_data) {
+	Event event = new Event ();
+	event.detail = SWT.PAGE_DOWN;
+	sendEvent (SWT.Selection, event);
+	return 0;
+}
+int XmNtoBottomCallback (int w, int client_data, int call_data) {
+	Event event = new Event ();
+	event.detail = SWT.END;
+	sendEvent (SWT.Selection, event);
+	return 0;
+}
+int XmNtoTopCallback (int w, int client_data, int call_data) {
+	Event event = new Event ();
+	event.detail = SWT.HOME;
+	sendEvent (SWT.Selection, event);
+	return 0;
+}
+int XmNvalueChangedCallback (int w, int client_data, int call_data) {
+	sendEvent (SWT.Selection);
+	return 0;
 }
 }

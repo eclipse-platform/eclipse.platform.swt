@@ -409,17 +409,17 @@ public boolean getSelection () {
 void hookEvents () {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	int windowProc = getDisplay ().windowProc;
-	OS.XtAddCallback (handle, OS.XmNhelpCallback, windowProc, SWT.Help);
+	OS.XtAddCallback (handle, OS.XmNhelpCallback, windowProc, HELP_CALLBACK);
 	if ((style & SWT.CASCADE) != 0) {
-		OS.XtAddCallback (handle, OS.XmNactivateCallback, windowProc, SWT.Arm);
-		OS.XtAddCallback (handle, OS.XmNcascadingCallback, windowProc, SWT.Arm);
+		OS.XtAddCallback (handle, OS.XmNactivateCallback, windowProc, ACTIVATE_CALLBACK);
+		OS.XtAddCallback (handle, OS.XmNcascadingCallback, windowProc, CASCADING_CALLBACK);
 	} else {
-		OS.XtAddCallback (handle, OS.XmNarmCallback, windowProc, SWT.Arm);
-	}
-	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
-		OS.XtAddCallback (handle, OS.XmNvalueChangedCallback, windowProc, SWT.Selection);
-	} else {
-		OS.XtAddCallback (handle, OS.XmNactivateCallback, windowProc, SWT.Selection);
+		OS.XtAddCallback (handle, OS.XmNarmCallback, windowProc, ARM_CALLBACK);
+		if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
+			OS.XtAddCallback (handle, OS.XmNvalueChangedCallback, windowProc, VALUE_CHANGED_CALLBACK);
+		} else {
+			OS.XtAddCallback (handle, OS.XmNactivateCallback, windowProc, ACTIVATE_CALLBACK);
+		}
 	}
 }
 boolean isAccelActive () {
@@ -484,44 +484,6 @@ String keysymName (int keysym) {
 }
 void manageChildren () {
 	OS.XtManageChild (handle);
-}
-int processArm (int callData) {
-	postEvent (SWT.Arm);
-	return 0;
-}
-int processHelp (int callData) {
-	if (hooks (SWT.Help)) {
-		postEvent (SWT.Help);
-		return 0;
-	}
-	parent.sendHelpEvent (callData);
-	return 0;
-}
-int processSelection (int callData) {
-	if (!isEnabled ()) return 0;
-	XmAnyCallbackStruct struct = new XmAnyCallbackStruct ();
-	OS.memmove (struct, callData, XmAnyCallbackStruct.sizeof);
-	Event event = new Event ();
-	if (struct.event != 0) {
-		XButtonEvent xEvent = new XButtonEvent ();
-		OS.memmove (xEvent, struct.event, XAnyEvent.sizeof);
-		event.time = xEvent.time;
-		switch (xEvent.type) {
-			case OS.ButtonPress:
-			case OS.ButtonRelease:
-			case OS.KeyPress:
-			case OS.KeyRelease:
-				setInputState (event, xEvent);
-				break;
-		}
-	}
-	if ((style & SWT.RADIO) != 0) {
-		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
-			selectRadio ();
-		}
-	}
-	postEvent (SWT.Selection, event);
-	return 0;
 }
 void releaseChild () {
 	super.releaseChild ();
@@ -863,4 +825,71 @@ boolean translateAccelerator (int accel) {
 	}
 	return false;
 }
+int XmNactivateCallback (int w, int client_data, int call_data) {
+	if ((style & SWT.CASCADE) != 0) {
+		postEvent (SWT.Arm);
+	}
+	if (!isEnabled ()) return 0;
+	XmAnyCallbackStruct struct = new XmAnyCallbackStruct ();
+	OS.memmove (struct, call_data, XmAnyCallbackStruct.sizeof);
+	Event event = new Event ();
+	if (struct.event != 0) {
+		XButtonEvent xEvent = new XButtonEvent ();
+		OS.memmove (xEvent, struct.event, XAnyEvent.sizeof);
+		event.time = xEvent.time;
+		switch (xEvent.type) {
+			case OS.ButtonPress:
+			case OS.ButtonRelease:
+			case OS.KeyPress:
+			case OS.KeyRelease:
+				setInputState (event, xEvent);
+				break;
+		}
+	}
+	postEvent (SWT.Selection, event);
+	return 0;
+}
+int XmNarmCallback (int w, int client_data, int call_data) {
+	postEvent (SWT.Arm);
+	return 0;
+}
+int XmNcascadingCallback (int w, int client_data, int call_data) {
+	postEvent (SWT.Arm);
+	return 0;
+}
+int XmNhelpCallback (int w, int client_data, int call_data) {
+	if (hooks (SWT.Help)) {
+		postEvent (SWT.Help);
+		return 0;
+	}
+	parent.sendHelpEvent (call_data);
+	return 0;
+}
+int XmNvalueChangedCallback (int w, int client_data, int call_data) {
+	if (!isEnabled ()) return 0;
+	XmAnyCallbackStruct struct = new XmAnyCallbackStruct ();
+	OS.memmove (struct, call_data, XmAnyCallbackStruct.sizeof);
+	Event event = new Event ();
+	if (struct.event != 0) {
+		XButtonEvent xEvent = new XButtonEvent ();
+		OS.memmove (xEvent, struct.event, XAnyEvent.sizeof);
+		event.time = xEvent.time;
+		switch (xEvent.type) {
+			case OS.ButtonPress:
+			case OS.ButtonRelease:
+			case OS.KeyPress:
+			case OS.KeyRelease:
+				setInputState (event, xEvent);
+				break;
+		}
+	}
+	if ((style & SWT.RADIO) != 0) {
+		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
+			selectRadio ();
+		}
+	}
+	postEvent (SWT.Selection, event);
+	return 0;
+}
+
 }

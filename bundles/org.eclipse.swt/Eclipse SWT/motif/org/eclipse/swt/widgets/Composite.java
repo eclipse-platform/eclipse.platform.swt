@@ -331,7 +331,7 @@ void hookEvents () {
 	super.hookEvents ();
 	if ((state & CANVAS) != 0) {
 		int windowProc = getDisplay ().windowProc;
-		OS.XtInsertEventHandler (handle, 0, true, windowProc, -1, OS.XtListTail);
+		OS.XtInsertEventHandler (handle, 0, true, windowProc, NON_MASKABLE, OS.XtListTail);
 	}
 }
 
@@ -445,65 +445,6 @@ void moveBelow (int handle1, int handle2) {
 		handles [index2 + 1] = handle1;
 	}
 	OS.memmove (ptr, handles, count * 4);
-}
-int processNonMaskable (int callData) {
-	if ((state & CANVAS) != 0) {
-		XExposeEvent xEvent = new XExposeEvent ();
-		OS.memmove (xEvent, callData, XExposeEvent.sizeof);
-		if (xEvent.type == OS.GraphicsExpose) processPaint (callData);
-	}
-	return 0;
-}
-int processPaint (int callData) {
-	if ((state & CANVAS) == 0) {
-		return super.processPaint (callData);
-	}
-	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return 0;
-	if ((style & SWT.NO_MERGE_PAINTS) != 0) {
-		return super.processPaint (callData);
-	}
-	XExposeEvent xEvent = new XExposeEvent ();
-	OS.memmove (xEvent, callData, XExposeEvent.sizeof);
-	int exposeCount = xEvent.count;
-	if (exposeCount == 0) {
-		if (OS.XEventsQueued (xEvent.display, OS.QueuedAfterReading) != 0) {
-			XAnyEvent xAnyEvent = new XAnyEvent ();
-			Display display = getDisplay ();
-			display.exposeCount = display.lastExpose = 0;
-			int checkExposeProc = display.checkExposeProc;
-			OS.XCheckIfEvent (xEvent.display, xAnyEvent, checkExposeProc, xEvent.window);
-			exposeCount = display.exposeCount;
-			int lastExpose = display.lastExpose;
-			if (exposeCount != 0 && lastExpose != 0) {
-				XExposeEvent xExposeEvent = display.xExposeEvent;
-				OS.memmove (xExposeEvent, lastExpose, XExposeEvent.sizeof);
-				xExposeEvent.count = 0;
-				OS.memmove (lastExpose, xExposeEvent, XExposeEvent.sizeof);
-			}
-		}
-	}
-	if (exposeCount == 0 && damagedRegion == 0) {
-		return super.processPaint (callData);
-	}
-	if (damagedRegion == 0) damagedRegion = OS.XCreateRegion ();
-	OS.XtAddExposureToRegion (callData, damagedRegion);
-	if (exposeCount != 0) return 0;
-	int xDisplay = OS.XtDisplay (handle);
-	if (xDisplay == 0) return 0;
-	Event event = new Event ();
-	GC gc = event.gc = new GC (this);
-	Region region = Region.motif_new (damagedRegion);
-	gc.setClipping (region);
-	XRectangle rect = new XRectangle ();
-	OS.XClipBox (damagedRegion, rect);
-	event.x = rect.x;  event.y = rect.y;
-	event.width = rect.width;  event.height = rect.height;
-	sendEvent (SWT.Paint, event);
-	gc.dispose ();
-	event.gc = null;
-	OS.XDestroyRegion (damagedRegion);
-	damagedRegion = 0;
-	return 0;
 }
 void propagateChildren (boolean enabled) {
 	super.propagateChildren (enabled);
@@ -723,5 +664,64 @@ boolean translateMnemonic (char key, XKeyEvent xEvent) {
 		if (child.translateMnemonic (key, xEvent)) return true;
 	}
 	return false;
+}
+int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) {
+	if ((state & CANVAS) == 0) {
+		return super.XExposure (w, client_data, call_data, continue_to_dispatch);
+	}
+	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return 0;
+	if ((style & SWT.NO_MERGE_PAINTS) != 0) {
+		return super.XExposure (w, client_data, call_data, continue_to_dispatch);
+	}
+	XExposeEvent xEvent = new XExposeEvent ();
+	OS.memmove (xEvent, call_data, XExposeEvent.sizeof);
+	int exposeCount = xEvent.count;
+	if (exposeCount == 0) {
+		if (OS.XEventsQueued (xEvent.display, OS.QueuedAfterReading) != 0) {
+			XAnyEvent xAnyEvent = new XAnyEvent ();
+			Display display = getDisplay ();
+			display.exposeCount = display.lastExpose = 0;
+			int checkExposeProc = display.checkExposeProc;
+			OS.XCheckIfEvent (xEvent.display, xAnyEvent, checkExposeProc, xEvent.window);
+			exposeCount = display.exposeCount;
+			int lastExpose = display.lastExpose;
+			if (exposeCount != 0 && lastExpose != 0) {
+				XExposeEvent xExposeEvent = display.xExposeEvent;
+				OS.memmove (xExposeEvent, lastExpose, XExposeEvent.sizeof);
+				xExposeEvent.count = 0;
+				OS.memmove (lastExpose, xExposeEvent, XExposeEvent.sizeof);
+			}
+		}
+	}
+	if (exposeCount == 0 && damagedRegion == 0) {
+		return super.XExposure (w, client_data, call_data, continue_to_dispatch);
+	}
+	if (damagedRegion == 0) damagedRegion = OS.XCreateRegion ();
+	OS.XtAddExposureToRegion (call_data, damagedRegion);
+	if (exposeCount != 0) return 0;
+	int xDisplay = OS.XtDisplay (handle);
+	if (xDisplay == 0) return 0;
+	Event event = new Event ();
+	GC gc = event.gc = new GC (this);
+	Region region = Region.motif_new (damagedRegion);
+	gc.setClipping (region);
+	XRectangle rect = new XRectangle ();
+	OS.XClipBox (damagedRegion, rect);
+	event.x = rect.x;  event.y = rect.y;
+	event.width = rect.width;  event.height = rect.height;
+	sendEvent (SWT.Paint, event);
+	gc.dispose ();
+	event.gc = null;
+	OS.XDestroyRegion (damagedRegion);
+	damagedRegion = 0;
+	return 0;
+}
+int XNonMaskable (int w, int client_data, int call_data, int continue_to_dispatch) {
+	if ((state & CANVAS) != 0) {
+		XExposeEvent xEvent = new XExposeEvent ();
+		OS.memmove (xEvent, call_data, XExposeEvent.sizeof);
+		if (xEvent.type == OS.GraphicsExpose) return XExposure (w, client_data, call_data, continue_to_dispatch);
+	}
+	return 0;
 }
 }

@@ -209,8 +209,8 @@ public int getSelection () {
 void hookEvents () {
 	super.hookEvents ();
 	int windowProc = getDisplay ().windowProc;
-	OS.XtAddCallback (handle, OS.XmNvalueChangedCallback, windowProc, SWT.Selection);
-	OS.XtAddCallback (handle, OS.XmNdragCallback, windowProc, SWT.Selection);
+	OS.XtAddCallback (handle, OS.XmNvalueChangedCallback, windowProc, VALUE_CHANGED_CALLBACK);
+	OS.XtAddCallback (handle, OS.XmNdragCallback, windowProc, DRAG_CALLBACK);
 }
 void overrideTranslations () {
 	Display display = getDisplay ();
@@ -344,5 +344,13 @@ public void setSelection (int selection) {
 	display.setWarnings (false);
 	OS.XtSetValues (handle, argList, argList.length / 2);
 	display.setWarnings (warnings);
+}
+int XmNdragCallback (int w, int client_data, int call_data) {
+	postEvent (SWT.Selection);
+	return 0;
+}
+int XmNvalueChangedCallback (int w, int client_data, int call_data) {
+	postEvent (SWT.Selection);
+	return 0;
 }
 }

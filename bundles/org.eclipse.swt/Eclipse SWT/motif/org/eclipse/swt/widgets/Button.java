@@ -455,10 +455,13 @@ public String getText () {
 }
 void hookEvents () {
 	super.hookEvents ();
-	int callback = OS.XmNactivateCallback;
 	int windowProc = getDisplay ().windowProc;
-	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) != 0) callback = OS.XmNvalueChangedCallback;	
-	OS.XtAddCallback (handle, callback, windowProc, SWT.Selection);
+	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) != 0) {
+		OS.XtAddCallback (handle, OS.XmNvalueChangedCallback, windowProc, VALUE_CHANGED_CALLBACK);
+	} else {
+		OS.XtAddCallback (handle, OS.XmNactivateCallback, windowProc, ACTIVATE_CALLBACK);
+	}	
+	
 }
 boolean mnemonicHit (char key) {
 	if (!setFocus ()) return false;
@@ -487,15 +490,6 @@ int processFocusOut () {
 		menuShell ().setDefaultButton (null, false);
 	}
 	return 0;
-}
-int processSelection (int callData) {
-	if ((style & SWT.RADIO) != 0) {
-		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
-			selectRadio ();
-		}
-	}
-	updateShadows ();
-	return super.processSelection (callData);
 }
 void releaseWidget () {
 	super.releaseWidget ();
@@ -752,5 +746,19 @@ void updateShadows () {
 		int [] argList2 = {OS.XmNtopShadowColor, pixel};
 		OS.XtSetValues (handle, argList2, argList2.length / 2);
 	}
+}
+int XmNactivateCallback (int w, int client_data, int call_data) {
+	postEvent (SWT.Selection);
+	return 0;
+}
+int XmNvalueChangedCallback (int w, int client_data, int call_data) {
+	if ((style & SWT.RADIO) != 0) {
+		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
+			selectRadio ();
+		}
+	}
+	updateShadows ();
+	postEvent (SWT.Selection);
+	return 0;
 }
 }

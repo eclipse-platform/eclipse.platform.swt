@@ -66,6 +66,39 @@ public abstract class Widget {
 	
 	/* Global widget variables */
 	static final char Mnemonic = '&';
+	
+	/* Events and Callback constants */		
+	static final int BUTTON_PRESS = 1;
+	static final int BUTTON_RELEASE = 2;
+	static final int EXPOSURE = 3;
+	static final int ENTER_WINDOW = 4;
+	static final int FOCUS_CHANGE = 5;
+	static final int KEY_PRESS = 6;
+	static final int KEY_RELEASE = 7;
+	static final int LEAVE_WINDOW = 8;
+	static final int ACTIVATE_CALLBACK = 9;
+	static final int ARM_CALLBACK = 10;
+	static final int BROWSE_SELECTION_CALLBACK = 11;
+	static final int CASCADING_CALLBACK = 12;
+	static final int DECREMENT_CALLBACK = 13;
+	static final int DEFAULT_ACTION_CALLBACK = 14;
+	static final int DRAG_CALLBACK = 15;
+	static final int EXTENDED_SELECTION_CALLBACK = 16;
+	static final int HELP_CALLBACK = 17;
+	static final int INCREMENT_CALLBACK = 18;
+	static final int MODIFY_VERIFY_CALLBACK = 19;
+	static final int PAGE_DECREMENT_CALLBACK = 20;
+	static final int PAGE_INCREMENT_CALLBACK = 21;
+	static final int SELECTION_CALLBACK = 22;
+	static final int TO_BOTTOM_CALLBACK = 23;
+	static final int TO_TOP_CALLBACK = 24;
+	static final int VALUE_CHANGED_CALLBACK = 25;
+	static final int NON_MASKABLE  = 26;
+	static final int POINTER_MOTION  = 27;
+	static final int STRUCTURE_NOTIFY  = 28;
+	static final int MAP_CALLBACK = 29;
+	static final int UNMAP_CALLBACK  = 30;
+	static final int DELETE_WINDOW = 31;
 
 Widget () {
 	/* Do nothing */
@@ -501,98 +534,6 @@ void postEvent (int eventType) {
 void postEvent (int eventType, Event event) {
 	sendEvent (eventType, event, false);
 }
-int processArm (int callData) {
-	return 0;
-}
-int processDispose (int callData) {
-	return 0;
-}
-int processDefaultSelection (int callData) {
-	return 0;
-}
-int processEvent (int eventNumber, int callData) {
-	switch (eventNumber) {
-		case SWT.Arm:			return processArm (callData);
-		case SWT.Dispose:		return processDispose (callData);
-		case SWT.DefaultSelection:	return processDefaultSelection (callData);
-		case SWT.FocusIn:		return processSetFocus (callData);
-		case SWT.Help:			return processHelp (callData);
-		case SWT.Hide:			return processHide (callData);
-		case SWT.KeyDown:		return processKeyDown (callData);
-		case SWT.KeyUp:			return processKeyUp (callData);
-		case SWT.Modify:		return processModify (callData);
-		case SWT.MouseDown:		return processMouseDown (callData);
-		case SWT.MouseEnter:		return processMouseEnter (callData);
-		case SWT.MouseExit:		return processMouseExit (callData);
-		case SWT.MouseHover:		return processMouseHover (callData);
-		case SWT.MouseMove:		return processMouseMove (callData);
-		case SWT.MouseUp:		return processMouseUp (callData);
-		case SWT.Paint:			return processPaint (callData);
-		case SWT.Resize:		return processResize (callData);
-		case SWT.Show:			return processShow (callData);
-		case SWT.Selection:		return processSelection (callData);
-		case SWT.Verify:		return processVerify (callData);
-		case -1:			return processNonMaskable (callData);
-	}
-	return 0;
-}
-int processHelp (int callData) {
-	return 0;
-}
-int processHide (int callData) {
-	return 0;
-}
-int processKeyDown (int callData) {
-	return 0;
-}
-int processKeyUp (int callData) {
-	return 0;
-}
-int processModify (int callData) {
-	return 0;
-}
-int processMouseDown (int callData) {
-	return 0;
-}
-int processMouseEnter (int callData) {
-	return 0;
-}
-int processMouseExit (int callData) {
-	return 0;
-}
-int processMouseHover (int id) {
-	return 0;
-}
-int processMouseMove (int callData) {
-	return 0;
-}
-int processMouseUp (int callData) {
-	return 0;
-}
-int processNonMaskable (int callData) {
-	return 0;
-}
-int processPaint (int callData) {
-	return 0;
-}
-int processResize (int callData) {
-	return 0;
-}
-int processSelection (int callData) {
-	return 0;
-}
-int processSetFocus (int callData) {
-	return 0;
-}
-int processShow (int callData) {
-	return 0;
-}
-int processTimer (int id) {
-	return 0;
-}
-int processVerify (int callData) {
-	return 0;
-}
 void propagateHandle (boolean enabled, int widgetHandle) {
 	int xDisplay = OS.XtDisplay (widgetHandle);
 	if (xDisplay == 0) return;
@@ -1027,6 +968,141 @@ int wcsToMbcs (char ch, String codePage) {
 	if (buffer.length == 2) {
 		return (char) (((buffer [0] & 0xFF) << 8) | (buffer [1] & 0xFF));
 	}
+	return 0;
+}
+int hoverProc (int widget) {
+	return 0;
+}
+int processTimer (int id) {
+	return 0;
+}
+int windowProc (int w, int client_data, int call_data, int continue_to_dispatch) {
+	switch (client_data) {
+		case BUTTON_PRESS:					return XButtonPress (w, client_data, call_data, continue_to_dispatch);	
+		case BUTTON_RELEASE:				return XButtonRelease (w, client_data, call_data, continue_to_dispatch);
+		case ENTER_WINDOW:					return XEnterWindow (w, client_data, call_data, continue_to_dispatch);
+		case EXPOSURE:						return XExposure (w, client_data, call_data, continue_to_dispatch);
+		case FOCUS_CHANGE:					return XFocusChange (w, client_data, call_data, continue_to_dispatch);
+		case KEY_PRESS:					return XKeyPress (w, client_data, call_data, continue_to_dispatch);
+		case KEY_RELEASE:					return XKeyRelease (w, client_data, call_data, continue_to_dispatch);
+		case LEAVE_WINDOW:					return XLeaveWindow (w, client_data, call_data, continue_to_dispatch);
+		case ACTIVATE_CALLBACK:			return XmNactivateCallback (w, client_data, call_data);
+		case ARM_CALLBACK:					return XmNarmCallback (w, client_data, call_data);
+		case BROWSE_SELECTION_CALLBACK:	return XmNbrowseSelectionCallback (w, client_data, call_data);
+		case CASCADING_CALLBACK:			return XmNcascadingCallback (w, client_data, call_data);
+		case DECREMENT_CALLBACK:			return XmNdecrementCallback (w, client_data, call_data);
+		case DEFAULT_ACTION_CALLBACK:		return XmNdefaultActionCallback (w, client_data, call_data);
+		case DRAG_CALLBACK:				return XmNdragCallback (w, client_data, call_data);
+		case EXTENDED_SELECTION_CALLBACK:	return XmNextendedSelectionCallback (w, client_data, call_data);
+		case HELP_CALLBACK:				return XmNhelpCallback (w, client_data, call_data);
+		case INCREMENT_CALLBACK:			return XmNincrementCallback (w, client_data, call_data);
+		case MODIFY_VERIFY_CALLBACK:		return XmNmodifyVerifyCallback (w, client_data, call_data);
+		case PAGE_DECREMENT_CALLBACK:		return XmNpageDecrementCallback (w, client_data, call_data);
+		case PAGE_INCREMENT_CALLBACK:		return XmNpageIncrementCallback (w, client_data, call_data);
+		case SELECTION_CALLBACK:			return XmNselectionCallback (w, client_data, call_data);
+		case TO_BOTTOM_CALLBACK:			return XmNtoBottomCallback (w, client_data, call_data);
+		case TO_TOP_CALLBACK:				return XmNtoTopCallback (w, client_data, call_data);
+		case VALUE_CHANGED_CALLBACK:		return XmNvalueChangedCallback (w, client_data, call_data);
+		case NON_MASKABLE:					return XNonMaskable (w, client_data, call_data, continue_to_dispatch);
+		case POINTER_MOTION :				return XPointerMotion (w, client_data, call_data, continue_to_dispatch);
+		case STRUCTURE_NOTIFY:				return XStructureNotify (w, client_data, call_data, continue_to_dispatch);
+		case MAP_CALLBACK:					return XmNmapCallback (w, client_data, call_data);
+		case UNMAP_CALLBACK:				return XmNunmapCallback (w, client_data, call_data);
+		case DELETE_WINDOW:				return WM_DELETE_WINDOW (w, client_data, call_data);
+	}
+	return 0;
+}
+int WM_DELETE_WINDOW (int w, int client_data, int call_data) {
+	return 0;
+}
+int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatch) {
+	return 0;
+}
+int XButtonRelease (int w, int client_data, int call_data, int continue_to_dispatch) {
+	return 0;
+}
+int XEnterWindow (int w, int client_data, int call_data, int continue_to_dispatch) {
+	return 0;
+}
+int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) {
+	return 0;
+}
+int XFocusChange (int w, int client_data, int call_data, int continue_to_dispatch) {
+	return 0;
+}
+int XKeyPress (int w, int client_data, int call_data, int continue_to_dispatch) {
+	return 0;
+}
+int XKeyRelease (int w, int client_data, int call_data, int continue_to_dispatch) {
+	return 0;
+}
+int XLeaveWindow (int w, int client_data, int call_data, int continue_to_dispatch) {
+	return 0;
+}
+int XPointerMotion (int w, int client_data, int call_data, int continue_to_dispatch) {
+	return 0;
+}
+int XmNactivateCallback (int w, int client_data, int call_data) {
+	return 0;
+}
+int XmNarmCallback (int w, int client_data, int call_data) {
+	return 0;
+}
+int XmNbrowseSelectionCallback (int w, int client_data, int call_data) {
+	return 0;
+}
+int XmNcascadingCallback (int w, int client_data, int call_data) {
+	return 0;
+}
+int XmNdecrementCallback (int w, int client_data, int call_data) {
+	return 0;
+}
+int XmNdefaultActionCallback (int w, int client_data, int call_data) {
+	return 0;
+}
+int XmNdragCallback (int w, int client_data, int call_data) {
+	return 0;
+}
+int XmNextendedSelectionCallback (int w, int client_data, int call_data) {
+	return 0;
+}
+int XmNhelpCallback (int w, int client_data, int call_data) {
+	return 0;
+}
+int XmNincrementCallback (int w, int client_data, int call_data) {
+	return 0;
+}
+int XmNmapCallback (int w, int client_data, int call_data) {
+	return 0;
+}
+int XmNmodifyVerifyCallback (int w, int client_data, int call_data) {
+	return 0;
+}
+int XmNpageDecrementCallback (int w, int client_data, int call_data) {
+	return 0;
+}
+int XmNpageIncrementCallback (int w, int client_data, int call_data) {
+	return 0;
+}
+int XmNselectionCallback (int w, int client_data, int call_data) {
+	return 0;
+}
+int XmNtoBottomCallback (int w, int client_data, int call_data) {
+	return 0;
+}
+int XmNtoTopCallback (int w, int client_data, int call_data) {
+	return 0;
+}
+int XmNunmapCallback (int w, int client_data, int call_data) {
+	return 0;
+}
+int XmNvalueChangedCallback (int w, int client_data, int call_data) {
+	return 0;
+}
+int XNonMaskable (int w, int client_data, int call_data, int continue_to_dispatch) {
+	return 0;
+}
+int XStructureNotify (int w, int client_data, int call_data, int continue_to_dispatch) {
 	return 0;
 }
 }

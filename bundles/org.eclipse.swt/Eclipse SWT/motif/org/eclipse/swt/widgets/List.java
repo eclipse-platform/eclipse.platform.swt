@@ -686,9 +686,9 @@ public int getTopIndex () {
 void hookEvents () {
 	super.hookEvents ();
 	int windowProc = getDisplay ().windowProc;
-	OS.XtAddCallback (handle, OS.XmNbrowseSelectionCallback, windowProc, SWT.Selection);
-	OS.XtAddCallback (handle, OS.XmNextendedSelectionCallback, windowProc, SWT.Selection);
-	OS.XtAddCallback (handle, OS.XmNdefaultActionCallback, windowProc, SWT.DefaultSelection);
+	OS.XtAddCallback (handle, OS.XmNbrowseSelectionCallback, windowProc, BROWSE_SELECTION_CALLBACK);
+	OS.XtAddCallback (handle, OS.XmNextendedSelectionCallback, windowProc, EXTENDED_SELECTION_CALLBACK);
+	OS.XtAddCallback (handle, OS.XmNdefaultActionCallback, windowProc, DEFAULT_ACTION_CALLBACK);
 }
 /**
  * Gets the index of an item.
@@ -1504,5 +1504,17 @@ int topHandle () {
 	* the top handle of the list.
 	*/
 	return formHandle;
+}
+int XmNbrowseSelectionCallback (int w, int client_data, int call_data) {
+	postEvent (SWT.Selection);
+	return 0;
+}
+int XmNdefaultActionCallback (int w, int client_data, int call_data) {
+	postEvent (SWT.DefaultSelection);
+	return 0;
+}
+int XmNextendedSelectionCallback (int w, int client_data, int call_data) {
+	postEvent (SWT.Selection);
+	return 0;
 }
 }

@@ -966,16 +966,16 @@ boolean hasFocus () {
 }
 void hookEvents () {
 	int windowProc = getDisplay ().windowProc;
-	OS.XtAddEventHandler (handle, OS.KeyPressMask, false, windowProc, SWT.KeyDown);
-	OS.XtAddEventHandler (handle, OS.KeyReleaseMask, false, windowProc, SWT.KeyUp);
-	OS.XtAddEventHandler (handle, OS.ButtonPressMask, false, windowProc, SWT.MouseDown);
-	OS.XtAddEventHandler (handle, OS.ButtonReleaseMask, false, windowProc, SWT.MouseUp);
-	OS.XtAddEventHandler (handle, OS.PointerMotionMask, false, windowProc, SWT.MouseMove);
-	OS.XtAddEventHandler (handle, OS.EnterWindowMask, false, windowProc, SWT.MouseEnter);
-	OS.XtAddEventHandler (handle, OS.LeaveWindowMask, false, windowProc, SWT.MouseExit);
-	OS.XtInsertEventHandler (handle, OS.ExposureMask, false, windowProc, SWT.Paint, OS.XtListTail);
-	OS.XtInsertEventHandler (handle, OS.FocusChangeMask, false, windowProc, SWT.FocusIn, OS.XtListTail);
-	OS.XtAddCallback (handle, OS.XmNhelpCallback, windowProc, SWT.Help);
+	OS.XtAddEventHandler (handle, OS.KeyPressMask, false, windowProc, KEY_PRESS);
+	OS.XtAddEventHandler (handle, OS.KeyReleaseMask, false, windowProc, KEY_RELEASE);
+	OS.XtAddEventHandler (handle, OS.ButtonPressMask, false, windowProc, BUTTON_PRESS);
+	OS.XtAddEventHandler (handle, OS.ButtonReleaseMask, false, windowProc, BUTTON_RELEASE);
+	OS.XtAddEventHandler (handle, OS.PointerMotionMask, false, windowProc, POINTER_MOTION);
+	OS.XtAddEventHandler (handle, OS.EnterWindowMask, false, windowProc, ENTER_WINDOW);
+	OS.XtAddEventHandler (handle, OS.LeaveWindowMask, false, windowProc, LEAVE_WINDOW);
+	OS.XtInsertEventHandler (handle, OS.ExposureMask, false, windowProc, EXPOSURE, OS.XtListTail);
+	OS.XtInsertEventHandler (handle, OS.FocusChangeMask, false, windowProc, FOCUS_CHANGE, OS.XtListTail);
+	OS.XtAddCallback (handle, OS.XmNhelpCallback, windowProc, HELP_CALLBACK);
 }
 /**	 
  * Invokes platform specific functionality to allocate a new GC handle.
@@ -1290,10 +1290,6 @@ public void pack (boolean changed) {
 	checkWidget();
 	setSize (computeSize (SWT.DEFAULT, SWT.DEFAULT, changed));
 }
-int processDefaultSelection (int callData) {
-	postEvent (SWT.DefaultSelection);
-	return 0;
-}
 int processFocusIn () {
 	sendEvent (SWT.FocusIn);
 	// widget could be disposed at this point
@@ -1311,10 +1307,6 @@ int processFocusOut () {
 		if (handle == 0) return 0;
 	}
 	processIMEFocusOut ();
-	return 0;
-}
-int processHelp (int callData) {
-	sendHelpEvent (callData);
 	return 0;
 }
 int processIMEFocusIn () {
@@ -1335,7 +1327,7 @@ int processIMEFocusIn () {
 		OS.XmNspotLocation, ptr,
 		OS.XmNfontList, font.handle,
 	};
-	OS.XmImSetValues(handle, argList, argList.length / 2);
+	OS.XmImSetValues (handle, argList, argList.length / 2);
 	OS.XmImSetFocusValues (handle, null, 0);
 
 	if (ptr != 0) OS.XtFree (ptr);
@@ -1346,90 +1338,7 @@ int processIMEFocusOut () {
 	OS.XmImUnsetFocus (handle);
 	return 0;
 }
-int processKeyDown (int callData) {
-	XKeyEvent xEvent = new XKeyEvent ();
-	OS.memmove (xEvent, callData, XKeyEvent.sizeof);
-	if (xEvent.keycode != 0) {
-		sendKeyEvent (SWT.KeyDown, xEvent);
-	} else {
-		sendIMEKeyEvent (SWT.KeyDown, xEvent);
-	}
-	return 0;
-}
-int processKeyUp (int callData) {
-	XKeyEvent xEvent = new XKeyEvent ();
-	OS.memmove (xEvent, callData, XKeyEvent.sizeof);
-	if (menu != null && xEvent.state == OS.ShiftMask) {
-		byte [] buffer = new byte [1];
-		int [] keysym = new int [1];	
-		OS.XLookupString (xEvent, buffer, buffer.length, keysym, null);
-		if (keysym [0] == OS.XK_F10) {
-			menu.setVisible (true);
-			return 0;
-		}
-	}
-	sendKeyEvent (SWT.KeyUp, xEvent);
-	return 0;
-}
-int processModify (int callData) {
-	sendEvent (SWT.Modify);
-	return 0;
-}
-int processMouseDown (int callData) {
-	Display display = getDisplay ();
-	Shell shell = getShell ();
-	display.hideToolTip ();
-	XButtonEvent xEvent = new XButtonEvent ();
-	OS.memmove (xEvent, callData, XButtonEvent.sizeof);
-	sendMouseEvent (SWT.MouseDown, xEvent.button, xEvent);
-	if (xEvent.button == 2 && hooks (SWT.DragDetect)) {
-		postEvent (SWT.DragDetect);
-	}
-	if (xEvent.button == 3 && menu != null) {
-		setFocus ();
-//		menu.setLocation (xEvent.x_root, xEvent.y_root);
-		menu.setVisible (true);
-	}
-	int clickTime = display.getDoubleClickTime ();
-	int lastTime = display.lastTime, eventTime = xEvent.time;
-	int lastButton = display.lastButton, eventButton = xEvent.button;
-	if (lastButton == eventButton && lastTime != 0 && Math.abs (lastTime - eventTime) <= clickTime) {
-		sendMouseEvent (SWT.MouseDoubleClick, eventButton, xEvent);
-	}
-	display.lastTime = eventTime == 0 ? 1 : eventTime;
-	display.lastButton = eventButton;
-	
-	/*
-	* It is possible that the shell may be
-	* disposed at this point.  If this happens
-	* don't send the activate and deactivate
-	* events.
-	*/	
-	if (!shell.isDisposed ()) {
-		shell.setActiveControl (this);
-	}
-	return 0;
-}
-int processMouseEnter (int callData) {
-	XCrossingEvent xEvent = new XCrossingEvent ();
-	OS.memmove (xEvent, callData, XCrossingEvent.sizeof);
-	if (xEvent.mode != OS.NotifyNormal) return 0;
-	if (xEvent.subwindow != 0) return 0;
-	sendMouseEvent (SWT.MouseEnter, 0, xEvent);
-	return 0;
-}
-int processMouseExit (int callData) {
-	Display display = getDisplay ();
-	display.removeMouseHoverTimeOut ();
-	display.hideToolTip ();
-	XCrossingEvent xEvent = new XCrossingEvent ();
-	OS.memmove (xEvent, callData, XCrossingEvent.sizeof);
-	if (xEvent.mode != OS.NotifyNormal) return 0;
-	if (xEvent.subwindow != 0) return 0;
-	sendMouseEvent (SWT.MouseExit, 0, xEvent);
-	return 0;
-}
-int processMouseHover (int id) {
+int hoverProc (int id) {
 	return processMouseHover (id, true);
 }
 int processMouseHover (int id, boolean showTip) {
@@ -1438,115 +1347,6 @@ int processMouseHover (int id, boolean showTip) {
 	sendMouseEvent (SWT.MouseHover, 0);
 	return 0;
 }
-int processMouseMove (int callData) {
-	Display display = getDisplay ();
-	display.addMouseHoverTimeOut (handle);
-	XMotionEvent xEvent = new XMotionEvent ();
-	OS.memmove (xEvent, callData, XMotionEvent.sizeof);
-	sendMouseEvent (SWT.MouseMove, 0, xEvent);
-	return 0;
-}
-int processMouseUp (int callData) {
-	Display display = getDisplay ();
-	display.hideToolTip ();
-	XButtonEvent xEvent = new XButtonEvent ();
-	OS.memmove (xEvent, callData, XButtonEvent.sizeof);
-	sendMouseEvent (SWT.MouseUp, xEvent.button, xEvent);
-	return 0;
-}
-int processPaint (int callData) {
-	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return 0;
-	XExposeEvent xEvent = new XExposeEvent ();
-	OS.memmove (xEvent, callData, XExposeEvent.sizeof);
-	int xDisplay = OS.XtDisplay (handle);
-	if (xDisplay == 0) return 0;
-	Event event = new Event ();
-	event.count = xEvent.count;
-	event.x = xEvent.x;  event.y = xEvent.y;
-	event.width = xEvent.width;  event.height = xEvent.height;
-	GC gc = event.gc = new GC (this);
-	gc.setClipping (event.x, event.y, event.width, event.height);
-	sendEvent (SWT.Paint, event);
-	if (!gc.isDisposed ()) gc.dispose ();
-	event.gc = null;
-	return 0;
-}
-int processSelection (int callData) {
-	postEvent (SWT.Selection);
-	return 0;
-}
-int processSetFocus (int callData) {
-
-	/* Get the focus change event */
-	XFocusChangeEvent xEvent = new XFocusChangeEvent ();
-	OS.memmove (xEvent, callData, XFocusChangeEvent.sizeof);
-
-	/* Ignore focus changes caused by grabbing and ungrabing */
-	if (xEvent.mode != OS.NotifyNormal) return 0;
-
-	/* Only process focus callbacks between windows */
-	if (xEvent.detail != OS.NotifyAncestor &&
-		xEvent.detail != OS.NotifyInferior &&
-		xEvent.detail != OS.NotifyNonlinear) return 0;
-
-	/*
-	* Ignore focus change events when the window getting or losing
-	* focus is a menu.  Because XmGetFocusWidget() does not answer
-	* the menu shell (it answers the menu parent), it is necessary
-	* to use XGetInputFocus() to get the real X focus window.
-	*/
-	int xDisplay = xEvent.display;
-	if (xDisplay == 0) return 0;
-	int [] unused = new int [1], xWindow = new int [1];
-	OS.XGetInputFocus (xDisplay, xWindow, unused);
-	if (xWindow [0] != 0) {
-		int widget = OS.XtWindowToWidget (xDisplay, xWindow [0]);
-		if (widget != 0 && OS.XtClass (widget) == OS.XmMenuShellWidgetClass ()) return 0;
-	}
-	
-	/* Process the focus change for the widget */
-	switch (xEvent.type) {
-		case OS.FocusIn: {
-			Shell shell = getShell ();
-			processFocusIn ();
-			// widget could be disposed at this point
-			
-			/*
-			* It is possible that the shell may be
-			* disposed at this point.  If this happens
-			* don't send the activate and deactivate
-			* events.
-			*/	
-			if (!shell.isDisposed ()) {
-				shell.setActiveControl (this);
-			}
-			break;
-		}
-		case OS.FocusOut: {
-			Shell shell = getShell ();
-			Display display = getDisplay ();
-			
-			processFocusOut ();
-			// widget could be disposed at this point
-			
-			/*
-			* It is possible that the shell may be
-			* disposed at this point.  If this happens
-			* don't send the activate and deactivate
-			* events.
-			*/
-			if (!shell.isDisposed ()) {
-				Control control = display.getFocusControl ();
-				if (control == null || shell != control.getShell () ) {
-					shell.setActiveControl (null);
-				}
-			}
-			break;
-		}
-	}
-	return 0;
-}
-
 void propagateChildren (boolean enabled) {
 	propagateWidget (enabled);
 }
@@ -2817,5 +2617,192 @@ public void update () {
 	while (OS.XCheckWindowEvent (display, window, OS.ExposureMask, event)) {
 		OS.XtDispatchEvent (event);
 	}
+}
+int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatch) {
+	Display display = getDisplay ();
+	Shell shell = getShell ();
+	display.hideToolTip ();
+	XButtonEvent xEvent = new XButtonEvent ();
+	OS.memmove (xEvent, call_data, XButtonEvent.sizeof);
+	sendMouseEvent (SWT.MouseDown, xEvent.button, xEvent);
+	if (xEvent.button == 2 && hooks (SWT.DragDetect)) {
+		postEvent (SWT.DragDetect);
+	}
+	if (xEvent.button == 3 && menu != null) {
+		setFocus ();
+//		menu.setLocation (xEvent.x_root, xEvent.y_root);
+		menu.setVisible (true);
+	}
+	int clickTime = display.getDoubleClickTime ();
+	int lastTime = display.lastTime, eventTime = xEvent.time;
+	int lastButton = display.lastButton, eventButton = xEvent.button;
+	if (lastButton == eventButton && lastTime != 0 && Math.abs (lastTime - eventTime) <= clickTime) {
+		sendMouseEvent (SWT.MouseDoubleClick, eventButton, xEvent);
+	}
+	display.lastTime = eventTime == 0 ? 1 : eventTime;
+	display.lastButton = eventButton;
+	
+	/*
+	* It is possible that the shell may be
+	* disposed at this point.  If this happens
+	* don't send the activate and deactivate
+	* events.
+	*/	
+	if (!shell.isDisposed ()) {
+		shell.setActiveControl (this);
+	}
+	return 0;
+}
+int XButtonRelease (int w, int client_data, int call_data, int continue_to_dispatch) {
+	Display display = getDisplay ();
+	display.hideToolTip ();
+	XButtonEvent xEvent = new XButtonEvent ();
+	OS.memmove (xEvent, call_data, XButtonEvent.sizeof);
+	sendMouseEvent (SWT.MouseUp, xEvent.button, xEvent);
+	return 0;
+}
+int XEnterWindow (int w, int client_data, int call_data, int continue_to_dispatch) {
+	XCrossingEvent xEvent = new XCrossingEvent ();
+	OS.memmove (xEvent, call_data, XCrossingEvent.sizeof);
+	if (xEvent.mode != OS.NotifyNormal) return 0;
+	if (xEvent.subwindow != 0) return 0;
+	sendMouseEvent (SWT.MouseEnter, 0, xEvent);
+	return 0;
+}
+int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) {
+	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return 0;
+	XExposeEvent xEvent = new XExposeEvent ();
+	OS.memmove (xEvent, call_data, XExposeEvent.sizeof);
+	int xDisplay = OS.XtDisplay (handle);
+	if (xDisplay == 0) return 0;
+	Event event = new Event ();
+	event.count = xEvent.count;
+	event.x = xEvent.x;  event.y = xEvent.y;
+	event.width = xEvent.width;  event.height = xEvent.height;
+	GC gc = event.gc = new GC (this);
+	gc.setClipping (event.x, event.y, event.width, event.height);
+	sendEvent (SWT.Paint, event);
+	if (!gc.isDisposed ()) gc.dispose ();
+	event.gc = null;
+	return 0;
+}
+int XFocusChange (int w, int client_data, int call_data, int continue_to_dispatch) {
+
+	/* Get the focus change event */
+	XFocusChangeEvent xEvent = new XFocusChangeEvent ();
+	OS.memmove (xEvent, call_data, XFocusChangeEvent.sizeof);
+
+	/* Ignore focus changes caused by grabbing and ungrabing */
+	if (xEvent.mode != OS.NotifyNormal) return 0;
+
+	/* Only process focus callbacks between windows */
+	if (xEvent.detail != OS.NotifyAncestor &&
+		xEvent.detail != OS.NotifyInferior &&
+		xEvent.detail != OS.NotifyNonlinear) return 0;
+
+	/*
+	* Ignore focus change events when the window getting or losing
+	* focus is a menu.  Because XmGetFocusWidget() does not answer
+	* the menu shell (it answers the menu parent), it is necessary
+	* to use XGetInputFocus() to get the real X focus window.
+	*/
+	int xDisplay = xEvent.display;
+	if (xDisplay == 0) return 0;
+	int [] unused = new int [1], xWindow = new int [1];
+	OS.XGetInputFocus (xDisplay, xWindow, unused);
+	if (xWindow [0] != 0) {
+		int widget = OS.XtWindowToWidget (xDisplay, xWindow [0]);
+		if (widget != 0 && OS.XtClass (widget) == OS.XmMenuShellWidgetClass ()) return 0;
+	}
+	
+	/* Process the focus change for the widget */
+	switch (xEvent.type) {
+		case OS.FocusIn: {
+			Shell shell = getShell ();
+			processFocusIn ();
+			// widget could be disposed at this point
+			
+			/*
+			* It is possible that the shell may be
+			* disposed at this point.  If this happens
+			* don't send the activate and deactivate
+			* events.
+			*/	
+			if (!shell.isDisposed ()) {
+				shell.setActiveControl (this);
+			}
+			break;
+		}
+		case OS.FocusOut: {
+			Shell shell = getShell ();
+			Display display = getDisplay ();
+			
+			processFocusOut ();
+			// widget could be disposed at this point
+			
+			/*
+			* It is possible that the shell may be
+			* disposed at this point.  If this happens
+			* don't send the activate and deactivate
+			* events.
+			*/
+			if (!shell.isDisposed ()) {
+				Control control = display.getFocusControl ();
+				if (control == null || shell != control.getShell () ) {
+					shell.setActiveControl (null);
+				}
+			}
+			break;
+		}
+	}
+	return 0;
+}
+int XKeyPress (int w, int client_data, int call_data, int continue_to_dispatch) {
+	XKeyEvent xEvent = new XKeyEvent ();
+	OS.memmove (xEvent, call_data, XKeyEvent.sizeof);
+	if (xEvent.keycode != 0) {
+		sendKeyEvent (SWT.KeyDown, xEvent);
+	} else {
+		sendIMEKeyEvent (SWT.KeyDown, xEvent);
+	}
+	return 0;
+}
+int XKeyRelease (int w, int client_data, int call_data, int continue_to_dispatch) {
+	XKeyEvent xEvent = new XKeyEvent ();
+	OS.memmove (xEvent, call_data, XKeyEvent.sizeof);
+	if (menu != null && xEvent.state == OS.ShiftMask) {
+		byte [] buffer = new byte [1];
+		int [] keysym = new int [1];	
+		OS.XLookupString (xEvent, buffer, buffer.length, keysym, null);
+		if (keysym [0] == OS.XK_F10) {
+			menu.setVisible (true);
+			return 0;
+		}
+	}
+	sendKeyEvent (SWT.KeyUp, xEvent);
+	return 0;
+}
+int XLeaveWindow (int w, int client_data, int call_data, int continue_to_dispatch) {
+	Display display = getDisplay ();
+	display.removeMouseHoverTimeOut ();
+	display.hideToolTip ();
+	XCrossingEvent xEvent = new XCrossingEvent ();
+	OS.memmove (xEvent, call_data, XCrossingEvent.sizeof);
+	if (xEvent.mode != OS.NotifyNormal) return 0;
+	if (xEvent.subwindow != 0) return 0;
+	sendMouseEvent (SWT.MouseExit, 0, xEvent);
+	return 0;
+}
+int XmNhelpCallback (int w, int client_data, int call_data) {
+	sendHelpEvent (call_data);
+	return 0;
+}
+int XPointerMotion (int w, int client_data, int call_data, int continue_to_dispatch) {
+	Display display = getDisplay ();
+	display.addMouseHoverTimeOut (handle);
+	XMotionEvent xEvent = new XMotionEvent ();
+	OS.memmove (xEvent, call_data, XMotionEvent.sizeof);
+	sendMouseEvent (SWT.MouseMove, 0, xEvent);
+	return 0;
 }
 }

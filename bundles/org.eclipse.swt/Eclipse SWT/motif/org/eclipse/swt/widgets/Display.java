@@ -1547,7 +1547,7 @@ int mouseHoverProc (int handle, int id) {
 	mouseHoverID = mouseHoverHandle = 0;
 	Widget widget = WidgetTable.get (handle);
 	if (widget == null) return 0;
-	return widget.processMouseHover(id);
+	return widget.hoverProc (id);
 }
 void postEvent (Event event) {
 	/*
@@ -2255,10 +2255,10 @@ int windowTimerProc (int handle, int id) {
 	if (widget == null) return 0;
 	return widget.processTimer (id);
 }
-int windowProc (int handle, int clientData, int callData, int unused) {
-	Widget widget = WidgetTable.get (handle);
+int windowProc (int w, int client_data, int call_data, int continue_to_dispatch) {
+	Widget widget = WidgetTable.get (w);
 	if (widget == null) return 0;
-	return widget.processEvent (clientData, callData);
+	return widget.windowProc (w, client_data, call_data, continue_to_dispatch);
 }
 String wrapText (String text, Font font, int width) {
 	String Lf = "\n";
