@@ -30,7 +30,7 @@ class DialogTab extends Tab {
 	Button modelessButton, primaryModalButton, applicationModalButton, systemModalButton;
 	Button saveButton, openButton;
 
-	static String [] FilterExtensions	= {".txt.", ".bat", ".doc"};
+	static String [] FilterExtensions	= {"*.txt", "*.bat", "*.doc"};
 	static String [] FilterNames		= {ControlExample.getResourceString("FilterName_0"),
 										   ControlExample.getResourceString("FilterName_1"),
 										   ControlExample.getResourceString("FilterName_2")};
