@@ -1312,7 +1312,8 @@ boolean mnemonicMatch (char key) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
- * @see #moveBelow
+ * @see Control#moveBelow
+ * @see Composite#getChildren
  */
 public void moveAbove (Control control) {
 	checkWidget ();
@@ -1355,7 +1356,8 @@ public void moveAbove (Control control) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
- * @see #moveAbove
+ * @see Control#moveAbove
+ * @see Composite#getChildren
  */
 public void moveBelow (Control control) {
 	checkWidget ();
