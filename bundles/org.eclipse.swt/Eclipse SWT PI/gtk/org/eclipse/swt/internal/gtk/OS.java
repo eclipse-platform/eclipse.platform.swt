@@ -371,6 +371,8 @@ public class OS {
 	public static final byte[] xalign = signal("xalign");
 	public static final byte[] default_border = signal("default_border");
 	
+	public static final int GTK_VERSION = OS.gtk_major_version () * 100 + OS.gtk_minor_version () * 10 + OS.gtk_micro_version();
+	
 protected static byte [] signal (String name) {
 	int length = name.length ();
 	char [] chars = new char [length];
@@ -380,6 +382,10 @@ protected static byte [] signal (String name) {
 		buffer [i] = (byte) chars [i];
 	}
 	return buffer;
+}
+
+public static int VERSION (int major, int minor, int micro) {
+	return major * 100 + minor + 10 + micro;
 }
 
 /** 64 bit */

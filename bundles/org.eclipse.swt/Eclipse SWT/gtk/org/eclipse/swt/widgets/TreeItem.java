@@ -248,7 +248,7 @@ public Rectangle getBounds () {
 	OS.gtk_widget_style_get (parentHandle, OS.horizontal_separator, buffer, 0);
 	int horizontalSeparator = buffer[0];
 	rect.x += horizontalSeparator;
-	if (OS.gtk_major_version () * 100 + OS.gtk_minor_version () * 10 + OS.gtk_micro_version () >= 213) {
+	if (OS.GTK_VERSION >= OS.VERSION (2, 1, 3)) {
 		OS.gtk_tree_view_column_cell_get_position (column, parent.textRenderer, x, null);
 		rect.x += x [0];
 	} else {

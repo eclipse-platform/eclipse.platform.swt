@@ -430,7 +430,7 @@ void createHandle (int index) {
 		/*
 		* Feature in GTK. The fixed_height_mode property only exists in GTK 2.3.2 and greater.
 		*/
-		if (OS.gtk_major_version () * 100 + OS.gtk_minor_version () * 10 + OS.gtk_micro_version () >= 232) {
+		if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2)) {
 			OS.g_object_set (handle, OS.fixed_height_mode, true, 0);
 		}
 	}
@@ -511,7 +511,7 @@ void createRenderers (int /*long*/ columnHandle, int modelIndex, boolean check, 
 		/*
 		* Feature in GTK. The inconsistent property only exists in GTK 2.2.x.
 		*/
-		if (OS.gtk_major_version () > 2 || (OS.gtk_major_version () == 2 && OS.gtk_minor_version () >= 2)) {
+		if (OS.GTK_VERSION >= OS.VERSION (2, 2, 0)) {
 			OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, "inconsistent", GRAYED_COLUMN);
 		}
 	}

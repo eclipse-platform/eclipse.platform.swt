@@ -223,7 +223,7 @@ void createHandle (int index) {
 		/*
 		* Feature in GTK. The inconsistent property only exists in GTK 2.2.x.
 		*/
-		if (OS.gtk_major_version () > 2 || (OS.gtk_major_version () == 2 && OS.gtk_minor_version () >= 2)) {
+		if (OS.GTK_VERSION >= OS.VERSION (2, 2, 0)) {
 			OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, "inconsistent", GRAYED_COLUMN);
 		}
 	}
@@ -245,7 +245,14 @@ void createHandle (int index) {
 	OS.gtk_tree_view_column_pack_start (columnHandle, textRenderer, true);
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "text", TEXT_COLUMN);
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "foreground-gdk", FOREGROUND_COLUMN);
-	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "background-gdk", BACKGROUND_COLUMN);
+	
+	/*
+	 * Bug on GTK. Gtk renders the background of the text renderer on top of the pixbuf renderer.
+	 * This only happens in version 2.2.1 and earlier. The fix is not to set the background.   
+	 */
+	if (OS.GTK_VERSION > OS.VERSION (2, 2, 1)) {
+		OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "background-gdk", BACKGROUND_COLUMN);
+	}
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "font-desc", FONT_COLUMN);
 	OS.gtk_container_add (fixedHandle, scrolledHandle);
 	OS.gtk_container_add (scrolledHandle, handle);
@@ -327,7 +334,7 @@ void destroyItem (TreeItem item) {
 	* than 2.0.6.  The fix is to collapse the tree item being destroyed
 	* when it is a root, before it is destroyed.
 	*/
-	if (OS.gtk_major_version () == 2 && OS.gtk_minor_version () == 0 && OS.gtk_micro_version () < 6) {
+	if (OS.GTK_VERSION < OS.VERSION (2, 0, 6)) {
 		TreeItem [] roots = getItems (0);
 		for (int i = 0; i < roots.length; i++) {
 			if (item == roots [i]) {
@@ -354,7 +361,7 @@ void destroyWidget () {
 	* on versions earlier than 2.0.5.  The fix is to flush all outstanding events before
 	* destroying the widget.
 	*/
-	if (OS.gtk_major_version () == 2 && OS.gtk_minor_version () == 0 && OS.gtk_micro_version () < 5) {
+	if (OS.GTK_VERSION < OS.VERSION (2, 0, 5)) {
 		while (OS.gtk_events_pending () != 0) OS.gtk_main_iteration ();
 	}
 	super.destroyWidget ();
