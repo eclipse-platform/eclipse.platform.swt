@@ -697,6 +697,7 @@ public void test_postLorg_eclipse_swt_widgets_Event() {
 	final int MOUSEDOWN = 3;
 	final int MOUSEMOVE = 4;
 	final int CHARACTER = ' '; 	// space character works both in bidi language and western
+	final int KEYCODE = SWT.SHIFT;
 	
 	Display display = new Display();
 	try {
@@ -718,7 +719,7 @@ public void test_postLorg_eclipse_swt_widgets_Event() {
 			}
 			
 			public void keyReleased(KeyEvent e) {
-				if (e.keyCode == SWT.F5)
+				if (e.keyCode == KEYCODE)
 					verifiedEvent[KEYUP] = true;
 			}
 		});
@@ -762,7 +763,7 @@ public void test_postLorg_eclipse_swt_widgets_Event() {
 		assertFalse(display.post(event));
 
 		event.type = SWT.KeyDown;
-		event.keyCode = SWT.F5;
+		event.keyCode = KEYCODE;
 		shell.setFocus();
 		assertTrue(display.post(event));
 		event.type = SWT.KeyUp;
