@@ -157,6 +157,16 @@ static int checkStyle (int style) {
 void createWidget () {
 	increment = 1;
 	pageIncrement = 10;
+	/*
+	* Do not set the intial values of the maximum
+	* or the thumb.  These values normally default
+	* to 100 and 10 but may have been set already
+	* by the widget that owns the scroll bar.  For
+	* example, a scroll bar that is created for a
+	* list widget, setting these defaults would
+	* override the initial values provided by the
+	* list widget.
+	*/
 }
 
 void destroyWidget () {
