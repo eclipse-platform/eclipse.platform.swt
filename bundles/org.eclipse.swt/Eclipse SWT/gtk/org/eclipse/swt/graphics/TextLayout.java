@@ -398,7 +398,7 @@ int _getOffset (int offset, int movement, boolean forward) {
 	offset = translateOffset(offset);
 	PangoLogAttr logAttr = new PangoLogAttr();
 	offset += step;
-	if (segments != null) {
+	if (segments != null && segments.length > 2) {
 		for (int j = 0; j < segments.length; j++) {
 			if (translateOffset(segments[j]) - 1 == offset) {
 				offset += step;
@@ -411,7 +411,7 @@ int _getOffset (int offset, int movement, boolean forward) {
 		if (((movement & MOVEMENT_CLUSTER) != 0) && logAttr.is_cursor_position) break; 
 		if (((movement & MOVEMENT_WORD) != 0) && (logAttr.is_word_start || logAttr.is_sentence_end)) break;
 		offset += step;
-		if (segments != null) {
+		if (segments != null && segments.length > 2) {
 			for (int j = 0; j < segments.length; j++) {
 				if (translateOffset(segments[j]) - 1 == offset) {
 					offset += step;
