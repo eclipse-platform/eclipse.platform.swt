@@ -236,7 +236,7 @@ public int getBorderWidth () {
 
 public Rectangle getBounds () {
 	checkWidget();
-	Rect rect = getBounds (topHandle ());
+	Rect rect = getControlBounds (topHandle ());
 	return new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 }
 
@@ -270,7 +270,7 @@ public Object getLayoutData () {
 
 public Point getLocation () {
 	checkWidget();
-	Rect rect = getBounds (topHandle ());
+	Rect rect = getControlBounds (topHandle ());
 	return new Point (rect.left, rect.top);
 }
 
@@ -308,7 +308,7 @@ public Shell getShell () {
 
 public Point getSize () {
 	checkWidget();
-	Rect rect = getSize (topHandle ());
+	Rect rect = getControlSize (topHandle ());
 	return new Point (rect.right - rect.left, rect.bottom - rect.top);
 }
 
