@@ -1156,7 +1156,8 @@ int processModify (int callData) {
 	return 0;
 }
 int processMouseDown (int callData) {
-	getDisplay ().hideToolTip ();
+	Display display = getDisplay ();
+	display.hideToolTip ();
 	XButtonEvent xEvent = new XButtonEvent ();
 	OS.memmove (xEvent, callData, XButtonEvent.sizeof);
 	sendMouseEvent (SWT.MouseDown, xEvent.button, xEvent.state, xEvent);
@@ -1167,19 +1168,15 @@ int processMouseDown (int callData) {
 		OS.XmProcessTraversal (handle, OS.XmTRAVERSE_CURRENT);
 		menu.setVisible (true);
 	}
-	int xDisplay = OS.XtDisplay (handle);
-	if (xDisplay != 0) {
-		Display display = getDisplay ();
-		int clickTime = OS.XtGetMultiClickTime (xDisplay);
-		int lastTime = display.lastTime, eventTime = xEvent.time;
-		int lastButton = display.lastButton, eventButton = xEvent.button;
-		if (lastButton == eventButton && lastTime != 0 && Math.abs (lastTime - eventTime) <= clickTime) {
-			sendMouseEvent (SWT.MouseDoubleClick, eventButton, xEvent.state, xEvent);
-		}
-		if (eventTime == 0) eventTime = 1;
-		display.lastTime = eventTime;
-		display.lastButton = eventButton;
+	int clickTime = display.getDoubleClickTime ();
+	int lastTime = display.lastTime, eventTime = xEvent.time;
+	int lastButton = display.lastButton, eventButton = xEvent.button;
+	if (lastButton == eventButton && lastTime != 0 && Math.abs (lastTime - eventTime) <= clickTime) {
+		sendMouseEvent (SWT.MouseDoubleClick, eventButton, xEvent.state, xEvent);
 	}
+	if (eventTime == 0) eventTime = 1;
+	display.lastTime = eventTime;
+	display.lastButton = eventButton;
 	return 0;
 }
 int processMouseEnter (int callData) {
@@ -1194,8 +1191,10 @@ int processMouseEnter (int callData) {
 	return 0;
 }
 int processMouseMove (int callData) {
-	Display display = getDisplay ();
-	display.addMouseHoverTimeOut (handle);
+	if (toolTipText != null && toolTipText.length () != 0) {
+		Display display = getDisplay ();
+		display.addMouseHoverTimeOut (handle);
+	}
 	XMotionEvent xEvent = new XMotionEvent ();
 	OS.memmove (xEvent, callData, XMotionEvent.sizeof);
 	sendMouseEvent (SWT.MouseMove, 0, xEvent.state, xEvent);
@@ -1205,7 +1204,6 @@ int processMouseExit (int callData) {
 	Display display = getDisplay ();
 	display.removeMouseHoverTimeOut ();
 	display.hideToolTip ();
-	
 	XCrossingEvent xEvent = new XCrossingEvent ();
 	OS.memmove (xEvent, callData, XCrossingEvent.sizeof);
 	if (xEvent.mode != OS.NotifyNormal) return 0;
@@ -1216,8 +1214,18 @@ int processMouseExit (int callData) {
 	postEvent (SWT.MouseExit, event);
 	return 0;
 }
+int processMouseHover (int id) {
+	Display display = getDisplay ();
+	Event event = new Event ();
+	Point local = toControl (display.getCursorLocation ());
+	event.x = local.x; event.y = local.y;
+	postEvent (SWT.MouseHover, event);
+	display.showToolTip (handle, toolTipText);
+	return 0;
+}
 int processMouseUp (int callData) {
-	getDisplay ().hideToolTip ();
+	Display display = getDisplay ();
+	display.hideToolTip ();
 	XButtonEvent xEvent = new XButtonEvent ();
 	OS.memmove (xEvent, callData, XButtonEvent.sizeof);
 	sendMouseEvent (SWT.MouseUp, xEvent.button, xEvent.state, xEvent);
@@ -2560,14 +2568,5 @@ public void update () {
 	while (OS.XCheckWindowEvent (display, window, OS.ExposureMask, event)) {
 		OS.XtDispatchEvent (event);
 	}
-}
-int processMouseHover (int id) {
-	Display display = getDisplay();
-	Event event = new Event();
-	Point local = toControl(display.getCursorLocation());
-	event.x = local.x; event.y = local.y;
-	postEvent (SWT.MouseHover, event);
-	display.showToolTip(handle, toolTipText);
-	return 0;
 }
 }

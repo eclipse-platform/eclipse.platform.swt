@@ -651,7 +651,7 @@ void setDrawPressed (boolean value) {
 }
 int processMouseDown (int callData) {
 	Display display = getDisplay ();
-	display.hideToolTip();
+	display.hideToolTip ();
 	XButtonEvent xEvent = new XButtonEvent ();
 	OS.memmove (xEvent, callData, XButtonEvent.sizeof);
 	if (xEvent.button == 1) {
@@ -706,8 +706,10 @@ int processMouseHover (int id) {
 	return 0;
 }
 int processMouseMove (int callData) {
-	Display display = getDisplay ();
-	display.addMouseHoverTimeOut (handle);
+	if (toolTipText != null && toolTipText.length () != 0) {
+		Display display = getDisplay ();
+		display.addMouseHoverTimeOut (handle);
+	}
 
 	/*
 	* Forward the mouse event to the parent.
