@@ -980,6 +980,7 @@ public class OS {
 	public static final int TVM_GETITEMRECT = 0x1104;
 	public static final int TVM_GETNEXTITEM = 0x110a;
 	public static final int TVM_GETTEXTCOLOR = 0x1120;
+	public static final int TVM_GETTOOLTIPS = OS.TV_FIRST + 25;
 	public static final int TVM_GETVISIBLECOUNT = OS.TV_FIRST + 16;
 	public static final int TVM_HITTEST = 0x1111;
 	public static final int TVM_INSERTITEM = IsUnicode ? 0x1132 : 0x1100;

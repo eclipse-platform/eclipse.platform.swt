@@ -1088,13 +1088,18 @@ public void showSelection () {
 	if (hItem != 0) showItem (hItem);
 }
 
+String toolTipText (NMTTDISPINFO hdr) {
+	int hwndToolTip = OS.SendMessage (handle, OS.TVM_GETTOOLTIPS, 0, 0);
+	if (hwndToolTip == hdr.hwndFrom && toolTipText != null) return "";
+	return super.toolTipText (hdr);
+}
+
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.TVS_SHOWSELALWAYS;
 	bits |= OS.TVS_LINESATROOT | OS.TVS_HASLINES | OS.TVS_HASBUTTONS;
 	/*
 	* This code is intentionally commented.  In future,
-	* FULL_SELECTION may be implemented for trees and
-	* automatic tool tips turned off.
+	* FULL_SELECTION may be implemented for trees.
 	*/
 //	if ((style & SWT.FULL_SELECTION) != 0) {
 //		bits |= OS.TVS_FULLROWSELECT;

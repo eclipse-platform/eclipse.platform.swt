@@ -568,17 +568,14 @@ void setSelection (int index, boolean notify) {
 	}
 }
 
-int toolTipHandle () {
-	return OS.SendMessage (handle, OS.TCM_GETTOOLTIPS, 0, 0);
-}
-
 String toolTipText (NMTTDISPINFO hdr) {
 	if ((hdr.uFlags & OS.TTF_IDISHWND) != 0) {
 		return null;
 	}
 	int index = hdr.idFrom;
-	int hwndToolTip = toolTipHandle ();
+	int hwndToolTip = OS.SendMessage (handle, OS.TCM_GETTOOLTIPS, 0, 0);
 	if (hwndToolTip == hdr.hwndFrom) {
+		if (toolTipText != null) return "";
 		if (0 <= index && index < items.length) {
 			TabItem item = items [index];
 			if (item != null) return item.toolTipText;

@@ -606,36 +606,30 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 			* kind of message occurs by inlining the memory moves and
 			* the UNICODE conversion code.
 			*/
-			case OS.TTN_GETDISPINFOA: {
-				NMTTDISPINFO lpnmtdi = new NMTTDISPINFO ();
-				OS.MoveMemoryA (lpnmtdi, lParam, NMTTDISPINFO.sizeofA);
-				String string = toolTipText (lpnmtdi);
-				if (string != null && string.length () != 0) {
-					Shell shell = getShell ();
-					string = Display.withCrLf (string);
-					int length = string.length ();
-					char [] chars = new char [length];
-					string.getChars (0, length, chars, 0);
-					byte [] bytes = new byte [chars.length * 2 + 1];
-					OS.WideCharToMultiByte (OS.CP_ACP, 0, chars, chars.length, bytes, bytes.length, null, null);
-					shell.setToolTipText (lpnmtdi, bytes);
-					OS.MoveMemoryA (lParam, lpnmtdi, NMTTDISPINFO.sizeofA);
-					return LRESULT.ZERO;
-				}
-				break;
-			}
+			case OS.TTN_GETDISPINFOA:
 			case OS.TTN_GETDISPINFOW: {
 				NMTTDISPINFO lpnmtdi = new NMTTDISPINFO ();
-				OS.MoveMemoryW (lpnmtdi, lParam, NMTTDISPINFO.sizeofW);
+				if (hdr.code == OS.TTN_GETDISPINFOA) {
+					OS.MoveMemoryA (lpnmtdi, lParam, NMTTDISPINFO.sizeofA);
+				} else {
+					OS.MoveMemoryW (lpnmtdi, lParam, NMTTDISPINFO.sizeofW);
+				}
 				String string = toolTipText (lpnmtdi);
-				if (string != null && string.length () != 0) {
+				if (string != null) {
 					Shell shell = getShell ();
 					string = Display.withCrLf (string);
 					int length = string.length ();
-					char [] buffer = new char [length + 1];
-					string.getChars (0, length, buffer, 0);
-					shell.setToolTipText (lpnmtdi, buffer);
-					OS.MoveMemoryW (lParam, lpnmtdi, NMTTDISPINFO.sizeofW);
+					char [] chars = new char [length + 1];
+					string.getChars (0, length, chars, 0);	
+					if (hdr.code == OS.TTN_GETDISPINFOA) {
+						byte [] bytes = new byte [chars.length * 2];
+						OS.WideCharToMultiByte (OS.CP_ACP, 0, chars, chars.length, bytes, bytes.length, null, null);
+						shell.setToolTipText (lpnmtdi, bytes);
+						OS.MoveMemoryA (lParam, lpnmtdi, NMTTDISPINFO.sizeofA);
+					} else {
+						shell.setToolTipText (lpnmtdi, chars);
+						OS.MoveMemoryW (lParam, lpnmtdi, NMTTDISPINFO.sizeofW);
+					}
 					return LRESULT.ZERO;
 				}
 				break;
