@@ -205,7 +205,10 @@ void createScrolledHandle (int parentHandle) {
 	}
 	OS.gtk_widget_show (handle);
 	
-	//DOESN'T WORK RIGHT NOW
+	OS.GTK_WIDGET_UNSET_FLAGS (handle, OS.GTK_WIDGET_DOUBLE_BUFFERED);
+	if ((style & SWT.NO_BACKGROUND) != 0) {
+		setBackgroundPixmap ();
+	}
 	if ((style & SWT.NO_REDRAW_RESIZE) != 0) {
 		OS.gtk_widget_set_redraw_on_allocate (handle, false);
 	}
@@ -355,6 +358,47 @@ int processMouseUp (int callData, int arg1, int int2) {
 	return result;
 }
 
+int processPaint (int callData, int int1, int int2) {
+	if ((state & CANVAS) == 0) {
+		return super.processPaint (callData, int1, int2);
+	}
+	if ((style & SWT.NO_BACKGROUND) == 0) {
+		int window = paintWindow ();
+		int gc = OS.gdk_gc_new (window);
+		OS.gdk_gc_set_foreground (gc, getBackgroundColor ());
+		GdkEventExpose gdkEvent = new GdkEventExpose (callData);
+		int x = gdkEvent.x, y = gdkEvent.y;
+		int width = gdkEvent.width, height = gdkEvent.height;
+		OS.gdk_gc_set_clip_region (gc, gdkEvent.region);
+		OS.gdk_draw_rectangle (window, gc, 1, x, y, width, height);
+		OS.g_object_unref (gc);
+	}
+	if ((style & SWT.NO_MERGE_PAINTS) == 0) {
+		return super.processPaint (callData, int1, int2);
+	}
+	if (!hooks (SWT.Paint)) return 0;
+	GdkEventExpose gdkEvent = new GdkEventExpose (callData);
+	int [] rectangles = new int [1];
+	int [] n_rectangles = new int [1];
+	OS.gdk_region_get_rectangles (gdkEvent.region, rectangles, n_rectangles);
+	GdkRectangle rect = new GdkRectangle ();
+	for (int i=0; i<n_rectangles[0]; i++) {
+		Event event = new Event ();
+		OS.memmove (rect, rectangles [0] + i * GdkRectangle.sizeof, GdkRectangle.sizeof);
+		event.x = rect.x;
+		event.y = rect.y;
+		event.width = rect.width;
+		event.height = rect.height;
+		GC gc = event.gc = new GC (this);
+		gc.setClipping (event.x, event.y, event.width, event.height);
+		sendEvent (SWT.Paint, event);
+		gc.dispose ();
+		event.gc = null;
+	}
+	OS.g_free (rectangles [0]);
+	return 0;
+}
+
 int radioGroup() {
 	if (radioHandle == 0) {
 		radioHandle = OS.gtk_radio_button_new (0);
@@ -385,6 +429,19 @@ void releaseWidget () {
 	layout = null;
 }
 
+void setBackgroundPixmap () {
+	if ((style & SWT.NO_BACKGROUND) != 0) {
+		OS.gtk_widget_realize (handle);
+		int window = OS.GTK_WIDGET_WINDOW (handle);
+		OS.gdk_window_set_back_pixmap (window, 0, false);
+	}
+}
+
+void setBackgroundColor (GdkColor color) {
+	super.setBackgroundColor (color);
+	if ((state & CANVAS) != 0) setBackgroundPixmap ();
+}
+
 boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	boolean changed = super.setBounds (x, y, width, height, move, resize);
 	if (changed && resize && layout != null) layout.layout (this, false);
@@ -399,6 +456,16 @@ public boolean setFocus () {
 		if (child.getVisible () && child.setFocus ()) return true;
 	}
 	return super.setFocus ();
+}
+
+void setFontDescription (int font) {
+	super.setFontDescription (font);
+	if ((state & CANVAS) != 0) setBackgroundPixmap ();
+}
+
+void setForegroundColor (GdkColor color) {
+	super.setForegroundColor (color);
+	if ((state & CANVAS) != 0) setBackgroundPixmap ();
 }
 
 /**

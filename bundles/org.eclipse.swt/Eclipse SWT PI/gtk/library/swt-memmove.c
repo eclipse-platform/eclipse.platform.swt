@@ -290,3 +290,14 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__ILorg_eclip
 		getGtkTargetEntryFields(env, src, (GtkTargetEntry *)dest, &PGLOB(GtkTargetEntryFc));
 	}
 }
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclipse_swt_internal_gtk_GdkRectangle_2II
+  (JNIEnv *env, jclass that, jobject dest, jint src, jint size)
+{
+	DECL_GLOB(pGlob)
+	if (dest) {
+		cacheGdkRectangleFids(env, dest, &PGLOB(GdkRectangleFc));
+		setGdkRectangleFields(env, dest, (GdkRectangle *)src, &PGLOB(GdkRectangleFc));
+	}
+}
+

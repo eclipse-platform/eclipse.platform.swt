@@ -1162,7 +1162,7 @@ public void removeTraverseListener(TraverseListener listener) {
 public boolean forceFocus () {
 	checkWidget();
 	OS.gtk_widget_grab_focus (handle);
-	return true;
+	return hasFocus ();
 }
 
 /**
@@ -1697,7 +1697,8 @@ int processPaint (int callData, int int2, int int3) {
 	event.width = gdkEvent.width;
 	event.height = gdkEvent.height;
 	GC gc = event.gc = new GC (this);
-	OS.gdk_gc_set_clip_region (gc.handle, gdkEvent.region);
+	Region region = Region.gtk_new (gdkEvent.region);
+	gc.setClipping (region);
 	sendEvent (SWT.Paint, event);
 	gc.dispose ();
 	event.gc = null;

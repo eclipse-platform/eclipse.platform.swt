@@ -88,6 +88,18 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1region_1get_1cl
 	}
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1region_1get_1rectangles
+  (JNIEnv *env, jclass that, jint region, jintArray rectangles, jintArray n_rectangles)
+{
+	jint *rectangles1 = NULL;
+	jint *n_rectangles1 = NULL;
+	if (rectangles) rectangles1 = (*env)->GetIntArrayElements(env, rectangles, NULL);
+	if (n_rectangles) n_rectangles1 = (*env)->GetIntArrayElements(env, n_rectangles, NULL);
+	gdk_region_get_rectangles((GdkRegion*)region, (GdkRectangle**)rectangles1, (gint *)n_rectangles1);
+	if (rectangles) (*env)->ReleaseIntArrayElements(env, rectangles, rectangles1, 0);
+	if (n_rectangles) (*env)->ReleaseIntArrayElements(env, n_rectangles, n_rectangles1, 0);
+}
+
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1region_1empty
   (JNIEnv *env, jclass that, jint region)
 {
