@@ -136,7 +136,7 @@ void readNextChunk(PngChunkReader chunkReader) {
 	}
 }
 void unloadIntoByteStream(ImageData p1) {
-	SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
+	SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
 }
 boolean isFileFormat(LEDataInputStream stream) {
 	try {

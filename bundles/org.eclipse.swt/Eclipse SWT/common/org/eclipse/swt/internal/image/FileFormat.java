@@ -76,8 +76,8 @@ public static ImageData[] load(InputStream is, ImageLoader loader) {
 }
 
 public static void save(OutputStream os, int format, ImageLoader loader) {
-	if (format < 0 || format >= FORMATS.length) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	if (FORMATS[format] == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (format < 0 || format >= FORMATS.length) SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
+	if (FORMATS[format] == null) SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
 
 	/* We do not currently support writing multi-image files,
 	 * so we use the first image data in the loader's array. */
@@ -88,7 +88,7 @@ public static void save(OutputStream os, int format, ImageLoader loader) {
 		Class clazz = Class.forName(FORMAT_PACKAGE + '.' + FORMATS[format] + FORMAT_SUFFIX);
 		fileFormat = (FileFormat) clazz.newInstance();
 	} catch (Exception e) {
-		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
 	}
 	if (format == SWT.IMAGE_BMP_RLE) {
 		switch (data.depth) {

@@ -224,6 +224,7 @@ public void save(OutputStream stream, int format) {
  * @exception SWTException <ul>
  *    <li>ERROR_INVALID_IMAGE if the image data contains invalid data</li>
  *    <li>ERROR_IO if an IO error occurs while writing to the file</li>
+ *    <li>ERROR_UNSUPPORTED_FORMAT - if the image file contains an unrecognized format</li>
  * </ul>
  */
 public void save(String filename, int format) {
