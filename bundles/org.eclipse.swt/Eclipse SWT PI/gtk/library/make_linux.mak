@@ -20,6 +20,7 @@ WS_PREFIX = gtk
 SWT_PREFIX = swt
 AWT_PREFIX = swt-awt
 SWTPI_PREFIX = swt-pi
+CAIRO_PREFIX = swt-cairo
 ATK_PREFIX = swt-atk
 KDE_PREFIX = swt-kde
 GNOME_PREFIX = swt-gnome
@@ -27,10 +28,14 @@ MOZILLA_PREFIX = swt-mozilla
 SWT_LIB = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 AWT_LIB = lib$(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 SWTPI_LIB = lib$(SWTPI_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+CAIRO_LIB = lib$(CAIRO_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 ATK_LIB = lib$(ATK_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 GNOME_LIB = lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 KDE_LIB = lib$(KDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 MOZILLA_LIB = lib$(MOZILLA_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+
+CAIROCFLAGS = -I/usr/local/include -I/usr/include/freetype2 
+CAIROLIBS = -L/usr/local/lib -lcairo
 
 # Do not use pkg-config to get libs because it includes unnecessary dependencies (i.e. pangoxft-1.0)
 GTKCFLAGS = `pkg-config --cflags gtk+-2.0`
@@ -68,6 +73,7 @@ MOZILLALIBS = -shared -Wl,--version-script=mozilla_exports -Bsymbolic ${GECKO_LI
 SWT_OBJECTS = swt.o callback.o
 AWT_OBJECTS = swt_awt.o
 SWTPI_OBJECTS = swt.o os.o os_structs.o os_custom.o os_stats.o
+CAIRO_OBJECTS = swt.o cairo.o cairo_structs.o cairo_stats.o cairo_custom.o
 ATK_OBJECTS = swt.o atk.o atk_structs.o atk_custom.o atk_stats.o
 GNOME_OBJECTS = swt.o gnome.o gnome_structs.o gnome_stats.o
 KDE_OBJS = swt.o kde.o kde_stats.o
@@ -83,7 +89,7 @@ CFLAGS = -O -Wall \
 LIBS = -shared -fpic
 
 
-all: make_swt make_atk make_gnome make_awt make_kde
+all: make_swt make_atk make_gnome make_awt make_kde make_cairo
 
 #
 # SWT libs
@@ -109,6 +115,23 @@ os_custom.o: os_custom.c os_structs.h os.h swt.h
 	$(CC) $(CFLAGS) $(GTKCFLAGS) -c os_custom.c
 os_stats.o: os_stats.c os_structs.h os.h os_stats.h swt.h
 	$(CC) $(CFLAGS) $(GTKCFLAGS) -c os_stats.c
+
+#
+# CAIRO libs
+#
+make_cairo: $(CAIRO_LIB)
+
+$(CAIRO_LIB): $(CAIRO_OBJECTS)
+	$(LD) $(LIBS) $(CAIROLIBS) -o $(CAIRO_LIB) $(CAIRO_OBJECTS)
+
+cairo.o: cairo.c cairo.h swt.h
+	$(CC) $(CFLAGS) $(CAIROCFLAGS) -c cairo.c
+cairo_custom.o: cairo_custom.c cairo_structs.h cairo.h swt.h
+	$(CC) $(CFLAGS) $(CAIROCFLAGS) -c cairo_custom.c
+cairo_structs.o: cairo_structs.c cairo_structs.h cairo.h swt.h
+	$(CC) $(CFLAGS) $(CAIROCFLAGS) -c cairo_structs.c
+cairo_stats.o: cairo_stats.c cairo_structs.h cairo.h cairo_stats.h swt.h
+	$(CC) $(CFLAGS) $(CAIROCFLAGS) -c cairo_stats.c
 
 #
 # AWT lib

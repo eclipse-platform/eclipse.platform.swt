@@ -128,6 +128,14 @@ public Device(DeviceData data) {
 	systemFont = getSystemFont ();
 }
 
+void checkCairo() {
+	try {
+		Class.forName("org.eclipse.swt.internal.cairo.Cairo");
+	} catch (Throwable t) {
+		SWT.error(SWT.ERROR_NO_GRAPHICS_LIBRARY, t);
+	}
+}
+
 /**
  * Throws an <code>SWTException</code> if the receiver can not
  * be accessed by the caller. This may include both checks on

@@ -993,6 +993,11 @@ public void drawOval (int x, int y, int width, int height) {
 	}
 }
 
+public void drawPath(Path path) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (path.handle == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+}
+
 /** 
  * Draws a pixel, using the foreground color, at the specified
  * point (<code>x</code>, <code>y</code>).
@@ -1663,6 +1668,11 @@ public void fillOval (int x, int y, int width, int height) {
 	}
 }
 
+public void fillPath (Path path) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (path.handle == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+}
+
 /** 
  * Fills the interior of the closed polygon which is defined by the
  * specified array of integer coordinates, using the receiver's
@@ -1818,6 +1828,11 @@ public int getAdvanceWidth(char ch) {
 	return getCharWidth(ch);
 }
 
+public int getAlpha() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return 0xFF;
+}
+
 /** 
  * Returns the background color.
  *
@@ -1925,6 +1940,7 @@ public Rectangle getClipping() {
 public void getClipping (Region region) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int flags = OS.PtEnter(0);
 	try {
 		if (region.handle != 0 && region.handle != Region.EMPTY_REGION) {
@@ -2081,6 +2097,12 @@ public int getStyle () {
 	return data.style;
 }
 
+public void getTransform(Transform transform) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (transform == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+}
+
 /** 
  * Returns <code>true</code> if this GC is drawing in the mode
  * where the resulting color in the destination is the
@@ -2185,6 +2207,10 @@ public boolean isDisposed() {
 	return handle == 0;
 }
 
+public void setAlpha(int alpha) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+}
+
 /**
  * Sets the background color. The background color is used
  * for fill operations and as the background color when text
@@ -2248,6 +2274,11 @@ public void setClipping (int x, int y, int width, int height) {
 	dirtyBits |= DIRTY_CLIPPING;
 }
 
+public void setClipping(Path path) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (path != null && path.isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+}
+
 /**
  * Sets the area of the receiver which can be changed
  * by drawing operations to the rectangular area specified
@@ -2279,12 +2310,16 @@ public void setClipping (Rectangle rect) {
  *
  * @param region the clipping region.
  *
+ * * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the region has been disposed</li>
+ * </ul> 
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
 public void setClipping (Region region) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (region != null && region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int clipRects = data.clipRects;
 	int clipRectsCount = data.clipRectsCount;
 	if (clipRects != 0)
@@ -2606,6 +2641,12 @@ int getClipping(int widget, int topWidget, boolean clipChildren, boolean clipSib
 		return clip_tile;
 	}
 	return widget_tile;
+}
+
+public void setTransform(Transform transform) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (transform == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 }
 
 /** 

@@ -39,6 +39,9 @@ public final class GCData {
 	public byte[] dashes;
 	public boolean xorMode;
 
+	public int /*long*/ cairo;
+	public int /*long*/ matrix, inverseMatrix;
+
 	public String string;
 	public int stringWidth = -1;
 	public int stringHeight = -1;

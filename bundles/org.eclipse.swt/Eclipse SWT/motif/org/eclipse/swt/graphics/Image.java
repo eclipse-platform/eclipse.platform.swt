@@ -11,6 +11,7 @@
 package org.eclipse.swt.graphics;
 
  
+import org.eclipse.swt.internal.cairo.*;
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;
 import java.io.*;
@@ -92,6 +93,8 @@ public final class Image implements Drawable {
 	 * </p>
 	 */
 	public int mask;
+
+	int /*long*/ surface;
 
 	/**
 	 * The device where this image was created.
@@ -672,8 +675,9 @@ public void dispose () {
 	int xDisplay = device.xDisplay;
 	if (pixmap != 0) OS.XFreePixmap (xDisplay, pixmap);
 	if (mask != 0) OS.XFreePixmap (xDisplay, mask);
+	if (surface != 0) Cairo.cairo_surface_destroy(surface);
+	surface = pixmap = mask = 0;
 	memGC = null;
-	pixmap = mask = 0;
 	if (device.tracking) device.dispose_Object(this);
 	device = null;
 }
