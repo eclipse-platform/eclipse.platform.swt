@@ -383,7 +383,6 @@ public int getHeight() {
  * @see #setName
  */
 public String getName() {
-	//WRONG - need to convert
 	char[] chars = {
 		data.lfFaceName0,  data.lfFaceName1,  data.lfFaceName2,  data.lfFaceName3,
 		data.lfFaceName4,  data.lfFaceName5,  data.lfFaceName6,  data.lfFaceName7,
@@ -510,49 +509,40 @@ public void setLocale(Locale locale) {
  * @see #getName
  */
 public void setName(String name) {
-	/* Use the character encoding for the default locale */
-	
-	//WRONG
-	char [] nameBytes = new char [name.length()];
-	name.getChars (0, nameBytes.length, nameBytes, 0);
-	
-	/* Pad nameBytes to 32 */
-	char[] paddedNameBytes = new char[32];
-	System.arraycopy(nameBytes, 0, paddedNameBytes, 0, nameBytes.length);
-	
-	/* Copy into the log font */
-	data.lfFaceName0 = paddedNameBytes[0];
-	data.lfFaceName1 = paddedNameBytes[1];
-	data.lfFaceName2 = paddedNameBytes[2];
-	data.lfFaceName3 = paddedNameBytes[3];
-	data.lfFaceName4 = paddedNameBytes[4];
-	data.lfFaceName5 = paddedNameBytes[5];
-	data.lfFaceName6 = paddedNameBytes[6];
-	data.lfFaceName7 = paddedNameBytes[7];
-	data.lfFaceName8 = paddedNameBytes[8];
-	data.lfFaceName9 = paddedNameBytes[9];
-	data.lfFaceName10 = paddedNameBytes[10];
-	data.lfFaceName11 = paddedNameBytes[11];
-	data.lfFaceName12 = paddedNameBytes[12];
-	data.lfFaceName13 = paddedNameBytes[13];
-	data.lfFaceName14 = paddedNameBytes[14];
-	data.lfFaceName15 = paddedNameBytes[15];
-	data.lfFaceName16 = paddedNameBytes[16];
-	data.lfFaceName17 = paddedNameBytes[17];
-	data.lfFaceName18 = paddedNameBytes[18];
-	data.lfFaceName19 = paddedNameBytes[19];
-	data.lfFaceName20 = paddedNameBytes[20];
-	data.lfFaceName21 = paddedNameBytes[21];
-	data.lfFaceName22 = paddedNameBytes[22];
-	data.lfFaceName23 = paddedNameBytes[23];
-	data.lfFaceName24 = paddedNameBytes[24];
-	data.lfFaceName25 = paddedNameBytes[25];
-	data.lfFaceName26 = paddedNameBytes[26];
-	data.lfFaceName27 = paddedNameBytes[27];
-	data.lfFaceName28 = paddedNameBytes[28];
-	data.lfFaceName29 = paddedNameBytes[29];
-	data.lfFaceName30 = paddedNameBytes[30];
-	data.lfFaceName31 = paddedNameBytes[31];
+	char [] chars = new char [32];
+	name.getChars (0, name.length(), chars, 0);
+	data.lfFaceName0 = chars[0];
+	data.lfFaceName1 = chars[1];
+	data.lfFaceName2 = chars[2];
+	data.lfFaceName3 = chars[3];
+	data.lfFaceName4 = chars[4];
+	data.lfFaceName5 = chars[5];
+	data.lfFaceName6 = chars[6];
+	data.lfFaceName7 = chars[7];
+	data.lfFaceName8 = chars[8];
+	data.lfFaceName9 = chars[9];
+	data.lfFaceName10 = chars[10];
+	data.lfFaceName11 = chars[11];
+	data.lfFaceName12 = chars[12];
+	data.lfFaceName13 = chars[13];
+	data.lfFaceName14 = chars[14];
+	data.lfFaceName15 = chars[15];
+	data.lfFaceName16 = chars[16];
+	data.lfFaceName17 = chars[17];
+	data.lfFaceName18 = chars[18];
+	data.lfFaceName19 = chars[19];
+	data.lfFaceName20 = chars[20];
+	data.lfFaceName21 = chars[21];
+	data.lfFaceName22 = chars[22];
+	data.lfFaceName23 = chars[23];
+	data.lfFaceName24 = chars[24];
+	data.lfFaceName25 = chars[25];
+	data.lfFaceName26 = chars[26];
+	data.lfFaceName27 = chars[27];
+	data.lfFaceName28 = chars[28];
+	data.lfFaceName29 = chars[29];
+	data.lfFaceName30 = chars[30];
+	data.lfFaceName31 = chars[31];
 }
 
 /**

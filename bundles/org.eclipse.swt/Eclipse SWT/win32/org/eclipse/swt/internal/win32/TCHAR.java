@@ -18,6 +18,11 @@ public TCHAR (int codePage, int length) {
 	}
 }
 
+//BOGUS - optimize or inline
+public TCHAR (int codePage, char ch, boolean terminate) {
+	this (codePage, String.valueOf (ch), terminate);
+}
+
 public TCHAR (int codePage, String string, boolean terminate) {
 	this.codePage = codePage;
 	int charCount = string.length ();
@@ -55,15 +60,31 @@ public int strlen () {
 	}
 }
 
+public int tcharAt (int index) {
+	if (OS.IsUnicode) {
+		return chars [index];
+	} else {
+		int ch = bytes [index] & 0xFF;
+		if (OS.IsDBCSLeadByte ((byte) ch)) {
+			ch = ch << 8 | (bytes [index + 1] & 0xFF);
+		}
+		return ch;
+	}
+}
+
 public String toString () {
 	return toString (0, length ());
 }
 
-//BOGUS - start must be zero
 public String toString (int start, int length) {
 	if (OS.IsUnicode) {
 		return new String (chars, start, length);
 	} else {
+		byte [] bytes = this.bytes;
+		if (start != 0) {
+			bytes = new byte [length];
+			System.arraycopy (this.bytes, start, bytes, 0, length);
+		}
 		char [] chars = new char [length];
 		int cp = codePage != 0 ? codePage : OS.CP_ACP;
 		int charCount = OS.MultiByteToWideChar (cp, OS.MB_PRECOMPOSED, bytes, length, chars, length);

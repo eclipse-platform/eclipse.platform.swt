@@ -231,7 +231,7 @@ typedef struct CHOOSEFONT_FID_CACHE {
     jfieldID lStructSize, hwndOwner, hDC, lpLogFont, \
              iPointSize, Flags, rgbColors, lCustData, lpfnHook, \
              lpTemplateName, hInstance, lpszStyle, nFontType, \
-             ___MISSING_ALIGNMENT__, nSizeMin, nSizeMax;
+             nSizeMin, nSizeMax;
 
 } CHOOSEFONT_FID_CACHE;
 typedef CHOOSEFONT_FID_CACHE *PCHOOSEFONT_FID_CACHE;
@@ -289,10 +289,7 @@ void setMenuinfoFields(JNIEnv *env, jobject lpObject, MENUINFO *lpMenuinfo, MENU
 typedef struct NMTTDISPINFO_FID_CACHE {
     int cached;
     jclass nmttdispinfoClass;
-    jfieldID hwndFrom, idFrom, code, lpszText, pad0, pad1, pad2, pad3, \
-             pad4, pad5, pad6, pad7, pad8, pad9, pad10, pad11, pad12, \
-             pad13, pad14, pad15, pad16, pad17, pad18, pad19, hinst, \
-             uFlags, lParam;
+    jfieldID hwndFrom, idFrom, code, lpszText, hinst, uFlags, lParam;
 } NMTTDISPINFO_FID_CACHE;
 typedef NMTTDISPINFO_FID_CACHE *PNMTTDISPINFO_FID_CACHE;
 void cacheNmttdispinfoFids(JNIEnv *env, jobject lpNmttdispinfo, PNMTTDISPINFO_FID_CACHE lpCache);
@@ -816,7 +813,7 @@ typedef struct NMTOOLBAR_FID_CACHE {
     int cached;
     jclass nmtoolbarClass;
     jfieldID hwndFrom, idFrom, code, iItem, iBitmap, idCommand,
-             fsState, fsStyle, ___MISSING_ALIGNMENT__, dwData,
+             fsState, fsStyle, dwData,
              iString, cchText, pszText, left, top, right, bottom; 
 
 } NMTOOLBAR_FID_CACHE;

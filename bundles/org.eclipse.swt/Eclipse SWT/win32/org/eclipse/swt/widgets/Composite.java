@@ -457,9 +457,12 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 	}
 
 	/* Set the clipping bits */
-//	int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-//	int newBits = oldBits | OS.WS_CLIPSIBLINGS | OS.WS_CLIPCHILDREN;
-//	OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
+	int oldBits = 0;
+	if (!OS.IsWinCE) {
+		oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		int newBits = oldBits | OS.WS_CLIPSIBLINGS | OS.WS_CLIPCHILDREN;	
+		OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
+	}
 
 	/* Create the paint GC */
 	PAINTSTRUCT ps = new PAINTSTRUCT ();
@@ -512,15 +515,17 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 	event.gc = null;
 	gc.dispose ();
 
-	/*
-	* It is possible (but unlikely), that application
-	* code could have disposed the widget in the paint
-	* event.  If this happens, don't attempt to restore
-	* the style.
-	*/
-//	if (!isDisposed ()) {
-//		OS.SetWindowLong (handle, OS.GWL_STYLE, oldBits);
-//	}
+	if (!OS.IsWinCE) { 
+		/*
+		* It is possible (but unlikely), that application
+		* code could have disposed the widget in the paint
+		* event.  If this happens, don't attempt to restore
+		* the style.
+		*/
+		if (!isDisposed ()) {
+			OS.SetWindowLong (handle, OS.GWL_STYLE, oldBits);
+		}
+	}
 	return LRESULT.ZERO;
 }
 

@@ -206,8 +206,8 @@ void fillAccel (ACCEL accel) {
 		if (key == 0x7F) {
 			key = OS.VK_DELETE;
 		} else {
-			char ch = wcsToMbcs ((char) key);
-			key = OS.CharUpper ((short) ch);
+			short ch = (short) wcsToMbcs ((char) key);
+			key = OS.CharUpper (ch);
 		}
 	}
 	accel.key = (short) key;
@@ -584,9 +584,12 @@ public void setMenu (Menu menu) {
 		info.hSubMenu = menu.handle;
 	}
 	OS.RemoveMenu (hMenu, index, OS.MF_BYPOSITION);
-//	success = OS.InsertMenuItem (hMenu, index, true, info);
-	success = OS.InsertMenu (hMenu, index, OS.MF_BYPOSITION, id, null); 
-	if (success) success = OS.SetMenuItemInfo (hMenu, index, true, info);
+	if (OS.IsWinCE) {
+		success = OS.InsertMenu (hMenu, index, OS.MF_BYPOSITION, id, null); 
+		if (success) success = OS.SetMenuItemInfo (hMenu, index, true, info);
+	} else {
+		success = OS.InsertMenuItem (hMenu, index, true, info);
+	}
 	if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
 	if (!success) error (SWT.ERROR_CANNOT_SET_MENU);
 	parent.destroyAcceleratorTable ();

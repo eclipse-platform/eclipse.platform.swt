@@ -99,7 +99,7 @@ static String getKeyValue (String string) {
 	}
 	String result = null;
 	int [] lpcbData = new int [1];
-	if (OS.RegQueryValueEx (phkResult [0], null, 0, null, null, lpcbData) == 0) {
+	if (OS.RegQueryValueEx (phkResult [0], (TCHAR) null, 0, null, null, lpcbData) == 0) {
 		/* Use the character encoding for the default locale */
 		TCHAR lpData = new TCHAR (0, lpcbData [0] / TCHAR.sizeof);
 		if (OS.RegQueryValueEx (phkResult [0], null, 0, null, lpData, lpcbData) == 0) {

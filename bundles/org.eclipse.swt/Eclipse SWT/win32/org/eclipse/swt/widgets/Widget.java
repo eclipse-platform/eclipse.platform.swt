@@ -92,6 +92,7 @@ public abstract class Widget {
 		COMCTL32_MINOR = dvi.dwMinorVersion;
 		if ((COMCTL32_MAJOR << 16 | COMCTL32_MINOR) < (4 << 16 | 71)) {
 			System.out.println ("***WARNING: SWT requires comctl32.dll version 4.71 or greater");
+			System.out.println ("***WARNING: Detected: " + COMCTL32_MAJOR + "." + COMCTL32_MINOR);
 		}
 		
 		/* Initialize the Common Controls DLL */
@@ -577,7 +578,7 @@ boolean isValidThread () {
  * @param ch the MBCS character
  * @return the WCS character
  */
-char mbcsToWcs (char ch) {
+char mbcsToWcs (int ch) {
 	return mbcsToWcs (ch, 0);
 }
 
@@ -590,12 +591,12 @@ char mbcsToWcs (char ch) {
  * @param codePage the code page used to convert the character
  * @return the WCS character
  */
-char mbcsToWcs (char ch, int codePage) {
+char mbcsToWcs (int ch, int codePage) {
 	if (OS.IsUnicode) {
-		return ch;
+		return (char) ch;
 	} else {
 		int key = ch & 0xFFFF;
-		if (key <= 0x7F) return ch;
+		if (key <= 0x7F) return (char) ch;
 		byte [] buffer;
 		if (key <= 0xFF) {
 			buffer = new byte [1];
@@ -605,9 +606,11 @@ char mbcsToWcs (char ch, int codePage) {
 			buffer [0] = (byte) ((key >> 8) & 0xFF);
 			buffer [1] = (byte) (key & 0xFF);
 		}
-		char [] result = Converter.mbcsToWcs (codePage, buffer);
-		if (result.length == 0) return 0;
-		return result [0];
+		char [] unicode = new char [1];
+		int cp = codePage != 0 ? codePage : OS.CP_ACP;
+		int count = OS.MultiByteToWideChar (cp, OS.MB_PRECOMPOSED, buffer, buffer.length, unicode, 1);
+		if (count == 0) return 0;
+		return unicode [0];
 	}
 }
 
@@ -960,7 +963,7 @@ public String toString () {
  * @param ch the WCS character
  * @return the MBCS character
  */
-char wcsToMbcs (char ch) {
+int wcsToMbcs (char ch) {
 	return wcsToMbcs (ch, 0);
 }
 
@@ -974,19 +977,11 @@ char wcsToMbcs (char ch) {
  * @param codePage the code page used to convert the character
  * @return the MBCS character
  */
-char wcsToMbcs (char ch, int codePage) {
-	if (OS.IsUnicode) {
-		return ch;
-	} else {
-		int key = ch & 0xFFFF;
-		if (key <= 0x7F) return ch;
-		byte [] buffer = Converter.wcsToMbcs (codePage, new char [] {ch}, false);
-		if (buffer.length == 1) return (char) buffer [0];
-		if (buffer.length == 2) {
-			return (char) (((buffer [0] & 0xFF) << 8) | (buffer [1] & 0xFF));
-		}
-		return 0;
-	}
+int wcsToMbcs (char ch, int codePage) {
+	if (OS.IsUnicode) return ch;
+	if (ch <= 0x7F) return ch;
+	TCHAR buffer = new TCHAR (codePage, ch, false);
+	return buffer.tcharAt (0);
 }
 
 }

@@ -17,8 +17,7 @@ public class CHOOSEFONT {
 	public int lpTemplateName; 
 	public int hInstance;     
 	public int lpszStyle; 
-	public short nFontType;     
-	public short ___MISSING_ALIGNMENT__; 
+	public short nFontType;
 	public int nSizeMin;     
 	public int nSizeMax; 
 	public static final int sizeof = 60;

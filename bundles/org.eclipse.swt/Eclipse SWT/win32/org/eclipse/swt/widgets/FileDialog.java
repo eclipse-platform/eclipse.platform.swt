@@ -165,11 +165,12 @@ public String open () {
 	if (parent != null) hwndOwner = parent.handle;
 
 	/* Convert the title and copy it into lpstrTitle */
-	if (title == null) title = "";
+	if (title == null) title = "";	
 	/* Use the character encoding for the default locale */
-	byte [] buffer3 = Converter.wcsToMbcs (0, title, true);
-	int lpstrTitle = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, buffer3.length);
-	OS.MoveMemory (lpstrTitle, buffer3, buffer3.length); 
+	TCHAR buffer3 = new TCHAR (0, title, true);
+	int byteCount3 = buffer3.length () * TCHAR.sizeof;
+	int lpstrTitle = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount3);
+	OS.MoveMemory (lpstrTitle, buffer3, byteCount3); 
 
 	/* Compute filters and copy into lpstrFilter */
 	String strFilter = "";
@@ -184,17 +185,15 @@ public String open () {
 		strFilter = strFilter + FILTER + '\0' + FILTER + '\0';
 	}
 	/* Use the character encoding for the default locale */
-	byte [] buffer4 = Converter.wcsToMbcs (0, strFilter, true);
-	int lpstrFilter = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, buffer4.length);
-	OS.MoveMemory (lpstrFilter, buffer4, buffer4.length);
+	TCHAR buffer4 = new TCHAR (0, strFilter, true);
+	int byteCount4 = buffer4.length () * TCHAR.sizeof;
+	int lpstrFilter = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount4);
+	OS.MoveMemory (lpstrFilter, buffer4, byteCount4);
 	
 	/* Convert the fileName and filterName to C strings */
 	if (fileName == null) fileName = "";
 	/* Use the character encoding for the default locale */
-	byte [] name = Converter.wcsToMbcs (0, fileName, false);
-	if (filterPath == null) filterPath = "";
-	/* Use the character encoding for the default locale */
-	byte [] path = Converter.wcsToMbcs (0, filterPath, false);
+	TCHAR name = new TCHAR (0, fileName, true);
 
 	/*
 	* Bug/Feature in Windows.  Verify that the file name is valid.
@@ -203,11 +202,10 @@ public String open () {
 	* this behavior by verifying the file name before opening the
 	* dialog.  If the file name is not valid, use an empty string.
 	*/
-	byte [] buffer2 = new byte [name.length + 1];
-	System.arraycopy (name, 0, buffer2, 0, name.length);
-	if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
-	if (OS.GetFileTitle (buffer2, null, (short) 0) < 0) {
-		name = new byte [0];
+	if (!OS.IsWinCE) {
+		if (OS.GetFileTitle (name, null, (short) 0) < 0) {
+			name = new TCHAR (0, "", true);
+		}
 	}
 	
 	/*
@@ -216,17 +214,23 @@ public String open () {
 	* Note that the longest that a single path name can
 	* be on Windows is 256.
 	*/
-	int bufferSize = 256;
-	if ((style & SWT.MULTI) != 0) bufferSize = Math.max (256, BUFFER_SIZE);
-	int lpstrFile = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, bufferSize);
-	OS.MoveMemory (lpstrFile, name, Math.min (name.length, bufferSize - 1)); 
+	int nMaxFile = 256;
+	if ((style & SWT.MULTI) != 0) nMaxFile = Math.max (nMaxFile, BUFFER_SIZE);
+	int byteCount = nMaxFile * TCHAR.sizeof;
+	int lpstrFile = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	int byteCountFile = Math.min (name.length () * TCHAR.sizeof, byteCount - TCHAR.sizeof);
+	OS.MoveMemory (lpstrFile, name, byteCountFile); 
 
 	/*
 	* Copy the path into lpstrInitialDir and ensure that
 	* the last byte is NULL and the buffer does not overrun.
 	*/
-	int lpstrInitialDir = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, bufferSize);
-	OS.MoveMemory (lpstrInitialDir, path, Math.min (path.length, bufferSize - 1)); 
+	if (filterPath == null) filterPath = "";
+	/* Use the character encoding for the default locale */
+	TCHAR path = new TCHAR (0, filterPath, true);
+	int lpstrInitialDir = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	int byteCountDir = Math.min (path.length () * TCHAR.sizeof, byteCount - TCHAR.sizeof);
+	OS.MoveMemory (lpstrInitialDir, path, byteCountDir); 
 
 	/* Create the file dialog struct */
 	OPENFILENAME struct = new OPENFILENAME ();
@@ -238,7 +242,7 @@ public String open () {
 	struct.hwndOwner = hwndOwner;
 	struct.lpstrTitle = lpstrTitle;
 	struct.lpstrFile = lpstrFile;
-	struct.nMaxFile = bufferSize;
+	struct.nMaxFile = nMaxFile;
 	struct.lpstrInitialDir = lpstrInitialDir;
 	struct.lpstrFilter = lpstrFilter;
 	struct.nFilterIndex = 0;
@@ -265,30 +269,37 @@ public String open () {
 	boolean save = (style & SWT.SAVE) != 0;
 	boolean success = (save) ? OS.GetSaveFileName (struct) : OS.GetOpenFileName (struct);
 	if (OS.CommDlgExtendedError () == OS.FNERR_INVALIDFILENAME) {
-		OS.MoveMemory (lpstrFile, new byte [1], 1);
+		OS.MoveMemory (lpstrFile, new TCHAR (0, "", true), TCHAR.sizeof);
 		success = (save) ? OS.GetSaveFileName (struct) : OS.GetOpenFileName (struct);
 	}
 
 	/* Set the new path, file name and filter */
 	fullPath = null;
 	if (success) {
-		int count = 0;
-		fileNames = new String [1];
-		byte [] buffer = new byte [struct.nMaxFile];
-		OS.MoveMemory (buffer, lpstrFile, buffer.length);
-		byte [] prefix = new byte [struct.nFileOffset - 1];
-		System.arraycopy (buffer, 0, prefix, 0, prefix.length);
+		
 		/* Use the character encoding for the default locale */
-		filterPath = new String (Converter.mbcsToWcs (0, prefix));
+		TCHAR buffer = new TCHAR (0, struct.nMaxFile);
+		int byteCount1 = buffer.length () * TCHAR.sizeof;
+		OS.MoveMemory (buffer, lpstrFile, byteCount1);
+		
+		/* Use the character encoding for the default locale */
+		TCHAR prefix = new TCHAR (0, struct.nFileOffset - 1);
+		int byteCount2 = prefix.length () * TCHAR.sizeof;
+		OS.MoveMemory (prefix, lpstrFile, byteCount2);
+		filterPath = prefix.toString (0, prefix.length ());
+		
+		/*
+		* Get each file from the buffer.  Files are delimited
+		* by a NULL character with 2 NULL characters at the end.
+		*/
+		int count = 0;
+		fileNames = new String [(style & SWT.MULTI) != 0 ? 4 : 1];
 		int start = struct.nFileOffset;
 		do {
 			int end = start;
-			while (end < buffer.length && buffer [end] != 0) end++;
-			byte [] buffer1 = new byte [end - start];
-			System.arraycopy (buffer, start, buffer1, 0, buffer1.length);
+			while (end < buffer.length () && buffer.tcharAt (end) != 0) end++;
+			String string = buffer.toString (start, end - start);
 			start = end;
-			/* Use the character encoding for the default locale */
-			String string = new String (Converter.mbcsToWcs (0, buffer1));
 			if (count == fileNames.length) {
 				String [] newFileNames = new String [fileNames.length + 4];
 				System.arraycopy (fileNames, 0, newFileNames, 0, fileNames.length);
@@ -297,7 +308,8 @@ public String open () {
 			fileNames [count++] = string;
 			if ((style & SWT.MULTI) == 0) break;
 			start++;
-		} while (start < buffer.length && buffer [start] != 0);
+		} while (start < buffer.length () && buffer.tcharAt (start) != 0);
+		
 		if (fileNames.length > 0) fileName = fileNames  [0];
 		String separator = "";
 		int length = filterPath.length ();

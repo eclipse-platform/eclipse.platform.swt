@@ -42,7 +42,7 @@ public final class GC {
 	 * a space character always converts to the same ASCII or
 	 * Unicode value (32).
 	 */
-	static final TCHAR SPACE = new TCHAR (0, " ", false);
+//	static final TCHAR SPACE = new TCHAR (0, " ", false);
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -767,13 +767,19 @@ void drawBitmapTransparent(Image srcImage, int srcX, int srcY, int srcWidth, int
 void drawBitmap(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, BITMAP bm, int imgWidth, int imgHeight) {
 	int srcHdc = OS.CreateCompatibleDC(handle);
 	int oldSrcBitmap = OS.SelectObject(srcHdc, srcImage.handle);
-	int bltRop = OS.SRCCOPY;
-	if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
-	if (OS.GetROP2(handle) == OS.R2_XORPEN) bltRop = OS.SRCINVERT;
-	int oldStretchMode = 0;
-	if (!OS.IsWinCE) OS.SetStretchBltMode(handle, OS.COLORONCOLOR);
-	OS.StretchBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, bltRop);
-	if (!OS.IsWinCE) OS.SetStretchBltMode(handle, oldStretchMode);
+	int mode = 0, rop2 = 0;
+	if (!OS.IsWinCE) {
+		rop2 = OS.GetROP2(handle);
+		mode = OS.SetStretchBltMode(handle, OS.COLORONCOLOR);
+	} else {
+		rop2 = OS.SetROP2 (handle, OS.R2_COPYPEN);
+		OS.SetROP2 (handle, rop2);
+	}
+	int dwRop = rop2 == OS.R2_XORPEN ? OS.SRCINVERT : OS.SRCCOPY;
+	OS.StretchBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, dwRop);
+	if (!OS.IsWinCE) {
+		OS.SetStretchBltMode(handle, mode);
+	}
 	OS.SelectObject(srcHdc, oldSrcBitmap);
 	OS.DeleteDC(srcHdc);
 }
@@ -1341,11 +1347,15 @@ public void fillPolygon(int[] pointArray) {
  */
 public void fillRectangle (int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
-	if (OS.GetROP2(handle) == OS.R2_COPYPEN)
-		OS.PatBlt (handle, x, y, width, height, OS.PATCOPY);
-	else
-		OS.PatBlt (handle, x, y, width, height, OS.PATINVERT);
+	int rop2 = 0;
+	if (OS.IsWinCE) {
+		rop2 = OS.SetROP2(handle, OS.R2_COPYPEN);
+		OS.SetROP2(handle, rop2);
+	} else {
+		rop2 = OS.GetROP2(handle);
+	}
+	int dwRop = rop2 == OS.R2_XORPEN ? OS.PATINVERT : OS.PATCOPY;
+	OS.PatBlt(handle, x, y, width, height, dwRop);
 }
 
 /** 
@@ -1410,22 +1420,19 @@ public void fillRoundRectangle (int x, int y, int width, int height, int arcWidt
  */
 public int getAdvanceWidth(char ch) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (OS.IsUnicode) {
-		int[] width = new int[1];
-		if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
-		OS.GetCharWidthW(handle, ch, ch, width);
-		return width[0];
-	} else {
-		byte[] buffer = Converter.wcsToMbcs(getCodePage(), new char[] { ch });
-		int val = 0;
-		for (int i = 0; i < buffer.length; i++) {
-			val |= (buffer[i] & 0xFF) << (i * 8);
-		}
-		int[] width = new int[1];
-		if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
-		OS.GetCharWidthA(handle, val, val, width);
-		return width[0];
+	if (OS.IsWinCE) {
+		SIZE size = new SIZE();
+		OS.GetTextExtentPoint32W(handle, new char[]{ch}, 1, size);
+		return size.cx;
 	}
+	int tch = ch;
+	if (ch > 0x7F) {
+		TCHAR buffer = new TCHAR(getCodePage(), ch, false);
+		tch = buffer.tcharAt(0);
+	}
+	int[] width = new int[1];
+	OS.GetCharWidth(handle, tch, tch, width);
+	return width[0];
 }
 
 /** 
@@ -1464,39 +1471,26 @@ public Color getBackground() {
  */
 public int getCharWidth(char ch) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (OS.IsUnicode) {
-		/* GetCharABCWidths only succeeds on truetype fonts */
-		if (!OS.IsWinCE) {
-			int[] width = new int[3];
-			if (OS.GetCharABCWidthsW(handle, ch, ch, width)) {
-				return width[1];
-			}
-		}
-		/* It wasn't a truetype font */
-		TEXTMETRIC tm = new TEXTMETRIC();
-		OS.GetTextMetricsW(handle, tm);
-		SIZE size = new SIZE();
-		OS.GetTextExtentPoint32W(handle, new char[]{ch}, 1, size);
-		return size.cx - tm.tmOverhang;
-	} else {
-		byte [] buffer = Converter.wcsToMbcs(getCodePage(), new char[] { ch });
-		int val = 0;
-		for (int i = 0; i < buffer.length; i++) {
-			val |= (buffer[i] & 0xFF) << (i * 8);
+	
+	/* GetCharABCWidths only succeeds on truetype fonts */
+	if (!OS.IsWinCE) {
+		int tch = ch;
+		if (ch > 0x7F) {
+			TCHAR buffer = new TCHAR(getCodePage(), ch, false);
+			tch = buffer.tcharAt (0);
 		}
 		int[] width = new int[3];
-		/* GetCharABCWidths only succeeds on truetype fonts */
-		if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
-		if (OS.GetCharABCWidthsA(handle, val, val, width)) {
+		if (OS.GetCharABCWidths(handle, tch, tch, width)) {
 			return width[1];
 		}
-		/* It wasn't a truetype font */
-		TEXTMETRIC tm = new TEXTMETRIC();
-		OS.GetTextMetricsA(handle, tm);
-		SIZE size = new SIZE();
-		OS.GetTextExtentPoint32A(handle, buffer, buffer.length, size);
-		return size.cx - tm.tmOverhang;
 	}
+	
+	/* It wasn't a truetype font */
+	TEXTMETRIC tm = new TEXTMETRIC();
+	OS.GetTextMetricsW(handle, tm);
+	SIZE size = new SIZE();
+	OS.GetTextExtentPoint32W(handle, new char[]{ch}, 1, size);
+	return size.cx - tm.tmOverhang;
 }
 
 /** 
@@ -1664,8 +1658,14 @@ public int getLineWidth() {
  */
 public boolean getXORMode() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
-	return OS.GetROP2(handle) == OS.R2_XORPEN;
+	int rop2 = 0;
+	if (OS.IsWinCE) {
+		rop2 = OS.SetROP2 (handle, OS.R2_COPYPEN);
+		OS.SetROP2 (handle, rop2);
+	} else {
+		rop2 = OS.GetROP2(handle);
+	}
+	return rop2 == OS.R2_XORPEN;
 }
 
 void init(Drawable drawable, GCData data, int hDC) {
@@ -1995,7 +1995,7 @@ public Point stringExtent(String string) {
 	SIZE size = new SIZE();
 	int length = string.length();
 	if (length == 0) {
-//		OS.GetTextExtentPoint32W(handle, SPACE, SPACE.length(), size);
+//		OS.GetTextExtentPoint32(handle, SPACE, SPACE.length(), size);
 		OS.GetTextExtentPoint32W(handle, new char[]{' '}, 1, size);
 		return new Point(0, size.cy);
 	} else {
@@ -2031,7 +2031,8 @@ public Point textExtent(String string) {
 	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (string.length () == 0) {
 		SIZE size = new SIZE();
-		OS.GetTextExtentPoint32(handle, SPACE, SPACE.length(), size);
+//		OS.GetTextExtentPoint32(handle, SPACE, SPACE.length(), size);
+		OS.GetTextExtentPoint32W(handle, new char [] {' '}, 1, size);
 		return new Point(0, size.cy);
 	} else {
 		RECT rect = new RECT();

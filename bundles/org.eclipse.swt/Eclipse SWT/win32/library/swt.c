@@ -970,7 +970,6 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GradientFill
  * Method:    InsertMenuItemA
  * Signature: (IIZLorg/eclipse/swt/internal/win32/MENUITEMINFO;)Z
  */
- /*
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_InsertMenuItemA
   (JNIEnv *env, jclass that, jint hMenu, jint uItem, jboolean fByPosition, jobject lpmii)
 {
@@ -993,13 +992,12 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_InsertMenuItem
     }
     return rc;
 }
-*/
+
 /*
  * Class:     org_eclipse_swt_internal_win32_OS
  * Method:    InsertMenuItemW
  * Signature: (IIZLorg/eclipse/swt/internal/win32/MENUITEMINFO;)Z
  */
- /*
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_InsertMenuItemW
   (JNIEnv *env, jclass that, jint hMenu, jint uItem, jboolean fByPosition, jobject lpmii)
 {
@@ -1022,7 +1020,7 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_InsertMenuItem
     }
     return rc;
 }
-*/
+
 /*
  * Class:     org_eclipse_swt_internal_win32_OS
  * Method:    InvalidateRgn
@@ -1155,7 +1153,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemoryA__ILorg
   (JNIEnv * env, jclass that, jint Destination, jobject Source, jint Length)
 {
 	DECL_GLOB(pGlob)
-    NMTTDISPINFO nmttdispinfo, *lpSource1=NULL;
+    NMTTDISPINFO nmttdispinfo={0}, *lpSource1=NULL;
 
 #ifdef DEBUG_CALL_PRINTS
     fprintf(stderr, "MoveMemoryA__ILorg_eclipse_swt_internal_win32_NMTTDISPINFO_2I\n");
@@ -1178,7 +1176,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemoryW__ILorg
   (JNIEnv * env, jclass that, jint Destination, jobject Source, jint Length)
 {
 	DECL_GLOB(pGlob)
-    NMTTDISPINFOW nmttdispinfo, *lpSource1=NULL;
+    NMTTDISPINFOW nmttdispinfo={0}, *lpSource1=NULL;
 
 #ifdef DEBUG_CALL_PRINTS
     fprintf(stderr, "MoveMemoryW__ILorg_eclipse_swt_internal_win32_NMTTDISPINFO_2I\n");
@@ -1224,7 +1222,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemoryA__Lorg_
   (JNIEnv * env, jclass that, jobject Destination, jint Source, jint Length)
 {
 	DECL_GLOB(pGlob)
-    NMTTDISPINFO nmttdispinfo, *lpDestination1=NULL;
+    NMTTDISPINFO nmttdispinfo={0}, *lpDestination1=NULL;
 
 #ifdef DEBUG_CALL_PRINTS
     fprintf(stderr, "MoveMemoryA__Lorg_eclipse_swt_internal_win32_NMTTDISPINFO_2II\n");
@@ -1247,7 +1245,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemoryW__Lorg_
   (JNIEnv * env, jclass that, jobject Destination, jint Source, jint Length)
 {
 	DECL_GLOB(pGlob)
-    NMTTDISPINFOW nmttdispinfo, *lpDestination1=NULL;
+    NMTTDISPINFOW nmttdispinfo={0}, *lpDestination1=NULL;
 
 #ifdef DEBUG_CALL_PRINTS
     fprintf(stderr, "MoveMemoryW__Lorg_eclipse_swt_internal_win32_NMTTDISPINFO_2II\n");
@@ -1740,6 +1738,36 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ToAscii
         (*env)->ReleaseByteArrayElements(env, lpKeyState, (jbyte *)lpKeyState1, 0);
     if (lpChar)
         (*env)->ReleaseShortArrayElements(env, lpChar, (jshort *)lpChar1, 0);
+    return rc;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    ToUnicode
+ * Signature: 
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ToUnicode
+  (JNIEnv *env, jclass that, jint uVirtKey, jint uScanMode, jbyteArray lpKeyState, jcharArray lpChar, jint cchBuff, jint uFlags)
+{
+    PBYTE lpKeyState1=NULL;
+    LPWSTR lpChar1=NULL;
+    jint rc;
+
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "ToUnicode\n");
+#endif
+
+    if (lpKeyState)
+        lpKeyState1 = (*env)->GetByteArrayElements(env, lpKeyState, NULL);
+    if (lpChar)
+        lpChar1 = (*env)->GetCharArrayElements(env, lpChar, NULL);
+
+    rc = (jint) ToUnicode(uVirtKey, uScanMode, lpKeyState1, lpChar1, cchBuff, uFlags);
+
+    if (lpKeyState)
+        (*env)->ReleaseByteArrayElements(env, lpKeyState, (jbyte *)lpKeyState1, 0);
+    if (lpChar)
+        (*env)->ReleaseCharArrayElements(env, lpChar, (jshort *)lpChar1, 0);
     return rc;
 }
 
@@ -5172,7 +5200,7 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetTextMetrics
   (JNIEnv *env, jclass that, jint hdc, jobject lptm)
 {
 	DECL_GLOB(pGlob)
-    TEXTMETRICA tm, *lptm1=NULL;
+    TEXTMETRICA tm={0}, *lptm1=NULL;
     jboolean rc;
 
 #ifdef DEBUG_CALL_PRINTS
@@ -5198,7 +5226,7 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetTextMetrics
   (JNIEnv *env, jclass that, jint hdc, jobject lptm)
 {
 	DECL_GLOB(pGlob)
-    TEXTMETRICW tm, *lptm1=NULL;
+    TEXTMETRICW tm={0}, *lptm1=NULL;
     jboolean rc;
 
 #ifdef DEBUG_CALL_PRINTS
@@ -10866,7 +10894,7 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetVersionExA
   (JNIEnv *env, jclass that, jobject lpVersionInfo)
 {
 	DECL_GLOB(pGlob)
-    OSVERSIONINFO versionInfo, *lpVersionInfo1=NULL;
+    OSVERSIONINFO versionInfo={0}, *lpVersionInfo1=NULL;
 	jboolean rc;
 	
 #ifdef DEBUG_CALL_PRINTS
@@ -10894,7 +10922,7 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetVersionExW
   (JNIEnv *env, jclass that, jobject lpVersionInfo)
 {
 	DECL_GLOB(pGlob)
-    OSVERSIONINFOW versionInfo, *lpVersionInfo1=NULL;
+    OSVERSIONINFOW versionInfo={0}, *lpVersionInfo1=NULL;
 	jboolean rc;
 	
 #ifdef DEBUG_CALL_PRINTS

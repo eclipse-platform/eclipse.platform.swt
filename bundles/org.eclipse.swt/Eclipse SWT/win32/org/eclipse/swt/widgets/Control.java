@@ -2539,7 +2539,7 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 	* Do not report a lead byte as a key pressed.
 	*/
 	Display display = getDisplay ();
-	if (OS.IsDBLocale) {
+	if (!OS.IsUnicode && OS.IsDBLocale) {
 		byte lead = (byte) (wParam & 0xFF);
 		if (OS.IsDBCSLeadByte (lead)) return null;
 	}
@@ -2558,16 +2558,15 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 		display.lastKey = wParam;
 		display.lastVirtual = display.isVirtualKey (wParam);
 	} else {
-		if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
-		int result = OS.VkKeyScan ((short) wParam);
-		if (result == -1 || (result >> 8) <= 2) {
+		int result = OS.IsWinCE ? 0 : OS.VkKeyScan ((short) wParam);
+		if (!OS.IsWinCE && (result == -1 || (result >> 8) <= 2)) {
 			if (OS.GetKeyState (OS.VK_CONTROL) < 0) {
 				display.lastVirtual = display.isVirtualKey (display.lastKey);
 			}
 		} else {
 			display.lastKey = wParam;
 			display.lastVirtual = false;
-		}
+		}	
 	}
 	if (!sendKeyEvent (SWT.KeyDown, OS.WM_CHAR, wParam, lParam)) {
 		return LRESULT.ZERO;
@@ -2796,8 +2795,8 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	/*
 	* Do not report a lead byte as a key pressed.
 	*/
-	Display display = getDisplay ();	
-	if (OS.IsDBLocale) {
+	Display display = getDisplay ();
+	if (!OS.IsUnicode && OS.IsDBLocale) {
 		byte lead = (byte) (wParam & 0xFF);
 		if (OS.IsDBCSLeadByte (lead)) {
 			display.lastAscii = display.lastKey = 0;
@@ -2838,7 +2837,7 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	}
 	
 	/*
-	* If are going to get a WM_CHAR, ensure that last key has
+	* If we are going to get a WM_CHAR, ensure that last key has
 	* the correct character value for the key down and key up
 	* events.  It is not sufficient to ignore the WM_KEYDOWN
 	* (when we know we are going to get a WM_CHAR) and compute
@@ -2871,7 +2870,7 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 		* that Ctrl+Home does not issue a WM_CHAR when Num Lock is
 		* down.
 		*/
-		if ((OS.VK_NUMPAD0 <= display.lastKey) && (display.lastKey <= OS.VK_DIVIDE)) {
+		if (OS.VK_NUMPAD0 <= display.lastKey && display.lastKey <= OS.VK_DIVIDE) {
 			if (display.asciiKey (display.lastKey) != 0) return null;
 		}
 	} else {

@@ -252,16 +252,20 @@ public Display (DeviceData data) {
 }
 
 int asciiKey (int key) {
+	if (OS.IsWinCE) return 0;
 	
 	/* Get the current keyboard. */
 	for (int i=0; i<keyboard.length; i++) keyboard [i] = 0;
-	if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
 	if (!OS.GetKeyboardState (keyboard)) return 0;
-	
-	/* Translate the key to ASCII using the current keyboard. */
-	short [] result = new short [1];
-	if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
-	if (OS.ToAscii (key, key, keyboard, result, 0) == 1) return result [0];
+		
+	/* Translate the key to ASCII or UNICODE using the virtual keyboard */
+	if (OS.IsUnicode) {
+		char [] result = new char [1];
+		if (OS.ToUnicode (key, key, keyboard, result, 1, 0) == 1) return result [0];
+	} else {
+		short [] result = new short [1];
+		if (OS.ToAscii (key, key, keyboard, result, 0) == 1) return result [0];
+	}
 	return 0;
 }
 
@@ -1528,15 +1532,20 @@ public void setSynchronizer (Synchronizer synchronizer) {
 }
 
 int shiftedKey (int key) {
+	if (OS.IsWinCE) return 0;
 	
-	/* Clear the virtual keyboard and press the shift key. */
+	/* Clear the virtual keyboard and press the shift key */
 	for (int i=0; i<keyboard.length; i++) keyboard [i] = 0;
 	keyboard [OS.VK_SHIFT] |= 0x80;
 
-	/* Translate aKey to ASCII using the virtual keyboard. */
-	short [] result = new short [1];
-	if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
-	if (OS.ToAscii (key, key, keyboard, result, 0) == 1) return result [0];
+	/* Translate the key to ASCII or UNICODE using the virtual keyboard */
+	if (OS.IsUnicode) {
+		char [] result = new char [1];
+		if (OS.ToUnicode (key, key, keyboard, result, 1, 0) == 1) return result [0];
+	} else {
+		short [] result = new short [1];
+		if (OS.ToAscii (key, key, keyboard, result, 0) == 1) return result [0];
+	}
 	return 0;
 }
 

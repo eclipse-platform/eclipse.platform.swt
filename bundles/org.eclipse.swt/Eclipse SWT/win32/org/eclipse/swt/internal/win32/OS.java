@@ -12,8 +12,8 @@ public class OS {
 	/*
 	* SWT Windows flags.
 	*/
-//	public static final boolean IsWin32s;
-//	public static final boolean IsWin95;
+	public static final boolean IsWin32s;
+	public static final boolean IsWin95;
 	public static final boolean IsWinNT;
 	public static final boolean IsWinCE;
 	public static final boolean IsDBLocale;
@@ -36,44 +36,34 @@ public class OS {
 		/* Load the SWT library */
 		Callback.loadLibrary ();
 
-		/* Get the Windows version */
-		OSVERSIONINFO info = new OSVERSIONINFO ();
-//		info.dwOSVersionInfoSize = OSVERSIONINFO.sizeof;
-		info.dwOSVersionInfoSize = 20 + 128 * 2;
-		
 		/*
 		* Try the UNICODE version of GetVersionEx first
-		* and then the ASCII version.  The UNICODE version
+		* and then the ANSI version.  The UNICODE version
 		* is present on all versions of Windows but is not
 		* implemented on Win95/98/ME.
+		* 
+		* NOTE: The value of OSVERSIONINFO.sizeof cannot
+		* be static final because it relies on the Windows
+		* platform version to be initialized and IsUnicode
+		* has not been calculated.  It must be initialized
+		* here, after the platform is determined in order
+		* for the value to be correct.
 		*/
-//		if (!OS.GetVersionExW (info)) {
-			//BOGUS - this gets called and causes CreateWindowEx to fail		
-//			info.dwOSVersionInfoSize = 20 + 128;
-//			OS.GetVersionExA (info);
-//		}
-//		info.dwPlatformId = VER_PLATFORM_WIN32_CE;
-		info.dwPlatformId = VER_PLATFORM_WIN32_WINDOWS;
-//		info.dwPlatformId = VER_PLATFORM_WIN32_NT;
+		OSVERSIONINFO info = new OSVERSIONINFO ();
+		info.dwOSVersionInfoSize = 276;
+		if (!OS.GetVersionExW (info)) {
+			info.dwOSVersionInfoSize = 148;
+			OS.GetVersionExA (info);
+		}
+		OSVERSIONINFO.sizeof = info.dwOSVersionInfoSize;
 		
-//		IsWin32s = info.dwPlatformId == VER_PLATFORM_WIN32s;
-//		IsWin95 = info.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS;
+		IsWin32s = info.dwPlatformId == VER_PLATFORM_WIN32s;
+		IsWin95 = info.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS;
 		IsWinNT = info.dwPlatformId == VER_PLATFORM_WIN32_NT;
 		IsWinCE = info.dwPlatformId == VER_PLATFORM_WIN32_CE;	
 		WIN32_MAJOR = info.dwMajorVersion;
 		WIN32_MINOR = info.dwMinorVersion;
-//		IsUnicode = !IsWin32s && !IsWin95;
-		switch (info.dwPlatformId) {
-			case VER_PLATFORM_WIN32s:
-			case VER_PLATFORM_WIN32_WINDOWS:
-				IsUnicode = false;
-				break;
-			case VER_PLATFORM_WIN32_NT:
-			case VER_PLATFORM_WIN32_CE:
-			default:
-				IsUnicode = true;
-				break;
-		}
+		IsUnicode = !IsWin32s && !IsWin95;
 		
 		/* Get the DBCS flag */
 		int index = 0;
@@ -85,6 +75,21 @@ public class OS {
 	}
 
 /*+++++++++FIX LATER+++++++++++ */
+public static final int GetProfileString (byte [] lpAppName, byte [] lpKeyName, byte [] lpDefault, byte [] lpReturnedString, int nSize) {
+	return GetProfileStringA (lpAppName, lpKeyName, lpDefault, lpReturnedString, nSize);
+}
+public static final int CreateDC (byte [] lpszDriver, byte [] lpszDevice, int lpszOutput, int lpInitData) {
+	return CreateDCA (lpszDriver, lpszDevice, lpszOutput, lpInitData);
+}
+public static final int RegOpenKeyEx (int hKey, byte [] lpSubKey, int ulOptions, int samDesired, int[] phkResult) {
+	return RegOpenKeyExA (hKey, lpSubKey, ulOptions, samDesired, phkResult);
+}
+public static final int RegQueryValueEx (int hKey, byte [] lpValueName, int lpReserved, int[] lpType, byte [] lpData, int[] lpcbData) {
+	return RegQueryValueExA (hKey, lpValueName, lpReserved, lpType, lpData, lpcbData);
+}
+/*+++++++++END FIX LATER+++++++++++ */
+
+/*+++++++++FIX NOW+++++++++++ */
 public static final int GetWindowText (int hWnd, TCHAR lpString, int nMaxCount) {
 	if (lpString != null) {
 		if (IsUnicode) return GetWindowTextW (hWnd, lpString.chars, nMaxCount);
@@ -118,8 +123,7 @@ public static final int ImmGetCompositionString (int hIMC, int dwIndex, TCHAR lp
 	}
 	return IsUnicode ? ImmGetCompositionStringW (hIMC, dwIndex, null, dwBufLen) : ImmGetCompositionStringA (hIMC, dwIndex, null, dwBufLen);
 }
-
-/*+++++++++++++++++++++++++++++++ */
+/*++++++++END FIX NOW++++++++++ */
 
 public static final int ExtractIconEx (TCHAR lpszFile, int nIconIndex, int [] phiconLarge, int [] phiconSmall, int nIcons) {
 	if (IsUnicode) {
@@ -1280,6 +1284,7 @@ public static final boolean InsertMenu (int hMenu, int uPosition, int uFlags, in
 	public static final int MF_GRAYED = 0x1;
 	public static final int MF_HILITE = 0x80;
 	public static final int MF_POPUP = 0x10;
+	public static final int MF_SEPARATOR = 0x800;
 	public static final int MF_SYSMENU = 0x2000;
 	public static final int MIIM_BITMAP = 0x80;
 	public static final int MIIM_ID = 0x2;
@@ -2605,7 +2610,7 @@ public static final native boolean StretchBlt (
   int nHeightSrc,   // height of source rectangle
   int dwRop       	// raster operation code
 );
-public static final native boolean TextOut (int hdc, int nXStart, int nYStart, byte [] lpString, int cbString);
+//public static final native boolean TextOut (int hdc, int nXStart, int nYStart, byte [] lpString, int cbString);
 public static final native int ToAscii (
   int uVirtKey, 
   int uScanCode, 
@@ -2613,7 +2618,15 @@ public static final native int ToAscii (
   short [] lpChar, 
   int uFlags 
 );
- 
+public static final native int ToUnicode(
+  int wVirtKey,
+  int wScanCode,
+  byte [] lpKeyState,
+  char [] pwszBuff,
+  int cchBuff,
+  int wFlags
+);
+
 public static final native boolean TrackMouseEvent(TRACKMOUSEEVENT lpEventTrack);
 public static final native boolean TrackPopupMenu (
   int hMenu,  // handle to shortcut menu

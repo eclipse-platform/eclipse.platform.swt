@@ -177,14 +177,51 @@ void bringToTop () {
 }
 
 static int checkStyle (int style) {
+	if (OS.IsWinCE) {
+		return style & ~(SWT.SHELL_TRIM | SWT.DIALOG_TRIM);
+	}
 	if ((style & (SWT.MENU | SWT.MIN | SWT.MAX | SWT.CLOSE)) != 0) {
 		style |= SWT.TITLE;
 	}
+	/*
+	* Bug in Windows.  If WS_MINIMIZEBOX or WS_MAXIMIZEBOX
+	* are set, we must also set WS_SYSMENU or the buttons
+	* will not appear.
+	*/
+	if ((style & (SWT.MIN | SWT.MAX)) != 0) style |= SWT.CLOSE;
 	return style;
 }
 
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
+public Rectangle computeTrim (int x, int y, int width, int height) {
+	checkWidget ();
+
+	/* Get the size of the trimmings */
+	RECT rect = new RECT ();
+	OS.SetRect (rect, x, y, x + width, y + height);
+	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	boolean hasMenu = OS.IsWinCE ? false : OS.GetMenu (handle) != 0;
+	OS.AdjustWindowRectEx (rect, bits, hasMenu, OS.GetWindowLong (handle, OS.GWL_EXSTYLE));
+
+	/* Get the size of the scroll bars */
+	if (horizontalBar != null) rect.bottom += OS.GetSystemMetrics (OS.SM_CYHSCROLL);
+	if (verticalBar != null) rect.right += OS.GetSystemMetrics (OS.SM_CXVSCROLL);
+
+	/* Get the height of the menu bar */
+	if (hasMenu) {
+		RECT testRect = new RECT ();
+		OS.SetRect (testRect, 0, 0, rect.right - rect.left, rect.bottom - rect.top);
+		OS.SendMessage (handle, OS.WM_NCCALCSIZE, 0, testRect);
+		while ((testRect.bottom - testRect.top) < height) {
+			rect.top -= OS.GetSystemMetrics (OS.SM_CYMENU) - OS.GetSystemMetrics (OS.SM_CYBORDER);
+			OS.SetRect(testRect, 0, 0, rect.right - rect.left, rect.bottom - rect.top);
+			OS.SendMessage (handle, OS.WM_NCCALCSIZE, 0, testRect);
+		}
+	}
+	return new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 }
 
 void createAcceleratorTable () {
@@ -220,12 +257,6 @@ void createHandle () {
 }
 
 void createWidget () {
-	/*
-	* Bug in Windows.  If WS_MINIMIZEBOX or WS_MAXIMIZEBOX
-	* are set, we must also set WS_SYSMENU or the buttons
-	* will not appear.
-	*/
-	if ((style & (SWT.MIN | SWT.MAX)) != 0) style |= SWT.CLOSE;
 	super.createWidget ();
 	swFlags = OS.SW_SHOWNOACTIVATE;
 	hAccel = -1;

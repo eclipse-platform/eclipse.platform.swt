@@ -56,10 +56,10 @@ public boolean equals (Object object) {
 		handle.tmOverhang == metric.tmOverhang &&
 		handle.tmDigitizedAspectX == metric.tmDigitizedAspectX &&
 		handle.tmDigitizedAspectY == metric.tmDigitizedAspectY &&
-		handle.tmFirstChar == metric.tmFirstChar &&
-		handle.tmLastChar == metric.tmLastChar &&
-		handle.tmDefaultChar == metric.tmDefaultChar &&
-		handle.tmBreakChar == metric.tmBreakChar &&
+//		handle.tmFirstChar == metric.tmFirstChar &&
+//		handle.tmLastChar == metric.tmLastChar &&
+//		handle.tmDefaultChar == metric.tmDefaultChar &&
+//		handle.tmBreakChar == metric.tmBreakChar &&
 		handle.tmItalic == metric.tmItalic &&
 		handle.tmUnderlined == metric.tmUnderlined &&
 		handle.tmStruckOut == metric.tmStruckOut &&
@@ -141,9 +141,8 @@ public int hashCode() {
 	return handle.tmHeight ^ handle.tmAscent ^ handle.tmDescent ^
 		handle.tmInternalLeading ^ handle.tmExternalLeading ^
 		handle.tmAveCharWidth ^ handle.tmMaxCharWidth ^ handle.tmWeight ^
-		handle.tmOverhang ^ handle.tmDigitizedAspectX ^
-		handle.tmDigitizedAspectY ^ handle.tmFirstChar ^
-		handle.tmLastChar ^ handle.tmDefaultChar ^ handle.tmBreakChar ^
+		handle.tmOverhang ^ handle.tmDigitizedAspectX ^ handle.tmDigitizedAspectY ^
+//		handle.tmFirstChar ^ handle.tmLastChar ^ handle.tmDefaultChar ^ handle.tmBreakChar ^
 		handle.tmItalic ^ handle.tmUnderlined ^ handle.tmStruckOut ^
 		handle.tmPitchAndFamily ^ handle.tmCharSet;
 }

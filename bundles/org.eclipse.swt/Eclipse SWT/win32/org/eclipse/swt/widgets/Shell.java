@@ -809,8 +809,8 @@ public void setVisible (boolean visible) {
 	checkWidget ();
 	super.setVisible (visible);
 	if (showWithParent == visible) return;
-	if (OS.IsWinCE) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
-	OS.ShowOwnedPopups (handle, showWithParent = visible);
+	showWithParent = visible;
+	if (!OS.IsWinCE) OS.ShowOwnedPopups (handle, visible);
 	int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
 	if ((style & mask) != 0) {
 		if (visible) {
@@ -972,12 +972,13 @@ LRESULT WM_SETCURSOR (int wParam, int lParam) {
 			}
 		}
 		if (!OS.IsWindowEnabled (handle)) {
-			if (OS.IsWinCE) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
-			int hwndPopup = OS.GetLastActivePopup (handle);
-			if (hwndPopup != 0 && hwndPopup != handle) {
-				if (WidgetTable.get (hwndPopup) == null) {
-					OS.SetActiveWindow (hwndPopup);
-				} 
+			if (!OS.IsWinCE) {
+				int hwndPopup = OS.GetLastActivePopup (handle);
+				if (hwndPopup != 0 && hwndPopup != handle) {
+					if (WidgetTable.get (hwndPopup) == null) {
+						OS.SetActiveWindow (hwndPopup);
+					}
+				}
 			}
 		}
 	}

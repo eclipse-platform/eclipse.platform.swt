@@ -1110,7 +1110,7 @@ public void setDoubleClickEnabled (boolean doubleClick) {
 public void setEchoChar (char echo) {
 	checkWidget ();
 	if (echo != 0) {
-		if ((echo = wcsToMbcs (echo, getCodePage ())) == 0) echo = '*';
+		if ((echo = (char) wcsToMbcs (echo, getCodePage ())) == 0) echo = '*';
 	}
 	OS.SendMessage (handle, OS.EM_SETPASSWORDCHAR, echo, 0);
 	/*
@@ -1454,6 +1454,7 @@ int wcsToMbcsPos (int wcsPos) {
 			if (mbcsSize + delimiterSize > buffer.length) {
 				buffer = new byte [mbcsSize + delimiterSize];
 			}
+			//ENDIAN
 			buffer [0] = (byte) (mbcsSize & 0xFF);
 			buffer [1] = (byte) (mbcsSize >> 8);
 			mbcsSize = OS.SendMessageA (handle, OS.EM_GETLINE, line, buffer);

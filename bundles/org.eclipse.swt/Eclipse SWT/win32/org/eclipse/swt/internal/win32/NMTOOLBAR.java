@@ -11,7 +11,6 @@ public class NMTOOLBAR extends NMHDR {
 	public int idCommand;
 	public byte fsState;
 	public byte fsStyle;
-	public short ___MISSING_ALIGNMENT__; 
 	public int dwData;
 	public int iString;
 	public int cchText;
