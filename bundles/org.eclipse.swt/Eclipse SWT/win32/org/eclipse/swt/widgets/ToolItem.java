@@ -382,7 +382,7 @@ void releaseImages () {
 	info.cbSize = TBBUTTONINFO.sizeof;
 	info.dwMask = OS.TBIF_IMAGE | OS.TBIF_STYLE;
 	int hwnd = parent.handle;
-	int index = OS.SendMessage (hwnd, OS.TB_GETBUTTONINFO, id, info);
+	OS.SendMessage (hwnd, OS.TB_GETBUTTONINFO, id, info);
 	/*
 	* Feature in Windows.  For some reason, a tool item that has
 	* the style BTNS_SEP does not return I_IMAGENONE when queried
@@ -579,7 +579,7 @@ public void setText (String string) {
 	info.dwMask = OS.TBIF_TEXT | OS.TBIF_STYLE;
 	info.pszText = pszText;
 	info.fsStyle = (byte) (widgetStyle () | OS.BTNS_AUTOSIZE);
-	int result = OS.SendMessage (hwnd, OS.TB_SETBUTTONINFO, id, info);
+	OS.SendMessage (hwnd, OS.TB_SETBUTTONINFO, id, info);
 	OS.HeapFree (hHeap, 0, pszText);
 	
 	/*
@@ -711,7 +711,14 @@ int widgetStyle () {
 }
 
 LRESULT wmCommandChild (int wParam, int lParam) {
-	postEvent (SWT.Selection);
+	Event event = new Event ();
+	if (OS.GetKeyState (OS.VK_MENU) < 0) event.stateMask |= SWT.ALT;
+	if (OS.GetKeyState (OS.VK_SHIFT) < 0) event.stateMask |= SWT.SHIFT;
+	if (OS.GetKeyState (OS.VK_CONTROL) < 0) event.stateMask |= SWT.CONTROL;
+	if (OS.GetKeyState (OS.VK_LBUTTON) < 0) event.stateMask |= SWT.BUTTON1;
+	if (OS.GetKeyState (OS.VK_MBUTTON) < 0) event.stateMask |= SWT.BUTTON2;
+	if (OS.GetKeyState (OS.VK_RBUTTON) < 0) event.stateMask |= SWT.BUTTON3;
+	postEvent (SWT.Selection, event);
 	return null;
 }
 
