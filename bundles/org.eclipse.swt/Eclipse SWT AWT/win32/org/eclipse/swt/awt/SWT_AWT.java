@@ -75,6 +75,13 @@ static synchronized void loadLibrary () {
  * the AWT components that will be embedded within the composite. In order
  * for the embedding to succeed, the composite must have been created
  * with the SWT.EMBEDDED style.
+ * <p>
+ * IMPORTANT: As of JDK1.5, the embedded frame does not receive mouse events.
+ * When a lightweight component is added as a child of the embedded frame,
+ * the cursor does not change. In order to work around both these problems, it is
+ * strongly recommended that a heightweight component such as <code>java.awt.Panel</code>
+ * be added to the frame as the root of all components.
+ * </p>
  * 
  * @param parent the parent <code>Composite</code> of the new <code>java.awt.Frame</code>
  * @return a <code>java.awt.Frame</code> to be the parent of the embedded AWT components
@@ -124,7 +131,7 @@ public static Frame new_Frame (final Composite parent) {
 	final Frame frame = (Frame) value;
 	
 	/*
-	* This is necessary to make lightweigth components
+	* This is necessary to make lightweight components
 	* directly added to the frame receive mouse events
 	* properly.
 	*/
