@@ -1184,17 +1184,21 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventRawKeyDown (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	/*
-	* Feature in the Macintosh.  For some reason, when the user hits an
-	* up or down arrow to traverse the items in a Data Browser, the item
-	* scrolls to the left such that the white space that is normally
-	* visible to the right of the every item is scrolled out of view.
-	* The fix is to do the arrow traversal in Java and not call the
-	* default handler.
-	*/
 	int [] keyCode = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
 	switch (keyCode [0]) {
+		case 36: { /* Return */
+			postEvent (SWT.DefaultSelection);
+			break;
+		}
+		/*
+		* Feature in the Macintosh.  For some reason, when the user hits an
+		* up or down arrow to traverse the items in a Data Browser, the item
+		* scrolls to the left such that the white space that is normally
+		* visible to the right of the every item is scrolled out of view.
+		* The fix is to do the arrow traversal in Java and not call the
+		* default handler.
+		*/
 		case 125: { /* Down */
 			int index = getSelectionIndex ();
 			setSelection (Math.min (itemCount - 1, index + 1), true);
@@ -1212,25 +1216,29 @@ int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
 int kEventRawKeyRepeat (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventRawKeyRepeat (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	/*
-	* Feature in the Macintosh.  For some reason, when the user hits an
-	* up or down arrow to traverse the items in a Data Browser, the item
-	* scrolls to the left such that the white space that is normally
-	* visible to the right of the every item is scrolled out of view.
-	* The fix is to do the arrow traversal in Java and not call the
-	* default handler.
-	*/
 	int [] keyCode = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
 	switch (keyCode [0]) {
+		case 36: { /* Return */
+			postEvent (SWT.DefaultSelection);
+			break;
+		}
+		/*
+		* Feature in the Macintosh.  For some reason, when the user hits an
+		* up or down arrow to traverse the items in a Data Browser, the item
+		* scrolls to the left such that the white space that is normally
+		* visible to the right of the every item is scrolled out of view.
+		* The fix is to do the arrow traversal in Java and not call the
+		* default handler.
+		*/
 		case 125: { /* Down */
 			int index = getSelectionIndex ();
-			setSelection (Math.min (itemCount - 1, index + 1));
+			setSelection (Math.min (itemCount - 1, index + 1), true);
 			return OS.noErr;
 		}
 		case 126: { /* Up*/
 			int index = getSelectionIndex ();
-			setSelection (Math.max (0, index - 1));
+			setSelection (Math.max (0, index - 1), true);
 			return OS.noErr;
 		}
 	}
