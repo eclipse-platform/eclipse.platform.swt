@@ -337,6 +337,7 @@ public static final native int gdk_window_get_pointer(int window, int[] x, int[]
 public static final native void gdk_window_set_cursor(int window, int cursor);
 public static final native void gdk_window_set_icon(int window, int icon_window, int pixmap, int mask);
 public static final native void gdk_window_set_user_data(int window, int user_data);
+public static final native void gdk_window_show(int window);
 public static final native void gdk_window_get_user_data(int window, int[] data);
 public static final native void gdk_window_set_decorations(int window, int decorations);
 public static final native int gtk_adjustment_new(float value, float lower, float upper, float step_increment, float page_increment, float page_size);
