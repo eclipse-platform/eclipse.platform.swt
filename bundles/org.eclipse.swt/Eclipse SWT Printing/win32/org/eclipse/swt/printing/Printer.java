@@ -51,13 +51,13 @@ public final class Printer extends Device {
 	 * strings used to access the Windows registry
 	 * (Warning: These fields are platform dependent)
 	 */
-	static byte[] profile;
-	static byte[] appName;
-	static byte[] keyName;
+	static TCHAR profile;
+	static TCHAR appName;
+	static TCHAR keyName;
 	static {
-		profile = Converter.wcsToMbcs(0, "PrinterPorts", true);
-		appName = Converter.wcsToMbcs(0, "windows", true);
-		keyName = Converter.wcsToMbcs(0, "device", true);
+		profile = new TCHAR(0, "PrinterPorts", true);
+		appName = new TCHAR(0, "windows", true);
+		keyName = new TCHAR(0, "device", true);
 	}
 	
 /**
@@ -67,36 +67,36 @@ public final class Printer extends Device {
  * @return the list of available printers
  */
 public static PrinterData[] getPrinterList() {
-	byte[] buf = new byte[1024];
-	int n = OS.GetProfileStringA(profile, null, new byte[] {0}, buf, buf.length);
+	int length = 1024;
+	/* Use the character encoding for the default locale */
+	TCHAR buf = new TCHAR(0, length);
+	TCHAR nullBuf = new TCHAR(0, 1);
+	int n = OS.GetProfileString(profile, null, nullBuf, buf, length);
 	if (n == 0) return new PrinterData[0];
-	byte[][] deviceNames = new byte[5][];
+	String[] deviceNames = new String[5];
 	int nameCount = 0;
 	int index = 0;
 	for (int i = 0; i < n; i++) {
-		if (buf[i] == 0) {
+		if (buf.tcharAt(i) == 0) {
 			if (nameCount == deviceNames.length) {
-				byte[][] newNames = new byte[deviceNames.length + 5][];
+				String[] newNames = new String[deviceNames.length + 5];
 				System.arraycopy(deviceNames, 0, newNames, 0, deviceNames.length);
 				deviceNames = newNames;
 			}
-			deviceNames[nameCount] = new byte[i - index + 1];
-			System.arraycopy(buf, index, deviceNames[nameCount], 0, i - index);
+			deviceNames[nameCount] = buf.toString(index, i - index);
 			nameCount++;
 			index = i + 1;
 		}
 	}
 	PrinterData printerList[] = new PrinterData[nameCount];
 	for (int p = 0; p < nameCount; p++) {
-		String device = new String(deviceNames[p], 0, deviceNames[p].length - 1);
+		String device = deviceNames[p];
 		String driver = "";
-		if (OS.GetProfileStringA(profile, deviceNames[p], new byte [] {0}, buf, buf.length) > 0) {
+		if (OS.GetProfileString(profile, new TCHAR(0, device, true), nullBuf, buf, length) > 0) {
 			int commaIndex = 0;
-			while (buf[commaIndex] != ',' && commaIndex < buf.length) commaIndex++;
-			if (commaIndex < buf.length) {
-				byte[] driverName = new byte[commaIndex + 1];
-				System.arraycopy(buf, 0, driverName, 0, commaIndex);
-				driver = new String(driverName, 0, driverName.length - 1);
+			while (buf.tcharAt(commaIndex) != ',' && commaIndex < length) commaIndex++;
+			if (commaIndex < length) {
+				driver = buf.toString(0, commaIndex);
 			}
 		}
 		printerList[p] = new PrinterData(driver, device);
@@ -115,28 +115,27 @@ public static PrinterData[] getPrinterList() {
  * @return the default printer data
  */
 static PrinterData getDefaultPrinterData() {
-	byte [] deviceName = null;
-	byte[] buf = new byte[1024];
-	int n = OS.GetProfileStringA(appName, keyName, new byte[] {0}, buf, buf.length);
+	String deviceName = null;
+	int length = 1024;
+	/* Use the character encoding for the default locale */
+	TCHAR buf = new TCHAR(0, length);
+	TCHAR nullBuf = new TCHAR(0, 1);
+	int n = OS.GetProfileString(appName, keyName, nullBuf, buf, length);
 	if (n == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int commaIndex = 0;
-	while(buf[commaIndex] != ',' && commaIndex < buf.length) commaIndex++;
-	if (commaIndex < buf.length) {
-		deviceName = new byte[commaIndex + 1];
-		System.arraycopy(buf, 0, deviceName, 0, commaIndex);
+	while(buf.tcharAt(commaIndex) != ',' && commaIndex < length) commaIndex++;
+	if (commaIndex < length) {
+		deviceName = buf.toString(0, commaIndex);		
 	}
-	String device = new String(deviceName, 0, deviceName.length - 1);
 	String driver = "";
-	if (OS.GetProfileStringA(profile, deviceName, new byte [] {0}, buf, buf.length) > 0) {
+	if (OS.GetProfileString(profile, new TCHAR(0, deviceName, true), nullBuf, buf, length) > 0) {
 		commaIndex = 0;
-		while (buf[commaIndex] != ',' && commaIndex < buf.length) commaIndex++;
-		if (commaIndex < buf.length) {
-			byte[] driverName = new byte[commaIndex + 1];
-			System.arraycopy(buf, 0, driverName, 0, commaIndex);
-			driver = new String(driverName, 0, driverName.length - 1);
+		while (buf.tcharAt(commaIndex) != ',' && commaIndex < length) commaIndex++;
+		if (commaIndex < length) {
+			driver = buf.toString(0, commaIndex);	
 		}
 	}
-	return new PrinterData(driver, device);
+	return new PrinterData(driver, deviceName);
 }
 
 /**
@@ -183,8 +182,8 @@ public Printer(PrinterData data) {
 protected void create(DeviceData deviceData) {
 	data = (PrinterData)deviceData;
 	/* Use the character encoding for the default locale */
-	byte[] driver = Converter.wcsToMbcs(0, data.driver, true);
-	byte[] device = Converter.wcsToMbcs(0, data.name, true);
+	TCHAR driver = new TCHAR(0, data.driver, true);
+	TCHAR device = new TCHAR(0, data.name, true);
 	int lpInitData = 0;
 	byte buffer [] = data.otherData;
 	int hHeap = OS.GetProcessHeap();
@@ -192,7 +191,7 @@ protected void create(DeviceData deviceData) {
 		lpInitData = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, buffer.length);
 		OS.MoveMemory(lpInitData, buffer, buffer.length);
 	}
-	handle = OS.CreateDCA(driver, device, 0, lpInitData);
+	handle = OS.CreateDC(driver, device, 0, lpInitData);
 	if (lpInitData != 0) OS.HeapFree(hHeap, 0, lpInitData);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 }
@@ -270,20 +269,22 @@ public boolean startJob(String jobName) {
 	int lpszDocName = 0;
 	if (jobName != null && jobName.length() != 0) {
 		/* Use the character encoding for the default locale */
-		byte [] buffer = Converter.wcsToMbcs(0, jobName, true);
-		lpszDocName = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, buffer.length);
-		OS.MoveMemory(lpszDocName, buffer, buffer.length);
+		TCHAR buffer = new TCHAR(0, jobName, true);
+		int byteCount = buffer.length() * TCHAR.sizeof;
+		lpszDocName = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+		OS.MoveMemory(lpszDocName, buffer, byteCount);
 		di.lpszDocName = lpszDocName;
 	}
 	int lpszOutput = 0;
 	if (data.printToFile && data.fileName != null) {
 		/* Use the character encoding for the default locale */
-		byte [] buffer = Converter.wcsToMbcs(0, data.fileName, true);
-		lpszOutput = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, buffer.length);
-		OS.MoveMemory(lpszOutput, buffer, buffer.length);
+		TCHAR buffer = new TCHAR(0, data.fileName, true);
+		int byteCount = buffer.length() * TCHAR.sizeof;
+		lpszOutput = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+		OS.MoveMemory(lpszOutput, buffer, byteCount);
 		di.lpszOutput = lpszOutput;
 	}
-	int rc = OS.StartDocA(handle, di);
+	int rc = OS.StartDoc(handle, di);
 	if (lpszDocName != 0) OS.HeapFree(hHeap, 0, lpszDocName);
 	if (lpszOutput != 0) OS.HeapFree(hHeap, 0, lpszOutput);
 	return rc > 0;

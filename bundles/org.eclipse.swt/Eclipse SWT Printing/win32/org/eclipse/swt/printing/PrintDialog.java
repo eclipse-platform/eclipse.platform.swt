@@ -210,28 +210,31 @@ public PrinterData open() {
 	pd.nMaxPage = -1;
 	pd.nFromPage = (short) startPage;
 	pd.nToPage = (short) endPage;
-	if (OS.PrintDlgA(pd)) {
+	if (OS.PrintDlg(pd)) {
 		/* Get driver and device from the DEVNAMES struct */
 		int size = OS.GlobalSize(pd.hDevNames);
 		int ptr = OS.GlobalLock(pd.hDevNames);
-		byte [] DEVNAMES = new byte[size];
-		OS.MoveMemory(DEVNAMES, ptr, size);
+		short[] offsets = new short[4];
+		OS.MoveMemory(offsets, ptr, 2 * offsets.length);
+		TCHAR buffer = new TCHAR(0, size);
+		OS.MoveMemory(buffer, ptr, size);	
 		OS.GlobalUnlock(ptr);
-		int driverOffset = (DEVNAMES[0] & 0xFF) | ((DEVNAMES[1] & 0xFF) << 8);
+
+		int driverOffset = offsets[0];
 		int i = 0;
 		while (driverOffset + i < size) {
-			if (DEVNAMES[driverOffset + i] == 0) break;
+			if (buffer.tcharAt(driverOffset + i) == 0) break;
 			else i++;
 		}
-		String driver = new String(DEVNAMES, driverOffset, i);
-		int deviceOffset = (DEVNAMES[2] & 0xFF) | ((DEVNAMES[3] & 0xFF) << 8);
+		String driver = buffer.toString(driverOffset, i);
+		int deviceOffset = offsets[1];
 		i = 0;
 		while (deviceOffset + i < size) {
-			if (DEVNAMES[deviceOffset + i] == 0) break;
+			if (buffer.tcharAt(deviceOffset + i) == 0) break;
 			else i++;
 		}
-		String device = new String(DEVNAMES, deviceOffset, i);
-	
+		String device = buffer.toString(deviceOffset, i);	
+		
 		/* Create PrinterData object and set fields from PRINTDLG */
 		PrinterData data = new PrinterData(driver, device);
 		if ((pd.Flags & OS.PD_PAGENUMS) != 0) {
