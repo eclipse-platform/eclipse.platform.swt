@@ -157,9 +157,12 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 			break;
 		case OS.WM_RBUTTONDOWN: {
 			sendEvent (SWT.MenuDetect);
+			// widget could be disposed at this point
+			if (isDisposed()) return 0;
 			break;
 		}
 	}
+	display.wakeThread ();
 	return 0;
 }
 
@@ -256,13 +259,18 @@ public void setToolTipText (String value) {
 	toolTipText = value;
 	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
 	TCHAR buffer = new TCHAR (0, toolTipText == null ? "" : toolTipText, true);
+	/*
+	* Note that the size of the szTip field is different
+	* in version 5.0 of shell32.dll.
+	*/
+	int length = OS.SHELL32_MAJOR < 5 ? 64 : 128;
 	if (OS.IsUnicode) {
 		char [] szTip = ((NOTIFYICONDATAW) iconData).szTip;
-		int length = Math.min (szTip.length - 1, buffer.length ());
+		length = Math.min (length - 1, buffer.length ());
 		System.arraycopy (buffer.chars, 0, szTip, 0, length);
 	} else {
 		byte [] szTip = ((NOTIFYICONDATAA) iconData).szTip;
-		int length = Math.min (szTip.length - 1, buffer.length ());
+		length = Math.min (length - 1, buffer.length ());
 		System.arraycopy (buffer.bytes, 0, szTip, 0, length);
 	}
 	iconData.cbSize = NOTIFYICONDATA.sizeof;
@@ -300,10 +308,22 @@ public void setVisible (boolean visible) {
 	iconData.cbSize = NOTIFYICONDATA.sizeof;
 	iconData.uID = id;
 	iconData.hWnd = display.hwndMessage;
-	iconData.uFlags = OS.NIF_STATE;
-	iconData.dwState = visible ? 0 : OS.NIS_HIDDEN;
-	iconData.dwStateMask = OS.NIS_HIDDEN;
-	OS.Shell_NotifyIcon (OS.NIM_MODIFY, iconData);
+	if (OS.SHELL32_MAJOR < 5) {
+		if (visible) {
+			iconData.uFlags = OS.NIF_MESSAGE;
+			iconData.uCallbackMessage = Display.SWT_TRAYICONMSG;
+			OS.Shell_NotifyIcon (OS.NIM_ADD, iconData);
+			setImage (image);
+			setToolTipText (toolTipText);
+		} else {
+			OS.Shell_NotifyIcon (OS.NIM_DELETE, iconData);
+		}
+	} else {
+		iconData.uFlags = OS.NIF_STATE;
+		iconData.dwState = visible ? 0 : OS.NIS_HIDDEN;
+		iconData.dwStateMask = OS.NIS_HIDDEN;
+		OS.Shell_NotifyIcon (OS.NIM_MODIFY, iconData);
+	}
 	if (!visible) sendEvent (SWT.Hide);
 }
 

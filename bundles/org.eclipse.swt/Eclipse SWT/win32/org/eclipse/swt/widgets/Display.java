@@ -2939,12 +2939,15 @@ public void wake () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	if (thread == Thread.currentThread ()) return;
 	synchronized (getMessageLock ()) {
-		if (getMessageCount () > 1) return;
-		if (OS.IsWinCE) {
-			OS.PostMessage (hwndMessage, OS.WM_NULL, 0, 0);
-		} else {
-			OS.PostThreadMessage (threadId, OS.WM_NULL, 0, 0);
-		}
+		if (getMessageCount () == 1) wakeThread ();
+	}
+}
+
+void wakeThread () {
+	if (OS.IsWinCE) {
+		OS.PostMessage (hwndMessage, OS.WM_NULL, 0, 0);
+	} else {
+		OS.PostThreadMessage (threadId, OS.WM_NULL, 0, 0);
 	}
 }
 
