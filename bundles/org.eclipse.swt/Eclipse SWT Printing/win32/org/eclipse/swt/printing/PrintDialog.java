@@ -224,7 +224,7 @@ public PrinterData open() {
 	pd.nMaxPage = -1;
 	pd.nFromPage = (short) Math.min (0xFFFF, Math.max (1, startPage));
 	pd.nToPage = (short) Math.min (0xFFFF, Math.max (1, endPage));
-	if (OS.PrintDlg(pd)) {
+	if (OS.PrintDlg(pd)) {		// success
 		/* Get driver and device from the DEVNAMES struct */
 		int hMem = pd.hDevNames;
 		/* Ensure size is a multiple of 2 bytes on UNICODE platforms */
@@ -282,6 +282,10 @@ public PrinterData open() {
 		OS.MoveMemory(data.otherData, ptr, size);
 		OS.GlobalUnlock(hMem);
 
+		endPage = data.endPage;
+		printToFile = data.printToFile;
+		scope = data.scope;
+		startPage = data.startPage;
 		return data;
 	}
 	return null;
