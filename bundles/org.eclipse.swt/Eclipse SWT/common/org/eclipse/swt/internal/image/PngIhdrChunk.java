@@ -7,6 +7,7 @@ package org.eclipse.swt.internal.image;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 
 class PngIhdrChunk extends PngChunk {
 	static final int EXPECTED_DATA_LENGTH = 13;
@@ -343,7 +344,7 @@ boolean usesDirectColor() {
 
 PaletteData createGrayscalePalette() {
 	int bitDepth = Math.min(getBitDepth(), 8);
-	int max = (int) (Math.pow(2, bitDepth) - 1);
+	int max = (int) (Compatability.pow(2, bitDepth) - 1);
 	int delta = 255 / max;
 	int gray = 0;
 	RGB[] rgbs = new RGB[max + 1]; 

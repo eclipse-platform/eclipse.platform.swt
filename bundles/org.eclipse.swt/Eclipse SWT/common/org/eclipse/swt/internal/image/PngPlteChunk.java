@@ -7,6 +7,7 @@ package org.eclipse.swt.internal.image;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
 
 class PngPlteChunk extends PngChunk {
 
@@ -71,7 +72,7 @@ void validate(PngFileReadState readState, PngIhdrChunk headerChunk) {
 	// Palettes cannot have more entries than 2^bitDepth
 	// where bitDepth is the bit depth of the image given
 	// in the IHDR chunk.
-	if (Math.pow(2, headerChunk.getBitDepth()) < getPaletteSize()) {
+	if (Compatability.pow(2, headerChunk.getBitDepth()) < getPaletteSize()) {
 		SWT.error(SWT.ERROR_INVALID_IMAGE);
 	}
 	

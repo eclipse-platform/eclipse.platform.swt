@@ -298,7 +298,15 @@ void validate(PngFileReadState readState, PngIhdrChunk headerChunk) {
 	
 	// All characters must be letters.
 	for (int i = 0; i < TYPE_FIELD_LENGTH; i++) {
-		if (!Character.isLetter((char) type[i])) SWT.error(SWT.ERROR_INVALID_IMAGE);
+		/* MVM - CLDC changes
+			- Character.isLetter() not available
+			- note: this is also a fix as isLetter is more than just upper and lower
+			case letters, however the PNG spec says only upper or lower case letters allowed
+		*/
+		//if (!Character.isLetter((char) type[i])) SWT.error(SWT.ERROR_INVALID_IMAGE);
+		if (!Character.isUpperCase((char) type[i]) && !Character.isLowerCase((char) type[i]))
+			SWT.error(SWT.ERROR_INVALID_IMAGE);
+		/* MVM - CLDC changes end */
 	}
 	
 	// The stored CRC must match the data's computed CRC.

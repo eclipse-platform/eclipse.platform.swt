@@ -183,7 +183,7 @@ private static String[] getExtensions( Display display ) {
 		Vector mimeExts = (Vector) mimeInfo.get( mimeType );
 		for (int index = 0; index < mimeExts.size(); index++){
 			if (!extensions.contains( mimeExts.elementAt( index ) )) {
-				extensions.add( mimeExts.elementAt( index ) );
+				extensions.addElement( mimeExts.elementAt( index ) );
 			}
 		}
 	}
@@ -237,7 +237,7 @@ private static Program[] getPrograms( Display display ) {
 			program.command   = command;
 			program.extension = extension;
 			program.display   = display;
-			programs.add( program );
+			programs.addElement( program );
 		}
 	}
 			
@@ -431,7 +431,7 @@ private static String[] parseCommand( String cmd ) {
 	int eIndex;
 	while (sIndex < cmd.length()) {
 		// Trim initial white space of argument.
-		while (sIndex < cmd.length() && Character.isWhitespace( cmd.charAt(sIndex) )) {
+		while (sIndex < cmd.length() && Compatability.isWhitespace( cmd.charAt(sIndex) )) {
 			sIndex++;
 		}
 		if (sIndex < cmd.length()) {
@@ -445,11 +445,11 @@ private static String[] parseCommand( String cmd ) {
 				}
 				if (eIndex >= cmd.length()) { // the terminating quote was not found
 					// Add the argument as is with only one initial quote.
-					args.add( cmd.substring( sIndex, eIndex ) );
+					args.addElement( cmd.substring( sIndex, eIndex ) );
 				}
 				// else add the argument, trimming off the quotes.
 				else {
-					args.add( cmd.substring( sIndex+1, eIndex ) );
+					args.addElement( cmd.substring( sIndex+1, eIndex ) );
 				}
 				sIndex = eIndex + 1;
 			}
@@ -457,10 +457,10 @@ private static String[] parseCommand( String cmd ) {
 			// else use white space for the delimiters.
 			else {
 				eIndex = sIndex;
-				while (eIndex < cmd.length() && !Character.isWhitespace( cmd.charAt(eIndex) )) {
+				while (eIndex < cmd.length() && !Compatability.isWhitespace( cmd.charAt(eIndex) )) {
 					eIndex++;
 				}
-				args.add( cmd.substring( sIndex, eIndex ) );
+				args.addElement( cmd.substring( sIndex, eIndex ) );
 				sIndex = eIndex + 1;
 			}
 		}
@@ -524,9 +524,7 @@ static String gnome_getMimeValue(String mimeType, String key) {
 }
 
 static boolean kde_init () {
-	try {
-		Callback.loadLibrary("swt-kde");
-	} catch (UnsatisfiedLinkError e) {
+	if (!Compatability.loadLibrary("swt-kde")) {
 		return false;
 	}
 
@@ -586,7 +584,7 @@ private static Hashtable kde_getMimeInfo() {
 			extension = kde_convertQStringAndFree( patString );
 			int period = extension.indexOf( '.' );
 			if (period != -1) {
-				mimeExts.add( extension.substring( period ) );
+				mimeExts.addElement( extension.substring( period ) );
 			}
 
 			// Advance to the next pattern.		
@@ -651,7 +649,7 @@ private static boolean launch( Display display, String fileName ) {
 	if (fileName == null) SWT.error( SWT.ERROR_NULL_ARGUMENT );
 	
 	// If the argument appears to be a data file (it has an extension)
-	int index = fileName.lastIndexOf(".");
+	int index = fileName.lastIndexOf('.');
 	if (index > 0) {
 		
 		// Find the associated program, if one is defined.
@@ -861,12 +859,7 @@ public String toString () {
 	return "Program {" + name + "}";
 }
 static boolean gnome_init () {
-	try {
-		Callback.loadLibrary("swt-gnome");
-	} catch (UnsatisfiedLinkError e) {
-		return false;
-	}
-	return true;
+	return Compatability.loadLibrary("swt-gnome");
 }
 
 /* CDE - Get Attribute Value
@@ -959,7 +952,7 @@ static Hashtable cde_getDataTypeInfo() {
    			if (!CDE.DtDtsDataTypeIsAction( dataTypeBuf ) &&
 				extension != null && cde_getAction( dataTypeName ) != null) {
 				Vector exts = new Vector();
-				exts.add( extension );
+				exts.addElement( extension );
 				dataTypeInfo.put( dataTypeName, exts );
 	   		}
 			dataType = CDE.listElementAt( dataTypeList, index++ );
@@ -1031,9 +1024,7 @@ ImageData cde_getImageData() {
  * The shell created fo DtAppInitialize is kept for DtActionInvoke calls.
  */
 static boolean cde_init( Display display ) {
-	try {
-		Callback.loadLibrary("swt-cde");
-	} catch (UnsatisfiedLinkError e) {
+	if (!Compatability.loadLibrary("swt-cde")) {
 		return false;
 	}
 

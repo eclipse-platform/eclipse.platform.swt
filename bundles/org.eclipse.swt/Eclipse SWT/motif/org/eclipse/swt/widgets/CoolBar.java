@@ -350,7 +350,7 @@ void moveDown(CoolItem item, int x_root) {
 		/* Create a new bottom row for the item. */
 		Vector newRow = new Vector(10);
 		insertItemIntoRow(item, newRow, x_root, newRowY);
-		rows.add(newRow);
+		rows.addElement(newRow);
 		adjustItemHeights(oldRowIndex);
 		return;
 	}
@@ -424,7 +424,7 @@ void moveUp(CoolItem item, int x_root) {
 		/* Create a new top row for the item. */
 		Vector newRow = new Vector(10);
 		insertItemIntoRow(item, newRow, x_root, newRowY);
-		rows.add(0, newRow);
+		rows.insertElementAt(newRow, 0);
 		adjustItemHeights(0);
 		return;
 	}

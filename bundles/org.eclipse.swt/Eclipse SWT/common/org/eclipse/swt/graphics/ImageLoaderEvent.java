@@ -6,6 +6,7 @@ package org.eclipse.swt.graphics;
  */
 
 import java.util.*;
+import org.eclipse.swt.internal.*;
 
 /**
  * Instances of this class are sent as a result of the incremental
@@ -25,7 +26,7 @@ import java.util.*;
  * @see ImageLoaderListener
  */
 
-public class ImageLoaderEvent extends EventObject {
+public class ImageLoaderEvent extends EventObjectCompatability {
 	
 	/**
 	 * if the <code>endOfImage</code> flag is false, then this is a

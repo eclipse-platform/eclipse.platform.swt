@@ -9,6 +9,7 @@ import java.io.*;
 import java.util.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.image.*;
+import org.eclipse.swt.internal.*;
 
 /**
  * Instances of this class are used to load images from,
@@ -139,7 +140,7 @@ public ImageData[] load(String filename) {
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	InputStream stream = null;
 	try {
-		stream = new FileInputStream(filename);
+		stream = Compatability.newFileInputStream(filename);
 		return load(stream);
 	} catch (IOException e) {
 		SWT.error(SWT.ERROR_IO, e);
@@ -220,7 +221,7 @@ public void save(String filename, int format) {
 	if (filename == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	OutputStream stream = null;
 	try {
-		stream = new FileOutputStream(filename);
+		stream = Compatability.newFileOutputStream(filename);
 	} catch (IOException e) {
 		SWT.error(SWT.ERROR_IO, e);
 	}

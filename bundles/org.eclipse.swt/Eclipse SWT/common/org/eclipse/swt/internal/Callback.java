@@ -254,14 +254,9 @@ public static void loadLibrary (String name) {
 	
 	/* No "r" until first revision */
 	if (REVISION > 0) newName += "r" + REVISION;
-	try {
-		System.loadLibrary (newName);
-	} catch (UnsatisfiedLinkError e) {
-		try {
-			System.loadLibrary (name);
-		} catch (UnsatisfiedLinkError e2) {
-			throw e;
-		}
+	if (!Compatability.loadLibrary (newName)) {
+		if (Compatability.loadLibrary (name))
+			SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 }
 
