@@ -2733,7 +2733,7 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III_3I_3I)
     return rc;
 }
 
-JNIEXPORT jint JNICALL JNICALL XPCOM_NATIVE(VtblCall__IISSS_3Z)
+JNIEXPORT jint JNICALL JNICALL XPCOM_NATIVE(VtblCall__IIISSS_3Z)
 	(JNIEnv *env, jclass, jint fnNumber, jint ppVtbl, jint arg0, jshort arg1, jshort arg2, jshort arg3, jbooleanArray arg4)
 {
     P_OLE_FN_6SSS fn = (P_OLE_FN_6SSS)(*(int **)ppVtbl)[fnNumber];
@@ -2745,7 +2745,7 @@ JNIEXPORT jint JNICALL JNICALL XPCOM_NATIVE(VtblCall__IISSS_3Z)
     return rc;
 }
 
-JNIEXPORT jint JNICALL JNICALL XPCOM_NATIVE(VtblCall__IZSSS_3Z)
+JNIEXPORT jint JNICALL JNICALL XPCOM_NATIVE(VtblCall__IIZSSS_3Z)
 	(JNIEnv *env, jclass, jint fnNumber, jint ppVtbl, jboolean arg0, jshort arg1, jshort arg2, jshort arg3, jbooleanArray arg4)
 {
     P_OLE_FN_6SSS fn = (P_OLE_FN_6SSS)(*(int **)ppVtbl)[fnNumber];
