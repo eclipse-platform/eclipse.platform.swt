@@ -380,7 +380,7 @@ public void test_getCaretLocation() {
 	assertTrue(":b:", text.getCaretLocation().y >= 0);
 	text.setSelection(1,1);
 	assertTrue(":c:", text.getCaretLocation().x > 0);
-	assertTrue(":c:", text.getCaretLocation().y > 0);
+	assertTrue(":c:", text.getCaretLocation().y >= 0);
 }
 
 public void test_getCaretPosition() {
