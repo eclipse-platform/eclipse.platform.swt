@@ -241,11 +241,11 @@ LRESULT WM_MOUSEWHEEL (int wParam, int lParam) {
 	* Translate WM_MOUSEWHEEL to WM_VSCROLL or WM_HSCROLL.
 	*/
 	if ((state & CANVAS) != 0) {
-		if ((wParam & (OS.MK_SHIFT | OS.MK_CONTROL)) != 0) return LRESULT.ZERO;
+		if ((wParam & (OS.MK_SHIFT | OS.MK_CONTROL)) != 0) return result;
 		int delta = (short) (wParam >> 16);
 		int code = delta < 0 ? OS.SB_LINEDOWN : OS.SB_LINEUP;
 		delta = Math.abs (delta);
-		if (delta < OS.WHEEL_DELTA) return LRESULT.ZERO;
+		if (delta < OS.WHEEL_DELTA) return result;
 		if (verticalBar != null) {
 			int [] value = new int [1];
    			OS.SystemParametersInfo (OS.SPI_GETWHEELSCROLLLINES, 0, value, 0);
@@ -262,7 +262,7 @@ LRESULT WM_MOUSEWHEEL (int wParam, int lParam) {
 			}
 			return LRESULT.ZERO;
 		}
-		return LRESULT.ZERO;
+		return result;
 	}
 		
 	/*
