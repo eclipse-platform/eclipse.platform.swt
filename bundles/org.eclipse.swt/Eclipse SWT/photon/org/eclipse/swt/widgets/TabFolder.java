@@ -39,7 +39,7 @@ import org.eclipse.swt.events.*;
 public class TabFolder extends Composite {
 	int parentingHandle;
 	TabItem [] items;
-	int itemCount;
+	int itemCount, currentIndex = OS.Pt_PG_INVALID;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -366,15 +366,22 @@ public TabItem [] getSelection () {
  */
 public int getSelectionIndex () {
 	checkWidget();
-	int [] args = {OS.Pt_ARG_PG_CURRENT_INDEX, 0, 0};
-	OS.PtGetResources (handle, args.length / 3, args);
-	return args [1] == OS.Pt_PG_INVALID ? -1 : args [1];
+	int index;
+	if (currentIndex != OS.Pt_PG_INVALID && !OS.PtWidgetIsRealized (handle)) {
+		index = currentIndex;
+	} else {
+		int [] args = {OS.Pt_ARG_PG_CURRENT_INDEX, 0, 0};
+		OS.PtGetResources (handle, args.length / 3, args);
+		index = args [1];
+	}
+	return index == OS.Pt_PG_INVALID ? -1 : index;
 }
 
 void hookEvents () {
 	super.hookEvents ();
 	int windowProc = getDisplay ().windowProc;
 	OS.PtAddCallback (handle, OS.Pt_CB_PG_PANEL_SWITCHING, windowProc, SWT.Selection);
+	OS.PtAddCallback (handle, OS.Pt_CB_REALIZED, windowProc, SWT.Show);
 }
 
 /**
@@ -444,6 +451,20 @@ int processSelection (int info) {
 	return OS.Pt_CONTINUE;
 }
 
+int processShow (int info) {
+	int result = super.processShow (info);
+	if (currentIndex != OS.Pt_PG_INVALID) {
+		if (info == 0) return OS.Pt_END;
+		PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
+		OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
+		if (cbinfo.reason == OS.Pt_CB_REALIZED) {
+			setSelection (currentIndex, false);
+			currentIndex = OS.Pt_PG_INVALID;
+		}
+	}
+	return result;
+}
+
 void register () {
 	super.register ();
 	if (parentingHandle != 0) WidgetTable.put (parentingHandle, this);
@@ -497,10 +518,8 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		int [] args = {OS.Pt_ARG_WIDTH, 0, 0, OS.Pt_ARG_HEIGHT, 0, 0};
 		OS.PtGetResources (parentingHandle, args.length / 3, args);
 		OS.PtSetResources (handle, args.length / 3, args);
-		args = new int [] {OS.Pt_ARG_PG_CURRENT_INDEX, 0, 0};
-		OS.PtGetResources (handle, args.length / 3, args);
-		int index = args [1];
-		if (index != OS.Pt_PG_INVALID) {
+		int index = getSelectionIndex ();
+		if (index != -1) {
 			TabItem item = items [index];
 			Control control = item.control;
 			if (control != null && !control.isDisposed ()) {
@@ -540,10 +559,19 @@ void setSelection (int index, boolean notify) {
 			control.setVisible (false);
 		}
 	}
+	if (index == -1) index = OS.Pt_PG_INVALID;
 	OS.PtSetResource (handle, OS.Pt_ARG_PG_CURRENT_INDEX, index, 0);	
 	args [1] = 0;
 	OS.PtGetResources (handle, args.length / 3, args);
 	int newIndex = args [1];
+	/*
+	* Bug in Photon.  Pt_ARG_PG_CURRENT_INDEX cannot be set if
+	* the widget is not realized.  The fix is to remember the current
+	* index and reset it when the widget is realized. 
+	*/
+	if (!OS.PtWidgetIsRealized (handle)) {
+		newIndex = currentIndex = index;
+	}
 	if (newIndex != OS.Pt_PG_INVALID) {
 		TabItem item = items [newIndex];
 		Control control = item.control;
