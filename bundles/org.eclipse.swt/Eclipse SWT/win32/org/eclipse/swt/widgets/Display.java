@@ -1898,7 +1898,7 @@ boolean isValidThread () {
  * @return point with mapped coordinates 
  * 
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the rectangle is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li> 
  * </ul>
  * @exception SWTException <ul>
