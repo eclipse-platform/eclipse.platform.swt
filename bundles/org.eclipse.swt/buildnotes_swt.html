@@ -16,9 +16,15 @@ SWT</h1>
 
 <h3><a NAME="Breaking Changes"></a>Breaking Changes</h3>
 <blockquote>
-<code>Text.getText(int start, int end)</code> now throws an <code>IllegalArgumentException</code> if
+<ul>
+<li><code>DirectoryDialog.setMessage(String string)</code> now throws an <code>IllegalArgumentException</code> if
+<code>string</code> is <code>null</code>
+<li><code>MessageBox.setMessage(String string)</code> now throws an <code>IllegalArgumentException</code> if
+<code>string</code> is <code>null</code>
+<li><code>Text.getText(int start, int end)</code> now throws an <code>IllegalArgumentException</code> if
 <code>start</code> is negative, if <code>end</code> is equal to or greater than the length of
 the receiver's text, or if <code>start</code> is greater than <code>end</code>.
+</ul>
 </blockquote>
 
 <h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
