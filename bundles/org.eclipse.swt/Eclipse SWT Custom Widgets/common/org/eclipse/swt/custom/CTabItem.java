@@ -18,10 +18,10 @@ public class CTabItem extends Item {
 	private Image disabledImage;
 	
 	// internal constants
-	private static final int LEFT_MARGIN = 3;
-	private static final int RIGHT_MARGIN = 3;	
-	static final int TOP_MARGIN = 2;
-	static final int BOTTOM_MARGIN = 2;
+	private static final int LEFT_MARGIN = 5;
+	private static final int RIGHT_MARGIN = 5;	
+	static final int TOP_MARGIN = 4;
+	static final int BOTTOM_MARGIN = 4;
 	private static final int INTERNAL_SPACING = 2;
 	
 	private static final String ellipsis = "...";
@@ -135,16 +135,20 @@ void onPaint(GC gc, boolean isSelected) {
 	int index = parent.indexOf(this);
 	
 	if (isSelected) {
-		
-		if (parent.isFocusControl()) {
-			// draw a focus rectangle
-			gc.drawFocus(x + 2, y + 1, width - 3, height - 1);
-		}
-		final Rectangle bounds;
-		if (index == parent.topTabIndex) {
-			bounds = new Rectangle(x + 1, y, width - 2, height);
+
+		Rectangle bounds = null;
+		if (!parent.onBottom) {
+			if (index == parent.topTabIndex) {
+				bounds = new Rectangle(x + 1, y + 1, width - 2, height - 1);
+			} else {
+				bounds = new Rectangle(x + 2, y + 1, width - 3, height - 1);
+			}
 		} else {
-			bounds = new Rectangle(x + 2, y, width - 3, height);
+			if (index == parent.topTabIndex) {
+				bounds = new Rectangle(x + 1, y + 1, width - 2, height - 2);
+			} else {
+				bounds = new Rectangle(x + 2, y + 1, width - 3, height - 2);
+			}
 		}
 		if (parent.backgroundImage != null) {
 			// draw a background image behind the text
@@ -153,12 +157,12 @@ void onPaint(GC gc, boolean isSelected) {
 				bounds.x, bounds.y, bounds.width, bounds.height);
 		} else if (parent.gradientColors != null) {
 			// draw a gradient behind the text
-			final Color oldBackground = gc.getBackground();
+			Color oldBackground = gc.getBackground();
 			if (parent.gradientColors.length == 1) {
 				if (parent.gradientColors[0] != null) gc.setBackground(parent.gradientColors[0]);
 				gc.fillRectangle(bounds.x, bounds.y, bounds.width, bounds.height);
 			} else {
-				final Color oldForeground = gc.getForeground();
+				Color oldForeground = gc.getForeground();
 				Color lastColor = parent.gradientColors[0];
 				if (lastColor == null) lastColor = oldBackground;
 				for (int i = 0, pos = 0; i < parent.gradientPercents.length; ++i) {
@@ -166,7 +170,7 @@ void onPaint(GC gc, boolean isSelected) {
 					lastColor = parent.gradientColors[i + 1];
 					if (lastColor == null) lastColor = oldBackground;
 					gc.setBackground(lastColor);
-					final int gradientWidth = (parent.gradientPercents[i] * bounds.width / 100) - pos;
+					int gradientWidth = (parent.gradientPercents[i] * bounds.width / 100) - pos;
 					gc.fillGradientRectangle(bounds.x + pos, bounds.y, gradientWidth, bounds.height, false);
 					pos += gradientWidth;
 				}
@@ -239,6 +243,26 @@ void onPaint(GC gc, boolean isSelected) {
 				gc.drawLine(x + 1, y + height - 1, x + width - 3, y + height - 1);
 			}			
 		}
+		if (parent.isFocusControl()) {
+			// draw a focus rectangle
+			int x1, y1, width1, height1;
+			if (!parent.onBottom) {
+				if (index == parent.topTabIndex) {
+					x1 = x + 2; y1 = y + 2; width1 = width - 4; height1 = height - 3;
+				} else {
+					x1 = x + 3; y1 = y + 2; width1 = width - 5; height1 = height - 3;
+				}
+			} else {
+				if (index == parent.topTabIndex) {
+					x1 = x + 2; y1 = y + 2; width1 = width - 4; height1 = height - 4;
+				} else {
+					x1 = x + 3; y1 = y + 2; width1 = width - 5; height1 = height - 4;
+				}
+			}
+			gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
+			gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
+			gc.drawFocus(x1, y1, width1, height1);
+		}
 	} else {
 		// draw tab lines for unselected items
 		gc.setForeground(normalShadow);
@@ -288,7 +312,6 @@ void onPaint(GC gc, boolean isSelected) {
 	}
 	int textY = y + (height - textHeight(gc)) / 2; 	
 	gc.drawString(text, xDraw, textY, true);
-	//gc.drawText(text, xDraw, textY, true, true);
 	
 	gc.setForeground(parent.getForeground());
 }

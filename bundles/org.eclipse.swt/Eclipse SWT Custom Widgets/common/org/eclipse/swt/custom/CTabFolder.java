@@ -419,7 +419,7 @@ void destroyItem (CTabItem item) {
 			control.setVisible(false);
 		}
 		selectedIndex = -1;
-		setSelectionNotify(Math.max(0, index - 1));
+		setSelection(Math.max(0, index - 1), true);
 	} else if (selectedIndex > index) {
 		selectedIndex --;
 	}
@@ -431,12 +431,12 @@ void destroyItem (CTabItem item) {
 private void onKeyDown(Event e) {
 	if (e.keyCode == SWT.ARROW_LEFT) {
 		if (selectedIndex > 0) {
-			setSelectionNotify(selectedIndex - 1);
+			setSelection(selectedIndex - 1, true);
 		}
 	}
 	if (e.keyCode == SWT.ARROW_RIGHT) {
 		if (selectedIndex < items.length - 1) {
-			setSelectionNotify(selectedIndex + 1);
+			setSelection(selectedIndex + 1, true);
 		}
 	}
 }
@@ -509,7 +509,7 @@ public void onFocus(Event e) {
 	if (selectedIndex >= 0) {
 		redrawTabArea(selectedIndex);
 	} else {
-		setSelectionNotify(0);
+		setSelection(0, true);
 	}
 }
 /** 
@@ -822,7 +822,7 @@ boolean onMnemonic (Event event) {
 			char mnemonic = getMnemonic (items[i].getText ());
 			if (mnemonic != '\0') {
 				if (Character.toUpperCase (key) == Character.toUpperCase (mnemonic)) {
-					setSelectionNotify(i);
+					setSelection(i, true);
 					return true;
 				}
 			}
@@ -1052,7 +1052,6 @@ private void onSelection(Event event) {
 public void setBackground (Color color) {
 	super.setBackground(color);
 	color = getBackground();
-	Color foreground = getForeground();
 	
 	// init inactive close button
 	inactiveCloseBar.setBackground(color);
@@ -1293,10 +1292,10 @@ public void setSelection(CTabItem item) {
 /**
  * Set the selection to the tab at the specified index.
  */
-private void setSelectionNotify(int index) {	
+private void setSelection(int index, boolean notify) {	
 	int oldSelectedIndex = selectedIndex;
 	setSelection(index);
-	if (selectedIndex != oldSelectedIndex && selectedIndex != -1) {
+	if (notify && selectedIndex != oldSelectedIndex && selectedIndex != -1) {
 		Event event = new Event();
 		event.item = getItem(selectedIndex);
 		notifyListeners(SWT.Selection, event);
@@ -1401,7 +1400,7 @@ private void onMouseDoubleClick(Event event) {
 private void onMouseDown(Event event) {
 	for (int i=0; i<items.length; i++) {
 		if (items[i].getBounds().contains(new Point(event.x, event.y))) {
-			setSelectionNotify(i);
+			setSelection(i, true);
 			return;
 		}
 	}
