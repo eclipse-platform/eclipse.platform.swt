@@ -19,6 +19,14 @@ void setAEDescFields(JNIEnv *env, jobject lpObject, AEDesc *lpStruct);
 #define setAEDescFields(a,b,c)
 #endif /* NO_AEDesc */
 
+#ifndef NO_ATSTrapezoid
+ATSTrapezoid *getATSTrapezoidFields(JNIEnv *env, jobject lpObject, ATSTrapezoid *lpStruct);
+void setATSTrapezoidFields(JNIEnv *env, jobject lpObject, ATSTrapezoid *lpStruct);
+#else
+#define getATSTrapezoidFields(a,b,c) NULL
+#define setATSTrapezoidFields(a,b,c)
+#endif /* NO_ATSTrapezoid */
+
 #ifndef NO_CFRange
 CFRange *getCFRangeFields(JNIEnv *env, jobject lpObject, CFRange *lpStruct);
 void setCFRangeFields(JNIEnv *env, jobject lpObject, CFRange *lpStruct);
@@ -98,6 +106,14 @@ void setEventRecordFields(JNIEnv *env, jobject lpObject, EventRecord *lpStruct);
 #define getEventRecordFields(a,b,c) NULL
 #define setEventRecordFields(a,b,c)
 #endif /* NO_EventRecord */
+
+#ifndef NO_FontInfo
+FontInfo *getFontInfoFields(JNIEnv *env, jobject lpObject, FontInfo *lpStruct);
+void setFontInfoFields(JNIEnv *env, jobject lpObject, FontInfo *lpStruct);
+#else
+#define getFontInfoFields(a,b,c) NULL
+#define setFontInfoFields(a,b,c)
+#endif /* NO_FontInfo */
 
 #ifndef NO_HICommand
 HICommand *getHICommandFields(JNIEnv *env, jobject lpObject, HICommand *lpStruct);

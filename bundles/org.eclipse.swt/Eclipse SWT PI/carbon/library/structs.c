@@ -54,6 +54,58 @@ void setAEDescFields(JNIEnv *env, jobject lpObject, AEDesc *lpStruct)
 }
 #endif /* NO_AEDesc */
 
+#ifndef NO_ATSTrapezoid
+typedef struct ATSTrapezoid_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID upperLeft_x, upperLeft_y, upperRight_x, upperRight_y, lowerRight_x, lowerRight_y, lowerLeft_x, lowerLeft_y;
+} ATSTrapezoid_FID_CACHE;
+
+ATSTrapezoid_FID_CACHE ATSTrapezoidFc;
+
+void cacheATSTrapezoidFids(JNIEnv *env, jobject lpObject)
+{
+	if (ATSTrapezoidFc.cached) return;
+	ATSTrapezoidFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	ATSTrapezoidFc.upperLeft_x = (*env)->GetFieldID(env, ATSTrapezoidFc.clazz, "upperLeft_x", "I");
+	ATSTrapezoidFc.upperLeft_y = (*env)->GetFieldID(env, ATSTrapezoidFc.clazz, "upperLeft_y", "I");
+	ATSTrapezoidFc.upperRight_x = (*env)->GetFieldID(env, ATSTrapezoidFc.clazz, "upperRight_x", "I");
+	ATSTrapezoidFc.upperRight_y = (*env)->GetFieldID(env, ATSTrapezoidFc.clazz, "upperRight_y", "I");
+	ATSTrapezoidFc.lowerRight_x = (*env)->GetFieldID(env, ATSTrapezoidFc.clazz, "lowerRight_x", "I");
+	ATSTrapezoidFc.lowerRight_y = (*env)->GetFieldID(env, ATSTrapezoidFc.clazz, "lowerRight_y", "I");
+	ATSTrapezoidFc.lowerLeft_x = (*env)->GetFieldID(env, ATSTrapezoidFc.clazz, "lowerLeft_x", "I");
+	ATSTrapezoidFc.lowerLeft_y = (*env)->GetFieldID(env, ATSTrapezoidFc.clazz, "lowerLeft_y", "I");
+	ATSTrapezoidFc.cached = 1;
+}
+
+ATSTrapezoid *getATSTrapezoidFields(JNIEnv *env, jobject lpObject, ATSTrapezoid *lpStruct)
+{
+	if (!ATSTrapezoidFc.cached) cacheATSTrapezoidFids(env, lpObject);
+	lpStruct->upperLeft.x = (*env)->GetIntField(env, lpObject, ATSTrapezoidFc.upperLeft_x);
+	lpStruct->upperLeft.y = (*env)->GetIntField(env, lpObject, ATSTrapezoidFc.upperLeft_y);
+	lpStruct->upperRight.x = (*env)->GetIntField(env, lpObject, ATSTrapezoidFc.upperRight_x);
+	lpStruct->upperRight.y = (*env)->GetIntField(env, lpObject, ATSTrapezoidFc.upperRight_y);
+	lpStruct->lowerRight.x = (*env)->GetIntField(env, lpObject, ATSTrapezoidFc.lowerRight_x);
+	lpStruct->lowerRight.y = (*env)->GetIntField(env, lpObject, ATSTrapezoidFc.lowerRight_y);
+	lpStruct->lowerLeft.x = (*env)->GetIntField(env, lpObject, ATSTrapezoidFc.lowerLeft_x);
+	lpStruct->lowerLeft.y = (*env)->GetIntField(env, lpObject, ATSTrapezoidFc.lowerLeft_y);
+	return lpStruct;
+}
+
+void setATSTrapezoidFields(JNIEnv *env, jobject lpObject, ATSTrapezoid *lpStruct)
+{
+	if (!ATSTrapezoidFc.cached) cacheATSTrapezoidFids(env, lpObject);
+	(*env)->SetIntField(env, lpObject, ATSTrapezoidFc.upperLeft_x, (jint)lpStruct->upperLeft.x);
+	(*env)->SetIntField(env, lpObject, ATSTrapezoidFc.upperLeft_y, (jint)lpStruct->upperLeft.y);
+	(*env)->SetIntField(env, lpObject, ATSTrapezoidFc.upperRight_x, (jint)lpStruct->upperRight.x);
+	(*env)->SetIntField(env, lpObject, ATSTrapezoidFc.upperRight_y, (jint)lpStruct->upperRight.y);
+	(*env)->SetIntField(env, lpObject, ATSTrapezoidFc.lowerRight_x, (jint)lpStruct->lowerRight.x);
+	(*env)->SetIntField(env, lpObject, ATSTrapezoidFc.lowerRight_y, (jint)lpStruct->lowerRight.y);
+	(*env)->SetIntField(env, lpObject, ATSTrapezoidFc.lowerLeft_x, (jint)lpStruct->lowerLeft.x);
+	(*env)->SetIntField(env, lpObject, ATSTrapezoidFc.lowerLeft_y, (jint)lpStruct->lowerLeft.y);
+}
+#endif /* NO_ATSTrapezoid */
+
 #ifndef NO_CFRange
 typedef struct CFRange_FID_CACHE {
 	int cached;
@@ -594,6 +646,46 @@ void setEventRecordFields(JNIEnv *env, jobject lpObject, EventRecord *lpStruct)
 	(*env)->SetShortField(env, lpObject, EventRecordFc.modifiers, (jshort)lpStruct->modifiers);
 }
 #endif /* NO_EventRecord */
+
+#ifndef NO_FontInfo
+typedef struct FontInfo_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID ascent, descent, widMax, leading;
+} FontInfo_FID_CACHE;
+
+FontInfo_FID_CACHE FontInfoFc;
+
+void cacheFontInfoFids(JNIEnv *env, jobject lpObject)
+{
+	if (FontInfoFc.cached) return;
+	FontInfoFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	FontInfoFc.ascent = (*env)->GetFieldID(env, FontInfoFc.clazz, "ascent", "S");
+	FontInfoFc.descent = (*env)->GetFieldID(env, FontInfoFc.clazz, "descent", "S");
+	FontInfoFc.widMax = (*env)->GetFieldID(env, FontInfoFc.clazz, "widMax", "S");
+	FontInfoFc.leading = (*env)->GetFieldID(env, FontInfoFc.clazz, "leading", "S");
+	FontInfoFc.cached = 1;
+}
+
+FontInfo *getFontInfoFields(JNIEnv *env, jobject lpObject, FontInfo *lpStruct)
+{
+	if (!FontInfoFc.cached) cacheFontInfoFids(env, lpObject);
+	lpStruct->ascent = (*env)->GetShortField(env, lpObject, FontInfoFc.ascent);
+	lpStruct->descent = (*env)->GetShortField(env, lpObject, FontInfoFc.descent);
+	lpStruct->widMax = (*env)->GetShortField(env, lpObject, FontInfoFc.widMax);
+	lpStruct->leading = (*env)->GetShortField(env, lpObject, FontInfoFc.leading);
+	return lpStruct;
+}
+
+void setFontInfoFields(JNIEnv *env, jobject lpObject, FontInfo *lpStruct)
+{
+	if (!FontInfoFc.cached) cacheFontInfoFids(env, lpObject);
+	(*env)->SetShortField(env, lpObject, FontInfoFc.ascent, (jshort)lpStruct->ascent);
+	(*env)->SetShortField(env, lpObject, FontInfoFc.descent, (jshort)lpStruct->descent);
+	(*env)->SetShortField(env, lpObject, FontInfoFc.widMax, (jshort)lpStruct->widMax);
+	(*env)->SetShortField(env, lpObject, FontInfoFc.leading, (jshort)lpStruct->leading);
+}
+#endif /* NO_FontInfo */
 
 #ifndef NO_HICommand
 typedef struct HICommand_FID_CACHE {
