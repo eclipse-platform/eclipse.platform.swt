@@ -89,7 +89,7 @@ public class Decorations extends Canvas {
 	Image image;
 	Menu menuBar;
 	Menu [] menus;
-	Button defaultButton, saveDefault;
+//	Button defaultButton, saveDefault;
 Decorations () {
 	/* Do nothing */
 }
@@ -165,7 +165,11 @@ void createWidget (int index) {
  */
 public Button getDefaultButton () {
 	checkWidget();
-	return defaultButton;
+	int buttonHandle = OS.gtk_window_get_default(topHandle());
+	if (buttonHandle==0) return null;
+	Widget button = WidgetTable.get(buttonHandle);
+	if (!(button instanceof Button)) return null;
+	return (Button)button;
 }
 /**
  * Returns the receiver's image if it had previously been 
@@ -294,7 +298,6 @@ void releaseWidget () {
 	menus = null;
 	super.releaseWidget ();
 	image = null;
-	defaultButton = saveDefault = null;
 }
 /**
  * If the argument is not null, sets the receiver's default
