@@ -12,4 +12,8 @@
 
 cd `dirname $0`
 
+OUTPUT_DIR=../../../org.eclipse.swt.carbon/os/macosx/ppc
+
+export OUTPUT_DIR
+
 make -f make_macosx.mak $1 $2 $3 $4 $5 $6 $7 $8 $9

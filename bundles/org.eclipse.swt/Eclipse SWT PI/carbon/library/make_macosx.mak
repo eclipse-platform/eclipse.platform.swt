@@ -48,5 +48,8 @@ webkit.o: webkit.c
 $(WEBKIT_LIB): $(WEBKIT_OBJECTS)
 	cc -o $(WEBKIT_LIB) $(WEBKITLFLAGS) $(WEBKIT_OBJECTS)
 
+install: all
+	cp *.jnilib $(OUTPUT_DIR)
+
 clean:
 	rm -f *.jnilib *.o

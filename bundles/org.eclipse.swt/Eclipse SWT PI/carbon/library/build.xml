@@ -1,46 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project default="build_macosx_ppc_lib" basedir=".">
+<project default="build_carbon_lib" basedir="../../..">
 
-	<target name="init">
-		<tstamp/>
-       	<property name="fragment_dir" value="../../../../org.eclipse.swt.carbon" />
-        <property name="jar_destdir" value="${fragment_dir}/ws/carbon" />
-        <property name="lib_destdir" value="${fragment_dir}/os/macosx/ppc" />
-		<property name="plugin" value="org.eclipse.swt" />
-		<property name="bin_dir" value="../../../bin" />
-		<property name="lib_extension" value=".jnilib" />
-        <mkdir dir="${jar_destdir}" />
-        <mkdir dir="${lib_destdir}" />
-	</target>
+<target name="build_carbon_lib">
+	<exec dir="./bin/library" executable="sh">
+		<arg line="${basedir}/bin/library/build.sh"/>
+		<arg line="install"/>
+	</exec>
+	<eclipse.refreshLocal resource="org.eclipse.swt.carbon" depth="infinite" />		
+</target>
 
-	<target name="build" depends="init">
-    	<eclipse.incrementalBuild project="${plugin}" kind="incr" />
-	</target>
-	
-	<target name="build_macosx_ppc_lib" depends="build">
-		<exec dir="${bin_dir}/library/" executable="sh">
-  			<arg line='build.sh' />
-		</exec>
-		<copy todir="${lib_destdir}">
-		    <fileset dir="${bin_dir}/library" includes="**/*${lib_extension}"/>
-		</copy>
-		<eclipse.refreshLocal resource="org.eclipse.swt.carbon" depth="infinite" />	
-	</target>
-		
-    <target name="build_jar" depends="build">
-        <jar
-            jarfile="${jar_destdir}/swt.jar"
-            basedir="${bin_dir}"
-        />
-    </target>
-    
-	<target name="clean" depends="init">
-	
-		<exec dir="${bin_dir}/library/" executable="sh">
-  			<arg line='build.sh' />
-  			<arg line='clean' />
-		</exec>
-	</target>
-	
+<target name="clean">
+	<tstamp/>
+	<exec dir="./bin/library" executable="sh">
+		<arg line="${basedir}/bin/library/build.sh"/>
+		<arg line="clean"/>
+	</exec>
+</target>
+
 </project>
