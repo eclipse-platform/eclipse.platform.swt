@@ -29,7 +29,7 @@ SWT_LIB      = -L$(MOTIF_HOME)/lib -L/usr/lib  \
 CDE_PREFIX   = swt-cde
 CDE_DLL      = lib$(CDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 CDE_OBJ      = cde.o
-CDE_LIB      = -G -L$(CDE_HOME)/lib -lDtSvc
+CDE_LIB      = -G -L$(CDE_HOME)/lib -R$(CDE_HOME)/lib -lDtSvc
 
 
 #
