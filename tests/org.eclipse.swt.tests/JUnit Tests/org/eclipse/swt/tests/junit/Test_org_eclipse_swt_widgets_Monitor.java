@@ -9,10 +9,8 @@ package org.eclipse.swt.tests.junit;
 
 import junit.framework.*;
 import junit.textui.*;
-import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.events.*;
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Monitor
  *
