@@ -69,8 +69,8 @@ import org.eclipse.swt.graphics.*;
  *					Point size = event.size;
  *					shell.setSize(shell.computeSize(size.x, size.y));
  *				}
- *				if (event.addressbar || event.menubar || event.statusBar || event.toolBar) {
- *					// create widgets for the address bar, menu bar, status bar and/or toolbar
+ *				if (event.addressBar || event.menuBar || event.statusBar || event.toolBar) {
+ *					// create widgets for the address bar, menu bar, status bar and/or tool bar
  *					// leave enough space in the Shell to accomodate a Browser of the size
  *					// given by event.size
  *				}
