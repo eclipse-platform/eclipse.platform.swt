@@ -249,10 +249,11 @@ void createHandle () {
 	* is to lock the active window's position during the SetWindowPos
 	* invocation below.
 	*/
+	Display display = getDisplay();
 	int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOSIZE;
-	getDisplay().lockActiveWindow = true;
+	display.lockActiveWindow = true;
 	OS.SetWindowPos (hwndToolTip, OS.HWND_TOPMOST, 0, 0, 0, 0, flags);
-	getDisplay().lockActiveWindow = false;
+	display.lockActiveWindow = false;
 }
 
 void createWidget () {
