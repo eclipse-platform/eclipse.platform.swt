@@ -458,8 +458,13 @@ public void setExpanded (boolean expanded) {
 
 public void setImage (Image image) {
 	checkWidget();
-	super.setImage (image);
+	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	if ((parent.style & SWT.CHECK) != 0) return;
+	this.image = image;
+	realSetImage(image);
+}
+
+void realSetImage (Image image) {
 	int pixmap = 0, mask = 0;
 	if (image != null) {
 		pixmap = image.pixmap;
