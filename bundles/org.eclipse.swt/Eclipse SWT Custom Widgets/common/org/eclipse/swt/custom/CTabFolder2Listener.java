@@ -17,10 +17,20 @@ import org.eclipse.swt.internal.*;
 *
 * @ since 3.0
 */
-public interface CTabFolderMinMaxListener extends SWTEventListener {
+public interface CTabFolder2Listener extends SWTEventListener {
+	
+/**
+ * Sent when the user clicks on the close button of an item in the CTabFolder.  The item being closed is specified
+ * in the event.item field. Setting the event.doit field to false will stop  the CTabItem from closing. 
+ * When the CTabItem is closed, it is disposed.  The contents of the CTabItem (see CTabItem#setControl) will be 
+ * made not visible when the CTabItem is closed.
+ * 
+ * @param event an event indicating the item being closed
+ */
+public void close(CTabFolderEvent event);
 
 /**
- * 
+ *  
  */
 public void minimize(CTabFolderEvent event);
 
@@ -34,4 +44,18 @@ public void maximize(CTabFolderEvent event);
  */
 public void restore(CTabFolderEvent event);
 
+/**
+ * 
+ */
+public void showList(CTabFolderEvent event);
+
+/**
+ * 
+ */
+public void drawTabs(CTabFolderEvent event);
+
+/**
+ * 
+ */
+public void getTabSize(CTabFolderEvent event);
 }

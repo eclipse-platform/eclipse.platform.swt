@@ -360,7 +360,7 @@ void drawSelected(GC gc ) {
 			Display display = getDisplay();
 			gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
 			gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
-			gc.drawFocus(xDraw-3, textY-2, extent.x+6, extent.y+4);
+			gc.drawFocus(xDraw-1, textY-1, extent.x+2, extent.y+2);
 		}
 		
 		gc.setClipping(clipping);
@@ -650,7 +650,38 @@ public void setBackground(Color color){
 	}
 }
 /**
- * Specify a gradient of colours to be draw in the background of the unselected tab.
+ * Specify a gradient of colours to be drawn in the background of the unselected tab.
+ * For example to draw a horizontal gradient that varies from dark blue to blue and then to
+ * white, use the following call to setBackground:
+ * <pre>
+ *	cfolder.setBackground(new Color[]{display.getSystemColor(SWT.COLOR_DARK_BLUE), 
+ *		                           display.getSystemColor(SWT.COLOR_BLUE),
+ *		                           display.getSystemColor(SWT.COLOR_WHITE), 
+ *		                           display.getSystemColor(SWT.COLOR_WHITE)},
+ *		                  new int[] {25, 50, 100});
+ * </pre>
+ *
+ * @param colors an array of Color that specifies the colors to appear in the gradient 
+ *               in order of appearance left to right.  The value <code>null</code> clears the
+ *               background gradient. The value <code>null</code> can be used inside the array of 
+ *               Color to specify the background color.
+ * @param percents an array of integers between 0 and 100 specifying the percent of the width 
+ *                 of the widget at which the color should change.  The size of the percents array must be one 
+ *                 less than the size of the colors array.
+ * 
+ * 
+ * @exception SWTError <ul>
+ *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ *	</ul>
+ *
+ *@since 3.0
+ */
+public void setBackground(Color[] colors, int[] percents) {
+	setBackground(colors, percents, false);
+}
+/**
+ * Specify a gradient of colours to be drawn in the background of the unselected tab.
  * For example to draw a vertical gradient that varies from dark blue to blue and then to
  * white, use the following call to setBackground:
  * <pre>

@@ -10,7 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
-public interface CTabFolderListener extends CTabFolderCloseListener {
+import org.eclipse.swt.internal.*;
+
+public interface CTabFolderListener extends SWTEventListener {
 	
 /**
  * Sent when the user clicks on the close button of an item in the CTabFolder.  The item being closed is specified
@@ -20,7 +22,5 @@ public interface CTabFolderListener extends CTabFolderCloseListener {
  * 
  * @param e an event indicating the item being closed
  */
-// INTENTIONALLY COMMENTED
-// This method is now inherited from  CTabFolderCloseListener
-//public void itemClosed(CTabFolderEvent event);
+public void itemClosed(CTabFolderEvent event);
 }

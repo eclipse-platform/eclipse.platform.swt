@@ -15,6 +15,9 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
+/**
+ * 
+ */
 public class CTabFolderEvent extends TypedEvent {
 	/**
 	 * The tab item for the operation.
@@ -28,10 +31,24 @@ public class CTabFolderEvent extends TypedEvent {
  	public boolean doit;
 
 	/**
-	* DO NOT USE FIELD RECT - UNDER CONSTRUCTION
+	* DO NOT USE FIELD - UNDER CONSTRUCTION
 	* @ since 3.0
 	*/
- 	public Rectangle rect;
+ 	public int x;
+	public int y;
+	public int width;
+	public int height;
+ 	
+ 	/**
+	 * the graphics context to use when painting
+	 * that is configured to use the colors, font and
+	 * damaged region of the control.  It is valid
+	 * only during the paint and must not be disposed
+	 * 
+	 * DO NOT USE FIELD - UNDER CONSTRUCTION
+	 * @ since 3.0
+	 */
+ 	public GC gc;
 
 /**
  * Constructs a new instance of this class.
@@ -53,6 +70,11 @@ public String toString() {
 	return string.substring (0, string.length() - 1) // remove trailing '}'
 		+ " item=" + item
 		+ " doit=" + doit
+		+ " x=" + x
+		+ " x=" + y
+		+ " x=" + width
+		+ " x=" + height
+		+ " gc=" + gc
 		+ "}";
 }
 }
