@@ -89,7 +89,7 @@ CFLAGS = -O -Wall \
 LIBS = -shared -fpic
 
 
-all: make_swt make_atk make_gnome make_awt make_kde make_cairo
+all: make_swt make_atk make_gnome make_awt make_kde
 
 #
 # SWT libs
