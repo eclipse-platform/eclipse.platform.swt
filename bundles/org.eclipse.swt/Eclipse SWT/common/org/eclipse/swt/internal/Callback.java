@@ -162,17 +162,11 @@ public static native String getPlatform ();
  *
  * @return the os name of the currently running SWT
  */
-public static String getOS () {
-	// OS_LIST is a collection of known platforms that is consistant 
-	// with the platform names defined in 
-	// org.eclipse.core.internal.InternalBootLoader
-	String[] OS_LIST = { "win32", "linux", "aix", "solaris", "neutrino" };
+static String getOS () {
 	String name = System.getProperty("os.name");
-	for (int i = 0; i < OS_LIST.length; i++) {
-		if (name.regionMatches(true, 0, OS_LIST [i], 0, 3))
-			return OS_LIST [i];
-	}
-	return "unknown";
+	if (name.regionMatches(true, 0, "win", 0, 3)) return "win32";
+	if (name.regionMatches(true, 0, "sun", 0, 3)) return "solaris";
+	return name.toLowerCase();
 }
 /**
  * Returns the SWT revision number as an integer. Revision changes
