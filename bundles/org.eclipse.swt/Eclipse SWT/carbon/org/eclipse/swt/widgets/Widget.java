@@ -897,11 +897,27 @@ int kEventControlTrack (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+int kEventMenuCalculateSize (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
 int kEventMenuClosed (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+int kEventMenuCreateFrameView (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventMenuDrawItem (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
 int kEventMenuDrawItemContent (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventMenuGetFrameBounds (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
@@ -1052,11 +1068,15 @@ int keyboardProc (int nextHandler, int theEvent, int userData) {
 int menuProc (int nextHandler, int theEvent, int userData) {	
 	int eventKind = OS.GetEventKind (theEvent);
 	switch (eventKind) {
-		case OS.kEventMenuClosed:		return kEventMenuClosed (nextHandler, theEvent, userData);
+		case OS.kEventMenuCalculateSize:		return kEventMenuCalculateSize (nextHandler, theEvent, userData);
+		case OS.kEventMenuClosed:				return kEventMenuClosed (nextHandler, theEvent, userData);
+		case OS.kEventMenuCreateFrameView:	return kEventMenuCreateFrameView (nextHandler, theEvent, userData);
+		case OS.kEventMenuDrawItem: 			return kEventMenuDrawItem (nextHandler, theEvent, userData);
 		case OS.kEventMenuDrawItemContent: 	return kEventMenuDrawItemContent (nextHandler, theEvent, userData);
-		case OS.kEventMenuMeasureItemWidth: return kEventMenuMeasureItemWidth (nextHandler, theEvent, userData);
-		case OS.kEventMenuOpening:		return kEventMenuOpening (nextHandler, theEvent, userData);
-		case OS.kEventMenuTargetItem:	return kEventMenuTargetItem (nextHandler, theEvent, userData);
+		case OS.kEventMenuGetFrameBounds: 	return kEventMenuGetFrameBounds (nextHandler, theEvent, userData);
+		case OS.kEventMenuMeasureItemWidth: 	return kEventMenuMeasureItemWidth (nextHandler, theEvent, userData);
+		case OS.kEventMenuOpening:			return kEventMenuOpening (nextHandler, theEvent, userData);
+		case OS.kEventMenuTargetItem:			return kEventMenuTargetItem (nextHandler, theEvent, userData);
 	}
 	return OS.eventNotHandledErr;
 }

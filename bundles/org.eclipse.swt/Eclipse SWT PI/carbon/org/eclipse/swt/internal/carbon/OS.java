@@ -298,8 +298,12 @@ public class OS extends Platform {
 	public static final int kEventFontPanelClosed = 1;
 	public static final int kEventHIObjectConstruct = 1;
 	public static final int kEventHIObjectDestruct = 3;
+	public static final int kEventMenuCalculateSize = 1004;
 	public static final int kEventMenuClosed = 5;
+	public static final int kEventMenuCreateFrameView = 1005;
+	public static final int kEventMenuDrawItem = 102;
 	public static final int kEventMenuDrawItemContent = 103;
+	public static final int kEventMenuGetFrameBounds = 1006;
 	public static final int kEventMenuMeasureItemWidth = 100;
 	public static final int kEventMenuOpening = 4;
 	public static final int kEventMenuPopulate = 9;
@@ -320,6 +324,7 @@ public class OS extends Platform {
 	public static final int kEventParamAEEventID = ('e'<<24) + ('v'<<16) + ('t'<<8) + 'i';
 	public static final int kEventParamATSUFontID = ('a'<<24) + ('u'<<16) + ('i'<<8) + 'd';
 	public static final int kEventParamAttributes = ('a'<<24) + ('t'<<16) + ('t'<<8) + 'r';
+	public static final int kEventParamBounds =  ('b'<<24) + ('o'<<16) + ('u'<<8) + 'n';
 	public static final int kEventParamCGContextRef= ('c'<<24) + ('n'<<16) + ('t'<<8) + 'x';
 	public static final int kEventParamClickCount = ('c'<<24) + ('c'<<16) + ('n'<<8) + 't';
 	public static final int kEventParamControlPart= ('c'<<24) + ('p'<<16) + ('r'<<8) + 't';
@@ -677,6 +682,7 @@ public class OS extends Platform {
 	public static final int typeFSRef = ('f'<<24) + ('s'<<16) + ('r'<<8) + 'f';
 	public static final int typeHICommand = ('h'<<24) + ('c'<<16) + ('m'<<8) + 'd';
 	public static final int typeHIPoint = ('h'<<24) + ('i'<<16) + ('p'<<8) + 't';
+	public static final int typeHIRect = ('h'<<24) + ('i'<<16) + ('r'<<8) + 'c';
 	public static final int typeMenuCommand = ('m'<<24) + ('c'<<16) + ('m'<<8) + 'd';
 	public static final int typeMenuItemIndex = ('m'<<24) + ('i'<<16) + ('d'<<8) + 'x';        
 	public static final int typeMenuRef = ('m'<<24) + ('e'<<16) + ('n'<<8) + 'u';
@@ -885,6 +891,8 @@ public static final native int CGWarpMouseCursorPosition (CGPoint newCursorPosit
 public static final native int CPSEnableForegroundOperation(int[] psn, int arg2, int arg3, int arg4, int arg5);
 public static final native int CPSSetProcessName(int[] psn, byte[] name);
 public static final native int CallNextEventHandler(int nextHandler, int eventRefHandle);
+public static final native void CalcMenuSize(int theMenu);
+public static final native int CancelMenuTracking(int inRootMenu, boolean inImmediate, int inDismissalReason); 
 public static final native short CharWidth(short c);
 public static final native int ClearCurrentScrap();
 public static final native int ClearKeyboardFocus(int inWindow);
@@ -1066,6 +1074,7 @@ public static final native int GetEventParameter(int inEvent, int inName, int in
 public static final native int GetEventParameter(int inEvent, int inName, int inDesiredType, int[] outActualType, int inBufferSize, int[] outActualSize, HICommand outData);
 public static final native int GetEventParameter(int inEvent, int inName, int inDesiredType, int[] outActualType, int inBufferSize, int[] outActualSize, Point outData);
 public static final native int GetEventParameter(int inEvent, int inName, int inDesiredType, int[] outActualType, int inBufferSize, int[] outActualSize, CGPoint outData);
+public static final native int GetEventParameter(int inEvent, int inName, int inDesiredType, int[] outActualType, int inBufferSize, int[] outActualSize, CGRect outData);
 public static final native int GetEventParameter(int inEvent, int inName, int inDesiredType, int[] outActualType, int inBufferSize, int[] outActualSize, RGBColor outData);
 public static final native int GetEventParameter(int inEvent, int inName, int inDesiredType, int[] outActualType, int inBufferSize, int[] outActualSize, Rect outData);
 public static final native double GetEventTime(int eHandle);

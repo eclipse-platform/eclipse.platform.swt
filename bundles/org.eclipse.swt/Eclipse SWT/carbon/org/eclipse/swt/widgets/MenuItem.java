@@ -35,6 +35,7 @@ import org.eclipse.swt.internal.carbon.*;
 public class MenuItem extends Item {
 	Menu parent, menu;
 	int accelerator;
+	int x, y, width, height;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -115,21 +116,6 @@ public MenuItem (Menu parent, int style, int index) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
 	parent.createItem (this, index);
-}
-
-public void _setEnabled (boolean enabled) {
-	int index = parent.indexOf (this);
-	if (index == -1) return;
-	int outMenuRef [] = new int [1];
-	short menuIndex = (short) (index + 1);
-	OS.GetMenuItemHierarchicalMenu (parent.handle, menuIndex, outMenuRef);
-	if (enabled) {
-		if (outMenuRef [0] != 0) OS.EnableMenuItem (outMenuRef [0], (short) 0);
-		OS.EnableMenuItem (parent.handle, menuIndex);
-	} else {
-		if (outMenuRef [0] != 0) OS.DisableMenuItem (outMenuRef [0], (short) 0);
-		OS.DisableMenuItem (parent.handle, menuIndex);
-	}
 }
 
 /**
@@ -270,6 +256,29 @@ void destroyEmptyMenu (int index) {
 public int getAccelerator () {
 	checkWidget ();
 	return accelerator;
+}
+
+/*public*/ Rectangle getBounds () {
+	checkWidget ();
+	if ((parent.style & SWT.BAR) != 0) {
+		int index = parent.indexOf (this);
+		if (index == -1) return new Rectangle (0 ,0, 0, 0);
+		Menu menu = display.getMenuBar ();
+		if (parent != menu) return new Rectangle (0 ,0, 0, 0);
+		int outMenuRef [] = new int [1];
+		if (OS.GetMenuItemHierarchicalMenu (menu.handle, (short)(index + 1), outMenuRef) != OS.noErr) {
+			return new Rectangle (0 ,0, 0, 0);
+		};
+		Rect rect = new Rect ();
+		//TODO - get the bounds of the menu item from the menu title
+//		if (... code needed to do this ... != OS.noErr) {
+//			return new Rectangle (0 ,0, 0, 0);
+//		}
+		int width = rect.right - rect.left;
+		int height = rect.bottom - rect.top;
+		return new Rectangle (rect.left, rect.top, width, height);
+	}
+	return new Rectangle (x, y, width, height);
 }
 
 /**
@@ -597,12 +606,20 @@ public void setAccelerator (int accelerator) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget ();
+	int index = parent.indexOf (this);
+	if (index == -1) return;
+	int outMenuRef [] = new int [1];
+	short menuIndex = (short) (index + 1);
+	OS.GetMenuItemHierarchicalMenu (parent.handle, menuIndex, outMenuRef);
 	if (enabled) {
 		state &= ~DISABLED;
+		if (outMenuRef [0] != 0) OS.EnableMenuItem (outMenuRef [0], (short) 0);
+		OS.EnableMenuItem (parent.handle, menuIndex);
 	} else {
 		state |= DISABLED;
+		if (outMenuRef [0] != 0) OS.DisableMenuItem (outMenuRef [0], (short) 0);
+		OS.DisableMenuItem (parent.handle, menuIndex);
 	}
-	_setEnabled (enabled);
 }
 
 /**

@@ -10,7 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
- 
+
+import org.eclipse.swt.internal.carbon.CGRect;
 import org.eclipse.swt.internal.carbon.FontInfo;
 import org.eclipse.swt.internal.carbon.GDevice;
 import org.eclipse.swt.internal.carbon.OS;
@@ -51,7 +52,7 @@ public class Menu extends Widget {
 	 */
 	int handle;
 	short id;
-	int x, y;
+	int x, y, width, height;
 	boolean hasLocation, modified, closed;
 	MenuItem [] items;
 	MenuItem cascade, defaultItem, lastTarget;
@@ -187,11 +188,15 @@ static int checkStyle (int style) {
 void _setVisible (boolean visible) {
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
 	if (!visible) return;
-	int left = x, top = y;
-	if (!hasLocation) {
+	int left = 0, top = 0;
+	if (hasLocation) {
+		left = x;
+		top = y;
+	} else {
 		org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
 		OS.GetGlobalMouse (where);
-		left = where.h; top = where.v;
+		left = where.h;
+		top = where.v;
 	}
 	OS.PopUpMenuSelect (handle, (short)top, (short)left, (short)-1);
 }
@@ -311,6 +316,23 @@ void destroyWidget () {
 		OS.DeleteMenu (OS.GetMenuID (theMenu));
 		OS.DisposeMenu (theMenu);
 	}
+}
+
+/*public*/ Rectangle getBounds () {
+	checkWidget ();
+	if ((style & SWT.BAR) != 0) {
+		Menu menu = display.getMenuBar ();
+		if (this != menu) return new Rectangle (0, 0, 0, 0);
+		int height = OS.GetMBarHeight ();
+		int gdevice = OS.GetMainDevice ();
+		int [] ptr = new int [1];
+		OS.memcpy (ptr, gdevice, 4);
+		GDevice device = new GDevice ();
+		OS.memcpy (device, ptr [0], GDevice.sizeof);
+		return new Rectangle (0, 0, device.right - device.left, height);
+	}
+	OS.CalcMenuSize (handle);
+	return new Rectangle (x, y, width, height);
 }
 
 /**
@@ -494,21 +516,6 @@ public Shell getShell () {
 	return parent.getShell ();
 }
 
-/*public*/ Point getSize () {
-	if ((style & SWT.BAR) != 0) {
-		int height = OS.GetMBarHeight ();
-		int gdevice = OS.GetMainDevice ();
-		int [] ptr = new int [1];
-		OS.memcpy (ptr, gdevice, 4);
-		GDevice device = new GDevice ();
-		OS.memcpy (device, ptr [0], GDevice.sizeof);
-		return new Point (device.right - device.left, height);
-	}
-	int width = OS.GetMenuWidth (handle);
-	int height = OS.GetMenuHeight (handle);
-	return new Point (width, height);
-}
-
 /**
  * Returns <code>true</code> if the receiver is visible, and
  * <code>false</code> otherwise.
@@ -546,20 +553,44 @@ void hookEvents () {
 	super.hookEvents ();
 	int menuProc = display.menuProc;
 	int [] mask = new int [] {
+		OS.kEventClassMenu, OS.kEventMenuCalculateSize,
 		OS.kEventClassMenu, OS.kEventMenuClosed,
+		OS.kEventClassMenu, OS.kEventMenuCreateFrameView,
+		OS.kEventClassMenu, OS.kEventMenuDrawItem,
+		OS.kEventClassMenu, OS.kEventMenuDrawItemContent,
+		OS.kEventClassMenu, OS.kEventMenuMeasureItemWidth,
 		OS.kEventClassMenu, OS.kEventMenuOpening,
 		OS.kEventClassMenu, OS.kEventMenuTargetItem,
-		OS.kEventClassMenu, OS.kEventMenuMeasureItemWidth,
-		OS.kEventClassMenu, OS.kEventMenuDrawItemContent,
 	};
 	int menuTarget = OS.GetMenuEventTarget (handle);
-	OS.InstallEventHandler (menuTarget, menuProc, mask.length / 2, mask, 0, null);
+	OS.InstallEventHandler (menuTarget, menuProc, mask.length / 2, mask, handle, null);
+}
+
+int kEventMenuCalculateSize (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventMenuCalculateSize (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	int [] theControl = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamControlRef, OS.typeControlRef, null, 4, null, theControl);
+	int menuProc = display.menuProc;
+	int [] mask = new int [] {
+		OS.kEventClassMenu, OS.kEventMenuGetFrameBounds,
+	};
+	int controlTarget = OS.GetControlEventTarget (theControl [0]);
+	//TODO - installed multi-times, does this matter?
+	OS.InstallEventHandler (controlTarget, menuProc, mask.length / 2, mask, handle, null);
+	return result;
 }
 
 int kEventMenuClosed (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventMenuClosed (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	closed = true;
+	width = height = 0;
+	int count = OS.CountMenuItems (handle);
+	for (int i=0; i<count; i++) {
+		MenuItem item = items [i];
+		item.x = item.y = item.width = item.height = 0;
+	}
 	sendEvent (SWT.Hide);
 	if (hooks (SWT.Hide)) {
 		getShell().update (true);
@@ -567,7 +598,38 @@ int kEventMenuClosed (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+int kEventMenuCreateFrameView (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventMenuCreateFrameView (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	int [] theControl = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamControlRef, OS.typeControlRef, null, 4, null, theControl);
+	int menuProc = display.menuProc;
+	int [] mask = new int [] {
+		OS.kEventClassMenu, OS.kEventMenuGetFrameBounds,
+	};
+	int controlTarget = OS.GetControlEventTarget (theControl [0]);
+	OS.InstallEventHandler (controlTarget, menuProc, mask.length / 2, mask, handle, null);
+	return OS.eventNotHandledErr;
+}
+
+int kEventMenuDrawItem (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventMenuDrawItem (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	short [] index = new short [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamMenuItemIndex, OS.typeMenuItemIndex, null, 2, null, index);
+	MenuItem item = items [index [0] - 1];
+	Rect rect = new Rect ();
+	OS.GetEventParameter (theEvent, OS.kEventParamMenuItemBounds, OS.typeQDRectangle, null, Rect.sizeof, null, rect);
+	item.x = rect.left - x;
+	item.y = rect.top - y;
+	item.width = rect.right - rect.left;
+	item.height = rect.bottom - rect.top;
+	return OS.eventNotHandledErr;
+}
+
 int kEventMenuDrawItemContent (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventMenuDrawItemContent (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
 	short [] index = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamMenuItemIndex, OS.typeMenuItemIndex, null, 2, null, index);
 	MenuItem item = items [index [0] - 1];
@@ -577,7 +639,7 @@ int kEventMenuDrawItemContent (int nextHandler, int theEvent, int userData) {
 			String accelText = item.text.substring (accelIndex + 1);
 			int length = accelText.length ();
 			if (length != 0) {
-				int result = OS.CallNextEventHandler (nextHandler, theEvent);
+				result = OS.CallNextEventHandler (nextHandler, theEvent);
 				Rect rect = new Rect ();
 				OS.GetEventParameter (theEvent, OS.kEventParamMenuItemBounds, OS.typeQDRectangle, null, Rect.sizeof, null, rect);
 				int [] context = new int [1];
@@ -622,7 +684,29 @@ int kEventMenuDrawItemContent (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+int kEventMenuGetFrameBounds (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventMenuGetFrameBounds (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	result = OS.CallNextEventHandler (nextHandler, theEvent);
+	CGRect rect = new CGRect ();
+	OS.GetEventParameter (theEvent, OS.kEventParamBounds, OS.typeHIRect, null, CGRect.sizeof, null, rect);
+	x = (int) rect.x;
+	y = (int) rect.y;
+	width = (int) rect.width;
+	height = (int) rect.height;
+	if (cascade != null) {
+		OS.GetEventParameter (theEvent, OS.kEventParamMenuItemBounds, OS.typeHIRect, null, CGRect.sizeof, null, rect);
+		cascade.x = (int) rect.x - x;
+		cascade.y = (int) rect.y - y;
+		cascade.width = (int) rect.width;
+		cascade.height = (int) rect.height;
+	}
+	return result;
+}
+
 int kEventMenuMeasureItemWidth (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventMenuMeasureItemWidth (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
 	short [] index = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamMenuItemIndex, OS.typeMenuItemIndex, null, 2, null, index);
 	MenuItem item = items [index [0] - 1];
@@ -631,7 +715,7 @@ int kEventMenuMeasureItemWidth (int nextHandler, int theEvent, int userData) {
 		if (accelIndex != -1) {
 			String accelText = item.text.substring (accelIndex + 1);
 			if (accelText.length () != 0) {
-				int result = OS.CallNextEventHandler (nextHandler, theEvent);
+				result = OS.CallNextEventHandler (nextHandler, theEvent);
 				char [] buffer = new char [accelText.length ()];
 				accelText.getChars (0, buffer.length, buffer, 0);
 				int str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);

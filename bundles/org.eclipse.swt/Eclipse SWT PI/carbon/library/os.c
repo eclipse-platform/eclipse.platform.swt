@@ -2309,6 +2309,16 @@ fail:
 }
 #endif
 
+#ifndef NO_CalcMenuSize
+JNIEXPORT void JNICALL OS_NATIVE(CalcMenuSize)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, CalcMenuSize_FUNC);
+	CalcMenuSize((MenuRef)arg0);
+	OS_NATIVE_EXIT(env, that, CalcMenuSize_FUNC);
+}
+#endif
+
 #ifndef NO_CallNextEventHandler
 JNIEXPORT jint JNICALL OS_NATIVE(CallNextEventHandler)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -2317,6 +2327,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(CallNextEventHandler)
 	OS_NATIVE_ENTER(env, that, CallNextEventHandler_FUNC);
 	rc = (jint)CallNextEventHandler((EventHandlerCallRef)arg0, (EventRef)arg1);
 	OS_NATIVE_EXIT(env, that, CallNextEventHandler_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CancelMenuTracking
+JNIEXPORT jint JNICALL OS_NATIVE(CancelMenuTracking)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CancelMenuTracking_FUNC);
+	rc = (jint)CancelMenuTracking((MenuRef)arg0, arg1, arg2);
+	OS_NATIVE_EXIT(env, that, CancelMenuTracking_FUNC);
 	return rc;
 }
 #endif
@@ -4945,6 +4967,28 @@ fail:
 	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	OS_NATIVE_EXIT(env, that, GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_CGPoint_2_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_CGRect_2
+JNIEXPORT jint JNICALL OS_NATIVE(GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_CGRect_2)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jint arg4, jintArray arg5, jobject arg6)
+{
+	jint *lparg3=NULL;
+	jint *lparg5=NULL;
+	CGRect _arg6, *lparg6=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_CGRect_2_FUNC);
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = getCGRectFields(env, arg6, &_arg6)) == NULL) goto fail;
+	rc = (jint)GetEventParameter((EventRef)arg0, (EventParamName)arg1, (EventParamType)arg2, (EventParamType *)lparg3, (UInt32)arg4, (UInt32 *)lparg5, (void *)lparg6);
+fail:
+	if (arg6 && lparg6) setCGRectFields(env, arg6, lparg6);
+	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	OS_NATIVE_EXIT(env, that, GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_CGRect_2_FUNC);
 	return rc;
 }
 #endif

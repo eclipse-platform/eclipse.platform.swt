@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 819;
-int OS_nativeFunctionCallCount[819];
+int OS_nativeFunctionCount = 822;
+int OS_nativeFunctionCallCount[822];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -197,7 +197,9 @@ char * OS_nativeFunctionNames[] = {
 	"CGWarpMouseCursorPosition",
 	"CPSEnableForegroundOperation",
 	"CPSSetProcessName",
+	"CalcMenuSize",
 	"CallNextEventHandler",
+	"CancelMenuTracking",
 	"CharWidth",
 	"ClearCurrentScrap",
 	"ClearKeyboardFocus",
@@ -373,6 +375,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetEventDispatcherTarget",
 	"GetEventKind",
 	"GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_CGPoint_2",
+	"GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_CGRect_2",
 	"GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_HICommand_2",
 	"GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_Point_2",
 	"GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_RGBColor_2",
