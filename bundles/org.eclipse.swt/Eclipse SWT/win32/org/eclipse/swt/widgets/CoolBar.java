@@ -931,15 +931,12 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
 	switch (hdr.code) {
 		case OS.RBN_HEIGHTCHANGE:
-			if (ignoreResize) {
-				int code = callWindowProc (OS.RBN_HEIGHTCHANGE, wParam, lParam);
-				if (code == 0) return LRESULT.ZERO;
-				return new LRESULT (code);
+			if (!ignoreResize) {
+				Point size = getSize ();
+				int border = getBorderWidth ();
+				int height = OS.SendMessage (handle, OS.RB_GETBARHEIGHT, 0, 0);
+				setSize (size.x, height + (border * 2));
 			}
-			Point size = getSize ();
-			int border = getBorderWidth ();
-			int height = OS.SendMessage (handle, OS.RB_GETBARHEIGHT, 0, 0);
-			setSize (size.x, height + (border * 2));
 			break;
 		case OS.RBN_CHEVRONPUSHED:
 			NMREBARCHEVRON lpnm = new NMREBARCHEVRON ();

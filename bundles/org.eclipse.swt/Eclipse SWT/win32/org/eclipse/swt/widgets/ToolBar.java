@@ -170,8 +170,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int border = getBorderWidth ();
 	int newWidth = wHint == SWT.DEFAULT ? 0x3FFF : wHint + (border * 2);
 	int newHeight = hHint == SWT.DEFAULT ? 0x3FFF : hHint + (border * 2);
+	boolean redraw = drawCount == 0 && OS.IsWindowVisible (handle);
 	ignoreResize = true;
-	OS.UpdateWindow (handle);
+	if (redraw) OS.UpdateWindow (handle);
 	int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOREDRAW | OS.SWP_NOZORDER;
 	OS.SetWindowPos (handle, 0, 0, 0, newWidth, newHeight, flags);
 	int count = OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
@@ -182,8 +183,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		height = Math.max (height, rect.bottom);
 	}
 	OS.SetWindowPos (handle, 0, 0, 0, oldWidth, oldHeight, flags);
-	OS.ValidateRect (handle, null);
+	if (redraw) OS.ValidateRect (handle, null);
 	ignoreResize = false;
+	
 	/*
 	* From the Windows SDK for TB_SETBUTTONSIZE:
 	*
