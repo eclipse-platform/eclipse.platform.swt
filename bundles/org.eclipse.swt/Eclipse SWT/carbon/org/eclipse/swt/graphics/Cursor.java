@@ -54,11 +54,6 @@ public final class Cursor extends Resource {
 	public int handle;
 	
 	/**
-	 * the device where this cursor was created
-	 */
-	Device device;
-	
-	/**
 	 * data and mask used to create a Resize NS Cursor
 	 */
 	static final short [] SIZENS_SOURCE = new short[] {

@@ -76,11 +76,6 @@ public final class Font extends Resource {
 	 * </p>
 	 */
 	public short size;
-
-	/**
-	 * The device where this font was created.
-	 */
-	Device device;
 	
 	/**
 	 * The ATSUI style for the font.

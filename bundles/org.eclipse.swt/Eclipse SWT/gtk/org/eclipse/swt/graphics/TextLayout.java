@@ -37,8 +37,7 @@ public final class TextLayout extends Resource {
 		TextStyle style;
 		int start;
 	}
-	
-	Device device;
+
 	Font font;
 	String text;
 	int ascent, descent;

@@ -24,11 +24,6 @@ public class Transform extends Resource {
 	 */
 	public float[] handle;
 	
-	/**
-	 * the device where this font was created
-	 */
-	Device device;
-	
 public Transform (Device device) {
 	this(device, 1, 0, 0, 1, 0, 0);
 }

@@ -53,11 +53,6 @@ public final class Cursor extends Resource {
 	 */
 	public int handle;
 	
-	/**
-	 * the device where this cursor was created
-	 */
-	Device device;
-	
 	boolean isIcon;
 	
 	/**

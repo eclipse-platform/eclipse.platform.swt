@@ -150,6 +150,7 @@ static Device getDevice () {
  * @see DeviceData
  */
 public Device(DeviceData data) {
+    this.device = this;
 	if (data != null) {
 		display_name = data.display_name;
 		application_name = data.application_name;

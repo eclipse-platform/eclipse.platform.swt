@@ -37,11 +37,6 @@ public final class Region extends Resource {
 	 */
 	public int /*long*/ handle;
 
-	/**
-	 * The device where this region was created.
-	 */
-	Device device;
-
 /**
  * Constructs a new empty region.
  * 

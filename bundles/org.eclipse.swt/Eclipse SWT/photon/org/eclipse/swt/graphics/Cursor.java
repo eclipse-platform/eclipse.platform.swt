@@ -63,11 +63,6 @@ public final class Cursor extends Resource {
 	 * </p>
 	 */
 	public int bitmap;
-	
-	/**
-	 * the device where this cursor was created
-	 */
-	Device device;
 
 Cursor() {
 }

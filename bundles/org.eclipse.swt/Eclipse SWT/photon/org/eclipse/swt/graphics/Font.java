@@ -41,11 +41,6 @@ public final class Font extends Resource {
 	 * </p>
 	 */
 	public byte[] handle;
-	
-	/**
-	 * the device where this font was created
-	 */
-	Device device;
 
 Font() {
 }

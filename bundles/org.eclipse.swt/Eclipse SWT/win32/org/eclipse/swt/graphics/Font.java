@@ -42,11 +42,6 @@ public final class Font extends Resource {
 	 */
 	public int handle;
 	
-	/**
-	 * the device where this font was created
-	 */
-	Device device;
-	
 /**
  * Prevents uninitialized instances from being created outside the package.
  */

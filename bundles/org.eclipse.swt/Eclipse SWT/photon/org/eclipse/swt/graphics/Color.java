@@ -41,11 +41,6 @@ public final class Color extends Resource {
 	 */
 	public int handle;
 
-	/**
-	 * the device where this color was created
-	 */
-	Device device;
-
 Color() {	
 }
 

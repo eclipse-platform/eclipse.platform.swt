@@ -41,11 +41,6 @@ public final class Color extends Resource {
 	 */
 	public XColor handle;
 
-	/**
-	 * The device where this image was created.
-	 */
-	Device device;
-
 Color() {
 }
 /**	 

@@ -41,11 +41,6 @@ public final class Color extends Resource {
 	 */
 	public GdkColor handle;
 
-	/**
-	 * The device where this color was created.
-	 */
-	Device device;
-
 Color() {
 }
 

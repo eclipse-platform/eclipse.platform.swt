@@ -90,6 +90,7 @@ static Device getDevice () {
  * @see DeviceData
  */
 public Device(DeviceData data) {
+    this.device = this;
 	if (data != null) {
 		debug = data.debug;
 		tracking = data.tracking;

@@ -158,7 +158,6 @@ public final class TextLayout extends Resource {
 		}
 	}
 	
-	Device device;
 	Font font;
 	String text;
 	int textPtr;

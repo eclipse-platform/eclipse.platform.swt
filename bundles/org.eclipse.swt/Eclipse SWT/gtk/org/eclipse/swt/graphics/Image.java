@@ -96,11 +96,6 @@ public final class Image extends Resource implements Drawable {
 	public int /*long*/ mask;
 
 	int /*long*/ surface;
-
-	/**
-	 * The device where this image was created.
-	 */
-	Device device;
 	
 	/**
 	 * specifies the transparent pixel

@@ -40,11 +40,6 @@ public final class Color extends Resource {
 	 */
 	public float[] handle;
 
-	/**
-	 * The device where this color was created.
-	 */
-	Device device;
-
 Color() {
 }
 

@@ -42,11 +42,6 @@ public final class Color extends Resource {
 	 * </p>
 	 */
 	public int handle;
-	
-	/**
-	 * the device where this color was created
-	 */
-	Device device;
 
 /**
  * Prevents uninitialized instances from being created outside the package.

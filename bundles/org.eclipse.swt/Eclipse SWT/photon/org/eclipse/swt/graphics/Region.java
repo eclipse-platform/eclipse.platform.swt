@@ -37,11 +37,6 @@ public final class Region extends Resource {
 	 * </p>
 	 */
 	public int handle;
-	
-	/**
-	 * the device where this cursor was created
-	 */
-	Device device;
 
 	static int EMPTY_REGION = -1;
 

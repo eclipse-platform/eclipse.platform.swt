@@ -37,11 +37,6 @@ public final class Region extends Resource {
 	 */
 	public int handle;
 
-	/**
-	 * The device where this image was created.
-	 */
-	Device device;
-
 /**
  * Constructs a new empty region.
  * 

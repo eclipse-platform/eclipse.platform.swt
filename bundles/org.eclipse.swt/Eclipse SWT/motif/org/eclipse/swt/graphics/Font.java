@@ -55,11 +55,6 @@ public final class Font extends Resource {
 	 */
 	public String codePage;
 
-	/**
-	 * The device where this image was created.
-	 */
-	Device device;
-
 Font () {
 }
 

@@ -40,11 +40,6 @@ public final class Font extends Resource {
 	 * </p>
 	 */
 	public int /*long*/ handle;
-
-	/**
-	 * The device where this image was created.
-	 */
-	Device device;
 	
 Font() {
 }

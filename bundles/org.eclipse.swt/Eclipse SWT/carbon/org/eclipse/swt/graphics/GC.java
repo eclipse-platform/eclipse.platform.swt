@@ -123,7 +123,7 @@ public GC(Drawable drawable, int style) {
 	Device device = data.device;
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	data.device = device;
+	this.device = data.device = device;
 	init(drawable, data, gdkGC);
 }
 

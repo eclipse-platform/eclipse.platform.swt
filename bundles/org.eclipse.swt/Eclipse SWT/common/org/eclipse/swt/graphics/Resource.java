@@ -32,6 +32,11 @@ package org.eclipse.swt.graphics;
  */
 public abstract class Resource {
     
+	/**
+	 * the device where this font was created
+	 */
+	Device device;
+
 /**
  * Disposes of the operating system resources associated with
  * this resource. Applications must dispose of all resources

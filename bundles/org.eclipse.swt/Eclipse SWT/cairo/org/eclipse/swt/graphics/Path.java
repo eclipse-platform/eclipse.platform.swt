@@ -22,11 +22,6 @@ public class Path extends Resource {
 	 */
 	public int /*long*/ handle;
 	
-	/**
-	 * the device where this font was created
-	 */
-	Device device;
-	
 public Path (Device device) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
