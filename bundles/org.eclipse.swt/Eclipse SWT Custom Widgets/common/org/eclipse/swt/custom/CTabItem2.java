@@ -472,6 +472,14 @@ void drawUnselected(GC gc) {
 	if (parent.showUnselectedClose && (parent.showClose || showClose)) drawClose(gc);
 }
 /**
+ * @since 3.0
+ */
+public Color getBackground() {
+	checkWidget();
+	if (background != null) return background;
+	return parent.getBackground();
+}
+/**
  * Returns a rectangle describing the receiver's size and location
  * relative to its parent.
  *
@@ -515,6 +523,22 @@ public Control getControl () {
 public Image getDisabledImage(){
 	//checkWidget();
 	return null;
+}
+/**
+ * @since 3.0
+ */
+public Font getFont() {
+	checkWidget();
+	if (font != null) return font;
+	return parent.getFont();
+}
+/**
+ * @since 3.0
+ */
+public Color getForeground() {
+	checkWidget();
+	if (foreground != null) return foreground;
+	return parent.getForeground();
 }
 /**
  * Returns the receiver's parent, which must be a <code>CTabFolder</code>.

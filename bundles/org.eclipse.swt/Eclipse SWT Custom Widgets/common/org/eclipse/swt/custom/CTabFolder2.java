@@ -124,7 +124,7 @@ public class CTabFolder2 extends Composite {
 	Color[] gradientColors;
 	int[] gradientPercents;
 	boolean gradientVertical;
-	boolean showUnselectedImage = false;
+	boolean showUnselectedImage = true;
 	
 	static Color borderColor;
 	
