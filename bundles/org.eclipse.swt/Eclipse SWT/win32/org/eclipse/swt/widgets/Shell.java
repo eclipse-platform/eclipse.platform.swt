@@ -925,6 +925,27 @@ void setBounds (int x, int y, int width, int height, int flags) {
 	OS.SetWindowPos (handle, 0, x, y, width, height, flags);
 }
 
+/**
+ * Sets the area of the shell which can be changed
+ * by drawing operations to the region specified
+ * by the argument.
+ *
+ * @param rect the clipping region.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.0
+ *
+ */
+public void setClipping(Region region) {
+	checkWidget ();
+	if ((style & SWT.NO_TRIM) == 0) return;
+	OS.SetWindowRgn (handle, region.handle, true);
+}
+
 public void setEnabled (boolean enabled) {
 	checkWidget ();
 	state &= ~DISABLED;
@@ -999,27 +1020,6 @@ void setItemEnabled (int cmd, boolean enabled) {
 
 void setParent () {
 	/* Do nothing.  Not necessary for Shells */
-}
-
-/**
- * Sets the area of the shell which can be changed
- * by drawing operations to the region specified
- * by the argument.
- *
- * @param rect the clipping region.
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @since 3.0
- *
- */
-public void setClipping(Region region) {
-	checkWidget ();
-	if ((style & SWT.NO_TRIM) == 0) return;
-	OS.SetWindowRgn (handle, region.handle, true);
 }
 
 void setToolTipText (int hwnd, String text) {
