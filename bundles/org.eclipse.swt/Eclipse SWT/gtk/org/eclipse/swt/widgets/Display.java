@@ -1607,6 +1607,7 @@ public Cursor getSystemCursor (int id) {
  * @since 3.0
  */
 public Image getSystemImage (int id) {
+	checkDevice ();
 	int /*long*/ imagePixmap = 0, imageMask = 0;
 	switch (id) {
 		case SWT.ICON_ERROR:
@@ -1798,6 +1799,7 @@ public Font getSystemFont () {
  * @since 3.0
  */
 public Tray getSystemTray () {
+	checkDevice ();
 	if (tray != null) return tray;
 	return tray = new Tray (this, SWT.NULL);
 }

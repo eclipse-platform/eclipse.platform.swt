@@ -1659,6 +1659,7 @@ public Cursor getSystemCursor (int id) {
  * @since 3.0
  */
 public Image getSystemImage (int id) {
+	checkDevice ();
 	int cgImage = 0;
 	int imageData = 0;
 	switch (id) {
