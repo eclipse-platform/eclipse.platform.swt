@@ -135,9 +135,30 @@ public class CTabFolder extends Composite {
 	private Shell tip;
 
 /**
- * Construct a CTabFolder with the specified parent and style.
- * @param parent org.eclipse.swt.widgets.Composite
- * @param swtStyle int
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a widget which will be the parent of the new instance (cannot be null)
+ * @param style the style of widget to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see #getStyle
  */
 public CTabFolder(Composite parent, int style) {
 	super(parent, checkStyle (style));
@@ -228,6 +249,7 @@ private static int checkStyle (int style) {
 *	</ul>
 */
 public void addSelectionListener(SelectionListener listener) {
+	checkWidget();
 	if (listener == null) {
 		SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	}
@@ -242,13 +264,16 @@ public void addSelectionListener(SelectionListener listener) {
  * @param listener the listener which should be notified
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ *      <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
  *
  * @see CTabFolderListener
  * @see #removeCTabFolderListener
  */
 public void addCTabFolderListener(CTabFolderListener listener) {
+	checkWidget();
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	// add to array
 	CTabFolderListener[] newTabListeners = new CTabFolderListener[tabListeners.length + 1];
@@ -280,6 +305,7 @@ private void closeNotify(CTabItem item, int time) {
 	}
 }
 public Point computeSize (int wHint, int hHint, boolean changed) {
+	checkWidget();
 	int minWidth = 0;
 	int minHeight = 0;
 
@@ -308,6 +334,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (trim.width, trim.height);
 }
 public Rectangle computeTrim (int x, int y, int width, int height) {
+	checkWidget();
 	int tabHeight = getTabHeight();
 	int trimX = x - marginWidth - borderLeft;
 	int trimY = y - marginHeight - tabHeight - borderTop;
@@ -517,7 +544,8 @@ private void onDispose() {
 	if (borderColor3 != null) borderColor3.dispose();
 	borderColor3 = null;
 }
-public void onFocus(Event e) {
+void onFocus(Event e) {
+	checkWidget();
 	if (selectedIndex >= 0) {
 		redrawTabArea(selectedIndex);
 	} else {
@@ -574,6 +602,7 @@ private void drawBorder(GC gc) {
 	gc.setForeground(getForeground());
 }
 public Rectangle getClientArea() {
+	checkWidget();
 	Rectangle clientArea = super.getClientArea();
 	clientArea.x = xClient;
 	clientArea.y = yClient;
@@ -581,7 +610,18 @@ public Rectangle getClientArea() {
 	clientArea.height -= 2*marginHeight + borderTop + borderBottom + getTabHeight() + 1;
 	return clientArea;
 }
+/**
+ * Returns the height of the tab
+ * 
+ * @return the height of the tab
+ * 
+ * @exception SWTError <ul>
+ *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ *	</ul>
+ */
 public int getTabHeight(){
+	checkWidget();
 	if (fixedTabHeight > 0) return fixedTabHeight;
 
 	int tempHeight = 0;
@@ -594,8 +634,16 @@ public int getTabHeight(){
 }
 /**
  * Return the tab that is located at the specified index.
+ * 
+ * @return the item at the specified index
+ * 
+ * @exception SWTError <ul>
+ *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ *	</ul> 
  */
 public CTabItem getItem (int index) {
+	checkWidget();
 	if (index  < 0 || index > items.length) 
 		SWT.error(SWT.ERROR_INVALID_RANGE);
 	return items [index];
@@ -609,10 +657,10 @@ public CTabItem getItem (int index) {
 * @exception SWTError <ul>
 *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
 *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-* 		<li>ERROR_CANNOT_GET_COUNT when the operation fails</li>
 *	</ul>
 */
 public CTabItem getItem (Point pt) {
+	checkWidget();
 	for (int i = 0; i < items.length; i++) {
 		Rectangle bounds = items[i].getBounds();
 		if (bounds.contains(pt)) return items[i];
@@ -621,14 +669,30 @@ public CTabItem getItem (Point pt) {
 }
 /**
  * Return the number of tabs in the folder.
+ * 
+ * @return the number of tabs in the folder
+ * 
+ * @exception SWTError <ul>
+ *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ *	</ul>
  */
 public int getItemCount(){
+	checkWidget();
 	return items.length;
 }
 /**
  * Return the tab items.
+ * 
+ * @return the tab items
+ * 
+ * @exception SWTError <ul>
+ *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ *	</ul>
  */
 public CTabItem [] getItems() {
+	checkWidget();
 	CTabItem[] tabItems = new CTabItem [items.length];
 	System.arraycopy(items, 0, tabItems, 0, items.length);
 	return tabItems;
@@ -636,16 +700,32 @@ public CTabItem [] getItems() {
 /**
  * Return the selected tab item, or an empty array if there
  * is no selection.
+ * 
+ * @return the selected tab item
+ * 
+ * @exception SWTError <ul>
+ *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ *	</ul>
  */
 public CTabItem getSelection() {
+	checkWidget();
 	if (selectedIndex == -1) return null;
 	return items[selectedIndex];
 }
 /**
  * Return the index of the selected tab item, or -1 if there
  * is no selection.
+ * 
+ * @return the index of the selected tab item or -1
+ * 
+ * @exception SWTError <ul>
+ *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ *	</ul>
  */
 public int getSelectionIndex() {
+	checkWidget();
 	return selectedIndex;
 }
 
@@ -653,8 +733,17 @@ public int getSelectionIndex() {
 /**
  * Return the index of the specified tab or -1 if the tab is not 
  * in the receiver.
+ * 
+ * @return the index of the specified tab item or -1
+ * 
+ * @exception SWTError <ul>
+ *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ *      <li>ERROR_NULL_ARGUMENT when the item is null</li>
+ *	</ul>
  */
 public int indexOf(CTabItem item) {
+	checkWidget();
 	if (item == null) {
 		SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	}
@@ -924,6 +1013,7 @@ private void redrawTabArea(int index) {
  * 		<li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
  */
 public void removeSelectionListener(SelectionListener listener) {
+	checkWidget();
 	if (listener == null) {
 		SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	}
@@ -941,6 +1031,7 @@ public void removeSelectionListener(SelectionListener listener) {
  * 		<li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
  */
 public void removeCTabFolderListener(CTabFolderListener listener) {
+	checkWidget();
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (tabListeners.length == 0) return;
 	int index = -1;
@@ -1051,9 +1142,15 @@ public void setBackground (Color color) {
  * @param percents an array of integers between 0 and 100 specifying the percent of the width 
  *                 of the widget at which the color should change.  The size of the percents array must be one 
  *                 less than the size of the colors array.
+ * 
+ * @exception SWTError <ul>
+ *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ *	</ul>
  */
 
 public void setSelectionBackground(Color[] colors, int[] percents) {
+	checkWidget();
 	if (colors != null) {
 		if (percents == null || percents.length != colors.length - 1) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -1115,14 +1212,39 @@ public void setSelectionBackground(Color[] colors, int[] percents) {
 	// Refresh with the new settings
 	if (selectedIndex > -1) redrawTabArea(selectedIndex);
 }
+
+/**
+ * Set the image to be drawn in the background of the selected tab.
+ * 
+ * @param image the image to be drawn in the background
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setSelectionBackground(Image image) {
+	checkWidget();
 	if (image == backgroundImage) return;
-	gradientColors = null;
-	gradientPercents = null;
+	if (image != null) {
+		gradientColors = null;
+		gradientPercents = null;
+	}
 	backgroundImage = image;
 	redrawTabArea(selectedIndex);
 }
+/**
+ * Toggle the visibility of the border
+ * 
+ * @param show true if the border should be displayed
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setBorderVisible(boolean show) {
+	checkWidget();
 	if (showBorders == show) return;
 	
 	showBorders = show;
@@ -1139,6 +1261,7 @@ public void setBorderVisible(boolean show) {
 	onClientAreaChange();
 }
 public void setFont(Font font) {
+	checkWidget();
 	if (font != null && font.equals(getFont())) return;
 	int oldHeight = getTabHeight();
 	super.setFont(font);
@@ -1149,7 +1272,18 @@ public void setFont(Font font) {
 		redraw();
 	}
 }
+/**
+ * Set the foreground color of the selected tab.
+ * 
+ * @param color the color of the text displayed in the selected tab
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setSelectionForeground (Color color) {
+	checkWidget();
 	if (selectionForeground == color) return;
 	if (color == null) color = getForeground();
 	selectionForeground = color;
@@ -1157,14 +1291,42 @@ public void setSelectionForeground (Color color) {
 		redrawTabArea(selectedIndex);
 	}
 }
+/**
+ * Display an insert marker before or after the specified tab item. 
+ * Null will clear the mark.
+ * 
+ * @param item the item with which the mark is associated or null
+ * 
+ * @param after true if the mark should be displayed after the specified item
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setInsertMark(CTabItem item, boolean after) {
+	checkWidget();
 	int index = -1;
 	if (item != null) {
 		index = indexOf(item);
 	}
 	setInsertMark(index, after);
 }
+/**
+ * Display an insert marker before or after the specified tab item. 
+ * -1 will clear the mark.
+ * 
+ * @param item the index of the item with which the mark is associated or null
+ * 
+ * @param after true if the mark should be displayed after the specified item
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setInsertMark(int index, boolean after) {
+	checkWidget();
 	if (index < -1 || index >= getItemCount()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
@@ -1184,8 +1346,16 @@ public void setInsertMark(int index, boolean after) {
 
 /**
  * Set the selection to the tab at the specified index.
+ * 
+ * @param index the index of the tab item to be selected
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public void setSelection(int index) {
+	checkWidget();
 	if (index < 0 || index >= items.length) return;
 	if (selectedIndex == index) return;
 	
@@ -1260,9 +1430,17 @@ char getMnemonic (String string) {
  	return '\0';
 }
 /**
- * Set the selection to the specified item.
+ * Set the selection to the tab at the specified item.
+ * 
+ * @param index the tab item to be selected
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public void setSelection(CTabItem item) {
+	checkWidget();
 	if (item == null) 
 		SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	int index = indexOf(item);
@@ -1560,7 +1738,21 @@ private void scroll_scrollRight() {
 		redrawTabArea(-1);
 	}
 }
+/**
+ * Specify a fixed height for the tab items.  If no height is specified,
+ * the default height is the height of the text or the image, whichever 
+ * is greater. Specifying a height of 0 will revert to the default height.
+ * 
+ * @param height the pixel value of the height or 0
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if called with a height of less than 0</li>
+ * </ul>
+ */
 public void setTabHeight(int height) {
+	checkWidget();
 	if (height < 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
