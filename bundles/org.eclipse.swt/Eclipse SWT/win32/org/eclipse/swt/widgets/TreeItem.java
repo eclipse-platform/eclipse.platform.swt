@@ -670,6 +670,36 @@ public String getText (int index) {
 	return "";
 }
 
+/**
+ * Searches the receiver's list starting at the first item
+ * (index 0) until an item is found that is equal to the 
+ * argument, and returns the index of that item. If no item
+ * is found, returns -1.
+ *
+ * @param item the search item
+ * @return the index of the item
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the tool item is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the tool item has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
+/*public*/ int indexOf (TreeItem item) {
+	//TODO - make public and add Tree.indexOf(TreeItem) and TreeItem.indexOf(TreeItem)?
+	checkWidget ();
+	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	int hwnd = parent.handle;
+	int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+	return hItem == 0 ? -1 : parent.indexOf (hItem, item.handle);
+}
+
 void redraw () {
 	if (parent.drawCount > 0) return;
 	int hwnd = parent.handle;

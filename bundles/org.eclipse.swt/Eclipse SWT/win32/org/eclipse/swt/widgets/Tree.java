@@ -1324,6 +1324,15 @@ int imageIndex (Image image) {
 	return imageList.add (image);
 }
 
+int indexOf (int hItem, int hChild) {
+	int index = 0;
+	while (hItem != 0 && hItem != hChild) {
+		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+		index++;
+	}
+	return hItem == hChild ? index : -1;
+}
+
 /**
  * Searches the receiver's list starting at the first column
  * (index 0) until a column is found that is equal to the 
@@ -1344,15 +1353,43 @@ int imageIndex (Image image) {
  * @since 3.1
  */
 /*public*/ int indexOf (TreeColumn column) {
-	//TODO - make public and add Tree.indexOf(TreeItem) and TreeItem.indexOf(TreeItem)?
 	checkWidget ();
 	if (column == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (column.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	if (hwndHeader == 0) return -1;
 	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 	for (int i=0; i<count; i++) {
 		if (columns [i] == column) return i;
 	}
 	return -1;
+}
+
+/**
+ * Searches the receiver's list starting at the first item
+ * (index 0) until an item is found that is equal to the 
+ * argument, and returns the index of that item. If no item
+ * is found, returns -1.
+ *
+ * @param item the search item
+ * @return the index of the item
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the tool item is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the tool item has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
+/*public*/ int indexOf (TreeItem item) {
+	checkWidget ();
+	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+	return hItem == 0 ? -1 : indexOf (hItem, item.handle);
 }
 
 void register () {
