@@ -110,7 +110,6 @@ public class StyledText extends Canvas {
 	int textLimit = -1;					// limits the number of characters the user can type in the widget. Unlimited by default.
 	Hashtable keyActionMap = new Hashtable();
 	Font boldFont;
-//	Font italicFont = null;
 	Font regularFont;
 	Color background = null;			// workaround for bug 4791
 	Color foreground = null;			//
@@ -2816,12 +2815,13 @@ int getBidiOffsetAtMouseLocation(int x, int line) {
 	return lineOffset + offsetInLine;
 }
 /**
- * Returns an array of bold and italic text ranges for a line.
+ * Returns an array of text ranges that have a font style specified (e.g., SWT.BOLD).
  * <p>
- * @param styles style ranges in the line, may be bold, italic, non-bold/italic
+ * @param styles style ranges in the line
  * @param lineOffset start index of the line, relative to the start of the document
  * @param length of the line
- * @return StyleRange[], null if styles parameter is null
+ * @return StyleRange[], array of ranges with a font style specified, 
+ * null if styles parameter is null
  */
 StyleRange[] getFontStyleRanges(StyleRange[] styles, int lineOffset, int lineLength) {
 	int count = 0;
@@ -2834,7 +2834,7 @@ StyleRange[] getFontStyleRanges(StyleRange[] styles, int lineOffset, int lineLen
 	for (int i = 0; i < styles.length; i++) {
 		StyleRange style = styles[i];
 		if (style.start - lineOffset < lineLength) {
-			if (style.fontStyle == SWT.BOLD /* || style.fontStyle == SWT.ITALIC */) {
+			if (style.fontStyle == SWT.BOLD) {
 				count++;
 			}
 		}
@@ -2847,7 +2847,7 @@ StyleRange[] getFontStyleRanges(StyleRange[] styles, int lineOffset, int lineLen
 			StyleRange style = styles[i];
 			int styleLineStart = style.start - lineOffset;
 			if (styleLineStart < lineLength) {			
-				if (style.fontStyle == SWT.BOLD /* || style.fontStyle == SWT.ITALIC */) {
+				if (style.fontStyle == SWT.BOLD) {
 					StyleRange newStyle = new StyleRange();
 					newStyle.start = Math.max(0, styleLineStart);
 					newStyle.length = (Math.min(styleLineStart + style.length, lineLength)) - newStyle.start;
@@ -3227,6 +3227,7 @@ StyledTextEvent getLineStyleData(int lineOffset, String line) {
 				// Note that there is no need to deal with segments when checking for
 				// the ligatures.
 				int lineLength = line.length();
+				
 				StyledTextBidi bidi = new StyledTextBidi(gc, line, new int[] {0, lineLength});
 				for (int i=0; i<event.styles.length; i++) {
 					StyleRange range = event.styles[i];
@@ -3953,7 +3954,7 @@ StyledTextBidi getStyledTextBidi(String lineText, int lineOffset, GC gc, StyleRa
 	else {
 		fontStyles = getFontStyleRanges(styles, lineOffset, lineText.length());
 	}
-	return new StyledTextBidi(gc, tabWidth, lineText, fontStyles, boldFont, null /* italicFont */, getBidiSegments(lineText, lineOffset));
+	return new StyledTextBidi(gc, tabWidth, lineText, fontStyles, boldFont, getBidiSegments(lineText, lineOffset));
 }		
 /**
  * Returns the tab width measured in characters.
@@ -4485,9 +4486,6 @@ void handleDispose() {
 	if (boldFont != null) {
 		boldFont.dispose();
 	}
-//	if (italicFont != null) {
-//		italicFont.dispose();
-//	}
 	if (content != null) {
 		content.removeTextChangeListener(textChangeListener);
 	}	
@@ -4803,9 +4801,6 @@ void initializeFonts() {
 	fontData = regularFont.getFontData()[0];
 	fontData.setStyle(fontData.getStyle() | SWT.BOLD);
 	boldFont = new Font(getDisplay(), fontData);
-//	fontData = regularFont.getFontData()[0];
-//	fontData.setStyle(fontData.getStyle() | SWT.ITALIC);
-//	italicFont = new Font(getDisplay(), fontData);
 	gc.dispose();
 }
 /**
@@ -6047,9 +6042,6 @@ public void setFont(Font font) {
 	if (boldFont != null) {
 		boldFont.dispose();
 	}
-//	if (italicFont != null) {
-//		italicFont.dispose();
-//	}
 	initializeFonts();
 	oldLineHeight = lineHeight;
 	calculateLineHeight();
@@ -6237,7 +6229,7 @@ Color setLineBackground(GC gc, Color currentBackground, Color newBackground) {
  * @param gc GC to set the font in
  * @param currentFont font data of font currently set in gc
  * @param style desired style of the font in gc. Can be one of 
- * 	SWT.NORMAL, SWT.ITALIC, SWT.BOLD
+ * 	SWT.NORMAL, SWT.BOLD
  */
 void setLineFont(GC gc, FontData currentFont, int style) {
 	if (currentFont.getStyle() != style) {
@@ -6246,11 +6238,6 @@ void setLineFont(GC gc, FontData currentFont, int style) {
 			gc.setFont(boldFont);
 		}
 		else
-//		if (style == SWT.ITALIC) {
-//			currentFont.setStyle(style);
-//			gc.setFont(italicFont);
-//		}
-//		else
 		if (style == SWT.NORMAL) {
 			currentFont.setStyle(style);
 			gc.setFont(regularFont);

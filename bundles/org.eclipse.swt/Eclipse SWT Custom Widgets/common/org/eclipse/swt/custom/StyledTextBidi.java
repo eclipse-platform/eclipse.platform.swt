@@ -92,7 +92,7 @@ class StyledTextBidi {
  * 	separately, may be needed to preserve the order of separate R2L 
  * 	segments to each other
  */
-public StyledTextBidi(GC gc, int tabWidth, String text, StyleRange[] ranges, Font boldFont, Font italicFont, int[] offsets) {
+public StyledTextBidi(GC gc, int tabWidth, String text, StyleRange[] ranges, Font boldFont, int[] offsets) {
 	int length = text.length();
 		
 	this.gc = gc;
@@ -107,23 +107,19 @@ public StyledTextBidi(GC gc, int tabWidth, String text, StyleRange[] ranges, Fon
 	else {
 		glyphBuffer = BidiUtil.getRenderInfo(gc, text, order, classBuffer, dx, 0, offsets);
 		if (ranges != null) {
-			// If the font supports characters shaping, break up the bold/italic ranges based on 
+			// If the font supports characters shaping, break up the font style ranges based on 
 			// the specified bidi segments.  Each bidi segment will be treated separately 
-			// for bold/italic purposes.
+			// for font style purposes.
 			StyleRange[] segmentedRanges;
 			if (isCharacterShaped(gc)) segmentedRanges = segmentedRangesFor(ranges);
 			else segmentedRanges = ranges;
 			Font normalFont = gc.getFont();
-			int previousStyle = -1;
+			gc.setFont(boldFont);
 			for (int i = 0; i < segmentedRanges.length; i++) {
 				StyleRange segmentedRange = segmentedRanges[i];
-				if (segmentedRange.fontStyle != previousStyle) {
-					if (segmentedRange.fontStyle == SWT.ITALIC) gc.setFont(italicFont);
-					else gc.setFont(boldFont);
-				}
 				int rangeStart = segmentedRange.start;
 				int rangeLength = segmentedRange.length;
-				// Bold/italic text needs to be processed so that the dx array reflects the bold
+				// Font styled text needs to be processed so that the dx array reflects the styled
 				// font.
 				prepareFontStyledText(text, rangeStart, rangeLength);
 			}
@@ -870,7 +866,7 @@ private void prepareFontStyledText(String textline, int logicalStart, int length
 
 	// Figure out what is before and after the substring so that the proper character 
 	// shaping will occur.  Character shaping will not occur across bidi segments, so
-	// if the bold text starts or ends on a bidi segment, do not process the text
+	// if the styled text starts or ends on a bidi segment, do not process the text
 	// for character shaping.
 	if (logicalStart != 0  
 		&& isCharacterShaped(gc) 
