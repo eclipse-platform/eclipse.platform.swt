@@ -63,7 +63,14 @@ import org.eclipse.swt.graphics.*;
  * (only) when constructing multi-threaded applications to use the
  * inter-thread communication mechanisms which this class provides
  * when required.
- * </p><p>
+ * </p>
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>(none)</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>Close, Dispose</dd>
+ * </dl>
+ * <p>
  * All SWT API methods which may only be called from the user-interface
  * thread are distinguished in their documentation by indicating that
  * they throw the "<code>ERROR_THREAD_INVALID_ACCESS</code>"
@@ -86,6 +93,7 @@ public class Display extends Device {
 	Event [] eventQueue;
 	int windowProc2, windowProc3, windowProc4, windowProc5;
 	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5;
+	EventTable eventTable;
 
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer = new Synchronizer (this);
@@ -120,8 +128,6 @@ public class Display extends Device {
 	/* Fonts */
 	int defaultFont;
 	
-	int textHighlightThickness = 1; /* for emulated widgets */
-		
 	/* Colors */
 	GdkColor COLOR_WIDGET_DARK_SHADOW, COLOR_WIDGET_NORMAL_SHADOW, COLOR_WIDGET_LIGHT_SHADOW;
 	GdkColor COLOR_WIDGET_HIGHLIGHT_SHADOW, COLOR_WIDGET_BACKGROUND, COLOR_WIDGET_FOREGROUND, COLOR_WIDGET_BORDER;
@@ -284,6 +290,34 @@ void addLast (RunnableLock entry) {
 	}
 }
 
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notifed when an event of the given type occurs. When the
+ * event does occur in the display, the listener is notified by
+ * sending it the <code>handleEvent()</code> message.
+ *
+ * @param eventType the type of event to listen for
+ * @param listener the listener which should be notified when the event occurs
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Listener
+ * @see #removeListener
+ * 
+ * @since 2.0 
+ */
+public void addListener (int eventType, Listener listener) {
+	checkDevice ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) eventTable = new EventTable ();
+	eventTable.hook (eventType, listener);
+}
+
 void addMouseHoverTimeout (int handle) {
 	if (mouseHoverId != 0) OS.gtk_timeout_remove (mouseHoverId);
 	mouseHoverId = OS.gtk_timeout_add (400, mouseHoverProc, handle);
@@ -331,6 +365,25 @@ static synchronized void checkDisplay (Thread thread) {
 
 protected void checkSubclass () {
 	if (!isValidClass (getClass ())) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
+/**
+ * Requests that the connection between SWT and the underlying
+ * operating system be closed.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see #dispose
+ * 
+ * @since 2.0
+ */
+public void close () {
+	checkDevice ();
+	Event event = new Event ();
+	sendEvent (SWT.Close, event);
+	if (event.doit) dispose ();
 }
 
 protected void create (DeviceData data) {
@@ -1187,6 +1240,7 @@ synchronized void register () {
 }
 
 protected void release () {
+	sendEvent (SWT.Dispose, new Event ());
 	Shell [] shells = WidgetTable.shells ();
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
@@ -1266,6 +1320,32 @@ RunnableLock removeFirst () {
 	}
 }
 
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notifed when an event of the given type occurs.
+ *
+ * @param eventType the type of event to listen for
+ * @param listener the listener which should no longer be notified when the event occurs
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Listener
+ * @see #addListener
+ * 
+ * @since 2.0 
+ */
+public void removeListener (int eventType, Listener listener) {
+	checkDevice ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (eventType, listener);
+}
+
 void removeMouseHoverTimeout (int handle) {
 	if (handle != mouseHoverHandle) return;
 	if (mouseHoverId != 0) OS.gtk_timeout_remove (mouseHoverId);
@@ -1279,8 +1359,8 @@ boolean runAsyncMessages () {
 boolean runDeferredEvents () {
 	/*
 	* Run deferred events.  This code is always
-	* called  in the Display's thread so it must
-	* be re-enterant need not be synchronized.
+	* called in the Display's thread so it must
+	* be re-enterant but need not be synchronized.
 	*/
 	while (eventQueue != null) {
 		
@@ -1296,7 +1376,7 @@ boolean runDeferredEvents () {
 		if (widget != null && !widget.isDisposed ()) {
 			Widget item = event.item;
 			if (item == null || !item.isDisposed ()) {
-				widget.notifyListeners (event.type, event);
+				widget.sendEvent (event);
 				
 				/* Ask for the next mouse event */
 				if (event.type == SWT.MouseMove) {
@@ -1566,6 +1646,19 @@ int caretProc (int clientData, int id) {
 		currentCaret = null;
 	}
 	return 0;
+}
+
+void sendEvent (int eventType, Event event) {
+	if (eventTable == null) return;
+	if (event == null) event = new Event ();
+	event.display = this;
+	event.type = eventType;
+	if (event.time == 0) {
+		int gdkEvent = OS.gdk_event_get ();
+		event.time = OS.gdk_event_get_time (gdkEvent);
+		OS.gdk_event_free (gdkEvent);
+	}
+	eventTable.sendEvent (event);
 }
 
 void setCurrentCaret (Caret caret) {

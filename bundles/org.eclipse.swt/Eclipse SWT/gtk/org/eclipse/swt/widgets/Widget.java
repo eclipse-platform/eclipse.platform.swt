@@ -528,10 +528,7 @@ char mbcsToWcs (char ch) {
 public void notifyListeners (int eventType, Event event) {
 	checkWidget();
 	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (eventTable == null) return;
-	event.type = eventType;
-	event.widget = this;
-	eventTable.sendEvent (event);
+	sendEvent (eventType, event);
 }
 
 void postEvent (int eventType) {
@@ -541,9 +538,16 @@ void postEvent (int eventType) {
 
 void postEvent (int eventType, Event event) {
 	if (eventTable == null) return;
+	Display display = getDisplay ();
 	event.type = eventType;
 	event.widget = this;
-	getDisplay ().postEvent (event);
+	event.display = display;
+	if (event.time == 0) {
+		int gdkEvent = OS.gdk_event_get ();
+		event.time = OS.gdk_event_get_time (gdkEvent);
+		OS.gdk_event_free (gdkEvent);
+	}
+	display.postEvent (event);
 }
 
 int processEvent (int eventNumber, int int0, int int1, int int2) {
@@ -791,8 +795,20 @@ void sendEvent (int eventType) {
 
 void sendEvent (int eventType, Event event) {
 	if (eventTable == null) return;
-	event.widget = this;
+	Display display = getDisplay ();
 	event.type = eventType;
+	event.display = display;
+	event.widget = this;
+	if (event.time == 0) {
+		int gdkEvent = OS.gdk_event_get ();
+		event.time = OS.gdk_event_get_time (gdkEvent);
+		OS.gdk_event_free (gdkEvent);
+	}
+	eventTable.sendEvent (event);
+}
+
+void sendEvent (Event event) {
+	if (eventTable == null) return;
 	eventTable.sendEvent (event);
 }
 
