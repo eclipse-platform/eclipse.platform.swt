@@ -22,5 +22,5 @@ public class GdkDragContext {
    public int suggested_action;
    public int action; 
    public int start_time;
-   public static final int sizeof = 34;
+   public static final int sizeof = OS.GdkDragContext_sizeof();
 }

@@ -18,6 +18,18 @@
 
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_accessibility_gtk_ATK_##func
 
+#ifndef NO_AtkObjectFactoryClass_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(AtkObjectFactoryClass_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "AtkObjectFactoryClass_1sizeof\n")
+	rc = (jint)sizeof(AtkObjectFactoryClass);
+	NATIVE_EXIT(env, that, "AtkObjectFactoryClass_1sizeof\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_AtkObjectFactory_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(AtkObjectFactory_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -30,14 +42,38 @@ JNIEXPORT jint JNICALL OS_NATIVE(AtkObjectFactory_1sizeof)
 }
 #endif
 
-#ifndef NO_AtkObjectFactoryClass_1sizeof
-JNIEXPORT jint JNICALL OS_NATIVE(AtkObjectFactoryClass_1sizeof)
+#ifndef NO_GInterfaceInfo_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GInterfaceInfo_1sizeof)
 	(JNIEnv *env, jclass that)
 {
 	jint rc;
-	NATIVE_ENTER(env, that, "AtkObjectFactoryClass_1sizeof\n")
-	rc = (jint)sizeof(AtkObjectFactoryClass);
-	NATIVE_EXIT(env, that, "AtkObjectFactoryClass_1sizeof\n")
+	NATIVE_ENTER(env, that, "GInterfaceInfo_1sizeof\n")
+	rc = (jint)sizeof(GInterfaceInfo);
+	NATIVE_EXIT(env, that, "GInterfaceInfo_1sizeof\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_GTypeInfo_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GTypeInfo_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "GTypeInfo_1sizeof\n")
+	rc = (jint)sizeof(GTypeInfo);
+	NATIVE_EXIT(env, that, "GTypeInfo_1sizeof\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_GTypeQuery_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GTypeQuery_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "GTypeQuery_1sizeof\n")
+	rc = (jint)sizeof(GTypeQuery);
+	NATIVE_EXIT(env, that, "GTypeQuery_1sizeof\n")
 	return rc;
 }
 #endif

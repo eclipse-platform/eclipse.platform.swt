@@ -81,6 +81,13 @@ public class ATK extends OS {
 	public static final byte[] text_caret_moved = OS.signal ("text_caret_moved");
 	public static final byte[] text_selection_changed = OS.signal ("text_selection_changed");
 	
+	/** 64 bit */
+	public static final synchronized native int AtkObjectFactory_sizeof ();
+	public static final synchronized native int AtkObjectFactoryClass_sizeof ();
+	public static final synchronized native int GInterfaceInfo_sizeof ();
+	public static final synchronized native int GTypeInfo_sizeof ();
+	public static final synchronized native int GTypeQuery_sizeof ();
+	
 	/** Native methods */
 	public static final synchronized native int ATK_ACTION_GET_IFACE (int obj);
 	public static final synchronized native int ATK_COMPONENT_GET_IFACE(int atkHandle);
@@ -91,8 +98,6 @@ public class ATK extends OS {
 	public static final synchronized native int G_OBJECT_GET_CLASS (int object);
 	public static final synchronized native int G_TYPE_FROM_INSTANCE (int instance);
 	public static final synchronized native int GTK_ACCESSIBLE (int handle);
-	public static final synchronized native short AtkObjectFactory_sizeof ();
-	public static final synchronized native short AtkObjectFactoryClass_sizeof ();
 	public static final synchronized native void atk_focus_tracker_notify (int object);
 	public static final synchronized native int atk_get_default_registry ();
 	public static final synchronized native int atk_object_factory_get_accessible_type (int factory);

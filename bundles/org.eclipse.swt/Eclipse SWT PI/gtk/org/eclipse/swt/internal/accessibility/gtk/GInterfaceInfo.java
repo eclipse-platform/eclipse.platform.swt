@@ -16,5 +16,5 @@ public class GInterfaceInfo {
 	public int interface_init;
 	public int interface_finalize;
 	public int interface_data;
-	public static final int sizeof = 12;
+	public static final int sizeof = ATK.GInterfaceInfo_sizeof();
 }

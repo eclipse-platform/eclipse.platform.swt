@@ -16,5 +16,5 @@ public class PangoAttribute {
 	public int klass;
 	public int start_index;
 	public int end_index;
-	public static final int sizeof = 12;
+	public static final int sizeof = OS.PangoAttribute_sizeof();
 }

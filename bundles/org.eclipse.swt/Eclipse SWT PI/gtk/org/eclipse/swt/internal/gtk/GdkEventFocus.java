@@ -16,5 +16,5 @@ public class GdkEventFocus extends GdkEvent {
 	public int window;
 	public byte send_event;
 	public short in;
-	public static final int sizeof = 12;
+	public static final int sizeof = OS.GdkEventFocus_sizeof();
 }

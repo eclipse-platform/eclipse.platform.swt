@@ -23,5 +23,5 @@ public class GTypeInfo {
 	public short n_preallocs;
 	public int instance_init;
 	public int value_table;
-	public static final int sizeof = 36; //(34 from struct plus 2 bits caused by compiler aligment)	
+	public static final int sizeof = ATK.GTypeInfo_sizeof();	
 }

@@ -14,5 +14,5 @@ package org.eclipse.swt.internal.gtk;
 
 public class GdkEvent {
 	public int type;
-	public static final int sizeof = 4;
+	public static final int sizeof = OS.GdkEvent_sizeof();
 }

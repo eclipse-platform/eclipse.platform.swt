@@ -11,14 +11,19 @@
  *******************************************************************************/
 package org.eclipse.swt.internal.gtk;
 
- 
+import org.eclipse.swt.internal.Library;
+
 public class GNOME extends OS  {
+	static {
+		Library.loadLibrary("swt-gnome");
+	}
 
 public static final int GNOME_FILE_DOMAIN_PIXMAP = 4;
 public static final int GNOME_ICON_LOOKUP_FLAGS_NONE = 0;
 public static final int GNOME_PARAM_NONE = 0;
 public static final int GNOME_VFS_MIME_APPLICATION_ARGUMENT_TYPE_URIS = 0;
 
+public static final synchronized native int GnomeVFSMimeApplication_sizeof();
 public static final synchronized native int LIBGNOME_MODULE();
 public static final synchronized native int gnome_icon_lookup(int icon_theme, int thumbnail_factory, byte[] file_uri, byte[] custom_icon, int file_info, byte[] mime_type, int flags, int[] result);
 public static final synchronized native int gnome_icon_theme_lookup_icon(int theme, int icon_name, int size, int[] icon_data, int[] base_size);

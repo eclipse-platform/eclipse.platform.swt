@@ -16,5 +16,5 @@ public class GtkTargetEntry {
 	public int target;
 	public int flags;
 	public int info;
-	public static final int sizeof = 12;
+	public static final int sizeof = OS.GtkTargetEntry_sizeof();
 }

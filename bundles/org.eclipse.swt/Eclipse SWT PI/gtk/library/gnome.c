@@ -89,6 +89,15 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_GNOME_LIBGNOME_1MODULE
 }
 #endif
 
+#ifndef NO_GnomeVFSMimeApplication_1sizeof
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_GNOME_GnomeVFSMimeApplication_1sizeof
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("GnomeVFSMimeApplication_1sizeof\n")
+	return (jint)sizeof(GnomeVFSMimeApplication);
+}
+#endif
+
 #ifndef NO_gnome_1icon_1lookup
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_GNOME_gnome_1icon_1lookup
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jbyteArray arg3, jint arg4, jbyteArray arg5, jint arg6, jintArray arg7)

@@ -20,5 +20,5 @@ public class GnomeVFSMimeApplication {
 	public int expects_uris;
 	public int supported_uri_schemes;
 	public boolean requires_terminal;
-	public static final int sizeof = 28;
+	public static final int sizeof = GNOME.GnomeVFSMimeApplication_sizeof();
 }

@@ -21,6 +21,6 @@ public class GdkEventExpose extends GdkEvent {
 	public int area_height;
 	public int region;
 	public int count;
-	public static final int sizeof = 36;
+	public static final int sizeof = OS.GdkEventExpose_sizeof();
 }
 

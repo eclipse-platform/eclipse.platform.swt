@@ -17,5 +17,5 @@ public class GdkEventWindowState extends GdkEvent {
 	public byte send_event; 
 	public int changed_mask;
 	public int new_window_state;
-	public static final int sizeof = 20;
+	public static final int sizeof = OS.GdkEventWindowState_sizeof();
 }

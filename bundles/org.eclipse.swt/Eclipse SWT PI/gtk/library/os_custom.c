@@ -178,6 +178,306 @@ JNIEXPORT jint JNICALL OS_NATIVE(GTK_1WIDGET_1Y)
 }
 #endif
 
+#ifndef NO_GdkColor_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GdkColor_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "GdkColor_1sizeof\n")
+	rc = (jint)sizeof(GdkColor);
+	NATIVE_EXIT(env, that, "GdkColor_1sizeof\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_GdkDragContext_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GdkDragContext_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "GdkDragContext_1sizeof\n")
+	rc = (jint)sizeof(GdkDragContext);
+	NATIVE_EXIT(env, that, "GdkDragContext_1sizeof\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_GdkEventButton_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GdkEventButton_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "GdkEventButton_1sizeof\n")
+	rc = (jint)sizeof(GdkEventButton);
+	NATIVE_EXIT(env, that, "GdkEventButton_1sizeof\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_GdkEventCrossing_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GdkEventCrossing_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "GdkEventCrossing_1sizeof\n")
+	rc = (jint)sizeof(GdkEventCrossing);
+	NATIVE_EXIT(env, that, "GdkEventCrossing_1sizeof\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_GdkEventExpose_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GdkEventExpose_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "GdkEventExpose_1sizeof\n")
+	rc = (jint)sizeof(GdkEventExpose);
+	NATIVE_EXIT(env, that, "GdkEventExpose_1sizeof\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_GdkEventFocus_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GdkEventFocus_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "GdkEventFocus_1sizeof\n")
+	rc = (jint)sizeof(GdkEventFocus);
+	NATIVE_EXIT(env, that, "GdkEventFocus_1sizeof\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_GdkEventKey_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GdkEventKey_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "GdkEventKey_1sizeof\n")
+	rc = (jint)sizeof(GdkEventKey);
+	NATIVE_EXIT(env, that, "GdkEventKey_1sizeof\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_GdkEventWindowState_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GdkEventWindowState_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "GdkEventWindowState_1sizeof\n")
+	rc = (jint)sizeof(GdkEventWindowState);
+	NATIVE_EXIT(env, that, "GdkEventWindowState_1sizeof\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_GdkEvent_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GdkEvent_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "GdkEvent_1sizeof\n")
+	rc = (jint)sizeof(GdkEvent);
+	NATIVE_EXIT(env, that, "GdkEvent_1sizeof\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_GdkGCValues_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GdkGCValues_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "GdkGCValues_1sizeof\n")
+	rc = (jint)sizeof(GdkGCValues);
+	NATIVE_EXIT(env, that, "GdkGCValues_1sizeof\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_GdkImage_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GdkImage_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "GdkImage_1sizeof\n")
+	rc = (jint)sizeof(GdkImage);
+	NATIVE_EXIT(env, that, "GdkImage_1sizeof\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_GdkRectangle_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GdkRectangle_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "GdkRectangle_1sizeof\n")
+	rc = (jint)sizeof(GdkRectangle);
+	NATIVE_EXIT(env, that, "GdkRectangle_1sizeof\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_GdkVisual_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GdkVisual_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "GdkVisual_1sizeof\n")
+	rc = (jint)sizeof(GdkVisual);
+	NATIVE_EXIT(env, that, "GdkVisual_1sizeof\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_GtkAdjustment_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GtkAdjustment_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "GtkAdjustment_1sizeof\n")
+	rc = (jint)sizeof(GtkAdjustment);
+	NATIVE_EXIT(env, that, "GtkAdjustment_1sizeof\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_GtkAllocation_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GtkAllocation_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "GtkAllocation_1sizeof\n")
+	rc = (jint)sizeof(GtkAllocation);
+	NATIVE_EXIT(env, that, "GtkAllocation_1sizeof\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_GtkColorSelectionDialog_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GtkColorSelectionDialog_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "GtkColorSelectionDialog_1sizeof\n")
+	rc = (jint)sizeof(GtkColorSelectionDialog);
+	NATIVE_EXIT(env, that, "GtkColorSelectionDialog_1sizeof\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_GtkCombo_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GtkCombo_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "GtkCombo_1sizeof\n")
+	rc = (jint)sizeof(GtkCombo);
+	NATIVE_EXIT(env, that, "GtkCombo_1sizeof\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_GtkFileSelection_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GtkFileSelection_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "GtkFileSelection_1sizeof\n")
+	rc = (jint)sizeof(GtkFileSelection);
+	NATIVE_EXIT(env, that, "GtkFileSelection_1sizeof\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_GtkFixed_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GtkFixed_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "GtkFixed_1sizeof\n")
+	rc = (jint)sizeof(GtkFixed);
+	NATIVE_EXIT(env, that, "GtkFixed_1sizeof\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_GtkRequisition_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GtkRequisition_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "GtkRequisition_1sizeof\n")
+	rc = (jint)sizeof(GtkRequisition);
+	NATIVE_EXIT(env, that, "GtkRequisition_1sizeof\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_GtkSelectionData_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GtkSelectionData_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "GtkSelectionData_1sizeof\n")
+	rc = (jint)sizeof(GtkSelectionData);
+	NATIVE_EXIT(env, that, "GtkSelectionData_1sizeof\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_GtkTargetEntry_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GtkTargetEntry_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "GtkTargetEntry_1sizeof\n")
+	rc = (jint)sizeof(GtkTargetEntry);
+	NATIVE_EXIT(env, that, "GtkTargetEntry_1sizeof\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_GtkTargetPair_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GtkTargetPair_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "GtkTargetPair_1sizeof\n")
+	rc = (jint)sizeof(GtkTargetPair);
+	NATIVE_EXIT(env, that, "GtkTargetPair_1sizeof\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PangoAttribute_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(PangoAttribute_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PangoAttribute_1sizeof\n")
+	rc = (jint)sizeof(PangoAttribute);
+	NATIVE_EXIT(env, that, "PangoAttribute_1sizeof\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PangoRectangle_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(PangoRectangle_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PangoRectangle_1sizeof\n")
+	rc = (jint)sizeof(PangoRectangle);
+	NATIVE_EXIT(env, that, "PangoRectangle_1sizeof\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_PTR_1sizeof
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_PTR_1sizeof
 	(JNIEnv *env, jclass that)
@@ -198,6 +498,18 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GtkTreeIter_1sizeof
 	NATIVE_ENTER(env, that, "GtkTreeIter_1sizeof\n")
 	rc = (jint)sizeof(GtkTreeIter);
 	NATIVE_EXIT(env, that, "GtkTreeIter_1sizeof\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XWindowChanges_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(XWindowChanges_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XWindowChanges_1sizeof\n")
+	rc = (jint)sizeof(XWindowChanges);
+	NATIVE_EXIT(env, that, "XWindowChanges_1sizeof\n")
 	return rc;
 }
 #endif

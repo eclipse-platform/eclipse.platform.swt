@@ -7305,12 +7305,25 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove___3I_3BI)
 	jint *lparg0=NULL;
 	jbyte *lparg1=NULL;
 	NATIVE_ENTER(env, that, "memmove___3I_3BI\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
 	if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
-	if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
 	memmove((void *)lparg0, (const void *)lparg1, (size_t)arg2);
-	if (arg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
 	if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	NATIVE_EXIT(env, that, "memmove___3I_3BI\n")
+}
+#endif
+
+#ifndef NO_memmove___3JII
+JNIEXPORT void JNICALL OS_NATIVE(memmove___3JII)
+	(JNIEnv *env, jclass that, jlongArray arg0, jint arg1, jint arg2)
+{
+	jlong *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove___3JII\n")
+	if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) (*env)->ReleasePrimitiveArrayCritical(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "memmove___3JII\n")
 }
 #endif
 

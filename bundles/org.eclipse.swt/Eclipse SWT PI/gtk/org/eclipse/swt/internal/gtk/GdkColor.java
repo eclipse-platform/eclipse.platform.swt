@@ -17,5 +17,5 @@ public class GdkColor {
 	public short red; 
 	public short green;
 	public short blue;
-	public static final int sizeof = 12;
+	public static final int sizeof = OS.GdkColor_sizeof();
 }

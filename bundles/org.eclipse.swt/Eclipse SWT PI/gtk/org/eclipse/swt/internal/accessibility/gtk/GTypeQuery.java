@@ -17,5 +17,5 @@ public class GTypeQuery {
 	public int type_name;
 	public int class_size;
 	public int instance_size;
-	public static final int sizeof = 16;
+	public static final int sizeof = ATK.GTypeQuery_sizeof();
 }

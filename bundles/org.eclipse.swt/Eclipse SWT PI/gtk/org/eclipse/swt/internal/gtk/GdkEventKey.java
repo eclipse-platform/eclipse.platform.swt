@@ -22,5 +22,5 @@ public class GdkEventKey extends GdkEvent {
 	public int string;
 	public short hardware_keycode;
     public byte group;
-   	public static final int sizeof = 36;
+   	public static final int sizeof = OS.GdkEventKey_sizeof();
 }

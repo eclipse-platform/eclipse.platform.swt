@@ -19,5 +19,5 @@ public class GtkSelectionData {
 	public int  format;
 	public int  data;  
 	public int  length;
-	public static final int sizeof = 24;
+	public static final int sizeof = OS.GtkSelectionData_sizeof();
 }

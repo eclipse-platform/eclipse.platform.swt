@@ -24,5 +24,5 @@ public class GdkEventButton extends GdkEvent {
 	public int device;
 	public double x_root;
 	public double y_root;
-	public static final int sizeof = 64;
+	public static final int sizeof = OS.GdkEventButton_sizeof();
 }

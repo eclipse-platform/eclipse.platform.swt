@@ -15,5 +15,5 @@ package org.eclipse.swt.internal.gtk;
 public class GtkRequisition {
 	public int width;
 	public int height;
-	public static final int sizeof = 8;
+	public static final int sizeof = OS.GtkRequisition_sizeof();
 }

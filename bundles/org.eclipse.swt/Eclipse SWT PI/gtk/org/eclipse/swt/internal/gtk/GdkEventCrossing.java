@@ -25,5 +25,5 @@ public class GdkEventCrossing extends GdkEvent {
 	public int detail;
 	public boolean focus;
 	public int state;
-	public static final int sizeof = 68;
+	public static final int sizeof = OS.GdkEventCrossing_sizeof();
 }

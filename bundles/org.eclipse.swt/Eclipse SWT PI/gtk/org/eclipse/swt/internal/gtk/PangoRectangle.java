@@ -17,5 +17,5 @@ public class PangoRectangle {
 	public int y;
 	public int width;
 	public int height;
-	public static final int sizeof = 16;
+	public static final int sizeof = OS.PangoRectangle_sizeof();
 }

@@ -286,7 +286,6 @@ static Program gnome_getProgram(Display display, String mimeType) {
 
 static boolean gnome_init() {
 	try {
-		Library.loadLibrary("swt-gnome");
 		return GNOME.gnome_vfs_init();
 	} catch (Throwable e) {
 		return false;

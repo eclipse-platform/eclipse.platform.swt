@@ -37,5 +37,5 @@ public class GdkGCValues {
 	public int line_style;
 	public int cap_style;
 	public int join_style;
-	public static final int sizeof = 88;
+	public static final int sizeof = OS.GdkGCValues_sizeof();
 }
