@@ -712,7 +712,7 @@ void setBounds (int x, int y, int width, int height, int flags) {
 			}
 		}
 	} else {
-		if (OS.IsIconic (handle)) {
+		if (OS.IsIconic (handle) || OS.IsZoomed (handle)) {
 			super.setBounds (x, y, width, height, flags);
 			return;
 		}

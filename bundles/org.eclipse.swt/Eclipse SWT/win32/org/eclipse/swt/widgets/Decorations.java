@@ -453,9 +453,8 @@ public Point getLocation () {
  */
 public boolean getMaximized () {
 	checkWidget ();
-	if (!OS.IsWinCE) {
-		if (OS.IsWindowVisible (handle)) return OS.IsZoomed (handle);
-	}
+	if (OS.IsWinCE) return swFlags == OS.SW_SHOWMAXIMIZED;
+	if (OS.IsWindowVisible (handle)) return OS.IsZoomed (handle);
 	return swFlags == OS.SW_SHOWMAXIMIZED;
 }
 
@@ -615,23 +614,31 @@ void saveFocus () {
 }
 
 void setBounds (int x, int y, int width, int height, int flags) {
-	if (!OS.IsWinCE) {
+	if (OS.IsWinCE) {
+		super.setBounds (x, y, width, height, flags);
+	}
+	if (OS.IsIconic (handle) || OS.IsZoomed (handle)) {
+		WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
+		lpwndpl.length = WINDOWPLACEMENT.sizeof;
+		OS.GetWindowPlacement (handle, lpwndpl);
+		lpwndpl.showCmd = OS.SW_SHOWNA;
 		if (OS.IsIconic (handle)) {
-			WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
-			lpwndpl.length = WINDOWPLACEMENT.sizeof;
-			OS.GetWindowPlacement (handle, lpwndpl);
-			lpwndpl.showCmd = 0;
-			if ((flags & OS.SWP_NOMOVE) == 0) {
-				lpwndpl.left = x;
-				lpwndpl.top = y;
+			lpwndpl.showCmd = OS.SW_SHOWMINNOACTIVE;
+		} else {
+			if (OS.IsZoomed (handle)) {
+				lpwndpl.showCmd = OS.SW_SHOWMAXIMIZED;
 			}
-			if ((flags & OS.SWP_NOSIZE) == 0) {
-				lpwndpl.right = x + width;
-				lpwndpl.bottom = y + height;
-			}
-			OS.SetWindowPlacement (handle, lpwndpl);
-			return;
 		}
+		if ((flags & OS.SWP_NOMOVE) == 0) {
+			lpwndpl.left = x;
+			lpwndpl.top = y;
+		}
+		if ((flags & OS.SWP_NOSIZE) == 0) {
+			lpwndpl.right = x + width;
+			lpwndpl.bottom = y + height;
+		}
+		OS.SetWindowPlacement (handle, lpwndpl);
+		return;
 	}
 	super.setBounds (x, y, width, height, flags);
 }
