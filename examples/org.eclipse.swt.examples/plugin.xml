@@ -13,11 +13,13 @@
 
 <!-- Runtime -->
 <runtime>
-   <library name="swtexamples.jar"/>
+   <library name="swtexamples.jar">
+      <export name="*"/>
+   </library>
 </runtime>
 
-<!-- Extensions -->
 <!-- Extension points -->
+<!-- Extensions -->
 <extension
       point="org.eclipse.swt.examples.launcher.launchItems">
    <category
