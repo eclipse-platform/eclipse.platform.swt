@@ -1356,6 +1356,12 @@ void keyDown(Event event) {
 		doSpace(event.stateMask);
 		isCtrlSelection = (event.stateMask == SWT.CTRL);
 	}
+	//forward the enter key pressed to defaultSelection listenters
+	if(event.character == SWT.CR){
+		Event forwardEvent = new Event();
+		forwardEvent.item = getLastFocus();
+		notifyListeners(SWT.DefaultSelection, forwardEvent);
+	}	
 	setCtrlSelection(isCtrlSelection);
 }
 /**
