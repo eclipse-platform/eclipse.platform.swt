@@ -2654,7 +2654,7 @@ boolean setItemLocation() {
 		}
 
 		CTabItem item = items[items.length - 1];
-		if (item.isShowing()) {
+		if (item.x + item.width < getRightItemEdge()) {
 			setLastIndex(items.length - 1);
 			changed = true;
 		}
@@ -2687,11 +2687,15 @@ boolean setItemSize() {
 		int tabAreaWidth = size.x - borderLeft - borderRight - 3;
 		if (showMin) tabAreaWidth -= BUTTON_SIZE;
 		if (showMax) tabAreaWidth -= BUTTON_SIZE;
+		if (!simple) tabAreaWidth -= curveWidth - curveIndent;
 		int count = items.length;
 		for (int i = 0 ; i < count; i++) {
 			totalWidth += widths[i];
 		}
-		if (totalWidth > tabAreaWidth) {
+		if (totalWidth <= tabAreaWidth) {
+			// no compression required
+			firstIndex = 0;
+		} else {
 			// try to compress items
 			int minWidth = MIN_TAB_WIDTH * tabHeight;
 			totalWidth = 0;
@@ -2757,6 +2761,7 @@ void setLastIndex(int index) {
 	if (index < 0 || index > items.length - 1) return;
 	Point size = getSize();
 	if (size.x <= 0) return;
+	if (!showChevron) return;
 	int maxWidth = getRightItemEdge() - borderLeft;
 	int tabWidth = items[index].width;
 	while (index > 0) {
