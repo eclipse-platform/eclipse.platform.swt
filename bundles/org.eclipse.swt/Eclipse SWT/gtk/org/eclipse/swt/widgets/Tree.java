@@ -552,7 +552,7 @@ int GtkCTreeCountItems (int ctree, int node, int data) {
 
 int GtkCTreeFindSibling (int ctree, int node, int data) {
 	if (Index == -1) return 0;
-	if (Index==data) {
+	if (Index == data) {
 		Sibling = node;
 		Index = -1;
 	} else {
