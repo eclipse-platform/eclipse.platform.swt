@@ -712,11 +712,13 @@ int /*long*/ gtk_toggled (int /*long*/ renderer, int /*long*/ pathStr) {
 	}
 	OS.g_free (iter);
 	OS.gtk_tree_path_free (path);
-	if (item != null) item.setChecked (!item.getChecked ());
-	Event event = new Event ();
-	event.detail = SWT.CHECK;
-	event.item = item;
-	postEvent (SWT.Selection, event);
+	if (item != null) {
+		item.setChecked (!item.getChecked ());
+		Event event = new Event ();
+		event.detail = SWT.CHECK;
+		event.item = item;
+		postEvent (SWT.Selection, event);
+	}
 	return 0;
 }
 
