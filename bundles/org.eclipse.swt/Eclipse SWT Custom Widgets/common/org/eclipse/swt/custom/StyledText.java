@@ -3839,7 +3839,11 @@ String getPlatformDelimitedText(TextWriter writer) {
  * <p>
  *
  * @return start and end of the selection, x is the offset of the first 
- * 	selected character, y is the offset after the last selected character
+ * 	selected character, y is the offset after the last selected character.
+ *  The selection values returned are visual (i.e., x will always always be   
+ *  <= y).  To determine if a selection is right-to-left (RtoL) vs. left-to-right 
+ *  (LtoR), compare the caretOffset to the start and end of the selection 
+ *  (e.g., caretOffset == start of selection implies that the selection is RtoL).
  * @see #getSelectionRange
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -3857,6 +3861,10 @@ public Point getSelection() {
  * @return start and length of the selection, x is the offset of the 
  * 	first selected character, relative to the first character of the 
  * 	widget content. y is the length of the selection. 
+ *  The selection values returned are visual (i.e., length will always always be   
+ *  positive).  To determine if a selection is right-to-left (RtoL) vs. left-to-right 
+ *  (LtoR), compare the caretOffset to the start and end of the selection 
+ *  (e.g., caretOffset == start of selection implies that the selection is RtoL).
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -4791,9 +4799,9 @@ void handleMouseDoubleClick(Event event) {
 	}
 	event.y -= topMargin;
 	mouseDoubleClick = true;
-	caretOffset = getWordEndNoSpaces(caretOffset);
-	resetSelection();
 	caretOffset = getWordStart(caretOffset);
+	resetSelection();
+	caretOffset = getWordEndNoSpaces(caretOffset);
 	caretLine = content.getLineAtOffset(caretOffset);
 	showCaret();
 	doMouseSelection();
@@ -7055,7 +7063,7 @@ public void setSelection(int start, int end) {
  * @param start offset of the first selected character, start >= 0 must be true.
  * @param length number of characters to select, 0 <= start + length <= getCharCount() 
  * 	must be true.
- * 	A negative length places the caret at the selection start.
+ * 	A negative length places the caret at the visual start of the selection.
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
