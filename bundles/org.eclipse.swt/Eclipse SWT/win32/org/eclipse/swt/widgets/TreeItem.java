@@ -1120,10 +1120,12 @@ public void setImage (int index, Image image) {
 		}
 		images [index] = image;
 	}
+	
+	/* Ensure that the image list is created */
+	//TODO - items that are not in column zero don't need to be in the image list
+	parent.imageIndex (image);
+	
 	if (index == 0) {
-		/* Ensure that the image list is created */
-		parent.imageIndex (image);
-
 		int hwnd = parent.handle;
 		TVITEM tvItem = new TVITEM ();
 		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_IMAGE | OS.TVIF_SELECTEDIMAGE;
