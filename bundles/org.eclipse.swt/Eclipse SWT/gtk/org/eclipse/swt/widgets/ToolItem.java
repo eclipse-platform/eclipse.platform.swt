@@ -496,6 +496,48 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
 	return 0;
 }
 
+int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
+	OS.GTK_WIDGET_UNSET_FLAGS (handle, OS.GTK_CAN_FOCUS);
+	parent.lastFocus = this;
+	return 0;
+}
+
+int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
+	if (!hasFocus ()) return 0;
+	int /*long*/ result = parent.gtk_key_press_event (widget, eventPtr);
+	if (result != 0) return result;
+	GdkEventKey gdkEvent = new GdkEventKey ();
+	OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
+	boolean next = false;
+	switch (gdkEvent.keyval) {
+		case OS.GDK_Up:
+		case OS.GDK_Left: next = false; break;
+		case OS.GDK_Down: {
+			if ((style & SWT.DROP_DOWN) != 0) {
+				Event event = new Event ();
+				event.detail = SWT.ARROW;
+				int /*long*/ topHandle = topHandle ();
+				event.x = OS.GTK_WIDGET_X (topHandle);
+				event.y = OS.GTK_WIDGET_Y (topHandle) + OS.GTK_WIDGET_HEIGHT (topHandle);
+				postEvent (SWT.Selection, event);
+				return result;
+			}
+			//FALL THROUGH
+		}
+		case OS.GDK_Right: next = true; break;
+		default: return result;
+	}
+	ToolItem [] items = parent.getItems ();
+	int index = 0, length = items.length;
+	while (items [index] != this) index++;
+	int start = index, offset = (next) ? 1 : -1;
+	while ((index = (index + offset + length) % length) != start) {
+		ToolItem item = items [index];
+		if (item.setFocus ()) return result;
+	}
+	return result;
+}
+
 int /*long*/ gtk_leave_notify_event (int /*long*/ widget, int /*long*/ event) {
 	if (drawHotImage) {
 		drawHotImage = false;
@@ -510,6 +552,10 @@ int /*long*/ gtk_mnemonic_activate (int /*long*/ widget, int /*long*/ arg1) {
 	return parent.gtk_mnemonic_activate (widget, arg1);
 }
 
+boolean hasFocus () {
+	return OS.GTK_WIDGET_HAS_FOCUS (handle);
+}
+
 void hookEvents () {
 	super.hookEvents ();
 	if ((style & SWT.SEPARATOR) != 0) return;
@@ -519,6 +565,9 @@ void hookEvents () {
 	OS.g_signal_connect (handle, OS.enter_notify_event, windowProc3, ENTER_NOTIFY_EVENT);
 	OS.g_signal_connect (handle, OS.leave_notify_event, windowProc3, LEAVE_NOTIFY_EVENT);
 	if (labelHandle != 0) OS.g_signal_connect (labelHandle, OS.mnemonic_activate, display.windowProc3, MNEMONIC_ACTIVATE);
+
+	OS.g_signal_connect (handle, OS.key_press_event, windowProc3, KEY_PRESS_EVENT);
+	OS.g_signal_connect (handle, OS.focus_out_event, windowProc3, FOCUS_OUT_EVENT);
 
 	/*
 	* Feature in GTK.  Usually, GTK widgets propagate all events to their
@@ -574,6 +623,7 @@ void releaseWidget () {
 	/* Reparent the control back to the toolbar */
 	if (control != null) setControl (null);
 	super.releaseWidget ();
+	if (parent.lastFocus == this) parent.lastFocus = null;
 	parent = null;
 	control = null;
 	hotImage = disabledImage = null;
@@ -699,6 +749,15 @@ public void setEnabled (boolean enabled) {
 	checkWidget();
 	int /*long*/ topHandle = topHandle ();
 	OS.gtk_widget_set_sensitive (topHandle, enabled);
+}
+
+boolean setFocus () {
+	if ((style & SWT.SEPARATOR) != 0) return false;
+	OS.GTK_WIDGET_SET_FLAGS (handle, OS.GTK_CAN_FOCUS);
+	OS.gtk_widget_grab_focus (handle);
+	boolean result = OS.gtk_widget_is_focus (handle);
+	if (!result) OS.GTK_WIDGET_UNSET_FLAGS (handle, OS.GTK_CAN_FOCUS);
+	return result;
 }
 
 void setFontDescription (int /*long*/ font) {

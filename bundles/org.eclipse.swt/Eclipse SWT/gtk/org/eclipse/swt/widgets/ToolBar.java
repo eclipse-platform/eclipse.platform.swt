@@ -40,6 +40,7 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 public class ToolBar extends Composite {
+	ToolItem lastFocus;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -157,6 +158,21 @@ int /*long*/ eventHandle () {
 	return fixedHandle;
 }
 
+public boolean forceFocus () {
+	checkWidget();
+	Shell shell = getShell ();
+	shell.setSavedFocus (this);
+	if (!isEnabled () || !isVisible ()) return false;
+	shell.bringToTop (false);
+	if (lastFocus != null && lastFocus.setFocus ()) return true;
+	ToolItem [] items = getItems ();
+	for (int i = 0; i < items.length; i++) {
+		ToolItem item = items [i];
+		if (item.setFocus ()) return true;
+	}
+	return super.forceFocus ();
+}
+
 /**
  * Returns the item at the given, zero-relative index in the
  * receiver. Throws an exception if the index is out of range.
@@ -271,6 +287,15 @@ public int getRowCount () {
 	checkWidget();
 	 /* On GTK, toolbars cannot wrap */
 	return 1;
+}
+
+boolean hasFocus () {
+	ToolItem [] items = getItems ();
+	for (int i=0; i<items.length; i++) {
+		ToolItem item = items [i];
+		if (item.hasFocus ()) return true;
+	}
+	return super.hasFocus();
 }
 
 /**
