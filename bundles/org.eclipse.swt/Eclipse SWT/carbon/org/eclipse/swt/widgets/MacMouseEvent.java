@@ -58,10 +58,7 @@ class MacMouseEvent {
 		return fButton;
 	}
 	
-	public EventRecord toOldMacEvent() {
-		if (fMacEvent != null)
-			return fMacEvent.toOldMacEvent();
-		System.err.println("MacMouseEvent.toOldMacEvent: nyi");
-		return null;
+	public int getEventRef() {
+		return fMacEvent.getEventRef();
 	}
 }

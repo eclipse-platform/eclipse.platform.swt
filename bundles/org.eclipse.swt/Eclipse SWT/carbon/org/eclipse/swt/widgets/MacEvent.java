@@ -42,17 +42,7 @@ class MacEvent {
 	public int getNextHandler() {
 		return fNextHandler;
 	}
-	
-	public EventRecord toOldMacEvent() {
-		if (fEventRef != -1) {
-			EventRecord eventRecord = new EventRecord();
-			if (OS.ConvertEventRefToEventRecord(fEventRef, eventRecord))
-				return eventRecord;
-		}
-		System.out.println("MacEvent.toOldMacEvent: can't convert event");
-		return null;
-	}
-	
+		
 	public int getKind() {
 		if (fEventRef != -1)
 			return OS.GetEventKind(fEventRef);
