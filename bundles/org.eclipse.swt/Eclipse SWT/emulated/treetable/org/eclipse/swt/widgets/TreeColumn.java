@@ -381,6 +381,7 @@ void paint (GC gc) {
 		if (displayText.length () > 0) startX += Tree.MARGIN_IMAGE; 
 	}
 	if (displayText.length () > 0) {
+		gc.setForeground (display.getSystemColor (SWT.COLOR_BLACK));
 		int fontHeight = parent.fontHeight;
 		gc.drawText (displayText, startX, (headerHeight - fontHeight) / 2, SWT.DRAW_MNEMONIC);
 	}
