@@ -721,6 +721,7 @@ public static final synchronized native int gtk_text_buffer_get_selection_bound(
 public static final synchronized native boolean gtk_text_buffer_get_selection_bounds(int buffer, byte[] start, byte[] end);
 public static final synchronized native int gtk_text_buffer_get_text(int buffer, byte[] start, byte[] end, boolean include_hidden_chars);
 public static final synchronized native void gtk_text_buffer_insert(int buffer, byte[] iter, byte[] text, int len);
+public static final synchronized native void gtk_text_buffer_insert(int buffer, int iter, byte[] text, int len);
 public static final synchronized native void gtk_text_buffer_move_mark(int buffer, int mark, byte[] where);
 public static final synchronized native void gtk_text_buffer_paste_clipboard(int buffer, int clipboard, byte[] override_location, boolean default_editable);
 public static final synchronized native void gtk_text_buffer_place_cursor(int buffer, byte[] where);

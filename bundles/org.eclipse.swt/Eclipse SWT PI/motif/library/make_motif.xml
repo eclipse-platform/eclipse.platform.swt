@@ -53,6 +53,7 @@
 	<copy todir="${lib_destdir}">
 		<fileset dir="${basedir}/bin/library/" includes="*${lib_extension}"/>
 	</copy>
+	<eclipse.refreshLocal resource="org.eclipse.swt.motif" depth="infinite" />		
 </target>
 
 <!-- Build swt.so for motif linux -->

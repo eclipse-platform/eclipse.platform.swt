@@ -4712,19 +4712,32 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1text_1buffer_1get_1text)
 }
 #endif
 
-#ifndef NO_gtk_1text_1buffer_1insert
-JNIEXPORT void JNICALL OS_NATIVE(gtk_1text_1buffer_1insert)
+#ifndef NO_gtk_1text_1buffer_1insert__II_3BI
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1text_1buffer_1insert__II_3BI)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jint arg3)
+{
+	jbyte *lparg2=NULL;
+	NATIVE_ENTER(env, that, "gtk_1text_1buffer_1insert__II_3BI\n")
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	gtk_text_buffer_insert((GtkTextBuffer *)arg0, (GtkTextIter *)arg1, (const gchar *)lparg2, (gint)arg3);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "gtk_1text_1buffer_1insert__II_3BI\n")
+}
+#endif
+
+#ifndef NO_gtk_1text_1buffer_1insert__I_3B_3BI
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1text_1buffer_1insert__I_3B_3BI)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jbyteArray arg2, jint arg3)
 {
 	jbyte *lparg1=NULL;
 	jbyte *lparg2=NULL;
-	NATIVE_ENTER(env, that, "gtk_1text_1buffer_1insert\n")
+	NATIVE_ENTER(env, that, "gtk_1text_1buffer_1insert__I_3B_3BI\n")
 	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
 	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
 	gtk_text_buffer_insert((GtkTextBuffer *)arg0, (GtkTextIter *)lparg1, (const gchar *)lparg2, (gint)arg3);
 	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	NATIVE_EXIT(env, that, "gtk_1text_1buffer_1insert\n")
+	NATIVE_EXIT(env, that, "gtk_1text_1buffer_1insert__I_3B_3BI\n")
 }
 #endif
 
