@@ -19,7 +19,7 @@ import org.eclipse.swt.widgets.*;
  * This Layout stacks all the controls one on top of the other and resizes all controls
  * to have the same size and location.
  * The control specified in topControl is visible and all other controls are not visible.
- * Users must set the topControl value to flip between the visible items and the call 
+ * Users must set the topControl value to flip between the visible items and then call 
  * layout() on the composite which has the StackLayout.
  * 
  * <p> Here is an example which places ten buttons in a stack layout and 
@@ -36,7 +36,7 @@ import org.eclipse.swt.widgets.*;
  * 		final StackLayout layout = new StackLayout();
  * 		parent.setLayout(layout);
  * 		final Button[] bArray = new Button[10];
- * 		for (int i = 0; i < 10; i++) {
+ * 		for (int i = 0; i &lt; 10; i++) {
  * 			bArray[i] = new Button(parent, SWT.PUSH);
  * 			bArray[i].setText("Button "+i);
  * 		}
