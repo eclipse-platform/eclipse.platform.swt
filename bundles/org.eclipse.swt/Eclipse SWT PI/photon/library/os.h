@@ -28,7 +28,6 @@ void *PtCreateAppContext();
 
 #define utsname struct utsname
 
-#define NATIVE_ENTER(env,clazz,func)
-#define NATIVE_EXIT(env,clazz,func)
+#include "os_stats.h"
 
 #endif /* INC_os_H */

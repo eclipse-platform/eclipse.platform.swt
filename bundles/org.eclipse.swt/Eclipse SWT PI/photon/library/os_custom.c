@@ -27,10 +27,10 @@ JNIEXPORT jint JNICALL OS_NATIVE(PhGetTile)
 	(JNIEnv *env, jclass that)
 {
 	jint rc;
-	NATIVE_ENTER(env, that, "PhGetTile\n")
+	OS_NATIVE_ENTER(env, that, PhGetTile_FUNC)
 	rc = (jint)PhGetTile();
 	memset((void *)rc, 0, sizeof(PhTile_t));
-	NATIVE_EXIT(env, that, "PhGetTile\n")
+	OS_NATIVE_EXIT(env, that, PhGetTile_FUNC)
 	return rc;
 }
 #endif
