@@ -56,6 +56,9 @@ public boolean equals (Object object) {
 		handle.desc.length == info.desc.length &&
 		handle.font.length == info.font.length)
 	{
+		for (int i = handle.desc.length - 1; i >= 0; i--) {
+			if (handle.desc[i] != info.desc[i])	return false;
+		}
 		for (int i = handle.font.length - 1; i >= 0; i--) {
 			if (handle.font[i] != info.font[i]) return false;
 		}

@@ -156,8 +156,8 @@ public boolean equals(Object object) {
 	byte[] h = ((Font)object).handle;
 	if (h == handle) return true;
 	if (h == null || handle == null) return false;
-	int end = Math.min(h.length, handle.length);
-	for (int i=0; i<end; i++) {
+	if (h.length != handle.length) return false;
+	for (int i=0; i<h.length; i++) {
 		if (handle[i] != h[i]) return false;
 		if (handle[i] == 0) break;
 	}
