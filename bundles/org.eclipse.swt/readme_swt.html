@@ -55,7 +55,7 @@ If keyboard accelerators appear to not be working, please check the state of all
 <h4>
 99.1.5 Printing Support</h4>
 
-Although printing is not used by Eclipse, SWT provides printing support on Win32 platforms.  
+SWT provides printing support on Win32 platforms only.  
 See org.eclipse.swt.printing for more information.
 
 <h4>
@@ -74,25 +74,25 @@ since Motif accesses the disposed widget within their internal focus change even
 Similar but less serious issues exist on Windows such that occasionally an SWT exception can be thrown.
 
 <h4>
-99.1.7  List and ComboBox on Windows NT</h4>
+99.1.8  List and ComboBox on Windows NT</h4>
 
 On Windows NT only, you should avoid creating items in a List or ComboBox with strings longer than 1000 characters.
 Doing so may result in a General Protection Fault.  This has been fixed in more recent versions of Windows.
 
+<h4>
+99.1.9  ToolBar on Windows</h4>
+
+On Windows, you must create all tool bars with the FLAT style bit set. If you do not do this,
+the "hot" (rollover) images of <em>all</em> toolbars may display incorrectly.
+This will be fixed in a future release.
 
 <h4>
-99.1.8 SWT Example (Standalone) - FileViewer</h4>
-
-On Motif, drag and drop in File Viewer may cause the X-Server to hang.  This is due to a thread synchronization issue in the example.
-This will be fixed in a future release of the FileViewer example.
-
-<h4>
-99.1.9 SWT Example (Standalone) - Hover Help</h4>
+99.1.10 SWT Example (Standalone) - Hover Help</h4>
 
 On Motif, the tooltips may not appear correctly in all instances.  This will be fixed in a future release.
 
 <h4>
-99.1.10 SWT Example (Workbench View) - Paint</h4>
+99.1.11 SWT Example (Workbench View) - Paint</h4>
 
 When the polygon tool is selected and the fill mode is set to Outline or Solid, the filled region may be rendered at the wrong location 
 in the Canvas.  This will be fixed in a future release of the Paint example.
