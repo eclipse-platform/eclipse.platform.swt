@@ -174,15 +174,17 @@ void createWidget () {
 	*/
 }
 
-void destroyWidget () {
+public void dispose () {
 	int hwnd = hwndScrollBar (), type = scrollBarType ();
-	releaseHandle ();
+	super.dispose ();
 	if (OS.IsWinCE) {
-		/*
-		* This line is intentionally commented.  Currently
-		* always show scrollbar as being enabled and visible.
-		*/
-		// error (SWT.ERROR_NOT_IMPLEMENTED);
+		SCROLLINFO info = new SCROLLINFO ();
+		info.cbSize = SCROLLINFO.sizeof;
+		info.fMask = OS.SIF_RANGE | OS.SIF_PAGE;
+		info.nPage = 101;
+		info.nMax = 100;
+		info.nMin = 0;
+		OS.SetScrollInfo (hwnd, type, info, true);
 	} else {
 		OS.ShowScrollBar (hwnd, type, false);
 	}
