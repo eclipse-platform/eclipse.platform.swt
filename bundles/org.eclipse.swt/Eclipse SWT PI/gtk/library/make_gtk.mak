@@ -80,6 +80,7 @@ MOZILLALIBS = -L$(MOZILLA_HOME)/lib -lembed_base_s -lxpcom
 # for RedHat and Suse
 MOZILLALDFLAGS = -s -Xlinker -rpath -Xlinker /usr/lib/mozilla-1.6 \
 					-Xlinker -rpath -Xlinker /usr/lib/mozilla-1.5 \
+					-Xlinker -rpath -Xlinker /usr/lib/mozilla-1.4.2 \
 					-Xlinker -rpath -Xlinker /usr/lib/mozilla-1.4 \
 					-Xlinker -rpath -Xlinker /opt/mozilla/lib
 

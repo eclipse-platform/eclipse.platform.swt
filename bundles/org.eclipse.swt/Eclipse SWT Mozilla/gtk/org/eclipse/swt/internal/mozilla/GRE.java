@@ -44,10 +44,12 @@ public class GRE {
 			String version = reader.readLine();
 			int major = -1, minor = -1;
 			try {
-				/* the version line is formatted as follow: [major.minor] */
+				/* the version line is formatted as follow: [major.minor] or [major.minor.subminor] */
 				int sep = version.indexOf('.'); //$NON-NLS-1$
 				String majorVersion = version.substring(version.indexOf('[') + 1, sep); //$NON-NLS-1$
 				String minorVersion = version.substring(sep + 1, version.indexOf(']')); //$NON-NLS-1$
+				sep = minorVersion.indexOf('.'); //$NON-NLS-1$
+				if (sep != -1) minorVersion = minorVersion.substring(0, sep);
 				major = Integer.parseInt(majorVersion);
 				minor = Integer.parseInt(minorVersion);
 			} catch (IndexOutOfBoundsException e) {
