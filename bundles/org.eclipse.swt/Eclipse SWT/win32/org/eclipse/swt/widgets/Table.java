@@ -39,7 +39,7 @@ public class Table extends Composite {
 	ImageList imageList;
 	boolean ignoreSelect, dragStarted;
 	static final int TableProc;
-	static final byte [] TableClass = OS.WC_LISTVIEW;
+	static final TCHAR TableClass = new TCHAR (0, OS.WC_LISTVIEW, true);
 	static {
 		WNDCLASSEX lpWndClass = new WNDCLASSEX ();
 		lpWndClass.cbSize = WNDCLASSEX.sizeof;
@@ -213,7 +213,7 @@ void createHandle () {
 	LVCOLUMN lvColumn = new LVCOLUMN ();
 	lvColumn.mask = OS.LVCF_TEXT;
 	int hHeap = OS.GetProcessHeap ();
-	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, 1);
+	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, TCHAR.sizeof);
 	lvColumn.pszText = pszText;
 	OS.SendMessage (handle, OS.LVM_INSERTCOLUMN, 0, lvColumn);
 	OS.HeapFree (hHeap, 0, pszText);
@@ -249,7 +249,8 @@ void createItem (TableColumn column, int index) {
 			OS.SendMessage (handle, OS.LVM_INSERTCOLUMN, 1, lvColumn);
 			int cchTextMax = 1024;
 			int hHeap = OS.GetProcessHeap ();
-			int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, cchTextMax);
+			int byteCount = cchTextMax * TCHAR.sizeof;
+			int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 			LVITEM lvItem = new LVITEM ();
 			lvItem.mask = OS.LVIF_TEXT | OS.LVIF_IMAGE | OS.LVIF_STATE;
 			int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
@@ -452,7 +453,8 @@ void destroyItem (TableColumn column) {
 			index = 1;
 			int cchTextMax = 1024;
 			int hHeap = OS.GetProcessHeap ();
-			int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, cchTextMax);
+			int byteCount = cchTextMax * TCHAR.sizeof;
+			int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 			LVCOLUMN lvColumn = new LVCOLUMN ();
 			lvColumn.mask = OS.LVCF_TEXT | OS.LVCF_WIDTH;
 			lvColumn.pszText = pszText;
@@ -476,7 +478,7 @@ void destroyItem (TableColumn column) {
 			if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
 		} else {
 			int hHeap = OS.GetProcessHeap ();
-			int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, 1);
+			int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, TCHAR.sizeof);
 			LVCOLUMN lvColumn = new LVCOLUMN ();
 			lvColumn.mask = OS.LVCF_TEXT;
 			lvColumn.pszText = pszText;
@@ -1926,7 +1928,7 @@ int widgetStyle () {
 	return bits;
 }
 
-byte [] windowClass () {
+TCHAR windowClass () {
 	return TableClass;
 }
 
@@ -2057,7 +2059,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 		*/
 		switch (hdr.code) {
 			case OS.HDN_BEGINTRACKW:
-			case OS.HDN_BEGINTRACK: {
+			case OS.HDN_BEGINTRACKA: {
 				NMHEADER phdn = new NMHEADER ();
 				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
 				HDITEM pitem = new HDITEM ();
@@ -2069,7 +2071,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 				break;
 			}
 			case OS.HDN_ITEMCHANGEDW:
-			case OS.HDN_ITEMCHANGED: {
+			case OS.HDN_ITEMCHANGEDA: {
 				NMHEADER phdn = new NMHEADER ();
 				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
 				Event event = new Event ();

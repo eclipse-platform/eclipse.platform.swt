@@ -180,8 +180,8 @@ public int open () {
 
 	/* Open the message box */
 	/* Use the character encoding for the default locale */
-	byte [] buffer1 = Converter.wcsToMbcs (0, message, true);
-	byte [] buffer2 = Converter.wcsToMbcs (0, title, true);
+	TCHAR buffer1 = new TCHAR (0, message, true);
+	TCHAR buffer2 = new TCHAR (0, title, true);
 	int code = OS.MessageBox (hwndOwner, buffer1, buffer2, bits);
 	
 	/* Restore focus */

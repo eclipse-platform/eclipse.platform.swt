@@ -41,7 +41,7 @@ public class Text extends Scrollable {
 	}
 	
 	static final int EditProc;
-	static final byte [] EditClass = Converter.wcsToMbcs (0, "EDIT\0");
+	static final TCHAR EditClass = new TCHAR (0, "EDIT", true);
 	static {
 		WNDCLASSEX lpWndClass = new WNDCLASSEX ();
 		lpWndClass.cbSize = WNDCLASSEX.sizeof;
@@ -202,7 +202,7 @@ public void append (String string) {
 		if (string == null) return;
 	}
 	OS.SendMessage (handle, OS.EM_SETSEL, length, length);
-	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
+	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
 	OS.SendMessage (handle, OS.EM_SCROLLCARET, 0, 0);
 }
@@ -244,8 +244,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		rect.right = wHint;
 	}
 	String text = getText ();
-	byte [] buffer = Converter.wcsToMbcs (getCodePage (), text, false);
-	OS.DrawText (hDC, buffer, buffer.length, rect, flags);
+	TCHAR buffer = new TCHAR (getCodePage (), text, false);
+	OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
 	width = rect.right - rect.left;
 	if ((style & SWT.WRAP) != 0 && hHint == SWT.DEFAULT) {
 		int newHeight = rect.bottom - rect.top;
@@ -402,10 +402,11 @@ public Point getCaretLocation () {
 	if (pos == -1) {
 		pos = 0;
 		if (start [0] >= OS.GetWindowTextLength (handle)) {
-			OS.SendMessage (handle, OS.EM_REPLACESEL, 0, new byte [] {(byte)' ', 0});
+			int cp = getCodePage ();
+			OS.SendMessage (handle, OS.EM_REPLACESEL, 0, new TCHAR (cp, " ", true));
 			pos = OS.SendMessage (handle, OS.EM_POSFROMCHAR, start [0], 0);
 			OS.SendMessage (handle, OS.EM_SETSEL, start [0], start [0] + 1);
-			OS.SendMessage (handle, OS.EM_REPLACESEL, 0, new byte [] {0});
+			OS.SendMessage (handle, OS.EM_REPLACESEL, 0, new TCHAR (cp, "", true));
 		}
 	}
 	return new Point ((short) (pos & 0xFFFF), (short) (pos >> 16));
@@ -674,7 +675,8 @@ int getTabWidth (int tabs) {
 	int newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 	int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE | OS.DT_NOPREFIX;
-	OS.DrawText (hDC, new byte [] {(byte) ' '}, 1, rect, flags);
+	TCHAR SPACE = new TCHAR (getCodePage (), " ", true);
+	OS.DrawText (hDC, SPACE, SPACE.length (), rect, flags);
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (handle, hDC);
 	return (rect.right - rect.left) * tabs;
@@ -697,10 +699,9 @@ public String getText () {
 	checkWidget ();
 	int length = OS.GetWindowTextLength (handle);
 	if (length == 0) return "";
-	byte [] buffer1 = new byte [length + 1];
-	OS.GetWindowText (handle, buffer1, buffer1.length);
-	char [] buffer2 = Converter.mbcsToWcs (getCodePage (), buffer1);
-	return new String (buffer2, 0, buffer2.length - 1);
+	TCHAR buffer = new TCHAR (getCodePage (), length + 1);
+	OS.GetWindowText (handle, buffer, length + 1);
+	return buffer.toString (0, length);
 }
 
 /**
@@ -836,12 +837,13 @@ public void insert (String string) {
 		string = verifyText (string, start [0], end [0]);
 		if (string == null) return;
 	}
-	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
+	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
 }
 
 int mbcsToWcsPos (int mbcsPos) {
 	if (mbcsPos == 0) return 0;
+	if (OS.IsUnicode) return mbcsPos;
 	int cp = getCodePage ();
 	int wcsTotal = 0, mbcsTotal = 0;
 	byte [] buffer = new byte [128];
@@ -850,15 +852,15 @@ int mbcsToWcsPos (int mbcsPos) {
 	int count = OS.SendMessage (handle, OS.EM_GETLINECOUNT, 0, 0);
 	for (int line=0; line<count; line++) {
 		int wcsSize = 0;
-		int linePos = OS.SendMessage (handle, OS.EM_LINEINDEX, line, 0);
-		int mbcsSize = OS.SendMessage (handle, OS.EM_LINELENGTH, linePos, 0);
+		int linePos = OS.SendMessageA (handle, OS.EM_LINEINDEX, line, 0);
+		int mbcsSize = OS.SendMessageA (handle, OS.EM_LINELENGTH, linePos, 0);
 		if (mbcsSize != 0) {
 			if (mbcsSize + delimiterSize > buffer.length) {
 				buffer = new byte [mbcsSize + delimiterSize];
 			}
 			buffer [0] = (byte) (mbcsSize & 0xFF);
 			buffer [1] = (byte) (mbcsSize >> 8);
-			mbcsSize = OS.SendMessage (handle, OS.EM_GETLINE, line, buffer);
+			mbcsSize = OS.SendMessageA (handle, OS.EM_GETLINE, line, buffer);
 			wcsSize = OS.MultiByteToWideChar (cp, OS.MB_PRECOMPOSED, buffer, mbcsSize, null, 0);
 		}
 		if (line - 1 != count) {
@@ -1070,7 +1072,7 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 	if (newText == null) return false;
 	if (newText == oldText) return true;
 	newText = Display.withCrLf (newText);
-	byte [] buffer = Converter.wcsToMbcs (getCodePage (), newText, true);
+	TCHAR buffer = new TCHAR (getCodePage (), newText, true);
 	OS.SendMessage (handle, OS.EM_SETSEL, start [0], end [0]);
 	OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
 	return false;
@@ -1324,7 +1326,7 @@ public void setText (String string) {
 		string = verifyText (string, 0, length);
 		if (string == null) return;
 	}
-	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
+	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	OS.SetWindowText (handle, buffer);
 	/*
 	* Bug in Windows.  When the widget is multi line
@@ -1443,6 +1445,7 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 
 int wcsToMbcsPos (int wcsPos) {
 	if (wcsPos == 0) return 0;
+	if (OS.IsUnicode) return wcsPos;
 	int cp = getCodePage ();
 	int wcsTotal = 0, mbcsTotal = 0;
 	byte [] buffer = new byte [128];
@@ -1451,15 +1454,15 @@ int wcsToMbcsPos (int wcsPos) {
 	int count = OS.SendMessage (handle, OS.EM_GETLINECOUNT, 0, 0);
 	for (int line=0; line<count; line++) {
 		int wcsSize = 0;
-		int linePos = OS.SendMessage (handle, OS.EM_LINEINDEX, line, 0);
-		int mbcsSize = OS.SendMessage (handle, OS.EM_LINELENGTH, linePos, 0);
+		int linePos = OS.SendMessageA (handle, OS.EM_LINEINDEX, line, 0);
+		int mbcsSize = OS.SendMessageA (handle, OS.EM_LINELENGTH, linePos, 0);
 		if (mbcsSize != 0) {
 			if (mbcsSize + delimiterSize > buffer.length) {
 				buffer = new byte [mbcsSize + delimiterSize];
 			}
 			buffer [0] = (byte) (mbcsSize & 0xFF);
 			buffer [1] = (byte) (mbcsSize >> 8);
-			mbcsSize = OS.SendMessage (handle, OS.EM_GETLINE, line, buffer);
+			mbcsSize = OS.SendMessageA (handle, OS.EM_GETLINE, line, buffer);
 			wcsSize = OS.MultiByteToWideChar (cp, OS.MB_PRECOMPOSED, buffer, mbcsSize, null, 0);
 		}
 		if (line - 1 != count) {
@@ -1495,7 +1498,7 @@ int widgetStyle () {
 	return bits;
 }
 
-byte [] windowClass () {
+TCHAR windowClass () {
 	return EditClass;
 }
 
@@ -1541,7 +1544,7 @@ LRESULT WM_CLEAR (int wParam, int lParam) {
 	if (newText.length () != 0) {
 		result = new LRESULT (callWindowProc (OS.WM_CLEAR, 0, 0));	
 		newText = Display.withCrLf (newText);
-		byte [] buffer = Converter.wcsToMbcs (getCodePage (), newText, true);
+		TCHAR buffer = new TCHAR (getCodePage (), newText, true);
 		OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
 	}
 	return result;
@@ -1561,7 +1564,7 @@ LRESULT WM_CUT (int wParam, int lParam) {
 	if (newText.length () != 0) {
 		result = new LRESULT (callWindowProc (OS.WM_CUT, 0, 0));	
 		newText = Display.withCrLf (newText);
-		byte [] buffer = Converter.wcsToMbcs (getCodePage (), newText, true);
+		TCHAR buffer = new TCHAR (getCodePage (), newText, true);
 		OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
 	}
 	return result;
@@ -1645,7 +1648,7 @@ LRESULT WM_PASTE (int wParam, int lParam) {
 	if (newText == null) return LRESULT.ZERO;
 	if (newText != oldText) {
 		newText = Display.withCrLf (newText);
-		byte [] buffer = Converter.wcsToMbcs (getCodePage (), newText, true);
+		TCHAR buffer = new TCHAR (getCodePage (), newText, true);
 		OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
 		return LRESULT.ZERO;
 	}
@@ -1711,7 +1714,7 @@ LRESULT WM_UNDO (int wParam, int lParam) {
 	if (newText == null) return LRESULT.ZERO;
 	if (newText != oldText) {
 		newText = Display.withCrLf (newText);
-		byte [] buffer = Converter.wcsToMbcs (getCodePage (), newText, true);
+		TCHAR buffer = new TCHAR (getCodePage (), newText, true);
 		OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
 		return LRESULT.ZERO;
 	}

@@ -89,10 +89,10 @@ public class Display extends Device {
 	public MSG msg = new MSG ();
 	
 	/* Windows, Events and Callback */
-	byte [] windowClass;
+	Event [] eventQueue;
 	Callback windowCallback;
 	int windowProc, threadId, processId;
-	Event [] eventQueue;
+	TCHAR windowClass;
 	static int windowClassCount = 0;
 	static final String WindowName = "SWT_Window";
 
@@ -720,24 +720,24 @@ public Control getFocusControl () {
  */
 public int getIconDepth () {
 	checkDevice ();
-	int [] phkResult = new int [1];
+
 	/* Use the character encoding for the default locale */
-	byte [] buffer1 = Converter.wcsToMbcs (0, "Control Panel\\Desktop\\WindowMetrics", true);
+	TCHAR buffer1 = new TCHAR (0, "Control Panel\\Desktop\\WindowMetrics", true);
+
+	int [] phkResult = new int [1];
 	int result = OS.RegOpenKeyEx (OS.HKEY_CURRENT_USER, buffer1, 0, OS.KEY_READ, phkResult);
 	if (result != 0) return 4;
 	int depth = 4;
 	int [] lpcbData = {128};
-	byte [] lpData = new byte [lpcbData [0]];
+	
 	/* Use the character encoding for the default locale */
-	byte [] buffer2 = Converter.wcsToMbcs (0, "Shell Icon BPP", true);
+	TCHAR lpData = new TCHAR (0, lpcbData [0]);
+	TCHAR buffer2 = new TCHAR (0, "Shell Icon BPP", true);
+	
 	result = OS.RegQueryValueEx (phkResult [0], buffer2, 0, null, lpData, lpcbData);
 	if (result == 0) {
-		/* Use the character encoding for the default locale */
-		char [] buffer3 = Converter.mbcsToWcs (0, lpData);
-		int length = 0;
-		while (length < buffer3.length && buffer3 [length] != 0) length++;
 		try {
-			depth = Integer.parseInt (new String (buffer3, 0, length));
+			depth = Integer.parseInt (lpData.toString ().trim ());
 		} catch (NumberFormatException e) {};
 	}
 	OS.RegCloseKey (phkResult [0]);
@@ -1056,7 +1056,7 @@ protected void init () {
 	processId = OS.GetCurrentProcessId ();
 	
 	/* Use the character encoding for the default locale */
-	windowClass = Converter.wcsToMbcs (0, WindowName + windowClassCount++ + "\0");
+	windowClass = new TCHAR (0, WindowName + windowClassCount++, true);
 
 	/* Register the SWT window class */
 	int hHeap = OS.GetProcessHeap ();
@@ -1070,10 +1070,12 @@ protected void init () {
 	lpWndClass.lpfnWndProc = windowProc;
 	lpWndClass.style = OS.CS_BYTEALIGNWINDOW | OS.CS_DBLCLKS;
 	lpWndClass.hCursor = OS.LoadCursor (0, OS.IDC_ARROW);
-	lpWndClass.lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, windowClass.length);
-	OS.MoveMemory (lpWndClass.lpszClassName, windowClass, windowClass.length); 
+	int byteCount = windowClass.length () * TCHAR.sizeof;
+	int lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	lpWndClass.lpszClassName = lpszClassName;
+	OS.MoveMemory (lpszClassName, windowClass, byteCount); 
 	OS.RegisterClassEx (lpWndClass);
-	OS.HeapFree (hHeap, 0, lpWndClass.lpszClassName);
+	OS.HeapFree (hHeap, 0, lpszClassName);
 }
 
 /**	 

@@ -94,10 +94,14 @@ public abstract class Widget {
 		dvi.cbSize = DLLVERSIONINFO.sizeof;
 		dvi.dwMajorVersion = 4;
 		dvi.dwMinorVersion = 0;
-		byte[] lpLibFileName = Converter.wcsToMbcs (0, "comctl32.dll\0");
+		TCHAR lpLibFileName = new TCHAR (0, "comctl32.dll", true);
 		int hModule = OS.LoadLibrary (lpLibFileName);
 		if (hModule != 0) {
-			byte [] lpProcName = Converter.wcsToMbcs (0, "DllGetVersion\0");
+			String name = "DllGetVersion\0";
+			byte [] lpProcName = new byte [name.length ()];
+			for (int i=0; i<lpProcName.length; i++) {
+				lpProcName [i] = (byte) name.charAt (i);
+			}
 			int DllGetVersion = OS.GetProcAddress (hModule, lpProcName);
 			if (DllGetVersion != 0) OS.Call (DllGetVersion, dvi);
 			OS.FreeLibrary (hModule);
@@ -605,20 +609,24 @@ char mbcsToWcs (char ch) {
  * @return the WCS character
  */
 char mbcsToWcs (char ch, int codePage) {
-	int key = ch & 0xFFFF;
-	if (key <= 0x7F) return ch;
-	byte [] buffer;
-	if (key <= 0xFF) {
-		buffer = new byte [1];
-		buffer [0] = (byte) key;
+	if (OS.IsUnicode) {
+		return ch;
 	} else {
-		buffer = new byte [2];
-		buffer [0] = (byte) ((key >> 8) & 0xFF);
-		buffer [1] = (byte) (key & 0xFF);
+		int key = ch & 0xFFFF;
+		if (key <= 0x7F) return ch;
+		byte [] buffer;
+		if (key <= 0xFF) {
+			buffer = new byte [1];
+			buffer [0] = (byte) key;
+		} else {
+			buffer = new byte [2];
+			buffer [0] = (byte) ((key >> 8) & 0xFF);
+			buffer [1] = (byte) (key & 0xFF);
+		}
+		char [] result = Converter.mbcsToWcs (codePage, buffer);
+		if (result.length == 0) return 0;
+		return result [0];
 	}
-	char [] result = Converter.mbcsToWcs (codePage, buffer);
-	if (result.length == 0) return 0;
-	return result [0];
 }
 
 /**
@@ -976,14 +984,18 @@ char wcsToMbcs (char ch) {
  * @return the MBCS character
  */
 char wcsToMbcs (char ch, int codePage) {
-	int key = ch & 0xFFFF;
-	if (key <= 0x7F) return ch;
-	byte [] buffer = Converter.wcsToMbcs (codePage, new char [] {ch}, false);
-	if (buffer.length == 1) return (char) buffer [0];
-	if (buffer.length == 2) {
-		return (char) (((buffer [0] & 0xFF) << 8) | (buffer [1] & 0xFF));
+	if (OS.IsUnicode) {
+		return ch;
+	} else {
+		int key = ch & 0xFFFF;
+		if (key <= 0x7F) return ch;
+		byte [] buffer = Converter.wcsToMbcs (codePage, new char [] {ch}, false);
+		if (buffer.length == 1) return (char) buffer [0];
+		if (buffer.length == 2) {
+			return (char) (((buffer [0] & 0xFF) << 8) | (buffer [1] & 0xFF));
+		}
+		return 0;
 	}
-	return 0;
 }
 
 }

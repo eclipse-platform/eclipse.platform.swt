@@ -156,7 +156,7 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
-byte [] windowClass () {
+TCHAR windowClass () {
 	return getDisplay ().windowClass;
 }
 

@@ -63,7 +63,7 @@ public class Combo extends Composite {
 	}
 	
 	static final int ComboProc;
-	static final byte [] ComboClass = Converter.wcsToMbcs (0,"COMBOBOX\0");
+	static final TCHAR ComboClass = new TCHAR (0,"COMBOBOX", true);
 	/*
 	 * These are the undocumented control id's for the children of
 	 * a combo box.  Since there are no constants for these values,
@@ -132,7 +132,7 @@ public Combo (Composite parent, int style) {
 public void add (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
+	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	int result = OS.SendMessage (handle, OS.CB_ADDSTRING, 0, buffer);
 	if (result == OS.CB_ERR) error (SWT.ERROR_ITEM_NOT_ADDED);
 	if (result == OS.CB_ERRSPACE) error (SWT.ERROR_ITEM_NOT_ADDED);
@@ -167,7 +167,7 @@ public void add (String string) {
 public void add (String string, int index) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
+	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	int result = OS.SendMessage (handle, OS.CB_INSERTSTRING, index, buffer);
 	if (result == OS.CB_ERRSPACE) error (SWT.ERROR_ITEM_NOT_ADDED);
 	if (result == OS.CB_ERR) {
@@ -310,14 +310,15 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	RECT rect = new RECT ();
 	int flags = OS.DT_CALCRECT | OS.DT_NOPREFIX;
 	int length = OS.GetWindowTextLength (handle);
-	byte [] buffer = new byte [length + 1];
-	OS.GetWindowText (handle, buffer, buffer.length);
+	int cp = getCodePage ();
+	TCHAR buffer = new TCHAR (cp, length + 1);
+	OS.GetWindowText (handle, buffer, length);
 	OS.DrawText (hDC, buffer, length, rect, flags);
 	width = Math.max (width, rect.right - rect.left);
 	for (int i=0; i<count; i++) {
 		length = OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, i, 0);
 		if (length != OS.CB_ERR) {
-			if (length + 1 > buffer.length) buffer = new byte [length + 1];
+			if (length + 1 > buffer.length ()) buffer = new TCHAR (cp, length + 1);
 			int result = OS.SendMessage (handle, OS.CB_GETLBTEXT, i, buffer);
 			if (result != OS.CB_ERR) {
 				OS.DrawText (hDC, buffer, length, rect, flags);
@@ -420,12 +421,9 @@ public String getItem (int index) {
 	checkWidget ();
 	int length = OS.SendMessage (handle, OS.CB_GETLBTEXTLEN, index, 0);
 	if (length != OS.CB_ERR) {
-		byte [] buffer1 = new byte [length + 1];
-		int result = OS.SendMessage (handle, OS.CB_GETLBTEXT, index, buffer1);
-		if (result != OS.CB_ERR) {
-			char [] buffer2 = Converter.mbcsToWcs (getCodePage (), buffer1);
-			return new String (buffer2, 0, buffer2.length - 1);
-		}
+		TCHAR buffer = new TCHAR (getCodePage (), length + 1);
+		int result = OS.SendMessage (handle, OS.CB_GETLBTEXT, index, buffer);
+		if (result != OS.CB_ERR) return buffer.toString (0, length);
 	}
 	int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
 	if (0 <= index && index < count) error (SWT.ERROR_CANNOT_GET_ITEM);
@@ -561,10 +559,9 @@ public String getText () {
 	checkWidget ();
 	int length = OS.GetWindowTextLength (handle);
 	if (length == 0) return "";
-	byte [] buffer1 = new byte [length + 1];
-	OS.GetWindowText (handle, buffer1, buffer1.length);
-	char [] buffer2 = Converter.mbcsToWcs (getCodePage (), buffer1);
-	return new String (buffer2, 0, buffer2.length - 1);
+	TCHAR buffer = new TCHAR (getCodePage (), length + 1);
+	OS.GetWindowText (handle, buffer, length + 1);
+	return buffer.toString (0, length);
 }
 
 String getText (int start, int stop) {
@@ -672,7 +669,7 @@ public int indexOf (String string, int start) {
 	int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
 	if (!((0 <= start) && (start < count))) return -1;
 	int index = start - 1, last;
-	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
+	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	do {
 		index = OS.SendMessage (handle, OS.CB_FINDSTRINGEXACT, last = index, buffer);
 		if ((index == OS.CB_ERR) || (index <= last)) return -1;
@@ -996,7 +993,7 @@ public void setItems (String [] items) {
 	int codePage = getCodePage ();
 	for (int i=0; i<items.length; i++) {
 		String string = items [i];
-		byte [] buffer = Converter.wcsToMbcs (codePage, string, true);
+		TCHAR buffer = new TCHAR (codePage, string, true);
 		int code = OS.SendMessage (handle, OS.CB_ADDSTRING, 0, buffer);
 		if (code == OS.CB_ERR) error (SWT.ERROR_ITEM_NOT_ADDED);
 		if (code == OS.CB_ERRSPACE) error (SWT.ERROR_ITEM_NOT_ADDED);
@@ -1053,7 +1050,7 @@ protected boolean setTabGroupFocus () {
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
+	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	if ((style & SWT.READ_ONLY) != 0) {
 		int code = OS.SendMessage (handle, OS.CB_SELECTSTRING, -1, buffer);
 		if (code != OS.CB_ERR) {
@@ -1144,7 +1141,7 @@ int widgetStyle () {
 	return bits | OS.CBS_DROPDOWN;
 }
 
-byte [] windowClass () {
+TCHAR windowClass () {
 	return ComboClass;
 }
 

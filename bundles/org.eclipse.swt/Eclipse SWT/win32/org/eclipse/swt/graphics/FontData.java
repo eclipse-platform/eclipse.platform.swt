@@ -209,38 +209,38 @@ public FontData(String string) {
 		}
 		char[] lfFaceName = new char[32];
 		string.getChars(start, string.length(), lfFaceName, 0);
-		newData.lfFaceName0 = (byte)lfFaceName[0];
-		newData.lfFaceName1 = (byte)lfFaceName[1];
-		newData.lfFaceName2 = (byte)lfFaceName[2];
-		newData.lfFaceName3 = (byte)lfFaceName[3];
-		newData.lfFaceName4 = (byte)lfFaceName[4];
-		newData.lfFaceName5 = (byte)lfFaceName[5];
-		newData.lfFaceName6 = (byte)lfFaceName[6];
-		newData.lfFaceName7 = (byte)lfFaceName[7];
-		newData.lfFaceName8 = (byte)lfFaceName[8];
-		newData.lfFaceName9 = (byte)lfFaceName[9];
-		newData.lfFaceName10 = (byte)lfFaceName[10];
-		newData.lfFaceName11 = (byte)lfFaceName[11];
-		newData.lfFaceName12 = (byte)lfFaceName[12];
-		newData.lfFaceName13 = (byte)lfFaceName[13];
-		newData.lfFaceName14 = (byte)lfFaceName[14];
-		newData.lfFaceName15 = (byte)lfFaceName[15];
-		newData.lfFaceName16 = (byte)lfFaceName[16];
-		newData.lfFaceName17 = (byte)lfFaceName[17];
-		newData.lfFaceName18 = (byte)lfFaceName[18];
-		newData.lfFaceName19 = (byte)lfFaceName[19];
-		newData.lfFaceName20 = (byte)lfFaceName[20];
-		newData.lfFaceName21 = (byte)lfFaceName[21];
-		newData.lfFaceName22 = (byte)lfFaceName[22];
-		newData.lfFaceName23 = (byte)lfFaceName[23];
-		newData.lfFaceName24 = (byte)lfFaceName[24];
-		newData.lfFaceName25 = (byte)lfFaceName[25];
-		newData.lfFaceName26 = (byte)lfFaceName[26];
-		newData.lfFaceName27 = (byte)lfFaceName[27];
-		newData.lfFaceName28 = (byte)lfFaceName[28];
-		newData.lfFaceName29 = (byte)lfFaceName[29];
-		newData.lfFaceName30 = (byte)lfFaceName[30];
-		newData.lfFaceName31 = (byte)lfFaceName[31];
+		newData.lfFaceName0 = lfFaceName[0];
+		newData.lfFaceName1 = lfFaceName[1];
+		newData.lfFaceName2 = lfFaceName[2];
+		newData.lfFaceName3 = lfFaceName[3];
+		newData.lfFaceName4 = lfFaceName[4];
+		newData.lfFaceName5 = lfFaceName[5];
+		newData.lfFaceName6 = lfFaceName[6];
+		newData.lfFaceName7 = lfFaceName[7];
+		newData.lfFaceName8 = lfFaceName[8];
+		newData.lfFaceName9 = lfFaceName[9];
+		newData.lfFaceName10 = lfFaceName[10];
+		newData.lfFaceName11 = lfFaceName[11];
+		newData.lfFaceName12 = lfFaceName[12];
+		newData.lfFaceName13 = lfFaceName[13];
+		newData.lfFaceName14 = lfFaceName[14];
+		newData.lfFaceName15 = lfFaceName[15];
+		newData.lfFaceName16 = lfFaceName[16];
+		newData.lfFaceName17 = lfFaceName[17];
+		newData.lfFaceName18 = lfFaceName[18];
+		newData.lfFaceName19 = lfFaceName[19];
+		newData.lfFaceName20 = lfFaceName[20];
+		newData.lfFaceName21 = lfFaceName[21];
+		newData.lfFaceName22 = lfFaceName[22];
+		newData.lfFaceName23 = lfFaceName[23];
+		newData.lfFaceName24 = lfFaceName[24];
+		newData.lfFaceName25 = lfFaceName[25];
+		newData.lfFaceName26 = lfFaceName[26];
+		newData.lfFaceName27 = lfFaceName[27];
+		newData.lfFaceName28 = lfFaceName[28];
+		newData.lfFaceName29 = lfFaceName[29];
+		newData.lfFaceName30 = lfFaceName[30];
+		newData.lfFaceName31 = lfFaceName[31];
 		data = newData;
 	}
 }
@@ -335,26 +335,26 @@ int EnumLocalesProc(int lpLocaleString) {
 	
 	/* Get the locale ID */
 	int length = 8;
-	byte[] buffer = new byte[length];
+	TCHAR buffer = new TCHAR(0, length);
 	OS.MoveMemory(buffer, lpLocaleString, length);
-	int lcid = Integer.parseInt(new String(buffer, 0, length), 16);
+	int lcid = Integer.parseInt(buffer.toString(0, length).trim(), 16);
 
 	/* Check the language */
 	int size = OS.GetLocaleInfo(lcid, OS.LOCALE_SISO639LANGNAME, buffer, length);
-	String lang = new String(buffer, 0, size - 1);
+	String lang = buffer.toString(0, size - 1);
 	if (!locale.getLanguage().equals(lang)) return 1;
 
 	/* Check the country */
 	String javaCountry = locale.getCountry();
 	if (javaCountry.length() != 0) {
 		size = OS.GetLocaleInfo(lcid, OS.LOCALE_SISO3166CTRYNAME, buffer, length);
-		String country = new String(buffer, 0, size - 1);
+		String country = buffer.toString(0, size - 1);
 		if (!javaCountry.equals(country)) return 1;
 	}
 
 	/* Get the charset */
 	size = OS.GetLocaleInfo(lcid, OS.LOCALE_IDEFAULTANSICODEPAGE, buffer, length);
-	int cp = Integer.parseInt(new String(buffer, 0, size - 1));
+	int cp = Integer.parseInt(buffer.toString(0, size - 1));
 	int [] lpCs = new int[8];
 	OS.TranslateCharsetInfo(cp, lpCs, OS.TCI_SRCCODEPAGE);
 	data.lfCharSet = (byte)lpCs[0];
@@ -383,7 +383,8 @@ public int getHeight() {
  * @see #setName
  */
 public String getName() {
-	byte[] bytes = {
+	//WRONG - need to convert
+	char[] chars = {
 		data.lfFaceName0,  data.lfFaceName1,  data.lfFaceName2,  data.lfFaceName3,
 		data.lfFaceName4,  data.lfFaceName5,  data.lfFaceName6,  data.lfFaceName7,
 		data.lfFaceName8,  data.lfFaceName9,  data.lfFaceName10, data.lfFaceName11,
@@ -393,20 +394,7 @@ public String getName() {
 		data.lfFaceName24, data.lfFaceName25, data.lfFaceName26, data.lfFaceName27,
 		data.lfFaceName28, data.lfFaceName29, data.lfFaceName30, data.lfFaceName31,
 	};
-	int index = 0;
-	while (index < bytes.length) {
-		if (bytes[index] == 0)
-			break;
-		index++;
-	}
-	if (index < bytes.length) {
-		byte[] newBytes = new byte[index];
-		System.arraycopy(bytes, 0, newBytes, 0, index);
-		bytes = newBytes;
-	}
-	/* Use the character encoding for the default locale */
-	char[] name = Converter.mbcsToWcs(0, bytes);
-	return new String(name);
+	return new String (chars).trim();
 }
 
 /**
@@ -523,10 +511,15 @@ public void setLocale(Locale locale) {
  */
 public void setName(String name) {
 	/* Use the character encoding for the default locale */
-	byte[] nameBytes = Converter.wcsToMbcs(0, name, true);
+	
+	//WRONG
+	char [] nameBytes = new char [name.length()];
+	name.getChars (0, nameBytes.length, nameBytes, 0);
+	
 	/* Pad nameBytes to 32 */
-	byte[] paddedNameBytes = new byte[32];
+	char[] paddedNameBytes = new char[32];
 	System.arraycopy(nameBytes, 0, paddedNameBytes, 0, nameBytes.length);
+	
 	/* Copy into the log font */
 	data.lfFaceName0 = paddedNameBytes[0];
 	data.lfFaceName1 = paddedNameBytes[1];
@@ -629,7 +622,7 @@ public String toString() {
 	buffer.append("|");
 	buffer.append(data.lfPitchAndFamily);
 	buffer.append("|");
-	byte[] faceName = {
+	char[] faceName = {
 		data.lfFaceName0,  data.lfFaceName1,  data.lfFaceName2,  data.lfFaceName3,
 		data.lfFaceName4,  data.lfFaceName5,  data.lfFaceName6,  data.lfFaceName7,
 		data.lfFaceName8,  data.lfFaceName9,  data.lfFaceName10, data.lfFaceName11,

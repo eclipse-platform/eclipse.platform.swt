@@ -577,6 +577,7 @@ int getCodePage () {
 	LOGFONT logFont = new LOGFONT ();
 	OS.GetObject (hFont, LOGFONT.sizeof, logFont);
 	int cs = logFont.lfCharSet & 0xFF;
+//	if (cs == OS.DEFAULT_CHARSET) return OS.CP_ACP;
 	int [] lpCs = new int [8];
 	OS.TranslateCharsetInfo (cs, lpCs, OS.TCI_SRCCHARSET);
 	return lpCs [1];
@@ -2432,7 +2433,7 @@ public boolean setParent (Composite parent) {
 	return true;
 }
 
-abstract byte [] windowClass ();
+abstract TCHAR windowClass ();
 
 abstract int windowProc ();
 

@@ -414,7 +414,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 			if (string != null && string.length () != 0) {
 				string = Display.withCrLf (string);
 				/* Use the character encoding for the default locale */
-				byte [] buffer = Converter.wcsToMbcs (0, string, true);
+				TCHAR buffer = new TCHAR (0, string, true);
 				getShell ().setToolTipText (lpnmtdi, buffer);
 				OS.MoveMemory (lParam, lpnmtdi, NMTTDISPINFO.sizeof);
 			}

@@ -426,29 +426,6 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_ole_win32_COM_IsEqualGU
 /*
  * Class:     org_eclipse_swt_internal_ole_win32_COM
  * Method:    MoveMemory
- * Signature: ([CII)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_ole_win32_COM_MoveMemory___3CII
-  (JNIEnv *env, jclass that, jcharArray DestinationPtr, jint Source, jint Length)
-{
-    jchar *DestinationPtr1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "COM_MoveMemory___3CII\n");
-#endif
-
-    if (DestinationPtr)
-        DestinationPtr1 = (*env)->GetCharArrayElements(env, DestinationPtr, NULL);
-
-    MoveMemory(DestinationPtr1, (CONST VOID *)Source, Length);
-
-    if (DestinationPtr)
-        (*env)->ReleaseCharArrayElements(env, DestinationPtr, DestinationPtr1, 0);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_ole_win32_COM
- * Method:    MoveMemory
  * Signature: ([DII)V
  */
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_ole_win32_COM_MoveMemory___3DII

@@ -751,7 +751,7 @@ void setToolTipText (int hwnd, String text) {
 	if (toolTipHandle == 0) {
 		toolTipHandle = OS.CreateWindowEx (
 			OS.WS_EX_TOPMOST,
-			OS.TOOLTIPS_CLASS,
+			new TCHAR (0, OS.TOOLTIPS_CLASS, true),
 			null,
 			OS.TTS_ALWAYSTIP,
 			OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
@@ -782,7 +782,7 @@ void setToolTipText (int hwnd, String text) {
 	}
 }
 
-void setToolTipText (NMTTDISPINFO lpnmtdi, byte [] buffer) {
+void setToolTipText (NMTTDISPINFO lpnmtdi, TCHAR buffer) {
 	/*
 	* Ensure that the current position of the mouse
 	* is inside the client area of the shell.  This
@@ -792,8 +792,9 @@ void setToolTipText (NMTTDISPINFO lpnmtdi, byte [] buffer) {
 	if (!hasCursor ()) return;
 	int hHeap = OS.GetProcessHeap ();
 	if (lpstrTip != 0) OS.HeapFree (hHeap, 0, lpstrTip);
-	lpstrTip = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, buffer.length);
-	OS.MoveMemory (lpstrTip, buffer, buffer.length);
+	int byteCount = buffer.length () * TCHAR.sizeof;
+	lpstrTip = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	OS.MoveMemory (lpstrTip, buffer, byteCount);
 	lpnmtdi.lpszText = lpstrTip;
 }
 

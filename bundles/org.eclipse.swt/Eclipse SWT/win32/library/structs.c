@@ -409,38 +409,38 @@ void cacheLogfontFids(JNIEnv *env, jobject lpLogfont, PLOGFONT_FID_CACHE lpCache
     lpCache->lfQuality = (*env)->GetFieldID(env,lpCache->logfontClass,"lfQuality","B");
     lpCache->lfPitchAndFamily = (*env)->GetFieldID(env,lpCache->logfontClass,"lfPitchAndFamily","B");
     /* the calling function must get these byte array elements */
-    lpCache->lfFaceName0 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName0","B");
-    lpCache->lfFaceName1 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName1","B");
-    lpCache->lfFaceName2 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName2","B");
-    lpCache->lfFaceName3 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName3","B");
-    lpCache->lfFaceName4 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName4","B");
-    lpCache->lfFaceName5 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName5","B");
-    lpCache->lfFaceName6 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName6","B");
-    lpCache->lfFaceName7 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName7","B");
-    lpCache->lfFaceName8 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName8","B");
-    lpCache->lfFaceName9 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName9","B");
-    lpCache->lfFaceName10 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName10","B");
-    lpCache->lfFaceName11 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName11","B");
-    lpCache->lfFaceName12 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName12","B");
-    lpCache->lfFaceName13 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName13","B");
-    lpCache->lfFaceName14 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName14","B");
-    lpCache->lfFaceName15 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName15","B");
-    lpCache->lfFaceName16 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName16","B");
-    lpCache->lfFaceName17 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName17","B");
-    lpCache->lfFaceName18 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName18","B");
-    lpCache->lfFaceName19 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName19","B");
-    lpCache->lfFaceName20 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName20","B");
-    lpCache->lfFaceName21 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName21","B");
-    lpCache->lfFaceName22 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName22","B");
-    lpCache->lfFaceName23 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName23","B");
-    lpCache->lfFaceName24 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName24","B");
-    lpCache->lfFaceName25 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName25","B");
-    lpCache->lfFaceName26 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName26","B");
-    lpCache->lfFaceName27 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName27","B");
-    lpCache->lfFaceName28 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName28","B");
-    lpCache->lfFaceName29 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName29","B");
-    lpCache->lfFaceName30 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName30","B");
-    lpCache->lfFaceName31 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName31","B");
+    lpCache->lfFaceName0 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName0","C");
+    lpCache->lfFaceName1 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName1","C");
+    lpCache->lfFaceName2 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName2","C");
+    lpCache->lfFaceName3 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName3","C");
+    lpCache->lfFaceName4 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName4","C");
+    lpCache->lfFaceName5 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName5","C");
+    lpCache->lfFaceName6 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName6","C");
+    lpCache->lfFaceName7 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName7","C");
+    lpCache->lfFaceName8 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName8","C");
+    lpCache->lfFaceName9 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName9","C");
+    lpCache->lfFaceName10 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName10","C");
+    lpCache->lfFaceName11 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName11","C");
+    lpCache->lfFaceName12 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName12","C");
+    lpCache->lfFaceName13 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName13","C");
+    lpCache->lfFaceName14 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName14","C");
+    lpCache->lfFaceName15 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName15","C");
+    lpCache->lfFaceName16 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName16","C");
+    lpCache->lfFaceName17 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName17","C");
+    lpCache->lfFaceName18 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName18","C");
+    lpCache->lfFaceName19 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName19","C");
+    lpCache->lfFaceName20 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName20","C");
+    lpCache->lfFaceName21 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName21","C");
+    lpCache->lfFaceName22 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName22","C");
+    lpCache->lfFaceName23 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName23","C");
+    lpCache->lfFaceName24 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName24","C");
+    lpCache->lfFaceName25 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName25","C");
+    lpCache->lfFaceName26 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName26","C");
+    lpCache->lfFaceName27 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName27","C");
+    lpCache->lfFaceName28 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName28","C");
+    lpCache->lfFaceName29 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName29","C");
+    lpCache->lfFaceName30 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName30","C");
+    lpCache->lfFaceName31 = (*env)->GetFieldID(env,lpCache->logfontClass,"lfFaceName31","C");
     lpCache->cached = 1;
 }
 
@@ -981,10 +981,10 @@ void cacheTextmetricFids(JNIEnv *env, jobject lpTextmetric, PTEXTMETRIC_FID_CACH
     lpCache->tmOverhang = (*env)->GetFieldID(env,lpCache->textmetricClass,"tmOverhang","I");
     lpCache->tmDigitizedAspectX = (*env)->GetFieldID(env,lpCache->textmetricClass,"tmDigitizedAspectX","I");
     lpCache->tmDigitizedAspectY = (*env)->GetFieldID(env,lpCache->textmetricClass,"tmDigitizedAspectY","I");
-    lpCache->tmFirstChar = (*env)->GetFieldID(env,lpCache->textmetricClass,"tmFirstChar","B");
-    lpCache->tmLastChar = (*env)->GetFieldID(env,lpCache->textmetricClass,"tmLastChar","B");
-    lpCache->tmDefaultChar = (*env)->GetFieldID(env,lpCache->textmetricClass,"tmDefaultChar","B");
-    lpCache->tmBreakChar = (*env)->GetFieldID(env,lpCache->textmetricClass,"tmBreakChar","B");
+    lpCache->tmFirstChar = (*env)->GetFieldID(env,lpCache->textmetricClass,"tmFirstChar","C");
+    lpCache->tmLastChar = (*env)->GetFieldID(env,lpCache->textmetricClass,"tmLastChar","C");
+    lpCache->tmDefaultChar = (*env)->GetFieldID(env,lpCache->textmetricClass,"tmDefaultChar","C");
+    lpCache->tmBreakChar = (*env)->GetFieldID(env,lpCache->textmetricClass,"tmBreakChar","C");
     lpCache->tmItalic = (*env)->GetFieldID(env,lpCache->textmetricClass,"tmItalic","B");
     lpCache->tmUnderlined = (*env)->GetFieldID(env,lpCache->textmetricClass,"tmUnderlined","B");
     lpCache->tmStruckOut = (*env)->GetFieldID(env,lpCache->textmetricClass,"tmStruckOut","B");
@@ -2170,7 +2170,7 @@ void setLogbrushFields(JNIEnv *env, jobject lpObject, LOGBRUSH *lpLogbrush, LOGB
     (*env)->SetIntField(env,lpObject,lpLogbrushFc->lbHatch, lpLogbrush->lbHatch);
 }
 
-void getLogfontFields(JNIEnv *env, jobject lpObject, LOGFONT *lpLogfont, LOGFONT_FID_CACHE *lpLogfontFc)
+void getLogfontFieldsA(JNIEnv *env, jobject lpObject, LOGFONT *lpLogfont, LOGFONT_FID_CACHE *lpLogfontFc)
 {
     lpLogfont->lfHeight = (*env)->GetIntField(env,lpObject,lpLogfontFc->lfHeight);
     lpLogfont->lfWidth = (*env)->GetIntField(env,lpObject,lpLogfontFc->lfWidth);
@@ -2185,41 +2185,89 @@ void getLogfontFields(JNIEnv *env, jobject lpObject, LOGFONT *lpLogfont, LOGFONT
     lpLogfont->lfClipPrecision = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfClipPrecision);
     lpLogfont->lfQuality = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfQuality);
     lpLogfont->lfPitchAndFamily = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfPitchAndFamily);
-    lpLogfont->lfFaceName[0] = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfFaceName0);
-    lpLogfont->lfFaceName[1] = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfFaceName1);
-    lpLogfont->lfFaceName[2] = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfFaceName2);
-    lpLogfont->lfFaceName[3] = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfFaceName3);
-    lpLogfont->lfFaceName[4] = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfFaceName4);
-    lpLogfont->lfFaceName[5] = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfFaceName5);
-    lpLogfont->lfFaceName[6] = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfFaceName6);
-    lpLogfont->lfFaceName[7] = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfFaceName7);
-    lpLogfont->lfFaceName[8] = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfFaceName8);
-    lpLogfont->lfFaceName[9] = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfFaceName9);
-    lpLogfont->lfFaceName[10] = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfFaceName10);
-    lpLogfont->lfFaceName[11] = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfFaceName11);
-    lpLogfont->lfFaceName[12] = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfFaceName12);
-    lpLogfont->lfFaceName[13] = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfFaceName13);
-    lpLogfont->lfFaceName[14] = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfFaceName14);
-    lpLogfont->lfFaceName[15] = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfFaceName15);
-    lpLogfont->lfFaceName[16] = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfFaceName16);
-    lpLogfont->lfFaceName[17] = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfFaceName17);
-    lpLogfont->lfFaceName[18] = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfFaceName18);
-    lpLogfont->lfFaceName[19] = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfFaceName19);
-    lpLogfont->lfFaceName[20] = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfFaceName20);
-    lpLogfont->lfFaceName[21] = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfFaceName21);
-    lpLogfont->lfFaceName[22] = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfFaceName22);
-    lpLogfont->lfFaceName[23] = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfFaceName23);
-    lpLogfont->lfFaceName[24] = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfFaceName24);
-    lpLogfont->lfFaceName[25] = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfFaceName25);
-    lpLogfont->lfFaceName[26] = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfFaceName26);
-    lpLogfont->lfFaceName[27] = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfFaceName27);
-    lpLogfont->lfFaceName[28] = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfFaceName28);
-    lpLogfont->lfFaceName[29] = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfFaceName29);
-    lpLogfont->lfFaceName[30] = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfFaceName30);
-    lpLogfont->lfFaceName[31] = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfFaceName31);
+    lpLogfont->lfFaceName[0] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName0);
+    lpLogfont->lfFaceName[1] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName1);
+    lpLogfont->lfFaceName[2] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName2);
+    lpLogfont->lfFaceName[3] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName3);
+    lpLogfont->lfFaceName[4] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName4);
+    lpLogfont->lfFaceName[5] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName5);
+    lpLogfont->lfFaceName[6] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName6);
+    lpLogfont->lfFaceName[7] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName7);
+    lpLogfont->lfFaceName[8] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName8);
+    lpLogfont->lfFaceName[9] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName9);
+    lpLogfont->lfFaceName[10] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName10);
+    lpLogfont->lfFaceName[11] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName11);
+    lpLogfont->lfFaceName[12] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName12);
+    lpLogfont->lfFaceName[13] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName13);
+    lpLogfont->lfFaceName[14] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName14);
+    lpLogfont->lfFaceName[15] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName15);
+    lpLogfont->lfFaceName[16] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName16);
+    lpLogfont->lfFaceName[17] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName17);
+    lpLogfont->lfFaceName[18] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName18);
+    lpLogfont->lfFaceName[19] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName19);
+    lpLogfont->lfFaceName[20] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName20);
+    lpLogfont->lfFaceName[21] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName21);
+    lpLogfont->lfFaceName[22] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName22);
+    lpLogfont->lfFaceName[23] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName23);
+    lpLogfont->lfFaceName[24] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName24);
+    lpLogfont->lfFaceName[25] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName25);
+    lpLogfont->lfFaceName[26] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName26);
+    lpLogfont->lfFaceName[27] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName27);
+    lpLogfont->lfFaceName[28] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName28);
+    lpLogfont->lfFaceName[29] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName29);
+    lpLogfont->lfFaceName[30] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName30);
+    lpLogfont->lfFaceName[31] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName31);
+}
+void getLogfontFieldsW(JNIEnv *env, jobject lpObject, LOGFONTW *lpLogfont, LOGFONT_FID_CACHE *lpLogfontFc)
+{
+    lpLogfont->lfHeight = (*env)->GetIntField(env,lpObject,lpLogfontFc->lfHeight);
+    lpLogfont->lfWidth = (*env)->GetIntField(env,lpObject,lpLogfontFc->lfWidth);
+    lpLogfont->lfEscapement = (*env)->GetIntField(env,lpObject,lpLogfontFc->lfEscapement);
+    lpLogfont->lfOrientation = (*env)->GetIntField(env,lpObject,lpLogfontFc->lfOrientation);
+    lpLogfont->lfWeight = (*env)->GetIntField(env,lpObject,lpLogfontFc->lfWeight);
+    lpLogfont->lfItalic = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfItalic);
+    lpLogfont->lfUnderline = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfUnderline);
+    lpLogfont->lfStrikeOut = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfStrikeOut);
+    lpLogfont->lfCharSet = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfCharSet);
+    lpLogfont->lfOutPrecision = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfOutPrecision);
+    lpLogfont->lfClipPrecision = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfClipPrecision);
+    lpLogfont->lfQuality = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfQuality);
+    lpLogfont->lfPitchAndFamily = (*env)->GetByteField(env,lpObject,lpLogfontFc->lfPitchAndFamily);
+    lpLogfont->lfFaceName[0] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName0);
+    lpLogfont->lfFaceName[1] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName1);
+    lpLogfont->lfFaceName[2] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName2);
+    lpLogfont->lfFaceName[3] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName3);
+    lpLogfont->lfFaceName[4] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName4);
+    lpLogfont->lfFaceName[5] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName5);
+    lpLogfont->lfFaceName[6] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName6);
+    lpLogfont->lfFaceName[7] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName7);
+    lpLogfont->lfFaceName[8] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName8);
+    lpLogfont->lfFaceName[9] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName9);
+    lpLogfont->lfFaceName[10] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName10);
+    lpLogfont->lfFaceName[11] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName11);
+    lpLogfont->lfFaceName[12] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName12);
+    lpLogfont->lfFaceName[13] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName13);
+    lpLogfont->lfFaceName[14] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName14);
+    lpLogfont->lfFaceName[15] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName15);
+    lpLogfont->lfFaceName[16] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName16);
+    lpLogfont->lfFaceName[17] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName17);
+    lpLogfont->lfFaceName[18] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName18);
+    lpLogfont->lfFaceName[19] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName19);
+    lpLogfont->lfFaceName[20] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName20);
+    lpLogfont->lfFaceName[21] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName21);
+    lpLogfont->lfFaceName[22] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName22);
+    lpLogfont->lfFaceName[23] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName23);
+    lpLogfont->lfFaceName[24] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName24);
+    lpLogfont->lfFaceName[25] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName25);
+    lpLogfont->lfFaceName[26] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName26);
+    lpLogfont->lfFaceName[27] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName27);
+    lpLogfont->lfFaceName[28] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName28);
+    lpLogfont->lfFaceName[29] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName29);
+    lpLogfont->lfFaceName[30] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName30);
+    lpLogfont->lfFaceName[31] = (*env)->GetCharField(env,lpObject,lpLogfontFc->lfFaceName31);
 }
 
-void setLogfontFields(JNIEnv *env, jobject lpObject, LOGFONT *lpLogfont, LOGFONT_FID_CACHE *lpLogfontFc)
+void setLogfontFieldsA(JNIEnv *env, jobject lpObject, LOGFONT *lpLogfont, LOGFONT_FID_CACHE *lpLogfontFc)
 {
     (*env)->SetIntField(env,lpObject,lpLogfontFc->lfHeight, lpLogfont->lfHeight);
     (*env)->SetIntField(env,lpObject,lpLogfontFc->lfWidth, lpLogfont->lfWidth);
@@ -2234,39 +2282,88 @@ void setLogfontFields(JNIEnv *env, jobject lpObject, LOGFONT *lpLogfont, LOGFONT
     (*env)->SetByteField(env,lpObject,lpLogfontFc->lfClipPrecision, lpLogfont->lfClipPrecision);
     (*env)->SetByteField(env,lpObject,lpLogfontFc->lfQuality, lpLogfont->lfQuality);
     (*env)->SetByteField(env,lpObject,lpLogfontFc->lfPitchAndFamily, lpLogfont->lfPitchAndFamily);
-    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfFaceName0, lpLogfont->lfFaceName[0]);
-    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfFaceName1, lpLogfont->lfFaceName[1]);
-    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfFaceName2, lpLogfont->lfFaceName[2]);
-    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfFaceName3, lpLogfont->lfFaceName[3]);
-    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfFaceName4, lpLogfont->lfFaceName[4]);
-    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfFaceName5, lpLogfont->lfFaceName[5]);
-    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfFaceName6, lpLogfont->lfFaceName[6]);
-    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfFaceName7, lpLogfont->lfFaceName[7]);
-    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfFaceName8, lpLogfont->lfFaceName[8]);
-    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfFaceName9, lpLogfont->lfFaceName[9]);
-    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfFaceName10, lpLogfont->lfFaceName[10]);
-    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfFaceName11, lpLogfont->lfFaceName[11]);
-    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfFaceName12, lpLogfont->lfFaceName[12]);
-    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfFaceName13, lpLogfont->lfFaceName[13]);
-    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfFaceName14, lpLogfont->lfFaceName[14]);
-    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfFaceName15, lpLogfont->lfFaceName[15]);
-    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfFaceName16, lpLogfont->lfFaceName[16]);
-    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfFaceName17, lpLogfont->lfFaceName[17]);
-    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfFaceName18, lpLogfont->lfFaceName[18]);
-    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfFaceName19, lpLogfont->lfFaceName[19]);
-    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfFaceName20, lpLogfont->lfFaceName[20]);
-    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfFaceName21, lpLogfont->lfFaceName[21]);
-    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfFaceName22, lpLogfont->lfFaceName[22]);
-    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfFaceName23, lpLogfont->lfFaceName[23]);
-    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfFaceName24, lpLogfont->lfFaceName[24]);
-    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfFaceName25, lpLogfont->lfFaceName[25]);
-    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfFaceName26, lpLogfont->lfFaceName[26]);
-    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfFaceName27, lpLogfont->lfFaceName[27]);
-    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfFaceName28, lpLogfont->lfFaceName[28]);
-    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfFaceName29, lpLogfont->lfFaceName[29]);
-    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfFaceName30, lpLogfont->lfFaceName[30]);
-    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfFaceName31, lpLogfont->lfFaceName[31]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName0, lpLogfont->lfFaceName[0]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName1, lpLogfont->lfFaceName[1]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName2, lpLogfont->lfFaceName[2]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName3, lpLogfont->lfFaceName[3]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName4, lpLogfont->lfFaceName[4]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName5, lpLogfont->lfFaceName[5]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName6, lpLogfont->lfFaceName[6]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName7, lpLogfont->lfFaceName[7]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName8, lpLogfont->lfFaceName[8]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName9, lpLogfont->lfFaceName[9]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName10, lpLogfont->lfFaceName[10]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName11, lpLogfont->lfFaceName[11]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName12, lpLogfont->lfFaceName[12]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName13, lpLogfont->lfFaceName[13]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName14, lpLogfont->lfFaceName[14]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName15, lpLogfont->lfFaceName[15]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName16, lpLogfont->lfFaceName[16]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName17, lpLogfont->lfFaceName[17]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName18, lpLogfont->lfFaceName[18]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName19, lpLogfont->lfFaceName[19]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName20, lpLogfont->lfFaceName[20]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName21, lpLogfont->lfFaceName[21]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName22, lpLogfont->lfFaceName[22]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName23, lpLogfont->lfFaceName[23]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName24, lpLogfont->lfFaceName[24]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName25, lpLogfont->lfFaceName[25]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName26, lpLogfont->lfFaceName[26]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName27, lpLogfont->lfFaceName[27]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName28, lpLogfont->lfFaceName[28]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName29, lpLogfont->lfFaceName[29]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName30, lpLogfont->lfFaceName[30]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName31, lpLogfont->lfFaceName[31]);
 }
+void setLogfontFieldsW(JNIEnv *env, jobject lpObject, LOGFONTW *lpLogfont, LOGFONT_FID_CACHE *lpLogfontFc)
+{
+    (*env)->SetIntField(env,lpObject,lpLogfontFc->lfHeight, lpLogfont->lfHeight);
+    (*env)->SetIntField(env,lpObject,lpLogfontFc->lfWidth, lpLogfont->lfWidth);
+    (*env)->SetIntField(env,lpObject,lpLogfontFc->lfEscapement, lpLogfont->lfEscapement);
+    (*env)->SetIntField(env,lpObject,lpLogfontFc->lfOrientation, lpLogfont->lfOrientation);
+    (*env)->SetIntField(env,lpObject,lpLogfontFc->lfWeight, lpLogfont->lfWeight);
+    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfItalic, lpLogfont->lfItalic);
+    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfUnderline, lpLogfont->lfUnderline);
+    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfStrikeOut, lpLogfont->lfStrikeOut);
+    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfCharSet, lpLogfont->lfCharSet);
+    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfOutPrecision, lpLogfont->lfOutPrecision);
+    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfClipPrecision, lpLogfont->lfClipPrecision);
+    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfQuality, lpLogfont->lfQuality);
+    (*env)->SetByteField(env,lpObject,lpLogfontFc->lfPitchAndFamily, lpLogfont->lfPitchAndFamily);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName0, lpLogfont->lfFaceName[0]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName1, lpLogfont->lfFaceName[1]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName2, lpLogfont->lfFaceName[2]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName3, lpLogfont->lfFaceName[3]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName4, lpLogfont->lfFaceName[4]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName5, lpLogfont->lfFaceName[5]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName6, lpLogfont->lfFaceName[6]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName7, lpLogfont->lfFaceName[7]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName8, lpLogfont->lfFaceName[8]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName9, lpLogfont->lfFaceName[9]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName10, lpLogfont->lfFaceName[10]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName11, lpLogfont->lfFaceName[11]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName12, lpLogfont->lfFaceName[12]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName13, lpLogfont->lfFaceName[13]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName14, lpLogfont->lfFaceName[14]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName15, lpLogfont->lfFaceName[15]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName16, lpLogfont->lfFaceName[16]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName17, lpLogfont->lfFaceName[17]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName18, lpLogfont->lfFaceName[18]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName19, lpLogfont->lfFaceName[19]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName20, lpLogfont->lfFaceName[20]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName21, lpLogfont->lfFaceName[21]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName22, lpLogfont->lfFaceName[22]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName23, lpLogfont->lfFaceName[23]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName24, lpLogfont->lfFaceName[24]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName25, lpLogfont->lfFaceName[25]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName26, lpLogfont->lfFaceName[26]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName27, lpLogfont->lfFaceName[27]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName28, lpLogfont->lfFaceName[28]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName29, lpLogfont->lfFaceName[29]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName30, lpLogfont->lfFaceName[30]);
+    (*env)->SetCharField(env,lpObject,lpLogfontFc->lfFaceName31, lpLogfont->lfFaceName[31]);
+}
+
 
 void getLogpenFields(JNIEnv *env, jobject lpObject, LOGPEN *lpLogpen, LOGPEN_FID_CACHE *lpLogpenFc)
 {
@@ -2601,7 +2698,40 @@ void setNmtoolbarFields(JNIEnv *env, jobject lpObject, NMTOOLBAR *lpNmtoolbar, N
     (*env)->SetIntField(env,lpObject,lpNmtoolbarFc->bottom, lpNmtoolbar->rcButton.bottom);
 }
 
-void getNmttdispinfoFields(JNIEnv *env, jobject lpObject, NMTTDISPINFO *lpNmttdispinfo, NMTTDISPINFO_FID_CACHE *lpNmttdispinfoFc)
+void getNmttdispinfoFieldsA(JNIEnv *env, jobject lpObject, NMTTDISPINFO *lpNmttdispinfo, NMTTDISPINFO_FID_CACHE *lpNmttdispinfoFc)
+{
+    jint *lpInt;
+
+    lpNmttdispinfo->hdr.hwndFrom = (HWND)(*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->hwndFrom);
+    lpNmttdispinfo->hdr.idFrom = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->idFrom);
+    lpNmttdispinfo->hdr.code = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->code);
+    lpNmttdispinfo->lpszText = (LPTSTR)(*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->lpszText);
+    lpInt = (jint *)lpNmttdispinfo->szText;
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad0);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad1);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad2);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad3);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad4);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad5);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad6);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad7);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad8);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad9);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad10);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad11);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad12);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad13);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad14);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad15);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad16);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad17);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad18);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad19);
+    lpNmttdispinfo->hinst = (HINSTANCE)(*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->hinst);
+    lpNmttdispinfo->uFlags = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->uFlags);
+    lpNmttdispinfo->lParam = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->lParam);
+}
+void getNmttdispinfoFieldsW(JNIEnv *env, jobject lpObject, NMTTDISPINFOW *lpNmttdispinfo, NMTTDISPINFO_FID_CACHE *lpNmttdispinfoFc)
 {
     jint *lpInt;
 
@@ -2635,7 +2765,40 @@ void getNmttdispinfoFields(JNIEnv *env, jobject lpObject, NMTTDISPINFO *lpNmttdi
     lpNmttdispinfo->lParam = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->lParam);
 }
 
-void setNmttdispinfoFields(JNIEnv *env, jobject lpObject, NMTTDISPINFO *lpNmttdispinfo, NMTTDISPINFO_FID_CACHE *lpNmttdispinfoFc)
+void setNmttdispinfoFieldsA(JNIEnv *env, jobject lpObject, NMTTDISPINFO *lpNmttdispinfo, NMTTDISPINFO_FID_CACHE *lpNmttdispinfoFc)
+{
+    jint *lpInt;
+
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->hwndFrom, (jint)lpNmttdispinfo->hdr.hwndFrom);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->idFrom, lpNmttdispinfo->hdr.idFrom);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->code, lpNmttdispinfo->hdr.code);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->lpszText, (jint)lpNmttdispinfo->lpszText);
+    lpInt = (jint *)lpNmttdispinfo->szText;
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad0, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad1, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad2, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad3, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad4, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad5, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad6, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad7, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad8, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad9, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad10, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad11, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad12, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad13, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad14, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad15, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad16, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad17, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad18, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad19, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->hinst, (jint)lpNmttdispinfo->hinst);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->uFlags, lpNmttdispinfo->uFlags);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->lParam, lpNmttdispinfo->lParam);
+}
+void setNmttdispinfoFieldsW(JNIEnv *env, jobject lpObject, NMTTDISPINFOW *lpNmttdispinfo, NMTTDISPINFO_FID_CACHE *lpNmttdispinfoFc)
 {
     jint *lpInt;
 
@@ -3145,7 +3308,7 @@ void setTcitemFields(JNIEnv *env, jobject lpObject, TCITEM *lpTcitem, TCITEM_FID
     (*env)->SetIntField(env,lpObject,lpTcitemFc->lParam, lpTcitem->lParam);
 }
 
-void getTextmetricFields(JNIEnv *env, jobject lpObject, TEXTMETRIC *lpTextmetric, TEXTMETRIC_FID_CACHE *lpTextmetricFc)
+void getTextmetricFieldsA(JNIEnv *env, jobject lpObject, TEXTMETRIC *lpTextmetric, TEXTMETRIC_FID_CACHE *lpTextmetricFc)
 {
     lpTextmetric->tmHeight = (*env)->GetIntField(env,lpObject,lpTextmetricFc->tmHeight);
     lpTextmetric->tmAscent = (*env)->GetIntField(env,lpObject,lpTextmetricFc->tmAscent);
@@ -3168,8 +3331,31 @@ void getTextmetricFields(JNIEnv *env, jobject lpObject, TEXTMETRIC *lpTextmetric
     lpTextmetric->tmPitchAndFamily = (*env)->GetByteField(env,lpObject,lpTextmetricFc->tmPitchAndFamily);
     lpTextmetric->tmCharSet = (*env)->GetByteField(env,lpObject,lpTextmetricFc->tmCharSet);
 }
+void getTextmetricFieldsW(JNIEnv *env, jobject lpObject, TEXTMETRICW *lpTextmetric, TEXTMETRIC_FID_CACHE *lpTextmetricFc)
+{
+    lpTextmetric->tmHeight = (*env)->GetIntField(env,lpObject,lpTextmetricFc->tmHeight);
+    lpTextmetric->tmAscent = (*env)->GetIntField(env,lpObject,lpTextmetricFc->tmAscent);
+    lpTextmetric->tmDescent = (*env)->GetIntField(env,lpObject,lpTextmetricFc->tmDescent);
+    lpTextmetric->tmInternalLeading = (*env)->GetIntField(env,lpObject,lpTextmetricFc->tmInternalLeading);
+    lpTextmetric->tmExternalLeading = (*env)->GetIntField(env,lpObject,lpTextmetricFc->tmExternalLeading);
+    lpTextmetric->tmAveCharWidth = (*env)->GetIntField(env,lpObject,lpTextmetricFc->tmAveCharWidth);
+    lpTextmetric->tmMaxCharWidth = (*env)->GetIntField(env,lpObject,lpTextmetricFc->tmMaxCharWidth);
+    lpTextmetric->tmWeight = (*env)->GetIntField(env,lpObject,lpTextmetricFc->tmWeight);
+    lpTextmetric->tmOverhang = (*env)->GetIntField(env,lpObject,lpTextmetricFc->tmOverhang);
+    lpTextmetric->tmDigitizedAspectX = (*env)->GetIntField(env,lpObject,lpTextmetricFc->tmDigitizedAspectX);
+    lpTextmetric->tmDigitizedAspectY = (*env)->GetIntField(env,lpObject,lpTextmetricFc->tmDigitizedAspectY);
+    lpTextmetric->tmFirstChar = (*env)->GetCharField(env,lpObject,lpTextmetricFc->tmFirstChar);
+    lpTextmetric->tmLastChar = (*env)->GetCharField(env,lpObject,lpTextmetricFc->tmLastChar);
+    lpTextmetric->tmDefaultChar = (*env)->GetCharField(env,lpObject,lpTextmetricFc->tmDefaultChar);
+    lpTextmetric->tmBreakChar = (*env)->GetCharField(env,lpObject,lpTextmetricFc->tmBreakChar);
+    lpTextmetric->tmItalic = (*env)->GetByteField(env,lpObject,lpTextmetricFc->tmItalic);
+    lpTextmetric->tmUnderlined = (*env)->GetByteField(env,lpObject,lpTextmetricFc->tmUnderlined);
+    lpTextmetric->tmStruckOut = (*env)->GetByteField(env,lpObject,lpTextmetricFc->tmStruckOut);
+    lpTextmetric->tmPitchAndFamily = (*env)->GetByteField(env,lpObject,lpTextmetricFc->tmPitchAndFamily);
+    lpTextmetric->tmCharSet = (*env)->GetByteField(env,lpObject,lpTextmetricFc->tmCharSet);
+}
 
-void setTextmetricFields(JNIEnv *env, jobject lpObject, TEXTMETRIC *lpTextmetric, TEXTMETRIC_FID_CACHE *lpTextmetricFc)
+void setTextmetricFieldsA(JNIEnv *env, jobject lpObject, TEXTMETRIC *lpTextmetric, TEXTMETRIC_FID_CACHE *lpTextmetricFc)
 {
     (*env)->SetIntField(env,lpObject,lpTextmetricFc->tmHeight, lpTextmetric->tmHeight);
     (*env)->SetIntField(env,lpObject,lpTextmetricFc->tmAscent, lpTextmetric->tmAscent);
@@ -3186,6 +3372,29 @@ void setTextmetricFields(JNIEnv *env, jobject lpObject, TEXTMETRIC *lpTextmetric
     (*env)->SetByteField(env,lpObject,lpTextmetricFc->tmLastChar, lpTextmetric->tmLastChar);
     (*env)->SetByteField(env,lpObject,lpTextmetricFc->tmDefaultChar, lpTextmetric->tmDefaultChar);
     (*env)->SetByteField(env,lpObject,lpTextmetricFc->tmBreakChar, lpTextmetric->tmBreakChar);
+    (*env)->SetByteField(env,lpObject,lpTextmetricFc->tmItalic, lpTextmetric->tmItalic);
+    (*env)->SetByteField(env,lpObject,lpTextmetricFc->tmUnderlined, lpTextmetric->tmUnderlined);
+    (*env)->SetByteField(env,lpObject,lpTextmetricFc->tmStruckOut, lpTextmetric->tmStruckOut);
+    (*env)->SetByteField(env,lpObject,lpTextmetricFc->tmPitchAndFamily, lpTextmetric->tmPitchAndFamily);
+    (*env)->SetByteField(env,lpObject,lpTextmetricFc->tmCharSet, lpTextmetric->tmCharSet);
+}
+void setTextmetricFieldsW(JNIEnv *env, jobject lpObject, TEXTMETRICW *lpTextmetric, TEXTMETRIC_FID_CACHE *lpTextmetricFc)
+{
+    (*env)->SetIntField(env,lpObject,lpTextmetricFc->tmHeight, lpTextmetric->tmHeight);
+    (*env)->SetIntField(env,lpObject,lpTextmetricFc->tmAscent, lpTextmetric->tmAscent);
+    (*env)->SetIntField(env,lpObject,lpTextmetricFc->tmDescent, lpTextmetric->tmDescent);
+    (*env)->SetIntField(env,lpObject,lpTextmetricFc->tmInternalLeading, lpTextmetric->tmInternalLeading);
+    (*env)->SetIntField(env,lpObject,lpTextmetricFc->tmExternalLeading, lpTextmetric->tmExternalLeading);
+    (*env)->SetIntField(env,lpObject,lpTextmetricFc->tmAveCharWidth, lpTextmetric->tmAveCharWidth);
+    (*env)->SetIntField(env,lpObject,lpTextmetricFc->tmMaxCharWidth, lpTextmetric->tmMaxCharWidth);
+    (*env)->SetIntField(env,lpObject,lpTextmetricFc->tmWeight, lpTextmetric->tmWeight);
+    (*env)->SetIntField(env,lpObject,lpTextmetricFc->tmOverhang, lpTextmetric->tmOverhang);
+    (*env)->SetIntField(env,lpObject,lpTextmetricFc->tmDigitizedAspectX, lpTextmetric->tmDigitizedAspectX);
+    (*env)->SetIntField(env,lpObject,lpTextmetricFc->tmDigitizedAspectY, lpTextmetric->tmDigitizedAspectY);
+    (*env)->SetCharField(env,lpObject,lpTextmetricFc->tmFirstChar, lpTextmetric->tmFirstChar);
+    (*env)->SetCharField(env,lpObject,lpTextmetricFc->tmLastChar, lpTextmetric->tmLastChar);
+    (*env)->SetCharField(env,lpObject,lpTextmetricFc->tmDefaultChar, lpTextmetric->tmDefaultChar);
+    (*env)->SetCharField(env,lpObject,lpTextmetricFc->tmBreakChar, lpTextmetric->tmBreakChar);
     (*env)->SetByteField(env,lpObject,lpTextmetricFc->tmItalic, lpTextmetric->tmItalic);
     (*env)->SetByteField(env,lpObject,lpTextmetricFc->tmUnderlined, lpTextmetric->tmUnderlined);
     (*env)->SetByteField(env,lpObject,lpTextmetricFc->tmStruckOut, lpTextmetric->tmStruckOut);

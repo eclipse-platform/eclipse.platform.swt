@@ -223,7 +223,7 @@ int widgetStyle () {
 	return bits;
 }
 
-byte [] windowClass () {
+TCHAR windowClass () {
 	return getDisplay ().windowClass;
 }
 

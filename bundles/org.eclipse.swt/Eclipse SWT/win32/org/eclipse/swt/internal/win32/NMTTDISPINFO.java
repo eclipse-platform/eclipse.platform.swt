@@ -12,5 +12,5 @@ public class NMTTDISPINFO extends NMHDR {
 	public int hinst;   
 	public int uFlags;
 	public int lParam;
-	public static final int sizeof = 108;
+	public static final int sizeof = OS.IsUnicode ? 188 : 108;
 }

@@ -391,7 +391,7 @@ public FontData [] getFontList (String faceName, boolean scalable) {
 			 * should enumerate for each available style of that font. Instead, it only enumerates
 			 * once. The fix is to call EnumFontFamilies, which works as expected.
 			 */
-			byte [] lpFaceName = new byte [] {
+			char [] buffer = new char [] {
 				lf.lfFaceName0,  lf.lfFaceName1,  lf.lfFaceName2,  lf.lfFaceName3,
 				lf.lfFaceName4,  lf.lfFaceName5,  lf.lfFaceName6,  lf.lfFaceName7,
 				lf.lfFaceName8,  lf.lfFaceName9,  lf.lfFaceName10, lf.lfFaceName11,
@@ -401,11 +401,12 @@ public FontData [] getFontList (String faceName, boolean scalable) {
 				lf.lfFaceName24, lf.lfFaceName25, lf.lfFaceName26, lf.lfFaceName27,
 				lf.lfFaceName28, lf.lfFaceName29, lf.lfFaceName30, lf.lfFaceName31,
 			};
+			TCHAR lpFaceName = new TCHAR (0, new String(buffer), true);
 			OS.EnumFontFamilies (hDC, lpFaceName, lpEnumFontFamProc, scalable ? 1 : 0);
 		}
 	} else {
 		/* Use the character encoding for the default locale */
-		byte [] lpFaceName = Converter.wcsToMbcs (0, faceName, true);
+		TCHAR lpFaceName = new TCHAR (0, faceName, true);
 		/**
 		 * Bug in Windows 98. When EnumFontFamiliesEx is called with a specified face name, it
 		 * should enumerate for each available style of that font. Instead, it only enumerates

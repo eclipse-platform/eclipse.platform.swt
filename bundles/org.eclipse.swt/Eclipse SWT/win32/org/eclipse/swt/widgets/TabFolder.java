@@ -38,13 +38,10 @@ public class TabFolder extends Composite {
 	TabItem [] items;
 	ImageList imageList;
 	static final int TabFolderProc;
-	static final byte [] TabFolderClass;
+	static final TCHAR TabFolderClass = new TCHAR (0, "SWT_" + OS.WC_TABCONTROL, true);
 	static {
-		byte [] prefix = Converter.wcsToMbcs (0, "SWT_");
-		TabFolderClass = new byte [prefix.length + OS.WC_TABCONTROL.length];
-		System.arraycopy (prefix, 0, TabFolderClass, 0, prefix.length);
-		System.arraycopy (OS.WC_TABCONTROL, 0, TabFolderClass, prefix.length, OS.WC_TABCONTROL.length);
-		/*
+		
+			/*
 		* Feature in Windows.  The tab control window class
 		* uses the CS_HREDRAW and CS_VREDRAW style bits to
 		* force a full redraw of the control and all children
@@ -55,16 +52,20 @@ public class TabFolder extends Composite {
 		*/
 		WNDCLASSEX lpWndClass = new WNDCLASSEX ();
 		lpWndClass.cbSize = WNDCLASSEX.sizeof;
-		OS.GetClassInfoEx (0, OS.WC_TABCONTROL, lpWndClass);
+		TCHAR WC_TABCONTROL = new TCHAR (0, OS.WC_TABCONTROL, true);
+		OS.GetClassInfoEx (0, WC_TABCONTROL, lpWndClass);
 		TabFolderProc = lpWndClass.lpfnWndProc;
 		int hInstance = OS.GetModuleHandle (null);
 		if (!OS.GetClassInfoEx (hInstance, TabFolderClass, lpWndClass)) {
 			int hHeap = OS.GetProcessHeap ();
 			lpWndClass.hInstance = hInstance;
 			lpWndClass.style &= ~(OS.CS_HREDRAW | OS.CS_VREDRAW);
-			lpWndClass.lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, TabFolderClass.length);
-			OS.MoveMemory (lpWndClass.lpszClassName, TabFolderClass, TabFolderClass.length);
+			int byteCount = TabFolderClass.length () * TCHAR.sizeof;
+			int lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+			OS.MoveMemory (lpszClassName, TabFolderClass, byteCount);
+			lpWndClass.lpszClassName = lpszClassName;
 			OS.RegisterClassEx (lpWndClass);
+			OS.HeapFree (hHeap, 0, lpszClassName);
 		}
 	}
 
@@ -578,7 +579,7 @@ int widgetStyle () {
 	return bits | OS.TCS_TABS | OS.TCS_FOCUSNEVER | OS.TCS_TOOLTIPS;
 }
 
-byte [] windowClass () {
+TCHAR windowClass () {
 	return TabFolderClass;
 }
 

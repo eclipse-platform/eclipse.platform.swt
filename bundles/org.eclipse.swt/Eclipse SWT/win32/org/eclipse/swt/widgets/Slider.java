@@ -59,7 +59,7 @@ import org.eclipse.swt.events.*;
 public class Slider extends Control {
 	int increment, pageIncrement;
 	static final int ScrollBarProc;
-	static final byte [] ScrollBarClass = Converter.wcsToMbcs (0, "SCROLLBAR\0");
+	static final TCHAR ScrollBarClass = new TCHAR (0, "SCROLLBAR", true);
 	static {
 		WNDCLASSEX lpWndClass = new WNDCLASSEX ();
 		lpWndClass.cbSize = WNDCLASSEX.sizeof;
@@ -646,7 +646,7 @@ int widgetStyle () {
 	return bits | OS.SBS_VERT;
 }
 
-byte [] windowClass () {
+TCHAR windowClass () {
 	return ScrollBarClass;
 }
 

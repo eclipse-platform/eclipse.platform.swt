@@ -34,7 +34,7 @@ public class ToolBar extends Composite {
 	ToolItem [] items;
 	ImageList imageList, disabledImageList, hotImageList;
 	static final int ToolBarProc;
-	static final byte [] ToolBarClass = OS.TOOLBARCLASSNAME;
+	static final TCHAR ToolBarClass = new TCHAR (0, OS.TOOLBARCLASSNAME, true);
 	static {
 		WNDCLASSEX lpWndClass = new WNDCLASSEX ();
 		lpWndClass.cbSize = WNDCLASSEX.sizeof;
@@ -575,7 +575,7 @@ int widgetStyle () {
 	return bits;
 }
 
-byte [] windowClass () {
+TCHAR windowClass () {
 	return ToolBarClass;
 }
 

@@ -1412,8 +1412,10 @@ void getInitcommoncontrolsexFields(JNIEnv *env, jobject lpObject, INITCOMMONCONT
 void setInitcommoncontrolsexFields(JNIEnv *env, jobject lpObject, INITCOMMONCONTROLSEX *lpInitcommoncontrolsex, INITCOMMONCONTROLSEX_FID_CACHE *lpInitcommoncontrolsexFc);
 void getLogbrushFields(JNIEnv *env, jobject lpObject, LOGBRUSH *lpLogbrush, LOGBRUSH_FID_CACHE *lpLogbrushFc);
 void setLogbrushFields(JNIEnv *env, jobject lpObject, LOGBRUSH *lpLogbrush, LOGBRUSH_FID_CACHE *lpLogbrushFc);
-void getLogfontFields(JNIEnv *env, jobject lpObject, LOGFONT *lpLogfont, PLOGFONT_FID_CACHE lpLogfontFc);
-void setLogfontFields(JNIEnv *env, jobject lpObject, LOGFONT *lpLogfont, PLOGFONT_FID_CACHE lpLogfontFc);
+void getLogfontFieldsW(JNIEnv *env, jobject lpObject, LOGFONTW *lpLogfont, PLOGFONT_FID_CACHE lpLogfontFc);
+void setLogfontFieldsW(JNIEnv *env, jobject lpObject, LOGFONTW *lpLogfont, PLOGFONT_FID_CACHE lpLogfontFc);
+void getLogfontFieldsA(JNIEnv *env, jobject lpObject, LOGFONT *lpLogfont, PLOGFONT_FID_CACHE lpLogfontFc);
+void setLogfontFieldsA(JNIEnv *env, jobject lpObject, LOGFONT *lpLogfont, PLOGFONT_FID_CACHE lpLogfontFc);
 void getLogpenFields(JNIEnv *env, jobject lpObject, LOGPEN *lpLogpen, PLOGPEN_FID_CACHE lpLogpenFc);
 void setLogpenFields(JNIEnv *env, jobject lpObject, LOGPEN *lpLogpen, PLOGPEN_FID_CACHE lpLogpenFc);
 /*
@@ -1446,8 +1448,10 @@ void getNmlistviewFields(JNIEnv *env, jobject lpObject, NMLISTVIEW *lpNmlistview
 void setNmlistviewFields(JNIEnv *env, jobject lpObject, NMLISTVIEW *lpNmlistview, NMLISTVIEW_FID_CACHE *lpNmlistviewFc);
 void getNmtoolbarFields(JNIEnv *env, jobject lpObject, NMTOOLBAR *lpNmtoolbar, NMTOOLBAR_FID_CACHE *lpNmtoolbarFc);
 void setNmtoolbarFields(JNIEnv *env, jobject lpObject, NMTOOLBAR *lpNmtoolbar, NMTOOLBAR_FID_CACHE *lpNmtoolbarFc);
-void getNmttdispinfoFields(JNIEnv *env, jobject lpObject, NMTTDISPINFO *lpNmttdispinfo, NMTTDISPINFO_FID_CACHE *lpNmttdispinfoFc);
-void setNmttdispinfoFields(JNIEnv *env, jobject lpObject, NMTTDISPINFO *lpNmttdispinfo, NMTTDISPINFO_FID_CACHE *lpNmttdispinfoFc);
+void getNmttdispinfoFieldsW(JNIEnv *env, jobject lpObject, NMTTDISPINFOW *lpNmttdispinfo, NMTTDISPINFO_FID_CACHE *lpNmttdispinfoFc);
+void setNmttdispinfoFieldsW(JNIEnv *env, jobject lpObject, NMTTDISPINFOW *lpNmttdispinfo, NMTTDISPINFO_FID_CACHE *lpNmttdispinfoFc);
+void getNmttdispinfoFieldsA(JNIEnv *env, jobject lpObject, NMTTDISPINFO *lpNmttdispinfo, NMTTDISPINFO_FID_CACHE *lpNmttdispinfoFc);
+void setNmttdispinfoFieldsA(JNIEnv *env, jobject lpObject, NMTTDISPINFO *lpNmttdispinfo, NMTTDISPINFO_FID_CACHE *lpNmttdispinfoFc);
 void getNmtvcustomdrawFields(JNIEnv *env, jobject lpObject, NMTVCUSTOMDRAW *lpNmtvcustomdraw, NMTVCUSTOMDRAW_FID_CACHE *lpNmtvcustomdrawFc);
 void setNmtvcustomdrawFields(JNIEnv *env, jobject lpObject, NMTVCUSTOMDRAW *lpNmtvcustomdraw, NMTVCUSTOMDRAW_FID_CACHE *lpNmtvcustomdrawFc);
 void getOpenfilenameFields(JNIEnv *env, jobject lpObject, OPENFILENAME *lpOpenfilename, OPENFILENAME_FID_CACHE *lpOpenfilenameFc);
@@ -1478,8 +1482,10 @@ void getTbbuttoninfoFields(JNIEnv *env, jobject lpObject, TBBUTTONINFO *lpTbbutt
 void setTbbuttoninfoFields(JNIEnv *env, jobject lpObject, TBBUTTONINFO *lpTbbuttoninfo, TBBUTTONINFO_FID_CACHE *lpTbbuttoninfoFc);
 void getTcitemFields(JNIEnv *env, jobject lpObject, TCITEM *lpTcitem, TCITEM_FID_CACHE *lpTcitemFc);
 void setTcitemFields(JNIEnv *env, jobject lpObject, TCITEM *lpTcitem, TCITEM_FID_CACHE *lpTcitemFc);
-void getTextmetricFields(JNIEnv *env, jobject lpObject, TEXTMETRIC *lpTextmetric, TEXTMETRIC_FID_CACHE *lpTextmetricFc);
-void setTextmetricFields(JNIEnv *env, jobject lpObject, TEXTMETRIC *lpTextmetric, TEXTMETRIC_FID_CACHE *lpTextmetricFc);
+void getTextmetricFieldsW(JNIEnv *env, jobject lpObject, TEXTMETRICW *lpTextmetric, TEXTMETRIC_FID_CACHE *lpTextmetricFc);
+void setTextmetricFieldsW(JNIEnv *env, jobject lpObject, TEXTMETRICW *lpTextmetric, TEXTMETRIC_FID_CACHE *lpTextmetricFc);
+void getTextmetricFieldsA(JNIEnv *env, jobject lpObject, TEXTMETRIC *lpTextmetric, TEXTMETRIC_FID_CACHE *lpTextmetricFc);
+void setTextmetricFieldsA(JNIEnv *env, jobject lpObject, TEXTMETRIC *lpTextmetric, TEXTMETRIC_FID_CACHE *lpTextmetricFc);
 void getToolinfoFields(JNIEnv *env, jobject lpObject, TOOLINFO *lpToolinfo, TOOLINFO_FID_CACHE *lpToolinfoFc);
 void setToolinfoFields(JNIEnv *env, jobject lpObject, TOOLINFO *lpToolinfo, TOOLINFO_FID_CACHE *lpToolinfoFc);
 void getTrackmouseeventFields(JNIEnv *env, jobject lpObject, TRACKMOUSEEVENT *lpTrackmouseevent, TRACKMOUSEEVENT_FID_CACHE *lpTrackmouseeventFc);

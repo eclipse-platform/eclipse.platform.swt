@@ -39,7 +39,7 @@ public class Tree extends Composite {
 	boolean dragStarted;
 	boolean ignoreSelect, ignoreExpand, ignoreDeselect;
 	static final int TreeProc;
-	static final byte [] TreeClass = OS.WC_TREEVIEW;
+	static final TCHAR TreeClass = new TCHAR (0, OS.WC_TREEVIEW, true);
 	static {
 		WNDCLASSEX lpWndClass = new WNDCLASSEX ();
 		lpWndClass.cbSize = WNDCLASSEX.sizeof;
@@ -1043,7 +1043,7 @@ int widgetStyle () {
 	return bits;
 }
 
-byte [] windowClass () {
+TCHAR windowClass () {
 	return TreeClass;
 }
 

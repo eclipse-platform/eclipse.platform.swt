@@ -572,11 +572,13 @@ public void setMenu (Menu menu) {
 		index++;
 	}
 	if (index == count) return;
+	int cch = 128;
 	int hHeap = OS.GetProcessHeap ();
-	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, 128);
+	int byteCount = cch * TCHAR.sizeof;
+	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	info.fMask = OS.MIIM_STATE | OS.MIIM_ID | OS.MIIM_TYPE;
 	info.dwTypeData = pszText;
-	info.cch = 128;
+	info.cch = cch;
 	boolean success = OS.GetMenuItemInfo (hMenu, index, true, info);
 	if (menu != null) {
 		menu.cascade = this; 
@@ -627,9 +629,10 @@ public void setText (String string) {
 	int hMenu = parent.handle;
 	int hHeap = OS.GetProcessHeap ();
 	/* Use the character encoding for the default locale */
-	byte [] buffer = Converter.wcsToMbcs (0, string, false);
-	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, buffer.length + 1);
-	OS.MoveMemory (pszText, buffer, buffer.length);
+	TCHAR buffer = new TCHAR (0, string, true);
+	int byteCount = buffer.length () * TCHAR.sizeof;
+	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	OS.MoveMemory (pszText, buffer, byteCount);
 	MENUITEMINFO info = new MENUITEMINFO ();
 	info.cbSize = MENUITEMINFO.sizeof;
 	info.fMask = OS.MIIM_TYPE;

@@ -26,7 +26,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class ProgressBar extends Control {
 	static final int ProgressBarProc;
-	static final byte [] ProgressBarClass = OS.PROGRESS_CLASS;
+	static final TCHAR ProgressBarClass = new TCHAR (0, OS.PROGRESS_CLASS, true);
 	static {
 		WNDCLASSEX lpWndClass = new WNDCLASSEX ();
 		lpWndClass.cbSize = WNDCLASSEX.sizeof;
@@ -240,7 +240,7 @@ int widgetStyle () {
 	return bits;
 }
 
-byte [] windowClass () {
+TCHAR windowClass () {
 	return ProgressBarClass;
 }
 
