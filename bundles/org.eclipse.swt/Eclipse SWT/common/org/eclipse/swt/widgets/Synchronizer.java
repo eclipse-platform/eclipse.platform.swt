@@ -70,6 +70,10 @@ protected void asyncExec (Runnable runnable) {
 	display.wake ();
 }
 
+int getMessageCount () {
+	return messageCount;
+}
+
 void releaseSynchronizer () {
 	display = null;
 	messages = null;
