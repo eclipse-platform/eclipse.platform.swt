@@ -22,11 +22,25 @@
 
 /* define this to print out debug statements */
 /* #define DEBUG_CALL_PRINTS */
+#define DEBUG_CHECK_NULL_EXCEPTIONS
 
 #ifdef DEBUG_CALL_PRINTS
 #define DEBUG_CALL(func) fprintf(stderr, func);
 #else
 #define DEBUG_CALL(func)
+#endif
+
+#ifdef DEBUG_CHECK_NULL_EXCEPTIONS
+#define DEBUG_CHECK_NULL(env, address) \
+	if (address == 0) { \
+		jclass clazz = (*env)->FindClass(env, "org/eclipse/swt/SWTError"); \
+		if (clazz != NULL) { \
+			(*env)->ThrowNew(env, clazz, "Argument cannot be NULL"); \
+		} \
+		return; \
+	}
+#else
+#define DEBUG_CHECK_NULL(func)
 #endif
 
 #define DECL_GLOB(pSym)

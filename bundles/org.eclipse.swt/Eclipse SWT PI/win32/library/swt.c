@@ -3843,6 +3843,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__I_3SI
 	jshort *lparg1=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg0)
 
 	if (arg1) lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL);
 
@@ -3857,6 +3858,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__I_3FI
 	jfloat *lparg1=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg0)
 
 	if (arg1) lparg1 = (*env)->GetFloatArrayElements(env, arg1, NULL);
 
@@ -3871,6 +3873,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__I_3DI
 	jdouble *lparg1=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg0)
 
 	if (arg1) lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL);
 
@@ -3885,6 +3888,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory___3SII
 	jshort *lparg0=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg1)
 
 	if (arg0) lparg0 = (*env)->GetShortArrayElements(env, arg0, NULL);
 
@@ -3899,6 +3903,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory___3FII
 	jfloat *lparg0=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg1)
 
 	if (arg0) lparg0 = (*env)->GetFloatArrayElements(env, arg0, NULL);
 
@@ -3913,6 +3918,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory___3DII
 	jdouble *lparg0=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg1)
 
 	if (arg0) lparg0 = (*env)->GetDoubleArrayElements(env, arg0, NULL);
 
@@ -3929,6 +3935,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_
 	DROPFILES _arg1, *lparg1=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg0)
 
 	if (arg1) lparg1 = getDROPFILESFields(env, arg1, &_arg1, &PGLOB(DROPFILESFc));
 
@@ -3945,6 +3952,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_e
 	MSG _arg0, *lparg0=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg1)
 
 	if (arg0) lparg0 = &_arg0;
 
@@ -3960,6 +3968,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_e
 	WINDOWPOS _arg0, *lparg0=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg1)
 
 	if (arg0) lparg0 = &_arg0;
 
@@ -3975,6 +3984,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_e
 	TVITEM _arg0, *lparg0=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg1)
 
 	if (arg0) lparg0 = &_arg0;
 
@@ -3990,6 +4000,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_e
 	NMTOOLBAR _arg0, *lparg0=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg1)
 
 	if (arg0) lparg0 = &_arg0;
 
@@ -4005,6 +4016,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_e
 	NMLISTVIEW _arg0, *lparg0=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg1)
 
 	if (arg0) lparg0 = &_arg0;
 
@@ -4021,6 +4033,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_e
 	NMREBARCHEVRON _arg0, *lparg0=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg1)
 
 	if (arg0) lparg0 = &_arg0;
 
@@ -4037,6 +4050,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_e
 	NMHEADER _arg0, *lparg0=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg1)
 
 	if (arg0) lparg0 = &_arg0;
 
@@ -4052,6 +4066,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_e
 	NMHDR _arg0, *lparg0=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg1)
 
 	if (arg0) lparg0 = &_arg0;
 
@@ -4067,6 +4082,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_
 	NMCUSTOMDRAW _arg1, *lparg1=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg0)
 
 	if (arg1) lparg1 = getNMCUSTOMDRAWFields(env, arg1, &_arg1, &PGLOB(NMCUSTOMDRAWFc));
 
@@ -4082,6 +4098,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_
 	NMLVCUSTOMDRAW _arg1, *lparg1=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg0)
 
 	if (arg1) lparg1 = getNMLVCUSTOMDRAWFields(env, arg1, &_arg1, &PGLOB(NMLVCUSTOMDRAWFc));
 
@@ -4097,6 +4114,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_
 	NMTVCUSTOMDRAW _arg1, *lparg1=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg0)
 
 	if (arg1) lparg1 = getNMTVCUSTOMDRAWFields(env, arg1, &_arg1, &PGLOB(NMTVCUSTOMDRAWFc));
 
@@ -4112,6 +4130,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_e
 	NMCUSTOMDRAW _arg0, *lparg0=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg1)
 
 	if (arg0) lparg0 = getNMCUSTOMDRAWFields(env, arg0, &_arg0, &PGLOB(NMCUSTOMDRAWFc));
 
@@ -4127,6 +4146,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_e
 	NMLVCUSTOMDRAW _arg0, *lparg0=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg1)
 
 	//if (arg0) lparg0 = getNMLVCUSTOMDRAWFields(env, arg0, &_arg0, &PGLOB(NMLVCUSTOMDRAWFc));
 	if (arg0) lparg0 = &_arg0;
@@ -4144,6 +4164,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_e
 	NMTVCUSTOMDRAW _arg0, *lparg0=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg1)
 
 	if (arg0) lparg0 = getNMTVCUSTOMDRAWFields(env, arg0, &_arg0, &PGLOB(NMTVCUSTOMDRAWFc));
 
@@ -4159,6 +4180,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_e
 	MEASUREITEMSTRUCT _arg0, *lparg0=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg1)
 
 	if (arg0) lparg0 = &_arg0;
 
@@ -4175,6 +4197,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_e
 	HELPINFO _arg0, *lparg0=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg1)
 
 	if (arg0) lparg0 = &_arg0;
 
@@ -4191,6 +4214,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_e
 	HDITEM _arg0, *lparg0=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg1)
 
 	if (arg0) lparg0 = &_arg0;
 
@@ -4206,6 +4230,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_e
 	DRAWITEMSTRUCT _arg0, *lparg0=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg1)
 
 	if (arg0) lparg0 = &_arg0;
 
@@ -4222,6 +4247,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_
 	TRIVERTEX _arg1, *lparg1=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg0)
 
 	if (arg1) lparg1 = getTRIVERTEXFields(env, arg1, &_arg1, &PGLOB(TRIVERTEXFc));
 
@@ -4236,6 +4262,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_
 	RECT _arg1, *lparg1=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg0)
 
 	if (arg1) lparg1 = getRECTFields(env, arg1, &_arg1, &PGLOB(RECTFc));
 
@@ -4249,6 +4276,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_
 	WINDOWPOS _arg1, *lparg1=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg0)
 
 	if (arg1) lparg1 = getWINDOWPOSFields(env, arg1, &_arg1, &PGLOB(WINDOWPOSFc));
 
@@ -4262,6 +4290,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_
 	MEASUREITEMSTRUCT _arg1, *lparg1=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg0)
 
 	if (arg1) lparg1 = getMEASUREITEMSTRUCTFields(env, arg1, &_arg1, &PGLOB(MEASUREITEMSTRUCTFc));
 
@@ -4276,6 +4305,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_
 	GRADIENT_RECT _arg1, *lparg1=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg0)
 
 	if (arg1) lparg1 = getGRADIENT_RECTFields(env, arg1, &_arg1, &PGLOB(GRADIENT_RECTFc));
 
@@ -4289,6 +4319,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__I_3II
 	jint *lparg1=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg0)
 
 	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
 
@@ -4303,6 +4334,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__I_3CI
 	jchar *lparg1=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg0)
 
 	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
 
@@ -4317,6 +4349,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__I_3BI
 	jbyte *lparg1=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg0)
 
 	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
 
@@ -4331,6 +4364,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory___3III
 	jint *lparg0=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg1)
 
 	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
 
@@ -4362,6 +4396,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory___3BII
 	jbyte *lparg0=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg1)
 
 	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
 
@@ -4376,6 +4411,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory___3CII
 	jchar *lparg0=NULL;
 
 	DEBUG_CALL("MoveMemory\n")
+	DEBUG_CHECK_NULL(env, arg1)
 
 	if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
 
@@ -4392,6 +4428,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemoryA__Lorg_
 	NMTTDISPINFOA _arg0={0}, *lparg0=NULL;
 
 	DEBUG_CALL("MoveMemoryA\n")
+	DEBUG_CHECK_NULL(env, arg1)
 
 	if (arg0) lparg0 = &_arg0;
 
@@ -4407,6 +4444,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemoryA__Lorg_
 	LOGFONTA _arg0, *lparg0=NULL;
 
 	DEBUG_CALL("MoveMemoryA\n")
+	DEBUG_CHECK_NULL(env, arg1)
 
 	if (arg0) lparg0 = &_arg0;
 
@@ -4422,6 +4460,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemoryA__ILorg
 	NMTTDISPINFOA _arg1={0}, *lparg1=NULL;
 
 	DEBUG_CALL("MoveMemoryA\n")
+	DEBUG_CHECK_NULL(env, arg0)
 
 	if (arg1) lparg1 = getNMTTDISPINFOAFields(env, arg1, &_arg1, &PGLOB(NMTTDISPINFOFc));
 
@@ -4435,6 +4474,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemoryA__ILorg
 	LOGFONTA _arg1, *lparg1=NULL;
 
 	DEBUG_CALL("MoveMemoryA\n")
+	DEBUG_CHECK_NULL(env, arg0)
 
 	if (arg1) lparg1 = getLOGFONTAFields(env, arg1, &_arg1, &PGLOB(LOGFONTFc));
 
@@ -4450,6 +4490,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemoryW__Lorg_
 	NMTTDISPINFOW _arg0={0}, *lparg0=NULL;
 
 	DEBUG_CALL("MoveMemoryW\n")
+	DEBUG_CHECK_NULL(env, arg1)
 
 	if (arg0) lparg0 = &_arg0;
 
@@ -4466,6 +4507,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemoryW__Lorg_
 	LOGFONTW _arg0, *lparg0=NULL;
 
 	DEBUG_CALL("MoveMemoryW\n")
+	DEBUG_CHECK_NULL(env, arg1)
 
 	if (arg0) lparg0 = &_arg0;
 
@@ -4482,6 +4524,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemoryW__ILorg
 	NMTTDISPINFOW _arg1={0}, *lparg1=NULL;
 
 	DEBUG_CALL("MoveMemoryW\n")
+	DEBUG_CHECK_NULL(env, arg0)
 
 	if (arg1) lparg1 = getNMTTDISPINFOWFields(env, arg1, &_arg1, &PGLOB(NMTTDISPINFOFc));
 
@@ -4496,6 +4539,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemoryW__ILorg
 	LOGFONTW _arg1, *lparg1=NULL;
 
 	DEBUG_CALL("MoveMemoryW\n")
+	DEBUG_CHECK_NULL(env, arg0)
 
 	if (arg1) lparg1 = getLOGFONTWFields(env, arg1, &_arg1, &PGLOB(LOGFONTFc));
 
