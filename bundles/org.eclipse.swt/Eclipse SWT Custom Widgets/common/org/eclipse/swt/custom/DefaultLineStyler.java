@@ -6,7 +6,6 @@ package org.eclipse.swt.custom;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.Compatibility;
 import java.util.Vector;

@@ -7,7 +7,6 @@ package org.eclipse.swt.custom;
  */
 
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
 
 /**
  * This event is sent when a line is about to be drawn.

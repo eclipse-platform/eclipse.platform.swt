@@ -7,10 +7,8 @@ package org.eclipse.swt.custom;
  */
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.internal.Compatibility;
 import org.eclipse.swt.widgets.*;
-import java.io.*;
 import java.util.Vector;
 
 class DefaultContent implements StyledTextContent {

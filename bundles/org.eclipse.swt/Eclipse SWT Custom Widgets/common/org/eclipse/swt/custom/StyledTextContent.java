@@ -7,8 +7,6 @@ package org.eclipse.swt.custom;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.events.*;
-
 /**
  * Clients may implement the StyledTextContent interface to provide a 
  * custom store for the StyledText widget content. The StyledText widget 
