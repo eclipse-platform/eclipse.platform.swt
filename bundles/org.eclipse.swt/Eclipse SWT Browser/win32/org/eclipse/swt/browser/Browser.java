@@ -59,6 +59,7 @@ public class Browser extends Composite {
 	static final int NewWindow2 = 0xfb;
 	static final int OnVisible = 0xfe;
 	static final int ProgressChange = 0x6c;
+	static final int RegisterAsBrowser = 0x228;
 	static final int StatusTextChange = 0x66;
 	static final int WindowClosing = 0x107;
 	
@@ -345,6 +346,10 @@ public Browser(Composite parent, int style) {
 	site.addEventListener(ProgressChange, listener);
 	site.addEventListener(StatusTextChange, listener);
 	site.addEventListener(WindowClosing, listener);
+	
+	Variant variant = new Variant(true);
+	auto.setProperty(RegisterAsBrowser, variant);
+	variant.dispose();
 }
 
 /**	 
