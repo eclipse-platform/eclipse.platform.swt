@@ -1196,12 +1196,13 @@ void initializeList () {
 	* Feature in Motif.  If the value of resource XmNselectColor is
 	* XmDEFAULT_SELECT_COLOR then querying for this resource gives
 	* the value of the selection color to use, which is between the
-	* background and bottom shadow colors.
+	* background and bottom shadow colors.  If the resource value
+	* that is returned is XmDEFAULT_SELECT_COLOR, and not the color,
+	* since there is no API to query the color, use the list foreground
+	* color.
 	*/
 	switch (argList [7]) {
 		case OS.XmDEFAULT_SELECT_COLOR:
-			listSelect = listForeground;
-			break;
 		case OS.XmREVERSED_GROUND_COLORS:
 			listSelect = listForeground;
 			break;
