@@ -216,15 +216,7 @@ void resize () {
 }
 void scroll (Event e) {
 	if (editor == null || editor.isDisposed()) return;
-	if (editor.getVisible ()) {
-		hadFocus = editor.isFocusControl();
-	}
-	boolean visible = e.detail != SWT.DRAG;
-	if (visible) {
-		editor.setBounds (computeBounds ());
-	}
-	editor.setVisible (visible);
-	if (visible && hadFocus) editor.setFocus ();
+	editor.setBounds (computeBounds ());
 }
 /**
 * Specify the Control that is to be displayed.
