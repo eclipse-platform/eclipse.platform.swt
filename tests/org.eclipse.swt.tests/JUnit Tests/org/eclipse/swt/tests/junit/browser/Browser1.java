@@ -23,6 +23,7 @@ public class Browser1 {
 	
 	public static boolean test1(String url) {
 		System.out.println("URL Loading - args: "+url+" Expected Event Sequence: Location.changing > Location.changed > Progress.completed");
+		System.out.println("TEST: sysproperty <"+System.getProperty("PLUGIN_PATH")+">");
 		passed = false;
 		locationChanging = locationChanged = progressCompleted = false;
 				
