@@ -193,7 +193,6 @@ static TreeItem checkNull (TreeItem item) {
  * </ul>
  */
 public Rectangle getBounds () {
-	int CELL_SPACING=1;
 	int ctree = parent.handle;
 	GtkCTree tree = new GtkCTree();
 	OS.memmove(tree, ctree, GtkCTree.sizeof);
@@ -221,7 +220,7 @@ public Rectangle getBounds () {
 		}
 		index++;
 	}
-	int y=height*index+(index+1)*CELL_SPACING+tree.voffset+2;
+	int y = height*index + Tree.CELL_SPACING + tree.voffset + 2;
 
 	int [] buffer = new int [1]; byte [] spacing = new byte [1];
 	boolean [] is_leaf = new boolean [1], expanded = new boolean [1];
