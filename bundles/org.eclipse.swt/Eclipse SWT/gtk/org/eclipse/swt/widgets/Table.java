@@ -477,7 +477,7 @@ void destroyItem (TableColumn column) {
 	int columnHandle = column.handle;
 	System.arraycopy (columns, index + 1, columns, index, --columnCount - index);
 	columns [columnCount] = null;
-	deregister ();
+	column.deregister ();
 	OS.gtk_tree_view_remove_column (handle, columnHandle);
 	if (columnCount == 0) {
 		int oldModel = modelHandle;
