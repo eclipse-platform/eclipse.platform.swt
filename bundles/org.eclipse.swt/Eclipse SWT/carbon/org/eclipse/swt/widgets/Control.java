@@ -934,6 +934,7 @@ void setFontStyle (Font font) {
 		fontStyle.flags |= OS.kControlUseThemeFontIDMask;
 		fontStyle.font = (short) defaultThemeFont ();
 	}
+	OS.SetControlFontStyle (handle, fontStyle);
 }
 
 public void setForeground (Color color) {

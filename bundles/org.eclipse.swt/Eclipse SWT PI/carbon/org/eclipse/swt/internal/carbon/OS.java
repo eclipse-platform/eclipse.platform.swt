@@ -396,6 +396,7 @@ public class OS {
 	public static final int kThemeDisclosureRight = 0;
 	public static final int kThemeDisclosureDown = 1;
 	public static final int kThemeDisclosureLeft = 2;
+	public static final int kThemeEmphasizedSystemFont = 4;
 	public static final int kThemeIBeamCursor = 4;
 	public static final int kThemeNotAllowedCursor = 18;
 	public static final int kThemePointingHandCursor = 10;

@@ -110,6 +110,10 @@ void createHandle () {
 	handle = outControl [0];
 }
 
+int defaultThemeFont () {	
+	return OS.kThemeEmphasizedSystemFont;
+}
+
 public Rectangle getClientArea () {
 	checkWidget();
 	Rect bounds = new Rect ();
