@@ -12,6 +12,7 @@ package org.eclipse.swt.internal;
 
  
 import java.io.*;
+import java.text.MessageFormat;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import org.eclipse.swt.SWT;
@@ -272,7 +273,30 @@ public static String getMessage(String key) {
 	}
 	return answer;
 }
+
+public static String getMessage(String key, Object[] args) {
+	String answer = key;
 	
+	if (key == null || args == null) {
+		SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	}
+	if (msgs == null) {
+		try {
+			msgs = ResourceBundle.getBundle("org.eclipse.swt.internal.SWTMessages"); //$NON-NLS-1$
+		} catch (MissingResourceException ex) {
+			answer = key + " (no resource bundle)"; //$NON-NLS-1$
+		}
+	}
+	if (msgs != null) {
+		try {
+			MessageFormat formatter = new MessageFormat("");			
+			formatter.applyPattern(msgs.getString(key));			
+			answer = formatter.format(args);
+		} catch (MissingResourceException ex2) {}
+	}
+	return answer;
+}
+
 /**
  * Interrupt the current thread. 
  * <p>

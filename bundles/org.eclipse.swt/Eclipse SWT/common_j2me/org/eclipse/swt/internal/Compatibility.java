@@ -300,54 +300,63 @@ public static void exec(String[] progArray) throws java.io.IOException{
  */
 public static String getMessage(String key) {
 	if (key == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);	
-	if (key.equals("SWT_Yes")) return "Yes";
-	if (key.equals("SWT_No")) return "No";
-	if (key.equals("SWT_OK")) return "OK";
-	if (key.equals("SWT_Cancel")) return "Cancel";
-	if (key.equals("SWT_Abort")) return "Abort";
-	if (key.equals("SWT_Retry")) return "Retry";
-	if (key.equals("SWT_Ignore")) return "Ignore";
-	if (key.equals("SWT_Sample")) return "Sample";
-	if (key.equals("SWT_A_Sample_Text")) return "A Sample Text";
-	if (key.equals("SWT_Selection")) return "Selection";
-	if (key.equals("SWT_Current_Selection")) return "Current Selection";
-	if (key.equals("SWT_Character_set")) return "Character set";
-	if (key.equals("SWT_Font")) return "Font";
-	if (key.equals("SWT_Extended_style")) return "Extended style";
-	if (key.equals("SWT_Size")) return "Size";
-	if (key.equals("SWT_Style")) return "Style";
-	if (key.equals("SWT_Save")) return "Save";
-	if (key.equals("SWT_Character_set")) return "Character set";
-	if (key.equals("SWT_ColorDialog_Title")) return "Colors";
-	if (key.equals("SWT_FontDialog_Title")) return "Fonts";
-	if (key.equals("SWT_Charset_Western")) return "western";
-	if (key.equals("SWT_Charset_EastEuropean")) return "east european";
-	if (key.equals("SWT_Charset_SouthEuropean")) return "south european";
-	if (key.equals("SWT_Charset_NorthEuropean")) return "north european";
-	if (key.equals("SWT_Charset_Cyrillic")) return "cyrillic";
-	if (key.equals("SWT_Charset_Arabic")) return "arabic";
-	if (key.equals("SWT_Charset_Greek")) return "greek";
-	if (key.equals("SWT_Charset_Hebrew")) return "hebrew";
-	if (key.equals("SWT_Charset_Turkish")) return "turkish";
-	if (key.equals("SWT_Charset_Nordic")) return "nordic";		 	
-	if (key.equals("SWT_Charset_Thai")) return "thai";
-	if (key.equals("SWT_Charset_BalticRim")) return "baltic rim";
-	if (key.equals("SWT_Charset_Celtic")) return "celtic";
-	if (key.equals("SWT_Charset_Euro")) return "euro";
-	if (key.equals("SWT_Charset_Romanian")) return "romanian";
-	if (key.equals("SWT_Charset_SimplifiedChinese")) return "simplified chinese";
-	if (key.equals("SWT_Charset_TraditionalChinese")) return "traditional chinese";
-	if (key.equals("SWT_Charset_Japanese")) return "japanese";
-	if (key.equals("SWT_Charset_Korean")) return "korean";
-	if (key.equals("SWT_Charset_Unicode")) return "unicode";
-	if (key.equals("SWT_Charset_ASCII")) return "ASCII";
-	if (key.equals("SWT_InputMethods")) return "Input Methods";
-	if (key.equals("SWT_Password")) return "Password:";
-	if (key.equals("SWT_Username")) return "User Name:";
-	if (key.equals("SWT_Prompt")) return "Prompt";
+	if (key.equals("SWT_Yes")) return "Yes"; //$NON-NLS-1$
+	if (key.equals("SWT_No")) return "No"; //$NON-NLS-1$
+	if (key.equals("SWT_OK")) return "OK"; //$NON-NLS-1$
+	if (key.equals("SWT_Cancel")) return "Cancel"; //$NON-NLS-1$
+	if (key.equals("SWT_Abort")) return "Abort"; //$NON-NLS-1$
+	if (key.equals("SWT_Retry")) return "Retry"; //$NON-NLS-1$
+	if (key.equals("SWT_Ignore")) return "Ignore"; //$NON-NLS-1$
+	if (key.equals("SWT_Sample")) return "Sample"; //$NON-NLS-1$
+	if (key.equals("SWT_A_Sample_Text")) return "A Sample Text"; //$NON-NLS-1$
+	if (key.equals("SWT_Selection")) return "Selection"; //$NON-NLS-1$
+	if (key.equals("SWT_Current_Selection")) return "Current Selection"; //$NON-NLS-1$
+	if (key.equals("SWT_Character_set")) return "Character set"; //$NON-NLS-1$
+	if (key.equals("SWT_Font")) return "Font"; //$NON-NLS-1$
+	if (key.equals("SWT_Extended_style")) return "Extended style"; //$NON-NLS-1$
+	if (key.equals("SWT_Size")) return "Size"; //$NON-NLS-1$
+	if (key.equals("SWT_Style")) return "Style"; //$NON-NLS-1$
+	if (key.equals("SWT_Save")) return "Save"; //$NON-NLS-1$
+	if (key.equals("SWT_Character_set")) return "Character set"; //$NON-NLS-1$
+	if (key.equals("SWT_ColorDialog_Title")) return "Colors"; //$NON-NLS-1$
+	if (key.equals("SWT_FontDialog_Title")) return "Fonts"; //$NON-NLS-1$
+	if (key.equals("SWT_Charset_Western")) return "western"; //$NON-NLS-1$
+	if (key.equals("SWT_Charset_EastEuropean")) return "east european"; //$NON-NLS-1$
+	if (key.equals("SWT_Charset_SouthEuropean")) return "south european"; //$NON-NLS-1$
+	if (key.equals("SWT_Charset_NorthEuropean")) return "north european"; //$NON-NLS-1$
+	if (key.equals("SWT_Charset_Cyrillic")) return "cyrillic"; //$NON-NLS-1$
+	if (key.equals("SWT_Charset_Arabic")) return "arabic"; //$NON-NLS-1$
+	if (key.equals("SWT_Charset_Greek")) return "greek"; //$NON-NLS-1$
+	if (key.equals("SWT_Charset_Hebrew")) return "hebrew"; //$NON-NLS-1$
+	if (key.equals("SWT_Charset_Turkish")) return "turkish"; //$NON-NLS-1$
+	if (key.equals("SWT_Charset_Nordic")) return "nordic"; //$NON-NLS-1$
+	if (key.equals("SWT_Charset_Thai")) return "thai"; //$NON-NLS-1$
+	if (key.equals("SWT_Charset_BalticRim")) return "baltic rim"; //$NON-NLS-1$
+	if (key.equals("SWT_Charset_Celtic")) return "celtic"; //$NON-NLS-1$
+	if (key.equals("SWT_Charset_Euro")) return "euro"; //$NON-NLS-1$
+	if (key.equals("SWT_Charset_Romanian")) return "romanian"; //$NON-NLS-1$
+	if (key.equals("SWT_Charset_SimplifiedChinese")) return "simplified chinese"; //$NON-NLS-1$
+	if (key.equals("SWT_Charset_TraditionalChinese")) return "traditional chinese"; //$NON-NLS-1$
+	if (key.equals("SWT_Charset_Japanese")) return "japanese"; //$NON-NLS-1$
+	if (key.equals("SWT_Charset_Korean")) return "korean"; //$NON-NLS-1$
+	if (key.equals("SWT_Charset_Unicode")) return "unicode"; //$NON-NLS-1$
+	if (key.equals("SWT_Charset_ASCII")) return "ASCII"; //$NON-NLS-1$
+	if (key.equals("SWT_InputMethods")) return "Input Methods"; //$NON-NLS-1$
+	if (key.equals("SWT_Password")) return "Password:"; //$NON-NLS-1$
+	if (key.equals("SWT_Username")) return "User Name:"; //$NON-NLS-1$
+	if (key.equals("SWT_Prompt")) return "Prompt"; //$NON-NLS-1$
+	if (key.equals("SWT_Download_Started")) return "Downloading..."; //$NON-NLS-1$
 	return key;
 }
-	
+
+public static String getMessage(String key, Object[] args) {
+	if (key == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);	
+	if (key.equals("SWT_Download_File")) return "Download: "+args[0]; //$NON-NLS-1$
+	if (key.equals("SWT_Download_Location")) return "Saving "+args[0]+" from "+args[1]; //$NON-NLS-1$
+	if (key.equals("SWT_Download_Status")) return "Download: "+args[0]+" KB of "+args[1]+" KB"; //$NON-NLS-1$
+	return key;
+}
+
 /**
  * Interrupt the current thread. 
  * <p>
