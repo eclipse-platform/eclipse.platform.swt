@@ -484,7 +484,7 @@ void createHandle (int index) {
 		OS.PtSetResources (scrolledHandle, args.length / 3, args);
 	}
 	int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX;
-	if (!((style & SWT.NO_TRIM) == 0 && (style & trim) != 0)) {
+	if ((style & SWT.NO_TRIM) != 0 || (style & trim) == 0) {
 		OS.PtSetResource (shellHandle, OS.Pt_ARG_MIN_WIDTH, 0, 0);
 	}
 	OS.PtSetResource (shellHandle, OS.Pt_ARG_MIN_HEIGHT, 0, 0);
