@@ -13,6 +13,8 @@ package org.eclipse.swt.tests.junit;
 
 import junit.framework.*;
 
+import org.eclipse.swt.SWT;
+
 public class SwtTestCase extends TestCase {
 	/**
 	 * The following flags are used to mark test cases that
@@ -53,6 +55,9 @@ public class SwtTestCase extends TestCase {
 	// allow specific image formats to be tested
 	public static String[] imageFormats = new String[] {"bmp", "jpg", "gif", "png"};
 	public static String[] imageFilenames = new String[] {"folder", "folderOpen", "target"};
+	
+	// specify reparentable platforms
+	public static String[] reparentablePlatforms = new String[] {"win32", "gtk"};
 	
 public SwtTestCase(String name) {
 	super(name);
@@ -167,7 +172,13 @@ static private void failNotEquals(String message, Object expected, Object actual
 		formatted= message+" ";
 	fail(formatted+"expected:<"+expected+"> but was:<"+actual+">");
 }
-
+protected boolean isReparentablePlatform() {
+	String platform = SWT.getPlatform();
+	for (int i=0; i<reparentablePlatforms.length; i++) {
+		if (reparentablePlatforms[i].equals(platform)) return true;
+	}
+	return false;
+}
 protected void warnUnimpl(String message) {
 	if (verbose) {
 		System.out.println(this.getClass() + ": " + message);

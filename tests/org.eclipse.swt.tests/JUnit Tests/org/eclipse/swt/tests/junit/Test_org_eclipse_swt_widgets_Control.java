@@ -329,9 +329,7 @@ public void test_isFocusControl() {
 }
 
 public void test_isReparentable() {
-	String platform = SWT.getPlatform();
-	boolean isReparentable = platform.equals("win32") || platform.equals("gtk");
-	assertEquals ("isReparentable", control.isReparentable(), isReparentable);
+	assertEquals ("isReparentable", control.isReparentable(), isReparentablePlatform());
 }
 
 public void test_isVisible() {
