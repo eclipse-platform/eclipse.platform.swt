@@ -6,9 +6,6 @@ package org.eclipse.swt.dnd;
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/cpl-v10.html
  */
- 
-import org.eclipse.swt.internal.Converter;
-import org.eclipse.swt.widgets.Display;
 
 /**
  * <code>Transfer</code> provides a mechanism for converting between a java 
