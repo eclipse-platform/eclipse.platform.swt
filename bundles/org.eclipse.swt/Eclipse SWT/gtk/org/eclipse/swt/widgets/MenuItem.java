@@ -119,10 +119,6 @@ public MenuItem (Menu parent, int style, int index) {
 }
 
 void addAccelerator (int accelGroup) {
-	if (menu != null) {
-		menu.addAccelerators (accelGroup);
-		return;
-	}
 	if (accelerator == 0) return;
 	int mask = 0;
 	if ((accelerator & SWT.CONTROL) != 0) mask |= OS.GDK_CONTROL_MASK;
@@ -139,6 +135,14 @@ void addAccelerator (int accelGroup) {
 		}
 	}
 	OS.gtk_widget_add_accelerator (handle, OS.activate, accelGroup, keysym, mask, OS.GTK_ACCEL_VISIBLE);
+}
+
+void addAccelerators (int accelGroup) {
+	if (menu == null) {
+		addAccelerator (accelGroup);
+	} else {
+		menu.addAccelerators (accelGroup);
+	}
 }
 
 /**
@@ -434,10 +438,6 @@ void releaseWidget () {
 }
 
 void removeAccelerator (int accelGroup) {
-	if (menu != null) {
-		menu.removeAccelerators (accelGroup);
-		return;
-	}
 	if (accelerator == 0) return;
 	int mask = 0;
 	if ((accelerator & SWT.CONTROL) != 0) mask |= OS.GDK_CONTROL_MASK;
@@ -454,6 +454,14 @@ void removeAccelerator (int accelGroup) {
 		}
 	}
 	OS.gtk_widget_remove_accelerator (handle, accelGroup, keysym, mask);
+}
+
+void removeAccelerators (int accelGroup) {
+	if (menu == null) {
+		removeAccelerator (accelGroup);
+	} else {
+		menu.removeAccelerators (accelGroup);
+	}
 }
 
 /**
@@ -543,6 +551,7 @@ public void removeSelectionListener (SelectionListener listener) {
  */
 public void setAccelerator (int accelerator) {
 	checkWidget();
+	if (this.accelerator == accelerator) return;
 	int accelGroup = getAccelGroup ();
 	if (accelGroup != 0) removeAccelerator (accelGroup);
 	this.accelerator = accelerator;
@@ -634,7 +643,7 @@ public void setMenu (Menu menu) {
 	Menu oldMenu = this.menu;
 	if (oldMenu == menu) return;
 	int accelGroup = getAccelGroup ();
-	if (accelGroup != 0) removeAccelerator (accelGroup);
+	if (accelGroup != 0) removeAccelerators (accelGroup);
 	if (oldMenu != null) {
 		oldMenu.cascade = null;
 		/*
@@ -648,7 +657,7 @@ public void setMenu (Menu menu) {
 		menu.cascade = this;
 		OS.gtk_menu_item_set_submenu (handle, menu.handle);
 	}
-	if (accelGroup != 0) addAccelerator (accelGroup);
+	if (accelGroup != 0) addAccelerators (accelGroup);
 }
 
 /**
