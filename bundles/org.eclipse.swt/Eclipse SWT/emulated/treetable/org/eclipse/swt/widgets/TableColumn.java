@@ -283,6 +283,29 @@ public Table getParent() {
 	return parent;
 }
 /**
+ * Gets the moveable attribute. A column that is
+ * not moveable cannot be reordered by the user 
+ * by dragging the header but may be reordered 
+ * by the programmer.
+ *
+ * @return the moveable attribute
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see Table#getColumnOrder()
+ * @see Table#setColumnOrder(int[])
+ * 
+ * @since 3.1
+ */
+public boolean getMoveable() {
+	checkWidget();
+	// TODO implement moveable table headers
+	return false;
+}
+/**
  * Gets the resizable attribute. A column that is
  * not resizable cannot be dragged by the user but
  * may be resized by the programmer.
@@ -464,6 +487,29 @@ public void setImage(Image image) {
  */
 void setIndex(int newIndex) {
 	this.index = newIndex;
+}
+/**
+ * Sets the moveable attribute.  A column that is
+ * moveable can be reordered by the user by dragging
+ * the header. A column that is not moveable cannot be 
+ * dragged by the user but may be reordered 
+ * by the programmer.
+ *
+ * @param moveable the moveable attribute
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see Table#setColumnOrder(int[])
+ * @see Table#getColumnOrder()
+ * 
+ * @since 3.1
+ */
+public void setMoveable (boolean moveable) {
+	checkWidget();
+	// TODO implement moveable table headers
 }
 /**
  * Sets the resizable attribute.  A column that is

@@ -828,6 +828,39 @@ public int getColumnCount() {
 	}
 	return count;
 }
+/**
+ * Returns an array of zero-relative integers that map
+ * the creation order of the receiver's items to the
+ * order in which they are currently being displayed.
+ * <p>
+ * Specifically, the indices of the returned array represent
+ * the current visual order of the items, and the contents
+ * of the array represent the creation order of the items.
+ * </p><p>
+ * Note: This is not the actual structure used by the receiver
+ * to maintain its list of items, so modifying the array will
+ * not affect the receiver. 
+ * </p>
+ *
+ * @return the current visual order of the receiver's items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
+public int[] getColumnOrder () {
+	checkWidget ();
+	int count = getColumnCount ();
+	int [] order = new int [count];
+	// TODO implement changing column order
+	for (int i = 0; i < order.length; i++) {
+		order [i] = i;
+	}
+	return order;
+}
 /** Replace CURSOR_SIZEWE with real column resize cursor 
  *	(no standard cursor-have to load from file)
  * Answer the cursor displayed during a column resize 
@@ -2549,6 +2582,43 @@ public void selectAll() {
 	if (item != null) {
 		setLastSelection(item, false);
 	}
+}
+/**
+ * Sets the order that the items in the receiver should 
+ * be displayed in to the given argument which is described
+ * in terms of the zero-relative ordering of when the items
+ * were added.
+ *
+ * @param itemOrder the new order to display the items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the item order is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the item order is not the same length as the number of items</li>
+ * </ul>
+ *
+ * @since 3.1
+ */
+public void setColumnOrder (int [] order) {
+	checkWidget ();
+	if (order == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int columnCount = getColumnCount ();
+	if (columnCount == 0) {
+		if (order.length > 0) error (SWT.ERROR_INVALID_ARGUMENT);
+		return;
+	}
+	if (order.length != columnCount) error (SWT.ERROR_INVALID_ARGUMENT);
+	boolean [] seen = new boolean [columnCount];
+	for (int i = 0; i<order.length; i++) {
+		int index = order [i];
+		if (index < 0 || index >= columnCount) error (SWT.ERROR_INVALID_RANGE);
+		if (seen [index]) error (SWT.ERROR_INVALID_ARGUMENT);
+		seen [index] = true;
+	}
+	// TODO implement changing column order
 }
 /**
  * Set the y position of 'column'.
