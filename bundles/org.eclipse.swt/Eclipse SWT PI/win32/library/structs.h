@@ -30,8 +30,11 @@
 #include <objbase.h>
 #include <shlwapi.h>
 #include <shellapi.h>
+
+#ifndef _WIN32_WCE
 #include <initguid.h>
 #include <oleacc.h>
+#endif // _WIN32_WCE
 
 #ifdef WIN32_PLATFORM_PSPC
 #include <aygshell.h>
