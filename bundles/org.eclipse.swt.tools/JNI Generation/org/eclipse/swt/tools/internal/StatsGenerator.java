@@ -59,11 +59,15 @@ void generateNATIVEMacros(Class clazz) {
 	String className = getClassName(clazz);
 	output("#ifdef NATIVE_STATS");
 	outputDelimiter();
-	output("int ");
+	output("extern int ");
+	output(className);
+	output("_nativeFunctionCount;");
+	outputDelimiter();
+	output("extern int ");
 	output(className);
 	output("_nativeFunctionCallCount[];");
 	outputDelimiter();
-	output("char* ");
+	output("extern char* ");
 	output(className);
 	output("_nativeFunctionNames[];");
 	outputDelimiter();
@@ -109,7 +113,15 @@ public void generateSourceFile(Class[] classes) {
 		Class clazz = classes[i];
 		ClassData classData = getMetaData().getMetaData(clazz);
 		if (classData.getFlag("no_gen")) continue;
-		isCPP |= classData.getFlag("cpp");
+		if (classData.getFlag("cpp")) {
+			isCPP = true;
+			break;
+		}
+	}
+	for (int i = 0; i < classes.length; i++) {
+		Class clazz = classes[i];
+		ClassData classData = getMetaData().getMetaData(clazz);
+		if (classData.getFlag("no_gen")) continue;
 		generateSourceFile(clazz);
 	}
 	outputDelimiter();
@@ -144,6 +156,66 @@ public void generateSourceFile(Class clazz) {
 	outputDelimiter();
 	generate(methods);
 	output("};");
+	outputDelimiter();
+	outputDelimiter();
+	generateStatsNatives(className);
+}
+
+void generateStatsNatives(String className) {
+	output("#define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func");
+	outputDelimiter();
+	outputDelimiter();
+
+	output("JNIEXPORT jint JNICALL STATS_NATIVE(");
+	output(toC(className + "_GetFunctionCount"));
+	output(")");
+	outputDelimiter();
+	output("\t(JNIEnv *env, jclass that)");
+	outputDelimiter();
+	output("{");
+	outputDelimiter();
+	output("\treturn ");
+	output(className);
+	output("_nativeFunctionCount;");
+	outputDelimiter();
+	output("}");
+	outputDelimiter();
+	outputDelimiter();
+
+	output("JNIEXPORT jstring JNICALL STATS_NATIVE(");
+	output(toC(className + "_GetFunctionName"));
+	output(")");
+	outputDelimiter();
+	output("\t(JNIEnv *env, jclass that, jint index)");
+	outputDelimiter();
+	output("{");
+	outputDelimiter();
+	output("\treturn ");
+	if (isCPP) {
+		output("env->NewStringUTF(");
+	} else {
+		output("(*env)->NewStringUTF(env, ");
+	}
+	output(className);
+	output("_nativeFunctionNames[index]);");
+	outputDelimiter();
+	output("}");
+	outputDelimiter();
+	outputDelimiter();
+
+	output("JNIEXPORT jint JNICALL STATS_NATIVE(");
+	output(toC(className + "_GetFunctionCallCount"));
+	output(")");
+	outputDelimiter();
+	output("\t(JNIEnv *env, jclass that, jint index)");
+	outputDelimiter();
+	output("{");
+	outputDelimiter();
+	output("\treturn ");
+	output(className);
+	output("_nativeFunctionCallCount[index];");
+	outputDelimiter();
+	output("}");
 	outputDelimiter();
 }
 
