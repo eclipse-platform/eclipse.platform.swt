@@ -272,7 +272,6 @@ void resize () {
 //	OS.CreateCaret (hwnd, 0, width, height);
 //	OS.SetCaretPos (x, y);
 //	OS.ShowCaret (hwnd);
-//	self move.
 //	showCaret();
 	resized = false;
 }

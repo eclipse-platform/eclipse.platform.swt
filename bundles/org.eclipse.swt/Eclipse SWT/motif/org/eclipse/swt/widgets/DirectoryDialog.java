@@ -288,10 +288,6 @@ public String open () {
 	if (destroyContext) appContext.dispose ();
 	callback.dispose ();
 	
-//	(shell == nil or: [shell isDestroyed not]) ifTrue: [dialog xtDestroyWidget].
-//	OSWidget updateDisplay.
-//	entryPoint unbind.
-
 	if (cancel) return null;
 	return directoryPath;
 }

@@ -1132,11 +1132,6 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	* back.  The fix is to detect this case and scroll the
 	* text back.
 	*/
-//	inset := self inset.
-//	nWidth := self dimensionAt: XmNwidth.
-//	self noWarnings: [super resizeWidget].
-//	nWidth > inset x ifTrue: [^self].
-//	self showPosition: self topCharacter
 	return changed;
 }
 /**

@@ -1194,13 +1194,6 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	* out properly by growing and then shrinking the scrolled
 	* window.
 	*/
-//	fixHScroll := hScroll ~~ nil and: [
-//		hScroll isVisible not and: [
-//			height ~~ (self dimensionAt: XmNheight)]].
-//	fixVScroll := vScroll ~~ nil and: [
-//		vScroll isVisible not and: [
-//			width ~~ (self dimensionAt: XmNwidth)]].
-//	(fixHScroll or: [fixVScroll]) ifFalse: [^self].
 	
 	/* Grow and shrink the scrolled window by one pixel */
 	if (changed && scrolledHandle != 0) {

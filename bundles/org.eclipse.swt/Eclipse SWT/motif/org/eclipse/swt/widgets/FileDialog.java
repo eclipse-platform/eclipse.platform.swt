@@ -322,28 +322,6 @@ public String open () {
 	OS.XmStringFree (xmStringPtr1);
 	OS.XmStringFree (xmStringPtr2);
 	OS.XmStringFree (xmStringPtr3);
-/*
-	string := OSWidget xmStringAt: XmNdirectory handle: dialog.
-	OSWidget xmStringAt: XmNdirSpec put: string, fileName handle: dialog.
-
-	"Select the matching file in the list and scroll to show it."
-	child := dialog xmFileSelectionBoxGetChild: XmDIALOGLIST.
-	child isNull ifFalse: [
-		string := OSWidget xmStringAt: XmNdirSpec handle: dialog.
-		string := PlatformConverter wcsToMbcs: 0 buffer: string.
-		xmString := OSXmString xmStringCreateLocalized: string asPSZ.
-		child
-			xmListSelectItem: xmString notify: false;
-			xmListSetItem: xmString.
-		xmString xmStringFree.
-
-		"Bug in Solaris.  For some reason, the horizontal scroll bar in the dialog
-		list refuses to be displayed.  This stops the dialog list from scrolling
-		horizontally and displaying the file names.  This does not happen on other
-		Motif platforms.  The fix is to force the horizontal scroll bar to be displayed
-		by explicitly setting the scroll bar display policy."
-		OSWidget resourceAt: XmNscrollBarDisplayPolicy put: XmSTATIC handle: child].
-*/
 
 	/* Hook the callbacks. */
 	Callback cancelCallback = new Callback (this, "cancelPressed", 3);
@@ -353,10 +331,6 @@ public String open () {
 	int okAddress = okCallback.getAddress ();
 	OS.XtAddCallback (dialog, OS.XmNokCallback, okAddress, 0);
 
-/*
-	shell == nil ifFalse: [
-		shell minimized ifTrue: [shell minimized: false]].
-*/
 	OS.XtManageChild (dialog);
 	
 //BOGUS - should be a pure OS message loop (no SWT AppContext)
@@ -368,10 +342,6 @@ public String open () {
 	if (destroyContext) appContext.dispose ();
 	okCallback.dispose ();
 	cancelCallback.dispose ();
-	
-//	(shell == nil or: [shell isDestroyed not]) ifTrue: [dialog xtDestroyWidget].
-//	OSWidget updateDisplay.
-//	entryPoint unbind.
 
 	if (cancel) return null;
 	return fullPath;

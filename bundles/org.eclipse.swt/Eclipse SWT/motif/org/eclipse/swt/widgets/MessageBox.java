@@ -202,10 +202,6 @@ public int open () {
 	OS.XtAddCallback (dialog, OS.XmNhelpCallback, address, OS.XmDIALOG_HELP_BUTTON);
 
 	/* Open the dialog and dispatch events. */
-/*
-	shell == nil ifFalse: [
-		shell minimized ifTrue: [shell minimized: false]].
-*/
 	OS.XtManageChild (dialog);
 	
 //BOGUS - should be a pure OS message loop (no SWT AppContext)
@@ -216,10 +212,6 @@ public int open () {
 	if (OS.XtIsRealized (dialog)) OS.XtDestroyWidget (dialog);
 	if (destroyContext) appContext.dispose ();
 	callback.dispose ();
-	
-//	(shell == nil or: [shell isDestroyed not]) ifTrue: [dialog xtDestroyWidget].
-//	OSWidget updateDisplay.
-//	entryPoint unbind.
 
 	if ((style & (SWT.YES | SWT.NO | SWT.CANCEL)) == (SWT.YES | SWT.NO | SWT.CANCEL)) {
 		if (button == OS.XmDIALOG_OK_BUTTON) return SWT.YES;

@@ -2110,20 +2110,6 @@ void setForegroundPixel (int pixel) {
 	redrawHandle(0, 0, 0, 0, handle, false);
 }
 void setGrabCursor (int cursor) {
-	/*	| window attributes eventMask grabMask |
-	handle xtIsWidget ifFalse: [^self].
-	(window := handle xtWindow) isNull ifTrue: [^self].
-	attributes := OSXWindowAttributesPtr new.
-	XDisplay
-		xGetWindowAttributes: window
-		windowAttributesReturn: attributes.
-	grabMask := ((((((((((ButtonPressMask bitOr: ButtonReleaseMask) bitOr:
- 		EnterWindowMask) bitOr: LeaveWindowMask) bitOr: PointerMotionMask) bitOr:
-		PointerMotionHintMask) bitOr: Button1MotionMask) bitOr: Button2MotionMask) bitOr:
-		Button3MotionMask) bitOr: Button4MotionMask) bitOr: Button5MotionMask) bitOr: ButtonMotionMask.
-	eventMask := attributes yourEventMask bitAnd: grabMask.
-	XDisplay xChangeActivePointerGrab: eventMask cursor: aCursor time: CurrentTime.
-	*/
 	System.out.println("Control.setGrabCursor: nyi");
 }
 /**
