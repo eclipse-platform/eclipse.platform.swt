@@ -12,6 +12,15 @@
 Eclipse Platform Build Notes<br>
 SWT</h1>
 
+<h2> SWT Build 3.1 008 - Tuesday October 5th, 2004 </h2>
+<h3><a NAME="New APIs"></a>New APIs</h3>
+<blockquote>
+GridData.minimumWidth - minimum width for dynamically sized controls
+<br>GridData.minimumHeight - minimum height for dynamically sized controls
+<br>Combo.addVerifyListener - add verify listener
+<br>Combo.removeVerifyListener - remove verify listener
+</blockquote>
+
 <h2> SWT Build 3.1 007 - Tuesday September 28th, 2004 </h2>
 <h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
@@ -64,6 +73,11 @@ SWT</h1>
 </blockquote>
 
 <h2> SWT Build 3.1 005 - Tuesday September 14th, 2004 </h2>
+<h3><a NAME="New APIs"></a>New APIs</h3>
+<blockquote>
+CTabFolder.setMRUVisible(boolean) - Show only the most recently selected tabs if there is not enough room to show all tabs
+</blockquote>
+
 <h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 9211:  GP - VM crash in KDE.KMimeType_allMimeTypes  
@@ -86,7 +100,6 @@ SWT</h1>
 <br>73432:  Textlayout does not render multiline text correctly  
 <br>73698:  Control.isVisible() returns incorrect value for child Shell  
 <br>73735:  Carbon vertical Scale widget has top/bottom reversed from...  
-
 </blockquote>
 
 <h2> SWT Build 3.1 004 - Tuesday August 31, 2004 </h2>
@@ -130,6 +143,13 @@ SWT</h1>
 </blockquote>
 
 <h2> SWT Build 3.1 002 - Tuesday August 17, 2004 </h2>
+<h3><a NAME="New APIs"></a>New APIs</h3>
+<blockquote>
+Shell.getMinimumSize - Returns a point describing the minimum receiver's size
+<br>Shell.setMinimumSize(int, int) - Sets the receiver's minimum size
+<br>Shell.setMinimumSize(Point) - Sets the receiver's minimum size
+</blockquote>
+
 <h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4479:  getFocusControl inside FocusOut event inconsistent (1FMITIE)  
@@ -171,6 +191,12 @@ SWT</h1>
 </blockquote>
 
 <h2> SWT Build 3.1 001 - Tuesday July 26, 2004 </h2>
+<h3><a NAME="New APIs"></a>New APIs</h3>
+<blockquote>
+CBanner.getRightMinimumSize - Returns the minimum size of the control that appears on the right of the banner
+<br>CBanner.setRightMinimumSize - Sets the minimum size of the control that appears on the right of the banner
+</blockquote>
+
 <h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
 4770: Accessibility Problems (1GHQMR9)  
