@@ -4,14 +4,14 @@
 # All Rights Reserved.
 
 maj_ver=2
-min_ver=006
+min_ver=8
 revision=0
 
 #assumes IVE_HOME is set in the environment
 
 DLLPREFIX=swt
 OS_PREFIX=qnx
-DLLNAME=lib$(DLLPREFIX)-$(OS_PREFIX)-$(maj_ver)$(min_ver).so
+DLLNAME=lib$(DLLPREFIX)-$(OS_PREFIX)-$(maj_ver)00$(min_ver).so
 #DLLNAME=lib$(DLLPREFIX)$(maj_ver)$(min_ver)r$(revision).so
 
 DEBUG =  
