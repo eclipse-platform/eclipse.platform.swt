@@ -749,6 +749,7 @@ public String getText () {
  */
 public String getText (int start, int end) {
 	checkWidget ();
+	if (!(0 <= start && start <= end)) error (SWT.ERROR_INVALID_RANGE);
 	int address;
 	if ((style & SWT.SINGLE) != 0) {
 		address = OS.gtk_editable_get_chars (handle, start, end + 1);
@@ -764,6 +765,7 @@ public String getText (int start, int end) {
 	byte [] buffer = new byte [length];
 	OS.memmove (buffer, address, length);
 	OS.g_free (address);
+	if (length <= end) error (SWT.ERROR_INVALID_RANGE); 
 	return new String (Converter.mbcsToWcs (null, buffer));
 }
 
