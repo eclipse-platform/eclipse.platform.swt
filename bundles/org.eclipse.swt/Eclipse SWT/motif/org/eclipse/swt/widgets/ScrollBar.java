@@ -665,6 +665,6 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
  */
 public void setVisible (boolean visible) {
 	checkWidget();
-	parent.setScrollbarVisible (this.handle, visible);
+	parent.setScrollbarVisible (handle, visible);
 }
 }
