@@ -2910,8 +2910,13 @@ void update (boolean all) {
 
 boolean updateFont (Font oldFont, Font newFont) {
 	boolean sameFont = getFont ().equals (oldFont);
-	if (!sameFont) setFont (newFont);
-	return !sameFont;
+	/* 
+	* If the font that the control is using is the
+	* same one that was being used from the Control
+	* Panel, then use the new Control Panel font.
+	*/
+	if (sameFont) setFont (newFont);
+	return sameFont;
 }
 
 void updateLayout (boolean resize, boolean all) {
