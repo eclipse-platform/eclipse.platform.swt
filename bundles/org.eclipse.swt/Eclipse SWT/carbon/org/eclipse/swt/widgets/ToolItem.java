@@ -340,7 +340,7 @@ int kEventMenuOpening (int nextHandler, int theEvent, int userData) {
 	return OS.userCanceledErr;
 }
 
-public void redraw () {
+void redraw () {
 	checkWidget();
 	if (!OS.IsControlVisible (handle)) return;
 	Rect rect = new Rect ();
