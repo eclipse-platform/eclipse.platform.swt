@@ -18,7 +18,7 @@ public class TreeColumn extends Item {
 	Tree parent;
 	int width;
 	boolean resizable = true;
-	
+
 public TreeColumn (Tree parent, int style) {
 	this (parent, style, checkNull (parent).columns.length);
 }
@@ -75,10 +75,17 @@ public int getAlignment () {
 	if ((style & SWT.RIGHT) != 0) return SWT.RIGHT;
 	return SWT.LEFT;
 }
+/*
+ * Returns the width of the header's content (image + text + margin widths)
+ */
 int getContentWidth (GC gc) {
-	int contentWidth = gc.textExtent (text, SWT.DRAW_MNEMONIC).x;
+	int contentWidth = 0;
+	if (text.length () > 0) {
+		contentWidth += gc.textExtent (text, SWT.DRAW_MNEMONIC).x;
+	}
 	if (image != null) {
-		contentWidth += image.getBounds ().width + Tree.MARGIN_IMAGE;
+		contentWidth += image.getBounds ().width;
+		if (text.length () > 0) contentWidth += Tree.MARGIN_IMAGE;
 	}
 	return contentWidth;
 }
@@ -147,7 +154,8 @@ void paint (GC gc) {
 			imageBounds.width, imageBounds.height,
 			startX, (headerHeight - drawHeight) / 2,
 			imageBounds.width, drawHeight); 
-		startX += imageBounds.width + Tree.MARGIN_IMAGE; 
+		startX += imageBounds.width;
+		if (text.length () > 0) startX += Tree.MARGIN_IMAGE; 
 	}
 	if (text.length () > 0) {
 		int fontHeight = parent.fontHeight;
@@ -219,7 +227,7 @@ public void setResizable (boolean value) {
 public void setText (String value) {
 	checkWidget ();
 	if (value == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (value.equals (text)) return;						/* same value */
+	if (value.equals (text)) return;					/* same value */
 	super.setText (value);
 	parent.header.redraw (getX (), 0, width, parent.getHeaderHeight (), false);
 }
