@@ -39,6 +39,29 @@ public class NativeStats {
 	
 	final static String[] classes = new String[]{"OS", "ATK", "CDE", "GNOME", "GTK", "KDE", "XPCOM", "COM"};
 
+	
+	public static class NativeFunction {
+		String name;
+		int callCount;
+		
+	public NativeFunction(String name, int callCount) {
+		this.name = name;
+		this.callCount = callCount;
+	}
+
+	void subtract(NativeFunction func) {
+		this.callCount -= func.callCount;
+	}
+
+	public int getCallCount() {
+		return callCount;
+	}
+
+	public String getName() {
+		return name;
+	}
+	}
+	
 public NativeStats() {
 	snapshot = snapshot();
 }
