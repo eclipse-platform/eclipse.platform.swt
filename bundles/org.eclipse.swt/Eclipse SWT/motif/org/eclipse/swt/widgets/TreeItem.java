@@ -9,13 +9,21 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import java.util.*;
  
+/**
+ * Instances of this class represent a selectable user interface object
+ * that represents a heirarchy of tree items in a tree widget.
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>(none)</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>(none)</dd>
+ * </dl>
+ * <p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
+ */
+public /*final*/ class TreeItem extends AbstractTreeItem {
 /** 
- * This class represents leaf, non-leaf and root tree items.
- * leaf items don't have any children. non-leaf items have one 
- * or more children.
- * Root items don't have a parent item. Root items are either
- * leaf or non-leaf items.
- *
  * This class caches geometrical data for drawing.. 
  * A description of the cached data follows:
  *
@@ -50,9 +58,7 @@ import java.util.*;
  * d = SELECTION_PADDING
  * e = ITEM_NOIMAGE_OFFSET
  * f = ITEM_CONNECTOR_PADDING;
- 
  */
-public /*final*/ class TreeItem extends AbstractTreeItem {
 	private static final int DEFAULT_ITEM_CONNECTOR_WIDTH = 8;	// Default width of the horizontal line connecting 
 															// items with the vertical lines. Only used when
 															// no image is set in the tree. Normally connector 
@@ -420,16 +426,15 @@ Point drawVerticalItemConnector(GC gc, Point position) {
 }
 
 /**
- * Gets the widget bounds.
- * The widget bounds is the rectangle around the item text. It is 
- * the same as the selection rectangle.
- * <p>
- * @return a rectangle that is the widget bounds.
+ * Returns a rectangle describing the receiver's size and location
+ * relative to its parent.
  *
- * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- *	</ul>
+ * @return the receiver's bounding rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public Rectangle getBounds() {
 	if (!isValidThread()) error(SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -521,7 +526,15 @@ int getItemConnectorWidth() {
 	return itemConnectorWidth;
 }
 /**
- * Return the number of children.
+ * Returns the number of items contained in the receiver
+ * that are direct item children of the receiver.
+ *
+ * @return the number of items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public int getItemCount() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -565,8 +578,21 @@ int getItemStartX() {
 	}
 	return itemStartX;
 }
-/** 
- * Answer the child items of the receiver as an Array.
+/**
+ * Returns an array of <code>TreeItem</code>s which are the
+ * direct item children of the receiver.
+ * <p>
+ * Note: This is not the actual structure used by the receiver
+ * to maintain its list of items, so modifying the array will
+ * not effect the receiver. 
+ * </p>
+ *
+ * @return the receiver's items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public TreeItem [] getItems() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -614,7 +640,14 @@ int getPaintStopX() {
 	return (getItemStartX() + getItemExtent().x - getParent().getHorizontalOffset());
 }
 /**
- * Answer the parent widget of the receiver.
+ * Returns the receiver's parent, which must be a <code>Tree</code>.
+ *
+ * @return the receiver's parent
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public Tree getParent() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -623,8 +656,16 @@ public Tree getParent() {
 	return (Tree) super.getSelectableParent();
 }
 /**
- * Answer the parent item of the receiver or null if the
- * receiver is a root.
+ * Returns the receiver's parent item, which must be a
+ * <code>TreeItem</code> or null when the receiver is a
+ * root.
+ *
+ * @return the receiver's parent item
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public TreeItem getParentItem() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -947,14 +988,16 @@ void reset() {
 	setPaintStartX(-1);
 	setTextYPosition(-1);	
 }
-/** 
- * Set whether the receiver is expanded or not. 
- * If the receiver is expanded its child items are visible.
- * @param expand - 
- *	true=the receiver will be expanded, making its child items 
- *		visible.
- * 	false=the receiver will be collapsed, making its child items 
- *		invisible 
+/**
+ * Sets the expanded state of the receiver.
+ * <p>
+ *
+ * @param expanded the new expanded state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public void setExpanded(boolean expand) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -967,10 +1010,6 @@ public void setExpanded(boolean expand) {
 		getParent().collapse(this, false);
 	}
 }
-/**
- * Set the image of the receiver to 'newImage'.
- * Reset cached data and notify the parent if the image has changed.
- */
 public void setImage(Image newImage) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -1036,9 +1075,6 @@ void setParentItem(TreeItem parentItem) {
 	this.parentItem = parentItem;
 }
 /**
- * Set the label text of the receiver to 'string'.
- * Reset cached data and notify the parent if the text has 
- * changed.
  * This label will be displayed to the right of the bitmap, 
  * or, if the receiver doesn't have a bitmap to the right of 
  * the horizontal hierarchy connector line.
@@ -1084,9 +1120,17 @@ void disposeItem() {
 	super.disposeItem();
 }
 /**
- * Return whether or not the receiver is checked.
- * Always return false if the parent of the receiver does not
- * have the CHECK style.
+ * Returns <code>true</code> if the receiver is checked,
+ * and false otherwise.  When the parent does not have
+ * the <code>CHECK style, return false.
+ * <p>
+ *
+ * @return the checked state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public boolean getChecked() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -1094,21 +1138,21 @@ public boolean getChecked() {
 	
 	return super.getChecked();
 }
-/**
- * Answer the display of the receiver's parent widget.
- */
 public Display getDisplay() {
 	return super.getDisplay();
 }
 /**
- * Gets the grayed state.
+ * Returns <code>true</code> if the receiver is grayed,
+ * and false otherwise. When the parent does not have
+ * the <code>CHECK style, return false.
  * <p>
- * @return the item grayed state.
  *
- * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- *	</ul>
+ * @return the grayed state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public boolean getGrayed() {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -1117,8 +1161,15 @@ public boolean getGrayed() {
 	return super.getGrayed();
 }
 /**
- * Set the checked state to 'checked' if the parent of the 
- * receiver has the CHECK style.
+ * Sets the checked state of the receiver.
+ * <p>
+ *
+ * @param checked the new checked state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public void setChecked(boolean checked) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -1127,14 +1178,15 @@ public void setChecked(boolean checked) {
 	super.setChecked(checked);
 }
 /**
- * Sets the grayed state.
+ * Sets the grayed state of the receiver.
  * <p>
- * @param grayed the new grayed state.
  *
- * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- *	</ul>
+ * @param checked the new grayed state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public void setGrayed (boolean grayed) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);

@@ -155,7 +155,6 @@ public void setImage (Image image) {
 	tcItem.iImage = parent.imageIndex (image);
 	OS.SendMessage (hwnd, OS.TCM_SETITEM, index, tcItem);
 }
-
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);

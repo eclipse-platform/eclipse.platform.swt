@@ -298,7 +298,7 @@ protected void checkSubclass () {
  * </p><p>
  * In future releases of SWT, there may be more or fewer error
  * checks and exceptions may be thrown for different reasons.
- * <p>
+ * </p>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -320,7 +320,7 @@ protected void checkWidget () {
  * descendents are also destroyed by the operating system.
  * This means that it is only necessary to call <code>destroyWidget</code>
  * on the root of the widget tree.
- * </p>
+ * </p><p>
  * This method is called after <code>releaseWidget</code>.
  * </p>
  * @see #dispose
@@ -446,6 +446,7 @@ public Object getData (String key) {
  * A widget's display is either provided when it is created
  * (for example, top level <code>Shell</code>s) or is the
  * same as its parent's display.
+ * </p>
  *
  * @return the receiver's display
  *
@@ -533,6 +534,7 @@ boolean hooks (int eventType) {
  * This method gets the dispose state for the widget.
  * When a widget has been disposed, it is an error to
  * invoke any other method using the widget.
+ * </p>
  *
  * @return <code>true</code> when the widget is disposed and <code>false</code> otherwise
  */
@@ -584,6 +586,7 @@ boolean isValidThread () {
  * and <code>false</code> otherwise.
  * <p>
  * Note: This method is no longer required and will be deprecated.
+ * </p>
  *
  * @return <code>true</code> when the widget is not disposed and <code>false</code> otherwise
  *

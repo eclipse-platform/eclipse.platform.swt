@@ -5,7 +5,6 @@ package org.eclipse.swt.widgets;
  * (c) Copyright IBM Corp. 1998, 2000  All Rights Reserved
  */
  
-/* Imports */
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;
@@ -13,17 +12,17 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
 /**
-*	A tool item is a selectable user interface object
-* that represents a button in a tool bar.
-*
-* <p>
-* <b>Styles</b><br>
-* <dd>CHECK, PUSH,	RADIO,	SEPARATOR<br>
-* <b>Events</b><br>
-* <dd>Selection<br>
-*/
-
-/* Class Definition */
+ * Instances of this class represent a selectable user interface object
+ * that represents a button in a tool bar.
+ * dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>PUSH, CHECK, RADIO, SEPARATOR, DROP_DOWN</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>Selection</dd>
+ * </dl>
+ * <p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ */
 public /*final*/ class ToolItem extends Item {
 	ToolBar parent;
 	Image hotImage, disabledImage;
@@ -47,19 +46,25 @@ public ToolItem (ToolBar parent, int style, int index) {
 	this.parent = parent;
 	parent.createItem (this, index);
 }
-/**	 
-* Adds the listener to receive events.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the control is selected, by sending
+ * it one of the messages defined in the <code>SelectionListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SelectionListener
+ * @see #removeSelectionListener
+ */
 public void addSelectionListener(SelectionListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -170,6 +175,17 @@ public void dispose () {
 	super.dispose ();
 	parent.relayout ();
 }
+/**
+ * Returns a rectangle describing the receiver's size and location
+ * relative to its parent.
+ *
+ * @return the receiver's bounding rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Rectangle getBounds () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -178,15 +194,16 @@ public Rectangle getBounds () {
 	return new Rectangle ((short) argList [1], (short) argList [3], argList [5], argList [7]);
 }
 /**
-* Gets the control.
-* <p>
-* @return the control
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns the control that is used to fill the bounds of
+ * the item when the items is a <code>SEPARATOR</code>.
+ * <p>
+ * @return the control
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Control getControl () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -208,19 +225,18 @@ public Image getDisabledmage () {
 	return disabledImage;
 }
 /**
-* Gets the enabled state.
-* <p>
-* A disabled widget is typically not selectable from
-* the user interface and draws with an inactive or
-* grayed look.
-*
-* @return a boolean that is the enabled state of the widget.
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns <code>true</code> if the receiver is enabled, and
+ * <code>false</code> otherwise. A disabled control is typically
+ * not selectable from the user interface and draws with an
+ * inactive or "grayed" look.
+ *
+ * @return the receiver's enabled state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean getEnabled () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -228,54 +244,58 @@ public boolean getEnabled () {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1] != 0;
 }
-/**
-* Gets the Display.
-*/
 public Display getDisplay () {
 	Composite parent = this.parent;
 	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getDisplay ();
 }
 /**
-* Gets the hot image.
-* <p>
-* @return the image
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns the receiver's hot image if it has one, or null
+ * if it does not. The hot image is displayed when the mouse
+ * enters the receiver.
+ *
+ * @return the receiver's hot image
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Image getHotImage () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return hotImage;
 }
 /**
-* Gets the parent.
-* <p>
-* @return the parent
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns the receiver's parent, which must be a <code>ToolBar</code>.
+ *
+ * @return the receiver's parent
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public ToolBar getParent () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent;
 }
 /**
-* Gets the selection state.
-* <p>
-* @return the selection state
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns <code>true</code> if the receiver is selected,
+ * and false otherwise.
+ * <p>
+ * When the receiver is of type <code>CHECK</code> or <code>RADIO</code>,
+ * it is selected when it is checked. When it is of type <code>TOGGLE</code>,
+ * it is selected when it is pushed.
+ *
+ * @return the selection state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean getSelection () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -283,20 +303,31 @@ public boolean getSelection () {
 	return set;
 }
 /**
-* Gets the hover help text.
-* <p>
-* @return the hover help text
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns the receiver's tool tip text, or null if it has
+ * not been set.
+ *
+ * @return the receiver's tool tip text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public String getToolTipText () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return toolTipText;
 }
+/**
+ * Gets the width of the receiver.
+ * <p>
+ * @return the width
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getWidth () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -316,19 +347,18 @@ void hookEvents () {
 	OS.XtAddEventHandler (handle, OS.LeaveWindowMask, false, windowProc, SWT.MouseExit);
 }
 /**
-* Gets the enabled status.
-* <p>
-* When an ancestor of the widget is disabled, the enabled
-* stats of the widget in the widget hierarchy is disabled
-* regardless of the actual enabled state of the widget.
-*
-* @param enabled a boolean that is the enabled state.
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns <code>true</code> if the receiver is enabled, and
+ * <code>false</code> otherwise. A disabled control is typically
+ * not selectable from the user interface and draws with an
+ * inactive or "grayed" look.
+ *
+ * @return the receiver's enabled state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean isEnabled () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -350,19 +380,23 @@ void releaseWidget () {
 	toolTipText = null;
 	disabledImage = hotImage = null; 
 }
-/**	 
-* Removes the listener.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when listener is null
-*/
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the control is selected.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SelectionListener
+ * @see #addSelectionListener
+ */
 public void removeSelectionListener(SelectionListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -397,15 +431,16 @@ void setBounds (int x, int y, int width, int height) {
 	OS.XtConfigureWidget (handle, x, y, newWidth, newHeight, 0);
 }
 /**
-* Sets the control.
-* <p>
-* @param control the new control
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Sets the control that is used to fill the bounds of
+ * the item when the items is a <code>SEPARATOR</code>.
+ * <p>
+ * @param control the new control
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setControl (Control control) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -419,19 +454,18 @@ public void setControl (Control control) {
 	}
 }
 /**
-* Sets the enabled state.
-* <p>
-* A disabled widget is typically not selectable from
-* the user interface and draws with an inactive or
-* grayed look.
-*
-* @param enabled the new value of the enabled flag
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Enables the receiver if the argument is <code>true</code>,
+ * and disables it otherwise. A disabled control is typically
+ * not selectable from the user interface and draws with an
+ * inactive or "grayed" look.
+ *
+ * @param enabled the new enabled state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setEnabled (boolean enabled) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -439,15 +473,17 @@ public void setEnabled (boolean enabled) {
 	OS.XtSetValues (handle, argList, argList.length / 2);
 }
 /**
-* Sets the hot image.
-* <p>
-* @param image the new image (or null)
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Sets the receiver's disabled image to the argument, which may be
+ * null indicating that no disabled image should be displayed.  The
+ * disbled image is displayed when the receiver is disabled.
+ *
+ * @param image the hot image to display on the receiver (may be null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setDisabledImage (Image image) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -455,31 +491,23 @@ public void setDisabledImage (Image image) {
 	disabledImage = image;
 }
 /**
-* Sets the hot image.
-* <p>
-* @param image the new image (or null)
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Sets the receiver's hot image to the argument, which may be
+ * null indicating that no hot image should be displayed.  The
+ * hot image is displayed when the mouse enters the receiver.
+ *
+ * @param image the hot image to display on the receiver (may be null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setHotImage (Image image) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	hotImage = image;
 }
-/**
-* Sets the widget image.
-* <p>
-* @param image the widget image (or null)
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
 public void setImage (Image image) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -496,15 +524,19 @@ public void setImage (Image image) {
 }
 
 /**
-* Sets the selection state.
-* <p>
-* @param selected the new selection state
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Sets the selection state of the receiver.
+ * <p>
+ * When the receiver is of type <code>CHECK</code> or <code>RADIO</code>,
+ * it is selected when it is checked. When it is of type <code>TOGGLE</code>,
+ * it is selected when it is pushed.
+ *
+ * @param selected the new selection state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setSelection (boolean selected) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -519,9 +551,6 @@ public void setSelection (boolean selected) {
 		OS.XtSetValues (handle, argList, argList.length / 2);
 	}
 }
-/**
-* Sets the widget text.
-*/
 public void setText (String string) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -540,20 +569,31 @@ public void setText (String string) {
 }
 
 /**
-* Sets the hover help text.
-* <p>
-* @param string the hover help text (or null)
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Sets the receiver's tool tip text to the argument, which
+ * may be null indicating that no tool tip text should be shown.
+ *
+ * @param string the new tool tip text (or null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setToolTipText (String string) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	toolTipText = string;
 }
+/**
+ * Sets the width of the receiver.
+ * <p>
+ * @param width the new width
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setWidth (int width) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);

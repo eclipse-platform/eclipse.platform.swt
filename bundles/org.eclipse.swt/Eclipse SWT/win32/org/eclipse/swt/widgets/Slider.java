@@ -241,7 +241,7 @@ public int getSelection () {
 }
 
 /**
- * Answers the size of the receiver's thumb relative to the
+ * Returns the size of the receiver's thumb relative to the
  * difference between its maximum and minimum values.
  *
  * @return the thumb value

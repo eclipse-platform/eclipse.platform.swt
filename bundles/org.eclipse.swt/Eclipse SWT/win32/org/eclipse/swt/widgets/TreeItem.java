@@ -12,7 +12,8 @@ import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of this class represent a selectable user interface object
- * that represents a heirarchy of tree items in a tree widget.
+ * that represents a hierarchy of tree items in a tree widget.
+ * 
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>(none)</dd>
@@ -419,6 +420,11 @@ public void setImage (Image image) {
 	int result = OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
 }
 
+/**
+ * This label will be displayed to the right of the bitmap, 
+ * or, if the receiver doesn't have a bitmap to the right of 
+ * the horizontal hierarchy connector line.
+ */
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);

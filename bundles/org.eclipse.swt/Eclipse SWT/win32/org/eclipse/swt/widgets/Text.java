@@ -21,7 +21,7 @@ import org.eclipse.swt.events.*;
  * <dt><b>Events:</b></dt>
  * <dd>DefaultSelection, Modify, Verify</dd>
  * </dl>
- * <p>
+ * </p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  */
 
@@ -148,6 +148,7 @@ public void addVerifyListener (VerifyListener listener) {
  * <p>
  * The new text is appended to the text at
  * the end of the widget.
+ * </p>
  *
  * @param string the string to be appended
  *
@@ -185,7 +186,6 @@ static int checkStyle (int style) {
 
 /**
  * Clears the selection.
- * <p>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -268,6 +268,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
  * Copies the selected text.
  * <p>
  * The current selection is copied to the clipboard.
+ * </p>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -294,6 +295,7 @@ void createWidget () {
  * <p>
  * The current selection is first copied to the
  * clipboard and then deleted from the widget.
+ * </p>
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
@@ -316,6 +318,7 @@ int defaultBackground () {
  * Gets the line number of the caret.
  * <p>
  * The line number of the caret is returned.
+ * </p>
  *
  * @return the line number
  *
@@ -336,6 +339,7 @@ public int getCaretLineNumber () {
  * Gets the location the caret.
  * <p>
  * The location of the caret is returned.
+ * </p>
  *
  * @return a point, the location of the caret
  *
@@ -377,6 +381,7 @@ public Point getCaretLocation () {
  * Gets the position of the caret.
  * <p>
  * The character position of the caret is returned.
+ * </p>
  *
  * @return the position of the caret
  *
@@ -400,7 +405,7 @@ public int getCaretPosition () {
 
 /**
  * Gets the number of characters.
- * <p>
+ *
  * @return number of characters in the widget
  *
  * @exception SWTException <ul>
@@ -444,6 +449,7 @@ String getClipboardText () {
  * The double click flag enables or disables the
  * default action of the text widget when the user
  * double clicks.
+ * </p>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -461,6 +467,7 @@ public boolean getDoubleClickEnabled () {
  * The echo character is the character that is
  * displayed when the user enters text or the
  * text is changed by the programmer.
+ * </p>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -476,7 +483,6 @@ public char getEchoChar () {
 
 /**
  * Gets the editable state.
- * <p>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -491,7 +497,7 @@ public boolean getEditable () {
 
 /**
  * Gets the number of lines.
- * <p>
+ *
  * @return the number of lines in the widget
  *
  * @exception SWTException <ul>
@@ -506,7 +512,7 @@ public int getLineCount () {
 
 /**
  * Gets the line delimiter.
- * <p>
+ *
  * @return a string that is the line delimiter
  *
  * @exception SWTException <ul>
@@ -521,7 +527,7 @@ public String getLineDelimiter () {
 
 /**
  * Gets the height of a line.
- * <p>
+ *
  * @return the height of a row of text
  *
  * @exception SWTException <ul>
@@ -548,6 +554,7 @@ public int getLineHeight () {
  * Indexing is zero based.  The range of
  * a selection is from 0..N where N is
  * the number of characters in the widget.
+ * </p>
  * 
  * @return the start and end of the selection
  *
@@ -569,7 +576,7 @@ public Point getSelection () {
 
 /**
  * Gets the number of selected characters.
- * <p>
+ *
  * @return the number of selected characters.
  *
  * @exception SWTException <ul>
@@ -585,7 +592,6 @@ public int getSelectionCount () {
 
 /**
  * Gets the selected text.
- * <p>
  *
  * @return the selected text
  * 
@@ -611,6 +617,7 @@ public String getSelectionText () {
  * Tab stop spacing is specified in terms of the
  * space (' ') character.  The width of a single
  * tab stop is the pixel width of the spaces.
+ * </p>
  *
  * @return the number of tab characters
  *
@@ -641,6 +648,7 @@ int getTabWidth (int tabs) {
  * Gets the widget text.
  * <p>
  * The text for a text widget is the characters in the widget.
+ * </p>
  *
  * @return the widget text
  *
@@ -665,6 +673,7 @@ public String getText () {
  * Indexing is zero based.  The range of
  * a selection is from 0..N-1 where N is
  * the number of characters in the widget.
+ * </p>
  *
  * @param start the start of the range
  * @param end the end of the range
@@ -687,10 +696,11 @@ public String getText (int start, int end) {
 }
 
 /**
- * Returns the maximum number of characters that the receiver
- * is capable of holding. If this has not been changed
- * by <code>setTextLimit()</code>, it will be the constant
- * <code>Text.LIMIT</code>.
+ * Returns the maximum number of characters that the receiver is capable of holding. 
+ * <p>
+ * If this has not been changed by <code>setTextLimit()</code>,
+ * it will be the constant <code>Text.LIMIT</code>.
+ * </p>
  * 
  * @return the text limit
  * 
@@ -706,8 +716,10 @@ public int getTextLimit () {
 
 /**
  * Returns the zero-relative index of the line which is currently
- * at the top of the receiver. This index can change when lines are
- * scrolled or new lines are added or removed.
+ * at the top of the receiver.
+ * <p>
+ * This index can change when lines are scrolled or new lines are added or removed.
+ * </p>
  *
  * @return the index of the top line
  *
@@ -731,9 +743,10 @@ public int getTopIndex () {
  * some platforms, a text widget can be scrolled by
  * pixels instead of lines so that a partial line
  * is displayed at the top of the widget.
- * <p>
+ * </p><p>
  * The top pixel changes when the widget is scrolled.
  * The top pixel does not include the widget trimming.
+ * </p>
  *
  * @return the pixel position of the top line
  *
@@ -770,6 +783,7 @@ boolean getWrap () {
  * Inserts a string.
  * <p>
  * The old selection is replaced with the new text.
+ * </p>
  *
  * @param string the string
  *
@@ -833,6 +847,7 @@ int mbcsToWcsPos (int mbcsPos) {
  * <p>
  * The selected text is deleted from the widget
  * and new text inserted from the clipboard.
+ * </p>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1028,11 +1043,12 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 /**
  * Sets the double click enabled flag.
  * <p>
- * @param doubleClick the new double click flag
- *
  * The double click flag enables or disables the
  * default action of the text widget when the user
  * double clicks.
+ * </p>
+ * 
+ * @param doubleClick the new double click flag
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1047,11 +1063,12 @@ public void setDoubleClickEnabled (boolean doubleClick) {
 /**
  * Sets the echo character.
  * <p>
- * @param echo the new echo character
- *
  * The echo character is the character that is
  * displayed when the user enters text or the
  * text is changed by the programmer.
+ * </p>
+ *
+ * @param echo the new echo character
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1072,7 +1089,7 @@ public void setEchoChar (char echo) {
 
 /**
  * Sets the editable state.
- * <p>
+ *
  * @param editable the new editable state
  *
  * @exception SWTException <ul>
@@ -1096,11 +1113,10 @@ public void setFont (Font font) {
 /**
  * Sets the selection.
  * <p>
- *
  * Indexing is zero based.  The range of
  * a selection is from 0..N where N is
  * the number of characters in the widget.
- *
+ * </p><p>
  * Text selections are specified in terms of
  * caret positions.  In a text widget that
  * contains N characters, there are N+1 caret
@@ -1108,6 +1124,7 @@ public void setFont (Font font) {
  * from other functions that address character
  * position such as getText () that use the
  * regular array indexing rules.
+ * </p>
  *
  * @param start new caret position
  *
@@ -1128,11 +1145,10 @@ public void setSelection (int start) {
 /**
  * Sets the selection.
  * <p>
- *
  * Indexing is zero based.  The range of
  * a selection is from 0..N where N is
  * the number of characters in the widget.
- *
+ * </p><p>
  * Text selections are specified in terms of
  * caret positions.  In a text widget that
  * contains N characters, there are N+1 caret
@@ -1140,6 +1156,7 @@ public void setSelection (int start) {
  * from other functions that address character
  * position such as getText () that use the
  * usual array indexing rules.
+ * </p>
  *
  * @param start the start of the range
  * @param end the end of the range
@@ -1185,11 +1202,10 @@ public void setRedraw (boolean redraw) {
 /**
  * Sets the selection.
  * <p>
- *
  * Indexing is zero based.  The range of
  * a selection is from 0..N where N is
  * the number of characters in the widget.
- *
+ * </p><p>
  * Text selections are specified in terms of
  * caret positions.  In a text widget that
  * contains N characters, there are N+1 caret
@@ -1197,6 +1213,7 @@ public void setRedraw (boolean redraw) {
  * from other functions that address character
  * position such as getText () that use the
  * usual array indexing rules.
+ * </p>
  *
  * @param selection the point
  *
@@ -1220,6 +1237,7 @@ public void setSelection (Point selection) {
  * Tab stop spacing is specified in terms of the
  * space (' ') character.  The width of a single
  * tab stop is the pixel width of the spaces.
+ * </p>
  *
  * @param tabs the number of tabs
  *
@@ -1335,10 +1353,13 @@ void setWrap (boolean wrap) {
 }
 
 /**
- * Shows the selection.  If the selection is already showing
+ * Shows the selection.
+ * <p>
+ * If the selection is already showing
  * in the receiver, this method simply returns.  Otherwise,
  * lines are scrolled until the selection is visible.
- *
+ * </p>
+ * 
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>

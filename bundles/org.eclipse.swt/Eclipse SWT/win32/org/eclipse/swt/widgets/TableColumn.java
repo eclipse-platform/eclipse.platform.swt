@@ -154,7 +154,7 @@ public Table getParent () {
  * Gets the resizable attribute. A column that is
  * not resizable cannot be dragged by the user but
  * may be resized by the programmer.
- * <p>
+ *
  * @return the resizable attribute
  *
  * @exception SWTException <ul>
@@ -169,7 +169,7 @@ public boolean getResizable () {
 
 /**
  * Gets the width of the receiver.
- * <p>
+ *
  * @return the width
  *
  * @exception SWTException <ul>
@@ -304,7 +304,7 @@ public void setAlignment (int alignment) {
  * Sets the resizable attribute.  A column that is
  * not resizable cannot be dragged by the user but
  * may be resized by the programmer.
- * <p>
+ *
  * @param resizable the resize attribute
  *
  * @exception SWTException <ul>
@@ -350,7 +350,7 @@ public void setText (String string) {
 
 /**
  * Sets the width of the receiver.
- * <p>
+ *
  * @param width the new width
  *
  * @exception SWTException <ul>
