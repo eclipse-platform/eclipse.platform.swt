@@ -2479,6 +2479,7 @@ void selectItem (TreeItem item, boolean addToSelection) {
 			}
 		}
 	} else {
+		if (item.isSelected ()) return;
 		selectedItems = new TreeItem [selectedItems.length + 1];
 		System.arraycopy (oldSelectedItems, 0, selectedItems, 0, oldSelectedItems.length);
 		selectedItems [selectedItems.length - 1] = item;
