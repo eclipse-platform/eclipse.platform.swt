@@ -527,8 +527,7 @@ public void setStyle (TextStyle style, int start, int end) {
 public void setTabs(int[] tabs) {
 	checkLayout();
 	if (tabs == null) {
-		OS.pango_layout_set_tabs(layout, 0);		
-//		OS.pango_layout_set_tabs(layout, device.emptyTab);		
+		OS.pango_layout_set_tabs(layout, device.emptyTab);
 	} else {
 		int /*long*/ tabArray = OS.pango_tab_array_new(tabs.length, true);
 		if (tabArray != 0) {

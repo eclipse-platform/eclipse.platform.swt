@@ -108,11 +108,11 @@ void computeRuns (GC gc) {
 				char[] chars = new char[run.length];
 				text.getChars(run.start, run.start + run.length, chars, 0);
 				int width = 0, maxWidth = wrapWidth - lineWidth;
-				int charWidth = gc.stringExtent(Character.toString(chars[start])).x;
+				int charWidth = gc.stringExtent(String.valueOf(chars[start])).x;
 				while (width + charWidth < maxWidth) {
 					width += charWidth;
 					start++;
-					charWidth =	gc.stringExtent(Character.toString(chars[start])).x;
+					charWidth =	gc.stringExtent(String.valueOf(chars[start])).x;
 				}
 				int firstStart = start;
 				int firstIndice = i;
@@ -562,7 +562,7 @@ public int getOffset (int x, int y, int[] trailing) {
 			char[] chars = new char[run.length];
 			text.getChars(run.start, run.start + run.length, chars, 0);
 			for (offset = 0; offset < chars.length; offset++) {
-				int charWidth = gc.stringExtent(Character.toString(chars[0])).x;
+				int charWidth = gc.stringExtent(String.valueOf(chars[0])).x;
 				if (width + charWidth > x) {
 					if (trailing != null) {
 						trailing[0] = x < (width + charWidth / 2) ? SWT.LEAD : SWT.TRAIL;
