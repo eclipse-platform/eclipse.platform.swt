@@ -223,7 +223,20 @@ static int checkStyle (int style) {
  */
 public void clearSelection () {
 	checkWidget ();
-	OS.SendMessage (handle, OS.EM_SETSEL, -1, 0);
+	if (OS.IsWinCE) {
+		/*
+		* Bug in WinCE.  Calling EM_SETSEL with -1 and 0 is equivalent
+		* to calling EM_SETSEL with 0 and -1.  It causes the entire
+		* text to be selected instead of clearing the selection.  The
+		* fix is to set the start of the selection to the  end of the
+		* current selection.
+		*/ 
+		int [] end = new int [1];
+		OS.SendMessage (handle, OS.EM_GETSEL, (int []) null, end);
+		OS.SendMessage (handle, OS.EM_SETSEL, end [0], end [0]);
+	} else {
+		OS.SendMessage (handle, OS.EM_SETSEL, -1, 0);
+	}
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
