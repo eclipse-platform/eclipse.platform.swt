@@ -787,8 +787,8 @@ void setActiveControl (Control control) {
 	* deactivated by finding the first common parent
 	* control.
 	*/
-	Control [] activate = (control == null) ? new Control[0] : control.getPath ();
-	Control [] deactivate = (lastActive == null) ? new Control[0] : lastActive.getPath ();
+	Control [] activate = (control == null) ? new Control [0] : control.getPath ();
+	Control [] deactivate = (lastActive == null) ? new Control [0] : lastActive.getPath ();
 	lastActive = control;
 	int index = 0, length = Math.min (activate.length, deactivate.length);
 	while (index < length) {
@@ -914,21 +914,8 @@ void setParent () {
 void setToolTipText (int hwnd, String text) {
 	if (OS.IsWinCE) return;
 	if (toolTipHandle == 0) {
-
-		/*
-		* On Windows 98 and NT, setting a window to be the
-		* top most window using HWND_TOPMOST can result in a
-		* parent dialog shell being moved behind its parent
-		* if the dialog has a sibling that is currently on top
-		* This only occurs using SetWindowPos (), not when the
-		* handle is created.
-		*/
-		/*
-		* The following code is intentionally commented.
-		*/
-//		display.lockActiveWindow = true;
 		toolTipHandle = OS.CreateWindowEx (
-			OS.WS_EX_TOPMOST,
+			0,
 			new TCHAR (0, OS.TOOLTIPS_CLASS, true),
 			null,
 			OS.TTS_ALWAYSTIP,
@@ -937,12 +924,7 @@ void setToolTipText (int hwnd, String text) {
 			0,
 			OS.GetModuleHandle (null),
 			null);
-		/*
-		* The following code is intentionally commented.
-		*/
-//		display.lockActiveWindow = false;
-		if (toolTipHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		
+		if (toolTipHandle == 0) error (SWT.ERROR_NO_HANDLES);	
 		/*
 		* Feature in Windows.  Despite the fact that the
 		* tool tip text contains \r\n, the tooltip will
@@ -1043,6 +1025,22 @@ void updateModal () {
 
 int widgetExtStyle () {
 	int bits = super.widgetExtStyle ();
+	/*
+	* Bug in Windows 98 and NT.  Creating a window with the
+	* WS_EX_TOPMOST extendes style can result in a dialog shell
+	* being moved behind its parent.  The exact case where this
+	* happens is a shell with two dialog shell children where
+	* each dialog child has another hidden dialog child with
+	* the WS_EX_TOPMOST extended style.  Clicking on either of
+	* the visible dialog causes them to become active but move
+	* to the back, behind the parent shell.  The fix is to
+	* disallow the WS_EX_TOPMOST extended style on Windows 98
+	* and NT.
+	*/
+	if (OS.IsWin95) return bits;
+	if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) {
+		return bits;
+	}
 	if ((style & SWT.ON_TOP) != 0) bits |= OS.WS_EX_TOPMOST;
 	return bits;
 }

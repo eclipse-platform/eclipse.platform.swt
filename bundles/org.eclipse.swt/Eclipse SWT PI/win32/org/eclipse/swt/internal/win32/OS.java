@@ -393,6 +393,7 @@ public class OS {
 	public static final int HWND_BOTTOM = 0x1;
 	public static final int HWND_TOP = 0x0;
 	public static final int HWND_TOPMOST = 0xffffffff;
+	public static final int HWND_NOTOPMOST = -2;
 	public static final int ICC_COOL_CLASSES = 0x400;
 	public static final int ICM_NOTOPEN = 0x0;
 	public static final int ICON_BIG = 0x1;
@@ -937,6 +938,8 @@ public class OS {
 	public static final int TTN_GETDISPINFO = IsUnicode ? 0xfffffdee : 0xfffffdf8;
 	public static final int TTN_GETDISPINFOW = 0xfffffdee;
 	public static final int TTN_GETDISPINFOA = 0xfffffdf8;
+	public static final int TTN_POP = TTN_FIRST - 2;
+	public static final int TTN_SHOW = TTN_FIRST - 1;
 	public static final int TTS_ALWAYSTIP = 0x1;
 	public static final int TVE_COLLAPSE = 0x1;
 	public static final int TVE_EXPAND = 0x2;

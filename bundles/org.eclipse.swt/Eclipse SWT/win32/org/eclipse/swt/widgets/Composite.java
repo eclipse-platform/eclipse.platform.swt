@@ -570,6 +570,31 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 		OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
 		switch (hdr.code) {
 			/*
+			* Feature in Windows.  When the tool tip control is
+			* created, the parent of the tool tip is the shell.
+			* If SetParent () is used to reparent the tool bar
+			* into a new shell, the tool tip is not reparented
+			* and pops up underneath the new shell.  The fix is
+			* to make sure the tool tip is a topmost window.
+			*/
+			case OS.TTN_SHOW:
+			case OS.TTN_POP: {
+				/*
+				* Bug in Windows 98 and NT.  Setting the tool tip to be the
+				* top most window using HWND_TOPMOST can result in a parent
+				* dialog shell being moved behind its parent if the dialog
+				* has a sibling that is currently on top.  The fix is to lock
+				* the z-order of the active window.
+				*/
+				Display display = getDisplay ();
+				display.lockActiveWindow = true;
+				int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOSIZE;
+				int hwndInsertAfter = hdr.code == OS.TTN_SHOW ? OS.HWND_TOPMOST : OS.HWND_NOTOPMOST;
+				OS.SetWindowPos (hdr.hwndFrom, hwndInsertAfter, 0, 0, 0, 0, flags);
+				display.lockActiveWindow = false;
+				break;
+			}
+			/*
 			* Bug in Windows 98.  For some reason, the tool bar control
 			* sends both TTN_GETDISPINFOW and TTN_GETDISPINFOA to get
 			* the tool tip text and the tab folder control sends only 
@@ -578,8 +603,8 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 			*
 			* NOTE:  Because the size of NMTTDISPINFO differs between
 			* Windows 98 and NT, guard against the case where the wrong
-			* kind of message occurs by copy inlining the memory moves
-			* and UNICODE conversion code.
+			* kind of message occurs by inlining the memory moves and
+			* the UNICODE conversion code.
 			*/
 			case OS.TTN_GETDISPINFOA: {
 				NMTTDISPINFO lpnmtdi = new NMTTDISPINFO ();

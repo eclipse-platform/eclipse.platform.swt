@@ -224,7 +224,6 @@ void createItem (TabItem item, int index) {
 void createHandle () {
 	super.createHandle ();
 	state &= ~CANVAS;
-	
 	/*
 	* Feature in Windows.  Despite the fact that the
 	* tool tip text contains \r\n, the tooltip will
@@ -234,27 +233,6 @@ void createHandle () {
 	*/
 	int hwndToolTip = OS.SendMessage (handle, OS.TCM_GETTOOLTIPS, 0, 0);
 	OS.SendMessage (hwndToolTip, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
-	
-	/*
-	* Feature in Windows.  When the tool tip control is
-	* created, the parent of the tool tip is the shell.
-	* If SetParent () is used to reparent the tab folder
-	* into a new shell, the tool tip is not reparented
-	* and pops up underneath the new shell.  The fix is
-	* to make sure the tool tip is a topmost window.
-	*/
-	/*
-	* Bug in Windows 98 and NT.  Setting the tool tip to be the
-	* top most window using HWND_TOPMOST can result in a parent
-	* dialog shell being moved behind its parent if the dialog
-	* has a sibling that is currently on top.  The fix is to lock
-	* the z-order of the active window.
-	*/
-	Display display = getDisplay ();
-	int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOSIZE;
-	display.lockActiveWindow = true;
-	OS.SetWindowPos (hwndToolTip, OS.HWND_TOPMOST, 0, 0, 0, 0, flags);
-	display.lockActiveWindow = false;
 }
 
 void createWidget () {
