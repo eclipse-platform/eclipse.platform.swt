@@ -1248,7 +1248,7 @@ void getPgDisplaySettings_tFields(JNIEnv *env, jobject lpObject, PgDisplaySettin
 	jintArray reserved = (*env)->GetObjectField(env, lpObject, lpCache->reserved);
     if (reserved) {
         jint *reserved1 = (*env)->GetIntArrayElements(env, reserved, NULL);
-        memcpy(reserved1, lpStruct->reserved, sizeof (lpStruct->reserved));
+        memcpy(lpStruct->reserved, reserved1, sizeof (lpStruct->reserved));
         (*env)->ReleaseIntArrayElements(env, reserved, reserved1, JNI_ABORT);
 	}
 	lpStruct->flags = (*env)->GetIntField(env, lpObject, lpCache->flags);
