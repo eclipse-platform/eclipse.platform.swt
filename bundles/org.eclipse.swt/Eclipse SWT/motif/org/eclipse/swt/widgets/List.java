@@ -842,9 +842,9 @@ public void remove (int start, int end) {
 	if (start > end) return;
 	int count = end - start + 1;
 	/*
-	* Feature in Motif.  An index out of range handled
+	* Feature in Motif.  An index out of range is handled
 	* correctly by the list widget but causes an unwanted
-	* Xm Warning.  The fix is to check the range before
+	* Xm warning.  The fix is to check the range before
 	* deleting an item.
 	*/
 	int [] argList = {OS.XmNitemCount, 0};
