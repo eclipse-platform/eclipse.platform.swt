@@ -129,9 +129,16 @@ protected void checkSubclass () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	// NEEDS WORK
-	int count = OS.GetControl32BitMaximum (handle);
-	int width = 100 * count, height = 0;
+	int width = 0, height = 0;
+	if (wHint == SWT.DEFAULT) {
+		GC gc = new GC (this);
+		for (int i = 0; i < items.length; i++) {
+			if (items [i] != null) {
+				width += items [i].calculateWidth (gc);
+			}
+		}
+		gc.dispose ();
+	}
 	Point size;
 	if (layout != null) {
 		size = layout.computeSize (this, wHint, hHint, changed);

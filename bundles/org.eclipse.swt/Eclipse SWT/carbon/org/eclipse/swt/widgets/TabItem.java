@@ -35,6 +35,8 @@ public class TabItem extends Item {
 	Control control;
 	String toolTipText;
 	int cIcon;
+	
+	static final int EXTRA_WIDTH = 25;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -107,6 +109,15 @@ public TabItem (TabFolder parent, int style, int index) {
 	super (parent, style);
 	this.parent = parent;
 	parent.createItem (this, index);
+}
+
+int calculateWidth (GC gc) {
+	int width = 0;
+	Image image = getImage ();
+	String text = getText ();
+	if (image != null) width = image.getBounds ().width + 2;
+	if (text != null && text.length () > 0) width += gc.stringExtent (text).x;
+	return width + EXTRA_WIDTH;
 }
 
 protected void checkSubclass () {
@@ -271,7 +282,6 @@ public void setImage (Image image) {
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if ((style & SWT.ARROW) != 0) return;
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	super.setText (string);
