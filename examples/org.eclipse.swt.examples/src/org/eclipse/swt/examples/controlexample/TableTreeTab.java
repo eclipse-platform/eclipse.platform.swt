@@ -15,15 +15,23 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 class TableTreeTab extends ScrollableTab {
 	/* Example widgets and groups that contain them */
 	TableTree tree1;
-	Group treeGroup;
+	TableTreeItem node1;
+	Group treeGroup, itemGroup;
 	
 	/* Style widgets added to the "Style" group */
 	Button checkButton, fullSelectionButton;
+	
+	/* Controls and resources added to the "Colors" group */
+	Button itemForegroundButton, itemBackgroundButton, itemFontButton;
+	Color itemForegroundColor, itemBackgroundColor;
+	Image itemForegroundImage, itemBackgroundImage;
+	Font itemFont;
 	
 	/* Other widgets added to the "Other" group */
 	Button headerVisibleButton, linesVisibleButton;
@@ -35,6 +43,93 @@ class TableTreeTab extends ScrollableTab {
 		super(instance);
 	}
 	
+	/**
+	 * Creates the "Colors" group.
+	 */
+	void createColorGroup () {
+		super.createColorGroup();
+		
+		itemGroup = new Group (colorGroup, SWT.NONE);
+		itemGroup.setText (ControlExample.getResourceString ("Tree_Item_Colors"));
+		GridData data = new GridData ();
+		data.horizontalSpan = 2;
+		itemGroup.setLayoutData (data);
+		itemGroup.setLayout (new GridLayout (2, false));
+		new Label (itemGroup, SWT.NONE).setText (ControlExample.getResourceString ("Foreground_Color"));
+		itemForegroundButton = new Button (itemGroup, SWT.PUSH);
+		new Label (itemGroup, SWT.NONE).setText (ControlExample.getResourceString ("Background_Color"));
+		itemBackgroundButton = new Button (itemGroup, SWT.PUSH);
+		itemFontButton = new Button (itemGroup, SWT.PUSH);
+		itemFontButton.setText(ControlExample.getResourceString("Font"));
+		itemFontButton.setLayoutData(new GridData (GridData.HORIZONTAL_ALIGN_FILL));
+		
+		Shell shell = colorGroup.getShell ();
+		final ColorDialog foregroundDialog = new ColorDialog (shell);
+		final ColorDialog backgroundDialog = new ColorDialog (shell);
+		final FontDialog fontDialog = new FontDialog (shell);
+
+		int imageSize = 12;
+		Display display = shell.getDisplay ();
+		itemForegroundImage = new Image(display, imageSize, imageSize);
+		itemBackgroundImage = new Image(display, imageSize, imageSize);
+
+		/* Add listeners to set the colors and font */
+		itemForegroundButton.setImage(itemForegroundImage);
+		itemForegroundButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				Color oldColor = itemForegroundColor;
+				if (oldColor == null) oldColor = node1.getForeground ();
+				foregroundDialog.setRGB(oldColor.getRGB());
+				RGB rgb = foregroundDialog.open();
+				if (rgb == null) return;
+				oldColor = itemForegroundColor;
+				itemForegroundColor = new Color (event.display, rgb);
+				setItemForeground ();
+				if (oldColor != null) oldColor.dispose ();
+			}
+		});
+		itemBackgroundButton.setImage(itemBackgroundImage);
+		itemBackgroundButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				Color oldColor = itemBackgroundColor;
+				if (oldColor == null) oldColor = node1.getBackground ();
+				backgroundDialog.setRGB(oldColor.getRGB());
+				RGB rgb = backgroundDialog.open();
+				if (rgb == null) return;
+				oldColor = itemBackgroundColor;
+				itemBackgroundColor = new Color (event.display, rgb);
+				setItemBackground ();
+				if (oldColor != null) oldColor.dispose ();
+			}
+		});
+		itemFontButton.addSelectionListener(new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				Font oldFont = itemFont;
+				if (oldFont == null) oldFont = node1.getFont ();
+				fontDialog.setFontList(oldFont.getFontData());
+				FontData fontData = fontDialog.open ();
+				if (fontData == null) return;
+				oldFont = itemFont;
+				itemFont = new Font (event.display, fontData);
+				setItemFont ();
+				setExampleWidgetSize ();
+				if (oldFont != null) oldFont.dispose ();
+			}
+		});
+		shell.addDisposeListener(new DisposeListener() {
+			public void widgetDisposed(DisposeEvent event) {
+				if (itemBackgroundImage != null) itemBackgroundImage.dispose();
+				if (itemForegroundImage != null) itemForegroundImage.dispose();
+				if (itemBackgroundColor != null) itemBackgroundColor.dispose();
+				if (itemForegroundColor != null) itemForegroundColor.dispose();
+				if (itemFont != null) itemFont.dispose();
+				itemBackgroundColor = null;
+				itemForegroundColor = null;			
+				itemFont = null;
+			}
+		});
+	}
+
 	/**
 	 * Creates the "Other" group.
 	 */
@@ -93,7 +188,7 @@ class TableTreeTab extends ScrollableTab {
 			column.setWidth(100);
 			column.setText(ControlExample.getResourceString("TableTree_column") + ": " + i);
 		}
-		TableTreeItem node1 = new TableTreeItem (tree1, SWT.NONE);
+		node1 = new TableTreeItem (tree1, SWT.NONE);
 		for (int i = 0; i < 3; i++) {
 			node1.setText (i, ControlExample.getResourceString("Node_1") + "-" + i);
 		}
@@ -201,14 +296,72 @@ class TableTreeTab extends ScrollableTab {
 	}
 
 	/**
+	 * Sets the foreground color, background color, and font
+	 * of the "Example" widgets to their default settings.
+	 * Also sets foreground and background color of the Node 1
+	 * TreeItems to default settings.
+	 */
+	void resetColorsAndFonts () {
+		super.resetColorsAndFonts ();
+		Color oldColor = itemForegroundColor;
+		itemForegroundColor = null;
+		setItemForeground ();
+		if (oldColor != null) oldColor.dispose();
+		oldColor = itemBackgroundColor;
+		itemBackgroundColor = null;
+		setItemBackground ();
+		if (oldColor != null) oldColor.dispose();
+		Font oldFont = font;
+		itemFont = null;
+		setItemFont ();
+		setExampleWidgetSize ();
+		if (oldFont != null) oldFont.dispose();
+	}
+	
+	/**
 	 * Sets the state of the "Example" widgets.
 	 */
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
+		setItemBackground ();
+		setItemForeground ();
+		setItemFont ();
+		setExampleWidgetSize ();
 		setWidgetHeaderVisible ();
 		setWidgetLinesVisible ();
 	}
 	
+	/**
+	 * Sets the background color of the Node 1 TreeItems.
+	 */
+	void setItemBackground () {
+		node1.setBackground (itemBackgroundColor);
+		/* Set the background button's color to match the color just set. */
+		Color color = itemBackgroundColor;
+		if (color == null) color = node1.getBackground ();
+		drawImage (itemBackgroundImage, color);
+		itemBackgroundButton.setImage (itemBackgroundImage);
+	}
+	
+	/**
+	 * Sets the foreground color of the Node 1 TreeItems.
+	 */
+	void setItemForeground () {
+		node1.setForeground (itemForegroundColor);
+		/* Set the foreground button's color to match the color just set. */
+		Color color = itemForegroundColor;
+		if (color == null) color = node1.getForeground ();
+		drawImage (itemForegroundImage, color);
+		itemForegroundButton.setImage (itemForegroundImage);
+	}
+	
+	/**
+	 * Sets the font of the Node 1 TreeItems.
+	 */
+	void setItemFont () {
+		node1.setFont (itemFont);
+	}
+
 	/**
 	 * Sets the header visible state of the "Example" widgets.
 	 */

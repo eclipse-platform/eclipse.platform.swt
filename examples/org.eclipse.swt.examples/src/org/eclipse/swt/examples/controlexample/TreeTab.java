@@ -21,7 +21,7 @@ class TreeTab extends ScrollableTab {
 	/* Example widgets and groups that contain them */
 	Tree tree1, tree2;
 	TreeItem textNode1, imageNode1;
-	Group treeGroup, imageTreeGroup, treeItemGroup;
+	Group treeGroup, imageTreeGroup, itemGroup;
 	
 	/* Style widgets added to the "Style" group */
 	Button checkButton;
@@ -45,17 +45,17 @@ class TreeTab extends ScrollableTab {
 	void createColorGroup () {
 		super.createColorGroup();
 		
-		treeItemGroup = new Group (colorGroup, SWT.NONE);
-		treeItemGroup.setText (ControlExample.getResourceString ("Tree_Item_Colors"));
+		itemGroup = new Group (colorGroup, SWT.NONE);
+		itemGroup.setText (ControlExample.getResourceString ("Tree_Item_Colors"));
 		GridData data = new GridData ();
 		data.horizontalSpan = 2;
-		treeItemGroup.setLayoutData (data);
-		treeItemGroup.setLayout (new GridLayout (2, false));
-		new Label (treeItemGroup, SWT.NONE).setText (ControlExample.getResourceString ("Foreground_Color"));
-		itemForegroundButton = new Button (treeItemGroup, SWT.PUSH);
-		new Label (treeItemGroup, SWT.NONE).setText (ControlExample.getResourceString ("Background_Color"));
-		itemBackgroundButton = new Button (treeItemGroup, SWT.PUSH);
-		itemFontButton = new Button (treeItemGroup, SWT.PUSH);
+		itemGroup.setLayoutData (data);
+		itemGroup.setLayout (new GridLayout (2, false));
+		new Label (itemGroup, SWT.NONE).setText (ControlExample.getResourceString ("Foreground_Color"));
+		itemForegroundButton = new Button (itemGroup, SWT.PUSH);
+		new Label (itemGroup, SWT.NONE).setText (ControlExample.getResourceString ("Background_Color"));
+		itemBackgroundButton = new Button (itemGroup, SWT.PUSH);
+		itemFontButton = new Button (itemGroup, SWT.PUSH);
 		itemFontButton.setText(ControlExample.getResourceString("Font"));
 		itemFontButton.setLayoutData(new GridData (GridData.HORIZONTAL_ALIGN_FILL));
 		
