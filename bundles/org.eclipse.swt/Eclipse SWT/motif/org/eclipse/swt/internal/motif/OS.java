@@ -380,6 +380,7 @@ public class OS {
 	public static final int XK_Shift_R = 0xFFE2;
 	public static final int XK_Tab = 0xFF09;
 	public static final int XK_Up = 0xFF52;
+	public static final int XK_VoidSymbol = 0xFFFFFF;
 //	public static final int XLookupBoth = 0x4;
 //	public static final int XLookupChars = 0x2;
 //	public static final int XLookupKeySym = 0x3;
