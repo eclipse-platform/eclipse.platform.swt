@@ -151,6 +151,7 @@ public class OS {
 	public static final int NotifyNormal = 0x0;
 	public static final int PMinSize = 1 << 4;
 	public static final int PMaxSize = 1 << 5;
+	public static final int PPosition = 1 << 2;
 	public static final int PointerMotionMask = 1 << 6;
 	public static final int PointerMotionHintMask = 1 << 7;
 	public static final int PropertyChangeMask = 1 << 22;

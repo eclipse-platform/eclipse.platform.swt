@@ -1226,7 +1226,6 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		sendEvent (SWT.Move);
 	}
 	if (resize && (width != oldWidth || height != oldHeight)) {
-		if (OS.IsLinux) updateResizable (width, height);
 		resized = true;
 		oldWidth = width;
 		oldHeight = height;
@@ -1557,7 +1556,7 @@ void updateResizable (int width, int height) {
 	if ((style & SWT.RESIZE) != 0) return;
 	if (!OS.XtIsRealized (shellHandle)) return;
 	XSizeHints hints = new XSizeHints ();
-	hints.flags = OS.PMinSize | OS.PMaxSize;
+	hints.flags = OS.PMinSize | OS.PMaxSize | OS.PPosition;
 	hints.min_width = hints.max_width = width;
 	hints.min_height = hints.max_height = height;
 	OS.XSetWMNormalHints (OS.XtDisplay (shellHandle), OS.XtWindow (shellHandle), hints);
@@ -1630,11 +1629,6 @@ int XStructureNotify (int w, int client_data, int call_data, int continue_to_dis
 		case OS.ReparentNotify: {
 			reparented = true;
 			adjustTrim ();
-			if (OS.IsLinux) {
-				int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
-				OS.XtGetValues (shellHandle, argList, argList.length / 2);
-				updateResizable (argList [1], argList [3]);
-			}
 			break;
 		}
 		case OS.ConfigureNotify:
@@ -1646,6 +1640,7 @@ int XStructureNotify (int w, int client_data, int call_data, int continue_to_dis
 				oldY = root_y [0];
 				sendEvent (SWT.Move);
 			}
+			updateResizable (xEvent.width, xEvent.height);
 			if (!resized || oldWidth != xEvent.width || oldHeight != xEvent.height) {
 				int xEvent1 = OS.XtMalloc (XEvent.sizeof);
 				display.resizeWindow = xEvent.window;
