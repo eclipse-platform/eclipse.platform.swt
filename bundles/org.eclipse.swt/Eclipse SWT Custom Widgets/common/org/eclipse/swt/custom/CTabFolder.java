@@ -999,13 +999,15 @@ private void setButtonBounds() {
 		if (item == null) {
 			closeBar.setVisible(false);
 		} else {
-			int toolbarHeight = tabHeight - CTabItem.TOP_MARGIN - CTabItem.BOTTOM_MARGIN + 2; // +2 to ignore gab between focus rectangle
+			int toolbarHeight = tabHeight - CTabItem.TOP_MARGIN - CTabItem.BOTTOM_MARGIN + 2; // +2 to ignore gap between focus rectangle
 			Point size = closeBar.computeSize(SWT.DEFAULT, toolbarHeight);
 			int x = item.x + item.width - size.x - 2; // -2 to not overlap focus rectangle and trim
 			int y = item.y + Math.max(0, (item.height - toolbarHeight)/2);		
 			closeBar.setBounds(x, y, size.x, toolbarHeight);
 			Rectangle toolspace = getToolSpace();
-			closeBar.setVisible(!toolspace.contains(x, y));
+			Point folderSize = getSize();
+			boolean visible = (toolspace.width == 0 || x < toolspace.x) && x + size.x < folderSize.x - borderRight;
+			closeBar.setVisible(visible);
 		}
 	}
 }
@@ -1940,13 +1942,13 @@ private void onMouseMove(Event event) {
 		
 	if (item == null || item == getSelection()) return;
 
-	int toolbarHeight = tabHeight - CTabItem.TOP_MARGIN - CTabItem.BOTTOM_MARGIN + 2; // +2 to ignore gab between focus rectangle
+	int toolbarHeight = tabHeight - CTabItem.TOP_MARGIN - CTabItem.BOTTOM_MARGIN + 2; // +2 to ignore gap between focus rectangle
 	Point size = inactiveCloseBar.computeSize(SWT.DEFAULT, toolbarHeight);
-	int x = item.x + item.width - size.x;
+	int x = item.x + item.width - size.x - 2; // -2 to not overlap focus rectangle and trim
 	int y = item.y + Math.max(0, (item.height - toolbarHeight)/2);
-	
-	Rectangle toolspace = getToolSpace(); 
-	if (toolspace.width == 0 || x + size.x < toolspace.x) {
+	Rectangle toolspace = getToolSpace();
+	Point folderSize = getSize();
+	if ((toolspace.width == 0 || x < toolspace.x) && x + size.x < folderSize.x - borderRight) {
 		inactiveCloseBar.setBounds(x, y, size.x, toolbarHeight);
 		inactiveCloseBar.setVisible(true);
 		inactiveItem = item;
