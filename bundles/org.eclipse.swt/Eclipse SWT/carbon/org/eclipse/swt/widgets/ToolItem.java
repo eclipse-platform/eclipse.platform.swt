@@ -184,7 +184,7 @@ void drawWidget (int control) {
 
 public Rectangle getBounds () {
 	checkWidget();
-	Rect rect = getBounds (handle);
+	Rect rect = getControlBounds (handle);
 	return new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 }
 

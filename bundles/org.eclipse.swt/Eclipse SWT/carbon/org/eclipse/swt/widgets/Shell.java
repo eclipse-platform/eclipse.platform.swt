@@ -297,8 +297,14 @@ void hookEvents () {
 	};
 	int windowTarget = OS.GetWindowEventTarget (shellHandle);
 	OS.InstallEventHandler (windowTarget, windowProc, mask1.length / 2, mask1, shellHandle, null);
-	int[] mask2 = new int [] {	
+	int [] mask2 = new int [] {
 		OS.kEventClassMouse, OS.kEventMouseDown,
+		OS.kEventClassMouse, OS.kEventMouseDragged,
+//		OS.kEventClassMouse, OS.kEventMouseEntered,
+//		OS.kEventClassMouse, OS.kEventMouseExited,
+		OS.kEventClassMouse, OS.kEventMouseMoved,
+		OS.kEventClassMouse, OS.kEventMouseUp,
+		OS.kEventClassMouse, OS.kEventMouseWheelMoved,
 	};
 	OS.InstallEventHandler (windowTarget, mouseProc, mask2.length / 2, mask2, shellHandle, null);
 }

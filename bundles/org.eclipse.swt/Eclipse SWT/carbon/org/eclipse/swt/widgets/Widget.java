@@ -288,27 +288,6 @@ boolean filters (int eventType) {
 	return display.filters (eventType);
 }
 
-Rect getBounds (int control) {
-	Rect rect = new Rect();
-	OS.GetControlBounds (control, rect);
-	int window = OS.GetControlOwner (control);
-	int [] theRoot = new int [1];
-	OS.GetRootControl (window, theRoot);
-	int [] parentHandle = new int [1];
-	OS.GetSuperControl (control, parentHandle);
-	if (parentHandle [0] != theRoot [0]) {
-		Rect parentRect = new Rect ();
-		OS.GetControlBounds (parentHandle [0], parentRect);
-		OS.OffsetRect (rect, (short) -parentRect.left, (short) -parentRect.top);
-	}
-	Rect inset = getInset ();
-	rect.left -= inset.left;
-	rect.top -= inset.top;
-	rect.right += inset.right;
-	rect.bottom += inset.bottom;
-	return rect;
-}
-
 int getClipping (int control) {
 	int visibleRgn = OS.NewRgn (), childRgn = OS.NewRgn (), tempRgn = OS.NewRgn ();
 	int window = OS.GetControlOwner (control);
@@ -340,6 +319,38 @@ int getClipping (int control) {
 	return visibleRgn;
 }
 
+Rect getControlBounds (int control) {
+	Rect rect = new Rect();
+	OS.GetControlBounds (control, rect);
+	int window = OS.GetControlOwner (control);
+	int [] theRoot = new int [1];
+	OS.GetRootControl (window, theRoot);
+	int [] parentHandle = new int [1];
+	OS.GetSuperControl (control, parentHandle);
+	if (parentHandle [0] != theRoot [0]) {
+		Rect parentRect = new Rect ();
+		OS.GetControlBounds (parentHandle [0], parentRect);
+		OS.OffsetRect (rect, (short) -parentRect.left, (short) -parentRect.top);
+	}
+	Rect inset = getInset ();
+	rect.left -= inset.left;
+	rect.top -= inset.top;
+	rect.right += inset.right;
+	rect.bottom += inset.bottom;
+	return rect;
+}
+
+Rect getControlSize (int control) {
+	Rect rect = new Rect ();
+	OS.GetControlBounds (control, rect);
+	Rect inset = getInset ();
+	rect.left -= inset.left;
+	rect.top -= inset.top;
+	rect.right += inset.right;
+	rect.bottom += inset.bottom;
+	return rect;
+}
+
 public Object getData () {
 	checkWidget();
 	return data;
@@ -366,17 +377,6 @@ String getName () {
 
 String getNameText () {
 	return "";
-}
-
-Rect getSize (int control) {
-	Rect rect = new Rect ();
-	OS.GetControlBounds (control, rect);
-	Rect inset = getInset ();
-	rect.left -= inset.left;
-	rect.top -= inset.top;
-	rect.right += inset.right;
-	rect.bottom += inset.bottom;
-	return rect;
 }
 
 public int getStyle () {
