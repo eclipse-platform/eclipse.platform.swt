@@ -885,32 +885,25 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	if (move) {
 		int [] x_pos = new int [1], y_pos = new int [1];
 		OS.gtk_window_get_position (shellHandle, x_pos, y_pos);
-		oldX = x_pos [0];
-		oldY = y_pos [0];
 		OS.gtk_window_move (shellHandle, x, y);
-		if (!OS.GTK_WIDGET_VISIBLE (shellHandle)) {
-			if (oldX != x || oldY != y) {
-				sendEvent(SWT.Move);
-				oldX = x;
-				oldY = y;
-			}
+		if (x_pos [0] != x || y_pos [0] != y) {
+			oldX = x;
+			oldY = y;
+			sendEvent(SWT.Move);
 		}
 	}
 	if (resize) {
 		int [] w = new int [1], h = new int [1];
 		OS.gtk_window_get_size (shellHandle, w, h);
-		oldWidth = w [0];
-		oldHeight = h [0];
 		width = Math.max (1, width - trimWidth ());
 		height = Math.max (1, height - trimHeight ());
 		OS.gtk_window_resize (shellHandle, width, height);
-		boolean visible = OS.GTK_WIDGET_VISIBLE (shellHandle);
-		boolean changed = oldWidth != width || oldHeight != height;
-		resizeBounds (width, height, !visible && changed);
-		if (!visible && changed) {
+		boolean changed = width != oldWidth || height != oldHeight;
+		if (changed) {
 			oldWidth = width;
 			oldHeight = height;
 		}
+		resizeBounds (width, height, changed);
 	}
 	return move || resize;
 }
