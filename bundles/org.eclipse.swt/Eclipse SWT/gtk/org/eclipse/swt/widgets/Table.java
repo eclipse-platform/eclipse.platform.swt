@@ -224,7 +224,6 @@ void createColumn (TableColumn column, int index) {
 	OS.g_signal_connect (columnHandle, OS.clicked, display.treeColumnSelectionProc, handle);
 	OS.gtk_tree_view_column_set_resizable (columnHandle, true);
 	OS.gtk_tree_view_column_set_clickable (columnHandle, true);
-	OS.gtk_tree_view_column_set_sizing (columnHandle, OS.GTK_TREE_VIEW_COLUMN_FIXED);
 	OS.gtk_tree_view_insert_column (handle, columnHandle, index);
 	if (column != null) {
 		column.handle = columnHandle;

@@ -193,7 +193,6 @@ void createHandle (int index) {
 	if (columnHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_tree_view_column_pack_start (columnHandle, textRenderer, true);
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "text", 0);
-	OS.gtk_tree_view_column_set_sizing (columnHandle, OS.GTK_TREE_VIEW_COLUMN_FIXED);
 	OS.gtk_tree_view_insert_column (handle, columnHandle, index);
 	int parentHandle = parent.parentingHandle ();
 	OS.gtk_container_add (parentHandle, fixedHandle);

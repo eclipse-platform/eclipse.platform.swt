@@ -8,7 +8,6 @@ package org.eclipse.swt.widgets;
  */
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
@@ -199,7 +198,6 @@ void createHandle (int index) {
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "text", 0);
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "foreground-gdk", 2);
 	OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, "background-gdk", 3);
-	OS.gtk_tree_view_column_set_sizing (columnHandle, OS.GTK_TREE_VIEW_COLUMN_FIXED);
 	OS.gtk_tree_view_insert_column (handle, columnHandle, 0);
 	int parentHandle = parent.parentingHandle ();
 	OS.gtk_container_add (parentHandle, fixedHandle);
