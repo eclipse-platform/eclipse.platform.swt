@@ -1715,38 +1715,69 @@ void sendHelpEvent (int callData) {
 		control = control.parent;
 	}
 }
-void sendMouseEvent (int type) {
+boolean sendMouseEvent (int type) {
 	int xDisplay = OS.XtDisplay (handle), xWindow = OS.XtWindow (handle);
 	int [] windowX = new int [1], windowY = new int [1], mask = new int [1], unused = new int [1];
 	OS.XQueryPointer (xDisplay, xWindow, unused, unused, unused, unused, windowX, windowY, mask);
-	sendMouseEvent (type, 0, 0, windowX [0], windowY [0], mask [0]);
+	return sendMouseEvent (type, 0, 0, 0, false, 0, windowX [0], windowY [0], mask [0]);
 }
-void sendMouseEvent (int type, int button, int time, int x, int y, int state) {
+boolean sendMouseEvent (int type, int button, int count, int detail, boolean send, int time, int x, int y, int state) {
 	Event event = new Event ();
 	event.time = time;
 	event.button = button;
+	event.count = count;
+	event.detail = detail;
 	event.x = x;
 	event.y = y;
 	setInputState (event, state);
-	postEvent (type, event);
+	if (send) {
+		sendEvent (type, event);
+		if (isDisposed ()) return false;
+	} else {
+		postEvent (type, event);
+	}
+	return event.doit;
 }
-void sendMouseEvent (int type, XButtonEvent xEvent) {
+boolean sendMouseEvent (int type, XButtonEvent xEvent) {
 	short [] x_root = new short [1], y_root = new short [1];
 	OS.XtTranslateCoords (handle, (short) 0, (short) 0, x_root, y_root);
 	int x = xEvent.x_root - x_root [0], y = xEvent.y_root - y_root [0];
-	sendMouseEvent (type, xEvent.button, xEvent.time, x, y, xEvent.state);
+	int count = 0, detail = 0, button = xEvent.button;
+	boolean send = false;
+	switch (button) {
+		case 4:
+			if (type == SWT.MouseUp) return false;
+			detail = SWT.SCROLL_LINE;
+			count = 3;
+			type = SWT.MouseWheel;
+			button = 0;
+			break;
+		case 5:
+			if (type == SWT.MouseUp) return false;
+			detail = SWT.SCROLL_LINE;
+			count = -3;
+			type = SWT.MouseWheel;
+			button = 0;
+		case 6:
+			button = 4;
+			break;
+		case 7:
+			button = 5;
+			break;
+	}
+	return sendMouseEvent (type, button, count, detail, send, xEvent.time, x, y, xEvent.state);
 }
-void sendMouseEvent (int type, XCrossingEvent xEvent) {
+boolean sendMouseEvent (int type, XCrossingEvent xEvent) {
 	short [] x_root = new short [1], y_root = new short [1];
 	OS.XtTranslateCoords (handle, (short) 0, (short) 0, x_root, y_root);
 	int x = xEvent.x_root - x_root [0], y = xEvent.y_root - y_root [0];
-	sendMouseEvent (type, 0, xEvent.time, x, y, xEvent.state);
+	return sendMouseEvent (type, 0, 0, 0, false, xEvent.time, x, y, xEvent.state);
 }
-void sendMouseEvent (int type, XMotionEvent xEvent) {	
+boolean sendMouseEvent (int type, XMotionEvent xEvent) {	
 	short [] x_root = new short [1], y_root = new short [1];
 	OS.XtTranslateCoords (handle, (short) 0, (short) 0, x_root, y_root);
 	int x = xEvent.x_root - x_root [0], y = xEvent.y_root - y_root [0];
-	sendMouseEvent (type, 0, xEvent.time, x, y, xEvent.state);
+	return sendMouseEvent (type, 0, 0, 0, false, xEvent.time, x, y, xEvent.state);
 }
 /**
  * Sets the receiver's background color to the color specified
@@ -2829,22 +2860,10 @@ int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatc
 	display.hideToolTip ();
 	XButtonEvent xEvent = new XButtonEvent ();
 	OS.memmove (xEvent, call_data, XButtonEvent.sizeof);
-	switch (xEvent.button) {
-		case 4:
-		case 5:
-			Event event = new Event ();
-			event.detail = SWT.SCROLL_LINE;
-			event.count = xEvent.button == 4 ? 3 : -3;
-			sendEvent (SWT.MouseWheel, event);
-			return event.doit ? 0 : 1;
-		case 6:
-			xEvent.button = 4;
-			break;
-		case 7:
-			xEvent.button = 5;
-			break;
+	if (!sendMouseEvent (SWT.MouseDown, xEvent)) {
+		OS.memmove (continue_to_dispatch, new int [1], 4);
+		return 1;
 	}
-	sendMouseEvent (SWT.MouseDown, xEvent);
 	if (xEvent.button == 2 && hooks (SWT.DragDetect)) {
 		Event event = new Event ();
 		event.x = xEvent.x;
@@ -2881,19 +2900,10 @@ int XButtonRelease (int w, int client_data, int call_data, int continue_to_dispa
 	display.hideToolTip ();
 	XButtonEvent xEvent = new XButtonEvent ();
 	OS.memmove (xEvent, call_data, XButtonEvent.sizeof);
-	switch (xEvent.button) {
-		case 4:
-		case 5:
-			/* Ignore mouse wheel for ButtonRelease */
-			return 0;
-		case 6:
-			xEvent.button = 4;
-			break;
-		case 7:
-			xEvent.button = 5;
-			break;
+	if (!sendMouseEvent (SWT.MouseUp, xEvent)) {
+		OS.memmove (continue_to_dispatch, new int [1], 4);
+		return 1;
 	}
-	sendMouseEvent (SWT.MouseUp, xEvent);
 	return 0;
 }
 int XEnterWindow (int w, int client_data, int call_data, int continue_to_dispatch) {
