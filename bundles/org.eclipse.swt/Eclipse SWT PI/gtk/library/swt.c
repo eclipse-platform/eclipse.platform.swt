@@ -3452,6 +3452,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1progress_1bar_1
 	return (jint)gtk_progress_bar_new();
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1progress_1bar_1pulse
+	(JNIEnv *env, jclass that, jint arg0, jdouble arg1)
+{
+	DEBUG_CALL("gtk_1progress_1bar_1pulse\n")
+
+	gtk_progress_bar_pulse((GtkProgressBar *)arg0);
+}
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1progress_1bar_1set_1fraction
 	(JNIEnv *env, jclass that, jint arg0, jdouble arg1)
 {

@@ -30,7 +30,8 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 public class ProgressBar extends Control {
-	int min = 0, max = 100, value = 0;
+	int timerId, min = 0, max = 100, value = 0;
+	static final int DELAY = 100;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -93,9 +94,16 @@ void createHandle (int index) {
 	OS.gtk_container_add (parentHandle, handle);
 	OS.gtk_widget_show (handle);
 	int orientation = (style & SWT.VERTICAL) != 0 ? OS.GTK_PROGRESS_TOP_TO_BOTTOM : OS.GTK_PROGRESS_LEFT_TO_RIGHT;
-	OS.gtk_progress_bar_set_orientation (handle, orientation);		
-	int style = (this.style & SWT.SMOOTH) == 0 ? OS.GTK_PROGRESS_DISCRETE : OS.GTK_PROGRESS_CONTINUOUS;
-	OS.gtk_progress_bar_set_bar_style (handle, style);
+	OS.gtk_progress_bar_set_orientation (handle, orientation);
+	if ((style & SWT.INDETERMINATE) != 0) {
+		Display display = getDisplay ();
+		timerId = OS.gtk_timeout_add (DELAY, display.windowTimerProc, handle);
+	} else {
+		/*
+		* Note: this API is deprecated, but there is no replacement.		*/
+		int barStyle = (this.style & SWT.SMOOTH) == 0 ? OS.GTK_PROGRESS_DISCRETE : OS.GTK_PROGRESS_CONTINUOUS;
+		OS.gtk_progress_bar_set_bar_style (handle, barStyle);
+	}
 }
 
 /**
@@ -141,6 +149,19 @@ public int getMinimum () {
 public int getSelection () {
 	checkWidget ();
 	return value;
+}
+
+int processTimer (int id) {
+	OS.gtk_progress_bar_pulse (handle);
+	Display display = getDisplay ();
+	timerId = OS.gtk_timeout_add (DELAY, display.windowTimerProc, handle);
+	return 0;
+}
+
+void releaseWidget () {
+	super.releaseWidget ();
+	if (timerId != 0) OS.gtk_timeout_remove (timerId);
+	timerId = 0;
 }
 
 /**
