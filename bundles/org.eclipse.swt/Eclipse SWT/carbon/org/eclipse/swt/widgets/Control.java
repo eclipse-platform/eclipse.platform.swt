@@ -456,6 +456,16 @@ int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 	OS.GetEventParameter (theEvent, OS.kEventParamRgnHandle, OS.typeQDRgnHandle, null, 4, null, region);
 	Rect bounds = new Rect ();
 	OS.GetRegionBounds (region [0], bounds);
+	int window = OS.GetControlOwner (handle);
+	int [] theRoot = new int [1];
+	OS.GetRootControl (window, theRoot);
+	int [] parentHandle = new int [1];
+	OS.GetSuperControl (handle, parentHandle);
+	if (parentHandle [0] != theRoot [0]) {
+		Rect rect = new Rect ();
+		OS.GetControlBounds (parentHandle [0], rect);
+		OS.OffsetRect (bounds, (short) -rect.left, (short) -rect.top);
+	}
 
 	GCData data = new GCData ();
 	data.paintEvent = theEvent;

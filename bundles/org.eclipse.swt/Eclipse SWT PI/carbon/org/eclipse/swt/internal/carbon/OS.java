@@ -670,6 +670,7 @@ public static final native int GetEventParameter(int inEvent, int inName, int in
 public static final native int GetEventParameter(int inEvent, int inName, int inDesiredType, int[] outActualType, int inBufferSize, int[] outActualSize, Point outData);
 public static final native int GetEventParameter(int inEvent, int inName, int inDesiredType, int[] outActualType, int inBufferSize, int[] outActualSize, CGPoint outData);
 public static final native int GetEventParameter(int inEvent, int inName, int inDesiredType, int[] outActualType, int inBufferSize, int[] outActualSize, RGBColor outData);
+public static final native int GetEventParameter(int inEvent, int inName, int inDesiredType, int[] outActualType, int inBufferSize, int[] outActualSize, Rect outData);
 public static final native double GetEventTime(int eHandle);
 public static final native void GetFontInfo(short[] info);
 public static final native int GetGDevice();
