@@ -624,7 +624,8 @@ public void test_setVisibleZ() {
 }
 
 public void test_toControlII() {
-	warnUnimpl("Test test_toControlII not written");
+	Point controlCoords = control.toControl(0, 0);
+	assertEquals(new Point(0, 0), control.toDisplay(controlCoords.x, controlCoords.y));
 }
 
 public void test_toControlLorg_eclipse_swt_graphics_Point() {
@@ -639,7 +640,8 @@ public void test_toControlLorg_eclipse_swt_graphics_Point() {
 }
 
 public void test_toDisplayII() {
-	warnUnimpl("Test test_toDisplayII not written");
+	Point displayCoords = control.toDisplay(0, 0);
+	assertEquals(new Point(0, 0), control.toControl(displayCoords.x, displayCoords.y));
 }
 
 public void test_toDisplayLorg_eclipse_swt_graphics_Point() {
