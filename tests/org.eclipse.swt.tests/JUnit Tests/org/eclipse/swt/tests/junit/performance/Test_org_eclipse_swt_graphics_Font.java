@@ -42,171 +42,170 @@ protected void setUp() throws Exception {
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_Device$Lorg_eclipse_swt_graphics_FontData() {
-	final int COUNT = 10000;	// 20000 causes No More Handles
+	final int COUNT = 160000;
 	
 	FontData[] data = new FontData [1];
 	data[0] = new FontData (SwtJunit.testFontName, 10, SWT.BOLD | SWT.ITALIC); 
-	Font[] fonts = new Font[COUNT];
 	
 	PerformanceMeter meter = createMeter();
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
-		fonts[i] = new Font(display, data);
+		/*
+		* This test is not really valid since it's measuring both creation and
+		* disposal of the Fonts.  This is done because attempting to pre-create
+		* more than 20000 Fonts for disposal causes a No More Handles error.
+		*/ 
+		new Font(display, data).dispose();
 	}
 	meter.stop();
-
-	for (int i = 0; i < COUNT; i++) {
-		fonts[i].dispose();
-	}
 
 	disposeMeter(meter);
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_FontData() {
-	final int COUNT = 10000;	// 20000 causes No More Handles
+	final int COUNT = 170000;
 	
 	FontData data = new FontData (SwtJunit.testFontName, 10, SWT.BOLD | SWT.ITALIC);
-	Font[] fonts = new Font[COUNT];
 	
 	PerformanceMeter meter = createMeter();
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
-		fonts[i] = new Font(display, data);
+		/*
+		* This test is not really valid since it's measuring both creation and
+		* disposal of the Fonts.  This is done because attempting to pre-create
+		* more than 20000 Fonts for disposal causes a No More Handles error.
+		*/ 
+		new Font(display, data).dispose();
 	}
 	meter.stop();
-
-	for (int i = 0; i < COUNT; i++) {
-		fonts[i].dispose();
-	}
 
 	disposeMeter(meter);
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_StringII() {
-	final int COUNT = 10000;	// 20000 causes No More Handles
-	
-	Font[] fonts = new Font[COUNT];
+	final int COUNT = 150000;
 	
 	PerformanceMeter meter = createMeter("no name");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
+		/*
+		* This test is not really valid since it's measuring both creation and
+		* disposal of the Fonts.  This is done because attempting to pre-create
+		* more than 20000 Fonts for disposal causes a No More Handles error.
+		*/ 
 		// valid font with no name
-		fonts[i] = new Font(display, "", 10, SWT.NORMAL);
+		new Font(display, "", 10, SWT.NORMAL).dispose();
 	}
 	meter.stop();
-
-	for (int i = 0; i < COUNT; i++) {
-		fonts[i].dispose();
-	}
 
 	disposeMeter(meter);
 		
 	meter = createMeter("unknown name");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
+		/*
+		* This test is not really valid since it's measuring both creation and
+		* disposal of the Fonts.  This is done because attempting to pre-create
+		* more than 20000 Fonts for disposal causes a No More Handles error.
+		*/ 
 		// valid font with unknown name
-		fonts[i] = new Font(display, "bad-font", 10, SWT.NORMAL);
+		new Font(display, "bad-font", 10, SWT.NORMAL).dispose();
 	}
 	meter.stop();
-
-	for (int i = 0; i < COUNT; i++) {
-		fonts[i].dispose();
-	}
 
 	disposeMeter(meter);
 	
 	meter = createMeter("0 height");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
+		/*
+		* This test is not really valid since it's measuring both creation and
+		* disposal of the Fonts.  This is done because attempting to pre-create
+		* more than 20000 Fonts for disposal causes a No More Handles error.
+		*/ 
 		// valid font with 0 height
-		fonts[i] = new Font(display, SwtJunit.testFontName, 0, SWT.NORMAL);
+		new Font(display, SwtJunit.testFontName, 0, SWT.NORMAL).dispose();
 	}
 	meter.stop();
-
-	for (int i = 0; i < COUNT; i++) {
-		fonts[i].dispose();
-	}
 
 	disposeMeter(meter);
 
 	meter = createMeter("10 pt");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
+		/*
+		* This test is not really valid since it's measuring both creation and
+		* disposal of the Fonts.  This is done because attempting to pre-create
+		* more than 20000 Fonts for disposal causes a No More Handles error.
+		*/ 
 		// valid normal 10-point font
-		fonts[i] = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
+		new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL).dispose();
 	}
 	meter.stop();
-
-	for (int i = 0; i < COUNT; i++) {
-		fonts[i].dispose();
-	}
 
 	disposeMeter(meter);
 
 	meter = createMeter("100 pt");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
+		/*
+		* This test is not really valid since it's measuring both creation and
+		* disposal of the Fonts.  This is done because attempting to pre-create
+		* more than 20000 Fonts for disposal causes a No More Handles error.
+		*/ 
 		// valid normal 100-point font
-		fonts[i] = new Font(display, SwtJunit.testFontName, 100, SWT.NORMAL);
+		new Font(display, SwtJunit.testFontName, 100, SWT.NORMAL).dispose();
 	}
 	meter.stop();
-
-	for (int i = 0; i < COUNT; i++) {
-		fonts[i].dispose();
-	}
 
 	disposeMeter(meter);
 	
 	meter = createMeter("bold italic");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
+		/*
+		* This test is not really valid since it's measuring both creation and
+		* disposal of the Fonts.  This is done because attempting to pre-create
+		* more than 20000 Fonts for disposal causes a No More Handles error.
+		*/ 
 		// valid bold italic 10-point font
-		fonts[i] = new Font(display, SwtJunit.testFontName, 10, SWT.BOLD | SWT.ITALIC);
+		new Font(display, SwtJunit.testFontName, 10, SWT.BOLD | SWT.ITALIC).dispose();
 	}
 	meter.stop();
-
-	for (int i = 0; i < COUNT; i++) {
-		fonts[i].dispose();
-	}
 
 	disposeMeter(meter);
 
 	meter = createMeter("null device");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
+		/*
+		* This test is not really valid since it's measuring both creation and
+		* disposal of the Fonts.  This is done because attempting to pre-create
+		* more than 20000 Fonts for disposal causes a No More Handles error.
+		*/ 
 		// device == null (valid)
-		fonts[i] = new Font(null, SwtJunit.testFontName, 10, SWT.NORMAL);
+		new Font(null, SwtJunit.testFontName, 10, SWT.NORMAL).dispose();
 	}
 	meter.stop();
-
-	for (int i = 0; i < COUNT; i++) {
-		fonts[i].dispose();
-	}
 
 	disposeMeter(meter);
 }
 
 public void test_dispose() {
-	final int COUNT = 10000;	// 20000 causes No More Handles
+	final int COUNT = 55000000;
 	
-	Font[] fonts = new Font [COUNT];
-	for (int i = 0; i < COUNT; i++) {
-		fonts[i] = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
-	}
-	
-	PerformanceMeter meter = createMeter("not disposed");
+	/*
+	 * The typical dispose() case is covered in the constructor tests, since
+	 * they must dispose created Fonts within their timed blocks. 
+	 */
+
+	Font disposedFont = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
+	disposedFont.dispose();
+
+	PerformanceMeter meter = createMeter();
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
-		fonts[i].dispose();	// dispose
-	}
-	meter.stop();
-	
-    disposeMeter(meter);
-    
-	meter = createMeter("disposed");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		fonts[i].dispose();	// dispose disposed
+		disposedFont.dispose();
 	}
 	meter.stop();
 	
@@ -214,7 +213,7 @@ public void test_dispose() {
 }
 
 public void test_equalsLjava_lang_Object() {
-	final int COUNT = 60000000;
+	final int COUNT = 57000000;
 	
 	// Fonts are only equal if their handles are the same
 	Font font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
@@ -247,7 +246,7 @@ public void test_equalsLjava_lang_Object() {
 }
 
 public void test_getFontData() {
-	final int COUNT = 300000;
+	final int COUNT = 250000;
 	
 	Font font = new Font(display, SwtJunit.testFontName, 40, SWT.BOLD | SWT.ITALIC);
 	

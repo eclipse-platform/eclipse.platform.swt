@@ -57,7 +57,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceIII() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_RGB() {
-	final int COUNT = 2500000;	// 5000000 causes OOM
+	final int COUNT = 3000000;	// 3500000 causes OOM
 	
 	Color[] colors = new Color [COUNT];
 	RGB rgb = new RGB(102, 255, 3);
@@ -77,26 +77,32 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 }
 
 public void test_dispose() {
-	final int COUNT = 1000000;	// 5000000 causes OOM 
 	
-	Color[] colors = new Color [COUNT];
-	for (int i = 0; i < COUNT; i++) {
-		colors[i] = new Color(display, 255,0,128);
-	}
+	int count = 20000000; 
 	
 	PerformanceMeter meter = createMeter("not disposed");
 	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		colors[i].dispose();	// dispose
+	for (int i = 0; i < count; i++) {
+		/*
+		* This test is not really valid since it's measuring both creation and
+		* disposal of the Colors.  This is done because attempting to pre-create
+		* more than 3500000 Colors for disposal causes an Out Of Memory error.
+		*/ 
+		new Color(display, 255, 0, 128).dispose();
 	}
 	meter.stop();
 	
 	disposeMeter(meter);
+
+	count *= 3;
 	
+	Color disposedColor = new Color (display, 255, 0, 128);
+	disposedColor.dispose();
+
 	meter = createMeter("already disposed");
 	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		colors[i].dispose();	// dispose disposed
+	for (int i = 0; i < count; i++) {
+		disposedColor.dispose();	// dispose disposed
 	}
 	meter.stop();
 	

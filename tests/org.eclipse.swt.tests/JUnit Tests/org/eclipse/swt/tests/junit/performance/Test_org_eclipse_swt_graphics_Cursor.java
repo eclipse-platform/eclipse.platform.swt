@@ -133,10 +133,10 @@ public void test_equalsLjava_lang_Object() {
 	final int COUNT = 60000000;
 	
 	/* 
-	 * Note: Two cursors are only considered equal if their handles are equal.
-	 * So since Windows reuses cursor handles, and other platforms do not,
-	 * it does not make sense to test whether cursor.equals(sameCursor).
-	 */
+	* Note: Two cursors are only considered equal if their handles are equal.
+	* So since Windows reuses cursor handles, and other platforms do not,
+	* it does not make sense to test whether cursor.equals(sameCursor).
+	*/
 	Cursor cursor = new Cursor(display, SWT.CURSOR_WAIT);
 	Cursor otherCursor = new Cursor(display, SWT.CURSOR_CROSS);
 	

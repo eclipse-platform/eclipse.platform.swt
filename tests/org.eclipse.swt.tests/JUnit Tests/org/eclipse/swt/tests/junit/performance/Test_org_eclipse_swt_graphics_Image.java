@@ -61,7 +61,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceII() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageI() {
-	final int COUNT = 5000;
+	final int COUNT = 6000;
 	String name = getPath(imageFilenames[0] + "." + imageFormats[0]);
 	FileInputStream inStream = null;
 	try {
@@ -121,7 +121,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_Rectangle() {
-	final int COUNT = 5000;
+	final int COUNT = 6000;
 	
 	Image[] images = new Image[COUNT];
 	Rectangle rectangle = new Rectangle(0, 0, 100, 100);
@@ -141,7 +141,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageData() {
-	final int COUNT = 7000;	// 8000 causes No More Handles error
+	final int COUNT = 60000;
 	
 	String name = getPath(imageFilenames[0] + "." + imageFormats[0]);
 	FileInputStream inStream = null;
@@ -151,7 +151,6 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 		e.printStackTrace();
 	}
 	ImageData[] imageData = new ImageLoader().load(inStream);
-	Image[] images = new Image[COUNT];
 	try {
 		inStream.close();
 	} catch (IOException e1) {
@@ -161,13 +160,14 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	PerformanceMeter meter = createMeter();
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
-		images[i] = new Image(display, imageData[0]);
+		/*
+		* This test is not really valid since it's measuring both creation and
+		* disposal of the Images.  This is done because attempting to pre-create
+		* more than 8000 Images for disposal causes a No More Handles error.
+		*/ 
+		new Image(display, imageData[0]).dispose();
 	}
 	meter.stop();
-	
-	for (int i = 0; i < COUNT; i++) {
-		images[i].dispose();
-	}
 	
 	disposeMeter(meter);
 }
@@ -238,26 +238,21 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() 
 }
 
 public void test_dispose() {
-	final int COUNT = 7000;	// 8000 causes No More Handles error
+	final int COUNT = 50000000;
 	
-	Image[] images = new Image [COUNT];
-	for (int i = 0; i < COUNT; i++) {
-		images[i] = new Image(display, 100, 100);
-	}
+	/*
+	* test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageData
+	* covers the base dispose case since it has to dispose of created Images within its timer block.  
+	*/
 	
-	PerformanceMeter meter = createMeter("not disposed");
+	Image disposedImage = new Image (display, 100, 100);
+	disposedImage.dispose();
+	
+	PerformanceMeter meter = createMeter();
+
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
-		images[i].dispose();	// dispose
-	}
-	meter.stop();
-	
-    disposeMeter(meter);
-    
-	meter = createMeter("disposed");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		images[i].dispose();	// dispose disposed
+		disposedImage.dispose();	// disposed
 	}
 	meter.stop();
 	
@@ -397,7 +392,7 @@ public void test_isDisposed() {
 }
 
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
-	final int COUNT = 70000000;
+	final int COUNT = 60000000;
 	
 	Image image = new Image(display, 100, 100);
 	Color color1 = display.getSystemColor(SWT.COLOR_GREEN);
