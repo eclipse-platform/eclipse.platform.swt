@@ -380,18 +380,24 @@ LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 LRESULT WM_SETCURSOR (int wParam, int lParam) {
 	LRESULT result = super.WM_SETCURSOR (wParam, lParam);
 	if (result != null) return result;
-	int hitTest = lParam & 0xFFFF;
- 	if (hitTest == OS.HTCLIENT) {
-	 	int hCursor;
-	 	if ((style & SWT.HORIZONTAL) != 0) {
-			hCursor = OS.LoadCursor (0, OS.IDC_SIZENS);
-	 	} else {
-			hCursor = OS.LoadCursor (0, OS.IDC_SIZEWE);
-	 	}
-		OS.SetCursor (hCursor);
-		return LRESULT.ONE;
+	int code = callWindowProc (OS.WM_SETCURSOR, wParam, lParam);
+	switch (code) {
+		case 0:
+			int hitTest = lParam & 0xFFFF;
+	 		if (hitTest == OS.HTCLIENT) {
+			 	int hCursor;
+			 	if ((style & SWT.HORIZONTAL) != 0) {
+					hCursor = OS.LoadCursor (0, OS.IDC_SIZENS);
+			 	} else {
+					hCursor = OS.LoadCursor (0, OS.IDC_SIZEWE);
+			 	}
+				OS.SetCursor (hCursor);
+				return LRESULT.ONE;
+	 		}
+	 		return LRESULT.ZERO;
+		case 1: return LRESULT.ONE;
 	}
-	return result;
+	return new LRESULT (code);
 }
 
 }

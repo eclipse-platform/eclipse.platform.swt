@@ -757,7 +757,10 @@ public void setDefaultButton (Button button) {
 
 void setDefaultButton (Button button, boolean save) {
 	if (button == null) {
-		if (defaultButton == saveDefault) return;
+		if (defaultButton == saveDefault) {
+			if (save) saveDefault = null;
+			return;
+		}
 	} else {
 		if (button.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		if ((button.style & SWT.PUSH) == 0) return;

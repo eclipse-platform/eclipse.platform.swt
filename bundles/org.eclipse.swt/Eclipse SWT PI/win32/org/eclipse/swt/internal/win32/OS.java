@@ -379,6 +379,7 @@ public class OS {
 	public static final int HORZRES = 0x8;
 	public static final int HTBORDER = 0x12;
 	public static final int HTCLIENT = 0x1;
+	public static final int HTERROR = -2;
 	public static final int HTHSCROLL = 0x6;
 	public static final int HTMENU = 0x5;
 	public static final int HTNOWHERE = 0x0;
