@@ -565,6 +565,15 @@ public void disposeExec (Runnable runnable) {
 	disposeList = newDisposeList;
 }
 
+void drawMenuBars () {
+	if (bars == null) return;
+	for (int i=0; i<bars.length; i++) {
+		Menu menu = bars [i];
+		if (menu != null && !menu.isDisposed ()) menu.update ();
+	}
+	bars = null;
+}
+
 /**
  * Does whatever display specific cleanup is required, and then
  * uses the code in <code>SWTError.error</code> to handle the error.
@@ -700,28 +709,6 @@ public Rectangle getBounds () {
 	int height = OS.GetSystemMetrics (OS.SM_CYVIRTUALSCREEN);
 	return new Rectangle (x, y, width, height);
 }
-
-/**
- * Returns the button dismissal ordering, one of <code>LEFT</code> or <code>RIGHT</code>.
- * The button dismissal ordering is the alignment that should be used
- * when positioning the default dismissal button for a dialog.  For example,
- * in a dialog that contains an OK and CANCEL button, on platforms where
- * the button dismissal order is <code>LEFT</code>, the button ordering should be
- * OK/CANCEL.  When button dismissal order is <code>RIGHT</code>, the button ordering
- * should be CANCEL/OK.
- *
- * @return the button dismissal order
- *
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @since 2.1
- */
-//public int getButtonOrder () {
-//	checkDevice ();
-//	return SWT.LEFT;
-//}
 
 /**
  * Returns the display which the currently running thread is
@@ -863,6 +850,28 @@ public Object getData () {
 	checkDevice ();
 	return data;
 }
+
+/**
+ * Returns the button dismissal alignment, one of <code>LEFT</code> or <code>RIGHT</code>.
+ * The button dismissal alignment is the ordering that should be used when positioning the
+ * default dismissal button for a dialog.  For example, in a dialog that contains an OK and
+ * CANCEL button, on platforms where the button dismissal alignment is <code>LEFT</code>, the
+ * button ordering should be OK/CANCEL.  When button dismissal alignment is <code>RIGHT</code>,
+ * the button ordering should be CANCEL/OK.
+ *
+ * @return the button dismissal order
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.1
+ */
+public int getDismissalAlignment () {
+	checkDevice ();
+	return SWT.LEFT;
+}
+
 
 /**
  * Returns the longest duration, in milliseconds, between
@@ -1463,7 +1472,7 @@ void postEvent (Event event) {
  */
 public boolean readAndDispatch () {
 	checkDevice ();
-	updateMenuBars ();
+	drawMenuBars ();
 	runPopups ();
 	if (OS.PeekMessage (msg, 0, 0, 0, OS.PM_REMOVE)) {
 		if (!isWakeMessage (msg)) {
@@ -2247,15 +2256,6 @@ void updateFont () {
 			shell.updateFont (oldFont, newFont);
 		}
 	}
-}
-
-void updateMenuBars () {
-	if (bars == null) return;
-	for (int i=0; i<bars.length; i++) {
-		Menu menu = bars [i];
-		if (menu != null && !menu.isDisposed ()) menu.update ();
-	}
-	bars = null;
 }
 
 /**
