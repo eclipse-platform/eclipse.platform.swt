@@ -509,6 +509,7 @@ int Pt_CB_WEB_COMPLETE(int info) {
 	event.display = display;
 	event.widget = this;
 	event.location = url;
+	event.top = true;
 	for (int i = 0; i < locationListeners.length; i++)
 		locationListeners[i].changed(event);
 	ProgressEvent progress = new ProgressEvent(this);

@@ -146,7 +146,7 @@ public BrowserExample(Composite parent) {
 		browser.addLocationListener(new LocationListener() {
 			public void changed(LocationEvent event) {
 				busy = true;
-				location.setText(event.location);
+				if (event.top) location.setText(event.location);
 			}
 			public void changing(LocationEvent event) {
 			}

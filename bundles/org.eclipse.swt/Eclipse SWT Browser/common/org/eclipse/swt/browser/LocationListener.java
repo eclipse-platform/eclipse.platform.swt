@@ -38,9 +38,9 @@ public interface LocationListener extends SWTEventListener {
  * <p>The following fields in the <code>LocationEvent</code> apply:
  * <ul>
  * <li>(in) location the location to be loaded
- * <li>(in) doit can be set to <code>false</code> to prevent the location
- * from being loaded 
  * <li>(in) widget the <code>Browser</code> whose location is changing
+ * <li>(in/out) doit can be set to <code>false</code> to prevent the location
+ * from being loaded 
  * </ul>
  * 
  * @param event the <code>LocationEvent</code> that specifies the location
@@ -57,6 +57,8 @@ public void changing(LocationEvent event);
  * <p>The following fields in the <code>LocationEvent</code> apply:
  * <ul>
  * <li>(in) location the current location
+ * <li>(in) top <code>true</code> if the location opens in the top frame or
+ * <code>false</code> otherwise
  * <li>(in) widget the <code>Browser</code> whose location has changed
  * </ul>
  * 
