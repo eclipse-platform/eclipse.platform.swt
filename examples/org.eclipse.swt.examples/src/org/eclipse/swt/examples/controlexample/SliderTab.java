@@ -187,7 +187,7 @@ class SliderTab extends RangeTab {
 	 * Gets the text for the tab folder item.
 	 */
 	String getTabText () {
-		return ControlExample.getResourceString("Slider_and_Scale");
+		return "Slider & Scale";
 	}
 	
 	/**

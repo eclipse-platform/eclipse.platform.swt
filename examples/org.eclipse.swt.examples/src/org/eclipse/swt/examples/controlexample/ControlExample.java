@@ -96,13 +96,13 @@ public class ControlExample {
 	void createControlExampleMenu(final Shell shell) {
 		Menu bar = new Menu (shell, SWT.BAR);
 		MenuItem consoleItem = new MenuItem (bar, SWT.CASCADE);
-		consoleItem.setText ("Controls");
+		consoleItem.setText (ControlExample.getResourceString("Menu_Controls"));
 		shell.setMenuBar (bar);
 		Menu dropDown = new Menu (bar);
 		consoleItem.setMenu (dropDown);
 
 		final MenuItem showEvents = new MenuItem (dropDown, SWT.CHECK);
-		showEvents.setText ("&Log Events");
+		showEvents.setText (ControlExample.getResourceString("MenuItem_Log"));
 		showEvents.addListener (SWT.Selection, new Listener () {
 			public void handleEvent (Event e) {
 				if (showEvents.getSelection()) {
@@ -114,7 +114,7 @@ public class ControlExample {
 		});
 		
 		final MenuItem exit = new MenuItem (dropDown, SWT.NONE);
-		exit.setText ("E&xit");
+		exit.setText (ControlExample.getResourceString("MenuItem_Exit"));
 		exit.addListener (SWT.Selection, new Listener () {
 			public void handleEvent (Event e) {
 				shell.dispose();
@@ -131,7 +131,7 @@ public class ControlExample {
 
 		MenuItem copy = new MenuItem (popup, SWT.PUSH);
 		copy.setAccelerator(SWT.MOD1 + 'C');
-		copy.setText ("&Copy\tCtrl+C");
+		copy.setText (ControlExample.getResourceString("MenuItem_Copy") + "\tCtrl+C");
 		copy.addListener (SWT.Selection, new Listener () {
 			public void handleEvent (Event event) {
 				console.copy ();
@@ -139,14 +139,14 @@ public class ControlExample {
 		});
 		MenuItem selectAll = new MenuItem (popup, SWT.PUSH);
 		selectAll.setAccelerator(SWT.MOD1 + 'A');
-		selectAll.setText("Select &All");
+		selectAll.setText(ControlExample.getResourceString("MenuItem_SelectAll"));
 		selectAll.addListener (SWT.Selection, new Listener () {
 			public void handleEvent (Event event) {
 				console.selectAll ();
 			}
 		});
 		MenuItem clear = new MenuItem (popup, SWT.PUSH);
-		clear.setText ("C&lear");
+		clear.setText (ControlExample.getResourceString("MenuItem_Clear"));
 		clear.addListener (SWT.Selection, new Listener () {
 			public void handleEvent (Event event) {
 				console.setText ("");
