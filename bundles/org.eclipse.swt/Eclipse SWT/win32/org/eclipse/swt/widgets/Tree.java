@@ -1069,9 +1069,9 @@ LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 }
 
 LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
-	Event e = createMouseEvent(SWT.MouseDown, 1, wParam, lParam);
-	e.item = this;
-	notifyParentListeners(SWT.ChildMouseDown, e);
+	Event event = new Event();
+	event.item = this;
+	notifyParentListeners(SWT.Activate, event);
 	
 	/*
 	* Feature in Windows.  When a tree item is
@@ -1108,7 +1108,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 			}
 			tvItem.state = state << 12;
 			OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
-			Event event = new Event ();
+			event = new Event ();
 			event.item = items [tvItem.lParam];
 			event.detail = SWT.CHECK;
 			postEvent (SWT.Selection, event);
@@ -1244,7 +1244,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	tvItem.hItem = hNewItem;
 	tvItem.mask = OS.TVIF_STATE | OS.TVIF_PARAM;
 	OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-	Event event = new Event ();
+	event = new Event ();
 	if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
 		event.item = items [tvItem.lParam];
 	}
@@ -1269,9 +1269,9 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 }
 
 LRESULT WM_RBUTTONDOWN (int wParam, int lParam) {
-	Event e = createMouseEvent(SWT.MouseDown, 3, wParam, lParam);
-	e.item = this;
-	notifyParentListeners(SWT.ChildMouseDown, e);
+	Event event = new Event();
+	event.item = this;
+	notifyParentListeners(SWT.Activate, event);
 	
 	/*
 	* Feature in Windows.  The receiver uses WM_RBUTTONDOWN

@@ -2989,9 +2989,9 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 
 LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	
-	Event e = createMouseEvent(SWT.MouseDown, 1, wParam, lParam);
-	e.item = this;
-	notifyParentListeners(SWT.ChildMouseDown, e);
+	Event event = new Event();
+	event.item = this;
+	notifyParentListeners(SWT.Activate, event);
 	
 	sendMouseEvent (SWT.MouseDown, 1, OS.WM_LBUTTONDOWN, wParam, lParam);
 	int result = callWindowProc (OS.WM_LBUTTONDOWN, wParam, lParam);
@@ -3038,9 +3038,9 @@ LRESULT WM_MBUTTONDBLCLK (int wParam, int lParam) {
 }
 
 LRESULT WM_MBUTTONDOWN (int wParam, int lParam) {
-	Event e = createMouseEvent(SWT.MouseDown, 2, wParam, lParam);
-	e.item = this;
-	notifyParentListeners(SWT.ChildMouseDown, e);
+	Event event = new Event();
+	event.item = this;
+	notifyParentListeners(SWT.Activate, event);
 	
 	sendMouseEvent (SWT.MouseDown, 2, OS.WM_MBUTTONDOWN, wParam, lParam);
 	int result = callWindowProc (OS.WM_MBUTTONDOWN, wParam, lParam);
@@ -3350,9 +3350,9 @@ LRESULT WM_RBUTTONDBLCLK (int wParam, int lParam) {
 }
 
 LRESULT WM_RBUTTONDOWN (int wParam, int lParam) {
-	Event e = createMouseEvent(SWT.MouseDown, 3, wParam, lParam);
-	e.item = this;
-	notifyParentListeners(SWT.ChildMouseDown, e);
+	Event event = new Event();
+	event.item = this;
+	notifyParentListeners(SWT.Activate, event);
 	
 	sendMouseEvent (SWT.MouseDown, 3, OS.WM_RBUTTONDOWN, wParam, lParam);
 	int result = callWindowProc (OS.WM_RBUTTONDOWN, wParam, lParam);
@@ -3385,18 +3385,18 @@ LRESULT WM_SETCURSOR (int wParam, int lParam) {
 LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	
 	/* Build the focus in list */
-	int index = 0;
-	Control [] focusIn = getPath ();
-	Display display = getDisplay ();
-	Control control = display.findControl (wParam);
-	if (control != null) {
-		Control [] focusOut = control.getPath ();
-		int length = Math.min (focusIn.length, focusOut.length);
-		while (index < length) {
-			if (focusIn [index] != focusOut [index]) break;
-			index++;
-		}
-	}
+//	int index = 0;
+//	Control [] focusIn = getPath ();
+//	Display display = getDisplay ();
+//	Control control = display.findControl (wParam);
+//	if (control != null) {
+//		Control [] focusOut = control.getPath ();
+//		int length = Math.min (focusIn.length, focusOut.length);
+//		while (index < length) {
+//			if (focusIn [index] != focusOut [index]) break;
+//			index++;
+//		}
+//	}
 	
 	/*
 	* It is possible (but unlikely), that application
@@ -3414,11 +3414,14 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	* this happens, keep processing those widgets that
 	* are not disposed.
 	*/
-	for (int i=focusIn.length-1; i>=index; --i) {
-		if (!focusIn [i].isDisposed ()) {
-			focusIn [i].sendEvent (SWT.Activate);
-		}
-	}
+//	for (int i=focusIn.length-1; i>=index; --i) {
+//		if (!focusIn [i].isDisposed ()) {
+//			focusIn [i].sendEvent (SWT.Activate);
+//		}
+//	}
+	Event event = new Event();
+	event.item = this;
+	notifyParentListeners(SWT.Activate, event);
 
 	/*
 	* It is possible (but unlikely), that application

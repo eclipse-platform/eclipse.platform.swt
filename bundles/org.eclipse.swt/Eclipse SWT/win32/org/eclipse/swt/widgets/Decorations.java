@@ -940,7 +940,10 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 		* Windows message by returning zero as the result of
 		* the window proc.
 		*/
-		sendEvent (SWT.Activate);
+//		Event e = new Event();
+//		e.item = this;
+//		notifyParentListeners(SWT.Activate, e);
+		sendEvent(SWT.Activate);
 		if (isDisposed ()) return LRESULT.ZERO;
 		if (restoreFocus ()) return LRESULT.ZERO;
 	}

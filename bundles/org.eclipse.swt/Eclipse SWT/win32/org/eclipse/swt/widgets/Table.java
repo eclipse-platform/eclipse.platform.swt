@@ -1944,9 +1944,9 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 }
 
 LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
-	Event e = createMouseEvent(SWT.MouseDown, 1, wParam, lParam);
-	e.item = this;
-	notifyParentListeners(SWT.ChildMouseDown, e);
+	Event event = new Event();
+	event.item = this;
+	notifyParentListeners(SWT.Activate, event);
 	
 	/*
 	* Feature in Windows.  For some reason, capturing
@@ -2104,9 +2104,9 @@ LRESULT WM_RBUTTONDBLCLK (int wParam, int lParam) {
 
 LRESULT WM_RBUTTONDOWN (int wParam, int lParam) {
 	
-	Event e = createMouseEvent(SWT.MouseDown, 3, wParam, lParam);
-	e.item = this;
-	notifyParentListeners(SWT.ChildMouseDown, e);
+	Event event = new Event();
+	event.item = this;
+	notifyParentListeners(SWT.Activate, event);
 	
 	/*
 	* Feature in Windows.  For some reason, capturing
