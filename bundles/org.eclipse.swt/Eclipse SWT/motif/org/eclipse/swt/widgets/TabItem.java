@@ -49,16 +49,13 @@ public TabItem (TabFolder parent, int style) {
 public TabItem (TabFolder parent, int style, int index) {
 	super (parent, style);
 	parent.createChild (this, index);
-	addListener(SWT.Dispose, new Listener() {
-		public void handleEvent(Event event) {disposeItem();}});
 }
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
-/**
- * Dispose the receiver.
- */
-void disposeItem () {
+
+public void dispose() {
+	super.dispose();
 	parent.destroyChild(this);
 	parent = null;
 	control = null;
