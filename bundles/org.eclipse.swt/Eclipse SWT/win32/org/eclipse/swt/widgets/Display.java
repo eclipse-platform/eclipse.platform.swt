@@ -311,8 +311,7 @@ public class Display extends Device {
 	static final int SWT_GETACCEL 		= OS.WM_APP + 1;
 	static final int SWT_KEYMSG	 		= OS.WM_APP + 2;
 	static final int SWT_DESTROY	 	= OS.WM_APP + 3;
-	static final int SWT_RESIZE			= OS.WM_APP + 4;
-	static final int SWT_TRAYICONMSG	= OS.WM_APP + 5;
+	static final int SWT_TRAYICONMSG	= OS.WM_APP + 4;
 	static int SWT_TASKBARCREATED;
 	
 	/* Package Name */
@@ -756,11 +755,6 @@ int embeddedProc (int hwnd, int msg, int wParam, int lParam) {
 			if (getMsgCallback != null) getMsgCallback.dispose ();
 			embeddedCallback = getMsgCallback = null;
 			embeddedProc = getMsgProc = 0;
-			break;
-		}
-		case SWT_RESIZE: {
-			int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
-			OS.SetWindowPos (wParam, 0, 0, 0, lParam & 0xFFFF, lParam >> 16, flags);
 			break;
 		}
 	}
@@ -1462,14 +1456,6 @@ int getMsgProc (int code, int wParam, int lParam) {
 		MSG msg = new MSG ();
 		OS.MoveMemory (msg, lParam, MSG.sizeof);
 		switch (msg.message) {
-			case SWT_RESIZE: {
-				if (msg.hwnd == 0 && msg.wParam != 0) {
-					OS.PostMessage (embeddedHwnd, SWT_RESIZE, msg.wParam, msg.lParam);
-					msg.message = OS.WM_NULL;
-					OS.MoveMemory (lParam, msg, MSG.sizeof);
-				}
-				break;
-			}
 			case OS.WM_KEYDOWN:
 			case OS.WM_KEYUP:
 			case OS.WM_SYSKEYDOWN:
