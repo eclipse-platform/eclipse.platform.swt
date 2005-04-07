@@ -134,7 +134,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
-void createHandle () {
+void createHandle (int index) {
 	SWT.error(SWT.ERROR_NOT_IMPLEMENTED);//tmp code
 	state |= HANDLE;
 	int clazz = display.PtContainer;
