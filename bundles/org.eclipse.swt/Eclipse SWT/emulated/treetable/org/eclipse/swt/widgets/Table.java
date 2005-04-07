@@ -3218,7 +3218,7 @@ public void setTopIndex (int index) {
 	int change = topIndex - index;
 	topIndex = index;
 	getVerticalBar ().setSelection (topIndex);
-	if (parent.drawCount == 0) {
+	if (drawCount == 0) {
 		GC gc = new GC (this);
 		gc.copyArea (0, 0, clientArea.width, clientArea.height, 0, change * itemHeight);
 		gc.dispose ();
