@@ -66,10 +66,8 @@ public void test_createComposites() {
 	// Warm up.
 	for(samples = 0; samples < 2; samples++) {
 		Shell shell = new Shell(display);
-		shell.setLayout(new FillLayout());
 		for (int i = 0; i < 100; i++) {
 			Composite c = new Composite(shell, SWT.NONE);
-			c.setLayout(new FillLayout());
 			for (int j = 0; j < 10; j++) {
 				Composite c2 = new Composite(c, SWT.NONE);
 			}
@@ -80,11 +78,9 @@ public void test_createComposites() {
 
 	for(samples = 0; samples < 10; samples++) {
 		Shell shell = new Shell(display);
-		shell.setLayout(new FillLayout());
 		meter.start();
 		for (int i = 0; i < 100; i++) {
 			Composite c = new Composite(shell, SWT.NONE);
-			c.setLayout(new FillLayout());
 			for (int j = 0; j < 30; j++) {
 				Composite c2 = new Composite(c, SWT.NONE);
 			}
@@ -218,6 +214,7 @@ public void test_imageDrawing() {
 		GC gc = new GC(image);
 		for(int i = 0; i < 10000; i++) {
 			x1 = (x1 + 5) % width; y1 = (y1 + 5) % height; x2 = (x2 + 5) % width; y2 = (y2 + 5) % height;
+			gc.setLineStyle(SWT.LINE_SOLID);
 			gc.drawLine(x1, y1, x2, y2);
 			gc.setForeground((i & 1) == 0 ? color1 : color2);
 			gc.setBackground((i & 1) == 0 ? color1 : color2);
@@ -260,6 +257,7 @@ public void test_windowDrawing() {
 		GC gc = new GC(c);
 		for(int i = 0; i < 2000; i++) {
 			x1 = (x1 + 5) % width; y1 = (y1 + 5) % height; x2 = (x2 + 5) % width; y2 = (y2 + 5) % height;
+			gc.setLineStyle(SWT.LINE_SOLID);
 			gc.drawLine(x1, y1, x2, y2);
 			gc.setForeground((i & 1) == 0 ? color1 : color2);
 			gc.setBackground((i & 1) == 0 ? color1 : color2);
