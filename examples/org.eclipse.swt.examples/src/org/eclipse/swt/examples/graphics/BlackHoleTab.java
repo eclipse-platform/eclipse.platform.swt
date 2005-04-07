@@ -14,16 +14,16 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Display;
 
-public class BlackWholeTab extends GraphicsTab {
+public class BlackHoleTab extends GraphicsTab {
 	
 	int size = 1;
 	
-public BlackWholeTab(GraphicsExample example) {
+public BlackHoleTab(GraphicsExample example) {
 	super(example);
 }
 
 public String getText() {
-	return GraphicsExample.getResourceString("BlackWhole"); //$NON-NLS-1$
+	return GraphicsExample.getResourceString("BlackHole"); //$NON-NLS-1$
 }
 
 public boolean isAnimated() {
