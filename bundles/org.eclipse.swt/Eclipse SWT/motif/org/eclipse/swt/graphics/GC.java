@@ -2929,6 +2929,10 @@ static void setCairoClip(int /*long*/ cairo, int /*long*/ clipRgn) {
 	Cairo.cairo_clip(cairo);
 	Cairo.cairo_new_path(cairo);
 }
+static void setCairoPatternColor(int /*long*/ pattern, int offset, Color c) {
+	XColor color = c.handle;
+	Cairo.cairo_pattern_add_color_stop(pattern, offset, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF, 1);
+}
 void setClipping(int clipRgn) {
 	if (clipRgn == 0) {
 		if (data.clipRgn != 0) {

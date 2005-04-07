@@ -47,8 +47,8 @@ public abstract class Device implements Drawable {
 	/* System Font */
 	Font systemFont;
 	
-	Callback drawPatternCallback;
-	int drawPatternProc;
+	Callback drawPatternCallback, axialShadingCallback;
+	int drawPatternProc, axialShadingProc;
 
 	/*
 	* TEMPORARY CODE. When a graphics object is
@@ -105,6 +105,14 @@ public Device(DeviceData data) {
 	}
 }
 
+int axialShadingProc (int ref, int in, int out) {
+	Object object = OS.JNIGetObject (ref);
+	if (object instanceof Pattern) {
+		return ((Pattern) object).axialShadingProc (ref, in, out);
+	}
+	return 0;
+}
+
 /**
  * Throws an <code>SWTException</code> if the receiver can not
  * be accessed by the caller. This may include both checks on
@@ -151,6 +159,11 @@ void createPatternCallbacks () {
 		drawPatternCallback = new Callback(this, "drawPatternProc", 2);
 		drawPatternProc = drawPatternCallback.getAddress();
 		if (drawPatternProc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+	}
+	if (axialShadingCallback == null) {
+		axialShadingCallback = new Callback(this, "axialShadingProc", 3);
+		axialShadingProc = axialShadingCallback.getAddress();
+		if (axialShadingProc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	}
 }
 
@@ -595,8 +608,9 @@ void new_Object (Object object) {
  */
 protected void release () {
 	if (drawPatternCallback != null) drawPatternCallback.dispose();
-	drawPatternCallback = null;
-	drawPatternProc = 0;
+	if (axialShadingCallback != null) axialShadingCallback.dispose();
+	axialShadingCallback = drawPatternCallback = null;
+	axialShadingProc = drawPatternProc = 0;
 
 	OS.CGColorSpaceRelease(colorspace);
 	colorspace = 0;

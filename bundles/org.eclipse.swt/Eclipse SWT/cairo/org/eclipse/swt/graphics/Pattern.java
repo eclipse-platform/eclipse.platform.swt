@@ -37,6 +37,24 @@ public Pattern(Device device, Image image) {
 	Cairo.cairo_pattern_set_extend(handle, Cairo.CAIRO_EXTEND_REPEAT);
 	if (device.tracking) device.new_Object(this);
 }
+
+public Pattern(Device device, float x1, float y1, float x2, float y2, Color color1, Color color2) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (color1 == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (color1.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (color2 == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (color2.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	this.device = device;
+	device.checkCairo();
+	handle = Cairo.cairo_pattern_create_linear(x1, y1, x2, y2);
+	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	//TODO - how about alpha?
+	GC.setCairoPatternColor(handle, 0, color1);
+	GC.setCairoPatternColor(handle, 1, color2);
+	Cairo.cairo_pattern_set_extend(handle, Cairo.CAIRO_EXTEND_REPEAT);
+	if (device.tracking) device.new_Object(this);
+}
 	
 public void dispose() {
 	if (handle == 0) return;

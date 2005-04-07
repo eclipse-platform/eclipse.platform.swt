@@ -44,6 +44,35 @@ public Pattern(Device device, Image image) {
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (device.tracking) device.new_Object(this);
 }
+
+public Pattern(Device device, float x1, float y1, float x2, float y2, Color foreground, Color background) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (foreground == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (foreground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (background == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (background.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	this.device = device;
+	device.checkGDIP();
+	//TODO - how about alpha?
+	int colorRef = foreground.handle;
+	int rgb = ((colorRef >> 16) & 0xFF) | (colorRef & 0xFF00) | ((colorRef & 0xFF) << 16);
+	int foreColor = Gdip.Color_new(0xFF << 24 | rgb);
+	colorRef = background.handle;
+	rgb = ((colorRef >> 16) & 0xFF) | (colorRef & 0xFF00) | ((colorRef & 0xFF) << 16);
+	int backColor = Gdip.Color_new(0xFF << 24 | rgb);
+	PointF p1 = new PointF();
+	p1.X = x1;
+	p1.Y = y1;
+	PointF p2 = new PointF();
+	p2.X = x2;
+	p2.Y = y2;
+	handle = Gdip.LinearGradientBrush_new(p1, p2, foreColor, backColor);
+	Gdip.Color_delete(foreColor);
+	Gdip.Color_delete(backColor);
+	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	if (device.tracking) device.new_Object(this);
+}
 	
 public void dispose() {
 	if (handle == 0) return;
