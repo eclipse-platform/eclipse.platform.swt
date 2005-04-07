@@ -15,6 +15,41 @@
 
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_carbon_OS_##func
 
+#ifndef NO_NewGlobalRef
+JNIEXPORT jint JNICALL OS_NATIVE(NewGlobalRef)
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NewGlobalRef_FUNC);
+	rc = (jint)(*env)->NewGlobalRef(env, arg0);
+fail:
+	OS_NATIVE_EXIT(env, that, NewGlobalRef_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DeleteGlobalRef
+JNIEXPORT void JNICALL OS_NATIVE(DeleteGlobalRef)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, DeleteGlobalRef_FUNC);
+	(*env)->DeleteGlobalRef(env, (jobject)arg0);
+	OS_NATIVE_EXIT(env, that, DeleteGlobalRef_FUNC);
+}
+#endif
+
+#ifndef NO_JNIGetObject
+JNIEXPORT jobject JNICALL OS_NATIVE(JNIGetObject)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jobject rc = 0;
+	OS_NATIVE_ENTER(env, that, JNIGetObject_FUNC);
+	rc = (jobject)arg0;
+fail:
+	OS_NATIVE_EXIT(env, that, JNIGetObject_FUNC);
+	return rc;
+}
+#endif
 
 #ifndef NO_CGAffineTransformConcat
 JNIEXPORT void JNICALL OS_NATIVE(CGAffineTransformConcat)
@@ -118,6 +153,19 @@ fail:
 }
 #endif
 
+#ifndef NO_CGContextGetCTM
+JNIEXPORT void JNICALL OS_NATIVE(CGContextGetCTM)
+	(JNIEnv *env, jclass that, jint arg0, jfloatArray arg1)
+{
+	jfloat *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, CGContextGetCTM_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetFloatArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	*(CGAffineTransform *)lparg1 = CGContextGetCTM((CGContextRef)arg0);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseFloatArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, CGContextGetCTM_FUNC);
+}
+#endif
 
 #ifndef NO_CGContextGetPathBoundingBox
 JNIEXPORT void JNICALL OS_NATIVE(CGContextGetPathBoundingBox)

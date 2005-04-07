@@ -711,6 +711,11 @@ public class OS extends Platform {
 	public static final short wInContent = 1;
 	public static final short wNoHit = 0;
 
+/** JNI natives */
+public static final native int NewGlobalRef(Object object);
+public static final native void DeleteGlobalRef(int globalRef);
+public static final native Object JNIGetObject(int globalRef);
+
 /** Natives */
 public static final native int kHIViewWindowContentID();
 public static final native int kPMDocumentFormatPDF();
@@ -815,6 +820,7 @@ public static final native void CGContextFillPath (int ctx);
 public static final native void CGContextStrokeRect (int ctx, CGRect rect);
 public static final native void CGContextFillRect (int ctx, CGRect rect);
 public static final native void CGContextFlush (int ctx);
+public static final native void CGContextGetCTM (int context, float[] result);
 public static final native int CGContextGetInterpolationQuality (int context	);
 public static final native void CGContextGetPathBoundingBox(int ctx, CGRect rect);
 public static final native void CGContextGetTextPosition (int ctx, CGPoint point);

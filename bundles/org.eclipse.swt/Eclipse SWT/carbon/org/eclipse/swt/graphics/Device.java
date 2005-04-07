@@ -47,6 +47,9 @@ public abstract class Device implements Drawable {
 	/* System Font */
 	Font systemFont;
 	
+	Callback drawPatternCallback;
+	int drawPatternProc;
+
 	/*
 	* TEMPORARY CODE. When a graphics object is
 	* created and the device parameter is null,
@@ -143,6 +146,14 @@ protected void checkDevice () {
 protected void create (DeviceData data) {
 }
 
+void createPatternCallbacks () {
+	if (drawPatternCallback == null) {
+		drawPatternCallback = new Callback(this, "drawPatternProc", 2);
+		drawPatternProc = drawPatternCallback.getAddress();
+		if (drawPatternProc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+	}
+}
+
 /**
  * Disposes of the operating system resources associated with
  * the receiver. After this method has been invoked, the receiver
@@ -190,6 +201,14 @@ void dispose_Object (Object object) {
  * @see #release
  */
 protected void destroy () {
+}
+
+int drawPatternProc (int ref, int context) {
+	Object object = OS.JNIGetObject (ref);
+	if (object instanceof Pattern) {
+		return ((Pattern) object).drawPatternProc (ref, context);
+	}
+	return 0;
 }
 
 /**
@@ -575,6 +594,10 @@ void new_Object (Object object) {
  * @see #destroy
  */
 protected void release () {
+	if (drawPatternCallback != null) drawPatternCallback.dispose();
+	drawPatternCallback = null;
+	drawPatternProc = 0;
+
 	OS.CGColorSpaceRelease(colorspace);
 	colorspace = 0;
 	

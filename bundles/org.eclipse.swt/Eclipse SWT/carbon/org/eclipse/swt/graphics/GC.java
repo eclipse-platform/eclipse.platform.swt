@@ -408,11 +408,15 @@ public void dispose() {
 	if (stringPtr != 0) OS.DisposePtr(stringPtr);
 	int tabs = data.tabs;
 	if (tabs != 0) OS.DisposePtr(tabs);
+	int forePattern = data.forePattern;
+	if (forePattern != 0) OS.CGPatternRelease(forePattern);
+	int backPattern = data.backPattern;
+	if (backPattern != 0) OS.CGPatternRelease(backPattern);
 	
 	/* Dispose the GC */
 	drawable.internal_dispose_GC(handle, data);
 
-	data.clipRgn = data.atsuiStyle = data.stringPtr = data.layout = data.tabs = 0;
+	data.clipRgn = data.atsuiStyle = data.stringPtr = data.layout = data.tabs = data.forePattern = data.backPattern = 0;
 	drawable = null;
 	data.image = null;
 	data.string = null;
@@ -1489,6 +1493,14 @@ public Color getBackground() {
 /**
  * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
  */
+public Pattern getBackgroundPattern() {	
+	if (handle == 0) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
+	return data.backgroundPattern;	
+}
+
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
 public int getAlpha() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.alpha;
@@ -1651,6 +1663,14 @@ public FontMetrics getFontMetrics() {
 public Color getForeground() {	
 	if (handle == 0) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
 	return Color.carbon_new(data.device, data.foreground);	
+}
+
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
+public Pattern getForegroundPattern() {	
+	if (handle == 0) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
+	return data.foregroundPattern;	
 }
 
 /**
@@ -1943,6 +1963,22 @@ public void setBackground(Color color) {
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	data.background = color.handle;
 	OS.CGContextSetFillColor(handle, color.handle);
+	if (data.backPattern != 0) OS.CGPatternRelease(data.backPattern);
+	data.backPattern = 0;
+	data.backgroundPattern = null;
+}
+
+public void setBackgroundPattern(Pattern pattern) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (pattern == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	int colorspace = OS.CGColorSpaceCreatePattern(data.device.colorspace);
+	OS.CGContextSetFillColorSpace(handle, colorspace);
+	OS.CGColorSpaceRelease(colorspace);
+	if (data.backPattern != 0) OS.CGPatternRelease(data.backPattern);
+	data.backPattern = pattern.createPattern(handle);
+	OS.CGContextSetFillPattern(handle, data.backPattern, data.background);
+	data.backgroundPattern = pattern;
 }
 
 void setClipping(int clipRgn) {
@@ -2155,6 +2191,25 @@ public void setForeground(Color color) {
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	data.foreground = color.handle;
 	OS.CGContextSetStrokeColor(handle, color.handle);
+	if (data.forePattern != 0) OS.CGPatternRelease(data.forePattern);
+	data.forePattern = 0;
+	data.foregroundPattern = null;
+}
+
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
+public void setForegroundPattern(Pattern pattern) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (pattern == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	int colorspace = OS.CGColorSpaceCreatePattern(data.device.colorspace);
+	OS.CGContextSetStrokeColorSpace(handle, colorspace);
+	OS.CGColorSpaceRelease(colorspace);
+	if (data.forePattern != 0) OS.CGPatternRelease(data.forePattern);
+	data.forePattern = pattern.createPattern(handle);
+	OS.CGContextSetStrokePattern(handle, data.forePattern, data.foreground);
+	data.foregroundPattern = pattern;
 }
 
 /**
@@ -2496,6 +2551,16 @@ public void setTransform(Transform transform) {
 	} else {
 		data.transform = new float[]{1, 0, 0, 1, 0, 0};
 		data.inverseTransform = new float[]{1, 0, 0, 1, 0, 0};
+	}
+	if (data.forePattern != 0) {
+		OS.CGPatternRelease(data.forePattern);
+		data.forePattern = data.foregroundPattern.createPattern(handle);
+		OS.CGContextSetStrokePattern(handle, data.forePattern, data.foreground);
+	}
+	if (data.backPattern != 0) {
+		OS.CGPatternRelease(data.backPattern);
+		data.backPattern = data.backgroundPattern.createPattern(handle);
+		OS.CGContextSetFillPattern(handle, data.backPattern, data.background);
 	}
 	//TODO - rounds off problems
 	int clipRgn = data.clipRgn;
