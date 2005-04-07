@@ -57,19 +57,17 @@ protected void setUp() throws Exception {
  * - Layouts
  */
 public void test_createComposites() {
-	PerformanceMeter meter = createMeter("Create 1000 composites");
+	PerformanceMeter meter = createMeter("Create composites");
 	int samples;
 
     Performance performance = Performance.getDefault();
-    performance.tagAsGlobalSummary(meter, "Create 1000 composites", Dimension.CPU_TIME);
+    performance.tagAsGlobalSummary(meter, "Create composites", Dimension.CPU_TIME);
 	
 	// Warm up.
 	for(samples = 0; samples < 2; samples++) {
 		Shell shell = new Shell(display);
-		shell.setLayout(new FillLayout());
 		for (int i = 0; i < 100; i++) {
 			Composite c = new Composite(shell, SWT.NONE);
-			c.setLayout(new FillLayout());
 			for (int j = 0; j < 10; j++) {
 				Composite c2 = new Composite(c, SWT.NONE);
 			}
@@ -80,12 +78,10 @@ public void test_createComposites() {
 
 	for(samples = 0; samples < 10; samples++) {
 		Shell shell = new Shell(display);
-		shell.setLayout(new FillLayout());
 		meter.start();
 		for (int i = 0; i < 100; i++) {
 			Composite c = new Composite(shell, SWT.NONE);
-			c.setLayout(new FillLayout());
-			for (int j = 0; j < 10; j++) {
+			for (int j = 0; j < 30; j++) {
 				Composite c2 = new Composite(c, SWT.NONE);
 			}
 		}
@@ -97,7 +93,7 @@ public void test_createComposites() {
 }
 
 public void test_createWidgets() {
-	PerformanceMeter meter = createMeter("Create 10 composites of 130 widgets");
+	PerformanceMeter meter = createMeter("Create composites and widgets");
 	int samples;
 	
 	for(samples = 0; samples < 10; samples++) {
@@ -131,7 +127,7 @@ public void test_createWidgets() {
 }
 
 public void test_layout() {
-	PerformanceMeter meter = createMeter("layout 50 composites 20 times");
+	PerformanceMeter meter = createMeter("layout composites");
 	int samples;
 
 	for(samples = 0; samples < 10; samples++) {
@@ -218,6 +214,7 @@ public void test_imageDrawing() {
 		GC gc = new GC(image);
 		for(int i = 0; i < 10000; i++) {
 			x1 = (x1 + 5) % width; y1 = (y1 + 5) % height; x2 = (x2 + 5) % width; y2 = (y2 + 5) % height;
+			gc.setLineStyle(SWT.LINE_SOLID);
 			gc.drawLine(x1, y1, x2, y2);
 			gc.setForeground((i & 1) == 0 ? color1 : color2);
 			gc.setBackground((i & 1) == 0 ? color1 : color2);
@@ -260,6 +257,7 @@ public void test_windowDrawing() {
 		GC gc = new GC(c);
 		for(int i = 0; i < 2000; i++) {
 			x1 = (x1 + 5) % width; y1 = (y1 + 5) % height; x2 = (x2 + 5) % width; y2 = (y2 + 5) % height;
+			gc.setLineStyle(SWT.LINE_SOLID);
 			gc.drawLine(x1, y1, x2, y2);
 			gc.setForeground((i & 1) == 0 ? color1 : color2);
 			gc.setBackground((i & 1) == 0 ? color1 : color2);
@@ -279,7 +277,7 @@ public void test_windowDrawing() {
 }
 
 public void test_stringDrawing() {
-	PerformanceMeter meter = createMeter("300 strings by GC.drawText");
+	PerformanceMeter meter = createMeter("Draw strings using GC.drawText");
 	int samples;
 	
 	for(samples = 0; samples < 10; samples++) {
@@ -303,7 +301,7 @@ public void test_stringDrawing() {
 		int x1 = 0, y1 = height/2, x2 = width/2, y2 = 0;
 		meter.start();
 		GC gc = new GC(c);
-		for(int i = 0; i < 100; i++) {
+		for(int i = 0; i < 4000; i++) {
 			x1 = (x1 + 5) % width; y1 = (y1 + 5) % height; x2 = (x2 + 5) % width; y2 = (y2 + 5) % height;
 			gc.setFont((i & 1) == 0 ? font1 : font2);
 			gc.setForeground((i & 1) == 0 ? color1 : color2);
@@ -325,11 +323,11 @@ public void test_stringDrawing() {
 }
 
 public void test_fastStringDrawing() {
-	PerformanceMeter meter = createMeter("2000 strings by GC.drawString()");
+	PerformanceMeter meter = createMeter("Draw strings using GC.drawString()");
 	int samples;
 
     Performance performance = Performance.getDefault();
-    performance.tagAsGlobalSummary(meter, "2000 strings by GC.drawString()", Dimension.CPU_TIME);
+    performance.tagAsGlobalSummary(meter, "Draw strings using GC.drawString()", Dimension.CPU_TIME);
 
 	for(samples = 0; samples < 10; samples++) {
 		int width = 640;
@@ -352,7 +350,7 @@ public void test_fastStringDrawing() {
 		int x1 = 0, y1 = height/2, x2 = width/2, y2 = 0;
 		meter.start();
 		GC gc = new GC(c);
-		for(int i = 0; i < 1000; i++) {
+		for(int i = 0; i < 2000; i++) {
 			x1 = (x1 + 5) % width; y1 = (y1 + 5) % height; x2 = (x2 + 5) % width; y2 = (y2 + 5) % height;
 			gc.setFont((i & 1) == 0 ? font1 : font2);
 			gc.setForeground((i & 1) == 0 ? color1 : color2);
