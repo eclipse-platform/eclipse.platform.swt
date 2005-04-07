@@ -227,13 +227,6 @@ void drawWidget (GC gc, RECT rect) {
 
 void enableWidget (boolean enabled) {
 	if (OS.COMCTL32_MAJOR >= 6) {
-		/*
-		* Feature in Windows.  For some reason, setting
-		* LIS_ENABLED state using LM_SETITEM causes the
-		* SysLink to become enabled.  To be specific,
-		* calling IsWindowEnabled() returns true.  The
-		* fix is disable the SysLink after LM_SETITEM.
-		*/
 		LITEM item = new LITEM ();
 		item.mask = OS.LIF_ITEMINDEX | OS.LIF_STATE;
 		item.stateMask = OS.LIS_ENABLED;
@@ -250,6 +243,13 @@ void enableWidget (boolean enabled) {
 		}
 		redraw ();
 	}
+	/*
+	* Feature in Windows.  For some reason, setting
+	* LIS_ENABLED state using LM_SETITEM causes the
+	* SysLink to become enabled.  To be specific,
+	* calling IsWindowEnabled() returns true.  The
+	* fix is disable the SysLink after LM_SETITEM.
+	*/	
 	super.enableWidget (enabled);
 }
 
