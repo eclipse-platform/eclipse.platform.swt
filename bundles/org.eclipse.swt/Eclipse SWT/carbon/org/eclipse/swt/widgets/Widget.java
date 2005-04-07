@@ -797,7 +797,7 @@ boolean isEnabled () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-protected boolean isListening (int eventType) {
+public boolean isListening (int eventType) {
 	checkWidget();
 	return hooks (eventType);
 }

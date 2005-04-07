@@ -318,6 +318,21 @@ int ShowMessage(int hwnd, int lpstrText, int lpstrCaption, int dwType, int lpstr
  * the help.
  */
 int ShowHelp(int hwnd, int pszHelpFile, int uCommand, int dwData, int ptMouse_x, int ptMouse_y, int pDispatchObjectHit) {
+	Browser browser = (Browser)getParent().getParent();
+	Event event = new Event();
+	event.type = SWT.Help;
+	event.display = getDisplay();
+	event.widget = browser;
+	Shell shell = browser.getShell();
+	Control control = browser;
+	do {
+		if (control.isListening(SWT.Help)) {
+			control.notifyListeners(SWT.Help, event);
+			break;
+		}
+		if (control == shell) break;
+		control = control.getParent();
+	} while (true);
 	return COM.S_OK;
 }
 
