@@ -833,6 +833,30 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(HatchBrush_1new)
 }
 #endif
 
+#ifndef NO_Image_1GetHeight
+JNIEXPORT jint JNICALL Gdip_NATIVE(Image_1GetHeight)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Image_1GetHeight_FUNC);
+	rc = (jint)((Image *)arg0)->GetHeight();
+	Gdip_NATIVE_EXIT(env, that, Image_1GetHeight_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Image_1GetWidth
+JNIEXPORT jint JNICALL Gdip_NATIVE(Image_1GetWidth)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Image_1GetWidth_FUNC);
+	rc = (jint)((Image *)arg0)->GetWidth();
+	Gdip_NATIVE_EXIT(env, that, Image_1GetWidth_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_LinearGradientBrush_1SetWrapMode
 JNIEXPORT jint JNICALL Gdip_NATIVE(LinearGradientBrush_1SetWrapMode)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)

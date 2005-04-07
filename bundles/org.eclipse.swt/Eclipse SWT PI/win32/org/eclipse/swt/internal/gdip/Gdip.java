@@ -171,6 +171,8 @@ public static final native boolean GraphicsPath_IsOutlineVisible(int path, float
 public static final native boolean GraphicsPath_IsVisible(int path, float x, float y, int g);
 public static final native int GraphicsPath_SetFillMode(int path, int fillmode);
 public static final native int HatchBrush_new(int hatchStyle, int foreColor, int backColor);
+public static final native int Image_GetWidth(int image);
+public static final native int Image_GetHeight(int image);
 public static final native void HatchBrush_delete(int brush);
 public static final native int Matrix_new(float m11, float m12, float m21, float m22, float dx, float dy);
 public static final native void Matrix_delete(int matrix);
