@@ -255,7 +255,7 @@ public int getWidth () {
 	checkWidget ();
 	short [] width = new short [1];
 	OS.GetDataBrowserTableViewNamedColumnWidth (parent.handle, id, width);
-	return Math.max (0, width [0] - Tree.EXTRA_WIDTH);
+	return Math.max (0, width [0]);
 }
 
 /**
@@ -278,7 +278,7 @@ public void pack () {
 		width = Math.max (width, calculateWidth(parent.getItems (null), index, gc, width));
 	}
 	gc.dispose ();
-	setWidth (width);
+	setWidth (width + Tree.EXTRA_WIDTH);
 }
 
 int calculateWidth (TreeItem[] items, int index, GC gc, int width) {
@@ -431,7 +431,6 @@ public void setText (String string) {
  */
 public void setWidth (int width) {
 	checkWidget ();
-	width += Tree.EXTRA_WIDTH;
 	OS.SetDataBrowserTableViewNamedColumnWidth (parent.handle, id, (short) width);
 	updateHeader ();
 	if (width != lastWidth) resized (width);

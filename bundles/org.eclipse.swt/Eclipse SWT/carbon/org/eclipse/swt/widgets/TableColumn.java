@@ -280,7 +280,7 @@ public int getWidth () {
 	checkWidget ();
 	short [] width = new short [1];
 	OS.GetDataBrowserTableViewNamedColumnWidth (parent.handle, id, width);
-	return Math.max (0, width [0] - Table.EXTRA_WIDTH);
+	return Math.max (0, width [0]);
 }
 
 /**
@@ -308,7 +308,7 @@ public void pack () {
 		}
 	}
 	gc.dispose ();
-	setWidth (width);
+	setWidth (width + Table.EXTRA_WIDTH);
 }
 
 void releaseChild () {
@@ -491,7 +491,6 @@ public void setText (String string) {
  */
 public void setWidth (int width) {
 	checkWidget ();
-	width += Table.EXTRA_WIDTH;
 	OS.SetDataBrowserTableViewNamedColumnWidth (parent.handle, id, (short) width);
 	updateHeader ();
 	if (width != lastWidth) resized (width);
