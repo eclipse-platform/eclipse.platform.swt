@@ -2977,21 +2977,6 @@ int XFocusChange (int w, int client_data, int call_data, int continue_to_dispatc
 		xEvent.detail != OS.NotifyInferior &&
 		xEvent.detail != OS.NotifyNonlinear) return 0;
 
-	/*
-	* Ignore focus change events when the window getting or losing
-	* focus is a menu.  Because XmGetFocusWidget() does not answer
-	* the menu shell (it answers the menu parent), it is necessary
-	* to use XGetInputFocus() to get the real X focus window.
-	*/
-	int xDisplay = xEvent.display;
-	if (xDisplay == 0) return 0;
-	int [] unused = new int [1], xWindow = new int [1];
-	OS.XGetInputFocus (xDisplay, xWindow, unused);
-	if (xWindow [0] != 0) {
-		int widget = OS.XtWindowToWidget (xDisplay, xWindow [0]);
-		if (widget != 0 && OS.XtClass (widget) == OS.xmMenuShellWidgetClass ()) return 0;
-	}
-	
 	/* Process the focus change for the widget */
 	Display display = this.display;
 	Shell shell = getShell ();
