@@ -1245,6 +1245,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		*/
 		width = Math.max (1, Math.max (argList [1], width - trimWidth ()));
 		height = Math.max (1, Math.max (argList [3], height - trimHeight ()));
+		updateResizable (width, height);
 	}
 	if (move && resize) {
 		OS.XtConfigureWidget (shellHandle, x, y, width, height, 0);
