@@ -1831,7 +1831,7 @@ void onMouseDoubleClick (Event event) {
 	postEvent (SWT.DefaultSelection, newEvent);
 }
 void onMouseDown (Event event) {
-	if (!isFocusControl ()) setFocus ();
+	if (!isFocusControl ()) forceFocus ();
 	int index = (event.y - getHeaderHeight ()) / itemHeight + topIndex;
 	if (!(0 <= index && index < availableItemsCount)) return;	/* not on an available item */
 	TreeItem selectedItem = availableItems [index];
