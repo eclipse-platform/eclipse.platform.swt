@@ -3537,7 +3537,7 @@ LRESULT WM_WINDOWPOSCHANGED (int wParam, int lParam) {
 	if (result != null) return result;
 	WINDOWPOS lpwp = new WINDOWPOS ();
 	OS.MoveMemory (lpwp, lParam, WINDOWPOS.sizeof);
-	if ((lpwp.flags & OS.SWP_NOSIZE) == 0) {
+	if ((lpwp.flags & OS.SWP_NOSIZE) == 0 || (lpwp.flags & OS.SWP_DRAWFRAME) != 0) {
 		setResizeChildren (false);
 		int code = callWindowProc (handle, OS.WM_WINDOWPOSCHANGED, wParam, lParam);
 		sendEvent (SWT.Resize);
