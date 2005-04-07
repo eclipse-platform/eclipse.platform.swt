@@ -31,6 +31,8 @@ public final class GCData {
 	public int /*long*/ drawable;
 	public GdkColor foreground;
 	public GdkColor background;
+	public Pattern foregroundPattern;
+	public Pattern backgroundPattern;
 	public int /*long*/ font;
 	public int /*long*/ context;
 	public int /*long*/ layout;

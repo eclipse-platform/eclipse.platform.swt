@@ -95,7 +95,7 @@ public final class Image extends Resource implements Drawable {
 	 */
 	public int /*long*/ mask;
 
-	int /*long*/ surface;
+	int /*long*/ surface, surfaceData;
 	
 	/**
 	 * specifies the transparent pixel
@@ -537,6 +537,41 @@ int /*long*/ createMask(ImageData image, boolean copy) {
 
 void createSurface() {
 	if (surface != 0) return;
+	if (mask != 0) {
+		int[] w = new int[1], h = new int[1];
+	 	OS.gdk_drawable_get_size(pixmap, w, h);
+	 	int width = w[0], height = h[0]; 	
+	 	int /*long*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, true, 8, width, height);
+		if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		int /*long*/ colormap = OS.gdk_colormap_get_system();
+		OS.gdk_pixbuf_get_from_drawable(pixbuf, pixmap, colormap, 0, 0, 0, 0, width, height);
+		int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
+		int /*long*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
+		int /*long*/ gdkImagePtr = OS.gdk_drawable_get_image(mask, 0, 0, width, height);
+		byte[] line = new byte[stride];
+		for (int y=0; y<height; y++) {
+			int /*long*/ offset = pixels + (y * stride);
+			OS.memmove(line, offset, stride);
+			for (int x=0; x<width; x++) {
+				int offset1 = x * 4;
+				if (gdkImagePtr != 0) {
+					if (OS.gdk_image_get_pixel(gdkImagePtr, x, y) == 0) {
+						line[offset1+3] = 0;
+					}
+				}
+				byte temp = line[offset1];
+				line[offset1] = line[offset1 + 2];
+				line[offset1 + 2] = temp;
+			}
+			OS.memmove(offset, line, stride);
+		}
+		if (gdkImagePtr != 0) OS.g_object_unref(gdkImagePtr);
+		surfaceData = OS.g_malloc(stride * height);
+		OS.memmove(surfaceData, pixels, stride * height);
+		surface = Cairo.cairo_surface_create_for_image(surfaceData, Cairo.CAIRO_FORMAT_ARGB32, width, height, stride);
+		OS.g_object_unref(pixbuf);
+		return;
+	}	
 	int /*long*/ xDisplay = OS.GDK_DISPLAY();
 	int /*long*/ xDrawable = OS.GDK_PIXMAP_XID(pixmap);
 	int /*long*/ xVisual = OS.gdk_x11_visual_get_xvisual(OS.gdk_visual_get_system());
@@ -565,7 +600,8 @@ public void dispose () {
 	if (pixmap != 0) OS.g_object_unref(pixmap);
 	if (mask != 0) OS.g_object_unref(mask);
 	if (surface != 0) Cairo.cairo_surface_destroy(surface);
-	surface = pixmap = mask = 0;
+	if (surfaceData != 0) OS.g_free(surfaceData);
+	surfaceData = surface = pixmap = mask = 0;
 	memGC = null;
 	if (device.tracking) device.dispose_Object(this);
 	device = null;

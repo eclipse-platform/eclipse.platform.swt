@@ -43,4 +43,6 @@ public final class GCData {
 	public int gdipGraphics;
 	public int gdipPen;
 	public int gdipBrush;
+	public Pattern foregroundPattern;
+	public Pattern backgroundPattern;
 }

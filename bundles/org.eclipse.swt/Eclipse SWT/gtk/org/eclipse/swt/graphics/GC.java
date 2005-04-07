@@ -1193,7 +1193,11 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int arc
 		int /*long*/ colormap = OS.gdk_colormap_get_system();
 		OS.gdk_colormap_query_color(colormap, color.pixel, color);
 		Cairo.cairo_save(cairo);
-		Cairo.cairo_set_rgb_color(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF);
+		if (data.backgroundPattern != null) {
+			Cairo.cairo_set_pattern(cairo, data.backgroundPattern.handle);
+		} else {
+			Cairo.cairo_set_rgb_color(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF);
+		}
 		Cairo.cairo_translate(cairo, x + width / 2f, y + height / 2f);
 		Cairo.cairo_scale(cairo, width / 2f, height / 2f);
 		Cairo.cairo_arc_negative(cairo, 0, 0, 1, -startAngle * (float)Compatibility.PI / 180,  -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
@@ -1321,7 +1325,11 @@ public void fillOval(int x, int y, int width, int height) {
 		int /*long*/ colormap = OS.gdk_colormap_get_system();
 		OS.gdk_colormap_query_color(colormap, color.pixel, color);
 		Cairo.cairo_save(cairo);
-		Cairo.cairo_set_rgb_color(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF);
+		if (data.backgroundPattern != null) {
+			Cairo.cairo_set_pattern(cairo, data.backgroundPattern.handle);
+		} else {
+			Cairo.cairo_set_rgb_color(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF);
+		}
 		Cairo.cairo_translate(cairo, x + width / 2f, y + height / 2f);
 		Cairo.cairo_scale(cairo, width / 2f, height / 2f);
 		Cairo.cairo_arc_negative(cairo, 0, 0, 1, 0, 2 * (float)Compatibility.PI);
@@ -1350,7 +1358,11 @@ public void fillPath (Path path) {
 	int /*long*/ colormap = OS.gdk_colormap_get_system();
 	OS.gdk_colormap_query_color(colormap, color.pixel, color);
 	Cairo.cairo_save(cairo);
-	Cairo.cairo_set_rgb_color(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF);
+	if (data.backgroundPattern != null) {
+		Cairo.cairo_set_pattern(cairo, data.backgroundPattern.handle);
+	} else {
+		Cairo.cairo_set_rgb_color(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF);
+	}
 	Cairo.cairo_add_path(cairo, path.handle);
 	Cairo.cairo_fill(cairo);
 	Cairo.cairo_restore(cairo);
@@ -1387,7 +1399,11 @@ public void fillPolygon(int[] pointArray) {
 		int /*long*/ colormap = OS.gdk_colormap_get_system();
 		OS.gdk_colormap_query_color(colormap, color.pixel, color);
 		Cairo.cairo_save(cairo);
-		Cairo.cairo_set_rgb_color(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF);
+		if (data.backgroundPattern != null) {
+			Cairo.cairo_set_pattern(cairo, data.backgroundPattern.handle);
+		} else {
+			Cairo.cairo_set_rgb_color(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF);
+		}
 		drawPolyline(cairo, pointArray, true);
 		Cairo.cairo_fill(cairo);
 		Cairo.cairo_restore(cairo);
@@ -1433,7 +1449,11 @@ public void fillRectangle(int x, int y, int width, int height) {
 		int /*long*/ colormap = OS.gdk_colormap_get_system();
 		OS.gdk_colormap_query_color(colormap, color.pixel, color);
 		Cairo.cairo_save(cairo);
-		Cairo.cairo_set_rgb_color(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF);
+		if (data.backgroundPattern != null) {
+			Cairo.cairo_set_pattern(cairo, data.backgroundPattern.handle);
+		} else {
+			Cairo.cairo_set_rgb_color(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF);
+		}
 		Cairo.cairo_rectangle(cairo, x, y, width, height);
 		Cairo.cairo_fill(cairo);
 		Cairo.cairo_restore(cairo);
@@ -1514,7 +1534,11 @@ public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth
 		int /*long*/ colormap = OS.gdk_colormap_get_system();
 		OS.gdk_colormap_query_color(colormap, color.pixel, color);
 		Cairo.cairo_save(cairo);
-		Cairo.cairo_set_rgb_color(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF);
+		if (data.backgroundPattern != null) {
+			Cairo.cairo_set_pattern(cairo, data.backgroundPattern.handle);
+		} else {
+			Cairo.cairo_set_rgb_color(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF);
+		}
 		Cairo.cairo_translate(cairo, nx, ny);
 		Cairo.cairo_scale(cairo, naw2, nah2);
 		Cairo.cairo_move_to(cairo, fw - 1, 0);
@@ -1630,6 +1654,14 @@ public Color getBackground() {
 	int /*long*/ colormap = OS.gdk_colormap_get_system();
 	OS.gdk_colormap_query_color(colormap, color.pixel, color);
 	return Color.gtk_new(data.device, color);	
+}
+
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
+public Pattern getBackgroundPattern() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return data.backgroundPattern;
 }
 
 /**
@@ -1778,6 +1810,14 @@ public Color getForeground() {
 	int /*long*/ colormap = OS.gdk_colormap_get_system();
 	OS.gdk_colormap_query_color(colormap, color.pixel, color);
 	return Color.gtk_new(data.device, color);	
+}
+
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
+public Pattern getForegroundPattern() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return data.foregroundPattern;
 }
 
 /**
@@ -2162,6 +2202,18 @@ public void setBackground(Color color) {
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	OS.gdk_gc_set_background(handle, color.handle);
+	data.backgroundPattern = null;
+}
+
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
+public void setBackgroundPattern(Pattern pattern) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (pattern == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	initCairo();
+	data.backgroundPattern = pattern;
 }
 
 static void setCairoFont(int /*long*/ cairo, Font font) {
@@ -2392,6 +2444,20 @@ public void setForeground(Color color) {
 		GdkColor gdkColor = color.handle;
 		Cairo.cairo_set_rgb_color(cairo, (gdkColor.red & 0xFFFF) / (float)0xFFFF, (gdkColor.green & 0xFFFF) / (float)0xFFFF, (gdkColor.blue & 0xFFFF) / (float)0xFFFF);
 	}
+	data.foregroundPattern = null;
+}
+
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
+public void setForegroundPattern(Pattern pattern) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (pattern == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	initCairo();
+	int /*long*/ cairo = data.cairo;
+	Cairo.cairo_set_pattern(cairo, pattern.handle);
+	data.foregroundPattern = pattern;
 }
 
 /**

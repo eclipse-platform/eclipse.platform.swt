@@ -319,6 +319,7 @@ int createGdipPen() {
 	int color = Gdip.Color_new(data.alpha << 24 | rgb);
 	int pen = Gdip.Pen_new(color, width);
 	Gdip.Color_delete(color);
+	if (data.foregroundPattern != null) Gdip.Pen_SetBrush(pen, data.foregroundPattern.handle);
 	int dashStyle = 0; 
 	switch (style & OS.PS_STYLE_MASK) {
 		case OS.PS_SOLID: dashStyle = Gdip.DashStyleSolid; break;
@@ -357,6 +358,24 @@ int createGdipPen() {
 	return pen;
 }
 
+void destroyGdipBrush(int brush) {
+	int type = Gdip.Brush_GetType(brush);
+	switch (type) {
+		case Gdip.BrushTypeSolidColor:
+			Gdip.SolidBrush_delete(brush);
+			break;
+		case Gdip.BrushTypeHatchFill:
+			Gdip.HatchBrush_delete(brush);
+			break;
+		case Gdip.BrushTypeLinearGradient:
+			Gdip.LinearGradientBrush_delete(brush);
+			break;
+		case Gdip.BrushTypeTextureFill:
+			Gdip.TextureBrush_delete(brush);
+			break;
+	}
+}
+
 /**
  * Disposes of the operating system resources associated with
  * the graphics context. Applications must dispose of all GCs
@@ -368,7 +387,7 @@ public void dispose() {
 	
 	if (data.gdipGraphics != 0) Gdip.Graphics_delete(data.gdipGraphics);
 	if (data.gdipPen != 0) Gdip.Pen_delete(data.gdipPen);
-	if (data.gdipBrush != 0) Gdip.SolidBrush_delete(data.gdipBrush);
+	if (data.gdipBrush != 0) destroyGdipBrush(data.gdipBrush);
 	data.gdipBrush = data.gdipPen = data.gdipGraphics = 0;
 
 	/* Select stock pen and brush objects and free resources */
@@ -2231,6 +2250,14 @@ public Color getBackground() {
 }
 
 /**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
+public Pattern getBackgroundPattern() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return data.backgroundPattern;
+}
+
+/**
  * Returns the width of the specified character in the font
  * selected into the receiver. 
  * <p>
@@ -2429,6 +2456,14 @@ public int getInterpolation() {
 		case Gdip.InterpolationModeHighQuality: return SWT.HIGH;
 	}
 	return SWT.DEFAULT;
+}
+
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
+public Pattern getForegroundPattern() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return data.foregroundPattern;
 }
 
 /** 
@@ -2845,7 +2880,7 @@ public void setAlpha(int alpha) {
 		data.gdipPen = 0;
 	}
 	if (data.gdipBrush != 0) {
-		Gdip.SolidBrush_delete(data.gdipBrush);
+		destroyGdipBrush(data.gdipBrush);
 		data.gdipBrush = 0;
 	}
 }
@@ -2869,7 +2904,7 @@ public void setBackground (Color color) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	if (OS.GetBkColor(handle) == color.handle) return;
+	if (data.backgroundPattern == null && OS.GetBkColor(handle) == color.handle) return;
 	data.background = color.handle;
 	OS.SetBkColor (handle, color.handle);
 	int newBrush = OS.CreateSolidBrush (color.handle);
@@ -2877,9 +2912,23 @@ public void setBackground (Color color) {
 	if (data.hBrush != 0) OS.DeleteObject (data.hBrush);
 	data.hBrush = newBrush;
 	if (data.gdipBrush != 0) {
-		Gdip.SolidBrush_delete(data.gdipBrush);		
+		destroyGdipBrush(data.gdipBrush);
 		data.gdipBrush = 0;
 	}
+	data.backgroundPattern = null;
+}
+
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
+public void setBackgroundPattern (Pattern pattern) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (pattern == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	initGdip(false, false);
+	if (data.gdipBrush != 0) destroyGdipBrush(data.gdipBrush);
+	data.gdipBrush = Gdip.Brush_Clone(pattern.handle);
+	data.backgroundPattern = pattern;
 }
 
 void setClipping(int clipRgn) {
@@ -3035,10 +3084,23 @@ public void setForeground (Color color) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	if (OS.GetTextColor(handle) == color.handle) return;
+	if (data.foregroundPattern == null && OS.GetTextColor(handle) == color.handle) return;
 	data.foreground = color.handle;
 	OS.SetTextColor(handle, color.handle);
 	setPen(color.handle, -1, -1, -1, -1, data.dashes);
+	data.foregroundPattern = null;
+}
+
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
+public void setForegroundPattern (Pattern pattern) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (pattern == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	initGdip(true, false);
+	Gdip.Pen_SetBrush(data.gdipPen, pattern.handle);
+	data.foregroundPattern = pattern;
 }
 
 /**
