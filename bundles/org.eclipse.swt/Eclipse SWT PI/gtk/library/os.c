@@ -11776,6 +11776,16 @@ JNIEXPORT jint JNICALL OS_NATIVE(localeconv_1decimal_1point)
 }
 #endif
 
+#ifndef NO_memmove__III
+JNIEXPORT void JNICALL OS_NATIVE(memmove__III)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, memmove__III_FUNC);
+	memmove((void *)arg0, (const void *)arg1, (size_t)arg2);
+	OS_NATIVE_EXIT(env, that, memmove__III_FUNC);
+}
+#endif
+
 #ifndef NO_memmove__ILorg_eclipse_swt_internal_gtk_GInterfaceInfo_2I
 JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_GInterfaceInfo_2I)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)

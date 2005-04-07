@@ -944,6 +944,7 @@ typedef enum {
 	g_1main_1context_1wakeup_FUNC,
 	getenv_FUNC,
 	localeconv_1decimal_1point_FUNC,
+	memmove__III_FUNC,
 	memmove__ILorg_eclipse_swt_internal_gtk_GInterfaceInfo_2I_FUNC,
 	memmove__ILorg_eclipse_swt_internal_gtk_GObjectClass_2_FUNC,
 	memmove__ILorg_eclipse_swt_internal_gtk_GTypeInfo_2I_FUNC,
