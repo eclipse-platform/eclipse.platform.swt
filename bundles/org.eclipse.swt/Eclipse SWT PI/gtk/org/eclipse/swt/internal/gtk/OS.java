@@ -7491,7 +7491,7 @@ public static final native void memmove(int[] dest, byte[] src, int /*long*/ siz
 public static final native void memmove(byte[] dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(char[] dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(int[] dest, int /*long*/ src, int /*long*/ size);
-public static final native void memmove(int dest, int /*long*/ src, int /*long*/ size);
+public static final native void memmove(int /*long*/ dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(long[] dest, int /*long*/ src, int /*long*/ size);
 public static final native void memset(int /*long*/ buffer, char c, int /*long*/ num);
 public static final native int /*long*/ _pango_attr_background_new (short red, short green, short blue);
