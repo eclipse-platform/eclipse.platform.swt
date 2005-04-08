@@ -236,13 +236,13 @@ void propagateWidget (boolean enabled) {
 	super.propagateWidget (enabled);
 	propagateHandle (enabled, labelHandle, OS.None);
 }
-void redrawWidget (int x, int y, int width, int height, boolean all) {
-	super.redrawWidget (x, y, width, height, all);
+void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boolean allChildren) {
+	super.redrawWidget (x, y, width, height, redrawAll, allChildren);
 	short [] root_x = new short [1], root_y = new short [1];
 	OS.XtTranslateCoords (handle, (short) x, (short) y, root_x, root_y);
 	short [] label_x = new short [1], label_y = new short [1];
 	OS.XtTranslateCoords (labelHandle, (short) 0, (short) 0, label_x, label_y);
-	redrawHandle (root_x [0] - label_x [0], root_y [0] - label_y [0], width, height, labelHandle);
+	redrawHandle (root_x [0] - label_x [0], root_y [0] - label_y [0], width, height, redrawAll, labelHandle);
 }
 void releaseHandle () {
 	super.releaseHandle ();

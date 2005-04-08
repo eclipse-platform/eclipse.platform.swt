@@ -96,10 +96,10 @@ public Caret getCaret () {
 Caret getIMCaret () {
 	return caret;
 }
-void redrawWidget (int x, int y, int width, int height, boolean all) {
+void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boolean allChildren) {
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
-	super.redrawWidget (x, y, width, height, all);
+	super.redrawWidget (x, y, width, height, redrawAll, allChildren);
 	if (isFocus) caret.setFocus ();
 }
 

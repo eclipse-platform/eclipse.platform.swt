@@ -799,14 +799,14 @@ void register () {
 	super.register ();
 	if (focusHandle != 0) display.addWidget (focusHandle, this);
 }
-void redrawWidget (int x, int y, int width, int height, boolean all) {
-	super.redrawWidget (x, y, width, height, all);
-	if (!all) return;
+void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boolean allChildren) {
+	super.redrawWidget (x, y, width, height, redrawAll, allChildren);
+	if (!allChildren) return;
 	Control [] children = _getChildren ();
 	for (int i = 0; i < children.length; i++) {
 		Control child = children [i];
 		Point location = child.getClientLocation ();
-		child.redrawWidget (x - location.x, y - location.y, width, height, all);
+		child.redrawWidget (x - location.x, y - location.y, width, height, redrawAll, allChildren);
 	}
 }
 void releaseChildren () {

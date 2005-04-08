@@ -583,27 +583,24 @@ void propagateHandle (boolean enabled, int widgetHandle, int cursor) {
 	attributes.cursor = cursor;
 	OS.XChangeWindowAttributes (xDisplay, xWindow, mask, attributes);
 }
-void redrawHandle (int x, int y, int width, int height, int widgetHandle) {
+void redrawHandle (int x, int y, int width, int height, boolean redrawAll, int widgetHandle) {
 	int display = OS.XtDisplay (widgetHandle);
 	if (display == 0) return;
 	int window = OS.XtWindow (widgetHandle);
 	if (window == 0) return;
-	int [] argList = {
-		OS.XmNwidth, 0, 		/* 1 */
-		OS.XmNheight, 0, 		/* 3 */
-		OS.XmNborderWidth, 0, 	/* 5 */
-		OS.XmNborderColor, 0,	/* 7 */
-	};
-	OS.XtGetValues (widgetHandle, argList, argList.length / 2);
-	/*
-	* Uncomment this code to force the window trimmings to redraw.
-	*/
-//	if (argList [5] != 0) {
-//		/* Force the border to repaint by setting the color */
-//		OS.XtSetValues (widgetHandle, argList, argList.length / 2);
-//	}
-	if ((x < argList [1]) && (y < argList [3]) && (x + width > 0) && (y + height > 0)) {
-		OS.XClearArea (display, window, x, y, width, height, true);
+	if (redrawAll) {
+		OS.XClearArea (display, window, 0, 0, 0, 0, true);
+	} else {
+		if (width > 0 && height > 0) {
+			int [] argList = {
+				OS.XmNwidth, 0, 		/* 1 */
+				OS.XmNheight, 0, 		/* 3 */
+			};
+			OS.XtGetValues (widgetHandle, argList, argList.length / 2);
+			if ((x < argList [1]) && (y < argList [3]) && (x + width > 0) && (y + height > 0)) {
+				OS.XClearArea (display, window, x, y, width, height, true);
+			}
+		}
 	}
 }
 void register () {

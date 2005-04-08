@@ -1425,7 +1425,7 @@ void realizeChildren () {
  */
 public void redraw () {
 	checkWidget();
-	redrawWidget (0, 0, 0, 0, false);
+	redrawWidget (0, 0, 0, 0, true, false);
 }
 /**
  * Causes the rectangular area of the receiver specified by
@@ -1458,11 +1458,12 @@ public void redraw () {
  */
 public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget ();
-	if (width <= 0 || height <= 0) return;
-	redrawWidget (x, y, width, height, all);
+	if (width > 0 && height > 0) {
+		redrawWidget (x, y, width, height, false, all);
+	}
 }
-void redrawWidget (int x, int y, int width, int height, boolean all) {
-	redrawHandle (x, y, width, height, handle);
+void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boolean allChildren) {
+	redrawHandle (x, y, width, height, redrawAll, handle);
 }
 void releaseChild () {
 	parent.removeControl (this);
