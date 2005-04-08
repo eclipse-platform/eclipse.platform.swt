@@ -346,7 +346,7 @@ public void clearSelection () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	int width = 0, height = 0, tmInternalLeading = 0;
+	int width = 0, height = 0;
 	if (wHint == SWT.DEFAULT) {
 		int newFont, oldFont = 0;
 		int hDC = OS.GetDC (handle);
@@ -373,11 +373,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 				}
 			}
 		}
-		if ((style & SWT.READ_ONLY) != 0) {
-			TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
-			OS.GetTextMetrics (hDC, tm);
-			tmInternalLeading = tm.tmInternalLeading;
-		}
 		if (newFont != 0) OS.SelectObject (hDC, oldFont);
 		OS.ReleaseDC (handle, hDC);
 	}
@@ -387,13 +382,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			int itemHeight = OS.SendMessage (handle, OS.CB_GETITEMHEIGHT, 0, 0);
 			height = count * itemHeight;
 		}
-	}	
+	}
 	if (width == 0) width = DEFAULT_WIDTH;
 	if (height == 0) height = DEFAULT_HEIGHT;
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	if ((style & SWT.READ_ONLY) != 0) {
-		width += tmInternalLeading * 2;
+		width += 8;
 	} else {
 		int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 		if (hwndText != 0) {
