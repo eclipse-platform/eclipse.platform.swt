@@ -87,7 +87,6 @@ public class StackLayout extends Layout {
 
 protected Point computeSize(Composite composite, int wHint, int hHint, boolean flushCache) {
 	Control children[] = composite.getChildren();
-	
 	int maxWidth = 0;
 	int maxHeight = 0;
 	for (int i = 0; i < children.length; i++) {
@@ -95,11 +94,11 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 		maxWidth = Math.max(size.x, maxWidth);
 		maxHeight = Math.max(size.y, maxHeight);
 	}
-	
-	int width = wHint, height = hHint;
-	if (wHint == SWT.DEFAULT) width = maxWidth;
-	if (hHint == SWT.DEFAULT) height = maxHeight;
-	return new Point(width + 2 * marginWidth, height + 2 * marginHeight);
+	int width = maxWidth + 2 * marginWidth;
+	int height = maxHeight + 2 * marginHeight;
+	if (wHint != SWT.DEFAULT) width = wHint;
+	if (hHint != SWT.DEFAULT) height = hHint;
+	return new Point(width, height);
 }
 
 protected boolean flushCache(Control control) {
