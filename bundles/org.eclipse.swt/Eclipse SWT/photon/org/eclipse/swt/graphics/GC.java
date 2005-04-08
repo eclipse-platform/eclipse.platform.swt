@@ -254,6 +254,9 @@ public void copyArea(Image image, int x, int y) {
  * </ul>
  */
 public void copyArea(int x, int y, int width, int height, int destX, int destY) {
+	copyArea(x, y, width, height, destX, destY, true);
+}
+public void copyArea(int x, int y, int width, int height, int destX, int destY, boolean paint) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width == 0 || height == 0) return;
 	int deltaX = destX - x, deltaY = destY - y;

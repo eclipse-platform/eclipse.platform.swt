@@ -191,6 +191,26 @@ public void copyArea(Image image, int x, int y) {
  * </ul>
  */
 public void copyArea(int srcX, int srcY, int width, int height, int destX, int destY) {
+	copyArea(srcX, srcY, width, height, destX, destY, true);
+}
+
+/**
+ * Copies a rectangular area of the receiver at the source
+ * position onto the receiver at the destination position.
+ *
+ * @param srcX the x coordinate in the receiver of the area to be copied
+ * @param srcY the y coordinate in the receiver of the area to be copied
+ * @param width the width of the area to copy
+ * @param height the height of the area to copy
+ * @param destX the x coordinate in the receiver of the area to copy to
+ * @param destY the y coordinate in the receiver of the area to copy to
+ * @param paint if <code>true</code> paint events will be generated for old and obscured areas
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public void copyArea(int srcX, int srcY, int width, int height, int destX, int destY, boolean paint) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 
 	/*
@@ -210,7 +230,8 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 		OS.DeleteObject(hrgn);
 		RECT lprcScroll = new RECT();
 		OS.SetRect(lprcScroll, srcX, srcY, srcX + width, srcY + height);
-		int res = OS.ScrollWindowEx(hwnd, destX - srcX, destY - srcY, lprcScroll, lprcClip, 0, null, OS.SW_INVALIDATE | OS.SW_ERASE); 
+		int flags = paint ? OS.SW_INVALIDATE | OS.SW_ERASE : 0;
+		int res = OS.ScrollWindowEx(hwnd, destX - srcX, destY - srcY, lprcScroll, lprcClip, 0, null, flags); 
 
 		/*
 		* Feature in WinCE.  ScrollWindowEx does not accept combined
@@ -219,22 +240,24 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 		*/
 		if (res == 0 && OS.IsWinCE) {
 			OS.BitBlt(handle, destX, destY, width, height, handle, srcX, srcY, OS.SRCCOPY);
-			int deltaX = destX - srcX, deltaY = destY - srcY;
-			boolean disjoint = (destX + width < srcX) || (srcX + width < destX) || (destY + height < srcY) || (srcY + height < destY);
-			if (disjoint) {
-				OS.InvalidateRect(hwnd, lprcScroll, true);
-			} else {
-				if (deltaX != 0) {
-					int newX = destX - deltaX;
-					if (deltaX < 0) newX = destX + width;
-					OS.SetRect(lprcScroll, newX, srcY, newX + Math.abs(deltaX), srcY + height);
+			if (paint) {
+				int deltaX = destX - srcX, deltaY = destY - srcY;
+				boolean disjoint = (destX + width < srcX) || (srcX + width < destX) || (destY + height < srcY) || (srcY + height < destY);
+				if (disjoint) {
 					OS.InvalidateRect(hwnd, lprcScroll, true);
-				}
-				if (deltaY != 0) {
-					int newY = destY - deltaY;
-					if (deltaY < 0) newY = destY + height;
-					OS.SetRect(lprcScroll, srcX, newY, srcX + width, newY + Math.abs(deltaY));
-					OS.InvalidateRect(hwnd, lprcScroll, true);
+				} else {
+					if (deltaX != 0) {
+						int newX = destX - deltaX;
+						if (deltaX < 0) newX = destX + width;
+						OS.SetRect(lprcScroll, newX, srcY, newX + Math.abs(deltaX), srcY + height);
+						OS.InvalidateRect(hwnd, lprcScroll, true);
+					}
+					if (deltaY != 0) {
+						int newY = destY - deltaY;
+						if (deltaY < 0) newY = destY + height;
+						OS.SetRect(lprcScroll, srcX, newY, srcX + width, newY + Math.abs(deltaY));
+						OS.InvalidateRect(hwnd, lprcScroll, true);
+					}
 				}
 			}
 		}

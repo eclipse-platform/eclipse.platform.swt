@@ -145,15 +145,18 @@ static int checkStyle (int style) {
  * </ul>
  */
 public void copyArea(int x, int y, int width, int height, int destX, int destY) {
+	copyArea(x, y, width, height, destX, destY, true);
+}
+public void copyArea(int x, int y, int width, int height, int destX, int destY, boolean paint) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width <= 0 || height <= 0) return;
 	int deltaX = destX - x, deltaY = destY - y;
 	if (deltaX == 0 && deltaY == 0) return;
 	int xDisplay = data.display;
 	int xDrawable = data.drawable;
-	if (data.image == null) OS.XSetGraphicsExposures (xDisplay, handle, true);
+	if (data.image == null && paint) OS.XSetGraphicsExposures (xDisplay, handle, true);
 	OS.XCopyArea(xDisplay, xDrawable, xDrawable, handle, x, y, width, height, destX, destY);
-	if (data.image == null) {
+	if (data.image == null && paint) {
 		OS.XSetGraphicsExposures (xDisplay, handle, false);
 		boolean disjoint = (destX + width < x) || (x + width < destX) || (destY + height < y) || (y + height < destY);
 		if (disjoint) {

@@ -249,6 +249,9 @@ void copyArea (Image image, int x, int y, int srcImage) {
  * </ul>
  */
 public void copyArea(int srcX, int srcY, int width, int height, int destX, int destY) {
+	copyArea(srcX, srcY, width, height, destX, destY, true);
+}
+public void copyArea(int srcX, int srcY, int width, int height, int destX, int destY, boolean paint) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (data.updateClip) setCGClipping();
 	if (width <= 0 || height <= 0) return;
@@ -333,14 +336,16 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 		}
 		
 		/* Invalidate src and obscured areas */
-		int invalRgn = OS.NewRgn();
-		OS.DiffRgn(srcRgn, data.visibleRgn, invalRgn);
-		OS.OffsetRgn(invalRgn, (short)deltaX, (short)deltaY);
-		OS.DiffRgn(srcRgn, destRgn, srcRgn);
-		OS.UnionRgn(srcRgn, invalRgn, invalRgn);
-		OS.SectRgn(data.visibleRgn, invalRgn, invalRgn);
-		OS.InvalWindowRgn(window, invalRgn);
-		OS.DisposeRgn(invalRgn);
+		if (paint) {
+			int invalRgn = OS.NewRgn();
+			OS.DiffRgn(srcRgn, data.visibleRgn, invalRgn);
+			OS.OffsetRgn(invalRgn, (short)deltaX, (short)deltaY);
+			OS.DiffRgn(srcRgn, destRgn, srcRgn);
+			OS.UnionRgn(srcRgn, invalRgn, invalRgn);
+			OS.SectRgn(data.visibleRgn, invalRgn, invalRgn);
+			OS.InvalWindowRgn(window, invalRgn);
+			OS.DisposeRgn(invalRgn);
+		}
 		
 		/* Dispose src and dest regions */
 		OS.DisposeRgn(destRgn);

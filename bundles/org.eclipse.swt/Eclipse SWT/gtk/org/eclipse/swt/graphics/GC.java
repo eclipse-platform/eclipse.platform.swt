@@ -184,14 +184,17 @@ public void copyArea(Image image, int x, int y) {
  * </ul>
  */
 public void copyArea(int srcX, int srcY, int width, int height, int destX, int destY) {
+	copyArea(srcX, srcY, width, height, destX, destY, true);
+}
+public void copyArea(int srcX, int srcY, int width, int height, int destX, int destY, boolean paint) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width <= 0 || height <= 0) return;
 	int deltaX = destX - srcX, deltaY = destY - srcY;
 	if (deltaX == 0 && deltaY == 0) return;
 	int /*long*/ drawable = data.drawable;
-	if (data.image == null) OS.gdk_gc_set_exposures(handle, true);
+	if (data.image == null && paint) OS.gdk_gc_set_exposures(handle, true);
 	OS.gdk_draw_drawable(drawable, handle, drawable, srcX, srcY, destX, destY, width, height);
-	if (data.image == null) {
+	if (data.image == null & paint) {
 		OS.gdk_gc_set_exposures(handle, false);
 		boolean disjoint = (destX + width < srcX) || (srcX + width < destX) || (destY + height < srcY) || (srcY + height < destY);
 		GdkRectangle rect = new GdkRectangle ();
