@@ -1781,13 +1781,9 @@ void onFocusIn () {
 		initialFocus = selectedItems [0];
 	} else {
 		initialFocus = items [topIndex];
-		selectItem (initialFocus, false);
 	}
 	setFocusItem (initialFocus, false);
 	redrawItem (initialFocus.index, true);
-	Event newEvent = new Event ();
-	newEvent.item = initialFocus;
-	postEvent (SWT.Selection, newEvent);
 	return;
 }
 void onFocusOut () {
