@@ -1326,6 +1326,19 @@ LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
 	}
 	
 	/*
+	*  Bug in Windows.  Somehow, the widget is becoming disposed after
+	*  calling PeekMessage().  In rare cirucmstances, it seems that
+	*  PeekMessage() can allow SWT listeners to run that might contain
+	*  application code that disposes the widget.  It is not exactly
+	*  clear how this can happen.  PeekMessage() is only looking for
+	*  WM_DEADCHAR.  It is not dispatching any message that it finds
+	*  or removing any message from the queue.  Cross-thread messages
+	*  are disabled.  The fix is to check for a disposed widget and
+	*  return without calling the window proc.
+	*/
+	if (isDisposed ()) return LRESULT.ONE;
+	
+	/*
 	* If we are going to get a WM_CHAR, ensure that last key has
 	* the correct character value for the key down and key up
 	* events.  It is not sufficient to ignore the WM_KEYDOWN
