@@ -169,7 +169,7 @@ class SpinnerTab extends RangeTab {
 	
 		/* Create the scale widget */
 		digitsScale = new Scale (digitsGroup, SWT.NONE);
-		digitsScale.setMaximum (50);
+		digitsScale.setMaximum (8);
 		digitsScale.setSelection (0);
 		digitsScale.setPageIncrement (10);
 		digitsScale.setIncrement (5);
