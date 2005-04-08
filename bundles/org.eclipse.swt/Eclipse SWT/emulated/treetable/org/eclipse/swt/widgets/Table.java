@@ -530,6 +530,19 @@ public void deselectAll () {
 		}
 	}
 }
+void deselectItem (TableItem item) {
+	int index = getSelectionIndex (item);
+	if (index == -1) return;
+	TableItem[] newSelectedItems = new TableItem [selectedItems.length - 1];
+	System.arraycopy (selectedItems, 0, newSelectedItems, 0, index);
+	System.arraycopy (
+		selectedItems,
+		index + 1,
+		newSelectedItems,
+		index,
+		newSelectedItems.length - index);
+	selectedItems = newSelectedItems;
+}
 void destroyItem (TableColumn column) {
 	int index = column.getIndex ();
 	int orderedIndex = column.getOrderIndex ();
@@ -1510,6 +1523,10 @@ void onArrowDown (int stateMask) {
 	int newFocusIndex = focusItem.index + 1;
 	if (newFocusIndex == itemsCount) return; 	/* at bottom */
 	if (anchorItem == null) anchorItem = focusItem;
+	if (focusItem.index < anchorItem.index) {
+		deselectItem (focusItem);
+		redrawItem (focusItem.index, true);
+	}
 	selectItem (items [newFocusIndex], true);
 	setFocusItem (items [newFocusIndex], true);
 	redrawItem (newFocusIndex, true);
@@ -1644,6 +1661,10 @@ void onArrowUp (int stateMask) {
 	int newFocusIndex = focusItem.index - 1;
 	if (newFocusIndex < 0) return; 		/* at top */
 	if (anchorItem == null) anchorItem = focusItem;
+	if (anchorItem.index < focusItem.index) {
+		deselectItem (focusItem);
+		redrawItem (focusItem.index, true);
+	}
 	TableItem item = items [newFocusIndex];
 	selectItem (item, true);
 	setFocusItem (item, true);

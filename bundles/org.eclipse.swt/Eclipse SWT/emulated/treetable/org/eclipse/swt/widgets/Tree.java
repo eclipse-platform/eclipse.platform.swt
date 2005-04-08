@@ -339,6 +339,19 @@ public void deselectAll () {
 		redrawItem (oldSelection [i].availableIndex, true);
 	}
 }
+void deselectItem (TreeItem item) {
+	int index = getSelectionIndex (item);
+	if (index == -1) return;
+	TreeItem[] newSelectedItems = new TreeItem [selectedItems.length - 1];
+	System.arraycopy (selectedItems, 0, newSelectedItems, 0, index);
+	System.arraycopy (
+		selectedItems,
+		index + 1,
+		newSelectedItems,
+		index,
+		newSelectedItems.length - index);
+	selectedItems = newSelectedItems;
+}
 void destroyItem (TreeColumn column) {
 	int numColumns = columns.length;
 	int index = column.getIndex ();
@@ -1346,6 +1359,10 @@ void onArrowDown (int stateMask) {
 	int newFocusIndex = focusItem.availableIndex + 1;
 	if (newFocusIndex == availableItemsCount) return; 	/* at bottom */
 	if (anchorItem == null) anchorItem = focusItem;
+	if (focusItem.availableIndex < anchorItem.availableIndex) {
+		deselectItem (focusItem);
+		redrawItem (focusItem.availableIndex, true);
+	}
 	selectItem (availableItems [newFocusIndex], true);
 	setFocusItem (availableItems [newFocusIndex], true);
 	redrawItem (newFocusIndex, true);
@@ -1529,6 +1546,10 @@ void onArrowUp (int stateMask) {
 	int newFocusIndex = focusItem.availableIndex - 1;
 	if (newFocusIndex < 0) return; 		/* at top */
 	if (anchorItem == null) anchorItem = focusItem;
+	if (anchorItem.availableIndex < focusItem.availableIndex) {
+		deselectItem (focusItem);
+		redrawItem (focusItem.availableIndex, true);
+	}
 	TreeItem item = availableItems [newFocusIndex];
 	selectItem (item, true);
 	setFocusItem (item, true);
