@@ -830,13 +830,27 @@ public Table getParent () {
  * Returns the receiver's ideal width for the specified columnIndex.
  */
 int getPreferredWidth (int columnIndex) {
+	int width = 2 * parent.getCellPadding ();
+	if (columnIndex == 0 && (parent.style & SWT.CHECK) != 0) {
+		width += parent.checkboxBounds.width;
+		width += Table.MARGIN_IMAGE;
+	}
 	GC gc = new GC (parent);
 	gc.setFont (getFont (columnIndex));
-	int textPaintWidth = gc.stringExtent (getText (columnIndex)).x + 2 * MARGIN_TEXT;
+	width += gc.stringExtent (getText (columnIndex)).x + 2 * MARGIN_TEXT;
 	gc.dispose ();
-	int result = getTextX (columnIndex) + textPaintWidth + parent.getCellPadding ();	/* right side cell pad */
-	result -= parent.columns [columnIndex].getX ();
-	return result;
+	if (columnIndex == 0) {
+		width += parent.col0ImageWidth;
+		width += 2 * Table.MARGIN_IMAGE;
+	} else {
+		Image image = getImage (columnIndex);
+		if (image != null) {
+			width += image.getBounds ().width;
+			width += 2 * Table.MARGIN_IMAGE;
+		}
+	}
+	
+	return width;
 }
 public String getText () {
 	checkWidget ();
