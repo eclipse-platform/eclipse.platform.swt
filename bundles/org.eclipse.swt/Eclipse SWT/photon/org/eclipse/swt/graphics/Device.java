@@ -54,7 +54,7 @@ public abstract class Device implements Drawable {
 		} catch (Throwable e) {}
 	}	
 
-static Device getDevice () {
+static synchronized Device getDevice () {
 	if (DeviceFinder != null) DeviceFinder.run();
 	Device device = CurrentDevice;
 	CurrentDevice = null;
