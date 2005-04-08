@@ -1025,9 +1025,9 @@ void paint (GC gc, TableColumn column, boolean paintCellContent) {
 	int padding = parent.getCellPadding ();
 	gc.setClipping (
 		startX,
-		cellBounds.y + padding,
+		cellBounds.y + padding - (parent.linesVisible ? 1 : 0),
 		cellRightX - startX - padding,
-		cellBounds.height - (2 * padding));
+		cellBounds.height - 2 * (padding - (parent.linesVisible ? 1 : 0)));
 
 	/* draw the image */
 	if (image != null) {
