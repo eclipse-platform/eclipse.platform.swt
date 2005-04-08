@@ -1104,9 +1104,8 @@ boolean hasFocus () {
 public int internal_new_GC (GCData data) {
 	checkWidget();
 	int hwnd = handle;
-	if (data != null && data.hwnd != 0) {
-		hwnd = data.hwnd;
-	}
+	if (data != null && data.hwnd != 0) hwnd = data.hwnd;
+	if (data != null) data.hwnd = hwnd;
 	int hDC = 0;
 	if (data == null || data.ps == null) {
 		hDC = OS.GetDC (hwnd);
