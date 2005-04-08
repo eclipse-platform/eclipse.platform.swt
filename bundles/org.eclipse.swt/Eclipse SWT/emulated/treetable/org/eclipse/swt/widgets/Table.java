@@ -2337,7 +2337,8 @@ void onPaint (Event event) {
 		gc.fillRectangle (0, bottomY, clientArea.width, fillHeight);
 	}
 	if (columns.length > 0) {
-		TableColumn column = columns [columns.length - 1];	/* last column */
+		TableColumn[] orderedColums = getOrderedColumns ();
+		TableColumn column = orderedColums [orderedColums.length - 1];	/* last column */
 		int rightX = column.getX () + column.width;
 		if (rightX < clientArea.width) {
 			gc.fillRectangle (rightX, 0, clientArea.width - rightX, clientArea.height - fillHeight);
