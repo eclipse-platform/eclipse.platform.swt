@@ -21,7 +21,7 @@ public class Pattern extends Resource {
 	Image image;
 	Color color1, color2;
 	float x1, y1, x2, y2;
-	int function, shading;
+	int shading;
 
 public Pattern(Device device, Image image) {
 	if (device == null) device = Device.getDevice();
@@ -61,9 +61,10 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 	end.y = y2;
 	CGFunctionCallbacks fCallbacks = new CGFunctionCallbacks();
 	fCallbacks.evaluate = device.axialShadingProc;
-	function = OS.CGFunctionCreate(jniRef, 1, new float[]{0, 1}, 4, new float[]{0, 1, 0, 1, 0, 1, 0, 1}, fCallbacks);
+	int function = OS.CGFunctionCreate(jniRef, 1, new float[]{0, 1}, 4, new float[]{0, 1, 0, 1, 0, 1, 0, 1}, fCallbacks);
 	if (function == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	shading = OS.CGShadingCreateAxial(device.colorspace, start, end, function, true, true);	
+	OS.CGFunctionRelease(function);
 	if (shading == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (device.tracking) device.new_Object(this);
 }
@@ -108,9 +109,8 @@ public void dispose() {
 	if (jniRef == 0) return;
 	if (device.isDisposed()) return;
 	if (jniRef != 0) OS.DeleteGlobalRef(jniRef);
-	if (function != 0) OS.CGFunctionRelease(function);
 	if (shading != 0) OS.CGShadingRelease(shading);
-	jniRef = function = shading = 0;
+	jniRef = shading = 0;
 	image = null;
 	color1 = color2 = null;
 	if (device.tracking) device.dispose_Object(this);
