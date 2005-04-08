@@ -383,12 +383,12 @@ public void addShellListener (ShellListener listener) {
 }
 
 int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
+	if (handle == 0) return 0;
 	if ((style & SWT.TOOL) != 0) {
 		int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX | SWT.BORDER | SWT.RESIZE;
 		if ((style & trim) == 0) return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 	}
 	if (parent != null) {
-		if (handle == 0) return 0;
 		switch (msg) {
 			case OS.WM_KILLFOCUS:
 			case OS.WM_SETFOCUS: 
@@ -396,7 +396,6 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 		}
 		return OS.CallWindowProc (DialogProc, hwnd, msg, wParam, lParam);
 	}
-	if (handle == 0) return 0;
 	if (hwndMDIClient != 0) {
 		return OS.DefFrameProc (hwnd, hwndMDIClient, msg, wParam, lParam);
 	}
