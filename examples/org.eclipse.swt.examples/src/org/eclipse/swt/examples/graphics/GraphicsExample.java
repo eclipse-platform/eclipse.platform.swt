@@ -337,7 +337,7 @@ GraphicsTab[] createTabs() {
 		new LineTab(this),
 		new StarPolyTab(this),
 		tab = new IntroTab(this),
-		new BlackWholeTab(this),
+		new BlackHoleTab(this),
 	};
 }
 
