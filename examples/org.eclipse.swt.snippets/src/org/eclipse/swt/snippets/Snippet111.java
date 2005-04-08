@@ -44,13 +44,15 @@ public static void main (String [] args) {
 		public void handleEvent (Event e) {
 			final TreeItem item = (TreeItem) e.item;
 			if (item != null && item == lastItem [0]) {
+				boolean isCarbon = SWT.getPlatform ().equals ("carbon");
 				final Composite composite = new Composite (tree, SWT.NONE);
-				composite.setBackground (black);
+				if (!isCarbon) composite.setBackground (black);
 				final Text text = new Text (composite, SWT.NONE);
+				final int inset = isCarbon ? 0 : 1;
 				composite.addListener (SWT.Resize, new Listener () {
 					public void handleEvent (Event e) {
 						Rectangle rect = composite.getClientArea ();
-						text.setBounds (rect.x + 1, rect.y + 1, rect.width - 2, rect.height - 2);
+						text.setBounds (rect.x + inset, rect.y + inset, rect.width - inset * 2, rect.height - inset * 2);
 					}
 				});
 				Listener textListener = new Listener () {
@@ -70,9 +72,10 @@ public static void main (String [] args) {
 								size = text.computeSize (size.x, SWT.DEFAULT);
 								editor.horizontalAlignment = SWT.LEFT;
 								Rectangle itemRect = item.getBounds (), rect = tree.getClientArea ();
-								editor.minimumWidth = Math.max (size.x, itemRect.width) + 2;
+								editor.minimumWidth = Math.max (size.x, itemRect.width) + inset * 2;
 								int left = itemRect.x, right = rect.x + rect.width;
 								editor.minimumWidth = Math.min (editor.minimumWidth, right - left);
+								editor.minimumHeight = size.y + inset * 2;
 								editor.layout ();
 								break;
 							case SWT.Traverse:
