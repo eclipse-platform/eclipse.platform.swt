@@ -756,7 +756,6 @@ void disposeCOMInterfaces() {
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
  *
- * WARNING 3.1 API STILL UNDER CONSTRUCTION
  * @since 3.1
  */
 public boolean execute(String script) {

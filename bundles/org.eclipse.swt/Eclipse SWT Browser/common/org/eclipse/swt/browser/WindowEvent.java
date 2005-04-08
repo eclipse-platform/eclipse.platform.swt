@@ -15,8 +15,6 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 
 /**
- * WARNING 3.1 API STILL UNDER CONSTRUCTION
- * 
  * A <code>WindowEvent</code> is sent by a {@link Browser} when
  * a new window needs to be created or when an existing window needs to be
  * closed. This notification occurs when a javascript command such as
@@ -93,6 +91,30 @@ import org.eclipse.swt.graphics.*;
  *	}
  * </pre></code>
  * 
+ * The following notifications are emitted when the user selects a hyperlink that targets a new window
+ * or as the result of a javascript that executes window.open. 
+ * 
+ * <p>Main Browser
+ * <ul>
+ *    <li>User selects a link that opens in a new window or javascript requests a new window</li>
+ *    <li>OpenWindowListener.open() notified</li>
+ *    <ul>
+ *    		<li>Application creates a new Shell and a second Browser inside that Shell</li>
+ *    		<li>Application registers WindowListener's on that second Browser, such as VisibilityWindowListener</li>
+ *	    	<li>Application returns the second Browser as the host for the new window content</li>
+ *    </ul>
+ * </ul>
+ * 
+ * <p>Second Browser
+ * <ul>
+ *    <li>VisibilityWindowListener.show() notified</li>
+ *    <ul>
+ *    		<li>Application sets navigation tool bar, status bar, menu bar and Shell size
+ *    		<li>Application makes the Shell hosting the second Browser visible
+ *    		<li>User now sees the new window
+ *    </ul> 
+ * </ul>
+ * 
  * @see CloseWindowListener
  * @see OpenWindowListener
  * @see VisibilityWindowListener
@@ -105,7 +127,6 @@ public class WindowEvent extends TypedEvent {
 	 * Specifies whether the platform requires the user to provide a
 	 * <code>Browser</code> to handle the new window.
 	 * 
-	 * UNDER CONSTRUCTION
 	 * @since 3.1
 	 */
 	public boolean required;
@@ -133,7 +154,6 @@ public class WindowEvent extends TypedEvent {
 	 * Specifies whether the <code>Shell</code> hosting the <code>Browser</code> should
 	 * display an address bar.
 	 * 
-	 * UNDER CONSTRUCTION
 	 * @since 3.1
 	 */
 	public boolean addressBar;
@@ -142,7 +162,6 @@ public class WindowEvent extends TypedEvent {
 	 * Specifies whether the <code>Shell</code> hosting the <code>Browser</code> should
 	 * display a menu bar.
 	 * 
-	 * UNDER CONSTRUCTION
 	 * @since 3.1
 	 */
 	public boolean menuBar;
@@ -151,7 +170,6 @@ public class WindowEvent extends TypedEvent {
 	 * Specifies whether the <code>Shell</code> hosting the <code>Browser</code> should
 	 * display a status bar.
 	 * 
-	 * UNDER CONSTRUCTION
 	 * @since 3.1
 	 */
 	public boolean statusBar;
@@ -160,7 +178,6 @@ public class WindowEvent extends TypedEvent {
 	 * Specifies whether the <code>Shell</code> hosting the <code>Browser</code> should
 	 * display a tool bar.
 	 * 
-	 * UNDER CONSTRUCTION
 	 * @since 3.1
 	 */
 	public boolean toolBar;
