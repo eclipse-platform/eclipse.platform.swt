@@ -107,7 +107,16 @@ protected Point computeSize (Composite composite, int wHint, int hHint, boolean 
 	int maxWidth = 0, maxHeight = 0;
 	for (int i=0; i<count; i++) {
 		Control child = children [i];
-		Point size = child.computeSize (SWT.DEFAULT, SWT.DEFAULT, flushCache);
+		int w = wHint, h = hHint;
+		if (count > 0) {
+			if (type == SWT.HORIZONTAL && wHint != SWT.DEFAULT) {
+				w = Math.max (0, (wHint - (count - 1) * spacing) / count);
+			}
+			if (type == SWT.VERTICAL && hHint != SWT.DEFAULT) {
+				h = Math.max (0, (hHint - (count - 1) * spacing) / count);
+			}
+		}
+		Point size = computeSize (child, w, h, flushCache);
 		maxWidth = Math.max (maxWidth, size.x);
 		maxHeight = Math.max (maxHeight, size.y);
 	}
@@ -123,7 +132,30 @@ protected Point computeSize (Composite composite, int wHint, int hHint, boolean 
 	}
 	width += marginWidth * 2;
 	height += marginHeight * 2;
+	if (wHint != SWT.DEFAULT) width = wHint;
+	if (hHint != SWT.DEFAULT) height = hHint;
 	return new Point (width, height);
+}
+
+Point computeSize (Control control, int wHint, int hHint, boolean flushCache) {
+	Point size = null;
+	if (wHint == SWT.DEFAULT && hHint == SWT.DEFAULT) {
+		size = control.computeSize (wHint, hHint, flushCache);
+	} else {
+		// TEMPORARY CODE
+		int trimX, trimY;
+		if (control instanceof Scrollable) {
+			Rectangle rect = ((Scrollable) control).computeTrim (0, 0, 0, 0);
+			trimX = rect.width;
+			trimY = rect.height;
+		} else {
+			trimX = trimY = control.getBorderWidth () * 2;
+		}
+		int w = wHint == SWT.DEFAULT ? wHint : Math.max (0, wHint - trimX);
+		int h = hHint == SWT.DEFAULT ? hHint : Math.max (0, hHint - trimY);
+		size = control.computeSize (w, h, flushCache);
+	}
+	return size;
 }
 
 protected boolean flushCache (Control control) {
