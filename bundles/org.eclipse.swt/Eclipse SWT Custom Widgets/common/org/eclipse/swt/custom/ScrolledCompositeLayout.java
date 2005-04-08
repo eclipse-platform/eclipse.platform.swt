@@ -30,8 +30,7 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 	if (sc.content == null) {
 		int w = (wHint != SWT.DEFAULT) ? wHint : DEFAULT_WIDTH;
 		int h = (hHint != SWT.DEFAULT) ? hHint : DEFAULT_HEIGHT;
-		Rectangle trim = sc.computeTrim(0, 0, w, h);
-		return new Point(trim.width, trim.height);
+		return new Point(w, h);
 	}
 	Point size = sc.content.computeSize (wHint, hHint, flushCache);
 	if (sc.alwaysShowScroll) {
