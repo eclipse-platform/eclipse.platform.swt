@@ -84,9 +84,9 @@ public abstract class Device implements Drawable {
 /*
 * TEMPORARY CODE.
 */
-static Device getDevice () {
+static synchronized Device getDevice () {
 	if (DeviceFinder != null) DeviceFinder.run();
-	Device device = CurrentDevice;
+	Device device = CurrentDevice;	
 	CurrentDevice = null;
 	return device;
 }
