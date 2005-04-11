@@ -1598,21 +1598,22 @@ LRESULT WM_MOUSEACTIVATE (int wParam, int lParam) {
 	int hwnd = OS.WindowFromPoint (pt);
 	if (hwnd == 0) return null;
 	Control control = display.findControl (hwnd);
-	setActiveControl (control);
-	
 	/*
-	* This code is intentionally commented.  On some platforms,
-	* shells that are created with SWT.NO_TRIM won't take focus
-	* when the user clicks in the client area or on the border.
-	* This behavior is usedful when emulating tool tip shells
-	* Until this behavior is specified, this code will remain
-	* commented.
+	* When a shell is created with SWT.ON_TOP and SWT.NO_FOCUS,
+	* do not activate the shell when the user clicks on the
+	* the client area or on the border or a control within the
+	* shell that does not take focus.
 	*/
-//	if ((style & SWT.NO_TRIM) != 0) {
-//		if (hittest == OS.HTBORDER || hittest == OS.HTCLIENT) {
-//			return new LRESULT (OS.MA_NOACTIVATE);
+//	if (control != null /*&& (control.state & CANVAS) != 0*/) {
+//		if ((control.style & SWT.NO_FOCUS) != 0) {
+//			if ((style & SWT.ON_TOP) != 0 && (style & SWT.NO_FOCUS) != 0) {
+//				if (hittest == OS.HTBORDER || hittest == OS.HTCLIENT) {
+//					return new LRESULT (OS.MA_NOACTIVATE);
+//				}
+//			}
 //		}
 //	}
+	setActiveControl (control);
 	return null;
 }
 
@@ -1795,31 +1796,32 @@ LRESULT WM_SHOWWINDOW (int wParam, int lParam) {
 
 LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
 	LRESULT result = super.WM_SYSCOMMAND (wParam, lParam);
-	//This code is intentionally commented
-//	if (result != null) return result;
-//	/*
-//	* Feature in Windows.  When a window is minimized, the memory
-//	* for the working set of the process.  For applications that
-//	* use a lot of memory, when the window is restored, it can take
-//	* a long time (sometimes minutes) before the application becomes
-//	* responsive.   The fix is to intercept WM_SYSCOMMAND looking
-//	* for SC_MINIMIZE and use ShowWindow() with SW_SHOWMINIMIZED to
-//	* minimize the window rather than allowing the default window
-//	* proc to do it when more that 64Meg of memory is being used.
-//	* 
-//	* NOTE:  The default window proc activates the next top-level
-//	* window in the Z order while ShowWindow () with SW_SHOWMINIMIZED
-//	* does not.  There is no fix for this at this time.
-//	*/
-//	int cmd = wParam & 0xFFF0;
-//	switch (cmd) {
-//		case OS.SC_MINIMIZE:
-//			long memory = Runtime.getRuntime ().totalMemory ();
-//			if (memory > 64000000) {
-//				OS.ShowWindow (handle, OS.SW_SHOWMINIMIZED);
-//				return LRESULT.ZERO;
-//			}
-//	}
+	if (result != null) return result;
+	/*
+	* Feature in Windows.  When the last visible window in
+	* a process minimized, Windows swaps out the memory for
+	* the process.  The assumption is that the user can no
+	* longer interact with the window, so the memory can be
+	* released to other applications.  However, for programs
+	* that use a lot of memory, swapping the memory back in
+	* can take a long time, sometimes minutes.  The fix is
+	* to intercept WM_SYSCOMMAND looking for SC_MINIMIZE
+	* and use ShowWindow() with SW_SHOWMINIMIZED to minimize
+	* the window, rather than running the default window proc.
+	* 
+	* NOTE:  The default window proc activates the next top-level
+	* window in the Z order while ShowWindow () with SW_SHOWMINIMIZED
+	* does not.  There is no fix for this at this time.
+	*/
+	int cmd = wParam & 0xFFF0;
+	switch (cmd) {
+		case OS.SC_MINIMIZE:
+			long memory = Runtime.getRuntime ().totalMemory ();
+			if (memory >= 64 * 10024 * 1024) {
+				OS.ShowWindow (handle, OS.SW_SHOWMINIMIZED);
+				return LRESULT.ZERO;
+			}
+	}
 	return result;
 }
 
