@@ -1547,10 +1547,10 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 		int font = Gdip.Font_new(handle, OS.GetCurrentObject(handle, OS.OBJ_FONT));
 		if (font == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		PointF pt = new PointF();
-		pt.X = x - (Gdip.Font_GetSize(font) / 6);
+		pt.X = x;
 		pt.Y = y;
 		int brush = Gdip.Pen_GetBrush(data.gdipPen);
-		Gdip.Graphics_DrawString(data.gdipGraphics, buffer, length, font, pt, brush);
+		Gdip.Graphics_DrawString(data.gdipGraphics, buffer, length, font, pt, Gdip.StringFormat_GenericTypographic(), brush);
 		Gdip.Font_delete(font);
 		return;
 	}
@@ -3478,8 +3478,25 @@ public void setTransform(Transform transform) {
 public Point stringExtent(String string) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	SIZE size = new SIZE();
 	int length = string.length();
+	if (data.gdipGraphics != 0) {
+		int font = Gdip.Font_new(handle, OS.GetCurrentObject(handle, OS.OBJ_FONT));
+		if (font == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		PointF pt = new PointF();
+		RectF bounds = new RectF();
+		char[] buffer;
+		if (length != 0) {
+			buffer = new char [length];
+			string.getChars(0, length, buffer, 0);
+		} else {
+			buffer = new char[]{' '};
+			length = 1;
+		}
+		Gdip.Graphics_MeasureString(data.gdipGraphics, buffer, length, font, pt, Gdip.StringFormat_GenericTypographic(), bounds);
+		Gdip.Font_delete(font);
+		return new Point((int)Math.round(bounds.Width), (int)Math.round(bounds.Height));
+	}
+	SIZE size = new SIZE();
 	if (length == 0) {
 //		OS.GetTextExtentPoint32(handle, SPACE, SPACE.length(), size);
 		OS.GetTextExtentPoint32W(handle, new char[]{' '}, 1, size);
