@@ -2276,15 +2276,16 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 		case OS.WM_TIMER:
 			runTimer (wParam);
 			break;
-	}
-	if (msg == SWT_TASKBARCREATED) {
-		if (tray != null) {
-			TrayItem [] items = tray.items;
-			for (int i=0; i<items.length; i++) {
-				TrayItem item = items [i];
-				if (item != null) item.recreate ();
+		default:
+			if (msg == SWT_TASKBARCREATED) {
+				if (tray != null) {
+					TrayItem [] items = tray.items;
+					for (int i=0; i<items.length; i++) {
+						TrayItem item = items [i];
+						if (item != null) item.recreate ();
+					}
+				}
 			}
-		}
 	}
 	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 }
