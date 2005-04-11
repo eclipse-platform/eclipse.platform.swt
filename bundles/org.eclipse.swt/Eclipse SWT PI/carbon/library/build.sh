@@ -12,7 +12,7 @@
 
 cd `dirname $0`
 
-OUTPUT_DIR=../../../org.eclipse.swt.carbon/os/macosx/ppc
+OUTPUT_DIR=../../../org.eclipse.swt.carbon.macosx.ppc
 
 export OUTPUT_DIR
 

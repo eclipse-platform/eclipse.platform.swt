@@ -13,7 +13,10 @@
 		<arg line="${basedir}/bin/library/build.sh"/>
 		<arg line="install"/>
 	</exec>
-	<eclipse.refreshLocal resource="org.eclipse.swt.motif" depth="infinite" />		
+	<eclipse.refreshLocal resource="org.eclipse.swt.motif.aix.ppc" depth="infinite" />		
+	<eclipse.refreshLocal resource="org.eclipse.swt.motif.hpux.PA_RISC" depth="infinite" />		
+	<eclipse.refreshLocal resource="org.eclipse.swt.motif.linux.x86" depth="infinite" />		
+	<eclipse.refreshLocal resource="org.eclipse.swt.motif.solaris.sparc" depth="infinite" />		
 </target>
 
 <target name="clean">

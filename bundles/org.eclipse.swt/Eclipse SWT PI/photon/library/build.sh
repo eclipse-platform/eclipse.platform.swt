@@ -12,7 +12,7 @@
 
 cd `dirname $0`
 
-OUTPUT_DIR=../../../org.eclipse.swt.photon/os/qnx/x86
+OUTPUT_DIR=../../../org.eclipse.swt.photon.qnx.x86
 IVE_HOME=~/ive/bin
 
 export IVE_HOME OUTPUT_DIR

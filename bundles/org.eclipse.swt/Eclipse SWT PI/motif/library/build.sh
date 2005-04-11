@@ -35,7 +35,7 @@ case $OS in
 			if [ "${CDE_HOME}" = "" ]; then
 				CDE_HOME=/usr/dt
 			fi
-			OUTPUT_DIR=../../../org.eclipse.swt.motif/os/aix/ppc
+			OUTPUT_DIR=../../../org.eclipse.swt.motif.aix.ppc
 			makefile="make_aix.mak"
 			echo "Building AIX motif ppc version of SWT"
 		esac
@@ -52,7 +52,7 @@ case $OS in
 			if [ "${QT_HOME}" = "" ]; then
 				QT_HOME=$QTDIR
 			fi
-			OUTPUT_DIR=../../../org.eclipse.swt.motif/os/linux/x86
+			OUTPUT_DIR=../../../org.eclipse.swt.motif.linux.x86
 			makefile="make_linux.mak"
 			echo "Building Linux motif x86 version of SWT"
 		esac
@@ -69,7 +69,7 @@ case $OS in
 			if [ "${CDE_HOME}" = "" ]; then
 				CDE_HOME=/usr/dt		
 			fi
-			OUTPUT_DIR=../../../org.eclipse.swt.motif/os/solaris/sparc
+			OUTPUT_DIR=../../../org.eclipse.swt.motif.solaris.sparc
 			PATH=/usr/ccs/bin:/opt/SUNWspro/bin:$PATH
 			export PATH
 			makefile="make_solaris.mak"
@@ -88,7 +88,7 @@ case $OS in
 				if [ "${CDE_HOME}" = "" ]; then
 					CDE_HOME=/usr/dt
 				fi
-				OUTPUT_DIR=../../../org.eclipse.swt.motif/os/hpux/ia64
+				OUTPUT_DIR=../../../org.eclipse.swt.motif.hpux.ia64
 				makefile="make_hpux_ia64.mak"
 				echo "Building HPUX motif ia64 version of SWT"
 				;;
@@ -102,7 +102,7 @@ case $OS in
 				if [ "${CDE_HOME}" = "" ]; then
 					CDE_HOME=/usr/dt
 				fi
-				OUTPUT_DIR=../../../org.eclipse.swt.motif/os/hpux/PA_RISC
+				OUTPUT_DIR=../../../org.eclipse.swt.motif.hpux.PA_RISC
 				makefile="make_hpux_PA_RISC.mak"
 				echo "Building HPUX motif risc version of SWT"
 				;;
