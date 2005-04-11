@@ -350,11 +350,16 @@ void createHandle () {
 		OS.kTXNDisableDragAndDropTag,
 		OS.kTXNIOPrivilegesTag,
 		OS.kTXNMarginsTag,
+		OS.kTXNJustificationTag,
 	};
+	int just = OS.kTXNFlushLeft;
+	if ((style & SWT.CENTER) != 0) just = OS.kTXNCenter;
+	if ((style & SWT.RIGHT) != 0) just = OS.kTXNFlushRight;
 	int [] datas = new int [] {
 		1,
 		(style & SWT.READ_ONLY) != 0 ? 1 : 0,
 		ptr,
+		just,
 	};
 	OS.TXNSetTXNObjectControls (txnObject, false, tags.length, tags, datas);
 	OS.TXNSetFrameBounds (txnObject, 0, 0, 0, 0, txnFrameID);
