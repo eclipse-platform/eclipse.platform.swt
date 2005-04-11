@@ -165,6 +165,13 @@ protected void layout(Composite composite, boolean flushCache) {
 	if (banner.curveStart > oldStart) {
 		banner.redraw(oldStart - CBanner.CURVE_TAIL, 0, banner.curveStart + banner.curve_width - oldStart + CBanner.CURVE_TAIL + 5, size.y, false);
 	}
+	/*
+	 * The paint events must be flushed in order to make the curve draw smoothly
+	 * while the user drags the divider.
+	 * On Windows, it is neccessary to flush the paints before the children are 
+	 * resized because otherwise the children (particularly toolbars) will flash.
+	 */
+	banner.update();
 	banner.curveRect = new Rectangle(banner.curveStart, 0, banner.curve_width, size.y);
 	if (bottomRect != null) bottom.setBounds(bottomRect);
 	if (rightRect != null) right.setBounds(rightRect);
