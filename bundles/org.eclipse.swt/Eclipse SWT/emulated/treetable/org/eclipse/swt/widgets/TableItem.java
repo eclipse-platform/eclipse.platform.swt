@@ -840,16 +840,17 @@ int getPreferredWidth (int columnIndex) {
 	width += gc.stringExtent (getText (columnIndex)).x + 2 * MARGIN_TEXT;
 	gc.dispose ();
 	if (columnIndex == 0) {
-		width += parent.col0ImageWidth;
-		width += 2 * Table.MARGIN_IMAGE;
+		if (parent.col0ImageWidth > 0) {
+			width += parent.col0ImageWidth;
+			width += Table.MARGIN_IMAGE;
+		}
 	} else {
 		Image image = getImage (columnIndex);
 		if (image != null) {
 			width += image.getBounds ().width;
-			width += 2 * Table.MARGIN_IMAGE;
+			width += Table.MARGIN_IMAGE;
 		}
 	}
-	
 	return width;
 }
 public String getText () {
