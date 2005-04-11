@@ -1817,7 +1817,7 @@ LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
 	switch (cmd) {
 		case OS.SC_MINIMIZE:
 			long memory = Runtime.getRuntime ().totalMemory ();
-			if (memory >= 64 * 10024 * 1024) {
+			if (memory >= 32 * 10024 * 1024) {
 				OS.ShowWindow (handle, OS.SW_SHOWMINIMIZED);
 				return LRESULT.ZERO;
 			}
