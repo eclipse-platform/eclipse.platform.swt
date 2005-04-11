@@ -1,23 +1,23 @@
 Manifest-Version: 1.0
 Bundle-Name: %pluginName
 Bundle-Vendor: %providerName
-Bundle-SymbolicName: org.eclipse.swt; singleton=true
+Bundle-SymbolicName: org.eclipse.swt; singleton:=true
 Bundle-Version: 3.1.0
 Bundle-ManifestVersion: 2
 Bundle-Localization: plugin
-Provide-Package: 
+Export-Package: 
  org.eclipse.swt,
  org.eclipse.swt.accessibility,
+ org.eclipse.swt.awt,
  org.eclipse.swt.browser,
  org.eclipse.swt.custom,
  org.eclipse.swt.dnd,
  org.eclipse.swt.events,
  org.eclipse.swt.graphics,
- org.eclipse.swt.internal,
- org.eclipse.swt.awt,
- org.eclipse.swt.internal.image,
  org.eclipse.swt.layout,
  org.eclipse.swt.printing,
  org.eclipse.swt.program,
- org.eclipse.swt.widgets
+ org.eclipse.swt.widgets,
+ org.eclipse.swt.internal; x-internal:=true,
+ org.eclipse.swt.internal.image; x-internal:=true
 Eclipse-ExtensibleAPI: true
