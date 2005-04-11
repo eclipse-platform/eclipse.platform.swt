@@ -392,6 +392,10 @@ void register () {
 	super.register ();
 	if (formHandle != 0) display.addWidget (formHandle, this);
 }
+void realizeChildren () {
+	super.realizeChildren ();
+	setBitGravity ();
+}
 void releaseHandle () {
 	super.releaseHandle ();
 	formHandle = 0;
@@ -432,6 +436,7 @@ public void setAlignment (int alignment) {
 	if ((alignment & SWT.CENTER) != 0) argList [1] = OS.XmALIGNMENT_CENTER;
 	if ((alignment & SWT.RIGHT) != 0) argList [1] = OS.XmALIGNMENT_END;
 	OS.XtSetValues (handle, argList, argList.length / 2);
+	setBitGravity ();
 }
 void setBackgroundPixel (int pixel) {
 	super.setBackgroundPixel (pixel);
@@ -444,6 +449,16 @@ void setBackgroundPixel (int pixel) {
 	int [] argList2 = {OS.XmNlabelType, 0};
 	OS.XtGetValues (handle, argList2, argList2.length / 2);
 	if (argList2 [1] == OS.XmPIXMAP) setBitmap (image);
+}
+void setBitGravity () {
+	int xDisplay = OS.XtDisplay (handle);
+	if (xDisplay == 0) return;
+	int xWindow = OS.XtWindow (handle);
+	if (xWindow == 0) return;
+	int flags = OS.CWBitGravity;
+	XSetWindowAttributes attributes = new XSetWindowAttributes ();
+	attributes.bit_gravity = (style & SWT.LEFT) != 0 ? OS.NorthWestGravity : OS.ForgetGravity;
+	OS.XChangeWindowAttributes (xDisplay, xWindow, flags, attributes);
 }
 void setBitmap (Image image) {
 	int labelPixmap = OS.XmUNSPECIFIED_PIXMAP;

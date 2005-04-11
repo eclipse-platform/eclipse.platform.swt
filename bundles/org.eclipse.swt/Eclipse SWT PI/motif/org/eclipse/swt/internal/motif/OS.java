@@ -148,6 +148,7 @@ public class OS extends Platform {
 	public static final int MotionNotify = 6;
 	public static final int None = 0;
 	public static final int NormalState = 0x1;
+	public static final int NorthWestGravity = 0x1;
 	public static final int NotifyAncestor = 0x0;
 	public static final int NotifyInferior = 0x2;
 	public static final int NotifyNonlinear = 0x3;
