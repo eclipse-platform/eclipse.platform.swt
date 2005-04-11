@@ -31,7 +31,7 @@ rem ******
 set Mssdk=K:\dev\PRODUCTS\PLATSDK\feb2003
 call %mssdk%\setenv.bat
 
-set OUTPUT_DIR=..\..\..\org.eclipse.swt.win32\os\win32\x86
+set OUTPUT_DIR=..\..\..\org.eclipse.swt.win32.win32.x86
 
 :MAKE
 nmake -f make_win32.mak %1 %2 %3 %4
