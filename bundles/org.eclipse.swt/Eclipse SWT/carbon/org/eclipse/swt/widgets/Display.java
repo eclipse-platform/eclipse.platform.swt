@@ -2326,8 +2326,9 @@ public Point map (Control from, Control to, int x, int y) {
 	if (from != null) {
 		Rect rect = new Rect ();
 		OS.GetControlBounds (from.handle, rect);
-		point.x += rect.left; 
-		point.y += rect.top;
+		Rect inset = from.getInset ();
+		point.x += rect.left - inset.left; 
+		point.y += rect.top - inset.top;
 		int window = OS.GetControlOwner (from.handle);
 		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
 		point.x += rect.left;
@@ -2336,8 +2337,9 @@ public Point map (Control from, Control to, int x, int y) {
 	if (to != null) {
 		Rect rect = new Rect ();
 		OS.GetControlBounds (to.handle, rect);
-		point.x -= rect.left; 
-		point.y -= rect.top;
+		Rect inset = to.getInset ();
+		point.x -= rect.left - inset.left; 
+		point.y -= rect.top - inset.top;
 		int window = OS.GetControlOwner (to.handle);
 		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
 		point.x -= rect.left;
@@ -2434,8 +2436,9 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 	if (from != null) {
 		Rect rect = new Rect ();
 		OS.GetControlBounds (from.handle, rect);
-		rectangle.x += rect.left; 
-		rectangle.y += rect.top;
+		Rect inset = from.getInset ();
+		rectangle.x += rect.left - inset.left; 
+		rectangle.y += rect.top - inset.top;
 		int window = OS.GetControlOwner (from.handle);
 		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
 		rectangle.x += rect.left;
@@ -2444,8 +2447,9 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 	if (to != null) {
 		Rect rect = new Rect ();
 		OS.GetControlBounds (to.handle, rect);
-		rectangle.x -= rect.left; 
-		rectangle.y -= rect.top;
+		Rect inset = to.getInset ();
+		rectangle.x -= rect.left - inset.left; 
+		rectangle.y -= rect.top - inset.top;
 		int window = OS.GetControlOwner (to.handle);
 		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
 		rectangle.x -= rect.left;

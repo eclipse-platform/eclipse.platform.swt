@@ -2697,8 +2697,9 @@ public Point toControl (int x, int y) {
 	Rect rect = new Rect ();
 	int window = OS.GetControlOwner (handle);
 	OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-	x -= rect.left;
-	y -= rect.top;
+	Rect inset = getInset ();
+	x -= rect.left - inset.left;
+	y -= rect.top - inset.top;
 	OS.GetControlBounds (handle, rect);
     return new Point (x - rect.left, y - rect.top);
 }
@@ -2745,8 +2746,9 @@ public Point toDisplay (int x, int y) {
 	checkWidget();
 	Rect rect = new Rect ();
 	OS.GetControlBounds (handle, rect);
-	x += rect.left; 
-	y += rect.top; 
+	Rect inset = getInset ();
+	x += rect.left - inset.left;
+	y += rect.top - inset.top;
 	int window = OS.GetControlOwner (handle);
 	OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
     return new Point (x + rect.left, y + rect.top);
