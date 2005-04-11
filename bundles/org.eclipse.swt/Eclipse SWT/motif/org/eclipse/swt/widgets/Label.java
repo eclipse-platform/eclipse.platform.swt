@@ -388,13 +388,13 @@ void propagateWidget (boolean enabled) {
 	super.propagateWidget (enabled);
 	if (formHandle != 0) propagateHandle (enabled, formHandle, OS.None);
 }
-void register () {
-	super.register ();
-	if (formHandle != 0) display.addWidget (formHandle, this);
-}
 void realizeChildren () {
 	super.realizeChildren ();
 	setBitGravity ();
+}
+void register () {
+	super.register ();
+	if (formHandle != 0) display.addWidget (formHandle, this);
 }
 void releaseHandle () {
 	super.releaseHandle ();
