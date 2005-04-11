@@ -932,17 +932,7 @@ abstract class Tab {
 			case SWT.Paint: toString += new PaintEvent (event).toString (); break;
 			case SWT.Move:
 			case SWT.Resize: toString += new ControlEvent (event).toString (); break;
-			case SWT.Dispose: {
-				try {
-					toString += new DisposeEvent (event).toString ();
-				} catch (Exception e) {
-					String string = event.widget.getClass ().getName ();
-					int index = string.lastIndexOf ('.');
-					if (index != -1) string = string.substring (index + 1, string.length ());
-					toString += "DisposeEvent{" + string + "}";
-				}
-				break;
-			}
+			case SWT.Dispose: toString += new DisposeEvent (event).toString (); break;
 			case SWT.Selection:
 			case SWT.DefaultSelection: toString += new SelectionEvent (event).toString (); break;
 			case SWT.FocusIn:
