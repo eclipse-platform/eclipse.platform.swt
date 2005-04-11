@@ -689,6 +689,50 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetTransform)
 }
 #endif
 
+#ifndef NO_Graphics_1MeasureString__I_3CIILorg_eclipse_swt_internal_gdip_PointF_2ILorg_eclipse_swt_internal_gdip_RectF_2
+JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1MeasureString__I_3CIILorg_eclipse_swt_internal_gdip_PointF_2ILorg_eclipse_swt_internal_gdip_RectF_2)
+	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2, jint arg3, jobject arg4, jint arg5, jobject arg6)
+{
+	jchar *lparg1=NULL;
+	PointF _arg4, *lparg4=NULL;
+	RectF _arg6, *lparg6=NULL;
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Graphics_1MeasureString__I_3CIILorg_eclipse_swt_internal_gdip_PointF_2ILorg_eclipse_swt_internal_gdip_RectF_2_FUNC);
+	if (arg1) if ((lparg1 = env->GetCharArrayElements(arg1, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = getPointFFields(env, arg4, &_arg4)) == NULL) goto fail;
+	if (arg6) if ((lparg6 = getRectFFields(env, arg6, &_arg6)) == NULL) goto fail;
+	rc = (jint)((Graphics *)arg0)->MeasureString((const WCHAR *)lparg1, (INT)arg2, (const Font *)arg3, *(const PointF *)lparg4, (StringFormat *)arg5, lparg6);
+fail:
+	if (arg6 && lparg6) setRectFFields(env, arg6, lparg6);
+	if (arg4 && lparg4) setPointFFields(env, arg4, lparg4);
+	if (arg1 && lparg1) env->ReleaseCharArrayElements(arg1, lparg1, 0);
+	Gdip_NATIVE_EXIT(env, that, Graphics_1MeasureString__I_3CIILorg_eclipse_swt_internal_gdip_PointF_2ILorg_eclipse_swt_internal_gdip_RectF_2_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Graphics_1MeasureString__I_3CIILorg_eclipse_swt_internal_gdip_PointF_2Lorg_eclipse_swt_internal_gdip_RectF_2
+JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1MeasureString__I_3CIILorg_eclipse_swt_internal_gdip_PointF_2Lorg_eclipse_swt_internal_gdip_RectF_2)
+	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2, jint arg3, jobject arg4, jobject arg5)
+{
+	jchar *lparg1=NULL;
+	PointF _arg4, *lparg4=NULL;
+	RectF _arg5, *lparg5=NULL;
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Graphics_1MeasureString__I_3CIILorg_eclipse_swt_internal_gdip_PointF_2Lorg_eclipse_swt_internal_gdip_RectF_2_FUNC);
+	if (arg1) if ((lparg1 = env->GetCharArrayElements(arg1, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = getPointFFields(env, arg4, &_arg4)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = getRectFFields(env, arg5, &_arg5)) == NULL) goto fail;
+	rc = (jint)((Graphics *)arg0)->MeasureString((const WCHAR *)lparg1, (INT)arg2, (const Font *)arg3, *(const PointF *)lparg4, (RectF *)lparg5);
+fail:
+	if (arg5 && lparg5) setRectFFields(env, arg5, lparg5);
+	if (arg4 && lparg4) setPointFFields(env, arg4, lparg4);
+	if (arg1 && lparg1) env->ReleaseCharArrayElements(arg1, lparg1, 0);
+	Gdip_NATIVE_EXIT(env, that, Graphics_1MeasureString__I_3CIILorg_eclipse_swt_internal_gdip_PointF_2Lorg_eclipse_swt_internal_gdip_RectF_2_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Graphics_1ResetClip
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1ResetClip)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -1294,6 +1338,18 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(SolidBrush_1new)
 	Gdip_NATIVE_ENTER(env, that, SolidBrush_1new_FUNC);
 	rc = (jint)new SolidBrush(*(Color *)arg0);
 	Gdip_NATIVE_EXIT(env, that, SolidBrush_1new_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_StringFormat_1GenericTypographic
+JNIEXPORT jint JNICALL Gdip_NATIVE(StringFormat_1GenericTypographic)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, StringFormat_1GenericTypographic_FUNC);
+	rc = (jint)StringFormat::GenericTypographic();
+	Gdip_NATIVE_EXIT(env, that, StringFormat_1GenericTypographic_FUNC);
 	return rc;
 }
 #endif
