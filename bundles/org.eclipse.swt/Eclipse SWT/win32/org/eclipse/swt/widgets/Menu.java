@@ -817,9 +817,13 @@ String getNameText () {
 	int length = items.length;
 	if (length > 0) {
 		for (int i=0; i<length-1; i++) {
-			result = result + items [i].getNameText() + ", ";
+			if (items [i] != null) {
+				result = result + items [i].getNameText() + ", ";
+			}
 		}
-		result = result + items [length-1].getNameText ();
+		if (items [length-1] != null) {
+			result = result + items [length-1].getNameText ();
+		}
 	}
 	return result;
 }
