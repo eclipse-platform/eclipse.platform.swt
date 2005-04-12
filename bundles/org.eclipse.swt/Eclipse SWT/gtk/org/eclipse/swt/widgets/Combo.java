@@ -1366,7 +1366,7 @@ public void setItems (String [] items) {
 	this.items = new String [items.length];
 	System.arraycopy (items, 0, this.items, 0, i);
 	lockText = ignoreSelect = false;
-	OS.gtk_entry_set_text (entryHandle, new byte[0]);
+	OS.gtk_entry_set_text (entryHandle, new byte[1]);
 }
 
 void setOrientation() {
