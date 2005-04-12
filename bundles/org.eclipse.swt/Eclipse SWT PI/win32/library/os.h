@@ -232,6 +232,7 @@
 #define NO_GetRandomRgn
 #define NO_GetROP2
 #define NO_GetSaveFileNameA
+#define NO_GetSystemDefaultUILanguage
 #define NO_GetTextCharset
 #define NO_GetTextExtentPoint32A
 #define NO_GetTextMetricsA
@@ -246,6 +247,7 @@
 #define NO_GlobalAddAtomW
 #define NO_GradientFill
 #define NO_IIDFromString
+#define NO_ImmDisableTextFrameService
 #define NO_ImmGetCompositionFontA
 #define NO_ImmGetCompositionStringA
 #define NO_ImmSetCompositionFontA
@@ -296,6 +298,7 @@
 #define NO_Pie
 #define NO_PostMessageA
 #define NO_PostThreadMessageA
+#define NO_PRIMARYLANGID
 #define NO_PrintDlgA
 #define NO_PrintDlgW
 #define NO_RedrawWindow

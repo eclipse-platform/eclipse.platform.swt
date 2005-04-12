@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 644;
-int OS_nativeFunctionCallCount[644];
+int OS_nativeFunctionCount = 647;
+int OS_nativeFunctionCallCount[647];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateKeyboardLayout",
@@ -254,6 +254,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetStockObject",
 	"GetSysColor",
 	"GetSysColorBrush",
+	"GetSystemDefaultUILanguage",
 	"GetSystemMenu",
 	"GetSystemMetrics",
 	"GetSystemPaletteEntries",
@@ -307,6 +308,7 @@ char * OS_nativeFunctionNames[] = {
 	"ImmAssociateContext",
 	"ImmCreateContext",
 	"ImmDestroyContext",
+	"ImmDisableTextFrameService",
 	"ImmGetCompositionFontA",
 	"ImmGetCompositionFontW",
 	"ImmGetCompositionStringA",
@@ -445,6 +447,7 @@ char * OS_nativeFunctionNames[] = {
 	"OleUninitialize",
 	"OpenClipboard",
 	"OpenThemeData",
+	"PRIMARYLANGID",
 	"PatBlt",
 	"PeekMessageA",
 	"PeekMessageW",

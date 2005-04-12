@@ -3849,6 +3849,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetSysColorBrush)
 }
 #endif
 
+#ifndef NO_GetSystemDefaultUILanguage
+JNIEXPORT jshort JNICALL OS_NATIVE(GetSystemDefaultUILanguage)
+	(JNIEnv *env, jclass that)
+{
+	jshort rc = 0;
+	OS_NATIVE_ENTER(env, that, GetSystemDefaultUILanguage_FUNC);
+	rc = (jshort)GetSystemDefaultUILanguage();
+	OS_NATIVE_EXIT(env, that, GetSystemDefaultUILanguage_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetSystemMenu
 JNIEXPORT jint JNICALL OS_NATIVE(GetSystemMenu)
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
@@ -4627,6 +4639,34 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(ImmDestroyContext)
 	OS_NATIVE_ENTER(env, that, ImmDestroyContext_FUNC);
 	rc = (jboolean)ImmDestroyContext((HIMC)arg0);
 	OS_NATIVE_EXIT(env, that, ImmDestroyContext_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ImmDisableTextFrameService
+JNIEXPORT jboolean JNICALL OS_NATIVE(ImmDisableTextFrameService)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, ImmDisableTextFrameService_FUNC);
+/*
+	rc = (jboolean)ImmDisableTextFrameService(arg0);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!(hm = GetModuleHandle(ImmDisableTextFrameService_LIB))) hm = LoadLibrary(ImmDisableTextFrameService_LIB);
+			if (hm) fp = GetProcAddress(hm, "ImmDisableTextFrameService");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jboolean)fp(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, ImmDisableTextFrameService_FUNC);
 	return rc;
 }
 #endif
@@ -6816,6 +6856,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(OpenThemeData)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, OpenThemeData_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_PRIMARYLANGID
+JNIEXPORT jshort JNICALL OS_NATIVE(PRIMARYLANGID)
+	(JNIEnv *env, jclass that, jshort arg0)
+{
+	jshort rc = 0;
+	OS_NATIVE_ENTER(env, that, PRIMARYLANGID_FUNC);
+	rc = (jshort)PRIMARYLANGID(arg0);
+	OS_NATIVE_EXIT(env, that, PRIMARYLANGID_FUNC);
 	return rc;
 }
 #endif

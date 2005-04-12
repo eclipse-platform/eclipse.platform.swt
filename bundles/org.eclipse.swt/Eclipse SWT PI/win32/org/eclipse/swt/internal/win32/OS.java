@@ -82,6 +82,23 @@ public class OS extends Platform {
 		boolean dbcsEnabled = OS.GetSystemMetrics (OS.SM_DBCSENABLED) != 0;
 		boolean immEnabled = OS.GetSystemMetrics (OS.SM_IMMENABLED) != 0;
 		IsDBLocale = dbcsEnabled || immEnabled;
+		
+		/*
+		* Bug in Windows.  On Korean Windows XP when the Text
+		* Services Framework support for legacy applications
+		* is enabled, certain legacy calls segment fault.
+		* For example, when ImmSetCompositionWindow() is used
+		* to move the composition window outside of the client
+		* area, Windows crashes.  The fix is to disable legacy
+		* support.
+		*/
+		if (!OS.IsWinCE && OS.WIN32_VERSION > OS.VERSION (5, 1)) {
+			short langID = OS.GetSystemDefaultUILanguage ();
+			short primaryLang = OS.PRIMARYLANGID (langID);
+			if (primaryLang == OS.LANG_KOREAN) {
+				OS.ImmDisableTextFrameService (0);
+			}
+		}
 	}
 	
 	/* Get the COMCTL32.DLL version */
@@ -591,6 +608,7 @@ public class OS extends Platform {
 	public static final int KEY_READ = 0x20019;
 	public static final int KEYEVENTF_KEYUP = 0x0002;
 	public static final int L_MAX_URL_LENGTH = 2084;
+	public static final int LANG_KOREAN = 0x12;
 	public static final int LANG_NEUTRAL = 0x0;
 	public static final int LANG_USER_DEFAULT = 1 << 10;
 	public static final int LAYOUT_RTL = 0x1;
@@ -2631,6 +2649,7 @@ public static final native boolean GetScrollInfo (int hwnd, int flags, SCROLLINF
 public static final native int GetStockObject (int fnObject);
 public static final native int GetSysColor (int nIndex);
 public static final native int GetSysColorBrush (int nIndex);
+public static final native short GetSystemDefaultUILanguage ();
 public static final native int GetSystemMenu (int hWnd, boolean bRevert);
 public static final native int GetSystemMetrics (int nIndex);
 public static final native int GetSystemPaletteEntries(int hdc, int iStartIndex, int nEntries, byte[] lppe);
@@ -2682,6 +2701,7 @@ public static final native boolean ImageList_SetIconSize (int himl, int cx, int 
 public static final native int ImmAssociateContext (int hWnd, int hIMC);
 public static final native int ImmCreateContext ();
 public static final native boolean ImmDestroyContext (int hIMC);
+public static final native boolean ImmDisableTextFrameService (int idThread);
 public static final native boolean ImmGetCompositionFontW (int hIMC, LOGFONTW lplf);
 public static final native boolean ImmGetCompositionFontA (int hIMC, LOGFONTA lplf);
 public static final native int ImmGetCompositionStringW (int hIMC, int dwIndex, char [] lpBuf, int dwBufLen);
@@ -2830,6 +2850,7 @@ public static final native boolean PostMessageW (int hWnd, int Msg, int wParam, 
 public static final native boolean PostMessageA (int hWnd, int Msg, int wParam, int lParam);
 public static final native boolean PostThreadMessageW (int idThread, int Msg, int wParam, int lParam);
 public static final native boolean PostThreadMessageA (int idThread, int Msg, int wParam, int lParam);
+public static final native short PRIMARYLANGID (short lgid);
 public static final native boolean PrintDlgW (PRINTDLG lppd);
 public static final native boolean PrintDlgA (PRINTDLG lppd);
 public static final native boolean PtInRect (RECT rect, POINT pt);
