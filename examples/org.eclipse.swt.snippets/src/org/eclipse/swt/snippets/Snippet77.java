@@ -46,7 +46,7 @@ public static void main(String[] args) {
 			Rectangle area = comp.getClientArea();
 			Point preferredSize = table.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 			int width = area.width - 2*table.getBorderWidth();
-			if (preferredSize.y > area.height) {
+			if (preferredSize.y > area.height + table.getHeaderHeight()) {
 				// Subtract the scrollbar width from the total column width
 				// if a vertical scrollbar will be required
 				Point vBarSize = table.getVerticalBar().getSize();
