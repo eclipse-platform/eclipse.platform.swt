@@ -2478,6 +2478,7 @@ void redrawItems (int startIndex, int endIndex, boolean focusBoundsOnly) {
  */
 public void removeAll () {
 	checkWidget ();
+	if (items.length == 0) return;
 	setRedraw (false);
 	setFocusItem (null, false);		/* do this upfront for performance */
 	while (items.length > 0) {

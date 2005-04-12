@@ -2632,6 +2632,7 @@ public void remove (int [] indices) {
  */
 public void removeAll () {
 	checkWidget ();
+	if (itemsCount == 0) return;
 	setRedraw (false);
 	setFocusItem (null, false);		/* do this upfront for performance */
 	while (itemsCount > 0) {
