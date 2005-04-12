@@ -86,6 +86,21 @@ static synchronized Device getDevice () {
  * You must dispose the device when it is no longer required. 
  * </p>
  *
+ * @see #create
+ * @see #init
+ * 
+ * @since 3.1
+ */
+public Device() {
+	this(null);
+}
+
+/**
+ * Constructs a new instance of this class.
+ * <p>
+ * You must dispose the device when it is no longer required. 
+ * </p>
+ *
  * @param data the DeviceData which describes the receiver
  *
  * @see #create
