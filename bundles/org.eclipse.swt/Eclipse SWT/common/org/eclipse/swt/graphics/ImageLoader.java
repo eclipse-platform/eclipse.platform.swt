@@ -73,7 +73,8 @@ public class ImageLoader {
 	/**
 	 * the number of times to repeat the display of a sequence
 	 * of animated images (this corresponds to the commonly-used
-	 * GIF application extension for "NETSCAPE 2.0 01")
+	 * GIF application extension for "NETSCAPE 2.0 01").
+	 * The default is 1. A value of 0 means 'display repeatedly'
 	 */
 	public int repeatCount;
 		
