@@ -1832,17 +1832,12 @@ LRESULT wmPaint (int hwnd, int wParam, int lParam) {
 	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) {
 		return null;
 	}
-
-	/* Get the damage */
+	
+	/* Issue a paint event */
 	int result = 0;
 	if (OS.IsWinCE) {
 		RECT rect = new RECT ();
 		OS.GetUpdateRect (hwnd, rect, false);
-		result = callWindowProc (hwnd, OS.WM_PAINT, wParam, lParam);
-		OS.InvalidateRect (hwnd, rect, false);
-	} else {
-		int rgn = OS.CreateRectRgn (0, 0, 0, 0);
-		OS.GetUpdateRgn (hwnd, rgn, false);
 		result = callWindowProc (hwnd, OS.WM_PAINT, wParam, lParam);
 		/*
 		* Bug in Windows.  When InvalidateRgn(), InvalidateRect()
@@ -1853,32 +1848,60 @@ LRESULT wmPaint (int hwnd, int wParam, int lParam) {
 		* caret.
 		*/
 		OS.HideCaret (hwnd);
-		OS.InvalidateRgn (hwnd, rgn, false);
+		OS.InvalidateRect (hwnd, rect, false);
 		OS.ShowCaret (hwnd);
-		OS.DeleteObject (rgn);
-	}
-	
-	/* Send the paint event */
-	PAINTSTRUCT ps = new PAINTSTRUCT ();
-	GCData data = new GCData ();
-	data.ps = ps;
-	data.hwnd = hwnd;
-	GC gc = new_GC (data);
-	if (gc != null) {
-		int width = ps.right - ps.left;
-		int height = ps.bottom - ps.top;
-		if (width != 0 && height != 0) {
-			Event event = new Event ();
-			event.gc = gc;
-			event.x = ps.left;
-			event.y = ps.top;
-			event.width = width;
-			event.height = height;
-			sendEvent (SWT.Paint, event);
-			// widget could be disposed at this point
-			event.gc = null;
+		PAINTSTRUCT ps = new PAINTSTRUCT ();
+		GCData data = new GCData ();
+		data.ps = ps;
+		data.hwnd = hwnd;
+		GC gc = new_GC (data);
+		if (gc != null) {
+			int width = ps.right - ps.left;
+			int height = ps.bottom - ps.top;
+			if (width != 0 && height != 0) {
+				Event event = new Event ();
+				event.gc = gc;
+				event.x = ps.left;
+				event.y = ps.top;
+				event.width = width;
+				event.height = height;
+				sendEvent (SWT.Paint, event);
+				// widget could be disposed at this point
+				event.gc = null;
+			}
+			gc.dispose ();
 		}
-		gc.dispose ();
+	} else {
+		int rgn = OS.CreateRectRgn (0, 0, 0, 0);
+		OS.GetUpdateRgn (hwnd, rgn, false);
+		result = callWindowProc (hwnd, OS.WM_PAINT, wParam, lParam);
+		GCData data = new GCData ();
+		data.hwnd = hwnd;
+		GC gc = new_GC (data);
+		if (gc != null) {
+			OS.HideCaret (hwnd);
+			RECT rect = new RECT();
+			OS.GetRgnBox (rgn, rect);
+			int width = rect.right - rect.left;
+			int height = rect.bottom - rect.top;
+			if (width != 0 && height != 0) {
+				int hDC = gc.handle;
+				OS.SelectClipRgn (hDC, rgn);
+				OS.SetMetaRgn (hDC);
+				Event event = new Event ();
+				event.gc = gc;
+				event.x = rect.left;
+				event.y = rect.top;
+				event.width = width;
+				event.height = height;
+				sendEvent (SWT.Paint, event);
+				// widget could be disposed at this point
+				event.gc = null;
+			}
+			gc.dispose ();
+			OS.ShowCaret (hwnd);
+		}
+		OS.DeleteObject (rgn);
 	}
 	if (result == 0) return LRESULT.ZERO;
 	return new LRESULT (result);
