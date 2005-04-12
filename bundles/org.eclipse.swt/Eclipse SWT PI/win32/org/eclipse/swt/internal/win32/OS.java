@@ -92,7 +92,7 @@ public class OS extends Platform {
 		* area, Windows crashes.  The fix is to disable legacy
 		* support.
 		*/
-		if (!OS.IsWinCE && OS.WIN32_VERSION > OS.VERSION (5, 1)) {
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
 			short langID = OS.GetSystemDefaultUILanguage ();
 			short primaryLang = OS.PRIMARYLANGID (langID);
 			if (primaryLang == OS.LANG_KOREAN) {

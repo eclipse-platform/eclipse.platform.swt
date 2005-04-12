@@ -23,7 +23,7 @@
 #define GetMonitorInfoA_LIB "user32.dll"
 #define GetMonitorInfoW_LIB "user32.dll"
 #define GradientFill_LIB "msimg32.dll"
-#define ImmDisableTextFrameService_LIB "imm32.lib"
+#define ImmDisableTextFrameService_LIB "imm32.dll"
 #define IsAppThemed_LIB "uxtheme.dll"
 #define MonitorFromWindow_LIB "user32.dll"
 #define NotifyWinEvent_LIB "user32.dll"
