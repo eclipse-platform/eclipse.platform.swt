@@ -84,6 +84,7 @@ public class Browser extends Composite {
 	static final int URLZONE_INTRANET = 1;
 	static final int URLACTION_ACTIVEX_MIN = 0x00001200;
 	static final int URLACTION_ACTIVEX_MAX = 0x000013ff;
+	static final int URLACTION_ACTIVEX_RUN = 0x00001200;
 	static final int URLACTION_JAVA_MIN = 0x00001C00;
 	static final int URLPOLICY_JAVA_LOW = 0x00030000;
 	static final int URLACTION_JAVA_MAX = 0x00001Cff;
@@ -108,10 +109,7 @@ public class Browser extends Composite {
 	static final int DOCHOSTUIFLAG_NO3DOUTERBORDER = 0x00200000;
 	
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
-	static final String URL_CAB = ".cab"; //$NON-NLS-1$
 	static final String URL_DIRECTOR = "http://download.macromedia.com/pub/shockwave/cabs/director/sw.cab"; //$NON-NLS-1$
-	static final String URL_JAVA = "http://java.sun.com/products/plugin/"; //$NON-NLS-1$
-	static final String URL_JAVA_15 = "http://java.sun.com/update"; //$NON-NLS-1$
 
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$

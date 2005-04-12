@@ -361,17 +361,7 @@ int GetSecuritySite(int ppSite) {
 	return Browser.INET_E_DEFAULT_ACTION;
 }
 
-int MapUrlToZone(int pwszUrl, int pdwZone, int dwFlags) {
-	int cnt = OS.wcslen(pwszUrl);
-	char[] buffer = new char[cnt];
-	/* 
-	* Note.  pwszUrl is unicode on both unicode and ansi platforms.
-	* The nbr of chars is multiplied by the constant 2 and not by TCHAR.sizeof since
-	* TCHAR.sizeof returns 1 on ansi platforms.
-	*/
-	OS.MoveMemory(buffer, pwszUrl, cnt * 2);
-	String url = new String(buffer);
-	
+int MapUrlToZone(int pwszUrl, int pdwZone, int dwFlags) {	
 	/*
 	* Feature in IE 6 sp1.  HTML rendered in memory
 	* does not enable local links but the exact same
@@ -379,26 +369,8 @@ int MapUrlToZone(int pwszUrl, int pdwZone, int dwFlags) {
 	* permitted to follow local links.  The workaround is
 	* to return URLZONE_INTRANET instead of the default
 	* value URLZONE_LOCAL_MACHINE.
-	*/
-	int zone = Browser.URLZONE_INTRANET;
-	
-	/*
-	* Note.  Some ActiveX plugins crash when executing
-	* inside the embedded explorer itself running into
-	* a JVM.  The current workaround is to detect when
-	* such ActiveX is about to be started and refuse
-	* to execute it.
-	* ActiveX blocked in an object tag:
-	* - Shockwave director plugin (mime: application/x-director)
-	* - Java plugin
-	*/
-
-	if (url.startsWith(Browser.URL_DIRECTOR) ||
-		(url.startsWith(Browser.URL_JAVA) && url.indexOf(Browser.URL_CAB) != -1) ||
-		(url.startsWith(Browser.URL_JAVA_15) && url.indexOf(Browser.URL_CAB) != -1)) {
-		zone = Browser.URLZONE_LOCAL_MACHINE;
-	}
-	COM.MoveMemory(pdwZone, new int[] {zone}, 4);
+	*/	
+	COM.MoveMemory(pdwZone, new int[] {Browser.URLZONE_INTRANET}, 4);
 	return COM.S_OK;
 }
 
@@ -431,26 +403,19 @@ int ProcessUrlAction(int pwszUrl, int dwAction, int pPolicy, int cbPolicy, int p
 	if (dwAction >= Browser.URLACTION_JAVA_MIN && dwAction <= Browser.URLACTION_JAVA_MAX) {
 		policy = Browser.URLPOLICY_JAVA_LOW;
 	}
-	if (dwAction >= Browser.URLACTION_ACTIVEX_MIN && dwAction <= Browser.URLACTION_ACTIVEX_MAX) {
-		int cnt = OS.wcslen(pwszUrl);
-		char[] buffer = new char[cnt];
-		/* 
-		* Note.  pwszUrl is unicode on both unicode and ansi platforms.
-		* The nbr of chars is multiplied by the constant 2 and not by TCHAR.sizeof since
-		* TCHAR.sizeof returns 1 on ansi platforms.
-		*/
-		OS.MoveMemory(buffer, pwszUrl, cnt * 2);
-		String url = new String(buffer);
-		/*
-		* Note.  Some ActiveX plugins crash when executing
-		* inside the embedded explorer itself running into
-		* a JVM.  The current workaround is to detect when
-		* such ActiveX is about to be started and refuse
-		* to execute it.
-		* ActiveX blocked based on URL extension:
-		* - Shockwave director plugin (mime: application/x-director)
-		*/
-		if (url.endsWith(".dcr")) policy = Browser.URLPOLICY_DISALLOW; //$NON-NLS-1$
+	/*
+	* Note.  Some ActiveX plugins crash when executing
+	* inside the embedded explorer itself running into
+	* a JVM.  The current workaround is to detect when
+	* such ActiveX is about to be started and refuse
+	* to execute it.
+	*/
+	if (dwAction == Browser.URLACTION_ACTIVEX_RUN) {
+		GUID guid = new GUID();
+		COM.MoveMemory(guid, pContext, GUID.sizeof);
+		if (COM.IsEqualGUID(guid, COM.IIDJavaBeansBridge) || COM.IsEqualGUID(guid, COM.IIDShockwaveActiveXControl)) {
+			policy = Browser.URLPOLICY_DISALLOW;
+		}
 	}
 	if (cbPolicy >= 4) COM.MoveMemory(pPolicy, new int[] {policy}, 4);
 	return COM.S_OK;
