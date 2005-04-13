@@ -1321,6 +1321,12 @@ int XStructureNotify (int w, int client_data, int call_data, int continue_to_dis
 				if (xDestroyEvent.window == clientWindow) setClientWindow (0);
 				break;
 			}
+			case OS.ConfigureNotify: {
+				XConfigureEvent xConfigureEvent = new XConfigureEvent ();
+				OS.memmove (xConfigureEvent, call_data, XConfigureEvent.sizeof);
+				if (xConfigureEvent.window == clientWindow) resizeClientWindow ();
+				break;
+			}
 		}
 	}
 	return result;
