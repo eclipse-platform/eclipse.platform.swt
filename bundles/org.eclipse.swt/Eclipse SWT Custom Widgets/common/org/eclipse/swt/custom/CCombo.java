@@ -377,7 +377,9 @@ void dropDown (boolean drop) {
 	if (drop == isDropped ()) return;
 	if (!drop) {
 		popup.setVisible (false);
-		text.setFocus ();
+		if (!isDisposed ()&& arrow.isFocusControl()) {
+			text.setFocus();
+		}
 		return;
 	}
 
@@ -918,6 +920,7 @@ void listEvent (Event event) {
 		}
 	}
 }
+
 void popupEvent(Event event) {
 	switch (event.type) {
 		case SWT.Paint:
