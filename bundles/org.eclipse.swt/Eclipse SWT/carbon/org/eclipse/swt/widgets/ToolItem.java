@@ -40,6 +40,7 @@ public class ToolItem extends Item {
 	int handle, iconHandle, labelHandle;
 	int cIcon, labelCIcon;
 	int visibleRgn;
+	int width = DEFAULT_SEPARATOR_WIDTH;
 	ToolBar parent;
 	Image hotImage, disabledImage;
 	String toolTipText;
@@ -48,7 +49,7 @@ public class ToolItem extends Item {
 
 	static final int DEFAULT_WIDTH = 24;
 	static final int DEFAULT_HEIGHT = 22;
-	static final int DEFAULT_SEPARATOR_WIDTH = 8;
+	static final int DEFAULT_SEPARATOR_WIDTH = 6;
 	static final int ARROW_WIDTH = 9;
 
 /**
@@ -89,7 +90,6 @@ public ToolItem (ToolBar parent, int style) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
 	parent.createItem (this, parent.getItemCount ());
-	parent.relayout ();
 }
 
 /**
@@ -131,7 +131,6 @@ public ToolItem (ToolBar parent, int style, int index) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
 	parent.createItem (this, index);
-	parent.relayout ();
 }
 
 /**
@@ -175,7 +174,7 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
-Point computeSize () {
+Point computeSize (GC gc) {
 	checkWidget();
 	int width = 0, height = 0;
 	if ((style & SWT.SEPARATOR) != 0) {
@@ -186,30 +185,36 @@ Point computeSize () {
 			width = DEFAULT_WIDTH;
 			height = getWidth ();
 		}
+		if (control != null) {
+			height = Math.max (height, control.getMininumHeight ());
+		}
 	} else {
 		int space = 0;
-		int stringWidth = 0, stringHeight = 0;
-		if (text.length () != 0) {
-			GC gc = new GC (parent);
-			int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_MNEMONIC | SWT.DRAW_TRANSPARENT;
-			Point size = gc.textExtent (text, flags);
-			stringWidth = size.x;
-			stringHeight = size.y;
-			gc.dispose ();
-		}
-		int imageWidth = 0, imageHeight = 0;
-		if (image != null) {
-			if (text.length () != 0) space = 2;
-			Rectangle rect = image.getBounds ();
-			imageWidth = rect.width;
-			imageHeight = rect.height;
-		}
-		if ((parent.style & SWT.RIGHT) != 0) {
-			width = stringWidth + imageWidth;
-			height = Math.max (stringHeight, imageHeight);
+		if (text.length () != 0 || image != null) {
+			int stringWidth = 0, stringHeight = 0;
+			if (text.length () != 0) {
+				int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_MNEMONIC | SWT.DRAW_TRANSPARENT;
+				Point size = gc.textExtent (text, flags);
+				stringWidth = size.x;
+				stringHeight = size.y;
+			}
+			int imageWidth = 0, imageHeight = 0;
+			if (image != null) {
+				if (text.length () != 0) space = 2;
+				Rectangle rect = image.getBounds ();
+				imageWidth = rect.width;
+				imageHeight = rect.height;
+			}
+			if ((parent.style & SWT.RIGHT) != 0) {
+				width = stringWidth + imageWidth;
+				height = Math.max (stringHeight, imageHeight);
+			} else {
+				width = Math.max (stringWidth, imageWidth);
+				height = stringHeight + imageHeight;
+			}
 		} else {
-			width = Math.max (stringWidth, imageWidth);
-			height = stringHeight + imageHeight;
+			width = DEFAULT_WIDTH;
+			height = DEFAULT_HEIGHT;
 		}
 		if ((style & SWT.DROP_DOWN) != 0) {
 			width += ARROW_WIDTH;
@@ -228,7 +233,6 @@ void createHandle () {
 	OS.CreateUserPaneControl (window, null, features, outControl);
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];
-	int width = DEFAULT_WIDTH, height = DEFAULT_HEIGHT;
 	if ((style & SWT.SEPARATOR) == 0) {
 		ControlButtonContentInfo inContent = new ControlButtonContentInfo ();
 		OS.CreateIconControl(window, null, inContent, false, outControl);
@@ -237,15 +241,7 @@ void createHandle () {
 		OS.CreateIconControl(window, null, inContent, false, outControl);
 		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 		labelHandle = outControl [0];
-	} else {
-		if ((parent.style & SWT.HORIZONTAL) != 0) {
-			width = DEFAULT_SEPARATOR_WIDTH;
-		} else {
-			height = DEFAULT_SEPARATOR_WIDTH;
-		}
-	}	
-	setBounds (0, 0, width, height);
-	parent.relayout ();
+	}
 }
 
 void createWidget () {
@@ -461,9 +457,7 @@ public String getToolTipText () {
  */
 public int getWidth () {
 	checkWidget();
-	Rect rect = new Rect ();
-	OS.GetControlBounds (handle, rect);
-	return rect.right - rect.left;
+	return width;
 }
 
 int getVisibleRegion (int control, boolean clipChildren) {
@@ -743,20 +737,17 @@ void selectRadio () {
 	setSelection (true);
 }
 
-void setBounds (int x, int y, int width, int height) {
-	if (control != null) control.setBounds (x, y, width, height);
+void setBounds (int x, int y, int width, int height, GC gc) {
 	setBounds (handle, x, y, width, height, true, true, false);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	int space = 0;
 	int inset = 3;
 	int stringWidth = 0, stringHeight = 0;
 	if (text.length () != 0) {
-		GC gc = new GC (parent);
 		int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_MNEMONIC | SWT.DRAW_TRANSPARENT;
 		Point size = gc.textExtent (text, flags);
 		stringWidth = size.x;
 		stringHeight = size.y;
-		gc.dispose ();
 	}
 	int imageWidth = 0, imageHeight = 0;
 	if (image != null) {
@@ -778,7 +769,7 @@ void setBounds (int x, int y, int width, int height) {
 		setBounds (labelHandle, labelX, labelY, stringWidth, stringHeight, true, true, false);
 	} else {
 		int imageX = inset + (width - (inset * 2) - arrowWidth - imageWidth) / 2;
-		int imageY = inset;
+		int imageY = inset + (height - imageHeight - stringHeight - inset * 2) / 2;
 		setBounds (iconHandle, imageX, imageY, imageWidth, imageHeight, true, true, false);
 		int labelX = inset + (width - (inset * 2) - arrowWidth - stringWidth) / 2;
 		int labelY = imageY + imageHeight + space;
@@ -808,11 +799,13 @@ public void setControl (Control control) {
 		if (control.parent != parent) error (SWT.ERROR_INVALID_PARENT);
 	}
 	if ((style & SWT.SEPARATOR) == 0) return;
+	if (this.control == control) return;
 	this.control = control;
-	if (control != null && !control.isDisposed ()) {
-		control.setBounds (getBounds ());
-	}
 	redrawWidget (handle, false);
+	if (control != null && !control.isDisposed ()) {
+		control.moveAbove (null);
+	}
+	parent.relayout ();
 }
 
 /**
@@ -847,7 +840,7 @@ public void setEnabled (boolean enabled) {
 void setFontStyle (Font font) {
 	/* This code is intentionaly commented. */
 //	parent.setFontStyle (labelHandle, font);
-	updateText ();
+	updateText (false);
 }
 
 /**
@@ -872,7 +865,7 @@ public void setDisabledImage (Image image) {
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	disabledImage = image;
-	updateImage ();
+	updateImage (true);
 }
 
 /**
@@ -897,7 +890,7 @@ public void setHotImage (Image image) {
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	hotImage = image;
-	updateImage ();
+	updateImage (true);
 }
 
 public void setImage (Image image) {
@@ -905,7 +898,7 @@ public void setImage (Image image) {
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setImage (image);
-	updateImage ();
+	updateImage (true);
 }
 
 boolean setRadioSelection (boolean value) {
@@ -943,15 +936,6 @@ public void setSelection (boolean selected) {
 	redrawWidget (handle, true);
 }
 
-void setSize (int width, int height, boolean layout) {
-	Rect rect = new Rect();
-	OS.GetControlBounds (handle, rect);
-	if ((rect.right - rect.left) != width || (rect.bottom - rect.top) != height) {
-		setBounds (handle, 0, 0, width, height, false, true, false);
-		if (layout) parent.relayout ();
-	}
-}
-
 /**
  * Sets the receiver's text. The string may include
  * the mnemonic character.
@@ -982,7 +966,7 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setText (string);
-	updateText ();
+	updateText (true);
 }
 
 /**
@@ -1014,13 +998,10 @@ public void setToolTipText (String string) {
 public void setWidth (int width) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) == 0) return;
-	if (width < 0) return;
-	Rect rect = new Rect ();
-	OS.GetControlBounds (handle, rect);
-	setSize (width, rect.bottom - rect.top, true);
-	if (control != null && !control.isDisposed ()) {
-		control.setBounds (getBounds ());
-	}
+	if (width < 0 || this.width == width) return;
+	this.width = width;
+	redrawWidget (handle, false);
+	parent.relayout();
 }
 
 void setZOrder () {
@@ -1029,7 +1010,7 @@ void setZOrder () {
 	if (labelHandle != 0) OS.HIViewAddSubview (handle, labelHandle);
 }
 
-void updateImage () {
+void updateImage (boolean layout) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if (cIcon != 0) destroyCIcon (cIcon);
 	cIcon = 0;
@@ -1051,11 +1032,10 @@ void updateImage () {
 	}
 	OS.SetBevelButtonContentInfo (iconHandle, inContent);
 	redrawWidget (iconHandle, false);
-	Point size = computeSize ();
-	setSize (size.x, size.y, true);
+	if (layout) parent.relayout();
 }
 
-void updateText () {
+void updateText (boolean layout) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if (labelCIcon != 0) destroyCIcon (labelCIcon);
 	labelCIcon = 0;
@@ -1082,10 +1062,9 @@ void updateText () {
 		inContent.contentType = (short) OS.kControlContentCIconHandle;
 		inContent.iconRef = labelCIcon;
 	}
-	OS.SetBevelButtonContentInfo (labelHandle, inContent);	
+	OS.SetBevelButtonContentInfo (labelHandle, inContent);
 	redrawWidget (labelHandle, false);
-	Point size = computeSize ();
-	setSize (size.x, size.y, true);
+	if (layout) parent.relayout();
 }
 
 }

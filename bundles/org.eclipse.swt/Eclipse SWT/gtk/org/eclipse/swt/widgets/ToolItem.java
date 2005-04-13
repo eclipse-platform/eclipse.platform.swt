@@ -254,7 +254,7 @@ void createHandle (int index) {
 void createWidget (int index) {
 	super.createWidget (index);
 	showWidget (index);
-	parent.layoutItems ();
+	parent.relayout ();
 }
 
 void deregister() {
@@ -266,7 +266,7 @@ public void dispose () {
 	if (isDisposed ()) return;
 	ToolBar parent = this.parent;
 	super.dispose ();
-	parent.layoutItems ();
+	parent.relayout ();
 }
 
 /**
@@ -715,7 +715,7 @@ public void setControl (Control control) {
 	if ((style & SWT.SEPARATOR) == 0) return;
 	if (this.control == control) return;
 	this.control = control;
-	resizeControl ();
+	parent.relayout ();
 }
 
 /**
@@ -825,7 +825,7 @@ public void setImage (Image image) {
 		OS.gtk_image_set_from_pixbuf (imageHandle, 0);
 		OS.gtk_widget_hide (imageHandle);
 	}
-	parent.layoutItems ();
+	parent.relayout ();
 }
 
 void setOrientation () {
@@ -912,7 +912,7 @@ public void setText (String string) {
 	} else {
 		OS.gtk_widget_hide (labelHandle);
 	}
-	parent.layoutItems ();
+	parent.relayout ();
 }
 
 /**
@@ -950,7 +950,7 @@ public void setWidth (int width) {
 	if ((style & SWT.SEPARATOR) == 0) return;
 	if (width < 0) return;
 	OS.gtk_widget_set_size_request (handle, width, -1);
-	parent.layoutItems ();
+	parent.relayout ();
 }
 
 void showWidget (int index) {

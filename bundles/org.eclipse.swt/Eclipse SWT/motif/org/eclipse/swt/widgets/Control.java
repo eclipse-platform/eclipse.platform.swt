@@ -882,6 +882,9 @@ public Menu getMenu () {
 	checkWidget();
 	return menu;
 }
+int getMinimumHeight () {
+	return 0;
+}
 /**
  * Returns the receiver's monitor.
  * 

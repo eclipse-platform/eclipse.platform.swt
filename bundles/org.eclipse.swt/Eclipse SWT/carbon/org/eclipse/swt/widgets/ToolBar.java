@@ -138,6 +138,7 @@ void createItem (ToolItem item, int index) {
 	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
 	items [index] = item;
 	if (parent.font != null) item.setFontStyle (parent.font);
+	relayout ();
 }
 
 void createWidget () {
@@ -315,64 +316,84 @@ int [] layoutHorizontal (int width, int height, boolean resize) {
 	int xSpacing = 0, ySpacing = 2;
 	int marginWidth = 0, marginHeight = 0;
 	int x = marginWidth, y = marginHeight;
-	int maxHeight = 0, maxX = 0, rows = 1;
+	int maxX = 0, rows = 1;
 	boolean wrap = (style & SWT.WRAP) != 0;
 	int itemHeight = 0;
+	GC gc = new GC(this);
+	Point [] sizes = new Point [itemCount];
 	for (int i=0; i<itemCount; i++) {
-		Rectangle rect = items [i].getBounds ();
-		itemHeight = Math.max (itemHeight, rect.height);
+		Point size = sizes [i] = items [i].computeSize (gc);
+		itemHeight = Math.max (itemHeight, size.y);
 	}
 	for (int i=0; i<itemCount; i++) {
 		ToolItem item = items [i];
-		Rectangle rect = item.getBounds ();
-		if (wrap && i != 0 && x + rect.width > width) {
+		Point size = sizes [i];
+		if (wrap && i != 0 && x + size.x > width) {
 			rows++;
 			x = marginWidth;
-			y += ySpacing + maxHeight;
-			maxHeight = 0;
+			y += ySpacing + itemHeight;
 		}
-		maxHeight = Math.max (maxHeight, rect.height);
 		if (resize) {
-			item.setBounds (x, y, rect.width, itemHeight);
-			boolean visible = x + rect.width <= width && y + rect.height <= height;
+			item.setBounds (x, y, size.x, itemHeight, gc);
+			boolean visible = x + size.x <= width && y + itemHeight <= height;
 			item.setVisible (item.handle, visible);
+			Control control = item.control;
+			if (control != null) {
+				int controlY = y + (itemHeight - size.y) / 2;
+				control.setBounds (x, controlY, size.x, itemHeight - (controlY - y));
+			}
 		}
-		x += xSpacing + rect.width;
+		x += xSpacing + size.x;
 		maxX = Math.max (maxX, x);
 	}
-	return new int [] {rows, maxX, y + maxHeight};
+	gc.dispose();
+	
+	//TODO - tempporary code
+	if (resize) invalidateVisibleRegion (handle);
+	
+	return new int [] {rows, maxX, y + itemHeight};
 }
 
 int [] layoutVertical (int width, int height, boolean resize) {
 	int xSpacing = 2, ySpacing = 0;
 	int marginWidth = 0, marginHeight = 0;
 	int x = marginWidth, y = marginHeight;
-	int maxWidth = 0, maxY = 0, cols = 1;
+	int maxY = 0, cols = 1;
 	boolean wrap = (style & SWT.WRAP) != 0;
 	int itemWidth = 0;
+	GC gc = new GC(this);
+	Point [] sizes = new Point [itemCount];
 	for (int i=0; i<itemCount; i++) {
-		Rectangle rect = items [i].getBounds ();
-		itemWidth = Math.max (itemWidth, rect.width);
+		Point size = sizes [i] = items [i].computeSize (gc);
+		itemWidth = Math.max (itemWidth, size.x);
 	}
 	for (int i=0; i<itemCount; i++) {
 		ToolItem item = items [i];
-		Rectangle rect = item.getBounds ();
-		if (wrap && i != 0 && y + rect.height > height) {
+		Point size = sizes [i];
+		if (wrap && i != 0 && y + size.y > height) {
 			cols++;
-			x += xSpacing + maxWidth;
+			x += xSpacing + itemWidth;
 			y = marginHeight;
-			maxWidth = 0;
 		}
-		maxWidth = Math.max (maxWidth, rect.width);
 		if (resize) {
-			item.setBounds (x, y, itemWidth, rect.height);
-			boolean visible = x + rect.width <= width && y + rect.height <= height;
+			item.setBounds (x, y, itemWidth, size.y, gc);
+			boolean visible = x + itemWidth <= width && y + size.y <= height;
 			item.setVisible (item.handle, visible);
+			Control control = item.control;
+			if (control != null) {
+				int controlX = x + (itemWidth - size.x) / 2;
+				control.setBounds (controlX, y, itemWidth - (controlX - x), size.y);
+			}
 		}
-		y += ySpacing + rect.height;
+		y += ySpacing + size.y;
 		maxY = Math.max (maxY, y);
 	}
-	return new int [] {cols, x + maxWidth, maxY};
+	gc.dispose();
+	
+	//TODO - tempporary code
+	if (resize) invalidateVisibleRegion (handle);
+	
+	return new int [] {cols, x + itemWidth, maxY};
 }
 
 int [] layout (int nWidth, int nHeight, boolean resize) {
@@ -387,11 +408,6 @@ void relayout () {
 	if (drawCount > 0) return;
 	Rectangle rect = getClientArea ();
 	layout (rect.width, rect.height, true);
-}
-
-void relayout (int width, int height) {
-	if (drawCount > 0) return;
-	layout (width, height, true);
 }
 
 void releaseWidget () {
@@ -414,10 +430,7 @@ void removeControl (Control control) {
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
 	int result = super.setBounds (x, y, width, height, move, resize, events);
-	if ((result & RESIZED) != 0) {
-		Rectangle rect = getClientArea ();
-		relayout (rect.width, rect.height);
-	}
+	if ((result & RESIZED) != 0) 	relayout ();
 	return result;
 }
 
@@ -427,8 +440,6 @@ void setFontStyle (Font font) {
 	for (int i=0; i<itemCount; i++) {
 		ToolItem item = items [i];
 		item.setFontStyle (font);
-		Point size = item.computeSize ();
-		item.setSize (size.x, size.y, false);
 	}
 	relayout ();
 }

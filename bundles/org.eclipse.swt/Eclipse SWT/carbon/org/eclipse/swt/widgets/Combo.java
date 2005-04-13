@@ -658,6 +658,10 @@ public String [] getItems () {
 	return result;
 }
 
+int getMininumHeight () {
+	return getTextHeight ();
+}
+
 /**
  * Returns the orientation of the receiver.
  *

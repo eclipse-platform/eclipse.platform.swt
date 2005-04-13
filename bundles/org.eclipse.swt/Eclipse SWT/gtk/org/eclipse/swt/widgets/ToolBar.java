@@ -348,14 +348,6 @@ public int indexOf (ToolItem item) {
 	return -1;
 }
 
-void layoutItems () {
-	ToolItem [] items = getItems ();
-	for (int i=0; i<items.length; i++) {
-		ToolItem item = items [i];
-		if (item != null) item.resizeControl ();
-	}
-}
-
 boolean mnemonicHit (char key) {
 	ToolItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
@@ -372,6 +364,14 @@ boolean mnemonicMatch (char key) {
 		if (labelHandle != 0 && mnemonicMatch (labelHandle, key)) return true;
 	}
 	return false;
+}
+
+void relayout () {
+	ToolItem [] items = getItems ();
+	for (int i=0; i<items.length; i++) {
+		ToolItem item = items [i];
+		if (item != null) item.resizeControl ();
+	}
 }
 
 void releaseWidget () {
@@ -397,7 +397,7 @@ void removeControl (Control control) {
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	int result = super.setBounds (x, y, width, height, move, resize);
-	if ((result & RESIZED) != 0) layoutItems ();
+	if ((result & RESIZED) != 0) relayout ();
 	return result;
 }
 
@@ -407,7 +407,7 @@ void setFontDescription (int /*long*/ font) {
 	for (int i = 0; i < items.length; i++) {
 		items[i].setFontDescription (font);
 	}
-	layoutItems ();
+	relayout ();
 }
 
 void setForegroundColor (GdkColor color) {

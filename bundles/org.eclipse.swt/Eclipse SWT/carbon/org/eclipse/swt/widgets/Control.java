@@ -807,6 +807,10 @@ public Menu getMenu () {
 	return menu;
 }
 
+int getMininumHeight () {
+	return 0;
+}
+
 /**
  * Returns the receiver's monitor.
  * 

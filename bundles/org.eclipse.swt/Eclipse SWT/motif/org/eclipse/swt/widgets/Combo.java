@@ -606,6 +606,9 @@ public String [] getItems () {
 	}
 	return result;
 }
+int getMinimumHeight () {
+	return getTextHeight ();
+}
 String getNameText () {
 	return getText ();
 }
