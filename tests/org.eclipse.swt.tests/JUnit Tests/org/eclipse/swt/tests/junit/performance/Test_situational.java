@@ -76,12 +76,12 @@ public void test_createComposites() {
 		while(display.readAndDispatch());
 	}
 
-	for(samples = 0; samples < 10; samples++) {
+	for(samples = 0; samples < 100; samples++) {
 		Shell shell = new Shell(display);
 		meter.start();
 		for (int i = 0; i < 100; i++) {
 			Composite c = new Composite(shell, SWT.NONE);
-			for (int j = 0; j < 30; j++) {
+			for (int j = 0; j < 50; j++) {
 				Composite c2 = new Composite(c, SWT.NONE);
 			}
 		}
@@ -100,9 +100,8 @@ public void test_createWidgets() {
 		Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
 		meter.start();
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 50; i++) {
 			Composite c = new Composite(shell, SWT.NONE);
-			c.setLayout(new RowLayout());
 			for (int j = 0; j < 10; j++) {
 				Button b = new Button(c, SWT.PUSH);
 				Label label = new Label(c, SWT.NONE);
@@ -185,6 +184,8 @@ public void test_layout() {
 		
 		shell.open();
 		while(display.readAndDispatch());
+		try { Thread.sleep(2000); } catch (Exception e) {}
+		while(display.readAndDispatch());
 		meter.start();
 		for(int numlayouts = 0; numlayouts < 20; numlayouts++) {
 			shell.layout(true);
@@ -250,12 +251,14 @@ public void test_windowDrawing() {
 		shell.pack();
 		shell.open();
 		while(display.readAndDispatch());
+		try { Thread.sleep(2000); } catch (Exception e) {}
+		while(display.readAndDispatch());
 		Color color1 = new Color(display, 0xff, 0, 0xff);
 		Color color2 = new Color(display, 0, 0xff, 0xff);
 		int x1 = 0, y1 = height/2, x2 = width/2, y2 = 0;
 		meter.start();
 		GC gc = new GC(c);
-		for(int i = 0; i < 2000; i++) {
+		for(int i = 0; i < 6000; i++) {
 			x1 = (x1 + 5) % width; y1 = (y1 + 5) % height; x2 = (x2 + 5) % width; y2 = (y2 + 5) % height;
 			gc.setLineStyle(SWT.LINE_SOLID);
 			gc.drawLine(x1, y1, x2, y2);
@@ -292,6 +295,8 @@ public void test_stringDrawing() {
 		c.setLayoutData(data);
 		shell.pack();
 		shell.open();
+		while(display.readAndDispatch());
+		try { Thread.sleep(2000); } catch (Exception e) {}
 		while(display.readAndDispatch());
 		Color color1 = new Color(display, 0xff, 0, 0xff);
 		Color color2 = new Color(display, 0, 0xff, 0xff);
@@ -341,6 +346,8 @@ public void test_fastStringDrawing() {
 		c.setLayoutData(data);
 		shell.pack();
 		shell.open();
+		while(display.readAndDispatch());
+		try { Thread.sleep(2000); } catch (Exception e) {}
 		while(display.readAndDispatch());
 		Color color1 = new Color(display, 0xff, 0, 0xff);
 		Color color2 = new Color(display, 0, 0xff, 0xff);
