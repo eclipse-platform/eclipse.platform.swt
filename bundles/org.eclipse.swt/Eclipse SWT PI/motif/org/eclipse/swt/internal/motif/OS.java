@@ -386,6 +386,7 @@ public class OS extends Platform {
 	public static final int XmMERGE_REPLACE = 0x1;
 	public static final int XmMULTIPLE_SELECT = 0x1;
 	public static final int XmMULTI_LINE_EDIT = 0x0;
+	public static final int XmNO_LINE = 0x0;
 	public static final int XmNONE = 0x0;
 	public static final int XmN_OF_MANY = 0x1;
 	public static final int XmNaccelerator = malloc ("accelerator", 4);
