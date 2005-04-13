@@ -211,7 +211,7 @@ Point adjustMoveCursor () {
 	return new Point ((int) pt.x, (int) pt.y);
 }
 
-Point adjustResizeCursor () {
+Point adjustResizeCursor (boolean movePointer) {
 	int newX, newY;
 
 	if ((cursorOrientation & SWT.LEFT) != 0) {
@@ -243,9 +243,11 @@ Point adjustResizeCursor () {
 		newX += rect.left; 
 		newY += rect.top; 
 	}
-	CGPoint pt = new CGPoint ();
-	pt.x = newX;  pt.y = newY;
-	OS.CGWarpMouseCursorPosition (pt);
+	if (movePointer) {
+		CGPoint pt = new CGPoint ();
+		pt.x = newX;  pt.y = newY;
+		OS.CGWarpMouseCursorPosition (pt);
+	}
 
 	/*
 	* If the client has not provided a custom cursor then determine
@@ -289,7 +291,7 @@ Point adjustResizeCursor () {
 		resizeCursor = newCursor;
 	}
 		
-	return new Point ((int) pt.x, (int) pt.y);
+	return new Point (newX, newY);
 }
 
 static int checkStyle (int style) {
@@ -442,7 +444,7 @@ int kEventMouse (int eventKind, int nextHandler, int theEvent, int userData) {
 		event.x = newX;
 		event.y = newY;
 		if ((style & SWT.RESIZE) != 0) {
-			resizeRectangles (newX - oldX, newY - oldY);
+			boolean orientationInit = resizeRectangles (newX - oldX, newY - oldY);
 			inEvent = true;
 			sendEvent (SWT.Resize, event);
 			inEvent = false;
@@ -484,7 +486,7 @@ int kEventMouse (int eventKind, int nextHandler, int theEvent, int userData) {
 				update ();
 				drawRectangles (window, rectangles, false);
 			}
-			Point cursorPos = adjustResizeCursor ();
+			Point cursorPos = adjustResizeCursor (orientationInit);
 			newX = cursorPos.x;
 			newY = cursorPos.y;
 		} else {
@@ -624,7 +626,7 @@ int kEventRawKeyPressed (int nextHandler, int theEvent, int userData) {
 				update ();
 				drawRectangles (window, rectangles, false);
 			}
-			cursorPos = adjustResizeCursor ();
+			cursorPos = adjustResizeCursor (true);
 		} else {
 			moveRectangles (xChange, yChange);
 			inEvent = true;
@@ -738,7 +740,7 @@ public boolean open () {
 		cursorPos = new Point (pt.h, pt.v);
 	} else {
 		if ((style & SWT.RESIZE) != 0) {
-			cursorPos = adjustResizeCursor ();
+			cursorPos = adjustResizeCursor (true);
 		} else {
 			cursorPos = adjustMoveCursor ();
 		}
@@ -848,22 +850,39 @@ public void removeKeyListener(KeyListener listener) {
 	eventTable.unhook(SWT.KeyDown, listener);
 }
 
-void resizeRectangles (int xChange, int yChange) {
+/*
+ * Returns true if the pointer's orientation was initialized in some dimension,
+ * and false otherwise.
+ */
+boolean resizeRectangles (int xChange, int yChange) {
+	boolean orientationInit = false;
 	/*
 	* If the cursor orientation has not been set in the orientation of
 	* this change then try to set it here.
 	*/
 	if (xChange < 0 && ((style & SWT.LEFT) != 0) && ((cursorOrientation & SWT.RIGHT) == 0)) {
-		cursorOrientation |= SWT.LEFT;
+		if ((cursorOrientation & SWT.LEFT) == 0) {
+			cursorOrientation |= SWT.LEFT;
+			orientationInit = true;
+		}
 	}
 	if (xChange > 0 && ((style & SWT.RIGHT) != 0) && ((cursorOrientation & SWT.LEFT) == 0)) {
-		cursorOrientation |= SWT.RIGHT;
+		if ((cursorOrientation & SWT.RIGHT) == 0) {
+			cursorOrientation |= SWT.RIGHT;
+			orientationInit = true;
+		}
 	} 
 	if (yChange < 0 && ((style & SWT.UP) != 0) && ((cursorOrientation & SWT.DOWN) == 0)) {
-		cursorOrientation |= SWT.UP;
+		if ((cursorOrientation & SWT.UP) == 0) {
+			cursorOrientation |= SWT.UP;
+			orientationInit = true;
+		}
 	} 
 	if (yChange > 0 && ((style & SWT.DOWN) != 0) && ((cursorOrientation & SWT.UP) == 0)) {
-		cursorOrientation |= SWT.DOWN;
+		if ((cursorOrientation & SWT.DOWN) == 0) {
+			cursorOrientation |= SWT.DOWN;
+			orientationInit = true;
+		}
 	}
 	
 	/*
@@ -874,7 +893,7 @@ void resizeRectangles (int xChange, int yChange) {
 	 */
 	if ((cursorOrientation & SWT.LEFT) != 0) {
 		if (xChange > bounds.width) {
-			if ((style & SWT.RIGHT) == 0) return;
+			if ((style & SWT.RIGHT) == 0) return orientationInit;
 			cursorOrientation |= SWT.RIGHT;
 			cursorOrientation &= ~SWT.LEFT;
 			bounds.x += bounds.width;
@@ -889,7 +908,7 @@ void resizeRectangles (int xChange, int yChange) {
 		}
 	} else if ((cursorOrientation & SWT.RIGHT) != 0) {
 		if (bounds.width < -xChange) {
-			if ((style & SWT.LEFT) == 0) return;
+			if ((style & SWT.LEFT) == 0) return orientationInit;
 			cursorOrientation |= SWT.LEFT;
 			cursorOrientation &= ~SWT.RIGHT;
 			xChange += bounds.width;
@@ -904,7 +923,7 @@ void resizeRectangles (int xChange, int yChange) {
 	}
 	if ((cursorOrientation & SWT.UP) != 0) {
 		if (yChange > bounds.height) {
-			if ((style & SWT.DOWN) == 0) return;
+			if ((style & SWT.DOWN) == 0) return orientationInit;
 			cursorOrientation |= SWT.DOWN;
 			cursorOrientation &= ~SWT.UP;
 			bounds.y += bounds.height;
@@ -919,7 +938,7 @@ void resizeRectangles (int xChange, int yChange) {
 		}
 	} else if ((cursorOrientation & SWT.DOWN) != 0) {
 		if (bounds.height < -yChange) {
-			if ((style & SWT.UP) == 0) return;
+			if ((style & SWT.UP) == 0) return orientationInit;
 			cursorOrientation |= SWT.UP;
 			cursorOrientation &= ~SWT.DOWN;
 			yChange += bounds.height;
@@ -956,7 +975,8 @@ void resizeRectangles (int xChange, int yChange) {
 			proportion.width * bounds.width / 100,
 			proportion.height * bounds.height / 100);
 	}
-	rectangles = newRects;	
+	rectangles = newRects;
+	return orientationInit;
 }
 
 /**
