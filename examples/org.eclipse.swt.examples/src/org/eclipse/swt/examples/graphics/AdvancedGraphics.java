@@ -16,6 +16,8 @@ package org.eclipse.swt.examples.graphics;
  * For a list of all SWT example snippets see
  * http://dev.eclipse.org/viewcvs/index.cgi/%7Echeckout%7E/platform-swt-home/dev.html#snippets
  */
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ResourceBundle;
 
 import org.eclipse.swt.*;
@@ -26,6 +28,21 @@ public class AdvancedGraphics {
 	
 	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle("examples_graphics");
 	
+	static Image loadImage (Display display, Class clazz, String string) {
+		InputStream stream = clazz.getResourceAsStream (string);
+		if (stream == null) return null;
+		Image image = null;
+		try {
+			image = new Image (display, stream);
+		} catch (SWTException ex) {
+		} finally {
+			try {
+				stream.close ();
+			} catch (IOException ex) {}
+		}
+		return image;
+	}
+
 	public Shell open(final Display display) {
 		final Shell shell = new Shell(display);
 		shell.setText(RESOURCE_BUNDLE.getString("AdvancedGraphics")); //$NON-NLS-1$
@@ -42,7 +59,7 @@ public class AdvancedGraphics {
 		}
 		FontData fd = shell.getFont().getFontData()[0];
 		final Font font = new Font(display, fd.getName(), 96, SWT.BOLD | SWT.ITALIC);
-		final Image image = new Image(display, AdvancedGraphics.class.getResourceAsStream("irmaos.jpg"));
+		final Image image = loadImage(display, AdvancedGraphics.class, "irmaos.jpg");
 		final Rectangle rect = image.getBounds();
 		shell.addListener(SWT.Paint, new Listener() {
 			public void handleEvent(Event event) {
@@ -50,7 +67,9 @@ public class AdvancedGraphics {
 				Transform tr = new Transform(display);
 				tr.translate(rect.width / 4, rect.height / 2);
 				tr.rotate(-30);
-				gc.drawImage(image, 0, 0, rect.width, rect.height, 0, 0, rect.width, rect.height);
+				if (image != null) {
+					gc.drawImage(image, 0, 0, rect.width, rect.height, 0, 0, rect.width, rect.height);
+				}
 				gc.setAlpha(100);
 				gc.setTransform(tr);
 				Path path = new Path(display);
@@ -67,7 +86,7 @@ public class AdvancedGraphics {
 		shell.open();
 		shell.addListener(SWT.Dispose, new Listener() {
 			public void handleEvent(Event event) {
-				image.dispose();
+				if (image != null) image.dispose();
 				font.dispose();
 			}
 		});	

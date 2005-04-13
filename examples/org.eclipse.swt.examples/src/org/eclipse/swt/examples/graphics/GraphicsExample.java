@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.examples.graphics;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.MissingResourceException;
@@ -400,9 +402,24 @@ static String getResourceString(String key) {
 	}			
 }
 
+static Image loadImage (Display display, Class clazz, String string) {
+	InputStream stream = clazz.getResourceAsStream (string);
+	if (stream == null) return null;
+	Image image = null;
+	try {
+		image = new Image (display, stream);
+	} catch (SWTException ex) {
+	} finally {
+		try {
+			stream.close ();
+		} catch (IOException ex) {}
+	}
+	return image;
+}
+
 Image loadImage(Display display, String name) {
-	Image image = new Image(display, GraphicsExample.class.getResourceAsStream(name));
-	images.addElement(image);
+	Image image = loadImage(display, GraphicsExample.class, name);
+	if (image != null) images.addElement(image);
 	return image;
 }
 
