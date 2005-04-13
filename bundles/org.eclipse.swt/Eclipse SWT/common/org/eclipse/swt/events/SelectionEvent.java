@@ -78,6 +78,11 @@ public class SelectionEvent extends TypedEvent {
 	public int stateMask;
 
 	/**
+	 * depending on the event.
+	 */
+	public String text;
+	
+	/**
 	 * A flag indicating whether the operation should be allowed.
 	 * Setting this field to <code>false</code> will cancel the
 	 * operation, depending on the widget.
@@ -101,6 +106,7 @@ public SelectionEvent(Event e) {
 	this.height = e.height;
 	this.detail = e.detail;
 	this.stateMask = e.stateMask;
+	this.text = e.text;
 	this.doit = e.doit;
 }
 
@@ -120,6 +126,7 @@ public String toString() {
 		+ " width=" + width
 		+ " height=" + height
 		+ " stateMask=" + stateMask
+		+ " text=" + text
 		+ " doit=" + doit
 		+ "}";
 }
