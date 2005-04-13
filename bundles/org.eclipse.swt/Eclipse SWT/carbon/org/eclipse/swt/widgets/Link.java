@@ -646,7 +646,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 
 void setFontStyle (Font font) {
 	super.setFontStyle (font);
-	layout.setFont (font);
+	layout.setFont (getFont ());
 }
 
 /**
