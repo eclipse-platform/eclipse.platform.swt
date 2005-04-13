@@ -693,7 +693,11 @@ public void test_getTransparencyMask() {
 //	Bug 71472 - transparency mask should be null	
 //	assertNull(":a:", imageData.getTransparencyMask());
 
-	Image image = new Image(Display.getDefault(), getClass().getResourceAsStream(transparentImageFilenames[0]));
+	InputStream stream = getClass().getResourceAsStream(transparentImageFilenames[0]);
+	Image image = new Image(Display.getDefault(), stream);
+	try {
+		stream.close();
+	} catch (IOException e) {}
 	imageData = image.getImageData();
 	ImageData maskData = imageData.getTransparencyMask();
 	assertNotNull(":b:", maskData);
@@ -709,11 +713,19 @@ public void test_getTransparencyMask() {
 public void test_getTransparencyType() {
 	assertEquals(":a:", SWT.TRANSPARENCY_NONE, imageData.getTransparencyType());
 
-	Image image = new Image(Display.getDefault(), getClass().getResourceAsStream(transparentImageFilenames[0]));
+	InputStream stream = getClass().getResourceAsStream(transparentImageFilenames[0]);
+	Image image = new Image(Display.getDefault(), stream);
+	try {
+		stream.close();
+	} catch (IOException e) {}
 	imageData = image.getImageData();
 	assertFalse(":b:", SWT.TRANSPARENCY_NONE == imageData.getTransparencyType());
 	
-	image = new Image(Display.getDefault(), getClass().getResourceAsStream(imageFilenames[0] + '.' + imageFormats[imageFormats.length-1]));
+	stream = getClass().getResourceAsStream(imageFilenames[0] + '.' + imageFormats[imageFormats.length-1]);
+	image = new Image(Display.getDefault(), stream);
+	try {
+		stream.close();
+	} catch (IOException e) {}
 	imageData = image.getImageData();
 	assertEquals(":c:", SWT.TRANSPARENCY_NONE, imageData.getTransparencyType());
 }
