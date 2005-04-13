@@ -153,11 +153,12 @@ public class StyledText extends Canvas {
 	Caret defaultCaret = null;
 	boolean updateCaretDirection = true;
 
-	final static boolean IS_CARBON;
+	final static boolean IS_CARBON, IS_MOTIF;
 	final static boolean DOUBLE_BUFFER;
 	static {
 		String platform = SWT.getPlatform();
 		IS_CARBON = "carbon".equals(platform);
+		IS_MOTIF = "motif".equals(platform);
 		DOUBLE_BUFFER = !IS_CARBON;
 	}
 
@@ -5017,14 +5018,21 @@ void handleKey(Event event) {
 		boolean ignore = false;
 		
 		if (IS_CARBON) {
-			// Ignore acclerator key combinations (we do not want to 
+			// Ignore accelerator key combinations (we do not want to 
 			// insert a character in the text in this instance). Do not  
 			// ignore COMMAND+ALT combinations since that key sequence
 			// produces characters on the mac.
 			ignore = (event.stateMask ^ SWT.COMMAND) == 0 ||
 					(event.stateMask ^ (SWT.COMMAND | SWT.SHIFT)) == 0;
+		} else if (IS_MOTIF) {
+			// Ignore accelerator key combinations (we do not want to 
+			// insert a character in the text in this instance). Do not  
+			// ignore ALT combinations since this key sequence
+			// produces characters on motif.
+			ignore = (event.stateMask ^ SWT.CTRL) == 0 ||
+					(event.stateMask ^ (SWT.CTRL | SWT.SHIFT)) == 0;
 		} else {
-			// Ignore acclerator key combinations (we do not want to 
+			// Ignore accelerator key combinations (we do not want to 
 			// insert a character in the text in this instance). Don't  
 			// ignore CTRL+ALT combinations since that is the Alt Gr 
 			// key on some keyboards.  See bug 20953. 
