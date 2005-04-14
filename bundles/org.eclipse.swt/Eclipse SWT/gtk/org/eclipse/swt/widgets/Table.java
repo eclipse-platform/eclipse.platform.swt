@@ -1672,7 +1672,33 @@ int /*long*/ pixbufCellDataProc (int /*long*/ tree_column, int /*long*/ cell, in
 		}
 	}
 	if (modelIndex == -1) return 0;
-	boolean setData = setCellData (tree_model, iter);
+	boolean setData = false;
+	if ((style & SWT.VIRTUAL) != 0) {
+		int /*long*/ path = OS.gtk_tree_model_get_path (tree_model, iter);
+		/*
+		* Feature in GTK.  On GTK before 2.4, fixed_height_mode is not
+		* supported, and the tree asks for the data of all items.  The
+		* fix is to only provide the data if the row is visible.
+		*/
+		if (OS.GTK_VERSION < OS.VERSION (2, 3, 2)) {
+			GdkRectangle visible = new GdkRectangle ();
+			OS.gtk_tree_view_get_visible_rect (handle, visible);
+			GdkRectangle area = new GdkRectangle ();
+			OS.gtk_tree_view_get_cell_area (handle, path, tree_column, area);
+			if (area.y + area.height < 0 || area.y + visible.y > visible.y + visible.height) {
+				/* Give an image from the image list to make sure the row has
+				* the correct height.
+				*/
+				if (imageList != null && imageList.pixbufs.length > 0) {
+					OS.g_object_set (cell, OS.pixbuf, imageList.pixbufs [0], 0);
+				}
+				OS.gtk_tree_path_free (path);
+				return 0;
+			}
+		}
+		setData = setCellData (tree_model, path);
+		OS.gtk_tree_path_free (path);
+	}
 	int /*long*/ [] ptr = new int /*long*/ [1];
 	if (setData) {
 		OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_PIXBUF, ptr, -1);
@@ -2109,17 +2135,13 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	return result;
 }
 
-boolean setCellData(int /*long*/ tree_model, int /*long*/ iter) {
-	if ((style & SWT.VIRTUAL) != 0) {
-		int [] index = new int [1];
-		int /*long*/ path = OS.gtk_tree_model_get_path (tree_model, iter);
-		OS.memmove (index, OS.gtk_tree_path_get_indices (path), 4);
-		OS.gtk_tree_path_free (path);
-		if (lastDataIndex != index [0]) {
-			lastDataIndex = lastIndexOf = index [0];
-			TableItem item = _getItem (index [0]);
-			if (!item.cached) return checkData (item);
-		}
+boolean setCellData(int /*long*/ tree_model, int /*long*/ path) {
+	int [] index = new int [1];
+	OS.memmove (index, OS.gtk_tree_path_get_indices (path), 4);
+	if (lastDataIndex != index [0]) {
+		lastDataIndex = lastIndexOf = index [0];
+		TableItem item = _getItem (index [0]);
+		if (!item.cached) return checkData (item);
 	}
 	return false;
 }
@@ -2286,7 +2308,7 @@ void setScrollWidth (int /*long*/ column, int /*long*/ iter) {
 	* Use GTK_TREE_VIEW_COLUMN_AUTOSIZE on GTK versions < 2.3.2
 	* because fixed_height_mode is not supported.
 	*/
-	if (OS.GTK_VERSION < OS.VERSION (2, 3, 2)) return;
+	if (((style & SWT.VIRTUAL) != 0) && OS.GTK_VERSION < OS.VERSION (2, 3, 2)) return;
 	int width = OS.gtk_tree_view_column_get_width (column);
 	int itemWidth = calculateWidth (column, iter);
 	if (width < itemWidth) {
@@ -2563,7 +2585,27 @@ int /*long*/ textCellDataProc (int /*long*/ tree_column, int /*long*/ cell, int 
 		}
 	}
 	if (modelIndex == -1) return 0;
-	boolean setData = setCellData (tree_model, iter);
+	boolean setData = false;
+	if ((style & SWT.VIRTUAL) != 0) {
+		int /*long*/ path = OS.gtk_tree_model_get_path (tree_model, iter);
+		/*
+		* Feature in GTK.  On GTK before 2.4, fixed_height_mode is not
+		* supported, and the tree asks for the data of all items.  The
+		* fix is to only provide the data if the row is visible.
+		*/
+		if (OS.GTK_VERSION < OS.VERSION (2, 3, 2)) {
+			GdkRectangle visible = new GdkRectangle ();
+			OS.gtk_tree_view_get_visible_rect (handle, visible);
+			GdkRectangle area = new GdkRectangle ();
+			OS.gtk_tree_view_get_cell_area (handle, path, tree_column, area);
+			if (area.y + area.height < 0 || area.y + visible.y > visible.y + visible.height ) {
+				OS.gtk_tree_path_free (path);
+				return 0;
+			}
+		}
+		setData = setCellData (tree_model, path);
+		OS.gtk_tree_path_free (path);
+	}
 	int /*long*/ [] ptr = new int /*long*/ [1];
 	if (setData) {
 		OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_TEXT, ptr, -1); 
