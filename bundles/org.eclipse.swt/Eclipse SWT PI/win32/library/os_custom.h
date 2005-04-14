@@ -30,4 +30,5 @@
 #define OpenThemeData_LIB "uxtheme.dll"
 #define SetLayout_LIB "gdi32.dll"
 #define SetMenuInfo_LIB "user32.dll"
+#define TransparentBlt_LIB "msimg32.dll"
 

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 647;
-int OS_nativeFunctionCallCount[647];
+int OS_nativeFunctionCount = 648;
+int OS_nativeFunctionCallCount[648];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateKeyboardLayout",
@@ -645,6 +645,7 @@ char * OS_nativeFunctionNames[] = {
 	"TranslateCharsetInfo",
 	"TranslateMDISysAccel",
 	"TranslateMessage",
+	"TransparentBlt",
 	"TransparentImage",
 	"UnhookWindowsHookEx",
 	"UnregisterClassA",

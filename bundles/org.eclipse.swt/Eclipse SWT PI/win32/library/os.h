@@ -397,6 +397,7 @@
 #define NO_TrackMouseEvent
 #define NO_TranslateAcceleratorA
 #define NO_TranslateMDISysAccel
+#define NO_TransparentBlt
 #define NO_UnhookWindowsHookEx
 #define NO_UnregisterClassA
 #define NO_VkKeyScanA

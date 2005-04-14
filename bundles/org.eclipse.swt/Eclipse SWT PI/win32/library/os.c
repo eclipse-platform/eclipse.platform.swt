@@ -9981,6 +9981,34 @@ fail:
 }
 #endif
 
+#ifndef NO_TransparentBlt
+JNIEXPORT jboolean JNICALL OS_NATIVE(TransparentBlt)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, TransparentBlt_FUNC);
+/*
+	rc = (jboolean)TransparentBlt(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!(hm = GetModuleHandle(TransparentBlt_LIB))) hm = LoadLibrary(TransparentBlt_LIB);
+			if (hm) fp = GetProcAddress(hm, "TransparentBlt");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jboolean)fp(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, TransparentBlt_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_TransparentImage
 JNIEXPORT jboolean JNICALL OS_NATIVE(TransparentImage)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10)

@@ -3038,6 +3038,7 @@ public static final native int TranslateAcceleratorA (int hWnd, int hAccTable, M
 public static final native boolean TranslateCharsetInfo(int lpSrc, int [] lpCs, int dwFlags);
 public static final native boolean TranslateMDISysAccel (int hWndClient, MSG lpMsg);
 public static final native boolean TranslateMessage (MSG lpmsg);
+public static final native boolean TransparentBlt(int hdcDest, int nXOriginDest, int nYOriginDest, int nWidthDest, int hHeightDest, int hdcSrc, int nXOriginSrc, int nYOriginSrc, int nWidthSrc, int nHeightSrc, int crTransparent);
 public static final native boolean TransparentImage (int hdcDest, int DstX, int DstY, int DstCx, int DstCy,int hSrc, int SrcX, int SrcY, int SrcCx, int SrcCy, int TransparentColor);public static final native boolean UnhookWindowsHookEx(int hhk);
 public static final native boolean UnregisterClassW (char [] lpClassName, int hInstance);
 public static final native boolean UnregisterClassA (byte [] lpClassName, int hInstance);

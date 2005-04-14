@@ -649,6 +649,7 @@ typedef enum {
 	TranslateCharsetInfo_FUNC,
 	TranslateMDISysAccel_FUNC,
 	TranslateMessage_FUNC,
+	TransparentBlt_FUNC,
 	TransparentImage_FUNC,
 	UnhookWindowsHookEx_FUNC,
 	UnregisterClassA_FUNC,
