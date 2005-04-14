@@ -2573,10 +2573,9 @@ public void setTransform(Transform transform) {
 		int newRgn = OS.NewRgn();
 		Callback callback = new Callback(this, "regionToRects", 4);
 		int proc = callback.getAddress();
-		if (proc != 0) {
-			OS.QDRegionToRects(clipRgn, OS.kQDParseRegionFromTopLeft, proc, newRgn);
-			callback.dispose();
-		}
+		if (proc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+		OS.QDRegionToRects(clipRgn, OS.kQDParseRegionFromTopLeft, proc, newRgn);
+		callback.dispose();
 		OS.DisposeRgn(clipRgn);
 		data.clipRgn = newRgn;
 	}
