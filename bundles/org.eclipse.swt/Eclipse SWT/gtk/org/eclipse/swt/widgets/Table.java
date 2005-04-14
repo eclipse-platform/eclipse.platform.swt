@@ -398,7 +398,12 @@ void createColumn (TableColumn column, int index) {
 		createRenderers (checkColumn.handle, checkColumn.modelIndex, false, checkColumn.style);
 	}
 	createRenderers (columnHandle, modelIndex, index == 0, column == null ? 0 : column.style);
-	if ((style & SWT.VIRTUAL) == 0 && columnCount == 0) {
+	/*
+	* Use GTK_TREE_VIEW_COLUMN_AUTOSIZE on GTK versions < 2.3.2
+	* because fixed_height_mode is not supported.
+	*/
+	boolean useVirtual = (style & SWT.VIRTUAL) != 0 && OS.GTK_VERSION >= OS.VERSION (2, 3, 2);
+	if (!useVirtual && columnCount == 0) {
 		OS.gtk_tree_view_column_set_sizing (columnHandle, OS.GTK_TREE_VIEW_COLUMN_AUTOSIZE);
 	} else {
 		OS.gtk_tree_view_column_set_sizing (columnHandle, OS.GTK_TREE_VIEW_COLUMN_FIXED);
@@ -443,9 +448,7 @@ void createHandle (int index) {
 	OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
 	if ((style & SWT.BORDER) != 0) OS.gtk_scrolled_window_set_shadow_type (scrolledHandle, OS.GTK_SHADOW_ETCHED_IN);
 	if ((style & SWT.VIRTUAL) != 0) {
-		/*
-		* Feature in GTK. The fixed_height_mode property only exists in GTK 2.3.2 and greater.
-		*/
+		/* The fixed_height_mode property only exists in GTK 2.3.2 and greater */
 		if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2)) {
 			OS.g_object_set (handle, OS.fixed_height_mode, true, 0);
 		}
@@ -2279,6 +2282,11 @@ public void setRedraw (boolean redraw) {
 
 void setScrollWidth (int /*long*/ column, int /*long*/ iter) {
 	if (columnCount != 0) return;
+	/*
+	* Use GTK_TREE_VIEW_COLUMN_AUTOSIZE on GTK versions < 2.3.2
+	* because fixed_height_mode is not supported.
+	*/
+	if (OS.GTK_VERSION < OS.VERSION (2, 3, 2)) return;
 	int width = OS.gtk_tree_view_column_get_width (column);
 	int itemWidth = calculateWidth (column, iter);
 	if (width < itemWidth) {
