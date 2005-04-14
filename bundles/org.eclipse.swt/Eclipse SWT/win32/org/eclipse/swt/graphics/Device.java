@@ -77,7 +77,7 @@ public abstract class Device implements Drawable {
 	protected static Runnable DeviceFinder;
 	static {
 		try {
-			Class.forName ("org.eclipse.swt.widgets.Display");
+			Class.forName ("org.eclipse.swt.widgets.Display"); //$NON-NLS-1$
 		} catch (Throwable e) {}
 	}	
 
@@ -437,9 +437,10 @@ public FontData [] getFontList (String faceName, boolean scalable) {
 	checkDevice ();
 	
 	/* Create the callback */
-	Callback callback = new Callback (this, "EnumFontFamProc", 4);
+	Callback callback = new Callback (this, "EnumFontFamProc", 4); //$NON-NLS-1$
 	int lpEnumFontFamProc = callback.getAddress ();
-		
+	if (lpEnumFontFamProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+	
 	/* Initialize the instance variables */
 	metrics = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
 	pixels = new int[nFonts];
@@ -506,17 +507,17 @@ public FontData [] getFontList (String faceName, boolean scalable) {
 
 String getLastError () {
 	int error = OS.GetLastError();
-	if (error == 0) return ""; 
-	return " [GetLastError=0x" + Integer.toHexString(error) + "]";
+	if (error == 0) return ""; //$NON-NLS-1$
+	return " [GetLastError=0x" + Integer.toHexString(error) + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 }
 
 String getLastErrorText () {
 	int error = OS.GetLastError();
-	if (error == 0) return ""; 
+	if (error == 0) return ""; //$NON-NLS-1$
 	int[] buffer = new int[1];
 	int dwFlags = OS.FORMAT_MESSAGE_ALLOCATE_BUFFER | OS.FORMAT_MESSAGE_FROM_SYSTEM | OS.FORMAT_MESSAGE_IGNORE_INSERTS;
 	int length = OS.FormatMessage(dwFlags, 0, error, OS.LANG_USER_DEFAULT, buffer, 0, 0);
-	if (length == 0) return " [GetLastError=0x" + Integer.toHexString(error) + "]";
+	if (length == 0) return " [GetLastError=0x" + Integer.toHexString(error) + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 	TCHAR buffer1 = new TCHAR(0, length);
 	OS.MoveMemory(buffer1, buffer[0], length * TCHAR.sizeof);
 	if (buffer[0] != 0) OS.LocalFree(buffer[0]);
