@@ -75,6 +75,12 @@ public class Tree extends Composite {
 	static final String ID_CHECKMARK = "CHECKMARK";			//$NON-NLS-1$
 	static final String ID_CONNECTOR_COLOR = "CONNECTOR_COLOR";	//$NON-NLS-1$
 
+//	TEMPORARY CODE
+boolean hasFocus;
+public boolean isFocusControl() {
+	return hasFocus;
+}
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -1650,6 +1656,8 @@ void onEnd (int stateMask) {
 	postEvent (SWT.Selection, newEvent);
 }
 void onFocusIn () {
+	hasFocus = true;
+
 	if (items.length == 0) return;
 	if (focusItem != null) {
 		redrawItem (focusItem.availableIndex, true);
@@ -1675,6 +1683,8 @@ void onFocusIn () {
 	return;
 }
 void onFocusOut () {
+	hasFocus = false;
+
 	if (focusItem != null) {
 		redrawItem (focusItem.availableIndex, true);
 	}
