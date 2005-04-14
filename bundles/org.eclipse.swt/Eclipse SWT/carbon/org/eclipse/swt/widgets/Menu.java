@@ -189,15 +189,26 @@ void _setVisible (boolean visible) {
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
 	if (!visible) return;
 	int left = 0, top = 0;
+	org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
+	OS.GetGlobalMouse (where);
 	if (hasLocation) {
 		left = x;
 		top = y;
 	} else {
-		org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
-		OS.GetGlobalMouse (where);
 		left = where.h;
 		top = where.v;
 	}
+	/*
+	* Feature in the Macintosh.  PopUpMenuSelect() does not position
+	* the menu at the specified coordinates. The x coordinate is honoured,
+	* but the top of the menu is placed a few pixels above the y coordinate.
+	* This means that the first item in the menu will be under the mouse
+	* and will draw selected.  This is against the Macintosh User Guidelines.
+	* The fix is to offset the menu by one pixel in both directions when
+	* it coincides with the mouse location. 
+	*/
+	if (left == where.h) left++;
+	if (top == where.v) top++;
 	OS.PopUpMenuSelect (handle, (short)top, (short)left, (short)-1);
 }
 
