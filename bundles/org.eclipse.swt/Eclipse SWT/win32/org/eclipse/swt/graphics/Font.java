@@ -178,7 +178,6 @@ public boolean equals(Object object) {
  * @return an array of font data objects describing the receiver
  *
  * @exception SWTException <ul>
- *    <li>ERROR_INVALID_FONT - if the font could not be loaded</li>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
