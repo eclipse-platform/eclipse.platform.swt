@@ -1009,14 +1009,29 @@ void drawBitmapTransparent(Image srcImage, int srcX, int srcY, int srcWidth, int
 				int maxColors = 1 << bm.bmBitsPixel;
 				byte[] oldColors = new byte[maxColors * 4];
 				OS.GetDIBColorTable(srcHdc, 0, maxColors, oldColors);
-				int offset = srcImage.transparentPixel * 4;
-				byte[] newColors = new byte[oldColors.length];
-				transRed = transGreen = transBlue = 0xff;
-				newColors[offset] = (byte)transBlue;
-				newColors[offset+1] = (byte)transGreen;
-				newColors[offset+2] = (byte)transRed;
-				OS.SetDIBColorTable(srcHdc, 0, maxColors, newColors);
-				originalColors = oldColors;
+				int offset = srcImage.transparentPixel * 4;				
+				boolean fixPalette = false;
+				for (int i = 0; i < oldColors.length; i += 4) {
+					if (i != offset) {
+						if (oldColors[offset] == oldColors[i] && oldColors[offset+1] == oldColors[i+1] && oldColors[offset+2] == oldColors[i+2]) {
+							fixPalette = true;
+							break;
+						}
+					}
+				}
+				if (fixPalette) {
+					byte[] newColors = new byte[oldColors.length];
+					transRed = transGreen = transBlue = 0xff;
+					newColors[offset] = (byte)transBlue;
+					newColors[offset+1] = (byte)transGreen;
+					newColors[offset+2] = (byte)transRed;
+					OS.SetDIBColorTable(srcHdc, 0, maxColors, newColors);
+					originalColors = oldColors;
+				} else {
+					transRed = oldColors[offset] & 0xFF;
+					transGreen = oldColors[offset+1] & 0xFF;
+					transBlue = oldColors[offset+2] & 0xFF;
+				}
 			}
 		} else {
 			/* Palette-based bitmap */
@@ -1057,21 +1072,24 @@ void drawBitmapTransparent(Image srcImage, int srcX, int srcY, int srcWidth, int
 		}
 	}
 
+	int transparentColor = transBlue << 16 | transGreen << 8 | transRed;
 	if (OS.IsWinCE) {
 		/*
 		* Note in WinCE. TransparentImage uses the first entry of a palette
 		* based image when there are multiple entries that have the same
 		* transparent color.
 		*/
-		int transparentColor = transBlue << 16 | transGreen << 8 | transRed;
-		OS.TransparentImage(handle, destX, destY, destWidth, destHeight,
-			srcHdc, srcX, srcY, srcWidth, srcHeight, transparentColor);
+		OS.TransparentImage(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, transparentColor);
+	} else if (originalColors == null && OS.IsWinNT && OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
+		int mode = OS.SetStretchBltMode(handle, OS.COLORONCOLOR);
+		OS.TransparentBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, transparentColor);
+		OS.SetStretchBltMode(handle, mode);
 	} else {
 		/* Create the mask for the source image */
 		int maskHdc = OS.CreateCompatibleDC(hDC);
 		int maskBitmap = OS.CreateBitmap(imgWidth, imgHeight, 1, 1, null);
 		int oldMaskBitmap = OS.SelectObject(maskHdc, maskBitmap);
-		OS.SetBkColor(srcHdc, (transBlue << 16) | (transGreen << 8) | transRed);
+		OS.SetBkColor(srcHdc, transparentColor);
 		OS.BitBlt(maskHdc, 0, 0, imgWidth, imgHeight, srcHdc, 0, 0, OS.SRCCOPY);
 		if (originalColors != null) OS.SetDIBColorTable(srcHdc, 0, 1 << bm.bmBitsPixel, originalColors);
 	
