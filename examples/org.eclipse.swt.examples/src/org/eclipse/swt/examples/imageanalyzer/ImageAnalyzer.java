@@ -866,21 +866,22 @@ public class ImageAnalyzer {
 				});
 				incrementalThreadStart();
 			}
-			// Read the new image(s) from the chosen file.
+			// Read the new image(s) from the chosen URL.
 			long startTime = System.currentTimeMillis();
 			imageDataArray = loader.load(stream);
+			stream.close();
 			loadTime = System.currentTimeMillis() - startTime;
 			if (imageDataArray.length > 0) {
 				currentName = urlname;
 				fileName = null;
 				
-				// If there are multiple images in the file (typically GIF)
+				// If there are multiple images (typically GIF)
 				// then enable the Previous, Next and Animate buttons.
 				previousButton.setEnabled(imageDataArray.length > 1);
 				nextButton.setEnabled(imageDataArray.length > 1);
 				animateButton.setEnabled(imageDataArray.length > 1 && loader.logicalScreenWidth > 0 && loader.logicalScreenHeight > 0);
 	
-				// Display the first image in the file.
+				// Display the first image.
 				imageDataIndex = 0;
 				displayImage(imageDataArray[imageDataIndex]);
 				resetScrollBars();
@@ -1163,6 +1164,7 @@ public class ImageAnalyzer {
 				URL url = new URL(currentName);
 				InputStream stream = url.openStream();
 				newImageData = loader.load(stream);
+				stream.close();
 			} else {
 				newImageData = loader.load(fileName);
 			}
