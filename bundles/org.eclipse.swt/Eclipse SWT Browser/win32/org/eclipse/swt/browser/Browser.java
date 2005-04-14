@@ -36,8 +36,7 @@ public class Browser extends Composite {
 	OleControlSite site;
 	OleAutomation auto;
 
-	boolean back;
-	boolean forward;
+	boolean back, forward, navigate;
 	Point location;
 	Point size;
 	boolean addressBar = true, menuBar = true, statusBar = true, toolBar = true;
@@ -1230,15 +1229,24 @@ public boolean setText(String html) {
 	* The previous request would otherwise render the new html content and
 	* reset the html field before the browser actually navigates to the blank
 	* page as requested below.
+	* 
+	* Feature in Internet Explorer.  Stopping pending requests when no request
+	* is pending causes a default page 'Action cancelled' to be displayed.  The
+	* workaround is to not invoke 'stop' when no request has been set since
+	* that instance was created.
 	*/
-	int[] rgdispid = auto.getIDsOfNames(new String[] { "Stop" }); //$NON-NLS-1$
-	auto.invoke(rgdispid[0]);
+	int[] rgdispid;
+	if (navigate) {
+		rgdispid = auto.getIDsOfNames(new String[] { "Stop" }); //$NON-NLS-1$
+		auto.invoke(rgdispid[0]);
+	}
 	/* Note.  Internet Explorer can still fire DocumentComplete events from the previous
 	 * requests that were stopped.  The DocumentComplete related to the blank page
 	 * will follow.  The workaround is to verify the DocumentComplete event relates to
 	 * the blank page.  
 	 */
 	rgdispid = auto.getIDsOfNames(new String[] { "Navigate", "URL" }); //$NON-NLS-1$ //$NON-NLS-2$
+	navigate = true;
 	Variant[] rgvarg = new Variant[1];
 	rgvarg[0] = new Variant(ABOUT_BLANK);
 	int[] rgdispidNamedArgs = new int[1];
@@ -1276,6 +1284,7 @@ public boolean setUrl(String url) {
 	if (url == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	html = null;
 	int[] rgdispid = auto.getIDsOfNames(new String[] { "Navigate", "URL" }); //$NON-NLS-1$ //$NON-NLS-2$
+	navigate = true;
 	Variant[] rgvarg = new Variant[1];
 	rgvarg[0] = new Variant(url);
 	int[] rgdispidNamedArgs = new int[1];
