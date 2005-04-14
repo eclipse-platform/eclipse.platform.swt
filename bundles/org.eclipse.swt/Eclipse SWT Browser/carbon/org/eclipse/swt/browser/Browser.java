@@ -309,19 +309,24 @@ public Browser(Composite parent, int style) {
 	} while (c != shell);
 	
 	if (Callback3 == null) Callback3 = new Callback(this.getClass(), "eventProc3", 3); //$NON-NLS-1$
+	int callback3Address = Callback3.getAddress();
+	if (callback3Address == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+
 	int[] keyboardMask = new int[] {OS.kEventClassKeyboard, OS.kEventRawKeyDown};
 	int controlTarget = OS.GetControlEventTarget(webViewHandle);
-	OS.InstallEventHandler(controlTarget, Callback3.getAddress(), keyboardMask.length / 2, keyboardMask, webViewHandle, null);
+	OS.InstallEventHandler(controlTarget, callback3Address, keyboardMask.length / 2, keyboardMask, webViewHandle, null);
 		
 	int[] textInputMask = new int[] { OS.kEventClassTextInput, OS.kEventTextInputUnicodeForKeyEvent };
 	int windowTarget = OS.GetWindowEventTarget(OS.GetControlOwner(handle));
-	OS.InstallEventHandler (windowTarget, Callback3.getAddress(), textInputMask.length / 2, textInputMask, webViewHandle, null);
+	OS.InstallEventHandler (windowTarget, callback3Address, textInputMask.length / 2, textInputMask, webViewHandle, null);
 
 	if (Callback7 == null) Callback7 = new Callback(this.getClass(), "eventProc7", 7); //$NON-NLS-1$
+	int callback7Address = Callback7.getAddress();
+	if (callback7Address == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	
 	// delegate = [[WebResourceLoadDelegate alloc] init eventProc];
 	delegate = WebKit.objc_msgSend(WebKit.C_WebKitDelegate, WebKit.S_alloc);
-	delegate = WebKit.objc_msgSend(delegate, WebKit.S_initWithProc, Callback7.getAddress(), webViewHandle);
+	delegate = WebKit.objc_msgSend(delegate, WebKit.S_initWithProc, callback7Address, webViewHandle);
 				
 	// [webView setFrameLoadDelegate:delegate];
 	WebKit.objc_msgSend(webView, WebKit.S_setFrameLoadDelegate, delegate);

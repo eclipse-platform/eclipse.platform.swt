@@ -106,6 +106,8 @@ public class DragSource extends Widget {
 	
 	static {
 		DragSendDataProc = new Callback(DragSource.class, "DragSendDataProc", 4); //$NON-NLS-1$
+		int dragSendDataProcAddress = DragSendDataProc.getAddress();
+		if (dragSendDataProcAddress == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	}
 
 /**

@@ -210,9 +210,11 @@ public FontData open () {
 		OS.kEventClassFont, OS.kEventFontPanelClosed,
 	};
 	Callback fontPanelCallback = new Callback (this, "fontProc", 3);
+	int fontPanelCallbackAddress = fontPanelCallback.getAddress ();
+	if (fontPanelCallbackAddress == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	int appTarget = OS.GetApplicationEventTarget ();
 	int [] outRef = new int [1];
-	OS.InstallEventHandler (appTarget, fontPanelCallback.getAddress(), mask.length / 2, mask, 0, outRef);
+	OS.InstallEventHandler (appTarget, fontPanelCallbackAddress, mask.length / 2, mask, 0, outRef);
 	fontData = null;
 	rgb = null;
 	open = true;

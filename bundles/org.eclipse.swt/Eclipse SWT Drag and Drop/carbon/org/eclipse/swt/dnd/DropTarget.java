@@ -99,9 +99,13 @@ public class DropTarget extends Widget {
 	
 	static {
 		DragTrackingHandler = new Callback(DropTarget.class, "DragTrackingHandler", 4); //$NON-NLS-1$
+		int dragTrackingHandlerAddress = DragTrackingHandler.getAddress();
+		if (dragTrackingHandlerAddress == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 		DragReceiveHandler = new Callback(DropTarget.class, "DragReceiveHandler", 3); //$NON-NLS-1$
-		OS.InstallTrackingHandler(DragTrackingHandler.getAddress(), 0, null);
-		OS.InstallReceiveHandler(DragReceiveHandler.getAddress(), 0, null);
+		int dragReceiveHandlerAddress = DragReceiveHandler.getAddress();
+		if (dragReceiveHandlerAddress == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+		OS.InstallTrackingHandler(dragTrackingHandlerAddress, 0, null);
+		OS.InstallReceiveHandler(dragReceiveHandlerAddress, 0, null);
 	}
 
 /**
