@@ -174,7 +174,8 @@ public String open () {
 	/* Create the BrowseCallbackProc */
 	Callback callback = new Callback (this, "BrowseCallbackProc", 4); //$NON-NLS-1$
 	int address = callback.getAddress ();
-
+	if (address == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+	
 	/* Make the parent shell be temporary modal */
 	Shell oldModal = null;
 	Display display = parent.getDisplay ();

@@ -131,8 +131,9 @@ public RGB open () {
 	int hwndOwner = parent.handle;
 
 	/* Create the CCHookProc */
-	Callback callback = new Callback (this, "CCHookProc", 4);
+	Callback callback = new Callback (this, "CCHookProc", 4); //$NON-NLS-1$
 	int lpfnHook = callback.getAddress ();
+	if (lpfnHook == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	
 	/* Allocate the Custom Colors */
 	Display display = parent.display;

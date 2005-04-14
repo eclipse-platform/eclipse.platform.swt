@@ -165,7 +165,7 @@ public FontData(String string) {
 	if (end == -1) return;
 	String version2 = string.substring(start, end);
 
-	if (platform.equals("WINDOWS") && version2.equals("1")) {
+	if (platform.equals("WINDOWS") && version2.equals("1")) {  //$NON-NLS-1$//$NON-NLS-2$
 		LOGFONT newData = OS.IsUnicode ? (LOGFONT)new LOGFONTW() : new LOGFONTA();
 		try {
 			start = end + 1;
@@ -503,8 +503,9 @@ public void setLocale(String locale) {
 	if (lang == null) {
 		data.lfCharSet = (byte)OS.DEFAULT_CHARSET;
 	} else {
-		Callback callback = new Callback (this, "EnumLocalesProc", 1);
+		Callback callback = new Callback (this, "EnumLocalesProc", 1); //$NON-NLS-1$
 		int lpEnumLocalesProc = callback.getAddress ();	
+		if (lpEnumLocalesProc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 		OS.EnumSystemLocales(lpEnumLocalesProc, OS.LCID_SUPPORTED);
 		callback.dispose ();
 	}
@@ -585,40 +586,40 @@ public void setStyle(int style) {
  */
 public String toString() {
 	StringBuffer buffer = new StringBuffer();
-	buffer.append("1|");
+	buffer.append("1|"); //$NON-NLS-1$
 	buffer.append(getName());
-	buffer.append("|");
+	buffer.append("|"); //$NON-NLS-1$
 	buffer.append(getHeight());
-	buffer.append("|");
+	buffer.append("|"); //$NON-NLS-1$
 	buffer.append(getStyle());
-	buffer.append("|");
-	buffer.append("WINDOWS|1|");	
+	buffer.append("|"); //$NON-NLS-1$
+	buffer.append("WINDOWS|1|"); //$NON-NLS-1$	
 	buffer.append(data.lfHeight);
-	buffer.append("|");
-	buffer.append(data.lfWidth);    
-	buffer.append("|");
-	buffer.append(data.lfEscapement); 
-	buffer.append("|");
-	buffer.append(data.lfOrientation);    
-	buffer.append("|");
-	buffer.append(data.lfWeight);    
-	buffer.append("|");
-	buffer.append(data.lfItalic);    
-	buffer.append("|");
-	buffer.append(data.lfUnderline); 
-	buffer.append("|");
-	buffer.append(data.lfStrikeOut);    
-	buffer.append("|");
-	buffer.append(data.lfCharSet);    
-	buffer.append("|");
-	buffer.append(data.lfOutPrecision); 
-	buffer.append("|");
-	buffer.append(data.lfClipPrecision);    
-	buffer.append("|");
-	buffer.append(data.lfQuality);    
-	buffer.append("|");
+	buffer.append("|"); //$NON-NLS-1$
+	buffer.append(data.lfWidth);
+	buffer.append("|"); //$NON-NLS-1$
+	buffer.append(data.lfEscapement);
+	buffer.append("|"); //$NON-NLS-1$
+	buffer.append(data.lfOrientation);  
+	buffer.append("|"); //$NON-NLS-1$
+	buffer.append(data.lfWeight);  
+	buffer.append("|"); //$NON-NLS-1$
+	buffer.append(data.lfItalic);
+	buffer.append("|"); //$NON-NLS-1$
+	buffer.append(data.lfUnderline);
+	buffer.append("|"); //$NON-NLS-1$
+	buffer.append(data.lfStrikeOut);  
+	buffer.append("|"); //$NON-NLS-1$
+	buffer.append(data.lfCharSet); 
+	buffer.append("|"); //$NON-NLS-1$
+	buffer.append(data.lfOutPrecision);
+	buffer.append("|"); //$NON-NLS-1$
+	buffer.append(data.lfClipPrecision);  
+	buffer.append("|"); //$NON-NLS-1$
+	buffer.append(data.lfQuality); 
+	buffer.append("|"); //$NON-NLS-1$
 	buffer.append(data.lfPitchAndFamily);
-	buffer.append("|");
+	buffer.append("|"); //$NON-NLS-1$
 	buffer.append(getName());
 	return buffer.toString();
 }

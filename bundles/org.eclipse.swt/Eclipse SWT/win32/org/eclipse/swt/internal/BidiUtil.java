@@ -45,11 +45,12 @@ public class BidiUtil {
 	 * they are targeted for CLDC.
 	 */
 	//	static Callback callback = new Callback (BidiUtil.class, "windowProc", 4);
-	static final String CLASS_NAME = "org.eclipse.swt.internal.BidiUtil";
+	static final String CLASS_NAME = "org.eclipse.swt.internal.BidiUtil"; //$NON-NLS-1$
 	static Callback callback;
 	static {
 		try {
-			callback = new Callback (Class.forName (CLASS_NAME), "windowProc", 4);
+			callback = new Callback (Class.forName (CLASS_NAME), "windowProc", 4); //$NON-NLS-1$
+			if (callback.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 		} catch (ClassNotFoundException e) {}
 	}
 
@@ -71,8 +72,8 @@ public class BidiUtil {
 	static final int LANG_ARABIC = 0x01;
 	static final int LANG_HEBREW = 0x0d;
 	// code page identifiers
-	static final String CD_PG_HEBREW = "1255";
-	static final String CD_PG_ARABIC = "1256";
+	static final String CD_PG_HEBREW = "1255"; //$NON-NLS-1$
+	static final String CD_PG_ARABIC = "1256"; //$NON-NLS-1$
 	// ActivateKeyboard constants
 	static final int HKL_NEXT = 1;
 	static final int HKL_PREV = 0;
@@ -450,7 +451,7 @@ public static boolean isBidiPlatform() {
 	
 	Callback callback = null;
 	try {
-		callback = new Callback (Class.forName (CLASS_NAME), "EnumSystemLanguageGroupsProc", 5);
+		callback = new Callback (Class.forName (CLASS_NAME), "EnumSystemLanguageGroupsProc", 5); //$NON-NLS-1$
 		int lpEnumSystemLanguageGroupsProc = callback.getAddress ();	
 		if (lpEnumSystemLanguageGroupsProc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 		OS.EnumSystemLanguageGroups(lpEnumSystemLanguageGroupsProc, OS.LGRPID_INSTALLED, 0);

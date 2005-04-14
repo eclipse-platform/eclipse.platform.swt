@@ -1426,6 +1426,7 @@ public Monitor [] getMonitors () {
 	monitors = new Monitor [4];
 	Callback callback = new Callback (this, "monitorEnumProc", 4); //$NON-NLS-1$
 	int lpfnEnum = callback.getAddress ();
+	if (lpfnEnum == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	OS.EnumDisplayMonitors (0, null, lpfnEnum, 0);
 	callback.dispose ();
 	Monitor [] result = new Monitor [monitorCount];
@@ -1498,6 +1499,7 @@ public Monitor getPrimaryMonitor () {
 	monitors = new Monitor [4];
 	Callback callback = new Callback (this, "monitorEnumProc", 4); //$NON-NLS-1$
 	int lpfnEnum = callback.getAddress ();
+	if (lpfnEnum == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	OS.EnumDisplayMonitors (0, null, lpfnEnum, 0);
 	callback.dispose ();
 	Monitor result = null;

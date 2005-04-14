@@ -475,7 +475,9 @@ public boolean open () {
 			null);
 		oldProc = OS.GetWindowLong (hwndTransparent, OS.GWL_WNDPROC);
 		newProc = new Callback (this, "transparentProc", 4); //$NON-NLS-1$
-		OS.SetWindowLong (hwndTransparent, OS.GWL_WNDPROC, newProc.getAddress ());
+		int address = newProc.getAddress ();
+		if (address == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+		OS.SetWindowLong (hwndTransparent, OS.GWL_WNDPROC, address);
 	}
 
 	update ();
