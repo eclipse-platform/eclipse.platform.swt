@@ -2214,7 +2214,15 @@ public class SWT {
 	 * @since 3.1
 	 */
 	public static final int ERROR_FAILED_LOAD_LIBRARY = 47;
-	
+
+	/** 
+	 * SWT error constant indicating that a font is not valid
+	 * (value is 48).
+	 * 
+	 * @since 3.1
+	 */
+	public static final int ERROR_INVALID_FONT = 48;
+
 	/**
 	 * Traversal event detail field value indicating that no 
 	 * traversal action should be taken
@@ -2778,6 +2786,7 @@ static String findErrorText (int code) {
 		case ERROR_FAILED_LOAD_LIBRARY:    return "Unable to load library"; //$NON-NLS-1$
 		case ERROR_CANNOT_INVERT_MATRIX:    return "Cannot invert matrix"; //$NON-NLS-1$
 		case ERROR_NO_GRAPHICS_LIBRARY:    return "Unable to load graphics library"; //$NON-NLS-1$
+		case ERROR_INVALID_FONT:    		return "Font not valid"; //$NON-NLS-1$
 	}
 	return "Unknown error"; //$NON-NLS-1$
 }

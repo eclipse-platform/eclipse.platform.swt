@@ -272,10 +272,11 @@ public FontData[] getFontData() {
 	int xDisplay = device.xDisplay;
 	/*
 	 * Create a font context to iterate over each element in the font list.
-	 * If a font context can not be created, return null.
 	 */
 	int[] buffer = new int[1];
-	if (!OS.XmFontListInitFontContext(buffer, handle)) return null;
+	if (!OS.XmFontListInitFontContext(buffer, handle)) {
+		SWT.error (SWT.ERROR_INVALID_FONT);
+	}
 	int context = buffer[0];
 	XFontStruct fontStruct = new XFontStruct();
 	int fontListEntry;
@@ -342,8 +343,8 @@ public FontData[] getFontData() {
 								/*
 								 * Some font servers, for example, xfstt, do not pass
 								 * reasonable font properties to the client, so we
-								 * cannot construct a FontData for these. Use the font
-								 * name instead and return null if that fails.
+								 * cannot construct a FontData for these. Try to use
+								 * the font name instead.
 								 */
 								int[] fontName = new int[1];
 								OS.memmove(fontName, fontNamePtr [0] + (i * 4), 4);
@@ -364,14 +365,14 @@ public FontData[] getFontData() {
 				}
 			}
 		}
-		if (data.length == 0) return null;
+		if (data.length == 0) SWT.error (SWT.ERROR_INVALID_FONT);
 	} catch (Exception e) {
 		/*
 		 * Some font servers, for example, xfstt, do not pass
 		 * reasonable font properties to the client, so we
-		 * cannot construct a FontData for these. Return null.
+		 * cannot construct a FontData for these.
 		 */
-		return null;
+		SWT.error (SWT.ERROR_INVALID_FONT);
 	} finally {
 		OS.XmFontListFreeFontContext(context);
 	}
