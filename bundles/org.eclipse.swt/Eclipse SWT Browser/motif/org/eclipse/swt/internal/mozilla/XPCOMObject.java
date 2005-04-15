@@ -12,6 +12,7 @@ package org.eclipse.swt.internal.mozilla;
 
 import java.util.Hashtable;
 import org.eclipse.swt.internal.Callback;
+import org.eclipse.swt.SWT;
 
 public class XPCOMObject {
 
@@ -29,6 +30,7 @@ public XPCOMObject(int[] argCounts) {
 			Callbacks[i][argCounts[i]] = new Callback(this.getClass(), "callback"+i, argCounts[i] + 1, true); //$NON-NLS-1$
 		}
 		callbackAddresses[i] = Callbacks[i][argCounts[i]].getAddress();
+		if (callbackAddresses[i] == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	}	
 
 	int pVtable = XPCOM.PR_Malloc(4 * argCounts.length);

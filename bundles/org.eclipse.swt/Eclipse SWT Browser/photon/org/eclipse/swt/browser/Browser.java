@@ -138,6 +138,7 @@ public Browser(Composite parent, int style) {
 	
 	if (callback == null) callback = new Callback(this.getClass(), "webProc", 3, false); //$NON-NLS-1$
 	int webProc = callback.getAddress();
+	if (webProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	OS.PtAddCallback(webHandle,OS.Pt_CB_WEB_CLOSE_WINDOW, webProc, OS.Pt_CB_WEB_CLOSE_WINDOW);
 	OS.PtAddCallback(webHandle,OS.Pt_CB_WEB_COMPLETE, webProc, OS.Pt_CB_WEB_COMPLETE);
 	OS.PtAddCallback(webHandle,OS.Pt_CB_WEB_DATA_REQ, webProc, OS.Pt_CB_WEB_DATA_REQ);
