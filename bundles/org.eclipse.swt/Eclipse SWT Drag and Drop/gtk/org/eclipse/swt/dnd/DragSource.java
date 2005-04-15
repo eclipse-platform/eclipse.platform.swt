@@ -95,24 +95,27 @@ import org.eclipse.swt.internal.gtk.*;
 public class DragSource extends Widget {
 
 	// info for registering as a drag source
-	private Control control;
-	private Listener controlListener;
-	private Transfer[] transferAgents = new Transfer[0];
+	Control control;
+	Listener controlListener;
+	Transfer[] transferAgents = new Transfer[0];
 
-	private int /*long*/ targetList;
+	int /*long*/ targetList;
 	
 	//workaround - remember action performed for DragEnd
-	private boolean moveData = false;
+	boolean moveData = false;
 	
-	private static final String DRAGSOURCEID = "DragSource"; //$NON-NLS-1$
+	static final String DRAGSOURCEID = "DragSource"; //$NON-NLS-1$
 		
-	private static Callback DragGetData;
-	private static Callback DragEnd;
-	private static Callback DragDataDelete;
+	static Callback DragGetData;
+	static Callback DragEnd;
+	static Callback DragDataDelete;
 	static {
-		DragGetData = new Callback(DragSource.class, "DragGetData", 5);	
-		DragEnd = new Callback(DragSource.class, "DragEnd", 2);
-		DragDataDelete = new Callback(DragSource.class, "DragDataDelete", 2);
+		DragGetData = new Callback(DragSource.class, "DragGetData", 5);	 //$NON-NLS-1$
+		if (DragGetData.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+		DragEnd = new Callback(DragSource.class, "DragEnd", 2); //$NON-NLS-1$
+		if (DragEnd.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+		DragDataDelete = new Callback(DragSource.class, "DragDataDelete", 2); //$NON-NLS-1$
+		if (DragDataDelete.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	}
 	
 /**
@@ -155,11 +158,11 @@ public DragSource(Control control, int style) {
 	}
 	control.setData(DRAGSOURCEID, this);
 
-	byte[] buffer = Converter.wcsToMbcs(null, "drag_data_get", true);
+	byte[] buffer = Converter.wcsToMbcs(null, "drag_data_get", true); //$NON-NLS-1$
 	OS.g_signal_connect(control.handle, buffer, DragGetData.getAddress(), 0);	
-	buffer = Converter.wcsToMbcs(null, "drag_end", true);
+	buffer = Converter.wcsToMbcs(null, "drag_end", true); //$NON-NLS-1$
 	OS.g_signal_connect(control.handle, buffer, DragEnd.getAddress(), 0);
-	buffer = Converter.wcsToMbcs(null, "drag_data_delete", true);
+	buffer = Converter.wcsToMbcs(null, "drag_data_delete", true); //$NON-NLS-1$
 	OS.g_signal_connect(control.handle, buffer, DragDataDelete.getAddress(), 0);
 	
 	controlListener = new Listener () {
@@ -265,7 +268,7 @@ protected void checkSubclass () {
 	}
 }
 
-private void drag(Event dragEvent) {
+void drag(Event dragEvent) {
 	moveData = false;	
 	DNDEvent event = new DNDEvent();
 	event.widget = this;	
@@ -371,7 +374,7 @@ public Transfer[] getTransfer(){
 	return transferAgents;
 }
 
-private void onDispose() {
+void onDispose() {
 	if (control == null) return;
 	if (targetList != 0) {
 		OS.gtk_target_list_unref(targetList);
@@ -387,7 +390,7 @@ private void onDispose() {
 	transferAgents = null;
 }
 
-private int opToOsOp(int operation){
+int opToOsOp(int operation){
 	int osOperation = 0;
 	
 	if ((operation & DND.DROP_COPY) == DND.DROP_COPY)
@@ -400,7 +403,7 @@ private int opToOsOp(int operation){
 	return osOperation;
 }
 
-private int osOpToOp(int osOperation){
+int osOpToOp(int osOperation){
 	int operation = DND.DROP_NONE;
 	
 	if ((osOperation & OS.GDK_ACTION_COPY) == OS.GDK_ACTION_COPY)

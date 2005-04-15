@@ -57,7 +57,9 @@ static ClipboardProxy _getInstance(final Display display) {
 ClipboardProxy(Display display) {	
 	this.display = display;
 	getFunc = new Callback( this, "getFunc", 4); //$NON-NLS-1$
+	if (getFunc.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	clearFunc = new Callback( this, "clearFunc", 2); //$NON-NLS-1$
+	if (clearFunc.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 }
 
 void clear (Clipboard owner, int clipboards) {

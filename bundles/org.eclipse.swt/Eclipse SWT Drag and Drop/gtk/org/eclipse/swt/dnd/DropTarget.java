@@ -70,41 +70,45 @@ import org.eclipse.swt.internal.gtk.*;
  */
 public class DropTarget extends Widget {
 
-	private Control control;
-	private Listener controlListener;
-	private Transfer[] transferAgents = new Transfer[0];
-	private DragUnderEffect effect;
+	Control control;
+	Listener controlListener;
+	Transfer[] transferAgents = new Transfer[0];
+	DragUnderEffect effect;
 	
 	// Track application selections
-	private TransferData selectedDataType;
-	private int selectedOperation;
+	TransferData selectedDataType;
+	int selectedOperation;
 	
 	// workaround - There is no event for "operation changed" so track operation based on key state
-	private int keyOperation = -1;
+	int keyOperation = -1;
 	
 	// workaround - Simulate events when the mouse is not moving
-	private long dragOverStart;
-	private Runnable dragOverHeartbeat;
-	private DNDEvent dragOverEvent;
+	long dragOverStart;
+	Runnable dragOverHeartbeat;
+	DNDEvent dragOverEvent;
 	
-	private int drag_motion_handler;
-	private int drag_leave_handler;
-	private int drag_data_received_handler;
-	private int drag_drop_handler;
+	int drag_motion_handler;
+	int drag_leave_handler;
+	int drag_data_received_handler;
+	int drag_drop_handler;
 	
-	private static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
-	private static final int DRAGOVER_HYSTERESIS = 50;
+	static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
+	static final int DRAGOVER_HYSTERESIS = 50;
 	
-	private static Callback Drag_Motion;
-	private static Callback Drag_Leave;
-	private static Callback Drag_Data_Received;
-	private static Callback Drag_Drop;
+	static Callback Drag_Motion;
+	static Callback Drag_Leave;
+	static Callback Drag_Data_Received;
+	static Callback Drag_Drop;
 	
 	 static {	
 		Drag_Motion = new Callback(DropTarget.class, "Drag_Motion", 5); //$NON-NLS-1$
+		if (Drag_Motion.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 		Drag_Leave = new Callback(DropTarget.class, "Drag_Leave", 3); //$NON-NLS-1$
+		if (Drag_Leave.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 		Drag_Data_Received = new Callback(DropTarget.class, "Drag_Data_Received", 7); //$NON-NLS-1$
+		if (Drag_Data_Received.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 		Drag_Drop = new Callback(DropTarget.class, "Drag_Drop", 5); //$NON-NLS-1$
+		if (Drag_Drop.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	}
 
 /**
@@ -131,7 +135,6 @@ public class DropTarget extends Widget {
  * <p>NOTE: ERROR_CANNOT_INIT_DROP should be an SWTException, since it is a
  * recoverable error, but can not be changed due to backward compatability.</p>
  * 
- * @see DropTarget#dispose
  * @see DropTarget#checkSubclass
  * @see DND#DROP_NONE
  * @see DND#DROP_COPY
@@ -236,33 +239,33 @@ static int checkStyle (int style) {
 	return style;
 }
 
-private static int /*long*/ Drag_Data_Received ( int /*long*/ widget, int /*long*/ context, int /*long*/ x, int /*long*/ y, int /*long*/ data, int /*long*/ info, int /*long*/ time){
+static int /*long*/ Drag_Data_Received ( int /*long*/ widget, int /*long*/ context, int /*long*/ x, int /*long*/ y, int /*long*/ data, int /*long*/ info, int /*long*/ time){
 	DropTarget target = FindDropTarget(widget);
 	if (target == null) return 0;
 	target.drag_data_received (widget, context, (int)/*64*/x, (int)/*64*/y, data, (int)/*64*/info, (int)/*64*/time);
 	return 0;
 }
 
-private static int /*long*/ Drag_Drop(int /*long*/ widget, int /*long*/ context, int /*long*/ x, int /*long*/ y, int /*long*/ time) {
+static int /*long*/ Drag_Drop(int /*long*/ widget, int /*long*/ context, int /*long*/ x, int /*long*/ y, int /*long*/ time) {
 	DropTarget target = FindDropTarget(widget);
 	if (target == null) return 0;
 	return target.drag_drop (widget, context, (int)/*64*/x, (int)/*64*/y, (int)/*64*/time) ? 1 : 0;
 }
 
-private static int /*long*/ Drag_Leave ( int /*long*/ widget, int /*long*/ context, int /*long*/ time){
+static int /*long*/ Drag_Leave ( int /*long*/ widget, int /*long*/ context, int /*long*/ time){
 	DropTarget target = FindDropTarget(widget);
 	if (target == null) return 0;
 	target.drag_leave (widget, context, (int)/*64*/time);
 	return 0;
 }
 
-private static int /*long*/ Drag_Motion ( int /*long*/ widget, int /*long*/ context, int /*long*/ x, int /*long*/ y, int /*long*/ time){
+static int /*long*/ Drag_Motion ( int /*long*/ widget, int /*long*/ context, int /*long*/ x, int /*long*/ y, int /*long*/ time){
 	DropTarget target = FindDropTarget(widget);
 	if (target == null) return 0;
 	return target.drag_motion (widget, context, (int)/*64*/x, (int)/*64*/y, (int)/*64*/time) ? 1 : 0;
 }
 	
-private static DropTarget FindDropTarget(int /*long*/ handle) {
+static DropTarget FindDropTarget(int /*long*/ handle) {
 	Display display = Display.findDisplay(Thread.currentThread());
 	if (display == null || display.isDisposed()) return null;
 	Widget widget = display.findWidget(handle);
@@ -321,7 +324,7 @@ protected void checkSubclass () {
 	}
 }
 
-private void drag_data_received ( int /*long*/ widget, int /*long*/ context, int x, int y, int /*long*/ data, int info, int time){
+void drag_data_received ( int /*long*/ widget, int /*long*/ context, int x, int y, int /*long*/ data, int info, int time){
 	DNDEvent event = new DNDEvent();
 	if (data == 0 || !setEventData(context, x, y, time, event)) {
 		keyOperation = -1;
@@ -365,7 +368,7 @@ private void drag_data_received ( int /*long*/ widget, int /*long*/ context, int
 	return;	
 }
 
-private boolean drag_drop(int /*long*/ widget, int /*long*/ context, int x, int y, int time) {
+boolean drag_drop(int /*long*/ widget, int /*long*/ context, int x, int y, int time) {
 	DNDEvent event = new DNDEvent();
 	if (!setEventData(context, x, y, time, event)) {
 		keyOperation = -1;
@@ -402,7 +405,7 @@ private boolean drag_drop(int /*long*/ widget, int /*long*/ context, int x, int 
 	return true;
 }
 
-private void drag_leave ( int /*long*/ widget, int /*long*/ context, int time){
+void drag_leave ( int /*long*/ widget, int /*long*/ context, int time){
 	updateDragOverHover(0, null);
 	effect.show(DND.FEEDBACK_NONE, 0, 0);
 	
@@ -416,7 +419,7 @@ private void drag_leave ( int /*long*/ widget, int /*long*/ context, int time){
 	notifyListeners(DND.DragLeave, event);
 }
 
-private boolean drag_motion ( int /*long*/ widget, int /*long*/ context, int x, int y, int time){
+boolean drag_motion ( int /*long*/ widget, int /*long*/ context, int x, int y, int time){
 	int oldKeyOperation = keyOperation;
 	
 	if (oldKeyOperation == -1) { //drag enter
@@ -498,7 +501,7 @@ public Control getControl () {
 	return control;
 }
 
-private int getOperationFromKeyState() {
+int getOperationFromKeyState() {
 	int[] state = new int[1];
 	OS.gdk_window_get_pointer(0, null, null, state);
 	boolean ctrl = (state[0] & OS.GDK_CONTROL_MASK) != 0;
@@ -558,7 +561,7 @@ public void notifyListeners (int eventType, Event event) {
 	super.notifyListeners(eventType, event);
 }
 
-private void onDispose(){
+void onDispose(){
 	if (control == null) return;
 	OS.g_signal_handler_disconnect(control.handle, drag_motion_handler);
 	OS.g_signal_handler_disconnect(control.handle, drag_leave_handler);
@@ -574,7 +577,7 @@ private void onDispose(){
 	controlListener = null;
 }
 
-private int opToOsOp(int operation){
+int opToOsOp(int operation){
 	int osOperation = 0;
 	if ((operation & DND.DROP_COPY) == DND.DROP_COPY)
 		osOperation |= OS.GDK_ACTION_COPY;
@@ -585,7 +588,7 @@ private int opToOsOp(int operation){
 	return osOperation;
 }
 
-private int osOpToOp(int osOperation){
+int osOpToOp(int osOperation){
 	int operation = DND.DROP_NONE;
 	if ((osOperation & OS.GDK_ACTION_COPY) == OS.GDK_ACTION_COPY)
 		operation |= DND.DROP_COPY;
@@ -675,7 +678,7 @@ public void setTransfer(Transfer[] transferAgents){
 	}
 }
 
-private boolean setEventData(int /*long*/ context, int x, int y, int time, DNDEvent event) {
+boolean setEventData(int /*long*/ context, int x, int y, int time, DNDEvent event) {
 	if (context == 0) return false;
 	GdkDragContext dragContext = new GdkDragContext();
 	OS.memmove(dragContext, context, GdkDragContext.sizeof);
@@ -732,7 +735,7 @@ private boolean setEventData(int /*long*/ context, int x, int y, int time, DNDEv
 	return true;
 }
 
-private void updateDragOverHover(long delay, DNDEvent event) {
+void updateDragOverHover(long delay, DNDEvent event) {
 	if (delay == 0) {
 		dragOverStart = 0;
 		dragOverEvent = null;
