@@ -284,11 +284,11 @@ void initialize16BitColors() {
 
 	for (red = 0; red <= 255; red += iterationStep) {
 		for (blue = 0; blue <= 255; blue += iterationStep) {
-			if (blue == iterationStep && column < 20) {		// hack to evenly distribute 256 colors on 32 columns
+			if (blue == iterationStep && column < 20) {		// evenly distribute 256 colors on 32 columns
 				blue += iterationStep;
 			}
 			for (green = 0; green <= 255; green += iterationStep) {
-				if (row == 2 || row == 5) {					// hack to evenly distribute 256 colors on 8 rows
+				if (row == 2 || row == 5) {					// evenly distribute 256 colors on 8 rows
 					colorGrid[column][row++] = new Color(display, red, green - iterationStep / 2, blue);
 				}
 				if (row == numRows) {

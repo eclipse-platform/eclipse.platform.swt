@@ -96,7 +96,7 @@ public class Display extends Device {
 	/* TEMPORARY CODE FOR EMULATED TABLE */
 	int textHighlightThickness = 0;
 	
-	/* TEMPORARY HACK FOR PHOTON */
+	/* TEMPORARY CODE FOR EMBEDDED */
 	public boolean embedded;
 	
 	/* Photon Only Public Fields */
