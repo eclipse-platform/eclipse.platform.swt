@@ -523,6 +523,10 @@ void createItem (TableItem item, int index) {
 	}
 	item.handle = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	if (item.handle == 0) error (SWT.ERROR_NO_HANDLES);
+	/*
+	* Feature in GTK.  It is much faster to append to a list store
+	* than to insert at the end using gtk_list_store_insert(). 
+	*/
 	if (index == itemCount) {
 		OS.gtk_list_store_append (modelHandle, item.handle);
 	} else {

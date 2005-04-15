@@ -457,6 +457,10 @@ void createItem (TreeItem item, int /*long*/ iter, int index) {
 	}
 	item.handle = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	if (item.handle == 0) error(SWT.ERROR_NO_HANDLES);
+	/*
+	* Feature in GTK.  It is much faster to append to a tree store
+	* than to insert at the end using gtk_tree_store_insert(). 
+	*/
 	if (index == count) {
 		OS.gtk_tree_store_append (modelHandle, item.handle, iter);
 	} else {

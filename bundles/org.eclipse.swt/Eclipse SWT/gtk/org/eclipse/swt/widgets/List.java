@@ -131,6 +131,10 @@ public void add (String string, int index) {
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
 	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	if (iter == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
+	/*
+	* Feature in GTK.  It is much faster to append to a list store
+	* than to insert at the end using gtk_list_store_insert(). 
+	*/
 	if (index == count) {
 		OS.gtk_list_store_append (modelHandle, iter);
 	} else {
