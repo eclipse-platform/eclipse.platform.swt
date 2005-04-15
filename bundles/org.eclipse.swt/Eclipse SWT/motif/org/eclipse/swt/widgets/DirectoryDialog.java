@@ -162,7 +162,7 @@ public String open () {
 		0);
 
 	/* Use the character encoding for the default locale */
-	byte [] buffer7 = Converter.wcsToMbcs (null, "Selection", true);
+	byte [] buffer7 = Converter.wcsToMbcs (null, SWT.getMessage ("SWT_Selection"), true);
 	int xmStringPtr4 = OS.XmStringParseText (
 		buffer7,
 		0,
