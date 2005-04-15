@@ -532,7 +532,7 @@ public String getString() {
 	}
 }
 /**
- * Returns the ytpe of the variant type.  This will be an OLE.VT_* value or
+ * Returns the type of the variant type.  This will be an OLE.VT_* value or
  * a bitwise combination of OLE.VT_* values as in the case of 
  * OLE.VT_BSTR | OLE.VT_BYREF.
  * 
