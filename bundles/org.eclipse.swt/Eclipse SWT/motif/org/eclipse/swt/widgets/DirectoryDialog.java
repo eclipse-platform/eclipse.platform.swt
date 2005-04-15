@@ -30,10 +30,10 @@ import org.eclipse.swt.*;
  * </p>
  */
 public class DirectoryDialog extends Dialog {
-	String filterPath = "";
+	String filterPath = ""; //$NON-NLS-1$
 	boolean cancel = true;
-	String message = "";
-	static final String SEPARATOR = System.getProperty ("file.separator");
+	String message = ""; //$NON-NLS-1$
+	static final String SEPARATOR = System.getProperty ("file.separator"); //$NON-NLS-1$
 	
 /**
  * Constructs a new instance of this class given only its parent.
@@ -123,7 +123,7 @@ public String open () {
 	* to be a single space.
 	*/
 	String string = title;
-	if (string.length () == 0) string = " ";
+	if (string.length () == 0) string = " "; //$NON-NLS-1$
 
 	/* Use the character encoding for the default locale */
 	byte [] buffer1 = Converter.wcsToMbcs (null, string, true);
@@ -138,7 +138,7 @@ public String open () {
 
 	/* Compute the filter */
 	/* Use the character encoding for the default locale */
-	byte [] buffer2 = Converter.wcsToMbcs (null, "*", true);
+	byte [] buffer2 = Converter.wcsToMbcs (null, "*", true); //$NON-NLS-1$
 	int xmStringPtr2 = OS.XmStringParseText (
 		buffer2,
 		0,
@@ -149,7 +149,7 @@ public String open () {
 		0);
 
 	/* Compute the filter path */
-	if (filterPath == null) filterPath = "";
+	if (filterPath == null) filterPath = ""; //$NON-NLS-1$
 	/* Use the character encoding for the default locale */
 	byte [] buffer3 = Converter.wcsToMbcs (null, filterPath, true);
 	int xmStringPtr3 = OS.XmStringParseText (
@@ -230,8 +230,9 @@ public String open () {
 	OS.XmStringFree (xmString1);
 
 	/* Hook the callbacks. */
-	Callback callback = new Callback (this, "activate", 3);
+	Callback callback = new Callback (this, "activate", 3); //$NON-NLS-1$
 	int address = callback.getAddress ();
+	if (address == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	OS.XtAddCallback (dialog, OS.XmNokCallback, address, OS.XmDIALOG_OK_BUTTON);
 	OS.XtAddCallback (dialog, OS.XmNcancelCallback, address, OS.XmDIALOG_CANCEL_BUTTON);
 
@@ -244,7 +245,7 @@ public String open () {
 		if (!display.readAndDispatch ()) display.sleep ();
 
 	/* Set the new path, file name and filter. */
-	String directoryPath="";
+	String directoryPath=""; //$NON-NLS-1$
 	if (!cancel) {
 		int [] argList2 = {OS.XmNdirMask, 0};
 		OS.XtGetValues (dialog, argList2, argList2.length / 2);

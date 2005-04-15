@@ -34,11 +34,11 @@ public class FileDialog extends Dialog {
 	String [] filterNames = new String [0];
 	String [] filterExtensions = new String [0];
 	String [] fileNames = new String [0];
-	String fileName = "";
-	String filterPath = "";
+	String fileName = ""; //$NON-NLS-1$
+	String filterPath = ""; //$NON-NLS-1$
 	String fullPath;
-	static final String FILTER = "*";
-	static final char SEPARATOR = System.getProperty ("file.separator").charAt (0);
+	static final String FILTER = "*"; //$NON-NLS-1$
+	static final char SEPARATOR = System.getProperty ("file.separator").charAt (0); //$NON-NLS-1$
 
 /**
  * Constructs a new instance of this class given only its parent.
@@ -264,7 +264,7 @@ int okPressed (int widget, int client, int call) {
 	}
 
 	// if no file selected then go into the current directory
-	if (fileName.equals("")) {
+	if (fileName.equals("")) { //$NON-NLS-1$
 		int [] argList1 = {OS.XmNdirMask, 0};
 		OS.XtGetValues (dialog, argList1, argList1.length / 2);
 		int directoryHandle = argList1[1];
@@ -326,7 +326,7 @@ public String open () {
 	* to be a single space.
 	*/
 	String string = title;
-	if (string.length () == 0) string = " ";
+	if (string.length () == 0) string = " "; //$NON-NLS-1$
 	/* Use the character encoding for the default locale */
 	byte [] buffer1 = Converter.wcsToMbcs (null, string, true);
 	int xmStringPtr1 = OS.XmStringParseText (
@@ -366,7 +366,7 @@ public String open () {
 		0);
 
 	/* Compute the filter path */
-	if (filterPath == null) filterPath = "";
+	if (filterPath == null) filterPath = ""; //$NON-NLS-1$
 	int length = filterPath.length ();
 	if (length == 0 || filterPath.charAt (length - 1) != SEPARATOR) {
 		filterPath += SEPARATOR;
@@ -440,11 +440,13 @@ public String open () {
 	}
 
 	/* Hook the callbacks. */
-	Callback cancelCallback = new Callback (this, "cancelPressed", 3);
+	Callback cancelCallback = new Callback (this, "cancelPressed", 3); //$NON-NLS-1$
 	int cancelAddress = cancelCallback.getAddress ();
+	if (cancelAddress == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	OS.XtAddCallback (dialog, OS.XmNcancelCallback, cancelAddress, 0);
-	Callback okCallback = new Callback (this, "okPressed", 3);
+	Callback okCallback = new Callback (this, "okPressed", 3); //$NON-NLS-1$
 	int okAddress = okCallback.getAddress ();
+	if (okAddress == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	OS.XtAddCallback (dialog, OS.XmNokCallback, okAddress, 0);
 	Callback selectCallback = null;
 	if ((style & SWT.MULTI) != 0) {
@@ -452,7 +454,7 @@ public String open () {
 		if (child != 0) {
 			int [] argList3 = {OS.XmNselectionPolicy, OS.XmEXTENDED_SELECT};
 			OS.XtSetValues(child, argList3, argList3.length / 2);
-			selectCallback = new Callback (this, "itemSelected", 3);
+			selectCallback = new Callback (this, "itemSelected", 3); //$NON-NLS-1$
 			int selectAddress = selectCallback.getAddress ();
 			if (selectAddress == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 			OS.XtAddCallback (child, OS.XmNextendedSelectionCallback, selectAddress, 0);
