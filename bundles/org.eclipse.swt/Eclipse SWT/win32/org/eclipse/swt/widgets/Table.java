@@ -3571,7 +3571,6 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 //			if (drawCount != 0 || !OS.IsWindowVisible (handle)) break;
 			NMLVDISPINFO plvfi = new NMLVDISPINFO ();
 			OS.MoveMemory (plvfi, lParam, NMLVDISPINFO.sizeof);
-			lastIndexOf = plvfi.iItem;
 			TableItem item = _getItem (plvfi.iItem);
 			/*
 			* The cached flag is used by both virtual and non-virtual
@@ -3580,6 +3579,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			*/
 			if (!item.cached) {
 				if ((style & SWT.VIRTUAL) != 0) {
+					lastIndexOf = plvfi.iItem;
 					if (!checkData (item, false)) break;
 					TableItem newItem = fixScrollWidth ? null : item;
 					if (setScrollWidth (newItem, true)) {
