@@ -43,7 +43,7 @@ import org.eclipse.swt.events.*;
  */
 public class Table extends Composite {
 	int /*long*/ modelHandle, checkRenderer;
-	int itemCount, columnCount, lastIndexOf, lastDataIndex = -1;
+	int itemCount, columnCount, lastIndexOf;
 	int /*long*/ ignoreTextCell, ignorePixbufCell;
 	TableItem [] items;
 	TableColumn [] columns;
@@ -834,7 +834,6 @@ void destroyItem (TableItem item) {
 	item.handle = 0;
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
-	lastDataIndex = -1;
 	if (itemCount == 0) resetCustomDraw ();
 }
 
@@ -1700,7 +1699,13 @@ int /*long*/ pixbufCellDataProc (int /*long*/ tree_column, int /*long*/ cell, in
 				return 0;
 			}
 		}
-		setData = setCellData (tree_model, path);
+		int [] index = new int [1];
+		OS.memmove (index, OS.gtk_tree_path_get_indices (path), 4);
+		TableItem item = _getItem (index [0]);
+		if (!item.cached) {
+			lastIndexOf = index [0];
+			setData = checkData (item);
+		}
 		OS.gtk_tree_path_free (path);
 	}
 	int /*long*/ [] ptr = new int /*long*/ [1];
@@ -2137,17 +2142,6 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	*/
 	OS.gtk_widget_realize (handle);
 	return result;
-}
-
-boolean setCellData(int /*long*/ tree_model, int /*long*/ path) {
-	int [] index = new int [1];
-	OS.memmove (index, OS.gtk_tree_path_get_indices (path), 4);
-	if (lastDataIndex != index [0]) {
-		lastDataIndex = lastIndexOf = index [0];
-		TableItem item = _getItem (index [0]);
-		if (!item.cached) return checkData (item);
-	}
-	return false;
 }
 
 /**
@@ -2607,7 +2601,13 @@ int /*long*/ textCellDataProc (int /*long*/ tree_column, int /*long*/ cell, int 
 				return 0;
 			}
 		}
-		setData = setCellData (tree_model, path);
+		int [] index = new int [1];
+		OS.memmove (index, OS.gtk_tree_path_get_indices (path), 4);
+		TableItem item = _getItem (index [0]);
+		if (!item.cached) {
+			lastIndexOf = index [0];
+			setData = checkData (item);
+		}
 		OS.gtk_tree_path_free (path);
 	}
 	int /*long*/ [] ptr = new int /*long*/ [1];
