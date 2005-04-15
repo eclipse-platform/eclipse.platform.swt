@@ -2105,8 +2105,12 @@ public void setFont (Font font) {
 	OS.XtSetValues (fontHandle, argList2, argList2.length / 2);
 	updateIM ();
 
-	/* Restore the widget size */
-	OS.XtSetValues (handle, argList1, argList1.length / 2);
+	/*
+	* Feature in Motif.  When XtSetValues() is used to restore the width and
+	* height of the widget, the new width and height are sometimes ignored.
+	* The fix is to use XtResizeWidget().
+	*/
+	OS.XtResizeWidget (handle, argList1 [1], argList1 [3], argList1 [5]);
 }
 /**
  * Sets the receiver's foreground color to the color specified

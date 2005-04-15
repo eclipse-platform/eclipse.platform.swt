@@ -276,7 +276,7 @@ boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 	* the OS.  This behavior is unwanted.  The fix is
 	* to force the widget to resize to original size.
 	*/
-	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
+	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
 	OS.XtGetValues (scrolledHandle, argList, argList.length / 2);
 	
 	/* Hide or show the scroll bar */
@@ -285,21 +285,27 @@ boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 	} else {
 		OS.XtUnmanageChild (barHandle);
 	}
-	if (formHandle != 0) {	
-		boolean showBorder = (style & SWT.BORDER) != 0;
-		int margin = showBorder || visible ? 3 : 0;
-		if ((bar.style & SWT.V_SCROLL) != 0) {
-			int [] argList2 = new int [] {OS.XmNmarginWidth, margin};
-			OS.XtSetValues (formHandle, argList2, argList2.length/2);
-		}
-		if ((bar.style & SWT.H_SCROLL) != 0) {
-			int [] argList2 = new int [] {OS.XmNmarginHeight, margin};
-			OS.XtSetValues (formHandle, argList2, argList2.length/2);
+	if ((state & CANVAS) != 0) {
+		if (formHandle != 0) {	
+			boolean showBorder = (style & SWT.BORDER) != 0;
+			int margin = showBorder || visible ? 3 : 0;
+			if ((bar.style & SWT.V_SCROLL) != 0) {
+				int [] argList2 = new int [] {OS.XmNmarginWidth, margin};
+				OS.XtSetValues (formHandle, argList2, argList2.length/2);
+			}
+			if ((bar.style & SWT.H_SCROLL) != 0) {
+				int [] argList2 = new int [] {OS.XmNmarginHeight, margin};
+				OS.XtSetValues (formHandle, argList2, argList2.length/2);
+			}
 		}
 	}
 	
-	/* Restore the size */
-	OS.XtSetValues (scrolledHandle, argList, argList.length / 2);
+	/*
+	* Feature in Motif.  When XtSetValues() is used to restore the width and
+	* height of the widget, the new width and height are sometimes ignored.
+	* The fix is to use XtResizeWidget().
+	*/
+	OS.XtResizeWidget (scrolledHandle, argList [1], argList [3], argList [5]);
 
 	bar.sendEvent (visible ? SWT.Show : SWT.Hide);
 	sendEvent (SWT.Resize);
