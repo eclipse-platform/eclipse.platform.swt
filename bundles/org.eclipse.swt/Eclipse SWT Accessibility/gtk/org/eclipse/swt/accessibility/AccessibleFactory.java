@@ -89,70 +89,70 @@ class AccessibleFactory {
 	static final int /*long*/ SelectionIfaceDefinition;
 	static final int /*long*/ TextIfaceDefinition;
 	static {
-		AtkActionCB_get_keybinding = newCallback ("atkAction_get_keybinding", 2); //$NON-NLS-1$
-		AtkActionCB_get_name = newCallback ("atkAction_get_name", 2); //$NON-NLS-1$
-		AtkComponentCB_get_extents = newCallback ("atkComponent_get_extents", 6); //$NON-NLS-1$
-		AtkComponentCB_get_position = newCallback ("atkComponent_get_position", 4); //$NON-NLS-1$
-		AtkComponentCB_get_size = newCallback ("atkComponent_get_size", 4); //$NON-NLS-1$
-		AtkComponentCB_ref_accessible_at_point = newCallback ("atkComponent_ref_accessible_at_point", 4); //$NON-NLS-1$
-		AtkHypertextCB_get_link = newCallback ("atkHypertext_get_link", 2); //$NON-NLS-1$
-		AtkHypertextCB_get_n_links = newCallback ("atkHypertext_get_n_links", 1); //$NON-NLS-1$
-		AtkHypertextCB_get_link_index = newCallback ("atkHypertext_get_link_index", 2); //$NON-NLS-1$
-		AtkObjectCB_get_name = newCallback ("atkObject_get_name", 1); //$NON-NLS-1$
-		AtkObjectCB_get_description = newCallback ("atkObject_get_description", 1); //$NON-NLS-1$
-		AtkObjectCB_get_n_children = newCallback ("atkObject_get_n_children", 1); //$NON-NLS-1$
-		AtkObjectCB_get_role = newCallback ("atkObject_get_role", 1); //$NON-NLS-1$
-		AtkObjectCB_get_parent = newCallback ("atkObject_get_parent", 1); //$NON-NLS-1$
-		AtkObjectCB_ref_state_set = newCallback ("atkObject_ref_state_set", 1); //$NON-NLS-1$
-		AtkObjectCB_get_index_in_parent = newCallback ("atkObject_get_index_in_parent", 1); //$NON-NLS-1$
-		AtkObjectCB_ref_child = newCallback ("atkObject_ref_child", 2); //$NON-NLS-1$
-		AtkSelectionCB_is_child_selected = newCallback ("atkSelection_is_child_selected", 2); //$NON-NLS-1$
-		AtkSelectionCB_ref_selection = newCallback ("atkSelection_ref_selection", 2); //$NON-NLS-1$
-		AtkTextCB_get_caret_offset = newCallback ("atkText_get_caret_offset", 1); //$NON-NLS-1$
-		AtkTextCB_get_n_selections = newCallback ("atkText_get_n_selections", 1); //$NON-NLS-1$
-		AtkTextCB_get_selection = newCallback ("atkText_get_selection", 4); //$NON-NLS-1$
-		AtkTextCB_get_text = newCallback ("atkText_get_text", 3); //$NON-NLS-1$
-		AtkTextCB_get_text_after_offset = newCallback ("atkText_get_text_after_offset", 5); //$NON-NLS-1$
-		AtkTextCB_get_text_at_offset = newCallback ( "atkText_get_text_at_offset", 5); //$NON-NLS-1$
-		AtkTextCB_get_text_before_offset = newCallback ("atkText_get_text_before_offset", 5); //$NON-NLS-1$
-		AtkTextCB_get_character_at_offset = newCallback ("atkText_get_character_at_offset", 2); //$NON-NLS-1$
-		AtkTextCB_get_character_count = newCallback ("atkText_get_character_count", 1); //$NON-NLS-1$
-		GObjectClass_finalize = newCallback ("gObjectClass_finalize", 1); //$NON-NLS-1$
-		GTypeInfo_base_init_type = newCallback ("gTypeInfo_base_init_type", 1); //$NON-NLS-1$
+		AtkActionCB_get_keybinding = newCallback (AccessibleObject.class, "atkAction_get_keybinding", 2); //$NON-NLS-1$
+		AtkActionCB_get_name = newCallback (AccessibleObject.class, "atkAction_get_name", 2); //$NON-NLS-1$
+		AtkComponentCB_get_extents = newCallback (AccessibleObject.class, "atkComponent_get_extents", 6); //$NON-NLS-1$
+		AtkComponentCB_get_position = newCallback (AccessibleObject.class, "atkComponent_get_position", 4); //$NON-NLS-1$
+		AtkComponentCB_get_size = newCallback (AccessibleObject.class, "atkComponent_get_size", 4); //$NON-NLS-1$
+		AtkComponentCB_ref_accessible_at_point = newCallback (AccessibleObject.class, "atkComponent_ref_accessible_at_point", 4); //$NON-NLS-1$
+		AtkHypertextCB_get_link = newCallback (AccessibleObject.class, "atkHypertext_get_link", 2); //$NON-NLS-1$
+		AtkHypertextCB_get_n_links = newCallback (AccessibleObject.class, "atkHypertext_get_n_links", 1); //$NON-NLS-1$
+		AtkHypertextCB_get_link_index = newCallback (AccessibleObject.class, "atkHypertext_get_link_index", 2); //$NON-NLS-1$
+		AtkObjectCB_get_name = newCallback (AccessibleObject.class, "atkObject_get_name", 1); //$NON-NLS-1$
+		AtkObjectCB_get_description = newCallback (AccessibleObject.class, "atkObject_get_description", 1); //$NON-NLS-1$
+		AtkObjectCB_get_n_children = newCallback (AccessibleObject.class, "atkObject_get_n_children", 1); //$NON-NLS-1$
+		AtkObjectCB_get_role = newCallback (AccessibleObject.class, "atkObject_get_role", 1); //$NON-NLS-1$
+		AtkObjectCB_get_parent = newCallback (AccessibleObject.class, "atkObject_get_parent", 1); //$NON-NLS-1$
+		AtkObjectCB_ref_state_set = newCallback (AccessibleObject.class, "atkObject_ref_state_set", 1); //$NON-NLS-1$
+		AtkObjectCB_get_index_in_parent = newCallback (AccessibleObject.class, "atkObject_get_index_in_parent", 1); //$NON-NLS-1$
+		AtkObjectCB_ref_child = newCallback (AccessibleObject.class, "atkObject_ref_child", 2); //$NON-NLS-1$
+		AtkSelectionCB_is_child_selected = newCallback (AccessibleObject.class, "atkSelection_is_child_selected", 2); //$NON-NLS-1$
+		AtkSelectionCB_ref_selection = newCallback (AccessibleObject.class, "atkSelection_ref_selection", 2); //$NON-NLS-1$
+		AtkTextCB_get_caret_offset = newCallback (AccessibleObject.class, "atkText_get_caret_offset", 1); //$NON-NLS-1$
+		AtkTextCB_get_n_selections = newCallback (AccessibleObject.class, "atkText_get_n_selections", 1); //$NON-NLS-1$
+		AtkTextCB_get_selection = newCallback (AccessibleObject.class, "atkText_get_selection", 4); //$NON-NLS-1$
+		AtkTextCB_get_text = newCallback (AccessibleObject.class, "atkText_get_text", 3); //$NON-NLS-1$
+		AtkTextCB_get_text_after_offset = newCallback (AccessibleObject.class, "atkText_get_text_after_offset", 5); //$NON-NLS-1$
+		AtkTextCB_get_text_at_offset = newCallback ( AccessibleObject.class, "atkText_get_text_at_offset", 5); //$NON-NLS-1$
+		AtkTextCB_get_text_before_offset = newCallback (AccessibleObject.class, "atkText_get_text_before_offset", 5); //$NON-NLS-1$
+		AtkTextCB_get_character_at_offset = newCallback (AccessibleObject.class, "atkText_get_character_at_offset", 2); //$NON-NLS-1$
+		AtkTextCB_get_character_count = newCallback (AccessibleObject.class, "atkText_get_character_count", 1); //$NON-NLS-1$
+		GObjectClass_finalize = newCallback (AccessibleObject.class, "gObjectClass_finalize", 1); //$NON-NLS-1$
+		GTypeInfo_base_init_type = newCallback (AccessibleFactory.class, "gTypeInfo_base_init_type", 1); //$NON-NLS-1$
 		/* Action interface */
-		InitActionIfaceCB = newCallback ("initActionIfaceCB", 1); //$NON-NLS-1$
+		InitActionIfaceCB = newCallback (AccessibleFactory.class, "initActionIfaceCB", 1); //$NON-NLS-1$
 		GInterfaceInfo interfaceInfo = new GInterfaceInfo ();
 		interfaceInfo.interface_init = InitActionIfaceCB.getAddress ();
 		ActionIfaceDefinition = OS.g_malloc (GInterfaceInfo.sizeof);  
 		OS.memmove (ActionIfaceDefinition, interfaceInfo, GInterfaceInfo.sizeof);
 		/* Component interface */
-		InitComponentIfaceCB = newCallback ("initComponentIfaceCB", 1); //$NON-NLS-1$
+		InitComponentIfaceCB = newCallback (AccessibleFactory.class, "initComponentIfaceCB", 1); //$NON-NLS-1$
 		interfaceInfo = new GInterfaceInfo ();
 		interfaceInfo.interface_init = InitComponentIfaceCB.getAddress ();
 		ComponentIfaceDefinition = OS.g_malloc (GInterfaceInfo.sizeof);
 		OS.memmove (ComponentIfaceDefinition, interfaceInfo, GInterfaceInfo.sizeof);
 		/* Hypertext interface */
-		InitHypertextIfaceCB = newCallback ("initHypertextIfaceCB", 1); //$NON-NLS-1$
+		InitHypertextIfaceCB = newCallback (AccessibleFactory.class, "initHypertextIfaceCB", 1); //$NON-NLS-1$
 		interfaceInfo = new GInterfaceInfo ();
 		interfaceInfo.interface_init = InitHypertextIfaceCB.getAddress ();
 		HypertextIfaceDefinition = OS.g_malloc (GInterfaceInfo.sizeof);  
 		OS.memmove (HypertextIfaceDefinition, interfaceInfo, GInterfaceInfo.sizeof);
 		/* Selection interface */
-		InitSelectionIfaceCB = newCallback ("initSelectionIfaceCB", 1); //$NON-NLS-1$
+		InitSelectionIfaceCB = newCallback (AccessibleFactory.class, "initSelectionIfaceCB", 1); //$NON-NLS-1$
 		interfaceInfo = new GInterfaceInfo ();
 		interfaceInfo.interface_init = InitSelectionIfaceCB.getAddress ();
 		SelectionIfaceDefinition = OS.g_malloc (GInterfaceInfo.sizeof);  
 		OS.memmove (SelectionIfaceDefinition, interfaceInfo, GInterfaceInfo.sizeof);
 		/* Text interface */
-		InitTextIfaceCB = newCallback ("initTextIfaceCB", 1); //$NON-NLS-1$
+		InitTextIfaceCB = newCallback (AccessibleFactory.class, "initTextIfaceCB", 1); //$NON-NLS-1$
 		interfaceInfo = new GInterfaceInfo ();
 		interfaceInfo.interface_init = InitTextIfaceCB.getAddress ();
 		TextIfaceDefinition = OS.g_malloc (GInterfaceInfo.sizeof);  
 		OS.memmove (TextIfaceDefinition, interfaceInfo, GInterfaceInfo.sizeof);
 	}
 
-	static private Callback newCallback (String method, int argCount) {
-		Callback callback = new Callback (AccessibleFactory.class, method, argCount);
+	static private Callback newCallback (Object object, String method, int argCount) {
+		Callback callback = new Callback (object, method, argCount);
 		if (callback.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 		return callback;
 	}
