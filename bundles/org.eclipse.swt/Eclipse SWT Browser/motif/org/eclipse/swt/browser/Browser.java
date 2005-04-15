@@ -121,7 +121,7 @@ public Browser(Composite parent, int style) {
 
 	int /*long*/[] result = new int /*long*/[1];
 	if (!mozilla) {
-		String mozillaPath = null;;
+		String mozillaPath = null;
 		int /*long*/ ptr = OS.getenv(Converter.wcsToMbcs(null, XPCOM.MOZILLA_FIVE_HOME, true));
 		if (ptr != 0) {
 			int length = OS.strlen(ptr);
@@ -2004,42 +2004,44 @@ int /*long*/ OnShowContextMenu(int /*long*/ aContextFlags, int /*long*/ aEvent, 
 /* nsIURIContentListener */
 
 int /*long*/ OnStartURIOpen(int /*long*/ aURI, int /*long*/ retval) {
-	if (locationListeners.length == 0) return XPCOM.NS_OK;
-	
+	nsIURI location = new nsIURI(aURI);
+	int /*long*/ aSpec = XPCOM.nsEmbedCString_new();
+	location.GetSpec(aSpec);
+	int length = XPCOM.nsEmbedCString_Length(aSpec);
+	int /*long*/ buffer = XPCOM.nsEmbedCString_get(aSpec);
+	buffer = XPCOM.nsEmbedCString_get(aSpec);
+	byte[] dest = new byte[length];
+	XPCOM.memmove(dest, buffer, length);
+	XPCOM.nsEmbedCString_delete(aSpec);
+	String value = new String(dest);
+	/*
+	* Feature in Mozilla.  In Mozilla 1.7.5, navigating to an 
+	* HTTPS link without a user profile set causes a crash. 
+	* HTTPS requires a user profile to be set to persist security
+	* information.  This requires creating a new user profile
+	* (i.e. creating a new folder) or locking an existing Mozilla 
+	* user profile.  The Mozilla Profile API is not frozen and it is not 
+	* currently implemented.  The workaround is to not load 
+	* HTTPS resources to avoid the crash.
+	*/
+	if (value.startsWith(XPCOM.HTTPS_PROTOCOL)) {
+		XPCOM.memmove(retval, new int[] {1}, 4);
+		return XPCOM.NS_OK;
+	}
+	if (locationListeners.length == 0) {
+		XPCOM.memmove(retval, new int[] {0}, 4);
+		return XPCOM.NS_OK;
+	}
 	boolean doit = true;
 	if (request == 0) {
-		nsIURI location = new nsIURI(aURI);
-		int /*long*/ aSpec = XPCOM.nsEmbedCString_new();
-		location.GetSpec(aSpec);
-		int length = XPCOM.nsEmbedCString_Length(aSpec);
-		int /*long*/ buffer = XPCOM.nsEmbedCString_get(aSpec);
-		buffer = XPCOM.nsEmbedCString_get(aSpec);
-		byte[] dest = new byte[length];
-		XPCOM.memmove(dest, buffer, length);
-		XPCOM.nsEmbedCString_delete(aSpec);
-		String value = new String(dest);
-		/*
-		* Feature in Mozilla.  In Mozilla 1.7.5, navigating to an 
-		* HTTPS link without a user profile set causes a crash. 
-		* HTTPS requires a user profile to be set to persist security
-		* information.  This requires creating a new user profile
-		* (i.e. creating a new folder) or locking an existing Mozilla 
-		* user profile.  The Mozilla Profile API is not frozen and it is not 
-		* currently implemented.  The workaround is to not load 
-		* HTTPS resources to avoid the crash.
-		*/
-		if (value.startsWith(XPCOM.HTTPS_PROTOCOL)) {
-			doit = false;
-		} else {
-			LocationEvent event = new LocationEvent(this);
-			event.display = getDisplay();
-			event.widget = this;
-			event.location = value;
-			event.doit = true;
-			for (int i = 0; i < locationListeners.length; i++)
-				locationListeners[i].changing(event);
-			doit = event.doit;
-		}
+		LocationEvent event = new LocationEvent(this);
+		event.display = getDisplay();
+		event.widget = this;
+		event.location = value;
+		event.doit = true;
+		for (int i = 0; i < locationListeners.length; i++)
+			locationListeners[i].changing(event);
+		doit = event.doit;
 	}
 	/* Note. boolean remains of size 4 on 64 bit machine */
 	XPCOM.memmove(retval, new int[] {doit ? 0 : 1}, 4);
