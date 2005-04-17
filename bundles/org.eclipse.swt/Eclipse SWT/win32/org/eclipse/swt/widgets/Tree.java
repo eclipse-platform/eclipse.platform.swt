@@ -2409,51 +2409,7 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 	* proc in these cases.
 	*/
 	switch (wParam) {
-		case SWT.CR:
-			/*
-			* Feature in Windows.  Windows sends NM_RETURN from WM_KEYDOWN
-			* instead of using WM_CHAR.  This means that application code
-			* that expects to consume the key press and therefore avoid a
-			* SWT.DefaultSelection event from WM_CHAR will fail.  The fix
-			* is to implement SWT.DefaultSelection in WM_CHAR instead of
-			* using NM_RETURN.
-			*/
-			Event event = new Event ();
-			int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-			if (hItem != 0) {
-				TVITEM tvItem = new TVITEM ();
-				tvItem.hItem = hItem;
-				tvItem.mask = OS.TVIF_PARAM;
-				OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-				event.item = items [tvItem.lParam];
-			}
-			postEvent (SWT.DefaultSelection, event);
-			//FALL THROUGH
-		case SWT.ESC:
-		case ' ':
-			return LRESULT.ZERO;
-	}
-	return result;
-}
-
-LRESULT WM_GETOBJECT (int wParam, int lParam) {
-	/*
-	* Ensure that there is an accessible object created for this
-	* control because support for checked item and tree column
-	* accessibility is temporarily implemented in the accessibility
-	* package.
-	*/
-	if ((style & SWT.CHECK) != 0 || hwndParent != 0) {
-		if (accessible == null) accessible = new_Accessible (this);
-	}
-	return super.WM_GETOBJECT (wParam, lParam);
-}
-
-LRESULT WM_KEYDOWN (int wParam, int lParam) {
-	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
-	if (result != null) return result;
-	switch (wParam) {
-		case OS.VK_SPACE: {
+		case ' ': {
 			int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 			if (hItem != 0) {
 				hAnchor = hItem;
@@ -2501,10 +2457,61 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 					event.detail = SWT.CHECK;
 					postEvent (SWT.Selection, event);
 				}
-				return LRESULT.ZERO;
 			}
-			break;
+			return LRESULT.ZERO;
 		}
+		case SWT.CR: {
+			/*
+			* Feature in Windows.  Windows sends NM_RETURN from WM_KEYDOWN
+			* instead of using WM_CHAR.  This means that application code
+			* that expects to consume the key press and therefore avoid a
+			* SWT.DefaultSelection event from WM_CHAR will fail.  The fix
+			* is to implement SWT.DefaultSelection in WM_CHAR instead of
+			* using NM_RETURN.
+			*/
+			Event event = new Event ();
+			int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+			if (hItem != 0) {
+				TVITEM tvItem = new TVITEM ();
+				tvItem.hItem = hItem;
+				tvItem.mask = OS.TVIF_PARAM;
+				OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+				event.item = items [tvItem.lParam];
+			}
+			postEvent (SWT.DefaultSelection, event);
+			return LRESULT.ZERO;
+		}
+		case SWT.ESC:
+			return LRESULT.ZERO;
+	}
+	return result;
+}
+
+LRESULT WM_GETOBJECT (int wParam, int lParam) {
+	/*
+	* Ensure that there is an accessible object created for this
+	* control because support for checked item and tree column
+	* accessibility is temporarily implemented in the accessibility
+	* package.
+	*/
+	if ((style & SWT.CHECK) != 0 || hwndParent != 0) {
+		if (accessible == null) accessible = new_Accessible (this);
+	}
+	return super.WM_GETOBJECT (wParam, lParam);
+}
+
+LRESULT WM_KEYDOWN (int wParam, int lParam) {
+	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
+	if (result != null) return result;
+	switch (wParam) {
+		case OS.VK_SPACE:
+			/*
+			* Ensure that the window proc does not process VK_SPACE
+			* so that it can be handled in WM_CHAR.  This allows the
+			* application to cancel an operation that is normally
+			* performed in WM_KEYDOWN from WM_CHAR.
+			*/
+			return LRESULT.ZERO;
 		case OS.VK_UP:
 		case OS.VK_DOWN:
 		case OS.VK_PRIOR:

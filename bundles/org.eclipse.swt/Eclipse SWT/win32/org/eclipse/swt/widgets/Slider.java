@@ -622,7 +622,6 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
  	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
  	if (result != null) return result;
  	if ((style & SWT.VERTICAL) != 0) return result;
- 	
  	/*
  	* Bug in Windows.  When a horizontal scroll bar is mirrored,
  	* the native control does not correctly swap the arrow keys.

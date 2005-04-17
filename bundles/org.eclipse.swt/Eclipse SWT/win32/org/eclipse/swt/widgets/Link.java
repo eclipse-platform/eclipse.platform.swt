@@ -565,6 +565,52 @@ int windowProc () {
 	return LinkProc != 0 ? LinkProc : display.windowProc;
 }
 
+LRESULT WM_CHAR (int wParam, int lParam) {
+	LRESULT result = super.WM_CHAR (wParam, lParam);
+	if (result != null) return result;
+	if (OS.COMCTL32_MAJOR < 6) {
+		if (focusIndex == -1) return result;
+		switch (wParam) {
+			case ' ':
+			case SWT.CR:
+				Event event = new Event ();
+				event.text = ids [focusIndex];
+				sendEvent (SWT.Selection, event);
+				break;
+			case SWT.TAB:
+				boolean next = OS.GetKeyState (OS.VK_SHIFT) >= 0;
+				if (next) {
+					if (focusIndex < offsets.length - 1) {
+						focusIndex++;
+						redraw ();
+					}
+				} else {
+					if (focusIndex > 0) {
+						focusIndex--;
+						redraw ();
+					}
+				}
+				break;
+		}
+	} else {
+		switch (wParam) {
+			case ' ':
+			case SWT.CR:
+			case SWT.TAB:
+				/*
+				* NOTE: Call the window proc with WM_KEYDOWN rather than WM_CHAR
+				* so that the key that was ignored during WM_KEYDOWN is processed.
+				* This allows the application to cancel an operation that is normally
+				* performed in WM_KEYDOWN from WM_CHAR.
+				*/
+				int code = callWindowProc (handle, OS.WM_KEYDOWN, wParam, lParam);
+				return new LRESULT (code);
+		}
+		
+	}
+	return result;
+}
+
 LRESULT WM_GETDLGCODE (int wParam, int lParam) {
 	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
 	if (result != null) return result;
@@ -611,29 +657,18 @@ LRESULT WM_GETFONT (int wParam, int lParam) {
 LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
 	if (result != null) return result;
-	if (OS.COMCTL32_MAJOR < 6) {
-		if (focusIndex == -1) return result;
+	if (OS.COMCTL32_MAJOR >= 6) {
 		switch (wParam) {
 			case OS.VK_SPACE:
 			case OS.VK_RETURN:
-				Event event = new Event ();
-				event.text = ids [focusIndex];
-				sendEvent (SWT.Selection, event);
-				break;
 			case OS.VK_TAB:
-				boolean next = OS.GetKeyState (OS.VK_SHIFT) >= 0;
-				if (next) {
-					if (focusIndex < offsets.length - 1) {
-						focusIndex++;
-						redraw ();
-					}
-				} else {
-					if (focusIndex > 0) {
-						focusIndex--;
-						redraw ();
-					}
-				}
-				break;
+				/*
+				* Ensure that the window proc does not process VK_SPACE,
+				* VK_RETURN or VK_TAB so that it can be handled in WM_CHAR.
+				* This allows the application to cancel an operation that
+				* is normally performed in WM_KEYDOWN from WM_CHAR.
+				*/
+				return LRESULT.ZERO;
 		}
 	}
 	return result;

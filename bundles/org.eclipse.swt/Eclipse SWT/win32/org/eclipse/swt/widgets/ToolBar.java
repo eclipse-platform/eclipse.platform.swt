@@ -818,6 +818,24 @@ LRESULT WM_CAPTURECHANGED (int wParam, int lParam) {
 	return null;
 }
 
+LRESULT WM_CHAR (int wParam, int lParam) {
+	LRESULT result = super.WM_CHAR (wParam, lParam);
+	if (result != null) return result;
+	switch (wParam) {
+		case ' ':
+			int index = OS.SendMessage (handle, OS.TB_GETHOTITEM, 0, 0);
+			if (index != -1) {
+				TBBUTTON lpButton = new TBBUTTON ();
+				int code = OS.SendMessage (handle, OS.TB_GETBUTTON, index, lpButton);
+				if (code != 0) {
+					items [lpButton.idCommand].click (false);
+					return LRESULT.ZERO;
+				}
+			}
+	}
+	return result;
+}
+
 LRESULT WM_COMMAND (int wParam, int lParam) {
 	/*
 	* Feature in Windows.  When the toolbar window
@@ -857,16 +875,13 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
 	if (result != null) return result;
 	switch (wParam) {
-		case OS.VK_SPACE:
-			int index = OS.SendMessage (handle, OS.TB_GETHOTITEM, 0, 0);
-			if (index != -1) {
-				TBBUTTON lpButton = new TBBUTTON ();
-				int code = OS.SendMessage (handle, OS.TB_GETBUTTON, index, lpButton);
-				if (code != 0) {
-					items [lpButton.idCommand].click (false);
-					return LRESULT.ZERO;
-				}
-			}
+		case OS.VK_SPACE:	
+			/*
+			* Ensure that the window proc does not process VK_SPACE
+			* so that it can be handled in WM_CHAR.  This allows the
+			* application the opportunity to cancel the operation.
+			*/
+			return LRESULT.ZERO;
 	}
 	return result;
 }

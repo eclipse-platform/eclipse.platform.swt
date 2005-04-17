@@ -3019,6 +3019,25 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 	LRESULT result = super.WM_CHAR (wParam, lParam);
 	if (result != null) return result;
 	switch (wParam) {
+		case ' ':
+			if ((style & SWT.CHECK) != 0) {
+				int index = OS.SendMessage (handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED);
+				if (index != -1) {
+					TableItem item = _getItem (index);
+					item.setChecked (!item.getChecked (), true);
+					if (!OS.IsWinCE) {
+						OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, handle, OS.OBJID_CLIENT, index + 1);
+					}
+				}
+			}
+			/*
+			* NOTE: Call the window proc with WM_KEYDOWN rather than WM_CHAR
+			* so that the key that was ignored during WM_KEYDOWN is processed.
+			* This allows the application to cancel an operation that is normally
+			* performed in WM_KEYDOWN from WM_CHAR.
+			*/
+			int code = callWindowProc (handle, OS.WM_KEYDOWN, wParam, lParam);
+			return new LRESULT (code);
 		case SWT.CR:
 			/*
 			* Feature in Windows.  Windows sends LVN_ITEMACTIVATE from WM_KEYDOWN
@@ -3110,15 +3129,15 @@ LRESULT WM_GETOBJECT (int wParam, int lParam) {
 LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
 	if (result != null) return result;
-	if ((style & SWT.CHECK) != 0 && wParam == OS.VK_SPACE) {
-		int index = OS.SendMessage (handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED);
-		if (index != -1) {
-			TableItem item = _getItem (index);
-			item.setChecked (!item.getChecked (), true);
-			if (!OS.IsWinCE) {
-				OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, handle, OS.OBJID_CLIENT, index + 1);
-			}
-		}
+	switch (wParam) {
+		case OS.VK_SPACE:
+			/*
+			* Ensure that the window proc does not process VK_SPACE
+			* so that it can be handled in WM_CHAR.  This allows the
+			* application to cancel an operation that is normally
+			* performed in WM_KEYDOWN from WM_CHAR.
+			*/
+			return LRESULT.ZERO;
 	}
 	return result;
 }
