@@ -236,7 +236,7 @@ void createHandle () {
 	* flickering and clearing the TBSTYLE_TRANSPARENT interferes
 	* with the XP theme.
 	*/
-	if (OS.COMCTL32_MAJOR < 6) {
+	if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 		bits &= ~OS.TBSTYLE_TRANSPARENT;
 		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
