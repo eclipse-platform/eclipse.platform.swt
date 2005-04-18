@@ -117,7 +117,7 @@ public static Frame new_Frame (final Composite parent) {
 		String className = embeddedFrameClass != null ? embeddedFrameClass : "sun.awt.X11.XEmbeddedFrame";
 		clazz = Class.forName(className);
 	} catch (Throwable e) {
-		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);		
+		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e, " [need JDK 1.5 or greater]");		
 	}
 	initializeSwing ();
 	Object value = null;
