@@ -14,11 +14,11 @@ import java.io.*;
 
 class ImageDataLoader {
 
-	public ImageData[] load(InputStream stream) {
+	public static ImageData[] load(InputStream stream) {
 		return new ImageLoader().load(stream);
 	}
 
-	public ImageData[] load(String filename) {
+	public static ImageData[] load(String filename) {
 		return new ImageLoader().load(filename);
 	}
 
