@@ -813,7 +813,7 @@ void drawChevron(GC gc) {
 		}
 		count = items.length - showCount;
 	}
-	String chevronString = count > 99 ? "99+" : String.valueOf(count);
+	String chevronString = count > 99 ? "99+" : String.valueOf(count); //$NON-NLS-1$
 	switch (chevronImageState) {
 		case NORMAL: {
 			Color chevronBorder = single ? getSelectionForeground() : getForeground();
@@ -2839,9 +2839,11 @@ boolean setItemSize() {
 	// First, try the minimum tab size at full compression.
 	int minWidth = 0;
 	int[] minWidths = new int[items.length];	
-	for (int i = 0; i < minWidths.length; i++) {
-		minWidths[i] = items[i].preferredWidth(gc, i == selectedIndex, true);
-		minWidth += minWidths[i];
+	for (int i = 0; i < priority.length; i++) {
+		int index = priority[i];
+		minWidths[index] = items[index].preferredWidth(gc, index == selectedIndex, true);
+		minWidth += minWidths[index];
+		if (mru && minWidth > tabAreaWidth) break;
 	}
 	if (minWidth > tabAreaWidth) {
 		// full compression required and a chevron
