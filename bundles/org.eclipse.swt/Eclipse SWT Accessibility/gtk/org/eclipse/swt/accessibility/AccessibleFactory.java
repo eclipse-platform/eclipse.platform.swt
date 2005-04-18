@@ -176,7 +176,7 @@ class AccessibleFactory {
 			if (objectParentType == 0) objectParentType = DefaultParentType;
 			int /*long*/ factoryParentType = OS.g_type_from_name (FACTORY_PARENTTYPENAME);
 			gTypeInfo_base_init_factory  = new Callback (this, "gTypeInfo_base_init_factory", 1); //$NON-NLS-1$
-			int address = gTypeInfo_base_init_factory.getAddress ();
+			int /*long*/ address = gTypeInfo_base_init_factory.getAddress ();
 			if (address == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 			GTypeInfo typeInfo = new GTypeInfo ();
 			typeInfo.base_init = address;
@@ -300,7 +300,7 @@ class AccessibleFactory {
 		AtkObjectFactoryClass objectFactoryClassStruct = new AtkObjectFactoryClass ();
 		ATK.memmove (objectFactoryClassStruct, atkObjectFactoryClass);
 		atkObjectFactoryCB_create_accessible = new Callback (this, "atkObjectFactory_create_accessible", 1); //$NON-NLS-1$
-		int address = atkObjectFactoryCB_create_accessible.getAddress ();
+		int /*long*/ address = atkObjectFactoryCB_create_accessible.getAddress ();
 		if (address == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 		objectFactoryClassStruct.create_accessible = address;
 		ATK.memmove (atkObjectFactoryClass, objectFactoryClassStruct); 
