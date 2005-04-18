@@ -460,6 +460,19 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	return result;
 }
 
+int kEventMouseDown (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventMouseDown (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	if ((state & CANVAS) != 0) {
+		if ((style & SWT.NO_FOCUS) != 0) {
+			Shell shell = getShell ();
+			int bits = SWT.ON_TOP | SWT.NO_FOCUS;
+			if ((shell.style & bits) == bits) return OS.noErr;
+		}
+	}
+	return result;
+}
+
 int kEventRawKeyPressed (int nextHandler, int theEvent, int userData) {
 	/*
 	* Feature in the Macintosh.  For some reason, the default handler

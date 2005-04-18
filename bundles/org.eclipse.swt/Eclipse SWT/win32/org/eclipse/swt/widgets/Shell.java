@@ -1598,21 +1598,24 @@ LRESULT WM_MOUSEACTIVATE (int wParam, int lParam) {
 	int hwnd = OS.WindowFromPoint (pt);
 	if (hwnd == 0) return null;
 	Control control = display.findControl (hwnd);
+	
 	/*
 	* When a shell is created with SWT.ON_TOP and SWT.NO_FOCUS,
 	* do not activate the shell when the user clicks on the
 	* the client area or on the border or a control within the
 	* shell that does not take focus.
 	*/
-//	if (control != null /*&& (control.state & CANVAS) != 0*/) {
-//		if ((control.style & SWT.NO_FOCUS) != 0) {
-//			if ((style & SWT.ON_TOP) != 0 && (style & SWT.NO_FOCUS) != 0) {
-//				if (hittest == OS.HTBORDER || hittest == OS.HTCLIENT) {
-//					return new LRESULT (OS.MA_NOACTIVATE);
-//				}
-//			}
-//		}
-//	}
+	if (control != null && (control.state & CANVAS) != 0) {
+		if ((control.style & SWT.NO_FOCUS) != 0) {
+			int bits = SWT.ON_TOP | SWT.NO_FOCUS;
+			if ((style & bits) == bits) {
+				if (hittest == OS.HTBORDER || hittest == OS.HTCLIENT) {
+					return new LRESULT (OS.MA_NOACTIVATE);
+				}
+			}
+		}
+	}
+	
 	setActiveControl (control);
 	return null;
 }
