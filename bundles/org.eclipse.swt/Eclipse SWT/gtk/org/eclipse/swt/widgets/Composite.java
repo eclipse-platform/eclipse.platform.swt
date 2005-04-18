@@ -560,7 +560,7 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
 	* expected behavior for Composite and its subclasses.  The
 	* fix is to avoid calling the default handler.
 	*/
-	if ((state & CANVAS) != 0 && socketHandle == 0) {
+	if ((state & CANVAS) != 0) {
 		GdkEventKey keyEvent = new GdkEventKey ();
 		OS.memmove (keyEvent, event, GdkEventKey.sizeof);
 		int key = keyEvent.keyval;
