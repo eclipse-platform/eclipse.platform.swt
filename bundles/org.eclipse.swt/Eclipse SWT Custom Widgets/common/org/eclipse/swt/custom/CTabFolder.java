@@ -2822,73 +2822,74 @@ boolean setItemSize() {
 		return changed;
 	}
 	
-	int[] widths = new int[items.length];
-	widths = new int[items.length];
+	if (items.length == 0) return changed;
+
+	int[] widths;
 	GC gc = new GC(this);
-	for (int i = 0; i < items.length; i++) {
-		widths[i] = items[i].preferredWidth(gc, i == selectedIndex, false);
-	}	
-	if (items.length > 0) {
-		int totalWidth = 0;
-		int tabAreaWidth = size.x - borderLeft - borderRight - 3;
-		if (showMin) tabAreaWidth -= BUTTON_SIZE;
-		if (showMax) tabAreaWidth -= BUTTON_SIZE;
-		if (topRightAlignment == SWT.RIGHT && topRight != null) {
-			Point rightSize = topRight.computeSize(SWT.DEFAULT, SWT.DEFAULT, false);
-			tabAreaWidth -= rightSize.x + 3;
+	int tabAreaWidth = size.x - borderLeft - borderRight - 3;
+	if (showMin) tabAreaWidth -= BUTTON_SIZE;
+	if (showMax) tabAreaWidth -= BUTTON_SIZE;
+	if (topRightAlignment == SWT.RIGHT && topRight != null) {
+		Point rightSize = topRight.computeSize(SWT.DEFAULT, SWT.DEFAULT, false);
+		tabAreaWidth -= rightSize.x + 3;
+	}
+	if (!simple) tabAreaWidth -= curveWidth - 2*curveIndent;
+	tabAreaWidth = Math.max(0, tabAreaWidth);
+	
+	// First, try the minimum tab size at full compression.
+	int minWidth = 0;
+	int[] minWidths = new int[items.length];	
+	for (int i = 0; i < minWidths.length; i++) {
+		minWidths[i] = items[i].preferredWidth(gc, i == selectedIndex, true);
+		minWidth += minWidths[i];
+	}
+	if (minWidth > tabAreaWidth) {
+		// full compression required and a chevron
+		showChevron = items.length > 1;
+		if (showChevron) tabAreaWidth -= 3*BUTTON_SIZE/2;
+		widths = minWidths;
+		int index = selectedIndex != -1 ? selectedIndex : 0;
+		if (tabAreaWidth < widths[index]) {
+			widths[index] = Math.max(0, tabAreaWidth);
 		}
-		if (!simple) tabAreaWidth -= curveWidth - 2*curveIndent;
-		tabAreaWidth = Math.max(0, tabAreaWidth);
-		int count = items.length;
-		for (int i = 0 ; i < count; i++) {
-			totalWidth += widths[i];
+	} else {
+		int maxWidth = 0;
+		int[] maxWidths = new int[items.length];
+		for (int i = 0; i < items.length; i++) {
+			maxWidths[i] = items[i].preferredWidth(gc, i == selectedIndex, false);
+			maxWidth += maxWidths[i];
 		}
-		if (totalWidth > tabAreaWidth) {
-			// try maximum compression size
-			totalWidth = 0;
-			int[] minWidths = new int[items.length];
-			for (int i = 0 ; i < count; i++) {
-				minWidths[i] = items[i].preferredWidth(gc, i == selectedIndex, true);
-				totalWidth += minWidths[i];
+		if (maxWidth <= tabAreaWidth) {
+			// no compression required
+			widths = maxWidths;
+		} else {
+			// determine compression for each item
+			int extra = (tabAreaWidth - minWidth) / items.length;
+			while (true) {
+				int large = 0, totalWidth = 0;
+				for (int i = 0 ; i < items.length; i++) {
+					if (maxWidths[i] > minWidths[i] + extra) {
+						totalWidth += minWidths[i] + extra;
+						large++;
+					} else {
+						totalWidth += maxWidths[i];
+					}
+				}
+				if (totalWidth >= tabAreaWidth) {
+					extra--;
+					break;
+				}
+				if (large == 0 || tabAreaWidth - totalWidth < large) break;
+				extra++;
 			}
-			if (totalWidth > tabAreaWidth) {
-				//  maximum compression required and a chevron
-				showChevron = items.length > 1;
-				if (showChevron) tabAreaWidth -= 3*BUTTON_SIZE/2;
-				widths = minWidths;
-				int index = selectedIndex != -1 ? selectedIndex : 0;
-				if (tabAreaWidth < widths[index]) {
-					widths[index] = Math.max(0, tabAreaWidth);
-				}
-			} else {
-				// determine compression for each item
-				int extra = (tabAreaWidth - totalWidth) / items.length;
-				int large = 0;
-				while (true) {
-					totalWidth = 0;
-					large = 0;
-					for (int i = 0 ; i < count; i++) {
-						if (widths[i] > minWidths[i] + extra) {
- 							totalWidth += minWidths[i] + extra;
-							large++;
-						} else {
-							totalWidth += widths[i];
-						}
-					}
-					if (totalWidth >= tabAreaWidth) {
-						extra--;
-						break;
-					}
-					if (large == 0 ||tabAreaWidth - totalWidth < large) break;
-					extra++;
-				}
-				for (int i = 0; i < items.length; i++) {
-					widths[i] = Math.min(widths[i], minWidths[i] + extra);
-				}	
+			widths = new int[items.length];
+			for (int i = 0; i < items.length; i++) {
+				widths[i] = Math.min(maxWidths[i], minWidths[i] + extra);
 			}
 		}
 	}
-	
+	gc.dispose();
+
 	for (int i = 0; i < items.length; i++) {
 		CTabItem tab = items[i];
 		int width = widths[i];
@@ -2907,7 +2908,6 @@ boolean setItemSize() {
 			}
 		}
 	}
-	gc.dispose();
 	return changed;
 }
 /**
