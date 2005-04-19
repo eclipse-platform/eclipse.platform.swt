@@ -2157,7 +2157,7 @@ public void setItemCount (int count) {
 	System.arraycopy (items, 0, newItems, 0, Math.min (count, itemCount));
 	items = newItems;
 	if ((style & SWT.VIRTUAL) == 0) {
-		for (int i=count; i<itemCount; i++) {
+		for (int i=itemCount; i<count; i++) {
 			items [i] = new TableItem (this, SWT.NONE, i, false);
 		}
 	}
