@@ -1693,7 +1693,7 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 				case OS.WM_PAINT:			result = wmPaint (hwnd, wParam, lParam); break;
 
 				/* Menu messages */
-				case OS.WM_CONTEXTMENU:		result = wmContextMenu (hwnd, wParam, lParam);
+				case OS.WM_CONTEXTMENU:		result = wmContextMenu (hwnd, wParam, lParam); break;
 					
 				/* Clipboard messages */
 				case OS.WM_CLEAR:
