@@ -25,8 +25,7 @@ JNIEXPORT jint JNICALL SWT_AWT_NATIVE(getAWTHandle)
 	jint lock;
 
 	awt.version = JAWT_VERSION_1_3;
-	result = JAWT_GetAWT(env, &awt);
-	if (result != 0) {
+	if (JAWT_GetAWT(env, &awt) != 0) {
 		ds = awt.GetDrawingSurface(env, canvas);
 		if (ds != NULL) {
 			lock = ds->Lock(ds);

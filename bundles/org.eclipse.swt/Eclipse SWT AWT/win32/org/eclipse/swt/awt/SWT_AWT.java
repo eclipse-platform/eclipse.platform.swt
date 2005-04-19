@@ -241,6 +241,7 @@ public static Frame new_Frame (final Composite parent) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the display is null</li>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the parent's peer is not created</li>
  * </ul>
  * 
  * @since 3.0
@@ -255,7 +256,7 @@ public static Shell new_Shell (final Display display, final Canvas parent) {
 	} catch (Throwable e) {
 		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);
 	}
-	if (handle == 0) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
+	if (handle == 0) SWT.error (SWT.ERROR_INVALID_ARGUMENT, null, " [peer not created]");
 
 	final Shell shell = Shell.win32_new (display, handle);
 	parent.addComponentListener(new ComponentAdapter () {
