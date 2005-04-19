@@ -3471,7 +3471,7 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 	* 
 	* NOTE: Under normal circumstances, Windows will never send
 	* consecutive WM_NCHITTEST messages to the same control without
-	* another message (normally WM_MOUSEMOVE) in between.
+	* another message (normally WM_SETCURSOR) in between.
 	*/
 	if (msg == OS.WM_NCHITTEST) {
 		if (hitCount++ >= 1024) {
