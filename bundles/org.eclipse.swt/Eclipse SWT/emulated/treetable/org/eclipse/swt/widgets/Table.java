@@ -3006,9 +3006,12 @@ public void setItemCount (int count) {
 	checkWidget ();
 	count = Math.max (0, count);
 	if (count == itemsCount) return;
+	int redrawStart, redrawEnd;
 	
 	/* if the new item count is less than the current count then remove all excess items from the end */
 	if (count < itemsCount) {
+		redrawStart = count;
+		redrawEnd = itemsCount - 1;
 		for (int i = count; i < itemsCount; i++) {
 			items [i].dispose (false);
 		}
@@ -3036,6 +3039,8 @@ public void setItemCount (int count) {
 		}
 		itemsCount = count;
 	} else {
+		redrawStart = itemsCount;
+		redrawEnd = count - 1;
 		TableItem[] newItems = new TableItem [count];
 		System.arraycopy (items, 0, newItems, 0, Math.min (count, itemsCount));
 		items = newItems;
@@ -3047,7 +3052,7 @@ public void setItemCount (int count) {
 
 	updateVerticalBar ();
 	updateHorizontalBar ();
-	redraw ();
+	redrawItems (redrawStart, redrawEnd, false);
 }
 /**
  * Marks the receiver's lines as visible if the argument is <code>true</code>,
