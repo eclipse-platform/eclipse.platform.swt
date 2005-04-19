@@ -2843,7 +2843,7 @@ boolean setItemSize() {
 		int index = priority[i];
 		minWidths[index] = items[index].preferredWidth(gc, index == selectedIndex, true);
 		minWidth += minWidths[index];
-		if (mru && minWidth > tabAreaWidth) break;
+		if (minWidth > tabAreaWidth) break;
 	}
 	if (minWidth > tabAreaWidth) {
 		// full compression required and a chevron
@@ -3564,6 +3564,7 @@ public void showItem (CTabItem item) {
 	if (item == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int index = indexOf(item);
+	if (index == -1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int idx = -1;
 	for (int i = 0; i < priority.length; i++) {
 		if (priority[i] == index) {
@@ -3571,45 +3572,17 @@ public void showItem (CTabItem item) {
 			break;
 		}
 	}
-	boolean changed = false;
-	boolean oldShowChevron = showChevron;
 	if (mru) {
+		// move to front of mru order
 		int[] newPriority = new int[priority.length];
 		System.arraycopy(priority, 0, newPriority, 1, idx);
 		System.arraycopy(priority, idx+1, newPriority, idx+1, priority.length - idx - 1);
 		newPriority[0] = index;
 		priority = newPriority;
-		if (setItemSize()) changed = true;
-		if (setItemLocation()) changed = true;
-	} else {
-		if (setItemSize()) changed = true;
-		if (setItemLocation()) changed = true;
-		if (!item.showing) {
-			if (priority[idx] >= priority[0]) {
-				int maxWidth = getRightItemEdge() - borderLeft;
-				if (!single && !simple) maxWidth -= curveWidth - 2*curveIndent;
-				int width = items[priority[idx]].width;
-				while (idx > 1) {
-					width += items[priority[idx-1]].width;
-					if (width > maxWidth) break;
-					idx--;
-				}
-			}
-			int[] newPriority = new int[priority.length];
-			System.arraycopy(priority, idx, newPriority, 0, priority.length - idx);
-			System.arraycopy(priority, 0, newPriority, priority.length - idx, idx);
-			priority = newPriority;
-			if (setItemLocation()) changed = true;
-		}
 	}
-	setButtonBounds();
-	if (showChevron != oldShowChevron) changed = true;
-	if (changed && toolTipShell != null) {
-		Point pt = getDisplay().getCursorLocation();
-		pt = toControl(pt);
-		if (!updateToolTip(pt.x, pt.y)) hideToolTip();
-	}
-	if (changed) redrawTabs();
+	if (item.isShowing()) return;
+	updateItems(index);
+	redrawTabs();
 }
 void showList (Rectangle rect) {
 	if (items.length == 0 || !showChevron) return;
@@ -3692,16 +3665,45 @@ void showToolTip (int x, int y) {
 	
 }
 boolean updateItems() {
-	if (selectedIndex  != -1 && items[selectedIndex].showing) {
-		showItem(items[selectedIndex]);
-		return false;
+	return updateItems(selectedIndex);
+}
+boolean updateItems(int showIndex) {
+	if (!single && !mru && showIndex != -1) {
+		// make sure selected item will be showing
+		int idx = -1;
+		for (int i = 0; i < priority.length; i++) {
+			if (priority[i] == showIndex) {
+				idx = i;
+				break;
+			}
+		}
+		if (priority[idx] > priority[0]) {
+			int maxWidth = getRightItemEdge() - borderLeft;
+			if (!simple) maxWidth -= curveWidth - 2*curveIndent;
+			GC gc = new GC(this);
+			int nextIndex = priority[idx];
+			CTabItem next = items[nextIndex];
+			int width = next.preferredWidth(gc, nextIndex == selectedIndex, true);
+			while (idx > 1) {
+				nextIndex = priority[idx-1];
+				next = items[nextIndex];
+				width += next.preferredWidth(gc, nextIndex == selectedIndex, true);
+				if (width > maxWidth) break;
+				idx--;
+			}
+			gc.dispose();
+		}
+		int[] newPriority = new int[priority.length];
+		System.arraycopy(priority, idx, newPriority, 0, priority.length - idx);
+		System.arraycopy(priority, 0, newPriority, priority.length - idx, idx);
+		priority = newPriority;
 	}
-	boolean changed = false;
+	
 	boolean oldShowChevron = showChevron;
-	if (setItemSize()) changed = true;
-	if (setItemLocation()) changed = true;
+	boolean changed = setItemSize();
+	changed |= setItemLocation();
 	setButtonBounds();
-	if (showChevron != oldShowChevron) changed = true;
+	changed |= showChevron != oldShowChevron;
 	if (changed && toolTipShell != null) {
 		Point pt = getDisplay().getCursorLocation();
 		pt = toControl(pt);
