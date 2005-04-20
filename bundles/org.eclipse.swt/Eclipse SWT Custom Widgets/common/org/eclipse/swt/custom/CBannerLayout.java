@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.*;
  * @see CBanner
  */
 class CBannerLayout extends Layout {
-	
+
 protected Point computeSize(Composite composite, int wHint, int hHint, boolean flushCache) {
 	CBanner banner = (CBanner)composite;
 	Control left = banner.left;
@@ -35,7 +35,7 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 	if (bottom != null) {
 		int trim = computeTrim(bottom);
 		int w = wHint == SWT.DEFAULT ? SWT.DEFAULT : width - trim;
-		bottomSize = bottom.computeSize(w, SWT.DEFAULT, flushCache);
+		bottomSize = computeChildSize(bottom, w, SWT.DEFAULT, flushCache);
 		if (hHint != SWT.DEFAULT) {
 			bottomSize.y = Math.min(bottomSize.y, height);
 			height -= bottomSize.y + CBanner.BORDER_TOP + CBanner.BORDER_STRIPE + CBanner.BORDER_BOTTOM;
@@ -49,7 +49,7 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 		int trim = computeTrim(right);
 		int w = banner.rightWidth == SWT.DEFAULT ? SWT.DEFAULT : banner.rightWidth - trim;
 		int h = banner.rightWidth == SWT.DEFAULT ? SWT.DEFAULT : height;
-		rightSize = right.computeSize(w, h, flushCache);
+		rightSize = computeChildSize(right, w, h, flushCache);
 		if (wHint != SWT.DEFAULT) {
 			rightSize.x = Math.min(rightSize.x, width);
 			width -= rightSize.x + banner.curve_width - 2* banner.curve_indent;
@@ -60,7 +60,7 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 	if (left != null) {
 		int trim = computeTrim(left);
 		int w = wHint == SWT.DEFAULT ? SWT.DEFAULT : width - trim;
-		leftSize = left.computeSize(w, SWT.DEFAULT, flushCache);
+		leftSize = computeChildSize(left, w, SWT.DEFAULT, flushCache);
 	}
 	
 	// Add up sizes
@@ -84,6 +84,14 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 	
 	return new Point(width, height);
 }
+Point computeChildSize(Control control, int wHint, int hHint, boolean flushCache) {
+	Object data = control.getLayoutData();
+	if (data == null || !(data instanceof CLayoutData)) {
+		data = new CLayoutData();
+		control.setLayoutData(data);
+	}
+	return ((CLayoutData)data).computeSize(control, wHint, hHint, flushCache);
+}
 int computeTrim(Control c) {
 	if (c instanceof Scrollable) {
 		Rectangle rect = ((Scrollable) c).computeTrim (0, 0, 0, 0);
@@ -92,6 +100,8 @@ int computeTrim(Control c) {
 	return c.getBorderWidth () * 2;
 }
 protected boolean flushCache(Control control) {
+	Object data = control.getLayoutData();
+	if (data != null && data instanceof CLayoutData) ((CLayoutData)data).flushCache();
 	return true;
 }
 protected void layout(Composite composite, boolean flushCache) {
@@ -109,7 +119,7 @@ protected void layout(Composite composite, boolean flushCache) {
 	if (bottom != null) {
 		int trim = computeTrim(bottom);
 		int w = width - trim;
-		bottomSize = bottom.computeSize(w, SWT.DEFAULT, flushCache);
+		bottomSize = computeChildSize(bottom, w, SWT.DEFAULT, flushCache);
 		bottomSize.y = Math.min(bottomSize.y, height);
 		height -= bottomSize.y + CBanner.BORDER_TOP + CBanner.BORDER_BOTTOM + CBanner.BORDER_STRIPE;
 	}
@@ -129,7 +139,7 @@ protected void layout(Composite composite, boolean flushCache) {
 		}
 		int rightW = banner.rightWidth == SWT.DEFAULT ? SWT.DEFAULT : banner.rightWidth - trimX;
 		int rightH = banner.rightWidth == SWT.DEFAULT ? SWT.DEFAULT : height - trimY;
-		rightSize = right.computeSize(rightW, rightH, flushCache);
+		rightSize = computeChildSize(right, rightW, rightH, flushCache);
 		rightSize.x = Math.min(rightSize.x, width);
 		width -= rightSize.x + banner.curve_width - 2*banner.curve_indent;
 		width = Math.max(width, CBanner.MIN_LEFT); 
@@ -138,7 +148,7 @@ protected void layout(Composite composite, boolean flushCache) {
 	Point leftSize = new Point(0, 0);
 	if (left != null) {
 		int trim = computeTrim(left);
-		leftSize = left.computeSize(width - trim, SWT.DEFAULT, flushCache);
+		leftSize = computeChildSize(left, width - trim, SWT.DEFAULT, flushCache);
 	}
 
 	int x = 0;
