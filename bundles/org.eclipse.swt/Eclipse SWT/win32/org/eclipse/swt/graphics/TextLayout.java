@@ -554,7 +554,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 							OS.LineTo(hdc, drawX + run.width, strikeoutY);	
 						}
 						OS.SelectObject(hdc, oldPen);
-						if (hasSelection && fg != selectionForeground.handle) OS.DeleteObject(newPen);
+						if (!hasSelection || fg != selectionForeground.handle) OS.DeleteObject(newPen);
 					}
 					boolean partialSelection = hasSelection && !(selectionStart > end || run.start > selectionEnd);
 					if (!fullSelection && partialSelection && fg != selectionForeground.handle) {
