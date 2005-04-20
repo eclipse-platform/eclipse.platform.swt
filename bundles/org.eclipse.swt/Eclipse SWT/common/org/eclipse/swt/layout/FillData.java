@@ -14,7 +14,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
-class LayoutData {
+class FillData {
 
 	int defaultWidth = -1, defaultHeight = -1;
 	int currentWhint, currentHhint, currentWidth = -1, currentHeight = -1;

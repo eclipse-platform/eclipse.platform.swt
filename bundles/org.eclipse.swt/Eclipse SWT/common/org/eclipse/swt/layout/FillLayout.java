@@ -138,9 +138,9 @@ protected Point computeSize (Composite composite, int wHint, int hHint, boolean 
 }
 
 Point computeChildSize (Control control, int wHint, int hHint, boolean flushCache) {
-	LayoutData data = (LayoutData)control.getLayoutData ();
+	FillData data = (FillData)control.getLayoutData ();
 	if (data == null) {
-		data = new LayoutData ();
+		data = new FillData ();
 		control.setLayoutData (data);
 	}
 	Point size = null;
@@ -165,7 +165,7 @@ Point computeChildSize (Control control, int wHint, int hHint, boolean flushCach
 
 protected boolean flushCache (Control control) {
 	Object data = control.getLayoutData();
-	if (data != null) ((LayoutData)data).flushCache();
+	if (data != null) ((FillData)data).flushCache();
 	return true;
 }
 
