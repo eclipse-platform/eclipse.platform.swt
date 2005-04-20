@@ -30,15 +30,15 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 	
 	Point leftSize = new Point(0, 0);
 	if (left != null) {
-		leftSize = left.computeSize(SWT.DEFAULT, SWT.DEFAULT, flushCache);
+		leftSize = computeChildSize(left, SWT.DEFAULT, SWT.DEFAULT, flushCache);
 	}
 	Point centerSize = new Point(0, 0);
 	if (center != null) {
-		 centerSize = center.computeSize(SWT.DEFAULT, SWT.DEFAULT, flushCache);
+		 centerSize = computeChildSize(center, SWT.DEFAULT, SWT.DEFAULT, flushCache);
 	}
 	Point rightSize = new Point(0, 0);
 	if (right != null) {
-		 rightSize = right.computeSize(SWT.DEFAULT, SWT.DEFAULT, flushCache);
+		 rightSize = computeChildSize(right, SWT.DEFAULT, SWT.DEFAULT, flushCache);
 	}
 	Point size = new Point(0, 0);
 	// calculate width of title bar
@@ -65,7 +65,7 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 	if (content != null) {
 		if (left != null || right != null || center != null) size.y += 1; // allow space for a vertical separator
 		Point contentSize = new Point(0, 0);
-		contentSize = content.computeSize(SWT.DEFAULT, SWT.DEFAULT, flushCache); 
+		contentSize = computeChildSize(content, SWT.DEFAULT, SWT.DEFAULT, flushCache); 
 		size.x = Math.max (size.x, contentSize.x);
 		size.y += contentSize.y;
 		if (size.y > contentSize.y) size.y += form.verticalSpacing;
@@ -80,6 +80,15 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 	return size;
 }
 
+Point computeChildSize(Control control, int wHint, int hHint, boolean flushCache) {
+	Object data = control.getLayoutData();
+	if (data == null || !(data instanceof CLayoutData)) {
+		data = new CLayoutData();
+		control.setLayoutData(data);
+	}
+	return ((CLayoutData)data).computeSize(control, wHint, hHint, flushCache);
+}
+
 int computeTrim(Control c) {
 	if (c instanceof Scrollable) {
 		Rectangle rect = ((Scrollable) c).computeTrim (0, 0, 0, 0);
@@ -89,6 +98,8 @@ int computeTrim(Control c) {
 }
 
 protected boolean flushCache(Control control) {
+	Object data = control.getLayoutData();
+	if (data != null && data instanceof CLayoutData) ((CLayoutData)data).flushCache();
 	return true;
 }
 
@@ -103,15 +114,15 @@ protected void layout(Composite composite, boolean flushCache) {
 	
 	Point leftSize = new Point(0, 0);
 	if (left != null && !left.isDisposed()) {
-		leftSize = left.computeSize(SWT.DEFAULT, SWT.DEFAULT, flushCache);
+		leftSize = computeChildSize(left, SWT.DEFAULT, SWT.DEFAULT, flushCache);
 	}
 	Point centerSize = new Point(0, 0);
 	if (center != null && !center.isDisposed()) {
-		 centerSize = center.computeSize(SWT.DEFAULT, SWT.DEFAULT, flushCache);
+		 centerSize = computeChildSize(center, SWT.DEFAULT, SWT.DEFAULT, flushCache);
 	}
 	Point rightSize = new Point(0, 0);
 	if (right != null && !right.isDisposed()) {
-		 rightSize = right.computeSize(SWT.DEFAULT, SWT.DEFAULT, flushCache);
+		 rightSize = computeChildSize(right, SWT.DEFAULT, SWT.DEFAULT, flushCache);
 	}
 	
 	int minTopWidth = leftSize.x + centerSize.x + rightSize.x + 2*form.marginWidth + 2*form.highlight;
@@ -137,7 +148,7 @@ protected void layout(Composite composite, boolean flushCache) {
 			top = true;
 			int trim = computeTrim(left);
 			int leftW = x - rect.x - form.marginWidth - form.highlight - trim;
-			leftSize = left.computeSize(leftW, SWT.DEFAULT, false);
+			leftSize = computeChildSize(left, leftW, SWT.DEFAULT, false);
 			left.setBounds(rect.x + form.marginWidth + form.highlight, y, leftSize.x, topHeight);
 		}
 		if (top) y += topHeight + form.verticalSpacing;
@@ -145,7 +156,7 @@ protected void layout(Composite composite, boolean flushCache) {
 			top = true;
 			int trim = computeTrim(center);
 			int w = rect.width - 2*form.marginWidth - 2*form.highlight - trim;
-			centerSize = center.computeSize(w, SWT.DEFAULT, false);
+			centerSize = computeChildSize(center, w, SWT.DEFAULT, false);
 			center.setBounds(rect.x + rect.width - form.marginWidth - form.highlight - centerSize.x, y, centerSize.x, centerSize.y);
 			y += centerSize.y + form.verticalSpacing;
 		}		
@@ -168,7 +179,7 @@ protected void layout(Composite composite, boolean flushCache) {
 			Rectangle trim = left instanceof Composite ? ((Composite)left).computeTrim(0, 0, 0, 0) : new Rectangle(0, 0, 0, 0);
 			int w = x - rect.x - form.marginWidth - form.highlight - trim.width;
 			int h = topHeight - trim.height;
-			leftSize = left.computeSize(w, h, false);
+			leftSize = computeChildSize(left, w, h, false);
 			left.setBounds(rect.x + form.marginWidth + form.highlight, y, leftSize.x, topHeight);
 		}
 		if (top)y += topHeight + form.verticalSpacing;
