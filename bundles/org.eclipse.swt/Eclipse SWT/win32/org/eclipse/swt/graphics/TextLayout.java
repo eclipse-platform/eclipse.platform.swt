@@ -967,10 +967,10 @@ public FontMetrics getLineMetrics (int lineIndex) {
 			StyleItem run = lineRuns[i];
 			OS.SelectObject(srcHdc, getItemFont(run));
 			OS.GetTextMetrics(srcHdc, lptm);
-			ascent = Math.max (ascent, lptm.tmAscent);
-			descent = Math.max (descent, lptm.tmDescent);
-			height = Math.max (height, lptm.tmHeight);
-			leading = Math.max (leading, lptm.tmInternalLeading);
+			ascent = Math.max(ascent, lptm.tmAscent);
+			descent = Math.max(descent, lptm.tmDescent);
+			height = Math.max(height, lptm.tmHeight);
+			leading = Math.max(leading, lptm.tmInternalLeading);
 			aveCharWidth += lptm.tmAveCharWidth;
 		}
 		lptm.tmAscent = ascent;
