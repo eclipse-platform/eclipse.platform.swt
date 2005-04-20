@@ -116,7 +116,7 @@ protected Point computeSize (Composite composite, int wHint, int hHint, boolean 
 				h = Math.max (0, (hHint - (count - 1) * spacing) / count);
 			}
 		}
-		Point size = computeSize (child, w, h, flushCache);
+		Point size = computeChildSize (child, w, h, flushCache);
 		maxWidth = Math.max (maxWidth, size.x);
 		maxHeight = Math.max (maxHeight, size.y);
 	}
@@ -137,10 +137,15 @@ protected Point computeSize (Composite composite, int wHint, int hHint, boolean 
 	return new Point (width, height);
 }
 
-Point computeSize (Control control, int wHint, int hHint, boolean flushCache) {
+Point computeChildSize (Control control, int wHint, int hHint, boolean flushCache) {
+	LayoutData data = (LayoutData)control.getLayoutData ();
+	if (data == null) {
+		data = new LayoutData ();
+		control.setLayoutData (data);
+	}
 	Point size = null;
 	if (wHint == SWT.DEFAULT && hHint == SWT.DEFAULT) {
-		size = control.computeSize (wHint, hHint, flushCache);
+		size = data.computeSize (control, wHint, hHint, flushCache);
 	} else {
 		// TEMPORARY CODE
 		int trimX, trimY;
@@ -153,12 +158,14 @@ Point computeSize (Control control, int wHint, int hHint, boolean flushCache) {
 		}
 		int w = wHint == SWT.DEFAULT ? wHint : Math.max (0, wHint - trimX);
 		int h = hHint == SWT.DEFAULT ? hHint : Math.max (0, hHint - trimY);
-		size = control.computeSize (w, h, flushCache);
+		size = data.computeSize (control, w, h, flushCache);
 	}
 	return size;
 }
 
 protected boolean flushCache (Control control) {
+	Object data = control.getLayoutData();
+	if (data != null) ((LayoutData)data).flushCache();
 	return true;
 }
 
