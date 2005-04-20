@@ -20,7 +20,6 @@ Point computeSize (Control control, int wHint, int hHint, boolean flushCache) {
 		return new Point(defaultWidth, defaultHeight);
 	}
 	if (currentWidth == -1 || currentHeight == -1 || wHint != currentWhint || hHint != currentHhint) {
-		System.out.println(control.handle+"computeSize at "+wHint+" "+hHint+" "+flushCache);
 		Point size = control.computeSize (wHint, hHint, flushCache);
 		currentWhint = wHint;
 		currentHhint = hHint;
