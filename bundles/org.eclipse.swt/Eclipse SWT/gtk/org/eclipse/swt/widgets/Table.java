@@ -1033,6 +1033,11 @@ public int getGridLineWidth () {
 public int getHeaderHeight () {
 	checkWidget ();
 	if (!OS.gtk_tree_view_get_headers_visible (handle)) return 0;
+	if (columns != null && columns [0] != null && columns [0].buttonHandle != 0) {
+		GtkRequisition requisition = new GtkRequisition ();
+		OS.gtk_widget_size_request (columns [0].buttonHandle, requisition);
+		return requisition.height;
+	}
 	OS.gtk_widget_realize (handle);
 	int /*long*/ fixedWindow = OS.GTK_WIDGET_WINDOW (fixedHandle);
 	int /*long*/ binWindow = OS.gtk_tree_view_get_bin_window (handle);
