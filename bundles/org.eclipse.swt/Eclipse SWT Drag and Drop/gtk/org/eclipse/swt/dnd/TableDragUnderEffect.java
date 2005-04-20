@@ -19,7 +19,7 @@ class TableDragUnderEffect extends DragUnderEffect {
 	private Table table;
 	private int scrollIndex = -1;
 	private long scrollBeginTime;
-	private static final int SCROLL_HYSTERESIS = 500; // milli seconds
+	private static final int SCROLL_HYSTERESIS = 150; // milli seconds
 
 TableDragUnderEffect(Table table) {
 	this.table = table;

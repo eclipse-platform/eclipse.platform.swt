@@ -22,8 +22,8 @@ class TreeDragUnderEffect extends DragUnderEffect {
 	private int expandIndex;
 	private long expandBeginTime;
 	
-	private static final int SCROLL_HYSTERESIS = 500; // milli seconds
-	private static final int EXPAND_HYSTERESIS = 600; // milli seconds
+	private static final int SCROLL_HYSTERESIS = 150; // milli seconds
+	private static final int EXPAND_HYSTERESIS = 300; // milli seconds
 	
 
 TreeDragUnderEffect(Tree tree) {
