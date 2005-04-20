@@ -3038,6 +3038,7 @@ public void setItemCount (int count) {
 			setFocusItem (newFocusItem, false);
 		}
 		itemsCount = count;
+		if (columns.length == 0) updateHorizontalBar ();
 	} else {
 		redrawStart = itemsCount;
 		redrawEnd = count - 1;
@@ -3051,7 +3052,6 @@ public void setItemCount (int count) {
 	}
 
 	updateVerticalBar ();
-	updateHorizontalBar ();
 	redrawItems (redrawStart, redrawEnd, false);
 }
 /**
