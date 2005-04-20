@@ -376,7 +376,7 @@ public Variant invoke(int dispIdMember, Variant[] rgvarg) {
 }
 /** 
  * Invokes a method on the OLE Object; the method has optional parameters.  It is not
- * neccessary to specify all the optional parameters, only include the parameters for which
+ * necessary to specify all the optional parameters, only include the parameters for which
  * you are providing values.
  *
  * @param dispIdMember the ID of the method as specified by the IDL of the ActiveX Control; the
@@ -498,7 +498,7 @@ public void invokeNoReply(int dispIdMember, Variant[] rgvarg) {
 }
 /** 
  * Invokes a method on the OLE Object; the method has optional parameters.  It is not
- * neccessary to specify all the optional parameters, only include the parameters for which
+ * necessary to specify all the optional parameters, only include the parameters for which
  * you are providing values.  In the early days of OLE, the IDispatch interface was not well 
  * defined and some applications (mainly Word) did not support a return value.  For these 
  * applications, call this method instead of calling

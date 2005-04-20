@@ -178,7 +178,7 @@ protected void layout(Composite composite, boolean flushCache) {
 	/*
 	 * The paint events must be flushed in order to make the curve draw smoothly
 	 * while the user drags the divider.
-	 * On Windows, it is neccessary to flush the paints before the children are 
+	 * On Windows, it is necessary to flush the paints before the children are 
 	 * resized because otherwise the children (particularly toolbars) will flash.
 	 */
 	banner.update();
