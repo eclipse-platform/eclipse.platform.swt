@@ -2946,7 +2946,7 @@ public void setFont (Font value) {
 	if (drawCount == 0 && header.isVisible ()) header.redraw ();
 	
 	/* update scrollbars */
-	updateHorizontalBar ();
+	if (columns.length == 0) updateHorizontalBar ();
 	ScrollBar vBar = getVerticalBar ();
 	int thumb = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
 	vBar.setThumb (thumb);
