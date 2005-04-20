@@ -51,25 +51,6 @@ class SashFormTab extends Tab {
 	SashFormTab(ControlExample instance) {
 		super(instance);
 	}
-
-	/**
-	 * Creates the tab folder page.
-	 */
-	Composite createTabFolderPage (TabFolder tabFolder) {
-		/*
-		* Create a two column page.
-		*/
-		tabFolderPage = new Composite (tabFolder, SWT.NONE);
-		tabFolderPage.setLayout (new GridLayout (2, false));
-	
-		/* Create the "Example" and "Control" groups. */
-		createExampleGroup ();
-		createControlGroup ();
-		
-		/* Create and initialize the example and control widgets. */
-		createExampleWidgets ();
-		return tabFolderPage;
-	}
 	void createExampleGroup () {
 		super.createExampleGroup ();
 		
