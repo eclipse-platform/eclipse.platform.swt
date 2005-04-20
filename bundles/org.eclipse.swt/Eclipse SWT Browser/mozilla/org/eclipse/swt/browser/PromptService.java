@@ -309,7 +309,7 @@ public int /*long*/ Prompt(int /*long*/ parent, int /*long*/ dialogTitle, int /*
 				System.arraycopy(tmp, 0, aContractID, 0, tmp.length);
 				rc = serviceManager.GetServiceByContractID(aContractID, nsIMemory.NS_IMEMORY_IID, result2);
 				if (rc != XPCOM.NS_OK) SWT.error(rc);
-				if (result[0] == 0) SWT.error(XPCOM.NS_NOINTERFACE);		
+				if (result2[0] == 0) SWT.error(XPCOM.NS_NOINTERFACE);		
 				serviceManager.Release();
 				
 				nsIMemory memory = new nsIMemory(result2[0]);
