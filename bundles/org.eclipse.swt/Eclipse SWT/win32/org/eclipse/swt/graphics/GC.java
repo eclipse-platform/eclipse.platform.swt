@@ -266,46 +266,6 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 	}
 }
 
-int createDIB(int width, int height) {
-	short depth = 32;
-
-	BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER();
-	bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
-	bmiHeader.biWidth = width;
-	bmiHeader.biHeight = -height;
-	bmiHeader.biPlanes = 1;
-	bmiHeader.biBitCount = depth;
-	if (OS.IsWinCE) bmiHeader.biCompression = OS.BI_BITFIELDS;
-	else bmiHeader.biCompression = OS.BI_RGB;
-	byte[]	bmi = new byte[BITMAPINFOHEADER.sizeof + (OS.IsWinCE ? 12 : 0)];
-	OS.MoveMemory(bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
-	/* Set the rgb colors into the bitmap info */
-	if (OS.IsWinCE) {
-		int redMask = 0xFF00;
-		int greenMask = 0xFF0000;
-		int blueMask = 0xFF000000;
-		/* big endian */
-		int offset = BITMAPINFOHEADER.sizeof;
-		bmi[offset] = (byte)((redMask & 0xFF000000) >> 24);
-		bmi[offset + 1] = (byte)((redMask & 0xFF0000) >> 16);
-		bmi[offset + 2] = (byte)((redMask & 0xFF00) >> 8);
-		bmi[offset + 3] = (byte)((redMask & 0xFF) >> 0);
-		bmi[offset + 4] = (byte)((greenMask & 0xFF000000) >> 24);
-		bmi[offset + 5] = (byte)((greenMask & 0xFF0000) >> 16);
-		bmi[offset + 6] = (byte)((greenMask & 0xFF00) >> 8);
-		bmi[offset + 7] = (byte)((greenMask & 0xFF) >> 0);
-		bmi[offset + 8] = (byte)((blueMask & 0xFF000000) >> 24);
-		bmi[offset + 9] = (byte)((blueMask & 0xFF0000) >> 16);
-		bmi[offset + 10] = (byte)((blueMask & 0xFF00) >> 8);
-		bmi[offset + 11] = (byte)((blueMask & 0xFF) >> 0);
-	}
-
-	int[] pBits = new int[1];
-	int hDib = OS.CreateDIBSection(0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
-	if (hDib == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	return hDib;
-}
-
 int createGdipBrush() {
 	int colorRef = OS.GetBkColor (handle);
 	int rgb = ((colorRef >> 16) & 0xFF) | (colorRef & 0xFF00) | ((colorRef & 0xFF) << 16);
@@ -845,7 +805,8 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 	int srcHdc = OS.CreateCompatibleDC(handle);
 	int oldSrcBitmap = OS.SelectObject(srcHdc, srcImage.handle);
 	int memHdc = OS.CreateCompatibleDC(handle);
-	int memDib = createDIB(Math.max(srcWidth, destWidth), Math.max(srcHeight, destHeight));
+	int memDib = Image.createDIB(Math.max(srcWidth, destWidth), Math.max(srcHeight, destHeight), 32);
+	if (memDib == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int oldMemBitmap = OS.SelectObject(memHdc, memDib);
 
 	BITMAP dibBM = new BITMAP();
@@ -891,7 +852,8 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 	*/
 	if ((OS.IsWinCE && (destWidth > srcWidth || destHeight > srcHeight)) || (!OS.IsWinNT && !OS.IsWinCE)) {
 		int tempHdc = OS.CreateCompatibleDC(handle);
-		int tempDib = createDIB(destWidth, destHeight);
+		int tempDib = Image.createDIB(destWidth, destHeight, 32);
+		if (tempDib == 0) SWT.error(SWT.ERROR_NO_HANDLES);		
 		int oldTempBitmap = OS.SelectObject(tempHdc, tempDib);
 		if (!simple && (srcWidth != destWidth || srcHeight != destHeight)) {
 			if (!OS.IsWinCE) OS.SetStretchBltMode(memHdc, OS.COLORONCOLOR);
