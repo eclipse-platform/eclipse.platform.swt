@@ -1089,7 +1089,7 @@ abstract class Tab {
 			}
 			controls [i].setLayoutData (gridData);
 		}
-		exampleGroup.layout (controls);
+		tabFolderPage.layout (controls);
 	}
 	
 	/**
