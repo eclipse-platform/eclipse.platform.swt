@@ -30,9 +30,9 @@ public class TextTransfer extends ByteArrayTransfer {
 
 	private static TextTransfer _instance = new TextTransfer();
 	private static final String COMPOUND_TEXT = "COMPOUND_TEXT"; //$NON-NLS-1$
-	private static final String STRING = "STRING"; //$NON-NLS-1$
+	private static final String UTF8_STRING = "UTF8_STRING"; //$NON-NLS-1$
 	private static final int COMPOUND_TEXT_ID = registerType(COMPOUND_TEXT);
-	private static final int STRING_ID = registerType(STRING);
+	private static final int UTF8_STRING_ID = registerType(UTF8_STRING);
 
 private TextTransfer() {}
 
@@ -74,11 +74,11 @@ public void javaToNative (Object object, TransferData transferData) {
 		transferData.pValue = ctext[0];
 		transferData.result = 1;
 	} 
-	if (transferData.type == STRING_ID) {
+	if (transferData.type == UTF8_STRING_ID) {
 		int /*long*/ pValue = OS.g_malloc(buffer.length);
 		if (pValue ==  0) return;
 		OS.memmove(pValue, buffer, buffer.length);
-		transferData.type = STRING_ID;
+		transferData.type = UTF8_STRING_ID;
 		transferData.format = 8;
 		transferData.length = buffer.length - 1;
 		transferData.pValue = pValue;
@@ -110,7 +110,7 @@ public Object nativeToJava(TransferData transferData){
 		OS.memmove(buffer, ptr[0], length);
 		OS.g_strfreev(list[0]);
 	}
-	if (transferData.type == STRING_ID) {
+	if (transferData.type == UTF8_STRING_ID) {
 		int size = transferData.format * transferData.length / 8;
 		if (size == 0) return null;
 		buffer = new byte[size];
@@ -125,11 +125,11 @@ public Object nativeToJava(TransferData transferData){
 }
 
 protected int[] getTypeIds() {
-	return new int[] {COMPOUND_TEXT_ID, STRING_ID};
+	return new int[] {UTF8_STRING_ID, COMPOUND_TEXT_ID};
 }
 
 protected String[] getTypeNames() {
-	return new String[] {COMPOUND_TEXT, STRING};
+	return new String[] {UTF8_STRING, COMPOUND_TEXT};
 }
 
 boolean checkText(Object object) {
