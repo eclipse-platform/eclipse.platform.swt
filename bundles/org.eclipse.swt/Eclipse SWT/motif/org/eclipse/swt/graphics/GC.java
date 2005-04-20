@@ -3378,7 +3378,7 @@ public void setLineWidth(int width) {
 	OS.XSetLineAttributes(data.display, handle, width, line_style, values.cap_style, values.join_style);
 	int /*long*/ cairo = data.cairo;
 	if (cairo != 0) {
-		Cairo.cairo_set_line_width(cairo, width);
+		Cairo.cairo_set_line_width(cairo, Math.max(1, width));
 	}
 }
 void setString(String string) {

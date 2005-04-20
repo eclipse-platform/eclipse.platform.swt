@@ -38,7 +38,7 @@ public final class GCData {
 	public float[] transform = new float[]{1, 0, 0, 1, 0, 0};
 	public float[] inverseTransform = new float[]{1, 0, 0, 1, 0, 0};
 	public int clipRgn;
-	public int lineWidth = 1;
+	public int lineWidth;
 	public int lineStyle = SWT.LINE_SOLID;
 	public int lineCap = SWT.CAP_FLAT;
 	public int lineJoin = SWT.JOIN_MITER;

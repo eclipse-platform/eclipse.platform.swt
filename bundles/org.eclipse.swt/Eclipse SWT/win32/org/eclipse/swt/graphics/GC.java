@@ -285,6 +285,15 @@ int createGdipPen() {
 		colorRef = logPen.lopnColor;
 		width = logPen.x;
 		style = logPen.lopnStyle;
+		/*
+		* Feature in Windows.  The default end caps is PS_ENDCAP_ROUND
+		* and the default line join is PS_JOIN_ROUND which are different
+		* from other platforms.  The fix is to change these values when
+		* line width is widened.
+		*/
+		if (width <= 1) {
+			style |= OS.PS_ENDCAP_FLAT | OS.PS_JOIN_MITER;
+		}
 	} else {
 		EXTLOGPEN logPen = new EXTLOGPEN();
 		if (size <= EXTLOGPEN.sizeof) {
@@ -302,7 +311,7 @@ int createGdipPen() {
 	}
 	int rgb = ((colorRef >> 16) & 0xFF) | (colorRef & 0xFF00) | ((colorRef & 0xFF) << 16);
 	int color = Gdip.Color_new(data.alpha << 24 | rgb);
-	int pen = Gdip.Pen_new(color, width);
+	int pen = Gdip.Pen_new(color, Math.max (1, width));
 	Gdip.Color_delete(color);
 	if (data.foregroundPattern != null) Gdip.Pen_SetBrush(pen, data.foregroundPattern.handle);
 	int dashStyle = 0; 
