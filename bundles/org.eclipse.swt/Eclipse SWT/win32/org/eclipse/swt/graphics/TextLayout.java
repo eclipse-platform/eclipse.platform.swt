@@ -172,6 +172,24 @@ void breakRun(StyleItem run) {
 	OS.ScriptBreak(chars, chars.length, run.analysis, run.psla);
 }
 
+void checkItem (int hDC, StyleItem item) {
+	if (item.fallbackFont != 0) {
+		/*
+		* Feature in Windows. The fallback font returned by the MLang service
+		* can be disposed by some other client running in the same thread.
+		* For example, disposing a Browser widget internally releases all fonts
+		* in the MLang cache. The fix is to use GetObject() to detect if the 
+		* font was disposed and reshape the run.
+		*/
+		LOGFONT logFont = OS.IsUnicode ? (LOGFONT)new LOGFONTW() : new LOGFONTA();
+		if (OS.GetObject(item.fallbackFont, LOGFONT.sizeof, (LOGFONT)logFont) == 0) {
+			item.free();
+			OS.SelectObject(hDC, getItemFont(item));
+			shape(hDC, item);
+		}
+	}
+}
+
 void checkLayout () {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 }
@@ -537,6 +555,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 						if (run.style != null && run.style.foreground != null) fg = run.style.foreground.handle;
 					}
 					OS.SetTextColor(hdc, fg);
+					checkItem(hdc, run);
 					OS.SelectObject(hdc, getItemFont(run));
 					int drawRunY = drawY + (baseline - run.ascent);
 					OS.ScriptTextOut(hdc, run.psc, drawX, drawRunY, 0, null, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, null, run.goffsets);
@@ -824,7 +843,7 @@ public Font getFont () {
 	return font;
 }
 
-int getItemFont(StyleItem item) {
+int getItemFont (StyleItem item) {
 	if (item.fallbackFont != 0) return item.fallbackFont;
 	if (item.style != null && item.style.font != null) {
 		return item.style.font.handle;
@@ -965,6 +984,7 @@ public FontMetrics getLineMetrics (int lineIndex) {
 		StyleItem[] lineRuns = runs[lineIndex];
 		for (int i = 0; i<lineRuns.length; i++) {
 			StyleItem run = lineRuns[i];
+			checkItem(srcHdc, run);
 			OS.SelectObject(srcHdc, getItemFont(run));
 			OS.GetTextMetrics(srcHdc, lptm);
 			ascent = Math.max(ascent, lptm.tmAscent);
