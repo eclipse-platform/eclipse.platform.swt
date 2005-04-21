@@ -2259,32 +2259,6 @@ void onPaint (Event event) {
 				}
 			}
 		}
-		if (isFocusControl ()) {
-			if (focusItem == item) {
-				Rectangle focusBounds = item.getFocusBounds ();
-				if (focusBounds.width > 0) {
-					gc.setClipping (focusBounds);
-					int[] oldLineDash = gc.getLineDash ();
-					if (item.isSelected ()) {
-						gc.setLineDash (new int[] {2, 2});
-					} else {
-						gc.setLineDash (new int[] {1, 1});
-					}
-					gc.drawFocus (focusBounds.x, focusBounds.y, focusBounds.width, focusBounds.height);
-					gc.setLineDash (oldLineDash);
-				}
-			}
-			if (insertMarkItem == item) {
-				Rectangle focusBounds = item.getFocusBounds ();
-				gc.setClipping (focusBounds);
-				if (insertMarkPrecedes) {
-					gc.drawLine (focusBounds.x, focusBounds.y, focusBounds.x + focusBounds.width, focusBounds.y);
-				} else {
-					int y = focusBounds.y + focusBounds.height - 1;
-					gc.drawLine (focusBounds.x, y, focusBounds.x + focusBounds.width, y);
-				}
-			}
-		}
 	}
 
 	/* fill background not handled by items */
@@ -2321,6 +2295,35 @@ void onPaint (Event event) {
 		while (y <= bottomY) {
 			gc.drawLine (clipping.x, y, rightX, y);
 			y += itemHeight;
+		}
+	}
+
+	/* draw focus rectangle */
+	if (focusItem != null && isFocusControl ()) {
+		Rectangle focusBounds = focusItem.getFocusBounds ();
+		if (focusBounds.width > 0) {
+			gc.setForeground (display.getSystemColor (SWT.COLOR_BLACK));
+			gc.setClipping (focusBounds);
+			int[] oldLineDash = gc.getLineDash ();
+			if (focusItem.isSelected ()) {
+				gc.setLineDash (new int[] {2, 2});
+			} else {
+				gc.setLineDash (new int[] {1, 1});
+			}
+			gc.drawFocus (focusBounds.x, focusBounds.y, focusBounds.width, focusBounds.height);
+			gc.setLineDash (oldLineDash);
+		}
+	}
+	/* draw insert mark */
+	if (insertMarkItem != null) {
+		Rectangle focusBounds = insertMarkItem.getFocusBounds ();
+		gc.setForeground (display.getSystemColor (SWT.COLOR_BLACK));
+		gc.setClipping (focusBounds);
+		if (insertMarkPrecedes) {
+			gc.drawLine (focusBounds.x, focusBounds.y, focusBounds.x + focusBounds.width, focusBounds.y);
+		} else {
+			int y = focusBounds.y + focusBounds.height - 1;
+			gc.drawLine (focusBounds.x, y, focusBounds.x + focusBounds.width, y);
 		}
 	}
 }

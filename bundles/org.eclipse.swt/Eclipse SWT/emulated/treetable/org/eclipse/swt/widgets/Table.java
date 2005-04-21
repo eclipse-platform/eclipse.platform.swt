@@ -2345,22 +2345,6 @@ void onPaint (Event event) {
 				}
 			}
 		}
-		if (isFocusControl ()) {
-			if (focusItem == item) {
-				Rectangle focusBounds = item.getFocusBounds ();
-				if (focusBounds.width > 0) {
-					gc.setClipping (focusBounds);
-					int[] oldLineDash = gc.getLineDash ();
-					if (item.isSelected ()) {
-						gc.setLineDash (new int[] {2, 2});
-					} else {
-						gc.setLineDash (new int[] {1, 1});
-					}
-					gc.drawFocus (focusBounds.x, focusBounds.y, focusBounds.width, focusBounds.height);
-					gc.setLineDash (oldLineDash);
-				}
-			}
-		}
 	}
 
 	/* fill background not handled by items */
@@ -2398,6 +2382,23 @@ void onPaint (Event event) {
 		while (y <= bottomY) {
 			gc.drawLine (clipping.x, y, rightX, y);
 			y += itemHeight;
+		}
+	}
+
+	/* paint focus rectangle */
+	if (focusItem != null && isFocusControl ()) {
+		Rectangle focusBounds = focusItem.getFocusBounds ();
+		if (focusBounds.width > 0) {
+			gc.setForeground (display.getSystemColor (SWT.COLOR_BLACK));
+			gc.setClipping (focusBounds);
+			int[] oldLineDash = gc.getLineDash ();
+			if (focusItem.isSelected ()) {
+				gc.setLineDash (new int[] {2, 2});
+			} else {
+				gc.setLineDash (new int[] {1, 1});
+			}
+			gc.drawFocus (focusBounds.x, focusBounds.y, focusBounds.width, focusBounds.height);
+			gc.setLineDash (oldLineDash);
 		}
 	}
 }
