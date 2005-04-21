@@ -1293,9 +1293,6 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 		cellRightX = cellBounds.x + cellBounds.width;
 	}
 
-	/* if this cell is completely to the left of the client area then there's no need to paint it */
-	if (cellRightX < 0) return;
-
 	/* restrict the clipping region to the cell */
 	gc.setClipping (x, cellBounds.y, clientArea.width - x, cellBounds.height);
 	
