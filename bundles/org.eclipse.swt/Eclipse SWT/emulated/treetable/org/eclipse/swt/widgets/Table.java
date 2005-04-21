@@ -2387,7 +2387,7 @@ void onPaint (Event event) {
 		if (numColumns > 0 && startColumn != -1) {
 			/* vertical column lines */
 			for (int i = startColumn; i <= endColumn; i++) {
-				int x = columns [i].getX () + columns [i].width - 1;
+				int x = orderedColumns [i].getX () + orderedColumns [i].width - 1;
 				gc.drawLine (x, clipping.y, x, clipping.y + clipping.height);
 			}
 		}
