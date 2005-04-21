@@ -224,7 +224,7 @@ static Table checkNull (Table table) {
 void clear () {
 	checked = grayed = false;
 	texts = null;
-	int[] textWidths = new int [1];
+	textWidths = new int [1];
 	fontHeight = 0;
 	fontHeights = null;
 	images = null;

@@ -227,8 +227,10 @@ static int checkStyle (int style) {
 public void clear (int index) {
 	checkWidget ();
 	if (!(0 <= index && index < itemsCount)) error (SWT.ERROR_INVALID_RANGE);
+	Rectangle bounds = items [index].getBounds ();
+	int oldRightX = bounds.x + bounds.width;
 	items [index].clear ();
-	// TODO may be able to shorten horizontal scrollbar now
+	if (columns.length == 0) updateHorizontalBar (0, -oldRightX);
 	redrawItem (index, false);
 }
 /**
@@ -263,7 +265,7 @@ public void clear (int start, int end) {
 	for (int i = start; i <= end; i++) {
 		items [i].clear ();
 	}
-	// TODO may be able to shorten horizontal scrollbar now
+	updateHorizontalBar ();
 	redrawItems (start, end, false);
 }
 /**
@@ -301,7 +303,7 @@ public void clear (int [] indices) {
 	for (int i = 0; i < indices.length; i++) {
 		items [indices [i]].clear ();
 	}
-	// TODO may be able to shorten horizontal scrollbar now
+	updateHorizontalBar ();
 	for (int i = 0; i < indices.length; i++) {
 		redrawItem (indices [i], false);
 	}
