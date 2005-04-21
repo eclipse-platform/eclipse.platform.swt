@@ -153,11 +153,12 @@ public class StyledText extends Canvas {
 	Caret defaultCaret = null;
 	boolean updateCaretDirection = true;
 
-	final static boolean IS_CARBON, IS_MOTIF;
+	final static boolean IS_CARBON, IS_GTK, IS_MOTIF;
 	final static boolean DOUBLE_BUFFER;
 	static {
 		String platform = SWT.getPlatform();
 		IS_CARBON = "carbon".equals(platform);
+		IS_GTK = "gtk".equals(platform);
 		IS_MOTIF = "motif".equals(platform);
 		DOUBLE_BUFFER = !IS_CARBON;
 	}
@@ -6748,6 +6749,7 @@ public void setCaretOffset(int offset) {
  * @see org.eclipse.swt.dnd.Clipboard.setContents
  */
 void setClipboardContent(int start, int length, int clipboardType) throws SWTError {
+	if (clipboardType == DND.SELECTION_CLIPBOARD && !(IS_MOTIF || IS_GTK)) return;
 	RTFTransfer rtfTransfer = RTFTransfer.getInstance();
 	TextTransfer plainTextTransfer = TextTransfer.getInstance();
 	RTFWriter rtfWriter = new RTFWriter(start, length);
