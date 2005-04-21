@@ -100,7 +100,7 @@ public class Decorations extends Canvas {
 	String text = "";
 	boolean minimized, maximized;
 	Control savedFocus;
-	Button defaultButton, saveDefault;
+	Button defaultButton;
 	
 Decorations () {
 	/* Do nothing */
@@ -367,7 +367,7 @@ void releaseWidget () {
 	image = null;
 	images = null;
 	savedFocus = null;
-	defaultButton = saveDefault = null;
+	defaultButton = null;
 }
 
 boolean restoreFocus () {
@@ -406,29 +406,16 @@ void saveFocus () {
  */
 public void setDefaultButton (Button button) {
 	checkWidget();
-	setDefaultButton (button, true);
-}
-
-void setDefaultButton (Button button, boolean save) {
-	if (button == null) {
-		if (defaultButton == saveDefault) {
-			if (save) saveDefault = null;
-			return;
-		}
-	} else {
-		if (button.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-		if ((button.style & SWT.PUSH) == 0) return;
-		if (button == defaultButton) return;
-	}
+	if (button.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	if ((button.style & SWT.PUSH) == 0) return;
+	if (button == defaultButton) return;
 	if (defaultButton != null) {
 		if (!defaultButton.isDisposed ()) defaultButton.setDefault (false);
 	}
-	if ((defaultButton = button) == null) defaultButton = saveDefault;
+	defaultButton = button;
 	if (defaultButton != null) {
 		if (!defaultButton.isDisposed ()) defaultButton.setDefault (true);
 	}
-	if (save) saveDefault = defaultButton;
-	if (saveDefault != null && saveDefault.isDisposed ()) saveDefault = null;
 }
 
 /**
