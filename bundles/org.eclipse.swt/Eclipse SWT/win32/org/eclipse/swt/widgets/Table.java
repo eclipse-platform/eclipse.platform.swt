@@ -2390,12 +2390,22 @@ public void setItemCount (int count) {
 	}
 	if (index < itemCount) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	int length = Math.max (4, (count + 3) / 4 * 4);
-	TableItem [] newItems =  new TableItem [length];
+	TableItem [] newItems = new TableItem [length];
 	System.arraycopy (items, 0, newItems, 0, Math.min (count, itemCount));
 	items = newItems;
 	if (isVirtual) {
 		int flags = OS.LVSICF_NOINVALIDATEALL | OS.LVSICF_NOSCROLL;
 		OS.SendMessage (handle, OS.LVM_SETITEMCOUNT, count, flags);
+		/*
+		* Bug in Windows.  When a virutal table contains items and
+		* LVM_SETITEMCOUNT is used to set the new item count to zero,
+		* Windows does not redraw the table.  Note that simply not
+		* specifying LVSICF_NOINVALIDATEALL or LVSICF_NOSCROLL does
+		* correct the problem.  The fix is to force a redraw.
+		*/
+		if (count == 0 && itemCount != 0) {
+			OS.InvalidateRect (handle, null, true);
+		}
 	} else {
 		for (int i=itemCount; i<count; i++) {
 			items [i] = new TableItem (this, SWT.NONE, i, true);
