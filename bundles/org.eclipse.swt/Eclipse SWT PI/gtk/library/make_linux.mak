@@ -60,6 +60,8 @@ MOZILLACFLAGS = -O \
 	-Wno-non-virtual-dtor \
 	-fPIC \
 	-I./ \
+	-I$(JAVA_HOME)/include \
+	-I$(JAVA_HOME)/include/linux \
 	${GECKO_INCLUDES} \
 	${SWT_PTR_CFLAGS}
 	
