@@ -15,7 +15,6 @@ import java.util.Vector;
 import junit.framework.*;
 import junit.textui.*;
 import org.eclipse.swt.*;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -398,6 +397,9 @@ public void test_setSelection$Lorg_eclipse_swt_widgets_TreeItem() {
 	catch (IllegalArgumentException e) {
 	}
 
+	tree.setSelection(new TreeItem[]{null});
+	assertEquals(0, tree.getSelectionCount());
+
 	tree.setSelection(new TreeItem[]{items[10]});
 	assertEquals(new TreeItem[] {items[10]}, tree.getSelection());
 	
@@ -726,7 +728,6 @@ private void makeCleanEnvironment(boolean single) {
 
 private void createTree(Vector events) {
     makeCleanEnvironment(true);
-	tree.setLayoutData(new GridData(GridData.BEGINNING));
 	for (int i = 0; i < 3; i++) {
 		TreeItem item = new TreeItem(tree, SWT.NONE);
 		item.setText("TreeItem" + i);
