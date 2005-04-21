@@ -3109,8 +3109,9 @@ public void setSelection(CTabItem item) {
 public void setSelection(int index) {
 	checkWidget();
 	if (index < 0 || index >= items.length) return;
+	CTabItem selection = items[index];
 	if (selectedIndex == index) {
-		showItem(items[index]);
+		showItem(selection);
 		return;
 	}
 	
@@ -3119,9 +3120,10 @@ public void setSelection(int index) {
 	if (oldIndex != -1) {
 		items[oldIndex].closeImageState = NONE;
 	}
-	items[selectedIndex].closeImageState = NORMAL;
-	
-	Control control = items[index].control;
+	selection.closeImageState = NORMAL;
+	selection.showing = false;
+
+	Control control = selection.control;
 	if (control != null && !control.isDisposed()) {
 		control.setBounds(getClientArea());
 		control.setVisible(true);
@@ -3133,7 +3135,7 @@ public void setSelection(int index) {
 			control.setVisible(false);
 		}
 	}
-	showItem(items[index]);
+	showItem(selection);
 	redraw();
 }
 void setSelection(int index, boolean notify) {	
@@ -3697,7 +3699,7 @@ boolean updateItems(int showIndex) {
 		System.arraycopy(priority, idx, newPriority, 0, priority.length - idx);
 		System.arraycopy(priority, 0, newPriority, priority.length - idx, idx);
 		priority = newPriority;
-	}
+}
 	
 	boolean oldShowChevron = showChevron;
 	boolean changed = setItemSize();
