@@ -17,7 +17,6 @@ import junit.framework.*;
 import junit.textui.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.TableColumn;
 
 /**
@@ -357,7 +356,6 @@ private void setSelection_helper(String message, TableTreeItem[] itemsToSelect, 
 private void createTableTree(Vector events, boolean traverse) {
     String test = getTestName();
     tableTree = new TableTree(shell, SWT.BORDER | SWT.SINGLE);
-	tableTree.setLayoutData(new GridData(GridData.BEGINNING));
 	for (int col = 0; col < 3; col++) {
 		TableColumn column = new TableColumn(tableTree.getTable(), SWT.NONE);
 		column.setText("Col " + col);
