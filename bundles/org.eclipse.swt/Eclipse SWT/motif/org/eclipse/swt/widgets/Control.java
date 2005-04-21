@@ -2626,7 +2626,9 @@ boolean translateMnemonic (char key, int keysym, XKeyEvent xEvent) {
 		Event event = new Event();
 		event.time = xEvent.time;
 		event.detail = SWT.TRAVERSE_MNEMONIC;
-		if (setKeyState (event, xEvent)) {
+		event.character = key;
+		event.keyCode = keysym;
+		if (setInputState (event, xEvent.state)) {
 			return translateMnemonic (event, null) || shell.translateMnemonic (event, this);
 		}
 	}
