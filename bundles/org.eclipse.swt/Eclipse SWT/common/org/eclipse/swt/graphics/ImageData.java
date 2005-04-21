@@ -291,7 +291,25 @@ public ImageData(int width, int height, int depth, PaletteData palette, int scan
  * image only. If the stream contains multiple images, only the first
  * one will be loaded. To load multiple images, use 
  * <code>ImageLoader.load()</code>.
+ * </p><p>
+ * This constructor may be used to load a resource as follows:
  * </p>
+ * <pre>
+ *     static ImageData loadImageData (Class clazz, String string) {
+ *          InputStream stream = clazz.getResourceAsStream (string);
+ *          if (stream == null) return null;
+ *          ImageData imageData = null;
+ *          try {
+ *               imageData = new ImageData (stream);
+ *          } catch (SWTException ex) {
+ *          } finally {
+ *               try {
+ *                    stream.close ();
+ *               } catch (IOException ex) {}
+ *          }
+ *          return imageData;
+ *     }
+ * </pre>
  *
  * @param stream the input stream to load the image from (must not be null)
  *
