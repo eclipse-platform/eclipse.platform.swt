@@ -78,7 +78,12 @@ public class SelectionEvent extends TypedEvent {
 	public int stateMask;
 
 	/**
-	 * depending on the event.
+	 * The text of the hyperlink that was selected.
+	 * This will be either the text of the hyperlink or the value of its HREF,
+	 * if one was specified.
+	 * 
+	 * @see Link#setText(String)
+	 * @since 3.1
 	 */
 	public String text;
 	
