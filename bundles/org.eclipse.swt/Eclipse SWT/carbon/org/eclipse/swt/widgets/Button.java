@@ -471,17 +471,6 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	return result;
 }
 
-int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	if ((style & SWT.PUSH) != 0) {
-		short [] part = new short [1];
-		OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
-		menuShell ().setDefaultButton (part [0] != OS.kControlFocusNoPart ? this : null, false);	
-	}
-	return result;
-}
-
 int kEventControlTrack (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlTrack (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;

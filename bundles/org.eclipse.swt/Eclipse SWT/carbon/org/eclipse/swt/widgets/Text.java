@@ -231,6 +231,10 @@ static int checkStyle (int style) {
 	return style | SWT.SINGLE;
 }
 
+int callFocusEventHandler (int nextHandler, int theEvent) {
+	return OS.noErr;
+}
+
 /**
  * Clears the selection.
  *
@@ -948,13 +952,14 @@ int kEventControlSetCursor (int nextHandler, int theEvent, int userData) {
 
 int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	short [] part = new short [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
-	drawFocusClipped (handle, part [0] != OS.kControlFocusNoPart && drawFocusRing (), hasBorder (), getParentBackground (), inset ());
-	OS.TXNDraw (txnObject, 0);
-	OS.TXNFocus (txnObject, part [0] != OS.kControlFocusNoPart);
-	return OS.noErr;
+	if (result == OS.noErr) {
+		short [] part = new short [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
+		drawFocusClipped (handle, part [0] != OS.kControlFocusNoPart && drawFocusRing (), hasBorder (), getParentBackground (), inset ());
+		OS.TXNDraw (txnObject, 0);
+		OS.TXNFocus (txnObject, part [0] != OS.kControlFocusNoPart);
+	}
+	return result;
 }
 
 int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userData) {

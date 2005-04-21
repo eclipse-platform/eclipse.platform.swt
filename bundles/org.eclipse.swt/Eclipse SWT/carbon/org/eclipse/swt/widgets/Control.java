@@ -366,6 +366,10 @@ int colorProc (int inControl, int inMessage, int inDrawDepth, int inDrawInColor)
 	return OS.eventNotHandledErr;
 }
 
+int callFocusEventHandler (int nextHandler, int theEvent) {
+	return OS.CallNextEventHandler (nextHandler, theEvent);
+}
+
 void checkBuffered () {
 	style |= SWT.DOUBLE_BUFFERED;
 }
@@ -1390,14 +1394,17 @@ int kEventControlSetCursor (int nextHandler, int theEvent, int userData) {
 
 int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	display.focusCombo = null;
+	int result = callFocusEventHandler (nextHandler, theEvent);
 	if (!display.ignoreFocus) {
-		short [] part = new short [1];
-		OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
-		sendFocusEvent (part [0] != OS.kControlFocusNoPart ? SWT.FocusIn : SWT.FocusOut, false);
-		// widget could be disposed at this point
-		if (isDisposed ()) return OS.noErr;
+		if (result == OS.noErr) {		
+			short [] part = new short [1];
+			OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
+			sendFocusEvent (part [0] != OS.kControlFocusNoPart ? SWT.FocusIn : SWT.FocusOut, false);
+			// widget could be disposed at this point
+			if (isDisposed ()) return OS.noErr;
+		}
 	}
-	return OS.eventNotHandledErr;
+	return result;
 }	
 
 int kEventControlTrack (int nextHandler, int theEvent, int userData) {

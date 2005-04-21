@@ -550,12 +550,13 @@ Rect inset () {
 
 int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	short [] part = new short [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
-	if (part [0] == OS.kControlFocusNoPart) {
-		int value = getSelectionText ();
-		setSelection (value, true);		
+	if (result == OS.noErr) {
+		short [] part = new short [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
+		if (part [0] == OS.kControlFocusNoPart) {
+			int value = getSelectionText ();
+			setSelection (value, true);
+		}
 	}
 	return result;
 }

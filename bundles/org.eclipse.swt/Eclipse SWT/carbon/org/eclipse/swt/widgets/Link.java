@@ -109,6 +109,10 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection, typedListener);
 }
 
+int callFocusEventHandler (int nextHandler, int theEvent) {
+	return OS.noErr;
+}
+
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
@@ -258,9 +262,9 @@ public String getText () {
 }
 
 int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
-	super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
-	redraw ();
-	return OS.noErr;
+	int result = super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
+	if (result == OS.noErr) redraw ();
+	return result;
 }
 
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {

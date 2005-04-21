@@ -117,6 +117,10 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
+int callFocusEventHandler (int nextHandler, int theEvent) {
+	return OS.noErr;
+}
+
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int width = 0, height = 0;
@@ -233,11 +237,12 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 
 int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	Point location = getLocation();
-	lastX = location.x;
-	lastY = location.y;
-	return OS.noErr;
+	if (result == OS.noErr) {
+		Point location = getLocation();
+		lastX = location.x;
+		lastY = location.y;
+	}
+	return result;
 }
 
 int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userData) {

@@ -126,6 +126,11 @@ Control [] _getTabList () {
 	return tabList;
 }
 
+int callFocusEventHandler (int nextHandler, int theEvent) {
+	if ((state & CANVAS) != 0) return OS.noErr;
+	return super.callFocusEventHandler (nextHandler, theEvent);
+}
+
 /**
  * Clears any data that has been cached by a Layout for all widgets that 
  * are in the parent hierarchy of the changed control up to and including the 
@@ -446,16 +451,16 @@ int kEventControlClick (int nextHandler, int theEvent, int userData) {
 
 int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	if ((state & CANVAS) != 0) {
-		if (scrolledHandle != 0) {
-			if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
-				short [] part = new short [1];
-				OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
-				drawFocusClipped (scrolledHandle, part [0] != OS.kControlFocusNoPart && drawFocusRing (), hasBorder (), getParentBackground (), inset ());
+	if (result == OS.noErr) {
+		if ((state & CANVAS) != 0) {
+			if (scrolledHandle != 0) {
+				if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
+					short [] part = new short [1];
+					OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
+					drawFocusClipped (scrolledHandle, part [0] != OS.kControlFocusNoPart && drawFocusRing (), hasBorder (), getParentBackground (), inset ());
+				}
 			}
 		}
-		return OS.noErr;
 	}
 	return result;
 }

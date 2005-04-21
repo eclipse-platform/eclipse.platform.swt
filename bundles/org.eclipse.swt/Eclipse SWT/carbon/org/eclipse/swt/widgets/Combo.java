@@ -980,11 +980,12 @@ int kEventRawKeyPressed (int nextHandler, int theEvent, int userData) {
 
 int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	if ((style & SWT.READ_ONLY) == 0) {
-		short [] part = new short [1];
-		OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
-		if (part [0] != OS.kControlFocusNoPart) display.focusCombo = this;
+	if (result == OS.noErr) {
+		if ((style & SWT.READ_ONLY) == 0) {
+			short [] part = new short [1];
+			OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
+			if (part [0] != OS.kControlFocusNoPart) display.focusCombo = this;
+		}
 	}
 	return result;
 }
