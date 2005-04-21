@@ -999,9 +999,9 @@ void drawBitmapTransparent(Image srcImage, int srcX, int srcY, int srcWidth, int
 					OS.SetDIBColorTable(srcHdc, 0, maxColors, newColors);
 					originalColors = oldColors;
 				} else {
-					transRed = oldColors[offset] & 0xFF;
+					transBlue = oldColors[offset] & 0xFF;
 					transGreen = oldColors[offset+1] & 0xFF;
-					transBlue = oldColors[offset+2] & 0xFF;
+					transRed = oldColors[offset+2] & 0xFF;
 				}
 			}
 		} else {
