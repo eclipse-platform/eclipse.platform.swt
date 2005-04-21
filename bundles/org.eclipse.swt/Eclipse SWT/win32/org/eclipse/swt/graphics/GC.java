@@ -708,7 +708,7 @@ void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, i
 			
 			if (technology == OS.DT_RASPRINTER) {
 				OS.SelectObject(srcHdc, newIconInfo.hbmColor);
-				OS.SelectObject(dstHdc, srcIconInfo.hbmMask);
+				OS.SelectObject(dstHdc, newIconInfo.hbmMask);
 				drawBitmapTransparentByClipping(srcHdc, dstHdc, 0, 0, destWidth, destHeight, destX, destY, destWidth, destHeight, true, destWidth, destHeight);	
 				OS.SelectObject(srcHdc, oldSrcBitmap);
 				OS.SelectObject(dstHdc, oldDestBitmap);
@@ -911,6 +911,7 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 }
 
 void drawBitmapTransparentByClipping(int srcHdc, int maskHdc, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imgWidth, int imgHeight) {
+	/* Create a clipping region from the mask */
 	int rgn = OS.CreateRectRgn(0, 0, 0, 0);
 	for (int y=0; y<imgHeight; y++) {
 		for (int x=0; x<imgWidth; x++) {
@@ -920,6 +921,16 @@ void drawBitmapTransparentByClipping(int srcHdc, int maskHdc, int srcX, int srcY
 				OS.DeleteObject(tempRgn);
 			}
 		}
+	}
+	/* Stretch the clipping mask if needed */
+	if (destWidth != srcWidth || destHeight != srcHeight) {
+		int nBytes = OS.GetRegionData (rgn, 0, null);
+		int[] lpRgnData = new int[nBytes / 4];
+		OS.GetRegionData (rgn, nBytes, lpRgnData);
+		float[] lpXform = new float[] {(float)destWidth/srcWidth, 0, 0, (float)destHeight/srcHeight, 0, 0};
+		int tmpRgn = OS.ExtCreateRegion(lpXform, nBytes, lpRgnData);
+		OS.DeleteObject(rgn);
+		rgn = tmpRgn;
 	}
 	OS.OffsetRgn(rgn, destX, destY);
 	int clip = OS.CreateRectRgn(0, 0, 0, 0);
