@@ -1446,6 +1446,9 @@ public void test_setSelection$Lorg_eclipse_swt_widgets_TableItem() {
 	table.setSelection(new TableItem[]{});
 	assertEquals(0, table.getSelectionCount());
 
+	table.setSelection(new TableItem[]{null});
+	assertEquals(0, table.getSelectionCount());
+
 	table.setSelection(new TableItem[]{items[0], items[3], items[2]});
 	assertSame(new TableItem[]{items[0], items[2], items[3]}, table.getSelection());	
 	table.setSelection(new TableItem[]{items[3], items[2], items[1]});
