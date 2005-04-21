@@ -232,9 +232,34 @@ public void test_removeShellListenerLorg_eclipse_swt_events_ShellListener() {
 }
 
 public void test_setActive() {
+	/* Create shell2 and make it active. */
+	Shell shell2 = new Shell();
+	shell2.open();
+	
+	/* Test setActive for visible shell. */
 	shell.setVisible(true);
 	shell.setActive();
-	assertTrue(":a:", shell.getDisplay().getActiveShell() == shell);
+	assertTrue("visible shell was not made active", shell.getDisplay().getActiveShell() == shell);
+	
+	/* Test setActive for visible dialog shell. */
+	shell2.setActive();
+	testShell.setVisible(true);
+	testShell.setActive();
+	assertTrue("visible dialog shell was not made active", testShell.getDisplay().getActiveShell() == testShell);
+	
+	/* Test setActive for non-visible shell. */
+	shell2.setActive();
+	shell.setVisible(false);
+	shell.setActive();
+	assertTrue("non-visible shell was made active", shell.getDisplay().getActiveShell() != shell);
+
+	/* Test setActive for non-visible dialog shell. */
+	shell2.setActive();
+	testShell.setVisible(false);
+	testShell.setActive();
+	assertTrue("non-visible dialog shell was made active", testShell.getDisplay().getActiveShell() != testShell);
+	
+	shell2.dispose();
 }
 
 public void test_setEnabledZ() {
