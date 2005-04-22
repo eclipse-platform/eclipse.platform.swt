@@ -1812,18 +1812,21 @@ LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
 	* and use ShowWindow() with SW_SHOWMINIMIZED to minimize
 	* the window, rather than running the default window proc.
 	* 
-	* NOTE:  The default window proc activates the next top-level
-	* window in the Z order while ShowWindow () with SW_SHOWMINIMIZED
-	* does not.  There is no fix for this at this time.
+	* NOTE:  The default window proc activates the next
+	* top-level window in the Z-order while ShowWindow()
+	* with SW_SHOWMINIMIZED does not.  There is no fix for
+	* this at this time.
 	*/
-	int cmd = wParam & 0xFFF0;
-	switch (cmd) {
-		case OS.SC_MINIMIZE:
-			long memory = Runtime.getRuntime ().totalMemory ();
-			if (memory >= 32 * 1024 * 1024) {
-				OS.ShowWindow (handle, OS.SW_SHOWMINIMIZED);
-				return LRESULT.ZERO;
-			}
+	if (OS.IsWinNT) {
+		int cmd = wParam & 0xFFF0;
+		switch (cmd) {
+			case OS.SC_MINIMIZE:
+				long memory = Runtime.getRuntime ().totalMemory ();
+				if (memory >= 32 * 1024 * 1024) {
+					OS.ShowWindow (handle, OS.SW_SHOWMINIMIZED);
+					return LRESULT.ZERO;
+				}
+		}
 	}
 	return result;
 }
