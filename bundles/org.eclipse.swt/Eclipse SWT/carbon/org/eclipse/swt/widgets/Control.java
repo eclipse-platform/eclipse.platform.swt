@@ -618,7 +618,15 @@ public boolean forceFocus () {
 	if (isDisposed ()) return false;
 	int focusHandle = focusHandle ();
 	int window = OS.GetControlOwner (focusHandle);
+	Control oldFocus = display.getFocusControl ();
+	display.ignoreFocus = true;
 	OS.SetKeyboardFocus (window, focusHandle, (short) OS.kControlFocusNextPart);
+	display.ignoreFocus = false;
+	Control newFocus = display.getFocusControl ();
+	if (oldFocus != newFocus) {
+		if (oldFocus != null && !oldFocus.isDisposed ()) oldFocus.sendFocusEvent (SWT.FocusOut, false);
+		if (newFocus != null && !newFocus.isDisposed () && newFocus.isEnabled ()) newFocus.sendFocusEvent (SWT.FocusIn, false);
+	}
 	if (isDisposed ()) return false;
 	shell.setSavedFocus (this);
 	return hasFocus ();
