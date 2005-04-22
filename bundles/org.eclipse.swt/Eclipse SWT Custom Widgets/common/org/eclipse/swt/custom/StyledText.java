@@ -124,6 +124,7 @@ public class StyledText extends Canvas {
 										// when changing lines/pages. Fixes bug 5935
 	int caretOffset = 0;
 	Point selection = new Point(0, 0);	// x and y are start and end caret offsets of selection
+	Point clipboardSelection;           // x and y are start and end caret offsets of previous selection
 	int selectionAnchor;				// position of selection anchor. 0 based offset from beginning of text
 	Point doubleClickSelection;			// selection after last mouse double click
 	boolean editable = true;
@@ -4809,6 +4810,7 @@ void installListeners() {
 			switch (event.type) {
 				case SWT.Dispose: handleDispose(event); break;
 				case SWT.KeyDown: handleKeyDown(event); break;
+				case SWT.KeyUp: handleKeyUp(event); break;
 				case SWT.MouseDown: handleMouseDown(event); break;
 				case SWT.MouseUp: handleMouseUp(event); break;
 				case SWT.MouseDoubleClick: handleMouseDoubleClick(event); break;
@@ -4821,6 +4823,7 @@ void installListeners() {
 	};
 	addListener(SWT.Dispose, listener);
 	addListener(SWT.KeyDown, listener);
+	addListener(SWT.KeyUp, listener);
 	addListener(SWT.MouseDown, listener);
 	addListener(SWT.MouseUp, listener);
 	addListener(SWT.MouseDoubleClick, listener);
@@ -5062,8 +5065,11 @@ void handleKey(Event event) {
  * @param event keyboard event
  */
 void handleKeyDown(Event event) {
-	Event verifyEvent = new Event();
+	if (clipboardSelection == null) {
+		clipboardSelection = new Point(selection.x, selection.y);
+	}
 	
+	Event verifyEvent = new Event();
 	verifyEvent.character = event.character;
 	verifyEvent.keyCode = event.keyCode;
 	verifyEvent.stateMask = event.stateMask;
@@ -5072,6 +5078,33 @@ void handleKeyDown(Event event) {
 	if (verifyEvent.doit == true) {
 		handleKey(event);
 	}
+}
+/**
+ * Update the Selection Clipboard.
+ * <p>
+ *
+ * @param event keyboard event
+ */
+void handleKeyUp(Event event) {
+	if (clipboardSelection != null) {
+		if (clipboardSelection.x != selection.x || clipboardSelection.y != selection.y) {
+			try {
+				if (selection.y - selection.x > 0) {
+					setClipboardContent(selection.x, selection.y - selection.x, DND.SELECTION_CLIPBOARD);
+				}
+			}
+			catch (SWTError error) {
+				// Copy to clipboard failed. This happens when another application 
+				// is accessing the clipboard while we copy. Ignore the error.
+				// Fixes 1GDQAVN
+				// Rethrow all other errors. Fixes bug 17578.
+				if (error.code != DND.ERROR_CANNOT_SET_CLIPBOARD) {
+					throw error;
+				}
+			}
+		}
+	}
+	clipboardSelection = null;
 }
 /**
  * Updates the caret location and selection if mouse button 1 has been 
@@ -5141,6 +5174,22 @@ void handleMouseUp(Event event) {
 	mouseDoubleClick = false;
 	event.y -= topMargin;
 	endAutoScroll();
+	if (event.button == 1) {
+		try {
+			if (selection.y - selection.x > 0) {
+				setClipboardContent(selection.x, selection.y - selection.x, DND.SELECTION_CLIPBOARD);
+			}
+		}
+		catch (SWTError error) {
+			// Copy to clipboard failed. This happens when another application 
+			// is accessing the clipboard while we copy. Ignore the error.
+			// Fixes 1GDQAVN
+			// Rethrow all other errors. Fixes bug 17578.
+			if (error.code != DND.ERROR_CANNOT_SET_CLIPBOARD) {
+				throw error;
+			}
+		}
+	}
 }
 /**
  * Renders the invalidated area specified in the paint event.
@@ -6554,20 +6603,6 @@ void sendSelectionEvent() {
 	event.x = selection.x;
 	event.y = selection.y;
 	notifyListeners(SWT.Selection, event);
-	try {
-		if (selection.y - selection.x > 0) {
-			setClipboardContent(selection.x, selection.y - selection.x, DND.SELECTION_CLIPBOARD);
-		}
-	}
-	catch (SWTError error) {
-		// Copy to clipboard failed. This happens when another application 
-		// is accessing the clipboard while we copy. Ignore the error.
-		// Fixes 1GDQAVN
-		// Rethrow all other errors. Fixes bug 17578.
-		if (error.code != DND.ERROR_CANNOT_SET_CLIPBOARD) {
-			throw error;
-		}
-	}
 }
 /**
  * Sets whether the widget wraps lines.
@@ -6751,17 +6786,22 @@ public void setCaretOffset(int offset) {
  */
 void setClipboardContent(int start, int length, int clipboardType) throws SWTError {
 	if (clipboardType == DND.SELECTION_CLIPBOARD && !(IS_MOTIF || IS_GTK)) return;
-	RTFTransfer rtfTransfer = RTFTransfer.getInstance();
 	TextTransfer plainTextTransfer = TextTransfer.getInstance();
-	RTFWriter rtfWriter = new RTFWriter(start, length);
 	TextWriter plainTextWriter = new TextWriter(start, length);
-	String rtfText = getPlatformDelimitedText(rtfWriter);
 	String plainText = getPlatformDelimitedText(plainTextWriter);
-
-	clipboard.setContents(
-		new String[]{rtfText, plainText}, 
-		new Transfer[]{rtfTransfer, plainTextTransfer},
-		clipboardType);
+	Object[] data;
+	Transfer[] types;
+	if (clipboardType == DND.SELECTION_CLIPBOARD) {
+		data = new Object[]{plainText};
+		types = new Transfer[]{plainTextTransfer};
+	} else {
+		RTFTransfer rtfTransfer = RTFTransfer.getInstance();
+		RTFWriter rtfWriter = new RTFWriter(start, length);
+		String rtfText = getPlatformDelimitedText(rtfWriter);
+		data = new Object[]{rtfText, plainText};
+		types = new Transfer[]{rtfTransfer, plainTextTransfer};
+	}
+	clipboard.setContents(data, types, clipboardType);
 }
 /**
  * Sets the content implementation to use for text storage.
