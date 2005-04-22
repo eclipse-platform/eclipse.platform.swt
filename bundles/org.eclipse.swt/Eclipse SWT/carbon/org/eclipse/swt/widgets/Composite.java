@@ -449,6 +449,11 @@ int kEventControlClick (int nextHandler, int theEvent, int userData) {
 	return result;
 }
 
+int kEventControlGetFocusPart (int nextHandler, int theEvent, int userData) {
+	if ((state & CANVAS) != 0) return OS.noErr;
+	return super.kEventControlGetFocusPart (nextHandler, theEvent, userData);
+}
+
 int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
 	if (result == OS.noErr) {

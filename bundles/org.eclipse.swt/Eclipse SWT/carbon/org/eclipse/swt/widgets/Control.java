@@ -1063,6 +1063,7 @@ void hookEvents () {
 		OS.kEventClassControl, OS.kEventControlHit,
 		OS.kEventClassControl, OS.kEventControlSetCursor,
 		OS.kEventClassControl, OS.kEventControlSetFocusPart,
+		OS.kEventClassControl, OS.kEventControlGetFocusPart,
 		OS.kEventClassControl, OS.kEventControlTrack,
 	};
 	int controlTarget = OS.GetControlEventTarget (handle);
@@ -1396,10 +1397,20 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	display.focusCombo = null;
 	int result = callFocusEventHandler (nextHandler, theEvent);
 	if (!display.ignoreFocus) {
-		if (result == OS.noErr) {		
-			short [] part = new short [1];
-			OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
-			sendFocusEvent (part [0] != OS.kControlFocusNoPart ? SWT.FocusIn : SWT.FocusOut, false);
+		if (result == OS.noErr) {
+			int window = OS.GetControlOwner (handle);
+			if (window == OS.GetUserFocusWindow ()) {
+				int focusHandle = focusHandle ();
+				int [] focusControl = new int [1];
+				OS.GetKeyboardFocus (window, focusControl);
+				short [] part = new short [1];
+				OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
+				if (part [0] == OS.kControlFocusNoPart) {
+					if (focusControl [0] == focusHandle) sendFocusEvent (SWT.FocusOut, false);
+				} else {
+					if (focusControl [0] != focusHandle) sendFocusEvent (SWT.FocusIn, false);
+				}
+			}
 			// widget could be disposed at this point
 			if (isDisposed ()) return OS.noErr;
 		}

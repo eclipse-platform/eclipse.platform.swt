@@ -324,6 +324,7 @@ int controlProc (int nextHandler, int theEvent, int userData) {
 		case OS.kEventControlSetCursor:				return kEventControlSetCursor (nextHandler, theEvent, userData);
 		case OS.kEventControlSetFocusPart:			return kEventControlSetFocusPart (nextHandler, theEvent, userData);
 		case OS.kEventControlTrack:					return kEventControlTrack (nextHandler, theEvent, userData);
+		case OS.kEventControlGetFocusPart:			return kEventControlGetFocusPart (nextHandler, theEvent, userData); 
 	}
 	return OS.eventNotHandledErr;
 }
@@ -879,6 +880,10 @@ int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 	}
 	OS.DisposeRgn (visibleRgn);
 	return OS.noErr;
+}
+
+int kEventControlGetFocusPart (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
 }
 
 int kEventControlHit (int nextHandler, int theEvent, int userData) {

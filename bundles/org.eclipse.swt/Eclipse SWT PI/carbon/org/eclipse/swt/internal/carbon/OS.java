@@ -291,6 +291,7 @@ public class OS extends Platform {
   	public static final int kEventControlDeactivate = 10;
 	public static final int kEventControlDraw = 4;
 	public static final int kControlFocusNextPart = -1;
+	public static final int kEventControlGetFocusPart = 8;
 	public static final int kEventControlHit = 1;
 	public static final int kEventControlSetCursor = 11;
 	public static final int kEventControlSetFocusPart = 7;

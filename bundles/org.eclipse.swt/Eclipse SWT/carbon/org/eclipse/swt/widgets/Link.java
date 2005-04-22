@@ -261,6 +261,10 @@ public String getText () {
 	return text;
 }
 
+int kEventControlGetFocusPart (int nextHandler, int theEvent, int userData) {
+	return OS.noErr;
+}
+
 int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
 	if (result == OS.noErr) redraw ();

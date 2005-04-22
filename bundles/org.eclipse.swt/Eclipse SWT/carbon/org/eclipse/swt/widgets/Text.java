@@ -943,6 +943,10 @@ int kEventControlDeactivate (int nextHandler, int theEvent, int userData) {
 	return result;
 }
 
+int kEventControlGetFocusPart (int nextHandler, int theEvent, int userData) {
+	return OS.noErr;
+}
+
 int kEventControlSetCursor (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlSetCursor (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
