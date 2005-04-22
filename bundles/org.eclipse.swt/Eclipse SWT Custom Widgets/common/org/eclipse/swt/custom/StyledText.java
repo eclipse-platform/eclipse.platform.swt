@@ -5130,6 +5130,7 @@ void handleMouseMove(Event event) {
 	}
 	event.y -= topMargin;
 	doMouseLocationChange(event.x, event.y, true);
+	update();
 	doAutoScroll(event);
 }
 /** 
