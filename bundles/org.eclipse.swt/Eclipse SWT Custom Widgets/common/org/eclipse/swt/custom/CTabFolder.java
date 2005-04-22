@@ -3672,34 +3672,54 @@ boolean updateItems() {
 boolean updateItems(int showIndex) {
 	if (!single && !mru && showIndex != -1) {
 		// make sure selected item will be showing
-		int idx = -1;
-		for (int i = 0; i < priority.length; i++) {
-			if (priority[i] == showIndex) {
-				idx = i;
-				break;
-			}
-		}
-		if (priority[idx] > priority[0]) {
+		int firstIndex = showIndex;
+		if (priority[0] < showIndex) {
 			int maxWidth = getRightItemEdge() - borderLeft;
 			if (!simple) maxWidth -= curveWidth - 2*curveIndent;
+			int width = 0;
+			int[] widths = new int[items.length];
 			GC gc = new GC(this);
-			int nextIndex = priority[idx];
-			CTabItem next = items[nextIndex];
-			int width = next.preferredWidth(gc, nextIndex == selectedIndex, true);
-			while (idx > 1) {
-				nextIndex = priority[idx-1];
-				next = items[nextIndex];
-				width += next.preferredWidth(gc, nextIndex == selectedIndex, true);
+			for (int i = priority[0]; i <= showIndex; i++) {
+				widths[i] = items[i].preferredWidth(gc, i == selectedIndex, true);
+				width += widths[i];
 				if (width > maxWidth) break;
-				idx--;
+			}
+			if (width > maxWidth) {
+				width = 0;
+				for (int i = showIndex; i >= 0; i--) {
+					if (widths[i] == 0) widths[i] = items[i].preferredWidth(gc, i == selectedIndex, true);
+					width += widths[i];
+					if (width > maxWidth) break;
+					firstIndex = i;
+				}
+			} else {
+				firstIndex = priority[0];
+				for (int i = showIndex + 1; i < items.length; i++) {
+					widths[i] = items[i].preferredWidth(gc, i == selectedIndex, true);
+					width += widths[i];
+					if (width >= maxWidth) break;
+				}
+				if (width < maxWidth) {
+					for (int i = priority[0] - 1; i >= 0; i--) {
+						if (widths[i] == 0) widths[i] = items[i].preferredWidth(gc, i == selectedIndex, true);
+						width += widths[i];
+						if (width > maxWidth) break;
+						firstIndex = i;
+					}
+				}
 			}
 			gc.dispose();
 		}
-		int[] newPriority = new int[priority.length];
-		System.arraycopy(priority, idx, newPriority, 0, priority.length - idx);
-		System.arraycopy(priority, 0, newPriority, priority.length - idx, idx);
-		priority = newPriority;
-}
+		if (firstIndex != priority[0]) {
+			int index = 0;
+			for (int i = firstIndex; i < items.length; i++) {
+				priority[index++] = i;
+			}
+			for (int i = 0; i < firstIndex; i++) {
+				priority[index++] = i;
+			}
+		}
+	}
 	
 	boolean oldShowChevron = showChevron;
 	boolean changed = setItemSize();
