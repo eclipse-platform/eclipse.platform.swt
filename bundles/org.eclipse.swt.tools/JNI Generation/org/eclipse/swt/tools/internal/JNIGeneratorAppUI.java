@@ -557,6 +557,11 @@ void createMembersPanel(Composite panel) {
 			} else if (memberData instanceof MethodData) {
 				MethodData methodData = (MethodData)memberData;
 				switch (column) {
+					case METHOD_ACCESSOR_COLUMN: {
+						methodData.setAccessor(text);
+						item.setText(column, methodData.getAccessor());
+						break;
+					}
 					case METHOD_EXCLUDE_COLUMN: {
 						methodData.setExclude(text);
 						item.setText(column, methodData.getExclude());
