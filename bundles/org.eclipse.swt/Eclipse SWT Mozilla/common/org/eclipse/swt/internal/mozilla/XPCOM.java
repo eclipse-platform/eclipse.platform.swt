@@ -32,6 +32,7 @@ import org.eclipse.swt.internal.*;
 public class XPCOM extends Platform {
 	
 	public static final String MOZILLA_FIVE_HOME = "MOZILLA_FIVE_HOME"; //$NON-NLS-1$
+	public static final String CONTENT_MAYBETEXT = "application/x-vnd.mozilla.maybe-text"; //$NON-NLS-1$
 	public static final String CONTENT_MULTIPART = "multipart/x-mixed-replace"; //$NON-NLS-1$
 	public static final String HTTPS_PROTOCOL = "https:";  //$NON-NLS-1$
 	

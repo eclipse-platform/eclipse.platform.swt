@@ -2062,6 +2062,13 @@ int /*long*/ IsPreferred(int /*long*/ aContentType, int /*long*/ aDesiredContent
 		byte[] dest = new byte[size];
 		XPCOM.memmove(dest, aContentType, size);
 		String contentType = new String(dest);
+		/*
+		* Feature in Mozilla. Implementing IsPreferred properly would require the use of
+		* unfrozen API such as nsICategoryManeger.GetCategoryEntry("gecko-content-viewer")
+		* in order to determine which content can be handled.  The workaround is to always
+		* accept content except for known problematic types.
+		*/
+		if (contentType.equals(XPCOM.CONTENT_MAYBETEXT)) preferred = 0;
 		if (contentType.equals(XPCOM.CONTENT_MULTIPART)) preferred = 0;
 	}
 	/* Note. boolean remains of size 4 on 64 bit machine */
