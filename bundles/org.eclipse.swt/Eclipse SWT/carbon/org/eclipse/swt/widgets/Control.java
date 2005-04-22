@@ -616,10 +616,20 @@ public boolean forceFocus () {
 	shell.setSavedFocus (null);
 	shell.bringToTop (false);
 	if (isDisposed ()) return false;
-	int focusHandle = focusHandle ();
-	int window = OS.GetControlOwner (focusHandle);
+	/*
+	* Feature in the Macintosh.  SetKeyboardFocus() sends kEventControlSetFocusPart
+	* with the part code equal to kControlFocusNoPart to the control that is about
+	* to lose focus and then sends kEventControlSetFocusPart with part code equal
+	* to kControlFocusNextPart to this control (the one that is about to get focus).
+	* If the control does not accept focus because of the full keyboard access mode,
+	* kEventControlSetFocusPart is sent again to the control in focus causing multiple
+	* focus events to happen.  The fix is to ignore focus events and issue them only
+	* if the focus control changed.
+	*/
 	Control oldFocus = display.getFocusControl ();
 	display.ignoreFocus = true;
+	int focusHandle = focusHandle ();
+	int window = OS.GetControlOwner (focusHandle);
 	OS.SetKeyboardFocus (window, focusHandle, (short) OS.kControlFocusNextPart);
 	display.ignoreFocus = false;
 	Control newFocus = display.getFocusControl ();
