@@ -679,6 +679,14 @@ void createItem (TableColumn column, int index) {
 	*/
 	System.arraycopy (columns, index, columns, index + 1, count - index);
 	columns [index] = column;
+	
+	/*
+	* Ensure that resize listeners for the table and for columns
+	* within the table are not called.  This can happen when the
+	* first column is inserted into a table or when a new column
+	* is inserted in the first position. 
+	*/
+	ignoreResize = true;
 	if (index == 0) {
 		if (count > 0) {
 			LVCOLUMN lvColumn = new LVCOLUMN ();
@@ -726,6 +734,7 @@ void createItem (TableColumn column, int index) {
 		lvColumn.fmt = fmt;
 		OS.SendMessage (handle, OS.LVM_INSERTCOLUMN, index, lvColumn);
 	}
+	ignoreResize = false;
 }
 
 void createItem (TableItem item, int index) {

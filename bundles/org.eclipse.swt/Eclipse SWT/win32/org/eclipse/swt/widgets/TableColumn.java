@@ -309,7 +309,6 @@ public void pack () {
 		Rectangle rect = image.getBounds ();
 		headerWidth += rect.width + margin * 2;
 	}
-	boolean oldIgnoreRezize = parent.ignoreResize;
 	parent.ignoreResize = true;
 	OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, OS.LVSCW_AUTOSIZE);
 	int columnWidth = OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
@@ -368,7 +367,7 @@ public void pack () {
 			OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, columnWidth);
 		}
 	}
-	parent.ignoreResize = oldIgnoreRezize;
+	parent.ignoreResize = false;
 	int newWidth = OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
 	if (oldWidth != newWidth) {
 		sendEvent (SWT.Resize);
