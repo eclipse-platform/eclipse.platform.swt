@@ -252,7 +252,7 @@ void createHandle (int index, boolean scrolled) {
 		OS.gtk_container_add (fixedHandle, scrolledHandle);
 		/*
 		* Force the scrolledWindow to have a single child that is
-		* not scrolled automatically.  Calling gtk_container_add
+		* not scrolled automatically.  Calling gtk_container_add()
 		* seems to add the child correctly but cause a warning.
 		*/
 		boolean warnings = display.getWarnings ();
