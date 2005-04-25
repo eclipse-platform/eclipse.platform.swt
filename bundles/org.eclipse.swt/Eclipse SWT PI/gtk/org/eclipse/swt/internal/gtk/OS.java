@@ -401,7 +401,6 @@ public class OS extends Platform {
 	public static final byte[] interior_focus = ascii("interior_focus");
 	public static final byte[] mode = ascii("mode");
 	public static final byte[] pixbuf = ascii("pixbuf");
-	public static final byte[] show_hidden = ascii("show-hidden");
 	public static final byte[] text = ascii("text");
 	public static final byte[] xalign = ascii("xalign");
 	

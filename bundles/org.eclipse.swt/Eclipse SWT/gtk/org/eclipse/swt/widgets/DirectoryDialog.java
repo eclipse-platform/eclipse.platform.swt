@@ -135,7 +135,6 @@ String openChooserDialog () {
 		OS.GTK_STOCK_OK (), OS.GTK_RESPONSE_OK,
 		0);
 	display.setWarnings (oldWarnings);
-	OS.g_object_set (handle, OS.show_hidden, 1, 0);
 	if (filterPath != null && filterPath.length () > 0) {
 		StringBuffer stringBuffer = new StringBuffer ();
 		/* filename must be a full path */

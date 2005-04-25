@@ -317,7 +317,6 @@ String openChooserDialog () {
 		OS.GTK_STOCK_OK (), OS.GTK_RESPONSE_OK,
 		0);
 	display.setWarnings (oldWarnings);
-	OS.g_object_set (handle, OS.show_hidden, 1, 0);
 	presetChooserDialog ();
 	String answer = null;
 	if (OS.gtk_dialog_run (handle) == OS.GTK_RESPONSE_OK) {
