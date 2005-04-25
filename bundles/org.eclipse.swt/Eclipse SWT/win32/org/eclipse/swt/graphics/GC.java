@@ -1971,8 +1971,7 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 	*/
 	if (!OS.IsWinCE && rop2 != OS.R2_XORPEN && OS.GetDeviceCaps(handle, OS.TECHNOLOGY) != OS.DT_RASPRINTER) {
 		final int hHeap = OS.GetProcessHeap();
-		final int pMesh = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY,
-			GRADIENT_RECT.sizeof + TRIVERTEX.sizeof * 2);
+		final int pMesh = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, GRADIENT_RECT.sizeof + TRIVERTEX.sizeof * 2);
 		final int pVertex = pMesh + GRADIENT_RECT.sizeof;
 	
 		GRADIENT_RECT gradientRect = new GRADIENT_RECT();
@@ -1997,8 +1996,7 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 		trivertex.Alpha = -1;
 		OS.MoveMemory(pVertex + TRIVERTEX.sizeof, trivertex, TRIVERTEX.sizeof);
 	
-		boolean success = OS.GradientFill(handle, pVertex, 2, pMesh, 1,
-			vertical ? OS.GRADIENT_FILL_RECT_V : OS.GRADIENT_FILL_RECT_H);
+		boolean success = OS.GradientFill(handle, pVertex, 2, pMesh, 1, vertical ? OS.GRADIENT_FILL_RECT_V : OS.GRADIENT_FILL_RECT_H);
 		OS.HeapFree(hHeap, 0, pMesh);
 		if (success) return;
 	}
