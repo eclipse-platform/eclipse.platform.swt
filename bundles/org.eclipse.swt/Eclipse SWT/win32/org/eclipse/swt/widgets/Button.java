@@ -514,6 +514,7 @@ public void setImage (Image image) {
 		if (imageList != null) imageList.dispose ();
 		imageList = null;
 		if (image != null) {
+			if (image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 			imageList = new ImageList ();
 			imageList.add (image);
 			BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
