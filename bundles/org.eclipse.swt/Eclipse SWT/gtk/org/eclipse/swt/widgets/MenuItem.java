@@ -839,10 +839,13 @@ void updateAccelerator (int /*long*/ accelGroup, boolean add) {
 			default: keysym = Display.wcsToMbcs ((char) keysym);
 		}
 	}
-	if (add) {
-		OS.gtk_widget_add_accelerator (handle, OS.activate, accelGroup, keysym, mask, OS.GTK_ACCEL_VISIBLE);
-	} else {
-		OS.gtk_widget_remove_accelerator (handle, accelGroup, keysym, mask);
+	/* When accel_key is zero, it causes GTK warnings */
+	if (keysym != 0) {
+		if (add) {
+			OS.gtk_widget_add_accelerator (handle, OS.activate, accelGroup, keysym, mask, OS.GTK_ACCEL_VISIBLE);
+		} else {
+			OS.gtk_widget_remove_accelerator (handle, accelGroup, keysym, mask);
+		}
 	}
 }
 }
