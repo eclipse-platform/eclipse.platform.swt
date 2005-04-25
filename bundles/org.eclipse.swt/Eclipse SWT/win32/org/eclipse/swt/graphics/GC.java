@@ -1535,13 +1535,6 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 	if (length == 0) return;
 	char[] buffer = new char [length];
 	string.getChars(0, length, buffer, 0);
-	int rop2 = 0;
-	if (OS.IsWinCE) {
-		rop2 = OS.SetROP2(handle, OS.R2_COPYPEN);
-		OS.SetROP2(handle, rop2);
-	} else {
-		rop2 = OS.GetROP2(handle);
-	}
 	if (data.gdipGraphics != 0) {
 		initGdip(true, false);
 		int font = Gdip.Font_new(handle, OS.GetCurrentObject(handle, OS.OBJ_FONT));
@@ -1553,6 +1546,13 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 		Gdip.Graphics_DrawString(data.gdipGraphics, buffer, length, font, pt, Gdip.StringFormat_GenericTypographic(), brush);
 		Gdip.Font_delete(font);
 		return;
+	}
+	int rop2 = 0;
+	if (OS.IsWinCE) {
+		rop2 = OS.SetROP2(handle, OS.R2_COPYPEN);
+		OS.SetROP2(handle, rop2);
+	} else {
+		rop2 = OS.GetROP2(handle);
 	}
 	int oldBkMode = OS.SetBkMode(handle, isTransparent ? OS.TRANSPARENT : OS.OPAQUE);
 	if (rop2 != OS.R2_XORPEN) {
@@ -1672,6 +1672,26 @@ public void drawText (String string, int x, int y, int flags) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (string.length() == 0) return;
+	if (data.gdipGraphics != 0) {
+		initGdip(true, false);
+		int length = string.length();
+		char[] buffer = new char [length];
+		string.getChars(0, length, buffer, 0);
+		int font = Gdip.Font_new(handle, OS.GetCurrentObject(handle, OS.OBJ_FONT));
+		if (font == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		PointF pt = new PointF();
+		pt.X = x;
+		pt.Y = y;
+		int brush = Gdip.Pen_GetBrush(data.gdipPen);
+		int format = Gdip.StringFormat_Clone(Gdip.StringFormat_GenericDefault());
+		float[] tabs = (flags & SWT.DRAW_TAB) != 0 ? new float[]{measureSpace(font, format) * 8} : new float[1];
+		Gdip.StringFormat_SetTabStops(format, 0, tabs.length, tabs); 
+		Gdip.StringFormat_SetHotkeyPrefix(format, (flags & SWT.DRAW_MNEMONIC) != 0 ? Gdip.HotkeyPrefixShow : Gdip.HotkeyPrefixNone);
+		Gdip.Graphics_DrawString(data.gdipGraphics, buffer, length, font, pt, format, brush);
+		Gdip.StringFormat_delete(format);
+		Gdip.Font_delete(font);
+		return;
+	}
 	TCHAR buffer = new TCHAR(getCodePage(), string, false);
 	int length = buffer.length();
 	if (length == 0) return;
@@ -2870,6 +2890,13 @@ boolean isIdentity(float[] xform) {
 		xform[3] == 1 && xform[4] == 0 && xform[5] == 0;
 }
 
+float measureSpace(int font, int format) {
+	PointF pt = new PointF();
+	RectF bounds = new RectF();
+	Gdip.Graphics_MeasureString(data.gdipGraphics, new char[]{' '}, 1, font, pt, format, bounds);
+	return bounds.Width;
+}
+
 /**
  * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
  */
@@ -3490,11 +3517,10 @@ public Point stringExtent(String string) {
 			string.getChars(0, length, buffer, 0);
 		} else {
 			buffer = new char[]{' '};
-			length = 1;
 		}
-		Gdip.Graphics_MeasureString(data.gdipGraphics, buffer, length, font, pt, Gdip.StringFormat_GenericTypographic(), bounds);
+		Gdip.Graphics_MeasureString(data.gdipGraphics, buffer, buffer.length, font, pt, Gdip.StringFormat_GenericTypographic(), bounds);
 		Gdip.Font_delete(font);
-		return new Point((int)Math.round(bounds.Width), (int)Math.round(bounds.Height));
+		return new Point(length == 0 ? 0 : (int)Math.round(bounds.Width), (int)Math.round(bounds.Height));
 	}
 	SIZE size = new SIZE();
 	if (length == 0) {
@@ -3567,6 +3593,28 @@ public Point textExtent(String string) {
 public Point textExtent(String string, int flags) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (data.gdipGraphics != 0) {
+		int font = Gdip.Font_new(handle, OS.GetCurrentObject(handle, OS.OBJ_FONT));
+		if (font == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		PointF pt = new PointF();
+		RectF bounds = new RectF();
+		char[] buffer;
+		int length = string.length();
+		if (length != 0) {
+			buffer = new char [length];
+			string.getChars(0, length, buffer, 0);
+		} else {
+			buffer = new char[]{' '};
+		}
+		int format = Gdip.StringFormat_Clone(Gdip.StringFormat_GenericDefault());
+		float[] tabs = (flags & SWT.DRAW_TAB) != 0 ? new float[]{measureSpace(font, format) * 8} : new float[1];
+		Gdip.StringFormat_SetTabStops(format, 0, tabs.length, tabs); 
+		Gdip.StringFormat_SetHotkeyPrefix(format, (flags & SWT.DRAW_MNEMONIC) != 0 ? Gdip.HotkeyPrefixShow : Gdip.HotkeyPrefixNone);
+		Gdip.Graphics_MeasureString(data.gdipGraphics, buffer, buffer.length, font, pt, format, bounds);
+		Gdip.StringFormat_delete(format);
+		Gdip.Font_delete(font);
+		return new Point(length == 0 ? 0 : (int)Math.round(bounds.Width), (int)Math.round(bounds.Height));
+	}
 	if (string.length () == 0) {
 		SIZE size = new SIZE();
 //		OS.GetTextExtentPoint32(handle, SPACE, SPACE.length(), size);

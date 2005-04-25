@@ -1342,6 +1342,30 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(SolidBrush_1new)
 }
 #endif
 
+#ifndef NO_StringFormat_1Clone
+JNIEXPORT jint JNICALL Gdip_NATIVE(StringFormat_1Clone)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, StringFormat_1Clone_FUNC);
+	rc = (jint)((StringFormat *)arg0)->Clone();
+	Gdip_NATIVE_EXIT(env, that, StringFormat_1Clone_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_StringFormat_1GenericDefault
+JNIEXPORT jint JNICALL Gdip_NATIVE(StringFormat_1GenericDefault)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, StringFormat_1GenericDefault_FUNC);
+	rc = (jint)StringFormat::GenericDefault();
+	Gdip_NATIVE_EXIT(env, that, StringFormat_1GenericDefault_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_StringFormat_1GenericTypographic
 JNIEXPORT jint JNICALL Gdip_NATIVE(StringFormat_1GenericTypographic)
 	(JNIEnv *env, jclass that)
@@ -1351,6 +1375,44 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(StringFormat_1GenericTypographic)
 	rc = (jint)StringFormat::GenericTypographic();
 	Gdip_NATIVE_EXIT(env, that, StringFormat_1GenericTypographic_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_StringFormat_1SetHotkeyPrefix
+JNIEXPORT jint JNICALL Gdip_NATIVE(StringFormat_1SetHotkeyPrefix)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, StringFormat_1SetHotkeyPrefix_FUNC);
+	rc = (jint)((StringFormat *)arg0)->SetHotkeyPrefix((HotkeyPrefix)arg1);
+	Gdip_NATIVE_EXIT(env, that, StringFormat_1SetHotkeyPrefix_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_StringFormat_1SetTabStops
+JNIEXPORT jint JNICALL Gdip_NATIVE(StringFormat_1SetTabStops)
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jint arg2, jfloatArray arg3)
+{
+	jfloat *lparg3=NULL;
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, StringFormat_1SetTabStops_FUNC);
+	if (arg3) if ((lparg3 = env->GetFloatArrayElements(arg3, NULL)) == NULL) goto fail;
+	rc = (jint)((StringFormat *)arg0)->SetTabStops(arg1, arg2, lparg3);
+fail:
+	if (arg3 && lparg3) env->ReleaseFloatArrayElements(arg3, lparg3, 0);
+	Gdip_NATIVE_EXIT(env, that, StringFormat_1SetTabStops_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_StringFormat_1delete
+JNIEXPORT void JNICALL Gdip_NATIVE(StringFormat_1delete)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	Gdip_NATIVE_ENTER(env, that, StringFormat_1delete_FUNC);
+	delete (StringFormat *)arg0;
+	Gdip_NATIVE_EXIT(env, that, StringFormat_1delete_FUNC);
 }
 #endif
 
