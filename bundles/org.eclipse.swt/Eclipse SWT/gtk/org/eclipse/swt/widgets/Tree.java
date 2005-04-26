@@ -325,12 +325,12 @@ void createColumn (TreeColumn column, int index) {
 	}
 	createRenderers (columnHandle, modelIndex, index == 0, column == null ? 0 : column.style);
 	/*
-	* Use GTK_TREE_VIEW_COLUMN_AUTOSIZE on GTK versions < 2.3.2
+	* Use GTK_TREE_VIEW_COLUMN_GROW_ONLY on GTK versions < 2.3.2
 	* because fixed_height_mode is not supported.
 	*/
 	boolean useVirtual = (style & SWT.VIRTUAL) != 0 && OS.GTK_VERSION >= OS.VERSION (2, 3, 2);
 	if (!useVirtual && columnCount == 0) {
-		OS.gtk_tree_view_column_set_sizing (columnHandle, OS.GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+		OS.gtk_tree_view_column_set_sizing (columnHandle, OS.GTK_TREE_VIEW_COLUMN_GROW_ONLY);
 	} else {
 		OS.gtk_tree_view_column_set_sizing (columnHandle, OS.GTK_TREE_VIEW_COLUMN_FIXED);
 		if (columnCount != 0) OS.gtk_tree_view_column_set_visible (columnHandle, false);
@@ -1807,7 +1807,7 @@ public void setLinesVisible (boolean show) {
 void setScrollWidth (int /*long*/ column, int /*long*/ iter) {
 	if (columnCount != 0) return;
 	/*
-	* Use GTK_TREE_VIEW_COLUMN_AUTOSIZE on GTK versions < 2.3.2
+	* Use GTK_TREE_VIEW_COLUMN_GROW_ONLY on GTK versions < 2.3.2
 	* because fixed_height_mode is not supported.
 	*/
 	if (((style & SWT.VIRTUAL) != 0) && OS.GTK_VERSION < OS.VERSION (2, 3, 2)) return;
