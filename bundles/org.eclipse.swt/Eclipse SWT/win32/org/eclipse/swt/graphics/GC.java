@@ -627,6 +627,23 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 }
 
 void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
+	if (data.gdipGraphics != 0) {
+		//TODO - cache bitmap
+		int img = Gdip.Bitmap_new(srcImage.handle);
+		if (simple) {
+			srcWidth = destWidth = Gdip.Image_GetWidth(img);
+			srcHeight = destHeight = Gdip.Image_GetHeight(img);
+		}		
+		Rect rect = new Rect();
+		rect.X = destX;
+		rect.Y = destY;
+		rect.Width = destWidth;
+		rect.Height = destHeight;
+		Gdip.Graphics_DrawImage(data.gdipGraphics, img, rect, srcX, srcY, srcWidth, srcHeight, Gdip.UnitPixel, 0, 0, 0);
+		Gdip.Bitmap_delete(img);
+		return;
+	}
+
 	int technology = OS.GetDeviceCaps(handle, OS.TECHNOLOGY);
 
 	/* Simple case: no stretching, entire icon */
