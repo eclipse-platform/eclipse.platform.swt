@@ -518,13 +518,27 @@ int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*
 		int /*long*/ ptr = OS.gtk_entry_get_text (handle);
 		pos [0] = (int)/*64*/OS.g_utf8_strlen (ptr, -1);
 	}
-	String newText = verifyText (oldText, pos [0], pos [0]); //WRONG POSITION
+	int [] oldStart = new int [1], oldEnd = new int [1];
+	OS.gtk_editable_get_selection_bounds (handle, oldStart, oldEnd);
+	String newText = verifyText (oldText, pos [0], pos [0]);
+	final int [] newStart = new int [1], newEnd = new int [1];
+	OS.gtk_editable_get_selection_bounds (handle, newStart, newEnd);
+	boolean newSelection = oldStart [0] != newStart [0] || oldEnd [0] != newEnd [0];
+	if (newSelection) {
+		if (newText == null) newText = "";
+		pos [0] = newEnd [0];
+	}
 	if (newText == null) {
 		OS.g_signal_stop_emission_by_name (handle, OS.insert_text);
 	} else {
-		if (newText != oldText) {
+		if (newText != oldText || newSelection) {
 			byte [] buffer2 = Converter.wcsToMbcs (null, newText, false);
 			OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+			if (newSelection) {
+				OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+				OS.gtk_editable_delete_selection (handle);
+				OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+			}
 			OS.gtk_editable_insert_text (handle, buffer2, buffer2.length, pos);
 			OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 			OS.g_signal_stop_emission_by_name (handle, OS.insert_text);
