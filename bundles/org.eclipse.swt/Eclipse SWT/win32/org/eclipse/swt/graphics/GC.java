@@ -614,6 +614,28 @@ public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeig
 }
 
 void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
+	if (data.gdipGraphics != 0) {
+		//TODO - cache bitmap
+		int img = srcImage.createGdipImage();
+		int imgWidth = Gdip.Image_GetWidth(img);
+		int imgHeight = Gdip.Image_GetHeight(img);
+		if (simple) {
+			srcWidth = destWidth = imgWidth;
+			srcHeight = destHeight = imgHeight;
+		} else {
+			if (srcX + srcWidth > imgWidth || srcY + srcHeight > imgHeight) {
+				SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+			}
+		}
+		Rect rect = new Rect();
+		rect.X = destX;
+		rect.Y = destY;
+		rect.Width = destWidth;
+		rect.Height = destHeight;
+		Gdip.Graphics_DrawImage(data.gdipGraphics, img, rect, srcX, srcY, srcWidth, srcHeight, Gdip.UnitPixel, 0, 0, 0);
+		Gdip.Bitmap_delete(img);
+		return;
+	}
 	switch (srcImage.type) {
 		case SWT.BITMAP:
 			drawBitmap(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple);
@@ -627,23 +649,6 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 }
 
 void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
-	if (data.gdipGraphics != 0) {
-		//TODO - cache bitmap
-		int img = Gdip.Bitmap_new(srcImage.handle);
-		if (simple) {
-			srcWidth = destWidth = Gdip.Image_GetWidth(img);
-			srcHeight = destHeight = Gdip.Image_GetHeight(img);
-		}		
-		Rect rect = new Rect();
-		rect.X = destX;
-		rect.Y = destY;
-		rect.Width = destWidth;
-		rect.Height = destHeight;
-		Gdip.Graphics_DrawImage(data.gdipGraphics, img, rect, srcX, srcY, srcWidth, srcHeight, Gdip.UnitPixel, 0, 0, 0);
-		Gdip.Bitmap_delete(img);
-		return;
-	}
-
 	int technology = OS.GetDeviceCaps(handle, OS.TECHNOLOGY);
 
 	/* Simple case: no stretching, entire icon */
@@ -1129,18 +1134,6 @@ void drawBitmapTransparent(Image srcImage, int srcX, int srcY, int srcWidth, int
 }
 
 void drawBitmap(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, BITMAP bm, int imgWidth, int imgHeight) {
-	if (data.gdipGraphics != 0) {
-		//TODO - cache bitmap
-		int img = Gdip.Bitmap_new(srcImage.handle, 0);
-		Rect rect = new Rect();
-		rect.X = destX;
-		rect.Y = destY;
-		rect.Width = destWidth;
-		rect.Height = destHeight;
-		Gdip.Graphics_DrawImage(data.gdipGraphics, img, rect, srcX, srcY, srcWidth, srcHeight, Gdip.UnitPixel, 0, 0, 0);
-		Gdip.Bitmap_delete(img);
-		return;
-	}
 	int srcHdc = OS.CreateCompatibleDC(handle);
 	int oldSrcBitmap = OS.SelectObject(srcHdc, srcImage.handle);
 	int rop2 = 0;

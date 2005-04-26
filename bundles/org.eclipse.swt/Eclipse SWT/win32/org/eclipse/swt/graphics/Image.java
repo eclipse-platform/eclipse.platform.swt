@@ -11,6 +11,7 @@
 package org.eclipse.swt.graphics;
 
 
+import org.eclipse.swt.internal.gdip.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import java.io.*;
@@ -789,6 +790,15 @@ int createDIBFromDDB(int hDC, int hBitmap, int width, int height) {
 	OS.DeleteDC(hdcDest);
 	
 	return hDib;
+}
+
+int createGdipImage() {
+	switch (type) {
+		case SWT.BITMAP: return Gdip.Bitmap_new(handle, 0);
+		case SWT.ICON: return Gdip.Bitmap_new(handle);
+		default: SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
+	}
+	return 0;
 }
 
 /**
