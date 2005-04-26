@@ -626,13 +626,20 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 			if (srcX + srcWidth > imgWidth || srcY + srcHeight > imgHeight) {
 				SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 			}
+			simple = srcX == 0 && srcY == 0 && 
+				srcWidth == destWidth && destWidth == imgWidth &&
+				srcHeight == destHeight && destHeight == imgHeight;
 		}
-		Rect rect = new Rect();
-		rect.X = destX;
-		rect.Y = destY;
-		rect.Width = destWidth;
-		rect.Height = destHeight;
-		Gdip.Graphics_DrawImage(data.gdipGraphics, img, rect, srcX, srcY, srcWidth, srcHeight, Gdip.UnitPixel, 0, 0, 0);
+		if (simple) {
+			Gdip.Graphics_DrawImage(data.gdipGraphics, img, destX, destY);
+		} else {
+			Rect rect = new Rect();
+			rect.X = destX;
+			rect.Y = destY;
+			rect.Width = destWidth;
+			rect.Height = destHeight;
+			Gdip.Graphics_DrawImage(data.gdipGraphics, img, rect, srcX, srcY, srcWidth, srcHeight, Gdip.UnitPixel, 0, 0, 0);
+		}
 		Gdip.Bitmap_delete(img);
 		return;
 	}
