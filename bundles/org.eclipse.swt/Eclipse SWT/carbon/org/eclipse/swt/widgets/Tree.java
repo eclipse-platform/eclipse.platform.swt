@@ -615,9 +615,11 @@ void destroyItem (TreeItem item) {
 	TreeItem parentItem = item.parentItem;
 	if (parentItem == null || parentItem.getExpanded ()) {
 		int parentID = parentItem == null ? OS.kDataBrowserNoItem : item.parentItem.id;
+		ignoreExpand = true;
 		if (OS.RemoveDataBrowserItems (handle, parentID, 1, new int[] {item.id}, 0) != OS.noErr) {
 			error (SWT.ERROR_ITEM_NOT_REMOVED);
 		}
+		ignoreExpand = false;
 	}
 	releaseItems (item.getItems ());
 	releaseItem (item);
@@ -1543,9 +1545,11 @@ void releaseWidget () {
  */
 public void removeAll () {
 	checkWidget ();
+	ignoreExpand = true;
 	if (OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, 0, null, 0) != OS.noErr) {
 		error (SWT.ERROR_ITEM_NOT_REMOVED);
 	}
+	ignoreExpand = false;
 	OS.SetDataBrowserScrollPosition (handle, 0, 0);
 	for (int i=0; i<items.length; i++) {
 		TreeItem item = items [i];
