@@ -1323,9 +1323,8 @@ void headerOnPaint (Event event) {
 	
 	/* paint each of the column headers */
 	if (numColumns == 0) return;	/* no headers to paint */
-	int height = getClientArea ().height;
 	for (int i = startColumn; i <= endColumn; i++) {
-		headerPaintVShadows (gc, orderedColumns [i].getX (), 0, orderedColumns [i].width, height);
+		headerPaintVShadows (gc, orderedColumns [i].getX (), 0, orderedColumns [i].width, headerSize.y);
 		orderedColumns [i].paint (gc);
 	}
 }
