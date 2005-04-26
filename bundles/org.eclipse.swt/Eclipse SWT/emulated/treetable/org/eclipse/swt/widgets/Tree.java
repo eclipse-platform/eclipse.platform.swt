@@ -2889,6 +2889,7 @@ public void setTopItem (TreeItem item) {
 
 	Rectangle clientArea = getClientArea ();
 	int visibleItemCount = (clientArea.height - getHeaderHeight ()) / itemHeight;
+	if (availableItemsCount < visibleItemCount) return;
 	int index = Math.min (item.availableIndex, availableItemsCount - visibleItemCount);
 	if (topIndex == index) return;
 
