@@ -24,6 +24,7 @@ typedef enum {
 	Bitmap_1delete_FUNC,
 	Bitmap_1new__I_FUNC,
 	Bitmap_1new__II_FUNC,
+	Bitmap_1new__IIIII_FUNC,
 	Brush_1Clone_FUNC,
 	Brush_1GetType_FUNC,
 	Color_1delete_FUNC,

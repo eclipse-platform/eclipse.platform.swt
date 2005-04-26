@@ -14,12 +14,13 @@
 
 #ifdef NATIVE_STATS
 
-int Gdip_nativeFunctionCount = 119;
-int Gdip_nativeFunctionCallCount[119];
+int Gdip_nativeFunctionCount = 120;
+int Gdip_nativeFunctionCallCount[120];
 char * Gdip_nativeFunctionNames[] = {
 	"Bitmap_1delete",
 	"Bitmap_1new__I",
 	"Bitmap_1new__II",
+	"Bitmap_1new__IIIII",
 	"Brush_1Clone",
 	"Brush_1GetType",
 	"Color_1delete",

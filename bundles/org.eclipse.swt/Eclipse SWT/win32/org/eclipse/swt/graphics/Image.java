@@ -792,13 +792,98 @@ int createDIBFromDDB(int hDC, int hBitmap, int width, int height) {
 	return hDib;
 }
 
-int createGdipImage() {
+int[] createGdipImage() {
 	switch (type) {
-		case SWT.BITMAP: return Gdip.Bitmap_new(handle, 0);
-		case SWT.ICON: return Gdip.Bitmap_new(handle);
+		case SWT.BITMAP: {
+			if (alpha != -1 || alphaData != null || transparentPixel != -1) {
+				BITMAP bm = new BITMAP();
+				OS.GetObject(handle, BITMAP.sizeof, bm);
+				int imgWidth = bm.bmWidth;
+				int imgHeight = bm.bmHeight;
+				int hDC = device.internal_new_GC(null);
+				int srcHdc = OS.CreateCompatibleDC(hDC);
+				int oldSrcBitmap = OS.SelectObject(srcHdc, handle);
+				int memHdc = OS.CreateCompatibleDC(hDC);
+				int memDib = createDIB(imgWidth, imgHeight, 32);
+				if (memDib == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+				int oldMemBitmap = OS.SelectObject(memHdc, memDib);	
+				BITMAP dibBM = new BITMAP();
+				OS.GetObject(memDib, BITMAP.sizeof, dibBM);
+				int sizeInBytes = dibBM.bmWidthBytes * dibBM.bmHeight;	
+			 	OS.BitBlt(memHdc, 0, 0, imgWidth, imgHeight, srcHdc, 0, 0, OS.SRCCOPY);
+			 	byte red = 0, green = 0, blue = 0;
+			 	if (transparentPixel != -1) {
+					if (bm.bmBitsPixel <= 8)  {
+						byte[] color = new byte[4];
+						OS.GetDIBColorTable(srcHdc, transparentPixel, 1, color);
+						blue = color[0];
+						green = color[1];
+						red = color[2];
+					} else {
+						switch (bm.bmBitsPixel) {
+							case 16:
+								blue = (byte)((transparentPixel & 0x1F) << 3);
+								green = (byte)((transparentPixel & 0x3E0) >> 2);
+								red = (byte)((transparentPixel & 0x7C00) >> 7);
+								break;
+							case 24:
+								blue = (byte)((transparentPixel & 0xFF0000) >> 16);
+								green = (byte)((transparentPixel & 0xFF00) >> 8);
+								red = (byte)(transparentPixel & 0xFF);
+								break;
+							case 32:
+								blue = (byte)((transparentPixel & 0xFF000000) >>> 24);
+								green = (byte)((transparentPixel & 0xFF0000) >> 16);
+								red = (byte)((transparentPixel & 0xFF00) >> 8);
+								break;
+						}
+					}
+			 	}
+				OS.SelectObject(srcHdc, oldSrcBitmap);
+				OS.SelectObject(memHdc, oldMemBitmap);
+				OS.DeleteObject(srcHdc);
+				OS.DeleteObject(memHdc);
+			 	byte[] srcData = new byte[sizeInBytes];
+				OS.MoveMemory(srcData, dibBM.bmBits, sizeInBytes);
+				OS.DeleteObject(memDib);
+				device.internal_dispose_GC(hDC, null);
+				if (alpha != -1) {
+					for (int y = 0, dp = 0; y < imgHeight; ++y) {
+						for (int x = 0; x < imgWidth; ++x) {
+							srcData[dp + 3] = (byte)alpha;
+							dp += 4;
+						}
+					}
+				} else if (alphaData != null) {
+					for (int y = 0, dp = 0, ap = 0; y < imgHeight; ++y) {
+						for (int x = 0; x < imgWidth; ++x) {
+							srcData[dp + 3] = alphaData[ap++];
+							dp += 4;
+						}
+					}
+				} else if (transparentPixel != -1) {
+					for (int y = 0, dp = 0; y < imgHeight; ++y) {
+						for (int x = 0; x < imgWidth; ++x) {
+							if (srcData[dp] == blue && srcData[dp + 1] == green && srcData[dp + 2] == red) {
+								srcData[dp + 3] = (byte)0;
+							} else {
+								srcData[dp + 3] = (byte)0xFF;
+							}
+							dp += 4;
+						}
+					}
+				}
+				int hHeap = OS.GetProcessHeap();
+				int pixels = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, srcData.length);
+				OS.MoveMemory(pixels, srcData, sizeInBytes);
+				return new int[]{Gdip.Bitmap_new(imgWidth, imgHeight, dibBM.bmWidthBytes, Gdip.PixelFormat32bppARGB, pixels), pixels};
+			}
+			return new int[]{Gdip.Bitmap_new(handle, 0), 0};
+		}
+		case SWT.ICON: return new int[]{Gdip.Bitmap_new(handle), 0};
 		default: SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
 	}
-	return 0;
+	return null;
 }
 
 /**

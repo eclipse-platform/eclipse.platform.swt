@@ -616,7 +616,8 @@ public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeig
 void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
 	if (data.gdipGraphics != 0) {
 		//TODO - cache bitmap
-		int img = srcImage.createGdipImage();
+		int[] gdipImage = srcImage.createGdipImage();
+		int img = gdipImage[0];
 		int imgWidth = Gdip.Image_GetWidth(img);
 		int imgHeight = Gdip.Image_GetHeight(img);
 		if (simple) {
@@ -641,6 +642,10 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 			Gdip.Graphics_DrawImage(data.gdipGraphics, img, rect, srcX, srcY, srcWidth, srcHeight, Gdip.UnitPixel, 0, 0, 0);
 		}
 		Gdip.Bitmap_delete(img);
+		if (gdipImage[1] != 0) {
+			int hHeap = OS.GetProcessHeap ();
+			OS.HeapFree(hHeap, 0, gdipImage[1]);
+		}
 		return;
 	}
 	switch (srcImage.type) {

@@ -51,6 +51,18 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Bitmap_1new__II)
 }
 #endif
 
+#ifndef NO_Bitmap_1new__IIIII
+JNIEXPORT jint JNICALL Gdip_NATIVE(Bitmap_1new__IIIII)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Bitmap_1new__IIIII_FUNC);
+	rc = (jint)new Bitmap(arg0, arg1, arg2, (PixelFormat)arg3, (BYTE *)arg4);
+	Gdip_NATIVE_EXIT(env, that, Bitmap_1new__IIIII_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Brush_1Clone
 JNIEXPORT jint JNICALL Gdip_NATIVE(Brush_1Clone)
 	(JNIEnv *env, jclass that, jint arg0)
