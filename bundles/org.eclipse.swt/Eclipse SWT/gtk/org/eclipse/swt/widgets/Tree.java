@@ -1355,27 +1355,41 @@ int /*long*/ gtk_row_activated (int /*long*/ tree, int /*long*/ path, int /*long
 int /*long*/ gtk_test_collapse_row (int /*long*/ tree, int /*long*/ iter, int /*long*/ path) {
 	int [] index = new int [1];
 	OS.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, index, -1);
+	TreeItem item = items [index [0]];
 	Event event = new Event ();
-	event.item = items [index [0]];
+	event.item = item;
 	sendEvent (SWT.Collapse, event);
-	if (isDisposed ()) return 0;
-	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_COLLAPSE_ROW);
-	OS.gtk_tree_view_collapse_row (handle, path);
-	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_COLLAPSE_ROW);
-	return 1;
+	if (isDisposed () || item.isDisposed ()) return 1;
+	/*
+	* Bug in GTK.  Expanding a row which has deleted children
+	* causes the model state to become invalid, causing GTK to
+	* give warnings and behave strangely.  The fix is to stop
+	* the expansion if there are no remaining subitems.
+	* 
+	* Note: This callback must return 0 for the collapsing
+	* animation to occur.
+	*/
+	return OS.gtk_tree_model_iter_n_children (modelHandle, iter) == 0 ? 1 : 0;
 }
 
 int /*long*/ gtk_test_expand_row (int /*long*/ tree, int /*long*/ iter, int /*long*/ path) {
 	int [] index = new int [1];
 	OS.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, index, -1);
+	TreeItem item = items [index [0]];
 	Event event = new Event ();
-	event.item = items [index [0]];
+	event.item = item;
 	sendEvent (SWT.Expand, event);
-	if (isDisposed ()) return 0;
-	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_EXPAND_ROW);
-	OS.gtk_tree_view_expand_row (handle, path, false);
-	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_EXPAND_ROW);
-	return 1;
+	if (isDisposed () || item.isDisposed ()) return 1;
+	/*
+	* Bug in GTK.  Expanding a row which has deleted children
+	* causes the model state to become invalid, causing GTK to
+	* give warnings and behave strangely.  The fix is to stop
+	* the expansion if there are no remaining subitems.
+	* 
+	* Note: This callback must return 0 for the expansion
+	* animation to occur.
+	*/
+	return OS.gtk_tree_model_iter_n_children (modelHandle, iter) == 0 ? 1 : 0;
 }
 
 int /*long*/ gtk_toggled (int /*long*/ renderer, int /*long*/ pathStr) {
@@ -1743,6 +1757,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	return result;
 }
 
+//./;/' FIXME SAME AS TABULAR!@!!!!!!'
 boolean setCellData(int /*long*/ tree_model, int /*long*/ path) {
 	// TODO support for SWT.VIRTUAL
 	return false;
