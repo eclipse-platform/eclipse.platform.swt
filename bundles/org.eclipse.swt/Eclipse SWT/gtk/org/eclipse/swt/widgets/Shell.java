@@ -360,13 +360,13 @@ public void addShellListener (ShellListener listener) {
 }
 
 void adjustTrim () {
-	int [] width = new int [1], height = new int [1];
-	OS.gtk_window_get_size (shellHandle, width, height);
+	int width = OS.GTK_WIDGET_WIDTH (shellHandle);
+	int height = OS.GTK_WIDGET_HEIGHT (shellHandle);
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
 	GdkRectangle rect = new GdkRectangle ();
 	OS.gdk_window_get_frame_extents (window, rect);
-	int trimWidth = Math.max (0, rect.width - width [0]);
-	int trimHeight = Math.max (0, rect.height - height [0]);
+	int trimWidth = Math.max (0, rect.width - width);
+	int trimHeight = Math.max (0, rect.height - height);
 	boolean hasTitle = false, hasResize = false, hasBorder = false;
 	if ((style & SWT.NO_TRIM) == 0) {
 		hasTitle = (style & (SWT.MIN | SWT.MAX | SWT.TITLE | SWT.MENU)) != 0;
@@ -823,12 +823,12 @@ int /*long*/ gtk_map_event (int /*long*/ widget, int /*long*/ event) {
 }
 
 int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
-	int [] width = new int [1], height = new int [1];
-	OS.gtk_window_get_size (shellHandle, width, height);
-	if (!resized || oldWidth != width [0] || oldHeight != height [0]) {
-		oldWidth = width [0];
-		oldHeight = height [0];
-		resizeBounds (width [0], height [0], true);
+	int width = OS.GTK_WIDGET_WIDTH (shellHandle);
+	int height = OS.GTK_WIDGET_HEIGHT (shellHandle);
+	if (!resized || oldWidth != width || oldHeight != height) {
+		oldWidth = width;
+		oldHeight = height;
+		resizeBounds (width, height, true);
 	}
 	return 0;
 }
@@ -1193,9 +1193,9 @@ public void setMenuBar (Menu menu) {
 		createAccelGroup ();
 		menuBar.addAccelerators (accelGroup);
 	}
-	int [] width = new int [1], height = new int [1];
-	OS.gtk_window_get_size (shellHandle, width, height);
-	resizeBounds (width [0], height [0], !both);
+	int width = OS.GTK_WIDGET_WIDTH (shellHandle);
+	int height = OS.GTK_WIDGET_HEIGHT (shellHandle);
+	resizeBounds (width, height, !both);
 }
 
 public void setMinimized (boolean minimized) {
@@ -1337,11 +1337,13 @@ public void setVisible (boolean visible) {
 		display.putGdkEvents();
 		boolean iconic = false;
 		Shell shell = parent != null ? parent.getShell() : null;
+		System.out.println("setVisible loop start");
 		do {
 			OS.g_main_context_iteration (0, false);
 			if (isDisposed ()) break;
 			iconic = minimized || (shell != null && shell.minimized);
 		} while (!mapped && !iconic);
+		System.out.println("setVisible loop end");
 		display.dispatchEvents = null;
 		if (isDisposed ()) return;
 		if (!iconic) {
