@@ -41,7 +41,7 @@ public class Transform extends Resource {
 /**
  * Constructs a new identity Transform.
  * 
- * @param device the device on which to allocate the region
+ * @param device the device on which to allocate the Transform
  * 
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle for the Transform could not be obtained/li>
@@ -57,11 +57,11 @@ public Transform (Device device) {
  * Constructs a new Transform given an array of elements that represent the 
  * matrix that describes the transformation.
  * 
- * @param device the device on which to allocate the region
+ * @param device the device on which to allocate the Transform
  * @param elements an array of floats that describe the transformation matrix
  * 
  * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES if a handle could not be obtained for region creation</li>
+ *    <li>ERROR_NO_HANDLES if a handle for the Transform could not be obtained/li>
  * </ul>
  * 
  * @see #dispose()
@@ -74,7 +74,7 @@ public Transform(Device device, float[] elements) {
  * Constructs a new Transform given all of the elements that represent the 
  * matrix that describes the transformation.
  * 
- * @param device the device on which to allocate the region
+ * @param device the device on which to allocate the Transform
  * @param m11 the first element of the first row of the matrix
  * @param m12 the second element of the first row of the matrix
  * @param m21 the first element of the second row of the matrix
@@ -83,7 +83,7 @@ public Transform(Device device, float[] elements) {
  * @param dy the third element of the second row of the matrix
  * 
  * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES if a handle could not be obtained for region creation</li>
+ *    <li>ERROR_NO_HANDLES if a handle for the Transform could not be obtained/li>
  * </ul>
  * 
  * @see #dispose()
