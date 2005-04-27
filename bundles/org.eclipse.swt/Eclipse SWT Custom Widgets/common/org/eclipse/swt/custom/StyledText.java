@@ -139,6 +139,7 @@ public class StyledText extends Canvas {
 	boolean mouseDown = false;
 	boolean mouseDoubleClick = false;	// true=a double click ocurred. Don't do mouse swipe selection.
 	int autoScrollDirection = SWT.NULL;	// the direction of autoscrolling (up, down, right, left)
+	int autoScrollDistance = 0;
 	int lastTextChangeStart;			// cache data of the 
 	int lastTextChangeNewLineCount;		// last text changing 
 	int lastTextChangeNewCharCount;		// event for use in the 
@@ -2434,19 +2435,19 @@ void doAutoScroll(Event event) {
 	Rectangle area = getClientArea();		
 	
 	if (event.y > area.height) {
-		doAutoScroll(SWT.DOWN);
+		doAutoScroll(SWT.DOWN, event.y - area.height);
 	}
 	else 
 	if (event.y < 0) {
-		doAutoScroll(SWT.UP);
+		doAutoScroll(SWT.UP, -event.y);
 	}
 	else 
 	if (event.x < leftMargin && wordWrap == false) {
-		doAutoScroll(ST.COLUMN_PREVIOUS);
+		doAutoScroll(ST.COLUMN_PREVIOUS, leftMargin - event.x);
 	}
 	else 
 	if (event.x > area.width - leftMargin - rightMargin && wordWrap == false) {
-		doAutoScroll(ST.COLUMN_NEXT);
+		doAutoScroll(ST.COLUMN_NEXT, event.x - (area.width - leftMargin - rightMargin));
 	}
 	else {
 		endAutoScroll();
@@ -2458,10 +2459,12 @@ void doAutoScroll(Event event) {
  *
  * @param direction SWT.UP, SWT.DOWN, SWT.COLUMN_NEXT, SWT.COLUMN_PREVIOUS
  */
-void doAutoScroll(int direction) {
+void doAutoScroll(int direction, int distance) {
 	Runnable timer = null;
-	final int TIMER_INTERVAL = 5;
+	final int TIMER_INTERVAL = 50;
 	
+	autoScrollDistance = distance;
+
 	// If we're already autoscrolling in the given direction do nothing
 	if (autoScrollDirection == direction) {
 		return;
@@ -2474,7 +2477,8 @@ void doAutoScroll(int direction) {
 		timer = new Runnable() {
 			public void run() {
 				if (autoScrollDirection == SWT.UP) {
-					doSelectionLineUp();
+					int lines = ((autoScrollDistance * autoScrollDistance) / (getLineHeight() * 32)) + 1;
+					doSelectionPageUp(lines);
 					display.timerExec(TIMER_INTERVAL, this);
 				}
 			}
@@ -2483,7 +2487,8 @@ void doAutoScroll(int direction) {
 		timer = new Runnable() {
 			public void run() {
 				if (autoScrollDirection == SWT.DOWN) {
-					doSelectionLineDown();
+					int lines = ((autoScrollDistance * autoScrollDistance) / (getLineHeight() * 32)) + 1;
+					doSelectionPageDown(lines);
 					display.timerExec(TIMER_INTERVAL, this);
 				}
 			}
@@ -2902,7 +2907,7 @@ int doMouseWordSelect(int x, int newCaretOffset, int line) {
  *
  * @param select whether or not to select the page
  */
-void doPageDown(boolean select) {
+void doPageDown(boolean select, int lines) {
 	int lineCount = content.getLineCount();
 	int oldColumnX = columnX;
 	int oldHScrollOffset = horizontalScrollOffset;
@@ -2916,7 +2921,7 @@ void doPageDown(boolean select) {
 	if (caretLine < lineCount - 1) {
 		int verticalMaximum = lineCount * getVerticalIncrement();
 		int pageSize = getClientArea().height;
-		int scrollLines = Math.min(lineCount - caretLine - 1, getLineCountWhole());
+		int scrollLines = Math.min(lineCount - caretLine - 1, lines);
 		int scrollOffset;
 		
 		// ensure that scrollLines never gets negative and at leat one 
@@ -2982,17 +2987,20 @@ void doPageStart() {
  * of the text where a full page scroll is not possible. In this case the
  * caret is moved in front of the first character.
  */
-void doPageUp() {
+void doPageUp(boolean select, int lines) {
 	int oldColumnX = columnX;
 	int oldHScrollOffset = horizontalScrollOffset;
 	int caretLine = getCaretLine();
 	
 	if (caretLine > 0) {	
-		int scrollLines = Math.max(1, Math.min(caretLine, getLineCountWhole()));
+		int scrollLines = Math.max(1, Math.min(caretLine, lines));
 		int scrollOffset;
 		
 		caretLine -= scrollLines;
 		caretOffset = getOffsetAtMouseLocation(columnX, caretLine);
+		if (select) {
+			doSelection(ST.COLUMN_PREVIOUS);
+		}
 		// scroll one page up or to the top
 		scrollOffset = Math.max(0, verticalScrollOffset - scrollLines * getVerticalIncrement());
 		if (scrollOffset < verticalScrollOffset) {
@@ -3187,7 +3195,7 @@ void doSelectionLineUp() {
  * direction.
  * </p>
  */
-void doSelectionPageDown() {
+void doSelectionPageDown(int lines) {
 	int oldColumnX;
 	int caretLine = getCaretLine();
 	int lineStartOffset = content.getOffsetAtLine(caretLine);
@@ -3195,7 +3203,7 @@ void doSelectionPageDown() {
 	// reset columnX on selection
 	oldColumnX = columnX = getXAtOffset(
 		content.getLine(caretLine), caretLine, caretOffset - lineStartOffset);
-	doPageDown(true);
+	doPageDown(true, lines);
 	columnX = oldColumnX;
 }
 /**
@@ -3211,7 +3219,7 @@ void doSelectionPageDown() {
  * direction.
  * </p>
  */
-void doSelectionPageUp() {
+void doSelectionPageUp(int lines) {
 	int oldColumnX;
 	int caretLine = getCaretLine();
 	int lineStartOffset = content.getOffsetAtLine(caretLine);
@@ -3219,7 +3227,7 @@ void doSelectionPageUp() {
 	// reset columnX on selection
 	oldColumnX = columnX = getXAtOffset(
 		content.getLine(caretLine), caretLine, caretOffset - lineStartOffset);
-	doPageUp();
+	doPageUp(true, lines);
 	columnX = oldColumnX;
 }
 /**
@@ -5522,11 +5530,11 @@ public void invokeAction(int action) {
 			clearSelection(true);
 			break;
 		case ST.PAGE_UP:
-			doPageUp();
+			doPageUp(false, getLineCountWhole());
 			clearSelection(true);
 			break;
 		case ST.PAGE_DOWN:
-			doPageDown(false);
+			doPageDown(false, getLineCountWhole());
 			clearSelection(true);
 			break;
 		case ST.WORD_PREVIOUS:
@@ -5580,11 +5588,10 @@ public void invokeAction(int action) {
 			doSelection(ST.COLUMN_NEXT);
 			break;
 		case ST.SELECT_PAGE_UP:
-			doSelectionPageUp();
-			doSelection(ST.COLUMN_PREVIOUS);
+			doSelectionPageUp(getLineCountWhole());
 			break;
 		case ST.SELECT_PAGE_DOWN:
-			doSelectionPageDown();
+			doSelectionPageDown(getLineCountWhole());
 			break;
 		case ST.SELECT_WORD_PREVIOUS:
 			doSelectionWordPrevious();
