@@ -43,6 +43,9 @@ public class Transform extends Resource {
  * 
  * @param device the device on which to allocate the Transform
  * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle for the Transform could not be obtained/li>
  * </ul>
@@ -60,6 +63,9 @@ public Transform (Device device) {
  * @param device the device on which to allocate the Transform
  * @param elements an array of floats that describe the transformation matrix
  * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle for the Transform could not be obtained/li>
  * </ul>
@@ -82,6 +88,9 @@ public Transform(Device device, float[] elements) {
  * @param dx the third element of the first row of the matrix
  * @param dy the third element of the second row of the matrix
  * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle for the Transform could not be obtained/li>
  * </ul>
@@ -130,8 +139,6 @@ public void dispose() {
  * </ul>
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parameter is null</li>
- * </ul>
- * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the parameter is too small to hold the matrix values</li>
  * </ul>
  * @see Rectangle#union
@@ -149,8 +156,6 @@ public void getElements(float[] elements) {
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- * @exception SWTException <ul>
  *    <li>ERROR_CANNOT_INVERT_MATRIX - if the matrix is not invertable</li>
  * </ul>
  */
@@ -196,8 +201,6 @@ public boolean isIdentity() {
  * </ul>
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parameter is null</li>
- * </ul>
- * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the parameter has been disposed</li>
  * </ul>
  */
