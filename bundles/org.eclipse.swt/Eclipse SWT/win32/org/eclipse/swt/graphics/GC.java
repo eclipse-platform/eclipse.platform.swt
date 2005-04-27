@@ -2376,6 +2376,10 @@ public int getCharWidth(char ch) {
  */
 public Rectangle getClipping() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (data.gdipGraphics != 0) {
+		Rect rect = new Rect();
+		return new Rectangle(rect.X, rect.Y, rect.Width, rect.Height);
+	}
 	RECT rect = new RECT();
 	OS.GetClipBox(handle, rect);
 	return new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
@@ -2399,6 +2403,21 @@ public void getClipping (Region region) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (region.isDisposed()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	if (data.gdipGraphics != 0) {
+		int rgn = Gdip.Region_new();
+		Gdip.Graphics_GetClip(data.gdipGraphics, rgn);
+		int matrix = Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
+		int identity = Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
+		Gdip.Graphics_GetTransform(data.gdipGraphics, matrix);
+		Gdip.Graphics_SetTransform(data.gdipGraphics, identity);
+		int hRgn = Gdip.Region_GetHRGN(rgn, data.gdipGraphics);
+		Gdip.Graphics_SetTransform(data.gdipGraphics, matrix);
+		Gdip.Matrix_delete(identity);
+		Gdip.Matrix_delete(matrix);
+		OS.CombineRgn(region.handle, hRgn, 0, OS.RGN_COPY);
+		Gdip.Region_delete(rgn);
+		return;
+	}
 	int result = OS.GetClipRgn (handle, region.handle);
 	if (result != 1) {
 		RECT rect = new RECT();
@@ -3014,8 +3033,9 @@ void setClipping(int clipRgn) {
 		} else {
 			Gdip.Graphics_ResetClip(gdipGraphics);
 		}
+	} else {
+		OS.SelectClipRgn(handle, hRgn);
 	}
-	OS.SelectClipRgn (handle, hRgn);
 	if (hRgn != 0 && hRgn != clipRgn) {
 		OS.DeleteObject(hRgn);
 	}
