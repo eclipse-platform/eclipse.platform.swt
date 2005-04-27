@@ -37,7 +37,7 @@ GTKLIBS = `pkg-config --libs-only-L gtk+-2.0 gthread-2.0` -lgtk-x11-2.0 -lgthrea
 
 CDE_LIBS = -L$(CDE_HOME)/lib -R$(CDE_HOME)/lib -lXt -lX11 -lDtSvc
 
-AWT_LIBS = -L$(AWT_LIB_PATH) -ljawt -shared
+AWT_LIBS = -L$(AWT_LIB_PATH) -ljawt -shared -static-libgcc
 
 ATKCFLAGS = `pkg-config --cflags atk gtk+-2.0`
 ATKLIBS = `pkg-config --libs-only-L atk gtk+-2.0`-latk-1.0 -lgtk-x11-2.0
@@ -84,7 +84,7 @@ CFLAGS = -O -Wall \
 		-fpic \
 		${SWT_PTR_CFLAGS} \
 		-I$(CDE_HOME)/include
-LIBS = -shared -fpic
+LIBS = -shared -fpic -static-libgcc
 
 
 all: make_swt make_atk make_awt make_cde
