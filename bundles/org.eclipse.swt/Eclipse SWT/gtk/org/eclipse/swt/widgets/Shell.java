@@ -1337,13 +1337,11 @@ public void setVisible (boolean visible) {
 		display.putGdkEvents();
 		boolean iconic = false;
 		Shell shell = parent != null ? parent.getShell() : null;
-		System.out.println("setVisible loop start");
 		do {
 			OS.g_main_context_iteration (0, false);
 			if (isDisposed ()) break;
 			iconic = minimized || (shell != null && shell.minimized);
 		} while (!mapped && !iconic);
-		System.out.println("setVisible loop end");
 		display.dispatchEvents = null;
 		if (isDisposed ()) return;
 		if (!iconic) {
