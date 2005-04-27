@@ -994,6 +994,7 @@ public class OS extends Platform {
 	public static final int READ_CONTROL = 0x20000;
 	public static final String REBARCLASSNAME = "ReBarWindow32"; //$NON-NLS-1$
 	public static final int RGN_AND = 0x1;
+	public static final int RGN_COPY = 5;
 	public static final int RGN_DIFF = 0x4;
 	public static final int RGN_ERROR = 0;
 	public static final int RGN_OR = 0x2;
