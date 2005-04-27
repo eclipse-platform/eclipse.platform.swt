@@ -1512,9 +1512,7 @@ int /*long*/ pixbufCellDataProc (int /*long*/ tree_column, int /*long*/ cell, in
 	if (modelIndex == -1) return 0;
 	boolean setData = false;
 	if ((style & SWT.VIRTUAL) != 0) {
-		int /*long*/ path = OS.gtk_tree_model_get_path (tree_model, iter);
-		setData = setCellData (tree_model, path);
-		OS.gtk_tree_path_free (path);
+		// TODO support for SWT.VIRTUAL
 	}
 	int /*long*/ [] ptr = new int /*long*/ [1];
 	if (setData) {
@@ -1755,12 +1753,6 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	*/
 	OS.gtk_widget_realize (handle);
 	return result;
-}
-
-//./;/' FIXME SAME AS TABULAR!@!!!!!!'
-boolean setCellData(int /*long*/ tree_model, int /*long*/ path) {
-	// TODO support for SWT.VIRTUAL
-	return false;
 }
 
 void setFontDescription (int /*long*/ font) {
@@ -2057,9 +2049,7 @@ int /*long*/ textCellDataProc (int /*long*/ tree_column, int /*long*/ cell, int 
 	if (modelIndex == -1) return 0;
 	boolean setData = false;
 	if ((style & SWT.VIRTUAL) != 0) {
-		int /*long*/ path = OS.gtk_tree_model_get_path (tree_model, iter);
-		setData = setCellData (tree_model, path);
-		OS.gtk_tree_path_free (path);
+		// TODO support for SWT.VIRTUAL
 	}
 	int /*long*/ [] ptr = new int /*long*/ [1];
 	if (setData) {
