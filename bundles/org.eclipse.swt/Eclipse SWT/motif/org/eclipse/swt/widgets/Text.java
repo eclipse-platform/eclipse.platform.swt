@@ -919,7 +919,7 @@ public void insert (String string) {
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XmTextReplace (handle, start [0], end [0], buffer);
-	int position = start [0] + buffer.length - 1;
+	int position = start [0] + Math.max (0, buffer.length - 1);
 	OS.XmTextSetInsertionPosition (handle, position);
 	display.setWarnings (warnings);
 }
