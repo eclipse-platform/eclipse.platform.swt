@@ -2378,6 +2378,7 @@ public Rectangle getClipping() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (data.gdipGraphics != 0) {
 		Rect rect = new Rect();
+		Gdip.Graphics_GetClipBounds(data.gdipGraphics, rect);
 		return new Rectangle(rect.X, rect.Y, rect.Width, rect.Height);
 	}
 	RECT rect = new RECT();
