@@ -280,9 +280,9 @@ public void setText (String string) {
 
 int widgetStyle () {
 	/*
-	* Bug in Windows.  When GetDCEx () is called with DCX_INTERSECTUPDATE,
+	* Bug in Windows.  When GetDCEx() is called with DCX_INTERSECTUPDATE,
 	* the HDC that is returned does not include the current update region.
-	* This was confirmed under DEBUG Windows when GetDCEx () complained about
+	* This was confirmed under DEBUG Windows when GetDCEx() complained about
 	* invalid flags.  Therefore, it is not easily possible to get an HDC from
 	* outside of WM_PAINT that includes the current damage and clips children.
 	* Because the receiver has children and draws a frame and label, it is
