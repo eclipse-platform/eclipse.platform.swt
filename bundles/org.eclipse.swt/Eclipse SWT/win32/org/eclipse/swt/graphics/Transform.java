@@ -64,7 +64,8 @@ public Transform (Device device) {
  * @param elements an array of floats that describe the transformation matrix
  * 
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device, or the elements array is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the elements array is too small to hold the matrix values</li>
  * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle for the Transform could not be obtained/li>
