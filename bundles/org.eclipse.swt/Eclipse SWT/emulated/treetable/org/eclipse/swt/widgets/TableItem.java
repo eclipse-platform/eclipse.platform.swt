@@ -290,7 +290,7 @@ void computeDisplayText (int columnIndex, GC gc) {
 	}
 
 	/* Make initial guess. */
-	int index = availableWidth / gc.getFontMetrics ().getAverageCharWidth ();
+	int index = Math.min (availableWidth / gc.getFontMetrics ().getAverageCharWidth (), text.length ());
 	textWidth = gc.stringExtent (text.substring (0, index)).x;
 
 	/* Initial guess is correct. */
