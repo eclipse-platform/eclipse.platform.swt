@@ -61,7 +61,7 @@ public void test_createComposites() {
 	int samples;
 
     Performance performance = Performance.getDefault();
-    performance.tagAsGlobalSummary(meter, "Create composites", Dimension.CPU_TIME);
+    performance.tagAsGlobalSummary(meter, "Create composites", Dimension.ELAPSED_PROCESS);
 	
 	// Warm up.
 	for(samples = 0; samples < 2; samples++) {
@@ -332,7 +332,7 @@ public void test_fastStringDrawing() {
 	int samples;
 
     Performance performance = Performance.getDefault();
-    performance.tagAsGlobalSummary(meter, "Draw strings using GC.drawString()", Dimension.CPU_TIME);
+    performance.tagAsGlobalSummary(meter, "Draw strings using GC.drawString()", Dimension.ELAPSED_PROCESS);
 
 	for(samples = 0; samples < 10; samples++) {
 		int width = 640;
