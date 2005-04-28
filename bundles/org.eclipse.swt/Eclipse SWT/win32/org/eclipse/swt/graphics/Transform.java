@@ -142,7 +142,6 @@ public void dispose() {
  *    <li>ERROR_NULL_ARGUMENT - if the parameter is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the parameter is too small to hold the matrix values</li>
  * </ul>
- * @see Rectangle#union
  */
 public void getElements(float[] elements) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
