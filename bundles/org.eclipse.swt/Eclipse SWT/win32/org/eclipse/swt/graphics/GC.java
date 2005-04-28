@@ -1255,8 +1255,8 @@ public void drawOval (int x, int y, int width, int height) {
  */
 public void drawPath (Path path) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT); /* McQ added a missing null check. */
-	if (path.handle == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT); /* McQ says "Should be path.isDisposed()?" */
+	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (path.handle == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	initGdip(true, false);
 	Gdip.Graphics_DrawPath(data.gdipGraphics, data.gdipPen, path.handle);
 }
@@ -2094,6 +2094,7 @@ public void fillOval (int x, int y, int width, int height) {
  */
 public void fillPath (Path path) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (path.handle == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	initGdip(false, true);
 	int mode = OS.GetPolyFillMode(handle) == OS.WINDING ? Gdip.FillModeWinding : Gdip.FillModeAlternate;
@@ -3738,12 +3739,13 @@ public void setTextAntialias(int antialias) {
 }
 
 /** 
- * Sets the transform that is currently being used by the receiver.
+ * Sets the transform that is currently being used by the receiver. If
+ * the argument is <code>null</code>, the current transform is set to
+ * the identity transform.
  *
  * @param transform the transform to set
  * 
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the parameter is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the parameter has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
