@@ -2063,16 +2063,14 @@ int itemNotificationProc (int browser, int item, int message) {
 	return OS.noErr;
 }
 
-int keyboardProc (int nextHandler, int theEvent, int userData) {
-	Widget widget = getWidget (userData);
-	if (widget == null) {
-		int theWindow = OS.GetUserFocusWindow ();
-		if (theWindow == 0) return OS.eventNotHandledErr;
+int keyboardProc (int nextHandler, int theEvent, int userData) {	
+	int theWindow = OS.GetUserFocusWindow ();
+	if (theWindow != 0) {
 		int [] theControl = new int [1];
 		OS.GetKeyboardFocus (theWindow, theControl);
-		widget = getWidget (theControl [0]);
+		Widget widget = getWidget (theControl [0]);
+		if (widget != null) return widget.keyboardProc (nextHandler, theEvent, userData);
 	}
-	if (widget != null) return widget.keyboardProc (nextHandler, theEvent, userData);
 	return OS.eventNotHandledErr;
 }
 
@@ -3393,15 +3391,23 @@ public void syncExec (Runnable runnable) {
 }
 
 int textInputProc (int nextHandler, int theEvent, int userData) {
-	Widget widget = getWidget (userData);
-	if (widget == null) {
-		int theWindow = OS.GetUserFocusWindow ();
-		if (theWindow == 0) return OS.eventNotHandledErr;
+	int theWindow = OS.GetUserFocusWindow ();
+	if (theWindow != 0) {
 		int [] theControl = new int [1];
 		OS.GetKeyboardFocus (theWindow, theControl);
-		widget = getWidget (theControl [0]);
+		Widget widget = getWidget (theControl [0]);
+		if (widget != null) {
+			/* Stop the default event handler from activating the default button */
+			OS.GetWindowDefaultButton (theWindow, theControl);
+			OS.SetWindowDefaultButton (theWindow, 0);
+			int result = widget.textInputProc (nextHandler, theEvent, userData);
+			if (result == OS.eventNotHandledErr) {
+				result = OS.CallNextEventHandler (nextHandler, theEvent);
+			}
+			OS.SetWindowDefaultButton (theWindow, theControl [0]);
+			return result;
+		}
 	}
-	if (widget != null) return widget.textInputProc (nextHandler, theEvent, userData);
 	return OS.eventNotHandledErr;
 }
 
