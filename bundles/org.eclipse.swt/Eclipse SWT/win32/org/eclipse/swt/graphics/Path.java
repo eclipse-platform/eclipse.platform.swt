@@ -43,20 +43,20 @@ public class Path extends Resource {
 	
 	PointF currentPoint = new PointF();
 	
-	/**
-	 * Constructs a new empty Path.
-	 * 
-	 * @param device the device on which to allocate the path
-	 * 
-	 * @exception IllegalArgumentException <ul>
-	 *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device</li>
-	 * </ul>
-	 * @exception SWTError <ul>
-	 *    <li>ERROR_NO_HANDLES if a handle for the path could not be obtained/li>
-	 * </ul>
-	 * 
-	 * @see #dispose()
-	 */
+/**
+ * Constructs a new empty Path.
+ * 
+ * @param device the device on which to allocate the path
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle for the path could not be obtained/li>
+ * </ul>
+ * 
+ * @see #dispose()
+ */
 public Path (Device device) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
