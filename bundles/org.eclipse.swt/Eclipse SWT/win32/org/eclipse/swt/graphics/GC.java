@@ -3681,6 +3681,8 @@ void setPen(int newColor, int newWidth, int lineStyle, int capStyle, int joinSty
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
+ * 
+ * @deprecated this functionality is not supported on some platforms
  */
 public void setXORMode(boolean xor) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
