@@ -1187,6 +1187,7 @@ public class OS extends Platform {
 	public static final int TB_GETHOTITEM = 0x0400 + 71;
 	public static final int TB_GETIMAGELIST = 0x431;
 	public static final int TB_GETITEMRECT = 0x41d;
+	public static final int TB_GETPADDING = 0x0400 + 86;
 	public static final int TB_GETROWS = 0x428;
 	public static final int TB_GETSTATE = 0x412;
 	public static final int TB_GETTOOLTIPS = 0x423;

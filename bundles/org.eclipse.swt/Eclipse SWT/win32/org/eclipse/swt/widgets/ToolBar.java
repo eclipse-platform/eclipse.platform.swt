@@ -550,7 +550,25 @@ public int indexOf (ToolItem item) {
 
 void layoutItems () {
 	if ((style & SWT.WRAP) != 0) {
-		OS.SendMessage(handle, OS.TB_AUTOSIZE, 0, 0);
+		OS.SendMessage (handle, OS.TB_AUTOSIZE, 0, 0);
+	}
+	/*
+	*  When the tool bar is vertical, make the width
+	*  of each button be the width of the widest.
+	*/
+	if ((style & SWT.VERTICAL) != 0) {
+		TBBUTTONINFO info = new TBBUTTONINFO ();
+		info.cbSize = TBBUTTONINFO.sizeof;
+		info.dwMask = OS.TBIF_SIZE;
+		int size = OS.SendMessage (handle, OS.TB_GETBUTTONSIZE, 0, 0);
+		int padding = OS.SendMessage (handle, OS.TB_GETPADDING, 0, 0);
+		info.cx = (short) ((size & 0xFFFF) + (padding & 0xFFFF) * 2);
+		for (int i=0; i<items.length; i++) {
+			ToolItem item = items [i];
+			if (item != null && (item.style & SWT.SEPARATOR) == 0) {
+				OS.SendMessage (handle, OS.TB_SETBUTTONINFO, item.id, info);
+			}
+		}
 	}
 	for (int i=0; i<items.length; i++) {
 		ToolItem item = items [i];
