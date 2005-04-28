@@ -472,7 +472,7 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
 	if (width == 0 || height == 0 || arcAngle == 0) return;
 	OS.CGContextBeginPath(handle);
 	OS.CGContextSaveGState(handle);
-	float offset = (data.lineWidth % 2) == 1 ? 0.5f : 0f;
+	float offset = data.lineWidth == 0 || (data.lineWidth % 2) == 1 ? 0.5f : 0f;
 	OS.CGContextTranslateCTM(handle, x + offset + width / 2f, y + offset + height / 2f);
 	OS.CGContextScaleCTM(handle, width / 2f, height / 2f);
 	OS.CGContextAddArc(handle, 0, 0, 1, -startAngle * (float)Compatibility.PI / 180,  -(startAngle + arcAngle) * (float)Compatibility.PI / 180, true);
@@ -643,7 +643,7 @@ public void drawLine(int x1, int y1, int x2, int y2) {
 		return;
 	}
 	OS.CGContextBeginPath(handle);
-	float offset = (data.lineWidth % 2) == 1 ? 0.5f : 0f;
+	float offset = data.lineWidth == 0 || (data.lineWidth % 2) == 1 ? 0.5f : 0f;
 	OS.CGContextMoveToPoint(handle, x1 + offset, y1 + offset);
 	OS.CGContextAddLineToPoint(handle, x2 + offset, y2 + offset);
 	OS.CGContextStrokePath(handle);
@@ -684,7 +684,7 @@ public void drawOval(int x, int y, int width, int height) {
 	}
 	OS.CGContextBeginPath(handle);
 	OS.CGContextSaveGState(handle);
-	float offset = (data.lineWidth % 2) == 1 ? 0.5f : 0f;
+	float offset = data.lineWidth == 0 || (data.lineWidth % 2) == 1 ? 0.5f : 0f;
 	OS.CGContextTranslateCTM(handle, x + offset + width / 2f, y + offset + height / 2f);
 	OS.CGContextScaleCTM(handle, width / 2f, height / 2f);
 	OS.CGContextMoveToPoint(handle, 1, 0);
@@ -704,7 +704,7 @@ public void drawPath(Path path) {
 	if (data.updateClip) setCGClipping();
 	OS.CGContextBeginPath(handle);
 	OS.CGContextSaveGState(handle);
-	float offset = (data.lineWidth % 2) == 1 ? 0.5f : 0f;
+	float offset = data.lineWidth == 0 || (data.lineWidth % 2) == 1 ? 0.5f : 0f;
 	OS.CGContextTranslateCTM(handle, offset, offset);
 	OS.CGContextAddPath(handle, path.handle);
 	OS.CGContextRestoreGState(handle);
@@ -833,7 +833,7 @@ public void drawRectangle(int x, int y, int width, int height) {
 		height = -height;
 	}
 	CGRect rect = new CGRect();
-	float offset = (data.lineWidth % 2) == 1 ? 0.5f : 0f;
+	float offset = data.lineWidth == 0 || (data.lineWidth % 2) == 1 ? 0.5f : 0f;
 	rect.x = x + offset;
 	rect.y = y + offset;
 	rect.width = width;
@@ -915,7 +915,7 @@ public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth
 	float fh = nh / nah2;
 	OS.CGContextBeginPath(handle);
 	OS.CGContextSaveGState(handle);
-	float offset = (data.lineWidth % 2) == 1 ? 0.5f : 0f;
+	float offset = data.lineWidth == 0 || (data.lineWidth % 2) == 1 ? 0.5f : 0f;
 	OS.CGContextTranslateCTM(handle, nx + offset, ny + offset);
 	OS.CGContextScaleCTM(handle, naw2, nah2);
 	OS.CGContextMoveToPoint(handle, fw - 1, 0);
