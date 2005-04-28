@@ -197,8 +197,9 @@ public void addString(String string, float x, float y, Font font) {
 }
 
 /**
- * Adds to the receiver a line from the current end of the
- * path back to the starting point for the path.
+ * Closes the current sub path by adding to the receiver a line
+ * from the current point of the path back to the starting point
+ * of the sub path.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
@@ -252,12 +253,12 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
 /**
  * Adds to the receiver a cubic bezier curve based on the parameters.
  *
- * @param cx1 the x coordinate of the starting point of the spline
- * @param cy1 the y coordinate of the starting point of the spline
- * @param cx2 the x coordinate of the ending point of the spline
- * @param cy2 the y coordinate of the ending point of the spline
- * @param x the x coordinate of the control point of the spline
- * @param y the y coordinate of the control point of the spline
+ * @param cx1 the x coordinate of the first control point of the spline
+ * @param cy1 the y coordinate of the first control of the spline
+ * @param cx2 the x coordinate of the second control of the spline
+ * @param cy2 the y coordinate of the second control of the spline
+ * @param x the x coordinate of the end point of the spline
+ * @param y the y coordinate of the end point of the spline
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
@@ -312,7 +313,7 @@ public void getBounds(float[] bounds) {
 
 /**
  * Replaces the first two elements in the parameter with values that
- * describe the current end point of the path.
+ * describe the current point of the path.
  *
  * @param point the array to hold the result
  * 
@@ -390,7 +391,7 @@ public PathData getPathData() {
 }
 
 /**
- * Adds to the receiver the a line from the current end point to
+ * Adds to the receiver a line from the current point to
  * the point specified by (x, y).
  *
  * @param x the x coordinate of the end of the line to add
@@ -421,9 +422,9 @@ public boolean isDisposed() {
 }
 
 /**
- * Sets the current end point of the receiver to the point
- * specified by (x, y). Not that if the path is empty, this
- * is equivalent to setting the starting point for the path.
+ * Sets the current point of the receiver to the point
+ * specified by (x, y). Note that this starts a new
+ * sub path.
  *
  * @param x the x coordinate of the new end point
  * @param y the y coordinate of the new end point
@@ -441,10 +442,10 @@ public void moveTo(float x, float y) {
 /**
  * Adds to the receiver a quadratic curve based on the parameters.
  *
- * @param cx1 the x coordinate of the starting point of the curve
- * @param cy1 the y coordinate of the starting point of the curve
- * @param x the x coordinate of the control point of the curve
- * @param y the y coordinate of the control point of the curve
+ * @param cx1 the x coordinate of the control point of the spline
+ * @param cy1 the y coordinate of the control point of the spline
+ * @param x the x coordinate of the end point of the spline
+ * @param y the y coordinate of the end point of the spline
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
