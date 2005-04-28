@@ -236,10 +236,12 @@ void createHandle () {
 	* flickering and clearing the TBSTYLE_TRANSPARENT interferes
 	* with the XP theme.
 	*/
-	if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
-		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		bits &= ~OS.TBSTYLE_TRANSPARENT;
-		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+	if ((style & SWT.FLAT) != 0) {
+		if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+			bits &= ~OS.TBSTYLE_TRANSPARENT;
+			OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+		}
 	}
 
 	/*
@@ -638,6 +640,32 @@ void removeControl (Control control) {
 		ToolItem item = items [i];
 		if (item != null && item.control == control) {
 			item.setControl (null);
+		}
+	}
+}
+
+void setBackgroundPixel (int pixel) {
+	super.setBackgroundPixel (pixel);
+	/*
+	* Feature in Windows.  When TBSTYLE_TRANSPARENT is set
+	* in a tool bar that is drawing a background, image in
+	* the image list that include transparency information
+	* do not draw correctly.  The fix is to clear and set
+	* TBSTYLE_TRANSPARENT depending on the background color.
+	* 
+	* NOTE:  This work around is unnecessary on XP.  The
+	* TBSTYLE_TRANSPARENT style is never cleared on that
+	* platform.
+	*/
+	if ((style & SWT.FLAT) != 0) {
+		if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+			if (pixel == -1) {
+				bits &= ~OS.TBSTYLE_TRANSPARENT;
+			} else {
+				bits |= OS.TBSTYLE_TRANSPARENT;
+			}
+			OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 		}
 	}
 }
