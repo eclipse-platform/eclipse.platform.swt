@@ -1573,14 +1573,20 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 	char[] buffer = new char [length];
 	string.getChars(0, length, buffer, 0);
 	if (data.gdipGraphics != 0) {
-		initGdip(true, false);
+		initGdip(true, !isTransparent);
 		int font = Gdip.Font_new(handle, OS.GetCurrentObject(handle, OS.OBJ_FONT));
 		if (font == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		PointF pt = new PointF();
 		pt.X = x;
 		pt.Y = y;
 		int brush = Gdip.Pen_GetBrush(data.gdipPen);
-		Gdip.Graphics_DrawString(data.gdipGraphics, buffer, length, font, pt, Gdip.StringFormat_GenericTypographic(), brush);
+		int format = Gdip.StringFormat_GenericTypographic();
+		if (!isTransparent) {
+			RectF bounds = new RectF();
+			Gdip.Graphics_MeasureString(data.gdipGraphics, buffer, length, font, pt, format, bounds);
+			Gdip.Graphics_FillRectangle(data.gdipGraphics, data.gdipBrush, (int)bounds.X, (int)bounds.Y, (int)Math.round(bounds.Width), (int)Math.round(bounds.Height));
+		}
+		Gdip.Graphics_DrawString(data.gdipGraphics, buffer, length, font, pt, format, brush);
 		Gdip.Font_delete(font);
 		return;
 	}
@@ -1710,7 +1716,7 @@ public void drawText (String string, int x, int y, int flags) {
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (string.length() == 0) return;
 	if (data.gdipGraphics != 0) {
-		initGdip(true, false);
+		initGdip(true, (flags & SWT.DRAW_TRANSPARENT) == 0);
 		int length = string.length();
 		char[] buffer = new char [length];
 		string.getChars(0, length, buffer, 0);
@@ -1720,10 +1726,15 @@ public void drawText (String string, int x, int y, int flags) {
 		pt.X = x;
 		pt.Y = y;
 		int brush = Gdip.Pen_GetBrush(data.gdipPen);
-		int format = Gdip.StringFormat_Clone(Gdip.StringFormat_GenericDefault());
-		float[] tabs = (flags & SWT.DRAW_TAB) != 0 ? new float[]{measureSpace(font, format) * 8} : new float[1];
+		int format = Gdip.StringFormat_Clone(Gdip.StringFormat_GenericTypographic());
+		float[] tabs = (flags & SWT.DRAW_TAB) != 0 ? new float[]{measureSpace(font) * 8} : new float[1];
 		Gdip.StringFormat_SetTabStops(format, 0, tabs.length, tabs); 
 		Gdip.StringFormat_SetHotkeyPrefix(format, (flags & SWT.DRAW_MNEMONIC) != 0 ? Gdip.HotkeyPrefixShow : Gdip.HotkeyPrefixNone);
+		if ((flags & SWT.DRAW_TRANSPARENT) == 0) {
+			RectF bounds = new RectF();
+			Gdip.Graphics_MeasureString(data.gdipGraphics, buffer, length, font, pt, format, bounds);
+			Gdip.Graphics_FillRectangle(data.gdipGraphics, data.gdipBrush, (int)bounds.X, (int)bounds.Y, (int)Math.round(bounds.Width), (int)Math.round(bounds.Height));
+		}
 		Gdip.Graphics_DrawString(data.gdipGraphics, buffer, length, font, pt, format, brush);
 		Gdip.StringFormat_delete(format);
 		Gdip.Font_delete(font);
@@ -3043,9 +3054,10 @@ public boolean isDisposed() {
 	return handle == 0;
 }
 
-float measureSpace(int font, int format) {
+float measureSpace(int font) {
 	PointF pt = new PointF();
 	RectF bounds = new RectF();
+	int format = Gdip.StringFormat_GenericDefault();
 	Gdip.Graphics_MeasureString(data.gdipGraphics, new char[]{' '}, 1, font, pt, format, bounds);
 	return bounds.Width;
 }
@@ -3889,8 +3901,8 @@ public Point textExtent(String string, int flags) {
 		} else {
 			buffer = new char[]{' '};
 		}
-		int format = Gdip.StringFormat_Clone(Gdip.StringFormat_GenericDefault());
-		float[] tabs = (flags & SWT.DRAW_TAB) != 0 ? new float[]{measureSpace(font, format) * 8} : new float[1];
+		int format = Gdip.StringFormat_Clone(Gdip.StringFormat_GenericTypographic());
+		float[] tabs = (flags & SWT.DRAW_TAB) != 0 ? new float[]{measureSpace(font) * 8} : new float[1];
 		Gdip.StringFormat_SetTabStops(format, 0, tabs.length, tabs); 
 		Gdip.StringFormat_SetHotkeyPrefix(format, (flags & SWT.DRAW_MNEMONIC) != 0 ? Gdip.HotkeyPrefixShow : Gdip.HotkeyPrefixNone);
 		Gdip.Graphics_MeasureString(data.gdipGraphics, buffer, buffer.length, font, pt, format, bounds);
