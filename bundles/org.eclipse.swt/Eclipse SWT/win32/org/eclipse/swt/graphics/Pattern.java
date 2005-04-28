@@ -91,8 +91,8 @@ public Pattern(Device device, Image image) {
  * 
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device, 
- *                              or if either the foreground or the background is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if either the foreground or the background has been disposed</li>
+ *                              or if either color1 or color2 is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if either color1 or color2 has been disposed</li>
  * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle for the pattern could not be obtained/li>
