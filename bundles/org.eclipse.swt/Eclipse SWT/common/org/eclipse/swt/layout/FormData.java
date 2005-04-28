@@ -145,7 +145,15 @@ FormAttachment getBottomAttachment (Control control, int spacing, boolean flushC
 		return cacheBottom = getTopAttachment (control, spacing, flushCache).plus (getHeight (control, flushCache));
 	}
 	Control bottomControl = bottom.control;
-	if (bottomControl != null && bottomControl.isDisposed ()) bottom.control = bottomControl = null;
+	if (bottomControl != null) {
+		if (bottomControl.isDisposed ()) {
+			bottom.control = bottomControl = null;
+		} else {
+			if (bottomControl.getParent () != control.getParent ()) {
+				bottomControl = null;
+			}
+		}
+	}
 	if (bottomControl == null) return cacheBottom = bottom;
 	isVisited = true;
 	FormData bottomData = (FormData) bottomControl.getLayoutData ();
@@ -178,7 +186,15 @@ FormAttachment getLeftAttachment (Control control, int spacing, boolean flushCac
 		return cacheLeft = getRightAttachment (control, spacing, flushCache).minus (getWidth (control, flushCache));
 	}
 	Control leftControl = left.control;
-	if (leftControl != null && leftControl.isDisposed ()) left.control = leftControl = null;
+	if (leftControl != null) {
+		if (leftControl.isDisposed ()) {
+			left.control = leftControl = null;
+		} else {
+			if (leftControl.getParent () != control.getParent ()) {
+				leftControl = null;
+			}
+		}
+	}
 	if (leftControl == null) return cacheLeft = left;
 	isVisited = true;
 	FormData leftData = (FormData) leftControl.getLayoutData ();
@@ -217,7 +233,15 @@ FormAttachment getRightAttachment (Control control, int spacing, boolean flushCa
 		return cacheRight = getLeftAttachment (control, spacing, flushCache).plus (getWidth (control, flushCache));
 	}
 	Control rightControl = right.control;
-	if (rightControl != null && rightControl.isDisposed ()) right.control = rightControl = null;
+	if (rightControl != null) {
+		if (rightControl.isDisposed ()) {
+			right.control = rightControl = null;
+		} else {
+			if (rightControl.getParent () != control.getParent ()) {
+				rightControl = null;
+			}
+		}
+	}
 	if (rightControl == null) return cacheRight = right;
 	isVisited = true;
 	FormData rightData = (FormData) rightControl.getLayoutData ();
@@ -250,7 +274,15 @@ FormAttachment getTopAttachment (Control control, int spacing, boolean flushCach
 		return cacheTop = getBottomAttachment (control, spacing, flushCache).minus (getHeight (control, flushCache));
 	}
 	Control topControl = top.control;
-	if (topControl != null && topControl.isDisposed ()) top.control = topControl = null;
+	if (topControl != null) {
+		if (topControl.isDisposed ()) {
+			top.control = topControl = null;
+		} else {
+			if (topControl.getParent () != control.getParent ()) {
+				topControl = null;
+			}
+		}
+	}
 	if (topControl == null) return cacheTop = top;
 	isVisited = true;
 	FormData topData = (FormData) topControl.getLayoutData ();
