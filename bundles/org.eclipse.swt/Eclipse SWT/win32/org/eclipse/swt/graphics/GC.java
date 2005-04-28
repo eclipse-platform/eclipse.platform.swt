@@ -3043,11 +3043,6 @@ public boolean isDisposed() {
 	return handle == 0;
 }
 
-boolean isIdentity(float[] xform) {
-	return xform[0] == 1 && xform[1] == 0 && xform[2] == 0 &&
-		xform[3] == 1 && xform[4] == 0 && xform[5] == 0;
-}
-
 float measureSpace(int font, int format) {
 	PointF pt = new PointF();
 	RectF bounds = new RectF();
