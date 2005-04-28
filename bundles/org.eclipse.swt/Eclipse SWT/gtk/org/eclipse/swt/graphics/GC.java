@@ -701,6 +701,7 @@ public void drawOval(int x, int y, int width, int height) {
  */
 public void drawPath(Path path) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (path.handle == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	initCairo();
 	Cairo.cairo_add_path(data.cairo, path.handle);
@@ -1351,6 +1352,7 @@ public void fillOval(int x, int y, int width, int height) {
  */
 public void fillPath (Path path) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (path.handle == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	initCairo();
 	GdkGCValues values = new GdkGCValues();

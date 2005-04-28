@@ -699,6 +699,7 @@ public void drawOval(int x, int y, int width, int height) {
  */
 public void drawPath(Path path) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (path.handle == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (data.updateClip) setCGClipping();
 	OS.CGContextBeginPath(handle);
@@ -1283,6 +1284,7 @@ public void fillOval(int x, int y, int width, int height) {
  */
 public void fillPath(Path path) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (path.handle == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (data.updateClip) setCGClipping();
 	OS.CGContextBeginPath(handle);
@@ -1821,6 +1823,8 @@ public int getTextAntialias() {
  */
 public void getTransform (Transform transform) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (transform == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	float[] cmt = data.transform; 
 	transform.setElements(cmt[0], cmt[1], cmt[2], cmt[3], cmt[4], cmt[5]);
 }

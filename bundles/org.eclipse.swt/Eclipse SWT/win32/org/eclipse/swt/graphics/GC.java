@@ -2594,6 +2594,24 @@ public Color getForeground() {
 }
 
 /** 
+ * Returns the foreground pattern.
+ *
+ * @return the receiver's foreground pattern
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see Pattern
+ * 
+ * @since 3.1
+ */
+public Pattern getForegroundPattern() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return data.foregroundPattern;
+}
+
+/** 
  * Returns the receiver's interpolation setting, which will be one of
  * <code>SWT.DEFAULT</code>, <code>SWT.NONE</code>, 
  * <code>SWT.LOW</code> or <code>SWT.HIGH</code>.
@@ -2621,24 +2639,6 @@ public int getInterpolation() {
 		case Gdip.InterpolationModeHighQuality: return SWT.HIGH;
 	}
 	return SWT.DEFAULT;
-}
-
-/** 
- * Returns the foreground pattern.
- *
- * @return the receiver's foreground pattern
- *
- * @exception SWTException <ul>
- *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
- * </ul>
- * 
- * @see Pattern
- * 
- * @since 3.1
- */
-public Pattern getForegroundPattern() {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return data.foregroundPattern;
 }
 
 /** 

@@ -1001,6 +1001,7 @@ public void drawOval (int x, int y, int width, int height) {
  */
 public void drawPath(Path path) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (path.handle == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 }
 
@@ -1681,6 +1682,7 @@ public void fillOval (int x, int y, int width, int height) {
  */
 public void fillPath (Path path) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (path.handle == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 }
 
@@ -1869,6 +1871,11 @@ public Color getBackground() {
 	return Color.photon_new(data.device, data.background);
 }
 
+public Pattern getBackgroundPattern() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return null;
+}
+
 /**
  * Returns the width of the specified character in the font
  * selected into the receiver. 
@@ -2046,6 +2053,11 @@ public FontMetrics getFontMetrics() {
 public Color getForeground() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return Color.photon_new(data.device, data.foreground);
+}
+
+public Pattern getForegroundPattern() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return null;
 }
 
 /**
@@ -2337,6 +2349,12 @@ public void setBackground (Color color) {
 	dirtyBits |= DIRTY_BACKGROUND;
 }
 
+public void setBackgroundPattern (Pattern pattern) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (pattern == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+}
+
 /**
  * Sets the area of the receiver which can be changed
  * by drawing operations to the rectangular area specified
@@ -2516,6 +2534,12 @@ public void setInterpolation(int interpolation) {
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
+}
+
+public void setForegroundPattern (Pattern pattern) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (pattern == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 }
 
 /** 
@@ -2845,8 +2869,7 @@ public void setTextAntialias(int antialias) {
  */
 public void setTransform(Transform transform) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (transform == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (transform != null && transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 }
 
 /** 
