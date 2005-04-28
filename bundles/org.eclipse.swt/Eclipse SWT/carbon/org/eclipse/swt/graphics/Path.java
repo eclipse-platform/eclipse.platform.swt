@@ -43,6 +43,7 @@ public void addArc(float x, float y, float width, float height, float startAngle
 
 public void addPath(Path path) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	OS.CGPathAddPath(handle, null, path.handle);
 }
@@ -96,6 +97,8 @@ float[] point = new float[2];
 boolean first;
 public void addString(String string, float x, float y, Font font) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (font == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int length = string.length();
 	if (length == 0) return;
 	

@@ -38,6 +38,7 @@ public void addArc(float x, float y, float width, float height, float startAngle
 
 public void addPath(Path path) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 }
 

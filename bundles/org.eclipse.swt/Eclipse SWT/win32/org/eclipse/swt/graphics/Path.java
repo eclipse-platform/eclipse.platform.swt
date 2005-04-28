@@ -126,7 +126,7 @@ public void addArc(float x, float y, float width, float height, float startAngle
  */
 public void addPath(Path path) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT); /* McQ added a missing null check. */
+	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	//TODO - expose connect?
 	Gdip.GraphicsPath_AddPath(handle, path.handle, false);
@@ -175,8 +175,8 @@ public void addRectangle(float x, float y, float width, float height) {
  */
 public void addString(String string, float x, float y, Font font) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (font == null) SWT.error(SWT.ERROR_NULL_ARGUMENT); /* McQ added a missing null check. */
-	if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT); /* McQ added a missing isDisposed check. */
+	if (font == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int length = string.length();
 	char[] buffer = new char[length];
 	string.getChars(0, length, buffer, 0);

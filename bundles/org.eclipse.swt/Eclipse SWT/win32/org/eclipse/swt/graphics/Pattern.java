@@ -86,8 +86,8 @@ public Pattern(Device device, Image image) {
  * @param y1 the y coordinate of the starting corner of the gradient
  * @param x2 the x coordinate of the ending corner of the gradient
  * @param y2 the y coordinate of the ending corner of the gradient
- * @param foreground the starting color of the gradient
- * @param background the ending color of the gradient
+ * @param color1 the starting color of the gradient
+ * @param color2 the ending color of the gradient
  * 
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device, 
@@ -100,20 +100,20 @@ public Pattern(Device device, Image image) {
  * 
  * @see #dispose()
  */
-public Pattern(Device device, float x1, float y1, float x2, float y2, Color foreground, Color background) {
+public Pattern(Device device, float x1, float y1, float x2, float y2, Color color1, Color color2) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (foreground == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (foreground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	if (background == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (background.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (color1 == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (color1.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (color2 == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (color2.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	this.device = device;
 	device.checkGDIP();
 	//TODO - how about alpha?
-	int colorRef = foreground.handle;
+	int colorRef = color1.handle;
 	int rgb = ((colorRef >> 16) & 0xFF) | (colorRef & 0xFF00) | ((colorRef & 0xFF) << 16);
 	int foreColor = Gdip.Color_new(0xFF << 24 | rgb);
-	colorRef = background.handle;
+	colorRef = color2.handle;
 	rgb = ((colorRef >> 16) & 0xFF) | (colorRef & 0xFF00) | ((colorRef & 0xFF) << 16);
 	int backColor = Gdip.Color_new(0xFF << 24 | rgb);
 	PointF p1 = new PointF();
