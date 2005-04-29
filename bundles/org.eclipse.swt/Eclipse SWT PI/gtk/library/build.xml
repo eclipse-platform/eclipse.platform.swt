@@ -18,6 +18,16 @@
 	<eclipse.refreshLocal resource="org.eclipse.swt.gtk.linux.x86" depth="infinite" />
 </target>
 
+<!-- Build swt.so for PowerPC 32 bit GTK (no Mozilla)-->
+<target name="build_ppc_gtk_lib" depends="init">
+	<exec dir="./bin/library" executable="sh">
+		<env key="MODEL" value="ppc"/>
+		<arg line="${basedir}/bin/library/build.sh"/>
+		<arg line="install"/>
+	</exec>
+	<eclipse.refreshLocal resource="org.eclipse.swt.gtk.linux.x86" depth="infinite" />
+</target>
+
 <!-- Build swt.so for Solaris GTK (no Mozilla) -->
 <target name="build_solaris_gtk_lib" depends="init">
 	<exec dir="./bin/library" executable="sh">

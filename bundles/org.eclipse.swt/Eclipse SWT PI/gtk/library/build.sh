@@ -70,6 +70,7 @@ case $OS in
 				XTEST_LIB_PATH=/usr/X11R6/lib
 				OUTPUT_DIR=../../../org.eclipse.swt.gtk.linux.ppc
 				makefile="make_linux.mak"
+				echo "Building Linux GTK PowerPC 32 bit version of SWT"
 				;;
 			"ppc64")
 				CC=gcc
