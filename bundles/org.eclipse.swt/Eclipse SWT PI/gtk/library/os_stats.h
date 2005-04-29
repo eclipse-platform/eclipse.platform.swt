@@ -134,6 +134,7 @@ typedef enum {
 	_1XCheckWindowEvent_FUNC,
 	_1XDefaultRootWindow_FUNC,
 	_1XDefaultScreen_FUNC,
+	_1XFlush_FUNC,
 	_1XFree_FUNC,
 	_1XGetSelectionOwner_FUNC,
 	_1XInternAtom_FUNC,

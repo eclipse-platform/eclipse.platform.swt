@@ -1301,6 +1301,16 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1XDefaultScreen)
 }
 #endif
 
+#ifndef NO__1XFlush
+JNIEXPORT void JNICALL OS_NATIVE(_1XFlush)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1XFlush_FUNC);
+	XFlush((Display *)arg0);
+	OS_NATIVE_EXIT(env, that, _1XFlush_FUNC);
+}
+#endif
+
 #ifndef NO__1XFree
 JNIEXPORT void JNICALL OS_NATIVE(_1XFree)
 	(JNIEnv *env, jclass that, jint arg0)

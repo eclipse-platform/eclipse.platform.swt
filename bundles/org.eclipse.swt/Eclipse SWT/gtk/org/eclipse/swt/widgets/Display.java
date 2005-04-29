@@ -597,7 +597,12 @@ public void asyncExec (Runnable runnable) {
 public void beep () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	OS.gdk_beep();
-	OS.gdk_flush();
+	if (!OS.GDK_WINDOWING_X11 ()) {
+		OS.gdk_flush ();
+	} else {
+		int /*long*/ xDisplay = OS.GDK_DISPLAY ();
+		OS.XFlush (xDisplay);
+	}
 }
 
 protected void checkDevice () {

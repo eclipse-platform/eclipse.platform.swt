@@ -2590,7 +2590,12 @@ void setCursor (int /*long*/ cursor) {
 	int /*long*/ window = paintWindow ();
 	if (window != 0) {
 		OS.gdk_window_set_cursor (window, cursor);
-		OS.gdk_flush ();
+		if (!OS.GDK_WINDOWING_X11 ()) {
+			OS.gdk_flush ();
+		} else {
+			int /*long*/ xDisplay = OS.GDK_DISPLAY ();
+			OS.XFlush (xDisplay);
+		}
 	}
 }
 

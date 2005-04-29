@@ -587,6 +587,15 @@ public static final int /*long*/ XDefaultRootWindow(int /*long*/ display) {
 		lock.unlock();
 	}
 }
+public static final native void _XFlush(int /*long*/ display);
+public static final void XFlush(int /*long*/ display) {
+	lock.lock();
+	try {
+		_XFlush(display);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _XFree(int /*long*/ address);
 public static final void XFree(int /*long*/ address) {
 	lock.lock();

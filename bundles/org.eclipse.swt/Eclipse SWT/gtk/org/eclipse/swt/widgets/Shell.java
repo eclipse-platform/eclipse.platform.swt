@@ -1075,7 +1075,12 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 void setCursor (int /*long*/ cursor) {
 	if (enableWindow != 0) {
 		OS.gdk_window_set_cursor (enableWindow, cursor);
-		OS.gdk_flush ();
+		if (!OS.GDK_WINDOWING_X11 ()) {
+			OS.gdk_flush ();
+		} else {
+			int /*long*/ xDisplay = OS.GDK_DISPLAY ();
+			OS.XFlush (xDisplay);
+		}
 	}
 	super.setCursor (cursor);
 }
@@ -1119,7 +1124,12 @@ public void setEnabled (boolean enabled) {
 		if (enableWindow != 0) {
 			if (cursor != null) {
 				OS.gdk_window_set_cursor (enableWindow, cursor.handle);
-				OS.gdk_flush ();
+				if (!OS.GDK_WINDOWING_X11 ()) {
+					OS.gdk_flush ();
+				} else {
+					int /*long*/ xDisplay = OS.GDK_DISPLAY ();
+					OS.XFlush (xDisplay);
+				}
 			}
 			OS.gdk_window_set_user_data (enableWindow, parentHandle);
 			OS.gdk_window_show (enableWindow);

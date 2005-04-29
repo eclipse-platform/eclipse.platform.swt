@@ -48,6 +48,7 @@
 #define NO__1XCheckIfEvent
 #define NO__1XDefaultScreen
 #define NO__1XDefaultRootWindow
+#define NO__1XFlush
 #define NO__1XGetSelectionOwner
 #define NO__1XQueryTree
 #define NO__1XKeysymToKeycode
