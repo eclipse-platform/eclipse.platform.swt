@@ -5339,6 +5339,39 @@ fail:
 }
 #endif
 
+#ifndef NO_GetIconRefFromIconFamilyPtr
+JNIEXPORT jint JNICALL OS_NATIVE(GetIconRefFromIconFamilyPtr)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetIconRefFromIconFamilyPtr_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)GetIconRefFromIconFamilyPtr(arg0, arg1, lparg2);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef jint (*FPTR)(jint, jint, jint *);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(GetIconRefFromIconFamilyPtr_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("GetIconRefFromIconFamilyPtr"));
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0, arg1, lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, GetIconRefFromIconFamilyPtr_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetIndMenuItemWithCommandID
 JNIEXPORT jint JNICALL OS_NATIVE(GetIndMenuItemWithCommandID)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jshortArray arg4)
@@ -9749,6 +9782,18 @@ JNIEXPORT void JNICALL OS_NATIVE(SetGWorld)
 	OS_NATIVE_ENTER(env, that, SetGWorld_FUNC);
 	SetGWorld((CGrafPtr)arg0, (GDHandle)arg1);
 	OS_NATIVE_EXIT(env, that, SetGWorld_FUNC);
+}
+#endif
+
+#ifndef NO_SetIconFamilyData
+JNIEXPORT jint JNICALL OS_NATIVE(SetIconFamilyData)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SetIconFamilyData_FUNC);
+	rc = (jint)SetIconFamilyData((IconFamilyHandle)arg0, (OSType)arg1, (Handle)arg2);
+	OS_NATIVE_EXIT(env, that, SetIconFamilyData_FUNC);
+	return rc;
 }
 #endif
 

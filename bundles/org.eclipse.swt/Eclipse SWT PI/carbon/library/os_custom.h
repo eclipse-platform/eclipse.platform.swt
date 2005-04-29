@@ -9,13 +9,6 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 
-#ifndef INC_os_H
-#define INC_os_H
+/* Libraries for dynamic loaded functions */
+#define GetIconRefFromIconFamilyPtr_LIB "com.apple.Carbon"
 
-/*#define NDEBUG*/
-
-#include <Carbon/Carbon.h>
-
-#include "os_custom.h"
-
-#endif /* INC_os_H */

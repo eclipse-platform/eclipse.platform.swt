@@ -36,7 +36,7 @@ import org.eclipse.swt.events.*;
  */
 public class TreeColumn extends Item {
 	Tree parent;
-	int id, lastWidth;
+	int id, lastWidth, iconRef;
 	boolean resizable;
 
 /**
@@ -273,6 +273,11 @@ public void pack () {
 	checkWidget ();
 	GC gc = new GC (parent);
 	int width = gc.stringExtent (text).x;
+	if (iconRef != 0) {
+		/* Note that the image is stretched to the header height */
+		width += parent.headerHeight;
+		if (text.length () != 0) width += 3;
+	}
 	if ((parent.style & SWT.VIRTUAL) == 0) {
 		int index = parent.indexOf (this);
 		width = Math.max (width, calculateWidth(parent.getItems (null), index, gc, width));
@@ -300,6 +305,8 @@ void releaseChild () {
 void releaseWidget () {
 	super.releaseWidget ();
 	parent = null;
+	if (iconRef != 0) OS.ReleaseIconRef (iconRef);
+	iconRef = 0;
 }
 
 /**
@@ -391,7 +398,15 @@ public void setImage (Image image) {
 	}
 	int index = parent.indexOf (this);
 	if (index == -1) return;
+	if (iconRef != 0) {
+		OS.ReleaseIconRef (iconRef);
+		iconRef = 0;
+	}
 	super.setImage (image);
+	if (image != null) {
+		iconRef = createIconRef (image);
+	}
+	updateHeader ();
 }
 
 /**
@@ -457,6 +472,8 @@ void updateHeader () {
 		desc.minimumWidth = desc.maximumWidth = width [0];
 	}
 	desc.titleString = str;
+	desc.btnContentInfo_contentType = (short) (iconRef != 0 ? OS.kControlContentIconRef : OS.kControlContentTextOnly);
+	desc.btnContentInfo_iconRef = iconRef;
 	OS.SetDataBrowserListViewHeaderDesc (parent.handle, id, desc);
 	OS.CFRelease (str);
 }

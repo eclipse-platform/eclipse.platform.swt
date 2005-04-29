@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.carbon.CGRect;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.RGBColor;
 import org.eclipse.swt.internal.carbon.Rect;
@@ -408,6 +409,117 @@ int createCIcon (Image image) {
 }
 
 void createHandle () {
+}
+
+int createIconRef (Image image) {
+	int imageHandle = image.handle;
+	int imageData = image.data;
+	int width = OS.CGImageGetWidth(imageHandle);
+	int height = OS.CGImageGetHeight(imageHandle);
+	int bpr = OS.CGImageGetBytesPerRow(imageHandle);
+	int alphaInfo = OS.CGImageGetAlphaInfo(imageHandle);
+	
+	int type = 0, maskType = 0;
+	if (width == 16 && height == 16) {
+		type = OS.kSmall32BitData;
+		maskType = OS.kSmall8BitMask;
+	} else if (width == 32 && height == 32) {
+		type = OS.kLarge32BitData;
+		maskType = OS.kLarge8BitMask;
+	} else if (width == 48 && height == 48) {
+		type = OS.kHuge32BitData;
+		maskType = OS.kHuge8BitMask;
+	} else if (width == 128 && height == 128) {
+		type = OS.kThumbnail32BitData;
+		maskType = OS.kThumbnail8BitMask;
+	} else {
+		type = OS.kSmall32BitData;
+		maskType = OS.kSmall8BitMask;
+		int size = 16;
+		if (width > 16 || height > 16) {
+			type = OS.kHuge32BitData;
+			maskType = OS.kHuge8BitMask;
+			size = 32;
+		}
+		if (width > 32 || height > 32) {
+			type = OS.kHuge32BitData;
+			maskType = OS.kHuge8BitMask;
+			size = 48;			
+		}
+		if (width > 48 || height > 48) {
+			type = OS.kThumbnail32BitData;
+			maskType = OS.kThumbnail8BitMask;
+			size = 128;
+		}
+		width = height = size;
+		bpr = width * 4;
+		int dataSize = height * bpr;
+		imageData = OS.NewPtr(dataSize);
+		if (imageData == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		int colorspace = OS.CGColorSpaceCreateDeviceRGB();
+		if (colorspace == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		int context = OS.CGBitmapContextCreate(imageData, width, height, 8, bpr, colorspace, OS.kCGImageAlphaNoneSkipFirst);
+		OS.CGColorSpaceRelease(colorspace);
+		if (context == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		CGRect rect = new CGRect();
+		rect.width = width;
+		rect.height = height;
+		OS.CGContextDrawImage(context, rect, imageHandle);
+		OS.CGContextRelease(context);		
+	}
+	if (type == 0) return 0;
+	
+	int iconFamily = OS.NewHandle(0);
+	if (iconFamily == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	
+	int dataSize = height * bpr;
+	int dataHandle = OS.NewHandle(dataSize);
+	if (dataHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	int[] dataPtr = new int[1];
+	OS.HLock(dataHandle);
+	OS.memcpy(dataPtr, dataHandle, 4);
+	OS.memcpy(dataPtr[0], imageData, dataSize);
+	OS.HUnlock(dataHandle);
+	OS.SetIconFamilyData(iconFamily, type, dataHandle);
+	OS.DisposeHandle(dataHandle);
+
+	/* Initialize the mask data */
+	int maskSize = width * height;
+	int maskHandle = OS.NewHandle (maskSize);	
+	if (maskHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	OS.HLock(maskHandle);
+	int[] maskPtr = new int[1];
+	OS.memcpy(maskPtr, maskHandle, 4);
+	if (alphaInfo != OS.kCGImageAlphaFirst) {
+		OS.memset(maskPtr[0], 0xFF, maskSize);
+	} else {
+		byte[] srcData = new byte[dataSize];
+		OS.memcpy(srcData, imageData, dataSize);
+		byte[] maskData = new byte[maskSize];
+		int offset = 0, maskOffset = 0;
+		for (int y = 0; y<height; y++) {
+			for (int x = 0; x<width; x++) {
+				maskData[maskOffset++] = srcData[offset];
+				offset += 4;
+			}
+		}
+		OS.memcpy(maskPtr[0], maskData, maskData.length);
+	}
+	OS.HUnlock(maskHandle);
+	OS.SetIconFamilyData(iconFamily, maskType, maskHandle);
+	OS.DisposeHandle(maskHandle);
+	
+	if (imageData != image.data) OS.DisposePtr(imageData);
+
+	/* Create the icon ref */
+	int[] iconRef = new int[1];
+	OS.HLock(iconFamily);
+	int[] iconPtr = new int[1];
+	OS.memcpy(iconPtr, iconFamily, 4);
+	OS.GetIconRefFromIconFamilyPtr(iconPtr[0], OS.GetHandleSize(iconFamily), iconRef);
+	OS.HUnlock(iconFamily);	
+	OS.DisposeHandle(iconFamily);
+	return iconRef[0];
 }
 
 void createWidget () {

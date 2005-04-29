@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 824;
-int OS_nativeFunctionCallCount[824];
+int OS_nativeFunctionCount = 830;
+int OS_nativeFunctionCallCount[830];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -114,6 +114,7 @@ char * OS_nativeFunctionNames[] = {
 	"CGContextFillPath",
 	"CGContextFillRect",
 	"CGContextFlush",
+	"CGContextGetCTM",
 	"CGContextGetInterpolationQuality",
 	"CGContextGetPathBoundingBox",
 	"CGContextGetTextPosition",
@@ -252,6 +253,7 @@ char * OS_nativeFunctionNames[] = {
 	"CreateWindowGroup",
 	"DMGetFirstScreenDevice",
 	"DMGetNextScreenDevice",
+	"DeleteGlobalRef",
 	"DeleteMenu",
 	"DeleteMenuItem",
 	"DeleteMenuItems",
@@ -396,6 +398,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetHandleSize",
 	"GetIconFamilyData",
 	"GetIconRef",
+	"GetIconRefFromIconFamilyPtr",
 	"GetIndMenuItemWithCommandID",
 	"GetIndexedSubControl",
 	"GetItemMark",
@@ -528,6 +531,7 @@ char * OS_nativeFunctionNames[] = {
 	"IsWindowActive",
 	"IsWindowCollapsed",
 	"IsWindowVisible",
+	"JNIGetObject",
 	"KeyTranslate",
 	"KillPoly",
 	"LineTo",
@@ -551,6 +555,7 @@ char * OS_nativeFunctionNames[] = {
 	"NewControl",
 	"NewDrag",
 	"NewGWorldFromPtr",
+	"NewGlobalRef",
 	"NewHandle",
 	"NewHandleClear",
 	"NewPtr",
@@ -718,6 +723,7 @@ char * OS_nativeFunctionNames[] = {
 	"SetFrontProcess",
 	"SetFrontProcessWithOptions",
 	"SetGWorld",
+	"SetIconFamilyData",
 	"SetItemMark",
 	"SetKeyboardFocus",
 	"SetMenuCommandMark",
