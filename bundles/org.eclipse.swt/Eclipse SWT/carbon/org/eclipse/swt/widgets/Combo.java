@@ -757,7 +757,7 @@ char []  getText (int start, int end) {
 		int length = OS.CFStringGetLength (ptr [0]);
 		range.length = length - start;
 	} else {
-		range.length = end - start + 1;
+		range.length = end - start;
 	}
 	char [] buffer= new char [range.length];
 	OS.CFStringGetCharacters (ptr [0], range, buffer);
