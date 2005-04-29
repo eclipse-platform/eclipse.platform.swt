@@ -1103,6 +1103,7 @@ public void setEnabled (boolean enabled) {
 		state |= DISABLED;
 	}
 	enableWidget (enabled);
+	if (isDisposed ()) return;
 	if (enabled) {
 		if (enableWindow != 0) {
 			OS.gdk_window_set_user_data (enableWindow, 0);
