@@ -1517,8 +1517,8 @@ void setTXNBounds () {
 	* scroll the widget back.  The fix is to save the 
 	* current selection, set the selection to the start
 	* of the text and then restore the selection.  This
-	* will cause the widget text widget to recompute the
-	* left scroll position.
+	* will cause the widget to recompute the left scroll
+	* position.
 	*/
 	int width = viewRect.left - viewRect.right;
 	int height = viewRect.bottom - viewRect.top;
