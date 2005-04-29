@@ -103,9 +103,14 @@ public ToolBar (Composite parent, int style) {
 	* clear these bits to avoid scroll bars and then reset
 	* the bits using the original style supplied by the
 	* programmer.
+	* 
+	* NOTE: The CCS_VERT style cannot be applied when the
+	* widget is created because of this conflict.
 	*/
 	if ((style & SWT.VERTICAL) != 0) {
 		this.style |= SWT.VERTICAL;
+		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		OS.SetWindowLong (handle, OS.GWL_STYLE, bits | OS.CCS_VERT);
 	} else {
 		this.style |= SWT.HORIZONTAL;
 	}

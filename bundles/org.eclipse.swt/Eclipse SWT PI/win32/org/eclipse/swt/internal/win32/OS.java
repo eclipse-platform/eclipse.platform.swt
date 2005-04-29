@@ -268,6 +268,7 @@ public class OS extends Platform {
 	public static final int CCM_SETVERSION = 0x2007;
 	public static final int CCS_NODIVIDER = 0x40;
 	public static final int CCS_NORESIZE = 0x4;
+	public static final int CCS_VERT = 0x80;
 	public static final int CC_ANYCOLOR = 0x100;
 	public static final int CC_ENABLEHOOK = 0x10;
 	public static final int CC_RGBINIT = 0x1;
