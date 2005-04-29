@@ -43,6 +43,7 @@ import org.eclipse.swt.events.*;
 public class Button extends Control {
 	int /*long*/ boxHandle, labelHandle, imageHandle, arrowHandle, groupHandle;
 	boolean selected;
+	ImageList imageList;
 	Image image;
 	String text;
 
@@ -457,6 +458,8 @@ void releaseWidget () {
 	super.releaseWidget ();
 	if (groupHandle != 0) OS.g_object_unref (groupHandle);
 	groupHandle = 0;
+	if (imageList != null) imageList.dispose ();
+	imageList = null;
 	image = null;
 	text = null;
 }
@@ -628,11 +631,15 @@ public void setImage (Image image) {
 	if ((style & SWT.ARROW) != 0) return;
 	if (image != null) {
 		if (image.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
-		OS.gtk_image_set_from_pixmap (imageHandle, image.pixmap, image.mask);
+		if (imageList == null) imageList = imageList = new ImageList ();
+		int imageIndex = imageList.indexOf (image);
+		if (imageIndex == -1) imageIndex = imageList.add (image);
+		int /*long*/ pixbuf = imageList.getPixbuf (imageIndex);
+		OS.gtk_image_set_from_pixbuf (imageHandle, pixbuf);
 		OS.gtk_widget_hide (labelHandle);
 		OS.gtk_widget_show (imageHandle);
 	} else {
-		OS.gtk_image_set_from_pixmap (imageHandle, 0, 0);
+		OS.gtk_image_set_from_pixbuf (imageHandle, 0);
 		OS.gtk_widget_show (labelHandle);
 		OS.gtk_widget_hide (imageHandle);
 	}

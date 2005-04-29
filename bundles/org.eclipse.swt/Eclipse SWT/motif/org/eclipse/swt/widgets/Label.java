@@ -470,10 +470,14 @@ void setBitmap (Image image) {
 		if (image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		switch (image.type) {
 			case SWT.BITMAP:
-				labelPixmap = image.pixmap;
-				disabled = new Image (display, image, SWT.IMAGE_DISABLE);
-				labelInsensitivePixmap = disabled.pixmap;
-				break;
+				ImageData data = image.getImageData ();
+				if (data.alpha == -1 && data.alphaData == null && data.transparentPixel == -1) {
+					labelPixmap = image.pixmap;
+					disabled = new Image (display, image, SWT.IMAGE_DISABLE);
+					labelInsensitivePixmap = disabled.pixmap;
+					break;
+				}
+				//FALL THROUGH
 			case SWT.ICON:
 				Rectangle rect = image.getBounds ();
 				bitmap = new Image (display, rect.width, rect.height);
