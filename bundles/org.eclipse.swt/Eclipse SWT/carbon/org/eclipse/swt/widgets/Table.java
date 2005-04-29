@@ -2111,8 +2111,12 @@ void setFontStyle (Font font) {
  */
 public void setHeaderVisible (boolean show) {
 	checkWidget ();
-	int height = show ? headerHeight : 0;
-	OS.SetDataBrowserListViewHeaderBtnHeight (handle, (short)height);
+	short [] height = new short [1];
+	OS.GetDataBrowserListViewHeaderBtnHeight (handle, height);
+	if ((height [0] != 0) != show) {
+		OS.SetDataBrowserListViewHeaderBtnHeight (handle, (short) (show ? headerHeight : 0));
+		resetVisibleRegion (handle);
+	}
 }
 
 /**
