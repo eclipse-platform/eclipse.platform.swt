@@ -539,7 +539,14 @@ public void cut () {
 public void deselect (int index) {
 	checkWidget ();
 	if (index == -1) return;
-	//TODO - not supported by the OS
+	if (index == getSelectionIndex ()) {
+		if ((style & SWT.READ_ONLY) != 0) {
+			OS.SetControl32BitValue (handle, 0);
+			sendEvent (SWT.Modify);
+		} else {
+			setText ("");
+		}
+	}
 }
 
 /**
@@ -558,7 +565,12 @@ public void deselect (int index) {
  */
 public void deselectAll () {
 	checkWidget ();
-	//TODO - not supported by the OS
+	if ((style & SWT.READ_ONLY) != 0) {
+		OS.SetControl32BitValue (handle, 0);
+		sendEvent (SWT.Modify);
+	} else {
+		setText ("");
+	}
 }
 
 /**
