@@ -3014,6 +3014,7 @@ public void setVisible (boolean visible) {
 		}
 		state |= HIDDEN;
 		OS.gtk_widget_hide (topHandle);
+		if (isDisposed ()) return;
 		if (enableWindow != 0) OS.gdk_window_hide (enableWindow);
 		sendEvent (SWT.Hide);
 	}
