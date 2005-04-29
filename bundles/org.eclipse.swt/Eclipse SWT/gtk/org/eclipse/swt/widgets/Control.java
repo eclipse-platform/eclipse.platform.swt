@@ -1485,6 +1485,7 @@ public boolean forceFocus () {
 }
 
 boolean forceFocus (int /*long*/ focusHandle) {
+	if (!OS.GTK_WIDGET_VISIBLE (topHandle ())) return false;
 	OS.gtk_widget_grab_focus (focusHandle);
 	Shell shell = getShell ();
 	int /*long*/ shellHandle = shell.shellHandle;
@@ -3012,13 +3013,13 @@ public void setVisible (boolean visible) {
 			control = display.getFocusControl ();
 			fixFocus = isFocusAncestor (control);
 		}
+		state |= HIDDEN;
 		if (fixFocus) {
 			OS.GTK_WIDGET_UNSET_FLAGS (topHandle, OS.GTK_VISIBLE);
 			fixFocus (control);
 			if (isDisposed ()) return;
 			OS.GTK_WIDGET_SET_FLAGS (topHandle, OS.GTK_VISIBLE);
 		}
-		state |= HIDDEN;
 		OS.gtk_widget_hide (topHandle);
 		if (isDisposed ()) return;
 		if (enableWindow != 0) OS.gdk_window_hide (enableWindow);
