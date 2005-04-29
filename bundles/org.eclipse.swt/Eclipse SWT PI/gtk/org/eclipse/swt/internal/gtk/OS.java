@@ -394,6 +394,7 @@ public class OS extends Platform {
 	public static final byte[] focus_line_width = ascii("focus_line_width");
 	public static final byte[] font_desc = ascii("font-desc");
 	public static final byte[] foreground_gdk = ascii("foreground-gdk");
+	public static final byte[] gtk_cursor_blink = ascii("gtk-cursor-blink");
 	public static final byte[] gtk_cursor_blink_time = ascii("gtk-cursor-blink-time");
 	public static final byte[] gtk_double_click_time = ascii("gtk-double-click-time");
 	public static final byte[] horizontal_separator = ascii("horizontal_separator");

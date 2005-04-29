@@ -557,6 +557,7 @@ int caretProc (int clientData, int id) {
 	if (currentCaret == null) return 0;
 	if (currentCaret.blinkCaret ()) {
 		int blinkRate = currentCaret.blinkRate;
+		if (blinkRate == 0) return 0;
 		int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
 		caretID = OS.XtAppAddTimeOut (xtContext, blinkRate, caretProc, 0);
 	} else {

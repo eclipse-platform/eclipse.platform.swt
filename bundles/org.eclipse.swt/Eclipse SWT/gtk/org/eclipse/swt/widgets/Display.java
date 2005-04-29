@@ -1080,6 +1080,8 @@ int getCaretBlinkTime () {
 	int /*long*/ settings = OS.gtk_settings_get_default ();
 	if (settings == 0) return 500;
 	int [] buffer = new int [1];
+	OS.g_object_get (settings, OS.gtk_cursor_blink, buffer, 0);
+	if (buffer [0] == 0) return 0;
 	OS.g_object_get (settings, OS.gtk_cursor_blink_time, buffer, 0);
 	if (buffer [0] == 0) return 500;
 	/*
@@ -3190,6 +3192,7 @@ int /*long*/ caretProc (int /*long*/ clientData) {
 	}
 	if (currentCaret.blinkCaret()) {
 		int blinkRate = currentCaret.blinkRate;
+		if (blinkRate == 0) return 0;
 		caretId = OS.gtk_timeout_add (blinkRate, caretProc, 0);
 	} else {
 		currentCaret = null;

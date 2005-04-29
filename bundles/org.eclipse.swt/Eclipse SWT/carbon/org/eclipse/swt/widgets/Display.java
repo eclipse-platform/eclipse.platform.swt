@@ -509,6 +509,7 @@ int caretProc (int id, int clientData) {
 	if (currentCaret == null || currentCaret.isDisposed()) return 0;
 	if (currentCaret.blinkCaret ()) {
 		int blinkRate = currentCaret.blinkRate;
+		if (blinkRate == 0) return 0;
 		OS.SetEventLoopTimerNextFireTime (id, blinkRate / 1000.0);
 	} else {
 		currentCaret = null;
