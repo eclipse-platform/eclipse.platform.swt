@@ -4462,6 +4462,56 @@ public String getText(int start, int end) {
 	return content.getTextRange(start, end - start + 1);
 }
 /**
+ * Returns the smallest bounding rectangle that includes the characters between two offsets.
+ * <p>
+ *
+ * @param start offset of the first character included in the bounding box
+ * @param end offset of the last character included in the bounding box 
+ * @return bounding box of the text between start and end
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *   <li>ERROR_INVALID_RANGE when start and/or end are outside the widget content</li> 
+ * </ul>
+ * @since 3.1
+ */
+public Rectangle getTextBounds(int start, int end) {
+	checkWidget();	
+	int contentLength = getCharCount();	
+	if (start < 0 || start >= contentLength || end < 0 || end >= contentLength || start > end) {
+		SWT.error(SWT.ERROR_INVALID_RANGE);
+	}
+	int lineStart = content.getLineAtOffset(start);
+	int lineEnd = content.getLineAtOffset(end);
+	Rectangle rect;
+	int y = lineStart * lineHeight;
+	int height = (lineEnd + 1) * lineHeight - y;
+	int left = 0x7fffffff, right = 0;
+	for (int i = lineStart; i <= lineEnd; i++) {
+		int lineOffset = content.getOffsetAtLine(i);
+		String line = content.getLine(i);
+		TextLayout layout = renderer.getTextLayout(line, lineOffset);
+		if (i == lineStart && i == lineEnd) {
+			rect = layout.getBounds(start - lineOffset, end - lineOffset);
+		} else if (i == lineStart) {
+			rect = layout.getBounds(start - lineOffset, line.length());
+		}	else	if (i == lineEnd) {
+			rect = layout.getBounds(0, end - lineOffset);
+		} else {
+			rect = layout.getLineBounds(0);
+		}
+		left = Math.min (left, rect.x);
+		right = Math.max (right, rect.x + rect.width);
+		renderer.disposeTextLayout(layout);
+	}
+	rect = new Rectangle (left, y, right-left, height);
+	rect.x += leftMargin - horizontalScrollOffset;
+	rect.y -= verticalScrollOffset;
+	return rect;
+}
+/**
  * Returns the widget content starting at start for length characters.
  * <p>
  *
