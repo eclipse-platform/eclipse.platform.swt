@@ -1314,6 +1314,35 @@ boolean sendKeyEvent (int type, Event event) {
 	postEvent (SWT.Modify);
 	return newText == oldText;
 }
+int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
+	if ((style & SWT.READ_ONLY) != 0) {
+		return super.setBounds (x, y, width, height, move, resize, events);
+	}
+	/*
+	* Bug in the Macintosh.  When the caret is moved,
+	* the combo widget scrolls to show the new location.
+	* This means that the combo widget may be scrolled
+	* to the left in order to show the caret when the
+	* widget is not large enough to show both the caret
+	* location and all the text.  Unfortunately, when
+	* the widget is resized such that all the text and
+	* the caret could be visible, the Macintosh does not
+	* scroll the widget back.  The fix is to save the 
+	* current selection, reset the text and then restore
+	* the selection.  This will cause the widget
+	* to recompute the left scroll position.
+	*/
+	Rect inset = getInset ();
+	Rectangle rect = getBounds ();
+	int oldWidth = rect.width - inset.left - inset.right;
+	int result = super.setBounds (x, y, width, height, move, resize, events);
+	if (oldWidth == 0 && width > 0) {
+		Point selection = getSelection ();
+		setText (getText (), false);
+		setSelection (selection);
+	}
+	return result;
+}
 /**
  * Sets the text of the item in the receiver's list at the given
  * zero-relative index to the string argument. This is equivalent
@@ -1430,7 +1459,7 @@ public void setSelection (Point selection) {
 	checkWidget ();
 	if (selection == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.READ_ONLY) == 0) {
-		short [] s = new short [] {(short)selection.x, (short)selection.y };
+		short [] s = new short [] {(short)selection.x, (short)selection.y};
 		OS.SetControlData (handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, 4, s);
 	}
 }
