@@ -597,7 +597,7 @@ int checkResizeProc (int display, int event, int arg) {
 static synchronized void checkDisplay (Thread thread, boolean multiple) {
 	for (int i=0; i<Displays.length; i++) {
 		if (Displays [i] != null) {
-			if (!multiple) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
+			if (!multiple) SWT.error (SWT.ERROR_NOT_IMPLEMENTED, null, " [multiple displays]");
 			if (Displays [i].thread == thread) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
 		}
 	}
