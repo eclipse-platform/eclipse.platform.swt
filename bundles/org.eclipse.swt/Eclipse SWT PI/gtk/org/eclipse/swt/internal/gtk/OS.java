@@ -2428,6 +2428,24 @@ public static final int /*long*/ gdk_pixbuf_get_from_drawable(int /*long*/ dest,
 		lock.unlock();
 	}
 }
+public static final native boolean _gdk_pixbuf_get_has_alpha(int /*long*/ pixbuf);
+public static final boolean gdk_pixbuf_get_has_alpha(int /*long*/ pixbuf) {
+	lock.lock();
+	try {
+		return _gdk_pixbuf_get_has_alpha(pixbuf);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _gdk_pixbuf_get_height(int /*long*/ pixbuf);
+public static final int gdk_pixbuf_get_height(int /*long*/ pixbuf) {
+	lock.lock();
+	try {
+		return _gdk_pixbuf_get_height(pixbuf);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _gdk_pixbuf_get_pixels(int /*long*/ pixbuf);
 public static final int /*long*/ gdk_pixbuf_get_pixels(int /*long*/ pixbuf) {
 	lock.lock();
@@ -2442,6 +2460,15 @@ public static final int gdk_pixbuf_get_rowstride(int /*long*/ pixbuf) {
 	lock.lock();
 	try {
 		return _gdk_pixbuf_get_rowstride(pixbuf);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _gdk_pixbuf_get_width(int /*long*/ pixbuf);
+public static final int gdk_pixbuf_get_width(int /*long*/ pixbuf) {
+	lock.lock();
+	try {
+		return _gdk_pixbuf_get_width(pixbuf);
 	} finally {
 		lock.unlock();
 	}

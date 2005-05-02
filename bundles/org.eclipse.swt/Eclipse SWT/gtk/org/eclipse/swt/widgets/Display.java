@@ -204,9 +204,8 @@ public class Display extends Device {
 	int /*long*/ defaultFont;
 
 	/* System Images */
-	int /*long*/ errorPixmap, infoPixmap, questionPixmap, warningPixmap;
-	int /*long*/ errorMask, infoMask, questionMask, warningMask;
-	
+	Image errorImage, infoImage, questionImage, warningImage;
+
 	/* System Cursors */
 	Cursor [] cursors = new Cursor [SWT.CURSOR_HAND + 1];
 
@@ -783,18 +782,40 @@ synchronized void createDisplay (DeviceData data) {
 	OS.gdk_window_add_filter  (0, filterProc, 0);
 }
 
-int /*long*/[] createImage (String name) {
+Image createImage (String name) {
 	int /*long*/ style = OS.gtk_widget_get_default_style ();
 	byte[] buffer = Converter.wcsToMbcs (null, name, true);
 	int /*long*/ pixbuf = OS.gtk_icon_set_render_icon (
 		OS.gtk_icon_factory_lookup_default (buffer), style,
 		OS.GTK_TEXT_DIR_NONE, OS.GTK_STATE_NORMAL, OS.GTK_ICON_SIZE_DIALOG, 0, 0);
 	if (pixbuf == 0) return null;
-	int /*long*/[] pixmap_return = new int /*long*/[1];
-	int /*long*/[] mask_return = new int /*long*/[1];
-	OS.gdk_pixbuf_render_pixmap_and_mask (pixbuf, pixmap_return, mask_return, 128);
+	int width = OS.gdk_pixbuf_get_width (pixbuf);
+	int height = OS.gdk_pixbuf_get_height (pixbuf);
+	int stride = OS.gdk_pixbuf_get_rowstride (pixbuf);
+	boolean hasAlpha = OS.gdk_pixbuf_get_has_alpha (pixbuf);
+	int /*long*/ pixels = OS.gdk_pixbuf_get_pixels (pixbuf);
+	byte [] data = new byte [stride * height];
+	OS.memmove (data, pixels, data.length);
 	OS.g_object_unref (pixbuf);
-	return new int /*long*/[] {pixmap_return [0], mask_return [0]};
+	ImageData imageData = null;
+	if (hasAlpha) {
+		PaletteData palette = new PaletteData (0xFF000000, 0xFF0000, 0xFF00);
+		imageData = new ImageData (width, height, 32, palette);
+		byte [] alpha = new byte [stride * height];
+		for (int y=0; y<height; y++) {
+			for (int x=0; x<width; x++) {
+				alpha [y*height+x] = data [y*stride+x*4+3];
+				data [y*stride+x*4+3] = 0;
+			}
+		}
+		imageData.setAlphas (0, 0, width * height, alpha, 0);
+	} else {
+		PaletteData palette = new PaletteData (0xFF0000, 0xFF00, 0xFF);
+		imageData = new ImageData (width, height, 24, palette);
+	}
+	imageData.data = data;
+	imageData.bytesPerLine = stride;
+	return new Image (this, imageData);
 }
 
 synchronized void deregister () {
@@ -1707,56 +1728,30 @@ public Cursor getSystemCursor (int id) {
  */
 public Image getSystemImage (int id) {
 	checkDevice ();
-	int /*long*/ imagePixmap = 0, imageMask = 0;
 	switch (id) {
 		case SWT.ICON_ERROR:
-			if (errorPixmap == 0) {
-				int /*long*/[] image = createImage ("gtk-dialog-error");
-				if (image != null) {
-					errorPixmap = image [0];
-					errorMask = image [1];
-				}
+			if (errorImage == null) {
+				errorImage = createImage ("gtk-dialog-error");
 			}
-			imagePixmap = errorPixmap;
-			imageMask = errorMask;
-			break;
+			return errorImage;
 		case SWT.ICON_INFORMATION:
 		case SWT.ICON_WORKING:
-			if (infoPixmap == 0) {
-				int /*long*/[] image = createImage ("gtk-dialog-info");
-				if (image != null) {
-					infoPixmap = image [0];
-					infoMask = image [1];
-				}
+			if (infoImage == null) {
+				infoImage = createImage ("gtk-dialog-info");
 			}
-			imagePixmap = infoPixmap;
-			imageMask = infoMask;
-			break;
+			return infoImage;
 		case SWT.ICON_QUESTION:
-			if (questionPixmap == 0) {
-				int /*long*/[] image = createImage ("gtk-dialog-question");
-				if (image != null) {
-					questionPixmap = image [0];
-					questionMask = image [1];
-				}
+			if (questionImage == null) {
+				questionImage = createImage ("gtk-dialog-question");
 			}
-			imagePixmap = questionPixmap;
-			imageMask = questionMask;
-			break;
+			return questionImage;
 		case SWT.ICON_WARNING:
-			if (warningPixmap == 0) {
-				int /*long*/[] image = createImage ("gtk-dialog-warning");
-				if (image != null) {
-					warningPixmap = image [0];
-					warningMask = image [1];
-				}
+			if (warningImage == null) {
+				warningImage = createImage ("gtk-dialog-warning");
 			}
-			imagePixmap = warningPixmap;
-			imageMask = warningMask;
-			break;
+			return warningImage;
 	}
-	if (imagePixmap == 0) return null;
-	return Image.gtk_new (this, SWT.ICON, imagePixmap, imageMask);
+	return null;
 }
 
 void initializeSystemResources () {
@@ -2617,24 +2612,11 @@ void releaseDisplay () {
 	defaultFont = 0;
 	
 	/* Dispose the System Images */
-	if (errorPixmap != 0) {
-		OS.g_object_unref (errorPixmap);
-		OS.g_object_unref (errorMask);
-	}
-	if (infoPixmap != 0) {
-		OS.g_object_unref (infoPixmap);
-		OS.g_object_unref (infoMask);
-	}
-	if (questionPixmap != 0) {
-		OS.g_object_unref (questionPixmap);
-		OS.g_object_unref (questionMask);
-	}
-	if (warningPixmap != 0) {
-		OS.g_object_unref (warningPixmap);
-		OS.g_object_unref (warningMask);
-	}
-	errorPixmap = infoPixmap = questionPixmap = warningPixmap = 0;
-	errorMask = infoMask = questionMask = warningMask = 0;
+	if (errorImage != null) errorImage.dispose();
+	if (infoImage != null) infoImage.dispose();
+	if (questionImage != null) questionImage.dispose();
+	if (warningImage != null) warningImage.dispose();
+	errorImage = infoImage = questionImage = warningImage = null;
 	
 	/* Release the System Cursors */
 	for (int i = 0; i < cursors.length; i++) {

@@ -3595,6 +3595,30 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1pixbuf_1get_1from_1drawable)
 }
 #endif
 
+#ifndef NO__1gdk_1pixbuf_1get_1has_1alpha
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gdk_1pixbuf_1get_1has_1alpha)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1get_1has_1alpha_FUNC);
+	rc = (jboolean)gdk_pixbuf_get_has_alpha((const GdkPixbuf *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1get_1has_1alpha_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1pixbuf_1get_1height
+JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1pixbuf_1get_1height)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1get_1height_FUNC);
+	rc = (jint)gdk_pixbuf_get_height((const GdkPixbuf *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1get_1height_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1pixbuf_1get_1pixels
 JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1pixbuf_1get_1pixels)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -3615,6 +3639,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1pixbuf_1get_1rowstride)
 	OS_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1get_1rowstride_FUNC);
 	rc = (jint)gdk_pixbuf_get_rowstride((const GdkPixbuf *)arg0);
 	OS_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1get_1rowstride_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1pixbuf_1get_1width
+JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1pixbuf_1get_1width)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1get_1width_FUNC);
+	rc = (jint)gdk_pixbuf_get_width((const GdkPixbuf *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1get_1width_FUNC);
 	return rc;
 }
 #endif
