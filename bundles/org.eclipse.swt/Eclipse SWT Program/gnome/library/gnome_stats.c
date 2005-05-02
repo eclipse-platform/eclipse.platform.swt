@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2000, 2004 IBM Corporation and others. All rights reserved.
+* Copyright (c) 2000, 2005 IBM Corporation and others. All rights reserved.
 * The contents of this file are made available under the terms
 * of the GNU Lesser General Public License (LGPL) Version 2.1 that
 * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -18,10 +18,13 @@
 
 #ifdef NATIVE_STATS
 
-int GNOME_nativeFunctionCount = 15;
-int GNOME_nativeFunctionCallCount[15];
+int GNOME_nativeFunctionCount = 21;
+int GNOME_nativeFunctionCallCount[21];
 char * GNOME_nativeFunctionNames[] = {
 	"GnomeVFSMimeApplication_1sizeof",
+	"_1dlclose",
+	"_1dlopen",
+	"_1dlsym",
 	"_1g_1free",
 	"_1g_1list_1next",
 	"_1g_1object_1unref",
@@ -30,11 +33,14 @@ char * GNOME_nativeFunctionNames[] = {
 	"_1gnome_1icon_1theme_1new",
 	"_1gnome_1vfs_1get_1registered_1mime_1types",
 	"_1gnome_1vfs_1init",
+	"_1gnome_1vfs_1make_1uri_1from_1input_1with_1dirs",
 	"_1gnome_1vfs_1mime_1application_1free",
 	"_1gnome_1vfs_1mime_1extensions_1list_1free",
 	"_1gnome_1vfs_1mime_1get_1default_1application",
 	"_1gnome_1vfs_1mime_1get_1extensions_1list",
 	"_1gnome_1vfs_1mime_1registered_1mime_1type_1list_1free",
+	"_1gnome_1vfs_1mime_1type_1from_1name",
+	"_1gnome_1vfs_1url_1show",
 	"memmove",
 };
 

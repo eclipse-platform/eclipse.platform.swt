@@ -19,11 +19,16 @@
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
+#include <dlfcn.h>
 #include <libgnome/libgnome.h>
 #include <libgnome/gnome-program.h>
 #include <libgnomeui/libgnomeui.h>
 #include <libgnomevfs/gnome-vfs.h>
+#include <libgnomevfs/gnome-vfs-mime.h>
 #include <libgnomevfs/gnome-vfs-mime-handlers.h>
 #include <libgnomevfs/gnome-vfs-mime-info.h>
+
+#define gnome_vfs_url_show_LIB "libgnomevfs-2.so.0"
+#define gnome_vfs_make_uri_from_input_with_dirs_LIB "libgnomevfs-2.so.0"
 
 #endif

@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2000, 2004 IBM Corporation and others. All rights reserved.
+* Copyright (c) 2000, 2005 IBM Corporation and others. All rights reserved.
 * The contents of this file are made available under the terms
 * of the GNU Lesser General Public License (LGPL) Version 2.1 that
 * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -26,6 +26,9 @@ extern char* GNOME_nativeFunctionNames[];
 
 typedef enum {
 	GnomeVFSMimeApplication_1sizeof_FUNC,
+	_1dlclose_FUNC,
+	_1dlopen_FUNC,
+	_1dlsym_FUNC,
 	_1g_1free_FUNC,
 	_1g_1list_1next_FUNC,
 	_1g_1object_1unref_FUNC,
@@ -34,10 +37,13 @@ typedef enum {
 	_1gnome_1icon_1theme_1new_FUNC,
 	_1gnome_1vfs_1get_1registered_1mime_1types_FUNC,
 	_1gnome_1vfs_1init_FUNC,
+	_1gnome_1vfs_1make_1uri_1from_1input_1with_1dirs_FUNC,
 	_1gnome_1vfs_1mime_1application_1free_FUNC,
 	_1gnome_1vfs_1mime_1extensions_1list_1free_FUNC,
 	_1gnome_1vfs_1mime_1get_1default_1application_FUNC,
 	_1gnome_1vfs_1mime_1get_1extensions_1list_FUNC,
 	_1gnome_1vfs_1mime_1registered_1mime_1type_1list_1free_FUNC,
+	_1gnome_1vfs_1mime_1type_1from_1name_FUNC,
+	_1gnome_1vfs_1url_1show_FUNC,
 	memmove_FUNC,
 } GNOME_FUNCS;

@@ -22,11 +22,42 @@ public static final int GNOME_FILE_DOMAIN_PIXMAP = 4;
 public static final int GNOME_ICON_LOOKUP_FLAGS_NONE = 0;
 public static final int GNOME_PARAM_NONE = 0;
 public static final int GNOME_VFS_MIME_APPLICATION_ARGUMENT_TYPE_URIS = 0;
+public static final int GNOME_VFS_OK = 0;
+public static final int GNOME_VFS_MAKE_URI_DIR_NONE = 0;
+public static final int GNOME_VFS_MAKE_URI_DIR_HOMEDIR = 1<<0;
+public static final int GNOME_VFS_MAKE_URI_DIR_CURRENT = 1<<1;
 
 /** 64 bit */
 public static final native int GnomeVFSMimeApplication_sizeof();
 
 /** Natives */
+public static final native int _dlclose(int /*long*/ handle);
+public static final int dlclose(int /*long*/ handle) {
+	lock.lock();
+	try {
+		return _dlclose(handle);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _dlopen(byte[] filename, int flag);
+public static final int /*long*/ dlopen(byte[] filename, int flag) {
+	lock.lock();
+	try {
+		return _dlopen(filename, flag);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _dlsym(int /*long*/ handle, byte[] symbol);
+public static final int /*long*/ dlsym(int /*long*/ handle, byte[] symbol) {
+	lock.lock();
+	try {
+		return _dlsym(handle, symbol);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _g_free(int /*long*/ mem);
 public static final void g_free(int /*long*/ mem) {
 	lock.lock();
@@ -99,6 +130,15 @@ public static final boolean gnome_vfs_init() {
 		lock.unlock();
 	}
 }
+public static final native int /*long*/ _gnome_vfs_make_uri_from_input_with_dirs(byte[] uri, int dirs);
+public static final int /*long*/ gnome_vfs_make_uri_from_input_with_dirs(byte[] uri, int dirs) {
+	lock.lock();
+	try {
+		return _gnome_vfs_make_uri_from_input_with_dirs(uri, dirs);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gnome_vfs_mime_application_free(int /*long*/ application);
 public static final void gnome_vfs_mime_application_free(int /*long*/ application) {
 	lock.lock();
@@ -140,6 +180,24 @@ public static final void gnome_vfs_mime_registered_mime_type_list_free(int /*lon
 	lock.lock();
 	try {
 		_gnome_vfs_mime_registered_mime_type_list_free(list);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _gnome_vfs_mime_type_from_name(byte[] file);
+public static final int /*long*/ gnome_vfs_mime_type_from_name(byte[] file) {
+	lock.lock();
+	try {
+		return _gnome_vfs_mime_type_from_name(file);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _gnome_vfs_url_show(int /*long*/ url);
+public static final int gnome_vfs_url_show(int /*long*/ url) {
+	lock.lock();
+	try {
+		return _gnome_vfs_url_show(url);
 	} finally {
 		lock.unlock();
 	}

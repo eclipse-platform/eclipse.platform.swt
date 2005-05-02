@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2000, 2004 IBM Corporation and others. All rights reserved.
+* Copyright (c) 2000, 2005 IBM Corporation and others. All rights reserved.
 * The contents of this file are made available under the terms
 * of the GNU Lesser General Public License (LGPL) Version 2.1 that
 * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -27,6 +27,50 @@ JNIEXPORT jint JNICALL GNOME_NATIVE(GnomeVFSMimeApplication_1sizeof)
 	GNOME_NATIVE_ENTER(env, that, GnomeVFSMimeApplication_1sizeof_FUNC);
 	rc = (jint)GnomeVFSMimeApplication_sizeof();
 	GNOME_NATIVE_EXIT(env, that, GnomeVFSMimeApplication_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1dlclose
+JNIEXPORT jint JNICALL GNOME_NATIVE(_1dlclose)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	GNOME_NATIVE_ENTER(env, that, _1dlclose_FUNC);
+	rc = (jint)dlclose((void *)arg0);
+	GNOME_NATIVE_EXIT(env, that, _1dlclose_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1dlopen
+JNIEXPORT jint JNICALL GNOME_NATIVE(_1dlopen)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1)
+{
+	jbyte *lparg0=NULL;
+	jint rc = 0;
+	GNOME_NATIVE_ENTER(env, that, _1dlopen_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jint)dlopen((const char *)lparg0, arg1);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	GNOME_NATIVE_EXIT(env, that, _1dlopen_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1dlsym
+JNIEXPORT jint JNICALL GNOME_NATIVE(_1dlsym)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jint rc = 0;
+	GNOME_NATIVE_ENTER(env, that, _1dlsym_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)dlsym((void *)arg0, (const char *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	GNOME_NATIVE_EXIT(env, that, _1dlsym_FUNC);
 	return rc;
 }
 #endif
@@ -143,6 +187,39 @@ JNIEXPORT jboolean JNICALL GNOME_NATIVE(_1gnome_1vfs_1init)
 }
 #endif
 
+#ifndef NO__1gnome_1vfs_1make_1uri_1from_1input_1with_1dirs
+JNIEXPORT jint JNICALL GNOME_NATIVE(_1gnome_1vfs_1make_1uri_1from_1input_1with_1dirs)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1)
+{
+	jbyte *lparg0=NULL;
+	jint rc = 0;
+	GNOME_NATIVE_ENTER(env, that, _1gnome_1vfs_1make_1uri_1from_1input_1with_1dirs_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)gnome_vfs_make_uri_from_input_with_dirs(lparg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jbyte *, jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gnome_vfs_make_uri_from_input_with_dirs_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gnome_vfs_make_uri_from_input_with_dirs");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(lparg0, arg1);
+		}
+	}
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	GNOME_NATIVE_EXIT(env, that, _1gnome_1vfs_1make_1uri_1from_1input_1with_1dirs_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gnome_1vfs_1mime_1application_1free
 JNIEXPORT void JNICALL GNOME_NATIVE(_1gnome_1vfs_1mime_1application_1free)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -171,7 +248,7 @@ JNIEXPORT jint JNICALL GNOME_NATIVE(_1gnome_1vfs_1mime_1get_1default_1applicatio
 	jint rc = 0;
 	GNOME_NATIVE_ENTER(env, that, _1gnome_1vfs_1mime_1get_1default_1application_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	rc = (jint)gnome_vfs_mime_get_default_application(lparg0);
+	rc = (jint)gnome_vfs_mime_get_default_application((const char *)lparg0);
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	GNOME_NATIVE_EXIT(env, that, _1gnome_1vfs_1mime_1get_1default_1application_FUNC);
@@ -198,6 +275,51 @@ JNIEXPORT void JNICALL GNOME_NATIVE(_1gnome_1vfs_1mime_1registered_1mime_1type_1
 	GNOME_NATIVE_ENTER(env, that, _1gnome_1vfs_1mime_1registered_1mime_1type_1list_1free_FUNC);
 	gnome_vfs_mime_registered_mime_type_list_free((GList *)arg0);
 	GNOME_NATIVE_EXIT(env, that, _1gnome_1vfs_1mime_1registered_1mime_1type_1list_1free_FUNC);
+}
+#endif
+
+#ifndef NO__1gnome_1vfs_1mime_1type_1from_1name
+JNIEXPORT jint JNICALL GNOME_NATIVE(_1gnome_1vfs_1mime_1type_1from_1name)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jint rc = 0;
+	GNOME_NATIVE_ENTER(env, that, _1gnome_1vfs_1mime_1type_1from_1name_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jint)gnome_vfs_mime_type_from_name((const char *)lparg0);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	GNOME_NATIVE_EXIT(env, that, _1gnome_1vfs_1mime_1type_1from_1name_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gnome_1vfs_1url_1show
+JNIEXPORT jint JNICALL GNOME_NATIVE(_1gnome_1vfs_1url_1show)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	GNOME_NATIVE_ENTER(env, that, _1gnome_1vfs_1url_1show_FUNC);
+/*
+	rc = (jint)gnome_vfs_url_show(arg0);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gnome_vfs_url_show_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gnome_vfs_url_show");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0);
+		}
+	}
+	GNOME_NATIVE_EXIT(env, that, _1gnome_1vfs_1url_1show_FUNC);
+	return rc;
 }
 #endif
 
