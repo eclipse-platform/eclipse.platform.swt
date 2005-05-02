@@ -816,7 +816,7 @@ String getNameText () {
 	if ((parent.style & SWT.VIRTUAL) != 0) {
 		if (!cached) return "*virtual*"; //$NON-NLS-1$
 	}
-	return getText ();
+	return super.getNameText ();
 }
 /**
  * Returns the receiver's parent, which must be a <code>Table</code>.
