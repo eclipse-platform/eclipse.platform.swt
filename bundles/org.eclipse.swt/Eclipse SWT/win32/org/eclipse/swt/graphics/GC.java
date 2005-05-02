@@ -3570,6 +3570,11 @@ public void setLineStyle(int lineStyle) {
  * for all of the figure drawing operations (that is,
  * <code>drawLine</code>, <code>drawRectangle</code>, 
  * <code>drawPolyline</code>, and so forth.
+ * <p>
+ * Note that line width of zero is used as a hint to
+ * indicate that the fastest possible line drawing
+ * algorithm should be used.
+ * </p>
  *
  * @param lineWidth the width of a line
  *
@@ -3597,7 +3602,7 @@ void setPen(int newColor, int newWidth, int lineStyle, int capStyle, int joinSty
 		* from other platforms.  The fix is to change these values when
 		* line width is widened.
 		*/
-		if (width <= 1 && (newWidth > 1 || lineStyle == OS.PS_USERSTYLE)) {
+		if (width < 1 && (newWidth >= 1 || lineStyle == OS.PS_USERSTYLE)) {
 			if (capStyle == -1) capStyle = OS.PS_ENDCAP_FLAT;
 			if (joinStyle == -1) joinStyle = OS.PS_JOIN_MITER;
 		}
@@ -3616,7 +3621,7 @@ void setPen(int newColor, int newWidth, int lineStyle, int capStyle, int joinSty
 		width = logPen.elpWidth;
 		style = logPen.elpPenStyle;
 		extPen = true;
-		if (newWidth == 0 || newWidth == 1) {
+		if (newWidth == 0) {
 			if (dashes == null && (style & OS.PS_ENDCAP_MASK) == OS.PS_ENDCAP_FLAT && (style & OS.PS_JOIN_MASK) == OS.PS_JOIN_MITER) {
 				style &= ~(OS.PS_ENDCAP_MASK | OS.PS_JOIN_MASK | OS.PS_TYPE_MASK);
 				extPen = false;
@@ -3661,7 +3666,7 @@ void setPen(int newColor, int newWidth, int lineStyle, int capStyle, int joinSty
 	* is to use ExtCreatePen() instead.
 	*/
 	int newPen;
-	if (!OS.IsWinCE && (extPen || width > 1 || (style & OS.PS_STYLE_MASK) == OS.PS_USERSTYLE)) {
+	if (!OS.IsWinCE && (extPen || width >= 1 || (style & OS.PS_STYLE_MASK) == OS.PS_USERSTYLE)) {
 		LOGBRUSH logBrush = new LOGBRUSH();
 		logBrush.lbStyle = OS.BS_SOLID;
 		logBrush.lbColor = color;
