@@ -69,6 +69,8 @@ public abstract class Device implements Drawable {
 	
 	int /*long*/ emptyTab;
 
+	static final Object CREATE_LOCK = new Object();
+
 	/*
 	* TEMPORARY CODE. When a graphics object is
 	* created and the device parameter is null,
@@ -127,20 +129,22 @@ public Device() {
  * @see DeviceData
  */
 public Device(DeviceData data) {
-	if (data != null) {
-		debug = data.debug;
-		tracking = data.tracking;
+	synchronized (CREATE_LOCK) {
+		if (data != null) {
+			debug = data.debug;
+			tracking = data.tracking;
+		}
+		if (tracking) {
+			errors = new Error [128];
+			objects = new Object [128];
+		}
+		create (data);
+		init ();
+		register (this);
+	
+		/* Initialize the system font slot */
+		systemFont = getSystemFont ();
 	}
-	if (tracking) {
-		errors = new Error [128];
-		objects = new Object [128];
-	}
-	create (data);
-	init ();
-	register (this);
-
-	/* Initialize the system font slot */
-	systemFont = getSystemFont ();
 }
 
 void checkCairo() {

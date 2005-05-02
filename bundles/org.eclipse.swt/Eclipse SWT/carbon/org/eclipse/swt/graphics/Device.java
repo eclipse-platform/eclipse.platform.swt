@@ -50,6 +50,8 @@ public abstract class Device implements Drawable {
 	Callback drawPatternCallback, axialShadingCallback;
 	int drawPatternProc, axialShadingProc;
 
+	final static Object CREATE_OBJECT = new Object();
+
 	/*
 	* TEMPORARY CODE. When a graphics object is
 	* created and the device parameter is null,
@@ -108,15 +110,17 @@ public Device() {
  * @see DeviceData
  */
 public Device(DeviceData data) {
-	if (data != null) {
-		debug = data.debug;
-		tracking = data.tracking;
-	}
-	create (data);
-	init ();
-	if (tracking) {
-		errors = new Error [128];
-		objects = new Object [128];
+	synchronized (CREATE_OBJECT) {
+		if (data != null) {
+			debug = data.debug;
+			tracking = data.tracking;
+		}
+		create (data);
+		init ();
+		if (tracking) {
+			errors = new Error [128];
+			objects = new Object [128];
+		}
 	}
 }
 

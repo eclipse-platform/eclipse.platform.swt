@@ -97,6 +97,8 @@ public abstract class Device implements Drawable {
 	static int XErrorProc, XIOErrorProc, XNullErrorProc, XNullIOErrorProc;
 	static Device[] Devices = new Device[4];
 	
+	static final Object CREATE_LOCK = new Object();
+
 	/* Initialize X and Xt */
 	static {
 		/*
@@ -165,23 +167,25 @@ public Device() {
  * @see DeviceData
  */
 public Device(DeviceData data) {
-	if (data != null) {
-		display_name = data.display_name;
-		application_name = data.application_name;
-		application_class = data.application_class;
-		tracking = data.tracking;
-		debug = data.debug;
+	synchronized (CREATE_LOCK) {
+		if (data != null) {
+			display_name = data.display_name;
+			application_name = data.application_name;
+			application_class = data.application_class;
+			tracking = data.tracking;
+			debug = data.debug;
+		}
+		if (tracking) {
+			errors = new Error [128];
+			objects = new Object [128];
+		}
+		create (data);
+		init ();
+		register (this);
+		
+		/* Initialize the system font slot */
+		systemFont = getSystemFont ();
 	}
-	if (tracking) {
-		errors = new Error [128];
-		objects = new Object [128];
-	}
-	create (data);
-	init ();
-	register (this);
-	
-	/* Initialize the system font slot */
-	systemFont = getSystemFont ();
 }
 
 void checkCairo() {
