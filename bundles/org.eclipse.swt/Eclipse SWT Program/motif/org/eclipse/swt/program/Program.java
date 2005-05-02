@@ -43,6 +43,7 @@ public final class Program {
 	static final String[] CDE_ICON_EXT = { ".m.pm",   ".l.pm",   ".s.pm",   ".t.pm" };
 	static final String[] CDE_MASK_EXT = { ".m_m.bm", ".l_m.bm", ".s_m.bm", ".t_m.bm" };
 	static final String DESKTOP_DATA = "Program_DESKTOP";
+	static final String ICON_THEME_DATA = "Program_GNOME_ICON_THEME";
 	static final int DESKTOP_UNKNOWN = 0;
 	static final int DESKTOP_GNOME = 1;
 	static final int DESKTOP_CDE = 2;
@@ -55,7 +56,7 @@ Program() {
 }
 
 /* Determine the desktop for the given display. */
-static int getDesktop(Display display) {
+static int getDesktop(final Display display) {
 	if (display == null) return DESKTOP_UNKNOWN;	
 	Integer desktopValue = (Integer)display.getData(DESKTOP_DATA);
 	if (desktopValue != null) return desktopValue.intValue();
@@ -71,7 +72,7 @@ static int getDesktop(Display display) {
 		OS.memmove(property, propList, (property.length * OS.PTR_SIZEOF));
 		OS.XFree(propList);
 	}
-	
+
 	/*
 	 * Feature in Linux Desktop. There is currently no official way to
 	 * determine whether the Gnome window manager or gnome-vfs is
@@ -88,6 +89,21 @@ static int getDesktop(Display display) {
 		int /*long*/ gnome = OS.XInternAtom(xDisplay, gnomeName, true);
 		if (gnome != OS.None && gnome_init()) {
 			desktop = DESKTOP_GNOME;
+			int /*long*/ icon_theme = GNOME.gnome_icon_theme_new();
+			display.setData(ICON_THEME_DATA, new Integer(icon_theme));
+			display.addListener(SWT.Dispose, new Listener() {
+				public void handleEvent(Event event) {
+					Integer gnomeIconTheme = (Integer)display.getData(ICON_THEME_DATA);
+					if (gnomeIconTheme == null) return;
+					display.setData(ICON_THEME_DATA, null);
+					int iconThemeValue = gnomeIconTheme.intValue();
+					/* 
+					 * Note.  gnome_icon_theme_new uses g_object_new to allocate the
+					 * data it returns. Use g_object_unref to free the pointer it returns.
+					 */
+					if (iconThemeValue != 0) GNOME.g_object_unref(iconThemeValue);
+				}
+			});
 		}
 	}
 
@@ -436,16 +452,12 @@ static Program gnome_getProgram(Display display, String mimeType) {
 		length = OS.strlen(application.id);
 		buffer = new byte[length + 1];
 		OS.memmove(buffer, application.id, length);
-		/* 
-		* Note.  gnome_icon_theme_new uses g_object_new to allocate the data it returns.
-		* Use g_object_unref to free the pointer it returns.
-		*/
-		int /*long*/ icon_theme = GNOME.gnome_icon_theme_new();
-		int /*long*/ icon_name = GNOME.gnome_icon_lookup(icon_theme, 0, null, buffer, 0, mimeTypeBuffer, 
+		Integer gnomeIconTheme = (Integer)display.getData(ICON_THEME_DATA);
+		int iconThemeValue = gnomeIconTheme.intValue();
+		int /*long*/ icon_name = GNOME.gnome_icon_lookup(iconThemeValue, 0, null, buffer, 0, mimeTypeBuffer, 
 				GNOME.GNOME_ICON_LOOKUP_FLAGS_NONE, null);
 		int /*long*/ path = 0;
-		if (icon_name != 0) path = GNOME.gnome_icon_theme_lookup_icon(icon_theme, icon_name, PREFERRED_ICON_SIZE, null, null);
-		GNOME.g_object_unref(icon_theme);
+		if (icon_name != 0) path = GNOME.gnome_icon_theme_lookup_icon(iconThemeValue, icon_name, PREFERRED_ICON_SIZE, null, null);
 		if (path != 0) {
 			length = OS.strlen(path);
 			if (length > 0) {
