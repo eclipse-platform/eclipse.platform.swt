@@ -1714,7 +1714,7 @@ public void setHeaderVisible (boolean show) {
 	OS.GetDataBrowserListViewHeaderBtnHeight (handle, height);
 	if ((height [0] != 0) != show) {
 		OS.SetDataBrowserListViewHeaderBtnHeight (handle, (short) (show ? headerHeight : 0));
-		//resetVisibleRegion (handle);
+		invalidateVisibleRegion (handle);
 	}
 }
 
