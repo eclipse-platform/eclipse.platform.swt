@@ -607,10 +607,11 @@ protected void checkDevice () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 }
 
-static synchronized void checkDisplay (Thread thread) {
+static synchronized void checkDisplay (Thread thread, boolean multiple) {
 	for (int i=0; i<Displays.length; i++) {
-		if (Displays [i] != null && Displays [i].thread == thread) {
-			SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
+		if (Displays [i] != null) {
+			if (!multiple) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
+			if (Displays [i].thread == thread) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
 		}
 	}
 }
@@ -671,7 +672,7 @@ public void close () {
  */
 protected void create (DeviceData data) {
 	checkSubclass ();
-	checkDisplay (thread = Thread.currentThread ());
+	checkDisplay (thread = Thread.currentThread (), true);
 	createDisplay (data);
 	register (this);
 	if (Default == null) Default = this;
