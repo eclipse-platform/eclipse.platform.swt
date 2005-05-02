@@ -465,9 +465,9 @@ public void setImage (Image image) {
 	OS.SendMessage (handle, OS.STM_SETIMAGE, fImageType, hImage);
 	
 	/*
-	* When STM_SETIMAGE encounters an bitmap with alpha information,
-	* it takes a copy of the bitmap.  Therefore it is necessary to
-	* free the copy that was made to preserve transparency.
+	* When STM_SETIMAGE encounters a bitmap with alpha information,
+	* it takes a copy of the bitmap.  Therefore the bitmap that was
+	* created to preserve transparency can be deleted right away.
 	*/
 	if (image != null && image.handle != hImage) {
 		OS.DeleteObject (hImage);	
