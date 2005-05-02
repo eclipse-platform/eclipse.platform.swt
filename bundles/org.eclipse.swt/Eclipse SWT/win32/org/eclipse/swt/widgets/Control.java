@@ -1893,7 +1893,12 @@ public void setBackground (Color color) {
 void setBackgroundPixel (int pixel) {
 	if (background == pixel) return;
 	background = pixel;
-	OS.InvalidateRect (handle, null, true);
+	if (OS.IsWinCE) {
+		OS.InvalidateRect (handle, null, true);
+	} else {
+		int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE;
+		OS.RedrawWindow (handle, null, 0, flags);
+	}
 }
 
 /**
