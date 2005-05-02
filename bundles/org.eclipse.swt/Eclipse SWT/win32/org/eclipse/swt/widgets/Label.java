@@ -172,104 +172,95 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
-int createAlphaFromMask (Image image) {
-	if (OS.COMCTL32_MAJOR < 6) return image.handle;
-	ImageData data = image.getImageData ();
-	int alpha = data.alpha;
-	byte [] alphaData = data.alphaData;
-	int transparentPixel = data.transparentPixel;
-	if (alpha != -1 || alphaData != null || transparentPixel != -1) {
-		BITMAP bm = new BITMAP ();
-		OS.GetObject (image.handle, BITMAP.sizeof, bm);
-		int imgWidth = bm.bmWidth;
-		int imgHeight = bm.bmHeight;
-		int hDC = display.internal_new_GC (null);
-		int srcHdc = OS.CreateCompatibleDC (hDC);
-		int oldSrcBitmap = OS.SelectObject (srcHdc, image.handle);
-		int memHdc = OS.CreateCompatibleDC (hDC);		
-		BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER ();
-		bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
-		bmiHeader.biWidth = imgWidth;
-		bmiHeader.biHeight = -imgHeight;
-		bmiHeader.biPlanes = 1;
-		bmiHeader.biBitCount = (short)32;
-		bmiHeader.biCompression = OS.BI_RGB;
-		byte []	bmi = new byte [BITMAPINFOHEADER.sizeof];
-		OS.MoveMemory (bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
-		int [] pBits = new int [1];
-		int memDib = OS.CreateDIBSection (0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
-		if (memDib == 0) SWT.error (SWT.ERROR_NO_HANDLES);		
-		int oldMemBitmap = OS.SelectObject (memHdc, memDib);
-		BITMAP dibBM = new BITMAP ();
-		OS.GetObject (memDib, BITMAP.sizeof, dibBM);
-		int sizeInBytes = dibBM.bmWidthBytes * dibBM.bmHeight;
-	 	OS.BitBlt (memHdc, 0, 0, imgWidth, imgHeight, srcHdc, 0, 0, OS.SRCCOPY);
-	 	byte red = 0, green = 0, blue = 0;
-	 	if (transparentPixel != -1) {
-			if (bm.bmBitsPixel <= 8)  {
-				byte [] color = new byte [4];
-				OS.GetDIBColorTable (srcHdc, transparentPixel, 1, color);
-				blue = color [0];
-				green = color [1];
-				red = color [2];
-			} else {
-				switch (bm.bmBitsPixel) {
-					case 16:
-						blue = (byte)((transparentPixel & 0x1F) << 3);
-						green = (byte)((transparentPixel & 0x3E0) >> 2);
-						red = (byte)((transparentPixel & 0x7C00) >> 7);
-						break;
-					case 24:
-						blue = (byte)((transparentPixel & 0xFF0000) >> 16);
-						green = (byte)((transparentPixel & 0xFF00) >> 8);
-						red = (byte)(transparentPixel & 0xFF);
-						break;
-					case 32:
-						blue = (byte)((transparentPixel & 0xFF000000) >>> 24);
-						green = (byte)((transparentPixel & 0xFF0000) >> 16);
-						red = (byte)((transparentPixel & 0xFF00) >> 8);
-						break;
-				}
-			}
-	 	}
-		OS.SelectObject (srcHdc, oldSrcBitmap);
-		OS.SelectObject (memHdc, oldMemBitmap);
-		OS.DeleteObject (srcHdc);
-		OS.DeleteObject (memHdc);
-		display.internal_dispose_GC (hDC, null);
-		
-	 	byte [] srcData = new byte [sizeInBytes];
-		OS.MoveMemory (srcData, pBits [0], sizeInBytes);
-		if (alpha != -1) {
-			for (int y = 0, dp = 0; y < imgHeight; ++y) {
-				for (int x = 0; x < imgWidth; ++x) {
-					srcData [dp + 3] = (byte)alpha;
-					dp += 4;
-				}
-			}
-		} else if (alphaData != null) {
-			for (int y = 0, dp = 0, ap = 0; y < imgHeight; ++y) {
-				for (int x = 0; x < imgWidth; ++x) {
-					srcData [dp + 3] = alphaData [ap++];
-					dp += 4;
-				}
-			}
-		} else if (transparentPixel != -1) {
-			for (int y = 0, dp = 0; y < imgHeight; ++y) {
-				for (int x = 0; x < imgWidth; ++x) {
-					if (srcData [dp] == blue && srcData [dp + 1] == green && srcData [dp + 2] == red) {
-						srcData [dp + 3] = (byte)0;
-					} else {
-						srcData [dp + 3] = (byte)0xFF;
-					}
-					dp += 4;
-				}
+int createAlphaFromMask (int hBitmap, int alpha, byte [] alphaData, int transparentPixel) {
+	BITMAP bm = new BITMAP ();
+	OS.GetObject (hBitmap, BITMAP.sizeof, bm);
+	int imgWidth = bm.bmWidth;
+	int imgHeight = bm.bmHeight;
+	int hDC = OS.GetDC (0);
+	int srcHdc = OS.CreateCompatibleDC (hDC);
+	int oldSrcBitmap = OS.SelectObject (srcHdc, hBitmap);
+	int memHdc = OS.CreateCompatibleDC (hDC);		
+	BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER ();
+	bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
+	bmiHeader.biWidth = imgWidth;
+	bmiHeader.biHeight = -imgHeight;
+	bmiHeader.biPlanes = 1;
+	bmiHeader.biBitCount = (short)32;
+	bmiHeader.biCompression = OS.BI_RGB;
+	byte []	bmi = new byte [BITMAPINFOHEADER.sizeof];
+	OS.MoveMemory (bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
+	int [] pBits = new int [1];
+	int memDib = OS.CreateDIBSection (0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
+	if (memDib == 0) SWT.error (SWT.ERROR_NO_HANDLES);		
+	int oldMemBitmap = OS.SelectObject (memHdc, memDib);
+	BITMAP dibBM = new BITMAP ();
+	OS.GetObject (memDib, BITMAP.sizeof, dibBM);
+	int sizeInBytes = dibBM.bmWidthBytes * dibBM.bmHeight;
+ 	OS.BitBlt (memHdc, 0, 0, imgWidth, imgHeight, srcHdc, 0, 0, OS.SRCCOPY);
+ 	byte red = 0, green = 0, blue = 0;
+ 	if (transparentPixel != -1) {
+		if (bm.bmBitsPixel <= 8)  {
+			byte [] color = new byte [4];
+			OS.GetDIBColorTable (srcHdc, transparentPixel, 1, color);
+			blue = color [0];
+			green = color [1];
+			red = color [2];
+		} else {
+			switch (bm.bmBitsPixel) {
+				case 16:
+					blue = (byte)((transparentPixel & 0x1F) << 3);
+					green = (byte)((transparentPixel & 0x3E0) >> 2);
+					red = (byte)((transparentPixel & 0x7C00) >> 7);
+					break;
+				case 24:
+					blue = (byte)((transparentPixel & 0xFF0000) >> 16);
+					green = (byte)((transparentPixel & 0xFF00) >> 8);
+					red = (byte)(transparentPixel & 0xFF);
+					break;
+				case 32:
+					blue = (byte)((transparentPixel & 0xFF000000) >>> 24);
+					green = (byte)((transparentPixel & 0xFF0000) >> 16);
+					red = (byte)((transparentPixel & 0xFF00) >> 8);
+					break;
 			}
 		}
-		OS.MoveMemory (pBits [0], srcData, sizeInBytes);
-		return memDib;
+ 	}
+	OS.SelectObject (srcHdc, oldSrcBitmap);
+	OS.SelectObject (memHdc, oldMemBitmap);
+	OS.DeleteObject (srcHdc);
+	OS.DeleteObject (memHdc);
+	OS.ReleaseDC (0, hDC);
+ 	byte [] srcData = new byte [sizeInBytes];
+	OS.MoveMemory (srcData, pBits [0], sizeInBytes);
+	if (alpha != -1) {
+		for (int y = 0, dp = 0; y < imgHeight; ++y) {
+			for (int x = 0; x < imgWidth; ++x) {
+				srcData [dp + 3] = (byte)alpha;
+				dp += 4;
+			}
+		}
+	} else if (alphaData != null) {
+		for (int y = 0, dp = 0, ap = 0; y < imgHeight; ++y) {
+			for (int x = 0; x < imgWidth; ++x) {
+				srcData [dp + 3] = alphaData [ap++];
+				dp += 4;
+			}
+		}
+	} else if (transparentPixel != -1) {
+		for (int y = 0, dp = 0; y < imgHeight; ++y) {
+			for (int x = 0; x < imgWidth; ++x) {
+				if (srcData [dp] == blue && srcData [dp + 1] == green && srcData [dp + 2] == red) {
+					srcData [dp + 3] = (byte)0;
+				} else {
+					srcData [dp + 3] = (byte)0xFF;
+				}
+				dp += 4;
+			}
+		}
 	}
-	return image.handle;
+	OS.MoveMemory (pBits [0], srcData, sizeInBytes);
+	return memDib;
 }
 
 /**
@@ -436,16 +427,27 @@ public void setImage (Image image) {
 	if (image != null) {
 		if (image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		switch (image.type) {
-			case SWT.BITMAP:
-				hImage = createAlphaFromMask (image);
+			case SWT.BITMAP: {
+				if (OS.COMCTL32_MAJOR < 6) {
+					hImage = image.handle;
+				} else {
+					ImageData data = image.getImageData ();
+					if (data.alpha != -1 || data.alphaData != null || data.transparentPixel != -1) {
+						hImage = createAlphaFromMask (image.handle, data.alpha, data.alphaData, data.transparentPixel);
+					} else {
+						hImage = image.handle;
+					}
+				}
 				imageBits = OS.SS_BITMAP;
 				fImageType = OS.IMAGE_BITMAP;
 				break;
-			case SWT.ICON:
+			}
+			case SWT.ICON: {
 				hImage = image.handle;
 				imageBits = OS.SS_ICON;
 				fImageType = OS.IMAGE_ICON;
 				break;
+			}
 			default:
 				return;
 		}
@@ -461,7 +463,16 @@ public void setImage (Image image) {
 		OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
 	}
 	OS.SendMessage (handle, OS.STM_SETIMAGE, fImageType, hImage);
-	if (image != null && image.handle != hImage) OS.DeleteObject (hImage);	
+	
+	/*
+	* When STM_SETIMAGE encounters an bitmap with alpha information,
+	* it takes a copy of the bitmap.  Therefore it is necessary to
+	* free the copy that was made to preserve transparency.
+	*/
+	if (image != null && image.handle != hImage) {
+		OS.DeleteObject (hImage);	
+	}
+
 	/*
 	* Feature in Windows.  When STM_SETIMAGE is used to set the
 	* image for a static control, Windows either streches the image
