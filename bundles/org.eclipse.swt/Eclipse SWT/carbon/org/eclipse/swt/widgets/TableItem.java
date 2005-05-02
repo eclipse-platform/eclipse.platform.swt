@@ -434,6 +434,13 @@ public int getImageIndent () {
 	return 0;
 }
 
+String getNameText () {
+	if ((parent.style & SWT.VIRTUAL) != 0) {
+		if (!cached) return "*virtual*"; //$NON-NLS-1$
+	}
+	return getText ();
+}
+
 /**
  * Returns the receiver's parent, which must be a <code>Table</code>.
  *
