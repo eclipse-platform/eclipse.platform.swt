@@ -1514,7 +1514,7 @@ static int[] init(Device device, Image image, ImageData i) {
 	 * into 4-bit ImageData before creating the image.
 	 */
 	/* Windows does not support 2-bit images. Convert to 4-bit image. */
-	if ((i.depth == 1 && i.getTransparencyType() != SWT.TRANSPARENCY_MASK) || i.depth == 2) {
+	if ((OS.IsWin95 && i.depth == 1 && i.getTransparencyType() != SWT.TRANSPARENCY_MASK) || i.depth == 2) {
 		ImageData img = new ImageData(i.width, i.height, 4, i.palette);
 		ImageData.blit(ImageData.BLIT_SRC, 
 			i.data, i.depth, i.bytesPerLine, i.getByteOrder(), 0, 0, i.width, i.height, null, null, null,
