@@ -78,7 +78,7 @@ public int add (Image image) {
 				int /*long*/ offset = pixels + (y * stride);
 				OS.memmove (line, offset, stride);
 				for (int x = 0; x<w [0]; x++) {
-					line [x*4+3] = alpha [y*h [0]+x];
+					line [x*4+3] = alpha [y*w [0]+x];
 				}
 				OS.memmove (offset, line, stride);
 			}

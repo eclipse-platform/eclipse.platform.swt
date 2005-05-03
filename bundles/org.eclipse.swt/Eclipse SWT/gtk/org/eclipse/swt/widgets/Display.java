@@ -805,7 +805,7 @@ Image createImage (String name) {
 		byte [] alpha = new byte [stride * height];
 		for (int y=0; y<height; y++) {
 			for (int x=0; x<width; x++) {
-				alpha [y*height+x] = data [y*stride+x*4+3];
+				alpha [y*width+x] = data [y*stride+x*4+3];
 				data [y*stride+x*4+3] = 0;
 			}
 		}
