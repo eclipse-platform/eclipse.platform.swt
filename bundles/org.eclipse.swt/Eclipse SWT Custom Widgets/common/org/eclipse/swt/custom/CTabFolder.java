@@ -2751,13 +2751,9 @@ boolean setItemLocation() {
 		int width = 0;
 		for (int i = 0; i < priority.length; i++) {
 			CTabItem item = items[priority[i]];
-			if (width > maxWidth) {
-				item.showing = false;
-			} else {
-				width += item.width;
-				item.showing = i == 0 || width <= maxWidth;
-				if (!simple && priority[i] == selectedIndex) width += curveWidth - 2*curveIndent;
-			}
+			width += item.width;
+			item.showing = i == 0 ? true : item.width > 0 && width <= maxWidth;
+			if (!simple && priority[i] == selectedIndex) width += curveWidth - 2*curveIndent;
 		}
 		int x = 0;
 		int defaultX = getDisplay().getBounds().width + 10; // off screen
