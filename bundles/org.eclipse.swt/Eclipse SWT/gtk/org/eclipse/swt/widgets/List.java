@@ -1406,7 +1406,7 @@ public void showSelection () {
 	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
 	int /*long*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
-	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, true, 0, 0);
+	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, false, 0, 0);
 	OS.gtk_tree_path_free (path);
 	OS.g_free (iter);
 }
