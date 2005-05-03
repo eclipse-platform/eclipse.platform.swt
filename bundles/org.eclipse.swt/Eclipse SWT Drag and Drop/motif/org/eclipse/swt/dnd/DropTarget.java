@@ -357,7 +357,7 @@ private void dragProcCallback(int widget, int client_data, int call_data) {
 	if (call_data == 0) return;
 	XmDragProcCallbackStruct callbackData = new XmDragProcCallbackStruct();
 	OS.memmove(callbackData, call_data, XmDragProcCallbackStruct.sizeof);
-	
+
 	if (callbackData.reason == OS.XmCR_DROP_SITE_LEAVE_MESSAGE) {
 		updateDragOverHover(0, null);
 		effect.show(DND.FEEDBACK_NONE, 0, 0);
@@ -602,7 +602,7 @@ private int osOpToOp(byte osOperation){
 	
 	return operation;
 }
-private void registerDropTarget() {	
+private void registerDropTarget() {
 	if (control == null || control.isDisposed() || registered) return;
 
 	int[] args = new int[]{
@@ -684,7 +684,6 @@ private boolean setEventData(byte ops, byte op, int dragContext, short x, short 
 	
 	//get current operation
 	int operation = osOpToOp(op);
-	if ((operation & operations) == 0) operation = DND.DROP_NONE;
 	int xDisplay = getDisplay().xDisplay;
 	int xWindow = OS.XDefaultRootWindow (xDisplay);
 	int [] unused = new int [1];
@@ -692,9 +691,15 @@ private boolean setEventData(byte ops, byte op, int dragContext, short x, short 
 	OS.XQueryPointer (xDisplay, xWindow, unused, unused, unused, unused, unused, unused, mask_return);
 	int mask = mask_return[0];
 	if ((mask & OS.ShiftMask) == 0 && (mask & OS.ControlMask) == 0) {
-		operation = (style & DND.DROP_DEFAULT) != 0 ? DND.DROP_DEFAULT : DND.DROP_NONE;
+		operation = DND.DROP_DEFAULT;
 	}
-	
+	if (operation == DND.DROP_DEFAULT) {
+		if ((style & DND.DROP_DEFAULT) == 0) {
+			operation = (operations & DND.DROP_MOVE) != 0 ? DND.DROP_MOVE : DND.DROP_NONE;
+		}
+	} else {
+		if ((operation & operations) == 0) operation = DND.DROP_NONE;
+	}	
 	//Get allowed transfer types
 	int ppExportTargets = OS.XtMalloc(4);
 	int pNumExportTargets = OS.XtMalloc(4);
