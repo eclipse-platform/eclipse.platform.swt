@@ -85,6 +85,28 @@ JNIEXPORT void JNICALL GNOME_NATIVE(_1g_1free)
 }
 #endif
 
+#ifndef NO__1g_1list_1append
+JNIEXPORT jint JNICALL GNOME_NATIVE(_1g_1list_1append)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	GNOME_NATIVE_ENTER(env, that, _1g_1list_1append_FUNC);
+	rc = (jint)g_list_append((GList *)arg0, (gpointer)arg1);
+	GNOME_NATIVE_EXIT(env, that, _1g_1list_1append_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1g_1list_1free
+JNIEXPORT void JNICALL GNOME_NATIVE(_1g_1list_1free)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	GNOME_NATIVE_ENTER(env, that, _1g_1list_1free_FUNC);
+	g_list_free((GList *)arg0);
+	GNOME_NATIVE_EXIT(env, that, _1g_1list_1free_FUNC);
+}
+#endif
+
 #ifndef NO__1g_1list_1next
 JNIEXPORT jint JNICALL GNOME_NATIVE(_1g_1list_1next)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -230,6 +252,35 @@ JNIEXPORT void JNICALL GNOME_NATIVE(_1gnome_1vfs_1mime_1application_1free)
 }
 #endif
 
+#ifndef NO__1gnome_1vfs_1mime_1application_1launch
+JNIEXPORT jint JNICALL GNOME_NATIVE(_1gnome_1vfs_1mime_1application_1launch)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	GNOME_NATIVE_ENTER(env, that, _1gnome_1vfs_1mime_1application_1launch_FUNC);
+/*
+	rc = (jint)gnome_vfs_mime_application_launch((GnomeVFSMimeApplication *)arg0, (GList *)arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(GnomeVFSMimeApplication *, GList *);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gnome_vfs_mime_application_launch_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gnome_vfs_mime_application_launch");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)((GnomeVFSMimeApplication *)arg0, (GList *)arg1);
+		}
+	}
+	GNOME_NATIVE_EXIT(env, that, _1gnome_1vfs_1mime_1application_1launch_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gnome_1vfs_1mime_1extensions_1list_1free
 JNIEXPORT void JNICALL GNOME_NATIVE(_1gnome_1vfs_1mime_1extensions_1list_1free)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -301,12 +352,12 @@ JNIEXPORT jint JNICALL GNOME_NATIVE(_1gnome_1vfs_1url_1show)
 	jint rc = 0;
 	GNOME_NATIVE_ENTER(env, that, _1gnome_1vfs_1url_1show_FUNC);
 /*
-	rc = (jint)gnome_vfs_url_show(arg0);
+	rc = (jint)gnome_vfs_url_show((const char *)arg0);
 */
 	{
 		static int initialized = 0;
 		static void *handle = NULL;
-		typedef jint (*FPTR)(jint);
+		typedef jint (*FPTR)(const char *);
 		static FPTR fptr;
 		rc = 0;
 		if (!initialized) {
@@ -315,7 +366,7 @@ JNIEXPORT jint JNICALL GNOME_NATIVE(_1gnome_1vfs_1url_1show)
 			initialized = 1;
 		}
 		if (fptr) {
-			rc = (jint)(*fptr)(arg0);
+			rc = (jint)(*fptr)((const char *)arg0);
 		}
 	}
 	GNOME_NATIVE_EXIT(env, that, _1gnome_1vfs_1url_1show_FUNC);

@@ -67,6 +67,24 @@ public static final void g_free(int /*long*/ mem) {
 		lock.unlock();
 	}
 }
+public static final native int /*long*/ _g_list_append(int /*long*/ list, int /*long*/ data);
+public static final int /*long*/ g_list_append(int /*long*/ list, int /*long*/ data) {
+	lock.lock();
+	try {
+		return _g_list_append(list, data);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _g_list_free(int /*long*/ list);
+public static final void g_list_free(int /*long*/ list) {
+	lock.lock();
+	try {
+		_g_list_free(list);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _g_list_next(int /*long*/ list);
 public static final int /*long*/ g_list_next(int /*long*/ list) {
 	lock.lock();
@@ -144,6 +162,15 @@ public static final void gnome_vfs_mime_application_free(int /*long*/ applicatio
 	lock.lock();
 	try {
 		_gnome_vfs_mime_application_free(application);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _gnome_vfs_mime_application_launch(int /*long*/ application, int /*long*/ uris);
+public static final int gnome_vfs_mime_application_launch(int /*long*/ application, int /*long*/ uris) {	
+	lock.lock();
+	try {
+		return _gnome_vfs_mime_application_launch(application, uris);
 	} finally {
 		lock.unlock();
 	}
