@@ -1722,6 +1722,7 @@ void setCheckboxImageList () {
 	int count = 5;
 	int height = OS.SendMessage (handle, OS.TVM_GETITEMHEIGHT, 0, 0), width = height;
 	int flags = ImageList.COLOR_FLAGS;
+	if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) flags |= OS.ILC_MASK;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) flags |= OS.ILC_MIRROR;
 	int hImageList = OS.ImageList_Create (width, height, flags, count, count);
 	int hDC = OS.GetDC (handle);
@@ -1730,7 +1731,8 @@ void setCheckboxImageList () {
 	int hOldBitmap = OS.SelectObject (memDC, hBitmap);
 	RECT rect = new RECT ();
 	OS.SetRect (rect, 0, 0, width * count, height);
-	int hBrush = OS.CreateSolidBrush (_getBackgroundPixel ());
+	int clrBackground = _getBackgroundPixel ();
+	int hBrush = OS.CreateSolidBrush (clrBackground);
 	OS.FillRect (memDC, rect, hBrush);
 	OS.DeleteObject (hBrush);
 	int oldFont = OS.SelectObject (hDC, defaultFont ());
@@ -1763,7 +1765,11 @@ void setCheckboxImageList () {
 	OS.SelectObject (memDC, hOldBitmap);
 	OS.DeleteDC (memDC);
 	OS.ReleaseDC (handle, hDC);
-	OS.ImageList_Add (hImageList, hBitmap, 0);
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		OS.ImageList_Add (hImageList, hBitmap, 0);
+	} else {
+		OS.ImageList_AddMasked (hImageList, hBitmap, clrBackground);
+	}
 	OS.DeleteObject (hBitmap);
 	int hOldList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_STATE, 0);
 	OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_STATE, hImageList);

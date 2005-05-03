@@ -24,7 +24,7 @@ class ImageList {
 			COLOR_FLAGS = OS.ILC_COLOR;
 		} else {
 			int flags = 0;
-			if (OS.COMCTL32_MAJOR >= 6) {
+			if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 				flags |= OS.ILC_COLOR32;
 			} else {
 				int hDC = OS.GetDC (0);

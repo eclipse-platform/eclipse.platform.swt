@@ -2215,6 +2215,7 @@ void setCheckboxImageList (int width, int height) {
 	if ((style & SWT.CHECK) == 0) return;
 	int count = 4;
 	int flags = ImageList.COLOR_FLAGS;
+	if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) flags |= OS.ILC_MASK;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) flags |= OS.ILC_MIRROR;
 	int hImageList = OS.ImageList_Create (width, height, flags, count, count);
 	int hDC = OS.GetDC (handle);
@@ -2223,7 +2224,8 @@ void setCheckboxImageList (int width, int height) {
 	int hOldBitmap = OS.SelectObject (memDC, hBitmap);
 	RECT rect = new RECT ();
 	OS.SetRect (rect, 0, 0, width * count, height);
-	int hBrush = OS.CreateSolidBrush (getBackgroundPixel ());
+	int clrBackground = getBackgroundPixel ();
+	int hBrush = OS.CreateSolidBrush (clrBackground);
 	OS.FillRect (memDC, rect, hBrush);
 	OS.DeleteObject (hBrush);
 	int oldFont = OS.SelectObject (hDC, defaultFont ());
@@ -2256,7 +2258,11 @@ void setCheckboxImageList (int width, int height) {
 	OS.SelectObject (memDC, hOldBitmap);
 	OS.DeleteDC (memDC);
 	OS.ReleaseDC (handle, hDC);
-	OS.ImageList_Add (hImageList, hBitmap, 0);
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		OS.ImageList_Add (hImageList, hBitmap, 0);
+	} else {
+		OS.ImageList_AddMasked (hImageList, hBitmap, clrBackground);
+	}
 	OS.DeleteObject (hBitmap);
 	int hOldStateList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
 	OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_STATE, hImageList);
