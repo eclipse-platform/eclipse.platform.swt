@@ -138,7 +138,9 @@ static Program getProgram (String key) {
 
 	/* Name */
 	String name = getKeyValue (key, false);
-	if (name == null || name.length () == 0) return null;
+	if (name == null || name.length () == 0) {
+		name = key;
+	}
 
 	/* Command */
 	String DEFAULT_COMMAND = "\\shell"; //$NON-NLS-1$
