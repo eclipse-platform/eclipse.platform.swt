@@ -411,7 +411,6 @@ void createHandle (int index) {
 	
 	boolean editable = (style & SWT.READ_ONLY) == 0;
 	OS.gtk_editable_set_editable (entryHandle, editable);
-	OS.gtk_entry_set_activates_default (entryHandle, true);
 	OS.gtk_combo_disable_activate (handle);
 	OS.gtk_combo_set_case_sensitive (handle, true);
 }
