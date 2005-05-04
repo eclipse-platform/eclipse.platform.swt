@@ -64,7 +64,7 @@ case $OS in
 				CC=gcc
 				LD=gcc
 				if [ "${JAVA_HOME}" = "" ]; then
-					echo "JAVA_HOME is missing. Build will probably fail."
+					JAVA_HOME=/opt/IBMJava2-ppc-142
 				fi
 				AWT_LIB_PATH=$JAVA_HOME/jre/bin
 				XTEST_LIB_PATH=/usr/X11R6/lib
