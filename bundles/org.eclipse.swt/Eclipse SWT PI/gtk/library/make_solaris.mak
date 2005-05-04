@@ -37,7 +37,7 @@ GTKLIBS = `pkg-config --libs-only-L gtk+-2.0 gthread-2.0` -lgtk-x11-2.0 -lgthrea
 
 CDE_LIBS = -L$(CDE_HOME)/lib -R$(CDE_HOME)/lib -lXt -lX11 -lDtSvc
 
-AWT_LIBS = -L$(AWT_LIB_PATH) -ljawt -shared -static-libgcc
+AWT_LIBS = -L$(AWT_LIB_PATH) -ljawt -shared -s -static-libgcc
 
 ATKCFLAGS = `pkg-config --cflags atk gtk+-2.0`
 ATKLIBS = `pkg-config --libs-only-L atk gtk+-2.0`-latk-1.0 -lgtk-x11-2.0
@@ -62,7 +62,7 @@ MOZILLACFLAGS = -O \
 	-I$(GECKO_SDK)/string/include \
 	-I$(GECKO_SDK)/embed_base/include \
 	-I$(GECKO_SDK)/embedstring/include
-MOZILLALIBS = -shared -Wl,--version-script=mozilla_exports -Bsymbolic \
+MOZILLALIBS = -shared -s -Wl,--version-script=mozilla_exports -Bsymbolic \
 	-L$(GECKO_SDK)/embedstring/bin -lembedstring \
 	-L$(GECKO_SDK)/embed_base/bin -lembed_base_s \
 	-L$(GECKO_SDK)/xpcom/bin -lxpcomglue_s -lxpcom \
@@ -84,7 +84,7 @@ CFLAGS = -O -Wall \
 		-fpic \
 		${SWT_PTR_CFLAGS} \
 		-I$(CDE_HOME)/include
-LIBS = -shared -fpic -static-libgcc
+LIBS = -shared -fpic -s -static-libgcc
 
 
 all: make_swt make_atk make_awt make_cde
