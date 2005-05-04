@@ -785,6 +785,7 @@ static int XErrorProc (int xDisplay, int xErrorEvent) {
 			OS.Call (XErrorProc, xDisplay, xErrorEvent);
 		}
 	} else {
+		if (DEBUG) new SWTError ().printStackTrace ();
 		OS.Call (XErrorProc, xDisplay, xErrorEvent);
 	}
 	return 0;
@@ -792,8 +793,12 @@ static int XErrorProc (int xDisplay, int xErrorEvent) {
 
 static int XIOErrorProc (int xDisplay) {
 	Device device = findDevice (xDisplay);
-	if (device != null && (DEBUG || device.debug)) {
-		new SWTError ().printStackTrace ();
+	if (device != null) {
+		if (DEBUG || device.debug) {
+			new SWTError ().printStackTrace ();
+		}
+	} else {
+		if (DEBUG) new SWTError ().printStackTrace ();
 	}
 	OS.Call (XIOErrorProc, xDisplay, 0);
 	return 0;
