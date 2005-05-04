@@ -178,10 +178,17 @@ void onDragSash(Event event) {
 		b1.width += shift;
 		b2.x += shift;
 		b2.width -= shift;
-		if (b1.width < DRAG_MINIMUM || b2.width < DRAG_MINIMUM) {
-			event.x = b1.x + DRAG_MINIMUM;
-			event.doit = false;
-			return;
+		if (b1.width < DRAG_MINIMUM) {
+			b1.width = DRAG_MINIMUM;
+			b2.x = b1.x + b1.width + sashBounds.x;
+			b2.width = area.width - DRAG_MINIMUM - sashBounds.width;
+			event.x = b1.x + b1.width;
+		}
+		if (b2.width < DRAG_MINIMUM) {
+			b1.width = area.width - DRAG_MINIMUM - sashBounds.width;
+			b2.x = b1.x + b1.width + sashBounds.x;
+			b2.width = DRAG_MINIMUM;
+			event.x = b1.x + b1.width;
 		}
 		Object data1 = c1.getLayoutData();
 		if (data1 == null || !(data1 instanceof SashFormData)) {
@@ -200,10 +207,17 @@ void onDragSash(Event event) {
 		b1.height += shift;
 		b2.y += shift;
 		b2.height -= shift;
-		if (b1.height < DRAG_MINIMUM || b2.height < DRAG_MINIMUM) {
-			event.y = b1.y + DRAG_MINIMUM;
-			event.doit = false;
-			return;
+		if (b1.height < DRAG_MINIMUM) {
+			b1.height = DRAG_MINIMUM;
+			b2.y = b1.y + b1.height + sashBounds.height;
+			b2.height = area.height - DRAG_MINIMUM - sashBounds.height;
+			event.y = b1.y + b1.height;
+		}
+		if (b2.height < DRAG_MINIMUM) {
+			b1.height = area.height - DRAG_MINIMUM - sashBounds.height;
+			b2.y = b1.y + b1.height + sashBounds.y;
+			b2.height = DRAG_MINIMUM;
+			event.y = b1.y + b1.height;
 		}
 		Object data1 = c1.getLayoutData();
 		if (data1 == null || !(data1 instanceof SashFormData)) {
