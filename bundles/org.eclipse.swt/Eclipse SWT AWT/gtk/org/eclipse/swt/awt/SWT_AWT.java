@@ -16,6 +16,7 @@ import java.lang.reflect.Method;
 /* SWT Imports */
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.Library;
+import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Composite;
@@ -49,6 +50,7 @@ public class SWT_AWT {
 static boolean loaded, swingInitialized;
 
 static native final int /*long*/ getAWTHandle (Canvas canvas);
+static native final void setDebug (Frame canvas, boolean debug);
 
 static synchronized void loadLibrary () {
 	if (loaded) return;
@@ -134,6 +136,10 @@ public static Frame new_Frame (final Composite parent) {
 		}
 	}
 	final Frame frame = (Frame) value;
+	if (Device.DEBUG) {
+		loadLibrary();
+		setDebug(frame, true);
+	}
 	try {
 		/* Call registerListeners() to make XEmbed focus traversal work */
 		Method method = clazz.getMethod("registerListeners", null);

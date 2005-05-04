@@ -42,3 +42,31 @@ JNIEXPORT jint JNICALL SWT_AWT_NATIVE(getAWTHandle)
 	return result;
 }
 #endif
+
+#ifndef NO_setDebug
+JNIEXPORT void JNICALL SWT_AWT_NATIVE(setDebug)
+	(JNIEnv *env, jclass that, jobject frame, jboolean debug)
+{
+	JAWT awt;
+	JAWT_DrawingSurface* ds;
+	JAWT_DrawingSurfaceInfo* dsi;
+	JAWT_X11DrawingSurfaceInfo* dsi_x11;
+	jint lock;
+
+	awt.version = JAWT_VERSION_1_3;
+	if (JAWT_GetAWT(env, &awt) != 0) {
+		ds = awt.GetDrawingSurface(env, frame);
+		if (ds != NULL) {
+			lock = ds->Lock(ds);
+		 	if ((lock & JAWT_LOCK_ERROR) == 0) {
+			 	dsi = ds->GetDrawingSurfaceInfo(ds);
+				dsi_x11 = (JAWT_X11DrawingSurfaceInfo*)dsi->platformInfo;
+				XSynchronize(dsi_x11->display, debug);
+				ds->FreeDrawingSurfaceInfo(dsi);
+				ds->Unlock(ds);
+			}
+		}
+		awt.FreeDrawingSurface(ds);
+	}
+}
+#endif
