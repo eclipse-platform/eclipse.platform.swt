@@ -39,7 +39,7 @@ CAIROLIBS = `pkg-config --libs cairo`
 GTKCFLAGS = `pkg-config --cflags gtk+-2.0`
 GTKLIBS = `pkg-config --libs-only-L gtk+-2.0 gthread-2.0` -lgtk-x11-2.0 -lgthread-2.0 -L$(XTEST_LIB_PATH) -lXtst
 
-AWT_LIBS = -L$(AWT_LIB_PATH) -ljawt -shared
+AWT_LIBS = -L$(AWT_LIB_PATH) -ljawt -shared -s
 
 ATKCFLAGS = `pkg-config --cflags atk gtk+-2.0`
 ATKLIBS = `pkg-config --libs-only-L atk gtk+-2.0`-latk-1.0 -lgtk-x11-2.0
@@ -65,7 +65,7 @@ MOZILLACFLAGS = -O \
 	${GECKO_INCLUDES} \
 	${SWT_PTR_CFLAGS}
 	
-MOZILLALIBS = -shared -Wl,--version-script=mozilla_exports -Bsymbolic ${GECKO_LIBS}
+MOZILLALIBS = -shared -s -Wl,--version-script=mozilla_exports -Bsymbolic ${GECKO_LIBS}
 	
 SWT_OBJECTS = swt.o callback.o
 AWT_OBJECTS = swt_awt.o
@@ -83,7 +83,7 @@ CFLAGS = -O -Wall \
 		-I$(JAVA_HOME)/include/linux \
 		-fpic \
 		${SWT_PTR_CFLAGS}
-LIBS = -shared -fpic
+LIBS = -shared -fpic -s
 
 
 all: make_swt make_atk make_gnome make_awt
