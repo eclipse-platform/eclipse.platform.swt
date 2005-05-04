@@ -400,7 +400,17 @@ static boolean gnome_24_launch(String fileName) {
 boolean gnome_execute(String fileName) {
 	if (gnomeExpectUri) {
 		/* Convert the given path into a URL */
-		fileName = "file://" + fileName;
+		byte[] fileNameBuffer = Converter.wcsToMbcs(null, fileName, true);
+		int /*long*/ uri = GNOME.gnome_vfs_make_uri_from_input(fileNameBuffer);
+		if (uri != 0) {
+			int length = OS.strlen(uri);
+			if (length > 0) {
+				byte[] buffer = new byte[length];
+				OS.memmove(buffer, uri, length);
+				fileName = new String(Converter.mbcsToWcs(null, buffer));
+			}
+			GNOME.g_free(uri);
+		}
 	}
 
 	/* Parse the command into its individual arguments. */

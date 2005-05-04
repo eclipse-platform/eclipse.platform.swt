@@ -209,6 +209,22 @@ JNIEXPORT jboolean JNICALL GNOME_NATIVE(_1gnome_1vfs_1init)
 }
 #endif
 
+#ifndef NO__1gnome_1vfs_1make_1uri_1from_1input
+JNIEXPORT jint JNICALL GNOME_NATIVE(_1gnome_1vfs_1make_1uri_1from_1input)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jint rc = 0;
+	GNOME_NATIVE_ENTER(env, that, _1gnome_1vfs_1make_1uri_1from_1input_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jint)gnome_vfs_make_uri_from_input((const char *)lparg0);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	GNOME_NATIVE_EXIT(env, that, _1gnome_1vfs_1make_1uri_1from_1input_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gnome_1vfs_1make_1uri_1from_1input_1with_1dirs
 JNIEXPORT jint JNICALL GNOME_NATIVE(_1gnome_1vfs_1make_1uri_1from_1input_1with_1dirs)
 	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1)
@@ -218,12 +234,12 @@ JNIEXPORT jint JNICALL GNOME_NATIVE(_1gnome_1vfs_1make_1uri_1from_1input_1with_1
 	GNOME_NATIVE_ENTER(env, that, _1gnome_1vfs_1make_1uri_1from_1input_1with_1dirs_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
 /*
-	rc = (jint)gnome_vfs_make_uri_from_input_with_dirs(lparg0, arg1);
+	rc = (jint)gnome_vfs_make_uri_from_input_with_dirs((const char *)lparg0, arg1);
 */
 	{
 		static int initialized = 0;
 		static void *handle = NULL;
-		typedef jint (*FPTR)(jbyte *, jint);
+		typedef jint (*FPTR)(const char *, jint);
 		static FPTR fptr;
 		rc = 0;
 		if (!initialized) {
@@ -232,7 +248,7 @@ JNIEXPORT jint JNICALL GNOME_NATIVE(_1gnome_1vfs_1make_1uri_1from_1input_1with_1
 			initialized = 1;
 		}
 		if (fptr) {
-			rc = (jint)(*fptr)(lparg0, arg1);
+			rc = (jint)(*fptr)((const char *)lparg0, arg1);
 		}
 	}
 fail:

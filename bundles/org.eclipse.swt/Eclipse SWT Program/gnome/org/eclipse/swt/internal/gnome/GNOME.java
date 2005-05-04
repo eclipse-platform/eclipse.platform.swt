@@ -148,6 +148,15 @@ public static final boolean gnome_vfs_init() {
 		lock.unlock();
 	}
 }
+public static final native int /*long*/ _gnome_vfs_make_uri_from_input(byte[] uri);
+public static final int /*long*/ gnome_vfs_make_uri_from_input(byte[] uri) {
+	lock.lock();
+	try {
+		return _gnome_vfs_make_uri_from_input(uri);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _gnome_vfs_make_uri_from_input_with_dirs(byte[] uri, int dirs);
 public static final int /*long*/ gnome_vfs_make_uri_from_input_with_dirs(byte[] uri, int dirs) {
 	lock.lock();

@@ -39,6 +39,7 @@ typedef enum {
 	_1gnome_1icon_1theme_1new_FUNC,
 	_1gnome_1vfs_1get_1registered_1mime_1types_FUNC,
 	_1gnome_1vfs_1init_FUNC,
+	_1gnome_1vfs_1make_1uri_1from_1input_FUNC,
 	_1gnome_1vfs_1make_1uri_1from_1input_1with_1dirs_FUNC,
 	_1gnome_1vfs_1mime_1application_1free_FUNC,
 	_1gnome_1vfs_1mime_1application_1launch_FUNC,
