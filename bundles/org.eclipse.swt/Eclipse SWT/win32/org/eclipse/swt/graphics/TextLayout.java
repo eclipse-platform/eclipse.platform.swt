@@ -80,6 +80,7 @@ public final class TextLayout extends Resource {
 		int ascent;
 		int descent;
 		int leading;
+		int x;
 
 		/* ScriptBreak */
 		int psla;
@@ -125,7 +126,7 @@ public final class TextLayout extends Resource {
 			}
 			fallbackFont = 0;
 		}
-		width = ascent = descent = 0;
+		width = ascent = descent = x = 0;
 		lineBreak = softBreak = false;		
 	}
 	}
@@ -365,6 +366,17 @@ void computeRuns (GC gc) {
 			StyleItem lastRun = runs[line][lineRunCount - 1];
 			runs[line] = reorder(runs[line]);
 			this.lineWidth[line] = lineWidth;
+			lineWidth = 0;
+			if (wrapWidth != -1) {
+				switch (alignment) {
+					case SWT.CENTER: lineWidth = (wrapWidth - this.lineWidth[line]) / 2; break;
+					case SWT.RIGHT: lineWidth = wrapWidth - this.lineWidth[line]; break;
+				}
+			}
+			for (int j = 0; j < runs[line].length; j++) {
+				runs[line][j].x = lineWidth;
+				lineWidth += runs[line][j].width;
+			}
 			line++;
 			lineY[line] = lineY[line - 1] + ascent + descent + lineSpacing;
 			lineOffset[line] = lastRun.start + lastRun.length;
@@ -708,105 +720,52 @@ public Rectangle getBounds (int start, int end) {
 	if (start > end) return new Rectangle(0, 0, 0, 0);
 	start = Math.min(Math.max(0, start), length - 1);
 	end = Math.min(Math.max(0, end), length - 1);
-	int startLine = getLineIndex(start);
-	int endLine = getLineIndex(end);
-	length = segmentsText.length();
 	start = translateOffset(start);
 	end = translateOffset(end);
-	if (startLine != endLine) {
-		int width = 0;
-		int y = lineY[startLine];
-		while (startLine <= endLine) {
-			width = Math.max (width, lineWidth[startLine++]);
-		}
-		return new Rectangle (0, y, width, lineY[endLine + 1] - y);
-	}
-	int x = 0, startRunX = 0, endRunX = 0, i = 0;
-	StyleItem startRun = null, endRun = null, lastRun;
-	StyleItem[] lineRuns = runs[startLine];
-	for (; i < lineRuns.length; i++) {
-		StyleItem run = lineRuns[i];
+	int left = 0x7fffffff, right = 0;
+	int top = 0x7fffffff, bottom = 0;
+	int lineIndex = 0;
+	boolean isRTL = (orientation & SWT.RIGHT_TO_LEFT) != 0;
+	for (int i = 0; i < allRuns.length - 1; i++) {
+		StyleItem run = allRuns[i];
 		int runEnd = run.start + run.length;
-		if (runEnd == length) runEnd++;
+		if (run.lineBreak) lineIndex++;
+		if (runEnd <= start) continue;
+		if (run.start > end) break;
+		int runLead = run.x;
+		int runTrail = run.x + run.width;
 		if (run.start <= start && start < runEnd) {
-			startRun = run;
-			startRunX = x;
-			break;
-		}
-		x  += run.width;
-	}
-	boolean reordered = false;	
-	lastRun = startRun;
-	boolean isRTL = (orientation & SWT.RIGHT_TO_LEFT) != 0 ^ (lastRun.analysis.s.uBidiLevel & 1) != 0;
-	for (; i < lineRuns.length; i++) {
-		StyleItem run = lineRuns[i];
-		if (run != lastRun) {
-			if (isRTL) {
-				reordered = run.start + run.length != lastRun.start;
+			int cx = 0;
+			if (!run.tab) {
+				int[] piX = new int[1];
+				OS.ScriptCPtoX(start - run.start, false, run.length, run.glyphCount, run.clusters, run.visAttrs, run.advances, run.analysis, piX);
+				cx = isRTL ? run.width - piX[0] : piX[0];
+			}
+			if (run.analysis.fRTL ^ isRTL) {
+				runTrail = run.x + cx;
 			} else {
-				reordered = lastRun.start + lastRun.length != run.start;
+				runLead = run.x + cx;
 			}
 		}
-		if (reordered) break;
-		lastRun = run;
-		int runEnd = run.start + run.length;	
-		if (runEnd == length) runEnd++;
-		if ( run.start <= end && end < runEnd) {
-			endRun = run;
-			endRunX = x;
-			break;
+		if (run.start <= end && end < runEnd) {
+			int cx = run.width;
+			if (!run.tab) {
+				int[] piX = new int[1];
+				OS.ScriptCPtoX(end - run.start, true, run.length, run.glyphCount, run.clusters, run.visAttrs, run.advances, run.analysis, piX);
+				cx = isRTL ? run.width - piX[0] : piX[0];
+			}
+			if (run.analysis.fRTL ^ isRTL) {
+				runLead = run.x + cx;
+			} else {
+				runTrail = run.x + cx;
+			}
 		}
-		x  += run.width;
+		left = Math.min(left, runLead);
+		right = Math.max(right, runTrail);
+		top = Math.min(top, lineY[lineIndex]);
+		bottom = Math.max(bottom, lineY[lineIndex + 1]);
 	}
-	if (reordered || endRun == null) {
-		int y = lineY[startLine];
-		return new Rectangle (0, y, lineWidth[startLine], lineY[startLine + 1] - y);
-	}
-	if (((startRun.analysis.s.uBidiLevel & 1) != 0) ^ ((endRun.analysis.s.uBidiLevel & 1) != 0)) {
-		int y = lineY[startLine];
-		return new Rectangle (startRunX, y, endRunX + endRun.width, lineY[startLine + 1] - y);
-	}
-	int startX, endX;
-	if (startRun.tab) {
-		startX = startRunX;
-	} else {
-		int runOffset = start - startRun.start;
-		int cChars = startRun.length;
-		int gGlyphs = startRun.glyphCount;
-		int[] piX = new int[1];
-		OS.ScriptCPtoX(runOffset, false, cChars, gGlyphs, startRun.clusters, startRun.visAttrs, startRun.advances, startRun.analysis, piX);
-		if ((orientation & SWT.RIGHT_TO_LEFT) != 0) {
-			piX[0] = startRun.width - piX[0];
-		}
-		startX = startRunX + piX[0];
-	}
-	if (endRun.tab) {
-		endX = endRunX + endRun.width;
-	} else {
-		int runOffset = end - endRun.start;
-		int cChars = endRun.length;
-		int gGlyphs = endRun.glyphCount;
-		int[] piX = new int[1];
-		OS.ScriptCPtoX(runOffset, true, cChars, gGlyphs, endRun.clusters, endRun.visAttrs, endRun.advances, endRun.analysis, piX);
-		if ((orientation & SWT.RIGHT_TO_LEFT) != 0) {
-			piX[0] = endRun.width - piX[0];
-		}
-		endX = endRunX + piX[0];
-	}
-	if (startX > endX) {
-		int tmp = startX;
-		startX = endX;
-		endX = tmp;
-	}
-	int width = endX - startX;
-	if (wrapWidth != -1) {
-		switch (alignment) {
-			case SWT.CENTER: startX += (wrapWidth - lineWidth[startLine]) / 2; break;
-			case SWT.RIGHT: startX += wrapWidth - lineWidth[startLine]; break;
-		}
-	}
-	int y = lineY[startLine];
-	return new Rectangle (startX, y, width, lineY[startLine + 1] - y);
+	return new Rectangle(left, top, right - left, bottom - top);
 }
 
 /**
