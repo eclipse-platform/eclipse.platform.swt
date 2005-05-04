@@ -165,26 +165,26 @@ protected void checkSubclass () {
 void _setImages (Image [] images) {
 	int /*long*/ pixbufs = 0;
 	if (images != null) {
+		int /*long*/ colormap = OS.gdk_colormap_get_system ();
 		for (int i = 0; i < images.length; i++) {
-			Image icon = images [i];
+			Image image = images [i];
 			int [] w = new int [1], h = new int [1];
-			OS.gdk_drawable_get_size (icon.pixmap, w, h);
-			int width = w [0], height = h [0]; 	
-			boolean hasMask = icon.mask != 0;
-			int /*long*/ pixbuf = OS.gdk_pixbuf_new (OS.GDK_COLORSPACE_RGB, hasMask, 8, width, height);
-			if (pixbuf == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-			int /*long*/ colormap = OS.gdk_colormap_get_system ();
-			OS.gdk_pixbuf_get_from_drawable (pixbuf, icon.pixmap, colormap, 0, 0, 0, 0, width, height);
+			OS.gdk_drawable_get_size (image.pixmap, w, h);
+			int /*long*/ pixbuf;
+			boolean hasMask = image.mask != 0;
 			if (hasMask) {
-				int /*long*/ gdkMaskImagePtr = OS.gdk_drawable_get_image (icon.mask, 0, 0, width, height);
+				pixbuf = OS.gdk_pixbuf_new (OS.GDK_COLORSPACE_RGB, true, 8, w [0], h [0]);
+				if (pixbuf == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+				OS.gdk_pixbuf_get_from_drawable (pixbuf, image.pixmap, colormap, 0, 0, 0, 0, w [0], h [0]);				
+				int /*long*/ gdkMaskImagePtr = OS.gdk_drawable_get_image (image.mask, 0, 0, w [0], h [0]);
 				if (gdkMaskImagePtr == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 				int stride = OS.gdk_pixbuf_get_rowstride (pixbuf);
 				int /*long*/ pixels = OS.gdk_pixbuf_get_pixels (pixbuf);
 				byte [] line = new byte [stride];
-				for (int y=0; y<height; y++) {
+				for (int y = 0; y < h [0]; y++) {
 					int /*long*/ offset = pixels + (y * stride);
 					OS.memmove (line, offset, stride);
-					for (int x=0; x<width; x++) {
+					for (int x = 0; x < w [0]; x++) {
 						if (OS.gdk_image_get_pixel (gdkMaskImagePtr, x, y) == 0) {
 							line[x*4+3] = 0;
 						}
@@ -192,6 +192,26 @@ void _setImages (Image [] images) {
 					OS.memmove (offset, line, stride);
 				}
 				OS.g_object_unref (gdkMaskImagePtr);
+			} else {
+				ImageData data = image.getImageData ();
+				boolean hasAlpha = data.getTransparencyType () == SWT.TRANSPARENCY_ALPHA;
+				pixbuf = OS.gdk_pixbuf_new (OS.GDK_COLORSPACE_RGB, hasAlpha, 8, w [0], h [0]);
+				if (pixbuf == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+				OS.gdk_pixbuf_get_from_drawable (pixbuf, image.pixmap, colormap, 0, 0, 0, 0, w [0], h [0]);
+				if (hasAlpha) {
+					byte [] alpha = data.alphaData;
+					int stride = OS.gdk_pixbuf_get_rowstride (pixbuf);
+					int /*long*/ pixels = OS.gdk_pixbuf_get_pixels (pixbuf);
+					byte [] line = new byte [stride];
+					for (int y = 0; y < h [0]; y++) {
+						int /*long*/ offset = pixels + (y * stride);
+						OS.memmove (line, offset, stride);
+						for (int x = 0; x < w [0]; x++) {
+							line [x*4+3] = alpha [y*w [0]+x];
+						}
+						OS.memmove (offset, line, stride);
+					}
+				}				
 			}
 			pixbufs = OS.g_list_append (pixbufs, pixbuf);			
 		}
