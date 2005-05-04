@@ -1551,9 +1551,9 @@ boolean translateTraversal (GdkEventKey keyEvent) {
 				int /*long*/ [] preeditString = new int /*long*/ [1];
 				OS.gtk_im_context_get_preedit_string (imContext, preeditString, null, null);
 				if (preeditString [0] != 0) {
-					int lenght = OS.strlen (preeditString [0]);
+					int length = OS.strlen (preeditString [0]);
 					OS.g_free (preeditString [0]);
-					if (lenght != 0) return false;
+					if (length != 0) return false;
 				}
 			}
 		}
