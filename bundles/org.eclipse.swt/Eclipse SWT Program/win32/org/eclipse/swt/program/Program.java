@@ -145,7 +145,7 @@ static Program getProgram (String key) {
 	/* Command */
 	String DEFAULT_COMMAND = "\\shell"; //$NON-NLS-1$
 	String defaultCommand = getKeyValue (key + DEFAULT_COMMAND, true);
-	if (defaultCommand == null) defaultCommand = "open"; //$NON-NLS-1$
+	if (defaultCommand == null || defaultCommand.length() == 0) defaultCommand = "open"; //$NON-NLS-1$
 	String COMMAND = "\\shell\\" + defaultCommand + "\\command"; //$NON-NLS-1$
 	String command = getKeyValue (key + COMMAND, true);
 	if (command == null || command.length () == 0) return null;
