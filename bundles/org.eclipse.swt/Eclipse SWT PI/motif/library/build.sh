@@ -49,9 +49,6 @@ case $OS in
 			if [ "${MOTIF_HOME}" = "" ]; then
 				MOTIF_HOME=/bluebird/teamswt/swt-builddir/motif21
 			fi
-			if [ "${QT_HOME}" = "" ]; then
-				QT_HOME=$QTDIR
-			fi
 			OUTPUT_DIR=../../../org.eclipse.swt.motif.linux.x86
 			makefile="make_linux.mak"
 			echo "Building Linux motif x86 version of SWT"
@@ -114,6 +111,6 @@ case $OS in
 		;;
 esac
 
-export JAVA_HOME MOTIF_HOME CDE_HOME QT_HOME OUTPUT_DIR
+export JAVA_HOME MOTIF_HOME CDE_HOME OUTPUT_DIR
 
 make -f $makefile $1 $2 $3 $4
