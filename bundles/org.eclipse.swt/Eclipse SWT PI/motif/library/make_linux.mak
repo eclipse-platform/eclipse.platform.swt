@@ -31,7 +31,7 @@ SWT_LIBS = -L$(MOTIF_HOME)/lib -lXm -L/usr/lib -L/usr/X11R6/lib \
 # Uncomment for Native Stats tool
 #NATIVE_STATS = -DNATIVE_STATS
 
-CFLAGS = -O -s -Wall -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) -DLINUX -DMOTIF  -fpic -I./ \
+CFLAGS = -O -s -Wall -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) -DLINUX -DMOTIF  -fpic \
 	-I$(JAVA_HOME)/include -I$(MOTIF_HOME)/include -I/usr/X11R6/include 
 
 # Do not use pkg-config to get libs because it includes unnecessary dependencies (i.e. pangoxft-1.0)
@@ -51,6 +51,12 @@ GTK_LIB = lib$(GTK_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 GTK_OBJS = swt.o gtk.o
 GTK_CFLAGS = `pkg-config --cflags gtk+-2.0`
 GTK_LIBS = -x -shared `pkg-config --libs-only-L gtk+-2.0` -lgtk-x11-2.0
+
+CAIRO_PREFIX = swt-cairo
+CAIRO_LIB = lib$(CAIRO_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+CAIRO_OBJECTS = swt.o cairo.o cairo_structs.o cairo_stats.o cairo_custom.o
+CAIROCFLAGS = `pkg-config --cflags cairo`
+CAIROLIBS = -shared -fpic -fPIC -s `pkg-config --libs-only-L cairo` -lcairo
 	
 all: make_swt make_awt make_gnome make_gtk
 
@@ -96,7 +102,21 @@ $(GTK_LIB): $(GTK_OBJS)
 
 gtk.o: gtk.c
 	$(CC) $(CFLAGS) $(GTK_CFLAGS) -c -o gtk.o gtk.c
-		
+
+make_cairo: $(CAIRO_LIB)
+
+$(CAIRO_LIB): $(CAIRO_OBJECTS)
+	$(LD) $(CAIROLIBS) -o $(CAIRO_LIB) $(CAIRO_OBJECTS)
+
+cairo.o: cairo.c cairo.h swt.h
+	$(CC) $(CFLAGS) $(CAIROCFLAGS) -c cairo.c
+cairo_custom.o: cairo_custom.c cairo_structs.h cairo.h swt.h
+	$(CC) $(CFLAGS) $(CAIROCFLAGS) -c cairo_custom.c
+cairo_structs.o: cairo_structs.c cairo_structs.h cairo.h swt.h
+	$(CC) $(CFLAGS) $(CAIROCFLAGS) -c cairo_structs.c
+cairo_stats.o: cairo_stats.c cairo_structs.h cairo.h cairo_stats.h swt.h
+	$(CC) $(CFLAGS) $(CAIROCFLAGS) -c cairo_stats.c
+
 install: all
 	cp *.so $(OUTPUT_DIR)
 
