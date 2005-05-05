@@ -2630,6 +2630,8 @@ void releaseDisplay () {
 	COLOR_LIST_FOREGROUND = COLOR_LIST_BACKGROUND = COLOR_LIST_SELECTION = COLOR_LIST_SELECTION_TEXT =
 	COLOR_INFO_BACKGROUND = null;
 	
+	popups = null;
+
 	max_priority = timeout = null;
 	if (fds != 0) OS.g_free (fds);
 	fds = 0;
