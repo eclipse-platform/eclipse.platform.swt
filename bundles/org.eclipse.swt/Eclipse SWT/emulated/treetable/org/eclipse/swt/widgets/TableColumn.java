@@ -30,7 +30,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class TableColumn extends Item {
 	Table parent;
-	String displayText;
+	String displayText = "";
 	int width;
 	boolean moveable, resizable = true;
 

@@ -32,7 +32,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class TreeColumn extends Item {
 	Tree parent;
-	String displayText;
+	String displayText = "";
 	int width;
 	boolean resizable = true;
 
