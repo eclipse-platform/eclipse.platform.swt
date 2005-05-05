@@ -403,6 +403,18 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		int labelWidth = OS.GTK_WIDGET_WIDTH (handle);
 		int labelHeight = OS.GTK_WIDGET_HEIGHT (handle);
 		OS.gtk_widget_set_size_request (labelHandle, labelWidth, labelHeight);
+		/*
+		* Bug in GTK.  Setting the size request should invalidate the label's
+		* layout, but it does not.  The fix is to resize the label directly. 
+		*/
+		GtkRequisition requisition = new GtkRequisition ();
+		OS.gtk_widget_size_request (labelHandle, requisition);
+		GtkAllocation allocation = new GtkAllocation ();
+		allocation.x = OS.GTK_WIDGET_X (labelHandle);
+		allocation.y = OS.GTK_WIDGET_Y (labelHandle);
+		allocation.width = labelWidth;
+		allocation.height = labelHeight;
+		OS.gtk_widget_size_allocate (labelHandle, allocation);
 	}
 	return result;
 }
