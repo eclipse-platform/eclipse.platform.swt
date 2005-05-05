@@ -281,12 +281,13 @@ void setBackgroundPixel (int pixel) {
 	super.setBackgroundPixel (pixel);
 	/*
 	* Bug in Windows.  Changing the background color of the Scale
-	* widget and calling InvalidateRect still draws with the old color.
-	* The fix is to post a fake WM_SETFOCUS event to cause it to redraw
-	* with the new background color.
+	* widget and calling InvalidateRect() still draws with the old
+	* color.  The fix is to post a fake WM_SETFOCUS event to cause
+	* it to redraw with the new background color.
 	* 
 	* Note.  This WM_SETFOCUS message causes recursion when
-	* setBackground is called from within the focus event listener.
+	* setBackground is called from within the focus event
+	* listener.
 	*/
 	OS.PostMessage (handle, OS.WM_SETFOCUS, 0, 0);
 }
