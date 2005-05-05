@@ -609,6 +609,16 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1FillRectangle)
 }
 #endif
 
+#ifndef NO_Graphics_1Flush
+JNIEXPORT void JNICALL Gdip_NATIVE(Graphics_1Flush)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	Gdip_NATIVE_ENTER(env, that, Graphics_1Flush_FUNC);
+	((Graphics *)arg0)->Flush((FlushIntention)arg1);
+	Gdip_NATIVE_EXIT(env, that, Graphics_1Flush_FUNC);
+}
+#endif
+
 #ifndef NO_Graphics_1GetClip
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetClip)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -649,6 +659,18 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetClipBounds__ILorg_eclipse_swt_in
 fail:
 	if (arg1 && lparg1) setRectFields(env, arg1, lparg1);
 	Gdip_NATIVE_EXIT(env, that, Graphics_1GetClipBounds__ILorg_eclipse_swt_internal_gdip_Rect_2_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Graphics_1GetHDC
+JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetHDC)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Graphics_1GetHDC_FUNC);
+	rc = (jint)((Graphics *)arg0)->GetHDC();
+	Gdip_NATIVE_EXIT(env, that, Graphics_1GetHDC_FUNC);
 	return rc;
 }
 #endif
@@ -742,6 +764,16 @@ fail:
 	if (arg1 && lparg1) env->ReleaseCharArrayElements(arg1, lparg1, 0);
 	Gdip_NATIVE_EXIT(env, that, Graphics_1MeasureString__I_3CIILorg_eclipse_swt_internal_gdip_PointF_2Lorg_eclipse_swt_internal_gdip_RectF_2_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_Graphics_1ReleaseHDC
+JNIEXPORT void JNICALL Gdip_NATIVE(Graphics_1ReleaseHDC)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	Gdip_NATIVE_ENTER(env, that, Graphics_1ReleaseHDC_FUNC);
+	((Graphics *)arg0)->ReleaseHDC((HDC)arg1);
+	Gdip_NATIVE_EXIT(env, that, Graphics_1ReleaseHDC_FUNC);
 }
 #endif
 

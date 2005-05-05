@@ -40,6 +40,8 @@ public class Gdip extends Platform {
     public static final int DashStyleDashDot = 3;
     public static final int DashStyleDashDotDot = 4;
     public static final int DashStyleCustom = 5;
+    public static final int FlushIntentionFlush = 0;
+    public static final int FlushIntentionSync = 1;
     public static final int HotkeyPrefixNone = 0;
     public static final int HotkeyPrefixShow = 1;
     public static final int HotkeyPrefixHide = 2;
@@ -136,12 +138,15 @@ public static final native int Graphics_DrawString(int graphics, char[] string, 
 public static final native int Graphics_DrawString(int graphics, char[] string, int length, int font, PointF origin, int format, int brush);
 public static final native int Graphics_FillEllipse(int graphics, int brush, int x, int y, int width, int height);
 public static final native int Graphics_FillPath(int graphics, int brush, int path);
+public static final native void Graphics_Flush(int graphics, int intention);
 public static final native int Graphics_FillPie(int graphics, int brush, int x, int y, int width, int height, float startAngle, float sweepAngle);
 public static final native int Graphics_FillPolygon(int graphics, int brush, int[] points, int count, int fillMode);
 public static final native int Graphics_FillRectangle(int graphics, int brush, int x, int y, int width, int height);
 public static final native int Graphics_GetClipBounds(int graphics, RectF rect);
 public static final native int Graphics_GetClipBounds(int graphics, Rect rect);
 public static final native int Graphics_GetClip(int graphics, int region);
+public static final native int Graphics_GetHDC(int graphics);
+public static final native void Graphics_ReleaseHDC(int graphics, int hdc);
 public static final native int Graphics_GetInterpolationMode(int graphics);
 public static final native int Graphics_GetSmoothingMode(int graphics);
 public static final native int Graphics_GetTextRenderingHint(int graphics);

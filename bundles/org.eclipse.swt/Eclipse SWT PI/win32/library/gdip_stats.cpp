@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int Gdip_nativeFunctionCount = 120;
-int Gdip_nativeFunctionCallCount[120];
+int Gdip_nativeFunctionCount = 123;
+int Gdip_nativeFunctionCallCount[123];
 char * Gdip_nativeFunctionNames[] = {
 	"Bitmap_1delete",
 	"Bitmap_1new__I",
@@ -67,15 +67,18 @@ char * Gdip_nativeFunctionNames[] = {
 	"Graphics_1FillPie",
 	"Graphics_1FillPolygon",
 	"Graphics_1FillRectangle",
+	"Graphics_1Flush",
 	"Graphics_1GetClip",
 	"Graphics_1GetClipBounds__ILorg_eclipse_swt_internal_gdip_RectF_2",
 	"Graphics_1GetClipBounds__ILorg_eclipse_swt_internal_gdip_Rect_2",
+	"Graphics_1GetHDC",
 	"Graphics_1GetInterpolationMode",
 	"Graphics_1GetSmoothingMode",
 	"Graphics_1GetTextRenderingHint",
 	"Graphics_1GetTransform",
 	"Graphics_1MeasureString__I_3CIILorg_eclipse_swt_internal_gdip_PointF_2ILorg_eclipse_swt_internal_gdip_RectF_2",
 	"Graphics_1MeasureString__I_3CIILorg_eclipse_swt_internal_gdip_PointF_2Lorg_eclipse_swt_internal_gdip_RectF_2",
+	"Graphics_1ReleaseHDC",
 	"Graphics_1ResetClip",
 	"Graphics_1SetClip__II",
 	"Graphics_1SetClip__III",

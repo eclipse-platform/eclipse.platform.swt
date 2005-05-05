@@ -1232,6 +1232,7 @@ public ImageData getImageData() {
 				if (!isDib) {
 					boolean mustRestore = false;
 					if (memGC != null && !memGC.isDisposed()) {
+						memGC.flush ();
 						mustRestore = true;
 						GCData data = memGC.data;
 						if (data.hNullBitmap != 0) {

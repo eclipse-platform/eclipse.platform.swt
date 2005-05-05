@@ -794,6 +794,7 @@ void drawBitmap(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight,
 	boolean mustRestore = false;
 	GC memGC = srcImage.memGC;
 	if (memGC != null && !memGC.isDisposed()) {
+		memGC.flush();
 		mustRestore = true;
 		GCData data = memGC.data;
 		if (data.hNullBitmap != 0) {
@@ -2276,6 +2277,19 @@ void fillRoundRectangleGdip (int gdipGraphics, int brush, int x, int y, int widt
 		} else {
 			Gdip.Graphics_FillPie(gdipGraphics, brush, nx, ny, nw, nh, 0, 360);
 		}
+	}
+}
+
+void flush () {
+	if (data.gdipGraphics != 0) {
+		Gdip.Graphics_Flush(data.gdipGraphics, 0);
+		/*
+		* Note Flush() does not flush the output to the
+		* underline HDC. This is done by calling GetHDC()
+		* followed by ReleaseHDC().
+		*/
+		int hdc = Gdip.Graphics_GetHDC(data.gdipGraphics);
+		Gdip.Graphics_ReleaseHDC(data.gdipGraphics, hdc);
 	}
 }
 
