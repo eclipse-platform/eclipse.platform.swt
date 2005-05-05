@@ -78,7 +78,7 @@ static void extentsClosePath(jdouble *extents) {
 }
 
 JNIEXPORT void JNICALL Cairo_NATIVE(cairo_1extents)
-	(JNIEnv *env, jclass that, jint arg0, jdoubleArray arg1)
+	(JNIEnv *env, jclass that, SWT_PTR arg0, jdoubleArray arg1)
 {
 	jdouble *lparg1=NULL;
 	Cairo_NATIVE_ENTER(env, that, cairo_1extents_FUNC);
@@ -150,7 +150,7 @@ static void pointsClosePath(points_data *data) {
 }
 
 JNIEXPORT void JNICALL Cairo_NATIVE(cairo_1points)
-	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2, jbyteArray arg3, jfloatArray arg4)
+	(JNIEnv *env, jclass that, SWT_PTR arg0, jintArray arg1, jintArray arg2, jbyteArray arg3, jfloatArray arg4)
 {
 	points_data data;
 	jint *lparg1=NULL;
