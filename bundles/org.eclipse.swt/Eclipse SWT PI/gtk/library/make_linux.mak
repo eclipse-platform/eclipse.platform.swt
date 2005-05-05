@@ -33,7 +33,7 @@ GNOME_LIB = lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 MOZILLA_LIB = lib$(MOZILLA_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 
 CAIROCFLAGS = `pkg-config --cflags cairo`
-CAIROLIBS = `pkg-config --libs cairo`
+CAIROLIBS = `pkg-config --libs-only-L cairo` -lcairo
 
 # Do not use pkg-config to get libs because it includes unnecessary dependencies (i.e. pangoxft-1.0)
 GTKCFLAGS = `pkg-config --cflags gtk+-2.0`
