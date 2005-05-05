@@ -141,6 +141,56 @@ public Menu (Menu parentMenu) {
 public Menu (MenuItem parentItem) {
 	this (checkNull(parentItem).parent);
 }
+void _setVisible (boolean visible) {
+	checkWidget();
+	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
+	if (visible) {
+		sendEvent (SWT.Show);
+		if (getItemCount () != 0) {
+			int xDisplay = OS.XtDisplay (handle);
+			if (xDisplay == 0) return;
+			int xWindow = OS.XDefaultRootWindow (xDisplay);
+			if (xWindow == 0) return;
+			int [] rootX = new int [1], rootY = new int [1], unused = new int [1], mask = new int [1];
+			if (OS.XQueryPointer (xDisplay, xWindow, unused, unused, rootX, rootY, unused, unused, mask) == 0) {
+				return;
+			}
+			if (!hasLocation) {
+				/*
+				* Bug in Motif.  For some reason, when a menu is popped up
+				* under the mouse, the menu will not highlight until the
+				* mouse exits and then enters the menu again.  The fix is
+				* to pop the menu up outside the current mouse position
+				* causing highlighting to work properly when the user
+				* waits for the menu to appear.
+				*/
+				rootX[0] += 1;  rootY[0] += 1;
+				int [] argList = {OS.XmNx, rootX [0], OS.XmNy, rootY [0]};
+				OS.XtSetValues (handle, argList, argList.length / 2);
+			}
+			/*
+			* Feature in Motif.  If an X grab is active, then
+			* the menu pops us but issues and error message an
+			* fails to grab the pointer.  The fix is to ensure
+			* that no grab is active before showing the menu.
+			*/
+			OS.XUngrabPointer (xDisplay, OS.CurrentTime);
+			OS.XtManageChild (handle);
+			/*
+			* Feature in Motif.  There is no API to force the menu
+			* to accept keyboard traversal when popped up using
+			* XtManageChild.  The fix is to call undocumented API
+			* to do this.
+			*/
+			int flags = OS.Button1Mask | OS.Button2Mask | OS.Button3Mask;
+			if ((mask [0] & flags) == 0) OS._XmSetMenuTraversal (handle, true);
+		} else {
+			sendEvent (SWT.Hide);
+		}
+	} else {
+		OS.XtUnmanageChild (handle);
+	}
+}
 void addAccelerators () {
 	MenuItem [] items = getItems ();
 	for (int i = 0; i < items.length; i++) {
@@ -788,51 +838,10 @@ public void setVisible (boolean visible) {
 	checkWidget();
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
 	if (visible) {
-		display.runDeferredEvents ();
-		sendEvent (SWT.Show);
-		if (getItemCount () != 0) {
-			int xDisplay = OS.XtDisplay (handle);
-			if (xDisplay == 0) return;
-			int xWindow = OS.XDefaultRootWindow (xDisplay);
-			if (xWindow == 0) return;
-			int [] rootX = new int [1], rootY = new int [1], unused = new int [1], mask = new int [1];
-			if (OS.XQueryPointer (xDisplay, xWindow, unused, unused, rootX, rootY, unused, unused, mask) == 0) {
-				return;
-			}
-			if (!hasLocation) {
-				/*
-				* Bug in Motif.  For some reason, when a menu is popped up
-				* under the mouse, the menu will not highlight until the
-				* mouse exits and then enters the menu again.  The fix is
-				* to pop the menu up outside the current mouse position
-				* causing highlighting to work properly when the user
-				* waits for the menu to appear.
-				*/
-				rootX[0] += 1;  rootY[0] += 1;
-				int [] argList = {OS.XmNx, rootX [0], OS.XmNy, rootY [0]};
-				OS.XtSetValues (handle, argList, argList.length / 2);
-			}
-			/*
-			* Feature in Motif.  If an X grab is active, then
-			* the menu pops us but issues and error message an
-			* fails to grab the pointer.  The fix is to ensure
-			* that no grab is active before showing the menu.
-			*/
-			OS.XUngrabPointer (xDisplay, OS.CurrentTime);
-			OS.XtManageChild (handle);
-			/*
-			* Feature in Motif.  There is no API to force the menu
-			* to accept keyboard traversal when popped up using
-			* XtManageChild.  The fix is to call undocumented API
-			* to do this.
-			*/
-			int flags = OS.Button1Mask | OS.Button2Mask | OS.Button3Mask;
-			if ((mask [0] & flags) == 0) OS._XmSetMenuTraversal (handle, true);
-		} else {
-			sendEvent (SWT.Hide);
-		}
+		display.addPopup (this);
 	} else {
-		OS.XtUnmanageChild (handle);
+		display.removePopup (this);
+		_setVisible (false);
 	}
 }
 boolean translateAccelerator (int accel, boolean doit) {

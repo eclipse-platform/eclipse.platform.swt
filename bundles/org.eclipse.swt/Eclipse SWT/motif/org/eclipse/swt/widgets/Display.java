@@ -135,6 +135,9 @@ public class Display extends Device {
 	XColor COLOR_WIDGET_HIGHLIGHT_SHADOW, COLOR_WIDGET_FOREGROUND, COLOR_WIDGET_BACKGROUND, COLOR_WIDGET_BORDER;
 	XColor COLOR_LIST_FOREGROUND, COLOR_LIST_BACKGROUND, COLOR_LIST_SELECTION, COLOR_LIST_SELECTION_TEXT;
 	Color COLOR_INFO_BACKGROUND;
+
+	/* Popup Menus */
+	Menu [] popups;
 	
 	/* System Images and Masks */
 	int errorPixmap, infoPixmap, questionPixmap, warningPixmap, workingPixmap;
@@ -518,6 +521,24 @@ public void addListener (int eventType, Listener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) eventTable = new EventTable ();
 	eventTable.hook (eventType, listener);
+}
+void addPopup (Menu menu) {
+	if (popups == null) popups = new Menu [4];
+	int length = popups.length;
+	for (int i=0; i<length; i++) {
+		if (popups [i] == menu) return;
+	}
+	int index = 0;
+	while (index < length) {
+		if (popups [index] == null) break;
+		index++;
+	}
+	if (index == length) {
+		Menu [] newPopups = new Menu [length + 4];
+		System.arraycopy (popups, 0, newPopups, 0, length);
+		popups = newPopups;
+	}
+	popups [index] = menu;
 }
 /**
  * Causes the <code>run()</code> method of the runnable to
@@ -2687,9 +2708,11 @@ void postEvent (Event event) {
  */
 public boolean readAndDispatch () {
 	checkDevice ();
+	boolean events = runPopups ();
 	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
 	int status = OS.XtAppPending (xtContext);
 	if (status != 0) {
+		events |= true;
 		if ((status & OS.XtIMTimer) != 0) {
 			OS.XtAppProcessEvent (xtContext, OS.XtIMTimer);
 			status = OS.XtAppPending (xtContext);
@@ -2702,6 +2725,8 @@ public boolean readAndDispatch () {
 			OS.XtAppNextEvent (xtContext, xEvent);
 			if (!filterEvent (xEvent)) OS.XtDispatchEvent (xEvent);
 		}
+	}
+	if (events) {
 		runDeferredEvents ();
 		return true;
 	}
@@ -2886,6 +2911,8 @@ void releaseDisplay () {
 	COLOR_WIDGET_HIGHLIGHT_SHADOW = COLOR_WIDGET_FOREGROUND = COLOR_WIDGET_BACKGROUND = COLOR_WIDGET_BORDER =
 	COLOR_LIST_FOREGROUND = COLOR_LIST_BACKGROUND = COLOR_LIST_SELECTION = COLOR_LIST_SELECTION_TEXT = null;
 	COLOR_INFO_BACKGROUND = null;
+
+	popups = null;
 }
 void releaseToolTipHandle (int handle) {
 	if (mouseHoverHandle == handle) removeMouseHoverTimeOut ();
@@ -2924,6 +2951,15 @@ Widget removeWidget (int handle) {
 		OS.XtSetValues (handle, userData, userData.length / 2);
 	}
 	return widget;
+}
+void removePopup (Menu menu) {
+	if (popups == null) return;
+	for (int i=0; i<popups.length; i++) {
+		if (popups [i] == menu) {
+			popups [i] = null;
+			return;
+		}
+	}
 }
 /**
  * Removes the listener from the collection of listeners who will
@@ -3044,6 +3080,22 @@ boolean runFocusOutEvents () {
 		}
 	}
 	return true;
+}
+boolean runPopups () {
+	if (popups == null) return false;
+	boolean result = false;
+	while (popups != null) {
+		Menu menu = popups [0];
+		if (menu == null) break;
+		int length = popups.length;
+		System.arraycopy (popups, 1, popups, 0, --length);
+		popups [length] = null;
+		runDeferredEvents ();
+		menu._setVisible (true);
+		result = true;
+	}
+	popups = null;
+	return result;
 }
 void sendEvent (int eventType, Event event) {
 	if (eventTable == null && filterTable == null) {
