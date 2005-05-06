@@ -2477,7 +2477,7 @@ void doAutoScroll(int direction, int distance) {
 		timer = new Runnable() {
 			public void run() {
 				if (autoScrollDirection == SWT.UP) {
-					int lines = ((autoScrollDistance * autoScrollDistance) / (getLineHeight() * 32)) + 1;
+					int lines = (autoScrollDistance / getLineHeight()) + 1;
 					doSelectionPageUp(lines);
 					display.timerExec(TIMER_INTERVAL, this);
 				}
@@ -2487,7 +2487,7 @@ void doAutoScroll(int direction, int distance) {
 		timer = new Runnable() {
 			public void run() {
 				if (autoScrollDirection == SWT.DOWN) {
-					int lines = ((autoScrollDistance * autoScrollDistance) / (getLineHeight() * 32)) + 1;
+					int lines = (autoScrollDistance / getLineHeight()) + 1;
 					doSelectionPageDown(lines);
 					display.timerExec(TIMER_INTERVAL, this);
 				}
