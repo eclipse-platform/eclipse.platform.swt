@@ -574,13 +574,8 @@ void destroyItem (CTabItem item) {
 		if (control != null && !control.isDisposed()) {
 			control.setVisible(false);
 		}
-		if (fixedTabHeight == SWT.DEFAULT) tabHeight = 0;
-		if (onBottom) {
-			yClient = borderTop + highlight_margin + marginHeight;
-		} else {
-			yClient = borderTop + tabHeight + highlight_header + marginHeight; 
-		}		
 		hideToolTip();
+		setButtonBounds();
 		redraw();
 		return;
 	} 
@@ -1097,11 +1092,9 @@ void drawTabArea(Event event) {
 	}
 	
 	// Draw Buttons
-	if (items.length > 0) {
-		drawChevron(gc);
-		drawMinimize(gc);
-		drawMaximize(gc);
-	}
+	drawChevron(gc);
+	drawMinimize(gc);
+	drawMaximize(gc);
 	
 	// Draw border line
 	if (borderLeft > 0) {
@@ -3736,8 +3729,12 @@ boolean updateTabHeight(boolean force){
 	} else {
 		int tempHeight = 0;
 		GC gc = new GC(this);
-		for (int i=0; i < items.length; i++) {
-			tempHeight = Math.max(tempHeight, items[i].preferredHeight(gc));
+		if (items.length == 0) {
+			tempHeight = gc.textExtent("Default", CTabItem.FLAGS).y + CTabItem.TOP_MARGIN + CTabItem.BOTTOM_MARGIN; //$NON-NLS-1$
+		} else {
+			for (int i=0; i < items.length; i++) {
+				tempHeight = Math.max(tempHeight, items[i].preferredHeight(gc));
+			}
 		}
 		gc.dispose();
 		tabHeight =  tempHeight;
