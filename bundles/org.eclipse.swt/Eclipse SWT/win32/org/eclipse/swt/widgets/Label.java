@@ -39,10 +39,11 @@ import org.eclipse.swt.graphics.*;
  */
 public class Label extends Control {
 	String text = "";
-	Image image;
+	Image image, image2;
 	int font;
 	static final int LabelProc;
 	static final TCHAR LabelClass = new TCHAR (0, "STATIC", true);
+	static final int ICON_WIDTH = 128, ICON_HEIGHT = 128;
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, LabelClass, lpWndClass);
@@ -88,6 +89,98 @@ public class Label extends Control {
  */
 public Label (Composite parent, int style) {
 	super (parent, checkStyle (style));
+}
+
+void _setImage (Image image) {
+	boolean hasAlpha = false;
+	int hImage = 0, imageBits = 0, fImageType = 0;
+	if (image != null) {
+		switch (image.type) {
+			case SWT.BITMAP: {
+				if (image2 != null) image2.dispose ();
+				image2 = null;
+				ImageData data = image.getImageData ();
+				if (OS.COMCTL32_MAJOR < 6) {
+					Rectangle rect = image.getBounds ();
+					switch (data.getTransparencyType ()) {
+						case SWT.TRANSPARENCY_PIXEL: 
+							if (rect.width <= ICON_WIDTH && rect.height <= ICON_HEIGHT) {
+								image2 = new Image (display, data, data.getTransparencyMask ());
+								hImage = image2.handle;
+								imageBits = OS.SS_ICON;
+								fImageType = OS.IMAGE_ICON;
+								break;
+							}
+							//FALL THROUGH
+						case SWT.TRANSPARENCY_ALPHA:
+							image2 = new Image (display, rect.width, rect.height);
+							GC gc = new GC (image2);
+							gc.setBackground (getBackground ());
+							gc.fillRectangle (rect);
+							gc.drawImage (image, 0, 0);
+							gc.dispose ();
+							hImage = image2.handle;
+							imageBits = OS.SS_BITMAP;
+							fImageType = OS.IMAGE_BITMAP;
+							break;
+						case SWT.TRANSPARENCY_NONE:
+							hImage = image.handle;
+							imageBits = OS.SS_BITMAP;
+							fImageType = OS.IMAGE_BITMAP;
+							break;
+					}
+					break;
+				} else {
+					if (data.alpha != -1 || data.alphaData != null || data.transparentPixel != -1) {
+						hasAlpha = true;
+						hImage = createAlphaFromMask (image.handle, data.alpha, data.alphaData, data.transparentPixel);
+					} else {
+						hImage = image.handle;
+					}
+					imageBits = OS.SS_BITMAP;
+					fImageType = OS.IMAGE_BITMAP;
+				}
+				break;
+			}
+			case SWT.ICON: {
+				hImage = image.handle;
+				imageBits = OS.SS_ICON;
+				fImageType = OS.IMAGE_ICON;
+				break;
+			}
+		}
+	}
+	RECT rect = new RECT ();
+	OS.GetWindowRect (handle, rect);
+	int newBits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	int oldBits = newBits;
+	newBits &= ~(OS.SS_BITMAP | OS.SS_ICON);
+	newBits |= imageBits | OS.SS_REALSIZEIMAGE | OS.SS_CENTERIMAGE;
+	if (newBits != oldBits) {
+		OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
+	}
+	OS.SendMessage (handle, OS.STM_SETIMAGE, fImageType, hImage);
+	
+	/*
+	* When STM_SETIMAGE encounters a bitmap with alpha information,
+	* it takes a copy of the bitmap.  Therefore the bitmap that was
+	* created to preserve transparency can be deleted right away.
+	*/
+	if (hasAlpha && hImage != 0) OS.DeleteObject (hImage);	
+
+	/*
+	* Feature in Windows.  When STM_SETIMAGE is used to set the
+	* image for a static control, Windows either streches the image
+	* to fit the control or shrinks the control to fit the image.
+	* While not stricly wrong, neither of these is desirable.
+	* The fix is to stop Windows from stretching the image by
+	* using SS_REALSIZEIMAGE and SS_CENTERIMAGE, allow Windows
+	* to shrink the control, and then restore the control to the
+	* original size.
+	*/
+	int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE | OS.SWP_NOMOVE;
+	SetWindowPos (handle, 0, 0, 0, rect.right - rect.left, rect.bottom - rect.top, flags);
+	OS.InvalidateRect (handle, null, true);
 }
 
 int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
@@ -360,6 +453,8 @@ boolean mnemonicMatch (char key) {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	if (image2 != null) image2.dispose ();
+	image2 = null;
 	text = null;
 	image = null;
 }
@@ -423,69 +518,8 @@ public void setAlignment (int alignment) {
 public void setImage (Image image) {
 	checkWidget ();
 	if ((style & SWT.SEPARATOR) != 0) return;
-	int hImage = 0, imageBits = 0, fImageType = 0;
-	if (image != null) {
-		if (image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-		switch (image.type) {
-			case SWT.BITMAP: {
-				if (OS.COMCTL32_MAJOR < 6) {
-					hImage = image.handle;
-				} else {
-					ImageData data = image.getImageData ();
-					if (data.alpha != -1 || data.alphaData != null || data.transparentPixel != -1) {
-						hImage = createAlphaFromMask (image.handle, data.alpha, data.alphaData, data.transparentPixel);
-					} else {
-						hImage = image.handle;
-					}
-				}
-				imageBits = OS.SS_BITMAP;
-				fImageType = OS.IMAGE_BITMAP;
-				break;
-			}
-			case SWT.ICON: {
-				hImage = image.handle;
-				imageBits = OS.SS_ICON;
-				fImageType = OS.IMAGE_ICON;
-				break;
-			}
-			default:
-				return;
-		}
-	}
-	this.image = image;
-	RECT rect = new RECT ();
-	OS.GetWindowRect (handle, rect);
-	int newBits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	int oldBits = newBits;
-	newBits &= ~(OS.SS_BITMAP | OS.SS_ICON);
-	newBits |= imageBits | OS.SS_REALSIZEIMAGE | OS.SS_CENTERIMAGE;
-	if (newBits != oldBits) {
-		OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
-	}
-	OS.SendMessage (handle, OS.STM_SETIMAGE, fImageType, hImage);
-	
-	/*
-	* When STM_SETIMAGE encounters a bitmap with alpha information,
-	* it takes a copy of the bitmap.  Therefore the bitmap that was
-	* created to preserve transparency can be deleted right away.
-	*/
-	if (image != null && image.handle != hImage) {
-		OS.DeleteObject (hImage);	
-	}
-
-	/*
-	* Feature in Windows.  When STM_SETIMAGE is used to set the
-	* image for a static control, Windows either streches the image
-	* to fit the control or shrinks the control to fit the image.
-	* While not stricly wrong, neither of these is desirable.
-	* The fix is to stop Windows from stretching the image by
-	* using SS_REALSIZEIMAGE and SS_CENTERIMAGE, allow Windows
-	* to shrink the control, and then restore the control to the
-	* original size.
-	*/
-	int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE | OS.SWP_NOMOVE;
-	SetWindowPos (handle, 0, 0, 0, rect.right - rect.left, rect.bottom - rect.top, flags);
-	OS.InvalidateRect (handle, null, true);
+	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	_setImage (this.image = image);
 }
 
 /**
@@ -694,6 +728,13 @@ LRESULT wmColorChild (int wParam, int lParam) {
 			return new LRESULT (OS.GetStockObject (OS.NULL_BRUSH));
 		}
 	}
+	return result;
+}
+
+LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
+	LRESULT result = super.WM_SYSCOLORCHANGE (wParam, lParam);
+	if (result != null) return result;
+	if (image2 != null) _setImage (image);
 	return result;
 }
 

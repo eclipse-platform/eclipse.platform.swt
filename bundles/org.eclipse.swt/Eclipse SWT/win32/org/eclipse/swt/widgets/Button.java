@@ -42,24 +42,25 @@ import org.eclipse.swt.events.*;
 
 public class Button extends Control {
 	String text = "";
-	Image image;
+	Image image, image2;
 	ImageList imageList;
 	boolean ignoreMouse;
 	static final int ButtonProc;
 	static final TCHAR ButtonClass = new TCHAR (0,"BUTTON", true);
 	static final char [] SCROLLBAR = new char [] {'S', 'C', 'R', 'O', 'L', 'L', 'B', 'A', 'R', 0};
-	static final int CheckWidth, CheckHeight;
+	static final int CHECK_WIDTH, CHECK_HEIGHT;
+	static final int ICON_WIDTH = 128, ICON_HEIGHT = 128;
 	static {
 		int hBitmap = OS.LoadBitmap (0, OS.OBM_CHECKBOXES);
 		if (hBitmap == 0) {
-			CheckWidth = OS.GetSystemMetrics (OS.IsWinCE ? OS.SM_CXSMICON : OS.SM_CXVSCROLL);
-			CheckHeight = OS.GetSystemMetrics (OS.IsWinCE ? OS.SM_CYSMICON : OS.SM_CYVSCROLL);
+			CHECK_WIDTH = OS.GetSystemMetrics (OS.IsWinCE ? OS.SM_CXSMICON : OS.SM_CXVSCROLL);
+			CHECK_HEIGHT = OS.GetSystemMetrics (OS.IsWinCE ? OS.SM_CYSMICON : OS.SM_CYVSCROLL);
 		} else {
 			BITMAP bitmap = new BITMAP ();
 			OS.GetObject (hBitmap, BITMAP.sizeof, bitmap);
 			OS.DeleteObject (hBitmap);
-			CheckWidth = bitmap.bmWidth / 4;
-			CheckHeight =  bitmap.bmHeight / 3;
+			CHECK_WIDTH = bitmap.bmWidth / 4;
+			CHECK_HEIGHT =  bitmap.bmHeight / 3;
 		}
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, ButtonClass, lpWndClass);
@@ -104,6 +105,82 @@ public class Button extends Control {
  */
 public Button (Composite parent, int style) {
 	super (parent, checkStyle (style));
+}
+
+void _setImage (Image image) {
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, 0);
+		if (imageList != null) imageList.dispose ();
+		imageList = null;
+		if (image != null) {
+			imageList = new ImageList ();
+			imageList.add (image);
+			BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
+			buttonImageList.himl = imageList.getHandle ();
+			if ((style & SWT.LEFT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
+			if ((style & SWT.CENTER) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_CENTER;
+			if ((style & SWT.RIGHT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_RIGHT;
+			TCHAR buffer = new TCHAR (getCodePage (), "", true);
+			OS.SetWindowText (handle, buffer);
+			OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, buttonImageList);
+		} else {
+			TCHAR buffer = new TCHAR (getCodePage (), text, true);
+			OS.SetWindowText (handle, buffer);
+			OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, 0);
+		}
+	} else {
+		int hImage = 0, imageBits = 0, fImageType = 0;
+		if (image != null) {
+			if (image2 != null) image2.dispose ();
+			image2 = null;
+			switch (image.type) {
+				case SWT.BITMAP: {
+					Rectangle rect = image.getBounds ();
+					ImageData data = image.getImageData ();
+					switch (data.getTransparencyType ()) {
+						case SWT.TRANSPARENCY_PIXEL: 
+							if (rect.width <= ICON_WIDTH && rect.height <= ICON_HEIGHT) {
+								image2 = new Image (display, data, data.getTransparencyMask ());
+								hImage = image2.handle;
+								imageBits = OS.BS_ICON;
+								fImageType = OS.IMAGE_ICON;
+								break;
+							}
+							//FALL THROUGH
+						case SWT.TRANSPARENCY_ALPHA:
+							image2 = new Image (display, rect.width, rect.height);
+							GC gc = new GC (image2);
+							gc.setBackground (getBackground ());
+							gc.fillRectangle (rect);
+							gc.drawImage (image, 0, 0);
+							gc.dispose ();
+							hImage = image2.handle;
+							imageBits = OS.BS_BITMAP;
+							fImageType = OS.IMAGE_BITMAP;
+							break;
+						case SWT.TRANSPARENCY_NONE:
+							hImage = image.handle;
+							imageBits = OS.BS_BITMAP;
+							fImageType = OS.IMAGE_BITMAP;
+							break;
+					}
+					break;
+				}
+				case SWT.ICON: {
+					hImage = image.handle;
+					imageBits = OS.BS_ICON;
+					fImageType = OS.IMAGE_ICON;
+					break;
+				}
+			}
+		}
+		int newBits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		int oldBits = newBits;
+		newBits &= ~(OS.BS_BITMAP | OS.BS_ICON);
+		newBits |= imageBits;
+		if (newBits != oldBits) OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
+		OS.SendMessage (handle, OS.BM_SETIMAGE, fImageType, hImage);
+	}
 }
 
 /**
@@ -228,8 +305,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		}
 	}
 	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
-		width += CheckWidth + extra;
-		height = Math.max (height, CheckHeight + 3);
+		width += CHECK_WIDTH + extra;
+		height = Math.max (height, CHECK_HEIGHT + 3);
 	}
 	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
 		width += 12;  height += 10;
@@ -375,10 +452,12 @@ boolean mnemonicMatch (char key) {
 
 void releaseWidget () {
 	super.releaseWidget ();
-	text = null;
-	image = null;
 	if (imageList != null) imageList.dispose ();
 	imageList = null;
+	if (image2 != null) image2.dispose ();
+	image2 = null;
+	text = null;
+	image = null;
 }
 
 /**
@@ -508,51 +587,8 @@ void setDefault (boolean value) {
  */
 public void setImage (Image image) {
 	checkWidget ();
-	this.image = image;
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, 0);
-		if (imageList != null) imageList.dispose ();
-		imageList = null;
-		if (image != null) {
-			if (image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-			imageList = new ImageList ();
-			imageList.add (image);
-			BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
-			buttonImageList.himl = imageList.getHandle ();
-			if ((style & SWT.LEFT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
-			if ((style & SWT.CENTER) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_CENTER;
-			if ((style & SWT.RIGHT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_RIGHT;
-			TCHAR buffer = new TCHAR (getCodePage (), "", true);
-			OS.SetWindowText (handle, buffer);
-			OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, buttonImageList);
-		} else {
-			TCHAR buffer = new TCHAR (getCodePage (), text, true);
-			OS.SetWindowText (handle, buffer);
-			OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, 0);
-		}
-	} else {
-		int hImage = 0, imageBits = 0, fImageType = 0;
-		if (image != null) {
-			if (image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-			hImage = image.handle;
-			switch (image.type) {
-				case SWT.BITMAP:
-					imageBits = OS.BS_BITMAP;
-					fImageType = OS.IMAGE_BITMAP;
-					break;
-				case SWT.ICON:
-					imageBits = OS.BS_ICON;
-					fImageType = OS.IMAGE_ICON;
-					break;
-			}
-		}
-		int newBits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		int oldBits = newBits;
-		newBits &= ~(OS.BS_BITMAP | OS.BS_ICON);
-		newBits |= imageBits;
-		if (newBits != oldBits) OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
-		OS.SendMessage (handle, OS.BM_SETIMAGE, fImageType, hImage);
-	}
+	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	_setImage (this.image = image);
 }
 
 boolean setRadioFocus () {
@@ -731,6 +767,13 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	if ((style & SWT.PUSH) != 0) {
 		menuShell ().setDefaultButton (this, false);
 	}
+	return result;
+}
+
+LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
+	LRESULT result = super.WM_SYSCOLORCHANGE (wParam, lParam);
+	if (result != null) return result;
+	if (image2 != null) _setImage (image);
 	return result;
 }
 
