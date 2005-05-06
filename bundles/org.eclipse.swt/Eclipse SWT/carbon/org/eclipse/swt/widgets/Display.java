@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.carbon.CFRange;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.CGPoint;
 import org.eclipse.swt.internal.carbon.CGRect;
@@ -186,6 +187,9 @@ public class Display extends Device {
 	int errorImage, infoImage, warningImage;
 	int errorImageData, infoImageData, warningImageData;
 	
+	/* Dock icon */
+	int dockImage, dockImageData;
+
 	/* System Cursors Cache */
 	Cursor [] cursors = new Cursor [SWT.CURSOR_HAND + 1];
 
@@ -547,20 +551,23 @@ int[] createImage (int type) {
 	result = OS.IconRefToIconFamily (ref [0], OS.kSelectorAlLAvailableData, family);
 	OS.ReleaseIconRef (ref [0]);
 	if (result != OS.noErr) return null;
+	int[] image =  createImageFromFamily(family [0]);
+	OS.DisposeHandle (family [0]);
+	return image;
+}
 
+int[] createImageFromFamily (int family) {
 	int dataHandle = OS.NewHandle (0);
-	result = OS.GetIconFamilyData (family [0], OS.kLarge32BitData, dataHandle);
+	int result = OS.GetIconFamilyData (family, OS.kLarge32BitData, dataHandle);
 	if (result != OS.noErr) {
 		OS.DisposeHandle (dataHandle);
-		OS.DisposeHandle (family [0]);
 		return null;
 	}
 	int maskHandle = OS.NewHandle (0);
-	result = OS.GetIconFamilyData (family [0], OS.kLarge8BitMask, maskHandle);
+	result = OS.GetIconFamilyData (family, OS.kLarge8BitMask, maskHandle);
 	if (result != OS.noErr) {
 		OS.DisposeHandle (maskHandle);
 		OS.DisposeHandle (dataHandle);
-		OS.DisposeHandle (family [0]);
 		return null;
 	}	
 	int width = 32, height = 32;
@@ -570,7 +577,6 @@ int[] createImage (int type) {
 	if (data == 0)  {
 		OS.DisposeHandle (maskHandle);
 		OS.DisposeHandle (dataHandle);
-		OS.DisposeHandle (family [0]);
 		return null;
 	}
 	OS.HLock (dataHandle);
@@ -588,7 +594,6 @@ int[] createImage (int type) {
 	OS.HUnlock (dataHandle);
 	OS.DisposeHandle (maskHandle);
 	OS.DisposeHandle (dataHandle);
-	OS.DisposeHandle (family [0]);
 
 	int provider = OS.CGDataProviderCreateWithData (0, data, dataSize, 0);
 	if (provider == 0) {
@@ -836,6 +841,15 @@ void createDisplay (DeviceData data) {
 		}
 		OS.CPSEnableForegroundOperation (psn, 0x03, 0x3C, 0x2C, 0x1103);
 		OS.SetFrontProcess (psn);
+		int ptr = OS.getenv (("APP_ICON_" + OS.getpid() + "\0").getBytes ());
+		if (ptr != 0) {
+			int [] image = readImageRef (ptr);
+			if (image != null) {
+				dockImage = image [0];
+				dockImageData = image [1];
+				OS.SetApplicationDockTileImage (dockImage);
+			}
+		}
 	}
 	/*
 	* Feature in the Macintosh.  In order to get the standard
@@ -2550,6 +2564,52 @@ int mouseHoverProc (int id, int handle) {
 	return 0;
 }
 
+int[] readImageRef(int path) {
+	int[] image = null;
+	int url = OS.CFURLCreateFromFileSystemRepresentation(OS.kCFAllocatorDefault, path, OS.strlen(path), false);
+	if (url != 0) {
+		int extention = OS.CFURLCopyPathExtension(url);
+		if (extention != 0) {
+			int length = OS.CFStringGetLength(extention);
+			char[] buffer = new char[length];
+			CFRange range = new CFRange();
+			range.length = length;
+			OS.CFStringGetCharacters(extention, range, buffer);
+			String ext = new String(buffer);
+			if (ext.equalsIgnoreCase("png")) {
+				int provider = OS.CGDataProviderCreateWithURL(url);
+				if (provider != 0) {
+					image = new int[]{OS.CGImageCreateWithPNGDataProvider(provider, null, true, OS.kCGRenderingIntentDefault), 0};
+					OS.CGDataProviderRelease(provider);
+				}
+			} else if (ext.equalsIgnoreCase("jpeg") || ext.equals("jpg")) {
+				int provider = OS.CGDataProviderCreateWithURL(url);
+				if (provider != 0) {
+					image = new int[]{OS.CGImageCreateWithJPEGDataProvider(provider, null, true, OS.kCGRenderingIntentDefault)};
+					OS.CGDataProviderRelease(provider);
+				}
+			} else if (ext.equalsIgnoreCase("icns")) {
+				byte[] fsRef = new byte[80];
+				if (OS.CFURLGetFSRef(url, fsRef)) {
+					byte[] fsSpec = new byte[70];
+					if (OS.FSGetCatalogInfo(fsRef, 0, null, null, fsSpec, null) == OS.noErr) {
+						int[] iconFamily = new int[1];
+						OS.ReadIconFile(fsSpec, iconFamily);						
+						if (iconFamily[0] != 0) {
+							image = createImageFromFamily(iconFamily[0]);
+							OS.DisposeHandle(iconFamily[0]);
+						}
+					}
+				}
+			}
+			OS.CFRelease(extention);
+		}
+		OS.CFRelease(url);
+	}
+	return image;
+}
+
+
 /**
  * Reads an event from the operating system's event queue,
  * dispatches it appropriately, and returns <code>true</code>
@@ -2729,6 +2789,11 @@ void releaseDisplay () {
 	if (warningImageData != 0) OS.DisposePtr (warningImageData);
 	errorImage = infoImage = warningImage = 0;
 	errorImageData = infoImageData = warningImageData = 0;
+
+	/* Release Dock image */
+	if (dockImage != 0) OS.CGImageRelease (dockImage);
+	if (dockImageData != 0) OS.DisposePtr (dockImageData);
+	dockImage = dockImageData = 0;
 
 	/* Release the System Cursors */
 	for (int i = 0; i < cursors.length; i++) {
