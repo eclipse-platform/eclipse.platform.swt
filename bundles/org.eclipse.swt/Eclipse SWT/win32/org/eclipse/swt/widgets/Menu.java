@@ -933,15 +933,16 @@ int imageIndex (Image image) {
 		if (hOldList != 0) OS.ImageList_Destroy (hOldList);
 		Rectangle bounds = image.getBounds ();
 		imageList = display.getImageList (new Point (bounds.width, bounds.height));
-		int index = imageList.indexOf (image);
-		if (index == -1) index = imageList.add (image);
 		int hImageList = imageList.getHandle ();
 		OS.SendMessage (hwndCB, OS.TB_SETIMAGELIST, 0, hImageList);
-		return index;
 	}
 	int index = imageList.indexOf (image);
-	if (index != -1) return index;
-	return imageList.add (image);
+	if (index == -1) {
+		index = imageList.add (image);
+	} else {
+		imageList.put (index, image);
+	}
+	return index;
 }
 
 /**
