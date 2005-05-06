@@ -464,10 +464,11 @@ public void setImage (Image image) {
 	checkWidget ();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	this.image = image;
+	if (imageList != null) imageList.dispose ();
+	imageList = null;
 	if (image != null) {
-		if (imageList == null) imageList = imageList = new ImageList ();
-		int imageIndex = imageList.indexOf (image);
-		if (imageIndex == -1) imageIndex = imageList.add (image);
+		imageList = new ImageList ();
+		int imageIndex = imageList.add (image);
 		int /*long*/ pixbuf = imageList.getPixbuf (imageIndex);
 		OS.gtk_image_set_from_pixbuf (imageHandle, pixbuf);
 		OS.gtk_widget_hide (labelHandle);
