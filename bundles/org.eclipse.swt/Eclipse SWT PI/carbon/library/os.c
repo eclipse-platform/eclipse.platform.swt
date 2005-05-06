@@ -1025,6 +1025,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(CFURLCopyLastPathComponent)
 }
 #endif
 
+#ifndef NO_CFURLCopyPathExtension
+JNIEXPORT jint JNICALL OS_NATIVE(CFURLCopyPathExtension)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CFURLCopyPathExtension_FUNC);
+	rc = (jint)CFURLCopyPathExtension((CFURLRef)arg0);
+	OS_NATIVE_EXIT(env, that, CFURLCopyPathExtension_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CFURLCreateCopyAppendingPathComponent
 JNIEXPORT jint JNICALL OS_NATIVE(CFURLCreateCopyAppendingPathComponent)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3)
@@ -1061,6 +1073,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(CFURLCreateFromFSRef)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, CFURLCreateFromFSRef_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CFURLCreateFromFileSystemRepresentation
+JNIEXPORT jint JNICALL OS_NATIVE(CFURLCreateFromFileSystemRepresentation)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CFURLCreateFromFileSystemRepresentation_FUNC);
+	rc = (jint)CFURLCreateFromFileSystemRepresentation((CFAllocatorRef)arg0, (const UInt8 *)arg1, arg2, arg3);
+	OS_NATIVE_EXIT(env, that, CFURLCreateFromFileSystemRepresentation_FUNC);
 	return rc;
 }
 #endif
@@ -1733,6 +1757,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(CGDataProviderCreateWithData)
 }
 #endif
 
+#ifndef NO_CGDataProviderCreateWithURL
+JNIEXPORT jint JNICALL OS_NATIVE(CGDataProviderCreateWithURL)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CGDataProviderCreateWithURL_FUNC);
+	rc = (jint)CGDataProviderCreateWithURL((CFURLRef)arg0);
+	OS_NATIVE_EXIT(env, that, CGDataProviderCreateWithURL_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CGDataProviderRelease
 JNIEXPORT void JNICALL OS_NATIVE(CGDataProviderRelease)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -1907,6 +1943,38 @@ JNIEXPORT jint JNICALL OS_NATIVE(CGImageCreate)
 fail:
 	if (arg8 && lparg8) (*env)->ReleaseFloatArrayElements(env, arg8, lparg8, 0);
 	OS_NATIVE_EXIT(env, that, CGImageCreate_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGImageCreateWithJPEGDataProvider
+JNIEXPORT jint JNICALL OS_NATIVE(CGImageCreateWithJPEGDataProvider)
+	(JNIEnv *env, jclass that, jint arg0, jfloatArray arg1, jboolean arg2, jint arg3)
+{
+	jfloat *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CGImageCreateWithJPEGDataProvider_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetFloatArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)CGImageCreateWithJPEGDataProvider((CGDataProviderRef)arg0, lparg1, arg2, arg3);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseFloatArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, CGImageCreateWithJPEGDataProvider_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGImageCreateWithPNGDataProvider
+JNIEXPORT jint JNICALL OS_NATIVE(CGImageCreateWithPNGDataProvider)
+	(JNIEnv *env, jclass that, jint arg0, jfloatArray arg1, jboolean arg2, jint arg3)
+{
+	jfloat *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CGImageCreateWithPNGDataProvider_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetFloatArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)CGImageCreateWithPNGDataProvider((CGDataProviderRef)arg0, lparg1, arg2, arg3);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseFloatArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, CGImageCreateWithPNGDataProvider_FUNC);
 	return rc;
 }
 #endif
@@ -8614,6 +8682,25 @@ fail:
 }
 #endif
 
+#ifndef NO_ReadIconFile
+JNIEXPORT jint JNICALL OS_NATIVE(ReadIconFile)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jintArray arg1)
+{
+	jbyte *lparg0=NULL;
+	jint *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ReadIconFile_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)ReadIconFile((const FSSpec *)lparg0, (IconFamilyHandle *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, ReadIconFile_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_ReceiveNextEvent
 JNIEXPORT jint JNICALL OS_NATIVE(ReceiveNextEvent)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jdouble arg2, jboolean arg3, jintArray arg4)
@@ -10975,6 +11062,34 @@ fail:
 }
 #endif
 
+#ifndef NO_getenv
+JNIEXPORT jint JNICALL OS_NATIVE(getenv)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, getenv_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jint)getenv(lparg0);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, getenv_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_getpid
+JNIEXPORT jint JNICALL OS_NATIVE(getpid)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, getpid_FUNC);
+	rc = (jint)getpid();
+	OS_NATIVE_EXIT(env, that, getpid_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_kCFNumberFormatterDecimalSeparator
 JNIEXPORT jint JNICALL OS_NATIVE(kCFNumberFormatterDecimalSeparator)
 	(JNIEnv *env, jclass that)
@@ -11559,6 +11674,18 @@ JNIEXPORT void JNICALL OS_NATIVE(memset)
 	OS_NATIVE_ENTER(env, that, memset_FUNC);
 	memset((void *)arg0, arg1, arg2);
 	OS_NATIVE_EXIT(env, that, memset_FUNC);
+}
+#endif
+
+#ifndef NO_strlen
+JNIEXPORT jint JNICALL OS_NATIVE(strlen)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, strlen_FUNC);
+	rc = (jint)strlen((char *)arg0);
+	OS_NATIVE_EXIT(env, that, strlen_FUNC);
+	return rc;
 }
 #endif
 

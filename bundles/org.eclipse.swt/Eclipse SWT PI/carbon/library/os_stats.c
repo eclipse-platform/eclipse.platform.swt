@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 830;
-int OS_nativeFunctionCallCount[830];
+int OS_nativeFunctionCount = 839;
+int OS_nativeFunctionCallCount[839];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -82,9 +82,11 @@ char * OS_nativeFunctionNames[] = {
 	"CFStringGetSystemEncoding",
 	"CFURLCopyFileSystemPath",
 	"CFURLCopyLastPathComponent",
+	"CFURLCopyPathExtension",
 	"CFURLCreateCopyAppendingPathComponent",
 	"CFURLCreateCopyDeletingLastPathComponent",
 	"CFURLCreateFromFSRef",
+	"CFURLCreateFromFileSystemRepresentation",
 	"CFURLCreateWithFileSystemPath",
 	"CFURLGetFSRef",
 	"CGAffineTransformConcat",
@@ -153,6 +155,7 @@ char * OS_nativeFunctionNames[] = {
 	"CGContextSynchronize",
 	"CGContextTranslateCTM",
 	"CGDataProviderCreateWithData",
+	"CGDataProviderCreateWithURL",
 	"CGDataProviderRelease",
 	"CGDisplayBaseAddress",
 	"CGDisplayBitsPerPixel",
@@ -166,6 +169,8 @@ char * OS_nativeFunctionNames[] = {
 	"CGFunctionRelease",
 	"CGGetDisplaysWithRect",
 	"CGImageCreate",
+	"CGImageCreateWithJPEGDataProvider",
+	"CGImageCreateWithPNGDataProvider",
 	"CGImageGetAlphaInfo",
 	"CGImageGetBitsPerComponent",
 	"CGImageGetBitsPerPixel",
@@ -632,6 +637,7 @@ char * OS_nativeFunctionNames[] = {
 	"QDSwapTextFlags",
 	"RGBBackColor",
 	"RGBForeColor",
+	"ReadIconFile",
 	"ReceiveNextEvent",
 	"RectInRgn",
 	"RectRgn",
@@ -814,6 +820,8 @@ char * OS_nativeFunctionNames[] = {
 	"WaitMouseMoved",
 	"X2Fix",
 	"ZoomWindowIdeal",
+	"getenv",
+	"getpid",
 	"kCFNumberFormatterDecimalSeparator",
 	"kHIViewWindowContentID",
 	"kPMDocumentFormatPDF",
@@ -847,6 +855,7 @@ char * OS_nativeFunctionNames[] = {
 	"memcpy___3FII",
 	"memcpy___3III",
 	"memset",
+	"strlen",
 };
 
 #define STATS_NATIVE(func) Java_org_eclipse_swt_tools_internal_NativeStats_##func
