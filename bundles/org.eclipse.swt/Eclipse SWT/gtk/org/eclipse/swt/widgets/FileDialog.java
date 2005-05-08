@@ -112,6 +112,7 @@ String computeResultChooserDialog () {
 			}
 			current = OS.g_slist_next (current);
 		}
+		if (writePos == 0) return null;
 		if (writePos != listLength) {
 			String [] validFileNames = new String [writePos];
 			System.arraycopy (fileNames, 0, validFileNames, 0, writePos);
