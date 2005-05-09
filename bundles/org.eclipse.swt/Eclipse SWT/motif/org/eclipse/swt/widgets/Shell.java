@@ -1565,6 +1565,19 @@ public void setVisible (boolean visible) {
 			}
 		}
 	} else {
+		/*
+		* Feature in Motif.  When the active shell is disposed,
+		* some window managers place focus in a temporary window.
+		* The fix is to make the parent be the active top level
+		* shell when the child shell is disposed.
+		*/
+		if (parent != null) {
+			Shell activeShell = display.getActiveShell ();
+			if (activeShell == this) {
+				Shell shell = parent.getShell ();
+				shell.bringToTop (false);
+			}
+		}
 	
 		/* Hide the shell */
 		OS.XtSetMappedWhenManaged (shellHandle, false);
