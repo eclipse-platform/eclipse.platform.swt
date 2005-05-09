@@ -271,6 +271,7 @@ public CTabFolder(Composite parent, int style) {
 	selectionForeground = display.getSystemColor(SELECTION_FOREGROUND);
 	selectionBackground = display.getSystemColor(SELECTION_BACKGROUND);
 	borderColor = display.getSystemColor(BORDER1_COLOR);
+	updateTabHeight(false);
 	
 	initAccessible();
 	
