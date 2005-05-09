@@ -606,7 +606,7 @@ void fixFocus (Control focusControl) {
 	Shell shell = getShell ();
 	Control control = this;
 	while ((control = control.parent) != null) {
-		if (control.setFocus ()) return;
+		if (control.setFixedFocus ()) return;
 		if (control == shell) break;
 	}
 	shell.setSavedFocus (focusControl);
@@ -2108,6 +2108,11 @@ public void setEnabled (boolean enabled) {
 	}
 	enableWidget (enabled);
 	if (fixFocus) fixFocus (control);
+}
+
+boolean setFixedFocus () {
+	if ((style & SWT.NO_FOCUS) != 0) return false;
+	return forceFocus ();
 }
 
 /**

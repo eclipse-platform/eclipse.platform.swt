@@ -675,6 +675,20 @@ void resizeEmbeddedHandle(int embeddedHandle, int width, int height) {
 	}
 }
 
+boolean setFixedFocus () {
+	checkWidget ();
+	Control [] children = _getChildren ();
+	for (int i=0; i<children.length; i++) {
+		Control child = children [i];
+		if (child.setRadioFocus ()) return true;
+	}
+	for (int i=0; i<children.length; i++) {
+		Control child = children [i];
+		if (child.setFixedFocus ()) return true;
+	}
+	return super.setFixedFocus ();
+}
+
 public boolean setFocus () {
 	checkWidget ();
 	Control [] children = _getChildren ();
