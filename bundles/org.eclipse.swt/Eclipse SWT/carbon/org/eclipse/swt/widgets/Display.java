@@ -551,26 +551,25 @@ int[] createImage (int type) {
 	result = OS.IconRefToIconFamily (ref [0], OS.kSelectorAlLAvailableData, family);
 	OS.ReleaseIconRef (ref [0]);
 	if (result != OS.noErr) return null;
-	int[] image =  createImageFromFamily(family [0]);
+	int[] image =  createImageFromFamily(family [0], OS.kLarge32BitData, OS.kLarge8BitMask, 32, 32);
 	OS.DisposeHandle (family [0]);
 	return image;
 }
 
-int[] createImageFromFamily (int family) {
+int[] createImageFromFamily (int family, int type, int maskType, int width, int height) {
 	int dataHandle = OS.NewHandle (0);
-	int result = OS.GetIconFamilyData (family, OS.kLarge32BitData, dataHandle);
+	int result = OS.GetIconFamilyData (family, type, dataHandle);
 	if (result != OS.noErr) {
 		OS.DisposeHandle (dataHandle);
 		return null;
 	}
 	int maskHandle = OS.NewHandle (0);
-	result = OS.GetIconFamilyData (family, OS.kLarge8BitMask, maskHandle);
+	result = OS.GetIconFamilyData (family, maskType, maskHandle);
 	if (result != OS.noErr) {
 		OS.DisposeHandle (maskHandle);
 		OS.DisposeHandle (dataHandle);
 		return null;
-	}	
-	int width = 32, height = 32;
+	}
 	int bpr = width * 4;
 	int dataSize = OS.GetHandleSize (dataHandle);
 	int data = OS.NewPtrClear (dataSize);
@@ -2596,7 +2595,7 @@ int[] readImageRef(int path) {
 						int[] iconFamily = new int[1];
 						OS.ReadIconFile(fsSpec, iconFamily);						
 						if (iconFamily[0] != 0) {
-							image = createImageFromFamily(iconFamily[0]);
+							image = createImageFromFamily(iconFamily[0], OS.kThumbnail32BitData, OS.kThumbnail8BitMask, 128, 128);
 							OS.DisposeHandle(iconFamily[0]);
 						}
 					}
