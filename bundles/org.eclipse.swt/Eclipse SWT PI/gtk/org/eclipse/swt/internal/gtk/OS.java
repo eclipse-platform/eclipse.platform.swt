@@ -505,7 +505,6 @@ public static final int Above = 0;
 public static final int Below = 1;
 public static final int ButtonRelease = 5;
 public static final int ClientMessage = 33;
-public static final int CurrentTime = 0;
 public static final int CWSibling = 0x20;
 public static final int CWStackMode = 0x40;
 public static final int EnterNotify = 7;
@@ -8103,15 +8102,6 @@ public static final void pango_layout_set_attributes(int /*long*/ layout, int /*
 	lock.lock();
 	try {
 		_pango_layout_set_attributes(layout, attrs);
-	} finally {
-		lock.unlock();
-	}
-}
-public static final native void _pango_layout_set_auto_dir(int /*long*/ layout, boolean auto_dir);
-public static final void pango_layout_set_auto_dir(int /*long*/ layout, boolean auto_dir) {
-	lock.lock();
-	try {
-		_pango_layout_set_auto_dir(layout, auto_dir);
 	} finally {
 		lock.unlock();
 	}
