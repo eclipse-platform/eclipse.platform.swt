@@ -8106,6 +8106,15 @@ public static final void pango_layout_set_attributes(int /*long*/ layout, int /*
 		lock.unlock();
 	}
 }
+public static final native void _pango_layout_set_auto_dir(int /*long*/ layout, boolean auto_dir);
+public static final void pango_layout_set_auto_dir(int /*long*/ layout, boolean auto_dir) {
+	lock.lock();
+	try {
+		_pango_layout_set_auto_dir(layout, auto_dir);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _pango_layout_set_font_description(int /*long*/ context, int /*long*/ descr);
 public static final void pango_layout_set_font_description(int /*long*/ context, int /*long*/ descr) {
 	lock.lock();
