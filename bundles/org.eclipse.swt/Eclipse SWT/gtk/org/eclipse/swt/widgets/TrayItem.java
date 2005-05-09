@@ -270,7 +270,11 @@ public void setImage (Image image) {
 		OS.gtk_widget_set_size_request (handle, rect.width, rect.height);
 		if (imageList == null) imageList = new ImageList ();
 		int imageIndex = imageList.indexOf (image);
-		if (imageIndex == -1) imageIndex = imageList.add (image);
+		if (imageIndex == -1) {
+			imageIndex = imageList.add (image);
+		} else {
+			imageList.put (imageIndex, image);
+		}
 		int /*long*/ pixbuf = imageList.getPixbuf (imageIndex);
 		OS.gtk_image_set_from_pixbuf (imageHandle, pixbuf);
 		OS.gtk_widget_show (imageHandle);

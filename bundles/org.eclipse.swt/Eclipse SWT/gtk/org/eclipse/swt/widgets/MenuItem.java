@@ -655,7 +655,11 @@ public void setImage (Image image) {
 		ImageList imageList = parent.imageList;
 		if (imageList == null) imageList = parent.imageList = new ImageList ();
 		int imageIndex = imageList.indexOf (image);
-		if (imageIndex == -1) imageIndex = imageList.add (image);
+		if (imageIndex == -1) {
+			imageIndex = imageList.add (image);
+		} else {
+			imageList.put (imageIndex, image);
+		}
 		int /*long*/ pixbuf = imageList.getPixbuf (imageIndex);
 		int /*long*/ imageHandle = OS.gtk_image_new_from_pixbuf (pixbuf);
 		OS.gtk_image_menu_item_set_image (handle, imageHandle);
