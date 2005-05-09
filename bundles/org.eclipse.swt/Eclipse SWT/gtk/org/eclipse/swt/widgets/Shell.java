@@ -424,7 +424,8 @@ void bringToTop (boolean force) {
 		int /*long*/ xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
 		int /*long*/ xWindow = OS.gdk_x11_drawable_get_xid (window);
 		OS.gdk_error_trap_push ();
-		OS.XSetInputFocus (xDisplay, xWindow, OS.RevertToParent, OS.gtk_get_current_event_time ());
+		/* Use CurrentTime instead of the last event time to ensure that the shell becomes active */
+		OS.XSetInputFocus (xDisplay, xWindow, OS.RevertToParent, OS.CurrentTime);
 		OS.gdk_error_trap_pop ();
 	} else {
 		OS.gdk_window_focus (window, OS.gtk_get_current_event_time ());

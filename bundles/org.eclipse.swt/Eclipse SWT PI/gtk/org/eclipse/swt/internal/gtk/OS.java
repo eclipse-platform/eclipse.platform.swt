@@ -505,6 +505,7 @@ public static final int Above = 0;
 public static final int Below = 1;
 public static final int ButtonRelease = 5;
 public static final int ClientMessage = 33;
+public static final int CurrentTime = 0;
 public static final int CWSibling = 0x20;
 public static final int CWStackMode = 0x40;
 public static final int EnterNotify = 7;
