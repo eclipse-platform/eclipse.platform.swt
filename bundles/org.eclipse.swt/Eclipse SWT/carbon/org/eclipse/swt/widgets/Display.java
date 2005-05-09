@@ -2585,7 +2585,7 @@ int[] readImageRef(int path) {
 			} else if (ext.equalsIgnoreCase("jpeg") || ext.equals("jpg")) {
 				int provider = OS.CGDataProviderCreateWithURL(url);
 				if (provider != 0) {
-					image = new int[]{OS.CGImageCreateWithJPEGDataProvider(provider, null, true, OS.kCGRenderingIntentDefault)};
+					image = new int[]{OS.CGImageCreateWithJPEGDataProvider(provider, null, true, OS.kCGRenderingIntentDefault), 0};
 					OS.CGDataProviderRelease(provider);
 				}
 			} else if (ext.equalsIgnoreCase("icns")) {
