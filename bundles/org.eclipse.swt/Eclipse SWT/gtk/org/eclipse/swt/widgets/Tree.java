@@ -48,6 +48,7 @@ public class Tree extends Composite {
 	TreeColumn [] columns;
 	ImageList imageList;
 	boolean firstCustomDraw;
+	boolean modelChanged;
 	
 	static final int ID_COLUMN = 0;
 	static final int CHECKED_COLUMN = 1;
@@ -468,6 +469,7 @@ void createItem (TreeItem item, int /*long*/ iter, int index) {
 	}
 	OS.gtk_tree_store_set (modelHandle, item.handle, ID_COLUMN, id, -1);
 	items [id] = item;
+	modelChanged = true;
 }
 
 void createRenderers (int /*long*/ columnHandle, int modelIndex, boolean check, int columnStyle) {
@@ -675,6 +677,7 @@ void destroyItem (TreeItem item) {
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.gtk_tree_store_remove (modelHandle, item.handle);
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	modelChanged = true;
 }
 
 GdkColor getBackgroundColor () {
@@ -1358,18 +1361,30 @@ int /*long*/ gtk_test_collapse_row (int /*long*/ tree, int /*long*/ iter, int /*
 	TreeItem item = items [index [0]];
 	Event event = new Event ();
 	event.item = item;
+	boolean oldModelChanged = modelChanged;
+	modelChanged = false;
 	sendEvent (SWT.Collapse, event);
+	boolean changed = modelChanged;
+	modelChanged = oldModelChanged;
 	if (isDisposed () || item.isDisposed ()) return 1;
 	/*
-	* Bug in GTK.  Expanding a row which has deleted children
-	* causes the model state to become invalid, causing GTK to
-	* give warnings and behave strangely.  The fix is to stop
-	* the expansion if there are no remaining subitems.
+	* Bug in GTK.  Expanding or collapsing a row which has no more
+	* children causes the model state to become invalid, causing
+	* GTK to give warnings and behave strangely.  Other changes to
+	* the model can cause expansion to fail when using the multiple
+	* expansion keys (such as *).  The fix is to stop the expansion
+	* if there are model changes.
 	* 
 	* Note: This callback must return 0 for the collapsing
 	* animation to occur.
 	*/
-	return OS.gtk_tree_model_iter_n_children (modelHandle, iter) == 0 ? 1 : 0;
+	if (changed) {
+		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_COLLAPSE_ROW);
+		OS.gtk_tree_view_collapse_row (handle, path);
+		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_COLLAPSE_ROW);
+		return 1;
+	}
+	return 0;
 }
 
 int /*long*/ gtk_test_expand_row (int /*long*/ tree, int /*long*/ iter, int /*long*/ path) {
@@ -1378,18 +1393,30 @@ int /*long*/ gtk_test_expand_row (int /*long*/ tree, int /*long*/ iter, int /*lo
 	TreeItem item = items [index [0]];
 	Event event = new Event ();
 	event.item = item;
+	boolean oldModelChanged = modelChanged;
+	modelChanged = false;
 	sendEvent (SWT.Expand, event);
+	boolean changed = modelChanged;
+	modelChanged = oldModelChanged;
 	if (isDisposed () || item.isDisposed ()) return 1;
 	/*
-	* Bug in GTK.  Expanding a row which has deleted children
-	* causes the model state to become invalid, causing GTK to
-	* give warnings and behave strangely.  The fix is to stop
-	* the expansion if there are no remaining subitems.
+	* Bug in GTK.  Expanding or collapsing a row which has no more
+	* children causes the model state to become invalid, causing
+	* GTK to give warnings and behave strangely.  Other changes to
+	* the model can cause expansion to fail when using the multiple
+	* expansion keys (such as *).  The fix is to stop the expansion
+	* if there are model changes.
 	* 
-	* Note: This callback must return 0 for the expansion
+	* Note: This callback must return 0 for the collapsing
 	* animation to occur.
 	*/
-	return OS.gtk_tree_model_iter_n_children (modelHandle, iter) == 0 ? 1 : 0;
+	if (changed) {
+		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_EXPAND_ROW);
+		OS.gtk_tree_view_expand_row (handle, path, false);
+		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_EXPAND_ROW);
+		return 1;
+	}
+	return 0;
 }
 
 int /*long*/ gtk_toggled (int /*long*/ renderer, int /*long*/ pathStr) {
