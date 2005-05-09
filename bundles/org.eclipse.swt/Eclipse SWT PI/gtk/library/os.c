@@ -11616,16 +11616,6 @@ JNIEXPORT void JNICALL OS_NATIVE(_1pango_1layout_1set_1attributes)
 }
 #endif
 
-#ifndef NO__1pango_1layout_1set_1auto_1dir
-JNIEXPORT void JNICALL OS_NATIVE(_1pango_1layout_1set_1auto_1dir)
-	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
-{
-	OS_NATIVE_ENTER(env, that, _1pango_1layout_1set_1auto_1dir_FUNC);
-	pango_layout_set_auto_dir(arg0, arg1);
-	OS_NATIVE_EXIT(env, that, _1pango_1layout_1set_1auto_1dir_FUNC);
-}
-#endif
-
 #ifndef NO__1pango_1layout_1set_1font_1description
 JNIEXPORT void JNICALL OS_NATIVE(_1pango_1layout_1set_1font_1description)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
