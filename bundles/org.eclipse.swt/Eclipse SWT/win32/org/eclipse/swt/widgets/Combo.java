@@ -1757,6 +1757,28 @@ LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 	return null;
 }
 
+LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
+	/*
+	* Feature in Windows.  When an editiabl combo box is dropped
+	* down and the text in the entry field partially matches an
+	* item in the list, Windows selects the item but doesn't send
+	* WM_COMMAND with CBN_SELCHANGE.  The fix is to detect that
+	* the selection has changed and issue the notification.
+	*/
+	int oldSelection = OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
+	LRESULT result = super.WM_LBUTTONDOWN (wParam, lParam);
+	if ((style & SWT.READ_ONLY) == 0) {
+		int newSelection = OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
+		if (oldSelection != newSelection) {
+			sendEvent (SWT.Modify);
+			if (isDisposed ()) return LRESULT.ZERO;
+			sendEvent (SWT.Selection);
+			if (isDisposed ()) return LRESULT.ZERO;
+		}
+	}
+	return result;
+}
+
 LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	/*
 	* Return NULL - Focus notification is
@@ -1941,20 +1963,13 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 			/*
 			* Feature in Windows.  If the combo box list selection is
 			* queried using CB_GETCURSEL before the WM_COMMAND (with
-			* CBM_EDITCHANGE) returns, CB_GETCURSEL returns the previous
+			* CBN_EDITCHANGE) returns, CB_GETCURSEL returns the previous
 			* selection in the list.  It seems that the combo box sends
 			* the WM_COMMAND before it makes the selection in the list box
 			* match the entry field.  The fix is remember that no selection
 			* in the list should exist in this case.
 			*/
 			noSelection = true;
-			/*
-			* It is possible (but unlikely), that application
-			* code could have disposed the widget in the modify
-			* event.  If this happens, end the processing of the
-			* Windows message by returning zero as the result of
-			* the window proc.
-			*/
 			sendEvent (SWT.Modify);
 			if (isDisposed ()) return LRESULT.ZERO;
 			noSelection = false;
@@ -1963,7 +1978,7 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 			/*
 			* Feature in Windows.  If the text in an editable combo box
 			* is queried using GetWindowText () before the WM_COMMAND
-			* (with CBM_SELCHANGE) returns, GetWindowText () returns is
+			* (with CBN_SELCHANGE) returns, GetWindowText () returns is
 			* the previous text in the combo box.  It seems that the combo
 			* box sends the WM_COMMAND before it updates the text field to
 			* match the list selection.  The fix is to force the text field
@@ -1985,24 +2000,10 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 			postEvent (SWT.Selection);
 			break;
 		case OS.CBN_SETFOCUS:
-			/*
-			* It is possible (but unlikely), that application
-			* code could have disposed the widget in the focus
-			* event.  If this happens, end the processing of the
-			* Windows message by returning zero as the result of
-			* the window proc.
-			*/
 			sendFocusEvent (SWT.FocusIn);
 			if (isDisposed ()) return LRESULT.ZERO;
 			break;
 		case OS.CBN_KILLFOCUS:
-			/*
-			* It is possible (but unlikely), that application
-			* code could have disposed the widget in the focus
-			* event.  If this happens, end the processing of the
-			* Windows message by returning zero as the result of
-			* the window proc.
-			*/
 			sendFocusEvent (SWT.FocusOut);
 			if (isDisposed ()) return LRESULT.ZERO;
 			break;
