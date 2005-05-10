@@ -142,7 +142,6 @@ public Menu (MenuItem parentItem) {
 	this (checkNull(parentItem).parent);
 }
 void _setVisible (boolean visible) {
-	checkWidget();
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
 	if (visible) {
 		sendEvent (SWT.Show);
