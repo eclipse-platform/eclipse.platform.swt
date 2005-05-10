@@ -576,6 +576,14 @@ public Shell getShell () {
  */
 public boolean getVisible () {
 	checkWidget();
+	if ((style & SWT.POP_UP) != 0) {
+		Menu [] popups = display.popups;
+		if (popups != null) {
+			for (int i=0; i<popups.length; i++) {
+				if (popups [i] == this) return true;
+			}
+		}
+	}
 	return OS.XtIsManaged (handle);
 }
 void hookEvents () {
