@@ -281,16 +281,15 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 		TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
 		OS.GetTextMetrics (hDC, lptm);
-		int length = OS.GetWindowTextLength (handle);
+		int length = text.length ();
 		if (length == 0) {
 			height += lptm.tmHeight;
 		} else {
 			extra = Math.max (8, lptm.tmAveCharWidth);
-			TCHAR buffer = new TCHAR (getCodePage (), length + 1);
-			OS.GetWindowText (handle, buffer, length + 1);
+			TCHAR buffer = new TCHAR (getCodePage (), text, true);
 			RECT rect = new RECT ();
 			int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE;
-			OS.DrawText (hDC, buffer, length, rect, flags);
+			OS.DrawText (hDC, buffer, -1, rect, flags);
 			width += rect.right - rect.left;
 			height += rect.bottom - rect.top;
 		}
@@ -326,6 +325,26 @@ int defaultBackground () {
 
 int defaultForeground () {
 	return OS.GetSysColor (OS.COLOR_BTNTEXT);
+}
+
+void enableWidget (boolean enabled) {
+	super.enableWidget (enabled);
+	/*
+	* Bug in Windows.  When a Button control is right-to-left and
+	* is disabled, the first pixel of the text is clipped.  The fix
+	* is to append a space to the text.
+	*/
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+			boolean hasImage = (bits & (OS.BS_BITMAP | OS.BS_ICON)) != 0;
+			if (!hasImage) {
+					String string = enabled ? text : text + " ";
+					TCHAR buffer = new TCHAR (getCodePage (), string, true);
+					OS.SetWindowText (handle, buffer);
+			}
+		}
+	}
 }
 
 /**
@@ -705,6 +724,16 @@ public void setText (String string) {
 		}
 	}
 	text = string;
+	/*
+	* Bug in Windows.  When a Button control is right-to-left and
+	* is disabled, the first pixel of the text is clipped.  The fix
+	* is to append a space to the text.
+	*/
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+			string = OS.IsWindowEnabled (handle) ? text : text + " ";
+		}
+	}
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	OS.SetWindowText (handle, buffer);
 }
