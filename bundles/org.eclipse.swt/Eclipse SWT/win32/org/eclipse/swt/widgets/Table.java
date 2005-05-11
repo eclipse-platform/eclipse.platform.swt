@@ -48,7 +48,7 @@ public class Table extends Composite {
 	TableItem currentItem;
 	int lastIndexOf, lastWidth;
 	boolean customDraw, dragStarted, fixScrollWidth, mouseDown, tipRequested;
-	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize;
+	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize, resized;
 	static final int INSET = 4;
 	static final int GRID_WIDTH = 1;
 	static final int HEADER_MARGIN = 10;
@@ -3511,6 +3511,7 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	* the WM_SIZE processing in WM_WINDOWPOSCHANGED after the
 	* table has been updated.
 	*/
+	resized = true;
 	return null;
 }
 
@@ -3582,15 +3583,20 @@ LRESULT WM_WINDOWPOSCHANGED (int wParam, int lParam) {
 	WINDOWPOS lpwp = new WINDOWPOS ();
 	OS.MoveMemory (lpwp, lParam, WINDOWPOS.sizeof);
 	if ((lpwp.flags & OS.SWP_NOSIZE) == 0 || (lpwp.flags & OS.SWP_DRAWFRAME) != 0) {
-		setResizeChildren (false);
+		boolean oldResized = resized;
+		resized = false;
 		int code = callWindowProc (handle, OS.WM_WINDOWPOSCHANGED, wParam, lParam);
-		sendEvent (SWT.Resize);
-		if (isDisposed ()) return new LRESULT (code);
-		if (layout != null) {
-			markLayout (false, false);
-			updateLayout (false, false);
+		if (resized) {
+			setResizeChildren (false);
+			sendEvent (SWT.Resize);
+			if (isDisposed ()) return new LRESULT (code);
+			if (layout != null) {
+				markLayout (false, false);
+				updateLayout (false, false);
+			}
+			setResizeChildren (true);
 		}
-		setResizeChildren (true);
+		resized = oldResized;
 		return new LRESULT (code);
 	}
 	return result;
