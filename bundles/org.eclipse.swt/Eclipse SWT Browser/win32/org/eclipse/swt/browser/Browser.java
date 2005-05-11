@@ -36,7 +36,7 @@ public class Browser extends Composite {
 	OleControlSite site;
 	OleAutomation auto;
 
-	boolean back, forward, navigate;
+	boolean back, forward, navigate = true;
 	Point location;
 	Point size;
 	boolean addressBar = true, menuBar = true, statusBar = true, toolBar = true;
