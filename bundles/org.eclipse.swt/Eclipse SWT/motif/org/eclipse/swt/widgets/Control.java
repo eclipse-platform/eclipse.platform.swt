@@ -463,7 +463,7 @@ void createWidget (int index) {
 			if (display != 0) OS.XLowerWindow (display, window);
 		}
 		/*
-		* Make that the widget has been properly realized
+		* Make sure that the widget has been properly realized
 		* because the widget was created after the parent
 		* has been realized.  This is not part of the fix
 		* for Z-order in the code above. 
