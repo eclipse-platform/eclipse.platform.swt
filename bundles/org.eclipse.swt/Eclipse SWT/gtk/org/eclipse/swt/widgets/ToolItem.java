@@ -507,7 +507,9 @@ int /*long*/ gtk_clicked (int /*long*/ widget) {
 int /*long*/ gtk_enter_notify_event (int /*long*/ widget, int /*long*/ event) {
 	drawHotImage = (parent.style & SWT.FLAT) != 0 && hotImage != null;
 	if (drawHotImage && imageHandle != 0) {
-		OS.gtk_image_set_from_pixmap (imageHandle, hotImage.pixmap, hotImage.mask);
+		ImageList imageList = parent.imageList;
+		int /*long*/ pixbuf = imageList.getPixbuf (imageList.indexOf (hotImage));
+		OS.gtk_image_set_from_pixbuf (imageHandle, pixbuf);
 	}
 	return 0;
 }
@@ -538,7 +540,9 @@ int /*long*/ gtk_leave_notify_event (int /*long*/ widget, int /*long*/ event) {
 	if (drawHotImage) {
 		drawHotImage = false;
 		if (imageHandle != 0 && image != null) {
-			OS.gtk_image_set_from_pixmap (imageHandle, image.pixmap, image.mask);
+			ImageList imageList = parent.imageList;
+			int /*long*/ pixbuf = imageList.getPixbuf (imageList.indexOf (image));
+			OS.gtk_image_set_from_pixbuf (imageHandle, pixbuf);
 		}	
 	}
 	return 0;
@@ -807,6 +811,16 @@ public void setHotImage (Image image) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	hotImage = image;
+	if (image != null) {
+		ImageList imageList = parent.imageList;
+		if (imageList == null) imageList = parent.imageList = new ImageList ();
+		int imageIndex = imageList.indexOf (image);
+		if (imageIndex == -1) {
+			imageIndex = imageList.add (image);
+		} else {
+			imageList.put (imageIndex, image);
+		}
+	}
 }
 
 public void setImage (Image image) {
