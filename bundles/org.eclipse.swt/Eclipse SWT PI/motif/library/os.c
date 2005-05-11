@@ -811,6 +811,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1XFreeGC)
 }
 #endif
 
+#ifndef NO__1XFreeModifiermap
+JNIEXPORT void JNICALL OS_NATIVE(_1XFreeModifiermap)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, _1XFreeModifiermap_FUNC);
+	XFreeModifiermap((XModifierKeymap *)arg0);
+	OS_NATIVE_EXIT(env, that, _1XFreeModifiermap_FUNC);
+}
+#endif
+
 #ifndef NO__1XFreePixmap
 JNIEXPORT void JNICALL OS_NATIVE(_1XFreePixmap)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)

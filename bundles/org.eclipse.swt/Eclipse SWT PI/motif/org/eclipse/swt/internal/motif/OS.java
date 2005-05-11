@@ -1219,6 +1219,15 @@ public static final void XFreeGC(int display, int gc) {
 		lock.unlock();
 	}
 }
+public static final native void _XFreeModifiermap(int modmap);
+public static final void XFreeModifiermap(int modmap) {
+	lock.lock();
+	try {
+		_XFreeModifiermap(modmap);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _XFreePixmap(int display, int pixmap);
 public static final void XFreePixmap(int display, int pixmap) {
 	lock.lock();

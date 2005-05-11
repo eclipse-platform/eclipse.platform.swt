@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 447;
-int OS_nativeFunctionCallCount[447];
+int OS_nativeFunctionCount = 448;
+int OS_nativeFunctionCallCount[448];
 char * OS_nativeFunctionNames[] = {
 	"CODESET",
 	"FD_1ISSET",
@@ -84,6 +84,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1XFreeFont",
 	"_1XFreeFontNames",
 	"_1XFreeGC",
+	"_1XFreeModifiermap",
 	"_1XFreePixmap",
 	"_1XFreeStringList",
 	"_1XGetGCValues",

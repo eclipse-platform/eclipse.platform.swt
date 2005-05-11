@@ -2184,6 +2184,7 @@ void initializeNumLock () {
 			break;
 		}
 	}
+	OS.XFreeModifiermap (keymapHandle);
 }
 void initializePixmaps () {
 	/*

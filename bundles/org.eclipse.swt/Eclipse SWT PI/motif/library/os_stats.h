@@ -88,6 +88,7 @@ typedef enum {
 	_1XFreeFont_FUNC,
 	_1XFreeFontNames_FUNC,
 	_1XFreeGC_FUNC,
+	_1XFreeModifiermap_FUNC,
 	_1XFreePixmap_FUNC,
 	_1XFreeStringList_FUNC,
 	_1XGetGCValues_FUNC,
