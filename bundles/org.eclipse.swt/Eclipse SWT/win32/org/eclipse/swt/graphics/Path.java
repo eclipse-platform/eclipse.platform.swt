@@ -41,7 +41,7 @@ public class Path extends Resource {
 	 */
 	public int handle;
 	
-	PointF currentPoint = new PointF();
+	PointF currentPoint = new PointF(), startPoint = new PointF();
 	
 /**
  * Constructs a new empty Path.
@@ -130,7 +130,8 @@ public void addPath(Path path) {
 	if (path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	//TODO - expose connect?
 	Gdip.GraphicsPath_AddPath(handle, path.handle, false);
-	Gdip.GraphicsPath_GetLastPoint(handle, currentPoint);
+	currentPoint.X = path.currentPoint.X;
+	currentPoint.Y = path.currentPoint.Y;
 }
 
 /**
@@ -153,7 +154,8 @@ public void addRectangle(float x, float y, float width, float height) {
 	rect.Width = width;
 	rect.Height = height;
 	Gdip.GraphicsPath_AddRectangle(handle, rect);
-	Gdip.GraphicsPath_GetLastPoint(handle, currentPoint);
+	currentPoint.X = x;
+	currentPoint.Y = y;
 }
 
 /**
@@ -208,8 +210,15 @@ public void addString(String string, float x, float y, Font font) {
 public void close() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	Gdip.GraphicsPath_CloseFigure(handle);
-	//TODO - last point is wrong?
-	//Gdip.GraphicsPath_GetLastPoint(handle, currentPoint);
+	/*
+	* Feature in GDI+. CloseFigure() does affect the last
+	* point, so GetLastPoint() does not return the starting
+	* point of the subpath after calling CloseFigure().  The
+	* fix is to remember the subpath starting point and use
+	* it instead.
+	*/
+	currentPoint.X = startPoint.X;
+	currentPoint.Y = startPoint.Y;
 }
 
 /**
@@ -435,8 +444,8 @@ public boolean isDisposed() {
  */
 public void moveTo(float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	currentPoint.X = x;
-	currentPoint.Y = y;
+	currentPoint.X = startPoint.X = x;
+	currentPoint.Y = startPoint.Y = y;
 }
 
 /**
