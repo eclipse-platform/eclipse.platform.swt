@@ -279,6 +279,9 @@ boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
 	OS.XtGetValues (scrolledHandle, argList, argList.length / 2);
 	
+	int [] argList1 = {OS.XmNwidth, 0, OS.XmNheight, 0};
+	OS.XtGetValues (handle, argList1, argList1.length / 2);
+	
 	/* Hide or show the scroll bar */
 	if (visible) {
 		OS.XtManageChild (barHandle);
@@ -308,8 +311,13 @@ boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 	OS.XtResizeWidget (scrolledHandle, argList [1], argList [3], argList [5]);
 
 	bar.sendEvent (visible ? SWT.Show : SWT.Hide);
-	sendEvent (SWT.Resize);
-	return true;
+	int [] argList3 = {OS.XmNwidth, 0, OS.XmNheight, 0};
+	OS.XtGetValues (handle, argList3, argList3.length / 2);
+	if (argList1 [1] != argList3 [1] || argList1 [3] != argList3 [3]) {
+		sendEvent (SWT.Resize);
+		return true;
+	}
+	return false;
 }
 int topHandle () {
 	if (scrolledHandle != 0) return scrolledHandle;

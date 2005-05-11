@@ -370,7 +370,26 @@ public boolean isVisible () {
 	return getVisible () && parent.isVisible ();
 }
 void manageChildren () {
+	/*
+	* Feature in Motif.  Hiding or showing a scroll bar
+	* can cause the widget to automatically resize in
+	* the OS.  This behavior is unwanted.  The fix is
+	* to force the widget to resize to original size.
+	*/
+	int scrolledHandle = parent.scrolledHandle;
+	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
+	if (scrolledHandle != 0) {
+		OS.XtGetValues (scrolledHandle, argList, argList.length / 2);
+	}
 	OS.XtManageChild (handle);
+	/*
+	* Feature in Motif.  When XtSetValues() is used to restore the width and
+	* height of the widget, the new width and height are sometimes ignored.
+	* The fix is to use XtResizeWidget().
+	*/
+	if (scrolledHandle != 0) {
+		OS.XtResizeWidget (scrolledHandle, argList [1], argList [3], argList [5]);
+	}
 }
 void propagateWidget (boolean enabled) {
 	propagateHandle (enabled, handle, OS.None);
