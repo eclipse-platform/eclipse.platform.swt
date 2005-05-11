@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 648;
-int OS_nativeFunctionCallCount[648];
+int OS_nativeFunctionCount = 651;
+int OS_nativeFunctionCallCount[651];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateKeyboardLayout",
@@ -186,6 +186,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetDoubleClickTime",
 	"GetFocus",
 	"GetFontLanguageInfo",
+	"GetForegroundWindow",
 	"GetGUIThreadInfo",
 	"GetIconInfo",
 	"GetKeyNameTextA",
@@ -473,8 +474,10 @@ char * OS_nativeFunctionNames[] = {
 	"RegOpenKeyExW",
 	"RegQueryInfoKeyA",
 	"RegQueryInfoKeyW",
-	"RegQueryValueExA",
-	"RegQueryValueExW",
+	"RegQueryValueExA__I_3BI_3I_3B_3I",
+	"RegQueryValueExA__I_3BI_3I_3I_3I",
+	"RegQueryValueExW__I_3CI_3I_3C_3I",
+	"RegQueryValueExW__I_3CI_3I_3I_3I",
 	"RegisterClassA",
 	"RegisterClassW",
 	"RegisterClipboardFormatA",

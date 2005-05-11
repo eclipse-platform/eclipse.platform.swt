@@ -396,7 +396,7 @@ static String getKeyValue (TCHAR key) {
 	}
 	String result = null;
 	int [] lpcbData = new int [1];
-	if (OS.RegQueryValueEx (phkResult [0], (TCHAR) null, 0, null, null, lpcbData) == 0) {
+	if (OS.RegQueryValueEx (phkResult [0], (TCHAR) null, 0, null, (TCHAR) null, lpcbData) == 0) {
 		int length = lpcbData [0] / TCHAR.sizeof;
 		if (length == 0) {
 			result = "";

@@ -305,7 +305,10 @@
 #define NO_RegEnumKeyExA
 #define NO_RegOpenKeyExA
 #define NO_RegQueryInfoKeyA
-#define NO_RegQueryValueExA
+#define NO_RegQueryValueExA__I_3BI_3I_3B_3I
+#define NO_RegQueryValueExA__I_3BI_3I_3I_3I
+#define NO_RegQueryValueExW__I_3CI_3I_3C_3I
+#define NO_RegQueryValueExW__I_3CI_3I_3I_3I
 #define NO_RegisterClassA
 #define NO_RegisterClipboardFormatA
 #define NO_RegisterWindowMessageA

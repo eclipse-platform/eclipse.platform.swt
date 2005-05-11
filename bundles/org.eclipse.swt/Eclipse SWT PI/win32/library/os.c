@@ -2751,6 +2751,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetFontLanguageInfo)
 }
 #endif
 
+#ifndef NO_GetForegroundWindow
+JNIEXPORT jint JNICALL OS_NATIVE(GetForegroundWindow)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetForegroundWindow_FUNC);
+	rc = (jint)GetForegroundWindow();
+	OS_NATIVE_EXIT(env, that, GetForegroundWindow_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetGUIThreadInfo
 JNIEXPORT jboolean JNICALL OS_NATIVE(GetGUIThreadInfo)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
@@ -7338,8 +7350,8 @@ fail:
 }
 #endif
 
-#ifndef NO_RegQueryValueExA
-JNIEXPORT jint JNICALL OS_NATIVE(RegQueryValueExA)
+#ifndef NO_RegQueryValueExA__I_3BI_3I_3B_3I
+JNIEXPORT jint JNICALL OS_NATIVE(RegQueryValueExA__I_3BI_3I_3B_3I)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jintArray arg3, jbyteArray arg4, jintArray arg5)
 {
 	jbyte *lparg1=NULL;
@@ -7347,7 +7359,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(RegQueryValueExA)
 	jbyte *lparg4=NULL;
 	jint *lparg5=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, RegQueryValueExA_FUNC);
+	OS_NATIVE_ENTER(env, that, RegQueryValueExA__I_3BI_3I_3B_3I_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL)) == NULL) goto fail;
@@ -7358,13 +7370,38 @@ fail:
 	if (arg4 && lparg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, RegQueryValueExA_FUNC);
+	OS_NATIVE_EXIT(env, that, RegQueryValueExA__I_3BI_3I_3B_3I_FUNC);
 	return rc;
 }
 #endif
 
-#ifndef NO_RegQueryValueExW
-JNIEXPORT jint JNICALL OS_NATIVE(RegQueryValueExW)
+#ifndef NO_RegQueryValueExA__I_3BI_3I_3I_3I
+JNIEXPORT jint JNICALL OS_NATIVE(RegQueryValueExA__I_3BI_3I_3I_3I)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jintArray arg3, jintArray arg4, jintArray arg5)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, RegQueryValueExA__I_3BI_3I_3I_3I_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	rc = (jint)RegQueryValueExA((HKEY)arg0, (LPSTR)lparg1, (LPDWORD)arg2, lparg3, (LPBYTE)lparg4, lparg5);
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, RegQueryValueExA__I_3BI_3I_3I_3I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_RegQueryValueExW__I_3CI_3I_3C_3I
+JNIEXPORT jint JNICALL OS_NATIVE(RegQueryValueExW__I_3CI_3I_3C_3I)
 	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2, jintArray arg3, jcharArray arg4, jintArray arg5)
 {
 	jchar *lparg1=NULL;
@@ -7372,7 +7409,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(RegQueryValueExW)
 	jchar *lparg4=NULL;
 	jint *lparg5=NULL;
 	jint rc = 0;
-	OS_NATIVE_ENTER(env, that, RegQueryValueExW_FUNC);
+	OS_NATIVE_ENTER(env, that, RegQueryValueExW__I_3CI_3I_3C_3I_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetCharArrayElements(env, arg4, NULL)) == NULL) goto fail;
@@ -7383,7 +7420,32 @@ fail:
 	if (arg4 && lparg4) (*env)->ReleaseCharArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg1 && lparg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
-	OS_NATIVE_EXIT(env, that, RegQueryValueExW_FUNC);
+	OS_NATIVE_EXIT(env, that, RegQueryValueExW__I_3CI_3I_3C_3I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_RegQueryValueExW__I_3CI_3I_3I_3I
+JNIEXPORT jint JNICALL OS_NATIVE(RegQueryValueExW__I_3CI_3I_3I_3I)
+	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2, jintArray arg3, jintArray arg4, jintArray arg5)
+{
+	jchar *lparg1=NULL;
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, RegQueryValueExW__I_3CI_3I_3I_3I_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
+	rc = (jint)RegQueryValueExW((HKEY)arg0, (LPWSTR)lparg1, (LPDWORD)arg2, lparg3, (LPBYTE)lparg4, lparg5);
+fail:
+	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg1 && lparg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, RegQueryValueExW__I_3CI_3I_3I_3I_FUNC);
 	return rc;
 }
 #endif

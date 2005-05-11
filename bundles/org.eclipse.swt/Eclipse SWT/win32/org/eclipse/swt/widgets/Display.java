@@ -1955,6 +1955,24 @@ public void internal_dispose_GC (int hDC, GCData data) {
 	OS.ReleaseDC (0, hDC);
 }
 
+boolean isXMouseActive () {
+	/*
+	* NOTE: X-Mouse is active when bit 1 of the UserPreferencesMask is set.
+  	*/
+	boolean xMouseActive = false;
+	TCHAR key = new TCHAR (0, "Control Panel\\Desktop", true); //$NON-NLS-1$
+	int [] phKey = new int [1];
+	int result = OS.RegOpenKeyEx (OS.HKEY_CURRENT_USER, key, 0, OS.KEY_READ, phKey);
+	if (result == 0) {
+		TCHAR lpValueName = new TCHAR (0, "UserPreferencesMask", true); //$NON-NLS-1$
+		int [] lpcbData = new int [] {4}, lpData = new int [1];
+		result = OS.RegQueryValueEx (phKey [0], lpValueName, 0, null, lpData, lpcbData);
+		if (result == 0) xMouseActive = (lpData [0] & 0x01) != 0;
+		OS.RegCloseKey (phKey [0]);
+	}
+	return xMouseActive;
+}
+
 boolean isValidThread () {
 	return thread == Thread.currentThread ();
 }
@@ -2238,22 +2256,24 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 			* and force the enabled dialog child to the front.
 			* This is typically what the user is expecting.
 			* 
-			* NOTE: If the modal shell is disabled for any reason,
-			* it should not be brought to the front.
+			* NOTE: If the modal shell is disabled for any
+			* reason, it should not be brought to the front.
 			*/
 			if (wParam != 0) {
-				if (modalDialogShell != null && modalDialogShell.isDisposed ()) modalDialogShell = null;
-				Shell modal = modalDialogShell != null ? modalDialogShell : getModalShell ();
-				if (modal != null) {
-					int hwndModal = modal.handle;
-					if (OS.IsWindowEnabled (hwndModal)) {
-						modal.bringToTop ();
-					}
-					int hwndPopup = OS.GetLastActivePopup (hwndModal);
-					if (hwndPopup != 0 && hwndPopup != modal.handle) {
-						if (getControl (hwndPopup) == null) {
-							if (OS.IsWindowEnabled (hwndPopup)) {
-								OS.SetActiveWindow (hwndPopup);
+				if (!isXMouseActive ()) {
+					if (modalDialogShell != null && modalDialogShell.isDisposed ()) modalDialogShell = null;
+					Shell modal = modalDialogShell != null ? modalDialogShell : getModalShell ();
+					if (modal != null) {
+						int hwndModal = modal.handle;
+						if (OS.IsWindowEnabled (hwndModal)) {
+							modal.bringToTop ();
+						}
+						int hwndPopup = OS.GetLastActivePopup (hwndModal);
+						if (hwndPopup != 0 && hwndPopup != modal.handle) {
+							if (getControl (hwndPopup) == null) {
+								if (OS.IsWindowEnabled (hwndPopup)) {
+									OS.SetActiveWindow (hwndPopup);
+								}
 							}
 						}
 					}

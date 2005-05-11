@@ -2180,6 +2180,15 @@ public static final int RegQueryValueEx (int hKey, TCHAR lpValueName, int lpRese
 	return RegQueryValueExA (hKey, lpValueName1, lpReserved, lpType, lpData1, lpcbData);
 }
 
+public static final int RegQueryValueEx (int hKey, TCHAR lpValueName, int lpReserved, int[] lpType, int [] lpData, int[] lpcbData) {
+	if (IsUnicode) {
+		char [] lpValueName1 = lpValueName == null ? null : lpValueName.chars;
+		return RegQueryValueExW (hKey, lpValueName1, lpReserved, lpType, lpData, lpcbData);
+	}
+	byte [] lpValueName1 = lpValueName == null ? null : lpValueName.bytes;
+	return RegQueryValueExA (hKey, lpValueName1, lpReserved, lpType, lpData, lpcbData);
+}
+
 public static final int RemoveProp  (int hWnd, int lpString){
 	if (IsUnicode) return RemovePropW (hWnd, lpString);
 	return RemovePropA (hWnd, lpString);
@@ -2581,6 +2590,7 @@ public static final native int GetDlgItem (int hDlg, int nIDDlgItem);
 public static final native int GetDoubleClickTime ();
 public static final native int GetFocus ();
 public static final native int GetFontLanguageInfo(int hdc);
+public static final native int GetForegroundWindow ();
 public static final native boolean GetGUIThreadInfo(int idThread, GUITHREADINFO lpgui);
 public static final native boolean GetIconInfo (int hIcon, ICONINFO piconinfo);
 public static final native int GetKeyboardLayoutList(int nBuff, int[] lpList);
@@ -2873,10 +2883,12 @@ public static final native int RegisterClipboardFormatW (char[] lpszFormat);
 public static final native int RegOpenKeyExW (int hKey, char[] lpSubKey, int ulOptions, int samDesired, int[] phkResult);
 public static final native int RegQueryInfoKeyW (int hKey, int lpClass, int[] lpcbClass, int lpReserved, int[] lpSubKeys, int[] lpcbMaxSubKeyLen, int[] lpcbMaxClassLen, int[] lpcValues, int[] lpcbMaxValueNameLen, int[] lpcbMaxValueLen, int[] lpcbSecurityDescriptor, int lpftLastWriteTime);
 public static final native int RegQueryValueExW (int hKey, char[] lpValueName, int lpReserved, int[] lpType, char [] lpData, int[] lpcbData);
+public static final native int RegQueryValueExW (int hKey, char[] lpValueName, int lpReserved, int[] lpType, int [] lpData, int[] lpcbData);
 public static final native int RegEnumKeyExA (int hKey, int dwIndex, byte [] lpName, int [] lpcName, int [] lpReserved, byte [] lpClass, int [] lpcClass, FILETIME lpftLastWriteTime);
 public static final native int RegOpenKeyExA (int hKey, byte[] lpSubKey, int ulOptions, int samDesired, int[] phkResult);
 public static final native int RegQueryInfoKeyA (int hKey, int lpClass, int[] lpcbClass, int lpReserved, int[] lpSubKeys, int[] lpcbMaxSubKeyLen, int[] lpcbMaxClassLen, int[] lpcValues, int[] lpcbMaxValueNameLen, int[] lpcbMaxValueLen, int[] lpcbSecurityDescriptor, int lpftLastWriteTime);
 public static final native int RegQueryValueExA (int hKey, byte[] lpValueName, int lpReserved, int[] lpType, byte [] lpData, int[] lpcbData);
+public static final native int RegQueryValueExA (int hKey, byte[] lpValueName, int lpReserved, int[] lpType, int [] lpData, int[] lpcbData);
 public static final native boolean ReleaseCapture ();
 public static final native int ReleaseDC (int hWnd, int hDC);
 public static final native boolean RemoveMenu (int hMenu, int uPosition, int uFlags);
