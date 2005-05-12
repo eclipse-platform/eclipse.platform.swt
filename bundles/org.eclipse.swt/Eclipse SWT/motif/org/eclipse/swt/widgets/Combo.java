@@ -793,11 +793,11 @@ public int getVisibleItemCount () {
 void hookEvents () {
 	super.hookEvents ();
 	int windowProc = display.windowProc;
-	OS.XtAddCallback (handle, OS.XmNselectionCallback, windowProc, SELECTION_CALLBACK);
 	int [] argList = {OS.XmNlist, 0, OS.XmNtextField, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	int listHandle = argList [1];
 	int textHandle = argList [3];
+	OS.XtAddCallback (listHandle, OS.XmNbrowseSelectionCallback, windowProc, BROWSE_SELECTION_CALLBACK);
 	OS.XtAddEventHandler (listHandle, OS.KeyPressMask, false, windowProc, KEY_PRESS);
 	OS.XtAddEventHandler (listHandle, OS.KeyReleaseMask, false, windowProc, KEY_RELEASE);
 	OS.XtAddCallback (textHandle, OS.XmNactivateCallback, windowProc, ACTIVATE_CALLBACK);
@@ -1538,7 +1538,7 @@ int XmNactivateCallback (int w, int client_data, int call_data) {
 	postEvent (SWT.DefaultSelection);
 	return 0;
 }
-int XmNselectionCallback (int w, int client_data, int call_data) {
+int XmNbrowseSelectionCallback (int w, int client_data, int call_data) {
 	/*
 	* Bug in MOTIF.  If items have been added and removed from a
 	* combo then users are able to select an empty drop-down item
