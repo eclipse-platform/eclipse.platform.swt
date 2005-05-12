@@ -170,7 +170,7 @@ public class Display extends Device {
 	Control currentControl;
 	int mouseHoverID;
 	org.eclipse.swt.internal.carbon.Point dragMouseStart = null;
-	boolean dragging = false;
+	boolean dragging, mouseMoved;
 	
 	/* Insets */
 	Rect buttonInset, tabFolderNorthInset, tabFolderSouthInset, comboInset, spinnerInset;
@@ -2487,6 +2487,11 @@ int menuProc (int nextHandler, int theEvent, int userData) {
 
 int mouseProc (int nextHandler, int theEvent, int userData) {
 	int eventKind = OS.GetEventKind (theEvent);
+	switch (eventKind) {
+		case OS.kEventMouseDragged:
+		case OS.kEventMouseMoved:
+			mouseMoved = true;
+	}
 	if (mouseUpControl != null && eventKind == OS.kEventMouseUp) {
 		if (!mouseUpControl.isDisposed ()) {
 			mouseUpControl.mouseProc (nextHandler, theEvent, userData);
@@ -2552,6 +2557,8 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 }
 
 int mouseHoverProc (int id, int handle) {
+	mouseHoverID = 0;
+	mouseMoved = false;
 	if (currentControl == null) return 0;
 	if (!currentControl.isDisposed ()) {
 		//OPTIMIZE - use OS calls
@@ -2956,6 +2963,7 @@ boolean runEnterExit () {
 			currentControl.sendMouseEvent (SWT.MouseExit, (short)0, chord, (short)pt.x, (short)pt.y, modifiers, true);
 			if (mouseHoverID != 0) OS.RemoveEventLoopTimer (mouseHoverID);
 			mouseHoverID = 0;
+			mouseMoved = false;
 		}
 		// widget could be disposed at this point
 		if (control != null && control.isDisposed()) control = null;
@@ -2965,19 +2973,20 @@ boolean runEnterExit () {
 			int modifiers = OS.GetCurrentEventKeyModifiers ();
 			Point pt = currentControl.toControl (where.h, where.v);
 			currentControl.sendMouseEvent (SWT.MouseEnter, (short)0, chord, (short)pt.x, (short)pt.y, modifiers, true);
-			if (mouseHoverID != 0) OS.RemoveEventLoopTimer (mouseHoverID);
-			int [] id = new int [1], outDelay = new int [1];
-			OS.HMGetTagDelay (outDelay);
+		}
+	}
+	if (control != null && mouseMoved) {
+		int [] outDelay = new int [1];
+		OS.HMGetTagDelay (outDelay);
+		if (mouseHoverID != 0) {
+			OS.SetEventLoopTimerNextFireTime (mouseHoverID, outDelay [0] / 1000.0);
+		} else {
 			int eventLoop = OS.GetCurrentEventLoop ();
+			int [] id = new int [1];
 			OS.InstallEventLoopTimer (eventLoop, outDelay [0] / 1000.0, 0.0, mouseHoverProc, 0, id);
 			mouseHoverID = id [0];
 		}
-	} else {
-		if (control != null && mouseHoverID != 0) {
-			int [] outDelay = new int [1];
-			OS.HMGetTagDelay (outDelay);
-			OS.SetEventLoopTimerNextFireTime (mouseHoverID, outDelay [0] / 1000.0);
-		}
+		mouseMoved = false;
 	}
 	if (!OS.StillDown () && theWindow [0] != 0 && theControl [0] != 0) {
 		Rect rect = new Rect ();
@@ -3082,6 +3091,7 @@ boolean runGrabs () {
 //				case OS.kMouseTrackingMouseExited: 				type = SWT.MouseExit; break;
 //				case OS.kMouseTrackingMouseEntered: 			type = SWT.MouseEnter; break;
 				case OS.kMouseTrackingMouseDragged: {
+					mouseMoved = true;
 					type = SWT.MouseMove;
 					dragDetect (grabControl);
 					break;
@@ -3089,6 +3099,7 @@ boolean runGrabs () {
 				case OS.kMouseTrackingMouseKeyModifiersChanged:	break;
 				case OS.kMouseTrackingUserCancelled:	 break;
 				case OS.kMouseTrackingMouseMoved: {
+					mouseMoved = true;
 					type = SWT.MouseMove;
 					break;
 				}
