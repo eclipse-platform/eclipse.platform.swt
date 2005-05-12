@@ -727,7 +727,7 @@ public void setFont (Font font){
 	this.font = font;
 	if (!parent.updateTabHeight(false)) {
 		parent.updateItems();
-		parent.redraw();
+		parent.redrawTabs();
 	}
 }
 public void setImage (Image image) {
@@ -741,8 +741,8 @@ public void setImage (Image image) {
 	super.setImage(image);
 	if (!parent.updateTabHeight(false)) {
 		parent.updateItems();
+		parent.redrawTabs();
 	}
-	parent.redraw();
 }
 public void setText (String string) {
 	checkWidget();
@@ -751,8 +751,10 @@ public void setText (String string) {
 	super.setText(string);
 	shortenedText = null;
 	shortenedTextWidth = 0;
-	parent.updateItems();
-	parent.redraw();
+	if (!parent.updateTabHeight(false)) {
+		parent.updateItems();
+		parent.redrawTabs();
+	}
 }
 /**
  * Sets the receiver's tool tip text to the argument, which
