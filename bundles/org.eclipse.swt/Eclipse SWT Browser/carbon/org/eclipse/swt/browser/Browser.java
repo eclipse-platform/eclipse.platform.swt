@@ -35,6 +35,7 @@ public class Browser extends Composite {
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
 	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
+	static final String BROWSER_WINDOW = "org.eclipse.swt.browser.Browser.Window"; //$NON-NLS-1$
 	static final int MAX_PROGRESS = 100;
 	
 	/* External Listener management */
@@ -121,16 +122,42 @@ public Browser(Composite parent, int style) {
 	getDisplay().setData(ADD_WIDGET_KEY, new Object[] {new Integer(webViewHandle), this});
 	
 	/*
-	* Bug in Safari. The WebView must be added after the top window is visible
-	* or it eats mouse events from the top window. A second issue is that the WebView 
-	* does not receive mouse and key events when it is added to a visible top window. 
-	* It is assumed that Safari hooks its own event listener when the top window 
-	* emits the kEventWindowShown event. The workaround to the first problem is to add
-	* the WebView to the HIView after the top window is visible. The workaround to the second
-	* problem is to send a fake kEventWindowShown event to the top window after the WebView
-	* has been added to the HIView (after the top window is visible) to give Safari a chance
-	* to hook events.
+	* Bug in Safari.  For some reason, every application must contain
+	* a visible window that has never had a WebView or mouse move events
+	* are not delivered.  This seems to happen after a browser has been
+	* either hidden or disposed in any window.  The fix is to create a
+	* single transparent overlay window that is disposed when the display
+	* is disposed.
 	*/
+	Display display = getDisplay();
+	if (display.getData(BROWSER_WINDOW) == null) {
+		Rect bounds = new Rect ();
+		OS.SetRect (bounds, (short) 0, (short) 0, (short) 1, (short) 1);
+		final int[] outWindow = new int[1];
+		OS.CreateNewWindow(OS.kOverlayWindowClass, 0, bounds, outWindow);
+		OS.ShowWindow(outWindow[0]);
+		display.disposeExec(new Runnable() {
+			public void run() {
+				if (outWindow[0] != 0) {
+					OS.DisposeWindow(outWindow[0]);
+				}
+				outWindow[0] = 0;
+			}
+		});
+		display.setData(BROWSER_WINDOW, outWindow);
+	}
+	
+	/*
+	 * Bug in Safari. The WebView must be added after the top window is visible
+	 * or it eats mouse events from the top window. A second issue is that the WebView 
+	 * does not receive mouse and key events when it is added to a visible top window. 
+	 * It is assumed that Safari hooks its own event listener when the top window 
+	 * emits the kEventWindowShown event. The workaround to the first problem is to add
+	 * the WebView to the HIView after the top window is visible. The workaround to the second
+	 * problem is to send a fake kEventWindowShown event to the top window after the WebView
+	 * has been added to the HIView (after the top window is visible) to give Safari a chance
+	 * to hook events.
+	 */
 	if (getShell().isVisible()) {
 		added = true;
 		OS.HIViewAddSubview(handle, webViewHandle);
