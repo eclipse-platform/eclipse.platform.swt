@@ -659,7 +659,7 @@ int handleCallback(int nextHandler, int theEvent) {
 			* events might be generated as a result of this workaround.
 			*/
 			doit = false;
-			int result = OS.SendEventToEventTarget(theEvent, OS.GetApplicationEventTarget());
+			OS.SendEventToEventTarget(theEvent, OS.GetApplicationEventTarget());
 			if (!doit) return OS.noErr;
 			break;
 		}
