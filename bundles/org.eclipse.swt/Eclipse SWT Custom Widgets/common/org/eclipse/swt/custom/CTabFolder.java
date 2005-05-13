@@ -108,7 +108,7 @@ public class CTabFolder extends Composite {
 	boolean simple = true;
 	int fixedTabHeight = SWT.DEFAULT;
 	int tabHeight;
-	int minChars = 10;
+	int minChars = 20;
 	
 	/* item management */
 	CTabItem items[] = new CTabItem[0];
@@ -2779,7 +2779,6 @@ boolean setItemLocation() {
 boolean setItemSize() {
 	boolean changed = false;
 	if (isDisposed()) return changed;
-	showChevron = false;
 	Point size = getSize();
 	if (size.x <= 0 || size.y <= 0) return changed;
 	xClient = borderLeft + marginWidth + highlight_margin;
@@ -2788,6 +2787,7 @@ boolean setItemSize() {
 	} else {
 		yClient = borderTop + tabHeight + highlight_header + marginHeight; 
 	}
+	showChevron = false;
 	if (single) {
 		showChevron = true;
 		if (selectedIndex != -1) {
