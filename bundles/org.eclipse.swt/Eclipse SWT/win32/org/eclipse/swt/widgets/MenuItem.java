@@ -321,8 +321,8 @@ public int getAccelerator () {
 		}
 		int x = info2.left - info1.left;
 		int y = info2.top - info1.top;
-		int width = info1.right - info1.left;
-		int height = info1.bottom - info1.top;
+		int width = info2.right - info2.left;
+		int height = info2.bottom - info2.top;
 		return new Rectangle (x, y, width, height);
 	} else {
 		int hMenu = parent.handle;
