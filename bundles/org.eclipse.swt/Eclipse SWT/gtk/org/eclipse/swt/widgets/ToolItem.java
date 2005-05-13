@@ -508,8 +508,13 @@ int /*long*/ gtk_enter_notify_event (int /*long*/ widget, int /*long*/ event) {
 	drawHotImage = (parent.style & SWT.FLAT) != 0 && hotImage != null;
 	if (drawHotImage && imageHandle != 0) {
 		ImageList imageList = parent.imageList;
-		int /*long*/ pixbuf = imageList.getPixbuf (imageList.indexOf (hotImage));
-		OS.gtk_image_set_from_pixbuf (imageHandle, pixbuf);
+		if (imageList != null) {
+			int index = imageList.indexOf (hotImage);
+			if (index != -1) {
+				int /*long*/ pixbuf = imageList.getPixbuf (index);
+				OS.gtk_image_set_from_pixbuf (imageHandle, pixbuf);
+			}
+		}
 	}
 	return 0;
 }
@@ -541,8 +546,13 @@ int /*long*/ gtk_leave_notify_event (int /*long*/ widget, int /*long*/ event) {
 		drawHotImage = false;
 		if (imageHandle != 0 && image != null) {
 			ImageList imageList = parent.imageList;
-			int /*long*/ pixbuf = imageList.getPixbuf (imageList.indexOf (image));
-			OS.gtk_image_set_from_pixbuf (imageHandle, pixbuf);
+			if (imageList != null) {
+				int index = imageList.indexOf (image);
+				if (index != -1) {
+					int /*long*/ pixbuf = imageList.getPixbuf (index);
+					OS.gtk_image_set_from_pixbuf (imageHandle, pixbuf);
+				}
+			}
 		}	
 	}
 	return 0;
