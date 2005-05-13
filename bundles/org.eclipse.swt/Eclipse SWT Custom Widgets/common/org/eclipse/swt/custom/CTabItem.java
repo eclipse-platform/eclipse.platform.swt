@@ -740,6 +740,16 @@ public void setImage (Image image) {
 	if (image != null && image.equals(oldImage)) return;
 	super.setImage(image);
 	if (!parent.updateTabHeight(false)) {
+		// If image is the same size as before, 
+		// redraw only the image
+		if (oldImage != null && image != null) {
+			Rectangle oldBounds = oldImage.getBounds();
+			Rectangle bounds = image.getBounds();
+			if (bounds.width == oldBounds.width && bounds.height == oldBounds.height) {
+				if (isShowing()) parent.redraw(x, y, width, height, false);
+				return;
+			}
+		} 
 		parent.updateItems();
 		parent.redrawTabs();
 	}
