@@ -61,7 +61,7 @@ public class Browser extends Composite {
 	Point location;
 	Point size;
 	boolean statusBar = true, toolBar = true;
-	boolean added, doit;
+	boolean doit;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -148,21 +148,16 @@ public Browser(Composite parent, int style) {
 	}
 	
 	/*
-	 * Bug in Safari. The WebView must be added after the top window is visible
-	 * or it eats mouse events from the top window. A second issue is that the WebView 
-	 * does not receive mouse and key events when it is added to a visible top window. 
-	 * It is assumed that Safari hooks its own event listener when the top window 
-	 * emits the kEventWindowShown event. The workaround to the first problem is to add
-	 * the WebView to the HIView after the top window is visible. The workaround to the second
-	 * problem is to send a fake kEventWindowShown event to the top window after the WebView
-	 * has been added to the HIView (after the top window is visible) to give Safari a chance
-	 * to hook events.
+	 * Bug in Safari. The WebView does not receive mouse and key events when it is added
+	 * to a visible top window.  It is assumed that Safari hooks its own event listener
+	 * when the top window emits the kEventWindowShown event. The workaround is to send a
+	 * fake kEventWindowShown event to the top window after the WebView has been added
+	 * to the HIView (after the top window is visible) to give Safari a chance to hook
+	 * events.
 	 */
+	OS.HIViewAddSubview(handle, webViewHandle);
+	OS.HIViewSetVisible(webViewHandle, true);	
 	if (getShell().isVisible()) {
-		added = true;
-		OS.HIViewAddSubview(handle, webViewHandle);
-		OS.HIViewSetVisible(webViewHandle, true);
-		
 		int[] showEvent = new int[1];
 		OS.CreateEvent(0, OS.kEventClassWindow, OS.kEventWindowShown, 0.0, OS.kEventAttributeUserEvent, showEvent);
 		OS.SetEventParameter(showEvent[0], OS.kEventParamDirectObject, OS.typeWindowRef, 4, new int[] {OS.GetControlOwner(handle)});
@@ -226,52 +221,6 @@ public Browser(Composite parent, int style) {
 					break;
 				}
 				case SWT.Show: {
-					if (!added && e.widget == getShell()) {
-						/*
-						* Bug in Safari. The WebView must be added after the top window is visible
-						* or it eats mouse events from the top window. A second issue is that the WebView 
-						* does not receive mouse and key events when it is added to a visible top window. 
-						* It is assumed that Safari hooks its own event listener when the top window 
-						* emits the kEventWindowShown event. The workaround to the first problem is to add
-						* the WebView to the HIView after the top window is visible. The workaround to the second
-						* problem is to send a fake kEventWindowShown event to the top window after the WebView
-						* has been added to the HIView (after the top window is visible) to give Safari a chance
-						* to hook events.
-						* 
-						* Note. SWT.Show is sent before the Shell is actually visible. The workaround is to
-						* add the WebView to the HiView from an asyncExec, after this notification has returned and
-						* made the Shell visible.
-						* Note. Because the Shell is already visible when WebView is added to the HiView and the real
-						* kEventWindowShow event has therefore been sent already, we need to send a fake kEventWindowShown
-						* event so that Safari can hook its events.
-						*/
-						final Shell shell = getShell();
-						getDisplay().asyncExec(new Runnable() { 
-							public void run() {
-								if (isDisposed() || shell.isDisposed()) return;
-								if (added || !shell.isVisible()) return;
-								added = true;
-								OS.HIViewAddSubview(handle, webViewHandle);
-								OS.HIViewSetVisible(webViewHandle, true);
-
-								int[] showEvent = new int[1];
-								OS.CreateEvent(0, OS.kEventClassWindow, OS.kEventWindowShown, 0.0, OS.kEventAttributeUserEvent, showEvent);
-								OS.SetEventParameter(showEvent[0], OS.kEventParamDirectObject, OS.typeWindowRef, 4, new int[] {OS.GetControlOwner(handle)});
-								OS.SendEventToEventTarget(showEvent[0], OS.GetWindowEventTarget(OS.GetControlOwner(handle)));
-								if (showEvent[0] != 0) OS.ReleaseEvent(showEvent[0]);
-
-								CGRect bounds = new CGRect();
-								OS.HIViewGetFrame(handle, bounds);
-								/* 
-								* Note.  Setting negative width or height causes Safari to always
-								* display incorrectly even if further resize events are correct.
-								*/
-								if (bounds.width < 0) bounds.width = 0;
-								if (bounds.height < 0) bounds.height = 0;
-								OS.HIViewSetFrame(webViewHandle, bounds);							
-							}
-						});
-					}
 					/*
 					* Bug on Safari. The web view cannot be obscured by other views above it.
 					* This problem is specified in the apple documentation for HiWebViewCreate.
