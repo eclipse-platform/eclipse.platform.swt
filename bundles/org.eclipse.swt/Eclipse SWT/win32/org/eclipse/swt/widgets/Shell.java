@@ -245,6 +245,9 @@ Shell (Display display, Shell parent, int style, int handle) {
 	if (!display.isValidThread ()) {
 		error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	}
+	if (parent != null && parent.isDisposed ()) {
+		error (SWT.ERROR_INVALID_ARGUMENT);	
+	}
 	this.style = checkStyle (style);
 	this.parent = parent;
 	this.display = display;
@@ -267,7 +270,7 @@ Shell (Display display, Shell parent, int style, int handle) {
  * @param parent a shell which will be the parent of the new instance
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the parent is disposed</li> 
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -301,6 +304,9 @@ public Shell (Shell parent) {
  * @param parent a shell which will be the parent of the new instance
  * @param style the style of control to construct
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the parent is disposed</li> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
