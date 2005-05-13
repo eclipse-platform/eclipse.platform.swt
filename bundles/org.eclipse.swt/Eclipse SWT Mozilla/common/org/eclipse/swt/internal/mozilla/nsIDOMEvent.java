@@ -71,7 +71,7 @@ public class nsIDOMEvent extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aCancelable);
 	}
 
-	public int GetTimeStamp(int /*long*/ aTimeStamp) {
+	public int GetTimeStamp(int /*long*/[] aTimeStamp) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aTimeStamp);
 	}
 
