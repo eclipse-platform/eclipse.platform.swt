@@ -1524,13 +1524,6 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 		* events or restore the focus.
 		*/
 		if ((wParam >> 16) != 0) return result;
-		/*
-		* It is possible (but unlikely), that application
-		* code could have disposed the widget in the activate
-		* event.  If this happens, end the processing of the
-		* Windows message by returning zero as the result of
-		* the window proc.
-		*/
 		Control control = display.findControl (lParam);
 		if (control == null || control instanceof Shell) {
 			if (this instanceof Shell) {
@@ -1540,23 +1533,22 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 		}
 		if (restoreFocus ()) return LRESULT.ZERO;	
 	} else {
-		/*
-		* It is possible (but unlikely), that application
-		* code could have disposed the widget in the deactivate
-		* event.  If this happens, end the processing of the
-		* Windows message by returning zero as the result of
-		* the window proc.
-		*/
+		Display display = this.display;
+		boolean lockWindow = display.isXMouseActive ();
+		if (lockWindow) display.lockActiveWindow = true;
 		Control control = display.findControl (lParam);
 		if (control == null || control instanceof Shell) {
 			if (this instanceof Shell) {
 				sendEvent (SWT.Deactivate);
-				if (isDisposed ()) return LRESULT.ZERO;
-				Shell shell = getShell ();
-				shell.setActiveControl (null);
-				if (isDisposed ()) return LRESULT.ZERO;
+				if (!isDisposed ()) {
+					Shell shell = getShell ();
+					shell.setActiveControl (null);
+					// widget could be disposed at this point
+				}
 			}
 		}
+		if (lockWindow) display.lockActiveWindow = false;
+		if (isDisposed ()) return LRESULT.ZERO;
 		saveFocus ();
 	}
 	return result;
