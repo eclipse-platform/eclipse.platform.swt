@@ -746,7 +746,7 @@ public void setImage (Image image) {
 			Rectangle oldBounds = oldImage.getBounds();
 			Rectangle bounds = image.getBounds();
 			if (bounds.width == oldBounds.width && bounds.height == oldBounds.height) {
-				if (isShowing()) parent.redraw(x, y, width, height, false);
+				if (showing) parent.redraw(x, y, width, height, false);
 				return;
 			}
 		} 
