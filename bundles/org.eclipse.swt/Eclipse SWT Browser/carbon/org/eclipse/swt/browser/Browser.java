@@ -119,7 +119,8 @@ public Browser(Composite parent, int style) {
 		dispose();
 		SWT.error(SWT.ERROR_NO_HANDLES);		
 	}
-	getDisplay().setData(ADD_WIDGET_KEY, new Object[] {new Integer(webViewHandle), this});
+	Display display = getDisplay();
+	display.setData(ADD_WIDGET_KEY, new Object[] {new Integer(webViewHandle), this});
 	
 	/*
 	* Bug in Safari.  For some reason, every application must contain
@@ -129,7 +130,6 @@ public Browser(Composite parent, int style) {
 	* single transparent overlay window that is disposed when the display
 	* is disposed.
 	*/
-	Display display = getDisplay();
 	if (display.getData(BROWSER_WINDOW) == null) {
 		Rect bounds = new Rect ();
 		OS.SetRect (bounds, (short) 0, (short) 0, (short) 1, (short) 1);
