@@ -3867,7 +3867,23 @@ JNIEXPORT jshort JNICALL OS_NATIVE(GetSystemDefaultUILanguage)
 {
 	jshort rc = 0;
 	OS_NATIVE_ENTER(env, that, GetSystemDefaultUILanguage_FUNC);
+/*
 	rc = (jshort)GetSystemDefaultUILanguage();
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!(hm = GetModuleHandle(GetSystemDefaultUILanguage_LIB))) hm = LoadLibrary(GetSystemDefaultUILanguage_LIB);
+			if (hm) fp = GetProcAddress(hm, "GetSystemDefaultUILanguage");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jshort)fp();
+		}
+	}
 	OS_NATIVE_EXIT(env, that, GetSystemDefaultUILanguage_FUNC);
 	return rc;
 }

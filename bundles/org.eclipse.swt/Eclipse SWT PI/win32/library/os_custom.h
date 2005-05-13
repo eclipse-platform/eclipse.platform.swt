@@ -22,6 +22,7 @@
 #define GetMenuInfo_LIB "user32.dll"
 #define GetMonitorInfoA_LIB "user32.dll"
 #define GetMonitorInfoW_LIB "user32.dll"
+#define GetSystemDefaultUILanguage_LIB "kernel32.dll"
 #define GradientFill_LIB "msimg32.dll"
 #define ImmDisableTextFrameService_LIB "imm32.dll"
 #define IsAppThemed_LIB "uxtheme.dll"
