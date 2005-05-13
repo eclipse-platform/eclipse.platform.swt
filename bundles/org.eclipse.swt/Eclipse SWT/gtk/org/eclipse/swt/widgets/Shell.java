@@ -235,6 +235,9 @@ Shell (Display display, Shell parent, int style, int /*long*/ handle) {
 	if (!display.isValidThread ()) {
 		error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	}
+	if (parent != null && parent.isDisposed ()) {
+		error (SWT.ERROR_INVALID_ARGUMENT);	
+	}
 	this.style = checkStyle (style);
 	this.parent = parent;
 	this.display = display;

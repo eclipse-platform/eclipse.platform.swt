@@ -274,6 +274,7 @@ void checkOrientation (Widget parent) {
  */
 void checkParent (Widget parent) {
 	if (parent == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (parent.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	parent.checkWidget ();
 	parent.checkOpen ();
 }
