@@ -400,6 +400,9 @@ class TableTab extends ScrollableTab {
 		}
 	}
 
+	/**
+	 * Sets the moveable columns state of the "Example" widgets.
+	 */
 	void setColumnsMoveable () {
 		boolean selection = moveableColumns.getSelection();
 		TableColumn[] columns = table1.getColumns();
