@@ -63,6 +63,8 @@ public class Browser extends Composite {
 	boolean statusBar = true, toolBar = true;
 	boolean doit;
 
+	static final int MIN_SIZE = 16;
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -189,14 +191,6 @@ public Browser(Composite parent, int style) {
 				case SWT.Dispose: {
 					Shell shell = getShell();
 					shell.removeListener(SWT.Resize, this);
-					shell.removeListener(SWT.Show, this);
-					shell.removeListener(SWT.Hide, this);
-					Control c = Browser.this;
-					do {
-						c.removeListener(SWT.Show, this);
-						c.removeListener(SWT.Hide, this);
-						c = c.getParent();
-					} while (c != shell);
 					
 					e.display.setData(ADD_WIDGET_KEY, new Object[] {new Integer(webViewHandle), null});
 
@@ -209,29 +203,6 @@ public Browser(Composite parent, int style) {
 					WebKit.objc_msgSend(delegate, WebKit.S_release);					
 					break;
 				}
-				case SWT.Hide: {
-					/*
-					* Bug on Safari. The web view cannot be obscured by other views above it.
-					* This problem is specified in the apple documentation for HiWebViewCreate.
-					* The workaround is to hook Hide and Show events on the browser's parents
-					* and set its size to 0 in Hide and to restore its size in Show.
-					*/
-					CGRect bounds = new CGRect();
-					OS.HIViewSetFrame(webViewHandle, bounds);
-					break;
-				}
-				case SWT.Show: {
-					/*
-					* Bug on Safari. The web view cannot be obscured by other views above it.
-					* This problem is specified in the apple documentation for HiWebViewCreate.
-					* The workaround is to hook Hide and Show events on the browser's parents
-					* and set its size to 0 in Hide and to restore its size in Show.
-					*/
-					CGRect bounds = new CGRect();
-					OS.HIViewGetFrame(handle, bounds);
-					OS.HIViewSetFrame(webViewHandle, bounds);
-					break;
-				}
 				case SWT.Resize: {
 					/*
 					* Bug on Safari. Resizing the height of a Shell containing a Browser at
@@ -241,23 +212,17 @@ public Browser(Composite parent, int style) {
 					* bottom left corner of a window instead of the coordinates system used
 					* in Carbon that starts at the top left corner. The workaround is to
 					* reposition the web view every time the Shell of the Browser is resized.
-					* 
-					* Feature on Safari. The HIView ignores the call to update its position
-					* because it believes it has not changed. The workaround is to force
-					* it to reposition by changing its size and setting it back to the
-					* original value.
-					* 
 					*/
-					/* If the widget is hidden, leave its size to 0,0 as set in the SWT.Hide callback */
-					if (!isVisible()) break;
 					CGRect bounds = new CGRect();
 					OS.HIViewGetFrame(handle, bounds);
 					/* 
-					* Note.  Setting negative width or height causes Safari to always
-					* display incorrectly even if further resize events are correct.
+					* Bug in Safari.  For some reason, the web view will display incorrectly or
+					* blank depending on its contents, if its size is set to a value smaller than
+					* MIN_SIZE. It will not display properly even after the size is made larger.
+					* The fix is to avoid setting sizes smaller than MIN_SIZE. 
 					*/
-					if (bounds.width < 0) bounds.width = 0;
-					if (bounds.height < 0) bounds.height = 0;
+					if (bounds.width <= MIN_SIZE) bounds.width = MIN_SIZE;
+					if (bounds.height <= MIN_SIZE) bounds.height = MIN_SIZE;
 					OS.HIViewSetFrame(webViewHandle, bounds);
 					/*
 					* Bug on Webkit. Resizing a Cocoa WebView in a Carbon window does not
@@ -275,26 +240,18 @@ public Browser(Composite parent, int style) {
 	addListener(SWT.Resize, listener);
 	Shell shell = getShell();
 	shell.addListener(SWT.Resize, listener);
-	shell.addListener(SWT.Show, listener);
-	shell.addListener(SWT.Hide, listener);
-	Control c = this;
-	do {
-		c.addListener(SWT.Show, listener);
-		c.addListener(SWT.Hide, listener);
-		c = c.getParent();
-	} while (c != shell);
 	
 	if (Callback3 == null) Callback3 = new Callback(this.getClass(), "eventProc3", 3); //$NON-NLS-1$
 	int callback3Address = Callback3.getAddress();
 	if (callback3Address == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 
-	int[] keyboardMask = new int[] {OS.kEventClassKeyboard, OS.kEventRawKeyDown};
+	int[] mask = new int[] {
+		OS.kEventClassKeyboard, OS.kEventRawKeyDown,
+		OS.kEventClassControl, OS.kEventControlDraw,
+		OS.kEventClassTextInput, OS.kEventTextInputUnicodeForKeyEvent,
+	};
 	int controlTarget = OS.GetControlEventTarget(webViewHandle);
-	OS.InstallEventHandler(controlTarget, callback3Address, keyboardMask.length / 2, keyboardMask, webViewHandle, null);
-		
-	int[] textInputMask = new int[] { OS.kEventClassTextInput, OS.kEventTextInputUnicodeForKeyEvent };
-	int windowTarget = OS.GetWindowEventTarget(OS.GetControlOwner(handle));
-	OS.InstallEventHandler (windowTarget, callback3Address, textInputMask.length / 2, textInputMask, webViewHandle, null);
+	OS.InstallEventHandler(controlTarget, callback3Address, mask.length / 2, mask, webViewHandle, null);
 
 	if (Callback7 == null) Callback7 = new Callback(this.getClass(), "eventProc7", 7); //$NON-NLS-1$
 	int callback7Address = Callback7.getAddress();
@@ -642,6 +599,15 @@ public String getUrl() {
 int handleCallback(int nextHandler, int theEvent) {
 	int eventKind = OS.GetEventKind(theEvent);
 	switch (eventKind) {
+		case OS.kEventControlDraw: {
+			/*
+			* Bug on Safari. The web view cannot be obscured by other views above it.
+			* This problem is specified in the apple documentation for HiWebViewCreate.
+			* The workaround is to don't draw the web view when it is not visible.
+			*/
+			if (!isVisible ()) return OS.noErr;
+			break;
+		}
 		case OS.kEventRawKeyDown: {
 			/*
 			* Bug in Safari. The WebView blocks the propagation of certain Carbon events
