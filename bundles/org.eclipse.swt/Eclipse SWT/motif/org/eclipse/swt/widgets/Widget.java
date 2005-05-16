@@ -87,19 +87,18 @@ public abstract class Widget {
 	static final int MODIFY_VERIFY_CALLBACK = 19;
 	static final int PAGE_DECREMENT_CALLBACK = 20;
 	static final int PAGE_INCREMENT_CALLBACK = 21;
-	static final int SELECTION_CALLBACK = 22;
-	static final int TO_BOTTOM_CALLBACK = 23;
-	static final int TO_TOP_CALLBACK = 24;
-	static final int VALUE_CHANGED_CALLBACK = 25;
-	static final int NON_MASKABLE  = 26;
-	static final int POINTER_MOTION  = 27;
-	static final int STRUCTURE_NOTIFY  = 28;
-	static final int MAP_CALLBACK = 29;
-	static final int UNMAP_CALLBACK  = 30;
-	static final int DELETE_WINDOW = 31;
-	static final int EXPOSURE_CALLBACK  = 32;
-	static final int MULTIPLE_SELECTION_CALLBACK  = 33;
-	static final int PROPERTY_CHANGE = 34;
+	static final int TO_BOTTOM_CALLBACK = 22;
+	static final int TO_TOP_CALLBACK = 23;
+	static final int VALUE_CHANGED_CALLBACK = 24;
+	static final int NON_MASKABLE  = 25;
+	static final int POINTER_MOTION  = 26;
+	static final int STRUCTURE_NOTIFY  = 27;
+	static final int MAP_CALLBACK = 28;
+	static final int UNMAP_CALLBACK  = 29;
+	static final int DELETE_WINDOW = 30;
+	static final int EXPOSURE_CALLBACK  = 31;
+	static final int MULTIPLE_SELECTION_CALLBACK  = 32;
+	static final int PROPERTY_CHANGE = 33;
 
 Widget () {
 	/* Do nothing */
@@ -1045,7 +1044,6 @@ int windowProc (int w, int client_data, int call_data, int continue_to_dispatch)
 		case MULTIPLE_SELECTION_CALLBACK:		return XmNmultipleSelectionCallback (w, client_data, call_data);
 		case PAGE_DECREMENT_CALLBACK:		return XmNpageDecrementCallback (w, client_data, call_data);
 		case PAGE_INCREMENT_CALLBACK:		return XmNpageIncrementCallback (w, client_data, call_data);
-		case SELECTION_CALLBACK:			return XmNselectionCallback (w, client_data, call_data);
 		case TO_BOTTOM_CALLBACK:			return XmNtoBottomCallback (w, client_data, call_data);
 		case TO_TOP_CALLBACK:				return XmNtoTopCallback (w, client_data, call_data);
 		case VALUE_CHANGED_CALLBACK:		return XmNvalueChangedCallback (w, client_data, call_data);
@@ -1156,9 +1154,6 @@ int XmNpageDecrementCallback (int w, int client_data, int call_data) {
 	return 0;
 }
 int XmNpageIncrementCallback (int w, int client_data, int call_data) {
-	return 0;
-}
-int XmNselectionCallback (int w, int client_data, int call_data) {
 	return 0;
 }
 int XmNtoBottomCallback (int w, int client_data, int call_data) {
