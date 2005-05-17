@@ -2391,7 +2391,8 @@ public Color getBackground() {
 }
 
 /** 
- * Returns the background pattern.
+ * Returns the background pattern. The default value is
+ * <code>null</code>.
  *
  * @return the receiver's background pattern
  *
@@ -2619,7 +2620,8 @@ public Color getForeground() {
 }
 
 /** 
- * Returns the foreground pattern.
+ * Returns the foreground pattern. The default value is
+ * <code>null</code>.
  *
  * @return the receiver's foreground pattern
  *
@@ -3175,12 +3177,11 @@ public void setBackground (Color color) {
 }
 
 /** 
- * Sets the background pattern.
+ * Sets the background pattern. The default value is <code>null</code>.
  *
  * @param pattern the new background pattern
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the parameter is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the parameter has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
@@ -3193,11 +3194,14 @@ public void setBackground (Color color) {
  */
 public void setBackgroundPattern (Pattern pattern) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (pattern == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (pattern != null && pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	initGdip(false, false);
 	if (data.gdipBrush != 0) destroyGdipBrush(data.gdipBrush);
-	data.gdipBrush = Gdip.Brush_Clone(pattern.handle);
+	if (pattern != null) {
+		data.gdipBrush = Gdip.Brush_Clone(pattern.handle);
+	} else {
+		data.gdipBrush = 0;
+	}
 	data.backgroundPattern = pattern;
 }
 
@@ -3391,12 +3395,11 @@ public void setForeground (Color color) {
 }
 
 /** 
- * Sets the foreground pattern.
+ * Sets the foreground pattern. The default value is <code>null</code>.
  *
  * @param pattern the new foreground pattern
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the parameter is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the parameter has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
@@ -3409,10 +3412,16 @@ public void setForeground (Color color) {
  */
 public void setForegroundPattern (Pattern pattern) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (pattern == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	initGdip(true, false);
-	Gdip.Pen_SetBrush(data.gdipPen, pattern.handle);
+	if (pattern != null && pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	initGdip(false, false);
+	if (pattern != null) {
+		if (data.gdipPen != 0) Gdip.Pen_SetBrush(data.gdipPen, pattern.handle);
+	} else {
+		if (data.gdipPen != 0) {
+			Gdip.Pen_delete(data.gdipPen);
+			data.gdipPen = 0;
+		}
+	}
 	data.foregroundPattern = pattern;
 }
 
@@ -3763,7 +3772,7 @@ public void setTextAntialias(int antialias) {
 			} else {
 				textMode = Gdip.TextRenderingHintAntiAliasGridFit;
 			}
-			break;			
+			break;
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
