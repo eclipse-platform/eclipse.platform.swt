@@ -12,6 +12,7 @@ package org.eclipse.swt.graphics;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.gdip.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * Instances of this class represent patterns to use while drawing. Patterns
@@ -62,16 +63,16 @@ public Pattern(Device device, Image image) {
 	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	this.device = device;
 	device.checkGDIP();
-	int img;
-	if (image.type == SWT.ICON){
-		img = Gdip.Bitmap_new(image.handle);
-	} else {
-		img = Gdip.Bitmap_new(image.handle, 0);
-	}
+	int[] gdipImage = image.createGdipImage();
+	int img = gdipImage[0];
 	int width = Gdip.Image_GetWidth(img);
 	int height = Gdip.Image_GetHeight(img);
 	handle = Gdip.TextureBrush_new(img, Gdip.WrapModeTile, 0, 0, width, height);	
 	Gdip.Bitmap_delete(img);
+	if (gdipImage[1] != 0) {
+		int hHeap = OS.GetProcessHeap ();
+		OS.HeapFree(hHeap, 0, gdipImage[1]);
+	}
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (device.tracking) device.new_Object(this);
 }
