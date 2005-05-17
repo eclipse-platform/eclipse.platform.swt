@@ -762,8 +762,8 @@ public Rectangle getBounds (int start, int end) {
 		}
 		left = Math.min(left, runLead);
 		right = Math.max(right, runTrail);
-		top = Math.min(top, lineY[lineIndex]);
-		bottom = Math.max(bottom, lineY[lineIndex + 1]);
+		top = Math.min(top, lineY[run.lineBreak ? lineIndex - 1 : lineIndex]);
+		bottom = Math.max(bottom, lineY[run.lineBreak ? lineIndex : lineIndex + 1]);
 	}
 	return new Rectangle(left, top, right - left, bottom - top);
 }
