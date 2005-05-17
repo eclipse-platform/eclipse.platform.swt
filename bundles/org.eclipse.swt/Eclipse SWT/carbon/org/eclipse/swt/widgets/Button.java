@@ -311,7 +311,11 @@ void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
 		Rect bounds = new Rect(), content = new Rect();
 		OS.GetControlBounds (handle, bounds);
 		ThemeButtonDrawInfo drawInfo = new ThemeButtonDrawInfo();
-		drawInfo.state = OS.IsControlActive (handle) ? OS.kThemeStateActive : OS.kThemeStateInactive;
+		if (OS.IsControlEnabled (handle)) {
+			drawInfo.state = OS.IsControlActive (handle) ? OS.kThemeStateActive : OS.kThemeStateInactive;
+		} else {
+			drawInfo.state = OS.IsControlActive (handle) ? OS.kThemeStateUnavailable : OS.kThemeStateUnavailableInactive;
+		}
 		drawInfo.adornment = OS.kThemeAdornmentDefault;
 		OS.GetThemeButtonContentBounds (bounds, OS.kThemePushButton, drawInfo, content);
 		int width = image == null ? 0 : OS.CGImageGetWidth (image.handle);

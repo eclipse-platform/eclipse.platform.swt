@@ -628,7 +628,12 @@ void drawFocus (int control, boolean hasFocus, boolean hasBorder, float[] backgr
 	rect.top += inset.top;
 	rect.right -= inset.right;
 	rect.bottom -= inset.bottom;
-	int state = OS.IsControlActive (control) ? OS.kThemeStateActive : OS.kThemeStateInactive;
+	int state;
+	if (OS.IsControlEnabled (control)) {
+		state = OS.IsControlActive (control) ? OS.kThemeStateActive : OS.kThemeStateInactive;
+	} else {
+		state = OS.IsControlActive (control) ? OS.kThemeStateUnavailable : OS.kThemeStateUnavailableInactive;
+	}
 	if (hasFocus) {
 		if (hasBorder) OS.DrawThemeEditTextFrame (rect, state);
 		OS.DrawThemeFocusRect (rect, true);

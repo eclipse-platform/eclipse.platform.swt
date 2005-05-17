@@ -648,6 +648,8 @@ public class OS extends Platform {
 	public static final int kThemeStateActive = 1;
 	public static final int kThemeStateInactive = 0;
 	public static final int kThemeStatePressed = 2;
+	public static final int kThemeStateUnavailable = 7;
+	public static final int kThemeStateUnavailableInactive = 8;
 	public static final int kThemeSystemFont = 0;
 	public static final int kThemeTextColorDialogActive = 1;
 	public static final int kThemeTextColorDocumentWindowTitleActive = 23;
