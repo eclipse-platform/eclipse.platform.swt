@@ -191,6 +191,14 @@ public Browser(Composite parent, int style) {
 				case SWT.Dispose: {
 					Shell shell = getShell();
 					shell.removeListener(SWT.Resize, this);
+					shell.removeListener(SWT.Show, this);
+					shell.removeListener(SWT.Hide, this);
+					Control c = Browser.this;
+					do {
+						c.removeListener(SWT.Show, this);
+						c.removeListener(SWT.Hide, this);
+						c = c.getParent();
+					} while (c != shell);
 					
 					e.display.setData(ADD_WIDGET_KEY, new Object[] {new Integer(webViewHandle), null});
 
@@ -203,7 +211,42 @@ public Browser(Composite parent, int style) {
 					WebKit.objc_msgSend(delegate, WebKit.S_release);					
 					break;
 				}
+				case SWT.Hide: {
+					/*
+					* Bug on Safari. The web view cannot be obscured by other views above it.
+					* This problem is specified in the apple documentation for HiWebViewCreate.
+					* The workaround is to hook Hide and Show events on the browser's parents
+					* and set its size to 0 in Hide and to restore its size in Show.
+					*/
+					CGRect bounds = new CGRect();
+					bounds.x = bounds.y = -MIN_SIZE;
+					bounds.width = bounds.height = MIN_SIZE;
+					OS.HIViewSetFrame(webViewHandle, bounds);
+					break;
+				}
+				case SWT.Show: {
+					/*
+					* Bug on Safari. The web view cannot be obscured by other views above it.
+					* This problem is specified in the apple documentation for HiWebViewCreate.
+					* The workaround is to hook Hide and Show events on the browser's parents
+					* and set its size to 0 in Hide and to restore its size in Show.
+					*/
+					CGRect bounds = new CGRect();
+					OS.HIViewGetFrame(handle, bounds);
+					/* 
+					* Bug in Safari.  For some reason, the web view will display incorrectly or
+					* blank depending on its contents, if its size is set to a value smaller than
+					* MIN_SIZE. It will not display properly even after the size is made larger.
+					* The fix is to avoid setting sizes smaller than MIN_SIZE. 
+					*/
+					if (bounds.width <= MIN_SIZE) bounds.width = MIN_SIZE;
+					if (bounds.height <= MIN_SIZE) bounds.height = MIN_SIZE;
+					OS.HIViewSetFrame(webViewHandle, bounds);
+					break;
+				}
 				case SWT.Resize: {
+					/* Do not update size when it is not visible */
+					if (!isVisible()) return;
 					/*
 					* Bug on Safari. Resizing the height of a Shell containing a Browser at
 					* a fixed location causes the Browser to redraw at a wrong location.
@@ -240,6 +283,14 @@ public Browser(Composite parent, int style) {
 	addListener(SWT.Resize, listener);
 	Shell shell = getShell();
 	shell.addListener(SWT.Resize, listener);
+	shell.addListener(SWT.Show, listener);
+	shell.addListener(SWT.Hide, listener);
+	Control c = this;
+	do {
+		c.addListener(SWT.Show, listener);
+		c.addListener(SWT.Hide, listener);
+		c = c.getParent();
+	} while (c != shell);
 	
 	if (Callback3 == null) Callback3 = new Callback(this.getClass(), "eventProc3", 3); //$NON-NLS-1$
 	int callback3Address = Callback3.getAddress();
