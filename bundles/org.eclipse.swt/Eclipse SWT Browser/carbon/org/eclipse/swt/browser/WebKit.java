@@ -83,19 +83,22 @@ static final native int objc_msgSend(int object, int selector, int arg0, int arg
 static final native int objc_msgSend(int object, int selector, int arg0, int arg1, int arg2, int arg3);
 static final native int sel_registerName(byte[] selectorName);
 
+static byte [] ascii (String name) {
+	int length = name.length ();
+	char [] chars = new char [length];
+	name.getChars (0, length, chars, 0);
+	byte [] buffer = new byte [length + 1];
+	for (int i=0; i<length; i++) {
+		buffer [i] = (byte) chars [i];
+	}
+	return buffer;
+}
+
 static int sel_registerName(String selector) {
-	byte[] buffer0 = selector.getBytes();
-	int length = buffer0.length;
-	byte[] buffer = new byte[length+1];
-	System.arraycopy(buffer0, 0, buffer, 0, length);
-	return WebKit.sel_registerName(buffer);
+	return WebKit.sel_registerName(ascii(selector));
 }
 	
 static int objc_getClass(String className) {
-	byte[] buffer0 = className.getBytes();
-	int length = buffer0.length;
-	byte[] buffer = new byte[length+1];
-	System.arraycopy(buffer0, 0, buffer, 0, length);
-	return WebKit.objc_getClass(buffer);
+	return WebKit.objc_getClass(ascii(className));
 }
 }

@@ -307,6 +307,17 @@ static void setDevice (Device device) {
 	CurrentDevice = device;
 }
 
+static byte [] ascii (String name) {
+	int length = name.length ();
+	char [] chars = new char [length];
+	name.getChars (0, length, chars, 0);
+	byte [] buffer = new byte [length + 1];
+	for (int i=0; i<length; i++) {
+		buffer [i] = (byte) chars [i];
+	}
+	return buffer;
+}
+
 static int translateKey (int key) {
 	for (int i=0; i<KeyTable.length; i++) {
 		if (KeyTable [i] [0] == key) return KeyTable [i] [1];
@@ -840,7 +851,7 @@ void createDisplay (DeviceData data) {
 		}
 		OS.CPSEnableForegroundOperation (psn, 0x03, 0x3C, 0x2C, 0x1103);
 		OS.SetFrontProcess (psn);
-		int ptr = OS.getenv (("APP_ICON_" + OS.getpid() + "\0").getBytes ());
+		int ptr = OS.getenv (ascii ("APP_ICON_" + OS.getpid()));
 		if (ptr != 0) {
 			int [] image = readImageRef (ptr);
 			if (image != null) {
