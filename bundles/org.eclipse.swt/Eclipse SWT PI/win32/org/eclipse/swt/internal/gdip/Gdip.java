@@ -30,7 +30,7 @@ public class Gdip extends Platform {
 	public static final int CombineModeExclude = 4;
 	public static final int CombineModeComplement = 5;
 	public static final int FillModeAlternate = 0;
-	public static final int FillModeWinding = 0;
+	public static final int FillModeWinding = 1;
 	public static final int DashCapFlat = 0;
 	public static final int DashCapRound = 2;
     public static final int DashCapTriangle = 3;
