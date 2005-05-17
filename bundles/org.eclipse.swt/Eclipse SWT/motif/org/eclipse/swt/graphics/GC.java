@@ -2906,8 +2906,7 @@ public void setBackground (Color color) {
  */
 public void setBackgroundPattern(Pattern pattern) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (pattern == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (pattern != null && pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	initCairo();
 	data.backgroundPattern = pattern;
 }
@@ -3132,11 +3131,20 @@ public void setForeground (Color color) {
  */
 public void setForegroundPattern(Pattern pattern) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (pattern == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (pattern != null && pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	initCairo();
 	int /*long*/ cairo = data.cairo;
-	Cairo.cairo_set_pattern(cairo, pattern.handle);
+	if (pattern != null) {
+		Cairo.cairo_set_pattern(cairo, pattern.handle);
+	} else {
+		int display = data.display;
+		XGCValues values = new XGCValues ();
+		OS.XGetGCValues (display, handle, OS.GCForeground, values);
+		XColor color = new XColor();
+		color.pixel = values.foreground;
+		OS.XQueryColor(display, data.colormap, color);
+		Cairo.cairo_set_rgb_color(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF);
+	}
 	data.foregroundPattern = pattern;
 }
 /**

@@ -1971,6 +1971,8 @@ public void setBackground(Color color) {
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	data.background = color.handle;
+	int colorspace = data.device.colorspace;
+	OS.CGContextSetFillColorSpace(handle, colorspace);
 	OS.CGContextSetFillColor(handle, color.handle);
 	if (data.backPattern != 0) OS.CGPatternRelease(data.backPattern);
 	data.backPattern = 0;
@@ -1979,14 +1981,21 @@ public void setBackground(Color color) {
 
 public void setBackgroundPattern(Pattern pattern) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (pattern == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	int colorspace = OS.CGColorSpaceCreatePattern(data.device.colorspace);
-	OS.CGContextSetFillColorSpace(handle, colorspace);
-	OS.CGColorSpaceRelease(colorspace);
+	if (pattern != null && pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (data.backPattern != 0) OS.CGPatternRelease(data.backPattern);
-	data.backPattern = pattern.createPattern(handle);
-	OS.CGContextSetFillPattern(handle, data.backPattern, data.background);
+	if (pattern != null) {
+		int colorspace = OS.CGColorSpaceCreatePattern(data.device.colorspace);
+		OS.CGContextSetFillColorSpace(handle, colorspace);
+		OS.CGColorSpaceRelease(colorspace);
+		data.backPattern = pattern.createPattern(handle);
+		OS.CGContextSetFillPattern(handle, data.backPattern, data.background);
+	} else {
+		int colorspace = data.device.colorspace;
+		OS.CGContextSetFillColorSpace(handle, colorspace);
+		float[] color = data.background;
+		OS.CGContextSetFillColor(handle, color);
+		data.backPattern = 0;	
+	}
 	data.backgroundPattern = pattern;
 }
 
@@ -2199,6 +2208,8 @@ public void setForeground(Color color) {
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	data.foreground = color.handle;
+	int colorspace = data.device.colorspace;
+	OS.CGContextSetStrokeColorSpace(handle, colorspace);
 	OS.CGContextSetStrokeColor(handle, color.handle);
 	if (data.forePattern != 0) OS.CGPatternRelease(data.forePattern);
 	data.forePattern = 0;
@@ -2210,14 +2221,21 @@ public void setForeground(Color color) {
  */
 public void setForegroundPattern(Pattern pattern) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (pattern == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	int colorspace = OS.CGColorSpaceCreatePattern(data.device.colorspace);
-	OS.CGContextSetStrokeColorSpace(handle, colorspace);
-	OS.CGColorSpaceRelease(colorspace);
+	if (pattern != null && pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (data.forePattern != 0) OS.CGPatternRelease(data.forePattern);
-	data.forePattern = pattern.createPattern(handle);
-	OS.CGContextSetStrokePattern(handle, data.forePattern, data.foreground);
+	if (pattern != null) {
+		int colorspace = OS.CGColorSpaceCreatePattern(data.device.colorspace);
+		OS.CGContextSetStrokeColorSpace(handle, colorspace);
+		OS.CGColorSpaceRelease(colorspace);
+		data.forePattern = pattern.createPattern(handle);
+		OS.CGContextSetStrokePattern(handle, data.forePattern, data.foreground);
+	} else {
+		int colorspace = data.device.colorspace;
+		OS.CGContextSetStrokeColorSpace(handle, colorspace);
+		float[] color = data.foreground;
+		OS.CGContextSetStrokeColor(handle, color);
+		data.forePattern = 0;	
+	}
 	data.foregroundPattern = pattern;
 }
 

@@ -2215,8 +2215,7 @@ public void setBackground(Color color) {
  */
 public void setBackgroundPattern(Pattern pattern) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (pattern == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (pattern != null && pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	initCairo();
 	data.backgroundPattern = pattern;
 }
@@ -2462,11 +2461,20 @@ public void setForeground(Color color) {
  */
 public void setForegroundPattern(Pattern pattern) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (pattern == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (pattern != null && pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	initCairo();
 	int /*long*/ cairo = data.cairo;
-	Cairo.cairo_set_pattern(cairo, pattern.handle);
+	if (pattern != null) {
+		Cairo.cairo_set_pattern(cairo, pattern.handle);
+	} else {
+		GdkGCValues values = new GdkGCValues();
+		OS.gdk_gc_get_values(handle, values);
+		GdkColor color = new GdkColor();
+		color.pixel = values.foreground_pixel;
+		int /*long*/ colormap = OS.gdk_colormap_get_system();
+		OS.gdk_colormap_query_color(colormap, color.pixel, color);
+		Cairo.cairo_set_rgb_color(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF);
+	}
 	data.foregroundPattern = pattern;
 }
 
