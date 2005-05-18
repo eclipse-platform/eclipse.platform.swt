@@ -1586,7 +1586,7 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 		if (!isTransparent) {
 			RectF bounds = new RectF();
 			Gdip.Graphics_MeasureString(data.gdipGraphics, buffer, length, font, pt, format, bounds);
-			Gdip.Graphics_FillRectangle(data.gdipGraphics, data.gdipBrush, (int)bounds.X, (int)bounds.Y, (int)Math.round(bounds.Width), (int)Math.round(bounds.Height));
+			Gdip.Graphics_FillRectangle(data.gdipGraphics, data.gdipBrush, (int)bounds.X, (int)bounds.Y, Math.round(bounds.Width), Math.round(bounds.Height));
 		}
 		Gdip.Graphics_DrawString(data.gdipGraphics, buffer, length, font, pt, format, brush);
 		Gdip.StringFormat_delete(format);
@@ -1737,7 +1737,7 @@ public void drawText (String string, int x, int y, int flags) {
 		if ((flags & SWT.DRAW_TRANSPARENT) == 0) {
 			RectF bounds = new RectF();
 			Gdip.Graphics_MeasureString(data.gdipGraphics, buffer, length, font, pt, format, bounds);
-			Gdip.Graphics_FillRectangle(data.gdipGraphics, data.gdipBrush, (int)bounds.X, (int)bounds.Y, (int)Math.round(bounds.Width), (int)Math.round(bounds.Height));
+			Gdip.Graphics_FillRectangle(data.gdipGraphics, data.gdipBrush, (int)bounds.X, (int)bounds.Y, Math.round(bounds.Width), Math.round(bounds.Height));
 		}
 		Gdip.Graphics_DrawString(data.gdipGraphics, buffer, length, font, pt, format, brush);
 		Gdip.StringFormat_delete(format);
@@ -3853,7 +3853,7 @@ public Point stringExtent(String string) {
 		Gdip.Graphics_MeasureString(data.gdipGraphics, buffer, buffer.length, font, pt, format, bounds);
 		Gdip.StringFormat_delete(format);
 		Gdip.Font_delete(font);
-		return new Point(length == 0 ? 0 : (int)Math.round(bounds.Width), (int)Math.round(bounds.Height));
+		return new Point(length == 0 ? 0 : Math.round(bounds.Width), Math.round(bounds.Height));
 	}
 	SIZE size = new SIZE();
 	if (length == 0) {
@@ -3947,7 +3947,7 @@ public Point textExtent(String string, int flags) {
 		Gdip.Graphics_MeasureString(data.gdipGraphics, buffer, buffer.length, font, pt, format, bounds);
 		Gdip.StringFormat_delete(format);
 		Gdip.Font_delete(font);
-		return new Point(length == 0 ? 0 : (int)Math.round(bounds.Width), (int)Math.round(bounds.Height));
+		return new Point(length == 0 ? 0 : Math.round(bounds.Width), Math.round(bounds.Height));
 	}
 	if (string.length () == 0) {
 		SIZE size = new SIZE();
