@@ -138,6 +138,8 @@ typedef enum {
 	StringFormat_1Clone_FUNC,
 	StringFormat_1GenericDefault_FUNC,
 	StringFormat_1GenericTypographic_FUNC,
+	StringFormat_1GetFormatFlags_FUNC,
+	StringFormat_1SetFormatFlags_FUNC,
 	StringFormat_1SetHotkeyPrefix_FUNC,
 	StringFormat_1SetTabStops_FUNC,
 	StringFormat_1delete_FUNC,

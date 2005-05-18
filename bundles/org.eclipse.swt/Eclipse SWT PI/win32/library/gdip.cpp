@@ -1422,6 +1422,30 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(StringFormat_1GenericTypographic)
 }
 #endif
 
+#ifndef NO_StringFormat_1GetFormatFlags
+JNIEXPORT jint JNICALL Gdip_NATIVE(StringFormat_1GetFormatFlags)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, StringFormat_1GetFormatFlags_FUNC);
+	rc = (jint)((StringFormat *)arg0)->GetFormatFlags();
+	Gdip_NATIVE_EXIT(env, that, StringFormat_1GetFormatFlags_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_StringFormat_1SetFormatFlags
+JNIEXPORT jint JNICALL Gdip_NATIVE(StringFormat_1SetFormatFlags)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, StringFormat_1SetFormatFlags_FUNC);
+	rc = (jint)((StringFormat *)arg0)->SetFormatFlags((StringFormatFlags)arg1);
+	Gdip_NATIVE_EXIT(env, that, StringFormat_1SetFormatFlags_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_StringFormat_1SetHotkeyPrefix
 JNIEXPORT jint JNICALL Gdip_NATIVE(StringFormat_1SetHotkeyPrefix)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)

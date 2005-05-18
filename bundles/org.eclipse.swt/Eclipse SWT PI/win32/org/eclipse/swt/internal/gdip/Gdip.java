@@ -100,6 +100,16 @@ public class Gdip extends Platform {
     public static final int SmoothingModeAntiAlias8x4 = 4;
     public static final int SmoothingModeAntiAlias = SmoothingModeAntiAlias8x4;
     public static final int SmoothingModeAntiAlias8x8 = 5;
+    public static final int StringFormatFlagsDirectionRightToLeft = 0x00000001;
+    public static final int StringFormatFlagsDirectionVertical = 0x00000002;
+    public static final int StringFormatFlagsNoFitBlackBox = 0x00000004;
+    public static final int StringFormatFlagsDisplayFormatControl = 0x00000020;
+    public static final int StringFormatFlagsNoFontFallback = 0x00000400;
+    public static final int StringFormatFlagsMeasureTrailingSpaces = 0x00000800;
+    public static final int StringFormatFlagsNoWrap = 0x00001000;
+    public static final int StringFormatFlagsLineLimit = 0x00002000;
+    public static final int StringFormatFlagsNoClip = 0x00004000;
+
     public static final int TextRenderingHintSystemDefault = 0;
     public static final int TextRenderingHintSingleBitPerPixelGridFit = 1;
     public static final int TextRenderingHintSingleBitPerPixel = 2;
@@ -233,7 +243,9 @@ public static final native void StringFormat_delete(int format);
 public static final native int StringFormat_Clone(int format);
 public static final native int StringFormat_GenericDefault();
 public static final native int StringFormat_GenericTypographic();
+public static final native int StringFormat_GetFormatFlags(int format);
 public static final native int StringFormat_SetHotkeyPrefix(int format, int hotkeyPrefix);
+public static final native int StringFormat_SetFormatFlags(int format, int flags);
 public static final native int StringFormat_SetTabStops(int format, float firstTabOffset, int count, float[] tabStops);
 public static final native int TextureBrush_new(int image, int wrapMode, float dstX, float dstY, float dstWidth, float dstHeight);
 public static final native void TextureBrush_delete(int brush);

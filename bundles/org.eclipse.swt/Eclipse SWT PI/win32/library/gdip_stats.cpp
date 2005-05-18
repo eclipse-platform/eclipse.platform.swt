@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int Gdip_nativeFunctionCount = 123;
-int Gdip_nativeFunctionCallCount[123];
+int Gdip_nativeFunctionCount = 125;
+int Gdip_nativeFunctionCallCount[125];
 char * Gdip_nativeFunctionNames[] = {
 	"Bitmap_1delete",
 	"Bitmap_1new__I",
@@ -134,6 +134,8 @@ char * Gdip_nativeFunctionNames[] = {
 	"StringFormat_1Clone",
 	"StringFormat_1GenericDefault",
 	"StringFormat_1GenericTypographic",
+	"StringFormat_1GetFormatFlags",
+	"StringFormat_1SetFormatFlags",
 	"StringFormat_1SetHotkeyPrefix",
 	"StringFormat_1SetTabStops",
 	"StringFormat_1delete",
