@@ -1083,6 +1083,14 @@ void drawTabArea(Event event) {
 	if (selectedIndex != -1) {
 		CTabItem item = items[selectedIndex];
 		item.onPaint(gc, true);
+		
+		if (single) {
+			int x1 = borderLeft;
+			int y1 = (onBottom) ? size.y - borderBottom - tabHeight - 1 : borderTop + tabHeight;
+			int x2 = size.x - borderRight;
+			gc.setForeground(borderColor);
+			gc.drawLine(x1, y1, x2, y1);
+		}
 	} else {
 		// if no selected tab - draw line across bottom of all tabs
 		int x1 = borderLeft;
