@@ -661,6 +661,15 @@ public static final native void FD_SET(int fd, byte[] fd_set);
 public static final native void FD_ZERO(byte[] fd_set);
 public static final native int LC_CTYPE();
 public static final native int MB_CUR_MAX();
+public static final native int _applicationShellWidgetClass();
+public static final int applicationShellWidgetClass() {
+	lock.lock();
+	try {
+		return _applicationShellWidgetClass();
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int _overrideShellWidgetClass();
 public static final int overrideShellWidgetClass() {
 	lock.lock();

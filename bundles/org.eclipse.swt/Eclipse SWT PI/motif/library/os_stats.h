@@ -404,6 +404,7 @@ typedef enum {
 	_1XtWindow_FUNC,
 	_1XtWindowToWidget_FUNC,
 	_1_1XmSetMenuTraversal_FUNC,
+	_1applicationShellWidgetClass_FUNC,
 	_1overrideShellWidgetClass_FUNC,
 	_1shellWidgetClass_FUNC,
 	_1topLevelShellWidgetClass_FUNC,

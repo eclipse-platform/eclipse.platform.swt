@@ -614,7 +614,7 @@ void createHandle (int index) {
 	byte [] appClass = display.appClass;
 	if (parent == null && (style & SWT.ON_TOP) == 0 && inputMode != OS.MWM_INPUT_FULL_APPLICATION_MODAL) {
 		int xDisplay = display.xDisplay;
-		int widgetClass = OS.topLevelShellWidgetClass ();
+		int widgetClass = OS.applicationShellWidgetClass ();
 		shellHandle = OS.XtAppCreateShell (display.appName, appClass, widgetClass, xDisplay, argList1, argList1.length / 2);
 	} else {
 		int widgetClass = OS.transientShellWidgetClass ();

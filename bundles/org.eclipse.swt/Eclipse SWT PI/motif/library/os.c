@@ -5099,6 +5099,18 @@ JNIEXPORT void JNICALL OS_NATIVE(_1_1XmSetMenuTraversal)
 }
 #endif
 
+#ifndef NO__1applicationShellWidgetClass
+JNIEXPORT jint JNICALL OS_NATIVE(_1applicationShellWidgetClass)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1applicationShellWidgetClass_FUNC);
+	rc = (jint)applicationShellWidgetClass;
+	OS_NATIVE_EXIT(env, that, _1applicationShellWidgetClass_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1overrideShellWidgetClass
 JNIEXPORT jint JNICALL OS_NATIVE(_1overrideShellWidgetClass)
 	(JNIEnv *env, jclass that)
