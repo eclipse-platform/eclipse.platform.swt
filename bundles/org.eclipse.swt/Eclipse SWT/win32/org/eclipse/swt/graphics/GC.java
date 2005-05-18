@@ -3164,18 +3164,20 @@ public void setBackground (Color color) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	if (data.backgroundPattern == null && OS.GetBkColor(handle) == color.handle) return;
+	if (data.backgroundPattern != null) {
+		if (data.gdipBrush != 0) {
+			destroyGdipBrush(data.gdipBrush);
+			data.gdipBrush = 0;
+		}
+		data.backgroundPattern = null;
+	}
+	if (OS.GetBkColor(handle) == color.handle) return;
 	data.background = color.handle;
 	OS.SetBkColor (handle, color.handle);
 	int newBrush = OS.CreateSolidBrush (color.handle);
 	OS.SelectObject (handle, newBrush);
 	if (data.hBrush != 0) OS.DeleteObject (data.hBrush);
 	data.hBrush = newBrush;
-	if (data.gdipBrush != 0) {
-		destroyGdipBrush(data.gdipBrush);
-		data.gdipBrush = 0;
-	}
-	data.backgroundPattern = null;
 }
 
 /** 
@@ -3389,11 +3391,17 @@ public void setForeground (Color color) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	if (data.foregroundPattern == null && OS.GetTextColor(handle) == color.handle) return;
+	if (data.foregroundPattern != null) {
+		if (data.gdipPen != 0) {
+			Gdip.Pen_delete(data.gdipPen);
+			data.gdipPen = 0;
+		}
+		data.foregroundPattern = null;		
+	}
+	if (OS.GetTextColor(handle) == color.handle) return;
 	data.foreground = color.handle;
 	OS.SetTextColor(handle, color.handle);
 	setPen(color.handle, -1, -1, -1, -1, data.dashes);
-	data.foregroundPattern = null;
 }
 
 /** 
