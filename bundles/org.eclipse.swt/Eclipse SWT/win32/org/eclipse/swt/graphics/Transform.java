@@ -214,9 +214,9 @@ public void multiply(Transform matrix) {
 /**
  * Modifies the receiver so that it represents a transformation that is
  * equivalent to its previous transformation rotated by the specified angle.
- * The angle is specified in degrees, where 0 degrees is at the 3 o'clock
- * position. A positive value indicates a counter-clockwise rotation
- * while a negative value indicates a clockwise rotation.
+ * The angle is specified in degrees and for the identity transform 0 degrees
+ * is at the 3 o'clock position. A positive value indicates a clockwise rotation
+ * while a negative value indicates a counter-clockwise rotation.
  *
  * @param angle the angle to rotate the transformation by
  * 
