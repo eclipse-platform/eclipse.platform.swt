@@ -1689,6 +1689,7 @@ int /*long*/ pixbufCellDataProc (int /*long*/ tree_column, int /*long*/ cell, in
 		* fix is to only provide the data if the row is visible.
 		*/
 		if (OS.GTK_VERSION < OS.VERSION (2, 3, 2)) {
+			OS.gtk_widget_realize (handle);
 			GdkRectangle visible = new GdkRectangle ();
 			OS.gtk_tree_view_get_visible_rect (handle, visible);
 			GdkRectangle area = new GdkRectangle ();
@@ -2597,6 +2598,7 @@ int /*long*/ textCellDataProc (int /*long*/ tree_column, int /*long*/ cell, int 
 		* fix is to only provide the data if the row is visible.
 		*/
 		if (OS.GTK_VERSION < OS.VERSION (2, 3, 2)) {
+			OS.gtk_widget_realize (handle);
 			GdkRectangle visible = new GdkRectangle ();
 			OS.gtk_tree_view_get_visible_rect (handle, visible);
 			GdkRectangle area = new GdkRectangle ();
