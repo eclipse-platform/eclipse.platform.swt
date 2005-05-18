@@ -1213,10 +1213,11 @@ public CTabItem [] getItems() {
 	return tabItems;
 }
 char _findMnemonic (String string) {
+	if (string == null) return '\0';
 	int index = 0;
 	int length = string.length ();
 	do {
-		while ((index < length) && (string.charAt (index) != '&')) index++;
+		while (index < length && string.charAt (index) != '&') index++;
 		if (++index >= length) return '\0';
 		if (string.charAt (index) != '&') return string.charAt (index);
 		index++;
