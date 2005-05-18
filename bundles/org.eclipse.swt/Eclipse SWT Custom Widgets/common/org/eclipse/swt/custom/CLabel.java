@@ -288,17 +288,15 @@ private void initAccessible() {
 		
 	accessible.addAccessibleControlListener(new AccessibleControlAdapter() {
 		public void getChildAtPoint(AccessibleControlEvent e) {
-			Point pt = toControl(e.x, e.y);
-			e.childID = (getBounds().contains(pt)) ? ACC.CHILDID_SELF : ACC.CHILDID_NONE;
+			e.childID = ACC.CHILDID_SELF;
 		}
 		
 		public void getLocation(AccessibleControlEvent e) {
-			Rectangle location = getBounds();
-			Point pt = toDisplay(location.x, location.y);
-			e.x = pt.x;
-			e.y = pt.y;
-			e.width = location.width;
-			e.height = location.height;
+			Rectangle rect = getDisplay().map(getParent(), null, getBounds());
+			e.x = rect.x;
+			e.y = rect.y;
+			e.width = rect.width;
+			e.height = rect.height;
 		}
 		
 		public void getChildCount(AccessibleControlEvent e) {
