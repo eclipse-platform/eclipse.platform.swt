@@ -2124,6 +2124,20 @@ fail:
 }
 #endif
 
+#ifndef NO__1g_1set_1prgname
+JNIEXPORT void JNICALL OS_NATIVE(_1g_1set_1prgname)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, _1g_1set_1prgname_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	g_set_prgname((const gchar *)lparg0);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, JNI_ABORT);
+	OS_NATIVE_EXIT(env, that, _1g_1set_1prgname_FUNC);
+}
+#endif
+
 #ifndef NO__1g_1signal_1connect
 JNIEXPORT jint JNICALL OS_NATIVE(_1g_1signal_1connect)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jint arg3)

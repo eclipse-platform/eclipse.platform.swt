@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 986;
-int OS_nativeFunctionCallCount[986];
+int OS_nativeFunctionCount = 987;
+int OS_nativeFunctionCallCount[987];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1WINDOWING_1X11",
@@ -192,6 +192,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1g_1object_1set_1qdata",
 	"_1g_1object_1unref",
 	"_1g_1quark_1from_1string",
+	"_1g_1set_1prgname",
 	"_1g_1signal_1connect",
 	"_1g_1signal_1connect_1after",
 	"_1g_1signal_1emit_1by_1name__I_3B",

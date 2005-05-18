@@ -1511,6 +1511,15 @@ public static final int g_quark_from_string(byte[] string) {
 		lock.unlock();
 	}
 }
+public static final native void _g_set_prgname(byte[] prgname);
+public static final void g_set_prgname(byte[] prgname) {
+	lock.lock();
+	try {
+		_g_set_prgname(prgname);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int _g_signal_connect(int /*long*/ instance, byte[] detailed_signal, int /*long*/ proc, int /*long*/ data);
 public static final int g_signal_connect(int /*long*/ instance, byte[] detailed_signal, int /*long*/ proc, int /*long*/ data) {
 	lock.lock();

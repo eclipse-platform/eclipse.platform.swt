@@ -196,6 +196,7 @@ typedef enum {
 	_1g_1object_1set_1qdata_FUNC,
 	_1g_1object_1unref_FUNC,
 	_1g_1quark_1from_1string_FUNC,
+	_1g_1set_1prgname_FUNC,
 	_1g_1signal_1connect_FUNC,
 	_1g_1signal_1connect_1after_FUNC,
 	_1g_1signal_1emit_1by_1name__I_3B_FUNC,
