@@ -183,7 +183,7 @@ void checkItem (int hDC, StyleItem item) {
 		* font was disposed and reshape the run.
 		*/
 		LOGFONT logFont = OS.IsUnicode ? (LOGFONT)new LOGFONTW() : new LOGFONTA();
-		if (OS.GetObject(item.fallbackFont, LOGFONT.sizeof, (LOGFONT)logFont) == 0) {
+		if (OS.GetObject(item.fallbackFont, LOGFONT.sizeof, logFont) == 0) {
 			item.free();
 			OS.SelectObject(hDC, getItemFont(item));
 			shape(hDC, item);
