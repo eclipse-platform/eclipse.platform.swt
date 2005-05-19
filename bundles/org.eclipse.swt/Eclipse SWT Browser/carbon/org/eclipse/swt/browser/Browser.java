@@ -266,14 +266,13 @@ public Browser(Composite parent, int style) {
 					*/
 					if (bounds.width <= MIN_SIZE) bounds.width = MIN_SIZE;
 					if (bounds.height <= MIN_SIZE) bounds.height = MIN_SIZE;
+					if (e.widget == getShell()) {
+						bounds.x++;
+						/* Note that the bounds needs change */
+						OS.HIViewSetFrame(webViewHandle, bounds);
+						bounds.x--;
+					}
 					OS.HIViewSetFrame(webViewHandle, bounds);
-					/*
-					* Bug on Webkit. Resizing a Cocoa WebView in a Carbon window does not
-					* redraw the new area of the WebView. The workaround is to call Display.update.
-					* That call invokes UpdateControls on the Carbon window and that causes the
-					* Cocoa view to redraw correctly.
-					*/
-					e.display.update();
 					break;
 				}
 			}
