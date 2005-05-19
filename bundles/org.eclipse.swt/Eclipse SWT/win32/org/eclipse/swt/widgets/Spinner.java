@@ -730,6 +730,12 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 	return false;
 }
 
+void setBackgroundPixel (int pixel) {
+	if (background == pixel) return;
+	super.setBackgroundPixel (pixel);
+	OS.InvalidateRect (hwndText, null, true);
+}
+
 /**
  * Sets the number of decimal places used by the receiver.
  * <p>
@@ -761,12 +767,6 @@ public void setDigits (int value) {
 		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 	}
 	setSelection (pos, false);
-}
-
-void setBackgroundPixel (int pixel) {
-	if (background == pixel) return;
-	super.setBackgroundPixel (pixel);
-	OS.InvalidateRect (hwndText, null, true);
 }
 
 void setForegroundPixel (int pixel) {
@@ -1224,16 +1224,6 @@ LRESULT wmLButtonDown (int hwnd,int wParam,int lParam) {
 	return super.wmLButtonDown (hwnd, wParam, lParam);
 }
 
-LRESULT wmScrollChild (int wParam, int lParam) {
-	int code = wParam & 0xFFFF;
-	switch (code) {
-		case OS.SB_THUMBPOSITION:
-			postEvent (SWT.Selection);
-			break;
-	}
-	return super.wmScrollChild (wParam, lParam);
-}
-
 LRESULT wmNotifyChild(int wParam, int lParam) {
 	NMHDR hdr = new NMHDR ();
 	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
@@ -1261,6 +1251,16 @@ LRESULT wmNotifyChild(int wParam, int lParam) {
 			return LRESULT.ONE;
 	}
 	return super.wmNotifyChild (wParam, lParam);
+}
+
+LRESULT wmScrollChild (int wParam, int lParam) {
+	int code = wParam & 0xFFFF;
+	switch (code) {
+		case OS.SB_THUMBPOSITION:
+			postEvent (SWT.Selection);
+			break;
+	}
+	return super.wmScrollChild (wParam, lParam);
 }
 
 }
