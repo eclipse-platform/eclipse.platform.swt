@@ -537,7 +537,9 @@ int /*long*/ createMask(ImageData image, boolean copy) {
 
 void createSurface() {
 	if (surface != 0) return;
-	if (mask != 0) {
+	/* Generate the mask if necessary. */
+	if (transparentPixel != -1) createMask();
+	if (mask != 0 || alpha != -1 || alphaData != null) {
 		int[] w = new int[1], h = new int[1];
 	 	OS.gdk_drawable_get_size(pixmap, w, h);
 	 	int width = w[0], height = h[0]; 	
@@ -546,37 +548,72 @@ void createSurface() {
 		int /*long*/ colormap = OS.gdk_colormap_get_system();
 		OS.gdk_pixbuf_get_from_drawable(pixbuf, pixmap, colormap, 0, 0, 0, 0, width, height);
 		int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
-		int /*long*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
-		int /*long*/ gdkImagePtr = OS.gdk_drawable_get_image(mask, 0, 0, width, height);
+		int /*long*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);		
 		byte[] line = new byte[stride];
-		for (int y=0; y<height; y++) {
-			int /*long*/ offset = pixels + (y * stride);
-			OS.memmove(line, offset, stride);
-			for (int x=0; x<width; x++) {
-				int offset1 = x * 4;
-				if (gdkImagePtr != 0) {
-					if (OS.gdk_image_get_pixel(gdkImagePtr, x, y) == 0) {
-						line[offset1+3] = 0;
+		if (mask != 0) {
+			int /*long*/ maskPixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, w[0], h[0]);
+			if (maskPixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			OS.gdk_pixbuf_get_from_drawable(maskPixbuf, mask, 0, 0, 0, 0, 0, w[0], h[0]);
+			int maskStride = OS.gdk_pixbuf_get_rowstride(maskPixbuf);
+			int /*long*/ maskPixels = OS.gdk_pixbuf_get_pixels(maskPixbuf);
+			byte[] maskLine = new byte[maskStride];
+			for (int y=0; y<height; y++) {
+				int /*long*/ offset = pixels + (y * stride);
+				OS.memmove(line, offset, stride);
+				int /*long*/ maskOffset = maskPixels + (y * maskStride);
+				OS.memmove(maskLine, maskOffset, maskStride);
+				for (int x=0; x<width; x++) {
+					int offset1 = x * 4;
+					if (maskLine[x * 3] == 0) {
+						line[offset1 + 3] = 0;
 					}
+					byte temp = line[offset1];
+					line[offset1] = line[offset1 + 2];
+					line[offset1 + 2] = temp;
 				}
-				byte temp = line[offset1];
-				line[offset1] = line[offset1 + 2];
-				line[offset1 + 2] = temp;
+				OS.memmove(offset, line, stride);
 			}
-			OS.memmove(offset, line, stride);
+			OS.g_object_unref(maskPixbuf);
+		} else if (alpha != -1) {
+			for (int y=0; y<height; y++) {
+				int /*long*/ offset = pixels + (y * stride);
+				OS.memmove(line, offset, stride);
+				for (int x=0; x<width; x++) {
+					int offset1 = x * 4;
+					line[offset1+3] = (byte)alpha;
+					byte temp = line[offset1];
+					line[offset1] = line[offset1 + 2];
+					line[offset1 + 2] = temp;
+				}
+				OS.memmove(offset, line, stride);
+			}
+		} else {
+			for (int y = 0; y < h [0]; y++) {
+				int /*long*/ offset = pixels + (y * stride);
+				OS.memmove (line, offset, stride);
+				for (int x = 0; x < w [0]; x++) {
+					int offset1 = x * 4;
+					line[offset1+3] = alphaData [y*w [0]+x];
+					byte temp = line[offset1];
+					line[offset1] = line[offset1 + 2];
+					line[offset1 + 2] = temp;
+				}
+				OS.memmove (offset, line, stride);
+			}
 		}
-		if (gdkImagePtr != 0) OS.g_object_unref(gdkImagePtr);
 		surfaceData = OS.g_malloc(stride * height);
 		OS.memmove(surfaceData, pixels, stride * height);
 		surface = Cairo.cairo_surface_create_for_image(surfaceData, Cairo.CAIRO_FORMAT_ARGB32, width, height, stride);
 		OS.g_object_unref(pixbuf);
-		return;
-	}	
-	int /*long*/ xDisplay = OS.GDK_DISPLAY();
-	int /*long*/ xDrawable = OS.GDK_PIXMAP_XID(pixmap);
-	int /*long*/ xVisual = OS.gdk_x11_visual_get_xvisual(OS.gdk_visual_get_system());
-	int /*long*/ xColormap = OS.gdk_x11_colormap_get_xcolormap(OS.gdk_colormap_get_system());
-	surface = Cairo.cairo_xlib_surface_create(xDisplay, xDrawable, xVisual, 0, xColormap);
+	} else {
+		int /*long*/ xDisplay = OS.GDK_DISPLAY();
+		int /*long*/ xDrawable = OS.GDK_PIXMAP_XID(pixmap);
+		int /*long*/ xVisual = OS.gdk_x11_visual_get_xvisual(OS.gdk_visual_get_system());
+		int /*long*/ xColormap = OS.gdk_x11_colormap_get_xcolormap(OS.gdk_colormap_get_system());
+		surface = Cairo.cairo_xlib_surface_create(xDisplay, xDrawable, xVisual, 0, xColormap);
+	}
+	/* Destroy the image mask if the there is a GC created on the image */
+	if (transparentPixel != -1 && memGC != null) destroyMask();
 }
 
 /**

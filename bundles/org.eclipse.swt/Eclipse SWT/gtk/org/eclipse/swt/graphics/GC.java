@@ -538,27 +538,32 @@ void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeig
 	int /*long*/ maskPixmap = srcImage.mask;
 
 	if (srcWidth != destWidth || srcHeight != destHeight) {
-		//NOT DONE - there must be a better way of scaling a GdkBitmap
 		int /*long*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, true, 8, srcWidth, srcHeight);
 		if (pixbuf != 0) {
 			int /*long*/ colormap = OS.gdk_colormap_get_system();
 			OS.gdk_pixbuf_get_from_drawable(pixbuf, colorPixmap, colormap, srcX, srcY, 0, 0, srcWidth, srcHeight);
-			int /*long*/ gdkImagePtr = OS.gdk_drawable_get_image(maskPixmap, 0, 0, imgWidth, imgHeight);
-			if (gdkImagePtr != 0) {
+			int /*long*/ maskPixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, srcWidth, srcHeight);
+			if (maskPixbuf != 0) {
+				OS.gdk_pixbuf_get_from_drawable(maskPixbuf, maskPixmap, 0, srcX, srcY, 0, 0, srcWidth, srcHeight);
 				int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
 				int /*long*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);
 				byte[] line = new byte[stride];
+				int maskStride = OS.gdk_pixbuf_get_rowstride(maskPixbuf);
+				int /*long*/ maskPixels = OS.gdk_pixbuf_get_pixels(maskPixbuf);
+				byte[] maskLine = new byte[maskStride];
 				for (int y=0; y<srcHeight; y++) {
 					int /*long*/ offset = pixels + (y * stride);
 					OS.memmove(line, offset, stride);
+					int /*long*/ maskOffset = maskPixels + (y * maskStride);
+					OS.memmove(maskLine, maskOffset, maskStride);
 					for (int x=0; x<srcWidth; x++) {
-						if (OS.gdk_image_get_pixel(gdkImagePtr, x + srcX, y + srcY) == 0) {
+						if (maskLine[x * 3] == 0) {
 							line[x*4+3] = 0;
 						}
 					}
 					OS.memmove(offset, line, stride);
 				}
-				OS.g_object_unref(gdkImagePtr);
+				OS.g_object_unref(maskPixbuf);
 				int /*long*/ scaledPixbuf = OS.gdk_pixbuf_scale_simple(pixbuf, destWidth, destHeight, OS.GDK_INTERP_BILINEAR);
 				if (scaledPixbuf != 0) {
 					int /*long*/[] colorBuffer = new int /*long*/[1];
