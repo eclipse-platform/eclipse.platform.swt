@@ -425,8 +425,8 @@ void fixIM () {
 	/*
 	*  The IM filter has to be called one time for each key press event.
 	*  When the IM is open the key events are duplicated. The first event
-	*  is filter by SWT and the second event is filter by GTK.  In some 
-	*  cases the GTK handler does not run (the widget  is destroyed, the 
+	*  is filtered by SWT and the second event is filtered by GTK.  In some 
+	*  cases the GTK handler does not run (the widget is destroyed, the 
 	*  application code consumes the event, etc), for these cases the IM
 	*  filter has to be called by SWT.
 	*/
