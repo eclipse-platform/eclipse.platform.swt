@@ -47,7 +47,7 @@ public class Table extends Composite {
 	ImageList imageList;
 	TableItem currentItem;
 	int lastIndexOf, lastWidth;
-	boolean customDraw, dragStarted, fixScrollWidth, mouseDown, tipRequested;
+	boolean customDraw, dragStarted, fixScrollWidth, tipRequested, wasSelected;
 	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize, resized;
 	static final int INSET = 4;
 	static final int GRID_WIDTH = 1;
@@ -139,7 +139,28 @@ public void addSelectionListener (SelectionListener listener) {
 
 int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 	if (handle == 0) return 0;
+	boolean checkSelection = false, checkFilter = false, checkActivate = false;
 	switch (msg) {
+		case OS.WM_CHAR:
+		case OS.WM_IME_CHAR:
+		case OS.WM_KEYUP:
+		case OS.WM_SYSCHAR:
+		case OS.WM_SYSKEYDOWN:
+		case OS.WM_SYSKEYUP:
+		case OS.WM_LBUTTONDBLCLK:
+		case OS.WM_LBUTTONUP:
+		case OS.WM_MBUTTONDBLCLK:
+		case OS.WM_MBUTTONUP:
+		case OS.WM_MOUSEHOVER:
+		case OS.WM_MOUSELEAVE:
+		case OS.WM_MOUSEMOVE:
+//		case OS.WM_MOUSEWHEEL:
+		case OS.WM_RBUTTONDBLCLK:
+		case OS.WM_RBUTTONUP:
+		case OS.WM_XBUTTONDBLCLK:
+		case OS.WM_XBUTTONUP:
+			checkSelection = true;
+			break;
 		/*
 		* Bug in Windows.  For some reason, when the user clicks
 		* on this control, the Windows hook WH_MSGFILTER is sent
@@ -150,13 +171,9 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 		case OS.WM_LBUTTONDOWN:
 		case OS.WM_MBUTTONDOWN:
 		case OS.WM_RBUTTONDOWN:
-		case OS.WM_XBUTTONDOWN: {
-			Display display = this.display;
-			display.ignoreMsgFilter = true;
-			int code = OS.CallWindowProc (TableProc, hwnd, msg, wParam, lParam);
-			display.ignoreMsgFilter = false;
-			return code;
-		}
+		case OS.WM_XBUTTONDOWN:
+			checkSelection = checkFilter = true;
+			break;
 		/*
 		* Feature in Windows.  Windows sends LVN_ITEMACTIVATE from WM_KEYDOWN
 		* instead of WM_CHAR.  This means that application code that expects
@@ -164,14 +181,27 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 		* event will fail.  The fix is to ignore LVN_ITEMACTIVATE when it is
 		* caused by WM_KEYDOWN and send SWT.DefaultSelection from WM_CHAR.
 		*/
-		case OS.WM_KEYDOWN: {
-			ignoreActivate = true;
-			int code = OS.CallWindowProc (TableProc, hwnd, msg, wParam, lParam);
-			ignoreActivate = false;
-			return code;
-		}
+		case OS.WM_KEYDOWN:
+			checkSelection = checkActivate = true;
+			break;
 	}
-	return OS.CallWindowProc (TableProc, hwnd, msg, wParam, lParam);
+	boolean oldSelected = wasSelected;
+	if (checkSelection) wasSelected = false;
+	if (checkActivate) ignoreActivate = true;
+	if (checkFilter) display.ignoreMsgFilter = true;
+	int code = OS.CallWindowProc (TableProc, hwnd, msg, wParam, lParam);
+	if (checkFilter) display.ignoreMsgFilter = false;
+	if (checkActivate) ignoreActivate = false;
+	if (checkSelection) {
+		if (wasSelected) {
+			Event event = new Event ();
+			int index = OS.SendMessage (handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED);
+			if (index != -1) event.item = _getItem (index);
+			postEvent (SWT.Selection, event);
+		}
+		wasSelected = oldSelected;
+	}
+	return code;
 }
 
 static int checkStyle (int style) {
@@ -2046,11 +2076,10 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lPara
 	/*
 	* Force the table to have focus so that when the user
 	* reselects the focus item, the LVIS_FOCUSED state bits
-	* for the item will be set.  These bits are used when
-	* the table is multi-select to issue the selection
-	* event.  If the user did not click on an item, then
-	* set focus to the table so that it will come to the
-	* front and take focus in the work around below.
+	* for the item will be set.  If the user did not click on
+	* an item, then set focus to the table so that it will
+	* come to the front and take focus in the work around
+	* below.
 	*/
 	OS.SetFocus (handle);
 		
@@ -2072,13 +2101,8 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lPara
 	* WM_NOTIFY because the item state has not changed.
 	* This is strictly correct but is inconsistent with the
 	* list widget and other widgets in Windows.  The fix is
-	* to detect the case when an item is reselected and issue
-	* the notification.
-	* 
-	* NOTE: This code runs for multi-select as well, ignoring
-	* the selection that is issed from WM_NOTIFY.
+	* to detect the case when an item is mark it as selected.
 	*/
-	boolean wasSelected = false;
 	int count = OS.SendMessage (handle, OS.LVM_GETSELECTEDCOUNT, 0, 0);
 	if (count == 1 && pinfo.iItem != -1) {
 		LVITEM lvItem = new LVITEM ();
@@ -2086,17 +2110,10 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lPara
 		lvItem.stateMask = OS.LVIS_SELECTED;
 		lvItem.iItem = pinfo.iItem;
 		OS.SendMessage (handle, OS.LVM_GETITEM, 0, lvItem);
-		wasSelected = (lvItem.state & OS.LVIS_SELECTED) != 0;
-		if (wasSelected) ignoreSelect = true;
+		if ((lvItem.state & OS.LVIS_SELECTED) != 0) wasSelected = true;
 	}
 	dragStarted = false;
 	int code = callWindowProc (handle, msg, wParam, lParam);
-	if (wasSelected) {
-		ignoreSelect = false;
-		Event event = new Event ();
-		event.item = _getItem (pinfo.iItem);
-		postEvent (SWT.Selection, event);
-	}
 	if (dragStarted) {
 		if (OS.GetCapture () != handle) OS.SetCapture (handle);
 	} else {
@@ -2106,7 +2123,6 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lPara
 			fakeMouseUp = (pinfo.flags & OS.LVHT_ONITEMSTATEICON) == 0;
 		}
 		if (fakeMouseUp) {
-			mouseDown = false;
 			sendMouseEvent (SWT.MouseUp, button, handle, msg, wParam, lParam);
 		}
 	}
@@ -3168,7 +3184,6 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 }
 
 LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
-	mouseDown = true;
 
 	/*
 	* Feature in Windows.  When the user selects outside of
@@ -3208,7 +3223,6 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 }
 
 LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
-	mouseDown = true;
 	
 	/*
 	* Feature in Windows.  For some reason, capturing
@@ -3243,11 +3257,6 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	}
 	
 	return result;
-}
-
-LRESULT WM_LBUTTONUP (int wParam, int lParam) {
-	mouseDown = false;
-	return super.WM_LBUTTONUP (wParam, lParam);
 }
 
 LRESULT WM_MOUSEHOVER (int wParam, int lParam) {
@@ -3781,33 +3790,13 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			if (!ignoreSelect) {
 				NMLISTVIEW pnmlv = new NMLISTVIEW ();
 				OS.MoveMemory (pnmlv, lParam, NMLISTVIEW.sizeof);
-				if (pnmlv.iItem != -1 && (pnmlv.uChanged & OS.LVIF_STATE) != 0) {
-					boolean isFocus = (pnmlv.uNewState & OS.LVIS_FOCUSED) != 0;
-					int index = OS.SendMessage (handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED);
-					if ((style & SWT.MULTI) != 0) {
-						if (OS.GetKeyState (OS.VK_CONTROL) < 0) {
-							if (!isFocus) {
-								if (index == pnmlv.iItem) {
-									boolean isSelected = (pnmlv.uNewState & OS.LVIS_SELECTED) != 0;
-									boolean wasSelected = (pnmlv.uOldState & OS.LVIS_SELECTED) != 0;
-									isFocus = isSelected != wasSelected;
-								}
-							} else {
-								isFocus = mouseDown;
-							}
-						}
-					}
-					if (OS.GetKeyState (OS.VK_SPACE) < 0) isFocus = true;
-					if (isFocus) {
-						Event event = new Event();
-						if (index != -1) {
-							/*
-							* This code is intentionally commented.
-							*/
-//							OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 0);
-							event.item = _getItem (index);
-						}
-						postEvent (SWT.Selection, event);
+				if ((pnmlv.uChanged & OS.LVIF_STATE) != 0) {
+					if (pnmlv.iItem == -1) {
+						wasSelected = true;
+					} else {
+						boolean oldSelected = (pnmlv.uNewState & OS.LVIS_SELECTED) != 0;
+						boolean newSelected = (pnmlv.uOldState & OS.LVIS_SELECTED) != 0;
+						if (oldSelected != newSelected) wasSelected = true;
 					}
 				}
 			}
