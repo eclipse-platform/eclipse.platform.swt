@@ -224,6 +224,39 @@ public ScrollBar getVerticalBar () {
 	return verticalBar;
 }
 
+int /*long*/ gtk_scroll_event (int /*long*/ widget, int /*long*/ eventPtr) {
+	int result = super.gtk_scroll_event (widget, eventPtr);
+	
+	/*
+	* Feature in GTK.  Scrolled windows do not scroll if the scrollbars
+	* are hidden.  This is not a bug, but is inconsistent with other platforms.
+	* The fix is to set the adjustment values directly.
+	*/
+	if ((state & CANVAS) != 0) {
+		ScrollBar scrollBar;
+		GdkEventScroll gdkEvent = new GdkEventScroll ();
+		OS.memmove (gdkEvent, eventPtr, GdkEventScroll.sizeof);
+		if (gdkEvent.direction == OS.GDK_SCROLL_UP || gdkEvent.direction == OS.GDK_SCROLL_DOWN) {
+			scrollBar = verticalBar;
+		} else {
+			scrollBar = horizontalBar;
+		}
+		if (scrollBar != null && !OS.GTK_WIDGET_VISIBLE (scrollBar.handle) && scrollBar.getEnabled()) {
+			GtkAdjustment adjustment = new GtkAdjustment ();
+			OS.memmove (adjustment, scrollBar.handle);
+			/* Calculate wheel delta to match GTK+ 2.4 and higher */
+			int wheel_delta = (int) Math.pow(adjustment.page_size, 2.0 / 3.0);
+			if (gdkEvent.direction == OS.GDK_SCROLL_UP || gdkEvent.direction == OS.GDK_SCROLL_LEFT)
+				wheel_delta = -wheel_delta;
+			int value = (int) Math.max(adjustment.lower,
+					Math.min(adjustment.upper - adjustment.page_size, adjustment.value + wheel_delta));
+			OS.gtk_adjustment_set_value (scrollBar.handle, value);
+			return 1;
+		}
+	}
+	return result;
+}
+
 int hScrollBarWidth() {
 	if (horizontalBar==null) return 0;
 	int /*long*/ hBarHandle = OS.GTK_SCROLLED_WINDOW_HSCROLLBAR(scrolledHandle);
