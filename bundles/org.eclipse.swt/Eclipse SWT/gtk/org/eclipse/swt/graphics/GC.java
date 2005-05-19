@@ -1628,7 +1628,7 @@ public int getAdvanceWidth(char ch) {
  */
 public int getAlpha() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	initCairo();
+	if (data.cairo == 0) return 0xFF;
 	return (int)(Cairo.cairo_current_alpha(data.cairo) * 255);
 }
 
