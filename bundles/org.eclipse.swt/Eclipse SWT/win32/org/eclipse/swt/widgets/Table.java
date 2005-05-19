@@ -812,6 +812,17 @@ void createWidget () {
 	super.createWidget ();
 	items = new TableItem [4];
 	columns = new TableColumn [4];
+	/*
+	* Force virtual tables to use custom draw.  This
+	* is necessary to support colors and fonts for table
+	* items.  When the application is queried for data,
+	* setting the custom draw flag at that time is too
+	* late.  The current item is not redrawn in order
+	* to avoid recursion and NM_CUSTOMDRAW has already
+	* been avoided because at the time of the message,
+	* there were no items that required custom drawing.
+	*/
+	if ((style & SWT.VIRTUAL) != 0) customDraw = true;
 }
 
 int defaultBackground () {
@@ -2823,7 +2834,7 @@ void setTableEmpty () {
 			imageList = null;
 		}
 	}
-	customDraw = false;
+	if ((style & SWT.VIRTUAL) != 0) customDraw = false;
 	items = new TableItem [4];
 }
 
