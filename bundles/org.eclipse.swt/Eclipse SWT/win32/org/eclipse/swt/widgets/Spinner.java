@@ -1216,6 +1216,14 @@ LRESULT wmKillFocus (int hwnd, int wParam, int lParam) {
 	return super.wmKillFocus (hwnd, wParam, lParam);
 }
 
+LRESULT wmLButtonDown (int hwnd,int wParam,int lParam) {
+	if (hwnd == hwndUpDown) {
+		int value = getSelectionText ();
+		OS.SendMessage (hwndUpDown , OS.IsWinCE ? OS.UDM_SETPOS : OS.UDM_SETPOS32, 0, value);
+	}
+	return super.wmLButtonDown (hwnd, wParam, lParam);
+}
+
 LRESULT wmScrollChild (int wParam, int lParam) {
 	int code = wParam & 0xFFFF;
 	switch (code) {
@@ -1241,7 +1249,7 @@ LRESULT wmNotifyChild(int wParam, int lParam) {
 				if (value > max [0]) value = min [0];
 			}
 			/*
-			* The SWT.Modify event is after the widget has been
+			* The SWT.Modify event is sent after the widget has been
 			* updated with the new state.  Rather than allowing
 			* the default updown window proc to set the value
 			* when the user clicks on the updown control, set
