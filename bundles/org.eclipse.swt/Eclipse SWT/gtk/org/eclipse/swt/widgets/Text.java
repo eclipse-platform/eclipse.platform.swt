@@ -35,7 +35,7 @@ import org.eclipse.swt.events.*;
  */
 public class Text extends Scrollable {
 	int /*long*/ bufferHandle;
-	int tabs = 8, lastEventTime = 0;
+	int tabs = 8, lastEventTime = 0, gdkEventKey = 0;
 	boolean doubleClick;
 	
 	static final int INNER_BORDER = 2;
@@ -409,23 +409,36 @@ void deregister () {
 }
 
 boolean filterKey (int keyval, int /*long*/ event) {
-	/*
-	* Bug in GTK.  On simplified Chinese, when the IM is open and the user
-	* presses a tab key, focus traversal occurs and the IM stops working.
-	* In order to process keys properly in SWT, if the same key event is
-	* dispatched twice, it is ignored.  If the tab key is not dispatched twice,
-	* the IM fails.  The fix is to dispatch it.
-	*/
-	boolean isTab = keyval == OS.GDK_Tab || keyval == OS.GDK_ISO_Left_Tab;
 	int time = OS.gdk_event_get_time (event);
-	if (time != lastEventTime ||  isTab) {
+	if (time != lastEventTime) {
 		lastEventTime = time;
 		int /*long*/ imContext = imContext ();
 		if (imContext != 0) {
 			return OS.gtk_im_context_filter_keypress (imContext, event);
 		}
 	}
+	gdkEventKey = event;
 	return false;
+}
+
+void fixIM () {
+	/*
+	*  The IM filter has to be called one time for each key press event.
+	*  When the IM is open the key events are duplicated. The first event
+	*  is filter by SWT and the second event is filter by GTK.  In some 
+	*  cases the GTK handler does not run (the widget  is destroyed, the 
+	*  application code consumes the event, etc), for these cases the IM
+	*  filter has to be called by SWT.
+	*/
+	if (gdkEventKey != 0 && gdkEventKey != -1) {
+		int /*long*/ imContext = imContext ();
+		if (imContext != 0) {
+			OS.gtk_im_context_filter_keypress (imContext, gdkEventKey);
+			gdkEventKey = -1;
+			return;
+		}
+	}
+	gdkEventKey = 0;
 }
 
 GdkColor getBackgroundColor () {
@@ -1011,6 +1024,11 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
 	return super.gtk_event_after (widget, gdkEvent);
 }
 
+int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
+	fixIM ();
+	return super.gtk_focus_out_event (widget, event);
+}
+
 int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*long*/ new_text_length, int /*long*/ position) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	if ((style & SWT.SINGLE) != 0) {
@@ -1069,6 +1087,14 @@ int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*
 		}
 	}
 	return 0;
+}
+
+int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
+	int /*long*/ result = super.gtk_key_press_event (widget, event);
+	if (result != 0) fixIM ();
+	if (gdkEventKey == -1) result = 1;
+	gdkEventKey = 0;
+	return result;
 }
 
 int /*long*/ gtk_popup_menu (int /*long*/ widget) {
@@ -1184,6 +1210,7 @@ void register () {
 }
 
 void releaseWidget () {
+	fixIM ();	
 	super.releaseWidget ();
 	if (OS.GTK_VERSION < OS.VERSION (2, 6, 0)) {		 
 		/*
