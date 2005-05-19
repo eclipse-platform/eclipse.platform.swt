@@ -145,7 +145,6 @@ public class StyledText extends Canvas {
 	int lastTextChangeNewCharCount;		// event for use in the 
 	int lastTextChangeReplaceLineCount;	// text changed handler
 	int lastTextChangeReplaceCharCount;	
-	boolean isBidi;
 	boolean isMirrored;
 	boolean bidiColoring = false;		// apply the BIDI algorithm on text segments of the same color
 	Image leftCaretBitmap = null;
@@ -1622,11 +1621,10 @@ public StyledText(Composite parent, int style) {
 	super.setBackground(getBackground());
 	Display display = getDisplay();
 	isMirrored = (super.getStyle() & SWT.MIRRORED) != 0;
-	isBidi = BidiUtil.isBidiPlatform() || isMirrored;
 	if ((style & SWT.READ_ONLY) != 0) {
 		setEditable(false);
 	}
-	leftMargin = rightMargin = isBidi() ? BIDI_CARET_WIDTH - 1: 0;
+	leftMargin = rightMargin = isBidiCaret() ? BIDI_CARET_WIDTH - 1: 0;
 	if ((style & SWT.SINGLE) != 0 && (style & SWT.BORDER) != 0) {
 		leftMargin = topMargin = rightMargin = bottomMargin = 2;
 	}
@@ -1640,7 +1638,7 @@ public StyledText(Composite parent, int style) {
 	    lineCache = new ContentWidthCache(this, content);
 	}	
 	defaultCaret = new Caret(this, SWT.NULL);
-	if (isBidi) {
+	if (isBidiCaret()) {
 		createCaretBitmaps();
 		Runnable runnable = new Runnable() {
 			public void run() {
@@ -4602,7 +4600,7 @@ int getVerticalIncrement() {
 	return lineHeight;
 }
 int getCaretDirection() {
-	if (!isBidi()) return SWT.DEFAULT;
+	if (!isBidiCaret()) return SWT.DEFAULT;
 	if (!updateCaretDirection && caretDirection != SWT.NULL) return caretDirection;
 	updateCaretDirection = false;
 	int caretLine = getCaretLine();
@@ -5026,7 +5024,7 @@ void handleDispose(Event event) {
 		defaultLineStyler.release();
 		defaultLineStyler = null;
 	}
-	if (isBidi()) {
+	if (isBidiCaret()) {
 		BidiUtil.removeLanguageListener(handle);
 	}
 	selectionBackground = null;
@@ -5699,7 +5697,7 @@ public void invokeAction(int action) {
  * Temporary until SWT provides this
  */
 boolean isBidi() {
-	return isBidi;
+	return IS_GTK || BidiUtil.isBidiPlatform() || isMirrored;
 }
 /**
  * Returns whether the given offset is inside a multi byte line delimiter.
@@ -6961,7 +6959,7 @@ public void setFont(Font font) {
 	}
 	calculateContentWidth();
 	calculateScrollBars();
-	if (isBidi()) createCaretBitmaps();
+	if (isBidiCaret()) createCaretBitmaps();
 	caretDirection = SWT.NULL;
 	// always set the caret location. Fixes 6685
 	setCaretLocation();
@@ -7199,7 +7197,6 @@ public void setOrientation(int orientation) {
 		return;
 	}
 	isMirrored = (orientation & SWT.RIGHT_TO_LEFT) != 0;
-	isBidi = BidiUtil.isBidiPlatform() || isMirrored();
 	initializeRenderer();
 	caretDirection = SWT.NULL;
 	setCaretLocation();
@@ -7897,6 +7894,9 @@ public void showSelection() {
 		// will not be visible
 		showLocation(endX, endLine);
 	}	 
+}
+boolean isBidiCaret() {
+	return BidiUtil.isBidiPlatform();
 }
 /**
  * Updates the selection and caret position depending on the text change.
