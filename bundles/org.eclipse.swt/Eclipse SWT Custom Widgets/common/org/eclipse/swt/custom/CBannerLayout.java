@@ -66,8 +66,8 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 	// Add up sizes
 	width = leftSize.x + rightSize.x;
 	height = bottomSize.y;
-	if (bottom != null && (left != null || right != null)) {
-		height += CBanner.BORDER_TOP + CBanner.BORDER_BOTTOM + CBanner.BORDER_STRIPE;
+	if (bottom != null) {
+		height += CBanner.BORDER_STRIPE + 2;
 	}
 	if (left != null) {
 		height += right == null ? leftSize.y : Math.max(leftSize.y, banner.rightMinHeight);

@@ -288,7 +288,7 @@ void onPaint(GC gc) {
 	
 	if (bottom != null && (left != null || right != null)) {
 		gc.setForeground(border1);
-		int y = bottom.getBounds().y - BORDER_BOTTOM - BORDER_STRIPE;
+		int y = bottom.getBounds().y - BORDER_STRIPE - 1;
 		gc.drawLine(0, y, size.x, y);
 	}
 	
