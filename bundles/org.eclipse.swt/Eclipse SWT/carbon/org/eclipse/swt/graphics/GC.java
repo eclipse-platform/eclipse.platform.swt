@@ -1505,6 +1505,11 @@ public Pattern getBackgroundPattern() {
 	return data.backgroundPattern;	
 }
 
+boolean getAdvanced() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return data.advanced;
+}
+
 /**
  * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
  */
@@ -1920,6 +1925,22 @@ public boolean isDisposed() {
 boolean isIdentity(float[] transform) {
 	return transform[0] == 1 && transform[1] == 0 && transform[2] == 0
 	 	&& transform[3] == 1 && transform[4] == 0 && transform[5] == 0;
+}
+
+void setAdvanced(boolean advanced) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (advanced && data.advanced) return;
+	data.advanced = advanced;
+	if (!advanced) {
+		setAlpha(0xFF);
+		setAntialias(SWT.DEFAULT);
+		setBackgroundPattern(null);
+		setClipping(0);
+		setForegroundPattern(null);
+		setInterpolation(SWT.DEFAULT);
+		setTextAntialias(SWT.DEFAULT);
+		setTransform(null);
+	}
 }
 
 /**

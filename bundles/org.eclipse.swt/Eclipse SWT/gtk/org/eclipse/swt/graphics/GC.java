@@ -1628,6 +1628,11 @@ public int getAdvanceWidth(char ch) {
 	return stringExtent(new String(new char[]{ch})).x;
 }
 
+boolean getAdvanced() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return data.cairo != 0;
+}
+
 /**
  * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
  */
@@ -2164,6 +2169,27 @@ boolean isIdentity(int /*long*/ matrix) {
 	double[] d = new double[1], tx = new double[1], ty = new double[1];			
 	Cairo.cairo_matrix_get_affine(matrix, a, b, c, d, tx, ty);
 	return a[0] == 1 && b[0] == 0 && c[0] == 0 && d[0] == 1 && tx[0] == 0 && ty[0] == 0;
+}
+
+void setAdvanced(boolean advanced) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (advanced && data.cairo != 0) return;
+	if (advanced) {
+		try {
+			initCairo();
+		} catch (SWTException e) {}
+	} else {
+		int /*long*/ cairo = data.cairo;
+		if (cairo != 0) Cairo.cairo_destroy(cairo);
+		int /*long*/ matrix = data.matrix;
+		if (matrix != 0) Cairo.cairo_matrix_destroy(matrix);
+		int /*long*/ inverseMatrix = data.inverseMatrix;
+		if (inverseMatrix != 0) Cairo.cairo_matrix_destroy(inverseMatrix);
+		data.cairo = data.matrix = data.inverseMatrix = 0;
+		data.antialias = data.textAntialias = data.interpolation = SWT.DEFAULT;
+		data.backgroundPattern = data.foregroundPattern = null;
+		setClipping(0);
+	}
 }
 
 /**

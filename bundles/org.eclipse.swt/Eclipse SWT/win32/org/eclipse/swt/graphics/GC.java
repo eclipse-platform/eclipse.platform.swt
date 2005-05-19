@@ -2328,6 +2328,11 @@ public int getAdvanceWidth(char ch) {
 	return width[0];
 }
 
+boolean getAdvanced() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return data.gdipGraphics != 0;
+}
+
 /**
  * Returns the receiver's alpha value.
  *
@@ -3078,6 +3083,24 @@ float measureSpace(int font, int format) {
 	RectF bounds = new RectF();
 	Gdip.Graphics_MeasureString(data.gdipGraphics, new char[]{' '}, 1, font, pt, format, bounds);
 	return bounds.Width;
+}
+
+void setAdvanced(boolean advanced) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (advanced && data.gdipGraphics != 0) return;
+	if (advanced) {
+		try {
+			initGdip(false, false);
+		} catch (SWTException e) {}
+	} else {
+		if (data.gdipGraphics != 0) Gdip.Graphics_delete(data.gdipGraphics);
+		if (data.gdipPen != 0) Gdip.Pen_delete(data.gdipPen);
+		if (data.gdipBrush != 0) destroyGdipBrush(data.gdipBrush);
+		data.gdipGraphics = data.gdipBrush = data.gdipPen = 0;
+		data.alpha = 0xFF;
+		data.backgroundPattern = data.foregroundPattern = null;
+		setClipping(0);
+	}
 }
 
 /**

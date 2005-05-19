@@ -47,6 +47,7 @@ public final class GCData {
 	public int antialias = SWT.DEFAULT;
 	public int textAntialias = SWT.DEFAULT;
 	public int fillRule = SWT.FILL_EVEN_ODD;
+	public boolean advanced;
 	
 	public Font font;
 	public int fontAscent;
