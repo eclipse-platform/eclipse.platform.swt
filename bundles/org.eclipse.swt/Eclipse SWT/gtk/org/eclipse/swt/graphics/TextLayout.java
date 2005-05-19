@@ -91,7 +91,7 @@ void computeRuns () {
 	String segmentsText = getSegmentsText();
 	byte[] buffer = Converter.wcsToMbcs(null, segmentsText, false);
 	OS.pango_layout_set_text (layout, buffer, buffer.length);
-	if (styles.length == 2 && styles[0].style == null && ascent == -1 && descent == -1) return;
+	if (styles.length == 2 && styles[0].style == null && ascent == -1 && descent == -1 && segments == null) return;
 	int /*long*/ ptr = OS.pango_layout_get_text(layout);
 	attrList = OS.pango_attr_list_new();	
 	PangoAttribute attribute = new PangoAttribute();
