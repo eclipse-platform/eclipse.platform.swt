@@ -181,7 +181,7 @@ void bringToTop () {
 //		OS.SetWindowPos (handle, OS.HWND_TOP, 0, 0, 0, 0, flags);
 //	} else {
 		OS.BringWindowToTop (handle);
-		// Widget could be disposed at this point
+		// widget could be disposed at this point
 //	}
 }
 
