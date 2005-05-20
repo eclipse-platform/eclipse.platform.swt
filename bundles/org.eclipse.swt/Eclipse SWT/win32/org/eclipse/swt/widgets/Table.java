@@ -138,6 +138,10 @@ public void addSelectionListener (SelectionListener listener) {
 }
 
 int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
+	return callWindowProc (hwnd, msg, wParam, lParam, false);
+}
+
+int callWindowProc (int hwnd, int msg, int wParam, int lParam, boolean forceSelect) {
 	if (handle == 0) return 0;
 	boolean checkSelection = false, checkFilter = false, checkActivate = false;
 	switch (msg) {
@@ -193,7 +197,7 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 	if (checkFilter) display.ignoreMsgFilter = false;
 	if (checkActivate) ignoreActivate = false;
 	if (checkSelection) {
-		if (wasSelected) {
+		if (wasSelected || forceSelect) {
 			Event event = new Event ();
 			int index = OS.SendMessage (handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED);
 			if (index != -1) event.item = _getItem (index);
@@ -2114,6 +2118,7 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lPara
 	* list widget and other widgets in Windows.  The fix is
 	* to detect the case when an item is mark it as selected.
 	*/
+	boolean forceSelect = false;
 	int count = OS.SendMessage (handle, OS.LVM_GETSELECTEDCOUNT, 0, 0);
 	if (count == 1 && pinfo.iItem != -1) {
 		LVITEM lvItem = new LVITEM ();
@@ -2121,10 +2126,12 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lPara
 		lvItem.stateMask = OS.LVIS_SELECTED;
 		lvItem.iItem = pinfo.iItem;
 		OS.SendMessage (handle, OS.LVM_GETITEM, 0, lvItem);
-		if ((lvItem.state & OS.LVIS_SELECTED) != 0) wasSelected = true;
+		if ((lvItem.state & OS.LVIS_SELECTED) != 0) {
+			forceSelect = true;
+		}
 	}
 	dragStarted = false;
-	int code = callWindowProc (handle, msg, wParam, lParam);
+	int code = callWindowProc (handle, msg, wParam, lParam, forceSelect);
 	if (dragStarted) {
 		if (OS.GetCapture () != handle) OS.SetCapture (handle);
 	} else {
