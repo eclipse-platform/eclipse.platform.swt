@@ -2267,6 +2267,7 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 						int hwndModal = modal.handle;
 						if (OS.IsWindowEnabled (hwndModal)) {
 							modal.bringToTop ();
+							if (modal.isDisposed ()) break;
 						}
 						int hwndPopup = OS.GetLastActivePopup (hwndModal);
 						if (hwndPopup != 0 && hwndPopup != modal.handle) {
