@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 839;
-int OS_nativeFunctionCallCount[839];
+int OS_nativeFunctionCount = 843;
+int OS_nativeFunctionCallCount[843];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -70,6 +70,8 @@ char * OS_nativeFunctionNames[] = {
 	"CFArrayCreateMutable",
 	"CFArrayGetCount",
 	"CFArrayGetValueAtIndex",
+	"CFDataGetBytes",
+	"CFDataGetLength",
 	"CFLocaleCopyCurrent",
 	"CFNumberFormatterCopyProperty",
 	"CFNumberFormatterCreate",
@@ -85,8 +87,10 @@ char * OS_nativeFunctionNames[] = {
 	"CFURLCopyPathExtension",
 	"CFURLCreateCopyAppendingPathComponent",
 	"CFURLCreateCopyDeletingLastPathComponent",
+	"CFURLCreateData",
 	"CFURLCreateFromFSRef",
 	"CFURLCreateFromFileSystemRepresentation",
+	"CFURLCreateWithBytes",
 	"CFURLCreateWithFileSystemPath",
 	"CFURLGetFSRef",
 	"CGAffineTransformConcat",

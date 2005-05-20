@@ -860,6 +860,35 @@ JNIEXPORT jint JNICALL OS_NATIVE(CFArrayGetValueAtIndex)
 }
 #endif
 
+#ifndef NO_CFDataGetBytes
+JNIEXPORT void JNICALL OS_NATIVE(CFDataGetBytes)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jbyteArray arg2)
+{
+	CFRange _arg1, *lparg1=NULL;
+	jbyte *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, CFDataGetBytes_FUNC);
+	if (arg1) if ((lparg1 = getCFRangeFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	CFDataGetBytes((CFDataRef)arg0, *lparg1, (UInt8 *)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) setCFRangeFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, CFDataGetBytes_FUNC);
+}
+#endif
+
+#ifndef NO_CFDataGetLength
+JNIEXPORT jint JNICALL OS_NATIVE(CFDataGetLength)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CFDataGetLength_FUNC);
+	rc = (jint)CFDataGetLength((CFDataRef)arg0);
+	OS_NATIVE_EXIT(env, that, CFDataGetLength_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CFLocaleCopyCurrent
 JNIEXPORT jint JNICALL OS_NATIVE(CFLocaleCopyCurrent)
 	(JNIEnv *env, jclass that)
@@ -1061,6 +1090,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(CFURLCreateCopyDeletingLastPathComponent)
 }
 #endif
 
+#ifndef NO_CFURLCreateData
+JNIEXPORT jint JNICALL OS_NATIVE(CFURLCreateData)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CFURLCreateData_FUNC);
+	rc = (jint)CFURLCreateData((CFAllocatorRef)arg0, (CFURLRef)arg1, (CFStringEncoding)arg2, (Boolean)arg3);
+	OS_NATIVE_EXIT(env, that, CFURLCreateData_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CFURLCreateFromFSRef
 JNIEXPORT jint JNICALL OS_NATIVE(CFURLCreateFromFSRef)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
@@ -1085,6 +1126,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(CFURLCreateFromFileSystemRepresentation)
 	OS_NATIVE_ENTER(env, that, CFURLCreateFromFileSystemRepresentation_FUNC);
 	rc = (jint)CFURLCreateFromFileSystemRepresentation((CFAllocatorRef)arg0, (const UInt8 *)arg1, arg2, arg3);
 	OS_NATIVE_EXIT(env, that, CFURLCreateFromFileSystemRepresentation_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CFURLCreateWithBytes
+JNIEXPORT jint JNICALL OS_NATIVE(CFURLCreateWithBytes)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jint arg3, jint arg4)
+{
+	jbyte *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CFURLCreateWithBytes_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)CFURLCreateWithBytes((CFAllocatorRef)arg0, (const UInt8 *)lparg1, (CFIndex)arg2, (CFStringEncoding)arg3, (CFURLRef)arg4);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, CFURLCreateWithBytes_FUNC);
 	return rc;
 }
 #endif
