@@ -1507,7 +1507,7 @@ public Pattern getBackgroundPattern() {
 
 boolean getAdvanced() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return data.advanced;
+	return true;
 }
 
 /**
@@ -1929,8 +1929,6 @@ boolean isIdentity(float[] transform) {
 
 void setAdvanced(boolean advanced) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (advanced && data.advanced) return;
-	data.advanced = advanced;
 	if (!advanced) {
 		setAlpha(0xFF);
 		setAntialias(SWT.DEFAULT);
