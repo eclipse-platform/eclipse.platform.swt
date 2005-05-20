@@ -112,7 +112,13 @@ public RGB open () {
 	byte [] buffer = Converter.wcsToMbcs (null, title, true);
 	int /*long*/ handle = OS.gtk_color_selection_dialog_new (buffer);
 	if (parent != null) {
-		OS.gtk_window_set_transient_for (handle, parent.topHandle ());
+		int /*long*/ shellHandle = parent.topHandle ();
+		OS.gtk_window_set_transient_for (handle, shellHandle);
+		int /*long*/ pixbufs = OS.gtk_window_get_icon_list (shellHandle);
+		if (pixbufs != 0) {
+			OS.gtk_window_set_icon_list (handle, pixbufs);
+			OS.g_list_free (pixbufs);
+		}
 	}
 	GtkColorSelectionDialog dialog = new GtkColorSelectionDialog ();
 	OS.memmove (dialog, handle);

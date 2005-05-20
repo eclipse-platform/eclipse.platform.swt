@@ -10592,6 +10592,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1window_1get_1focus)
 }
 #endif
 
+#ifndef NO__1gtk_1window_1get_1icon_1list
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1window_1get_1icon_1list)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1window_1get_1icon_1list_FUNC);
+	rc = (jint)gtk_window_get_icon_list((GtkWindow *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1window_1get_1icon_1list_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1window_1get_1mnemonic_1modifier
 JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1window_1get_1mnemonic_1modifier)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -10741,6 +10753,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1window_1set_1geometry_1hints)
 fail:
 	if (arg2 && lparg2) setGdkGeometryFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, _1gtk_1window_1set_1geometry_1hints_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1window_1set_1icon_1list
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1window_1set_1icon_1list)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1window_1set_1icon_1list_FUNC);
+	gtk_window_set_icon_list((GtkWindow *)arg0, (GList *)arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1window_1set_1icon_1list_FUNC);
 }
 #endif
 

@@ -171,8 +171,7 @@ void _setImages (Image [] images) {
 			pixbufs = OS.g_list_append (pixbufs, pixbuf);			
 		}
 	}
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (topHandle ());
-	OS.gdk_window_set_icon_list (window, pixbufs);
+	OS.gtk_window_set_icon_list (topHandle (), pixbufs);
 	int /*long*/ [] data = new int /*long*/ [1];
 	int /*long*/ temp = pixbufs;
 	while (temp != 0) {

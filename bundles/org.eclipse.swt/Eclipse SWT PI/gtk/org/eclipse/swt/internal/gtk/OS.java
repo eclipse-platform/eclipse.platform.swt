@@ -7317,6 +7317,15 @@ public static final int /*long*/ gtk_window_get_focus(int /*long*/ window) {
 		lock.unlock();
 	}
 }
+public static final native int /*long*/ _gtk_window_get_icon_list(int /*long*/ window);
+public static final int /*long*/ gtk_window_get_icon_list(int /*long*/ window) {
+	lock.lock();
+	try {
+		return _gtk_window_get_icon_list(window);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int _gtk_window_get_mnemonic_modifier(int /*long*/ window);
 public static final int gtk_window_get_mnemonic_modifier(int /*long*/ window) {
 	lock.lock();
@@ -7430,6 +7439,15 @@ public static final void gtk_window_set_geometry_hints(int /*long*/ window, int 
 	lock.lock();
 	try {
 		_gtk_window_set_geometry_hints(window, geometry_widget, geometry, geom_mask);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_window_set_icon_list(int /*long*/ window, int /*long*/ list);
+public static final void gtk_window_set_icon_list(int /*long*/ window, int /*long*/ list) {	
+	lock.lock();
+	try {
+		_gtk_window_set_icon_list(window, list);
 	} finally {
 		lock.unlock();
 	}

@@ -134,7 +134,13 @@ public FontData open () {
 	titleBytes = Converter.wcsToMbcs (null, title, true);
 	handle = OS.gtk_font_selection_dialog_new (titleBytes);
 	if (parent!=null) {
-		OS.gtk_window_set_transient_for(handle, parent.topHandle());
+		int /*long*/ shellHandle = parent.topHandle ();
+		OS.gtk_window_set_transient_for(handle, shellHandle);
+		int /*long*/ pixbufs = OS.gtk_window_get_icon_list (shellHandle);
+		if (pixbufs != 0) {
+			OS.gtk_window_set_icon_list (handle, pixbufs);
+			OS.g_list_free (pixbufs);
+		}
 	}
 	if (fontData != null) {
 		Display display = parent != null ? parent.display : Display.getCurrent ();

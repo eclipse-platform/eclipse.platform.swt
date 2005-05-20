@@ -313,13 +313,19 @@ String openChooserDialog () {
 	*/
 	boolean oldWarnings = display.getWarnings ();
 	display.setWarnings (false);
+	int /*long*/ shellHandle = parent.topHandle ();
 	handle = OS.gtk_file_chooser_dialog_new (
 		titleBytes,
-		parent.topHandle (),
+		shellHandle,
 		action,
 		OS.GTK_STOCK_CANCEL (), OS.GTK_RESPONSE_CANCEL,
 		OS.GTK_STOCK_OK (), OS.GTK_RESPONSE_OK,
 		0);
+	int /*long*/ pixbufs = OS.gtk_window_get_icon_list (shellHandle);
+	if (pixbufs != 0) {
+		OS.gtk_window_set_icon_list (handle, pixbufs);
+		OS.g_list_free (pixbufs);
+	}
 	display.setWarnings (oldWarnings);
 	presetChooserDialog ();
 	String answer = null;
@@ -333,7 +339,13 @@ String openClassicDialog () {
 	byte [] titleBytes = Converter.wcsToMbcs (null, title, true);
 	handle = OS.gtk_file_selection_new (titleBytes);
 	if (parent != null) {
-		OS.gtk_window_set_transient_for (handle, parent.topHandle());
+		int /*long*/ shellHandle = parent.topHandle ();
+		OS.gtk_window_set_transient_for (handle, shellHandle);
+		int /*long*/ pixbufs = OS.gtk_window_get_icon_list (shellHandle);
+		if (pixbufs != 0) {
+			OS.gtk_window_set_icon_list (handle, pixbufs);
+			OS.g_list_free (pixbufs);
+		}
 	}
 	presetClassicDialog ();
 	String answer = null;
