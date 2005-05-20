@@ -1525,7 +1525,7 @@ int /*long*/ pixbufCellDataProc (int /*long*/ tree_column, int /*long*/ cell, in
 	int modelIndex = -1;
 	boolean customDraw = false;
 	if (columnCount == 0) {
-		modelIndex = Table.FIRST_COLUMN;
+		modelIndex = Tree.FIRST_COLUMN;
 		customDraw = firstCustomDraw;
 	} else {
 		for (int i = 0; i < columns.length; i++) {
@@ -2062,7 +2062,7 @@ int /*long*/ textCellDataProc (int /*long*/ tree_column, int /*long*/ cell, int 
 	int modelIndex = -1;
 	boolean customDraw = false;
 	if (columnCount == 0) {
-		modelIndex = Table.FIRST_COLUMN;
+		modelIndex = Tree.FIRST_COLUMN;
 		customDraw = firstCustomDraw;
 	} else {
 		for (int i = 0; i < columns.length; i++) {
