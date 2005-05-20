@@ -174,6 +174,29 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+int colorProc (int inControl, int inMessage, int inDrawDepth, int inDrawInColor) {
+	switch (inMessage) {
+		case OS.kControlMsgApplyTextColor: {
+			if (parent.foreground != null) {
+				OS.RGBForeColor (toRGBColor (parent.foreground));
+			} else {
+				OS.SetThemeTextColor ((short) OS.kThemeTextColorDialogActive, (short) inDrawDepth, inDrawInColor != 0);
+			}
+			return OS.noErr;
+		}
+		case OS.kControlMsgSetUpBackground: {
+			float [] background = parent.background != null ? parent.background : parent.getParentBackground ();
+			if (background != null) {
+				OS.RGBBackColor (toRGBColor (background));
+			} else {
+				OS.SetThemeBackground ((short) OS.kThemeBrushDialogBackgroundActive, (short) inDrawDepth, inDrawInColor != 0);
+			}
+			return OS.noErr;
+		}
+	}
+	return OS.eventNotHandledErr;
+}
+
 Point computeSize (GC gc) {
 	checkWidget();
 	int width = 0, height = 0;
@@ -273,12 +296,17 @@ public void dispose () {
 }
 
 void drawBackground (int control) {
-	drawBackground (control, null);
+	drawBackground (control, parent.background);
 }
 
 void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
 	if (control == handle && (style & (SWT.DROP_DOWN | SWT.SEPARATOR)) != 0) {
-		int state = OS.IsControlEnabled(control) && OS.IsControlActive (control) ? OS.kThemeStateActive : OS.kThemeStateInactive;
+		int state;
+		if (OS.IsControlEnabled (control)) {
+			state = OS.IsControlActive (control) ? OS.kThemeStateActive : OS.kThemeStateInactive;
+		} else {
+			state = OS.IsControlActive (control) ? OS.kThemeStateUnavailable : OS.kThemeStateUnavailableInactive;
+		}
 		Rect rect = new Rect ();
 		OS.GetControlBounds (handle, rect);
 		if ((style & SWT.SEPARATOR) != 0 && this.control == null) {
@@ -511,6 +539,7 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 void hookEvents () {
 	super.hookEvents ();
 	int controlProc = display.controlProc;
+	int colorProc = display.colorProc;
 	int [] mask1 = new int [] {
 		OS.kEventClassControl, OS.kEventControlDraw,
 		OS.kEventClassControl, OS.kEventControlHit,
@@ -527,13 +556,16 @@ void hookEvents () {
 	if (iconHandle != 0) {
 		controlTarget = OS.GetControlEventTarget (iconHandle);
 		OS.InstallEventHandler (controlTarget, controlProc, mask2.length / 2, mask2, iconHandle, null);
+		OS.SetControlColorProc (iconHandle, colorProc);
 	}
 	if (labelHandle != 0) {
 		controlTarget = OS.GetControlEventTarget (labelHandle);
 		OS.InstallEventHandler (controlTarget, controlProc, mask2.length / 2, mask2, labelHandle, null);
+		OS.SetControlColorProc (labelHandle, colorProc);
 	}
 	int helpProc = display.helpProc;
 	OS.HMInstallControlContentCallback (handle, helpProc);
+	OS.SetControlColorProc (handle, colorProc);
 }
 
 void invalidateVisibleRegion (int control) {
@@ -737,6 +769,15 @@ void selectRadio () {
 	setSelection (true);
 }
 
+void setBackground (float [] color) {
+	parent.setBackground (handle, color);
+	if (labelHandle != 0) {
+		parent.setBackground (labelHandle, color);
+		updateText (false);
+	}
+	if (iconHandle != 0) parent.setBackground (iconHandle, color);
+}
+
 void setBounds (int x, int y, int width, int height, GC gc) {
 	setBounds (handle, x, y, width, height, true, true, false);
 	if ((style & SWT.SEPARATOR) != 0) return;
@@ -841,6 +882,15 @@ void setFontStyle (Font font) {
 	/* This code is intentionaly commented. */
 //	parent.setFontStyle (labelHandle, font);
 	updateText (false);
+}
+
+void setForeground (float [] color) {
+	parent.setForeground (handle, color);
+	if (labelHandle != 0) {
+		parent.setForeground (labelHandle, color);
+		updateText (false);
+	}
+	if (iconHandle != 0) parent.setForeground (iconHandle, color);
 }
 
 /**
@@ -1048,15 +1098,21 @@ void updateText (boolean layout) {
 		gc.dispose ();
 		Image image = new Image (display, size.x, size.y);
 		gc = new GC (image);
-		Color foreground = parent.getForeground();
-		gc.setForeground(foreground);
+		Color foreground = parent.getForeground ();
+		gc.setForeground (foreground);
+		if (parent.background != null) {
+			gc.setBackground (parent.getBackground ());
+			gc.fillRectangle (0, 0, size.x, size.y);
+		}
 		gc.setFont (font);
 		gc.drawText (text, 0, 0, flags);
 		gc.dispose ();
-		ImageData data = image.getImageData ();
-		data.transparentPixel = 0xFFFFFF;
-		image.dispose ();
-		image = new Image (display, data, data.getTransparencyMask());
+		if (parent.background == null) {
+			ImageData data = image.getImageData ();
+			data.transparentPixel = 0xFFFFFF;
+			image.dispose ();
+			image = new Image (display, data, data.getTransparencyMask ());
+		}
 		labelCIcon = createCIcon (image);
 		image.dispose ();
 		inContent.contentType = (short) OS.kControlContentCIconHandle;

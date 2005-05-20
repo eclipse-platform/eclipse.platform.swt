@@ -428,6 +428,16 @@ void removeControl (Control control) {
 	}
 }
 
+void setBackground (float [] color) {
+	super.setBackground (color);
+	if (items == null) return;
+	for (int i=0; i<itemCount; i++) {
+		ToolItem item = items [i];
+		item.setBackground (color);
+	}
+	redrawWidget (handle, true);
+}
+
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
 	int result = super.setBounds (x, y, width, height, move, resize, events);
 	if ((result & RESIZED) != 0) 	relayout ();
@@ -442,6 +452,16 @@ void setFontStyle (Font font) {
 		item.setFontStyle (font);
 	}
 	relayout ();
+}
+
+void setForeground (float [] color) {
+	super.setForeground (color);
+	if (items == null) return;
+	for (int i=0; i<itemCount; i++) {
+		ToolItem item = items [i];
+		item.setForeground (color);
+	}
+	redrawWidget (handle, true);
 }
 
 public void setRedraw (boolean redraw) {
