@@ -48,7 +48,7 @@ import org.eclipse.swt.widgets.*;
  * tab character into the widget.  A list widget implementation, on the
  * other hand, would like the system default traversal behavior.  Using
  * only the doit flag, both implementations are possible.  The text widget
- * implementor sets doit to <code>false</false>, ensuring that the system
+ * implementor sets doit to <code>false</code>, ensuring that the system
  * will not traverse and that the tab key will be delivered to key listeners.
  * The list widget implementor sets doit to <code>true</code>, indicating
  * that the system should perform tab traversal and that the key should not
