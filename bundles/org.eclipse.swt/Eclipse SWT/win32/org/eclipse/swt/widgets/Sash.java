@@ -290,6 +290,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 		lastX = event.x;
 		lastY = event.y;
 		menuShell ().bringToTop ();
+		if (isDisposed ()) return LRESULT.ZERO;
 		if (OS.IsWinCE) {
 			OS.UpdateWindow (hwndTrack);
 		} else {

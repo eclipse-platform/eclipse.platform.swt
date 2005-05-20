@@ -812,6 +812,7 @@ int hwndMDIClient () {
 public void open () {
 	checkWidget ();
 	bringToTop ();
+	if (isDisposed ()) return;
 	/*
 	* Feature on WinCE PPC.  A new application becomes
 	* the foreground application only if it has at least
@@ -957,6 +958,7 @@ public void setActive () {
 	checkWidget ();
 	if(!isVisible()) return;
 	bringToTop ();
+	// widget could be disposed at this point
 }
 
 void setActiveControl (Control control) {
@@ -1265,7 +1267,10 @@ public void setVisible (boolean visible) {
 		if (visible) {
 			display.setModalShell (this);
 			Control control = display._getFocusControl ();
-			if (control != null && !control.isActive ()) bringToTop ();
+			if (control != null && !control.isActive ()) {
+				bringToTop ();
+				if (isDisposed ()) return;
+			}
 			int hwndShell = OS.GetActiveWindow ();
 			if (hwndShell == 0) {
 				if (parent != null) hwndShell = parent.handle;
