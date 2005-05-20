@@ -35,7 +35,8 @@ import org.eclipse.swt.events.*;
  */
 public class Text extends Scrollable {
 	int /*long*/ bufferHandle;
-	int tabs = 8, lastEventTime = 0, gdkEventKey = 0;
+	int tabs = 8, lastEventTime = 0;
+	int /*long*/ gdkEventKey = 0;
 	boolean doubleClick;
 	
 	static final int INNER_BORDER = 2;

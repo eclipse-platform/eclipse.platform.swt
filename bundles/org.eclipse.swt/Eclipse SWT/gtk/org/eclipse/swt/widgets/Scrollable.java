@@ -225,7 +225,7 @@ public ScrollBar getVerticalBar () {
 }
 
 int /*long*/ gtk_scroll_event (int /*long*/ widget, int /*long*/ eventPtr) {
-	int result = super.gtk_scroll_event (widget, eventPtr);
+	int /*long*/ result = super.gtk_scroll_event (widget, eventPtr);
 	
 	/*
 	* Feature in GTK.  Scrolled windows do not scroll if the scrollbars

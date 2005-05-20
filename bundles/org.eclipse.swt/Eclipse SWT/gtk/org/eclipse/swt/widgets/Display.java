@@ -820,7 +820,7 @@ Image createImage (String name) {
 	return new Image (this, imageData);
 }
 
-static int createPixbuf(Image image) {
+static int /*long*/ createPixbuf(Image image) {
 	int [] w = new int [1], h = new int [1];
  	OS.gdk_drawable_get_size (image.pixmap, w, h);
 	int /*long*/ colormap = OS.gdk_colormap_get_system ();

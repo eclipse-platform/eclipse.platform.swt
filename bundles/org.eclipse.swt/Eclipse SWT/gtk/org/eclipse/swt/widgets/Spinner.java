@@ -37,7 +37,8 @@ import org.eclipse.swt.events.*;
 public class Spinner extends Composite {
 	static final int INNER_BORDER = 2;
 	static final int MIN_ARROW_WIDTH = 6;
-	int lastEventTime = 0, gdkEventKey = 0;
+	int lastEventTime = 0;
+	int /*long*/ gdkEventKey = 0;
 	
 /**
  * Constructs a new instance of this class given its parent

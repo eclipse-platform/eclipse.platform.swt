@@ -54,7 +54,8 @@ import org.eclipse.swt.events.*;
  */
 public class Combo extends Composite {
 	int /*long*/ arrowHandle, entryHandle, listHandle;
-	int lastEventTime, visibleCount = 5, gdkEventKey = 0;
+	int lastEventTime, visibleCount = 5;
+	int /*long*/ gdkEventKey = 0;
 	String [] items = new String [0];
 	boolean ignoreSelect, lockText;
 
