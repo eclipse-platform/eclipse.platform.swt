@@ -345,11 +345,11 @@ public void setBounds (int x, int y, int width, int height) {
 	checkWidget();
 	if (this.x == x && this.y == y && this.width == width && this.height == height) return;
 	boolean isFocus = isFocusCaret ();
-	if (isFocus) hideCaret ();
+	if (isFocus && isVisible) hideCaret ();
 	this.x = x; this.y = y;
 	this.width = width; this.height = height;
 //	parent.updateCaret ();
-	if (isFocus) showCaret ();
+	if (isFocus && isVisible) showCaret ();
 }
 
 /**
@@ -421,9 +421,9 @@ public void setImage (Image image) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	boolean isFocus = isFocusCaret ();
-	if (isFocus) hideCaret ();
+	if (isFocus && isVisible) hideCaret ();
 	this.image = image;
-	if (isFocus) showCaret ();
+	if (isFocus && isVisible) showCaret ();
 }
 
 /**
