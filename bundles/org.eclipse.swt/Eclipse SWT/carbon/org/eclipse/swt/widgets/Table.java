@@ -1502,6 +1502,13 @@ int itemDataProc (int browser, int id, int property, int itemData, int setValue)
 				event.item = item;
 				event.detail = SWT.CHECK;
 				postEvent (SWT.Selection, event);
+				/*
+				* Bug in the Macintosh. When the height of the row is smaller than the
+				* check box, the tail of the check mark draws outside of the item part
+				* bounds. This means it will not be redrawn when the item is unckeched.
+				* The fix is to redraw the area.
+				*/
+				if (!item.checked) item.redraw(Table.CHECK_COLUMN_ID);
 			} else {
 				int theData = OS.kThemeButtonOff;
 				if (item.checked) theData = item.grayed ? OS.kThemeButtonMixed : OS.kThemeButtonOn;

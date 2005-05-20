@@ -684,6 +684,24 @@ void redraw (int propertyID) {
 	*/
 	if (propertyID == OS.kDataBrowserNoItem && parent.columnCount == 0) propertyID = parent.column_id;
 	OS.UpdateDataBrowserItems (parent.handle, parentID, 1, new int[] {id}, OS.kDataBrowserItemNoProperty, propertyID);
+	/*
+	* Bug in the Macintosh. When the height of the row is smaller than the
+	* check box, the tail of the check mark draws outside of the item part
+	* bounds. This means it will not be redrawn when the item is unckeched.
+	* The fix is to redraw the area.
+	*/
+	if (propertyID == Tree.CHECK_COLUMN_ID) {
+		Rect rect = new Rect();
+		if (OS.GetDataBrowserItemPartBounds (parent.handle, id, propertyID, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+			Rect controlRect = new Rect ();
+			OS.GetControlBounds (parent.handle, controlRect);
+			int x = rect.left - controlRect.left;
+			int y = rect.top - controlRect.top - 1;
+			int width = rect.right - rect.left;
+			int height = 1;
+			redrawWidget (parent.handle, x, y, width, height, false);
+		}
+	}
 }
 
 void releaseChild () {
