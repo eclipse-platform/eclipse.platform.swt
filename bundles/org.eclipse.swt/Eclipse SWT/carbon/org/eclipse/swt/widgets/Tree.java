@@ -653,6 +653,8 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		}
 		if (columnIndex == columnCount) return OS.noErr;
 	}
+	Rect controlRect = new Rect ();
+	OS.GetControlBounds (handle, controlRect);
 	TreeItem item = items [index];
 	if ((style & SWT.VIRTUAL) != 0) {
 		if (!item.cached) {
@@ -660,7 +662,11 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 			if (setScrollWidth (item)) {
 				Rect rect = new Rect();
 				if (OS.GetDataBrowserItemPartBounds (handle, id, property, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
-					redrawWidget (handle, rect.left, rect.top, rect.right, rect.bottom, false);
+					int x = rect.left - controlRect.left;
+					int y = rect.top - controlRect.top;
+					int width = rect.right - rect.left;
+					int height = rect.bottom - rect.top;
+					redrawWidget (handle, x, y, width, height, false);
 				}
 				return OS.noErr;
 			}
@@ -673,8 +679,6 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
 	boolean selected = (itemState & OS.kDataBrowserItemIsSelected) != 0;
-	Rect controlRect = new Rect ();
-	OS.GetControlBounds (handle, controlRect);
 	x -= controlRect.left;
 	y -= controlRect.top;
 	GC gc = paintGC;
