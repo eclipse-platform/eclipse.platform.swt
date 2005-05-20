@@ -652,10 +652,12 @@ void deregister() {
 public void deselect (int index) {
 	checkWidget();
 	if (index < 0 || index >= itemCount) return;
+	boolean fixColumn = showFirstColumn ();
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.gtk_tree_selection_unselect_iter (selection, _getItem (index).handle);
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	if (fixColumn) hideFirstColumn ();
 }
 
 /**
@@ -675,6 +677,7 @@ public void deselect (int index) {
  */
 public void deselect (int start, int end) {
 	checkWidget();
+	boolean fixColumn = showFirstColumn ();
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	for (int index=start; index<=end; index++) {
@@ -682,6 +685,7 @@ public void deselect (int start, int end) {
 		OS.gtk_tree_selection_unselect_iter (selection, _getItem (index).handle);
 	}
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	if (fixColumn) hideFirstColumn ();
 }
 
 /**
@@ -704,6 +708,7 @@ public void deselect (int start, int end) {
 public void deselect (int [] indices) {
 	checkWidget();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
+	boolean fixColumn = showFirstColumn ();
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	for (int i=0; i<indices.length; i++) {
@@ -712,6 +717,7 @@ public void deselect (int [] indices) {
 		OS.gtk_tree_selection_unselect_iter (selection, _getItem (index).handle);
 	}
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	if (fixColumn) hideFirstColumn ();
 }
 
 /**
@@ -724,10 +730,12 @@ public void deselect (int [] indices) {
  */
 public void deselectAll () {
 	checkWidget();
+	boolean fixColumn = showFirstColumn ();
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.gtk_tree_selection_unselect_all (selection);
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	if (fixColumn) hideFirstColumn ();
 }
 
 void destroyItem (TableColumn column) {
@@ -1546,6 +1554,11 @@ int /*long*/ gtk_toggled (int /*long*/ renderer, int /*long*/ pathStr) {
 	return 0;
 }
 
+void hideFirstColumn () {
+	int /*long*/ firstColumn = OS.gtk_tree_view_get_column (handle, 0);
+	OS.gtk_tree_view_column_set_visible (firstColumn, false);	
+}
+
 void hookEvents () {
 	super.hookEvents ();
 	int /*long*/ selection = OS.gtk_tree_view_get_selection(handle);
@@ -1989,6 +2002,7 @@ void resetCustomDraw () {
 public void select (int index) {
 	checkWidget();
 	if (!(0 <= index && index < itemCount))  return;
+	boolean fixColumn = showFirstColumn ();
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	TableItem item = _getItem (index);
@@ -1999,6 +2013,7 @@ public void select (int index) {
 		OS.gtk_tree_path_free (path);
 	}
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	if (fixColumn) hideFirstColumn ();
 }
 
 /**
@@ -2029,6 +2044,7 @@ public void select (int start, int end) {
 	if (itemCount == 0 || start >= itemCount) return;
 	start = Math.max (0, start);
 	end = Math.min (end, itemCount - 1);
+	boolean fixColumn = showFirstColumn ();
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	for (int index=start; index<=end; index++) {
@@ -2041,6 +2057,7 @@ public void select (int start, int end) {
 		}
 	}
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	if (fixColumn) hideFirstColumn ();
 }
 
 /**
@@ -2070,6 +2087,7 @@ public void select (int [] indices) {
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int length = indices.length;
 	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
+	boolean fixColumn = showFirstColumn ();
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	for (int i=0; i<length; i++) {
@@ -2084,6 +2102,7 @@ public void select (int [] indices) {
 		}
 	}
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	if (fixColumn) hideFirstColumn ();
 }
 
 /**
@@ -2099,10 +2118,12 @@ public void select (int [] indices) {
 public void selectAll () {
 	checkWidget();
 	if ((style & SWT.SINGLE) != 0) return;
+	boolean fixColumn = showFirstColumn ();
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.gtk_tree_selection_select_all (selection);
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	if (fixColumn) hideFirstColumn ();
 }
 
 void selectFocusIndex (int index) {
@@ -2336,23 +2357,11 @@ void setScrollWidth (int /*long*/ column, int /*long*/ iter) {
  */
 public void setSelection (int index) {
 	checkWidget ();
+	boolean fixColumn = showFirstColumn ();
 	deselectAll ();
-	/*
-	* Bug in GTK.  If no columns are visible, changing the selection
-	* will fail.  The fix is to temporarily make a column visible. 
-	*/
-	boolean columnVisible = false;
-	int columnCount = Math.max (1, this.columnCount);
-	for (int i=0; i<columnCount; i++) {
-		int /*long*/ column = OS.gtk_tree_view_get_column (handle, i);
-		columnVisible = OS.gtk_tree_view_column_get_visible (column);
-		if (columnVisible) break;
-	}
-	int /*long*/ firstColumn = OS.gtk_tree_view_get_column (handle, 0);
-	if (!columnVisible) OS.gtk_tree_view_column_set_visible (firstColumn, true);
 	selectFocusIndex (index);
 	showSelection ();
-	if (!columnVisible) OS.gtk_tree_view_column_set_visible (firstColumn, false);
+	if (fixColumn) hideFirstColumn ();
 }
 
 /**
@@ -2381,27 +2390,15 @@ public void setSelection (int start, int end) {
 	deselectAll();
 	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) return;
 	if (itemCount == 0 || start >= itemCount) return;
+	boolean fixColumn = showFirstColumn ();
 	start = Math.max (0, start);
 	end = Math.min (end, itemCount - 1);
-	/*
-	* Bug in GTK.  If no columns are visible, changing the selection
-	* will fail.  The fix is to temporarily make a column visible. 
-	*/
-	boolean columnVisible = false;
-	int columnCount = Math.max (1, this.columnCount);
-	for (int i=0; i<columnCount; i++) {
-		int /*long*/ column = OS.gtk_tree_view_get_column (handle, i);
-		columnVisible = OS.gtk_tree_view_column_get_visible (column);
-		if (columnVisible) break;
-	}
-	int /*long*/ firstColumn = OS.gtk_tree_view_get_column (handle, 0);
-	if (!columnVisible) OS.gtk_tree_view_column_set_visible (firstColumn, true);
 	selectFocusIndex (start);
 	if ((style & SWT.MULTI) != 0) {
 		select (start, end);
 	}
 	showSelection ();
-	if (!columnVisible) OS.gtk_tree_view_column_set_visible (firstColumn, false);
+	if (fixColumn) hideFirstColumn ();
 }
 
 /**
@@ -2431,25 +2428,13 @@ public void setSelection (int [] indices) {
 	deselectAll ();
 	int length = indices.length;
 	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
-	/*
-	* Bug in GTK.  If no columns are visible, changing the selection
-	* will fail.  The fix is to temporarily make a column visible. 
-	*/
-	boolean columnVisible = false;
-	int columnCount = Math.max (1, this.columnCount);
-	for (int i=0; i<columnCount; i++) {
-		int /*long*/ column = OS.gtk_tree_view_get_column (handle, i);
-		columnVisible = OS.gtk_tree_view_column_get_visible (column);
-		if (columnVisible) break;
-	}
-	int /*long*/ firstColumn = OS.gtk_tree_view_get_column (handle, 0);
-	if (!columnVisible) OS.gtk_tree_view_column_set_visible (firstColumn, true);
+	boolean fixColumn = showFirstColumn ();
 	selectFocusIndex (indices [0]);
 	if ((style & SWT.MULTI) != 0) {
 		select (indices);
 	}
 	showSelection ();
-	if (!columnVisible) OS.gtk_tree_view_column_set_visible (firstColumn, false);
+	if (fixColumn) hideFirstColumn ();
 }
 
 /**
@@ -2478,22 +2463,13 @@ public void setSelection (int [] indices) {
 public void setSelection (TableItem [] items) {
 	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
+	boolean fixColumn = showFirstColumn ();
 	deselectAll ();
 	int length = items.length;
-	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
-	/*
-	* Bug in GTK.  If no columns are visible, changing the selection
-	* will fail.  The fix is to temporarily make a column visible. 
-	*/
-	boolean columnVisible = false;
-	int columnCount = Math.max (1, this.columnCount);
-	for (int i=0; i<columnCount; i++) {
-		int /*long*/ column = OS.gtk_tree_view_get_column (handle, i);
-		columnVisible = OS.gtk_tree_view_column_get_visible (column);
-		if (columnVisible) break;
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) {
+		if (fixColumn) hideFirstColumn ();
+		return;
 	}
-	int /*long*/ firstColumn = OS.gtk_tree_view_get_column (handle, 0);
-	if (!columnVisible) OS.gtk_tree_view_column_set_visible (firstColumn, true);
 	boolean first = true;
 	for (int i = 0; i < length; i++) {
 		int index = indexOf (items [i]);
@@ -2507,7 +2483,7 @@ public void setSelection (TableItem [] items) {
 		}
 	}
 	showSelection ();
-	if (!columnVisible) OS.gtk_tree_view_column_set_visible (firstColumn, false);
+	if (fixColumn) hideFirstColumn ();
 }
 
 /**
@@ -2574,6 +2550,21 @@ public void showColumn (TableColumn column) {
 			OS.gtk_tree_view_scroll_to_point (handle, tree_x, -1);
 		}
 	}
+}
+
+boolean showFirstColumn () {	
+	/*
+	* Bug in GTK.  If no columns are visible, changing the selection
+	* will fail.  The fix is to temporarily make a column visible. 
+	*/
+	int columnCount = Math.max (1, this.columnCount);
+	for (int i=0; i<columnCount; i++) {
+		int /*long*/ column = OS.gtk_tree_view_get_column (handle, i);
+		if (OS.gtk_tree_view_column_get_visible (column)) return false;
+	}
+	int /*long*/ firstColumn = OS.gtk_tree_view_get_column (handle, 0);
+	OS.gtk_tree_view_column_set_visible (firstColumn, true);
+	return true;
 }
 
 /**
