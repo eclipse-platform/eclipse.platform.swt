@@ -312,6 +312,7 @@ public class Display extends Device {
 	static final int SWT_KEYMSG	 		= OS.WM_APP + 2;
 	static final int SWT_DESTROY	 	= OS.WM_APP + 3;
 	static final int SWT_TRAYICONMSG	= OS.WM_APP + 4;
+	static final int SWT_NULL			= OS.WM_APP + 5;
 	static int SWT_TASKBARCREATED;
 	
 	/* Workaround for Adobe Reader 7.0 */
@@ -3390,6 +3391,26 @@ static int untranslateKey (int key) {
  */
 public void update() {
 	checkDevice ();
+	/*
+	* Feature in Windows.  When an application does not remove
+	* events from the event queue for some time, Windows assumes
+	* the application is not responding and no longer sends paint
+	* events to the application.  The fix is to detect that the
+	* application is not responding and call PeekMessage() with
+	* PM_REMOVE to tell Windows that the application is ready
+	* to dispatch events.  Note that the message does not have
+	* to be found or dispatched in order to wake Windows up.
+	* 
+	* NOTE: This allows other cross thread messages to be delivered,
+	* most notably WM_ACTIVATE.
+	*/	
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
+		if (OS.IsHungAppWindow (hwndMessage)) {
+			MSG msg = new MSG ();
+			int flags = OS.PM_REMOVE | OS.PM_NOYIELD;
+			OS.PeekMessage (msg, hwndMessage, SWT_NULL, SWT_NULL, flags);
+		}
+	}
 	Shell[] shells = getShells ();
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];

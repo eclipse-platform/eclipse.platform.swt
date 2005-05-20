@@ -26,6 +26,7 @@
 #define GradientFill_LIB "msimg32.dll"
 #define ImmDisableTextFrameService_LIB "imm32.dll"
 #define IsAppThemed_LIB "uxtheme.dll"
+#define IsHungAppWindow_LIB "user32.dll"
 #define MonitorFromWindow_LIB "user32.dll"
 #define NotifyWinEvent_LIB "user32.dll"
 #define OpenThemeData_LIB "uxtheme.dll"

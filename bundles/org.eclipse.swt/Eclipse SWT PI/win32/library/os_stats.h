@@ -340,6 +340,7 @@ typedef enum {
 	InvalidateRgn_FUNC,
 	IsAppThemed_FUNC,
 	IsDBCSLeadByte_FUNC,
+	IsHungAppWindow_FUNC,
 	IsIconic_FUNC,
 	IsPPC_FUNC,
 	IsSP_FUNC,

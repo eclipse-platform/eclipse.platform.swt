@@ -5092,6 +5092,34 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(IsDBCSLeadByte)
 }
 #endif
 
+#ifndef NO_IsHungAppWindow
+JNIEXPORT jboolean JNICALL OS_NATIVE(IsHungAppWindow)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, IsHungAppWindow_FUNC);
+/*
+	rc = (jboolean)IsHungAppWindow(arg0);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!(hm = GetModuleHandle(IsHungAppWindow_LIB))) hm = LoadLibrary(IsHungAppWindow_LIB);
+			if (hm) fp = GetProcAddress(hm, "IsHungAppWindow");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jboolean)fp(arg0);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, IsHungAppWindow_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_IsIconic
 JNIEXPORT jboolean JNICALL OS_NATIVE(IsIconic)
 	(JNIEnv *env, jclass that, jint arg0)

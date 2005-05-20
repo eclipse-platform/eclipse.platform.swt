@@ -2741,6 +2741,7 @@ public static final native boolean InvalidateRect(int hWnd, RECT lpRect, boolean
 public static final native boolean InvalidateRgn (int hWnd, int hRgn, boolean bErase);
 public static final native boolean IsAppThemed();
 public static final native boolean IsDBCSLeadByte (byte TestChar);
+public static final native boolean IsHungAppWindow  (int hWnd);
 public static final native boolean IsIconic (int hWnd);
 public static final native boolean IsPPC();
 public static final native boolean IsSP();

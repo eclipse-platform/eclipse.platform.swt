@@ -256,6 +256,7 @@
 #define NO_InsertMenuItemW
 #define NO_InvalidateRgn
 #define NO_IsAppThemed
+#define NO_IsHungAppWindow
 #define NO_IsIconic
 #define NO_IsZoomed
 #define NO_LineTo

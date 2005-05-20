@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 651;
-int OS_nativeFunctionCallCount[651];
+int OS_nativeFunctionCount = 652;
+int OS_nativeFunctionCallCount[652];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateKeyboardLayout",
@@ -336,6 +336,7 @@ char * OS_nativeFunctionNames[] = {
 	"InvalidateRgn",
 	"IsAppThemed",
 	"IsDBCSLeadByte",
+	"IsHungAppWindow",
 	"IsIconic",
 	"IsPPC",
 	"IsSP",
