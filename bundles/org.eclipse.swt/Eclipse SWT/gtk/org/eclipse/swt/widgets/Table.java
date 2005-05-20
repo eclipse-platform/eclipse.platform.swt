@@ -2466,23 +2466,21 @@ public void setSelection (TableItem [] items) {
 	boolean fixColumn = showFirstColumn ();
 	deselectAll ();
 	int length = items.length;
-	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) {
-		if (fixColumn) hideFirstColumn ();
-		return;
-	}
-	boolean first = true;
-	for (int i = 0; i < length; i++) {
-		int index = indexOf (items [i]);
-		if (index != -1) {
-			if (first) {
-				first = false;
-				selectFocusIndex (index);
-			} else {
-				select (index);
+	if (!(length == 0 || ((style & SWT.SINGLE) != 0 && length > 1))) {
+		boolean first = true;
+		for (int i = 0; i < length; i++) {
+			int index = indexOf (items [i]);
+			if (index != -1) {
+				if (first) {
+					first = false;
+					selectFocusIndex (index);
+				} else {
+					select (index);
+				}
 			}
 		}
+		showSelection ();
 	}
-	showSelection ();
 	if (fixColumn) hideFirstColumn ();
 }
 
