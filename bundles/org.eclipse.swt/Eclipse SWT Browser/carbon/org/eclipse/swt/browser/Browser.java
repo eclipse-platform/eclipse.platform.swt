@@ -268,7 +268,7 @@ public Browser(Composite parent, int style) {
 					if (bounds.height <= MIN_SIZE) bounds.height = MIN_SIZE;
 					if (e.widget == getShell()) {
 						bounds.x++;
-						/* Note that the bounds needs change */
+						/* Note that the bounds needs to change */
 						OS.HIViewSetFrame(webViewHandle, bounds);
 						bounds.x--;
 					}
