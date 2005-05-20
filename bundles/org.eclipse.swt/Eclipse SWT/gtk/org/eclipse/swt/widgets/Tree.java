@@ -1884,6 +1884,19 @@ public void setSelection (TreeItem [] items) {
 	deselectAll ();
 	int length = items.length;
 	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
+	/*
+	* Bug in GTK.  If no columns are visible, changing the selection
+	* will fail.  The fix is to temporarily make a column visible. 
+	*/
+	boolean columnVisible = false;
+	int columnCount = Math.max (1, this.columnCount);
+	for (int i=0; i<columnCount; i++) {
+		int /*long*/ column = OS.gtk_tree_view_get_column (handle, i);
+		columnVisible = OS.gtk_tree_view_column_get_visible (column);
+		if (columnVisible) break;
+	}
+	int /*long*/ firstColumn = OS.gtk_tree_view_get_column (handle, 0);
+	if (!columnVisible) OS.gtk_tree_view_column_set_visible (firstColumn, true);
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	boolean first = true;
@@ -1902,6 +1915,7 @@ public void setSelection (TreeItem [] items) {
 		first = false;
 	}
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	if (!columnVisible) OS.gtk_tree_view_column_set_visible (firstColumn, false);
 }
 
 /**

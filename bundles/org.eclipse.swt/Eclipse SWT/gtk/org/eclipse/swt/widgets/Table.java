@@ -2337,8 +2337,22 @@ void setScrollWidth (int /*long*/ column, int /*long*/ iter) {
 public void setSelection (int index) {
 	checkWidget ();
 	deselectAll ();
+	/*
+	* Bug in GTK.  If no columns are visible, changing the selection
+	* will fail.  The fix is to temporarily make a column visible. 
+	*/
+	boolean columnVisible = false;
+	int columnCount = Math.max (1, this.columnCount);
+	for (int i=0; i<columnCount; i++) {
+		int /*long*/ column = OS.gtk_tree_view_get_column (handle, i);
+		columnVisible = OS.gtk_tree_view_column_get_visible (column);
+		if (columnVisible) break;
+	}
+	int /*long*/ firstColumn = OS.gtk_tree_view_get_column (handle, 0);
+	if (!columnVisible) OS.gtk_tree_view_column_set_visible (firstColumn, true);
 	selectFocusIndex (index);
 	showSelection ();
+	if (!columnVisible) OS.gtk_tree_view_column_set_visible (firstColumn, false);
 }
 
 /**
@@ -2369,11 +2383,25 @@ public void setSelection (int start, int end) {
 	if (itemCount == 0 || start >= itemCount) return;
 	start = Math.max (0, start);
 	end = Math.min (end, itemCount - 1);
+	/*
+	* Bug in GTK.  If no columns are visible, changing the selection
+	* will fail.  The fix is to temporarily make a column visible. 
+	*/
+	boolean columnVisible = false;
+	int columnCount = Math.max (1, this.columnCount);
+	for (int i=0; i<columnCount; i++) {
+		int /*long*/ column = OS.gtk_tree_view_get_column (handle, i);
+		columnVisible = OS.gtk_tree_view_column_get_visible (column);
+		if (columnVisible) break;
+	}
+	int /*long*/ firstColumn = OS.gtk_tree_view_get_column (handle, 0);
+	if (!columnVisible) OS.gtk_tree_view_column_set_visible (firstColumn, true);
 	selectFocusIndex (start);
 	if ((style & SWT.MULTI) != 0) {
 		select (start, end);
 	}
 	showSelection ();
+	if (!columnVisible) OS.gtk_tree_view_column_set_visible (firstColumn, false);
 }
 
 /**
@@ -2403,11 +2431,25 @@ public void setSelection (int [] indices) {
 	deselectAll ();
 	int length = indices.length;
 	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
+	/*
+	* Bug in GTK.  If no columns are visible, changing the selection
+	* will fail.  The fix is to temporarily make a column visible. 
+	*/
+	boolean columnVisible = false;
+	int columnCount = Math.max (1, this.columnCount);
+	for (int i=0; i<columnCount; i++) {
+		int /*long*/ column = OS.gtk_tree_view_get_column (handle, i);
+		columnVisible = OS.gtk_tree_view_column_get_visible (column);
+		if (columnVisible) break;
+	}
+	int /*long*/ firstColumn = OS.gtk_tree_view_get_column (handle, 0);
+	if (!columnVisible) OS.gtk_tree_view_column_set_visible (firstColumn, true);
 	selectFocusIndex (indices [0]);
 	if ((style & SWT.MULTI) != 0) {
 		select (indices);
 	}
 	showSelection ();
+	if (!columnVisible) OS.gtk_tree_view_column_set_visible (firstColumn, false);
 }
 
 /**
@@ -2439,6 +2481,19 @@ public void setSelection (TableItem [] items) {
 	deselectAll ();
 	int length = items.length;
 	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
+	/*
+	* Bug in GTK.  If no columns are visible, changing the selection
+	* will fail.  The fix is to temporarily make a column visible. 
+	*/
+	boolean columnVisible = false;
+	int columnCount = Math.max (1, this.columnCount);
+	for (int i=0; i<columnCount; i++) {
+		int /*long*/ column = OS.gtk_tree_view_get_column (handle, i);
+		columnVisible = OS.gtk_tree_view_column_get_visible (column);
+		if (columnVisible) break;
+	}
+	int /*long*/ firstColumn = OS.gtk_tree_view_get_column (handle, 0);
+	if (!columnVisible) OS.gtk_tree_view_column_set_visible (firstColumn, true);
 	boolean first = true;
 	for (int i = 0; i < length; i++) {
 		int index = indexOf (items [i]);
@@ -2452,6 +2507,7 @@ public void setSelection (TableItem [] items) {
 		}
 	}
 	showSelection ();
+	if (!columnVisible) OS.gtk_tree_view_column_set_visible (firstColumn, false);
 }
 
 /**
