@@ -45,6 +45,8 @@ public class Composite extends Scrollable {
 	Control[] tabList;
 	int layoutCount = 0;
 
+	static final String NO_INPUT_METHOD = "org.eclipse.swt.internal.gtk.noInputMethod"; //$NON-NLS-1$
+
 Composite () {
 	/* Do nothing */
 }
@@ -244,8 +246,11 @@ void createHandle (int index, boolean scrolled) {
 	OS.GTK_WIDGET_SET_FLAGS(handle, OS.GTK_CAN_FOCUS);
 	if ((style & SWT.EMBEDDED) == 0) {
 		if ((state & CANVAS) != 0 && (style & SWT.NO_FOCUS) == 0) {
-			imHandle = OS.gtk_im_multicontext_new ();
-			if (imHandle == 0) error (SWT.ERROR_NO_HANDLES);
+			/* Prevent an input method context from being created for the Browser widget */
+			if (display.getData (NO_INPUT_METHOD) == null) {
+				imHandle = OS.gtk_im_multicontext_new ();
+				if (imHandle == 0) error (SWT.ERROR_NO_HANDLES);
+			}
 		}
 	}
 	if (scrolled) {
