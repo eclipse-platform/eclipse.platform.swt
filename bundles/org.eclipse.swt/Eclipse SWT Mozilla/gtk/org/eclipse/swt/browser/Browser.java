@@ -113,7 +113,7 @@ public class Browser extends Composite {
 public Browser(Composite parent, int style) {
 	super(fixIM(parent), style);
 	Display display = parent.getDisplay();	
-	display.	setData(NO_INPUT_METHOD, null);
+	display.setData(NO_INPUT_METHOD, null);
 	
 	int /*long*/[] result = new int /*long*/[1];
 	if (!mozilla) {
