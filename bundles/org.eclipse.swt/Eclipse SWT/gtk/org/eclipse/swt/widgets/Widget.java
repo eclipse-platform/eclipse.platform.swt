@@ -1065,7 +1065,7 @@ boolean sendKeyEvent (int type, GdkEventKey keyEvent) {
 }
 
 char [] sendIMKeyEvent (int type, GdkEventKey keyEvent, char  [] chars) {
-	int index = 0, count = 0, state = 0, time = 0;
+	int index = 0, count = 0, state = 0;
 	if (keyEvent == null) {
 		int /*long*/ ptr = OS.gtk_get_current_event ();
 		if (ptr != 0) {
@@ -1076,7 +1076,6 @@ char [] sendIMKeyEvent (int type, GdkEventKey keyEvent, char  [] chars) {
 				case OS.GDK_KEY_PRESS:
 				case OS.GDK_KEY_RELEASE:
 					state = keyEvent.state;
-					time =  keyEvent.time;
 					break;
 				default:
 					keyEvent = null;
@@ -1088,11 +1087,9 @@ char [] sendIMKeyEvent (int type, GdkEventKey keyEvent, char  [] chars) {
 		int [] buffer = new int [1];
 		OS.gtk_get_current_event_state (buffer);
 		state = buffer [0];
-		time = OS.gtk_get_current_event_time();
 	}
 	while (index < chars.length) {
 		Event event = new Event ();
-		event.time = time;
 		if (keyEvent != null && chars.length <= 1) {
 			setKeyState (event, keyEvent);
 		} else {

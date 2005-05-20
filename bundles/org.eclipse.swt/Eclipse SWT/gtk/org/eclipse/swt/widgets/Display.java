@@ -959,7 +959,17 @@ void error (int code) {
 }
 
 int /*long*/ eventProc (int /*long*/ event, int /*long*/ data) {
-
+	/*
+	* Use gdk_event_get_time() rather than event.time or
+	* gtk_get_current_event_time().  If the event does not
+	* have a time stamp, then the field will contain garbage.
+	* Note that calling gtk_get_current_event_time() from
+	* outside of gtk_main_do_event() seems to always
+	* return zero.
+	*/
+	int time = OS.gdk_event_get_time (event);
+	if (time != 0) lastEventTime = time;
+	
 	/*
 	* NOTE: The event may not be a GdkEventButton.
 	* Check the event type before accessing any fields.
@@ -979,17 +989,6 @@ int /*long*/ eventProc (int /*long*/ event, int /*long*/ data) {
 		addGdkEvent (OS.gdk_event_copy (event));
 		return 0;
 	}
-
-	/*
-	* Use gdk_event_get_time() rather than event.time or
-	* gtk_get_current_event_time().  If the event does not
-	* have a time stamp, then the field will contain garbage.
-	* Note that calling gtk_get_current_event_time() from
-	* outside of gtk_main_do_event() seems to always
-	* return zero.
-	*/
-	int time = OS.gdk_event_get_time (event);
-	if (time != 0) lastEventTime = time;
 
 	Control control = null;
 	int /*long*/ window = 0;
@@ -1528,9 +1527,7 @@ public Point [] getIconSizes () {
 }
 
 int getLastEventTime () {
-//	checkDevice ();
-	int time = OS.gtk_get_current_event_time ();
-	return time != 0 ? time : lastEventTime;
+	return lastEventTime;
 }
 
 int getMessageCount () {

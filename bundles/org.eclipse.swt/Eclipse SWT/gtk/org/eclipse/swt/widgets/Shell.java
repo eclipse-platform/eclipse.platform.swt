@@ -431,7 +431,7 @@ void bringToTop (boolean force) {
 		OS.XSetInputFocus (xDisplay, xWindow, OS.RevertToParent, OS.CurrentTime);
 		OS.gdk_error_trap_pop ();
 	} else {
-		OS.gdk_window_focus (window, OS.gtk_get_current_event_time ());
+		OS.gdk_window_focus (window, OS.GDK_CURRENT_TIME);
 	}
 	display.activeShell = this;
 }
