@@ -7168,7 +7168,7 @@ void setMouseWordSelectionAnchor() {
 }
 /**
  * Sets the orientation of the receiver, which must be one
- * of the constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.LEFT_TO_RIGHT</code>.
+ * of the constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
  * <p>
  *
  * @param orientation new orientation style
