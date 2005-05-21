@@ -2328,7 +2328,31 @@ public int getAdvanceWidth(char ch) {
 	return width[0];
 }
 
-boolean getAdvanced() {
+/**
+ * Returns <code>true</code> if receiver is using the operating system's
+ * advanced graphics subsystem.  Otherwise, <code>false</code> is returned
+ * to indicate that normal graphics are in use.
+ * <p>
+ * Advanced graphics may not be installed for the operating system.  In this
+ * case, <code>false</code> is always returned.  Some operating system have
+ * only one graphics subsystem.  If this subsystem supports advanced graphics,
+ * then <code>true</code> is always returned.  If any graphics operation such
+ * as alpha, antialias, patterns, interpolation, paths, clipping or transformation
+ * has caused the receiver to switch from regular to advanced graphics mode,
+ * <code>true</code> is returned.  If the receiver has been explicitly switched
+ * to advanced mode and this mode is supported, <code>true</code> is returned.
+ * </p>
+ *
+ * @return the advanced value
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see setAdvanced()
+ * @since 3.1
+ */
+/*public*/ boolean getAdvanced() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.gdipGraphics != 0;
 }
@@ -3085,7 +3109,49 @@ float measureSpace(int font, int format) {
 	return bounds.Width;
 }
 
-void setAdvanced(boolean advanced) {
+/**
+ * Sets the receiver to always use the operating system's advanced graphics
+ * subsystem for all graphics operations if the argument is <code>true</code>.
+ * If the argument is <code>false</code>, the advanced graphics subsystem is 
+ * no longer used, advanced graphics state is cleared and the normal graphics
+ * subsystem is used from now on.
+ * <p>
+ * Normally, the advanced graphics subsystem is invoked automatically when
+ * any one of the alpha, antialias, patterns, interpolation, paths, clipping
+ * or transformation operations in the receiver is requested.  When the receiver
+ * is switched into advanced mode, the advanced graphics subsystem performs both
+ * advanced and normal graphics operations.  Because the two subsystems are
+ * different, their output may differ.  Switching to advanced graphics before
+ * any graphics operations are performed ensures that the output is consistent.
+ * </p>
+ * <p>
+ * Advanced graphics may not be installed for the operating system.  In this
+ * case, this operation does nothing.  Some operating system have only one
+ * graphics subsystem, so switching from normal to advanced graphics does
+ * nothing.  However, switching from advanced to normal graphics will always
+ * clear the advanced graphics state, even for operating systems that have
+ * only one graphics subsystem.
+ * </p>
+ *
+ * @param advanced the new advanced graphics state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see #setAlpha()
+ * @see #setAntialias()
+ * @see #setBackgroundPattern()
+ * @see #setClipping()
+ * @see #setForegroundPattern()
+ * @see #setInterpolation()
+ * @see #setTextAntialias()
+ * @see #setTransform()
+ * @see #getAdvanced()
+ * 
+ * @since 3.1
+ */
+/*public*/ void setAdvanced(boolean advanced) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (advanced && data.gdipGraphics != 0) return;
 	if (advanced) {
