@@ -2190,11 +2190,22 @@ public int getCharWidth(char ch) {
  */
 public Rectangle getClipping() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Region region = new Region();
-	getClipping(region);
-	Rectangle rect = region.getBounds();
-	region.dispose();
-	return rect;
+	int[] width = new int[1], height = new int[1], unused = new int[1];
+	OS.XGetGeometry(data.display, data.drawable, unused, unused, unused, width, height, unused, unused);
+	int clipRgn = data.clipRgn;
+	if (clipRgn == 0) {
+		return new Rectangle(0, 0, width[0], height[0]);
+	} else {
+		int rgn = OS.XCreateRegion ();
+		XRectangle rect = new XRectangle();
+		rect.width = (short)width[0];
+		rect.height = (short)height[0];
+		OS.XUnionRectWithRegion(rect, rgn, rgn);
+		OS.XIntersectRegion(rgn, clipRgn, rgn);
+		OS.XClipBox(rgn, rect);
+		OS.XDestroyRegion(rgn);
+		return new Rectangle(rect.x, rect.y, rect.width, rect.height);
+	}
 }
 /** 
  * Sets the region managed by the argument to the current

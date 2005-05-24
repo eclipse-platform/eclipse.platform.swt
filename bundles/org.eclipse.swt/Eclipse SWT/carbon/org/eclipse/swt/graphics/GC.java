@@ -1562,11 +1562,30 @@ public int getCharWidth(char ch) {
  */
 public Rectangle getClipping() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Region region = new Region();
-	getClipping(region);
-	Rectangle rect = region.getBounds();
-	region.dispose();
-	return rect;
+	Rect rect = new Rect();
+	int width = 0, height = 0;
+	if (data.control != 0) {
+		OS.GetControlBounds(data.control, rect);
+		width = rect.right - rect.left;
+		height = rect.bottom - rect.top;
+	} else {
+		if (data.image != null) {
+			int image = data.image.handle;
+			width = OS.CGImageGetWidth(image);
+			height = OS.CGImageGetHeight(image);
+		}
+	}
+	int clipRgn = data.clipRgn;
+	if (clipRgn == 0) {
+		return new Rectangle(0, 0, width, height);
+	} else {
+		int rgn = OS.NewRgn();
+		OS.SetRectRgn(rgn, (short)0, (short)0, (short)width, (short)height);
+		OS.SectRgn(rgn, clipRgn, rgn);
+		OS.GetRegionBounds(rgn, rect);
+		OS.DisposeRgn(rgn);
+		return new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+	}
 }
 
 /** 

@@ -1715,11 +1715,22 @@ public int getCharWidth(char ch) {
  */
 public Rectangle getClipping() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	Region region = new Region();
-	getClipping(region);
-	Rectangle rect = region.getBounds();
-	region.dispose();
-	return rect;
+	int[] width = new int[1], height = new int[1];
+	OS.gdk_drawable_get_size(data.drawable, width, height);
+	int /*long*/ clipRgn = data.clipRgn;
+	if (clipRgn == 0) {
+		return new Rectangle(0, 0, width[0], height[0]);
+	} else {
+		int /*long*/ rgn = OS.gdk_region_new();
+		GdkRectangle rect = new GdkRectangle();
+		rect.width = width[0];
+		rect.height = height[0];
+		OS.gdk_region_union_with_rect(rgn, rect);
+		OS.gdk_region_intersect(rgn, clipRgn);
+		OS.gdk_region_get_clipbox(rgn, rect);
+		OS.gdk_region_destroy(rgn);
+		return new Rectangle(rect.x, rect.y, rect.width, rect.height);
+	}
 }
 
 /** 
