@@ -558,6 +558,12 @@ int asciiKey (int key) {
  * reasonable opportunity. The caller of this method continues 
  * to run in parallel, and is not notified when the
  * runnable has completed.
+ * <p>
+ * Note that at the time the runnable is invoked, widgets 
+ * that have the receiver as their display may have been
+ * disposed. Therefore, it is necessary to check for this
+ * case inside the runnable before accessing the widget.
+ * </p>
  *
  * @param runnable code to run on the user-interface thread.
  *
@@ -3233,7 +3239,13 @@ public boolean sleep () {
  * be invoked by the user-interface thread at the next 
  * reasonable opportunity. The thread which calls this method
  * is suspended until the runnable completes.
- *
+ * <p>
+ * Note that at the time the runnable is invoked, widgets 
+ * that have the receiver as their display may have been
+ * disposed. Therefore, it is necessary to check for this
+ * case inside the runnable before accessing the widget.
+ * </p>
+ * 
  * @param runnable code to run on the user-interface thread.
  *
  * @exception SWTException <ul>
@@ -3264,6 +3276,12 @@ int systemFont () {
  * be invoked by the user-interface thread after the specified
  * number of milliseconds have elapsed. If milliseconds is less
  * than zero, the runnable is not executed.
+ * <p>
+ * Note that at the time the runnable is invoked, widgets 
+ * that have the receiver as their display may have been
+ * disposed. Therefore, it is necessary to check for this
+ * case inside the runnable before accessing the widget.
+ * </p>
  *
  * @param milliseconds the delay before running the runnable
  * @param runnable code to run on the user-interface thread
