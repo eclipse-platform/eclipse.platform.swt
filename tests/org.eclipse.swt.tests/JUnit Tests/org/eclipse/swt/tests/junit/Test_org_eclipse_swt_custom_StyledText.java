@@ -227,7 +227,7 @@ public void test_addBidiSegmentListenerLorg_eclipse_swt_custom_BidiSegmentListen
 	text.addBidiSegmentListener(listener);
 	// cause StyledText to call the BidiSegmentListener. 
 	text.getLocationAtOffset(0);
-	if (isBidi()) {
+	if (isBidi() || SWT.getPlatform().equals("gtk")) {
 		assertTrue("Listener not called", listenerCalled);
 	}
 	else {
