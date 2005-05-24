@@ -229,6 +229,9 @@ public void addDisposeListener (DisposeListener listener) {
 int /*long*/ textCellDataProc (int /*long*/ tree_column, int /*long*/ cell, int /*long*/ tree_model, int /*long*/ iter, int /*long*/ data) {
 	return 0;
 }
+int /*long*/ paintWindow () {
+	return 0;
+}
 int /*long*/ pixbufCellDataProc (int /*long*/ tree_column, int /*long*/ cell, int /*long*/ tree_model, int /*long*/ iter, int /*long*/ data) {
 	return 0;
 }
@@ -1324,6 +1327,11 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ user_data) {
 int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ user_data) {
 	switch ((int)/*64*/user_data) {
 		case -EXPOSE_EVENT: {
+			GdkEventExpose gdkEvent = new GdkEventExpose ();
+			OS.memmove (gdkEvent, arg0, GdkEventExpose.sizeof);
+			int /*long*/ paintWindow = paintWindow();
+			int /*long*/ window = gdkEvent.window;
+			if (window != paintWindow) return 0;
 			return (state & OBSCURED) != 0 ? 1 : 0;
 		}
 		case -BUTTON_PRESS_EVENT:

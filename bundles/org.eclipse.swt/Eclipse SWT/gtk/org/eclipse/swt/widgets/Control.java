@@ -2105,7 +2105,7 @@ int /*long*/ gtk_visibility_notify_event (int /*long*/ widget, int /*long*/ even
 				GdkRectangle rect = new GdkRectangle ();
 				rect.width = width [0];
 				rect.height = height [0];
-				OS.gdk_window_invalidate_rect (window, rect, true);
+				OS.gdk_window_invalidate_rect (window, rect, false);
 			}
 			state &= ~OBSCURED;
 		}
