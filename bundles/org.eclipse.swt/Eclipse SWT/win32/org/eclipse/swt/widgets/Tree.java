@@ -2524,8 +2524,8 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 		case OS.VK_NEXT:
 		case OS.VK_HOME:
 		case OS.VK_END: {
-			if ((style & SWT.SINGLE) != 0) break;
 			OS.SendMessage (handle, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
+			if ((style & SWT.SINGLE) != 0) break;
 			if (OS.GetKeyState (OS.VK_SHIFT) < 0) {
 				int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 				if (hItem != 0) {

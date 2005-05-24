@@ -3197,6 +3197,14 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 			* performed in WM_KEYDOWN from WM_CHAR.
 			*/
 			return LRESULT.ZERO;
+		case OS.VK_UP:
+		case OS.VK_DOWN:
+		case OS.VK_PRIOR:
+		case OS.VK_NEXT:
+		case OS.VK_HOME:
+		case OS.VK_END:
+			OS.SendMessage (handle, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
+			break;
 	}
 	return result;
 }
