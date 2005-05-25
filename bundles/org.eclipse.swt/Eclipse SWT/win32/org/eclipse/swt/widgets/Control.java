@@ -3297,6 +3297,7 @@ LRESULT WM_INITMENUPOPUP (int wParam, int lParam) {
 	Menu oldMenu = shell.activeMenu, newMenu = null;
 	if ((lParam >> 16) == 0) {
 		newMenu = menuShell ().findMenu (wParam);
+		if (newMenu != null) newMenu.update ();
 	}	
 	Menu menu = newMenu;
 	while (menu != null && menu != oldMenu) {

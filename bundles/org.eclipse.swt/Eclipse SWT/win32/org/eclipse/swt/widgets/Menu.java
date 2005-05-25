@@ -797,7 +797,6 @@ public MenuItem [] getItems () {
 }
 
 int GetMenuItemCount (int handle) {
-	checkWidget ();
 	if (OS.IsWinCE) {
 		if ((OS.IsPPC || OS.IsSP) && hwndCB != 0) {
 			return OS.IsSP ? 2 : OS.SendMessage (hwndCB, OS.TB_BUTTONCOUNT, 0, 0);
@@ -923,7 +922,12 @@ public boolean getVisible () {
 			if (popups [i] == this) return true;
 		}
 	}
-	return this == getShell ().activeMenu;
+	Shell shell = getShell ();
+	Menu menu = shell.activeMenu;
+	while (menu != null && menu != this) {
+		menu = menu.getParentMenu ();
+	}
+	return this == menu;
 }
 
 int imageIndex (Image image) {
@@ -1030,6 +1034,7 @@ public boolean isVisible () {
 }
 
 void redraw () {
+	if (!isVisible ()) return;
 	if ((style & SWT.BAR) != 0) {
 		display.addBar (this);
 	} else {
