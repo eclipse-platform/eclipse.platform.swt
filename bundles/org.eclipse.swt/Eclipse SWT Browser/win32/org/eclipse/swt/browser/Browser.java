@@ -36,7 +36,7 @@ public class Browser extends Composite {
 	OleControlSite site;
 	OleAutomation auto;
 
-	boolean back, forward, navigate;
+	boolean back, forward, navigate, delaySetText;
 	Point location;
 	Point size;
 	boolean addressBar = true, menuBar = true, statusBar = true, toolBar = true;
@@ -77,6 +77,7 @@ public class Browser extends Composite {
 	static final short CSC_NAVIGATEFORWARD = 1;
 	static final short CSC_NAVIGATEBACK = 2;
 	static final int INET_E_DEFAULT_ACTION = 0x800C0011;
+	static final int READYSTATE_COMPLETE = 4;
 	static final int URLPOLICY_ALLOW = 0x00;
 	static final int URLPOLICY_DISALLOW = 0x03;
 	static final int URLZONE_LOCAL_MACHINE = 0;
@@ -222,7 +223,7 @@ public Browser(Composite parent, int style) {
 					varResult = event.arguments[1];
 					String url = varResult.getString();
 					if (html != null && url.equals(ABOUT_BLANK)) {
-						getDisplay().asyncExec(new Runnable (){
+						Runnable runnable = new Runnable () {
 							public void run() {
 								if (isDisposed() || html == null) return;
 								int charCount = html.length();
@@ -275,7 +276,13 @@ public Browser(Composite parent, int style) {
 									}
 								}
 							}
-						});
+						};
+						if (delaySetText) {
+							delaySetText = false;
+							getDisplay().asyncExec(runnable);
+						} else {
+							runnable.run();
+						}
 					} else {
 						Variant variant = new Variant(auto);
 						IDispatch top = variant.getDispatch();
@@ -1250,14 +1257,22 @@ public boolean setText(String html) {
 	*/
 	int[] rgdispid;
 	if (navigate) {
+		/*
+		* Stopping the loading of a page causes DocumentComplete events from previous
+		* requests to be received before the DocumentComplete for this page.  In such
+		* cases we must be sure to not set the html into the browser too soon, since
+		* doing so could result in its page being cleared out by a subsequent
+		* DocumentComplete.  The Browser's ReadyState can be used to determine whether
+		* these extra events will be received or not.
+		*/
+		rgdispid = auto.getIDsOfNames(new String[] { "ReadyState" }); //$NON-NLS-1$
+		Variant pVarResult = auto.getProperty(rgdispid[0]);
+		if (pVarResult == null) return false;
+		delaySetText = pVarResult.getInt() != READYSTATE_COMPLETE;
+		pVarResult.dispose();
 		rgdispid = auto.getIDsOfNames(new String[] { "Stop" }); //$NON-NLS-1$
 		auto.invoke(rgdispid[0]);
 	}
-	/* Note.  Internet Explorer can still fire DocumentComplete events from the previous
-	 * requests that were stopped.  The DocumentComplete related to the blank page
-	 * will follow.  The workaround is to verify the DocumentComplete event relates to
-	 * the blank page.  
-	 */
 	rgdispid = auto.getIDsOfNames(new String[] { "Navigate", "URL" }); //$NON-NLS-1$ //$NON-NLS-2$
 	navigate = true;
 	Variant[] rgvarg = new Variant[1];
