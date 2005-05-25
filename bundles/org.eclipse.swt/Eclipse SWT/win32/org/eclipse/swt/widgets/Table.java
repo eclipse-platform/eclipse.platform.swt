@@ -90,6 +90,7 @@ public class Table extends Composite {
  * @see SWT#CHECK
  * @see SWT#FULL_SELECTION
  * @see SWT#HIDE_SELECTION
+ * @see SWT#VIRTUAL
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
