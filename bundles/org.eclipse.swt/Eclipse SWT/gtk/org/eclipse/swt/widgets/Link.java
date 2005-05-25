@@ -14,6 +14,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.accessibility.*;
 
 /**
  * Instances of this class represent a selectable
@@ -154,7 +155,7 @@ void createWidget (int index) {
 	super.createWidget (index);
 	layout.setFont (getFont ());
 	text = "";
-	//TODO accessibility
+	initAccessible ();
 }
 
 void enableWidget (boolean enabled) {
@@ -167,6 +168,54 @@ void enableWidget (boolean enabled) {
 		layout.setStyle (linkStyle, point.x, point.y);
 	}
 	redraw ();
+}
+
+void initAccessible () {
+	Accessible accessible = getAccessible ();
+	accessible.addAccessibleListener (new AccessibleAdapter () {
+		public void getName (AccessibleEvent e) {
+			e.result = parse (text);
+		}
+	});
+		
+	accessible.addAccessibleControlListener (new AccessibleControlAdapter () {
+		public void getChildAtPoint (AccessibleControlEvent e) {
+			e.childID = ACC.CHILDID_SELF;
+		}
+		
+		public void getLocation (AccessibleControlEvent e) {
+			Rectangle rect = display.map (getParent (), null, getBounds ());
+			e.x = rect.x;
+			e.y = rect.y;
+			e.width = rect.width;
+			e.height = rect.height;
+		}
+		
+		public void getChildCount (AccessibleControlEvent e) {
+			e.detail = 0;
+		}
+		
+		public void getRole (AccessibleControlEvent e) {
+			e.detail = ACC.ROLE_LINK;
+		}
+		
+		public void getState (AccessibleControlEvent e) {
+			e.detail = ACC.STATE_FOCUSABLE;
+			if (hasFocus ()) e.detail |= ACC.STATE_FOCUSED;
+		}
+		
+		public void getDefaultAction (AccessibleControlEvent e) {
+			e.result = SWT.getMessage ("SWT_Press"); //$NON-NLS-1$
+		}
+		
+		public void getSelection (AccessibleControlEvent e) {
+			if (hasFocus ()) e.childID = ACC.CHILDID_SELF;
+		}
+		
+		public void getFocus (AccessibleControlEvent e) {
+			if (hasFocus ()) e.childID = ACC.CHILDID_SELF;
+		}
+	});
 }
 
 String getNameText () {
