@@ -410,12 +410,15 @@ void bringToTop (boolean force) {
 	if (activeShell == this) return;
 	if (!force) {
 		if (activeShell == null) return;
-		int /*long*/ focusHandle = OS.gtk_window_get_focus (activeShell.shellHandle);
-		if (focusHandle != 0) {
-			if (!OS.GTK_WIDGET_HAS_FOCUS (focusHandle)) return;
+		if (!display.activePending) {
+			int /*long*/ focusHandle = OS.gtk_window_get_focus (activeShell.shellHandle);
+			if (focusHandle != 0 && !OS.GTK_WIDGET_HAS_FOCUS (focusHandle)) return;
 		}
 	}
-	if (activeShell != null) display.activeShell = null;
+	if (activeShell != null) {
+		display.activeShell = null;
+		display.activePending = true;
+	}
 	/*
 	* Feature in GTK.  When the shell is an override redirect
 	* window, gdk_window_focus() does not give focus to the
@@ -434,6 +437,7 @@ void bringToTop (boolean force) {
 		OS.gdk_window_focus (window, OS.GDK_CURRENT_TIME);
 	}
 	display.activeShell = this;
+	display.activePending = true;
 }
 
 void checkBorder () {
@@ -804,6 +808,7 @@ int /*long*/ gtk_focus_in_event (int /*long*/ widget, int /*long*/ event) {
 	}
 	if (tooltipsHandle != 0) OS.gtk_tooltips_enable (tooltipsHandle);
 	display.activeShell = this;
+	display.activePending = false;
 	sendEvent (SWT.Activate);
 	return 0;
 }
@@ -816,7 +821,10 @@ int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
 	Display display = this.display;
 	sendEvent (SWT.Deactivate);
 	setActiveControl (null);
-	if (display.activeShell == this) display.activeShell = null;
+	if (display.activeShell == this) {
+		display.activeShell = null;
+		display.activePending = false;
+	}
 	return 0;
 }
 
@@ -903,9 +911,9 @@ int /*long*/ gtk_window_state_event (int /*long*/ widget, int /*long*/ event) {
  */
 public void open () {
 	checkWidget ();
+	bringToTop (false);
 	setVisible (true);
 	if (isDisposed ()) return;
-	bringToTop (false);
 	if (!restoreFocus () && !traverseGroup (true)) setFocus ();
 }
 
@@ -1141,7 +1149,7 @@ public void setEnabled (boolean enabled) {
 		}
 	}
 	if (fixFocus) fixFocus (control);
-	if (enabled && (display.activeShell == this)) {
+	if (enabled && display.activeShell == this) {
 		if (!restoreFocus ()) traverseGroup (false);
 	}
 }
