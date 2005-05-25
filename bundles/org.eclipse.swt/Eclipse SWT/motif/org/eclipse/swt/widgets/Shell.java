@@ -486,6 +486,7 @@ void bringToTop (boolean force) {
 		int handle = OS.XtWindowToWidget (xDisplay, buffer1 [0]);
 		if (handle == 0) return;
 	}
+	OS.XRaiseWindow (xDisplay, xWindow);
 	OS.XSetInputFocus (xDisplay, xWindow, OS.RevertToParent, OS.CurrentTime);
 }
 void checkOpen () {
@@ -1068,6 +1069,7 @@ void manageChildren () {
  */
 public void open () {
 	checkWidget();
+	bringToTop (false);
 	setVisible (true);
 	if (isDisposed ()) return;
 	if (!restoreFocus () && !traverseGroup (true)) setFocus ();
