@@ -289,7 +289,7 @@ void initAccessible () {
 		}
 		
 		public void getDefaultAction (AccessibleControlEvent e) {
-			e.result = "Press"; //$NON-NLS-1$
+			e.result = SWT.getMessage ("SWT_Press"); //$NON-NLS-1$
 		}
 		
 		public void getSelection (AccessibleControlEvent e) {

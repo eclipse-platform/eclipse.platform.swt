@@ -1631,7 +1631,7 @@ void initAccessible() {
 			String action = null;
 			int childID = e.childID;
 			if (childID >= 0 && childID < items.length) {
-				action = "Switch"; //$NON-NLS-1$
+				action = SWT.getMessage ("SWT_Switch"); //$NON-NLS-1$
 			}
 			e.result = action;
 		}

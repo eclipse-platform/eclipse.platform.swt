@@ -804,7 +804,7 @@ void initAccessible() {
 
 	arrow.getAccessible ().addAccessibleControlListener (new AccessibleControlAdapter() {
 		public void getDefaultAction (AccessibleControlEvent e) {
-			e.result = isDropped () ? "Close" : "Open"; //$NON-NLS-1$ //$NON-NLS-2$
+			e.result = isDropped () ? SWT.getMessage ("SWT_Close") : SWT.getMessage ("SWT_Open"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	});
 }
