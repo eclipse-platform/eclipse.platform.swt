@@ -6786,6 +6786,15 @@ public static final void gtk_tree_view_set_rules_hint(int /*long*/ tree_view, bo
 		lock.unlock();
 	}
 }
+public static final native void _gtk_tree_view_set_search_column(int /*long*/ tree_view, int column);
+public static final void gtk_tree_view_set_search_column(int /*long*/ tree_view, int column) {
+	lock.lock();
+	try {
+		_gtk_tree_view_set_search_column(tree_view, column);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gtk_tree_view_tree_to_widget_coords(int /*long*/ tree_view, int tx, int ty, int[] wx, int[] wy);
 public static final void gtk_tree_view_tree_to_widget_coords(int /*long*/ tree_view, int tx, int ty, int[] wx, int[] wy) {
 	lock.lock();

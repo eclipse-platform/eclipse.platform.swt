@@ -9887,6 +9887,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1view_1set_1rules_1hint)
 }
 #endif
 
+#ifndef NO__1gtk_1tree_1view_1set_1search_1column
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1view_1set_1search_1column)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1set_1search_1column_FUNC);
+	gtk_tree_view_set_search_column((GtkTreeView *)arg0, (gint)arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1view_1set_1search_1column_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1tree_1view_1tree_1to_1widget_1coords
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1view_1tree_1to_1widget_1coords)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jintArray arg4)

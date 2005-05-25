@@ -343,6 +343,9 @@ void createColumn (TreeColumn column, int index) {
 		column.handle = columnHandle;
 		column.modelIndex = modelIndex;
 	}
+	/* Set the search column whenever the model changes */
+	int firstColumn = columnCount == 0 ? FIRST_COLUMN : columns [0].modelIndex;
+	OS.gtk_tree_view_set_search_column (handle, firstColumn + CELL_TEXT);
 }
 
 void createHandle (int index) {
@@ -652,6 +655,9 @@ void destroyItem (TreeColumn column) {
 	}
 	column.handle = column.buttonHandle = column.labelHandle = 0;
 	column.imageHandle = 0;
+	/* Set the search column whenever the model changes */
+	int firstColumn = columnCount == 0 ? FIRST_COLUMN : columns [0].modelIndex;
+	OS.gtk_tree_view_set_search_column (handle, firstColumn + CELL_TEXT);
 }
 
 
@@ -1650,6 +1656,9 @@ public void removeAll () {
 		if (item != null && !item.isDisposed ()) item.releaseResources ();
 	}
 	items = new TreeItem[4];
+	/* Set the search column whenever the model changes */
+	int firstColumn = columnCount == 0 ? FIRST_COLUMN : columns [0].modelIndex;
+	OS.gtk_tree_view_set_search_column (handle, firstColumn + CELL_TEXT);
 }
 
 /**

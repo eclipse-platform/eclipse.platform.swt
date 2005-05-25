@@ -416,6 +416,9 @@ void createColumn (TableColumn column, int index) {
 		column.handle = columnHandle;
 		column.modelIndex = modelIndex;
 	}
+	/* Set the search column whenever the model changes */
+	int firstColumn = columnCount == 0 ? FIRST_COLUMN : columns [0].modelIndex;
+	OS.gtk_tree_view_set_search_column (handle, firstColumn + CELL_TEXT);
 }
 
 void createHandle (int index) {
@@ -824,6 +827,9 @@ void destroyItem (TableColumn column) {
 	}
 	column.handle = column.buttonHandle = column.labelHandle = 0;
 	column.imageHandle = 0;
+	/* Set the search column whenever the model changes */
+	int firstColumn = columnCount == 0 ? FIRST_COLUMN : columns [0].modelIndex;
+	OS.gtk_tree_view_set_search_column (handle, firstColumn + CELL_TEXT);
 }
 
 void destroyItem (TableItem item) {
@@ -1945,6 +1951,9 @@ public void removeAll () {
 	items = new TableItem [4];
 	itemCount = 0;
 	resetCustomDraw ();
+	/* Set the search column whenever the model changes */
+	int firstColumn = columnCount == 0 ? FIRST_COLUMN : columns [0].modelIndex;
+	OS.gtk_tree_view_set_search_column (handle, firstColumn + CELL_TEXT);
 }
 
 /**
