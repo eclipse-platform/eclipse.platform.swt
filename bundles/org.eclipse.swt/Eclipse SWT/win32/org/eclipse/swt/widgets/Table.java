@@ -3210,6 +3210,23 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	return result;
 }
 
+LRESULT WM_KILLFOCUS (int wParam, int lParam) {
+	LRESULT result = super.WM_KILLFOCUS (wParam, lParam);
+	/*
+	* Bug in Windows.  When LVS_SHOWSELALWAYS is not specified,
+	* Windows hides the selection when focus is lost but does
+	* not redraw anything other than the text, leaving the image
+	* and check box appearing selected.  The fix is to redraw
+	* the table.
+	*/
+	if ((style & SWT.HIDE_SELECTION) != 0) {
+		if (imageList != null || (style & SWT.CHECK) != 0) {
+			OS.InvalidateRect (handle, null, false);
+		}
+	}
+	return result;
+}
+
 LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 
 	/*
