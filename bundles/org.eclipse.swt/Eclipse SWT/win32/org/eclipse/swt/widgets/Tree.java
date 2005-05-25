@@ -474,13 +474,14 @@ void createItem (TreeItem item, int hParent, int hInsertAfter) {
 	* indicator.  The fix is to detect the case when the first
 	* child is added to a visible parent item and redraw the parent.
 	*/
-	if (!OS.IsWindowVisible (handle) || drawCount > 0) return;
-	int hChild = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hParent);
-	if (hChild != 0 && OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hChild) == 0) {
-		RECT rect = new RECT ();
-		rect.left = hParent;
-		if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect) != 0) {
-			OS.InvalidateRect (handle, rect, true);
+	if (OS.IsWindowVisible (handle) && drawCount == 0) {
+		int hChild = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hParent);
+		if (hChild != 0 && OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hChild) == 0) {
+			RECT rect = new RECT ();
+			rect.left = hParent;
+			if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect) != 0) {
+				OS.InvalidateRect (handle, rect, true);
+			}
 		}
 	}
 	updateScrollBar ();
@@ -2279,13 +2280,20 @@ int topHandle () {
 
 void updateScrollBar () {
 	if (hwndParent != 0) {
-		int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-		if (count != 0) {
+		int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+		if (columnCount != 0) {
 			SCROLLINFO info = new SCROLLINFO ();
 			info.cbSize = SCROLLINFO.sizeof;
 			info.fMask = OS.SIF_ALL;
-			OS.GetScrollInfo (handle, OS.SB_VERT, info);
-			OS.SetScrollInfo (hwndParent, OS.SB_VERT, info, true);
+			int itemCount = OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0);
+			if (itemCount == 0) {
+				OS.GetScrollInfo (hwndParent, OS.SB_VERT, info);
+				info.nPage = info.nMax + 1;
+				OS.SetScrollInfo (hwndParent, OS.SB_VERT, info, true);
+			} else {
+				OS.GetScrollInfo (handle, OS.SB_VERT, info);
+				OS.SetScrollInfo (hwndParent, OS.SB_VERT, info, true);
+			}
 		}
 	}
 }
