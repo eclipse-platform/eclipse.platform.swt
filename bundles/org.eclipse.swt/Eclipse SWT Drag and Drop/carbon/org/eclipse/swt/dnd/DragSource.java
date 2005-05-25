@@ -344,13 +344,11 @@ int dragSendDataProc(int theType, int dragSendRefCon, int theItemRef, int theDra
 	if (transfer == null) return OS.badDragFlavorErr;
 	transfer.javaToNative(event.data, transferData);
 	if (transferData.result != OS.noErr) return transferData.result;
-	for (int i = 0; i < transferData.data.length; i++) {
-		byte[] data = transferData.data[i];
-		if (data == null) return OS.cantGetFlavorErr;
-		int result = OS.SetDragItemFlavorData(theDrag, theItemRef, theType, data, data.length, 0);
-		if (result != OS.noErr) return result;
-	}
-	return OS.noErr;
+	// Except for FileTransfer (see #drag), only one item can be transferred
+	// in a Drag operation
+	byte[] datum = transferData.data[0];
+	if (datum == null) return OS.cantGetFlavorErr;
+	return OS.SetDragItemFlavorData(theDrag, theItemRef, theType, datum, datum.length, 0);
 }
 
 /**
