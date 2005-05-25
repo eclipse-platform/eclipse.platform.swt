@@ -775,6 +775,20 @@ public void setEnabled (boolean enabled) {
 	checkWidget();
 	int /*long*/ topHandle = topHandle ();
 	OS.gtk_widget_set_sensitive (topHandle, enabled);
+	if (enabled) {
+		/*
+		* Bug in GTK.  GtkButton requires an enter notify before it
+		* allows the button to be pressed, but events are dropped when
+		* widgets are insensitive.  The fix is to hide and show the
+		* button if the pointer is within its bounds.
+		*/
+		int [] x = new int [1], y = new int [1];
+		OS.gdk_window_get_pointer (parent.paintWindow (), x, y, null);
+		if (getBounds ().contains (x [0], y [0])) {
+			OS.gtk_widget_hide (handle);
+			OS.gtk_widget_show (handle);
+		}
+	}
 }
 
 boolean setFocus () {
