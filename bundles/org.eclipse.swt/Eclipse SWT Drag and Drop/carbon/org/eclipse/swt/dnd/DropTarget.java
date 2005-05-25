@@ -651,7 +651,7 @@ private boolean setEventData(int theDrag, DNDEvent event) {
 		short[] numFlavors = new short[1];
 		OS.CountDragItemFlavors(theDrag, theItemRef[0], numFlavors);
 		int[] theType = new int[1];
-		for (int j = 0; j < numFlavors.length; j++) {
+		for (int j = 0; j < numFlavors[0]; j++) {
 			theType[0] = 0;
 			if (OS.GetFlavorType(theDrag, theItemRef[0], (short) (j+1), theType) == OS.noErr) {
 				boolean unique = true;
