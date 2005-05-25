@@ -62,6 +62,7 @@ public void test_createComposites() {
 
     Performance performance = Performance.getDefault();
     performance.tagAsGlobalSummary(meter, "Create composites", Dimension.ELAPSED_PROCESS);
+    performance.setComment(meter, Performance.EXPLAINS_DEGRADATION_COMMENT, "Unreproducable regression.  See bug 96652.");
 	
 	// Warm up.
 	for(samples = 0; samples < 2; samples++) {
