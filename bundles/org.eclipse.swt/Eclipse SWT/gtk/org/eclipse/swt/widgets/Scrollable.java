@@ -133,9 +133,11 @@ ScrollBar createScrollBar (int style) {
 	bar.display = display;
 	bar.state |= HANDLE;
 	if ((style & SWT.H_SCROLL) != 0) {
-		bar.handle = OS.gtk_scrolled_window_get_hadjustment (scrolledHandle);
+		bar.handle = OS.GTK_SCROLLED_WINDOW_HSCROLLBAR (scrolledHandle);
+		bar.adjustmentHandle = OS.gtk_scrolled_window_get_hadjustment (scrolledHandle);
 	} else {
-		bar.handle = OS.gtk_scrolled_window_get_vadjustment (scrolledHandle);
+		bar.handle = OS.GTK_SCROLLED_WINDOW_VSCROLLBAR (scrolledHandle);
+		bar.adjustmentHandle = OS.gtk_scrolled_window_get_vadjustment (scrolledHandle);
 	}
 	bar.hookEvents ();
 	bar.register ();
@@ -243,14 +245,14 @@ int /*long*/ gtk_scroll_event (int /*long*/ widget, int /*long*/ eventPtr) {
 		}
 		if (scrollBar != null && !OS.GTK_WIDGET_VISIBLE (scrollBar.handle) && scrollBar.getEnabled()) {
 			GtkAdjustment adjustment = new GtkAdjustment ();
-			OS.memmove (adjustment, scrollBar.handle);
+			OS.memmove (adjustment, scrollBar.adjustmentHandle);
 			/* Calculate wheel delta to match GTK+ 2.4 and higher */
 			int wheel_delta = (int) Math.pow(adjustment.page_size, 2.0 / 3.0);
 			if (gdkEvent.direction == OS.GDK_SCROLL_UP || gdkEvent.direction == OS.GDK_SCROLL_LEFT)
 				wheel_delta = -wheel_delta;
 			int value = (int) Math.max(adjustment.lower,
 					Math.min(adjustment.upper - adjustment.page_size, adjustment.value + wheel_delta));
-			OS.gtk_adjustment_set_value (scrollBar.handle, value);
+			OS.gtk_adjustment_set_value (scrollBar.adjustmentHandle, value);
 			return 1;
 		}
 	}
