@@ -257,24 +257,33 @@ private void drag(Event dragEvent) {
 	
 	Point pt = new Point();
 	OS.GetGlobalMouse (pt);
-	
-	int index = 0;
+
 	for (int i = 0; i < transferAgents.length; i++) {
 		int[] types = transferAgents[i].getTypeIds();
-		for (int j = 0; j < types.length; j++) {
-			OS.AddDragItemFlavor(theDrag[0], index++, types[j], null, 0, 0);	
-		}	
-	}
-
-	if (index == 0) {
-		OS.DisposeDrag(theDrag[0]);
-		event = new DNDEvent();
-		event.widget = this;
-		event.time = (int)System.currentTimeMillis();
-		event.doit = false;
-		event.detail = DND.DROP_NONE; 
-		notifyListeners(DND.DragEnd, event);
-		return;
+		if (transferAgents[i] instanceof FileTransfer) {
+			TransferData transferData = new TransferData();
+			transferData.type = types[0];
+			event = new DNDEvent();
+			event.widget = this;
+			event.time = (int)System.currentTimeMillis(); 
+			event.dataType = transferData; 
+			notifyListeners(DND.DragSetData, event);
+			if (event.data == null) return;
+			Transfer transferAgent = transferAgents[i];
+			for (int j = 0; j < types.length; j++) {
+				transferData.type = types[j];
+				transferAgent.javaToNative(event.data, transferData);
+				if (transferData.result != OS.noErr) return;
+				for (int k = 0; k < transferData.data.length; k++) {
+					byte[] datum = transferData.data[k];
+					OS.AddDragItemFlavor(theDrag[0], 1 + k, types[j], datum, datum.length, 0);
+				}
+			}
+		} else {
+			for (int j = 0; j < types.length; j++) {
+				OS.AddDragItemFlavor(theDrag[0], 1, types[j], null, 0, 0);	
+			}	
+		}
 	}
 	
 	OS.SetDragSendProc(theDrag[0], DragSendDataProc.getAddress(), control.handle);
