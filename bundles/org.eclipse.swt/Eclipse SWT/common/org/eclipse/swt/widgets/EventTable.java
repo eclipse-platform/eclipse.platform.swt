@@ -36,28 +36,12 @@ public void hook (int eventType, Listener listener) {
 	}
 	index++;
 	if (index == length) {
-		if (level == 0) {
-			index = 0;
-			for (int i=0; i<types.length; i++) {
-				if (types [i] != 0) {
-					types [index] = types [i];
-					listeners [index] = listeners [i];
-					index++;
-				}
-			}
-			for (int i=index; i<types.length; i++) {
-				types [i] = 0;
-				listeners [i] = null;
-			}
-		}
-		if (index == length) {
-			int [] newTypes = new int [length + 4];
-			System.arraycopy (types, 0, newTypes, 0, length);
-			types = newTypes;
-			Listener [] newListeners = new Listener [length + 4];
-			System.arraycopy (listeners, 0, newListeners, 0, length);
-			listeners = newListeners;
-		}
+		int [] newTypes = new int [length + 4];
+		System.arraycopy (types, 0, newTypes, 0, length);
+		types = newTypes;
+		Listener [] newListeners = new Listener [length + 4];
+		System.arraycopy (listeners, 0, newListeners, 0, length);
+		listeners = newListeners;
 	}
 	types [index] = eventType;
 	listeners [index] = listener;
@@ -73,7 +57,7 @@ public boolean hooks (int eventType) {
 
 public void sendEvent (Event event) {
 	if (types == null) return;
-	level++;
+	level += level >= 0 ? 1 : -1;
 	try {
 		for (int i=0; i<types.length; i++) {
 			if (event.type == SWT.None) return;
@@ -83,7 +67,22 @@ public void sendEvent (Event event) {
 			}
 		}
 	} finally {
-		--level;
+		boolean compact = level < 0;
+		level -= level >= 0 ? 1 : -1;
+		if (compact && level == 0) {
+			int index = 0;
+			for (int i=0; i<types.length; i++) {
+				if (types [i] != 0) {
+					types [index] = types [i];
+					listeners [index] = listeners [i];
+					index++;
+				}
+			}
+			for (int i=index; i<types.length; i++) {
+				types [i] = 0;
+				listeners [i] = null;
+			}
+		}
 	}
 }
 
@@ -102,6 +101,8 @@ void remove (int index) {
 		System.arraycopy (types, index + 1, types, index, end - index);
 		System.arraycopy (listeners, index + 1, listeners, index, end - index);
 		index = end;
+	} else {
+		if (level > 0) level = -level;
 	}
 	types [index] = 0;
 	listeners [index] = null;
