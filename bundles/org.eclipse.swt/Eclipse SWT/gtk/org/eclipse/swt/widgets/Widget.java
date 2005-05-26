@@ -95,43 +95,44 @@ public abstract class Widget {
 	static final int ENTER_NOTIFY_EVENT = 11;
 	static final int EVENT = 12;
 	static final int EVENT_AFTER = 13;
-	static final int EXPOSE_EVENT = 14;
-	static final int FOCUS = 15;
-	static final int FOCUS_IN_EVENT = 16;
-	static final int FOCUS_OUT_EVENT = 17;
-	static final int HIDE = 18;
-	static final int INPUT = 19;
-	static final int INSERT_TEXT = 20;
-	static final int KEY_PRESS_EVENT = 21;
-	static final int KEY_RELEASE_EVENT = 22;
-	static final int LEAVE_NOTIFY_EVENT = 23;
-	static final int MAP = 24;
-	static final int MAP_EVENT = 25;
-	static final int MNEMONIC_ACTIVATE = 26;
-	static final int MOTION_NOTIFY_EVENT = 27;
-	static final int MOVE_FOCUS = 28;
-	static final int OUTPUT = 29;
-	static final int POPUP_MENU = 30;
-	static final int PREEDIT_CHANGED = 31;
-	static final int REALIZE = 32;
-	static final int ROW_ACTIVATED = 33;
-	static final int SCROLL_CHILD = 34;
-	static final int SCROLL_EVENT = 35;
-	static final int SELECT = 36;
-	static final int SHOW = 37;
-	static final int SHOW_HELP = 38;
-	static final int SIZE_ALLOCATE = 39;
-	static final int STYLE_SET = 40;
-	static final int SWITCH_PAGE = 41;
-	static final int TEST_COLLAPSE_ROW = 42;
-	static final int TEST_EXPAND_ROW = 43;
-	static final int TOGGLED = 44;
-	static final int UNMAP = 45;
-	static final int UNMAP_EVENT = 46;
-	static final int UNREALIZE = 47;
-	static final int VALUE_CHANGED = 48;
-	static final int VISIBILITY_NOTIFY_EVENT = 49;
-	static final int WINDOW_STATE_EVENT = 50;
+	static final int EXPAND_COLLAPSE_CURSOR_ROW = 14;
+	static final int EXPOSE_EVENT = 15;
+	static final int FOCUS = 16;
+	static final int FOCUS_IN_EVENT = 17;
+	static final int FOCUS_OUT_EVENT = 18;
+	static final int HIDE = 19;
+	static final int INPUT = 20;
+	static final int INSERT_TEXT = 21;
+	static final int KEY_PRESS_EVENT = 22;
+	static final int KEY_RELEASE_EVENT = 23;
+	static final int LEAVE_NOTIFY_EVENT = 24;
+	static final int MAP = 25;
+	static final int MAP_EVENT = 26;
+	static final int MNEMONIC_ACTIVATE = 27;
+	static final int MOTION_NOTIFY_EVENT = 28;
+	static final int MOVE_FOCUS = 29;
+	static final int OUTPUT = 30;
+	static final int POPUP_MENU = 31;
+	static final int PREEDIT_CHANGED = 32;
+	static final int REALIZE = 33;
+	static final int ROW_ACTIVATED = 34;
+	static final int SCROLL_CHILD = 35;
+	static final int SCROLL_EVENT = 36;
+	static final int SELECT = 37;
+	static final int SHOW = 38;
+	static final int SHOW_HELP = 39;
+	static final int SIZE_ALLOCATE = 40;
+	static final int STYLE_SET = 41;
+	static final int SWITCH_PAGE = 42;
+	static final int TEST_COLLAPSE_ROW = 43;
+	static final int TEST_EXPAND_ROW = 44;
+	static final int TOGGLED = 45;
+	static final int UNMAP = 46;
+	static final int UNMAP_EVENT = 47;
+	static final int UNREALIZE = 48;
+	static final int VALUE_CHANGED = 49;
+	static final int VISIBILITY_NOTIFY_EVENT = 50;
+	static final int WINDOW_STATE_EVENT = 51;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -579,6 +580,10 @@ int /*long*/ gtk_event (int /*long*/ widget, int /*long*/ event) {
 }
 
 int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ event) {
+	return 0;
+}
+
+int /*long*/ gtk_expand_collapse_cursor_row (int /*long*/ widget, int /*long*/ logical, int /*long*/ expand, int /*long*/ open_all) {
 	return 0;
 }
 
@@ -1386,6 +1391,7 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ ar
 
 int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ user_data) {
 	switch ((int)/*64*/user_data) {
+		case EXPAND_COLLAPSE_CURSOR_ROW: return gtk_expand_collapse_cursor_row (handle, arg0, arg1, arg2);
 		case INSERT_TEXT: return gtk_insert_text (handle, arg0, arg1, arg2);
 		default: return 0;
 	}

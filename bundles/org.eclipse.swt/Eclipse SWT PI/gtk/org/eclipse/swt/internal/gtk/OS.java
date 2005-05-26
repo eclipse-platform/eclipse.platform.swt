@@ -344,6 +344,7 @@ public class OS extends Platform {
 	public static final byte[] enter_notify_event = ascii("enter-notify-event");
 	public static final byte[] event = ascii("event");
 	public static final byte[] event_after = ascii("event-after");
+	public static final byte[] expand_collapse_cursor_row = ascii("expand-collapse-cursor-row");
 	public static final byte[] expose_event = ascii("expose-event");
 	public static final byte[] focus = ascii("focus");
 	public static final byte[] focus_in_event = ascii("focus-in-event");

@@ -49,6 +49,7 @@ public class Tree extends Composite {
 	ImageList imageList;
 	boolean firstCustomDraw;
 	boolean modelChanged;
+	boolean expandAll;
 	
 	static final int ID_COLUMN = 0;
 	static final int CHECKED_COLUMN = 1;
@@ -1306,6 +1307,11 @@ int /*long*/ gtk_changed (int /*long*/ widget) {
 	return 0;
 }
 
+int /*long*/ gtk_expand_collapse_cursor_row (int /*long*/ widget, int /*long*/ logical, int /*long*/ expand, int /*long*/ open_all) {
+	if (expand != 0 && open_all != 0) expandAll = true;
+	return 0;
+}
+
 int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 	int /*long*/ result = super.gtk_key_press_event (widget, eventPtr);
 	if (result != 0) return result;
@@ -1415,10 +1421,15 @@ int /*long*/ gtk_test_expand_row (int /*long*/ tree, int /*long*/ iter, int /*lo
 	* expansion keys (such as *).  The fix is to stop the expansion
 	* if there are model changes.
 	* 
+	* Bug in GTK.  test-expand-row does not get called for each row
+	* in an expand all operation.  The fix is to block the initial
+	* expansion and only expand a single level.
+	* 
 	* Note: This callback must return 0 for the collapsing
 	* animation to occur.
 	*/
-	if (changed) {
+	if (changed || expandAll) {
+		expandAll = false;
 		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_EXPAND_ROW);
 		OS.gtk_tree_view_expand_row (handle, path, false);
 		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_EXPAND_ROW);
@@ -1461,6 +1472,7 @@ void hookEvents () {
 	OS.g_signal_connect (handle, OS.row_activated, display.windowProc4, ROW_ACTIVATED);
 	OS.g_signal_connect (handle, OS.test_expand_row, display.windowProc4, TEST_EXPAND_ROW);
 	OS.g_signal_connect (handle, OS.test_collapse_row, display.windowProc4, TEST_COLLAPSE_ROW);
+	OS.g_signal_connect (handle, OS.expand_collapse_cursor_row, display.windowProc5, EXPAND_COLLAPSE_CURSOR_ROW);
 	if (checkRenderer != 0) {
 		OS.g_signal_connect (checkRenderer, OS.toggled, display.windowProc3, TOGGLED);
 	}
