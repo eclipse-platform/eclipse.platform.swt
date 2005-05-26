@@ -1173,11 +1173,9 @@ void createRenderTable() {
 		SWT.error(SWT.ERROR_NO_HANDLES);
 	}
 	int context = fontBuffer[0], fontListEntry = 0;
-	int widgetClass = OS.topLevelShellWidgetClass ();
 	int[] renditions = new int[4]; int renditionCount = 0;	
 		
 	/* Create a rendition for each entry in the font list */
-	int shellHandle = OS.XtAppCreateShell (null, null, widgetClass, xDisplay, null, 0);
 	while ((fontListEntry = OS.XmFontListNextEntry(context)) != 0) {
 		int fontPtr = OS.XmFontListEntryGetFont(fontListEntry, fontBuffer);
 		int fontType = (fontBuffer [0] == 0) ? OS.XmFONT_IS_FONT : OS.XmFONT_IS_FONTSET;
@@ -1187,7 +1185,7 @@ void createRenderTable() {
 			OS.XmNfont, fontPtr,
 			OS.XmNfontType, fontType,
 		};
-		int rendition = OS.XmRenditionCreate(shellHandle, OS.XmFONTLIST_DEFAULT_TAG, argList, argList.length / 2);
+		int rendition = OS.XmRenditionCreate(device.shellHandle, OS.XmFONTLIST_DEFAULT_TAG, argList, argList.length / 2);
 		renditions[renditionCount++] = rendition;
 		if (renditionCount == renditions.length) {
 			int[] newArray = new int[renditions.length + 4];
@@ -1198,7 +1196,6 @@ void createRenderTable() {
 	OS.XmFontListFreeFontContext(context);
 	OS.XmTabFree(tab);
 	OS.XmTabListFree(tabList);
-	OS.XtDestroyWidget (shellHandle);		
 	
 	/* Create the render table from the renditions */
 	data.renderTable = OS.XmRenderTableAddRenditions(0, renditions, renditionCount, OS.XmMERGE_REPLACE);
@@ -1301,16 +1298,20 @@ public void drawText (String string, int x, int y, int flags) {
 		return;
 	}
 	setText(string, flags);
+	int xDisplay = data.display;
+	int xDrawable = data.drawable;
+	if (data.image != null) OS.XtRegisterDrawable (xDisplay, xDrawable, device.shellHandle);
 	int xmMnemonic = data.xmMnemonic;
 	if (xmMnemonic != 0) {
-		OS.XmStringDrawUnderline(data.display, data.drawable, data.renderTable, data.xmText, handle, x, y, 0x7FFFFFFF, OS.XmALIGNMENT_BEGINNING, 0, null, xmMnemonic);
+		OS.XmStringDrawUnderline(xDisplay, xDrawable, data.renderTable, data.xmText, handle, x, y, 0x7FFFFFFF, OS.XmALIGNMENT_BEGINNING, 0, null, xmMnemonic);
 	} else {
 		if ((flags & SWT.DRAW_TRANSPARENT) != 0) {
-			OS.XmStringDraw(data.display, data.drawable, data.renderTable, data.xmText, handle, x, y, 0x7FFFFFFF, OS.XmALIGNMENT_BEGINNING, 0, null);
+			OS.XmStringDraw(xDisplay, xDrawable, data.renderTable, data.xmText, handle, x, y, 0x7FFFFFFF, OS.XmALIGNMENT_BEGINNING, 0, null);
 		} else {
-			OS.XmStringDrawImage(data.display, data.drawable, data.renderTable, data.xmText, handle, x, y, 0x7FFFFFFF, OS.XmALIGNMENT_BEGINNING, 0, null);
+			OS.XmStringDrawImage(xDisplay, xDrawable, data.renderTable, data.xmText, handle, x, y, 0x7FFFFFFF, OS.XmALIGNMENT_BEGINNING, 0, null);
 		}
 	}
+	if (data.image != null) OS.XtUnregisterDrawable (xDisplay, xDrawable);
 }
 /**
  * Compares the argument to the receiver, and returns true

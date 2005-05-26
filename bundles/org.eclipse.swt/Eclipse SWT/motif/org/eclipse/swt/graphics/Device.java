@@ -72,6 +72,8 @@ public abstract class Device implements Drawable {
 	/* System Font */
 	Font systemFont;
 	
+	int shellHandle;
+
 	/* Parsing Tables */
 	int tabPointer, crPointer;
 	/**
@@ -637,6 +639,10 @@ protected void init () {
 	COLOR_CYAN = new Color (this, 0,0xFF,0xFF);
 	COLOR_WHITE = new Color (this, 0xFF,0xFF,0xFF);
 
+	int widgetClass = OS.topLevelShellWidgetClass ();
+	shellHandle = OS.XtAppCreateShell (null, null, widgetClass, xDisplay, null, 0);
+	if (shellHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+
 	/* Create the parsing tables */
 	byte[] tabBuffer = {(byte) '\t', 0};
 	tabPointer = OS.XtMalloc (tabBuffer.length);
@@ -765,6 +771,9 @@ protected void release () {
 	OS.XmParseMappingFree(tabMapping);
 	OS.XmParseMappingFree(crMapping);
 	tabPointer = crPointer = tabMapping = crMapping = 0;
+
+	if (shellHandle != 0) OS.XtDestroyWidget (shellHandle);
+	shellHandle = 0;
 
 	/*
 	* Free the palette.  Note that this disposes all colors on
