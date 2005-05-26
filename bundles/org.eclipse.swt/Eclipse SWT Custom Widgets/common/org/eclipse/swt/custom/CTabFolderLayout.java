@@ -40,7 +40,7 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 	if (folder.single) tabW += 3*CTabFolder.BUTTON_SIZE/2; //chevron
 	if (folder.topRight != null) {
 		Point pt = folder.topRight.computeSize(SWT.DEFAULT, folder.tabHeight, flushCache);
-		tabW += pt.x;
+		tabW += 3 + pt.x;
 	}
 	if (!folder.single && !folder.simple) tabW += folder.curveWidth - 2*folder.curveIndent;
 	
