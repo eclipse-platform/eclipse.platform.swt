@@ -517,8 +517,13 @@ void createParent () {
 		null);
 	if (hwndParent == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.SetWindowLong (hwndParent, OS.GWL_ID, hwndParent);
+	int bits = 0;
+	if (OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
+		bits |= OS.WS_EX_NOINHERITLAYOUT;
+		if ((style & SWT.RIGHT_TO_LEFT) != 0) bits |= OS.WS_EX_LAYOUTRTL;
+	}
 	hwndHeader = OS.CreateWindowEx (
-		0,
+		bits,
 		new TCHAR (0, OS.WC_HEADER, true),
 		null,
 		OS.HDS_BUTTONS | OS.HDS_FULLDRAG | OS.HDS_HIDDEN | OS.WS_CHILD | OS.WS_CLIPSIBLINGS,
