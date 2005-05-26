@@ -1185,7 +1185,7 @@ void createRenderTable() {
 			OS.XmNfont, fontPtr,
 			OS.XmNfontType, fontType,
 		};
-		int rendition = OS.XmRenditionCreate(device.shellHandle, OS.XmFONTLIST_DEFAULT_TAG, argList, argList.length / 2);
+		int rendition = OS.XmRenditionCreate(data.device.shellHandle, OS.XmFONTLIST_DEFAULT_TAG, argList, argList.length / 2);
 		renditions[renditionCount++] = rendition;
 		if (renditionCount == renditions.length) {
 			int[] newArray = new int[renditions.length + 4];
@@ -1300,7 +1300,7 @@ public void drawText (String string, int x, int y, int flags) {
 	setText(string, flags);
 	int xDisplay = data.display;
 	int xDrawable = data.drawable;
-	if (data.image != null) OS.XtRegisterDrawable (xDisplay, xDrawable, device.shellHandle);
+	if (data.image != null) OS.XtRegisterDrawable (xDisplay, xDrawable, data.device.shellHandle);
 	int xmMnemonic = data.xmMnemonic;
 	if (xmMnemonic != 0) {
 		OS.XmStringDrawUnderline(xDisplay, xDrawable, data.renderTable, data.xmText, handle, x, y, 0x7FFFFFFF, OS.XmALIGNMENT_BEGINNING, 0, null, xmMnemonic);
