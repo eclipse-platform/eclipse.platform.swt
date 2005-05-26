@@ -1320,6 +1320,21 @@ public boolean setUrl(String url) {
 	* navigating to any xml document. 
 	*/
 	if (url.endsWith(".xml")) {	//$NON-NLS-1$
+		/*
+		* Feature in Internet Explorer.  Stopping pending requests when no request has been
+		* issued causes a default 'Action cancelled' page to be displayed.  Since Stop must
+		* be issued here, the workaround is to first Navigate to the about:blank page before
+		* issuing Stop so that the 'Action cancelled' page is not displayed.
+		*/
+		if (!navigate) {
+			int[] rgdispid = auto.getIDsOfNames(new String[] { "Navigate", "URL" }); //$NON-NLS-1$ //$NON-NLS-2$
+			Variant[] rgvarg = new Variant[1];
+			rgvarg[0] = new Variant(ABOUT_BLANK);
+			int[] rgdispidNamedArgs = new int[1];
+			rgdispidNamedArgs[0] = rgdispid[1];
+			auto.invoke(rgdispid[0], rgvarg, rgdispidNamedArgs);
+			rgvarg[0].dispose();
+		}
 		int[] rgdispid = auto.getIDsOfNames(new String[] { "Stop" }); //$NON-NLS-1$
 		auto.invoke(rgdispid[0]);
 	}
