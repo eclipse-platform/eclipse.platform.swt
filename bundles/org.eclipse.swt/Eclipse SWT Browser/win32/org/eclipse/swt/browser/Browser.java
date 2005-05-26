@@ -1311,6 +1311,19 @@ public boolean setUrl(String url) {
 	checkWidget();
 	if (url == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	html = null;
+
+	/*
+	* Bug in Internet Explorer.  For some reason, Navigating to an xml document before
+	* a previous Navigate has completed will leave the Browser in a bad state if the
+	* Navigate to the xml document does not complete.  This bad state causes a GP when
+	* the parent window is eventually disposed.  The workaround is to issue a Stop before
+	* navigating to any xml document. 
+	*/
+	if (url.endsWith(".xml")) {	//$NON-NLS-1$
+		int[] rgdispid = auto.getIDsOfNames(new String[] { "Stop" }); //$NON-NLS-1$
+		auto.invoke(rgdispid[0]);
+	}
+
 	int[] rgdispid = auto.getIDsOfNames(new String[] { "Navigate", "URL" }); //$NON-NLS-1$ //$NON-NLS-2$
 	navigate = true;
 	Variant[] rgvarg = new Variant[1];
