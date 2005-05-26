@@ -258,7 +258,11 @@ void drawBackground (int control) {
 		if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
 			drawFocus (control, hasFocus () && drawFocusRing (), hasBorder (), getParentBackground (), inset ());
 		} else {
-			drawBackground (control, getParentBackground ());			
+			if (hasBorder ()) {
+				drawFocus (control, false, hasBorder (), getParentBackground (), inset ());
+			} else {
+				drawBackground (control, getParentBackground ());
+			}
 		}
 	} else {
 		if ((state & CANVAS) != 0) {
