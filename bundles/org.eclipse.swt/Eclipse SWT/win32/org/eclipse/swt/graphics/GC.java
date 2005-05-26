@@ -2997,7 +2997,21 @@ public boolean getXORMode() {
 void initGdip(boolean draw, boolean fill) {
 	data.device.checkGDIP();
 	int gdipGraphics = data.gdipGraphics;
-	if (gdipGraphics == 0) gdipGraphics = data.gdipGraphics = Gdip.Graphics_new(handle);
+	if (gdipGraphics == 0) {
+		/*
+		* Feature in GDI+. The GDI+ clipping set with Graphics->SetClip()
+		* is always intersected with the GDI clipping at the time the
+		* GDI+ graphics is created.  This means that the clipping 
+		* cannot be reset.  The fix is to clear the clipping before
+		* the GDI+ graphics is created and reset it afterwards.
+		*/
+		int hRgn = OS.CreateRectRgn(0, 0, 0, 0);
+		int result = OS.GetClipRgn(handle, hRgn);
+		OS.SelectClipRgn(handle, 0);
+		gdipGraphics = data.gdipGraphics = Gdip.Graphics_new(handle);
+		if (result == 1) setClipping(hRgn);
+		OS.DeleteObject(hRgn);
+	}
 	if (gdipGraphics == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (draw && data.gdipPen == 0) data.gdipPen = createGdipPen();
 	if (fill && data.gdipBrush == 0) data.gdipBrush = createGdipBrush();
