@@ -93,6 +93,7 @@ public class OS extends Platform {
 	public static final int kCFNumberFormatterDecimalStyle = 1;
 	public static final int kCFURLPOSIXPathStyle = 0;
 	public static final int kCFStringEncodingASCII = 0x0600;
+	public static final int kCFStringEncodingUTF8 = 0x08000100;
 	public static final int kCGEncodingMacRoman = 1;
 	public static final int kCGImageAlphaFirst = 4;
 	public static final int kCGImageAlphaNoneSkipFirst = 6;
