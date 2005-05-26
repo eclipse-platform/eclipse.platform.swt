@@ -3709,7 +3709,8 @@ public void setLineStyle(int lineStyle) {
  * <p>
  * Note that line width of zero is used as a hint to
  * indicate that the fastest possible line drawing
- * algorithm should be used.
+ * algorithms should be used. This means that the
+ * output may be different from line width one.
  * </p>
  *
  * @param lineWidth the width of a line
