@@ -1841,6 +1841,11 @@ public int getAdvanceWidth(char ch) {
 	return getCharWidth(ch);
 }
 
+public boolean getAdvanced() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return false;
+}
+
 /**
  * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
  */
@@ -2302,6 +2307,20 @@ public boolean isClipped() {
  */
 public boolean isDisposed() {
 	return handle == 0;
+}
+
+public void setAdvanced(boolean advanced) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (!advanced) {
+		setAlpha(0xFF);
+		setAntialias(SWT.DEFAULT);
+		setBackgroundPattern(null);
+		setClipping((Rectangle)null);
+		setForegroundPattern(null);
+		setInterpolation(SWT.DEFAULT);
+		setTextAntialias(SWT.DEFAULT);
+		setTransform(null);
+	}
 }
 
 /**

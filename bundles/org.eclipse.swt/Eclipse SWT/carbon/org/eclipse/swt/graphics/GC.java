@@ -1505,7 +1505,7 @@ public Pattern getBackgroundPattern() {
 	return data.backgroundPattern;	
 }
 
-boolean getAdvanced() {
+public boolean getAdvanced() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return true;
 }
@@ -1946,7 +1946,7 @@ boolean isIdentity(float[] transform) {
 	 	&& transform[3] == 1 && transform[4] == 0 && transform[5] == 0;
 }
 
-void setAdvanced(boolean advanced) {
+public void setAdvanced(boolean advanced) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (!advanced) {
 		setAlpha(0xFF);

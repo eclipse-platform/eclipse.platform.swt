@@ -2352,7 +2352,7 @@ public int getAdvanceWidth(char ch) {
  * @see setAdvanced()
  * @since 3.1
  */
-/*public*/ boolean getAdvanced() {
+public boolean getAdvanced() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.gdipGraphics != 0;
 }
@@ -3151,7 +3151,7 @@ float measureSpace(int font, int format) {
  * 
  * @since 3.1
  */
-/*public*/ void setAdvanced(boolean advanced) {
+public void setAdvanced(boolean advanced) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (advanced && data.gdipGraphics != 0) return;
 	if (advanced) {
