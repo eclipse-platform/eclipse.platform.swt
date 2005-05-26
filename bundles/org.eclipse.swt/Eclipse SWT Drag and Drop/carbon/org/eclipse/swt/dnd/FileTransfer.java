@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Outhink - support for typeFileURL
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
@@ -35,13 +36,10 @@ import org.eclipse.swt.internal.carbon.*;
 public class FileTransfer extends ByteArrayTransfer {
 	
 	private static FileTransfer _instance = new FileTransfer();
-	//the text/uri-list is used only for transfers within the same application
-	private static final String URILIST = "text/uri-list";
 	private static final String HFS = "hfs ";
-	private static final int URILISTID = registerType(URILIST);
+	private static final String FURL = "furl";
 	private static final int HFSID = registerType(HFS);
-	private static final String URILIST_PREFIX = "file:";
-	private static final String URILIST_SEPARATOR = "\r";
+	private static final int FURLID = registerType(FURL);
 	
 private FileTransfer() {}
 
@@ -72,37 +70,20 @@ public void javaToNative(Object object, TransferData transferData) {
 	}
 	String[] files = (String[])object;
 	transferData.result = -1;
-	if (transferData.type == URILISTID) {
-		// create a string separated by "new lines" to represent list of files
-		StringBuffer sb = new StringBuffer();
-		for (int i = 0, length = files.length; i < length; i++){
-			sb.append(URILIST_PREFIX);
-			sb.append(files[i]);
-			sb.append(URILIST_SEPARATOR);
-		}
-		String str = sb.toString();
-		char[] chars = new char[str.length()];
-		str.getChars (0, chars.length, chars, 0);
-		byte[] buffer = new byte[chars.length * 2];
-		OS.memcpy(buffer, chars, buffer.length);
-		transferData.data = new byte[1][];
-		transferData.data[0] = buffer;
-		transferData.result = 0;
-	}
-	if (transferData.type == HFSID) {
-		byte[][] data = new byte[files.length][];
-		for (int i = 0; i < data.length; i++) {
-			File file = new File(files[i]);
-			boolean isDirectory = file.isDirectory();
-			String fileName = files[i];
-			char [] chars = new char [fileName.length ()];
-			fileName.getChars (0, chars.length, chars, 0);
-			int cfstring = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, chars, chars.length);
-			if (cfstring == 0) return;
+	byte[][] data = new byte[files.length][];
+	for (int i = 0; i < data.length; i++) {
+		File file = new File(files[i]);
+		boolean isDirectory = file.isDirectory();
+		String fileName = files[i];
+		char [] chars = new char [fileName.length ()];
+		fileName.getChars (0, chars.length, chars, 0);
+		int cfstring = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, chars, chars.length);
+		if (cfstring == 0) return;
+		try {
+			int url = OS.CFURLCreateWithFileSystemPath(OS.kCFAllocatorDefault, cfstring, OS.kCFURLPOSIXPathStyle, isDirectory);
+			if (url == 0) return;
 			try {
-				int url = OS.CFURLCreateWithFileSystemPath(OS.kCFAllocatorDefault, cfstring, OS.kCFURLPOSIXPathStyle, isDirectory);
-				if (url == 0) return;
-				try {
+				if (transferData.type == HFSID) {
 					byte[] fsRef = new byte[80];
 					if (!OS.CFURLGetFSRef(url, fsRef)) return;
 					byte[] fsSpec = new byte[70];
@@ -113,16 +94,31 @@ public void javaToNative(Object object, TransferData transferData) {
 					System.arraycopy(finfo, 0, hfsflavor, 0, 10);
 					System.arraycopy(fsSpec, 0, hfsflavor, 10, fsSpec.length);
 					data[i] = hfsflavor;
-				} finally {
-					OS.CFRelease(url);
+				}
+				if (transferData.type == FURLID) {
+					int encoding = OS.CFStringGetSystemEncoding();
+					int theData = OS.CFURLCreateData(OS.kCFAllocatorDefault, url, encoding, true);
+					if (theData == 0) return;
+					try {
+						int length = OS.CFDataGetLength(theData);
+						byte[] buffer = new byte[length];
+						CFRange range = new CFRange();
+						range.length = length;
+						OS.CFDataGetBytes(theData, range, buffer);
+						data[i] = buffer;
+					} finally {
+						OS.CFRelease(theData);
+					}
 				}
 			} finally {
-				OS.CFRelease(cfstring);
+				OS.CFRelease(url);
 			}
+		} finally {
+			OS.CFRelease(cfstring);
 		}
-		transferData.data = data;
-		transferData.result = 0;
 	}
+	transferData.data = data;
+	transferData.result = 0;
 }
 /**
  * This implementation of <code>nativeToJava</code> converts a platform specific 
@@ -138,71 +134,51 @@ public void javaToNative(Object object, TransferData transferData) {
 public Object nativeToJava(TransferData transferData) {
 	if (!isSupportedType(transferData) || transferData.data == null) return null;
 	if (transferData.data.length == 0) return null;
-	
-	if (transferData.type == URILISTID) {
-		byte[] data = transferData.data[0];
-		if (data.length == 0) return null;
-		char[] chars = new char[(data.length + 1) / 2];
-		OS.memcpy(chars, data, data.length);
-		String str = new String(chars);
-		int start = str.indexOf(URILIST_PREFIX);
-		if (start == -1) return null;
-		start += URILIST_PREFIX.length();
-		String[] fileNames = new String[0];
-		while (start < str.length()) { 
-			int end = str.indexOf(URILIST_SEPARATOR, start);
-			if (end == -1) end = str.length() - 1;
-			String fileName = str.substring(start, end);
-			String[] newFileNames = new String[fileNames.length + 1];
-			System.arraycopy(fileNames, 0, newFileNames, 0, fileNames.length);
-			newFileNames[fileNames.length] = fileName;
-			fileNames = newFileNames;
-			start = str.indexOf(URILIST_PREFIX, end);
-			if (start == -1) break;
-			start += URILIST_PREFIX.length();
-		}
-		return fileNames;
-	}
-	if (transferData.type == HFSID) {
-		int count = transferData.data.length;
-		String[] fileNames = new String[count];
-		for (int i=0; i<count; i++) {
-			byte[] data = transferData.data[i];
+	int count = transferData.data.length;
+	String[] fileNames = new String[count];
+	for (int i=0; i<count; i++) {
+		byte[] data = transferData.data[i];
+		int url = 0;
+		if (transferData.type == HFSID) {
 			byte[] fsspec = new byte[data.length - 10];
 			System.arraycopy(data, 10, fsspec, 0, fsspec.length);
 			byte[] fsRef = new byte[80];
 			if (OS.FSpMakeFSRef(fsspec, fsRef) != OS.noErr) return null;
-			int url = OS.CFURLCreateFromFSRef(OS.kCFAllocatorDefault, fsRef);
+			url = OS.CFURLCreateFromFSRef(OS.kCFAllocatorDefault, fsRef);
 			if (url == 0) return null;
-			try {
-				int path = OS.CFURLCopyFileSystemPath(url, OS.kCFURLPOSIXPathStyle);
-				if (path == 0) return null;
-				try {
-					int length = OS.CFStringGetLength(path);
-					if (length == 0) return null;
-					char[] buffer= new char[length];
-					CFRange range = new CFRange();
-					range.length = length;
-					OS.CFStringGetCharacters(path, range, buffer);
-					fileNames[i] = new String(buffer);
-				} finally {
-					OS.CFRelease(path);
-				}
-			} finally {
-				OS.CFRelease(url);
-			}
 		}
-		return fileNames;
+		if (transferData.type == FURLID) {
+			int encoding = OS.CFStringGetSystemEncoding();
+			url = OS.CFURLCreateWithBytes(OS.kCFAllocatorDefault, data, data.length, encoding, 0);
+			if (url == 0) return null;
+		}
+		try {
+			int path = OS.CFURLCopyFileSystemPath(url, OS.kCFURLPOSIXPathStyle);
+			if (path == 0) return null;
+			try {
+				int length = OS.CFStringGetLength(path);
+				if (length == 0) return null;
+				char[] buffer= new char[length];
+				CFRange range = new CFRange();
+				range.length = length;
+				OS.CFStringGetCharacters(path, range, buffer);
+				fileNames[i] = new String(buffer);
+			} finally {
+				OS.CFRelease(path);
+			}
+		} finally {
+			OS.CFRelease(url);
+		}
 	}
-	return null;
+	return fileNames;
 }
 
 protected int[] getTypeIds(){
-	return new int[] {URILISTID, HFSID};
+	return new int[] {FURLID, HFSID};
 }
 
 protected String[] getTypeNames(){
-	return new String[] {URILIST, HFS};
+	return new String[] {FURL, HFS};
 }
 
 boolean checkFile(Object object) {
