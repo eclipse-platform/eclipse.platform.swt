@@ -202,23 +202,29 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 	if (hwndParent != 0 && hwnd == hwndParent) {
 		return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 	}
-	/*
-	* Bug in Windows.  For some reason, when the user clicks
-	* on this control, the Windows hook WH_MSGFILTER is sent
-	* despite the fact that an input event from a dialog box,
-	* message box, menu, or scroll bar did not seem to occur.
-	* The fix is to ignore the hook.
-	*/
 	switch (msg) {
+		/*
+		* Bug in Windows.  For some reason, when the user clicks
+		* on this control, the Windows hook WH_MSGFILTER is sent
+		* despite the fact that an input event from a dialog box,
+		* message box, menu, or scroll bar did not seem to occur.
+		* The fix is to ignore the hook.
+		*/
 		case OS.WM_LBUTTONDOWN:
 		case OS.WM_MBUTTONDOWN:
 		case OS.WM_RBUTTONDOWN:
-		case OS.WM_XBUTTONDOWN:
+		case OS.WM_XBUTTONDOWN: {
 			Display display = this.display;
 			display.ignoreMsgFilter = true;
 			int code = OS.CallWindowProc (TreeProc, hwnd, msg, wParam, lParam);
 			display.ignoreMsgFilter = false;
 			return code;
+		}
+		case OS.WM_MOUSEWHEEL: {
+			int code = OS.CallWindowProc (TreeProc, hwnd, msg, wParam, lParam);
+			updateScrollBar ();
+			return code;
+		}
 	}
 	return OS.CallWindowProc (TreeProc, hwnd, msg, wParam, lParam);
 }
