@@ -306,7 +306,7 @@ public Point getSize () {
 public int getThumb () {
 	checkWidget ();
 	GtkAdjustment adjustment = new GtkAdjustment ();
-	OS.memmove (adjustment, handle);
+	OS.memmove (adjustment, adjustmentHandle);
 	return (int) adjustment.page_size;
 }
 
