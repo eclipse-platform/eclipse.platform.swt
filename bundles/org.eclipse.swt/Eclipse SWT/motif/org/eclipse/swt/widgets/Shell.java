@@ -486,7 +486,8 @@ void bringToTop (boolean force) {
 		int handle = OS.XtWindowToWidget (xDisplay, buffer1 [0]);
 		if (handle == 0) return;
 	}
-	OS.XRaiseWindow (xDisplay, xWindow);
+	int shellWindow = OS.XtWindow (shellHandle);
+	if (shellWindow != 0) OS.XRaiseWindow (xDisplay, shellWindow);
 	OS.XSetInputFocus (xDisplay, xWindow, OS.RevertToParent, OS.CurrentTime);
 }
 void checkOpen () {
