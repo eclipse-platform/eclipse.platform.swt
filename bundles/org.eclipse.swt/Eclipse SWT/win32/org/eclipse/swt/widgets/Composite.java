@@ -1097,7 +1097,7 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 			if ((style & SWT.DOUBLE_BUFFERED) != 0) {
 				image = new Image (display, width, height);
 				paintGC = gc;
-				gc = new GC (image);
+				gc = new GC (image, style & SWT.RIGHT_TO_LEFT);
 				gc.setForeground (getForeground ());
 				gc.setBackground (getBackground ());
 				gc.setFont (getFont ());
