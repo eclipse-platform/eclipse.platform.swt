@@ -311,7 +311,9 @@ static int createGdipFont(int hDC, int hFont) {
 			index++;
 		}
 		String name = new String (chars, 0, index);
-		if (name.equalsIgnoreCase("Courier")) name = "Courier New";
+		if (name.equalsIgnoreCase("Courier")) { //$NON-NLS-1$
+			name = "Courier New"; //$NON-NLS-1$
+		}
 		char[] buffer = new char[name.length() + 1];
 		name.getChars(0, name.length(), buffer, 0);
 		font = Gdip.Font_new(buffer, size, style, Gdip.UnitPixel, 0);
