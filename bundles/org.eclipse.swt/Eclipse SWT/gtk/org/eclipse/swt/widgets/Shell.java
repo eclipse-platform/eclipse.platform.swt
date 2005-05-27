@@ -476,9 +476,15 @@ void closeWidget () {
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
 	Rectangle trim = super.computeTrim (x, y, width, height);
+	int border = 0;
+	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.RESIZE)) == 0) {
+		border = OS.gtk_container_get_border_width (shellHandle);
+	}
 	int trimWidth = trimWidth (), trimHeight = trimHeight ();
-	trim.x -= trimWidth / 2; trim.y -= trimHeight - (trimWidth / 2);
-	trim.width += trimWidth; trim.height += trimHeight;
+	trim.x -= (trimWidth / 2) + border;
+	trim.y -= trimHeight - (trimWidth / 2) + border;
+	trim.width += trimWidth + border * 2;
+	trim.height += trimHeight + border * 2;
 	if (menuBar != null) {
 		forceResize ();
 		int menuBarHeight = OS.GTK_WIDGET_HEIGHT (menuBar.handle);

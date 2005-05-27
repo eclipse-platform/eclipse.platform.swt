@@ -533,8 +533,8 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 		OS.XtGetValues (handle, argList, argList.length / 2);
 		border = argList [1];
 	}
-	trim.x -= trimLeft ();
-	trim.y -= trimTop ();
+	trim.x -= trimLeft () + border;
+	trim.y -= trimTop () + border;
 	trim.width += trimWidth () + (border * 2);
 	trim.height += trimHeight () + imeHeight () + (border * 2);
 	return trim;
