@@ -5099,7 +5099,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(IsHungAppWindow)
 	jboolean rc = 0;
 	OS_NATIVE_ENTER(env, that, IsHungAppWindow_FUNC);
 /*
-	rc = (jboolean)IsHungAppWindow(arg0);
+	rc = (jboolean)IsHungAppWindow((HWND)arg0);
 */
 	{
 		static int initialized = 0;
@@ -5112,7 +5112,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(IsHungAppWindow)
 			initialized = 1;
 		}
 		if (fp) {
-			rc = (jboolean)fp(arg0);
+			rc = (jboolean)fp((HWND)arg0);
 		}
 	}
 	OS_NATIVE_EXIT(env, that, IsHungAppWindow_FUNC);
