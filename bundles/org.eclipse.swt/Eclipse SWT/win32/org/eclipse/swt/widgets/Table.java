@@ -2249,9 +2249,8 @@ void setCheckboxImageListColor () {
 void setCheckboxImageList (int width, int height) {
 	if ((style & SWT.CHECK) == 0) return;
 	int count = 4;
-	int flags = ImageList.COLOR_FLAGS;
+	int flags = ImageList.COLOR_FLAGS | OS.ILC_MIRROR;
 	if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) flags |= OS.ILC_MASK;
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) flags |= OS.ILC_MIRROR;
 	int hImageList = OS.ImageList_Create (width, height, flags, count, count);
 	int hDC = OS.GetDC (handle);
 	int memDC = OS.CreateCompatibleDC (hDC);

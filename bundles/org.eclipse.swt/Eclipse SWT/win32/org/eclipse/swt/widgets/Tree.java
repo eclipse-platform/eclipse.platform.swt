@@ -1733,9 +1733,8 @@ void setCheckboxImageList () {
 	if ((style & SWT.CHECK) == 0) return;
 	int count = 5;
 	int height = OS.SendMessage (handle, OS.TVM_GETITEMHEIGHT, 0, 0), width = height;
-	int flags = ImageList.COLOR_FLAGS;
+	int flags = ImageList.COLOR_FLAGS | OS.ILC_MIRROR;
 	if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) flags |= OS.ILC_MASK;
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) flags |= OS.ILC_MIRROR;
 	int hImageList = OS.ImageList_Create (width, height, flags, count, count);
 	int hDC = OS.GetDC (handle);
 	int memDC = OS.CreateCompatibleDC (hDC);

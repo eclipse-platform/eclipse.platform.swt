@@ -936,7 +936,7 @@ int imageIndex (Image image) {
 		int hOldList = OS.SendMessage (hwndCB, OS.TB_GETIMAGELIST, 0, 0);
 		if (hOldList != 0) OS.ImageList_Destroy (hOldList);
 		Rectangle bounds = image.getBounds ();
-		imageList = display.getImageList (new Point (bounds.width, bounds.height));
+		imageList = display.getImageList (bounds.width, bounds.height);
 		int hImageList = imageList.getHandle ();
 		OS.SendMessage (hwndCB, OS.TB_SETIMAGELIST, 0, hImageList);
 	}
