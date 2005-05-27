@@ -1283,7 +1283,7 @@ public Point [] getIconSizes () {
 	};	
 }
 
-ImageList getImageList (Point size) {
+ImageList getImageList (int width, int height) {
 	if (imageList == null) imageList = new ImageList [4];
 	
 	int i = 0;
@@ -1291,7 +1291,8 @@ ImageList getImageList (Point size) {
 	while (i < length) {
 		ImageList list = imageList [i];
 		if (list == null) break;
-		if (list.getImageSize().equals(size)) {
+		Point size = list.getImageSize();
+		if (size.x == width && size.y == height) {
 			list.addRef();
 			return list;
 		}
@@ -1310,7 +1311,7 @@ ImageList getImageList (Point size) {
 	return list;
 }
 
-ImageList getToolImageList (Point size) {
+ImageList getImageListTooBar (int width, int height) {
 	if (toolImageList == null) toolImageList = new ImageList [4];
 	
 	int i = 0;
@@ -1318,7 +1319,8 @@ ImageList getToolImageList (Point size) {
 	while (i < length) {
 		ImageList list = toolImageList [i];
 		if (list == null) break;
-		if (list.getImageSize().equals(size)) {
+		Point size = list.getImageSize();
+		if (size.x == width && size.y == height) {
 			list.addRef();
 			return list;
 		}
@@ -1337,34 +1339,7 @@ ImageList getToolImageList (Point size) {
 	return list;
 }
 
-ImageList getToolHotImageList (Point size) {
-	if (toolHotImageList == null) toolHotImageList = new ImageList [4];
-	
-	int i = 0;
-	int length = toolHotImageList.length; 
-	while (i < length) {
-		ImageList list = toolHotImageList [i];
-		if (list == null) break;
-		if (list.getImageSize().equals(size)) {
-			list.addRef();
-			return list;
-		}
-		i++;
-	}
-	
-	if (i == length) {
-		ImageList [] newList = new ImageList [length + 4];
-		System.arraycopy (toolHotImageList, 0, newList, 0, length);
-		toolHotImageList = newList;
-	}
-	
-	ImageList list = new ImageList();
-	toolHotImageList [i] = list;
-	list.addRef();
-	return list;
-}
-
-ImageList getToolDisabledImageList (Point size) {
+ImageList getImageListToolBarDisabled (int width, int height) {
 	if (toolDisabledImageList == null) toolDisabledImageList = new ImageList [4];
 	
 	int i = 0;
@@ -1372,7 +1347,8 @@ ImageList getToolDisabledImageList (Point size) {
 	while (i < length) {
 		ImageList list = toolDisabledImageList [i];
 		if (list == null) break;
-		if (list.getImageSize().equals(size)) {
+		Point size = list.getImageSize();
+		if (size.x == width && size.y == height) {
 			list.addRef();
 			return list;
 		}
@@ -1387,6 +1363,34 @@ ImageList getToolDisabledImageList (Point size) {
 	
 	ImageList list = new ImageList();
 	toolDisabledImageList [i] = list;
+	list.addRef();
+	return list;
+}
+
+ImageList getImageListToolBarHot (int width, int height) {
+	if (toolHotImageList == null) toolHotImageList = new ImageList [4];
+	
+	int i = 0;
+	int length = toolHotImageList.length; 
+	while (i < length) {
+		ImageList list = toolHotImageList [i];
+		if (list == null) break;
+		Point size = list.getImageSize();
+		if (size.x == width && size.y == height) {
+			list.addRef();
+			return list;
+		}
+		i++;
+	}
+	
+	if (i == length) {
+		ImageList [] newList = new ImageList [length + 4];
+		System.arraycopy (toolHotImageList, 0, newList, 0, length);
+		toolHotImageList = newList;
+	}
+	
+	ImageList list = new ImageList();
+	toolHotImageList [i] = list;
 	list.addRef();
 	return list;
 }

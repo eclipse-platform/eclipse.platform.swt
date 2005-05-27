@@ -57,7 +57,7 @@ class ImageList {
 	}
 	
 public ImageList () {
-	handle = OS.ImageList_Create (32, 32, COLOR_FLAGS | OS.ILC_MASK, 16, 16);
+	handle = OS.ImageList_Create (32, 32, COLOR_FLAGS | OS.ILC_MASK | OS.ILC_MIRROR, 16, 16);
 	images = new Image [4];
 }
 

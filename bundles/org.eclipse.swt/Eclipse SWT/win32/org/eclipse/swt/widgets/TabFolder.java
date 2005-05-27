@@ -423,7 +423,7 @@ int imageIndex (Image image) {
 	if (image == null) return OS.I_IMAGENONE;
 	if (imageList == null) {
 		Rectangle bounds = image.getBounds ();
-		imageList = display.getImageList (new Point (bounds.width, bounds.height));
+		imageList = display.getImageList (bounds.width, bounds.height);
 		int hImageList = imageList.getHandle ();
 		OS.SendMessage (handle, OS.TCM_SETIMAGELIST, 0, hImageList);
 	}

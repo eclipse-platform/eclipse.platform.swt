@@ -861,13 +861,12 @@ void updateImages (boolean enabled) {
 	ImageList disabledImageList = parent.getDisabledImageList();
 	if (info.iImage == OS.I_IMAGENONE) {
 		Rectangle bounds = image.getBounds ();
-		Point size = new Point (bounds.width, bounds.height);
-		if (imageList == null) imageList = display.getToolImageList (size);
+		if (imageList == null) imageList = display.getImageListTooBar (bounds.width, bounds.height);
 		if (disabledImageList == null) {
-			disabledImageList = display.getToolDisabledImageList (size);
+			disabledImageList = display.getImageListToolBarDisabled (bounds.width, bounds.height);
 		}
 		if (hotImageList == null) {
-			hotImageList = display.getToolHotImageList (size);
+			hotImageList = display.getImageListToolBarHot (bounds.width, bounds.height);
 		}
 		Image disabled = disabledImage;
 		if (disabledImage == null) {
