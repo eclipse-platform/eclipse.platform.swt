@@ -57,7 +57,26 @@ CAIRO_LIB = lib$(CAIRO_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 CAIRO_OBJECTS = swt.o cairo.o cairo_structs.o cairo_stats.o cairo_custom.o
 CAIROCFLAGS = `pkg-config --cflags cairo`
 CAIROLIBS = -shared -fpic -fPIC -s `pkg-config --libs-only-L cairo` -lcairo
-	
+
+MOZILLA_PREFIX = swt-mozilla
+MOZILLA_LIB = lib$(MOZILLA_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+MOZILLA_OBJECTS = swt.o xpcom.o xpcom_custom.o xpcom_structs.o xpcom_stats.o
+MOZILLACFLAGS = -O \
+	-DXPCOM_GLUE=1 \
+	-DMOZILLA_STRICT_API=1 \
+	-fno-rtti \
+	-fno-exceptions \
+	-Wall \
+	-DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) \
+	-Wno-non-virtual-dtor \
+	-fPIC \
+	-I./ \
+	-I$(JAVA_HOME)/include \
+	-I$(JAVA_HOME)/include/linux \
+	${GECKO_INCLUDES} \
+	${SWT_PTR_CFLAGS}
+MOZILLALIBS = -shared -s -Wl,--version-script=mozilla_exports -Bsymbolic ${GECKO_LIBS}
+
 all: make_swt make_awt make_gnome make_gtk
 
 make_swt: $(SWT_LIB)
@@ -116,6 +135,20 @@ cairo_structs.o: cairo_structs.c cairo_structs.h cairo.h swt.h
 	$(CC) $(CFLAGS) $(CAIROCFLAGS) -c cairo_structs.c
 cairo_stats.o: cairo_stats.c cairo_structs.h cairo.h cairo_stats.h swt.h
 	$(CC) $(CFLAGS) $(CAIROCFLAGS) -c cairo_stats.c
+
+make_mozilla:$(MOZILLA_LIB)
+
+$(MOZILLA_LIB): $(MOZILLA_OBJECTS)
+	$(CXX) -o $(MOZILLA_LIB) $(MOZILLA_OBJECTS) $(MOZILLALIBS)
+
+xpcom.o: xpcom.cpp
+	$(CXX) $(MOZILLACFLAGS) -c xpcom.cpp
+xpcom_structs.o: xpcom_structs.cpp
+	$(CXX) $(MOZILLACFLAGS) -c xpcom_structs.cpp
+xpcom_custom.o: xpcom_custom.cpp
+	$(CXX) $(MOZILLACFLAGS) -c xpcom_custom.cpp
+xpcom_stats.o: xpcom_stats.cpp
+	$(CXX) $(MOZILLACFLAGS) -c xpcom_stats.cpp	
 
 install: all
 	cp *.so $(OUTPUT_DIR)

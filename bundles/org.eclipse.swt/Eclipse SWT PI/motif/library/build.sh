@@ -49,6 +49,11 @@ case $OS in
 			if [ "${MOTIF_HOME}" = "" ]; then
 				MOTIF_HOME=/bluebird/teamswt/swt-builddir/motif21
 			fi
+			if [ "${GECKO_SDK}" = "" ]; then
+				GECKO_SDK=/mozilla/mozilla/1.4/linux_gtk2/mozilla/dist/sdk
+				GECKO_INCLUDES="-include ${GECKO_SDK}/mozilla-config.h -I${GECKO_SDK}/nspr/include -I${GECKO_SDK}/xpcom/include -I${GECKO_SDK}/string/include -I${GECKO_SDK}/embed_base/include -I${GECKO_SDK}/embedstring/include"
+				GECKO_LIBS="-L${GECKO_SDK}/embedstring/bin -lembedstring -L${GECKO_SDK}/embed_base/bin -lembed_base_s -L${GECKO_SDK}/xpcom/bin -lxpcomglue_s -lxpcom -L${GECKO_SDK}/nspr/bin -lnspr4 -lplds4 -lplc4"
+			fi
 			OUTPUT_DIR=../../../org.eclipse.swt.motif.linux.x86
 			makefile="make_linux.mak"
 			echo "Building Linux motif x86 version of SWT"
@@ -111,6 +116,6 @@ case $OS in
 		;;
 esac
 
-export JAVA_HOME MOTIF_HOME CDE_HOME OUTPUT_DIR
+export JAVA_HOME MOTIF_HOME CDE_HOME GECKO_SDK GECKO_INCLUDES GECKO_LIBS OUTPUT_DIR
 
 make -f $makefile $1 $2 $3 $4
