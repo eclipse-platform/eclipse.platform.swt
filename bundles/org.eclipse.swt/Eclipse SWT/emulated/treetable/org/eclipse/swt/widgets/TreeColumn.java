@@ -399,7 +399,6 @@ void paint (GC gc) {
  */
 public void pack () {
 	checkWidget ();
-	if (parent.availableItemsCount == 0) return;
 	TreeItem[] availableItems = parent.availableItems;
 	int index = getIndex ();
 	int newWidth = getPreferredWidth ();

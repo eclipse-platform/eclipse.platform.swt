@@ -406,7 +406,6 @@ int getX () {
  */
 public void pack () {
 	checkWidget ();
-	if (parent.itemsCount == 0) return;
 	TableItem[] items = parent.items;
 	int index = getIndex ();
 	int newWidth = getPreferredWidth ();
