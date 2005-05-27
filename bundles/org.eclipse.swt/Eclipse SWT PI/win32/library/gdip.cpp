@@ -109,6 +109,22 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Color_1new)
 }
 #endif
 
+#ifndef NO_FontFamily_1GetFamilyName
+JNIEXPORT jint JNICALL Gdip_NATIVE(FontFamily_1GetFamilyName)
+	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jchar arg2)
+{
+	jchar *lparg1=NULL;
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, FontFamily_1GetFamilyName_FUNC);
+	if (arg1) if ((lparg1 = env->GetCharArrayElements(arg1, NULL)) == NULL) goto fail;
+	rc = (jint)((FontFamily *)arg0)->GetFamilyName((WCHAR *)lparg1, (WCHAR)arg2);
+fail:
+	if (arg1 && lparg1) env->ReleaseCharArrayElements(arg1, lparg1, 0);
+	Gdip_NATIVE_EXIT(env, that, FontFamily_1GetFamilyName_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_FontFamily_1delete
 JNIEXPORT void JNICALL Gdip_NATIVE(FontFamily_1delete)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -167,6 +183,18 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Font_1GetStyle)
 }
 #endif
 
+#ifndef NO_Font_1IsAvailable
+JNIEXPORT jboolean JNICALL Gdip_NATIVE(Font_1IsAvailable)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Font_1IsAvailable_FUNC);
+	rc = (jboolean)((Font *)arg0)->IsAvailable();
+	Gdip_NATIVE_EXIT(env, that, Font_1IsAvailable_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Font_1delete
 JNIEXPORT void JNICALL Gdip_NATIVE(Font_1delete)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -177,14 +205,30 @@ JNIEXPORT void JNICALL Gdip_NATIVE(Font_1delete)
 }
 #endif
 
-#ifndef NO_Font_1new
-JNIEXPORT jint JNICALL Gdip_NATIVE(Font_1new)
+#ifndef NO_Font_1new__II
+JNIEXPORT jint JNICALL Gdip_NATIVE(Font_1new__II)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jint rc = 0;
-	Gdip_NATIVE_ENTER(env, that, Font_1new_FUNC);
+	Gdip_NATIVE_ENTER(env, that, Font_1new__II_FUNC);
 	rc = (jint)new Font((HDC)arg0, (HFONT)arg1);
-	Gdip_NATIVE_EXIT(env, that, Font_1new_FUNC);
+	Gdip_NATIVE_EXIT(env, that, Font_1new__II_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Font_1new___3CFIII
+JNIEXPORT jint JNICALL Gdip_NATIVE(Font_1new___3CFIII)
+	(JNIEnv *env, jclass that, jcharArray arg0, jfloat arg1, jint arg2, jint arg3, jint arg4)
+{
+	jchar *lparg0=NULL;
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Font_1new___3CFIII_FUNC);
+	if (arg0) if ((lparg0 = env->GetCharArrayElements(arg0, NULL)) == NULL) goto fail;
+	rc = (jint)new Font((const WCHAR *)lparg0, (REAL)arg1, (INT)arg2, (Unit)arg3, (const FontCollection *)arg4);
+fail:
+	if (arg0 && lparg0) env->ReleaseCharArrayElements(arg0, lparg0, 0);
+	Gdip_NATIVE_EXIT(env, that, Font_1new___3CFIII_FUNC);
 	return rc;
 }
 #endif
@@ -837,6 +881,18 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetInterpolationMode)
 	Gdip_NATIVE_ENTER(env, that, Graphics_1SetInterpolationMode_FUNC);
 	rc = (jint)((Graphics *)arg0)->SetInterpolationMode((InterpolationMode)arg1);
 	Gdip_NATIVE_EXIT(env, that, Graphics_1SetInterpolationMode_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Graphics_1SetPixelOffsetMode
+JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetPixelOffsetMode)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Graphics_1SetPixelOffsetMode_FUNC);
+	rc = (jint)((Graphics *)arg0)->SetPixelOffsetMode((PixelOffsetMode)arg1);
+	Gdip_NATIVE_EXIT(env, that, Graphics_1SetPixelOffsetMode_FUNC);
 	return rc;
 }
 #endif

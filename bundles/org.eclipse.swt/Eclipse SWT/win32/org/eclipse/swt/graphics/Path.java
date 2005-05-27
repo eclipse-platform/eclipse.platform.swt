@@ -183,7 +183,7 @@ public void addString(String string, float x, float y, Font font) {
 	char[] buffer = new char[length];
 	string.getChars(0, length, buffer, 0);
 	int hDC = device.internal_new_GC(null);
-	int gdipFont = Gdip.Font_new(hDC, font.handle);
+	int gdipFont = GC.createGdipFont(hDC, font.handle);
 	PointF point = new PointF();
 	point.X = x - (Gdip.Font_GetSize(gdipFont) / 6);
 	point.Y = y;

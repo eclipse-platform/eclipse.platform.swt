@@ -282,6 +282,44 @@ int createGdipBrush() {
 	return brush;
 }
 
+int createGdipFont() {
+	return createGdipFont(handle, OS.GetCurrentObject(handle, OS.OBJ_FONT));
+}
+
+static int createGdipFont(int hDC, int hFont) {
+	int font = Gdip.Font_new(hDC, hFont);
+	if (font == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	if (!Gdip.Font_IsAvailable(font)) {
+		Gdip.Font_delete(font);
+		LOGFONT logFont = OS.IsUnicode ? (LOGFONT)new LOGFONTW() : new LOGFONTA();
+		OS.GetObject(hFont, LOGFONT.sizeof, logFont);
+		int size = Math.abs(logFont.lfHeight);
+		int style = Gdip.FontStyleRegular;
+		if (logFont.lfWeight == 700) style |= Gdip.FontStyleBold;
+		if (logFont.lfItalic != 0) style |= Gdip.FontStyleItalic;
+		char[] chars;
+		if (OS.IsUnicode) {
+			chars = ((LOGFONTW)logFont).lfFaceName;
+		} else {
+			chars = new char[OS.LF_FACESIZE];
+			byte[] bytes = ((LOGFONTA)logFont).lfFaceName;
+			OS.MultiByteToWideChar (OS.CP_ACP, OS.MB_PRECOMPOSED, bytes, bytes.length, chars, chars.length);
+		}
+		int index = 0;
+		while (index < chars.length) {
+			if (chars [index] == 0) break;
+			index++;
+		}
+		String name = new String (chars, 0, index);
+		if (name.equalsIgnoreCase("Courier")) name = "Courier New";
+		char[] buffer = new char[name.length() + 1];
+		name.getChars(0, name.length(), buffer, 0);
+		font = Gdip.Font_new(buffer, size, style, Gdip.UnitPixel, 0);
+	}
+	if (font == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	return font;
+}
+
 int createGdipPen() {
 	int style, colorRef, width, size, hPen = OS.GetCurrentObject(handle, OS.OBJ_PEN);
 	if ((size = OS.GetObject(hPen, 0, (LOGPEN)null)) == LOGPEN.sizeof) {
@@ -1584,8 +1622,7 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 	string.getChars(0, length, buffer, 0);
 	if (data.gdipGraphics != 0) {
 		initGdip(true, !isTransparent);
-		int font = Gdip.Font_new(handle, OS.GetCurrentObject(handle, OS.OBJ_FONT));
-		if (font == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		int font = createGdipFont();
 		PointF pt = new PointF();
 		pt.X = x;
 		pt.Y = y;
@@ -1732,8 +1769,7 @@ public void drawText (String string, int x, int y, int flags) {
 		int length = string.length();
 		char[] buffer = new char [length];
 		string.getChars(0, length, buffer, 0);
-		int font = Gdip.Font_new(handle, OS.GetCurrentObject(handle, OS.OBJ_FONT));
-		if (font == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		int font = createGdipFont();
 		PointF pt = new PointF();
 		pt.X = x;
 		pt.Y = y;
@@ -3958,8 +3994,7 @@ public Point stringExtent(String string) {
 	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	int length = string.length();
 	if (data.gdipGraphics != 0) {
-		int font = Gdip.Font_new(handle, OS.GetCurrentObject(handle, OS.OBJ_FONT));
-		if (font == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		int font = createGdipFont();
 		PointF pt = new PointF();
 		RectF bounds = new RectF();
 		char[] buffer;
@@ -4048,8 +4083,7 @@ public Point textExtent(String string, int flags) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (data.gdipGraphics != 0) {
-		int font = Gdip.Font_new(handle, OS.GetCurrentObject(handle, OS.OBJ_FONT));
-		if (font == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		int font = createGdipFont();
 		PointF pt = new PointF();
 		RectF bounds = new RectF();
 		char[] buffer;

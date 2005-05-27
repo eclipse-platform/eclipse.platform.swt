@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int Gdip_nativeFunctionCount = 125;
-int Gdip_nativeFunctionCallCount[125];
+int Gdip_nativeFunctionCount = 129;
+int Gdip_nativeFunctionCallCount[129];
 char * Gdip_nativeFunctionNames[] = {
 	"Bitmap_1delete",
 	"Bitmap_1new__I",
@@ -25,13 +25,16 @@ char * Gdip_nativeFunctionNames[] = {
 	"Brush_1GetType",
 	"Color_1delete",
 	"Color_1new",
+	"FontFamily_1GetFamilyName",
 	"FontFamily_1delete",
 	"FontFamily_1new",
 	"Font_1GetFamily",
 	"Font_1GetSize",
 	"Font_1GetStyle",
+	"Font_1IsAvailable",
 	"Font_1delete",
-	"Font_1new",
+	"Font_1new__II",
+	"Font_1new___3CFIII",
 	"GdiplusShutdown",
 	"GdiplusStartup",
 	"GraphicsPath_1AddArc",
@@ -84,6 +87,7 @@ char * Gdip_nativeFunctionNames[] = {
 	"Graphics_1SetClip__III",
 	"Graphics_1SetClip__ILorg_eclipse_swt_internal_gdip_RectF_2",
 	"Graphics_1SetInterpolationMode",
+	"Graphics_1SetPixelOffsetMode",
 	"Graphics_1SetSmoothingMode",
 	"Graphics_1SetTextRenderingHint",
 	"Graphics_1SetTransform",
