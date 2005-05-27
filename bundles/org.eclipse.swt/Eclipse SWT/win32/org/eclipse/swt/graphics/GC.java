@@ -311,7 +311,7 @@ static int createGdipFont(int hDC, int hFont) {
 			index++;
 		}
 		String name = new String (chars, 0, index);
-		if (name.equalsIgnoreCase("Courier")) { //$NON-NLS-1$
+		if (Compatibility.equalsIgnoreCase(name, "Courier")) { //$NON-NLS-1$
 			name = "Courier New"; //$NON-NLS-1$
 		}
 		char[] buffer = new char[name.length() + 1];
