@@ -61,6 +61,15 @@ public final class GC extends Resource {
 
 	static final int TAB_COUNT = 32;
 
+	static final int[] LINE_DOT = new int[]{1, 1};
+	static final int[] LINE_DASH = new int[]{3, 1};
+	static final int[] LINE_DASHDOT = new int[]{3, 1, 1, 1};
+	static final int[] LINE_DASHDOTDOT = new int[]{3, 1, 1, 1, 1, 1};
+	static final int[] LINE_DOT_ZERO = new int[]{3, 3};
+	static final int[] LINE_DASH_ZERO = new int[]{18, 6};
+	static final int[] LINE_DASHDOT_ZERO = new int[]{9, 6, 3, 6};
+	static final int[] LINE_DASHDOTDOT_ZERO = new int[]{9, 3, 3, 3, 3, 3};
+
 GC() {
 }
 
@@ -1750,12 +1759,10 @@ public int getLineCap() {
  */
 public int[] getLineDash() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	float[] lengths = data.dashes;
+	int[] lengths = data.dashes;
 	if (lengths == null) return null;
 	int[] dashes = new int[lengths.length];
-	for (int i = 0; i < dashes.length; i++) {
-		dashes[i] = (int)lengths[i];
-	}
+	System.arraycopy(lengths, 0, dashes, 0, dashes.length);
 	return dashes;
 }
 
@@ -2354,12 +2361,14 @@ public void setLineDash(int[] dashes) {
 			if (dash <= 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 			lengths[i] = dash;
 		}
+		data.dashes = new int[dashes.length];
+		System.arraycopy(dashes, 0, data.dashes, 0, dashes.length);
 		data.lineStyle = SWT.LINE_CUSTOM;
 	} else {
+		data.dashes = null;
 		data.lineStyle = SWT.LINE_SOLID;
 	}
 	OS.CGContextSetLineDash(handle, 0, lengths, lengths != null ? lengths.length : 0);
-	data.dashes = lengths;
 }
 
 /** 
@@ -2415,35 +2424,40 @@ public void setLineJoin(int join) {
  */
 public void setLineStyle(int lineStyle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	int[] dashes = null;
+	int width = data.lineWidth;
 	switch (lineStyle) {
 		case SWT.LINE_SOLID:
-			OS.CGContextSetLineDash(handle, 0, null, 0);
 			break;
 		case SWT.LINE_DASH:
-			OS.CGContextSetLineDash(handle, 0, new float[]{18, 6}, 2);
+			dashes = width != 0 ? LINE_DASH : LINE_DASH_ZERO;
 			break;
 		case SWT.LINE_DOT:
-			OS.CGContextSetLineDash(handle, 0, new float[]{3, 3}, 2);
+			dashes = width != 0 ? LINE_DOT : LINE_DOT_ZERO;
 			break;
 		case SWT.LINE_DASHDOT:
-			OS.CGContextSetLineDash(handle, 0, new float[]{9, 6, 3, 6}, 4);
+			dashes = width != 0 ? LINE_DASHDOT : LINE_DASHDOT_ZERO;
 			break;
 		case SWT.LINE_DASHDOTDOT:
-			OS.CGContextSetLineDash(handle, 0, new float[]{9, 3, 3, 3, 3, 3}, 6);
+			dashes = width != 0 ? LINE_DASHDOTDOT : LINE_DASHDOTDOT_ZERO;
 			break;
 		case SWT.LINE_CUSTOM:
-			float[] lengths = data.dashes;
-			if (lengths != null) {
-				OS.CGContextSetLineDash(handle, 0, lengths, lengths.length);
-			} else {
-				OS.CGContextSetLineDash(handle, 0, null, 0);
-				lineStyle = SWT.LINE_SOLID;
-			}
+			dashes = data.dashes;
+			if (dashes == null) lineStyle = SWT.LINE_SOLID;
 			break;
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	data.lineStyle = lineStyle;
+	if (dashes != null) {
+		float[] lengths = new float[dashes.length];
+		for (int i = 0; i < lengths.length; i++) {
+			lengths[i] = width == 0 ? dashes[i] : dashes[i] * width;
+		}
+		OS.CGContextSetLineDash(handle, 0, lengths, lengths.length);
+	} else {
+		OS.CGContextSetLineDash(handle, 0, null, 0);
+	}
 }
 
 /** 
@@ -2462,6 +2476,13 @@ public void setLineWidth(int width) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	data.lineWidth = width;
 	OS.CGContextSetLineWidth(handle, Math.max(1, width));
+	switch (data.lineStyle) {
+		case SWT.LINE_DOT:
+		case SWT.LINE_DASH:
+		case SWT.LINE_DASHDOT:
+		case SWT.LINE_DASHDOTDOT:
+			setLineStyle(data.lineStyle);
+	}
 }
 
 int setString(String string, int flags) {

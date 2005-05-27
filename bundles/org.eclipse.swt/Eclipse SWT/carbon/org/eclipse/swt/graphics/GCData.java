@@ -42,7 +42,7 @@ public final class GCData {
 	public int lineStyle = SWT.LINE_SOLID;
 	public int lineCap = SWT.CAP_FLAT;
 	public int lineJoin = SWT.JOIN_MITER;
-	public float[] dashes;
+	public int[] dashes;
 	public boolean xorMode;
 	public int antialias = SWT.DEFAULT;
 	public int textAntialias = SWT.DEFAULT;

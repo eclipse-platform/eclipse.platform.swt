@@ -61,6 +61,15 @@ public final class GC extends Resource {
 	Drawable drawable;
 	GCData data;
 
+	static final int[] LINE_DOT = new int[]{1, 1};
+	static final int[] LINE_DASH = new int[]{3, 1};
+	static final int[] LINE_DASHDOT = new int[]{3, 1, 1, 1};
+	static final int[] LINE_DASHDOTDOT = new int[]{3, 1, 1, 1, 1, 1};
+	static final int[] LINE_DOT_ZERO = new int[]{3, 3};
+	static final int[] LINE_DASH_ZERO = new int[]{18, 6};
+	static final int[] LINE_DASHDOT_ZERO = new int[]{9, 6, 3, 6};
+	static final int[] LINE_DASHDOTDOT_ZERO = new int[]{9, 3, 3, 3, 3, 3};
+
 GC() {
 }
 /**	 
@@ -2580,12 +2589,10 @@ public int getLineCap() {
  */
 public int[] getLineDash() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	byte[] dash_list = data.dashes;
+	int[] dash_list = data.dashes;
 	if (dash_list == null) return null;
 	int[] dashes = new int[dash_list.length];
-	for (int i = 0; i < dash_list.length; i++) {
-		dashes[i] = dash_list[i] & 0xFF;
-	}
+	System.arraycopy(dash_list, 0, dashes, 0, dashes.length);
 	return dashes;
 }
 /** 
@@ -3270,7 +3277,8 @@ public void setLineDash(int[] dashes) {
 			dash_list[i] = (byte)dash;
 		}
 		OS.XSetDashes(xDisplay, handle, 0, dash_list, dash_list.length);
-		data.dashes = dash_list;
+		data.dashes = new int[dashes.length];
+		System.arraycopy(dashes, 0, data.dashes, 0, dashes.length);
 		data.lineStyle = SWT.LINE_CUSTOM;
 	} else {
 		data.dashes = null;
@@ -3355,53 +3363,54 @@ public void setLineJoin(int join) {
  */
 public void setLineStyle(int lineStyle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int /*long*/ cairo = data.cairo;
 	int xDisplay = data.display;
-	int line_style = OS.LineOnOffDash;
+	XGCValues values = new XGCValues();
+	OS.XGetGCValues(xDisplay, handle, OS.GCLineWidth | OS.GCCapStyle | OS.GCJoinStyle, values);
+	int[] dashes = null;
+	int width = values.line_width;
 	switch (lineStyle) {
 		case SWT.LINE_SOLID:
-			line_style = OS.LineSolid;
-			if (cairo != 0) Cairo.cairo_set_dash(cairo, null, 0, 0);
 			break;
 		case SWT.LINE_DASH:
-			OS.XSetDashes(xDisplay, handle, 0, new byte[]{18, 6}, 2);
-			if (cairo != 0) Cairo.cairo_set_dash(cairo, new double[] {18, 6}, 2, 0);
+			dashes = width != 0 ? LINE_DASH : LINE_DASH_ZERO;
 			break;
 		case SWT.LINE_DOT:
-			OS.XSetDashes(xDisplay, handle, 0, new byte[]{3, 3}, 2);
-			if (cairo != 0) Cairo.cairo_set_dash(cairo, new double[] {3, 3}, 2, 0);
+			dashes = width != 0 ? LINE_DOT : LINE_DOT_ZERO;
 			break;
 		case SWT.LINE_DASHDOT:
-			OS.XSetDashes(xDisplay, handle, 0, new byte[]{9, 6, 3, 6}, 4);
-			if (cairo != 0) Cairo.cairo_set_dash(cairo, new double[] {9, 6, 3, 6}, 4, 0);
+			dashes = width != 0 ? LINE_DASHDOT : LINE_DASHDOT_ZERO;
 			break;
 		case SWT.LINE_DASHDOTDOT:
-			OS.XSetDashes(xDisplay, handle, 0, new byte[]{9, 3, 3, 3, 3, 3}, 6);
-			if (cairo != 0) Cairo.cairo_set_dash(cairo, new double[] {9, 3, 3, 3, 3, 3}, 6, 0);
+			dashes = width != 0 ? LINE_DASHDOTDOT : LINE_DASHDOTDOT_ZERO;
 			break;
 		case SWT.LINE_CUSTOM:
-			byte[] dash_list = data.dashes;
-			if (dash_list != null) {
-				OS.XSetDashes(xDisplay, handle, 0, dash_list, dash_list.length);
-				if (cairo != 0) {
-					double[] dashes = new double[data.dashes.length];
-					for (int i = 0; i < dashes.length; i++) {
-						dashes[i] = data.dashes[i];
-					}
-					Cairo.cairo_set_dash(cairo, dashes, dashes.length, 0);
-				}
-			} else {
-				line_style = OS.LineSolid;
-				if (cairo != 0) Cairo.cairo_set_dash(cairo, null, 0, 0);
-			}
+			dashes = data.dashes;
+			if (dashes == null) lineStyle = SWT.LINE_SOLID;
 			break;
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	data.lineStyle = lineStyle;
-	XGCValues values = new XGCValues();
-	OS.XGetGCValues(xDisplay, handle, OS.GCLineWidth | OS.GCCapStyle | OS.GCJoinStyle, values);
-	OS.XSetLineAttributes(xDisplay, handle, values.line_width, line_style, values.cap_style, values.join_style);
+	OS.XSetLineAttributes(xDisplay, handle, values.line_width, dashes != null ? OS.LineOnOffDash : OS.LineSolid, values.cap_style, values.join_style);
+	if (dashes != null) {
+		byte[] dash_list = new byte[dashes.length];
+		for (int i = 0; i < dash_list.length; i++) {
+			dash_list[i] = (byte)(width == 0 ? dashes[i] : dashes[i] * width);
+		}
+		OS.XSetDashes(xDisplay, handle, 0, dash_list, dash_list.length);
+	}
+	int /*long*/ cairo = data.cairo;
+	if (cairo != 0) {
+		if (dashes != null) {
+			double[] cairoDashes = new double[dashes.length];
+			for (int i = 0; i < cairoDashes.length; i++) {
+				cairoDashes[i] = width == 0 ? dashes[i] : dashes[i] * width;
+			}
+			Cairo.cairo_set_dash(cairo, cairoDashes, cairoDashes.length, 0);
+		} else {
+			Cairo.cairo_set_dash(cairo, null, 0, 0);
+		}
+	}
 }
 /** 
  * Sets the width that will be used when drawing lines
@@ -3425,6 +3434,13 @@ public void setLineWidth(int width) {
 	int /*long*/ cairo = data.cairo;
 	if (cairo != 0) {
 		Cairo.cairo_set_line_width(cairo, Math.max(1, width));
+	}
+	switch (data.lineStyle) {
+		case SWT.LINE_DOT:
+		case SWT.LINE_DASH:
+		case SWT.LINE_DASHDOT:
+		case SWT.LINE_DASHDOTDOT:
+			setLineStyle(data.lineStyle);
 	}
 }
 void setString(String string) {

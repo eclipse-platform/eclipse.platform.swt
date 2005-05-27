@@ -38,7 +38,7 @@ public final class GCData {
 	public int /*long*/ layout;
 	public int /*long*/ clipRgn, damageRgn;
 	public int lineStyle = SWT.LINE_SOLID;
-	public byte[] dashes;
+	public int[] dashes;
 	public boolean xorMode;
 	public int antialias = SWT.DEFAULT;
 	public int textAntialias = SWT.DEFAULT;

@@ -63,6 +63,11 @@ public final class GC extends Resource {
 	Drawable drawable;
 	GCData data;
 
+	static final float[] LINE_DOT_ZERO = new float[]{3, 3};
+	static final float[] LINE_DASH_ZERO = new float[]{18, 6};
+	static final float[] LINE_DASHDOT_ZERO = new float[]{9, 6, 3, 6};
+	static final float[] LINE_DASHDOTDOT_ZERO = new float[]{9, 3, 3, 3, 3, 3};
+
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -314,27 +319,31 @@ int createGdipPen() {
 	int pen = Gdip.Pen_new(color, Math.max (1, width));
 	Gdip.Color_delete(color);
 	if (data.foregroundPattern != null) Gdip.Pen_SetBrush(pen, data.foregroundPattern.handle);
-	int dashStyle = 0; 
+	float[] dashes = null;
+	int dashStyle = Gdip.DashStyleSolid; 
 	switch (style & OS.PS_STYLE_MASK) {
-		case OS.PS_SOLID: dashStyle = Gdip.DashStyleSolid; break;
-		case OS.PS_DOT: dashStyle = Gdip.DashStyleDot; break;
-		case OS.PS_DASH: dashStyle = Gdip.DashStyleDash; break;
-		case OS.PS_DASHDOT: dashStyle = Gdip.DashStyleDashDot; break;
-		case OS.PS_DASHDOTDOT: dashStyle = Gdip.DashStyleDashDotDot; break;
+		case OS.PS_SOLID: break;
+		case OS.PS_DOT: dashStyle = Gdip.DashStyleDot; if (width == 0) dashes = LINE_DOT_ZERO; break;
+		case OS.PS_DASH: dashStyle = Gdip.DashStyleDash; if (width == 0) dashes = LINE_DASH_ZERO; break;
+		case OS.PS_DASHDOT: dashStyle = Gdip.DashStyleDashDot; if (width == 0) dashes = LINE_DASHDOT_ZERO; break;
+		case OS.PS_DASHDOTDOT: dashStyle = Gdip.DashStyleDashDotDot; if (width == 0) dashes = LINE_DASHDOTDOT_ZERO; break;
 		case OS.PS_USERSTYLE: {
 			if (data.dashes != null) {
-				float[] pattern = new float[data.dashes.length];
-				for (int i = 0; i < pattern.length; i++) {
-					pattern[i] = (float)data.dashes[i] / width;
+				dashes = new float[data.dashes.length * 2];
+				for (int i = 0; i < data.dashes.length; i++) {
+					float dash = (float)data.dashes[i] / Math.max (1, width);
+					dashes[i] = dash;
+					dashes[i + data.dashes.length] = dash;
 				}
-				Gdip.Pen_SetDashPattern(pen, pattern, pattern.length);
-				dashStyle = Gdip.DashStyleCustom;
-			} else {
-				dashStyle = Gdip.DashStyleSolid;
 			}
 		}
 	}
-	if (dashStyle != Gdip.DashStyleCustom) Gdip.Pen_SetDashStyle(pen, dashStyle);
+	if (dashes != null) {
+		Gdip.Pen_SetDashPattern(pen, dashes, dashes.length);
+		Gdip.Pen_SetDashStyle(pen, Gdip.DashStyleCustom);
+	} else {
+		Gdip.Pen_SetDashStyle(pen, dashStyle);
+	}
 	int joinStyle = 0;
 	switch (style & OS.PS_JOIN_MASK) {
 		case OS.PS_JOIN_MITER: joinStyle = Gdip.LineJoinMiter; break;
