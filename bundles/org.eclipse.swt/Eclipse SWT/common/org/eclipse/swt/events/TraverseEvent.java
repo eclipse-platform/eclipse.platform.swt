@@ -65,7 +65,7 @@ import org.eclipse.swt.widgets.*;
  * widget.  Setting doit to <code>false</code> will stop the system from
  * activating the default button but the key will be delivered to the text
  * control, running the key and selection listeners for the text.  How
- * can <code>TRAVERSE_RETURN be implemented so that the default button
+ * can <code>TRAVERSE_RETURN</code> be implemented so that the default button
  * will not be activated and the text widget will not see the return key?
  * This is achieved by setting doit to <code>true</code>, and the detail
  * to <code>TRAVERSE_NONE</code>.
