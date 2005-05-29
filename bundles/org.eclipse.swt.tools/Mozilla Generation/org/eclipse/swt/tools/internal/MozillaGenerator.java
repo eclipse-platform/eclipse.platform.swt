@@ -256,7 +256,6 @@ public class MozillaGenerator {
 			if (i < argTypes.length - 1)
 				vtbl += ", ";
 		}
-		;
 		vtbl += ");";
 		Integer key = new Integer(argTypes.length);
 		Vector list = (Vector) vtbls.get(key);
