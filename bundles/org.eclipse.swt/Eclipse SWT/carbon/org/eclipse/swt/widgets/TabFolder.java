@@ -253,7 +253,9 @@ public Rectangle getClientArea () {
 	Rect bounds = new Rect ();
 	OS.GetControlBounds (handle, bounds);
 	Rect client = new Rect ();
-	OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlTabContentRectTag, Rect.sizeof, client, null);
+	if (OS.GetControlData (handle, (short)OS.kControlEntireControl, OS.kControlTabContentRectTag, Rect.sizeof, client, null) != OS.noErr) {
+		return new Rectangle(0, 0, 0, 0);
+	}
 	int x = Math.max (0, client.left - bounds.left);
 	int y = Math.max (0, client.top - bounds.top);
 	int width = Math.max (0, client.right - client.left);
