@@ -222,8 +222,12 @@ void createItem (TabItem item, int index) {
 	item.pageHandle = pageHandle;
 	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
 	items [index] = item;
-	item.setForegroundColor (getForegroundColor ());
-	item.setFontDescription (getFontDescription ());
+	if ((state & FOREGROUND) != 0) {
+		item.setForegroundColor (getForegroundColor());
+	}
+	if ((state & FONT) != 0) {
+		item.setFontDescription (getFontDescription());
+	}
 	if (itemCount == 1) {
 		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWITCH_PAGE);
 		OS.gtk_notebook_set_current_page (handle, 0);

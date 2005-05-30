@@ -432,7 +432,9 @@ void createItem (TreeColumn column, int index) {
 	}
 	System.arraycopy (columns, index, columns, index + 1, columnCount++ - index);
 	columns [index] = column;
-	column.setFontDescription (getFontDescription ());
+	if ((state & FONT) != 0) {
+		column.setFontDescription (getFontDescription ());
+	}
 	if (columnCount >= 1) {
 		for (int i=0; i<items.length; i++) {
 			TreeItem item = items [i];

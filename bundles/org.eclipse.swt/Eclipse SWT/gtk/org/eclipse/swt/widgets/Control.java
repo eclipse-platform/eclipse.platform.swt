@@ -1586,6 +1586,7 @@ public Font getFont () {
 	
 int /*long*/ getFontDescription () {
 	int /*long*/ fontHandle = fontHandle ();
+	OS.gtk_widget_realize (fontHandle);
 	return OS.gtk_style_get_font_desc (OS.gtk_widget_get_style (fontHandle));
 }
 
