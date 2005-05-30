@@ -1853,7 +1853,7 @@ int /*long*/ gtk_commit (int /*long*/ imcontext, int /*long*/ text) {
 int /*long*/ gtk_enter_notify_event (int /*long*/ widget, int /*long*/ event) {
 	GdkEventCrossing gdkEvent = new GdkEventCrossing ();
 	OS.memmove (gdkEvent, event, GdkEventCrossing.sizeof);
-	if (gdkEvent.mode != OS.GDK_CROSSING_NORMAL) return 0;
+	if (gdkEvent.mode != OS.GDK_CROSSING_NORMAL && gdkEvent.mode != OS.GDK_CROSSING_UNGRAB) return 0;
 	if (gdkEvent.subwindow != 0) return 0;
 	sendMouseEvent (SWT.MouseEnter, 0, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, gdkEvent.state, event);
 	return 0;

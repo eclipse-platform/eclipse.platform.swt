@@ -69,6 +69,8 @@ public class OS extends Platform {
 	public static final int GDK_COPY = 0x0;
 	public static final int GDK_CROSS = 0x1e;
 	public static final int GDK_CROSSING_NORMAL = 0;
+	public static final int GDK_CROSSING_GRAB = 1;
+	public static final int GDK_CROSSING_UNGRAB = 2;
 	public static final int GDK_Break = 0xff6b;
 	public static final int GDK_Cancel = 0xff69;
 	public static final int GDK_Caps_Lock = 0xffE5;

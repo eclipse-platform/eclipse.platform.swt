@@ -154,6 +154,8 @@ public class OS extends Platform {
 	public static final int NotifyNonlinear = 0x3;
 	public static final int NotifyNonlinearVirtual = 0x4;
 	public static final int NotifyNormal = 0x0;
+	public static final int NotifyGrab = 0x1;
+	public static final int NotifyUngrab = 0x2;
 	public static final int PMinSize = 1 << 4;
 	public static final int PMaxSize = 1 << 5;
 	public static final int PPosition = 1 << 2;
