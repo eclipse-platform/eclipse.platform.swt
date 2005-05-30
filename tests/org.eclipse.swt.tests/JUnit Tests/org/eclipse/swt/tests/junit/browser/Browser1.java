@@ -57,11 +57,12 @@ public class Browser1 {
 				System.out.println("completed");
 				passed = locationChanging && locationChanged && !progressCompleted;
 				progressCompleted = true;
-				if (!passed) shell.close();
-				if (passed) {
-					/* wait a little bit more before declaring it a success,
+				// TEMPORARILY COMMENTED OUT
+				/*if (!passed)*/ shell.close();
+/*				if (passed) {
+					 wait a little bit more before declaring it a success,
 					 * in case bogus events follow this one.
-					 */
+					 
 					new Thread() {
 						public void run() {
 							System.out.println("timer start");
@@ -77,7 +78,7 @@ public class Browser1 {
 						};
 					}.start();
 				}
-			}
+*/			}
 		});
 		
 		shell.open();
