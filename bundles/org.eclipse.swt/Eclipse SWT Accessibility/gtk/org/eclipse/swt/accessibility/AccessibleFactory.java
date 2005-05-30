@@ -165,9 +165,9 @@ class AccessibleFactory {
 		int widgetTypeNameLength = OS.strlen (widgetTypeName) + 1;
 		byte[] buffer = new byte [widgetTypeNameLength];
 		OS.memmove (buffer, widgetTypeName, widgetTypeNameLength);
-		byte[] factoryName = new byte [FACTORY_TYPENAME.length + widgetTypeNameLength];
+		byte[] factoryName = new byte [FACTORY_TYPENAME.length + widgetTypeNameLength - 1];
 		System.arraycopy (FACTORY_TYPENAME, 0, factoryName, 0, FACTORY_TYPENAME.length);
-		System.arraycopy (buffer, 0, factoryName, FACTORY_TYPENAME.length, widgetTypeNameLength);
+		System.arraycopy (buffer, 0, factoryName, FACTORY_TYPENAME.length - 1, widgetTypeNameLength);
 		if (OS.g_type_from_name (factoryName) == 0) {
 			/* register the factory */
 			int /*long*/ registry = ATK.atk_get_default_registry ();
