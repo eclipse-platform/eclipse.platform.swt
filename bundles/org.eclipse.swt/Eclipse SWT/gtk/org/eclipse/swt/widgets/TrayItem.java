@@ -149,7 +149,7 @@ void createHandle (int index) {
 	event.data [2] = id;
 	int /*long*/ clientEvent = OS.g_malloc (XClientMessageEvent.sizeof);
 	OS.memmove (clientEvent, event, XClientMessageEvent.sizeof);
-	OS.XSendEvent (OS.GDK_DISPLAY (), trayWindow, false, OS.NoEventMask, clientEvent);
+	OS.XSendEvent (xDisplay, trayWindow, false, OS.NoEventMask, clientEvent);
 	OS.g_free (clientEvent);
 }
 
