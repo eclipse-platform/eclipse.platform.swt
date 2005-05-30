@@ -152,14 +152,10 @@ public DropTarget(Control control, int style) {
 	}
 	control.setData(DROPTARGETID, this);
 	
-	byte[] buffer = Converter.wcsToMbcs(null, "drag_motion", true); //$NON-NLS-1$
-	drag_motion_handler = OS.g_signal_connect(control.handle, buffer, Drag_Motion.getAddress(), 0);
-	buffer = Converter.wcsToMbcs(null, "drag_leave", true); //$NON-NLS-1$
-	drag_leave_handler = OS.g_signal_connect(control.handle, buffer, Drag_Leave.getAddress(), 0);
-	buffer = Converter.wcsToMbcs(null, "drag_data_received", true); //$NON-NLS-1$
-	drag_data_received_handler = OS.g_signal_connect(control.handle, buffer, Drag_Data_Received.getAddress(), 0);
-	buffer = Converter.wcsToMbcs(null, "drag_drop", true); //$NON-NLS-1$
-	drag_drop_handler = OS.g_signal_connect(control.handle, buffer, Drag_Drop.getAddress(), 0);
+	drag_motion_handler = OS.g_signal_connect(control.handle, OS.drag_motion, Drag_Motion.getAddress(), 0);
+	drag_leave_handler = OS.g_signal_connect(control.handle, OS.drag_leave, Drag_Leave.getAddress(), 0);
+	drag_data_received_handler = OS.g_signal_connect(control.handle, OS.drag_data_received, Drag_Data_Received.getAddress(), 0);
+	drag_drop_handler = OS.g_signal_connect(control.handle, OS.drag_drop, Drag_Drop.getAddress(), 0);
 
 	// Dispose listeners	
 	controlListener = new Listener(){

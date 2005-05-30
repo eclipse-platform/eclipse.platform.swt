@@ -158,12 +158,9 @@ public DragSource(Control control, int style) {
 	}
 	control.setData(DRAGSOURCEID, this);
 
-	byte[] buffer = Converter.wcsToMbcs(null, "drag_data_get", true); //$NON-NLS-1$
-	OS.g_signal_connect(control.handle, buffer, DragGetData.getAddress(), 0);	
-	buffer = Converter.wcsToMbcs(null, "drag_end", true); //$NON-NLS-1$
-	OS.g_signal_connect(control.handle, buffer, DragEnd.getAddress(), 0);
-	buffer = Converter.wcsToMbcs(null, "drag_data_delete", true); //$NON-NLS-1$
-	OS.g_signal_connect(control.handle, buffer, DragDataDelete.getAddress(), 0);
+	OS.g_signal_connect(control.handle, OS.drag_data_get, DragGetData.getAddress(), 0);	
+	OS.g_signal_connect(control.handle, OS.drag_end, DragEnd.getAddress(), 0);
+	OS.g_signal_connect(control.handle, OS.drag_data_delete, DragDataDelete.getAddress(), 0);
 	
 	controlListener = new Listener () {
 		public void handleEvent (Event event) {

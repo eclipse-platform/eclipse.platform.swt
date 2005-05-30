@@ -343,6 +343,13 @@ public class OS extends Platform {
 	public static final byte[] delete_event = ascii("delete-event");
 	public static final byte[] delete_range = ascii("delete-range");
 	public static final byte[] delete_text = ascii("delete-text");
+	public static final byte[] drag_data_delete = ascii("drag_data_delete");
+	public static final byte[] drag_data_get = ascii("drag_data_get");
+	public static final byte[] drag_data_received = ascii("drag_data_received");
+	public static final byte[] drag_drop = ascii("drag_drop");
+	public static final byte[] drag_end = ascii("drag_end");
+	public static final byte[] drag_leave = ascii("drag_leave");
+	public static final byte[] drag_motion = ascii("drag_motion");
 	public static final byte[] enter_notify_event = ascii("enter-notify-event");
 	public static final byte[] event = ascii("event");
 	public static final byte[] event_after = ascii("event-after");
