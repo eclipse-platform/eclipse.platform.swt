@@ -21,6 +21,7 @@ class TreeDragUnderEffect extends DragUnderEffect {
 	private long scrollBeginTime;
 	private int expandIndex;
 	private long expandBeginTime;
+	private boolean clearInsert = false;
 	
 	private static final int SCROLL_HYSTERESIS = 150; // milli seconds
 	private static final int EXPAND_HYSTERESIS = 300; // milli seconds
@@ -100,8 +101,10 @@ void show(int effect, int x, int y) {
 	if ((effect & DND.FEEDBACK_INSERT_BEFORE) != 0 || (effect & DND.FEEDBACK_INSERT_AFTER) != 0) {
 		boolean before = (effect & DND.FEEDBACK_INSERT_BEFORE) != 0;
 		OS.SendMessage (handle, OS.TVM_SETINSERTMARK, (before) ? 0 : 1, hItem);
+		clearInsert = true;
 	} else {
-		OS.SendMessage (handle, OS.TVM_SETINSERTMARK, 0, 0);
+		if (clearInsert) OS.SendMessage (handle, OS.TVM_SETINSERTMARK, 0, 0);
+		clearInsert = false;
 	}
 	return;
 }
