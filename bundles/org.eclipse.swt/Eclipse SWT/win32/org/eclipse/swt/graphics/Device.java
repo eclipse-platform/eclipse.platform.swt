@@ -172,7 +172,7 @@ void checkGDIP() {
 			gdipToken = token;
 		}
 	} catch (Throwable t) {
-		SWT.error (SWT.ERROR_NO_GRAPHICS_LIBRARY, t);
+		SWT.error (SWT.ERROR_NO_GRAPHICS_LIBRARY, t, " [GDI+ is required]"); //$NON-NLS-1$
 	} finally {
         OS.SetErrorMode (oldErrorMode);
     }
