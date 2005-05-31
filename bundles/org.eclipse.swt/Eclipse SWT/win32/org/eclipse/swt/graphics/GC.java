@@ -3328,6 +3328,10 @@ public void setBackground (Color color) {
 	OS.SelectObject (handle, newBrush);
 	if (data.hBrush != 0) OS.DeleteObject (data.hBrush);
 	data.hBrush = newBrush;
+	if (data.gdipBrush != 0) {
+		destroyGdipBrush(data.gdipBrush);
+		data.gdipBrush = 0;
+	}
 }
 
 /** 
