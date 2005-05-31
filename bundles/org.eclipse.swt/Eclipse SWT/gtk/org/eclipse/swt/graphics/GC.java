@@ -327,7 +327,8 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
 	int /*long*/ cairo = data.cairo;
 	if (cairo != 0) {
 		Cairo.cairo_save(cairo);
-		Cairo.cairo_translate(cairo, x + width / 2f, y + height / 2f);
+		float offset = data.lineWidth == 0 || (data.lineWidth % 2) == 1 ? 0.5f : 0f;
+		Cairo.cairo_translate(cairo, x + offset + width / 2f, y + offset + height / 2f);
 		Cairo.cairo_scale(cairo, width / 2f, height / 2f);
 		Cairo.cairo_set_line_width(cairo, Cairo.cairo_current_line_width(cairo) / (width / 2f));
 		Cairo.cairo_arc_negative(cairo, 0, 0, 1, -startAngle * (float)Compatibility.PI / 180, -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
@@ -657,8 +658,9 @@ public void drawLine(int x1, int y1, int x2, int y2) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int /*long*/ cairo = data.cairo;
 	if (cairo != 0) {
-		Cairo.cairo_move_to(cairo, x1, y1);
-		Cairo.cairo_line_to(cairo, x2, y2);
+		float offset = data.lineWidth == 0 || (data.lineWidth % 2) == 1 ? 0.5f : 0f;
+		Cairo.cairo_move_to(cairo, x1 + offset, y1 + offset);
+		Cairo.cairo_line_to(cairo, x2 + offset, y2 + offset);
 		Cairo.cairo_stroke(cairo);
 		return;
 	}
@@ -699,7 +701,8 @@ public void drawOval(int x, int y, int width, int height) {
 	int /*long*/ cairo = data.cairo;
 	if (cairo != 0) {
 		Cairo.cairo_save(cairo);
-		Cairo.cairo_translate(cairo, x + width / 2f, y + height / 2f);
+		float offset = data.lineWidth == 0 || (data.lineWidth % 2) == 1 ? 0.5f : 0f;
+		Cairo.cairo_translate(cairo, x + offset + width / 2f, y + offset + height / 2f);
 		Cairo.cairo_scale(cairo, width / 2f, height / 2f);
 		Cairo.cairo_set_line_width(cairo, Cairo.cairo_current_line_width(cairo) / (width / 2f));
 		Cairo.cairo_arc_negative(cairo, 0, 0, 1, 0, -2 * (float)Compatibility.PI);
@@ -718,8 +721,13 @@ public void drawPath(Path path) {
 	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (path.handle == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	initCairo();
-	Cairo.cairo_add_path(data.cairo, path.handle);
-	Cairo.cairo_stroke(data.cairo);
+	int /*long*/ cairo = data.cairo;
+	Cairo.cairo_save(cairo);
+	float offset = data.lineWidth == 0 || (data.lineWidth % 2) == 1 ? 0.5f : 0f;
+	Cairo.cairo_translate(cairo, offset, offset);
+	Cairo.cairo_add_path(cairo, path.handle);
+	Cairo.cairo_stroke(cairo);
+	Cairo.cairo_restore(cairo);
 }
 
 /** 
@@ -811,9 +819,10 @@ public void drawPolyline(int[] pointArray) {
 void drawPolyline(int /*long*/ cairo, int[] pointArray, boolean close) {
 	int count = pointArray.length / 2;
 	if (count == 0) return;
-	Cairo.cairo_move_to(cairo, pointArray[0], pointArray[1]);
+	float offset = data.lineWidth == 0 || (data.lineWidth % 2) == 1 ? 0.5f : 0f;
+	Cairo.cairo_move_to(cairo, pointArray[0] + offset, pointArray[1] + offset);
 	for (int i = 1, j=2; i < count; i++, j += 2) {
-		Cairo.cairo_line_to(cairo, pointArray[j], pointArray[j + 1]);
+		Cairo.cairo_line_to(cairo, pointArray[j] + offset, pointArray[j + 1] + offset);
 	}
 	if (close) Cairo.cairo_close_path(cairo);
 }
@@ -845,7 +854,8 @@ public void drawRectangle(int x, int y, int width, int height) {
 	}
 	int /*long*/ cairo = data.cairo;
 	if (cairo != 0) {
-		Cairo.cairo_rectangle(cairo, x, y, width, height);
+		float offset = data.lineWidth == 0 || (data.lineWidth % 2) == 1 ? 0.5f : 0f;
+		Cairo.cairo_rectangle(cairo, x + offset, y + offset, width, height);
 		Cairo.cairo_stroke(cairo);
 		return;
 	}
@@ -918,7 +928,8 @@ public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth
 		float fw = nw / naw2;
 		float fh = nh / nah2;
 		Cairo.cairo_save(cairo);
-		Cairo.cairo_translate(cairo, nx, ny);
+		float offset = data.lineWidth == 0 || (data.lineWidth % 2) == 1 ? 0.5f : 0f;
+		Cairo.cairo_translate(cairo, nx + offset, ny + offset);
 		Cairo.cairo_scale(cairo, naw2, nah2);
 		Cairo.cairo_move_to(cairo, fw - 1, 0);
 //		Cairo.cairo_arc_to(cairo, 0, 0, 0, 1, 1);
@@ -2762,15 +2773,16 @@ public void setLineStyle(int lineStyle) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public void setLineWidth(int width) {
+public void setLineWidth(int lineWidth) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	GdkGCValues values = new GdkGCValues();
 	OS.gdk_gc_get_values(handle, values);
 	int line_style = data.lineStyle == SWT.LINE_SOLID ? OS.GDK_LINE_SOLID : OS.GDK_LINE_ON_OFF_DASH;
-	OS.gdk_gc_set_line_attributes(handle, width, line_style, values.cap_style, values.join_style);
+	OS.gdk_gc_set_line_attributes(handle, lineWidth, line_style, values.cap_style, values.join_style);
+	data.lineWidth = lineWidth;
 	int /*long*/ cairo = data.cairo;
 	if (cairo != 0) {
-		Cairo.cairo_set_line_width(cairo, Math.max (1, width));
+		Cairo.cairo_set_line_width(cairo, Math.max (1, lineWidth));
 	}
 	switch (data.lineStyle) {
 		case SWT.LINE_DOT:

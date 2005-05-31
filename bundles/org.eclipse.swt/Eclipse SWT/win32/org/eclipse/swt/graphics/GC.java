@@ -514,9 +514,12 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int ar
 		height = -height;
 	}
 	if (width == 0 || height == 0 || arcAngle == 0) return;
-	if (data.gdipGraphics != 0) {
+	int gdipGraphics = data.gdipGraphics;
+	if (gdipGraphics != 0) {
 		initGdip(true, false);
-		Gdip.Graphics_DrawArc(data.gdipGraphics, data.gdipPen, x, y, width, height, -startAngle, -arcAngle);
+		if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeNone);
+		Gdip.Graphics_DrawArc(gdipGraphics, data.gdipPen, x, y, width, height, -startAngle, -arcAngle);
+		if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
 		return;
 	}
 	/*
@@ -1233,9 +1236,12 @@ void drawBitmap(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight,
  */
 public void drawLine (int x1, int y1, int x2, int y2) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (data.gdipGraphics != 0) {
+	int gdipGraphics = data.gdipGraphics;
+	if (gdipGraphics != 0) {
 		initGdip(true, false);
-		Gdip.Graphics_DrawLine(data.gdipGraphics, data.gdipPen, x1, y1, x2, y2);
+		if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeNone);
+		Gdip.Graphics_DrawLine(gdipGraphics, data.gdipPen, x1, y1, x2, y2);
+		if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
 		return;
 	}
 	if (OS.IsWinCE) {
@@ -1273,9 +1279,12 @@ public void drawLine (int x1, int y1, int x2, int y2) {
  */	 
 public void drawOval (int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (data.gdipGraphics != 0) {
+	int gdipGraphics = data.gdipGraphics;
+	if (gdipGraphics != 0) {
 		initGdip(true, false);
-		Gdip.Graphics_DrawEllipse(data.gdipGraphics, data.gdipPen, x, y, width, height);
+		if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeNone);
+		Gdip.Graphics_DrawEllipse(gdipGraphics, data.gdipPen, x, y, width, height);
+		if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
 		return;
 	}
 	// Check performance impact of always setting null brush. If the user has not
@@ -1308,7 +1317,10 @@ public void drawPath (Path path) {
 	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (path.handle == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	initGdip(true, false);
-	Gdip.Graphics_DrawPath(data.gdipGraphics, data.gdipPen, path.handle);
+	int gdipGraphics = data.gdipGraphics;
+	if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeNone);
+	Gdip.Graphics_DrawPath(gdipGraphics, data.gdipPen, path.handle);
+	if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
 }
 
 /** 
@@ -1353,9 +1365,12 @@ public void drawPoint (int x, int y) {
 public void drawPolygon(int[] pointArray) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (data.gdipGraphics != 0) {
+	int gdipGraphics = data.gdipGraphics;
+	if (gdipGraphics != 0) {
 		initGdip(true, false);
-		Gdip.Graphics_DrawPolygon(data.gdipGraphics, data.gdipPen, pointArray, pointArray.length / 2);
+		if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeNone);
+		Gdip.Graphics_DrawPolygon(gdipGraphics, data.gdipPen, pointArray, pointArray.length / 2);
+		if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
 		return;
 	}
 	int nullBrush = OS.GetStockObject(OS.NULL_BRUSH);
@@ -1384,9 +1399,12 @@ public void drawPolygon(int[] pointArray) {
 public void drawPolyline(int[] pointArray) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (data.gdipGraphics != 0) {
+	int gdipGraphics = data.gdipGraphics;
+	if (gdipGraphics != 0) {
 		initGdip(true, false);
-		Gdip.Graphics_DrawLines(data.gdipGraphics, data.gdipPen, pointArray, pointArray.length / 2);
+		if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeNone);
+		Gdip.Graphics_DrawLines(gdipGraphics, data.gdipPen, pointArray, pointArray.length / 2);
+		if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
 		return;
 	}
 	OS.Polyline(handle, pointArray, pointArray.length / 2);
@@ -1415,9 +1433,12 @@ public void drawPolyline(int[] pointArray) {
  */
 public void drawRectangle (int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (data.gdipGraphics != 0) {
+	int gdipGraphics = data.gdipGraphics;
+	if (gdipGraphics != 0) {
 		initGdip(true, false);
-		Gdip.Graphics_DrawRectangle(data.gdipGraphics, data.gdipPen, x, y, width, height);
+		if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeNone);
+		Gdip.Graphics_DrawRectangle(gdipGraphics, data.gdipPen, x, y, width, height);
+		if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
 		return;
 	}
 	int hOld = OS.SelectObject (handle, OS.GetStockObject (OS.NULL_BRUSH));
@@ -1544,6 +1565,7 @@ void drawRoundRectangleGdip (int gdipGraphics, int brush, int x, int y, int widt
 	int naw2 = naw / 2;
 	int nah2 = nah / 2;
 	
+	if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeNone);
 	if (nw > naw) {
 		if (nh > nah) {
 			Gdip.Graphics_DrawArc(gdipGraphics, brush, nx, ny, naw, nah, -90, -90);
@@ -1570,6 +1592,7 @@ void drawRoundRectangleGdip (int gdipGraphics, int brush, int x, int y, int widt
 			Gdip.Graphics_DrawArc(gdipGraphics, brush, nx, ny, nw, nh, 0, 360);
 		}
 	}
+	if (data.lineWidth == 0 || (data.lineWidth % 2) == 1) Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
 }
 
 /** 
@@ -3056,10 +3079,11 @@ void initGdip(boolean draw, boolean fill) {
 		int result = OS.GetClipRgn(handle, hRgn);
 		OS.SelectClipRgn(handle, 0);
 		gdipGraphics = data.gdipGraphics = Gdip.Graphics_new(handle);
+		if (gdipGraphics == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
 		if (result == 1) setClipping(hRgn);
 		OS.DeleteObject(hRgn);
 	}
-	if (gdipGraphics == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (draw && data.gdipPen == 0) data.gdipPen = createGdipPen();
 	if (fill && data.gdipBrush == 0) data.gdipBrush = createGdipBrush();
 }
