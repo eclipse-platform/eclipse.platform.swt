@@ -805,9 +805,10 @@ public void drawPolyline(int[] pointArray) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (data.updateClip) setCGClipping();
+	float offset = data.lineWidth == 0 || (data.lineWidth % 2) == 1 ? 0.5f : 0f;
 	float[] points = new float[pointArray.length];
 	for (int i=0; i<points.length; i++) {
-		points[i] = pointArray[i] + 0.5f;
+		points[i] = pointArray[i] + offset;
 	}
 	OS.CGContextBeginPath(handle);
 	OS.CGContextAddLines(handle, points, points.length / 2);
