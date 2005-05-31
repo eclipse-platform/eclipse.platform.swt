@@ -129,7 +129,6 @@ void _setImage (Image image) {
 							fImageType = OS.IMAGE_BITMAP;
 							break;
 					}
-					break;
 				} else {
 					if (data.alpha != -1 || data.alphaData != null || data.transparentPixel != -1) {
 						hasAlpha = true;
