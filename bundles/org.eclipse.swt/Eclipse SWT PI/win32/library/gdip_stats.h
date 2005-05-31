@@ -90,6 +90,7 @@ typedef enum {
 	Graphics_1SetClip__II_FUNC,
 	Graphics_1SetClip__III_FUNC,
 	Graphics_1SetClip__ILorg_eclipse_swt_internal_gdip_RectF_2_FUNC,
+	Graphics_1SetCompositingQuality_FUNC,
 	Graphics_1SetInterpolationMode_FUNC,
 	Graphics_1SetPixelOffsetMode_FUNC,
 	Graphics_1SetSmoothingMode_FUNC,

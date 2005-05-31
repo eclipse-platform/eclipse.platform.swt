@@ -485,7 +485,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawArc)
 {
 	jint rc = 0;
 	Gdip_NATIVE_ENTER(env, that, Graphics_1DrawArc_FUNC);
-	rc = (jint)((Graphics *)arg0)->DrawArc((Pen *)arg1, (INT)arg2, (INT)arg3, (INT)arg4, (INT)arg5, (REAL)arg6, (REAL)arg7);
+	rc = (jint)((Graphics *)arg0)->DrawArc((Pen *)arg1, arg2, arg3, arg4, arg5, arg6, arg7);
 	Gdip_NATIVE_EXIT(env, that, Graphics_1DrawArc_FUNC);
 	return rc;
 }
@@ -497,7 +497,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawEllipse)
 {
 	jint rc = 0;
 	Gdip_NATIVE_ENTER(env, that, Graphics_1DrawEllipse_FUNC);
-	rc = (jint)((Graphics *)arg0)->DrawEllipse((Pen *)arg1, (INT)arg2, (INT)arg3, (INT)arg4, (INT)arg5);
+	rc = (jint)((Graphics *)arg0)->DrawEllipse((Pen *)arg1, arg2, arg3, arg4, arg5);
 	Gdip_NATIVE_EXIT(env, that, Graphics_1DrawEllipse_FUNC);
 	return rc;
 }
@@ -537,7 +537,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawLine)
 {
 	jint rc = 0;
 	Gdip_NATIVE_ENTER(env, that, Graphics_1DrawLine_FUNC);
-	rc = (jint)((Graphics *)arg0)->DrawLine((Pen *)arg1, (INT)arg2, (INT)arg3, (INT)arg4, (INT)arg5);
+	rc = (jint)((Graphics *)arg0)->DrawLine((Pen *)arg1, arg2, arg3, arg4, arg5);
 	Gdip_NATIVE_EXIT(env, that, Graphics_1DrawLine_FUNC);
 	return rc;
 }
@@ -561,7 +561,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1DrawRectangle)
 {
 	jint rc = 0;
 	Gdip_NATIVE_ENTER(env, that, Graphics_1DrawRectangle_FUNC);
-	rc = (jint)((Graphics *)arg0)->DrawRectangle((Pen *)arg1, (INT)arg2, (INT)arg3, (INT)arg4, (INT)arg5);
+	rc = (jint)((Graphics *)arg0)->DrawRectangle((Pen *)arg1, arg2, arg3, arg4, arg5);
 	Gdip_NATIVE_EXIT(env, that, Graphics_1DrawRectangle_FUNC);
 	return rc;
 }
@@ -869,6 +869,18 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetClip__ILorg_eclipse_swt_internal
 fail:
 	if (arg1 && lparg1) setRectFFields(env, arg1, lparg1);
 	Gdip_NATIVE_EXIT(env, that, Graphics_1SetClip__ILorg_eclipse_swt_internal_gdip_RectF_2_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Graphics_1SetCompositingQuality
+JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetCompositingQuality)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Graphics_1SetCompositingQuality_FUNC);
+	rc = (jint)((Graphics *)arg0)->SetCompositingQuality((CompositingQuality)arg1);
+	Gdip_NATIVE_EXIT(env, that, Graphics_1SetCompositingQuality_FUNC);
 	return rc;
 }
 #endif
