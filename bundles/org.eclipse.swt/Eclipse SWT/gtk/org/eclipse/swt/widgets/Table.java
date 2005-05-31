@@ -1804,7 +1804,7 @@ void releaseWidget () {
  */
 public void remove (int index) {
 	checkWidget();
-	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_ITEM_NOT_REMOVED);
+	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	TableItem item = items [index];
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 	if (item != null && !item.isDisposed ()) {
