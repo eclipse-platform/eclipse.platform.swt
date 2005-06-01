@@ -255,6 +255,7 @@ public Image(Device device, Image srcImage, int flag) {
 				newData = new ImageData(r.width, r.height, 8, new PaletteData(rgbs));
 				newData.maskData = data.maskData;
 				newData.maskPad = data.maskPad;
+				if (data.transparentPixel != -1) newData.transparentPixel = 254; 
 
 				/* Convert the pixels. */
 				int[] scanline = new int[r.width];
@@ -269,14 +270,20 @@ public Image(Device device, Image srcImage, int flag) {
 					data.getPixels(0, y, r.width, scanline, 0);
 					for (int x=0; x<r.width; x++) {
 						int pixel = scanline[x];
-						int red = pixel & redMask;
-						red = (redShift < 0) ? red >>> -redShift : red << redShift;
-						int green = pixel & greenMask;
-						green = (greenShift < 0) ? green >>> -greenShift : green << greenShift;
-						int blue = pixel & blueMask;
-						blue = (blueShift < 0) ? blue >>> -blueShift : blue << blueShift;
-						newData.data[offset++] =
-							(byte)((red+red+green+green+green+green+green+blue) >> 3);
+						if (pixel != data.transparentPixel) {
+							int red = pixel & redMask;
+							red = (redShift < 0) ? red >>> -redShift : red << redShift;
+							int green = pixel & greenMask;
+							green = (greenShift < 0) ? green >>> -greenShift : green << greenShift;
+							int blue = pixel & blueMask;
+							blue = (blueShift < 0) ? blue >>> -blueShift : blue << blueShift;
+							int intensity = (red+red+green+green+green+green+green+blue) >> 3;
+							if (newData.transparentPixel == intensity) intensity = 255;
+							newData.data[offset] = (byte)intensity;
+						} else {
+							newData.data[offset] = (byte)254;
+						}
+						offset++;
 					}
 				}
 			}
