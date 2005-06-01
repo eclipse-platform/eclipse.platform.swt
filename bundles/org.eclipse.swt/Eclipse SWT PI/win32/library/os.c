@@ -55,6 +55,38 @@ fail:
 }
 #endif
 
+#ifndef NO_AlphaBlend
+JNIEXPORT jboolean JNICALL OS_NATIVE(AlphaBlend)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jobject arg10)
+{
+	BLENDFUNCTION _arg10, *lparg10=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, AlphaBlend_FUNC);
+	if (arg10) if ((lparg10 = getBLENDFUNCTIONFields(env, arg10, &_arg10)) == NULL) goto fail;
+/*
+	rc = (jboolean)AlphaBlend(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, *lparg10);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!(hm = GetModuleHandle(AlphaBlend_LIB))) hm = LoadLibrary(AlphaBlend_LIB);
+			if (hm) fp = GetProcAddress(hm, "AlphaBlend");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jboolean)fp(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, *lparg10);
+		}
+	}
+fail:
+	if (arg10 && lparg10) setBLENDFUNCTIONFields(env, arg10, lparg10);
+	OS_NATIVE_EXIT(env, that, AlphaBlend_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Arc
 JNIEXPORT jboolean JNICALL OS_NATIVE(Arc)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8)

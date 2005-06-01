@@ -10,6 +10,7 @@
  *******************************************************************************/
 
 /* Libraries for dynamic loaded functions */
+#define AlphaBlend_LIB "msimg32.dll"
 #define CloseThemeData_LIB "uxtheme.dll"
 #define DrawThemeBackground_LIB "uxtheme.dll"
 #define DrawThemeParentBackground_LIB "uxtheme.dll"

@@ -47,6 +47,18 @@ void setBITMAPINFOHEADERFields(JNIEnv *env, jobject lpObject, BITMAPINFOHEADER *
 #define BITMAPINFOHEADER_sizeof() 0
 #endif
 
+#ifndef NO_BLENDFUNCTION
+void cacheBLENDFUNCTIONFields(JNIEnv *env, jobject lpObject);
+BLENDFUNCTION *getBLENDFUNCTIONFields(JNIEnv *env, jobject lpObject, BLENDFUNCTION *lpStruct);
+void setBLENDFUNCTIONFields(JNIEnv *env, jobject lpObject, BLENDFUNCTION *lpStruct);
+#define BLENDFUNCTION_sizeof() sizeof(BLENDFUNCTION)
+#else
+#define cacheBLENDFUNCTIONFields(a,b)
+#define getBLENDFUNCTIONFields(a,b,c) NULL
+#define setBLENDFUNCTIONFields(a,b,c)
+#define BLENDFUNCTION_sizeof() 0
+#endif
+
 #ifndef NO_BROWSEINFO
 void cacheBROWSEINFOFields(JNIEnv *env, jobject lpObject);
 BROWSEINFO *getBROWSEINFOFields(JNIEnv *env, jobject lpObject, BROWSEINFO *lpStruct);

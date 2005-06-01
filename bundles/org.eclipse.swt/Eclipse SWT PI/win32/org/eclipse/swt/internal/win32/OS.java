@@ -173,7 +173,9 @@ public class OS extends Platform {
 	public static final int	ABS_RIGHTPRESSED = 15;
 	public static final int ABS_UPDISABLED = 4;
 	public static final int ABS_UPNORMAL = 1;
-	public static final int ABS_UPPRESSED = 3;	
+	public static final int ABS_UPPRESSED = 3;
+	public static final int AC_SRC_OVER = 0;
+	public static final int AC_SRC_ALPHA = 1;
 	public static final int ALTERNATE = 1;
 	public static final int BDR_SUNKENINNER = 0x8;
 	public static final int BFFM_INITIALIZED = 0x1;
@@ -368,6 +370,7 @@ public class OS extends Platform {
 	public static final int DIB_RGB_COLORS = 0x0;
 	public static final int DISP_E_EXCEPTION = 0x80020009;
 	public static final int DI_NORMAL = 0x3;
+	public static final int DI_NOMIRROR = 0x10;
 	public static final int DLGC_BUTTON = 0x2000;
 	public static final int DLGC_HASSETSEL = 0x8;
 	public static final int DLGC_STATIC = 0x100;
@@ -2424,6 +2427,7 @@ public static final short VkKeyScan (short ch) {
 public static final native int AbortDoc (int hdc);
 public static final native int ActivateKeyboardLayout(int hkl, int Flags);
 public static final native boolean AdjustWindowRectEx (RECT lpRect, int dwStyle, boolean bMenu, int dwExStyle);
+public static final native boolean AlphaBlend(int hdcDest, int nXOriginDest, int nYOriginDest, int nWidthDest, int nHeightDest, int hdcSrc, int nXOriginSrc, int nYOriginSrc, int nWidthSrc, int nHeightSrc, BLENDFUNCTION blendFunction);
 public static final native boolean Arc (int hdc,int nLeftRect,int nTopRect,int nRightRect,int nBottomRect,int nXStartArc,int nYStartArc,int nXEndArc,int nYEndArc);
 public static final native int BeginDeferWindowPos (int nNumWindows);
 public static final native int BeginPaint (int hWnd, PAINTSTRUCT lpPaint);

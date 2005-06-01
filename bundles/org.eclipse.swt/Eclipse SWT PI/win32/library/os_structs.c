@@ -159,6 +159,46 @@ void setBITMAPINFOHEADERFields(JNIEnv *env, jobject lpObject, BITMAPINFOHEADER *
 }
 #endif
 
+#ifndef NO_BLENDFUNCTION
+typedef struct BLENDFUNCTION_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID BlendOp, BlendFlags, SourceConstantAlpha, AlphaFormat;
+} BLENDFUNCTION_FID_CACHE;
+
+BLENDFUNCTION_FID_CACHE BLENDFUNCTIONFc;
+
+void cacheBLENDFUNCTIONFields(JNIEnv *env, jobject lpObject)
+{
+	if (BLENDFUNCTIONFc.cached) return;
+	BLENDFUNCTIONFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	BLENDFUNCTIONFc.BlendOp = (*env)->GetFieldID(env, BLENDFUNCTIONFc.clazz, "BlendOp", "B");
+	BLENDFUNCTIONFc.BlendFlags = (*env)->GetFieldID(env, BLENDFUNCTIONFc.clazz, "BlendFlags", "B");
+	BLENDFUNCTIONFc.SourceConstantAlpha = (*env)->GetFieldID(env, BLENDFUNCTIONFc.clazz, "SourceConstantAlpha", "B");
+	BLENDFUNCTIONFc.AlphaFormat = (*env)->GetFieldID(env, BLENDFUNCTIONFc.clazz, "AlphaFormat", "B");
+	BLENDFUNCTIONFc.cached = 1;
+}
+
+BLENDFUNCTION *getBLENDFUNCTIONFields(JNIEnv *env, jobject lpObject, BLENDFUNCTION *lpStruct)
+{
+	if (!BLENDFUNCTIONFc.cached) cacheBLENDFUNCTIONFields(env, lpObject);
+	lpStruct->BlendOp = (*env)->GetByteField(env, lpObject, BLENDFUNCTIONFc.BlendOp);
+	lpStruct->BlendFlags = (*env)->GetByteField(env, lpObject, BLENDFUNCTIONFc.BlendFlags);
+	lpStruct->SourceConstantAlpha = (*env)->GetByteField(env, lpObject, BLENDFUNCTIONFc.SourceConstantAlpha);
+	lpStruct->AlphaFormat = (*env)->GetByteField(env, lpObject, BLENDFUNCTIONFc.AlphaFormat);
+	return lpStruct;
+}
+
+void setBLENDFUNCTIONFields(JNIEnv *env, jobject lpObject, BLENDFUNCTION *lpStruct)
+{
+	if (!BLENDFUNCTIONFc.cached) cacheBLENDFUNCTIONFields(env, lpObject);
+	(*env)->SetByteField(env, lpObject, BLENDFUNCTIONFc.BlendOp, (jbyte)lpStruct->BlendOp);
+	(*env)->SetByteField(env, lpObject, BLENDFUNCTIONFc.BlendFlags, (jbyte)lpStruct->BlendFlags);
+	(*env)->SetByteField(env, lpObject, BLENDFUNCTIONFc.SourceConstantAlpha, (jbyte)lpStruct->SourceConstantAlpha);
+	(*env)->SetByteField(env, lpObject, BLENDFUNCTIONFc.AlphaFormat, (jbyte)lpStruct->AlphaFormat);
+}
+#endif
+
 #ifndef NO_BROWSEINFO
 typedef struct BROWSEINFO_FID_CACHE {
 	int cached;

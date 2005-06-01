@@ -24,6 +24,7 @@ typedef enum {
 	AbortDoc_FUNC,
 	ActivateKeyboardLayout_FUNC,
 	AdjustWindowRectEx_FUNC,
+	AlphaBlend_FUNC,
 	Arc_FUNC,
 	BeginDeferWindowPos_FUNC,
 	BeginPaint_FUNC,

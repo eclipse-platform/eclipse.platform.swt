@@ -45,6 +45,7 @@
 
 /* Structs excludes */
 #ifdef _WIN32_WCE
+#define NO_BLENDFUNCTION
 #define NO_BROWSEINFO
 #define NO_BUTTON_IMAGELIST
 #define NO_CHOOSEFONT
@@ -123,6 +124,7 @@
 #define NO_AbortDoc
 #define NO_ActivateKeyboardLayout
 #define NO_Arc
+#define NO_AlphaBlend
 #define NO_BeginPath
 #define NO_CallNextHookEx
 #define NO_CallWindowProcA
