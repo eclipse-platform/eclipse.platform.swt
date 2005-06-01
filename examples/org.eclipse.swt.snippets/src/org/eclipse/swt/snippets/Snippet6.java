@@ -45,7 +45,7 @@ public static void main (String [] args) {
             index[0]++;
             Control[] children = c.getChildren();
             b.moveAbove(children[3]);
-            shell.layout(true);
+            shell.layout(new Control[] {b});
         }
     });
 
