@@ -79,7 +79,7 @@ public static void main (String [] args) {
 	
 	// Navigate to this web site which uses post data to fill in the text field
 	// and put the string "hello world" into the text box
-	text.setText("http://cmis.mis.brighton.ac.uk/cgi-bin/mas/mas_form");
+	text.setText("file://"+Snippet186.class.getResource("Snippet186.html").getFile());
 	int[] rgdispid = automation.getIDsOfNames(new String[]{"Navigate", "URL", "PostData"}); 
 	int dispIdMember = rgdispid[0];	
 	Variant[] rgvarg = new Variant[2];
