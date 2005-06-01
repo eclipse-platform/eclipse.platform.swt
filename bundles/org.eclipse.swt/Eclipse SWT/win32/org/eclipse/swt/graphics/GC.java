@@ -717,7 +717,7 @@ void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, i
 
 	/* Simple case: no stretching, entire icon */
 	if (simple && technology != OS.DT_RASPRINTER) {
-		OS.DrawIconEx(handle, destX, destY, srcImage.handle, 0, 0, 0, 0, OS.DI_NORMAL);
+		OS.DrawIconEx(handle, destX, destY, srcImage.handle, 0, 0, 0, 0, OS.DI_NORMAL | OS.DI_NOMIRROR);
 		return;
 	}
 
@@ -750,17 +750,13 @@ void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, i
 			srcWidth == iconWidth && srcHeight == iconHeight;
 		if (simple && technology != OS.DT_RASPRINTER)	{
 			/* Simple case: no stretching, entire icon */
-			OS.DrawIconEx(handle, destX, destY, srcImage.handle, 0, 0, 0, 0, OS.DI_NORMAL);
+			OS.DrawIconEx(handle, destX, destY, srcImage.handle, 0, 0, 0, 0, OS.DI_NORMAL | OS.DI_NOMIRROR);
 		} else {
-			/* Get the HDC for the device */
-			Device device = data.device;
- 			int hDC = device.internal_new_GC(null);
- 	
  			/* Create the icon info and HDC's */
 			ICONINFO newIconInfo = new ICONINFO();
 			newIconInfo.fIcon = true;
-			int srcHdc = OS.CreateCompatibleDC(hDC);
-			int dstHdc = OS.CreateCompatibleDC(hDC);
+			int srcHdc = OS.CreateCompatibleDC(handle);
+			int dstHdc = OS.CreateCompatibleDC(handle);
 						
 			/* Blt the color bitmap */
 			int srcColorY = srcY;
@@ -803,7 +799,7 @@ void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, i
 				OS.SelectObject(dstHdc, oldDestBitmap);
 				int hIcon = OS.CreateIconIndirect(newIconInfo);
 				if (hIcon == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-				OS.DrawIconEx(handle, destX, destY, hIcon, destWidth, destHeight, 0, 0, OS.DI_NORMAL);
+				OS.DrawIconEx(handle, destX, destY, hIcon, destWidth, destHeight, 0, 0, OS.DI_NORMAL | OS.DI_NOMIRROR);
 				OS.DestroyIcon(hIcon);
 			}
 			
@@ -812,9 +808,6 @@ void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, i
 			OS.DeleteObject(newIconInfo.hbmColor);
 			OS.DeleteDC(dstHdc);
 			OS.DeleteDC(srcHdc);
-
-			/* Release the HDC for the device */
-			device.internal_dispose_GC(hDC, null);
 		}
 	}
 
@@ -873,6 +866,50 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 	if (srcImage.alpha == 255) {
 		drawBitmap(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, bm, imgWidth, imgHeight);
 		return;
+	}
+
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
+		BLENDFUNCTION blend = new BLENDFUNCTION();
+		blend.BlendOp = OS.AC_SRC_OVER;
+		int srcHdc = OS.CreateCompatibleDC(handle);
+		int oldSrcBitmap = OS.SelectObject(srcHdc, srcImage.handle);
+		if (srcImage.alpha != -1) {
+			blend.SourceConstantAlpha = (byte)srcImage.alpha;
+			OS.AlphaBlend(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, blend);
+		} else {
+			int memDib = Image.createDIB(srcWidth, srcHeight, 32);
+			if (memDib == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			int memHdc = OS.CreateCompatibleDC(handle);
+			int oldMemBitmap = OS.SelectObject(memHdc, memDib);
+			BITMAP dibBM = new BITMAP();
+			OS.GetObject(memDib, BITMAP.sizeof, dibBM);
+			OS.BitBlt(memHdc, 0, 0, srcWidth, srcHeight, srcHdc, srcX, srcY, OS.SRCCOPY);
+			byte[] srcData = new byte[dibBM.bmWidthBytes * dibBM.bmHeight];
+			OS.MoveMemory(srcData, dibBM.bmBits, srcData.length);
+			final int apinc = imgWidth - srcWidth;
+			int ap = srcY * imgWidth + srcX, sp = 0;
+			byte[] alphaData = srcImage.alphaData;
+			for (int y = 0; y < srcHeight; ++y) {
+				for (int x = 0; x < srcWidth; ++x) {
+					int alpha = alphaData[ap++];
+					srcData[sp+3] = (byte)alpha;
+					srcData[sp+2] = (byte)((srcData[sp+2] & 0xff) * alpha / 255);
+					srcData[sp+1] = (byte)((srcData[sp+1] & 0xff) * alpha / 255);
+					srcData[sp+0] = (byte)((srcData[sp+0] & 0xff) * alpha / 255);
+					sp += 4;
+				}
+				ap += apinc;
+			}
+			OS.MoveMemory(dibBM.bmBits, srcData, srcData.length);
+			blend.SourceConstantAlpha = (byte)0xff;
+			blend.AlphaFormat = OS.AC_SRC_ALPHA;
+			OS.AlphaBlend(handle, destX, destY, destWidth, destHeight, memHdc, 0, 0, srcWidth, srcHeight, blend);
+			OS.SelectObject(memHdc, oldMemBitmap);
+			OS.DeleteDC(memHdc);
+			OS.DeleteObject(memDib);
+		}
+		OS.SelectObject(srcHdc, oldSrcBitmap);
+		OS.DeleteDC(srcHdc);
 	}
 
 	/* Check clipping */
@@ -1046,10 +1083,6 @@ void drawBitmapTransparentByClipping(int srcHdc, int maskHdc, int srcX, int srcY
 }
 
 void drawBitmapTransparent(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, BITMAP bm, int imgWidth, int imgHeight) {
-
-	/* Get the HDC for the device */
-	Device device = data.device;
- 	int hDC = device.internal_new_GC(null);
  		
 	/* Find the RGB values for the transparent pixel. */
 	int transBlue = 0, transGreen = 0, transRed = 0;
@@ -1155,7 +1188,7 @@ void drawBitmapTransparent(Image srcImage, int srcX, int srcY, int srcWidth, int
 		OS.SetStretchBltMode(handle, mode);
 	} else {
 		/* Create the mask for the source image */
-		int maskHdc = OS.CreateCompatibleDC(hDC);
+		int maskHdc = OS.CreateCompatibleDC(handle);
 		int maskBitmap = OS.CreateBitmap(imgWidth, imgHeight, 1, 1, null);
 		int oldMaskBitmap = OS.SelectObject(maskHdc, maskBitmap);
 		OS.SetBkColor(srcHdc, transparentColor);
@@ -1167,8 +1200,8 @@ void drawBitmapTransparent(Image srcImage, int srcX, int srcY, int srcWidth, int
 			drawBitmapTransparentByClipping(srcHdc, maskHdc, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, imgWidth, imgHeight);
 		} else {
 			/* Draw the source bitmap transparently using invert/and mask/invert */
-			int tempHdc = OS.CreateCompatibleDC(hDC);
-			int tempBitmap = OS.CreateCompatibleBitmap(hDC, destWidth, destHeight);	
+			int tempHdc = OS.CreateCompatibleDC(handle);
+			int tempBitmap = OS.CreateCompatibleBitmap(handle, destWidth, destHeight);	
 			int oldTempBitmap = OS.SelectObject(tempHdc, tempBitmap);
 			OS.BitBlt(tempHdc, 0, 0, destWidth, destHeight, handle, destX, destY, OS.SRCCOPY);
 			if (!simple && (srcWidth != destWidth || srcHeight != destHeight)) {
@@ -1193,9 +1226,6 @@ void drawBitmapTransparent(Image srcImage, int srcX, int srcY, int srcWidth, int
 	OS.SelectObject(srcHdc, oldSrcBitmap);
 	if (hBitmap != srcImage.handle) OS.DeleteObject(hBitmap);
 	OS.DeleteDC(srcHdc);
-	
-	/* Release the HDC for the device */
-	device.internal_dispose_GC(hDC, null);
 }
 
 void drawBitmap(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, BITMAP bm, int imgWidth, int imgHeight) {
