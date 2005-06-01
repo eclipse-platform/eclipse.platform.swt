@@ -1460,7 +1460,7 @@ static int createDIB(int width, int height, int depth) {
 	bmiHeader.biBitCount = (short)depth;
 	if (OS.IsWinCE) bmiHeader.biCompression = OS.BI_BITFIELDS;
 	else bmiHeader.biCompression = OS.BI_RGB;
-	byte[]	bmi = new byte[BITMAPINFOHEADER.sizeof + (OS.IsWinCE ? 12 : 0)];
+	byte[] bmi = new byte[BITMAPINFOHEADER.sizeof + (OS.IsWinCE ? 12 : 0)];
 	OS.MoveMemory(bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
 	/* Set the rgb colors into the bitmap info */
 	if (OS.IsWinCE) {
