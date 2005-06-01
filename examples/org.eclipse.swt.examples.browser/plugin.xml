@@ -10,7 +10,6 @@
 <!-- Runtime -->
    <runtime>
       <library name="browserexample.jar">
-         <packages prefixes="org.eclipse.swt.examples.browserexample"/>
       </library>
    </runtime>
 <!-- Required plugins -->
