@@ -36,7 +36,7 @@ public static void main(String[] args) {
 	copyItem.addSelectionListener(new SelectionAdapter(){
 		public void widgetSelected(SelectionEvent e) {
 			String selection = text.getSelectionText();
-			if (selection == null || selection.length() == 0) return;
+			if (selection.length() == 0) return;
 			Object[] data = new Object[]{selection};
 			Transfer[] types = new Transfer[] {TextTransfer.getInstance()};
 			cb.setContents(data, types);
@@ -47,16 +47,14 @@ public static void main(String[] args) {
 	pasteItem.addSelectionListener(new SelectionAdapter(){
 		public void widgetSelected(SelectionEvent e) {
 			String string = (String)(cb.getContents(TextTransfer.getInstance()));
-			if (string != null) {
-				text.insert(string);
-			}
+			if (string != null) text.insert(string);
 		}
 	});
 	menu.addMenuListener(new MenuAdapter() {
 		public void menuShown(MenuEvent e) {
 			// is copy valid?
 			String selection = text.getSelectionText();
-			copyItem.setEnabled(selection != null && selection.length() > 0);
+			copyItem.setEnabled(selection.length() > 0);
 			// is paste valid?
 			TransferData[] available = cb.getAvailableTypes();
 			boolean enabled = false;
