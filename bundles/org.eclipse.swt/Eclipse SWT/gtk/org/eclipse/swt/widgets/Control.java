@@ -2909,6 +2909,8 @@ public void setRedraw (boolean redraw) {
 		if (--drawCount == 0) {
 			if (redrawWindow != 0) {
 				int /*long*/ window = paintWindow ();
+				/* Explicitly hiding the window avoids flicker on GTK+ >= 2.6 */
+				OS.gdk_window_hide (redrawWindow);
 				OS.gdk_window_destroy (redrawWindow);
 				OS.gdk_window_set_events (window, OS.gtk_widget_get_events (paintHandle ()));
 				redrawWindow = 0;
