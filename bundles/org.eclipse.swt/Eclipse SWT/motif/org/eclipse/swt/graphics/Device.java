@@ -194,7 +194,7 @@ void checkCairo() {
 	try {
 		Class.forName("org.eclipse.swt.internal.cairo.Cairo");
 	} catch (Throwable t) {
-		SWT.error(SWT.ERROR_NO_GRAPHICS_LIBRARY, t);
+		SWT.error(SWT.ERROR_NO_GRAPHICS_LIBRARY, t, " [Cairo required]");
 	}
 }
 
