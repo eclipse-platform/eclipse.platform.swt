@@ -88,6 +88,7 @@ public CoolBar (Composite parent, int style) {
 				case SWT.MouseUp:      		onMouseUp(event);   		break;
 				case SWT.MouseDoubleClick:	onMouseDoubleClick(event); 	break;
 				case SWT.Paint:        		onPaint(event);     		break;
+				case SWT.Resize:          	onResize();     			break;
 			}
 		}
 	};
@@ -98,7 +99,8 @@ public CoolBar (Composite parent, int style) {
 		SWT.MouseMove, 
 		SWT.MouseUp, 
 		SWT.MouseDoubleClick,
-		SWT.Paint 
+		SWT.Paint,
+		SWT.Resize
 	};
 	for (int i = 0; i < events.length; i++) {
 		addListener(events[i], listener);	
@@ -696,6 +698,9 @@ void onPaint(Event event) {
 		}
 	}
 }
+void onResize () {
+	layoutItems ();
+}
 void removeControl (Control control) {
 	super.removeControl (control);
 	CoolItem [] items = getItems ();
@@ -814,14 +819,6 @@ void relayout() {
 	int height = layoutItems();
 	Rectangle trim = computeTrim (0, 0, 0, height);
 	if (height != size.y) super.setSize(size.x, trim.height);
-}
-public void setBounds (int x, int y, int width, int height) {
-	super.setBounds (x, y, width, height);
-	layoutItems();
-}
-public void setSize (int width, int height) {
-	super.setSize (width, height);
-	layoutItems();
 }
 /**
  * Returns an array of zero-relative ints that map
