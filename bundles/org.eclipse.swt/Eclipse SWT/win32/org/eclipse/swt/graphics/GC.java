@@ -910,6 +910,7 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 		}
 		OS.SelectObject(srcHdc, oldSrcBitmap);
 		OS.DeleteDC(srcHdc);
+		return;
 	}
 
 	/* Check clipping */
