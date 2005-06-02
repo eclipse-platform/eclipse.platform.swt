@@ -87,7 +87,7 @@ protected boolean flushCache (Control control) {
  * with the children. Typically, a layout will cache
  * the preferred sizes of the children to avoid the
  * expense of computing these values each time the
- * widget is layed out.
+ * widget is laid out.
  * </p>
  * <p>
  * When layout is triggered explicitly by the programmer

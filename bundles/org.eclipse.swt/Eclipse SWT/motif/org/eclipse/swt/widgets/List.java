@@ -1164,7 +1164,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	* maximized and then restored.  This is just one of a number
 	* of repeatable cases where the scrolled window hides the
 	* scroll bars but does not resize the list.  The fix is to
-	* detect these cases and force the scroll bars to be layed
+	* detect these cases and force the scroll bars to be laid
 	* out properly by growing and then shrinking the scrolled
 	* window.
 	*/

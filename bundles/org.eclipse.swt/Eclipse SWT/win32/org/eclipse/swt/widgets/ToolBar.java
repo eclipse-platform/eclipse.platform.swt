@@ -789,7 +789,7 @@ void setRowCount (int count) {
 		* number of items.  The fix is to set the number of rows to be two
 		* larger than the actual number of rows in the tool bar.  When items
 		* are being added, as long as the number of rows is at least one
-		* item larger than the count, the tool bar is layed out properly.
+		* item larger than the count, the tool bar is laid out properly.
 		* When items are being removed, setting the number of rows to be
 		* one more than the item count has no effect.  The number of rows
 		* is already one more causing TB_SETROWS to do nothing.  Therefore,

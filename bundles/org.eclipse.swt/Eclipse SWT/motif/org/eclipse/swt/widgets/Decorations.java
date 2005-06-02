@@ -614,7 +614,7 @@ public void setMenuBar (Menu menu) {
 	* Bug in Motif.  When a XmMainWindowSetAreas () is used
 	* to replace an existing menu, both menus must be managed
 	* before the call to XmMainWindowSetAreas () or the new
-	* menu will not be layed out properly.
+	* menu will not be laid out properly.
 	*/
 	int newHandle = (menu != null) ? menu.handle : 0;
 	int oldHandle = (menuBar != null) ? menuBar.handle : 0;

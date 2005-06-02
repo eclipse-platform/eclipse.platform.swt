@@ -1190,7 +1190,7 @@ public void setFont (Font font) {
 	* the drop down arrow may be positioned in the middle of the text
 	* field or may be invisible, positioned outside the bounds of the
 	* widget.  The fix is to detect these cases and force the combo box
-	* to be layed out properly by temporarily growing and then shrinking
+	* to be laid out properly by temporarily growing and then shrinking
 	* the widget.
 	* 
 	* NOTE: This problem also occurs for simple combo boxes.

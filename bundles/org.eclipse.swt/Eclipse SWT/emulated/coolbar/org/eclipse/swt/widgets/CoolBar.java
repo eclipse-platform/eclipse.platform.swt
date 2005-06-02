@@ -745,7 +745,7 @@ void removeItemFromRow(CoolItem item, int rowIndex, boolean disposed) {
 }
 /**
  * Return the height of the bar after it has
- * been properly layed out for the given width.
+ * been properly laid out for the given width.
  */
 int layoutItems () {
 	int y = 0, width = getClientArea().width;

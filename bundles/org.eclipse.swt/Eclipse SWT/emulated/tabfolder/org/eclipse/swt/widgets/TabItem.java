@@ -188,7 +188,7 @@ public String getToolTipText () {
 	return toolTipText;
 }
 /**
- * Answer true if the receiver has been layed out.
+ * Answer true if the receiver has been laid out.
  */
 boolean hasLocation() {
 	return !(width == 0 && height == 0 && x == 0 && y == 0);

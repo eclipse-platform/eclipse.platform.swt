@@ -513,7 +513,7 @@ abstract class Tab {
 	 * in the layout example.
 	 */
 	void refreshLayoutComposite () {
-		/* Remove children that are already layed out */
+		/* Remove children that are already laid out */
 		children = layoutComposite.getChildren ();
 		for (int i = 0; i < children.length; i++) {
 			children [i].dispose ();
