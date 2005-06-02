@@ -2937,15 +2937,19 @@ boolean runEnterExit () {
 			while (theControl [0] != 0 && !OS.IsControlEnabled (theControl [0])) {				
 				OS.GetSuperControl (theControl [0], theControl);
 			}
+			boolean propagate = true;
 			if (theControl [0] != 0) {
 				do {
 					Widget widget = getWidget (theControl [0]);
 					if (widget != null) {
-						if (widget.isTrimHandle (theControl [0])) break;
 						if (widget instanceof Control) {
 							Control cursorControl = (Control) widget;
 							if (cursorControl.isEnabled ()) {
 								if (cursorControl.isEnabledModal ()) {
+									if (widget.isTrimHandle (theControl [0])) {
+										propagate = false;
+										break;
+									}
 									control = cursorControl;
 								}
 								break;
@@ -2955,12 +2959,17 @@ boolean runEnterExit () {
 					OS.GetSuperControl (theControl [0], theControl);
 				} while (theControl [0] != 0);
 			}
-			if (control == null) {
+			if (control == null && propagate) {
 				theControl [0] = theRoot [0];
 				Widget widget = getWidget (theControl [0]);
 				if (widget != null && widget instanceof Control) {
-					control = (Control) widget;
-					theControl[0] = control.handle;
+					Control cursorControl = (Control) widget;
+					if (cursorControl.isEnabled ()) {
+						if (cursorControl.isEnabledModal ()) {
+							control = cursorControl;
+							theControl[0] = control.handle;
+						}
+					}
 				}
 			}
 		}
@@ -3116,7 +3125,6 @@ boolean runGrabs () {
 				}
 			}
 			boolean events = type != 0;
-			events |= runEnterExit ();
 			if (type != 0) {
 				OS.GetControlBounds (handle, rect);
 				int x = outPt.h - rect.left;

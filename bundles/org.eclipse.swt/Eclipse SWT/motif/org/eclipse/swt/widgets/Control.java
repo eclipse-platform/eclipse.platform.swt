@@ -2945,6 +2945,7 @@ int XEnterWindow (int w, int client_data, int call_data, int continue_to_dispatc
 	XCrossingEvent xEvent = new XCrossingEvent ();
 	OS.memmove (xEvent, call_data, XCrossingEvent.sizeof);
 	if (xEvent.mode != OS.NotifyNormal && xEvent.mode != OS.NotifyUngrab) return 0;
+	if ((xEvent.state & (OS.Button1Mask | OS.Button2Mask | OS.Button3Mask)) != 0) return 0;
 	if (xEvent.subwindow != 0) return 0;
 	sendMouseEvent (SWT.MouseEnter, xEvent);
 	return 0;
@@ -3116,7 +3117,8 @@ int XLeaveWindow (int w, int client_data, int call_data, int continue_to_dispatc
 	display.hideToolTip ();
 	XCrossingEvent xEvent = new XCrossingEvent ();
 	OS.memmove (xEvent, call_data, XCrossingEvent.sizeof);
-	if (xEvent.mode != OS.NotifyNormal) return 0;
+	if (xEvent.mode != OS.NotifyNormal && xEvent.mode != OS.NotifyUngrab) return 0;
+	if ((xEvent.state & (OS.Button1Mask | OS.Button2Mask | OS.Button3Mask)) != 0) return 0;
 	if (xEvent.subwindow != 0) return 0;
 	sendMouseEvent (SWT.MouseExit, xEvent);
 	return 0;
