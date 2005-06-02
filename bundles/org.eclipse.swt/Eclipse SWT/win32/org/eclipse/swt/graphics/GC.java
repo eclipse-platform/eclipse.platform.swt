@@ -891,11 +891,11 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 			byte[] alphaData = srcImage.alphaData;
 			for (int y = 0; y < srcHeight; ++y) {
 				for (int x = 0; x < srcWidth; ++x) {
-					int alpha = alphaData[ap++];
-					srcData[sp+3] = (byte)alpha;
-					srcData[sp+2] = (byte)((srcData[sp+2] & 0xff) * alpha / 255);
-					srcData[sp+1] = (byte)((srcData[sp+1] & 0xff) * alpha / 255);
+					int alpha = alphaData[ap++] & 0xff;
 					srcData[sp+0] = (byte)((srcData[sp+0] & 0xff) * alpha / 255);
+					srcData[sp+1] = (byte)((srcData[sp+1] & 0xff) * alpha / 255);
+					srcData[sp+2] = (byte)((srcData[sp+2] & 0xff) * alpha / 255);
+					srcData[sp+3] = (byte)alpha;
 					sp += 4;
 				}
 				ap += apinc;
