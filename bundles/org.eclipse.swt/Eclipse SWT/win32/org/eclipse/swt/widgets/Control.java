@@ -605,9 +605,8 @@ void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, De
 void fixFocus (Control focusControl) {
 	Shell shell = getShell ();
 	Control control = this;
-	while ((control = control.parent) != null) {
+	while (control != shell && (control = control.parent) != null) {
 		if (control.setFixedFocus ()) return;
-		if (control == shell) break;
 	}
 	shell.setSavedFocus (focusControl);
 	OS.SetFocus (0);

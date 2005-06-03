@@ -523,9 +523,8 @@ char findMnemonic (String string) {
 void fixFocus (Control focusControl) {
 	Shell shell = getShell ();
 	Control control = this;
-	while ((control = control.parent) != null) {
+	while (control != shell && (control = control.parent) != null) {
 		if (control.setFocus ()) return;
-		if (control == shell) break;
 	}
 	shell.setSavedFocus (focusControl);
 }
