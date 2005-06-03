@@ -174,6 +174,7 @@ void onDragSash(Event event) {
 	Rectangle sashBounds = sash.getBounds();
 	Rectangle area = getClientArea();
 	if (getOrientation() == SWT.HORIZONTAL) {
+		int totalWidth = b2.x + b2.width - b1.x; 
 		int shift = event.x - sashBounds.x;
 		b1.width += shift;
 		b2.x += shift;
@@ -181,11 +182,11 @@ void onDragSash(Event event) {
 		if (b1.width < DRAG_MINIMUM) {
 			b1.width = DRAG_MINIMUM;
 			b2.x = b1.x + b1.width + sashBounds.width;
-			b2.width = area.width - DRAG_MINIMUM - sashBounds.width;
+			b2.width = totalWidth - b2.x;
 			event.x = b1.x + b1.width;
 		}
 		if (b2.width < DRAG_MINIMUM) {
-			b1.width = area.width - DRAG_MINIMUM - sashBounds.width;
+			b1.width = totalWidth - DRAG_MINIMUM - sashBounds.width;
 			b2.x = b1.x + b1.width + sashBounds.width;
 			b2.width = DRAG_MINIMUM;
 			event.x = b1.x + b1.width;
@@ -203,6 +204,7 @@ void onDragSash(Event event) {
 		((SashFormData)data1).weight = (((long)b1.width << 16) + area.width - 1) / area.width;
 		((SashFormData)data2).weight = (((long)b2.width << 16) + area.width - 1) / area.width;
 	} else {
+		int totalHeight = b2.y + b2.height - b1.y;
 		int shift = event.y - sashBounds.y;
 		b1.height += shift;
 		b2.y += shift;
@@ -210,11 +212,11 @@ void onDragSash(Event event) {
 		if (b1.height < DRAG_MINIMUM) {
 			b1.height = DRAG_MINIMUM;
 			b2.y = b1.y + b1.height + sashBounds.height;
-			b2.height = area.height - DRAG_MINIMUM - sashBounds.height;
+			b2.height = totalHeight - b2.y;
 			event.y = b1.y + b1.height;
 		}
 		if (b2.height < DRAG_MINIMUM) {
-			b1.height = area.height - DRAG_MINIMUM - sashBounds.height;
+			b1.height = totalHeight - DRAG_MINIMUM - sashBounds.height;
 			b2.y = b1.y + b1.height + sashBounds.height;
 			b2.height = DRAG_MINIMUM;
 			event.y = b1.y + b1.height;
