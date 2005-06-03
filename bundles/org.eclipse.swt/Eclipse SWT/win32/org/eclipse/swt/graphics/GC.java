@@ -715,9 +715,17 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
 	int technology = OS.GetDeviceCaps(handle, OS.TECHNOLOGY);
 
+	boolean drawIcon = true;
+	int flags = OS.DI_NORMAL;
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(5, 1)) {
+		flags |= OS.DI_NOMIRROR;
+	} else {
+		drawIcon = (data.style & SWT.MIRRORED) == 0;
+	}
+
 	/* Simple case: no stretching, entire icon */
-	if (simple && technology != OS.DT_RASPRINTER) {
-		OS.DrawIconEx(handle, destX, destY, srcImage.handle, 0, 0, 0, 0, OS.DI_NORMAL | OS.DI_NOMIRROR);
+	if (simple && technology != OS.DT_RASPRINTER && drawIcon) {
+		OS.DrawIconEx(handle, destX, destY, srcImage.handle, 0, 0, 0, 0, flags);
 		return;
 	}
 
@@ -748,9 +756,37 @@ void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, i
 		simple = srcX == 0 && srcY == 0 &&
 			srcWidth == destWidth && srcHeight == destHeight &&
 			srcWidth == iconWidth && srcHeight == iconHeight;
-		if (simple && technology != OS.DT_RASPRINTER)	{
+		if (!drawIcon) {
+			int srcHdc = OS.CreateCompatibleDC(handle);
+			int srcColorY = srcY;
+			int srcColor = srcIconInfo.hbmColor;
+			if (srcColor == 0) {
+				srcColor = srcIconInfo.hbmMask;
+				srcColorY += iconHeight;
+			}
+			int srcMask = srcIconInfo.hbmMask;
+			int oldSrcBitmap = OS.SelectObject(srcHdc, srcColor);
+			if (!simple && (srcWidth != destWidth || srcHeight != destHeight)) {
+				int mode = 0;
+				if (!OS.IsWinCE) mode = OS.SetStretchBltMode(handle, OS.COLORONCOLOR);
+				OS.StretchBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcColorY, srcWidth, srcHeight, OS.SRCINVERT);
+				OS.SelectObject(srcHdc, srcMask);
+				OS.StretchBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCAND);
+				OS.SelectObject(srcHdc, srcColor);
+				OS.StretchBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcColorY, srcWidth, srcHeight, OS.SRCINVERT);
+				if (!OS.IsWinCE) OS.SetStretchBltMode(handle, mode);
+			} else {
+				OS.BitBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcColorY, OS.SRCINVERT);
+				OS.SelectObject(srcHdc, srcMask);
+				OS.BitBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcY, OS.SRCAND);
+				OS.SelectObject(srcHdc, srcColor);
+				OS.BitBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcColorY, OS.SRCINVERT);
+			}
+			OS.SelectObject(srcHdc, oldSrcBitmap);
+			OS.DeleteDC(srcHdc);
+		} else if (simple && technology != OS.DT_RASPRINTER) {
 			/* Simple case: no stretching, entire icon */
-			OS.DrawIconEx(handle, destX, destY, srcImage.handle, 0, 0, 0, 0, OS.DI_NORMAL | OS.DI_NOMIRROR);
+			OS.DrawIconEx(handle, destX, destY, srcImage.handle, 0, 0, 0, 0, flags);
 		} else {
  			/* Create the icon info and HDC's */
 			ICONINFO newIconInfo = new ICONINFO();
@@ -799,7 +835,7 @@ void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, i
 				OS.SelectObject(dstHdc, oldDestBitmap);
 				int hIcon = OS.CreateIconIndirect(newIconInfo);
 				if (hIcon == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-				OS.DrawIconEx(handle, destX, destY, hIcon, destWidth, destHeight, 0, 0, OS.DI_NORMAL | OS.DI_NOMIRROR);
+				OS.DrawIconEx(handle, destX, destY, hIcon, destWidth, destHeight, 0, 0, flags);
 				OS.DestroyIcon(hIcon);
 			}
 			
