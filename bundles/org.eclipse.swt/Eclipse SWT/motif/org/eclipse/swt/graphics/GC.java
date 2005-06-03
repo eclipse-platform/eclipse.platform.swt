@@ -2873,14 +2873,16 @@ public void setAdvanced(boolean advanced) {
  */
 public void setAlpha(int alpha) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (data.cairo == 0 && (alpha & 0xff) == 0xff) return;
 	initCairo();
-	Cairo.cairo_set_alpha(data.cairo, alpha / 255f);
+	Cairo.cairo_set_alpha(data.cairo, (alpha & 0xff) / 255f);
 }
 /**
  * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
  */
 public void setAntialias(int antialias) {
     if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (data.cairo == 0 && antialias == SWT.DEFAULT) return;
     switch (antialias) {
         case SWT.DEFAULT: break;
         case SWT.OFF: break;
@@ -2961,6 +2963,7 @@ public void setBackground (Color color) {
 public void setBackgroundPattern(Pattern pattern) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pattern != null && pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (data.cairo == 0 && pattern == null) return;
 	initCairo();
 	data.backgroundPattern = pattern;
 }
@@ -3186,6 +3189,7 @@ public void setForeground (Color color) {
 public void setForegroundPattern(Pattern pattern) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pattern != null && pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (data.cairo == 0 && pattern == null) return;
 	initCairo();
 	int /*long*/ cairo = data.cairo;
 	if (pattern != null) {
@@ -3206,6 +3210,7 @@ public void setForegroundPattern(Pattern pattern) {
  */
 public void setInterpolation(int interpolation) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (data.cairo == 0 && interpolation == SWT.DEFAULT) return;
 	switch (interpolation) {
 		case SWT.DEFAULT:
 		case SWT.NONE:
@@ -3497,6 +3502,7 @@ void setText(String string, int flags) {
  */
 public void setTextAntialias(int antialias) {
     if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (data.cairo == 0 && antialias == SWT.DEFAULT) return;
     switch (antialias) {
         case SWT.DEFAULT: break;
         case SWT.OFF: break;
@@ -3512,6 +3518,7 @@ public void setTextAntialias(int antialias) {
 public void setTransform(Transform transform) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (transform != null && transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (data.cairo == 0 && transform == null) return;
 	initCairo();
 	int /*long*/ cairo = data.cairo;
 	Cairo.cairo_concat_matrix(cairo, data.inverseMatrix);

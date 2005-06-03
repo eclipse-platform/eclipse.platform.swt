@@ -3546,9 +3546,9 @@ public void setClipping (int x, int y, int width, int height) {
 public void setClipping (Path path) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (path != null && path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	if (path != null) initGdip(false, false);
 	setClipping(0);
 	if (path != null) {
+		initGdip(false, false);
 		int mode = OS.GetPolyFillMode(handle) == OS.WINDING ? Gdip.FillModeWinding : Gdip.FillModeAlternate;
 		Gdip.GraphicsPath_SetFillMode(path.handle, mode);
 		Gdip.Graphics_SetClip(data.gdipGraphics, path.handle);
