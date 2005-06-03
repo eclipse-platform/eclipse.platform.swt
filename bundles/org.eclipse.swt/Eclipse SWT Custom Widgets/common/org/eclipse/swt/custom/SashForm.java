@@ -173,7 +173,9 @@ void onDragSash(Event event) {
 	
 	Rectangle sashBounds = sash.getBounds();
 	Rectangle area = getClientArea();
+	boolean correction = false;
 	if (getOrientation() == SWT.HORIZONTAL) {
+		correction = b1.width < DRAG_MINIMUM || b2.width < DRAG_MINIMUM;
 		int totalWidth = b2.x + b2.width - b1.x; 
 		int shift = event.x - sashBounds.x;
 		b1.width += shift;
@@ -184,12 +186,14 @@ void onDragSash(Event event) {
 			b2.x = b1.x + b1.width + sashBounds.width;
 			b2.width = totalWidth - b2.x;
 			event.x = b1.x + b1.width;
+			event.doit = false;
 		}
 		if (b2.width < DRAG_MINIMUM) {
 			b1.width = totalWidth - DRAG_MINIMUM - sashBounds.width;
 			b2.x = b1.x + b1.width + sashBounds.width;
 			b2.width = DRAG_MINIMUM;
 			event.x = b1.x + b1.width;
+			event.doit = false;
 		}
 		Object data1 = c1.getLayoutData();
 		if (data1 == null || !(data1 instanceof SashFormData)) {
@@ -204,6 +208,7 @@ void onDragSash(Event event) {
 		((SashFormData)data1).weight = (((long)b1.width << 16) + area.width - 1) / area.width;
 		((SashFormData)data2).weight = (((long)b2.width << 16) + area.width - 1) / area.width;
 	} else {
+		correction = b1.height < DRAG_MINIMUM || b2.height < DRAG_MINIMUM;
 		int totalHeight = b2.y + b2.height - b1.y;
 		int shift = event.y - sashBounds.y;
 		b1.height += shift;
@@ -214,12 +219,14 @@ void onDragSash(Event event) {
 			b2.y = b1.y + b1.height + sashBounds.height;
 			b2.height = totalHeight - b2.y;
 			event.y = b1.y + b1.height;
+			event.doit = false;
 		}
 		if (b2.height < DRAG_MINIMUM) {
 			b1.height = totalHeight - DRAG_MINIMUM - sashBounds.height;
 			b2.y = b1.y + b1.height + sashBounds.height;
 			b2.height = DRAG_MINIMUM;
 			event.y = b1.y + b1.height;
+			event.doit = false;
 		}
 		Object data1 = c1.getLayoutData();
 		if (data1 == null || !(data1 instanceof SashFormData)) {
@@ -234,10 +241,12 @@ void onDragSash(Event event) {
 		((SashFormData)data1).weight = (((long)b1.height << 16) + area.height - 1) / area.height;
 		((SashFormData)data2).weight = (((long)b2.height << 16) + area.height - 1) / area.height;
 	}
-	if (event.detail != SWT.DRAG) {
-		c1.setBounds(b1);
-		sash.setBounds(event.x, event.y, event.width, event.height);
-		c2.setBounds(b2);
+	if (event.doit  || correction) {
+		if (event.detail != SWT.DRAG) {
+			c1.setBounds(b1);
+			sash.setBounds(event.x, event.y, event.width, event.height);
+			c2.setBounds(b2);
+		}
 	}
 }
 /**
