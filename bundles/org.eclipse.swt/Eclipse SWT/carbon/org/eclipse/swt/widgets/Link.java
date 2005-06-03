@@ -198,6 +198,7 @@ void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
 	selStart = selEnd = -1;
 	layout.draw (gc, 0, 0, selStart, selEnd, null, null);
 	gc.dispose ();
+	super.drawWidget (control, damageRgn, visibleRgn, theEvent);
 }
 
 void enableWidget (boolean enabled) {
