@@ -23,6 +23,8 @@ class WebSite extends OleControlSite {
 	COMObject iInternetSecurityManager;
 	COMObject iOleCommandTarget;
 
+	static final int OLECMDID_SHOWSCRIPTERROR = 40;
+
 public WebSite(Composite parent, int style, String progId) {
 	super(parent, style, progId);		
 }
@@ -439,16 +441,24 @@ int QueryStatus(int pguidCmdGroup, int cCmds, int prgCmds, int pCmdText) {
 }
 
 int Exec(int pguidCmdGroup, int nCmdID, int nCmdExecOpt, int pvaIn, int pvaOut) {
-	/*
-	* Bug in Internet Explorer.  OnToolBar TRUE is also fired when any of the 
-	* address bar or menu bar are requested but not the tool bar.  A workaround
-	* has been posted by a Microsoft developer on the public webbrowser_ctl
-	* newsgroup. The workaround is to implement the IOleCommandTarget interface
-	* to test the argument of an undocumented command.
-	*/
 	if (pguidCmdGroup != 0) {
 		GUID guid = new GUID();
 		COM.MoveMemory(guid, pguidCmdGroup, GUID.sizeof);
+
+		/*
+		* If a javascript error occurred then suppress IE's default script error dialog.
+		*/
+		if (COM.IsEqualGUID(guid, COM.CGID_DocHostCommandHandler)) {
+			if (nCmdID == OLECMDID_SHOWSCRIPTERROR) return COM.S_OK;
+		}
+
+		/*
+		* Bug in Internet Explorer.  OnToolBar TRUE is also fired when any of the 
+		* address bar or menu bar are requested but not the tool bar.  A workaround
+		* has been posted by a Microsoft developer on the public webbrowser_ctl
+		* newsgroup. The workaround is to implement the IOleCommandTarget interface
+		* to test the argument of an undocumented command.
+		*/
 		if (nCmdID == 1 && COM.IsEqualGUID(guid, COM.CGID_Explorer) && ((nCmdExecOpt & 0xFFFF) == 0xA)) {
 			Browser browser = (Browser)getParent().getParent();
 			browser.toolBar = (nCmdExecOpt & 0xFFFF0000) != 0;
