@@ -1062,8 +1062,8 @@ void destroyItem (TableColumn column) {
 			}
 		}
 	}
-	updateMoveable ();
 	if (columnCount == 0) setScrollWidth (null, true);
+	updateMoveable ();
 }
 
 void destroyItem (TableItem item) {
