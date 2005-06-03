@@ -2514,7 +2514,7 @@ public int getAdvanceWidth(char ch) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 
- * @see setAdvanced()
+ * @see #setAdvanced
  * @since 3.1
  */
 public boolean getAdvanced() {
@@ -2550,7 +2550,7 @@ public int getAlpha() {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 
- * @see #getTextAntialias()
+ * @see #getTextAntialias
  * 
  * @since 3.1
  */
@@ -3084,7 +3084,7 @@ public int getStyle () {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 
- * @see #getAntialias()
+ * @see #getAntialias
  * 
  * @since 3.1
  */
@@ -3319,15 +3319,15 @@ float measureSpace(int font, int format) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 
- * @see #setAlpha()
- * @see #setAntialias()
- * @see #setBackgroundPattern()
- * @see #setClipping()
- * @see #setForegroundPattern()
- * @see #setInterpolation()
- * @see #setTextAntialias()
- * @see #setTransform()
- * @see #getAdvanced()
+ * @see #setAlpha
+ * @see #setAntialias
+ * @see #setBackgroundPattern
+ * @see #setClipping
+ * @see #setForegroundPattern
+ * @see #setInterpolation
+ * @see #setTextAntialias
+ * @see #setTransform
+ * @see #getAdvanced
  * 
  * @since 3.1
  */
@@ -3365,7 +3365,7 @@ public void setAdvanced(boolean advanced) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 
- * @see #setTextAntialias()
+ * @see #setTextAntialias
  * 
  * @since 3.1
  */
@@ -4039,7 +4039,7 @@ public void setXORMode(boolean xor) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 
- * @see #setAntialias()
+ * @see #setAntialias
  * 
  * @since 3.1
  */

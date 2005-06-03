@@ -451,8 +451,8 @@ public void moveTo(float x, float y) {
 /**
  * Adds to the receiver a quadratic curve based on the parameters.
  *
- * @param cx1 the x coordinate of the control point of the spline
- * @param cy1 the y coordinate of the control point of the spline
+ * @param cx the x coordinate of the control point of the spline
+ * @param cy the y coordinate of the control point of the spline
  * @param x the x coordinate of the end point of the spline
  * @param y the y coordinate of the end point of the spline
  *
