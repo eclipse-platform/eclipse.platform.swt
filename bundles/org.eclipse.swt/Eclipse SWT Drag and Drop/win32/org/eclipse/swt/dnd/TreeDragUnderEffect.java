@@ -100,10 +100,22 @@ void show(int effect, int x, int y) {
 	}
 	if ((effect & DND.FEEDBACK_INSERT_BEFORE) != 0 || (effect & DND.FEEDBACK_INSERT_AFTER) != 0) {
 		boolean before = (effect & DND.FEEDBACK_INSERT_BEFORE) != 0;
-		OS.SendMessage (handle, OS.TVM_SETINSERTMARK, (before) ? 0 : 1, hItem);
-		clearInsert = true;
+		/*
+		* Bug in Windows.  When TVM_SETINSERTMARK is used to set
+		* an insert mark for a tree and an item is expanded or
+		* collapsed near the insert mark, the tree does not redraw
+		* the insert mark properly.  The fix is to hide and show
+		* the insert mark whenever an item is expanded or collapsed.
+		* Since the insert mark can not be queried from the tree,
+		* use the Tree API rather than calling the OS directly.
+		*/
+		TreeItem insertItem = (TreeItem)tree.getDisplay().findWidget(tree.handle, hItem);
+		if (insertItem != null) {
+			tree.setInsertMark(insertItem, before);
+			clearInsert = true;
+		}
 	} else {
-		if (clearInsert) OS.SendMessage (handle, OS.TVM_SETINSERTMARK, 0, 0);
+		if (clearInsert) tree.setInsertMark(null, false);
 		clearInsert = false;
 	}
 	return;
