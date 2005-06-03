@@ -3371,6 +3371,7 @@ public void setAdvanced(boolean advanced) {
  */
 public void setAntialias(int antialias) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (data.gdipGraphics == 0 && antialias == SWT.DEFAULT) return;
 	int mode = 0;
 	switch (antialias) {
 		case SWT.DEFAULT:
@@ -3402,6 +3403,7 @@ public void setAntialias(int antialias) {
  */
 public void setAlpha(int alpha) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (data.gdipGraphics == 0 && (alpha & 0xFF) == 0xFF) return;
 	initGdip(false, false);
 	data.alpha = alpha & 0xFF;
 	if (data.gdipPen != 0) {
@@ -3472,6 +3474,7 @@ public void setBackground (Color color) {
 public void setBackgroundPattern (Pattern pattern) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pattern != null && pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (data.gdipGraphics == 0 && pattern == null) return;
 	initGdip(false, false);
 	if (data.gdipBrush != 0) destroyGdipBrush(data.gdipBrush);
 	if (pattern != null) {
@@ -3543,7 +3546,7 @@ public void setClipping (int x, int y, int width, int height) {
 public void setClipping (Path path) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (path != null && path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	initGdip(false, false);
+	if (path != null) initGdip(false, false);
 	setClipping(0);
 	if (path != null) {
 		int mode = OS.GetPolyFillMode(handle) == OS.WINDING ? Gdip.FillModeWinding : Gdip.FillModeAlternate;
@@ -3696,6 +3699,7 @@ public void setForeground (Color color) {
 public void setForegroundPattern (Pattern pattern) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pattern != null && pattern.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (data.gdipGraphics == 0 && pattern == null) return;
 	initGdip(false, false);
 	if (pattern != null) {
 		if (data.gdipPen != 0) Gdip.Pen_SetBrush(data.gdipPen, pattern.handle);
@@ -3727,6 +3731,7 @@ public void setForegroundPattern (Pattern pattern) {
  */
 public void setInterpolation(int interpolation) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (data.gdipGraphics == 0 && interpolation == SWT.DEFAULT) return;
 	int mode = 0;
 	switch (interpolation) {
 		case SWT.DEFAULT: mode = Gdip.InterpolationModeDefault; break;
@@ -4040,6 +4045,7 @@ public void setXORMode(boolean xor) {
  */
 public void setTextAntialias(int antialias) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (data.gdipGraphics == 0 && antialias == SWT.DEFAULT) return;
 	int textMode = 0;
 	switch (antialias) {
 		case SWT.DEFAULT:
@@ -4085,6 +4091,7 @@ public void setTextAntialias(int antialias) {
 public void setTransform(Transform transform) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (transform != null && transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (data.gdipGraphics == 0 && transform == null) return;
 	initGdip(false, false);
 	if (transform != null) {
 		Gdip.Graphics_SetTransform(data.gdipGraphics, transform.handle);
