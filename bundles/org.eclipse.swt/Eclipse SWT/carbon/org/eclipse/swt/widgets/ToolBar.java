@@ -451,6 +451,7 @@ void setFontStyle (Font font) {
 		ToolItem item = items [i];
 		item.setFontStyle (font);
 	}
+	redrawWidget (handle, true);
 	relayout ();
 }
 

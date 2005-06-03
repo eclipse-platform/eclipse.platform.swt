@@ -1081,8 +1081,10 @@ void updateImage (boolean layout) {
 		inContent.iconRef = cIcon;
 	}
 	OS.SetBevelButtonContentInfo (iconHandle, inContent);
-	redrawWidget (iconHandle, false);
-	if (layout) parent.relayout();
+	if (layout) {
+		redrawWidget (iconHandle, false);
+		parent.relayout();
+	}
 }
 
 void updateText (boolean layout) {
@@ -1118,9 +1120,11 @@ void updateText (boolean layout) {
 		inContent.contentType = (short) OS.kControlContentCIconHandle;
 		inContent.iconRef = labelCIcon;
 	}
-	OS.SetBevelButtonContentInfo (labelHandle, inContent);
-	redrawWidget (labelHandle, false);
-	if (layout) parent.relayout();
+	OS.SetBevelButtonContentInfo (labelHandle, inContent);	
+	if (layout) {
+		redrawWidget (labelHandle, false);
+		parent.relayout();
+	}
 }
 
 }
