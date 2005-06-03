@@ -127,7 +127,6 @@ void createHandle(int index) {
 	OS.gtk_object_sink (labelHandle);
 	clientHandle = OS.g_object_new (display.gtk_fixed_get_type (), 0);
 	if (clientHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_fixed_set_has_window (clientHandle, true);
 	OS.gtk_container_add (fixedHandle, handle);
 	OS.gtk_container_add (handle, clientHandle);
 	if ((style & SWT.SHADOW_IN) != 0) {
