@@ -522,6 +522,7 @@ public void setImage (Image image) {
 public void setMoveable (boolean moveable) {
 	checkWidget ();
 	this.moveable = moveable;
+	parent.updateMoveable ();
 }
 
 /**

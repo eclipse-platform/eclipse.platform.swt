@@ -615,7 +615,7 @@ void createHandle () {
 	OS.HeapFree (hHeap, 0, pszText);
 
 	/* Set the extended style bits */
-	int bits1 = OS.LVS_EX_SUBITEMIMAGES | OS.LVS_EX_LABELTIP | OS.LVS_EX_HEADERDRAGDROP;
+	int bits1 = OS.LVS_EX_SUBITEMIMAGES | OS.LVS_EX_LABELTIP;
 	if ((style & SWT.FULL_SELECTION) != 0) bits1 |= OS.LVS_EX_FULLROWSELECT;
 	OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits1, bits1);
 	
@@ -1062,6 +1062,7 @@ void destroyItem (TableColumn column) {
 			}
 		}
 	}
+	updateMoveable ();
 	if (columnCount == 0) setScrollWidth (null, true);
 }
 
@@ -3051,6 +3052,19 @@ String toolTipText (NMTTDISPINFO hdr) {
 	return super.toolTipText (hdr);
 }
 
+void updateMoveable () {
+	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+	if (count == 1 && columns [0] == null) count = 0;
+	int index = 0;
+	while (index < count) {
+		if (columns [index].moveable) break;
+		index++;
+	}
+	int newBits = index < count ? OS.LVS_EX_HEADERDRAGDROP : 0;
+	OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, OS.LVS_EX_HEADERDRAGDROP, newBits);
+}
+
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.LVS_SHAREIMAGELISTS;
 	if ((style & SWT.HIDE_SELECTION) == 0) bits |= OS.LVS_SHOWSELALWAYS;
@@ -3367,6 +3381,8 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 				break;
 			}
 			case OS.HDN_BEGINDRAG: {
+				int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
+				if ((bits & OS.LVS_EX_HEADERDRAGDROP) == 0) break; 
 				int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 				if (count == 1 && columns [0] == null) return LRESULT.ONE;
 				NMHEADER phdn = new NMHEADER ();
@@ -3381,6 +3397,8 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 				break;
 			}
 			case OS.HDN_ENDDRAG: {
+				int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
+				if ((bits & OS.LVS_EX_HEADERDRAGDROP) == 0) break;
 				NMHEADER phdn = new NMHEADER ();
 				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
 				if (phdn.iItem != -1 && phdn.pitem != 0) {
