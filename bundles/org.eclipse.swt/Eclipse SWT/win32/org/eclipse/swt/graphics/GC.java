@@ -720,7 +720,9 @@ void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, i
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(5, 1)) {
 		flags |= OS.DI_NOMIRROR;
 	} else {
-		drawIcon = (data.style & SWT.MIRRORED) == 0;
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
+			drawIcon = (OS.GetLayout(handle) & OS.LAYOUT_RTL) == 0;
+		}
 	}
 
 	/* Simple case: no stretching, entire icon */
