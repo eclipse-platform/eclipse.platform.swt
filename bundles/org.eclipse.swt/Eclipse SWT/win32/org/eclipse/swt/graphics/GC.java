@@ -757,33 +757,7 @@ void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, i
 			srcWidth == destWidth && srcHeight == destHeight &&
 			srcWidth == iconWidth && srcHeight == iconHeight;
 		if (!drawIcon) {
-			int srcHdc = OS.CreateCompatibleDC(handle);
-			int srcColorY = srcY;
-			int srcColor = srcIconInfo.hbmColor;
-			if (srcColor == 0) {
-				srcColor = srcIconInfo.hbmMask;
-				srcColorY += iconHeight;
-			}
-			int srcMask = srcIconInfo.hbmMask;
-			int oldSrcBitmap = OS.SelectObject(srcHdc, srcColor);
-			if (!simple && (srcWidth != destWidth || srcHeight != destHeight)) {
-				int mode = 0;
-				if (!OS.IsWinCE) mode = OS.SetStretchBltMode(handle, OS.COLORONCOLOR);
-				OS.StretchBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcColorY, srcWidth, srcHeight, OS.SRCINVERT);
-				OS.SelectObject(srcHdc, srcMask);
-				OS.StretchBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCAND);
-				OS.SelectObject(srcHdc, srcColor);
-				OS.StretchBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcColorY, srcWidth, srcHeight, OS.SRCINVERT);
-				if (!OS.IsWinCE) OS.SetStretchBltMode(handle, mode);
-			} else {
-				OS.BitBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcColorY, OS.SRCINVERT);
-				OS.SelectObject(srcHdc, srcMask);
-				OS.BitBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcY, OS.SRCAND);
-				OS.SelectObject(srcHdc, srcColor);
-				OS.BitBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcColorY, OS.SRCINVERT);
-			}
-			OS.SelectObject(srcHdc, oldSrcBitmap);
-			OS.DeleteDC(srcHdc);
+			drawBitmapMask(srcImage, srcIconInfo.hbmColor, srcIconInfo.hbmMask, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, iconWidth, iconHeight, false);
 		} else if (simple && technology != OS.DT_RASPRINTER) {
 			/* Simple case: no stretching, entire icon */
 			OS.DrawIconEx(handle, destX, destY, srcImage.handle, 0, 0, 0, 0, flags);
@@ -1117,6 +1091,58 @@ void drawBitmapTransparentByClipping(int srcHdc, int maskHdc, int srcX, int srcY
 	OS.SelectClipRgn(handle, result == 1 ? clip : 0);
 	OS.DeleteObject(clip);
 	OS.DeleteObject(rgn);
+}
+
+void drawBitmapMask(Image srcImage, int srcColor, int srcMask, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imgWidth, int imgHeight, boolean offscreen) {
+	int srcColorY = srcY;
+	if (srcColor == 0) {
+		srcColor = srcMask;
+		srcColorY += imgHeight;
+	}
+	int srcHdc = OS.CreateCompatibleDC(handle);
+	int oldSrcBitmap = OS.SelectObject(srcHdc, srcColor);
+	int destHdc = handle, x = destX, y = destY;
+	int tempHdc = 0, tempBitmap = 0, oldTempBitmap = 0;
+	int oldBkColor = 0, oldTextColor = 0;
+	if (offscreen) {
+		tempHdc = OS.CreateCompatibleDC(handle);
+		tempBitmap = OS.CreateCompatibleBitmap(handle, destWidth, destHeight);
+		oldTempBitmap = OS.SelectObject(tempHdc, tempBitmap);
+		OS.BitBlt(tempHdc, 0, 0, destWidth, destHeight, handle, destX, destY, OS.SRCCOPY);
+		destHdc = tempHdc;
+		x = y = 0;
+	} else {
+		oldBkColor = OS.SetBkColor(handle, 0xFFFFFF);
+		oldTextColor = OS.SetTextColor(handle, 0); 
+	} 
+	if (!simple && (srcWidth != destWidth || srcHeight != destHeight)) {
+		int mode = 0;
+		if (!OS.IsWinCE) mode = OS.SetStretchBltMode(handle, OS.COLORONCOLOR);
+		OS.StretchBlt(destHdc, x, y, destWidth, destHeight, srcHdc, srcX, srcColorY, srcWidth, srcHeight, OS.SRCINVERT);
+		OS.SelectObject(srcHdc, srcMask);
+		OS.StretchBlt(destHdc, x, y, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCAND);
+		OS.SelectObject(srcHdc, srcColor);
+		OS.StretchBlt(destHdc, x, y, destWidth, destHeight, srcHdc, srcX, srcColorY, srcWidth, srcHeight, OS.SRCINVERT);
+		if (!OS.IsWinCE) OS.SetStretchBltMode(handle, mode);
+	} else {
+		OS.BitBlt(destHdc, x, y, destWidth, destHeight, srcHdc, srcX, srcColorY, OS.SRCINVERT);
+		OS.SetTextColor(destHdc, 0);
+		OS.SelectObject(srcHdc, srcMask);
+		OS.BitBlt(destHdc, x, y, destWidth, destHeight, srcHdc, srcX, srcY, OS.SRCAND);
+		OS.SelectObject(srcHdc, srcColor);
+		OS.BitBlt(destHdc, x, y, destWidth, destHeight, srcHdc, srcX, srcColorY, OS.SRCINVERT);
+	}
+	if (offscreen) {
+		OS.BitBlt(handle, destX, destY, destWidth, destHeight, tempHdc, 0, 0, OS.SRCCOPY);
+		OS.SelectObject(tempHdc, oldTempBitmap);
+		OS.DeleteDC(tempHdc);
+		OS.DeleteObject(tempBitmap);
+	} else {
+		OS.SetBkColor(handle, oldBkColor);
+		OS.SetTextColor(handle, oldTextColor);
+	}
+	OS.SelectObject(srcHdc, oldSrcBitmap);
+	OS.DeleteDC(srcHdc);
 }
 
 void drawBitmapTransparent(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, BITMAP bm, int imgWidth, int imgHeight) {
