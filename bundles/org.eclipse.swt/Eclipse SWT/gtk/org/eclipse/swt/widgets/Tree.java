@@ -845,10 +845,17 @@ public int getGridLineWidth () {
 public int getHeaderHeight () {
 	checkWidget ();
 	if (!OS.gtk_tree_view_get_headers_visible (handle)) return 0;
-	if (columns != null && columns [0] != null && columns [0].buttonHandle != 0) {
+	if (columnCount > 0) {
 		GtkRequisition requisition = new GtkRequisition ();
-		OS.gtk_widget_size_request (columns [0].buttonHandle, requisition);
-		return requisition.height;
+		int height = 0;
+		for (int i=0; i<columnCount; i++) {
+			int /*long*/ buttonHandle = columns [i].buttonHandle;
+			if (buttonHandle != 0) {
+				OS.gtk_widget_size_request (buttonHandle, requisition);
+				height = Math.max (height, requisition.height);
+			}
+		}
+		return height;
 	}
 	OS.gtk_widget_realize (handle);
 	int /*long*/ fixedWindow = OS.GTK_WIDGET_WINDOW (fixedHandle);
