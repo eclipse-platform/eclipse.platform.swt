@@ -186,14 +186,14 @@ void onDragSash(Event event) {
 			b2.x = b1.x + b1.width + sashBounds.width;
 			b2.width = totalWidth - b2.x;
 			event.x = b1.x + b1.width;
-			if ("carbon".equals(SWT.getPlatform())) event.doit = false;
+			event.doit = false;
 		}
 		if (b2.width < DRAG_MINIMUM) {
 			b1.width = totalWidth - DRAG_MINIMUM - sashBounds.width;
 			b2.x = b1.x + b1.width + sashBounds.width;
 			b2.width = DRAG_MINIMUM;
 			event.x = b1.x + b1.width;
-			if ("carbon".equals(SWT.getPlatform())) event.doit = false;
+			event.doit = false;
 		}
 		Object data1 = c1.getLayoutData();
 		if (data1 == null || !(data1 instanceof SashFormData)) {
@@ -219,14 +219,14 @@ void onDragSash(Event event) {
 			b2.y = b1.y + b1.height + sashBounds.height;
 			b2.height = totalHeight - b2.y;
 			event.y = b1.y + b1.height;
-			if ("carbon".equals(SWT.getPlatform())) event.doit = false;
+			event.doit = false;
 		}
 		if (b2.height < DRAG_MINIMUM) {
 			b1.height = totalHeight - DRAG_MINIMUM - sashBounds.height;
 			b2.y = b1.y + b1.height + sashBounds.height;
 			b2.height = DRAG_MINIMUM;
 			event.y = b1.y + b1.height;
-			if ("carbon".equals(SWT.getPlatform())) event.doit = false;
+			event.doit = false;
 		}
 		Object data1 = c1.getLayoutData();
 		if (data1 == null || !(data1 instanceof SashFormData)) {
@@ -241,12 +241,10 @@ void onDragSash(Event event) {
 		((SashFormData)data1).weight = (((long)b1.height << 16) + area.height - 1) / area.height;
 		((SashFormData)data2).weight = (((long)b2.height << 16) + area.height - 1) / area.height;
 	}
-	if (event.doit  || correction) {
-		if (event.detail != SWT.DRAG) {
-			c1.setBounds(b1);
-			sash.setBounds(event.x, event.y, event.width, event.height);
-			c2.setBounds(b2);
-		}
+	if (correction || (event.doit && event.detail != SWT.DRAG)) {
+		c1.setBounds(b1);
+		sash.setBounds(event.x, event.y, event.width, event.height);
+		c2.setBounds(b2);
 	}
 }
 /**
