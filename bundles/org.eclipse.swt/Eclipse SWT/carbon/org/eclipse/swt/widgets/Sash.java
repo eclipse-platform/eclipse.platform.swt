@@ -236,7 +236,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 				break;
 		}
 	}
-	return result;
+	return OS.noErr;
 }
 
 int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
