@@ -723,6 +723,9 @@ void destroyItem (TreeColumn column) {
 	    OS.InvalidateRect (handle, rect, true);
 	}
 	setScrollWidth ();
+	for (int i=index; i<columnCount; i++) {
+		columns [i].sendEvent (SWT.Move);
+	}
 }
 
 void destroyItem (TreeItem item) {
