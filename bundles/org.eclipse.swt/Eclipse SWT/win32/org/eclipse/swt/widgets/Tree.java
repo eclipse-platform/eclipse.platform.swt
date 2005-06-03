@@ -43,9 +43,9 @@ import org.eclipse.swt.events.*;
 public class Tree extends Composite {
 	TreeItem [] items;
 	TreeColumn [] columns;
-	int hwndParent, hwndHeader, hAnchor;
+	int hwndParent, hwndHeader, hAnchor, hInsert;
 	ImageList imageList;
-	boolean dragStarted, gestureCompleted;
+	boolean dragStarted, gestureCompleted, insertAfter;
 	boolean ignoreSelect, ignoreExpand, ignoreDeselect, ignoreResize;
 	boolean lockSelection, oldSelected, newSelected;
 	boolean linesVisible, customDraw, printClient;
@@ -1433,6 +1433,7 @@ void register () {
 boolean releaseItem (TreeItem item, TVITEM tvItem) {
 	int hItem = item.handle;
 	if (hItem == hAnchor) hAnchor = 0;
+	if (hItem == hInsert) hInsert = 0;
 	if (item.isDisposed ()) return false;
 	tvItem.hItem = hItem;
 	OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
@@ -1545,7 +1546,7 @@ public void removeAll () {
 	imageList = null;
 	if (hwndParent == 0) customDraw = false;
 	items = new TreeItem [4];
-	hAnchor = 0;
+	hAnchor = hInsert = 0;
 	updateScrollBar ();
 }
 
@@ -1622,7 +1623,9 @@ public void setInsertMark (TreeItem item, boolean before) {
 		if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		hItem = item.handle;
 	}
-	OS.SendMessage (handle, OS.TVM_SETINSERTMARK, (before) ? 0 : 1, hItem);
+	hInsert = hItem;
+	insertAfter = !before;
+	OS.SendMessage (handle, OS.TVM_SETINSERTMARK, insertAfter ? 1 : 0, hInsert);
 }
 
 /**
@@ -3643,11 +3646,31 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 		}
 		case OS.TVN_ITEMEXPANDEDA:
 		case OS.TVN_ITEMEXPANDEDW: {
+			/*
+			* Bug in Windows.  When TVM_SETINSERTMARK is used to set
+			* an insert mark for a tree and an item is expanded or
+			* collapsed near the insert mark, the tree does not redraw
+			* the insert mark properly.  The fix is to hide and show
+			* the insert mark whenever an item is expanded or collapsed.
+			*/
+			if (hInsert != 0) {
+				OS.SendMessage (handle, OS.TVM_SETINSERTMARK, insertAfter ? 1 : 0, hInsert);
+			}
 			updateScrollBar ();
 			break;
 		}
 		case OS.TVN_ITEMEXPANDINGA:
 		case OS.TVN_ITEMEXPANDINGW: {
+			/*
+			* Bug in Windows.  When TVM_SETINSERTMARK is used to set
+			* an insert mark for a tree and an item is expanded or
+			* collapsed near the insert mark, the tree does not redraw
+			* the insert mark properly.  The fix is to hide and show
+			* the insert mark whenever an item is expanded or collapsed.
+			*/
+			if (hInsert != 0) {
+				OS.SendMessage (handle, OS.TVM_SETINSERTMARK, 0, 0);
+			}
 			if (!ignoreExpand) {
 				TVITEM tvItem = new TVITEM ();
 				int offset = NMHDR.sizeof + 4 + TVITEM.sizeof;
