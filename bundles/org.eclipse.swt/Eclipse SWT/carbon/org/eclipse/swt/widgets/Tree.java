@@ -608,6 +608,9 @@ void destroyItem (TreeColumn column) {
 	}
 	System.arraycopy (columns, index + 1, columns, index, --columnCount - index);
 	columns [columnCount] = null;
+	for (int i=index; i<columnCount; i++) {
+		columns [i].sendEvent (SWT.Move);
+	}
 }
 
 void destroyItem (TreeItem item) {
