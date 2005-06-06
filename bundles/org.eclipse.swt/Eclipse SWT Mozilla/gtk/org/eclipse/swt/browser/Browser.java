@@ -1764,12 +1764,36 @@ int /*long*/ OnLocationChange(int /*long*/ aWebProgress, int /*long*/ aRequest, 
 }
   
 int /*long*/ OnStatusChange(int /*long*/ aWebProgress, int /*long*/ aRequest, int /*long*/ aStatus, int /*long*/ aMessage) {
+	/*
+	* Feature in Mozilla.  In Mozilla 1.7.5, navigating to an 
+	* HTTPS link without a user profile set causes a crash.
+	* Most requests for HTTPS pages are aborted in OnStartURIOpen.
+	* However, https page requests that do not initially specify
+	* https as their protocol will get past this check since they
+	* are resolved afterwards.  The workaround is to check the url
+	* whenever there is a status change, and to abort any https
+	* requests that are detected.
+	*/
+	nsIRequest request = new nsIRequest(aRequest);
+	int /*long*/ aName = XPCOM.nsEmbedCString_new();
+	request.GetName(aName);
+	int length = XPCOM.nsEmbedCString_Length(aName);
+	int buffer = XPCOM.nsEmbedCString_get(aName);
+	byte[] bytes = new byte[length];
+	XPCOM.memmove(bytes, buffer, length);
+	XPCOM.nsEmbedCString_delete(aName);
+	String value = new String(bytes);
+	if (value.startsWith(XPCOM.HTTPS_PROTOCOL)) {
+		request.Cancel(XPCOM.NS_BINDING_ABORTED);
+		return XPCOM.NS_OK;
+	}
+
 	if (statusTextListeners.length == 0) return XPCOM.NS_OK;
-	
+
 	StatusTextEvent event = new StatusTextEvent(this);
 	event.display = getDisplay();
 	event.widget = this;
-	int length = XPCOM.strlen_PRUnichar(aMessage);
+	length = XPCOM.strlen_PRUnichar(aMessage);
 	char[] dest = new char[length];
 	XPCOM.memmove(dest, aMessage, length * 2);
 	event.text = new String(dest);

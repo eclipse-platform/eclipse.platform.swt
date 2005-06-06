@@ -56,6 +56,7 @@ public class XPCOM extends Platform {
 	/* XPCOM constants */
 	public static final int NS_OK =  0;
 	public static final int NS_COMFALSE = 1;
+	public static final int NS_BINDING_ABORTED = 2;
 	public static final int NS_ERROR_BASE = 0xc1f30000;
 	public static final int NS_ERROR_NOT_INITIALIZED =  NS_ERROR_BASE + 1;
 	public static final int NS_ERROR_ALREADY_INITIALIZED = NS_ERROR_BASE + 2;
