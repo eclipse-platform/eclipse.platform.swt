@@ -328,7 +328,7 @@ class AccessibleObject {
 
 	static int /*long*/ atkHypertext_get_n_links (int /*long*/ atkObject) {
 		if (DEBUG) System.out.println ("-->atkHypertext_get_n_links");
-		return 1;
+		return 0;	/* read hyperlink's name */
 	}
 
 	static int /*long*/ atkHypertext_get_link_index (int /*long*/ atkObject, int /*long*/ char_index) {
