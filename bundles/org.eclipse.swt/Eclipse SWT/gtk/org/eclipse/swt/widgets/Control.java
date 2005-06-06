@@ -479,7 +479,7 @@ public Rectangle getBounds () {
 public void setBounds (Rectangle rect) {
 	checkWidget ();
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setBounds (rect.x, rect.y, rect.width, rect.height);
+	setBounds (rect.x, rect.y, Math.max (0, rect.width), Math.max (0, rect.height), true, true);
 }
 
 /**
@@ -661,7 +661,7 @@ public Point getLocation () {
 public void setLocation (Point location) {
 	checkWidget ();
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setLocation (location.x, location.y);
+	setBounds (location.x, location.y, 0, 0, true, false);
 }
 
 /**
@@ -729,7 +729,7 @@ public Point getSize () {
 public void setSize (Point size) {
 	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setSize (size.x, size.y);
+	setBounds (0, 0, Math.max (0, size.x), Math.max (0, size.y), false, true);
 }
 
 /**
