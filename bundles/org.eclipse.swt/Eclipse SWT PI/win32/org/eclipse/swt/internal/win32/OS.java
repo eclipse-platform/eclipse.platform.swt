@@ -858,6 +858,7 @@ public class OS extends Platform {
 	public static final int NM_CUSTOMDRAW = NM_FIRST - 12;
 	public static final int NM_DBLCLK = 0xfffffffd;
 	public static final int NM_RECOGNIZEGESTURE = NM_FIRST - 16;
+	public static final int NM_RELEASEDCAPTURE = NM_FIRST - 16;
 	public static final int NM_RETURN = 0xfffffffc;
 	public static final int NOTIFYICONDATAA_V2_SIZE = 488;
 	public static final int NOTIFYICONDATAW_V2_SIZE = 936;

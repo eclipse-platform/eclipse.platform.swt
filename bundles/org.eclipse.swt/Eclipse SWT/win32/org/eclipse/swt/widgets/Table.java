@@ -47,8 +47,8 @@ public class Table extends Composite {
 	ImageList imageList;
 	TableItem currentItem;
 	int lastIndexOf, lastWidth;
-	boolean customDraw, dragStarted, fixScrollWidth, tipRequested, wasSelected;
-	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize, resized;
+	boolean customDraw, cancelMove, dragStarted, fixScrollWidth, tipRequested;
+	boolean wasSelected, ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize, resized;
 	static final int INSET = 4;
 	static final int GRID_WIDTH = 1;
 	static final int HEADER_MARGIN = 10;
@@ -3380,7 +3380,11 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 				}
 				break;
 			}
+			case OS.NM_RELEASEDCAPTURE:
+				cancelMove = false;
+				break;
 			case OS.HDN_BEGINDRAG: {
+				if (cancelMove) return LRESULT.ONE;
 				int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
 				if ((bits & OS.LVS_EX_HEADERDRAGDROP) == 0) break; 
 				int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
@@ -3390,13 +3394,14 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 				if (phdn.iItem != -1) {
 					TableColumn column = columns [phdn.iItem];
 					if (column != null && !column.getMoveable ()) {
-						OS.ReleaseCapture ();
+						cancelMove = true;
 						return LRESULT.ONE;
 					}
 				}
 				break;
 			}
 			case OS.HDN_ENDDRAG: {
+				cancelMove = false;
 				int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
 				if ((bits & OS.LVS_EX_HEADERDRAGDROP) == 0) break;
 				NMHEADER phdn = new NMHEADER ();
