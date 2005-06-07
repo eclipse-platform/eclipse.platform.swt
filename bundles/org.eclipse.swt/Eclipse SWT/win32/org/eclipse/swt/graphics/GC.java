@@ -2909,7 +2909,8 @@ public int getLineCap() {
 }
 
 /** 
- * Returns the receiver's line dash style.
+ * Returns the receiver's line dash style. The default value is
+ * <code>null</code>.
  *
  * @return the lin dash style used for drawing lines
  *
@@ -3781,7 +3782,10 @@ public void setLineCap(int cap) {
 }
 
 /** 
- * Sets the receiver's line dash style to the argument.
+ * Sets the receiver's line dash style to the argument. The default
+ * value is <code>null</code>. If the argument is not <code>null</code>,
+ * the receiver's line style is set to <code>SWT.LINE_CUSTOM</code>, otherwise
+ * it is set to <code>SWT.LINE_SOLID</code>.
  *
  * @param dashes the dash style to be used for drawing lines
  * 
