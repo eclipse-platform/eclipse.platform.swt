@@ -379,8 +379,8 @@ void deselect (int [] ids, int count) {
 	/*
 	* Bug in the Macintosh.  When the DataBroswer selection flags includes
 	* both kDataBrowserNeverEmptySelectionSet and kDataBrowserSelectOnlyOne,
-    * two items are selected when SetDataBrowserSelectedItems() is called
-    * with kDataBrowserItemsAssign to assign a new seletion despite the fact
+	* two items are selected when SetDataBrowserSelectedItems() is called
+	* with kDataBrowserItemsAssign to assign a new seletion despite the fact
 	* that kDataBrowserSelectOnlyOne was specified.  The fix is to save and
 	* restore kDataBrowserNeverEmptySelectionSet around each call to
 	* SetDataBrowserSelectedItems().
