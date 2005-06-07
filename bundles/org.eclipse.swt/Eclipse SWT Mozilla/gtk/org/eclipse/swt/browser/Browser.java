@@ -1778,7 +1778,7 @@ int /*long*/ OnStatusChange(int /*long*/ aWebProgress, int /*long*/ aRequest, in
 	int /*long*/ aName = XPCOM.nsEmbedCString_new();
 	request.GetName(aName);
 	int length = XPCOM.nsEmbedCString_Length(aName);
-	int buffer = XPCOM.nsEmbedCString_get(aName);
+	int /*long*/ buffer = XPCOM.nsEmbedCString_get(aName);
 	byte[] bytes = new byte[length];
 	XPCOM.memmove(bytes, buffer, length);
 	XPCOM.nsEmbedCString_delete(aName);
