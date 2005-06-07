@@ -1484,7 +1484,6 @@ public boolean forceFocus () {
 }
 
 boolean forceFocus (int /*long*/ focusHandle) {
-	if (!OS.GTK_WIDGET_VISIBLE (topHandle ())) return false;
 	OS.gtk_widget_grab_focus (focusHandle);
 	Shell shell = getShell ();
 	int /*long*/ shellHandle = shell.shellHandle;
