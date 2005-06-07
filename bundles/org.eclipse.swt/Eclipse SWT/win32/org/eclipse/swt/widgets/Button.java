@@ -173,6 +173,45 @@ void _setImage (Image image) {
 					break;
 				}
 			}
+			
+			/*
+			* Feature in Windows.  The button control mirrors its image when the
+			* flag WS_EX_LAYOUTRTL is set. This behaviour is not desirable in SWT.
+			* The fix is to set a mirrored version of real image in the button.
+			*/
+			if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+				if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
+					Rectangle rect = image.getBounds ();
+					int hDC = OS.GetDC (handle);
+					int dstHdc = OS.CreateCompatibleDC (hDC);
+					int hBitmap = OS.CreateCompatibleBitmap (hDC, rect.width, rect.height);
+					int oldBitmap = OS.SelectObject (dstHdc, hBitmap);
+					OS.SetLayout (dstHdc, OS.LAYOUT_RTL);
+					if (fImageType == OS.IMAGE_BITMAP) {
+						int srcHdc = OS.CreateCompatibleDC (hDC);
+						int oldSrcBitmap = OS.SelectObject (srcHdc, hImage);
+						OS.SetLayout (dstHdc, 0);
+						OS.BitBlt (dstHdc, 0, 0, rect.width, rect.height, srcHdc, 0, 0, OS.SRCCOPY);
+						OS.SelectObject (srcHdc, oldSrcBitmap);
+						OS.DeleteDC (srcHdc);
+					} else {
+						int newBrush = OS.CreateSolidBrush (getBackgroundPixel ());
+						int oldBrush = OS.SelectObject (dstHdc, newBrush);
+						OS.PatBlt (dstHdc, 0, 0, rect.width, rect.height, OS.PATCOPY);
+						OS.DrawIconEx (dstHdc, 0, 0, hImage, 0, 0, 0, 0, OS.DI_NORMAL);
+						OS.SelectObject (dstHdc, oldBrush);
+						OS.DeleteObject (newBrush);
+					}
+					OS.SelectObject (dstHdc, oldBitmap);
+					OS.DeleteDC (dstHdc);
+					OS.ReleaseDC (handle, hDC);
+					if (image2 != null) image2.dispose ();
+					image2 = Image.win32_new (display, SWT.BITMAP, hBitmap);
+					imageBits = OS.BS_BITMAP;
+					fImageType = OS.IMAGE_BITMAP;
+					hImage = hBitmap;
+				}
+			}
 		}
 		int newBits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 		int oldBits = newBits;
