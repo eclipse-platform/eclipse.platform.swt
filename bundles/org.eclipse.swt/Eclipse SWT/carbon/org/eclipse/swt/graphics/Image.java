@@ -729,7 +729,7 @@ void init(Device device, ImageData image) {
 	}
 	int colorspace = device.colorspace;
 	int transparency = image.getTransparencyType(); 
-	int alphaInfo = transparency == SWT.TRANSPARENCY_NONE || image.alpha != -1 ? OS.kCGImageAlphaNoneSkipFirst : OS.kCGImageAlphaFirst;
+	int alphaInfo = transparency == SWT.TRANSPARENCY_NONE && image.alpha == -1 ? OS.kCGImageAlphaNoneSkipFirst : OS.kCGImageAlphaFirst;
 	handle = OS.CGImageCreate(width, height, 8, 32, width * 4, colorspace, alphaInfo, provider, null, true, 0);
 	OS.CGDataProviderRelease(provider);
 	if (handle == 0) {
