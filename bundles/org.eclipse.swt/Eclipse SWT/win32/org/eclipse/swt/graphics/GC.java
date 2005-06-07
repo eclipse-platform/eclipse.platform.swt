@@ -2703,17 +2703,19 @@ public void getClipping (Region region) {
 		Gdip.Region_delete(rgn);
 		return;
 	}
+	POINT pt = new POINT ();
+	OS.GetWindowOrgEx (handle, pt);
 	int result = OS.GetClipRgn (handle, region.handle);
 	if (result != 1) {
 		RECT rect = new RECT();
 		OS.GetClipBox(handle, rect);
 		OS.SetRectRgn(region.handle, rect.left, rect.top, rect.right, rect.bottom);
+	} else {
+		if (pt.x != 0 || pt.y != 0) OS.OffsetRgn (region.handle, pt.x, pt.y);
 	}
 	if (!OS.IsWinCE) {
 		int metaRgn = OS.CreateRectRgn (0, 0, 0, 0);
 		if (OS.GetMetaRgn (handle, metaRgn) != 0) {
-			POINT pt = new POINT ();
-			OS.GetWindowOrgEx (handle, pt);
 			OS.OffsetRgn (metaRgn, pt.x, pt.y);
 			OS.CombineRgn (region.handle, metaRgn, region.handle, OS.RGN_AND);
 		}
@@ -2727,7 +2729,6 @@ public void getClipping (Region region) {
 			int sysRgn = OS.CreateRectRgn (0, 0, 0, 0);
 			if (OS.GetRandomRgn (handle, sysRgn, OS.SYSRGN) == 1) {
 				if (OS.IsWinNT) {
-					POINT pt = new POINT();
 					OS.MapWindowPoints(0, hwnd, pt, 1);
 					OS.OffsetRgn(sysRgn, pt.x, pt.y);
 				}
@@ -3173,6 +3174,9 @@ void initGdip(boolean draw, boolean fill) {
 		*/
 		int hRgn = OS.CreateRectRgn(0, 0, 0, 0);
 		int result = OS.GetClipRgn(handle, hRgn);
+		POINT pt = new POINT ();
+		OS.GetWindowOrgEx (handle, pt);
+		if (pt.x != 0 || pt.y != 0) OS.OffsetRgn (hRgn, pt.x, pt.y);
 		OS.SelectClipRgn(handle, 0);
 		gdipGraphics = data.gdipGraphics = Gdip.Graphics_new(handle);
 		if (gdipGraphics == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -3498,7 +3502,14 @@ void setClipping(int clipRgn) {
 			Gdip.Graphics_ResetClip(gdipGraphics);
 		}
 	} else {
+		POINT pt = null;
+		if (hRgn != 0) {
+			pt = new POINT ();
+			OS.GetWindowOrgEx (handle, pt);
+			if (pt.x != 0 || pt.y != 0) OS.OffsetRgn (hRgn, -pt.x, -pt.y);
+		}
 		OS.SelectClipRgn(handle, hRgn);
+		if (hRgn != 0 && (pt.x != 0 || pt.y != 0)) OS.OffsetRgn (hRgn, pt.x, pt.y);
 	}
 	if (hRgn != 0 && hRgn != clipRgn) {
 		OS.DeleteObject(hRgn);
