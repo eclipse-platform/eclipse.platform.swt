@@ -1466,7 +1466,10 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 	*/
 	if (OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
 		if ((wParam & 0xFFFF) == 0 && OS.IsDBLocale && hIMC != 0) {
-			OS.ImmSetOpenStatus (hIMC, false);
+			if (OS.ImmGetOpenStatus(hIMC)) {
+				OS.ImmSetOpenStatus (hIMC, false);
+				OS.ImmSetOpenStatus (hIMC, true);
+			}
 		}
 	}
 	
