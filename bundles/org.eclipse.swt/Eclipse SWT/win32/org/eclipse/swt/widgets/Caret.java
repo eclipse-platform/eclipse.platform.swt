@@ -249,7 +249,7 @@ public boolean isVisible () {
 
 void killFocus () {
 	OS.DestroyCaret ();
-	if (font != null) restoreIMEFont ();
+	restoreIMEFont ();
 }
 
 void move () {
@@ -312,16 +312,6 @@ void restoreIMEFont () {
 	oldFont = null;
 }
 
-void saveIMEFont () {
-	if (!OS.IsDBLocale) return;
-	if (oldFont != null) return;
-	int hwnd = parent.handle;
-	int hIMC = OS.ImmGetContext (hwnd);
-	oldFont = OS.IsUnicode ? (LOGFONT) new LOGFONTW () : new LOGFONTA ();
-	if (!OS.ImmGetCompositionFont (hIMC, oldFont)) oldFont = null;
-	OS.ImmReleaseContext (hwnd, hIMC);
-}
-
 /**
  * Sets the receiver's size and location to the rectangular
  * area specified by the arguments. The <code>x</code> and 
@@ -378,13 +368,7 @@ void setFocus () {
 	if (image != null) hBitmap = image.handle;
 	OS.CreateCaret (hwnd, hBitmap, width, height);
 	move ();
-	if (OS.IsDBLocale) {
-		int hFont = 0;
-		if (font != null) hFont = font.handle;
-		if (hFont == 0) hFont = defaultFont ();
-		saveIMEFont ();
-		setIMEFont (hFont);
-	}
+	setIMEFont ();
 	if (isVisible) OS.ShowCaret (hwnd);
 }
 
@@ -409,13 +393,7 @@ public void setFont (Font font) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	this.font = font;
-	if (isVisible && hasFocus ()) {
-		int hFont = 0;
-		if (font != null) hFont = font.handle;
-		if (hFont == 0) hFont = defaultFont ();
-		saveIMEFont ();
-		setIMEFont (hFont);
-	}
+	if (hasFocus ()) setIMEFont ();
 }
 
 /**
@@ -442,15 +420,24 @@ public void setImage (Image image) {
 	if (isVisible && hasFocus ()) resize ();
 }
 
-void setIMEFont (int hFont) {
+void setIMEFont () {
 	if (!OS.IsDBLocale) return;
+	int hFont = 0;
+	if (font != null) hFont = font.handle;
+	if (hFont == 0) hFont = defaultFont ();
+	int hwnd = parent.handle;
+	int hIMC = OS.ImmGetContext (hwnd);
+	/* Save the current IME font */
+	if (oldFont == null) {
+		oldFont = OS.IsUnicode ? (LOGFONT) new LOGFONTW () : new LOGFONTA ();
+		if (!OS.ImmGetCompositionFont (hIMC, oldFont)) oldFont = null;
+	}
+	/* Set new IME font */
 	LOGFONT logFont = OS.IsUnicode ? (LOGFONT) new LOGFONTW () : new LOGFONTA ();
 	if (OS.GetObject (hFont, LOGFONT.sizeof, logFont) != 0) {
-		int hwnd = parent.handle;
-		int hIMC = OS.ImmGetContext (hwnd);
 		OS.ImmSetCompositionFont (hIMC, logFont);
-		OS.ImmReleaseContext (hwnd, hIMC);
 	}
+	OS.ImmReleaseContext (hwnd, hIMC);
 }
 
 /**

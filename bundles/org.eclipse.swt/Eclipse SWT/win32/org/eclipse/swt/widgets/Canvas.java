@@ -231,7 +231,10 @@ public void setFont (Font font) {
 
 LRESULT WM_INPUTLANGCHANGE (int wParam, int lParam) {
 	LRESULT result  = super.WM_INPUTLANGCHANGE (wParam, lParam);
-	if (caret != null) caret.resizeIME ();
+	if (caret != null && caret.isFocusCaret ()) {
+		caret.setIMEFont ();
+		caret.resizeIME ();
+	}
 	return result;
 }
 
@@ -249,7 +252,7 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 
 LRESULT WM_SIZE (int wParam, int lParam) {
 	LRESULT result  = super.WM_SIZE (wParam, lParam);
-	if (caret != null) caret.resizeIME ();
+	if (caret != null && caret.isFocusCaret ()) caret.resizeIME ();
 	return result;
 }
 
