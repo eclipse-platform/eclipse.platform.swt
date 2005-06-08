@@ -1402,6 +1402,7 @@ public static final native void SectRgn(int srcRgnA, int srcRgnB, int dstRgn);
 public static final native void SelectWindow(int wHandle);
 public static final native void SendBehind(int window, int behindWindow);
 public static final native int SendEventToEventTarget(int theEvent, int theTarget);
+public static final native int SendEventToEventTargetWithOptions(int theEvent, int theTarget, int options);
 public static final native int SetApplicationDockTileImage(int inImage);
 public static final native int SetAutomaticControlDragTrackingEnabledForWindow (int inWindow, boolean inTracks);
 public static final native int SetBevelButtonContentInfo(int inButton, ControlButtonContentInfo inContent);

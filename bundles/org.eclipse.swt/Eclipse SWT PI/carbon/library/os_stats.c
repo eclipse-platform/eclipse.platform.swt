@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 843;
-int OS_nativeFunctionCallCount[843];
+int OS_nativeFunctionCount = 844;
+int OS_nativeFunctionCallCount[844];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -672,6 +672,7 @@ char * OS_nativeFunctionNames[] = {
 	"SelectWindow",
 	"SendBehind",
 	"SendEventToEventTarget",
+	"SendEventToEventTargetWithOptions",
 	"SetApplicationDockTileImage",
 	"SetAutomaticControlDragTrackingEnabledForWindow",
 	"SetBevelButtonContentInfo",

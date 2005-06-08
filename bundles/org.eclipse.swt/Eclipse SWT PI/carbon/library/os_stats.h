@@ -676,6 +676,7 @@ typedef enum {
 	SelectWindow_FUNC,
 	SendBehind_FUNC,
 	SendEventToEventTarget_FUNC,
+	SendEventToEventTargetWithOptions_FUNC,
 	SetApplicationDockTileImage_FUNC,
 	SetAutomaticControlDragTrackingEnabledForWindow_FUNC,
 	SetBevelButtonContentInfo_FUNC,

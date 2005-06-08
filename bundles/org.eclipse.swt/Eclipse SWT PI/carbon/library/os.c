@@ -238,7 +238,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(ATSUFindFontFromName)
 	OS_NATIVE_ENTER(env, that, ATSUFindFontFromName_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
 	if (arg6) if ((lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL)) == NULL) goto fail;
-	rc = (jint)ATSUFindFontFromName(lparg0, arg1, arg2, arg3, arg4, arg5, lparg6);
+	rc = (jint)ATSUFindFontFromName((const void *)lparg0, arg1, arg2, arg3, arg4, arg5, (ATSUFontID *)lparg6);
 fail:
 	if (arg6 && lparg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
@@ -259,7 +259,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(ATSUFindFontName)
 	if (arg6) if ((lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL)) == NULL) goto fail;
 	if (arg7) if ((lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL)) == NULL) goto fail;
 	if (arg8) if ((lparg8 = (*env)->GetIntArrayElements(env, arg8, NULL)) == NULL) goto fail;
-	rc = (jint)ATSUFindFontName((ATSUFontID)arg0, arg1, arg2, arg3, arg4, arg5, (Ptr)lparg6, lparg7, lparg8);
+	rc = (jint)ATSUFindFontName((ATSUFontID)arg0, arg1, arg2, arg3, arg4, arg5, (Ptr)lparg6, (ByteCount *)lparg7, (ItemCount *)lparg8);
 fail:
 	if (arg8 && lparg8) (*env)->ReleaseIntArrayElements(env, arg8, lparg8, 0);
 	if (arg7 && lparg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
@@ -279,7 +279,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(ATSUGetFontIDs)
 	OS_NATIVE_ENTER(env, that, ATSUGetFontIDs_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL)) == NULL) goto fail;
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jint)ATSUGetFontIDs((ATSUFontID *)lparg0, arg1, lparg2);
+	rc = (jint)ATSUGetFontIDs((ATSUFontID *)lparg0, arg1, (ItemCount *)lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg0 && lparg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
@@ -2612,7 +2612,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(ConvertFromPStringToUnicode)
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetCharArrayElements(env, arg4, NULL)) == NULL) goto fail;
-	rc = (jint)ConvertFromPStringToUnicode((TextToUnicodeInfo)arg0, (ConstStr255Param)lparg1, arg2, lparg3, lparg4);
+	rc = (jint)ConvertFromPStringToUnicode((TextToUnicodeInfo)arg0, (ConstStr255Param)lparg1, arg2, (ByteCount *)lparg3, lparg4);
 fail:
 	if (arg4 && lparg4) (*env)->ReleaseCharArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
@@ -2632,7 +2632,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(ConvertFromUnicodeToPString)
 	OS_NATIVE_ENTER(env, that, ConvertFromUnicodeToPString_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
-	rc = (jint)ConvertFromUnicodeToPString((UnicodeToTextInfo)arg0, arg1, (ConstUniCharArrayPtr)lparg2, lparg3);
+	rc = (jint)ConvertFromUnicodeToPString((UnicodeToTextInfo)arg0, arg1, (ConstUniCharArrayPtr)lparg2, (unsigned char *)lparg3);
 fail:
 	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
 	if (arg2 && lparg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
@@ -3879,7 +3879,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(FMGetFontFamilyName)
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, FMGetFontFamilyName_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	rc = (jint)FMGetFontFamilyName(arg0, lparg1);
+	rc = (jint)FMGetFontFamilyName((FMFontFamily)arg0, (unsigned char *)lparg1);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, FMGetFontFamilyName_FUNC);
@@ -4431,7 +4431,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetControlFeatures)
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, GetControlFeatures_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	rc = (jint)GetControlFeatures((ControlRef)arg0, lparg1);
+	rc = (jint)GetControlFeatures((ControlRef)arg0, (UInt32 *)lparg1);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, GetControlFeatures_FUNC);
@@ -4461,7 +4461,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetControlProperty)
 	OS_NATIVE_ENTER(env, that, GetControlProperty_FUNC);
 	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
 	if (arg5) if ((lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL)) == NULL) goto fail;
-	rc = (jint)GetControlProperty((ControlRef)arg0, arg1, arg2, arg3, lparg4, lparg5);
+	rc = (jint)GetControlProperty((ControlRef)arg0, arg1, arg2, arg3, (UInt32 *)lparg4, (void *)lparg5);
 fail:
 	if (arg5 && lparg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
@@ -4638,7 +4638,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetDataBrowserItemDataButtonValue)
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, GetDataBrowserItemDataButtonValue_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	rc = (jint)GetDataBrowserItemDataButtonValue((ControlRef)arg0, lparg1);
+	rc = (jint)GetDataBrowserItemDataButtonValue((ControlRef)arg0, (ThemeButtonValue *)lparg1);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, GetDataBrowserItemDataButtonValue_FUNC);
@@ -4670,7 +4670,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetDataBrowserItemState)
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, GetDataBrowserItemState_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
-	rc = (jint)GetDataBrowserItemState((ControlRef)arg0, arg1, lparg2);
+	rc = (jint)GetDataBrowserItemState((ControlRef)arg0, arg1, (DataBrowserItemState *)lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	OS_NATIVE_EXIT(env, that, GetDataBrowserItemState_FUNC);
@@ -4717,7 +4717,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetDataBrowserListViewHeaderBtnHeight)
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, GetDataBrowserListViewHeaderBtnHeight_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	rc = (jint)GetDataBrowserListViewHeaderBtnHeight((ControlRef)arg0, lparg1);
+	rc = (jint)GetDataBrowserListViewHeaderBtnHeight((ControlRef)arg0, (UInt16 *)lparg1);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, GetDataBrowserListViewHeaderBtnHeight_FUNC);
@@ -4819,7 +4819,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetDataBrowserSelectionFlags)
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, GetDataBrowserSelectionFlags_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	rc = (jint)GetDataBrowserSelectionFlags((ControlRef)arg0, lparg1);
+	rc = (jint)GetDataBrowserSelectionFlags((ControlRef)arg0, (DataBrowserSelectionFlags *)lparg1);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, GetDataBrowserSelectionFlags_FUNC);
@@ -4835,7 +4835,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetDataBrowserSortProperty)
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, GetDataBrowserSortProperty_FUNC);
 	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
-	rc = (jint)GetDataBrowserSortProperty((ControlRef)arg0, lparg1);
+	rc = (jint)GetDataBrowserSortProperty((ControlRef)arg0, (DataBrowserPropertyID *)lparg1);
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, GetDataBrowserSortProperty_FUNC);
@@ -6124,7 +6124,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetThemeFont)
 	if (arg2) if ((lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	if (arg3) if ((lparg3 = (*env)->GetShortArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL)) == NULL) goto fail;
-	rc = (jint)GetThemeFont((ThemeFontID)arg0, (ScriptCode)arg1, (char *)lparg2, (SInt16 *)lparg3, (Style *)lparg4);
+	rc = (jint)GetThemeFont((ThemeFontID)arg0, (ScriptCode)arg1, (unsigned char *)lparg2, (SInt16 *)lparg3, (Style *)lparg4);
 fail:
 	if (arg4 && lparg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) (*env)->ReleaseShortArrayElements(env, arg3, lparg3, 0);
@@ -9139,6 +9139,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(SendEventToEventTarget)
 }
 #endif
 
+#ifndef NO_SendEventToEventTargetWithOptions
+JNIEXPORT jint JNICALL OS_NATIVE(SendEventToEventTargetWithOptions)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SendEventToEventTargetWithOptions_FUNC);
+	rc = (jint)SendEventToEventTargetWithOptions((EventRef)arg0, (EventTargetRef)arg1, arg2);
+	OS_NATIVE_EXIT(env, that, SendEventToEventTargetWithOptions_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_SetApplicationDockTileImage
 JNIEXPORT jint JNICALL OS_NATIVE(SetApplicationDockTileImage)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -9881,7 +9893,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetFontInfoForSelection)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, SetFontInfoForSelection_FUNC);
-	rc = (jint)SetFontInfoForSelection((OSType)arg0, (UInt32)arg1, (void *)arg2, (HIObjectRef)arg3);
+	rc = (jint)SetFontInfoForSelection((OSType)arg0, (UInt32)arg1, (void *)arg2, (EventTargetRef)arg3);
 	OS_NATIVE_EXIT(env, that, SetFontInfoForSelection_FUNC);
 	return rc;
 }
@@ -11066,7 +11078,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(UpgradeScriptInfoToTextEncoding)
 	OS_NATIVE_ENTER(env, that, UpgradeScriptInfoToTextEncoding_FUNC);
 	if (arg3) if ((lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL)) == NULL) goto fail;
 	if (arg4) if ((lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL)) == NULL) goto fail;
-	rc = (jint)UpgradeScriptInfoToTextEncoding(arg0, arg1, arg2, lparg3, lparg4);
+	rc = (jint)UpgradeScriptInfoToTextEncoding((ScriptCode)arg0, (LangCode)arg1, (RegionCode)arg2, (ConstStr255Param)lparg3, (TextEncoding *)lparg4);
 fail:
 	if (arg4 && lparg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg3 && lparg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
@@ -11127,7 +11139,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(getenv)
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, getenv_FUNC);
 	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
-	rc = (jint)getenv(lparg0);
+	rc = (jint)getenv((const char *)lparg0);
 fail:
 	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, getenv_FUNC);
