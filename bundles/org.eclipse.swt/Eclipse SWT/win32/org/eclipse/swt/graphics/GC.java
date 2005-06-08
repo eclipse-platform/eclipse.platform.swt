@@ -602,7 +602,7 @@ void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, i
 			
 			if (technology == OS.DT_RASPRINTER) {
 				OS.SelectObject(srcHdc, newIconInfo.hbmColor);
-				OS.SelectObject(dstHdc, srcIconInfo.hbmMask);
+				OS.SelectObject(dstHdc, newIconInfo.hbmMask);
 				drawBitmapTransparentByClipping(srcHdc, dstHdc, 0, 0, destWidth, destHeight, destX, destY, destWidth, destHeight, true, destWidth, destHeight);	
 				OS.SelectObject(srcHdc, oldSrcBitmap);
 				OS.SelectObject(dstHdc, oldDestBitmap);
