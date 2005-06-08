@@ -1458,11 +1458,11 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 	/*
 	* Bug in Windows XP.  When a Shell is deactivated, the
 	* IME composition window does not go away. This causes
-	* repaint issues.  The fix is to close the IME ourselves
-	* when the Shell is deactivated.
+	* repaint issues.  The fix is to close the IME to cause
+	* the composition string to be committed.
 	* 
-	* Note.  When the Shell is reactivated, the text in the
-	* composition window has been lost.
+	* Note. The IME needs to be reopened in order to preserve
+	* the input method status.
 	*/
 	if (OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
 		if ((wParam & 0xFFFF) == 0 && OS.IsDBLocale && hIMC != 0) {
