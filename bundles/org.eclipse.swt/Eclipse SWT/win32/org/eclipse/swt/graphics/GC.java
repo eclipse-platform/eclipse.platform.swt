@@ -3351,6 +3351,8 @@ public void setAdvanced(boolean advanced) {
 		data.alpha = 0xFF;
 		data.backgroundPattern = data.foregroundPattern = null;
 		setClipping(0);
+		if (data.hPen != 0) OS.SelectObject(handle, data.hPen);
+		if (data.hBrush != 0) OS.SelectObject(handle, data.hBrush);
 	}
 }
 
