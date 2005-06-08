@@ -138,6 +138,7 @@ public void add (String string, int index) {
 	if (OS.AddDataBrowserItems (handle, OS.kDataBrowserNoItem, 1, id, OS.kDataBrowserItemNoProperty) != OS.noErr) {
 		error (SWT.ERROR_ITEM_NOT_ADDED);
 	}
+	if (index != itemCount) fixSelection (index, true);
 	if (itemCount == items.length) {
 		String [] newItems = new String [itemCount + 4];
 		System.arraycopy (items, 0, newItems, 0, items.length);
@@ -409,6 +410,26 @@ void deselect (int [] ids, int count) {
 public void deselectAll () {
 	checkWidget ();
 	deselect (null, 0);
+}
+
+void fixSelection (int index, boolean add) {
+	int [] selection = getSelectionIndices ();
+	if (selection.length == 0) return;
+	int newCount = 0;
+	boolean fix = false;
+	for (int i = 0; i < selection.length; i++) {
+		if (!add && selection [i] == index) {
+			fix = true;
+		} else {
+			int newIndex = newCount++;
+			selection [newIndex] = selection [i] + 1;
+			if (selection [newIndex] - 1 >= index) {
+				selection [newIndex] += add ? 1 : -1;
+				fix = true;
+			}
+		}
+	}
+	if (fix) select (selection, newCount, true);
 }
 
 public Rectangle getClientArea () {
@@ -870,6 +891,7 @@ public boolean isSelected (int index) {
 public void remove (int index) {
 	checkWidget();
 	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_INVALID_RANGE);
+	if (index != itemCount - 1) fixSelection (index, false);
 	int [] id = new int [] {itemCount};
 	if (OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, id.length, id, 0) != OS.noErr) {
 		error (SWT.ERROR_ITEM_NOT_REMOVED);
