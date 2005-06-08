@@ -47,7 +47,7 @@ public class Table extends Composite {
 	TableItem[] selectedItems = new TableItem [0];
 	TableItem focusItem, anchorItem, lastClickedItem;
 	Event lastSelectionEvent;
-	boolean linesVisible;
+	boolean linesVisible, ignoreKey;
 	int itemsCount = 0;
 	int topIndex = 0, horizontalOffset = 0;
 	int fontHeight = 0, imageHeight = 0, itemHeight = 0;
@@ -1867,6 +1867,14 @@ void onHome (int stateMask) {
 	postEvent (SWT.Selection, newEvent);
 }
 void onKeyDown (Event event) {
+	if (ignoreKey) {
+		ignoreKey = false;
+		return;
+	}
+	ignoreKey = true;
+	notifyListeners (event.type, event);
+	event.type = SWT.None;
+	if (!event.doit) return;
 	if (focusItem == null) return;
 	if ((event.stateMask & SWT.SHIFT) == 0 && event.keyCode != SWT.SHIFT) {
 		anchorItem = null;
