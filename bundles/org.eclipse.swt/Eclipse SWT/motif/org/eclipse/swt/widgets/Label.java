@@ -349,6 +349,18 @@ public String getText () {
 	if ((style & SWT.SEPARATOR) != 0) return "";
 	return text;
 }
+void hookEvents () {
+	super.hookEvents ();
+	if (formHandle != 0) {
+		int windowProc = display.windowProc;
+		OS.XtAddEventHandler (formHandle, OS.ButtonPressMask, false, windowProc, BUTTON_PRESS);
+		OS.XtAddEventHandler (formHandle, OS.ButtonReleaseMask, false, windowProc, BUTTON_RELEASE);
+		OS.XtAddEventHandler (formHandle, OS.PointerMotionMask, false, windowProc, POINTER_MOTION);
+		OS.XtAddEventHandler (formHandle, OS.EnterWindowMask, false, windowProc, ENTER_WINDOW);
+		OS.XtAddEventHandler (formHandle, OS.LeaveWindowMask, false, windowProc, LEAVE_WINDOW);
+		OS.XtInsertEventHandler (formHandle, OS.ExposureMask, false, windowProc, EXPOSURE, OS.XtListTail);
+	}
+}
 void manageChildren () {
 	if (formHandle != 0) {
 		OS.XtSetMappedWhenManaged (formHandle, false);
