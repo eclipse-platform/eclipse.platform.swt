@@ -412,7 +412,7 @@ public void dispose() {
 	Image image = data.image;
 	if (image != null) {
 		image.memGC = null;
-		if (image.transparentPixel != -1) image.createMask();
+		image.createAlpha();
 	}
 	int layout = data.layout;
 	if (layout != 0) OS.ATSUDisposeTextLayout(layout);
@@ -600,6 +600,7 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		}
  	}
+ 	if (srcImage.memGC != null) srcImage.createAlpha();
  	OS.CGContextSaveGState(handle);
  	OS.CGContextScaleCTM(handle, 1, -1);
  	OS.CGContextTranslateCTM(handle, 0, -(destHeight + 2 * destY));
