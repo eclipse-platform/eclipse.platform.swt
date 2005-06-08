@@ -61,7 +61,8 @@ public class Browser extends Composite {
 	Point location;
 	Point size;
 	boolean statusBar = true, toolBar = true;
-	boolean doit;
+	//TEMPORARY CODE
+//	boolean doit;
 
 	static final int MIN_SIZE = 16;
 
@@ -674,9 +675,10 @@ int handleCallback(int nextHandler, int theEvent) {
 			* does not block the kEventRawKeyDown, then multiple kEventTextInputUnicodeForKeyEvent
 			* events might be generated as a result of this workaround.
 			*/
-			doit = false;
-			OS.SendEventToEventTarget(theEvent, OS.GetApplicationEventTarget());
-			if (!doit) return OS.noErr;
+			//TEMPORARY CODE
+//			doit = false;
+//			OS.SendEventToEventTarget(theEvent, OS.GetApplicationEventTarget());
+//			if (!doit) return OS.noErr;
 			break;
 		}
 		case OS.kEventTextInputUnicodeForKeyEvent: {
@@ -698,7 +700,8 @@ int handleCallback(int nextHandler, int theEvent) {
 			*  Return from Control Target - kEventRawKeyDown: let the event go to WebKit if doit true 
 			*  (eventNotHandledErr) or stop it (noErr).
 			*/
-			doit = true;
+			//TEMPORARY CODE
+//			doit = true;
 			break;
 		}
 	}
