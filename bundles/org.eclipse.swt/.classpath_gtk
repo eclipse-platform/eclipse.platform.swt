@@ -29,4 +29,7 @@
     <classpathentry kind="src" path="Eclipse SWT Mozilla/gtk"/>
     <classpathentry kind="src" path="Eclipse SWT Mozilla/common"/>
     <classpathentry kind="output" path="bin"/>
+	<attributes>
+		<attribute value="org.eclipse.swt.gtk.linux.x86" name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY"/>
+	</attributes>
 </classpath>

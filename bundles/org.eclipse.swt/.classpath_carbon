@@ -23,4 +23,7 @@
     <classpathentry kind="src" path="Eclipse SWT Browser/common"/>
     <classpathentry kind="src" path="Eclipse SWT Browser/carbon"/>
     <classpathentry kind="output" path="bin"/>
+    <attributes>
+		<attribute value="org.eclipse.swt.carbon.macosx.ppc" name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY"/>
+	</attributes>
 </classpath>
