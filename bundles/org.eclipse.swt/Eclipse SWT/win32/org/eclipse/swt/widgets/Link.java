@@ -137,14 +137,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		TCHAR buffer = new TCHAR (getCodePage (), parse (text), false);
 		RECT rect = new RECT ();
 		int flags = OS.DT_CALCRECT;
-		boolean wrap = wHint != SWT.DEFAULT;
-		if (wrap) {
+		if (wHint != SWT.DEFAULT) {
 			flags |= OS.DT_WORDBREAK;
-			rect.right = wHint;	
+			rect.right = wHint;
 		}
 		OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
 		width = rect.right - rect.left;
-		height = wrap ? rect.bottom : OS.SendMessage (handle, OS.LM_GETIDEALHEIGHT, 0, 0);
+		height = rect.bottom;
 		if (newFont != 0) OS.SelectObject (hDC, oldFont);
 		OS.ReleaseDC (handle, hDC);
 	} else {
