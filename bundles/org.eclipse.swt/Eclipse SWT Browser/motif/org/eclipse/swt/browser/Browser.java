@@ -1703,6 +1703,17 @@ int /*long*/ OnProgressChange(int /*long*/ aWebProgress, int /*long*/ aRequest, 
 }		
 
 int /*long*/ OnLocationChange(int /*long*/ aWebProgress, int /*long*/ aRequest, int /*long*/ aLocation) {
+	/*
+	* Feature on Mozilla.  When a page is loaded via setText before a previous
+	* setText page load has completed, the expected OnStateChange STATE_STOP for the
+	* original setText never arrives because it gets replaced by the OnStateChange
+	* STATE_STOP for the new request.  This results in the request field never being
+	* cleared because the original request's OnStateChange STATE_STOP is still expected
+	* (but never arrives).  To handle this case, the request field is updated to the new
+	* overriding request since its OnStateChange STATE_STOP will be received next.
+	*/
+	if (request != 0 && request != aRequest) request = aRequest;
+
 	if (locationListeners.length == 0) return XPCOM.NS_OK;
 	
 	nsIWebProgress webProgress = new nsIWebProgress(aWebProgress);
