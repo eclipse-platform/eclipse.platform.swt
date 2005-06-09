@@ -258,6 +258,28 @@ void closeWidget () {
 	if (event.doit && !isDisposed ()) dispose ();
 }
 
+int compare (ImageData data1, ImageData data2, int width, int height, int depth) {
+	int value1 = Math.abs (data1.width - width), value2 = Math.abs (data2.width - width);
+	if (value1 == value2) {
+		int transparent1 = data1.getTransparencyType ();
+		int transparent2 = data2.getTransparencyType ();
+		if (transparent1 == transparent2) {
+			if (data1.depth == data2.depth) return 0;
+			return data1.depth > data2.depth && data1.depth <= depth ? -1 : 1;
+		}
+		if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
+			if (transparent1 == SWT.TRANSPARENCY_ALPHA) return -1;
+			if (transparent2 == SWT.TRANSPARENCY_ALPHA) return 1;
+		}
+		if (transparent1 == SWT.TRANSPARENCY_MASK) return -1;
+		if (transparent2 == SWT.TRANSPARENCY_MASK) return 1;
+		if (transparent1 == SWT.TRANSPARENCY_PIXEL) return -1;
+		if (transparent2 == SWT.TRANSPARENCY_PIXEL) return 1;
+		return 0;
+	}
+	return value1 < value2 ? -1 : 1;
+}
+
 Control computeTabGroup () {
 	return this;
 }
@@ -352,7 +374,7 @@ Image createIcon (Image image) {
 	int hMask, hBitmap;
 	int hDC = OS.GetDC (handle);
 	int dstHdc = OS.CreateCompatibleDC (hDC), oldDstBitmap;
-	if (OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
 		hBitmap = Display.create32bitDIB (image.handle, data.alpha, data.alphaData, data.transparentPixel);
 		hMask = OS.CreateBitmap (width, height, 1, 1, null);
 		oldDstBitmap = OS.SelectObject (dstHdc, hMask);
@@ -920,27 +942,27 @@ void setImages (Image image, Image [] images) {
 	smallImage = largeImage = null;
 	int hSmallIcon = 0, hLargeIcon = 0;
 	Image smallIcon = null, largeIcon = null;
-	int smallWidth = 0x7FFFFFFF, largeWidth = 0x7FFFFFFF;
 	if (image != null) {
-		Rectangle rect = image.getBounds ();
-		smallWidth = Math.abs (rect.width - OS.GetSystemMetrics (OS.SM_CXSMICON));
-		smallIcon = image;
-		largeWidth = Math.abs (rect.width - OS.GetSystemMetrics (OS.SM_CXICON)); 
-		largeIcon = image;
-	}
-	if (images != null) {
-		for (int i = 0; i < images.length; i++) {
-			Rectangle rect = images [i].getBounds ();
-			int value = Math.abs (rect.width - OS.GetSystemMetrics (OS.SM_CXSMICON));
-			if (value < smallWidth) {
-				smallWidth = value;
-				smallIcon = images [i];
+		smallIcon = largeIcon = image;
+	} else {
+		if (images != null && images.length > 0) {
+			int depth = display.getIconDepth ();
+			ImageData [] datas = null;
+			if (images.length > 1) {
+				Image [] bestImages = new Image [images.length];
+				System.arraycopy (images, 0, bestImages, 0, images.length);
+				datas = new ImageData [images.length];
+				for (int i=0; i<datas.length; i++) {
+					datas [i] = images [i].getImageData ();
+				}
+				images = bestImages;
+				sort (images, datas, OS.GetSystemMetrics (OS.SM_CXSMICON), OS.GetSystemMetrics (OS.SM_CYSMICON), depth);
 			}
-			value = Math.abs (rect.width - OS.GetSystemMetrics (OS.SM_CXICON));
-			if (value < largeWidth) {
-				largeWidth = value;
-				largeIcon = images [i];
+			smallIcon = images [0];
+			if (images.length > 1) {
+				sort (images, datas, OS.GetSystemMetrics (OS.SM_CXICON), OS.GetSystemMetrics (OS.SM_CYICON), depth);
 			}
+			largeIcon = images [0];
 		}
 	}
 	if (smallIcon != null) {
@@ -1386,6 +1408,26 @@ public void setVisible (boolean visible) {
 		}
 		if (isDisposed ()) return;
 		sendEvent (SWT.Hide);
+	}
+}
+
+void sort (Image [] images, ImageData [] datas, int width, int height, int depth) {
+	/* Shell Sort from K&R, pg 108 */
+	int length = images.length;
+	if (length <= 1) return;
+	for (int gap=length/2; gap>0; gap/=2) {
+		for (int i=gap; i<length; i++) {
+			for (int j=i-gap; j>=0; j-=gap) {
+		   		if (compare (datas [j], datas [j + gap], width, height, depth) >= 0) {
+					Image swap = images [j];
+					images [j] = images [j + gap];
+					images [j + gap] = swap;
+					ImageData swapData = datas [j];
+					datas [j] = datas [j + gap];
+					datas [j + gap] = swapData;
+		   		}
+	    	}
+	    }
 	}
 }
 

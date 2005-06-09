@@ -1359,6 +1359,9 @@ public boolean getHighContrast () {
  */
 public int getIconDepth () {
 	checkDevice ();
+	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
+		if (getDepth () >= 24) return 32;
+	}
 
 	/* Use the character encoding for the default locale */
 	TCHAR buffer1 = new TCHAR (0, "Control Panel\\Desktop\\WindowMetrics", true); //$NON-NLS-1$
