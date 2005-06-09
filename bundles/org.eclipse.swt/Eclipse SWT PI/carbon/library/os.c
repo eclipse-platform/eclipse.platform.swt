@@ -9893,7 +9893,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetFontInfoForSelection)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, SetFontInfoForSelection_FUNC);
-	rc = (jint)SetFontInfoForSelection((OSType)arg0, (UInt32)arg1, (void *)arg2, (EventTargetRef)arg3);
+	rc = (jint)SetFontInfoForSelection((OSType)arg0, (UInt32)arg1, (void *)arg2, (void *)arg3);
 	OS_NATIVE_EXIT(env, that, SetFontInfoForSelection_FUNC);
 	return rc;
 }
