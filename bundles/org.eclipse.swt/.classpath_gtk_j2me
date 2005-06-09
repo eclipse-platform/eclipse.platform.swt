@@ -6,7 +6,11 @@
     <classpathentry kind="src" path="Eclipse SWT/emulated/coolbar"/>
     <classpathentry kind="src" path="Eclipse SWT/common"/>
     <classpathentry kind="src" path="Eclipse SWT/common_j2me"/>
-    <classpathentry kind="src" path="Eclipse SWT PI/gtk"/>
+    <classpathentry kind="src" path="Eclipse SWT PI/gtk">
+	    <attributes>
+			<attribute value="org.eclipse.swt.gtk.linux.x86" name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY"/>
+		</attributes>
+    </classpathentry>
     <classpathentry kind="src" path="Eclipse SWT PI/common_j2me"/>
     <classpathentry kind="src" path="Eclipse SWT Accessibility/gtk"/>
     <classpathentry kind="src" path="Eclipse SWT Accessibility/common"/>
@@ -18,7 +22,4 @@
     <classpathentry kind="src" path="Eclipse SWT Program/common"/>
     <classpathentry kind="src" path="Eclipse SWT Custom Widgets/common"/>
     <classpathentry kind="output" path="bin"/>
-    <attributes>
-		<attribute value="org.eclipse.swt.gtk.linux.x86" name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY"/>
-	</attributes>
 </classpath>

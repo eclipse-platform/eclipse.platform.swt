@@ -10,7 +10,11 @@
 	<classpathentry kind="src" path="Eclipse SWT/emulated/textlayout"/>
 	<classpathentry kind="src" path="Eclipse SWT/common"/>
 	<classpathentry kind="src" path="Eclipse SWT/common_j2se"/>
-	<classpathentry kind="src" path="Eclipse SWT PI/photon"/>
+	<classpathentry kind="src" path="Eclipse SWT PI/photon">
+	    <attributes>
+			<attribute value="org.eclipse.swt.photon.qnx.x86" name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY"/>
+		</attributes>
+    </classpathentry>
 	<classpathentry kind="src" path="Eclipse SWT PI/common_j2se"/>
 	<classpathentry kind="src" path="Eclipse SWT Accessibility/emulated"/>
 	<classpathentry kind="src" path="Eclipse SWT Accessibility/common"/>
@@ -26,7 +30,4 @@
 	<classpathentry kind="src" path="Eclipse SWT Browser/common"/>
 	<classpathentry kind="src" path="Eclipse SWT Browser/photon"/>
 	<classpathentry kind="output" path="bin"/>
-	<attributes>
-		<attribute value="org.eclipse.swt.photon.qnx.x86" name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY"/>
-	</attributes>
 </classpath>

@@ -10,7 +10,11 @@
     <classpathentry kind="src" path="Eclipse SWT/emulated/treetable"/>
     <classpathentry kind="src" path="Eclipse SWT/common"/>
     <classpathentry kind="src" path="Eclipse SWT/common_j2se"/>
-    <classpathentry kind="src" path="Eclipse SWT PI/motif"/>
+    <classpathentry kind="src" path="Eclipse SWT PI/motif">
+	    <attributes>
+			<attribute value="org.eclipse.swt.motif.linux.x86" name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY"/>
+		</attributes>
+    </classpathentry>
     <classpathentry kind="src" path="Eclipse SWT PI/motif_gtk"/>
     <classpathentry kind="src" path="Eclipse SWT PI/cairo"/>
     <classpathentry kind="src" path="Eclipse SWT PI/common"/>
@@ -32,7 +36,4 @@
     <classpathentry kind="src" path="Eclipse SWT Browser/motif"/>
     <classpathentry kind="src" path="Eclipse SWT Mozilla/common"/>
     <classpathentry kind="output" path="bin"/>
-    <attributes>
-		<attribute value="org.eclipse.swt.motif.linux.x86" name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY"/>
-	</attributes>
 </classpath>

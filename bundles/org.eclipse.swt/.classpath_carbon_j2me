@@ -7,7 +7,11 @@
     <classpathentry kind="src" path="Eclipse SWT/emulated/tray"/>
     <classpathentry kind="src" path="Eclipse SWT/common"/>
     <classpathentry kind="src" path="Eclipse SWT/common_j2me"/>
-    <classpathentry kind="src" path="Eclipse SWT PI/carbon"/>
+    <classpathentry kind="src" path="Eclipse SWT PI/carbon">
+	    <attributes>
+			<attribute value="org.eclipse.swt.carbon.macosx.ppc" name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY"/>
+		</attributes>
+    </classpathentry>
     <classpathentry kind="src" path="Eclipse SWT PI/common_j2me"/>
     <classpathentry kind="src" path="Eclipse SWT Accessibility/emulated"/>
     <classpathentry kind="src" path="Eclipse SWT Accessibility/common"/>
