@@ -341,7 +341,17 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	setLayoutControl(OS.kATSUCGContextTag, gc.handle, 4);
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
 	OS.CGContextSaveGState(gc.handle);
-
+	boolean restoreColor = false;
+	if (hasSelection && selectionBackground != null) {
+		int[] response = new int[1];
+		int err = OS.Gestalt(OS.gestaltSystemVersion, response);
+		if (err == OS.noErr && ((response[0] & 0xffff) >= 0x1030)) {
+			restoreColor = true;
+			int color = OS.CGColorCreate(device.colorspace, selectionBackground.handle);
+			setLayoutControl(OS.kATSULineHighlightCGColorTag, color, 4);
+			OS.CGColorRelease(color);
+		}
+	}
 	/* 
 	* Feature in ATSU. There is no API to set a background attribute
 	* of an ATSU style. Draw the background of styles ourselfs.
@@ -409,6 +419,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 		drawY += lineHeight[i];
 		start = lineBreak;
 	}
+	if (restoreColor) setLayoutControl(OS.kATSULineHighlightCGColorTag, 0, 4);
 	OS.CGContextRestoreGState(gc.handle);
 }
 

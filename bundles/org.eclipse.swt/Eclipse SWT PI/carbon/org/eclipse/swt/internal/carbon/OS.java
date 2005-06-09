@@ -835,6 +835,8 @@ public static final native void CGAffineTransformInvert (float[] t, float[] resu
 public static final native void CGContextScaleCTM(int inContext, float sx, float sy);
 public static final native void CGContextTranslateCTM(int inContext, float tx, float ty);
 public static final native int CGBitmapContextCreate(int data, int width, int height, int bitsPerComponent, int bytesPerRow, int colorspace, int alphaInfo);
+public static final native int CGColorCreate(int colorspace, float[] components);
+public static final native void CGColorRelease(int color);
 public static final native int CGColorSpaceCreatePattern(int baseSpace);
 public static final native int CGColorSpaceCreateDeviceRGB ();
 public static final native void CGColorSpaceRelease (int cs);

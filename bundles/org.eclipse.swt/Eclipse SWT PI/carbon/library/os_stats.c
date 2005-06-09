@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 844;
-int OS_nativeFunctionCallCount[844];
+int OS_nativeFunctionCount = 846;
+int OS_nativeFunctionCallCount[846];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -100,6 +100,8 @@ char * OS_nativeFunctionNames[] = {
 	"CGAffineTransformScale",
 	"CGAffineTransformTranslate",
 	"CGBitmapContextCreate",
+	"CGColorCreate",
+	"CGColorRelease",
 	"CGColorSpaceCreateDeviceRGB",
 	"CGColorSpaceCreatePattern",
 	"CGColorSpaceRelease",

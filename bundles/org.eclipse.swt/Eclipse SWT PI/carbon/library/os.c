@@ -1186,6 +1186,32 @@ JNIEXPORT jint JNICALL OS_NATIVE(CGBitmapContextCreate)
 }
 #endif
 
+#ifndef NO_CGColorCreate
+JNIEXPORT jint JNICALL OS_NATIVE(CGColorCreate)
+	(JNIEnv *env, jclass that, jint arg0, jfloatArray arg1)
+{
+	jfloat *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CGColorCreate_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetFloatArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jint)CGColorCreate((CGColorSpaceRef)arg0, lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseFloatArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, CGColorCreate_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGColorRelease
+JNIEXPORT void JNICALL OS_NATIVE(CGColorRelease)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, CGColorRelease_FUNC);
+	CGColorRelease((CGColorRef)arg0);
+	OS_NATIVE_EXIT(env, that, CGColorRelease_FUNC);
+}
+#endif
+
 #ifndef NO_CGColorSpaceCreateDeviceRGB
 JNIEXPORT jint JNICALL OS_NATIVE(CGColorSpaceCreateDeviceRGB)
 	(JNIEnv *env, jclass that)

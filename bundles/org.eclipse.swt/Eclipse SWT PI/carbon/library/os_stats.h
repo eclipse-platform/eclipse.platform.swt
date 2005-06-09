@@ -104,6 +104,8 @@ typedef enum {
 	CGAffineTransformScale_FUNC,
 	CGAffineTransformTranslate_FUNC,
 	CGBitmapContextCreate_FUNC,
+	CGColorCreate_FUNC,
+	CGColorRelease_FUNC,
 	CGColorSpaceCreateDeviceRGB_FUNC,
 	CGColorSpaceCreatePattern_FUNC,
 	CGColorSpaceRelease_FUNC,
