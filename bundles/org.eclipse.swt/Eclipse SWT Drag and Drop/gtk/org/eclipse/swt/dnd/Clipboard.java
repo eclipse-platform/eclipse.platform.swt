@@ -297,7 +297,7 @@ public Object getContents(Transfer transfer, int clipboards) {
 	GtkSelectionData gtkSelectionData = new GtkSelectionData();
 	OS.memmove(gtkSelectionData, selection_data, GtkSelectionData.sizeof);
 	TransferData tdata = new TransferData();
-	tdata.type = gtkSelectionData.target;
+	tdata.type = gtkSelectionData.type;
 	tdata.pValue = gtkSelectionData.data;
 	tdata.length = gtkSelectionData.length;
 	tdata.format = gtkSelectionData.format;
