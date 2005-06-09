@@ -163,6 +163,12 @@ protected void checkSubclass () {
 }
 
 void _setImages (Image [] images) {
+	if (images != null && images.length > 1) {
+		Image [] bestImages = new Image [images.length];
+		System.arraycopy (images, 0, bestImages, 0, images.length);
+		sort (bestImages);
+		images = bestImages;
+	}
 	int /*long*/ pixbufs = 0;
 	if (images != null) {
 		for (int i = 0; i < images.length; i++) {
@@ -194,6 +200,21 @@ void add (Menu menu) {
 	newMenus [menus.length] = menu;
 	System.arraycopy (menus, 0, newMenus, 0, menus.length);
 	menus = newMenus;
+}
+
+int compare (ImageData data1, ImageData data2) {
+	if (data1.width == data2.width && data1.height == data2.height) {
+		int transparent1 = data1.getTransparencyType ();
+		int transparent2 = data2.getTransparencyType ();
+		if (transparent1 == SWT.TRANSPARENCY_ALPHA) return -1;
+		if (transparent2 == SWT.TRANSPARENCY_ALPHA) return 1;
+		if (transparent1 == SWT.TRANSPARENCY_MASK) return -1;
+		if (transparent2 == SWT.TRANSPARENCY_MASK) return 1;
+		if (transparent1 == SWT.TRANSPARENCY_PIXEL) return -1;
+		if (transparent2 == SWT.TRANSPARENCY_PIXEL) return 1;
+		return 0;
+	}
+	return data1.width > data2.width || data1.height > data2.height ? -1 : 1;
 }
 
 Control computeTabGroup () {
@@ -664,6 +685,30 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	text = string;
+}
+
+void sort (Image [] images) {
+	/* Shell Sort from K&R, pg 108 */
+	int length = images.length;
+	if (length <= 1) return; 
+	ImageData [] datas = new ImageData [length];
+	for (int i = 0; i < length; i++) {
+		datas [i] = images [i].getImageData ();
+	}
+	for (int gap=length/2; gap>0; gap/=2) {
+		for (int i=gap; i<length; i++) {
+			for (int j=i-gap; j>=0; j-=gap) {
+		   		if (compare (datas [j], datas [j + gap]) >= 0) {
+					Image swap = images [j];
+					images [j] = images [j + gap];
+					images [j + gap] = swap;
+					ImageData swapData = datas [j];
+					datas [j] = datas [j + gap];
+					datas [j + gap] = swapData;
+		   		}
+	    	}
+	    }
+	}
 }
 
 boolean traverseItem (boolean next) {
