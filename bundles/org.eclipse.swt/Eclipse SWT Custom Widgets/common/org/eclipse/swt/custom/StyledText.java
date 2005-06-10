@@ -5281,22 +5281,22 @@ void handleResize(Event event) {
 	clientAreaHeight = clientArea.height;
 	clientAreaWidth = clientArea.width;
 	/* Redraw the old or new right/bottom margin if needed */
-	if (oldWidth != clientAreaWidth) {
+    if (oldWidth != clientAreaWidth) {
 		if (rightMargin > 0) {
 			int x = (oldWidth < clientAreaWidth ? oldWidth : clientAreaWidth)- rightMargin; 
 			redraw(x, 0, rightMargin, oldHeight, false);
 		}
-	}
-	if (oldHeight != clientAreaHeight) {
+    }
+    if (oldHeight != clientAreaHeight) {
 		if (bottomMargin > 0) {
 			int y = (oldHeight < clientAreaHeight ? oldHeight : clientAreaHeight)- bottomMargin; 
 			redraw(0, y, oldWidth, bottomMargin, false);
 		}
-	}
+    }
 	if (wordWrap) {
-		if (oldWidth != clientAreaWidth) {	
-			wordWrapResize(oldWidth);
-		}
+	    if (oldWidth != clientAreaWidth) {	
+	    	wordWrapResize(oldWidth);
+	    }
 	}
 	else
 	if (clientAreaHeight > oldHeight) {
