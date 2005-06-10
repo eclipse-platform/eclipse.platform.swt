@@ -40,7 +40,7 @@ import org.eclipse.swt.graphics.*;
 public class Label extends Control {
 	String text = "";
 	Image image, image2;
-	int font;
+	int font, hCopiedBitmap;
 	static final int LabelProc;
 	static final TCHAR LabelClass = new TCHAR (0, "STATIC", true);
 	static final int ICON_WIDTH = 128, ICON_HEIGHT = 128;
@@ -92,13 +92,15 @@ public Label (Composite parent, int style) {
 }
 
 void _setImage (Image image) {
+	if (image2 != null) image2.dispose ();
+	image2 = null;
+	if (hCopiedBitmap != 0) OS.DeleteObject (hCopiedBitmap);
+	hCopiedBitmap = 0;
 	boolean hasAlpha = false;
 	int hImage = 0, imageBits = 0, fImageType = 0;
 	if (image != null) {
 		switch (image.type) {
 			case SWT.BITMAP: {
-				if (image2 != null) image2.dispose ();
-				image2 = null;
 				ImageData data = image.getImageData ();
 				if (OS.COMCTL32_MAJOR < 6) {
 					Rectangle rect = image.getBounds ();
@@ -162,10 +164,17 @@ void _setImage (Image image) {
 	
 	/*
 	* When STM_SETIMAGE encounters a bitmap with alpha information,
-	* it takes a copy of the bitmap.  Therefore the bitmap that was
+	* it makes a copy of the bitmap.  Therefore the bitmap that was
 	* created to preserve transparency can be deleted right away.
+	* 
+	* Note: The client code also needs to delete the copied image
+	* created by Windows when the image changed but does not need
+	* to delete the copied image when the control is disposed.
 	*/
-	if (hasAlpha && hImage != 0) OS.DeleteObject (hImage);	
+	if (hasAlpha && hImage != 0) {
+		OS.DeleteObject (hImage);
+		hCopiedBitmap = OS.SendMessage (handle, OS.STM_GETIMAGE, OS.IMAGE_BITMAP, 0);
+	}
 
 	/*
 	* Feature in Windows.  When STM_SETIMAGE is used to set the
@@ -365,6 +374,9 @@ void releaseWidget () {
 	image2 = null;
 	text = null;
 	image = null;
+
+	/* Windows deletes the copied image when the control is disposed */
+	hCopiedBitmap = 0;
 }
 
 /**

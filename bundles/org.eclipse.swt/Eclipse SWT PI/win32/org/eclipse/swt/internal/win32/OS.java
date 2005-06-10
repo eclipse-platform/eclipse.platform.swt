@@ -1106,6 +1106,7 @@ public class OS extends Platform {
 	public static final int STD_FILEOPEN = 0x7;
 	public static final int STD_FILESAVE = 0x8;
 	public static final int STD_PASTE = 0x2;
+	public static final int STM_GETIMAGE = 0x173;
 	public static final int STM_SETIMAGE = 0x172;
 	public static final int SWP_ASYNCWINDOWPOS = 0x4000;
 	public static final int SWP_DRAWFRAME = 0x20;
