@@ -530,11 +530,11 @@ public Browser(Composite parent, int style) {
 	site.addEventListener(WindowSetTop, oleListener);
 	site.addEventListener(WindowSetWidth, oleListener);
 	
-	//Variant variant = new Variant(true);
-	//auto.setProperty(RegisterAsBrowser, variant);
-	//variant.dispose();
+	Variant variant = new Variant(true);
+	auto.setProperty(RegisterAsBrowser, variant);
+	variant.dispose();
 	
-	Variant variant = new Variant(false);
+	variant = new Variant(false);
 	int[] rgdispid = auto.getIDsOfNames(new String[] {"RegisterAsDropTarget"}); //$NON-NLS-1$
 	if (rgdispid != null) auto.setProperty(rgdispid[0], variant);
 	variant.dispose();
