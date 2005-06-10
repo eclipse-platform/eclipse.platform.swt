@@ -3127,7 +3127,7 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 }
 
 LRESULT WM_CAPTURECHANGED (int wParam, int lParam) {
-	return null;
+	return wmCaptureChanged (handle, wParam, lParam);
 }
 
 LRESULT WM_CHAR (int wParam, int lParam) {

@@ -1672,6 +1672,7 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 				case OS.WM_SYSKEYUP:	result = wmSysKeyUp (hwnd, wParam, lParam); break;
 
 				/* Mouse Messages */
+				case OS.WM_CAPTURECHANGED:	result = wmCaptureChanged (hwnd, wParam, lParam); break;
 				case OS.WM_LBUTTONDBLCLK:	result = wmLButtonDblClk (hwnd, wParam, lParam); break;
 				case OS.WM_LBUTTONDOWN:		result = wmLButtonDown (hwnd, wParam, lParam); break;
 				case OS.WM_LBUTTONUP:		result = wmLButtonUp (hwnd, wParam, lParam); break;

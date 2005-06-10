@@ -179,12 +179,12 @@ public class Display extends Device {
 	Runnable [] timerList;
 	int nextTimerId;
 	
-	/* Keyboard and Mouse State */
+	/* Keyboard and Mouse */
 	int lastKey, lastAscii, lastMouse;
 	boolean lastVirtual, lastNull, lastDead;
 	byte [] keyboard = new byte [256];
 	boolean accelKeyHit, mnemonicKeyHit;
-	boolean lockActiveWindow;
+	boolean lockActiveWindow, captureChanged;
 	
 	/* MDI */
 	boolean ignoreRestoreFocus;
