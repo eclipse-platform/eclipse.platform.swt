@@ -97,10 +97,10 @@ public boolean equals(Object object) {
 }
 
 public int hashCode() {
-	int hash = super.hashCode();
-	if (font != null) hash ^= font.hashCode();
+	int hash = 0;
 	if (foreground != null) hash ^= foreground.hashCode();
 	if (background != null) hash ^= background.hashCode();
+	if (font != null) hash ^= font.hashCode();
 	if (underline) hash ^= hash;
 	if (strikeout) hash ^= hash;
 	return hash;

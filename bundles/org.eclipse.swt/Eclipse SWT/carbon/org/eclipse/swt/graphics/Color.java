@@ -126,8 +126,10 @@ public boolean equals(Object object) {
 	Color color = (Color)object;
 	float[] rgbColor = color.handle;
 	if (handle == rgbColor) return true;
-	return device == color.device && handle[0] == rgbColor[0] &&
-		handle[1] == rgbColor[1] && handle[2] == rgbColor[2];
+	return device == color.device &&
+		(int)(handle[0] * 255) == (int)(rgbColor[0] * 255) &&
+		(int)(handle[1] * 255) == (int)(rgbColor[1] * 255) &&
+		(int)(handle[2] * 255) == (int)(rgbColor[2] * 255);
 }
 
 /**
