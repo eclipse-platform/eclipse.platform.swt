@@ -129,10 +129,10 @@ void _setImage (Image image) {
 			OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, 0);
 		}
 	} else {
+		if (image2 != null) image2.dispose ();
+		image2 = null;
 		int hImage = 0, imageBits = 0, fImageType = 0;
 		if (image != null) {
-			if (image2 != null) image2.dispose ();
-			image2 = null;
 			switch (image.type) {
 				case SWT.BITMAP: {
 					Rectangle rect = image.getBounds ();
