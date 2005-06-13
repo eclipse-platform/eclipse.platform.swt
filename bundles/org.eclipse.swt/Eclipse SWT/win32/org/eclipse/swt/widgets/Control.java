@@ -3800,6 +3800,26 @@ LRESULT WM_WINDOWPOSCHANGED (int wParam, int lParam) {
 }
 
 LRESULT WM_WINDOWPOSCHANGING (int wParam, int lParam) {
+	/*
+	* Bug in Windows.  When WM_SETREDRAW is used to turn off drawing
+	* for a control and the control is moved or resized, Windows does
+	* not redraw the area where the control once was in the parent.
+	* The fix is to detect this case and redraw the area.
+	*/
+	if (drawCount != 0) {
+		Shell shell = getShell ();
+		if (shell != this) {
+			WINDOWPOS lpwp = new WINDOWPOS ();
+			OS.MoveMemory (lpwp, lParam, WINDOWPOS.sizeof);
+			if ((lpwp.flags & OS.SWP_NOMOVE) == 0 || (lpwp.flags & OS.SWP_NOSIZE) == 0) {
+				RECT rect = new RECT ();
+				OS.GetWindowRect (topHandle (), rect);
+				int hwndParent = parent == null ? 0 : parent.handle;
+				OS.MapWindowPoints (0, hwndParent, rect, 2);
+				OS.InvalidateRect (hwndParent, rect, true);
+			}
+		}
+	}
 	return null;
 }
 
