@@ -48,7 +48,7 @@ public class Table extends Composite {
 	TableItem currentItem;
 	int lastIndexOf, lastWidth;
 	boolean customDraw, cancelMove, dragStarted, fixScrollWidth, tipRequested;
-	boolean wasSelected, ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize, resized;
+	boolean wasSelected, ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize;
 	static final int INSET = 4;
 	static final int GRID_WIDTH = 1;
 	static final int HEADER_MARGIN = 10;
@@ -2165,6 +2165,32 @@ void setBackgroundPixel (int pixel) {
 	OS.InvalidateRect (handle, null, true);
 }
 
+void setBounds (int x, int y, int width, int height, int flags) {
+	/*
+	* Bug in Windows.  If the table column widths are adjusted
+	* in WM_SIZE or WM_POSITIONCHANGED using LVM_SETCOLUMNWIDTH
+	* blank lines may be inserted at the top of the table.  A
+	* call to LVM_GETTOPINDEX will return a negative number (this
+	* is an impossible result).  Once the blank lines appear,
+	* there seems to be no way to get rid of them, other than
+	* destroying and recreating the table.  By observation, the
+	* problem happens when the height of the table is less than
+	* the two times the height of a line (this was tested using
+	* different fonts and images).  It also seems that the bug
+	* does not occur when the redraw is turned off for the table.
+	* The fix is to turn off drawing when resizing a table that
+	* is small enough to show the problem. 
+	*/
+	boolean fixResize = false;
+	if ((flags & OS.SWP_NOSIZE) == 0) {
+		Rectangle rect = getBounds ();
+		fixResize = rect.height < getItemHeight () * 2;
+	}
+	if (fixResize) setRedraw (false);
+	super.setBounds (x, y, width, height, flags);
+	if (fixResize) setRedraw (true);
+}
+
 /**
  * Sets the order that the items in the receiver should 
  * be displayed in to the given argument which is described
@@ -3577,19 +3603,6 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	return result;
 }
 
-LRESULT WM_SIZE (int wParam, int lParam) {
-	/*
-	* Bug in Windows.  If the table column widths are adjusted
-	* in WM_SIZE, blank lines may be inserted at the top of the
-	* widget.  A call to LVM_GETTOPINDEX will return a negative
-	* number (this is an impossible result).  The fix is to do
-	* the WM_SIZE processing in WM_WINDOWPOSCHANGED after the
-	* table has been updated.
-	*/
-	resized = true;
-	return null;
-}
-
 LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
 	LRESULT result = super.WM_SYSCOLORCHANGE (wParam, lParam);
 	if (result != null) return result;
@@ -3647,32 +3660,6 @@ LRESULT WM_VSCROLL (int wParam, int lParam) {
 				OS.InvalidateRect (handle, null, true);
 				break;
 		}
-	}
-	return result;
-}
-
-LRESULT WM_WINDOWPOSCHANGED (int wParam, int lParam) {
-	if (ignoreResize) return null;
-	LRESULT result = super.WM_WINDOWPOSCHANGED (wParam, lParam);
-	if (result != null) return result;
-	WINDOWPOS lpwp = new WINDOWPOS ();
-	OS.MoveMemory (lpwp, lParam, WINDOWPOS.sizeof);
-	if ((lpwp.flags & OS.SWP_NOSIZE) == 0 || (lpwp.flags & OS.SWP_DRAWFRAME) != 0) {
-		boolean oldResized = resized;
-		resized = false;
-		int code = callWindowProc (handle, OS.WM_WINDOWPOSCHANGED, wParam, lParam);
-		if (resized) {
-			setResizeChildren (false);
-			sendEvent (SWT.Resize);
-			if (isDisposed ()) return new LRESULT (code);
-			if (layout != null) {
-				markLayout (false, false);
-				updateLayout (false, false);
-			}
-			setResizeChildren (true);
-		}
-		resized = oldResized;
-		return new LRESULT (code);
 	}
 	return result;
 }
