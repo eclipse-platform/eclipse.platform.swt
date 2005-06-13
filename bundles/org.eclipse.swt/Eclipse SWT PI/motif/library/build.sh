@@ -90,9 +90,9 @@ case $OS in
 				if [ "${CDE_HOME}" = "" ]; then
 					CDE_HOME=/usr/dt
 				fi
-				OUTPUT_DIR=../../../org.eclipse.swt.motif.hpux.ia64
-				makefile="make_hpux_ia64.mak"
-				echo "Building HPUX motif ia64 version of SWT"
+				OUTPUT_DIR=../../../org.eclipse.swt.motif.hpux.ia64_32
+				makefile="make_hpux_ia64_32.mak"
+				echo "Building HPUX motif 32 bit ia64 version of SWT"
 				;;
 			*)
 				if [ "${JAVA_HOME}" = "" ]; then

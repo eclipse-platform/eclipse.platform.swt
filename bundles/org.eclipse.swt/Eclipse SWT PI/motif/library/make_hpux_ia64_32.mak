@@ -11,7 +11,7 @@
 #     Sridhar Bidigalu (ICS)
 #*******************************************************************************
 
-# Makefile for SWT libraries on HP-UX ia64 architechture
+# Makefile for SWT libraries on HP-UX for 32 bit ia64 architecture
 
 include make_common.mak
 
