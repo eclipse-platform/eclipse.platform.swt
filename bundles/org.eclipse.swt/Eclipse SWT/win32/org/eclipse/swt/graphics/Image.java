@@ -887,7 +887,66 @@ int[] createGdipImage() {
 			}
 			return new int[]{Gdip.Bitmap_new(handle, 0), 0};
 		}
-		case SWT.ICON: return new int[]{Gdip.Bitmap_new(handle), 0};
+		case SWT.ICON: {
+			/*
+			* Bug in GDI+. Creating a new GDI+ Bitmap from a HICON segment faults
+			* when the icon width is bigger than the icon height.  The fix is to
+			* detect this and create a PixelFormat32bppARGB image instead.
+			*/
+			ICONINFO iconInfo = new ICONINFO();
+			if (OS.IsWinCE) {
+				GetIconInfo(this, iconInfo);
+			} else {
+				OS.GetIconInfo(handle, iconInfo);
+			}
+			int hBitmap = iconInfo.hbmColor;
+			if (hBitmap == 0) hBitmap = iconInfo.hbmMask;
+			BITMAP bm = new BITMAP();
+			OS.GetObject(hBitmap, BITMAP.sizeof, bm);
+			int imgWidth = bm.bmWidth;
+			int imgHeight = hBitmap == iconInfo.hbmMask ? bm.bmHeight / 2 : bm.bmHeight;
+			int img = 0, pixels = 0;
+			if (imgWidth > imgHeight) {
+				int hDC = device.internal_new_GC(null);
+				int srcHdc = OS.CreateCompatibleDC(hDC);
+				int oldSrcBitmap = OS.SelectObject(srcHdc, hBitmap);
+				int memHdc = OS.CreateCompatibleDC(hDC);
+				int memDib = createDIB(imgWidth, imgHeight, 32);
+				if (memDib == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+				int oldMemBitmap = OS.SelectObject(memHdc, memDib);	
+				BITMAP dibBM = new BITMAP();
+				OS.GetObject(memDib, BITMAP.sizeof, dibBM);
+			 	OS.BitBlt(memHdc, 0, 0, imgWidth, imgHeight, srcHdc, 0, hBitmap == iconInfo.hbmMask ? imgHeight : 0, OS.SRCCOPY);
+				OS.SelectObject(memHdc, oldMemBitmap);
+				OS.DeleteObject(memHdc);
+			 	byte[] srcData = new byte[dibBM.bmWidthBytes * dibBM.bmHeight];
+				OS.MoveMemory(srcData, dibBM.bmBits, srcData.length);
+				OS.DeleteObject(memDib);
+				OS.SelectObject(srcHdc, iconInfo.hbmMask);
+				for (int y = 0, dp = 0; y < imgHeight; ++y) {
+					for (int x = 0; x < imgWidth; ++x) {
+						if (OS.GetPixel(srcHdc, x, y) != 0) {
+							srcData[dp + 3] = (byte)0;
+						} else {
+							srcData[dp + 3] = (byte)0xFF;
+						}
+						dp += 4;
+					}
+				}
+				OS.SelectObject(srcHdc, oldSrcBitmap);
+				OS.DeleteObject(srcHdc);
+				device.internal_dispose_GC(hDC, null);
+				int hHeap = OS.GetProcessHeap();
+				pixels = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, srcData.length);
+				OS.MoveMemory(pixels, srcData, srcData.length);
+				img = Gdip.Bitmap_new(imgWidth, imgHeight, dibBM.bmWidthBytes, Gdip.PixelFormat32bppARGB, pixels);
+			} else {
+				img = Gdip.Bitmap_new(handle);
+			}
+			if (iconInfo.hbmColor == 0) OS.DeleteObject(iconInfo.hbmColor);
+			if (iconInfo.hbmMask == 0) OS.DeleteObject(iconInfo.hbmMask);
+			return new int[]{img, pixels};
+		}
 		default: SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
 	}
 	return null;
