@@ -1436,7 +1436,7 @@ ImageList getImageList (int width, int height) {
 	return list;
 }
 
-ImageList getImageListTooBar (int width, int height) {
+ImageList getImageListToolBar (int width, int height) {
 	if (toolImageList == null) toolImageList = new ImageList [4];
 	
 	int i = 0;

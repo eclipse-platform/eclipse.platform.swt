@@ -861,7 +861,7 @@ void updateImages (boolean enabled) {
 	ImageList disabledImageList = parent.getDisabledImageList();
 	if (info.iImage == OS.I_IMAGENONE) {
 		Rectangle bounds = image.getBounds ();
-		if (imageList == null) imageList = display.getImageListTooBar (bounds.width, bounds.height);
+		if (imageList == null) imageList = display.getImageListToolBar (bounds.width, bounds.height);
 		if (disabledImageList == null) {
 			disabledImageList = display.getImageListToolBarDisabled (bounds.width, bounds.height);
 		}
