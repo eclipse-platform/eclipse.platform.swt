@@ -43,7 +43,7 @@ public static void main (String [] args) {
 				display.syncExec (new Runnable () {
 					public void run () {
 						if (table.isDisposed ()) return;
-						TableItem item = new TableItem (table, SWT.NULL);
+						TableItem item = new TableItem (table, SWT.NONE);
 						item.setText ("Table Item " + index [0]);
 						item.setImage (image);
 					}

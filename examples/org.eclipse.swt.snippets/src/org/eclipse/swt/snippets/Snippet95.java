@@ -52,7 +52,7 @@ public static void main(String[] args) {
 			popup.setText("Image");
 			popup.setBounds(50, 50, 200, 200);
 			popup.addListener(SWT.Close, new Listener() {
-				public void handleEvent(Event event) {
+				public void handleEvent(Event e) {
 					image.dispose();
 				}
 			});

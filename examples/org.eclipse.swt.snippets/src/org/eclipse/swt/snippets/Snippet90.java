@@ -27,7 +27,7 @@ public static void main (String [] args) {
 	Shell shell = new Shell (display);
 	final Tree tree = new Tree (shell, SWT.BORDER | SWT.MULTI);
 	for (int i=0; i<12; i++) {
-		TreeItem treeItem = new TreeItem (tree, SWT.NULL);
+		TreeItem treeItem = new TreeItem (tree, SWT.NONE);
 		treeItem.setText ("Item " + i);
 	}
 	tree.addListener (SWT.MouseDown, new Listener () {

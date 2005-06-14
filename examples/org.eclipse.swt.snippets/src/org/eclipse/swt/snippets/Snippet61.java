@@ -56,13 +56,11 @@ public static void main (String [] args) {
 	});
 	tree.addListener (SWT.Expand, new Listener () {
 		public void handleEvent (Event e) {
-			String string = "";
 			System.out.println ("Expand={" + e.item + "}");
 		}
 	});
 	tree.addListener (SWT.Collapse, new Listener () {
 		public void handleEvent (Event e) {
-			String string = "";
 			System.out.println ("Collapse={" + e.item + "}");
 		}
 	});

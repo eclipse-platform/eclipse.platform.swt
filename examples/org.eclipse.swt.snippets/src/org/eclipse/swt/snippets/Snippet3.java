@@ -30,11 +30,11 @@ public static void main (String [] args) {
         table.setLinesVisible (true);
         final int rowCount = 64, columnCount = 4;
         for (int i=0; i < columnCount; i++) {
-                TableColumn column = new TableColumn (table, SWT.NULL);
+                TableColumn column = new TableColumn (table, SWT.NONE);
                 column.setText ("Column " + i);
         }
         for (int i=0; i < rowCount; i++) {
-                TableItem item = new TableItem (table, SWT.NULL);
+                TableItem item = new TableItem (table, SWT.NONE);
                 for (int j=0; j < columnCount; j++) {
                         item.setText (j, "Item " + i + "-" + j);
                 }

@@ -33,7 +33,7 @@ public static void main(String[] args) {
 		column.setWidth (100);
 	}
 	for (int i=0; i<12; i++) {
-		TableItem item = new TableItem (table, SWT.NONE);
+		new TableItem (table, SWT.NONE);
 	}
 	TableItem [] items = table.getItems ();
 	for (int i=0; i<items.length; i++) {

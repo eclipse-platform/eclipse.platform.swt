@@ -25,7 +25,7 @@ public class Snippet46 {
 public static void main (String [] args) {
 	Display display = new Display ();
 	final Shell shell = new Shell (display);
-	final Composite composite = new Composite (shell, SWT.NULL);
+	final Composite composite = new Composite (shell, SWT.NONE);
 	composite.setEnabled (false);
 	composite.setLayout (new FillLayout ());
 	Button button = new Button (composite, SWT.PUSH);

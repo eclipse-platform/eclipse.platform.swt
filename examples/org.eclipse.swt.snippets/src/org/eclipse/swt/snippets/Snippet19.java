@@ -28,9 +28,9 @@ public static void main (String [] args) {
 	text.setBounds (10, 10, 200, 200);
 	text.addListener (SWT.Verify, new Listener () {
 		public void handleEvent (Event e) {
-			String text = e.text;
-			char [] chars = new char [text.length ()];
-			text.getChars (0, chars.length, chars, 0);
+			String string = e.text;
+			char [] chars = new char [string.length ()];
+			string.getChars (0, chars.length, chars, 0);
 			for (int i=0; i<chars.length; i++) {
 				if (!('0' <= chars [i] && chars [i] <= '9')) {
 					e.doit = false;

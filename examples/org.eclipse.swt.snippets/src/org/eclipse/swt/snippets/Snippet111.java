@@ -41,8 +41,8 @@ public static void main (String [] args) {
 	final TreeItem [] lastItem = new TreeItem [1];
 	final TreeEditor editor = new TreeEditor (tree);
 	tree.addListener (SWT.Selection, new Listener () {
-		public void handleEvent (Event e) {
-			final TreeItem item = (TreeItem) e.item;
+		public void handleEvent (Event event) {
+			final TreeItem item = (TreeItem) event.item;
 			if (item != null && item == lastItem [0]) {
 				boolean isCarbon = SWT.getPlatform ().equals ("carbon");
 				final Composite composite = new Composite (tree, SWT.NONE);

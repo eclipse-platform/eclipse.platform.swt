@@ -26,8 +26,8 @@ public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
 	shell.setLayout (new FillLayout ());
-	Label label1 = new Label (shell, SWT.SEPARATOR | SWT.HORIZONTAL);
-	Label label2 = new Label (shell, SWT.SEPARATOR | SWT.VERTICAL);
+	new Label (shell, SWT.SEPARATOR | SWT.HORIZONTAL);
+	new Label (shell, SWT.SEPARATOR | SWT.VERTICAL);
 	shell.setSize (200, 200);
 	shell.open ();
 	while (!shell.isDisposed ()) {

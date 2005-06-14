@@ -30,7 +30,7 @@ public class Snippet149 {
 		table.setHeaderVisible (true);
 		table.setLinesVisible(true);
 		for (int i=0; i<2; i++) {
-			TableColumn column = new TableColumn (table, SWT.NONE);
+			new TableColumn (table, SWT.NONE);
 		}
 		table.getColumn (0).setText ("Task");
 		table.getColumn (1).setText ("Progress");

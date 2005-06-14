@@ -30,7 +30,7 @@ public class Snippet4 {
 		b.pack();
 		b.setLocation(10, 10);
 		b.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
+			public void widgetSelected(SelectionEvent se) {
 				Shell dialog = new Shell(shell, SWT.DIALOG_TRIM);
 				dialog.addListener(SWT.Traverse, new Listener() {
 					public void handleEvent(Event e) {

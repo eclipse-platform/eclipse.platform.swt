@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * example snippet: detect CR in a text control (default selelection)
+ * example snippet: detect CR in a text or combo control (default selelection)
  *
  * For a list of all SWT example snippets see
  * http://dev.eclipse.org/viewcvs/index.cgi/%7Echeckout%7E/platform-swt-home/dev.html#snippets
@@ -26,7 +26,7 @@ public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
 	shell.setLayout (new RowLayout ());
-	Combo combo = new Combo (shell, SWT.NULL);
+	Combo combo = new Combo (shell, SWT.NONE);
 	combo.setItems (new String [] {"A-1", "B-1", "C-1"});
 	Text text = new Text (shell, SWT.SINGLE | SWT.BORDER);
 	text.setText ("some text");

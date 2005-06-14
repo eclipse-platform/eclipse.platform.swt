@@ -27,7 +27,7 @@ public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
 	shell.setLayout (new RowLayout ());
-	Label label = new Label (shell, SWT.NULL);
+	Label label = new Label (shell, SWT.NONE);
 	GC gc = new GC (label);
 	Point size = gc.textExtent ("Hello");
 	gc.dispose ();

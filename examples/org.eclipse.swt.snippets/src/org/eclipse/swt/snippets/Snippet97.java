@@ -28,7 +28,7 @@ public static void main (String [] args) {
 	final Menu menu = new Menu (shell, SWT.POP_UP);
 	tree.setMenu (menu);
 	for (int i=0; i<12; i++) {
-		TreeItem item = new TreeItem (tree, SWT.NULL);
+		TreeItem item = new TreeItem (tree, SWT.NONE);
 		item.setText ("Item " + i);
 	}
 	menu.addListener (SWT.Show, new Listener () {

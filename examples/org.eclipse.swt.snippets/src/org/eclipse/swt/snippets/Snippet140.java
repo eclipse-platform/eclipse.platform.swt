@@ -59,13 +59,13 @@ public static void main (String [] args) {
 				Point pt = coolBar.toDisplay(new Point(itemBounds.x, itemBounds.y));
 				itemBounds.x = pt.x;
 				itemBounds.y = pt.y;
-				ToolBar toolBar = (ToolBar) item.getControl ();
-				ToolItem[] tools = toolBar.getItems ();
+				ToolBar bar = (ToolBar) item.getControl ();
+				ToolItem[] tools = bar.getItems ();
 				
 				int i = 0;
 				while (i < tools.length) {
 					Rectangle toolBounds = tools[i].getBounds ();
-					pt = toolBar.toDisplay(new Point(toolBounds.x, toolBounds.y));
+					pt = bar.toDisplay(new Point(toolBounds.x, toolBounds.y));
 					toolBounds.x = pt.x;
 					toolBounds.y = pt.y;
 					

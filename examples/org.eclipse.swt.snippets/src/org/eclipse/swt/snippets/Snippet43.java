@@ -29,7 +29,6 @@ public static void main (String [] args) {
 	Caret caret = new Caret (shell, SWT.NONE);
 	Color white = display.getSystemColor (SWT.COLOR_WHITE);
 	Color black = display.getSystemColor (SWT.COLOR_BLACK);
-	Color red = display.getSystemColor (SWT.COLOR_RED);
 	Image image = new Image (display, 20, 20);
 	GC gc = new GC (image);
 	gc.setBackground (black);

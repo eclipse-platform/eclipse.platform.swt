@@ -61,7 +61,7 @@ public static void main(String[] args) {
 			Text newEditor = new Text(table, SWT.NONE);
 			newEditor.setText(item.getText(EDITABLECOLUMN));
 			newEditor.addModifyListener(new ModifyListener() {
-				public void modifyText(ModifyEvent e) {
+				public void modifyText(ModifyEvent me) {
 					Text text = (Text)editor.getEditor();
 					editor.getItem().setText(EDITABLECOLUMN, text.getText());
 				}

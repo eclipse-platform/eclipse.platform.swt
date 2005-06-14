@@ -194,7 +194,7 @@ public class Snippet133 {
 	}
 
 	void menuPrint() {
-		PrintDialog dialog = new PrintDialog(shell, SWT.NULL);
+		PrintDialog dialog = new PrintDialog(shell, SWT.NONE);
 		PrinterData data = dialog.open();
 		if (data == null) return;
 		if (data.printToFile) {

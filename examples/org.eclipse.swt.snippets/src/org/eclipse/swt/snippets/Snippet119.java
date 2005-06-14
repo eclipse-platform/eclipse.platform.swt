@@ -23,7 +23,7 @@ import org.eclipse.swt.widgets.*;
 
 public class Snippet119 {
 
-static byte[] source = {
+static byte[] srcData = {
 	(byte)0x11, (byte)0x11, (byte)0x11, (byte)0x00, (byte)0x00, (byte)0x11, (byte)0x11, (byte)0x11,
 	(byte)0x11, (byte)0x10, (byte)0x00, (byte)0x01, (byte)0x10, (byte)0x00, (byte)0x01, (byte)0x11, 
 	(byte)0x11, (byte)0x00, (byte)0x22, (byte)0x01, (byte)0x10, (byte)0x33, (byte)0x00, (byte)0x11,
@@ -42,7 +42,7 @@ static byte[] source = {
 	(byte)0x11, (byte)0x11, (byte)0x11, (byte)0x00, (byte)0x00, (byte)0x11, (byte)0x11, (byte)0x11,
 };
 
-static byte[] mask = {
+static byte[] mskData = {
 	(byte)0x03, (byte)0xc0, 
 	(byte)0x1f, (byte)0xf8,
 	(byte)0x3f, (byte)0xfc,
@@ -74,11 +74,11 @@ public static void main (String [] args) {
 	PaletteData palette = new PaletteData (new RGB[] {
 		black.getRGB(), white.getRGB(), yellow.getRGB(), 
 		red.getRGB(), blue.getRGB(), green.getRGB()});
-	ImageData sourceData = new ImageData (16, 16, 4, palette, 1, source);
+	ImageData sourceData = new ImageData (16, 16, 4, palette, 1, srcData);
 	
 	//Create a mask ImageData of depth 1 (monochrome)
 	palette = new PaletteData (new RGB [] {black.getRGB(), white.getRGB(),});
-	ImageData maskData = new ImageData (16, 16, 1, palette, 1, mask);
+	ImageData maskData = new ImageData (16, 16, 1, palette, 1, mskData);
 
 	//Set mask
 	sourceData.maskData = maskData.data;

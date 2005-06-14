@@ -29,12 +29,12 @@ public static void main (String [] args) {
 	table.setHeaderVisible (true);
 	String[] titles = {" ", "C", "!", "Description", "Resource", "In Folder", "Location"};
 	for (int i=0; i<titles.length; i++) {
-		TableColumn column = new TableColumn (table, SWT.NULL);
+		TableColumn column = new TableColumn (table, SWT.NONE);
 		column.setText (titles [i]);
 	}	
 	int count = 128;
 	for (int i=0; i<count; i++) {
-		TableItem item = new TableItem (table, SWT.NULL);
+		TableItem item = new TableItem (table, SWT.NONE);
 		item.setText (0, "x");
 		item.setText (1, "y");
 		item.setText (2, "!");

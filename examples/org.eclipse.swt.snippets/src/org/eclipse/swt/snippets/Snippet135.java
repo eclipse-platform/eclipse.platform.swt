@@ -90,7 +90,7 @@ public class Snippet135 {
 				data.horizontalAlignment = GridData.CENTER;
 				button.setLayoutData(data);
 				button.addListener(SWT.Selection, new Listener() {
-					public void handleEvent(Event e) {
+					public void handleEvent(Event event) {
 						s.dispose();
 					}
 				});
@@ -178,7 +178,7 @@ public class Snippet135 {
 			TreeItem treeItem = new TreeItem(fileTree, SWT.NONE);
 			treeItem.setText(file.getAbsolutePath());
 			treeItem.setData(file);
-			TreeItem dumyItem = new TreeItem(treeItem, SWT.NONE);
+			new TreeItem(treeItem, SWT.NONE);
 		}
 		fileTree.addListener(SWT.Expand, new Listener() {
 			public void handleEvent(Event e) {
@@ -200,7 +200,7 @@ public class Snippet135 {
 						TreeItem treeItem = new TreeItem(item, SWT.NONE);
 						treeItem.setText(file.getName());
 						treeItem.setData(file);
-						TreeItem dumyItem = new TreeItem(treeItem, SWT.NONE);
+						new TreeItem(treeItem, SWT.NONE);
 					}
 				}
 			}
