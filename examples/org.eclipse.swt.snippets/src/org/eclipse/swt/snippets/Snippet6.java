@@ -40,12 +40,12 @@ public static void main (String [] args) {
     final int[] index = new int[1];
     b.addListener(SWT.Selection, new Listener() {
         public void handleEvent(Event e) {
-            Button b = new Button(c, SWT.PUSH);
-            b.setText("Special "+index[0]);
+            Button s = new Button(c, SWT.PUSH);
+            s.setText("Special "+index[0]);
             index[0]++;
             Control[] children = c.getChildren();
-            b.moveAbove(children[3]);
-            shell.layout(new Control[] {b});
+            s.moveAbove(children[3]);
+            shell.layout(new Control[] {s});
         }
     });
 
