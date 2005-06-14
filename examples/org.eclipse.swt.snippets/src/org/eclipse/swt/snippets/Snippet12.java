@@ -30,7 +30,7 @@ public static void main (String [] args) {
 		text.append ("Line " + i + "\n");
 	}
 	shell.open ();
-	text.setSelection (30, 32);
+	text.setSelection (30, 38);
 	System.out.println (text.getCaretLocation ());
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();
