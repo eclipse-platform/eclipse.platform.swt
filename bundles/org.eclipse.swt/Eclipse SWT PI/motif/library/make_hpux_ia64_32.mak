@@ -9,6 +9,7 @@
 #     IBM Corporation - initial API and implementation
 #     Kevin Cornell (Rational Software Corporation)
 #     Sridhar Bidigalu (ICS)
+#     Sumit Sarkar (Hewlett-Packard)
 #*******************************************************************************
 
 # Makefile for SWT libraries on HP-UX for 32 bit ia64 architecture
@@ -33,7 +34,7 @@ SWT_LIBS = -L$(MOTIF_HOME)/lib -L/usr/lib -G -lXm -lXt -lX11 -lc -ldld -lm -lXp 
 CDE_PREFIX = swt-cde
 CDE_LIB = lib$(CDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 CDE_OBJS = swt.o cde.o cde_structs.o cde_stats.o
-CDE_LIBS = -G -L$(CDE_HOME)/lib -lDtSvc
+CDE_LIBS = -G -L$(CDE_HOME)/lib -L$(CDE_HOME)/lib/hpux32 -lDtSvc
 
 # Uncomment for Native Stats tool
 #NATIVE_STATS = -DNATIVE_STATS
