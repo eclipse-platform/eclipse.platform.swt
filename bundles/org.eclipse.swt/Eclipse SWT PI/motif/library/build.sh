@@ -11,6 +11,7 @@
 #     Kevin Cornell (Rational Software Corporation)
 #     Tom Tromey (Red Hat, Inc.)
 #     Sridhar Bidigalu (ICS)
+#     Sumit Sarkar (Hewlett-Packard)
 #*******************************************************************************
 
 cd `dirname $0`
