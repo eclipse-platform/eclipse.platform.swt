@@ -2489,7 +2489,11 @@ int msgFilterProc (int code, int wParam, int lParam) {
 		if (code >= 0) {
 			OS.MoveMemory (hookMsg, lParam, MSG.sizeof);
 			if (hookMsg.message == OS.WM_NULL) {
-				if (runAsyncMessages (false)) wakeThread ();
+				MSG msg = new MSG ();
+				int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD | OS.PM_QS_INPUT | OS.PM_QS_POSTMESSAGE;
+				if (!OS.PeekMessage (msg, 0, 0, 0, flags)) {
+					if (runAsyncMessages (false)) wakeThread ();
+				}
 			}
 		}
 	}
