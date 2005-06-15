@@ -1490,7 +1490,8 @@ boolean forceFocus (int /*long*/ focusHandle) {
 	int /*long*/ handle = OS.gtk_window_get_focus (shellHandle);
 	while (handle != 0) {
 		if (handle == focusHandle) return true;
-		if (display.getWidget (handle) != null) return false;
+		Widget widget = display.getWidget (handle);
+		if (widget != null) return widget == this;
 		handle = OS.gtk_widget_get_parent (handle);
 	}
 	return false;
