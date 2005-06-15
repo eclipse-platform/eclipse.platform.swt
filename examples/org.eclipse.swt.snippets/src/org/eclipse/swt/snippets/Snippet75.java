@@ -89,7 +89,6 @@ public static void main (String [] args) {
 	shell.pack ();
 	shell.open ();
 	
-	Control [] x = c1.getChildren ();
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}
