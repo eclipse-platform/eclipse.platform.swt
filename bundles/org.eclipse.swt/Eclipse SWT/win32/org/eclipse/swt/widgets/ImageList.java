@@ -16,7 +16,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
 class ImageList {
-	int handle, refCount;
+	int handle, style, refCount;
 	Image [] images;
 	static final int COLOR_FLAGS;
 	static {
@@ -56,8 +56,11 @@ class ImageList {
 		}
 	}
 	
-public ImageList () {
-	handle = OS.ImageList_Create (32, 32, COLOR_FLAGS | OS.ILC_MASK | OS.ILC_MIRROR, 16, 16);
+public ImageList (int style) {
+	this.style = style;
+	int flags = COLOR_FLAGS | OS.ILC_MASK;
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) flags |= OS.ILC_MIRROR;
+	handle = OS.ImageList_Create (32, 32, flags, 16, 16);
 	images = new Image [4];
 }
 
@@ -259,6 +262,10 @@ public void dispose () {
 
 public Image get (int index) {
 	return images [index];
+}
+
+public int getStyle () {
+	return style;
 }
 
 public int getHandle () {

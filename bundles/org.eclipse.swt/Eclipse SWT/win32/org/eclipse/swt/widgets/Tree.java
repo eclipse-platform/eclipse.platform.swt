@@ -1341,7 +1341,7 @@ int imageIndex (Image image) {
 		int hOldList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0);
 		if (hOldList != 0) OS.ImageList_Destroy (hOldList);
 		Rectangle bounds = image.getBounds ();
-		imageList = display.getImageList (bounds.width, bounds.height);
+		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height);
 		int index = imageList.indexOf (image);
 		if (index == -1) index = imageList.add (image);
 		int hImageList = imageList.getHandle ();
@@ -1739,7 +1739,8 @@ void setCheckboxImageList () {
 	if ((style & SWT.CHECK) == 0) return;
 	int count = 5;
 	int height = OS.SendMessage (handle, OS.TVM_GETITEMHEIGHT, 0, 0), width = height;
-	int flags = ImageList.COLOR_FLAGS | OS.ILC_MIRROR;
+	int flags = ImageList.COLOR_FLAGS;
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) flags |= OS.ILC_MIRROR;	
 	if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) flags |= OS.ILC_MASK;
 	int hImageList = OS.ImageList_Create (width, height, flags, count, count);
 	int hDC = OS.GetDC (handle);

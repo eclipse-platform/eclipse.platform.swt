@@ -113,7 +113,7 @@ void _setImage (Image image) {
 		if (imageList != null) imageList.dispose ();
 		imageList = null;
 		if (image != null) {
-			imageList = new ImageList ();
+			imageList = new ImageList (style & SWT.RIGHT_TO_LEFT);
 			imageList.add (image);
 			BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
 			buttonImageList.himl = imageList.getHandle ();
