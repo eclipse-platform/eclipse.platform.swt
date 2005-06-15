@@ -1491,7 +1491,9 @@ boolean forceFocus (int /*long*/ focusHandle) {
 	while (handle != 0) {
 		if (handle == focusHandle) return true;
 		Widget widget = display.getWidget (handle);
-		if (widget != null) return widget == this;
+		if (widget != null && widget instanceof Control) {
+			return widget == this;
+		}
 		handle = OS.gtk_widget_get_parent (handle);
 	}
 	return false;
