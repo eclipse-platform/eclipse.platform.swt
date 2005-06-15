@@ -137,6 +137,19 @@ void _setImage (Image image) {
 						hImage = Display.create32bitDIB (image.handle, data.alpha, data.alphaData, data.transparentPixel);
 					} else {
 						hImage = image.handle;
+						/*
+						* Bug in Windows.  For some reason in Windows XP only, indexed palette
+						* bitmaps are not drawn properly even though the screen depth can
+						* handle all colors in the palette.  The fix is to use a higher depth
+						* bitmap instead.
+						*/
+						if (data.depth <= 8 && display.getDepth () > 8) {
+							image2 = new Image (display, data.width, data.height);
+							GC gc = new GC (image2);
+							gc.drawImage (image, 0, 0);
+							gc.dispose ();
+							hImage = image2.handle;
+						}
 					}
 					imageBits = OS.SS_BITMAP;
 					fImageType = OS.IMAGE_BITMAP;
