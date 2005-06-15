@@ -55,6 +55,8 @@ public class Browser extends Composite {
 	/* Carbon HIView handle */
 	int webViewHandle;
 	
+	boolean changingLocation;
+	String html;
 	int identifier;
 	int resourceCount;
 	String url = "";
@@ -210,6 +212,7 @@ public Browser(Composite parent, int style) {
 					WebKit.objc_msgSend(notificationCenter, WebKit.S_removeObserver, delegate);
 					
 					WebKit.objc_msgSend(delegate, WebKit.S_release);					
+					html = null;
 					break;
 				}
 				case SWT.Hide: {
@@ -560,6 +563,7 @@ public void addVisibilityWindowListener(VisibilityWindowListener listener) {
  */
 public boolean back() {
 	checkWidget();
+	html = null;
 	int webView = WebKit.HIWebViewGetWebView(webViewHandle);
 	return WebKit.objc_msgSend(webView, WebKit.S_goBack) != 0;
 }
@@ -624,6 +628,7 @@ public boolean execute(String script) {
  */
 public boolean forward() {
 	checkWidget();
+	html = null;
 	int webView = WebKit.HIWebViewGetWebView(webViewHandle);
 	return WebKit.objc_msgSend(webView, WebKit.S_goForward) != 0;
 }
@@ -1102,7 +1107,20 @@ public void removeVisibilityWindowListener(VisibilityWindowListener listener) {
 public boolean setText(String html) {
 	checkWidget();
 	if (html == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	/*
+	* Bug in Safari.  The web view segment faults in some circunstances
+	* when the text changes during the location changing callback.  The
+	* fix is to defer the work until the callback is done. 
+	*/
+	if (changingLocation) {
+		this.html = html;
+	} else {
+		_setText(html);
+	}
+	return true;
+}
 	
+void _setText(String html) {	
 	int length = html.length();
 	char[] buffer = new char[length];
 	html.getChars(0, length, buffer, 0);
@@ -1130,8 +1148,6 @@ public boolean setText(String html) {
 	//[mainFrame loadHTMLString:(NSString *) string baseURL:(NSURL *)URL];
 	WebKit.objc_msgSend(mainFrame, WebKit.S_loadHTMLStringbaseURL, string, URL);
 	OS.CFRelease(string);
-	
-	return true;
 }
 
 /**
@@ -1157,6 +1173,8 @@ public boolean setText(String html) {
 public boolean setUrl(String url) {
 	checkWidget();
 	if (url == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+
+	html = null;
 
 	StringBuffer buffer = new StringBuffer();
 	if (url.indexOf('/') == 0) buffer.append("file://"); //$NON-NLS-1$  //$NON-NLS-2$
@@ -1206,6 +1224,7 @@ public boolean setUrl(String url) {
  */
 public void stop() {
 	checkWidget();
+	html = null;
 	int webView = WebKit.HIWebViewGetWebView(webViewHandle);
 	WebKit.objc_msgSend(webView, WebKit.S_stopLoading, 0);
 }
@@ -1656,11 +1675,19 @@ void decidePolicyForNavigationAction(int actionInformation, int request, int fra
 	newEvent.location = url2;
 	newEvent.doit = true;
 	if (locationListeners != null) {
+		changingLocation = true;
 		for (int i = 0; i < locationListeners.length; i++) 
 			locationListeners[i].changing(newEvent);
+		changingLocation = false;
 	}
 
 	WebKit.objc_msgSend(listener, newEvent.doit ? WebKit.S_use : WebKit.S_ignore);
+
+	if (html != null && !isDisposed()) {
+		String html = this.html;
+		this.html = null;
+		_setText(html);
+	}
 }
 
 void decidePolicyForNewWindowAction(int actionInformation, int request, int frameName, int listener) {
