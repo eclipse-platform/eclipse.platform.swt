@@ -115,7 +115,7 @@ int copyBitmap (int hImage, int width, int height) {
 
 int copyIcon (int hImage, int width, int height) {
 	if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
-	int hIcon = OS.CopyImage (hImage, OS.IMAGE_ICON, width, height, OS.LR_DEFAULTCOLOR);
+	int hIcon = OS.CopyImage (hImage, OS.IMAGE_ICON, width, height, 0);
 	return hIcon != 0 ? hIcon : hImage;
 }
 
