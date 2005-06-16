@@ -2059,24 +2059,21 @@ int /*long*/ OnStartURIOpen(int /*long*/ aURI, int /*long*/ retval) {
 	* currently implemented.  The workaround is to not load 
 	* HTTPS resources to avoid the crash.
 	*/
-	if (value.startsWith(XPCOM.HTTPS_PROTOCOL)) {
-		XPCOM.memmove(retval, new int[] {1}, 4);
-		return XPCOM.NS_OK;
-	}
+	boolean isHttps = value.startsWith(XPCOM.HTTPS_PROTOCOL);
 	if (locationListeners.length == 0) {
-		XPCOM.memmove(retval, new int[] {0}, 4);
+		XPCOM.memmove(retval, new int[] {isHttps ? 1 : 0}, 4);
 		return XPCOM.NS_OK;
 	}
-	boolean doit = true;
+	boolean doit = !isHttps;
 	if (request == 0) {
 		LocationEvent event = new LocationEvent(this);
 		event.display = getDisplay();
 		event.widget = this;
 		event.location = value;
-		event.doit = true;
+		event.doit = doit;
 		for (int i = 0; i < locationListeners.length; i++)
 			locationListeners[i].changing(event);
-		doit = event.doit;
+		if (!isHttps) doit = event.doit;
 	}
 	/* Note. boolean remains of size 4 on 64 bit machine */
 	XPCOM.memmove(retval, new int[] {doit ? 0 : 1}, 4);
