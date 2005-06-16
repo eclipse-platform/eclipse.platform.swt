@@ -122,6 +122,16 @@ void set (int index, Image image) {
 		OS.g_object_unref (pixbuf);
 		pixbuf = scaledPixbuf;
 	}
+	int /*long*/ oldPixbuf = pixbufs [index];
+	if (oldPixbuf != 0) {
+		if (images [index] == image) {
+			OS.gdk_pixbuf_copy_area (pixbuf, 0, 0, width, height, oldPixbuf, 0, 0);
+			OS.g_object_unref (pixbuf);
+			pixbuf = oldPixbuf;
+		} else {
+			OS.g_object_unref (oldPixbuf);
+		}
+	}
 	pixbufs [index] = pixbuf;
 	images [index] = image;	
 }
