@@ -86,7 +86,7 @@ protected boolean flushCache(Control control) {
 protected void layout(Composite composite, boolean flushCache) {
 	SashForm sashForm = (SashForm)composite;
 	Rectangle area = sashForm.getClientArea();
-	if (area.width == 0 || area.height == 0) return;
+	if (area.width <= 1 || area.height <= 1) return;
 	
 	Control[] newControls = sashForm.getControls(true);
 	if (sashForm.controls.length == 0 && newControls.length == 0) return;
