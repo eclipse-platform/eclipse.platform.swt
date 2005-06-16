@@ -1752,6 +1752,18 @@ LRESULT WM_GETDLGCODE (int wParam, int lParam) {
 
 LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 	/*
+	* Bug in Windows.  When a combo box that is read only
+	* is disposed in CBN_KILLFOCUS, Windows segment faults.
+	* The fix is to send focus from WM_KILLFOCUS instead
+	* of CBN_KILLFOCUS.
+	* 
+	* NOTE: In version 6 of COMCTL32.DLL, the bug is fixed.
+	*/
+	if ((style & SWT.READ_ONLY) != 0) {
+		return super.WM_KILLFOCUS (wParam, lParam);
+	}
+	
+	/*
 	* Return NULL - Focus notification is
 	* done in WM_COMMAND by CBN_KILLFOCUS.
 	*/
@@ -1760,7 +1772,7 @@ LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 
 LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	/*
-	* Feature in Windows.  When an editiabl combo box is dropped
+	* Feature in Windows.  When an editable combo box is dropped
 	* down and the text in the entry field partially matches an
 	* item in the list, Windows selects the item but doesn't send
 	* WM_COMMAND with CBN_SELCHANGE.  The fix is to detect that
@@ -2005,6 +2017,15 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 			if (isDisposed ()) return LRESULT.ZERO;
 			break;
 		case OS.CBN_KILLFOCUS:
+			/*
+			* Bug in Windows.  When a combo box that is read only
+			* is disposed in CBN_KILLFOCUS, Windows segment faults.
+			* The fix is to send focus from WM_KILLFOCUS instead
+			* of CBN_KILLFOCUS.
+			* 
+			* NOTE: In version 6 of COMCTL32.DLL, the bug is fixed.
+			*/
+			if ((style & SWT.READ_ONLY) != 0) break;
 			sendFocusEvent (SWT.FocusOut);
 			if (isDisposed ()) return LRESULT.ZERO;
 			break;
