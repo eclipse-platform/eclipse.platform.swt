@@ -704,7 +704,8 @@ public int[] getLineOffsets() {
 		int bytePos = OS.pango_layout_iter_get_index(iter);
 		int pos = (int)/*64*/OS.g_utf8_pointer_to_offset(ptr, ptr + bytePos);
 		offsets[i++] = untranslateOffset(pos);
-	} while (OS.pango_layout_iter_next_line(iter));					
+	} while (OS.pango_layout_iter_next_line(iter));
+	OS.pango_layout_iter_free(iter);
 	offsets[lineCount] = text.length();						 
 	return offsets;
 }
