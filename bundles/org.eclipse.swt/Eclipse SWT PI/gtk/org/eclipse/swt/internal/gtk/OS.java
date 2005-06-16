@@ -2439,6 +2439,15 @@ public static final int /*long*/ gdk_pango_layout_get_clip_region(int /*long*/ l
 		lock.unlock();
 	}
 }
+public static final native void _gdk_pixbuf_copy_area(int /*long*/ src_pixbuf, int src_x, int src_y, int width, int height, int /*long*/ dest_pixbuf, int dest_x, int dest_y);
+public static final void gdk_pixbuf_copy_area(int /*long*/ src_pixbuf, int src_x, int src_y, int width, int height, int /*long*/ dest_pixbuf, int dest_x, int dest_y) {
+	lock.lock();
+	try {
+		_gdk_pixbuf_copy_area(src_pixbuf, src_x, src_y, width, height, dest_pixbuf, dest_x, dest_y);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _gdk_pixbuf_get_from_drawable(int /*long*/ dest, int /*long*/ src, int /*long*/ cmap, int src_x, int src_y, int dest_x, int dest_y, int width, int height);
 public static final int /*long*/ gdk_pixbuf_get_from_drawable(int /*long*/ dest, int /*long*/ src, int /*long*/ cmap, int src_x, int src_y, int dest_x, int dest_y, int width, int height) {
 	lock.lock();

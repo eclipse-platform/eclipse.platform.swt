@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 990;
-int OS_nativeFunctionCallCount[990];
+int OS_nativeFunctionCount = 991;
+int OS_nativeFunctionCallCount[991];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1WINDOWING_1X11",
@@ -294,6 +294,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1pango_1context_1get",
 	"_1gdk_1pango_1context_1set_1colormap",
 	"_1gdk_1pango_1layout_1get_1clip_1region",
+	"_1gdk_1pixbuf_1copy_1area",
 	"_1gdk_1pixbuf_1get_1from_1drawable",
 	"_1gdk_1pixbuf_1get_1has_1alpha",
 	"_1gdk_1pixbuf_1get_1height",

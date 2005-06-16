@@ -3597,6 +3597,16 @@ fail:
 }
 #endif
 
+#ifndef NO__1gdk_1pixbuf_1copy_1area
+JNIEXPORT void JNICALL OS_NATIVE(_1gdk_1pixbuf_1copy_1area)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7)
+{
+	OS_NATIVE_ENTER(env, that, _1gdk_1pixbuf_1copy_1area_FUNC);
+	gdk_pixbuf_copy_area((GdkPixbuf *)arg0, arg1, arg2, arg3, arg4, (GdkPixbuf *)arg5, arg6, arg7);
+	OS_NATIVE_EXIT(env, that, _1gdk_1pixbuf_1copy_1area_FUNC);
+}
+#endif
+
 #ifndef NO__1gdk_1pixbuf_1get_1from_1drawable
 JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1pixbuf_1get_1from_1drawable)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8)
