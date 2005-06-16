@@ -477,8 +477,6 @@ public void deselectAll () {
 	display.setWarnings(warnings);	
 	OS.XmListDeselectAllItems (argList[3]);
 }
-
-
 /**
  * Returns the item at the given, zero-relative index in the
  * receiver's list. Throws an exception if the index is out
@@ -979,6 +977,23 @@ void register () {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	display.addWidget (argList[1], this);
 	display.addWidget (argList[3], this);
+}
+void releaseWidget () {
+	/*
+	* Bug in Motif.  Disposing a Combo while its list is visible
+	* causes Motif to crash.  The fix is to hide the drop down
+	* list before disposing the Combo. 
+	*/
+	if ((style & SWT.DROP_DOWN) != 0) {
+		int[] argList = new int[] {OS.XmNlist, 0};
+		OS.XtGetValues (handle, argList, argList.length / 2);
+		int parent = OS.XtParent (argList [1]);
+		while (parent != 0 && !OS.XtIsSubclass (parent, OS.shellWidgetClass ())) {
+			parent = OS.XtParent (parent);
+		}
+		if (parent != 0) OS.XtPopdown (parent);
+	}
+	super.releaseWidget ();
 }
 /**
  * Searches the receiver's list starting at the first item
