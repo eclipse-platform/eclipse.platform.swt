@@ -368,6 +368,7 @@ public class Display extends Device {
 	int titleBorderTrimWidth = 5, titleBorderTrimHeight = 28;
 	int titleResizeTrimWidth = 6, titleResizeTrimHeight = 29;
 	int titleTrimWidth = 0, titleTrimHeight = 23;
+	boolean ignoreTrim;
 	
 	/*
 	* TEMPORARY CODE.  Install the runnable that

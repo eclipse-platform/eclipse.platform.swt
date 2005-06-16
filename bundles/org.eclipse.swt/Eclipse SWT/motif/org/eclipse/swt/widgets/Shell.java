@@ -106,6 +106,7 @@ public class Shell extends Decorations {
 	Control lastActive;
 	Region region;
 
+	static final  int MAXIMUM_TRIM = 128;
 	static final  byte [] WM_DELETE_WINDOW = Converter.wcsToMbcs(null, "WM_DELETE_WINDOW\0");
 	static final  byte [] _NET_WM_STATE = Converter.wcsToMbcs(null, "_NET_WM_STATE\0");
 	static final  byte [] _NET_WM_STATE_MAXIMIZED_VERT = Converter.wcsToMbcs(null, "_NET_WM_STATE_MAXIMIZED_VERT\0");
@@ -361,6 +362,7 @@ public void addShellListener(ShellListener listener) {
 	addListener(SWT.Deiconify,typedListener);
 }
 void adjustTrim () {
+	if (display.ignoreTrim) return;
 	if (OS.XtIsSubclass (shellHandle, OS.overrideShellWidgetClass ())) {
 		return;
 	}
@@ -419,6 +421,17 @@ void adjustTrim () {
 	int height = (trimHeight [0] + (trimBorder [0] * 2)) - (shellHeight [0] + (shellBorder [0] * 2));
 	int leftInset = inner_x [0] - trimX [0];
 	int topInset = inner_y [0] - trimY [0];
+
+	/*
+	* Depending on the window manager, the algorithm to compute the window
+	* trim sometimes chooses the wrong X window, causing a large incorrect
+	* value to be calculated.  The fix is to ignore the trim values if they
+	* are too large.
+	*/
+	if (width > MAXIMUM_TRIM || height > MAXIMUM_TRIM) {
+		display.ignoreTrim = true;
+		return;
+	}
 	
 	/* Update the trim guesses to match the query */
 	boolean hasTitle = false, hasResize = false, hasBorder = false;

@@ -107,6 +107,8 @@ public class Shell extends Decorations {
 	Control lastActive;
 	Region region;
 
+	static final int MAXIMUM_TRIM = 128;
+
 /**
  * Constructs a new instance of this class. This is equivalent
  * to calling <code>Shell((Display) null)</code>.
@@ -363,6 +365,7 @@ public void addShellListener (ShellListener listener) {
 }
 
 void adjustTrim () {
+	if (display.ignoreTrim) return;
 	int width = OS.GTK_WIDGET_WIDTH (shellHandle);
 	int height = OS.GTK_WIDGET_HEIGHT (shellHandle);
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
@@ -370,6 +373,15 @@ void adjustTrim () {
 	OS.gdk_window_get_frame_extents (window, rect);
 	int trimWidth = Math.max (0, rect.width - width);
 	int trimHeight = Math.max (0, rect.height - height);
+	/*
+	* Bug in GTK.  gdk_window_get_frame_extents() fails for various window
+	* managers, causing a large incorrect value to be returned as the trim.
+	* The fix is to ignore the returned trim values if they are too large.
+	*/
+	if (trimWidth > MAXIMUM_TRIM || trimHeight > MAXIMUM_TRIM) {
+		display.ignoreTrim = true;
+		return;
+	}
 	boolean hasTitle = false, hasResize = false, hasBorder = false;
 	if ((style & SWT.NO_TRIM) == 0) {
 		hasTitle = (style & (SWT.MIN | SWT.MAX | SWT.TITLE | SWT.MENU)) != 0;

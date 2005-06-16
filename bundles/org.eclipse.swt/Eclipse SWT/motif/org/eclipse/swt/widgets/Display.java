@@ -157,6 +157,7 @@ public class Display extends Device {
 	int topTitleResizeHeight = 26, bottomTitleResizeHeight = 3;
 	int leftTitleWidth = 0, rightTitleWidth = 0;
 	int topTitleHeight = 23, bottomTitleHeight = 0;
+	boolean ignoreTrim;
 	
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer = new Synchronizer (this);
