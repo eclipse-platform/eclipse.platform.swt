@@ -787,6 +787,15 @@ public static final int /*long*/ gdk_x11_drawable_get_xid(int /*long*/ drawable)
 		lock.unlock();
 	}
 }
+public static final native int /*long*/ _gdk_x11_screen_get_window_manager_name(int /*long*/ screen);
+public static final int /*long*/ gdk_x11_screen_get_window_manager_name(int /*long*/ screen) {	
+	lock.lock();
+	try {
+		return _gdk_x11_screen_get_window_manager_name(screen);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _gdk_x11_visual_get_xvisual(int /*long*/ visual);
 public static final int /*long*/ gdk_x11_visual_get_xvisual(int /*long*/ visual) {
 	lock.lock();

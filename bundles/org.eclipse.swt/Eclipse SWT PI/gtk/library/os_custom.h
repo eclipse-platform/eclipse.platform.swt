@@ -45,6 +45,7 @@
 #define gdk_screen_get_number_LIB "libgdk-x11-2.0.so.0"
 #define gdk_window_set_keep_above_LIB "libgdk-x11-2.0.so.0"
 #define gdk_window_set_accept_focus_LIB "libgdk-x11-2.0.so.0"
+#define gdk_x11_screen_get_window_manager_name_LIB "libgdk-x11-2.0.so.0"
 
 /* Field accessors */
 #define GTK_ACCEL_LABEL_SET_ACCEL_STRING(arg0, arg1) (arg0)->accel_string = arg1
