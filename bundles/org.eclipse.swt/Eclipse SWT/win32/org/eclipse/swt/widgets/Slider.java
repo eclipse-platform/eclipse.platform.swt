@@ -114,7 +114,7 @@ public Slider (Composite parent, int style) {
  * interface.
  * <p>
  * When <code>widgetSelected</code> is called, the event object detail field contains one of the following values:
- * <code>0</code> - for the end of a drag.
+ * <code>SWT.NONE</code> - for the end of a drag.
  * <code>SWT.DRAG</code>.
  * <code>SWT.HOME</code>.
  * <code>SWT.END</code>.
@@ -707,11 +707,7 @@ LRESULT wmScrollChild (int wParam, int lParam) {
 
 	/* Do nothing when scrolling is ending */
 	int code = wParam & 0xFFFF;
-	switch (code) {
-		case OS.SB_THUMBPOSITION:
-		case OS.SB_ENDSCROLL:
-			return null;
-	}
+	if (code == OS.SB_ENDSCROLL) return null;
 
 	/* Move the thumb */
 	Event event = new Event ();
@@ -721,6 +717,10 @@ LRESULT wmScrollChild (int wParam, int lParam) {
 	OS.GetScrollInfo (handle, OS.SB_CTL, info);
 	info.fMask = OS.SIF_POS;
 	switch (code) {
+		case OS.SB_THUMBPOSITION:
+			event.detail = SWT.NONE;
+			info.nPos = info.nTrackPos;
+			break;
 		case OS.SB_THUMBTRACK:
 			event.detail = SWT.DRAG;
 			info.nPos = info.nTrackPos;

@@ -126,6 +126,7 @@ ScrollBar (Scrollable parent, int style) {
  * interface.
  * <p>
  * When <code>widgetSelected</code> is called, the event object detail field contains one of the following values:
+ * <code>SWT.NONE</code> - for the end of a drag.
  * <code>SWT.DRAG</code>.
  * <code>SWT.HOME</code>.
  * <code>SWT.END</code>.
@@ -889,11 +890,7 @@ LRESULT wmScrollChild (int wParam, int lParam) {
 
 	/* Do nothing when scrolling is ending */
 	int code = wParam & 0xFFFF;
-	switch (code) {
-		case OS.SB_THUMBPOSITION:
-		case OS.SB_ENDSCROLL:
-			return null;
-	}
+	if (code == OS.SB_ENDSCROLL) return null;
 
 	/*
 	* Send the event because WM_HSCROLL and
@@ -903,6 +900,7 @@ LRESULT wmScrollChild (int wParam, int lParam) {
 	*/
 	Event event = new Event ();
 	switch (code) {
+		case OS.SB_THUMBPOSITION:	event.detail = SWT.NONE;  break;
 		case OS.SB_THUMBTRACK:		event.detail = SWT.DRAG;  break;
 		case OS.SB_TOP: 			event.detail = SWT.HOME;  break;
 		case OS.SB_BOTTOM:			event.detail = SWT.END;  break;
