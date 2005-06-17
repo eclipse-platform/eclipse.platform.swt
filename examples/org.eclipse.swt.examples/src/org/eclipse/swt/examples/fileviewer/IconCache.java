@@ -114,6 +114,13 @@ class IconCache {
 				image.dispose();
 			}
 		}
+		if (stockCursors != null) {
+			for (int i = 0; i < stockCursors.length; ++i) {
+				final Cursor cursor = stockCursors[i];
+				if (cursor != null) cursor.dispose();
+			}
+			stockCursors = null;
+		}
 	}
 	/**
 	 * Creates a stock image
