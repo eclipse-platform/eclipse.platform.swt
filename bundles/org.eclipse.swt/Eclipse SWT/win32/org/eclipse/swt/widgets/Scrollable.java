@@ -350,8 +350,8 @@ LRESULT wmScroll (ScrollBar bar, boolean update, int hwnd, int msg, int wParam, 
 		int code = wParam & 0xFFFF;
 		switch (code) {
 			case OS.SB_ENDSCROLL:  return null;
-			case OS.SB_THUMBTRACK:
 			case OS.SB_THUMBPOSITION:
+			case OS.SB_THUMBTRACK:
 				/* 
 				* Note: On WinCE, the value in SB_THUMBPOSITION is relative to nMin.
 				* Same for SB_THUMBPOSITION 'except' for the very first thumb track
