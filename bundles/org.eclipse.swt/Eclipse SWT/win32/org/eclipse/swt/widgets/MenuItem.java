@@ -180,7 +180,7 @@ public void addHelpListener (HelpListener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the control is selected, by sending
+ * be notified when the menu item is selected, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
@@ -344,7 +344,7 @@ public int getAccelerator () {
 
 /**
  * Returns <code>true</code> if the receiver is enabled, and
- * <code>false</code> otherwise. A disabled control is typically
+ * <code>false</code> otherwise. A disabled menu item is typically
  * not selectable from the user interface and draws with an
  * inactive or "grayed" look.
  *
@@ -452,7 +452,7 @@ public boolean getSelection () {
 /**
  * Returns <code>true</code> if the receiver is enabled and all
  * of the receiver's ancestors are enabled, and <code>false</code>
- * otherwise. A disabled control is typically not selectable from the
+ * otherwise. A disabled menu item is typically not selectable from the
  * user interface and draws with an inactive or "grayed" look.
  *
  * @return the receiver's enabled state
@@ -599,7 +599,7 @@ public void setAccelerator (int accelerator) {
 
 /**
  * Enables the receiver if the argument is <code>true</code>,
- * and disables it otherwise. A disabled control is typically
+ * and disables it otherwise. A disabled menu item is typically
  * not selectable from the user interface and draws with an
  * inactive or "grayed" look.
  *

@@ -63,7 +63,7 @@ public class TreeItem extends Item {
  * Style bits are also inherited from superclasses.
  * </p>
  *
- * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param parent a tree control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
  *
  * @exception IllegalArgumentException <ul>
@@ -99,7 +99,7 @@ public TreeItem (Tree parent, int style) {
  * Style bits are also inherited from superclasses.
  * </p>
  *
- * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param parent a tree control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
  * @param index the index to store the receiver in its parent
  *
@@ -147,7 +147,7 @@ public TreeItem (Tree parent, int style, int index) {
  * Style bits are also inherited from superclasses.
  * </p>
  *
- * @param parentItem a composite control which will be the parent of the new instance (cannot be null)
+ * @param parentItem a tree control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
  *
  * @exception IllegalArgumentException <ul>
@@ -184,7 +184,7 @@ public TreeItem (TreeItem parentItem, int style) {
  * Style bits are also inherited from superclasses.
  * </p>
  *
- * @param parentItem a composite control which will be the parent of the new instance (cannot be null)
+ * @param parentItem a tree control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
  * @param index the index to store the receiver in its parent
  *

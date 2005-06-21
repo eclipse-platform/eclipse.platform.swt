@@ -172,7 +172,7 @@ public int getMinimum () {
 }
 
 /**
- * Returns the single <em>selection</em> that is the receiver's position.
+ * Returns the single 'selection' that is the receiver's position.
  *
  * @return the selection
  *
@@ -270,7 +270,7 @@ public void setMinimum (int value) {
 }
 
 /**
- * Sets the single <em>selection</em> that is the receiver's
+ * Sets the single 'selection' that is the receiver's
  * position to the argument which must be greater than or equal
  * to zero.
  *

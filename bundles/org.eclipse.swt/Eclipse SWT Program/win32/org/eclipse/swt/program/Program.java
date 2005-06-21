@@ -303,7 +303,7 @@ public ImageData getImageData () {
  * the program has no descriptive name, this string may
  * be the executable name, path or empty.
  *
- * @return an the name of the program
+ * @return the name of the program
  */
 public String getName () {
 	return name;

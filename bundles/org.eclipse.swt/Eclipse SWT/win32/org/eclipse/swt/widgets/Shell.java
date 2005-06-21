@@ -1067,7 +1067,7 @@ public void setImeInputMode (int mode) {
 }
 
 /**
- * Sets the receiver's minimum size to the point specified by the arguments.
+ * Sets the receiver's minimum size to the size specified by the arguments.
  * If the new minimum size is larger than the current size of the receiver,
  * the receiver is resized to the new minimum size.
  *
@@ -1108,7 +1108,7 @@ public void setMinimumSize (int width, int height) {
 }
 
 /**
- * Sets the receiver's minimum size to the point specified by the argument.
+ * Sets the receiver's minimum size to the size specified by the argument.
  * If the new minimum size is larger than the current size of the receiver,
  * the receiver is resized to the new minimum size.
  *

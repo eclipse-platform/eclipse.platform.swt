@@ -432,7 +432,7 @@ public int getItemCount () {
 
 /**
  * Returns the height of the area which would be used to
- * display <em>one</em> of the items in the tree.
+ * display <em>one</em> of the items in the list.
  *
  * @return the height of one item
  *
@@ -1381,7 +1381,7 @@ public void setSelection (String [] items) {
 /**
  * Selects the item at the given zero-relative index in the receiver. 
  * If the item at the index was already selected, it remains selected.
- * The current selected is first cleared, then the new items are selected.
+ * The current selection is first cleared, then the new item is selected.
  * Indices that are out of range are ignored.
  *
  * @param index the index of the item to select
