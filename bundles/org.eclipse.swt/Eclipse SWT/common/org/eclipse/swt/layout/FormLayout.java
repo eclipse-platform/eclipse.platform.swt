@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.*;
 /**
  * Instances of this class control the position and size of the 
  * children of a composite control by using <code>FormAttachments</code>
- * to optionally configure the left, top, right and bottom edge of
+ * to optionally configure the left, top, right and bottom edges of
  * each child.
  * <p>
  * The following example code creates a <code>FormLayout</code> and then sets
@@ -58,8 +58,8 @@ import org.eclipse.swt.widgets.*;
  * </p>
  * <p>
  * If a side is not given an attachment, it is defined as not being attached
- * to anything, causing the child to remain at it's preferred size.  If a child
- * is given no attachments on either the left or the right or top or bottom, it is
+ * to anything, causing the child to remain at its preferred size.  If a child
+ * is given no attachment on either the left or the right or top or bottom, it is
  * automatically attached to the left and top of the composite respectively.
  * The following code positions <code>button1</code> and <code>button2</code>
  * but relies on default attachments:
