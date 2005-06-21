@@ -339,7 +339,7 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
 	return result;
 }
 
-int /*long*/ gtk_expose_event (/*long*/ int widget, /*long*/ int eventPtr) {
+int /*long*/ gtk_expose_event (int /*long*/ widget, int /*long*/ eventPtr) {
 	if ((state & OBSCURED) != 0) return 0;
 	GdkEventExpose gdkEvent = new GdkEventExpose ();
 	OS.memmove (gdkEvent, eventPtr, GdkEventExpose.sizeof);
