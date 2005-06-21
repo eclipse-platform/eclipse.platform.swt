@@ -1047,7 +1047,7 @@ public void setImages (Image [] images) {
  * causes the receiver to switch back to either the minimized
  * or normal states.
  * <p>
- * Note: The result of intermixing calls to<code>setMaximized(true)</code>
+ * Note: The result of intermixing calls to <code>setMaximized(true)</code>
  * and <code>setMinimized(true)</code> will vary by platform. Typically,
  * the behavior will match the platform user's expectations, but not
  * always. This should be avoided if possible.
@@ -1167,7 +1167,7 @@ public void setMenuBar (Menu menu) {
  * causes the receiver to switch back to either the maximized
  * or normal states.
  * <p>
- * Note: The result of intermixing calls to<code>setMaximized(true)</code>
+ * Note: The result of intermixing calls to <code>setMaximized(true)</code>
  * and <code>setMinimized(true)</code> will vary by platform. Typically,
  * the behavior will match the platform user's expectations, but not
  * always. This should be avoided if possible.
@@ -1317,7 +1317,7 @@ void setSystemMenu () {
 /**
  * Sets the receiver's text, which is the string that the
  * window manager will typically display as the receiver's
- * <em>title</em>, to the argument, which may not be null. 
+ * <em>title</em>, to the argument, which must not be null. 
  *
  * @param string the new text
  *

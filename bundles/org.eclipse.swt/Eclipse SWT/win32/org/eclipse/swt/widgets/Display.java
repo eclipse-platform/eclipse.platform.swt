@@ -1202,7 +1202,7 @@ static boolean isValidClass (Class clazz) {
  * Applications may have associated arbitrary objects with the
  * receiver in this fashion. If the objects stored in the
  * properties need to be notified when the display is disposed
- * of, it is the application's responsibility provide a
+ * of, it is the application's responsibility to provide a
  * <code>disposeExec()</code> handler which does so.
  * </p>
  *
@@ -1239,7 +1239,7 @@ public Object getData (String key) {
  * Applications may put arbitrary objects in this field. If
  * the object stored in the display specific data needs to
  * be notified when the display is disposed of, it is the
- * application's responsibility provide a
+ * application's responsibility to provide a
  * <code>disposeExec()</code> handler which does so.
  * </p>
  *
@@ -3607,7 +3607,7 @@ void updateFont () {
 }
 
 /**
- * If the receiver's user-interface thread was <code>sleep</code>'ing, 
+ * If the receiver's user-interface thread was <code>sleep</code>ing, 
  * causes it to be awakened and start running again. Note that this
  * method may be called from any thread.
  * 
