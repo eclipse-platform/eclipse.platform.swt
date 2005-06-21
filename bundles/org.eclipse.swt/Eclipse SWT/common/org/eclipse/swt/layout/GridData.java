@@ -17,7 +17,7 @@ import org.eclipse.swt.widgets.*;
 /**
  * <code>GridData</code> is the layout data object associated with 
  * <code>GridLayout</code>. To set a <code>GridData</code> object into a 
- * control, you use the <code>Control#setLayoutData(Object)</code> method. 
+ * control, you use the <code>Control.setLayoutData(Object)</code> method. 
  * <p>
  * There are two ways to create a <code>GridData</code> object with certain 
  * fields set. The first is to set the fields directly, like this:
@@ -42,6 +42,7 @@ import org.eclipse.swt.widgets.*;
  * </p>
  * 
  * @see GridLayout
+ * @see Control#setLayoutData
  */
 public final class GridData {
 	/**
@@ -50,12 +51,12 @@ public final class GridData {
 	 *
 	 * The default value is CENTER.
 	 *
-	 * Possible values are:
-	 *
-	 * SWT.BEGINNING (or SWT.TOP): Position the control at the top of the cell
-	 * SWT.CENTER: Position the control in the vertical center of the cell
-	 * SWT.END (or SWT.BOTTOM): Position the control at the bottom of the cell
-	 * SWT.FILL: Resize the control to fill the cell vertically
+	 * Possible values are: <ul>
+	 *    <li>SWT.BEGINNING (or SWT.TOP): Position the control at the top of the cell</li>
+	 *    <li>SWT.CENTER: Position the control in the vertical center of the cell</li>
+	 *    <li>SWT.END (or SWT.BOTTOM): Position the control at the bottom of the cell</li>
+	 *    <li>SWT.FILL: Resize the control to fill the cell vertically</li>
+	 * </ul>
 	 */
 	public int verticalAlignment = CENTER;
 	
@@ -65,30 +66,34 @@ public final class GridData {
 	 *
 	 * The default value is BEGINNING.
 	 *
-	 * Possible values are:
-	 *
-	 * SWT.BEGINNING (or SWT.LEFT): Position the control at the left of the cell
-	 * SWT.CENTER: Position the control in the horizontal center of the cell
-	 * SWT.END (or SWT.RIGHT): Position the control at the right of the cell
-	 * SWT.FILL: Resize the control to fill the cell horizontally
+	 * Possible values are: <ul>
+	 *    <li>SWT.BEGINNING (or SWT.LEFT): Position the control at the left of the cell</li>
+	 *    <li>SWT.CENTER: Position the control in the horizontal center of the cell</li>
+	 *    <li>SWT.END (or SWT.RIGHT): Position the control at the right of the cell</li>
+	 *    <li>SWT.FILL: Resize the control to fill the cell horizontally</li>
+	 * </ul>
 	 */
 	public int horizontalAlignment = BEGINNING;
 	
 	/**
 	 * widthHint specifies the preferred width in pixels. This value
-	 * is the wHint passed into Control#computeSize(int, int, boolean) 
+	 * is the wHint passed into Control.computeSize(int, int, boolean) 
 	 * to determine the preferred size of the control.
 	 *
 	 * The default value is SWT.DEFAULT.
+	 * 
+	 * @see Control#computeSize
 	 */
 	public int widthHint = SWT.DEFAULT;
 	
 	/**
 	 * heightHint specifies the preferred height in pixels. This value
-	 * is the hHint passed into Control#computeSize(int, int, boolean) 
+	 * is the hHint passed into Control.computeSize(int, int, boolean) 
 	 * to determine the preferred size of the control.
 	 *
 	 * The default value is SWT.DEFAULT.
+	 * 
+	 * @see Control#computeSize
 	 */
 	public int heightHint = SWT.DEFAULT;
 	
@@ -138,11 +143,11 @@ public final class GridData {
 	 * horizontal space divided by the number of grabbing columns.</li>
 	 * <li>If there is not enough horizontal space available in the parent, the 
 	 * cell will shrink until it reaches its minimum width as specified by 
-	 * GridData#minimumWidth. The new width will be the maximum of 
+	 * GridData.minimumWidth. The new width will be the maximum of 
 	 * "minimumWidth" and "preferred width - delta", where delta is 
 	 * the amount of space missing divided by the number of grabbing columns.</li>
 	 * <li>If the parent is packed, the cell will be its preferred width 
-	 * as specified by GridData#widthHint.</li>
+	 * as specified by GridData.widthHint.</li>
 	 * <li>If the control spans multiple columns and there are no other grabbing 
 	 * controls in any of the spanned columns, the last column in the span will
 	 * grab the extra space.  If there is at least one other grabbing control
@@ -151,6 +156,9 @@ public final class GridData {
 	 * </ul>
 	 * 
 	 * <p>The default value is false.</p>
+	 * 
+	 * @see GridData#minimumWidth
+	 * @see GridData#widthHint
 	 */	
 	public boolean grabExcessHorizontalSpace = false;
 	
@@ -166,11 +174,11 @@ public final class GridData {
 	 * vertical space divided by the number of grabbing rows.</li>
 	 * <li>If there is not enough vertical space available in the parent, the 
 	 * cell will shrink until it reaches its minimum height as specified by 
-	 * GridData#minimumHeight. The new height will be the maximum of 
+	 * GridData.minimumHeight. The new height will be the maximum of 
 	 * "minimumHeight" and "preferred height - delta", where delta is 
 	 * the amount of space missing divided by the number of grabbing rows.</li>
 	 * <li>If the parent is packed, the cell will be its preferred height 
-	 * as specified by GridData#heightHint.</li>
+	 * as specified by GridData.heightHint.</li>
 	 * <li>If the control spans multiple rows and there are no other grabbing 
 	 * controls in any of the spanned rows, the last row in the span will
 	 * grab the extra space.  If there is at least one other grabbing control
@@ -179,32 +187,39 @@ public final class GridData {
 	 * </ul>
 	 * 
 	 * <p>The default value is false.</p>
+	 * 
+	 * @see GridData#minimumHeight
+	 * @see GridData#heightHint
 	 */	
 	public boolean grabExcessVerticalSpace = false;
 
 	/**
 	 * minimumWidth specifies the minimum width in pixels.  This value
 	 * applies only if grabExcessHorizontalSpace is true. A value of 
-	 * SWT#DEFAULT means that the minimum width will be the result
-	 * of Control#computeSize(int, int, boolean) where wHint is 
-	 * determined by GridData#widthHint.
+	 * SWT.DEFAULT means that the minimum width will be the result
+	 * of Control.computeSize(int, int, boolean) where wHint is 
+	 * determined by GridData.widthHint.
 	 *
 	 * The default value is 0.
 	 *
 	 * @since 3.1
+	 * @see Control#computeSize
+	 * @see GridData#widthHint
 	 */
 	public int minimumWidth = 0;
 	
 	/**
 	 * minimumHeight specifies the minimum height in pixels.  This value
 	 * applies only if grabExcessVerticalSpace is true.  A value of 
-	 * SWT#DEFAULT means that the minimum height will be the result
-	 * of Control#computeSize(int, int, boolean) where hHint is 
-	 * determined by GridData#heightHint.
+	 * SWT.DEFAULT means that the minimum height will be the result
+	 * of Control.computeSize(int, int, boolean) where hHint is 
+	 * determined by GridData.heightHint.
 	 *
 	 * The default value is 0.
 	 *
 	 * @since 3.1
+	 * @see Control#computeSize
+	 * @see GridData#heightHint
 	 */
 	public int minimumHeight = 0;
 	

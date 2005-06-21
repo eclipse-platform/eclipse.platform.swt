@@ -60,10 +60,10 @@ public final class RowLayout extends Layout {
 	 * 
 	 * The default value is HORIZONTAL.
 	 * 
-	 * Possible values are:
-	 * 
-	 * HORIZONTAL: Position the controls horizontally from left to right
-	 * VERTICAL: Position the controls vertically from top to bottom
+	 * Possible values are: <ul>
+	 *    <li>HORIZONTAL: Position the controls horizontally from left to right</li>
+	 *    <li>VERTICAL: Position the controls vertically from top to bottom</li>
+	 * </ul>
 	 * 
 	 * @since 2.0
 	 */

@@ -18,10 +18,10 @@ import org.eclipse.swt.internal.SWTEventListener;
  * that deal with changes in state of <code>Shell</code>s.
  * <p>
  * After creating an instance of a class that implements
- * this interface it can be added to a control using the
+ * this interface it can be added to a shell using the
  * <code>addShellListener</code> method and removed using
  * the <code>removeShellListener</code> method. When the
- * state of a shell changes, the appropriate method will
+ * state of the shell changes, the appropriate method will
  * be invoked.
  * </p>
  *

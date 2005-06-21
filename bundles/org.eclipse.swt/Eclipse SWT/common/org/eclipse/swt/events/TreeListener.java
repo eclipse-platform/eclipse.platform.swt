@@ -19,10 +19,10 @@ import org.eclipse.swt.internal.SWTEventListener;
  * branches.
  * <p>
  * After creating an instance of a class that implements
- * this interface it can be added to a control using the
+ * this interface it can be added to a tree control using the
  * <code>addTreeListener</code> method and removed using
  * the <code>removeTreeListener</code> method. When a branch
- * of a tree is expanded or collapsed, the appropriate method
+ * of the tree is expanded or collapsed, the appropriate method
  * will be invoked.
  * </p>
  *

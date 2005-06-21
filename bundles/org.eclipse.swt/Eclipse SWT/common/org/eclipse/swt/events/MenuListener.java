@@ -18,9 +18,9 @@ import org.eclipse.swt.internal.SWTEventListener;
  * that deal with the hiding and showing of menus.
  * <p>
  * After creating an instance of a class that implements
- * this interface it can be added to a control using the
+ * this interface it can be added to a menu using the
  * <code>addMenuListener</code> method and removed using
- * the <code>removeMenuListener</code> method. When a
+ * the <code>removeMenuListener</code> method. When the
  * menu is hidden or shown, the appropriate method will
  * be invoked.
  * </p>
