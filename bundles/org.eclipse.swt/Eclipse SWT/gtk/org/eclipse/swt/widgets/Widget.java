@@ -1074,12 +1074,12 @@ boolean sendKeyEvent (int type, GdkEventKey keyEvent) {
 
 char [] sendIMKeyEvent (int type, GdkEventKey keyEvent, char  [] chars) {
 	int index = 0, count = 0, state = 0;
+	int /*long*/ ptr = 0;
 	if (keyEvent == null) {
-		int /*long*/ ptr = OS.gtk_get_current_event ();
+		ptr = OS.gtk_get_current_event ();
 		if (ptr != 0) {
 			keyEvent = new GdkEventKey ();
 			OS.memmove (keyEvent, ptr, GdkEventKey.sizeof);
-			OS.gdk_event_free (ptr);
 			switch (keyEvent.type) {
 				case OS.GDK_KEY_PRESS:
 				case OS.GDK_KEY_RELEASE:
@@ -1112,10 +1112,14 @@ char [] sendIMKeyEvent (int type, GdkEventKey keyEvent, char  [] chars) {
 		* events.  If this happens, end the processing of
 		* the key by returning null.
 		*/
-		if (isDisposed ()) return null;
+		if (isDisposed ()) {
+			if (ptr != 0) OS.gdk_event_free (ptr);
+			return null;
+		}
 		if (event.doit) chars [count++] = chars [index];
 		index++;
 	}
+	if (ptr != 0) OS.gdk_event_free (ptr);
 	if (count == 0) return null;
 	if (index != count) {
 		char [] result = new char [count];
