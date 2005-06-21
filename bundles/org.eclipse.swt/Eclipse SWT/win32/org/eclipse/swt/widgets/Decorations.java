@@ -588,9 +588,9 @@ public Image getImage () {
  * marked as iconified, and may also be displayed somewhere
  * in the trim when the instance is in normal or maximized
  * states. Depending where the icon is displayed, the platform
- * chooses the icon with the "best" size. It is expected that
- * the array will contain the same icon rendered at different
- * resolutions.
+ * chooses the icon with the "best" attributes.  It is expected
+ * that the array will contain the same icon rendered at different
+ * sizes, with different depth and transparency attributes.
  * 
  * <p>
  * Note: This method will return an empty array if called before
@@ -1012,8 +1012,9 @@ void setImages (Image image, Image [] images) {
  * and may also be displayed somewhere in the trim when the
  * instance is in normal or maximized states. Depending where
  * the icon is displayed, the platform chooses the icon with
- * the "best" size. It is expected that the array will contain
- * the same icon rendered at different resolutions.
+ * the "best" attributes. It is expected that the array will
+ * contain the same icon rendered at different sizes, with
+ * different depth and transparency attributes.
  * 
  * @param images the new image array
  *
