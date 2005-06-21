@@ -474,8 +474,8 @@ public String [] getItems () {
 
 /**
  * Returns an array of <code>String</code>s that are currently
- * selected in the receiver. An empty array indicates that no
- * items are selected.
+ * selected in the receiver.  The order of the items is unspecified.
+ * An empty array indicates that no items are selected.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
@@ -551,7 +551,8 @@ public int getSelectionIndex () {
 
 /**
  * Returns the zero-relative indices of the items which are currently
- * selected in the receiver.  The array is empty if no items are selected.
+ * selected in the receiver.  The order of the indices is unspecified.
+ * The array is empty if no items are selected.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
