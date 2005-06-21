@@ -22,7 +22,7 @@ package org.eclipse.swt.widgets;
  * removed using the 
  * <code>removeListener (int eventType, Listener handler)</code> method. 
  * When the specified event occurs, <code>handleEvent(...)</code> will
- * will be sent to the instance.
+ * be sent to the instance.
  * </p>
  * <p>
  * Classes which implement this interface are described within SWT as

@@ -18,7 +18,7 @@ import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class provide a selectable user interface object
- * that displays a hierarchy of items and issue notificiation when an
+ * that displays a hierarchy of items and issue notification when an
  * item in the hierarchy is selected.
  * <p>
  * The item children that may be added to instances of this class

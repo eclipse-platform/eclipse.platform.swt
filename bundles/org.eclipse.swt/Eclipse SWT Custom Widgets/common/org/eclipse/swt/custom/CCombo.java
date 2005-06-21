@@ -19,7 +19,7 @@ import org.eclipse.swt.accessibility.*;
 
 /**
  * The CCombo class represents a selectable user interface object
- * that combines a text field and a list and issues notificiation
+ * that combines a text field and a list and issues notification
  * when an item is selected from the list.
  * <p>
  * Note that although this class is a subclass of <code>Composite</code>,
