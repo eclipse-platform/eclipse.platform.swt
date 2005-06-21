@@ -557,7 +557,8 @@ int asciiKey (int key) {
  * be invoked by the user-interface thread at the next 
  * reasonable opportunity. The caller of this method continues 
  * to run in parallel, and is not notified when the
- * runnable has completed.
+ * runnable has completed.  Specifying <code>null</code> as the
+ * runnable simply wakes the user-interface thread when run.
  * <p>
  * Note that at the time the runnable is invoked, widgets 
  * that have the receiver as their display may have been
@@ -565,7 +566,7 @@ int asciiKey (int key) {
  * case inside the runnable before accessing the widget.
  * </p>
  *
- * @param runnable code to run on the user-interface thread.
+ * @param runnable code to run on the user-interface thread or <code>null</code>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
@@ -838,7 +839,8 @@ void destroyDisplay () {
 /**
  * Causes the <code>run()</code> method of the runnable to
  * be invoked by the user-interface thread just before the
- * receiver is disposed.
+ * receiver is disposed.  Specifying a <code>null</code> runnable
+ * is ignored.
  *
  * @param runnable code to run at dispose time.
  * 
@@ -1000,7 +1002,9 @@ int foregroundIdleProc (int code, int wParam, int lParam) {
 /**
  * Returns the display which the given thread is the
  * user-interface thread for, or null if the given thread
- * is not a user-interface thread for any display.
+ * is not a user-interface thread for any display.  Specifying
+ * <code>null</code> as the thread will return <code>null</code>
+ * for the display. 
  *
  * @param thread the user-interface thread
  * @return the display for the given thread
@@ -3276,9 +3280,10 @@ public void setData (Object data) {
 /**
  * On platforms which support it, sets the application name
  * to be the argument. On Motif, for example, this can be used
- * to set the name used for resource lookup.
+ * to set the name used for resource lookup.  Specifying
+ * <code>null</code> for the name clears it.
  *
- * @param name the new app name
+ * @param name the new app name or <code>null</code>
  */
 public static void setAppName (String name) {
 	/* Do nothing */
@@ -3379,7 +3384,8 @@ public boolean sleep () {
  * Causes the <code>run()</code> method of the runnable to
  * be invoked by the user-interface thread at the next 
  * reasonable opportunity. The thread which calls this method
- * is suspended until the runnable completes.
+ * is suspended until the runnable completes.  Specifying <code>null</code>
+ * as the runnable simply wakes the user-interface thread.
  * <p>
  * Note that at the time the runnable is invoked, widgets 
  * that have the receiver as their display may have been
@@ -3387,7 +3393,7 @@ public boolean sleep () {
  * case inside the runnable before accessing the widget.
  * </p>
  * 
- * @param runnable code to run on the user-interface thread.
+ * @param runnable code to run on the user-interface thread or <code>null</code>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_FAILED_EXEC - if an exception occured when executing the runnable</li>

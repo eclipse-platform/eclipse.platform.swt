@@ -3600,9 +3600,11 @@ public void setClipping (Path path) {
 /**
  * Sets the area of the receiver which can be changed
  * by drawing operations to the rectangular area specified
- * by the argument.
+ * by the argument.  Specifying <code>null</code> for the
+ * rectangle reverts the receiver's clipping area to its
+ * original value.
  *
- * @param rect the clipping rectangle
+ * @param rect the clipping rectangle or <code>null</code>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
@@ -3620,9 +3622,11 @@ public void setClipping (Rectangle rect) {
 /**
  * Sets the area of the receiver which can be changed
  * by drawing operations to the region specified
- * by the argument.
+ * by the argument.  Specifying <code>null</code> for the
+ * region reverts the receiver's clipping area to its
+ * original value.
  *
- * @param region the clipping region.
+ * @param region the clipping region or <code>null</code>
  * 
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the region has been disposed</li>

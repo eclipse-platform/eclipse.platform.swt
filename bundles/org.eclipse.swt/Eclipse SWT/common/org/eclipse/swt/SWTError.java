@@ -64,7 +64,8 @@ public SWTError () {
 /**
  * Constructs a new instance of this class with its 
  * stack trace and message filled in. The error code is
- * set to an unspecified value.
+ * set to an unspecified value.  Specifying <code>null</code>
+ * as the message is equivalent to specifying an empty string.
  *
  * @param message the detail message for the exception
  */
@@ -85,7 +86,9 @@ public SWTError (int code) {
 /**
  * Constructs a new instance of this class with its 
  * stack trace, error code and message filled in.
- *
+ * Specifying <code>null</code> as the message is
+ * equivalent to specifying an empty string.
+ * 
  * @param code the SWT error code
  * @param message the detail message for the exception
  */

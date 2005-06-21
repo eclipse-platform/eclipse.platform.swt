@@ -823,7 +823,8 @@ int getTabWidth (int tabs) {
 /**
  * Gets the widget text.
  * <p>
- * The text for a text widget is the characters in the widget.
+ * The text for a text widget is the characters in the widget, or
+ * an empty string if this has never been set.
  * </p>
  *
  * @return the widget text
@@ -955,6 +956,9 @@ public int getTopPixel () {
  *
  * @param string the string
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is <code>null</code></li>
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1582,6 +1586,8 @@ public void setText (String string) {
  * creating a read-only text widget.
  * </p><p>
  * To reset this value to the default, use <code>setTextLimit(Text.LIMIT)</code>.
+ * Specifying a limit value larger than <code>Text.LIMIT</code> sets the
+ * receiver's limit to <code>Text.LIMIT</code>.
  * </p>
  *
  * @param limit new text limit

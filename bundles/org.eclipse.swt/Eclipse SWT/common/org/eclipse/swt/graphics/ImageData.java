@@ -1064,7 +1064,9 @@ public ImageData getTransparencyMask() {
 }
 
 /**
- * Returns the image transparency type.
+ * Returns the image transparency type, which will be one of
+ * <code>SWT.TRANSPARENCY_NONE</code>, <code>SWT.TRANSPARENCY_MASK</code>,
+ * <code>SWT.TRANSPARENCY_PIXEL</code> or <code>SWT.TRANSPARENCY_ALPHA</code>.
  *
  * @return the receiver's transparency type
  */

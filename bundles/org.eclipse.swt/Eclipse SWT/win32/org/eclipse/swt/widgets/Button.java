@@ -641,9 +641,9 @@ boolean setFixedFocus () {
 
 /**
  * Sets the receiver's image to the argument, which may be
- * null indicating that no image should be displayed.
+ * <code>null</code> indicating that no image should be displayed.
  *
- * @param image the image to display on the receiver (may be null)
+ * @param image the image to display on the receiver (may be <code>null</code>)
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>

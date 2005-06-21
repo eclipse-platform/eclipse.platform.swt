@@ -2997,7 +2997,8 @@ int widgetStyle () {
  * @return <code>true</code> if the parent is changed and <code>false</code> otherwise.
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is <code>null</code></li> 
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
