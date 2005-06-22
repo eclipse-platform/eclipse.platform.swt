@@ -1050,10 +1050,11 @@ public RGB[] getRGBs() {
 
 /**
  * Returns an <code>ImageData</code> which specifies the
- * transparency mask information for the receiver, or null if the
- * receiver has no transparency and is not an icon.
+ * transparency mask information for the receiver. If the
+ * receiver has no transparency or is not an icon, returns
+ * an opaque mask.
  *
- * @return the transparency mask or null if none exists
+ * @return the transparency mask
  */
 public ImageData getTransparencyMask() {
 	if (getTransparencyType() == SWT.TRANSPARENCY_MASK) {
