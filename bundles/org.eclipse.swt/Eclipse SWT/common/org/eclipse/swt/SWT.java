@@ -810,6 +810,7 @@ public class SWT {
 	 * orientation of their parent.  To override this behavior and
 	 * force an orientation for a child, explicitly set the orientation
 	 * of the child when that child is created.
+	 * <br>Note that this is a <em>HINT</em>.
 	 * </p>
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Control</code></li>
@@ -829,6 +830,7 @@ public class SWT {
 	 * orientation of their parent.  To override this behavior and
 	 * force an orientation for a child, explicitly set the orientation
 	 * of the child when that child is created.
+	 * <br>Note that this is a <em>HINT</em>.
 	 * </p>
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Control</code></li>

@@ -65,7 +65,11 @@ import org.eclipse.swt.*;
  * <dt><b>Events:</b></dt>
  * <dd>(none)</dd>
  * </dl>
- *
+ * <p>
+ * Note: Only one of the styles APPLICATION_MODAL, PRIMARY_MODAL, and SYSTEM_MODAL 
+ * may be specified.
+ * </p>
+ * 
  * @see Shell
  */
 

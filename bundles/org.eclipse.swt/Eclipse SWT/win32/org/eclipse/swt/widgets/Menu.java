@@ -1185,11 +1185,15 @@ public void setEnabled (boolean enabled) {
 }
 
 /**
- * Sets the receiver's location to the point specified by
- * the arguments which are relative to the display.
+ * Sets the location of the receiver, which must be a popup,
+ * to the point specified by the arguments which are relative
+ * to the display.
  * <p>
- * Note:  This is different from most widgets where the
+ * Note that this is different from most widgets where the
  * location of the widget is relative to the parent.
+ * </p><p>
+ * Note that some platforms may not support relocation of
+ * popup menus in which case this will be ignored.
  * </p>
  *
  * @param x the new x coordinate for the receiver
@@ -1209,11 +1213,15 @@ public void setLocation (int x, int y) {
 }
 
 /**
- * Sets the receiver's location to the point specified by
- * the arguments which are relative to the display.
+ * Sets the location of the receiver, which must be a popup,
+ * to the point specified by the argument which is relative
+ * to the display.
  * <p>
- * Note:  This is different from most widgets where the
+ * Note that this is different from most widgets where the
  * location of the widget is relative to the parent.
+ * </p><p>
+ * Note that some platforms may not support relocation of
+ * popup menus in which case this will be ignored.
  * </p>
  *
  * @param location the new location for the receiver
