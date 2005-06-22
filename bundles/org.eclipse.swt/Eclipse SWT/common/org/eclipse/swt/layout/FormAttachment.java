@@ -112,19 +112,20 @@ public final class FormAttachment {
 	/**
 	 * alignment specifies the alignment of the control side that is
 	 * attached to a control.
+	 * <p>
 	 * For top and bottom attachments, TOP, BOTTOM and CENTER are used. For left 
 	 * and right attachments, LEFT, RIGHT and CENTER are used. If any other case
 	 * occurs, the default will be used instead.
+	 * </p>
 	 * 
-	 * Possible values are:
-	 * 
-	 * TOP: Attach the side to the top side of the specified control.
-	 * BOTTOM : Attach the side to the bottom side of the specified control.
-	 * LEFT: Attach the side to the left side of the specified control.
-	 * RIGHT: Attach the side to the right side of the specified control.
-	 * CENTER: Attach the side at a position which will center the control on
-	 * the specified control.
-	 * DEFAULT: Attach the side to the adjacent side of the specified control.
+	 * <br>Possible values are: <ul>
+	 *    <li>TOP: Attach the side to the top side of the specified control.</li>
+	 *    <li>BOTTOM : Attach the side to the bottom side of the specified control.</li>
+	 *    <li>LEFT: Attach the side to the left side of the specified control.</li>
+	 *    <li>RIGHT: Attach the side to the right side of the specified control.</li>
+	 *    <li>CENTER: Attach the side at a position which will center the control on the specified control.</li>
+	 *    <li>DEFAULT: Attach the side to the adjacent side of the specified control.</li>
+	 * </ul>
 	 */
 	public int alignment;
 	

@@ -728,14 +728,17 @@ public int getOrientation () {
 }
 
 /**
- * Returns the position of the selected text.
+ * Returns a <code>Point</code> whose x coordinate is the
+ * character position representing the start of the selected
+ * text, and whose y coordinate is the character position
+ * representing the end of the selection. An "empty" selection
+ * is indicated by the x and y coordinates having the same value.
  * <p>
- * Indexing is zero based.  The range of
- * a selection is from 0..N where N is
- * the number of characters in the widget.
+ * Indexing is zero based.  The range of a selection is from
+ * 0..N where N is the number of characters in the widget.
  * </p>
- * 
- * @return the start and end of the selection
+ *
+ * @return a point representing the selection start and end
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

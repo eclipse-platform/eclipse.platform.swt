@@ -645,11 +645,16 @@ public int getOrientation () {
 }
 
 /**
- * Returns a <code>Point</code> whose x coordinate is the start
- * of the selection in the receiver's text field, and whose y
- * coordinate is the end of the selection. The returned values
- * are zero-relative. An "empty" selection as indicated by
- * the the x and y coordinates having the same value.
+ * Returns a <code>Point</code> whose x coordinate is the
+ * character position representing the start of the selection
+ * in the receiver's text field, and whose y coordinate is the
+ * character position representing the end of the selection.
+ * An "empty" selection is indicated by the x and y coordinates
+ * having the same value.
+ * <p>
+ * Indexing is zero based.  The range of a selection is from
+ * 0..N where N is the number of characters in the widget.
+ * </p>
  *
  * @return a point representing the selection start and end
  *

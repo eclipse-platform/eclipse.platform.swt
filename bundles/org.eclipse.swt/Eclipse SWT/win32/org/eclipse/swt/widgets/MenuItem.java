@@ -655,6 +655,7 @@ public void setEnabled (boolean enabled) {
  * <p>
  * Note: This feature is not available on all window systems (for example, Windows NT),
  * in which case, calling this method will do nothing.
+ * </p>
  *
  * @param image the image to display
  *
