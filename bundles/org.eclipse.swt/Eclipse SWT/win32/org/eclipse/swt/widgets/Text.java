@@ -39,6 +39,9 @@ public class Text extends Scrollable {
 	/**
 	* The maximum number of characters that can be entered
 	* into a text widget.
+	* <p>
+	* Note that this value is platform dependent.
+	* </p>
 	*/
 	public static final int LIMIT;
 	
@@ -479,7 +482,7 @@ public int getBorderWidth () {
 }
 
 /**
- * Gets the line number of the caret.
+ * Returns the line number of the caret.
  * <p>
  * The line number of the caret is returned.
  * </p>
@@ -497,7 +500,8 @@ public int getCaretLineNumber () {
 }
 
 /**
- * Gets the location of the caret.
+ * Returns a point describing the receiver's location relative
+ * to its parent (or its display if its parent is null).
  * <p>
  * The location of the caret is returned.
  * </p>
@@ -552,9 +556,9 @@ public Point getCaretLocation () {
 }
 
 /**
- * Gets the position of the caret.
+ * Returns the character position of the caret.
  * <p>
- * The character position of the caret is returned.
+ * Indexing is zero based.
  * </p>
  *
  * @return the position of the caret
@@ -578,7 +582,7 @@ public int getCaretPosition () {
 }
 
 /**
- * Gets the number of characters.
+ * Returns the number of characters.
  *
  * @return number of characters in the widget
  *
@@ -595,7 +599,7 @@ public int getCharCount () {
 }
 
 /**
- * Gets the double click enabled flag.
+ * Returns the double click enabled flag.
  * <p>
  * The double click flag enables or disables the
  * default action of the text widget when the user
@@ -615,7 +619,7 @@ public boolean getDoubleClickEnabled () {
 }
 
 /**
- * Gets the echo character.
+ * Returns the echo character.
  * <p>
  * The echo character is the character that is
  * displayed when the user enters text or the
@@ -637,7 +641,7 @@ public char getEchoChar () {
 }
 
 /**
- * Gets the editable state.
+ * Returns the editable state.
  *
  * @return whether or not the reciever is editable
  * 
@@ -653,7 +657,7 @@ public boolean getEditable () {
 }
 
 /**
- * Gets the number of lines.
+ * Returns the number of lines.
  *
  * @return the number of lines in the widget
  *
@@ -668,7 +672,7 @@ public int getLineCount () {
 }
 
 /**
- * Gets the line delimiter.
+ * Returns the line delimiter.
  *
  * @return a string that is the line delimiter
  *
@@ -683,7 +687,7 @@ public String getLineDelimiter () {
 }
 
 /**
- * Gets the height of a line.
+ * Returns the height of a line.
  *
  * @return the height of a row of text
  *
@@ -723,7 +727,7 @@ public int getOrientation () {
 }
 
 /**
- * Gets the position of the selected text.
+ * Returns the position of the selected text.
  * <p>
  * Indexing is zero based.  The range of
  * a selection is from 0..N where N is
@@ -749,7 +753,7 @@ public Point getSelection () {
 }
 
 /**
- * Gets the number of selected characters.
+ * Returns the number of selected characters.
  *
  * @return the number of selected characters.
  *
@@ -765,7 +769,7 @@ public int getSelectionCount () {
 }
 
 /**
- * Gets the selected text.
+ * Returns the selected text.
  *
  * @return the selected text
  * 
@@ -787,7 +791,7 @@ public String getSelectionText () {
 }
 
 /**
- * Gets the number of tabs.
+ * Returns the number of tabs.
  * <p>
  * Tab stop spacing is specified in terms of the
  * space (' ') character.  The width of a single
@@ -821,7 +825,7 @@ int getTabWidth (int tabs) {
 }
 
 /**
- * Gets the widget text.
+ * Returns the widget text.
  * <p>
  * The text for a text widget is the characters in the widget, or
  * an empty string if this has never been set.
@@ -844,7 +848,7 @@ public String getText () {
 }
 
 /**
- * Gets a range of text.  Returns an empty string if the
+ * Returns a range of text.  Returns an empty string if the
  * start of the range is greater than the end.
  * <p>
  * Indexing is zero based.  The range of
@@ -916,7 +920,7 @@ public int getTopIndex () {
 }
 
 /**
- * Gets the top pixel.
+ * Returns the top pixel.
  * <p>
  * The top pixel is the pixel position of the line
  * that is currently at the top of the widget.  On
