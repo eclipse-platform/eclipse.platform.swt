@@ -16,10 +16,10 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.*;
 
 /**
- * Instances of this class implement a Composite that lays out three
- * children horizontally and allows programmatic control of layout and
- * border parameters. ViewForm is used in the workbench to implement a
- * view's label/menu/toolbar local bar.
+ * Instances of this class implement a Composite that positions and sizes
+ * children and allows programmatic control of layout and border parameters. 
+ * ViewForm is used in the workbench to lay out a view's label/menu/toolbar
+ * local bar.
  * <p>
  * Note that although this class is a subclass of <code>Composite</code>,
  * it does not make sense to set a layout on it.

@@ -21,7 +21,7 @@ import org.eclipse.swt.*;
  * a separator between the left and right children which can be dragged
  * to resize the right control.
  * CBanner is used in the workbench to layout the toolbar area and
- * perspective switching toolbar at the top of the workbench.
+ * perspective switching toolbar.
  * <p>
  * Note that although this class is a subclass of <code>Composite</code>,
  * it does not make sense to set a layout on it.
