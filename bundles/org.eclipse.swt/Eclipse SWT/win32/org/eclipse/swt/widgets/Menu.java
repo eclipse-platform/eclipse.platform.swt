@@ -1192,8 +1192,8 @@ public void setEnabled (boolean enabled) {
  * Note that this is different from most widgets where the
  * location of the widget is relative to the parent.
  * </p><p>
- * Note that some platforms may not support relocation of
- * popup menus in which case this will be ignored.
+ * Note that relocation of popup menus is a hint to the
+ * platform window manager.
  * </p>
  *
  * @param x the new x coordinate for the receiver
@@ -1220,8 +1220,8 @@ public void setLocation (int x, int y) {
  * Note that this is different from most widgets where the
  * location of the widget is relative to the parent.
  * </p><p>
- * Note that some platforms may not support relocation of
- * popup menus in which case this will be ignored.
+ * Note that relocation of popup menus is a hint to the
+ * platform window manager.
  * </p>
  *
  * @param location the new location for the receiver
