@@ -26,7 +26,7 @@ public class Snippet91 {
 
 public static void main (String [] args) {
 	
-	final Display display = Display.getDefault ();
+	final Display display = new Display ();
 	final Shell shell = new Shell (display);
 	shell.setLayout(new FillLayout());
 	final Tree tree = new Tree(shell, SWT.BORDER);

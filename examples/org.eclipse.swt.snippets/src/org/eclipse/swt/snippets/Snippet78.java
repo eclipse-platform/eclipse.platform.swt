@@ -25,7 +25,7 @@ public class Snippet78 {
 
 public static void main (String [] args) {
 	
-	Display display = Display.getDefault ();
+	Display display = new Display ();
 	final Shell shell = new Shell (display);
 	shell.setLayout(new FillLayout());
 	final Label label1 = new Label (shell, SWT.BORDER);
