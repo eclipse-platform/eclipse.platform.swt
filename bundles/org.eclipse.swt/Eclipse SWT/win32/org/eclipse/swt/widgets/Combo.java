@@ -1291,8 +1291,8 @@ void setForegroundPixel (int pixel) {
 /**
  * Sets the text of the item in the receiver's list at the given
  * zero-relative index to the string argument. This is equivalent
- * to <code>remove</code>'ing the old item at the index, and then
- * <code>add</code>'ing the new item at that index.
+ * to removing the old item at the index, and then adding the new
+ * item at that index.
  *
  * @param index the index for the item
  * @param string the new text for the item
