@@ -373,10 +373,9 @@ public void setFileName (String string) {
  * use to filter the files it shows to the argument,
  * which may be null.
  * <p>
- * Each string should follow the file filtering conventions
- * for the platform. For example, on Windows, an extension
- * filter string is typically of the form "*.extension",
- * where "*.*" matches all files.
+ * The strings are platform specific. For example, on
+ * Windows, an extension filter string is typically of
+ * the form "*.extension", where "*.*" matches all files.
  * </p>
  *
  * @param extensions the file extension filter
