@@ -1294,7 +1294,7 @@ void setBounds (int x, int y, int width, int height, int flags) {
  * double clicks.
  * </p><p>
  * Note: This feature is not available on all window systems,
- * in which case, calling this method will silently do nothing.
+ * in which case, calling this method will do nothing.
  * </p>
  * 
  * @param doubleClick the new double click flag
@@ -1373,7 +1373,7 @@ public void setFont (Font font) {
  * of the constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
  * <p>
  * Note: This feature is not available on all window systems,
- * in which case, calling this method will silently do nothing.
+ * in which case, calling this method will do nothing.
  * </p>
  *
  * @param orientation new orientation style
