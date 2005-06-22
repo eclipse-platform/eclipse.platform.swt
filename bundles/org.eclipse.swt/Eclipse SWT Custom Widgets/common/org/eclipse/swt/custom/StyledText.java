@@ -6837,7 +6837,7 @@ public void setCaretOffset(int offset) {
  * @param length length of text to place in clipboard
  * 
  * @exception SWTError, see Clipboard.setContents
- * @see org.eclipse.swt.dnd.Clipboard.setContents
+ * @see org.eclipse.swt.dnd.Clipboard#setContents
  */
 void setClipboardContent(int start, int length, int clipboardType) throws SWTError {
 	if (clipboardType == DND.SELECTION_CLIPBOARD && !(IS_MOTIF || IS_GTK)) return;
