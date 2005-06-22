@@ -60,13 +60,14 @@ public StyleRange(int start, int length, Color foreground, Color background, int
 }
 
 /**
- * Compare the specified object to this StyleRange and answer if the two 
- * are equal. The object must be an instance of StyleRange and have the
- * same field values.
- * <p>
+ * Compares the argument to the receiver, and returns true
+ * if they represent the <em>same</em> object using a class
+ * specific comparison.
  *
  * @param object the object to compare with this object
- * @return true if the objects are equal, false otherwise
+ * @return <code>true</code> if the object is the same as this object and <code>false</code> otherwise
+ *
+ * @see #hashCode()
  */
 public boolean equals(Object object) {
 	StyleRange style;
@@ -78,11 +79,14 @@ public boolean equals(Object object) {
 	return similarTo(style);
 }
 /**
- * Returns an integer hash code for the receiver. Objects which are
- * equal answer the same value for this method.
- * <p>
+ * Returns an integer hash code for the receiver. Any two 
+ * objects that return <code>true</code> when passed to 
+ * <code>equals</code> must return the same value for this
+ * method.
  *
  * @return the receiver's hash
+ *
+ * @see #equals(Object)
  */
 public int hashCode() {
 	int code = start + length;

@@ -3263,7 +3263,7 @@ void init(Drawable drawable, GCData data, int hDC) {
 
 /**
  * Returns an integer hash code for the receiver. Any two 
- * objects which return <code>true</code> when passed to 
+ * objects that return <code>true</code> when passed to 
  * <code>equals</code> must return the same value for this
  * method.
  *

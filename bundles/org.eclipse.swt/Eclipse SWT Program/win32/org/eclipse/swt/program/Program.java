@@ -310,10 +310,14 @@ public String getName () {
 }
 
 /**
- * Returns true if the receiver and the argument represent
- * the same program.
- * 
- * @return true if the programs are the same
+ * Compares the argument to the receiver, and returns true
+ * if they represent the <em>same</em> object using a class
+ * specific comparison.
+ *
+ * @param object the object to compare with this object
+ * @return <code>true</code> if the object is the same as this object and <code>false</code> otherwise
+ *
+ * @see #hashCode()
  */
 public boolean equals(Object other) {
 	if (this == other) return true;
@@ -326,9 +330,14 @@ public boolean equals(Object other) {
 }
 
 /**
- * Returns a hash code suitable for this object.
- * 
- * @return a hash code
+ * Returns an integer hash code for the receiver. Any two 
+ * objects that return <code>true</code> when passed to 
+ * <code>equals</code> must return the same value for this
+ * method.
+ *
+ * @return the receiver's hash
+ *
+ * @see #equals(Object)
  */
 public int hashCode() {
 	return name.hashCode() ^ command.hashCode() ^ iconName.hashCode();

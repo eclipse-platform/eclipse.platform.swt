@@ -77,6 +77,16 @@ public TextStyle (Font font, Color foreground, Color background) {
 	this.background = background;
 }
 
+/**
+ * Compares the argument to the receiver, and returns true
+ * if they represent the <em>same</em> object using a class
+ * specific comparison.
+ *
+ * @param object the object to compare with this object
+ * @return <code>true</code> if the object is the same as this object and <code>false</code> otherwise
+ *
+ * @see #hashCode()
+ */
 public boolean equals(Object object) {
 	if (object == this) return true;
 	if (object == null) return false;
@@ -96,6 +106,16 @@ public boolean equals(Object object) {
 	return true;
 }
 
+/**
+ * Returns an integer hash code for the receiver. Any two 
+ * objects that return <code>true</code> when passed to 
+ * <code>equals</code> must return the same value for this
+ * method.
+ *
+ * @return the receiver's hash
+ *
+ * @see #equals(Object)
+ */
 public int hashCode() {
 	int hash = 0;
 	if (foreground != null) hash ^= foreground.hashCode();
