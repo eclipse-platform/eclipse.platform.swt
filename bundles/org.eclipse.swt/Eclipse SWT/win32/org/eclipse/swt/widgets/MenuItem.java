@@ -653,8 +653,8 @@ public void setEnabled (boolean enabled) {
 /**
  * Sets the image the receiver will display to the argument.
  * <p>
- * Note: This feature is not available on all window systems (for example, Windows NT),
- * in which case, calling this method will do nothing.
+ * Note: This operation is a hint and is not supported on
+ * platforms that do not have this concept (for example, Windows NT).
  * </p>
  *
  * @param image the image to display

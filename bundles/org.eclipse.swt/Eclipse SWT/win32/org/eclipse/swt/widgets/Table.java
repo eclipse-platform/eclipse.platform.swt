@@ -2787,7 +2787,7 @@ public void setSelection (TableItem [] items) {
 
 /**
  * Selects the item at the given zero-relative index in the receiver. 
- * The current selected is first cleared, then the new item is selected.
+ * The current selection is first cleared, then the new item is selected.
  *
  * @param index the index of the item to select
  *

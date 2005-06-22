@@ -633,6 +633,8 @@ public boolean getDoubleClickEnabled () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see #setEchoChar
  */
 public char getEchoChar () {
 	checkWidget ();
@@ -681,6 +683,8 @@ public int getLineCount () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see #DELIMITER
  */
 public String getLineDelimiter () {
 	checkWidget ();
@@ -711,7 +715,8 @@ public int getLineHeight () {
 }
 
 /**
- * Returns the orientation of the receiver.
+ * Returns the orientation of the receiver, which will be one of the
+ * constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
  *
  * @return the orientation style
  * 
@@ -1296,8 +1301,8 @@ void setBounds (int x, int y, int width, int height, int flags) {
  * default action of the text widget when the user
  * double clicks.
  * </p><p>
- * Note: This feature is not available on all window systems,
- * in which case, calling this method will do nothing.
+ * Note: This operation is a hint and is not supported on
+ * platforms that do not have this concept.
  * </p>
  * 
  * @param doubleClick the new double click flag
@@ -1375,8 +1380,8 @@ public void setFont (Font font) {
  * Sets the orientation of the receiver, which must be one
  * of the constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
  * <p>
- * Note: This feature is not available on all window systems,
- * in which case, calling this method will do nothing.
+ * Note: This operation is a hint and is not supported on
+ * platforms that do not have this concept.
  * </p>
  *
  * @param orientation new orientation style
@@ -1437,7 +1442,8 @@ public void setSelection (int start) {
 }
 
 /**
- * Sets the selection.
+ * Sets the selection to the range specified
+ * by the given start and end indices.
  * <p>
  * Indexing is zero based.  The range of
  * a selection is from 0..N where N is
@@ -1492,7 +1498,10 @@ public void setRedraw (boolean redraw) {
 }
 
 /**
- * Sets the selection.
+ * Sets the selection to the range specified
+ * by the given point, where the x coordinate
+ * represents the start index and the y coordinate
+ * represents the end index.
  * <p>
  * Indexing is zero based.  The range of
  * a selection is from 0..N where N is

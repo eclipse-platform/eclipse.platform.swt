@@ -24,6 +24,8 @@ import org.eclipse.swt.*;
  * <dd>(none)</dd>
  * </dl>
  * <p>
+ * Note: Only one of the styles SAVE and OPEN may be specified.
+ * </p><p>
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>

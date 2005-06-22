@@ -366,7 +366,7 @@ static void setDevice (Device device) {
  * </p>
  *
  * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if called from a thread that already created an existing display</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
@@ -1350,9 +1350,8 @@ public boolean getHighContrast () {
 }
 
 /**
- * Returns the maximum allowed depth of icons on this display.
- * On some platforms, this may be different than the actual
- * depth of the display.
+ * Returns the maximum allowed depth of icons on this display, in bits per pixel.
+ * On some platforms, this may be different than the actual depth of the display.
  *
  * @return the maximum icon depth
  *
@@ -1360,6 +1359,8 @@ public boolean getHighContrast () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
+ * 
+ * @see Device#getDepth
  */
 public int getIconDepth () {
 	checkDevice ();

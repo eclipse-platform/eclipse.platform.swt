@@ -863,7 +863,11 @@ void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
  * <em>saved default button</em>). If no default button had
  * previously been set, or the saved default button was
  * disposed, the receiver's default button will be set to
- * null. 
+ * null.
+ * <p>
+ * The default button is the button that is selected when
+ * the receiver is active and the user presses ENTER.
+ * </p>
  *
  * @param button the new default button
  *
