@@ -38,6 +38,11 @@ public class Synchronizer {
 	Object messageLock = new Object ();
 	Thread syncThread;
 
+/**
+ * Constructs a new instance of this class.
+ * 
+ * @param display the display to create the synchronizer on
+ */
 public Synchronizer (Display display) {
 	this.display = display;
 }
