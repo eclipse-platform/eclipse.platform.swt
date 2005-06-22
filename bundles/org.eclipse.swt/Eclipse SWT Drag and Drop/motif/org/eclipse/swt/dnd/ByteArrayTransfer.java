@@ -26,7 +26,7 @@ import org.eclipse.swt.internal.motif.*;
  * <code>byte[]</code>, you should sub-class <code>Transfer</code> directly 
  * and do your own mapping to a platform data type.</p>
  * 
- * <p>The following snippet shows a sublcass of ByteArrayTransfer that transfers
+ * <p>The following snippet shows a subclass of ByteArrayTransfer that transfers
  * data defined by the class <code>MyType</code>.</p>
  * 
  * <pre><code>
@@ -37,7 +37,7 @@ import org.eclipse.swt.internal.motif.*;
  * }
  * </code></pre>
  * 
- * <code><pre>
+ * <pre><code>
  * public class MyTypeTransfer extends ByteArrayTransfer {
  *	
  *	private static final String MYTYPENAME = "my_type_name";
@@ -114,6 +114,7 @@ import org.eclipse.swt.internal.motif.*;
  * 	return new int[] {MYTYPEID};
  * }
  * }
+ * </code></pre>
  */
 public abstract class ByteArrayTransfer extends Transfer {
 

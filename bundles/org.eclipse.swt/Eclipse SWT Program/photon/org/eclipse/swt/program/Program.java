@@ -319,17 +319,21 @@ public ImageData getImageData () {
  * the program has no descriptive name, this string may
  * be the executable name, path or empty.
  *
- * @return an the name of the program
+ * @return the name of the program
  */
 public String getName () {
 	return name;
 }
 
 /**
- * Returns true if the receiver and the argument represent
- * the same program.
- * 
- * @return true if the programs are the same
+ * Compares the argument to the receiver, and returns true
+ * if they represent the <em>same</em> object using a class
+ * specific comparison.
+ *
+ * @param other the object to compare with this object
+ * @return <code>true</code> if the object is the same as this object and <code>false</code> otherwise
+ *
+ * @see #hashCode()
  */
 public boolean equals(Object other) {
 	if (this == other) return true;
@@ -342,14 +346,25 @@ public boolean equals(Object other) {
 }
 
 /**
- * Returns a hash code suitable for this object.
- * 
- * @return a hash code
+ * Returns an integer hash code for the receiver. Any two 
+ * objects that return <code>true</code> when passed to 
+ * <code>equals</code> must return the same value for this
+ * method.
+ *
+ * @return the receiver's hash
+ *
+ * @see #equals(Object)
  */
 public int hashCode() {
 	return extension.hashCode() ^ name.hashCode() ^ command.hashCode();
 }
 
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the event
+ */
 public String toString () {
 	return "Program {" + name + "}";
 }

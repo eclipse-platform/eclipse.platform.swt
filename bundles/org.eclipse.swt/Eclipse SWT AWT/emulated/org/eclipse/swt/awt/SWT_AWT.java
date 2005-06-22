@@ -75,6 +75,7 @@ public static Frame new_Frame (final Composite parent) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the display is null</li>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the parent's peer is not created</li>
  * </ul>
  * 
  * @since 3.0

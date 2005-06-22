@@ -445,7 +445,7 @@ String getXlfd() {
 }
 /**
  * Returns an integer hash code for the receiver. Any two 
- * objects which return <code>true</code> when passed to 
+ * objects that return <code>true</code> when passed to 
  * <code>equals</code> must return the same value for this
  * method.
  *
@@ -552,7 +552,8 @@ public void setLocale(String locale) {
 /**
  * Sets the style of the receiver to the argument which must
  * be a bitwise OR of one or more of the <code>SWT</code> 
- * constants NORMAL, BOLD and ITALIC.
+ * constants NORMAL, BOLD and ITALIC.  All other style bits are
+ * ignored.
  *
  * @param style the new style for this <code>FontData</code>
  *

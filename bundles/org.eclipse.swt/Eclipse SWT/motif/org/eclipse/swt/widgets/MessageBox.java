@@ -109,9 +109,9 @@ int createHandle (int parentHandle, int [] argList) {
 }
 
 /**
- * Returns the dialog's message, which is a description of
- * the purpose for which it was opened. This message will be
- * visible on the dialog while it is open.
+ * Returns the dialog's message, or an empty string if it does not have one.
+ * The message is a description of the purpose for which the dialog was opened.
+ * This message will be visible in the dialog while it is open.
  *
  * @return the message
  */

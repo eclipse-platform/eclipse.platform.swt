@@ -20,7 +20,7 @@ import org.eclipse.swt.events.*;
 
 /** 
  * Instances of this class represent a selectable user interface
- * object that displays a list of strings and issues notificiation
+ * object that displays a list of strings and issues notification
  * when a string selected.  A list may be single or multi select.
  * <p>
  * <dl>
@@ -465,7 +465,7 @@ public int getItemCount () {
 }
 /**
  * Returns the height of the area which would be used to
- * display <em>one</em> of the items in the tree.
+ * display <em>one</em> of the items in the list.
  *
  * @return the height of one item
  *
@@ -487,8 +487,8 @@ public int getItemHeight () {
 	return getFontHeight (font.handle) + spacing + highlight + 1;
 }
 /**
- * Returns an array of <code>String</code>s which are the items
- * in the receiver. 
+ * Returns a (possibly empty) array of <code>String</code>s which
+ * are the items in the receiver. 
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
@@ -534,8 +534,8 @@ public String [] getItems () {
 }
 /**
  * Returns an array of <code>String</code>s that are currently
- * selected in the receiver. An empty array indicates that no
- * items are selected.
+ * selected in the receiver.  The order of the items is unspecified.
+ * An empty array indicates that no items are selected.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
@@ -598,7 +598,7 @@ public int getSelectionCount () {
  * Returns the zero-relative index of the item which is currently
  * selected in the receiver, or -1 if no item is selected.
  *
- * @return the index of the selected item
+ * @return the index of the selected item or -1
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -620,7 +620,8 @@ public int getSelectionIndex () {
 }
 /**
  * Returns the zero-relative indices of the items which are currently
- * selected in the receiver.  The array is empty if no items are selected.
+ * selected in the receiver.  The order of the indices is unspecified.
+ * The array is empty if no items are selected.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
@@ -1304,7 +1305,7 @@ public void setItems (String [] items) {
 /**
  * Selects the item at the given zero-relative index in the receiver. 
  * If the item at the index was already selected, it remains selected.
- * The current selected is first cleared, then the new items are selected.
+ * The current selection is first cleared, then the new item is selected.
  * Indices that are out of range are ignored.
  *
  * @param index the index of the item to select

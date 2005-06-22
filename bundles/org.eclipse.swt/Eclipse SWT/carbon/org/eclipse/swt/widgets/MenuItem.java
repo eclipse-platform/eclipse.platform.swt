@@ -172,7 +172,7 @@ public void addHelpListener (HelpListener listener) {
 
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the control is selected, by sending
+ * be notified when the menu item is selected, by sending
  * it one of the messages defined in the <code>SelectionListener</code>
  * interface.
  * <p>
@@ -241,11 +241,13 @@ void destroyEmptyMenu (int index) {
 }
 
 /**
- * Return the widget accelerator.  An accelerator is the bit-wise
+ * Returns the widget accelerator.  An accelerator is the bit-wise
  * OR of zero or more modifier masks and a key. Examples:
  * <code>SWT.CONTROL | SWT.SHIFT | 'T', SWT.ALT | SWT.F2</code>.
+ * The default value is zero, indicating that the menu item does
+ * not have an accelerator.
  *
- * @return the accelerator
+ * @return the accelerator or 0
  *
  * </ul>
  * @exception SWTException <ul>
@@ -285,7 +287,7 @@ public int getAccelerator () {
 
 /**
  * Returns <code>true</code> if the receiver is enabled, and
- * <code>false</code> otherwise. A disabled control is typically
+ * <code>false</code> otherwise. A disabled menu item is typically
  * not selectable from the user interface and draws with an
  * inactive or "grayed" look.
  *
@@ -392,7 +394,7 @@ int kEventProcessCommand (int nextHandler, int theEvent, int userData) {
 /**
  * Returns <code>true</code> if the receiver is enabled and all
  * of the receiver's ancestors are enabled, and <code>false</code>
- * otherwise. A disabled control is typically not selectable from the
+ * otherwise. A disabled menu item is typically not selectable from the
  * user interface and draws with an inactive or "grayed" look.
  *
  * @return the receiver's enabled state
@@ -552,6 +554,8 @@ void selectRadio () {
  * OR of zero or more modifier masks and a key. Examples:
  * <code>SWT.MOD1 | SWT.MOD2 | 'T', SWT.MOD3 | SWT.F2</code>.
  * <code>SWT.CONTROL | SWT.SHIFT | 'T', SWT.ALT | SWT.F2</code>.
+ * The default value is zero, indicating that the menu item does
+ * not have an accelerator.
  *
  * @param accelerator an integer that is the bit-wise OR of masks and a key
  *
@@ -595,7 +599,7 @@ public void setAccelerator (int accelerator) {
 
 /**
  * Enables the receiver if the argument is <code>true</code>,
- * and disables it otherwise. A disabled control is typically
+ * and disables it otherwise. A disabled menu item is typically
  * not selectable from the user interface and draws with an
  * inactive or "grayed" look.
  *
@@ -627,8 +631,9 @@ public void setEnabled (boolean enabled) {
 /**
  * Sets the image the receiver will display to the argument.
  * <p>
- * Note: This feature is not available on all window systems (for example, Window NT),
- * in which case, calling this method will silently do nothing.
+ * Note: This operation is a hint and is not supported on
+ * platforms that do not have this concept (for example, Windows NT).
+ * </p>
  *
  * @param image the image to display
  *

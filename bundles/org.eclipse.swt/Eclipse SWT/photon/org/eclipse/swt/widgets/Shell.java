@@ -67,7 +67,7 @@ import org.eclipse.swt.events.*;
  * it would be upgraded to <code>APPLICATION_MODAL</code>.
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>BORDER, CLOSE, MIN, MAX, NO_TRIM, RESIZE, TITLE</dd>
+ * <dd>BORDER, CLOSE, MIN, MAX, NO_TRIM, RESIZE, TITLE, ON_TOP, TOOL</dd>
  * <dd>APPLICATION_MODAL, MODELESS, PRIMARY_MODAL, SYSTEM_MODAL</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Activate, Close, Deactivate, Deiconify, Iconify</dd>
@@ -260,7 +260,7 @@ Shell (Display display, Shell parent, int style, int handle) {
  * @param parent a shell which will be the parent of the new instance
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the parent is disposed</li> 
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -294,6 +294,9 @@ public Shell (Shell parent) {
  * @param parent a shell which will be the parent of the new instance
  * @param style the style of control to construct
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the parent is disposed</li> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
@@ -308,6 +311,8 @@ public Shell (Shell parent) {
  * @see SWT#NO_TRIM
  * @see SWT#SHELL_TRIM
  * @see SWT#DIALOG_TRIM
+ * @see SWT#ON_TOP
+ * @see SWT#TOOL
  * @see SWT#MODELESS
  * @see SWT#PRIMARY_MODAL
  * @see SWT#APPLICATION_MODAL
@@ -1124,7 +1129,7 @@ public void setRegion (Region region) {
 }
 
 /**
- * Sets the receiver's minimum size to the point specified by the arguments.
+ * Sets the receiver's minimum size to the size specified by the arguments.
  * If the new minimum size is larger than the current size of the receiver,
  * the receiver is resized to the new minimum size.
  *
@@ -1156,7 +1161,7 @@ public void setMinimumSize (int width, int height) {
 }
 
 /**
- * Sets the receiver's minimum size to the point specified by the argument.
+ * Sets the receiver's minimum size to the size specified by the argument.
  * If the new minimum size is larger than the current size of the receiver,
  * the receiver is resized to the new minimum size.
  *

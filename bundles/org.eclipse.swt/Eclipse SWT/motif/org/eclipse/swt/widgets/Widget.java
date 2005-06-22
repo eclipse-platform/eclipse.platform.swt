@@ -121,6 +121,7 @@ Widget () {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the parent is disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -382,7 +383,7 @@ String getCodePage () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - when called from the wrong thread</li>
  * </ul>
  *
- * @see #setData
+ * @see #setData(Object)
  */
 public Object getData () {
 	checkWidget();
@@ -411,7 +412,7 @@ public Object getData () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see #setData
+ * @see #setData(String, Object)
  */
 public Object getData (String key) {
 	checkWidget();
@@ -438,7 +439,6 @@ public Object getData (String key) {
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
 public Display getDisplay () {
@@ -889,6 +889,8 @@ boolean sendKeyEvent (int type, XKeyEvent xEvent) {
  *    <li>ERROR_WIDGET_DISPOSED - when the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - when called from the wrong thread</li>
  * </ul>
+ * 
+ * @see #getData()
  */
 public void setData (Object data) {
 	checkWidget();
@@ -921,7 +923,7 @@ public void setData (Object data) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see #getData
+ * @see #getData(String)
  */
 public void setData (String key, Object value) {
 	checkWidget();

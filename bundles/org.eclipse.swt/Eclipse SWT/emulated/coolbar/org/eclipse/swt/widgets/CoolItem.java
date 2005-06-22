@@ -201,9 +201,9 @@ void calculateChevronTrim () {
  * @see Layout
  * @see #getBounds
  * @see #getSize
- * @see CoolBar#getBorderWidth
- * @see CoolBar#computeTrim
- * @see CoolBar#getClientArea
+ * @see Control#getBorderWidth
+ * @see Scrollable#computeTrim
+ * @see Scrollable#getClientArea
  */
 public Point computeSize (int wHint, int hHint) {
 	checkWidget();

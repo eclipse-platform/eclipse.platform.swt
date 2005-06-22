@@ -407,7 +407,7 @@ static void setDevice (Device device) {
  * </p>
  *
  * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if called from a thread that already created an existing display</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
@@ -420,6 +420,11 @@ public Display () {
 	this (null);
 }
 
+/**
+ * Constructs a new instance of this class using the parameter.
+ * 
+ * @param data the device data
+ */
 public Display (DeviceData data) {
 	super (data);
 }
@@ -574,9 +579,16 @@ void addWidget (int /*long*/ handle, Widget widget) {
  * be invoked by the user-interface thread at the next 
  * reasonable opportunity. The caller of this method continues 
  * to run in parallel, and is not notified when the
- * runnable has completed.
+ * runnable has completed.  Specifying <code>null</code> as the
+ * runnable simply wakes the user-interface thread when run.
+ * <p>
+ * Note that at the time the runnable is invoked, widgets 
+ * that have the receiver as their display may have been
+ * disposed. Therefore, it is necessary to check for this
+ * case inside the runnable before accessing the widget.
+ * </p>
  *
- * @param runnable code to run on the user-interface thread.
+ * @param runnable code to run on the user-interface thread or <code>null</code>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
@@ -911,7 +923,7 @@ synchronized void deregister () {
  * <p>
  * This method is called after <code>release</code>.
  * </p>
- * @see #dispose
+ * @see Device#dispose
  * @see #release
  */
 protected void destroy () {
@@ -926,7 +938,9 @@ void destroyDisplay () {
 /**
  * Returns the display which the given thread is the
  * user-interface thread for, or null if the given thread
- * is not a user-interface thread for any display.
+ * is not a user-interface thread for any display.  Specifying
+ * <code>null</code> as the thread will return <code>null</code>
+ * for the display. 
  *
  * @param thread the user-interface thread
  * @return the display for the given thread
@@ -944,7 +958,8 @@ public static synchronized Display findDisplay (Thread thread) {
 /**
  * Causes the <code>run()</code> method of the runnable to
  * be invoked by the user-interface thread just before the
- * receiver is disposed.
+ * receiver is disposed.  Specifying a <code>null</code> runnable
+ * is ignored.
  *
  * @param runnable code to run at dispose time.
  * 
@@ -1314,7 +1329,7 @@ public Point [] getCursorSizes () {
  * Applications may have associated arbitrary objects with the
  * receiver in this fashion. If the objects stored in the
  * properties need to be notified when the display is disposed
- * of, it is the application's responsibility provide a
+ * of, it is the application's responsibility to provide a
  * <code>disposeExec()</code> handler which does so.
  * </p>
  *
@@ -1354,7 +1369,7 @@ public Object getData (String key) {
  * Applications may put arbitrary objects in this field. If
  * the object stored in the display specific data needs to
  * be notified when the display is disposed of, it is the
- * application's responsibility provide a
+ * application's responsibility to provide a
  * <code>disposeExec()</code> handler which does so.
  * </p>
  *
@@ -1518,9 +1533,8 @@ public int getDepth () {
 }
 
 /**
- * Returns the maximum allowed depth of icons on this display.
- * On some platforms, this may be different than the actual
- * depth of the display.
+ * Returns the maximum allowed depth of icons on this display, in bits per pixel.
+ * On some platforms, this may be different than the actual depth of the display.
  *
  * @return the maximum icon depth
  *
@@ -1528,6 +1542,8 @@ public int getDepth () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
+ * 
+ * @see Device#getDepth
  */
 public int getIconDepth () {
 	checkDevice ();
@@ -1624,8 +1640,8 @@ public Monitor getPrimaryMonitor () {
 }
 
 /**
- * Returns an array containing all shells which have not been
- * disposed and have the receiver as their display.
+ * Returns a (possibly empty) array containing all shells which have
+ * not been disposed and have the receiver as their display.
  *
  * @return the receiver's shells
  *
@@ -2593,7 +2609,7 @@ synchronized void register () {
  * </p>
  * This method is called before <code>destroy</code>.
  * 
- * @see #dispose
+ * @see Device#dispose
  * @see #destroy
  */
 protected void release () {
@@ -2884,9 +2900,10 @@ boolean runPopups () {
 /**
  * On platforms which support it, sets the application name
  * to be the argument. On Motif, for example, this can be used
- * to set the name used for resource lookup.
+ * to set the name used for resource lookup.  Specifying
+ * <code>null</code> for the name clears it.
  *
- * @param name the new app name
+ * @param name the new app name or <code>null</code>
  */
 public static void setAppName (String name) {
 	APP_NAME = name;
@@ -3192,6 +3209,12 @@ public boolean sleep () {
  * be invoked by the user-interface thread after the specified
  * number of milliseconds have elapsed. If milliseconds is less
  * than zero, the runnable is not executed.
+ * <p>
+ * Note that at the time the runnable is invoked, widgets 
+ * that have the receiver as their display may have been
+ * disposed. Therefore, it is necessary to check for this
+ * case inside the runnable before accessing the widget.
+ * </p>
  *
  * @param milliseconds the delay before running the runnable
  * @param runnable code to run on the user-interface thread
@@ -3320,9 +3343,16 @@ int /*long*/ shellMapProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ 
  * Causes the <code>run()</code> method of the runnable to
  * be invoked by the user-interface thread at the next 
  * reasonable opportunity. The thread which calls this method
- * is suspended until the runnable completes.
- *
- * @param runnable code to run on the user-interface thread.
+ * is suspended until the runnable completes.  Specifying <code>null</code>
+ * as the runnable simply wakes the user-interface thread.
+ * <p>
+ * Note that at the time the runnable is invoked, widgets 
+ * that have the receiver as their display may have been
+ * disposed. Therefore, it is necessary to check for this
+ * case inside the runnable before accessing the widget.
+ * </p>
+ * 
+ * @param runnable code to run on the user-interface thread or <code>null</code>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_FAILED_EXEC - if an exception occured when executing the runnable</li>
@@ -3368,7 +3398,7 @@ public void update () {
 }
 
 /**
- * If the receiver's user-interface thread was <code>sleep</code>'ing, 
+ * If the receiver's user-interface thread was <code>sleep</code>ing, 
  * causes it to be awakened and start running again. Note that this
  * method may be called from any thread.
  * 

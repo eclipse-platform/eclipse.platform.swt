@@ -662,8 +662,8 @@ public int getItemHeight () {
 }
 
 /**
- * Returns an array of <code>String</code>s which are the items
- * in the receiver's list. 
+ * Returns a (possibly empty) array of <code>String</code>s which are
+ * the items in the receiver's list. 
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
@@ -702,11 +702,16 @@ public int getOrientation () {
 }
 
 /**
- * Returns a <code>Point</code> whose x coordinate is the start
- * of the selection in the receiver's text field, and whose y
- * coordinate is the end of the selection. The returned values
- * are zero-relative. An "empty" selection as indicated by
- * the the x and y coordinates having the same value.
+ * Returns a <code>Point</code> whose x coordinate is the
+ * character position representing the start of the selection
+ * in the receiver's text field, and whose y coordinate is the
+ * character position representing the end of the selection.
+ * An "empty" selection is indicated by the x and y coordinates
+ * having the same value.
+ * <p>
+ * Indexing is zero based.  The range of a selection is from
+ * 0..N where N is the number of characters in the widget.
+ * </p>
  *
  * @return a point representing the selection start and end
  *
@@ -754,7 +759,8 @@ public int getSelectionIndex () {
 
 /**
  * Returns a string containing a copy of the contents of the
- * receiver's text field.
+ * receiver's text field, or an empty string if there are no
+ * contents.
  *
  * @return the receiver's text
  *
@@ -808,6 +814,8 @@ public int getTextHeight () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ *
+ * @see #LIMIT
  */
 public int getTextLimit () {
 	checkWidget();
@@ -1338,8 +1346,8 @@ void setForegroundColor (GdkColor color) {
 /**
  * Sets the text of the item in the receiver's list at the given
  * zero-relative index to the string argument. This is equivalent
- * to <code>remove</code>'ing the old item at the index, and then
- * <code>add</code>'ing the new item at that index.
+ * to removing the old item at the index, and then adding the new
+ * item at that index.
  *
  * @param index the index for the item
  * @param string the new text for the item
@@ -1532,7 +1540,11 @@ public void setText (String string) {
 /**
  * Sets the maximum number of characters that the receiver's
  * text field is capable of holding to be the argument.
- *
+ * <p>
+ * To reset this value to the default, use <code>setTextLimit(Combo.LIMIT)</code>.
+ * Specifying a limit value larger than <code>Combo.LIMIT</code> sets the
+ * receiver's limit to <code>Combo.LIMIT</code>.
+ * </p>
  * @param limit new text limit
  *
  * @exception IllegalArgumentException <ul>
@@ -1542,6 +1554,8 @@ public void setText (String string) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see #LIMIT
  */
 public void setTextLimit (int limit) {
 	checkWidget();

@@ -256,6 +256,24 @@ public void copyArea(Image image, int x, int y) {
 public void copyArea(int x, int y, int width, int height, int destX, int destY) {
 	copyArea(x, y, width, height, destX, destY, true);
 }
+/**
+ * Copies a rectangular area of the receiver at the source
+ * position onto the receiver at the destination position.
+ *
+ * @param srcX the x coordinate in the receiver of the area to be copied
+ * @param srcY the y coordinate in the receiver of the area to be copied
+ * @param width the width of the area to copy
+ * @param height the height of the area to copy
+ * @param destX the x coordinate in the receiver of the area to copy to
+ * @param destY the y coordinate in the receiver of the area to copy to
+ * @param paint if <code>true</code> paint events will be generated for old and obscured areas
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.1 
+ */
 public void copyArea(int x, int y, int width, int height, int destX, int destY, boolean paint) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width == 0 || height == 0) return;
@@ -516,7 +534,7 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int ar
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see #drawRectangle
+ * @see #drawRectangle(int, int, int, int)
  */
 public void drawFocus (int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
@@ -996,8 +1014,22 @@ public void drawOval (int x, int y, int width, int height) {
 	}
 }
 
-/**
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+/** 
+ * Draws the path described by the parameter.
+ *
+ * @param path the path to draw
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parameter is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the parameter has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see Path
+ * 
+ * @since 3.1
  */
 public void drawPath(Path path) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
@@ -1598,7 +1630,7 @@ public void fillArc (int x, int y, int width, int height, int startAngle, int ar
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see #drawRectangle
+ * @see #drawRectangle(int, int, int, int)
  */
 public void fillGradientRectangle(int x, int y, int width, int height, boolean vertical) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
@@ -1677,8 +1709,22 @@ public void fillOval (int x, int y, int width, int height) {
 	}
 }
 
-/**
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+/** 
+ * Fills the path described by the parameter.
+ *
+ * @param path the path to fill
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parameter is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the parameter has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see Path
+ * 
+ * @since 3.1
  */
 public void fillPath (Path path) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
@@ -1738,7 +1784,7 @@ public void fillPolygon(int[] pointArray) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see #drawRectangle
+ * @see #drawRectangle(int, int, int, int)
  */
 public void fillRectangle (int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
@@ -1767,7 +1813,7 @@ public void fillRectangle (int x, int y, int width, int height) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see #drawRectangle
+ * @see #drawRectangle(int, int, int, int)
  */
 public void fillRectangle (Rectangle rect) {
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -1841,13 +1887,45 @@ public int getAdvanceWidth(char ch) {
 	return getCharWidth(ch);
 }
 
+/**
+ * Returns <code>true</code> if receiver is using the operating system's
+ * advanced graphics subsystem.  Otherwise, <code>false</code> is returned
+ * to indicate that normal graphics are in use.
+ * <p>
+ * Advanced graphics may not be installed for the operating system.  In this
+ * case, <code>false</code> is always returned.  Some operating system have
+ * only one graphics subsystem.  If this subsystem supports advanced graphics,
+ * then <code>true</code> is always returned.  If any graphics operation such
+ * as alpha, antialias, patterns, interpolation, paths, clipping or transformation
+ * has caused the receiver to switch from regular to advanced graphics mode,
+ * <code>true</code> is returned.  If the receiver has been explicitly switched
+ * to advanced mode and this mode is supported, <code>true</code> is returned.
+ * </p>
+ *
+ * @return the advanced value
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see #setAdvanced
+ * @since 3.1
+ */
 public boolean getAdvanced() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return false;
 }
 
 /**
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ * Returns the receiver's alpha value.
+ *
+ * @return the alpha value
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.1
  */
 public int getAlpha() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
@@ -1855,7 +1933,20 @@ public int getAlpha() {
 }
 
 /**
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ * Returns the receiver's anti-aliasing setting value, which will be
+ * one of <code>SWT.DEFAULT</code>, <code>SWT.OFF</code> or
+ * <code>SWT.ON</code>. Note that this controls anti-aliasing for all
+ * <em>non-text drawing</em> operations.
+ *
+ * @return the anti-aliasing setting
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see #getTextAntialias
+ * 
+ * @since 3.1
  */
 public int getAntialias() {
     if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
@@ -1876,6 +1967,20 @@ public Color getBackground() {
 	return Color.photon_new(data.device, data.background);
 }
 
+/** 
+ * Returns the background pattern. The default value is
+ * <code>null</code>.
+ *
+ * @return the receiver's background pattern
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see Pattern
+ * 
+ * @since 3.1
+ */
 public Pattern getBackgroundPattern() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return null;
@@ -2007,6 +2112,18 @@ public void getClipping (Region region) {
 	}
 }
 
+/** 
+ * Returns the receiver's fill rule, which will be one of
+ * <code>SWT.FILL_EVEN_ODD</code> or <code>SWT.FILL_WINDING</code>.
+ *
+ * @return the receiver's fill rule
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
 public int getFillRule() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	//TODO - implement fill rule
@@ -2060,13 +2177,37 @@ public Color getForeground() {
 	return Color.photon_new(data.device, data.foreground);
 }
 
+/** 
+ * Returns the foreground pattern. The default value is
+ * <code>null</code>.
+ *
+ * @return the receiver's foreground pattern
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see Pattern
+ * 
+ * @since 3.1
+ */
 public Pattern getForegroundPattern() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return null;
 }
 
-/**
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+/** 
+ * Returns the receiver's interpolation setting, which will be one of
+ * <code>SWT.DEFAULT</code>, <code>SWT.NONE</code>, 
+ * <code>SWT.LOW</code> or <code>SWT.HIGH</code>.
+ *
+ * @return the receiver's interpolation setting
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.1
  */
 public int getInterpolation() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
@@ -2092,7 +2233,8 @@ public int getLineCap() {
 }
 
 /** 
- * Returns the receiver's line dash style.
+ * Returns the receiver's line dash style. The default value is
+ * <code>null</code>.
  *
  * @return the lin dash style used for drawing lines
  *
@@ -2189,15 +2331,43 @@ public int getStyle () {
 }
 
 /**
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ * Returns the receiver's text drawing anti-aliasing setting value,
+ * which will be one of <code>SWT.DEFAULT</code>, <code>SWT.OFF</code> or
+ * <code>SWT.ON</code>. Note that this controls anti-aliasing
+ * <em>only</em> for text drawing operations.
+ *
+ * @return the anti-aliasing setting
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see #getAntialias
+ * 
+ * @since 3.1
  */
 public int getTextAntialias() {
     if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
     return SWT.DEFAULT;
 }
 
-/**
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+/** 
+ * Sets the parameter to the transform that is currently being
+ * used by the receiver.
+ *
+ * @param transform the destination to copy the transform into
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parameter is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the parameter has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see Transform
+ * 
+ * @since 3.1
  */
 public void getTransform(Transform transform) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
@@ -2226,7 +2396,7 @@ public boolean getXORMode() {
 
 /**
  * Returns an integer hash code for the receiver. Any two 
- * objects which return <code>true</code> when passed to 
+ * objects that return <code>true</code> when passed to 
  * <code>equals</code> must return the same value for this
  * method.
  *
@@ -2309,6 +2479,48 @@ public boolean isDisposed() {
 	return handle == 0;
 }
 
+/**
+ * Sets the receiver to always use the operating system's advanced graphics
+ * subsystem for all graphics operations if the argument is <code>true</code>.
+ * If the argument is <code>false</code>, the advanced graphics subsystem is 
+ * no longer used, advanced graphics state is cleared and the normal graphics
+ * subsystem is used from now on.
+ * <p>
+ * Normally, the advanced graphics subsystem is invoked automatically when
+ * any one of the alpha, antialias, patterns, interpolation, paths, clipping
+ * or transformation operations in the receiver is requested.  When the receiver
+ * is switched into advanced mode, the advanced graphics subsystem performs both
+ * advanced and normal graphics operations.  Because the two subsystems are
+ * different, their output may differ.  Switching to advanced graphics before
+ * any graphics operations are performed ensures that the output is consistent.
+ * </p>
+ * <p>
+ * Advanced graphics may not be installed for the operating system.  In this
+ * case, this operation does nothing.  Some operating system have only one
+ * graphics subsystem, so switching from normal to advanced graphics does
+ * nothing.  However, switching from advanced to normal graphics will always
+ * clear the advanced graphics state, even for operating systems that have
+ * only one graphics subsystem.
+ * </p>
+ *
+ * @param advanced the new advanced graphics state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see #setAlpha
+ * @see #setAntialias
+ * @see #setBackgroundPattern
+ * @see #setClipping(Path)
+ * @see #setForegroundPattern
+ * @see #setInterpolation
+ * @see #setTextAntialias
+ * @see #setTransform
+ * @see #getAdvanced
+ * 
+ * @since 3.1
+ */
 public void setAdvanced(boolean advanced) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (!advanced) {
@@ -2324,14 +2536,39 @@ public void setAdvanced(boolean advanced) {
 }
 
 /**
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ * Sets the receiver's alpha value.
+ *
+ * @param alpha the alpha value
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.1
  */
 public void setAlpha(int alpha) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 }
 
 /**
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ * Sets the receiver's anti-aliasing value to the parameter, 
+ * which must be one of <code>SWT.DEFAULT</code>, <code>SWT.OFF</code>
+ * or <code>SWT.ON</code>. Note that this controls anti-aliasing for all
+ * <em>non-text drawing</em> operations.
+ *
+ * @param antialias the anti-aliasing setting
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the parameter is not one of <code>SWT.DEFAULT</code>,
+ *                                 <code>SWT.OFF</code> or <code>SWT.ON</code></li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see #setTextAntialias
+ * 
+ * @since 3.1
  */
 public void setAntialias(int antialias) {
     if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
@@ -2368,6 +2605,22 @@ public void setBackground (Color color) {
 	dirtyBits |= DIRTY_BACKGROUND;
 }
 
+/** 
+ * Sets the background pattern. The default value is <code>null</code>.
+ *
+ * @param pattern the new background pattern
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the parameter has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see Pattern
+ * 
+ * @since 3.1
+ */
 public void setBackgroundPattern (Pattern pattern) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pattern == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -2415,7 +2668,22 @@ public void setClipping (int x, int y, int width, int height) {
 }
 
 /**
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ * Sets the area of the receiver which can be changed
+ * by drawing operations to the path specified
+ * by the argument.
+ *
+ * @param path the clipping path.
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the path has been disposed</li>
+ * </ul> 
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see Path
+ * 
+ * @since 3.1
  */
 public void setClipping(Path path) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
@@ -2425,9 +2693,11 @@ public void setClipping(Path path) {
 /**
  * Sets the area of the receiver which can be changed
  * by drawing operations to the rectangular area specified
- * by the argument.
+ * by the argument.  Specifying <code>null</code> for the
+ * rectangle reverts the receiver's clipping area to its
+ * original value.
  *
- * @param rect the clipping rectangle
+ * @param rect the clipping rectangle or <code>null</code>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
@@ -2449,9 +2719,11 @@ public void setClipping (Rectangle rect) {
 /**
  * Sets the area of the receiver which can be changed
  * by drawing operations to the region specified
- * by the argument.
+ * by the argument.  Specifying <code>null</code> for the
+ * region reverts the receiver's clipping area to its
+ * original value.
  *
- * @param region the clipping region.
+ * @param region the clipping region or <code>null</code>
  * 
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the region has been disposed</li>
@@ -2483,6 +2755,22 @@ public void setClipping (Region region) {
 	dirtyBits |= DIRTY_CLIPPING;
 }
 
+/** 
+ * Sets the receiver's fill rule to the parameter, which must be one of
+ * <code>SWT.FILL_EVEN_ODD</code> or <code>SWT.FILL_WINDING</code>.
+ *
+ * @param rule the new fill rule
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the rule is not one of <code>SWT.FILL_EVEN_ODD</code>
+ *                                 or <code>SWT.FILL_WINDING</code></li>
+ * </ul> 
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
 public void setFillRule(int rule) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	switch (rule) {
@@ -2539,8 +2827,22 @@ public void setForeground (Color color) {
 	dirtyBits |= DIRTY_FOREGROUND;
 }
 
-/**
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+/** 
+ * Sets the receiver's interpolation setting to the parameter, which
+ * must be one of <code>SWT.DEFAULT</code>, <code>SWT.NONE</code>, 
+ * <code>SWT.LOW</code> or <code>SWT.HIGH</code>.
+ *
+ * @param interpolation the new interpolation setting
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the rule is not one of <code>SWT.DEFAULT</code>, 
+ *                                 <code>SWT.NONE</code>, <code>SWT.LOW</code> or <code>SWT.HIGH</code>
+ * </ul> 
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.1
  */
 public void setInterpolation(int interpolation) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
@@ -2555,6 +2857,22 @@ public void setInterpolation(int interpolation) {
 	}
 }
 
+/** 
+ * Sets the foreground pattern. The default value is <code>null</code>.
+ *
+ * @param pattern the new foreground pattern
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the parameter has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see Pattern
+ * 
+ * @since 3.1
+ */
 public void setForegroundPattern (Pattern pattern) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pattern == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -2592,7 +2910,10 @@ public void setLineCap(int cap) {
 }
 
 /** 
- * Sets the receiver's line dash style to the argument.
+ * Sets the receiver's line dash style to the argument. The default
+ * value is <code>null</code>. If the argument is not <code>null</code>,
+ * the receiver's line style is set to <code>SWT.LINE_CUSTOM</code>, otherwise
+ * it is set to <code>SWT.LINE_SOLID</code>.
  *
  * @param dashes the dash style to be used for drawing lines
  * 
@@ -2691,6 +3012,12 @@ public void setLineStyle(int lineStyle) {
  * for all of the figure drawing operations (that is,
  * <code>drawLine</code>, <code>drawRectangle</code>, 
  * <code>drawPolyline</code>, and so forth.
+ * <p>
+ * Note that line width of zero is used as a hint to
+ * indicate that the fastest possible line drawing
+ * algorithms should be used. This means that the
+ * output may be different from line width one.
+ * </p>
  *
  * @param lineWidth the width of a line
  *
@@ -2870,7 +3197,24 @@ int getClipping(int widget, int topWidget, boolean clipChildren, boolean clipSib
 }
 
 /**
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ * Sets the receiver's text anti-aliasing value to the parameter, 
+ * which must be one of <code>SWT.DEFAULT</code>, <code>SWT.OFF</code>
+ * or <code>SWT.ON</code>. Note that this controls anti-aliasing only
+ * for all <em>text drawing</em> operations.
+ *
+ * @param antialias the anti-aliasing setting
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the parameter is not one of <code>SWT.DEFAULT</code>,
+ *                                 <code>SWT.OFF</code> or <code>SWT.ON</code></li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see #setAntialias
+ * 
+ * @since 3.1
  */
 public void setTextAntialias(int antialias) {
     if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
@@ -2883,8 +3227,23 @@ public void setTextAntialias(int antialias) {
     }
 }
 
-/**
- * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+/** 
+ * Sets the transform that is currently being used by the receiver. If
+ * the argument is <code>null</code>, the current transform is set to
+ * the identity transform.
+ *
+ * @param transform the transform to set
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the parameter has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @see Transform
+ * 
+ * @since 3.1
  */
 public void setTransform(Transform transform) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
@@ -2898,12 +3257,19 @@ public void setTransform(Transform transform) {
  * and the destination, and if the argument is <code>false</code>,
  * puts the receiver in a drawing mode where the destination color
  * is replaced with the source color value.
+ * <p>
+ * Note that this mode in fundamentally unsupportable on certain
+ * platforms, notably Carbon (Mac OS X). Clients that want their
+ * code to run on all platforms need to avoid this method.
+ * </p>
  *
  * @param xor if <code>true</code>, then <em>xor</em> mode is used, otherwise <em>source copy</em> mode is used
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
+ * 
+ * @deprecated this functionality is not supported on some platforms
  */
 public void setXORMode(boolean xor) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);

@@ -82,6 +82,8 @@ public DirectoryDialog (Shell parent, int style) {
  * the directories it shows.
  *
  * @return the filter path
+ * 
+ * @see #setFilterPath
  */
 public String getFilterPath () {
 	return filterPath;
@@ -258,9 +260,15 @@ String openClassicDialog () {
 	return answer;
 }
 /**
- * Sets the path which the dialog will use to filter
- * the directories it shows to the argument, which may be
- * null.
+ * Sets the path that the dialog will use to filter
+ * the directories it shows to the argument, which may
+ * be null. If the string is null, then the operating
+ * system's default filter path will be used.
+ * <p>
+ * Note that the path string is platform dependent.
+ * For convenience, either '/' or '\' can be used
+ * as a path separator.
+ * </p>
  *
  * @param string the filter path
  */

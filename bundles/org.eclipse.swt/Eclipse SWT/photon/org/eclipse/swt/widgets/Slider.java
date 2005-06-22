@@ -21,7 +21,7 @@ import org.eclipse.swt.events.*;
  * objects that represent a range of positive, numeric values. 
  * <p>
  * At any given moment, a given slider will have a 
- * single <em>selection</em> that is considered to be its
+ * single 'selection' that is considered to be its
  * value, which is constrained to be within the range of
  * values the slider represents (that is, between its
  * <em>minimum</em> and <em>maximum</em> values).
@@ -110,7 +110,7 @@ static int checkStyle (int style) {
  * interface.
  * <p>
  * When <code>widgetSelected</code> is called, the event object detail field contains one of the following values:
- * <code>0</code> - for the end of a drag.
+ * <code>SWT.NONE</code> - for the end of a drag.
  * <code>SWT.DRAG</code>.
  * <code>SWT.HOME</code>.
  * <code>SWT.END</code>.
@@ -254,7 +254,7 @@ public int getPageIncrement () {
 }
 
 /**
- * Returns the <em>selection</em>, which is the receiver's value.
+ * Returns the 'selection', which is the receiver's value.
  *
  * @return the selection
  *
@@ -467,7 +467,7 @@ public void setPageIncrement (int value) {
 }
 
 /**
- * Sets the <em>selection</em>, which is the receiver's
+ * Sets the 'selection', which is the receiver's
  * value, to the argument which must be greater than or equal
  * to zero.
  *

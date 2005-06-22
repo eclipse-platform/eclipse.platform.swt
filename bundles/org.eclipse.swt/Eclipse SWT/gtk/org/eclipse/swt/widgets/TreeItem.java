@@ -52,7 +52,7 @@ public class TreeItem extends Item {
  * Style bits are also inherited from superclasses.
  * </p>
  *
- * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param parent a tree control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
  *
  * @exception IllegalArgumentException <ul>
@@ -88,7 +88,7 @@ public TreeItem (Tree parent, int style) {
  * Style bits are also inherited from superclasses.
  * </p>
  *
- * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param parent a tree control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
  * @param index the index to store the receiver in its parent
  *
@@ -126,7 +126,7 @@ public TreeItem (Tree parent, int style, int index) {
  * Style bits are also inherited from superclasses.
  * </p>
  *
- * @param parentItem a composite control which will be the parent of the new instance (cannot be null)
+ * @param parentItem a tree control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
  *
  * @exception IllegalArgumentException <ul>
@@ -162,7 +162,7 @@ public TreeItem (TreeItem parentItem, int style) {
  * Style bits are also inherited from superclasses.
  * </p>
  *
- * @param parentItem a composite control which will be the parent of the new instance (cannot be null)
+ * @param parentItem a tree control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
  * @param index the index to store the receiver in its parent
  *
@@ -680,6 +680,23 @@ public int getItemCount () {
 	return OS.gtk_tree_model_iter_n_children (parent.modelHandle, handle);
 }
 
+/**
+ * Returns the item at the given, zero-relative index in the
+ * receiver. Throws an exception if the index is out of range.
+ *
+ * @param index the index of the item to return
+ * @return the item at the given index
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
 public TreeItem getItem (int index) {
 	checkWidget();
 	int length = OS.gtk_tree_model_iter_n_children (parent.modelHandle, handle);
@@ -694,8 +711,8 @@ public TreeItem getItem (int index) {
 }
 
 /**
- * Returns an array of <code>TreeItem</code>s which are the
- * direct item children of the receiver.
+ * Returns a (possibly empty) array of <code>TreeItem</code>s which
+ * are the direct item children of the receiver.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
@@ -797,6 +814,26 @@ public String getText (int index) {
 	return new String (Converter.mbcsToWcs (null, buffer));
 }
 
+/**
+ * Searches the receiver's list starting at the first item
+ * (index 0) until an item is found that is equal to the 
+ * argument, and returns the index of that item. If no item
+ * is found, returns -1.
+ *
+ * @param item the search item
+ * @return the index of the item
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the tool item is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the tool item has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
 public int indexOf (TreeItem item) {
 	checkWidget();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -839,6 +876,16 @@ void releaseWidget () {
 	cellFont = null;
 }
 
+/**
+ * Removes all of the items from the receiver.
+ * <p>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.1
+ */
 public void removeAll () {
 	checkWidget ();
 	int length = OS.gtk_tree_model_iter_n_children (parent.modelHandle, handle);

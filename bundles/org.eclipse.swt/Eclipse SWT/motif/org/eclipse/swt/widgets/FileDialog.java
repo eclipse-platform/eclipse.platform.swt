@@ -25,6 +25,8 @@ import org.eclipse.swt.*;
  * <dd>(none)</dd>
  * </dl>
  * <p>
+ * Note: Only one of the styles SAVE and OPEN may be specified.
+ * </p><p>
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
@@ -92,7 +94,8 @@ int cancelPressed (int widget, int client, int call) {
 }
 /**
  * Returns the path of the first file that was
- * selected in the dialog relative to the filter path
+ * selected in the dialog relative to the filter path, or an
+ * empty string if no such file has been selected.
  * 
  * @return the relative path of the file
  */
@@ -101,8 +104,8 @@ public String getFileName () {
 }
 
 /**
- * Returns the paths of all files that were selected
- * in the dialog relative to the filter path.
+ * Returns a (possibly empty) array with the paths of all files
+ * that were selected in the dialog relative to the filter path.
  * 
  * @return the relative paths of the files
  */
@@ -121,19 +124,19 @@ public String [] getFilterExtensions () {
 }
 
 /**
- * Returns the file names which the dialog will
- * use to filter the files it shows.
+ * Returns the names that describe the filter extensions
+ * which the dialog will use to filter the files it shows.
  *
- * @return the file name filter
+ * @return the list of filter names
  */
 public String [] getFilterNames () {
 	return filterNames;
 }
 
 /**
- * Returns the directory path that the dialog will use.
- * File names in this path will appear in the dialog,
- * filtered according to the filter extensions.
+ * Returns the directory path that the dialog will use, or an empty
+ * string if this is not set.  File names in this path will appear
+ * in the dialog, filtered according to the filter extensions.
  *
  * @return the directory path string
  * 
@@ -491,6 +494,11 @@ public void setFileName (String string) {
  * Set the file extensions which the dialog will
  * use to filter the files it shows to the argument,
  * which may be null.
+ * <p>
+ * The strings are platform specific. For example, on
+ * Windows, an extension filter string is typically of
+ * the form "*.extension", where "*.*" matches all files.
+ * </p>
  *
  * @param extensions the file extension filter
  */
@@ -499,11 +507,11 @@ public void setFilterExtensions (String [] extensions) {
 }
 
 /**
- * Sets the file names which the dialog will
- * use to filter the files it shows to the argument,
- * which may be null.
+ * Sets the the names that describe the filter extensions
+ * which the dialog will use to filter the files it shows
+ * to the argument, which may be null.
  *
- * @param names the file name filter
+ * @param names the list of filter names
  */
 public void setFilterNames (String [] names) {
 	filterNames = names;
@@ -513,7 +521,14 @@ public void setFilterNames (String [] names) {
  * Sets the directory path that the dialog will use
  * to the argument, which may be null. File names in this
  * path will appear in the dialog, filtered according
- * to the filter extensions.
+ * to the filter extensions. If the string is null,
+ * then the operating system's default filter path
+ * will be used.
+ * <p>
+ * Note that the path string is platform dependent.
+ * For convenience, either '/' or '\' can be used
+ * as a path separator.
+ * </p>
  *
  * @param string the directory path
  * 

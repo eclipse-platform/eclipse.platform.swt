@@ -232,6 +232,7 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
  * Creates the printer handle.
  * This method is called internally by the instance creation
  * mechanism of the <code>Device</code> class.
+ * @param deviceData the device data
  */
 protected void create(DeviceData deviceData) {
 	data = (PrinterData)deviceData;

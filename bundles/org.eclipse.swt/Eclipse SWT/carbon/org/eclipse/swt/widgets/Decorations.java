@@ -225,9 +225,9 @@ public Image getImage () {
  * marked as iconified, and may also be displayed somewhere
  * in the trim when the instance is in normal or maximized
  * states. Depending where the icon is displayed, the platform
- * chooses the icon with the "best" size. It is expected that
- * the array will contain the same icon rendered at different
- * resolutions.
+ * chooses the icon with the "best" attributes.  It is expected
+ * that the array will contain the same icon rendered at different
+ * sizes, with different depth and transparency attributes.
  * 
  * <p>
  * Note: This method will return an empty array if called before
@@ -392,7 +392,11 @@ void saveFocus () {
  * <em>saved default button</em>). If no default button had
  * previously been set, or the saved default button was
  * disposed, the receiver's default button will be set to
- * null. 
+ * null.
+ * <p>
+ * The default button is the button that is selected when
+ * the receiver is active and the user presses ENTER.
+ * </p>
  *
  * @param button the new default button
  *
@@ -457,8 +461,9 @@ public void setImage (Image image) {
  * and may also be displayed somewhere in the trim when the
  * instance is in normal or maximized states. Depending where
  * the icon is displayed, the platform chooses the icon with
- * the "best" size. It is expected that the array will contain
- * the same icon rendered at different resolutions.
+ * the "best" attributes. It is expected that the array will
+ * contain the same icon rendered at different sizes, with
+ * different depth and transparency attributes.
  * 
  * @param images the new image array
  *
@@ -503,7 +508,7 @@ public void setImages (Image [] images) {
  * causes the receiver to switch back to either the minimized
  * or normal states.
  * <p>
- * Note: The result of intermixing calls to<code>setMaximized(true)</code>
+ * Note: The result of intermixing calls to <code>setMaximized(true)</code>
  * and <code>setMinimized(true)</code> will vary by platform. Typically,
  * the behavior will match the platform user's expectations, but not
  * always. This should be avoided if possible.
@@ -557,7 +562,7 @@ public void setMenuBar (Menu menu) {
  * causes the receiver to switch back to either the maximized
  * or normal states.
  * <p>
- * Note: The result of intermixing calls to<code>setMaximized(true)</code>
+ * Note: The result of intermixing calls to <code>setMaximized(true)</code>
  * and <code>setMinimized(true)</code> will vary by platform. Typically,
  * the behavior will match the platform user's expectations, but not
  * always. This should be avoided if possible.
@@ -584,7 +589,7 @@ void setSavedFocus (Control control) {
 /**
  * Sets the receiver's text, which is the string that the
  * window manager will typically display as the receiver's
- * <em>title</em>, to the argument, which may not be null. 
+ * <em>title</em>, to the argument, which must not be null. 
  *
  * @param string the new text
  *

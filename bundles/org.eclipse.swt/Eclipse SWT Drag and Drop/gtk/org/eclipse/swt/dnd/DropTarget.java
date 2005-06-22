@@ -135,6 +135,7 @@ public class DropTarget extends Widget {
  * <p>NOTE: ERROR_CANNOT_INIT_DROP should be an SWTException, since it is a
  * recoverable error, but can not be changed due to backward compatability.</p>
  * 
+ * @see Widget#dispose
  * @see DropTarget#checkSubclass
  * @see DND#DROP_NONE
  * @see DND#DROP_COPY

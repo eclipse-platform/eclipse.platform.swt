@@ -25,7 +25,7 @@ package org.eclipse.swt.dnd;
  * <code>byte[]</code>, you should sub-class <code>Transfer</code> directly 
  * and do your own mapping to a platform data type.</p>
  * 
- * <p>The following snippet shows a sublcass of ByteArrayTransfer that transfers
+ * <p>The following snippet shows a subclass of ByteArrayTransfer that transfers
  * data defined by the class <code>MyType</code>.</p>
  * 
  * <pre><code>
@@ -36,7 +36,7 @@ package org.eclipse.swt.dnd;
  * }
  * </code></pre>
  * 
- * <code><pre>
+ * <pre><code>
  * public class MyTypeTransfer extends ByteArrayTransfer {
  *	
  *	private static final String MYTYPENAME = "my_type_name";
@@ -113,6 +113,7 @@ package org.eclipse.swt.dnd;
  * 	return new int[] {MYTYPEID};
  * }
  * }
+ * </code></pre>
  */
 public abstract class ByteArrayTransfer extends Transfer {
 

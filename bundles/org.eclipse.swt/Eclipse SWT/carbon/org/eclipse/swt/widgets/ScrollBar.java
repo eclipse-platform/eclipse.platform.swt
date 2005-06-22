@@ -23,7 +23,7 @@ import org.eclipse.swt.graphics.*;
  * objects that represent a range of positive, numeric values. 
  * <p>
  * At any given moment, a given scroll bar will have a 
- * single <em>selection</em> that is considered to be its
+ * single 'selection' that is considered to be its
  * value, which is constrained to be within the range of
  * values the scroll bar represents (that is, between its
  * <em>minimum</em> and <em>maximum</em> values).
@@ -106,6 +106,7 @@ ScrollBar (Scrollable parent, int style) {
  * interface.
  * <p>
  * When <code>widgetSelected</code> is called, the event object detail field contains one of the following values:
+ * <code>SWT.NONE</code> - for the end of a drag.
  * <code>SWT.DRAG</code>.
  * <code>SWT.HOME</code>.
  * <code>SWT.END</code>.
@@ -301,7 +302,7 @@ public int getPageIncrement () {
 }
 
 /**
- * Returns the receiver's parent, which must be scrollable.
+ * Returns the receiver's parent, which must be a Scrollable.
  *
  * @return the receiver's parent
  *
@@ -316,7 +317,7 @@ public Scrollable getParent () {
 }
 
 /**
- * Returns the single <em>selection</em> that is the receiver's value.
+ * Returns the single 'selection' that is the receiver's value.
  *
  * @return the selection
  *

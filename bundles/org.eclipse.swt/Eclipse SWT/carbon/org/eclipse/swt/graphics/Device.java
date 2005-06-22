@@ -416,7 +416,7 @@ public FontData[] getFontList (String faceName, boolean scalable) {
  * specified in class <code>SWT</code>. Any value other
  * than one of the SWT color constants which is passed
  * in will result in the color black. This color should
- * not be free'd because it was allocated by the system,
+ * not be freed because it was allocated by the system,
  * not the application.
  *
  * @param id the color constant
@@ -455,7 +455,7 @@ public Color getSystemColor (int id) {
  * Returns a reasonable font for applications to use.
  * On some platforms, this will match the "default font"
  * or "system font" if such can be found.  This font
- * should not be free'd because it was allocated by the
+ * should not be freed because it was allocated by the
  * system, not the application.
  * <p>
  * Typically, applications which want the default look

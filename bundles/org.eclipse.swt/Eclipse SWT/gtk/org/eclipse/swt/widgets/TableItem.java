@@ -170,7 +170,6 @@ void clear () {
  * </ul>
  * 
  * @since 2.0
- * 
  */
 public Color getBackground () {
 	checkWidget ();
@@ -346,7 +345,6 @@ public Font getFont (int index) {
  * </ul>
  * 
  * @since 2.0
- * 
  */
 public Color getForeground () {
 	checkWidget ();
@@ -442,7 +440,8 @@ public Image getImage (int index) {
 /**
  * Returns a rectangle describing the size and location
  * relative to its parent of an image at a column in the
- * table.
+ * table.  An empty rectangle is returned if index exceeds
+ * the index of the table's last column.
  *
  * @param index the index that specifies the column
  * @return the receiver's bounding image rectangle
@@ -613,7 +612,6 @@ void releaseWidget () {
  * </ul>
  * 
  * @since 2.0
- * 
  */
 public void setBackground (Color color) {
 	checkWidget ();
@@ -642,7 +640,6 @@ public void setBackground (Color color) {
  * </ul>
  * 
  * @since 3.0
- * 
  */
 public void setBackground (int index, Color color) {
 	checkWidget ();
@@ -816,7 +813,6 @@ public void setFont (int index, Font font) {
  * </ul>
  * 
  * @since 2.0
- * 
  */
 public void setForeground (Color color){
 	checkWidget ();
@@ -845,7 +841,6 @@ public void setForeground (Color color){
  * </ul>
  * 
  * @since 3.0
- * 
  */
 public void setForeground (int index, Color color){
 	checkWidget ();

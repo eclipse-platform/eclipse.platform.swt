@@ -54,7 +54,7 @@ import java.io.*;
  * loading process should use the support provided in class
  * <code>ImageLoader</code>.
  * </p><p>
- * Application code must explicitely invoke the <code>Image.dispose()</code> 
+ * Application code must explicitly invoke the <code>Image.dispose()</code> 
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required.
  * </p>
@@ -451,7 +451,20 @@ public Image(Device device, ImageData source, ImageData mask) {
  * This constructor may be used to load a resource as follows:
  * </p>
  * <pre>
- *     new Image(device, clazz.getResourceAsStream("file.gif"));
+ *     static Image loadImage (Display display, Class clazz, String string) {
+ *          InputStream stream = clazz.getResourceAsStream (string);
+ *          if (stream == null) return null;
+ *          Image image = null;
+ *          try {
+ *               image = new Image (display, stream);
+ *          } catch (SWTException ex) {
+ *          } finally {
+ *               try {
+ *                    stream.close ();
+ *               } catch (IOException ex) {}
+ *          }
+ *          return image;
+ *     }
  * </pre>
  *
  * @param device the device on which to create the image
@@ -806,7 +819,7 @@ public static Image gtk_new(Device device, int type, int /*long*/ pixmap, int /*
 
 /**
  * Returns an integer hash code for the receiver. Any two 
- * objects which return <code>true</code> when passed to 
+ * objects that return <code>true</code> when passed to 
  * <code>equals</code> must return the same value for this
  * method.
  *

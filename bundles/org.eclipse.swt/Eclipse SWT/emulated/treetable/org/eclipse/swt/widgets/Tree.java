@@ -17,7 +17,7 @@ import org.eclipse.swt.internal.*;
 
 /**
  * Instances of this class provide a selectable user interface object
- * that displays a hierarchy of items and issue notificiation when an
+ * that displays a hierarchy of items and issue notification when an
  * item in the hierarchy is selected.
  * <p>
  * The item children that may be added to instances of this class
@@ -694,12 +694,14 @@ public TreeItem getItem (Point point) {
  * @return the item at the given index
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of root elements minus 1 (inclusive)</li>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @since 3.1
  */
 public TreeItem getItem (int index) {
 	checkWidget ();
@@ -739,8 +741,8 @@ public int getItemHeight () {
 	return itemHeight;
 }
 /**
- * Returns the items contained in the receiver
- * that are direct item children of the receiver.  These
+ * Returns a (possibly empty) array of items contained in the
+ * receiver that are direct item children of the receiver.  These
  * are the roots of the tree.
  * <p>
  * Note: This is not the actual structure used by the receiver
@@ -810,8 +812,8 @@ public TreeItem getParentItem () {
 }
 /**
  * Returns an array of <code>TreeItem</code>s that are currently
- * selected in the receiver. An empty array indicates that no
- * items are selected.
+ * selected in the receiver. The order of the items is unspecified.
+ * An empty array indicates that no items are selected. 
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
@@ -1078,12 +1080,51 @@ void headerPaintVShadows (GC gc, int x, int y, int width, int height) {
 	gc.setForeground (display.getSystemColor (SWT.COLOR_WIDGET_DARK_SHADOW));
 	gc.drawLine (endX - 1, y, endX - 1, height - 1);		/* dark outer shadow */
 }
+/**
+ * Searches the receiver's list starting at the first column
+ * (index 0) until a column is found that is equal to the 
+ * argument, and returns the index of that column. If no column
+ * is found, returns -1.
+ *
+ * @param column the search column
+ * @return the index of the column
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
 public int indexOf (TreeColumn column) {
 	checkWidget ();
 	if (column == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (column.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	return column.getIndex ();
 }
+/**
+ * Searches the receiver's list starting at the first item
+ * (index 0) until an item is found that is equal to the 
+ * argument, and returns the index of that item. If no item
+ * is found, returns -1.
+ *
+ * @param item the search item
+ * @return the index of the item
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the tool item is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the tool item has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
 public int indexOf (TreeItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);

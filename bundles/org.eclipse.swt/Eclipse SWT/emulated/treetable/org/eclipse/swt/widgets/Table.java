@@ -105,6 +105,7 @@ public boolean isFocusControl() {
  * @see SWT#CHECK
  * @see SWT#FULL_SELECTION
  * @see SWT#HIDE_SELECTION
+ * @see SWT#VIRTUAL
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -933,8 +934,8 @@ public int getItemHeight () {
 	return itemHeight;
 }
 /**
- * Returns an array of <code>TableItem</code>s which are the items
- * in the receiver. 
+ * Returns a (possibly empty) array of <code>TableItem</code>s which
+ * are the items in the receiver. 
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
@@ -987,8 +988,8 @@ TableColumn[] getOrderedColumns () {
 }
 /**
  * Returns an array of <code>TableItem</code>s that are currently
- * selected in the receiver. An empty array indicates that no
- * items are selected.
+ * selected in the receiver. The order of the items is unspecified.
+ * An empty array indicates that no items are selected.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
@@ -1049,7 +1050,8 @@ int getSelectionIndex (TableItem item) {
 }
 /**
  * Returns the zero-relative indices of the items which are currently
- * selected in the receiver.  The array is empty if no items are selected.
+ * selected in the receiver. The order of the indices is unspecified.
+ * The array is empty if no items are selected.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
@@ -3171,7 +3173,7 @@ public void setSelection (TableItem[] items) {
 }
 /**
  * Selects the item at the given zero-relative index in the receiver. 
- * The current selected is first cleared, then the new item is selected.
+ * The current selection is first cleared, then the new item is selected.
  *
  * @param index the index of the item to select
  *
@@ -3300,8 +3302,8 @@ public void setTopIndex (int index) {
  * @param column the column to be shown
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the item has been disposed</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the column is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the column has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

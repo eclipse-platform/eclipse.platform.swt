@@ -38,7 +38,8 @@ abstract public TransferData[] getSupportedTypes();
 
 /**
  * Returns true if the <code>TransferData</code> data type can be converted 
- * using this transfer agent.
+ * using this transfer agent, or false otherwise (including if transferData is
+ * <code>null</code>).
  *
  * @param transferData a platform specific description of a data type; only the data
  *  type fields of the <code>TransferData</code> object need to be filled in
@@ -92,6 +93,10 @@ abstract protected int[] getTypeIds();
  *
  * @param transferData an empty TransferData object; this object will be 
  * filled in on return with the platform specific representation of the data
+ * 
+ * @exception org.eclipse.swt.SWTException <ul>
+ *    <li>ERROR_INVALID_DATA - if object does not contain data in a valid format or is <code>null</code></li>
+ * </ul>
  */
 abstract protected void javaToNative (Object object, TransferData transferData);
 
@@ -102,8 +107,9 @@ abstract protected void javaToNative (Object object, TransferData transferData);
  * converted
  *
  * @return a java representation of the converted data if the conversion was 
- * successful; otherwise null.  The type of Object that is returned is dependant 
- * on the <code>Transfer</code> subclass
+ * successful; otherwise null.  If transferData is <code>null</code> then
+ * <code>null</code> is returned.  The type of Object that is returned is 
+ * dependant on the <code>Transfer</code> subclass.
  */
 abstract protected Object nativeToJava(TransferData transferData);
 

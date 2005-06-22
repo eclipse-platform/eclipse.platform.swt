@@ -270,7 +270,7 @@ int /*long*/ paintWindow () {
  * @see #getBorderWidth
  * @see #getBounds
  * @see #getSize
- * @see #pack
+ * @see #pack(boolean)
  * @see "computeTrim, getClientArea for controls that implement them"
  */
 public Point computeSize (int wHint, int hHint) {
@@ -355,7 +355,7 @@ void createWidget (int index) {
  * @see #getBorderWidth
  * @see #getBounds
  * @see #getSize
- * @see #pack
+ * @see #pack(boolean)
  * @see "computeTrim, getClientArea for controls that implement them"
  */
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -821,7 +821,7 @@ public void moveBelow (Control control) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see #computeSize
+ * @see #computeSize(int, int, boolean)
  */
 public void pack () {
 	pack (true);
@@ -846,7 +846,7 @@ public void pack () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see #computeSize
+ * @see #computeSize(int, int, boolean)
  */
 public void pack (boolean changed) {
 	setSize (computeSize (SWT.DEFAULT, SWT.DEFAULT, changed));
@@ -2846,7 +2846,8 @@ void setOrientation () {
  * @return <code>true</code> if the parent is changed and <code>false</code> otherwise.
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is <code>null</code></li> 
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -2903,7 +2904,7 @@ boolean setRadioSelection (boolean value) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
- * @see #redraw
+ * @see #redraw(int, int, int, int, boolean)
  * @see #update
  */
 public void setRedraw (boolean redraw) {
@@ -3363,7 +3364,7 @@ boolean traverseMnemonic (char key) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see #redraw
+ * @see #redraw(int, int, int, int, boolean)
  * @see PaintListener
  * @see SWT#Paint
  */

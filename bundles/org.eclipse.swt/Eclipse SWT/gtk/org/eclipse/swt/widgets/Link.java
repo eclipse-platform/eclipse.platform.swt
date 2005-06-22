@@ -23,6 +23,7 @@ import org.eclipse.swt.accessibility.*;
  * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
+ * <dd>(none)</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection</dd>
  * </dl>
@@ -652,7 +653,7 @@ void setFontDescription (int /*long*/ font) {
  * is delimited by an anchor tag, &lt;A&gt; and &lt;/A&gt;.  Within an
  * anchor, a single HREF attribute is supported.  When a hyperlink is
  * selected, the text field of the selection event contains either the
- * text of hyperlink or the value of the HREF, if one was specified.
+ * text of the hyperlink or the value of its HREF, if one was specified.
  * In the rare case of identical hyperlinks within the same string, the
  * HREF tag can be used to distinguish between them.  The string may
  * include the mnemonic character and line delimiters.

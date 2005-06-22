@@ -81,7 +81,7 @@ public class Browser extends Composite {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for browser creation</li>
  * </ul>
  * 
- * @see #getStyle
+ * @see Widget#getStyle
  * 
  * @since 3.0
  */
@@ -208,7 +208,7 @@ public void addCloseWindowListener(CloseWindowListener listener) {
 
 /**	 
  * Adds the listener to the collection of listeners who will be
- * notified when the current location is changed or about to be changed.
+ * notified when the current location has changed or is about to change.
  * <p>
  * This notification typically occurs when the application navigates
  * to a new location with {@link #setUrl(String)} or when the user

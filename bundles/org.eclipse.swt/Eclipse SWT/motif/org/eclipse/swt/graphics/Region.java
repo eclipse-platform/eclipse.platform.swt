@@ -134,7 +134,6 @@ public void add (Rectangle rect) {
  * @param height the height coordinate of the rectangle
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the rectangle's width or height is negative</li>
  * </ul>
  * @exception SWTException <ul>
@@ -260,7 +259,7 @@ public Rectangle getBounds() {
 }
 /**
  * Returns an integer hash code for the receiver. Any two 
- * objects which return <code>true</code> when passed to 
+ * objects that return <code>true</code> when passed to 
  * <code>equals</code> must return the same value for this
  * method.
  *
@@ -361,7 +360,7 @@ public void intersect (Region region) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see Rectangle#intersects
+ * @see Rectangle#intersects(Rectangle)
  */
 public boolean intersects (int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
@@ -382,7 +381,7 @@ public boolean intersects (int x, int y, int width, int height) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see Rectangle#intersects
+ * @see Rectangle#intersects(Rectangle)
  */
 public boolean intersects (Rectangle rect) {
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -476,7 +475,6 @@ public void subtract (Rectangle rect) {
  * @param height the height coordinate of the rectangle
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the rectangle's width or height is negative</li>
  * </ul>
  * @exception SWTException <ul>

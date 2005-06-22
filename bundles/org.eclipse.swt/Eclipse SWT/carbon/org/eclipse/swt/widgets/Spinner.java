@@ -27,7 +27,7 @@ import org.eclipse.swt.graphics.*;
  * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>READ_ONLY</dd>
+ * <dd>READ_ONLY, WRAP</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection, Modify</dd>
  * </dl>
@@ -69,6 +69,7 @@ public class Spinner extends Composite {
  * </ul>
  *
  * @see SWT#READ_ONLY
+ * @see SWT#WRAP
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -363,6 +364,16 @@ int focusHandle () {
 	return textHandle;
 }
 
+/**
+ * Returns the number of decimal places used by the receiver.
+ *
+ * @return the digits
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public int getDigits () {
 	checkWidget ();
 	return digits;
@@ -797,6 +808,25 @@ void setBackground (float [] color) {
 	setBackground (textHandle, color);
 }
 
+/**
+ * Sets the number of decimal places used by the receiver.
+ * <p>
+ * The digit setting is used to allow for floating point values in the receiver.
+ * For example, to set the selection to a floating point value of 1.37 call setDigits() with 
+ * a value of 2 and setSelection() with a value of 137. Similarly, if getDigits() has a value
+ * of 2 and getSelection() returns 137 this should be interpreted as 1.37. This applies to all
+ * numeric APIs. 
+ * 
+ * @param value the new digits (must be greater than or equal to zero)
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the value is less than zero</li>
+ * </ul> 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setDigits (int value) {
 	checkWidget ();
 	if (value < 0) error (SWT.ERROR_INVALID_ARGUMENT);

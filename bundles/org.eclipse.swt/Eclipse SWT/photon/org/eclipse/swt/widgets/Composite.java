@@ -20,7 +20,7 @@ import org.eclipse.swt.graphics.*;
  * of containing other controls.
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>NO_BACKGROUND, NO_FOCUS, NO_MERGE_PAINTS, NO_REDRAW_RESIZE, NO_RADIO_GROUP, EMBEDDED</dd>
+ * <dd>NO_BACKGROUND, NO_FOCUS, NO_MERGE_PAINTS, NO_REDRAW_RESIZE, NO_RADIO_GROUP, EMBEDDED, DOUBLE_BUFFERED</dd>
  * <dt><b>Events:</b></dt>
  * <dd>(none)</dd>
  * </dl>
@@ -437,7 +437,7 @@ int getClipping(int widget, int topWidget, boolean clipChildren, boolean clipSib
 }
 
 /**
- * Returns an array containing the receiver's children.
+ * Returns a (possibly empty) array containing the receiver's children.
  * Children are returned in the order that they are drawn.
  * <p>
  * Note: This is not the actual structure used by the receiver
@@ -544,7 +544,7 @@ public boolean isLayoutDeferred () {
 }
 
 /**
- * Gets the last specified tabbing order for the control.
+ * Gets the (possibly empty) tabbing order for the control.
  *
  * @return tabList the ordered list of controls representing the tab order
  *
