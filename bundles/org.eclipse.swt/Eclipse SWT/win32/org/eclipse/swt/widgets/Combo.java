@@ -744,6 +744,8 @@ public int getTextHeight () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ *
+ * @see Combo.LIMIT
  */
 public int getTextLimit () {
 	checkWidget ();
@@ -1493,7 +1495,11 @@ public void setText (String string) {
 /**
  * Sets the maximum number of characters that the receiver's
  * text field is capable of holding to be the argument.
- *
+ * <p>
+ * To reset this value to the default, use <code>setTextLimit(Combo.LIMIT)</code>.
+ * Specifying a limit value larger than <code>Combo.LIMIT</code> sets the
+ * receiver's limit to <code>Combo.LIMIT</code>.
+ * </p>
  * @param limit new text limit
  *
  * @exception IllegalArgumentException <ul>
@@ -1503,6 +1509,8 @@ public void setText (String string) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see Combo.LIMIT
  */
 public void setTextLimit (int limit) {
 	checkWidget ();
