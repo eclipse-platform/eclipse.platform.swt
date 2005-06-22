@@ -895,7 +895,7 @@ public String getText (int start, int end) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
- * @see Text.LIMIT
+ * @see #LIMIT
  */
 public int getTextLimit () {
 	checkWidget ();
@@ -1614,7 +1614,7 @@ public void setText (String string) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
- * @see Text.LIMIT
+ * @see #LIMIT
  */
 public void setTextLimit (int limit) {
 	checkWidget ();
