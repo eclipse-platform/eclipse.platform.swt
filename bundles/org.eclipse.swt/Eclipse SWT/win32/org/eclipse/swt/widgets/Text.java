@@ -1289,6 +1289,9 @@ void setBounds (int x, int y, int width, int height, int flags) {
  * The double click flag enables or disables the
  * default action of the text widget when the user
  * double clicks.
+ * </p><p>
+ * Note: This feature is not available on all window systems,
+ * in which case, calling this method will silently do nothing.
  * </p>
  * 
  * @param doubleClick the new double click flag
@@ -1312,8 +1315,9 @@ public void setDoubleClickEnabled (boolean doubleClick) {
  * the echo character to '\0' clears the echo
  * character and redraws the original text.
  * If for any reason the echo character is invalid,
- * the default echo character for the platform
- * is used.
+ * or if the platform does not allow modification
+ * of the echo character, the default echo character
+ * for the platform is used.
  * </p>
  *
  * @param echo the new echo character
@@ -1365,6 +1369,9 @@ public void setFont (Font font) {
  * Sets the orientation of the receiver, which must be one
  * of the constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
  * <p>
+ * Note: This feature is not available on all window systems,
+ * in which case, calling this method will silently do nothing.
+ * </p>
  *
  * @param orientation new orientation style
  * 
