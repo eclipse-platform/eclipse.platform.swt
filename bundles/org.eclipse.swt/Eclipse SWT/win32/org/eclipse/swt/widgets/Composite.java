@@ -277,7 +277,7 @@ void fixTabList (Control control) {
 }
 
 /**
- * Returns an array containing the receiver's children.
+ * Returns a (possibly empty) array containing the receiver's children.
  * Children are returned in the order that they are drawn.
  * <p>
  * Note: This is not the actual structure used by the receiver
@@ -331,7 +331,7 @@ public Layout getLayout () {
 }
 
 /**
- * Gets the last specified tabbing order for the control.
+ * Gets the (possibly empty) tabbing order for the control.
  *
  * @return tabList the ordered list of controls representing the tab order
  *

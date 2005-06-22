@@ -1106,8 +1106,8 @@ public int getItemHeight () {
 }
 
 /**
- * Returns the items contained in the receiver
- * that are direct item children of the receiver.  These
+ * Returns a (possibly empty) array of items contained in the
+ * receiver that are direct item children of the receiver.  These
  * are the roots of the tree.
  * <p>
  * Note: This is not the actual structure used by the receiver

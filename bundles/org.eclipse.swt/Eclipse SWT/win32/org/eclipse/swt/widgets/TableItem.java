@@ -449,7 +449,8 @@ public Image getImage (int index) {
 /**
  * Returns a rectangle describing the size and location
  * relative to its parent of an image at a column in the
- * table.
+ * table.  An empty rectangle is returned if index exceeds
+ * the index of the table's last column.
  *
  * @param index the index that specifies the column
  * @return the receiver's bounding image rectangle

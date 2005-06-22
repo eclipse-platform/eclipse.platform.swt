@@ -449,8 +449,8 @@ public int getItemHeight () {
 }
 
 /**
- * Returns an array of <code>String</code>s which are the items
- * in the receiver. 
+ * Returns a (possibly empty) array of <code>String</code>s which
+ * are the items in the receiver. 
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
@@ -524,7 +524,7 @@ public int getSelectionCount () {
  * Returns the zero-relative index of the item which is currently
  * selected in the receiver, or -1 if no item is selected.
  *
- * @return the index of the selected item
+ * @return the index of the selected item or -1
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

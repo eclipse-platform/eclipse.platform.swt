@@ -266,13 +266,13 @@ void fixMenus (Decorations newParent) {
 }
 
 /**
- * Return the widget accelerator.  An accelerator is the bit-wise
+ * Returns the widget accelerator.  An accelerator is the bit-wise
  * OR of zero or more modifier masks and a key. Examples:
  * <code>SWT.CONTROL | SWT.SHIFT | 'T', SWT.ALT | SWT.F2</code>.
  * The default value is zero, indicating that the menu item does
  * not have an accelerator.
  *
- * @return the accelerator
+ * @return the accelerator or 0
  *
  * </ul>
  * @exception SWTException <ul>

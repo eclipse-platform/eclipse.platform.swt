@@ -600,8 +600,8 @@ public int getItemHeight () {
 }
 
 /**
- * Returns an array of <code>String</code>s which are the items
- * in the receiver's list. 
+ * Returns a (possibly empty) array of <code>String</code>s which are
+ * the items in the receiver's list. 
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
@@ -691,7 +691,8 @@ public int getSelectionIndex () {
 
 /**
  * Returns a string containing a copy of the contents of the
- * receiver's text field.
+ * receiver's text field, or an empty string if there are no
+ * contents.
  *
  * @return the receiver's text
  *

@@ -769,7 +769,7 @@ public int getSelectionCount () {
 }
 
 /**
- * Returns the selected text.
+ * Gets the selected text, or an empty string if there is no current selection.
  *
  * @return the selected text
  * 

@@ -84,7 +84,8 @@ public FileDialog (Shell parent, int style) {
 
 /**
  * Returns the path of the first file that was
- * selected in the dialog relative to the filter path.
+ * selected in the dialog relative to the filter path, or an
+ * empty string if no such file has been selected.
  * 
  * @return the relative path of the file
  */
@@ -93,8 +94,8 @@ public String getFileName () {
 }
 
 /**
- * Returns the paths of all files that were selected
- * in the dialog relative to the filter path.
+ * Returns a (possibly empty) array with the paths of all files
+ * that were selected in the dialog relative to the filter path.
  * 
  * @return the relative paths of the files
  */
@@ -123,9 +124,9 @@ public String [] getFilterNames () {
 }
 
 /**
- * Returns the directory path that the dialog will use.
- * File names in this path will appear in the dialog,
- * filtered according to the filter extensions.
+ * Returns the directory path that the dialog will use, or an empty
+ * string if this is not set.  File names in this path will appear
+ * in the dialog, filtered according to the filter extensions.
  *
  * @return the directory path string
  * 

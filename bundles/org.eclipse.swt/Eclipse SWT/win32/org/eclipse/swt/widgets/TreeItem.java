@@ -571,8 +571,8 @@ public int getItemCount () {
 }
 
 /**
- * Returns an array of <code>TreeItem</code>s which are the
- * direct item children of the receiver.
+ * Returns a (possibly empty) array of <code>TreeItem</code>s which
+ * are the direct item children of the receiver.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will

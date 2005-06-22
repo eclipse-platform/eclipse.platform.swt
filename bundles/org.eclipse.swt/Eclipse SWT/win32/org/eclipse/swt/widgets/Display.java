@@ -1671,8 +1671,8 @@ public Monitor getPrimaryMonitor () {
 }
 
 /**
- * Returns an array containing all shells which have not been
- * disposed and have the receiver as their display.
+ * Returns a (possibly empty) array containing all shells which have
+ * not been disposed and have the receiver as their display.
  *
  * @return the receiver's shells
  *
