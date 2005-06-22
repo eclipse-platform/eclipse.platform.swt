@@ -361,6 +361,12 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 	return new Point (w, h);
 }
 
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the event
+ */
 public String toString () {
  	String string =  getName ()+" {";
  	if (marginWidth != 0) string += "marginWidth="+marginWidth+" ";

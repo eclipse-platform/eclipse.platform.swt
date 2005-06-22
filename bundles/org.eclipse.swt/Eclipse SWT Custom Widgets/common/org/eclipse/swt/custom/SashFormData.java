@@ -21,6 +21,12 @@ String getName () {
 	return string.substring (index + 1, string.length ());
 }
 
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the event
+ */
 public String toString () {
 	return getName()+" {weight="+weight+"}"; //$NON-NLS-2$
 }

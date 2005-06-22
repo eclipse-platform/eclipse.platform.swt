@@ -434,6 +434,12 @@ Point layoutVertical (Composite composite, boolean move, boolean wrap, int heigh
 	return new Point (x + maxWidth + marginRight + marginWidth, maxY);
 }
 
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the event
+ */
 public String toString () {
  	String string = getName ()+" {";
  	string += "type="+((type != SWT.HORIZONTAL) ? "SWT.VERTICAL" : "SWT.HORIZONTAL")+" ";

@@ -251,9 +251,6 @@ int getChunkType() {
 	return CHUNK_UNKNOWN;
 }
 
-
-
-
 /**
  * Read the next PNG chunk from the input stream given.
  * If unable to read a chunk, return null.
@@ -318,6 +315,12 @@ void validate(PngFileReadState readState, PngIhdrChunk headerChunk) {
  */
 void contributeToString(StringBuffer buffer) {}
 
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the event
+ */
 public String toString() {
 	StringBuffer buffer = new StringBuffer();
 	buffer.append("{");

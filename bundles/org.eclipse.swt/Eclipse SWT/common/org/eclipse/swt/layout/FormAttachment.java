@@ -276,6 +276,12 @@ int solveY (int value) {
 	return (value - offset) * denominator / numerator;
 }
 	
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the event
+ */
 public String toString () {
  	String string = control != null ? control.toString () : numerator + "/" + denominator;
 	return "{y = (" + string + (offset >= 0 ? ")x + " + offset: ")x - " + (-offset))+"}";

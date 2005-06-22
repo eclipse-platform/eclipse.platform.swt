@@ -180,19 +180,19 @@ public class Event {
 	public Object data;
 	
 /**
-* Gets the bounds.
-* <p>
-* @return a rectangle that is the bounds.
-*/
+ * Gets the bounds.
+ * 
+ * @return a rectangle that is the bounds.
+ */
 public Rectangle getBounds () {
 	return new Rectangle (x, y, width, height);
 }
 
 /**
-* Sets the bounds.
-* <p>
-* @param rect the new rectangle
-*/
+ * Sets the bounds.
+ * 
+ * @param rect the new rectangle
+ */
 public void setBounds (Rectangle rect) {
 	this.x = rect.x;
 	this.y = rect.y;
@@ -201,10 +201,11 @@ public void setBounds (Rectangle rect) {
 }
 
 /**
-* Returns a string representation of the object.
-*
-* @return a string representation of the object
-*/
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the event
+ */
 public String toString () {
 	return "Event {type=" + type + ",widget=" + widget + ",x=" + x + ",y=" + y + ",width=" + width + ",height=" + height + "}";  //$NON-NLS-1$//$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
 }

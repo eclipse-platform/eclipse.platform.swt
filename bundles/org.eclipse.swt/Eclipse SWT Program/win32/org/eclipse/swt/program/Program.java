@@ -334,6 +334,12 @@ public int hashCode() {
 	return name.hashCode() ^ command.hashCode() ^ iconName.hashCode();
 }
 
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the event
+ */
 public String toString () {
 	return "Program {" + name + "}"; //$NON-NLS-1$ //$NON-NLS-2$
 }

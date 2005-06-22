@@ -15,7 +15,7 @@ package org.eclipse.swt.internal.win32;
  * This class implements the conversions between unicode characters
  * and the <em>platform supported</em> representation for characters.
  * <p>
- * Note that, unicode characters which can not be found in the platform
+ * Note that unicode characters which can not be found in the platform
  * encoding will be converted to an arbitrary platform specific character.
  * </p>
  */
