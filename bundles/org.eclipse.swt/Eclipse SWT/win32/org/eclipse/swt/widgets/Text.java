@@ -40,7 +40,9 @@ public class Text extends Scrollable {
 	* The maximum number of characters that can be entered
 	* into a text widget.
 	* <p>
-	* Note that this value is platform dependent.
+	* Note that this value is platform dependent, based upon
+	* the native widget implementation and (if applicable)
+	* client-server protocol constraints.
 	* </p>
 	*/
 	public static final int LIMIT;
@@ -893,6 +895,8 @@ public String getText (int start, int end) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see Text.LIMIT
  */
 public int getTextLimit () {
 	checkWidget ();
@@ -1610,6 +1614,8 @@ public void setText (String string) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see Text.LIMIT
  */
 public void setTextLimit (int limit) {
 	checkWidget ();
