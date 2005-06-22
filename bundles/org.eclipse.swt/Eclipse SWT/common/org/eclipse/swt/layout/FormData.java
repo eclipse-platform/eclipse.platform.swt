@@ -50,7 +50,7 @@ public final class FormData {
 	 *
 	 * The default value is SWT.DEFAULT.
 	 *
-	 * @see Control#computeSize
+	 * @see Control#computeSize(int, int, boolean)
 	 */
 	public int width = SWT.DEFAULT;
 	/**
@@ -60,7 +60,7 @@ public final class FormData {
 	 *
 	 * The default value is SWT.DEFAULT.
 	 *
-	 * @see Control#computeSize
+	 * @see Control#computeSize(int, int, boolean)
 	 */
 	public int height = SWT.DEFAULT;
 	/**
@@ -89,9 +89,21 @@ public final class FormData {
 	FormAttachment cacheLeft, cacheRight, cacheTop, cacheBottom;
 	boolean isVisited, needed;
 	
+/**
+ * Constructs a new instance of FormData using
+ * default values.
+ */
 public FormData () {
 }
 	
+/**
+ * Constructs a new instance of FormData according to the parameters.
+ * A value of SWT.DEFAULT indicates that no minimum width or
+ * no minumum height is specified.
+ * 
+ * @param width a minimum width for the control
+ * @param height a minimum height for the control
+ */
 public FormData (int width, int height) {
 	this.width = width;
 	this.height = height;

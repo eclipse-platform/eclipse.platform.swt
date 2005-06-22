@@ -108,6 +108,7 @@ public Dialog (Shell parent) {
  * Style bits are also inherited from superclasses.
  *
  * @param parent a shell which will be the parent of the new instance
+ * @param style the style of dialog to construct
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
@@ -164,7 +165,7 @@ void checkParent (Shell parent) {
  *
  * @param code the descriptive error code
  *
- * @see SWTError#error
+ * @see SWT#error(int)
  */
 void error (int code) {
 	SWT.error(code);

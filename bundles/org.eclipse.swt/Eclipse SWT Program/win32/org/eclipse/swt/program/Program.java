@@ -314,7 +314,7 @@ public String getName () {
  * if they represent the <em>same</em> object using a class
  * specific comparison.
  *
- * @param object the object to compare with this object
+ * @param other the object to compare with this object
  * @return <code>true</code> if the object is the same as this object and <code>false</code> otherwise
  *
  * @see #hashCode()

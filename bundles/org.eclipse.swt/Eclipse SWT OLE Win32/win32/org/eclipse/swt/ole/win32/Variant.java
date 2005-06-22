@@ -23,11 +23,13 @@ import org.eclipse.swt.internal.win32.*;
  */
 public final class Variant
 {
-	// A variant always takes up 16 bytes, no matter what you 
-	// store in it. Objects, strings, and arrays are not physically 
-	// stored in the Variant; in these cases, four bytes of the 
-	// Variant are used to hold either an object reference, or a 
-	// pointer to the string or array. The actual data are stored elsewhere.
+	/**
+	 * A variant always takes up 16 bytes, no matter what you 
+	 * store in it. Objects, strings, and arrays are not physically 
+	 * stored in the Variant; in these cases, four bytes of the 
+	 * Variant are used to hold either an object reference, or a 
+	 * pointer to the string or array. The actual data are stored elsewhere.
+	 */
 	public static final int sizeof = 16;
 	private short type; // OLE.VT_* type
 	

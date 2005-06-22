@@ -253,9 +253,8 @@ StyleRange [] getStyleRanges() {
  * Handles the get line background color callback.
  * <p>
  *
- * @param event.lineOffset line number (input)	
- * @param event.lineText line text (input)
- * @param event.background line background color (output)
+ * @param event the lineOffset line number (input), lineText line text (input),
+ * and background line background color (output)
  */
 public void lineGetBackground(LineBackgroundEvent event) {
 	int lineIndex = content.getLineAtOffset(event.lineOffset);
@@ -265,9 +264,8 @@ public void lineGetBackground(LineBackgroundEvent event) {
  * Handles the get line style information callback.
  * <p>
  *
- * @param event.lineOffset line number (input)	
- * @param event.lineText line text (input)
- * @param event.styles array of StyleRanges, need to be in order (output)
+ * @param event the lineOffset line number (input), lineText line text (input),
+ * and styles array of StyleRanges, need to be in order (output)
  */
 public void lineGetStyle(LineStyleEvent event) {
 	int lineStart = event.lineOffset;
@@ -324,7 +322,7 @@ int searchForStyle(int start, int end) {
  * <p>
  *
  * @param startLine index of the first line to color
- * @param lineCount number of lines to color starting at startLine
+ * @param count number of lines to color starting at startLine
  * @param background the background color for the lines
  */ 
 void setLineBackground(int startLine, int count, Color background) {
@@ -436,9 +434,10 @@ void setStyleRange(StyleRange newStyle) {
 }
 /** 
  * Replace the styles for the given range.
- * <p>
  *
- * @param styles the new styles, must be in order and non-overlapping
+ * @param start the initial style range to replace
+ * @param length the number of ranges to replace
+ * @param ranges the new styles, must be in order and non-overlapping
  */
 void replaceStyleRanges(int start, int length, StyleRange[] ranges) {
 	clearStyle(new StyleRange(start, length, null, null));

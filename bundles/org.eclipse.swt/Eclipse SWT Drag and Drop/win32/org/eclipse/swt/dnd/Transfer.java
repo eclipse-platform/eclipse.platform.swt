@@ -96,7 +96,7 @@ abstract protected String[] getTypeNames();
  * @param transferData an empty TransferData object; this object will be 
  * filled in on return with the platform specific representation of the data
  * 
- * @exception SWTException <ul>
+ * @exception org.eclipse.swt.SWTException <ul>
  *    <li>ERROR_INVALID_DATA - if object does not contain data in a valid format or is <code>null</code></li>
  * </ul>
  */

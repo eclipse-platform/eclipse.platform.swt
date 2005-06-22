@@ -587,7 +587,7 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int ar
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see #drawRectangle
+ * @see #drawRectangle(int, int, int, int)
  */	 
 public void drawFocus (int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
@@ -2139,7 +2139,7 @@ public void fillArc (int x, int y, int width, int height, int startAngle, int ar
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see #drawRectangle
+ * @see #drawRectangle(int, int, int, int)
  */
 public void fillGradientRectangle(int x, int y, int width, int height, boolean vertical) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
@@ -2357,7 +2357,7 @@ public void fillPolygon(int[] pointArray) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see #drawRectangle
+ * @see #drawRectangle(int, int, int, int)
  */
 public void fillRectangle (int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
@@ -2390,7 +2390,7 @@ public void fillRectangle (int x, int y, int width, int height) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see #drawRectangle
+ * @see #drawRectangle(int, int, int, int)
  */
 public void fillRectangle (Rectangle rect) {
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -3355,7 +3355,7 @@ float measureSpace(int font, int format) {
  * @see #setAlpha
  * @see #setAntialias
  * @see #setBackgroundPattern
- * @see #setClipping
+ * @see #setClipping(Path)
  * @see #setForegroundPattern
  * @see #setInterpolation
  * @see #setTextAntialias

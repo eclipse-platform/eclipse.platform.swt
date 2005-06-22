@@ -373,7 +373,7 @@ public void intersect (Region region) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see Rectangle#intersects
+ * @see Rectangle#intersects(Rectangle)
  */
 public boolean intersects (int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
@@ -397,7 +397,7 @@ public boolean intersects (int x, int y, int width, int height) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
- * @see Rectangle#intersects
+ * @see Rectangle#intersects(Rectangle)
  */
 public boolean intersects (Rectangle rect) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);

@@ -73,6 +73,7 @@ public SWTEventListener getEventListener () {
  * within the packages provided by SWT. It should never be
  * referenced from application code.
  * </p>
+ * @param e the event to handle
  */
 public void handleEvent (Event e) {
 	switch (e.type) {

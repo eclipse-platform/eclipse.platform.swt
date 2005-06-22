@@ -67,14 +67,34 @@ public final class RowData {
 	 */
 	public boolean exclude = false;
 	
+/**
+ * Constructs a new instance of RowData using
+ * default values.
+ */
 public RowData () {
 }
 
+/**
+ * Constructs a new instance of RowData according to the parameters.
+ * A value of SWT.DEFAULT indicates that no minimum width or
+ * no minumum height is specified.
+ * 
+ * @param width a minimum width for the control
+ * @param height a minimum height for the control
+ */
 public RowData (int width, int height) {
 	this.width = width;
 	this.height = height;
 }
 
+/**
+ * Constructs a new instance of RowData according to the parameter.
+ * A value of SWT.DEFAULT indicates that no minimum width or
+ * no minumum height is specified.
+ * 
+ * @param point a point whose x coordinate specifies a minimum width for the control
+ * and y coordinate specifies a minimum height for the control
+ */
 public RowData (Point point) {
 	this (point.x, point.y);
 }

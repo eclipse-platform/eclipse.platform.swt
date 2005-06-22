@@ -883,7 +883,7 @@ public class StyledText extends Canvas {
 	 * 	widget document. Any text occurring before the start offset or after the 
 	 * 	end offset specified during object creation is ignored.
 	 * @param styles styles to use for formatting. Must not be null.
-	 * @param linebackground line background color to use for formatting. 
+	 * @param lineBackground line background color to use for formatting. 
 	 * 	May be null.
 	 */
 	void writeStyledLine(String line, int lineOffset, StyleRange[] styles, Color lineBackground) {
@@ -1022,6 +1022,7 @@ public class StyledText extends Canvas {
 	}
 	/** 
 	 * Returns the number of characters to write.
+	 * @return the integer number of characters to write
 	 */
 	public int getCharCount() {
 		return endOffset - startOffset;
@@ -1029,12 +1030,14 @@ public class StyledText extends Canvas {
 	/** 
 	 * Returns the offset where writing starts. 0 based from the start of 
 	 * the widget text. Used to write partial lines.
+	 * @return the integer offset where writing starts
 	 */
 	public int getStart() {
 		return startOffset;
 	}
 	/**
 	 * Returns whether the writer is closed.
+	 * @return a boolean specifying whether or not the writer is closed
 	 */
 	public boolean isClosed() {
 		return isClosed;
@@ -1042,7 +1045,6 @@ public class StyledText extends Canvas {
 	/**
 	 * Returns the string.  <code>close()</code> must be called before <code>toString()</code> 
 	 * is guaranteed to return a valid string.
-	 * <p>
 	 *
 	 * @return the string
 	 */
@@ -1214,7 +1216,8 @@ public class StyledText extends Canvas {
 	 *
 	 * @param parent the StyledText widget used to create a GC for 
 	 * 	line measuring
-	 * @param lineCount initial number of lines to allocate space for
+	 * @param content a StyledTextContent containing the initial number
+	 *  of lines to allocate space for
 	 */
 	public ContentWidthCache(StyledText parent, StyledTextContent content) {
 		this.parent = parent;
@@ -1275,9 +1278,6 @@ public class StyledText extends Canvas {
 	 * @param line the line to measure
 	 * @param lineOffset start offset of the line to measure, relative 
 	 * 	to the start of the document
-	 * @param gc the GC to use for measuring the line
-	 * @param currentFont the font currently set in gc. Cached for better 
-	 * 	performance. Null when running in a bidi locale.
 	 * @return the width of the given line
 	 */
 	int contentWidth(String line, int lineOffset) {
@@ -1316,7 +1316,7 @@ public class StyledText extends Canvas {
 	 * Updates the line width array to reflect inserted or deleted lines.
 	 * <p>
 	 *
-	 * @param start	the starting line of the change that took place
+	 * @param startLine	the starting line of the change that took place
 	 * @param delta	the number of lines in the change, > 0 indicates lines inserted,
 	 * 	< 0 indicates lines deleted
 	 */
@@ -2090,14 +2090,6 @@ void clearSelection(boolean sendEvent) {
 		}
 	}
 }
-/**
- * Computes the preferred size.
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int count, width, height;
@@ -3358,9 +3350,6 @@ void draw(int x, int y, int width, int height, boolean clearBackground) {
 void endAutoScroll() {
 	autoScrollDirection = SWT.NULL;
 }
-/**
- * @see org.eclipse.swt.widgets.Control#getBackground
- */
 public Color getBackground() {
 	checkWidget();
 	if (background == null) {
@@ -3557,9 +3546,6 @@ public boolean getEditable() {
 	checkWidget();
 	return editable;
 }
-/**
- * @see org.eclipse.swt.widgets.Control#getForeground
- */
 public Color getForeground() {
 	checkWidget();
 	if (foreground == null) {
@@ -3670,9 +3656,10 @@ public int getCharCount() {
  * color has been specified for the line. Should not be called if a
  * LineBackgroundListener has been set since the listener maintains the
  * line background colors.
- * <p>
- *
+ * 
+ * @param index the index of the line
  * @return the background color of the line at the given index.
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -4224,7 +4211,7 @@ int [] getBidiSegments(int lineOffset, String line) {
 	return segments;
 }
 /**
- * @see getBidiSegments
+ * @see #getBidiSegments
  * Supports deprecated setBidiColoring API. Remove when API is removed.
  */
 int [] getBidiSegmentsCompatibility(String line, int lineOffset) {
@@ -4340,7 +4327,9 @@ public StyleRange [] getStyleRanges() {
  * Returns an empty array if a LineStyleListener has been set. 
  * Should not be called if a LineStyleListener has been set since the 
  * listener maintains the styles.
- * <p>
+ * 
+ * @param start the start offset of the style ranges to return
+ * @param length the number of style ranges to return
  *
  * @return the styles or an empty array if a LineStyleListener has 
  *  been set.  The returned styles will reflect the given range.  The first 
@@ -4535,9 +4524,9 @@ public String getTextRange(int start, int length) {
 	return content.getTextRange(start, length);
 }
 /**
- * Gets the text limit.  The text limit specifies the amount of text that the user 
- * can type into the widget.
- * <p>
+ * Returns the maximum number of characters that the receiver is capable of holding.
+ * 
+ * @return the text limit
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -7618,7 +7607,7 @@ public void setText(String text) {
 	}
 }
 /**
- * Sets the text limit.
+ * Sets the text limit to the specified number of characters.
  * <p>
  * The text limit specifies the amount of text that
  * the user can type into the widget.

@@ -27,8 +27,6 @@ class DisplayRenderer extends StyledTextRenderer {
  * </p>
  * @param device Device to render on
  * @param regularFont Font to use for regular text
- * @param isBidi true=bidi platform, false=no bidi platform
- * @param leftMargin margin to the left of the text
  * @param parent <class>StyledText</class> widget to render
  * @param tabLength length in characters of a tab character
  */
@@ -64,7 +62,7 @@ protected void disposeGC(GC gc) {
  * @param line the line to draw
  * @param lineOffset offset of the first character in the line.
  * 	Relative to the start of the document.
- * @param styles line styles
+ * @param paintX x location to draw at
  * @param paintY y location to draw at
  * @param gc GC to draw on
  */
@@ -112,7 +110,7 @@ protected void drawLineBreakSelection(String line, int lineOffset, int paintX, i
  *
  * @param lineOffset offset of the first character in the line. 
  * 	0 based from the beginning of the document.
- * @param line text of the line to specify bidi segments for
+ * @param lineText text of the line to specify bidi segments for
  * @return text segments that should be treated as if they had a
  * 	different direction than the surrounding text. Only the start 
  * 	index of a segment is specified, relative to the start of the 
@@ -151,7 +149,7 @@ protected StyledTextContent getContent() {
  * calling disposeGC.
  * </p>
  * @return the GC to use for rendering and measuring.
- * @see disposeGC
+ * @see #disposeGC
  */
 protected GC getGC() {
 	return new GC(parent);

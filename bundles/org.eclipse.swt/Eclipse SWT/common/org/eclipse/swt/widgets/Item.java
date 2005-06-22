@@ -55,7 +55,7 @@ public abstract class Item extends Widget {
  * </ul>
  *
  * @see SWT
- * @see #getStyle
+ * @see Widget#getStyle
  */
 public Item (Widget parent, int style) {
 	super (parent, style);
@@ -89,7 +89,7 @@ public Item (Widget parent, int style) {
  * </ul>
  *
  * @see SWT
- * @see #getStyle
+ * @see Widget#getStyle
  */
 public Item (Widget parent, int style, int index) {
 	this (parent, style);

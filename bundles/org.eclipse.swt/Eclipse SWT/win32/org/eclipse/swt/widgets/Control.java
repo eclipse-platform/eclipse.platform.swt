@@ -385,7 +385,7 @@ void checkMirrored () {
  * @see #getBorderWidth
  * @see #getBounds
  * @see #getSize
- * @see #pack
+ * @see #pack(boolean)
  * @see "computeTrim, getClientArea for controls that implement them"
  */
 public Point computeSize (int wHint, int hHint) {
@@ -423,7 +423,7 @@ public Point computeSize (int wHint, int hHint) {
  * @see #getBorderWidth
  * @see #getBounds
  * @see #getSize
- * @see #pack
+ * @see #pack(boolean)
  * @see "computeTrim, getClientArea for controls that implement them"
  */
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -1451,7 +1451,7 @@ GC new_GC (GCData data) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see #computeSize
+ * @see #computeSize(int, int, boolean)
  */
 public void pack () {
 	checkWidget ();
@@ -1477,7 +1477,7 @@ public void pack () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see #computeSize
+ * @see #computeSize(int, int, boolean)
  */
 public void pack (boolean changed) {
 	checkWidget ();
@@ -2316,7 +2316,7 @@ boolean setRadioSelection (boolean value) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
- * @see #redraw
+ * @see #redraw(int, int, int, int, boolean)
  * @see #update
  */
 public void setRedraw (boolean redraw) {
@@ -2901,7 +2901,7 @@ void unsubclass () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see #redraw
+ * @see #redraw(int, int, int, int, boolean)
  * @see PaintListener
  * @see SWT#Paint
  */

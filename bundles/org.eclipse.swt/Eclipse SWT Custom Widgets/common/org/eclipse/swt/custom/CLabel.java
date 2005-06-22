@@ -752,6 +752,11 @@ public void setToolTipText (String string) {
  * the given width. The default implementation replaces characters in the
  * center of the original string with an ellipsis ("...").
  * Override if you need a different strategy.
+ * 
+ * @param gc the gc to use for text measurement
+ * @param t the text to shorten
+ * @param width the width to shorten the text to, in pixels
+ * @return the shortened text
  */
 protected String shortenText(GC gc, String t, int width) {
 	if (t == null) return null;

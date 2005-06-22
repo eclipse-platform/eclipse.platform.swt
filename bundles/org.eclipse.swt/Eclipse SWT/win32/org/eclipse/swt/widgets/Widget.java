@@ -389,7 +389,7 @@ public void dispose () {
  *
  * @param code the descriptive error code
  *
- * @see SWTError#error
+ * @see SWT#error(int)
  */
 void error (int code) {
 	SWT.error(code);
@@ -442,7 +442,7 @@ char [] fixMnemonic (String string) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - when called from the wrong thread</li>
  * </ul>
  *
- * @see #setData
+ * @see #setData(Object)
  */
 public Object getData () {
 	checkWidget();
@@ -471,7 +471,7 @@ public Object getData () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see #setData
+ * @see #setData(String, Object)
  */
 public Object getData (String key) {
 	checkWidget();
@@ -924,6 +924,8 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
  *    <li>ERROR_WIDGET_DISPOSED - when the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - when called from the wrong thread</li>
  * </ul>
+ * 
+ * @see #getData()
  */
 public void setData (Object data) {
 	checkWidget();
@@ -956,7 +958,7 @@ public void setData (Object data) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see #getData
+ * @see #getData(String)
  */
 public void setData (String key, Object value) {
 	checkWidget();

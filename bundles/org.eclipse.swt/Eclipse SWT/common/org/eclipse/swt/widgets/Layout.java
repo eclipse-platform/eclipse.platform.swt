@@ -52,7 +52,7 @@ public abstract class Layout {
  * @see Control#getBorderWidth
  * @see Control#getBounds
  * @see Control#getSize
- * @see Control#pack
+ * @see Control#pack(boolean)
  * @see "computeTrim, getClientArea for controls that implement them"
  */
 protected abstract Point computeSize (Composite composite, int wHint, int hHint, boolean flushCache);

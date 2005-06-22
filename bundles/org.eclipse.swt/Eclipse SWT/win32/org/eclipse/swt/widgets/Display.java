@@ -379,6 +379,11 @@ public Display () {
 	this (null);
 }
 
+/**
+ * Constructs a new instance of this class using the parameter.
+ * 
+ * @param data the device data
+ */
 public Display (DeviceData data) {
 	super (data);
 }
@@ -824,7 +829,7 @@ static synchronized void deregister (Display display) {
  * <p>
  * This method is called after <code>release</code>.
  * </p>
- * @see #dispose
+ * @see Device#dispose
  * @see #release
  */
 protected void destroy () {
@@ -902,7 +907,7 @@ int embeddedProc (int hwnd, int msg, int wParam, int lParam) {
  *
  * @param code the descriptive error code
  *
- * @see SWTError#error
+ * @see SWT#error(int)
  */
 void error (int code) {
 	SWT.error (code);
@@ -2745,7 +2750,7 @@ static synchronized void register (Display display) {
  * </p>
  * This method is called before <code>destroy</code>.
  * 
- * @see #dispose
+ * @see Device#dispose
  * @see #destroy
  */
 protected void release () {

@@ -96,6 +96,7 @@ public SWTException (int code, String message) {
  * added to JDK1.4. It is necessary to override this method
  * in order for inherited printStackTrace() methods to work.
  * </p>
+ * @return the underlying throwable
  * 
  * @since 3.1
  */

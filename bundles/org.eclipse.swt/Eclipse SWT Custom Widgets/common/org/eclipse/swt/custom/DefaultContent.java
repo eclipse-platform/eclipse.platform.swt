@@ -174,6 +174,7 @@ boolean isDelimiter(char ch) {
  * @param start	start offset of text to replace
  * @param replaceLength start offset of text to replace
  * @param newText start offset of text to replace
+ * @return a boolean specifying whether or not the replace operation is valid
  */
 protected boolean isValidReplace(int start, int replaceLength, String newText){
 	if (replaceLength == 0) {
@@ -258,7 +259,7 @@ int[][] indexLines(int offset, int length, int numLines){
  * <p>
  *
  * @param position the position at which to insert the text
- * @param length the text to insert
+ * @param text the text to insert
  */
 void insert(int position, String text) {	
 	if (text.length() == 0) return;
@@ -326,8 +327,8 @@ void insert(int position, String text) {
  * <p>
  *
  * @param position the position at which a change is occurring
- * @param sizeHint the size of the change
- * @param line the line where the gap should be put
+ * @param size the size of the change
+ * @param newGapLine the line where the gap should be put
  */
 void moveAndResizeGap(int position, int size, int newGapLine) {
 	char[] content = null;

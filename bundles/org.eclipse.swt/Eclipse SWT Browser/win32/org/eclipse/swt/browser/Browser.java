@@ -140,7 +140,7 @@ public class Browser extends Composite {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for browser creation</li>
  * </ul>
  * 
- * @see #getStyle
+ * @see Widget#getStyle
  * 
  * @since 3.0
  */
