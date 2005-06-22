@@ -41,8 +41,7 @@ public class Text extends Scrollable {
 	* into a text widget.
 	* <p>
 	* Note that this value is platform dependent, based upon
-	* the native widget implementation and (if applicable)
-	* client-server protocol constraints.
+	* the native widget implementation.
 	* </p>
 	*/
 	public static final int LIMIT;
