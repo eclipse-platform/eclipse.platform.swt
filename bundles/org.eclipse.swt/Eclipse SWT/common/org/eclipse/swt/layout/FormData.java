@@ -45,20 +45,22 @@ import org.eclipse.swt.widgets.*;
 public final class FormData {
 	/**
 	 * width specifies the preferred width in pixels. This value
-	 * is the wHint passed into Control#computeSize(int, int, boolean) 
+	 * is the wHint passed into Control.computeSize(int, int, boolean) 
 	 * to determine the preferred size of the control.
 	 *
 	 * The default value is SWT.DEFAULT.
 	 *
+	 * @see Control#computeSize
 	 */
 	public int width = SWT.DEFAULT;
 	/**
 	 * height specifies the preferred height in pixels. This value
-	 * is the hHint passed into Control#computeSize(int, int, boolean) 
+	 * is the hHint passed into Control.computeSize(int, int, boolean) 
 	 * to determine the preferred size of the control.
 	 *
 	 * The default value is SWT.DEFAULT.
 	 *
+	 * @see Control#computeSize
 	 */
 	public int height = SWT.DEFAULT;
 	/**

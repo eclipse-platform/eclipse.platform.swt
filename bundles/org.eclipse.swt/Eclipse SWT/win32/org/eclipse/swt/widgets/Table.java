@@ -2946,8 +2946,8 @@ public void setTopIndex (int index) {
  * @param column the column to be shown
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the item has been disposed</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the column is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the column has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
