@@ -64,7 +64,7 @@ class GridLayoutTab extends Tab {
 					resetEditors ();
 				if (e.detail == SWT.TRAVERSE_ESCAPE)
 					disposeEditors ();
-			};
+			}
 		};
 		
 		/* Add common controls */
@@ -144,7 +144,7 @@ class GridLayoutTab extends Tab {
 				hGrabEditor.grabHorizontal = true;
 				hGrabEditor.minimumWidth = 50;
 				hGrabEditor.setEditor (hGrab, newItem, HGRAB_COL);
-				hGrab.addTraverseListener (traverseListener);;
+				hGrab.addTraverseListener (traverseListener);
 				
 				vGrab = new CCombo (table, SWT.NONE);
 				vGrab.setItems (boolValues);

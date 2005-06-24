@@ -446,17 +446,7 @@ void bringToTop (boolean force) {
 		OS.XSetInputFocus (xDisplay, xWindow, OS.RevertToParent, OS.CurrentTime);
 		OS.gdk_error_trap_pop ();
 	} else {
-		/*
-		* Bug in metacity.  Calling gdk_window_focus() with a timestamp more
-		* recent than the last user interaction time can cause windows not
-		* to come forward in versions > 2.10.0.  The fix is to use the last
-		* user event time. 
-		*/
-		if (display.windowManager.toLowerCase ().equals ("metacity")) {
-			OS.gdk_window_focus (window, display.lastUserEventTime);
-		} else {
-			OS.gdk_window_focus (window, OS.GDK_CURRENT_TIME);
-		}
+		OS.gdk_window_focus (window, OS.GDK_CURRENT_TIME);
 	}
 	display.activeShell = this;
 	display.activePending = true;

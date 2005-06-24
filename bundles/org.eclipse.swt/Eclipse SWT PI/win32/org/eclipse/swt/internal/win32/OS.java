@@ -872,7 +872,6 @@ public class OS extends Platform {
 	public static final int OBJID_CLIENT = 0xFFFFFFFC;
 	public static final int OBJID_MENU = 0xFFFFFFFD;
 	public static final int OBJID_WINDOW = 0x00000000;
-	public static final int OBJ_BITMAP = 0x7;
 	public static final int OBJ_FONT = 0x6;
 	public static final int OBJ_PEN = 0x1;
 	public static final int OBM_CHECKBOXES = 0x7ff7;

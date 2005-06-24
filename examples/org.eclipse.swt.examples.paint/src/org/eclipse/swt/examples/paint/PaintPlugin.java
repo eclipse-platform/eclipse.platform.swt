@@ -13,16 +13,12 @@ package org.eclipse.swt.examples.paint;
 
 import org.eclipse.core.runtime.*;
 import org.eclipse.ui.plugin.*;
-import org.osgi.framework.BundleContext;
-
-import java.util.*;
 
 /**
  * The main plugin class to be used in the desktop.
  */
 public class PaintPlugin extends AbstractUIPlugin {
 	private static PaintPlugin plugin;
-	private static ResourceBundle resourceBundle;
 
 	/**
 	 * Constructs the Paint plugin.
@@ -42,9 +38,4 @@ public class PaintPlugin extends AbstractUIPlugin {
 		plugin.getLog().log(
 			new Status(IStatus.ERROR, plugin.getBundle().getSymbolicName(), 0, message, exception));
 	}
-
-    public void start(BundleContext context) throws Exception {
-        super.start(context);
-        resourceBundle = Platform.getResourceBundle(getBundle());
-    }
 }

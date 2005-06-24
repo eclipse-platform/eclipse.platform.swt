@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.*;
  * using the MouseTrackListener.
  */
 public class HoverHelp {
-	private static ResourceBundle resourceBundle = ResourceBundle.getBundle("examples_hoverhelp");;
+	private static ResourceBundle resourceBundle = ResourceBundle.getBundle("examples_hoverhelp");
 	
 	static final int
 		hhiInformation = 0,

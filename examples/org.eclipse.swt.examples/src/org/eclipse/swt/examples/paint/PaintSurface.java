@@ -427,7 +427,6 @@ public class PaintSurface {
 				horizontal.setEnabled(false);
 				horizontal.setSelection(0);
 			} else {
-				final int max = imageWidth - visibleWidth;
 				horizontal.setEnabled(true);
 				horizontal.setValues(displayFDC.xOffset, 0, imageWidth, visibleWidth,
 					8, visibleWidth);
@@ -441,7 +440,6 @@ public class PaintSurface {
 				vertical.setEnabled(false);
 				vertical.setSelection(0);
 			} else {
-				final int max = imageHeight - visibleHeight;
 				vertical.setEnabled(true);
 				vertical.setValues(displayFDC.yOffset, 0, imageHeight, visibleHeight,
 					8, visibleHeight);

@@ -221,8 +221,8 @@ public class Display extends Device {
 	/* Popup Menus */
 	Menu [] popups;
 	
-	/* Timestamp of the Last Received Events */
-	int lastEventTime, lastUserEventTime;
+	/* Timestamp of the Last Received Event */
+	int lastEventTime;
 	
 	/* Fixed Subclass */
 	static int /*long*/ fixed_type;
@@ -369,10 +369,7 @@ public class Display extends Device {
 	int titleResizeTrimWidth = 6, titleResizeTrimHeight = 29;
 	int titleTrimWidth = 0, titleTrimHeight = 23;
 	boolean ignoreTrim;
-
-	/* Window Manager */
-	String windowManager;
-
+	
 	/*
 	* TEMPORARY CODE.  Install the runnable that
 	* gets the current display. This code will
@@ -787,23 +784,6 @@ synchronized void createDisplay (DeviceData data) {
 	filterProc = filterCallback.getAddress ();
 	if (filterProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	OS.gdk_window_add_filter  (0, filterProc, 0);
-
-	/* Get the window manager name */
-	windowManager = "";
-	if (OS.GTK_VERSION >= OS.VERSION (2, 2, 0)) {
-		int /*long*/ screen = OS.gdk_screen_get_default ();
-		if (screen != 0) {
-			int /*long*/ ptr2 = OS.gdk_x11_screen_get_window_manager_name (screen);
-			if (ptr2 != 0) {
-				int length = OS.strlen (ptr2);
-				if (length > 0) {
-					byte [] buffer2 = new byte [length];
-					OS.memmove (buffer2, ptr2, length);
-					windowManager = new String (Converter.mbcsToWcs (null, buffer2));
-				}
-			}
-		}
-	}
 }
 
 Image createImage (String name) {
@@ -997,11 +977,6 @@ int /*long*/ eventProc (int /*long*/ event, int /*long*/ data) {
 	* Check the event type before accessing any fields.
 	*/
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
-	switch (gdkEvent.type) {
-		case OS.GDK_BUTTON_PRESS:
-		case OS.GDK_KEY_PRESS:
-			lastUserEventTime = time;
-	}
 	boolean dispatch = true;
 	if (dispatchEvents != null) {
 		dispatch = false;

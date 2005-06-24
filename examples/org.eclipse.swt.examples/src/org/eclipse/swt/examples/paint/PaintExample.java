@@ -35,9 +35,6 @@ public class PaintExample {
 	private static final int numPaletteCols = 50;
 	private ToolSettings toolSettings; // current active settings
 	private PaintSurface paintSurface; // paint surface for drawing
-	private int activeTool; // currently active tool
-	private int activeFillType; // currently active fill type
-	private int activeLineStyle; // currently active line type
 
 	static final int Pencil_tool = 0;
 	static final int Airbrush_tool = 1;

@@ -1317,7 +1317,6 @@ int /*long*/ gtk_changed (int /*long*/ widget) {
 }
 
 int /*long*/ gtk_expand_collapse_cursor_row (int /*long*/ widget, int /*long*/ logical, int /*long*/ expand, int /*long*/ open_all) {
-	// FIXME - this flag is never cleared.  It should be cleared when the expand all operation completes.
 	if (expand != 0 && open_all != 0) expandAll = true;
 	return 0;
 }
@@ -1439,6 +1438,7 @@ int /*long*/ gtk_test_expand_row (int /*long*/ tree, int /*long*/ iter, int /*lo
 	* animation to occur.
 	*/
 	if (changed || expandAll) {
+		expandAll = false;
 		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_EXPAND_ROW);
 		OS.gtk_tree_view_expand_row (handle, path, false);
 		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_EXPAND_ROW);

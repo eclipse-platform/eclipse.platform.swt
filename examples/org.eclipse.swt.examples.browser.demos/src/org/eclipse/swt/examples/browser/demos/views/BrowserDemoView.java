@@ -11,7 +11,6 @@
 package org.eclipse.swt.examples.browser.demos.views;
 
 import org.eclipse.ui.part.*;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.action.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
@@ -39,18 +38,12 @@ public class BrowserDemoView extends ViewPart {
 		}
 		TabFolder folder = new TabFolder(parent, SWT.NONE);
 		TabItem item = new TabItem(folder, SWT.NONE);
-		PawnTab pawnTab = new PawnTab(item);
+		new PawnTab(item);
 		
 		item = new TabItem(folder, SWT.NONE);
-		EditorTab editorTab = new EditorTab(item);
+		new EditorTab(item);
 	}
 	
-	private void showMessage(String message) {
-		MessageDialog.openInformation(
-			parent.getShell(),
-			"Browser Demo",
-			message);
-	}
 	public void setFocus() {
 	}
 	

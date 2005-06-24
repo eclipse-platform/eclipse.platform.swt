@@ -3628,8 +3628,8 @@ LRESULT WM_VSCROLL (int wParam, int lParam) {
 	if ((bits & OS.LVS_EX_GRIDLINES) != 0) {
 		int code = wParam & 0xFFFF;
 		switch (code) {
-			case OS.SB_ENDSCROLL:
 			case OS.SB_THUMBPOSITION:
+			case OS.SB_ENDSCROLL:
 			case OS.SB_THUMBTRACK:
 			case OS.SB_TOP:
 			case OS.SB_BOTTOM:

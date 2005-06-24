@@ -435,7 +435,7 @@ abstract class Tab {
 				}
 			}
 		});
-		Label filler = new Label(dialog, SWT.NONE);
+		new Label(dialog, SWT.NONE); /* Filler */
 		Button ok = new Button (dialog, SWT.PUSH);
 		ok.setText(ControlExample.getResourceString ("OK"));
 		dialog.setDefaultButton(ok);

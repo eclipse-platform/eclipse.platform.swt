@@ -1966,7 +1966,7 @@ public class ImageAnalyzer {
 			public void widgetSelected (SelectionEvent event) {
 				Button radio = (Button) event.widget;
 				if (radio.getSelection()) bmpType[0] = ((Integer)radio.getData()).intValue();
-			};
+			}
 		};
 		// need to externalize strings
 		final Shell dialog = new Shell(shell, SWT.DIALOG_TRIM);

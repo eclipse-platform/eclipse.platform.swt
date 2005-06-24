@@ -391,7 +391,6 @@ typedef enum {
 	_1gdk_1x11_1colormap_1get_1xcolormap_FUNC,
 	_1gdk_1x11_1drawable_1get_1xdisplay_FUNC,
 	_1gdk_1x11_1drawable_1get_1xid_FUNC,
-	_1gdk_1x11_1screen_1get_1window_1manager_1name_FUNC,
 	_1gdk_1x11_1visual_1get_1xvisual_FUNC,
 	_1gtk_1accel_1group_1new_FUNC,
 	_1gtk_1accel_1groups_1activate_FUNC,

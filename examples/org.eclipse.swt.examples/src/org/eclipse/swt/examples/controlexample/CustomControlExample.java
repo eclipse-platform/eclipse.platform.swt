@@ -36,7 +36,6 @@ public class CustomControlExample extends ControlExample {
 			new CTabFolderTab (this),
 			new SashFormTab (this),
 			new StyledTextTab (this),
-			new TableTreeTab (this),
 		};
 	}
 	
