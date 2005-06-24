@@ -38,10 +38,10 @@ public class BrowserDemoView extends ViewPart {
 		}
 		TabFolder folder = new TabFolder(parent, SWT.NONE);
 		TabItem item = new TabItem(folder, SWT.NONE);
-		PawnTab pawnTab = new PawnTab(item);
+		new PawnTab(item);
 		
 		item = new TabItem(folder, SWT.NONE);
-		EditorTab editorTab = new EditorTab(item);
+		new EditorTab(item);
 	}
 	
 	public void setFocus() {
