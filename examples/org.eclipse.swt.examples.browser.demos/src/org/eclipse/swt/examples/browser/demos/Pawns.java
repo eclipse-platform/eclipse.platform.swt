@@ -197,11 +197,11 @@ static void initPawnBorders(byte[] g, int[] gameWallWeight) {
 			if (nTypes[2] == WALL || nTypes[5] == WALL) nAxis++;
 			if (nTypes[4] == WALL || nTypes[3] == WALL) nAxis++;
 			switch (nAxis) {
-				case 4: switch (nWalls) { case 4: score = 16; break; case 5: score = 14; break; case 6: score = 9; case 7: score = 6; break; case 8: score = 0; break;}; break;
-				case 3: switch (nWalls) { case 3: score = 9; break; case 4: score = 8;}; break;
-				case 2: switch (nWalls) { case 2: score = 6; break; case 3: score = 4; break; case 4: score = 2; }; break;
-				case 1: switch (nWalls) { case 1: score = 2; break; case 2: score = 1; break;}; break;
-			};
+				case 4: switch (nWalls) { case 4: score = 16; break; case 5: score = 14; break; case 6: score = 9; case 7: score = 6; break; case 8: score = 0; break;} break;
+				case 3: switch (nWalls) { case 3: score = 9; break; case 4: score = 8;} break;
+				case 2: switch (nWalls) { case 2: score = 6; break; case 3: score = 4; break; case 4: score = 2; } break;
+				case 1: switch (nWalls) { case 1: score = 2; break; case 2: score = 1; break;} break;
+			}
 		}
 		gameWallWeight[i] = score;
 	}

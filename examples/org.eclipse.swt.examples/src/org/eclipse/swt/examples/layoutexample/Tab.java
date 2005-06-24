@@ -60,7 +60,7 @@ abstract class Tab {
 	SelectionListener selectionListener = new SelectionAdapter () {
 		public void widgetSelected (SelectionEvent e) {
 			resetEditors ();
-		};
+		}
 	};
 		
 	TraverseListener traverseListener = new TraverseListener () {
@@ -69,7 +69,7 @@ abstract class Tab {
 				e.doit = false;
 				resetEditors ();
 			}
-		};
+		}
 	};
 
 	/**

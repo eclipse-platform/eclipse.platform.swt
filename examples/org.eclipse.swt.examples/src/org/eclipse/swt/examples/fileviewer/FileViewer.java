@@ -1679,7 +1679,7 @@ public class FileViewer {
 		 */
 		public void setProgress(int work) {
 			progressBar.setSelection(work);
-			while (display.readAndDispatch()); // enable event processing
+			while (display.readAndDispatch()) {} // enable event processing
 		}
 		/**
 		 * Adds to the progress of completion of the total work units.
