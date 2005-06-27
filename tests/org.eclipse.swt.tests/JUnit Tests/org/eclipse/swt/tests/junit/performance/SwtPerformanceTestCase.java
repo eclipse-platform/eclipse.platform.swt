@@ -47,6 +47,13 @@ protected PerformanceMeter createMeter(String id) {
 	return meter;
 }
 
+protected PerformanceMeter createMeterWithoutSummary(String id) {
+	Performance performance = Performance.getDefault();
+	String scenarioId = "org.eclipse.swt.test." + id;
+	PerformanceMeter meter = performance.createPerformanceMeter(scenarioId);
+	return meter;
+}
+
 protected void disposeMeter(PerformanceMeter meter) {
 	try {
 		meter.commit();
