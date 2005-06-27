@@ -61,8 +61,7 @@ public void test_createComposites() {
 	int samples;
 
     Performance performance = Performance.getDefault();
-    performance.tagAsGlobalSummary(meter, "Create composites", Dimension.ELAPSED_PROCESS);
-    performance.setComment(meter, Performance.EXPLAINS_DEGRADATION_COMMENT, "Unreproducable regression.  See bug 96652.");
+    performance.setComment(meter, Performance.EXPLAINS_DEGRADATION_COMMENT, "For unknown reasons this test has a performance regression on the 2 GHz Linux machine.  The regression is not reproducable on similar machines.  See bug 96652.");
 	
 	// Warm up.
 	for(samples = 0; samples < 2; samples++) {
@@ -96,7 +95,11 @@ public void test_createComposites() {
 public void test_createWidgets() {
 	PerformanceMeter meter = createMeter("Create composites and widgets");
 	int samples;
-	
+
+    Performance performance = Performance.getDefault();
+    performance.tagAsGlobalSummary(meter, "Create composites and widgets", Dimension.ELAPSED_PROCESS);
+    performance.setComment(meter, Performance.EXPLAINS_DEGRADATION_COMMENT, "For unknown reasons this test has a performance regression on the 2 GHz Linux machine.  The regression is not reproducable on similar machines.  See bug 96652.");
+
 	for(samples = 0; samples < 10; samples++) {
 		Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
@@ -281,7 +284,7 @@ public void test_windowDrawing() {
 }
 
 public void test_stringDrawing() {
-	PerformanceMeter meter = createMeter("Draw strings using GC.drawText");
+	PerformanceMeter meter = createMeterWithoutSummary("Draw strings using GC.drawText");
 	int samples;
 	
 	for(samples = 0; samples < 10; samples++) {
@@ -329,11 +332,8 @@ public void test_stringDrawing() {
 }
 
 public void test_fastStringDrawing() {
-	PerformanceMeter meter = createMeter("Draw strings using GC.drawString()");
+	PerformanceMeter meter = createMeterWithoutSummary("Draw strings using GC.drawString()");
 	int samples;
-
-    Performance performance = Performance.getDefault();
-    performance.tagAsGlobalSummary(meter, "Draw strings using GC.drawString()", Dimension.ELAPSED_PROCESS);
 
 	for(samples = 0; samples < 10; samples++) {
 		int width = 640;
