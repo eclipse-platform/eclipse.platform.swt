@@ -2201,8 +2201,8 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 		int brush = Gdip.LinearGradientBrush_new(p1, p2, fromGpColor, toGpColor);
 		Gdip.Graphics_FillRectangle(data.gdipGraphics, brush, x, y, width, height);
 		Gdip.LinearGradientBrush_delete(brush);
-		Gdip.Color_delete(fromColor);
-		Gdip.Color_delete(toColor);
+		Gdip.Color_delete(fromGpColor);
+		Gdip.Color_delete(toGpColor);
 		return;
 	}
 	/* Use GradientFill if supported, only on Windows 98, 2000 and newer. */
