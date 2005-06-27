@@ -67,6 +67,10 @@ public class GLContext {
 			0,
 			XGL.GLX_RGBA,
 			XGL.GLX_DOUBLEBUFFER,
+			XGL.GLX_STENCIL_BUFFER_BIT,
+			1,
+//			XGL.GLX_STENCIL_SIZE,
+//			8,
 //			XGL.GLX_DEPTH_SIZE,
 //			depth,
 			0
@@ -76,7 +80,7 @@ public class GLContext {
 		XVisualInfo info = new XVisualInfo ();
 		XGL.memmove (info, infoPtr, XVisualInfo.sizeof);
 		XGTK.XFree (infoPtr);
-		handle = XGL.glXCreateContext (xDisplay, info, 0, false);
+		handle = XGL.glXCreateContext (xDisplay, info, 0, true);
 		if (handle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	}
 	
