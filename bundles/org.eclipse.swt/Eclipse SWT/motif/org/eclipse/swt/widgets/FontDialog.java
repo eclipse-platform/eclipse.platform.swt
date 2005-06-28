@@ -910,9 +910,16 @@ void openDialog () {
 		pt = shell.computeSize (widthLimit, SWT.DEFAULT, false);
 	}
 	
-	// centre the dialog on its parent, and ensure that the
-	// whole dialog appears within the screen bounds
-	Rectangle parentBounds = getParent ().getBounds ();
+	/*
+	 * If the parent is visible then center this dialog on it,
+	 * otherwise center this dialog on the parent's monitor
+	 */
+	Rectangle parentBounds = null;
+	if (parent.isVisible ()) {
+		parentBounds = getParent ().getBounds ();
+	} else {
+		parentBounds = parent.getMonitor ().getBounds ();
+	}
 	int originX = (parentBounds.width - pt.x) / 2 + parentBounds.x;
 	originX = Math.max (originX, 0);
 	originX = Math.min (originX, widthLimit - pt.x);
