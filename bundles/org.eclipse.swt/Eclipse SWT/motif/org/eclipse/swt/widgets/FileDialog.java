@@ -400,8 +400,8 @@ public String open () {
 		OS.XmNdefaultPosition, defaultPos ? 1 : 0,
 	};
 	/*
-	* Bug in AIX. The dialog does not responde to input, if the parent
-	* is not realized.  The fix is to realized the parent.  
+	* Bug in AIX. The dialog does not respond to input, if the parent
+	* is not realized.  The fix is to realize the parent.  
 	*/
 	if (OS.IsAIX) parent.realizeWidget ();
 	int parentHandle = parent.shellHandle;

@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;
@@ -175,6 +176,7 @@ public String open () {
 		0);
 
 	/* Create the dialog */
+	boolean defaultPos = parent.isVisible ();
 	Display display = parent.display;
 	int [] argList1 = {
 		OS.XmNresizePolicy, OS.XmRESIZE_NONE,
@@ -184,12 +186,13 @@ public String open () {
 		OS.XmNpattern, xmStringPtr2,
 		OS.XmNdirectory, xmStringPtr3,
 		OS.XmNpathMode, OS.XmPATH_MODE_FULL,
-		OS.XmNfilterLabelString, xmStringPtr4
+		OS.XmNfilterLabelString, xmStringPtr4,
+		OS.XmNdefaultPosition, defaultPos ? 1 : 0,
 	};
 
 	/*
-	* Bug in AIX. The dialog does not responde to input, if the parent
-	* is not realized.  The fix is to realized the parent.  
+	* Bug in AIX. The dialog does not respond to input, if the parent
+	* is not realized.  The fix is to realize the parent.  
 	*/
 	if (OS.IsAIX) parent.realizeWidget ();
 	int parentHandle = parent.shellHandle;
@@ -223,11 +226,11 @@ public String open () {
 	/* Use the character encoding for the default locale */
 	byte [] buffer4 = Converter.wcsToMbcs (null, message, true);
 	int xmString1 = OS.XmStringGenerate(buffer4, null, OS.XmCHARSET_TEXT, null);
-	int [] argList = {
+	int [] argList2 = {
 		OS.XmNlabelType, OS.XmSTRING,
 		OS.XmNlabelString, xmString1
 	};
-	int textArea = OS.XmCreateLabel(dialog, name, argList, argList.length/2);
+	int textArea = OS.XmCreateLabel(dialog, name, argList2, argList2.length/2);
 	OS.XtManageChild(textArea);
 	OS.XmStringFree (xmString1);
 
@@ -240,6 +243,23 @@ public String open () {
 
 	/* Open the dialog and dispatch events. */
 	cancel = true;
+	if (!defaultPos) {
+		OS.XtRealizeWidget (dialog);
+		int[] argList3 = new int[] {
+			OS.XmNwidth, 0,
+			OS.XmNheight, 0,
+		};
+		OS.XtGetValues (dialog, argList3, argList3.length / 2);
+		Monitor monitor = parent.getMonitor ();
+		Rectangle bounds = monitor.getBounds ();
+		int x = bounds.x + (bounds.width - argList3 [1]) / 2;
+		int y = bounds.y + (bounds.height - argList3 [3]) / 2;
+		int[] argList4 = new int[] {
+			OS.XmNx, x,
+			OS.XmNy, y,
+		};
+		OS.XtSetValues (dialog, argList4, argList4.length / 2);
+	}
 	OS.XtManageChild (dialog);
 
 	/* Should be a pure OS message loop (no SWT AppContext) */
@@ -249,9 +269,9 @@ public String open () {
 	/* Set the new path, file name and filter. */
 	String directoryPath=""; //$NON-NLS-1$
 	if (!cancel) {
-		int [] argList2 = {OS.XmNdirMask, 0};
-		OS.XtGetValues (dialog, argList2, argList2.length / 2);
-		int xmString3 = argList2 [1];
+		int [] argList5 = {OS.XmNdirMask, 0};
+		OS.XtGetValues (dialog, argList5, argList5.length / 2);
+		int xmString3 = argList5 [1];
 		int [] table = new int [] {display.tabMapping, display.crMapping};
 		int ptr = OS.XmStringUnparse (
 			xmString3,

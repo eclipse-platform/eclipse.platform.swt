@@ -160,10 +160,10 @@ public int open () {
 	if ((style & SWT.PRIMARY_MODAL) != 0) dialogStyle = OS.XmDIALOG_PRIMARY_APPLICATION_MODAL;
 	if ((style & SWT.APPLICATION_MODAL) != 0) dialogStyle = OS.XmDIALOG_FULL_APPLICATION_MODAL;
 	if ((style & SWT.SYSTEM_MODAL) != 0) dialogStyle = OS.XmDIALOG_SYSTEM_MODAL;
-	if (parent != null && dialogStyle == OS.XmDIALOG_MODELESS) {
+	if (dialogStyle == OS.XmDIALOG_MODELESS) {
 		dialogStyle = OS.XmDIALOG_PRIMARY_APPLICATION_MODAL;
 	}
-	boolean defaultPos = parent.isVisible (); 
+	boolean defaultPos = parent.isVisible ();
 	int [] argList = {
 		OS.XmNnoResize, 1,
 		OS.XmNresizePolicy, OS.XmRESIZE_NONE,
