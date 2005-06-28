@@ -1024,7 +1024,7 @@ public Image getImage (int columnIndex) {
 /**
  * Returns a rectangle describing the size and location
  * relative to its parent of an image at a column in the
- * table.
+ * tree.
  *
  * @param index the index that specifies the column
  * @return the receiver's bounding image rectangle
@@ -1186,7 +1186,7 @@ int getPreferredWidth (int columnIndex) {
 	Image image = getImage (columnIndex);
 	if (image != null) {
 		width += image.getBounds ().width;
-		width += Table.MARGIN_IMAGE;
+		width += Tree.MARGIN_IMAGE;
 	}
 	return width;
 }

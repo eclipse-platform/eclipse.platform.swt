@@ -60,7 +60,7 @@ public class Tree extends Composite {
 	int drawCount = 0;
 	boolean inExpand = false;	/* for item creation within Expand callback */
 
-	Rectangle expanderBounds, checkboxBounds;
+	Rectangle arrowBounds, expanderBounds, checkboxBounds;
 
 	static final int MARGIN_IMAGE = 3;
 	static final int MARGIN_CELL = 1;
@@ -75,6 +75,8 @@ public class Tree extends Composite {
 	static final String ID_GRAYUNCHECKED = "GRAYUNCHECKED";	//$NON-NLS-1$
 	static final String ID_CHECKMARK = "CHECKMARK";			//$NON-NLS-1$
 	static final String ID_CONNECTOR_COLOR = "CONNECTOR_COLOR";	//$NON-NLS-1$
+	static final String ID_ARROWUP = "ARROWUP";				//$NON-NLS-1$
+	static final String ID_ARROWDOWN = "ARROWDOWN";			//$NON-NLS-1$
 
 //	TEMPORARY CODE
 boolean hasFocus;
@@ -123,6 +125,7 @@ public Tree (Composite parent, int style) {
 	initImages (display);
 	expanderBounds = getExpandedImage ().getBounds ();
 	checkboxBounds = getUncheckedImage ().getBounds ();
+	arrowBounds = getArrowDownImage ().getBounds ();
 	
 	Listener listener = new Listener () {
 		public void handleEvent (Event event) {
@@ -494,6 +497,12 @@ TreeItem[] getAllItems () {
 		index += childResults [i].length;
 	}
 	return result;
+}
+Image getArrowDownImage () {
+	return (Image) display.getData (ID_ARROWDOWN);
+}
+Image getArrowUpImage () {
+	return (Image) display.getData (ID_ARROWUP);
 }
 int getCellPadding () {
 	return MARGIN_CELL + WIDTH_CELL_HIGHLIGHT; 
@@ -1145,13 +1154,16 @@ static void initImages (final Display display) {
 			9, 9, 4, 										/* width, height, depth */
 			fourBit, 4,
 			new byte[] {
-				119, 119, 119, 119, 112, 0, 0, 0, 127, -1, -1, -1,
-				112, 0, 0, 0, 127, -1, -1, -1, 112, 0, 0, 0,
-				127, -1, -1, -1, 112, 0, 0, 0, 127, 0, 0, 15,
-				112, 0, 0, 0, 127, -1, -1, -1, 112, 0, 0, 0,
-				127, -1, -1, -1, 112, 0, 0, 0, 127, -1, -1, -1,
-				112, 0, 0, 0, 119, 119, 119, 119, 112, 0, 0, 0});
-		expanded.transparentPixel = 15;			/* use white for transparency */
+				119, 119, 119, 119, 112, 0, 0, 0,
+				127, -1, -1, -1, 112, 0, 0, 0,
+				127, -1, -1, -1, 112, 0, 0, 0,
+				127, -1, -1, -1, 112, 0, 0, 0,
+				127, 0, 0, 15, 112, 0, 0, 0,
+				127, -1, -1, -1, 112, 0, 0, 0,
+				127, -1, -1, -1, 112, 0, 0, 0,
+				127, -1, -1, -1, 112, 0, 0, 0,
+				119, 119, 119, 119, 112, 0, 0, 0});
+		expanded.transparentPixel = 15;		/* use white for transparency */
 		display.setData (ID_EXPANDED, new Image (display, expanded));
 	}
 
@@ -1160,17 +1172,39 @@ static void initImages (final Display display) {
 			9, 9, 4, 										/* width, height, depth */
 			fourBit, 4,
 			new byte[] {
-				119, 119, 119, 119, 112, 0, 0, 0, 127, -1, -1, -1,
-				112, 0, 0, 0, 127, -1, 15, -1, 112, 0, 0, 0,
-				127, -1, 15, -1, 112, 0, 0, 0, 127, 0, 0, 15,
-				112, 0, 0, 0, 127, -1, 15, -1, 112, 0, 0, 0,
-				127, -1, 15, -1, 112, 0, 0, 0, 127, -1, -1, -1,
-				112, 0, 0, 0, 119, 119, 119, 119, 112, 0, 0, 0});
-		collapsed.transparentPixel = 15;		/* use white for transparency */
+				119, 119, 119, 119, 112, 0, 0, 0,
+				127, -1, -1, -1, 112, 0, 0, 0,
+				127, -1, 15, -1, 112, 0, 0, 0,
+				127, -1, 15, -1, 112, 0, 0, 0,
+				127, 0, 0, 15, 112, 0, 0, 0,
+				127, -1, 15, -1, 112, 0, 0, 0,
+				127, -1, 15, -1, 112, 0, 0, 0,
+				127, -1, -1, -1, 112, 0, 0, 0,
+				119, 119, 119, 119, 112, 0, 0, 0});
+		collapsed.transparentPixel = 15;	/* use white for transparency */
 		display.setData (ID_COLLAPSED, new Image (display, collapsed));
 	}
 
-	PaletteData checkMarkPalette = new PaletteData (	
+	PaletteData arrowPalette = new PaletteData (new RGB[] {
+		new RGB (0, 0, 0), new RGB (255, 255, 255)});
+	if (display.getData (ID_ARROWDOWN) == null) {
+		ImageData arrowDown = new ImageData (
+			7, 4, 1,
+			arrowPalette, 1,
+			new byte[] {0x00, (byte)0x83, (byte)0xC7, (byte)0xEF});
+		arrowDown.transparentPixel = 0x1;	/* use white for transparency */
+		display.setData (ID_ARROWDOWN, new Image (display, arrowDown));
+	}
+	if (display.getData (ID_ARROWUP) == null) {
+		ImageData arrowUp = new ImageData (
+			7, 4, 1,
+			arrowPalette, 1,
+			new byte[] {(byte)0xEF, (byte)0xC7, (byte)0x83, 0x00});
+		arrowUp.transparentPixel = 0x1;		/* use white for transparency */
+		display.setData (ID_ARROWUP, new Image (display, arrowUp));
+	}
+
+	PaletteData checkMarkPalette = new PaletteData (
 		new RGB[] {new RGB (0, 0, 0), new RGB (252, 3, 251)});
 	byte[] checkbox = new byte[] {0, 0, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 127, -64, 0, 0};
 	ImageData checkmark = new ImageData (7, 7, 1, checkMarkPalette, 1, new byte[] {-4, -8, 112, 34, 6, -114, -34});
@@ -1211,6 +1245,10 @@ static void initImages (final Display display) {
 			if (grayUnchecked != null) grayUnchecked.dispose ();
 			Image checkmark = (Image) display.getData (ID_CHECKMARK);
 			if (checkmark != null) checkmark.dispose ();
+			Image arrowDown = (Image) display.getData (ID_ARROWDOWN);
+			if (arrowDown != null) arrowDown.dispose ();
+			Image arrowUp = (Image) display.getData (ID_ARROWUP);
+			if (arrowUp != null) arrowUp.dispose ();
 
 			display.setData (ID_EXPANDED, null);
 			display.setData (ID_COLLAPSED, null);
@@ -1218,6 +1256,8 @@ static void initImages (final Display display) {
 			display.setData (ID_UNCHECKED, null);
 			display.setData (ID_GRAYUNCHECKED, null);
 			display.setData (ID_CHECKMARK, null);
+			display.setData (ID_ARROWDOWN, null);
+			display.setData (ID_ARROWUP, null);
 		}
 	});
 }

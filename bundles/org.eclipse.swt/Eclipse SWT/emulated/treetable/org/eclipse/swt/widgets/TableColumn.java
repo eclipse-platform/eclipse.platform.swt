@@ -33,6 +33,7 @@ public class TableColumn extends Item {
 	String displayText = "";
 	int width;
 	boolean moveable, resizable = true;
+	int sort = SWT.NONE;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -181,6 +182,10 @@ void computeDisplayText (GC gc) {
 		availableWidth -= image.getBounds ().width;
 		availableWidth -= Table.MARGIN_IMAGE;
 	}
+	if (sort != SWT.NONE) {
+		availableWidth -= parent.arrowBounds.width;
+		availableWidth -= Table.MARGIN_IMAGE;
+	}
 	String text = this.text;
 	int textWidth = gc.textExtent (text, SWT.DRAW_MNEMONIC).x;
 	if (textWidth <= availableWidth) {
@@ -280,7 +285,8 @@ public int getAlignment () {
 	return SWT.LEFT;
 }
 /*
- * Returns the width of the header's content (image + text + margin widths)
+ * Returns the width of the header's content
+ * (image + text + sort arrow + internal margins)
  */
 int getContentWidth (GC gc, boolean useDisplayText) {
 	int contentWidth = 0;
@@ -291,6 +297,12 @@ int getContentWidth (GC gc, boolean useDisplayText) {
 	if (image != null) {
 		contentWidth += image.getBounds ().width;
 		if (text.length () > 0) contentWidth += Table.MARGIN_IMAGE;
+	}
+	if (sort != SWT.NONE) {
+		contentWidth += parent.arrowBounds.width;
+		if (text.length () > 0 || image != null) {
+			contentWidth += Table.MARGIN_IMAGE;
+		}
 	}
 	return contentWidth;
 }
@@ -370,6 +382,10 @@ public boolean getResizable () {
 	checkWidget ();
 	return resizable;
 }
+/*public*/ int getSortDirection () {
+	checkWidget ();
+	return sort;
+}
 /**
  * Gets the width of the receiver.
  *
@@ -445,13 +461,18 @@ void paint (GC gc) {
 			imageBounds.width, imageBounds.height,
 			startX, (headerHeight - drawHeight) / 2,
 			imageBounds.width, drawHeight); 
-		startX += imageBounds.width;
-		if (displayText.length () > 0) startX += Table.MARGIN_IMAGE; 
+		startX += imageBounds.width + Table.MARGIN_IMAGE; 
 	}
 	if (displayText.length () > 0) {
 		gc.setForeground (display.getSystemColor (SWT.COLOR_BLACK));
 		int fontHeight = parent.fontHeight;
 		gc.drawText (displayText, startX, (headerHeight - fontHeight) / 2, SWT.DRAW_MNEMONIC);
+		startX += gc.textExtent (displayText, SWT.DRAW_MNEMONIC).x + Table.MARGIN_IMAGE;
+	}
+	if (sort != SWT.NONE) {
+		Image image = sort == SWT.DOWN ? parent.getArrowDownImage () : parent.getArrowUpImage ();
+		int y = (headerHeight - parent.arrowBounds.height) / 2;
+		gc.drawImage (image, startX, y);
 	}
 }
 /**
@@ -602,6 +623,15 @@ public void setMoveable (boolean moveable) {
 public void setResizable (boolean value) {
 	checkWidget ();
 	resizable = value;
+}
+/*public*/ void setSortDirection (int value) {
+	checkWidget ();
+	if (value == sort) return;
+	if (value != SWT.NONE && value != SWT.UP && value != SWT.DOWN) return;
+	sort = value;
+	if (parent.drawCount == 0 && parent.getHeaderVisible ()) {
+		parent.header.redraw (getX (), 0, width, parent.getHeaderHeight (), false);
+	}
 }
 public void setText (String value) {
 	checkWidget ();
