@@ -426,6 +426,7 @@ public class OS extends Platform {
 	public static final int XmNdecrementCallback = malloc ("decrementCallback", 4);
 	public static final int XmNdefaultActionCallback = malloc ("defaultActionCallback", 4);
 	public static final int XmNdefaultButtonShadowThickness = malloc ("defaultButtonShadowThickness", 4);
+	public static final int XmNdefaultPosition = malloc ("defaultPosition", 1);
 	public static final int XmNdeleteResponse = malloc ("deleteResponse", 1);
 	public static final int XmNdialogStyle = malloc ("dialogStyle", 1);
 	public static final int XmNdialogTitle = malloc ("dialogTitle", 4);

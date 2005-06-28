@@ -163,11 +163,13 @@ public int open () {
 	if (parent != null && dialogStyle == OS.XmDIALOG_MODELESS) {
 		dialogStyle = OS.XmDIALOG_PRIMARY_APPLICATION_MODAL;
 	}
+	boolean defaultPos = parent.isVisible (); 
 	int [] argList = {
 		OS.XmNnoResize, 1,
 		OS.XmNresizePolicy, OS.XmRESIZE_NONE,
 		OS.XmNdialogStyle, dialogStyle,
 		OS.XmNdialogTitle, xmStringPtr,
+		OS.XmNdefaultPosition, defaultPos ? 1 : 0,
 	};
 	int parentHandle = parent.shellHandle;
 	int dialog = createHandle (parentHandle, argList);
@@ -185,8 +187,25 @@ public int open () {
 	OS.XtAddCallback (dialog, OS.XmNhelpCallback, address, OS.XmDIALOG_HELP_BUTTON);
 
 	/* Open the dialog and dispatch events. */
+	if (!defaultPos) {
+		OS.XtRealizeWidget (dialog);
+		int[] argList1 = new int[] {
+			OS.XmNwidth, 0,
+			OS.XmNheight, 0,
+		};
+		OS.XtGetValues (dialog, argList1, argList1.length / 2);
+		Monitor monitor = parent.getMonitor ();
+		Rectangle bounds = monitor.getBounds ();
+		int x = bounds.x + (bounds.width - argList1 [1]) / 2;
+		int y = bounds.y + (bounds.height - argList1 [3]) / 2;
+		int[] argList2 = new int[] {
+			OS.XmNx, x,
+			OS.XmNy, y,
+		};
+		OS.XtSetValues (dialog, argList2, argList2.length / 2);
+	}
 	OS.XtManageChild (dialog);
-	
+
 	// Should be a pure OS message loop (no SWT AppContext)
 	Display display = parent.display;
 	while (OS.XtIsRealized (dialog) && OS.XtIsManaged (dialog))
