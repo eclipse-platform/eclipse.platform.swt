@@ -958,6 +958,14 @@ void destroyItem (TableColumn column) {
 		if (columns [index] == column) break;
 		index++;
 	}
+	int orderIndex = 0;
+	int [] order = new int [columnCount];
+	OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, columnCount, order);
+	while (orderIndex < columnCount) {
+		if (order [orderIndex] == index) break;
+		orderIndex++;
+	}
+	ignoreResize = true;
 	boolean first = false;
 	if (index == 0) {
 		first = true;
@@ -1064,6 +1072,20 @@ void destroyItem (TableColumn column) {
 	}
 	if (columnCount == 0) setScrollWidth (null, true);
 	updateMoveable ();
+	ignoreResize = false;
+	if (columnCount != 0) {
+		int count = columnCount - orderIndex;
+		TableColumn [] newColumns = new TableColumn [count];
+		orderIndex++;
+		for (int i=orderIndex; i<order.length; i++) {
+			newColumns [i - orderIndex] = columns [order [i] - 1];
+		}
+		for (int i=0; i<newColumns.length; i++) {
+			if (!newColumns [i].isDisposed ()) {
+				newColumns [i].sendEvent (SWT.Move);
+			}
+		}
+	}
 }
 
 void destroyItem (TableItem item) {
