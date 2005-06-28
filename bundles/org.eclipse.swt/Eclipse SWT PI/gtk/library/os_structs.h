@@ -99,6 +99,18 @@ void setGdkEventFields(JNIEnv *env, jobject lpObject, GdkEvent *lpStruct);
 #define GdkEvent_sizeof() 0
 #endif
 
+#ifndef NO_GdkEventAny
+void cacheGdkEventAnyFields(JNIEnv *env, jobject lpObject);
+GdkEventAny *getGdkEventAnyFields(JNIEnv *env, jobject lpObject, GdkEventAny *lpStruct);
+void setGdkEventAnyFields(JNIEnv *env, jobject lpObject, GdkEventAny *lpStruct);
+#define GdkEventAny_sizeof() sizeof(GdkEventAny)
+#else
+#define cacheGdkEventAnyFields(a,b)
+#define getGdkEventAnyFields(a,b,c) NULL
+#define setGdkEventAnyFields(a,b,c)
+#define GdkEventAny_sizeof() 0
+#endif
+
 #ifndef NO_GdkEventButton
 void cacheGdkEventButtonFields(JNIEnv *env, jobject lpObject);
 GdkEventButton *getGdkEventButtonFields(JNIEnv *env, jobject lpObject, GdkEventButton *lpStruct);

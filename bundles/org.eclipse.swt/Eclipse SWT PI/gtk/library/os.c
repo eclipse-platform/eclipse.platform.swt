@@ -309,6 +309,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(GdkDragContext_1sizeof)
 }
 #endif
 
+#ifndef NO_GdkEventAny_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GdkEventAny_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GdkEventAny_1sizeof_FUNC);
+	rc = (jint)GdkEventAny_sizeof();
+	OS_NATIVE_EXIT(env, that, GdkEventAny_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GdkEventButton_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(GdkEventButton_1sizeof)
 	(JNIEnv *env, jclass that)

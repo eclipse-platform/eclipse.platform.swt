@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 992;
-int OS_nativeFunctionCallCount[992];
+int OS_nativeFunctionCount = 993;
+int OS_nativeFunctionCallCount[993];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1WINDOWING_1X11",
@@ -47,6 +47,7 @@ char * OS_nativeFunctionNames[] = {
 	"GTypeQuery_1sizeof",
 	"GdkColor_1sizeof",
 	"GdkDragContext_1sizeof",
+	"GdkEventAny_1sizeof",
 	"GdkEventButton_1sizeof",
 	"GdkEventCrossing_1sizeof",
 	"GdkEventExpose_1sizeof",

@@ -442,6 +442,7 @@ public static final native int GTypeQuery_sizeof ();
 public static final native int GdkColor_sizeof();
 public static final native int GdkDragContext_sizeof();
 public static final native int GdkEvent_sizeof();
+public static final native int GdkEventAny_sizeof();
 public static final native int GdkEventButton_sizeof();
 public static final native int GdkEventCrossing_sizeof();
 public static final native int GdkEventExpose_sizeof();

@@ -326,6 +326,43 @@ void setGdkEventFields(JNIEnv *env, jobject lpObject, GdkEvent *lpStruct)
 }
 #endif
 
+#ifndef NO_GdkEventAny
+typedef struct GdkEventAny_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID window, send_event;
+} GdkEventAny_FID_CACHE;
+
+GdkEventAny_FID_CACHE GdkEventAnyFc;
+
+void cacheGdkEventAnyFields(JNIEnv *env, jobject lpObject)
+{
+	if (GdkEventAnyFc.cached) return;
+	cacheGdkEventFields(env, lpObject);
+	GdkEventAnyFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	GdkEventAnyFc.window = (*env)->GetFieldID(env, GdkEventAnyFc.clazz, "window", "I");
+	GdkEventAnyFc.send_event = (*env)->GetFieldID(env, GdkEventAnyFc.clazz, "send_event", "B");
+	GdkEventAnyFc.cached = 1;
+}
+
+GdkEventAny *getGdkEventAnyFields(JNIEnv *env, jobject lpObject, GdkEventAny *lpStruct)
+{
+	if (!GdkEventAnyFc.cached) cacheGdkEventAnyFields(env, lpObject);
+	getGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
+	lpStruct->window = (GdkWindow *)(*env)->GetIntField(env, lpObject, GdkEventAnyFc.window);
+	lpStruct->send_event = (gint8)(*env)->GetByteField(env, lpObject, GdkEventAnyFc.send_event);
+	return lpStruct;
+}
+
+void setGdkEventAnyFields(JNIEnv *env, jobject lpObject, GdkEventAny *lpStruct)
+{
+	if (!GdkEventAnyFc.cached) cacheGdkEventAnyFields(env, lpObject);
+	setGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
+	(*env)->SetIntField(env, lpObject, GdkEventAnyFc.window, (jint)lpStruct->window);
+	(*env)->SetByteField(env, lpObject, GdkEventAnyFc.send_event, (jbyte)lpStruct->send_event);
+}
+#endif
+
 #ifndef NO_GdkEventButton
 typedef struct GdkEventButton_FID_CACHE {
 	int cached;

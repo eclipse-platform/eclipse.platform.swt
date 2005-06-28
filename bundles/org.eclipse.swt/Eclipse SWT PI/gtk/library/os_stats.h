@@ -51,6 +51,7 @@ typedef enum {
 	GTypeQuery_1sizeof_FUNC,
 	GdkColor_1sizeof_FUNC,
 	GdkDragContext_1sizeof_FUNC,
+	GdkEventAny_1sizeof_FUNC,
 	GdkEventButton_1sizeof_FUNC,
 	GdkEventCrossing_1sizeof_FUNC,
 	GdkEventExpose_1sizeof_FUNC,
