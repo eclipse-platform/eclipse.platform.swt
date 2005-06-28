@@ -36,7 +36,7 @@ public class Browser extends Composite {
 	OleControlSite site;
 	OleAutomation auto;
 
-	boolean back, forward, navigate, delaySetText;
+	boolean back, forward, navigate, delaySetText, ignoreDispose;
 	Point location;
 	Point size;
 	boolean addressBar = true, menuBar = true, statusBar = true, toolBar = true;
@@ -163,6 +163,14 @@ public Browser(Composite parent, int style) {
 		public void handleEvent(Event e) {
 			switch (e.type) {
 				case SWT.Dispose: {
+					/* make this handler run after other dispose listeners */
+					if (ignoreDispose) {
+						ignoreDispose = false;
+						break;
+					}
+					ignoreDispose = true;
+					notifyListeners (e.type, e);
+					e.type = SWT.NONE;
 					if (auto != null) auto.dispose();
 					auto = null;
 					break;
