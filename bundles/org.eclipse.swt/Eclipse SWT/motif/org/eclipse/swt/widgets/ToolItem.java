@@ -937,8 +937,10 @@ int XKeyPress (int w, int client_data, int call_data, int continue_to_dispatch) 
 			result = 1;
 			break;
 		case OS.XK_Down:
-			click (true, xEvent.state);
-			result = 1;
+			if ((style & SWT.DROP_DOWN) != 0) {
+				click (true, xEvent.state);
+				result = 1;
+			}
 			break;
 	}
 	/*
