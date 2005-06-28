@@ -34,7 +34,7 @@ import org.eclipse.swt.events.*;
  */
 public class TreeColumn extends Item {
 	Tree parent;
-	boolean resizable;
+	boolean resizable, moveable;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -200,6 +200,31 @@ public int getAlignment () {
 	if ((style & SWT.CENTER) != 0) return SWT.CENTER;
 	if ((style & SWT.RIGHT) != 0) return SWT.RIGHT;
 	return SWT.LEFT;
+}
+
+/**
+ * Gets the moveable attribute. A column that is
+ * not moveable cannot be reordered by the user 
+ * by dragging the header but may be reordered 
+ * by the programmer.
+ *
+ * @return the moveable attribute
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see Tree#getColumnOrder()
+ * @see Tree#setColumnOrder(int[])
+ * @see TreeColumn#setMoveable(boolean)
+ * @see SWT#Move
+ * 
+ * @since 3.2
+ */
+/*public*/ boolean getMoveable () {
+	checkWidget ();
+	return moveable;
 }
 
 String getNameText () {
@@ -450,6 +475,32 @@ public void setImage (Image image) {
 		hdItem.fmt &= ~OS.LVCFMT_IMAGE;
 	}
 	OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
+}
+
+/**
+ * Sets the moveable attribute.  A column that is
+ * moveable can be reordered by the user by dragging
+ * the header. A column that is not moveable cannot be 
+ * dragged by the user but may be reordered 
+ * by the programmer.
+ *
+ * @param moveable the moveable attribute
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see Tree#setColumnOrder(int[])
+ * @see Tree#getColumnOrder()
+ * @see TreeColumn#getMoveable()
+ * @see SWT#Move
+ * 
+ * @since 3.2
+ */
+/*public*/ void setMoveable (boolean moveable) {
+	checkWidget ();
+	this.moveable = moveable;
 }
 
 /**

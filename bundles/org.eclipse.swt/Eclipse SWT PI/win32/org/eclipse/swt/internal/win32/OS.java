@@ -508,14 +508,17 @@ public class OS extends Platform {
 	public static final int HDM_GETITEMW = HDM_FIRST + 11;
 	public static final int HDM_GETITEM = IsUnicode ? HDM_GETITEMW : HDM_GETITEMA;
 	public static final int HDM_GETITEMRECT = HDM_FIRST + 7;
+	public static final int HDM_GETORDERARRAY = HDM_FIRST + 17;
 	public static final int HDM_INSERTITEMA = HDM_FIRST + 1;
 	public static final int HDM_INSERTITEMW = HDM_FIRST + 10;
 	public static final int HDM_INSERTITEM = IsUnicode ? HDM_INSERTITEMW : HDM_INSERTITEMA;
 	public static final int HDM_LAYOUT = HDM_FIRST + 5;
+	public static final int HDM_ORDERTOINDEX = HDM_FIRST + 15;
 	public static final int HDM_SETIMAGELIST = HDM_FIRST + 8;
 	public static final int HDM_SETITEMA = HDM_FIRST + 4;
 	public static final int HDM_SETITEMW = HDM_FIRST + 12;
 	public static final int HDM_SETITEM = IsUnicode ? HDM_SETITEMW : HDM_SETITEMA;
+	public static final int HDM_SETORDERARRAY = HDM_FIRST + 18;
 	public static final int HDN_FIRST = 0xfffffed4;
 	public static final int HDN_BEGINDRAG = HDN_FIRST - 10;
 	public static final int HDN_BEGINTRACK = IsUnicode ? 0xfffffeba : 0xfffffece;
@@ -536,6 +539,7 @@ public class OS extends Platform {
 	public static final int HDN_ITEMDBLCLICKA = HDN_FIRST - 3;
 	public static final int HDN_ITEMDBLCLICK = IsUnicode ? HDN_ITEMDBLCLICKW : HDN_ITEMDBLCLICKA;
 	public static final int HDS_BUTTONS = 0x2;
+	public static final int HDS_DRAGDROP = 0x0040;
 	public static final int HDS_FULLDRAG = 0x80;
 	public static final int HDS_HIDDEN = 0x8;
 	public static final int HEAP_ZERO_MEMORY = 0x8;

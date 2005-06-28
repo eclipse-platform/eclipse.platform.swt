@@ -47,7 +47,7 @@ public class Tree extends Composite {
 	ImageList imageList;
 	boolean dragStarted, gestureCompleted, insertAfter;
 	boolean ignoreSelect, ignoreExpand, ignoreDeselect, ignoreResize;
-	boolean lockSelection, oldSelected, newSelected;
+	boolean lockSelection, oldSelected, newSelected, cancelMove;
 	boolean linesVisible, customDraw, printClient;
 	static final int INSET = 3;
 	static final int GRID_WIDTH = 1;
@@ -526,7 +526,7 @@ void createParent () {
 		bits,
 		new TCHAR (0, OS.WC_HEADER, true),
 		null,
-		OS.HDS_BUTTONS | OS.HDS_FULLDRAG | OS.HDS_HIDDEN | OS.WS_CHILD | OS.WS_CLIPSIBLINGS,
+		OS.HDS_BUTTONS | OS.HDS_FULLDRAG | OS.HDS_DRAGDROP | OS.HDS_HIDDEN | OS.WS_CHILD | OS.WS_CLIPSIBLINGS,
 		0, 0, 0, 0,
 		hwndParent,
 		0,
@@ -633,6 +633,8 @@ void destroyItem (TreeColumn column) {
 		if (columns [index] == column) break;
 		index++;
 	}
+	RECT itemRect = new RECT ();
+	OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, itemRect);
 	if (OS.SendMessage (hwndHeader, OS.HDM_DELETEITEM, index, 0) == 0) {
 		error (SWT.ERROR_ITEM_NOT_REMOVED);
 	}
@@ -716,15 +718,24 @@ void destroyItem (TreeColumn column) {
 			hdItem.fmt |= OS.HDF_LEFT;
 			OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
 		}
-		RECT rect = new RECT (), itemRect = new RECT ();
+		RECT rect = new RECT ();
 		OS.GetClientRect (handle, rect);
-		OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index - 1, itemRect);
-		rect.left = itemRect.right;
+		rect.left = itemRect.left;
 	    OS.InvalidateRect (handle, rect, true);
 	}
 	setScrollWidth ();
-	for (int i=index; i<columnCount; i++) {
-		columns [i].sendEvent (SWT.Move);
+	if (columnCount != 0) {
+		int start = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, index, 0);
+		TreeColumn [] newColumns = new TreeColumn [columnCount - start];
+		for (int i=start; i<columnCount; i++) {
+			int orderIndex = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, i, 0);
+			newColumns [i - start] = columns [orderIndex];
+		}
+		for (int i=0; i<newColumns.length; i++) {
+			if (!newColumns [i].isDisposed ()) {
+				newColumns [i].sendEvent (SWT.Move);
+			}
+		}
 	}
 }
 
@@ -960,6 +971,43 @@ public int getColumnCount () {
 	checkWidget ();
 	if (hwndHeader == 0) return 0;
 	return OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+}
+
+/**
+ * Returns an array of zero-relative integers that map
+ * the creation order of the receiver's items to the
+ * order in which they are currently being displayed.
+ * <p>
+ * Specifically, the indices of the returned array represent
+ * the current visual order of the items, and the contents
+ * of the array represent the creation order of the items.
+ * </p><p>
+ * Note: This is not the actual structure used by the receiver
+ * to maintain its list of items, so modifying the array will
+ * not affect the receiver. 
+ * </p>
+ *
+ * @return the current visual order of the receiver's items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see Tree#setColumnOrder(int[])
+ * @see TreeColumn#getMoveable()
+ * @see TreeColumn#setMoveable(boolean)
+ * @see SWT#Move
+ * 
+ * @since 3.2
+ */
+/*public*/ int[] getColumnOrder () {
+	checkWidget ();
+	if (hwndHeader == 0) return new int [0];
+	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0 );
+	int [] order = new int [count];
+	OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
+	return order;
 }
 
 /**
@@ -1735,6 +1783,77 @@ void setCursor () {
 	OS.SetCursor (hCursor);
 }
 
+/**
+ * Sets the order that the items in the receiver should 
+ * be displayed in to the given argument which is described
+ * in terms of the zero-relative ordering of when the items
+ * were added.
+ *
+ * @param order the new order to display the items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the item order is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the item order is not the same length as the number of items</li>
+ * </ul>
+ * 
+ * @see Tree#getColumnOrder()
+ * @see TreeColumn#getMoveable()
+ * @see TreeColumn#setMoveable(boolean)
+ * @see SWT#Move
+ * 
+ * @since 3.2
+ */
+/*public*/ void setColumnOrder (int [] order) {
+	checkWidget ();
+	if (order == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int count = 0;
+	if (hwndHeader != 0) {
+		count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+	}
+	if (count == 0) {
+		if (order.length != 0) error (SWT.ERROR_INVALID_ARGUMENT);
+		return;
+	}
+	if (order.length != count) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (order [0] != 0) return;
+	int [] oldOrder = new int [count];
+	OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, oldOrder);
+	boolean reorder = false;
+	boolean [] seen = new boolean [count];
+	for (int i=0; i<order.length; i++) {
+		int index = order [i];
+		if (index < 0 || index >= count) error (SWT.ERROR_INVALID_RANGE);
+		if (seen [index]) error (SWT.ERROR_INVALID_ARGUMENT);
+		seen [index] = true;
+		if (index != oldOrder [i]) reorder = true;
+	}
+	if (reorder) {
+		RECT [] oldRects = new RECT [count];
+		for (int i=0; i<count; i++) {
+			oldRects [i] = new RECT ();
+			OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, oldRects [i]);
+		}
+		OS.SendMessage (hwndHeader, OS.HDM_SETORDERARRAY, order.length, order);
+		OS.InvalidateRect (handle, null, true);
+		TreeColumn [] newColumns = new TreeColumn [count];
+		System.arraycopy (columns, 0, newColumns, 0, count);
+		RECT newRect = new RECT ();
+		for (int i=0; i<count; i++) {
+			TreeColumn column = newColumns [i];
+			if (!column.isDisposed ()) {
+				OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, newRect);
+				if (newRect.left != oldRects [i].left) {
+					column.sendEvent (SWT.Move);
+				}
+			}
+		}
+	}
+}
+
 void setCheckboxImageList () {
 	if ((style & SWT.CHECK) == 0) return;
 	int count = 5;
@@ -2185,21 +2304,16 @@ public void showColumn (TreeColumn column) {
 			RECT rect = new RECT ();
 			OS.GetClientRect (hwndParent, rect);
 			OS.MapWindowPoints (hwndParent, handle, rect, 2);
-			int x = 0;
-			HDITEM hdItem = new HDITEM ();
-			for (int i=0; i<index; i++) {
-				hdItem.mask = OS.HDI_WIDTH;
-				OS.SendMessage (hwndHeader, OS.HDM_GETITEM, i, hdItem);
-				x += hdItem.cxy;
-			}
+			RECT itemRect = new RECT ();
+			OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, itemRect);
 			POINT pt = new POINT ();
-			pt.x = x;
+			pt.x = itemRect.right;
 			pt.y = rect.top;
 			if (!OS.PtInRect (rect, pt)) {
 				SCROLLINFO info = new SCROLLINFO ();
 				info.cbSize = SCROLLINFO.sizeof;
 				info.fMask = OS.SIF_POS;
-				info.nPos = Math.max (0, pt.x - Tree.INSET / 2);
+				info.nPos = Math.max (0, itemRect.left - Tree.INSET / 2);
 				OS.SetScrollInfo (hwndParent, OS.SB_HORZ, info, true);
 				setScrollWidth ();
 			}
@@ -3075,6 +3189,64 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 				}
 				break;
 			}
+			case OS.NM_RELEASEDCAPTURE:
+				cancelMove = false;
+				break;
+			case OS.HDN_BEGINDRAG: {
+				if (cancelMove) return LRESULT.ONE;
+				NMHEADER phdn = new NMHEADER ();
+				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
+				if (phdn.iItem == 0) {
+					cancelMove = true;
+					return LRESULT.ONE;
+				}
+				if (phdn.iItem != -1) {
+					TreeColumn column = columns [phdn.iItem];
+					if (column != null && !column.getMoveable ()) {
+						cancelMove = true;
+						return LRESULT.ONE;
+					}
+				}
+				break;
+			}
+			case OS.HDN_ENDDRAG: {
+				cancelMove = false;
+				NMHEADER phdn = new NMHEADER ();
+				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
+				if (phdn.iItem != -1 && phdn.pitem != 0) {
+					HDITEM pitem = new HDITEM ();
+					OS.MoveMemory (pitem, phdn.pitem, HDITEM.sizeof);
+					if ((pitem.mask & OS.HDI_ORDER) != 0 && pitem.iOrder != -1) {
+						int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+						int [] order = new int [count];
+						OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
+						int index = 0;
+						while (index < order.length) {
+						 	if (order [index] == phdn.iItem) break;
+							index++;
+						}
+						if (index == order.length) index = 0;
+						if (index == pitem.iOrder) break;
+						int start = Math.min (index, pitem.iOrder);
+						if (start == 0) return LRESULT.ONE;
+						int end = Math.max (index, pitem.iOrder);
+						RECT rect = new RECT (), itemRect = new RECT ();
+						OS.GetClientRect (handle, rect);
+						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, order [start], itemRect);
+						rect.left = Math.max (rect.left, itemRect.left);
+						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, order [end], itemRect);
+						rect.right = Math.min (rect.right, itemRect.right);
+						OS.InvalidateRect (handle, rect, true);
+						for (int i=start; i<=end; i++) {
+							TreeColumn column = columns [order [i]];
+							if (!column.isDisposed ()) {
+								column.postEvent (SWT.Move);
+							}
+						}
+					}
+				}
+				break;
+			}
 			case OS.HDN_ITEMCHANGINGW:
 			case OS.HDN_ITEMCHANGINGA: {
 				NMHEADER phdn = new NMHEADER ();
@@ -3093,12 +3265,9 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 						int gridWidth = getLinesVisible () ? GRID_WIDTH : 0;
 						rect.left = itemRect.right - gridWidth;
 						int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-						if (phdn.iItem < count - 1) {
-							for (int i=phdn.iItem; i<count; i++) {
-								OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, itemRect);
-							}
-							rect.right = itemRect.right;
-						}
+						int index = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, count - 1, 0);
+						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, itemRect);
+						rect.right = itemRect.right;
 						int flags = OS.SW_INVALIDATE | OS.SW_ERASE;
 						OS.ScrollWindowEx (handle, deltaX, 0, rect, null, 0, null, flags);
 						//TODO - column flashes when resized
@@ -3128,10 +3297,15 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 							int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 							TreeColumn [] newColumns = new TreeColumn [count];
 							System.arraycopy (columns, 0, newColumns, 0, count);
-							for (int i=phdn.iItem+1; i<count; i++) {
-								if (!newColumns [i].isDisposed ()) {
-									newColumns [i].sendEvent (SWT.Move);
+							int [] order = new int [count];
+							OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
+							boolean moved = false;
+							for (int i=0; i<count; i++) {
+								TreeColumn nextColumn = newColumns [order [i]];
+								if (moved && !nextColumn.isDisposed ()) {
+									nextColumn.sendEvent (SWT.Move);
 								}
+								if (nextColumn == column) moved = true;
 							}
 						}
 					}
@@ -3335,7 +3509,8 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 							hdItem.mask = OS.HDI_WIDTH;
 							int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 							for (int i=0; i<count; i++) {
-								OS.SendMessage (hwndHeader, OS.HDM_GETITEM, i, hdItem);
+								int index = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, i, 0);
+								OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
 								OS.SetRect (rect, x, nmcd.top, x + hdItem.cxy, nmcd.bottom);
 								OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_RIGHT);
 								x += hdItem.cxy;
@@ -3483,17 +3658,18 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 						hdItem.mask = OS.HDI_WIDTH;
 						int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 						for (int i=0; i<count; i++) {
-							OS.SendMessage (hwndHeader, OS.HDM_GETITEM, i, hdItem);
+							int index = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, i, 0);
+							OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
 							if (i > 0) {
 								OS.SetRect (rect, x, nmcd.top, x + hdItem.cxy, nmcd.bottom - gridWidth);
 								if (printClient || (style & SWT.FULL_SELECTION) != 0) {
 									drawBackground (hDC, OS.GetBkColor (hDC), rect);
 								}
 								if (useColor) {
-									int clrTextBk = item.cellBackground != null ? item.cellBackground [i] : item.background;
+									int clrTextBk = item.cellBackground != null ? item.cellBackground [index] : item.background;
 									if (clrTextBk != -1) drawBackground (hDC, clrTextBk, rect);
 								}
-								Image image = item.images != null ? item.images [i] : null;
+								Image image = item.images != null ? item.images [index] : null;
 								if (image != null) {
 									Rectangle bounds = image.getBounds ();
 									if (size == null) size = getImageSize ();
@@ -3509,20 +3685,20 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 								* all text drawing for empty rectangles.
 								*/
 								if (rect.left < rect.right) {
-									if (item.strings != null && item.strings [i] != null) {
-										int hFont = item.cellFont != null ? item.cellFont [i] : item.font;
+									if (item.strings != null && item.strings [index] != null) {
+										int hFont = item.cellFont != null ? item.cellFont [index] : item.font;
 										hFont = hFont != -1 ? OS.SelectObject (hDC, hFont) : -1;
 										int clrText = -1;
 										if (useColor) {
-											clrText = item.cellForeground != null ? item.cellForeground [i] : item.foreground;
+											clrText = item.cellForeground != null ? item.cellForeground [index] : item.foreground;
 											clrText = clrText != -1? OS.SetTextColor (hDC, clrText) : -1;
 										}
 										int flags = OS.DT_NOPREFIX | OS.DT_SINGLELINE | OS.DT_VCENTER | OS.DT_ENDELLIPSIS;
-										TreeColumn column = columns [i];
+										TreeColumn column = columns [index];
 										if ((column.style & SWT.LEFT) != 0) flags |= OS.DT_LEFT;
 										if ((column.style & SWT.CENTER) != 0) flags |= OS.DT_CENTER;
 										if ((column.style & SWT.RIGHT) != 0) flags |= OS.DT_RIGHT;
-										TCHAR buffer = new TCHAR (getCodePage (), item.strings [i], false);
+										TCHAR buffer = new TCHAR (getCodePage (), item.strings [index], false);
 										OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
 										if (hFont != -1) OS.SelectObject (hDC, hFont);
 										if (clrText != -1) OS.SetTextColor (hDC, clrText);
