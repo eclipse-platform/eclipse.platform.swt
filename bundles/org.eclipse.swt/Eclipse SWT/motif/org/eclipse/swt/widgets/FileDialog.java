@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
  
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;
@@ -386,6 +387,7 @@ public String open () {
 		0);
 
 	/* Create the dialog */
+	boolean defaultPos = parent.isVisible ();
 	Display display = parent.display;
 	int [] argList1 = {
 		OS.XmNresizePolicy, OS.XmRESIZE_NONE,
@@ -395,6 +397,7 @@ public String open () {
 		OS.XmNdialogTitle, xmStringPtr1,
 		OS.XmNpattern, xmStringPtr2,
 		OS.XmNdirMask, xmStringPtr3,
+		OS.XmNdefaultPosition, defaultPos ? 1 : 0,
 	};
 	/*
 	* Bug in AIX. The dialog does not responde to input, if the parent
@@ -464,6 +467,23 @@ public String open () {
 		}
 	}
 
+	if (!defaultPos) {
+		OS.XtRealizeWidget (dialog);
+		int[] argList4 = new int[] {
+			OS.XmNwidth, 0,
+			OS.XmNheight, 0,
+		};
+		OS.XtGetValues (dialog, argList4, argList4.length / 2);
+		Monitor monitor = parent.getMonitor ();
+		Rectangle bounds = monitor.getBounds ();
+		int x = bounds.x + (bounds.width - argList4 [1]) / 2;
+		int y = bounds.y + (bounds.height - argList4 [3]) / 2;
+		int[] argList5 = new int[] {
+			OS.XmNx, x,
+			OS.XmNy, y,
+		};
+		OS.XtSetValues (dialog, argList5, argList5.length / 2);
+	}
 	OS.XtManageChild (dialog);
 
 	// Should be a pure OS message loop (no SWT AppContext)
