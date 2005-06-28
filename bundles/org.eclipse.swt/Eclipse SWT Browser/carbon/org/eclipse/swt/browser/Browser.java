@@ -1661,6 +1661,11 @@ void decidePolicyForMIMEType(int type, int request, int frame, int listener) {
 
 void decidePolicyForNavigationAction(int actionInformation, int request, int frame, int listener) {
 	int url = WebKit.objc_msgSend(request, WebKit.S_URL);
+	if (url == 0) {
+		/* indicates that a URL with an invalid format was specified */
+		WebKit.objc_msgSend(listener, WebKit.S_ignore);
+		return;
+	}
 	int s = WebKit.objc_msgSend(url, WebKit.S_absoluteString);
 	int length = OS.CFStringGetLength(s);
 	char[] buffer = new char[length];
@@ -1668,7 +1673,7 @@ void decidePolicyForNavigationAction(int actionInformation, int request, int fra
 	range.length = length;
 	OS.CFStringGetCharacters(s, range, buffer);
 	String url2 = new String(buffer);
-	
+
 	LocationEvent newEvent = new LocationEvent(this);
 	newEvent.display = getDisplay();
 	newEvent.widget = this;
