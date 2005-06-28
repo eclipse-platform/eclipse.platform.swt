@@ -23,6 +23,7 @@ class TextTab extends ScrollableTab {
 
 	/* Style widgets added to the "Style" group */
 	Button wrapButton, readOnlyButton;
+	Button leftButton, centerButton, rightButton;
 	
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
@@ -58,6 +59,9 @@ class TextTab extends ScrollableTab {
 		if (wrapButton.getSelection ()) style |= SWT.WRAP;
 		if (readOnlyButton.getSelection ()) style |= SWT.READ_ONLY;
 		if (borderButton.getSelection ()) style |= SWT.BORDER;
+		if (leftButton.getSelection ()) style |= SWT.LEFT;
+		if (centerButton.getSelection ()) style |= SWT.CENTER;
+		if (rightButton.getSelection ()) style |= SWT.RIGHT;
 	
 		/* Create the example widgets */
 		text = new Text (textGroup, style);
@@ -75,6 +79,28 @@ class TextTab extends ScrollableTab {
 		wrapButton.setText ("SWT.WRAP");
 		readOnlyButton = new Button (styleGroup, SWT.CHECK);
 		readOnlyButton.setText ("SWT.READ_ONLY");
+
+		Composite alignmentGroup = new Composite (styleGroup, SWT.NONE);
+		GridLayout layout = new GridLayout ();
+		layout.marginWidth = layout.marginHeight = 0;
+		alignmentGroup.setLayout (layout);
+		alignmentGroup.setLayoutData (new GridData (GridData.FILL_BOTH));
+		leftButton = new Button (alignmentGroup, SWT.RADIO);
+		leftButton.setText ("SWT.LEFT");
+		centerButton = new Button (alignmentGroup, SWT.RADIO);
+		centerButton.setText ("SWT.CENTER");
+		rightButton = new Button (alignmentGroup, SWT.RADIO);
+		rightButton.setText ("SWT.RIGHT");
+		
+		SelectionListener selectionListener = new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				if (!((Button) event.widget).getSelection ()) return;
+				recreateExampleWidgets ();
+			}
+		};
+		leftButton.addSelectionListener (selectionListener);
+		centerButton.addSelectionListener (selectionListener);
+		rightButton.addSelectionListener (selectionListener);
 	}
 
 	/**
@@ -133,5 +159,8 @@ class TextTab extends ScrollableTab {
 		wrapButton.setEnabled ((text.getStyle () & SWT.MULTI) != 0);
 		horizontalButton.setEnabled ((text.getStyle () & SWT.MULTI) != 0);
 		verticalButton.setEnabled ((text.getStyle () & SWT.MULTI) != 0);
+		leftButton.setSelection ((text.getStyle () & SWT.LEFT) != 0);
+		centerButton.setSelection ((text.getStyle () & SWT.CENTER) != 0);
+		rightButton.setSelection ((text.getStyle () & SWT.RIGHT) != 0);
 	}
 }
