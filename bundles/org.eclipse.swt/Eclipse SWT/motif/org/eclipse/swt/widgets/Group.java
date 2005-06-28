@@ -169,6 +169,10 @@ void createHandle (int index) {
 	OS.XtGetValues (handle, argList4, argList4.length / 2);
 	OS.XtSetValues (labelHandle, argList4, argList4.length / 2);
 }
+void deregister () {
+	super.deregister ();
+	display.removeWidget (labelHandle);
+}
 void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
 	enableHandle (enabled, labelHandle);
@@ -224,6 +228,13 @@ public String getText () {
 	checkWidget();
 	return text;
 }
+void hookEvents () {
+	super.hookEvents ();
+	int windowProc = display.windowProc;
+	OS.XtAddEventHandler (labelHandle, OS.ButtonPressMask, false, windowProc, BUTTON_PRESS);
+	OS.XtAddEventHandler (labelHandle, OS.ButtonReleaseMask, false, windowProc, BUTTON_RELEASE);
+	OS.XtAddEventHandler (labelHandle, OS.PointerMotionMask, false, windowProc, POINTER_MOTION);
+}
 boolean mnemonicHit (char key) {
 	return setFocus ();
 }
@@ -243,6 +254,10 @@ void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boole
 	short [] label_x = new short [1], label_y = new short [1];
 	OS.XtTranslateCoords (labelHandle, (short) 0, (short) 0, label_x, label_y);
 	redrawHandle (root_x [0] - label_x [0], root_y [0] - label_y [0], width, height, redrawAll, labelHandle);
+}
+void register () {
+	super.register ();
+	display.addWidget (labelHandle, this);
 }
 void releaseHandle () {
 	super.releaseHandle ();
