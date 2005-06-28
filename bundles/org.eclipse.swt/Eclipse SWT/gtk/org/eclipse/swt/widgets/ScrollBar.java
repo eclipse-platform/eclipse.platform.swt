@@ -285,7 +285,6 @@ public int getSelection () {
 public Point getSize () {
 	checkWidget ();
 	if (handle == 0) return new Point (0,0);
-	int /*long*/ scrolledHandle = parent.scrolledHandle;
 	GtkRequisition requisition = new GtkRequisition ();
 	OS.gtk_widget_size_request (handle, requisition);
 	return new Point (requisition.width, requisition.height);
