@@ -1278,6 +1278,7 @@ void headerOnMouseMove (Event event) {
 
 	/* redraw the resizing line at its new location */
 	GC gc = new GC (this);
+	gc.setForeground (display.getSystemColor (SWT.COLOR_BLACK));
 	int lineHeight = getClientArea ().height;
 	redraw (resizeColumnX - 1, 0, 1, lineHeight, false);
 	resizeColumnX = event.x;
