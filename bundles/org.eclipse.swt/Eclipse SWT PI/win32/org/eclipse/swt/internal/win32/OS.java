@@ -1279,6 +1279,7 @@ public class OS extends Platform {
 	public static final int TVGN_NEXT = 0x1;
 	public static final int TVGN_NEXTVISIBLE = 0x6;
 	public static final int TVGN_PARENT = 0x3;
+	public static final int TVGN_PREVIOUS = 0x2;
 	public static final int TVGN_PREVIOUSVISIBLE = 0x7;
 	public static final int TVGN_ROOT = 0x0;
 	public static final int TVHT_ONITEM = 0x46;
