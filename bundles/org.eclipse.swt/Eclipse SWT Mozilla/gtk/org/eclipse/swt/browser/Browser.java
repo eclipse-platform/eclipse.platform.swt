@@ -70,7 +70,7 @@ public class Browser extends Composite {
 	static nsIAppShell AppShell;
 	static WindowCreator WindowCreator;
 	static int BrowserCount;
-	static boolean mozilla;
+	static boolean mozilla, ignoreDispose;
 	static Callback eventCallback;
 	static int /*long*/ eventProc;
 
@@ -349,7 +349,18 @@ public Browser(Composite parent, int style) {
 	Listener listener = new Listener() {
 		public void handleEvent(Event event) {
 			switch (event.type) {
-				case SWT.Dispose: onDispose(event.display); break;
+				case SWT.Dispose: {
+					/* make this handler run after other dispose listeners */
+					if (ignoreDispose) {
+						ignoreDispose = false;
+						break;
+					}
+					ignoreDispose = true;
+					notifyListeners (event.type, event);
+					event.type = SWT.NONE;
+					onDispose(event.display);
+					break;
+				}
 				case SWT.Resize: onResize(); break;
 				case SWT.FocusIn: Activate(); break;
 				case SWT.Deactivate: {
