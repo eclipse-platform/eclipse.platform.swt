@@ -62,7 +62,7 @@ public class Browser extends Composite {
 	String url = "";
 	Point location;
 	Point size;
-	boolean statusBar = true, toolBar = true;
+	boolean statusBar = true, toolBar = true, ignoreDispose;
 	//TEMPORARY CODE
 //	boolean doit;
 
@@ -192,6 +192,15 @@ public Browser(Composite parent, int style) {
 		public void handleEvent(Event e) {
 			switch (e.type) {
 				case SWT.Dispose: {
+					/* make this handler run after other dispose listeners */
+					if (ignoreDispose) {
+						ignoreDispose = false;
+						break;
+					}
+					ignoreDispose = true;
+					notifyListeners (e.type, e);
+					e.type = SWT.NONE;
+
 					Shell shell = getShell();
 					shell.removeListener(SWT.Resize, this);
 					shell.removeListener(SWT.Show, this);
@@ -202,7 +211,7 @@ public Browser(Composite parent, int style) {
 						c.removeListener(SWT.Hide, this);
 						c = c.getParent();
 					} while (c != shell);
-					
+
 					e.display.setData(ADD_WIDGET_KEY, new Object[] {new Integer(webViewHandle), null});
 
 					WebKit.objc_msgSend(webView, WebKit.S_setFrameLoadDelegate, 0);
