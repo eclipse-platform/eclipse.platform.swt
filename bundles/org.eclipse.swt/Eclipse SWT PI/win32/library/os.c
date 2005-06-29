@@ -72,7 +72,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(AlphaBlend)
 		static FARPROC fp = NULL;
 		rc = 0;
 		if (!initialized) {
-			if (!(hm = GetModuleHandle(AlphaBlend_LIB))) hm = LoadLibrary(AlphaBlend_LIB);
+			if (!hm) hm = LoadLibrary(AlphaBlend_LIB);
 			if (hm) fp = GetProcAddress(hm, "AlphaBlend");
 			initialized = 1;
 		}
@@ -382,7 +382,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(CloseThemeData)
 		static FARPROC fp = NULL;
 		rc = 0;
 		if (!initialized) {
-			if (!(hm = GetModuleHandle(CloseThemeData_LIB))) hm = LoadLibrary(CloseThemeData_LIB);
+			if (!hm) hm = LoadLibrary(CloseThemeData_LIB);
 			if (hm) fp = GetProcAddress(hm, "CloseThemeData");
 			initialized = 1;
 		}
@@ -1451,7 +1451,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(DrawThemeBackground)
 		static FARPROC fp = NULL;
 		rc = 0;
 		if (!initialized) {
-			if (!(hm = GetModuleHandle(DrawThemeBackground_LIB))) hm = LoadLibrary(DrawThemeBackground_LIB);
+			if (!hm) hm = LoadLibrary(DrawThemeBackground_LIB);
 			if (hm) fp = GetProcAddress(hm, "DrawThemeBackground");
 			initialized = 1;
 		}
@@ -1596,7 +1596,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(EnumDisplayMonitors)
 		static FARPROC fp = NULL;
 		rc = 0;
 		if (!initialized) {
-			if (!(hm = GetModuleHandle(EnumDisplayMonitors_LIB))) hm = LoadLibrary(EnumDisplayMonitors_LIB);
+			if (!hm) hm = LoadLibrary(EnumDisplayMonitors_LIB);
 			if (hm) fp = GetProcAddress(hm, "EnumDisplayMonitors");
 			initialized = 1;
 		}
@@ -1690,7 +1690,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(EnumSystemLanguageGroupsA)
 		static FARPROC fp = NULL;
 		rc = 0;
 		if (!initialized) {
-			if (!(hm = GetModuleHandle(EnumSystemLanguageGroupsA_LIB))) hm = LoadLibrary(EnumSystemLanguageGroupsA_LIB);
+			if (!hm) hm = LoadLibrary(EnumSystemLanguageGroupsA_LIB);
 			if (hm) fp = GetProcAddress(hm, "EnumSystemLanguageGroupsA");
 			initialized = 1;
 		}
@@ -1718,7 +1718,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(EnumSystemLanguageGroupsW)
 		static FARPROC fp = NULL;
 		rc = 0;
 		if (!initialized) {
-			if (!(hm = GetModuleHandle(EnumSystemLanguageGroupsW_LIB))) hm = LoadLibrary(EnumSystemLanguageGroupsW_LIB);
+			if (!hm) hm = LoadLibrary(EnumSystemLanguageGroupsW_LIB);
 			if (hm) fp = GetProcAddress(hm, "EnumSystemLanguageGroupsW");
 			initialized = 1;
 		}
@@ -2536,7 +2536,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GetComboBoxInfo)
 		static FARPROC fp = NULL;
 		rc = 0;
 		if (!initialized) {
-			if (!(hm = GetModuleHandle(GetComboBoxInfo_LIB))) hm = LoadLibrary(GetComboBoxInfo_LIB);
+			if (!hm) hm = LoadLibrary(GetComboBoxInfo_LIB);
 			if (hm) fp = GetProcAddress(hm, "GetComboBoxInfo");
 			initialized = 1;
 		}
@@ -2954,7 +2954,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetLayout)
 		static FARPROC fp = NULL;
 		rc = 0;
 		if (!initialized) {
-			if (!(hm = GetModuleHandle(GetLayout_LIB))) hm = LoadLibrary(GetLayout_LIB);
+			if (!hm) hm = LoadLibrary(GetLayout_LIB);
 			if (hm) fp = GetProcAddress(hm, "GetLayout");
 			initialized = 1;
 		}
@@ -3028,7 +3028,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GetMenuBarInfo)
 		static FARPROC fp = NULL;
 		rc = 0;
 		if (!initialized) {
-			if (!(hm = GetModuleHandle(GetMenuBarInfo_LIB))) hm = LoadLibrary(GetMenuBarInfo_LIB);
+			if (!hm) hm = LoadLibrary(GetMenuBarInfo_LIB);
 			if (hm) fp = GetProcAddress(hm, "GetMenuBarInfo");
 			initialized = 1;
 		}
@@ -3072,7 +3072,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GetMenuInfo)
 		static FARPROC fp = NULL;
 		rc = 0;
 		if (!initialized) {
-			if (!(hm = GetModuleHandle(GetMenuInfo_LIB))) hm = LoadLibrary(GetMenuInfo_LIB);
+			if (!hm) hm = LoadLibrary(GetMenuInfo_LIB);
 			if (hm) fp = GetProcAddress(hm, "GetMenuInfo");
 			initialized = 1;
 		}
@@ -3264,7 +3264,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GetMonitorInfoA)
 		static FARPROC fp = NULL;
 		rc = 0;
 		if (!initialized) {
-			if (!(hm = GetModuleHandle(GetMonitorInfoA_LIB))) hm = LoadLibrary(GetMonitorInfoA_LIB);
+			if (!hm) hm = LoadLibrary(GetMonitorInfoA_LIB);
 			if (hm) fp = GetProcAddress(hm, "GetMonitorInfoA");
 			initialized = 1;
 		}
@@ -3296,7 +3296,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GetMonitorInfoW)
 		static FARPROC fp = NULL;
 		rc = 0;
 		if (!initialized) {
-			if (!(hm = GetModuleHandle(GetMonitorInfoW_LIB))) hm = LoadLibrary(GetMonitorInfoW_LIB);
+			if (!hm) hm = LoadLibrary(GetMonitorInfoW_LIB);
 			if (hm) fp = GetProcAddress(hm, "GetMonitorInfoW");
 			initialized = 1;
 		}
@@ -3908,7 +3908,7 @@ JNIEXPORT jshort JNICALL OS_NATIVE(GetSystemDefaultUILanguage)
 		static FARPROC fp = NULL;
 		rc = 0;
 		if (!initialized) {
-			if (!(hm = GetModuleHandle(GetSystemDefaultUILanguage_LIB))) hm = LoadLibrary(GetSystemDefaultUILanguage_LIB);
+			if (!hm) hm = LoadLibrary(GetSystemDefaultUILanguage_LIB);
 			if (hm) fp = GetProcAddress(hm, "GetSystemDefaultUILanguage");
 			initialized = 1;
 		}
@@ -4460,7 +4460,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GradientFill)
 		static FARPROC fp = NULL;
 		rc = 0;
 		if (!initialized) {
-			if (!(hm = GetModuleHandle(GradientFill_LIB))) hm = LoadLibrary(GradientFill_LIB);
+			if (!hm) hm = LoadLibrary(GradientFill_LIB);
 			if (hm) fp = GetProcAddress(hm, "GradientFill");
 			initialized = 1;
 		}
@@ -4718,7 +4718,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(ImmDisableTextFrameService)
 		static FARPROC fp = NULL;
 		rc = 0;
 		if (!initialized) {
-			if (!(hm = GetModuleHandle(ImmDisableTextFrameService_LIB))) hm = LoadLibrary(ImmDisableTextFrameService_LIB);
+			if (!hm) hm = LoadLibrary(ImmDisableTextFrameService_LIB);
 			if (hm) fp = GetProcAddress(hm, "ImmDisableTextFrameService");
 			initialized = 1;
 		}
@@ -5099,7 +5099,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(IsAppThemed)
 		static FARPROC fp = NULL;
 		rc = 0;
 		if (!initialized) {
-			if (!(hm = GetModuleHandle(IsAppThemed_LIB))) hm = LoadLibrary(IsAppThemed_LIB);
+			if (!hm) hm = LoadLibrary(IsAppThemed_LIB);
 			if (hm) fp = GetProcAddress(hm, "IsAppThemed");
 			initialized = 1;
 		}
@@ -5139,7 +5139,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(IsHungAppWindow)
 		static FARPROC fp = NULL;
 		rc = 0;
 		if (!initialized) {
-			if (!(hm = GetModuleHandle(IsHungAppWindow_LIB))) hm = LoadLibrary(IsHungAppWindow_LIB);
+			if (!hm) hm = LoadLibrary(IsHungAppWindow_LIB);
 			if (hm) fp = GetProcAddress(hm, "IsHungAppWindow");
 			initialized = 1;
 		}
@@ -5549,7 +5549,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(MonitorFromWindow)
 		static FARPROC fp = NULL;
 		rc = 0;
 		if (!initialized) {
-			if (!(hm = GetModuleHandle(MonitorFromWindow_LIB))) hm = LoadLibrary(MonitorFromWindow_LIB);
+			if (!hm) hm = LoadLibrary(MonitorFromWindow_LIB);
 			if (hm) fp = GetProcAddress(hm, "MonitorFromWindow");
 			initialized = 1;
 		}
@@ -6842,7 +6842,7 @@ JNIEXPORT void JNICALL OS_NATIVE(NotifyWinEvent)
 		static HMODULE hm = NULL;
 		static FARPROC fp = NULL;
 		if (!initialized) {
-			if (!(hm = GetModuleHandle(NotifyWinEvent_LIB))) hm = LoadLibrary(NotifyWinEvent_LIB);
+			if (!hm) hm = LoadLibrary(NotifyWinEvent_LIB);
 			if (hm) fp = GetProcAddress(hm, "NotifyWinEvent");
 			initialized = 1;
 		}
@@ -6933,7 +6933,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(OpenThemeData)
 		static FARPROC fp = NULL;
 		rc = 0;
 		if (!initialized) {
-			if (!(hm = GetModuleHandle(OpenThemeData_LIB))) hm = LoadLibrary(OpenThemeData_LIB);
+			if (!hm) hm = LoadLibrary(OpenThemeData_LIB);
 			if (hm) fp = GetProcAddress(hm, "OpenThemeData");
 			initialized = 1;
 		}
@@ -9186,7 +9186,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetLayout)
 		static FARPROC fp = NULL;
 		rc = 0;
 		if (!initialized) {
-			if (!(hm = GetModuleHandle(SetLayout_LIB))) hm = LoadLibrary(SetLayout_LIB);
+			if (!hm) hm = LoadLibrary(SetLayout_LIB);
 			if (hm) fp = GetProcAddress(hm, "SetLayout");
 			initialized = 1;
 		}
@@ -9240,7 +9240,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(SetMenuInfo)
 		static FARPROC fp = NULL;
 		rc = 0;
 		if (!initialized) {
-			if (!(hm = GetModuleHandle(SetMenuInfo_LIB))) hm = LoadLibrary(SetMenuInfo_LIB);
+			if (!hm) hm = LoadLibrary(SetMenuInfo_LIB);
 			if (hm) fp = GetProcAddress(hm, "SetMenuInfo");
 			initialized = 1;
 		}
@@ -10134,7 +10134,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(TransparentBlt)
 		static FARPROC fp = NULL;
 		rc = 0;
 		if (!initialized) {
-			if (!(hm = GetModuleHandle(TransparentBlt_LIB))) hm = LoadLibrary(TransparentBlt_LIB);
+			if (!hm) hm = LoadLibrary(TransparentBlt_LIB);
 			if (hm) fp = GetProcAddress(hm, "TransparentBlt");
 			initialized = 1;
 		}
