@@ -941,7 +941,6 @@ void paint (GC gc, TableColumn column, boolean paintCellContent) {
 
 	/* draw the background color of this cell */
 	Color background = getBackground (columnIndex);
-	TableColumn[] orderedColumns = parent.orderedColumns;
 	if (columnIndex == 0 && (column == null || column.getOrderIndex () == 0)) {
 		Rectangle focusBounds = getFocusBounds ();		
 		gc.setBackground (parent.getBackground ());

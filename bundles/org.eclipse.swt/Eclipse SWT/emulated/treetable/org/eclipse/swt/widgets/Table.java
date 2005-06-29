@@ -603,6 +603,7 @@ void destroyItem (TableColumn column) {
 		if (selection != horizontalOffset) {
 			horizontalOffset = selection;
 			redraw ();
+			if (header.isVisible () && drawCount == 0) header.redraw ();
 		}
 	}
 	TableColumn[] orderedColumns = getOrderedColumns ();
@@ -2374,7 +2375,6 @@ void onPaint (Event event) {
 	}
 	startIndex = Math.max (0, startIndex);
 	endIndex = Math.min (endIndex, itemsCount - 1);
-	int current = 0;
 	for (int i = startIndex; i <= endIndex; i++) {
 		TableItem item = items [i];
 		if (startColumn == -1) {
@@ -2401,8 +2401,7 @@ void onPaint (Event event) {
 		gc.fillRectangle (0, bottomY, clientArea.width, fillHeight);
 	}
 	if (columns.length > 0) {
-		TableColumn[] orderedColums = getOrderedColumns ();
-		TableColumn column = orderedColums [orderedColums.length - 1];	/* last column */
+		TableColumn column = orderedColumns [orderedColumns.length - 1];	/* last column */
 		int rightX = column.getX () + column.width;
 		if (rightX < clientArea.width) {
 			gc.fillRectangle (rightX, 0, clientArea.width - rightX, clientArea.height - fillHeight);
@@ -2596,6 +2595,8 @@ void redrawItem (int itemIndex, boolean focusBoundsOnly) {
  * for the end index value to extend beyond the last available item.
  */
 void redrawItems (int startIndex, int endIndex, boolean focusBoundsOnly) {
+	if (drawCount != 0) return;
+
 	int startY = (startIndex - topIndex) * itemHeight + getHeaderHeight ();
 	int height = (endIndex - startIndex + 1) * itemHeight;
 	if (focusBoundsOnly) {
@@ -3442,7 +3443,6 @@ void sort (int [] items) {
 	}
 }
 void updateColumnWidth (TableColumn column, int width) {
-	int oldWidth = column.width;
 	column.width = width;
 	Rectangle bounds = getClientArea ();
 
