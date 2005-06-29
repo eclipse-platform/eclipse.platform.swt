@@ -838,7 +838,7 @@ void delete(int position, int length, int numLines) {
 		endText = getTextRange(position + length - 1, 2);
 		if ((endText.charAt(0) == SWT.CR) && (endText.charAt(1) == SWT.LF)) {
 			splittingDelimiter = true;
-		    }
+		}
 	}
 
 	adjustGap(position + length, -length, startLine);
