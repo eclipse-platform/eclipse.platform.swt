@@ -42,6 +42,7 @@ import org.eclipse.swt.internal.*;
 public class Tree extends Composite {
 	Canvas header;
 	TreeColumn[] columns = new TreeColumn [0];
+	TreeColumn[] orderedColumns;
 	TreeItem[] items = new TreeItem [0];
 	TreeItem[] availableItems = new TreeItem [0];
 	TreeItem[] selectedItems = new TreeItem [0];
@@ -230,10 +231,11 @@ static int checkStyle (int style) {
  * -1 if the x lies to the right of the last column.
  */
 int computeColumnIntersect (int x, int startColumn) {
-	if (columns.length - 1 < startColumn) return -1;
-	int rightX = columns [startColumn].getX ();
-	for (int i = startColumn; i < columns.length; i++) {
-		rightX += columns [i].width;
+	TreeColumn[] orderedColumns = getOrderedColumns ();
+	if (orderedColumns.length - 1 < startColumn) return -1;
+	int rightX = orderedColumns [startColumn].getX ();
+	for (int i = startColumn; i < orderedColumns.length; i++) {
+		rightX += orderedColumns [i].width;
 		if (x <= rightX) return i;
 	}
 	return -1;
@@ -250,7 +252,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 				width = Math.max (width, itemBounds.x + itemBounds.width);
 			}
 		} else {
-			TreeColumn lastColumn = columns [columns.length - 1];
+			TreeColumn[] orderedColumns = getOrderedColumns ();
+			TreeColumn lastColumn = orderedColumns [orderedColumns.length - 1];
 			width = lastColumn.getX () + lastColumn.width;
 		}
 	}
@@ -269,6 +272,23 @@ void createItem (TreeColumn column, int index) {
 	System.arraycopy (columns, index, newColumns, index + 1, columns.length - index);
 	columns = newColumns;
 	
+	if (orderedColumns != null) {
+		int insertIndex = 0;
+		if (index > 0) {
+			insertIndex = columns [index - 1].getOrderIndex () + 1;
+		}
+		TreeColumn[] newOrderedColumns = new TreeColumn [orderedColumns.length + 1];
+		System.arraycopy (orderedColumns, 0, newOrderedColumns, 0, insertIndex);
+		newOrderedColumns [insertIndex] = column;
+		System.arraycopy (
+			orderedColumns,
+			insertIndex,
+			newOrderedColumns,
+			insertIndex + 1,
+			orderedColumns.length - insertIndex);
+		orderedColumns = newOrderedColumns;
+	}
+
 	/* allow all items to update their internal structures accordingly */
 	for (int i = 0; i < items.length; i++) {
 		items [i].addColumn (column);
@@ -363,18 +383,37 @@ void deselectItem (TreeItem item) {
 	selectedItems = newSelectedItems;
 }
 void destroyItem (TreeColumn column) {
-	int numColumns = columns.length;
 	int index = column.getIndex ();
+	int orderedIndex = column.getOrderIndex ();
 
 	TreeColumn[] newColumns = new TreeColumn [columns.length - 1];
 	System.arraycopy (columns, 0, newColumns, 0, index);
 	System.arraycopy (columns, index + 1, newColumns, index, newColumns.length - index);
 	columns = newColumns;
 
-	/* ensure that column 0 always has left-alignment */
-	if (index == 0 && columns.length > 0) {
-		columns [0].style |= SWT.LEFT;
-		columns [0].style &= ~(SWT.CENTER | SWT.RIGHT);
+	if (orderedColumns != null) {
+		if (columns.length < 2) {
+			orderedColumns = null;
+		} else {
+			int removeIndex = column.getOrderIndex ();
+			TreeColumn[] newOrderedColumns = new TreeColumn [orderedColumns.length - 1];
+			System.arraycopy (orderedColumns, 0, newOrderedColumns, 0, removeIndex);
+			System.arraycopy (
+				orderedColumns,
+				removeIndex + 1,
+				newOrderedColumns,
+				removeIndex,
+				newOrderedColumns.length - removeIndex);
+			orderedColumns = newOrderedColumns;
+		}
+	}
+
+	/* ensure that ordered column 0 always has left-alignment and is not movable */
+	TreeColumn[] orderedColumns = getOrderedColumns ();
+	if (index == 0 && orderedColumns.length > 0) {
+		orderedColumns [0].style |= SWT.LEFT;
+		orderedColumns [0].style &= ~(SWT.CENTER | SWT.RIGHT);
+		orderedColumns [0].moveable = false;
 	}
 	
 	/* allow all items to update their internal structures accordingly */
@@ -398,11 +437,12 @@ void destroyItem (TreeColumn column) {
 		if (selection != horizontalOffset) {
 			horizontalOffset = selection;
 			redraw ();
+			if (header.isVisible () && drawCount == 0) header.redraw ();
 		}
 	}
-	for (int i = index; i < columns.length; i++) {
-		if (!columns [i].isDisposed ()) {
-			columns [i].sendEvent (SWT.Move);
+	for (int i = orderedIndex; i < orderedColumns.length; i++) {
+		if (!orderedColumns [i].isDisposed ()) {
+			orderedColumns [i].sendEvent (SWT.Move);
 		}
 	}
 }
@@ -573,6 +613,20 @@ public TreeColumn getColumn (int index) {
 public int getColumnCount () {
 	checkWidget ();
 	return columns.length;
+}
+/*public*/ int[] getColumnOrder () {
+	checkWidget ();
+	int[] result = new int [columns.length];
+	if (orderedColumns != null) {
+		for (int i = 0; i < result.length; i++) {
+			result [i] = orderedColumns [i].getIndex ();
+		}
+	} else {
+		for (int i = 0; i < columns.length; i++) {
+			result [i] = i;
+		}
+	}
+	return result;
 }
 /**
  * Returns an array of <code>TreeColumn</code>s which are the
@@ -803,6 +857,10 @@ public boolean getLinesVisible () {
 	checkWidget ();
 	return linesVisible;
 }
+TreeColumn[] getOrderedColumns () {
+	if (orderedColumns != null) return orderedColumns;
+	return columns;
+}
 /**
  * Returns the receiver's parent item, which must be a
  * <code>TreeItem</code> or null when the receiver is a
@@ -955,9 +1013,10 @@ void handleEvents (Event event) {
 void headerOnMouseDoubleClick (Event event) {
 	if (!isFocusControl ()) setFocus ();
 	if (columns.length == 0) return;
+	TreeColumn[] orderedColumns = getOrderedColumns ();
 	int x = -horizontalOffset;
-	for (int i = 0; i < columns.length; i++) {
-		TreeColumn column = columns [i];
+	for (int i = 0; i < orderedColumns.length; i++) {
+		TreeColumn column = orderedColumns [i];
 		x += column.width;
 		if (event.x < x) {
 			Event newEvent = new Event ();
@@ -969,9 +1028,10 @@ void headerOnMouseDoubleClick (Event event) {
 }
 void headerOnMouseDown (Event event) {
 	if (event.button != 1) return;
+	TreeColumn[] orderedColumns = getOrderedColumns ();
 	int x = -horizontalOffset;
-	for (int i = 0; i < columns.length; i++) {
-		TreeColumn column = columns [i]; 
+	for (int i = 0; i < orderedColumns.length; i++) {
+		TreeColumn column = orderedColumns [i]; 
 		x += column.width;
 		/* if close to a resizable column separator line then begin column resize */
 		if (column.resizable && Math.abs (x - event.x) <= TOLLERANCE_COLUMNRESIZE) {
@@ -979,8 +1039,62 @@ void headerOnMouseDown (Event event) {
 			resizeColumnX = x;
 			return;
 		}
-		/* if within column but not near resizable separator line then fire column Selection */
+		/*
+		 * If within column but not near separator line then start column drag
+		 * if column is moveable, or just fire column Selection otherwise.
+		 */
 		if (event.x < x) {
+			if (column.moveable && column.getOrderIndex () > 0) {
+				/* open tracker on the dragged column's header cell */
+				int columnX = column.getX ();
+				int pointerOffset = event.x - columnX;
+				Tracker tracker = new Tracker (this, SWT.NONE);
+				tracker.setRectangles (new Rectangle[] {
+					new Rectangle (columnX, 0, column.width, getHeaderHeight ())
+				});
+				if (!tracker.open ()) return;	/* cancelled */
+				/* determine which column was dragged onto */
+				Rectangle result = tracker.getRectangles () [0];
+				int pointerX = result.x + pointerOffset;
+				if (pointerX < 0) return;	/* dragged too far left */
+				x = -horizontalOffset;
+				for (int destIndex = 0; destIndex < orderedColumns.length; destIndex++) {
+					TreeColumn destColumn = orderedColumns [destIndex];
+					x += destColumn.width;
+					if (pointerX < x) {
+						int oldIndex = column.getOrderIndex ();
+						if (destIndex == oldIndex) {	/* dragged onto self */
+							Event newEvent = new Event ();
+							newEvent.widget = column;
+							column.postEvent (SWT.Selection, newEvent);
+							return;
+						}
+						int leftmostIndex = Math.min (destIndex, oldIndex);
+						int[] oldOrder = getColumnOrder ();
+						int[] newOrder = new int [oldOrder.length];
+						System.arraycopy (oldOrder, 0, newOrder, 0, leftmostIndex);
+						if (leftmostIndex == oldIndex) {
+							/* column moving to the right */
+							System.arraycopy (oldOrder, oldIndex + 1, newOrder, oldIndex, destIndex - oldIndex);
+						} else {
+							/* column moving to the left */
+							System.arraycopy (oldOrder, destIndex, newOrder, destIndex + 1, oldIndex - destIndex);
+						}
+						newOrder [destIndex] = oldOrder [oldIndex];
+						int rightmostIndex = Math.max (destIndex, oldIndex);
+						System.arraycopy (
+							oldOrder,
+							rightmostIndex + 1,
+							newOrder,
+							rightmostIndex + 1,
+							newOrder.length - rightmostIndex - 1);
+						setColumnOrder (newOrder);
+						return;
+					}
+				}
+				return;		/* dragged too far right */
+			}
+			/* column is not moveable */
 			Event newEvent = new Event ();
 			newEvent.widget = column;
 			column.postEvent (SWT.Selection, newEvent);
@@ -1042,7 +1156,8 @@ void headerOnMouseUp (Event event) {
 	resizeColumn = null;
 }
 void headerOnPaint (Event event) {
-	int numColumns = columns.length;
+	TreeColumn[] orderedColumns = getOrderedColumns ();
+	int numColumns = orderedColumns.length;
 	GC gc = event.gc;
 	Rectangle clipping = gc.getClipping ();
 	int startColumn = -1, endColumn = -1;
@@ -1066,8 +1181,8 @@ void headerOnPaint (Event event) {
 	/* paint each of the column headers */
 	if (numColumns == 0) return;	/* no headers to paint */
 	for (int i = startColumn; i <= endColumn; i++) {
-		headerPaintVShadows (gc, columns [i].getX (), 0, columns [i].width, headerSize.y);
-		columns [i].paint (gc);
+		headerPaintVShadows (gc, orderedColumns [i].getX (), 0, orderedColumns [i].width, headerSize.y);
+		orderedColumns [i].paint (gc);
 	}
 }
 void headerPaintHShadows (GC gc, int x, int y, int width, int height) {
@@ -1663,7 +1778,7 @@ void onDispose () {
 	}
 	topIndex = availableItemsCount = 0;
 	availableItems = items = selectedItems = null;
-	columns = null;
+	columns = orderedColumns = null;
 	focusItem = anchorItem = insertMarkItem = lastClickedItem = null;
 	lastSelectionEvent = null;
 	header = null;
@@ -2310,10 +2425,11 @@ void onPageUp (int stateMask) {
 	postEvent (SWT.Selection, newEvent);
 }
 void onPaint (Event event) {
+	TreeColumn[] orderedColumns = getOrderedColumns ();
 	GC gc = event.gc;
 	Rectangle clipping = gc.getClipping ();
 	int headerHeight = getHeaderHeight ();
-	int numColumns = columns.length;
+	int numColumns = orderedColumns.length;
 	int startColumn = -1, endColumn = -1;
 	if (numColumns > 0) {
 		startColumn = computeColumnIntersect (clipping.x, 0);
@@ -2333,7 +2449,6 @@ void onPaint (Event event) {
 	}
 	startIndex = Math.max (0, startIndex);
 	endIndex = Math.min (endIndex, availableItemsCount - 1);
-	int current = 0;
 	for (int i = startIndex; i <= endIndex; i++) {
 		TreeItem item = availableItems [i];
 		if (startColumn == -1) {
@@ -2344,7 +2459,7 @@ void onPaint (Event event) {
 				item.paint (gc, null, true);
 			} else {
 				for (int j = startColumn; j <= endColumn; j++) {
-					item.paint (gc, columns [j], true);
+					item.paint (gc, orderedColumns [j], true);
 				}
 			}
 		}
@@ -2360,7 +2475,7 @@ void onPaint (Event event) {
 		gc.fillRectangle (0, bottomY, clientArea.width, fillHeight);
 	}
 	if (columns.length > 0) {
-		TreeColumn column = columns [columns.length - 1];	/* last column */
+		TreeColumn column = orderedColumns [orderedColumns.length - 1];	/* last column */
 		int rightX = column.getX () + column.width;
 		if (rightX < clientArea.width) {
 			gc.fillRectangle (rightX, 0, clientArea.width - rightX, clientArea.height - fillHeight);
@@ -2373,7 +2488,7 @@ void onPaint (Event event) {
 		if (numColumns > 0 && startColumn != -1) {
 			/* vertical column lines */
 			for (int i = startColumn; i <= endColumn; i++) {
-				int x = columns [i].getX () + columns [i].width - 1;
+				int x = orderedColumns [i].getX () + orderedColumns [i].width - 1;
 				gc.drawLine (x, clipping.y, x, clipping.y + clipping.height);
 			}
 		}
@@ -2585,14 +2700,15 @@ void redrawItems (int startIndex, int endIndex, boolean focusBoundsOnly) {
 	int height = (endIndex - startIndex + 1) * itemHeight;
 	if (focusBoundsOnly) {
 		if (columns.length > 0) {
-			int rightX = 0;
+			TreeColumn lastColumn;
 			if ((style & SWT.FULL_SELECTION) != 0) {
-				TreeColumn lastColumn = columns [columns.length - 1];
-				rightX = lastColumn.getX () + lastColumn.width;
+				TreeColumn[] orderedColumns = getOrderedColumns ();
+				lastColumn = orderedColumns [orderedColumns.length - 1];
 			} else {
-				rightX = columns [0].width - horizontalOffset;
+				lastColumn = columns [0];
 			}
-			if (rightX <= 0) return;	/* first column not visible */
+			int rightX = lastColumn.getX () + lastColumn.getWidth ();
+			if (rightX <= 0) return;	/* focus column(s) not visible */
 		}
 		endIndex = Math.min (endIndex, availableItemsCount - 1);
 		for (int i = startIndex; i <= endIndex; i++) {
@@ -2713,6 +2829,45 @@ void selectItem (TreeItem item, boolean addToSelection) {
 		System.arraycopy (oldSelectedItems, 0, selectedItems, 0, oldSelectedItems.length);
 		selectedItems [selectedItems.length - 1] = item;
 	}
+}
+/*public*/ void setColumnOrder (int [] order) {
+	checkWidget ();
+	if (order == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (columns.length == 0) {
+		if (order.length != 0) error (SWT.ERROR_INVALID_ARGUMENT);
+		return;
+	}
+	if (order.length != columns.length) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (order [0] != 0) return;		/* column 0 cannot be moved */
+	boolean reorder = false;
+	boolean [] seen = new boolean [columns.length];
+	int[] oldOrder = getColumnOrder ();
+	for (int i = 0; i < order.length; i++) {
+		int index = order [i];
+		if (index < 0 || index >= columns.length) error (SWT.ERROR_INVALID_RANGE);
+		if (seen [index]) error (SWT.ERROR_INVALID_ARGUMENT);
+		seen [index] = true;
+		if (index != oldOrder [i]) reorder = true;
+	}
+	if (!reorder) return;
+
+	int[] oldX = new int [columns.length];
+	for (int i = 0; i < columns.length; i++) {
+		oldX [i] = columns [i].getX ();
+	}
+	orderedColumns = new TreeColumn [order.length];
+	for (int i = 0; i < order.length; i++) {
+		orderedColumns [i] = columns [order [i]];
+	}
+	for (int i = 0; i < orderedColumns.length; i++) {
+		TreeColumn column = orderedColumns [i];
+		if (!column.isDisposed () && column.getX () != oldX [column.getIndex ()]) {
+			column.sendEvent (SWT.Move);
+		}
+	}
+
+	redraw ();
+	if (drawCount == 0 && header.isVisible ()) header.redraw ();
 }
 void setFocusItem (TreeItem item, boolean redrawOldFocus) {
 	if (item == focusItem) return;
@@ -3022,8 +3177,9 @@ public void showColumn (TreeColumn column) {
 	if (0 <= x && rightX <= bounds.width) return;	 /* column is fully visible */
 
 	int absX = 0;	/* the X of the column irrespective of the horizontal scroll */
-	for (int i = 0; i < column.getIndex (); i++) {
-		absX += columns [i].width;
+	TreeColumn[] orderedColumns = getOrderedColumns ();
+	for (int i = 0; i < column.getOrderIndex (); i++) {
+		absX += orderedColumns [i].width;
 	}
 	if (x < bounds.x) { 	/* column is to left of viewport */
 		horizontalOffset = absX;
@@ -3092,7 +3248,6 @@ public void showSelection () {
 	showItem (selectedItems [0]);
 }
 void updateColumnWidth (TreeColumn column, int width) {
-	int oldWidth = column.width;
 	column.width = width;
 	Rectangle bounds = getClientArea ();
 
@@ -3133,9 +3288,10 @@ void updateColumnWidth (TreeColumn column, int width) {
 	}
 
 	column.sendEvent (SWT.Resize);
-	for (int i = column.getIndex () + 1; i < columns.length; i++) {
-		if (!columns [i].isDisposed ()) {
-			columns [i].sendEvent (SWT.Move);
+	TreeColumn[] orderedColumns = getOrderedColumns ();
+	for (int i = column.getOrderIndex () + 1; i < orderedColumns.length; i++) {
+		if (!orderedColumns [i].isDisposed ()) {
+			orderedColumns [i].sendEvent (SWT.Move);
 		}
 	}
 }

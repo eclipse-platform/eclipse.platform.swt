@@ -837,7 +837,8 @@ Rectangle getFocusBounds () {
 	} else {
 		TreeColumn column;
 		if ((parent.style & SWT.FULL_SELECTION) != 0) {
-			column = columns [columns.length - 1];
+			int[] columnOrder = parent.getColumnOrder ();
+			column = columns [columnOrder [columnOrder.length - 1]];
 		} else {
 			column = columns [0];
 		}
@@ -988,7 +989,8 @@ Rectangle getHitBounds () {
 		 */
 		TreeColumn column;
 		if ((parent.style & SWT.FULL_SELECTION) != 0) {
-			column = columns [columns.length - 1];
+			int[] columnOrder = parent.getColumnOrder ();
+			column = columns [columnOrder [columnOrder.length - 1]];
 		} else {
 			column = columns [0];
 		}
@@ -1368,7 +1370,8 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 			}
 		} else {
 			int fillWidth = column.width;
-			if (columnIndex == parent.columns.length - 1) {
+			int[] columnOrder = parent.getColumnOrder ();
+			if (columnIndex == columnOrder [columnOrder.length - 1]) {
 				fillWidth -= 2;		/* space for right bound of focus rect */
 			}
 			if (fillWidth > 0) {

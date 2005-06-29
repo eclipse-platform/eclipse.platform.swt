@@ -34,7 +34,7 @@ public class TreeColumn extends Item {
 	Tree parent;
 	String displayText = "";
 	int width;
-	boolean resizable = true;
+	boolean moveable, resizable = true;
 	int sort = SWT.NONE;
 
 /**
@@ -299,6 +299,18 @@ int getIndex () {
 	}
 	return -1;
 }
+/*public*/ boolean getMoveable () {
+	checkWidget ();
+	return moveable;
+}
+int getOrderIndex () {
+	TreeColumn[] orderedColumns = parent.orderedColumns; 
+	if (orderedColumns == null) return getIndex ();
+	for (int i = 0; i < orderedColumns.length; i++) {
+		if (orderedColumns [i] == this) return i;
+	}
+	return -1;
+}
 /**
  * Returns the receiver's parent, which must be a <code>Tree</code>.
  *
@@ -355,10 +367,11 @@ public int getWidth () {
 	return width;
 }
 int getX () {
-	int index = getIndex ();
+	TreeColumn[] orderedColumns = parent.getOrderedColumns ();
+	int index = getOrderIndex ();
 	int result = -parent.horizontalOffset;
 	for (int i = 0; i < index; i++) {
-		result += parent.columns [i].width;
+		result += orderedColumns [i].width;
 	}
 	return result;
 }
@@ -534,6 +547,10 @@ public void setImage (Image value) {
 	if (parent.drawCount == 0 && parent.getHeaderVisible ()) {
 		parent.header.redraw (getX (), 0, width, parent.getHeaderHeight (), false);
 	}
+}
+/*public*/ void setMoveable (boolean moveable) {
+	checkWidget ();
+	this.moveable = moveable;
 }
 /**
  * Sets the resizable attribute.  A column that is
