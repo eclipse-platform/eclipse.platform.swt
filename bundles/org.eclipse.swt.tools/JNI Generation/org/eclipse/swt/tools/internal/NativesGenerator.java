@@ -463,9 +463,7 @@ void generateDynamicFunctionCall(Method method, MethodData methodData, Class[] p
 			}
 		}
 		outputln("\t\tif (!initialized) {");
-		output("\t\t\tif (!(hm = GetModuleHandle(");
-		output(name);
-		output("_LIB))) hm = LoadLibrary(");
+		output("\t\t\tif (!hm) hm = LoadLibrary(");
 		output(name);
 		outputln("_LIB);");
 		output("\t\t\tif (hm) fp = GetProcAddress(hm, \"");
