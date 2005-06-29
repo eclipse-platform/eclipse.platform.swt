@@ -1379,6 +1379,12 @@ public void setTabs(int[] tabs) {
 			OS.pango_tab_array_free(tabArray);
 		}		
 	}
+	/*
+	* Bug in Pango. A change in the tab stop array is not automatically reflected in the
+	* pango layout object because the call pango_layout_set_tabs() does not free the 
+	* lines cache. The fix to use pango_layout_context_changed() to free the lines cache.
+	*/
+	OS.pango_layout_context_changed(layout);
 }
 
 /**
