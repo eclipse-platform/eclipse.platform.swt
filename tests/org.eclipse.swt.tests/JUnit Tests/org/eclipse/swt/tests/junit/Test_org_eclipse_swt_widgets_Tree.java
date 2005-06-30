@@ -200,11 +200,16 @@ public void test_getItemLorg_eclipse_swt_graphics_Point() {
 
 public void test_getItems() {
 	int[] cases = {0, 10, 100};
+	TreeItem [][] items = new TreeItem [cases.length][];
+	for (int j = 0; j < cases.length; j++) {
+		items [j] = new TreeItem [cases [j]];
+	}
 	for (int j = 0; j < cases.length; j++) {
 		for (int i = 0; i < cases[j]; i++) {
 			TreeItem ti = new TreeItem(tree, 0);
+			items [j][i] = ti;
 		}
-		assertEquals(cases[j], tree.getItems().length);
+		assertEquals(items[j], tree.getItems());
 		tree.removeAll();
 		assertEquals(0, tree.getItemCount());
 	}
@@ -216,9 +221,9 @@ public void test_getItems() {
 			TreeItem ti = new TreeItem(tree, 0);
 			ti.setText(String.valueOf(i));
 		}
-		TreeItem[] items = tree.getItems();
-		for (int i = 0; i < items.length; i++) {
-			assertEquals(String.valueOf(i), items[i].getText());
+		TreeItem[] items2 = tree.getItems();
+		for (int i = 0; i < items2.length; i++) {
+			assertEquals(String.valueOf(i), items2[i].getText());
 		}
 		tree.removeAll();
 		assertEquals(0, tree.getItemCount());
