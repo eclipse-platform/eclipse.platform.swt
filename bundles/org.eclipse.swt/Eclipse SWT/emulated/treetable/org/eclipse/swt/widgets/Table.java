@@ -3078,13 +3078,14 @@ public void setItemCount (int count) {
 		}
 		selectedItems = newSelectedItems;
 
-		int visibleItemCount = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
-		topIndex = Math.min (topIndex, Math.max (0, count - visibleItemCount));
 		if (anchorItem != null && anchorItem.isDisposed ()) anchorItem = null;
+		if (lastClickedItem != null && lastClickedItem.isDisposed ()) lastClickedItem = null;
 		if (focusItem != null && focusItem.isDisposed ()) {
 			TableItem newFocusItem = count > 0 ? items [count - 1] : null; 
 			setFocusItem (newFocusItem, false);
 		}
+		int visibleItemCount = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
+		topIndex = Math.min (topIndex, Math.max (0, count - visibleItemCount));
 		itemsCount = count;
 		if (columns.length == 0) updateHorizontalBar ();
 	} else {
