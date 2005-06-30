@@ -1785,7 +1785,7 @@ public void removeAll () {
 	imageList = null;
 	if (hwndParent == 0) customDraw = false;
 	items = new TreeItem [4];
-	hAnchor = hInsert = 0;
+	hAnchor = hInsert = hFirstIndexOf = hLastIndexOf = 0;
 	updateScrollBar ();
 }
 
