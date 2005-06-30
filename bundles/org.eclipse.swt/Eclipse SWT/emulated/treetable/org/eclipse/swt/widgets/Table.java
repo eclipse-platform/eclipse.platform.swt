@@ -3068,15 +3068,18 @@ public void setItemCount (int count) {
 		for (int i = 0; i < selectedItems.length; i++) {
 			if (!selectedItems [i].isDisposed ()) newSelectedCount++;
 		}
-		TableItem[] newSelectedItems = new TableItem [newSelectedCount];
-		int pos = 0;
-		for (int i = 0; i < selectedItems.length; i++) {
-			TableItem item = selectedItems [i];
-			if (!item.isDisposed ()) {
-				newSelectedItems [pos++] = item;
+		if (newSelectedCount != selectedItems.length) {
+			/* one or more selected items have been disposed */
+			TableItem[] newSelectedItems = new TableItem [newSelectedCount];
+			int pos = 0;
+			for (int i = 0; i < selectedItems.length; i++) {
+				TableItem item = selectedItems [i];
+				if (!item.isDisposed ()) {
+					newSelectedItems [pos++] = item;
+				}
 			}
+			selectedItems = newSelectedItems;
 		}
-		selectedItems = newSelectedItems;
 
 		if (anchorItem != null && anchorItem.isDisposed ()) anchorItem = null;
 		if (lastClickedItem != null && lastClickedItem.isDisposed ()) lastClickedItem = null;
