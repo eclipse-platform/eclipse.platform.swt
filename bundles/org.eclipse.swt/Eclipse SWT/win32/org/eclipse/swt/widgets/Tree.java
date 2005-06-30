@@ -836,7 +836,7 @@ void destroyItem (TreeColumn column) {
 }
 
 void destroyItem (TreeItem item) {
-	hFirstIndexOf = hLastIndexOf = lastIndexOf = 0;
+	hFirstIndexOf = hLastIndexOf = 0;
 	/*
 	* Feature in Windows.  When an item is removed that is not
 	* visible in the tree because it belongs to a collapsed branch,
