@@ -223,8 +223,118 @@ public void addTreeListener (TreeListener listener) {
 	addListener (SWT.Expand, typedListener);
 	addListener (SWT.Collapse, typedListener);
 }
+boolean checkData (TreeItem item, boolean redraw) {
+	if (item.cached) return true;
+	if ((style & SWT.VIRTUAL) != 0) {
+		item.cached = true;
+		Event event = new Event ();
+		event.item = item;
+		sendEvent (SWT.SetData, event);
+		if (isDisposed () || item.isDisposed ()) return false;
+		if (redraw) redrawItem (item.availableIndex, false);
+	}
+	return true;
+}
 static int checkStyle (int style) {
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
+}
+/*public*/ void clear (int index, boolean recursive) {
+	checkWidget ();
+	if (!(0 <= index && index < items.length)) error (SWT.ERROR_INVALID_RANGE);
+	TreeItem item = items [index];
+	
+	/* if there are no columns then the horizontal scrollbar may need adjusting */
+	TreeItem[] availableDescendents = null;
+	int oldRightX = 0;
+	if (columns.length == 0) {
+		if (recursive) {
+			availableDescendents = item.computeAvailableDescendents ();
+			for (int i = 0; i < availableDescendents.length; i++) {
+				Rectangle bounds = availableDescendents [i].getBounds ();
+				oldRightX = Math.max (oldRightX, bounds.x + bounds.width);
+			}
+		} else {
+			Rectangle bounds = item.getBounds ();
+			oldRightX = bounds.x + bounds.width;
+		}
+	}
+	
+	/* clear the item(s) */
+	item.clear ();
+	if (recursive) {
+		item.clearAll (true, false);
+	}
+
+	/* adjust the horizontal scrollbar if needed */
+	if (columns.length == 0) {
+		int newWidth = 0;
+		if (recursive) {
+			for (int i = 0; i < availableDescendents.length; i++) {
+				Rectangle bounds = availableDescendents [i].getBounds ();
+				newWidth = Math.max (newWidth, bounds.x + bounds.width);
+			}
+		} else {
+			Rectangle bounds = item.getBounds ();
+			newWidth = bounds.x + bounds.width;
+		}
+		updateHorizontalBar (newWidth, newWidth - oldRightX);
+	}
+	
+	/* redraw the item(s) */
+	if (recursive) {
+		int descendentCount = availableDescendents == null ?
+			item.computeAvailableDescendentCount () :
+			availableDescendents.length;
+		redrawItems (item.availableIndex, item.availableIndex + descendentCount - 1, false);
+	} else {
+		redrawItem (item.availableIndex, false);
+	}
+}
+/*public*/ void clearAll (boolean recursive) {
+	checkWidget ();
+	if (items.length == 0) return;
+	
+	/* if there are no columns then the horizontal scrollbar may need adjusting */
+	int oldRightX = 0;
+	if (columns.length == 0 && !recursive) {
+		for (int i = 0; i < items.length; i++) {
+			Rectangle bounds = items [i].getBounds ();
+			oldRightX = Math.max (oldRightX, bounds.x + bounds.width);
+		}
+	}
+
+	/* clear the item(s) */
+	for (int i = 0; i < items.length; i++) {
+		if (recursive) {
+			items [i].clearAll (true, false);
+		} else {
+			items [i].clear ();
+		}
+	}
+
+	/* adjust the horizontal scrollbar if needed */
+	if (columns.length == 0) {
+		if (recursive) {
+			updateHorizontalBar ();		/* recompute from scratch */
+		} else {
+			/*
+			 * All cleared root items will have the same x and width values now,
+			 * so just measure the first one as a sample.
+			 */
+			Rectangle bounds = items [0].getBounds ();
+			int newWidth = bounds.x + bounds.width;
+			updateHorizontalBar (newWidth, newWidth - oldRightX);
+		}
+	}
+	
+	/* redraw the item(s) */
+	if (recursive) {
+		redrawItems (0, availableItemsCount - 1, false);
+	} else {
+		for (int i = 0; i < items.length; i++) {
+			redrawItem (items [i].availableIndex, false);
+		}
+	}
 }
 /*
  * Returns the index of the column that the specified x falls within, or
@@ -2992,6 +3102,78 @@ public void setInsertMark (TreeItem item, boolean before) {
 	if (item != null && item != oldInsertItem && item.availableIndex != -1) {
 		redrawItem (item.availableIndex, true);
 	}
+}
+/*public*/ void setItemCount (int count) {
+	checkWidget ();
+	count = Math.max (0, count);
+	if (count == items.length) return;
+	int redrawStart, redrawEnd;
+
+	/* if the new item count is less than the current count then remove all excess items from the end */
+	if (count < items.length) {
+		redrawStart = items [count - 1].availableIndex;
+		redrawEnd = availableItemsCount - 1;
+		availableItemsCount = Math.max (0, redrawStart - 1);
+		for (int i = count; i < items.length; i++) {
+			items [i].dispose (false);
+		}
+		if (count == 0) {
+			items = TreeItem.NO_ITEMS;
+		} else {
+			TreeItem[] newItems = new TreeItem [count];
+			System.arraycopy (items, 0, newItems, 0, count);
+			items = newItems;
+		}
+
+		int newSelectedCount = 0;
+		for (int i = 0; i < selectedItems.length; i++) {
+			if (!selectedItems [i].isDisposed ()) newSelectedCount++;
+		}
+		if (newSelectedCount != selectedItems.length) {
+			/* one or more selected items have been disposed */
+			TreeItem[] newSelectedItems = new TreeItem [newSelectedCount];
+			int pos = 0;
+			for (int i = 0; i < selectedItems.length; i++) {
+				TreeItem item = selectedItems [i];
+				if (!item.isDisposed ()) {
+					newSelectedItems [pos++] = item;
+				}
+			}
+			selectedItems = newSelectedItems;
+		}
+
+		if (insertMarkItem != null && insertMarkItem.isDisposed ()) insertMarkItem = null;
+		if (lastClickedItem != null && lastClickedItem.isDisposed ()) lastClickedItem = null;
+		if (anchorItem != null && anchorItem.isDisposed ()) anchorItem = null;
+		if (focusItem != null && focusItem.isDisposed ()) {
+			TreeItem newFocusItem = count > 0 ? items [count - 1] : null; 
+			setFocusItem (newFocusItem, false);
+		}
+		int visibleItemCount = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
+		topIndex = Math.min (topIndex, Math.max (0, count - visibleItemCount));
+		if (columns.length == 0) updateHorizontalBar ();
+	} else {
+		int grow = count - items.length;
+		redrawStart = items.length == 0 ? 0 : items [items.length - 1].availableIndex;
+		redrawEnd = availableItemsCount + grow - 1;
+		TreeItem[] newItems = new TreeItem [count];
+		System.arraycopy (items, 0, newItems, 0, items.length);
+		items = newItems;
+		if (availableItems.length < availableItemsCount + grow) {
+			TreeItem[] newAvailableItems = new TreeItem [availableItemsCount + grow];
+			System.arraycopy (availableItems, 0, newAvailableItems, 0, availableItemsCount);
+			availableItems = newAvailableItems;
+		}
+		for (int i = items.length - grow; i < count; i++) {
+			TreeItem newItem = new TreeItem (this, SWT.NONE, i, false);
+			items [i] = newItem;
+			items [i].availableIndex = availableItemsCount;
+			availableItems [availableItemsCount++] = newItem;
+		}
+	}
+
+	updateVerticalBar ();
+	redrawItems (redrawStart, redrawEnd, false);
 }
 /**
  * Marks the receiver's lines as visible if the argument is <code>true</code>,

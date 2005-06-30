@@ -34,7 +34,7 @@ public class TreeItem extends Item {
 	TreeItem[] items = NO_ITEMS;
 	int availableIndex = -1;	/* index in parent's flat list of available (though not necessarily within viewport) items */
 	int depth = 0;				/* cached for performance, does not change after instantiation */
-	boolean checked, grayed, expanded;
+	boolean checked, grayed, expanded, cached;
 
 	String[] texts;
 	int[] textWidths = new int [1];		/* cached string measurements */
@@ -82,19 +82,7 @@ public class TreeItem extends Item {
  * @see Widget#getStyle
  */
 public TreeItem (Tree parent, int style) {
-	super (parent, style);
-	this.parent = parent;
-	int index = parent.items.length;
-	int columnCount = parent.columns.length;
-	if (columnCount > 0) {
-		displayTexts = new String [columnCount];
-		if (columnCount > 1) {
-			texts = new String [columnCount];
-			textWidths = new int [columnCount];
-			images = new Image [columnCount];
-		}
-	}
-	parent.createItem (this, index);
+	this (parent, style, parent.items.length);
 }
 /**
  * Constructs a new instance of this class given its parent
@@ -128,20 +116,7 @@ public TreeItem (Tree parent, int style) {
  * @see Widget#getStyle
  */
 public TreeItem (Tree parent, int style, int index) {
-	super (parent, style);
-	int validItemIndex = parent.items.length;
-	if (!(0 <= index && index <= validItemIndex)) error (SWT.ERROR_INVALID_RANGE);
-	this.parent = parent;
-	int columnCount = parent.columns.length;
-	if (columnCount > 0) {
-		displayTexts = new String [columnCount];
-		if (columnCount > 1) {
-			texts = new String [columnCount];
-			textWidths = new int [columnCount];
-			images = new Image [columnCount];
-		}
-	}
-	parent.createItem (this, index);
+	this (parent, style, index, true);
 }
 /**
  * Constructs a new instance of this class given its parent
@@ -174,21 +149,7 @@ public TreeItem (Tree parent, int style, int index) {
  * @see Widget#getStyle
  */
 public TreeItem (TreeItem parentItem, int style) {
-	super (parentItem, style);
-	this.parentItem = parentItem;
-	parent = parentItem.parent;
-	depth = parentItem.depth + 1;
-	int columnCount = parent.columns.length;
-	if (columnCount > 0) {
-		displayTexts = new String [columnCount];
-		if (columnCount > 1) {
-			texts = new String [columnCount];
-			textWidths = new int [columnCount];
-			images = new Image [columnCount];
-		}
-	}
-	int index = parentItem.items.length;
-	parentItem.addItem (this, index);
+	this (parentItem, style, parentItem.items.length);
 }
 /**
  * Constructs a new instance of this class given its parent
@@ -222,6 +183,9 @@ public TreeItem (TreeItem parentItem, int style) {
  * @see Widget#getStyle
  */
 public TreeItem (TreeItem parentItem, int style, int index) {
+	this (parentItem, style, index, true);
+}
+TreeItem (TreeItem parentItem, int style, int index, boolean notifyParent) {
 	super (parentItem, style);
 	this.parentItem = parentItem;
 	parent = parentItem.parent;
@@ -237,7 +201,23 @@ public TreeItem (TreeItem parentItem, int style, int index) {
 			images = new Image [columnCount];
 		}
 	}
-	parentItem.addItem (this, index);
+	if (notifyParent) parentItem.addItem (this, index);
+}
+TreeItem (Tree parent, int style, int index, boolean notifyParent) {
+	super (parent, style);
+	int validItemIndex = parent.items.length;
+	if (!(0 <= index && index <= validItemIndex)) error (SWT.ERROR_INVALID_RANGE);
+	this.parent = parent;
+	int columnCount = parent.columns.length;
+	if (columnCount > 0) {
+		displayTexts = new String [columnCount];
+		if (columnCount > 1) {
+			texts = new String [columnCount];
+			textWidths = new int [columnCount];
+			images = new Image [columnCount];
+		}
+	}
+	if (notifyParent) parent.createItem (this, index);
 }
 /*
  * Updates internal structures in the receiver and its child items to handle the creation of a new column.
@@ -377,6 +357,160 @@ static Tree checkNull (Tree tree) {
 static TreeItem checkNull (TreeItem item) {
 	if (item == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	return item;
+}
+void clear () {
+	checked = grayed = false;
+	expanded = false;	// TODO needed?
+	texts = null;
+	textWidths = new int [1];
+	fontHeight = 0;
+	fontHeights = null;
+	images = null;
+	foreground = background = null;
+	displayTexts = null;
+	cellForegrounds = cellBackgrounds = null;
+	font = null;
+	cellFonts = null;
+	cached = false;
+	text = "";
+	image = null;
+
+	int columnCount = parent.columns.length;
+	if (columnCount > 0) {
+		displayTexts = new String [columnCount];
+		if (columnCount > 1) {
+			texts = new String [columnCount];
+			textWidths = new int [columnCount];
+			images = new Image [columnCount];
+		}
+	}
+}
+/*public*/ void clear (int index, boolean recursive) {
+	checkWidget ();
+	if (!(0 <= index && index < items.length)) error (SWT.ERROR_INVALID_RANGE);
+	TreeItem item = items [index];
+
+	/* if there are no columns then the horizontal scrollbar may need adjusting */
+	TreeItem[] availableDescendents = null;
+	int oldRightX = 0;
+	if (parent.columns.length == 0) {
+		if (recursive) {
+			availableDescendents = item.computeAvailableDescendents ();
+			for (int i = 0; i < availableDescendents.length; i++) {
+				Rectangle bounds = availableDescendents [i].getBounds ();
+				oldRightX = Math.max (oldRightX, bounds.x + bounds.width);
+			}
+		} else {
+			Rectangle bounds = item.getBounds ();
+			oldRightX = bounds.x + bounds.width;
+		}
+	}
+
+	/* clear the item(s) */
+	item.clear ();
+	if (recursive) {
+		item.clearAll (true, false);
+	}
+
+	/* adjust the horizontal scrollbar if needed */
+	if (parent.columns.length == 0) {
+		int newWidth = 0;
+		if (recursive) {
+			for (int i = 0; i < availableDescendents.length; i++) {
+				Rectangle bounds = availableDescendents [i].getBounds ();
+				newWidth = Math.max (newWidth, bounds.x + bounds.width);
+			}
+		} else {
+			Rectangle bounds = item.getBounds ();
+			newWidth = bounds.x + bounds.width;
+		}
+		parent.updateHorizontalBar (newWidth, newWidth - oldRightX);
+	}
+
+	/* redraw the item(s) */
+	if (recursive) {
+		int descendentCount = availableDescendents == null ?
+			item.computeAvailableDescendentCount () :
+			availableDescendents.length;
+		parent.redrawItems (item.availableIndex, item.availableIndex + descendentCount - 1, false);
+	} else {
+		parent.redrawItem (item.availableIndex, false);
+	}
+}
+/*public*/ void clearAll (boolean recursive) {
+	clearAll (true);
+}
+void clearAll (boolean recursive, boolean doVisualUpdate) {
+	checkWidget ();
+	if (items.length == 0) return;
+
+	/* if there are no columns then the horizontal scrollbar may need adjusting */
+	TreeItem[] availableDescendents = null;
+	int oldRightX = 0;
+	if (doVisualUpdate && parent.columns.length == 0) {
+		if (recursive) {
+			availableDescendents = computeAvailableDescendents ();
+			/*
+			 * i starts at 1 below because item 0 in availableDescendent
+			 * will be the receiver, but this item is not being cleared.
+			 */
+			for (int i = 1; i < availableDescendents.length; i++) {
+				Rectangle bounds = availableDescendents [i].getBounds ();
+				oldRightX = Math.max (oldRightX, bounds.x + bounds.width);
+			}
+		} else {
+			for (int i = 0; i < items.length; i++) {
+				Rectangle bounds = items [i].getBounds ();
+				oldRightX = Math.max (oldRightX, bounds.x + bounds.width);
+			}
+		}
+	}
+
+	/* clear the item(s) */
+	for (int i = 0; i < items.length; i++) {
+		if (recursive) {
+			items [i].clearAll (true, false);
+		} else {
+			items [i].clear ();
+		}
+	}
+
+	if (!doVisualUpdate) return;
+
+	/* adjust the horizontal scrollbar if needed */
+	if (parent.columns.length == 0) {
+		int newWidth = 0;
+		if (recursive) {
+			/*
+			 * i starts at 1 below because item 0 in availableDescendent
+			 * is the receiver, but this item was not cleared.
+			 */
+			for (int i = 1; i < availableDescendents.length; i++) {
+				Rectangle bounds = availableDescendents [i].getBounds ();
+				newWidth = Math.max (newWidth, bounds.x + bounds.width);
+			}
+		} else {
+			/*
+			 * All cleared direct child items will have the same x and width
+			 * values now, so just measure the first one as a sample.
+			 */
+			Rectangle bounds = items [0].getBounds ();
+			newWidth = bounds.x + bounds.width;
+		}
+		parent.updateHorizontalBar (newWidth, newWidth - oldRightX);
+	}
+
+	/* redraw the item(s) */
+	if (recursive) {
+		int startIndex = items [0].availableIndex;
+		TreeItem lastChild = items [items.length - 1]; 
+		int endIndex = lastChild.availableIndex + lastChild.computeAvailableDescendentCount () - 1;
+		parent.redrawItems (startIndex, endIndex, false);
+	} else {
+		for (int i = 0; i < items.length; i++) {
+			parent.redrawItem (items [i].availableIndex, false);
+		}
+	}
 }
 /*
  * Returns a collection of all tree items descending from the receiver, including
@@ -599,6 +733,7 @@ void expandAncestors () {
  */
 public Color getBackground () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (background != null) return background;
 	return parent.getBackground ();
 }
@@ -617,6 +752,7 @@ public Color getBackground () {
  */
 public Color getBackground (int columnIndex) {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int validColumnCount = Math.max (1, parent.columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return getBackground ();
 	if (cellBackgrounds == null || cellBackgrounds [columnIndex] == null) return getBackground ();
@@ -635,6 +771,7 @@ public Color getBackground (int columnIndex) {
  */
 public Rectangle getBounds () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (!isAvailable ()) return new Rectangle (0, 0, 0, 0);
 	int textPaintWidth = textWidths [0] + 2 * MARGIN_TEXT;
 	return new Rectangle (getTextX (0), parent.getItemY (this), textPaintWidth, parent.itemHeight - 1);
@@ -655,6 +792,7 @@ public Rectangle getBounds () {
  */
 public Rectangle getBounds (int columnIndex) {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (!isAvailable ()) return new Rectangle (0, 0, 0, 0);
 	TreeColumn[] columns = parent.columns;
 	int columnCount = columns.length;
@@ -730,6 +868,7 @@ Rectangle getCheckboxBounds () {
  */
 public boolean getChecked () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return checked;
 }
 int getContentWidth (int columnIndex) {
@@ -801,6 +940,8 @@ String getDisplayText (int columnIndex) {
  */
 public boolean getExpanded () {
 	checkWidget ();
+	// TODO is next line needed here?
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return expanded;
 }
 /*
@@ -865,6 +1006,7 @@ Rectangle getFocusBounds () {
  */
 public Font getFont () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (font != null) return font;
 	return parent.getFont ();
 }
@@ -884,6 +1026,7 @@ public Font getFont () {
  */
 public Font getFont (int columnIndex) {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int validColumnCount = Math.max (1, parent.columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return getFont ();
 	if (cellFonts == null || cellFonts [columnIndex] == null) return getFont ();
@@ -912,6 +1055,7 @@ int getFontHeight (int columnIndex) {
  */
 public Color getForeground () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (foreground != null) return foreground;
 	return parent.getForeground ();
 }
@@ -931,6 +1075,7 @@ public Color getForeground () {
  */
 public Color getForeground (int columnIndex) {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int validColumnCount = Math.max (1, parent.columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return getForeground ();
 	if (cellForegrounds == null || cellForegrounds [columnIndex] == null) return getForeground ();
@@ -951,6 +1096,7 @@ public Color getForeground (int columnIndex) {
  */
 public boolean getGrayed () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return grayed;
 }
 /*
@@ -1000,6 +1146,7 @@ Rectangle getHitBounds () {
 }
 public Image getImage () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return super.getImage ();
 }
 /**
@@ -1018,6 +1165,7 @@ public Image getImage () {
  */
 public Image getImage (int columnIndex) {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int validColumnCount = Math.max (1, parent.columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return null;
 	if (columnIndex == 0) return getImage ();
@@ -1040,6 +1188,7 @@ public Image getImage (int columnIndex) {
  */
 public Rectangle getImageBounds (int columnIndex) {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int validColumnCount = Math.max (1, parent.columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return new Rectangle (0,0,0,0);
 
@@ -1120,6 +1269,12 @@ public int getItemCount () {
 	checkWidget ();
 	return items.length;
 }
+String getNameText () {
+	if ((parent.style & SWT.VIRTUAL) != 0) {
+		if (!cached) return "*virtual*"; //$NON-NLS-1$
+	}
+	return super.getNameText ();
+}
 /**
  * Returns a (possibly empty) array of <code>TreeItem</code>s which
  * are the direct item children of the receiver.
@@ -1194,6 +1349,7 @@ int getPreferredWidth (int columnIndex) {
 }
 public String getText () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return super.getText ();
 }
 /**
@@ -1212,6 +1368,7 @@ public String getText () {
  */
 public String getText (int columnIndex) {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int validColumnCount = Math.max (1, parent.columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return "";	//$NON-NLS-1$
 	if (columnIndex == 0) return getText ();
@@ -1296,6 +1453,7 @@ boolean isSelected () {
  * to its item-level attributes (ie.- background color and selection).
  */
 void paint (GC gc, TreeColumn column, boolean paintCellContent) {
+	if (!parent.checkData (this, true)) return;
 	int columnIndex = 0, x = 0;
 	if (column != null) {
 		columnIndex = column.getIndex ();
@@ -2161,6 +2319,75 @@ public void setImage (int columnIndex, Image value) {
 		return;
 	}
 	redrawItem ();
+}
+/*public*/ void setItemCount (int count) {
+	checkWidget ();
+	count = Math.max (0, count);
+	if (count == items.length) return;
+	int redrawStart, redrawEnd;
+
+	/* if the new item count is less than the current count then remove all excess items from the end */
+	if (count < items.length) {
+		redrawStart = items [count].availableIndex;
+		redrawEnd = parent.availableItemsCount - 1;
+		for (int i = count; i < items.length; i++) {
+			items [i].dispose (true);
+		}
+		if (count == 0) {
+			items = NO_ITEMS;
+		} else {
+			TreeItem[] newItems = new TreeItem [count];
+			System.arraycopy (items, 0, newItems, 0, count);
+			items = newItems;
+		}
+		int visibleItemCount = (parent.getClientArea ().height - parent.getHeaderHeight ()) / parent.itemHeight;
+		parent.topIndex = Math.min (parent.topIndex, Math.max (0, count - visibleItemCount));
+	} else {
+		int oldAvailableDescendentCount = computeAvailableDescendentCount ();
+		int grow = count - items.length;
+		redrawStart = items.length == 0 ? availableIndex : items [items.length - 1].availableIndex;
+		redrawEnd = expanded && isAvailable () ? parent.availableItemsCount + grow  - 1: redrawStart;
+		TreeItem[] newItems = new TreeItem [count];
+		System.arraycopy (items, 0, newItems, 0, items.length);
+		items = newItems;
+		for (int i = items.length - grow; i < count; i++) {
+			items [i] = new TreeItem (this, SWT.NONE, i, false);
+		}
+		
+		if (expanded && isAvailable ()) {
+			/* expand the availableItems array if necessary */
+			if (parent.availableItems.length < parent.availableItemsCount + grow) {
+				TreeItem[] newAvailableItems = new TreeItem [parent.availableItemsCount + grow];
+				System.arraycopy (parent.availableItems, 0, newAvailableItems, 0, parent.availableItemsCount);
+				parent.availableItems = newAvailableItems;
+			}
+			TreeItem[] availableItems = parent.availableItems;
+			/* shift items right to create space for the new available items */
+			System.arraycopy (
+				availableItems,
+				availableIndex + oldAvailableDescendentCount,
+				availableItems,
+				availableIndex + oldAvailableDescendentCount + grow,
+				grow);
+			parent.availableItemsCount += grow;
+			/* copy new items in */
+			System.arraycopy (
+				items,
+				items.length - grow,
+				availableItems,
+				availableIndex + oldAvailableDescendentCount,
+				grow);
+			/* update availableIndex for all affected items */
+			for (int i = availableIndex + oldAvailableDescendentCount; i < parent.availableItemsCount; i++) {
+				availableItems [i].availableIndex = i;
+			}
+		}
+	}
+
+	if (isAvailable ()) {
+		if (expanded) parent.updateVerticalBar ();
+		parent.redrawItems (redrawStart, redrawEnd, false);
+	}
 }
 public void setText (String value) {
 	checkWidget ();
