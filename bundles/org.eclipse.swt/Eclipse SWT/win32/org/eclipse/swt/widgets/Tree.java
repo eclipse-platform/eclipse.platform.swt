@@ -43,9 +43,11 @@ import org.eclipse.swt.events.*;
 public class Tree extends Composite {
 	TreeItem [] items;
 	TreeColumn [] columns;
-	int hwndParent, hwndHeader, hAnchor, hInsert;
 	ImageList imageList;
-	boolean dragStarted, gestureCompleted, insertAfter;
+	TreeItem currentItem;
+	int hwndParent, hwndHeader, hAnchor, hInsert, lastID;
+	int hFirstIndexOf, hLastIndexOf, lastIndexOf;
+	boolean dragStarted, gestureCompleted, insertAfter, shrink;
 	boolean ignoreSelect, ignoreExpand, ignoreDeselect, ignoreResize;
 	boolean lockSelection, oldSelected, newSelected, cancelMove;
 	boolean linesVisible, customDraw, printClient;
@@ -229,6 +231,22 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 	return OS.CallWindowProc (TreeProc, hwnd, msg, wParam, lParam);
 }
 
+boolean checkData (TreeItem item, boolean redraw) {
+	if (item.cached) return true;
+	if ((style & SWT.VIRTUAL) != 0) {
+		item.cached = true;
+		Event event = new Event ();
+		event.item = item;
+		currentItem = item;
+		sendEvent (SWT.SetData, event);
+		//widget could be disposed at this point
+		currentItem = null;
+		if (isDisposed () || item.isDisposed ()) return false;
+		if (redraw) item.redraw ();
+	}
+	return true;
+}
+
 boolean checkHandle (int hwnd) {
 	return hwnd == handle || (hwndParent != 0 && hwnd == hwndParent);
 }
@@ -256,6 +274,72 @@ boolean checkScroll (int hItem) {
 
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
+/**
+ * Clears the item at the given zero-relative index in the receiver.
+ * The text, icon and other attributes of the item are set to the default
+ * value.  If the table was created with the SWT.VIRTUAL style, these
+ * attributes are requested again as needed.
+ *
+ * @param index the index of the item to clear
+ * @param all <code>true</code>if all child items should be cleared, and <code>false</code> otherwise
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see SWT#VIRTUAL
+ * @see SWT#SetData
+ * 
+ * @since 3.2
+ */
+/*public*/ void clear (int index, boolean all) {
+	checkWidget ();
+	clear (null, index, all);
+}
+
+void clear (TreeItem parentItem, int index, boolean all) {
+	checkWidget ();
+	TreeItem item = parentItem != null ? parentItem.getItem (index) : getItem (index);
+	item.clear ();
+	item.redraw ();
+	if (all) item.clearAll (all);
+}
+
+/**
+ * Clears all the items in the receiver. The text, icon and other
+ * attribues of the items are set to their default values. If the
+ * table was created with the SWT.VIRTUAL style, these attributes
+ * are requested again as needed.
+ * 
+ * @param all <code>true</code>if all child items should be cleared, and <code>false</code> otherwise
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see SWT#VIRTUAL
+ * @see SWT#SetData
+ * 
+ * @since 3.2
+ */
+/*public*/ void clearAll (boolean all) {
+	checkWidget ();
+	TreeItem [] items = all ? this.items : getItems ();
+	for (int i=0; i<items.length; i++) {
+		TreeItem item = items [i];
+		if (item != null) {
+			item.clear ();
+			if (!all) item.redraw ();
+		}
+	}
+	if (all) OS.InvalidateRect (handle, null, true);
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -440,13 +524,25 @@ void createItem (TreeColumn column, int index) {
 }
 
 void createItem (TreeItem item, int hParent, int hInsertAfter) {
-	int id = 0;
+	int id = lastID < items.length ? lastID : 0;
 	while (id < items.length && items [id] != null) id++;
 	if (id == items.length) {
-		TreeItem [] newItems = new TreeItem [items.length + 4];
+		/*
+		* Grow the array faster when redraw is off or the
+		* table is not visible.  When the table is painted,
+		* the items array is resized to be smaller to reduce
+		* memory usage.
+		*/
+		int length = items.length + 4;
+		if (drawCount != 0 || !OS.IsWindowVisible (handle)) {
+			length = Math.max (4, items.length * 3 / 2);
+			shrink = true;
+		}
+		TreeItem [] newItems = new TreeItem [length + 4];
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
 	}
+	lastID = id + 1;
 	TVINSERTSTRUCT tvInsert = new TVINSERTSTRUCT ();
 	tvInsert.hParent = hParent;
 	tvInsert.hInsertAfter = hInsertAfter;
@@ -740,6 +836,7 @@ void destroyItem (TreeColumn column) {
 }
 
 void destroyItem (TreeItem item) {
+	hFirstIndexOf = hLastIndexOf = lastIndexOf = 0;
 	/*
 	* Feature in Windows.  When an item is removed that is not
 	* visible in the tree because it belongs to a collapsed branch,
@@ -819,6 +916,54 @@ void enableWidget (boolean enabled) {
 	if (hwndParent != 0) OS.EnableWindow (hwndParent, enabled);
 }
 
+int findIndex (int hFirstItem, int hItem) {
+	if (hFirstItem == 0) return -1;
+	if (hFirstItem == hFirstIndexOf) {
+		if (hFirstIndexOf == hItem) return 0;
+		if (hLastIndexOf == hItem) return lastIndexOf;
+		int hPrevItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PREVIOUS, hLastIndexOf);
+		if (hPrevItem == hItem) {
+			hLastIndexOf = hPrevItem;
+			return --lastIndexOf;
+		}
+		int hNextItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hLastIndexOf);
+		if (hNextItem == hItem) {
+			hLastIndexOf = hNextItem;
+			return ++lastIndexOf;
+		}
+		int previousIndex = lastIndexOf - 1;
+		while (hPrevItem != 0 && hPrevItem != hItem) {
+			hPrevItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PREVIOUS, hPrevItem);
+			--previousIndex;
+		}
+		if (hPrevItem == hItem) {
+			hLastIndexOf = hPrevItem;
+			return lastIndexOf = previousIndex;
+		}
+		int nextIndex = lastIndexOf + 1;
+		while (hNextItem != 0 && hNextItem != hItem) {
+			hNextItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hNextItem);
+			nextIndex++;
+		}
+		if (hNextItem == hItem) {
+			hLastIndexOf = hNextItem;
+			return lastIndexOf = nextIndex;
+		}
+		return -1;
+	}
+	int index = 0, hNextItem = hFirstItem;
+	while (hNextItem != 0 && hNextItem != hItem) {
+		hNextItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hNextItem);
+		index++;
+	}
+	if (hNextItem == hItem) {
+		hFirstIndexOf = hFirstItem;
+		hLastIndexOf = hNextItem;
+		return lastIndexOf = index;
+	}
+	return -1;
+}
+
 Widget findItem (int id) {
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
@@ -828,6 +973,57 @@ Widget findItem (int id) {
 		if (0 <= lParam && lParam < items.length) return items [lParam];
 	}
 	return null;
+}
+
+int findItem (int hFirstItem, int index) {
+	if (hFirstItem == 0) return 0;
+	if (hFirstItem == hFirstIndexOf) {
+		if (index == 0) return hFirstItem;
+		if (lastIndexOf == index) return hLastIndexOf;
+		if (lastIndexOf - 1 == index) {
+			--lastIndexOf;
+			return hLastIndexOf = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PREVIOUS, hLastIndexOf);
+		}
+		if (lastIndexOf + 1 == index) {
+			lastIndexOf++;
+			return hLastIndexOf = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hLastIndexOf);
+		}
+		if (index < lastIndexOf) {
+			int previousIndex = lastIndexOf - 1;
+			int hPrevItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PREVIOUS, hLastIndexOf);
+			while (hPrevItem != 0 && index < previousIndex) {
+				hPrevItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PREVIOUS, hPrevItem);
+				--previousIndex;
+			}
+			if (index == previousIndex) {
+				lastIndexOf = previousIndex;
+				return hLastIndexOf = hPrevItem;
+			}
+		} else {
+			int nextIndex = lastIndexOf + 1;
+			int hNextItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hLastIndexOf);
+			while (hNextItem != 0 && nextIndex < index) {
+				hNextItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hNextItem);
+				nextIndex++;
+			}
+			if (index == nextIndex) {
+				lastIndexOf = nextIndex;
+				return hLastIndexOf = hNextItem;
+			}
+		}
+		return 0;
+	}
+	int nextIndex = 0, hNextItem = hFirstItem;
+	while (hNextItem != 0 && nextIndex < index) {
+		hNextItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hNextItem);
+		nextIndex++;
+	}
+	if (index == nextIndex) {
+		lastIndexOf = nextIndex;
+		hFirstIndexOf = hFirstItem;
+		return hLastIndexOf = hNextItem;
+	}
+	return 0;
 }
 
 int getBackgroundPixel () {
@@ -1061,10 +1257,9 @@ public TreeColumn [] getColumns () {
 public TreeItem getItem (int index) {
 	checkWidget ();
 	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
-	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-	while (index-- > 0 && hItem != 0) {
-		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
-	}
+	int hFirstItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+	if (hFirstItem == 0) error (SWT.ERROR_INVALID_RANGE);
+	int hItem = findItem (hFirstItem, index);
 	if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
@@ -1130,6 +1325,10 @@ public int getItemCount () {
 
 int getItemCount (int hItem) {
 	int count = 0;
+	if (hItem == hFirstIndexOf) {
+		hItem = hLastIndexOf;
+		count = lastIndexOf;
+	}
 	while (hItem != 0) {
 		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
 		count++;
@@ -1405,15 +1604,6 @@ int imageIndex (Image image) {
 	return imageList.add (image);
 }
 
-int indexOf (int hItem, int hChild) {
-	int index = 0;
-	while (hItem != 0 && hItem != hChild) {
-		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
-		index++;
-	}
-	return hItem == hChild ? index : -1;
-}
-
 /**
  * Searches the receiver's list starting at the first column
  * (index 0) until a column is found that is equal to the 
@@ -1470,7 +1660,7 @@ public int indexOf (TreeItem item) {
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-	return hItem == 0 ? -1 : indexOf (hItem, item.handle);
+	return hItem == 0 ? -1 : findIndex (hItem, item.handle);
 }
 
 void register () {
@@ -1485,6 +1675,7 @@ boolean releaseItem (TreeItem item, TVITEM tvItem) {
 	if (item.isDisposed ()) return false;
 	tvItem.hItem = hItem;
 	OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+	if (tvItem.lParam < lastID) lastID = tvItem.lParam;
 	items [tvItem.lParam] = null;
 	return true;
 }
@@ -1674,6 +1865,60 @@ public void setInsertMark (TreeItem item, boolean before) {
 	hInsert = hItem;
 	insertAfter = !before;
 	OS.SendMessage (handle, OS.TVM_SETINSERTMARK, insertAfter ? 1 : 0, hInsert);
+}
+
+/**
+ * Sets the number of items contained in the receiver.
+ *
+ * @param count the number of items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.2
+ */
+/*public*/ void setItemCount (int count) {
+	checkWidget ();
+	count = Math.max (0, count);
+	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+	setItemCount (count, hItem, null);
+}
+
+void setItemCount (int count, int hItem, TreeItem parent) {
+	int itemCount = 0;
+	while (hItem != 0 && itemCount < count) {
+		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+		itemCount++;
+	}
+	if (hItem != 0) {
+		TVITEM tvItem = new TVITEM ();
+		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+		tvItem.hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+		while (tvItem.hItem != 0) {
+			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+			TreeItem item = items [tvItem.lParam];
+			if (item != null && !item.isDisposed ()) item.dispose ();
+			tvItem.hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
+		}
+		tvItem.hItem = hItem;
+		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+		TreeItem item = items [tvItem.lParam];
+		if (item != null && !item.isDisposed ()) item.dispose ();
+	}
+	shrink = true;
+	int extra = Math.max (4, (count + 3) / 4 * 4);
+	TreeItem [] newItems =  new TreeItem [items.length + extra];
+	System.arraycopy (items, 0, newItems, 0, Math.min (count, itemCount));
+	items = newItems;
+	for (int i=itemCount; i<count; i++) {
+		if (parent == null) {
+			new TreeItem (this, SWT.NONE);
+		} else {
+			new TreeItem (parent, SWT.NONE);
+		}
+	}
 }
 
 /**
@@ -3389,6 +3634,26 @@ LRESULT WM_RBUTTONDOWN (int wParam, int lParam) {
 	return LRESULT.ZERO;
 }
 
+LRESULT WM_PAINT (int wParam, int lParam) {
+	if (shrink) {
+		/* Resize the item array to fit the last item */
+		int count = items.length - 1;
+		while (count >= 0) {
+			if (items [count] != null) break;
+			--count;
+		}
+		count++;
+		if (items.length > 4 && items.length - count > 3) {
+			int length = Math.max (4, (count + 3) / 4 * 4);
+			TreeItem [] newItems = new TreeItem [length];
+			System.arraycopy (items, 0, newItems, 0, count);
+			items = newItems;
+		}
+		shrink = false;
+	}
+	return super.WM_PAINT (wParam, lParam);
+}
+
 LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
 	LRESULT result = super.WM_PRINTCLIENT (wParam, lParam);
 	if (result != null) return result;
@@ -3473,6 +3738,23 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			if (items == null) break;
 			TreeItem item = items [lptvdi.lParam];
 			if (item == null) break;
+			if (!item.cached) {
+				if ((style & SWT.VIRTUAL) != 0) {
+					if (drawCount == 0 && OS.IsWindowVisible (handle)) {
+						RECT itemRect = new RECT ();
+						itemRect.left = lptvdi.hItem;
+						if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, itemRect) != 0) {
+							RECT rect = new RECT ();
+							OS.GetClientRect (handle, rect);
+							if (OS.IntersectRect (rect, rect, itemRect)) {
+								if (!checkData (item, false)) break;
+							}
+						}
+					}
+				} else {
+					item.cached = true;
+				}
+			}
 			if ((lptvdi.mask & OS.TVIF_TEXT) != 0) {
 				String string = item.text;
 				TCHAR buffer = new TCHAR (getCodePage (), string, false);

@@ -45,6 +45,7 @@ public class TreeItem extends Item {
 	Tree parent;
 	String [] strings;
 	Image [] images;
+	boolean cached;
 	int background = -1, foreground = -1, font = -1;
 	int [] cellBackground, cellForeground, cellFont;
 	
@@ -121,12 +122,9 @@ public TreeItem (Tree parent, int style, int index) {
 	this.parent = parent;
 	int hItem = OS.TVI_FIRST;
 	if (index != 0) {
-		int count = 1, hwnd = parent.handle;
-		hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-		while (hItem != 0 && count < index) {
-			hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
-			count++;
-		}
+		int hwnd = parent.handle;
+		int hFirstItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+		hItem = parent.findItem (hFirstItem, index - 1);
 		if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
 	}
 	parent.createItem (this, 0, hItem);
@@ -165,8 +163,7 @@ public TreeItem (Tree parent, int style, int index) {
 public TreeItem (TreeItem parentItem, int style) {
 	super (checkNull (parentItem).parent, style);
 	parent = parentItem.parent;
-	int hItem = parentItem.handle;
-	parent.createItem (this, hItem, OS.TVI_LAST);
+	parent.createItem (this, parentItem.handle, OS.TVI_LAST);
 }
 
 /**
@@ -207,12 +204,9 @@ public TreeItem (TreeItem parentItem, int style, int index) {
 	int hItem = OS.TVI_FIRST;
 	int hParent = parentItem.handle;
 	if (index != 0) {
-		int count = 1, hwnd = parent.handle;
-		hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hParent);
-		while (hItem != 0 && count < index) {
-			hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
-			count++;
-		}
+		int hwnd = parent.handle;
+		int hFirstItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hParent);
+		hItem = parent.findItem (hFirstItem, index - 1);
 		if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
 	}
 	parent.createItem (this, hParent, hItem);
@@ -225,6 +219,80 @@ static TreeItem checkNull (TreeItem item) {
 
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
+void clear () {
+	text = "";
+	image = null;
+	strings = null;
+	images = null;
+	if ((parent.style & SWT.CHECK) != 0) {
+		int hwnd = parent.handle;
+		TVITEM tvItem = new TVITEM ();
+		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
+		tvItem.stateMask = OS.TVIS_STATEIMAGEMASK;
+		tvItem.hItem = handle;
+		OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
+	}
+	background = foreground = font = -1;
+	cellBackground = cellForeground = cellFont = null;
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = false;
+}
+
+/**
+ * Clears the item at the given zero-relative index in the receiver.
+ * The text, icon and other attributes of the item are set to the default
+ * value.  If the table was created with the SWT.VIRTUAL style, these
+ * attributes are requested again as needed.
+ *
+ * @param index the index of the item to clear
+ * @param all <code>true</code>if all child items should be cleared, and <code>false</code> otherwise
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see SWT#VIRTUAL
+ * @see SWT#SetData
+ * 
+ * @since 3.2
+ */
+/*public*/ void clear (int index, boolean all) {
+	checkWidget ();
+	parent.clear (this, index, all);
+}
+
+/**
+ * Clears all the items in the receiver. The text, icon and other
+ * attribues of the items are set to their default values. If the
+ * table was created with the SWT.VIRTUAL style, these attributes
+ * are requested again as needed.
+ * 
+ * @param all <code>true</code>if all child items should be cleared, and <code>false</code> otherwise
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see SWT#VIRTUAL
+ * @see SWT#SetData
+ * 
+ * @since 3.2
+ */
+/*public*/ void clearAll (boolean all) {
+	checkWidget ();
+	TreeItem [] items = getItems ();
+	for (int i=0; i<items.length; i++) {
+		TreeItem item = items [i];
+		item.clear ();
+		item.redraw ();
+		if (all) item.clearAll (all);
+	}
 }
 
 /**
@@ -242,6 +310,7 @@ protected void checkSubclass () {
  */
 public Color getBackground () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int pixel = (background == -1) ? parent.getBackgroundPixel() : background;
 	return Color.win32_new (display, pixel);
 }
@@ -261,6 +330,7 @@ public Color getBackground () {
  */
 public Color getBackground (int index) {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count - 1) return getBackground ();
 	int pixel = cellBackground != null ? cellBackground [index] : -1;
@@ -280,6 +350,7 @@ public Color getBackground (int index) {
  */
 public Rectangle getBounds () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	RECT rect = getBounds (0, true, false, false);
 	int width = rect.right - rect.left, height = rect.bottom - rect.top;
 	return new Rectangle (rect.left, rect.top, width, height);
@@ -301,14 +372,23 @@ public Rectangle getBounds () {
  */
 public Rectangle getBounds (int index) {
 	checkWidget();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	RECT rect = getBounds (index, true, true, true);
 	int width = rect.right - rect.left, height = rect.bottom - rect.top;
 	return new Rectangle (rect.left, rect.top, width, height);
 }
 
+//TODO - take into account grid (add boolean arg) to damage less during redraw
 RECT getBounds (int index, boolean getText, boolean getImage, boolean full) {
-//	TODO - take into account grid (add boolean arg) to damage less during redraw
 	if (!getText && !getImage) return new RECT ();
+	if ((parent.style & SWT.VIRTUAL) == 0 && !cached) {
+		int hwnd = parent.handle;
+		TVITEM tvItem = new TVITEM ();
+		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
+		tvItem.hItem = handle;
+		tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
+		OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
+	}
 	int count = 0, hwndHeader = parent.hwndHeader;
 	if (hwndHeader != 0) {
 		count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
@@ -381,6 +461,7 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean full) {
  */
 public boolean getChecked () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((parent.style & SWT.CHECK) == 0) return false;
 	int hwnd = parent.handle;
 	TVITEM tvItem = new TVITEM ();
@@ -427,6 +508,7 @@ public boolean getExpanded () {
  */
 public Font getFont () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return font == -1 ? parent.getFont () : Font.win32_new (display, font);
 }
 
@@ -446,6 +528,7 @@ public Font getFont () {
  */
 public Font getFont (int index) {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count -1) return getFont ();
 	int hFont = (cellFont != null) ? cellFont [index] : font;
@@ -467,6 +550,7 @@ public Font getFont (int index) {
  */
 public Color getForeground () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int pixel = (foreground == -1) ? parent.getForegroundPixel() : foreground;
 	return Color.win32_new (display, pixel);
 }
@@ -487,6 +571,7 @@ public Color getForeground () {
  */
 public Color getForeground (int index) {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count -1) return getForeground ();
 	int pixel = cellForeground != null ? cellForeground [index] : -1;
@@ -508,6 +593,7 @@ public Color getForeground (int index) {
  */
 public boolean getGrayed () {
 	checkWidget ();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((parent.style & SWT.CHECK) == 0) return false;
 	int hwnd = parent.handle;
 	TVITEM tvItem = new TVITEM ();
@@ -539,10 +625,9 @@ public TreeItem getItem (int index) {
 	checkWidget ();
 	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
 	int hwnd = parent.handle;
-	int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
-	while (index-- > 0 && hItem != 0) {
-		hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
-	}
+	int hFirstItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+	if (hFirstItem == 0) error (SWT.ERROR_INVALID_RANGE);
+	int hItem = parent.findItem (hFirstItem, index);
 	if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
@@ -594,6 +679,12 @@ public TreeItem [] getItems () {
 	return parent.getItems (hItem);
 }
 
+public Image getImage () {
+	checkWidget();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	return super.getImage ();
+}
+
 /**
  * Returns the image stored at the given column index in the receiver,
  * or null if the image has not been set or if the column does not exist.
@@ -610,6 +701,7 @@ public TreeItem [] getItems () {
  */
 public Image getImage (int index) {
 	checkWidget();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (index == 0) return getImage ();
 	if (images != null) {
 		if (0 <= index && index < images.length) return images [index];
@@ -634,6 +726,7 @@ public Image getImage (int index) {
  */
 public Rectangle getImageBounds (int index) {
 	checkWidget();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	RECT rect = getBounds (index, false, true, false);
 	int width = rect.right - rect.left, height = rect.bottom - rect.top;
 	return new Rectangle (rect.left, rect.top, width, height);
@@ -677,6 +770,12 @@ public TreeItem getParentItem () {
 	return parent.items [tvItem.lParam];
 }
 
+public String getText () {
+	checkWidget();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	return super.getText ();
+}
+
 /**
  * Returns the text stored at the given column index in the receiver,
  * or empty string if the text has not been set.
@@ -693,6 +792,7 @@ public TreeItem getParentItem () {
  */
 public String getText (int index) {
 	checkWidget();
+	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (index == 0) return getText ();
 	if (strings != null) {
 		if (0 <= index && index < strings.length) {
@@ -729,11 +829,11 @@ public int indexOf (TreeItem item) {
 	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	int hwnd = parent.handle;
 	int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
-	return hItem == 0 ? -1 : parent.indexOf (hItem, item.handle);
+	return hItem == 0 ? -1 : parent.findIndex (hItem, item.handle);
 }
 
 void redraw () {
-	if (parent.drawCount > 0) return;
+	if (parent.currentItem == this || parent.drawCount != 0) return;
 	int hwnd = parent.handle;
 	if (!OS.IsWindowVisible (hwnd)) return;
 	RECT rect = new RECT ();
@@ -756,7 +856,7 @@ void redraw () {
 }
 
 void redraw (int column, boolean drawText, boolean drawImage) {
-	if (parent.drawCount > 0) return;
+	if (parent.currentItem == this || parent.drawCount != 0) return;
 	int hwnd = parent.handle;
 	if (!OS.IsWindowVisible (hwnd)) return;
 	RECT rect = getBounds (column, drawText, drawImage, true);
@@ -800,9 +900,7 @@ public void removeAll () {
 	while (tvItem.hItem != 0) {
 		OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
 		TreeItem item = parent.items [tvItem.lParam];
-		if (item != null && !item.isDisposed ()) {
-			item.dispose ();
-		}
+		if (item != null && !item.isDisposed ()) item.dispose ();
 		tvItem.hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
 	}
 }
@@ -837,6 +935,7 @@ public void setBackground (Color color) {
 	}
 	if (background == pixel) return;
 	background = pixel;
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	redraw ();
 }
 
@@ -879,6 +978,7 @@ public void setBackground (int index, Color color) {
 	}
 	if (cellBackground [index] == pixel) return;
 	cellBackground [index] = pixel;
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	redraw (index, true, true);
 }
 
@@ -908,7 +1008,10 @@ public void setChecked (boolean checked) {
 	} else {
 		if ((state & 0x1) == 0) --state;
 	}
-	tvItem.state = state << 12;
+	state <<= 12;
+	if (tvItem.state == state) return;
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
+	tvItem.state = state;
 	OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
 }
 
@@ -986,18 +1089,22 @@ public void setFont (Font font){
 	}
 	if (this.font == hFont) return;
 	this.font = hFont;
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	/*
 	* Bug in Windows.  When the font is changed for an item,
 	* the bounds for the item are not updated, causing the text
 	* to be clipped.  The fix is to reset the text, causing
 	* Windows to compute the new bounds using the new font.
 	*/
-	int hwnd = parent.handle;
-	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
-	tvItem.hItem = handle;
-	tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-	OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
+	if (cached) {
+		int hwnd = parent.handle;
+		TVITEM tvItem = new TVITEM ();
+		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
+		tvItem.hItem = handle;
+		tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
+		OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
+		if ((parent.style & SWT.VIRTUAL) == 0) cached = false;
+	}
 }
 
 
@@ -1040,6 +1147,7 @@ public void setFont (int index, Font font) {
 	}
 	if (cellFont [index] == hFont) return;
 	cellFont [index] = hFont;
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	/*
 	* Bug in Windows.  When the font is changed for an item,
 	* the bounds for the item are not updated, causing the text
@@ -1047,12 +1155,15 @@ public void setFont (int index, Font font) {
 	* Windows to compute the new bounds using the new font.
 	*/
 	if (index == 0) {
-		int hwnd = parent.handle;
-		TVITEM tvItem = new TVITEM ();
-		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
-		tvItem.hItem = handle;
-		tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-		OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
+		if (cached) {
+			int hwnd = parent.handle;
+			TVITEM tvItem = new TVITEM ();
+			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
+			tvItem.hItem = handle;
+			tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
+			OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
+			if ((parent.style & SWT.VIRTUAL) == 0) cached = false;
+		}
 	} else {
 		redraw (index, true, false);
 	}
@@ -1090,6 +1201,7 @@ public void setForeground (Color color) {
 	}
 	if (foreground == pixel) return;
 	foreground = pixel;
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	redraw ();
 }
 
@@ -1132,6 +1244,7 @@ public void setForeground (int index, Color color){
 	}
 	if (cellForeground [index] == pixel) return;
 	cellForeground [index] = pixel;
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	redraw (index, true, false);
 }
 
@@ -1161,7 +1274,10 @@ public void setGrayed (boolean grayed) {
 	} else {
 		if (state > 2) state -=2;
 	}
-	tvItem.state = state << 12;
+	state <<= 12;
+	if (tvItem.state == state) return;
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
+	tvItem.state = state;
 	OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
 }
 
@@ -1225,26 +1341,30 @@ public void setImage (int index, Image image) {
 		}
 		images [index] = image;
 	}
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	
 	/* Ensure that the image list is created */
 	//TODO - items that are not in column zero don't need to be in the image list
 	parent.imageIndex (image);
 	
 	if (index == 0) {
-		int hwnd = parent.handle;
-		TVITEM tvItem = new TVITEM ();
-		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_IMAGE | OS.TVIF_SELECTEDIMAGE;
-		tvItem.hItem = handle;
-		tvItem.iImage = tvItem.iSelectedImage = OS.I_IMAGECALLBACK;
-		/*
-		* Bug in Windows.  When I_IMAGECALLBACK is used with TVM_SETITEM
-		* to indicate that an image has changed, Windows does not draw
-		* the new image.  The fix is to use LPSTR_TEXTCALLBACK to force
-		* Windows to ask for the text, causing Windows to ask for both.
-		*/
-		tvItem.mask |= OS.TVIF_TEXT;
-		tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-		OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
+		if (cached) {
+			int hwnd = parent.handle;
+			TVITEM tvItem = new TVITEM ();
+			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_IMAGE | OS.TVIF_SELECTEDIMAGE;
+			tvItem.hItem = handle;
+			tvItem.iImage = tvItem.iSelectedImage = OS.I_IMAGECALLBACK;
+			/*
+			* Bug in Windows.  When I_IMAGECALLBACK is used with TVM_SETITEM
+			* to indicate that an image has changed, Windows does not draw
+			* the new image.  The fix is to use LPSTR_TEXTCALLBACK to force
+			* Windows to ask for the text, causing Windows to ask for both.
+			*/
+			tvItem.mask |= OS.TVIF_TEXT;
+			tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
+			OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
+			if ((parent.style & SWT.VIRTUAL) == 0) cached = false;
+		}
 	} else {
 		redraw (index, false, true);
 	}
@@ -1280,6 +1400,26 @@ public void setText (String [] strings) {
 }
 
 /**
+ * Sets the number of items contained in the receiver.
+ *
+ * @param count the number of items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.2
+ */
+/*public*/ void setItemCount (int count) {
+	checkWidget ();
+	count = Math.max (0, count);
+	int hwnd = parent.handle;
+	int hItem = OS.SendMessage (hwnd, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, handle);
+	parent.setItemCount (count, hItem, this);
+}
+
+/**
  * Sets the receiver's text at a column
  *
  * @param index the column index
@@ -1309,13 +1449,17 @@ public void setText (int index, String string) {
 		if (string.equals (strings [index])) return;
 		strings [index] = string;
 	}
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	if (index == 0) {
-		int hwnd = parent.handle;
-		TVITEM tvItem = new TVITEM ();
-		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
-		tvItem.hItem = handle;
-		tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-		OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
+		if (cached) {
+			int hwnd = parent.handle;
+			TVITEM tvItem = new TVITEM ();
+			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
+			tvItem.hItem = handle;
+			tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
+			OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
+			if ((parent.style & SWT.VIRTUAL) == 0) cached = false;
+		}
 	} else {
 		redraw (index, true, false);
 	}
