@@ -90,7 +90,7 @@ public void generate(Method method) {
 	Class[] paramTypes = method.getParameterTypes();
 	String function = getFunctionName(method);
 	
-	if (!(returnType == Void.TYPE || returnType.isPrimitive())) {
+	if (!(returnType == Void.TYPE || returnType.isPrimitive() || isSystemClass(returnType) || returnType == String.class)) {
 		output("Warning: bad return type. :");
 		outputln(method.toString());
 		return;
