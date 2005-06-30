@@ -3092,7 +3092,7 @@ public void setItemCount (int count) {
 		redrawStart = itemsCount;
 		redrawEnd = count - 1;
 		TableItem[] newItems = new TableItem [count];
-		System.arraycopy (items, 0, newItems, 0, Math.min (count, itemsCount));
+		System.arraycopy (items, 0, newItems, 0, itemsCount);
 		items = newItems;
 		for (int i = itemsCount; i < count; i++) {
 			items [i] = new TableItem (this, SWT.NONE, i, false);
