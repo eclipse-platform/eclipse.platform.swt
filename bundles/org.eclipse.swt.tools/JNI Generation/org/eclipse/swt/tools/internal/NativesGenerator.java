@@ -146,7 +146,7 @@ void generateNativeMacro(Class clazz) {
 }
 
 boolean generateGetParameter(Method method, int i, Class paramType, ParameterData paramData, boolean critical, int indent) {
-	if (paramType.isPrimitive()) return false;
+	if (paramType.isPrimitive() || isSystemClass(paramType)) return false;
 	String iStr = String.valueOf(i);
 	for (int j = 0; j < indent; j++) output("\t");
 	output("if (arg");
@@ -220,7 +220,7 @@ boolean generateGetParameter(Method method, int i, Class paramType, ParameterDat
 }
 
 void generateSetParameter(int i, Class paramType, ParameterData paramData, boolean critical) {
-	if (paramType.isPrimitive()) return;
+	if (paramType.isPrimitive() || isSystemClass(paramType)) return;
 	String iStr = String.valueOf(i);
 	if (paramType.isArray()) {
 		output("\tif (arg");
@@ -327,7 +327,7 @@ boolean generateLocalVars(Method method, Class[] paramTypes, Class returnType) {
 	boolean needsReturn = enterExitMacro;
 	for (int i = 0; i < paramTypes.length; i++) {
 		Class paramType = paramTypes[i];
-		if (paramType.isPrimitive()) continue;
+		if (paramType.isPrimitive() || isSystemClass(paramType)) continue;
 		ParameterData paramData = getMetaData().getMetaData(method, i);
 		output("\t");
 		if (paramType.isArray()) {
@@ -577,19 +577,25 @@ void generateFunctionCallLeftSide(Method method, MethodData methodData, Class re
 	}
 	if (methodData.getFlag("address")) {
 		output("&");
+	}	
+	if (methodData.getFlag("jni")) {
+		output(isCPP ? "env->" : "(*env)->");
 	}
 }
 
 void generateFunctionCallRightSide(Method method, MethodData methodData, Class[] paramTypes, int paramStart) {
 	if (!methodData.getFlag("const")) {
 		output("(");
+		if (methodData.getFlag("jni")) {
+			if (!isCPP) output("env, ");
+		}
 		for (int i = paramStart; i < paramTypes.length; i++) {
 			Class paramType = paramTypes[i];
 			ParameterData paramData = getMetaData().getMetaData(method, i);
 			if (i != paramStart) output(", ");
 			if (paramData.getFlag("struct")) output("*");
 			output(paramData.getCast());
-			if (!paramType.isPrimitive()) output("lp");
+			if (!paramType.isPrimitive() && !isSystemClass(paramType)) output("lp");
 			output("arg" + i);
 		}
 		output(")");
@@ -792,6 +798,10 @@ void generateSourceEnd(String function) {
 
 boolean isCritical(Class paramType, ParameterData paramData) {
 	return paramType.isArray() && paramType.getComponentType().isPrimitive() && paramData.getFlag("critical");
+}
+
+boolean isSystemClass(Class type) {
+	return type == Object.class || type == Class.class;
 }
 
 public static void main(String[] args) {
