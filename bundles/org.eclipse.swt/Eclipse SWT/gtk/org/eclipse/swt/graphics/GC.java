@@ -958,7 +958,7 @@ public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth
 		float naw2 = naw / 2f;
 		float nah2 = nah / 2f;
 		float fw = nw / naw2;
-		float fh = nh / nah2;
+//		float fh = nh / nah2;
 		Cairo.cairo_save(cairo);
 		float offset = data.lineWidth == 0 || (data.lineWidth % 2) == 1 ? 0.5f : 0f;
 		Cairo.cairo_translate(cairo, nx + offset, ny + offset);
@@ -1606,7 +1606,7 @@ public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth
 		float naw2 = naw / 2f;
 		float nah2 = nah / 2f;
 		float fw = nw / naw2;
-		float fh = nh / nah2;
+//		float fh = nh / nah2;
 		int /*long*/ colormap = OS.gdk_colormap_get_system();
 		OS.gdk_colormap_query_color(colormap, color.pixel, color);
 		Cairo.cairo_save(cairo);
