@@ -469,10 +469,10 @@ public void setImage (Image image) {
 	hdItem.mask = OS.HDI_FORMAT | OS.HDI_IMAGE;
 	OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
 	if (image != null) {
-		hdItem.fmt |= OS.LVCFMT_IMAGE;
+		hdItem.fmt |= OS.HDF_IMAGE;
 		hdItem.iImage = parent.imageIndex (image);
 	} else {
-		hdItem.fmt &= ~OS.LVCFMT_IMAGE;
+		hdItem.fmt &= ~OS.HDF_IMAGE;
 	}
 	OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
 }
