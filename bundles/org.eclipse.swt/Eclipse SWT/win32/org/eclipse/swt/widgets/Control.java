@@ -2932,6 +2932,10 @@ boolean updateFont (Font oldFont, Font newFont) {
 	return sameFont;
 }
 
+void updateImages () {
+	/* Do nothing */
+}
+
 void updateLayout (boolean resize, boolean all) {
 	/* Do nothing */
 }

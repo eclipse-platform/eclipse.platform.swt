@@ -208,6 +208,9 @@ public class Display extends Device {
 	/* Custom Colors for ChooseColor */
 	int lpCustColors;
 
+	/* Sort Indicators */
+	Image upArrow, downArrow;
+	
 	/* Display Data */
 	Object data;
 	String [] keys;
@@ -1705,6 +1708,54 @@ public Shell [] getShells () {
 	return result;
 }
 
+Image getSortImage (int direction) {
+	switch (direction) {
+		case SWT.UP: {
+			if (upArrow != null) return upArrow;
+			Color c1 = getSystemColor (SWT.COLOR_WIDGET_NORMAL_SHADOW);
+			Color c2 = getSystemColor (SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW);
+			Color c3 = getSystemColor (SWT.COLOR_WIDGET_BACKGROUND);
+			PaletteData palette = new PaletteData(new RGB [] {c1.getRGB (), c2.getRGB (), c3.getRGB ()});
+			ImageData imageData = new ImageData (8, 8, 4, palette);
+			imageData.transparentPixel = 2;
+			upArrow = new Image (this, imageData);
+			GC gc = new GC (upArrow);
+			gc.setBackground (c3);
+			gc.fillRectangle (0, 0, 8, 8);
+			gc.setForeground (c1);
+			int [] line1 = new int [] {0,6, 1,6, 1,4, 2,4, 2,2, 3,2, 3,1};
+			gc.drawPolyline (line1);
+			gc.setForeground (c2);
+			int [] line2 = new int [] {0,7, 7,7, 7,6, 6,6, 6,4, 5,4, 5,2, 4,2, 4,1};
+			gc.drawPolyline (line2);
+			gc.dispose ();
+			return upArrow;
+		}
+		case SWT.DOWN: {
+			if (downArrow != null) return downArrow;
+			Color c1 = getSystemColor (SWT.COLOR_WIDGET_NORMAL_SHADOW);
+			Color c2 = getSystemColor (SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW);
+			Color c3 = getSystemColor (SWT.COLOR_WIDGET_BACKGROUND);
+			PaletteData palette = new PaletteData (new RGB [] {c1.getRGB (), c2.getRGB (), c3.getRGB ()});
+			ImageData imageData = new ImageData (8, 8, 4, palette);
+			imageData.transparentPixel = 2;
+			downArrow = new Image (this, imageData);
+			GC gc = new GC (downArrow);
+			gc.setBackground (c3);
+			gc.fillRectangle (0, 0, 8, 8);
+			gc.setForeground (c1);
+			int [] line1 = new int [] {7,0, 0,0, 0,1, 1,1, 1,3, 2,3, 2,5, 3,5, 3,6};
+			gc.drawPolyline (line1);
+			gc.setForeground (c2);
+			int [] line2 = new int [] {4,6, 4,5, 5,5, 5,3, 6,3, 6,1, 7,1};
+			gc.drawPolyline (line2);
+			gc.dispose ();
+			return downArrow;
+		}
+	}
+	return null;
+}
+
 /**
  * Returns the thread that has invoked <code>syncExec</code>
  * or null if no such runnable is currently being invoked by
@@ -2452,7 +2503,8 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 			if (!event.doit) return 0;
 			break;
 		case OS.WM_SETTINGCHANGE:
-			updateFont ();
+			updateFonts ();
+			updateImages ();
 			break;
 		case OS.WM_TIMER:
 			runTimer (wParam);
@@ -2842,6 +2894,11 @@ void releaseDisplay () {
 	if (questionIcon != 0) OS.DestroyIcon (questionIcon);
 	if (warningIcon != 0) OS.DestroyIcon (warningIcon);
 	errorIcon = infoIcon = questionIcon = warningIcon = 0;
+	
+	/* Release Sort Indicators */
+	if (upArrow != null) upArrow.dispose ();
+	if (downArrow != null) downArrow.dispose ();
+	upArrow = downArrow = null;
 	
 	/* Release the System Cursors */
 	for (int i = 0; i < cursors.length; i++) {
@@ -3589,7 +3646,7 @@ public void update() {
 	}
 }
 
-void updateFont () {
+void updateFonts () {
 	if (OS.IsWinCE) return;
 	Font oldFont = getSystemFont ();
 	int systemFont = 0;
@@ -3615,6 +3672,16 @@ void updateFont () {
 		if (!shell.isDisposed ()) {
 			shell.updateFont (oldFont, newFont);
 		}
+	}
+}
+
+void updateImages () {
+	if (upArrow != null) upArrow.dispose ();
+	if (downArrow != null) downArrow.dispose ();
+	upArrow = downArrow = null;
+	for (int i=0; i<controlTable.length; i++) {
+		Control control = controlTable [i];
+		if (control != null) control.updateImages ();
 	}
 }
 

@@ -43,7 +43,7 @@ import org.eclipse.swt.events.*;
 public class Tree extends Composite {
 	TreeItem [] items;
 	TreeColumn [] columns;
-	ImageList imageList;
+	ImageList imageList, headerImageList;
 	TreeItem currentItem;
 	int hwndParent, hwndHeader, hAnchor, hInsert, lastID;
 	int hFirstIndexOf, hLastIndexOf, lastIndexOf;
@@ -53,6 +53,7 @@ public class Tree extends Composite {
 	boolean linesVisible, customDraw, printClient;
 	static final int INSET = 3;
 	static final int GRID_WIDTH = 1;
+	static final int SORT_WIDTH = 10;
 	static final int HEADER_MARGIN = 10;
 	static final int TreeProc;
 	static final TCHAR TreeClass = new TCHAR (0, OS.WC_TREEVIEW, true);
@@ -645,10 +646,6 @@ void createParent () {
 	}
 	int hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 	if (hFont != 0) OS.SendMessage (hwndHeader, OS.WM_SETFONT, hFont, 0);
-	int hImageList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0);
-	if (hImageList != 0) {
-		OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hImageList);
-	}
 	int hwndInsertAfter = OS.GetWindow (handle, OS.GW_HWNDPREV);
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE;
 	SetWindowPos (hwndParent, hwndInsertAfter, 0, 0, 0, 0, flags);
@@ -888,9 +885,6 @@ void destroyItem (TreeItem item) {
 	if (count == 0) {
 		if (imageList != null) {
 			OS.SendMessage (handle, OS.TVM_SETIMAGELIST, 0, 0);
-			if (hwndHeader != 0) {
-				OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, 0);
-			}
 			display.releaseImageList (imageList);
 		}
 		imageList = null;
@@ -1585,23 +1579,37 @@ public TreeItem getTopItem () {
 int imageIndex (Image image) {
 	if (image == null) return OS.I_IMAGENONE;
 	if (imageList == null) {
-		int hOldList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0);
-		if (hOldList != 0) OS.ImageList_Destroy (hOldList);
 		Rectangle bounds = image.getBounds ();
 		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height);
 		int index = imageList.indexOf (image);
 		if (index == -1) index = imageList.add (image);
 		int hImageList = imageList.getHandle ();
 		OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, hImageList);
-		if (hwndHeader != 0) {
-			OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hImageList);
-		}
 		updateScrollBar ();
 		return index;
 	}
 	int index = imageList.indexOf (image);
 	if (index != -1) return index;
 	return imageList.add (image);
+}
+
+int imageIndexHeader (Image image) {
+	if (image == null) return OS.I_IMAGENONE;
+	if (headerImageList == null) {
+		Rectangle bounds = image.getBounds ();
+		headerImageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height);
+		int index = headerImageList.indexOf (image);
+		if (index == -1) index = headerImageList.add (image);
+		int hImageList = headerImageList.getHandle ();
+		if (hwndHeader != 0) {
+			OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hImageList);
+		}
+		updateScrollBar ();
+		return index;
+	}
+	int index = headerImageList.indexOf (image);
+	if (index != -1) return index;
+	return headerImageList.add (image);
 }
 
 /**
@@ -1724,18 +1732,18 @@ void releaseWidget () {
 	customDraw = false;
 	if (imageList != null) {
 		OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, 0);
-		OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, 0);
 		display.releaseImageList (imageList);
-	} else {
-		int hOldList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0);
-		OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, 0);
-		OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, 0);
-		if (hOldList != 0) OS.ImageList_Destroy (hOldList);
 	}
-	imageList = null;
-	int hOldList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_STATE, 0);
+	if (headerImageList != null) {
+		if (hwndHeader != 0) {
+			OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, 0);
+		}
+		display.releaseImageList (headerImageList);
+	}
+	imageList = headerImageList = null;
+	int hStateList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_STATE, 0);
 	OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_STATE, 0);
-	if (hOldList != 0) OS.ImageList_Destroy (hOldList);
+	if (hStateList != 0) OS.ImageList_Destroy (hStateList);
 	super.releaseWidget ();
 }
 
@@ -1777,9 +1785,6 @@ public void removeAll () {
 	}
 	if (imageList != null) {
 		OS.SendMessage (handle, OS.TVM_SETIMAGELIST, 0, 0);
-		if (hwndHeader != 0) {
-			OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, 0);
-		}
 		display.releaseImageList (imageList);
 	}
 	imageList = null;
@@ -2106,7 +2111,7 @@ void setCheckboxImageList () {
 	int flags = ImageList.COLOR_FLAGS;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) flags |= OS.ILC_MIRROR;	
 	if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) flags |= OS.ILC_MASK;
-	int hImageList = OS.ImageList_Create (width, height, flags, count, count);
+	int hNewStateList = OS.ImageList_Create (width, height, flags, count, count);
 	int hDC = OS.GetDC (handle);
 	int memDC = OS.CreateCompatibleDC (hDC);
 	int hBitmap = OS.CreateCompatibleBitmap (hDC, width * count, height);
@@ -2148,14 +2153,14 @@ void setCheckboxImageList () {
 	OS.DeleteDC (memDC);
 	OS.ReleaseDC (handle, hDC);
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		OS.ImageList_Add (hImageList, hBitmap, 0);
+		OS.ImageList_Add (hNewStateList, hBitmap, 0);
 	} else {
-		OS.ImageList_AddMasked (hImageList, hBitmap, clrBackground);
+		OS.ImageList_AddMasked (hNewStateList, hBitmap, clrBackground);
 	}
 	OS.DeleteObject (hBitmap);
-	int hOldList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_STATE, 0);
-	OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_STATE, hImageList);
-	if (hOldList != 0) OS.ImageList_Destroy (hOldList);
+	int hOldStateList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_STATE, 0);
+	OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_STATE, hNewStateList);
+	if (hOldStateList != 0) OS.ImageList_Destroy (hOldStateList);
 }
 
 void setForegroundPixel (int pixel) {
@@ -2652,6 +2657,14 @@ String toolTipText (NMTTDISPINFO hdr) {
 
 int topHandle () {
 	return hwndParent != 0 ? hwndParent : handle;
+}
+
+void updateImages () {
+	if (hwndHeader == 0) return;
+	int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+	for (int i=0; i<columnCount; i++) {
+		columns [i].updateImages ();
+	}
 }
 
 void updateScrollBar () {

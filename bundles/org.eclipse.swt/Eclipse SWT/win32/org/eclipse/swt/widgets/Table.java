@@ -44,13 +44,14 @@ import org.eclipse.swt.events.*;
 public class Table extends Composite {
 	TableItem [] items;
 	TableColumn [] columns;
-	ImageList imageList;
+	ImageList imageList, headerImageList;
 	TableItem currentItem;
 	int lastIndexOf, lastWidth;
 	boolean customDraw, cancelMove, dragStarted, fixScrollWidth, tipRequested;
 	boolean wasSelected, ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize;
 	static final int INSET = 4;
 	static final int GRID_WIDTH = 1;
+	static final int SORT_WIDTH = 10;
 	static final int HEADER_MARGIN = 10;
 	static final int TableProc;
 	static final TCHAR TableClass = new TCHAR (0, OS.WC_LISTVIEW, true);
@@ -976,12 +977,12 @@ void destroyItem (TableColumn column) {
 			int byteCount = cchTextMax * TCHAR.sizeof;
 			int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 			LVCOLUMN lvColumn = new LVCOLUMN ();
-			lvColumn.mask = OS.LVCF_TEXT | OS.LVCF_WIDTH;
+			lvColumn.mask = OS.LVCF_TEXT | OS.LVCF_IMAGE | OS.LVCF_WIDTH | OS.LVCF_FMT;
 			lvColumn.pszText = pszText;
 			lvColumn.cchTextMax = cchTextMax;
 			OS.SendMessage (handle, OS.LVM_GETCOLUMN, 1, lvColumn);
-			lvColumn.mask |= OS.LVCF_FMT;
-			lvColumn.fmt = OS.LVCFMT_LEFT;
+			lvColumn.fmt &= ~(OS.LVCFMT_CENTER | OS.LVCFMT_RIGHT);
+			lvColumn.fmt |= OS.LVCFMT_LEFT;
 			OS.SendMessage (handle, OS.LVM_SETCOLUMN, 0, lvColumn);
 			if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
 		} else {
@@ -1117,10 +1118,10 @@ void fixCheckboxImageList () {
 	if (hImageList == 0) return;
 	int [] cx = new int [1], cy = new int [1];
 	OS.ImageList_GetIconSize (hImageList, cx, cy);
-	int hOldStateList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
-	if (hOldStateList == 0) return;
+	int hStateList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
+	if (hStateList == 0) return;
 	int [] stateCx = new int [1], stateCy = new int [1];
-	OS.ImageList_GetIconSize (hOldStateList, stateCx, stateCy);
+	OS.ImageList_GetIconSize (hStateList, stateCx, stateCy);
 	if (cx [0] == stateCx [0] && cy [0] == stateCy [0]) return;
 	setCheckboxImageList (cx [0], cy [0]);
 }
@@ -1240,7 +1241,7 @@ public int[] getColumnOrder () {
  */
 public TableColumn [] getColumns () {
 	checkWidget ();
-	int hwndHeader =  OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 	if (count == 1 && columns [0] == null) count = 0;
 	TableColumn [] result = new TableColumn [count];
@@ -1594,6 +1595,11 @@ int imageIndex (Image image) {
 		setRedraw (false);
 		setTopIndex (0);
 		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
+		if (headerImageList != null) {
+			int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+			int hHeaderImageList = headerImageList.getHandle ();
+			OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hHeaderImageList);
+		}
 		setTopIndex (topIndex);
 		fixCheckboxImageList ();
 		setRedraw (true);
@@ -1602,6 +1608,23 @@ int imageIndex (Image image) {
 	int index = imageList.indexOf (image);
 	if (index != -1) return index;
 	return imageList.add (image);
+}
+
+int imageIndexHeader (Image image) {
+	if (image == null) return OS.I_IMAGENONE;
+	if (headerImageList == null) {
+		Rectangle bounds = image.getBounds ();
+		headerImageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height);
+		int index = headerImageList.indexOf (image);
+		if (index == -1) index = headerImageList.add (image);
+		int hImageList = headerImageList.getHandle ();
+		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+		OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hImageList);
+		return index;
+	}
+	int index = headerImageList.indexOf (image);
+	if (index != -1) return index;
+	return headerImageList.add (image);
 }
 
 /**
@@ -1624,7 +1647,7 @@ int imageIndex (Image image) {
 public int indexOf (TableColumn column) {
 	checkWidget ();
 	if (column == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int hwndHeader =  OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 	for (int i=0; i<count; i++) {
 		if (columns [i] == column) return i;
@@ -1694,7 +1717,7 @@ public boolean isSelected (int index) {
 }
 
 void releaseWidget () {
-	int hwndHeader =  OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 	if (columnCount == 1 && columns [0] == null) columnCount = 0;
 	int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
@@ -1740,10 +1763,14 @@ void releaseWidget () {
 		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, 0);
 		display.releaseImageList (imageList);
 	}
-	imageList = null;
-	int hOldList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
+	if (headerImageList != null) {
+		OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, 0);
+		display.releaseImageList (headerImageList);
+	}
+	imageList = headerImageList = null;
+	int hStateList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
 	OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_STATE, 0);
-	if (hOldList != 0) OS.ImageList_Destroy (hOldList);
+	if (hStateList != 0) OS.ImageList_Destroy (hStateList);
 	super.releaseWidget ();
 }
 
@@ -1873,7 +1900,7 @@ public void remove (int start, int end) {
  */
 public void removeAll () {
 	checkWidget ();
-	int hwndHeader =  OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 	if (columnCount == 1 && columns [0] == null) columnCount = 0;
 	int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
@@ -2289,10 +2316,10 @@ public void setColumnOrder (int [] order) {
 
 void setCheckboxImageListColor () {
 	if ((style & SWT.CHECK) == 0) return;
-	int hOldStateList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
-	if (hOldStateList == 0) return;
+	int hStateList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
+	if (hStateList == 0) return;
 	int [] cx = new int [1], cy = new int [1];
-	OS.ImageList_GetIconSize (hOldStateList, cx, cy);
+	OS.ImageList_GetIconSize (hStateList, cx, cy);
 	setCheckboxImageList (cx [0], cy [0]);
 }
 
@@ -2302,7 +2329,7 @@ void setCheckboxImageList (int width, int height) {
 	int flags = ImageList.COLOR_FLAGS;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) flags |= OS.ILC_MIRROR;
 	if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) flags |= OS.ILC_MASK;
-	int hImageList = OS.ImageList_Create (width, height, flags, count, count);
+	int hNewStateList = OS.ImageList_Create (width, height, flags, count, count);
 	int hDC = OS.GetDC (handle);
 	int memDC = OS.CreateCompatibleDC (hDC);
 	int hBitmap = OS.CreateCompatibleBitmap (hDC, width * count, height);
@@ -2344,13 +2371,13 @@ void setCheckboxImageList (int width, int height) {
 	OS.DeleteDC (memDC);
 	OS.ReleaseDC (handle, hDC);
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		OS.ImageList_Add (hImageList, hBitmap, 0);
+		OS.ImageList_Add (hNewStateList, hBitmap, 0);
 	} else {
-		OS.ImageList_AddMasked (hImageList, hBitmap, clrBackground);
+		OS.ImageList_AddMasked (hNewStateList, hBitmap, clrBackground);
 	}
 	OS.DeleteObject (hBitmap);
 	int hOldStateList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
-	OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_STATE, hImageList);
+	OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_STATE, hNewStateList);
 	if (hOldStateList != 0) OS.ImageList_Destroy (hOldStateList);
 }
 
@@ -2393,7 +2420,7 @@ public void setFont (Font font) {
 	* to be redrawn but not the column headers.  The fix is
 	* to force a redraw of the column headers.
 	*/
-	int hwndHeader =  OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);		 
+	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);		 
 	OS.InvalidateRect (hwndHeader, null, true);
 	int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
 	if ((bits & OS.LVS_EX_GRIDLINES) == 0) return;
@@ -2529,7 +2556,7 @@ void setItemHeight () {
 	if (OS.COMCTL32_VERSION >= OS.VERSION (5, 80)) return;
 	int hOldList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_SMALL, 0);
 	if (hOldList != 0) return;
-	int hwndHeader =  OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	RECT rect = new RECT ();
 	OS.GetWindowRect (hwndHeader, rect);
 	int height = rect.bottom - rect.top - 1;
@@ -2537,6 +2564,10 @@ void setItemHeight () {
 	OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
 	fixCheckboxImageList ();
 	OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, 0);
+	if (headerImageList != null) {
+		int hHeaderImageList = headerImageList.getHandle ();
+		OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hHeaderImageList);
+	}
 	OS.ImageList_Destroy (hImageList);
 }
 
@@ -2865,7 +2896,7 @@ public void setSelection (int start, int end) {
 
 void setTableEmpty () {
 	if (imageList != null) {
-		int hwndHeader =  OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 		int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 		if (columnCount == 1 && columns [0] == null) columnCount = 0;
 		int i = 0;
@@ -2887,6 +2918,10 @@ void setTableEmpty () {
 			int hImageList = OS.ImageList_Create (1, 1, 0, 0, 0);
 			OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, hImageList);
 			OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, 0);
+			if (headerImageList != null) {
+				int hHeaderImageList = headerImageList.getHandle ();
+				OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hHeaderImageList);
+			}
 			OS.ImageList_Destroy (hImageList);
 			display.releaseImageList (imageList);
 			imageList = null;
@@ -3113,6 +3148,15 @@ void updateMoveable () {
 	}
 	int newBits = index < count ? OS.LVS_EX_HEADERDRAGDROP : 0;
 	OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, OS.LVS_EX_HEADERDRAGDROP, newBits);
+}
+
+void updateImages () {
+	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+	int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+	if (columnCount == 1 && columns [0] == null) return;
+	for (int i=0; i<columnCount; i++) {
+		columns [i].updateImages ();
+	}
 }
 
 int widgetStyle () {

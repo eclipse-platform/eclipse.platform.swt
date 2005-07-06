@@ -490,11 +490,16 @@ public class OS extends Platform {
 	public static final int GW_OWNER = 0x4;
 	public static final int HBMMENU_CALLBACK = 0xffffffff;
 	public static final int HCF_HIGHCONTRASTON = 0x1;
+	public static final int HDF_BITMAP = 0x2000;
+	public static final int HDF_BITMAP_ON_RIGHT = 0x1000;
 	public static final int HDF_CENTER = 2;
 	public static final int HDF_JUSTIFYMASK = 0x3;
 	public static final int HDF_IMAGE = 0x0800;
 	public static final int HDF_LEFT = 0;
 	public static final int HDF_RIGHT = 1;
+	public static final int HDF_SORTUP = 0x0400;
+	public static final int HDF_SORTDOWN = 0x0200;
+	public static final int HDI_BITMAP = 0x0010;
 	public static final int HDI_IMAGE = 32;
 	public static final int HDI_ORDER = 0x80;
 	public static final int HDI_TEXT = 0x2;
@@ -675,6 +680,7 @@ public class OS extends Platform {
 	public static final int LPSTR_TEXTCALLBACK = 0xffffffff;
 	public static final int LR_DEFAULTCOLOR = 0x0;
 	public static final int LR_SHARED = 0x8000;
+	public static final int LVCFMT_BITMAP_ON_RIGHT = 0x1000;
 	public static final int LVCFMT_CENTER = 0x2;
 	public static final int LVCFMT_IMAGE = 0x800;
 	public static final int LVCFMT_LEFT = 0x0;
