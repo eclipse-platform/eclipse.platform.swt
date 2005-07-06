@@ -48,7 +48,7 @@ public class Table extends Composite {
 	TableItem [] items;
 	TableColumn [] columns;
 	TableItem currentItem;
-	ImageList imageList;
+	ImageList imageList, headerImageList;
 	boolean firstCustomDraw;
 	
 	static final int CHECKED_COLUMN = 0;
@@ -1794,7 +1794,8 @@ void releaseWidget () {
 	if (checkRenderer != 0) OS.g_object_unref (checkRenderer);
 	checkRenderer = 0;
 	if (imageList != null) imageList.dispose ();
-	imageList = null;
+	if (headerImageList != null) headerImageList.dispose ();
+	imageList = headerImageList = null;
 }
 
 /**

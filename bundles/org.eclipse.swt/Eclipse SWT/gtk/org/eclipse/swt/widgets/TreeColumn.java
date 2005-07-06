@@ -455,11 +455,13 @@ public void setImage (Image image) {
 	checkWidget ();
 	super.setImage (image);
 	if (image != null) {
-		ImageList imageList = parent.imageList;
-		if (imageList == null) imageList = parent.imageList = new ImageList ();
-		int imageIndex = imageList.indexOf (image);
-		if (imageIndex == -1) imageIndex = imageList.add (image);
-		int /*long*/ pixbuf = imageList.getPixbuf (imageIndex);
+		ImageList headerImageList = parent.headerImageList;
+		if (headerImageList == null) {
+			headerImageList = parent.headerImageList = new ImageList ();
+		}
+		int imageIndex = headerImageList.indexOf (image);
+		if (imageIndex == -1) imageIndex = headerImageList.add (image);
+		int /*long*/ pixbuf = headerImageList.getPixbuf (imageIndex);
 		OS.gtk_image_set_from_pixbuf (imageHandle, pixbuf);
 		OS.gtk_widget_show (imageHandle);
 	} else {

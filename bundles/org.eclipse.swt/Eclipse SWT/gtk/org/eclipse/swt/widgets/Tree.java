@@ -46,7 +46,7 @@ public class Tree extends Composite {
 	int /*long*/ ignoreTextCell, ignorePixbufCell;
 	TreeItem[] items;
 	TreeColumn [] columns;
-	ImageList imageList;
+	ImageList imageList, headerImageList;
 	boolean firstCustomDraw;
 	boolean modelChanged;
 	boolean expandAll;
@@ -1679,7 +1679,8 @@ void releaseWidget () {
 	if (checkRenderer != 0) OS.g_object_unref (checkRenderer);
 	checkRenderer = 0;
 	if (imageList != null) imageList.dispose ();
-	imageList = null;
+	if (headerImageList != null) headerImageList.dispose ();
+	imageList = headerImageList = null;
 }
 
 /**
