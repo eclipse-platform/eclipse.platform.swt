@@ -2329,7 +2329,7 @@ void setCheckboxImageList (int width, int height) {
 	int flags = ImageList.COLOR_FLAGS;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) flags |= OS.ILC_MIRROR;
 	if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) flags |= OS.ILC_MASK;
-	int hNewStateList = OS.ImageList_Create (width, height, flags, count, count);
+	int hStateList = OS.ImageList_Create (width, height, flags, count, count);
 	int hDC = OS.GetDC (handle);
 	int memDC = OS.CreateCompatibleDC (hDC);
 	int hBitmap = OS.CreateCompatibleBitmap (hDC, width * count, height);
@@ -2371,13 +2371,13 @@ void setCheckboxImageList (int width, int height) {
 	OS.DeleteDC (memDC);
 	OS.ReleaseDC (handle, hDC);
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		OS.ImageList_Add (hNewStateList, hBitmap, 0);
+		OS.ImageList_Add (hStateList, hBitmap, 0);
 	} else {
-		OS.ImageList_AddMasked (hNewStateList, hBitmap, clrBackground);
+		OS.ImageList_AddMasked (hStateList, hBitmap, clrBackground);
 	}
 	OS.DeleteObject (hBitmap);
 	int hOldStateList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
-	OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_STATE, hNewStateList);
+	OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_STATE, hStateList);
 	if (hOldStateList != 0) OS.ImageList_Destroy (hOldStateList);
 }
 
