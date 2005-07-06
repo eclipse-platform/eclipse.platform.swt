@@ -933,8 +933,6 @@ public boolean getVisible () {
 int imageIndex (Image image) {
 	if (hwndCB == 0 || image == null) return OS.I_IMAGENONE;
 	if (imageList == null) {
-		int hOldList = OS.SendMessage (hwndCB, OS.TB_GETIMAGELIST, 0, 0);
-		if (hOldList != 0) OS.ImageList_Destroy (hOldList);
 		Rectangle bounds = image.getBounds ();
 		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height);
 		int hImageList = imageList.getHandle ();
