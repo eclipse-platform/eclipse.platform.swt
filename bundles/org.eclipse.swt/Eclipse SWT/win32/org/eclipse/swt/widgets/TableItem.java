@@ -540,7 +540,6 @@ public String getText (int index) {
 }
 
 void redraw () {
-	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	if (parent.currentItem == this || parent.drawCount != 0) return;
 	int hwnd = parent.handle;
 	if (!OS.IsWindowVisible (hwnd)) return;
@@ -550,7 +549,6 @@ void redraw () {
 }
 
 void redraw (int column, boolean drawText, boolean drawImage) {
-	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	if (parent.currentItem == this || parent.drawCount != 0) return;
 	int hwnd = parent.handle;
 	if (!OS.IsWindowVisible (hwnd)) return;
@@ -602,6 +600,7 @@ public void setBackground (Color color) {
 	}
 	if (background == pixel) return;
 	background = pixel;
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	redraw ();
 }
 
@@ -643,6 +642,7 @@ public void setBackground (int index, Color color) {
 	}
 	if (cellBackground [index] == pixel) return;
 	cellBackground [index] = pixel;
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	redraw (index, true, true);
 }
 
@@ -666,6 +666,7 @@ public void setChecked (boolean checked) {
 
 void setChecked (boolean checked, boolean notify) {
 	this.checked = checked;
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	if (notify) {
 		Event event = new Event();
 		event.item = this;
@@ -704,6 +705,7 @@ public void setFont (Font font){
 	}
 	if (this.font == hFont) return;
 	this.font = hFont;
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	/*
 	* Bug in Windows.  Despite the fact that every item in the
 	* table always has LPSTR_TEXTCALLBACK, Windows caches the
@@ -770,6 +772,7 @@ public void setFont (int index, Font font) {
 	}
 	if (cellFont [index] == hFont) return;
 	cellFont [index] = hFont;
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	if (index == 0) {
 		/*
 		* Bug in Windows.  Despite the fact that every item in the
@@ -828,6 +831,7 @@ public void setForeground (Color color){
 	}
 	if (foreground == pixel) return;
 	foreground = pixel;
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	redraw ();
 }
 
@@ -869,6 +873,7 @@ public void setForeground (int index, Color color){
 	}
 	if (cellForeground [index] == pixel) return;
 	cellForeground [index] = pixel;
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	redraw (index, true, false);
 }
 
@@ -888,6 +893,7 @@ public void setGrayed (boolean grayed) {
 	if ((parent.style & SWT.CHECK) == 0) return;
 	if (this.grayed == grayed) return;
 	this.grayed = grayed;
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	redraw ();
 }
 
@@ -947,6 +953,7 @@ public void setImage (int index, Image image) {
 		}
 		images [index] = image;
 	}
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	
 	/* Ensure that the image list is created */
 	parent.imageIndex (image);
@@ -978,7 +985,9 @@ public void setImageIndent (int indent) {
 	if (indent < 0) return;
 	if (imageIndent == indent) return;
 	imageIndent = indent;
-	if ((parent.style & SWT.VIRTUAL) == 0) {
+	if ((parent.style & SWT.VIRTUAL) != 0) {
+		cached = true;
+	} else {
 		int index = parent.indexOf (this);
 		if (index != -1) {
 			int hwnd = parent.handle;
@@ -1043,6 +1052,7 @@ public void setText (int index, String string) {
 		if (string.equals (strings [index])) return;
 		strings [index] = string;
 	}
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	if (index == 0) {
 		/*
 		* Bug in Windows.  Despite the fact that every item in the
