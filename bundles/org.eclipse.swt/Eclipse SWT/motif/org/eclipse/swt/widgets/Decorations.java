@@ -488,6 +488,10 @@ void remove (Menu menu) {
  */
 public void setDefaultButton (Button button) {
 	checkWidget();
+	if (button != null) {
+		if (button.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
+		if (button.menuShell () != this) error(SWT.ERROR_INVALID_PARENT);
+	}
 	setDefaultButton (button, true);
 }
 void setDefaultButton (Button button, boolean save) {
@@ -497,7 +501,6 @@ void setDefaultButton (Button button, boolean save) {
 			return;
 		}
 	} else {
-		if (button.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		if ((button.style & SWT.PUSH) == 0) return;
 		if (button == defaultButton) return;
 	}

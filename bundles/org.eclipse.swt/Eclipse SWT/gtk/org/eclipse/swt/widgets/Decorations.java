@@ -522,6 +522,7 @@ public void setDefaultButton (Button button) {
 	int /*long*/ buttonHandle = 0;
 	if (button != null) {
 		if (button.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+		if (button.menuShell () != this) error (SWT.ERROR_INVALID_PARENT);
 		buttonHandle = button.handle;
 	}
 	saveDefault = defaultButton = button;

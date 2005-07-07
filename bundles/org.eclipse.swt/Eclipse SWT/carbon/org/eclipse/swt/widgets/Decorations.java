@@ -411,7 +411,8 @@ void saveFocus () {
 public void setDefaultButton (Button button) {
 	checkWidget();
 	if (button != null) {
-		if (button.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+		if (button.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+		if (button.menuShell () != this) error (SWT.ERROR_INVALID_PARENT);
 		if ((button.style & SWT.PUSH) == 0) return;
 	}
 	if (button == defaultButton) return;
