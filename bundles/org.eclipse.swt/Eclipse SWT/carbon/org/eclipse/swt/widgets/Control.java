@@ -2833,6 +2833,7 @@ boolean translateTraversal (int key, int theEvent) {
 			detail = SWT.TRAVERSE_ESCAPE;
 			break;
 		}
+		case 76: /* KP Enter */
 		case 36: /* Return */ {
 			all = true;
 			detail = SWT.TRAVERSE_RETURN;
