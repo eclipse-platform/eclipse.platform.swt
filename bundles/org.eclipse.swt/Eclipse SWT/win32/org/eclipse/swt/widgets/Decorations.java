@@ -873,6 +873,7 @@ void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the button has been disposed</li> 
+ *    <li>ERROR_INVALID_PARENT - if the control is not in the same widget tree</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -881,6 +882,10 @@ void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
  */
 public void setDefaultButton (Button button) {
 	checkWidget ();
+	if (button != null) {
+		if (button.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+		if (button.menuShell () != this) error(SWT.ERROR_INVALID_PARENT);
+	}
 	setDefaultButton (button, true);
 }
 
@@ -891,7 +896,6 @@ void setDefaultButton (Button button, boolean save) {
 			return;
 		}
 	} else {
-		if (button.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		if ((button.style & SWT.PUSH) == 0) return;
 		if (button == defaultButton) return;
 	}
