@@ -381,14 +381,6 @@ public Rectangle getBounds (int index) {
 //TODO - take into account grid (add boolean arg) to damage less during redraw
 RECT getBounds (int index, boolean getText, boolean getImage, boolean full) {
 	if (!getText && !getImage) return new RECT ();
-	if ((parent.style & SWT.VIRTUAL) == 0 && !cached) {
-		int hwnd = parent.handle;
-		TVITEM tvItem = new TVITEM ();
-		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
-		tvItem.hItem = handle;
-		tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-		OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
-	}
 	int count = 0, hwndHeader = parent.hwndHeader;
 	if (hwndHeader != 0) {
 		count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
@@ -1155,15 +1147,12 @@ public void setFont (int index, Font font) {
 	* Windows to compute the new bounds using the new font.
 	*/
 	if (index == 0) {
-		if (cached) {
-			int hwnd = parent.handle;
-			TVITEM tvItem = new TVITEM ();
-			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
-			tvItem.hItem = handle;
-			tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-			OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
-			if ((parent.style & SWT.VIRTUAL) == 0) cached = false;
-		}
+		int hwnd = parent.handle;
+		TVITEM tvItem = new TVITEM ();
+		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
+		tvItem.hItem = handle;
+		tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
+		OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
 	} else {
 		redraw (index, true, false);
 	}
@@ -1348,23 +1337,20 @@ public void setImage (int index, Image image) {
 	parent.imageIndex (image);
 	
 	if (index == 0) {
-		if (cached) {
-			int hwnd = parent.handle;
-			TVITEM tvItem = new TVITEM ();
-			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_IMAGE | OS.TVIF_SELECTEDIMAGE;
-			tvItem.hItem = handle;
-			tvItem.iImage = tvItem.iSelectedImage = OS.I_IMAGECALLBACK;
-			/*
-			* Bug in Windows.  When I_IMAGECALLBACK is used with TVM_SETITEM
-			* to indicate that an image has changed, Windows does not draw
-			* the new image.  The fix is to use LPSTR_TEXTCALLBACK to force
-			* Windows to ask for the text, causing Windows to ask for both.
-			*/
-			tvItem.mask |= OS.TVIF_TEXT;
-			tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-			OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
-			if ((parent.style & SWT.VIRTUAL) == 0) cached = false;
-		}
+		int hwnd = parent.handle;
+		TVITEM tvItem = new TVITEM ();
+		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_IMAGE | OS.TVIF_SELECTEDIMAGE;
+		tvItem.hItem = handle;
+		tvItem.iImage = tvItem.iSelectedImage = OS.I_IMAGECALLBACK;
+		/*
+		* Bug in Windows.  When I_IMAGECALLBACK is used with TVM_SETITEM
+		* to indicate that an image has changed, Windows does not draw
+		* the new image.  The fix is to use LPSTR_TEXTCALLBACK to force
+		* Windows to ask for the text, causing Windows to ask for both.
+		*/
+		tvItem.mask |= OS.TVIF_TEXT;
+		tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
+		OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
 	} else {
 		redraw (index, false, true);
 	}
@@ -1451,15 +1437,12 @@ public void setText (int index, String string) {
 	}
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	if (index == 0) {
-		if (cached) {
-			int hwnd = parent.handle;
-			TVITEM tvItem = new TVITEM ();
-			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
-			tvItem.hItem = handle;
-			tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-			OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
-			if ((parent.style & SWT.VIRTUAL) == 0) cached = false;
-		}
+		int hwnd = parent.handle;
+		TVITEM tvItem = new TVITEM ();
+		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
+		tvItem.hItem = handle;
+		tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
+		OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
 	} else {
 		redraw (index, true, false);
 	}
