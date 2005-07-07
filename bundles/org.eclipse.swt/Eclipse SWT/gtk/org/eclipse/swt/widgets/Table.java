@@ -418,8 +418,13 @@ void createColumn (TableColumn column, int index) {
 		column.modelIndex = modelIndex;
 	}
 	/* Set the search column whenever the model changes */
-	int firstColumn = columnCount == 0 ? FIRST_COLUMN : columns [0].modelIndex;
-	OS.gtk_tree_view_set_search_column (handle, firstColumn + CELL_TEXT);
+	if ((style & SWT.VIRTUAL) != 0) {
+		/* Disable searching when using VIRTUAL */
+		OS.gtk_tree_view_set_search_column (handle, -1);
+	} else {
+		int firstColumn = columnCount == 0 ? FIRST_COLUMN : columns [0].modelIndex;
+		OS.gtk_tree_view_set_search_column (handle, firstColumn + CELL_TEXT);
+	}
 }
 
 void createHandle (int index) {
@@ -456,6 +461,8 @@ void createHandle (int index) {
 		if (OS.GTK_VERSION >= OS.VERSION (2, 3, 2)) {
 			OS.g_object_set (handle, OS.fixed_height_mode, true, 0);
 		}
+		/* Disable searching when using VIRTUAL */
+		OS.gtk_tree_view_set_search_column (handle, -1);
 	}
 }
 
@@ -831,8 +838,13 @@ void destroyItem (TableColumn column) {
 	column.handle = column.buttonHandle = column.labelHandle = 0;
 	column.imageHandle = 0;
 	/* Set the search column whenever the model changes */
-	int firstColumn = columnCount == 0 ? FIRST_COLUMN : columns [0].modelIndex;
-	OS.gtk_tree_view_set_search_column (handle, firstColumn + CELL_TEXT);
+	if ((style & SWT.VIRTUAL) != 0) {
+		/* Disable searching when using VIRTUAL */
+		OS.gtk_tree_view_set_search_column (handle, -1);
+	} else {
+		int firstColumn = columnCount == 0 ? FIRST_COLUMN : columns [0].modelIndex;
+		OS.gtk_tree_view_set_search_column (handle, firstColumn + CELL_TEXT);
+	}
 }
 
 void destroyItem (TableItem item) {
@@ -1964,8 +1976,13 @@ public void removeAll () {
 	itemCount = 0;
 	resetCustomDraw ();
 	/* Set the search column whenever the model changes */
-	int firstColumn = columnCount == 0 ? FIRST_COLUMN : columns [0].modelIndex;
-	OS.gtk_tree_view_set_search_column (handle, firstColumn + CELL_TEXT);
+	if ((style & SWT.VIRTUAL) != 0) {
+		/* Disable searching when using VIRTUAL */
+		OS.gtk_tree_view_set_search_column (handle, -1);
+	} else {
+		int firstColumn = columnCount == 0 ? FIRST_COLUMN : columns [0].modelIndex;
+		OS.gtk_tree_view_set_search_column (handle, firstColumn + CELL_TEXT);
+	}
 }
 
 /**
