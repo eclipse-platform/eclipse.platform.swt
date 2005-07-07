@@ -160,6 +160,34 @@ void createHandle (int index) {
 	OS.gtk_container_add (fixedHandle, handle);
 }
 
+int /*long*/ gtk_change_value (int /*long*/ widget, int /*long*/ scroll, int /*long*/ value) {
+	Event event = new Event ();
+	switch (scroll) {
+	case OS.GTK_SCROLL_NONE:	event.detail = SWT.NONE; break;
+	case OS.GTK_SCROLL_JUMP:	event.detail = SWT.DRAG; break;
+	case OS.GTK_SCROLL_START:	event.detail = SWT.HOME; break;
+	case OS.GTK_SCROLL_END:		event.detail = SWT.END; break;
+	case OS.GTK_SCROLL_PAGE_DOWN:
+	case OS.GTK_SCROLL_PAGE_RIGHT:
+	case OS.GTK_SCROLL_PAGE_FORWARD:
+								event.detail = SWT.PAGE_DOWN; break;
+	case OS.GTK_SCROLL_PAGE_UP:
+	case OS.GTK_SCROLL_PAGE_LEFT:
+	case OS.GTK_SCROLL_PAGE_BACKWARD:
+								event.detail = SWT.PAGE_UP; break;
+	case OS.GTK_SCROLL_STEP_DOWN:
+	case OS.GTK_SCROLL_STEP_RIGHT:
+	case OS.GTK_SCROLL_STEP_FORWARD:
+								event.detail = SWT.ARROW_DOWN; break;
+	case OS.GTK_SCROLL_STEP_UP:
+	case OS.GTK_SCROLL_STEP_LEFT:
+	case OS.GTK_SCROLL_STEP_BACKWARD:
+								event.detail = SWT.ARROW_UP; break;
+	}
+	postEvent (SWT.Selection, event);
+	return 0;
+}
+
 int /*long*/ gtk_value_changed (int /*long*/ adjustment) {
 	postEvent (SWT.Selection);
 	return 0;
@@ -167,7 +195,11 @@ int /*long*/ gtk_value_changed (int /*long*/ adjustment) {
 
 void hookEvents () {
 	super.hookEvents ();
-	OS.g_signal_connect (handle, OS.value_changed, display.windowProc2, VALUE_CHANGED);
+	if (OS.GTK_VERSION >= OS.VERSION (2, 6, 0)) {
+		OS.g_signal_connect (handle, OS.change_value, display.windowProc5, CHANGE_VALUE);
+	} else {
+		OS.g_signal_connect (handle, OS.value_changed, display.windowProc2, VALUE_CHANGED);
+	}
 }
 
 void register () {
