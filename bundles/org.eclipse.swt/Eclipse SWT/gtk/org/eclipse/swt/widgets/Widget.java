@@ -548,7 +548,7 @@ int /*long*/ gtk_changed (int /*long*/ widget) {
 	return 0;
 }
 
-int /*long*/ gtk_change_value (int /*long*/ widget, int /*long*/ scroll, int /*long*/ value) {
+int /*long*/ gtk_change_value (int /*long*/ widget, int /*long*/ scroll, int /*long*/ value1, int /*long*/ value2) {
 	return 0;
 }
 
@@ -1389,7 +1389,6 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ us
 
 int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ user_data) {
 	switch ((int)/*64*/user_data) {
-		case CHANGE_VALUE: return gtk_change_value (handle, arg0, arg1);
 		case DELETE_RANGE: return gtk_delete_range (handle, arg0, arg1);
 		case DELETE_TEXT: return gtk_delete_text (handle, arg0, arg1);
 		case ROW_ACTIVATED: return gtk_row_activated (handle, arg0, arg1);
@@ -1403,7 +1402,7 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ ar
 
 int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, int /*long*/ user_data) {
 	switch ((int)/*64*/user_data) {
-		case CHANGE_VALUE: return gtk_change_value (handle, arg0, arg1);
+		case CHANGE_VALUE: return gtk_change_value (handle, arg0, arg1, arg2);
 		case EXPAND_COLLAPSE_CURSOR_ROW: return gtk_expand_collapse_cursor_row (handle, arg0, arg1, arg2);
 		case INSERT_TEXT: return gtk_insert_text (handle, arg0, arg1, arg2);
 		default: return 0;
