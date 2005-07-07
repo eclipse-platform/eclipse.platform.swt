@@ -3738,12 +3738,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 	switch (hdr.code) {
 		case OS.LVN_ODFINDITEMA:
 		case OS.LVN_ODFINDITEMW: {
-			if ((style & SWT.VIRTUAL) != 0) {
-				NMLVFINDITEM pnmfi = new NMLVFINDITEM ();
-				OS.MoveMemory (pnmfi, lParam, NMLVFINDITEM.sizeof);
-				int index = Math.max (0, pnmfi.iStart - 1);
-				return new LRESULT (index);
-			}
+			if ((style & SWT.VIRTUAL) != 0) return new LRESULT (-1);
 			break;
 		}
 		case OS.LVN_GETDISPINFOA:
