@@ -3372,6 +3372,8 @@ public void setAdvanced(boolean advanced) {
 			initGdip(false, false);
 		} catch (SWTException e) {}
 	} else {
+		int foreground = OS.GetTextColor(handle);
+		int background = OS.GetBkColor(handle);
 		if (data.gdipGraphics != 0) Gdip.Graphics_delete(data.gdipGraphics);
 		if (data.gdipPen != 0) Gdip.Pen_delete(data.gdipPen);
 		if (data.gdipBrush != 0) destroyGdipBrush(data.gdipBrush);
@@ -3379,6 +3381,8 @@ public void setAdvanced(boolean advanced) {
 		data.alpha = 0xFF;
 		data.backgroundPattern = data.foregroundPattern = null;
 		setClipping(0);
+		OS.SetTextColor(handle, foreground);
+		OS.SetBkColor(handle, background);
 		if (data.hPen != 0) OS.SelectObject(handle, data.hPen);
 		if (data.hBrush != 0) OS.SelectObject(handle, data.hBrush);
 	}
