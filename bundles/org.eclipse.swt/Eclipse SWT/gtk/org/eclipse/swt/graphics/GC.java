@@ -2565,9 +2565,13 @@ static void setCairoClip(int /*long*/ cairo, int /*long*/ clipRgn) {
 	if (rects[0] != 0) OS.g_free(rects[0]);
 }
 
-static void setCairoPatternColor(int /*long*/ pattern, int offset, Color c) {
+static void setCairoPatternColor(int /*long*/ pattern, int offset, Color c, int alpha) {
 	GdkColor color = c.handle;
-	Cairo.cairo_pattern_add_color_stop(pattern, offset, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF, 1);
+	double aa = (alpha & 0xFF) / (double)0xFF;
+	double red = ((color.red & 0xFFFF) / (double)0xFFFF);
+	double green = ((color.green & 0xFFFF) / (double)0xFFFF);
+	double blue = ((color.blue & 0xFFFF) / (double)0xFFFF);
+	Cairo.cairo_pattern_add_color_stop(pattern, offset, red, green, blue, aa);
 }
 
 void setClipping(int /*long*/ clipRgn) {

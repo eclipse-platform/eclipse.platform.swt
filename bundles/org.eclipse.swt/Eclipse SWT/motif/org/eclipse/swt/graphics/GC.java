@@ -1093,7 +1093,7 @@ public void drawRoundRectangle (int x, int y, int width, int height, int arcWidt
 		float naw2 = naw / 2f;
 		float nah2 = nah / 2f;
 		float fw = nw / naw2;
-		float fh = nh / nah2;
+//		float fh = nh / nah2;
 		Cairo.cairo_new_path(cairo);
 		Cairo.cairo_save(cairo);
 		float offset = data.lineWidth == 0 || (data.lineWidth % 2) == 1 ? 0.5f : 0f;
@@ -1205,7 +1205,6 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 	}			
 }
 void createRenderTable() {
-	int xDisplay = data.display;
 	int fontList = data.font.handle;	
 	/* Get the width of the tabs */
 	byte[] buffer = {(byte)' ', 0};
@@ -1816,7 +1815,7 @@ public void fillRoundRectangle (int x, int y, int width, int height, int arcWidt
 		float naw2 = naw / 2f;
 		float nah2 = nah / 2f;
 		float fw = nw / naw2;
-		float fh = nh / nah2;
+//		float fh = nh / nah2;
 		XColor color = new XColor();
 		color.pixel = values.background;
 		OS.XQueryColor(xDisplay, data.colormap, color);
@@ -3234,9 +3233,13 @@ static void setCairoClip(int /*long*/ cairo, int /*long*/ clipRgn) {
 	Cairo.cairo_clip(cairo);
 	Cairo.cairo_new_path(cairo);
 }
-static void setCairoPatternColor(int /*long*/ pattern, int offset, Color c) {
+static void setCairoPatternColor(int /*long*/ pattern, int offset, Color c, int alpha) {
 	XColor color = c.handle;
-	Cairo.cairo_pattern_add_color_stop(pattern, offset, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF, 1);
+	double aa = (alpha & 0xFF) / (double)0xFF;
+	double red = ((color.red & 0xFFFF) / (double)0xFFFF);
+	double green = ((color.green & 0xFFFF) / (double)0xFFFF);
+	double blue = ((color.blue & 0xFFFF) / (double)0xFFFF);
+	Cairo.cairo_pattern_add_color_stop(pattern, offset, red, green, blue, aa);
 }
 void setClipping(int clipRgn) {
 	if (clipRgn == 0) {

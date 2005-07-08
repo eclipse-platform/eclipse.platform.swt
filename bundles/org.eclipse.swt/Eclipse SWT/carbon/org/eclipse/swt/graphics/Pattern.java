@@ -28,6 +28,7 @@ public class Pattern extends Resource {
 	int jniRef;
 	Image image;
 	Color color1, color2;
+	int alpha1, alpha2;
 	float x1, y1, x2, y2;
 	int shading;
 
@@ -86,6 +87,9 @@ public Pattern(Device device, Image image) {
  * @see #dispose()
  */
 public Pattern(Device device, float x1, float y1, float x2, float y2, Color color1, Color color2) {
+	this(device, x1, y1, x2, y2, color1, 0xFF, color2, 0xFF);
+}
+public Pattern(Device device, float x1, float y1, float x2, float y2, Color color1, int alpha1, Color color2, int alpha2) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color1 == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -99,6 +103,8 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 	this.y2 = y2;
 	this.color1 = color1;
 	this.color2 = color2;
+	this.alpha1 = alpha1;
+	this.alpha2 = alpha2;
 	device.createPatternCallbacks();
 	jniRef = OS.NewGlobalRef(this);
 	if (jniRef == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -124,11 +130,12 @@ int axialShadingProc (int ref, int in, int out) {
 	float factor2 = buffer[0], factor1 = 1 - factor2;
 	float[] c1 = color1.handle;
 	float[] c2 = color2.handle;
+	float a1 = ((alpha1 & 0xFF) / (float)0xFF);
+	float a2 = ((alpha2 & 0xFF) / (float)0xFF);
 	buffer[0] = (c2[0] * factor2) + (c1[0] * factor1);
 	buffer[1] = (c2[1] * factor2) + (c1[1] * factor1);
 	buffer[2] = (c2[2] * factor2) + (c1[2] * factor1);
-	//TODO - how about alpha?
-	buffer[3] = 1;
+	buffer[3] = (a2 * factor2) + (a1 * factor1);
 	OS.memcpy(out, buffer, buffer.length * 4);
 	return 0;
 }
