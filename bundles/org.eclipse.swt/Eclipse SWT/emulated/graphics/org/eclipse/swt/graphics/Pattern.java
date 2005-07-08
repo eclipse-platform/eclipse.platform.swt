@@ -89,6 +89,10 @@ public Pattern(Device device, Image image) {
  * @see #dispose()
  */
 public Pattern(Device device, float x1, float y1, float x2, float y2, Color color1, Color color2) {
+	this(device, x1, y1, x2, y2, color1, 0xFF, color2, 0xFF);
+}
+
+public Pattern(Device device, float x1, float y1, float x2, float y2, Color color1, int alpha1, Color color2, int alpha2) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color1 == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);

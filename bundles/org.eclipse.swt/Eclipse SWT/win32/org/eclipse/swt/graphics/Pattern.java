@@ -102,6 +102,38 @@ public Pattern(Device device, Image image) {
  * @see #dispose()
  */
 public Pattern(Device device, float x1, float y1, float x2, float y2, Color color1, Color color2) {
+	this(device, x1, y1, x2, y2, color1, 0xFF, color2, 0xFF);
+}
+
+/**
+ * Constructs a new Pattern that represents a linear, two color
+ * gradient. Drawing with the pattern will cause the resulting area to be
+ * tiled with the gradient specified by the arguments.
+ * 
+ * @param device the device on which to allocate the pattern
+ * @param x1 the x coordinate of the starting corner of the gradient
+ * @param y1 the y coordinate of the starting corner of the gradient
+ * @param x2 the x coordinate of the ending corner of the gradient
+ * @param y2 the y coordinate of the ending corner of the gradient
+ * @param color1 the starting color of the gradient
+ * @param alpha1 the starting alpha value of the gradient
+ * @param color2 the ending color of the gradient
+ * @param alpha2 the ending alpha value of the gradient
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the device is null and there is no current device, 
+ *                              or if either color1 or color2 is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if either color1 or color2 has been disposed</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle for the pattern could not be obtained/li>
+ * </ul>
+ * 
+ * @see #dispose()
+ * 
+ * @since 3.2
+ */
+public Pattern(Device device, float x1, float y1, float x2, float y2, Color color1, int alpha1, Color color2, int alpha2) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color1 == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -110,13 +142,12 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 	if (color2.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	this.device = device;
 	device.checkGDIP();
-	//TODO - how about alpha?
-	int colorRef = color1.handle;
-	int rgb = ((colorRef >> 16) & 0xFF) | (colorRef & 0xFF00) | ((colorRef & 0xFF) << 16);
-	int foreColor = Gdip.Color_new(0xFF << 24 | rgb);
-	colorRef = color2.handle;
-	rgb = ((colorRef >> 16) & 0xFF) | (colorRef & 0xFF00) | ((colorRef & 0xFF) << 16);
-	int backColor = Gdip.Color_new(0xFF << 24 | rgb);
+	int colorRef1 = color1.handle;
+	int rgb = ((colorRef1 >> 16) & 0xFF) | (colorRef1 & 0xFF00) | ((colorRef1 & 0xFF) << 16);
+	int foreColor = Gdip.Color_new((alpha1 & 0xFF) << 24 | rgb);
+	int colorRef2 = color2.handle;
+	rgb = ((colorRef2 >> 16) & 0xFF) | (colorRef2 & 0xFF00) | ((colorRef2 & 0xFF) << 16);
+	int backColor = Gdip.Color_new((alpha2 & 0xFF) << 24 | rgb);
 	PointF p1 = new PointF();
 	p1.X = x1;
 	p1.Y = y1;
@@ -124,9 +155,18 @@ public Pattern(Device device, float x1, float y1, float x2, float y2, Color colo
 	p2.X = x2;
 	p2.Y = y2;
 	handle = Gdip.LinearGradientBrush_new(p1, p2, foreColor, backColor);
+	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	if (alpha1 != 0xFF || alpha2 != 0xFF) {
+		int a = (int)((alpha1 & 0xFF) * 0.5f + (alpha2 & 0xFF) * 0.5f);
+		int r = (int)(((colorRef1 & 0xFF) >> 0) * 0.5f + ((colorRef2 & 0xFF) >> 0) * 0.5f);
+		int g = (int)(((colorRef1 & 0xFF00) >> 8) * 0.5f + ((colorRef2 & 0xFF00) >> 8) * 0.5f);
+		int b = (int)(((colorRef1 & 0xFF000) >> 16) * 0.5f + ((colorRef2 & 0xFF0000) >> 16) * 0.5f);
+		int midColor = Gdip.Color_new(a << 24 | r << 16 | g << 8 | b);
+		Gdip.LinearGradientBrush_SetInterpolationColors(handle, new int[]{foreColor, midColor, backColor}, new float[]{0, 0.5f, 1}, 3);
+		Gdip.Color_delete(midColor);
+	}
 	Gdip.Color_delete(foreColor);
 	Gdip.Color_delete(backColor);
-	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (device.tracking) device.new_Object(this);
 }
 	
