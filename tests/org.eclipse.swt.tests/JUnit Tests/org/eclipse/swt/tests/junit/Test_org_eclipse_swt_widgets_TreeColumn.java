@@ -188,10 +188,10 @@ public void test_setResizableZ() {
 }
 
 public void test_setTextLjava_lang_String() {
-	assertTrue(":a:", treeColumn.getText() == "");
+	assertEquals(":a:", treeColumn.getText(), "");
 
 	treeColumn.setText("text");
-	assertTrue(":b:", treeColumn.getText() == "text");
+	assertEquals(":b:", treeColumn.getText(), "text");
 
 	try {
 		treeColumn.setText(null);

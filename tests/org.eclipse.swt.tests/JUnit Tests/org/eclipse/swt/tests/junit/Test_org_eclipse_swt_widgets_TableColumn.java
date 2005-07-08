@@ -216,10 +216,10 @@ public void test_setResizableZ() {
 }
 
 public void test_setTextLjava_lang_String() {
-	assertTrue(":a:", tableColumn.getText() == "");
+	assertEquals(":a:", tableColumn.getText(), "");
 
 	tableColumn.setText("text");
-	assertTrue(":b:", tableColumn.getText() == "text");
+	assertEquals(":b:", tableColumn.getText(), "text");
 
 	try {
 		tableColumn.setText(null);
