@@ -3630,8 +3630,8 @@ LRESULT WM_RBUTTONDBLCLK (int wParam, int lParam) {
 	pinfo.x = (short) (lParam & 0xFFFF);
 	pinfo.y = (short) (lParam >> 16);
 	OS.SendMessage (handle, OS.LVM_HITTEST, 0, pinfo);
-	sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_RBUTTONDOWN, wParam, lParam);
-	sendMouseEvent (SWT.MouseDoubleClick, 1, handle, OS.WM_RBUTTONDBLCLK, wParam, lParam);
+	sendMouseEvent (SWT.MouseDown, 3, handle, OS.WM_RBUTTONDOWN, wParam, lParam);
+	sendMouseEvent (SWT.MouseDoubleClick, 3, handle, OS.WM_RBUTTONDBLCLK, wParam, lParam);
 	if (pinfo.iItem != -1) callWindowProc (handle, OS.WM_RBUTTONDBLCLK, wParam, lParam);
 	if (OS.GetCapture () != handle) OS.SetCapture (handle);
 	return LRESULT.ZERO;
