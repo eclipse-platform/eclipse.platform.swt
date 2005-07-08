@@ -102,6 +102,7 @@ typedef enum {
 	HatchBrush_1new_FUNC,
 	Image_1GetHeight_FUNC,
 	Image_1GetWidth_FUNC,
+	LinearGradientBrush_1SetInterpolationColors_FUNC,
 	LinearGradientBrush_1SetWrapMode_FUNC,
 	LinearGradientBrush_1delete_FUNC,
 	LinearGradientBrush_1new_FUNC,
