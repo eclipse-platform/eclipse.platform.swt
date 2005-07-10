@@ -960,10 +960,10 @@ void destroyItem (TableColumn column) {
 		index++;
 	}
 	int orderIndex = 0;
-	int [] order = new int [columnCount];
-	OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, columnCount, order);
+	int [] oldOrder = new int [columnCount];
+	OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, columnCount, oldOrder);
 	while (orderIndex < columnCount) {
-		if (order [orderIndex] == index) break;
+		if (oldOrder [orderIndex] == index) break;
 		orderIndex++;
 	}
 	ignoreResize = true;
@@ -1074,13 +1074,47 @@ void destroyItem (TableColumn column) {
 	if (columnCount == 0) setScrollWidth (null, true);
 	updateMoveable ();
 	ignoreResize = false;
-	if (columnCount != 0) {
-		int count = columnCount - orderIndex;
-		TableColumn [] newColumns = new TableColumn [count];
-		OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, columnCount, order);
-		for (int i=orderIndex; i<columnCount; i++) {
-			newColumns [i - orderIndex] = columns [order [i]];
+	if (columnCount != 0) {	
+		/*
+		* Bug in Windows.  When LVM_DELETECOLUMN is used to delete a
+		* column zero when that column is both the first column in the
+		* table and the first column in the column order array, Windows
+		* incorrectly computes the new column order.  For example, both
+		* the orders {0, 3, 1, 2} and {0, 3, 2, 1} give a new column
+		* order of {0, 2, 1}, while {0, 2, 1, 3} gives {0, 1, 2, 3}.
+		* The fix is to compute the new order and compare it with the
+		* order that Windows is using.  If the two differ, the new order
+		* is used.
+		*/
+		int count = 0;
+		int oldIndex = oldOrder [orderIndex];
+		int [] newOrder = new int [columnCount];
+		for (int i=0; i<oldOrder.length; i++) {
+			if (oldOrder [i] != oldIndex) {
+				int newIndex = oldOrder [i] <= oldIndex ? oldOrder [i] : oldOrder [i] - 1;
+				newOrder [count++] = newIndex;
+			}
 		}
+		OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, columnCount, oldOrder);
+		int j = 0;
+		while (j < newOrder.length) {
+			if (oldOrder [j] != newOrder [j]) break;
+			j++;
+		}
+		if (j != newOrder.length) {
+			OS.SendMessage (handle, OS.LVM_SETCOLUMNORDERARRAY, newOrder.length, newOrder);
+			/*
+			* Bug in Windows.  When LVM_SETCOLUMNORDERARRAY is used to change
+			* the column order, the header redraws correctly but the table does
+			* not.  The fix is to force a redraw.
+			*/
+			OS.InvalidateRect (handle, null, true);			
+		}
+		
+		TableColumn [] newColumns = new TableColumn [columnCount - orderIndex];
+		for (int i=orderIndex; i<newOrder.length; i++) {
+			newColumns [i - orderIndex] = columns [newOrder [i]];
+		}	
 		for (int i=0; i<newColumns.length; i++) {
 			if (!newColumns [i].isDisposed ()) {
 				newColumns [i].sendEvent (SWT.Move);
