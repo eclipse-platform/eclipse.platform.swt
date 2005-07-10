@@ -1077,9 +1077,9 @@ void destroyItem (TableColumn column) {
 	if (columnCount != 0) {
 		int count = columnCount - orderIndex;
 		TableColumn [] newColumns = new TableColumn [count];
-		orderIndex++;
-		for (int i=orderIndex; i<order.length; i++) {
-			newColumns [i - orderIndex] = columns [order [i] - 1];
+		OS.SendMessage (handle, OS.LVM_GETCOLUMNORDERARRAY, columnCount, order);
+		for (int i=orderIndex; i<columnCount; i++) {
+			newColumns [i - orderIndex] = columns [order [i]];
 		}
 		for (int i=0; i<newColumns.length; i++) {
 			if (!newColumns [i].isDisposed ()) {
