@@ -66,6 +66,7 @@ import org.eclipse.swt.events.*;
  */
 public class Slider extends Control {
 	int increment, pageIncrement;
+	boolean ignoreFocus;
 	static final int ScrollBarProc;
 	static final TCHAR ScrollBarClass = new TCHAR (0, "SCROLLBAR", true);
 	static {
@@ -371,11 +372,13 @@ void setBounds (int x, int y, int width, int height, int flags) {
 	/*
 	* Bug in Windows.  If the scroll bar is resized when it has focus,
 	* the flashing cursor that is used to show that the scroll bar has
-	* focus is not moved.  The fix is to post a fake WM_SETFOCUS to
+	* focus is not moved.  The fix is to send a fake WM_SETFOCUS to
 	* get the scroll bar to recompute the size of the flashing cursor.
 	*/
 	if (OS.GetFocus () == handle) {
-		OS.PostMessage (handle, OS.WM_SETFOCUS, 0, 0);
+		ignoreFocus = true;
+		OS.SendMessage (handle, OS.WM_SETFOCUS, 0, 0);
+		ignoreFocus = false;
 	}
 }
 
@@ -488,12 +491,14 @@ boolean SetScrollInfo (int hwnd, int flags, SCROLLINFO info, boolean fRedraw) {
 	/*
 	* Bug in Windows.  If the thumb is resized when it has focus,
 	* the flashing cursor that is used to show that the scroll bar
-	* has focus is not moved.  The fix is to post a fake WM_SETFOCUS
+	* has focus is not moved.  The fix is to send a fake WM_SETFOCUS
 	* to get the scroll bar to recompute the size of the flashing
 	* cursor.
 	*/
 	if (OS.GetFocus () == handle) {
-		OS.PostMessage (handle, OS.WM_SETFOCUS, 0, 0);
+		ignoreFocus = true;
+		OS.SendMessage (handle, OS.WM_SETFOCUS, 0, 0);
+		ignoreFocus = false;
 	}
 	return result;
 }
@@ -701,6 +706,11 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 		if (OS.GetCapture () == handle) OS.ReleaseCapture ();
 	}
 	return result;
+}
+
+LRESULT WM_SETFOCUS (int wParam, int lParam) {
+	if (ignoreFocus) return null;
+	return super.WM_SETFOCUS (wParam, lParam);
 }
 
 LRESULT wmScrollChild (int wParam, int lParam) {
