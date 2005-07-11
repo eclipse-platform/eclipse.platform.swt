@@ -283,7 +283,7 @@ void setBackgroundPixel (int pixel) {
 	/*
 	* Bug in Windows.  Changing the background color of the Scale
 	* widget and calling InvalidateRect() still draws with the old
-	* color.  The fix is to post a fake WM_SETFOCUS event to cause
+	* color.  The fix is to send a fake WM_SETFOCUS event to cause
 	* it to redraw with the new background color.
 	*/
 	ignoreFocus = true;
