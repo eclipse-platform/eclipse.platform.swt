@@ -477,7 +477,7 @@ public void setImage (Image image) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	super.setImage (image);
-	if (parent.sortColumn != this && parent.sortDirection != SWT.NULL) {
+	if (parent.sortColumn != this || parent.sortDirection != SWT.NULL) {
 		setImage (image, false, false);
 	}
 }
