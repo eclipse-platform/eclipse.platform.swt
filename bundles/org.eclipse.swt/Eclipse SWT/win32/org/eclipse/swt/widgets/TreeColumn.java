@@ -115,31 +115,6 @@ public TreeColumn (Tree parent, int style, int index) {
 	parent.createItem (this, index);
 }
 
-void _setImage (Image image, boolean sort, boolean right) {
-	int index = parent.indexOf (this);
-	if (index == -1) return;
-	int hwndHeader = parent.hwndHeader;
-	if (hwndHeader == 0) return;
-	HDITEM hdItem = new HDITEM ();
-	hdItem.mask = OS.HDI_FORMAT | OS.HDI_IMAGE | OS.HDI_BITMAP;
-	OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
-	if (image != null) {
-		if (sort) {
-			hdItem.mask &= ~OS.HDI_IMAGE;
-			hdItem.fmt |= OS.HDF_BITMAP;
-			hdItem.hbm = image.handle;
-		} else {
-			hdItem.mask &= ~OS.HDI_BITMAP;
-			hdItem.fmt |= OS.HDF_IMAGE;
-			hdItem.iImage = parent.imageIndexHeader (image);
-		}
-		if (right) hdItem.fmt |= OS.HDF_BITMAP_ON_RIGHT;
-	} else {
-		hdItem.fmt &= ~(OS.HDF_IMAGE | OS.HDF_BITMAP | OS.HDF_BITMAP_ON_RIGHT);
-	}
-	OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
-}
-
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the control is moved or resized, by sending
@@ -289,25 +264,6 @@ public boolean getResizable () {
 }
 
 /**
- * Returns a value which describes the sort indicator for
- * the receiver. The value will be one of <code>UP</code>,
- * <code>DOWN</code> or <code>NONE</code>.
- *
- * @return the sort indicator 
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-/*public*/ int getSortIndicator () {
-	checkWidget ();
-	if ((style & SWT.UP) != 0) return SWT.UP;
-	if ((style & SWT.DOWN) != 0) return SWT.DOWN;
-	return SWT.NONE;
-}
-
-/**
  * Gets the width of the receiver.
  *
  * @return the width
@@ -384,12 +340,11 @@ public void pack () {
 	TCHAR buffer = new TCHAR (cp, text, true);
 	OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
 	int headerWidth = rect.right - rect.left + Tree.HEADER_MARGIN;
-	if (image != null || (style & (SWT.UP | SWT.DOWN)) != 0) {
+	if (image != null || parent.sortColumn == this) {
 		Image headerImage = null;
-		if ((style & (SWT.UP | SWT.DOWN)) != 0) {
+		if (parent.sortColumn == this && parent.sortDirection != SWT.NULL) {
 			if (OS.COMCTL32_MAJOR < 6) {
-				int direction = style & (SWT.UP | SWT.DOWN);
-				headerImage = display.getSortImage (direction);
+				headerImage = display.getSortImage (parent.sortDirection);
 			} else {
 				headerWidth += Tree.SORT_WIDTH;
 			}
@@ -420,6 +375,9 @@ void releaseChild () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	if (parent.sortColumn == this) {
+		parent.sortColumn = null;
+	}
 	parent = null;
 }
 
@@ -519,9 +477,34 @@ public void setImage (Image image) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	super.setImage (image);
-	if ((style & (SWT.UP | SWT.DOWN)) == 0) {
-		_setImage (image, false, false);
+	if (parent.sortColumn != this && parent.sortDirection != SWT.NULL) {
+		setImage (image, false, false);
 	}
+}
+
+void setImage (Image image, boolean sort, boolean right) {
+	int index = parent.indexOf (this);
+	if (index == -1) return;
+	int hwndHeader = parent.hwndHeader;
+	if (hwndHeader == 0) return;
+	HDITEM hdItem = new HDITEM ();
+	hdItem.mask = OS.HDI_FORMAT | OS.HDI_IMAGE | OS.HDI_BITMAP;
+	OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
+	if (image != null) {
+		if (sort) {
+			hdItem.mask &= ~OS.HDI_IMAGE;
+			hdItem.fmt |= OS.HDF_BITMAP;
+			hdItem.hbm = image.handle;
+		} else {
+			hdItem.mask &= ~OS.HDI_BITMAP;
+			hdItem.fmt |= OS.HDF_IMAGE;
+			hdItem.iImage = parent.imageIndexHeader (image);
+		}
+		if (right) hdItem.fmt |= OS.HDF_BITMAP_ON_RIGHT;
+	} else {
+		hdItem.fmt &= ~(OS.HDF_IMAGE | OS.HDF_BITMAP | OS.HDF_BITMAP_ON_RIGHT);
+	}
+	OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
 }
 
 /**
@@ -567,21 +550,8 @@ public void setResizable (boolean resizable) {
 	this.resizable = resizable;
 }
 
-/**
- * Sets the sort indicator for the receiver. The value can be
- * one of <code>UP</code>, <code>DOWN</code> or <code>NONE</code>.
- *
- * @param direction the sort indicator 
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-/*public*/ void setSortIndicator (int direction) {
+void setSortDirection (int direction) {
 	checkWidget ();
-	style &= ~(SWT.UP | SWT.DOWN);
-	style |= direction & (SWT.UP | SWT.DOWN);
 	if (OS.COMCTL32_MAJOR >= 6) {
 		int hwndHeader = parent.hwndHeader;
 		if (hwndHeader != 0) {
@@ -615,10 +585,10 @@ public void setResizable (boolean resizable) {
 		switch (direction) {
 			case SWT.UP:
 			case SWT.DOWN:
-				_setImage (display.getSortImage (direction), true, true);
+				setImage (display.getSortImage (direction), true, true);
 				break;
 			case SWT.NONE:
-				_setImage (image, false, false);
+				setImage (image, false, false);
 				break;
 		}
 	}
@@ -674,17 +644,5 @@ public void setWidth (int width) {
 	hdItem.cxy = width;
 	OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
 	parent.setScrollWidth ();
-}
-
-void updateImages () {
-	if (OS.COMCTL32_MAJOR < 6) {
-		int direction = style & (SWT.UP | SWT.DOWN);
-		switch (direction) {
-			case SWT.UP:
-			case SWT.DOWN:
-				_setImage (display.getSortImage (direction), true, true);
-				break;
-		}
-	}
 }
 }

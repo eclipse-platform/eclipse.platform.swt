@@ -45,8 +45,9 @@ public class Tree extends Composite {
 	TreeColumn [] columns;
 	ImageList imageList, headerImageList;
 	TreeItem currentItem;
+	TreeColumn sortColumn;
 	int hwndParent, hwndHeader, hAnchor, hInsert, lastID;
-	int hFirstIndexOf, hLastIndexOf, lastIndexOf;
+	int hFirstIndexOf, hLastIndexOf, lastIndexOf, sortDirection;
 	boolean dragStarted, gestureCompleted, insertAfter, shrink;
 	boolean ignoreSelect, ignoreExpand, ignoreDeselect, ignoreResize;
 	boolean lockSelection, oldSelected, newSelected, cancelMove;
@@ -1552,6 +1553,48 @@ public int getSelectionCount () {
 }
 
 /**
+ * Returns the column which shows the sort indicator for
+ * the receiver. The value may be null if no column shows
+ * the sort indicator.
+ *
+ * @return the sort indicator 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see #setSortColumn(TreeColumn)
+ * 
+ * @since 3.2
+ */
+/*public*/ TreeColumn getSortColumn () {
+	checkWidget ();
+	return sortColumn;
+}
+
+/**
+ * Returns the direction of the sort indicator for the receiver. 
+ * The value will be one of <code>UP</code>, <code>DOWN</code> 
+ * or <code>NONE</code>.
+ *
+ * @return the sort direction
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see #setSortDirection(int)
+ * 
+ * @since 3.2
+ */
+/*public*/ int getSortDirection () {
+	checkWidget ();
+	return sortDirection;
+}
+
+/**
  * Returns the item which is currently at the top of the receiver.
  * This item can change when items are expanded, collapsed, scrolled
  * or new items are added or removed.
@@ -2660,10 +2703,15 @@ int topHandle () {
 }
 
 void updateImages () {
-	if (hwndHeader == 0) return;
-	int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	for (int i=0; i<columnCount; i++) {
-		columns [i].updateImages ();
+	if (sortColumn != null & !sortColumn.isDisposed ()) {
+		if (OS.COMCTL32_MAJOR < 6) {
+			switch (sortDirection) {
+				case SWT.UP:
+				case SWT.DOWN:
+					sortColumn.setImage (display.getSortImage (sortDirection), true, true);
+					break;
+			}
+		}
 	}
 }
 
