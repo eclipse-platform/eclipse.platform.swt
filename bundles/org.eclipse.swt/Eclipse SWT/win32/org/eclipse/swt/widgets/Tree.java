@@ -2450,6 +2450,57 @@ public void setSelection (TreeItem [] items) {
 }
 
 /**
+ * Sets the column used by the sort indicator for the receiver. A null
+ * value will clear the sort indicator.  The current sort column is cleared 
+ * before the new column is set.
+ *
+ * @param column the column used by the sort indicator
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the column is disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+/*public*/ void setSortColumn (TreeColumn column) {
+	checkWidget ();
+	if (column != null && column.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (sortColumn != null && !sortColumn.isDisposed ()) {
+		sortColumn.setSortDirection (SWT.NONE);
+	}
+	sortColumn = column;
+	if (sortColumn != null && sortDirection != SWT.NONE) {
+		sortColumn.setSortDirection (sortDirection);
+	}
+}
+
+/**
+ * Sets the direction of the sort indicator for the receiver. The value 
+ * can be one of <code>UP</code>, <code>DOWN</code> or <code>NONE</code>.
+ *
+ * @param direction the direction of the sort indicator 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+/*public*/ void setSortDirection (int direction) {
+	checkWidget ();
+	if ((direction & (SWT.UP | SWT.DOWN)) == 0 && direction != SWT.NONE) return;
+	sortDirection = direction;
+	if (sortColumn != null && !sortColumn.isDisposed ()) {
+		sortColumn.setSortDirection (direction);
+	}
+}
+
+/**
  * Sets the item which is currently at the top of the receiver.
  * This item can change when items are expanded, collapsed, scrolled
  * or new items are added or removed.

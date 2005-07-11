@@ -2971,7 +2971,6 @@ public void setSelection (int start, int end) {
 	showSelection ();
 }
 
-
 /**
  * Sets the column used by the sort indicator for the receiver. A null
  * value will clear the sort indicator.  The current sort column is cleared 
@@ -3014,7 +3013,7 @@ public void setSelection (int start, int end) {
  * 
  * @since 3.2
  */
-/*public*/ void setSortDirection  (int direction) {
+/*public*/ void setSortDirection (int direction) {
 	checkWidget ();
 	if ((direction & (SWT.UP | SWT.DOWN)) == 0 && direction != SWT.NONE) return;
 	sortDirection = direction;
