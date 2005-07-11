@@ -36,6 +36,16 @@ import org.eclipse.swt.events.*;
 public class MenuItem extends Item {
 	Menu parent, menu;
 	int id, accelerator;
+	/*
+	* Feature in Windows.  On Windows 98, it is necessary
+	* to add 4 pixels to the width of the image or the image
+	* and text are too close.  On other Windows platforms,
+	* this causes the text of the longest item to touch the
+	* accelerator text.  The fix is to use smaller margins
+	* everywhere but on Windows 98.
+	*/
+	final static int MARGIN_WIDTH = OS.IsWin95 ? 2 : 1;
+	final static int MARGIN_HEIGHT = OS.IsWin95 ? 2 : 1;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -1056,8 +1066,8 @@ LRESULT wmDrawChild (int wParam, int lParam) {
 		* coordinate.  The fix is to ignore this value when
 		* the item is in a menu bar.
 		*/
-		int x = (parent.style & SWT.BAR) != 0 ? (OS.IsWin95 ? 4 : 2) : struct.left;
-		gc.drawImage (image, x, struct.top + 2);
+		int x = (parent.style & SWT.BAR) != 0 ? MARGIN_WIDTH * 2 : struct.left;
+		gc.drawImage (image, x, struct.top + MARGIN_HEIGHT);
 		gc.dispose ();
 	}
 	return null;
@@ -1099,16 +1109,8 @@ LRESULT wmMeasureChild (int wParam, int lParam) {
 		}
 	}
 	if (width != 0 || height != 0) {
-		/*
-		* Feature in Windows.  On Windows 98, it is necessary
-		* to add 4 pixels to the width of the image or the image
-		* and text are too close.  On other Windows platforms,
-		* this causes the text of the longest item to touch the
-		* accelerator text.  The fix is to add only 2 pixels in
-		* this case.
-		*/
-		struct.itemWidth = width + (OS.IsWin95 ? 4 : 2);
-		struct.itemHeight = height + 4;
+		struct.itemWidth = width + MARGIN_WIDTH * 2;
+		struct.itemHeight = height + MARGIN_HEIGHT * 2;
 		OS.MoveMemory (lParam, struct, MEASUREITEMSTRUCT.sizeof);
 	}
 	return null;
