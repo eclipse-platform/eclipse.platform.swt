@@ -683,16 +683,19 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 				srcWidth == destWidth && destWidth == imgWidth &&
 				srcHeight == destHeight && destHeight == imgHeight;
 		}
-		if (simple) {
-			Gdip.Graphics_DrawImage(data.gdipGraphics, img, destX, destY);
-		} else {
-			Rect rect = new Rect();
-			rect.X = destX;
-			rect.Y = destY;
-			rect.Width = destWidth;
-			rect.Height = destHeight;
-			Gdip.Graphics_DrawImage(data.gdipGraphics, img, rect, srcX, srcY, srcWidth, srcHeight, Gdip.UnitPixel, 0, 0, 0);
-		}
+		Rect rect = new Rect();
+		rect.X = destX;
+		rect.Y = destY;
+		rect.Width = destWidth;
+		rect.Height = destHeight;
+		/*
+		* Note that if the wrap mode is not WrapModeTileFlipXY, the scaled image
+		* is translucent around the borders.
+		*/  
+		int attrib = Gdip.ImageAttributes_new();
+		Gdip.ImageAttributes_SetWrapMode(attrib, Gdip.WrapModeTileFlipXY);
+		Gdip.Graphics_DrawImage(data.gdipGraphics, img, rect, srcX, srcY, srcWidth, srcHeight, Gdip.UnitPixel, attrib, 0, 0);
+		Gdip.ImageAttributes_delete(attrib);
 		Gdip.Bitmap_delete(img);
 		if (gdipImage[1] != 0) {
 			int hHeap = OS.GetProcessHeap ();

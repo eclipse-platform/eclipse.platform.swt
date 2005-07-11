@@ -989,6 +989,40 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(HatchBrush_1new)
 }
 #endif
 
+#ifndef NO_ImageAttributes_1SetWrapMode
+JNIEXPORT jint JNICALL Gdip_NATIVE(ImageAttributes_1SetWrapMode)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, ImageAttributes_1SetWrapMode_FUNC);
+	rc = (jint)((ImageAttributes *)arg0)->SetWrapMode((WrapMode)arg1);
+	Gdip_NATIVE_EXIT(env, that, ImageAttributes_1SetWrapMode_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_ImageAttributes_1delete
+JNIEXPORT void JNICALL Gdip_NATIVE(ImageAttributes_1delete)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	Gdip_NATIVE_ENTER(env, that, ImageAttributes_1delete_FUNC);
+	delete (ImageAttributes *)arg0;
+	Gdip_NATIVE_EXIT(env, that, ImageAttributes_1delete_FUNC);
+}
+#endif
+
+#ifndef NO_ImageAttributes_1new
+JNIEXPORT jint JNICALL Gdip_NATIVE(ImageAttributes_1new)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, ImageAttributes_1new_FUNC);
+	rc = (jint)new ImageAttributes();
+	Gdip_NATIVE_EXIT(env, that, ImageAttributes_1new_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Image_1GetHeight
 JNIEXPORT jint JNICALL Gdip_NATIVE(Image_1GetHeight)
 	(JNIEnv *env, jclass that, jint arg0)
