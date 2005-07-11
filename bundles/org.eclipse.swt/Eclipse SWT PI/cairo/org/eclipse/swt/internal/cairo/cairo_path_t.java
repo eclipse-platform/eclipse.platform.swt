@@ -18,12 +18,12 @@
  * -  Copyright (C) 2005 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
+package org.eclipse.swt.internal.cairo;
 
-#ifndef INC_cairo_H
-#define INC_cairo_H
 
-#include <cairo.h>
-#include <cairo-xlib.h>
-#include <string.h>
-
-#endif /* INC_cairo_H */
+public class cairo_path_t {
+	public int status;
+	public int /*long*/ data;
+	public int num_data;
+	public static final int sizeof = Cairo.cairo_path_t_sizeof();
+}

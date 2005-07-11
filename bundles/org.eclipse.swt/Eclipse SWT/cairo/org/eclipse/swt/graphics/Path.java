@@ -62,7 +62,10 @@ public Path (Device device) {
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
 	device.checkCairo();
-	handle = Cairo.cairo_create();
+	int /*long*/ surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, 1, 1);
+	if (surface == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	handle = Cairo.cairo_create(surface);
+	Cairo.cairo_surface_destroy(surface);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (device.tracking) device.new_Object(this);
 }
@@ -99,16 +102,13 @@ public Path (Device device) {
 public void addArc(float x, float y, float width, float height, float startAngle, float arcAngle) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	move = true;
-	int /*long*/ matrix = Cairo.cairo_matrix_create();
-	Cairo.cairo_current_matrix(handle, matrix);
-	double lineWidth = Cairo.cairo_current_line_width(handle);
+	Cairo.cairo_save(handle);
+	double lineWidth = Cairo.cairo_get_line_width(handle);
 	Cairo.cairo_translate(handle, x + width / 2f, y + height / 2f);
 	Cairo.cairo_scale(handle, width / 2f, height / 2f);
 	Cairo.cairo_set_line_width(handle, lineWidth / (width / 2f));
 	Cairo.cairo_arc_negative(handle, 0, 0, 1, -startAngle * (float)Compatibility.PI / 180, -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
-	Cairo.cairo_set_line_width(handle, lineWidth);
-	Cairo.cairo_set_matrix(handle, matrix);
-	Cairo.cairo_destroy(matrix);
+	Cairo.cairo_restore(handle);
 }
 
 /**
@@ -129,7 +129,10 @@ public void addPath(Path path) {
 	if (path == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	move = false;
-	Cairo.cairo_add_path(handle, path.handle);
+	int /*long*/ copy = Cairo.cairo_copy_path(path.handle);
+	if (copy == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	Cairo.cairo_append_path(handle, copy);
+	Cairo.cairo_path_destroy(copy);
 }
 
 /**
@@ -174,7 +177,7 @@ public void addString(String string, float x, float y, Font font) {
 	move = false;
 	GC.setCairoFont(handle, font);
 	cairo_font_extents_t extents = new cairo_font_extents_t();
-	Cairo.cairo_current_font_extents(handle, extents);
+	Cairo.cairo_font_extents(handle, extents);
 	double baseline = y + extents.ascent;
 	Cairo.cairo_move_to(handle, x, baseline);
 	byte[] buffer = Converter.wcsToMbcs(null, string, true);
@@ -227,7 +230,10 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
 	gc.initCairo();
 	boolean result = false;
 	int /*long*/ cairo = gc.data.cairo;
-	Cairo.cairo_add_path(cairo, handle);
+	int /*long*/ copy = Cairo.cairo_copy_path(handle);
+	if (copy == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	Cairo.cairo_append_path(cairo, copy);
+	Cairo.cairo_path_destroy(copy);
 	if (outline) {
 		result = Cairo.cairo_in_stroke(cairo, x, y) != 0;		
 	} else {
@@ -255,7 +261,7 @@ public void cubicTo(float cx1, float cy1, float cx2, float cy2, float x, float y
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (!move) {
 		double[] currentX = new double[1], currentY = new double[1];
-		Cairo.cairo_current_point(handle, currentX, currentY);
+		Cairo.cairo_get_current_point(handle, currentX, currentY);
 		Cairo.cairo_move_to(handle, currentX[0], currentY[0]);
 	}
 	move = true;
@@ -281,12 +287,58 @@ public void getBounds(float[] bounds) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (bounds.length < 4) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	double[] extents = new double[4];
-	Cairo.cairo_extents(handle, extents);
-	bounds[0] = (float)extents[0];
-	bounds[1] = (float)extents[1];
-	bounds[2] = (float)(extents[2] - extents[0]);
-	bounds[3] = (float)(extents[3] - extents[1]);
+	int /*path*/ copy = Cairo.cairo_copy_path(handle);
+	if (copy == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	cairo_path_t path = new cairo_path_t();
+	Cairo.memmove(path, copy, cairo_path_t.sizeof);
+	double minX = 0, minY = 0, maxX = 0, maxY = 0;
+	if (path.num_data > 0) {
+		int i = 0;
+		double[] points = new double[6]; 
+		cairo_path_data_t data = new cairo_path_data_t();
+		while (i < path.num_data) {
+			int offset = path.data + i * cairo_path_data_t.sizeof;
+			Cairo.memmove(data, offset, cairo_path_data_t.sizeof);
+			switch (data.type) {
+				case Cairo.CAIRO_PATH_MOVE_TO:
+					Cairo.memmove(points, offset + cairo_path_data_t.sizeof, cairo_path_data_t.sizeof);
+					minX = Math.min(minX, points[0]);
+					minY = Math.min(minY, points[1]);
+					maxX = Math.max(maxX, points[0]);
+					maxY = Math.max(maxY, points[1]);
+					break;
+				case Cairo.CAIRO_PATH_LINE_TO:
+					Cairo.memmove(points, offset + cairo_path_data_t.sizeof, cairo_path_data_t.sizeof);
+					minX = Math.min(minX, points[0]);
+					minY = Math.min(minY, points[1]);
+					maxX = Math.max(maxX, points[0]);
+					maxY = Math.max(maxY, points[1]);
+					break;
+				case Cairo.CAIRO_PATH_CURVE_TO:
+					Cairo.memmove(points, offset + cairo_path_data_t.sizeof, cairo_path_data_t.sizeof * 3);
+					minX = Math.min(minX, points[0]);
+					minY = Math.min(minY, points[1]);
+					maxX = Math.max(maxX, points[0]);
+					maxY = Math.max(maxY, points[1]);
+					minX = Math.min(minX, points[2]);
+					minY = Math.min(minY, points[3]);
+					maxX = Math.max(maxX, points[2]);
+					maxY = Math.max(maxY, points[3]);
+					minX = Math.min(minX, points[4]);
+					minY = Math.min(minY, points[5]);
+					maxX = Math.max(maxX, points[4]);
+					maxY = Math.max(maxY, points[5]);
+					break;
+				case Cairo.CAIRO_PATH_CLOSE_PATH: break;
+			}
+			i += data.length;
+		}
+	}
+	bounds[0] = (float)minX;
+	bounds[1] = (float)minY;
+	bounds[2] = (float)(maxX - minX);
+	bounds[3] = (float)(maxY - minY);
+	Cairo.cairo_path_destroy(copy);
 }
 
 /**
@@ -308,7 +360,7 @@ public void getCurrentPoint(float[] point) {
 	if (point == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (point.length < 2) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	double[] x = new double[1], y = new double[1];
-	Cairo.cairo_current_point(handle, x, y);
+	Cairo.cairo_get_current_point(handle, x, y);
 	point[0] = (float)x[0];
 	point[1] = (float)y[0];
 }
@@ -326,15 +378,64 @@ public void getCurrentPoint(float[] point) {
  */
 public PathData getPathData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int[] n_types = new int[1];
-	int[] n_points = new int[1];
-	Cairo.cairo_points(handle, n_types, n_points, null, null);
-	byte[] types = new byte[n_types[0]];
-	float[] points = new float[n_points[0] * 2];
-	Cairo.cairo_points(handle, n_types, n_points, types, points);
+	int /*path*/ copy = Cairo.cairo_copy_path(handle);
+	if (copy == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	cairo_path_t path = new cairo_path_t();
+	Cairo.memmove(path, copy, cairo_path_t.sizeof);
+	byte[] types = new byte[path.num_data];
+	float[] pts = new float[path.num_data * 6];
+	int typeIndex = 0, ptsIndex = 0;
+	if (path.num_data > 0) {
+		int i = 0;
+		double[] points = new double[6]; 
+		cairo_path_data_t data = new cairo_path_data_t();
+		while (i < path.num_data) {
+			int offset = path.data + i * cairo_path_data_t.sizeof;
+			Cairo.memmove(data, offset, cairo_path_data_t.sizeof);
+			switch (data.type) {
+				case Cairo.CAIRO_PATH_MOVE_TO:
+					types[typeIndex++] = SWT.PATH_MOVE_TO;
+					Cairo.memmove(points, offset + cairo_path_data_t.sizeof, cairo_path_data_t.sizeof);
+					pts[ptsIndex++] = (float)points[0];
+					pts[ptsIndex++] = (float)points[1];
+					break;
+				case Cairo.CAIRO_PATH_LINE_TO:
+					types[typeIndex++] = SWT.PATH_LINE_TO;
+					Cairo.memmove(points, offset + cairo_path_data_t.sizeof, cairo_path_data_t.sizeof);
+					pts[ptsIndex++] = (float)points[0];
+					pts[ptsIndex++] = (float)points[1];
+					break;
+				case Cairo.CAIRO_PATH_CURVE_TO:
+					types[typeIndex++] = SWT.PATH_CUBIC_TO;
+					Cairo.memmove(points, offset + cairo_path_data_t.sizeof, cairo_path_data_t.sizeof * 3);
+					pts[ptsIndex++] = (float)points[0];
+					pts[ptsIndex++] = (float)points[1];
+					pts[ptsIndex++] = (float)points[2];
+					pts[ptsIndex++] = (float)points[3];
+					pts[ptsIndex++] = (float)points[4];
+					pts[ptsIndex++] = (float)points[5];
+					break;
+				case Cairo.CAIRO_PATH_CLOSE_PATH:
+					types[typeIndex++] = SWT.PATH_CLOSE;
+					break;
+			}
+			i += data.length;
+		}
+	}
+	if (typeIndex != types.length) {
+		byte[] newTypes = new byte[typeIndex];
+		System.arraycopy(types, 0, newTypes, 0, typeIndex);
+		types = newTypes;
+	}
+	if (ptsIndex != pts.length) {
+		float[] newPts = new float[ptsIndex];
+		System.arraycopy(pts, 0, newPts, 0, ptsIndex);
+		pts = newPts;
+	}
+	Cairo.cairo_path_destroy(copy);
 	PathData result = new PathData();
 	result.types = types;
-	result.points = points;
+	result.points = pts;
 	return result;
 }
 
@@ -353,7 +454,7 @@ public void lineTo(float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (!move) {
 		double[] currentX = new double[1], currentY = new double[1];
-		Cairo.cairo_current_point(handle, currentX, currentY);
+		Cairo.cairo_get_current_point(handle, currentX, currentY);
 		Cairo.cairo_move_to(handle, currentX[0], currentY[0]);
 	}
 	move = true;
@@ -400,7 +501,7 @@ public void moveTo(float x, float y) {
 public void quadTo(float cx, float cy, float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	double[] currentX = new double[1], currentY = new double[1];
-	Cairo.cairo_current_point(handle, currentX, currentY);
+	Cairo.cairo_get_current_point(handle, currentX, currentY);
 	if (!move) {
 		Cairo.cairo_move_to(handle, currentX[0], currentY[0]);
 	}

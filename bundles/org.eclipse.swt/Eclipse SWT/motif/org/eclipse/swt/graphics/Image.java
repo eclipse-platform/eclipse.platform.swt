@@ -681,11 +681,12 @@ void createMask() {
 }
 void createSurface() {
 	if (surface != 0) return;
+	int [] unused = new int [1];  int [] width = new int [1];  int [] height = new int [1];
+ 	OS.XGetGeometry (device.xDisplay, pixmap, unused, unused, unused, width, height, unused, unused);
 	int xDisplay = device.xDisplay;
 	int xDrawable = pixmap;
 	int xVisual = OS.XDefaultVisual(xDisplay, OS.XDefaultScreen(xDisplay));
-	int xColormap = OS.XDefaultColormap(xDisplay, OS.XDefaultScreen (xDisplay));
-	surface = Cairo.cairo_xlib_surface_create(xDisplay, xDrawable, xVisual, 0, xColormap);
+	surface = Cairo.cairo_xlib_surface_create(xDisplay, xDrawable, xVisual, width[0], height[0]);
 }
 /**
  * Disposes of the operating system resources associated with

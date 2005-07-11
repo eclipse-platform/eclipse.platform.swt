@@ -33,3 +33,27 @@ void setcairo_font_extents_tFields(JNIEnv *env, jobject lpObject, cairo_font_ext
 #define cairo_font_extents_t_sizeof() 0
 #endif
 
+#ifndef NO_cairo_path_data_t
+void cachecairo_path_data_tFields(JNIEnv *env, jobject lpObject);
+cairo_path_data_t *getcairo_path_data_tFields(JNIEnv *env, jobject lpObject, cairo_path_data_t *lpStruct);
+void setcairo_path_data_tFields(JNIEnv *env, jobject lpObject, cairo_path_data_t *lpStruct);
+#define cairo_path_data_t_sizeof() sizeof(cairo_path_data_t)
+#else
+#define cachecairo_path_data_tFields(a,b)
+#define getcairo_path_data_tFields(a,b,c) NULL
+#define setcairo_path_data_tFields(a,b,c)
+#define cairo_path_data_t_sizeof() 0
+#endif
+
+#ifndef NO_cairo_path_t
+void cachecairo_path_tFields(JNIEnv *env, jobject lpObject);
+cairo_path_t *getcairo_path_tFields(JNIEnv *env, jobject lpObject, cairo_path_t *lpStruct);
+void setcairo_path_tFields(JNIEnv *env, jobject lpObject, cairo_path_t *lpStruct);
+#define cairo_path_t_sizeof() sizeof(cairo_path_t)
+#else
+#define cachecairo_path_tFields(a,b)
+#define getcairo_path_tFields(a,b,c) NULL
+#define setcairo_path_tFields(a,b,c)
+#define cairo_path_t_sizeof() 0
+#endif
+

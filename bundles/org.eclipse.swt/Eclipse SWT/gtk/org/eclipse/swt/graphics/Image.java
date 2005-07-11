@@ -552,10 +552,10 @@ void createSurface() {
 	if (surface != 0) return;
 	/* Generate the mask if necessary. */
 	if (transparentPixel != -1) createMask();
+	int[] w = new int[1], h = new int[1];
+	OS.gdk_drawable_get_size(pixmap, w, h);
+	int width = w[0], height = h[0];
 	if (mask != 0 || alpha != -1 || alphaData != null) {
-		int[] w = new int[1], h = new int[1];
-	 	OS.gdk_drawable_get_size(pixmap, w, h);
-	 	int width = w[0], height = h[0]; 	
 	 	int /*long*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, true, 8, width, height);
 		if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		int /*long*/ colormap = OS.gdk_colormap_get_system();
@@ -616,14 +616,13 @@ void createSurface() {
 		}
 		surfaceData = OS.g_malloc(stride * height);
 		OS.memmove(surfaceData, pixels, stride * height);
-		surface = Cairo.cairo_surface_create_for_image(surfaceData, Cairo.CAIRO_FORMAT_ARGB32, width, height, stride);
+		surface = Cairo.cairo_image_surface_create_for_data(surfaceData, Cairo.CAIRO_FORMAT_ARGB32, width, height, stride);
 		OS.g_object_unref(pixbuf);
 	} else {
 		int /*long*/ xDisplay = OS.GDK_DISPLAY();
 		int /*long*/ xDrawable = OS.GDK_PIXMAP_XID(pixmap);
 		int /*long*/ xVisual = OS.gdk_x11_visual_get_xvisual(OS.gdk_visual_get_system());
-		int /*long*/ xColormap = OS.gdk_x11_colormap_get_xcolormap(OS.gdk_colormap_get_system());
-		surface = Cairo.cairo_xlib_surface_create(xDisplay, xDrawable, xVisual, 0, xColormap);
+		surface = Cairo.cairo_xlib_surface_create(xDisplay, xDrawable, xVisual, width, height);
 	}
 	/* Destroy the image mask if the there is a GC created on the image */
 	if (transparentPixel != -1 && memGC != null) destroyMask();

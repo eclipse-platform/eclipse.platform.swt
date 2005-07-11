@@ -54,7 +54,7 @@ GTK_LIBS = -x -shared `pkg-config --libs-only-L gtk+-2.0` -lgtk-x11-2.0
 
 CAIRO_PREFIX = swt-cairo
 CAIRO_LIB = lib$(CAIRO_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
-CAIRO_OBJECTS = swt.o cairo.o cairo_structs.o cairo_stats.o cairo_custom.o
+CAIRO_OBJECTS = swt.o cairo.o cairo_structs.o cairo_stats.o
 CAIROCFLAGS = `pkg-config --cflags cairo`
 CAIROLIBS = -shared -fpic -fPIC -s `pkg-config --libs-only-L cairo` -lcairo
 
@@ -90,8 +90,6 @@ os.o: os.c os.h swt.h os_custom.h
 	$(CC) $(CFLAGS) -c os.c
 os_structs.o: os_structs.c os_structs.h os.h swt.h
 	$(CC) $(CFLAGS) -c os_structs.c 
-os_custom.o: os_custom.c os_structs.h os.h swt.h
-	$(CC) $(CFLAGS) -c os_custom.c
 os_stats.o: os_stats.c os_structs.h os.h os_stats.h swt.h
 	$(CC) $(CFLAGS) -c os_stats.c
 

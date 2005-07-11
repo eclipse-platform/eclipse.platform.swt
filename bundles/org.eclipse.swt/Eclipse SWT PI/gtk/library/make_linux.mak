@@ -70,7 +70,7 @@ MOZILLALIBS = -shared -s -Wl,--version-script=mozilla_exports -Bsymbolic ${GECKO
 SWT_OBJECTS = swt.o callback.o
 AWT_OBJECTS = swt_awt.o
 SWTPI_OBJECTS = swt.o os.o os_structs.o os_custom.o os_stats.o
-CAIRO_OBJECTS = swt.o cairo.o cairo_structs.o cairo_stats.o cairo_custom.o
+CAIRO_OBJECTS = swt.o cairo.o cairo_structs.o cairo_stats.o
 ATK_OBJECTS = swt.o atk.o atk_structs.o atk_custom.o atk_stats.o
 GNOME_OBJECTS = swt.o gnome.o gnome_structs.o gnome_stats.o
 MOZILLA_OBJECTS = swt.o xpcom.o xpcom_custom.o xpcom_structs.o xpcom_stats.o
@@ -123,8 +123,6 @@ $(CAIRO_LIB): $(CAIRO_OBJECTS)
 
 cairo.o: cairo.c cairo.h swt.h
 	$(CC) $(CFLAGS) $(CAIROCFLAGS) -c cairo.c
-cairo_custom.o: cairo_custom.c cairo_structs.h cairo.h swt.h
-	$(CC) $(CFLAGS) $(CAIROCFLAGS) -c cairo_custom.c
 cairo_structs.o: cairo_structs.c cairo_structs.h cairo.h swt.h
 	$(CC) $(CFLAGS) $(CAIROCFLAGS) -c cairo_structs.c
 cairo_stats.o: cairo_stats.c cairo_structs.h cairo.h cairo_stats.h swt.h

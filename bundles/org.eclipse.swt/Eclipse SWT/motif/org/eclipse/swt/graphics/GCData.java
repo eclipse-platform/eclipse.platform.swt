@@ -40,12 +40,13 @@ public final class GCData {
 	public int lineWidth;
 	public int[] dashes;
 	public int renderTable;
+	public int alpha = 0xFF;
     public int antialias = SWT.DEFAULT;
     public int textAntialias = SWT.DEFAULT;
 	public int interpolation = SWT.DEFAULT;
 
 	public int /*long*/ cairo;
-	public int /*long*/ matrix, inverseMatrix;
+	public double[] matrix, inverseMatrix;
 
 	public String string;
 	public int stringWidth = -1;
