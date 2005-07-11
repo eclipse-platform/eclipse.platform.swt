@@ -51,7 +51,7 @@ public class Table extends Composite {
 	TableColumn [] columns;
 	TableItem currentItem;
 	GC paintGC;
-	int clickCount;
+	int clickCount, sortDirection, sortColumn;
 	int itemCount, columnCount, column_id, idCount, anchorFirst, anchorLast, headerHeight, lastIndexOf;
 	boolean  ignoreSelect, wasSelected, fixScrollWidth;
 	Rectangle imageBounds;
@@ -1429,6 +1429,7 @@ void hookEvents () {
 	OS.InitDataBrowserCallbacks (callbacks);
 	callbacks.v1_itemDataCallback = display.itemDataProc;
 	callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
+	callbacks.v1_itemCompareCallback = display.itemCompareProc;
 	OS.SetDataBrowserCallbacks (handle, callbacks);
 	DataBrowserCustomCallbacks custom = new DataBrowserCustomCallbacks ();
 	custom.version = OS.kDataBrowserLatestCustomCallbacks;
@@ -1520,6 +1521,11 @@ public boolean isSelected (int index) {
 	return OS.IsDataBrowserItemSelected (handle, index + 1);
 }
 
+int itemCompareProc (int browser, int itemOne, int itemTwo, int sortProperty) {
+	if (sortDirection == SWT.DOWN) return itemOne > itemTwo ? 1 : 0;
+	return itemOne < itemTwo ? 1 : 0;
+}
+
 int itemDataProc (int browser, int id, int property, int itemData, int setValue) {
 	int row = id - 1;
 	if (!(0 <= row && row < items.length)) return OS.noErr;
@@ -1588,7 +1594,8 @@ int itemNotificationProc (int browser, int id, int message) {
 					break;
 				}
 			}
-			OS.SetDataBrowserSortProperty (handle, 0);
+			OS.SetDataBrowserSortProperty (handle, sortColumn);
+			if (sortColumn != 0) OS.SetDataBrowserSortOrder(handle, sortDirection == SWT.UP ? (short)1 : (short)2);
 		}
 		return OS.noErr;
 	}
