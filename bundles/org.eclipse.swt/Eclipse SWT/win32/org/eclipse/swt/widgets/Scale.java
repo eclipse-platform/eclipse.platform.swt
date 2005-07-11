@@ -36,6 +36,7 @@ import org.eclipse.swt.events.*;
  */
 
 public class Scale extends Control {
+	boolean ignoreFocus;
 	static final int TrackBarProc;
 	static final TCHAR TrackBarClass = new TCHAR (0, OS.TRACKBAR_CLASS, true);
 	static {
@@ -284,12 +285,10 @@ void setBackgroundPixel (int pixel) {
 	* widget and calling InvalidateRect() still draws with the old
 	* color.  The fix is to post a fake WM_SETFOCUS event to cause
 	* it to redraw with the new background color.
-	* 
-	* Note.  This WM_SETFOCUS message causes recursion when
-	* setBackground is called from within the focus event
-	* listener.
 	*/
-	OS.PostMessage (handle, OS.WM_SETFOCUS, 0, 0);
+	ignoreFocus = true;
+	OS.SendMessage (handle, OS.WM_SETFOCUS, 0, 0);
+	ignoreFocus = false;
 }
 
 /**
@@ -407,6 +406,11 @@ TCHAR windowClass () {
 
 int windowProc () {
 	return TrackBarProc;
+}
+
+LRESULT WM_SETFOCUS (int wParam, int lParam) {
+	if (ignoreFocus) return null;
+	return super.WM_SETFOCUS (wParam, lParam);
 }
 
 LRESULT wmScrollChild (int wParam, int lParam) {
