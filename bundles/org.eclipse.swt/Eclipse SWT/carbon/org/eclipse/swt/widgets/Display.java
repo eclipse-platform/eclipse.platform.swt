@@ -854,16 +854,35 @@ void createDisplay (DeviceData data) {
 	*/
 	int [] psn = new int [2];
 	if (OS.GetCurrentProcess (psn) == OS.noErr) {
-		if (APP_NAME != null) {
-			byte[] buffer = new byte[APP_NAME.length () + 1];
-			for (int i = 0; i < buffer.length - 1; i++) {
-				buffer[i] = (byte) APP_NAME.charAt (i);					
+		int pid = OS.getpid ();
+		byte [] buffer = null;
+		int ptr = OS.getenv (ascii ("APP_NAME_" + pid));
+		if (ptr != 0) {
+			buffer = new byte [OS.strlen (ptr) + 1];
+			OS.memcpy (buffer, ptr, buffer.length);
+		} else {
+			if (APP_NAME != null) {
+				char [] chars = new char [APP_NAME.length ()];
+				APP_NAME.getChars (0, chars.length, chars, 0);
+				int cfstring = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, chars, chars.length);
+				if (cfstring != 0) {
+					CFRange range = new CFRange ();
+					range.length = chars.length;
+					int encoding = OS.CFStringGetSystemEncoding ();
+					int [] size = new int [1];
+					int numChars = OS.CFStringGetBytes (cfstring, range, encoding, (byte) '?', true, null, 0, size);
+					if (numChars != 0) {
+						buffer = new byte [size [0] + 1];
+						numChars = OS.CFStringGetBytes (cfstring, range, encoding, (byte) '?', true, buffer, size [0], size);
+					}
+					OS.CFRelease (cfstring);
+				}
 			}
-			OS.CPSSetProcessName (psn, buffer);
 		}
+		if (buffer != null) OS.CPSSetProcessName (psn, buffer);	
 		OS.CPSEnableForegroundOperation (psn, 0x03, 0x3C, 0x2C, 0x1103);
 		OS.SetFrontProcess (psn);
-		int ptr = OS.getenv (ascii ("APP_ICON_" + OS.getpid()));
+		ptr = OS.getenv (ascii ("APP_ICON_" + pid));
 		if (ptr != 0) {
 			int [] image = readImageRef (ptr);
 			if (image != null) {
