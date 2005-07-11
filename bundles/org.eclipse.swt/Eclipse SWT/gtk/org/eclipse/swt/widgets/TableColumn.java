@@ -274,6 +274,26 @@ public boolean getResizable () {
 }
 
 /**
+ * Returns a value which describes the sort indicator for
+ * the receiver. The value will be one of <code>UP</code>,
+ * <code>DOWN</code> or <code>NONE</code>.
+ *
+ * @return the sort indicator 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+/*public*/ int getSortIndicator () {
+	checkWidget();
+	if (OS.gtk_tree_view_column_get_sort_indicator (handle)) {
+		return OS.gtk_tree_view_column_get_sort_order (handle) == 0 ? SWT.DOWN : SWT.UP;
+	}
+	return SWT.NONE;
+}
+
+/**
  * Gets the width of the receiver.
  *
  * @return the width
@@ -589,4 +609,25 @@ public void setWidth (int width) {
 	}
 }
 
+/**
+ * Sets the sort indicator for the receiver. The value can be
+ * one of <code>UP</code>, <code>DOWN</code> or <code>NONE</code>.
+ *
+ * @param direction the sort indicator 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+/*public*/ void setSortIndicator (int direction) {
+	checkWidget();
+	if ((direction & (SWT.UP | SWT.DOWN)) == 0 && direction != SWT.NONE) return;
+	if (direction == SWT.NONE) {
+		OS.gtk_tree_view_column_set_sort_indicator (handle, false);
+	} else {
+		OS.gtk_tree_view_column_set_sort_indicator (handle, true);
+		OS.gtk_tree_view_column_set_sort_order (handle, direction == SWT.DOWN ? 0 : 1);
+	}
+}
 }

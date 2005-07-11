@@ -9474,6 +9474,30 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1tree_1view_1column_1get_1resizable)
 }
 #endif
 
+#ifndef NO__1gtk_1tree_1view_1column_1get_1sort_1indicator
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1gtk_1tree_1view_1column_1get_1sort_1indicator)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1column_1get_1sort_1indicator_FUNC);
+	rc = (jboolean)gtk_tree_view_column_get_sort_indicator((GtkTreeViewColumn *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1view_1column_1get_1sort_1indicator_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1tree_1view_1column_1get_1sort_1order
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1tree_1view_1column_1get_1sort_1order)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1column_1get_1sort_1order_FUNC);
+	rc = (jint)gtk_tree_view_column_get_sort_order((GtkTreeViewColumn *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1view_1column_1get_1sort_1order_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1tree_1view_1column_1get_1spacing
 JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1tree_1view_1column_1get_1spacing)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -9609,6 +9633,26 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1view_1column_1set_1sizing)
 	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1column_1set_1sizing_FUNC);
 	gtk_tree_view_column_set_sizing((GtkTreeViewColumn *)arg0, (GtkTreeViewColumnSizing)arg1);
 	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1view_1column_1set_1sizing_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1tree_1view_1column_1set_1sort_1indicator
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1view_1column_1set_1sort_1indicator)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1column_1set_1sort_1indicator_FUNC);
+	gtk_tree_view_column_set_sort_indicator((GtkTreeViewColumn *)arg0, (gboolean)arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1view_1column_1set_1sort_1indicator_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1tree_1view_1column_1set_1sort_1order
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1view_1column_1set_1sort_1order)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1view_1column_1set_1sort_1order_FUNC);
+	gtk_tree_view_column_set_sort_order((GtkTreeViewColumn *)arg0, (GtkSortType)arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1view_1column_1set_1sort_1order_FUNC);
 }
 #endif
 

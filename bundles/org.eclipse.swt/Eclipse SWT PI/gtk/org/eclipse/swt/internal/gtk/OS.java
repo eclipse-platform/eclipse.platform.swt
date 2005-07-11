@@ -6490,6 +6490,24 @@ public static final boolean gtk_tree_view_column_get_visible(int /*long*/ column
 		lock.unlock();
 	}
 }
+public static final native boolean _gtk_tree_view_column_get_sort_indicator(int /*long*/ tree_column);
+public static final boolean gtk_tree_view_column_get_sort_indicator(int /*long*/ tree_column) {
+	lock.lock();
+	try {
+		return _gtk_tree_view_column_get_sort_indicator(tree_column);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _gtk_tree_view_column_get_sort_order(int /*long*/ tree_column);
+public static final int gtk_tree_view_column_get_sort_order(int /*long*/ tree_column) {
+	lock.lock();
+	try {
+		return _gtk_tree_view_column_get_sort_order(tree_column);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int _gtk_tree_view_column_get_width(int /*long*/ column);
 public static final int gtk_tree_view_column_get_width(int /*long*/ column) {
 	lock.lock();
@@ -6585,6 +6603,24 @@ public static final void gtk_tree_view_column_set_sizing(int /*long*/ column, in
 	lock.lock();
 	try {
 		_gtk_tree_view_column_set_sizing(column, type);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_tree_view_column_set_sort_indicator(int /*long*/ tree_column, boolean setting);
+public static final void gtk_tree_view_column_set_sort_indicator(int /*long*/ tree_column, boolean setting) {
+	lock.lock();
+	try {
+		_gtk_tree_view_column_set_sort_indicator(tree_column, setting);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_tree_view_column_set_sort_order(int /*long*/ tree_column, int order);
+public static final void gtk_tree_view_column_set_sort_order(int /*long*/ tree_column, int order) {
+	lock.lock();
+	try {
+		_gtk_tree_view_column_set_sort_order(tree_column, order);
 	} finally {
 		lock.unlock();
 	}
