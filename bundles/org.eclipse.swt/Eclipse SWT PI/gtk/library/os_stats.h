@@ -725,6 +725,7 @@ typedef enum {
 	_1gtk_1tree_1path_1next_FUNC,
 	_1gtk_1tree_1path_1prev_FUNC,
 	_1gtk_1tree_1path_1up_FUNC,
+	_1gtk_1tree_1selection_1count_1selected_1rows_FUNC,
 	_1gtk_1tree_1selection_1get_1selected_FUNC,
 	_1gtk_1tree_1selection_1get_1selected_1rows_FUNC,
 	_1gtk_1tree_1selection_1path_1is_1selected_FUNC,

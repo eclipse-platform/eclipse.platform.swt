@@ -6211,6 +6211,15 @@ public static final boolean gtk_tree_path_up(int /*long*/ path) {
 		lock.unlock();
 	}
 }
+public static final native int _gtk_tree_selection_count_selected_rows(int /*long*/ selection);
+public static final int gtk_tree_selection_count_selected_rows(int /*long*/ selection) {
+	lock.lock();
+	try {
+		return _gtk_tree_selection_count_selected_rows(selection);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native boolean _gtk_tree_selection_get_selected(int /*long*/ selection, int /*long*/[] model, int /*long*/ iter);
 public static final boolean gtk_tree_selection_get_selected(int /*long*/ selection, int /*long*/[] model, int /*long*/ iter) {
 	lock.lock();
