@@ -267,24 +267,6 @@ public boolean getResizable () {
 }
 
 /**
- * Returns a value which describes the sort indicator for
- * the receiver. The value will be one of <code>UP</code>,
- * <code>DOWN</code> or <code>NONE</code>.
- *
- * @return the sort indicator 
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-/*public*/ int getSortIndicator () {
-	checkWidget ();
-	if (parent.sortColumn != id) return SWT.NONE;
-	return parent.sortDirection == SWT.UP ? SWT.UP : SWT.DOWN;
-}
-
-/**
  * Gets the width of the receiver.
  *
  * @return the width
@@ -341,6 +323,9 @@ void releaseChild () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	if (parent.sortColumn == this) {
+		parent.sortColumn = null;
+	}
 	parent = null;
 	if (iconRef != 0) OS.ReleaseIconRef (iconRef);
 	iconRef = 0;
@@ -555,26 +540,5 @@ void updateHeader () {
 	OS.SetDataBrowserListViewHeaderDesc (parent.handle, id, desc);
 	OS.CFRelease (str);
 }
-/**
- * Sets the sort indicator for the receiver. The value can be
- * one of <code>UP</code>, <code>DOWN</code> or <code>NONE</code>.
- *
- * @param direction the sort indicator 
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-/*public*/ void setSortIndicator (int direction) {
-	checkWidget ();
-	if ((direction & (SWT.UP | SWT.DOWN)) == 0 && direction != SWT.NONE) return;
-	parent.sortColumn = direction == SWT.NONE ? 0 : id;
-	parent.sortDirection = direction;
-	OS.SetDataBrowserSortProperty (parent.handle, 0);
-	if (direction != SWT.NONE) {
-		OS.SetDataBrowserSortProperty (parent.handle, id);
-		OS.SetDataBrowserSortOrder (parent.handle, direction == SWT.UP ? (short)1 : (short)2);
-	}
-}
+
 }
