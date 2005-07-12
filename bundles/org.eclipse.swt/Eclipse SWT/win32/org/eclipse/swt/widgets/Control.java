@@ -577,7 +577,7 @@ Cursor findCursor () {
 }
 
 Control findThemeControl () {
-	return background == - 1 ? parent.findThemeControl () : null;
+	return background == -1 ? parent.findThemeControl () : null;
 }
 
 Menu [] findMenus (Control control) {
