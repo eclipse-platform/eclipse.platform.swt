@@ -1568,7 +1568,7 @@ public int getSelectionCount () {
  * 
  * @since 3.2
  */
-/*public*/ TreeColumn getSortColumn () {
+public TreeColumn getSortColumn () {
 	checkWidget ();
 	return sortColumn;
 }
@@ -1589,7 +1589,7 @@ public int getSelectionCount () {
  * 
  * @since 3.2
  */
-/*public*/ int getSortDirection () {
+public int getSortDirection () {
 	checkWidget ();
 	return sortDirection;
 }
@@ -2466,7 +2466,7 @@ public void setSelection (TreeItem [] items) {
  * 
  * @since 3.2
  */
-/*public*/ void setSortColumn (TreeColumn column) {
+public void setSortColumn (TreeColumn column) {
 	checkWidget ();
 	if (column != null && column.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (sortColumn != null && !sortColumn.isDisposed ()) {
@@ -2491,7 +2491,7 @@ public void setSelection (TreeItem [] items) {
  * 
  * @since 3.2
  */
-/*public*/ void setSortDirection (int direction) {
+public void setSortDirection (int direction) {
 	checkWidget ();
 	if ((direction & (SWT.UP | SWT.DOWN)) == 0 && direction != SWT.NONE) return;
 	sortDirection = direction;
