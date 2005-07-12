@@ -1393,7 +1393,7 @@ public int [] getSelectionIndices () {
  * 
  * @since 3.2
  */
-/*public*/ TableColumn getSortColumn () {
+public TableColumn getSortColumn () {
 	checkWidget ();
 	return sortColumn;
 }
@@ -1414,7 +1414,7 @@ public int [] getSelectionIndices () {
  * 
  * @since 3.2
  */
-/*public*/ int getSortDirection () {
+public int getSortDirection () {
 	checkWidget ();
 	return sortDirection;
 }
@@ -2439,7 +2439,7 @@ void setScrollWidth (int /*long*/ column, int /*long*/ iter) {
  * 
  * @since 3.2
  */
-/*public*/ void setSortColumn (TableColumn column) {
+public void setSortColumn (TableColumn column) {
 	checkWidget ();
 	if (column != null && column.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (sortColumn != null && !sortColumn.isDisposed()) {
@@ -2465,9 +2465,9 @@ void setScrollWidth (int /*long*/ column, int /*long*/ iter) {
  * 
  * @since 3.2
  */
-/*public*/ void setSortDirection  (int direction) {
+public void setSortDirection  (int direction) {
 	checkWidget ();
-	if ((direction & (SWT.UP | SWT.DOWN)) == 0 && direction != SWT.NONE) return;
+	if (direction != SWT.UP && direction != SWT.DOWN && direction != SWT.NONE) return;
 	sortDirection = direction;
 	if (sortColumn == null || sortColumn.isDisposed ()) return;
 	if (sortDirection == SWT.NONE) {
