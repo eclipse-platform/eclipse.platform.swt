@@ -1263,6 +1263,7 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int arc
 	if (cairo != 0) {
 		if (width == height) {
 			Cairo.cairo_arc_negative(cairo, x + width / 2f, y + height / 2f, width / 2f, -startAngle * (float)Compatibility.PI / 180,  -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
+			Cairo.cairo_line_to(cairo, x + width / 2f, y + height / 2f);
 		} else {
 			Cairo.cairo_save(cairo);
 			Cairo.cairo_translate(cairo, x + width / 2f, y + height / 2f);
