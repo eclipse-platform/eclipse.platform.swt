@@ -34,6 +34,7 @@
 #define gtk_file_filter_add_pattern_LIB "libgtk-x11-2.0.so.0"
 #define gtk_file_filter_new_LIB "libgtk-x11-2.0.so.0"
 #define gtk_file_filter_set_name_LIB "libgtk-x11-2.0.so.0"
+#define gtk_tree_selection_count_selected_rows_LIB "libgtk-x11-2.0.so.0"
 #define gtk_tree_selection_get_selected_rows_LIB "libgtk-x11-2.0.so.0"
 #define gtk_tree_view_column_cell_get_position_LIB "libgtk-x11-2.0.so.0"
 #define gtk_entry_set_alignment_LIB "libgtk-x11-2.0.so.0"
