@@ -490,19 +490,22 @@ void setImage (Image image, boolean sort, boolean right) {
 	HDITEM hdItem = new HDITEM ();
 	hdItem.mask = OS.HDI_FORMAT | OS.HDI_IMAGE | OS.HDI_BITMAP;
 	OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
+	hdItem.fmt &= ~OS.HDF_BITMAP_ON_RIGHT;
 	if (image != null) {
 		if (sort) {
 			hdItem.mask &= ~OS.HDI_IMAGE;
+			hdItem.fmt &= ~OS.HDF_IMAGE;
 			hdItem.fmt |= OS.HDF_BITMAP;
 			hdItem.hbm = image.handle;
 		} else {
 			hdItem.mask &= ~OS.HDI_BITMAP;
+			hdItem.fmt &= ~OS.HDF_BITMAP;
 			hdItem.fmt |= OS.HDF_IMAGE;
 			hdItem.iImage = parent.imageIndexHeader (image);
 		}
 		if (right) hdItem.fmt |= OS.HDF_BITMAP_ON_RIGHT;
 	} else {
-		hdItem.fmt &= ~(OS.HDF_IMAGE | OS.HDF_BITMAP | OS.HDF_BITMAP_ON_RIGHT);
+		hdItem.fmt &= ~(OS.HDF_IMAGE | OS.HDF_BITMAP);
 	}
 	OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
 }
@@ -551,7 +554,6 @@ public void setResizable (boolean resizable) {
 }
 
 void setSortDirection (int direction) {
-	checkWidget ();
 	if (OS.COMCTL32_MAJOR >= 6) {
 		int hwndHeader = parent.hwndHeader;
 		if (hwndHeader != 0) {
