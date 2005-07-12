@@ -54,8 +54,10 @@ public class Table extends Composite {
 	int col0ImageWidth = 0;
 	int headerImageHeight = 0;
 	TableColumn resizeColumn;
+	TableColumn sortColumn;
 	int resizeColumnX = -1;
 	int drawCount = 0;
+	int sortDirection;
 
 	Rectangle arrowBounds, checkboxBounds;
 
@@ -1081,6 +1083,46 @@ public int [] getSelectionIndices () {
 		result [i] = selectedItems [i].index;
 	}
 	return result;
+}
+/**
+ * Returns the column which shows the sort indicator for
+ * the receiver. The value may be null if no column shows
+ * the sort indicator.
+ *
+ * @return the sort indicator 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see #setSortColumn(TableColumn)
+ * 
+ * @since 3.2
+ */
+public TableColumn getSortColumn () {
+	checkWidget ();
+	return sortColumn;
+}
+/**
+ * Returns the direction of the sort indicator for the receiver. 
+ * The value will be one of <code>UP</code>, <code>DOWN</code> 
+ * or <code>NONE</code>.
+ *
+ * @return the sort direction
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see #setSortDirection(int)
+ * 
+ * @since 3.2
+ */
+public int getSortDirection () {
+	checkWidget ();
+	return sortDirection;
 }
 /**
  * Returns the zero-relative index of the item which is currently
@@ -3210,6 +3252,54 @@ public void setSelection (TableItem[] items) {
 	}
 	showItem (selectedItems [0]);
 	setFocusItem (selectedItems [0], true);
+}
+/**
+ * Sets the column used by the sort indicator for the receiver. A null
+ * value will clear the sort indicator.  The current sort column is cleared 
+ * before the new column is set.
+ *
+ * @param column the column used by the sort indicator
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the column is disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public void setSortColumn (TableColumn column) {
+	checkWidget ();
+	if (column != null && column.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (sortColumn != null && !sortColumn.isDisposed()) {
+		sortColumn.setSortDirection (SWT.NONE);
+	}
+	sortColumn = column;
+	if (sortColumn != null) {
+		sortColumn.setSortDirection (sortDirection);
+	}
+}
+/**
+ * Sets the direction of the sort indicator for the receiver. The value 
+ * can be one of <code>UP</code>, <code>DOWN</code> or <code>NONE</code>.
+ *
+ * @param direction the direction of the sort indicator 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public void setSortDirection  (int direction) {
+	checkWidget ();
+	if (direction != SWT.UP && direction != SWT.DOWN && direction != SWT.NONE) return;
+	sortDirection = direction;
+	if (sortColumn == null || sortColumn.isDisposed ()) return;
+	sortColumn.setSortDirection (sortDirection);
 }
 /**
  * Selects the item at the given zero-relative index in the receiver. 

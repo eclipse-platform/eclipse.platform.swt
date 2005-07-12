@@ -264,6 +264,9 @@ public void dispose () {
 void dispose (boolean notifyParent) {
 	super.dispose ();	/* the use of super is intentional here */
 	if (notifyParent) parent.destroyItem (this);
+	if (parent.sortColumn == this) {
+		parent.sortColumn = null;
+	}
 	parent = null;
 }
 /**
@@ -381,10 +384,6 @@ int getPreferredWidth () {
 public boolean getResizable () {
 	checkWidget ();
 	return resizable;
-}
-/*public*/ int getSortDirection () {
-	checkWidget ();
-	return sort;
 }
 /**
  * Gets the width of the receiver.
@@ -624,10 +623,8 @@ public void setResizable (boolean value) {
 	checkWidget ();
 	resizable = value;
 }
-/*public*/ void setSortDirection (int value) {
-	checkWidget ();
+void setSortDirection (int value) {
 	if (value == sort) return;
-	if (value != SWT.NONE && value != SWT.UP && value != SWT.DOWN) return;
 	sort = value;
 	if (parent.drawCount == 0 && parent.getHeaderVisible ()) {
 		parent.header.redraw (getX (), 0, width, parent.getHeaderHeight (), false);
