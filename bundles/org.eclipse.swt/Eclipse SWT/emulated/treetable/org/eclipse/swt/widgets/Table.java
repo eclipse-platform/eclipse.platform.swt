@@ -54,10 +54,10 @@ public class Table extends Composite {
 	int col0ImageWidth = 0;
 	int headerImageHeight = 0;
 	TableColumn resizeColumn;
-	TableColumn sortColumn;
 	int resizeColumnX = -1;
 	int drawCount = 0;
-	int sortDirection;
+	TableColumn sortColumn;
+	int sortDirection = SWT.NONE;
 
 	Rectangle arrowBounds, checkboxBounds;
 
