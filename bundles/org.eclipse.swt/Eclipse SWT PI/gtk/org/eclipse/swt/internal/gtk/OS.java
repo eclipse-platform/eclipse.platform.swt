@@ -7627,6 +7627,7 @@ public static final native void memmove(GtkAdjustment dest, int /*long*/ src);
 public static final native void memmove(GtkBorder dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(GdkColor dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(GdkEvent dest, int /*long*/ src, int /*long*/ size);
+public static final native void memmove(GdkEventAny dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(GdkEventButton dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(GdkEventCrossing dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(GdkEventExpose dest, int /*long*/ src, int /*long*/ size);

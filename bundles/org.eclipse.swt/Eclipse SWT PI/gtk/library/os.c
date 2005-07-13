@@ -12364,6 +12364,20 @@ fail:
 }
 #endif
 
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventAny_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEventAny_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	GdkEventAny _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventAny_2II_FUNC);
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+fail:
+	if (arg0 && lparg0) setGdkEventAnyFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventAny_2II_FUNC);
+}
+#endif
+
 #ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_GdkEventButton_2II
 JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEventButton_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)

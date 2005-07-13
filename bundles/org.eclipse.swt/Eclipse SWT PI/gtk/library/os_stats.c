@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 998;
-int OS_nativeFunctionCallCount[998];
+int OS_nativeFunctionCount = 999;
+int OS_nativeFunctionCallCount[999];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1WINDOWING_1X11",
@@ -980,6 +980,7 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__Lorg_eclipse_swt_internal_gtk_GTypeQuery_2II",
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkColor_2II",
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2II",
+	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventAny_2II",
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventButton_2II",
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventCrossing_2II",
 	"memmove__Lorg_eclipse_swt_internal_gtk_GdkEventExpose_2II",
