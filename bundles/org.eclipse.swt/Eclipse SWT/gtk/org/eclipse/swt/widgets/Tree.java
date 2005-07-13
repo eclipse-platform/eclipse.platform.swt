@@ -1160,29 +1160,37 @@ int /*long*/ getPixbufRenderer (int /*long*/ column) {
  */
 public TreeItem[] getSelection () {
 	checkWidget();
-	if ((style & SWT.MULTI) != 0) {
+	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
+	if (OS.GTK_VERSION < OS.VERSION (2, 2, 0)) {
 		display.treeSelectionLength  = 0;
 		display.treeSelection = new int [items.length];
-		int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 		OS.gtk_tree_selection_selected_foreach (selection, display.treeSelectionProc, handle);
 		TreeItem [] result = new TreeItem [display.treeSelectionLength];
 		for (int i=0; i<result.length; i++) result [i] = items [display.treeSelection [i]];
 		return result;
-	} else {
-		int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
-		int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
-		boolean hasSelection = OS.gtk_tree_selection_get_selected (selection, null, iter);
-		TreeItem [] result;
-		if (hasSelection) {
-			int [] index = new int [1];
-			OS.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, index, -1);
-			result = new TreeItem []{items [index [0]]};
-		} else {
-			result = new TreeItem [0];
+	}
+	int /*long*/ list = OS.gtk_tree_selection_get_selected_rows(selection, null);
+	if (list != 0) {
+		int count = OS.g_list_length (list);
+		int [] treeSelection = new int [count];
+		int length = 0;
+		for (int i=0; i<count; i++) {
+			int /*long*/ data = OS.g_list_nth_data (list, i);
+			int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+			if (OS.gtk_tree_model_get_iter (modelHandle, iter, data)) {
+				int [] index = new int [1];
+				OS.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, index, -1);
+				treeSelection [length] = index [0];
+				length++;
+			}
+			OS.g_free (iter);
 		}
-		OS.g_free (iter);
+		OS.g_list_free (list);
+		TreeItem [] result = new TreeItem [length];
+		for (int i=0; i<result.length; i++) result [i] = items [treeSelection [i]];
 		return result;
 	}
+	return new TreeItem [0];
 }
 	
 /**
@@ -1197,11 +1205,14 @@ public TreeItem[] getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget();
-	display.treeSelectionLength = 0;
-	display.treeSelection = null;
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
-	OS.gtk_tree_selection_selected_foreach (selection, display.treeSelectionProc, handle);
-	return display.treeSelectionLength;
+	if (OS.GTK_VERSION < OS.VERSION (2, 2, 0)) {
+		display.treeSelectionLength = 0;
+		display.treeSelection = null;
+		OS.gtk_tree_selection_selected_foreach (selection, display.treeSelectionProc, handle);
+		return display.treeSelectionLength;
+	}
+	return OS.gtk_tree_selection_count_selected_rows (selection);
 }
 
 int /*long*/ getTextRenderer (int /*long*/ column) {

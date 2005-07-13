@@ -523,11 +523,14 @@ public String [] getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget();
-	display.treeSelectionLength = 0;
-	display.treeSelection = null;
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
-	OS.gtk_tree_selection_selected_foreach (selection, display.treeSelectionProc, handle);
-	return display.treeSelectionLength;
+	if (OS.GTK_VERSION < OS.VERSION (2, 2, 0)) {
+		display.treeSelectionLength = 0;
+		display.treeSelection = null;
+		OS.gtk_tree_selection_selected_foreach (selection, display.treeSelectionProc, handle);
+		return display.treeSelectionLength;
+	}
+	return OS.gtk_tree_selection_count_selected_rows (selection);
 }
 
 /**
@@ -543,13 +546,31 @@ public int getSelectionCount () {
  */
 public int getSelectionIndex () {
 	checkWidget();
-	int itemCount = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
-	display.treeSelectionLength  = 0;
-	display.treeSelection = new int [itemCount];
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
-	OS.gtk_tree_selection_selected_foreach (selection, display.treeSelectionProc, handle);
-	if (display.treeSelectionLength == 0) return -1;
-	return display.treeSelection [0];
+	if (OS.GTK_VERSION < OS.VERSION (2, 2, 0)) {
+		int itemCount = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
+		display.treeSelectionLength  = 0;
+		display.treeSelection = new int [itemCount];
+		OS.gtk_tree_selection_selected_foreach (selection, display.treeSelectionProc, handle);
+		if (display.treeSelectionLength == 0) return -1;
+		return display.treeSelection [0];
+	}
+	int /*long*/ list = OS.gtk_tree_selection_get_selected_rows (selection, null);
+	if (list != 0) {
+		int count = OS.g_list_length (list);
+		int [] index = new int [1];
+		for (int i=0; i<count; i++) {
+			int /*long*/ data = OS.g_list_nth_data (list, i);
+			int /*long*/ indices = OS.gtk_tree_path_get_indices (data);
+			if (indices != 0) {
+				OS.memmove (index, indices, 4);
+				break;
+			}
+		}
+		OS.g_list_free (list);
+		return index [0];
+	}
+	return -1;
 }
 
 /**
@@ -570,15 +591,38 @@ public int getSelectionIndex () {
  */
 public int [] getSelectionIndices () {
 	checkWidget();
-	int itemCount = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
-	display.treeSelectionLength  = 0;
-	display.treeSelection = new int [itemCount];
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
-	OS.gtk_tree_selection_selected_foreach (selection, display.treeSelectionProc, handle);
-	if (display.treeSelectionLength == display.treeSelection.length) return display.treeSelection;
-	int [] result = new int [display.treeSelectionLength];
-	System.arraycopy (display.treeSelection, 0, result, 0, display.treeSelectionLength);
-	return result;
+	if (OS.GTK_VERSION < OS.VERSION (2, 2, 0)) {
+		int itemCount = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
+		display.treeSelectionLength  = 0;
+		display.treeSelection = new int [itemCount];
+		OS.gtk_tree_selection_selected_foreach (selection, display.treeSelectionProc, handle);
+		if (display.treeSelectionLength == display.treeSelection.length) return display.treeSelection;
+		int [] result = new int [display.treeSelectionLength];
+		System.arraycopy (display.treeSelection, 0, result, 0, display.treeSelectionLength);
+		return result;
+	}
+	int /*long*/ list = OS.gtk_tree_selection_get_selected_rows (selection, null);
+	if (list != 0) {
+		int count = OS.g_list_length (list);
+		int [] treeSelection = new int [count];
+		int length = 0;
+		for (int i=0; i<count; i++) {
+			int /*long*/ data = OS.g_list_nth_data (list, i);
+			int /*long*/ indices = OS.gtk_tree_path_get_indices (data);
+			if (indices != 0) {
+				int [] index = new int [1];
+				OS.memmove (index, indices, 4);
+				treeSelection [length] = index [0];
+				length++;
+			}
+		}
+		OS.g_list_free (list);
+		int [] result = new int [length];
+		System.arraycopy (treeSelection, 0, result, 0, length);
+		return result;
+	}
+	return new int [0];
 }
 
 /**
