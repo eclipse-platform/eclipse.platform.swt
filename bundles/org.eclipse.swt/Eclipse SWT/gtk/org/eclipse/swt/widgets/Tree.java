@@ -42,10 +42,11 @@ import org.eclipse.swt.events.*;
  */
 public class Tree extends Composite {
 	int /*long*/ modelHandle, checkRenderer;
-	int columnCount;
+	int columnCount, sortDirection;
 	int /*long*/ ignoreTextCell, ignorePixbufCell;
 	TreeItem[] items;
 	TreeColumn [] columns;
+	TreeColumn sortColumn;
 	ImageList imageList, headerImageList;
 	boolean firstCustomDraw;
 	boolean modelChanged;
@@ -1215,6 +1216,48 @@ public int getSelectionCount () {
 	return OS.gtk_tree_selection_count_selected_rows (selection);
 }
 
+/**
+ * Returns the column which shows the sort indicator for
+ * the receiver. The value may be null if no column shows
+ * the sort indicator.
+ *
+ * @return the sort indicator 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see #setSortColumn(TreeColumn)
+ * 
+ * @since 3.2
+ */
+public TreeColumn getSortColumn () {
+	checkWidget ();
+	return sortColumn;
+}
+
+/**
+ * Returns the direction of the sort indicator for the receiver. 
+ * The value will be one of <code>UP</code>, <code>DOWN</code> 
+ * or <code>NONE</code>.
+ *
+ * @return the sort direction
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see #setSortDirection(int)
+ * 
+ * @since 3.2
+ */
+public int getSortDirection () {
+	checkWidget ();
+	return sortDirection;
+}
+
 int /*long*/ getTextRenderer (int /*long*/ column) {
 	int /*long*/ list = OS.gtk_tree_view_column_get_cell_renderers (column);
 	if (list == 0) return 0;
@@ -2010,6 +2053,62 @@ public void setSelection (TreeItem [] items) {
 	}
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	if (fixColumn) hideFirstColumn ();
+}
+
+/**
+ * Sets the column used by the sort indicator for the receiver. A null
+ * value will clear the sort indicator.  The current sort column is cleared 
+ * before the new column is set.
+ *
+ * @param column the column used by the sort indicator
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the column is disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public void setSortColumn (TreeColumn column) {
+	checkWidget ();
+	if (column != null && column.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (sortColumn != null && !sortColumn.isDisposed()) {
+		OS.gtk_tree_view_column_set_sort_indicator (sortColumn.handle, false);
+	}
+	sortColumn = column;
+	if (sortColumn != null && sortDirection != SWT.NONE) {
+		OS.gtk_tree_view_column_set_sort_indicator (sortColumn.handle, true);
+		OS.gtk_tree_view_column_set_sort_order (sortColumn.handle, sortDirection == SWT.DOWN ? 0 : 1);
+	}
+}
+
+/**
+ * Sets the direction of the sort indicator for the receiver. The value 
+ * can be one of <code>UP</code>, <code>DOWN</code> or <code>NONE</code>.
+ *
+ * @param direction the direction of the sort indicator 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public void setSortDirection  (int direction) {
+	checkWidget ();
+	if (direction != SWT.UP && direction != SWT.DOWN && direction != SWT.NONE) return;
+	sortDirection = direction;
+	if (sortColumn == null || sortColumn.isDisposed ()) return;
+	if (sortDirection == SWT.NONE) {
+		OS.gtk_tree_view_column_set_sort_indicator (sortColumn.handle, false);
+	} else {
+		OS.gtk_tree_view_column_set_sort_indicator (sortColumn.handle, true);
+		OS.gtk_tree_view_column_set_sort_order (sortColumn.handle, sortDirection == SWT.DOWN ? 0 : 1);
+	}
 }
 
 /**
