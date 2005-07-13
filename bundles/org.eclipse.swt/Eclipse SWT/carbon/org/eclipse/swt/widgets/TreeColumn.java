@@ -304,6 +304,9 @@ void releaseChild () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	if (parent.sortColumn == this) {
+		parent.sortColumn = null;
+	}
 	parent = null;
 	if (iconRef != 0) OS.ReleaseIconRef (iconRef);
 	iconRef = 0;
