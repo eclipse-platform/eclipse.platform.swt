@@ -104,7 +104,7 @@ public class Display extends Device {
 	boolean wake;
 	int [] max_priority = new int [1], timeout = new int [1];
 	Callback eventCallback, filterCallback;
-	GdkEventButton gdkEvent = new GdkEventButton ();
+	GdkEventAny gdkEvent = new GdkEventAny ();
 	int /*long*/ eventProc, filterProc, windowProc2, windowProc3, windowProc4, windowProc5;
 	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5;
 	EventTable eventTable, filterTable;
@@ -1006,12 +1006,8 @@ int /*long*/ eventProc (int /*long*/ event, int /*long*/ data) {
 	*/
 	int time = OS.gdk_event_get_time (event);
 	if (time != 0) lastEventTime = time;
-	
-	/*
-	* NOTE: The event may not be a GdkEventButton.
-	* Check the event type before accessing any fields.
-	*/
-	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
+
+	OS.memmove (gdkEvent, event, GdkEventAny.sizeof);
 	switch (gdkEvent.type) {
 		case OS.GDK_BUTTON_PRESS:
 		case OS.GDK_KEY_PRESS:
