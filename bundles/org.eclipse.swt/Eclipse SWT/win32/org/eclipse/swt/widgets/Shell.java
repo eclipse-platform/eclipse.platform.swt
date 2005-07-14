@@ -757,9 +757,8 @@ public Shell [] getShells () {
 	return result;
 }
 
-boolean isLayoutDeferred (boolean layoutChild) {
-	if (layoutChild && layoutCount > 0) state |= LAYOUT_CHILD;
-	return layoutCount > 0;
+Composite findDeferredControl () {
+	return layoutCount > 0 ? this : null;
 }
 
 public boolean isEnabled () {

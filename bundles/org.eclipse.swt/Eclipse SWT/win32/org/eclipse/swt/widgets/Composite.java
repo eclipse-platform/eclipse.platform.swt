@@ -407,12 +407,11 @@ public boolean getLayoutDeferred () {
  */
 public boolean isLayoutDeferred () {
 	checkWidget ();
-	return isLayoutDeferred (false);
+	return findDeferredControl () != null;
 }
 
-boolean isLayoutDeferred (boolean layoutChild) {
-	if (layoutChild && layoutCount > 0) state |= LAYOUT_CHILD;
-	return layoutCount > 0 || parent.isLayoutDeferred (layoutChild);
+Composite findDeferredControl () {
+	return layoutCount > 0 ? this : parent.findDeferredControl ();
 }
 
 /**
@@ -751,7 +750,10 @@ public void setLayoutDeferred (boolean defer) {
 		if (--layoutCount == 0) {
 			boolean layout = (state & LAYOUT_CHILD) != 0 || (state & LAYOUT_NEEDED) != 0;
 			state &= ~LAYOUT_CHILD;
-			if (!isLayoutDeferred (layout)) {
+			Composite parent = findDeferredControl ();
+			if (parent != null) {
+				parent.state |= LAYOUT_CHILD;
+			} else {
 				if (layout) updateLayout (true, true);
 			}
 		}
@@ -870,7 +872,11 @@ boolean updateFont (Font oldFont, Font newFont) {
 }
 
 void updateLayout (boolean resize, boolean all) {
-	if (isLayoutDeferred (true)) return;
+	Composite parent = findDeferredControl ();
+	if (parent != null) {
+		parent.state |= LAYOUT_CHILD;
+		return;
+	}
 	if ((state & LAYOUT_NEEDED) != 0) {
 		boolean changed = (state & LAYOUT_CHANGED) != 0;
 		state &= ~(LAYOUT_NEEDED | LAYOUT_CHANGED);
