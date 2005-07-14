@@ -230,6 +230,10 @@ void createHandle () {
 	state |= CANVAS;
 }
 
+Composite findDeferredControl () {
+	return layoutCount > 0 ? this : parent.findDeferredControl ();
+}
+
 Menu [] findMenus (Control control) {
 	if (control == this) return new Menu [0];
 	Menu result [] = super.findMenus (control);
@@ -408,10 +412,6 @@ public boolean getLayoutDeferred () {
 public boolean isLayoutDeferred () {
 	checkWidget ();
 	return findDeferredControl () != null;
-}
-
-Composite findDeferredControl () {
-	return layoutCount > 0 ? this : parent.findDeferredControl ();
 }
 
 /**
