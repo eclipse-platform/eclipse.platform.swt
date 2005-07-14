@@ -757,6 +757,9 @@ void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
 	enableHandle (enabled, shellHandle);
 }
+Composite findDeferredControl () {
+	return layoutCount > 0 ? this : null;
+}
 /**
  * If the receiver is visible, moves it to the top of the 
  * drawing order for the display on which it was created 
@@ -1039,10 +1042,6 @@ boolean isModal () {
 	int [] argList = {OS.XmNmwmInputMode, 0};
 	OS.XtGetValues (shellHandle, argList, argList.length / 2);
 	return (argList [1] != -1 && argList [1] != OS.MWM_INPUT_MODELESS);
-}
-public boolean isLayoutDeferred () {
-	checkWidget ();
-	return layoutCount > 0;
 }
 public boolean isVisible () {
 	checkWidget();

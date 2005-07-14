@@ -565,6 +565,10 @@ void createHandle (int index) {
 	OS.gtk_window_set_modal (shellHandle, modal);
 }
 
+Composite findDeferredControl () {
+	return layoutCount > 0 ? this : null;
+}
+
 boolean hasBorder () {
 	return false;
 }
@@ -589,11 +593,6 @@ void hookEvents () {
 public boolean isEnabled () {
 	checkWidget ();
 	return getEnabled ();
-}
-
-public boolean isLayoutDeferred () {
-	checkWidget ();
-	return layoutCount > 0;
 }
 
 public boolean isVisible () {

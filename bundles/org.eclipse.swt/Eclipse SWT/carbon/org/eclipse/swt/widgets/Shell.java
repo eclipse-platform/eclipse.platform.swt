@@ -565,6 +565,10 @@ void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
 	OS.QDEndCGContext (port, context);
 }
 
+Composite findDeferredControl () {
+	return layoutCount > 0 ? this : null;
+}
+
 Cursor findCursor () {
 	return cursor;
 }
@@ -825,11 +829,6 @@ public boolean isEnabled () {
 
 boolean isEnabledCursor () {
 	return true;
-}
-
-public boolean isLayoutDeferred () {
-	checkWidget ();
-	return layoutCount > 0;
 }
 
 public boolean isVisible () {
