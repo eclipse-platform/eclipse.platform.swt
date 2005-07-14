@@ -36,7 +36,7 @@ import org.eclipse.swt.events.*;
  */
 
 public class Scale extends Control {
-	boolean ignoreFocus;
+	boolean ignoreResize;
 	static final int TrackBarProc;
 	static final TCHAR TrackBarClass = new TCHAR (0, OS.TRACKBAR_CLASS, true);
 	static {
@@ -283,12 +283,12 @@ void setBackgroundPixel (int pixel) {
 	/*
 	* Bug in Windows.  Changing the background color of the Scale
 	* widget and calling InvalidateRect() still draws with the old
-	* color.  The fix is to send a fake WM_SETFOCUS event to cause
+	* color.  The fix is to send a fake WM_SIZE event to cause
 	* it to redraw with the new background color.
 	*/
-	ignoreFocus = true;
-	OS.SendMessage (handle, OS.WM_SETFOCUS, 0, 0);
-	ignoreFocus = false;
+	ignoreResize = true;
+	OS.SendMessage (handle, OS.WM_SIZE, 0, 0);
+	ignoreResize = false;
 }
 
 /**
@@ -408,9 +408,56 @@ int windowProc () {
 	return TrackBarProc;
 }
 
-LRESULT WM_SETFOCUS (int wParam, int lParam) {
-	if (ignoreFocus) return null;
-	return super.WM_SETFOCUS (wParam, lParam);
+LRESULT WM_ERASEBKGND (int wParam, int lParam) {
+	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
+	if (result != null) return result;
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		Control control = findThemeControl ();
+		if (control != null) return LRESULT.ONE;
+	}
+	return result;
+}
+
+LRESULT WM_PAINT (int wParam, int lParam) {
+	/*
+	* Bug in Windows.  For some reason, when WM_CTLCOLORSTATIC
+	* is used to implement transparency and returns a NULL brush,
+	* Windows doesn't always draw the track bar.  It seems that
+	* it is drawn correctly the first time.  It is possible that
+	* Windows double buffers the control and the double buffer
+	* strategy fails when WM_CTLCOLORSTATIC returns unexpected
+	* results.  The fix is to send a fake WM_SIZE to force it
+	* to redraw every time there is a WM_PAINT.
+	*/
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		Control control = findThemeControl ();
+		if (control != null) {
+			ignoreResize = true;
+			OS.SendMessage (handle, OS.WM_SIZE, 0, 0);
+			ignoreResize = false;
+		}
+	}
+	return super.WM_PAINT (wParam, lParam);
+}
+
+LRESULT WM_SIZE (int wParam, int lParam) {
+	if (ignoreResize) return null;
+	return super.WM_SIZE (wParam, lParam);
+}
+
+LRESULT wmColorChild (int wParam, int lParam) {
+	LRESULT result = super.wmColorChild (wParam, lParam);
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		Control control = findThemeControl ();
+		if (control != null) {
+			RECT rect = new RECT ();
+			OS.GetClientRect (control.handle, rect);
+			OS.MapWindowPoints (control.handle, handle, rect, 2);
+			control.drawThemeBackground (wParam, rect);
+			return new LRESULT (OS.GetStockObject (OS.NULL_BRUSH));
+		}
+	}
+	return result;
 }
 
 LRESULT wmScrollChild (int wParam, int lParam) {
