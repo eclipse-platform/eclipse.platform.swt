@@ -407,7 +407,12 @@ public boolean getLayoutDeferred () {
  */
 public boolean isLayoutDeferred () {
 	checkWidget ();
-	return layoutCount > 0 || parent.isLayoutDeferred ();
+	return isLayoutDeferred (false);
+}
+
+boolean isLayoutDeferred (boolean layoutChild) {
+	if (layoutChild && layoutCount > 0) state |= LAYOUT_CHILD;
+	return layoutCount > 0 || parent.isLayoutDeferred (layoutChild);
 }
 
 /**
@@ -744,7 +749,11 @@ public void setLayout (Layout layout) {
 public void setLayoutDeferred (boolean defer) {
 	if (!defer) {
 		if (--layoutCount == 0) {
-			if (!isLayoutDeferred ()) updateLayout (true, true);
+			boolean layout = (state & LAYOUT_CHILD) != 0 || (state & LAYOUT_NEEDED) != 0;
+			state &= ~LAYOUT_CHILD;
+			if (!isLayoutDeferred (layout)) {
+				if (layout) updateLayout (true, true);
+			}
 		}
 	} else {
 		layoutCount++;
@@ -861,7 +870,7 @@ boolean updateFont (Font oldFont, Font newFont) {
 }
 
 void updateLayout (boolean resize, boolean all) {
-	if (isLayoutDeferred ()) return;
+	if (isLayoutDeferred (true)) return;
 	if ((state & LAYOUT_NEEDED) != 0) {
 		boolean changed = (state & LAYOUT_CHANGED) != 0;
 		state &= ~(LAYOUT_NEEDED | LAYOUT_CHANGED);

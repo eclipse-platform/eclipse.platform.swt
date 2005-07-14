@@ -757,8 +757,8 @@ public Shell [] getShells () {
 	return result;
 }
 
-public boolean isLayoutDeferred () {
-	checkWidget ();
+boolean isLayoutDeferred (boolean layoutChild) {
+	if (layoutChild && layoutCount > 0) state |= LAYOUT_CHILD;
 	return layoutCount > 0;
 }
 
