@@ -748,13 +748,8 @@ public void setLayout (Layout layout) {
 public void setLayoutDeferred (boolean defer) {
 	if (!defer) {
 		if (--layoutCount == 0) {
-			boolean layout = (state & LAYOUT_CHILD) != 0 || (state & LAYOUT_NEEDED) != 0;
-			state &= ~LAYOUT_CHILD;
-			Composite parent = findDeferredControl ();
-			if (parent != null) {
-				parent.state |= LAYOUT_CHILD;
-			} else {
-				if (layout) updateLayout (true, true);
+			if ((state & LAYOUT_CHILD) != 0 || (state & LAYOUT_NEEDED) != 0) {
+				updateLayout (true, true);
 			}
 		}
 	} else {
@@ -885,6 +880,7 @@ void updateLayout (boolean resize, boolean all) {
 		if (resize) setResizeChildren (true);
 	}
 	if (all) {
+		state &= ~LAYOUT_CHILD;
 		Control [] children = _getChildren ();
 		for (int i=0; i<children.length; i++) {
 			children [i].updateLayout (resize, all);
