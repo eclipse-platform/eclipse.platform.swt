@@ -68,8 +68,15 @@ public abstract class Widget {
 	static final int MOVED			= 1 << 5;
 	static final int RESIZED		= 1 << 6;
 	static final int GRAB			= 1 << 7;
-	static final int LAYOUT_CHANGED	= 1 << 8;
-	static final int LAYOUT_NEEDED  = 1 << 9;
+	
+	/* A layout was requested on this widget */
+	static final int LAYOUT_NEEDED	= 1 << 8;
+	
+	/* The preferred size of a child has changed */
+	static final int LAYOUT_CHANGED	= 1 << 9;
+	
+	/* A layout was requested in this widget hierachy */
+	static final int LAYOUT_CHILD	= 1 << 10;
 	
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT = 64;

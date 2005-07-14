@@ -319,6 +319,10 @@ void drawWidget (int widget, int damage) {
 	}
 }
 
+Composite findDeferredControl () {
+	return layoutCount > 0 ? this : parent.findDeferredControl ();
+}
+
 void fixTabList (Control control) {
 	if (tabList == null) return;
 	int count = 0;
@@ -540,7 +544,7 @@ boolean hooksKeys () {
  */
 public boolean isLayoutDeferred () {
 	checkWidget ();
-	return layoutCount > 0 || parent.isLayoutDeferred ();
+	return findDeferredControl () != null;
 }
 
 /**
@@ -980,7 +984,9 @@ public void setLayout (Layout layout) {
 public void setLayoutDeferred (boolean defer) {
 	if (!defer) {
 		if (--layoutCount == 0) {
-			if (!isLayoutDeferred ()) updateLayout (true);
+			if ((state & LAYOUT_CHILD) != 0 || (state & LAYOUT_NEEDED) != 0) {
+				updateLayout (true);
+			}
 		}
 	} else {
 		layoutCount++;
@@ -1036,13 +1042,18 @@ int traversalCode (int key_sym, PhKeyEvent_t ke) {
 }
 
 void updateLayout (boolean all) {
-	if (isLayoutDeferred ()) return;
+	Composite parent = findDeferredControl ();
+	if (parent != null) {
+		parent.state |= LAYOUT_CHILD;
+		return;
+	}
 	if ((state & LAYOUT_NEEDED) != 0) {
 		boolean changed = (state & LAYOUT_CHANGED) != 0;
 		state &= ~(LAYOUT_NEEDED | LAYOUT_CHANGED);
 		layout.layout (this, changed);
 	}
 	if (all) {
+		state &= ~LAYOUT_CHILD;
 		Control [] children = _getChildren ();
 		for (int i=0; i<children.length; i++) {
 			children [i].updateLayout (all);

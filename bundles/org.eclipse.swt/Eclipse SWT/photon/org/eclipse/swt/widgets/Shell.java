@@ -506,6 +506,10 @@ void deregister () {
 	WidgetTable.remove (shellHandle);
 }
 
+Composite findDeferredControl () {
+	return layoutCount > 0 ? this : null;
+}
+
 /**
  * If the receiver is visible, moves it to the top of the 
  * drawing order for the display on which it was created 
@@ -723,11 +727,6 @@ int hotkeyProc (int w, int data, int info) {
 		}
 	}
 	return OS.Pt_CONTINUE;
-}
-
-public boolean isLayoutDeferred () {
-	checkWidget ();
-	return layoutCount > 0;
 }
 
 /**
