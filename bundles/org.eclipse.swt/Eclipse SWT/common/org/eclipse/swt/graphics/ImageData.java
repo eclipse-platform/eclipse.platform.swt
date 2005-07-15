@@ -639,49 +639,44 @@ public int getPixel(int x, int y) {
 	int index;
 	int theByte;
 	int mask;
-	if (depth == 1) {
-		index = (y * bytesPerLine) + (x >> 3);
-		theByte = data[index] & 0xFF;
-		mask = 1 << (7 - (x & 0x7));
-		if ((theByte & mask) == 0) {
-			return 0;
-		} else {
-			return 1;
-		}
-	}
-	if (depth == 2) {
-		index = (y * bytesPerLine) + (x >> 2);
-		theByte = data[index] & 0xFF;
-		int offset = 3 - (x % 4);
-		mask = 3 << (offset * 2);
-		return (theByte & mask) >> (offset * 2);
-	}
-	if (depth == 4) {
-		index = (y * bytesPerLine) + (x >> 1);
-		theByte = data[index] & 0xFF;
-		if ((x & 0x1) == 0) {
-			return theByte >> 4;
-		} else {
-			return theByte & 0x0F;
-		}
-	}
-	if (depth == 8) {
-		index = (y * bytesPerLine) + x ;
-		return data[index] & 0xFF;
-	}
-	if (depth == 16) {
-		index = (y * bytesPerLine) + (x * 2);
-		return ((data[index+1] & 0xFF) << 8) + (data[index] & 0xFF);
-	}
-	if (depth == 24) {
-		index = (y * bytesPerLine) + (x * 3);
-		return ((data[index] & 0xFF) << 16) + ((data[index+1] & 0xFF) << 8) +
-			(data[index+2] & 0xFF);
-	}
-	if (depth == 32) {
-		index = (y * bytesPerLine) + (x * 4);
-		return ((data[index] & 0xFF) << 24) + ((data[index+1] & 0xFF) << 16) +
-				((data[index+2] & 0xFF) << 8) + (data[index+3] & 0xFF);
+	switch (depth) {
+		case 32:
+			index = (y * bytesPerLine) + (x * 4);
+			return ((data[index] & 0xFF) << 24) + ((data[index+1] & 0xFF) << 16) +
+					((data[index+2] & 0xFF) << 8) + (data[index+3] & 0xFF);
+		case 24:
+			index = (y * bytesPerLine) + (x * 3);
+			return ((data[index] & 0xFF) << 16) + ((data[index+1] & 0xFF) << 8) +
+				(data[index+2] & 0xFF);
+		case 16:
+			index = (y * bytesPerLine) + (x * 2);
+			return ((data[index+1] & 0xFF) << 8) + (data[index] & 0xFF);
+		case 8:
+			index = (y * bytesPerLine) + x ;
+			return data[index] & 0xFF;
+		case 4:
+			index = (y * bytesPerLine) + (x >> 1);
+			theByte = data[index] & 0xFF;
+			if ((x & 0x1) == 0) {
+				return theByte >> 4;
+			} else {
+				return theByte & 0x0F;
+			}
+		case 2:
+			index = (y * bytesPerLine) + (x >> 2);
+			theByte = data[index] & 0xFF;
+			int offset = 3 - (x % 4);
+			mask = 3 << (offset * 2);
+			return (theByte & mask) >> (offset * 2);
+		case 1:
+			index = (y * bytesPerLine) + (x >> 3);
+			theByte = data[index] & 0xFF;
+			mask = 1 << (7 - (x & 0x7));
+			if ((theByte & mask) == 0) {
+				return 0;
+			} else {
+				return 1;
+			}
 	}
 	SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
 	return 0;
@@ -719,85 +714,26 @@ public void getPixels(int x, int y, int getWidth, byte[] pixels, int startIndex)
 	int n = getWidth;
 	int i = startIndex;
 	int srcX = x, srcY = y;
-	if (depth == 1) {
-		index = (y * bytesPerLine) + (x >> 3);
-		theByte = data[index] & 0xFF;
-		while (n > 0) {
-			mask = 1 << (7 - (srcX & 0x7));
-			if ((theByte & mask) == 0) {
-				pixels[i] = 0;
-			} else {
-				pixels[i] = 1;
-			}
-			i++;
-			n--;
-			srcX++;
-			if (srcX >= width) {
-				srcY++;
-				index = srcY * bytesPerLine;
-				if (n > 0) theByte = data[index] & 0xFF;
-				srcX = 0;
-			} else {
-				if (mask == 1) {
+	switch (depth) {
+		case 8:
+			index = (y * bytesPerLine) + x;
+			for (int j = 0; j < getWidth; j++) {
+				pixels[i] = data[index];
+				i++;
+				srcX++;
+				if (srcX >= width) {
+					srcY++;
+					index = srcY * bytesPerLine;
+					srcX = 0;
+				} else {
 					index++;
-					if (n > 0) theByte = data[index] & 0xFF;
 				}
 			}
-		}
-		return;
-	}
-	if (depth == 2) {
-		index = (y * bytesPerLine) + (x >> 2);
-		theByte = data[index] & 0xFF;
-		int offset;
-		while (n > 0) {
-			offset = 3 - (srcX % 4);
-			mask = 3 << (offset * 2);
-			pixels[i] = (byte)((theByte & mask) >> (offset * 2));
-			i++;
-			n--;
-			srcX++;
-			if (srcX >= width) {
-				srcY++;
-				index = srcY * bytesPerLine;
-				if (n > 0) theByte = data[index] & 0xFF;
-				srcX = 0;
-			} else {
-				if (offset == 0) {
-					index++;
-					theByte = data[index] & 0xFF;
-				}
-			}
-		}
-		return;
-	}
-	if (depth == 4) {
-		index = (y * bytesPerLine) + (x >> 1);
-		if ((x & 0x1) == 1) {
-			theByte = data[index] & 0xFF;
-			pixels[i] = (byte)(theByte & 0x0F);
-			i++;
-			n--;
-			srcX++;
-			if (srcX >= width) {
-				srcY++;
-				index = srcY * bytesPerLine;
-				srcX = 0;
-			} else {
-				index++;
-			}
-		}
-		while (n > 1) {
-			theByte = data[index] & 0xFF;
-			pixels[i] = (byte)(theByte >> 4);
-			i++;
-			n--;
-			srcX++;
-			if (srcX >= width) {
-				srcY++;
-				index = srcY * bytesPerLine;
-				srcX = 0;
-			} else {
+			return;
+		case 4:
+			index = (y * bytesPerLine) + (x >> 1);
+			if ((x & 0x1) == 1) {
+				theByte = data[index] & 0xFF;
 				pixels[i] = (byte)(theByte & 0x0F);
 				i++;
 				n--;
@@ -810,28 +746,85 @@ public void getPixels(int x, int y, int getWidth, byte[] pixels, int startIndex)
 					index++;
 				}
 			}
-		}
-		if (n > 0) {
-			theByte = data[index] & 0xFF;
-			pixels[i] = (byte)(theByte >> 4);
-		}
-		return;
-	}
-	if (depth == 8) {
-		index = (y * bytesPerLine) + x;
-		for (int j = 0; j < getWidth; j++) {
-			pixels[i] = data[index];
-			i++;
-			srcX++;
-			if (srcX >= width) {
-				srcY++;
-				index = srcY * bytesPerLine;
-				srcX = 0;
-			} else {
-				index++;
+			while (n > 1) {
+				theByte = data[index] & 0xFF;
+				pixels[i] = (byte)(theByte >> 4);
+				i++;
+				n--;
+				srcX++;
+				if (srcX >= width) {
+					srcY++;
+					index = srcY * bytesPerLine;
+					srcX = 0;
+				} else {
+					pixels[i] = (byte)(theByte & 0x0F);
+					i++;
+					n--;
+					srcX++;
+					if (srcX >= width) {
+						srcY++;
+						index = srcY * bytesPerLine;
+						srcX = 0;
+					} else {
+						index++;
+					}
+				}
 			}
-		}
-		return;
+			if (n > 0) {
+				theByte = data[index] & 0xFF;
+				pixels[i] = (byte)(theByte >> 4);
+			}
+			return;
+		case 2:
+			index = (y * bytesPerLine) + (x >> 2);
+			theByte = data[index] & 0xFF;
+			int offset;
+			while (n > 0) {
+				offset = 3 - (srcX % 4);
+				mask = 3 << (offset * 2);
+				pixels[i] = (byte)((theByte & mask) >> (offset * 2));
+				i++;
+				n--;
+				srcX++;
+				if (srcX >= width) {
+					srcY++;
+					index = srcY * bytesPerLine;
+					if (n > 0) theByte = data[index] & 0xFF;
+					srcX = 0;
+				} else {
+					if (offset == 0) {
+						index++;
+						theByte = data[index] & 0xFF;
+					}
+				}
+			}
+			return;
+		case 1:
+			index = (y * bytesPerLine) + (x >> 3);
+			theByte = data[index] & 0xFF;
+			while (n > 0) {
+				mask = 1 << (7 - (srcX & 0x7));
+				if ((theByte & mask) == 0) {
+					pixels[i] = 0;
+				} else {
+					pixels[i] = 1;
+				}
+				i++;
+				n--;
+				srcX++;
+				if (srcX >= width) {
+					srcY++;
+					index = srcY * bytesPerLine;
+					if (n > 0) theByte = data[index] & 0xFF;
+					srcX = 0;
+				} else {
+					if (mask == 1) {
+						index++;
+						if (n > 0) theByte = data[index] & 0xFF;
+					}
+				}
+			}
+			return;
 	}
 	SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
 }
@@ -867,85 +860,74 @@ public void getPixels(int x, int y, int getWidth, int[] pixels, int startIndex) 
 	int n = getWidth;
 	int i = startIndex;
 	int srcX = x, srcY = y;
-	if (depth == 1) {
-		index = (y * bytesPerLine) + (x >> 3);
-		theByte = data[index] & 0xFF;
-		while (n > 0) {
-			mask = 1 << (7 - (srcX & 0x7));
-			if ((theByte & mask) == 0) {
-				pixels[i] = 0;
-			} else {
-				pixels[i] = 1;
-			}
-			i++;
-			n--;
-			srcX++;
-			if (srcX >= width) {
-				srcY++;
-				index = srcY * bytesPerLine;
-				if (n > 0) theByte = data[index] & 0xFF;
-				srcX = 0;
-			} else {
-				if (mask == 1) {
-					index++;
-					if (n > 0) theByte = data[index] & 0xFF;
+	switch (depth) {
+		case 32:
+			index = (y * bytesPerLine) + (x * 4);
+			i = startIndex;
+			for (int j = 0; j < getWidth; j++) {
+				pixels[i] = ((data[index] & 0xFF) << 24) | ((data[index+1] & 0xFF) << 16)
+					| ((data[index+2] & 0xFF) << 8) | (data[index+3] & 0xFF);
+				i++;
+				srcX++;
+				if (srcX >= width) {
+					srcY++;
+					index = srcY * bytesPerLine;
+					srcX = 0;
+				} else {
+					index += 4;
 				}
 			}
-		}
-		return;
-	}		
-	if (depth == 2) {
-		index = (y * bytesPerLine) + (x >> 2);
-		theByte = data[index] & 0xFF;
-		int offset;
-		while (n > 0) {
-			offset = 3 - (srcX % 4);
-			mask = 3 << (offset * 2);
-			pixels[i] = (byte)((theByte & mask) >> (offset * 2));
-			i++;
-			n--;
-			srcX++;
-			if (srcX >= width) {
-				srcY++;
-				index = srcY * bytesPerLine;
-				if (n > 0) theByte = data[index] & 0xFF;
-				srcX = 0;
-			} else {
-				if (offset == 0) {
-					index++;
-					theByte = data[index] & 0xFF;
+			return;
+		case 24:
+			index = (y * bytesPerLine) + (x * 3);
+			for (int j = 0; j < getWidth; j++) {
+				pixels[i] = ((data[index] & 0xFF) << 16) | ((data[index+1] & 0xFF) << 8)
+					| (data[index+2] & 0xFF);
+				i++;
+				srcX++;
+				if (srcX >= width) {
+					srcY++;
+					index = srcY * bytesPerLine;
+					srcX = 0;
+				} else {
+					index += 3;
 				}
 			}
-		}
-		return;
-	}
-	if (depth == 4) {
-		index = (y * bytesPerLine) + (x >> 1);
-		if ((x & 0x1) == 1) {
-			theByte = data[index] & 0xFF;
-			pixels[i] = theByte & 0x0F;
-			i++;
-			n--;
-			srcX++;
-			if (srcX >= width) {
-				srcY++;
-				index = srcY * bytesPerLine;
-				srcX = 0;
-			} else {
-				index++;
+			return;
+		case 16:
+			index = (y * bytesPerLine) + (x * 2);
+			for (int j = 0; j < getWidth; j++) {
+				pixels[i] = ((data[index+1] & 0xFF) << 8) + (data[index] & 0xFF);
+				i++;
+				srcX++;
+				if (srcX >= width) {
+					srcY++;
+					index = srcY * bytesPerLine;
+					srcX = 0;
+				} else {
+					index += 2;
+				}
 			}
-		}
-		while (n > 1) {
-			theByte = data[index] & 0xFF;
-			pixels[i] = theByte >> 4;
-			i++;
-			n--;
-			srcX++;
-			if (srcX >= width) {
-				srcY++;
-				index = srcY * bytesPerLine;
-				srcX = 0;
-			} else {
+			return;
+		case 8:
+			index = (y * bytesPerLine) + x;
+			for (int j = 0; j < getWidth; j++) {
+				pixels[i] = data[index] & 0xFF;
+				i++;
+				srcX++;
+				if (srcX >= width) {
+					srcY++;
+					index = srcY * bytesPerLine;
+					srcX = 0;
+				} else {
+					index++;
+				}
+			}
+			return;
+		case 4:
+			index = (y * bytesPerLine) + (x >> 1);
+			if ((x & 0x1) == 1) {
+				theByte = data[index] & 0xFF;
 				pixels[i] = theByte & 0x0F;
 				i++;
 				n--;
@@ -958,79 +940,85 @@ public void getPixels(int x, int y, int getWidth, int[] pixels, int startIndex) 
 					index++;
 				}
 			}
-		}
-		if (n > 0) {
+			while (n > 1) {
+				theByte = data[index] & 0xFF;
+				pixels[i] = theByte >> 4;
+				i++;
+				n--;
+				srcX++;
+				if (srcX >= width) {
+					srcY++;
+					index = srcY * bytesPerLine;
+					srcX = 0;
+				} else {
+					pixels[i] = theByte & 0x0F;
+					i++;
+					n--;
+					srcX++;
+					if (srcX >= width) {
+						srcY++;
+						index = srcY * bytesPerLine;
+						srcX = 0;
+					} else {
+						index++;
+					}
+				}
+			}
+			if (n > 0) {
+				theByte = data[index] & 0xFF;
+				pixels[i] = theByte >> 4;
+			}
+			return;
+		case 2:
+			index = (y * bytesPerLine) + (x >> 2);
 			theByte = data[index] & 0xFF;
-			pixels[i] = theByte >> 4;
-		}
-		return;
-	}
-	if (depth == 8) {
-		index = (y * bytesPerLine) + x;
-		for (int j = 0; j < getWidth; j++) {
-			pixels[i] = data[index] & 0xFF;
-			i++;
-			srcX++;
-			if (srcX >= width) {
-				srcY++;
-				index = srcY * bytesPerLine;
-				srcX = 0;
-			} else {
-				index++;
+			int offset;
+			while (n > 0) {
+				offset = 3 - (srcX % 4);
+				mask = 3 << (offset * 2);
+				pixels[i] = (byte)((theByte & mask) >> (offset * 2));
+				i++;
+				n--;
+				srcX++;
+				if (srcX >= width) {
+					srcY++;
+					index = srcY * bytesPerLine;
+					if (n > 0) theByte = data[index] & 0xFF;
+					srcX = 0;
+				} else {
+					if (offset == 0) {
+						index++;
+						theByte = data[index] & 0xFF;
+					}
+				}
 			}
-		}
-		return;
-	}
-	if (depth == 16) {
-		index = (y * bytesPerLine) + (x * 2);
-		for (int j = 0; j < getWidth; j++) {
-			pixels[i] = ((data[index+1] & 0xFF) << 8) + (data[index] & 0xFF);
-			i++;
-			srcX++;
-			if (srcX >= width) {
-				srcY++;
-				index = srcY * bytesPerLine;
-				srcX = 0;
-			} else {
-				index += 2;
+			return;
+		case 1:
+			index = (y * bytesPerLine) + (x >> 3);
+			theByte = data[index] & 0xFF;
+			while (n > 0) {
+				mask = 1 << (7 - (srcX & 0x7));
+				if ((theByte & mask) == 0) {
+					pixels[i] = 0;
+				} else {
+					pixels[i] = 1;
+				}
+				i++;
+				n--;
+				srcX++;
+				if (srcX >= width) {
+					srcY++;
+					index = srcY * bytesPerLine;
+					if (n > 0) theByte = data[index] & 0xFF;
+					srcX = 0;
+				} else {
+					if (mask == 1) {
+						index++;
+						if (n > 0) theByte = data[index] & 0xFF;
+					}
+				}
 			}
-		}
-		return;
-	}
-	if (depth == 24) {
-		index = (y * bytesPerLine) + (x * 3);
-		for (int j = 0; j < getWidth; j++) {
-			pixels[i] = ((data[index] & 0xFF) << 16) | ((data[index+1] & 0xFF) << 8)
-				| (data[index+2] & 0xFF);
-			i++;
-			srcX++;
-			if (srcX >= width) {
-				srcY++;
-				index = srcY * bytesPerLine;
-				srcX = 0;
-			} else {
-				index += 3;
-			}
-		}
-		return;
-	}
-	if (depth == 32) {
-		index = (y * bytesPerLine) + (x * 4);
-		i = startIndex;
-		for (int j = 0; j < getWidth; j++) {
-			pixels[i] = ((data[index] & 0xFF) << 24) | ((data[index+1] & 0xFF) << 16)
-				| ((data[index+2] & 0xFF) << 8) | (data[index+3] & 0xFF);
-			i++;
-			srcX++;
-			if (srcX >= width) {
-				srcY++;
-				index = srcY * bytesPerLine;
-				srcX = 0;
-			} else {
-				index += 4;
-			}
-		}
-		return;
+			return;
 	}
 	SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
 }
@@ -1217,59 +1205,54 @@ public void setPixel(int x, int y, int pixelValue) {
 	int index;
 	byte theByte;
 	int mask;
-	if (depth == 1) {
-		index = (y * bytesPerLine) + (x >> 3);
-		theByte = data[index];
-		mask = 1 << (7 - (x & 0x7));
-		if ((pixelValue & 0x1) == 1) {
-			data[index] = (byte)(theByte | mask);
-		} else {
-			data[index] = (byte)(theByte & (mask ^ -1));
-		}
-		return;
-	}
-	if (depth == 2) {
-		index = (y * bytesPerLine) + (x >> 2);
-		theByte = data[index];
-		int offset = 3 - (x % 4);
-		mask = 0xFF ^ (3 << (offset * 2));
-		data[index] = (byte)((data[index] & mask) | (pixelValue << (offset * 2)));
-		return;
-	}
-	if (depth == 4) {
-		index = (y * bytesPerLine) + (x >> 1);
-		if ((x & 0x1) == 0) {
-			data[index] = (byte)((data[index] & 0x0F) | ((pixelValue & 0x0F) << 4));
-		} else {
-			data[index] = (byte)((data[index] & 0xF0) | (pixelValue & 0x0F));
-		}
-		return;
-	}
-	if (depth == 8) {
-		index = (y * bytesPerLine) + x ;
-		data[index] = (byte)(pixelValue & 0xFF);
-		return;
-	}
-	if (depth == 16) {
-		index = (y * bytesPerLine) + (x * 2);
-		data[index + 1] = (byte)((pixelValue >> 8) & 0xFF);
-		data[index] = (byte)(pixelValue & 0xFF);
-		return;
-	}
-	if (depth == 24) {
-		index = (y * bytesPerLine) + (x * 3);
-		data[index] = (byte)((pixelValue >> 16) & 0xFF);
-		data[index + 1] = (byte)((pixelValue >> 8) & 0xFF);
-		data[index + 2] = (byte)(pixelValue & 0xFF);
-		return;
-	}
-	if (depth == 32) {
-		index = (y * bytesPerLine) + (x * 4);
-		data[index]  = (byte)((pixelValue >> 24) & 0xFF);
-		data[index + 1] = (byte)((pixelValue >> 16) & 0xFF);
-		data[index + 2] = (byte)((pixelValue >> 8) & 0xFF);
-		data[index + 3] = (byte)(pixelValue & 0xFF);
-		return;
+	switch (depth) {
+		case 32:
+			index = (y * bytesPerLine) + (x * 4);
+			data[index]  = (byte)((pixelValue >> 24) & 0xFF);
+			data[index + 1] = (byte)((pixelValue >> 16) & 0xFF);
+			data[index + 2] = (byte)((pixelValue >> 8) & 0xFF);
+			data[index + 3] = (byte)(pixelValue & 0xFF);
+			return;
+		case 24:
+			index = (y * bytesPerLine) + (x * 3);
+			data[index] = (byte)((pixelValue >> 16) & 0xFF);
+			data[index + 1] = (byte)((pixelValue >> 8) & 0xFF);
+			data[index + 2] = (byte)(pixelValue & 0xFF);
+			return;
+		case 16:
+			index = (y * bytesPerLine) + (x * 2);
+			data[index + 1] = (byte)((pixelValue >> 8) & 0xFF);
+			data[index] = (byte)(pixelValue & 0xFF);
+			return;
+		case 8:
+			index = (y * bytesPerLine) + x ;
+			data[index] = (byte)(pixelValue & 0xFF);
+			return;
+		case 4:
+			index = (y * bytesPerLine) + (x >> 1);
+			if ((x & 0x1) == 0) {
+				data[index] = (byte)((data[index] & 0x0F) | ((pixelValue & 0x0F) << 4));
+			} else {
+				data[index] = (byte)((data[index] & 0xF0) | (pixelValue & 0x0F));
+			}
+			return;
+		case 2:
+			index = (y * bytesPerLine) + (x >> 2);
+			theByte = data[index];
+			int offset = 3 - (x % 4);
+			mask = 0xFF ^ (3 << (offset * 2));
+			data[index] = (byte)((data[index] & mask) | (pixelValue << (offset * 2)));
+			return;
+		case 1:
+			index = (y * bytesPerLine) + (x >> 3);
+			theByte = data[index];
+			mask = 1 << (7 - (x & 0x7));
+			if ((pixelValue & 0x1) == 1) {
+				data[index] = (byte)(theByte | mask);
+			} else {
+				data[index] = (byte)(theByte & (mask ^ -1));
+			}
+			return;
 	}
 	SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
 }
@@ -1307,96 +1290,94 @@ public void setPixels(int x, int y, int putWidth, byte[] pixels, int startIndex)
 	int n = putWidth;
 	int i = startIndex;
 	int srcX = x, srcY = y;
-	if (depth == 1) {
-		index = (y * bytesPerLine) + (x >> 3);
-		while (n > 0) {
-			mask = 1 << (7 - (srcX & 0x7));
-			if ((pixels[i] & 0x1) == 1) {
-				data[index] = (byte)((data[index] & 0xFF) | mask);
-			} else {
-				data[index] = (byte)((data[index] & 0xFF) & (mask ^ -1));
-			}
-			i++;
-			n--;
-			srcX++;
-			if (srcX >= width) {
-				srcY++;
-				index = srcY * bytesPerLine;
-				srcX = 0;
-			} else {
-				if (mask == 1) {
-					index++;
-				}
-			}
-		}
-		return;
-	}
-	if (depth == 2) {
-		byte [] masks = { (byte)0xFC, (byte)0xF3, (byte)0xCF, (byte)0x3F };
-		index = (y * bytesPerLine) + (x >> 2);
-		int offset = 3 - (x % 4);
-		while (n > 0) {
-			theByte = pixels[i] & 0x3;
-			data[index] = (byte)((data[index] & masks[offset]) | (theByte << (offset * 2)));
-			i++;
-			n--;
-			srcX++;
-			if (srcX >= width) {
-				srcY++;
-				index = srcY * bytesPerLine;
-				offset = 0;
-				srcX = 0;
-			} else {
-				if (offset == 0) {
-					index++;
-					offset = 3;
+	switch (depth) {
+		case 8:
+			index = (y * bytesPerLine) + x;
+			for (int j = 0; j < putWidth; j++) {
+				data[index] = (byte)(pixels[i] & 0xFF);
+				i++;
+				srcX++;
+				if (srcX >= width) {
+					srcY++;
+					index = srcY * bytesPerLine;
+					srcX = 0;
 				} else {
-					offset--;
+					index++;
 				}
 			}
-		}
-		return;
-	}
-	if (depth == 4) {
-		index = (y * bytesPerLine) + (x >> 1);
-		boolean high = (x & 0x1) == 0;
-		while (n > 0) {
-			theByte = pixels[i] & 0x0F;
-			if (high) {
-				data[index] = (byte)((data[index] & 0x0F) | (theByte << 4));
-			} else {
-				data[index] = (byte)((data[index] & 0xF0) | theByte);
+			return;
+		case 4:
+			index = (y * bytesPerLine) + (x >> 1);
+			boolean high = (x & 0x1) == 0;
+			while (n > 0) {
+				theByte = pixels[i] & 0x0F;
+				if (high) {
+					data[index] = (byte)((data[index] & 0x0F) | (theByte << 4));
+				} else {
+					data[index] = (byte)((data[index] & 0xF0) | theByte);
+				}
+				i++;
+				n--;
+				srcX++;
+				if (srcX >= width) {
+					srcY++;
+					index = srcY * bytesPerLine;
+					high = true;
+					srcX = 0;
+				} else {
+					if (!high) index++;
+					high = !high;
+				}
 			}
-			i++;
-			n--;
-			srcX++;
-			if (srcX >= width) {
-				srcY++;
-				index = srcY * bytesPerLine;
-				high = true;
-				srcX = 0;
-			} else {
-				if (!high) index++;
-				high = !high;
+			return;
+		case 2:
+			byte [] masks = { (byte)0xFC, (byte)0xF3, (byte)0xCF, (byte)0x3F };
+			index = (y * bytesPerLine) + (x >> 2);
+			int offset = 3 - (x % 4);
+			while (n > 0) {
+				theByte = pixels[i] & 0x3;
+				data[index] = (byte)((data[index] & masks[offset]) | (theByte << (offset * 2)));
+				i++;
+				n--;
+				srcX++;
+				if (srcX >= width) {
+					srcY++;
+					index = srcY * bytesPerLine;
+					offset = 0;
+					srcX = 0;
+				} else {
+					if (offset == 0) {
+						index++;
+						offset = 3;
+					} else {
+						offset--;
+					}
+				}
 			}
-		}
-		return;
-	}
-	if (depth == 8) {
-		index = (y * bytesPerLine) + x;
-		for (int j = 0; j < putWidth; j++) {
-			data[index] = (byte)(pixels[i] & 0xFF);
-			i++;
-			srcX++;
-			if (srcX >= width) {
-				srcY++;
-				index = srcY * bytesPerLine;
-				srcX = 0;
-			} else {
-				index++;
+			return;
+		case 1:
+			index = (y * bytesPerLine) + (x >> 3);
+			while (n > 0) {
+				mask = 1 << (7 - (srcX & 0x7));
+				if ((pixels[i] & 0x1) == 1) {
+					data[index] = (byte)((data[index] & 0xFF) | mask);
+				} else {
+					data[index] = (byte)((data[index] & 0xFF) & (mask ^ -1));
+				}
+				i++;
+				n--;
+				srcX++;
+				if (srcX >= width) {
+					srcY++;
+					index = srcY * bytesPerLine;
+					srcX = 0;
+				} else {
+					if (mask == 1) {
+						index++;
+					}
+				}
 			}
-		}
-		return;
+			return;
 	}
 	SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
 }
@@ -1434,154 +1415,148 @@ public void setPixels(int x, int y, int putWidth, int[] pixels, int startIndex) 
 	int i = startIndex;
 	int pixel;
 	int srcX = x, srcY = y;
-	if (depth == 1) {
-		index = (y * bytesPerLine) + (x >> 3);
-		while (n > 0) {
-			mask = 1 << (7 - (srcX & 0x7));
-			if ((pixels[i] & 0x1) == 1) {
-				data[index] = (byte)((data[index] & 0xFF) | mask);
-			} else {
-				data[index] = (byte)((data[index] & 0xFF) & (mask ^ -1));
-			}
-			i++;
-			n--;
-			srcX++;
-			if (srcX >= width) {
-				srcY++;
-				index = srcY * bytesPerLine;
-				srcX = 0;
-			} else {
-				if (mask == 1) {
-					index++;
-				}
-			}
-		}
-		return;
-	}
-	if (depth == 2) {
-		byte [] masks = { (byte)0xFC, (byte)0xF3, (byte)0xCF, (byte)0x3F };
-		index = (y * bytesPerLine) + (x >> 2);
-		int offset = 3 - (x % 4);
-		while (n > 0) {
-			theByte = pixels[i] & 0x3;
-			data[index] = (byte)((data[index] & masks[offset]) | (theByte << (offset * 2)));
-			i++;
-			n--;
-			srcX++;
-			if (srcX >= width) {
-				srcY++;
-				index = srcY * bytesPerLine;
-				offset = 3;
-				srcX = 0;
-			} else {
-				if (offset == 0) {
-					index++;
-					offset = 3;
+	switch (depth) {
+		case 32:
+			index = (y * bytesPerLine) + (x * 4);
+			for (int j = 0; j < putWidth; j++) {
+				pixel = pixels[i];
+				data[index] = (byte)((pixel >> 24) & 0xFF);
+				data[index + 1] = (byte)((pixel >> 16) & 0xFF);
+				data[index + 2] = (byte)((pixel >> 8) & 0xFF);
+				data[index + 3] = (byte)(pixel & 0xFF);
+				i++;
+				srcX++;
+				if (srcX >= width) {
+					srcY++;
+					index = srcY * bytesPerLine;
+					srcX = 0;
 				} else {
-					offset--;
+					index += 4;
 				}
 			}
-		}
-		return;
-	}
-	if (depth == 4) {
-		index = (y * bytesPerLine) + (x >> 1);
-		boolean high = (x & 0x1) == 0;
-		while (n > 0) {
-			theByte = pixels[i] & 0x0F;
-			if (high) {
-				data[index] = (byte)((data[index] & 0x0F) | (theByte << 4));
-			} else {
-				data[index] = (byte)((data[index] & 0xF0) | theByte);
+			return;
+		case 24:
+			index = (y * bytesPerLine) + (x * 3);
+			for (int j = 0; j < putWidth; j++) {
+				pixel = pixels[i];
+				data[index] = (byte)((pixel >> 16) & 0xFF);
+				data[index + 1] = (byte)((pixel >> 8) & 0xFF);
+				data[index + 2] = (byte)(pixel & 0xFF);
+				i++;
+				srcX++;
+				if (srcX >= width) {
+					srcY++;
+					index = srcY * bytesPerLine;
+					srcX = 0;
+				} else {
+					index += 3;
+				}
 			}
-			i++;
-			n--;
-			srcX++;
-			if (srcX >= width) {
-				srcY++;
-				index = srcY * bytesPerLine;
-				high = true;
-				srcX = 0;
-			} else {
-				if (!high) index++;
-				high = !high;
+			return;
+		case 16:
+			index = (y * bytesPerLine) + (x * 2);
+			for (int j = 0; j < putWidth; j++) {
+				pixel = pixels[i];
+				data[index] = (byte)(pixel & 0xFF);
+				data[index + 1] = (byte)((pixel >> 8) & 0xFF);
+				i++;
+				srcX++;
+				if (srcX >= width) {
+					srcY++;
+					index = srcY * bytesPerLine;
+					srcX = 0;
+				} else {
+					index += 2;
+				}
 			}
-		}
-		return;
-	}
-	if (depth == 8) {
-		index = (y * bytesPerLine) + x;
-		for (int j = 0; j < putWidth; j++) {
-			data[index] = (byte)(pixels[i] & 0xFF);
-			i++;
-			srcX++;
-			if (srcX >= width) {
-				srcY++;
-				index = srcY * bytesPerLine;
-				srcX = 0;
-			} else {
-				index++;
+			return;
+		case 8:
+			index = (y * bytesPerLine) + x;
+			for (int j = 0; j < putWidth; j++) {
+				data[index] = (byte)(pixels[i] & 0xFF);
+				i++;
+				srcX++;
+				if (srcX >= width) {
+					srcY++;
+					index = srcY * bytesPerLine;
+					srcX = 0;
+				} else {
+					index++;
+				}
 			}
-		}
-		return;
-
-	}
-	if (depth == 16) {
-		index = (y * bytesPerLine) + (x * 2);
-		for (int j = 0; j < putWidth; j++) {
-			pixel = pixels[i];
-			data[index] = (byte)(pixel & 0xFF);
-			data[index + 1] = (byte)((pixel >> 8) & 0xFF);
-			i++;
-			srcX++;
-			if (srcX >= width) {
-				srcY++;
-				index = srcY * bytesPerLine;
-				srcX = 0;
-			} else {
-				index += 2;
+			return;
+		case 4:
+			index = (y * bytesPerLine) + (x >> 1);
+			boolean high = (x & 0x1) == 0;
+			while (n > 0) {
+				theByte = pixels[i] & 0x0F;
+				if (high) {
+					data[index] = (byte)((data[index] & 0x0F) | (theByte << 4));
+				} else {
+					data[index] = (byte)((data[index] & 0xF0) | theByte);
+				}
+				i++;
+				n--;
+				srcX++;
+				if (srcX >= width) {
+					srcY++;
+					index = srcY * bytesPerLine;
+					high = true;
+					srcX = 0;
+				} else {
+					if (!high) index++;
+					high = !high;
+				}
 			}
-		}
-		return;
-	}
-	if (depth == 24) {
-		index = (y * bytesPerLine) + (x * 3);
-		for (int j = 0; j < putWidth; j++) {
-			pixel = pixels[i];
-			data[index] = (byte)((pixel >> 16) & 0xFF);
-			data[index + 1] = (byte)((pixel >> 8) & 0xFF);
-			data[index + 2] = (byte)(pixel & 0xFF);
-			i++;
-			srcX++;
-			if (srcX >= width) {
-				srcY++;
-				index = srcY * bytesPerLine;
-				srcX = 0;
-			} else {
-				index += 3;
+			return;
+		case 2:
+			byte [] masks = { (byte)0xFC, (byte)0xF3, (byte)0xCF, (byte)0x3F };
+			index = (y * bytesPerLine) + (x >> 2);
+			int offset = 3 - (x % 4);
+			while (n > 0) {
+				theByte = pixels[i] & 0x3;
+				data[index] = (byte)((data[index] & masks[offset]) | (theByte << (offset * 2)));
+				i++;
+				n--;
+				srcX++;
+				if (srcX >= width) {
+					srcY++;
+					index = srcY * bytesPerLine;
+					offset = 3;
+					srcX = 0;
+				} else {
+					if (offset == 0) {
+						index++;
+						offset = 3;
+					} else {
+						offset--;
+					}
+				}
 			}
-		}
-		return;
-	}
-	if (depth == 32) {
-		index = (y * bytesPerLine) + (x * 4);
-		for (int j = 0; j < putWidth; j++) {
-			pixel = pixels[i];
-			data[index] = (byte)((pixel >> 24) & 0xFF);
-			data[index + 1] = (byte)((pixel >> 16) & 0xFF);
-			data[index + 2] = (byte)((pixel >> 8) & 0xFF);
-			data[index + 3] = (byte)(pixel & 0xFF);
-			i++;
-			srcX++;
-			if (srcX >= width) {
-				srcY++;
-				index = srcY * bytesPerLine;
-				srcX = 0;
-			} else {
-				index += 4;
+			return;
+		case 1:
+			index = (y * bytesPerLine) + (x >> 3);
+			while (n > 0) {
+				mask = 1 << (7 - (srcX & 0x7));
+				if ((pixels[i] & 0x1) == 1) {
+					data[index] = (byte)((data[index] & 0xFF) | mask);
+				} else {
+					data[index] = (byte)((data[index] & 0xFF) & (mask ^ -1));
+				}
+				i++;
+				n--;
+				srcX++;
+				if (srcX >= width) {
+					srcY++;
+					index = srcY * bytesPerLine;
+					srcX = 0;
+				} else {
+					if (mask == 1) {
+						index++;
+					}
+				}
 			}
-		}
-		return;
+			return;
 	}
 	SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
 }
