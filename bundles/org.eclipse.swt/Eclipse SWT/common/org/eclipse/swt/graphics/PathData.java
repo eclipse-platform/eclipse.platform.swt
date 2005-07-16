@@ -21,7 +21,7 @@ package org.eclipse.swt.graphics;
 public class PathData {
 	
 	/**
-	 * The type of each points. 
+	 * The type of each point. 
 	 */
 	public byte[] types;
 	
