@@ -314,17 +314,26 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 					}
 					int w = data.cacheWidth + data.horizontalIndent - spanWidth - (hSpan - 1) * horizontalSpacing;
 					if (w > 0) {
-						if (spanExpandCount == 0) {
-							widths [j] += w;
-						} else {
-							int delta = w / spanExpandCount;
-							int remainder = w % spanExpandCount, last = -1;
+						if (makeColumnsEqualWidth) {
+							int equalWidth = (w + spanWidth) / hSpan;
+							int remainder = (w + spanWidth) % hSpan, last = -1;
 							for (int k = 0; k < hSpan; k++) {
-								if (expandColumn [j-k]) {
-									widths [last=j-k] += delta;
-								}
+								widths [last=j-k] = Math.max (equalWidth, widths [j-k]);
 							}
 							if (last > -1) widths [last] += remainder;
+						} else {
+							if (spanExpandCount == 0) {
+								widths [j] += w;
+							} else {
+								int delta = w / spanExpandCount;
+								int remainder = w % spanExpandCount, last = -1;
+								for (int k = 0; k < hSpan; k++) {
+									if (expandColumn [j-k]) {
+										widths [last=j-k] += delta;
+									}
+								}
+								if (last > -1) widths [last] += remainder;
+							}
 						}
 					}
 					if (!data.grabExcessHorizontalSpace || data.minimumWidth != 0) {
