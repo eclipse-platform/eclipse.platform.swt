@@ -3346,7 +3346,8 @@ public void setSelection (TreeItem[] items) {
 public void setSortColumn (TreeColumn column) {
 	checkWidget ();
 	if (column != null && column.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-	if (sortColumn != null && !sortColumn.isDisposed()) {
+	if (column == sortColumn) return;
+	if (sortColumn != null && !sortColumn.isDisposed ()) {
 		sortColumn.setSortDirection (SWT.NONE);
 	}
 	sortColumn = column;
@@ -3367,7 +3368,7 @@ public void setSortColumn (TreeColumn column) {
  * 
  * @since 3.2
  */
-public void setSortDirection  (int direction) {
+public void setSortDirection (int direction) {
 	checkWidget ();
 	if (direction != SWT.UP && direction != SWT.DOWN && direction != SWT.NONE) return;
 	sortDirection = direction;
