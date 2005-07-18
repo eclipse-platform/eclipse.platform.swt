@@ -614,6 +614,10 @@ void destroyItem (TableColumn column) {
 			orderedColumns [i].sendEvent (SWT.Move);
 		}
 	}
+
+	if (sortColumn == column) {
+		sortColumn = null;
+	}
 }
 /*
  * Allows the Table to update internal structures it has that may contain the
@@ -1776,7 +1780,7 @@ void onDispose () {
 	focusItem = anchorItem = lastClickedItem = null;
 	lastSelectionEvent = null;
 	header = null;
-	resizeColumn = null;
+	resizeColumn = sortColumn = null;
 }
 void onEnd (int stateMask) {
 	int lastAvailableIndex = itemsCount - 1;

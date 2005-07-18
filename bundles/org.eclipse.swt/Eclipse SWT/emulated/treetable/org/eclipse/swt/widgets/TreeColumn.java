@@ -250,9 +250,6 @@ public void dispose () {
 void dispose (boolean notifyParent) {
 	super.dispose ();	/* the use of super is intentional here */
 	if (notifyParent) parent.destroyItem (this);
-	if (parent.sortColumn == this) {
-		parent.sortColumn = null;
-	}
 	parent = null;
 }
 /**
