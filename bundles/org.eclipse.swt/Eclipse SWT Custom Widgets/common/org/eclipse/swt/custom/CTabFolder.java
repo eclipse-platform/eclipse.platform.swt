@@ -3640,6 +3640,8 @@ void hideToolTip() {
 	toolTipLabel = null;
 }
 void showToolTip (int x, int y) {
+	String tooltip = _getToolTip(x, y);
+	if (tooltip == null) return;
 	if (toolTipShell == null) {
 		toolTipShell = new Shell (getShell(), SWT.ON_TOP | SWT.TOOL);
 		toolTipLabel = new Label (toolTipShell, SWT.CENTER);
