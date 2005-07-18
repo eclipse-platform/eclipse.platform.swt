@@ -11,7 +11,7 @@
 package org.eclipse.swt.internal.win32;
 
 public class PAINTSTRUCT {
-	public int  hdc; 
+	public int hdc; 
 	public boolean fErase;
 //	public RECT rcPaint;
 	public int left, top, right, bottom;
