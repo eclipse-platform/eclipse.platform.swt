@@ -289,7 +289,7 @@ public void getBounds(float[] bounds) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (bounds.length < 4) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	int /*path*/ copy = Cairo.cairo_copy_path(handle);
+	int /*long*/ copy = Cairo.cairo_copy_path(handle);
 	if (copy == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	cairo_path_t path = new cairo_path_t();
 	Cairo.memmove(path, copy, cairo_path_t.sizeof);
@@ -299,7 +299,7 @@ public void getBounds(float[] bounds) {
 		double[] points = new double[6]; 
 		cairo_path_data_t data = new cairo_path_data_t();
 		while (i < path.num_data) {
-			int offset = path.data + i * cairo_path_data_t.sizeof;
+			int /*long*/ offset = path.data + i * cairo_path_data_t.sizeof;
 			Cairo.memmove(data, offset, cairo_path_data_t.sizeof);
 			switch (data.type) {
 				case Cairo.CAIRO_PATH_MOVE_TO:
@@ -380,7 +380,7 @@ public void getCurrentPoint(float[] point) {
  */
 public PathData getPathData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int /*path*/ copy = Cairo.cairo_copy_path(handle);
+	int /*long*/ copy = Cairo.cairo_copy_path(handle);
 	if (copy == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	cairo_path_t path = new cairo_path_t();
 	Cairo.memmove(path, copy, cairo_path_t.sizeof);
@@ -392,7 +392,7 @@ public PathData getPathData() {
 		double[] points = new double[6]; 
 		cairo_path_data_t data = new cairo_path_data_t();
 		while (i < path.num_data) {
-			int offset = path.data + i * cairo_path_data_t.sizeof;
+			int /*long*/ offset = path.data + i * cairo_path_data_t.sizeof;
 			Cairo.memmove(data, offset, cairo_path_data_t.sizeof);
 			switch (data.type) {
 				case Cairo.CAIRO_PATH_MOVE_TO:
