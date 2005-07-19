@@ -429,6 +429,28 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	return result;
 }
 
+LRESULT WM_UPDATEUISTATE (int wParam, int lParam) {
+	LRESULT result = super.WM_UPDATEUISTATE (wParam, lParam);
+	/*
+	* Feature in Windows.  When WM_UPDATEUISTATE is sent to
+	* a static control, it sends WM_CTLCOLORSTATIC to get the
+	* foreground and background.  If any drawing happens in
+	* WM_CTLCOLORBTN, it overwrites the contents of the control.
+	* The fix is draw the static without drawing the background
+	* and avoid the group window proc.
+	*/
+	if ((state & TRANSPARENT) != 0) {
+		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+			Control control = findThemeControl ();
+			if (control != null) {
+				OS.InvalidateRect (handle, null, false);
+				return LRESULT.ZERO;
+			}
+		}
+	}
+	return result;
+}
+
 LRESULT wmDrawChild (int wParam, int lParam) {
 	DRAWITEMSTRUCT struct = new DRAWITEMSTRUCT ();
 	OS.MoveMemory (struct, lParam, DRAWITEMSTRUCT.sizeof);

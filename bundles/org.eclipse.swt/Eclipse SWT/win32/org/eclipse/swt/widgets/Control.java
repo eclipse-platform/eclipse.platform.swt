@@ -3115,6 +3115,7 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 		case OS.WM_SYSKEYUP:			result = WM_SYSKEYUP (wParam, lParam); break;
 		case OS.WM_TIMER:				result = WM_TIMER (wParam, lParam); break;
 		case OS.WM_UNDO:				result = WM_UNDO (wParam, lParam); break;
+		case OS.WM_UPDATEUISTATE:		result = WM_UPDATEUISTATE (wParam, lParam); break;
 		case OS.WM_VSCROLL:				result = WM_VSCROLL (wParam, lParam); break;
 		case OS.WM_WINDOWPOSCHANGED:	result = WM_WINDOWPOSCHANGED (wParam, lParam); break;
 		case OS.WM_WINDOWPOSCHANGING:	result = WM_WINDOWPOSCHANGING (wParam, lParam); break;
@@ -3797,6 +3798,10 @@ LRESULT WM_TIMER (int wParam, int lParam) {
 }
 
 LRESULT WM_UNDO (int wParam, int lParam) {
+	return null;
+}
+
+LRESULT WM_UPDATEUISTATE (int wParam, int lParam) {
 	return null;
 }
 

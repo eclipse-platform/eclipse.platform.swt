@@ -1543,6 +1543,7 @@ public class OS extends Platform {
 	public static final int WM_SYSKEYUP = 0x105;
 	public static final int WM_TIMER = 0x113;
 	public static final int WM_UNDO = 0x304;
+	public static final int WM_UPDATEUISTATE = 0x0128;
 	public static final int WM_USER = 0x400;
 	public static final int WM_VSCROLL = 0x115;
 	public static final int WM_WINDOWPOSCHANGED = 0x47;

@@ -47,8 +47,7 @@ public class Group extends Composite {
 		* force a full redraw of the control and all children
 		* when resized.  This causes flashing.  The fix is to
 		* register a new window class without these bits and
-		* implement special code that damages only the exposed
-		* area.
+		* implement special code that damages only the control.
 		* 
 		* Feature in WinCE.  On certain devices, defining
 		* a new window class which looks like BUTTON causes
@@ -316,7 +315,7 @@ LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 		return result;
 	}
 	drawBackground (wParam);
-	return result;
+	return LRESULT.ONE;
 }
 
 LRESULT WM_NCHITTEST (int wParam, int lParam) {
@@ -374,6 +373,34 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	if (OS.IsWinCE) return result;
 	OS.InvalidateRect (handle, null, true);
+	return result;
+}
+
+LRESULT WM_UPDATEUISTATE (int wParam, int lParam) {
+	LRESULT result = super.WM_UPDATEUISTATE (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Feature in Windows.  When WM_UPDATEUISTATE is sent to
+	* a group, it sends WM_CTLCOLORBTNto get the foreground
+	* and background.  If drawing happens in WM_CTLCOLORBTN,
+	* it will overwrite the contents of the control.  The
+	* fix is draw the group without drawing the background
+	* and avoid the group window proc.
+	* 
+	* NOTE:  The DefWindowProc() must be called in order to
+	* broadcast WM_UPDATEUISTATE message to the children.
+	* 
+	*/
+	if ((state & TRANSPARENT) != 0) {
+		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+			Control control = findThemeControl ();
+			if (control != null) {
+				OS.InvalidateRect (handle, null, false);
+				int code = OS.DefWindowProc (handle, OS.WM_UPDATEUISTATE, wParam, lParam);
+				return new LRESULT (code);
+			}
+		}
+	}
 	return result;
 }
 
