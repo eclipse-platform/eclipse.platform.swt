@@ -39,11 +39,9 @@ import org.eclipse.swt.graphics.*;
  */
 public class Label extends Control {
 	String text = "";
-	Image image, image2;
-	int font, hCopiedBitmap;
+	Image image;
 	static final int LabelProc;
 	static final TCHAR LabelClass = new TCHAR (0, "STATIC", true);
-	static final int ICON_WIDTH = 128, ICON_HEIGHT = 128;
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, LabelClass, lpWndClass);
@@ -91,119 +89,6 @@ public Label (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
-void _setImage (Image image) {
-	if (image2 != null) image2.dispose ();
-	image2 = null;
-	if (hCopiedBitmap != 0) OS.DeleteObject (hCopiedBitmap);
-	hCopiedBitmap = 0;
-	boolean hasAlpha = false;
-	int hImage = 0, imageBits = 0, fImageType = 0;
-	if (image != null) {
-		switch (image.type) {
-			case SWT.BITMAP: {
-				ImageData data = image.getImageData ();
-				if (OS.COMCTL32_MAJOR < 6) {
-					Rectangle rect = image.getBounds ();
-					switch (data.getTransparencyType ()) {
-						case SWT.TRANSPARENCY_PIXEL: 
-							if (rect.width <= ICON_WIDTH && rect.height <= ICON_HEIGHT) {
-								image2 = new Image (display, data, data.getTransparencyMask ());
-								hImage = image2.handle;
-								imageBits = OS.SS_ICON;
-								fImageType = OS.IMAGE_ICON;
-								break;
-							}
-							//FALL THROUGH
-						case SWT.TRANSPARENCY_ALPHA:
-							image2 = new Image (display, rect.width, rect.height);
-							GC gc = new GC (image2);
-							gc.setBackground (getBackground ());
-							gc.fillRectangle (rect);
-							gc.drawImage (image, 0, 0);
-							gc.dispose ();
-							hImage = image2.handle;
-							imageBits = OS.SS_BITMAP;
-							fImageType = OS.IMAGE_BITMAP;
-							break;
-						case SWT.TRANSPARENCY_NONE:
-							hImage = image.handle;
-							imageBits = OS.SS_BITMAP;
-							fImageType = OS.IMAGE_BITMAP;
-							break;
-					}
-				} else {
-					if (data.alpha != -1 || data.alphaData != null || data.transparentPixel != -1) {
-						hasAlpha = true;
-						hImage = Display.create32bitDIB (image.handle, data.alpha, data.alphaData, data.transparentPixel);
-					} else {
-						hImage = image.handle;
-						/*
-						* Bug in Windows.  For some reason in Windows XP only, indexed palette
-						* bitmaps are not drawn properly even though the screen depth can
-						* handle all colors in the palette.  The fix is to use a higher depth
-						* bitmap instead.
-						*/
-						if (data.depth <= 8 && display.getDepth () > 8) {
-							image2 = new Image (display, data.width, data.height);
-							GC gc = new GC (image2);
-							gc.drawImage (image, 0, 0);
-							gc.dispose ();
-							hImage = image2.handle;
-						}
-					}
-					imageBits = OS.SS_BITMAP;
-					fImageType = OS.IMAGE_BITMAP;
-				}
-				break;
-			}
-			case SWT.ICON: {
-				hImage = image.handle;
-				imageBits = OS.SS_ICON;
-				fImageType = OS.IMAGE_ICON;
-				break;
-			}
-		}
-	}
-	RECT rect = new RECT ();
-	OS.GetWindowRect (handle, rect);
-	int newBits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	int oldBits = newBits;
-	newBits &= ~(OS.SS_BITMAP | OS.SS_ICON);
-	newBits |= imageBits | OS.SS_REALSIZEIMAGE | OS.SS_CENTERIMAGE;
-	if (newBits != oldBits) {
-		OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
-	}
-	OS.SendMessage (handle, OS.STM_SETIMAGE, fImageType, hImage);
-	
-	/*
-	* When STM_SETIMAGE encounters a bitmap with alpha information,
-	* it makes a copy of the bitmap.  Therefore the bitmap that was
-	* created to preserve transparency can be deleted right away.
-	* 
-	* Note: The client code also needs to delete the copied image
-	* created by Windows when the image changed but does not need
-	* to delete the copied image when the control is disposed.
-	*/
-	if (hasAlpha && hImage != 0) {
-		OS.DeleteObject (hImage);
-		hCopiedBitmap = OS.SendMessage (handle, OS.STM_GETIMAGE, OS.IMAGE_BITMAP, 0);
-	}
-
-	/*
-	* Feature in Windows.  When STM_SETIMAGE is used to set the
-	* image for a static control, Windows either streches the image
-	* to fit the control or shrinks the control to fit the image.
-	* While not stricly wrong, neither of these is desirable.
-	* The fix is to stop Windows from stretching the image by
-	* using SS_REALSIZEIMAGE and SS_CENTERIMAGE, allow Windows
-	* to shrink the control, and then restore the control to the
-	* original size.
-	*/
-	int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE | OS.SWP_NOMOVE;
-	SetWindowPos (handle, 0, 0, 0, rect.right - rect.left, rect.bottom - rect.top, flags);
-	OS.InvalidateRect (handle, null, true);
-}
-
 int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 	if (handle == 0) return 0;
 	return OS.CallWindowProc (LabelProc, hwnd, msg, wParam, lParam);
@@ -234,15 +119,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		width += border * 2; height += border * 2;
 		return new Point (width, height);
 	}
-	/*
-	* NOTE: SS_BITMAP and SS_ICON are not single bit
-	* masks so it is necessary to test for all of the
-	* bits in these masks.
-	*/
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	boolean isBitmap = (bits & OS.SS_BITMAP) == OS.SS_BITMAP;
-	boolean isIcon = (bits & OS.SS_ICON) == OS.SS_ICON;
-	if (isBitmap || isIcon) {
+	boolean isImage = (bits & OS.SS_OWNERDRAW) == OS.SS_OWNERDRAW;
+	if (isImage) {
 		if (image != null) {
 			Rectangle rect = image.getBounds();
 			width = rect.width;
@@ -281,9 +160,15 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	* The fix is to increase the size.
 	*/
 	if (OS.IsWinCE) {
-		if (!isBitmap && !isIcon) width += 2;
+		//TEST ME
+		if (!isImage) width += 2;
 	}
 	return new Point (width, height);
+}
+
+void createHandle () {
+	super.createHandle ();
+	state |= TRANSPARENT;
 }
 
 /**
@@ -347,16 +232,6 @@ public String getText () {
 	return text;
 }
 
-/*
-* Not currently used.
-*/
-boolean getWrap () {
-	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	if ((bits & (OS.SS_RIGHT | OS.SS_CENTER)) != 0) return true;
-	if ((bits & OS.SS_LEFTNOWORDWRAP) != 0) return false;
-	return true;
-}
-
 boolean mnemonicHit (char key) {
 	Composite control = this.parent;
 	while (control != null) {
@@ -383,13 +258,8 @@ boolean mnemonicMatch (char key) {
 
 void releaseWidget () {
 	super.releaseWidget ();
-	if (image2 != null) image2.dispose ();
-	image2 = null;
 	text = null;
 	image = null;
-
-	/* Windows deletes the copied image when the control is disposed */
-	hCopiedBitmap = 0;
 }
 
 /**
@@ -412,25 +282,15 @@ public void setAlignment (int alignment) {
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	/*
-	* Feature in Windows.  The windows label does not align
-	* the bitmap or icon.  Any attempt to set alignment bits
-	* such as SS_CENTER cause the label to display text.  The
-	* fix is to disallow alignment.
-	*
-	* NOTE: SS_BITMAP and SS_ICON are not single bit
-	* masks so it is necessary to test for all of the
-	* bits in these masks.
-	*/
-	if ((bits & OS.SS_BITMAP) == OS.SS_BITMAP) return;
-	if ((bits & OS.SS_ICON) == OS.SS_ICON) return;
-	bits &= ~(OS.SS_LEFTNOWORDWRAP | OS.SS_CENTER | OS.SS_RIGHT);
-	if ((style & SWT.LEFT) != 0 && (style & SWT.WRAP) == 0) {
-		bits |= OS.SS_LEFTNOWORDWRAP;
+	if ((bits & OS.SS_OWNERDRAW) != OS.SS_OWNERDRAW) {
+		bits &= ~(OS.SS_LEFTNOWORDWRAP | OS.SS_CENTER | OS.SS_RIGHT);
+		if ((style & SWT.LEFT) != 0 && (style & SWT.WRAP) == 0) {
+			bits |= OS.SS_LEFTNOWORDWRAP;
+		}
+		if ((style & SWT.CENTER) != 0) bits |= OS.SS_CENTER;
+		if ((style & SWT.RIGHT) != 0) bits |= OS.SS_RIGHT;
+		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 	}
-	if ((style & SWT.CENTER) != 0) bits |= OS.SS_CENTER;
-	if ((style & SWT.RIGHT) != 0) bits |= OS.SS_RIGHT;
-	OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 	OS.InvalidateRect (handle, null, true);
 }
 
@@ -452,7 +312,13 @@ public void setImage (Image image) {
 	checkWidget ();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-	_setImage (this.image = image);
+	this.image = image;
+	int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	int newBits = oldBits & ~(OS.SS_LEFTNOWORDWRAP | OS.SS_CENTER | OS.SS_RIGHT) | OS.SS_OWNERDRAW;
+	if (oldBits != newBits) {
+		OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
+		OS.InvalidateRect (handle, null, true);
+	}
 }
 
 /**
@@ -494,39 +360,19 @@ public void setText (String string) {
 	*/
 	if (string.equals (text)) return;
 	text = string;
-	int newBits = OS.GetWindowLong (handle, OS.GWL_STYLE), oldBits = newBits;
-	newBits &= ~(OS.SS_BITMAP | OS.SS_ICON | OS.SS_REALSIZEIMAGE | OS.SS_CENTERIMAGE);
-	if ((style & SWT.LEFT) != 0 && (style & SWT.WRAP) == 0) newBits |= OS.SS_LEFTNOWORDWRAP;
+	int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	int newBits = oldBits & ~OS.SS_OWNERDRAW;
+	if ((style & SWT.LEFT) != 0 && (style & SWT.WRAP) == 0) {
+		newBits |= OS.SS_LEFTNOWORDWRAP;
+	}
 	if ((style & SWT.CENTER) != 0) newBits |= OS.SS_CENTER;
 	if ((style & SWT.RIGHT) != 0) newBits |= OS.SS_RIGHT;
-	if (newBits != oldBits) {
-		/*
-		* Bug in Windows.  When the style of a label is SS_BITMAP
-		* or SS_ICON, the label does not remember the font that is
-		* set in WM_SETFONT.  The fix is to remember the font and
-		* return the font in WM_GETFONT and to reset the font when
-		* the style is changed from SS_BITMAP or SS_ICON to a style
-		* that displays text.
-		*/
-		int hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+	if (oldBits != newBits) {
 		OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
-		if (hFont != 0) OS.SendMessage (handle, OS.WM_SETFONT, hFont, 0);
 	}
 	string = Display.withCrLf (string);
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	OS.SetWindowText (handle, buffer);
-}
-
-/*
-* Not currently used.
-*/
-void setWrap (boolean wrap) {
-	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	if ((bits & (OS.SS_RIGHT | OS.SS_CENTER)) != 0) return;
-	bits &= ~OS.SS_LEFTNOWORDWRAP;
-	if (!wrap) bits |= OS.SS_LEFTNOWORDWRAP;
-	OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
-	OS.InvalidateRect (handle, null, true);
 }
 
 int widgetExtStyle () {
@@ -555,84 +401,20 @@ int windowProc () {
 LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
 	if (result != null) return result;
-	if ((style & SWT.SEPARATOR) != 0) return LRESULT.ONE;
-	/*
-	* Bug in Windows.  When a label has the SS_BITMAP
-	* or SS_ICON style, the label does not draw the
-	* background.  The fix is to draw the background
-	* when the label is showing a bitmap or icon.
-	*
-	* NOTE: SS_BITMAP and SS_ICON are not single bit
-	* masks so it is necessary to test for all of the
-	* bits in these masks.
-	*/
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	boolean isBitmap = (bits & OS.SS_BITMAP) == OS.SS_BITMAP;
-	boolean isIcon = (bits & OS.SS_ICON) == OS.SS_ICON;
-	if (isBitmap || isIcon) {
-		drawBackground (wParam);
+	if ((bits & OS.SS_OWNERDRAW) == OS.SS_OWNERDRAW) {
 		return LRESULT.ONE;
 	}
 	return result;
 }
 
-LRESULT WM_GETFONT (int wParam, int lParam) {
-	LRESULT result = super.WM_GETFONT (wParam, lParam);
-	if (result != null) return result;
-	/*
-	* Bug in Windows.  When the style of a label is SS_BITMAP
-	* or SS_ICON, the label does not remember the font that is
-	* set in WM_SETFONT.  The fix is to remember the font and
-	* return the font in WM_GETFONT.
-	*/
-	if (font == 0) font = defaultFont ();
-	return new LRESULT (font);
-}
-
-LRESULT WM_SETFONT (int wParam, int lParam) {
-	/*
-	* Bug in Windows.  When the style of a label is SS_BITMAP
-	* or SS_ICON, the label does not remember the font that is
-	* set in WM_SETFONT.  The fix is to remember the font and
-	* return the font in WM_GETFONT.
-	*/
-	return super.WM_SETFONT (font = wParam, lParam);
-}
-
 LRESULT WM_SIZE (int wParam, int lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
-	/*
-	* It is possible (but unlikely), that application
-	* code could have disposed the widget in the resize
-	* event.  If this happens, end the processing of the
-	* Windows message by returning the result of the
-	* WM_SIZE message.
-	*/
 	if (isDisposed ()) return result;
 	if ((style & SWT.SEPARATOR) != 0) {
 		OS.InvalidateRect (handle, null, true);
 		return result;
-	}
-	
-	/*
-	* Bug in Windows.  For some reason, a label with
-	* SS_BITMAP or SS_ICON and SS_CENTER does not redraw
-	* properly when resized.  Only the new area is drawn
-	* and the old area is not cleared.  The fix is to
-	* force the redraw.
-	*
-	* NOTE: SS_BITMAP and SS_ICON are not single bit
-	* masks so it is necessary to test for all of the
-	* bits in these masks.
-	*/
-	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	boolean isBitmap = (bits & OS.SS_BITMAP) == OS.SS_BITMAP;
-	boolean isIcon = (bits & OS.SS_ICON) == OS.SS_ICON;
-	if (isBitmap || isIcon) {
-		OS.InvalidateRect (handle, null, true);
-		return result;
-	}
-		
+	}		
 	/*
 	* Bug in Windows.  For some reason, a label with
 	* style SS_LEFT, SS_CENTER or SS_RIGHT does not
@@ -644,30 +426,6 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 		OS.InvalidateRect (handle, null, true);
 		return result;
 	}
-	
-	return result;
-}
-
-LRESULT wmColorChild (int wParam, int lParam) {
-	LRESULT result = super.wmColorChild (wParam, lParam);
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		Control control = findThemeControl ();
-		if (control != null) {
-			OS.SetBkMode (wParam, OS.TRANSPARENT);
-			RECT rect = new RECT ();
-			OS.GetClientRect (control.handle, rect);
-			OS.MapWindowPoints (control.handle, handle, rect, 2);
-			control.drawThemeBackground (wParam, rect);
-			return new LRESULT (OS.GetStockObject (OS.NULL_BRUSH));
-		}
-	}
-	return result;
-}
-
-LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
-	LRESULT result = super.WM_SYSCOLORCHANGE (wParam, lParam);
-	if (result != null) return result;
-	if (image2 != null) _setImage (image);
 	return result;
 }
 
@@ -675,19 +433,45 @@ LRESULT wmDrawChild (int wParam, int lParam) {
 	DRAWITEMSTRUCT struct = new DRAWITEMSTRUCT ();
 	OS.MoveMemory (struct, lParam, DRAWITEMSTRUCT.sizeof);
 	drawBackground (struct.hDC);
-	if ((style & SWT.SHADOW_NONE) != 0) return null;
-	RECT rect = new RECT ();
-	int lineWidth = OS.GetSystemMetrics (OS.SM_CXBORDER);
-	int flags = OS.EDGE_ETCHED;
-	if ((style & SWT.SHADOW_IN) != 0) flags = OS.EDGE_SUNKEN;
-	if ((style & SWT.HORIZONTAL) != 0) {
-		int bottom = struct.top + Math.max (lineWidth * 2, (struct.bottom - struct.top) / 2);
-		OS.SetRect (rect, struct.left, struct.top, struct.right, bottom);
-		OS.DrawEdge (struct.hDC, rect, flags, OS.BF_BOTTOM);
+	if ((style & SWT.SEPARATOR) != 0) {
+		if ((style & SWT.SHADOW_NONE) != 0) return null;
+		RECT rect = new RECT ();
+		int lineWidth = OS.GetSystemMetrics (OS.SM_CXBORDER);
+		int flags = (style & SWT.SHADOW_IN) != 0 ? OS.EDGE_SUNKEN : OS.EDGE_ETCHED;
+		if ((style & SWT.HORIZONTAL) != 0) {
+			int bottom = struct.top + Math.max (lineWidth * 2, (struct.bottom - struct.top) / 2);
+			OS.SetRect (rect, struct.left, struct.top, struct.right, bottom);
+			OS.DrawEdge (struct.hDC, rect, flags, OS.BF_BOTTOM);
+		} else {
+			int right = struct.left + Math.max (lineWidth * 2, (struct.right - struct.left) / 2);
+			OS.SetRect (rect, struct.left, struct.top, right, struct.bottom);
+			OS.DrawEdge (struct.hDC, rect, flags, OS.BF_RIGHT);
+		}
 	} else {
-		int right = struct.left + Math.max (lineWidth * 2, (struct.right - struct.left) / 2);
-		OS.SetRect (rect, struct.left, struct.top, right, struct.bottom);
-		OS.DrawEdge (struct.hDC, rect, flags, OS.BF_RIGHT);
+		if (image != null) {
+			GCData data = new GCData();
+			data.device = display;
+			GC gc = GC.win32_new (struct.hDC, data);
+			int width = struct.right - struct.left;
+			int height = struct.bottom - struct.top;
+			if (width != 0 && height != 0) {
+				int x = 0, y = 0;
+				if ((style & SWT.CENTER) != 0) {
+					Rectangle rect = image.getBounds ();
+					x = Math.max (0, (width - rect.width) / 2);
+				} else {
+					if ((style & SWT.RIGHT) != 0) {
+						Rectangle rect = image.getBounds ();
+						x = width - rect.width;
+					}
+				}
+				Image drawnImage = getEnabled () ? image : new Image (display, image, SWT.IMAGE_DISABLE);
+				gc.drawImage (drawnImage, x, y);
+				if (drawnImage != image) drawnImage.dispose ();
+			}
+			gc.dispose ();
+		}
+
 	}
 	return null;
 }
