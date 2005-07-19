@@ -3279,7 +3279,7 @@ void updateMoveable () {
 }
 
 void updateImages () {
-	if (sortColumn != null & !sortColumn.isDisposed ()) {
+	if (sortColumn != null && !sortColumn.isDisposed ()) {
 		if (OS.COMCTL32_MAJOR < 6) {
 			switch (sortDirection) {
 				case SWT.UP:

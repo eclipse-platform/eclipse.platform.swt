@@ -207,13 +207,13 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 		return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 	}
 	switch (msg) {
-		/*
-		* Bug in Windows.  For some reason, when the user clicks
-		* on this control, the Windows hook WH_MSGFILTER is sent
-		* despite the fact that an input event from a dialog box,
-		* message box, menu, or scroll bar did not seem to occur.
-		* The fix is to ignore the hook.
-		*/
+	/*
+	* Bug in Windows.  For some reason, when the user clicks
+	* on this control, the Windows hook WH_MSGFILTER is sent
+	* despite the fact that an input event from a dialog box,
+	* message box, menu, or scroll bar did not seem to occur.
+	* The fix is to ignore the hook.
+	*/
 		case OS.WM_LBUTTONDOWN:
 		case OS.WM_MBUTTONDOWN:
 		case OS.WM_RBUTTONDOWN:
@@ -223,7 +223,7 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 			int code = OS.CallWindowProc (TreeProc, hwnd, msg, wParam, lParam);
 			display.ignoreMsgFilter = false;
 			return code;
-		}
+	}
 		case OS.WM_MOUSEWHEEL: {
 			int code = OS.CallWindowProc (TreeProc, hwnd, msg, wParam, lParam);
 			updateScrollBar ();
@@ -579,14 +579,14 @@ void createItem (TreeItem item, int hParent, int hInsertAfter) {
 	* child is added to a visible parent item and redraw the parent.
 	*/
 	if (OS.IsWindowVisible (handle) && drawCount == 0) {
-		int hChild = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hParent);
-		if (hChild != 0 && OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hChild) == 0) {
-			RECT rect = new RECT ();
-			rect.left = hParent;
-			if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect) != 0) {
-				OS.InvalidateRect (handle, rect, true);
-			}
+	int hChild = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hParent);
+	if (hChild != 0 && OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hChild) == 0) {
+		RECT rect = new RECT ();
+		rect.left = hParent;
+		if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect) != 0) {
+			OS.InvalidateRect (handle, rect, true);
 		}
+	}
 	}
 	updateScrollBar ();
 }
@@ -824,7 +824,7 @@ void destroyItem (TreeColumn column) {
 		for (int i=start; i<columnCount; i++) {
 			int orderIndex = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, i, 0);
 			newColumns [i - start] = columns [orderIndex];
-		}
+}
 		for (int i=0; i<newColumns.length; i++) {
 			if (!newColumns [i].isDisposed ()) {
 				newColumns [i].sendEvent (SWT.Move);
@@ -1646,10 +1646,10 @@ int imageIndexHeader (Image image) {
 		int hImageList = headerImageList.getHandle ();
 		if (hwndHeader != 0) {
 			OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hImageList);
-		}
+	}
 		updateScrollBar ();
 		return index;
-	}
+}
 	int index = headerImageList.indexOf (image);
 	if (index != -1) return index;
 	return headerImageList.add (image);
@@ -1779,8 +1779,8 @@ void releaseWidget () {
 	}
 	if (headerImageList != null) {
 		if (hwndHeader != 0) {
-			OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, 0);
-		}
+		OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, 0);
+	}
 		display.releaseImageList (headerImageList);
 	}
 	imageList = headerImageList = null;
@@ -2754,7 +2754,7 @@ int topHandle () {
 }
 
 void updateImages () {
-	if (sortColumn != null & !sortColumn.isDisposed ()) {
+	if (sortColumn != null && !sortColumn.isDisposed ()) {
 		if (OS.COMCTL32_MAJOR < 6) {
 			switch (sortDirection) {
 				case SWT.UP:
@@ -2779,11 +2779,11 @@ void updateScrollBar () {
 				info.nPage = info.nMax + 1;
 				OS.SetScrollInfo (hwndParent, OS.SB_VERT, info, true);
 			} else {
-				OS.GetScrollInfo (handle, OS.SB_VERT, info);
-				OS.SetScrollInfo (hwndParent, OS.SB_VERT, info, true);
-			}
+			OS.GetScrollInfo (handle, OS.SB_VERT, info);
+			OS.SetScrollInfo (hwndParent, OS.SB_VERT, info, true);
 		}
 	}
+}
 }
 
 int widgetStyle () {
@@ -2960,8 +2960,8 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 					postEvent (SWT.Selection, event);
 				}
 			}
-			return LRESULT.ZERO;
-		}
+				return LRESULT.ZERO;
+			}
 		case SWT.CR: {
 			/*
 			* Feature in Windows.  Windows sends NM_RETURN from WM_KEYDOWN
@@ -2979,7 +2979,7 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 				tvItem.mask = OS.TVIF_PARAM;
 				OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 				event.item = items [tvItem.lParam];
-			}
+		}
 			postEvent (SWT.DefaultSelection, event);
 			return LRESULT.ZERO;
 		}
@@ -3624,7 +3624,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 						int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 						int index = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, count - 1, 0);
 						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, itemRect);
-						rect.right = itemRect.right;
+							rect.right = itemRect.right;
 						int flags = OS.SW_INVALIDATE | OS.SW_ERASE;
 						OS.ScrollWindowEx (handle, deltaX, 0, rect, null, 0, null, flags);
 						//TODO - column flashes when resized
