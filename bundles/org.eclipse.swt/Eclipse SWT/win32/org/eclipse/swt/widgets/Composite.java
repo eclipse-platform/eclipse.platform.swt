@@ -1079,31 +1079,25 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 	/* Paint the control and the background */
 	PAINTSTRUCT ps = new PAINTSTRUCT ();
 	if (hooks (SWT.Paint)) {
-		
-		/* Get the damage */
-		int [] lpRgnData = null;
-		boolean isComplex = false;
-		boolean exposeRegion = false;
 
-		int rgn = 0;
-		if ((style & (SWT.NO_MERGE_PAINTS | SWT.DOUBLE_BUFFERED)) != 0) {
-			rgn = OS.CreateRectRgn (0, 0, 0, 0);
-			isComplex = OS.GetUpdateRgn (handle, rgn, false) == OS.COMPLEXREGION;
-		}
-
-		if ((style & SWT.NO_MERGE_PAINTS) != 0) {
-			if (isComplex) {
-				int nBytes = OS.GetRegionData (rgn, 0, null);
-				lpRgnData = new int [nBytes / 4];
-				exposeRegion = OS.GetRegionData (rgn, nBytes, lpRgnData) != 0;
-			}
-		}
-	
 		/* Create the paint GC */
 		GCData data = new GCData ();
 		data.ps = ps;
 		data.hwnd = handle;
 		GC gc = GC.win32_new (this, data);
+
+		/* Get the system region for the paint HDC */
+		int sysRgn = 0;
+		if ((style & (SWT.NO_MERGE_PAINTS | SWT.DOUBLE_BUFFERED)) != 0) {
+			sysRgn = OS.CreateRectRgn (0, 0, 0, 0);
+			if (OS.GetRandomRgn (gc.handle, sysRgn, OS.SYSRGN) == 1) {
+				if (OS.IsWinNT) {
+					POINT pt = new POINT();
+					OS.MapWindowPoints (0, handle, pt, 1);
+					OS.OffsetRgn (sysRgn, pt.x, pt.y);
+				}
+			}
+		}
 		
 		/* Send the paint event */
 		int width = ps.right - ps.left;
@@ -1123,22 +1117,23 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 				} else {
 					gc.fillRectangle (0, 0, width, height);
 				}
-				OS.OffsetRgn (rgn, -ps.left, -ps.top);
-				OS.SelectClipRgn (gc.handle, rgn);
-				OS.SetMetaRgn (gc.handle);
+				OS.OffsetRgn (sysRgn, -ps.left, -ps.top);
+				OS.SelectClipRgn (gc.handle, sysRgn);
+				OS.OffsetRgn (sysRgn, ps.left, ps.top);
+				OS.SetMetaRgn (gc.handle);	
 				OS.SetWindowOrgEx (gc.handle, ps.left, ps.top, null);
 			}
 			Event event = new Event ();
-			event.gc = gc;
-			if (isComplex && exposeRegion) {
-				RECT rect = new RECT ();
+			event.gc = gc;			
+			RECT rect = null;
+			if ((style & SWT.NO_MERGE_PAINTS) != 0 && OS.GetRgnBox (sysRgn, rect = new RECT ()) == OS.COMPLEXREGION) {
+				int nBytes = OS.GetRegionData (sysRgn, 0, null);
+				int [] lpRgnData = new int [nBytes / 4];
+				OS.GetRegionData (sysRgn, nBytes, lpRgnData);
 				int count = lpRgnData [2];
 				for (int i=0; i<count; i++) {
-					OS.SetRect (rect,
-						lpRgnData [8 + (i << 2)],
-						lpRgnData [8 + (i << 2) + 1],
-						lpRgnData [8 + (i << 2) + 2],
-						lpRgnData [8 + (i << 2) + 3]);
+					int offset = 8 + (i << 2);
+					OS.SetRect (rect, lpRgnData [offset], lpRgnData [offset + 1], lpRgnData [offset + 2], lpRgnData [offset + 3]);
 					if ((style & (SWT.DOUBLE_BUFFERED | SWT.NO_BACKGROUND)) == 0) {
 						drawBackground (gc.handle, rect);
 					}
@@ -1159,7 +1154,7 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 				}
 			} else {
 				if ((style & (SWT.DOUBLE_BUFFERED | SWT.NO_BACKGROUND)) == 0) {
-					RECT rect = new RECT ();
+					if (rect == null) rect = new RECT ();
 					OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
 					drawBackground (gc.handle, rect);
 				}
@@ -1174,16 +1169,16 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 			if ((style & SWT.DOUBLE_BUFFERED) != 0) {
 				gc.dispose();
 				if (!isDisposed ()) {
-					paintGC.drawImage(image, ps.left, ps.top);
+					paintGC.drawImage (image, ps.left, ps.top);
 				}
-				image.dispose();
+				image.dispose ();
 				gc = paintGC;
 			}
 		}
 		
 		/* Dispose the paint GC */
 		gc.dispose ();
-		if (rgn != 0) OS.DeleteObject (rgn);
+		if (sysRgn != 0) OS.DeleteObject (sysRgn);
 	} else {
 		int hDC = OS.BeginPaint (handle, ps);
 		if ((style & SWT.NO_BACKGROUND) == 0) {
@@ -1195,7 +1190,7 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 	}
 
 	/* Restore the clipping bits */
-	if (!OS.IsWinCE) { 
+	if (!OS.IsWinCE && !isDisposed ()) { 
 		if (newBits != oldBits) {
 			/*
 			* It is possible (but unlikely), that application
