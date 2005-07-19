@@ -218,6 +218,31 @@ public int getAlignment () {
 }
 
 /**
+ * Gets the moveable attribute. A column that is
+ * not moveable cannot be reordered by the user 
+ * by dragging the header but may be reordered 
+ * by the programmer.
+ *
+ * @return the moveable attribute
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see Tree#getColumnOrder()
+ * @see Tree#setColumnOrder(int[])
+ * @see TreeColumn#setMoveable(boolean)
+ * @see SWT#Move
+ * 
+ * @since 3.2
+ */
+/*public*/ boolean getMoveable() {
+	checkWidget();
+	return OS.gtk_tree_view_column_get_reorderable (handle);
+}
+
+/**
  * Returns the receiver's parent, which must be a <code>Tree</code>.
  *
  * @return the receiver's parent
@@ -471,6 +496,32 @@ public void setImage (Image image) {
 		OS.gtk_image_set_from_pixbuf (imageHandle, 0);
 		OS.gtk_widget_hide (imageHandle);
 	}
+}
+
+/**
+ * Sets the moveable attribute.  A column that is
+ * moveable can be reordered by the user by dragging
+ * the header. A column that is not moveable cannot be 
+ * dragged by the user but may be reordered 
+ * by the programmer.
+ *
+ * @param moveable the moveable attribute
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see Tree#setColumnOrder(int[])
+ * @see Tree#getColumnOrder()
+ * @see TreeeColumn#getMoveable()
+ * @see SWT#Move
+ * 
+ * @since 3.2
+ */
+/*public*/ void setMoveable (boolean moveable) {
+	checkWidget();
+	OS.gtk_tree_view_column_set_reorderable (handle, moveable);
 }
 
 /**

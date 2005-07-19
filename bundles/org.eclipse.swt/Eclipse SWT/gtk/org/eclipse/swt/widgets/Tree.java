@@ -757,6 +757,58 @@ public int getColumnCount () {
 	return columnCount;
 }
 
+/**
+ * Returns an array of zero-relative integers that map
+ * the creation order of the receiver's items to the
+ * order in which they are currently being displayed.
+ * <p>
+ * Specifically, the indices of the returned array represent
+ * the current visual order of the items, and the contents
+ * of the array represent the creation order of the items.
+ * </p><p>
+ * Note: This is not the actual structure used by the receiver
+ * to maintain its list of items, so modifying the array will
+ * not affect the receiver. 
+ * </p>
+ *
+ * @return the current visual order of the receiver's items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see Tree#setColumnOrder(int[])
+ * @see TreeColumn#getMoveable()
+ * @see TreeColumn#setMoveable(boolean)
+ * @see SWT#Move
+ * 
+ * @since 3.2
+ */
+/*public*/ int [] getColumnOrder () {
+	checkWidget ();
+	if (columnCount == 0) return new int [0];
+	int /*long*/ list = OS.gtk_tree_view_get_columns (handle);
+	if (list == 0) return new int [0];
+	int  i = 0, count = OS.g_list_length (list);
+	int [] order = new int [count];
+	int /*long*/ temp = list;
+	while (temp != 0) {
+		int /*long*/ column = OS.g_list_data (temp);
+		if (column != 0) {
+			for (int j=0; j<columnCount; j++) {
+				if (columns [j].handle == column) {
+					order [i++] = j;
+					break;
+				}
+			}
+		}
+		temp = OS.g_list_next (temp);
+	}
+	OS.g_list_free (list);
+	return order;
+}
+
 int /*long*/[] getColumnTypes (int columnCount) {
 	int /*long*/[] types = new int /*long*/ [FIRST_COLUMN + (columnCount * CELL_TYPES)];
 	// per row data
@@ -1929,6 +1981,53 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	*/
 	OS.gtk_widget_realize (handle);
 	return result;
+}
+
+/**
+ * Sets the order that the items in the receiver should 
+ * be displayed in to the given argument which is described
+ * in terms of the zero-relative ordering of when the items
+ * were added.
+ *
+ * @param order the new order to display the items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the item order is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the item order is not the same length as the number of items</li>
+ * </ul>
+ * 
+ * @see Tree#getColumnOrder()
+ * @see TreeColumn#getMoveable()
+ * @see TreeColumn#setMoveable(boolean)
+ * @see SWT#Move
+ * 
+ * @since 3.2
+ */
+/*public*/ void setColumnOrder (int [] order) {
+	checkWidget ();
+	if (order == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (columnCount == 0) {
+		if (order.length > 0) error (SWT.ERROR_INVALID_ARGUMENT);
+		return;
+	}
+	if (order.length != columnCount) error (SWT.ERROR_INVALID_ARGUMENT);
+	boolean [] seen = new boolean [columnCount];
+	for (int i = 0; i<order.length; i++) {
+		int index = order [i];
+		if (index < 0 || index >= columnCount) error (SWT.ERROR_INVALID_RANGE);
+		if (seen [index]) error (SWT.ERROR_INVALID_ARGUMENT);
+		seen [index] = true;
+	}
+	int /*long*/ baseColumn = 0;
+	for (int i=0; i<order.length; i++) {
+		int /*long*/ column = columns [order [i]].handle;
+		OS.gtk_tree_view_move_column_after (handle, column, baseColumn);
+		baseColumn = column;
+	}
 }
 
 void setFontDescription (int /*long*/ font) {
