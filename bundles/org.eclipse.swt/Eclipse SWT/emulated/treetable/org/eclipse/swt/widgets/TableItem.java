@@ -248,6 +248,8 @@ void clear () {
 	}
 }
 void computeDisplayText (int columnIndex, GC gc) {
+	if ((parent.style & SWT.VIRTUAL) != 0 && !cached) return;	/* nothing to do */
+
 	int columnCount = parent.columns.length;
 	if (columnCount == 0) {
 		String text = getText (0, false);
@@ -328,12 +330,30 @@ void computeDisplayText (int columnIndex, GC gc) {
 	textWidths [columnIndex] = previousWidth + ellipsisWidth;
 }
 void computeDisplayTexts (GC gc) {
+	if ((parent.style & SWT.VIRTUAL) != 0 && !cached) return;	/* nothing to do */
+
 	int columnCount = parent.columns.length;
 	if (columnCount == 0) return;
 
 	for (int i = 0; i < columnCount; i++) {
 		gc.setFont (getFont (i, false));
 		computeDisplayText (i, gc);
+	}
+}
+/*
+ * Computes the cached text widths.
+ */
+void computeTextWidths (GC gc) {
+	if ((parent.style & SWT.VIRTUAL) != 0 && !cached) return;	/* nothing to do */
+
+	int validColumnCount = Math.max (1, parent.columns.length);
+	textWidths = new int [validColumnCount];
+	for (int i = 0; i < textWidths.length; i++) {
+		String value = getDisplayText (i);
+		if (value != null) {
+			gc.setFont (getFont (i, false));
+			textWidths [i] = gc.stringExtent (value).x;
+		}
 	}
 }
 public void dispose () {
@@ -1085,20 +1105,6 @@ void paint (GC gc, TableColumn column, boolean paintCellContent) {
 		gc.drawString (text, x, y + (itemHeight - fontHeight) / 2, true);
 	}
 }
-/*
- * Recomputes the cached text widths.
- */
-void recomputeTextWidths (GC gc) {
-	int validColumnCount = Math.max (1, parent.columns.length);
-	textWidths = new int [validColumnCount];
-	for (int i = 0; i < textWidths.length; i++) {
-		String value = getDisplayText (i);
-		if (value != null) {
-			gc.setFont (getFont (i, false));
-			textWidths [i] = gc.stringExtent (value).x;
-		}
-	}
-}
 void redrawItem () {
 	parent.redraw (0, parent.getItemY (this), parent.getClientArea ().width, parent.itemHeight, false);
 }
@@ -1115,7 +1121,7 @@ void removeColumn (TableColumn column, int index) {
 		cellFonts = null;
 		fontHeights = null;
 		GC gc = new GC (parent);
-		recomputeTextWidths (gc);
+		computeTextWidths (gc);
 		gc.dispose ();
 		return;
 	}
@@ -1305,7 +1311,7 @@ public void setFont (Font value) {
 	gc.setFont (getFont (false));
 	fontHeight = gc.getFontMetrics ().getHeight ();
 	computeDisplayTexts (gc);
-	recomputeTextWidths (gc);
+	computeTextWidths (gc);
 	gc.dispose ();
 	
 	/* horizontal bar could be affected if table has no columns */
@@ -1699,7 +1705,7 @@ void updateColumnWidth (TableColumn column, GC gc) {
 void updateFont (GC gc) {
 	if (font == null) {		/* receiver is using the Table's font */
 		computeDisplayTexts (gc);
-		recomputeTextWidths (gc);
+		computeTextWidths (gc);
 	}
 }
 }
