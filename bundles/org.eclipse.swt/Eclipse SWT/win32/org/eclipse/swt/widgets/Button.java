@@ -355,6 +355,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
+void createHandle () {
+	super.createHandle ();
+	state |= TRANSPARENT;
+}
+
 int defaultBackground () {
 	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
 		return OS.GetSysColor (OS.COLOR_BTNFACE);
@@ -851,22 +856,6 @@ LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
 	LRESULT result = super.WM_SYSCOLORCHANGE (wParam, lParam);
 	if (result != null) return result;
 	if (image2 != null) _setImage (image);
-	return result;
-}
-
-LRESULT wmColorChild (int wParam, int lParam) {
-	LRESULT result = super.wmColorChild (wParam, lParam);
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		Control control = findThemeControl ();
-		if (control != null) {
-			OS.SetBkMode (wParam, OS.TRANSPARENT);
-			RECT rect = new RECT ();
-			OS.GetClientRect (control.handle, rect);
-			OS.MapWindowPoints (control.handle, handle, rect, 2);
-			control.drawThemeBackground (wParam, rect);
-			return new LRESULT (OS.GetStockObject (OS.NULL_BRUSH));
-		}
-	}
 	return result;
 }
 

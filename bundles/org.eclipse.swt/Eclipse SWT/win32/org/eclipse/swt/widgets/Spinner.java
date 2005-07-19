@@ -114,7 +114,7 @@ protected void checkSubclass () {
 
 void createHandle () {
 	super.createHandle ();
-	state &= ~CANVAS;
+	state &= ~(CANVAS | TRANSPARENT);
 	int hInstance = OS.GetModuleHandle (null);
 	int textExStyle = (style & SWT.BORDER) != 0 ? OS.WS_EX_CLIENTEDGE : 0;
 	int textStyle = OS.WS_CHILD | OS.WS_VISIBLE | OS.ES_AUTOHSCROLL;

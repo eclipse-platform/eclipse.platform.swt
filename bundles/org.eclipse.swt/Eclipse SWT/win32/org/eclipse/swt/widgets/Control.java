@@ -536,8 +536,10 @@ void drawBackground (int hDC) {
 
 void drawBackground (int hDC, int pixel, RECT rect) {
 	Control control = null;
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		control = findThemeControl ();
+	if ((state & TRANSPARENT) != 0) {
+		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+			control = findThemeControl ();
+		}
 	}
 	if (control == null) {
 		int hPalette = display.hPalette;
@@ -548,10 +550,7 @@ void drawBackground (int hDC, int pixel, RECT rect) {
 		int hBrush = findBrush (pixel);
 		OS.FillRect (hDC, rect, hBrush);
 	} else {
-		RECT rect2 = new RECT ();
-		OS.GetWindowRect (control.handle, rect2);		
-		OS.MapWindowPoints (0, handle, rect2, 2);
-		control.drawThemeBackground (hDC, rect2);	
+		control.drawThemeBackground (hDC, handle, rect);	
 	}
 }
 
@@ -559,7 +558,7 @@ void drawBackground (int hDC, RECT rect) {
 	drawBackground (hDC, getBackgroundPixel (), rect);
 }
 
-void drawThemeBackground (int hDC, RECT rect) {
+void drawThemeBackground (int hDC, int hwnd, RECT rect) {
 	/* Do nothing */
 }
 
@@ -3213,6 +3212,12 @@ LRESULT WM_ENTERIDLE (int wParam, int lParam) {
 }
 
 LRESULT WM_ERASEBKGND (int wParam, int lParam) {
+	if ((state & TRANSPARENT) != 0) {
+		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+			Control control = findThemeControl ();
+			if (control != null) return LRESULT.ONE;
+		}
+	}
 	return null;
 }
 
@@ -3531,11 +3536,13 @@ LRESULT WM_MOUSEWHEEL (int wParam, int lParam) {
 }
 
 LRESULT WM_MOVE (int wParam, int lParam) {
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		if (OS.IsWindowVisible (handle)) {
-			if (findThemeControl () != null) {
-				int flags = OS.RDW_ERASE | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
-				OS.RedrawWindow (handle, null, 0, flags);
+	if ((state & TRANSPARENT) != 0) {
+		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+			if (OS.IsWindowVisible (handle)) {
+				if (findThemeControl () != null) {
+					int flags = OS.RDW_ERASE | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
+					OS.RedrawWindow (handle, null, 0, flags);
+				}
 			}
 		}
 	}
@@ -3841,12 +3848,27 @@ LRESULT WM_XBUTTONUP (int wParam, int lParam) {
 }
 
 LRESULT wmColorChild (int wParam, int lParam) {
-	if (background == -1 && foreground == -1) return null;
+	Control control = null;
+	if ((state & TRANSPARENT) != 0) {
+		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+			control = findThemeControl ();
+		}
+	}
+	if (background == -1 && foreground == -1 && control == null) {
+		return null;
+	}
 	int forePixel = foreground, backPixel = background;
 	if (forePixel == -1) forePixel = defaultForeground ();
 	if (backPixel == -1) backPixel = defaultBackground ();
 	OS.SetTextColor (wParam, forePixel);
 	OS.SetBkColor (wParam, backPixel);
+	if (control != null) {
+		RECT rect = new RECT ();
+		OS.GetClientRect (handle, rect);
+		control.drawThemeBackground (wParam, handle, rect);
+		OS.SetBkMode (wParam, OS.TRANSPARENT);
+		return new LRESULT (OS.GetStockObject (OS.NULL_BRUSH));
+	}
 	return new LRESULT (findBrush (backPixel));
 }
 

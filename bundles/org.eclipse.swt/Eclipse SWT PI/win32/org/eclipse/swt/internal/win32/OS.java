@@ -311,6 +311,7 @@ public class OS extends Platform {
 	public static final int CF_USESTYLE = 0x80;
 	public static final int CLR_DEFAULT = 0xff000000;
 	public static final int CLR_INVALID = 0xffffffff;
+	public static final int CLR_NONE = 0xffffffff;
 	public static final int CLSCTX_INPROC_SERVER = 1;
 	public static final int COLORONCOLOR = 0x3;
 	public static final int COLOR_3DDKSHADOW = 0x15 | SYS_COLOR_INDEX_FLAG;
@@ -1014,6 +1015,7 @@ public class OS extends Platform {
 	public static final int RGN_DIFF = 0x4;
 	public static final int RGN_ERROR = 0;
 	public static final int RGN_OR = 0x2;
+	public static final int RP_BAND = 3;
 	public static final int SBP_ARROWBTN = 0x1;
 	public static final int SBS_HORZ = 0x0;
 	public static final int SBS_VERT = 0x1;
@@ -2988,6 +2990,7 @@ public static final native int SendMessageA (int hWnd, int Msg, int wParam, SIZE
 public static final native int SetActiveWindow (int hWnd);
 public static final native int SetBkColor (int hdc, int colorRef);
 public static final native int SetBkMode (int hdc, int mode);
+public static final native boolean SetBrushOrgEx (int hdc, int nXOrg, int nYOrg, POINT lppt);
 public static final native int SetCapture (int hWnd);
 public static final native boolean SetCaretPos (int X, int Y);
 public static final native int SetClipboardData (int uFormat, int hMem);

@@ -9033,6 +9033,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetBkMode)
 }
 #endif
 
+#ifndef NO_SetBrushOrgEx
+JNIEXPORT jboolean JNICALL OS_NATIVE(SetBrushOrgEx)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	POINT _arg3, *lparg3=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, SetBrushOrgEx_FUNC);
+	if (arg3) if ((lparg3 = getPOINTFields(env, arg3, &_arg3)) == NULL) goto fail;
+	rc = (jboolean)SetBrushOrgEx((HDC)arg0, arg1, arg2, (LPPOINT)lparg3);
+fail:
+	if (arg3 && lparg3) setPOINTFields(env, arg3, lparg3);
+	OS_NATIVE_EXIT(env, that, SetBrushOrgEx_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_SetCapture
 JNIEXPORT jint JNICALL OS_NATIVE(SetCapture)
 	(JNIEnv *env, jclass that, jint arg0)

@@ -110,6 +110,11 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 }
 
+void createHandle () {
+	super.createHandle ();
+	state |= TRANSPARENT;
+}
+
 static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }

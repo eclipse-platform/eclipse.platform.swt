@@ -44,6 +44,7 @@ public class CoolBar extends Composite {
 	boolean ignoreResize;
 	static final int ReBarProc;
 	static final TCHAR ReBarClass = new TCHAR (0, OS.REBARCLASSNAME, true);
+	static final char [] REBAR = new char [] {'R', 'E', 'B', 'A', 'R', 0};
 	static {
 		INITCOMMONCONTROLSEX icex = new INITCOMMONCONTROLSEX ();
 		icex.dwSize = INITCOMMONCONTROLSEX.sizeof;
@@ -176,7 +177,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle () {
 	super.createHandle ();
-	state &= ~CANVAS;
+	state &= ~(CANVAS | TRANSPARENT);
 	
 	/*
 	* Feature in Windows.  When the control is created,
@@ -334,6 +335,15 @@ void destroyItem (CoolItem item) {
 	originalItems = newOriginals;
 }
 
+void drawThemeBackground (int hDC, int hwnd, RECT rect) {
+	RECT rect2 = new RECT ();
+	OS.GetClientRect (handle, rect2);
+	OS.MapWindowPoints (handle, hwnd, rect2, 2);
+	int hTheme = OS.OpenThemeData (handle, REBAR);
+	OS.DrawThemeBackground (hTheme, hDC, OS.RP_BAND, 0, rect2, null);
+	OS.CloseThemeData (hTheme);	
+}
+
 int getMargin (int index) {
 	int margin = 0;
 	if (OS.COMCTL32_MAJOR >= 6) {
@@ -357,7 +367,7 @@ int getMargin (int index) {
 }
 
 Control findThemeControl () {
-	return null;
+	return background == -1 ? this : super.findThemeControl ();	
 }
 
 /**

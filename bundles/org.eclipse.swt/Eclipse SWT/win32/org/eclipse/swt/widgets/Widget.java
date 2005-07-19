@@ -65,6 +65,8 @@ public abstract class Widget {
 	
 	/* A layout was requested in this widget hierachy */
 	static final int LAYOUT_CHILD = 1<<7;
+
+	static final int TRANSPARENT = 1<<8;
 	
 	/* Default widths for widgets */
 	static final int DEFAULT_WIDTH	= 64;

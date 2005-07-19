@@ -172,6 +172,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle () {
 	super.createHandle ();
+	state |= TRANSPARENT;
 	if (OS.COMCTL32_MAJOR < 6) {
 		layout = new TextLayout (display);
 		linkColor = new Color (display, LINK_FOREGROUND);
@@ -876,22 +877,6 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 		OS.GetClientRect (handle, rect);
 		layout.setWidth (rect.right > 0 ? rect.right : -1);
 		redraw ();
-	}
-	return result;
-}
-
-LRESULT wmColorChild (int wParam, int lParam) {
-	LRESULT result = super.wmColorChild (wParam, lParam);
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		Control control = findThemeControl ();
-		if (control != null) {
-			OS.SetBkMode (wParam, OS.TRANSPARENT);
-			RECT rect = new RECT ();
-			OS.GetClientRect (control.handle, rect);
-			OS.MapWindowPoints (control.handle, handle, rect, 2);
-			control.drawThemeBackground (wParam, rect);
-			return new LRESULT (OS.GetStockObject (OS.NULL_BRUSH));
-		}
 	}
 	return result;
 }

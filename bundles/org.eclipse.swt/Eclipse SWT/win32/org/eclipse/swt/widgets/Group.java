@@ -313,10 +313,10 @@ LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 	* and is not necessary when a parent has a theme.
 	*/
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		if (findThemeControl () != null) return result;
+		return result;
 	}
 	drawBackground (wParam);
-	return LRESULT.ONE;
+	return result;
 }
 
 LRESULT WM_NCHITTEST (int wParam, int lParam) {
@@ -374,22 +374,6 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	if (OS.IsWinCE) return result;
 	OS.InvalidateRect (handle, null, true);
-	return result;
-}
-
-LRESULT wmColorChild (int wParam, int lParam) {
-	LRESULT result = super.wmColorChild (wParam, lParam);
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		Control control = findThemeControl ();
-		if (control != null) {
-			OS.SetBkMode (wParam, OS.TRANSPARENT);
-			RECT rect = new RECT ();
-			OS.GetClientRect (control.handle, rect);
-			OS.MapWindowPoints (control.handle, handle, rect, 2);
-			control.drawThemeBackground (wParam, rect);
-			return new LRESULT (OS.GetStockObject (OS.NULL_BRUSH));
-		}
-	}
 	return result;
 }
 

@@ -28,10 +28,13 @@
 #define ImmDisableTextFrameService_LIB "imm32.dll"
 #define IsAppThemed_LIB "uxtheme.dll"
 #define IsHungAppWindow_LIB "user32.dll"
+#define IsThemeDialogTextureEnabled_LIB "uxtheme.dll"
+#define IsThemeBackgroundPartiallyTransparent_LIB "uxtheme.dll"
 #define MonitorFromWindow_LIB "user32.dll"
 #define NotifyWinEvent_LIB "user32.dll"
 #define OpenThemeData_LIB "uxtheme.dll"
 #define SetLayout_LIB "gdi32.dll"
 #define SetMenuInfo_LIB "user32.dll"
+#define SetThemeAppProperties_LIB "uxtheme.dll"
 #define TransparentBlt_LIB "msimg32.dll"
 

@@ -581,6 +581,7 @@ typedef enum {
 	SetActiveWindow_FUNC,
 	SetBkColor_FUNC,
 	SetBkMode_FUNC,
+	SetBrushOrgEx_FUNC,
 	SetCapture_FUNC,
 	SetCaretPos_FUNC,
 	SetClipboardData_FUNC,

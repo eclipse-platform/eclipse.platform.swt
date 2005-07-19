@@ -164,6 +164,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle () {
 	super.createHandle ();
+	state |= TRANSPARENT;
 	OS.SendMessage (handle, OS.TBM_SETRANGEMAX, 0, 100);
 	OS.SendMessage (handle, OS.TBM_SETPAGESIZE, 0, 10);
 	OS.SendMessage (handle, OS.TBM_SETTICFREQ, 10, 0);
@@ -408,16 +409,6 @@ int windowProc () {
 	return TrackBarProc;
 }
 
-LRESULT WM_ERASEBKGND (int wParam, int lParam) {
-	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
-	if (result != null) return result;
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		Control control = findThemeControl ();
-		if (control != null) return LRESULT.ONE;
-	}
-	return result;
-}
-
 LRESULT WM_PAINT (int wParam, int lParam) {
 	/*
 	* Bug in Windows.  For some reason, when WM_CTLCOLORSTATIC
@@ -443,21 +434,6 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 LRESULT WM_SIZE (int wParam, int lParam) {
 	if (ignoreResize) return null;
 	return super.WM_SIZE (wParam, lParam);
-}
-
-LRESULT wmColorChild (int wParam, int lParam) {
-	LRESULT result = super.wmColorChild (wParam, lParam);
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		Control control = findThemeControl ();
-		if (control != null) {
-			RECT rect = new RECT ();
-			OS.GetClientRect (control.handle, rect);
-			OS.MapWindowPoints (control.handle, handle, rect, 2);
-			control.drawThemeBackground (wParam, rect);
-			return new LRESULT (OS.GetStockObject (OS.NULL_BRUSH));
-		}
-	}
-	return result;
 }
 
 LRESULT wmScrollChild (int wParam, int lParam) {

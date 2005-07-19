@@ -246,13 +246,13 @@ void createItem (TabItem item, int index) {
 
 void createHandle () {
 	super.createHandle ();
+	state &= ~(CANVAS | TRANSPARENT);
 	
 	/* Enable the flat look for tab folders on PPC */
 	if (OS.IsPPC) {
 		OS.SendMessage (handle, OS.CCM_SETVERSION, 0x020c /*COMCTL32_VERSION*/, 0);
 	}
 
-	state &= ~CANVAS;
 	/*
 	* Feature in Windows.  Despite the fact that the
 	* tool tip text contains \r\n, the tooltip will
@@ -296,16 +296,17 @@ void destroyItem (TabItem item) {
 	}
 }
 
-void drawThemeBackground (int hDC, RECT rect) {
+void drawThemeBackground (int hDC, int hwnd, RECT rect) {
+	RECT rect2 = new RECT ();
+	OS.GetClientRect (handle, rect2);
+	OS.MapWindowPoints (handle, hwnd, rect2, 2);
 	int hTheme = OS.OpenThemeData (handle, TAB);
-	OS.DrawThemeBackground (hTheme, hDC, OS.TABP_BODY, 0, rect, null);
+	OS.DrawThemeBackground (hTheme, hDC, OS.TABP_BODY, 0, rect2, null);
 	OS.CloseThemeData (hTheme);	
 }
 
 Control findThemeControl () {
-	// TEMPORARY CODE
-	return null;
-	//return background == -1 ? this : null;	
+	return background == -1 ? this : super.findThemeControl ();	
 }
 
 public Rectangle getClientArea () {

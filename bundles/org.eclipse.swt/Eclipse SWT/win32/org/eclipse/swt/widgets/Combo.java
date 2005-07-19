@@ -435,7 +435,7 @@ public void copy () {
 
 void createHandle () {
 	super.createHandle ();
-	state &= ~CANVAS;
+	state &= ~(CANVAS | TRANSPARENT);
 
 	/* Get the text and list window procs */
 	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
