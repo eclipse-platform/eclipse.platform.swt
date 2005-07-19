@@ -162,7 +162,7 @@ void createHandle (int index) {
 
 int /*long*/ gtk_change_value (int /*long*/ widget, int /*long*/ scroll, int /*long*/ value1, int /*long*/ value2) {
 	Event event = new Event ();
-	switch (scroll) {
+	switch ((int)/*64*/scroll) {
 		case OS.GTK_SCROLL_NONE:			event.detail = SWT.NONE; break;
 		case OS.GTK_SCROLL_JUMP:			event.detail = SWT.DRAG; break;
 		case OS.GTK_SCROLL_START:			event.detail = SWT.HOME; break;
