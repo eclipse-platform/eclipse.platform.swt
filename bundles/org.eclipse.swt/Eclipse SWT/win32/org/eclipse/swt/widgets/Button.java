@@ -880,6 +880,26 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 	return super.wmCommandChild (wParam, lParam);
 }
 
+LRESULT wmColorChild (int wParam, int lParam) {
+	LRESULT result = super.wmColorChild (wParam, lParam);
+	/*
+	* Feature in Windows.  When WM_CTLCOLORBTN returns
+	* a NULL brush to indicate that the background should
+	* not be drawn, when the button has the BS_RADIOBUTTON
+	* style, it draws black.  The fix is to draw the background
+	* in WM_CTLCOLORBTN.
+	*/
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		Control control = findThemeControl ();
+		if (control != null) {
+			RECT rect = new RECT ();
+			OS.GetClientRect (handle, rect);
+			control.drawThemeBackground (wParam, handle, rect);
+		}
+	}
+	return result;
+}
+
 LRESULT wmDrawChild (int wParam, int lParam) {
 	if ((style & SWT.ARROW) == 0) return super.wmDrawChild (wParam, lParam);
 	DRAWITEMSTRUCT struct = new DRAWITEMSTRUCT ();

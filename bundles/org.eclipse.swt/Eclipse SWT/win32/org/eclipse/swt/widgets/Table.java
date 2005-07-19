@@ -551,7 +551,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle () {
 	super.createHandle ();
-	state &= ~CANVAS;
+	state &= ~(CANVAS | TRANSPARENT);
 	
 	/*
 	* Feature in Windows.  In version 5.8 of COMCTL32.DLL,
