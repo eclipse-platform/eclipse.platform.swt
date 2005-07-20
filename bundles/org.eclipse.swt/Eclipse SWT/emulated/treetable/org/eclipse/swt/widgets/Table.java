@@ -3133,8 +3133,6 @@ public void setItemCount (int count) {
 			TableItem newFocusItem = count > 0 ? items [count - 1] : null; 
 			setFocusItem (newFocusItem, false);
 		}
-		int visibleItemCount = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
-		topIndex = Math.min (topIndex, Math.max (0, count - visibleItemCount));
 		itemsCount = count;
 		if (columns.length == 0) updateHorizontalBar ();
 	} else {
