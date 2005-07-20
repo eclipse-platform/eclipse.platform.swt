@@ -237,7 +237,7 @@ public int getAlignment () {
  * 
  * @since 3.2
  */
-/*public*/ boolean getMoveable() {
+public boolean getMoveable() {
 	checkWidget();
 	return OS.gtk_tree_view_column_get_reorderable (handle);
 }
@@ -519,7 +519,7 @@ public void setImage (Image image) {
  * 
  * @since 3.2
  */
-/*public*/ void setMoveable (boolean moveable) {
+public void setMoveable (boolean moveable) {
 	checkWidget();
 	OS.gtk_tree_view_column_set_reorderable (handle, moveable);
 }

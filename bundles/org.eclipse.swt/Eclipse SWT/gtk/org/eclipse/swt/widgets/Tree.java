@@ -785,7 +785,7 @@ public int getColumnCount () {
  * 
  * @since 3.2
  */
-/*public*/ int [] getColumnOrder () {
+public int [] getColumnOrder () {
 	checkWidget ();
 	if (columnCount == 0) return new int [0];
 	int /*long*/ list = OS.gtk_tree_view_get_columns (handle);
@@ -2007,7 +2007,7 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
  * 
  * @since 3.2
  */
-/*public*/ void setColumnOrder (int [] order) {
+public void setColumnOrder (int [] order) {
 	checkWidget ();
 	if (order == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (columnCount == 0) {
