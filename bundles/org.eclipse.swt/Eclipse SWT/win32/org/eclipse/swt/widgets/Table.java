@@ -619,6 +619,7 @@ void createHandle () {
 	/* Set the extended style bits */
 	int bits1 = OS.LVS_EX_SUBITEMIMAGES | OS.LVS_EX_LABELTIP;
 	if ((style & SWT.FULL_SELECTION) != 0) bits1 |= OS.LVS_EX_FULLROWSELECT;
+	if (OS.COMCTL32_MAJOR >= 6) bits1 |= OS.LVS_EX_DOUBLEBUFFER;
 	OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, bits1, bits1);
 	
 	/*

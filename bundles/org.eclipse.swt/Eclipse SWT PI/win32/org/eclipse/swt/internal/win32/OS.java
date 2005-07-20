@@ -770,6 +770,7 @@ public class OS extends Platform {
 	public static final int LVSICF_NOSCROLL = 0x2;
 	public static final int LVSIL_SMALL = 0x1;
 	public static final int LVSIL_STATE = 0x2;
+	public static final int LVS_EX_DOUBLEBUFFER = 0x10000;
 	public static final int LVS_EX_FULLROWSELECT = 0x20;
 	public static final int LVS_EX_GRIDLINES = 0x1;
 	public static final int LVS_EX_HEADERDRAGDROP = 0x10;
