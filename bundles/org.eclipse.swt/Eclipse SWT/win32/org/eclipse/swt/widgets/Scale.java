@@ -436,25 +436,6 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	return super.WM_SIZE (wParam, lParam);
 }
 
-LRESULT wmColorChild (int wParam, int lParam) {
-	LRESULT result = super.wmColorChild (wParam, lParam);
-	/*
-	* Feature in Windows.  When WM_CTLCOLORSTATIC returns
-	* a NULL brush to indicate that the background should
-	* not be drawn, the scale draws using a black background.
-	* The fix is to draw the background in WM_CTLCOLORSTATIC.
-	*/
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		Control control = findThemeControl ();
-		if (control != null) {
-			RECT rect = new RECT ();
-			OS.GetClientRect (handle, rect);
-			control.drawThemeBackground (wParam, handle, rect);
-		}
-	}
-	return result;
-}
-
 LRESULT wmScrollChild (int wParam, int lParam) {
 	
 	/* Do nothing when scrolling is ending */
