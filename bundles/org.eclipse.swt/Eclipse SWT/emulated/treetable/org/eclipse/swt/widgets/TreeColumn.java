@@ -248,7 +248,7 @@ public void dispose () {
 	}
 }
 void dispose (boolean notifyParent) {
-	super.dispose ();	/* the use of super is intentional here */
+	super.dispose ();	/* super is intentional here */
 	if (notifyParent) parent.destroyItem (this);
 	parent = null;
 }
@@ -299,7 +299,7 @@ int getIndex () {
 	}
 	return -1;
 }
-/*public*/ boolean getMoveable () {
+public boolean getMoveable () {
 	checkWidget ();
 	return moveable;
 }
@@ -348,7 +348,7 @@ public boolean getResizable () {
 	checkWidget ();
 	return resizable;
 }
-/*public*/ int getSortDirection () {
+public int getSortDirection () {
 	checkWidget ();
 	return sort;
 }
@@ -548,7 +548,7 @@ public void setImage (Image value) {
 		parent.header.redraw (getX (), 0, width, parent.getHeaderHeight (), false);
 	}
 }
-/*public*/ void setMoveable (boolean moveable) {
+public void setMoveable (boolean moveable) {
 	checkWidget ();
 	this.moveable = moveable;
 }

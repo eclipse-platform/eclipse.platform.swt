@@ -252,11 +252,11 @@ static int checkStyle (int style) {
 		if (recursive) {
 			availableDescendents = item.computeAvailableDescendents ();
 			for (int i = 0; i < availableDescendents.length; i++) {
-				Rectangle bounds = availableDescendents [i].getBounds ();
+				Rectangle bounds = availableDescendents [i].getBounds (false);
 				oldRightX = Math.max (oldRightX, bounds.x + bounds.width);
 			}
 		} else {
-			Rectangle bounds = item.getBounds ();
+			Rectangle bounds = item.getBounds (false);
 			oldRightX = bounds.x + bounds.width;
 		}
 	}
@@ -269,21 +269,21 @@ static int checkStyle (int style) {
 
 	/* adjust the horizontal scrollbar if needed */
 	if (columns.length == 0) {
-		int newWidth = 0;
+		int newRightX = 0;
 		if (recursive) {
 			for (int i = 0; i < availableDescendents.length; i++) {
-				Rectangle bounds = availableDescendents [i].getBounds ();
-				newWidth = Math.max (newWidth, bounds.x + bounds.width);
+				Rectangle bounds = availableDescendents [i].getBounds (false);
+				newRightX = Math.max (newRightX, bounds.x + bounds.width);
 			}
 		} else {
-			Rectangle bounds = item.getBounds ();
-			newWidth = bounds.x + bounds.width;
+			Rectangle bounds = item.getBounds (false);
+			newRightX = bounds.x + bounds.width;
 		}
-		updateHorizontalBar (newWidth, newWidth - oldRightX);
+		updateHorizontalBar (newRightX, newRightX - oldRightX);
 	}
 	
 	/* redraw the item(s) */
-	if (recursive) {
+	if (recursive && item.expanded) {
 		int descendentCount = availableDescendents == null ?
 			item.computeAvailableDescendentCount () :
 			availableDescendents.length;
@@ -300,18 +300,15 @@ static int checkStyle (int style) {
 	int oldRightX = 0;
 	if (columns.length == 0 && !recursive) {
 		for (int i = 0; i < items.length; i++) {
-			Rectangle bounds = items [i].getBounds ();
+			Rectangle bounds = items [i].getBounds (false);
 			oldRightX = Math.max (oldRightX, bounds.x + bounds.width);
 		}
 	}
 
 	/* clear the item(s) */
 	for (int i = 0; i < items.length; i++) {
-		if (recursive) {
-			items [i].clearAll (true, false);
-		} else {
-			items [i].clear ();
-		}
+		items [i].clear ();
+		if (recursive) items [i].clearAll (true, false);
 	}
 
 	/* adjust the horizontal scrollbar if needed */
@@ -323,9 +320,9 @@ static int checkStyle (int style) {
 			 * All cleared root items will have the same x and width values now,
 			 * so just measure the first one as a sample.
 			 */
-			Rectangle bounds = items [0].getBounds ();
-			int newWidth = bounds.x + bounds.width;
-			updateHorizontalBar (newWidth, newWidth - oldRightX);
+			Rectangle bounds = items [0].getBounds (false);
+			int newRightX = bounds.x + bounds.width;
+			updateHorizontalBar (newRightX, newRightX - oldRightX);
 		}
 	}
 	
@@ -360,7 +357,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	} else {
 		if (columns.length == 0) {
 			for (int i = 0; i < items.length; i++) {
-				Rectangle itemBounds = items [i].getBounds ();
+				Rectangle itemBounds = items [i].getBounds (false);
 				width = Math.max (width, itemBounds.x + itemBounds.width);
 			}
 		} else {
@@ -448,7 +445,7 @@ void createItem (TreeItem item, int index) {
 
 	/* update scrollbars */
 	updateVerticalBar ();
-	Rectangle bounds = item.getBounds ();
+	Rectangle bounds = item.getBounds (false);
 	int rightX = bounds.x + bounds.width;
 	updateHorizontalBar (rightX, rightX);
 	/* 
@@ -572,7 +569,7 @@ void destroyItem (TreeItem item) {
 	/* availableItems array */
 	int availableIndex = item.availableIndex; 
 	if (availableIndex != -1) {
-		Rectangle bounds = item.getBounds ();
+		Rectangle bounds = item.getBounds (false);
 		int rightX = bounds.x + bounds.width;
 
 		if (availableIndex != availableItemsCount - 1) {
@@ -730,7 +727,7 @@ public int getColumnCount () {
 	checkWidget ();
 	return columns.length;
 }
-/*public*/ int[] getColumnOrder () {
+public int[] getColumnOrder () {
 	checkWidget ();
 	int[] result = new int [columns.length];
 	if (orderedColumns != null) {
@@ -2157,13 +2154,13 @@ void onKeyDown (Event event) {
 		return;
 	}
 	if ((event.stateMask & SWT.CTRL) != 0) return;
-	
+
 	int initialIndex = focusItem.availableIndex;
 	char character = Character.toLowerCase (event.character);
 	/* check available items from current focus item to bottom */
 	for (int i = initialIndex + 1; i < availableItemsCount; i++) {
 		TreeItem item = availableItems [i];
-		String text = item.getText ();
+		String text = item.getText (0, false);
 		if (text.length() > 0) {
 			if (Character.toLowerCase (text.charAt (0)) == character) {
 				selectItem (item, false);
@@ -2180,7 +2177,7 @@ void onKeyDown (Event event) {
 	/* check available items from top to current focus item */
 	for (int i = 0; i < initialIndex; i++) {
 		TreeItem item = availableItems [i];
-		String text = item.getText ();
+		String text = item.getText (0, false);
 		if (text.length() > 0) {
 			if (Character.toLowerCase (text.charAt (0)) == character) {
 				selectItem (item, false);
@@ -2986,7 +2983,7 @@ void selectItem (TreeItem item, boolean addToSelection) {
 		selectedItems [selectedItems.length - 1] = item;
 	}
 }
-/*public*/ void setColumnOrder (int [] order) {
+public void setColumnOrder (int [] order) {
 	checkWidget ();
 	if (order == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (columns.length == 0) {
@@ -3157,9 +3154,9 @@ public void setInsertMark (TreeItem item, boolean before) {
 
 	/* if the new item count is less than the current count then remove all excess items from the end */
 	if (count < items.length) {
-		redrawStart = items [count - 1].availableIndex;
+		redrawStart = count > 0 ? items [count - 1].availableIndex : 0;
 		redrawEnd = availableItemsCount - 1;
-		availableItemsCount = Math.max (0, redrawStart - 1);
+		availableItemsCount = items [count].availableIndex;
 		for (int i = count; i < items.length; i++) {
 			items [i].dispose (false);
 		}
@@ -3195,8 +3192,6 @@ public void setInsertMark (TreeItem item, boolean before) {
 			TreeItem newFocusItem = count > 0 ? items [count - 1] : null; 
 			setFocusItem (newFocusItem, false);
 		}
-		int visibleItemCount = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
-		topIndex = Math.min (topIndex, Math.max (0, count - visibleItemCount));
 		if (columns.length == 0) updateHorizontalBar ();
 	} else {
 		int grow = count - items.length;
@@ -3586,7 +3581,7 @@ void updateHorizontalBar () {
 		}
 	} else {
 		for (int i = 0; i < availableItemsCount; i++) {
-			Rectangle itemBounds = availableItems [i].getBounds ();
+			Rectangle itemBounds = availableItems [i].getBounds (false);
 			maxX = Math.max (maxX, itemBounds.x + itemBounds.width + horizontalOffset);
 		}
 	}

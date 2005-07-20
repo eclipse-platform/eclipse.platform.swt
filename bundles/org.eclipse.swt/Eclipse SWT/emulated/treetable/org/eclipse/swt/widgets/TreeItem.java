@@ -301,7 +301,7 @@ void addColumn (TreeColumn column) {
 		 * recompute its displayText.
 		 */
 		GC gc = new GC (parent);
-		gc.setFont (getFont (1));
+		gc.setFont (getFont (1, false));
 		computeDisplayText (1, gc);
 		gc.dispose ();
 	}
@@ -334,7 +334,7 @@ void addItem (TreeItem item, int index) {
 	parent.makeAvailable (item);
 	
 	/* update scrollbars */
-	Rectangle bounds = item.getBounds ();
+	Rectangle bounds = item.getBounds (false);
 	int rightX = bounds.x + bounds.width;
 	parent.updateHorizontalBar (rightX, rightX);
 	parent.updateVerticalBar ();
@@ -360,7 +360,6 @@ static TreeItem checkNull (TreeItem item) {
 }
 void clear () {
 	checked = grayed = false;
-	expanded = false;	// TODO needed?
 	texts = null;
 	textWidths = new int [1];
 	fontHeight = 0;
@@ -393,15 +392,15 @@ void clear () {
 	/* if there are no columns then the horizontal scrollbar may need adjusting */
 	TreeItem[] availableDescendents = null;
 	int oldRightX = 0;
-	if (parent.columns.length == 0) {
+	if (item.availableIndex != -1 && parent.columns.length == 0) {
 		if (recursive) {
 			availableDescendents = item.computeAvailableDescendents ();
 			for (int i = 0; i < availableDescendents.length; i++) {
-				Rectangle bounds = availableDescendents [i].getBounds ();
+				Rectangle bounds = availableDescendents [i].getBounds (false);
 				oldRightX = Math.max (oldRightX, bounds.x + bounds.width);
 			}
 		} else {
-			Rectangle bounds = item.getBounds ();
+			Rectangle bounds = item.getBounds (false);
 			oldRightX = bounds.x + bounds.width;
 		}
 	}
@@ -411,20 +410,21 @@ void clear () {
 	if (recursive) {
 		item.clearAll (true, false);
 	}
+	if (item.availableIndex == -1) return;	/* no visual update needed */
 
 	/* adjust the horizontal scrollbar if needed */
 	if (parent.columns.length == 0) {
-		int newWidth = 0;
+		int newRightX = 0;
 		if (recursive) {
 			for (int i = 0; i < availableDescendents.length; i++) {
-				Rectangle bounds = availableDescendents [i].getBounds ();
-				newWidth = Math.max (newWidth, bounds.x + bounds.width);
+				Rectangle bounds = availableDescendents [i].getBounds (false);
+				newRightX = Math.max (newRightX, bounds.x + bounds.width);
 			}
 		} else {
-			Rectangle bounds = item.getBounds ();
-			newWidth = bounds.x + bounds.width;
+			Rectangle bounds = item.getBounds (false);
+			newRightX = bounds.x + bounds.width;
 		}
-		parent.updateHorizontalBar (newWidth, newWidth - oldRightX);
+		parent.updateHorizontalBar (newRightX, newRightX - oldRightX);
 	}
 
 	/* redraw the item(s) */
@@ -438,7 +438,7 @@ void clear () {
 	}
 }
 /*public*/ void clearAll (boolean recursive) {
-	clearAll (true);
+	clearAll (recursive, true);
 }
 void clearAll (boolean recursive, boolean doVisualUpdate) {
 	checkWidget ();
@@ -447,20 +447,20 @@ void clearAll (boolean recursive, boolean doVisualUpdate) {
 	/* if there are no columns then the horizontal scrollbar may need adjusting */
 	TreeItem[] availableDescendents = null;
 	int oldRightX = 0;
-	if (doVisualUpdate && parent.columns.length == 0) {
+	if (doVisualUpdate && availableIndex != -1 && expanded && parent.columns.length == 0) {
 		if (recursive) {
 			availableDescendents = computeAvailableDescendents ();
 			/*
-			 * i starts at 1 below because item 0 in availableDescendent
+			 * i starts at 1 here because item 0 in availableDescendents
 			 * will be the receiver, but this item is not being cleared.
 			 */
 			for (int i = 1; i < availableDescendents.length; i++) {
-				Rectangle bounds = availableDescendents [i].getBounds ();
+				Rectangle bounds = availableDescendents [i].getBounds (false);
 				oldRightX = Math.max (oldRightX, bounds.x + bounds.width);
 			}
 		} else {
 			for (int i = 0; i < items.length; i++) {
-				Rectangle bounds = items [i].getBounds ();
+				Rectangle bounds = items [i].getBounds (false);
 				oldRightX = Math.max (oldRightX, bounds.x + bounds.width);
 			}
 		}
@@ -468,36 +468,33 @@ void clearAll (boolean recursive, boolean doVisualUpdate) {
 
 	/* clear the item(s) */
 	for (int i = 0; i < items.length; i++) {
-		if (recursive) {
-			items [i].clearAll (true, false);
-		} else {
-			items [i].clear ();
-		}
+		items [i].clear ();
+		if (recursive) items [i].clearAll (true, false);
 	}
 
-	if (!doVisualUpdate) return;
+	if (!doVisualUpdate || availableIndex == -1 || !expanded) return;	/* no visual update needed */
 
 	/* adjust the horizontal scrollbar if needed */
 	if (parent.columns.length == 0) {
-		int newWidth = 0;
+		int newRightX = 0;
 		if (recursive) {
 			/*
-			 * i starts at 1 below because item 0 in availableDescendent
+			 * i starts at 1 here because item 0 in availableDescendents
 			 * is the receiver, but this item was not cleared.
 			 */
 			for (int i = 1; i < availableDescendents.length; i++) {
-				Rectangle bounds = availableDescendents [i].getBounds ();
-				newWidth = Math.max (newWidth, bounds.x + bounds.width);
+				Rectangle bounds = availableDescendents [i].getBounds (false);
+				newRightX = Math.max (newRightX, bounds.x + bounds.width);
 			}
 		} else {
 			/*
 			 * All cleared direct child items will have the same x and width
 			 * values now, so just measure the first one as a sample.
 			 */
-			Rectangle bounds = items [0].getBounds ();
-			newWidth = bounds.x + bounds.width;
+			Rectangle bounds = items [0].getBounds (false);
+			newRightX = bounds.x + bounds.width;
 		}
-		parent.updateHorizontalBar (newWidth, newWidth - oldRightX);
+		parent.updateHorizontalBar (newRightX, newRightX - oldRightX);
 	}
 
 	/* redraw the item(s) */
@@ -572,9 +569,11 @@ TreeItem[] computeAvailableDescendents () {
 	return result;
 }
 void computeDisplayText (int columnIndex, GC gc) {
+	if ((parent.style & SWT.VIRTUAL) != 0 && !cached) return;	/* nothing to do */
+
 	int columnCount = parent.columns.length;
 	if (columnCount == 0) {
-		String text = getText (0);
+		String text = getText (0, false);
 		textWidths [columnIndex] = gc.stringExtent (text).x;
 		return;
 	}
@@ -592,7 +591,7 @@ void computeDisplayText (int columnIndex, GC gc) {
 			availableWidth -= Tree.MARGIN_IMAGE;
 		}
 	}
-	String text = getText (columnIndex);
+	String text = getText (columnIndex, false);
 	int textWidth = gc.stringExtent (text).x;
 	if (textWidth <= availableWidth) {
 		displayTexts [columnIndex] = text;
@@ -648,12 +647,30 @@ void computeDisplayText (int columnIndex, GC gc) {
 	textWidths [columnIndex] = previousWidth + ellipsisWidth;
 }
 void computeDisplayTexts (GC gc) {
+	if ((parent.style & SWT.VIRTUAL) != 0 && !cached) return;	/* nothing to do */
+
 	int columnCount = parent.columns.length;
 	if (columnCount == 0) return;
 	
 	for (int i = 0; i < columnCount; i++) {
-		gc.setFont (getFont (i));
+		gc.setFont (getFont (i, false));
 		computeDisplayText (i, gc);
+	}
+}
+/*
+ * Computes the cached text widths.
+ */
+void computeTextWidths (GC gc) {
+	if ((parent.style & SWT.VIRTUAL) != 0 && !cached) return;	/* nothing to do */
+
+	int validColumnCount = Math.max (1, parent.columns.length);
+	textWidths = new int [validColumnCount];
+	for (int i = 0; i < textWidths.length; i++) {
+		String value = getDisplayText (i);
+		if (value != null) {
+			gc.setFont (getFont (i, false));
+			textWidths [i] = gc.stringExtent (value).x;
+		}
 	}
 }
 public void dispose () {
@@ -771,7 +788,10 @@ public Color getBackground (int columnIndex) {
  */
 public Rectangle getBounds () {
 	checkWidget ();
-	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	return getBounds (true);
+}
+Rectangle getBounds (boolean checkData) {
+	if (checkData && !parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (!isAvailable ()) return new Rectangle (0, 0, 0, 0);
 	int textPaintWidth = textWidths [0] + 2 * MARGIN_TEXT;
 	return new Rectangle (getTextX (0), parent.getItemY (this), textPaintWidth, parent.itemHeight - 1);
@@ -877,7 +897,7 @@ int getContentWidth (int columnIndex) {
 		width += parent.col0ImageWidth;
 		if (parent.col0ImageWidth > 0) width += Tree.MARGIN_IMAGE;
 	} else {
-		Image image = getImage (columnIndex);
+		Image image = getImage (columnIndex, false);
 		if (image != null) {
 			width += image.getBounds ().width + Tree.MARGIN_IMAGE;
 		}
@@ -922,7 +942,7 @@ int getContentX (int columnIndex) {
 	return contentX + Tree.MARGIN_IMAGE + INDENT_HIERARCHY;
 }
 String getDisplayText (int columnIndex) {
-	if (parent.columns.length == 0) return getText (0);
+	if (parent.columns.length == 0) return getText (0, false);
 	String result = displayTexts [columnIndex];
 	return result != null ? result : "";	//$NON-NLS-1$
 }
@@ -940,7 +960,6 @@ String getDisplayText (int columnIndex) {
  */
 public boolean getExpanded () {
 	checkWidget ();
-	// TODO is next line needed here?
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return expanded;
 }
@@ -1006,7 +1025,10 @@ Rectangle getFocusBounds () {
  */
 public Font getFont () {
 	checkWidget ();
-	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	return getFont (true);
+}
+Font getFont (boolean checkData) {
+	if (checkData && !parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (font != null) return font;
 	return parent.getFont ();
 }
@@ -1026,10 +1048,13 @@ public Font getFont () {
  */
 public Font getFont (int columnIndex) {
 	checkWidget ();
-	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	return getFont (columnIndex, true);
+}
+Font getFont (int columnIndex, boolean checkData) {
+	if (checkData && !parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int validColumnCount = Math.max (1, parent.columns.length);
-	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return getFont ();
-	if (cellFonts == null || cellFonts [columnIndex] == null) return getFont ();
+	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return getFont (checkData);
+	if (cellFonts == null || cellFonts [columnIndex] == null) return getFont (checkData);
 	return cellFonts [columnIndex];
 }
 int getFontHeight () {
@@ -1165,10 +1190,13 @@ public Image getImage () {
  */
 public Image getImage (int columnIndex) {
 	checkWidget ();
-	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	return getImage (columnIndex, true);
+}
+Image getImage (int columnIndex, boolean checkData) {
+	if (checkData && !parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int validColumnCount = Math.max (1, parent.columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return null;
-	if (columnIndex == 0) return getImage ();
+	if (columnIndex == 0) return super.getImage ();	/* super is intentional here */
 	return images [columnIndex];
 }
 /**
@@ -1197,7 +1225,7 @@ public Rectangle getImageBounds (int columnIndex) {
 	int itemHeight = parent.itemHeight;
 	int imageSpaceY = itemHeight - 2 * padding;
 	int y = parent.getItemY (this);
-	Image image = getImage (columnIndex); 
+	Image image = getImage (columnIndex, false); 
 	if (image == null) {
 		return new Rectangle (startX, y + padding, 0, imageSpaceY);
 	}
@@ -1332,15 +1360,15 @@ public TreeItem getParentItem () {
  */
 int getPreferredWidth (int columnIndex) {
 	GC gc = new GC (parent);
-	gc.setFont (getFont (columnIndex));
-	int textPaintWidth = gc.stringExtent (getText (columnIndex)).x + 2 * MARGIN_TEXT;
+	gc.setFont (getFont (columnIndex, false));
+	int textPaintWidth = gc.stringExtent (getText (columnIndex, false)).x + 2 * MARGIN_TEXT;
 	gc.dispose ();
 	if (columnIndex == 0) {
 		return getTextX (columnIndex) + parent.horizontalOffset + textPaintWidth + parent.getCellPadding ();	/* right side cell pad */
 	}
 	/* column > 0 */
 	int width = 2 * parent.getCellPadding () + textPaintWidth;
-	Image image = getImage (columnIndex);
+	Image image = getImage (columnIndex, false);
 	if (image != null) {
 		width += image.getBounds ().width;
 		width += Tree.MARGIN_IMAGE;
@@ -1368,10 +1396,13 @@ public String getText () {
  */
 public String getText (int columnIndex) {
 	checkWidget ();
-	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
+	return getText (columnIndex, true);
+}
+String getText (int columnIndex, boolean checkData) {
+	if (checkData && !parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int validColumnCount = Math.max (1, parent.columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return "";	//$NON-NLS-1$
-	if (columnIndex == 0) return getText ();
+	if (columnIndex == 0) return super.getText ();	/* super is intentional here */
 	if (texts [columnIndex] == null) return "";	//$NON-NLS-1$
 	return texts [columnIndex];
 }
@@ -1384,7 +1415,7 @@ int getTextX (int columnIndex) {
 		textX += parent.col0ImageWidth;
 		if (parent.col0ImageWidth > 0) textX += Tree.MARGIN_IMAGE;
 	} else {
-		Image image = getImage (columnIndex);
+		Image image = getImage (columnIndex, false);
 		if (image != null) {
 			textX += image.getBounds ().width + Tree.MARGIN_IMAGE;	
 		}
@@ -1608,7 +1639,7 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 		}
 	}
 
-	Image image = getImage (columnIndex);
+	Image image = getImage (columnIndex, false);
 	String text = getDisplayText (columnIndex);
 	Rectangle imageArea = getImageBounds (columnIndex);
 	int startX = imageArea.x;
@@ -1634,7 +1665,7 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 	
 	/* draw the text */
 	if (text.length () > 0) {
-		gc.setFont (getFont (columnIndex));
+		gc.setFont (getFont (columnIndex, false));
 		int fontHeight = getFontHeight (columnIndex);
 		if (isSelected () && (columnIndex == 0 || (parent.style & SWT.FULL_SELECTION) != 0)) {
 			gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
@@ -1643,20 +1674,6 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 		}
 		x = getTextX (columnIndex) + MARGIN_TEXT;
 		gc.drawString (text, x, y + (itemHeight - fontHeight) / 2, true);
-	}
-}
-/*
- * Recomputes the cached text widths.
- */
-void recomputeTextWidths (GC gc) {
-	int validColumnCount = Math.max (1, parent.columns.length);
-	textWidths = new int [validColumnCount];
-	for (int i = 0; i < textWidths.length; i++) {
-		String value = getDisplayText (i);
-		if (value != null) {
-			gc.setFont (getFont (i));
-			textWidths [i] = gc.stringExtent (value).x;
-		}
 	}
 }
 void redrawItem () {
@@ -1676,7 +1693,7 @@ void removeColumn (TreeColumn column, int index) {
 		cellFonts = null;
 		fontHeights = null;
 		GC gc = new GC (parent);
-		recomputeTextWidths (gc);
+		computeTextWidths (gc);
 		gc.dispose ();
 		/* notify all child items as well */
 		for (int i = 0; i < items.length; i++) {
@@ -1740,7 +1757,7 @@ void removeColumn (TreeColumn column, int index) {
 		 * its displayText. 
 		 */
 		GC gc = new GC (parent);
-		gc.setFont (getFont (0));
+		gc.setFont (getFont (0, false));
 		computeDisplayText (0, gc);
 		gc.dispose ();
 	}
@@ -1832,6 +1849,7 @@ public void setBackground (Color value) {
 	if (background == value) return;
 	if (background != null && background.equals (value)) return;
 	background = value;
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	redrawItem ();
 }
 /**
@@ -1866,6 +1884,7 @@ public void setBackground (int columnIndex, Color value) {
 	if (cellBackgrounds [columnIndex] == value) return;
 	if (cellBackgrounds [columnIndex] != null && cellBackgrounds [columnIndex].equals (value)) return;
 	cellBackgrounds [columnIndex] = value;
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	if (availableIndex == -1) return;
 	Rectangle bounds = getCellBounds (columnIndex);
 	parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
@@ -1886,6 +1905,7 @@ public void setChecked (boolean value) {
 	if ((parent.getStyle () & SWT.CHECK) == 0) return;
 	if (checked == value) return;
 	checked = value;
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	if (availableIndex == -1) return;
 	Rectangle bounds = getCheckboxBounds ();
 	parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
@@ -1906,6 +1926,7 @@ public void setExpanded (boolean value) {
 	if (expanded == value) return;
 	if (items.length == 0) return;
 	if (parent.inExpand) return;
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	if (value) {
 		expanded = value;
 		if (availableIndex == -1) return;
@@ -1934,7 +1955,7 @@ public void setExpanded (boolean value) {
 		/* update scrollbars */
 		int rightX = 0;
 		for (int i = 1; i < availableDescendents.length; i++) {
-			Rectangle bounds = availableDescendents [i].getBounds ();
+			Rectangle bounds = availableDescendents [i].getBounds (false);
 			rightX = Math.max (rightX, bounds.x + bounds.width);
 		}
 		parent.updateHorizontalBar (rightX, rightX);
@@ -1960,7 +1981,7 @@ public void setExpanded (boolean value) {
 
 		int y = parent.getItemY (this) + parent.itemHeight;
 		int startY = y + (descendents.length - 1) * parent.itemHeight;
-		if (y < clientArea.height && 0 < startY) {	/* determine whether any some visual update is actually needed */
+		if (y < clientArea.height && 0 < startY) {	/* determine whether any visual update is actually needed */
 			if (parent.drawCount == 0) {
 				parent.update ();
 				GC gc = new GC (parent);
@@ -2031,21 +2052,22 @@ public void setFont (Font value) {
 	if (font == value) return;
 	if (value != null && value.equals (font)) return;
 	
-	Rectangle bounds = getBounds ();
+	Rectangle bounds = getBounds (false);
 	int oldRightX = bounds.x + bounds.width;
 	font = value;
-	
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
+
 	/* recompute cached values for string measurements */
 	GC gc = new GC (parent);
-	gc.setFont (getFont ());
+	gc.setFont (getFont (false));
 	fontHeight = gc.getFontMetrics ().getHeight ();
 	computeDisplayTexts (gc);
-	recomputeTextWidths (gc);
+	computeTextWidths (gc);
 	gc.dispose ();
 	
 	/* horizontal bar could be affected if tree has no columns */
 	if (parent.columns.length == 0) {
-		bounds = getBounds ();
+		bounds = getBounds (false);
 		int newRightX = bounds.x + bounds.width;
 		parent.updateHorizontalBar (newRightX, newRightX - oldRightX);
 	}
@@ -2082,10 +2104,11 @@ public void setFont (int columnIndex, Font value) {
 	if (cellFonts [columnIndex] == value) return;
 	if (cellFonts [columnIndex] != null && cellFonts [columnIndex].equals (value)) return;
 	cellFonts [columnIndex] = value;
-	
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
+
 	/* recompute cached values for string measurements */
 	GC gc = new GC (parent);
-	gc.setFont (getFont (columnIndex));
+	gc.setFont (getFont (columnIndex, false));
 	if (fontHeights == null) fontHeights = new int [validColumnCount];
 	fontHeights [columnIndex] = gc.getFontMetrics ().getHeight ();
 	computeDisplayText (columnIndex, gc);
@@ -2123,6 +2146,7 @@ public void setForeground (Color value) {
 	if (foreground == value) return;
 	if (foreground != null && foreground.equals (value)) return;
 	foreground = value;
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	redrawItem ();
 }
 /**
@@ -2157,6 +2181,7 @@ public void setForeground (int columnIndex, Color value) {
 	if (cellForegrounds [columnIndex] == value) return;
 	if (cellForegrounds [columnIndex] != null && cellForegrounds [columnIndex].equals (value)) return;
 	cellForegrounds [columnIndex] = value;
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	if (availableIndex == -1) return;
 	parent.redraw (
 		getTextX (columnIndex),
@@ -2181,6 +2206,7 @@ public void setGrayed (boolean value) {
 	if ((parent.getStyle () & SWT.CHECK) == 0) return;
 	if (grayed == value) return;
 	grayed = value;
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
 	if (availableIndex == -1) return;
 	Rectangle bounds = getCheckboxBounds ();
 	parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
@@ -2237,7 +2263,7 @@ public void setImage (int columnIndex, Image value) {
 	TreeColumn[] columns = parent.columns;
 	int validColumnCount = Math.max (1, columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return;
-	Image image = getImage (columnIndex);
+	Image image = getImage (columnIndex, false);
 	if (value == image) return;
 	if (value != null && value.equals (image)) return;
 	if (columnIndex == 0) {
@@ -2245,14 +2271,15 @@ public void setImage (int columnIndex, Image value) {
 	} else {
 		images [columnIndex] = value;
 	}
-	
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
+
 	/* 
 	 * An image width change may affect the space available for the item text, so
 	 * recompute the displayText if there are columns.
 	 */
 	if (columns.length > 0) {
 		GC gc = new GC (parent);
-		gc.setFont (getFont (columnIndex));
+		gc.setFont (getFont (columnIndex, false));
 		computeDisplayText (columnIndex, gc);
 		gc.dispose ();
 	}
@@ -2328,7 +2355,7 @@ public void setImage (int columnIndex, Image value) {
 
 	/* if the new item count is less than the current count then remove all excess items from the end */
 	if (count < items.length) {
-		redrawStart = items [count].availableIndex;
+		redrawStart = count > 0 ? items [count - 1].availableIndex : availableIndex;
 		redrawEnd = parent.availableItemsCount - 1;
 		for (int i = count; i < items.length; i++) {
 			items [i].dispose (true);
@@ -2340,8 +2367,7 @@ public void setImage (int columnIndex, Image value) {
 			System.arraycopy (items, 0, newItems, 0, count);
 			items = newItems;
 		}
-		int visibleItemCount = (parent.getClientArea ().height - parent.getHeaderHeight ()) / parent.itemHeight;
-		parent.topIndex = Math.min (parent.topIndex, Math.max (0, count - visibleItemCount));
+		if (count == 0) expanded = false;
 	} else {
 		int oldAvailableDescendentCount = computeAvailableDescendentCount ();
 		int grow = count - items.length;
@@ -2354,7 +2380,7 @@ public void setImage (int columnIndex, Image value) {
 			items [i] = new TreeItem (this, SWT.NONE, i, false);
 		}
 		
-		if (expanded && isAvailable ()) {
+		if (expanded && availableIndex != -1) {
 			/* expand the availableItems array if necessary */
 			if (parent.availableItems.length < parent.availableItemsCount + grow) {
 				TreeItem[] newAvailableItems = new TreeItem [parent.availableItemsCount + grow];
@@ -2363,12 +2389,13 @@ public void setImage (int columnIndex, Image value) {
 			}
 			TreeItem[] availableItems = parent.availableItems;
 			/* shift items right to create space for the new available items */
+			int dest = availableIndex + oldAvailableDescendentCount + grow;
 			System.arraycopy (
 				availableItems,
 				availableIndex + oldAvailableDescendentCount,
 				availableItems,
-				availableIndex + oldAvailableDescendentCount + grow,
-				grow);
+				dest,
+				availableItems.length - dest);
 			parent.availableItemsCount += grow;
 			/* copy new items in */
 			System.arraycopy (
@@ -2384,19 +2411,20 @@ public void setImage (int columnIndex, Image value) {
 		}
 	}
 
-	if (isAvailable ()) {
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
+	if (availableIndex != -1) {
 		if (expanded) parent.updateVerticalBar ();
 		parent.redrawItems (redrawStart, redrawEnd, false);
 	}
 }
 public void setText (String value) {
 	checkWidget ();
-	Rectangle bounds = getBounds ();
+	Rectangle bounds = getBounds (false);
 	int oldRightX = bounds.x + bounds.width;
 	setText (0, value);
 	/* horizontal bar could be affected if tree has no columns */
 	if (parent.columns.length == 0) {
-		bounds = getBounds ();
+		bounds = getBounds (false);
 		int newRightX = bounds.x + bounds.width;
 		parent.updateHorizontalBar (newRightX, newRightX - oldRightX);
 	}
@@ -2419,7 +2447,7 @@ public void setText (String value) {
 public void setText (String[] value) {
 	checkWidget ();
 	if (value == null) error (SWT.ERROR_NULL_ARGUMENT);
-	Rectangle bounds = getBounds ();
+	Rectangle bounds = getBounds (false);
 	int oldRightX = bounds.x + bounds.width;
 	// TODO make a smarter implementation of this
 	for (int i = 0; i < value.length; i++) {
@@ -2427,7 +2455,7 @@ public void setText (String[] value) {
 	}
 	/* horizontal bar could be affected if tree has no columns */
 	if (parent.columns.length == 0) {
-		bounds = getBounds ();
+		bounds = getBounds (false);
 		int newRightX = bounds.x + bounds.width;
 		parent.updateHorizontalBar (newRightX, newRightX - oldRightX);
 	}
@@ -2453,21 +2481,22 @@ public void setText (int columnIndex, String value) {
 	if (value == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int validColumnCount = Math.max (1, parent.columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return;
-	if (value.equals (getText (columnIndex))) return;
+	if (value.equals (getText (columnIndex, false))) return;
 	if (columnIndex == 0) {
 		super.setText (value);
 	} else {
 		texts [columnIndex] = value;		
 	}
-	
+	if ((parent.style & SWT.VIRTUAL) != 0) cached = true;
+
 	int oldWidth = textWidths [columnIndex];
 	GC gc = new GC (parent);
-	gc.setFont (getFont (columnIndex));
+	gc.setFont (getFont (columnIndex, false));
 	computeDisplayText (columnIndex, gc);
 	gc.dispose ();
 	if (availableIndex == -1) return;
 	if (parent.columns.length == 0) {
-		Rectangle bounds = getBounds ();
+		Rectangle bounds = getBounds (false);
 		int rightX = bounds.x + bounds.width;
 		parent.updateHorizontalBar (rightX, textWidths [columnIndex] - oldWidth);
 	}
@@ -2480,7 +2509,7 @@ public void setText (int columnIndex, String value) {
 }
 void updateColumnWidth (TreeColumn column, GC gc) {
 	int columnIndex = column.getIndex ();
-	gc.setFont (getFont (columnIndex));
+	gc.setFont (getFont (columnIndex, false));
 	computeDisplayText (columnIndex, gc);
 	for (int i = 0; i < items.length; i++) {
 		items [i].updateColumnWidth (column, gc);
@@ -2494,7 +2523,7 @@ void updateColumnWidth (TreeColumn column, GC gc) {
 void updateFont (GC gc) {
 	if (font == null) {		/* receiver is using the Tree's font */
 		computeDisplayTexts (gc);
-		recomputeTextWidths (gc);
+		computeTextWidths (gc);
 	}
 	/* pass notification on to all children */
 	for (int i = 0; i < items.length; i++) {
