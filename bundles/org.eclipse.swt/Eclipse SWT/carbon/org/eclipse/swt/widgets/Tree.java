@@ -276,6 +276,7 @@ void createHandle () {
 	int [] outControl = new int [1];
 	int window = OS.GetControlOwner (parent.handle);
 	OS.CreateDataBrowserControl (window, null, OS.kDataBrowserListView, outControl);
+	OS.SetAutomaticControlDragTrackingEnabledForWindow (window, true);
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];
 	if (!drawFocusRing ()) {
@@ -832,6 +833,47 @@ public int getColumnCount () {
 }
 
 /**
+ * Returns an array of zero-relative integers that map
+ * the creation order of the receiver's items to the
+ * order in which they are currently being displayed.
+ * <p>
+ * Specifically, the indices of the returned array represent
+ * the current visual order of the items, and the contents
+ * of the array represent the creation order of the items.
+ * </p><p>
+ * Note: This is not the actual structure used by the receiver
+ * to maintain its list of items, so modifying the array will
+ * not affect the receiver. 
+ * </p>
+ *
+ * @return the current visual order of the receiver's items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see Tree#setColumnOrder(int[])
+ * @see TreeColumn#getMoveable()
+ * @see TreeColumn#setMoveable(boolean)
+ * @see SWT#Move
+ * 
+ * @since 3.1
+ */
+public int [] getColumnOrder () {
+	checkWidget ();
+	int [] order = new int [columnCount];
+	int [] position = new int [1];
+	for (int i=0; i<columnCount; i++) {
+		TreeColumn column = columns [i];
+		OS.GetDataBrowserTableViewColumnPosition (handle, column.id, position);
+		if ((style & SWT.CHECK) != 0) position [0] -= 1;
+		order [position [0]] = i;
+	}
+	return order;
+}
+
+/**
  * Returns an array of <code>TreeColumn</code>s which are the
  * columns in the receiver. If no <code>TreeColumn</code>s were
  * created by the programmer, the array is empty, despite the fact
@@ -1266,9 +1308,9 @@ void hookEvents () {
 	DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
 	callbacks.version = OS.kDataBrowserLatestCallbacks;
 	OS.InitDataBrowserCallbacks (callbacks);
-	callbacks.v1_itemCompareCallback = display.itemCompareProc;
 	callbacks.v1_itemDataCallback = display.itemDataProc;
 	callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
+	callbacks.v1_itemCompareCallback = display.itemCompareProc;
 	OS.SetDataBrowserCallbacks (handle, callbacks);
 	DataBrowserCustomCallbacks custom = new DataBrowserCustomCallbacks ();
 	custom.version = OS.kDataBrowserLatestCustomCallbacks;
@@ -1402,6 +1444,23 @@ int itemNotificationProc (int browser, int id, int message) {
 				if (width [0] != column.lastWidth) {
 					column.resized (width [0]);
 					return OS.noErr;
+				}
+			}
+			if (!column.isDisposed ()) {
+				int [] position = new int[1];
+				OS.GetDataBrowserTableViewColumnPosition (handle, column.id, position);
+				if (position [0] != column.lastPosition) {
+					column.lastPosition = position [0];
+					int order = (style & SWT.CHECK) != 0 ? position [0] - 1 : position [0];
+					if (order == 0) {
+						int [] disclosure = new int [1];
+						boolean [] expandableRows = new boolean [1];
+						OS.GetDataBrowserListViewDisclosureColumn (handle, disclosure, expandableRows);
+						if (disclosure [0] != column.id) {
+							OS.SetDataBrowserListViewDisclosureColumn (handle, column.id, expandableRows [0]);
+						}
+					}
+					column.sendEvent (SWT.Move);
 				}
 			}
 		}
@@ -1816,6 +1875,91 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 		showItem (showItem , true);
 	}		 
 	return result;
+}
+
+/**
+ * Sets the order that the items in the receiver should 
+ * be displayed in to the given argument which is described
+ * in terms of the zero-relative ordering of when the items
+ * were added.
+ *
+ * @param order the new order to display the items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the item order is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the item order is not the same length as the number of items</li>
+ * </ul>
+ * 
+ * @see Tree#getColumnOrder()
+ * @see TreeColumn#getMoveable()
+ * @see TreeColumn#setMoveable(boolean)
+ * @see SWT#Move
+ * 
+ * @since 3.2
+ */
+public void setColumnOrder (int [] order) {
+	checkWidget ();
+	if (order == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (columnCount == 0) {
+		if (order.length != 0) error (SWT.ERROR_INVALID_ARGUMENT);
+		return;
+	}
+	if (order.length != columnCount) error (SWT.ERROR_INVALID_ARGUMENT);
+	int [] oldOrder = getColumnOrder ();
+	boolean reorder = false;
+	boolean [] seen = new boolean [columnCount];
+	for (int i=0; i<order.length; i++) {
+		int index = order [i];
+		if (index < 0 || index >= columnCount) error (SWT.ERROR_INVALID_ARGUMENT);
+		if (seen [index]) error (SWT.ERROR_INVALID_ARGUMENT);
+		seen [index] = true;
+		if (order [i] != oldOrder [i]) reorder = true;
+	}
+	if (reorder) {
+		int [] disclosure = new int [1];
+		boolean [] expandableRows = new boolean [1];
+		OS.GetDataBrowserListViewDisclosureColumn (handle, disclosure, expandableRows);
+		TreeColumn firstColumn = columns [order [0]];
+		if (disclosure [0] != firstColumn.id) {
+			OS.SetDataBrowserListViewDisclosureColumn (handle, firstColumn.id, expandableRows [0]);
+		}
+		int x = 0;
+		short [] width = new short [1];
+		int [] oldX = new int [oldOrder.length];
+		for (int i=0; i<oldOrder.length; i++) {
+			int index = oldOrder [i];
+			TreeColumn column = columns [index];
+			oldX [index] =  x;
+			OS.GetDataBrowserTableViewNamedColumnWidth(handle, column.id, width);
+			x += width [0];
+		}
+		x = 0;
+		int [] newX = new int [order.length];
+		for (int i=0; i<order.length; i++) {
+			int index = order [i];
+			TreeColumn column = columns [index];
+			int position = (style & SWT.CHECK) != 0 ? i + 1 : i;
+			OS.SetDataBrowserTableViewColumnPosition(handle, column.id, position);
+			column.lastPosition = position;
+			newX [index] =  x;
+			OS.GetDataBrowserTableViewNamedColumnWidth(handle, column.id, width);
+			x += width [0];
+		}
+		TreeColumn[] newColumns = new TreeColumn [columnCount];
+		System.arraycopy (columns, 0, newColumns, 0, columnCount);
+		for (int i=0; i<columnCount; i++) {
+			TreeColumn column = newColumns [i];
+			if (!column.isDisposed ()) {
+				if (newX [i] != oldX [i]) {
+					column.sendEvent (SWT.Move);
+				}
+			}
+		}
+	}
 }
 
 void setFontStyle (Font font) {
