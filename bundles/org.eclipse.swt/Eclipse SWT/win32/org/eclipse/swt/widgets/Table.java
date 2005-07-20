@@ -1163,7 +1163,9 @@ void fixCheckboxImageList () {
 }
 
 int getBackgroundPixel () {
-	return OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0);
+	int color = OS.SendMessage (handle, OS.LVM_GETBKCOLOR, 0, 0);
+	if (color == OS.CLR_NONE) return defaultBackground ();
+	return color;
 }
 
 /**
@@ -1300,7 +1302,7 @@ int getForegroundPixel () {
 	* that it is using the default foreground color.  This
 	* is undocumented.
 	*/
-	if (pixel == OS.CLR_DEFAULT) return OS.GetSysColor (OS.COLOR_WINDOWTEXT);
+	if (pixel == OS.CLR_DEFAULT) return defaultForeground ();
 	return pixel;
 }
 
