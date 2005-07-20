@@ -155,7 +155,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		Rect inset = getInset ();
 		width += inset.left + inset.right;
 		size.x = Math.max (width, size.x);	
-}
+	}
 	return size;
 }
 
