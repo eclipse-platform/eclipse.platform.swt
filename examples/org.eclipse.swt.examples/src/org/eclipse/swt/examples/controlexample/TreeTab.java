@@ -27,7 +27,7 @@ class TreeTab extends ScrollableTab {
 	Button checkButton, fullSelectionButton;
 
 	/* Other widgets added to the "Other" group */
-	Button multipleColumns, headerVisibleButton, linesVisibleButton;
+	Button multipleColumns, moveableColumns, headerVisibleButton, linesVisibleButton;
 	
 	/* Controls and resources added to the "Colors" group */
 	Button itemForegroundButton, itemBackgroundButton, itemFontButton;
@@ -155,22 +155,30 @@ class TreeTab extends ScrollableTab {
 		super.createOtherGroup ();
 	
 		/* Create display controls specific to this example */
-		multipleColumns = new Button (otherGroup, SWT.CHECK);
-		multipleColumns.setText (ControlExample.getResourceString("Multiple_Columns"));
 		headerVisibleButton = new Button (otherGroup, SWT.CHECK);
 		headerVisibleButton.setText (ControlExample.getResourceString("Header_Visible"));
+		multipleColumns = new Button (otherGroup, SWT.CHECK);
+		multipleColumns.setText (ControlExample.getResourceString("Multiple_Columns"));
+		moveableColumns = new Button (otherGroup, SWT.CHECK);
+		moveableColumns.setText (ControlExample.getResourceString("Moveable_Columns"));
+		moveableColumns.setSelection(false);
 		linesVisibleButton = new Button (otherGroup, SWT.CHECK);
 		linesVisibleButton.setText (ControlExample.getResourceString("Lines_Visible"));
 	
 		/* Add the listeners */
+		headerVisibleButton.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				setWidgetHeaderVisible ();
+			}
+		});
 		multipleColumns.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {
 				recreateExampleWidgets ();
 			}
 		});
-		headerVisibleButton.addSelectionListener (new SelectionAdapter () {
+		moveableColumns.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {
-				setWidgetHeaderVisible ();
+				setColumnsMoveable ();
 			}
 		});
 		linesVisibleButton.addSelectionListener (new SelectionAdapter () {
@@ -363,6 +371,17 @@ class TreeTab extends ScrollableTab {
 				TreeColumn treeColumn = tree.getColumn(i);
 				treeColumn.pack();
 			}
+		}
+	}
+	
+	/**
+	 * Sets the moveable columns state of the "Example" widgets.
+	 */
+	void setColumnsMoveable () {
+		boolean selection = moveableColumns.getSelection();
+		TreeColumn[] columns = tree1.getColumns();
+		for (int i = 0; i < columns.length; i++) {
+			//columns[i].setMoveable(selection);
 		}
 	}
 
