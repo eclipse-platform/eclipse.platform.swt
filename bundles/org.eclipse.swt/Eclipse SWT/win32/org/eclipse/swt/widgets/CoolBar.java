@@ -1037,6 +1037,12 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 		if (code == 0) return LRESULT.ZERO;
 		return new LRESULT (code);
 	}
+	//TEMPORARY CODE
+//	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+//		if (background == -1 && (style & SWT.FLAT) == 0) {
+//			OS.InvalidateRect (handle, null, true);
+//		}
+//	}
 	return super.WM_SIZE (wParam, lParam);
 }
 
