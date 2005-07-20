@@ -217,6 +217,7 @@ typedef enum {
 	CalcMenuSize_FUNC,
 	CallNextEventHandler_FUNC,
 	CancelMenuTracking_FUNC,
+	ChangeWindowAttributes_FUNC,
 	CharWidth_FUNC,
 	ClearCurrentScrap_FUNC,
 	ClearKeyboardFocus_FUNC,

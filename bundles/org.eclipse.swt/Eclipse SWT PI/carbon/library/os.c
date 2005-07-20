@@ -2504,6 +2504,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(CancelMenuTracking)
 }
 #endif
 
+#ifndef NO_ChangeWindowAttributes
+JNIEXPORT jint JNICALL OS_NATIVE(ChangeWindowAttributes)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ChangeWindowAttributes_FUNC);
+	rc = (jint)ChangeWindowAttributes((WindowRef)arg0, (WindowAttributes)arg1, (WindowAttributes)arg2);
+	OS_NATIVE_EXIT(env, that, ChangeWindowAttributes_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CharWidth
 JNIEXPORT jshort JNICALL OS_NATIVE(CharWidth)
 	(JNIEnv *env, jclass that, jshort arg0)

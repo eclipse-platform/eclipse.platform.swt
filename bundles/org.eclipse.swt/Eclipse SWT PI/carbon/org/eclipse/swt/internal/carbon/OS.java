@@ -41,6 +41,7 @@ public class OS extends Platform {
 	public static final int inStructure = 15;
 	public static final int inZoomIn = 7;
 	public static final int inZoomOut = 8;
+	public static final int inToolbarButton = 13;	
 	public static final int italic = 2;
 	public static final int k32ARGBPixelFormat = 0x00000020;
 	public static final int kAEQuitApplication = ('q'<<24) + ('u'<<16) + ('i'<<8) + 't';
@@ -386,6 +387,7 @@ public class OS extends Platform {
 	public static final int kEventWindowHidden = 25;
 	public static final int kEventWindowHitTest = 1003;
 	public static final int kEventWindowShown = 24;
+	public static final int kEventWindowToolbarSwitchMode = 150;
 	public static final int kEventWindowUpdate = 1;
 	public static final int kFMIterationCompleted = -980;
 	public static final int kFloatingWindowClass = 5;
@@ -588,6 +590,7 @@ public class OS extends Platform {
 	public static final int kTextLanguageDontCare = -128;
 	public static final int kTextRegionDontCare = -128;
 	public static final int kThemeAdornmentDefault = 1 << 0;
+	public static final int kThemeAdornmentFocus = 1 << 2;
 	public static final int kThemeAliasArrowCursor = 2;
 	public static final int kThemeArrowButton = 4;
 	public static final int kThemeArrowCursor = 0;
@@ -649,6 +652,7 @@ public class OS extends Platform {
 	public static final int kThemeStateActive = 1;
 	public static final int kThemeStateInactive = 0;
 	public static final int kThemeStatePressed = 2;
+	public static final int kThemeStateRollover = 6;
 	public static final int kThemeStateUnavailable = 7;
 	public static final int kThemeStateUnavailableInactive = 8;
 	public static final int kThemeSystemFont = 0;
@@ -687,6 +691,7 @@ public class OS extends Platform {
 	public static final int kWindowResizableAttribute = (1 << 4);
 	public static final int kWindowStandardHandlerAttribute = (1 << 25);
 	public static final int kWindowStructureRgn = 32;
+	public static final int kWindowToolbarButtonAttribute = (1 << 6);
 	public static final int kWindowUpdateRgn= 34;
 	public static final int mouseDown = 1;
 	public static final int noErr = 0;
@@ -941,6 +946,7 @@ public static final native int CGShadingCreateAxial (int colorspace, CGPoint sta
 public static final native int CGShadingCreateRadial (int colorspace, CGPoint start, float startRadius, CGPoint end, float endRadius, int function, boolean extendStart, boolean extendEnd);
 public static final native void CGShadingRelease (int shading);
 public static final native int CGWarpMouseCursorPosition (CGPoint newCursorPosition);
+public static final native int ChangeWindowAttributes(int windowHandle, int setAttributes, int clearAttributes);
 public static final native int CPSEnableForegroundOperation(int[] psn, int arg2, int arg3, int arg4, int arg5);
 public static final native int CPSSetProcessName(int[] psn, byte[] name);
 public static final native int CallNextEventHandler(int nextHandler, int eventRefHandle);

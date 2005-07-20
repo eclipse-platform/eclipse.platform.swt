@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 846;
-int OS_nativeFunctionCallCount[846];
+int OS_nativeFunctionCount = 847;
+int OS_nativeFunctionCallCount[847];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -213,6 +213,7 @@ char * OS_nativeFunctionNames[] = {
 	"CalcMenuSize",
 	"CallNextEventHandler",
 	"CancelMenuTracking",
+	"ChangeWindowAttributes",
 	"CharWidth",
 	"ClearCurrentScrap",
 	"ClearKeyboardFocus",
