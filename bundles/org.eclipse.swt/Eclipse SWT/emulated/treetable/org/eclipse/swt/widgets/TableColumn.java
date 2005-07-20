@@ -262,7 +262,7 @@ public void dispose () {
 	}
 }
 void dispose (boolean notifyParent) {
-	super.dispose ();	/* the use of super is intentional here */
+	super.dispose ();	/* super is intentional here */
 	if (notifyParent) parent.destroyItem (this);
 	parent = null;
 }

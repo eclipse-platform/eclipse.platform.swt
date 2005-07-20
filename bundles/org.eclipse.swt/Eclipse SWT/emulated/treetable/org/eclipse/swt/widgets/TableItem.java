@@ -776,7 +776,7 @@ Image getImage (int columnIndex, boolean checkData) {
 	if (checkData && !parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int validColumnCount = Math.max (1, parent.columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return null;
-	if (columnIndex == 0) return super.getImage ();		/* the use of super is intentional here */
+	if (columnIndex == 0) return super.getImage ();		/* super is intentional here */
 	return images [columnIndex];
 }
 /**
@@ -914,7 +914,7 @@ String getText (int columnIndex, boolean checkData) {
 	if (checkData && !parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	int validColumnCount = Math.max (1, parent.columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return "";	//$NON-NLS-1$
-	if (columnIndex == 0) return super.getText (); /* the use of super is intentional here */
+	if (columnIndex == 0) return super.getText (); /* super is intentional here */
 	if (texts [columnIndex] == null) return "";	//$NON-NLS-1$
 	return texts [columnIndex];
 }
