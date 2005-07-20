@@ -307,13 +307,7 @@ LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 	* Feaure in Windows.  Group boxes do not erase
 	* the background before drawing.  The fix is to
 	* fill the background.
-	* 
-	* NOTE:  This work around causes flashing on XP
-	* and is not necessary when a parent has a theme.
 	*/
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		return result;
-	}
 	drawBackground (wParam);
 	return LRESULT.ONE;
 }
