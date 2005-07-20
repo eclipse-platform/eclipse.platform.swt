@@ -2292,7 +2292,7 @@ void setBackgroundPixel (int pixel) {
 	OS.InvalidateRect (handle, null, true);
 }
 
-void setBounds (int x, int y, int width, int height, int flags) {
+void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
 	/*
 	* Bug in Windows.  If the table column widths are adjusted
 	* in WM_SIZE or WM_POSITIONCHANGED using LVM_SETCOLUMNWIDTH
@@ -2314,7 +2314,7 @@ void setBounds (int x, int y, int width, int height, int flags) {
 		fixResize = rect.height < getItemHeight () * 2;
 	}
 	if (fixResize) setRedraw (false);
-	super.setBounds (x, y, width, height, flags);
+	super.setBounds (x, y, width, height, flags, fixResize ? false : defer);
 	if (fixResize) setRedraw (true);
 }
 
