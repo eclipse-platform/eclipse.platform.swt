@@ -271,6 +271,8 @@ class TreeTab extends ScrollableTab {
 		item.setImage(image);
 		imageNode1 = treeRoots[0];
 		packColumns(tree2);
+		
+		setColumnsMoveable();
 	}
 	
 	void setItemText(TreeItem item, int i, String node) {
@@ -379,9 +381,13 @@ class TreeTab extends ScrollableTab {
 	 */
 	void setColumnsMoveable () {
 		boolean selection = moveableColumns.getSelection();
-		TreeColumn[] columns = tree1.getColumns();
-		for (int i = 0; i < columns.length; i++) {
-			//columns[i].setMoveable(selection);
+		TreeColumn[] columns1 = tree1.getColumns();
+		for (int i = 0; i < columns1.length; i++) {
+			columns1[i].setMoveable(selection);
+		}
+		TreeColumn[] columns2 = tree2.getColumns();
+		for (int i = 0; i < columns2.length; i++) {
+			columns2[i].setMoveable(selection);
 		}
 	}
 

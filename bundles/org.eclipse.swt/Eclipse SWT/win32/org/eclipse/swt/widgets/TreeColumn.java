@@ -222,7 +222,7 @@ public int getAlignment () {
  * 
  * @since 3.2
  */
-/*public*/ boolean getMoveable () {
+public boolean getMoveable () {
 	checkWidget ();
 	return moveable;
 }
@@ -531,7 +531,7 @@ void setImage (Image image, boolean sort, boolean right) {
  * 
  * @since 3.2
  */
-/*public*/ void setMoveable (boolean moveable) {
+public void setMoveable (boolean moveable) {
 	checkWidget ();
 	this.moveable = moveable;
 }

@@ -517,6 +517,7 @@ void createItem (TreeColumn column, int index) {
 		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 	}
 	setScrollWidth ();
+	updateImageList ();
 	updateScrollBar ();
 	
 	/* Redraw to hide the items when the first column is created */
@@ -818,6 +819,7 @@ void destroyItem (TreeColumn column) {
 	    OS.InvalidateRect (handle, rect, true);
 	}
 	setScrollWidth ();
+	updateImageList ();
 	if (columnCount != 0) {
 		int start = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, index, 0);
 		TreeColumn [] newColumns = new TreeColumn [columnCount - start];
@@ -1192,7 +1194,7 @@ public int getColumnCount () {
  * 
  * @since 3.2
  */
-/*public*/ int[] getColumnOrder () {
+public int[] getColumnOrder () {
 	checkWidget ();
 	if (hwndHeader == 0) return new int [0];
 	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0 );
@@ -1626,9 +1628,11 @@ int imageIndex (Image image) {
 		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height);
 		int index = imageList.indexOf (image);
 		if (index == -1) index = imageList.add (image);
-		int hImageList = imageList.getHandle ();
-		OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, hImageList);
-		updateScrollBar ();
+		if (hwndHeader == 0 || OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0) == 0) {
+			int hImageList = imageList.getHandle ();
+			OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, hImageList);
+			updateScrollBar ();
+		}
 		return index;
 	}
 	int index = imageList.indexOf (image);
@@ -2100,7 +2104,7 @@ void setCursor () {
  * 
  * @since 3.2
  */
-/*public*/ void setColumnOrder (int [] order) {
+public void setColumnOrder (int [] order) {
 	checkWidget ();
 	if (order == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int count = 0;
@@ -2132,6 +2136,7 @@ void setCursor () {
 		}
 		OS.SendMessage (hwndHeader, OS.HDM_SETORDERARRAY, order.length, order);
 		OS.InvalidateRect (handle, null, true);
+		updateImageList ();
 		TreeColumn [] newColumns = new TreeColumn [count];
 		System.arraycopy (columns, 0, newColumns, 0, count);
 		RECT newRect = new RECT ();
@@ -2751,6 +2756,28 @@ String toolTipText (NMTTDISPINFO hdr) {
 
 int topHandle () {
 	return hwndParent != 0 ? hwndParent : handle;
+}
+
+void updateImageList () {
+	if (imageList == null) return;
+	if (hwndHeader == 0) return;
+	int i = 0, index = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0);
+	while (i < items.length) {
+		TreeItem item = items [i];
+		if (item != null) {
+			Image image = null;
+			if (index == 0) {
+				image = item.image;
+			} else {
+				Image [] images  = item.images;
+				if (images != null) image = images [index];
+			}
+			if (image != null) break;
+		}
+		i++;
+	}
+	int hImageList = i == items.length ? 0 : imageList.getHandle ();
+	OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, hImageList);
 }
 
 void updateImages () {
@@ -3547,16 +3574,13 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 				break;
 			}
 			case OS.NM_RELEASEDCAPTURE:
+				if (!cancelMove) updateImageList ();
 				cancelMove = false;
 				break;
 			case OS.HDN_BEGINDRAG: {
 				if (cancelMove) return LRESULT.ONE;
 				NMHEADER phdn = new NMHEADER ();
 				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
-				if (phdn.iItem == 0) {
-					cancelMove = true;
-					return LRESULT.ONE;
-				}
 				if (phdn.iItem != -1) {
 					TreeColumn column = columns [phdn.iItem];
 					if (column != null && !column.getMoveable ()) {
@@ -3567,13 +3591,13 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 				break;
 			}
 			case OS.HDN_ENDDRAG: {
-				cancelMove = false;
 				NMHEADER phdn = new NMHEADER ();
 				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
 				if (phdn.iItem != -1 && phdn.pitem != 0) {
 					HDITEM pitem = new HDITEM ();
 					OS.MoveMemory (pitem, phdn.pitem, HDITEM.sizeof);
 					if ((pitem.mask & OS.HDI_ORDER) != 0 && pitem.iOrder != -1) {
+						cancelMove = false;
 						int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 						int [] order = new int [count];
 						OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
@@ -3585,7 +3609,6 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 						if (index == order.length) index = 0;
 						if (index == pitem.iOrder) break;
 						int start = Math.min (index, pitem.iOrder);
-						if (start == 0) return LRESULT.ONE;
 						int end = Math.max (index, pitem.iOrder);
 						RECT rect = new RECT (), itemRect = new RECT ();
 						OS.GetClientRect (handle, rect);
@@ -3867,16 +3890,34 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					item.cached = true;
 				}
 			}
+			int index = 0;
+			if (hwndHeader != 0) {
+				index = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0);
+			}
 			if ((lptvdi.mask & OS.TVIF_TEXT) != 0) {
-				String string = item.text;
-				TCHAR buffer = new TCHAR (getCodePage (), string, false);
-				int byteCount = Math.min (buffer.length (), lptvdi.cchTextMax - 1) * TCHAR.sizeof;
-				OS.MoveMemory (lptvdi.pszText, buffer, byteCount);
-				OS.MoveMemory (lptvdi.pszText + byteCount, new byte [TCHAR.sizeof], TCHAR.sizeof);
-				lptvdi.cchTextMax = Math.min (lptvdi.cchTextMax, string.length () + 1);
+				String string = null;
+				if (index == 0) {
+					string = item.text;
+				} else {
+					String [] strings  = item.strings;
+					if (strings != null) string = strings [index];
+				}
+				if (string != null) {
+					TCHAR buffer = new TCHAR (getCodePage (), string, false);
+					int byteCount = Math.min (buffer.length (), lptvdi.cchTextMax - 1) * TCHAR.sizeof;
+					OS.MoveMemory (lptvdi.pszText, buffer, byteCount);
+					OS.MoveMemory (lptvdi.pszText + byteCount, new byte [TCHAR.sizeof], TCHAR.sizeof);
+					lptvdi.cchTextMax = Math.min (lptvdi.cchTextMax, string.length () + 1);
+				}
 			}
 			if ((lptvdi.mask & (OS.TVIF_IMAGE | OS.TVIF_SELECTEDIMAGE)) != 0) {
-				Image image = item.image;
+				Image image = null;
+				if (index == 0) {
+					image = item.image;
+				} else {
+					Image [] images  = item.images;
+					if (images != null) image = images [index];
+				}
 				lptvdi.iImage = lptvdi.iSelectedImage = OS.I_IMAGENONE;
 				if (image != null) {
 					lptvdi.iImage = lptvdi.iSelectedImage = imageIndex (image);
@@ -3953,7 +3994,8 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 							if (count != 0) {
 								HDITEM hdItem = new HDITEM ();
 								hdItem.mask = OS.HDI_WIDTH;
-								OS.SendMessage (hwndHeader, OS.HDM_GETITEM, 0, hdItem);
+								int index = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0);
+								OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
 								int hRgn = OS.CreateRectRgn (nmcd.left, nmcd.top, nmcd.left + hdItem.cxy, nmcd.bottom);
 								OS.SelectClipRgn (hDC, hRgn);
 								OS.DeleteObject (hRgn);
@@ -4063,7 +4105,13 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 									int clrTextBk = item.cellBackground != null ? item.cellBackground [index] : item.background;
 									if (clrTextBk != -1) drawBackground (hDC, clrTextBk, rect);
 								}
-								Image image = item.images != null ? item.images [index] : null;
+								Image image = null;
+								if (index == 0) {
+									image = item.image;
+								} else {
+									Image [] images  = item.images;
+									if (images != null) image = images [index];
+								}								
 								if (image != null) {
 									Rectangle bounds = image.getBounds ();
 									if (size == null) size = getImageSize ();
@@ -4079,7 +4127,14 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 								* all text drawing for empty rectangles.
 								*/
 								if (rect.left < rect.right) {
-									if (item.strings != null && item.strings [index] != null) {
+									String string = null;
+									if (index == 0) {
+										string = item.text;
+									} else {
+										String [] strings  = item.strings;
+										if (strings != null) string = strings [index];
+									}
+									if (string != null) {
 										int hFont = item.cellFont != null ? item.cellFont [index] : item.font;
 										hFont = hFont != -1 ? OS.SelectObject (hDC, hFont) : -1;
 										int clrText = -1;
@@ -4092,7 +4147,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 										if ((column.style & SWT.LEFT) != 0) flags |= OS.DT_LEFT;
 										if ((column.style & SWT.CENTER) != 0) flags |= OS.DT_CENTER;
 										if ((column.style & SWT.RIGHT) != 0) flags |= OS.DT_RIGHT;
-										TCHAR buffer = new TCHAR (getCodePage (), item.strings [index], false);
+										TCHAR buffer = new TCHAR (getCodePage (), string, false);
 										OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
 										if (hFont != -1) OS.SelectObject (hDC, hFont);
 										if (clrText != -1) OS.SetTextColor (hDC, clrText);

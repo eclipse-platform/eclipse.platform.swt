@@ -228,13 +228,13 @@ class TableTab extends ScrollableTab {
 		} else {
 			new TableColumn(table1, SWT.NONE);
 		}
-		setColumnsMoveable();
 		for (int i=0; i<16; i++) {
 			TableItem item = new TableItem (table1, SWT.NONE);
 			item.setImage (instance.images [i % 3]);
 			setItemText (item, i, ControlExample.getResourceString("Index") + i);
 		}
 		packColumns();
+		setColumnsMoveable();
 	}
 	
 	void setItemText(TableItem item, int i, String node) {
