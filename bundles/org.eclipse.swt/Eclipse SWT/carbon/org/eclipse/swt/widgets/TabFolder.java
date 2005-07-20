@@ -145,9 +145,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			bounds = new Rect ();
 			bounds.right = bounds.bottom = 100;
 			OS.SetControlBounds (handle, bounds);
-	} else {
+		} else {
 			bounds = oldBounds;
-	}
+		}
 		Rect client = new Rect ();
 		OS.GetTabContentRect (handle, client);
 		if (fixBounds) OS.SetControlBounds (handle, oldBounds);
