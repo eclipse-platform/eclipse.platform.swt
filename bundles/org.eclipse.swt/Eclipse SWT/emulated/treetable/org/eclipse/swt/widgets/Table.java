@@ -140,10 +140,10 @@ public Table (Composite parent, int style) {
 	addListener (SWT.FocusOut, listener);
 	addListener (SWT.FocusIn, listener);
 	addListener (SWT.Traverse, listener);
-	
+
 	header = new Canvas (this, SWT.NO_REDRAW_RESIZE | SWT.NO_FOCUS);
 	header.setVisible (false);
-	header.setLocation (0,0);
+	header.setBounds (0, 0, 0, fontHeight + 2 * getHeaderPadding ());
 	header.addListener (SWT.Paint, listener);
 	header.addListener (SWT.MouseDown, listener);
 	header.addListener (SWT.MouseUp, listener);
