@@ -2299,8 +2299,9 @@ void setClipping(int clipRgn) {
 		if (data.clipRgn != 0) {
 			OS.DisposeRgn(data.clipRgn);
 			data.clipRgn = 0;
-		} else {
-			return;
+		//TEMPORARY CODE
+//		} else {
+//			return;
 		}
 	} else {
 		if (data.clipRgn == 0) data.clipRgn = OS.NewRgn();
