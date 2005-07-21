@@ -291,7 +291,9 @@ void fixTabList (Control control) {
 
 /**
  * Returns a (possibly empty) array containing the receiver's children.
- * Children are returned in the order that they are drawn.
+ * Children are returned in the order that they are drawn.  The topmost
+ * control appears at the beginning of the array.  Subsequent controls
+ * draw beneath this control and appear later in the array.
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of children, so modifying the array will
