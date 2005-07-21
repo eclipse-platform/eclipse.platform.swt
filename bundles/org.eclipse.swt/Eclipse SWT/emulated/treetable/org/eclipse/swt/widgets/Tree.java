@@ -589,7 +589,7 @@ void destroyItem (TreeItem item) {
 		availableItemsCount--;
 
 		if (drawCount == 0 && availableItems.length - availableItemsCount == 4) {
-			/* shrink the items array */
+			/* shrink the available items array */
 			TreeItem[] newAvailableItems = new TreeItem [availableItemsCount];
 			System.arraycopy (availableItems, 0, newAvailableItems, 0, newAvailableItems.length);
 			availableItems = newAvailableItems;
