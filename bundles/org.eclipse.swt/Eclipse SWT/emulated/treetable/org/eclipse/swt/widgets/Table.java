@@ -2762,16 +2762,23 @@ public void removeAll () {
 	checkWidget ();
 	if (itemsCount == 0) return;
 	setRedraw (false);
-	setFocusItem (null, false);		/* do this upfront for performance */
-	while (itemsCount > 0) {
-		items [0].dispose (true);
+
+	setFocusItem (null, false);
+	for (int i = 0; i < itemsCount; i++) {
+		items [i].dispose (false);
 	}
+	items = new TableItem [0];
+	selectedItems = new TableItem [0];
+	itemsCount = topIndex = horizontalOffset = 0;
+	anchorItem = lastClickedItem = null;
+	lastSelectionEvent = null;
 	ScrollBar vBar = getVerticalBar ();
 	ScrollBar hBar = getHorizontalBar ();
 	vBar.setMaximum (1);
 	hBar.setMaximum (1);
 	vBar.setVisible (false);
 	hBar.setVisible (false);
+
 	setRedraw (true);
 }
 void removeSelectedItem (int index) {
