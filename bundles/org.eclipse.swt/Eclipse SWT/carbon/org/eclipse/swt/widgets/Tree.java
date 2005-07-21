@@ -710,13 +710,16 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	Rect itemRect = new Rect();
 	OS.GetDataBrowserItemPartBounds (handle, id, property, OS.kDataBrowserPropertyEnclosingPart, itemRect);
 	OS.OffsetRect (itemRect, (short) -controlRect.left, (short) -controlRect.top);
+	int [] position = new int [1];
+	OS.GetDataBrowserTableViewColumnPosition (handle, property, position);
+	if ((style & SWT.CHECK) != 0) --position [0];
 	if (columnCount != 0) {
-		if (selected && ((style & SWT.FULL_SELECTION) != 0 || columnIndex == 0)) {
+		if (selected && ((style & SWT.FULL_SELECTION) != 0 || position [0] == 0)) {
 			gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
 		} else {
 			gc.setBackground (item.getBackground (columnIndex));			
 		}
-		if (columnIndex == 0) {
+		if (position [0] == 0) {
 			gc.fillRectangle (x - 1, y, itemRect.right - x + 2, itemRect.bottom - y);
 		} else {
 			gc.fillRectangle (itemRect.left, itemRect.top, itemRect.right - itemRect.left, itemRect.bottom - itemRect.top);
@@ -748,7 +751,7 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		gc.drawImage (image, 0, 0, imageBounds.width, imageBounds.height, x, y + (height - this.imageBounds.height) / 2, this.imageBounds.width, this.imageBounds.height);
 		x += this.imageBounds.width + 2;
 	}
-	if (selected && ((style & SWT.FULL_SELECTION) != 0 || columnIndex == 0)) {
+	if (selected && ((style & SWT.FULL_SELECTION) != 0 || position [0] == 0)) {
 		gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
 		if (columnCount == 0) {
 			gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
