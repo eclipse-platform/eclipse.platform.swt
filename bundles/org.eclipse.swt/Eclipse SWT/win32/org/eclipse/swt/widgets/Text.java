@@ -527,13 +527,11 @@ public Point getCaretLocation () {
 	* If EM_POSFROMCHAR fails for any other reason, return
 	* pixel coordinates (0,0). 
 	*/
-	int [] start = new int [1];
-	OS.SendMessage (handle, OS.EM_GETSEL, start, (int []) null);
-	int pos = OS.SendMessage (handle, OS.EM_POSFROMCHAR, start [0], 0);
-	if (pos == -1) {
-		pos = 0;
-		if (start [0] >= OS.GetWindowTextLength (handle)) {
-			int cp = getCodePage ();
+	int position = getCaretPosition ();
+	int caretPos = OS.SendMessage (handle, OS.EM_POSFROMCHAR, position, 0);
+	if (caretPos == -1) {
+		caretPos = 0;
+		if (position >= OS.GetWindowTextLength (handle)) {
 			/*
 			* Feature in Windows.  When an edit control with ES_MULTILINE
 			* style that does not have the WS_VSCROLL style is full (i.e.
@@ -546,14 +544,15 @@ public Point getCaretLocation () {
 			* handler from WM_CHAR.
 			*/
 			ignoreCharacter = ignoreModify = true;
+			int cp = getCodePage ();
 			OS.SendMessage (handle, OS.EM_REPLACESEL, 0, new TCHAR (cp, " ", true));
-			pos = OS.SendMessage (handle, OS.EM_POSFROMCHAR, start [0], 0);
-			OS.SendMessage (handle, OS.EM_SETSEL, start [0], start [0] + 1);
+			caretPos = OS.SendMessage (handle, OS.EM_POSFROMCHAR, position, 0);
+			OS.SendMessage (handle, OS.EM_SETSEL, position, position + 1);
 			OS.SendMessage (handle, OS.EM_REPLACESEL, 0, new TCHAR (cp, "", true));
 			ignoreCharacter = ignoreModify = false;
 		}
 	}
-	return new Point ((short) (pos & 0xFFFF), (short) (pos >> 16));
+	return new Point ((short) (caretPos & 0xFFFF), (short) (caretPos >> 16));
 }
 
 /**
@@ -573,11 +572,48 @@ public int getCaretPosition () {
 	checkWidget ();
 	int [] start = new int [1], end = new int [1];
 	OS.SendMessage (handle, OS.EM_GETSEL, start, end);
-	int startLine = OS.SendMessage (handle, OS.EM_LINEFROMCHAR, start [0], 0);
-	int caretPos = OS.SendMessage (handle, OS.EM_LINEINDEX, -1, 0);
-	int caretLine = OS.SendMessage (handle, OS.EM_LINEFROMCHAR, caretPos, 0);
-	int caret = end [0];
-	if (caretLine == startLine) caret = start [0];
+	/*
+	* In Windows, there is no API to get the position of the caret
+	* when the selection is an i-beam.  The best that can be done
+	* is to query the pixel position of the current caret and compare
+	* it to the pixel position of the start and end of the selection.
+	* 
+	* NOTE:  This does not work when the i-beam belongs to another
+	* control.  In this case, guess that the i-beam is at the start
+	* of the selection.
+	*/
+	int caret = start [0];
+	if (start [0] != end [0]) {
+		int startLine = OS.SendMessage (handle, OS.EM_LINEFROMCHAR, start [0], 0);
+		int endLine = OS.SendMessage (handle, OS.EM_LINEFROMCHAR, end [0], 0);
+		if (startLine == endLine) {
+			if (!OS.IsWinCE) {
+				int idThread = OS.GetWindowThreadProcessId (handle, null);
+				GUITHREADINFO  lpgui = new GUITHREADINFO();
+				lpgui.cbSize = GUITHREADINFO.sizeof;
+				if (OS.GetGUIThreadInfo (idThread, lpgui)) {
+					if (lpgui.hwndCaret == handle || lpgui.hwndCaret == 0) {
+						POINT ptCurrentPos = new POINT ();
+						if (OS.GetCaretPos (ptCurrentPos)) {
+							int endPos = OS.SendMessage (handle, OS.EM_POSFROMCHAR, end [0], 0);
+							if (endPos == -1) {
+								int startPos = OS.SendMessage (handle, OS.EM_POSFROMCHAR, start [0], 0);
+								int startX = (short) (startPos & 0xFFFF);
+								if (ptCurrentPos.x > startX) caret = end [0];
+							} else {
+								int endX = (short) (endPos & 0xFFFF);
+								if (ptCurrentPos.x >= endX) caret = end [0];
+							}
+						}
+					}
+				}
+			}
+		} else {
+			int caretPos = OS.SendMessage (handle, OS.EM_LINEINDEX, -1, 0);
+			int caretLine = OS.SendMessage (handle, OS.EM_LINEFROMCHAR, caretPos, 0);
+			if (caretLine == endLine) caret = end [0];
+		}
+	}
 	if (!OS.IsUnicode && OS.IsDBLocale) caret = mbcsToWcsPos (caret);
 	return caret;
 }
