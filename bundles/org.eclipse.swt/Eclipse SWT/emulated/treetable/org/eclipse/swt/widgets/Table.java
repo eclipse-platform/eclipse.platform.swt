@@ -2769,15 +2769,18 @@ public void removeAll () {
 	}
 	items = new TableItem [0];
 	selectedItems = new TableItem [0];
-	itemsCount = topIndex = horizontalOffset = 0;
+	itemsCount = topIndex = 0;
 	anchorItem = lastClickedItem = null;
 	lastSelectionEvent = null;
 	ScrollBar vBar = getVerticalBar ();
-	ScrollBar hBar = getHorizontalBar ();
 	vBar.setMaximum (1);
-	hBar.setMaximum (1);
 	vBar.setVisible (false);
-	hBar.setVisible (false);
+	if (columns.length == 0) {
+		horizontalOffset = 0;
+		ScrollBar hBar = getHorizontalBar ();
+		hBar.setMaximum (1);
+		hBar.setVisible (false);
+	}
 
 	setRedraw (true);
 }

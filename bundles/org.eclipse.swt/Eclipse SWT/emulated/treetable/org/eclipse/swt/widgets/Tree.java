@@ -2885,16 +2885,28 @@ public void removeAll () {
 	checkWidget ();
 	if (items.length == 0) return;
 	setRedraw (false);
-	setFocusItem (null, false);		/* do this upfront for performance */
-	while (items.length > 0) {
-		items [0].dispose (true);
+
+	setFocusItem (null, false);
+	for (int i = 0; i < items.length; i++) {
+		items [i].dispose (false);
 	}
+	items = new TreeItem [0];
+	availableItems = new TreeItem [0];
+	selectedItems = new TreeItem [0];
+	availableItemsCount = topIndex = 0;
+	anchorItem = lastClickedItem = insertMarkItem = null;
+	lastSelectionEvent = null;
+	inExpand = false;
 	ScrollBar vBar = getVerticalBar ();
-	ScrollBar hBar = getHorizontalBar ();
 	vBar.setMaximum (1);
-	hBar.setMaximum (1);
 	vBar.setVisible (false);
-	hBar.setVisible (false);
+	if (columns.length == 0) {
+		horizontalOffset = 0;
+		ScrollBar hBar = getHorizontalBar ();
+		hBar.setMaximum (1);
+		hBar.setVisible (false);
+	}
+
 	setRedraw (true);
 }
 void removeSelectedItem (int index) {
