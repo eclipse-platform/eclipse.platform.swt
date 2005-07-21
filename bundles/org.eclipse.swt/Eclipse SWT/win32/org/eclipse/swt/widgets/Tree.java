@@ -2776,8 +2776,16 @@ void updateImageList () {
 		}
 		i++;
 	}
+	/*
+	* Feature in Windows.  When setting the same image list multiple
+	* times, Windows does work making this operation slow.  The fix
+	* is to test for the same image list before setting the new one.
+	*/
 	int hImageList = i == items.length ? 0 : imageList.getHandle ();
-	OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, hImageList);
+	int hOldImageList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0);
+	if (hImageList != hOldImageList) {
+		OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, hImageList);
+	}
 }
 
 void updateImages () {
