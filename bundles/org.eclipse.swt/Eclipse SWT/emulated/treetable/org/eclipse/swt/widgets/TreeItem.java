@@ -31,7 +31,7 @@ import org.eclipse.swt.internal.Compatibility;
 public class TreeItem extends Item {
 	Tree parent;
 	TreeItem parentItem;
-	TreeItem[] items = NO_ITEMS;
+	TreeItem[] items = Tree.NO_ITEMS;
 	int availableIndex = -1;	/* index in parent's flat list of available (though not necessarily within viewport) items */
 	int depth = 0;				/* cached for performance, does not change after instantiation */
 	boolean checked, grayed, expanded, cached;
@@ -49,7 +49,6 @@ public class TreeItem extends Item {
 	
 	static final int INDENT_HIERARCHY = 6;	/* the margin between an item's expander and its checkbox or content */
 	static final int MARGIN_TEXT = 3;			/* the left and right margins within the text's space */
-	static final TreeItem[] NO_ITEMS = new TreeItem [0];
 
 /**
  * Constructs a new instance of this class given its parent
@@ -1796,7 +1795,7 @@ public void removeAll () {
 		items [0].dispose (true);
 		removeItem (items [0], 0);
 	}
-	items = NO_ITEMS;
+	items = Tree.NO_ITEMS;
 	expanded = false;
 	if (isAvailable ()) {
 		parent.redrawItems (availableIndex, lastAvailableIndex, false);
@@ -1812,7 +1811,7 @@ void removeItem (TreeItem item, int index) {
 	System.arraycopy (items, index + 1, newItems, index, newItems.length - index);
 	items = newItems;
 	if (items.length == 0) {
-		items = NO_ITEMS;
+		items = Tree.NO_ITEMS;
 		/* condition below handles creation of item within Expand callback */
 		if (!parent.inExpand) {
 			expanded = false;
@@ -2361,7 +2360,7 @@ public void setImage (int columnIndex, Image value) {
 			items [i].dispose (true);
 		}
 		if (count == 0) {
-			items = NO_ITEMS;
+			items = Tree.NO_ITEMS;
 		} else {
 			TreeItem[] newItems = new TreeItem [count];
 			System.arraycopy (items, 0, newItems, 0, count);

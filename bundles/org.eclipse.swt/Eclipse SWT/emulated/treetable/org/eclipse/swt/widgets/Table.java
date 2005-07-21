@@ -1774,7 +1774,7 @@ void onDispose () {
 	for (int i = 0; i < columns.length; i++) {
 		columns [i].dispose (false);
 	}
-	itemsCount = topIndex = 0;
+	itemsCount = topIndex = horizontalOffset = 0;
 	items = selectedItems = null;
 	columns = orderedColumns = null;
 	focusItem = anchorItem = lastClickedItem = null;

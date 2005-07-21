@@ -43,9 +43,9 @@ public class Tree extends Composite {
 	Canvas header;
 	TreeColumn[] columns = new TreeColumn [0];
 	TreeColumn[] orderedColumns;
-	TreeItem[] items = new TreeItem [0];
-	TreeItem[] availableItems = new TreeItem [0];
-	TreeItem[] selectedItems = new TreeItem [0];
+	TreeItem[] items = NO_ITEMS;
+	TreeItem[] availableItems = NO_ITEMS;
+	TreeItem[] selectedItems = NO_ITEMS;
 	TreeItem focusItem, anchorItem, insertMarkItem;
 	TreeItem lastClickedItem;
 	Event lastSelectionEvent;
@@ -64,6 +64,8 @@ public class Tree extends Composite {
 	int sortDirection = SWT.NONE;
 
 	Rectangle arrowBounds, expanderBounds, checkboxBounds;
+
+	static final TreeItem[] NO_ITEMS = new TreeItem [0];
 
 	static final int MARGIN_IMAGE = 3;
 	static final int MARGIN_CELL = 1;
@@ -473,7 +475,7 @@ void createItem (TreeItem item, int index) {
 public void deselectAll () {
 	checkWidget ();
 	TreeItem[] oldSelection = selectedItems;
-	selectedItems = new TreeItem [0];
+	selectedItems = NO_ITEMS;
 	for (int i = 0; i < oldSelection.length; i++) {
 		redrawItem (oldSelection [i].availableIndex, true);
 	}
@@ -1929,7 +1931,7 @@ void onDispose () {
 	for (int i = 0; i < columns.length; i++) {
 		columns [i].dispose (false);
 	}
-	topIndex = availableItemsCount = 0;
+	topIndex = availableItemsCount = horizontalOffset = 0;
 	availableItems = items = selectedItems = null;
 	columns = orderedColumns = null;
 	focusItem = anchorItem = insertMarkItem = lastClickedItem = null;
@@ -2890,9 +2892,7 @@ public void removeAll () {
 	for (int i = 0; i < items.length; i++) {
 		items [i].dispose (false);
 	}
-	items = new TreeItem [0];
-	availableItems = new TreeItem [0];
-	selectedItems = new TreeItem [0];
+	items = availableItems = selectedItems = NO_ITEMS;
 	availableItemsCount = topIndex = 0;
 	anchorItem = lastClickedItem = insertMarkItem = null;
 	lastSelectionEvent = null;
@@ -3173,7 +3173,7 @@ public void setInsertMark (TreeItem item, boolean before) {
 			items [i].dispose (false);
 		}
 		if (count == 0) {
-			items = TreeItem.NO_ITEMS;
+			items = Tree.NO_ITEMS;
 		} else {
 			TreeItem[] newItems = new TreeItem [count];
 			System.arraycopy (items, 0, newItems, 0, count);
