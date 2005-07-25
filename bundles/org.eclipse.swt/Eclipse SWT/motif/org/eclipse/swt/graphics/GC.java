@@ -468,7 +468,37 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 		if (srcX + srcWidth > imgWidth || srcY + srcHeight > imgHeight) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		}
- 	}	
+ 	}
+	int /*long*/ cairo = data.cairo;
+	if (cairo != 0) {
+		srcImage.createSurface();
+		Cairo.cairo_save(cairo);
+		//TODO - draw a piece of the image
+//		if (srcX != 0 || srcY != 0) {
+//			Cairo.cairo_rectangle(cairo, destX, destY, destWidth, destHeight);
+//			Cairo.cairo_clip(cairo);
+//			Cairo.cairo_new_path(cairo);
+//		}
+		Cairo.cairo_translate(cairo, destX - srcX, destY - srcY);
+		if (srcWidth != destWidth || srcHeight != destHeight) {
+			Cairo.cairo_scale(cairo, destWidth / (float)srcWidth,  destHeight / (float)srcHeight);
+		}
+		int filter = Cairo.CAIRO_FILTER_GOOD;
+		switch (data.interpolation) {
+			case SWT.DEFAULT: filter = Cairo.CAIRO_FILTER_GOOD; break;
+			case SWT.NONE: filter = Cairo.CAIRO_FILTER_NEAREST; break;
+			case SWT.LOW: filter = Cairo.CAIRO_FILTER_FAST; break;
+			case SWT.HIGH: filter = Cairo.CAIRO_FILTER_BEST; break;
+		}
+		int /*long*/ pattern = Cairo.cairo_pattern_create_for_surface(srcImage.surface);
+		if (pattern == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		Cairo.cairo_pattern_set_filter(pattern, filter);
+		Cairo.cairo_set_source(cairo, pattern);
+		Cairo.cairo_paint(cairo);
+		Cairo.cairo_restore(cairo);
+		Cairo.cairo_pattern_destroy(pattern);
+		return;
+	}
 	if (srcImage.alpha != -1 || srcImage.alphaData != null) {
 		drawImageAlpha(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, imgWidth, imgHeight, depth[0]);
 	} else if (srcImage.transparentPixel != -1 || srcImage.mask != 0) {
@@ -655,36 +685,6 @@ void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeig
 	if (srcImage.transparentPixel != -1 && srcImage.memGC != null) srcImage.destroyMask();
 }
 void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imgWidth, int imgHeight, int depth) {
-	int /*long*/ cairo = data.cairo;
-	if (cairo != 0) {
-		srcImage.createSurface();
-		Cairo.cairo_save(cairo);
-		//TODO - draw a piece of the image
-//		if (srcX != 0 || srcY != 0) {
-//			Cairo.cairo_rectangle(cairo, destX, destY, destWidth, destHeight);
-//			Cairo.cairo_clip(cairo);
-//			Cairo.cairo_new_path(cairo);
-//		}
-		Cairo.cairo_translate(cairo, destX - srcX, destY - srcY);
-		if (srcWidth != destWidth || srcHeight != destHeight) {
-			Cairo.cairo_scale(cairo, destWidth / (float)srcWidth,  destHeight / (float)srcHeight);
-		}
-		int filter = Cairo.CAIRO_FILTER_GOOD;
-		switch (data.interpolation) {
-			case SWT.DEFAULT: filter = Cairo.CAIRO_FILTER_GOOD; break;
-			case SWT.NONE: filter = Cairo.CAIRO_FILTER_NEAREST; break;
-			case SWT.LOW: filter = Cairo.CAIRO_FILTER_FAST; break;
-			case SWT.HIGH: filter = Cairo.CAIRO_FILTER_BEST; break;
-		}
-		int /*long*/ pattern = Cairo.cairo_pattern_create_for_surface(srcImage.surface);
-		if (pattern == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		Cairo.cairo_pattern_set_filter(pattern, filter);
-		Cairo.cairo_set_source(cairo, pattern);
-		Cairo.cairo_paint(cairo);
-		Cairo.cairo_restore(cairo);
-		Cairo.cairo_pattern_destroy(pattern);
-		return;
-	}
 	int xDisplay = data.display;
 	int xDrawable = data.drawable;
 	/* Simple case: no stretching */
