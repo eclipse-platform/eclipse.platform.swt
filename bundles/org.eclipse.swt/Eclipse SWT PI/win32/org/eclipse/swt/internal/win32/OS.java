@@ -432,6 +432,7 @@ public class OS extends Platform {
 	public static final int EN_ALIGN_LTR_EC = 0x0700;
 	public static final int EN_ALIGN_RTL_EC = 0x0701;
 	public static final int EN_CHANGE = 0x300;
+	public static final int EP_EDITTEXT = 1;
 	public static final int ERROR_NO_MORE_ITEMS = 0x103;
 	public static final int ESB_DISABLE_BOTH = 0x3;
 	public static final int ESB_ENABLE_BOTH = 0x0;
@@ -443,7 +444,8 @@ public class OS extends Platform {
 	public static final int ES_PASSWORD = 0x20;
 	public static final int ES_READONLY = 0x800;
 	public static final int ES_RIGHT = 0x2;
-	public static final int ETO_CLIPPED = 0x4;	
+	public static final int ETO_CLIPPED = 0x4;
+	public static final int ETS_NORMAL = 1;
 	public static final int EVENT_OBJECT_FOCUS = 0x8005;
 	public static final int EVENT_OBJECT_LOCATIONCHANGE = 0x800B;
 //	public static final int EVENT_OBJECT_SELECTION = 0x8006;
@@ -1515,6 +1517,7 @@ public class OS extends Platform {
 	public static final int WM_NCCALCSIZE = 0x83;
 	public static final int WM_NCHITTEST = 0x84;
 	public static final int WM_NCLBUTTONDOWN = 0x00A1;
+	public static final int WM_NCPAINT = 0x85;
 	public static final int WM_NOTIFY = 0x4e;
 	public static final int WM_NULL = 0x0;
 	public static final int WM_PAINT = 0xf;
@@ -2700,6 +2703,7 @@ public static final native boolean GetVersionExA (OSVERSIONINFOA lpVersionInfo);
 public static final native int GetWindow (int hWnd, int uCmd);
 public static final native int GetWindowLongW (int hWnd, int nIndex);
 public static final native int GetWindowLongA (int hWnd, int nIndex);
+public static final native int GetWindowDC (int hWnd);
 public static final native boolean GetWindowOrgEx(int hdc, POINT lpPoint);
 public static final native boolean GetWindowPlacement (int hWnd, WINDOWPLACEMENT lpwndpl);
 public static final native boolean GetWindowRect (int hWnd, RECT lpRect);

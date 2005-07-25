@@ -4181,6 +4181,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetWindow)
 }
 #endif
 
+#ifndef NO_GetWindowDC
+JNIEXPORT jint JNICALL OS_NATIVE(GetWindowDC)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetWindowDC_FUNC);
+	rc = (jint)GetWindowDC((HWND)arg0);
+	OS_NATIVE_EXIT(env, that, GetWindowDC_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetWindowLongA
 JNIEXPORT jint JNICALL OS_NATIVE(GetWindowLongA)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)

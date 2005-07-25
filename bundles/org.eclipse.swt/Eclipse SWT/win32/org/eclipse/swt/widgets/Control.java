@@ -3089,6 +3089,7 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 		case OS.WM_NCCALCSIZE:			result = WM_NCCALCSIZE (wParam, lParam); break;
 		case OS.WM_NCHITTEST:			result = WM_NCHITTEST (wParam, lParam); break;
 		case OS.WM_NCLBUTTONDOWN:		result = WM_NCLBUTTONDOWN (wParam, lParam); break;
+		case OS.WM_NCPAINT:		result = WM_NCPAINT (wParam, lParam); break;
 		case OS.WM_NOTIFY:				result = WM_NOTIFY (wParam, lParam); break;
 		case OS.WM_PAINT:				result = WM_PAINT (wParam, lParam); break;
 		case OS.WM_PALETTECHANGED:		result = WM_PALETTECHANGED (wParam, lParam); break;
@@ -3567,6 +3568,10 @@ LRESULT WM_NCHITTEST (int wParam, int lParam) {
 }
 
 LRESULT WM_NCLBUTTONDOWN (int wParam, int lParam) {
+	return null;
+}
+
+LRESULT WM_NCPAINT (int wParam, int lParam) {
 	return null;
 }
 

@@ -276,6 +276,7 @@ typedef enum {
 	GetVersionExA_FUNC,
 	GetVersionExW_FUNC,
 	GetWindow_FUNC,
+	GetWindowDC_FUNC,
 	GetWindowLongA_FUNC,
 	GetWindowLongW_FUNC,
 	GetWindowOrgEx_FUNC,

@@ -52,6 +52,7 @@ public class Composite extends Scrollable {
 	WINDOWPOS [] lpwp;
 	Control [] tabList;
 	int layoutCount = 0;
+	static final char [] EDIT = new char [] {'E', 'D', 'I', 'T', 0};
 	
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -948,6 +949,30 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 		}
 	}
 	return result;
+}
+
+LRESULT WM_NCPAINT (int wParam, int lParam) {
+	int result = callWindowProc (handle, OS.WM_NCPAINT, wParam, lParam);
+	if ((state & CANVAS) != 0) {
+		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+			int bits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+			if ((bits & OS.WS_EX_CLIENTEDGE) != 0) {
+				int hDC = OS.GetWindowDC (handle);
+			  RECT rect = new RECT ();
+			  OS.GetWindowRect (handle, rect);
+			  rect.right -= rect.left;
+			  rect.bottom -= rect.top;
+			  rect.left = rect.top = 0;
+			  int border = OS.GetSystemMetrics (OS.SM_CXEDGE);
+			  OS.ExcludeClipRect (hDC, border, border, rect.right - border, rect.bottom - border);
+			  int hTheme = OS.OpenThemeData (handle, EDIT);
+			  OS.DrawThemeBackground (hTheme, hDC, OS.EP_EDITTEXT, OS.ETS_NORMAL, rect, null);
+			  OS.CloseThemeData (handle);
+			  OS.ReleaseDC (handle, hDC);
+			}
+		}
+	}
+	return new LRESULT (result);
 }
 
 LRESULT WM_NOTIFY (int wParam, int lParam) {
