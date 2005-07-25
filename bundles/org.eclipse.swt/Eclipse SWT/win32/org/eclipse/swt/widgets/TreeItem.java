@@ -381,25 +381,31 @@ public Rectangle getBounds (int index) {
 //TODO - take into account grid (add boolean arg) to damage less during redraw
 RECT getBounds (int index, boolean getText, boolean getImage, boolean full) {
 	if (!getText && !getImage) return new RECT ();
+	boolean firstColumn = false;
 	int count = 0, hwndHeader = parent.hwndHeader;
 	if (hwndHeader != 0) {
 		count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+		firstColumn = index == OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0);
 	}
 	RECT rect = new RECT ();
-	if (index == 0) {
+	if (firstColumn) {
 		int hwnd = parent.handle; 
 		rect.left = handle;
 		if (OS.SendMessage (hwnd, OS.TVM_GETITEMRECT, 1, rect) == 0) {
 			return new RECT ();
 		}
 		if (getImage) {
-			Point size = parent.getImageSize ();
-			rect.left -= size.x + Tree.INSET;
-			if (!getText) rect.right = rect.left + size.x;
+			if (OS.SendMessage (hwnd, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0) != 0) {
+				Point size = parent.getImageSize ();
+				rect.left -= size.x + Tree.INSET;
+				if (!getText) rect.right = rect.left + size.x;
+			} else {
+				rect.right = rect.left;
+			}
 		}
 		if (getText && full && hwndHeader != 0 && count != 0) {
 			RECT headerRect = new RECT ();
-			if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, 0, headerRect) == 0) {
+			if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect) == 0) {
 				return new RECT ();
 			}
 			rect.right = headerRect.right;
@@ -418,7 +424,13 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean full) {
 		rect.left = headerRect.left;
 		rect.right = headerRect.right;
 		if (!getText || !getImage) {
-			if (images != null && images [index] != null) {
+			Image image = null;
+			if (index == 0) {
+				image = this.image;
+			} else {
+				if (images != null) image = images [index];
+			}
+			if (image != null) {
 				Point size = parent.getImageSize ();
 				if (getImage) {
 					rect.right = Math.min (rect.left + size.x, rect.right);
