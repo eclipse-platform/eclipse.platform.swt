@@ -728,6 +728,13 @@ void destroyItem (TreeColumn column) {
 		if (columns [index] == column) break;
 		index++;
 	}
+	int [] oldOrder = new int [columnCount];
+	OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, columnCount, oldOrder);
+	int orderIndex = 0;
+	while (orderIndex < columnCount) {
+		if (oldOrder [orderIndex] == index) break;
+		orderIndex++;
+	}
 	RECT itemRect = new RECT ();
 	OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, itemRect);
 	if (OS.SendMessage (hwndHeader, OS.HDM_DELETEITEM, index, 0) == 0) {
@@ -821,12 +828,12 @@ void destroyItem (TreeColumn column) {
 	setScrollWidth ();
 	updateImageList ();
 	if (columnCount != 0) {
-		int start = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, index, 0);
-		TreeColumn [] newColumns = new TreeColumn [columnCount - start];
-		for (int i=start; i<columnCount; i++) {
-			int orderIndex = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, i, 0);
-			newColumns [i - start] = columns [orderIndex];
-		}
+		int [] newOrder = new int [columnCount];
+		OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, columnCount, newOrder);
+		TreeColumn [] newColumns = new TreeColumn [columnCount - orderIndex];
+		for (int i=orderIndex; i<newOrder.length; i++) {
+			newColumns [i - orderIndex] = columns [newOrder [i]];
+		}	
 		for (int i=0; i<newColumns.length; i++) {
 			if (!newColumns [i].isDisposed ()) {
 				newColumns [i].sendEvent (SWT.Move);
@@ -2116,7 +2123,6 @@ public void setColumnOrder (int [] order) {
 		return;
 	}
 	if (order.length != count) error (SWT.ERROR_INVALID_ARGUMENT);
-	if (order [0] != 0) return;
 	int [] oldOrder = new int [count];
 	OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, oldOrder);
 	boolean reorder = false;
