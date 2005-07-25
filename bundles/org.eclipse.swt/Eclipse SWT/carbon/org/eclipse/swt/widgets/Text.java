@@ -1016,6 +1016,7 @@ int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userDa
 			* single line TXN Object.  While this may be correct platform behavior, it is
 			* unexpected.  The fix is to avoid calling the default handler. 
 			*/
+			case 76: /* KP Enter */
 			case 36: { /* Return */
 				postEvent (SWT.DefaultSelection);
 				return OS.noErr;

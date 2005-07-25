@@ -555,6 +555,7 @@ int kEventRawKeyPressed (int nextHandler, int theEvent, int userData) {
 			cancelled = true;
 			tracking = false;
 			break;
+		case 76: /* KP Enter */
 		case 36: /* Return */
 			tracking = false;
 			break;

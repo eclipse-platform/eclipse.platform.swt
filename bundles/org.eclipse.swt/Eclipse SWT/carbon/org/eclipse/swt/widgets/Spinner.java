@@ -581,6 +581,7 @@ int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userDa
 	OS.GetEventParameter (keyboardEvent [0], OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
 	int delta = 0;
 	switch (keyCode [0]) {
+		case 76: /* KP Enter */
 		case 36: /* Return */
 			int value = getSelectionText ();
 			setSelection (value, true);
