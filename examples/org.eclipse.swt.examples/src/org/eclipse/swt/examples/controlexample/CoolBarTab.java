@@ -110,7 +110,7 @@ class CoolBarTab extends Tab {
 		pushSize = pushItem.computeSize(pushSize.x, pushSize.y);
 		pushItem.setSize(pushSize);
 		pushItem.setMinimumSize(item.getWidth(), pushSize.y);
-        pushItem.addSelectionListener (new CoolItemSelectionListener());
+		pushItem.addSelectionListener (new CoolItemSelectionListener());
 				
 		/* create the dropdown toolbar */
 		toolBar = new ToolBar (coolBar, toolBarStyle);
@@ -128,7 +128,7 @@ class CoolBarTab extends Tab {
 		dropSize = dropDownItem.computeSize(dropSize.x, dropSize.y);
 		dropDownItem.setSize(dropSize);
 		dropDownItem.setMinimumSize(item.getWidth(), dropSize.y);
-        dropDownItem.addSelectionListener (new CoolItemSelectionListener());
+		dropDownItem.addSelectionListener (new CoolItemSelectionListener());
 				
 		/* create the radio button toolbar */
 		toolBar = new ToolBar (coolBar, toolBarStyle);
@@ -147,7 +147,7 @@ class CoolBarTab extends Tab {
 		radioSize = radioItem.computeSize(radioSize.x, radioSize.y);
 		radioItem.setSize(radioSize);
 		radioItem.setMinimumSize(item.getWidth(), radioSize.y);
-        radioItem.addSelectionListener (new CoolItemSelectionListener());
+		radioItem.addSelectionListener (new CoolItemSelectionListener());
 		
 		/* create the check button toolbar */
 		toolBar = new ToolBar (coolBar, toolBarStyle);
@@ -169,9 +169,9 @@ class CoolBarTab extends Tab {
 		checkSize = checkItem.computeSize(checkSize.x, checkSize.y);
 		checkItem.setSize(checkSize);
 		checkItem.setMinimumSize(item.getWidth(), checkSize.y);
-        checkItem.addSelectionListener (new CoolItemSelectionListener());
+		checkItem.addSelectionListener (new CoolItemSelectionListener());
 		
-        /* create the text */
+		/* create the text */
 		Text text = new Text (coolBar, SWT.BORDER | SWT.SINGLE);
 		textItem = new CoolItem (coolBar, itemStyle);
 		textItem.setControl (text);
@@ -179,7 +179,7 @@ class CoolBarTab extends Tab {
 		textSize = textItem.computeSize(textSize.x, textSize.y);
 		textItem.setSize(textSize);
 		textItem.setMinimumSize(textSize);
-        textItem.addSelectionListener (new CoolItemSelectionListener());
+		textItem.addSelectionListener (new CoolItemSelectionListener());
 
 		/* if we have saved state, restore it */
 		if (order != null) {
