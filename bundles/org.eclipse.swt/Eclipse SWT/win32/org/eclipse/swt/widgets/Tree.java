@@ -808,7 +808,7 @@ void destroyItem (TreeColumn column) {
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 		bits &= ~OS.TVS_NOHSCROLL;
 		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
-	    OS.InvalidateRect (handle, null, true);
+		OS.InvalidateRect (handle, null, true);
 	} else {
 		if (index == 0) {
 			columns [0].style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
@@ -823,7 +823,7 @@ void destroyItem (TreeColumn column) {
 		RECT rect = new RECT ();
 		OS.GetClientRect (handle, rect);
 		rect.left = itemRect.left;
-	    OS.InvalidateRect (handle, rect, true);
+		OS.InvalidateRect (handle, rect, true);
 	}
 	setScrollWidth ();
 	updateImageList ();
