@@ -476,14 +476,9 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 	if (cairo != 0) {
 		srcImage.createSurface();
 		Cairo.cairo_save(cairo);
-		//TODO - draw a piece of the image
-//		if (srcX != 0 || srcY != 0) {
-//			Cairo.cairo_rectangle(cairo, destX, destY, destWidth, destHeight);
-//			Cairo.cairo_clip(cairo);
-//			Cairo.cairo_new_path(cairo);
-//		}
-		//TODO - need 0.5 to draw at 0,0 with no transformation ???
-		Cairo.cairo_translate(cairo, destX - srcX + 0.5, destY - srcY);
+		Cairo.cairo_rectangle(cairo, destX, destY, destWidth, destHeight);
+		Cairo.cairo_clip(cairo);
+		Cairo.cairo_translate(cairo, destX - srcX + 0.5, destY - srcY + 0.5);
 		if (srcWidth != destWidth || srcHeight != destHeight) {
 			Cairo.cairo_scale(cairo, destWidth / (float)srcWidth,  destHeight / (float)srcHeight);
 		}
@@ -497,6 +492,7 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 		int /*long*/ pattern = Cairo.cairo_pattern_create_for_surface(srcImage.surface);
 		if (pattern == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		Cairo.cairo_pattern_set_filter(pattern, filter);
+		Cairo.cairo_pattern_set_extend(pattern, Cairo.CAIRO_EXTEND_REFLECT);
 		Cairo.cairo_set_source(cairo, pattern);
 		Cairo.cairo_paint(cairo);
 		Cairo.cairo_restore(cairo);
