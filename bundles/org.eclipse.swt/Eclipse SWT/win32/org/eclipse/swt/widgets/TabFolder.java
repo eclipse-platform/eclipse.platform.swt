@@ -522,9 +522,13 @@ boolean mnemonicMatch (char key) {
 
 void releaseWidget () {
 	int count = OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
-	for (int i=0; i<count; i++) {
-		TabItem item = items [i];
-		if (!item.isDisposed ()) item.releaseResources ();
+	if (items != null) {
+		for (int i=0; i<count; i++) {
+			TabItem item = items [i];
+			if (item != null && !item.isDisposed ()) {
+				item.releaseResources ();
+			}
+		}
 	}
 	items = null;
 	if (imageList != null) {

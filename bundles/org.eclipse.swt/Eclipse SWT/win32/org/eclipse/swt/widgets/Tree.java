@@ -1762,16 +1762,20 @@ void releaseHandle () {
 
 void releaseWidget () {
 	int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	for (int i=0; i<items.length; i++) {
-		TreeItem item = items [i];
-		if (item != null && !item.isDisposed ()) {
-			item.releaseResources ();
+	if (items != null) {
+		for (int i=0; i<items.length; i++) {
+			TreeItem item = items [i];
+			if (item != null && !item.isDisposed ()) {
+				item.releaseResources ();
+			}
 		}
 	}
 	items = null;
-	for (int i=0; i<columnCount; i++) {
-		TreeColumn column = columns [i];
-		if (!column.isDisposed ()) column.releaseResources ();
+	if (columns != null) {
+		for (int i=0; i<columnCount; i++) {
+			TreeColumn column = columns [i];
+			if (!column.isDisposed ()) column.releaseResources ();
+		}
 	}
 	columns = null;
 	/*
