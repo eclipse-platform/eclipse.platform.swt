@@ -317,7 +317,7 @@ Rectangle [] getRectangles (int linkIndex) {
 	while (point.y > lineOffsets [lineEnd]) lineEnd++;
 	int index = 0;
 	if (lineStart == lineEnd) {
-		rects [index++] = layout.getBounds (point.x, point.y);		
+		rects [index++] = layout.getBounds (point.x, point.y);
 	} else {
 		rects [index++] = layout.getBounds (point.x, lineOffsets [lineStart]-1);
 		rects [index++] = layout.getBounds (lineOffsets [lineEnd-1], point.y);
@@ -847,12 +847,12 @@ LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
 	LRESULT result = super.WM_PRINTCLIENT (wParam, lParam);
 	if (OS.COMCTL32_MAJOR < 6) {
 		RECT rect = new RECT ();
-	    OS.GetClientRect (handle, rect);
-	    GCData data = new GCData ();
-	    data.device = display;
-	    GC gc = GC.win32_new (wParam, data);
-	    drawWidget (gc, rect);
-	    gc.dispose ();
+		OS.GetClientRect (handle, rect);
+		GCData data = new GCData ();
+		data.device = display;
+		GC gc = GC.win32_new (wParam, data);
+		drawWidget (gc, rect);
+		gc.dispose ();
 	}
 	return result;
 }
