@@ -597,6 +597,15 @@ Point minimumSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
+boolean redrawChildren () {
+	if (!super.redrawChildren ()) return false;
+	Control [] children = _getChildren ();
+	for (int i=0; i<children.length; i++) {
+		children [i].redrawChildren ();
+	}
+	return true;
+}
+
 void releaseChildren () {
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
@@ -1303,14 +1312,7 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 			}
 		}
 		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-			if (findThemeControl () != null) {
-				int hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
-				while (hwndChild != 0) {
-					int flags = OS.RDW_ERASE | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
-					OS.RedrawWindow (hwndChild, null, 0, flags);
-					hwndChild = OS.GetWindow (hwndChild, OS.GW_HWNDNEXT);
-				}
-			}
+			if (findThemeControl () != null) redrawChildren ();
 		}
 	}
 

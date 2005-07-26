@@ -1556,6 +1556,20 @@ public void redraw (int x, int y, int width, int height, boolean all) {
 	}
 }
 
+boolean redrawChildren () {
+	if (background == -1) {
+		if ((state & TRANSPARENT) != 0) {
+			if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+				if (OS.IsWindowVisible (handle)) {
+					OS.InvalidateRect (handle, null, true);
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
 void register () {
 	display.addControl (handle, this);
 }
@@ -3541,10 +3555,7 @@ LRESULT WM_MOVE (int wParam, int lParam) {
 	if ((state & TRANSPARENT) != 0) {
 		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 			if (OS.IsWindowVisible (handle)) {
-				if (findThemeControl () != null) {
-					int flags = OS.RDW_ERASE | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
-					OS.RedrawWindow (handle, null, 0, flags);
-				}
+				if (findThemeControl () != null) redrawChildren ();
 			}
 		}
 	}
