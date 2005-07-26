@@ -381,7 +381,7 @@ public Rectangle getBounds (int index) {
 //TODO - take into account grid (add boolean arg) to damage less during redraw
 RECT getBounds (int index, boolean getText, boolean getImage, boolean full) {
 	if (!getText && !getImage) return new RECT ();
-	boolean firstColumn = false;
+	boolean firstColumn = index == 0;
 	int count = 0, hwndHeader = parent.hwndHeader;
 	if (hwndHeader != 0) {
 		count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
@@ -400,7 +400,7 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean full) {
 				rect.left -= size.x + Tree.INSET;
 				if (!getText) rect.right = rect.left + size.x;
 			} else {
-				rect.right = rect.left;
+				if (!getText) rect.right = rect.left;
 			}
 		}
 		if (getText && full && hwndHeader != 0 && count != 0) {
