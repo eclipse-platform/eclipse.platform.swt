@@ -375,7 +375,7 @@ LRESULT WM_UPDATEUISTATE (int wParam, int lParam) {
 	if (result != null) return result;
 	/*
 	* Feature in Windows.  When WM_UPDATEUISTATE is sent to
-	* a group, it sends WM_CTLCOLORBTNto get the foreground
+	* a group, it sends WM_CTLCOLORBTN to get the foreground
 	* and background.  If drawing happens in WM_CTLCOLORBTN,
 	* it will overwrite the contents of the control.  The
 	* fix is draw the group without drawing the background
