@@ -117,7 +117,7 @@ void createHandle () {
 	state &= ~(CANVAS | TRANSPARENT);
 	int hInstance = OS.GetModuleHandle (null);
 	int textExStyle = (style & SWT.BORDER) != 0 ? OS.WS_EX_CLIENTEDGE : 0;
-	int textStyle = OS.WS_CHILD | OS.WS_VISIBLE | OS.ES_AUTOHSCROLL;
+	int textStyle = OS.WS_CHILD | OS.WS_VISIBLE | OS.ES_AUTOHSCROLL | OS.WS_CLIPSIBLINGS;
 	if ((style & SWT.READ_ONLY) != 0) textStyle |= OS.ES_READONLY;
 	if (OS.WIN32_VERSION >= OS.VERSION (4, 10)) {
 		if ((style & SWT.RIGHT_TO_LEFT) != 0) textExStyle |= OS.WS_EX_LAYOUTRTL;
@@ -134,7 +134,8 @@ void createHandle () {
         null);
 	if (hwndText == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.SetWindowLong (hwndText, OS.GWL_ID, hwndText);
-	int upDownStyle = OS.WS_CHILD | OS.WS_VISIBLE;
+	int upDownStyle = OS.WS_CHILD | OS.WS_VISIBLE | OS.UDS_AUTOBUDDY;
+	if ((style & SWT.BORDER) != 0) upDownStyle |= OS.UDS_ALIGNRIGHT;
 	if ((style & SWT.WRAP) != 0) upDownStyle |= OS.UDS_WRAP;
 	hwndUpDown = OS.CreateWindowEx (
         0,
@@ -147,6 +148,8 @@ void createHandle () {
         hInstance,
         null);
 	if (hwndUpDown == 0) error (SWT.ERROR_NO_HANDLES);
+	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE;
+	SetWindowPos (hwndText, hwndUpDown, 0, 0, 0, 0, flags);
 	OS.SetWindowLong (hwndUpDown, OS.GWL_ID, hwndUpDown);
 	if (OS.IsDBLocale) {
 		int hIMC = OS.ImmGetContext (handle);
@@ -1069,11 +1072,12 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	if (isDisposed ()) return result;
 	int width = lParam & 0xFFFF, height = lParam >> 16;
-    int upDownWidth = OS.GetSystemMetrics (OS.SM_CXVSCROLL);
-    int textWidth = width - upDownWidth;
-    int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;    
-    SetWindowPos (hwndText, 0, 0, 0, textWidth, height, flags);
-    SetWindowPos (hwndUpDown, 0, textWidth, 0, upDownWidth, height, flags);              	
+	int upDownWidth = OS.GetSystemMetrics (OS.SM_CXVSCROLL);
+	int textWidth = width - upDownWidth;
+	int border = OS.GetSystemMetrics (OS.SM_CXEDGE);
+	int flags = OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
+	SetWindowPos (hwndText, 0, 0, 0, textWidth + border, height, flags);
+	SetWindowPos (hwndUpDown, 0, textWidth, 0, upDownWidth, height, flags);
 	return result;
 }
 
