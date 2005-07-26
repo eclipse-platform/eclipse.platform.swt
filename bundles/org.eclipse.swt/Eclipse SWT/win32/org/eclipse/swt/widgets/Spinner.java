@@ -135,8 +135,14 @@ void createHandle () {
 	if (hwndText == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.SetWindowLong (hwndText, OS.GWL_ID, hwndText);
 	int upDownStyle = OS.WS_CHILD | OS.WS_VISIBLE | OS.UDS_AUTOBUDDY;
-	if ((style & SWT.BORDER) != 0) upDownStyle |= OS.UDS_ALIGNRIGHT;
 	if ((style & SWT.WRAP) != 0) upDownStyle |= OS.UDS_WRAP;
+	if ((style & SWT.BORDER) != 0) {
+		if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+			upDownStyle |= OS.UDS_ALIGNLEFT;
+		} else {
+			upDownStyle |= OS.UDS_ALIGNRIGHT;
+		}
+	}
 	hwndUpDown = OS.CreateWindowEx (
         0,
         UpDownClass,
