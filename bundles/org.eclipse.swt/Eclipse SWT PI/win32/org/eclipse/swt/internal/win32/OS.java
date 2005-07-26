@@ -1368,6 +1368,7 @@ public class OS extends Platform {
 	public static final int UDM_SETPOS = 0x467;
 	public static final int UDM_SETPOS32 = 0x0471;
 	public static final int UDN_DELTAPOS = -722;
+	public static final int UDS_ALIGNLEFT = 0x008;
 	public static final int UDS_ALIGNRIGHT = 0x004;
 	public static final int UDS_AUTOBUDDY = 0x0010;
 	public static final int UDS_WRAP = 0x0001;
