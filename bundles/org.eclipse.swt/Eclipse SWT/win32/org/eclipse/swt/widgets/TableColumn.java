@@ -324,7 +324,7 @@ public void pack () {
 		}
 		headerWidth += margin * 4;
 	}
-	parent.ignoreResize = true;
+	parent.ignoreColumnResize = true;
 	OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, OS.LVSCW_AUTOSIZE);
 	int columnWidth = OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
 	if (index == 0) {
@@ -382,7 +382,7 @@ public void pack () {
 			OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, columnWidth);
 		}
 	}
-	parent.ignoreResize = false;
+	parent.ignoreColumnResize = false;
 	int newWidth = OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
 	if (oldWidth != newWidth) {
 		sendEvent (SWT.Resize);

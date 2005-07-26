@@ -50,6 +50,7 @@ public class Table extends Composite {
 	int lastIndexOf, lastWidth, sortDirection;
 	boolean customDraw, cancelMove, dragStarted, fixScrollWidth, tipRequested;
 	boolean wasSelected, ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize;
+	boolean ignoreColumnResize;
 	static final int INSET = 4;
 	static final int GRID_WIDTH = 1;
 	static final int SORT_WIDTH = 10;
@@ -724,7 +725,7 @@ void createItem (TableColumn column, int index) {
 	* first column is inserted into a table or when a new column
 	* is inserted in the first position. 
 	*/
-	ignoreResize = true;
+	ignoreColumnResize = true;
 	if (index == 0) {
 		if (count > 0) {
 			LVCOLUMN lvColumn = new LVCOLUMN ();
@@ -772,7 +773,7 @@ void createItem (TableColumn column, int index) {
 		lvColumn.fmt = fmt;
 		OS.SendMessage (handle, OS.LVM_INSERTCOLUMN, index, lvColumn);
 	}
-	ignoreResize = false;
+	ignoreColumnResize = false;
 }
 
 void createItem (TableItem item, int index) {
@@ -968,7 +969,7 @@ void destroyItem (TableColumn column) {
 		if (oldOrder [orderIndex] == index) break;
 		orderIndex++;
 	}
-	ignoreResize = true;
+	ignoreColumnResize = true;
 	boolean first = false;
 	if (index == 0) {
 		first = true;
@@ -1075,7 +1076,7 @@ void destroyItem (TableColumn column) {
 	}
 	if (columnCount == 0) setScrollWidth (null, true);
 	updateMoveable ();
-	ignoreResize = false;
+	ignoreColumnResize = false;
 	if (columnCount != 0) {	
 		/*
 		* Bug in Windows.  When LVM_DELETECOLUMN is used to delete a
@@ -2303,22 +2304,33 @@ void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
 	* call to LVM_GETTOPINDEX will return a negative number (this
 	* is an impossible result).  Once the blank lines appear,
 	* there seems to be no way to get rid of them, other than
-	* destroying and recreating the table.  By observation, the
-	* problem happens when the height of the table is less than
-	* the two times the height of a line (this was tested using
-	* different fonts and images).  It also seems that the bug
-	* does not occur when the redraw is turned off for the table.
-	* The fix is to turn off drawing when resizing a table that
-	* is small enough to show the problem. 
+	* destroying and recreating the table.  The fix is to send
+	* the resize notification after the size has been changed in
+	* the operating system.
+	* 
+	* NOTE:  This does not fix the case when the user is resizing
+	* columns dynamically.  There is no fix for this case at this
+	* time.
 	*/
-	boolean fixResize = false;
-	if ((flags & OS.SWP_NOSIZE) == 0) {
-		Rectangle rect = getBounds ();
-		fixResize = rect.height < getItemHeight () * 2;
+	if ((flags & OS.SWP_NOSIZE) != 0) {
+		super.setBounds (x, y, width, height, flags, defer);
+		return;
 	}
-	if (fixResize) setRedraw (false);
-	super.setBounds (x, y, width, height, flags, fixResize ? false : defer);
-	if (fixResize) setRedraw (true);
+	Rectangle oldRect = getClientArea ();
+	ignoreResize = true;
+	super.setBounds (x, y, width, height, flags, false);
+	ignoreResize = false;
+	Rectangle newRect = getClientArea ();
+	if (oldRect.width != newRect.width || oldRect.height != newRect.height) {
+		setResizeChildren (false);
+		sendEvent (SWT.Resize);
+		if (isDisposed ()) return;
+		if (layout != null) {
+			markLayout (false, false);
+			updateLayout (false, false);
+		}
+		setResizeChildren (true);
+	}
 }
 
 /**
@@ -3683,7 +3695,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 					}
 				}
 				lastWidth = width;
-				if (!ignoreResize) {
+				if (!ignoreColumnResize) {
 					NMHEADER phdn = new NMHEADER ();
 					OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
 					if (phdn.pitem != 0) {
@@ -3804,6 +3816,11 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 		ignoreSelect = false;
 	}
 	return result;
+}
+
+LRESULT WM_SIZE (int wParam, int lParam) {
+	if (ignoreResize) return null;
+	return super.WM_SIZE (wParam, lParam);
 }
 
 LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
