@@ -1628,22 +1628,22 @@ public TreeItem getTopItem () {
 	return items [tvItem.lParam];
 }
 
-int imageIndex (Image image) {
+int imageIndex (Image image, int index) {
 	if (image == null) return OS.I_IMAGENONE;
 	if (imageList == null) {
 		Rectangle bounds = image.getBounds ();
 		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height);
-		int index = imageList.indexOf (image);
-		if (index == -1) index = imageList.add (image);
-		if (hwndHeader == 0 || OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0) == 0) {
+		int imageIndex = imageList.indexOf (image);
+		if (imageIndex == -1) imageIndex = imageList.add (image);
+		if (hwndHeader == 0 || OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0) == index) {
 			int hImageList = imageList.getHandle ();
 			OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, hImageList);
 			updateScrollBar ();
 		}
-		return index;
+		return imageIndex;
 	}
-	int index = imageList.indexOf (image);
-	if (index != -1) return index;
+	int imageIndex = imageList.indexOf (image);
+	if (imageIndex != -1) return imageIndex;
 	return imageList.add (image);
 }
 
@@ -3934,7 +3934,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				}
 				lptvdi.iImage = lptvdi.iSelectedImage = OS.I_IMAGENONE;
 				if (image != null) {
-					lptvdi.iImage = lptvdi.iSelectedImage = imageIndex (image);
+					lptvdi.iImage = lptvdi.iSelectedImage = imageIndex (image, index);
 				}
 			}
 			OS.MoveMemory (lParam, lptvdi, NMTVDISPINFO.sizeof);

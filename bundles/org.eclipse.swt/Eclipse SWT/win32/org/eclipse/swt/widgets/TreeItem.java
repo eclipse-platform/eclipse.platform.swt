@@ -1346,7 +1346,7 @@ public void setImage (int index, Image image) {
 	
 	/* Ensure that the image list is created */
 	//TODO - items that are not in column zero don't need to be in the image list
-	parent.imageIndex (image);
+	parent.imageIndex (image, index);
 	
 	if (index == 0) {
 		int hwnd = parent.handle;
