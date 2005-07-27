@@ -2004,8 +2004,8 @@ void onKeyDown (Event event) {
 	/* check available items from current focus item to bottom */
 	for (int i = initialIndex + 1; i < itemsCount; i++) {
 		TableItem item = items [i];
-		String text = item.getText ();
-		if (text.length() > 0) {
+		String text = item.getText (0, false);
+		if (text.length () > 0) {
 			if (Character.toLowerCase (text.charAt (0)) == character) {
 				selectItem (item, false);
 				setFocusItem (item, true);
@@ -2021,8 +2021,8 @@ void onKeyDown (Event event) {
 	/* check available items from top to current focus item */
 	for (int i = 0; i < initialIndex; i++) {
 		TableItem item = items [i];
-		String text = item.getText ();
-		if (text.length() > 0) {
+		String text = item.getText (0, false);
+		if (text.length () > 0) {
 			if (Character.toLowerCase (text.charAt (0)) == character) {
 				selectItem (item, false);
 				setFocusItem (item, true);
