@@ -33,7 +33,7 @@ import org.eclipse.swt.graphics.*;
 public class TreeColumn extends Item {
 	Tree parent;
 	String displayText = "";
-	int width;
+	int width, itemImageWidth;
 	boolean moveable, resizable = true;
 	int sort = SWT.NONE;
 
@@ -380,7 +380,7 @@ void paint (GC gc) {
 	
 	int x = getX ();
 	int startX = x + padding;
-	if ((style & SWT.LEFT) == 0) {
+	if (getOrderIndex () != 0 && (style & SWT.LEFT) == 0) {
 		int contentWidth = getContentWidth (gc, true);
 		if ((style & SWT.RIGHT) != 0) {
 			startX = Math.max (startX, x + width - padding - contentWidth);	
@@ -504,12 +504,11 @@ public void removeSelectionListener (SelectionListener listener) {
 public void setAlignment (int alignment) {
 	checkWidget ();
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
-	int index = getIndex ();
-	if (index == -1 || index == 0) return;	/* column 0 can only have left-alignment */
 	alignment = checkBits (alignment, SWT.LEFT, SWT.CENTER, SWT.RIGHT, 0, 0, 0);
 	if ((style & alignment) != 0) return;	/* same value */
 	style &= ~(SWT.LEFT | SWT.CENTER | SWT.RIGHT);
 	style |= alignment;
+	if (getOrderIndex () == 0) return;	/* no update needed since first ordered column appears left-aligned */
 	int x = getX ();
 	parent.redraw (x, 0, width, parent.getClientArea ().height, false);
 	if (parent.drawCount == 0 && parent.getHeaderVisible ()) {

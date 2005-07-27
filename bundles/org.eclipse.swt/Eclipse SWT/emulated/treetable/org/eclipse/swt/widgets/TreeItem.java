@@ -293,15 +293,18 @@ void addColumn (TreeColumn column) {
 		fontHeights = newFontHeights;
 	}
 
-	if (index == 0 && columnCount > 1) {
+	int orderedIndex = column.getOrderIndex ();
+	if (orderedIndex == 0 && columnCount > 1) {
 		/*
-		 * The new second column now has more space available to it than it did while it
-		 * was the first column since it no longer has to show hierarchy decorations, so
-		 * recompute its displayText.
+		 * The new second ordered column now has more space available to it than it did while
+		 * it was the first ordered column since it no longer has to show hierarchy decorations,
+		 * so recompute its displayText.
 		 */
+		TreeColumn[] orderedColumns = parent.getOrderedColumns ();
+		int secondColumnIndex = orderedColumns [1].getIndex ();
 		GC gc = new GC (parent);
-		gc.setFont (getFont (1, false));
-		computeDisplayText (1, gc);
+		gc.setFont (getFont (secondColumnIndex, false));
+		computeDisplayText (secondColumnIndex, gc);
 		gc.dispose ();
 	}
 	
@@ -577,13 +580,14 @@ void computeDisplayText (int columnIndex, GC gc) {
 		return;
 	}
 
+	int orderedIndex = parent.columns.length == 0 ? 0 : parent.columns [columnIndex].getOrderIndex ();
 	TreeColumn column = parent.columns [columnIndex];
 	int availableWidth;
-	if (columnIndex == 0) {
-		/* column 0 is always LEFT and must consider hierarchy decorations */
+	if (orderedIndex == 0) {
+		/* ordered column 0 is always LEFT and must consider hierarchy decorations */
 		availableWidth = column.getX () + column.width - getTextX (columnIndex) - 2 * MARGIN_TEXT;
 	} else {
-		/* columns > 0 may not be LEFT so cannot use getTextX (int) */
+		/* ordered columns > 0 may not be LEFT so cannot use getTextX (int) */
 		availableWidth = column.width - 2 * parent.getCellPadding () - 2 * MARGIN_TEXT;
 		if (images [columnIndex] != null) {
 			availableWidth -= images [columnIndex].getBounds ().width;
@@ -597,7 +601,7 @@ void computeDisplayText (int columnIndex, GC gc) {
 		textWidths [columnIndex] = textWidth;
 		return;
 	}
-	
+
 	/* Ellipsis will be needed, so subtract their width from the available text width */
 	int ellipsisWidth = gc.stringExtent (Tree.ELLIPSIS).x;
 	availableWidth -= ellipsisWidth;
@@ -792,8 +796,10 @@ public Rectangle getBounds () {
 Rectangle getBounds (boolean checkData) {
 	if (checkData && !parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (!isAvailable ()) return new Rectangle (0, 0, 0, 0);
-	int textPaintWidth = textWidths [0] + 2 * MARGIN_TEXT;
-	return new Rectangle (getTextX (0), parent.getItemY (this), textPaintWidth, parent.itemHeight - 1);
+	TreeColumn[] orderedColumns = parent.getOrderedColumns ();
+	int orderedCol0Index = orderedColumns.length == 0 ? 0 : orderedColumns [0].getIndex ();
+	int textPaintWidth = textWidths [orderedCol0Index] + 2 * MARGIN_TEXT;
+	return new Rectangle (getTextX (orderedCol0Index), parent.getItemY (this), textPaintWidth, parent.itemHeight - 1);
 }
 /**
  * Returns a rectangle describing the receiver's size and location
@@ -829,20 +835,20 @@ public Rectangle getBounds (int columnIndex) {
 			getContentWidth (0),
 			parent.itemHeight - 1);
 	}
-	
+
 	TreeColumn column = columns [columnIndex];
-	if (columnIndex == 0) {
+	if (column.getOrderIndex () == 0) {
 		/* 
-		 * For column 0 this is bounds from the beginning of the content to the
+		 * For ordered column 0 this is bounds from the beginning of the content to the
 		 * end of the column.
 		 */
-		int x = getContentX (0);
+		int x = getContentX (columnIndex);
 		int offset = x - column.getX ();
 		int width = Math.max (0, column.width - offset);		/* max is for columns with small widths */
 		return new Rectangle (x, parent.getItemY (this), width, parent.itemHeight - 1);
 	}
 	/*
-	 * For columns > 0 this is the bounds of the tree cell.
+	 * For ordered columns > 0 this is the bounds of the tree cell.
 	 */
 	return new Rectangle (column.getX (), parent.getItemY (this), column.width, parent.itemHeight - 1);
 }
@@ -892,9 +898,10 @@ public boolean getChecked () {
 }
 int getContentWidth (int columnIndex) {
 	int width = textWidths [columnIndex] + 2 * MARGIN_TEXT;
-	if (columnIndex == 0) {
-		width += parent.col0ImageWidth;
-		if (parent.col0ImageWidth > 0) width += Tree.MARGIN_IMAGE;
+	int orderedIndex = parent.columns.length == 0 ? 0 : parent.columns [columnIndex].getOrderIndex ();
+	if (orderedIndex == 0) {
+		width += parent.orderedCol0imageWidth;
+		if (parent.orderedCol0imageWidth > 0) width += Tree.MARGIN_IMAGE;
 	} else {
 		Image image = getImage (columnIndex, false);
 		if (image != null) {
@@ -905,16 +912,17 @@ int getContentWidth (int columnIndex) {
 }
 /*
  * Returns the x value where the receiver's content (ie.- its image or text) begins
- * for the specified column.  For columns > 0 this is dependent upon column alignment,
- * and for column 0 this is dependent upon the receiver's depth in the tree item
- * hierarchy and the presence/absence of a checkbox.
+ * for the specified column.  For ordered columns > 0 this is dependent upon column
+ * alignment, and for ordered column 0 this is dependent upon the receiver's depth in
+ * the tree item hierarchy and the presence/absence of a checkbox.
  */
 int getContentX (int columnIndex) {
-	if (columnIndex > 0) {
+	int orderedIndex = parent.columns.length == 0 ? 0 : parent.columns [columnIndex].getOrderIndex ();
+	if (orderedIndex > 0) {
 		TreeColumn column = parent.columns [columnIndex];
 		int contentX = column.getX () + parent.getCellPadding ();
 		if ((column.style & SWT.LEFT) != 0) return contentX;
-		
+
 		/* column is not left-aligned */
 		int contentWidth = getContentWidth (columnIndex);
 		if ((column.style & SWT.RIGHT) != 0) {
@@ -926,12 +934,12 @@ int getContentX (int columnIndex) {
 		return contentX;
 	}
 
-	/* column 0 (always left-aligned) */
+	/* ordered column 0 (always left-aligned) */
 	if ((parent.style & SWT.CHECK) != 0) {
 		Rectangle checkBounds = getCheckboxBounds ();
 		return checkBounds.x + checkBounds.width + Tree.MARGIN_IMAGE;
 	}
-	
+
 	int contentX = parent.getCellPadding () - parent.horizontalOffset;
 	if (parentItem != null) {
 		int expanderWidth = parent.expanderBounds.width + INDENT_HIERARCHY;
@@ -982,26 +990,25 @@ Rectangle getExpanderBounds () {
  * Returns the bounds that should be used for drawing a focus rectangle on the receiver
  */
 Rectangle getFocusBounds () {
-	int x = getTextX (0);
 	TreeColumn[] columns = parent.columns;
-	if (columns.length > 0) {
-		/* ensure that the focus x does not start beyond the right bound of column 0 */
-		int rightX = columns [0].getX () + columns [0].width;
-		x = Math.min (x, rightX - 1);
-	}
-
+	int orderedCol0index = columns.length == 0 ? 0 : parent.getOrderedColumns ()[0].getIndex ();
+	int x = getTextX (orderedCol0index);
 	int width;
-	if (columns.length == 0) {
-		width = textWidths [0] + 2 * MARGIN_TEXT;
-	} else {
+	if (columns.length > 0) {
+		/* ensure that the focus x does not start beyond the right bound of ordered column 0 */
+		int rightX = columns [orderedCol0index].getX () + columns [orderedCol0index].width;
+		x = Math.min (x, rightX - 1);
+		
 		TreeColumn column;
 		if ((parent.style & SWT.FULL_SELECTION) != 0) {
 			int[] columnOrder = parent.getColumnOrder ();
-			column = columns [columnOrder [columnOrder.length - 1]];
+			column = columns [columnOrder [columnOrder.length - 1]];	/* last ordered column */
 		} else {
-			column = columns [0];
+			column = columns [orderedCol0index];
 		}
 		width = column.getX () + column.width - x - 1;
+	} else {	/* no columns */
+		width = textWidths [0] + 2 * MARGIN_TEXT;
 	}
 
 	return new Rectangle (
@@ -1147,7 +1154,9 @@ Point[] getHconnectorEndpoints () {
  * Returns the bounds representing the clickable region that should select the receiver.
  */
 Rectangle getHitBounds () {
-	int contentX = getContentX (0);
+	int[] columnOrder = parent.getColumnOrder ();
+	int orderedCol0index = columnOrder.length == 0 ? 0 : parent.columns [columnOrder [0]].getIndex ();
+	int contentX = getContentX (orderedCol0index);
 	int width = 0;
 	TreeColumn[] columns = parent.columns;
 	if (columns.length == 0) {
@@ -1159,10 +1168,9 @@ Rectangle getHitBounds () {
 		 */
 		TreeColumn column;
 		if ((parent.style & SWT.FULL_SELECTION) != 0) {
-			int[] columnOrder = parent.getColumnOrder ();
-			column = columns [columnOrder [columnOrder.length - 1]];
+			column = columns [columnOrder [columnOrder.length - 1]];	/* last column */
 		} else {
-			column = columns [0];
+			column = columns [orderedCol0index];
 		}
 		width = column.getX () + column.width - contentX;
 	}
@@ -1224,21 +1232,21 @@ public Rectangle getImageBounds (int columnIndex) {
 	int itemHeight = parent.itemHeight;
 	int imageSpaceY = itemHeight - 2 * padding;
 	int y = parent.getItemY (this);
+	int orderedIndex = parent.columns.length == 0 ? 0 : parent.columns [columnIndex].getOrderIndex ();
 	Image image = getImage (columnIndex, false); 
+
 	if (image == null) {
-		return new Rectangle (startX, y + padding, 0, imageSpaceY);
+		int width = 0;
+		/* for ordered column 0, image space is reserved even for null images */
+		if (orderedIndex == 0) width = parent.orderedCol0imageWidth;	
+		return new Rectangle (startX, y + padding, width, imageSpaceY);
 	}
-	
+
 	Rectangle imageBounds = image.getBounds ();
-	/* 
-	 * For column 0 all images have the same width, which may be larger or smaller
-	 * than the image to be drawn here.  Therefore the image bounds to draw must be
-	 * specified.
-	 */
 	int drawWidth;
-	if (columnIndex == 0) {
-		int imageSpaceX = parent.col0ImageWidth;
-		drawWidth = Math.min (imageSpaceX, imageBounds.width);
+	if (orderedIndex == 0) {
+		/* for ordered column 0 all images have the same width */
+		drawWidth = parent.orderedCol0imageWidth;
 	} else {
 		drawWidth = imageBounds.width;
 	}
@@ -1362,10 +1370,11 @@ int getPreferredWidth (int columnIndex) {
 	gc.setFont (getFont (columnIndex, false));
 	int textPaintWidth = gc.stringExtent (getText (columnIndex, false)).x + 2 * MARGIN_TEXT;
 	gc.dispose ();
-	if (columnIndex == 0) {
+	int orderedIndex = parent.columns.length == 0 ? 0 : parent.columns [columnIndex].getOrderIndex ();
+	if (orderedIndex == 0) {
 		return getTextX (columnIndex) + parent.horizontalOffset + textPaintWidth + parent.getCellPadding ();	/* right side cell pad */
 	}
-	/* column > 0 */
+	/* ordered column > 0 */
 	int width = 2 * parent.getCellPadding () + textPaintWidth;
 	Image image = getImage (columnIndex, false);
 	if (image != null) {
@@ -1409,10 +1418,11 @@ String getText (int columnIndex, boolean checkData) {
  * Returns the x value where the receiver's text begins.
  */
 int getTextX (int columnIndex) {
+	int orderedIndex = parent.columns.length == 0 ? 0 : parent.columns [columnIndex].getOrderIndex ();
 	int textX = getContentX (columnIndex);
-	if (columnIndex == 0) {
-		textX += parent.col0ImageWidth;
-		if (parent.col0ImageWidth > 0) textX += Tree.MARGIN_IMAGE;
+	if (orderedIndex == 0) {
+		textX += parent.orderedCol0imageWidth;
+		if (parent.orderedCol0imageWidth > 0) textX += Tree.MARGIN_IMAGE;
 	} else {
 		Image image = getImage (columnIndex, false);
 		if (image != null) {
@@ -1484,9 +1494,10 @@ boolean isSelected () {
  */
 void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 	if (!parent.checkData (this, true)) return;
-	int columnIndex = 0, x = 0;
+	int columnIndex = 0, orderedIndex = 0, x = 0;
 	if (column != null) {
 		columnIndex = column.getIndex ();
+		orderedIndex = column.getOrderIndex ();
 		x = column.getX ();
 	}
 	/* if this cell is completely to the right of the client area then there's no need to paint it */
@@ -1513,7 +1524,7 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 
 	/* draw the background color of this cell */
 	Color background = getBackground (columnIndex);
-	if (columnIndex == 0) {
+	if (orderedIndex == 0) {
 		Rectangle focusBounds = getFocusBounds ();
 		gc.setBackground (parent.getBackground ());
 		if (focusBounds.x > 0) {
@@ -1545,9 +1556,9 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 	}
 
 	/* draw the selection bar if the receiver is selected */
-	if (isSelected () && (columnIndex == 0 || (parent.style & SWT.FULL_SELECTION) != 0)) {
+	if (isSelected () && (orderedIndex == 0 || (parent.style & SWT.FULL_SELECTION) != 0)) {
 		gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
-		if (columnIndex == 0) {
+		if (orderedIndex == 0) {
 			Rectangle focusBounds = getFocusBounds ();
 			int fillWidth = focusBounds.width;
 			if (parent.columns.length < 2 || (parent.style & SWT.FULL_SELECTION) == 0) {
@@ -1575,7 +1586,7 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 	if (!paintCellContent) return;
 
 	/* Draw column 0 decorations */
-	if (columnIndex == 0) {
+	if (orderedIndex == 0) {
 		/* Draw hierarchy connector lines */
 		Rectangle expanderBounds = getExpanderBounds ();
 		gc.setForeground (parent.getConnectorColor ());
@@ -1666,7 +1677,7 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 	if (text.length () > 0) {
 		gc.setFont (getFont (columnIndex, false));
 		int fontHeight = getFontHeight (columnIndex);
-		if (isSelected () && (columnIndex == 0 || (parent.style & SWT.FULL_SELECTION) != 0)) {
+		if (isSelected () && (orderedIndex == 0 || (parent.style & SWT.FULL_SELECTION) != 0)) {
 			gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
 		} else {
 			gc.setForeground (getForeground (columnIndex));
@@ -1682,7 +1693,7 @@ void redrawItem () {
 /*
  * Updates internal structures in the receiver and its child items to handle the removal of a column.
  */
-void removeColumn (TreeColumn column, int index) {
+void removeColumn (TreeColumn column, int index, int orderedIndex) {
 	int columnCount = parent.columns.length;
 
 	if (columnCount == 0) {
@@ -1696,7 +1707,7 @@ void removeColumn (TreeColumn column, int index) {
 		gc.dispose ();
 		/* notify all child items as well */
 		for (int i = 0; i < items.length; i++) {
-			items [i].removeColumn (column, index);
+			items [i].removeColumn (column, index, orderedIndex);
 		}
 		return;
 	}
@@ -1750,14 +1761,18 @@ void removeColumn (TreeColumn column, int index) {
 		texts [0] = null;
 		image = images [0];
 		images [0] = null;
+	}
+
+	if (orderedIndex == 0) {
 		/* 
-		 * The new first column will not have as much width available to it as it did when it was
-		 * the second column since it now has to show hierarchy decorations as well, so recompute
-		 * its displayText. 
+		 * The new first ordered column will not have as much width available to it as it did when
+		 * it was the second ordered column since it now has to show hierarchy decorations as well,
+		 * so recompute its displayText. 
 		 */
+		int firstColumnIndex = parent.getOrderedColumns () [0].getIndex ();
 		GC gc = new GC (parent);
-		gc.setFont (getFont (0, false));
-		computeDisplayText (0, gc);
+		gc.setFont (getFont (firstColumnIndex, false));
+		computeDisplayText (firstColumnIndex, gc);
 		gc.dispose ();
 	}
 	if (columnCount < 2) {
@@ -1767,7 +1782,7 @@ void removeColumn (TreeColumn column, int index) {
 
 	/* notify all child items as well */
 	for (int i = 0; i < items.length; i++) {
-		items [i].removeColumn (column, index);
+		items [i].removeColumn (column, index, orderedIndex);
 	}
 }
 /**
@@ -1790,7 +1805,6 @@ public void removeAll () {
 	if (focusItem != null && focusItem.hasAncestor (this)) {
 		parent.setFocusItem (this, false);
 	}
-
 	while (items.length > 0) {
 		items [0].dispose (true);
 		removeItem (items [0], 0);
@@ -2282,68 +2296,83 @@ public void setImage (int columnIndex, Image value) {
 		computeDisplayText (columnIndex, gc);
 		gc.dispose ();
 	}
-	
+
 	if (value == null) {
 		redrawItem ();
 		return;
 	}
 
-	/*
-	 * If this is the first image being put into the tree then its item height
-	 * may be adjusted, in which case a full redraw is needed.
-	 */
-	if (parent.imageHeight == 0) {
-		int oldItemHeight = parent.itemHeight;
-		parent.setImageHeight (value.getBounds ().height);
-		if (oldItemHeight != parent.itemHeight) {
-			if (columnIndex == 0) {
-				parent.col0ImageWidth = value.getBounds ().width;
-				if (columns.length > 0) {
-					/* 
-					 * All column 0 cells will now have less room available for their texts,
-					 * so all items must now recompute their column 0 displayTexts.
-					 */
-					GC gc = new GC (parent);
-					TreeItem[] rootItems = parent.items;
-					for (int i = 0; i < rootItems.length; i++) {
-						rootItems [i].updateColumnWidth (columns [0], gc);
-					}
-					gc.dispose ();
-				}
-			}
-			parent.redraw ();
-			return;
+	if (columns.length == 0) {
+		if (parent.imageHeight == 0) {
+			/* this is the first image being put into the parent Tree */
+			Rectangle bounds = value.getBounds ();
+			parent.orderedCol0imageWidth = bounds.width;
+			parent.setImageHeight (bounds.height);
+			parent.redrawItems (0, parent.availableItemsCount - 1, false);
+		} else {
+			redrawItem ();
 		}
+		return;
 	}
 
-	/* 
-	 * If this is the first image being put into column 0 then all cells
-	 * in the column should also indent accordingly. 
-	 */
-	if (columnIndex == 0 && parent.col0ImageWidth == 0) {
-		parent.col0ImageWidth = value.getBounds ().width;
-		/* redraw the column */
-		if (columns.length == 0) {
-			parent.redraw ();
-		} else {
+	/* there are 1+ columns */
+	TreeColumn column = columns [columnIndex];
+	int orderedIndex = column.getOrderIndex ();
+	Rectangle bounds = value.getBounds ();
+	if (column.itemImageWidth == 0) column.itemImageWidth = bounds.width;
+
+	if (parent.imageHeight == 0) {
+		/* this is the first image being put into the parent Tree */
+		int oldItemHeight = parent.itemHeight;
+		parent.setImageHeight (bounds.height);
+
+		if (orderedIndex == 0) {	/* the first ordered column */
+			parent.orderedCol0imageWidth = bounds.width;
 			/* 
 			 * All column 0 cells will now have less room available for their texts,
 			 * so all items must now recompute their column 0 displayTexts.
 			 */
-			GC gc = new GC (parent);
 			TreeItem[] rootItems = parent.items;
+			GC gc = new GC (parent);
 			for (int i = 0; i < rootItems.length; i++) {
-				rootItems [i].updateColumnWidth (columns [0], gc);
+				rootItems [i].updateColumnWidth (column, gc);
 			}
 			gc.dispose ();
-			parent.redraw (
-				columns [0].getX (), 0,
-				columns [0].width,
-				parent.getClientArea ().height,
-				true);
+			if (oldItemHeight != parent.itemHeight) {
+				/* the item height grew as a result of the new image height, so redraw everything */
+				parent.redraw ();
+			} else {
+				/* redraw the column since all items should now have image space */
+				parent.redraw (column.getX (), 0, column.width, parent.getClientArea ().height, false);
+			}
+		} else {	/* not the first ordered column */
+			if (oldItemHeight != parent.itemHeight) {
+				/* the item height grew as a result of the new image height, so redraw everything */
+				parent.redraw ();
+			} else {
+				redrawItem ();
+			}
 		}
 		return;
 	}
+
+	if (orderedIndex == 0 && parent.orderedCol0imageWidth == 0) {
+		/* this is the first image being put into the current ordered column 0 */
+		parent.orderedCol0imageWidth = bounds.width;
+		/* 
+		 * All column 0 cells will now have less room available for their texts,
+		 * so all items must now recompute their column 0 displayTexts.
+		 */
+		TreeItem[] rootItems = parent.items;
+		GC gc = new GC (parent);
+		for (int i = 0; i < rootItems.length; i++) {
+			rootItems [i].updateColumnWidth (column, gc);
+		}
+		gc.dispose ();
+		parent.redraw (column.getX (), 0, column.width, parent.getClientArea ().height, false);
+		return;
+	}
+
 	redrawItem ();
 }
 /*public*/ void setItemCount (int count) {

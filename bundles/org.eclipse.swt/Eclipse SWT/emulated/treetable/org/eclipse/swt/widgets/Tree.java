@@ -54,8 +54,7 @@ public class Tree extends Composite {
 	boolean linesVisible, ignoreKey;
 	int topIndex = 0, horizontalOffset = 0;
 	int fontHeight = 0, imageHeight = 0, itemHeight = 0;
-	int col0ImageWidth = 0;
-	int headerImageHeight = 0;
+	int headerImageHeight = 0, orderedCol0imageWidth = 0;
 	TreeColumn resizeColumn;
 	int resizeColumnX = -1;
 	int drawCount = 0;
@@ -400,6 +399,12 @@ void createItem (TreeColumn column, int index) {
 		orderedColumns = newOrderedColumns;
 	}
 
+	if (columns.length == 1) {
+		column.itemImageWidth = orderedCol0imageWidth;
+	} else {
+		if (column.getOrderIndex () == 0) orderedCol0imageWidth = 0;
+	}
+
 	/* allow all items to update their internal structures accordingly */
 	for (int i = 0; i < items.length; i++) {
 		items [i].addColumn (column);
@@ -519,17 +524,13 @@ void destroyItem (TreeColumn column) {
 		}
 	}
 
-	/* ensure that ordered column 0 always has left-alignment and is not movable */
-	TreeColumn[] orderedColumns = getOrderedColumns ();
-	if (index == 0 && orderedColumns.length > 0) {
-		orderedColumns [0].style |= SWT.LEFT;
-		orderedColumns [0].style &= ~(SWT.CENTER | SWT.RIGHT);
-		orderedColumns [0].moveable = false;
+	if (orderedIndex == 0 && columns.length > 0) {
+		orderedCol0imageWidth = columns [getColumnOrder ()[0]].itemImageWidth;
 	}
-	
+
 	/* allow all items to update their internal structures accordingly */
 	for (int i = 0; i < items.length; i++) {
-		items [i].removeColumn (column, index);
+		items [i].removeColumn (column, index, orderedIndex);
 	}
 
 	/* update horizontal scrollbar */
@@ -551,6 +552,7 @@ void destroyItem (TreeColumn column) {
 			if (header.isVisible () && drawCount == 0) header.redraw ();
 		}
 	}
+	TreeColumn[] orderedColumns = getOrderedColumns ();
 	for (int i = orderedIndex; i < orderedColumns.length; i++) {
 		if (!orderedColumns [i].isDisposed ()) {
 			orderedColumns [i].sendEvent (SWT.Move);
@@ -1199,7 +1201,7 @@ void headerOnMouseDown (Event event) {
 		 * if column is moveable, or just fire column Selection otherwise.
 		 */
 		if (event.x < x) {
-			if (column.moveable && column.getOrderIndex () > 0) {
+			if (column.moveable) {
 				/* open tracker on the dragged column's header cell */
 				int columnX = column.getX ();
 				int pointerOffset = event.x - columnX;
@@ -3003,7 +3005,6 @@ public void setColumnOrder (int [] order) {
 		return;
 	}
 	if (order.length != columns.length) error (SWT.ERROR_INVALID_ARGUMENT);
-	if (order [0] != 0) return;		/* column 0 cannot be moved */
 	boolean reorder = false;
 	boolean [] seen = new boolean [columns.length];
 	int[] oldOrder = getColumnOrder ();
@@ -3023,6 +3024,20 @@ public void setColumnOrder (int [] order) {
 	orderedColumns = new TreeColumn [order.length];
 	for (int i = 0; i < order.length; i++) {
 		orderedColumns [i] = columns [order [i]];
+	}
+	/*
+	 * If the first ordered column has changed then the old and new ordered column 0's
+	 * have to recompute their display texts since they will now have just gained/lost
+	 * space as a result of the hierarchy decorations that appear in ordered column 0.
+	 */
+	if (oldOrder [0] != order [0]) {
+		orderedCol0imageWidth = columns [order [0]].itemImageWidth;
+		GC gc = new GC (this);
+		for (int i = 0; i < items.length; i++) {
+			items [i].updateColumnWidth (columns [oldOrder [0]], gc);
+			items [i].updateColumnWidth (columns [order [0]], gc);
+		}
+		gc.dispose();
 	}
 	for (int i = 0; i < orderedColumns.length; i++) {
 		TreeColumn column = orderedColumns [i];
