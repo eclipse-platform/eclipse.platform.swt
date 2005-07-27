@@ -2139,6 +2139,8 @@ public class ImageAnalyzer {
 			return "JPEG";
 		if (filetype == SWT.IMAGE_PNG)
 			return "PNG";
+		if (filetype == SWT.IMAGE_TIFF)
+			return "TIFF";
 		return bundle.getString("Unknown_ac");
 	}
 	
