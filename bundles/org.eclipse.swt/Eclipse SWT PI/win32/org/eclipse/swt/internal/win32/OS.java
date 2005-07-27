@@ -930,6 +930,8 @@ public class OS extends Platform {
 	public static final int PLANES = 0xe;
 	public static final int PM_NOREMOVE = 0x0;
 	public static final int PM_NOYIELD = 0x2;
+	public static final int PRF_CLIENT = 0x4;
+	public static final int PRF_ERASEBKGND = 0x8;
 	public static final int QS_HOTKEY = 0x0080;
 	public static final int QS_KEY = 0x0001;
 	public static final int QS_MOUSEMOVE = 0x0002;
@@ -1527,6 +1529,7 @@ public class OS extends Platform {
 	public static final int WM_PALETTECHANGED = 0x311;
 	public static final int WM_PARENTNOTIFY = 0x0210;
 	public static final int WM_PASTE = 0x302;
+	public static final int WM_PRINT = 0x0317;
 	public static final int WM_PRINTCLIENT = 0x0318;
 	public static final int WM_QUERYENDSESSION = 0x11;
 	public static final int WM_QUERYNEWPALETTE = 0x30f;
