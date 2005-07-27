@@ -413,7 +413,7 @@ private boolean saveAs() {
 	return save();	
 }
 private void sort(int column) {
-	if(table.getItemCount() <= 1)	return;
+	if(table.getItemCount() <= 1) return;
 
 	TableItem[] items = table.getItems();
 	String[][] data = new String[items.length][table.getColumnCount()];
@@ -426,12 +426,15 @@ private void sort(int column) {
 	Arrays.sort(data, new RowComparator(column));
 	
 	if (lastSortColumn != column) {
+		table.setSortColumn(table.getColumn(column));
+		table.setSortDirection(SWT.DOWN);
 		for (int i = 0; i < data.length; i++) {
 			items[i].setText(data[i]);
 		}
 		lastSortColumn = column;
 	} else {
 		// reverse order if the current column is selected again
+		table.setSortDirection(SWT.UP);
 		int j = data.length -1;
 		for (int i = 0; i < data.length; i++) {
 			items[i].setText(data[j--]);
