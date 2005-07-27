@@ -145,6 +145,7 @@ public Widget (Widget parent, int style) {
  *
  * @see Listener
  * @see #removeListener
+ * @see #notifyListeners
  */
 public void addListener (int eventType, Listener listener) {
 	checkWidget();
@@ -662,6 +663,10 @@ GC new_GC (GCData data) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see #addListener
+ * @see #removeListener
+
  */
 public void notifyListeners (int eventType, Event event) {
 	checkWidget();
@@ -783,6 +788,7 @@ void releaseWidget () {
  *
  * @see Listener
  * @see #addListener
+ * @see #notifyListeners
  */
 public void removeListener (int eventType, Listener listener) {
 	checkWidget();

@@ -59,6 +59,8 @@ public class SWT {
 	 * @see org.eclipse.swt.events.KeyEvent
 	 * @see org.eclipse.swt.widgets.Control#addKeyListener
 	 * @see org.eclipse.swt.widgets.Tracker#addKeyListener
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 */
 	public static final int KeyDown = 1;
 	
@@ -69,6 +71,8 @@ public class SWT {
 	 * @see org.eclipse.swt.events.KeyEvent
 	 * @see org.eclipse.swt.widgets.Control#addKeyListener
 	 * @see org.eclipse.swt.widgets.Tracker#addKeyListener
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 */
 	public static final int KeyUp = 2;
 	
@@ -78,6 +82,8 @@ public class SWT {
 	 * @see org.eclipse.swt.events.MouseListener#mouseDown
 	 * @see org.eclipse.swt.events.MouseEvent
 	 * @see org.eclipse.swt.widgets.Control#addMouseListener
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 */
 	public static final int MouseDown = 3;
 	
@@ -87,6 +93,8 @@ public class SWT {
 	 * @see org.eclipse.swt.events.MouseListener#mouseUp
 	 * @see org.eclipse.swt.events.MouseEvent
 	 * @see org.eclipse.swt.widgets.Control#addMouseListener
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 */
 	public static final int MouseUp = 4;
 	
@@ -96,6 +104,8 @@ public class SWT {
 	 * @see org.eclipse.swt.events.MouseMoveListener#mouseMove
 	 * @see org.eclipse.swt.events.MouseEvent
 	 * @see org.eclipse.swt.widgets.Control#addMouseMoveListener
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 */
 	public static final int MouseMove = 5;
 	
@@ -105,6 +115,8 @@ public class SWT {
 	 * @see org.eclipse.swt.events.MouseTrackListener#mouseEnter
 	 * @see org.eclipse.swt.events.MouseEvent
 	 * @see org.eclipse.swt.widgets.Control#addMouseTrackListener
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 */
 	public static final int MouseEnter = 6;		
 	
@@ -114,6 +126,8 @@ public class SWT {
 	 * @see org.eclipse.swt.events.MouseTrackListener#mouseExit
 	 * @see org.eclipse.swt.events.MouseEvent
 	 * @see org.eclipse.swt.widgets.Control#addMouseTrackListener
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 */
 	public static final int MouseExit = 7;
 	
@@ -123,6 +137,8 @@ public class SWT {
 	 * @see org.eclipse.swt.events.MouseListener#mouseDoubleClick
 	 * @see org.eclipse.swt.events.MouseEvent
 	 * @see org.eclipse.swt.widgets.Control#addMouseListener
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 */
 	public static final int MouseDoubleClick = 8;	
 	
@@ -132,6 +148,8 @@ public class SWT {
 	 * @see org.eclipse.swt.events.PaintListener#paintControl
 	 * @see org.eclipse.swt.events.PaintEvent
 	 * @see org.eclipse.swt.widgets.Control#addPaintListener
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 */
 	public static final int Paint = 9;	
 	
@@ -144,6 +162,8 @@ public class SWT {
 	 * @see org.eclipse.swt.widgets.TableColumn#addControlListener
 	 * @see org.eclipse.swt.widgets.Tracker#addControlListener
 	 * @see org.eclipse.swt.widgets.TreeColumn#addControlListener
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 */
 	public static final int Move = 10;
 	
@@ -156,6 +176,8 @@ public class SWT {
 	 * @see org.eclipse.swt.widgets.TableColumn#addControlListener
 	 * @see org.eclipse.swt.widgets.Tracker#addControlListener
 	 * @see org.eclipse.swt.widgets.TreeColumn#addControlListener
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 */
 	public static final int Resize = 11;
 	
@@ -165,6 +187,8 @@ public class SWT {
 	 * @see org.eclipse.swt.events.DisposeListener#widgetDisposed
 	 * @see org.eclipse.swt.events.DisposeEvent
 	 * @see org.eclipse.swt.widgets.Widget#addDisposeListener
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 */
 	public static final int Dispose = 12;
 	
@@ -190,6 +214,8 @@ public class SWT {
 	 * @see org.eclipse.swt.widgets.TrayItem#addSelectionListener
 	 * @see org.eclipse.swt.widgets.Tree#addSelectionListener
 	 * @see org.eclipse.swt.widgets.TreeColumn#addSelectionListener
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 */
 	public static final int Selection = 13;
 	
@@ -205,6 +231,8 @@ public class SWT {
 	 * @see org.eclipse.swt.widgets.Text#addSelectionListener
 	 * @see org.eclipse.swt.widgets.TrayItem#addSelectionListener
 	 * @see org.eclipse.swt.widgets.Tree#addSelectionListener
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 */
 	public static final int DefaultSelection = 14;
 	
@@ -214,6 +242,8 @@ public class SWT {
 	 * @see org.eclipse.swt.events.FocusListener#focusGained
 	 * @see org.eclipse.swt.events.FocusEvent
 	 * @see org.eclipse.swt.widgets.Control#addFocusListener
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 */
 	public static final int FocusIn = 15;
 	
@@ -223,6 +253,8 @@ public class SWT {
 	 * @see org.eclipse.swt.events.FocusListener#focusLost
 	 * @see org.eclipse.swt.events.FocusEvent
 	 * @see org.eclipse.swt.widgets.Control#addFocusListener
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 */
 	public static final int FocusOut = 16;
 	
@@ -232,6 +264,8 @@ public class SWT {
 	 * @see org.eclipse.swt.events.TreeListener#treeExpanded
 	 * @see org.eclipse.swt.events.TreeEvent
 	 * @see org.eclipse.swt.widgets.Tree#addTreeListener
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 */
 	public static final int Expand = 17;
 	
@@ -241,6 +275,8 @@ public class SWT {
 	 * @see org.eclipse.swt.events.TreeListener#treeCollapsed
 	 * @see org.eclipse.swt.events.TreeEvent
 	 * @see org.eclipse.swt.widgets.Tree#addTreeListener
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 */
 	public static final int Collapse = 18;
 	
@@ -250,6 +286,8 @@ public class SWT {
 	 * @see org.eclipse.swt.events.ShellListener#shellIconified
 	 * @see org.eclipse.swt.events.ShellEvent
 	 * @see org.eclipse.swt.widgets.Shell#addShellListener
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 */
 	public static final int Iconify = 19;
 	
@@ -259,6 +297,8 @@ public class SWT {
 	 * @see org.eclipse.swt.events.ShellListener#shellDeiconified
 	 * @see org.eclipse.swt.events.ShellEvent
 	 * @see org.eclipse.swt.widgets.Shell#addShellListener
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 */
 	public static final int Deiconify = 20;
 	
@@ -268,6 +308,8 @@ public class SWT {
 	 * @see org.eclipse.swt.events.ShellListener#shellClosed
 	 * @see org.eclipse.swt.events.ShellEvent
 	 * @see org.eclipse.swt.widgets.Shell#addShellListener
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 */
 	public static final int Close = 21;
 	
@@ -277,6 +319,8 @@ public class SWT {
 	 * @see org.eclipse.swt.events.MenuListener#menuShown
 	 * @see org.eclipse.swt.events.MenuEvent
 	 * @see org.eclipse.swt.widgets.Menu#addMenuListener
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 */
 	public static final int Show = 22;
 	
@@ -286,6 +330,8 @@ public class SWT {
 	 * @see org.eclipse.swt.events.MenuListener#menuHidden
 	 * @see org.eclipse.swt.events.MenuEvent
 	 * @see org.eclipse.swt.widgets.Menu#addMenuListener
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 */
 	public static final int Hide = 23;
 	
@@ -297,6 +343,8 @@ public class SWT {
 	 * @see org.eclipse.swt.widgets.Combo#addModifyListener
 	 * @see org.eclipse.swt.widgets.Spinner#addModifyListener
 	 * @see org.eclipse.swt.widgets.Text#addModifyListener
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 */
 	public static final int Modify = 24;
 	
@@ -307,6 +355,8 @@ public class SWT {
 	 * @see org.eclipse.swt.events.VerifyEvent
 	 * @see org.eclipse.swt.widgets.Combo#addVerifyListener
 	 * @see org.eclipse.swt.widgets.Text#addVerifyListener
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 */
 	public static final int Verify = 25;
 	
@@ -316,6 +366,8 @@ public class SWT {
 	 * @see org.eclipse.swt.events.ShellListener#shellActivated
 	 * @see org.eclipse.swt.events.ShellEvent
 	 * @see org.eclipse.swt.widgets.Shell#addShellListener
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 */
 	public static final int Activate = 26;
 	
@@ -325,6 +377,8 @@ public class SWT {
 	 * @see org.eclipse.swt.events.ShellListener#shellDeactivated
 	 * @see org.eclipse.swt.events.ShellEvent
 	 * @see org.eclipse.swt.widgets.Shell#addShellListener
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 */
 	public static final int Deactivate = 27;	
 	
@@ -336,6 +390,8 @@ public class SWT {
 	 * @see org.eclipse.swt.widgets.Control#addHelpListener
 	 * @see org.eclipse.swt.widgets.Menu#addHelpListener
 	 * @see org.eclipse.swt.widgets.MenuItem#addHelpListener
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 */
 	public static final int Help = 28;
 	
@@ -343,6 +399,8 @@ public class SWT {
 	 * The drag detect event type (value is 29).
 	 * 
 	 * @see org.eclipse.swt.dnd.DragSource
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 */
 	public static final int DragDetect = 29;
 	
@@ -352,6 +410,8 @@ public class SWT {
 	 * @see org.eclipse.swt.events.ArmListener#widgetArmed
 	 * @see org.eclipse.swt.events.ArmEvent
 	 * @see org.eclipse.swt.widgets.MenuItem#addArmListener
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 */
 	public static final int Arm = 30;
 	
@@ -361,6 +421,8 @@ public class SWT {
 	 * @see org.eclipse.swt.events.TraverseListener#keyTraversed
 	 * @see org.eclipse.swt.events.TraverseEvent
 	 * @see org.eclipse.swt.widgets.Control#addTraverseListener
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 */
 	public static final int Traverse = 31;
 	
@@ -370,21 +432,32 @@ public class SWT {
 	 * @see org.eclipse.swt.events.MouseTrackListener#mouseHover
 	 * @see org.eclipse.swt.events.MouseEvent
 	 * @see org.eclipse.swt.widgets.Control#addMouseTrackListener
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 */
 	public static final int MouseHover = 32;
 
 	/**
 	 * The hardware key down event type (value is 33).
+	 * 
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 */
 	public static final int HardKeyDown = 33;
 	
 	/**
 	 * The hardware key up event type (value is 34).
+	 * 
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 */
 	public static final int HardKeyUp = 34;
 
 	/**
 	 * The menu detect event type (value is 35).
+	 * 
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * 
 	 * @since 3.0
 	 */
@@ -395,6 +468,8 @@ public class SWT {
 	 * 
 	 * @see org.eclipse.swt.widgets.Table
 	 * @see org.eclipse.swt.widgets.Tree
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * 
 	 * @since 3.0
 	 */
@@ -402,6 +477,9 @@ public class SWT {
 
 	/**
 	 * The mouse wheel event type (value is 37).
+	 * 
+	 * @see org.eclipse.swt.widgets.Widget#addListener
+	 * @see org.eclipse.swt.widgets.Display#addFilter
 	 * 
 	 * @since 3.1
 	 */
