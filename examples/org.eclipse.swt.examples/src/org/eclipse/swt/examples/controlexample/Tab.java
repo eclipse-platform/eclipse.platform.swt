@@ -955,6 +955,7 @@ abstract class Tab {
 			case SWT.HardKeyUp:
 			case SWT.DragDetect:
 			case SWT.MenuDetect:
+			case SWT.SetData:
 			default: toString += event.toString ();
 		}
 		eventConsole.append (toString);
