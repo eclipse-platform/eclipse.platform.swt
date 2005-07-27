@@ -427,9 +427,15 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
 		Control control = findThemeControl ();
 		if (control != null) {
+			boolean redraw = drawCount == 0 && OS.IsWindowVisible (handle);
+			if (redraw) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 			ignoreResize = true;
 			OS.SendMessage (handle, OS.WM_SIZE, 0, 0);
 			ignoreResize = false;
+			if (redraw) {
+				OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
+				OS.InvalidateRect (handle, null, true);
+			}
 		}
 	}
 	return super.WM_PAINT (wParam, lParam);
