@@ -339,9 +339,10 @@ void drawThemeBackground (int hDC, int hwnd, RECT rect) {
 	RECT rect2 = new RECT ();
 	OS.GetClientRect (handle, rect2);
 	OS.MapWindowPoints (handle, hwnd, rect2, 2);
-	int hTheme = OS.OpenThemeData (handle, REBAR);
-	OS.DrawThemeBackground (hTheme, hDC, OS.RP_BAND, 0, rect2, null);
-	OS.CloseThemeData (hTheme);	
+	POINT lpPoint = new POINT ();
+	OS.SetWindowOrgEx (hDC, -rect2.left, -rect2.top, lpPoint);
+	OS.SendMessage (handle, OS.WM_PRINT, hDC, OS.PRF_CLIENT | OS.PRF_ERASEBKGND);
+	OS.SetWindowOrgEx (hDC, lpPoint.x, lpPoint.y, null);
 }
 
 int getMargin (int index) {
