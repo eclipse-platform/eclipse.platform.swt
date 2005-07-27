@@ -81,7 +81,7 @@ public class TreeItem extends Item {
  * @see Widget#getStyle
  */
 public TreeItem (Tree parent, int style) {
-	this (parent, style, parent.items.length);
+	this (parent, style, checkNull (parent).items.length);
 }
 /**
  * Constructs a new instance of this class given its parent
@@ -148,7 +148,7 @@ public TreeItem (Tree parent, int style, int index) {
  * @see Widget#getStyle
  */
 public TreeItem (TreeItem parentItem, int style) {
-	this (parentItem, style, parentItem.items.length);
+	this (parentItem, style, checkNull (parentItem).items.length);
 }
 /**
  * Constructs a new instance of this class given its parent
