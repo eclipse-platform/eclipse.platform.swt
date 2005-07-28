@@ -44,7 +44,6 @@ public class CoolBar extends Composite {
 	boolean ignoreResize;
 	static final int ReBarProc;
 	static final TCHAR ReBarClass = new TCHAR (0, OS.REBARCLASSNAME, true);
-	static final char [] REBAR = new char [] {'R', 'E', 'B', 'A', 'R', 0};
 	static {
 		INITCOMMONCONTROLSEX icex = new INITCOMMONCONTROLSEX ();
 		icex.dwSize = INITCOMMONCONTROLSEX.sizeof;
