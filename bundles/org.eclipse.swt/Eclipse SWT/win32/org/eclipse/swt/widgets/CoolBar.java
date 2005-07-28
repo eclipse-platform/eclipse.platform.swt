@@ -644,12 +644,10 @@ void resizeToMaximumWidth (int index) {
 }	
 
 void releaseWidget () {
-	if (items != null) {
-		for (int i=0; i<items.length; i++) {
-			CoolItem item = items [i];
-			if (item != null && !item.isDisposed ()) {
-				item.releaseResources ();
-			}
+	for (int i=0; i<items.length; i++) {
+		CoolItem item = items [i];
+		if (item != null && !item.isDisposed ()) {
+			item.releaseResources ();
 		}
 	}
 	items = null;
