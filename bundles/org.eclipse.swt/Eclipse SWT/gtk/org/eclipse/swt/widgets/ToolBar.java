@@ -142,6 +142,20 @@ int /*long*/ eventHandle () {
 	return fixedHandle;
 }
 
+void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, Decorations oldDecorations, Menu [] menus) {
+	super.fixChildren (newShell, oldShell, newDecorations, oldDecorations, menus);
+	ToolItem [] items = getItems ();
+	if (toolTipText == null) {
+		for (int i = 0; i < items.length; i++) {
+			ToolItem item = items [i];
+			if (item.toolTipText != null) {
+				item.setToolTipText(oldShell, null);
+				item.setToolTipText(newShell, item.toolTipText);
+			}
+		}
+	}
+}
+
 boolean forceFocus (int /*long*/ focusHandle) {
 	if (lastFocus != null && lastFocus.setFocus ()) return true;
 	ToolItem [] items = getItems ();

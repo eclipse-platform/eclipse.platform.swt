@@ -973,8 +973,12 @@ public void setToolTipText (String string) {
 	toolTipText = string;
 	if (parent.toolTipText == null) {
 		Shell shell = parent._getShell ();
-		shell.setToolTipText (handle, toolTipText);
+		setToolTipText (shell, toolTipText);
 	}
+}
+
+void setToolTipText (Shell shell, String string) {
+	shell.setToolTipText (handle, string);
 }
 
 /**
