@@ -1103,30 +1103,6 @@ public void selectAll () {
 	OS.SendMessage (handle, OS.LB_SETSEL, 1, -1);
 }
 
-void setBounds (int x, int y, int width, int height, int flags) {
-	/*
-	* Bug in Windows.  If the receiver is scrolled horizontally
-	* and is resized, the list does not redraw properly.  The fix
-	* is to redraw the control when resizing is not deferred and
-	* the new size is different from the previous size.
-	*/
-	if (parent.lpwp != null || (flags & OS.SWP_NOSIZE) != 0) {	
-		super.setBounds (x, y, width, height, flags);
-		return;
-	}
-	RECT rect = new RECT ();
-	OS.GetWindowRect (handle, rect);
-	int oldWidth = rect.right - rect.left;
-	int oldHeight = rect.bottom - rect.top;
-	super.setBounds (x, y, width, height, flags);
-	if (oldWidth == width && oldHeight == height) return;
-	SCROLLINFO info = new SCROLLINFO ();
-	info.cbSize = SCROLLINFO.sizeof;
-	info.fMask = OS.SIF_POS;
-	if (!OS.GetScrollInfo (handle, OS.SB_HORZ, info)) return;
-	if (info.nPos != 0) OS.InvalidateRect (handle, null, true);
-}
-
 void setFocusIndex (int index) {
 //	checkWidget ();	
 	int count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
@@ -1513,6 +1489,34 @@ TCHAR windowClass () {
 
 int windowProc () {
 	return ListProc;
+}
+
+LRESULT WM_SIZE (int wParam, int lParam) {
+	/*
+	* Bug in Windows.  If the top index is changed while the
+	* list is being resized, Windows does not redraw properly
+	* when their is white space at the bottom of the control.
+	* The fix is to detect when the top index has changed and
+	* redraw the control.
+	*
+	* Bug in Windows.  If the receiver is scrolled horizontally
+	* and is resized, the list does not redraw properly.  The fix
+	* is to redraw the control when the horizontal scroll bar is
+	* not at the beginning.
+	*/
+	int oldIndex = OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
+	LRESULT result = super.WM_SIZE (wParam, lParam);
+	if (!isDisposed ()) {
+		SCROLLINFO info = new SCROLLINFO ();
+		info.cbSize = SCROLLINFO.sizeof;
+		info.fMask = OS.SIF_POS;
+		if (OS.GetScrollInfo (handle, OS.SB_HORZ, info)) {
+			if (info.nPos != 0) OS.InvalidateRect (handle, null, true);
+		}
+		int newIndex = OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
+		if (oldIndex != newIndex) OS.InvalidateRect (handle, null, true);
+	}
+	return result;
 }
 
 LRESULT wmCommandChild (int wParam, int lParam) {
