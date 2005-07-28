@@ -1563,6 +1563,11 @@ public void setTextLimit (int limit) {
 	OS.gtk_entry_set_max_length (entryHandle, limit);
 }
 
+void setToolTipText (Shell shell, String string) {
+	shell.setToolTipText (entryHandle, string);
+	shell.setToolTipText (arrowHandle, string);
+}
+
 /**
  * Sets the number of items that are visible in the drop
  * down portion of the receiver's list.

@@ -647,10 +647,11 @@ int /*long*/ filterProc (int /*long*/ xEvent, int /*long*/ gdkEvent, int /*long*
 void fixShell (Shell newShell, Control control) {
 	if (this == newShell) return;
 	if (control == lastActive) setActiveControl (null);
-	if (tooltipsHandle != 0) {
-		setToolTipText (control.handle, null);
+	String toolTipText = control.toolTipText;
+	if (toolTipText != null) {
+		control.setToolTipText (this, null);
+		control.setToolTipText (newShell, toolTipText);
 	}
-	newShell.setToolTipText (control.handle, control.toolTipText);
 }
 
 void forceResize () {
