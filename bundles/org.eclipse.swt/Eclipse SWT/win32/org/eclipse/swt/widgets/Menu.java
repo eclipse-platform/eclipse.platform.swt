@@ -1064,7 +1064,7 @@ void releaseWidget () {
 	MenuItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
 		MenuItem item = items [i];
-		if (item != null && !item.isDisposed ()) {
+		if (!item.isDisposed ()) {
 			if (OS.IsPPC && hwndCB != 0) {
 				item.dispose ();
 			} else {
