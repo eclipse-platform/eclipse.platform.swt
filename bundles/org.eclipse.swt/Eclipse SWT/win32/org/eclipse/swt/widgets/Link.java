@@ -568,9 +568,11 @@ public void setText (String string) {
 	if (string.equals (text)) return;
 	text = string;	
 	if (OS.COMCTL32_MAJOR >= 6) {
+		boolean enabled = OS.IsWindowEnabled (handle);
 		TCHAR buffer = new TCHAR (getCodePage (), string, true);
 		OS.SetWindowText (handle, buffer);
 		parse (string);
+		enableWidget (enabled);
 	} else {
 		layout.setText (parse (string));	
 		focusIndex = offsets.length > 0 ? 0 : -1;
