@@ -942,6 +942,11 @@ void setSelection (int value, boolean notify) {
 	if (notify) postEvent (SWT.Selection);
 }
 
+void setToolTipText (Shell shell, String string) {
+	shell.setToolTipText (hwndText, string);
+	shell.setToolTipText (hwndUpDown, string);
+}
+
 void subclass () {
 	super.subclass ();
 	int newProc = display.windowProc;

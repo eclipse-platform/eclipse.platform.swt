@@ -1589,8 +1589,7 @@ void releaseWidget () {
 		OS.ImmAssociateContext (handle, 0);
 	}
 	if (toolTipText != null) {
-		Shell shell = getShell ();
-		shell.setToolTipText (handle, null);
+		setToolTipText (getShell (), null);
 	}
 	toolTipText = null;
 	if (menu != null && !menu.isDisposed ()) {
@@ -2441,8 +2440,12 @@ boolean setTabItemFocus () {
  */
 public void setToolTipText (String string) {
 	checkWidget ();
-	Shell shell = getShell ();
-	shell.setToolTipText (handle, toolTipText = string);
+	toolTipText = string;
+	setToolTipText (getShell (), string);
+}
+
+void setToolTipText (Shell shell, String string) {
+	shell.setToolTipText (handle, string);
 }
 
 /**

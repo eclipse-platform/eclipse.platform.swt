@@ -548,10 +548,11 @@ Control findThemeControl () {
 void fixShell (Shell newShell, Control control) {
 	if (this == newShell) return;
 	if (control == lastActive) setActiveControl (null);
-	if (toolTipHandle != 0) {
-		setToolTipText (control.handle, null);
+	String toolTipText = control.toolTipText;
+	if (toolTipText != null) {
+		control.setToolTipText (this, null);
+		control.setToolTipText (newShell, toolTipText);
 	}
-	newShell.setToolTipText (control.handle, control.toolTipText);
 }
 
 /**

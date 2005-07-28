@@ -1523,6 +1523,14 @@ public void setTextLimit (int limit) {
 	OS.SendMessage (handle, OS.CB_LIMITTEXT, limit, 0);
 }
 
+void setToolTipText (Shell shell, String string) {
+	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	int hwndList = OS.GetDlgItem (handle, CBID_LIST);
+	if (hwndText != 0) shell.setToolTipText (hwndText, string);
+	if (hwndList != 0) shell.setToolTipText (hwndList, string);
+	shell.setToolTipText (handle, string);
+}
+
 /**
  * Sets the number of items that are visible in the drop
  * down portion of the receiver's list.
