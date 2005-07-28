@@ -1799,9 +1799,9 @@ public boolean isSelected (int index) {
 
 void releaseWidget () {
 	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-	int columnCount = columns == null ? 0 : OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+	int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 	if (columnCount == 1 && columns [0] == null) columnCount = 0;
-	int itemCount = items == null ? 0 : OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+	int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	/*
 	* Feature in Windows 98.  When there are a large number
 	* of columns and items in a table (>1000) where each
@@ -1837,9 +1837,7 @@ void releaseWidget () {
 	items = null;
 	for (int i=0; i<columnCount; i++) {
 		TableColumn column = columns [i];
-		if (column != null && !column.isDisposed ()) {
-			column.releaseResources ();
-		}
+		if (!column.isDisposed ()) column.releaseResources ();
 	}
 	columns = null;
 	if (imageList != null) {

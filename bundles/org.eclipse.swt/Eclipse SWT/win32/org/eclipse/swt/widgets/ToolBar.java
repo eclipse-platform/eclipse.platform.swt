@@ -626,13 +626,11 @@ boolean mnemonicMatch (char ch) {
 }
 
 void releaseWidget () {
-	if (items != null) {
-		for (int i=0; i<items.length; i++) {
-			ToolItem item = items [i];
-			if (item != null && !item.isDisposed ()) {
-				item.releaseImages ();
-				item.releaseResources ();
-			}
+	for (int i=0; i<items.length; i++) {
+		ToolItem item = items [i];
+		if (item != null && !item.isDisposed ()) {
+			item.releaseImages ();
+			item.releaseResources ();
 		}
 	}
 	items = null;

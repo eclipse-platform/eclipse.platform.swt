@@ -407,7 +407,7 @@ void releaseChild () {
 
 void releaseWidget () {
 	super.releaseWidget ();
-	if (parent != null && parent.sortColumn == this) {
+	if (parent.sortColumn == this) {
 		parent.sortColumn = null;
 	}
 	parent = null;
