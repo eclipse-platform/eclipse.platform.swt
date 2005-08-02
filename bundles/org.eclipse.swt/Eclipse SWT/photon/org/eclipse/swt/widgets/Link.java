@@ -35,7 +35,7 @@ import org.eclipse.swt.events.*;
 public class Link extends Control {
 	String text;
 	TextLayout layout;
-	Color linkColor, linkDisabledColor;
+	Color linkColor, disabledColor;
 	Point [] offsets;
 	Point selection;
 	String [] ids;
@@ -149,7 +149,7 @@ void createHandle (int index) {
 	
 	layout = new TextLayout (display);
 	linkColor = new Color (display, LINK_FOREGROUND);
-	linkDisabledColor = new Color (display, LINK_DISABLED_FOREGROUND);
+	disabledColor = new Color (display, LINK_DISABLED_FOREGROUND);
 	offsets = new Point [0];
 	ids = new String [0];
 	mnemonics = new int [0];
@@ -179,6 +179,7 @@ void drawWidget(int widget, int damage) {
 	}
 	GC gc = GC.photon_new (this, data);
 	//set clipping on the GC?
+	if ((state & DISABLED) != 0) gc.setForeground (disabledColor);
 	layout.draw (gc, 0, 0, selStart, selEnd, null, null);
 	if (hasFocus () && focusIndex != -1) {
 		Rectangle [] rects = getRectangles (focusIndex);
@@ -242,7 +243,7 @@ public String getText () {
 
 void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
-	TextStyle linkStyle = new TextStyle (null, enabled ? linkColor : linkDisabledColor, null);
+	TextStyle linkStyle = new TextStyle (null, enabled ? linkColor : disabledColor, null);
 	linkStyle.underline = true;
 	for (int i = 0; i < offsets.length; i++) {
 		Point point = offsets [i];
@@ -531,8 +532,8 @@ void releaseWidget () {
 	layout = null;
 	if (linkColor != null) linkColor.dispose ();
 	linkColor = null;
-	if (linkDisabledColor != null) linkDisabledColor.dispose ();
-	linkDisabledColor = null;	
+	if (disabledColor != null) disabledColor.dispose ();
+	disabledColor = null;	
 	offsets = null;
 	ids = null;
 	mnemonics = null;
@@ -609,7 +610,7 @@ public void setText (String string) {
 	focusIndex = offsets.length > 0 ? 0 : -1;
 	selection.x = selection.y = -1;
 	boolean enabled = (state & DISABLED) == 0;
-	TextStyle linkStyle = new TextStyle (null, enabled ? linkColor : linkDisabledColor, null);
+	TextStyle linkStyle = new TextStyle (null, enabled ? linkColor : disabledColor, null);
 	linkStyle.underline = true;
 	for (int i = 0; i < offsets.length; i++) {
 		Point point = offsets [i];
