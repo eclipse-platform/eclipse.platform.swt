@@ -3062,7 +3062,7 @@ void setZOrder (Control sibling, boolean above, boolean fixChildren) {
 			}
 		}
 		int /*long*/ redrawWindow = fixChildren ? parent.redrawWindow : 0;
-		if (!OS.GDK_WINDOWING_X11 () || (siblingWindow == 0 && redrawWindow == 0)) {
+		if (!OS.GDK_WINDOWING_X11 () || (siblingWindow == 0 && (!above || redrawWindow == 0))) {
 			if (above) {
 				OS.gdk_window_raise (window);
 				if (redrawWindow != 0) OS.gdk_window_raise (redrawWindow);

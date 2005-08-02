@@ -2458,7 +2458,7 @@ void setZOrder (Control control, boolean above, boolean fixChildren) {
 	int window1 = OS.XtWindow (topHandle1);
 	if (window1 == 0) return;
 	int redrawWindow = fixChildren ? parent.redrawWindow : 0;
-	if (control == null && redrawWindow == 0) {
+	if (control == null && (!above || redrawWindow == 0)) {
 		if (above) {
 			OS.XRaiseWindow (display, window1);
 			if (fixChildren) parent.moveAbove (topHandle1, 0);
