@@ -1154,7 +1154,9 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 				if ((style & SWT.NO_BACKGROUND) != 0) {
 					paintGC.copyArea (image, ps.left, ps.top);
 				} else {
-					gc.fillRectangle (0, 0, width, height);
+					RECT rect = new RECT ();
+					OS.SetRect (rect, 0, 0, width, height);
+					drawBackground (gc.handle, rect);
 				}
 				OS.OffsetRgn (sysRgn, -ps.left, -ps.top);
 				OS.SelectClipRgn (gc.handle, sysRgn);
