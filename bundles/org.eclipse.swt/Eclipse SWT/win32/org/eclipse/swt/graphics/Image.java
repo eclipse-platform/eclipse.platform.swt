@@ -943,8 +943,8 @@ int[] createGdipImage() {
 			} else {
 				img = Gdip.Bitmap_new(handle);
 			}
-			if (iconInfo.hbmColor == 0) OS.DeleteObject(iconInfo.hbmColor);
-			if (iconInfo.hbmMask == 0) OS.DeleteObject(iconInfo.hbmMask);
+			if (iconInfo.hbmColor != 0) OS.DeleteObject(iconInfo.hbmColor);
+			if (iconInfo.hbmMask != 0) OS.DeleteObject(iconInfo.hbmMask);
 			return new int[]{img, pixels};
 		}
 		default: SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
