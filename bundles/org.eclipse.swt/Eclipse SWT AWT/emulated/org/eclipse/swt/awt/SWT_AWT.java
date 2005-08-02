@@ -32,6 +32,18 @@ public class SWT_AWT {
 	 */
 	public static String embeddedFrameClass;
 
+	/**
+	 * Key for looking up the embedded frame for a Composite using
+	 * getData(). 
+	 */
+	static String EMBEDDED_FRAME_KEY = "org.eclipse.swt.awt.SWT_AWT.embeddedFrame";
+
+public static Frame getFrame (Composite parent) {
+	if (parent == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if ((parent.getStyle () & SWT.EMBEDDED) == 0) return null;
+	return (Frame)parent.getData(EMBEDDED_FRAME_KEY);
+}
+
 /**
  * Creates a new <code>java.awt.Frame</code>. This frame is the root for
  * the AWT components that will be embedded within the composite. In order

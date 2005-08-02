@@ -47,6 +47,12 @@ public class SWT_AWT {
 	 */
 	public static String embeddedFrameClass;
 
+	/**
+	 * Key for looking up the embedded frame for a Composite using
+	 * getData(). 
+	 */
+	static String EMBEDDED_FRAME_KEY = "org.eclipse.swt.awt.SWT_AWT.embeddedFrame";
+
 static boolean loaded, swingInitialized;
 
 static native final int /*long*/ getAWTHandle (Canvas canvas);
@@ -78,6 +84,12 @@ static synchronized void initializeSwing() {
 		Method method = clazz.getMethod("getDefaults", emptyClass);
 		if (method != null) method.invoke(clazz, emptyObject);
 	} catch (Throwable e) {}
+}
+
+public static Frame getFrame (Composite parent) {
+	if (parent == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if ((parent.getStyle () & SWT.EMBEDDED) == 0) return null;
+	return (Frame)parent.getData(EMBEDDED_FRAME_KEY);
 }
 
 /**
@@ -136,6 +148,7 @@ public static Frame new_Frame (final Composite parent) {
 		}
 	}
 	final Frame frame = (Frame) value;
+	parent.setData(EMBEDDED_FRAME_KEY, frame);
 	if (Device.DEBUG) {
 		loadLibrary();
 		setDebug(frame, true);
