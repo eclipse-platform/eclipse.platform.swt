@@ -219,6 +219,11 @@ public class CTabFolder extends Composite {
 	static final int SELECTED = 3;
 	static final RGB CLOSE_FILL = new RGB(252, 160, 160);
 	
+	static final int CHEVRON_CHILD_ID = 0;
+	static final int MINIMIZE_CHILD_ID = 1;
+	static final int MAXIMIZE_CHILD_ID = 2;
+	static final int EXTRA_CHILD_ID_COUNT = 3;
+	
 
 /**
  * Constructs a new instance of this class given its parent
@@ -1545,6 +1550,12 @@ void initAccessible() {
 				if (index > 0) {
 					name = name.substring(0, index) + name.substring(index + 1);
 				}
+			} else if (childID == items.length + CHEVRON_CHILD_ID) {
+				name = SWT.getMessage("SWT_ShowList"); //$NON-NLS-1$
+			} else if (childID == items.length + MINIMIZE_CHILD_ID) {
+				name = minimized ? SWT.getMessage("SWT_Restore") : SWT.getMessage("SWT_Minimize"); //$NON-NLS-1$ //$NON-NLS-2$
+			} else if (childID == items.length + MAXIMIZE_CHILD_ID) {
+				name = maximized ? SWT.getMessage("SWT_Restore") : SWT.getMessage("SWT_Maximize"); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			e.result = name;
 		}
@@ -1587,10 +1598,18 @@ void initAccessible() {
 				}
 			}
 			if (childID == ACC.CHILDID_NONE) {
-				Rectangle location = getBounds();
-				location.height = location.height - getClientArea().height;
-				if (location.contains(testPoint)) {
-					childID = ACC.CHILDID_SELF;
+				if (showChevron && chevronRect.contains(testPoint)) {
+					childID = items.length + CHEVRON_CHILD_ID;
+				} else if (showMin && minRect.contains(testPoint)) {
+					childID = items.length + MINIMIZE_CHILD_ID;
+				} else if (showMax && maxRect.contains(testPoint)) {
+					childID = items.length + MAXIMIZE_CHILD_ID;
+				} else {
+					Rectangle location = getBounds();
+					location.height = location.height - getClientArea().height;
+					if (location.contains(testPoint)) {
+						childID = ACC.CHILDID_SELF;
+					}
 				}
 			}
 			e.childID = childID;
@@ -1602,9 +1621,14 @@ void initAccessible() {
 			int childID = e.childID;
 			if (childID == ACC.CHILDID_SELF) {
 				location = getBounds();
-			}
-			if (childID >= 0 && childID < items.length) {
+			} else if (childID >= 0 && childID < items.length) {
 				location = items[childID].getBounds();
+			} else if (showChevron && childID == items.length + CHEVRON_CHILD_ID) {
+				location = chevronRect;
+			} else if (showMin && childID == items.length + MINIMIZE_CHILD_ID) {
+				location = minRect;
+			} else if (showMax && childID == items.length + MAXIMIZE_CHILD_ID) {
+				location = maxRect;
 			}
 			if (location != null) {
 				Point pt = toDisplay(location.x, location.y);
@@ -1616,7 +1640,7 @@ void initAccessible() {
 		}
 		
 		public void getChildCount(AccessibleControlEvent e) {
-			e.detail = items.length;
+			e.detail = items.length + EXTRA_CHILD_ID_COUNT;
 		}
 		
 		public void getDefaultAction(AccessibleControlEvent e) {
@@ -1624,6 +1648,9 @@ void initAccessible() {
 			int childID = e.childID;
 			if (childID >= 0 && childID < items.length) {
 				action = SWT.getMessage ("SWT_Switch"); //$NON-NLS-1$
+			}
+			if (childID >= items.length && childID < items.length + EXTRA_CHILD_ID_COUNT) {
+				action = SWT.getMessage ("SWT_Press"); //$NON-NLS-1$
 			}
 			e.result = action;
 		}
@@ -1647,6 +1674,8 @@ void initAccessible() {
 				role = ACC.ROLE_TABFOLDER;
 			} else if (childID >= 0 && childID < items.length) {
 				role = ACC.ROLE_TABITEM;
+			} else if (childID >= items.length && childID < items.length + EXTRA_CHILD_ID_COUNT) {
+				role = ACC.ROLE_PUSHBUTTON;
 			}
 			e.detail = role;
 		}
@@ -1671,13 +1700,20 @@ void initAccessible() {
 						state |= ACC.STATE_FOCUSED;
 					}
 				}
+			} else if (childID == items.length + CHEVRON_CHILD_ID) {
+				state = showChevron ? ACC.STATE_NORMAL : ACC.STATE_INVISIBLE;
+			} else if (childID == items.length + MINIMIZE_CHILD_ID) {
+				state = showMin ? ACC.STATE_NORMAL : ACC.STATE_INVISIBLE;;
+			} else if (childID == items.length + MAXIMIZE_CHILD_ID) {
+				state = showMax ? ACC.STATE_NORMAL : ACC.STATE_INVISIBLE;;
 			}
 			e.detail = state;
 		}
 		
 		public void getChildren(AccessibleControlEvent e) {
-			Object[] children = new Object[items.length];
-			for (int i = 0; i < items.length; i++) {
+			int childIdCount = items.length + EXTRA_CHILD_ID_COUNT;
+			Object[] children = new Object[childIdCount];
+			for (int i = 0; i < childIdCount; i++) {
 				children[i] = new Integer(i);
 			}
 			e.children = children;
