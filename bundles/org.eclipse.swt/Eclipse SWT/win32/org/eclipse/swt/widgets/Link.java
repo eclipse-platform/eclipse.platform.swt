@@ -36,7 +36,7 @@ import org.eclipse.swt.accessibility.*;
 public class Link extends Control {
 	String text;
 	TextLayout layout;
-	Color linkColor, linkDisabledColor;
+	Color linkColor, disabledColor;
 	Point [] offsets;
 	Point selection;
 	String [] ids;
@@ -176,7 +176,7 @@ void createHandle () {
 	if (OS.COMCTL32_MAJOR < 6) {
 		layout = new TextLayout (display);
 		linkColor = new Color (display, LINK_FOREGROUND);
-		linkDisabledColor = Color.win32_new (display, OS.GetSysColor (OS.COLOR_GRAYTEXT));
+		disabledColor = Color.win32_new (display, OS.GetSysColor (OS.COLOR_GRAYTEXT));
 		offsets = new Point [0];
 		ids = new String [0];
 		mnemonics = new int [0];
@@ -206,6 +206,7 @@ void drawWidget (GC gc, RECT rect) {
 	}
 	// temporary code to disable text selection
 	selStart = selEnd = -1;
+	if (!OS.IsWindowEnabled (handle)) gc.setForeground (disabledColor);
 	layout.draw (gc, 0, 0, selStart, selEnd, null, null);
 	if (hasFocus () && focusIndex != -1) {
 		Rectangle [] rects = getRectangles (focusIndex);
@@ -236,7 +237,7 @@ void enableWidget (boolean enabled) {
 			item.iLink++;
 		}
 	} else {
-		TextStyle linkStyle = new TextStyle (null, enabled ? linkColor : linkDisabledColor, null);
+		TextStyle linkStyle = new TextStyle (null, enabled ? linkColor : disabledColor, null);
 		linkStyle.underline = true;
 		for (int i = 0; i < offsets.length; i++) {
 			Point point = offsets [i];
@@ -507,7 +508,7 @@ void releaseWidget () {
 	layout = null;
 	if (linkColor != null) linkColor.dispose ();
 	linkColor = null;
-	linkDisabledColor = null;
+	disabledColor = null;
 	offsets = null;
 	ids = null;
 	mnemonics = null;
@@ -585,7 +586,7 @@ public void setText (String string) {
 		}
 		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 		boolean enabled = OS.IsWindowEnabled (handle);
-		TextStyle linkStyle = new TextStyle (null, enabled ? linkColor : linkDisabledColor, null);
+		TextStyle linkStyle = new TextStyle (null, enabled ? linkColor : disabledColor, null);
 		linkStyle.underline = true;
 		for (int i = 0; i < offsets.length; i++) {
 			Point point = offsets [i];
@@ -879,6 +880,17 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 		OS.GetClientRect (handle, rect);
 		layout.setWidth (rect.right > 0 ? rect.right : -1);
 		redraw ();
+	}
+	return result;
+}
+
+LRESULT wmColorChild (int wParam, int lParam) {
+	LRESULT result = super.wmColorChild (wParam, lParam);
+	if (OS.COMCTL32_MAJOR >= 6) {
+		if (!OS.IsWindowEnabled (handle)) {
+			int forePixel = OS.GetSysColor (OS.COLOR_GRAYTEXT);
+			OS.SetTextColor (wParam, forePixel);
+		}
 	}
 	return result;
 }
