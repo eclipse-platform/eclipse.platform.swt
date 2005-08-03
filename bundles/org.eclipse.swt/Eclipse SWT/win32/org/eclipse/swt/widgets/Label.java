@@ -313,12 +313,13 @@ public void setImage (Image image) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	this.image = image;
-	int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	int newBits = oldBits & ~(OS.SS_LEFTNOWORDWRAP | OS.SS_CENTER | OS.SS_RIGHT) | OS.SS_OWNERDRAW;
-	if (oldBits != newBits) {
-		OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
-		OS.InvalidateRect (handle, null, true);
+	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	if ((bits & OS.SS_OWNERDRAW) != OS.SS_OWNERDRAW) {
+		bits &= ~(OS.SS_LEFTNOWORDWRAP | OS.SS_CENTER | OS.SS_RIGHT);
+		bits |= OS.SS_OWNERDRAW;
+		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 	}
+	OS.InvalidateRect (handle, null, true);
 }
 
 /**
