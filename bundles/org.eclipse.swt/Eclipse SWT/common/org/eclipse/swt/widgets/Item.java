@@ -140,6 +140,7 @@ void releaseWidget () {
 	text = null;
 	image = null;
 }
+
 /**
  * Sets the receiver's image to the argument, which may be
  * null indicating that no image should be displayed.
