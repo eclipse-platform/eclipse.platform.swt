@@ -101,7 +101,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 void createHandle (int index) {
-	state |= HANDLE;
 	int background = defaultBackground ();
 	int parentHandle = parent.handle;
 	int [] argList = {

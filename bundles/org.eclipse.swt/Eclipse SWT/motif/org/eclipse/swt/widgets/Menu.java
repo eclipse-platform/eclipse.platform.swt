@@ -263,9 +263,7 @@ static MenuItem checkNull (MenuItem item) {
 	if (item == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	return item;
 }
-void createHandle (int index) {
-	state |= HANDLE;
-	
+void createHandle (int index) {	
 	/*
 	* Bug in Motif. For some reason, creating a menu after any application context
 	* and shell have been destroyed will segment fault unless a new application

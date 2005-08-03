@@ -157,7 +157,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 void createHandle (int index) {
-	state |= HANDLE;
 	int [] argList = {
 		OS.XmNancestorSensitive, 1,
 		OS.XmNhighlightThickness, display.textHighlightThickness,

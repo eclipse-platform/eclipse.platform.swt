@@ -201,7 +201,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 void createHandle (int index) {
-	state |= HANDLE;
 	int borderWidth = (style & SWT.BORDER) != 0 ? 1 : 0;
 	int parentHandle = parent.handle;
 	

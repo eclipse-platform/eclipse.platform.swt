@@ -135,9 +135,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	}
 	return new Rectangle (trimX, trimY, trimWidth, trimHeight);
 }
-void createHandle (int index) {
-	state |= HANDLE;
-	
+void createHandle (int index) {	
 	/*
 	* Feature in Motif.  When a widget is managed or unmanaged,
 	* it may request and be granted, a new size in the OS.  This

@@ -128,7 +128,6 @@ ScrollBar createStandardBar (int style) {
 	bar.parent = this;
 	bar.style = style;
 	bar.display = display;
-	bar.state |= HANDLE;
 	int [] argList = {OS.XmNhorizontalScrollBar, 0, OS.XmNverticalScrollBar, 0};
 	OS.XtGetValues (scrolledHandle, argList, argList.length / 2);
 	if (style == SWT.H_SCROLL) bar.handle = argList [1];

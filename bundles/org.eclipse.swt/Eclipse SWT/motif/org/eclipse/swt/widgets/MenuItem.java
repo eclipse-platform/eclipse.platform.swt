@@ -254,7 +254,6 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 void createHandle (int index) {
-	state |= HANDLE;
 	int parentHandle = parent.handle;
 	int [] argList1 = {OS.XmNchildren, 0, OS.XmNnumChildren, 0};
 	OS.XtGetValues (parentHandle, argList1, argList1.length / 2);

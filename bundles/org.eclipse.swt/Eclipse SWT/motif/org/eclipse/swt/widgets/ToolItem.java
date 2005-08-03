@@ -164,7 +164,6 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 void createHandle (int index) {
-	state |= HANDLE;
 	int parentHandle = parent.handle;
 	if ((style & SWT.SEPARATOR) != 0) {
 		int orientation = (parent.style & SWT.HORIZONTAL) != 0 ? OS.XmVERTICAL : OS.XmHORIZONTAL;

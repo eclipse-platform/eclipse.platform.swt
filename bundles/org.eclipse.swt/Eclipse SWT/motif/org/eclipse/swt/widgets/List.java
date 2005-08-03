@@ -246,9 +246,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	trimY -= argList [1] + argList [3] + argList [7];
 	return new Rectangle (trimX, trimY, trimWidth, trimHeight);
 }
-void createHandle (int index) {
-	state |= HANDLE;
-	
+void createHandle (int index) {	
 	/*
 	* Feature in Motif.  When items are added or removed
 	* from a list, it may request and be granted, a new

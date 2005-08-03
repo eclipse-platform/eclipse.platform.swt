@@ -567,7 +567,7 @@ void createFocusProxy () {
 	OS.XtSetMappedWhenManaged (focusProxy, true);
 }
 void createHandle (int index) {
-	state |= HANDLE | CANVAS;
+	state |= CANVAS;
 	int decorations = 0;
 	if ((style & SWT.NO_TRIM) == 0) {
 		if ((style & SWT.MIN) != 0) decorations |= OS.MWM_DECOR_MINIMIZE;

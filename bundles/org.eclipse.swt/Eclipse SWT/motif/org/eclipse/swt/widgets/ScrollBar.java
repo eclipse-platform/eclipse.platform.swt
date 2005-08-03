@@ -132,7 +132,6 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 void createHandle (int index) {
-	state |= HANDLE;
 	int [] argList = {
 		OS.XmNancestorSensitive, 1,
 		OS.XmNborderWidth, (style & SWT.BORDER) != 0 ? 1 : 0,

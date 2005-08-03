@@ -221,7 +221,7 @@ protected void checkSubclass () {
 	/* Do nothing - Subclassing is allowed */
 }
 void createHandle (int index) {
-	state |= HANDLE | CANVAS;
+	state |= CANVAS;
 	boolean scroll = (style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0;
 	createHandle (index, parent.handle, scroll);
 }

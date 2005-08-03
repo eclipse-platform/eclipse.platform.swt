@@ -243,7 +243,6 @@ public void copy () {
 	OS.XmTextCopy (argList [1], OS.XtLastTimestampProcessed (xDisplay));
 }
 void createHandle (int index) {
-	state |= HANDLE;
 	int [] argList1 = {
 		OS.XmNcolumns, 2,
 		OS.XmNdecimalPoints, 0,

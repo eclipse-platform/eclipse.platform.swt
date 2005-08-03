@@ -350,7 +350,6 @@ public void copy () {
 	OS.XmTextCopy (handle, OS.XtLastTimestampProcessed (xDisplay));
 }
 void createHandle (int index) {
-	state |= HANDLE;
 	int [] argList1 = {
 		OS.XmNverifyBell, 0,
 		OS.XmNeditMode, (style & SWT.SINGLE) != 0 ? OS.XmSINGLE_LINE_EDIT : OS.XmMULTI_LINE_EDIT,

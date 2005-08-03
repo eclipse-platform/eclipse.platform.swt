@@ -371,8 +371,6 @@ public void copy () {
 	OS.XmTextCopy (argList [1], OS.XtLastTimestampProcessed (xDisplay));
 }
 void createHandle (int index) {
-	state |= HANDLE;
-	
 	/*
 	* Feature in Motif.  When items are added or removed
 	* from a combo, it may request and be granted, a new

@@ -244,7 +244,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	return trim;
 }
 void createHandle (int index) {
-	state |= HANDLE | CANVAS;
+	state |= CANVAS;
 	createHandle (index, parent.handle, true);
 }
 void createWidget (int index) {

@@ -122,7 +122,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 void createHandle (int index) {
-	state |= HANDLE;
 	int border = (style & SWT.BORDER) != 0 ? 1 : 0;
 	int [] argList = {
 		OS.XmNborderWidth, border,
