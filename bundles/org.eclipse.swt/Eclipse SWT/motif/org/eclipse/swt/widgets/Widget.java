@@ -54,21 +54,24 @@ public abstract class Widget {
 	Object data;
 	
 	/* Global state flags */
-	static final int DISPOSED		= 1<<0;
-	static final int CANVAS			= 1<<1;
-	static final int KEYED_DATA		= 1<<2;
-	static final int HANDLE			= 1<<3;
-	static final int FOCUS_FORCED	= 1<<4;
+	static final int DISPOSED = 1<<0;
+	static final int CANVAS = 1<<1;
+	static final int KEYED_DATA = 1<<2;
+	static final int FOCUS_FORCED = 1<<3;
 	
 	/* A layout was requested on this widget */
-	static final int LAYOUT_NEEDED	= 1<<5;
+	static final int LAYOUT_NEEDED	= 1<<4;
 	
 	/* The preferred size of a child has changed */
-	static final int LAYOUT_CHANGED = 1<<6;
+	static final int LAYOUT_CHANGED = 1<<5;
 	
 	/* A layout was requested in this widget hierachy */
-	static final int LAYOUT_CHILD = 1<<7;
+	static final int LAYOUT_CHILD = 1<<6;
+
+	/* More global state flags */
+	static final int RELEASED = 1<<7;
 	
+	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
 	
@@ -334,8 +337,13 @@ public void dispose () {
 	* Note:  It is valid to attempt to dispose a widget
 	* more than once.  If this happens, fail silently.
 	*/
-	if (isDisposed()) return;
+	if (isDisposed ()) return;
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if ((state & RELEASED) != 0) {
+		state |= DISPOSED;
+		return;
+	}
+	state |= RELEASED;
 	releaseChild ();
 	releaseWidget ();
 	destroyWidget ();
@@ -505,8 +513,6 @@ boolean hooks (int eventType) {
  * @return <code>true</code> when the widget is disposed and <code>false</code> otherwise
  */
 public boolean isDisposed () {
-	if (handle != 0) return false;
-	if ((state & HANDLE) != 0) return true;
 	return (state & DISPOSED) != 0;
 }
 /**
@@ -623,11 +629,14 @@ void releaseHandle () {
 	display = null;
 }
 void releaseResources () {
+	if ((state & RELEASED) != 0) return;
+	state |= RELEASED;
 	releaseWidget ();
 	releaseHandle ();
 }
 void releaseWidget () {
 	sendEvent (SWT.Dispose);
+	state &= ~DISPOSED;
 	deregister ();
 	eventTable = null;
 	data = null;

@@ -66,9 +66,11 @@ public abstract class Widget {
 	/* A layout was requested in this widget hierachy */
 	static final int LAYOUT_CHILD = 1<<7;
 
-	static final int TRANSPARENT = 1<<8;
+	/* More global state flags */
+	static final int TRANSPARENT	= 1<<8;
+	static final int RELEASED		= 1<<9;
 	
-	/* Default widths for widgets */
+	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
 
@@ -388,6 +390,11 @@ public void dispose () {
 	*/
 	if (isDisposed ()) return;
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if ((state & RELEASED) != 0) {
+		state |= DISPOSED;
+		return;
+	}
+	state |= RELEASED;
 	releaseChild ();
 	releaseWidget ();
 	destroyWidget ();
@@ -731,6 +738,8 @@ void releaseHandle () {
 }
 
 void releaseResources () {
+	if ((state & RELEASED) != 0) return;
+	state |= RELEASED;
 	releaseWidget ();
 	releaseHandle ();
 }
@@ -767,6 +776,7 @@ void releaseResources () {
  */
 void releaseWidget () {
 	sendEvent (SWT.Dispose);
+	state &= ~DISPOSED;
 	eventTable = null;
 	data = null;
 }

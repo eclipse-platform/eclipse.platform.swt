@@ -60,15 +60,15 @@ public abstract class Widget {
 	Object data;
 	
 	/* Global state flags */
-	static final int DISPOSED                = 1<<0;
-	static final int CANVAS                  = 1<<1;
-	static final int KEYED_DATA           = 1<<2;
-	static final int HANDLE                   = 1<<3;
-	static final int DISABLED                = 1<<4;
-	static final int MENU                      = 1<<5;
-	static final int OBSCURED              = 1<<6;
-	static final int MOVED                   = 1<<7;
-	static final int RESIZED                  = 1<<8;
+	static final int DISPOSED = 1<<0;
+	static final int CANVAS = 1<<1;
+	static final int KEYED_DATA = 1<<2;
+	static final int HANDLE = 1<<3;
+	static final int DISABLED = 1<<4;
+	static final int MENU = 1<<5;
+	static final int OBSCURED = 1<<6;
+	static final int MOVED = 1<<7;
+	static final int RESIZED = 1<<8;
 	static final int ZERO_SIZED = 1<<9;
 	static final int HIDDEN = 1<<10;
 	static final int FOREGROUND = 1<<11;
@@ -83,8 +83,11 @@ public abstract class Widget {
 	
 	/* A layout was requested in this widget hierachy */
 	static final int LAYOUT_CHILD = 1<<16;
+
+	/* More global state flags */
+	static final int RELEASED = 1<<17;
 	
-	/* Default widths for widgets */
+	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
 	
@@ -405,8 +408,13 @@ public void dispose () {
 	* Note:  It is valid to attempt to dispose a widget
 	* more than once.  If this happens, fail silently.
 	*/
-	if (isDisposed()) return;
+	if (isDisposed ()) return;
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if ((state & RELEASED) != 0) {
+		state |= DISPOSED;
+		return;
+	}
+	state |= RELEASED;
 	releaseChild ();
 	releaseWidget ();
 	destroyWidget ();
@@ -813,8 +821,6 @@ char [] fixMnemonic (String string) {
  * @return <code>true</code> when the widget is disposed and <code>false</code> otherwise
  */
 public boolean isDisposed () {
-	if (handle != 0) return false;
-	if ((state & HANDLE) != 0) return true;
 	return (state & DISPOSED) != 0;
 }
 
@@ -838,12 +844,6 @@ public boolean isListening (int eventType) {
 
 boolean isValidThread () {
 	return getDisplay ().isValidThread ();
-}
-
-boolean isValidWidget () {
-	if (handle != 0) return true;
-	if ((state & HANDLE) != 0) return false;
-	return (state & DISPOSED) == 0;
 }
 
 boolean isValidSubclass() {
@@ -936,12 +936,15 @@ void releaseHandle () {
 }
 
 void releaseResources () {
+	if ((state & RELEASED) != 0) return;
+	state |= RELEASED;
 	releaseWidget ();
 	releaseHandle ();
 }
 
 void releaseWidget () {
 	sendEvent (SWT.Dispose);
+	state &= ~DISPOSED;
 	deregister ();
 	eventTable = null;
 	data = null;
