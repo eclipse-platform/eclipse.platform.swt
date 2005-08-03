@@ -82,6 +82,7 @@ import org.eclipse.swt.events.*;
 public class ScrollBar extends Widget {
 	Scrollable parent;
 	int /*long*/ adjustmentHandle;
+	int detail;
 	
 ScrollBar () {
 }
@@ -340,8 +341,13 @@ public boolean getVisible () {
 }
 
 int /*long*/ gtk_change_value (int /*long*/ widget, int /*long*/ scroll, int /*long*/ value1, int /*long*/ value2) {
+	detail = (int)/*64*/scroll;
+	return 0;
+}
+
+int /*long*/ gtk_value_changed (int /*long*/ adjustment) {
 	Event event = new Event ();
-	switch ((int)/*64*/scroll) {
+	switch (detail) {
 		case OS.GTK_SCROLL_NONE:			event.detail = SWT.NONE; break;
 		case OS.GTK_SCROLL_JUMP:			event.detail = SWT.DRAG; break;
 		case OS.GTK_SCROLL_START:			event.detail = SWT.HOME; break;
@@ -359,12 +365,8 @@ int /*long*/ gtk_change_value (int /*long*/ widget, int /*long*/ scroll, int /*l
 		case OS.GTK_SCROLL_STEP_LEFT:
 		case OS.GTK_SCROLL_STEP_BACKWARD:	event.detail = SWT.ARROW_UP; break;
 	}
+	detail = OS.GTK_SCROLL_NONE;
 	postEvent (SWT.Selection, event);
-	return 0;
-}
-
-int /*long*/ gtk_value_changed (int /*long*/ adjustment) {
-	postEvent (SWT.Selection);
 	return 0;
 }
 
@@ -372,9 +374,8 @@ void hookEvents () {
 	super.hookEvents ();
 	if (OS.GTK_VERSION >= OS.VERSION (2, 6, 0)) {
 		OS.g_signal_connect (handle, OS.change_value, display.windowProc5, CHANGE_VALUE);
-	} else {
-		OS.g_signal_connect (adjustmentHandle, OS.value_changed, display.windowProc2, VALUE_CHANGED);
 	}
+	OS.g_signal_connect (adjustmentHandle, OS.value_changed, display.windowProc2, VALUE_CHANGED);
 }
 
 /**
