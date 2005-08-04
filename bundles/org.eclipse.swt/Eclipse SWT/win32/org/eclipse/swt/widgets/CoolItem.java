@@ -372,7 +372,7 @@ public Point getPreferredSize () {
 	rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_IDEALSIZE;
 	OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
 	int width = rbBand.cxIdeal + parent.getMargin (index);
-	return new Point (width, rbBand.cyMinChild);
+	return new Point (width, rbBand.cyMaxChild);
 }
 
 /**
