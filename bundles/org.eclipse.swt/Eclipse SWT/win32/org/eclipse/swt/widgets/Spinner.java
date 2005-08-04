@@ -269,7 +269,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 		TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
 		OS.GetTextMetrics (hDC, tm);
-		height = Math.max (tm.tmHeight, OS.GetSystemMetrics (OS.SM_CYVSCROLL));
+		height = tm.tmHeight;
 		RECT rect = new RECT ();
 		int [] max = new int [1];
 		OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, null, max);
@@ -297,6 +297,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	Rectangle trim = computeTrim (0, 0, width, height);
+	if (hHint == SWT.DEFAULT) {
+		int upDownHeight = OS.GetSystemMetrics (OS.SM_CYVSCROLL) + 2 * getBorderWidth ();
+		trim.height = Math.max (trim.height, upDownHeight);
+	}
 	return new Point (trim.width, trim.height);
 }
 
