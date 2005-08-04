@@ -146,16 +146,15 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		rbBand.cbSize = REBARBANDINFO.sizeof;
 		rbBand.fMask = OS.RBBIM_IDEALSIZE | OS.RBBIM_STYLE;
 		int rowWidth = 0;
-		int separator = (style & SWT.FLAT) == 0 ? SEPARATOR_WIDTH : 0;
 		for (int i = 0; i < count; i++) {
 			OS.SendMessage(handle, OS.RB_GETBANDINFO, i, rbBand);
 			if ((rbBand.fStyle & OS.RBBS_BREAK) != 0) {
-				width = Math.max(width, rowWidth - separator);
+				width = Math.max(width, rowWidth);
 				rowWidth = 0;
 			}
-			rowWidth += rbBand.cxIdeal + getMargin (i) + separator;
+			rowWidth += rbBand.cxIdeal + getMargin (i);
 		}
-		width = Math.max(width, rowWidth - separator);
+		width = Math.max(width, rowWidth);
 		if (redraw) {
 			if (OS.COMCTL32_MAJOR >= 6) {
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
@@ -362,6 +361,11 @@ int getMargin (int index) {
 		margin += rect.left + 4;
 	} else {
 		margin += rect.left + rect.right; 
+	}
+	if ((style & SWT.FLAT) == 0) {
+		if (!isLastItemOfRow (index)) {
+			margin += CoolBar.SEPARATOR_WIDTH;
+		}
 	}
 	return margin;
 }
