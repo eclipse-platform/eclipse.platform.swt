@@ -186,7 +186,11 @@ public Point computeSize (int wHint, int hHint) {
 	int width = wHint, height = hHint;
 	if (wHint == SWT.DEFAULT) width = 32;
 	if (hHint == SWT.DEFAULT) height = 32;
-	width += parent.getMargin (index);
+	if ((parent.style & SWT.VERTICAL) != 0) {
+		height += parent.getMargin (index);
+	} else {
+		width += parent.getMargin (index);
+	}
 	return new Point (width, height);
 }
 
@@ -219,6 +223,9 @@ public Rectangle getBounds () {
 	}
 	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
+	if ((parent.style & SWT.VERTICAL) != 0) {
+		return new Rectangle (rect.top, rect.left, height, width);
+	}
 	return new Rectangle (rect.left, rect.top, width, height);
 }
 
@@ -372,6 +379,9 @@ public Point getPreferredSize () {
 	rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_IDEALSIZE;
 	OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
 	int width = rbBand.cxIdeal + parent.getMargin (index);
+	if ((parent.style & SWT.VERTICAL) != 0) {
+		return new Point (rbBand.cyMaxChild, width);
+	}
 	return new Point (width, rbBand.cyMaxChild);
 }
 
@@ -394,6 +404,14 @@ public void setPreferredSize (int width, int height) {
 	height = Math.max (0, height);
 	ideal = true;
 	int hwnd = parent.handle;
+	int cxIdeal, cyMaxChild;
+	if ((parent.style & SWT.VERTICAL) != 0) {
+		cxIdeal = Math.max (0, height - parent.getMargin (index));
+		cyMaxChild = width;
+	} else {
+		cxIdeal = Math.max (0, width - parent.getMargin (index));
+		cyMaxChild = height;
+	}
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	
@@ -403,9 +421,9 @@ public void setPreferredSize (int width, int height) {
 	
 	/* Set the size fields we are currently modifying. */
 	rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_IDEALSIZE;
-	rbBand.cxIdeal = Math.max (0, width - parent.getMargin (index));
-	rbBand.cyMaxChild = height;
-	if (!minimum) rbBand.cyMinChild = height;
+	rbBand.cxIdeal = cxIdeal;
+	rbBand.cyMaxChild = cyMaxChild;
+	if (!minimum) rbBand.cyMinChild = cyMaxChild;
 	OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, rbBand);
 }
 
@@ -459,6 +477,9 @@ public Point getSize() {
 	}
 	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
+	if ((parent.style & SWT.VERTICAL) != 0) {
+		return new Point (height, width);
+	}
 	return new Point (width, height);
 }
 
@@ -485,6 +506,16 @@ public void setSize (int width, int height) {
 	width = Math.max (0, width);
 	height = Math.max (0, height);
 	int hwnd = parent.handle;
+	int cx, cyChild, cxIdeal;
+	if ((parent.style & SWT.VERTICAL) != 0) {
+		cx = height;
+		cyChild = width;
+		cxIdeal = Math.max (0, height - parent.getMargin (index));
+	} else {
+		cx = width;
+		cyChild = height;
+		cxIdeal = Math.max (0, width - parent.getMargin (index));
+	}
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	
@@ -493,9 +524,9 @@ public void setSize (int width, int height) {
 	OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
 	
 	/* Set the size fields we are currently modifying. */
-	if (!ideal) rbBand.cxIdeal = Math.max (0, width - parent.getMargin (index));
-	if (!minimum) rbBand.cyMinChild = height;
-	rbBand.cyChild = rbBand.cyMaxChild = height;
+	if (!ideal) rbBand.cxIdeal = cxIdeal;
+	if (!minimum) rbBand.cyMinChild = cyChild;
+	rbBand.cyChild = cyChild;
 	
 	/*
 	* Do not set the size for the last item on the row.
@@ -504,11 +535,10 @@ public void setSize (int width, int height) {
 		if (OS.COMCTL32_MAJOR >= 6) {
 			MARGINS margins = new MARGINS ();
 			OS.SendMessage (hwnd, OS.RB_GETBANDMARGINS, 0, margins);
-			width -= margins.cxLeftWidth;
-			width -= margins.cxRightWidth;
+			cx -= margins.cxLeftWidth + margins.cxRightWidth;
 		}
 		int separator = (parent.style & SWT.FLAT) == 0 ? CoolBar.SEPARATOR_WIDTH : 0;
-		rbBand.cx = width - separator;
+		rbBand.cx = cx - separator;
 		rbBand.fMask |= OS.RBBIM_SIZE;
 	}
 	OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, rbBand);
@@ -559,6 +589,9 @@ public Point getMinimumSize () {
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	rbBand.fMask = OS.RBBIM_CHILDSIZE;
 	OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
+	if ((parent.style & SWT.VERTICAL) != 0) {
+		return new Point (rbBand.cyMinChild, rbBand.cxMinChild);
+	}
 	return new Point (rbBand.cxMinChild, rbBand.cyMinChild);
 }
 
@@ -584,6 +617,14 @@ public void setMinimumSize (int width, int height) {
 	height = Math.max (0, height);
 	minimum = true;
 	int hwnd = parent.handle;
+	int cxMinChild, cyMinChild;
+	if ((parent.style & SWT.VERTICAL) != 0) {
+		cxMinChild = height;
+		cyMinChild = width;
+	} else {
+		cxMinChild = width;
+		cyMinChild = height;
+	}
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	
@@ -592,8 +633,8 @@ public void setMinimumSize (int width, int height) {
 	OS.SendMessage (hwnd, OS.RB_GETBANDINFO, index, rbBand);
 	
 	/* Set the size fields we are currently modifying. */
-	rbBand.cxMinChild = width;
-	rbBand.cyMinChild = height;
+	rbBand.cxMinChild = cxMinChild;
+	rbBand.cyMinChild = cyMinChild;
 	OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, rbBand);
 }
 

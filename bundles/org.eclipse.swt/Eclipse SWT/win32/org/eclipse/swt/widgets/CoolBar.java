@@ -94,15 +94,7 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 }
 
 static int checkStyle (int style) {
-	style |= SWT.NO_FOCUS;
-	/*
-	* Even though it is legal to create this widget
-	* with scroll bars, they serve no useful purpose
-	* because they do not automatically scroll the
-	* widget's client area.  The fix is to clear
-	* the SWT style.
-	*/
-	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
+	return style | SWT.NO_FOCUS;
 }
 
 protected void checkSubclass () {
@@ -166,6 +158,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	}
 	if (width == 0) width = DEFAULT_WIDTH;
 	if (height == 0) height = DEFAULT_HEIGHT;
+	if ((style & SWT.VERTICAL) != 0) {
+		int tmp = width;
+		width = height;
+		height = tmp;
+	}
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	height += border * 2;
@@ -358,9 +355,17 @@ int getMargin (int index) {
 		* the rectangle returned by RBS_BANDBORDERS is four pixels too small.
 		* The fix is to add four pixels to the result.
 		*/	
-		margin += rect.left + 4;
+		if ((style & SWT.VERTICAL) != 0) {
+			margin += rect.top + 4;
+		} else {
+			margin += rect.left + 4;
+		}
 	} else {
-		margin += rect.left + rect.right; 
+		if ((style & SWT.VERTICAL) != 0) {
+			margin += rect.top + rect.bottom;
+		} else {
+			margin += rect.left + rect.right;
+		}
 	}
 	if ((style & SWT.FLAT) == 0) {
 		if (!isLastItemOfRow (index)) {
@@ -371,7 +376,8 @@ int getMargin (int index) {
 }
 
 Control findThemeControl () {
-	return background == -1 ? this : super.findThemeControl ();	
+	if ((style & SWT.FLAT) != 0) return super.findThemeControl ();
+	return background == -1 ? this : super.findThemeControl ();
 }
 
 /**
@@ -519,7 +525,11 @@ public Point [] getItemSizes () {
 			rect.right += margins.cxRightWidth;
 		}
 		if (!isLastItemOfRow(i)) rect.right += separator;
-		sizes [i] = new Point (rect.right - rect.left, rbBand.cyChild);
+		if ((style & SWT.VERTICAL) != 0) {
+			sizes [i] = new Point (rbBand.cyChild, rect.right - rect.left);
+		} else {
+			sizes [i] = new Point (rect.right - rect.left, rbBand.cyChild);
+		}
 	}
 	return sizes;
 }
@@ -918,8 +928,17 @@ public void setWrapIndices (int [] indices) {
 
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.CCS_NODIVIDER | OS.CCS_NORESIZE;
-	bits |= OS.RBS_VARHEIGHT | OS.RBS_DBLCLKTOGGLE;
+	bits |= OS.RBS_VARHEIGHT | OS.RBS_DBLCLKTOGGLE;	
+	/*
+	* Even though it is legal to create this widget
+	* with scroll bars, they serve no useful purpose
+	* because they do not automatically scroll the
+	* widget's client area.  The fix is to clear
+	* the widget style.
+	*/
+	bits &= ~(OS.WS_HSCROLL | OS.WS_VSCROLL);	
 	if ((style & SWT.FLAT) == 0) bits |= OS.RBS_BANDBORDERS; 
+	if ((style & SWT.VERTICAL) != 0) bits |= OS.CCS_VERT; 
 	return bits;
 }
 
@@ -1080,8 +1099,12 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			if (!ignoreResize) {
 				Point size = getSize ();
 				int border = getBorderWidth ();
-				int height = OS.SendMessage (handle, OS.RB_GETBARHEIGHT, 0, 0);
-				setSize (size.x, height + (border * 2));
+				int barHeight = OS.SendMessage (handle, OS.RB_GETBARHEIGHT, 0, 0);
+				if ((style & SWT.VERTICAL) != 0) {
+					setSize (barHeight + 2 * border, size.y);
+				} else {
+					setSize (size.x, barHeight + 2 * border);
+				}
 			}
 			break;
 		case OS.RBN_CHEVRONPUSHED:
