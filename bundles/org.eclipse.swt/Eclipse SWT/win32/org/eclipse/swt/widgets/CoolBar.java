@@ -86,6 +86,24 @@ public class CoolBar extends Composite {
  */
 public CoolBar (Composite parent, int style) {
 	super (parent, checkStyle (style));
+	/*
+	* Ensure that either of HORIZONTAL or VERTICAL is set.
+	* NOTE: HORIZONTAL and VERTICAL have the same values
+	* as H_SCROLL and V_SCROLL so it is necessary to first
+	* clear these bits to avoid scroll bars and then reset
+	* the bits using the original style supplied by the
+	* programmer.
+	* 
+	* NOTE: The CCS_VERT style cannot be applied when the
+	* widget is created because of this conflict.
+	*/
+	if ((style & SWT.VERTICAL) != 0) {
+		this.style |= SWT.VERTICAL;
+		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		OS.SetWindowLong (handle, OS.GWL_STYLE, bits | OS.CCS_VERT);
+	} else {
+		this.style |= SWT.HORIZONTAL;
+	}
 }
 
 int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
@@ -94,7 +112,16 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 }
 
 static int checkStyle (int style) {
-	return style | SWT.NO_FOCUS;
+	style |= SWT.NO_FOCUS;
+	
+	/*
+	* Even though it is legal to create this widget
+	* with scroll bars, they serve no useful purpose
+	* because they do not automatically scroll the
+	* widget's client area.  The fix is to clear
+	* the SWT style.
+	*/
+	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
 }
 
 protected void checkSubclass () {
@@ -929,16 +956,7 @@ public void setWrapIndices (int [] indices) {
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.CCS_NODIVIDER | OS.CCS_NORESIZE;
 	bits |= OS.RBS_VARHEIGHT | OS.RBS_DBLCLKTOGGLE;	
-	/*
-	* Even though it is legal to create this widget
-	* with scroll bars, they serve no useful purpose
-	* because they do not automatically scroll the
-	* widget's client area.  The fix is to clear
-	* the widget style.
-	*/
-	bits &= ~(OS.WS_HSCROLL | OS.WS_VSCROLL);	
 	if ((style & SWT.FLAT) == 0) bits |= OS.RBS_BANDBORDERS; 
-	if ((style & SWT.VERTICAL) != 0) bits |= OS.CCS_VERT; 
 	return bits;
 }
 
