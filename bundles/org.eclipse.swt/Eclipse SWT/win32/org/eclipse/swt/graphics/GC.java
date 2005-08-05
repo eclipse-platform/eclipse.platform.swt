@@ -1787,6 +1787,7 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 		}
 		Gdip.Graphics_DrawString(data.gdipGraphics, buffer, length, font, pt, format, brush);
 		Gdip.StringFormat_delete(format);
+		destroyGdipBrush(brush);
 		Gdip.Font_delete(font);
 		return;
 	}
@@ -1937,6 +1938,7 @@ public void drawText (String string, int x, int y, int flags) {
 		}
 		Gdip.Graphics_DrawString(data.gdipGraphics, buffer, length, font, pt, format, brush);
 		Gdip.StringFormat_delete(format);
+		destroyGdipBrush(brush);
 		Gdip.Font_delete(font);
 		return;
 	}
