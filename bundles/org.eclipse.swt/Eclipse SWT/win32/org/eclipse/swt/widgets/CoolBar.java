@@ -113,7 +113,6 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 
 static int checkStyle (int style) {
 	style |= SWT.NO_FOCUS;
-	
 	/*
 	* Even though it is legal to create this widget
 	* with scroll bars, they serve no useful purpose
@@ -955,7 +954,7 @@ public void setWrapIndices (int [] indices) {
 
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.CCS_NODIVIDER | OS.CCS_NORESIZE;
-	bits |= OS.RBS_VARHEIGHT | OS.RBS_DBLCLKTOGGLE;	
+	bits |= OS.RBS_VARHEIGHT | OS.RBS_DBLCLKTOGGLE;
 	if ((style & SWT.FLAT) == 0) bits |= OS.RBS_BANDBORDERS; 
 	return bits;
 }
