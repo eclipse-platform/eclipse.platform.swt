@@ -2790,11 +2790,6 @@ void reassignFocus () {
 		TreeItem item = focusItem.parentItem;
 		setFocusItem (item, false);
 		showItem (item);
-		if ((style & SWT.MULTI) != 0) return;
-		setSelection (new TreeItem[] {item});
-		Event event = new Event ();
-		event.item = item;
-		sendEvent (SWT.Selection, event);
 		return;
 	}
 	
@@ -2812,12 +2807,6 @@ void reassignFocus () {
 		TreeItem item = items [index];
 		setFocusItem (item, false);
 		showItem (item);
-		if ((style & SWT.SINGLE) != 0) {
-			setSelection (new TreeItem[] {item});
-			Event event = new Event ();
-			event.item = item;
-			sendEvent (SWT.Selection, event);
-		}
 	} else {
 		setFocusItem (null, false);		/* no items left */
 	}
