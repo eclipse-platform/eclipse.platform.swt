@@ -898,7 +898,7 @@ public TableItem getItem (int index) {
 public TableItem getItem (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int index = (point.y - getHeaderHeight ()) / itemHeight - topIndex;
+	int index = (point.y - getHeaderHeight ()) / itemHeight + topIndex;
 	if (!(0 <= index && index < itemsCount)) return null;		/* below the last item */
 	TableItem result = items [index];
 	if (!result.getHitBounds ().contains (point)) return null;	/* considers the x value */

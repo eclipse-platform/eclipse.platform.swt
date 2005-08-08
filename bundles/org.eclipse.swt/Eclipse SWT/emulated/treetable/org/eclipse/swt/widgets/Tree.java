@@ -680,7 +680,7 @@ public boolean getHeaderVisible () {
 public TreeItem getItem (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int index = (point.y - getHeaderHeight ()) / itemHeight - topIndex;
+	int index = (point.y - getHeaderHeight ()) / itemHeight + topIndex;
 	if (!(0 <= index && index < availableItemsCount)) return null;		/* below the last item */
 	TreeItem result = availableItems [index];
 	if (!result.getHitBounds ().contains (point)) return null;	/* considers the x value */
