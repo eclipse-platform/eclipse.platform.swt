@@ -3014,7 +3014,7 @@ public void setMaximized(boolean maximize) {
 public void setMinimizeVisible(boolean visible) {
 	checkWidget();
 	if (showMin == visible) return;
-	// display maximize button
+	// display minimize button
 	showMin = visible;
 	updateItems();
 	redraw();
