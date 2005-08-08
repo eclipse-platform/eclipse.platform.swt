@@ -2602,12 +2602,6 @@ void reassignFocus () {
 		TableItem item = items [index];
 		setFocusItem (item, false);
 		showItem (item);
-		if ((style & SWT.SINGLE) != 0) {
-			setSelection (new TableItem[] {item});
-			Event event = new Event ();
-			event.item = item;
-			sendEvent (SWT.Selection, event);
-		}
 	} else {
 		setFocusItem (null, false);		/* no items left */
 	}
