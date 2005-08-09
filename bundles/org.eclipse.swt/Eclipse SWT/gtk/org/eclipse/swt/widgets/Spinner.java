@@ -653,8 +653,8 @@ void register () {
 }
 
 void releaseWidget () {
-	fixIM ();
 	super.releaseWidget ();
+	fixIM ();
 }
 
 /**

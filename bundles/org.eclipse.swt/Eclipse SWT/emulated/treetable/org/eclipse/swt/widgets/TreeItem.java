@@ -715,11 +715,11 @@ public void dispose () {
 }
 void dispose (boolean notifyParent) {
 	if (isDisposed ()) return;
-	if (notifyParent) parent.destroyItem (this);
-	super.dispose ();	/* super is intentional here */
 	for (int i = 0; i < items.length; i++) {
 		items [i].dispose (notifyParent);
 	}
+	if (notifyParent) parent.destroyItem (this);
+	super.dispose ();	/* super is intentional here */
 	background = foreground = null;
 	cellBackgrounds = cellForegrounds = null;
 	font = null;

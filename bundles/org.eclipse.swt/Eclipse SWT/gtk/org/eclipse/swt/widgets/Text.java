@@ -1230,8 +1230,8 @@ void register () {
 }
 
 void releaseWidget () {
-	fixIM ();	
 	super.releaseWidget ();
+	fixIM ();	
 	if (OS.GTK_VERSION < OS.VERSION (2, 6, 0)) {		 
 		/*
 		* Bug in GTK.  Any text copied into the clipboard will be lost when

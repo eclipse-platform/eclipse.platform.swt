@@ -478,8 +478,16 @@ public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();
 }
 
-void releaseChild () {
-	super.releaseChild ();
+void releaseChildren (boolean destroy) {
+	if (menu != null) {
+		menu.releaseChildren (false);
+		menu = null;
+	}
+	super.releaseChildren (destroy);
+}
+
+void releaseParent () {
+	super.releaseParent ();
 	if (menu != null) {
 		if (menu.selectedItem == this) menu.selectedItem = null;
 		menu.dispose ();
@@ -488,8 +496,6 @@ void releaseChild () {
 }
 
 void releaseWidget () {
-	if (menu != null) menu.releaseResources ();
-	menu = null;
 	super.releaseWidget ();
 	int /*long*/ accelGroup = getAccelGroup ();
 	if (accelGroup != 0) removeAccelerator (accelGroup);

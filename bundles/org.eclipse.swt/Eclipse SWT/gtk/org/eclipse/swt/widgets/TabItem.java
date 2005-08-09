@@ -126,6 +126,11 @@ void deregister() {
 	if (labelHandle != 0) display.removeWidget (labelHandle);
 }
 
+void destroyWidget () {
+	parent.destroyItem (this);
+	releaseHandle ();
+}
+
 /**
  * Returns the control that is used to fill the client area of
  * the tab folder when the user selects the tab item.  If no
@@ -188,23 +193,18 @@ void register () {
 	if (labelHandle != 0) display.addWidget (labelHandle, this);
 }
 
-void releaseChild () {
-	super.releaseChild ();
+void releaseHandle () {
+	super.releaseHandle ();
+	pageHandle = labelHandle = imageHandle = 0;
+	parent = null;
+}
+
+void releaseParent () {
+	super.releaseParent ();
 	int index = parent.indexOf (this);
 	if (index == parent.getSelectionIndex ()) {
 		if (control != null) control.setVisible (false);
 	}
-	parent.destroyItem (this);
-}
-
-void releaseHandle () {
-	super.releaseHandle ();
-	pageHandle = labelHandle = imageHandle = 0;
-}
-
-void releaseWidget () {
-	super.releaseWidget ();
-	parent = null;
 }
 
 /**

@@ -765,7 +765,6 @@ void destroyItem (TableColumn column) {
 	}
 	System.arraycopy (columns, index + 1, columns, index, --columnCount - index);
 	columns [columnCount] = null;
-	column.deregister ();
 	OS.gtk_tree_view_remove_column (handle, columnHandle);
 	if (columnCount == 0) {
 		int /*long*/ oldModel = modelHandle;
@@ -836,8 +835,6 @@ void destroyItem (TableColumn column) {
 			createRenderers (checkColumn.handle, checkColumn.modelIndex, true, checkColumn.style);
 		}
 	}
-	column.handle = column.buttonHandle = column.labelHandle = 0;
-	column.imageHandle = 0;
 	/* Set the search column whenever the model changes */
 	if ((style & SWT.VIRTUAL) != 0) {
 		/* Disable searching when using VIRTUAL */
@@ -861,7 +858,6 @@ void destroyItem (TableItem item) {
 	OS.gtk_list_store_remove (modelHandle, itemHandle);
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.g_free (itemHandle);
-	item.handle = 0;
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
 	if (itemCount == 0) resetCustomDraw ();
@@ -1899,18 +1895,29 @@ void register () {
 	if (checkRenderer != 0) display.addWidget (checkRenderer, this);
 }
 
+void releaseChildren (boolean destroy) {
+	if (items != null) {
+		for (int i=0; i<itemCount; i++) {
+			TableItem item = items [i];
+			if (item != null && !item.isDisposed ()) {
+				item.releaseChildren (false);
+			}
+		}
+		items = null;
+	}
+	if (columns != null) {
+		for (int i=0; i<columnCount; i++) {
+			TableColumn column = columns [i];
+			if (column != null && !column.isDisposed ()) {
+				column.releaseChildren (false);
+			}
+		}
+		columns = null;
+	}
+	super.releaseChildren (destroy);
+}
+
 void releaseWidget () {
-	for (int i=0; i<itemCount; i++) {
-		TableItem item = items [i];
-		if (item != null && !item.isDisposed ()) item.releaseResources ();
-	}
-	items = null;
-	currentItem = null;
-	for (int i=0; i<columnCount; i++) {
-		TableColumn column = columns [i];
-		if (!column.isDisposed ()) column.releaseResources ();
-	}
-	columns = null;
 	super.releaseWidget ();
 	if (modelHandle != 0) OS.g_object_unref (modelHandle);
 	modelHandle = 0;
@@ -1919,6 +1926,7 @@ void releaseWidget () {
 	if (imageList != null) imageList.dispose ();
 	if (headerImageList != null) headerImageList.dispose ();
 	imageList = headerImageList = null;
+	currentItem = null;
 }
 
 /**
@@ -1941,10 +1949,10 @@ public void remove (int index) {
 	TableItem item = items [index];
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 	if (item != null && !item.isDisposed ()) {
+		item.releaseChildren (false);
 		OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		OS.gtk_list_store_remove (modelHandle, item.handle);
 		OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-		item.releaseResources ();
 	} else {
 		int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 		OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
@@ -1985,10 +1993,10 @@ public void remove (int start, int end) {
 	int index = start;
 	while (index <= end) {
 		TableItem item = items [index];
+		if (item != null && !item.isDisposed ()) item.releaseChildren (false);
 		OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		OS.gtk_list_store_remove (modelHandle, iter);
 		OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-		if (item != null && !item.isDisposed ()) item.releaseResources ();
 		index++;
 	}
 	OS.g_free (iter);
@@ -2031,10 +2039,10 @@ public void remove (int [] indices) {
 		if (index != last) {
 			TableItem item = items [index];
 			if (item != null && !item.isDisposed ()) {
+				item.releaseChildren (false);
 				OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 				OS.gtk_list_store_remove (modelHandle, item.handle);
 				OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-				item.releaseResources ();
 			} else {
 				OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
 				OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
@@ -2059,6 +2067,14 @@ public void remove (int [] indices) {
  */
 public void removeAll () {
 	checkWidget();
+	int index = itemCount - 1;
+	while (index >= 0) {
+		TableItem item = items [index];
+		if (item != null && !item.isDisposed ()) item.releaseChildren (false);
+		--index;
+	}
+	items = new TableItem [4];
+	itemCount = 0;
 
 	/*
 	* Bug in GTK.  In version 2.3.2, when the property fixed-height-mode
@@ -2077,14 +2093,6 @@ public void removeAll () {
 	modelHandle = newModel;
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 
-	int index = itemCount - 1;
-	while (index >= 0) {
-		TableItem item = items [index];
-		if (item != null && !item.isDisposed ()) item.releaseResources ();
-		--index;
-	}
-	items = new TableItem [4];
-	itemCount = 0;
 	resetCustomDraw ();
 	/* Set the search column whenever the model changes */
 	if ((style & SWT.VIRTUAL) != 0) {

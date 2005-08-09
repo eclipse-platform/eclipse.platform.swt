@@ -2382,18 +2382,18 @@ void redrawWidget (int x, int y, int width, int height, boolean all) {
 	OS.gdk_window_invalidate_rect (window, rect, all);
 }
 
-void releaseChild () {
-	parent.removeControl (this);
-}
-
 void releaseHandle () {
 	super.releaseHandle ();
 	fixedHandle = 0;
 }
 
+void releaseParent () {
+	parent.removeControl (this);
+}
+
 void releaseWidget () {
-	display.removeMouseHoverTimeout (handle);
 	super.releaseWidget ();
+	display.removeMouseHoverTimeout (handle);
 	int /*long*/ imHandle = imHandle ();
 	if (imHandle != 0) {
 		OS.gtk_im_context_reset (imHandle);
@@ -2866,7 +2866,7 @@ public boolean setParent (Composite parent) {
 	if (parent.isDisposed()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	if (this.parent == parent) return true;
 	if (!isReparentable ()) return false;
-	releaseChild ();
+	releaseParent ();
 	Shell newShell = parent.getShell (), oldShell = getShell ();
 	Decorations newDecorations = parent.menuShell (), oldDecorations = menuShell ();
 	Menu [] menus = oldShell.findMenus (this);

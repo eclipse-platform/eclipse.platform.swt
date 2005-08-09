@@ -297,7 +297,7 @@ void createIMMenu (int /*long*/ imHandle) {
 void createWidget (int index) {
 	checkOrientation (parent);
 	super.createWidget (index);
-	parent.add (this);
+	parent.addMenu (this);
 }
 
 void fixMenus (Decorations newParent) {
@@ -305,8 +305,8 @@ void fixMenus (Decorations newParent) {
 	for (int i=0; i<items.length; i++) {
 		items [i].fixMenus (newParent);
 	}
-	parent.remove (this);
-	newParent.add (this);
+	parent.removeMenu (this);
+	newParent.addMenu (this);
 	this.parent = newParent;
 }
 
@@ -436,11 +436,18 @@ public MenuItem [] getItems () {
 	if (imSeparator != 0) count--;
 	if (imItem != 0) count--;
 	MenuItem [] items = new MenuItem [count];
+	int index = 0;
 	for (int i=0; i<count; i++) {
 		int /*long*/ data = OS.g_list_nth_data (list, i);
-		items [i] = (MenuItem) display.getWidget (data);
+		MenuItem item = (MenuItem) display.getWidget (data);
+		if (item != null) items [index++] = item; 
 	}
 	OS.g_list_free (list);
+	if (index != items.length) {
+		MenuItem [] newItems = new MenuItem[index];
+		System.arraycopy(items, 0, newItems, 0, index);
+		items = newItems;
+	}
 	return items;
 }
 
@@ -690,8 +697,19 @@ int /*long*/ menuPositionProc (int /*long*/ menu, int /*long*/ x, int /*long*/ y
 	return 0;
 }
 
-void releaseChild () {
-	super.releaseChild ();
+void releaseChildren (boolean destroy) {
+	MenuItem [] items = getItems ();
+	for (int i=0; i<items.length; i++) {
+		MenuItem item = items [i];
+		if (item != null && !item.isDisposed ()) {
+			item.releaseChildren (false);
+		}
+	}
+	super.releaseChildren (destroy);
+}
+
+void releaseParent () {
+	super.releaseParent ();
 	if (cascade != null) cascade.setMenu (null);
 	if ((style & SWT.BAR) != 0 && this == parent.menuBar) {
 		parent.setMenuBar (null);
@@ -703,13 +721,8 @@ void releaseChild () {
 }
 
 void releaseWidget () {
-	MenuItem [] items = getItems ();
-	for (int i=0; i<items.length; i++) {
-		MenuItem item = items [i];
-		if (!item.isDisposed ()) item.releaseResources ();
-	}
-	if (parent != null) parent.remove (this);
 	super.releaseWidget ();
+	if (parent != null) parent.removeMenu (this); 
 	parent = null;
 	cascade = null;
 	imItem = imSeparator = imHandle = 0;

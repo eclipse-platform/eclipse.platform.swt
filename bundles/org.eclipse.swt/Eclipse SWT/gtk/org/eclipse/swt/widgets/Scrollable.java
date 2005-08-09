@@ -306,11 +306,16 @@ void releaseHandle () {
 	scrolledHandle = 0;
 }
 
-void releaseWidget () {
-	if (horizontalBar != null) horizontalBar.releaseResources ();
-	if (verticalBar != null) verticalBar.releaseResources ();
-	horizontalBar = verticalBar = null;
-	super.releaseWidget ();
+void releaseChildren (boolean destroy) {
+	if (horizontalBar != null) {
+		horizontalBar.releaseChildren (false);
+		horizontalBar = null;
+	}
+	if (verticalBar != null) {
+		verticalBar.releaseChildren (false);
+		verticalBar = null;
+	}
+	super.releaseChildren (destroy);
 }
 
 void resizeHandle (int width, int height) {

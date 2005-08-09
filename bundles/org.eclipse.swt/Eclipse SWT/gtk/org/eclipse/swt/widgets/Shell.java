@@ -605,7 +605,7 @@ void register () {
 	display.addWidget (shellHandle, this);
 }
 
-void releaseChild () {
+void releaseParent () {
 	/* Do nothing */
 }
 
@@ -1566,18 +1566,20 @@ void releaseHandle () {
 	shellHandle = 0;
 }
 
-void releaseShells () {
+void releaseChildren (boolean destroy) {
 	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
-		if (!shell.isDisposed ()) shell.releaseResources ();
+		if (shell != null && !shell.isDisposed ()) {
+			shell.releaseChildren (false);
+		}
 	}
+	super.releaseChildren (destroy);
 }
 
 void releaseWidget () {
-	releaseShells ();
-	destroyAccelGroup ();
 	super.releaseWidget ();
+	destroyAccelGroup ();
 	if (display.activeShell == this) display.activeShell = null;
 	if (tooltipsHandle != 0) OS.g_object_unref (tooltipsHandle);
 	tooltipsHandle = 0;

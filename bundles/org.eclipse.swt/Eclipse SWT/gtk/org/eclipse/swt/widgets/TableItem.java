@@ -159,6 +159,11 @@ void clear () {
 	cellFont = null;
 }
 
+void destroyWidget () {
+	parent.destroyItem (this);
+	releaseHandle ();
+}
+
 /**
  * Returns the receiver's background color.
  *
@@ -582,16 +587,15 @@ public String getText (int index) {
 	return new String (Converter.mbcsToWcs (null, buffer));
 }
 
-void releaseChild () {
-	super.releaseChild ();
-	parent.destroyItem (this);
+void releaseHandle () {
+	if (handle != 0) OS.g_free (handle);
+	handle = 0;
+	super.releaseHandle ();
+	parent = null;
 }
 
 void releaseWidget () {
 	super.releaseWidget ();
-	if (handle != 0) OS.g_free (handle);
-	handle = 0;
-	parent = null;
 	font = null;
 	cellFont = null;
 }

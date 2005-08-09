@@ -1074,8 +1074,8 @@ void releaseHandle () {
 }
 
 void releaseWidget () {
-	fixIM ();
 	super.releaseWidget ();
+	fixIM ();
 }
 
 /**

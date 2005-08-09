@@ -194,6 +194,13 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+void destroyWidget () {
+	int [] index = new int [1];
+	parent.releaseItem (this, index, false);
+	parent.destroyItem (this);
+	releaseHandle ();
+}
+
 /**
  * Returns the receiver's background color.
  *
@@ -862,16 +869,23 @@ public int indexOf (TreeItem item) {
 	return index;
 }
 
-void releaseChild () {
-	super.releaseChild ();
-	parent.destroyItem (this);
+void releaseChildren (boolean destroy) {
+	if (destroy) {
+		int [] index = new int [1];
+		parent.releaseItems (getItems (), index);
+	}
+	super.releaseChildren (destroy);
+}
+
+void releaseHandle () {
+	if (handle != 0) OS.g_free (handle);
+	handle = 0;
+	super.releaseHandle ();
+	parent = null;
 }
 
 void releaseWidget () {
 	super.releaseWidget ();
-	if (handle != 0) OS.g_free (handle);
-	handle = 0;
-	parent = null;
 	font = null;
 	cellFont = null;
 }

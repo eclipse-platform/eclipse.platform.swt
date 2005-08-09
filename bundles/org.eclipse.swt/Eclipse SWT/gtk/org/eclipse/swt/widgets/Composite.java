@@ -939,20 +939,23 @@ void register () {
 	if (socketHandle != 0) display.addWidget (socketHandle, this);
 }
 
-void releaseChildren () {
+void releaseChildren (boolean destroy) {
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
-		if (child != null && !child.isDisposed ()) child.releaseResources ();
+		if (child != null && !child.isDisposed ()) {
+			child.releaseChildren (false);
+		}
 	}
+	super.releaseChildren (destroy);
 }
 
 void releaseWidget () {
-	releaseChildren ();
 	super.releaseWidget ();
 	if (imHandle != 0) OS.g_object_unref (imHandle);
 	imHandle = 0;
 	layout = null;
+	tabList = null;
 }
 
 void removeControl (Control control) {

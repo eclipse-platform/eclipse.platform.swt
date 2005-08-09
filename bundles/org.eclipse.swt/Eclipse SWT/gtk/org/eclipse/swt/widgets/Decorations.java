@@ -188,7 +188,7 @@ void _setImages (Image [] images) {
 	if (pixbufs != 0) OS.g_list_free (pixbufs);
 }
 
-void add (Menu menu) {
+void addMenu (Menu menu) {
 	if (menus == null) menus = new Menu [4];
 	for (int i=0; i<menus.length; i++) {
 		if (menus [i] == null) {
@@ -447,7 +447,7 @@ Decorations menuShell () {
 	return this;
 }
 
-void remove (Menu menu) {
+void removeMenu (Menu menu) {
 	if (menus == null) return;
 	for (int i=0; i<menus.length; i++) {
 		if (menus [i] == menu) {
@@ -457,9 +457,12 @@ void remove (Menu menu) {
 	}
 }
 
-void releaseWidget () {
-	if (menuBar != null) menuBar.releaseResources ();
-	menuBar = null;
+void releaseChildren (boolean destroy) {
+	if (menuBar != null) {
+		menuBar.releaseChildren (false);
+		menuBar = null;
+	}
+	super.releaseChildren (destroy);
 	if (menus != null) {
 		for (int i=0; i<menus.length; i++) {
 			Menu menu = menus [i];
@@ -467,8 +470,11 @@ void releaseWidget () {
 				menu.dispose ();
 			}
 		}
+		menus = null;
 	}
-	menus = null;
+}
+
+void releaseWidget () {
 	super.releaseWidget ();
 	image = null;
 	images = null;

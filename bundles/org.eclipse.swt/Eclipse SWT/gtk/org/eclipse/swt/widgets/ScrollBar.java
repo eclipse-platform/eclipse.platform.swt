@@ -422,8 +422,8 @@ void register () {
 	if (adjustmentHandle != 0) display.addWidget (adjustmentHandle, this);
 }
 
-void releaseChild () {
-	super.releaseChild ();
+void releaseParent () {
+	super.releaseParent ();
 	if (parent.horizontalBar == this) parent.horizontalBar = null;
 	if (parent.verticalBar == this) parent.verticalBar = null;
 }

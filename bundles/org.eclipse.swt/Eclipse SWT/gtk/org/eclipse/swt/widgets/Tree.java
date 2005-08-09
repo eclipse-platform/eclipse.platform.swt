@@ -618,7 +618,6 @@ void destroyItem (TreeColumn column) {
 	}
 	System.arraycopy (columns, index + 1, columns, index, --columnCount - index);
 	columns [columnCount] = null;
-	column.deregister ();
 	OS.gtk_tree_view_remove_column (handle, columnHandle);
 	if (columnCount == 0) {
 		int /*long*/ oldModel = modelHandle;
@@ -664,8 +663,6 @@ void destroyItem (TreeColumn column) {
 			createRenderers (firstColumn.handle, firstColumn.modelIndex, true, firstColumn.style);
 		}
 	}
-	column.handle = column.buttonHandle = column.labelHandle = 0;
-	column.imageHandle = 0;
 	/* Set the search column whenever the model changes */
 	if ((style & SWT.VIRTUAL) != 0) {
 		/* Disable searching when using VIRTUAL */
@@ -694,9 +691,6 @@ void destroyItem (TreeItem item) {
 			}
 		}
 	}
-	int [] index = new int [1];
-	releaseItems (item.getItems (), index);
-	releaseItem (item, index, false);
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.gtk_tree_store_remove (modelHandle, item.handle);
@@ -1762,11 +1756,10 @@ void register () {
 	if (checkRenderer != 0) display.addWidget (checkRenderer, this);
 }
 
-void releaseItem (TreeItem item, int [] index, boolean releaseResources) {
-	if (item.isDisposed ()) return;
+void releaseItem (TreeItem item, int [] index, boolean release) {
 	OS.gtk_tree_model_get (modelHandle, item.handle, ID_COLUMN, index, -1);
+	if (release) item.releaseChildren (false);
 	items [index [0]] = null;
-	if (releaseResources) item.releaseResources ();
 }
 
 void releaseItems (TreeItem [] nodes, int [] index) {
@@ -1776,22 +1769,36 @@ void releaseItems (TreeItem [] nodes, int [] index) {
 		if (sons.length != 0) {
 			releaseItems (sons, index);
 		}
-		releaseItem (item, index, true);
+		if (!isDisposed ()) {
+			releaseItem (item, index, true);
+		}
 	}
 }
 
+void releaseChildren (boolean destroy) {
+	if (items != null) {
+		for (int i=0; i<items.length; i++) {
+			TreeItem item = items [i];
+			if (item != null && !item.isDisposed ()) {
+				item.releaseChildren(false);
+			}
+		}
+		items = null;
+	}
+	if (columns != null) {
+		for (int i=0; i<columnCount; i++) {
+			TreeColumn column = columns [i];
+			if (column != null && !column.isDisposed ()) {
+				column.releaseChildren (false);
+			}
+		}
+		columns = null;
+	}
+	super.releaseChildren (destroy);
+}
+
 void releaseWidget () {
-	for (int i=0; i<items.length; i++) {
-		TreeItem item = items [i];
-		if (item != null && !item.isDisposed ()) item.releaseResources();
-	}
-	items = null;
-	for (int i=0; i<columnCount; i++) {
-		TreeColumn column = columns [i];
-		if (!column.isDisposed ()) column.releaseResources ();
-	}
-	columns = null;
-	super.releaseWidget();
+	super.releaseWidget ();
 	if (modelHandle != 0) OS.g_object_unref (modelHandle);
 	modelHandle = 0;
 	if (checkRenderer != 0) OS.g_object_unref (checkRenderer);
@@ -1811,6 +1818,11 @@ void releaseWidget () {
  */
 public void removeAll () {
 	checkWidget ();
+	for (int i=0; i<items.length; i++) {
+		TreeItem item = items [i];
+		if (item != null && !item.isDisposed ()) item.releaseChildren (false);
+	}
+	items = new TreeItem[4];
 	/*
 	* Bug in GTK.  In version 2.3.2, when the property fixed-height-mode
 	* is set and there are items in the list, OS.gtk_tree_store_clear()
@@ -1829,11 +1841,6 @@ public void removeAll () {
 	modelHandle = newModel;
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	
-	for (int i=0; i<items.length; i++) {
-		TreeItem item = items [i];
-		if (item != null && !item.isDisposed ()) item.releaseResources ();
-	}
-	items = new TreeItem[4];
 	/* Set the search column whenever the model changes */
 	if ((style & SWT.VIRTUAL) != 0) {
 		/* Disable searching when using VIRTUAL */

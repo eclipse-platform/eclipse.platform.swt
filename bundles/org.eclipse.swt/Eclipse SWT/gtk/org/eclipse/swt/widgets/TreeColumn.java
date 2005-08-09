@@ -197,6 +197,11 @@ void deregister() {
 	if (labelHandle != 0) display.removeWidget (labelHandle);
 }
 
+void destroyWidget () {
+	parent.destroyItem (this);
+	releaseHandle ();
+}
+
 /**
  * Returns a value which describes the position of the
  * text or image in the receiver. The value will be one of
@@ -389,17 +394,18 @@ void register () {
 	if (labelHandle != 0) display.addWidget (labelHandle, this);
 }
 
-void releaseChild () {
-	super.releaseChild ();
-	parent.destroyItem (this);
+void releaseHandle () {
+	super.releaseHandle ();
+	handle = buttonHandle = labelHandle = imageHandle = 0;
+	modelIndex = -1;
+	parent = null;
 }
 
-void releaseWidget () {
-	super.releaseWidget ();
+void releaseParent () {
+	super.releaseParent ();
 	if (parent.sortColumn == this) {
 		parent.sortColumn = null;
 	}
-	parent = null;
 }
 
 /**

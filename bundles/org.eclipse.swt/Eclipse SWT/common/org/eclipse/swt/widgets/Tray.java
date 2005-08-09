@@ -125,20 +125,22 @@ public TrayItem [] getItems () {
 	return result;
 }
 
-void releaseChild () {
-	super.releaseChild ();
-	if (display.tray == this) display.tray = null;
+void releaseChildren (boolean destroy) {
+	if (items != null) {
+		for (int i=0; i<items.length; i++) {
+			TrayItem item = items [i];
+			if (item != null && !item.isDisposed ()) {
+				item.releaseChildren (false);
+			}
+		}
+		items = null;
+	}
+	super.releaseChildren (destroy);
 }
 
-void releaseWidget () {
-	for (int i=0; i<items.length; i++) {
-		TrayItem item = items [i];
-		if (item != null && !item.isDisposed ()) {
-			item.releaseResources ();
-		}
-	}
-	items = null;
-	super.releaseWidget ();
+void releaseParent () {
+	super.releaseParent ();
+	if (display.tray == this) display.tray = null;
 }
 
 }

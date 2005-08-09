@@ -248,13 +248,11 @@ void destroyItem (TabItem item) {
 	}
 	if (index == itemCount) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	int oldIndex = OS.gtk_notebook_get_current_page (handle);
-	item.deregister ();
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWITCH_PAGE);
 	OS.gtk_notebook_remove_page (handle, index);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SWITCH_PAGE);
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
-	item.handle = item.pageHandle = item.imageHandle = item.labelHandle = 0;
 	if (index == oldIndex) {
 		int newIndex = OS.gtk_notebook_get_current_page (handle);
 		if (newIndex != -1) {
@@ -495,13 +493,20 @@ boolean mnemonicMatch (char key) {
 	return false;
 }
 
-void releaseWidget () {
-	int count = getItemCount ();
-	for (int i=0; i<count; i++) {
-		TabItem item = items [i];
-		if (!item.isDisposed ()) item.releaseResources ();
+void releaseChildren (boolean destroy) {
+	if (items != null) {
+		for (int i=0; i<items.length; i++) {
+			TabItem item = items [i];
+			if (item != null && !item.isDisposed ()) {
+				item.releaseChildren (false);
+			}
+		}
+		items = null;
 	}
-	items = null;
+	super.releaseChildren (destroy);
+}
+
+void releaseWidget () {
 	super.releaseWidget ();
 	if (imageList != null) imageList.dispose ();
 	imageList = null;
