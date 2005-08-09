@@ -149,7 +149,7 @@ public static final synchronized native void cairo_set_font_matrix (int /*long*/
 public static final synchronized native void cairo_get_font_matrix (int /*long*/ cr, double[] matrix);
 public static final synchronized native void cairo_show_text (int /*long*/ cr, byte[] utf8);
 public static final synchronized native void cairo_show_glyphs (int /*long*/ cr, int /*long*/ glyphs, int num_glyphs);
-public static final synchronized native int cairo_get_font_face (int /*long*/ cr);
+public static final synchronized native int /*long*/ cairo_get_font_face (int /*long*/ cr);
 public static final synchronized native void cairo_font_extents (int /*long*/ cr, cairo_font_extents_t extents);
 public static final synchronized native void cairo_set_font_face (int /*long*/ cr, int /*long*/ font_face);
 public static final synchronized native void cairo_text_extents (int /*long*/ cr, byte[] utf8, int /*long*/ extents);
