@@ -816,12 +816,15 @@ int Pt_CB_OUTBOUND (int widget, int info) {
 	return OS.Pt_CONTINUE;
 }
 
-void releaseChildren () {
+void releaseChildren (boolean destroy) {
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
-		if (!child.isDisposed ()) child.releaseResources ();
+		if (child != null && !child.isDisposed ()) {
+			child.releaseChildren (false);
+		}
 	}
+	super.releaseChildren (destroy);
 }
 
 void releaseHandle () {
@@ -830,7 +833,6 @@ void releaseHandle () {
 }
 
 void releaseWidget () {
-	releaseChildren ();
 	super.releaseWidget ();
 	layout = null;
 	tabList = null;

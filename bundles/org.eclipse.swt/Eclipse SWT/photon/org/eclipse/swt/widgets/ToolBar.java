@@ -387,14 +387,18 @@ void releaseHandle () {
 	parentingHandle = 0;
 }
 
-void releaseWidget () {
-	for (int i=0; i<itemCount; i++) {
-		ToolItem item = items [i];
-		if (!item.isDisposed ()) item.releaseResources ();
+void releaseChildren (boolean destroy) {
+	if (items != null) {
+		for (int i=0; i<itemCount; i++) {
+			ToolItem item = items [i];
+			if (item != null && !item.isDisposed ()) {
+				item.releaseChildren (false);
+			} 
+		}
+		items = null;
+		itemCount = 0;
 	}
-	items = null;
-	itemCount = 0;
-	super.releaseWidget ();
+	super.releaseChildren (destroy);
 }
 
 void removeControl (Control control) {

@@ -596,8 +596,19 @@ int Pt_CB_UNREALIZED (int widget, int info) {
 	return OS.Pt_CONTINUE;
 }
 
-void releaseChild () {
-	super.releaseChild ();
+void releaseChildren (boolean destroy) {
+	MenuItem [] items = getItems ();
+	for (int i=0; i<items.length; i++) {
+		MenuItem item = items [i];
+		if (item != null && !item.isDisposed ()) {
+			item.releaseChildren (false);
+		}
+	}
+	super.releaseChildren (destroy);
+}
+
+void releaseParent () {
+	super.releaseParent ();
 	if (cascade != null) cascade.setMenu (null);
 	if ((style & SWT.BAR) != 0 && this == parent.menuBar) {
 		parent.setMenuBar (null);
@@ -605,11 +616,6 @@ void releaseChild () {
 }
 
 void releaseWidget () {
-	MenuItem [] items = getItems ();
-	for (int i=0; i<items.length; i++) {
-		MenuItem item = items [i];
-		if (!item.isDisposed ()) item.releaseResources ();
-	}
 	super.releaseWidget ();
 	if (parent != null) parent.remove (this);
 	parent = null;

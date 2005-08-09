@@ -357,18 +357,27 @@ Decorations menuShell () {
 	return this;
 }
 
-void releaseWidget () {
+void releaseChildren (boolean destroy) {
+	if (menuBar != null) {
+		menuBar.releaseChildren (false);
+		menuBar = null;
+	}
+	super.releaseChildren (destroy);
 	if (menus != null) {
 		for (int i=0; i<menus.length; i++) {
 			Menu menu = menus [i];
-			if (menu != null && !menu.isDisposed ()) menu.releaseResources ();
+			if (menu != null && !menu.isDisposed ()) {
+				menu.releaseChildren (false);
+			} 
 		}
+		menus = null;
 	}
-	menuBar = null;
-	menus = null;
+}
+
+void releaseWidget () {
+	super.releaseWidget ();
 	image = null;
 	images = null;
-	super.releaseWidget ();
 	defaultButton = saveDefault = null;
 	text = null;
 }

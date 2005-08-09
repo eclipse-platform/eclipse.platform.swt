@@ -813,7 +813,7 @@ void realizeWidget() {
 	/* Do nothing */
 }
 
-void releaseChild () {
+void releaseParent () {
 	/* Do nothing */
 }
 
@@ -822,11 +822,11 @@ void releaseHandle () {
 	shellHandle = 0;
 }
 
-void releaseShells () {
+void releaseChildren (boolean destroy) {
 	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
-		if (!shell.isDisposed ()) {
+		if (shell != null && !shell.isDisposed ()) {
 			/*
 			* Feature in Photon.  A shell may have child shells that have been
 			* temporarily reparented to NULL because they were shown without
@@ -837,14 +837,14 @@ void releaseShells () {
 			if (shell.parent != null && OS.PtWidgetParent (shell.shellHandle) == 0) {
 				shell.dispose ();
 			} else {
-				shell.releaseResources ();
+				shell.releaseChildren (false);
 			}
 		}
 	}
+	super.releaseChildren (destroy);
 }
 
 void releaseWidget () {
-	releaseShells ();
 	super.releaseWidget ();
 	if (blockedList != 0) OS.PtUnblockWindows (blockedList);
 	blockedList = 0;

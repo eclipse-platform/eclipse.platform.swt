@@ -279,6 +279,11 @@ void deregister () {
 	}
 }
 
+void destroyWidget () {
+	parent.destroyItem (this);
+	super.destroyWidget ();
+}
+
 /**
  * Returns a rectangle describing the receiver's size and location
  * relative to its parent.
@@ -552,14 +557,10 @@ void register () {
 	}
 }
 
-void releaseChild () {
-	super.releaseChild ();
-	parent.destroyItem (this);
-}
-
 void releaseHandle () {
 	super.releaseHandle ();
 	arrow = button = 0;
+	parent = null;
 }
 
 void releaseWidget () {
@@ -569,7 +570,6 @@ void releaseWidget () {
 	if (toolTipHandle != 0) destroyToolTip (toolTipHandle);
 	if (parent.lastFocus == this) parent.lastFocus = null;
 	toolTipHandle = 0;
-	parent = null;
 	control = null;
 	hotImage = null;
 	disabledImage = null;

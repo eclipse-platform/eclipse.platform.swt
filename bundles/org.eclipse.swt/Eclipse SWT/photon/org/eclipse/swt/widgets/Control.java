@@ -1597,7 +1597,8 @@ void realizeWidget() {
 	}
 }
 
-void releaseChild () {
+void releaseParent () {
+	super.releaseParent ();
 	parent.removeControl (this);
 }
 

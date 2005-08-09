@@ -462,6 +462,12 @@ public void removeSelectionListener (SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+void releaseParent () {
+	super.releaseParent ();
+	if (parent.horizontalBar == this) parent.horizontalBar = null;
+	if (parent.verticalBar == this) parent.verticalBar = null;
+}
+
 void setBounds (int x, int y, int width, int height) {
 	PhArea_t area = new PhArea_t ();
 	area.pos_x = (short) x;

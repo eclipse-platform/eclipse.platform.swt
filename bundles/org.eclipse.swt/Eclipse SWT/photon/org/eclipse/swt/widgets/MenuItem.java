@@ -460,15 +460,21 @@ int Pt_CB_REALIZED (int widget, int info) {
 	return OS.Pt_CONTINUE;
 }
 
-void releaseChild () {
-	super.releaseChild ();
+void releaseChildren (boolean destroy) {
+	if (menu != null && !menu.isDisposed ()) {
+		menu.releaseChildren (false);
+		menu = null;
+	}
+	super.releaseChildren (destroy);
+}
+
+void releaseParent () {
+	super.releaseParent ();
 	if (menu != null) menu.dispose ();
 	menu = null;
 }
 
 void releaseWidget () {
-	if (menu != null && !menu.isDisposed ()) menu.releaseResources ();
-	menu = null;
 	super.releaseWidget ();
 	if (accelerator != 0) removeAccelerator ();
 	accelerator = 0;
