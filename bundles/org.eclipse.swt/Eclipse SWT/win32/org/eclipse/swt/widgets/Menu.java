@@ -776,19 +776,21 @@ public MenuItem [] getItems () {
 		}
 		return result;
 	}
-	int count = 0;
+	int index = 0, count = 0;
 	int length = OS.IsWinCE ? 4 : OS.GetMenuItemCount (handle);
 	MenuItem [] items = new MenuItem [length];
 	MENUITEMINFO info = new MENUITEMINFO ();
 	info.cbSize = MENUITEMINFO.sizeof;
 	info.fMask = OS.MIIM_DATA;
-	while (OS.GetMenuItemInfo (handle, count, true, info)) {
+	while (OS.GetMenuItemInfo (handle, index, true, info)) {
 		if (count == items.length) {
 			MenuItem [] newItems = new MenuItem [count + 4];
 			System.arraycopy (items, 0, newItems, 0, count);
 			items = newItems;
 		}
-		items [count++] = display.getMenuItem (info.dwItemData);
+		MenuItem item = display.getMenuItem (info.dwItemData);
+		if (item != null) items [count++] = item;
+		index++;
 	}
 	if (count == items.length) return items;
 	MenuItem [] result = new MenuItem [count];
@@ -1040,8 +1042,28 @@ void redraw () {
 	}
 }
 
-void releaseChild () {
-	super.releaseChild ();
+void releaseHandle () {
+	super.releaseHandle ();
+	handle = hwndCB = 0;
+}
+
+void releaseChildren (boolean destroy) {
+	MenuItem [] items = getItems ();
+	for (int i=0; i<items.length; i++) {
+		MenuItem item = items [i];
+		if (item != null && !item.isDisposed ()) {
+			if (OS.IsPPC && hwndCB != 0) {
+				item.dispose ();
+			} else {
+				item.releaseChildren (false);
+			}
+		}
+	}
+	super.releaseChildren (destroy);
+}
+
+void releaseParent () {
+	super.releaseParent ();
 	if (cascade != null) cascade.releaseMenu ();
 	if ((style & SWT.BAR) != 0) {
 		display.removeBar (this);
@@ -1055,23 +1077,8 @@ void releaseChild () {
 	}
 }
 
-void releaseHandle () {
-	super.releaseHandle ();
-	handle = hwndCB = 0;
-}
-
 void releaseWidget () {
-	MenuItem [] items = getItems ();
-	for (int i=0; i<items.length; i++) {
-		MenuItem item = items [i];
-		if (!item.isDisposed ()) {
-			if (OS.IsPPC && hwndCB != 0) {
-				item.dispose ();
-			} else {
-				item.releaseResources ();
-			}
-		}
-	}
+	super.releaseWidget ();
 	if (OS.IsPPC && hwndCB != 0) {
 		if (imageList != null) {
 			OS.SendMessage (hwndCB, OS.TB_SETIMAGELIST, 0, 0);
@@ -1079,7 +1086,6 @@ void releaseWidget () {
 			imageList = null;
 		}
 	}
-	super.releaseWidget ();
 	if (parent != null) parent.removeMenu (this);
 	parent = null;
 	cascade = null;

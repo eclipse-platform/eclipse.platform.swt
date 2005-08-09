@@ -194,6 +194,11 @@ public Point computeSize (int wHint, int hHint) {
 	return new Point (width, height);
 }
 
+void destroyWidget () {
+	parent.destroyItem (this);
+	releaseHandle ();
+}
+
 /**
  * Returns a rectangle describing the receiver's size and location
  * relative to its parent.
@@ -290,15 +295,11 @@ public CoolBar getParent () {
 	return parent;
 }
 
-void releaseChild () {
-	super.releaseChild ();
-	parent.destroyItem (this);
-}
-
-void releaseWidget () {
-	super.releaseWidget ();
-	control = null;
+void releaseHandle () {
+	super.releaseHandle ();
 	parent = null;
+	id = -1;
+	control = null;
 }
 
 /**

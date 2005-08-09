@@ -133,6 +133,11 @@ void clear () {
 	if ((parent.style & SWT.VIRTUAL) != 0) cached = false;
 }
 
+void destroyWidget () {
+	parent.destroyItem (this);
+	releaseHandle ();
+}
+
 /**
  * Returns the receiver's background color.
  *
@@ -558,14 +563,13 @@ void redraw (int column, boolean drawText, boolean drawImage) {
 	OS.InvalidateRect (hwnd, rect, true);
 }
 
-void releaseChild () {
-	super.releaseChild ();
-	parent.destroyItem (this);
+void releaseHandle () {
+	super.releaseHandle ();
+	parent = null;
 }
 
 void releaseWidget () {
 	super.releaseWidget ();
-	parent = null;
 	strings = null;
 	images = null;
 	cellBackground = cellForeground = cellFont = null;

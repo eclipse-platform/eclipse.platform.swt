@@ -220,6 +220,11 @@ Image createDisabledImage (Image image, Color color) {
 //	return disabled;
 }
 
+void destroyWidget () {
+	parent.destroyItem (this);
+	releaseHandle ();
+}
+
 /**
  * Returns a rectangle describing the receiver's size and location
  * relative to its parent.
@@ -415,19 +420,20 @@ public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();
 }
 
-void releaseChild () {
-	super.releaseChild ();
-	parent.destroyItem (this);
-}
-
 void releaseWidget () {
 	super.releaseWidget ();
-	parent = null;
+	releaseImages ();
 	control = null;
 	toolTipText = null;
 	disabledImage = hotImage = null;
 	if (disabledImage2 != null) disabledImage2.dispose ();
 	disabledImage2 = null;
+}
+
+void releaseHandle () {
+	super.releaseHandle ();
+	parent = null;
+	id = -1;
 }
 
 void releaseImages () {

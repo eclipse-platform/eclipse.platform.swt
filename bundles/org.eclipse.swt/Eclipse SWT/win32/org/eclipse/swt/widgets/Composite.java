@@ -606,16 +606,18 @@ boolean redrawChildren () {
 	return true;
 }
 
-void releaseChildren () {
+void releaseChildren (boolean destroy) {
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
-		if (!child.isDisposed ()) child.releaseResources ();
+		if (child != null && !child.isDisposed ()) {
+			child.releaseChildren (false);
+		}
 	}
+	super.releaseChildren (destroy);
 }
 
 void releaseWidget () {
-	releaseChildren ();
 	super.releaseWidget ();
 	if ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0) {
 		int hwndChild = OS.GetWindow (handle, OS.GW_CHILD);

@@ -846,8 +846,15 @@ public void open () {
 	if (!restoreFocus () && !traverseGroup (true)) setFocus ();
 }
 
-void releaseChild () {
-	/* Do nothing */
+void releaseChildren (boolean destroy) {
+	Shell [] shells = getShells ();
+	for (int i=0; i<shells.length; i++) {
+		Shell shell = shells [i];
+		if (shell != null && !shell.isDisposed ()) {
+			shell.releaseChildren (false);
+		}
+	}
+	super.releaseChildren (destroy);
 }
 
 void releaseHandle () {
@@ -855,16 +862,11 @@ void releaseHandle () {
 	hwndMDIClient = 0;
 }
 
-void releaseShells () {
-	Shell [] shells = getShells ();
-	for (int i=0; i<shells.length; i++) {
-		Shell shell = shells [i];
-		if (!shell.isDisposed ()) shell.releaseResources ();
-	}
+void releaseParent () {
+	/* Do nothing */
 }
 
 void releaseWidget () {
-	releaseShells ();
 	super.releaseWidget ();
 	activeMenu = null;
 	display.clearModal (this);
@@ -1527,8 +1529,8 @@ LRESULT WM_DESTROY (int wParam, int lParam) {
 	*/
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	if ((bits & OS.WS_CHILD) != 0) {
-		releaseChild ();
-		releaseResources ();
+		releaseParent ();
+		releaseChildren (false);
 	}
 	return result;
 }

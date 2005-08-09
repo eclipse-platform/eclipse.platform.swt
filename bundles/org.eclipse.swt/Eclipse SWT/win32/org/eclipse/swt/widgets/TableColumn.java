@@ -180,6 +180,11 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+void destroyWidget () {
+	parent.destroyItem (this);
+	releaseHandle ();
+}
+
 /**
  * Returns a value which describes the position of the
  * text or image in the receiver. The value will be one of
@@ -400,17 +405,16 @@ public void pack () {
 	}
 }
 
-void releaseChild () {
-	super.releaseChild ();
-	parent.destroyItem (this);
+void releaseHandle () {
+	super.releaseHandle ();
+	parent = null;
 }
 
-void releaseWidget () {
-	super.releaseWidget ();
+void releaseParent () {
+	super.releaseParent ();
 	if (parent.sortColumn == this) {
 		parent.sortColumn = null;
 	}
-	parent = null;
 }
 
 /**

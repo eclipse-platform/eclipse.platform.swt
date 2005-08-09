@@ -168,6 +168,11 @@ void createWidget () {
 	OS.Shell_NotifyIcon (OS.NIM_ADD, iconData);
 }
 
+void destroyWidget () {
+	parent.destroyItem (this);
+	releaseHandle ();
+}
+
 /**
  * Returns the receiver's tool tip text, or null if it has
  * not been set.
@@ -248,9 +253,9 @@ void recreate () {
 	if (toolTipText != null) setToolTipText (toolTipText);
 }
 
-void releaseChild () {
-	super.releaseChild ();
-	parent.destroyItem (this);
+void releaseHandle () {
+	super.releaseHandle ();
+	parent = null;
 }
 
 void releaseWidget () {

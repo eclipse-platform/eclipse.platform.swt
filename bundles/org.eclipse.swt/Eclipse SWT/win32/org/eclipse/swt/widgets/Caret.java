@@ -278,8 +278,8 @@ void resizeIME () {
 	OS.ImmReleaseContext (hwnd, hIMC);
 }
 
-void releaseChild () {
-	super.releaseChild ();
+void releaseParent () {
+	super.releaseParent ();
 	if (this == parent.getCaret ()) parent.setCaret (null);
 }
 

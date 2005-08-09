@@ -69,6 +69,7 @@ public abstract class Widget {
 	/* More global state flags */
 	static final int TRANSPARENT	= 1<<8;
 	static final int RELEASED		= 1<<9;
+	static final int DISPOSE_SENT	= 1<<10;
 	
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
@@ -390,14 +391,7 @@ public void dispose () {
 	*/
 	if (isDisposed ()) return;
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if ((state & RELEASED) != 0) {
-		state |= DISPOSED;
-		return;
-	}
-	state |= RELEASED;
-	releaseChild ();
-	releaseWidget ();
-	destroyWidget ();
+	releaseChildren (true);
 }
 
 /**
@@ -690,28 +684,41 @@ void postEvent (int eventType, Event event) {
 }
 
 /*
- * Releases the receiver, a child in a widget hierarchy,
- * from its parent.
+ * Releases the widget hiearchy and optionally destroys
+ * the receiver.
  * <p>
- * When a widget is destroyed, it may be necessary to remove
- * it from an internal data structure of the parent. When
- * a widget has no handle, it may also be necessary for the
- * parent to hide the widget or otherwise indicate that the
- * widget has been disposed. For example, disposing a menu
- * bar requires that the menu bar first be released from the
- * shell when the menu bar is active.  This could not be done
- * in <code>destroyWidget</code> for the menu bar because the
- * parent shell as well as other fields have been null'd out
- * already by <code>releaseWidget</code>.
+ * Typically, a widget with children will broadcast this
+ * message to all children so that they too can release their
+ * resources.  The <code>releaseHandle</code> method is used
+ * as part of this broadcast to zero the handle fields of the
+ * children without calling <code>destroyWidget</code>.  In
+ * this scenario, the children are actually destroyed later,
+ * when the operating system destroys the widget tree.
  * </p>
- * This method is called first when a widget is disposed.
+ * 
+ * @param destroy indicates that the receiver should be destroyed
  * 
  * @see #dispose
- * @see #releaseChild
- * @see #releaseWidget
  * @see #releaseHandle
- */
-void releaseChild () {
+ * @see #releaseParent
+ * @see #releaseWidget
+*/
+void releaseChildren (boolean destroy) {
+	if ((state & DISPOSE_SENT) == 0) {
+		state |= DISPOSE_SENT;
+		sendEvent (SWT.Dispose);
+	}
+	if ((state & RELEASED) == 0) {
+		state |= RELEASED;
+		if (destroy) {
+			releaseParent ();
+			releaseWidget ();
+			destroyWidget ();
+		} else {
+			releaseWidget ();
+			releaseHandle ();
+		}
+	}
 }
 
 /*
@@ -728,20 +735,34 @@ void releaseChild () {
  * </p>
  *
  * @see #dispose
- * @see #releaseChild
+ * @see #releaseChildren
+ * @see #releaseParent
  * @see #releaseWidget
- * @see #releaseHandle
  */
 void releaseHandle () {
 	state |= DISPOSED;
 	display = null;
 }
 
-void releaseResources () {
-	if ((state & RELEASED) != 0) return;
-	state |= RELEASED;
-	releaseWidget ();
-	releaseHandle ();
+/*
+ * Releases the receiver, a child in a widget hierarchy,
+ * from its parent.
+ * <p>
+ * When a widget is destroyed, it may be necessary to remove
+ * it from an internal data structure of the parent. When
+ * a widget has no handle, it may also be necessary for the
+ * parent to hide the widget or otherwise indicate that the
+ * widget has been disposed. For example, disposing a menu
+ * bar requires that the menu bar first be released from the
+ * shell when the menu bar is active.
+ * </p>
+ * 
+ * @see #dispose
+ * @see #releaseChildren
+ * @see #releaseWidget
+ * @see #releaseHandle
+ */
+void releaseParent () {
 }
 
 /*
@@ -758,25 +779,13 @@ void releaseResources () {
  * a reference to a disposed widget, all fields except the
  * handle are zero'd.  The handle is needed by <code>destroyWidget</code>.
  * </p>
- * <p>
- * Typically, a widget with children will broadcast this
- * message to all children so that they too can release their
- * resources.  The <code>releaseHandle</code> method is used
- * as part of this broadcast to zero the handle fields of the
- * children without calling <code>destroyWidget</code>.  In
- * this scenario, the children are actually destroyed later,
- * when the operating system destroys the widget tree.
- * </p>
- * This method is called after <code>releaseChild</code>.
  * 
  * @see #dispose
- * @see #releaseChild
- * @see #releaseWidget
+ * @see #releaseChildren
  * @see #releaseHandle
+ * @see #releaseParent
  */
 void releaseWidget () {
-	sendEvent (SWT.Dispose);
-	state &= ~DISPOSED;
 	eventTable = null;
 	data = null;
 }

@@ -295,6 +295,14 @@ void clear () {
 	}
 }
 
+void destroyWidget () {
+	TVITEM tvItem = new TVITEM ();
+	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+	parent.releaseItem (this, tvItem, false);
+	parent.destroyItem (this);
+	releaseHandle ();
+}
+
 /**
  * Returns the receiver's background color.
  *
@@ -867,19 +875,23 @@ void redraw (int column, boolean drawText, boolean drawImage) {
 	OS.InvalidateRect (hwnd, rect, true);
 }
 
-void releaseChild () {
-	super.releaseChild ();
-	parent.destroyItem (this);
+void releaseChildren (boolean destroy) {
+	if (destroy) {
+		TVITEM tvItem = new TVITEM ();
+		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+		parent.releaseItems (getItems (), tvItem);
+	}
+	super.releaseChildren (destroy);
 }
 
 void releaseHandle () {
 	super.releaseHandle ();
 	handle = 0;
+	parent = null;
 }
 
 void releaseWidget () {
 	super.releaseWidget ();
-	parent = null;
 	strings = null;
 	images = null;
 	cellBackground = cellForeground = cellFont = null;

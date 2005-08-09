@@ -625,15 +625,21 @@ boolean mnemonicMatch (char ch) {
 	return findMnemonic (items [id [0]].text) != '\0';
 }
 
-void releaseWidget () {
-	for (int i=0; i<items.length; i++) {
-		ToolItem item = items [i];
-		if (item != null && !item.isDisposed ()) {
-			item.releaseImages ();
-			item.releaseResources ();
+void releaseChildren (boolean destroy) {
+	if (items != null) {
+		for (int i=0; i<items.length; i++) {
+			ToolItem item = items [i];
+			if (item != null && !item.isDisposed ()) {
+				item.releaseChildren (false);
+			}
 		}
+		items = null;
 	}
-	items = null;
+	super.releaseChildren (destroy);
+}
+
+void releaseWidget () {
+	super.releaseWidget ();
 	if (imageList != null) {
 		OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, 0);
 		display.releaseToolImageList (imageList);
@@ -647,7 +653,6 @@ void releaseWidget () {
 		display.releaseToolDisabledImageList (disabledImageList);
 	}
 	imageList = hotImageList = disabledImageList = null;
-	super.releaseWidget ();
 }
 
 void removeControl (Control control) {

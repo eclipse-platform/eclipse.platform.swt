@@ -1797,54 +1797,66 @@ public boolean isSelected (int index) {
 	return (result != 0) && ((lvItem.state & OS.LVIS_SELECTED) != 0);
 }
 
-void releaseWidget () {
-	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
-	int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	if (columnCount == 1 && columns [0] == null) columnCount = 0;
-	int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-	/*
-	* Feature in Windows 98.  When there are a large number
-	* of columns and items in a table (>1000) where each
-	* of the subitems in the table has a string, it is much
-	* faster to delete each item with LVM_DELETEITEM rather
-	* than using LVM_DELETEALLITEMS.  The fix is to detect
-	* this case and delete the items, one by one.  The fact
-	* that the fix is only necessary on Windows 98 was
-	* confirmed using version 5.81 of COMCTL32.DLL on both
-	* Windows 98 and NT.
-	*
-	* NOTE: LVM_DELETEALLITEMS is also sent by the table
-	* when the table is destroyed.
-	*/	
-	if (OS.IsWin95 && columnCount > 1) {
-		/* Turn off redraw and leave it off */
-		OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
-		for (int i=itemCount-1; i>=0; --i) {
-			TableItem item = items [i];
-			ignoreSelect = ignoreShrink = true;
-			OS.SendMessage (handle, OS.LVM_DELETEITEM, i, 0);
-			ignoreSelect = ignoreShrink = false;
-			if (item != null && !item.isDisposed ()) item.releaseResources ();
+void releaseChildren (boolean destroy) {
+	if (items != null) {
+		int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+		/*
+		* Feature in Windows 98.  When there are a large number
+		* of columns and items in a table (>1000) where each
+		* of the subitems in the table has a string, it is much
+		* faster to delete each item with LVM_DELETEITEM rather
+		* than using LVM_DELETEALLITEMS.  The fix is to detect
+		* this case and delete the items, one by one.  The fact
+		* that the fix is only necessary on Windows 98 was
+		* confirmed using version 5.81 of COMCTL32.DLL on both
+		* Windows 98 and NT.
+		*
+		* NOTE: LVM_DELETEALLITEMS is also sent by the table
+		* when the table is destroyed.
+		*/	
+		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+		int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+		if (OS.IsWin95 && columnCount > 1) {
+			/* Turn off redraw and leave it off */
+			OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+			for (int i=itemCount-1; i>=0; --i) {
+				TableItem item = items [i];
+				ignoreSelect = ignoreShrink = true;
+				OS.SendMessage (handle, OS.LVM_DELETEITEM, i, 0);
+				ignoreSelect = ignoreShrink = false;
+				if (item != null && !item.isDisposed ()) item.releaseChildren (false);
+			}
+		} else {
+			for (int i=0; i<itemCount; i++) {
+				TableItem item = items [i];
+				if (item != null && !item.isDisposed ()) item.releaseChildren (false);
+			}
 		}
-	} else {	
-		for (int i=0; i<itemCount; i++) {
-			TableItem item = items [i];
-			if (item != null && !item.isDisposed ()) item.releaseResources ();
-		}
+		items = null;
 	}
+	if (columns != null) {
+		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+		int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+		if (columnCount == 1 && columns [0] == null) columnCount = 0;
+		for (int i=0; i<columnCount; i++) {
+			TableColumn column = columns [i];
+			if (!column.isDisposed ()) column.releaseChildren (false);
+		}
+		columns = null;
+	}
+	super.releaseChildren (destroy);
+}
+	
+void releaseWidget () {
+	super.releaseWidget ();
 	customDraw = false;
 	currentItem = null;
-	items = null;
-	for (int i=0; i<columnCount; i++) {
-		TableColumn column = columns [i];
-		if (!column.isDisposed ()) column.releaseResources ();
-	}
-	columns = null;
 	if (imageList != null) {
 		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, 0);
 		display.releaseImageList (imageList);
 	}
 	if (headerImageList != null) {
+		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 		OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, 0);
 		display.releaseImageList (headerImageList);
 	}
@@ -1852,7 +1864,6 @@ void releaseWidget () {
 	int hStateList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
 	OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_STATE, 0);
 	if (hStateList != 0) OS.ImageList_Destroy (hStateList);
-	super.releaseWidget ();
 }
 
 /**
@@ -1887,11 +1898,11 @@ public void remove (int [] indices) {
 		int index = newIndices [i];
 		if (index != last) {
 			TableItem item = items [index];
+			if (item != null && !item.isDisposed ()) item.releaseChildren (false);
 			ignoreSelect = ignoreShrink = true;
 			int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, index, 0);
 			ignoreSelect = ignoreShrink = false;
 			if (code == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
-			if (item != null && !item.isDisposed ()) item.releaseResources ();
 			System.arraycopy (items, index + 1, items, index, --count - index);
 			items [count] = null;
 			last = index;
@@ -1919,11 +1930,11 @@ public void remove (int index) {
 	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
 	TableItem item = items [index];
+	if (item != null && !item.isDisposed ()) item.releaseChildren (false);
 	ignoreSelect = ignoreShrink = true;
 	int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, index, 0);
 	ignoreSelect = ignoreShrink = false;
 	if (code == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
-	if (item != null && !item.isDisposed ()) item.releaseResources ();
 	System.arraycopy (items, index + 1, items, index, --count - index);
 	items [count] = null;
 	if (count == 0) setTableEmpty ();
@@ -1958,11 +1969,11 @@ public void remove (int start, int end) {
 		int index = start;
 		while (index <= end) {
 			TableItem item = items [index];
+			if (item != null && !item.isDisposed ()) item.releaseChildren (false);
 			ignoreSelect = ignoreShrink = true;
 			int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, start, 0);
 			ignoreSelect = ignoreShrink = false;
 			if (code == 0) break;
-			if (item != null && !item.isDisposed ()) item.releaseResources ();
 			index++;
 		}
 		System.arraycopy (items, index, items, start, count - index);
@@ -1981,10 +1992,14 @@ public void remove (int start, int end) {
  */
 public void removeAll () {
 	checkWidget ();
+	int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+	for (int i=0; i<itemCount; i++) {
+		TableItem item = items [i];
+		if (item != null && !item.isDisposed ()) item.releaseChildren (false);
+	}
 	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 	if (columnCount == 1 && columns [0] == null) columnCount = 0;
-	int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	
 	/*
 	* Feature in Windows 98.  When there are a large number
@@ -2005,12 +2020,10 @@ public void removeAll () {
 		if (redraw) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 		int index = itemCount - 1;
 		while (index >= 0) {
-			TableItem item = items [index];
 			ignoreSelect = ignoreShrink = true;
 			int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, index, 0);
 			ignoreSelect = ignoreShrink = false;
 			if (code == 0) break;
-			if (item != null && !item.isDisposed ()) item.releaseResources ();
 			--index;
 		}
 		if (redraw) {
@@ -2030,10 +2043,6 @@ public void removeAll () {
 		int code = OS.SendMessage (handle, OS.LVM_DELETEALLITEMS, 0, 0);
 		ignoreSelect = ignoreShrink = false;
 		if (code == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
-		for (int i=0; i<itemCount; i++) {
-			TableItem item = items [i];
-			if (item != null && !item.isDisposed ()) item.releaseResources ();
-		}
 	}
 	setTableEmpty ();
 }
@@ -2598,13 +2607,13 @@ public void setItemCount (int count) {
 	int index = count;
 	while (index < itemCount) {
 		TableItem item = items [index];
+		if (item != null && !item.isDisposed ()) item.releaseChildren (false);
 		if (!isVirtual) {
 			ignoreSelect = ignoreShrink = true;
 			int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, count, 0);
 			ignoreSelect = ignoreShrink = false;
 			if (code == 0) break;
 		}
-		if (item != null && !item.isDisposed ()) item.releaseResources ();
 		index++;
 	}
 	if (index < itemCount) error (SWT.ERROR_ITEM_NOT_REMOVED);

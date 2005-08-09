@@ -228,6 +228,11 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.PUSH, SWT.CHECK, SWT.RADIO, SWT.SEPARATOR, SWT.CASCADE, 0);
 }
 
+void destroyWidget () {
+	parent.destroyItem (this);
+	releaseHandle ();
+}
+
 void fillAccel (ACCEL accel) {
 	accel.fVirt = 0;
 	accel.cmd = accel.key = 0;
@@ -478,11 +483,18 @@ public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();
 }
 
-void releaseChild () {
-	super.releaseChild ();
-	if (menu != null) menu.dispose ();
-	menu = null;
-	parent.destroyItem (this);
+void releaseChildren (boolean destroy) {
+	if (menu != null) {
+		menu.releaseChildren (false);
+		menu = null;
+	}
+	super.releaseChildren (destroy);
+}
+
+void releaseHandle () {
+	super.releaseHandle ();
+	parent = null;
+	id = -1;
 }
 
 void releaseMenu () {
@@ -490,16 +502,19 @@ void releaseMenu () {
 	menu = null;
 }
 
-void releaseWidget () {
-	if (menu != null) menu.releaseResources ();
+void releaseParent () {
+	super.releaseParent ();
+	if (menu != null) menu.dispose ();
 	menu = null;
+}
+
+void releaseWidget () {
 	super.releaseWidget ();
 	if (accelerator != 0) {
 		parent.destroyAccelerators ();
 	}
 	accelerator = 0;
 	display.removeMenuItem (this);
-	parent = null;
 }
 
 /**

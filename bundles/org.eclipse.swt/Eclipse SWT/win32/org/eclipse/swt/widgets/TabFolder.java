@@ -520,19 +520,27 @@ boolean mnemonicMatch (char key) {
 	return false;
 }
 
-void releaseWidget () {
-	int count = OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
-	for (int i=0; i<count; i++) {
-		TabItem item = items [i];
-		if (!item.isDisposed ()) item.releaseResources ();
+void releaseChildren (boolean destroy) {
+	if (items != null) {
+		int count = OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
+		for (int i=0; i<count; i++) {
+			TabItem item = items [i];
+			if (item != null && !item.isDisposed ()) {
+				item.releaseChildren (false);
+			}
+		}
+		items = null;
 	}
-	items = null;
+	super.releaseChildren (destroy);
+}
+
+void releaseWidget () {
+	super.releaseWidget ();
 	if (imageList != null) {
 		OS.SendMessage (handle, OS.TCM_SETIMAGELIST, 0, 0);
 		display.releaseImageList (imageList);
 	}
 	imageList = null;
-	super.releaseWidget ();
 }
 
 void removeControl (Control control) {

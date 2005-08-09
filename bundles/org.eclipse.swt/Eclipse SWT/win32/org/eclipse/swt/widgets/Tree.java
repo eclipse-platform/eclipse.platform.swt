@@ -865,10 +865,6 @@ void destroyItem (TreeItem item) {
 		OS.UpdateWindow (handle);
 		OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 	}
-	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-	releaseItems (item.getItems (), tvItem);
-	releaseItem (item, tvItem);
 	if ((style & SWT.MULTI) != 0) {
 		ignoreDeselect = ignoreSelect = lockSelection = true;
 	}
@@ -1730,16 +1726,16 @@ void register () {
 	if (hwndParent != 0) display.addControl (hwndParent, this);
 }
 
-boolean releaseItem (TreeItem item, TVITEM tvItem) {
+void releaseItem (TreeItem item, TVITEM tvItem, boolean release) {
 	int hItem = item.handle;
+	if (release) item.releaseChildren (false);
 	if (hItem == hAnchor) hAnchor = 0;
 	if (hItem == hInsert) hInsert = 0;
-	if (item.isDisposed ()) return false;
 	tvItem.hItem = hItem;
-	OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-	if (tvItem.lParam < lastID) lastID = tvItem.lParam;
-	items [tvItem.lParam] = null;
-	return true;
+	if (OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem) != 0) {
+		if (tvItem.lParam < lastID) lastID = tvItem.lParam;
+		items [tvItem.lParam] = null;
+	}
 }
 
 void releaseItems (TreeItem [] nodes, TVITEM tvItem) {
@@ -1749,8 +1745,8 @@ void releaseItems (TreeItem [] nodes, TVITEM tvItem) {
 		if (sons.length != 0) {
 			releaseItems (sons, tvItem);
 		}
-		if (releaseItem (item, tvItem)) {
-			item.releaseResources ();
+		if (!item.isDisposed ()) {
+			releaseItem (item, tvItem, true);
 		}
 	}
 }
@@ -1760,20 +1756,30 @@ void releaseHandle () {
 	hwndParent = hwndHeader = 0;
 }
 
-void releaseWidget () {
-	int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	for (int i=0; i<items.length; i++) {
-		TreeItem item = items [i];
-		if (item != null && !item.isDisposed ()) {
-			item.releaseResources ();
+void releaseChildren (boolean destroy) {
+	if (items != null) {
+		for (int i=0; i<items.length; i++) {
+			TreeItem item = items [i];
+			if (item != null && !item.isDisposed ()) {
+				item.releaseChildren (false);
+			}
 		}
+		items = null;
 	}
-	items = null;
-	for (int i=0; i<columnCount; i++) {
-		TreeColumn column = columns [i];
-		if (!column.isDisposed ()) column.releaseResources ();
+	if (columns != null) {
+		for (int i=0; i<columns.length; i++) {
+			TreeColumn column = columns [i];
+			if (column != null && !column.isDisposed ()) {
+				column.releaseChildren (false);
+			}
+		}
+		columns = null;
 	}
-	columns = null;
+	super.releaseChildren (destroy);
+}
+
+void releaseWidget () {
+	super.releaseWidget ();
 	/*
 	* Feature in Windows.  For some reason, when TVM_GETIMAGELIST
 	* or TVM_SETIMAGELIST is sent, the tree issues NM_CUSTOMDRAW
@@ -1798,7 +1804,6 @@ void releaseWidget () {
 	int hStateList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_STATE, 0);
 	OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_STATE, 0);
 	if (hStateList != 0) OS.ImageList_Destroy (hStateList);
-	super.releaseWidget ();
 }
 
 /**
@@ -1811,6 +1816,13 @@ void releaseWidget () {
  */
 public void removeAll () {
 	checkWidget ();
+	for (int i=0; i<items.length; i++) {
+		TreeItem item = items [i];
+		if (item != null && !item.isDisposed ()) {
+			item.releaseChildren (false);
+		}
+	}
+	items = new TreeItem [4];
 	ignoreDeselect = ignoreSelect = true;
 	boolean redraw = drawCount == 0 && OS.IsWindowVisible (handle);
 	if (redraw) {
@@ -1831,19 +1843,12 @@ public void removeAll () {
 	}
 	ignoreDeselect = ignoreSelect = false;
 	if (result == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
-	for (int i=0; i<items.length; i++) {
-		TreeItem item = items [i];
-		if (item != null && !item.isDisposed ()) {
-			item.releaseResources ();
-		}
-	}
 	if (imageList != null) {
 		OS.SendMessage (handle, OS.TVM_SETIMAGELIST, 0, 0);
 		display.releaseImageList (imageList);
 	}
 	imageList = null;
 	if (hwndParent == 0) customDraw = false;
-	items = new TreeItem [4];
 	hAnchor = hInsert = hFirstIndexOf = hLastIndexOf = 0;
 	updateScrollBar ();
 }

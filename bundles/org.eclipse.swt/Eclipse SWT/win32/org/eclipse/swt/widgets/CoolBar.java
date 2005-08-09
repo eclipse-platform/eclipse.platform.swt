@@ -683,15 +683,17 @@ void resizeToMaximumWidth (int index) {
 	OS.SendMessage (handle, OS.RB_SETBANDINFO, index, rbBand);
 }	
 
-void releaseWidget () {
-	for (int i=0; i<items.length; i++) {
-		CoolItem item = items [i];
-		if (item != null && !item.isDisposed ()) {
-			item.releaseResources ();
+void releaseChildren (boolean destroy) {
+	if (items != null) {
+		for (int i=0; i<items.length; i++) {
+			CoolItem item = items [i];
+			if (item != null && !item.isDisposed ()) {
+				item.releaseChildren (false);
+			}
 		}
+		items = null;
 	}
-	items = null;
-	super.releaseWidget();
+	super.releaseChildren (destroy);
 }
 
 void removeControl (Control control) {

@@ -111,10 +111,12 @@ public Caret getCaret () {
 	return caret;
 }
 
-void releaseWidget () {
-	if (caret != null) caret.releaseResources ();
-	caret = null;
-	super.releaseWidget ();
+void releaseChildren (boolean destroy) {
+	if (caret != null) {
+		caret.releaseChildren (false);
+		caret = null;
+	}
+	super.releaseChildren (destroy);
 }
 
 /**

@@ -3097,7 +3097,6 @@ Control removeControl (int handle) {
 void removeMenuItem (MenuItem item) {
 	if (items == null) return;
 	items [item.id - ID_START] = null;
-	item.id = -1;
 }
 
 void removePopup (Menu menu) {

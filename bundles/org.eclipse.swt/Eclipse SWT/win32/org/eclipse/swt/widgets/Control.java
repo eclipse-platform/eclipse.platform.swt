@@ -1574,13 +1574,13 @@ void register () {
 	display.addControl (handle, this);
 }
 
-void releaseChild () {
-	parent.removeControl (this);
-}
-
 void releaseHandle () {
 	super.releaseHandle ();
 	handle = 0;
+}
+
+void releaseParent () {
+	parent.removeControl (this);
 }
 
 void releaseWidget () {
@@ -3031,7 +3031,7 @@ public boolean setParent (Composite parent) {
 	if (parent.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (this.parent == parent) return true;
 	if (!isReparentable ()) return false;
-	releaseChild ();
+	releaseParent ();
 	Shell newShell = parent.getShell (), oldShell = getShell ();
 	Decorations newDecorations = parent.menuShell (), oldDecorations = menuShell ();
 	if (oldShell != newShell || oldDecorations != newDecorations) {

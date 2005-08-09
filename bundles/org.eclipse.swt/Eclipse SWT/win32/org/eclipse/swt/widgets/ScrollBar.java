@@ -178,11 +178,8 @@ void createWidget () {
 	*/
 }
 
-public void dispose () {
-	if (isDisposed()) return;
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+public void destroyWidget () {
 	int hwnd = hwndScrollBar (), type = scrollBarType ();
-	super.dispose ();
 	if (OS.IsWinCE) {
 		SCROLLINFO info = new SCROLLINFO ();
 		info.cbSize = SCROLLINFO.sizeof;
@@ -194,6 +191,7 @@ public void dispose () {
 	} else {
 		OS.ShowScrollBar (hwnd, type, false);
 	}
+	releaseHandle ();
 }
 
 /*
@@ -468,15 +466,15 @@ public boolean isVisible () {
 	return getVisible () && parent.isVisible ();
 }
 
-void releaseChild () {
-	super.releaseChild ();
-	if (parent.horizontalBar == this) parent.horizontalBar = null;
-	if (parent.verticalBar == this) parent.verticalBar = null;
+void releaseHandle () {
+	super.releaseHandle ();
+	parent = null;
 }
 
-void releaseWidget () {
-	super.releaseWidget ();
-	parent = null;
+void releaseParent () {
+	super.releaseParent ();
+	if (parent.horizontalBar == this) parent.horizontalBar = null;
+	if (parent.verticalBar == this) parent.verticalBar = null;
 }
 
 /**
@@ -505,15 +503,7 @@ public void removeSelectionListener (SelectionListener listener) {
 }
 
 int scrollBarType () {
-	if ((style & SWT.VERTICAL) != 0) return OS.SB_VERT;
-	/*
-	* This line is intentionally commented.  There should
-	* only ever be HORIZONTAL and VERTICAL scroll bars.
-	* The commented code reminds us that this is the case
-	* and that the default style is HORIZONTAL.
-	*/	
-//	if ((style & SWT.HORIZONTAL) != 0) return OS.SB_HORZ;
-	return OS.SB_HORZ;
+	return (style & SWT.VERTICAL) != 0 ? OS.SB_VERT : OS.SB_HORZ;
 }
 
 /**
