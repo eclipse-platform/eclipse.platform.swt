@@ -564,11 +564,11 @@ void setSortDirection (int direction) {
 			OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
 			switch (direction) {
 				case SWT.UP:
-					hdItem.fmt &= ~OS.HDF_IMAGE;
+					hdItem.fmt &= ~(OS.HDF_IMAGE | OS.HDF_SORTDOWN);
 					hdItem.fmt |= OS.HDF_SORTUP;
 					break;
 				case SWT.DOWN:
-					hdItem.fmt &= ~OS.HDF_IMAGE;
+					hdItem.fmt &= ~(OS.HDF_IMAGE | OS.HDF_SORTUP);
 					hdItem.fmt |= OS.HDF_SORTDOWN;
 					break;
 				case SWT.NONE:
