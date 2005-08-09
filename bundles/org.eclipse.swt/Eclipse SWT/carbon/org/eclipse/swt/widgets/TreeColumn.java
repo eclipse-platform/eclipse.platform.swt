@@ -185,6 +185,11 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+void destroyWidget () {
+	parent.destroyItem (this);
+	releaseHandle ();
+}
+
 /**
  * Returns a value which describes the position of the
  * text or image in the receiver. The value will be one of
@@ -324,9 +329,10 @@ int calculateWidth (TreeItem[] items, int index, GC gc, int width) {
 	return width;
 }
 
-void releaseChild () {
-	super.releaseChild ();
-	parent.destroyItem (this);
+void releaseHandle () {
+	super.releaseHandle ();
+	id = -1;
+	parent = null;
 }
 
 void releaseWidget () {
@@ -334,7 +340,6 @@ void releaseWidget () {
 	if (parent.sortColumn == this) {
 		parent.sortColumn = null;
 	}
-	parent = null;
 	if (iconRef != 0) OS.ReleaseIconRef (iconRef);
 	iconRef = 0;
 }

@@ -1093,8 +1093,15 @@ void register () {
 	display.addWidget (theRoot [0], this);
 }
 
-void releaseChild () {
-	/* Do nothing */
+void releaseChildren (boolean destroy) {
+	Shell [] shells = getShells ();
+	for (int i=0; i<shells.length; i++) {
+		Shell shell = shells [i];
+		if (shell != null && !shell.isDisposed ()) {
+			shell.dispose ();
+		}
+	}
+	super.releaseChildren (destroy);
 }
 
 void releaseHandle () {
@@ -1102,18 +1109,13 @@ void releaseHandle () {
 	shellHandle = 0;
 }
 
-void releaseShells () {
-	Shell [] shells = getShells ();
-	for (int i=0; i<shells.length; i++) {
-		Shell shell = shells [i];
-		if (!shell.isDisposed ()) shell.dispose ();
-	}
+void releaseParent () {
+	/* Do nothing */
 }
 
 void releaseWidget () {
-	disposed = true;
-	releaseShells ();
 	super.releaseWidget ();
+	disposed = true;
 	if (windowGroup != 0) OS.ReleaseWindowGroup (windowGroup);
 	display.updateQuitMenu ();
 	if (invalRgn != 0) OS.DisposeRgn (invalRgn);

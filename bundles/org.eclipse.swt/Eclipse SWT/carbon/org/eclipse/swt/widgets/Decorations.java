@@ -341,28 +341,25 @@ Decorations menuShell () {
 	return this;
 }
 
-void releaseWidget () {
-	if (menuBar != null) menuBar.dispose ();
-	menuBar = null;
+void releaseChildren (boolean destroy) {
+	if (menuBar != null) {
+		menuBar.dispose ();
+		menuBar = null;
+	} 
+	Display display = this.display;
+	super.releaseChildren (destroy);
 	Menu [] menus = display.getMenus (this);
 	if (menus != null) {
-		do {
-			int index = 0;
-			while (index < menus.length) {
-				Menu menu = menus [index];
-				if (menu != null && !menu.isDisposed ()) {
-					while (menu.getParentMenu () != null) {
-						menu = menu.getParentMenu ();
-					}
-					menu.dispose ();
-					break;
-				}
-				index++;
+		for (int i=0; i<menus.length; i++) {
+			Menu menu = menus [i];
+			if (menu != null && !menu.isDisposed ()) {
+				menu.dispose ();
 			}
-			if (index == menus.length) break;
-		} while (true);
+		}
+		menus = null;
 	}
-	menus = null;
+}
+void releaseWidget () {
 	super.releaseWidget ();
 	image = null;
 	images = null;

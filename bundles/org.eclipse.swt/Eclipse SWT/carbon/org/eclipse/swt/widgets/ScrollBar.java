@@ -523,16 +523,16 @@ void register () {
 	display.addWidget (handle, this);
 }
 
-void releaseChild () {
-	super.releaseChild ();
-	if (parent.horizontalBar == this) parent.horizontalBar = null;
-	if (parent.verticalBar == this) parent.verticalBar = null;
-	parent.resizeClientArea ();
-}
-
 void releaseHandle () {
 	super.releaseHandle ();
 	handle = 0;
+}
+
+void releaseParent () {
+	super.releaseParent ();
+	if (parent.horizontalBar == this) parent.horizontalBar = null;
+	if (parent.verticalBar == this) parent.verticalBar = null;
+	parent.resizeClientArea ();
 }
 
 void releaseWidget () {

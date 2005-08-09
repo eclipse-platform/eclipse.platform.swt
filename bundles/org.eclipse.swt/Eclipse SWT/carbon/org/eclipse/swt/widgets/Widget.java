@@ -78,6 +78,7 @@ public abstract class Widget {
 
 	/* More global state flags */
 	static final int RELEASED = 1<<13;
+	static final int DISPOSE_SENT = 1<<14;
 	
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
@@ -85,8 +86,10 @@ public abstract class Widget {
 	
 	static final Rect EMPTY_RECT = new Rect ();
 
+static int count;
 Widget () {
 	/* Do nothing */
+	if (!(this instanceof Caret) && !(this instanceof Tracker)) count++;
 }
 
 /**
@@ -123,6 +126,7 @@ public Widget (Widget parent, int style) {
 	checkParent (parent);
 	this.style = style;
 	display = parent.display;
+	if (!(this instanceof Caret) && !(this instanceof Tracker)) count++;
 }
 
 int actionProc (int theControl, int partCode) {
@@ -611,14 +615,7 @@ public void dispose () {
 	*/
 	if (isDisposed ()) return;
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if ((state & RELEASED) != 0) {
-		state |= DISPOSED;
-		return;
-	}
-	state |= RELEASED;
-	releaseChild ();
-	releaseWidget ();
-	destroyWidget ();
+	releaseChildren (true);
 }
 
 void drawBackground (int control) {
@@ -1289,8 +1286,31 @@ void redrawWidget (int control, int x, int y, int width, int height, boolean chi
 void register () {
 }
 
-void releaseChild () {
-	/* Do nothing */
+void releaseChildren (boolean destroy) {
+	releaseChildren (destroy, true);
+}
+
+void releaseChildren (boolean destroy, boolean releaseParent) {
+	if ((state & DISPOSE_SENT) == 0) {
+		state |= DISPOSE_SENT;
+		sendEvent (SWT.Dispose);
+		
+		if (!(this instanceof Caret) && !(this instanceof Tracker)) {
+			count--;
+			System.out.println(count + " " + this);
+		}
+	}
+	if ((state & RELEASED) == 0) {
+		state |= RELEASED;
+		if (destroy) {
+			if (releaseParent) releaseParent ();
+			releaseWidget ();
+			destroyWidget ();
+		} else {
+			releaseWidget ();
+			releaseHandle ();
+		}
+	}
 }
 
 void releaseHandle () {
@@ -1298,16 +1318,11 @@ void releaseHandle () {
 	display = null;
 }
 
-void releaseResources () {
-	if ((state & RELEASED) != 0) return;
-	state |= RELEASED;
-	releaseWidget ();
-	releaseHandle ();
+void releaseParent () {
+	/* Do nothing */
 }
 
 void releaseWidget () {
-	sendEvent (SWT.Dispose);
-	state &= ~DISPOSED;
 	deregister ();
 	eventTable = null;
 	data = null;

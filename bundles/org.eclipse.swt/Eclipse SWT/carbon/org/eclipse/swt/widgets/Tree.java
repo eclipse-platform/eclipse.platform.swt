@@ -625,7 +625,6 @@ void destroyItem (TreeColumn column) {
 }
 
 void destroyItem (TreeItem item) {
-	//checkItems (true);
 	TreeItem parentItem = item.parentItem;
 	if (parentItem == null || parentItem.getExpanded ()) {
 		int parentID = parentItem == null ? OS.kDataBrowserNoItem : item.parentItem.id;
@@ -635,8 +634,6 @@ void destroyItem (TreeItem item) {
 		}
 		ignoreExpand = false;
 	}
-	releaseItems (item.getItems ());
-	releaseItem (item);
 	boolean hasChild = false;
 	for (int i=0; i<items.length; i++) {
 		if (items [i] != null && items [i].parentItem == parentItem) {
@@ -1701,10 +1698,10 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	return result;
 }
 
-boolean releaseItem (TreeItem item) {
-	if (item.isDisposed ()) return false;
-	items [item.id - 1] = null;
-	return true;
+void releaseItem (TreeItem item, boolean release) {
+	int id = item.id;
+	if (release) item.releaseChildren (false);
+	items [id - 1] = null;
 }
 
 void releaseItems (TreeItem [] nodes) {
@@ -1714,26 +1711,32 @@ void releaseItems (TreeItem [] nodes) {
 		if (sons.length != 0) {
 			releaseItems (sons);
 		}
-		if (releaseItem (item)) {
-			item.releaseResources ();
+		if (!isDisposed ()) {
+			releaseItem (item, true);
 		}
 	}
 }
 
-void releaseWidget () {
-	for (int i=0; i<items.length; i++) {
-		TreeItem item = items [i];
-		if (item != null && !item.isDisposed ()) {
-			item.releaseResources ();
+void releaseChildren (boolean destroy) {
+	if (items != null) {
+		for (int i=0; i<items.length; i++) {
+			TreeItem item = items [i];
+			if (item != null && !item.isDisposed ()) {
+				item.releaseChildren (false);
+			}
 		}
+		items = null;
 	}
-	items = null;
-	for (int i=0; i<columnCount; i++) {
-		TreeColumn column = columns [i];
-		if (!column.isDisposed ()) column.releaseResources ();
+	if (columns != null) {
+		for (int i=0; i<columnCount; i++) {
+			TreeColumn column = columns [i];
+			if (column != null && !column.isDisposed ()) {
+				column.releaseChildren (false);
+			}
+		}
+		columns = null;
 	}
-	columns = null;
-	super.releaseWidget ();
+	super.releaseChildren (destroy);
 }
 
 /**
@@ -1746,17 +1749,17 @@ void releaseWidget () {
  */
 public void removeAll () {
 	checkWidget ();
+	for (int i=0; i<items.length; i++) {
+		TreeItem item = items [i];
+		if (item != null && !item.isDisposed ()) item.releaseChildren (false);
+	}
+	items = new TreeItem [4];
 	ignoreExpand = true;
 	if (OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, 0, null, 0) != OS.noErr) {
 		error (SWT.ERROR_ITEM_NOT_REMOVED);
 	}
 	ignoreExpand = false;
 	OS.SetDataBrowserScrollPosition (handle, 0, 0);
-	for (int i=0; i<items.length; i++) {
-		TreeItem item = items [i];
-		if (item != null && !item.isDisposed ()) item.releaseResources ();
-	}
-	items = new TreeItem [4];
 	anchorFirst = anchorLast = 0;
 	setScrollWidth ();
 }

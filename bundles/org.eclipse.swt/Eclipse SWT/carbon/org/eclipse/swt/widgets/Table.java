@@ -1769,18 +1769,26 @@ int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userDa
 	return result;
 }
 
-void releaseWidget () {
-	for (int i=0; i<itemCount; i++) {
-		TableItem item = items [i];
-		if (item != null && !item.isDisposed ()) item.releaseResources ();
+void releaseChildren (boolean destroy) {
+	if (items != null) {
+		for (int i=0; i<itemCount; i++) {
+			TableItem item = items [i];
+			if (item != null && !item.isDisposed ()) {
+				item.releaseChildren (false);
+			}
+		}
+		items = null;
 	}
-	items = null;
-	for (int i=0; i<columnCount; i++) {
-		TableColumn column = columns [i];
-		if (!column.isDisposed ()) column.releaseResources ();
+	if (columns != null) {
+		for (int i=0; i<columnCount; i++) {
+			TableColumn column = columns [i];
+			if (column != null && !column.isDisposed ()) {
+				column.releaseChildren (false);
+			}
+		}
+		columns = null;
 	}
-	columns = null;
-	super.releaseWidget ();
+	super.releaseChildren (destroy);
 }
 
 /**
@@ -1801,15 +1809,15 @@ public void remove (int index) {
 	checkWidget();
 	checkItems (true);
 	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_INVALID_RANGE);
+	TableItem item = items [index];
+	if (item != null) item.releaseChildren (false);
 	if (index != itemCount - 1) fixSelection (index, false);
 	int [] id = new int [] {itemCount};
 	if (OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, id.length, id, 0) != OS.noErr) {
 		error (SWT.ERROR_ITEM_NOT_REMOVED);
 	}
-	TableItem item = items [index];
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
-	if (item != null) item.releaseResources ();
 	OS.UpdateDataBrowserItems (handle, 0, 0, null, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
 	if (itemCount == 0) setTableEmpty ();
 }
@@ -1890,6 +1898,10 @@ public void remove (int [] indices) {
  */
 public void removeAll () {
 	checkWidget();
+	for (int i=0; i<itemCount; i++) {
+		TableItem item = items [i];
+		if (item != null && !item.isDisposed ()) item.releaseChildren (false);
+	}
 	/*
 	* Feature in the Mac. When RemoveDataBrowserItems() is used
 	* to remove items, item notification callbacks are issued with
@@ -1905,10 +1917,6 @@ public void removeAll () {
 	callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
 	OS.SetDataBrowserCallbacks (handle, callbacks);
 	OS.SetDataBrowserScrollPosition (handle, 0, 0);
-	for (int i=0; i<itemCount; i++) {
-		TableItem item = items [i];
-		if (item != null && !item.isDisposed ()) item.releaseResources ();
-	}
 	setTableEmpty ();
 }
 
@@ -2250,12 +2258,12 @@ public void setItemCount (int count) {
 	if (count < itemCount) {
 		int index = count;
 		while (index < itemCount) {
+			TableItem item = items [index];
+			if (item != null) item.releaseChildren (false);
 			int [] id = new int [] {index + 1};
 			if (OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, id.length, id, 0) != OS.noErr) {
 				break;
 			}
-			TableItem item = items [index];
-			if (item != null) item.releaseResources ();
 			index++;
 		}
 		if (index < itemCount) error (SWT.ERROR_ITEM_NOT_REMOVED);

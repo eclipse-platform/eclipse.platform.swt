@@ -240,6 +240,11 @@ void destroyEmptyMenu (int index) {
 	}
 }
 
+void destroyWidget () {
+	parent.destroyItem (this);
+	releaseHandle ();
+}
+
 /**
  * Returns the widget accelerator.  An accelerator is the bit-wise
  * OR of zero or more modifier masks and a key. Examples:
@@ -446,23 +451,25 @@ int keyGlyph (int key) {
 	return OS.kMenuNullGlyph;
 }
 
-void releaseChild () {
-	super.releaseChild ();
-	parent.destroyItem (this);
+void releaseHandle () {
+	super.releaseHandle ();
+	parent = null;
 }
 
-void releaseWidget () {
+void releaseChildren (boolean destroy) {
 	if (menu == null) {
 		destroyEmptyMenu (-1);
 	} else {
-		menu.releaseWidget ();
-		menu.destroyWidget ();
+		menu.releaseChildren (true, false);
+		menu = null;
 	}
-	menu = null;
+	super.releaseChildren (destroy);
+}
+
+void releaseWidget () {
 	super.releaseWidget ();
 	accelerator = 0;
 	if (this == parent.defaultItem) parent.defaultItem = null;
-	parent = null;
 }
 
 /**

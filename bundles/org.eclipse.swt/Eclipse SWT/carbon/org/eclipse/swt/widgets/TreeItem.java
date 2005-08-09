@@ -220,6 +220,12 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+void destroyWidget () {
+	parent.releaseItem (this, false);
+	parent.destroyItem (this);
+	releaseHandle ();
+}
+
 /**
  * Returns the receiver's background color.
  *
@@ -741,17 +747,23 @@ void redraw (int propertyID) {
 	}
 }
 
-void releaseChild () {
-	super.releaseChild ();
-	parent.destroyItem (this);
+void releaseChildren (boolean destroy) {
+	if (destroy) {
+		parent.releaseItems (getItems ());
+	}
+	super.releaseChildren (destroy);
+}
+
+void releaseHandle () {
+	super.releaseHandle ();
+	parentItem = null;
+	index = -1;
+	id = 0;
+	parent = null;
 }
 
 void releaseWidget () {
 	super.releaseWidget ();
-	parentItem = null;
-	parent = null;
-	id = 0;
-	index = -1;
 	strings = null;
 	images = null;
 	background = foreground = null;

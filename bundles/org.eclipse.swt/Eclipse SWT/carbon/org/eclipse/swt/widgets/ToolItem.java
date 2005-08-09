@@ -281,18 +281,12 @@ void deregister () {
 }
 
 void destroyWidget () {
+	parent.destroyItem (this);
 	int theControl = handle;
 	releaseHandle ();
 	if (theControl != 0) {
 		OS.DisposeControl (theControl);
 	}
-}
-
-public void dispose () {
-	if (isDisposed()) return;
-	ToolBar parent = this.parent;
-	super.dispose ();
-	parent.relayout ();
 }
 
 void drawBackground (int control) {
@@ -702,15 +696,16 @@ void register () {
 	if (labelHandle != 0) display.addWidget (labelHandle, this);
 }
 
-void releaseChild () {
-	super.releaseChild ();
+
+void releaseParent () {
+	super.releaseParent ();
 	setVisible (handle, false);
-	parent.destroyItem (this);
 }
 
 void releaseHandle () {
 	super.releaseHandle ();
 	handle = iconHandle = labelHandle = 0;
+	parent = null;
 }
 
 void releaseWidget () {
@@ -720,7 +715,6 @@ void releaseWidget () {
 	cIcon = labelCIcon = 0;
 	if (visibleRgn != 0) OS.DisposeRgn (visibleRgn);
 	visibleRgn = 0;
-	parent = null;
 	control = null;
 	toolTipText = null;
 	image = disabledImage = hotImage = null; 

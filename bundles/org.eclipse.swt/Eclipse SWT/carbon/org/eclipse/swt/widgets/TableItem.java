@@ -149,6 +149,11 @@ void clear () {
 	width = -1;
 }
 
+void destroyWidget () {
+	parent.destroyItem (this);
+	releaseHandle ();
+}
+
 /**
  * Returns the receiver's background color.
  *
@@ -513,14 +518,13 @@ void redraw (int propertyID) {
 	}
 }
 
-void releaseChild () {
-	super.releaseChild ();
-	parent.destroyItem (this);
+void releaseHandle () {
+	super.releaseHandle ();
+	parent = null;
 }
 
 void releaseWidget () {
 	super.releaseWidget ();
-	parent = null;
 	strings = null;
 	images = null;
 	background = foreground = null;

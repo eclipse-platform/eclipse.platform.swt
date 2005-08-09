@@ -1707,15 +1707,14 @@ void register () {
 	super.register ();
 	display.addWidget (handle, this);
 }
-
-void releaseChild () {
-	setVisible (topHandle (), false);
-	parent.removeControl (this);
-}
-
 void releaseHandle () {
 	super.releaseHandle ();
 	handle = 0;
+}
+
+void releaseParent () {
+	setVisible (topHandle (), false);
+	parent.removeControl (this);
 }
 
 void releaseWidget () {

@@ -235,6 +235,7 @@ void destroyItem (TabItem item) {
 		index++;
 	}
 	if (index == count) return;
+	redrawWidget (handle, false);
 	int selectionIndex = OS.GetControl32BitValue (handle) - 1;
 	--count;
 	OS.SetControl32BitMaximum (handle, count);
@@ -243,9 +244,13 @@ void destroyItem (TabItem item) {
 	if (count == 0) {
 		items = new TabItem [4];
 	}
+	for (int i = index; i < count; i++) {
+		items [i].update ();
+	}
 	if (count > 0 && index == selectionIndex) {
 		setSelection (Math.max (0, selectionIndex - 1), true);
 	}
+	invalidateVisibleRegion (handle);
 }
 
 public Rectangle getClientArea () {
@@ -465,14 +470,17 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
-void releaseWidget () {
-	int count = OS.GetControl32BitMaximum (handle);
-	for (int i=0; i<count; i++) {
-		TabItem item = items [i];
-		if (!item.isDisposed ()) item.releaseResources ();
+void releaseChildren (boolean destroy) {
+	if (items != null) {
+		for (int i=0; i<items.length; i++) {
+			TabItem item = items [i];
+			if (item != null && !item.isDisposed ()) {
+				item.releaseChildren (false);
+			}
+		}
+		items = null;
 	}
-	items = null;
-	super.releaseWidget ();
+	super.releaseChildren (destroy);
 }
 
 void removeControl (Control control) {

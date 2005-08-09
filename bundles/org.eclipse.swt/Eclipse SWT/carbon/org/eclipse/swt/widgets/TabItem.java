@@ -125,6 +125,11 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+void destroyWidget () {
+	parent.destroyItem (this);
+	releaseHandle ();
+}
+
 /**
  * Returns the control that is used to fill the client area of
  * the tab folder when the user selects the tab item.  If no
@@ -173,13 +178,17 @@ public String getToolTipText () {
 	return toolTipText;
 }
 
-void releaseChild () {
-	super.releaseChild ();
+void releaseHandle () {
+	super.releaseHandle ();
+	parent = null;
+}
+
+void releaseParent () {
+	super.releaseParent ();
 	int index = parent.indexOf (this);
 	if (index == parent.getSelectionIndex ()) {
 		if (control != null) control.setVisible (false);
 	}
-	parent.destroyItem (this);
 }
 
 void releaseWidget () {
@@ -192,7 +201,6 @@ void releaseWidget () {
 		cIcon = 0;
 	}
 	control = null;
-	parent = null;
 }
 
 /**
@@ -313,6 +321,12 @@ public void setText (String string) {
 public void setToolTipText (String string) {
 	checkWidget();
 	toolTipText = string;
+}
+
+void update () {
+	setText (text);
+	setImage (image);
+	setToolTipText (toolTipText);
 }
 
 }

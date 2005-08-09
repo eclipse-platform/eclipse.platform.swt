@@ -315,7 +315,6 @@ void destroyItem (MenuItem item) {
 	System.arraycopy (items, index + 1, items, index, --count - index);
 	items [count] = null;
 	if (count == 0) items = new MenuItem [4];
-	if (item.menu == null) item.destroyEmptyMenu (index);
 	modified = true;
 	OS.DeleteMenuItem (handle, (short) (index + 1));
 }
@@ -441,7 +440,20 @@ public MenuItem [] getItems () {
 	checkWidget ();
 	int count = OS.CountMenuItems (handle);
 	MenuItem [] result = new MenuItem [count];
-	System.arraycopy (items, 0, result, 0, count);
+	int index = 0;
+	if (items != null) {
+		for (int i = 0; i < count; i++) {
+			MenuItem item = items [i];
+			if (item != null && !item.isDisposed ()) {
+				result [index++] = item;
+			}
+		}
+	}
+	if (index != result.length) {
+		MenuItem [] newItems = new MenuItem[index];
+		System.arraycopy(result, 0, newItems, 0, index);
+		result = newItems;
+	}
 	return result;
 }
 
@@ -864,12 +876,17 @@ int modifierIndex (String accelText) {
 	return -1;
 }
 
-void releaseChild () {
-	super.releaseChild ();
-	if (cascade != null) cascade.setMenu (null);
-	if ((style & SWT.BAR) != 0 && this == parent.menuBar) {
-		parent.setMenuBar (null);
+void releaseChildren (boolean destroy, boolean releaseParent) {
+	if (items != null) {
+		for (int i=0; i<items.length; i++) {
+			MenuItem item = items [i];
+			if (item != null && !item.isDisposed ()) {
+				item.releaseChildren (false);
+			}
+		}
+		items = null;
 	}
+	super.releaseChildren (destroy, releaseParent);
 }
 
 void releaseHandle () {
@@ -877,13 +894,15 @@ void releaseHandle () {
 	handle = 0;
 }
 
-void releaseWidget () {
-	int count = OS.CountMenuItems (handle);
-	for (int i=0; i<count; i++) {
-		MenuItem item = items [i];
-		if (!item.isDisposed ()) item.releaseResources ();
+void releaseParent () {
+	super.releaseParent ();
+	if (cascade != null) cascade.setMenu (null);
+	if ((style & SWT.BAR) != 0 && this == parent.menuBar) {
+		parent.setMenuBar (null);
 	}
-	items = null;
+}
+
+void releaseWidget () {
 	super.releaseWidget ();
 	display.removeMenu (this);
 	parent = null;
