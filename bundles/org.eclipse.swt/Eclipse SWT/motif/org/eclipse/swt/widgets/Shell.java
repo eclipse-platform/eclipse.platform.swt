@@ -1108,22 +1108,24 @@ void register () {
 	super.register ();
 	display.addWidget (shellHandle, this);
 }
-void releaseChild () {
-	/* Do nothing */
+void releaseChildren (boolean destroy) {
+	Shell [] shells = getShells ();
+	for (int i=0; i<shells.length; i++) {
+		Shell shell = shells [i];
+		if (shell != null && !shell.isDisposed ()) {
+			shell.releaseChildren (false);
+		}
+	}
+	super.releaseChildren (destroy);
 }
 void releaseHandle () {
 	super.releaseHandle ();
 	shellHandle = 0;
 }
-void releaseShells () {
-	Shell [] shells = getShells ();
-	for (int i=0; i<shells.length; i++) {
-		Shell shell = shells [i];
-		if (!shell.isDisposed ()) shell.releaseResources ();
-	}
+void releaseParent () {
+	/* Do nothing */
 }
 void releaseWidget () {
-	releaseShells ();
 	super.releaseWidget ();
 	lastActive = null;
 	region = null;

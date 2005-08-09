@@ -285,6 +285,10 @@ Point computeSize (GC gc) {
 	}
 	return new Point (width, height);
 }
+void destroyWidget () {
+	parent.destroyItem (this);
+	releaseHandle ();
+}
 public void dispose () {
 	if (isDisposed()) return;
 	ToolBar parent = this.parent;
@@ -507,15 +511,14 @@ void redraw () {
 	if (window == 0) return;
 	OS.XClearArea (display, window, 0, 0, 0, 0, true);
 }
-void releaseChild () {
-	super.releaseChild ();
-	parent.destroyItem (this);
+void releaseHandle () {
+	super.releaseHandle ();
+	parent = null;
 }
 void releaseWidget () {
-	display.releaseToolTipHandle (handle);
 	super.releaseWidget ();
+	display.releaseToolTipHandle (handle);
 	if (parent.lastFocus == this) parent.lastFocus = null;
-	parent = null;
 	control = null;
 	toolTipText = null;
 	image = disabledImage = hotImage = null; 

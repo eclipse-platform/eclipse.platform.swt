@@ -985,6 +985,7 @@ void register () {
 	display.addWidget (argList[3], this);
 }
 void releaseWidget () {
+	super.releaseWidget ();
 	/*
 	* Bug in Motif.  Disposing a Combo while its list is visible
 	* causes Motif to crash.  The fix is to hide the drop down
@@ -993,13 +994,12 @@ void releaseWidget () {
 	if ((style & SWT.DROP_DOWN) != 0) {
 		int[] argList = new int[] {OS.XmNlist, 0};
 		OS.XtGetValues (handle, argList, argList.length / 2);
-		int parent = OS.XtParent (argList [1]);
-		while (parent != 0 && !OS.XtIsSubclass (parent, OS.shellWidgetClass ())) {
-			parent = OS.XtParent (parent);
+		int xtParent = OS.XtParent (argList [1]);
+		while (xtParent != 0 && !OS.XtIsSubclass (xtParent, OS.shellWidgetClass ())) {
+			xtParent = OS.XtParent (xtParent);
 		}
-		if (parent != 0) OS.XtPopdown (parent);
+		if (xtParent != 0) OS.XtPopdown (xtParent);
 	}
-	super.releaseWidget ();
 }
 /**
  * Searches the receiver's list starting at the first item

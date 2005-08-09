@@ -394,8 +394,8 @@ void manageChildren () {
 void propagateWidget (boolean enabled) {
 	propagateHandle (enabled, handle, OS.None);
 }
-void releaseChild () {
-	super.releaseChild ();
+void releaseParent () {
+	super.releaseParent ();
 	if (parent.horizontalBar == this) parent.horizontalBar = null;
 	if (parent.verticalBar == this) parent.verticalBar = null;
 }

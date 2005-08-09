@@ -500,14 +500,19 @@ String keysymName (int keysym) {
 void manageChildren () {
 	OS.XtManageChild (handle);
 }
-void releaseChild () {
-	super.releaseChild ();
+void releaseChildren (boolean destroy) {
+	if (menu != null) {
+		menu.releaseChildren (false);
+		menu = null;
+	}
+	super.releaseChildren (destroy);
+}
+void releaseParent () {
+	super.releaseParent ();
 	if (menu != null) menu.dispose ();
 	menu = null;
 }
 void releaseWidget () {
-	if (menu != null && !menu.isDisposed ()) menu.releaseResources ();
-	menu = null;
 	super.releaseWidget ();
 	accelerator = 0;
 	if (this == parent.defaultItem) {

@@ -70,6 +70,7 @@ public abstract class Widget {
 
 	/* More global state flags */
 	static final int RELEASED = 1<<7;
+	static final int DISPOSE_SENT = 1<<8;
 	
 	/* Default size for widgets */
 	static final int DEFAULT_WIDTH	= 64;
@@ -339,14 +340,7 @@ public void dispose () {
 	*/
 	if (isDisposed ()) return;
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if ((state & RELEASED) != 0) {
-		state |= DISPOSED;
-		return;
-	}
-	state |= RELEASED;
-	releaseChild ();
-	releaseWidget ();
-	destroyWidget ();
+	releaseChildren (true);
 }
 void enableHandle (boolean enabled, int widgetHandle) {
 	int [] argList = {OS.XmNsensitive, enabled ? 1 : 0};
@@ -620,23 +614,32 @@ void register () {
 	if (handle == 0) return;
 	display.addWidget (handle, this);
 }
-void releaseChild () {
-	/* Do nothing */
+void releaseChildren (boolean destroy) {
+	if ((state & DISPOSE_SENT) == 0) {
+		state |= DISPOSE_SENT;
+		sendEvent (SWT.Dispose);
+	}
+	if ((state & RELEASED) == 0) {
+		state |= RELEASED;
+		if (destroy) {
+			releaseParent ();
+			releaseWidget ();
+			destroyWidget ();
+		} else {
+			releaseWidget ();
+			releaseHandle ();
+		}
+	}
 }
 void releaseHandle () {
 	handle = 0;
 	state |= DISPOSED;
 	display = null;
 }
-void releaseResources () {
-	if ((state & RELEASED) != 0) return;
-	state |= RELEASED;
-	releaseWidget ();
-	releaseHandle ();
+void releaseParent () {
+	/* Do nothing */
 }
 void releaseWidget () {
-	sendEvent (SWT.Dispose);
-	state &= ~DISPOSED;
 	deregister ();
 	eventTable = null;
 	data = null;

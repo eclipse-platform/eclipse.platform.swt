@@ -176,7 +176,7 @@ void _setImages (Image [] images) {
 	OS.XtSetValues (topHandle, argList, argList.length / 2);
 }
 
-void add (Menu menu) {
+void addMenu (Menu menu) {
 	if (menus == null) menus = new Menu [4];
 	for (int i=0; i<menus.length; i++) {
 		if (menus [i] == null) {
@@ -417,19 +417,27 @@ void propagateWidget (boolean enabled) {
 	OS.XtGetValues (scrolledHandle, argList, argList.length / 2);
 	if (argList [1] != 0) propagateHandle (enabled, argList [1], OS.None);
 }
+void releaseChildren (boolean destroy) {
+	if (menuBar != null) {
+		menuBar.releaseChildren (false);
+		menuBar = null;
+	}
+	super.releaseChildren (destroy);
+	if (menus != null) {
+		for (int i=0; i<menus.length; i++) {
+			Menu menu = menus [i];
+			if (menu != null && !menu.isDisposed ()) {
+				menu.releaseChildren (false);
+			}
+		}
+		menus = null;
+	}
+}
 void releaseHandle () {
 	super.releaseHandle ();
 	dialogHandle = 0;
 }
 void releaseWidget () {
-	if (menus != null) {
-		for (int i=0; i<menus.length; i++) {
-			Menu menu = menus [i];
-			if (menu != null && !menu.isDisposed ()) menu.releaseResources ();
-		}
-	}
-	menuBar = null;
-	menus = null;
 	super.releaseWidget ();
 	image = null;
 	images = null;
@@ -453,7 +461,7 @@ boolean restoreFocus () {
 //	return false;
 	return restored;
 }
-void remove (Menu menu) {
+void removeMenu (Menu menu) {
 	if (menus == null) return;
 	for (int i=0; i<menus.length; i++) {
 		if (menus [i] == menu) {

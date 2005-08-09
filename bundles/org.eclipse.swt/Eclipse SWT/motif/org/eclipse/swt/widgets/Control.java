@@ -1467,10 +1467,11 @@ public void redraw (int x, int y, int width, int height, boolean all) {
 void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boolean allChildren) {
 	redrawHandle (x, y, width, height, redrawAll, handle);
 }
-void releaseChild () {
+void releaseParent () {
 	parent.removeControl (this);
 }
 void releaseWidget () {
+	super.releaseWidget ();
 	/*
 	* Restore the default font for the widget in case the
 	* application disposes the widget font in the dispose
@@ -1484,7 +1485,6 @@ void releaseWidget () {
 		OS.XtSetValues (fontHandle, argList2, argList2.length / 2);
 		OS.XmImSetValues (fontHandle, argList2, argList2.length / 2);
 	}
-	super.releaseWidget ();
 	display.releaseToolTipHandle (handle);
 	toolTipText = null;
 	if (menu != null && !menu.isDisposed ()) {

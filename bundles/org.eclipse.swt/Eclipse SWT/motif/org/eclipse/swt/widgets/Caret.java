@@ -263,8 +263,8 @@ void killFocus () {
 	display.setCurrentCaret (null);
 	if (isVisible) hideCaret ();
 }
-void releaseChild () {
-	super.releaseChild ();
+void releaseParent () {
+	super.releaseParent ();
 	if (this == parent.getCaret ()) parent.setCaret (null);
 }
 void releaseWidget () {

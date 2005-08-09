@@ -238,15 +238,20 @@ void register () {
 	if (formHandle != 0) display.addWidget (formHandle, this);
 	if (scrolledHandle != 0) display.addWidget (scrolledHandle, this);
 }
+void releaseChildren (boolean destroy) {
+	if (horizontalBar != null) {
+		horizontalBar.releaseChildren (false);
+		horizontalBar = null;
+	}
+	if (verticalBar != null) {
+		verticalBar.releaseChildren (false);
+		verticalBar = null;
+	}
+	super.releaseChildren (destroy);
+}
 void releaseHandle () {
 	super.releaseHandle ();
 	scrolledHandle = formHandle = 0;
-}
-void releaseWidget () {
-	if (horizontalBar != null) horizontalBar.releaseResources ();
-	if (verticalBar != null) verticalBar.releaseResources ();
-	horizontalBar = verticalBar = null;
-	super.releaseWidget ();
 }
 void setBackgroundPixel (int pixel) {
 	super.setBackgroundPixel (pixel);
