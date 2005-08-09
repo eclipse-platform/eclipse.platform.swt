@@ -1351,8 +1351,7 @@ public void drawText (String string, int x, int y, int flags) {
 		double baseline = y + extents.ascent;
 		Cairo.cairo_move_to(cairo, x, baseline);
 		byte[] buffer = Converter.wcsToMbcs(null, string, true);
-		Cairo.cairo_text_path(cairo, buffer);
-		Cairo.cairo_fill(cairo);
+		Cairo.cairo_show_text(cairo, buffer);
 		return;
 	}
 	setText(string, flags);
