@@ -541,7 +541,7 @@ abstract class Tab {
 		final Shell dialog = new Shell(eventConsole.getShell (), SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MODELESS);
 		dialog.setLayout(new GridLayout(2, false));
 		dialog.setText(getTabText() + " " + ControlExample.getResourceString ("Set_Get"));
-		nameCombo = new Combo(dialog, SWT.NONE);
+		nameCombo = new Combo(dialog, SWT.READ_ONLY);
 		nameCombo.setItems(methodNames);
 		nameCombo.setText(methodNames[0]);
 		nameCombo.setVisibleItemCount(methodNames.length);
@@ -558,6 +558,8 @@ abstract class Tab {
 		setButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				setValue();
+				setText.selectAll();
+				setText.setFocus();
 			}
 		});
 		setText = new Text(dialog, SWT.SINGLE | SWT.BORDER);
