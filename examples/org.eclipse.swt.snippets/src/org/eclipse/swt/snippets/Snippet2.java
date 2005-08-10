@@ -68,8 +68,8 @@ public static void main (String [] args) {
     column1.addListener(SWT.Selection, sortListener);
     column2.addListener(SWT.Selection, sortListener);
     table.setSortColumn(column1);
-	table.setSortDirection(SWT.UP);
-	shell.setSize(shell.computeSize(SWT.DEFAULT, SWT.DEFAULT).x, 300);
+    table.setSortDirection(SWT.UP);
+    shell.setSize(shell.computeSize(SWT.DEFAULT, SWT.DEFAULT).x, 300);
     shell.open();
     while (!shell.isDisposed ()) {
         if (!display.readAndDispatch ()) display.sleep ();
