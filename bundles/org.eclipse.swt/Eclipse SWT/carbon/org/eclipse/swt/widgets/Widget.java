@@ -86,10 +86,8 @@ public abstract class Widget {
 	
 	static final Rect EMPTY_RECT = new Rect ();
 
-static int count;
 Widget () {
 	/* Do nothing */
-	if (!(this instanceof Caret) && !(this instanceof Tracker)) count++;
 }
 
 /**
@@ -126,7 +124,6 @@ public Widget (Widget parent, int style) {
 	checkParent (parent);
 	this.style = style;
 	display = parent.display;
-	if (!(this instanceof Caret) && !(this instanceof Tracker)) count++;
 }
 
 int actionProc (int theControl, int partCode) {
@@ -1294,11 +1291,6 @@ void releaseChildren (boolean destroy, boolean releaseParent) {
 	if ((state & DISPOSE_SENT) == 0) {
 		state |= DISPOSE_SENT;
 		sendEvent (SWT.Dispose);
-		
-		if (!(this instanceof Caret) && !(this instanceof Tracker)) {
-			count--;
-			System.out.println(count + " " + this);
-		}
 	}
 	if ((state & RELEASED) == 0) {
 		state |= RELEASED;
