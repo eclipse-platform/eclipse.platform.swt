@@ -51,7 +51,7 @@ public class Snippet192 {
 				TableItem item = (TableItem) e.item;
 				int index = table.indexOf(item);
 				int[] datum = data[index];
-				item.setText(new String[] { Integer.toString(datum[0]),
+				item.setText(new String[] {Integer.toString(datum[0]),
 						Integer.toString(datum[1]) });
 			}
 		});
