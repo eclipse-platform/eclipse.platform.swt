@@ -1133,8 +1133,13 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			if (item != null) {
 				Event event = new Event();
 				event.detail = SWT.ARROW;
-				event.x = lpnm.left;
-				event.y = lpnm.bottom;
+				if ((style & SWT.VERTICAL) != 0) {
+					event.x = lpnm.right;
+					event.y = lpnm.top;
+				} else {
+					event.x = lpnm.left;
+					event.y = lpnm.bottom;
+				}
 				item.postEvent (SWT.Selection, event);
 			}
 			break;

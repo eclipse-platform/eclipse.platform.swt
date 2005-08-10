@@ -529,7 +529,7 @@ boolean drawFocusRing () {
 	return !display.noFocusRing || getShell ().parent != null;
 }
 
-boolean drawGripper (int x, int y, int width, int height) {
+boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
 	return false;
 }
 
