@@ -4062,7 +4062,6 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					}
 					int hDC = nmcd.hdc;
 					OS.RestoreDC (hDC, -1);
-					OS.SetBkMode (hDC, OS.TRANSPARENT);
 					boolean useColor = OS.IsWindowEnabled (handle);
 					if (useColor) {
 						if ((style & SWT.FULL_SELECTION) != 0) {
@@ -4100,6 +4099,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 							}
 						} else {
 							OS.SetTextColor (hDC, getForegroundPixel ());
+							OS.SetBkColor (hDC, getBackgroundPixel ());
 						}
 					}
 					if (hwndHeader != 0) {
@@ -4116,14 +4116,16 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 							int index = OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, i, 0);
 							OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
 							if (i > 0) {
+								int clrTextBk = -1;
 								OS.SetRect (rect, x, nmcd.top, x + hdItem.cxy, nmcd.bottom - gridWidth);
 								if (printClient || (style & SWT.FULL_SELECTION) != 0) {
-									drawBackground (hDC, OS.GetBkColor (hDC), rect);
+									clrTextBk = OS.GetBkColor (hDC);
+								} else {
+									if (useColor) {
+										clrTextBk = item.cellBackground != null ? item.cellBackground [index] : item.background;
+									}
 								}
-								if (useColor) {
-									int clrTextBk = item.cellBackground != null ? item.cellBackground [index] : item.background;
-									if (clrTextBk != -1) drawBackground (hDC, clrTextBk, rect);
-								}
+								if (clrTextBk != -1) drawBackground (hDC, clrTextBk, rect);
 								Image image = null;
 								if (index == 0) {
 									image = item.image;
@@ -4159,8 +4161,9 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 										int clrText = -1;
 										if (useColor) {
 											clrText = item.cellForeground != null ? item.cellForeground [index] : item.foreground;
-											clrText = clrText != -1? OS.SetTextColor (hDC, clrText) : -1;
+											clrText = clrText != -1 ? OS.SetTextColor (hDC, clrText) : -1;
 										}
+										int oldMode = clrTextBk != -1 ? OS.SetBkMode (hDC, OS.TRANSPARENT) : -1;
 										int flags = OS.DT_NOPREFIX | OS.DT_SINGLELINE | OS.DT_VCENTER | OS.DT_ENDELLIPSIS;
 										TreeColumn column = columns [index];
 										if ((column.style & SWT.LEFT) != 0) flags |= OS.DT_LEFT;
@@ -4170,6 +4173,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 										OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
 										if (hFont != -1) OS.SelectObject (hDC, hFont);
 										if (clrText != -1) OS.SetTextColor (hDC, clrText);
+										if (oldMode != -1) OS.SetBkMode (hDC, oldMode);
 									}
 								}
 							}
