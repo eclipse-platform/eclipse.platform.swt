@@ -80,10 +80,7 @@ public class CoolItem extends Item {
  * @see Widget#getStyle
  */
 public CoolItem (CoolBar parent, int style) {
-	super (parent, style);
-	this.parent = parent;
-	parent.createItem (this, parent.getItemCount());
-	calculateChevronTrim ();        
+	this (parent, style, parent.getItemCount());
 }
 /**
  * Constructs a new instance of this class given its parent
@@ -162,7 +159,6 @@ public void addSelectionListener(SelectionListener listener) {
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
-
 /* 
  * Find the trim size of the Toolbar widget in the current platform.
  */
@@ -172,6 +168,7 @@ void calculateChevronTrim () {
 	Image image = new Image (display, 1, 1);
 	ti.setImage (image);
 	Point size = tb.computeSize (SWT.DEFAULT, SWT.DEFAULT);
+	size = parent.fixPoint(size.x, size.y);
 	CHEVRON_HORIZONTAL_TRIM = size.x - 1;
 	CHEVRON_VERTICAL_TRIM = size.y - 1;
 	tb.dispose ();
@@ -210,7 +207,11 @@ public Point computeSize (int wHint, int hHint) {
 	int width = wHint, height = hHint;
 	if (wHint == SWT.DEFAULT) width = 32;
 	if (hHint == SWT.DEFAULT) height = 32;
-	width += MINIMUM_WIDTH;
+	if ((parent.style & SWT.VERTICAL) != 0) {
+		height += MINIMUM_WIDTH;
+	} else {
+		width += MINIMUM_WIDTH;
+	}	
 	return new Point (width, height);
 }
 public void dispose () {
@@ -236,6 +237,9 @@ public void dispose () {
 }
 
 Image createArrowImage (int width, int height) {
+	Point point = parent.fixPoint(width, height);
+	width = point.x;
+	height = point.y;
 	Color foreground = parent.getForeground ();
 	Color black = display.getSystemColor (SWT.COLOR_BLACK);
 	Color background = parent.getBackground ();
@@ -251,6 +255,9 @@ Image createArrowImage (int width, int height) {
 	gc.setForeground (black);
 	
 	int startX = 0 ;
+	if ((parent.style & SWT.VERTICAL) != 0) {
+		startX = width - CHEVRON_IMAGE_WIDTH;
+	}
 	int startY = height / 6; 
 	int step = 2;	
 	gc.drawLine (startX, startY, startX + step, startY + step);
@@ -280,6 +287,9 @@ Image createArrowImage (int width, int height) {
  */
 public Rectangle getBounds () {
 	checkWidget();
+	return parent.fixRectangle(itemBounds.x, itemBounds.y, itemBounds.width, itemBounds.height);
+}
+Rectangle internalGetBounds () {
 	return new Rectangle(itemBounds.x, itemBounds.y, itemBounds.width, itemBounds.height);
 }
 /**
@@ -311,7 +321,7 @@ public Control getControl () {
  */
 public Point getMinimumSize () {
 	checkWidget();
-	return new Point (minimumWidth, minimumHeight);
+	return parent.fixPoint(minimumWidth, minimumHeight);
 }
 /**
  * Returns the receiver's parent, which must be a <code>CoolBar</code>.
@@ -341,7 +351,7 @@ public CoolBar getParent () {
  */
 public Point getPreferredSize () {
 	checkWidget();
-	return new Point(preferredWidth, preferredHeight);
+	return parent.fixPoint(preferredWidth, preferredHeight);
 }
 /**
  * Returns a point describing the receiver's size. The
@@ -358,7 +368,7 @@ public Point getPreferredSize () {
  */
 public Point getSize () {
 	checkWidget();
-	return new Point (itemBounds.width, itemBounds.height);
+	return parent.fixPoint(itemBounds.width, itemBounds.height);
 }
 int internalGetMinimumWidth () {
 	int width = minimumWidth + MINIMUM_WIDTH;
@@ -374,8 +384,13 @@ void onSelection (Event ev) {
 	Rectangle bounds = chevron.getBounds();
 	Event event = new Event();
 	event.detail = SWT.ARROW;
-	event.x = bounds.x;
-	event.y = bounds.y + bounds.height;
+	if ((parent.style & SWT.VERTICAL) != 0) {
+		event.x = bounds.x + bounds.width;
+		event.y = bounds.y;
+	} else {
+		event.x = bounds.x;
+		event.y = bounds.y + bounds.height;
+	}
 	postEvent (SWT.Selection, event);
 }
 /**
@@ -414,7 +429,7 @@ void setBounds (int x, int y, int width, int height) {
 		if ((style & SWT.DROP_DOWN) != 0 && width < preferredWidth) {
 			controlWidth -= CHEVRON_IMAGE_WIDTH + CHEVRON_HORIZONTAL_TRIM + CHEVRON_LEFT_MARGIN;
 		}
-		control.setBounds (	x + MINIMUM_WIDTH,	y, controlWidth, height);
+		control.setBounds (parent.fixRectangle(x + MINIMUM_WIDTH,	y, controlWidth, height));
 	}
 	updateChevron();
 }
@@ -445,7 +460,7 @@ public void setControl (Control control) {
 		if ((style & SWT.DROP_DOWN) != 0 && itemBounds.width < preferredWidth) {
 			controlWidth -= CHEVRON_IMAGE_WIDTH + CHEVRON_HORIZONTAL_TRIM + CHEVRON_LEFT_MARGIN;
 		}
-		control.setBounds (itemBounds.x + MINIMUM_WIDTH, itemBounds.y, controlWidth, itemBounds.height);
+		control.setBounds (parent.fixRectangle(itemBounds.x + MINIMUM_WIDTH, itemBounds.y, controlWidth, itemBounds.height));
 	}
 }
 /**
@@ -464,8 +479,9 @@ public void setControl (Control control) {
  */
 public void setMinimumSize (int width, int height) {
 	checkWidget ();
-	minimumWidth = width;
-	minimumHeight = height;
+	Point point = parent.fixPoint(width, height);
+	minimumWidth = point.x;
+	minimumHeight = point.y;
 }
 /**
  * Sets the minimum size that the cool item can be resized to
@@ -502,8 +518,9 @@ public void setMinimumSize (Point size) {
 public void setPreferredSize (int width, int height) {
 	checkWidget();
 	ideal = true;
-	preferredWidth = Math.max (width, MINIMUM_WIDTH);
-	preferredHeight = height;
+	Point point = parent.fixPoint(width, height);
+	preferredWidth = Math.max (point.x, MINIMUM_WIDTH);
+	preferredHeight = point.y;
 }
 /**
  * Sets the receiver's ideal size to the point specified by the argument.
@@ -541,7 +558,9 @@ public void setPreferredSize (Point size) {
  */
 public void setSize (int width, int height) {
 	checkWidget();
-	width = Math.max(width, minimumWidth + MINIMUM_WIDTH);
+	Point point = parent.fixPoint(width, height);
+	width = Math.max(point.x, minimumWidth + MINIMUM_WIDTH);
+	height = point.y;
 	if (!ideal) {
 		preferredWidth = width;
 		preferredHeight = height;
@@ -553,7 +572,7 @@ public void setSize (int width, int height) {
 		if ((style & SWT.DROP_DOWN) != 0 && width < preferredWidth) {
 			controlWidth -= CHEVRON_IMAGE_WIDTH + CHEVRON_HORIZONTAL_TRIM + CHEVRON_LEFT_MARGIN;
 		}
-		control.setSize(controlWidth, height);
+		control.setSize(parent.fixPoint(controlWidth, height));
 	}
 	parent.relayout();
 	updateChevron();
@@ -585,7 +604,6 @@ void updateChevron() {
 	if (control != null) {
 		int width = itemBounds.width;
 		if ((style & SWT.DROP_DOWN) != 0 && width < preferredWidth) {
-			int height = Math.min (control.getSize ().y, itemBounds.height);
 			if (chevron == null) {
 				chevron = new ToolBar (parent, SWT.FLAT | SWT.NO_FOCUS);
 				ToolItem toolItem = new ToolItem (chevron, SWT.PUSH);
@@ -595,19 +613,28 @@ void updateChevron() {
 					}
 				});
 			}
-			int imageHeight = Math.max(1, height - CHEVRON_VERTICAL_TRIM);
-			if (arrowImage == null || (arrowImage != null && arrowImage.getBounds().height != imageHeight)) {
+			int controlHeight, currentImageHeight = 0;
+			if ((parent.style & SWT.VERTICAL) != 0) {
+				controlHeight = control.getSize ().x;
+				if (arrowImage != null) currentImageHeight = arrowImage.getBounds().width;
+			} else {
+				controlHeight = control.getSize ().y;
+				if (arrowImage != null) currentImageHeight = arrowImage.getBounds().height;
+			}			
+			int height = Math.min (controlHeight, itemBounds.height);
+			int imageHeight = Math.max(1, height - CHEVRON_VERTICAL_TRIM);			
+			if (currentImageHeight != imageHeight) {
 				Image image = createArrowImage (CHEVRON_IMAGE_WIDTH, imageHeight);
 				chevron.getItem (0).setImage (image);
 				if (arrowImage != null) arrowImage.dispose ();
 				arrowImage = image;
 			}
-			chevron.setBackground (parent.getBackground());			
-			chevron.setBounds (
+			chevron.setBackground (parent.getBackground());
+			chevron.setBounds (parent.fixRectangle (
 				itemBounds.x + width - CHEVRON_LEFT_MARGIN - CHEVRON_IMAGE_WIDTH - CHEVRON_HORIZONTAL_TRIM,
 				itemBounds.y,
 				CHEVRON_IMAGE_WIDTH + CHEVRON_HORIZONTAL_TRIM,
-				height);
+				height));
 			chevron.setVisible(true);
 		} else {
 			if (chevron != null) {

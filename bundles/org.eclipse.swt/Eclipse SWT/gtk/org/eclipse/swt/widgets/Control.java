@@ -97,11 +97,12 @@ void deregister () {
 	if (imHandle != 0) display.removeWidget (imHandle);
 }
 
-boolean drawGripper (int x, int y, int width, int height) {
+boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
 	int /*long*/ paintHandle = paintHandle ();
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle);
 	if (window == 0) return false;
-	OS.gtk_paint_handle (OS.gtk_widget_get_style (paintHandle), window, OS.GTK_STATE_NORMAL, OS.GTK_SHADOW_OUT, null, paintHandle, new byte [1], x, y, width, height, OS.GTK_ORIENTATION_VERTICAL);
+	int orientation = vertical ? OS.GTK_ORIENTATION_HORIZONTAL : OS.GTK_ORIENTATION_VERTICAL;
+	OS.gtk_paint_handle (OS.gtk_widget_get_style (paintHandle), window, OS.GTK_STATE_NORMAL, OS.GTK_SHADOW_OUT, null, paintHandle, new byte [1], x, y, width, height, orientation);
 	return true;
 }
 
