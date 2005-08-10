@@ -1300,6 +1300,7 @@ public class SWT {
 	 * <li><code>ScrollBar</code></li>
 	 * <li><code>Slider</code></li>
 	 * <li><code>ToolBar</code></li>
+	 * <li><code>CoolBar</code></li>
 	 * <li><code>FillLayout</code> type</li>
 	 * <li><code>RowLayout</code> type</li>
 	 * </ul></p>
