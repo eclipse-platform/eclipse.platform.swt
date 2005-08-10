@@ -1303,7 +1303,13 @@ public TableItem [] getSelection () {
 		for (int i=0; i<result.length; i++) result [i] = _getItem (display.treeSelection [i]);
 		return result;
 	}
-	int /*long*/ list = OS.gtk_tree_selection_get_selected_rows(selection, null);
+	/*
+	* Bug in GTK.  gtk_tree_selection_get_selected_rows() segments fault 
+	* in versions smaller than 2.2.4 if the model is NULL.  The fix is
+	* to give a valid pointer instead.  
+	*/
+	int /*long*/ [] model = OS.GTK_VERSION < OS.VERSION (2, 2, 4) ? new int [1] : null;
+	int /*long*/ list = OS.gtk_tree_selection_get_selected_rows (selection, model);
 	if (list != 0) {
 		int count = OS.g_list_length (list);
 		int [] treeSelection = new int [count];
@@ -1370,7 +1376,13 @@ public int getSelectionIndex () {
 		return display.treeSelection [0];
 	}
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
-	int /*long*/ list = OS.gtk_tree_selection_get_selected_rows (selection, null);
+	/*
+	* Bug in GTK.  gtk_tree_selection_get_selected_rows() segments fault 
+	* in versions smaller than 2.2.4 if the model is NULL.  The fix is
+	* to give a valid pointer instead.  
+	*/
+	int /*long*/ [] model = OS.GTK_VERSION < OS.VERSION (2, 2, 4) ? new int [1] : null;
+	int /*long*/ list = OS.gtk_tree_selection_get_selected_rows (selection, model);
 	if (list != 0) {
 		int count = OS.g_list_length (list);
 		int [] index = new int [1];
@@ -1416,7 +1428,13 @@ public int [] getSelectionIndices () {
 		System.arraycopy (display.treeSelection, 0, result, 0, display.treeSelectionLength);
 		return result;
 	}
-	int /*long*/ list = OS.gtk_tree_selection_get_selected_rows (selection, null);
+	/*
+	* Bug in GTK.  gtk_tree_selection_get_selected_rows() segments fault 
+	* in versions smaller than 2.2.4 if the model is NULL.  The fix is
+	* to give a valid pointer instead.  
+	*/
+	int /*long*/ [] model = OS.GTK_VERSION < OS.VERSION (2, 2, 4) ? new int [1] : null;
+	int /*long*/ list = OS.gtk_tree_selection_get_selected_rows (selection, model);
 	if (list != 0) {
 		int count = OS.g_list_length (list);
 		int [] treeSelection = new int [count];
