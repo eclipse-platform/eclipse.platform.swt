@@ -42,7 +42,7 @@ GTKLIBS = `pkg-config --libs-only-L gtk+-2.0 gthread-2.0` -lgtk-x11-2.0 -lgthrea
 AWT_LIBS = -L$(AWT_LIB_PATH) -ljawt -shared -s
 
 ATKCFLAGS = `pkg-config --cflags atk gtk+-2.0`
-ATKLIBS = `pkg-config --libs-only-L atk gtk+-2.0`-latk-1.0 -lgtk-x11-2.0
+ATKLIBS = `pkg-config --libs-only-L atk gtk+-2.0` -latk-1.0 -lgtk-x11-2.0
 
 GNOMECFLAGS = `pkg-config --cflags gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0`
 GNOMELIBS = `pkg-config --libs-only-L gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0` -lgnomevfs-2 -lgnome-2 -lgnomeui-2
