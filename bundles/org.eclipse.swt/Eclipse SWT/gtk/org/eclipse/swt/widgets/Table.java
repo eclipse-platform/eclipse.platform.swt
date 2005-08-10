@@ -852,12 +852,10 @@ void destroyItem (TableItem item) {
 		index++;
 	}
 	if (index == itemCount) return;
-	int /*long*/ itemHandle = item.handle;
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-	OS.gtk_list_store_remove (modelHandle, itemHandle);
+	OS.gtk_list_store_remove (modelHandle, item.handle);
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-	OS.g_free (itemHandle);
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
 	if (itemCount == 0) resetCustomDraw ();
