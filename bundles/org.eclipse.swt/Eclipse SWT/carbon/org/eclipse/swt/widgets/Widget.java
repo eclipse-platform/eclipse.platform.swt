@@ -1292,7 +1292,9 @@ void release (boolean destroy, boolean releaseParent) {
 		state |= DISPOSE_SENT;
 		sendEvent (SWT.Dispose);
 	}
-	releaseChildren (destroy);
+	if ((state & DISPOSED) == 0) {
+		releaseChildren (destroy);
+	}
 	if ((state & RELEASED) == 0) {
 		state |= RELEASED;
 		if (destroy) {
