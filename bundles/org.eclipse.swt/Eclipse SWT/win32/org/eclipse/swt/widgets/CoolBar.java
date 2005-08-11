@@ -405,7 +405,7 @@ int getMargin (int index) {
 }
 
 Control findThemeControl () {
-	if ((style & SWT.FLAT) != 0) return super.findThemeControl ();
+	if ((style & SWT.FLAT) != 0) return this;
 	return background == -1 ? this : super.findThemeControl ();
 }
 
