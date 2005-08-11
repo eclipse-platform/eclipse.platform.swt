@@ -143,6 +143,7 @@ public class OS extends Platform {
 	public static final int kControlBoundsChangeSizeChanged = 1 << 2;
 	public static final int kControlBoundsChangePositionChanged = 1 << 3;
 	public static final int kControlCheckBoxAutoToggleProc = 371;
+	public static final int kControlContentCGImageRef = 134;
 	public static final int kControlContentCIconHandle = 130;
 	public static final int kControlContentIconRef = 132;
 	public static final int kControlContentMetaPart = -2;

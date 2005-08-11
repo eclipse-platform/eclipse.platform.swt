@@ -34,7 +34,6 @@ public class TabItem extends Item {
 	TabFolder parent;
 	Control control;
 	String toolTipText;
-	int cIcon;
 	
 	static final int EXTRA_WIDTH = 25;
 
@@ -196,10 +195,6 @@ void releaseWidget () {
 	if (control != null) control.setVisible (false);
 	
 	super.releaseWidget ();
-	if (cIcon != 0) {
-		destroyCIcon (cIcon);
-		cIcon = 0;
-	}
 	control = null;
 }
 
@@ -246,17 +241,12 @@ public void setImage (Image image) {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	super.setImage (image);
-	if (cIcon != 0) {
-		destroyCIcon(cIcon);
-		cIcon = 0;
-	}
 	ControlButtonContentInfo inContent = new ControlButtonContentInfo ();
 	if (image == null) {
 		inContent.contentType = (short)OS.kControlContentTextOnly;
 	} else {
-		cIcon = createCIcon (image);
-		inContent.contentType = (short)OS.kControlContentCIconHandle;
-		inContent.iconRef = cIcon;
+		inContent.contentType = (short)OS.kControlContentCGImageRef;
+		inContent.iconRef = image.handle;
 	}
 	OS.SetControlData (parent.handle, index+1, OS.kControlTabImageContentTag, ControlButtonContentInfo.sizeof, inContent);
 	parent.redraw ();
