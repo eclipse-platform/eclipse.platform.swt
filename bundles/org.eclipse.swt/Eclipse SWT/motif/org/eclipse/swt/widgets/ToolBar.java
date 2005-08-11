@@ -416,7 +416,7 @@ void releaseChildren (boolean destroy) {
 		for (int i=0; i<itemCount; i++) {
 			ToolItem item = items [i];
 			if (item != null && !item.isDisposed ()) {
-				item.releaseChildren (false);
+				item.release (false);
 			}
 		}
 		items = null;

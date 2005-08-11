@@ -1916,7 +1916,7 @@ void releaseChildren (boolean destroy) {
 		for (int i=0; i<itemCount; i++) {
 			TableItem item = items [i];
 			if (item != null && !item.isDisposed ()) {
-				item.releaseChildren (false);
+				item.release (false);
 			}
 		}
 		items = null;
@@ -1925,7 +1925,7 @@ void releaseChildren (boolean destroy) {
 		for (int i=0; i<columnCount; i++) {
 			TableColumn column = columns [i];
 			if (column != null && !column.isDisposed ()) {
-				column.releaseChildren (false);
+				column.release (false);
 			}
 		}
 		columns = null;
@@ -1969,7 +1969,7 @@ public void remove (int index) {
 		disposed = item.isDisposed ();
 		if (!disposed) {
 			OS.memmove (iter, item.handle, OS.GtkTreeIter_sizeof ());
-			item.releaseChildren (false);
+			item.release (false);
 		}
 	} else {
 		OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
@@ -2013,7 +2013,7 @@ public void remove (int start, int end) {
 	int index = start;
 	while (index <= end) {
 		TableItem item = items [index];
-		if (item != null && !item.isDisposed ()) item.releaseChildren (false);
+		if (item != null && !item.isDisposed ()) item.release (false);
 		OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		OS.gtk_list_store_remove (modelHandle, iter);
 		OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
@@ -2063,7 +2063,7 @@ public void remove (int [] indices) {
 				disposed = item.isDisposed ();
 				if (!disposed) {
 					OS.memmove (iter, item.handle, OS.GtkTreeIter_sizeof ());
-					item.releaseChildren (false);
+					item.release (false);
 				}
 			} else {
 				OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
@@ -2094,7 +2094,7 @@ public void removeAll () {
 	int index = itemCount - 1;
 	while (index >= 0) {
 		TableItem item = items [index];
-		if (item != null && !item.isDisposed ()) item.releaseChildren (false);
+		if (item != null && !item.isDisposed ()) item.release (false);
 		--index;
 	}
 	items = new TableItem [4];

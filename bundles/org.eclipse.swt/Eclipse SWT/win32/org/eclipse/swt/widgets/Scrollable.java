@@ -190,11 +190,11 @@ public ScrollBar getVerticalBar () {
 
 void releaseChildren (boolean destroy) {
 	if (horizontalBar != null) {
-		horizontalBar.releaseChildren (false);
+		horizontalBar.release (false);
 		horizontalBar = null;
 	}
 	if (verticalBar != null) {
-		verticalBar.releaseChildren (false);
+		verticalBar.release (false);
 		verticalBar = null;
 	}
 	super.releaseChildren (destroy);

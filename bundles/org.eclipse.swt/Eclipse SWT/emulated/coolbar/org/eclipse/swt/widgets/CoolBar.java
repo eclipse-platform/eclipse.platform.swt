@@ -87,7 +87,7 @@ public CoolBar (Composite parent, int style) {
 	Listener listener = new Listener() {
 		public void handleEvent(Event event) {
 			switch (event.type) {
-				case SWT.Dispose:      		onDispose();        		break;
+				case SWT.Dispose:      		onDispose(event);        	break;
 				case SWT.MouseDown:    		onMouseDown(event);			break;
 				case SWT.MouseExit:    		onMouseExit();      		break;
 				case SWT.MouseMove:    		onMouseMove(event); 		break;
@@ -556,14 +556,17 @@ void moveUp(CoolItem item, int x_root) {
 		layoutItems();
 	}
 }
-void onDispose() {
+void onDispose(Event event) {
 	/*
 	 * Usually when an item is disposed, destroyItem will change the size of the items array
 	 * and reset the bounds of all the remaining cool items.
 	 * Since the whole cool bar is being disposed, this is not necessary.  For speed
 	 * the inDispose flag is used to skip over this part of the item dispose.
 	 */
+	if (inDispose) return;
 	inDispose = true;
+	notifyListeners(SWT.Dispose, event);
+	event.type = SWT.None;
 	for (int i = 0; i < items.length; i++) {
 		for (int j = 0; j < items[i].length; j++) {
 			items[i][j].dispose();

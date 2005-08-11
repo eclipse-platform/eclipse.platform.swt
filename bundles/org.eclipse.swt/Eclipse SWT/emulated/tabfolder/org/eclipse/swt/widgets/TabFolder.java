@@ -253,8 +253,11 @@ void destroyChild (TabItem item) {
 /**
  * Dispose the items of the receiver
  */
-void doDispose() {
+void doDispose(Event event) {
+	if (inDispose) return;
 	inDispose = true;
+	notifyListeners(SWT.Dispose, event);
+	event.type = SWT.None;
 	// items array is resized during TabItem.dispose
 	// it is length 0 if the last item is removed
 	while (items.length > 0) {						
@@ -597,7 +600,7 @@ public String getToolTipText () {
 void handleEvents (Event event){
 	switch (event.type) {
 		case SWT.Dispose:
-			doDispose();
+			doDispose(event);
 			break;
 		case SWT.Paint:
 			paint(event);

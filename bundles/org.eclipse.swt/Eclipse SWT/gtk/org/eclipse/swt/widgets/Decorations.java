@@ -459,7 +459,7 @@ void removeMenu (Menu menu) {
 
 void releaseChildren (boolean destroy) {
 	if (menuBar != null) {
-		menuBar.releaseChildren (false);
+		menuBar.release (false);
 		menuBar = null;
 	}
 	super.releaseChildren (destroy);

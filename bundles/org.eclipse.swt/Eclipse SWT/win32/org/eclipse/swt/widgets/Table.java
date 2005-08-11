@@ -1824,12 +1824,12 @@ void releaseChildren (boolean destroy) {
 				ignoreSelect = ignoreShrink = true;
 				OS.SendMessage (handle, OS.LVM_DELETEITEM, i, 0);
 				ignoreSelect = ignoreShrink = false;
-				if (item != null && !item.isDisposed ()) item.releaseChildren (false);
+				if (item != null && !item.isDisposed ()) item.release (false);
 			}
 		} else {
 			for (int i=0; i<itemCount; i++) {
 				TableItem item = items [i];
-				if (item != null && !item.isDisposed ()) item.releaseChildren (false);
+				if (item != null && !item.isDisposed ()) item.release (false);
 			}
 		}
 		items = null;
@@ -1840,7 +1840,7 @@ void releaseChildren (boolean destroy) {
 		if (columnCount == 1 && columns [0] == null) columnCount = 0;
 		for (int i=0; i<columnCount; i++) {
 			TableColumn column = columns [i];
-			if (!column.isDisposed ()) column.releaseChildren (false);
+			if (!column.isDisposed ()) column.release (false);
 		}
 		columns = null;
 	}
@@ -1898,7 +1898,7 @@ public void remove (int [] indices) {
 		int index = newIndices [i];
 		if (index != last) {
 			TableItem item = items [index];
-			if (item != null && !item.isDisposed ()) item.releaseChildren (false);
+			if (item != null && !item.isDisposed ()) item.release (false);
 			ignoreSelect = ignoreShrink = true;
 			int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, index, 0);
 			ignoreSelect = ignoreShrink = false;
@@ -1930,7 +1930,7 @@ public void remove (int index) {
 	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
 	TableItem item = items [index];
-	if (item != null && !item.isDisposed ()) item.releaseChildren (false);
+	if (item != null && !item.isDisposed ()) item.release (false);
 	ignoreSelect = ignoreShrink = true;
 	int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, index, 0);
 	ignoreSelect = ignoreShrink = false;
@@ -1969,7 +1969,7 @@ public void remove (int start, int end) {
 		int index = start;
 		while (index <= end) {
 			TableItem item = items [index];
-			if (item != null && !item.isDisposed ()) item.releaseChildren (false);
+			if (item != null && !item.isDisposed ()) item.release (false);
 			ignoreSelect = ignoreShrink = true;
 			int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, start, 0);
 			ignoreSelect = ignoreShrink = false;
@@ -1995,7 +1995,7 @@ public void removeAll () {
 	int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	for (int i=0; i<itemCount; i++) {
 		TableItem item = items [i];
-		if (item != null && !item.isDisposed ()) item.releaseChildren (false);
+		if (item != null && !item.isDisposed ()) item.release (false);
 	}
 	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
@@ -2607,7 +2607,7 @@ public void setItemCount (int count) {
 	int index = count;
 	while (index < itemCount) {
 		TableItem item = items [index];
-		if (item != null && !item.isDisposed ()) item.releaseChildren (false);
+		if (item != null && !item.isDisposed ()) item.release (false);
 		if (!isVirtual) {
 			ignoreSelect = ignoreShrink = true;
 			int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, count, 0);

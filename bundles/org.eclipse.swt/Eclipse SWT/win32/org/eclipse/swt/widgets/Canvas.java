@@ -113,7 +113,7 @@ public Caret getCaret () {
 
 void releaseChildren (boolean destroy) {
 	if (caret != null) {
-		caret.releaseChildren (false);
+		caret.release (false);
 		caret = null;
 	}
 	super.releaseChildren (destroy);

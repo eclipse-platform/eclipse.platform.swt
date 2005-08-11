@@ -480,7 +480,7 @@ public boolean isEnabled () {
 
 void releaseChildren (boolean destroy) {
 	if (menu != null) {
-		menu.releaseChildren (false);
+		menu.release (false);
 		menu = null;
 	}
 	super.releaseChildren (destroy);

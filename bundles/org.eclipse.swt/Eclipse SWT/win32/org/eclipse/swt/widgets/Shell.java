@@ -851,7 +851,7 @@ void releaseChildren (boolean destroy) {
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
 		if (shell != null && !shell.isDisposed ()) {
-			shell.releaseChildren (false);
+			shell.release (false);
 		}
 	}
 	super.releaseChildren (destroy);
@@ -1530,7 +1530,7 @@ LRESULT WM_DESTROY (int wParam, int lParam) {
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	if ((bits & OS.WS_CHILD) != 0) {
 		releaseParent ();
-		releaseChildren (false);
+		release (false);
 	}
 	return result;
 }

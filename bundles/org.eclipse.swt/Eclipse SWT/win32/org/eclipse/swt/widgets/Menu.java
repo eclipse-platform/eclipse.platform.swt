@@ -1055,7 +1055,7 @@ void releaseChildren (boolean destroy) {
 			if (OS.IsPPC && hwndCB != 0) {
 				item.dispose ();
 			} else {
-				item.releaseChildren (false);
+				item.release (false);
 			}
 		}
 	}

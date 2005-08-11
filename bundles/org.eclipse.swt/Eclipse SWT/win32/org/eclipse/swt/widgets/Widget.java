@@ -391,7 +391,7 @@ public void dispose () {
 	*/
 	if (isDisposed ()) return;
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	releaseChildren (true);
+	release (true);
 }
 
 /**
@@ -703,11 +703,12 @@ void postEvent (int eventType, Event event) {
  * @see #releaseParent
  * @see #releaseWidget
 */
-void releaseChildren (boolean destroy) {
+void release (boolean destroy) {
 	if ((state & DISPOSE_SENT) == 0) {
 		state |= DISPOSE_SENT;
 		sendEvent (SWT.Dispose);
 	}
+	releaseChildren (destroy);
 	if ((state & RELEASED) == 0) {
 		state |= RELEASED;
 		if (destroy) {
@@ -719,6 +720,9 @@ void releaseChildren (boolean destroy) {
 			releaseHandle ();
 		}
 	}
+}
+
+void releaseChildren (boolean destroy) {
 }
 
 /*

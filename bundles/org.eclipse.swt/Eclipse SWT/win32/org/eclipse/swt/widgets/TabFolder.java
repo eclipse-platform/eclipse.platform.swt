@@ -526,7 +526,7 @@ void releaseChildren (boolean destroy) {
 		for (int i=0; i<count; i++) {
 			TabItem item = items [i];
 			if (item != null && !item.isDisposed ()) {
-				item.releaseChildren (false);
+				item.release (false);
 			}
 		}
 		items = null;

@@ -47,7 +47,7 @@ public class Table extends Composite {
 	TableItem[] selectedItems = new TableItem [0];
 	TableItem focusItem, anchorItem, lastClickedItem;
 	Event lastSelectionEvent;
-	boolean linesVisible, ignoreKey;
+	boolean linesVisible, ignoreKey, ignoreDispose;
 	int itemsCount = 0;
 	int topIndex = 0, horizontalOffset = 0;
 	int fontHeight = 0, imageHeight = 0, itemHeight = 0;
@@ -1182,7 +1182,7 @@ void handleEvents (Event event) {
 		case SWT.MouseExit:
 			headerOnMouseExit (); break;
 		case SWT.Dispose:
-			onDispose (); break;		
+			onDispose (event); break;		
 		case SWT.KeyDown:
 			onKeyDown (event); break;
 		case SWT.Resize:
@@ -1766,8 +1766,12 @@ void onCR () {
 	event.item = focusItem;
 	postEvent (SWT.DefaultSelection, event);
 }
-void onDispose () {
+void onDispose (Event event) {
 	if (isDisposed ()) return;
+	if (ignoreDispose) return;
+	ignoreDispose = true;
+	notifyListeners(SWT.Dispose, event);
+	event.type = SWT.None;
 	for (int i = 0; i < itemsCount; i++) {
 		items [i].dispose (false);
 	}

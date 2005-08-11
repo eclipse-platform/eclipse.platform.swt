@@ -1113,7 +1113,7 @@ void releaseChildren (boolean destroy) {
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
 		if (shell != null && !shell.isDisposed ()) {
-			shell.releaseChildren (false);
+			shell.release (false);
 		}
 	}
 	super.releaseChildren (destroy);

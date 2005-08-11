@@ -1728,7 +1728,7 @@ void register () {
 
 void releaseItem (TreeItem item, TVITEM tvItem, boolean release) {
 	int hItem = item.handle;
-	if (release) item.releaseChildren (false);
+	if (release) item.release (false);
 	if (hItem == hAnchor) hAnchor = 0;
 	if (hItem == hInsert) hInsert = 0;
 	tvItem.hItem = hItem;
@@ -1761,7 +1761,7 @@ void releaseChildren (boolean destroy) {
 		for (int i=0; i<items.length; i++) {
 			TreeItem item = items [i];
 			if (item != null && !item.isDisposed ()) {
-				item.releaseChildren (false);
+				item.release (false);
 			}
 		}
 		items = null;
@@ -1770,7 +1770,7 @@ void releaseChildren (boolean destroy) {
 		for (int i=0; i<columns.length; i++) {
 			TreeColumn column = columns [i];
 			if (column != null && !column.isDisposed ()) {
-				column.releaseChildren (false);
+				column.release (false);
 			}
 		}
 		columns = null;
@@ -1819,7 +1819,7 @@ public void removeAll () {
 	for (int i=0; i<items.length; i++) {
 		TreeItem item = items [i];
 		if (item != null && !item.isDisposed ()) {
-			item.releaseChildren (false);
+			item.release (false);
 		}
 	}
 	items = new TreeItem [4];

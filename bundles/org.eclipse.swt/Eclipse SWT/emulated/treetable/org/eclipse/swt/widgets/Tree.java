@@ -51,7 +51,7 @@ public class Tree extends Composite {
 	Event lastSelectionEvent;
 	int availableItemsCount = 0;
 	boolean insertMarkPrecedes = false;
-	boolean linesVisible, ignoreKey;
+	boolean linesVisible, ignoreKey, ignoreDispose;
 	int topIndex = 0, horizontalOffset = 0;
 	int fontHeight = 0, imageHeight = 0, itemHeight = 0;
 	int headerImageHeight = 0, orderedCol0imageWidth = 0;
@@ -1137,7 +1137,7 @@ void handleEvents (Event event) {
 		case SWT.MouseExit:
 			headerOnMouseExit (); break;
 		case SWT.Dispose:
-			onDispose (); break;		
+			onDispose (event); break;		
 		case SWT.KeyDown:
 			onKeyDown (event); break;
 		case SWT.Resize:
@@ -1925,8 +1925,12 @@ void onCR () {
 	event.item = focusItem;
 	postEvent (SWT.DefaultSelection, event);
 }
-void onDispose () {
+void onDispose (Event event) {
 	if (isDisposed ()) return;
+	if (ignoreDispose) return;
+	ignoreDispose = true;
+	notifyListeners(SWT.Dispose, event);
+	event.type = SWT.None;
 	for (int i = 0; i < items.length; i++) {
 		items [i].dispose (false);
 	}
