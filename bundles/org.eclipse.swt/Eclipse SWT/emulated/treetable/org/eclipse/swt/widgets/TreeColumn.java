@@ -569,7 +569,17 @@ public void setResizable (boolean value) {
 }
 void setSortDirection (int value) {
 	if (value == sort) return;
+	boolean widthChange = value == SWT.NONE || sort == SWT.NONE;
 	sort = value;
+	if (widthChange) {
+		/* 
+		 * adding/removing the sort arrow decreases/increases the width that is
+		 * available for the column's header text, so recompute the display text
+		 */
+		GC gc = new GC (parent);
+		computeDisplayText (gc);
+		gc.dispose ();
+	}
 	if (parent.drawCount == 0 && parent.getHeaderVisible ()) {
 		parent.header.redraw (getX (), 0, width, parent.getHeaderHeight (), false);
 	}
