@@ -78,6 +78,8 @@ public class Browser extends Composite {
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
 	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget";
 	static final String NO_INPUT_METHOD = "org.eclipse.swt.internal.gtk.noInputMethod"; //$NON-NLS-1$
+	static final String URI_FROMMEMORY = "file:///"; //$NON-NLS-1$
+	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final int EVENT = 1;
 	static final int KEY_PRESS_EVENT = 2;
 /**
@@ -931,7 +933,15 @@ public String getUrl() {
 		XPCOM.nsEmbedCString_delete(aSpec);
 		uri.Release();
 	}
-	return dest != null ? new String(dest) : ""; //$NON-NLS-1$
+	if (dest == null) return ""; //$NON-NLS-1$
+	/*
+	 * If the URI indicates that the current page is being rendered from
+	 * memory (ie.- via setText()) then answer about:blank as the URL
+	 * to be consistent with win32.
+	 */
+	String location = new String (dest);
+	if (location.equals (URI_FROMMEMORY)) location = ABOUT_BLANK;
+	return location;
 }
 
 /**
@@ -1475,7 +1485,7 @@ public boolean setText(String html) {
 	* when the URI protocol for the nsInputStreamChannel
 	* is about:blank.  The fix is to specify the file protocol.
 	*/
-	byte[] aString = "file:".getBytes(); //$NON-NLS-1$
+	byte[] aString = URI_FROMMEMORY.getBytes();
 	int /*long*/ aSpec = XPCOM.nsEmbedCString_new(aString, aString.length);
 	rc = ioService.NewURI(aSpec, null, 0, result);
 	XPCOM.nsEmbedCString_delete(aSpec);
@@ -1779,6 +1789,14 @@ int /*long*/ OnLocationChange(int /*long*/ aWebProgress, int /*long*/ aRequest, 
 	event.display = getDisplay();
 	event.widget = this;
 	event.location = new String(dest);
+	if (event.location.equals (URI_FROMMEMORY)) {
+		/*
+		 * If the URI indicates that the page is being rendered from memory
+		 * (ie.- via setText()) then set the event location to about:blank
+		 * to be consistent with win32.
+		 */
+		event.location = ABOUT_BLANK;
+	}
 	event.top = aTop[0] == aDOMWindow[0];
 	for (int i = 0; i < locationListeners.length; i++)
 		locationListeners[i].changed(event);
@@ -2104,6 +2122,14 @@ int /*long*/ OnStartURIOpen(int /*long*/ aURI, int /*long*/ retval) {
 		event.display = getDisplay();
 		event.widget = this;
 		event.location = value;
+		if (event.location.equals (URI_FROMMEMORY)) {
+			/*
+			 * If the URI indicates that the page is being rendered from memory
+			 * (ie.- via setText()) then set the event location to about:blank
+			 * to be consistent with win32.
+			 */
+			event.location = ABOUT_BLANK;
+		}
 		event.doit = doit;
 		for (int i = 0; i < locationListeners.length; i++)
 			locationListeners[i].changing(event);
