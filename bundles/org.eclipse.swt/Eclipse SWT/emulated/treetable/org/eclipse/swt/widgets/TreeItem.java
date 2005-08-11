@@ -844,13 +844,13 @@ public Rectangle getBounds (int columnIndex) {
 		 */
 		int x = getContentX (columnIndex);
 		int offset = x - column.getX ();
-		int width = Math.max (0, column.width - offset);		/* max is for columns with small widths */
-		return new Rectangle (x, parent.getItemY (this), width, parent.itemHeight - 1);
+		int width = Math.max (0, column.width - offset - 1);		/* max is for columns with small widths */
+		return new Rectangle (x, parent.getItemY (this) + 1, width, parent.itemHeight - 1);
 	}
 	/*
 	 * For ordered columns > 0 this is the bounds of the tree cell.
 	 */
-	return new Rectangle (column.getX (), parent.getItemY (this), column.width, parent.itemHeight - 1);
+	return new Rectangle (column.getX (), parent.getItemY (this) + 1, column.width - 1, parent.itemHeight - 1);
 }
 /*
  * Returns the full bounds of a cell in a tree, regardless of its content.
@@ -1234,26 +1234,14 @@ public Rectangle getImageBounds (int columnIndex) {
 	int y = parent.getItemY (this);
 	int orderedIndex = parent.columns.length == 0 ? 0 : parent.columns [columnIndex].getOrderIndex ();
 	Image image = getImage (columnIndex, false); 
-
-	if (image == null) {
-		int width = 0;
-		/* for ordered column 0, image space is reserved even for null images */
-		if (orderedIndex == 0) width = parent.orderedCol0imageWidth;	
-		return new Rectangle (startX, y + padding, width, imageSpaceY);
-	}
-
-	Rectangle imageBounds = image.getBounds ();
-	int drawWidth;
+	int drawWidth = 0;
 	if (orderedIndex == 0) {
 		/* for ordered column 0 all images have the same width */
 		drawWidth = parent.orderedCol0imageWidth;
 	} else {
-		drawWidth = imageBounds.width;
+		if (image != null) drawWidth = image.getBounds ().width;
 	}
-	int drawHeight = Math.min (imageSpaceY, imageBounds.height);
-	return new Rectangle (
-		startX, y + (itemHeight - drawHeight) / 2,
-		drawWidth, drawHeight);
+	return new Rectangle (startX, y + padding, drawWidth, imageSpaceY);
 }
 int getIndex () {
 	TreeItem[] items;

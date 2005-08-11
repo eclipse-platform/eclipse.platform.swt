@@ -462,13 +462,13 @@ public Rectangle getBounds (int columnIndex) {
 		 */
 		int x = getContentX (0);
 		int offset = x - column.getX ();
-		int width = Math.max (0, column.width - offset);		/* max is for columns with small widths */
-		return new Rectangle (x, parent.getItemY (this), width, parent.itemHeight - 1);
+		int width = Math.max (0, column.width - offset - 1);		/* max is for columns with small widths */
+		return new Rectangle (x, parent.getItemY (this) + 1, width, parent.itemHeight - 1);
 	}
 	/*
 	 * For columns > 0 this is the bounds of the table cell.
 	 */
-	return new Rectangle (column.getX (), parent.getItemY (this), column.width, parent.itemHeight - 1);
+	return new Rectangle (column.getX (), parent.getItemY (this) + 1, column.width - 1, parent.itemHeight - 1);
 }
 /*
  * Returns the full bounds of a cell in a table, regardless of its content.
@@ -805,27 +805,14 @@ public Rectangle getImageBounds (int columnIndex) {
 	int imageSpaceY = itemHeight - 2 * padding;
 	int y = parent.getItemY (this);
 	Image image = getImage (columnIndex, false); 
-	if (image == null) {
-		return new Rectangle (startX, y + padding, 0, imageSpaceY);
-	}
-	
-	Rectangle imageBounds = image.getBounds ();
-	/* 
-	 * For column 0 all images have the same width, which may be larger or smaller
-	 * than the image to be drawn here.  Therefore the image bounds to draw must be
-	 * specified.
-	 */
-	int drawWidth;
+	int drawWidth = 0;
 	if (columnIndex == 0) {
-		int imageSpaceX = parent.col0ImageWidth;
-		drawWidth = Math.min (imageSpaceX, imageBounds.width);
+		/* for column 0 all images have the same width */
+		drawWidth = parent.col0ImageWidth;
 	} else {
-		drawWidth = imageBounds.width;
+		if (image != null) drawWidth = image.getBounds ().width;
 	}
-	int drawHeight = Math.min (imageSpaceY, imageBounds.height);
-	return new Rectangle (
-		startX, y + (itemHeight - drawHeight) / 2,
-		drawWidth, drawHeight);
+	return new Rectangle (startX, y + padding, drawWidth, imageSpaceY);
 }
 /**
  * Gets the image indent.
