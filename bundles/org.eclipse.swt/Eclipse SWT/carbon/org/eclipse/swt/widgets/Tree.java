@@ -1700,7 +1700,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 
 void releaseItem (TreeItem item, boolean release) {
 	int id = item.id;
-	if (release) item.releaseChildren (false);
+	if (release) item.release (false);
 	items [id - 1] = null;
 }
 
@@ -1722,7 +1722,7 @@ void releaseChildren (boolean destroy) {
 		for (int i=0; i<items.length; i++) {
 			TreeItem item = items [i];
 			if (item != null && !item.isDisposed ()) {
-				item.releaseChildren (false);
+				item.release (false);
 			}
 		}
 		items = null;
@@ -1731,7 +1731,7 @@ void releaseChildren (boolean destroy) {
 		for (int i=0; i<columnCount; i++) {
 			TreeColumn column = columns [i];
 			if (column != null && !column.isDisposed ()) {
-				column.releaseChildren (false);
+				column.release (false);
 			}
 		}
 		columns = null;
@@ -1751,7 +1751,7 @@ public void removeAll () {
 	checkWidget ();
 	for (int i=0; i<items.length; i++) {
 		TreeItem item = items [i];
-		if (item != null && !item.isDisposed ()) item.releaseChildren (false);
+		if (item != null && !item.isDisposed ()) item.release (false);
 	}
 	items = new TreeItem [4];
 	ignoreExpand = true;

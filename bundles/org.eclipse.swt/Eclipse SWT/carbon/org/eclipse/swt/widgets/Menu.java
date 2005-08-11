@@ -876,17 +876,17 @@ int modifierIndex (String accelText) {
 	return -1;
 }
 
-void releaseChildren (boolean destroy, boolean releaseParent) {
+void releaseChildren (boolean destroy) {
 	if (items != null) {
 		for (int i=0; i<items.length; i++) {
 			MenuItem item = items [i];
 			if (item != null && !item.isDisposed ()) {
-				item.releaseChildren (false);
+				item.release (false);
 			}
 		}
 		items = null;
 	}
-	super.releaseChildren (destroy, releaseParent);
+	super.releaseChildren (destroy);
 }
 
 void releaseHandle () {

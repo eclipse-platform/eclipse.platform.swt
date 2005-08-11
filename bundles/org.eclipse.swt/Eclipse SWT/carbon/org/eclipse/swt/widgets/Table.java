@@ -1774,7 +1774,7 @@ void releaseChildren (boolean destroy) {
 		for (int i=0; i<itemCount; i++) {
 			TableItem item = items [i];
 			if (item != null && !item.isDisposed ()) {
-				item.releaseChildren (false);
+				item.release (false);
 			}
 		}
 		items = null;
@@ -1783,7 +1783,7 @@ void releaseChildren (boolean destroy) {
 		for (int i=0; i<columnCount; i++) {
 			TableColumn column = columns [i];
 			if (column != null && !column.isDisposed ()) {
-				column.releaseChildren (false);
+				column.release (false);
 			}
 		}
 		columns = null;
@@ -1810,7 +1810,7 @@ public void remove (int index) {
 	checkItems (true);
 	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_INVALID_RANGE);
 	TableItem item = items [index];
-	if (item != null) item.releaseChildren (false);
+	if (item != null) item.release (false);
 	if (index != itemCount - 1) fixSelection (index, false);
 	int [] id = new int [] {itemCount};
 	if (OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, id.length, id, 0) != OS.noErr) {
@@ -1900,7 +1900,7 @@ public void removeAll () {
 	checkWidget();
 	for (int i=0; i<itemCount; i++) {
 		TableItem item = items [i];
-		if (item != null && !item.isDisposed ()) item.releaseChildren (false);
+		if (item != null && !item.isDisposed ()) item.release (false);
 	}
 	/*
 	* Feature in the Mac. When RemoveDataBrowserItems() is used
@@ -2259,7 +2259,7 @@ public void setItemCount (int count) {
 		int index = count;
 		while (index < itemCount) {
 			TableItem item = items [index];
-			if (item != null) item.releaseChildren (false);
+			if (item != null) item.release (false);
 			int [] id = new int [] {index + 1};
 			if (OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, id.length, id, 0) != OS.noErr) {
 				break;

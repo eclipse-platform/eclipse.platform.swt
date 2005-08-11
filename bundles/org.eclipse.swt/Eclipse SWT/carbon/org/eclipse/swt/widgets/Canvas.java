@@ -138,7 +138,7 @@ void redrawWidget (int control, int x, int y, int width, int height, boolean all
 
 void releaseChildren (boolean destroy) {
 	if (caret != null) {
-		caret.releaseChildren (false);
+		caret.release (false);
 		caret = null;
 	}
 	super.releaseChildren (destroy);
