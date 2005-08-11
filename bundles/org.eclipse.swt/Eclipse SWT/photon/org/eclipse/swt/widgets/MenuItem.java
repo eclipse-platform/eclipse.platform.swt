@@ -462,7 +462,7 @@ int Pt_CB_REALIZED (int widget, int info) {
 
 void releaseChildren (boolean destroy) {
 	if (menu != null && !menu.isDisposed ()) {
-		menu.releaseChildren (false);
+		menu.release (false);
 		menu = null;
 	}
 	super.releaseChildren (destroy);

@@ -837,7 +837,7 @@ void releaseChildren (boolean destroy) {
 			if (shell.parent != null && OS.PtWidgetParent (shell.shellHandle) == 0) {
 				shell.dispose ();
 			} else {
-				shell.releaseChildren (false);
+				shell.release (false);
 			}
 		}
 	}

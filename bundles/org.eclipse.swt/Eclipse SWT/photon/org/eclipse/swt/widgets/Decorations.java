@@ -359,7 +359,7 @@ Decorations menuShell () {
 
 void releaseChildren (boolean destroy) {
 	if (menuBar != null) {
-		menuBar.releaseChildren (false);
+		menuBar.release (false);
 		menuBar = null;
 	}
 	super.releaseChildren (destroy);
@@ -367,7 +367,7 @@ void releaseChildren (boolean destroy) {
 		for (int i=0; i<menus.length; i++) {
 			Menu menu = menus [i];
 			if (menu != null && !menu.isDisposed ()) {
-				menu.releaseChildren (false);
+				menu.release (false);
 			} 
 		}
 		menus = null;
