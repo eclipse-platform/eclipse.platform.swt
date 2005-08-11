@@ -307,7 +307,7 @@ int defaultThemeFont () {
 }
 
 void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
-	if (isImage && image != null && (style & SWT.PUSH) != 0 && (style & SWT.FLAT) == 0) {
+	if (OS.VERSION < 0x1040 && isImage && image != null && (style & SWT.PUSH) != 0 && (style & SWT.FLAT) == 0) {
 		Rect bounds = new Rect(), content = new Rect();
 		OS.GetControlBounds (handle, bounds);
 		ThemeButtonDrawInfo drawInfo = new ThemeButtonDrawInfo();
@@ -647,10 +647,15 @@ public void setImage (Image image) {
 		OS.CFRelease (ptr);
 	}
 
-	cIcon = createCIcon (image);
 	ControlButtonContentInfo inContent = new ControlButtonContentInfo ();
-	inContent.contentType = (short)OS.kControlContentCIconHandle;
-	inContent.iconRef = cIcon;
+	if (OS.VERSION < 0x1040) {
+		cIcon = createCIcon (image);
+		inContent.contentType = (short)OS.kControlContentCIconHandle;
+		inContent.iconRef = cIcon;
+	} else {
+		inContent.contentType = (short)OS.kControlContentCGImageRef;
+		inContent.iconRef = image.handle;
+	}
 	OS.SetBevelButtonContentInfo (handle, inContent);
 	redraw ();
 }
