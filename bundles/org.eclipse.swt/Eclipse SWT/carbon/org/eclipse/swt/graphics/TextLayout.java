@@ -343,9 +343,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	OS.CGContextSaveGState(gc.handle);
 	boolean restoreColor = false;
 	if (hasSelection && selectionBackground != null) {
-		int[] response = new int[1];
-		int err = OS.Gestalt(OS.gestaltSystemVersion, response);
-		if (err == OS.noErr && ((response[0] & 0xffff) >= 0x1030)) {
+		if (OS.VERSION >= 0x1030) {
 			restoreColor = true;
 			int color = OS.CGColorCreate(device.colorspace, selectionBackground.handle);
 			setLayoutControl(OS.kATSULineHighlightCGColorTag, color, 4);
