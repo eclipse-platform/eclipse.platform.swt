@@ -1304,9 +1304,9 @@ public TableItem [] getSelection () {
 		return result;
 	}
 	/*
-	* Bug in GTK.  gtk_tree_selection_get_selected_rows() segments fault 
+	* Bug in GTK.  gtk_tree_selection_get_selected_rows() segmentation faults
 	* in versions smaller than 2.2.4 if the model is NULL.  The fix is
-	* to give a valid pointer instead.  
+	* to give a valid pointer instead.
 	*/
 	int /*long*/ [] model = OS.GTK_VERSION < OS.VERSION (2, 2, 4) ? new int [1] : null;
 	int /*long*/ list = OS.gtk_tree_selection_get_selected_rows (selection, model);
@@ -1377,9 +1377,9 @@ public int getSelectionIndex () {
 	}
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 	/*
-	* Bug in GTK.  gtk_tree_selection_get_selected_rows() segments fault 
+	* Bug in GTK.  gtk_tree_selection_get_selected_rows() segmentation faults
 	* in versions smaller than 2.2.4 if the model is NULL.  The fix is
-	* to give a valid pointer instead.  
+	* to give a valid pointer instead.
 	*/
 	int /*long*/ [] model = OS.GTK_VERSION < OS.VERSION (2, 2, 4) ? new int [1] : null;
 	int /*long*/ list = OS.gtk_tree_selection_get_selected_rows (selection, model);
@@ -1429,9 +1429,9 @@ public int [] getSelectionIndices () {
 		return result;
 	}
 	/*
-	* Bug in GTK.  gtk_tree_selection_get_selected_rows() segments fault 
+	* Bug in GTK.  gtk_tree_selection_get_selected_rows() segmentation faults
 	* in versions smaller than 2.2.4 if the model is NULL.  The fix is
-	* to give a valid pointer instead.  
+	* to give a valid pointer instead.
 	*/
 	int /*long*/ [] model = OS.GTK_VERSION < OS.VERSION (2, 2, 4) ? new int [1] : null;
 	int /*long*/ list = OS.gtk_tree_selection_get_selected_rows (selection, model);
