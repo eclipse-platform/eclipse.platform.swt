@@ -303,10 +303,10 @@ public void pack () {
 	checkWidget ();
 	GC gc = new GC (parent);
 	int width = gc.stringExtent (text).x;
-	if (iconRef != 0) {
+	if (iconRef != 0 || (image != null && OS.VERSION >= 0x1040)) {
 		/* Note that the image is stretched to the header height */
 		width += parent.headerHeight;
-		if (text.length () != 0) width += 3;
+		if (text.length () != 0) width += 4;
 	}
 	if ((parent.style & SWT.VIRTUAL) == 0) {
 		int index = parent.indexOf (this);
@@ -437,7 +437,9 @@ public void setImage (Image image) {
 	}
 	super.setImage (image);
 	if (image != null) {
-		iconRef = createIconRef (image);
+		if (OS.VERSION < 0x1040) {
+			iconRef = createIconRef (image);
+		}
 	}
 	updateHeader ();
 }
@@ -540,8 +542,15 @@ void updateHeader () {
 		desc.minimumWidth = desc.maximumWidth = width [0];
 	}
 	desc.titleString = str;
-	desc.btnContentInfo_contentType = (short) (iconRef != 0 ? OS.kControlContentIconRef : OS.kControlContentTextOnly);
-	desc.btnContentInfo_iconRef = iconRef;
+	if (OS.VERSION < 0x1040) {
+		desc.btnContentInfo_contentType = (short) (iconRef != 0 ? OS.kControlContentIconRef : OS.kControlContentTextOnly);
+		desc.btnContentInfo_iconRef = iconRef;
+	} else {
+		if (image != null) {
+			desc.btnContentInfo_contentType = OS.kControlContentCGImageRef;
+			desc.btnContentInfo_iconRef = image.handle;
+		}
+	}
 	OS.SetDataBrowserListViewHeaderDesc (parent.handle, id, desc);
 	OS.CFRelease (str);
 }

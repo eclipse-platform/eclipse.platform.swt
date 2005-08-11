@@ -106,9 +106,7 @@ public Browser(Composite parent, int style) {
 	* The workaround is to detect any OS prior to 10.30 and fail
 	* without crashing.
 	*/
-	int[] response = new int[1];
-	int err = OS.Gestalt(OS.gestaltSystemVersion, response);
-	if (err != OS.noErr || ((response[0] & 0xffff) < 0x1030)) {
+	if (OS.VERSION < 0x1030) {
 		dispose();
 		SWT.error(SWT.ERROR_NO_HANDLES);
 	}

@@ -20,6 +20,13 @@ public class OS extends Platform {
 		Library.loadLibrary ("swt-pi");
 	}
 	
+	public static final int VERSION;
+	static {
+		int [] response = new int [1];
+		OS.Gestalt (OS.gestaltSystemVersion, response);
+		VERSION  = response [0] & 0xffff;
+	}
+
 	/** Constants */
 	public static final int RGBDirect = 16;
 	public static final int alphaLock = 0x0400;
