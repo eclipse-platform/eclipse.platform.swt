@@ -221,7 +221,8 @@ protected void checkSubclass () {
 }
 
 void destroyWidget () {
-	parent.releaseItem (this, false);
+	//TEMPORARY CODE
+//	parent.releaseItem (this, false);
 	parent.destroyItem (this);
 	releaseHandle ();
 }

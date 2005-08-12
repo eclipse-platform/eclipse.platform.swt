@@ -651,6 +651,8 @@ void destroyItem (TreeItem item) {
 	if (hasChild && parentItem != null && !parentItem.getExpanded ()) {
 		parentItem.redraw (OS.kDataBrowserNoItem);
 	}
+	//TEMPORARY CODE
+	releaseItem (item, false);
 	setScrollWidth ();
 }
 
@@ -1425,6 +1427,7 @@ int itemDataProc (int browser, int id, int property, int itemData, int setValue)
 			for (int i=0; i<items.length; i++) {
 				if (items [i] != null && items [i].parentItem == item) {
 					OS.SetDataBrowserItemDataBooleanValue (itemData, true);
+					break;
 				}
 			}
 			break;
@@ -1536,7 +1539,7 @@ int itemNotificationProc (int browser, int id, int message) {
 			* issue a selection event.
 			*/
 			int ptr = OS.NewHandle (0);
-			if (OS.GetDataBrowserItems (handle, item.id, true, OS.kDataBrowserItemIsSelected, ptr) == OS.noErr) {
+			if (OS.GetDataBrowserItems (handle, id, true, OS.kDataBrowserItemIsSelected, ptr) == OS.noErr) {
 				int count = OS.GetHandleSize (ptr) / 4;
 				if (count > 0) {
 					int [] ids = new int [count];
