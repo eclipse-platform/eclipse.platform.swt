@@ -2276,6 +2276,9 @@ String getModelDelimitedText(String text) {
  * Creates default key bindings.
  */
 void createKeyBindings() {
+	int nextKey = isMirrored() ? SWT.ARROW_LEFT : SWT.ARROW_RIGHT;
+	int previousKey = isMirrored() ? SWT.ARROW_RIGHT : SWT.ARROW_LEFT;
+	
 	// Navigation
 	setKeyBinding(SWT.ARROW_UP, ST.LINE_UP);	
 	setKeyBinding(SWT.ARROW_DOWN, ST.LINE_DOWN);
@@ -2283,22 +2286,14 @@ void createKeyBindings() {
 	setKeyBinding(SWT.END, ST.LINE_END);
 	setKeyBinding(SWT.PAGE_UP, ST.PAGE_UP);
 	setKeyBinding(SWT.PAGE_DOWN, ST.PAGE_DOWN);
-	setKeyBinding(SWT.HOME | SWT.MOD1, ST.TEXT_START);	
+	setKeyBinding(SWT.HOME | SWT.MOD1, ST.TEXT_START);
 	setKeyBinding(SWT.END | SWT.MOD1, ST.TEXT_END);
 	setKeyBinding(SWT.PAGE_UP | SWT.MOD1, ST.WINDOW_START);
 	setKeyBinding(SWT.PAGE_DOWN | SWT.MOD1, ST.WINDOW_END);
-	if (isMirrored()) {
-		setKeyBinding(SWT.ARROW_LEFT, ST.COLUMN_NEXT);
-		setKeyBinding(SWT.ARROW_RIGHT, ST.COLUMN_PREVIOUS);
-		setKeyBinding(SWT.ARROW_LEFT | SWT.MOD1, ST.WORD_NEXT);
-		setKeyBinding(SWT.ARROW_RIGHT | SWT.MOD1, ST.WORD_PREVIOUS);
-	} 
-	else {
-		setKeyBinding(SWT.ARROW_LEFT, ST.COLUMN_PREVIOUS);
-		setKeyBinding(SWT.ARROW_RIGHT, ST.COLUMN_NEXT);
-		setKeyBinding(SWT.ARROW_LEFT | SWT.MOD1, ST.WORD_PREVIOUS);
-		setKeyBinding(SWT.ARROW_RIGHT | SWT.MOD1, ST.WORD_NEXT);
-	}
+	setKeyBinding(nextKey, ST.COLUMN_NEXT);
+	setKeyBinding(previousKey, ST.COLUMN_PREVIOUS);
+	setKeyBinding(nextKey | SWT.MOD1, ST.WORD_NEXT);
+	setKeyBinding(previousKey | SWT.MOD1, ST.WORD_PREVIOUS);
 	
 	// Selection
 	setKeyBinding(SWT.ARROW_UP | SWT.MOD2, ST.SELECT_LINE_UP);	
@@ -2311,18 +2306,10 @@ void createKeyBindings() {
 	setKeyBinding(SWT.END | SWT.MOD1 | SWT.MOD2, ST.SELECT_TEXT_END);
 	setKeyBinding(SWT.PAGE_UP | SWT.MOD1 | SWT.MOD2, ST.SELECT_WINDOW_START);
 	setKeyBinding(SWT.PAGE_DOWN | SWT.MOD1 | SWT.MOD2, ST.SELECT_WINDOW_END);
-	if (isMirrored()) {
-		setKeyBinding(SWT.ARROW_LEFT | SWT.MOD2, ST.SELECT_COLUMN_NEXT);
-		setKeyBinding(SWT.ARROW_RIGHT | SWT.MOD2, ST.SELECT_COLUMN_PREVIOUS);	  
-		setKeyBinding(SWT.ARROW_LEFT | SWT.MOD1 | SWT.MOD2, ST.SELECT_WORD_NEXT);
-		setKeyBinding(SWT.ARROW_RIGHT | SWT.MOD1 | SWT.MOD2, ST.SELECT_WORD_PREVIOUS);
-	}
-	else {
-		setKeyBinding(SWT.ARROW_LEFT | SWT.MOD2, ST.SELECT_COLUMN_PREVIOUS);
-		setKeyBinding(SWT.ARROW_RIGHT | SWT.MOD2, ST.SELECT_COLUMN_NEXT);
-		setKeyBinding(SWT.ARROW_LEFT | SWT.MOD1 | SWT.MOD2, ST.SELECT_WORD_PREVIOUS);
-		setKeyBinding(SWT.ARROW_RIGHT | SWT.MOD1 | SWT.MOD2, ST.SELECT_WORD_NEXT);	    	    
-	}
+	setKeyBinding(nextKey | SWT.MOD2, ST.SELECT_COLUMN_NEXT);
+	setKeyBinding(previousKey | SWT.MOD2, ST.SELECT_COLUMN_PREVIOUS);	
+	setKeyBinding(nextKey | SWT.MOD1 | SWT.MOD2, ST.SELECT_WORD_NEXT);
+	setKeyBinding(previousKey | SWT.MOD1 | SWT.MOD2, ST.SELECT_WORD_PREVIOUS);
            	  	
 	// Modification
 	// Cut, Copy, Paste
