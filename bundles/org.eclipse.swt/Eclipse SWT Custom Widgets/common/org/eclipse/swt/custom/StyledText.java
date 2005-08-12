@@ -1635,7 +1635,7 @@ public StyledText(Composite parent, int style) {
 		setWordWrap(true);
 	}
 	else {
-	    lineCache = new ContentWidthCache(this, content);
+		lineCache = new ContentWidthCache(this, content);
 	}	
 	defaultCaret = new Caret(this, SWT.NULL);
 	if (isBidiCaret()) {
@@ -1942,7 +1942,7 @@ public void append(String string) {
  * Calculates the width of the widest visible line.
  */
 void calculateContentWidth() {
-    lineCache = getLineCache(content);
+	lineCache = getLineCache(content);
 	lineCache.calculate(topIndex, getPartialBottomIndex() - topIndex + 1);
 }
 /**
@@ -3811,13 +3811,13 @@ public int getLineHeight() {
  * @return a LineCache implementation
  */
 LineCache getLineCache(StyledTextContent content) {
-    LineCache lineCache;
+	LineCache lineCache;
     
 	if (wordWrap) {
-	    lineCache = new WordWrapCache(this, (WrappedContent) content);
+		lineCache = new WordWrapCache(this, (WrappedContent) content);
 	}
 	else {
-	    lineCache = new ContentWidthCache(this, content);
+		lineCache = new ContentWidthCache(this, content);
 	}
 	return lineCache;
 }
@@ -6652,17 +6652,17 @@ public void setWordWrap(boolean wrap) {
 		
 		wordWrap = wrap;
 		if (wordWrap) {
-		    logicalContent = content;
-		    content = new WrappedContent(renderer, logicalContent);
+			logicalContent = content;
+			content = new WrappedContent(renderer, logicalContent);
 		}
 		else {
-		    content = logicalContent;
+			content = logicalContent;
 		}
 		calculateContentWidth();
-	    horizontalScrollOffset = 0;
-	    if (horizontalBar != null) {
-			horizontalBar.setVisible(!wordWrap);		
-	    }
+	  horizontalScrollOffset = 0;
+	  if (horizontalBar != null) {
+	  	horizontalBar.setVisible(!wordWrap);
+	  }
 		setScrollBars();
 		setCaretLocation();
 		super.redraw();		
@@ -6857,10 +6857,10 @@ public void setContent(StyledTextContent newContent) {
 	}	
 	logicalContent = newContent;
 	if (wordWrap) {
-	    content = new WrappedContent(renderer, logicalContent);
+		content = new WrappedContent(renderer, logicalContent);
 	}
 	else {
-	    content = logicalContent;
+		content = logicalContent;
 	}
 	content.addTextChangeListener(textChangeListener);
 	reset();
