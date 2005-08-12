@@ -1577,6 +1577,7 @@ int itemDataProc (int browser, int id, int property, int itemData, int setValue)
 	switch (property) {
 		case CHECK_COLUMN_ID: {
 			TableItem item = _getItem (row);
+			if (!checkData (item, false)) return OS.noErr;
 			if (setValue != 0) {
 				item.checked = !item.checked;
 				if (item.checked && item.grayed) {
