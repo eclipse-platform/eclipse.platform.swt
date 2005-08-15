@@ -560,7 +560,7 @@ public int getSelectionIndex () {
 	* in versions smaller than 2.2.4 if the model is NULL.  The fix is
 	* to give a valid pointer instead.
 	*/
-	int /*long*/ [] model = OS.GTK_VERSION < OS.VERSION (2, 2, 4) ? new int [1] : null;
+	int /*long*/ [] model = OS.GTK_VERSION < OS.VERSION (2, 2, 4) ? new int /*long*/ [1] : null;
 	int /*long*/ list = OS.gtk_tree_selection_get_selected_rows (selection, model);
 	if (list != 0) {
 		int count = OS.g_list_length (list);
@@ -613,7 +613,7 @@ public int [] getSelectionIndices () {
 	* in versions smaller than 2.2.4 if the model is NULL.  The fix is
 	* to give a valid pointer instead.
 	*/
-	int /*long*/ [] model = OS.GTK_VERSION < OS.VERSION (2, 2, 4) ? new int [1] : null;
+	int /*long*/ [] model = OS.GTK_VERSION < OS.VERSION (2, 2, 4) ? new int /*long*/ [1] : null;
 	int /*long*/ list = OS.gtk_tree_selection_get_selected_rows (selection, model);
 	if (list != 0) {
 		int count = OS.g_list_length (list);
