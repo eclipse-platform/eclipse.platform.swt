@@ -301,17 +301,17 @@ public class StyledText extends Canvas {
 			StyleRange[] styles = event.styles;
 			for (int i = 0; i < styles.length; i++) {
 				StyleRange styleCopy = null;
-				if (printOptions.printTextBackground == false && styles[i].background != null) {
+				if (!printOptions.printTextBackground && styles[i].background != null) {
 					styleCopy = (StyleRange) styles[i].clone();
 					styleCopy.background = null;
 				}
-				if (printOptions.printTextForeground == false && styles[i].foreground != null) {
+				if (!printOptions.printTextForeground && styles[i].foreground != null) {
 					if (styleCopy == null) {
 						styleCopy = (StyleRange) styles[i].clone();
 					}
 					styleCopy.foreground = null;
 				}
-				if (printOptions.printTextFontStyle == false && styles[i].fontStyle != SWT.NORMAL) {
+				if (!printOptions.printTextFontStyle && styles[i].fontStyle != SWT.NORMAL) {
 					if (styleCopy == null) {
 						styleCopy = (StyleRange) styles[i].clone();
 					}
@@ -673,7 +673,7 @@ public class StyledText extends Canvas {
 	 * <code>close()</code> has been called.
 	 */
 	public void close() {
-		if (isClosed() == false) {
+		if (!isClosed()) {
 			writeHeader();
 			write("\n}}\0");
 			super.close();
@@ -729,10 +729,10 @@ public class StyledText extends Canvas {
 				}
 			}
 		}
-		if (osName.startsWith(Win95) == false &&
-			osName.startsWith(Win98) == false &&
-			osName.startsWith(WinME) == false &&
-			(osName.startsWith(WinNT) == false || majorVersion > 4)) {
+		if (!osName.startsWith(Win95) &&
+			!osName.startsWith(Win98) &&
+			!osName.startsWith(WinME) &&
+			(!osName.startsWith(WinNT) || majorVersion > 4)) {
 			WriteUnicode = true;
 		}
 		else {
@@ -1016,7 +1016,7 @@ public class StyledText extends Canvas {
 	 * the writer is closed.
 	 */
 	public void close() {
-		if (isClosed == false) {
+		if (!isClosed) {
 			isClosed = true;
 		}
 	}
@@ -1786,7 +1786,7 @@ public void addBidiSegmentListener(BidiSegmentListener listener) {
 public void addLineBackgroundListener(LineBackgroundListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (userLineBackground == false) {
+	if (!userLineBackground) {
 		removeLineBackgroundListener(defaultLineStyler);
 		defaultLineStyler.setLineBackground(0, logicalContent.getLineCount(), null);
 		userLineBackground = true;
@@ -1813,7 +1813,7 @@ public void addLineStyleListener(LineStyleListener listener) {
 	if (listener == null) {
 		SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	}
-	if (userLineStyle == false) {
+	if (!userLineStyle) {
 		removeLineStyleListener(defaultLineStyler);
 		defaultLineStyler.setStyleRange(null);
 		userLineStyle = true;
@@ -2112,7 +2112,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			// set non-wrapping content width calculator. Ensures ideal line width 
 			// that does not required wrapping. Fixes bug 31195.
 			computeLineCache = new ContentWidthCache(this, logicalContent);
-			if (singleLine == false) {
+			if (!singleLine) {
 				count = logicalContent.getLineCount();
 			}
 		}
@@ -2124,7 +2124,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		width = computeLineCache.getWidth() + leftMargin + rightMargin;
 	}
 	else
-	if (wordWrap && singleLine == false) {
+	if (wordWrap && !singleLine) {
 		// calculate to wrap to width hint. Fixes bug 20377. 
 		// don't wrap live content. Fixes bug 38344.
 		WrappedContent wrappedContent = new WrappedContent(renderer, logicalContent);
@@ -2267,7 +2267,7 @@ String getModelDelimitedText(String text) {
 	}
 	// copy remaining text if any and if not in single line mode or no 
 	// text copied thus far (because there only is one line)
-	if (i < length && (isSingleLine() == false || convertedText.length() == 0)) {
+	if (i < length && (!isSingleLine() || convertedText.length() == 0)) {
 		convertedText.append(text.substring(i));
 	}
 	return convertedText.toString();
@@ -2419,11 +2419,11 @@ void doAutoScroll(Event event) {
 		doAutoScroll(SWT.UP, -event.y);
 	}
 	else 
-	if (event.x < leftMargin && wordWrap == false) {
+	if (event.x < leftMargin && !wordWrap) {
 		doAutoScroll(ST.COLUMN_PREVIOUS, leftMargin - event.x);
 	}
 	else 
-	if (event.x > area.width - leftMargin - rightMargin && wordWrap == false) {
+	if (event.x > area.width - leftMargin - rightMargin && !wordWrap) {
 		doAutoScroll(ST.COLUMN_NEXT, event.x - (area.width - leftMargin - rightMargin));
 	}
 	else {
@@ -2554,7 +2554,7 @@ void doContent(char key) {
 	// CR does not make sense on Windows since most (all?) applications
 	// don't recognize CR as a line break.
 	if (key == SWT.CR || key == SWT.LF) {
-		if (isSingleLine() == false) {
+		if (!isSingleLine()) {
 			event.text = getLineDelimiter();
 		}
 	}
@@ -2813,7 +2813,7 @@ void doMouseLocationChange(int x, int y, boolean select) {
 			showCaret();
 		}
 	}
-	if (select == false) {
+	if (!select) {
 		caretOffset = newCaretOffset;
 		clearSelection(true);
 	}
@@ -3058,7 +3058,7 @@ void doSelectionCursorNext() {
 		showCaret();
 	}
 	else
-	if (caretLine < content.getLineCount() - 1 && isSingleLine() == false) {
+	if (caretLine < content.getLineCount() - 1 && !isSingleLine()) {
 		// only go to next line if not in single line mode. fixes 5673
 		caretLine++;		
 		caretOffset = content.getOffsetAtLine(caretLine);
@@ -3216,7 +3216,7 @@ void doSelectionWordNext() {
 	advancing = false;
 	// don't change caret position if in single line mode and the cursor 
 	// would be on a different line. fixes 5673
-	if (isSingleLine() == false || 
+	if (!isSingleLine() || 
 		content.getLineAtOffset(caretOffset) == content.getLineAtOffset(newCaretOffset)) {
 		caretOffset = newCaretOffset;
 		showCaret();
@@ -3662,7 +3662,7 @@ public Color getLineBackground(int index) {
 	if (index < 0 || index > logicalContent.getLineCount()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (userLineBackground == false) {
+	if (!userLineBackground) {
 		lineBackground = defaultLineStyler.getLineBackground(index);
 	}
 	return lineBackground;
@@ -4164,7 +4164,7 @@ public int getStyle() {
  * </ul>
  */
 int [] getBidiSegments(int lineOffset, String line) {
-	if (isListening(LineGetSegments) == false) {
+	if (!isListening(LineGetSegments)) {
 		return getBidiSegmentsCompatibility(line, lineOffset);
 	}
 	StyledTextEvent event = sendLineEvent(LineGetSegments, lineOffset, line);
@@ -4205,7 +4205,7 @@ int [] getBidiSegmentsCompatibility(String line, int lineOffset) {
 	StyledTextEvent event;
 	StyleRange [] styles = new StyleRange [0];
 	int lineLength = line.length();
-	if (bidiColoring == false) {
+	if (!bidiColoring) {
 		return new int[] {0, lineLength};
 	}
 	event = renderer.getLineStyleData(lineOffset, line);
@@ -4278,7 +4278,7 @@ public StyleRange getStyleRangeAtOffset(int offset) {
 	if (offset < 0 || offset >= getCharCount()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	} 	
-	if (userLineStyle == false) {
+	if (!userLineStyle) {
 		return defaultLineStyler.getStyleRangeAtOffset(offset);
 	} 
 	return null;
@@ -4301,7 +4301,7 @@ public StyleRange [] getStyleRanges() {
 	checkWidget();
 	StyleRange styles[];
 	
-	if (userLineStyle == false) {
+	if (!userLineStyle) {
 		styles = defaultLineStyler.getStyleRanges();
 	}
 	else {
@@ -4343,7 +4343,7 @@ public StyleRange [] getStyleRanges(int start, int length) {
 	}	
 	StyleRange styles[];
 	
-	if (userLineStyle == false) {
+	if (!userLineStyle) {
 		styles = defaultLineStyler.getStyleRangesFor(start, length);
 		if (styles == null) return new StyleRange[0];
 		// adjust the first and last style to reflect the specified 
@@ -4685,11 +4685,11 @@ int getWordEndNoSpaces(int offset) {
 		char ch = lineText.charAt(offset);
 		boolean letterOrDigit = Compatibility.isLetterOrDigit(ch);
 		
-		while (offset < lineLength - 1 && Compatibility.isLetterOrDigit(ch) == letterOrDigit && Compatibility.isSpaceChar(ch) == false) {
+		while (offset < lineLength - 1 && Compatibility.isLetterOrDigit(ch) == letterOrDigit && !Compatibility.isSpaceChar(ch)) {
 			offset++;
 			ch = lineText.charAt(offset);
 		}
-		if (offset == lineLength - 1 && Compatibility.isLetterOrDigit(ch) == letterOrDigit && Compatibility.isSpaceChar(ch) == false) {
+		if (offset == lineLength - 1 && Compatibility.isLetterOrDigit(ch) == letterOrDigit && !Compatibility.isSpaceChar(ch)) {
 			offset++;
 		}
 		offset += lineOffset;
@@ -4823,10 +4823,10 @@ void installDefaultContent() {
 void installDefaultLineStyler() {
 	defaultLineStyler = new DefaultLineStyler(logicalContent);
 	StyledTextListener typedListener = new StyledTextListener(defaultLineStyler);
-	if (userLineStyle == false) {
+	if (!userLineStyle) {
 		addListener(LineGetStyle, typedListener);
 	}
-	if (userLineBackground == false) {
+	if (!userLineBackground) {
 		addListener(LineGetBackground, typedListener);
 	}
 }
@@ -5143,7 +5143,7 @@ void handleKeyUp(Event event) {
  * pressed.
  */
 void handleMouseDoubleClick(Event event) {
-	if (event.button != 1 || doubleClickEnabled == false) {
+	if (event.button != 1 || !doubleClickEnabled) {
 		return;
 	}
 	event.y -= topMargin;
@@ -5471,8 +5471,8 @@ void initializeAccessible() {
 			int state = 0;
 			if (isEnabled()) state |= ACC.STATE_FOCUSABLE;
 			if (isFocusControl()) state |= ACC.STATE_FOCUSED;
-			if (isVisible() == false) state |= ACC.STATE_INVISIBLE;
-			if (getEditable() == false) state |= ACC.STATE_READONLY;
+			if (!isVisible()) state |= ACC.STATE_INVISIBLE;
+			if (!getEditable()) state |= ACC.STATE_READONLY;
 			e.detail = state;
 		}
 		public void getValue(AccessibleControlEvent e) {
@@ -5496,7 +5496,7 @@ void initializeRenderer() {
 	renderer = new DisplayRenderer(getDisplay(), getFont(), this, tabLength);
 	lineHeight = renderer.getLineHeight();
 	if (wordWrap) {
-	    content = new WrappedContent(renderer, logicalContent);
+		content = new WrappedContent(renderer, logicalContent);
 	}
 }
 /**
@@ -6251,7 +6251,7 @@ public void removeLineBackgroundListener(LineBackgroundListener listener) {
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	removeListener(LineGetBackground, listener);	
 	// use default line styler if last user line styler was removed.
-	if (isListening(LineGetBackground) == false && userLineBackground) {
+	if (!isListening(LineGetBackground) && userLineBackground) {
 		StyledTextListener typedListener = new StyledTextListener(defaultLineStyler);
 		addListener(LineGetBackground, typedListener);	
 		userLineBackground = false;
@@ -6277,7 +6277,7 @@ public void removeLineStyleListener(LineStyleListener listener) {
 	}
 	removeListener(LineGetStyle, listener);	
 	// use default line styler if last user line styler was removed. Fixes 1G7B1X2
-	if (isListening(LineGetStyle) == false && userLineStyle) {
+	if (!isListening(LineGetStyle) && userLineStyle) {
 		StyledTextListener typedListener = new StyledTextListener(defaultLineStyler);
 		addListener(LineGetStyle, typedListener);	
 		userLineStyle = false;
@@ -6606,10 +6606,9 @@ public void selectAll() {
  *	</ul>
  */
 void sendKeyEvent(Event event) {
-	if (editable == false) {
-		return;
+	if (editable) {
+		modifyContent(event, true);
 	}
-	modifyContent(event, true);
 }
 void sendModifyEvent(Event event) {
 	Accessible accessible = getAccessible();
@@ -7131,15 +7130,13 @@ public void setLineBackground(int startLine, int lineCount, Color background) {
  * Flips selection anchor based on word selection direction.
  */
 void setMouseWordSelectionAnchor() {
-	if (mouseDoubleClick == false) {
-		return;
-	}
- 	if (caretOffset < doubleClickSelection.x) {
-		selectionAnchor = doubleClickSelection.y;
-	}
-	else
-	if (caretOffset > doubleClickSelection.y) {
-		selectionAnchor = doubleClickSelection.x;
+	if (mouseDoubleClick) {
+		if (caretOffset < doubleClickSelection.x) {
+			selectionAnchor = doubleClickSelection.y;
+		}
+		else if (caretOffset > doubleClickSelection.y) {
+			selectionAnchor = doubleClickSelection.x;
+		}
 	}
 }
 /**
@@ -7166,10 +7163,10 @@ public void setOrientation(int orientation) {
 	if ((orientation & SWT.RIGHT_TO_LEFT) != 0 && isMirrored()) {
 		return;	
 	} 
-	if ((orientation & SWT.LEFT_TO_RIGHT) != 0 && isMirrored() == false) {
+	if ((orientation & SWT.LEFT_TO_RIGHT) != 0 && !isMirrored()) {
 		return;
 	}
-	if (BidiUtil.setOrientation(handle, orientation) == false) {
+	if (!BidiUtil.setOrientation(handle, orientation)) {
 		return;
 	}
 	isMirrored = (orientation & SWT.RIGHT_TO_LEFT) != 0;
@@ -7791,7 +7788,7 @@ void showCaret(int caretLine) {
 			setWrapCaretLocation = true;
 		}
 	}
-	if (scrolled == false || setWrapCaretLocation) {
+	if (!scrolled || setWrapCaretLocation) {
 		// set the caret location if a scroll operation did not set it (as a 
 		// sideeffect of scrolling) or when in word wrap mode and the caret 
 		// line was explicitly specified (i.e., because getWrapCaretLine does 
