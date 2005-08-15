@@ -444,6 +444,7 @@ public boolean isDisposed() {
  */
 public void moveTo(float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	Gdip.GraphicsPath_StartFigure(handle);
 	currentPoint.X = startPoint.X = x;
 	currentPoint.Y = startPoint.Y = y;
 }
