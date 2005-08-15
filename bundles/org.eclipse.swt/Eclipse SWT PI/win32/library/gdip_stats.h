@@ -56,6 +56,7 @@ typedef enum {
 	GraphicsPath_1IsOutlineVisible_FUNC,
 	GraphicsPath_1IsVisible_FUNC,
 	GraphicsPath_1SetFillMode_FUNC,
+	GraphicsPath_1StartFigure_FUNC,
 	GraphicsPath_1delete_FUNC,
 	GraphicsPath_1new_FUNC,
 	Graphics_1DrawArc_FUNC,

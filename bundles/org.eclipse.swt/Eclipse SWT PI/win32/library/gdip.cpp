@@ -457,6 +457,18 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1SetFillMode)
 }
 #endif
 
+#ifndef NO_GraphicsPath_1StartFigure
+JNIEXPORT jint JNICALL Gdip_NATIVE(GraphicsPath_1StartFigure)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, GraphicsPath_1StartFigure_FUNC);
+	rc = (jint)((GraphicsPath *)arg0)->StartFigure();
+	Gdip_NATIVE_EXIT(env, that, GraphicsPath_1StartFigure_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GraphicsPath_1delete
 JNIEXPORT void JNICALL Gdip_NATIVE(GraphicsPath_1delete)
 	(JNIEnv *env, jclass that, jint arg0)

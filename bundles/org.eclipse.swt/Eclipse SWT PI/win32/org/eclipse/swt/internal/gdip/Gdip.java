@@ -210,6 +210,7 @@ public static final native int GraphicsPath_GetPointCount(int path);
 public static final native boolean GraphicsPath_IsOutlineVisible(int path, float x, float y, int pen, int g);
 public static final native boolean GraphicsPath_IsVisible(int path, float x, float y, int g);
 public static final native int GraphicsPath_SetFillMode(int path, int fillmode);
+public static final native int GraphicsPath_StartFigure(int path);
 public static final native int HatchBrush_new(int hatchStyle, int foreColor, int backColor);
 public static final native int Image_GetWidth(int image);
 public static final native int Image_GetHeight(int image);
