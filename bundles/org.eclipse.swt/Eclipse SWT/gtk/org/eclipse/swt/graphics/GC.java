@@ -1776,8 +1776,15 @@ public int getAlpha() {
  */
 public int getAntialias() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-    if (data.cairo != 0) return SWT.ON;
-	return data.antialias;
+    if (data.cairo == 0) return SWT.DEFAULT;
+    int antialias = Cairo.cairo_get_antialias(data.cairo);
+	switch (antialias) {
+		case Cairo.CAIRO_ANTIALIAS_DEFAULT: return SWT.DEFAULT;
+		case Cairo.CAIRO_ANTIALIAS_NONE: return SWT.OFF;
+		case Cairo.CAIRO_ANTIALIAS_GRAY:
+		case Cairo.CAIRO_ANTIALIAS_SUBPIXEL: return SWT.ON;
+	}
+	return SWT.DEFAULT;
 }
 
 /** 
@@ -2177,7 +2184,18 @@ public int getStyle () {
  */
 public int getTextAntialias() {
     if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-    return data.textAntialias;
+    if (data.cairo == 0) return SWT.DEFAULT;
+    int /*long*/ options = Cairo.cairo_font_options_create();
+    Cairo.cairo_get_font_options(data.cairo, options);
+    int antialias = Cairo.cairo_font_options_get_antialias(options);
+    Cairo.cairo_font_options_destroy(options);
+	switch (antialias) {
+		case Cairo.CAIRO_ANTIALIAS_DEFAULT: return SWT.DEFAULT;
+		case Cairo.CAIRO_ANTIALIAS_NONE: return SWT.OFF;
+		case Cairo.CAIRO_ANTIALIAS_GRAY:
+		case Cairo.CAIRO_ANTIALIAS_SUBPIXEL: return SWT.ON;
+	}
+	return SWT.DEFAULT;
 }
 
 /** 
@@ -2439,7 +2457,7 @@ public void setAdvanced(boolean advanced) {
 		if (cairo != 0) Cairo.cairo_destroy(cairo);
 		data.cairo = 0;
 		data.matrix = data.inverseMatrix = null;
-		data.antialias = data.textAntialias = data.interpolation = SWT.DEFAULT;
+		data.interpolation = SWT.DEFAULT;
 		data.backgroundPattern = data.foregroundPattern = null;
 		setClipping(0);
 	}
@@ -2496,16 +2514,18 @@ public void setAlpha(int alpha) {
 public void setAntialias(int antialias) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (data.cairo == 0 && antialias == SWT.DEFAULT) return;
+	int mode = 0;
 	switch (antialias) {
-		case SWT.DEFAULT: break;
-		case SWT.OFF: break;
-		case SWT.ON:
-            initCairo();
+		case SWT.DEFAULT: mode = Cairo.CAIRO_ANTIALIAS_DEFAULT; break;
+		case SWT.OFF: mode = Cairo.CAIRO_ANTIALIAS_NONE; break;
+		case SWT.ON: mode = Cairo.CAIRO_ANTIALIAS_GRAY;
             break;
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	data.antialias = antialias;
+    initCairo();
+    int /*long*/ cairo = data.cairo;
+    Cairo.cairo_set_antialias(cairo, mode);
 }
 
 /**
@@ -3212,14 +3232,20 @@ void setString(String string, int flags) {
 public void setTextAntialias(int antialias) {
     if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (data.cairo == 0 && antialias == SWT.DEFAULT) return;
-    switch (antialias) {
-        case SWT.DEFAULT: break;
-        case SWT.OFF: break;
-        case SWT.ON: break;
-        default:
-            SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-    }
-    data.textAntialias = antialias;
+	int mode = 0;
+	switch (antialias) {
+		case SWT.DEFAULT: mode = Cairo.CAIRO_ANTIALIAS_DEFAULT; break;
+		case SWT.OFF: mode = Cairo.CAIRO_ANTIALIAS_NONE; break;
+		case SWT.ON: mode = Cairo.CAIRO_ANTIALIAS_GRAY;
+            break;
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+    initCairo();
+    int /*long*/ options = Cairo.cairo_font_options_create();
+    Cairo.cairo_font_options_set_antialias(options, mode);
+    Cairo.cairo_set_font_options(data.cairo, options);
+    Cairo.cairo_font_options_destroy(options);
 }
 
 /** 

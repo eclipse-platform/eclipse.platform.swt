@@ -28,6 +28,10 @@ public class Cairo {
 	}
 
 	/** Constants */
+	public static final int CAIRO_ANTIALIAS_DEFAULT = 0;
+	public static final int CAIRO_ANTIALIAS_NONE = 1;
+	public static final int CAIRO_ANTIALIAS_GRAY = 2;
+	public static final int CAIRO_ANTIALIAS_SUBPIXEL = 3;
 	public static final int CAIRO_FORMAT_ARGB32 = 0;
 	public static final int CAIRO_FORMAT_RGB24 = 1;
 	public static final int CAIRO_FORMAT_A8 = 2;
@@ -88,7 +92,7 @@ public static final synchronized native int cairo_path_t_sizeof ();
 	
 /** Natives */
 public static final synchronized native int /*long*/ cairo_create (int /*long*/ target);
-public static final synchronized native void cairo_reference (int /*long*/ cr);
+public static final synchronized native int /*long*/ cairo_reference (int /*long*/ cr);
 public static final synchronized native void cairo_destroy (int /*long*/ cr);
 public static final synchronized native void cairo_save (int /*long*/ cr);
 public static final synchronized native void cairo_restore (int /*long*/ cr);
@@ -98,6 +102,7 @@ public static final synchronized native void cairo_set_source_rgba(int /*long*/ 
 public static final synchronized native void cairo_set_source(int /*long*/ cr, int /*long*/ source);
 public static final synchronized native void cairo_set_source_surface(int /*long*/ cr, int /*long*/ surface, double x, double y);
 public static final synchronized native void cairo_set_tolerance (int /*long*/ cr, double tolerance);
+public static final synchronized native void cairo_set_antialias (int /*long*/ cr, int antialias);
 public static final synchronized native void cairo_set_fill_rule (int /*long*/ cr, int fill_rule);
 public static final synchronized native void cairo_set_line_width (int /*long*/ cr, double width);
 public static final synchronized native void cairo_set_line_cap (int /*long*/ cr, int line_cap);
@@ -143,6 +148,12 @@ public static final synchronized native void cairo_fill_extents (int /*long*/ cr
 public static final synchronized native void cairo_clip (int /*long*/ cr);
 public static final synchronized native void cairo_clip_preserve (int /*long*/ cr);
 public static final synchronized native void cairo_reset_clip (int /*long*/ cr);
+public static final synchronized native int /*long*/ cairo_font_options_create ();
+public static final synchronized native void cairo_font_options_destroy (int /*long*/ options);
+public static final synchronized native void cairo_font_options_set_antialias (int /*long*/ options, int antialias);
+public static final synchronized native int  cairo_font_options_get_antialias (int /*long*/ options);
+public static final synchronized native void cairo_set_font_options (int /*long*/ cr, int /*long*/ options);
+public static final synchronized native void cairo_get_font_options (int /*long*/ cr, int /*long*/ options);
 public static final synchronized native void cairo_select_font_face (int /*long*/ cr, byte[] family, int slant, int weight);
 public static final synchronized native void cairo_set_font_size (int /*long*/ cr, double size);
 public static final synchronized native void cairo_set_font_matrix (int /*long*/ cr, double[] matrix);
@@ -160,6 +171,7 @@ public static final synchronized native int cairo_get_operator (int /*long*/ cr)
 public static final synchronized native int /*long*/ cairo_get_source (int /*long*/ cr);
 public static final synchronized native double cairo_get_tolerance (int /*long*/ cr);
 public static final synchronized native void cairo_get_current_point (int /*long*/ cr, double[] x, double[] y);
+public static final synchronized native int cairo_get_antialias (int /*long*/ cr);
 public static final synchronized native int cairo_get_fill_rule (int /*long*/ cr);
 public static final synchronized native double cairo_get_line_width (int /*long*/ cr);
 public static final synchronized native int cairo_get_line_cap (int /*long*/ cr);
@@ -180,7 +192,7 @@ public static final synchronized native int cairo_image_surface_get_height (int 
 public static final synchronized native int /*long*/ cairo_surface_create_similar (int /*long*/ other, int format, int width, int height);
 public static final synchronized native void cairo_surface_reference (int /*long*/ surface);
 public static final synchronized native void cairo_surface_destroy (int /*long*/ surface);
-public static final synchronized native int cairo_surface_finish (int /*long*/ surface);
+public static final synchronized native void cairo_surface_finish (int /*long*/ surface);
 public static final synchronized native int cairo_surface_set_user_data (int /*long*/ surface, int /*long*/ key, int /*long*/ user_data, int /*long*/ destroy);
 public static final synchronized native int /*long*/ cairo_surface_get_user_data (int /*long*/ surface, int /*long*/ key);
 public static final synchronized native void cairo_surface_set_device_offset (int /*long*/ surface, double x_offset, double y_offset);
@@ -210,7 +222,7 @@ public static final synchronized native void cairo_matrix_multiply (double[] res
 public static final synchronized native void cairo_matrix_transform_distance (double[] matrix, double[] dx, double[] dy);
 public static final synchronized native void cairo_matrix_transform_point (double[] matrix, double[] x, double[] y);
 public static final synchronized native int /*long*/ cairo_xlib_surface_create (int /*long*/ dpy, int /*long*/ drawable, int /*long*/ visual, int width, int height);
-public static final synchronized native int /*long*/ cairo_xlib_surface_create_for_bitmap (int /*long*/ dpy, int /*long*/ pixmap, int width, int height);
+public static final synchronized native int /*long*/ cairo_xlib_surface_create_for_bitmap (int /*long*/ dpy, int /*long*/ pixmap, int /*long*/ screen, int width, int height);
 public static final synchronized native void cairo_xlib_surface_set_size (int /*long*/ surface, int width, int height);
 public static final native void memmove(cairo_path_t dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(cairo_path_data_t dest, int /*long*/ src, int /*long*/ size);

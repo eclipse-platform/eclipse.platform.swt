@@ -24,8 +24,8 @@
 
 #ifdef NATIVE_STATS
 
-int Cairo_nativeFunctionCount = 130;
-int Cairo_nativeFunctionCallCount[130];
+int Cairo_nativeFunctionCount = 138;
+int Cairo_nativeFunctionCallCount[138];
 char * Cairo_nativeFunctionNames[] = {
 	"cairo_1append_1path",
 	"cairo_1arc",
@@ -46,10 +46,16 @@ char * Cairo_nativeFunctionNames[] = {
 	"cairo_1fill_1preserve",
 	"cairo_1font_1extents",
 	"cairo_1font_1extents_1t_1sizeof",
+	"cairo_1font_1options_1create",
+	"cairo_1font_1options_1destroy",
+	"cairo_1font_1options_1get_1antialias",
+	"cairo_1font_1options_1set_1antialias",
+	"cairo_1get_1antialias",
 	"cairo_1get_1current_1point",
 	"cairo_1get_1fill_1rule",
 	"cairo_1get_1font_1face",
 	"cairo_1get_1font_1matrix",
+	"cairo_1get_1font_1options",
 	"cairo_1get_1line_1cap",
 	"cairo_1get_1line_1join",
 	"cairo_1get_1line_1width",
@@ -114,10 +120,12 @@ char * Cairo_nativeFunctionNames[] = {
 	"cairo_1save",
 	"cairo_1scale",
 	"cairo_1select_1font_1face",
+	"cairo_1set_1antialias",
 	"cairo_1set_1dash",
 	"cairo_1set_1fill_1rule",
 	"cairo_1set_1font_1face",
 	"cairo_1set_1font_1matrix",
+	"cairo_1set_1font_1options",
 	"cairo_1set_1font_1size",
 	"cairo_1set_1line_1cap",
 	"cairo_1set_1line_1join",
