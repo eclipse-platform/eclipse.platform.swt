@@ -5230,16 +5230,13 @@ void handleMouseUp(Event event) {
  * @param event paint event
  */
 void handlePaint(Event event) {
+	// Check if there is work to do
+	if (event.height == 0) return;
 	int startLine = Math.max(0, (event.y - topMargin + verticalScrollOffset) / lineHeight);
 	int paintYFromTopLine = (startLine - topIndex) * lineHeight;
 	int topLineOffset = topIndex * lineHeight - verticalScrollOffset;
 	int startY = paintYFromTopLine + topLineOffset + topMargin;	// adjust y position for pixel based scrolling and top margin
 	int renderHeight = event.y + event.height - startY;
-	
-	// Check if there is work to do
-	if (event.height == 0) {		
-		return;
-	}
 	performPaint(event.gc, startLine, startY, renderHeight);
 }	
 /**
