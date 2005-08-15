@@ -97,7 +97,7 @@ protected void drawLineBreakSelection(String line, int lineOffset, int paintX, i
 				isWrappedLine = true;
 			}
 		}
-		if (isWrappedLine == false) {
+		if (!isWrappedLine) {
 			// render the line break selection
 			gc.fillRectangle(paintX, paintY, lineEndSpaceWidth, lineHeight);
 		}

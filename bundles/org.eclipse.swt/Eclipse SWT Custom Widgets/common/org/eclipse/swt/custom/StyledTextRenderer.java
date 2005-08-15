@@ -122,7 +122,7 @@ void drawLine(String line, int lineIndex, int paintY, GC gc, Color widgetBackgro
 	}
 	
 	if (clearBackground &&
-		(isFullLineSelection() == false || 
+		(!isFullLineSelection() || 
 		 selectionStart > lineOffset || 
 		 selectionEnd <= lineOffset + lineLength)) {
 		// draw background if full selection is off or if line is not 
