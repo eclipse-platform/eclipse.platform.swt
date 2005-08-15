@@ -7932,9 +7932,9 @@ void wordWrapResize(int oldClientAreaWidth) {
 		wrappedContent.getLineCount() == logicalContent.getLineCount()) {
 		return;
 	}
-    wrappedContent.wrapLines();
+	wrappedContent.wrapLines();
     
-    // adjust the top index so that top line remains the same
+	// adjust the top index so that top line remains the same
 	newTopIndex = content.getLineAtOffset(topOffset);
 	// topOffset is the beginning of the top line. therefore it 
 	// needs to be adjusted because in a wrapped line this is also 
@@ -7943,28 +7943,28 @@ void wordWrapResize(int oldClientAreaWidth) {
 		topOffset == content.getOffsetAtLine(newTopIndex + 1)) {
 		newTopIndex++;
 	}
-    if (newTopIndex != topIndex) {
-    	ScrollBar verticalBar = getVerticalBar();
-    	// adjust index and pixel offset manually instead of calling
-    	// setVerticalScrollOffset because the widget does not actually need
-    	// to be scrolled. causes flash otherwise.
-    	verticalScrollOffset += (newTopIndex - topIndex) * getVerticalIncrement();
-    	// verticalScrollOffset may become negative if first line was 
-    	// partially visible and second line was top line. prevent this from 
-    	// happening to fix 8503.
-    	if (verticalScrollOffset < 0) {
-    		verticalScrollOffset = 0;
-    	}
-    	topIndex = newTopIndex;
-    	topOffset = content.getOffsetAtLine(topIndex);
-    	if (verticalBar != null) {
+	if (newTopIndex != topIndex) {
+		ScrollBar verticalBar = getVerticalBar();
+		// adjust index and pixel offset manually instead of calling
+		// setVerticalScrollOffset because the widget does not actually need
+		// to be scrolled. causes flash otherwise.
+		verticalScrollOffset += (newTopIndex - topIndex) * getVerticalIncrement();
+		// verticalScrollOffset may become negative if first line was 
+		// partially visible and second line was top line. prevent this from 
+		// happening to fix 8503.
+		if (verticalScrollOffset < 0) {
+			verticalScrollOffset = 0;
+		}
+		topIndex = newTopIndex;
+		topOffset = content.getOffsetAtLine(topIndex);
+		if (verticalBar != null) {
 			verticalBar.setSelection(verticalScrollOffset);
-    	}
-    }
-  	// caret may be on a different line after a rewrap.
-  	// call setCaretLocation after fixing vertical scroll offset.
+		}
+	}
+	// caret may be on a different line after a rewrap.
+	// call setCaretLocation after fixing vertical scroll offset.
 	setCaretLocation();    
 	// word wrap may have changed on one of the visible lines
-    super.redraw();
+	super.redraw();
 }
 }
