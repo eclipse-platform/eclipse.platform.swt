@@ -41,8 +41,6 @@ public final class GCData {
 	public int[] dashes;
 	public int renderTable;
 	public int alpha = 0xFF;
-    public int antialias = SWT.DEFAULT;
-    public int textAntialias = SWT.DEFAULT;
 	public int interpolation = SWT.DEFAULT;
 
 	public int /*long*/ cairo;
