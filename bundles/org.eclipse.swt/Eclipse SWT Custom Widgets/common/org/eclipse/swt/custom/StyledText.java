@@ -2085,7 +2085,7 @@ void clearSelection(boolean sendEvent) {
 		if (redrawEnd - redrawStart > 0) {
 			internalRedrawRange(redrawStart, redrawEnd - redrawStart, true);
 		}
-		if (sendEvent == true) {
+		if (sendEvent) {
 			sendSelectionEvent();
 		}
 	}
@@ -2561,7 +2561,7 @@ void doContent(char key) {
 	// no selection and overwrite mode is on and the typed key is not a
 	// tab character (tabs are always inserted without overwriting)?
 	else
-	if (selection.x == selection.y && overwrite == true && key != TAB) {
+	if (selection.x == selection.y && overwrite && key != TAB) {
 		int lineIndex = content.getLineAtOffset(event.end);
 		int lineOffset = content.getOffsetAtLine(lineIndex);
 		String line = content.getLine(lineIndex);
@@ -5107,7 +5107,7 @@ void handleKeyDown(Event event) {
 	verifyEvent.stateMask = event.stateMask;
 	verifyEvent.doit = true;
 	notifyListeners(VerifyKey, verifyEvent);
-	if (verifyEvent.doit == true) {
+	if (verifyEvent.doit) {
 		handleKey(event);
 	}
 }
