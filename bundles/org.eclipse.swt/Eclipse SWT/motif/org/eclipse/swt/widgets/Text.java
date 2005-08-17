@@ -264,6 +264,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		} else {
 			byte [] buffer = new byte [size + 1];
 			OS.memmove (buffer, ptr, size);
+			boolean wrap = (style & SWT.MULTI) != 0 && (style & SWT.WRAP) != 0;
+			if (wrap && wHint != SWT.DEFAULT) {
+				String text = new String (buffer);
+				String wrapped = display.wrapText (text, font, wHint);
+				buffer = wrapped.getBytes ();
+			}
 			int xmString;
 			if ((style & SWT.SINGLE) != 0) {
 				xmString = OS.XmStringParseText (
