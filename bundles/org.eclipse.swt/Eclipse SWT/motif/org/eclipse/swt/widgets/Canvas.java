@@ -102,7 +102,7 @@ void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boole
 	if (isFocus) caret.setFocus ();
 }
 
-void releaseCildren (boolean destroy) {
+void releaseChildren (boolean destroy) {
 	if (caret != null) {
 		caret.release (false);
 		caret = null;
