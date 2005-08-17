@@ -323,13 +323,12 @@ protected void checkWidget () {
  * This means that it is only necessary to call <code>destroyWidget</code>
  * on the root of the widget tree.
  * </p><p>
- * This method is called after <code>releaseWidget()</code>.
- * </p><p>
- * See also <code>releaseChild()</code>, <code>releaseWidget()</code>
- * and <code>releaseHandle()</code>.
+ * This method is called after <code>releaseWidget</code>.
  * </p>
- * 
  * @see #dispose
+ * @see #releaseChild
+ * @see #releaseWidget
+ * @see #releaseHandle
  */
 void destroyWidget () {
 	releaseHandle ();

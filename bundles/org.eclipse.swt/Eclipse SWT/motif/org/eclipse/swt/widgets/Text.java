@@ -264,12 +264,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		} else {
 			byte [] buffer = new byte [size + 1];
 			OS.memmove (buffer, ptr, size);
-			boolean wrap = (style & SWT.MULTI) != 0 && (style & SWT.WRAP) != 0;
-			if (wrap && wHint != SWT.DEFAULT) {
-				String text = new String (buffer);
-				String wrapped = display.wrapText (text, font, wHint);
-				buffer = wrapped.getBytes ();
-			}
 			int xmString;
 			if ((style & SWT.SINGLE) != 0) {
 				xmString = OS.XmStringParseText (
@@ -1388,6 +1382,12 @@ public void setText (String string) {
 	OS.XmTextSetString (handle, buffer);
 	OS.XmTextSetInsertionPosition (handle, 0);
 	display.setWarnings(warnings);
+	/*
+	* Bug in Linux.  When the widget is multi-line
+	* it does not send a Modify to notify the application
+	* that the text has changed.  The fix is to send the event.
+	*/
+	if (OS.IsLinux && (style & SWT.MULTI) != 0) sendEvent (SWT.Modify);
 }
 /**
  * Sets the maximum number of characters that the receiver
