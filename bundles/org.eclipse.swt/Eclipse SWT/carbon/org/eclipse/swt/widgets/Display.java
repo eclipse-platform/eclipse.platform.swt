@@ -3473,7 +3473,6 @@ void setMenuBar (Menu menu) {
 	OS.SetRootMenu (theMenu);
 	if (menu == null) {
 		OS.ClearMenuBar ();
-		OS.DeleteMenu (OS.GetMenuID (theMenu));
 		OS.DisposeMenu (theMenu);
 	}
 	menuBar = menu;

@@ -1284,10 +1284,6 @@ void register () {
 }
 
 void release (boolean destroy) {
-	release (destroy, true);
-}
-
-void release (boolean destroy, boolean releaseParent) {
 	if ((state & DISPOSE_SENT) == 0) {
 		state |= DISPOSE_SENT;
 		sendEvent (SWT.Dispose);
@@ -1298,7 +1294,7 @@ void release (boolean destroy, boolean releaseParent) {
 	if ((state & RELEASED) == 0) {
 		state |= RELEASED;
 		if (destroy) {
-			if (releaseParent) releaseParent ();
+			releaseParent ();
 			releaseWidget ();
 			destroyWidget ();
 		} else {

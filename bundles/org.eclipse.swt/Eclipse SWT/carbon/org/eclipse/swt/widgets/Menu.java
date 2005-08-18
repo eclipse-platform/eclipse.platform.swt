@@ -295,7 +295,10 @@ void createItem (MenuItem item, int index) {
 	items [index] = item;
 	modified = true;
 	int emptyMenu = item.createEmptyMenu ();
-	if (emptyMenu != 0) OS.SetMenuItemHierarchicalMenu (handle, (short) (index + 1), emptyMenu);
+	if (emptyMenu != 0) {
+		OS.SetMenuItemHierarchicalMenu (handle, (short) (index + 1), emptyMenu);
+		OS.ReleaseMenu (emptyMenu);
+	}
 }
 
 void createWidget () {
@@ -323,7 +326,6 @@ void destroyWidget () {
 	int theMenu = handle;
 	releaseHandle ();
 	if (theMenu != 0) {
-		OS.DeleteMenu (OS.GetMenuID (theMenu));
 		OS.DisposeMenu (theMenu);
 	}
 }

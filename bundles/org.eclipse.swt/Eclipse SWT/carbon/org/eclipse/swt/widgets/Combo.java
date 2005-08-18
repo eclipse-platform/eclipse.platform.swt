@@ -1061,7 +1061,6 @@ void releaseWidget () {
 	super.releaseWidget ();
 	if (display.focusCombo == this) display.focusCombo = null;
 	if (menuHandle != 0) {
-		OS.DeleteMenu (OS.GetMenuID (menuHandle));
 		OS.DisposeMenu (menuHandle);
 	}
 	menuHandle = 0;

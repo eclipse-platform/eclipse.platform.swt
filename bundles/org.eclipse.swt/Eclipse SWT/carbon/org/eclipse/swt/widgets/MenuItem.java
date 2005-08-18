@@ -226,20 +226,6 @@ int createEmptyMenu () {
 	return 0;
 }
 
-void destroyEmptyMenu (int index) {
-	if ((parent.style & SWT.BAR) != 0) {
-		if (index == -1) index = parent.indexOf (this);
-		if (index != -1) {
-			short menuIndex = (short) (index + 1);
-			int [] outMenuRef = new int [1];
-			OS.GetMenuItemHierarchicalMenu (parent.handle, menuIndex, outMenuRef);
-			if (outMenuRef [0] != 0) {
-				OS.DisposeMenu (outMenuRef [0]);
-			}
-		}
-	}
-}
-
 void destroyWidget () {
 	parent.destroyItem (this);
 	releaseHandle ();
@@ -457,10 +443,8 @@ void releaseHandle () {
 }
 
 void releaseChildren (boolean destroy) {
-	if (menu == null) {
-		destroyEmptyMenu (-1);
-	} else {
-		menu.release (true, false);
+	if (menu != null) {
+		menu.release (false);
 		menu = null;
 	}
 	super.releaseChildren (destroy);
@@ -711,7 +695,6 @@ public void setMenu (Menu menu) {
 		menuHandle = createEmptyMenu ();
 	} else {
 		menu.cascade = this;
-		if (oldMenu == null) 	destroyEmptyMenu (index);
 		menuHandle = menu.handle;
 	}
 	short menuIndex = (short) (index + 1);
@@ -723,9 +706,11 @@ public void setMenu (Menu menu) {
 		OS.SetMenuTitleWithCFString (menuHandle, outString [0]);
 		OS.CFRelease (outString [0]);
 	}
+	if (oldMenu != null) OS.RetainMenu (oldMenu.handle);
 	if (OS.SetMenuItemHierarchicalMenu (parent.handle, menuIndex, menuHandle) != OS.noErr) {
 		error (SWT.ERROR_CANNOT_SET_MENU);
 	}
+	if (menuHandle != 0) OS.ReleaseMenu (menuHandle);
 }
 
 boolean setRadioSelection (boolean value) {
