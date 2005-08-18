@@ -636,9 +636,10 @@ void destroyItem (TreeItem item) {
 	}
 	boolean hasChild = false;
 	for (int i=0; i<items.length; i++) {
-		if (items [i] != null && items [i].parentItem == parentItem) {
-			if (items [i].index >= item.index) {
-				--items [i].index;
+		TreeItem child = items [i];
+		if (child != null && child != item && child.parentItem == parentItem) {
+			if (child.index >= item.index) {
+				--child.index;
 				hasChild = true;
 			}
 		}
@@ -1116,7 +1117,11 @@ TreeItem [] getItems (TreeItem item) {
 	TreeItem [] result = new TreeItem [count];
 	for (int i=0; i<items.length; i++) {
 		if (items [i] != null && items [i].parentItem == item) {
+			try {
 			result [items [i].index] = items [i];
+			} catch (Exception t) {
+				System.out.println("bad");
+			}
 		}
 	}
 	return result;
