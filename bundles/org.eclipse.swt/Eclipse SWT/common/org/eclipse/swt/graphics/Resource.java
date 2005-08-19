@@ -54,7 +54,7 @@ public abstract void dispose();
  *
  * @return <code>Device</code> the device of the receiver
  * 
- * @siince 3.2
+ * @since 3.2
  */
 public Device getDevice() {
 	if (isDisposed ()) SWT.error (SWT.ERROR_GRAPHIC_DISPOSED);
