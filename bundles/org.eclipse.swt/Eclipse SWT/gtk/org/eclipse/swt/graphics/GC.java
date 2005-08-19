@@ -145,6 +145,7 @@ static int checkStyle (int style) {
 public static GC gtk_new(Drawable drawable, GCData data) {
 	GC gc = new GC();
 	int /*long*/ gdkGC = drawable.internal_new_GC(data);
+	gc.device = data.device;
 	gc.init(drawable, data, gdkGC);
 	return gc;
 }

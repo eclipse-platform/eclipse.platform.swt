@@ -3408,6 +3408,7 @@ void unsetGC(int prevContext) {
 public static GC photon_new(Drawable drawable, GCData data) {
 	GC gc = new GC();
 	int context = drawable.internal_new_GC(data);
+	gc.device = data.device;
 	gc.init(drawable, data, context);
 	return gc;
 }

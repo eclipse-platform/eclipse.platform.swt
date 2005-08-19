@@ -3191,6 +3191,7 @@ public void setAntialias(int antialias) {
 public static GC motif_new(Drawable drawable, GCData data) {
 	GC gc = new GC();
 	int xGC = drawable.internal_new_GC(data);
+	gc.device = data.device;
 	gc.init(drawable, data, xGC);
 	return gc;
 }

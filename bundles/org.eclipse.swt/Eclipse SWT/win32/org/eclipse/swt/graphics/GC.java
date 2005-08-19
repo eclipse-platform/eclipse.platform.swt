@@ -4339,6 +4339,7 @@ public String toString () {
 public static GC win32_new(Drawable drawable, GCData data) {
 	GC gc = new GC();
 	int hDC = drawable.internal_new_GC(data);
+	gc.device = data.device;
 	gc.init(drawable, data, hDC);
 	return gc;
 }
@@ -4360,6 +4361,7 @@ public static GC win32_new(Drawable drawable, GCData data) {
  */
 public static GC win32_new(int hDC, GCData data) {
 	GC gc = new GC();
+	gc.device = data.device;
 	gc.init(null, data, hDC);
 	return gc;
 }
