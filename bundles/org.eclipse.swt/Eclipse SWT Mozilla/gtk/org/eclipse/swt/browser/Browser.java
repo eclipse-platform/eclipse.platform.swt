@@ -80,8 +80,7 @@ public class Browser extends Composite {
 	static final String NO_INPUT_METHOD = "org.eclipse.swt.internal.gtk.noInputMethod"; //$NON-NLS-1$
 	static final String URI_FROMMEMORY = "file:///"; //$NON-NLS-1$
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
-	static final int EVENT = 1;
-	static final int KEY_PRESS_EVENT = 2;
+	static final int STOP_PROPOGATE = 1;
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -336,15 +335,16 @@ public Browser(Composite parent, int style) {
 			getDisplay().setData(ADD_WIDGET_KEY, new Object[] {new LONG(mozillaHandle), this});
 
 			/* Note. Callback to get events before Mozilla receives and consumes them. */
-			OS.g_signal_connect (mozillaHandle, OS.event, eventProc, 1);
+			OS.g_signal_connect (mozillaHandle, OS.event, eventProc, 0);
 			
 			/* 
 			* Note.  Callback to get the events not consumed by Mozilla - and to block 
 			* them so that they don't get propagated to the parent handle twice.  
 			* This hook is set after Mozilla and is therefore called after Mozilla's 
-			* handler because GTK dispatches the event in the order of registration.
+			* handler because GTK dispatches events in their order of registration.
 			*/
-			OS.g_signal_connect (mozillaHandle, OS.key_press_event, eventProc, 2);
+			OS.g_signal_connect (mozillaHandle, OS.key_press_event, eventProc, STOP_PROPOGATE);
+			OS.g_signal_connect (mozillaHandle, OS.key_release_event, eventProc, STOP_PROPOGATE);
 		}
 	}
 	
@@ -393,7 +393,6 @@ public Browser(Composite parent, int style) {
 		SWT.Dispose,
 		SWT.Resize,  
 		SWT.FocusIn, 
-		SWT.KeyDown,
 		SWT.Deactivate,
 		SWT.Show
 	};
@@ -429,30 +428,24 @@ static Composite fixIM(Composite parent) {
 }
 
 int /*long*/ gtk_event (int /*long*/ handle, int /*long*/ gdkEvent, int /*long*/ pointer) {
+	/* 
+	* Stop the propagation of events that are not consumed by Mozilla, before
+	* they reach the parent embedder.  These event have already been received.
+	*/
+	if (pointer == STOP_PROPOGATE) return 1;
+
 	GdkEvent event = new GdkEvent ();
 	OS.memmove (event, gdkEvent, GdkEvent.sizeof);
 	switch (event.type) {
-		case OS.GDK_KEY_PRESS: {
+		case OS.GDK_KEY_PRESS:
+		case OS.GDK_KEY_RELEASE:
+		case OS.GDK_BUTTON_PRESS:
+		case OS.GDK_BUTTON_RELEASE: {
 			/* 
-			* Note.  Forward the event to the parent embedder before Mozilla receives it 
-			* and may or may not consume it.
+			* Forward the event to the parent embedder before Mozilla receives it, 
+			* as Mozilla may or may not consume it.
 			*/
-			if (pointer == EVENT) OS.gtk_widget_event(this.handle, gdkEvent);
-			
-			/* 
-			* Note.  Stop the propagation of an event not consumed by Mozilla
-			* before it reaches the parent embedder.  We already received that
-			* event through the EVENT hook.
-			*/
-			if (pointer == KEY_PRESS_EVENT) return 1;
-			break;
-		}
-		case OS.GDK_KEY_RELEASE: {
-			/* 
-			* Note.  Forward the event to the parent embedder before Mozilla receives it 
-			* and consumes it.
-			*/
-			if (pointer == EVENT) OS.gtk_widget_event(this.handle, gdkEvent);			
+			OS.gtk_widget_event (this.handle, gdkEvent);
 			break;
 		}
 	}
