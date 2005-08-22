@@ -28,13 +28,13 @@
     <delete dir="${location1}" quiet="true"/>
     <!-- Run all SWT tests on Windows, and either Carbon tests or Gtk tests otherwise. -->
     <condition property="class-tests" value="org.eclipse.swt.tests.junit.AllGtkTests">
-      <equals arg1="${arch}" arg2="linux"/>
+      <equals arg1="${os}" arg2="linux"/>
     </condition>
     <condition property="class-tests" value="org.eclipse.swt.tests.junit.AllCarbonTests">
-      <equals arg1="${arch}" arg2="macosx"/>
+      <equals arg1="${os}" arg2="macosx"/>
     </condition>
     <condition property="class-tests" value="org.eclipse.swt.tests.junit.AllTests">
-      <equals arg1="${arch}" arg2="win32"/>
+      <equals arg1="${os}" arg2="win32"/>
     </condition>
     <ant target="core-test" antfile="${library-file}" dir="${eclipse-home}">
       <property name="data-dir" value="${data}"/>
