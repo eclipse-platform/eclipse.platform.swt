@@ -268,7 +268,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			if (wrap && wHint != SWT.DEFAULT) {
 				String text = new String (buffer);
 				String wrapped = display.wrapText (text, font, wHint);
-				buffer = wrapped.getBytes ();
+				buffer = Converter.wcsToMbcs (getCodePage (), wrapped, true);
 			}
 			int xmString;
 			if ((style & SWT.SINGLE) != 0) {
