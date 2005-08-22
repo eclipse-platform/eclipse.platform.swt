@@ -217,6 +217,7 @@ public static final native int Image_GetHeight(int image);
 public static final native int ImageAttributes_new();
 public static final native void ImageAttributes_delete(int attrib);
 public static final native int ImageAttributes_SetWrapMode(int attrib, int wrap);
+public static final native int ImageAttributes_SetColorMatrix(int attrib, float[] matrix, int mode, int type);
 public static final native void HatchBrush_delete(int brush);
 public static final native int LinearGradientBrush_new(PointF point1, PointF point2, int color1, int color2);
 public static final native void LinearGradientBrush_delete(int brush);

@@ -101,6 +101,7 @@ typedef enum {
 	Graphics_1new_FUNC,
 	HatchBrush_1delete_FUNC,
 	HatchBrush_1new_FUNC,
+	ImageAttributes_1SetColorMatrix_FUNC,
 	ImageAttributes_1SetWrapMode_FUNC,
 	ImageAttributes_1delete_FUNC,
 	ImageAttributes_1new_FUNC,

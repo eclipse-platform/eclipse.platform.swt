@@ -1001,6 +1001,22 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(HatchBrush_1new)
 }
 #endif
 
+#ifndef NO_ImageAttributes_1SetColorMatrix
+JNIEXPORT jint JNICALL Gdip_NATIVE(ImageAttributes_1SetColorMatrix)
+	(JNIEnv *env, jclass that, jint arg0, jfloatArray arg1, jint arg2, jint arg3)
+{
+	jfloat *lparg1=NULL;
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, ImageAttributes_1SetColorMatrix_FUNC);
+	if (arg1) if ((lparg1 = env->GetFloatArrayElements(arg1, NULL)) == NULL) goto fail;
+	rc = (jint)((ImageAttributes *)arg0)->SetColorMatrix((ColorMatrix *)lparg1, (ColorMatrixFlags)arg2, (ColorAdjustType)arg3);
+fail:
+	if (arg1 && lparg1) env->ReleaseFloatArrayElements(arg1, lparg1, 0);
+	Gdip_NATIVE_EXIT(env, that, ImageAttributes_1SetColorMatrix_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_ImageAttributes_1SetWrapMode
 JNIEXPORT jint JNICALL Gdip_NATIVE(ImageAttributes_1SetWrapMode)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)

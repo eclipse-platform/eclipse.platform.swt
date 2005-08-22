@@ -694,6 +694,16 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 		*/  
 		int attrib = Gdip.ImageAttributes_new();
 		Gdip.ImageAttributes_SetWrapMode(attrib, Gdip.WrapModeTileFlipXY);
+		if (data.alpha != 0xFF) {
+			float[] matrix = new float[]{
+				1,0,0,0,0,
+				0,1,0,0,0,
+				0,0,1,0,0,
+				0,0,0,data.alpha / (float)0xFF,0,
+				0,0,0,0,1,
+			};
+			Gdip.ImageAttributes_SetColorMatrix(attrib, matrix, Gdip.ColorMatrixFlagsDefault, Gdip.ColorAdjustTypeBitmap);
+		}
 		Gdip.Graphics_DrawImage(data.gdipGraphics, img, rect, srcX, srcY, srcWidth, srcHeight, Gdip.UnitPixel, attrib, 0, 0);
 		Gdip.ImageAttributes_delete(attrib);
 		Gdip.Bitmap_delete(img);
