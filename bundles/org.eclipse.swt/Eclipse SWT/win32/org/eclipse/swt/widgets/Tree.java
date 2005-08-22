@@ -50,7 +50,7 @@ public class Tree extends Composite {
 	int hFirstIndexOf, hLastIndexOf, lastIndexOf, sortDirection;
 	boolean dragStarted, gestureCompleted, insertAfter, shrink;
 	boolean ignoreSelect, ignoreExpand, ignoreDeselect, ignoreResize;
-	boolean lockSelection, oldSelected, newSelected, cancelMove;
+	boolean lockSelection, oldSelected, newSelected, ignoreColumnMove;
 	boolean linesVisible, customDraw, printClient;
 	static final int INSET = 3;
 	static final int GRID_WIDTH = 1;
@@ -3590,20 +3590,21 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 				if (column != null && !column.getResizable ()) {
 					return LRESULT.ONE;
 				}
+				ignoreColumnMove = true;
 				break;
 			}
 			case OS.NM_RELEASEDCAPTURE:
-				if (!cancelMove) updateImageList ();
-				cancelMove = false;
+				if (!ignoreColumnMove) updateImageList ();
+				ignoreColumnMove = false;
 				break;
 			case OS.HDN_BEGINDRAG: {
-				if (cancelMove) return LRESULT.ONE;
+				if (ignoreColumnMove) return LRESULT.ONE;
 				NMHEADER phdn = new NMHEADER ();
 				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
 				if (phdn.iItem != -1) {
 					TreeColumn column = columns [phdn.iItem];
 					if (column != null && !column.getMoveable ()) {
-						cancelMove = true;
+						ignoreColumnMove = true;
 						return LRESULT.ONE;
 					}
 				}
@@ -3616,7 +3617,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 					HDITEM pitem = new HDITEM ();
 					OS.MoveMemory (pitem, phdn.pitem, HDITEM.sizeof);
 					if ((pitem.mask & OS.HDI_ORDER) != 0 && pitem.iOrder != -1) {
-						cancelMove = false;
+						ignoreColumnMove = false;
 						int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 						int [] order = new int [count];
 						OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
