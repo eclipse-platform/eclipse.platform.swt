@@ -83,6 +83,8 @@ public class StyledText extends Canvas {
 	static final int BIDI_CARET_WIDTH = 3;
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT = 64;
+	static final int V_SCROLL_RATE = 50;
+	static final int H_SCROLL_RATE = 10;
 	
 	static final int ExtendedModify = 3000;
 	static final int LineGetBackground = 3001;
@@ -2438,7 +2440,6 @@ void doAutoScroll(Event event) {
  */
 void doAutoScroll(int direction, int distance) {
 	Runnable timer = null;
-	final int TIMER_INTERVAL = 50;
 	
 	autoScrollDistance = distance;
 
@@ -2456,20 +2457,24 @@ void doAutoScroll(int direction, int distance) {
 				if (autoScrollDirection == SWT.UP) {
 					int lines = (autoScrollDistance / getLineHeight()) + 1;
 					doSelectionPageUp(lines);
-					display.timerExec(TIMER_INTERVAL, this);
+					display.timerExec(V_SCROLL_RATE, this);
 				}
 			}
 		};
+		autoScrollDirection = direction;
+		display.timerExec(V_SCROLL_RATE, timer);
 	} else if (direction == SWT.DOWN) {
 		timer = new Runnable() {
 			public void run() {
 				if (autoScrollDirection == SWT.DOWN) {
 					int lines = (autoScrollDistance / getLineHeight()) + 1;
 					doSelectionPageDown(lines);
-					display.timerExec(TIMER_INTERVAL, this);
+					display.timerExec(V_SCROLL_RATE, this);
 				}
 			}
 		};
+		autoScrollDirection = direction;
+		display.timerExec(V_SCROLL_RATE, timer);
 	} else if (direction == ST.COLUMN_NEXT) {
 		timer = new Runnable() {
 			public void run() {
@@ -2477,10 +2482,12 @@ void doAutoScroll(int direction, int distance) {
 					doVisualNext();
 					setMouseWordSelectionAnchor();
 					doMouseSelection();
-					display.timerExec(TIMER_INTERVAL, this);
+					display.timerExec(H_SCROLL_RATE, this);
 				}
 			}
 		};
+		autoScrollDirection = direction;
+		display.timerExec(H_SCROLL_RATE, timer);
 	} else if (direction == ST.COLUMN_PREVIOUS) {
 		timer = new Runnable() {
 			public void run() {
@@ -2488,14 +2495,12 @@ void doAutoScroll(int direction, int distance) {
 					doVisualPrevious();
 					setMouseWordSelectionAnchor();
 					doMouseSelection();
-					display.timerExec(TIMER_INTERVAL, this);
+					display.timerExec(H_SCROLL_RATE, this);
 				}
 			}
 		};
-	} 	
-	if (timer != null) {
 		autoScrollDirection = direction;
-		display.timerExec(TIMER_INTERVAL, timer);
+		display.timerExec(H_SCROLL_RATE, timer);
 	}
 }
 /**
