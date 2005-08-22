@@ -46,6 +46,15 @@ static String[] excludeTests = {
 	"test_paste(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Combo)",
 	"test_setSelectionLorg_eclipse_swt_graphics_Point(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Combo)",
 	"Browser4(org.eclipse.swt.tests.junit.browser.Test_BrowserSuite)",
+	//
+	"test_copy(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Text)",
+	"test_cut(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Text)",
+	"test_paste(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Text)",
+	"test_selectAll(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Text)",
+	"test_copy(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_custom_StyledText)",
+	"test_cut(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_custom_StyledText)",
+	"test_invokeActionI(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_custom_StyledText)",
+	"test_paste(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_custom_StyledText)",
 };
 
 static boolean isExcluded(String name) {
