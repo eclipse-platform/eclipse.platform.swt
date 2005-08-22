@@ -51,7 +51,7 @@ public class Menu extends Widget {
 	 */
 	int handle;
 	short id;
-	int x, y;
+	int x, y, itemCount;
 //	int width, height;
 	boolean hasLocation, modified, closed;
 	MenuItem [] items;
@@ -278,20 +278,19 @@ void createHandle () {
 
 void createItem (MenuItem item, int index) {
 	checkWidget ();
-	int count = OS.CountMenuItems (handle);
-	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
+	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_INVALID_RANGE);
 	int attributes = OS.kMenuItemAttrAutoRepeat | OS.kMenuItemAttrCustomDraw;
 	if ((item.style & SWT.SEPARATOR) != 0) attributes = OS.kMenuItemAttrSeparator;
 	int result = OS.InsertMenuItemTextWithCFString (handle, 0, (short) index, attributes, 0);
 	if (result != OS.noErr) {
 		error (SWT.ERROR_ITEM_NOT_ADDED);
 	}
-	if (count == items.length) {
+	if (itemCount == items.length) {
 		MenuItem [] newItems = new MenuItem [items.length + 4];
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
 	}
-	System.arraycopy (items, index, items, index + 1, count - index);
+	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
 	items [index] = item;
 	modified = true;
 	int emptyMenu = item.createEmptyMenu ();
@@ -308,16 +307,15 @@ void createWidget () {
 }
 
 void destroyItem (MenuItem item) {
-	int count = OS.CountMenuItems (handle);
 	int index = 0;
-	while (index < count) {
+	while (index < itemCount) {
 		if (items [index] == item) break;
 		index++;
 	}
-	if (index == count) return;
-	System.arraycopy (items, index + 1, items, index, --count - index);
-	items [count] = null;
-	if (count == 0) items = new MenuItem [4];
+	if (index == itemCount) return;
+	System.arraycopy (items, index + 1, items, index, --itemCount - index);
+	items [itemCount] = null;
+	if (itemCount == 0) items = new MenuItem [4];
 	modified = true;
 	OS.DeleteMenuItem (handle, (short) (index + 1));
 }
@@ -402,8 +400,7 @@ public boolean getEnabled () {
  */
 public MenuItem getItem (int index) {
 	checkWidget ();
-	int count = OS.CountMenuItems (handle);
-	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
+	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_INVALID_RANGE);
 	return items [index];
 }
 
@@ -419,7 +416,7 @@ public MenuItem getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget ();
-	return OS.CountMenuItems (handle);
+	return itemCount;
 }
 
 /**
@@ -440,11 +437,10 @@ public int getItemCount () {
  */
 public MenuItem [] getItems () {
 	checkWidget ();
-	int count = OS.CountMenuItems (handle);
-	MenuItem [] result = new MenuItem [count];
+	MenuItem [] result = new MenuItem [itemCount];
 	int index = 0;
 	if (items != null) {
-		for (int i = 0; i < count; i++) {
+		for (int i = 0; i < itemCount; i++) {
 			MenuItem item = items [i];
 			if (item != null && !item.isDisposed ()) {
 				result [index++] = item;
@@ -810,8 +806,7 @@ int kEventMenuTargetItem (int nextHandler, int theEvent, int userData) {
 public int indexOf (MenuItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int count = OS.CountMenuItems (handle);
-	for (int i=0; i<count; i++) {
+	for (int i=0; i<itemCount; i++) {
 		if (items [i] == item) return i;
 	}
 	return -1;
