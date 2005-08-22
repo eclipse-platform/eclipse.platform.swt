@@ -497,6 +497,21 @@ public void setAlignment (int alignment) {
 	if ((style & SWT.RIGHT) == SWT.RIGHT) fmt = OS.LVCFMT_RIGHT;
 	lvColumn.fmt |= fmt;
 	OS.SendMessage (hwnd, OS.LVM_SETCOLUMN, index, lvColumn);
+	/*
+	* Bug in Windows.  When LVM_SETCOLUMN is used to change
+	* the alignment of a column, the column is not redrawn
+	* to show the new alignment.  The fix is to compute the
+	* visible rectangle for the column and redraw it.
+	*/
+	if (index != 0) {
+		RECT rect = new RECT (), itemRect = new RECT ();
+		OS.GetClientRect (hwnd, rect);
+		int hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
+		OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, itemRect);
+		rect.left = itemRect.left;
+		rect.right = itemRect.right;
+		OS.InvalidateRect (hwnd, rect, true);
+	}
 }
 
 public void setImage (Image image) {
