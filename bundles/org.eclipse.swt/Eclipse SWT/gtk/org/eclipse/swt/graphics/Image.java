@@ -645,15 +645,6 @@ void createSurface() {
 		surfaceData = OS.g_malloc(stride * height);
 		OS.memmove(surfaceData, pixels, stride * height);
 		surface = Cairo.cairo_image_surface_create_for_data(surfaceData, Cairo.CAIRO_FORMAT_ARGB32, width, height, stride);
-//		surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, width, height);
-//		int cr = Cairo.cairo_create(surface);
-//		Cairo.cairo_set_source_rgba(cr, 1, 0, 0, 0.5);
-////		Cairo.cairo_rectangle(cr, 0, 0, width, height);
-////		Cairo.cairo_fill(cr);
-//		Cairo.cairo_set_source_rgba(cr, 1, 0, 0, 0.5);
-//		Cairo.cairo_rectangle(cr, 0, 0, width - 0, height - 0);
-//		Cairo.cairo_fill(cr);
-//		Cairo.cairo_destroy(cr);
 		OS.g_object_unref(pixbuf);
 	} else {
 		int /*long*/ xDisplay = OS.GDK_DISPLAY();
