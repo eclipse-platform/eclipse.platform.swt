@@ -579,7 +579,7 @@ void setSortDirection (int direction) {
 					hdItem.fmt &= ~(OS.HDF_SORTUP | OS.HDF_SORTDOWN);
 					if (image != null) {
 						hdItem.fmt |= OS.HDF_IMAGE;
-						hdItem.iImage = parent.imageIndex (image, index);
+						hdItem.iImage = parent.imageIndexHeader (image);
 					} else {
 						hdItem.fmt &= ~OS.HDF_IMAGE;
 					}
