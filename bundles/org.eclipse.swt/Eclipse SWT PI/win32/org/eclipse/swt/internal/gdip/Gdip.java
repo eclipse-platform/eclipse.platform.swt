@@ -23,6 +23,8 @@ public class Gdip extends Platform {
 	public static final int BrushTypeTextureFill = 2;
 	public static final int BrushTypePathGradient = 3;
 	public static final int BrushTypeLinearGradient = 4;
+	public static final int ColorAdjustTypeBitmap = 1;
+	public static final int ColorMatrixFlagsDefault = 0;
 	public static final int CombineModeReplace = 0;
 	public static final int CombineModeIntersect = 1;
 	public static final int CombineModeUnion = 2;
