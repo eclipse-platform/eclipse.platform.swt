@@ -266,7 +266,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			OS.memmove (buffer, ptr, size);
 			boolean wrap = (style & SWT.MULTI) != 0 && (style & SWT.WRAP) != 0;
 			if (wrap && wHint != SWT.DEFAULT) {
-				String text = new String (buffer);
+				char[] chars = Converter.mbcsToWcs (getCodePage (), buffer);
+				String text = new String (chars);
 				String wrapped = display.wrapText (text, font, wHint);
 				buffer = Converter.wcsToMbcs (getCodePage (), wrapped, true);
 			}
