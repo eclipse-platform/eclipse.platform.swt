@@ -564,19 +564,17 @@ void createSurface() {
 		int /*long*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);		
 		byte[] line = new byte[stride];
 		if (mask != 0) {
-			int /*long*/ maskPixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, w[0], h[0]);
+			int /*long*/ maskPixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, width, height);
 			if (maskPixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-			OS.gdk_pixbuf_get_from_drawable(maskPixbuf, mask, 0, 0, 0, 0, 0, w[0], h[0]);
+			OS.gdk_pixbuf_get_from_drawable(maskPixbuf, mask, 0, 0, 0, 0, 0, width, height);
 			int maskStride = OS.gdk_pixbuf_get_rowstride(maskPixbuf);
 			int /*long*/ maskPixels = OS.gdk_pixbuf_get_pixels(maskPixbuf);
 			byte[] maskLine = new byte[maskStride];
+			int /*long*/ offset = pixels, maskOffset = maskPixels;
 			for (int y=0; y<height; y++) {
-				int /*long*/ offset = pixels + (y * stride);
 				OS.memmove(line, offset, stride);
-				int /*long*/ maskOffset = maskPixels + (y * maskStride);
 				OS.memmove(maskLine, maskOffset, maskStride);
-				for (int x=0; x<width; x++) {
-					int offset1 = x * 4;
+				for (int x=0, offset1=0; x<width; x++, offset1 += 4) {
 					if (maskLine[x * 3] == 0) {
 						line[offset1 + 3] = 0;
 					}
@@ -585,38 +583,77 @@ void createSurface() {
 					line[offset1 + 2] = temp;
 				}
 				OS.memmove(offset, line, stride);
+				offset += stride;
+				maskOffset += maskStride;
 			}
 			OS.g_object_unref(maskPixbuf);
 		} else if (alpha != -1) {
+			int /*long*/ offset = pixels;
 			for (int y=0; y<height; y++) {
-				int /*long*/ offset = pixels + (y * stride);
 				OS.memmove(line, offset, stride);
-				for (int x=0; x<width; x++) {
-					int offset1 = x * 4;
+				for (int x=0, offset1=0; x<width; x++, offset1 += 4) {
 					line[offset1+3] = (byte)alpha;
-					byte temp = line[offset1];
-					line[offset1] = line[offset1 + 2];
-					line[offset1 + 2] = temp;
+					/* pre-multiplied alpha */
+					int r = ((line[offset1 + 0] & 0xFF) * alpha) + 128;
+					r = (r + (r >> 8)) >> 8;
+					int g = ((line[offset1 + 1] & 0xFF) * alpha) + 128;
+					g = (g + (g >> 8)) >> 8;
+					int b = ((line[offset1 + 2] & 0xFF) * alpha) + 128;
+					b = (b + (b >> 8)) >> 8;
+					line[offset1 + 0] = (byte)b;
+					line[offset1 + 1] = (byte)g;
+					line[offset1 + 2] = (byte)r;
 				}
 				OS.memmove(offset, line, stride);
+				offset += stride;
+			}
+		} else if (alphaData != null) {
+			int /*long*/ offset = pixels;
+			for (int y = 0; y < h [0]; y++) {
+				OS.memmove (line, offset, stride);
+				for (int x=0, offset1=0; x<width; x++, offset1 += 4) {
+					int alpha = alphaData [y*w [0]+x] & 0xFF;
+					line[offset1+3] = (byte)alpha;
+					/* pre-multiplied alpha */
+					int r = ((line[offset1 + 0] & 0xFF) * alpha) + 128;
+					r = (r + (r >> 8)) >> 8;
+					int g = ((line[offset1 + 1] & 0xFF) * alpha) + 128;
+					g = (g + (g >> 8)) >> 8;
+					int b = ((line[offset1 + 2] & 0xFF) * alpha) + 128;
+					b = (b + (b >> 8)) >> 8;
+					line[offset1 + 0] = (byte)b;
+					line[offset1 + 1] = (byte)g;
+					line[offset1 + 2] = (byte)r;
+				}
+				OS.memmove (offset, line, stride);
+				offset += stride;
 			}
 		} else {
+			int /*long*/ offset = pixels;
 			for (int y = 0; y < h [0]; y++) {
-				int /*long*/ offset = pixels + (y * stride);
 				OS.memmove (line, offset, stride);
-				for (int x = 0; x < w [0]; x++) {
-					int offset1 = x * 4;
-					line[offset1+3] = alphaData [y*w [0]+x];
+				for (int x=0, offset1=0; x<width; x++, offset1 += 4) {
+					line[offset1+3] = (byte)0xFF;
 					byte temp = line[offset1];
 					line[offset1] = line[offset1 + 2];
 					line[offset1 + 2] = temp;
 				}
 				OS.memmove (offset, line, stride);
+				offset += stride;
 			}
 		}
 		surfaceData = OS.g_malloc(stride * height);
 		OS.memmove(surfaceData, pixels, stride * height);
 		surface = Cairo.cairo_image_surface_create_for_data(surfaceData, Cairo.CAIRO_FORMAT_ARGB32, width, height, stride);
+//		surface = Cairo.cairo_image_surface_create(Cairo.CAIRO_FORMAT_ARGB32, width, height);
+//		int cr = Cairo.cairo_create(surface);
+//		Cairo.cairo_set_source_rgba(cr, 1, 0, 0, 0.5);
+////		Cairo.cairo_rectangle(cr, 0, 0, width, height);
+////		Cairo.cairo_fill(cr);
+//		Cairo.cairo_set_source_rgba(cr, 1, 0, 0, 0.5);
+//		Cairo.cairo_rectangle(cr, 0, 0, width - 0, height - 0);
+//		Cairo.cairo_fill(cr);
+//		Cairo.cairo_destroy(cr);
 		OS.g_object_unref(pixbuf);
 	} else {
 		int /*long*/ xDisplay = OS.GDK_DISPLAY();
