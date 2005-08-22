@@ -6024,24 +6024,6 @@ public void redraw(int x, int y, int width, int height, boolean all) {
 	}
 }
 /** 
- * Redraw the given line.
- * <p>
- *
- * @param line index of the line to redraw
- * @param offset offset in line to start redrawing
- */
-void redrawLine(int line, int offset) {
-	int redrawX = 0;
-	if (offset > 0) {
-		String lineText = content.getLine(line);
-		redrawX = getXAtOffset(lineText, line, offset);
-	}
-	int redrawY = line * lineHeight - verticalScrollOffset;
-	super.redraw(
-		redrawX + leftMargin, redrawY + topMargin, 
-		getClientArea().width - leftMargin - rightMargin, lineHeight, true);
-}
-/** 
  * Redraws a text range in the specified lines
  * <p>
  *
