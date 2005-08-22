@@ -1629,18 +1629,18 @@ int imageIndex (Image image, int index) {
 	if (imageList == null) {
 		Rectangle bounds = image.getBounds ();
 		imageList = display.getImageList (style & SWT.RIGHT_TO_LEFT, bounds.width, bounds.height);
-		int imageIndex = imageList.indexOf (image);
-		if (imageIndex == -1) imageIndex = imageList.add (image);
-		if (hwndHeader == 0 || OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0) == index) {
-			int hImageList = imageList.getHandle ();
+	}
+	int imageIndex = imageList.indexOf (image);
+	if (imageIndex == -1) imageIndex = imageList.add (image);
+	if (hwndHeader == 0 || OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0) == index) {
+		int hImageList = imageList.getHandle ();
+		int hOldImageList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0);
+		if (hOldImageList != hImageList) {
 			OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, hImageList);
 			updateScrollBar ();
 		}
-		return imageIndex;
 	}
-	int imageIndex = imageList.indexOf (image);
-	if (imageIndex != -1) return imageIndex;
-	return imageList.add (image);
+	return imageIndex;
 }
 
 int imageIndexHeader (Image image) {
