@@ -198,12 +198,14 @@ class PromptDialog extends Dialog {
 		data = new GridData();
 		data.horizontalAlignment = GridData.END;
 		composite.setLayoutData (data);
-		composite.setLayout(new RowLayout());
+		composite.setLayout(new GridLayout(2, true));
 		buttons[1] = new Button(composite, SWT.PUSH);
 		buttons[1].setText(SWT.getMessage("SWT_OK")); //$NON-NLS-1$
+		buttons[1].setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		buttons[1].addListener(SWT.Selection, listener);
 		buttons[2] = new Button(composite, SWT.PUSH);
 		buttons[2].setText(SWT.getMessage("SWT_Cancel")); //$NON-NLS-1$
+		buttons[2].setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		buttons[2].addListener(SWT.Selection, listener);
 
 		shell.pack();
