@@ -191,7 +191,6 @@ class PromptDialog extends Dialog {
 			buttons[0].setText(check);
 			buttons[0].setSelection(checkValue[0] != 0);
 			data = new GridData ();
-			data.horizontalAlignment = GridData.END;
 			buttons[0].setLayoutData (data);
 		}
 		Composite composite = new Composite(shell, SWT.NONE);
