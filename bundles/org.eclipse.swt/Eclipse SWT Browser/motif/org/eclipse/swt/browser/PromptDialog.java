@@ -135,21 +135,23 @@ class PromptDialog extends Dialog {
 			buttons[0].setText(check);
 			buttons[0].setSelection(checkValue[0] != 0);
 			data = new GridData ();
-			data.horizontalAlignment = GridData.END;
 			buttons[0].setLayoutData (data);
 		}
 		Composite composite = new Composite(shell, SWT.NONE);
 		data = new GridData();
 		data.horizontalAlignment = GridData.END;
 		composite.setLayoutData (data);
-		composite.setLayout(new RowLayout());
+		composite.setLayout(new GridLayout(2, true));
 		buttons[1] = new Button(composite, SWT.PUSH);
 		buttons[1].setText(SWT.getMessage("SWT_OK")); //$NON-NLS-1$
+		buttons[1].setLayoutData(new GridData (GridData.FILL_HORIZONTAL));
 		buttons[1].addListener(SWT.Selection, listener);
 		buttons[2] = new Button(composite, SWT.PUSH);
 		buttons[2].setText(SWT.getMessage("SWT_Cancel")); //$NON-NLS-1$
+		buttons[2].setLayoutData(new GridData (GridData.FILL_HORIZONTAL));
 		buttons[2].addListener(SWT.Selection, listener);
 
+		shell.setDefaultButton(buttons[1]);
 		shell.pack();
 		shell.open();
 		Display display = parent.getDisplay();

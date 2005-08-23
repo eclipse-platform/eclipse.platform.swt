@@ -244,7 +244,7 @@ public int Prompt(int parent, int dialogTitle, int text, int value, int checkMsg
 
 public int PromptUsernameAndPassword(int parent, int dialogTitle, int text, int username, int password, int checkMsg, int checkValue, int _retval) {
 	Browser browser = getBrowser(parent);
-	String titleLabel = null, textLabel, checkLabel = null;
+	String titleLabel, textLabel, checkLabel = null;
 	String[] userLabel = new String[1], passLabel = new String[1];
 	char[] dest;
 	int length;
@@ -253,6 +253,8 @@ public int PromptUsernameAndPassword(int parent, int dialogTitle, int text, int 
 		dest = new char[length];
 		XPCOM.memmove(dest, dialogTitle, length * 2);
 		titleLabel = new String(dest);
+	} else {
+		titleLabel = "";	//$NON-NLS-1$
 	}
 	
 	length = XPCOM.strlen_PRUnichar(text);
