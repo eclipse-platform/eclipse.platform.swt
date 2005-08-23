@@ -903,6 +903,14 @@ int /*long*/ gtk_realize (int /*long*/ widget) {
 	if ((style & SWT.ON_TOP) != 0) {
 		OS.gdk_window_set_override_redirect (window, true);
 	}
+	/*
+	* Bug in GTK.  When a shell that has no window manager trimmings
+	* is given focus, GTK gets stuck in "focus follows pointer" mode when
+	* the pointer is within the shell and its parent when the shell is disposed.
+	* The fix is to modify the X events that cause this to happen.
+	* 
+	* NOTE: This bug is fixed in GTK+ 2.6.8 and above.
+	*/
 	if (OS.GTK_VERSION < OS.VERSION (2, 6, 8)) {
 		OS.gdk_window_add_filter  (window, display.filterProc, shellHandle);
 	}
@@ -1585,7 +1593,7 @@ void releaseWidget () {
 	if (display.activeShell == this) display.activeShell = null;
 	if (tooltipsHandle != 0) OS.g_object_unref (tooltipsHandle);
 	tooltipsHandle = 0;
-	if (OS.GDK_WINDOWING_X11 ()) {
+	if (OS.GTK_VERSION < OS.VERSION (2, 6, 8) ) {
 		int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
 		OS.gdk_window_remove_filter  (window, display.filterProc, shellHandle);
 	}
