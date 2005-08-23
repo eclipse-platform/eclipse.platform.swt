@@ -589,7 +589,7 @@ public int getCaretPosition () {
 		if (startLine == endLine) {
 			if (!OS.IsWinCE) {
 				int idThread = OS.GetWindowThreadProcessId (handle, null);
-				GUITHREADINFO  lpgui = new GUITHREADINFO();
+				GUITHREADINFO lpgui = new GUITHREADINFO ();
 				lpgui.cbSize = GUITHREADINFO.sizeof;
 				if (OS.GetGUIThreadInfo (idThread, lpgui)) {
 					if (lpgui.hwndCaret == handle || lpgui.hwndCaret == 0) {
