@@ -208,6 +208,7 @@ class PromptDialog extends Dialog {
 		buttons[2].setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 		buttons[2].addListener(SWT.Selection, listener);
 
+		shell.setDefaultButton(buttons[1]);
 		shell.pack();
 		shell.open();
 		Display display = parent.getDisplay();
