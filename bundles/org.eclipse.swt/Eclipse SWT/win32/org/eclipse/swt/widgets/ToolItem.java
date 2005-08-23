@@ -788,19 +788,21 @@ public void setText (String string) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setText (string);
 	int hwnd = parent.handle;
-	int hHeap = OS.GetProcessHeap ();
-	TCHAR buffer = new TCHAR (parent.getCodePage (), string, true);
-	int byteCount = buffer.length () * TCHAR.sizeof;
-	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-	OS.MoveMemory (pszText, buffer, byteCount); 
 	TBBUTTONINFO info = new TBBUTTONINFO ();
 	info.cbSize = TBBUTTONINFO.sizeof;
 	info.dwMask = OS.TBIF_TEXT | OS.TBIF_STYLE;
-	info.pszText = pszText;
 	info.fsStyle = (byte) (widgetStyle () | OS.BTNS_AUTOSIZE);
-	if (string.length () != 0) info.fsStyle |= OS.BTNS_SHOWTEXT;
+	int hHeap = OS.GetProcessHeap (), pszText = 0;
+	if (string.length () != 0) {
+		info.fsStyle |= OS.BTNS_SHOWTEXT;
+		TCHAR buffer = new TCHAR (parent.getCodePage (), string, true);
+		int byteCount = buffer.length () * TCHAR.sizeof;
+		pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+		OS.MoveMemory (pszText, buffer, byteCount); 
+		info.pszText = pszText;
+	}
 	OS.SendMessage (hwnd, OS.TB_SETBUTTONINFO, id, info);
-	OS.HeapFree (hHeap, 0, pszText);
+	if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
 	
 	/*
 	* Bug in Windows.  For some reason, when the font is set
