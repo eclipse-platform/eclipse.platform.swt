@@ -424,6 +424,7 @@ public class OS extends Platform {
 	public static final byte[] gtk_cursor_blink = ascii("gtk-cursor-blink");
 	public static final byte[] gtk_cursor_blink_time = ascii("gtk-cursor-blink-time");
 	public static final byte[] gtk_double_click_time = ascii("gtk-double-click-time");
+	public static final byte[] gtk_entry_select_on_focus = ascii("gtk-entry-select-on-focus");
 	public static final byte[] horizontal_separator = ascii("horizontal-separator");
 	public static final byte[] inconsistent = ascii("inconsistent");
 	public static final byte[] interior_focus = ascii("interior-focus");

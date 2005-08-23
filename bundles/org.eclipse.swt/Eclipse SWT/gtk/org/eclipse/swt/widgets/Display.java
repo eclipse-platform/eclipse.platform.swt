@@ -187,6 +187,9 @@ public class Display extends Device {
 	int /*long*/ setDirectionProc;
 	Callback setDirectionCallback;
 	
+	/* Entry focus behaviour */
+	boolean entrySelectOnFocus;
+
 	/* Flush exposes */
 	int /*long*/ checkIfEventProc;
 	Callback checkIfEventCallback;
@@ -816,6 +819,14 @@ synchronized void createDisplay (DeviceData data) {
 			}
 		}
 	}
+
+	/* Entry focus behaviour */
+	int /*long*/ entry = OS.gtk_entry_new ();
+	OS.gtk_widget_destroy (entry);
+	int /*long*/ settings = OS.gtk_settings_get_default ();
+	int [] buf = new int [1];
+	OS.g_object_get (settings, OS.gtk_entry_select_on_focus, buf, 0);
+	entrySelectOnFocus = (buf [0] == 1);
 }
 
 Image createImage (String name) {
