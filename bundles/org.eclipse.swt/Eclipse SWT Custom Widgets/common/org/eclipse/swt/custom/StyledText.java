@@ -4889,9 +4889,6 @@ StyledTextContent internalGetContent() {
 int internalGetHorizontalPixel() {
 	return horizontalScrollOffset;
 }
-LineCache internalGetLineCache() {
-	return lineCache;
-}
 Point internalGetSelection() {
 	return selection;
 }
@@ -6642,10 +6639,10 @@ public void setWordWrap(boolean wrap) {
 			content = logicalContent;
 		}
 		calculateContentWidth();
-	  horizontalScrollOffset = 0;
-	  if (horizontalBar != null) {
-	  	horizontalBar.setVisible(!wordWrap);
-	  }
+		horizontalScrollOffset = 0;
+		if (horizontalBar != null) {
+			horizontalBar.setVisible(!wordWrap);
+		}
 		setScrollBars();
 		setCaretLocation();
 		super.redraw();		
