@@ -903,7 +903,9 @@ int /*long*/ gtk_realize (int /*long*/ widget) {
 	if ((style & SWT.ON_TOP) != 0) {
 		OS.gdk_window_set_override_redirect (window, true);
 	}
-	OS.gdk_window_add_filter  (window, display.filterProc, shellHandle);
+	if (OS.GTK_VERSION < OS.VERSION (2, 6, 8)) {
+		OS.gdk_window_add_filter  (window, display.filterProc, shellHandle);
+	}
 	return result;
 }
 
