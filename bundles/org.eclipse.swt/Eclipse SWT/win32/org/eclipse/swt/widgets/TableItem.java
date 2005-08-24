@@ -226,12 +226,12 @@ public Rectangle getBounds (int index) {
 
 RECT getBounds (int row, int column, boolean getText, boolean getImage) {
 	if (!getText && !getImage) return new RECT ();
-	int count = Math.max (1, parent.getColumnCount ());
-	if (0 > column || column > count - 1) return new RECT ();
+	int columnCount = Math.max (1, parent.getColumnCount ());
+	if (0 > column || column > columnCount - 1) return new RECT ();
 	if (parent.fixScrollWidth) parent.setScrollWidth (null, true);
 	RECT rect = new RECT ();
 	int hwnd = parent.handle;
-	if (column == 0 && count == 1) {
+	if (column == 0 && columnCount == 1) {
 		if (getText && getImage) {
 			rect.left = OS.LVIR_SELECTBOUNDS;
 		} else {
