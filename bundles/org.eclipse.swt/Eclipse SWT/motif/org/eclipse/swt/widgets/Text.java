@@ -1301,14 +1301,19 @@ public void setSelection (int start, int end) {
 	/* Set the selection. */
 	int xDisplay = OS.XtDisplay (handle);
 	if (xDisplay == 0) return;
-	int nStart = Math.min (Math.max (Math.min (start, end), 0), position);
-	int nEnd = Math.min (Math.max (Math.max (start, end), 0), position);
+	start = Math.min (Math.max (start, 0), position);
+	end = Math.min (Math.max (end, 0), position);
+	int nStart = Math.min (start, end), nEnd = Math.max (start, end);
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XmTextSetSelection (handle, nStart, nEnd, OS.XtLastTimestampProcessed (xDisplay));
 
 	/* Force the i-beam to follow the highlight/selection. */
-	OS.XmTextSetInsertionPosition (handle, nEnd);
+	if (start > end) {
+		OS.XmTextSetInsertionPosition (handle, nStart);
+	} else {
+		OS.XmTextSetInsertionPosition (handle, nEnd);
+	}
 	display.setWarnings (warnings);
 }
 /**
