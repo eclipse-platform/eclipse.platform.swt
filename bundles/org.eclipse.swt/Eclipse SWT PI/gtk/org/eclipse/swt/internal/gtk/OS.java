@@ -375,6 +375,7 @@ public class OS extends Platform {
 	public static final byte[] focus = ascii("focus");
 	public static final byte[] focus_in_event = ascii("focus-in-event");
 	public static final byte[] focus_out_event = ascii("focus-out-event");
+	public static final byte[] grab_focus = ascii("grab-focus");
 	public static final byte[] hide = ascii("hide");
 	public static final byte[] input = ascii("input");
 	public static final byte[] insert_text = ascii("insert-text");

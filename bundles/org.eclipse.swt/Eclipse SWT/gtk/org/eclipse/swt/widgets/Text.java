@@ -1061,10 +1061,13 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
 	return super.gtk_event_after (widget, gdkEvent);
 }
 
-int /*long*/ gtk_focus_in_event (int /*long*/ widget, int /*long*/ event) {
-	int /*long*/ result = super.gtk_focus_in_event (widget, event);
-	// widget could be disposed at this point
-	if (handle == 0) return 0;
+int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
+	fixIM ();
+	return super.gtk_focus_out_event (widget, event);
+}
+
+int /*long*/ gtk_grab_focus (int /*long*/ widget) {
+	int /*long*/ result = super.gtk_grab_focus (widget);
 	/*
 	* Feature in GTK.  GtkEntry widgets select their text on focus in,
 	* clearing the previous selection.  This behavior is controlled by
@@ -1077,11 +1080,6 @@ int /*long*/ gtk_focus_in_event (int /*long*/ widget, int /*long*/ event) {
 		OS.g_object_set (settings, OS.gtk_entry_select_on_focus, false, 0);
 	}
 	return result;
-}
-
-int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
-	fixIM ();
-	return super.gtk_focus_out_event (widget, event);
 }
 
 int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*long*/ new_text_length, int /*long*/ position) {
@@ -1169,6 +1167,7 @@ void hookEvents () {
 		OS.g_signal_connect (handle, OS.insert_text, windowProc5, INSERT_TEXT);
 		OS.g_signal_connect (handle, OS.delete_text, windowProc4, DELETE_TEXT);
 		OS.g_signal_connect (handle, OS.activate, windowProc2, ACTIVATE);
+		OS.g_signal_connect (handle, OS.grab_focus, windowProc2, GRAB_FOCUS);
 	} else {
 		OS.g_signal_connect (bufferHandle, OS.changed, windowProc2, CHANGED);
 		OS.g_signal_connect (bufferHandle, OS.insert_text, windowProc5, INSERT_TEXT);
