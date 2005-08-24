@@ -342,7 +342,7 @@ public void pack () {
 			columnWidth = Math.max (columnWidth, imageWidth + textWidth + Tree.INSET * 3);
 		}
 	}
-	TCHAR buffer = new TCHAR (cp, text, true);
+	TCHAR buffer = new TCHAR (cp, text, false);
 	OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
 	int headerWidth = rect.right - rect.left + Tree.HEADER_MARGIN;
 	if (image != null || parent.sortColumn == this) {
