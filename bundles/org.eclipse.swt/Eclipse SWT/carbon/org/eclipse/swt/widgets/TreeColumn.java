@@ -522,6 +522,11 @@ public void setText (String string) {
  */
 public void setWidth (int width) {
 	checkWidget ();
+	/*
+	* Feature in the Macintosh. The data browser widget adds the left inset
+	* of the disclosure column to the specified width making the column too
+	* wide. The fix is to subtract this value from the column width.
+	*/
 	width -= parent.getLeftDisclosureInset (id);
 	if (width < 0) width = 0;
 	OS.SetDataBrowserTableViewNamedColumnWidth (parent.handle, id, (short) width);
