@@ -231,8 +231,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int width = 0;
 	if (wHint == SWT.DEFAULT) {
 		if (columnCount != 0) {
-			for (int j=0; j<columnCount; j++) {
-				width += columns [j].getWidth ();
+			for (int i=0; i<columnCount; i++) {
+				width += columns [i].getWidth ();
 			}
 		} else {
 			int columnWidth = 0;
