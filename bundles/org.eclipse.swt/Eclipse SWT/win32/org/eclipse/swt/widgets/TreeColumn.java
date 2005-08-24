@@ -652,6 +652,13 @@ public void setWidth (int width) {
 	hdItem.mask = OS.HDI_WIDTH;
 	hdItem.cxy = width;
 	OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
+	RECT itemRect = new RECT ();
+	OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, itemRect);
+	int hwnd = parent.handle;
+	RECT rect = new RECT ();
+	OS.GetClientRect (hwnd, rect);
+	rect.left = itemRect.left;
+	OS.InvalidateRect (hwnd, rect, true);
 	parent.setScrollWidth ();
 }
 }
