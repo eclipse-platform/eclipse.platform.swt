@@ -306,7 +306,7 @@ public void pack () {
 	if (iconRef != 0 || (image != null && OS.VERSION >= 0x1040)) {
 		/* Note that the image is stretched to the header height */
 		width += parent.headerHeight;
-		if (text.length () != 0) width += 4;
+		if (text.length () != 0) width += parent.getGap ();
 	}
 	if ((parent.style & SWT.VIRTUAL) == 0) {
 		int index = parent.indexOf (this);
@@ -318,7 +318,7 @@ public void pack () {
 		}
 	}
 	gc.dispose ();
-	setWidth (width + Table.EXTRA_WIDTH);
+	setWidth (width + parent.getInsetWidth ());
 }
 
 void releaseHandle () {

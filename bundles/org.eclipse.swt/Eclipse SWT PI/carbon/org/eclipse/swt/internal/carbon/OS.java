@@ -216,6 +216,8 @@ public class OS extends Platform {
 	public static final int kControlUseThemeFontIDMask = 0x80;
 	public static final int kControlUseFaceMask = 0x2;
 	public static final int kCurrentProcess = 2;
+	public static final int kDataBrowserAttributeListViewAlternatingRowColors = (1 << 1);
+	public static final int kDataBrowserAttributeListViewDrawColumnDividers = (1 << 2);
 	public static final int kDataBrowserCheckboxType = ('c'<<24) + ('h'<<16) + ('b'<<8) + 'x';
 	public static final int kDataBrowserCmdTogglesSelection = 1 << 3;
 	public static final int kDataBrowserContainerClosed = 10;
@@ -252,6 +254,11 @@ public class OS extends Platform {
 	public static final int kDataBrowserListViewSelectionColumn = 1 << OS.kDataBrowserViewSpecificFlagsOffset;
 	public static final int kDataBrowserListViewSortableColumn = 1 << 18;
 	public static final int kDataBrowserNeverEmptySelectionSet = 1 << 6;
+	public static final int kDataBrowserMetricCellContentInset = 1;
+	public static final int kDataBrowserMetricIconAndTextGap = 2;
+	public static final int kDataBrowserMetricDisclosureColumnEdgeInset = 3;
+	public static final int kDataBrowserMetricDisclosureTriangleAndContentGap = 4;
+	public static final int kDataBrowserMetricDisclosureColumnPerDepthGap = 5;
 	public static final int kDataBrowserNoItem = 0;
 	public static final int kDataBrowserOrderIncreasing = 1;
 	public static final int kDataBrowserPropertyEnclosingPart = 0;
@@ -629,6 +636,7 @@ public class OS extends Platform {
 	public static final int kThemeMenuItemHierarchical = 1;
 	public static final int kThemeMetricDisclosureButtonWidth = 22;
 	public static final int kThemeMetricDisclosureTriangleHeight = 25;
+	public static final int kThemeMetricDisclosureTriangleWidth = 26;
 	public static final int kThemeMetricCheckBoxWidth = 50;
 	public static final int kThemeMetricComboBoxLargeDisclosureWidth = 74;
 	public static final int kThemeMetricRadioButtonWidth = 52;
@@ -1009,6 +1017,10 @@ public static final native int CreateUnicodeToTextInfoByEncoding (int iEncoding,
 public static final native int CreateEditUnicodeTextControl(int window, Rect boundsRect, int text, boolean isPassword, ControlFontStyleRec style, int [] outControl);
 public static final native int CreateUserPaneControl(int window, Rect boundsRect, int features, int [] outControl);
 public static final native int CreateWindowGroup (int inAttributes, int [] outGroup);
+public static final native int DataBrowserChangeAttributes(int inDataBrowser, int inAttributesToSet, int inAttributesToClear);
+public static final native int DataBrowserGetMetric(int inDataBrowser, int inMetric, boolean[] outUsingDefaultValue, float[] outValue);
+public static final native int DataBrowserSetMetric(int inDataBrowser, int inMetric, boolean inUseDefaultValue, float inValue);
+public static final native int DataBrowserGetAttributes(int inDataBrowser, int[] outAttributes); 
 public static final native void DeleteMenu(short menuID);
 public static final native void DeleteMenuItem(int mHandle, short index);
 public static final native int DeleteMenuItems(int mHandle, short firstItem, int numItems);

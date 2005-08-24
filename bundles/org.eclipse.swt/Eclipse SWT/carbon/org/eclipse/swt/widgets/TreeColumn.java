@@ -287,7 +287,7 @@ public int getWidth () {
 	checkWidget ();
 	short [] width = new short [1];
 	OS.GetDataBrowserTableViewNamedColumnWidth (parent.handle, id, width);
-	return Math.max (0, width [0]);
+	return Math.max (0, width [0] + parent.getLeftDisclosureInset (id));
 }
 
 /**
@@ -308,14 +308,14 @@ public void pack () {
 	if (iconRef != 0 || (image != null && OS.VERSION >= 0x1040)) {
 		/* Note that the image is stretched to the header height */
 		width += parent.headerHeight;
-		if (text.length () != 0) width += 4;
+		if (text.length () != 0) width += parent.getGap ();
 	}
 	if ((parent.style & SWT.VIRTUAL) == 0) {
 		int index = parent.indexOf (this);
 		width = Math.max (width, calculateWidth(parent.getItems (null), index, gc, width));
 	}
 	gc.dispose ();
-	setWidth (width + Tree.EXTRA_WIDTH);
+	setWidth (width + parent.getInsetWidth (id, true));
 }
 
 int calculateWidth (TreeItem[] items, int index, GC gc, int width) {
@@ -522,6 +522,8 @@ public void setText (String string) {
  */
 public void setWidth (int width) {
 	checkWidget ();
+	width -= parent.getLeftDisclosureInset (id);
+	if (width < 0) width = 0;
 	OS.SetDataBrowserTableViewNamedColumnWidth (parent.handle, id, (short) width);
 	updateHeader ();
 	if (width != lastWidth) resized (width);

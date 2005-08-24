@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 847;
-int OS_nativeFunctionCallCount[847];
+int OS_nativeFunctionCount = 851;
+int OS_nativeFunctionCallCount[851];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -265,6 +265,10 @@ char * OS_nativeFunctionNames[] = {
 	"CreateWindowGroup",
 	"DMGetFirstScreenDevice",
 	"DMGetNextScreenDevice",
+	"DataBrowserChangeAttributes",
+	"DataBrowserGetAttributes",
+	"DataBrowserGetMetric",
+	"DataBrowserSetMetric",
 	"DeleteGlobalRef",
 	"DeleteMenu",
 	"DeleteMenuItem",

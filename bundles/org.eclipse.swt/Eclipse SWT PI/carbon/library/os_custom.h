@@ -10,5 +10,9 @@
  *******************************************************************************/
 
 /* Libraries for dynamic loaded functions */
+#define DataBrowserChangeAttributes_LIB "com.apple.Carbon"
+#define DataBrowserGetAttributes_LIB "com.apple.Carbon"
+#define DataBrowserGetMetric_LIB "com.apple.Carbon"
+#define DataBrowserSetMetric_LIB "com.apple.Carbon"
 #define GetIconRefFromIconFamilyPtr_LIB "com.apple.Carbon"
 

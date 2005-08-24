@@ -3365,6 +3365,133 @@ JNIEXPORT jint JNICALL OS_NATIVE(DMGetNextScreenDevice)
 }
 #endif
 
+#ifndef NO_DataBrowserChangeAttributes
+JNIEXPORT jint JNICALL OS_NATIVE(DataBrowserChangeAttributes)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DataBrowserChangeAttributes_FUNC);
+/*
+	rc = (jint)DataBrowserChangeAttributes(arg0, arg1, arg2);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef jint (*FPTR)(jint, jint, jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(DataBrowserChangeAttributes_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("DataBrowserChangeAttributes"));
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0, arg1, arg2);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, DataBrowserChangeAttributes_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DataBrowserGetAttributes
+JNIEXPORT jint JNICALL OS_NATIVE(DataBrowserGetAttributes)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DataBrowserGetAttributes_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)DataBrowserGetAttributes(arg0, lparg1);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef jint (*FPTR)(jint, jint *);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(DataBrowserGetAttributes_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("DataBrowserGetAttributes"));
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0, lparg1);
+		}
+	}
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, DataBrowserGetAttributes_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DataBrowserGetMetric
+JNIEXPORT jint JNICALL OS_NATIVE(DataBrowserGetMetric)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbooleanArray arg2, jfloatArray arg3)
+{
+	jboolean *lparg2=NULL;
+	jfloat *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DataBrowserGetMetric_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetBooleanArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = (*env)->GetFloatArrayElements(env, arg3, NULL)) == NULL) goto fail;
+/*
+	rc = (jint)DataBrowserGetMetric(arg0, arg1, lparg2, lparg3);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef jint (*FPTR)(jint, jint, jboolean *, jfloat *);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(DataBrowserGetMetric_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("DataBrowserGetMetric"));
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0, arg1, lparg2, lparg3);
+		}
+	}
+fail:
+	if (arg3 && lparg3) (*env)->ReleaseFloatArrayElements(env, arg3, lparg3, 0);
+	if (arg2 && lparg2) (*env)->ReleaseBooleanArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, DataBrowserGetMetric_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_DataBrowserSetMetric
+JNIEXPORT jint JNICALL OS_NATIVE(DataBrowserSetMetric)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jfloat arg3)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, DataBrowserSetMetric_FUNC);
+/*
+	rc = (jint)DataBrowserSetMetric(arg0, arg1, arg2, arg3);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef jint (*FPTR)(jint, jint, jboolean, jfloat);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(DataBrowserSetMetric_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("DataBrowserSetMetric"));
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0, arg1, arg2, arg3);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, DataBrowserSetMetric_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_DeleteMenu
 JNIEXPORT void JNICALL OS_NATIVE(DeleteMenu)
 	(JNIEnv *env, jclass that, jshort arg0)

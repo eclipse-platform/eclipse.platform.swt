@@ -59,8 +59,9 @@ public class Table extends Composite {
 	int showIndex, lastHittest;
 	static final int CHECK_COLUMN_ID = 1024;
 	static final int COLUMN_ID = 1025;
-	static final int EXTRA_WIDTH = 24;
-	static final int CHECK_COLUMN_WIDTH = 25;
+	static final int GRID_WIDTH = 1;
+	static final int ICON_AND_TEXT_GAP = 4;
+	static final int CELL_CONTENT_INSET = 12;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -379,20 +380,23 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int width = 0;
 	if (wHint == SWT.DEFAULT) {
-		GC gc = new GC (this);
-		int columnCount = Math.max (this.columnCount, 1);
-		for (int j=0; j<columnCount; j++) {
-			int columnWidth = this.columnCount != 0 ? columns [j].getWidth () : 0;
+		if (columnCount != 0) {
+			for (int j=0; j<columnCount; j++) {
+				width += columns [j].getWidth ();
+			}
+		} else {
+			int columnWidth = 0;
+			GC gc = new GC (this);
 			for (int i=0; i<itemCount; i++) {
 				TableItem item = items [i];
 				if (item != null) {
-					columnWidth = Math.max (columnWidth, item.calculateWidth (j, gc));
+					columnWidth = Math.max (columnWidth, item.calculateWidth (0, gc));
 				}
 			}
-			width += columnWidth + EXTRA_WIDTH;
+			gc.dispose ();
+			width += columnWidth + getInsetWidth ();
 		}
-		gc.dispose ();
-		if ((style & SWT.CHECK) != 0) width += CHECK_COLUMN_WIDTH;
+		if ((style & SWT.CHECK) != 0) width += getCheckColumnWidth ();
 	} else {
 		width = wHint;
 	}
@@ -443,6 +447,9 @@ void createHandle () {
 	headerHeight = height [0];
 	OS.SetDataBrowserListViewHeaderBtnHeight (handle, (short) 0);
 	OS.SetDataBrowserHasScrollBars (handle, (style & SWT.H_SCROLL) != 0, (style & SWT.V_SCROLL) != 0);
+	if (OS.VERSION >= 0x1040) {
+		OS.DataBrowserSetMetric (handle, OS.kDataBrowserMetricCellContentInset, false, 4);
+	}
 	int position = 0;
 	if ((style & SWT.CHECK) != 0) {
 		DataBrowserListViewColumnDesc checkColumn = new DataBrowserListViewColumnDesc ();
@@ -450,9 +457,9 @@ void createHandle () {
 		checkColumn.propertyDesc_propertyID = CHECK_COLUMN_ID;
 		checkColumn.propertyDesc_propertyType = OS.kDataBrowserCheckboxType;
 		checkColumn.propertyDesc_propertyFlags = OS.kDataBrowserPropertyIsMutable;
-		//TODO - CHECK column size
-		checkColumn.headerBtnDesc_minimumWidth = CHECK_COLUMN_WIDTH;
-		checkColumn.headerBtnDesc_maximumWidth = CHECK_COLUMN_WIDTH;
+		int checkWidth = getCheckColumnWidth ();
+		checkColumn.headerBtnDesc_minimumWidth = (short) checkWidth;
+		checkColumn.headerBtnDesc_maximumWidth = (short) checkWidth;
 		checkColumn.headerBtnDesc_initialOrder = (short) OS.kDataBrowserOrderIncreasing;
 		OS.AddDataBrowserListViewColumn (handle, checkColumn, position++);
 	}
@@ -866,6 +873,7 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	}
 	Rect rect = new Rect ();
 	OS.memcpy (rect, theRect, Rect.sizeof);
+	rect.bottom++;
 	int x = rect.left;
 	int y = rect.top;
 	int width = rect.right - rect.left;
@@ -890,10 +898,14 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	OS.OffsetRect (itemRect, (short) -controlRect.left, (short) -controlRect.top);
 	if (selected && (style & SWT.FULL_SELECTION) != 0) {
 		gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
-		gc.fillRectangle(itemRect.left, itemRect.top, itemRect.right - itemRect.left, itemRect.bottom - itemRect.top);
+		int gridWidth = getLinesVisible () ? GRID_WIDTH : 0;
+		gc.fillRectangle (itemRect.left + gridWidth, itemRect.top, itemRect.right - itemRect.left - gridWidth, itemRect.bottom - itemRect.top + 1);
 	} else {
-		gc.setBackground (item.getBackground (columnIndex));
-		gc.fillRectangle (itemRect.left, itemRect.top, itemRect.right - itemRect.left, itemRect.bottom - itemRect.top);
+		if (background != null || item.background != null || (item.cellBackground != null && item.cellBackground [columnIndex] != null)) {
+			gc.setBackground (item.getBackground (columnIndex));
+			int gridWidth = getLinesVisible () ? GRID_WIDTH : 0;
+			gc.fillRectangle (itemRect.left + gridWidth, itemRect.top, itemRect.right - itemRect.left - gridWidth, itemRect.bottom - itemRect.top + 1);
+		}
 	}
 	int rectRgn = OS.NewRgn ();
 	OS.RectRgn (rectRgn, rect);
@@ -908,9 +920,10 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	Point extent = gc.stringExtent (text);
 	int itemWidth = extent.x;
 	Rectangle imageBounds = null;
+	int gap = getGap ();
 	if (image != null) {
 		imageBounds = image.getBounds ();
-		itemWidth += this.imageBounds.width + 2;
+		itemWidth += this.imageBounds.width + gap;
 	}
 	if (columnCount != 0) {
 		TableColumn column = columns [columnIndex];
@@ -919,13 +932,13 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	}
 	if (image != null) {
 		gc.drawImage (image, 0, 0, imageBounds.width, imageBounds.height, x, y + (height - this.imageBounds.height) / 2, this.imageBounds.width, this.imageBounds.height);
-		x += this.imageBounds.width + 2;
+		x += this.imageBounds.width + gap;
 	}
 	if (selected) {
 		gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
 		if (columnIndex == 0 && (style & SWT.FULL_SELECTION) == 0) {
 			gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
-			gc.fillRectangle (x - 1, y, extent.x + 2, height);
+			gc.fillRectangle (x - 1, y, extent.x + 2, itemRect.bottom - itemRect.top + 1);
 		}
 	} else {
 		Color foreground = item.getForeground (columnIndex);
@@ -954,6 +967,20 @@ void fixSelection (int index, boolean add) {
 		}
 	}
 	if (fix) select (selection, newCount, true);
+}
+
+int getCheckColumnWidth () {
+	int inset = 0;
+	if (OS.VERSION >= 0x1040) {
+		float [] metric = new float [1];
+		OS.DataBrowserGetMetric (handle, OS.kDataBrowserMetricCellContentInset, null, metric);
+		inset = (int) metric [0];
+	} else {
+		inset = CELL_CONTENT_INSET;
+	}
+	int [] checkWidth = new int [1];
+	OS.GetThemeMetric (OS.kThemeMetricCheckBoxWidth, checkWidth);
+	return checkWidth [0] + inset * 2;
 }
 
 public Rectangle getClientArea () {
@@ -1085,6 +1112,15 @@ public TableColumn [] getColumns () {
 	return result;
 }
 
+int getGap () {
+	if (OS.VERSION >= 0x1040) {
+		float [] metric = new float [1];
+		OS.DataBrowserGetMetric (handle, OS.kDataBrowserMetricIconAndTextGap, null, metric);
+		return (int) metric [0];
+	}
+	return ICON_AND_TEXT_GAP;
+}
+
 /**
  * Returns the width in pixels of a grid line.
  *
@@ -1141,6 +1177,15 @@ public boolean getHeaderVisible () {
 	short [] height = new short [1];
 	OS.GetDataBrowserListViewHeaderBtnHeight (handle, height);
 	return height [0] != 0;
+}
+
+int getInsetWidth () {
+	if (OS.VERSION >= 0x1040) {
+		float [] metric = new float [1];
+		OS.DataBrowserGetMetric (handle, OS.kDataBrowserMetricCellContentInset, null, metric);
+		return (int) metric [0] * 2;
+	}
+	return CELL_CONTENT_INSET * 2;
 }
 
 /**
@@ -1285,6 +1330,11 @@ public TableItem [] getItems () {
  */
 public boolean getLinesVisible () {
 	checkWidget ();
+	if (OS.VERSION >= 0x1040) {
+		int [] attrib = new int [1];
+		OS.DataBrowserGetAttributes (handle, attrib);
+		return (attrib [0] & (OS.kDataBrowserAttributeListViewAlternatingRowColors | OS.kDataBrowserAttributeListViewDrawColumnDividers)) != 0;
+	}
 	return false;
 }
 
@@ -2315,6 +2365,11 @@ void setItemHeight (Image image) {
  */
 public void setLinesVisible (boolean show) {
 	checkWidget ();
+	if (OS.VERSION >= 0x1040) {
+		int attrib = OS.kDataBrowserAttributeListViewAlternatingRowColors | OS.kDataBrowserAttributeListViewDrawColumnDividers;
+		OS.DataBrowserChangeAttributes (handle, show ? attrib : 0, !show ? attrib : 0);
+		redraw ();
+	}
 }
 
 public void setRedraw (boolean redraw) {
@@ -2342,7 +2397,7 @@ boolean setScrollWidth (TableItem item) {
 	GC gc = new GC (this);
 	int newWidth = item.calculateWidth (0, gc);
 	gc.dispose ();
-	newWidth += EXTRA_WIDTH;
+	newWidth += getInsetWidth ();
 	short [] width = new short [1];
 	OS.GetDataBrowserTableViewNamedColumnWidth (handle, column_id, width);
 	if (width [0] < newWidth) {
@@ -2368,7 +2423,7 @@ boolean setScrollWidth (TableItem [] items, boolean set) {
 		}
 	}
 	gc.dispose ();
-	newWidth += EXTRA_WIDTH;
+	newWidth += getInsetWidth ();
 	if (!set) {
 		short [] width = new short [1];
 		OS.GetDataBrowserTableViewNamedColumnWidth (handle, column_id, width);

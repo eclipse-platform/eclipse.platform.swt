@@ -210,7 +210,7 @@ int calculateWidth (int index, GC gc) {
 	int width = 0;
 	Image image = getImage (index);
 	String text = getText (index);
-	if (image != null) width += image.getBounds ().width + 2;
+	if (image != null) width += image.getBounds ().width + parent.getGap ();
 	if (text != null && text.length () > 0) width += gc.stringExtent (text).x;
 	if (index == 0) this.width = width;
 	return width;
@@ -326,17 +326,32 @@ public Rectangle getBounds (int index) {
 	if (OS.GetDataBrowserItemPartBounds (parent.handle, id, columnId, OS.kDataBrowserPropertyEnclosingPart, rect) != OS.noErr) {
 		return new Rectangle (0, 0, 0, 0);
 	}
-	Rect rect2 = new Rect();
-	if (OS.GetDataBrowserItemPartBounds (parent.handle, id, columnId, OS.kDataBrowserPropertyContentPart, rect2) != OS.noErr) {
-		return new Rectangle (0, 0, 0, 0);
+	int[] disclosure = new int [1];
+	OS.GetDataBrowserListViewDisclosureColumn (parent.handle, disclosure, new boolean [1]);
+	int x, y, width, height;
+	if (OS.VERSION >= 0x1040 && disclosure [0] != columnId) {
+		if (parent.getLinesVisible ()) {
+			rect.left += Tree.GRID_WIDTH;
+			rect.top += Tree.GRID_WIDTH;
+		}
+		x = rect.left;
+		y = rect.top;
+		width = rect.right - rect.left;
+		height = rect.bottom - rect.top;
+	} else {
+		Rect rect2 = new Rect();
+		if (OS.GetDataBrowserItemPartBounds (parent.handle, id, columnId, OS.kDataBrowserPropertyContentPart, rect2) != OS.noErr) {
+			return new Rectangle (0, 0, 0, 0);
+		}
+		x = rect2.left;
+		y = rect2.top;
+		width = rect.right - rect2.left + 1;
+		height = rect2.bottom - rect2.top + 1;
 	}
-	int x = rect2.left, y = rect2.top;
-	int width = rect.right - rect2.left;
-	int height = rect2.bottom - rect2.top;
 	OS.GetControlBounds (parent.handle, rect);
 	x -= rect.left;
 	y -= rect.top;
-	return new Rectangle (x, y, width + 1, height + 1);
+	return new Rectangle (x, y, width, height);
 }
 
 /**
