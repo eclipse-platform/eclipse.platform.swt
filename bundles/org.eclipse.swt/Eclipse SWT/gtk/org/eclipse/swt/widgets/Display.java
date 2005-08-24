@@ -821,12 +821,23 @@ synchronized void createDisplay (DeviceData data) {
 	}
 
 	/* Entry focus behaviour */
+	/*
+	* Feature in GTK.  Despite the fact that the
+	* gtk-entry-select-on-focus property is a global
+	* setting, it is initialized when the GtkEntry
+	* is initialized.  This means that it cannot be
+	* accessed before a GtkEntry is created.  The
+	* fix is to for the initializaion by creating
+	* a temporary GtkEntry.
+	*/
 	int /*long*/ entry = OS.gtk_entry_new ();
 	OS.gtk_widget_destroy (entry);
+	
+	/* Remember the gtk-entry-select-on-focus property */
+	int [] buffer2 = new int [1];
 	int /*long*/ settings = OS.gtk_settings_get_default ();
-	int [] buf = new int [1];
-	OS.g_object_get (settings, OS.gtk_entry_select_on_focus, buf, 0);
-	entrySelectOnFocus = (buf [0] == 1);
+	OS.g_object_get (settings, OS.gtk_entry_select_on_focus, buffer2, 0);
+	entrySelectOnFocus = buffer2 [0] != 0;
 }
 
 Image createImage (String name) {

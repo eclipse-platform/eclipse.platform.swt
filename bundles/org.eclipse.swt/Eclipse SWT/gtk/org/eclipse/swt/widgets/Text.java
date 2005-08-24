@@ -1040,7 +1040,9 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
 	if (cursor != null) setCursor (cursor.handle);
 	/*
 	* Feature in GTK.  The gtk-entry-select-on-focus property is a global
-	* setting.  Return it to its default value when a GtkEntry loses focus.
+	* setting.  Return it to its default value after the GtkEntry has done
+	* its focus in processing so that other widgets (such as the combo)
+	* use the correct value.
 	*/
 	if ((style & SWT.SINGLE) != 0 && display.entrySelectOnFocus) {
 		GdkEvent event = new GdkEvent ();
@@ -1064,8 +1066,11 @@ int /*long*/ gtk_focus_in_event (int /*long*/ widget, int /*long*/ event) {
 	// widget could be disposed at this point
 	if (handle == 0) return 0;
 	/*
-	* Feature in GTK.  GtkEntry widgets select their contents on focus in.
-	* The fix is to disable this property when a GtkEntry is given focus. 
+	* Feature in GTK.  GtkEntry widgets select their text on focus in,
+	* clearing the previous selection.  This behavior is controlled by
+	* the gtk-entry-select-on-focus property.  The fix is to disable
+	* this property when a GtkEntry is given focus and restore it after
+	* the entry has done focus in processing.
 	*/
 	if ((style & SWT.SINGLE) != 0 && display.entrySelectOnFocus) {
 		int /*long*/ settings = OS.gtk_settings_get_default ();
