@@ -296,6 +296,9 @@ public Rectangle getBounds () {
 	Point extent = gc.stringExtent (text);
 	gc.dispose ();
 	width += extent.x;
+	if (parent.columnCount > 0) {
+		width = Math.min (width, rect.right - x);
+	}
 	int height = rect.bottom - rect.top;
 	OS.GetControlBounds (parent.handle, rect);
 	x -= rect.left;

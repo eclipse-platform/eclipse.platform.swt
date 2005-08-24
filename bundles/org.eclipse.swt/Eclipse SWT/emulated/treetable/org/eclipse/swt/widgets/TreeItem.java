@@ -798,8 +798,17 @@ Rectangle getBounds (boolean checkData) {
 	if (!isAvailable ()) return new Rectangle (0, 0, 0, 0);
 	TreeColumn[] orderedColumns = parent.getOrderedColumns ();
 	int orderedCol0Index = orderedColumns.length == 0 ? 0 : orderedColumns [0].getIndex ();
+	int x = getTextX (orderedCol0Index);
 	int textPaintWidth = textWidths [orderedCol0Index] + 2 * MARGIN_TEXT;
-	return new Rectangle (getTextX (orderedCol0Index), parent.getItemY (this), textPaintWidth, parent.itemHeight - 1);
+	int width = textPaintWidth;
+	if (orderedColumns.length > 0) {
+		TreeColumn column = orderedColumns [0];
+		int right = column.getX () + column.width;
+		if (x + width > right) {
+			width = Math.max (0, right - x);
+		}
+	}
+	return new Rectangle (x, parent.getItemY (this), width, parent.itemHeight - 1);
 }
 /**
  * Returns a rectangle describing the receiver's size and location

@@ -356,6 +356,7 @@ public Rectangle getBounds () {
 	GdkRectangle rect = new GdkRectangle ();
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
 	OS.gtk_tree_path_free (path);
+	int right = rect.x + rect.width;
 
 	int [] x = new int [1], w = new int [1];
 	OS.gtk_cell_renderer_get_size (textRenderer, parentHandle, null, null, null, w, null);
@@ -396,6 +397,11 @@ public Rectangle getBounds () {
 	
 	int border = parent.getBorderWidth ();
 	int headerHeight = parent.getHeaderHeight ();
+	if (parent.columnCount > 0) {
+		if (rect.x + border + rect.width > right) {
+			rect.width = Math.max (0, right - rect.x - border);
+		}
+	}
 	return new Rectangle (rect.x + border, rect.y + (headerHeight == 0 ?  border : headerHeight), rect.width + 1, rect.height + 1);
 }
 

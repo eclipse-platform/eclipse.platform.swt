@@ -390,9 +390,9 @@ public Rectangle getBounds (int index) {
 RECT getBounds (int index, boolean getText, boolean getImage, boolean full) {
 	if (!getText && !getImage) return new RECT ();
 	boolean firstColumn = index == 0;
-	int count = 0, hwndHeader = parent.hwndHeader;
+	int columnCount = 0, hwndHeader = parent.hwndHeader;
 	if (hwndHeader != 0) {
-		count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+		columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 		firstColumn = index == OS.SendMessage (hwndHeader, OS.HDM_ORDERTOINDEX, 0, 0);
 	}
 	RECT rect = new RECT ();
@@ -411,15 +411,17 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean full) {
 				if (!getText) rect.right = rect.left;
 			}
 		}
-		if (getText && full && hwndHeader != 0 && count != 0) {
+		if (getText && hwndHeader != 0 && columnCount != 0) {
 			RECT headerRect = new RECT ();
 			if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect) == 0) {
 				return new RECT ();
 			}
-			rect.right = headerRect.right;
+			if (full || headerRect.right < rect.right) {
+				rect.right = headerRect.right;
+			}
 		}
 	} else {
-		if (!(0 <= index && index < count)) return new RECT ();
+		if (!(0 <= index && index < columnCount)) return new RECT ();
 		RECT headerRect = new RECT ();
 		if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, headerRect) == 0) {
 			return new RECT ();
