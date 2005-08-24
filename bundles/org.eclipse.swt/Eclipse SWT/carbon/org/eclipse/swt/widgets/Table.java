@@ -526,7 +526,7 @@ void createItem (TableColumn column, int index) {
 	}
 	System.arraycopy (columns, index, columns, index + 1, columnCount++ - index);
 	columns [index] = column;
-	if (columnCount >= 1) {
+	if (columnCount > 1) {
 		for (int i=0; i<itemCount; i++) {
 			TableItem item = items [i];
 			if (item != null) {
