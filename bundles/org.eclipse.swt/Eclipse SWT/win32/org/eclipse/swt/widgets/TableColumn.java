@@ -303,6 +303,9 @@ public void pack () {
 	int oldWidth = OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
 	TCHAR buffer = new TCHAR (parent.getCodePage (), text, true);
 	int headerWidth = OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, buffer) + Table.HEADER_MARGIN;
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		headerWidth += Table.HEADER_EXTRA;
+	}
 	boolean hasHeaderImage = false;
 	if (image != null || parent.sortColumn == this) {
 		hasHeaderImage = true;

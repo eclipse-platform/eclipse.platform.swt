@@ -54,7 +54,8 @@ public class Table extends Composite {
 	static final int INSET = 4;
 	static final int GRID_WIDTH = 1;
 	static final int SORT_WIDTH = 10;
-	static final int HEADER_MARGIN = 10;
+	static final int HEADER_MARGIN = 12;
+	static final int HEADER_EXTRA = 3;
 	static final int TableProc;
 	static final TCHAR TableClass = new TCHAR (0, OS.WC_LISTVIEW, true);
 	static final char [] BUTTON = new char [] {'B', 'U', 'T', 'T', 'O', 'N', 0};

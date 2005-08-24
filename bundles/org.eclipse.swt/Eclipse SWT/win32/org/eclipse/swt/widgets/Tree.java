@@ -55,7 +55,8 @@ public class Tree extends Composite {
 	static final int INSET = 3;
 	static final int GRID_WIDTH = 1;
 	static final int SORT_WIDTH = 10;
-	static final int HEADER_MARGIN = 10;
+	static final int HEADER_MARGIN = 12;
+	static final int HEADER_EXTRA = 3;
 	static final int TreeProc;
 	static final TCHAR TreeClass = new TCHAR (0, OS.WC_TREEVIEW, true);
 	static final char [] BUTTON = new char [] {'B', 'U', 'T', 'T', 'O', 'N', 0};

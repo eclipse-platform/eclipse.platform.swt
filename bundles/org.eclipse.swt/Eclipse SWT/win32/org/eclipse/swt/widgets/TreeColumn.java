@@ -345,6 +345,9 @@ public void pack () {
 	TCHAR buffer = new TCHAR (cp, text, false);
 	OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
 	int headerWidth = rect.right - rect.left + Tree.HEADER_MARGIN;
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		headerWidth += Tree.HEADER_EXTRA;
+	}
 	if (image != null || parent.sortColumn == this) {
 		Image headerImage = null;
 		if (parent.sortColumn == this && parent.sortDirection != SWT.NULL) {
