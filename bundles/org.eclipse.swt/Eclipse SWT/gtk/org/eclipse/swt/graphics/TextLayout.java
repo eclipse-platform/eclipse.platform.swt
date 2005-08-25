@@ -639,17 +639,17 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	int /*long*/ lang = OS.pango_context_get_language(context);
 	int ascent = 0, descent = 0, averageCharWidth = 0, height = 0;
 	int /*long*/ metrics = OS.pango_context_get_metrics(context, font, lang);
-	if (text.length() == 0) {
+	PangoLayoutLine line = new PangoLayoutLine();
+	OS.memmove(line, OS.pango_layout_get_line(layout, lineIndex), PangoLayoutLine.sizeof);
+	int /*long*/ runs = line.runs;
+	if (text.length() == 0 || runs == 0) {
 		ascent = OS.pango_font_metrics_get_ascent(metrics);
 		descent = OS.pango_font_metrics_get_descent(metrics);
 		averageCharWidth = OS.pango_font_metrics_get_approximate_char_width(metrics);
 		height = ascent + descent;
 	} else {
-		PangoLayoutLine line = new PangoLayoutLine();
-		OS.memmove(line, OS.pango_layout_get_line(layout, lineIndex), PangoLayoutLine.sizeof);
-		int /*long*/ runs = line.runs;
-		PangoItem item = new PangoItem();
 		PangoLayoutRun run = new PangoLayoutRun();
+		PangoItem item = new PangoItem();
 		int runCount = 0;
 		ascent = Math.max(0, this.ascent * OS.PANGO_SCALE);
 		descent = Math.max(0, this.descent * OS.PANGO_SCALE);
