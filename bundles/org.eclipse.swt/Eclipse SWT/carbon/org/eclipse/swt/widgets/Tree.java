@@ -701,7 +701,6 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	}
 	Rect rect = new Rect ();
 	OS.memcpy (rect, theRect, Rect.sizeof);
-	rect.bottom++;
 	int x = rect.left;
 	int y = rect.top;
 	int width = rect.right - rect.left;
@@ -724,16 +723,15 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	Rect itemRect = new Rect();
 	OS.GetDataBrowserItemPartBounds (handle, id, property, OS.kDataBrowserPropertyEnclosingPart, itemRect);
 	OS.OffsetRect (itemRect, (short) -controlRect.left, (short) -controlRect.top);
+	if (background != null || item.background != null || (item.cellBackground != null && item.cellBackground [columnIndex] != null)) {
+		gc.setBackground (item.getBackground (columnIndex));
+		int gridWidth = getLinesVisible () ? GRID_WIDTH : 0;
+		gc.fillRectangle (itemRect.left + gridWidth, itemRect.top, itemRect.right - itemRect.left - gridWidth, itemRect.bottom - itemRect.top + 1);
+	}
 	if (selected && (style & SWT.FULL_SELECTION) != 0) {
 		gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
 		int gridWidth = getLinesVisible () ? GRID_WIDTH : 0;
-		gc.fillRectangle (itemRect.left + gridWidth, itemRect.top, itemRect.right - itemRect.left - gridWidth, itemRect.bottom - itemRect.top + 1);
-	} else {
-		if (background != null || item.background != null || (item.cellBackground != null && item.cellBackground [columnIndex] != null)) {
-			gc.setBackground (item.getBackground (columnIndex));
-			int gridWidth = getLinesVisible () ? GRID_WIDTH : 0;
-			gc.fillRectangle (itemRect.left + gridWidth, itemRect.top, itemRect.right - itemRect.left - gridWidth, itemRect.bottom - itemRect.top + 1);
-		}
+		gc.fillRectangle (itemRect.left + gridWidth, itemRect.top, itemRect.right - itemRect.left - gridWidth, itemRect.bottom - itemRect.top);
 	}
 	int rectRgn = OS.NewRgn ();
 	OS.RectRgn (rectRgn, rect);
@@ -766,7 +764,7 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
 		if (columnIndex == 0 && (style & SWT.FULL_SELECTION) == 0) {
 			gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
-			gc.fillRectangle (x - 1, y, extent.x + 2, itemRect.bottom - itemRect.top + 1);
+			gc.fillRectangle (x - 1, y, extent.x + 2, itemRect.bottom - itemRect.top);
 		}
 	} else {
 		Color foreground = item.getForeground (columnIndex);
