@@ -864,7 +864,30 @@ int /*long*/ gtk_changed (int /*long*/ widget) {
 			}
 		}
 	}
-	sendEvent (SWT.Modify);
+	/*
+	* Feature in GTK.  When the user types, GTK positions
+	* the caret after sending the changed signal.  This
+	* means that application code that attempts to position
+	* the caret during a changed signal will fail.  The fix
+	* is to post the modify event when the user is typing.
+	*/
+	boolean keyPress = false;
+	int /*long*/ eventPtr = OS.gtk_get_current_event ();
+	if (eventPtr != 0) {
+		GdkEventKey gdkEvent = new GdkEventKey ();
+		OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
+		switch (gdkEvent.type) {
+			case OS.GDK_KEY_PRESS:
+				keyPress = true;
+				break;
+		}
+		OS.gdk_event_free (eventPtr);
+	}
+	if (keyPress) {
+		postEvent (SWT.Modify);
+	} else {
+		sendEvent (SWT.Modify);
+	}
 	return 0;
 }
 
