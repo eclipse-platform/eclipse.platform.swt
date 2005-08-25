@@ -110,10 +110,9 @@ int Release () {
 
 /* nsIFilePicker */
 
-int /*long*/ Init (int /*long*/ parent, int /*long*/ title, int mode) {
-	System.out.println ("INIT");
+int /*long*/ Init (int /*long*/ parent, int /*long*/ title, int /*long*/ mode) {
 	parentHandle = parent;
-	this.mode = mode;
+	this.mode = (int)/*64*/mode;
 	if (title != 0) {
 		int length = XPCOM.strlen_PRUnichar (title);
 		char[] chars = new char [length];
@@ -125,7 +124,6 @@ int /*long*/ Init (int /*long*/ parent, int /*long*/ title, int mode) {
 }
 
 int /*long*/ Show (int /*long*/ _retval) {
-	System.out.println ("show");
 	if (mode == nsIFilePicker.modeGetFolder) {
 		/* picking a directory */
 		int result = showDirectoryPicker ();
@@ -157,7 +155,7 @@ int /*long*/ Show (int /*long*/ _retval) {
 	return XPCOM.NS_OK;
 }
 
-int /*long*/ showDirectoryPicker () {
+int showDirectoryPicker () {
 	Shell parent;
 	if (parentHandle != 0) {
 		parent = Shell.gtk_new (Display.getCurrent (), parentHandle);
@@ -174,17 +172,14 @@ int /*long*/ showDirectoryPicker () {
 }
 
 int /*long*/ GetFiles (int /*long*/ aFiles) {
-	System.out.println ("GetFiles");
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
 int /*long*/ GetFileURL (int /*long*/ aFileURL) {
-	System.out.println ("GetFileURL");
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
 int /*long*/ GetFile (int /*long*/ aFile) {
-	System.out.println ("getFile");
 	String filename = "";	//$NON-NLS-1$
 	if (directory != null) filename += directory + SEPARATOR;
 	if (files != null && files.length > 0) filename += files [0];
@@ -199,7 +194,6 @@ int /*long*/ GetFile (int /*long*/ aFile) {
 }
 
 int /*long*/ SetDisplayDirectory (int /*long*/ aDisplayDirectory) {
-	System.out.println ("setDisplayDirectory");
 	if (aDisplayDirectory == 0) return XPCOM.NS_OK;
 	nsILocalFile file = new nsILocalFile (aDisplayDirectory);
 	int /*long*/ pathname = XPCOM.nsEmbedCString_new ();
@@ -215,7 +209,6 @@ int /*long*/ SetDisplayDirectory (int /*long*/ aDisplayDirectory) {
 }
 
 int /*long*/ GetDisplayDirectory (int /*long*/ aDisplayDirectory) {
-	System.out.println ("getDisplayDirectory");
 	String directoryName = directory != null ? directory : "";	//$NON-NLS-1$
 	nsEmbedString path = new nsEmbedString (directoryName);
 	int /*long*/[] file = new int /*long*/[1];
@@ -227,28 +220,23 @@ int /*long*/ GetDisplayDirectory (int /*long*/ aDisplayDirectory) {
 	return XPCOM.NS_OK;
 }
 
-int /*long*/ SetFilterIndex (int aFilterIndex) {
-	System.out.println ("setfilterIndex");
+int /*long*/ SetFilterIndex (int /*long*/ aFilterIndex) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-int /*long*/ GetFilterIndex (int aFilterIndex) {
-	System.out.println ("GetfilterIndex");
+int /*long*/ GetFilterIndex (int /*long*/ aFilterIndex) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
 int /*long*/ SetDefaultExtension (int /*long*/ aDefaultExtension) {
-	System.out.println ("setdefaultextenstion");
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
 int /*long*/ GetDefaultExtension (int /*long*/ aDefaultExtension) {
-	System.out.println ("getdefaultExtension");
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
 int /*long*/ SetDefaultString (int /*long*/ aDefaultString) {
-	System.out.println ("setdefaultstring");
 	if (aDefaultString == 0) return XPCOM.NS_OK;
 	int length = XPCOM.strlen_PRUnichar (aDefaultString);
 	char[] chars = new char [length];
@@ -258,17 +246,14 @@ int /*long*/ SetDefaultString (int /*long*/ aDefaultString) {
 }
 
 int /*long*/ GetDefaultString (int /*long*/ aDefaultString) {
-	System.out.println("getdefaultstring");
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
 int /*long*/ AppendFilter (int /*long*/ title, int /*long*/ filter) {
-	System.out.println ("appendfilter");
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 
-int /*long*/ AppendFilters (int filterMask) {
-	System.out.println ("append filters");
+int /*long*/ AppendFilters (int /*long*/ filterMask) {
 	String[] addFilters = null;
 	switch (filterMask) {
 		case nsIFilePicker.filterAll:
