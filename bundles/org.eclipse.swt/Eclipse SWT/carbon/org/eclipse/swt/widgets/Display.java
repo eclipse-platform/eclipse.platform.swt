@@ -116,6 +116,9 @@ public class Display extends Device {
 	EventTable eventTable, filterTable;
 	int queue, lastModifiers;
 	
+	/* Deferred dispose window */
+	int disposeWindow;
+
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer = new Synchronizer (this);
 	Thread thread;
@@ -461,6 +464,20 @@ void addPopup (Menu menu) {
 		popups = newPopups;
 	}
 	popups [index] = menu;
+}
+
+void addToDisposeWindow (int control) {
+	int [] root = new int [1];
+	if (disposeWindow == 0) {
+		int [] outWindow = new int [1];
+		OS.CreateNewWindow (OS.kOverlayWindowClass, 0, new Rect(), outWindow);
+		disposeWindow = outWindow [0];
+		OS.CreateRootControl (disposeWindow, root);
+	} else {
+		OS.GetRootControl (disposeWindow, root);
+	}
+	System.out.println("here");
+	OS.EmbedControl (control, root [0]);
 }
 
 void addWidget (int handle, Widget widget) {
@@ -3495,6 +3512,10 @@ void setMenuBar (Menu menu) {
 public boolean sleep () {
 	checkDevice ();
 	if (getMessageCount () != 0) return true;
+	if (disposeWindow != 0) {
+		OS.DisposeWindow (disposeWindow);
+		disposeWindow = 0;
+	}
 	allowTimers = false;
 	boolean result = OS.ReceiveNextEvent (0, null, OS.kEventDurationForever, false, null) == OS.noErr;
 	allowTimers = true;

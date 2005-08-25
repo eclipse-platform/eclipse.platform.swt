@@ -1710,6 +1710,7 @@ void register () {
 void releaseHandle () {
 	super.releaseHandle ();
 	handle = 0;
+	parent = null;
 }
 
 void releaseParent () {
@@ -1725,7 +1726,6 @@ void releaseWidget () {
 	if (visibleRgn != 0) OS.DisposeRgn (visibleRgn);
 	visibleRgn = 0;
 	menu = null;
-	parent = null;
 	layoutData = null;
 }
 
