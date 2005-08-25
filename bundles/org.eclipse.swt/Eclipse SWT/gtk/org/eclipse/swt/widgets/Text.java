@@ -1134,7 +1134,7 @@ int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*
 		OS.memmove (pos, position, 4);
 		if (pos [0] == -1) {
 			int /*long*/ ptr = OS.gtk_entry_get_text (handle);
-			pos [0] = OS.g_utf8_strlen (ptr, -1);
+			pos [0] = (int)/*64*/OS.g_utf8_strlen (ptr, -1);
 		}
 		String newText = verifyText (oldText, pos [0], pos [0]);
 		if (newText != oldText) {
