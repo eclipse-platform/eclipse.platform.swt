@@ -476,7 +476,6 @@ void addToDisposeWindow (int control) {
 	} else {
 		OS.GetRootControl (disposeWindow, root);
 	}
-	System.out.println("here");
 	OS.EmbedControl (control, root [0]);
 }
 
