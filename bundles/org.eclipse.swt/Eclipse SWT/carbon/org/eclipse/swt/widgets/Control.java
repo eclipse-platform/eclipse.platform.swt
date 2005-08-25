@@ -1526,7 +1526,9 @@ int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userDa
 	OS.GetEventParameter (theEvent, OS.kEventParamTextInputSendKeyboardEvent, OS.typeEventRef, null, keyboardEvent.length * 4, null, keyboardEvent);
 	int [] keyCode = new int [1];
 	OS.GetEventParameter (keyboardEvent [0], OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
-	if (translateTraversal (keyCode [0], keyboardEvent [0])) return OS.noErr;	
+	boolean [] consume = new boolean [1];
+	if (translateTraversal (keyCode [0], keyboardEvent [0], consume)) return OS.noErr;
+	if (isDisposed ()) return OS.noErr;	
 	if (keyCode [0] == 114) { /* Help */
 		Control control = this;
 		while (control != null) {
@@ -1538,6 +1540,7 @@ int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userDa
 		}
 	}
 	if (!sendKeyEvent (SWT.KeyDown, keyboardEvent [0])) return OS.noErr;
+	if (consume [0]) return 	OS.noErr;
 	return OS.eventNotHandledErr;
 }
 
@@ -2822,7 +2825,7 @@ int topHandle () {
 	return handle;
 }
 
-boolean translateTraversal (int key, int theEvent) {
+boolean translateTraversal (int key, int theEvent, boolean [] consume) {
 	int detail = SWT.TRAVERSE_NONE;
 	int code = traversalCode (key, theEvent);
 	boolean all = false;
@@ -2866,7 +2869,7 @@ boolean translateTraversal (int key, int theEvent) {
 			return false;
 	}
 	Event event = new Event ();
-	event.doit = (code & detail) != 0;
+	event.doit = consume [0] = (code & detail) != 0;
 	event.detail = detail;
 	if (!setKeyState (event, SWT.Traverse, theEvent)) return false;
 	Shell shell = getShell ();
