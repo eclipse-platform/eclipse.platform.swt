@@ -963,27 +963,12 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 }
 
 LRESULT WM_NCPAINT (int wParam, int lParam) {
-	int result = callWindowProc (handle, OS.WM_NCPAINT, wParam, lParam);
+	LRESULT result = super.WM_NCPAINT (wParam, lParam);
+	if (result != null) return result;
 	if ((state & CANVAS) != 0) {
-		if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-			int bits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
-			if ((bits & OS.WS_EX_CLIENTEDGE) != 0) {
-				int hDC = OS.GetWindowDC (handle);
-				RECT rect = new RECT ();
-				OS.GetWindowRect (handle, rect);
-				rect.right -= rect.left;
-				rect.bottom -= rect.top;
-				rect.left = rect.top = 0;
-				int border = OS.GetSystemMetrics (OS.SM_CXEDGE);
-				OS.ExcludeClipRect (hDC, border, border, rect.right - border, rect.bottom - border);
-				int hTheme = OS.OpenThemeData (handle, EDIT);
-				OS.DrawThemeBackground (hTheme, hDC, OS.EP_EDITTEXT, OS.ETS_NORMAL, rect, null);
-				OS.CloseThemeData (handle);
-				OS.ReleaseDC (handle, hDC);
-			}
-		}
+		result = wmNCPaint (handle, wParam, lParam);
 	}
-	return new LRESULT (result);
+	return result;
 }
 
 LRESULT WM_NOTIFY (int wParam, int lParam) {
@@ -1372,6 +1357,29 @@ LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
 	}
 	/* Return the result */
 	return result;
+}
+
+LRESULT wmNCPaint (int hwnd, int wParam, int lParam) {
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		int bits = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
+		if ((bits & OS.WS_EX_CLIENTEDGE) != 0) {
+			int code = callWindowProc (hwnd, OS.WM_NCPAINT, wParam, lParam);
+			int hDC = OS.GetWindowDC (hwnd);
+			RECT rect = new RECT ();
+			OS.GetWindowRect (hwnd, rect);
+			rect.right -= rect.left;
+			rect.bottom -= rect.top;
+			rect.left = rect.top = 0;
+			int border = OS.GetSystemMetrics (OS.SM_CXEDGE);
+			OS.ExcludeClipRect (hDC, border, border, rect.right - border, rect.bottom - border);
+			int hTheme = OS.OpenThemeData (hwnd, EDIT);
+			OS.DrawThemeBackground (hTheme, hDC, OS.EP_EDITTEXT, OS.ETS_NORMAL, rect, null);
+			OS.CloseThemeData (hwnd);
+			OS.ReleaseDC (hwnd, hDC);
+			return new LRESULT (code);
+		}
+	}
+	return null;
 }
 
 }

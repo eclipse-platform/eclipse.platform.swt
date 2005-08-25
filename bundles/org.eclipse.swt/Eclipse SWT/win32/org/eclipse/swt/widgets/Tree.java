@@ -2873,6 +2873,10 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 				setResizeChildren (true);
 				return code;
 			}
+			case OS.WM_NCPAINT: {
+				LRESULT result = wmNCPaint (hwnd, wParam, lParam);
+				if (result != null) return result.value;
+			}
 			case OS.WM_COMMAND:
 			case OS.WM_NOTIFY:
 			case OS.WM_SYSCOLORCHANGE: {
