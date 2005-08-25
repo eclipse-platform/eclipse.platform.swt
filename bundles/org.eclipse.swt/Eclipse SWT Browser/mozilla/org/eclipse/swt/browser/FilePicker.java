@@ -255,7 +255,7 @@ int /*long*/ AppendFilter (int /*long*/ title, int /*long*/ filter) {
 
 int /*long*/ AppendFilters (int /*long*/ filterMask) {
 	String[] addFilters = null;
-	switch (filterMask) {
+	switch ((int)/*64*/filterMask) {
 		case nsIFilePicker.filterAll:
 		case nsIFilePicker.filterApps:
 			masks = null;			/* this is equivalent to no filter */
