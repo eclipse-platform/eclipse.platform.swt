@@ -56,6 +56,7 @@ public class Combo extends Composite {
 	int /*long*/ arrowHandle, entryHandle, listHandle;
 	int lastEventTime, visibleCount = 5;
 	int /*long*/ gdkEventKey = 0;
+	int fixStart = -1, fixEnd = -1;
 	String [] items = new String [0];
 	boolean ignoreSelect, lockText;
 
@@ -901,6 +902,14 @@ int /*long*/ gtk_commit (int /*long*/ imContext, int /*long*/ text) {
 	char [] chars = Converter.mbcsToWcs (null, buffer);
 	char [] newChars = sendIMKeyEvent (SWT.KeyDown, null, chars);
 	if (newChars == null) return 0;
+	/*
+	* Feature in GTK.  For a GtkEntry, during the insert-text signal,
+	* GTK allows the programmer to change only the caret location,
+	* not the selection.  If the programmer changes the selection,
+	* the new selection is lost.  The fix is to detect a selection
+	* change and set it after the insert-text signal has completed.
+	*/
+	fixStart = fixEnd = -1;
 	OS.g_signal_handlers_block_matched (imContext, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, COMMIT);
 	int id = OS.g_signal_lookup (OS.commit, OS.gtk_im_context_get_type ());
 	int mask =  OS.G_SIGNAL_MATCH_DATA | OS.G_SIGNAL_MATCH_ID;
@@ -913,6 +922,11 @@ int /*long*/ gtk_commit (int /*long*/ imContext, int /*long*/ text) {
 	}
 	OS.g_signal_handlers_unblock_matched (imContext, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, COMMIT);
 	OS.g_signal_handlers_block_matched (imContext, mask, id, 0, 0, 0, entryHandle);
+	if (fixStart != -1 && fixEnd != -1) {
+		OS.gtk_editable_set_position (entryHandle, fixStart);
+		OS.gtk_editable_select_region (entryHandle, fixStart, fixEnd);
+	}
+	fixStart = fixEnd = -1;
 	return 0;
 }
 
@@ -960,36 +974,34 @@ int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*
 	String oldText = new String (Converter.mbcsToWcs (null, buffer));
 	int [] pos = new int [1];
 	OS.memmove (pos, position, 4);
-	if (pos [0] == -1)  {
+	if (pos [0] == -1) {
 		int /*long*/ ptr = OS.gtk_entry_get_text (entryHandle);
 		pos [0] = (int)/*64*/OS.g_utf8_strlen (ptr, -1);
 	}
-	int [] oldStart = new int [1], oldEnd = new int [1];
-	OS.gtk_editable_get_selection_bounds (entryHandle, oldStart, oldEnd);
 	String newText = verifyText (oldText, pos [0], pos [0]);
-	final int [] newStart = new int [1], newEnd = new int [1];
-	OS.gtk_editable_get_selection_bounds (entryHandle, newStart, newEnd);
-	boolean newSelection = oldStart [0] != newStart [0] || oldEnd [0] != newEnd [0];
-	if (newSelection) {
-		if (newText == null) newText = "";
-		pos [0] = newEnd [0];
-	}
-	if (newText == null) {
-		OS.g_signal_stop_emission_by_name (entryHandle, OS.insert_text);
-	} else {
-		if (newText != oldText || newSelection) {
-			byte [] buffer2 = Converter.wcsToMbcs (null, newText, false);
-			OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
-			if (newSelection) {
+	if (newText != oldText) {
+		int [] newStart = new int [1], newEnd = new int [1];
+		OS.gtk_editable_get_selection_bounds (entryHandle, newStart, newEnd);
+		if (newText != null) {
+			if (newStart [0] != newEnd [0]) {
+				OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
 				OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 				OS.gtk_editable_delete_selection (entryHandle);
+				OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
 				OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 			}
-			OS.gtk_editable_insert_text (entryHandle, buffer2, buffer2.length, pos);
+			byte [] buffer3 = Converter.wcsToMbcs (null, newText, false);
+			OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+			OS.gtk_editable_insert_text (entryHandle, buffer3, buffer3.length, pos);
 			OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
-			OS.g_signal_stop_emission_by_name (entryHandle, OS.insert_text);
-			OS.memmove (position, pos, 4);
 		}
+		pos [0] = newEnd [0];
+		if (newStart [0] != newEnd [0]) {
+			fixStart = newStart [0];
+			fixEnd = newEnd [0];
+		}
+		OS.memmove (position, pos, 4);
+		OS.g_signal_stop_emission_by_name (entryHandle, OS.insert_text);
 	}
 	return 0;
 }
