@@ -174,6 +174,7 @@ public String open () {
 	options.location_v = -1;
 	options.saveFileName = fileNamePtr;
 
+	int identifiers = 0, kUTTypeData = 0;
 	int [] outDialog = new int [1];
 	if ((style & SWT.SAVE) != 0) {
 		// NEEDS WORK - filter extensions, start in filter path, allow user
@@ -185,9 +186,9 @@ public String open () {
 		OS.NavCreateGetFileDialog(options, 0, 0, 0, 0, 0, outDialog);
 	}
 	if (outDialog [0] != 0) {
-		int identifiers = 0, kUTTypeData = 0;
-		if (filterExtensions == null) filterExtensions = new String [0];		
-		if (filterExtensions.length != 0 && OS.VERSION >= 0x1040) {
+		if (filterExtensions == null) filterExtensions = new String [0];
+		//TEMPORARY CODE
+		if (false && filterExtensions.length != 0 && OS.VERSION >= 0x1040) {
 			int count = 0;
 			String[] extensions = new String [filterExtensions.length];
 			for (int i = 0; i < filterExtensions.length; i++) {
@@ -237,7 +238,7 @@ public String open () {
 					uti = OS.UTTypeCreatePreferredIdentifierForTag (OS.kUTTagClassFilenameExtension (), ext, kUTTypeData);
 					OS.CFRelease (ext);
 				}
-				OS.CFArrayAppendValue (identifiers, uti);
+				if (uti != 0) OS.CFArrayAppendValue (identifiers, uti);
 			}			
 			OS.NavDialogSetFilterTypeIdentifiers (outDialog [0], identifiers);
 		}
@@ -335,19 +336,19 @@ public String open () {
 				}
 			}
 		}
-		if (identifiers != 0) {
-			int count = OS.CFArrayGetCount (identifiers);
-			for (int i = 0; i < count; i++) {
-				OS.CFRelease (OS.CFArrayGetValueAtIndex (identifiers, i));
-			}			
-			OS.CFRelease (identifiers);
-		}
-		if (kUTTypeData != 0) OS.CFRelease(kUTTypeData);
 	}
 
 	if (titlePtr != 0) OS.CFRelease (titlePtr);
 	if (fileNamePtr != 0) OS.CFRelease (fileNamePtr);	
 	if (outDialog [0] != 0) OS.NavDialogDispose (outDialog [0]);
+	if (identifiers != 0) {
+		int count = OS.CFArrayGetCount (identifiers);
+		for (int i = 0; i < count; i++) {
+			OS.CFRelease (OS.CFArrayGetValueAtIndex (identifiers, i));
+		}			
+		OS.CFRelease (identifiers);
+	}
+	if (kUTTypeData != 0) OS.CFRelease(kUTTypeData);
 
 	return fullPath;	
 }
