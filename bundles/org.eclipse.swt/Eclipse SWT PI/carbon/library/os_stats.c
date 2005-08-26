@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 851;
-int OS_nativeFunctionCallCount[851];
+int OS_nativeFunctionCount = 854;
+int OS_nativeFunctionCallCount[854];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -566,6 +566,7 @@ char * OS_nativeFunctionNames[] = {
 	"NavDialogGetSaveFileName",
 	"NavDialogGetUserAction",
 	"NavDialogRun",
+	"NavDialogSetFilterTypeIdentifiers",
 	"NavDialogSetSaveFileName",
 	"NavGetDefaultDialogCreationOptions",
 	"NewControl",
@@ -823,6 +824,7 @@ char * OS_nativeFunctionNames[] = {
 	"TextWidth",
 	"TrackDrag",
 	"TrackMouseLocationWithOptions",
+	"UTTypeCreatePreferredIdentifierForTag",
 	"UnionRect",
 	"UnionRgn",
 	"UnlockPortBits",
@@ -838,6 +840,7 @@ char * OS_nativeFunctionNames[] = {
 	"kHIViewWindowContentID",
 	"kPMDocumentFormatPDF",
 	"kPMGraphicsContextCoreGraphics",
+	"kUTTagClassFilenameExtension",
 	"memcpy__III",
 	"memcpy__ILorg_eclipse_swt_internal_carbon_ATSUTab_2I",
 	"memcpy__ILorg_eclipse_swt_internal_carbon_BitMap_2I",

@@ -7762,6 +7762,35 @@ JNIEXPORT jint JNICALL OS_NATIVE(NavDialogRun)
 }
 #endif
 
+#ifndef NO_NavDialogSetFilterTypeIdentifiers
+JNIEXPORT jint JNICALL OS_NATIVE(NavDialogSetFilterTypeIdentifiers)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, NavDialogSetFilterTypeIdentifiers_FUNC);
+/*
+	rc = (jint)NavDialogSetFilterTypeIdentifiers(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static CFBundleRef bundle = NULL;
+		typedef jint (*FPTR)(jint, jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!bundle) bundle = CFBundleGetBundleWithIdentifier(CFSTR(NavDialogSetFilterTypeIdentifiers_LIB));
+			if (bundle) fptr = (FPTR)CFBundleGetFunctionPointerForName(bundle, CFSTR("NavDialogSetFilterTypeIdentifiers"));
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, NavDialogSetFilterTypeIdentifiers_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_NavDialogSetSaveFileName
 JNIEXPORT jint JNICALL OS_NATIVE(NavDialogSetSaveFileName)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -11167,6 +11196,18 @@ fail:
 }
 #endif
 
+#ifndef NO_UTTypeCreatePreferredIdentifierForTag
+JNIEXPORT jint JNICALL OS_NATIVE(UTTypeCreatePreferredIdentifierForTag)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, UTTypeCreatePreferredIdentifierForTag_FUNC);
+	rc = (jint)UTTypeCreatePreferredIdentifierForTag((CFStringRef)arg0, (CFStringRef)arg1, (CFStringRef)arg2);
+	OS_NATIVE_EXIT(env, that, UTTypeCreatePreferredIdentifierForTag_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_UnionRect
 JNIEXPORT void JNICALL OS_NATIVE(UnionRect)
 	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jobject arg2)
@@ -11368,6 +11409,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(kPMGraphicsContextCoreGraphics)
 	OS_NATIVE_ENTER(env, that, kPMGraphicsContextCoreGraphics_FUNC);
 	rc = (jint)kPMGraphicsContextCoreGraphics;
 	OS_NATIVE_EXIT(env, that, kPMGraphicsContextCoreGraphics_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_kUTTagClassFilenameExtension
+JNIEXPORT jint JNICALL OS_NATIVE(kUTTagClassFilenameExtension)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, kUTTagClassFilenameExtension_FUNC);
+	rc = (jint)kUTTagClassFilenameExtension;
+	OS_NATIVE_EXIT(env, that, kUTTagClassFilenameExtension_FUNC);
 	return rc;
 }
 #endif

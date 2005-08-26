@@ -35,6 +35,7 @@ public class FileDialog extends Dialog {
 	String [] filterExtensions = new String [0];
 	String [] fileNames = new String[0];	
 	String filterPath = "", fileName = "";
+	static final char EXTENSION_SEPARATOR = ';';
 
 /**
  * Constructs a new instance of this class given only its parent.
@@ -184,6 +185,62 @@ public String open () {
 		OS.NavCreateGetFileDialog(options, 0, 0, 0, 0, 0, outDialog);
 	}
 	if (outDialog [0] != 0) {
+		int identifiers = 0, kUTTypeData = 0;
+		if (filterExtensions == null) filterExtensions = new String [0];		
+		if (filterExtensions.length != 0 && OS.VERSION >= 0x1040) {
+			int count = 0;
+			String[] extensions = new String [filterExtensions.length];
+			for (int i = 0; i < filterExtensions.length; i++) {
+				if (filterExtensions [i] != null) {
+					int start = 0, length = filterExtensions [i].length ();
+					while (start < length) {
+						int index = filterExtensions [i].indexOf (EXTENSION_SEPARATOR, start);
+						if (index == -1) index = length;
+						String extension = filterExtensions [i].substring (start, index);
+						boolean found = false;
+						for (int j = 0; j < count; j++) {
+							if (extensions [j].equals (extension)) {
+								found = true;
+								break;
+							}
+						}
+						if (!found) {
+							if (count == extensions.length) {
+								String[] newExtensions = new String [count + 4];
+								System.arraycopy (extensions, 0, newExtensions, 0, count);
+								extensions = newExtensions;
+							}
+							extensions[count++] = extension;
+						}
+						start = index + 1;
+					}
+				}
+			}
+			String publicData = "public.data";
+			char [] buffer = new char [publicData.length ()];
+			publicData.getChars (0, buffer.length, buffer, 0);
+			kUTTypeData = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+			identifiers = OS.CFArrayCreateMutable (OS.kCFAllocatorDefault, 1, 0);
+			for (int i = 0; i < count; i++) {
+				int uti;
+				String extension = extensions [i];
+				if (extension.equals ("*.*")) {
+					String publicItem = "public.item";
+					buffer = new char [publicItem.length ()];
+					publicItem.getChars (0, buffer.length, buffer, 0);
+					uti = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+				} else {
+					boolean star = extension.startsWith ("*.");
+					buffer = new char [extension.length () - (star ? 2 : 0)];
+					extension.getChars (star ? 2 : 0, extension.length (), buffer, 0);
+					int ext = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+					uti = OS.UTTypeCreatePreferredIdentifierForTag (OS.kUTTagClassFilenameExtension (), ext, kUTTypeData);
+					OS.CFRelease (ext);
+				}
+				OS.CFArrayAppendValue (identifiers, uti);
+			}			
+			OS.NavDialogSetFilterTypeIdentifiers (outDialog [0], identifiers);
+		}
 		OS.NavDialogRun (outDialog [0]);
 		int action = OS.NavDialogGetUserAction (outDialog [0]);
 		switch (action) {
@@ -278,6 +335,14 @@ public String open () {
 				}
 			}
 		}
+		if (identifiers != 0) {
+			int count = OS.CFArrayGetCount (identifiers);
+			for (int i = 0; i < count; i++) {
+				OS.CFRelease (OS.CFArrayGetValueAtIndex (identifiers, i));
+			}			
+			OS.CFRelease (identifiers);
+		}
+		if (kUTTypeData != 0) OS.CFRelease(kUTTypeData);
 	}
 
 	if (titlePtr != 0) OS.CFRelease (titlePtr);

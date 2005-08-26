@@ -768,6 +768,7 @@ public static final native void DeleteGlobalRef(int globalRef);
 public static final native Object JNIGetObject(int globalRef);
 
 /** Natives */
+public static final native int kUTTagClassFilenameExtension();
 public static final native int kHIViewWindowContentID();
 public static final native int kPMDocumentFormatPDF();
 public static final native int kPMGraphicsContextCoreGraphics();
@@ -1318,6 +1319,7 @@ public static final native int NavDialogGetSaveFileName(int dialogHandle);
 public static final native int NavDialogGetUserAction(int dialogHandle);
 public static final native int NavDialogRun(int dialogHandle);
 public static final native int NavDialogSetSaveFileName(int dialogHandle, int fileNameHandle);
+public static final native int NavDialogSetFilterTypeIdentifiers(int inGetFileDialog, int inTypeIdentifiers);  
 public static final native int NavGetDefaultDialogCreationOptions(NavDialogCreationOptions outOptions);
 public static final native int NavDialogGetReply(int inDialog, NavReplyRecord outReply);
 public static final native int NewControl(int owningWindow, Rect boundsRect, byte[] controlTitle, boolean initiallyVisible, short initialValue, short minimumValue, short maximumValue, short procID, int controlReference);
@@ -1574,6 +1576,7 @@ public static final native void TextSize(short size);
 public static final native short TextWidth(byte[] textBuf, short firstByte, short byteCount);
 public static final native int TrackDrag(int theDrag, EventRecord theEvent, int theRegion);
 public static final native int TrackMouseLocationWithOptions(int inPort, int inOptions, double inTime, Point outPt, int [] outModifiers, short[] outResult);
+public static final native int UTTypeCreatePreferredIdentifierForTag(int inTagClass, int inTag, int inConformingToUTI);   
 public static final native void UnionRect(Rect srcA, Rect srcB, Rect dst);
 public static final native void UnionRgn(int srcRgnA, int srcRgnB, int dstRgn);
 public static final native int UnlockPortBits(int portHandle);
