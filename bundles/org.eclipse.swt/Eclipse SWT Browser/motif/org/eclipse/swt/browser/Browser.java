@@ -258,6 +258,19 @@ public Browser(Composite parent, int style) {
 		if (rc != XPCOM.NS_OK) error(rc);
 		downloadFactory.Release();
 		
+		FilePickerFactory pickerFactory = new FilePickerFactory();
+		pickerFactory.AddRef();
+
+		buffer = XPCOM.NS_FILEPICKER_CONTRACTID.getBytes();
+		aContractID = new byte[buffer.length + 1];
+		System.arraycopy(buffer, 0, aContractID, 0, buffer.length);
+		buffer = "FilePicker".getBytes(); //$NON-NLS-1$
+		aClassName = new byte[buffer.length + 1];
+		System.arraycopy(buffer, 0, aClassName, 0, buffer.length);
+		rc = componentRegistrar.RegisterFactory(XPCOM.NS_FILEPICKER_CID, aClassName, aContractID, pickerFactory.getAddress());
+		if (rc != XPCOM.NS_OK) error(rc);
+		pickerFactory.Release();
+
 		componentRegistrar.Release();
 		componentManager.Release();
 		mozilla = true;
