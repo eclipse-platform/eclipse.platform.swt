@@ -325,6 +325,10 @@ int colorProc (int inControl, int inMessage, int inDrawDepth, int inDrawInColor)
 	return OS.eventNotHandledErr;
 }
 
+boolean contains (int shellX, int shellY) {
+	return true;
+}
+
 int controlProc (int nextHandler, int theEvent, int userData) {
 	int eventKind = OS.GetEventKind (theEvent);
 	switch (eventKind) {

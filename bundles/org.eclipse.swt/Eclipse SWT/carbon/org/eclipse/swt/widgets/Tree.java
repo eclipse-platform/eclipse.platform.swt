@@ -263,11 +263,15 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
 	int border = 0;
-	int [] outMetric = new int [1];
-	OS.GetThemeMetric (OS.kThemeMetricFocusRectOutset, outMetric);
-	border += outMetric [0];
-	OS.GetThemeMetric (OS.kThemeMetricEditTextFrameOutset, outMetric);
-	border += outMetric [0];
+	byte [] hasBorder = new byte [1];
+	OS.GetControlData (handle, (short) OS.kControlEntireControl, OS.kControlDataBrowserIncludesFrameAndFocusTag, 1, hasBorder, null);
+	if (hasBorder [0] != 0) {
+		int [] outMetric = new int [1];
+		OS.GetThemeMetric (OS.kThemeMetricFocusRectOutset, outMetric);
+		border += outMetric [0];
+		OS.GetThemeMetric (OS.kThemeMetricEditTextFrameOutset, outMetric);
+		border += outMetric [0];
+	}
 	Rect rect = new Rect ();
 	OS.GetDataBrowserScrollBarInset (handle, rect);
 	x -= rect.left + border;
@@ -275,6 +279,12 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	width += rect.left + rect.right + border + border;
 	height += rect.top + rect.bottom + border + border;
 	return new Rectangle (x, y, width, height);
+}
+
+boolean contains(int shellX, int shellY) {
+	Rect controlBounds = new Rect ();
+	OS.GetControlBounds (handle, controlBounds);
+	return getClientArea ().contains (shellX - controlBounds.left, shellY - controlBounds.top);
 }
 
 void createHandle () {
@@ -792,17 +802,21 @@ int getCheckColumnWidth () {
 public Rectangle getClientArea () {
 	checkWidget();
 	int border = 0;
-	int [] outMetric = new int [1];
-	OS.GetThemeMetric (OS.kThemeMetricFocusRectOutset, outMetric);
-	border += outMetric [0];
-	OS.GetThemeMetric (OS.kThemeMetricEditTextFrameOutset, outMetric);
-	border += outMetric [0];
+	byte [] hasBorder = new byte [1];
+	OS.GetControlData (handle, (short) OS.kControlEntireControl, OS.kControlDataBrowserIncludesFrameAndFocusTag, 1, hasBorder, null);
+	if (hasBorder [0] != 0) {
+		int [] outMetric = new int [1];
+		OS.GetThemeMetric (OS.kThemeMetricFocusRectOutset, outMetric);
+		border += outMetric [0];
+		OS.GetThemeMetric (OS.kThemeMetricEditTextFrameOutset, outMetric);
+		border += outMetric [0];
+	}
 	Rect rect = new Rect (), inset = new Rect ();
 	OS.GetControlBounds (handle, rect);
 	OS.GetDataBrowserScrollBarInset (handle, inset);
 	int width = Math.max (0, rect.right - rect.left - inset.right - border - border);
 	int height = Math.max (0, rect.bottom - rect.top - inset.bottom - border - border);
-	return new Rectangle (inset.left, inset.top, width, height);
+	return new Rectangle (inset.left + border, inset.top + border, width, height);
 }
 
 /**
@@ -1698,6 +1712,17 @@ int itemNotificationProc (int browser, int id, int message) {
 		}
 	}
 	return OS.noErr;
+}
+
+int kEventControlSetCursor (int nextHandler, int theEvent, int userData) {
+	if (!isEnabledCursor ()) return OS.noErr;
+	if (isEnabledModal ()) {
+		org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
+		int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
+		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
+		if (!contains (pt.h, pt.v)) return OS.eventNotHandledErr;
+	}
+	return super.kEventControlSetCursor (nextHandler, theEvent, userData);
 }
 
 int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userData) {

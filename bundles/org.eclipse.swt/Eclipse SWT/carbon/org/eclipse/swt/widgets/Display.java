@@ -2605,8 +2605,10 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 			} while (theControl [0] != 0);
 			if (theControl [0] == 0) widget = getWidget (theRoot [0]);
 			if (widget != null) {
-				int result = userData != 0 ? widget.mouseProc (nextHandler, theEvent, userData) : OS.eventNotHandledErr;
-				return consume ? OS.noErr : result;
+				if (widget.contains ((int) inPoint.x, (int) inPoint.y)) {
+					int result = userData != 0 ? widget.mouseProc (nextHandler, theEvent, userData) : OS.eventNotHandledErr;
+					return consume ? OS.noErr : result;
+				}
 			}
 			break;
 		}
@@ -3022,6 +3024,9 @@ boolean runEnterExit () {
 						}
 					}
 				}
+			}
+			if (control != null && !control.contains ((int) inPoint.x, (int) inPoint.y)) {
+				control = null;
 			}
 		}
 	}
