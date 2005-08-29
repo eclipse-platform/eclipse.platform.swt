@@ -80,7 +80,10 @@ public class CoolItem extends Item {
  * @see Widget#getStyle
  */
 public CoolItem (CoolBar parent, int style) {
-	this (parent, style, parent.getItemCount());
+	super(parent, style);
+	this.parent = parent;
+	parent.createItem (this, parent.getItemCount());
+	calculateChevronTrim ();
 }
 /**
  * Constructs a new instance of this class given its parent
