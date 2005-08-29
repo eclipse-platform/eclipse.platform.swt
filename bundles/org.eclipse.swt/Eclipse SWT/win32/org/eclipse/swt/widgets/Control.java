@@ -1577,6 +1577,7 @@ void register () {
 void releaseHandle () {
 	super.releaseHandle ();
 	handle = 0;
+	parent = null;
 }
 
 void releaseParent () {
@@ -1599,7 +1600,6 @@ void releaseWidget () {
 	cursor = null;
 	deregister ();
 	unsubclass ();
-	parent = null;
 	layoutData = null;
 	if (accessible != null) {
 		accessible.internal_dispose_Accessible ();
