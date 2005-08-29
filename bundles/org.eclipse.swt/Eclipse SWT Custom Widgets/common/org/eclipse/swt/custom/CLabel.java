@@ -66,6 +66,7 @@ public class CLabel extends Canvas {
 	private Color[] gradientColors;
 	private int[] gradientPercents;
 	private boolean gradientVertical;
+	private Color background;
 	
 	private static int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB | SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER;
 
@@ -137,18 +138,7 @@ private static int checkStyle (int style) {
 	if ((style & SWT.BORDER) != 0) style |= SWT.SHADOW_IN;
 	int mask = SWT.SHADOW_IN | SWT.SHADOW_OUT | SWT.SHADOW_NONE | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 	style = style & mask;
-	style |= SWT.NO_FOCUS;
-	//TEMPORARY CODE
-	/*
-	 * The default background on carbon and some GTK themes is not a solid color 
-	 * but a texture.  To show the correct default background, we must allow
-	 * the operating system to draw it and therefore, we can not use the 
-	 * NO_BACKGROUND style.  The NO_BACKGROUND style is not required on platforms
-	 * that use double buffering which is true in both of these cases.
-	 */
-	String platform = SWT.getPlatform();
-	if ("carbon".equals(platform) || "gtk".equals(platform)) return style; //$NON-NLS-1$ //$NON-NLS-2$
-	return style | SWT.NO_BACKGROUND;
+	return style |= SWT.NO_FOCUS | SWT.DOUBLE_BUFFERED;
 }
 
 //protected void checkSubclass () {
@@ -450,13 +440,13 @@ void onPaint(PaintEvent event) {
 			}
 			gc.setBackground(oldBackground);
 		} else {
-			if ((getStyle() & SWT.NO_BACKGROUND) != 0) {
+			if (background != null || (getStyle() & SWT.DOUBLE_BUFFERED) == 0) {
 				gc.setBackground(getBackground());
 				gc.fillRectangle(rect);
 			}
 		}
 	} catch (SWTException e) {
-		if ((getStyle() & SWT.NO_BACKGROUND) != 0) {
+		if ((getStyle() & SWT.DOUBLE_BUFFERED) == 0) {
 			gc.setBackground(getBackground());
 			gc.fillRectangle(rect);
 		}
@@ -549,13 +539,16 @@ public void setAlignment(int align) {
 public void setBackground (Color color) {
 	super.setBackground (color);
 	// Are these settings the same as before?
-	if (color != null && backgroundImage == null && 
-		gradientColors == null && gradientPercents == null) {
-		Color background = getBackground();
-		if (color.equals(background)) {
-			return;
+	if (backgroundImage == null && 
+		gradientColors == null && 
+		gradientPercents == null) {
+		if (color == null) {
+			if (background == null) return;
+		} else {
+			if (color.equals(background)) return;
 		}		
 	}
+	background = color;
 	backgroundImage = null;
 	gradientColors = null;
 	gradientPercents = null;
