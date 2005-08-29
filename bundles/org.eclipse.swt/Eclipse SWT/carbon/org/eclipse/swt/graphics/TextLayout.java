@@ -1392,8 +1392,15 @@ public void setText (String text) {
 	this.text = text;
 	int length = text.length();
 	if (length != 0) {
+		/*
+		* Bug in the Macintosh.  ATSUI does not break the last line
+		* if it is empty. The fix is to add an extra line. 
+		*/
+		char c = text.charAt(length - 1);
+		if (c == '\n') length++;
 		char[] chars = new char[length];
-		text.getChars(0, length, chars, 0);
+		text.getChars(0, text.length(), chars, 0);
+		if (c == '\n') chars [length - 1] = '\n';
 		textPtr = OS.NewPtr(length * 2);
 		OS.memcpy(textPtr, chars, length * 2);
 		OS.ATSUSetTextPointerLocation(layout, textPtr, 0, length, length);
