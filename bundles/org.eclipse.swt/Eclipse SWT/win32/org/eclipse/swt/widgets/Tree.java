@@ -895,7 +895,7 @@ void destroyItem (TreeItem item) {
 			display.releaseImageList (imageList);
 		}
 		imageList = null;
-		if (hwndParent == 0) customDraw = false;
+		if (hwndParent == 0 && !linesVisible) customDraw = false;
 		items = new TreeItem [4];
 	}
 	updateScrollBar ();
@@ -1849,7 +1849,7 @@ public void removeAll () {
 		display.releaseImageList (imageList);
 	}
 	imageList = null;
-	if (hwndParent == 0) customDraw = false;
+	if (hwndParent == 0 && !linesVisible) customDraw = false;
 	hAnchor = hInsert = hFirstIndexOf = hLastIndexOf = 0;
 	updateScrollBar ();
 }
@@ -2008,6 +2008,7 @@ public void setLinesVisible (boolean show) {
 	checkWidget ();
 	if (linesVisible == show) return;
 	linesVisible = show;
+	if (hwndParent == 0 && linesVisible) customDraw = true;
 	OS.InvalidateRect (handle, null, true);
 }
 
