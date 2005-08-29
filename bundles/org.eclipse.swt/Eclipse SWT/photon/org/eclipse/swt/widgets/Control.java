@@ -1597,6 +1597,11 @@ void realizeWidget() {
 	}
 }
 
+void releaseHandle () {
+	super.releaseHandle ();
+	parent = null;
+}
+
 void releaseParent () {
 	super.releaseParent ();
 	parent.removeControl (this);
@@ -1610,7 +1615,6 @@ void releaseWidget () {
 		menu.dispose ();
 	}
 	menu = null;
-	parent = null;
 	layoutData = null;
 }
 

@@ -1467,6 +1467,10 @@ public void redraw (int x, int y, int width, int height, boolean all) {
 void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boolean allChildren) {
 	redrawHandle (x, y, width, height, redrawAll, handle);
 }
+void releaseHandle () {
+	super.releaseHandle ();
+	parent = null;
+}
 void releaseParent () {
 	parent.removeControl (this);
 }
@@ -1499,7 +1503,6 @@ void releaseWidget () {
 			OS.XmImUnregister (focusHandle);
 		}
 	}
-	parent = null;
 	layoutData = null;
 }
 /**
