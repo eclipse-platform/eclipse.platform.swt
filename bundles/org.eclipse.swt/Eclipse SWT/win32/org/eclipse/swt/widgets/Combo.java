@@ -79,7 +79,7 @@ public class Combo extends Composite {
 	 */
 	static final int CBID_LIST = 1000;
 	static final int CBID_EDIT = 1001;
-	static int EditProc, ListProc;
+	static /*final*/ int EditProc, ListProc;
 	
 	static final int ComboProc;
 	static final TCHAR ComboClass = new TCHAR (0, "COMBOBOX", true);
