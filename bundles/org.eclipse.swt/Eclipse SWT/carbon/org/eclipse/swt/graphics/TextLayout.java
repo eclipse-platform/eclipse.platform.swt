@@ -867,14 +867,16 @@ public int getOffset(int x, int y, int[] trailing) {
 	if (trailing != null && trailing.length < 1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int length = text.length();
 	if (length == 0) return 0;
-	int lineY = 0, start = 0;
-	for (int i=0; i<breaks.length-1; i++) {
-		int lineBreak = breaks[i];
-		int height = lineHeight[i];
+	int lineY = 0, start = 0, lineIndex;
+	for (lineIndex=0; lineIndex<breaks.length-1; lineIndex++) {
+		int lineBreak = breaks[lineIndex];
+		int height = lineHeight[lineIndex];
 		if (lineY + height > y) break;
 		lineY += height;
 		start = lineBreak;
 	}
+	if (x >= lineX[lineIndex] + lineWidth[lineIndex]) x = lineX[lineIndex] + lineWidth[lineIndex] - 1;
+	if (x < lineX[lineIndex]) x = lineX[lineIndex];
 	int[] offset = new int[]{start};
 	boolean[] leading = new boolean[1];
 	OS.ATSUPositionToOffset(layout, OS.Long2Fix(x), OS.Long2Fix(y - lineY), offset, leading, null);
