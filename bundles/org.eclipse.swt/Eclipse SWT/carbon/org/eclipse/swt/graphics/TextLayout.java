@@ -1430,7 +1430,6 @@ public void setWidth (int width) {
 }
 
 int skipHardBreak(int lineBreak) {
-	if (true) return lineBreak;
 	while (lineBreak > 0) {
 		char c = text.charAt(lineBreak - 1);
 		switch (c) {
