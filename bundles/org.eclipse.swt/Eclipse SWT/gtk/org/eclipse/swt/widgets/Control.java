@@ -2386,6 +2386,7 @@ void redrawWidget (int x, int y, int width, int height, boolean all) {
 void releaseHandle () {
 	super.releaseHandle ();
 	fixedHandle = 0;
+	parent = null;
 }
 
 void releaseParent () {
@@ -2412,7 +2413,6 @@ void releaseWidget () {
 	menu = null;
 	cursor = null;
 	toolTipText = null;
-	parent = null;
 	layoutData = null;
 	accessible = null;
 }
