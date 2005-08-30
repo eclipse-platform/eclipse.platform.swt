@@ -16,6 +16,7 @@ import org.eclipse.swt.internal.carbon.DataBrowserCallbacks;
 import org.eclipse.swt.internal.carbon.DataBrowserCustomCallbacks;
 import org.eclipse.swt.internal.carbon.DataBrowserListViewColumnDesc;
 import org.eclipse.swt.internal.carbon.DataBrowserListViewHeaderDesc;
+import org.eclipse.swt.internal.carbon.HMHelpContentRec;
 import org.eclipse.swt.internal.carbon.Rect;
 
 import org.eclipse.swt.*;
@@ -1393,6 +1394,100 @@ public TreeItem getTopItem () {
 		}
 	}
 	return null;
+}
+
+int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentProvided, int ioHelpContent) {
+    switch (inRequest) {
+		case OS.kHMSupplyContent: {
+			if (!(toolTipText != null && toolTipText.length () != 0)) {
+				Rect rect = new Rect ();
+				int window = OS.GetControlOwner (handle);
+				OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+				short windowLeft = rect.left, windowTop = rect.top;
+				org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
+				pt.h = (short) ((inGlobalMouse & 0xFFFF) - windowLeft);
+				pt.v = (short) ((inGlobalMouse >> 16) - windowTop);
+				if (!contains (pt.h, pt.v)) break;
+				int columnIndex = 0;
+				TreeItem item = null;
+				TreeColumn column = null;
+				for (int i=0; i<items.length && item == null; i++) {
+					if (items [i] != null) {
+						if (columnCount == 0) {
+							if (OS.GetDataBrowserItemPartBounds (handle, items [i].id, column_id, OS.kDataBrowserPropertyContentPart, rect) == OS.noErr) {
+								if (OS.PtInRect (pt, rect)) {
+									item = items [i];
+									break;
+								}
+							}
+						} else {
+							for (int j = 0; j < columnCount; j++) {
+								column = columns [j];
+								if (OS.GetDataBrowserItemPartBounds (handle, items [i].id, column.id, OS.kDataBrowserPropertyContentPart, rect) == OS.noErr) {
+									if (OS.PtInRect (pt, rect)) {
+										item = items [i];
+										columnIndex = j;
+										break;
+									}
+								}
+							}
+						}
+					}
+				}
+				if (item != null) {
+					int columnId = column == null ? column_id : column.id;
+					GC gc = new GC (this);
+					int inset = getInsetWidth (columnId, false);
+					int width = item.calculateWidth (columnIndex, gc) + inset;
+					gc.dispose ();
+					short [] w = new short [1];
+					OS.GetDataBrowserTableViewNamedColumnWidth (handle, columnId, w);
+					String toolTipText = null;
+					if (width > w [0]) {
+						toolTipText = item.getText (columnIndex);
+						Image image = item.getImage (columnIndex);
+						int imageWidth = image != null ? image.getBounds ().width + getGap () : 0;
+						int style = column == null ? SWT.LEFT : column.style;
+						if ((style & SWT.LEFT) != 0) {
+							rect.left += imageWidth;
+							rect.right = (short) (rect.left + width - imageWidth - inset);
+						}
+						if ((style & SWT.RIGHT) != 0) {
+							rect.left = (short) (rect.right - width + imageWidth + inset);
+						}
+						if ((style & SWT.CENTER) != 0) {
+							rect.left += imageWidth;
+						}
+					}
+					if (toolTipText != null && toolTipText.length () != 0) {
+						char [] buffer = new char [toolTipText.length ()];
+						toolTipText.getChars (0, buffer.length, buffer, 0);
+						int length = fixMnemonic (buffer);
+						if (display.helpString != 0) OS.CFRelease (display.helpString);
+						display.helpString = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, length);
+						HMHelpContentRec helpContent = new HMHelpContentRec ();
+						OS.memcpy (helpContent, ioHelpContent, HMHelpContentRec.sizeof);
+						display.helpControl = this;
+						helpContent.version = OS.kMacHelpVersion;
+						helpContent.tagSide = (short) OS.kHMAbsoluteCenterAligned;
+						helpContent.absHotRect_left = (short) (rect.left + windowLeft);
+						helpContent.absHotRect_top = (short) (rect.top + windowTop);
+						helpContent.absHotRect_right = (short) (rect.right + windowLeft);
+						helpContent.absHotRect_bottom = (short) (rect.bottom + windowTop);	
+						helpContent.content0_contentType = OS.kHMCFStringContent;
+						helpContent.content0_tagCFString = display.helpString;
+						helpContent.content1_contentType = OS.kHMCFStringContent;
+						helpContent.content1_tagCFString = display.helpString;
+						OS.memcpy (ioHelpContent, helpContent, HMHelpContentRec.sizeof);
+						OS.memcpy (outContentProvided, new int[]{OS.kHMContentProvided}, 4);
+						return OS.noErr;
+					}
+				}
+			}
+			break;
+		}
+	}
+	return super.helpProc (inControl, inGlobalMouse, inRequest, outContentProvided, ioHelpContent);
 }
 
 int hitTestProc (int browser, int id, int property, int theRect, int mouseRect) {
