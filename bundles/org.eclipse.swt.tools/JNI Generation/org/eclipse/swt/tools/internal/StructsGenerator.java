@@ -356,7 +356,7 @@ void generateGetFields(Class clazz) {
 			output("Fc.");
 			output(field.getName());
 			outputln(");");
-			output("\tget");
+			output("\tif (lpObject1 != NULL) get");
 			output(typeName);
 			output("Fields(env, lpObject1, &lpStruct->");
 			output(accessor);
@@ -496,7 +496,7 @@ void generateSetFields(Class clazz) {
 			output("Fc.");
 			output(field.getName());
 			outputln(");");
-			output("\tset");
+			output("\tif (lpObject1 != NULL) set");
 			output(typeName);
 			output("Fields(env, lpObject1, &lpStruct->");
 			output(accessor);
