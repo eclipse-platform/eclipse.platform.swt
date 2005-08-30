@@ -1010,24 +1010,24 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 				toolTipText.getChars (0, buffer.length, buffer, 0);
 				int length = fixMnemonic (buffer);
 				if (display.helpString != 0) OS.CFRelease (display.helpString);
-		    	display.helpString = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, length);
+				display.helpString = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, length);
 				HMHelpContentRec helpContent = new HMHelpContentRec ();
 				OS.memcpy (helpContent, ioHelpContent, HMHelpContentRec.sizeof);
-		        helpContent.version = OS.kMacHelpVersion;
-		        
-		        /*
-		        * Feature in the Macintosh.  Despite the fact that the Mac
-		        * provides 23 different types of alignment for the help text,
-		        * it does not allow the text to be positioned at the current
-		        * mouse position.  The fix is to center the text in a rectangle
+				helpContent.version = OS.kMacHelpVersion;
+
+				/*
+				* Feature in the Macintosh.  Despite the fact that the Mac
+				* provides 23 different types of alignment for the help text,
+				* it does not allow the text to be positioned at the current
+				* mouse position.  The fix is to center the text in a rectangle
 				* that surrounds the original position of the mouse.  As the
 				* mouse is moved, this rectangle is grown to include the new
 				* location of the mouse.  The help text is then centered by
 				* the  Mac in the new rectangle that was carefully constructed
 				* such that the help text will stay in the same position.
-		        */
-		        int cursorHeight = 16;
-		        helpContent.tagSide = (short) OS.kHMAbsoluteCenterAligned;
+				*/
+				int cursorHeight = 16;
+				helpContent.tagSide = (short) OS.kHMAbsoluteCenterAligned;
 				int x = (short) (inGlobalMouse & 0xFFFF);
 				int y = (short) (inGlobalMouse >> 16);
 				if (display.helpControl != this) {
@@ -1042,15 +1042,15 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 				int width = deltaX * 2;
 				int height = deltaY * 2;
 				display.helpControl = this;
-		        helpContent.absHotRect_left = (short) x;
-		     	helpContent.absHotRect_top = (short) y;
-		        helpContent.absHotRect_right = (short) (x + width);
-		        helpContent.absHotRect_bottom = (short) (y + height);
-		        
-		        helpContent.content0_contentType = OS.kHMCFStringContent;
-		        helpContent.content0_tagCFString = display.helpString;
-		        helpContent.content1_contentType = OS.kHMCFStringContent;
-		        helpContent.content1_tagCFString = display.helpString;
+				helpContent.absHotRect_left = (short) x;
+				helpContent.absHotRect_top = (short) y;
+				helpContent.absHotRect_right = (short) (x + width);
+				helpContent.absHotRect_bottom = (short) (y + height);
+
+				helpContent.content0_contentType = OS.kHMCFStringContent;
+				helpContent.content0_tagCFString = display.helpString;
+				helpContent.content1_contentType = OS.kHMCFStringContent;
+				helpContent.content1_tagCFString = display.helpString;
 				OS.memcpy (ioHelpContent, helpContent, HMHelpContentRec.sizeof);
 				contentProvided [0] = OS.kHMContentProvided;
 			}
