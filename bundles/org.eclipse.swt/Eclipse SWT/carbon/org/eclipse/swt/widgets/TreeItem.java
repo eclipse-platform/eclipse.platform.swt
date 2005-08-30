@@ -737,15 +737,29 @@ void redraw (int propertyID) {
 	cached = true;
 	if (parent.ignoreRedraw) return;
 	if (parent.drawCount != 0 && propertyID != Tree.CHECK_COLUMN_ID) return;
+	int parentHandle = parent.handle;
 	int parentID = parentItem == null ? OS.kDataBrowserNoItem : parentItem.id;
 	/*
 	* Feature in Carbon.  Calling UpdateDataBrowserItems with kDataBrowserNoItem
 	* updates all columns associated with the items in the items array.  This is
 	* much slower than updating the items array for a specific column.  The fix
-	* is to give the specific column id if no columns are created.
+	* is to give the specific column ids instead.
 	*/
-	if (propertyID == OS.kDataBrowserNoItem && parent.columnCount == 0) propertyID = parent.column_id;
-	OS.UpdateDataBrowserItems (parent.handle, parentID, 1, new int[] {id}, OS.kDataBrowserItemNoProperty, propertyID);
+	int [] ids = new int [] {id};
+	if (propertyID == OS.kDataBrowserNoItem) {
+		if ((parent.style & SWT.CHECK) != 0) {
+			OS.UpdateDataBrowserItems (parentHandle, parentID, ids.length, ids, OS.kDataBrowserItemNoProperty, Tree.CHECK_COLUMN_ID);
+		}
+		if (parent.columnCount == 0) {
+			OS.UpdateDataBrowserItems (parentHandle, parentID, ids.length, ids, OS.kDataBrowserItemNoProperty, parent.column_id);
+		} else {
+			for (int i=0; i<parent.columnCount; i++) {
+				OS.UpdateDataBrowserItems (parentHandle, parentID, ids.length, ids, OS.kDataBrowserItemNoProperty, parent.columns[i].id);				
+			}
+		}
+	} else {
+		OS.UpdateDataBrowserItems (parentHandle, parentID, ids.length, ids, OS.kDataBrowserItemNoProperty, propertyID);
+	}
 	/*
 	* Bug in the Macintosh. When the height of the row is smaller than the
 	* check box, the tail of the check mark draws outside of the item part
@@ -754,14 +768,14 @@ void redraw (int propertyID) {
 	*/
 	if (propertyID == Tree.CHECK_COLUMN_ID) {
 		Rect rect = new Rect();
-		if (OS.GetDataBrowserItemPartBounds (parent.handle, id, propertyID, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
+		if (OS.GetDataBrowserItemPartBounds (parentHandle, id, propertyID, OS.kDataBrowserPropertyEnclosingPart, rect) == OS.noErr) {
 			Rect controlRect = new Rect ();
-			OS.GetControlBounds (parent.handle, controlRect);
+			OS.GetControlBounds (parentHandle, controlRect);
 			int x = rect.left - controlRect.left;
 			int y = rect.top - controlRect.top - 1;
 			int width = rect.right - rect.left;
 			int height = 1;
-			redrawWidget (parent.handle, x, y, width, height, false);
+			redrawWidget (parentHandle, x, y, width, height, false);
 		}
 	}
 }
