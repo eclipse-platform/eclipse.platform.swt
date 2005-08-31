@@ -33,6 +33,8 @@ import org.eclipse.swt.events.*;
 public class TableColumn extends Item {
 	Table parent;
 	boolean resizable, moveable;
+	String toolTipText;
+	int id;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -267,6 +269,24 @@ public boolean getResizable () {
 }
 
 /**
+ * Returns the receiver's tool tip text, or null if it has
+ * not been set.
+ *
+ * @return the receiver's tool tip text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public String getToolTipText () {
+	checkWidget();
+	return toolTipText;
+}
+
+/**
  * Gets the width of the receiver.
  *
  * @return the width
@@ -393,6 +413,7 @@ public void pack () {
 	parent.ignoreColumnResize = false;
 	int newWidth = OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
 	if (oldWidth != newWidth) {
+		updateToolTip (index);
 		sendEvent (SWT.Resize);
 		if (isDisposed ()) return;
 		boolean moved = false;
@@ -401,6 +422,7 @@ public void pack () {
 		for (int i=0; i<order.length; i++) {
 			TableColumn column = columns [order [i]];
 			if (moved && !column.isDisposed ()) {
+				column.updateToolTip (order [i]);
 				column.sendEvent (SWT.Move);
 			}
 			if (column == this) moved = true;
@@ -698,6 +720,25 @@ public void setText (String string) {
 }
 
 /**
+ * Sets the receiver's tool tip text to the argument, which
+ * may be null indicating that no tool tip text should be shown.
+ *
+ * @param string the new tool tip text (or null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public void setToolTipText (String string) {
+	checkWidget();
+	toolTipText = string;
+	parent.updateHeaderToolTips ();
+}
+
+/**
  * Sets the width of the receiver.
  *
  * @param width the new width
@@ -713,6 +754,26 @@ public void setWidth (int width) {
 	if (index == -1) return;
 	int hwnd = parent.handle;
 	OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, width);
+}
+
+void updateToolTip (int index) {
+	int hwndHeaderToolTip = parent.headerToolTipHandle;
+	if (hwndHeaderToolTip != 0) {
+		int hwnd = parent.handle;
+		int hwndHeader = OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
+		RECT rect = new RECT ();
+		if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, rect) != 0) {
+			TOOLINFO lpti = new TOOLINFO ();
+			lpti.cbSize = TOOLINFO.sizeof;
+			lpti.hwnd = hwndHeader;
+			lpti.uId = id;
+			lpti.left = rect.left;
+			lpti.top = rect.top;
+			lpti.right = rect.right;
+			lpti.bottom = rect.bottom;
+			OS.SendMessage (hwndHeaderToolTip, OS.TTM_NEWTOOLRECT, 0, lpti);
+		}
+	}
 }
 
 }

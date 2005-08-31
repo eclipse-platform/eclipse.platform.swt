@@ -47,10 +47,11 @@ public class Table extends Composite {
 	ImageList imageList, headerImageList;
 	TableItem currentItem;
 	TableColumn sortColumn;
-	int lastIndexOf, lastWidth, sortDirection;
+	int headerToolTipHandle, lastIndexOf, lastWidth, sortDirection;
 	boolean customDraw, dragStarted, fixScrollWidth, tipRequested;
 	boolean wasSelected, ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize;
 	boolean ignoreColumnMove, ignoreColumnResize;
+	static /*final*/ int HeaderProc;
 	static final int INSET = 4;
 	static final int GRID_WIDTH = 1;
 	static final int SORT_WIDTH = 10;
@@ -148,6 +149,12 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 
 int callWindowProc (int hwnd, int msg, int wParam, int lParam, boolean forceSelect) {
 	if (handle == 0) return 0;
+	if (handle != hwnd) {
+		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+		if (hwnd == hwndHeader) {
+			return OS.CallWindowProc (HeaderProc, hwnd, msg, wParam, lParam);
+		}
+	}
 	boolean checkSelection = false, checkFilter = false, checkActivate = false;
 	switch (msg) {
 		case OS.WM_CHAR:
@@ -243,6 +250,12 @@ boolean checkData (TableItem item, boolean redraw) {
 		}
 	}
 	return true;
+}
+
+boolean checkHandle (int hwnd) {
+	if (hwnd == handle) return true;
+	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+	return hwnd == hwndHeader;
 }
 
 protected void checkSubclass () {
@@ -555,6 +568,12 @@ void createHandle () {
 	super.createHandle ();
 	state &= ~(CANVAS | TRANSPARENT);
 	
+	/* Get the header window proc */
+	if (HeaderProc == 0) {
+		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+		HeaderProc = OS.GetWindowLong (hwndHeader, OS.GWL_WNDPROC);
+	}
+	
 	/*
 	* Feature in Windows.  In version 5.8 of COMCTL32.DLL,
 	* if the font is changed for an item, the bounds for the
@@ -775,6 +794,24 @@ void createItem (TableColumn column, int index) {
 		OS.SendMessage (handle, OS.LVM_INSERTCOLUMN, index, lvColumn);
 	}
 	ignoreColumnResize = false;
+	
+	/* Add the tool tip item for the header */
+	if (headerToolTipHandle != 0) {
+		RECT rect = new RECT ();
+		if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, rect) != 0) {
+			TOOLINFO lpti = new TOOLINFO ();
+			lpti.cbSize = TOOLINFO.sizeof;
+			lpti.uFlags = OS.TTF_SUBCLASS;
+			lpti.hwnd = hwndHeader;
+			lpti.uId = column.id = display.nextToolTipId++;
+			lpti.left = rect.left;
+			lpti.top = rect.top;
+			lpti.right = rect.right;
+			lpti.bottom = rect.bottom;
+			lpti.lpszText = OS.LPSTR_TEXTCALLBACK;
+			OS.SendMessage (headerToolTipHandle, OS.TTM_ADDTOOL, 0, lpti);
+		}
+	}
 }
 
 void createItem (TableItem item, int index) {
@@ -837,6 +874,12 @@ void createWidget () {
 
 int defaultBackground () {
 	return OS.GetSysColor (OS.COLOR_WINDOW);
+}
+
+void deregister () {
+	super.deregister ();
+	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+	if (hwndHeader != 0) display.removeControl (hwndHeader);
 }
 
 /**
@@ -1118,12 +1161,22 @@ void destroyItem (TableColumn column) {
 		TableColumn [] newColumns = new TableColumn [columnCount - orderIndex];
 		for (int i=orderIndex; i<newOrder.length; i++) {
 			newColumns [i - orderIndex] = columns [newOrder [i]];
+			newColumns [i - orderIndex].updateToolTip (newOrder [i]);
 		}	
 		for (int i=0; i<newColumns.length; i++) {
 			if (!newColumns [i].isDisposed ()) {
 				newColumns [i].sendEvent (SWT.Move);
 			}
 		}
+	}
+	
+	/* Remove the tool tip item for the header */
+	if (headerToolTipHandle != 0) {
+		TOOLINFO lpti = new TOOLINFO ();
+		lpti.cbSize = TOOLINFO.sizeof;
+		lpti.uId = column.id;
+		lpti.hwnd = hwndHeader;
+		OS.SendMessage (headerToolTipHandle, OS.TTM_DELTOOL, 0, lpti);
 	}
 }
 
@@ -1798,6 +1851,12 @@ public boolean isSelected (int index) {
 	return (result != 0) && ((lvItem.state & OS.LVIS_SELECTED) != 0);
 }
 
+void register () {
+	super.register ();
+	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+	if (hwndHeader != 0) display.addControl (hwndHeader, this);
+}
+
 void releaseChildren (boolean destroy) {
 	if (items != null) {
 		int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
@@ -1865,6 +1924,8 @@ void releaseWidget () {
 	int hStateList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
 	OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_STATE, 0);
 	if (hStateList != 0) OS.ImageList_Destroy (hStateList);
+	if (headerToolTipHandle != 0) OS.DestroyWindow (headerToolTipHandle);
+	headerToolTipHandle = 0;
 }
 
 /**
@@ -2409,6 +2470,7 @@ public void setColumnOrder (int [] order) {
 			if (!column.isDisposed ()) {
 				OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, newRect);
 				if (newRect.left != oldRects [i].left) {
+					column.updateToolTip (i);
 					column.sendEvent (SWT.Move);
 				}
 			}
@@ -3284,23 +3346,82 @@ public void showSelection () {
 	if (index != -1) showItem (index);
 }
 
+void subclass () {
+	super.subclass ();
+	if (HeaderProc != 0) {
+		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+		OS.SetWindowLong (hwndHeader, OS.GWL_WNDPROC, display.windowProc);
+	}
+}
+
 String toolTipText (NMTTDISPINFO hdr) {
 	int hwndToolTip = OS.SendMessage (handle, OS.LVM_GETTOOLTIPS, 0, 0);
 	if (hwndToolTip == hdr.hwndFrom && toolTipText != null) return ""; //$NON-NLS-1$
+	if (headerToolTipHandle == hdr.hwndFrom) {
+		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+		int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+		if (count == 1 && columns [0] == null) count = 0;
+		for (int i=0; i<count; i++) {
+			TableColumn column = columns [i];
+			if (column.id == hdr.idFrom) return column.toolTipText;
+		}
+	}
 	return super.toolTipText (hdr);
 }
 
-void updateMoveable () {
+void unsubclass () {
+	super.unsubclass ();
+	if (HeaderProc != 0) {
+		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+		OS.SetWindowLong (hwndHeader, OS.GWL_WNDPROC, HeaderProc);
+	}
+}
+
+void updateHeaderToolTips () {
+	if (OS.IsWinCE) return;
+	if (headerToolTipHandle != 0) return;
+	headerToolTipHandle = OS.CreateWindowEx (
+		0,
+		new TCHAR (0, OS.TOOLTIPS_CLASS, true),
+		null,
+		OS.TTS_ALWAYSTIP,
+		OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
+		0,
+		0,
+		OS.GetModuleHandle (null),
+		null);
+	if (headerToolTipHandle == 0) error (SWT.ERROR_NO_HANDLES);
+
+	/*
+	* Feature in Windows.  Despite the fact that the
+	* tool tip text contains \r\n, the tooltip will
+	* not honour the new line unless TTM_SETMAXTIPWIDTH
+	* is set.  The fix is to set TTM_SETMAXTIPWIDTH to
+	* a large value.
+	*/
+	OS.SendMessage (headerToolTipHandle, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
+	
+	/* Create the tool tip items for the header */
 	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+	RECT rect = new RECT ();
+	TOOLINFO lpti = new TOOLINFO ();
+	lpti.cbSize = TOOLINFO.sizeof;
+	lpti.uFlags = OS.TTF_SUBCLASS;
+	lpti.hwnd = hwndHeader;
+	lpti.lpszText = OS.LPSTR_TEXTCALLBACK;
 	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 	if (count == 1 && columns [0] == null) count = 0;
-	int index = 0;
-	while (index < count) {
-		if (columns [index].moveable) break;
-		index++;
+	for (int i=0; i<count; i++) {
+		TableColumn column = columns [i];
+		if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, rect) != 0) {
+			lpti.uId = column.id = display.nextToolTipId++;
+			lpti.left = rect.left;
+			lpti.top = rect.top;
+			lpti.right = rect.right;
+			lpti.bottom = rect.bottom;
+			OS.SendMessage (headerToolTipHandle, OS.TTM_ADDTOOL, 0, lpti);
+		}
 	}
-	int newBits = index < count ? OS.LVS_EX_HEADERDRAGDROP : 0;
-	OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, OS.LVS_EX_HEADERDRAGDROP, newBits);
 }
 
 void updateImages () {
@@ -3314,6 +3435,19 @@ void updateImages () {
 			}
 		}
 	}
+}
+
+void updateMoveable () {
+	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+	if (count == 1 && columns [0] == null) count = 0;
+	int index = 0;
+	while (index < count) {
+		if (columns [index].moveable) break;
+		index++;
+	}
+	int newBits = index < count ? OS.LVS_EX_HEADERDRAGDROP : 0;
+	OS.SendMessage (handle, OS.LVM_SETEXTENDEDLISTVIEWSTYLE, OS.LVS_EX_HEADERDRAGDROP, newBits);
 }
 
 int widgetStyle () {
@@ -3337,6 +3471,30 @@ TCHAR windowClass () {
 
 int windowProc () {
 	return TableProc;
+}
+
+int windowProc (int hwnd, int msg, int wParam, int lParam) {
+	if (handle == 0) return 0;
+	if (hwnd != handle) {
+		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+		if (hwnd == hwndHeader) {
+			switch (msg) {
+				case OS.WM_NOTIFY: {
+					NMHDR hdr = new NMHDR ();
+					OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
+					switch (hdr.code) {
+						case OS.TTN_SHOW:
+						case OS.TTN_POP: 
+						case OS.TTN_GETDISPINFOA:
+						case OS.TTN_GETDISPINFOW:
+							return OS.SendMessage (handle, msg, wParam, lParam);
+					}
+				}
+			}
+			return callWindowProc (hwnd, msg, wParam, lParam);
+		}
+	}
+	return super.windowProc (hwnd, msg, wParam, lParam);
 }
 
 LRESULT WM_CHAR (int wParam, int lParam) {
@@ -3378,63 +3536,6 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 			}
 			return LRESULT.ZERO;
 	}
-	return result;
-}
-
-LRESULT WM_ERASEBKGND (int wParam, int lParam) {
-	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
-	if (result != null) return result;
-	/*
-	* This code is intentionally commented.  When a table contains
-	* images that are not in the first column, the work around causes
-	* pixel corruption.
-	*/
-//	if (!OS.IsWindowEnabled (handle)) return result;
-//	/*
-//	* Feature in Windows.  When WM_ERASEBKGND is called,
-//	* it clears the damaged area by filling it with the
-//	* background color.  During WM_PAINT, when the table
-//	* items are drawn, the background for each item is
-//	* also drawn, causing flashing.  The fix is to adjust
-//	* the damage by subtracting the bounds of each visible
-//	* table item.
-//	*/
-//	int itemCount = getItemCount ();
-//	if (itemCount == 0) return result;
-//	GCData data = new GCData();
-//	data.device = display;
-//	GC gc = GC.win32_new (wParam, data);
-//	Region region = new Region (display);
-//	gc.getClipping (region);
-//	int columnCount = Math.max (1, getColumnCount ());
-//	Rectangle clientArea = getClientArea ();
-//	int i = getTopIndex ();
-//	int bottomIndex = i + OS.SendMessage (handle, OS.LVM_GETCOUNTPERPAGE, 0, 0);
-//	bottomIndex = Math.min (itemCount, bottomIndex);
-//	while (i < bottomIndex) {
-//		int j = 0;
-//		while (j < columnCount) {
-//			if (j != 0 || (!isSelected (i) && i != getFocusIndex ())) {
-//				RECT rect = new RECT ();
-//				rect.top = j;
-//				rect.left = OS.LVIR_LABEL;
-//				OS.SendMessage (handle, OS. LVM_GETSUBITEMRECT, i, rect);
-//				int width = Math.max (0, rect.right - rect.left);
-//				int height = Math.max (0, rect.bottom - rect.top);
-//				Rectangle rect2 = new Rectangle (rect.left, rect.top, width, height);
-//				if (!rect2.intersects (clientArea)) break;
-//				region.subtract (rect2);
-//			}
-//			j++;
-//		}
-//		i++;
-//	}
-//	gc.setClipping (region);
-//	drawBackground (wParam);
-//	gc.setClipping ((Region) null);
-//	region.dispose ();
-//	gc.dispose ();
-//	return LRESULT.ONE;
 	return result;
 }
 
@@ -3632,9 +3733,18 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 				ignoreColumnMove = true;
 				break;
 			}
-			case OS.NM_RELEASEDCAPTURE:
+			case OS.NM_RELEASEDCAPTURE: {
+				if (!ignoreColumnMove) {
+					int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+					if (count == 1 && columns [0] == null) count = 0;
+					for (int i=0; i<count; i++) {
+						TableColumn column = columns [i];
+						column.updateToolTip (i);
+					}
+				}
 				ignoreColumnMove = false;
 				break;
+			}
 			case OS.HDN_BEGINDRAG: {
 				if (ignoreColumnMove) return LRESULT.ONE;
 				int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
@@ -3653,7 +3763,6 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 				break;
 			}
 			case OS.HDN_ENDDRAG: {
-				ignoreColumnMove = false;
 				int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
 				if ((bits & OS.LVS_EX_HEADERDRAGDROP) == 0) break;
 				NMHEADER phdn = new NMHEADER ();
@@ -3675,6 +3784,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 						if (index == pitem.iOrder) break;
 						int start = Math.min (index, pitem.iOrder);
 						int end = Math.max (index, pitem.iOrder);
+						ignoreColumnMove = false;
 						for (int i=start; i<=end; i++) {
 							TableColumn column = columns [order [i]];
 							if (!column.isDisposed ()) {
@@ -3715,15 +3825,9 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 						if ((pitem.mask & OS.HDI_WIDTH) != 0) {
 							TableColumn column = columns [phdn.iItem];
 							if (column != null) {
+								column.updateToolTip (phdn.iItem);
 								column.sendEvent (SWT.Resize);
-								/*
-								* It is possible (but unlikely), that application
-								* code could have disposed the widget in the resize
-								* event.  If this happens, end the processing of the
-								* Windows message by returning zero as the result of
-								* the window proc.
-								*/
-								if (isDisposed ()) return LRESULT.ZERO;	
+								if (isDisposed ()) return LRESULT.ZERO;
 								int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 								if (count == 1 && columns [0] == null) count = 0;
 								/*
@@ -3740,6 +3844,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 								for (int i=0; i<count; i++) {
 									TableColumn nextColumn = newColumns [order [i]];
 									if (moved && !nextColumn.isDisposed ()) {
+										nextColumn.updateToolTip (order [i]);
 										nextColumn.sendEvent (SWT.Move);
 									}
 									if (nextColumn == column) moved = true;
@@ -3988,6 +4093,8 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 		}
 		case OS.NM_CUSTOMDRAW: {
 			if (!customDraw) break;
+			int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+			if (hdr.hwndFrom == hwndHeader) break;
 			NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
 			OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
 			switch (nmcd.dwDrawStage) {
@@ -4011,7 +4118,6 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					*/
 					if (hFont == -1 && clrText == -1 && clrTextBk == -1) {
 						if (item.cellForeground == null && item.cellBackground == null && item.cellFont == null) {
-							int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 							int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 							if (count == 1) break;
 						}

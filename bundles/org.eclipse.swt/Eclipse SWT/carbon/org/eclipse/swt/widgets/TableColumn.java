@@ -36,6 +36,7 @@ public class TableColumn extends Item {
 	Table parent;
 	int id, lastWidth, lastPosition, iconRef;
 	boolean resizable;
+	String toolTipText;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -271,6 +272,11 @@ public boolean getResizable () {
 	return resizable;
 }
 
+public String getToolTipText () {
+	checkWidget ();
+	return toolTipText;
+}
+
 /**
  * Gets the width of the receiver.
  *
@@ -502,6 +508,11 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	super.setText (string);
 	updateHeader ();
+}
+
+public void setToolTipText (String string) {
+	checkWidget();
+	toolTipText = string;
 }
 
 /**

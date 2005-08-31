@@ -52,6 +52,7 @@ public class Tree extends Composite {
 	boolean ignoreSelect, ignoreExpand, ignoreDeselect, ignoreResize;
 	boolean lockSelection, oldSelected, newSelected, ignoreColumnMove;
 	boolean linesVisible, customDraw, printClient;
+	int headerToolTipHandle;
 	static final int INSET = 3;
 	static final int GRID_WIDTH = 1;
 	static final int SORT_WIDTH = 10;
@@ -59,11 +60,15 @@ public class Tree extends Composite {
 	static final int HEADER_EXTRA = 3;
 	static final int TreeProc;
 	static final TCHAR TreeClass = new TCHAR (0, OS.WC_TREEVIEW, true);
+	static final int HeaderProc;
+	static final TCHAR HeaderClass = new TCHAR (0, OS.WC_HEADER, true);
 	static final char [] BUTTON = new char [] {'B', 'U', 'T', 'T', 'O', 'N', 0};
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, TreeClass, lpWndClass);
 		TreeProc = lpWndClass.lpfnWndProc;
+		OS.GetClassInfo (0, HeaderClass, lpWndClass);
+		HeaderProc = lpWndClass.lpfnWndProc;
 	}
 
 /**
@@ -207,6 +212,9 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 	if (hwndParent != 0 && hwnd == hwndParent) {
 		return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 	}
+	if (hwndHeader != 0 && hwnd == hwndHeader) {
+		return OS.CallWindowProc (HeaderProc, hwnd, msg, wParam, lParam);
+	}
 	switch (msg) {
 		/*
 		* Bug in Windows.  For some reason, when the user clicks
@@ -251,7 +259,7 @@ boolean checkData (TreeItem item, boolean redraw) {
 }
 
 boolean checkHandle (int hwnd) {
-	return hwnd == handle || (hwndParent != 0 && hwnd == hwndParent);
+	return hwnd == handle || (hwndParent != 0 && hwnd == hwndParent) || (hwndHeader != 0 && hwnd == hwndHeader);
 }
 
 boolean checkScroll (int hItem) {
@@ -525,6 +533,24 @@ void createItem (TreeColumn column, int index) {
 	if (columnCount == 0 && OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0) != 0) {
 		OS.InvalidateRect (handle, null, true);
 	}
+	
+	/* Add the tool tip item for the header */
+	if (headerToolTipHandle != 0) {
+		RECT rect = new RECT ();
+		if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, rect) != 0) {
+			TOOLINFO lpti = new TOOLINFO ();
+			lpti.cbSize = TOOLINFO.sizeof;
+			lpti.uFlags = OS.TTF_SUBCLASS;
+			lpti.hwnd = hwndHeader;
+			lpti.uId = column.id = display.nextToolTipId++;
+			lpti.left = rect.left;
+			lpti.top = rect.top;
+			lpti.right = rect.right;
+			lpti.bottom = rect.bottom;
+			lpti.lpszText = OS.LPSTR_TEXTCALLBACK;
+			OS.SendMessage (headerToolTipHandle, OS.TTM_ADDTOOL, 0, lpti);
+		}
+	}
 }
 
 void createItem (TreeItem item, int hParent, int hInsertAfter) {
@@ -624,7 +650,7 @@ void createParent () {
 	}
 	hwndHeader = OS.CreateWindowEx (
 		bits,
-		new TCHAR (0, OS.WC_HEADER, true),
+		HeaderClass,
 		null,
 		OS.HDS_BUTTONS | OS.HDS_FULLDRAG | OS.HDS_DRAGDROP | OS.HDS_HIDDEN | OS.WS_CHILD | OS.WS_CLIPSIBLINGS,
 		0, 0, 0, 0,
@@ -671,6 +697,7 @@ void createParent () {
 	OS.SetParent (handle, hwndParent);
 	if (hwndFocus == handle) OS.SetFocus (handle);
 	register ();
+	subclass ();
 }
 
 void createWidget () {
@@ -686,6 +713,7 @@ int defaultBackground () {
 void deregister () {
 	super.deregister ();
 	if (hwndParent != 0) display.removeControl (hwndParent);
+	if (hwndHeader != 0) display.removeControl (hwndHeader);
 }
 
 /**
@@ -834,12 +862,22 @@ void destroyItem (TreeColumn column) {
 		TreeColumn [] newColumns = new TreeColumn [columnCount - orderIndex];
 		for (int i=orderIndex; i<newOrder.length; i++) {
 			newColumns [i - orderIndex] = columns [newOrder [i]];
+			newColumns [i - orderIndex].updateToolTip (newOrder [i]);
 		}	
 		for (int i=0; i<newColumns.length; i++) {
 			if (!newColumns [i].isDisposed ()) {
 				newColumns [i].sendEvent (SWT.Move);
 			}
 		}
+	}
+
+	/* Remove the tool tip item for the header */
+	if (headerToolTipHandle != 0) {
+		TOOLINFO lpti = new TOOLINFO ();
+		lpti.cbSize = TOOLINFO.sizeof;
+		lpti.uId = column.id;
+		lpti.hwnd = hwndHeader;
+		OS.SendMessage (headerToolTipHandle, OS.TTM_DELTOOL, 0, lpti);
 	}
 }
 
@@ -1725,6 +1763,7 @@ public int indexOf (TreeItem item) {
 void register () {
 	super.register ();
 	if (hwndParent != 0) display.addControl (hwndParent, this);
+	if (hwndHeader != 0) display.addControl (hwndHeader, this);
 }
 
 void releaseItem (TreeItem item, TVITEM tvItem, boolean release) {
@@ -1805,6 +1844,8 @@ void releaseWidget () {
 	int hStateList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_STATE, 0);
 	OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_STATE, 0);
 	if (hStateList != 0) OS.ImageList_Destroy (hStateList);
+	if (headerToolTipHandle != 0) OS.DestroyWindow (headerToolTipHandle);
+	headerToolTipHandle = 0;
 }
 
 /**
@@ -2158,6 +2199,7 @@ public void setColumnOrder (int [] order) {
 			if (!column.isDisposed ()) {
 				OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, newRect);
 				if (newRect.left != oldRects [i].left) {
+					column.updateToolTip (i);
 					column.sendEvent (SWT.Move);
 				}
 			}
@@ -2761,14 +2803,73 @@ void showWidget (boolean visible) {
 	}
 }
 
+void subclass () {
+	super.subclass ();
+	if (hwndHeader != 0) {
+		OS.SetWindowLong (hwndHeader, OS.GWL_WNDPROC, display.windowProc);
+	}
+}
+
 String toolTipText (NMTTDISPINFO hdr) {
 	int hwndToolTip = OS.SendMessage (handle, OS.TVM_GETTOOLTIPS, 0, 0);
 	if (hwndToolTip == hdr.hwndFrom && toolTipText != null) return ""; //$NON-NLS-1$
+	if (headerToolTipHandle == hdr.hwndFrom) {
+		int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+		for (int i=0; i<count; i++) {
+			TreeColumn column = columns [i];
+			if (column.id == hdr.idFrom) return column.toolTipText;
+		}
+	}
 	return super.toolTipText (hdr);
 }
 
 int topHandle () {
 	return hwndParent != 0 ? hwndParent : handle;
+}
+
+void updateHeaderToolTips () {
+	if (OS.IsWinCE) return;
+	if (headerToolTipHandle != 0) return;
+	headerToolTipHandle = OS.CreateWindowEx (
+		0,
+		new TCHAR (0, OS.TOOLTIPS_CLASS, true),
+		null,
+		OS.TTS_ALWAYSTIP,
+		OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
+		0,
+		0,
+		OS.GetModuleHandle (null),
+		null);
+	if (headerToolTipHandle == 0) error (SWT.ERROR_NO_HANDLES);
+
+	/*
+	* Feature in Windows.  Despite the fact that the
+	* tool tip text contains \r\n, the tooltip will
+	* not honour the new line unless TTM_SETMAXTIPWIDTH
+	* is set.  The fix is to set TTM_SETMAXTIPWIDTH to
+	* a large value.
+	*/
+	OS.SendMessage (headerToolTipHandle, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
+	
+	/* Create the tool tip items for the header */
+	RECT rect = new RECT ();
+	TOOLINFO lpti = new TOOLINFO ();
+	lpti.cbSize = TOOLINFO.sizeof;
+	lpti.uFlags = OS.TTF_SUBCLASS;
+	lpti.hwnd = hwndHeader;
+	lpti.lpszText = OS.LPSTR_TEXTCALLBACK;
+	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+	for (int i=0; i<count; i++) {
+		TreeColumn column = columns [i];
+		if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, i, rect) != 0) {
+			lpti.uId = column.id = display.nextToolTipId++;
+			lpti.left = rect.left;
+			lpti.top = rect.top;
+			lpti.right = rect.right;
+			lpti.bottom = rect.bottom;
+			OS.SendMessage (headerToolTipHandle, OS.TTM_ADDTOOL, 0, lpti);
+		}
+	}
 }
 
 void updateImageList () {
@@ -2834,6 +2935,13 @@ void updateScrollBar () {
 	}
 }
 
+void unsubclass () {
+	super.unsubclass ();
+	if (hwndHeader != 0) {
+		OS.SetWindowLong (hwndHeader, OS.GWL_WNDPROC, HeaderProc);
+	}
+}
+
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.TVS_SHOWSELALWAYS | OS.TVS_LINESATROOT | OS.TVS_HASBUTTONS;
 	if ((style & SWT.FULL_SELECTION) != 0) {
@@ -2854,6 +2962,22 @@ int windowProc () {
 }
 
 int windowProc (int hwnd, int msg, int wParam, int lParam) {
+	if (hwndHeader != 0 && hwnd == hwndHeader) {
+		switch (msg) {
+			case OS.WM_NOTIFY: {
+				NMHDR hdr = new NMHDR ();
+				OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
+				switch (hdr.code) {
+					case OS.TTN_SHOW:
+					case OS.TTN_POP: 
+					case OS.TTN_GETDISPINFOA:
+					case OS.TTN_GETDISPINFOW:
+						return OS.SendMessage (handle, msg, wParam, lParam);
+				}
+			}
+		}
+		return callWindowProc (hwnd, msg, wParam, lParam);
+	}
 	if (hwndParent != 0 && hwnd == hwndParent) {
 		switch (msg) {
 			case OS.WM_MOVE: {
@@ -3599,10 +3723,18 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 				ignoreColumnMove = true;
 				break;
 			}
-			case OS.NM_RELEASEDCAPTURE:
-				if (!ignoreColumnMove) updateImageList ();
+			case OS.NM_RELEASEDCAPTURE: {
+				if (!ignoreColumnMove) {
+					int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+					for (int i=0; i<count; i++) {
+						TreeColumn column = columns [i];
+						column.updateToolTip (i);
+					}
+					updateImageList ();
+				}
 				ignoreColumnMove = false;
 				break;
+			}
 			case OS.HDN_BEGINDRAG: {
 				if (ignoreColumnMove) return LRESULT.ONE;
 				NMHEADER phdn = new NMHEADER ();
@@ -3623,7 +3755,6 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 					HDITEM pitem = new HDITEM ();
 					OS.MoveMemory (pitem, phdn.pitem, HDITEM.sizeof);
 					if ((pitem.mask & OS.HDI_ORDER) != 0 && pitem.iOrder != -1) {
-						ignoreColumnMove = false;
 						int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 						int [] order = new int [count];
 						OS.SendMessage (hwndHeader, OS.HDM_GETORDERARRAY, count, order);
@@ -3643,6 +3774,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, order [end], itemRect);
 						rect.right = Math.min (rect.right, itemRect.right);
 						OS.InvalidateRect (handle, rect, true);
+						ignoreColumnMove = false;
 						for (int i=start; i<=end; i++) {
 							TreeColumn column = columns [order [i]];
 							if (!column.isDisposed ()) {
@@ -3698,6 +3830,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 					if ((pitem.mask & OS.HDI_WIDTH) != 0) {
 						TreeColumn column = columns [phdn.iItem];
 						if (column != null) {
+							column.updateToolTip (phdn.iItem);
 							column.sendEvent (SWT.Resize);
 							if (isDisposed ()) return LRESULT.ZERO;	
 							int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
@@ -3709,6 +3842,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 							for (int i=0; i<count; i++) {
 								TreeColumn nextColumn = newColumns [order [i]];
 								if (moved && !nextColumn.isDisposed ()) {
+									nextColumn.updateToolTip (order [i]);
 									nextColumn.sendEvent (SWT.Move);
 								}
 								if (nextColumn == column) moved = true;
@@ -3954,6 +4088,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 		}
 		case OS.NM_CUSTOMDRAW: {
 			if (!customDraw) break;
+			if (hdr.hwndFrom == hwndHeader) break;
 			NMTVCUSTOMDRAW nmcd = new NMTVCUSTOMDRAW ();
 			OS.MoveMemory (nmcd, lParam, NMTVCUSTOMDRAW.sizeof);		
 			switch (nmcd.dwDrawStage) {

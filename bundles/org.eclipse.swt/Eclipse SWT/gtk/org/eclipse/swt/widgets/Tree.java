@@ -698,6 +698,17 @@ void destroyItem (TreeItem item) {
 	modelChanged = true;
 }
 
+void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, Decorations oldDecorations, Menu [] menus) {
+	super.fixChildren (newShell, oldShell, newDecorations, oldDecorations, menus);
+	for (int i=0; i<columnCount; i++) {
+		TreeColumn column = columns [i];
+		if (column.toolTipText != null) {
+			column.setToolTipText(oldShell, null);
+			column.setToolTipText(newShell, column.toolTipText);
+		}
+	}
+}
+
 GdkColor getBackgroundColor () {
 	return getBaseColor ();
 }

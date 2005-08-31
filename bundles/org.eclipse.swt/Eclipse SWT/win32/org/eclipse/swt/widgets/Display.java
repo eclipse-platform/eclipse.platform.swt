@@ -172,7 +172,7 @@ public class Display extends Device {
 	
 	/* System Tray */
 	Tray tray;
-	int nextTrayId = 0;
+	int nextTrayId;
 	
 	/* Timers */
 	int [] timerIds;
@@ -185,6 +185,9 @@ public class Display extends Device {
 	byte [] keyboard = new byte [256];
 	boolean accelKeyHit, mnemonicKeyHit;
 	boolean lockActiveWindow, captureChanged;
+	
+	/* Tool Tips */
+	int nextToolTipId;
 	
 	/* MDI */
 	boolean ignoreRestoreFocus;

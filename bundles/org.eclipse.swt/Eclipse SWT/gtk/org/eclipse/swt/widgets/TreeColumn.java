@@ -38,6 +38,7 @@ public class TreeColumn extends Item {
 	Tree parent;
 	int modelIndex, lastButton, lastTime, lastX, lastWidth;
 	boolean customDraw, useFixedWidth;
+	String toolTipText;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -277,6 +278,11 @@ public Tree getParent () {
 public boolean getResizable () {
 	checkWidget();
 	return OS.gtk_tree_view_column_get_resizable (handle);
+}
+
+public String getToolTipText () {
+	checkWidget();
+	return toolTipText;
 }
 
 /**
@@ -559,6 +565,17 @@ public void setText (String string) {
 	} else {
 		OS.gtk_widget_hide (labelHandle);
 	}
+}
+
+public void setToolTipText (String string) {
+	checkWidget();
+	toolTipText = string;
+	Shell shell = parent._getShell ();
+	setToolTipText (shell, toolTipText);
+}
+
+void setToolTipText (Shell shell, String string) {
+	shell.setToolTipText (buttonHandle, string);
 }
 
 /**

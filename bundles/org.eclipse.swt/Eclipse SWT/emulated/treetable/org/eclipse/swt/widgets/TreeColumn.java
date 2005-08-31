@@ -36,6 +36,7 @@ public class TreeColumn extends Item {
 	int width, itemImageWidth;
 	boolean moveable, resizable = true;
 	int sort = SWT.NONE;
+	String toolTipText;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -348,9 +349,9 @@ public boolean getResizable () {
 	checkWidget ();
 	return resizable;
 }
-public int getSortDirection () {
-	checkWidget ();
-	return sort;
+public String getToolTipText () {
+	checkWidget();
+	return toolTipText;
 }
 /**
  * Gets the width of the receiver.
@@ -595,6 +596,10 @@ public void setText (String value) {
 	if (parent.drawCount == 0 && parent.getHeaderVisible ()) {
 		parent.header.redraw (getX (), 0, width, parent.getHeaderHeight (), false);
 	}
+}
+public void setToolTipText (String string) {
+	checkWidget();
+	toolTipText = string;
 }
 /**
  * Sets the width of the receiver.

@@ -35,6 +35,8 @@ import org.eclipse.swt.events.*;
 public class TreeColumn extends Item {
 	Tree parent;
 	boolean resizable, moveable;
+	String toolTipText;
+	int id;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -266,6 +268,24 @@ public Tree getParent () {
 public boolean getResizable () {
 	checkWidget ();
 	return resizable;
+}
+
+/**
+ * Returns the receiver's tool tip text, or null if it has
+ * not been set.
+ *
+ * @return the receiver's tool tip text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public String getToolTipText () {
+	checkWidget();
+	return toolTipText;
 }
 
 /**
@@ -633,6 +653,25 @@ public void setText (String string) {
 }
 
 /**
+ * Sets the receiver's tool tip text to the argument, which
+ * may be null indicating that no tool tip text should be shown.
+ *
+ * @param string the new tool tip text (or null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.2
+ */
+public void setToolTipText (String string) {
+	checkWidget();
+	toolTipText = string;
+	parent.updateHeaderToolTips ();
+}
+
+/**
  * Sets the width of the receiver.
  *
  * @param width the new width
@@ -660,5 +699,24 @@ public void setWidth (int width) {
 	rect.left = itemRect.left;
 	OS.InvalidateRect (hwnd, rect, true);
 	parent.setScrollWidth ();
+}
+
+void updateToolTip (int index) {
+	int hwndHeaderToolTip = parent.headerToolTipHandle;
+	if (hwndHeaderToolTip != 0) {
+		int hwndHeader = parent.hwndHeader;
+		RECT rect = new RECT ();
+		if (OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index, rect) != 0) {
+			TOOLINFO lpti = new TOOLINFO ();
+			lpti.cbSize = TOOLINFO.sizeof;
+			lpti.hwnd = hwndHeader;
+			lpti.uId = id;
+			lpti.left = rect.left;
+			lpti.top = rect.top;
+			lpti.right = rect.right;
+			lpti.bottom = rect.bottom;
+			OS.SendMessage (hwndHeaderToolTip, OS.TTM_NEWTOOLRECT, 0, lpti);
+		}
+	}
 }
 }
