@@ -364,51 +364,6 @@ void createAccelerators () {
 	if (nAccel != 0) hAccel = OS.CreateAcceleratorTable (buffer2, nAccel);
 }
 
-Image createIcon (Image image) {
-	ImageData data = image.getImageData ();
-	if (data.alpha == -1 && data.alphaData == null) {
-		ImageData mask = data.getTransparencyMask ();
-		return new Image (display, data, mask);
-	}
-	int width = data.width, height = data.height;
-	int hMask, hBitmap;
-	int hDC = OS.GetDC (handle);
-	int dstHdc = OS.CreateCompatibleDC (hDC), oldDstBitmap;
-	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (5, 1)) {
-		hBitmap = Display.create32bitDIB (image.handle, data.alpha, data.alphaData, data.transparentPixel);
-		hMask = OS.CreateBitmap (width, height, 1, 1, null);
-		oldDstBitmap = OS.SelectObject (dstHdc, hMask);
-		OS.PatBlt (dstHdc, 0, 0, width, height, OS.BLACKNESS);
-	} else {
-		hMask = Display.createMaskFromAlpha (data, width, height);
-		/* Icons need black pixels where the mask is transparent */
-		hBitmap = OS.CreateCompatibleBitmap (hDC, width, height);
-		oldDstBitmap = OS.SelectObject (dstHdc, hBitmap);
-		int srcHdc = OS.CreateCompatibleDC (hDC);
-		int oldSrcBitmap = OS.SelectObject (srcHdc, image.handle);
-		OS.PatBlt (dstHdc, 0, 0, width, height, OS.BLACKNESS);
-		OS.BitBlt (dstHdc, 0, 0, width, height, srcHdc, 0, 0, OS.SRCINVERT);
-		OS.SelectObject (srcHdc, hMask);
-		OS.BitBlt (dstHdc, 0, 0, width, height, srcHdc, 0, 0, OS.SRCAND);
-		OS.SelectObject (srcHdc, image.handle);
-		OS.BitBlt (dstHdc, 0, 0, width, height, srcHdc, 0, 0, OS.SRCINVERT);
-		OS.SelectObject (srcHdc, oldSrcBitmap);
-		OS.DeleteDC (srcHdc);
-	}
-	OS.SelectObject (dstHdc, oldDstBitmap);
-	OS.DeleteDC (dstHdc);
-	OS.ReleaseDC (handle, hDC);
-	ICONINFO info = new ICONINFO ();
-	info.fIcon = true;
-	info.hbmColor = hBitmap;
-	info.hbmMask = hMask;
-	int hIcon = OS.CreateIconIndirect (info);
-	if (hIcon == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	OS.DeleteObject (hBitmap);
-	OS.DeleteObject (hMask);
-	return Image.win32_new (display, SWT.ICON, hIcon);
-}
-
 void createHandle () {
 	super.createHandle ();
 	if (parent != null || ((style & SWT.TOOL) != 0)) {
@@ -973,7 +928,7 @@ void setImages (Image image, Image [] images) {
 	if (smallIcon != null) {
 		switch (smallIcon.type) {
 			case SWT.BITMAP:
-				smallImage = createIcon (smallIcon);
+				smallImage = Display.createIcon (smallIcon);
 				hSmallIcon = smallImage.handle;
 				break;
 			case SWT.ICON:
@@ -985,7 +940,7 @@ void setImages (Image image, Image [] images) {
 	if (largeIcon != null) {
 		switch (largeIcon.type) {
 			case SWT.BITMAP:
-				largeImage = createIcon (largeIcon);
+				largeImage = Display.createIcon (largeIcon);
 				hLargeIcon = largeImage.handle;
 				break;
 			case SWT.ICON:
