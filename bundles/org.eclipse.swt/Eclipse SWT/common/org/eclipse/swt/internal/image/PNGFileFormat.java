@@ -135,7 +135,8 @@ void readNextChunk(PngChunkReader chunkReader) {
 			}
 	}
 }
-void unloadIntoByteStream(ImageData p1) {
+void unloadIntoByteStream(ImageLoader loader) {
+	/* We do not currently support writing png. */
 	SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
 }
 boolean isFileFormat(LEDataInputStream stream) {

@@ -23,16 +23,17 @@ import org.eclipse.swt.internal.image.*;
  * <p>
  * Currently supported image formats are:
  * </p><ul>
- * <li>BMP (Windows Bitmap)</li>
+ * <li>BMP (Windows or OS/2 Bitmap)</li>
  * <li>ICO (Windows Icon)</li>
  * <li>JPEG</li>
  * <li>GIF</li>
  * <li>PNG</li>
+ * <li>TIFF</li>
  * </ul>
  * <code>ImageLoaders</code> can be used to:
  * <ul>
  * <li>load/save single images in all formats</li>
- * <li>load/save multiple images (GIF/ICO)</li>
+ * <li>load/save multiple images (GIF/ICO/TIFF)</li>
  * <li>load/save animated GIF images</li>
  * <li>load interlaced GIF/PNG images</li>
  * <li>load progressive JPEG images</li>

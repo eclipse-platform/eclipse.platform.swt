@@ -420,31 +420,129 @@ final class GIFFileFormat extends FileFormat {
 		return new PaletteData(colors);
 	}
 
-	/**
-	 * Write the specified device independent image
-	 * to the output stream.
-	 */
-	void unloadIntoByteStream(ImageData image) {
-		if (!((image.depth == 1) || (image.depth == 4) || (image.depth == 8))) {
+	void unloadIntoByteStream(ImageLoader loader) {
+		
+ 		/* Step 1: Acquire GIF parameters */
+		ImageData[] data = loader.data;
+		int frameCount = data.length;
+		boolean multi = frameCount > 1;
+		ImageData firstImage = data[0];
+		int logicalScreenWidth = multi ? loader.logicalScreenWidth : firstImage.width;
+		int logicalScreenHeight = multi ? loader.logicalScreenHeight : firstImage.height;
+		int backgroundPixel = loader.backgroundPixel;
+		int depth = firstImage.depth;
+		PaletteData palette = firstImage.palette;
+		RGB[] colors = palette.getRGBs();
+		short globalTable = 1;
+				
+		/* Step 2: Check for validity and global/local color map */
+		if (!(depth == 1 || depth == 4 || depth == 8)) {
 			SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
 		}
-		byte bitField = (byte)((0x80 & 0xF8 & 0xF7 & 0x8F) + (image.depth - 1) + ((image.depth - 1) * 16));
+		for (int i=0; i<frameCount; i++) {
+			if (data[i].palette.isDirect) {
+				SWT.error(SWT.ERROR_INVALID_IMAGE);
+			}
+			if (multi) {
+				if (!(data[i].height <= logicalScreenHeight && data[i].width <= logicalScreenWidth && data[i].depth == depth)) {
+					SWT.error(SWT.ERROR_INVALID_IMAGE);
+				}
+				if (globalTable == 1) {
+					RGB rgbs[] = data[i].palette.getRGBs();
+					if (rgbs.length != colors.length) {
+						globalTable = 0;
+					} else { 
+						for (int j=0; j<colors.length; j++) {
+							if (!(rgbs[j].red == colors[j].red &&
+								rgbs[j].green == colors[j].green &&
+								rgbs[j].blue == colors[j].blue))
+									globalTable = 0;
+						}
+					}
+				}
+			}
+		}
+		
 		try {
-			outputStream.write(new byte[] { (byte)'G', (byte)'I', (byte)'F' });
-			outputStream.write(new byte[] { (byte)'8', (byte)'9', (byte)'a' });
-			outputStream.writeShort((short)image.width);
-			outputStream.writeShort((short)image.height);
-			outputStream.writeByte(bitField);
-			outputStream.writeByte((byte)0);
+ 			/* Step 3: Write the GIF89a Header and Logical Screen Descriptor */
+			int bits = globalTable*128 + (depth-1)*16 + depth-1;
+			outputStream.write("GIF89a".getBytes());
+			outputStream.writeShort((short)logicalScreenWidth);
+			outputStream.writeShort((short)logicalScreenHeight);
+			outputStream.writeByte((byte)bits);
+			outputStream.writeByte((byte)backgroundPixel);
 			outputStream.writeByte((byte)0);
 		} catch (IOException e) {
 			SWT.error(SWT.ERROR_IO, e);
 		}
-		writePalette(image.palette, image.depth);
-		if (image.transparentPixel != -1 || image.disposalMethod != 0 || image.delayTime != 0) {
-			writeGraphicsControlBlock(image);
+		
+		/* Step 4: Write Global Color Table if applicable */
+		if (globalTable == 1) {
+			writePalette(palette, depth);
 		}
-		writeImageBlock(image);
+
+		/* Step 5: Write Application Extension if applicable */
+		if (multi) {
+			int repeatCount = loader.repeatCount;
+			try {
+				outputStream.write(GIF_EXTENSION_BLOCK_ID);
+				outputStream.write(GIF_APPLICATION_EXTENSION_BLOCK_ID);
+				outputStream.write((byte)11); // Eleven bytes following
+				outputStream.write("NETSCAPE2.0".getBytes());
+				outputStream.write((byte)3); // Three bytes following
+				outputStream.writeByte((byte)1);
+				outputStream.write((byte) repeatCount & 0xFF);
+				outputStream.write((byte) (repeatCount >> 8) & 0xFF);
+				outputStream.writeByte((byte)0);
+			} catch (IOException e) {
+				SWT.error(SWT.ERROR_IO, e);
+			}
+		}
+		
+		for (int frame=0; frame<frameCount; frame++) {
+			
+			/* Step 6: Write Graphics Control Block for each frame if applicable */
+			if (multi || data[frame].transparentPixel != -1) {
+				writeGraphicsControlBlock(data[frame]);
+			}
+			
+			/* Step 7: Write Image Header for each frame */
+			int x = data[frame].x;
+			int y = data[frame].y;
+			int width = data[frame].width;
+			int height = data[frame].height;
+			try {
+				outputStream.write(GIF_IMAGE_BLOCK_ID);  // 0x2C
+				byte[] block = new byte[9];
+				block[0] = (byte)(x & 0xFF);
+				block[1] = (byte)((x >> 8) & 0xFF);
+				block[2] = (byte)(y & 0xFF);
+				block[3] = (byte)((y >> 8) & 0xFF);
+				block[4] = (byte)(width & 0xFF);
+				block[5] = (byte)((width >> 8) & 0xFF);
+				block[6] = (byte)(height & 0xFF);
+				block[7] = (byte)((height >> 8) & 0xFF); 
+				block[8] = (byte)(globalTable == 0 ? (depth-1) | 0x80 : 0x00);
+				outputStream.write(block);
+			} catch (IOException e) {
+				SWT.error(SWT.ERROR_IO, e);
+			}
+			
+			/* Step 8: Write Local Color Table for each frame if applicable */
+			if (globalTable == 0) {
+				writePalette(data[frame].palette, depth);
+			}
+			
+			/* Step 9: Write the actual data for each frame */
+			try {
+				outputStream.write(depth); // minimum LZW Code size: 3 for 1 bit per pixel images and usually the number of bits per pixel plus 1 for other images.
+			} catch (IOException e) {
+				SWT.error(SWT.ERROR_IO, e);
+			}
+			new LZWCodec().encode(outputStream, data[frame]);
+		}
+
+		/* Step 10: Write GIF terminator */
 		try {
 			outputStream.write(0x3B);
 		} catch (IOException e) {
@@ -462,18 +560,16 @@ final class GIFFileFormat extends FileFormat {
 			outputStream.write(GIF_GRAPHICS_CONTROL_BLOCK_ID);
 			outputStream.write(0x04); // size of block
 			byte[] gcBlock = new byte[4];
-			gcBlock[0] = (byte)0xFD;
+			gcBlock[0] = 0;
 			gcBlock[1] = 0;
 			gcBlock[2] = 0;
 			gcBlock[3] = 0;
-			if (image.transparentPixel == -1) {
-				gcBlock[0] = (byte)(gcBlock[0] & 0xFE);
-			} else {
-				gcBlock[0] = (byte)(gcBlock[0] | 0x01);
+			if (image.transparentPixel != -1) {
+				gcBlock[0] = (byte)0x01;
 				gcBlock[3] = (byte)image.transparentPixel;
 			}
 			if (image.disposalMethod != 0) {
-				gcBlock[0] = (byte)(gcBlock[0] | ((image.disposalMethod & 0x07) << 2));
+				gcBlock[0] |= (byte)((image.disposalMethod & 0x07) << 2);
 			}
 			if (image.delayTime != 0) {
 				gcBlock[1] = (byte)(image.delayTime & 0xFF);
@@ -484,31 +580,6 @@ final class GIFFileFormat extends FileFormat {
 		} catch (IOException e) {
 			SWT.error(SWT.ERROR_IO, e);
 		}
-	}
-
-	/**
-	 * Write the specified device independent image
-	 * to the current position in the output stream.
-	 */
-	void writeImageBlock(ImageData image) {
-		try {
-			outputStream.write(GIF_IMAGE_BLOCK_ID);
-			byte[] block = new byte[9];
-			block[0] = (byte)(image.x & 0xFF);
-			block[1] = (byte)((image.x >> 8) & 0xFF);
-			block[2] = (byte)(image.y & 0xFF);
-			block[3] = (byte)((image.y >> 8) & 0xFF);
-			block[4] = (byte)(image.width & 0xFF);
-			block[5] = (byte)((image.width >> 8) & 0xFF);
-			block[6] = (byte)(image.height & 0xFF);
-			block[7] = (byte)((image.height >> 8) & 0xFF); 
-			block[8] = 0; // no interlace, no sort, no local palette
-			outputStream.write(block);
-			outputStream.write(image.depth);
-		} catch (IOException e) {
-			SWT.error(SWT.ERROR_IO, e);
-		}
-		new LZWCodec().encode(outputStream, image);
 	}
 
 	/**

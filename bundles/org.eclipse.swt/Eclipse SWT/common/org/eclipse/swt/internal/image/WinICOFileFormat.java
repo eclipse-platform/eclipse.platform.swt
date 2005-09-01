@@ -17,6 +17,14 @@ import java.io.*;
 
 final class WinICOFileFormat extends FileFormat {
 	
+byte[] bitInvertData(byte[] data, int startIndex, int endIndex) {
+	// Destructively bit invert data in the given byte array.
+	for (int i = startIndex; i < endIndex; i++) {
+		data[i] = (byte)(255 - data[i - startIndex]);
+	}
+	return data;
+}
+
 static final byte[] convertPad(byte[] data, int width, int height, int depth, int pad, int newPad) {
 	if (pad == newPad) return data;
 	int stride = (width * depth + 7) / 8;
@@ -252,7 +260,10 @@ void unloadIconHeader(ImageData i) {
 		SWT.error(SWT.ERROR_IO, e);
 	}
 }
-void unloadIntoByteStream(ImageData image) {
+void unloadIntoByteStream(ImageLoader loader) {
+	/* We do not currently support writing multi-image ico,
+	 * so we use the first image data in the loader's array. */
+	ImageData image = loader.data[0];
 	if (!isValidIcon(image))
 		SWT.error(SWT.ERROR_INVALID_IMAGE);
 	try {

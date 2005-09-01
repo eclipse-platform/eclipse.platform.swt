@@ -569,7 +569,8 @@ int unloadDataNoCompression(ImageData image, OutputStream out) {
  * Unload a DeviceIndependentImage using Windows .BMP format into the given
  * byte stream.
  */
-void unloadIntoByteStream(ImageData image) {
+void unloadIntoByteStream(ImageLoader loader) {
+	ImageData image = loader.data[0];
 	byte[] rgbs;
 	int numCols;
 	if (!((image.depth == 1) || (image.depth == 4) || (image.depth == 8) ||

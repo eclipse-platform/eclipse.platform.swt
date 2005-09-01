@@ -1771,7 +1771,8 @@ void storeData(int[] dataUnit, int iComp, int xmcu, int ymcu, int hi, int ihi, i
 		destIndex += compWidth;
 	}
 }
-void unloadIntoByteStream(ImageData image) {
+void unloadIntoByteStream(ImageLoader loader) {
+	ImageData image = loader.data[0];
 	if (!new JPEGStartOfImage().writeToStream(outputStream)) {
 		SWT.error(SWT.ERROR_IO);
 	}

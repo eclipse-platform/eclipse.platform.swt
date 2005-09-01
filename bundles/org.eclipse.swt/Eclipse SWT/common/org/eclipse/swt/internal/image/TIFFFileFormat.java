@@ -64,7 +64,10 @@ ImageData[] loadFromByteStream() {
 	return images;
 }
 
-void unloadIntoByteStream(ImageData image) {
+void unloadIntoByteStream(ImageLoader loader) {
+	/* We do not currently support writing multi-page tiff,
+	 * so we use the first image data in the loader's array. */
+	ImageData image = loader.data[0];
 	TIFFDirectory directory = new TIFFDirectory(image);
 	try {
 		directory.writeToStream(outputStream);

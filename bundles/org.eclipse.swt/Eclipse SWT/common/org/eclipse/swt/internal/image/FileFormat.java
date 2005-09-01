@@ -25,14 +25,6 @@ public abstract class FileFormat {
 	ImageLoader loader;
 	int compression;
 
-byte[] bitInvertData(byte[] data, int startIndex, int endIndex) {
-	// Destructively bit invert data in the given byte array.
-	for (int i = startIndex; i < endIndex; i++) {
-		data[i] = (byte)(255 - data[i - startIndex]);
-	}
-	return data;
-}
-
 /**
  * Return whether or not the specified input stream
  * represents a supported file format.
@@ -51,6 +43,10 @@ public ImageData[] loadFromStream(LEDataInputStream stream) {
 	}
 }
 
+/**
+ * Read the specified input stream using the specified loader, and
+ * return the device independent image array represented by the stream.
+ */	
 public static ImageData[] load(InputStream is, ImageLoader loader) {
 	FileFormat fileFormat = null;
 	LEDataInputStream stream = new LEDataInputStream(is);
@@ -75,13 +71,15 @@ public static ImageData[] load(InputStream is, ImageLoader loader) {
 	return fileFormat.loadFromStream(stream);
 }
 
+/**
+ * Write the device independent image array stored in the specified loader
+ * to the specified output stream using the specified file format.
+ */	
 public static void save(OutputStream os, int format, ImageLoader loader) {
 	if (format < 0 || format >= FORMATS.length) SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
 	if (FORMATS[format] == null) SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
+	if (loader.data == null || loader.data.length < 1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 
-	/* We do not currently support writing multi-image files,
-	 * so we use the first image data in the loader's array. */
-	ImageData data = loader.data[0];
 	LEDataOutputStream stream = new LEDataOutputStream(os);
 	FileFormat fileFormat = null;
 	try {
@@ -91,20 +89,20 @@ public static void save(OutputStream os, int format, ImageLoader loader) {
 		SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
 	}
 	if (format == SWT.IMAGE_BMP_RLE) {
-		switch (data.depth) {
+		switch (loader.data[0].depth) {
 			case 8: fileFormat.compression = 1; break;
 			case 4: fileFormat.compression = 2; break;
 		}
 	}
-	fileFormat.unloadIntoStream(data, stream);
+	fileFormat.unloadIntoStream(loader, stream);
 }
 
-abstract void unloadIntoByteStream(ImageData image);
+abstract void unloadIntoByteStream(ImageLoader loader);
 
-public void unloadIntoStream(ImageData image, LEDataOutputStream stream) {
+public void unloadIntoStream(ImageLoader loader, LEDataOutputStream stream) {
 	try {
 		outputStream = stream;
-		unloadIntoByteStream(image);
+		unloadIntoByteStream(loader);
 		outputStream.flush();
 	} catch (Exception e) {
 		try {outputStream.flush();} catch (Exception f) {}
