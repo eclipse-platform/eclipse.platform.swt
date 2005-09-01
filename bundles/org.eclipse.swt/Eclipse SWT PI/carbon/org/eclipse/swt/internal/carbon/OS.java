@@ -421,6 +421,7 @@ public class OS extends Platform {
 	public static final int kHIViewZOrderAbove = 1;
 	public static final int kHIViewZOrderBelow = 2;
 	public static final int kHMCFStringContent = ('c'<<24) + ('f'<<16) + ('s'<<8) + 't';
+	public static final int kHMOutsideBottomRightAligned = 10;
 	public static final int kHMAbsoluteCenterAligned = 23;
 	public static final int kHMContentProvided = 0;
 	public static final int kHMContentNotProvided = -1;
