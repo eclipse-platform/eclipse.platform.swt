@@ -2089,4 +2089,31 @@ LRESULT wmIMEChar (int hwnd, int wParam, int lParam) {
 	return new LRESULT (result);
 }
 
+LRESULT wmSysKeyDown (int hwnd, int wParam, int lParam) {
+	/*
+	* Feature in Windows.  When an editable combo box is dropped
+	* down using Alt+Down and the text in the entry field partially
+	* matches an item in the list, Windows selects the item but doesn't
+	* send WM_COMMAND with CBN_SELCHANGE.  The fix is to detect that
+	* the selection has changed and issue the notification.
+	*/
+	int oldSelection = OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
+	LRESULT result = super.wmSysKeyDown (hwnd, wParam, lParam);
+	if (result != null) return result;
+	if ((style & SWT.READ_ONLY) == 0) {
+		if (wParam == OS.VK_DOWN) {
+			int code = callWindowProc (hwnd, OS.WM_SYSKEYDOWN, wParam, lParam);
+			int newSelection = OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
+			if (oldSelection != newSelection) {
+				sendEvent (SWT.Modify);
+				if (isDisposed ()) return LRESULT.ZERO;
+				sendEvent (SWT.Selection);
+				if (isDisposed ()) return LRESULT.ZERO;
+			}
+			return new LRESULT (code);
+		}
+	}
+	return result;
+}
+
 }
