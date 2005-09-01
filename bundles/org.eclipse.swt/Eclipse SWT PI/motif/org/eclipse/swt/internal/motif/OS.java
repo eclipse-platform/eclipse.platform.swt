@@ -635,6 +635,99 @@ public class OS extends Platform {
 	}
 	static final native int setResourceMem (int start, int end);
 
+/** X render natives and constants */
+public static final int PictStandardARGB32 = 0;
+public static final int PictStandardRGB24 = 1;
+public static final int PictStandardA8 = 2;
+public static final int PictStandardA4 = 3;
+public static final int PictStandardA1 = 4;
+public static final int PictOpSrc = 1;
+public static final int PictOpOver = 3;
+
+public static final native int XRenderPictureAttributes_sizeof();
+public static final native boolean _XRenderQueryExtension(int /*long*/ display, int[] event_basep, int[] error_basep);
+public static final boolean XRenderQueryExtension(int /*long*/ display, int[] event_basep, int[] error_basep) {
+	lock.lock();
+	try {
+		return _XRenderQueryExtension(display, event_basep, error_basep);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _XRenderCreatePicture(int /*long*/ display, int /*long*/ drawable, int /*long*/ format, int /*long*/ valuemask, XRenderPictureAttributes attributes);
+public static final int /*long*/ XRenderCreatePicture(int /*long*/ display, int /*long*/ drawable, int /*long*/ format, int /*long*/ valuemask, XRenderPictureAttributes attributes) {
+	lock.lock();
+	try {
+		return _XRenderCreatePicture(display, drawable, format, valuemask, attributes);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XRenderSetPictureClipRegion(int /*long*/ display, int /*long*/ picture, int /*long*/ region);
+public static final void XRenderSetPictureClipRegion(int /*long*/ display, int /*long*/ picture, int /*long*/ region) {
+	lock.lock();
+	try {
+		_XRenderSetPictureClipRegion(display, picture, region);
+	} finally {
+		lock.unlock();
+	}
+}
+
+public static final native void _XRenderSetPictureClipRectangles(int /*long*/ display, int /*long*/ picture, int xOrigin, int yOrigin, short[] rects, int count);
+public static final void XRenderSetPictureClipRectangles(int /*long*/ display, int /*long*/ picture, int xOrigin, int yOrigin, short[] rects, int count) {
+	lock.lock();
+	try {
+		_XRenderSetPictureClipRectangles(display, picture, xOrigin, yOrigin, rects, count);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XRenderSetPictureTransform(int /*long*/ display, int /*long*/ picture, int[] transform);
+public static final void XRenderSetPictureTransform(int /*long*/ display, int /*long*/ picture, int[] transform) {
+	lock.lock();
+	try {
+		_XRenderSetPictureTransform(display, picture, transform);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XRenderFreePicture(int /*long*/ display, int /*long*/ picture);
+public static final void XRenderFreePicture(int /*long*/ display, int /*long*/ picture) {
+	lock.lock();
+	try {
+		_XRenderFreePicture(display, picture);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XRenderComposite(int /*long*/ display, int op, int /*long*/ src, int /*long*/ mask, int /*long*/ dst, int src_x, int src_y, int mask_x, int mask_y, int dst_x, int dst_y, int width, int height);
+public static final void XRenderComposite(int /*long*/ display, int op, int /*long*/ src, int /*long*/ mask, int /*long*/ dst, int src_x, int src_y, int mask_x, int mask_y, int dst_x, int dst_y, int width, int height) {
+	lock.lock();
+	try {
+		_XRenderComposite(display, op, src, mask, dst, src_x, src_y, mask_x, mask_y, dst_x, dst_y, width, height);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _XRenderFindStandardFormat(int /*long*/ display, int format);
+public static final int /*long*/ XRenderFindStandardFormat(int /*long*/ display, int format) {
+	lock.lock();
+	try {
+		return _XRenderFindStandardFormat(display, format);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _XRenderFindVisualFormat(int /*long*/ display, int /*long*/ visual);
+public static final int /*long*/ XRenderFindVisualFormat(int /*long*/ display, int /*long*/ visual) {
+	lock.lock();
+	try {
+		return _XRenderFindVisualFormat(display, visual);
+	} finally {
+		lock.unlock();
+	}
+}
+
 /** JNI native methods */
 public static final native int MonitorEnter(Object object);
 public static final native int MonitorExit(Object object);

@@ -22,7 +22,12 @@
 #include <X11/keysym.h>
 #include <X11/extensions/shape.h>
 #include <X11/extensions/Print.h>
+#if !(defined _HPUX || defined AIX)
 #include <X11/extensions/Xrender.h>
+#else
+#define NO_XRenderPictureAttributes
+#define NO__1XRenderCreatePicture
+#endif
 #if !(defined _HPUX || defined SOLARIS)
 #include <X11/extensions/XTest.h>
 #endif
