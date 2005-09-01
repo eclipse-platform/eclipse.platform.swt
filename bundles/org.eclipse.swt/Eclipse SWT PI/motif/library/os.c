@@ -95,6 +95,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(MB_1CUR_1MAX)
 }
 #endif
 
+#ifndef NO_XRenderPictureAttributes_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(XRenderPictureAttributes_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, XRenderPictureAttributes_1sizeof_FUNC);
+	rc = (jint)XRenderPictureAttributes_sizeof();
+	OS_NATIVE_EXIT(env, that, XRenderPictureAttributes_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1Call
 JNIEXPORT jint JNICALL OS_NATIVE(_1Call)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
@@ -1386,6 +1398,271 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1XRectInRegion)
 	rc = (jint)XRectInRegion((Region)arg0, arg1, arg2, arg3, arg4);
 	OS_NATIVE_EXIT(env, that, _1XRectInRegion_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO__1XRenderComposite
+JNIEXPORT void JNICALL OS_NATIVE(_1XRenderComposite)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11, jint arg12)
+{
+	OS_NATIVE_ENTER(env, that, _1XRenderComposite_FUNC);
+/*
+	XRenderComposite(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint, jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(XRenderComposite_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "XRenderComposite");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1XRenderComposite_FUNC);
+}
+#endif
+
+#ifndef NO__1XRenderCreatePicture
+JNIEXPORT jint JNICALL OS_NATIVE(_1XRenderCreatePicture)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4)
+{
+	XRenderPictureAttributes _arg4, *lparg4=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1XRenderCreatePicture_FUNC);
+	if (arg4) if ((lparg4 = getXRenderPictureAttributesFields(env, arg4, &_arg4)) == NULL) goto fail;
+/*
+	rc = (jint)XRenderCreatePicture(arg0, arg1, arg2, arg3, lparg4);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint, jint, jint, jint, XRenderPictureAttributes *);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(XRenderCreatePicture_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "XRenderCreatePicture");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0, arg1, arg2, arg3, lparg4);
+		}
+	}
+fail:
+	if (arg4 && lparg4) setXRenderPictureAttributesFields(env, arg4, lparg4);
+	OS_NATIVE_EXIT(env, that, _1XRenderCreatePicture_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1XRenderFindStandardFormat
+JNIEXPORT jint JNICALL OS_NATIVE(_1XRenderFindStandardFormat)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1XRenderFindStandardFormat_FUNC);
+/*
+	rc = (jint)XRenderFindStandardFormat(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint, jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(XRenderFindStandardFormat_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "XRenderFindStandardFormat");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1XRenderFindStandardFormat_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1XRenderFindVisualFormat
+JNIEXPORT jint JNICALL OS_NATIVE(_1XRenderFindVisualFormat)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1XRenderFindVisualFormat_FUNC);
+/*
+	rc = (jint)XRenderFindVisualFormat(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(jint, jint);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(XRenderFindVisualFormat_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "XRenderFindVisualFormat");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1XRenderFindVisualFormat_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1XRenderFreePicture
+JNIEXPORT void JNICALL OS_NATIVE(_1XRenderFreePicture)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1XRenderFreePicture_FUNC);
+/*
+	XRenderFreePicture(arg0, arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(XRenderFreePicture_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "XRenderFreePicture");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1XRenderFreePicture_FUNC);
+}
+#endif
+
+#ifndef NO__1XRenderQueryExtension
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1XRenderQueryExtension)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1XRenderQueryExtension_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
+	rc = (jboolean)XRenderQueryExtension(arg0, lparg1, lparg2);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jboolean (*FPTR)(jint, jint *, jint *);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(XRenderQueryExtension_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "XRenderQueryExtension");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jboolean)(*fptr)(arg0, lparg1, lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, _1XRenderQueryExtension_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1XRenderSetPictureClipRectangles
+JNIEXPORT void JNICALL OS_NATIVE(_1XRenderSetPictureClipRectangles)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jshortArray arg4, jint arg5)
+{
+	jshort *lparg4=NULL;
+	OS_NATIVE_ENTER(env, that, _1XRenderSetPictureClipRectangles_FUNC);
+	if (arg4) if ((lparg4 = (*env)->GetShortArrayElements(env, arg4, NULL)) == NULL) goto fail;
+/*
+	XRenderSetPictureClipRectangles(arg0, arg1, arg2, arg3, lparg4, arg5);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jint, jint, jint, jshort *, jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(XRenderSetPictureClipRectangles_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "XRenderSetPictureClipRectangles");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1, arg2, arg3, lparg4, arg5);
+		}
+	}
+fail:
+	if (arg4 && lparg4) (*env)->ReleaseShortArrayElements(env, arg4, lparg4, 0);
+	OS_NATIVE_EXIT(env, that, _1XRenderSetPictureClipRectangles_FUNC);
+}
+#endif
+
+#ifndef NO__1XRenderSetPictureClipRegion
+JNIEXPORT void JNICALL OS_NATIVE(_1XRenderSetPictureClipRegion)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, _1XRenderSetPictureClipRegion_FUNC);
+/*
+	XRenderSetPictureClipRegion(arg0, arg1, arg2);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jint, jint);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(XRenderSetPictureClipRegion_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "XRenderSetPictureClipRegion");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1, arg2);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1XRenderSetPictureClipRegion_FUNC);
+}
+#endif
+
+#ifndef NO__1XRenderSetPictureTransform
+JNIEXPORT void JNICALL OS_NATIVE(_1XRenderSetPictureTransform)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, _1XRenderSetPictureTransform_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+/*
+	XRenderSetPictureTransform(arg0, arg1, lparg2);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef void (*FPTR)(jint, jint, jint *);
+		static FPTR fptr;
+		if (!initialized) {
+			if (!handle) handle = dlopen(XRenderSetPictureTransform_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "XRenderSetPictureTransform");
+			initialized = 1;
+		}
+		if (fptr) {
+			(*fptr)(arg0, arg1, lparg2);
+		}
+	}
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, _1XRenderSetPictureTransform_FUNC);
 }
 #endif
 

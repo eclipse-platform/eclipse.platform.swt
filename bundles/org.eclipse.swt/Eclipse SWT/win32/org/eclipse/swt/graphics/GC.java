@@ -894,35 +894,13 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 	}
 
 	if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION(4, 10)) {
-		/*
-		* Feature in Windows.  AlphaBlend() alters the alpha
-		* channel if the destination is a 32 bit depth bitmap.
-		* The fix is to draw to a temporary 24 bit depth bitmap
-		* first and then draw the temporary bitmap.
-		*/
-		boolean fixAlpha = false;
-		int dstBitmap = OS.GetCurrentObject(handle, OS.OBJ_BITMAP);
-		if (dstBitmap != 0) {
-			BITMAP dstBM = new BITMAP();
-			OS.GetObject(dstBitmap, BITMAP.sizeof, dstBM);
-			fixAlpha = dstBM.bmPlanes * dstBM.bmBitsPixel == 32;
-		}
-		int dstDib = 0, oldDstBitmap = 0, dstHdc = handle, dstX = destX, dstY = destY;
-		if (fixAlpha) {
-			dstDib = Image.createDIB(destWidth, destHeight, 24);
-			if (dstDib == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-			dstHdc = OS.CreateCompatibleDC(handle);
-			oldDstBitmap = OS.SelectObject(dstHdc, dstDib);
-			OS.BitBlt(dstHdc, 0, 0, destWidth, destHeight, handle, destX, destY, OS.SRCCOPY);
-			dstX = dstY = 0;
-		}
 		BLENDFUNCTION blend = new BLENDFUNCTION();
 		blend.BlendOp = OS.AC_SRC_OVER;
 		int srcHdc = OS.CreateCompatibleDC(handle);
 		int oldSrcBitmap = OS.SelectObject(srcHdc, srcImage.handle);
 		if (srcImage.alpha != -1) {
 			blend.SourceConstantAlpha = (byte)srcImage.alpha;
-			OS.AlphaBlend(dstHdc, dstX, dstY, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, blend);
+			OS.AlphaBlend(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, blend);
 		} else {
 			int memDib = Image.createDIB(srcWidth, srcHeight, 32);
 			if (memDib == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -939,9 +917,15 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 			for (int y = 0; y < srcHeight; ++y) {
 				for (int x = 0; x < srcWidth; ++x) {
 					int alpha = alphaData[ap++] & 0xff;
-					srcData[sp+0] = (byte)((srcData[sp+0] & 0xff) * alpha / 255);
-					srcData[sp+1] = (byte)((srcData[sp+1] & 0xff) * alpha / 255);
-					srcData[sp+2] = (byte)((srcData[sp+2] & 0xff) * alpha / 255);
+					int r = ((srcData[sp + 0] & 0xFF) * alpha) + 128;
+					r = (r + (r >> 8)) >> 8;
+					int g = ((srcData[sp + 1] & 0xFF) * alpha) + 128;
+					g = (g + (g >> 8)) >> 8;
+					int b = ((srcData[sp + 2] & 0xFF) * alpha) + 128;
+					b = (b + (b >> 8)) >> 8;								
+					srcData[sp+0] = (byte)r;
+					srcData[sp+1] = (byte)g;
+					srcData[sp+2] = (byte)b;
 					srcData[sp+3] = (byte)alpha;
 					sp += 4;
 				}
@@ -950,16 +934,10 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 			OS.MoveMemory(dibBM.bmBits, srcData, srcData.length);
 			blend.SourceConstantAlpha = (byte)0xff;
 			blend.AlphaFormat = OS.AC_SRC_ALPHA;
-			OS.AlphaBlend(dstHdc, dstX, dstY, destWidth, destHeight, memHdc, 0, 0, srcWidth, srcHeight, blend);
+			OS.AlphaBlend(handle, destX, destY, destWidth, destHeight, memHdc, 0, 0, srcWidth, srcHeight, blend);
 			OS.SelectObject(memHdc, oldMemBitmap);
 			OS.DeleteDC(memHdc);
 			OS.DeleteObject(memDib);
-		}
-		if (fixAlpha) {
-			OS.BitBlt(handle, destX, destY, destWidth, destHeight, dstHdc, 0, 0, OS.SRCCOPY);
-			OS.SelectObject(dstHdc, oldDstBitmap);
-			OS.DeleteDC(dstHdc);
-			OS.DeleteObject(dstDib);
 		}
 		OS.SelectObject(srcHdc, oldSrcBitmap);
 		OS.DeleteDC(srcHdc);

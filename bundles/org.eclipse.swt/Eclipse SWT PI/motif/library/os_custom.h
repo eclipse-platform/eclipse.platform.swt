@@ -12,3 +12,15 @@
 /* Special sizeof's */
 #define fd_set_sizeof() sizeof(fd_set)
 #define localeconv_decimal_point() localeconv()->decimal_point
+
+/* Libraries for dynamic loaded functions */
+#define XRenderQueryExtension_LIB "libXrender.so"
+#define XRenderFindStandardFormat_LIB "libXrender.so"
+#define XRenderFindVisualFormat_LIB "libXrender.so"
+#define XRenderComposite_LIB "libXrender.so"
+#define XRenderCreatePicture_LIB "libXrender.so"
+#define XRenderFreePicture_LIB "libXrender.so"
+#define XRenderSetPictureClipRectangles_LIB "libXrender.so"
+#define XRenderSetPictureClipRegion_LIB "libXrender.so"
+#define XRenderSetPictureTransform_LIB "libXrender.so"
+

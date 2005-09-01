@@ -208,7 +208,7 @@ public Image(Device device, Image srcImage, int flag) {
  	int height = h[0];
 	int drawable = OS.XDefaultRootWindow(xDisplay);
 	/* Don't create the mask here if flag is SWT.IMAGE_GRAY. See below.*/
-	if (flag != SWT.IMAGE_GRAY && (srcImage.mask != 0 || srcImage.transparentPixel != -1)) {
+	if (flag != SWT.IMAGE_GRAY && ((srcImage.type == SWT.ICON && srcImage.mask != 0) || srcImage.transparentPixel != -1)) {
 		/* Generate the mask if necessary. */
 		if (srcImage.transparentPixel != -1) srcImage.createMask();
 		int mask = OS.XCreatePixmap(xDisplay, drawable, width, height, 1);
@@ -1071,6 +1071,31 @@ void init(Device device, ImageData image) {
 		if (image.alpha == -1 && image.alphaData != null) {
 			this.alphaData = new byte[image.alphaData.length];
 			System.arraycopy(image.alphaData, 0, this.alphaData, 0, alphaData.length);
+		}
+		if (device.useXRender && (alpha != -1 || alphaData != null)) {
+			mask = OS.XCreatePixmap(xDisplay, drawable, alpha != -1 ? 1 : image.width, alpha != -1 ? 1 : image.height, 8);
+			if (mask == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			gc = OS.XCreateGC(xDisplay, mask, 0, null);
+			if (alpha != -1) {
+				OS.XSetForeground(xDisplay, gc, (alpha & 0xFF) << 8 | (alpha & 0xFF));
+				OS.XFillRectangle(xDisplay, mask, gc, 0, 0, 1, 1);
+			} else {
+				int imagePtr = OS.XGetImage(xDisplay, mask, 0, 0, image.width, image.height, OS.AllPlanes, OS.ZPixmap);
+				XImage xImage = new XImage();
+				OS.memmove(xImage, imagePtr, XImage.sizeof);
+				if (xImage.bytes_per_line == image.width) {
+					OS.memmove(xImage.data, alphaData, alphaData.length);
+				} else {
+					byte[] line = new byte[xImage.bytes_per_line];
+					for (int y = 0; y < image.height; y++) {
+						System.arraycopy(alphaData, image.width * y, line, 0, image.width);
+						OS.memmove(xImage.data + (xImage.bytes_per_line * y), line, xImage.bytes_per_line);
+					}
+				}
+				OS.XPutImage(xDisplay, mask, gc, imagePtr, 0, 0, 0, 0, image.width, image.height);
+				OS.XDestroyImage(imagePtr);
+			}			
+			OS.XFreeGC(xDisplay, gc);
 		}
 	}
 	this.pixmap = pixmap;

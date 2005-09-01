@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 449;
-int OS_nativeFunctionCallCount[449];
+int OS_nativeFunctionCount = 459;
+int OS_nativeFunctionCallCount[459];
 char * OS_nativeFunctionNames[] = {
 	"CODESET",
 	"FD_1ISSET",
@@ -25,6 +25,7 @@ char * OS_nativeFunctionNames[] = {
 	"MB_1CUR_1MAX",
 	"MonitorEnter",
 	"MonitorExit",
+	"XRenderPictureAttributes_1sizeof",
 	"_1Call",
 	"_1ConnectionNumber",
 	"_1XAllocColor",
@@ -121,6 +122,15 @@ char * OS_nativeFunctionNames[] = {
 	"_1XRaiseWindow",
 	"_1XReconfigureWMWindow",
 	"_1XRectInRegion",
+	"_1XRenderComposite",
+	"_1XRenderCreatePicture",
+	"_1XRenderFindStandardFormat",
+	"_1XRenderFindVisualFormat",
+	"_1XRenderFreePicture",
+	"_1XRenderQueryExtension",
+	"_1XRenderSetPictureClipRectangles",
+	"_1XRenderSetPictureClipRegion",
+	"_1XRenderSetPictureTransform",
 	"_1XReparentWindow",
 	"_1XResizeWindow",
 	"_1XRootWindowOfScreen",

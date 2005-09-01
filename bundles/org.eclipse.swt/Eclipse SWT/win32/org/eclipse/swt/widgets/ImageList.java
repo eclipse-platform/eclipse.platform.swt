@@ -99,7 +99,53 @@ int copyBitmap (int hImage, int width, int height) {
 	int hdc1 = OS.CreateCompatibleDC (hDC);
 	OS.SelectObject (hdc1, hImage);
 	int hdc2 = OS.CreateCompatibleDC (hDC);
-	int hBitmap = OS.CreateCompatibleBitmap (hDC, width, height);
+	/*
+	* Feature in Windows.  If a bitmap has a 32-bit depth and any
+	* pixel has an alpha value different than zero, common controls
+	* version 6.0 assumes that the bitmap should be alpha blended.
+	* AlphaBlend() composes the alpha channel of a destination 32-bit
+	* depth image with the alpha channel of the source image. This
+	* may cause opaque images to draw transparently.  The fix is
+	* remove the alpha channel of opaque images by down sampling
+	* it to 24-bit depth.
+	*/
+	int hBitmap;
+	if (bm.bmBitsPixel == 32 && OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER();
+		bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
+		bmiHeader.biWidth = width;
+		bmiHeader.biHeight = -height;
+		bmiHeader.biPlanes = 1;
+		bmiHeader.biBitCount = (short)24;
+		if (OS.IsWinCE) bmiHeader.biCompression = OS.BI_BITFIELDS;
+		else bmiHeader.biCompression = OS.BI_RGB;
+		byte[] bmi = new byte[BITMAPINFOHEADER.sizeof + (OS.IsWinCE ? 12 : 0)];
+		OS.MoveMemory(bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
+		/* Set the rgb colors into the bitmap info */
+		if (OS.IsWinCE) {
+			int redMask = 0xFF00;
+			int greenMask = 0xFF0000;
+			int blueMask = 0xFF000000;
+			/* big endian */
+			int offset = BITMAPINFOHEADER.sizeof;
+			bmi[offset] = (byte)((redMask & 0xFF000000) >> 24);
+			bmi[offset + 1] = (byte)((redMask & 0xFF0000) >> 16);
+			bmi[offset + 2] = (byte)((redMask & 0xFF00) >> 8);
+			bmi[offset + 3] = (byte)((redMask & 0xFF) >> 0);
+			bmi[offset + 4] = (byte)((greenMask & 0xFF000000) >> 24);
+			bmi[offset + 5] = (byte)((greenMask & 0xFF0000) >> 16);
+			bmi[offset + 6] = (byte)((greenMask & 0xFF00) >> 8);
+			bmi[offset + 7] = (byte)((greenMask & 0xFF) >> 0);
+			bmi[offset + 8] = (byte)((blueMask & 0xFF000000) >> 24);
+			bmi[offset + 9] = (byte)((blueMask & 0xFF0000) >> 16);
+			bmi[offset + 10] = (byte)((blueMask & 0xFF00) >> 8);
+			bmi[offset + 11] = (byte)((blueMask & 0xFF) >> 0);
+		}
+		int[] pBits = new int[1];
+		hBitmap = OS.CreateDIBSection(0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
+	} else {
+		hBitmap = OS.CreateCompatibleBitmap (hDC, width, height);
+	}
 	OS.SelectObject (hdc2, hBitmap);
 	if (width != bm.bmWidth || height != bm.bmHeight) {
 		if (!OS.IsWinCE) OS.SetStretchBltMode(hdc2, OS.COLORONCOLOR);

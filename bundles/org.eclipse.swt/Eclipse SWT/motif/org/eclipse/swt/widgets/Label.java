@@ -481,8 +481,8 @@ void setBitmap (Image image) {
 		if (image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		switch (image.type) {
 			case SWT.BITMAP:
-				ImageData data = image.getImageData ();
-				if (data.alpha == -1 && data.alphaData == null && data.transparentPixel == -1) {
+				ImageData data;
+				if (image.mask == 0	&& (data = image.getImageData ()).alpha == -1 && data.alphaData == null && data.transparentPixel == -1) {
 					labelPixmap = image.pixmap;
 					disabled = new Image (display, image, SWT.IMAGE_DISABLE);
 					labelInsensitivePixmap = disabled.pixmap;

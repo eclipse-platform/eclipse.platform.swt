@@ -74,6 +74,8 @@ public abstract class Device implements Drawable {
 	
 	int shellHandle;
 
+	boolean useXRender;
+
 	/* Parsing Tables */
 	int tabPointer, crPointer;
 	/**
@@ -581,6 +583,9 @@ boolean _getWarnings () {
  */
 protected void init () {
 	if (debug) OS.XSynchronize (xDisplay, true);
+
+	int[] event_basep = new int[1], error_basep = new int [1];
+	useXRender = OS.XRenderQueryExtension(xDisplay, event_basep, error_basep);
 		
 	/* Create the warning and error callbacks */
 	Class clazz = getClass ();

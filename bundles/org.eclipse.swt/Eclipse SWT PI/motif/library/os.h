@@ -22,6 +22,7 @@
 #include <X11/keysym.h>
 #include <X11/extensions/shape.h>
 #include <X11/extensions/Print.h>
+#include <X11/extensions/Xrender.h>
 #if !(defined _HPUX || defined SOLARIS)
 #include <X11/extensions/XTest.h>
 #endif
@@ -42,6 +43,7 @@
 void _XmSetMenuTraversal(Widget wid, int traversalOn);
 #endif
 
+#include <dlfcn.h>
 #include <stdio.h>
 #include <assert.h>
 #include <langinfo.h>
