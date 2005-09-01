@@ -2681,9 +2681,12 @@ public int getCharWidth(char ch) {
  */
 public Rectangle getClipping() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (data.gdipGraphics != 0) {
+	int gdipGraphics = data.gdipGraphics;
+	if (gdipGraphics != 0) {
 		Rect rect = new Rect();
-		Gdip.Graphics_GetClipBounds(data.gdipGraphics, rect);
+		Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeNone);
+		Gdip.Graphics_GetVisibleClipBounds(gdipGraphics, rect);
+		Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
 		return new Rectangle(rect.X, rect.Y, rect.Width, rect.Height);
 	}
 	RECT rect = new RECT();
@@ -2709,19 +2712,28 @@ public void getClipping (Region region) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (region.isDisposed()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-	if (data.gdipGraphics != 0) {
+	int gdipGraphics = data.gdipGraphics;
+	if (gdipGraphics != 0) {
+		Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeNone);
 		int rgn = Gdip.Region_new();
 		Gdip.Graphics_GetClip(data.gdipGraphics, rgn);
-		int matrix = Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
-		int identity = Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
-		Gdip.Graphics_GetTransform(data.gdipGraphics, matrix);
-		Gdip.Graphics_SetTransform(data.gdipGraphics, identity);
-		int hRgn = Gdip.Region_GetHRGN(rgn, data.gdipGraphics);
-		Gdip.Graphics_SetTransform(data.gdipGraphics, matrix);
-		Gdip.Matrix_delete(identity);
-		Gdip.Matrix_delete(matrix);
-		OS.CombineRgn(region.handle, hRgn, 0, OS.RGN_COPY);
+		if (Gdip.Region_IsInfinite(rgn, gdipGraphics)) {
+			Rect rect = new Rect();
+			Gdip.Graphics_GetVisibleClipBounds(gdipGraphics, rect);
+			OS.SetRectRgn(region.handle, rect.X, rect.Y, rect.Width, rect.Height);
+		} else {
+			int matrix = Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
+			int identity = Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
+			Gdip.Graphics_GetTransform(gdipGraphics, matrix);
+			Gdip.Graphics_SetTransform(gdipGraphics, identity);
+			int hRgn = Gdip.Region_GetHRGN(rgn, data.gdipGraphics);
+			Gdip.Graphics_SetTransform(gdipGraphics, matrix);
+			Gdip.Matrix_delete(identity);
+			Gdip.Matrix_delete(matrix);
+			OS.CombineRgn(region.handle, hRgn, 0, OS.RGN_COPY);
+		}
 		Gdip.Region_delete(rgn);
+		Gdip.Graphics_SetPixelOffsetMode(gdipGraphics, Gdip.PixelOffsetModeHalf);
 		return;
 	}
 	POINT pt = new POINT ();

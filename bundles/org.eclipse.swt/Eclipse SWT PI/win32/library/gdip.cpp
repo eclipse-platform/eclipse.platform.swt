@@ -779,6 +779,22 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetTransform)
 }
 #endif
 
+#ifndef NO_Graphics_1GetVisibleClipBounds
+JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetVisibleClipBounds)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	Rect _arg1, *lparg1=NULL;
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Graphics_1GetVisibleClipBounds_FUNC);
+	if (arg1) if ((lparg1 = getRectFields(env, arg1, &_arg1)) == NULL) goto fail;
+	rc = (jint)((Graphics *)arg0)->GetVisibleClipBounds(lparg1);
+fail:
+	if (arg1 && lparg1) setRectFields(env, arg1, lparg1);
+	Gdip_NATIVE_EXIT(env, that, Graphics_1GetVisibleClipBounds_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Graphics_1MeasureString__I_3CIILorg_eclipse_swt_internal_gdip_PointF_2ILorg_eclipse_swt_internal_gdip_RectF_2
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1MeasureString__I_3CIILorg_eclipse_swt_internal_gdip_PointF_2ILorg_eclipse_swt_internal_gdip_RectF_2)
 	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2, jint arg3, jobject arg4, jint arg5, jobject arg6)
@@ -1456,6 +1472,18 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Region_1GetHRGN)
 	Gdip_NATIVE_ENTER(env, that, Region_1GetHRGN_FUNC);
 	rc = (jint)((Region *)arg0)->GetHRGN((Graphics *)arg1);
 	Gdip_NATIVE_EXIT(env, that, Region_1GetHRGN_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Region_1IsInfinite
+JNIEXPORT jboolean JNICALL Gdip_NATIVE(Region_1IsInfinite)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jboolean rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Region_1IsInfinite_FUNC);
+	rc = (jboolean)((Region *)arg0)->IsInfinite((Graphics *)arg1);
+	Gdip_NATIVE_EXIT(env, that, Region_1IsInfinite_FUNC);
 	return rc;
 }
 #endif
