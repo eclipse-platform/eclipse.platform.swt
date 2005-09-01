@@ -217,7 +217,7 @@ public Image(Device device, Image srcImage, int flag) {
  	int height = h[0];
  	
  	/* Copy the mask */
-	if (srcImage.mask != 0 || srcImage.transparentPixel != -1) {
+	if ((srcImage.type == SWT.ICON && srcImage.mask != 0) || srcImage.transparentPixel != -1) {
 		/* Generate the mask if necessary. */
 		if (srcImage.transparentPixel != -1) srcImage.createMask();
 		int /*long*/ mask = OS.gdk_pixmap_new(0, width, height, 1);
@@ -563,7 +563,7 @@ void createSurface() {
 		int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
 		int /*long*/ pixels = OS.gdk_pixbuf_get_pixels(pixbuf);		
 		byte[] line = new byte[stride];
-		if (mask != 0) {
+		if (mask != 0 && OS.gdk_drawable_get_depth(mask) == 1) {
 			int /*long*/ maskPixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, width, height);
 			if (maskPixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 			OS.gdk_pixbuf_get_from_drawable(maskPixbuf, mask, 0, 0, 0, 0, 0, width, height);
@@ -963,6 +963,33 @@ void init(Device device, ImageData image) {
 		if (image.alpha == -1 && image.alphaData != null) {
 			this.alphaData = new byte[image.alphaData.length];
 			System.arraycopy(image.alphaData, 0, this.alphaData, 0, alphaData.length);
+		}
+		if (device.useXRender && (alpha != -1 || alphaData != null)) {
+			mask = OS.gdk_pixmap_new(0, alpha != -1 ? 1 : width, alpha != -1 ? 1 : height, 8);
+			if (mask == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			int /*long*/ gc = OS.gdk_gc_new(mask);
+			if (alpha != -1) {
+				GdkColor color = new GdkColor();
+				color.pixel = (alpha & 0xFF) << 8 | (alpha & 0xFF);
+				OS.gdk_gc_set_foreground(gc, color);
+				OS.gdk_draw_rectangle(mask, gc, 1, 0, 0, 1, 1);
+			} else {
+				int /*long*/ imagePtr = OS.gdk_drawable_get_image(mask, 0, 0, width, height);
+				GdkImage gdkImage = new GdkImage();
+				OS.memmove(gdkImage, imagePtr);
+				if (gdkImage.bpl == width) {
+					OS.memmove(gdkImage.mem, alphaData, alphaData.length);
+				} else {
+					byte[] line = new byte[gdkImage.bpl];
+					for (int y = 0; y < height; y++) {
+						System.arraycopy(alphaData, width * y, line, 0, width);
+						OS.memmove(gdkImage.mem + (gdkImage.bpl * y), line, gdkImage.bpl);
+					}
+				}
+				OS.gdk_draw_image(mask, gc, imagePtr, 0, 0, 0, 0, width, height);
+				OS.g_object_unref(imagePtr);
+			}		
+			OS.g_object_unref(gc);
 		}
 	}
 	this.pixmap = pixmap;

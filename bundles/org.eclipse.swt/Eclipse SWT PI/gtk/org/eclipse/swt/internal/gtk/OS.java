@@ -872,6 +872,89 @@ public static final native void memmove(XExposeEvent dest, int /*long*/ src, int
 public static final native void memmove(XFocusChangeEvent dest, int /*long*/ src, int /*long*/ size);
 public static final native void memmove(XVisibilityEvent dest, int /*long*/ src, int /*long*/ size);
 
+/** X render natives and constants */
+public static final int PictStandardARGB32 = 0;
+public static final int PictStandardRGB24 = 1;
+public static final int PictStandardA8 = 2;
+public static final int PictStandardA4 = 3;
+public static final int PictStandardA1 = 4;
+public static final int PictOpSrc = 1;
+public static final int PictOpOver = 3;
+
+public static final native int XRenderPictureAttributes_sizeof();
+public static final native boolean _XRenderQueryExtension(int /*long*/ display, int[] event_basep, int[] error_basep);
+public static final boolean XRenderQueryExtension(int /*long*/ display, int[] event_basep, int[] error_basep) {
+	lock.lock();
+	try {
+		return _XRenderQueryExtension(display, event_basep, error_basep);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _XRenderCreatePicture(int /*long*/ display, int /*long*/ drawable, int /*long*/ format, int /*long*/ valuemask, XRenderPictureAttributes attributes);
+public static final int /*long*/ XRenderCreatePicture(int /*long*/ display, int /*long*/ drawable, int /*long*/ format, int /*long*/ valuemask, XRenderPictureAttributes attributes) {
+	lock.lock();
+	try {
+		return _XRenderCreatePicture(display, drawable, format, valuemask, attributes);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XRenderSetPictureClipRectangles(int /*long*/ display, int /*long*/ picture, int xOrigin, int yOrigin, short[] rects, int count);
+public static final void XRenderSetPictureClipRectangles(int /*long*/ display, int /*long*/ picture, int xOrigin, int yOrigin, short[] rects, int count) {
+	lock.lock();
+	try {
+		_XRenderSetPictureClipRectangles(display, picture, xOrigin, yOrigin, rects, count);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XRenderSetPictureTransform(int /*long*/ display, int /*long*/ picture, int[] transform);
+public static final void XRenderSetPictureTransform(int /*long*/ display, int /*long*/ picture, int[] transform) {
+	lock.lock();
+	try {
+		_XRenderSetPictureTransform(display, picture, transform);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XRenderFreePicture(int /*long*/ display, int /*long*/ picture);
+public static final void XRenderFreePicture(int /*long*/ display, int /*long*/ picture) {
+	lock.lock();
+	try {
+		_XRenderFreePicture(display, picture);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XRenderComposite(int /*long*/ display, int op, int /*long*/ src, int /*long*/ mask, int /*long*/ dst, int src_x, int src_y, int mask_x, int mask_y, int dst_x, int dst_y, int width, int height);
+public static final void XRenderComposite(int /*long*/ display, int op, int /*long*/ src, int /*long*/ mask, int /*long*/ dst, int src_x, int src_y, int mask_x, int mask_y, int dst_x, int dst_y, int width, int height) {
+	lock.lock();
+	try {
+		_XRenderComposite(display, op, src, mask, dst, src_x, src_y, mask_x, mask_y, dst_x, dst_y, width, height);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _XRenderFindStandardFormat(int /*long*/ display, int format);
+public static final int /*long*/ XRenderFindStandardFormat(int /*long*/ display, int format) {
+	lock.lock();
+	try {
+		return _XRenderFindStandardFormat(display, format);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _XRenderFindVisualFormat(int /*long*/ display, int /*long*/ visual);
+public static final int /*long*/ XRenderFindVisualFormat(int /*long*/ display, int /*long*/ visual) {
+	lock.lock();
+	try {
+		return _XRenderFindVisualFormat(display, visual);
+	} finally {
+		lock.unlock();
+	}
+}
+
 /** Natives */
 public static final native int Call (int /*long*/ func, int /*long*/ arg0, int arg1, int arg2);
 public static final native int /*long*/ _GDK_DISPLAY();
@@ -2009,6 +2092,15 @@ public static final void gdk_draw_drawable(int /*long*/ drawable, int /*long*/ g
 		lock.unlock();
 	}
 }
+public static final native void _gdk_draw_image(int /*long*/ drawable, int /*long*/ gc, int /*long*/ image, int xsrc, int ysrc, int xdest, int ydest, int width, int height);
+public static final void gdk_draw_image(int /*long*/ drawable, int /*long*/ gc, int /*long*/ image, int xsrc, int ysrc, int xdest, int ydest, int width, int height) {
+	lock.lock();
+	try {
+		_gdk_draw_image(drawable, gc, image, xsrc, ysrc, xdest, ydest, width, height);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gdk_draw_layout(int /*long*/ drawable, int /*long*/ gc, int x, int y, int /*long*/ layout);
 public static final void gdk_draw_layout(int /*long*/ drawable, int /*long*/ gc, int x, int y, int /*long*/ layout) {
 	lock.lock();
@@ -2081,6 +2173,16 @@ public static final void gdk_draw_rectangle(int /*long*/ drawable, int /*long*/ 
 		lock.unlock();
 	}
 }
+public static final native int _gdk_drawable_get_depth(int /*long*/ drawable);
+public static final int gdk_drawable_get_depth(int /*long*/ drawable) {
+	lock.lock();
+	try {
+		return _gdk_drawable_get_depth(drawable);
+	} finally {
+		lock.unlock();
+	}
+}
+
 public static final native int /*long*/ _gdk_drawable_get_image(int /*long*/ drawable, int x, int y, int width, int height);
 public static final int /*long*/ gdk_drawable_get_image(int /*long*/ drawable, int x, int y, int width, int height) {
 	lock.lock();
@@ -2374,24 +2476,6 @@ public static final void gdk_gc_set_values(int /*long*/ gc, GdkGCValues values, 
 	lock.lock();
 	try {
 		_gdk_gc_set_values(gc, values, values_mask);
-	} finally {
-		lock.unlock();
-	}
-}
-public static final native int /*long*/ _gdk_image_get(int /*long*/ window, int x, int y, int width, int height);
-public static final int /*long*/ gdk_image_get(int /*long*/ window, int x, int y, int width, int height) {
-	lock.lock();
-	try {
-		return _gdk_image_get(window, x, y, width, height);
-	} finally {
-		lock.unlock();
-	}
-}
-public static final native int /*long*/ _gdk_image_get_pixel(int /*long*/ image, int x, int y);
-public static final int /*long*/ gdk_image_get_pixel(int /*long*/ image, int x, int y) {
-	lock.lock();
-	try {
-		return _gdk_image_get_pixel(image, x, y);
 	} finally {
 		lock.unlock();
 	}

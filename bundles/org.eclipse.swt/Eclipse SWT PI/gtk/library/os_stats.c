@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 999;
-int OS_nativeFunctionCallCount[999];
+int OS_nativeFunctionCount = 1008;
+int OS_nativeFunctionCallCount[1008];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1WINDOWING_1X11",
@@ -92,6 +92,7 @@ char * OS_nativeFunctionNames[] = {
 	"XEvent_1sizeof",
 	"XExposeEvent_1sizeof",
 	"XFocusChangeEvent_1sizeof",
+	"XRenderPictureAttributes_1sizeof",
 	"XVisibilityEvent_1sizeof",
 	"XWindowChanges_1sizeof",
 	"_1Call",
@@ -139,6 +140,14 @@ char * OS_nativeFunctionNames[] = {
 	"_1XListProperties",
 	"_1XQueryTree",
 	"_1XReconfigureWMWindow",
+	"_1XRenderComposite",
+	"_1XRenderCreatePicture",
+	"_1XRenderFindStandardFormat",
+	"_1XRenderFindVisualFormat",
+	"_1XRenderFreePicture",
+	"_1XRenderQueryExtension",
+	"_1XRenderSetPictureClipRectangles",
+	"_1XRenderSetPictureTransform",
 	"_1XSendEvent",
 	"_1XSetErrorHandler",
 	"_1XSetIOErrorHandler",
@@ -244,6 +253,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1drag_1status",
 	"_1gdk_1draw_1arc",
 	"_1gdk_1draw_1drawable",
+	"_1gdk_1draw_1image",
 	"_1gdk_1draw_1layout",
 	"_1gdk_1draw_1layout_1with_1colors",
 	"_1gdk_1draw_1line",
@@ -252,6 +262,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1draw_1point",
 	"_1gdk_1draw_1polygon",
 	"_1gdk_1draw_1rectangle",
+	"_1gdk_1drawable_1get_1depth",
 	"_1gdk_1drawable_1get_1image",
 	"_1gdk_1drawable_1get_1size",
 	"_1gdk_1drawable_1get_1visible_1region",
@@ -285,8 +296,6 @@ char * OS_nativeFunctionNames[] = {
 	"_1gdk_1gc_1set_1stipple",
 	"_1gdk_1gc_1set_1subwindow",
 	"_1gdk_1gc_1set_1values",
-	"_1gdk_1image_1get",
-	"_1gdk_1image_1get_1pixel",
 	"_1gdk_1keyboard_1ungrab",
 	"_1gdk_1keymap_1get_1default",
 	"_1gdk_1keymap_1translate_1keyboard_1state",

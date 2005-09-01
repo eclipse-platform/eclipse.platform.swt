@@ -21,6 +21,14 @@
 #define PTR_sizeof() sizeof(void *)
 
 /* Libraries for dynamic loaded functions */
+#define XRenderQueryExtension_LIB "libXrender.so"
+#define XRenderFindStandardFormat_LIB "libXrender.so"
+#define XRenderFindVisualFormat_LIB "libXrender.so"
+#define XRenderComposite_LIB "libXrender.so"
+#define XRenderCreatePicture_LIB "libXrender.so"
+#define XRenderFreePicture_LIB "libXrender.so"
+#define XRenderSetPictureClipRectangles_LIB "libXrender.so"
+#define XRenderSetPictureTransform_LIB "libXrender.so"
 #define gtk_file_chooser_add_filter_LIB "libgtk-x11-2.0.so.0"
 #define gtk_file_chooser_dialog_new_LIB "libgtk-x11-2.0.so.0"
 #define gtk_file_chooser_get_current_folder_LIB "libgtk-x11-2.0.so.0"

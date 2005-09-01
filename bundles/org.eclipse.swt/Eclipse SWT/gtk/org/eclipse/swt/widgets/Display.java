@@ -881,7 +881,7 @@ static int /*long*/ createPixbuf(Image image) {
  	OS.gdk_drawable_get_size (image.pixmap, w, h);
 	int /*long*/ colormap = OS.gdk_colormap_get_system ();
 	int /*long*/ pixbuf;
-	boolean hasMask = image.mask != 0;
+	boolean hasMask = image.mask != 0 && OS.gdk_drawable_get_depth (image.mask) == 1;
 	if (hasMask) {
 		pixbuf = OS.gdk_pixbuf_new (OS.GDK_COLORSPACE_RGB, true, 8, w [0], h [0]);
 		if (pixbuf == 0) SWT.error (SWT.ERROR_NO_HANDLES);

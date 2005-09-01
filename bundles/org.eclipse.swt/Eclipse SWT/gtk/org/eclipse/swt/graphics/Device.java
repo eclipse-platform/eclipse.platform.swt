@@ -69,6 +69,8 @@ public abstract class Device implements Drawable {
 	
 	int /*long*/ emptyTab;
 
+	boolean useXRender;
+
 	static final Object CREATE_LOCK = new Object();
 
 	/*
@@ -524,6 +526,9 @@ public boolean getWarnings () {
 protected void init () {
 	if (OS.GDK_WINDOWING_X11()) {
 		xDisplay = OS.GDK_DISPLAY ();
+
+		int[] event_basep = new int[1], error_basep = new int [1];
+		useXRender = OS.XRenderQueryExtension (xDisplay, event_basep, error_basep);
 	}
 
 	if (debug) {

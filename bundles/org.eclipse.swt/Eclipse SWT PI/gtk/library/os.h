@@ -79,6 +79,7 @@
 #else
 #include <gdk/gdkx.h>
 #include <X11/extensions/XTest.h>
+#include <X11/extensions/Xrender.h>
 #endif
 
 #include "os_custom.h"
