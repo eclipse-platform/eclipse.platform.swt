@@ -668,7 +668,7 @@ void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeig
 	/* Destroy the image mask if the there is a GC created on the image */
 	if (srcImage.transparentPixel != -1 && srcImage.memGC != null) srcImage.destroyMask();
 }
-void drawImageXRender(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imgWidth, int imgHeight, int maskPixmap, int maskType) {
+void drawImageXRender(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imgWidth, int imgHeight, int /*long*/ maskPixmap, int maskType) {
 	int translateX = 0, translateY = 0;
 	int /*long*/ drawable = data.drawable;
 	if (data.image == null) {
