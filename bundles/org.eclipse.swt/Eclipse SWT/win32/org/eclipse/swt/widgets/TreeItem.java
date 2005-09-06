@@ -242,7 +242,7 @@ void clear () {
 /**
  * Clears the item at the given zero-relative index in the receiver.
  * The text, icon and other attributes of the item are set to the default
- * value.  If the table was created with the SWT.VIRTUAL style, these
+ * value.  If the tree was created with the SWT.VIRTUAL style, these
  * attributes are requested again as needed.
  *
  * @param index the index of the item to clear
@@ -269,7 +269,7 @@ void clear () {
 /**
  * Clears all the items in the receiver. The text, icon and other
  * attribues of the items are set to their default values. If the
- * table was created with the SWT.VIRTUAL style, these attributes
+ * tree was created with the SWT.VIRTUAL style, these attributes
  * are requested again as needed.
  * 
  * @param all <code>true</code>if all child items should be cleared, and <code>false</code> otherwise

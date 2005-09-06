@@ -3479,6 +3479,12 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 		if (hwnd == hwndHeader) {
 			switch (msg) {
+				/* This code is intentionally commented */
+//				case OS.WM_CONTEXTMENU: {
+//					LRESULT result = wmContextMenu (hwnd, wParam, lParam);
+//					if (result != null) return result.value;
+//					break;
+//				}
 				case OS.WM_NOTIFY: {
 					NMHDR hdr = new NMHDR ();
 					OS.MoveMemory (hdr, lParam, NMHDR.sizeof);

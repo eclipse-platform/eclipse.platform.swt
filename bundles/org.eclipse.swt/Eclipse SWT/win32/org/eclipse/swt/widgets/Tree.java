@@ -290,7 +290,7 @@ protected void checkSubclass () {
 /**
  * Clears the item at the given zero-relative index in the receiver.
  * The text, icon and other attributes of the item are set to the default
- * value.  If the table was created with the SWT.VIRTUAL style, these
+ * value.  If the tree was created with the SWT.VIRTUAL style, these
  * attributes are requested again as needed.
  *
  * @param index the index of the item to clear
@@ -325,7 +325,7 @@ void clear (TreeItem parentItem, int index, boolean all) {
 /**
  * Clears all the items in the receiver. The text, icon and other
  * attribues of the items are set to their default values. If the
- * table was created with the SWT.VIRTUAL style, these attributes
+ * tree was created with the SWT.VIRTUAL style, these attributes
  * are requested again as needed.
  * 
  * @param all <code>true</code>if all child items should be cleared, and <code>false</code> otherwise
@@ -2964,6 +2964,12 @@ int windowProc () {
 int windowProc (int hwnd, int msg, int wParam, int lParam) {
 	if (hwndHeader != 0 && hwnd == hwndHeader) {
 		switch (msg) {
+			/* This code is intentionally commented */
+//			case OS.WM_CONTEXTMENU: {
+//				LRESULT result = wmContextMenu (hwnd, wParam, lParam);
+//				if (result != null) return result.value;
+//				break;
+//			}
 			case OS.WM_NOTIFY: {
 				NMHDR hdr = new NMHDR ();
 				OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
@@ -3986,7 +3992,9 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 LRESULT WM_SETFONT (int wParam, int lParam) {
 	LRESULT result = super.WM_SETFONT (wParam, lParam);
 	if (result != null) return result;
-	if (hwndHeader != 0) OS.SendMessage (hwndHeader, OS.WM_SETFONT, wParam, lParam);
+	if (hwndHeader != 0) {
+		OS.SendMessage (hwndHeader, OS.WM_SETFONT, wParam, lParam);
+	}
 	return result;
 }
 
