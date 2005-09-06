@@ -253,6 +253,8 @@ public int PromptUsernameAndPassword(int parent, int dialogTitle, int text, int 
 		dest = new char[length];
 		XPCOM.memmove(dest, dialogTitle, length * 2);
 		titleLabel = new String(dest);
+	} else {
+		titleLabel = "";	//$NON-NLS-1$
 	}
 	
 	length = XPCOM.strlen_PRUnichar(text);
