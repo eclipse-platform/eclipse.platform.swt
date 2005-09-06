@@ -344,12 +344,20 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
 	if (cairo != 0) {
 		float offset = data.lineWidth == 0 || (data.lineWidth % 2) == 1 ? 0.5f : 0f;
 		if (width == height) {
-			Cairo.cairo_arc_negative(cairo,  + offset + width / 2f, y + offset + height / 2f, width / 2f, -startAngle * (float)Compatibility.PI / 180, -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
+            if (arcAngle >= 0) {
+                Cairo.cairo_arc_negative(cairo, x + offset + width / 2f, y + offset + height / 2f, width / 2f, -startAngle * (float)Compatibility.PI / 180, -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
+            } else { 
+                Cairo.cairo_arc(cairo, x + offset + width / 2f, y + offset + height / 2f, width / 2f, -startAngle * (float)Compatibility.PI / 180, -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
+            }
 		} else {
 			Cairo.cairo_save(cairo);
 			Cairo.cairo_translate(cairo, x + offset + width / 2f, y + offset + height / 2f);
 			Cairo.cairo_scale(cairo, width / 2f, height / 2f);
-			Cairo.cairo_arc_negative(cairo, 0, 0, 1, -startAngle * (float)Compatibility.PI / 180, -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
+            if (arcAngle >= 0) {
+                Cairo.cairo_arc_negative(cairo, 0, 0, 1, -startAngle * (float)Compatibility.PI / 180, -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
+            } else {
+                Cairo.cairo_arc(cairo, 0, 0, 1, -startAngle * (float)Compatibility.PI / 180, -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
+            }
 			Cairo.cairo_restore(cairo);
 		}
 		Cairo.cairo_stroke(cairo);
@@ -1343,13 +1351,21 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int arc
 	int /*long*/ cairo = data.cairo;
 	if (cairo != 0) {
 		if (width == height) {
-			Cairo.cairo_arc_negative(cairo, x + width / 2f, y + height / 2f, width / 2f, -startAngle * (float)Compatibility.PI / 180,  -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
+            if (arcAngle >= 0) {
+            	Cairo.cairo_arc_negative(cairo, x + width / 2f, y + height / 2f, width / 2f, -startAngle * (float)Compatibility.PI / 180,  -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
+            } else {
+            	Cairo.cairo_arc(cairo, x + width / 2f, y + height / 2f, width / 2f, -startAngle * (float)Compatibility.PI / 180,  -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
+            }
 			Cairo.cairo_line_to(cairo, x + width / 2f, y + height / 2f);
 		} else {
 			Cairo.cairo_save(cairo);
 			Cairo.cairo_translate(cairo, x + width / 2f, y + height / 2f);
 			Cairo.cairo_scale(cairo, width / 2f, height / 2f);
-			Cairo.cairo_arc_negative(cairo, 0, 0, 1, -startAngle * (float)Compatibility.PI / 180,  -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
+			if (arcAngle >= 0) {
+				Cairo.cairo_arc_negative(cairo, 0, 0, 1, -startAngle * (float)Compatibility.PI / 180,  -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
+			} else {
+				Cairo.cairo_arc(cairo, 0, 0, 1, -startAngle * (float)Compatibility.PI / 180,  -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
+			}
 			Cairo.cairo_line_to(cairo, 0, 0);
 			Cairo.cairo_restore(cairo);
 		}

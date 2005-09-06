@@ -103,12 +103,20 @@ public void addArc(float x, float y, float width, float height, float startAngle
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	move = true;
 	if (width == height) {
-		Cairo.cairo_arc_negative(handle, x + width / 2f, y + height / 2f, width / 2f, -startAngle * (float)Compatibility.PI / 180, -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
+		if (arcAngle >= 0) {
+			Cairo.cairo_arc_negative(handle, x + width / 2f, y + height / 2f, width / 2f, -startAngle * (float)Compatibility.PI / 180, -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
+		} else {
+			Cairo.cairo_arc(handle, x + width / 2f, y + height / 2f, width / 2f, -startAngle * (float)Compatibility.PI / 180, -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
+		}
 	} else {
 		Cairo.cairo_save(handle);
 		Cairo.cairo_translate(handle, x + width / 2f, y + height / 2f);
 		Cairo.cairo_scale(handle, width / 2f, height / 2f);
-		Cairo.cairo_arc_negative(handle, 0, 0, 1, -startAngle * (float)Compatibility.PI / 180, -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
+		if (arcAngle >= 0) {
+			Cairo.cairo_arc_negative(handle, 0, 0, 1, -startAngle * (float)Compatibility.PI / 180, -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
+		} else {
+			Cairo.cairo_arc(handle, 0, 0, 1, -startAngle * (float)Compatibility.PI / 180, -(startAngle + arcAngle) * (float)Compatibility.PI / 180);
+		}
 		Cairo.cairo_restore(handle);
 	}
 }
