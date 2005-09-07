@@ -133,7 +133,7 @@ public final class FormAttachment {
  * Constructs a new instance of this class.
  * Since no numerator, denominator or offset is specified,
  * the attachment is treated as a percentage of the form.
- * The numerator is zero, the denmonator is 100 and the
+ * The numerator is zero, the denominator is 100 and the
  * offset is zero.
  * 
  * @since 3.2
