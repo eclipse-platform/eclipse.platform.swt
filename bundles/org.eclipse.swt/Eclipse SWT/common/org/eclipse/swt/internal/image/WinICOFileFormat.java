@@ -249,8 +249,8 @@ void unloadIconHeader(ImageData i) {
 	int offset = headerSize + 6;
 	int iconSize = iconSize(i);
 	try {
-		outputStream.writeByte((byte)i.width);
-		outputStream.writeByte((byte)i.height);
+		outputStream.write(i.width);
+		outputStream.write(i.height);
 		outputStream.writeShort(i.palette.colors != null ? i.palette.colors.length : 0);
 		outputStream.writeShort(0);
 		outputStream.writeShort(0);

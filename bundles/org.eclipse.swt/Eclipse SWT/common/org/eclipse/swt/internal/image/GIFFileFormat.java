@@ -471,9 +471,9 @@ final class GIFFileFormat extends FileFormat {
 			int bitField = globalTable*128 + (depth-1)*16 + depth-1;
 			outputStream.writeShort((short)logicalScreenWidth);
 			outputStream.writeShort((short)logicalScreenHeight);
-			outputStream.writeByte((byte)bitField);
-			outputStream.writeByte((byte)backgroundPixel);
-			outputStream.writeByte((byte)0); // Aspect ratio is 1:1
+			outputStream.write(bitField);
+			outputStream.write(backgroundPixel);
+			outputStream.write(0); // Aspect ratio is 1:1
 		} catch (IOException e) {
 			SWT.error(SWT.ERROR_IO, e);
 		}
@@ -489,12 +489,12 @@ final class GIFFileFormat extends FileFormat {
 			try {
 				outputStream.write(GIF_EXTENSION_BLOCK_ID);
 				outputStream.write(GIF_APPLICATION_EXTENSION_BLOCK_ID);
-				outputStream.writeByte((byte)NETSCAPE2_0.length);
+				outputStream.write(NETSCAPE2_0.length);
 				outputStream.write(NETSCAPE2_0);
-				outputStream.writeByte((byte)3); // Three bytes follow
-				outputStream.writeByte((byte)1); // Extension type
+				outputStream.write(3); // Three bytes follow
+				outputStream.write(1); // Extension type
 				outputStream.writeShort((short) repeatCount);
-				outputStream.writeByte((byte)0); // Block terminator
+				outputStream.write(0); // Block terminator
 			} catch (IOException e) {
 				SWT.error(SWT.ERROR_IO, e);
 			}

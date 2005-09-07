@@ -571,8 +571,8 @@ void writeEntry(short tag, int type, int count, int value) throws IOException {
 
 void writeHeader() throws IOException {
 	/* little endian */
-	out.writeByte((byte)0x49);
-	out.writeByte((byte)0x49);
+	out.write(0x49);
+	out.write(0x49);
 
 	/* TIFF identifier */
 	out.writeShort(42);

@@ -18,9 +18,10 @@ final class LEDataOutputStream extends OutputStream {
 public LEDataOutputStream(OutputStream output) {
 	this.out = output;
 }
-public void close() throws IOException {
-	out.close();
-}
+/**
+ * Write the specified number of bytes of the given byte array,
+ * starting at the specified offset, to the output stream.
+ */
 public void write(byte b[], int off, int len) throws IOException {
 	out.write(b, off, len);
 }
