@@ -197,6 +197,7 @@ public class Display extends Device {
 	/* Message Only Window */
 	Callback messageCallback;
 	int hwndMessage, messageProc;
+	boolean settingsChanged;
 	int [] systemFonts;
 	
 	/* System Images Cache */
@@ -319,6 +320,7 @@ public class Display extends Device {
 	static final int SWT_DESTROY	 	= OS.WM_APP + 3;
 	static final int SWT_TRAYICONMSG	= OS.WM_APP + 4;
 	static final int SWT_NULL			= OS.WM_APP + 5;
+	static final int SWT_SETTINGCHANGED = OS.WM_APP + 6;
 	static int SWT_TASKBARCREATED;
 	
 	/* Workaround for Adobe Reader 7.0 */
@@ -2482,6 +2484,12 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 				OS.PostMessage (embeddedHwnd, SWT_KEYMSG, wParam, lParam);
 			}
 			return 0;
+		case SWT_SETTINGCHANGED:
+			settingsChanged = false;
+			updateFonts ();
+			updateImages ();
+			sendEvent (SWT.Settings, null);
+			break;
 		case SWT_TRAYICONMSG:
 			if (tray != null) {
 				TrayItem [] items = tray.items;
@@ -2552,8 +2560,9 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 			if (!event.doit) return 0;
 			break;
 		case OS.WM_SETTINGCHANGE:
-			updateFonts ();
-			updateImages ();
+			if (settingsChanged) break;
+			settingsChanged = true;
+			OS.PostMessage (hwnd, SWT_SETTINGCHANGED, 0 ,0);
 			break;
 		case OS.WM_TIMER:
 			runTimer (wParam);

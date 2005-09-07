@@ -557,6 +557,16 @@ public class SWT {
 	 */
 	public static final int MouseWheel = 37;
 
+	/**
+	 * The settings changed event type (value is 38).
+	 * 
+	 * @see org.eclipse.swt.widgets.Display#addListener
+	 * @see org.eclipse.swt.widgets.Event
+	 * 
+	 * @since 3.2
+	 */
+	public static final int Settings = 38;
+
 	/* Event Details */
 	
 	/**
