@@ -3117,7 +3117,8 @@ boolean showMenu (int x, int y) {
 	sendEvent (SWT.MenuDetect, event);
 	if (event.doit) {
 		if (menu != null && !menu.isDisposed ()) {
-			menu.createIMMenu (imHandle());
+			boolean hooksKeys = hooks (SWT.KeyDown) || hooks (SWT.KeyUp);
+			menu.createIMMenu (hooksKeys ? imHandle() : 0);
 			if (event.x != x || event.y != y) {
 				menu.setLocation (event.x, event.y);
 			}
