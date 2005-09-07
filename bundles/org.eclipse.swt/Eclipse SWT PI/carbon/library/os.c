@@ -59,6 +59,18 @@ fail:
 }
 #endif
 
+#ifndef NO_AEInstallEventHandler
+JNIEXPORT jint JNICALL OS_NATIVE(AEInstallEventHandler)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jboolean arg4)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, AEInstallEventHandler_FUNC);
+	rc = (jint)AEInstallEventHandler((AEEventClass)arg0, (AEEventID)arg1, (AEEventHandlerUPP)arg2, (long)arg3, arg4);
+	OS_NATIVE_EXIT(env, that, AEInstallEventHandler_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_AEProcessAppleEvent
 JNIEXPORT jint JNICALL OS_NATIVE(AEProcessAppleEvent)
 	(JNIEnv *env, jclass that, jobject arg0)

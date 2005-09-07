@@ -23,6 +23,7 @@ extern char* OS_nativeFunctionNames[];
 typedef enum {
 	AECountItems_FUNC,
 	AEGetNthPtr_FUNC,
+	AEInstallEventHandler_FUNC,
 	AEProcessAppleEvent_FUNC,
 	ATSFontGetPostScriptName_FUNC,
 	ATSUBatchBreakLines_FUNC,
