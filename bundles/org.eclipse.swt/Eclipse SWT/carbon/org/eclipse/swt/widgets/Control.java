@@ -1672,6 +1672,11 @@ public void redraw () {
 	redrawWidget (handle, false);
 }
 
+void redraw (boolean children) {
+//	checkWidget();
+	redrawWidget (handle, true);
+}
+
 /**
  * Causes the rectangular area of the receiver specified by
  * the arguments to be marked as needing to be redrawn. 

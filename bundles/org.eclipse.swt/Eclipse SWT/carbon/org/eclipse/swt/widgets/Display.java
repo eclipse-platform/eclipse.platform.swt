@@ -105,11 +105,11 @@ public class Display extends Device {
 	static final int WAKE_CLASS = 0;
 	static final int WAKE_KIND = 0;
 	Event [] eventQueue;
-	Callback actionCallback, appleEventCallback, commandCallback, controlCallback;
+	Callback actionCallback, appleEventCallback, commandCallback, controlCallback, appearanceCallback;
 	Callback drawItemCallback, itemDataCallback, itemNotificationCallback, itemCompareCallback;
 	Callback hitTestCallback, keyboardCallback, menuCallback, mouseHoverCallback, helpCallback;
 	Callback mouseCallback, trackingCallback, windowCallback, colorCallback, textInputCallback;
-	int actionProc, appleEventProc, commandProc, controlProc;
+	int actionProc, appleEventProc, commandProc, controlProc, appearanceProc;
 	int drawItemProc, itemDataProc, itemNotificationProc, itemCompareProc, helpProc;
 	int hitTestProc, keyboardProc, menuProc, mouseHoverProc;
 	int mouseProc, trackingProc, windowProc, colorProc, textInputProc;
@@ -339,6 +339,16 @@ int actionProc (int theControl, int partCode) {
 	Widget widget = getWidget (theControl);
 	if (widget != null) return widget.actionProc (theControl, partCode);
 	return OS.noErr;
+}
+
+int appearanceProc (int theAppleEvent, int reply, int handlerRefcon) {
+	sendEvent (SWT.Settings, null);
+	Shell [] shells = getShells ();
+	for (int i=0; i<shells.length; i++) {
+		Shell shell = shells [i];
+		if (!shell.isDisposed ()) shell.redraw (true);
+	}
+	return OS.eventNotHandledErr;
 }
 
 int appleEventProc (int nextHandler, int theEvent, int userData) {
@@ -1954,6 +1964,9 @@ void initializeCallbacks () {
 	textInputCallback = new Callback (this, "textInputProc", 3);
 	textInputProc = textInputCallback.getAddress ();
 	if (textInputProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	appearanceCallback = new Callback (this, "appearanceProc", 3);
+	appearanceProc = appearanceCallback.getAddress ();
+	if (appearanceProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	/* Install Event Handlers */
 	int[] mask1 = new int[] {
@@ -1987,6 +2000,10 @@ void initializeCallbacks () {
 		OS.kEventClassTextInput, OS.kEventTextInputUnicodeForKeyEvent,
 	};
 	OS.InstallEventHandler (focusTarget, textInputProc, mask5.length / 2, mask5, 0, null);
+	OS.AEInstallEventHandler (OS.kAppearanceEventClass, OS.kAEAppearanceChanged, appearanceProc, 0, false);
+	OS.AEInstallEventHandler (OS.kAppearanceEventClass, OS.kAESmallSystemFontChanged, appearanceProc, 0, false);
+	OS.AEInstallEventHandler (OS.kAppearanceEventClass, OS.kAESystemFontChanged, appearanceProc, 0, false);
+	OS.AEInstallEventHandler (OS.kAppearanceEventClass, OS.kAEViewsFontChanged, appearanceProc, 0, false);
 }
 
 void initializeFonts () {
@@ -2831,12 +2848,13 @@ void releaseDisplay () {
 	windowCallback.dispose ();
 	colorCallback.dispose ();
 	textInputCallback.dispose ();
-	actionCallback = appleEventCallback = caretCallback = commandCallback = null;
+	appearanceCallback.dispose ();
+	actionCallback = appleEventCallback = caretCallback = commandCallback = appearanceCallback = null;
 	controlCallback = drawItemCallback = itemDataCallback = itemNotificationCallback = null;
 	helpCallback = hitTestCallback = keyboardCallback = menuCallback = itemCompareCallback = null;
 	mouseHoverCallback = mouseCallback = trackingCallback = windowCallback = colorCallback = null;
 	textInputCallback = null;
-	actionProc = appleEventProc = caretProc = commandProc = 0;
+	actionProc = appleEventProc = caretProc = commandProc = appearanceProc = 0;
 	controlProc = drawItemProc = itemDataProc = itemNotificationProc = itemCompareProc = 0;
 	helpProc = hitTestProc = keyboardProc = menuProc = 0;
 	mouseHoverProc = mouseProc = trackingProc = windowProc = colorProc = 0;
