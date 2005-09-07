@@ -187,6 +187,11 @@ public class Display extends Device {
 	int /*long*/ setDirectionProc;
 	Callback setDirectionCallback;
 	
+	/* Settings callbacks */
+	int /*long*/ styleSetProc;
+	Callback styleSetCallback;
+	int shellHandle;
+	
 	/* Entry focus behaviour */
 	boolean entrySelectOnFocus;
 
@@ -793,6 +798,11 @@ synchronized void createDisplay (DeviceData data) {
 	byte [] flatStyle = Converter.wcsToMbcs (null, "style \"swt-flat\" { GtkToolbar::shadow-type = none } widget \"*swt-toolbar-flat*\" style : highest \"swt-flat\"", true);
 	OS.gtk_rc_parse_string (flatStyle);
 
+	/* Initialize the hidden shell */
+	shellHandle = OS.gtk_window_new (OS.GTK_WINDOW_TOPLEVEL);
+	if (shellHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	OS.gtk_widget_realize (shellHandle);
+
 	/* Initialize the filter and event callback */
 	eventCallback = new Callback (this, "eventProc", 2);
 	eventProc = eventCallback.getAddress ();
@@ -802,42 +812,6 @@ synchronized void createDisplay (DeviceData data) {
 	filterProc = filterCallback.getAddress ();
 	if (filterProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	OS.gdk_window_add_filter  (0, filterProc, 0);
-
-	/* Get the window manager name */
-	windowManager = "";
-	if (OS.GTK_VERSION >= OS.VERSION (2, 2, 0)) {
-		int /*long*/ screen = OS.gdk_screen_get_default ();
-		if (screen != 0) {
-			int /*long*/ ptr2 = OS.gdk_x11_screen_get_window_manager_name (screen);
-			if (ptr2 != 0) {
-				int length = OS.strlen (ptr2);
-				if (length > 0) {
-					byte [] buffer2 = new byte [length];
-					OS.memmove (buffer2, ptr2, length);
-					windowManager = new String (Converter.mbcsToWcs (null, buffer2));
-				}
-			}
-		}
-	}
-
-	/* Entry focus behaviour */
-	/*
-	* Feature in GTK.  Despite the fact that the
-	* gtk-entry-select-on-focus property is a global
-	* setting, it is initialized when the GtkEntry
-	* is initialized.  This means that it cannot be
-	* accessed before a GtkEntry is created.  The
-	* fix is to for the initializaion by creating
-	* a temporary GtkEntry.
-	*/
-	int /*long*/ entry = OS.gtk_entry_new ();
-	OS.gtk_widget_destroy (entry);
-	
-	/* Remember the gtk-entry-select-on-focus property */
-	int [] buffer2 = new int [1];
-	int /*long*/ settings = OS.gtk_settings_get_default ();
-	OS.g_object_get (settings, OS.gtk_entry_select_on_focus, buffer2, 0);
-	entrySelectOnFocus = buffer2 [0] != 0;
 }
 
 Image createImage (String name) {
@@ -2049,7 +2023,9 @@ protected void init () {
 	super.init ();
 	initializeCallbacks ();
 	initializeSystemResources ();
+	initializeSystemSettings ();
 	initializeWidgetTable ();
+	initializeWindowManager ();
 }
 
 void initializeCallbacks () {
@@ -2114,11 +2090,53 @@ void initializeCallbacks () {
 	if (checkIfEventProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 }
 
+void initializeSystemSettings () {
+	styleSetCallback = new Callback (this, "styleSetProc", 3);
+	styleSetProc = styleSetCallback.getAddress ();
+	if (styleSetProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+	OS.g_signal_connect (shellHandle, OS.style_set, styleSetProc, 0);
+	
+	/*
+	* Feature in GTK.  Despite the fact that the
+	* gtk-entry-select-on-focus property is a global
+	* setting, it is initialized when the GtkEntry
+	* is initialized.  This means that it cannot be
+	* accessed before a GtkEntry is created.  The
+	* fix is to for the initializaion by creating
+	* a temporary GtkEntry.
+	*/
+	int /*long*/ entry = OS.gtk_entry_new ();
+	OS.gtk_widget_destroy (entry);
+	int [] buffer2 = new int [1];
+	int /*long*/ settings = OS.gtk_settings_get_default ();
+	OS.g_object_get (settings, OS.gtk_entry_select_on_focus, buffer2, 0);
+	entrySelectOnFocus = buffer2 [0] != 0;
+}
+
 void initializeWidgetTable () {
 	indexTable = new int [GROW_SIZE];
 	widgetTable = new Widget [GROW_SIZE];
 	for (int i=0; i<GROW_SIZE-1; i++) indexTable [i] = i + 1;
 	indexTable [GROW_SIZE - 1] = -1;
+}
+
+void initializeWindowManager () {
+	/* Get the window manager name */
+	windowManager = "";
+	if (OS.GTK_VERSION >= OS.VERSION (2, 2, 0)) {
+		int /*long*/ screen = OS.gdk_screen_get_default ();
+		if (screen != 0) {
+			int /*long*/ ptr2 = OS.gdk_x11_screen_get_window_manager_name (screen);
+			if (ptr2 != 0) {
+				int length = OS.strlen (ptr2);
+				if (length > 0) {
+					byte [] buffer2 = new byte [length];
+					OS.memmove (buffer2, ptr2, length);
+					windowManager = new String (Converter.mbcsToWcs (null, buffer2));
+				}
+			}
+		}
+	}
 }
 
 /**	 
@@ -2657,6 +2675,7 @@ void releaseDisplay () {
 	windowCallback3.dispose ();  windowCallback3 = null;
 	windowCallback4.dispose ();  windowCallback4 = null;
 	windowCallback5.dispose ();  windowCallback5 = null;
+	windowProc2 = windowProc3 = windowProc4 = windowProc5 = 0;
 	
 	/* Dispose xfilter callback */
 	filterCallback.dispose(); filterCallback = null;
@@ -2718,10 +2737,6 @@ void releaseDisplay () {
 	mouseHoverHandle = mouseHoverProc = 0;
 	mouseHoverCallback.dispose ();
 	mouseHoverCallback = null;
-
-	thread = null;
-	activeShell = null;
-	windowProc2 = windowProc3 = windowProc4 = windowProc5 = 0;
 	
 	/* Dispose the default font */
 	if (defaultFont != 0) OS.pango_font_description_free (defaultFont);
@@ -2740,20 +2755,32 @@ void releaseDisplay () {
 	}
 	cursors = null;
 
+	/* Release the System Colors */
 	COLOR_WIDGET_DARK_SHADOW = COLOR_WIDGET_NORMAL_SHADOW = COLOR_WIDGET_LIGHT_SHADOW =
 	COLOR_WIDGET_HIGHLIGHT_SHADOW = COLOR_WIDGET_BACKGROUND = COLOR_WIDGET_BORDER =
 	COLOR_LIST_FOREGROUND = COLOR_LIST_BACKGROUND = COLOR_LIST_SELECTION = COLOR_LIST_SELECTION_TEXT =
-	COLOR_INFO_BACKGROUND = null;
-	
-	popups = null;
-
-	max_priority = timeout = null;
-	if (fds != 0) OS.g_free (fds);
-	fds = 0;
+	COLOR_INFO_BACKGROUND = COLOR_INFO_FOREGROUND = null;
 
 	/* Dispose the event callback */
 	OS.gdk_event_handler_set (0, 0, 0);
 	eventCallback.dispose ();  eventCallback = null;
+	
+	/* Dispose the hidden shell */
+	if (shellHandle != 0) OS.gtk_widget_destroy (shellHandle);
+	shellHandle = 0;
+	
+	/* Dispose the settings callback */
+	styleSetCallback.dispose(); styleSetCallback = null;
+	styleSetProc = 0;
+
+	/* Release the sleep resources */
+	max_priority = timeout = null;
+	if (fds != 0) OS.g_free (fds);
+	fds = 0;
+
+	popups = null;
+	thread = null;
+	activeShell = null;
 }
 
 /**
@@ -3355,6 +3382,12 @@ int /*long*/ shellMapProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ 
 	Widget widget = getWidget (handle);
 	if (widget == null) return 0;
 	return widget.shellMapProc (handle, arg0, user_data);
+}
+
+int /*long*/ styleSetProc (int /*long*/ gobject, int /*long*/ arg1, int /*long*/ user_data) {
+	initializeSystemResources ();
+	sendEvent (SWT.Settings, null);
+	return 0;
 }
 
 /**
