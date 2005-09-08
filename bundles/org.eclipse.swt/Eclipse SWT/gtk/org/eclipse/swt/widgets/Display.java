@@ -190,7 +190,7 @@ public class Display extends Device {
 	/* Settings callbacks */
 	int /*long*/ styleSetProc;
 	Callback styleSetCallback;
-	int shellHandle;
+	int /*long*/ shellHandle;
 	
 	/* Entry focus behaviour */
 	boolean entrySelectOnFocus;
