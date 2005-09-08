@@ -1128,13 +1128,19 @@ public void refresh() {
 	
 	nsIWebNavigation webNavigation = new nsIWebNavigation(result[0]);		 	
 	rc = webNavigation.Reload(nsIWebNavigation.LOAD_FLAGS_NONE);
+	webNavigation.Release();
+	if (rc == XPCOM.NS_OK) return;
 	/*
 	* Feature in Mozilla.  Reload returns an error code NS_ERROR_INVALID_POINTER
 	* when it is called immediately after a request to load a new document using
-	* LoadURI.  The workaround is to ignore this error code. 
+	* LoadURI.  The workaround is to ignore this error code.
+	* 
+	* Feature in Mozilla.  Attempting to reload a file that no longer exists
+	* returns an error code of NS_ERROR_FILE_NOT_FOUND.  This is equivalent to
+	* attempting to load a non-existent local url, which is not a Browser error,
+	* so this error code should be ignored. 
 	*/
-	if (rc != XPCOM.NS_OK && rc != XPCOM.NS_ERROR_INVALID_POINTER) error(rc);	
-	webNavigation.Release();
+	if (rc != XPCOM.NS_ERROR_INVALID_POINTER && rc != XPCOM.NS_ERROR_FILE_NOT_FOUND) error(rc);
 }
 
 /**	 

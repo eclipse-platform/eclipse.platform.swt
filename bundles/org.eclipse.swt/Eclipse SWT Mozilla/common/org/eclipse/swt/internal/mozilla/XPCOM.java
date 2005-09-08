@@ -81,6 +81,7 @@ public class XPCOM extends Platform {
 	public static final int NS_ERROR_FACTORY_NO_SIGNATURE_SUPPORT = NS_ERROR_BASE + 0x101;
 	public static final int NS_ERROR_FACTORY_EXISTS = NS_ERROR_BASE + 0x100;
 	public static final int NS_ERROR_HTMLPARSER_UNRESOLVEDDTD = 0x804e03f3;
+	public static final int NS_ERROR_FILE_NOT_FOUND = 0x80520012;
 
 public static final native void memmove(nsID dest, int /*long*/ src, int nbytes);
 public static final native void memmove(int /*long*/ dest, nsID src, int nbytes);
