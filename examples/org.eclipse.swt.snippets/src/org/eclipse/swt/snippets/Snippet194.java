@@ -51,7 +51,6 @@ public class Snippet194 {
 		data[1] = newFrame("S", red,   palette, true,  0, 0,  30, 55, SWT.DM_FILL_NONE, 40);
 		data[2] = newFrame("W", green, palette, true, 28, 0,  39, 55, SWT.DM_FILL_NONE, 40);
 		data[3] = newFrame("T", blue,  palette, true, 69, 0,  32, 55, SWT.DM_FILL_BACKGROUND, 200);
-		font.dispose();
 		
 		ImageLoader loader = new ImageLoader();
 		loader.data = data;
@@ -60,6 +59,13 @@ public class Snippet194 {
 		loader.logicalScreenWidth = data[0].width;
 		loader.repeatCount = 0; // run forever
 		loader.save("swt.gif", SWT.IMAGE_GIF);
+
+		white.dispose();
+		red.dispose();
+		green.dispose();
+		blue.dispose();
+		font.dispose();
+		display.dispose();
 	}
 
 	ImageData newFrame(String letter, Color color, PaletteData palette, boolean transparent, int x, int y, int width, int height, int disposalMethod, int delayTime) {
