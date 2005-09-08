@@ -524,6 +524,16 @@ void createItem (TreeColumn column, int index) {
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 		bits |= OS.TVS_NOHSCROLL;
 		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+		/*
+		* Bug in Windows.  When TVS_NOHSCROLL is set after items
+		* have been inserted into the tree, Windows shows the
+		* scroll bar.  The fix is to check for this case and
+		* explicilty hide the scroll bar explicitly.
+		*/
+		int count = OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0);
+		if (count != 0) {
+			if (!OS.IsWinCE) OS.ShowScrollBar (handle, OS.SB_HORZ, false);
+		}
 	}
 	setScrollWidth ();
 	updateImageList ();
@@ -830,7 +840,7 @@ void destroyItem (TreeColumn column) {
 
 	/*
 	* When the last column is deleted, show the horizontal
-	* scroll bar.   Otherwise, left align the first column
+	* scroll bar.  Otherwise, left align the first column
 	* and redraw the columns to the right.
 	*/
 	if (columnCount == 0) {
