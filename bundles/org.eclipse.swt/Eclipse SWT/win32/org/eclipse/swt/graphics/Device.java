@@ -163,6 +163,7 @@ protected void checkDevice () {
 
 void checkGDIP() {
 	if (gdipToken != null) return;
+	if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
     int oldErrorMode = OS.SetErrorMode (OS.SEM_FAILCRITICALERRORS);
 	try {
 		int [] token = new int [1];
