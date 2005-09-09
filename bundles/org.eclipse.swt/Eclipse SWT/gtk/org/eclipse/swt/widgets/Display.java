@@ -1845,20 +1845,28 @@ public Image getSystemImage (int id) {
 }
 
 void initializeSystemResources () {
-	int /*long*/ shellHandle = OS.gtk_window_new (OS.GTK_WINDOW_TOPLEVEL);
-	if (shellHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_widget_realize (shellHandle);
+	GdkColor gdkColor;
 	
+	/* Get tooltip resources */
 	int /*long*/ tooltipShellHandle = OS.gtk_window_new (OS.GTK_WINDOW_POPUP);
 	if (tooltipShellHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	byte[] gtk_tooltips = Converter.wcsToMbcs (null, "gtk-tooltips", true);
 	OS.gtk_widget_set_name (tooltipShellHandle, gtk_tooltips);
 	OS.gtk_widget_realize (tooltipShellHandle);
-
-	GdkColor gdkColor;
-	int /*long*/ style = OS.gtk_widget_get_style (shellHandle);	
 	int /*long*/ tooltipStyle = OS.gtk_widget_get_style (tooltipShellHandle);
 	
+	gdkColor = new GdkColor();
+	OS.gtk_style_get_fg (tooltipStyle, OS.GTK_STATE_NORMAL, gdkColor);
+	COLOR_INFO_FOREGROUND = gdkColor;
+	
+	gdkColor = new GdkColor();
+	OS.gtk_style_get_bg (tooltipStyle, OS.GTK_STATE_NORMAL, gdkColor);
+	COLOR_INFO_BACKGROUND = gdkColor;
+	
+	OS.gtk_widget_destroy (tooltipShellHandle);	
+	
+	/* Get Shell resources */
+	int /*long*/ style = OS.gtk_widget_get_style (shellHandle);	
 	defaultFont = OS.pango_font_description_copy (OS.gtk_style_get_font_desc (style));
 
 	gdkColor = new GdkColor();
@@ -1908,14 +1916,6 @@ void initializeSystemResources () {
 	gdkColor = new GdkColor();
 	OS.gtk_style_get_base (style, OS.GTK_STATE_SELECTED, gdkColor);
 	COLOR_LIST_SELECTION = gdkColor;
-
-	gdkColor = new GdkColor();
-	OS.gtk_style_get_fg (tooltipStyle, OS.GTK_STATE_NORMAL, gdkColor);
-	COLOR_INFO_FOREGROUND = gdkColor;
-
-	gdkColor = new GdkColor();
-	OS.gtk_style_get_bg (tooltipStyle, OS.GTK_STATE_NORMAL, gdkColor);
-	COLOR_INFO_BACKGROUND = gdkColor;
 	
 	gdkColor = new GdkColor();
 	OS.gtk_style_get_bg (style, OS.GTK_STATE_SELECTED, gdkColor);
@@ -1940,9 +1940,6 @@ void initializeSystemResources () {
 	gdkColor = new GdkColor();
 	OS.gtk_style_get_light (style, OS.GTK_STATE_INSENSITIVE, gdkColor);
 	COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT = gdkColor;
-
-	OS.gtk_widget_destroy (tooltipShellHandle);
-	OS.gtk_widget_destroy (shellHandle);
 }
 
 /**
