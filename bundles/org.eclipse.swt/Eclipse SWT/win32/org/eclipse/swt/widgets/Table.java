@@ -49,8 +49,9 @@ public class Table extends Composite {
 	TableColumn sortColumn;
 	int headerToolTipHandle, lastIndexOf, lastWidth, sortDirection;
 	boolean customDraw, dragStarted, fixScrollWidth, tipRequested;
-	boolean wasSelected, ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize;
+	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize;
 	boolean ignoreColumnMove, ignoreColumnResize;
+	boolean wasSelected, wasResized;
 	static /*final*/ int HeaderProc;
 	static final int INSET = 4;
 	static final int GRID_WIDTH = 1;
@@ -847,12 +848,14 @@ void createItem (TableItem item, int index) {
 	lvItem.iImage = OS.I_IMAGECALLBACK;
 
 	/* Insert the item */
+	setDeferResize (true);
 	ignoreSelect = true;
 	int result = OS.SendMessage (handle, OS.LVM_INSERTITEM, 0, lvItem);
 	ignoreSelect = false;
 	if (result == -1) error (SWT.ERROR_ITEM_NOT_ADDED);
 	System.arraycopy (items, index, items, index + 1, count - index);
 	items [index] = item;
+	setDeferResize (false);
 }
 
 void createWidget () {
@@ -1188,9 +1191,11 @@ void destroyItem (TableItem item) {
 		index++;
 	}
 	if (index == count) return;
+	setDeferResize (true);
 	ignoreSelect = ignoreShrink = true;
 	int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, index, 0);
 	ignoreSelect = ignoreShrink = false;
+	setDeferResize (false);
 	if (code == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	System.arraycopy (items, index + 1, items, index, --count - index);
 	items [count] = null;
@@ -1877,14 +1882,15 @@ void releaseChildren (boolean destroy) {
 		int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 		int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 		if (OS.IsWin95 && columnCount > 1) {
-			/* Turn off redraw and leave it off */
+			/* Turn off redraw and resize events and leave them off */
+			ignoreResize = true;
 			OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 			for (int i=itemCount-1; i>=0; --i) {
 				TableItem item = items [i];
+				if (item != null && !item.isDisposed ()) item.release (false);
 				ignoreSelect = ignoreShrink = true;
 				OS.SendMessage (handle, OS.LVM_DELETEITEM, i, 0);
 				ignoreSelect = ignoreShrink = false;
-				if (item != null && !item.isDisposed ()) item.release (false);
 			}
 		} else {
 			for (int i=0; i<itemCount; i++) {
@@ -1961,9 +1967,11 @@ public void remove (int [] indices) {
 		if (index != last) {
 			TableItem item = items [index];
 			if (item != null && !item.isDisposed ()) item.release (false);
+			setDeferResize (true);
 			ignoreSelect = ignoreShrink = true;
 			int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, index, 0);
 			ignoreSelect = ignoreShrink = false;
+			setDeferResize (false);
 			if (code == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
 			System.arraycopy (items, index + 1, items, index, --count - index);
 			items [count] = null;
@@ -1993,9 +2001,11 @@ public void remove (int index) {
 	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
 	TableItem item = items [index];
 	if (item != null && !item.isDisposed ()) item.release (false);
+	setDeferResize (true);
 	ignoreSelect = ignoreShrink = true;
 	int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, index, 0);
 	ignoreSelect = ignoreShrink = false;
+	setDeferResize (false);
 	if (code == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	System.arraycopy (items, index + 1, items, index, --count - index);
 	items [count] = null;
@@ -2032,9 +2042,11 @@ public void remove (int start, int end) {
 		while (index <= end) {
 			TableItem item = items [index];
 			if (item != null && !item.isDisposed ()) item.release (false);
+			setDeferResize (true);
 			ignoreSelect = ignoreShrink = true;
 			int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, start, 0);
 			ignoreSelect = ignoreShrink = false;
+			setDeferResize (false);
 			if (code == 0) break;
 			index++;
 		}
@@ -2082,9 +2094,11 @@ public void removeAll () {
 		if (redraw) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 		int index = itemCount - 1;
 		while (index >= 0) {
+			setDeferResize (true);
 			ignoreSelect = ignoreShrink = true;
 			int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, index, 0);
 			ignoreSelect = ignoreShrink = false;
+			setDeferResize (false);
 			if (code == 0) break;
 			--index;
 		}
@@ -2101,9 +2115,11 @@ public void removeAll () {
 		}
 		if (index != -1) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	} else {
+		setDeferResize (true);
 		ignoreSelect = ignoreShrink = true;
 		int code = OS.SendMessage (handle, OS.LVM_DELETEALLITEMS, 0, 0);
 		ignoreSelect = ignoreShrink = false;
+		setDeferResize (false);
 		if (code == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	}
 	setTableEmpty ();
@@ -2383,25 +2399,9 @@ void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
 	* columns dynamically.  There is no fix for this case at this
 	* time.
 	*/
-	if ((flags & OS.SWP_NOSIZE) != 0) {
-		super.setBounds (x, y, width, height, flags, defer);
-		return;
-	}
-	Rectangle oldRect = getClientArea ();
-	ignoreResize = true;
+	setDeferResize (true);
 	super.setBounds (x, y, width, height, flags, false);
-	ignoreResize = false;
-	Rectangle newRect = getClientArea ();
-	if (oldRect.width != newRect.width || oldRect.height != newRect.height) {
-		setResizeChildren (false);
-		sendEvent (SWT.Resize);
-		if (isDisposed ()) return;
-		if (layout != null) {
-			markLayout (false, false);
-			updateLayout (false, false);
-		}
-		setResizeChildren (true);
-	}
+	setDeferResize (false);
 }
 
 /**
@@ -2474,6 +2474,26 @@ public void setColumnOrder (int [] order) {
 					column.sendEvent (SWT.Move);
 				}
 			}
+		}
+	}
+}
+
+void setDeferResize (boolean defer) {
+	if (defer) {
+		ignoreResize = true;
+		wasResized = false;
+	} else {
+		ignoreResize = false;
+		if (wasResized) {
+			wasResized = false;
+			setResizeChildren (false);
+			sendEvent (SWT.Resize);
+			if (isDisposed ()) return;
+			if (layout != null) {
+				markLayout (false, false);
+				updateLayout (false, false);
+			}
+			setResizeChildren (true);
 		}
 	}
 }
@@ -2672,9 +2692,11 @@ public void setItemCount (int count) {
 		TableItem item = items [index];
 		if (item != null && !item.isDisposed ()) item.release (false);
 		if (!isVirtual) {
+			setDeferResize (true);
 			ignoreSelect = ignoreShrink = true;
 			int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, count, 0);
 			ignoreSelect = ignoreShrink = false;
+			setDeferResize (false);
 			if (code == 0) break;
 		}
 		index++;
@@ -3941,7 +3963,10 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 }
 
 LRESULT WM_SIZE (int wParam, int lParam) {
-	if (ignoreResize) return null;
+	if (ignoreResize) {
+		wasResized = true;
+		return null;
+	}
 	return super.WM_SIZE (wParam, lParam);
 }
 
