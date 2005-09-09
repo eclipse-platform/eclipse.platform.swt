@@ -359,6 +359,7 @@ void createHandle () {
 		OS.kTXNIOPrivilegesTag,
 		OS.kTXNMarginsTag,
 		OS.kTXNJustificationTag,
+		OS.kTXNDoFontSubstitution,
 	};
 	int just = OS.kTXNFlushLeft;
 	if ((style & SWT.CENTER) != 0) just = OS.kTXNCenter;
@@ -368,6 +369,7 @@ void createHandle () {
 		(style & SWT.READ_ONLY) != 0 ? 1 : 0,
 		ptr,
 		just,
+		1,
 	};
 	OS.TXNSetTXNObjectControls (txnObject, false, tags.length, tags, datas);
 	OS.TXNSetFrameBounds (txnObject, 0, 0, 0, 0, txnFrameID);
