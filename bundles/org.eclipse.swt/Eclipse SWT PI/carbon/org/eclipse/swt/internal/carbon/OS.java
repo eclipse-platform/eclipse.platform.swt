@@ -580,7 +580,7 @@ public class OS extends Platform {
 	public static final int kTXNFlushRight = 2;
 	public static final int kTXNCenter = 4;
 	public static final int kTXNDisableDragAndDropTag = ('d'<<24) + ('r'<<16) + ('a'<<8) + 'g';
-	public static final int kTXNDoFontSubstitution = ('f'<<24) + ('s'<<16) + ('u'<<8) + 'b';
+	public static final int kTXNDoFontSubstitution = ('f'<<24) + ('S'<<16) + ('u'<<8) + 'b';
 	public static final int kTXNDontDrawCaretWhenInactiveMask = 1 << 12;
 	public static final int kTXNDrawCaretWhenInactiveTag = ('d'<<24)+('c'<<16)+('r'<<8)+'t';
 	public static final int kTXNEndOffset = 2147483647;
