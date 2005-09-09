@@ -1150,6 +1150,7 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 				OS.OffsetRgn (sysRgn, ps.left, ps.top);
 				OS.SetMetaRgn (gc.handle);	
 				OS.SetWindowOrgEx (gc.handle, ps.left, ps.top, null);
+				OS.SetBrushOrgEx (gc.handle, ps.left, ps.top, null);
 			}
 			Event event = new Event ();
 			event.gc = gc;			
