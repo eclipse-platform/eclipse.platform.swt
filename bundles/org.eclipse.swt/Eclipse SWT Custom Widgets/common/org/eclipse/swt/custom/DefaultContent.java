@@ -22,13 +22,11 @@ class DefaultContent implements StyledTextContent {
 	char[] textStore = new char[0];	// stores the actual text
 	int gapStart = -1;	// the character position start of the gap
 	int gapEnd = -1;	// the character position after the end of the gap
-	int gapLine = -1;	// the line on which the gap exists, the gap will always be associated
-				// with one line
+	int gapLine = -1;	// the line on which the gap exists, the gap will always be associated with one line
 	int highWatermark = 300;	
 	int lowWatermark = 50;		
 	
-	int[][] lines = new int[50][2];	// array of character positions and lengths representing
-							// the lines of text
+	int[][] lines = new int[50][2];	// array of character positions and lengths representing the lines of text
 	int lineCount = 0;	// the number of lines of text	
 	int expandExp = 1; 	// the expansion exponent, used to increase the lines array exponentially
 	int replaceExpandExp = 1; 	// the expansion exponent, used to increase the lines array exponentially
@@ -134,7 +132,7 @@ void indexLines(){
 	lineCount = 0;
 	int textLength = textStore.length;
 	int i;
-	for (i=start; i<textLength; i++) { 
+	for (i = start; i < textLength; i++) {
 		char ch = textStore[i];					
 		if (ch == SWT.CR) {
 			// see if the next character is a LF
@@ -149,8 +147,8 @@ void indexLines(){
 		} else if (ch == SWT.LF) {
 			addLineIndex(start, i - start + 1);
 			start = i + 1;
-		} 
-	}			
+		}
+	}
 	addLineIndex(start, i - start);
 }
 /** 
@@ -221,10 +219,10 @@ protected boolean isValidReplace(int start, int replaceLength, String newText){
 int[][] indexLines(int offset, int length, int numLines){
 	int[][] indexedLines = new int[numLines][2];
 	int start = 0;
-	int lineCnt = 0;
+	int lineCount = 0;
 	int i;
 	replaceExpandExp = 1;
-	for (i=start; i<length; i++) {
+	for (i = start; i < length; i++) {
 		int location = i + offset; 
 		if ((location >= gapStart) && (location < gapEnd)) {
 			// ignore the gap
@@ -238,20 +236,20 @@ int[][] indexLines(int offset, int length, int numLines){
 						i++;
 					} 
 				}
-				indexedLines = addLineIndex(start, i - start + 1, indexedLines, lineCnt);
-				lineCnt++;
+				indexedLines = addLineIndex(start, i - start + 1, indexedLines, lineCount);
+				lineCount++;
 				start = i + 1;
 			} else if (ch == SWT.LF) {
-				indexedLines = addLineIndex(start, i - start + 1, indexedLines, lineCnt);
-				lineCnt++;
+				indexedLines = addLineIndex(start, i - start + 1, indexedLines, lineCount);
+				lineCount++;
 				start = i + 1;
-			} 
+			}
 		}
 	}
-	int[][] newLines = new int[lineCnt+1][2];
-	System.arraycopy(indexedLines, 0, newLines, 0, lineCnt);
+	int[][] newLines = new int[lineCount+1][2];
+	System.arraycopy(indexedLines, 0, newLines, 0, lineCount);
 	int[] range = new int[] {start, i - start};
-	newLines[lineCnt]=range;
+	newLines[lineCount] = range;
 	return newLines; 
 }
 /**
@@ -280,8 +278,9 @@ void insert(int position, String text) {
 	if (change > 0) {
 		// shrink gap 
 		gapStart += (change);
-		for (int i = 0; i < text.length(); i++)
+		for (int i = 0; i < text.length(); i++) {
 			textStore[position + i]= text.charAt(i);
+		}
 	}
 		
 	// figure out the number of new lines that have been inserted
@@ -303,11 +302,11 @@ void insert(int position, String text) {
 	// make room for the new lines
 	expandLinesBy(numNewLines);
 	// shift down the lines after the replace line
-	for (int i = lineCount-1; i > startLine; i--) {
+	for (int i = lineCount - 1; i > startLine; i--) {
 		lines[i + numNewLines]=lines[i];
 	}
 	// insert the new lines
-	for (int i=0; i<numNewLines; i++) {
+	for (int i = 0; i < numNewLines; i++) {
 		newLines[i][0] += startLineOffset;
 		lines[startLine + i]=newLines[i];
 	}
@@ -318,7 +317,7 @@ void insert(int position, String text) {
 	}
 	
 	lineCount += numNewLines;
-	gapLine = getLineAtPhysicalOffset(gapStart);		
+	gapLine = getLineAtPhysicalOffset(gapStart);
 }
 /**
  * Moves the gap and adjusts its size in anticipation of a text change.  
@@ -344,8 +343,8 @@ void moveAndResizeGap(int position, int size, int newGapLine) {
 		// adjust the line length
 		lines[gapLine][1] = lines[gapLine][1] - oldSize;
 		// adjust the offsets of the lines after the gapLine
-		for (int i=gapLine+1; i<lineCount; i++) {
-			lines[i][0]=lines[i][0]-oldSize;
+		for (int i = gapLine + 1; i < lineCount; i++) {
+			lines[i][0] = lines[i][0] - oldSize;
 		}
 	}
 	
@@ -355,15 +354,15 @@ void moveAndResizeGap(int position, int size, int newGapLine) {
 			content = new char[textStore.length - oldSize];
 			System.arraycopy(textStore, 0, content, 0, gapStart);
 			System.arraycopy(textStore, gapEnd, content, gapStart, content.length - gapStart);
-			textStore= content;
+			textStore = content;
 		}
-		gapStart = gapEnd= position;
+		gapStart = gapEnd = position;
 		return;
 	}
 	content = new char[textStore.length + (newSize - oldSize)];
 	int newGapStart = position;
 	int newGapEnd = newGapStart + newSize;
-	if (oldSize == 0) {		
+	if (oldSize == 0) {
 		System.arraycopy(textStore, 0, content, 0, newGapStart);
 		System.arraycopy(textStore, newGapStart, content, newGapEnd, content.length - newGapEnd);	
 	} else if (newGapStart < gapStart) {
@@ -371,7 +370,7 @@ void moveAndResizeGap(int position, int size, int newGapLine) {
 		System.arraycopy(textStore, 0, content, 0, newGapStart);
 		System.arraycopy(textStore, newGapStart, content, newGapEnd, delta);
 		System.arraycopy(textStore, gapEnd, content, newGapEnd + delta, textStore.length - gapEnd);
-	} else {		
+	} else {
 		int delta = newGapStart - gapStart;
 		System.arraycopy(textStore, 0, content, 0, gapStart);
 		System.arraycopy(textStore, gapEnd, content, gapStart, delta);
@@ -388,8 +387,8 @@ void moveAndResizeGap(int position, int size, int newGapLine) {
 		int gapLength = gapEnd - gapStart;
 		lines[gapLine][1] = lines[gapLine][1] + (gapLength);
 		// adjust the offsets of the lines after the gapLine
-		for (int i=gapLine+1; i<lineCount; i++) {
-			lines[i][0]=lines[i][0]+gapLength;
+		for (int i = gapLine + 1; i < lineCount; i++) {
+			lines[i][0] = lines[i][0] + gapLength;
 		}
 	}
 }
@@ -405,7 +404,7 @@ int lineCount(int startOffset, int length){
 	if (length == 0) {
 		return 0;
 	}
-	int lineCnt = 0;
+	int lineCount = 0;
 	int count = 0;
 	int i = startOffset;
 	if (i >= gapStart) {
@@ -425,15 +424,15 @@ int lineCount(int startOffset, int length){
 						count++;
 					} 
 				} 
-				lineCnt++;
+				lineCount++;
 			} else if (ch == SWT.LF) {
-				lineCnt++;
+				lineCount++;
 			}
 			count++;
 		}
 		i++;
-	}			
-	return lineCnt;
+	}
+	return lineCount;
 }
 /** 
  * Returns the number of lines that are in the specified text.
@@ -452,9 +451,7 @@ int lineCount(String text){
 				i++;
 			}
 			lineCount++;
-		}
-		else
-		if (ch == SWT.LF) {
+		} else if (ch == SWT.LF) {
 			lineCount++;
 		}
 	}
@@ -495,7 +492,7 @@ public String getLine(int index) {
 		buf.append(textStore, start, gapStart - start);
 		buf.append(textStore, gapEnd, length - gapLength - (gapStart - start));
 		length = buf.length();
-		while ((length - 1 >=0) && isDelimiter(buf.charAt(length-1))) {
+		while ((length - 1 >=0) && isDelimiter(buf.charAt(length - 1))) {
 			length--;
 		}
 		return buf.toString().substring(0, length);
@@ -528,11 +525,11 @@ String getFullLine(int index) {
 		return new String(textStore, start, length);
 	} else {
 		// gap is in the specified range, strip out the gap
-		StringBuffer buf = new StringBuffer();
+		StringBuffer buffer = new StringBuffer();
 		int gapLength = gapEnd - gapStart;
-		buf.append(textStore, start, gapStart - start);
-		buf.append(textStore, gapEnd, length - gapLength - (gapStart - start));
-		return buf.toString();
+		buffer.append(textStore, start, gapStart - start);
+		buffer.append(textStore, gapEnd, length - gapLength - (gapStart - start));
+		return buffer.toString();
 	}
 }
 /**
@@ -564,15 +561,15 @@ public int getLineCount(){
  * </ul>
  */
 public int getLineAtOffset(int charPosition){
-	int position;
 	if ((charPosition > getCharCount()) || (charPosition < 0)) error(SWT.ERROR_INVALID_ARGUMENT);
+	int position;
 	if (charPosition < gapStart) {
 		// position is before the gap
 		position = charPosition;
 	} else {
 		// position includes the gap
 		position = charPosition + (gapEnd - gapStart);
-	} 			
+	}
 
 	// if last line and the line is not empty you can ask for 
 	// a position that doesn't exist (the one to the right of the 
@@ -591,7 +588,7 @@ public int getLineAtOffset(int charPosition){
 		int lineStart = lines[index][0];
 		int lineEnd = lineStart + lines[index][1] - 1;
 		if (position <= lineStart) {
-			high = index;			
+			high = index;
 		} else if (position <= lineEnd) {
 			high = index;
 			break;
@@ -599,7 +596,6 @@ public int getLineAtOffset(int charPosition){
 			low = index;
 		}
 	}
-
 	return high;
 }
 /**
@@ -618,7 +614,7 @@ int getLineAtPhysicalOffset(int position){
 		int lineStart = lines[index][0];
 		int lineEnd = lineStart + lines[index][1] - 1;
 		if (position <= lineStart) {
-			high = index;			
+			high = index;
 		} else if (position <= lineEnd) {
 			high = index;
 			break;
@@ -681,8 +677,7 @@ void error (int code) {
  */
 boolean gapExists() {
 	return gapStart != gapEnd;
-}	
-
+}
 /**
  * Returns a string representing the continous content of
  * the text store.
@@ -732,7 +727,7 @@ public String getTextRange(int start, int length) {
  */
 public void removeTextChangeListener(TextChangeListener listener){
 	if (listener == null) error(SWT.ERROR_NULL_ARGUMENT);
-	for (int i=0; i<textListeners.size(); i++) {
+	for (int i = 0; i < textListeners.size(); i++) {
 		TypedListener typedListener = (TypedListener) textListeners.elementAt(i);
 		if (typedListener.getEventListener () == listener) {
 			textListeners.removeElementAt(i);
@@ -789,14 +784,13 @@ public void replaceTextRange(int start, int replaceLength, String newText){
 	// inform listeners
 	event = new StyledTextEvent(this);
 	event.type = StyledText.TextChanged;
-	sendTextEvent(event);		
-	// printLines();
+	sendTextEvent(event);
 }
 /**
  * Sends the text listeners the TextChanged event.
  */
 void sendTextEvent(StyledTextEvent event) {
-	for (int i=0; i<textListeners.size(); i++) {
+	for (int i = 0; i < textListeners.size(); i++) {
 		((StyledTextListener)textListeners.elementAt(i)).handleEvent(event);
 	}
 }		
@@ -860,14 +854,16 @@ void delete(int position, int length, int numLines) {
 		if (j < gapStart || j >= gapEnd) {
 			char ch = textStore[j];
 			if (isDelimiter(ch)) {
-				if (j + 1 < textStore.length) 
-					if (ch == SWT.CR && (textStore[j+1] == SWT.LF))
+				if (j + 1 < textStore.length) {
+					if (ch == SWT.CR && (textStore[j+1] == SWT.LF)) {
 						j++;
+					}
+				}
 				eol = true;
 			} 
 		}
 		j++;
-	}	
+	}
 	// update the line where the deletion started
 	lines[startLine][1] = (position - startLineOffset) + (j - position);
 	// figure out the number of lines that have been deleted
@@ -876,7 +872,7 @@ void delete(int position, int length, int numLines) {
 	// shift up the lines after the last deleted line, no need to update
 	// the offset or length of the lines
 	for (int i = endLine + 1; i < lineCount; i++) {
-		lines[i - numOldLines]=lines[i];
+		lines[i - numOldLines] = lines[i];
 	}
 	lineCount -= numOldLines;
 	gapLine = getLineAtPhysicalOffset(gapStart);		
