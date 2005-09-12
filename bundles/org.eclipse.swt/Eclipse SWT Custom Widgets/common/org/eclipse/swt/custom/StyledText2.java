@@ -105,7 +105,7 @@ public class StyledText2 extends Canvas {
 	DisplayRenderer2 renderer;
 	Listener listener;
 	TextChangeListener textChangeListener;	// listener for TextChanging, TextChanged and TextSet events from StyledTextContent
-	DefaultLineStyler defaultLineStyler;// used for setStyles API when no LineStyleListener is registered
+	DefaultLineStyler defaultLineStyler;	// used for setStyles API when no LineStyleListener is registered
 	LineCache lineCache;
 	boolean userLineStyle = false;		// true=widget is using a user defined line style listener for line styles. false=widget is using the default line styler to store line styles
 	boolean userLineBackground = false;	// true=widget is using a user defined line background listener for line backgrounds. false=widget is using the default line styler to store line backgrounds
@@ -114,10 +114,8 @@ public class StyledText2 extends Canvas {
 	int topIndex = 0;					// top visible line
 	int lastPaintTopIndex = -1;
 	int topOffset = 0;					// offset of first character in top line
-	int clientAreaHeight = 0;			// the client area height. Needed to calculate content width for new 
-										// visible lines during Resize callback
-	int clientAreaWidth = 0;			// the client area width. Needed during Resize callback to determine 
-										// if line wrap needs to be recalculated
+	int clientAreaHeight = 0;			// the client area height. Needed to calculate content width for new visible lines during Resize callback
+	int clientAreaWidth = 0;			// the client area width. Needed during Resize callback to determine if line wrap needs to be recalculated
 	int lineHeight;						// line height=font height
 	int tabLength = 4;					// number of characters in a tab
 	int leftMargin;
@@ -125,8 +123,7 @@ public class StyledText2 extends Canvas {
 	int rightMargin;
 	int bottomMargin;
 	Cursor ibeamCursor;		
-	int columnX;							// keep track of the horizontal caret position
-										// when changing lines/pages. Fixes bug 5935
+	int columnX;						// keep track of the horizontal caret position when changing lines/pages. Fixes bug 5935
 	int caretOffset = 0;
 	Point selection = new Point(0, 0);	// x and y are start and end caret offsets of selection
 	Point clipboardSelection;           // x and y are start and end caret offsets of previous selection
@@ -635,17 +632,11 @@ public class StyledText2 extends Canvas {
 	 * 	or "defaultIndex" if "color" is null.
 	 */
 	int getColorIndex(Color color, int defaultIndex) {
-		int index;
-		
-		if (color == null) {
-			index = defaultIndex;
-		}
-		else {		
-			index = colorTable.indexOf(color);
-			if (index == -1) {
-				index = colorTable.size();
-				colorTable.addElement(color);
-			}
+		if (color == null) return defaultIndex;
+		int index = colorTable.indexOf(color);
+		if (index == -1) {
+			index = colorTable.size();
+			colorTable.addElement(color);
 		}
 		return index;
 	}
@@ -668,22 +659,16 @@ public class StyledText2 extends Canvas {
 				osVersion = osVersion.substring(0, majorIndex);
 				try {
 					majorVersion = Integer.parseInt(osVersion);
-				}
-				catch (NumberFormatException exception) {
+				} catch (NumberFormatException exception) {
 					// ignore exception. version number remains unknown.
 					// will write without Unicode
 				}
 			}
 		}
-		if (!osName.startsWith(Win95) &&
-			!osName.startsWith(Win98) &&
-			!osName.startsWith(WinME) &&
-			(!osName.startsWith(WinNT) || majorVersion > 4)) {
-			WriteUnicode = true;
-		}
-		else {
-			WriteUnicode = false;
-		}
+		WriteUnicode =	!osName.startsWith(Win95) &&
+						!osName.startsWith(Win98) &&
+						!osName.startsWith(WinME) &&
+						(!osName.startsWith(WinNT) || majorVersion > 4);
 	}
 	/**
 	 * Appends the specified segment of "string" to the RTF data.
@@ -708,9 +693,7 @@ public class StyledText2 extends Canvas {
 				write(Integer.toString((short) ch));
 				write(' ');						// control word delimiter
 				start = index + 1;
-			}
-			else
-			if (ch == '}' || ch == '{' || ch == '\\') {
+			} else if (ch == '}' || ch == '{' || ch == '\\') {
 				// write the sub string from the last escaped character 
 				// to the current one. Fixes bug 21698.
 				if (index > start) {
@@ -726,7 +709,7 @@ public class StyledText2 extends Canvas {
 		if (start < end) {
 			write(string.substring(start, end));
 		}
-	}	
+	}
 	/**
 	 * Writes the RTF header including font table and color table.
 	 */
@@ -754,7 +737,7 @@ public class StyledText2 extends Canvas {
 			header.append("\\blue");
 			header.append(color.getBlue());
 			header.append(";");
-		} 
+		}
 		// some RTF readers ignore the deff0 font tag. Explicitly 
 		// set the font for the whole document to work around this.
 		header.append("}\n{\\f0\\fs");
@@ -779,18 +762,16 @@ public class StyledText2 extends Canvas {
 	 * </ul>
 	 */
 	public void writeLine(String line, int lineOffset) {
-		StyleRange[] styles = new StyleRange[0];
-		Color lineBackground = null;
-		StyledTextEvent event;
-		
 		if (isClosed()) {
 			SWT.error(SWT.ERROR_IO);
 		}
-		event = renderer.getLineStyleData(lineOffset, line);
+		StyledTextEvent event = renderer.getLineStyleData(lineOffset, line);
+		StyleRange[] styles = new StyleRange[0];
 		if (event != null) {
 			styles = event.styles;
 		}
 		event = renderer.getLineBackgroundData(lineOffset, line);
+		Color lineBackground = null;
 		if (event != null) {
 			lineBackground = event.lineBackground;
 		}
@@ -834,21 +815,14 @@ public class StyledText2 extends Canvas {
 	 */
 	void writeStyledLine(String line, int lineOffset, StyleRange[] styles, Color lineBackground) {
 		int lineLength = line.length();
-		int lineIndex;
-		int copyEnd;
-		int startOffset = getStart();		
-		int endOffset = startOffset + super.getCharCount();
-		int lineEndOffset = Math.min(lineLength, endOffset - lineOffset);
+		int startOffset = getStart();
 		int writeOffset = startOffset - lineOffset;
-		
-		if (writeOffset >= line.length()) {
+		int lineIndex;
+		if (writeOffset >= lineLength) {
 			return;					// whole line is outside write range
-		}
-		else
-		if (writeOffset > 0) {
+		} else if (writeOffset > 0) {
 			lineIndex = writeOffset;		// line starts before RTF write start
-		}
-		else {
+		} else {
 			lineIndex = 0;
 		}
 		if (lineBackground != null) {
@@ -856,11 +830,12 @@ public class StyledText2 extends Canvas {
 			write(getColorIndex(lineBackground, DEFAULT_BACKGROUND));
 			write(" "); 
 		}
-		for (int i = 0; i < styles.length; i++) {		
+		int endOffset = startOffset + super.getCharCount();
+		int lineEndOffset = Math.min(lineLength, endOffset - lineOffset);
+		for (int i = 0; i < styles.length; i++) {
 			StyleRange style = styles[i];
 			int start = style.start - lineOffset;
 			int end = start + style.length;
-			int colorIndex;
 			// skip over partial first line
 			if (end < writeOffset) {
 				continue;
@@ -870,7 +845,7 @@ public class StyledText2 extends Canvas {
 				break;
 			}
 			// write any unstyled text
-			if (lineIndex < start) { 
+			if (lineIndex < start) {
 				// copy to start of style
 				// style starting betond end of write range or end of line 
 				// is guarded against above.
@@ -878,7 +853,7 @@ public class StyledText2 extends Canvas {
 				lineIndex = start;
 			}
 			// write styled text
-			colorIndex = getColorIndex(style.background, DEFAULT_BACKGROUND);
+			int colorIndex = getColorIndex(style.background, DEFAULT_BACKGROUND);
 			write("{\\cf");
 			write(getColorIndex(style.foreground, DEFAULT_FOREGROUND));
 			if (colorIndex != DEFAULT_BACKGROUND) {
@@ -899,7 +874,7 @@ public class StyledText2 extends Canvas {
 			}
 			write(" "); 
 			// copy to end of style or end of write range or end of line
-			copyEnd = Math.min(end, lineEndOffset);
+			int copyEnd = Math.min(end, lineEndOffset);
 			// guard against invalid styles and let style processing continue
 			copyEnd = Math.max(copyEnd, lineIndex);
 			write(line, lineIndex, copyEnd);
@@ -911,7 +886,7 @@ public class StyledText2 extends Canvas {
 			}
 			if (style.underline) {
 				write("\\ul0");
-			}			
+			}
 			if (style.strikeout) {
 				write("\\strike0");
 			}
@@ -1002,7 +977,7 @@ public class StyledText2 extends Canvas {
 	 */
 	void write(String string) {
 		buffer.append(string);
-	}	
+	}
 	/**
 	 * Inserts the given string to the data at the specified offset.
 	 * Do nothing if "offset" is < 0 or > getCharCount()
@@ -1016,7 +991,7 @@ public class StyledText2 extends Canvas {
 			return;
 		}
 		buffer.insert(offset, string);
-	}	
+	}
 	/**
 	 * Appends the given int to the data.
 	 */
@@ -1028,7 +1003,7 @@ public class StyledText2 extends Canvas {
 	 */
 	void write(char i) {
 		buffer.append(i);
-	}			
+	}
 	/**
 	 * Appends the specified line text to the data.
 	 * <p>
@@ -1042,29 +1017,24 @@ public class StyledText2 extends Canvas {
 	 *   <li>ERROR_IO when the writer is closed.</li>
 	 * </ul>
 	 */
-	public void writeLine(String line, int lineOffset) {
-		int lineLength = line.length();
-		int lineIndex;
-		int copyEnd;
-		int writeOffset = startOffset - lineOffset;
-		
+	public void writeLine(String line, int lineOffset) {	
 		if (isClosed) {
 			SWT.error(SWT.ERROR_IO);
 		}		
+		int writeOffset = startOffset - lineOffset;
+		int lineLength = line.length();
+		int lineIndex;
 		if (writeOffset >= lineLength) {
 			return;							// whole line is outside write range
-		}
-		else
-		if (writeOffset > 0) {
+		} else if (writeOffset > 0) {
 			lineIndex = writeOffset;		// line starts before write start
-		}
-		else {
+		} else {
 			lineIndex = 0;
 		}
-		copyEnd = Math.min(lineLength, endOffset - lineOffset);
+		int copyEnd = Math.min(lineLength, endOffset - lineOffset);
 		if (lineIndex < copyEnd) {
 			write(line.substring(lineIndex, copyEnd));
-		}		
+		}
 	}
 	/**
 	 * Appends the specified line delmimiter to the data.
@@ -1609,6 +1579,10 @@ public StyledText2(Composite parent, int style) {
 	installListeners();
 	installDefaultLineStyler();
 	initializeAccessible();
+
+
+	/** make StyledText2 visually different from StyledText for testing purpose **/
+	setBackground (new Color(parent.getDisplay(), 224, 237, 243));
 }
 /**	 
  * Adds an extended modify listener. An ExtendedModify event is sent by the 
@@ -4896,21 +4870,6 @@ void internalRedrawRange(int start, int length, boolean clearBackground) {
 		int redrawY = (firstLine + 1) * lineHeight - verticalScrollOffset;		
 		draw(0, redrawY, clientArea.width, redrawStopY - redrawY, clearBackground);
 	}
-}
-/**
- * Returns the widget text with style information encoded using RTF format
- * specification version 1.5.
- *
- * @return the widget text with style information encoded using RTF format
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-String getRtf(){
-	checkWidget();
-	RTFWriter rtfWriter = new RTFWriter(0, getCharCount());
-	return getPlatformDelimitedText(rtfWriter);
 }
 /** 
  * Frees resources.
