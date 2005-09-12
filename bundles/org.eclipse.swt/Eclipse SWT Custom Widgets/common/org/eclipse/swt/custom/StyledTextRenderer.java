@@ -290,10 +290,8 @@ int getLineHeight() {
  * 	least partially on the line.
  */
 StyledTextEvent getLineStyleData(StyledTextEvent event, int lineOffset, String line) {
-	int lineLength = line.length();
-	
 	if (event.styles != null && getWordWrap()) {
-		event.styles = getVisualLineStyleData(event.styles, lineOffset, lineLength);
+		event.styles = getVisualLineStyleData(event.styles, lineOffset, line.length());
 	}
 	if (event.styles == null) {
 		event.styles = new StyleRange[0];
@@ -395,7 +393,6 @@ protected abstract boolean isFullLineSelection();
 void setTabLength(int tabLength) {
 	GC gc = getGC();
 	StringBuffer tabBuffer = new StringBuffer(tabLength);
-	
 	for (int i = 0; i < tabLength; i++) {
 		tabBuffer.append(' ');
 	}
