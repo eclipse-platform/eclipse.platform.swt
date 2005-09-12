@@ -1153,13 +1153,11 @@ public class StyledText2 extends Canvas {
 	 * @param lineCount number of lines to calculate the line width for
 	 */
 	public void calculate(int startLine, int lineCount) {
-		int caretWidth = 0;
 		int endLine = startLine + lineCount;
-			
 		if (startLine < 0 || endLine > lineWidth.length) {
 			return;
 		}
-		caretWidth = getCaretWidth();
+		int caretWidth = getCaretWidth();
 		for (int i = startLine; i < endLine; i++) {
 			if (lineWidth[i] == -1) {
 				String line = content.getLine(i);
@@ -1183,7 +1181,6 @@ public class StyledText2 extends Canvas {
 	void calculateVisible(int startLine, int newLineCount) {
 		int topIndex = parent.getTopIndex();
 		int bottomLine = Math.min(getPartialBottomIndex(), startLine + newLineCount);
-		
 		startLine = Math.max(startLine, topIndex);
 		calculate(startLine, bottomLine - startLine + 1);
 	}
@@ -1237,11 +1234,10 @@ public class StyledText2 extends Canvas {
 	 * 	< 0 indicates lines deleted
 	 */
 	void linesChanged(int startLine, int delta) {
-		boolean inserting = delta > 0;
-		
 		if (delta == 0) {
 			return;
 		}
+		boolean inserting = delta > 0;
 		if (inserting) {
 			// shift the lines down to make room for new lines
 			expandLines(delta);
@@ -1256,8 +1252,7 @@ public class StyledText2 extends Canvas {
 			if (maxWidthLineIndex >= startLine) {
 				maxWidthLineIndex += delta;
 			}
-		} 
-		else {
+		} else {
 			// shift up the lines
 			for (int i = startLine - delta; i < lineCount; i++) {
 				lineWidth[i+delta] = lineWidth[i];
@@ -1266,9 +1261,7 @@ public class StyledText2 extends Canvas {
 			if (maxWidthLineIndex > startLine && maxWidthLineIndex <= startLine - delta) {
 				maxWidth = 0;
 				maxWidthLineIndex = -1;
-			}
-			else
-			if (maxWidthLineIndex >= startLine - delta) {
+			} else if (maxWidthLineIndex >= startLine - delta) {
 				maxWidthLineIndex += delta;
 			}
 		}
@@ -1301,13 +1294,12 @@ public class StyledText2 extends Canvas {
 	 */
 	public void reset(int startLine, int lineCount, boolean calculateMaxWidth) {
 		int endLine = startLine + lineCount;
-		
 		if (startLine < 0 || endLine > lineWidth.length) {
 			return;
 		}
 		for (int i = startLine; i < endLine; i++) {
 			lineWidth[i] = -1;
-		}		
+		}
 		// if the longest line is one of the reset lines, the maximum line 
 		// width is no longer valid
 		if (maxWidthLineIndex >= startLine && maxWidthLineIndex < endLine) {
@@ -1319,7 +1311,7 @@ public class StyledText2 extends Canvas {
 						maxWidth = lineWidth[i];
 						maxWidthLineIndex = i;
 					}
-				}			
+				}
 			}
 		}
 	}
@@ -1343,8 +1335,7 @@ public class StyledText2 extends Canvas {
 			lineWidth = new int[lineCount];
 			reset(0, lineCount, false);
 			maxWidth = 0;
-		}
-		else {
+		} else {
 			linesChanged(startLine, -replaceLineCount);
 			linesChanged(startLine, newLineCount);
 			lineWidth[startLine] = -1;
@@ -1356,8 +1347,7 @@ public class StyledText2 extends Canvas {
 		// maxWidthLineIndex will be -1 (i.e., unknown line width) if the widget has 
 		// not been visible yet and the changed lines have therefore not been
 		// calculated above.
-		if (removedMaxLine || 
-			(maxWidthLineIndex != -1 && lineWidth[maxWidthLineIndex] < maxWidth)) {
+		if (removedMaxLine || (maxWidthLineIndex != -1 && lineWidth[maxWidthLineIndex] < maxWidth)) {
 			// longest line has been removed or changed and is now shorter.
 			// need to recalculate maximum content width for all lines
 			maxWidth = 0;
@@ -1366,7 +1356,7 @@ public class StyledText2 extends Canvas {
 					maxWidth = lineWidth[i];
 					maxWidthLineIndex = i;
 				}
-			}			
+			}
 		}
 	}
 	}
@@ -1429,8 +1419,7 @@ public class StyledText2 extends Canvas {
 	    if (lineCount == visualContent.getLineCount()) {
 			// do a full rewrap if all lines are reset
 			visualContent.wrapLines();
-	    }
-	    else {
+	    } else {
 		    visualContent.reset(startLine, lineCount);
 	    }
 	}
@@ -1448,7 +1437,6 @@ public class StyledText2 extends Canvas {
 	public void reset(int startLine, int lineCount, boolean calculateMaxWidth) {
 		int itemCount = getPartialBottomIndex() - topIndex + 1;
 	    int[] oldLineOffsets = new int[itemCount];
-	    
 	    for (int i = 0; i < itemCount; i++) {
 	    	oldLineOffsets[i] = visualContent.getOffsetAtLine(i + topIndex);
 	    }
@@ -1457,15 +1445,14 @@ public class StyledText2 extends Canvas {
 	    if (getPartialBottomIndex() - topIndex + 1 != itemCount) {
 	    	// number of visible lines has changed
 	    	parent.internalRedraw();
-	    }
-	    else {
+	    } else {
 		    for (int i = 0; i < itemCount; i++) {
 		    	if (visualContent.getOffsetAtLine(i + topIndex) != oldLineOffsets[i]) {
 		    		// wrapping of one of the visible lines has changed
 		    		parent.internalRedraw();
 		    		break;
 		    	}
-	    	}	    	
+	    	}
 	    }
 	}
 	/** 
@@ -1481,7 +1468,6 @@ public class StyledText2 extends Canvas {
 	public void textChanged(int startOffset, int newLineCount, int replaceLineCount, int newCharCount, int replaceCharCount) {
 		int startLine = visualContent.getLineAtOffset(startOffset);
 		visualContent.textChanged(startOffset, newLineCount, replaceLineCount, newCharCount, replaceCharCount);
-
 		// if we are wrapping then it is possible for a deletion on the last
 		// line of text to shorten the total text length by a line.  If this
 		// occurs then the startIndex must be adjusted such that a redraw will
