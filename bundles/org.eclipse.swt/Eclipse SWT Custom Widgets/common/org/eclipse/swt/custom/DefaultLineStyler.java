@@ -32,7 +32,7 @@ public DefaultLineStyler(StyledTextContent content) {
 	this.content = content;
 	lineCount = content.getLineCount();
 	lineBackgrounds = new Color[lineCount];
-}	
+}
 /** 
  * Inserts a style at the given location.
  * <p>
@@ -59,7 +59,7 @@ void insertStyles(StyleRange[] insertStyles, int index) {
 	int insertCount = insertStyles.length;
 	int spaceNeeded = styleCount + insertCount - size;
 	if (spaceNeeded > 0) {
-		StyleRange[] newStyles = new StyleRange[size+spaceNeeded];
+		StyleRange[] newStyles = new StyleRange[size + spaceNeeded];
 		System.arraycopy(styles, 0, newStyles, 0, size);
 		styles = newStyles;
 	}
@@ -97,7 +97,7 @@ boolean mergeStyleBefore(StyleRange style, int index) {
 	// see if the style is similar to the style before it and merge the
 	// styles if possible
 	if (index > 0) {
-		StyleRange previous = styles[index-1];
+		StyleRange previous = styles[index - 1];
 		if (style.similarTo(previous)) {
 			// the start of style needs to be in the range of the previous style
 			// and the end of style needs to be < the start of the next style
@@ -132,7 +132,7 @@ boolean mergeStyleAfter(StyleRange style, int index) {
 			int styleEnd = style.start + style.length;
 			int nextEnd = next.start + next.length;
 			if ((styleEnd <= nextEnd) && (styleEnd >= next.start)) {
-				if ((index == 0) || (style.start >= styles[index-1].start + styles[index-1].length)) {
+				if ((index == 0) || (style.start >= styles[index - 1].start + styles[index - 1].length)) {
 					next.length = next.start + next.length - style.start;
 					next.start = style.start;
 					return true;
@@ -161,13 +161,13 @@ void clearStyle(StyleRange clearStyle) {
 	int count = 0;
 	int deleteStyle = -1;
 	int deleteCount = 0;
-	for (int i=pt.x; count<pt.y; i++) {
+	for (int i = pt.x; count < pt.y; i++) {
 		StyleRange overlap = styles[i];
 		int overlapEnd = overlap.start + overlap.length - 1;
 		if (overlap.start < clearStyle.start) {
 			if (overlapEnd <= clearStyleEnd) {
 				// the end of overlap needs to be cleared
-				overlap.length=clearStyle.start - overlap.start;
+				overlap.length = clearStyle.start - overlap.start;
 			} else {
 				// middle of overlap needs to be cleared, this will
 				// cause overlap to be broken into two
@@ -175,7 +175,7 @@ void clearStyle(StyleRange clearStyle) {
 				endStyle.start = clearStyleEnd + 1;
 				endStyle.length = overlapEnd - clearStyleEnd;
 				overlap.length = clearStyle.start - overlap.start;
-				insertStyle(endStyle, i+1);
+				insertStyle(endStyle, i + 1);
 				break;
 			}
 		} else {
@@ -183,15 +183,15 @@ void clearStyle(StyleRange clearStyle) {
 				// entire overlap needs to be cleared
 				if (deleteStyle == -1) {
 					deleteStyle = i;
-				} 
+				}
 				deleteCount++;
 			} else {
 				// beginning of overlap needs to be cleared
-				overlap.start=clearStyleEnd + 1;
-				overlap.length=overlapEnd - overlap.start + 1;
+				overlap.start = clearStyleEnd + 1;
+				overlap.length = overlapEnd - overlap.start + 1;
 				break;
 			}
-		}				
+		}
 		count++;
 	}
 	deleteStyles(deleteStyle, deleteCount);
@@ -205,10 +205,8 @@ void clearStyle(StyleRange clearStyle) {
  */
 void expandLinesBy(int numLines) {
 	int size = lineBackgrounds.length;
-	if (size - lineCount >= numLines) {
-		return;
-	}
-	Color[] newLines = new Color[size+Math.max(Compatibility.pow2(lineExpandExp), numLines)];
+	if (size - lineCount >= numLines) return;
+	Color[] newLines = new Color[size + Math.max(Compatibility.pow2(lineExpandExp), numLines)];
 	System.arraycopy(lineBackgrounds, 0, newLines, 0, size);
 	lineBackgrounds = newLines;
 	lineExpandExp++;
@@ -284,9 +282,10 @@ public void lineGetStyle(LineStyleEvent event) {
 	// -- starts before the line, ends after the line (add range)
 	for (int index = high; index < styleCount; index++) {
 		style = styles[index];
-		if (style.start > lineEnd)
+		if (style.start > lineEnd) {
 			// style starts after the line, end looping 
 			break;
+		}
 		int styleEnd = style.start + style.length - 1;
 		if (styleEnd >= lineStart) lineStyles.addElement(style);
 	}
@@ -326,8 +325,8 @@ int searchForStyle(int start, int end) {
  * @param background the background color for the lines
  */ 
 void setLineBackground(int startLine, int count, Color background) {
-	for (int i=startLine; i<startLine + count; i++) {
-		lineBackgrounds[i]=background;
+	for (int i = startLine; i < startLine + count; i++) {
+		lineBackgrounds[i] = background;
 	}
 }
 /** 
@@ -345,7 +344,7 @@ void setStyleRange(StyleRange newStyle) {
 		styleCount = 0;
 		return;
 	}
-	if (newStyle.length ==0) return;
+	if (newStyle.length == 0) return;
 	if (newStyle.isUnstyled()) {
 		clearStyle(newStyle);
 		return;
@@ -371,7 +370,7 @@ void setStyleRange(StyleRange newStyle) {
 	int count = 0;
 	// pt.x is the index of the first overlapped style, pt.y is the number of overlapped
 	// styles
-	for (int i=pt.x; count<pt.y; i++) {
+	for (int i = pt.x; count < pt.y; i++) {
 		StyleRange overlap = styles[i];
 		int overlapEnd = overlap.start + overlap.length - 1;
 		if (overlap.start < newStyle.start) {
@@ -381,13 +380,13 @@ void setStyleRange(StyleRange newStyle) {
 					// update overlap to accomodate the new style
 					overlap.length = newStyle.start + newStyle.length - overlap.start;
 				} else {
-					overlap.length=newStyle.start - overlap.start;
+					overlap.length = newStyle.start - overlap.start;
 					// see if newStyle can be merged with the style after overlap, if so,
 					// processing is done
-					if (mergeStyleAfter(newStyle, i+1)) break;
+					if (mergeStyleAfter(newStyle, i + 1)) break;
 					// otherwise, insert the newStyle, newStyle may still overlap other
 					// styles after it so continue processing	
-					insertStyle(newStyle, i+1);
+					insertStyle(newStyle, i + 1);
 					i++;
 				}
 				added = true;
@@ -399,9 +398,9 @@ void setStyleRange(StyleRange newStyle) {
 				endStyle.start = newStyleEnd + 1;
 				endStyle.length = overlapEnd - newStyleEnd;
 				overlap.length = newStyle.start - overlap.start;
-				insertStyle(newStyle, i+1);
+				insertStyle(newStyle, i + 1);
 				i++;
-				insertStyle(endStyle, i+1);
+				insertStyle(endStyle, i + 1);
 				// when newStyle overlaps the middle of a style, this implies that
 				// processing is done (no more overlapped styles)
 				break;
@@ -419,8 +418,8 @@ void setStyleRange(StyleRange newStyle) {
 				}
 			} else {
 				// beginning of overlap needs to be replaced by newStyle
-				overlap.start=newStyleEnd + 1;
-				overlap.length=overlapEnd - overlap.start + 1;
+				overlap.start = newStyleEnd + 1;
+				overlap.length = overlapEnd - overlap.start + 1;
 				if (!added) {
 					insertMergeStyle(newStyle, i);
 				}
@@ -428,8 +427,8 @@ void setStyleRange(StyleRange newStyle) {
 				// that processing is done (no more overlapped styles)
 				break;
 			}
-		}				
-	count++;
+		}
+		count++;
 	}
 }
 /** 
@@ -514,13 +513,13 @@ void linesChanging(int start, int delta) {
 		for (int i = lineCount-1; i >= start; i--) {
 			lineBackgrounds[i + delta]=lineBackgrounds[i];
 		}
-		for (int i=start; i<start + delta; i++) {
-			lineBackgrounds[i]=null;
+		for (int i = start; i < start + delta; i++) {
+			lineBackgrounds[i] = null;
 		}
 	} else {
 		// shift up the lines
 		for (int i = start - delta; i < lineCount; i++) {
-			lineBackgrounds[i+delta]=lineBackgrounds[i];
+			lineBackgrounds[i + delta] = lineBackgrounds[i];
 		}
 	}
 	lineCount += delta;
@@ -672,9 +671,9 @@ StyleRange[] getStyleRangesFor(int offset, int length) {
 	Point pt = getOverlappingStyles(offset, length);
 	if (pt == null || pt.y == 0) return null;
 	StyleRange[] ranges = new StyleRange[pt.y];
-	for (int i=0; i<pt.y; i++) {
+	for (int i = 0; i < pt.y; i++) {
 		StyleRange newStyle = styles[pt.x + i];
-		ranges[i]=newStyle;
+		ranges[i] = newStyle;
 	}
 	return ranges;
 }
