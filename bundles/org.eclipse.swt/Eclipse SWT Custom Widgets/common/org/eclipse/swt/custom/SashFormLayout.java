@@ -66,11 +66,13 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 		}
 		total += ratios[i];
 	}
-	int sashwidth = sashForm.sashes.length > 0 ? sashForm.SASH_WIDTH + sashForm.sashes [0].getBorderWidth() * 2 : sashForm.SASH_WIDTH;
-	if (vertical) {
-		height += (int)(total * maxValue / ratios[maxIndex]) + (cArray.length - 1) * sashwidth;
-	} else {
-		width += (int)(total * maxValue / ratios[maxIndex]) + (cArray.length - 1) * sashwidth;
+	if (ratios[maxIndex] > 0) {
+		int sashwidth = sashForm.sashes.length > 0 ? sashForm.SASH_WIDTH + sashForm.sashes [0].getBorderWidth() * 2 : sashForm.SASH_WIDTH;
+		if (vertical) {
+			height += (int)(total * maxValue / ratios[maxIndex]) + (cArray.length - 1) * sashwidth;
+		} else {
+			width += (int)(total * maxValue / ratios[maxIndex]) + (cArray.length - 1) * sashwidth;
+		}
 	}
 	width += sashForm.getBorderWidth()*2;
 	height += sashForm.getBorderWidth()*2;
