@@ -112,8 +112,7 @@ protected int[] getBidiSegments(int lineOffset, String lineText) {
 	
 	if (segments == null) {
 		segments = new int[] {0, lineLength};
-	}
-	else {
+	} else {
 		// cached bidi segments are for logical lines.
 		// make sure that returned segments match requested line since
 		// line wrapping may require either entire or part of logical 
@@ -198,7 +197,6 @@ protected int getHorizontalPixel() {
  */
 private int getLogicalLineOffset(int visualLineOffset) {
 	int logicalLineIndex = logicalContent.getLineAtOffset(visualLineOffset);
-	
 	return logicalContent.getOffsetAtLine(logicalLineIndex);
 }
 protected  int getOrientation () {
@@ -217,7 +215,6 @@ protected Color getSelectionForeground() {
  */
 protected StyledTextEvent getLineBackgroundData(int lineOffset, String line) {
 	int logicalLineOffset = getLogicalLineOffset(lineOffset);
-	
 	return (StyledTextEvent) lineBackgrounds.get(new Integer(logicalLineOffset));
 }
 /**

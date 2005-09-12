@@ -30,46 +30,39 @@ public void handleEvent(Event e) {
 		case StyledText.ExtendedModify:
 			ExtendedModifyEvent extendedModifyEvent = new ExtendedModifyEvent((StyledTextEvent) e);
 			((ExtendedModifyListener) eventListener).modifyText(extendedModifyEvent);
-		break;
-		
+			break;		
 		case StyledText.LineGetBackground:
 			LineBackgroundEvent lineBgEvent = new LineBackgroundEvent((StyledTextEvent) e);
 			((LineBackgroundListener) eventListener).lineGetBackground(lineBgEvent);
 			((StyledTextEvent) e).lineBackground = lineBgEvent.lineBackground;
-		break;
-		
+			break;		
 		case StyledText.LineGetSegments:
 			BidiSegmentEvent segmentEvent = new BidiSegmentEvent((StyledTextEvent) e);
 			((BidiSegmentListener) eventListener).lineGetSegments(segmentEvent);
 			((StyledTextEvent) e).segments = segmentEvent.segments;
-		break;
-		
+			break;		
 		case StyledText.LineGetStyle:
 			LineStyleEvent lineStyleEvent = new LineStyleEvent((StyledTextEvent) e);
 			((LineStyleListener) eventListener).lineGetStyle(lineStyleEvent);
 			((StyledTextEvent) e).styles = lineStyleEvent.styles;
-		break;
-
+			break;
 		case StyledText.VerifyKey:
 			VerifyEvent verifyEvent = new VerifyEvent(e);
 			((VerifyKeyListener) eventListener).verifyKey(verifyEvent);
 			e.doit = verifyEvent.doit;
-		break;		
-
+			break;
 		case StyledText.TextChanged:
 			textChangedEvent = new TextChangedEvent((StyledTextContent) e.data);
 			((TextChangeListener) eventListener).textChanged(textChangedEvent);
-		break;
-
+			break;
 		case StyledText.TextChanging:
 			TextChangingEvent textChangingEvent = new TextChangingEvent((StyledTextContent) e.data, (StyledTextEvent) e);
 			((TextChangeListener) eventListener).textChanging(textChangingEvent);
-		break;
-
+			break;
 		case StyledText.TextSet:
 			textChangedEvent = new TextChangedEvent((StyledTextContent) e.data);
 			((TextChangeListener) eventListener).textSet(textChangedEvent);
-		break;
+			break;
 	}
 }
 }

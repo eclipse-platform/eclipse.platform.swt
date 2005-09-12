@@ -74,13 +74,12 @@ protected void drawLineBreakSelection(String line, int lineOffset, int paintX, i
 	int lineLength = line.length();
 	int selectionStart = Math.max(0, selection.x - lineOffset);
 	int selectionEnd = selection.y - lineOffset;
-	int lineEndSpaceWidth = getLineEndSpaceWidth();
-	int lineHeight = getLineHeight();
 	
 	if (selectionEnd == selectionStart || selectionEnd < 0 || selectionStart > lineLength || selectionEnd <= lineLength) {
 		return;
 	}
 	
+	int lineHeight = getLineHeight();
 	gc.setBackground(parent.getSelectionBackground());
 	gc.setForeground(parent.getSelectionForeground());
 	if ((parent.getStyle() & SWT.FULL_SELECTION) != 0) {
@@ -102,6 +101,7 @@ protected void drawLineBreakSelection(String line, int lineOffset, int paintX, i
 		}
 		if (!isWrappedLine) {
 			// render the line break selection
+			int lineEndSpaceWidth = getLineEndSpaceWidth();
 			gc.fillRectangle(paintX, paintY, lineEndSpaceWidth, lineHeight);
 		}
 	}	
@@ -231,7 +231,7 @@ TextLayout createTextLayout(int lineOffset) {
 }
 void disposeTextLayout (TextLayout layout) {
 	if (layouts != null) {
-		for (int i=0; i<layouts.length; i++) {
+		for (int i = 0; i < layouts.length; i++) {
 			if (layouts[i] == layout) return;
 		}
 	}
@@ -244,7 +244,7 @@ void updateTopIndex() {
 	if (layouts == null || topIndex != this.topIndex || newLength != layouts.length) {
 		TextLayout[] newLayouts = new TextLayout[newLength];
 		if (layouts != null) {
-			for(int i=0; i<layouts.length; i++) {
+			for(int i = 0; i < layouts.length; i++) {
 				TextLayout layout = layouts[i];
 				if (layout != null) {
 					int layoutIndex = (i + this.topIndex) - topIndex;
