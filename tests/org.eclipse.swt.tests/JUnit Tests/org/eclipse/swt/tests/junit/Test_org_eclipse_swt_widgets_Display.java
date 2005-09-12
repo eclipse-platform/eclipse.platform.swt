@@ -740,8 +740,9 @@ public void test_postLorg_eclipse_swt_widgets_Event() {
 		// Test mouse events (down/up/move)
 		event = new Event();
 		event.type = SWT.MouseMove;
-		event.x = 0;
-		event.y = 0;
+		Rectangle bounds = shell.getBounds();
+		event.x = bounds.x + bounds.width/2;
+		event.y = bounds.y + bounds.height/2;
 		shell.setFocus();
 		assertTrue(display.post(event));
 		
