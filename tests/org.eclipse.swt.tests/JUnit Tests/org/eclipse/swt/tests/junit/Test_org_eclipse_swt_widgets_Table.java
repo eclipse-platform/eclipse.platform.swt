@@ -1328,10 +1328,7 @@ public void test_setHeaderVisibleZ() {
 
 public void test_setLinesVisibleZ() {
 	if (SwtJunit.isCarbon) {
-		// carbon does not support lines
-		assertFalse(table.getLinesVisible());
-		table.setLinesVisible(true);
-		assertFalse(table.getLinesVisible());
+		/* only carbon versions >= 10.4 support Table lines */
 		return;
 	}
 	assertFalse(table.getLinesVisible());
