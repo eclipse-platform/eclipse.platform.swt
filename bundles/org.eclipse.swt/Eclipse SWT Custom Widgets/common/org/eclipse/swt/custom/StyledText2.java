@@ -213,8 +213,6 @@ public class StyledText2 extends Canvas {
 	 * @param printOptions print options
 	 */		
 	Printing(StyledText2 parent, Printer printer, StyledTextPrintOptions printOptions) {
-		PrinterData data = printer.getPrinterData();
-
 		this.parent = parent;
 		this.printer = printer;
 		this.printOptions = printOptions;
@@ -222,6 +220,7 @@ public class StyledText2 extends Canvas {
 		singleLine = parent.isSingleLine();
 		startPage = 1;
 		endPage = Integer.MAX_VALUE;
+		PrinterData data = printer.getPrinterData();
 		if (data.scope == PrinterData.PAGE_RANGE) {
 			startPage = data.startPage;
 			endPage = data.endPage;
@@ -230,12 +229,9 @@ public class StyledText2 extends Canvas {
 				endPage = startPage;
 				startPage = temp;
 			}			
-		} 
-		else 
-		if (data.scope == PrinterData.SELECTION) {
+		} else if (data.scope == PrinterData.SELECTION) {
 			selection = parent.getSelectionRange();
 		}
-
 		displayFontData = parent.getFont().getFontData()[0];
 		copyContent(parent.getContent());
 		cacheLineData(printerContent);
@@ -249,7 +245,6 @@ public class StyledText2 extends Canvas {
 	 */
 	void cacheBidiSegments(int lineOffset, String line) {
 		int[] segments = parent.getBidiSegments(lineOffset, line);
-		
 		if (segments != null) {
 			bidiSegments.put(new Integer(lineOffset), segments);
 		}
@@ -263,7 +258,6 @@ public class StyledText2 extends Canvas {
 	 */
 	void cacheLineBackground(int lineOffset, String line) {
 		StyledTextEvent event = parent.getLineBackgroundData(lineOffset, line);
-		
 		if (event != null) {
 			lineBackgrounds.put(new Integer(lineOffset), event);
 		}
@@ -278,7 +272,6 @@ public class StyledText2 extends Canvas {
 		for (int i = 0; i < printerContent.getLineCount(); i++) {
 			int lineOffset = printerContent.getOffsetAtLine(i);
 			String line = printerContent.getLine(i);
-	
 			if (printOptions.printLineBackground) {
 				cacheLineBackground(lineOffset, line);
 			}
@@ -301,7 +294,6 @@ public class StyledText2 extends Canvas {
 	 */
 	void cacheLineStyle(int lineOffset, String line) {
 		StyledTextEvent event = parent.getLineStyleData(lineOffset, line);
-		
 		if (event != null) {
 			StyleRange[] styles = event.styles;
 			for (int i = 0; i < styles.length; i++) {
@@ -325,7 +317,7 @@ public class StyledText2 extends Canvas {
 				if (styleCopy != null) {
 					styles[i] = styleCopy;
 				}
-			}	
+			}
 			lineStyles.put(new Integer(lineOffset), event);
 		}
 	}
@@ -335,15 +327,13 @@ public class StyledText2 extends Canvas {
 	 * @param original the <class>StyledTextContent</class> to copy.
 	 */
 	void copyContent(StyledTextContent original) {
-		int insertOffset = 0;
-		
 		printerContent = new DefaultContent();
+		int insertOffset = 0;
 		for (int i = 0; i < original.getLineCount(); i++) {
 			int insertEndOffset;
 			if (i < original.getLineCount() - 1) {
 				insertEndOffset = original.getOffsetAtLine(i + 1);
-			}
-			else {
+			} else {
 				insertEndOffset = original.getCharCount();
 			}
 			printerContent.replaceTextRange(insertOffset, 0, original.getTextRange(insertOffset, insertEndOffset - insertOffset));
@@ -355,13 +345,12 @@ public class StyledText2 extends Canvas {
 	 * line styles with printer colors.
 	 */
 	void createPrinterColors() {
-		Enumeration values = lineBackgrounds.elements();
 		printerColors = new Hashtable();
+		Enumeration values = lineBackgrounds.elements();
 		while (values.hasMoreElements()) {
 			StyledTextEvent event = (StyledTextEvent) values.nextElement();
 			event.lineBackground = getPrinterColor(event.lineBackground);
 		}
-		
 		values = lineStyles.elements();
 		while (values.hasMoreElements()) {
 			StyledTextEvent event = (StyledTextEvent) values.nextElement();
@@ -369,16 +358,14 @@ public class StyledText2 extends Canvas {
 				StyleRange style = event.styles[i];
 				Color printerBackground = getPrinterColor(style.background);
 				Color printerForeground = getPrinterColor(style.foreground);
-				
-				if (printerBackground != style.background || 
-					printerForeground != style.foreground) {
+				if (printerBackground != style.background || printerForeground != style.foreground) {
 					style = (StyleRange) style.clone();
 					style.background = printerBackground;
 					style.foreground = printerForeground;
 					event.styles[i] = style;
 				}
 			}
-		}		
+		}
 	}
 	/**
 	 * Disposes of the resources and the <class>PrintRenderer</class>.
@@ -386,7 +373,6 @@ public class StyledText2 extends Canvas {
 	void dispose() {
 		if (printerColors != null) {
 			Enumeration colors = printerColors.elements();
-			
 			while (colors.hasMoreElements()) {
 				Color color = (Color) colors.nextElement();
 				color.dispose();
@@ -407,19 +393,11 @@ public class StyledText2 extends Canvas {
 		}
 	}
 	/**
-	 * Finish printing the indicated page.
-	 * 
-	 * @param page page that was printed
-	 */
-	void endPage(int page) {
-		printDecoration(page, false);
-		printer.endPage();
-	}
-	/**
 	 * Creates a <class>PrintRenderer</class> and calculate the line range
 	 * to print.
 	 */
 	void initializeRenderer() {
+		createPrinterColors();
 		Rectangle trim = printer.computeTrim(0, 0, 0, 0);
 		Point dpi = printer.getDPI();
 		
@@ -451,23 +429,15 @@ public class StyledText2 extends Canvas {
 		pageSize = clientArea.height / renderer.getLineHeight();
 		StyledTextContent content = renderer.getContent();
 		startLine = 0;
-		if (singleLine) {
-			endLine = 0;
-		}
-		else {
-			endLine = content.getLineCount() - 1;
-		}
+		endLine = singleLine ? 0 : content.getLineCount() - 1;
 		PrinterData data = printer.getPrinterData();
 		if (data.scope == PrinterData.PAGE_RANGE) {
 			startLine = (startPage - 1) * pageSize;
-		} 
-		else
-		if (data.scope == PrinterData.SELECTION) {
+		} else if (data.scope == PrinterData.SELECTION) {
 			startLine = content.getLineAtOffset(selection.x);
 			if (selection.y > 0) {
 				endLine = content.getLineAtOffset(selection.x + selection.y - 1);
-			} 
-			else {
+			} else {
 				endLine = startLine - 1;
 			}
 		}
@@ -481,7 +451,6 @@ public class StyledText2 extends Canvas {
  	 */
 	Color getPrinterColor(Color color) {
 		Color printerColor = null;
-		
 		if (color != null) {
 			printerColor = (Color) printerColors.get(color);		
 			if (printerColor == null) {
@@ -503,23 +472,24 @@ public class StyledText2 extends Canvas {
 		int page = startPage;
 		
 		for (int i = startLine; i <= endLine && page <= endPage; i++, paintY += lineHeight) {
-			String line = content.getLine(i);
-			
+			String line = content.getLine(i);	
 			if (paintY == clientArea.y) {
-				startPage(page);
+				printer.startPage();
+				printDecoration(page, true);
 			}
-			renderer.drawLine(
-				line, i, paintY, gc, background, foreground, true);
+			renderer.drawLine(line, i, paintY, gc, background, foreground, true);
 			if (paintY + lineHeight * 2 > clientArea.y + clientArea.height) {
 				// close full page
-				endPage(page);
+				printDecoration(page, false);
+				printer.endPage();
 				paintY = clientArea.y - lineHeight;
 				page++;
 			}
 		}
 		if (paintY > clientArea.y) {
 			// close partial page
-			endPage(page);
+			printDecoration(page, false);
+			printer.endPage();
 		}
 	}
 	/**
@@ -529,29 +499,18 @@ public class StyledText2 extends Canvas {
 	 * @param header true = print the header, false = print the footer
 	 */
 	void printDecoration(int page, boolean header) {
+		String text = header ? printOptions.header : printOptions.footer;
+		if (text == null) return;
 		int lastSegmentIndex = 0;
-		final int SegmentCount = 3;
-		String text;
-		
-		if (header) {
-			text = printOptions.header;
-		}
-		else {
-			text = printOptions.footer;
-		}
-		if (text == null) {
-			return;
-		}
-		for (int i = 0; i < SegmentCount; i++) {
+		int segmentCount = 3;
+		for (int i = 0; i < segmentCount; i++) {
 			int segmentIndex = text.indexOf(StyledTextPrintOptions.SEPARATOR, lastSegmentIndex);
 			String segment;
-			
 			if (segmentIndex == -1) {
 				segment = text.substring(lastSegmentIndex);
 				printDecorationSegment(segment, i, page, header);
 				break;
-			}
-			else {
+			} else {
 				segment = text.substring(lastSegmentIndex, segmentIndex);
 				printDecorationSegment(segment, i, page, header);
 				lastSegmentIndex = segmentIndex + StyledTextPrintOptions.SEPARATOR.length();
@@ -570,38 +529,31 @@ public class StyledText2 extends Canvas {
 	 */
 	void printDecorationSegment(String segment, int alignment, int page, boolean header) {		
 		int pageIndex = segment.indexOf(StyledTextPrintOptions.PAGE_TAG);
-		
 		if (pageIndex != -1) {
-			final int PageTagLength = StyledTextPrintOptions.PAGE_TAG.length();
+			int pageTagLength = StyledTextPrintOptions.PAGE_TAG.length();
 			StringBuffer buffer = new StringBuffer(segment.substring (0, pageIndex));
 			buffer.append (page);
-			buffer.append (segment.substring(pageIndex + PageTagLength));
+			buffer.append (segment.substring(pageIndex + pageTagLength));
 			segment = buffer.toString();
 		}
 		if (segment.length() > 0) {
-			int segmentWidth;
-			int drawX = 0;
-			int drawY = 0;
 			TextLayout layout = new TextLayout(printer);
 			layout.setText(segment);
 			layout.setFont(printerFont);
-			segmentWidth = layout.getLineBounds(0).width;
-			if (header) {
-				drawY = clientArea.y - renderer.getLineHeight() * 2;
-			}
-			else {
-				drawY = clientArea.y + clientArea.height + renderer.getLineHeight();
-			}
+			int segmentWidth = layout.getLineBounds(0).width;
+			int segmentHeight = renderer.getLineHeight();
+			int drawX = 0, drawY;
 			if (alignment == LEFT) {
 				drawX = clientArea.x;
-			}
-			else				
-			if (alignment == CENTER) {
+			} else if (alignment == CENTER) {
 				drawX = (pageWidth - segmentWidth) / 2;
-			}
-			else 
-			if (alignment == RIGHT) {
+			} else if (alignment == RIGHT) {
 				drawX = clientArea.x + clientArea.width - segmentWidth;
+			}
+			if (header) {
+				drawY = clientArea.y - segmentHeight * 2;
+			} else {
+				drawY = clientArea.y + clientArea.height + segmentHeight;
 			}
 			layout.draw(gc, drawX, drawY);
 			layout.dispose();
@@ -612,26 +564,15 @@ public class StyledText2 extends Canvas {
 	 */
 	public void run() {
 		String jobName = printOptions.jobName;
-		
 		if (jobName == null) {
 			jobName = "Printing";
-		}		
+		}
 		if (printer.startJob(jobName)) {
-			createPrinterColors();
 			initializeRenderer();
 			print();
 			dispose();
-			printer.endJob();			
+			printer.endJob();
 		}
-	}
-	/**
-	 * Start printing a new page.
-	 * 
-	 * @param page page number to be started
-	 */
-	void startPage(int page) {
-		printer.startPage();
-		printDecoration(page, true);
 	}	
 	}
 	/**
