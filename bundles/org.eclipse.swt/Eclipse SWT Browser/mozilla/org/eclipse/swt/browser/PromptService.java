@@ -32,13 +32,13 @@ int AddRef() {
 void createCOMInterfaces() {
 	/* Create each of the interfaces that this object implements */
 	supports = new XPCOMObject(new int[]{2, 0, 0}){
-		public int /*long*/ method0(int /*long*/[] args) {return queryInterface(args[0], args[1]);}
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
 		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
 		public int /*long*/ method2(int /*long*/[] args) {return Release();}
 	};
 	
 	promptService = new XPCOMObject(new int[]{2, 0, 0, 3, 5, 4, 6, 10, 7, 8, 7, 7}){
-		public int /*long*/ method0(int /*long*/[] args) {return queryInterface(args[0], args[1]);}
+		public int /*long*/ method0(int /*long*/[] args) {return QueryInterface(args[0], args[1]);}
 		public int /*long*/ method1(int /*long*/[] args) {return AddRef();}
 		public int /*long*/ method2(int /*long*/[] args) {return Release();}
 		public int /*long*/ method3(int /*long*/[] args) {return Alert(args[0], args[1], args[2]);}
@@ -68,7 +68,7 @@ int /*long*/ getAddress() {
 	return promptService.getAddress();
 }
 
-int /*long*/ queryInterface(int /*long*/ riid, int /*long*/ ppvObject) {
+int /*long*/ QueryInterface(int /*long*/ riid, int /*long*/ ppvObject) {
 	if (riid == 0 || ppvObject == 0) return XPCOM.NS_ERROR_NO_INTERFACE;
 	nsID guid = new nsID();
 	XPCOM.memmove(guid, riid, nsID.sizeof);
