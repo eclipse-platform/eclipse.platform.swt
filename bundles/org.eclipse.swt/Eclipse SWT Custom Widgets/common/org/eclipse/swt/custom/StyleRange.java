@@ -40,7 +40,6 @@ public StyleRange(int start, int length, Color foreground, Color background) {
 	this.foreground = foreground;
 	this.background = background;
 }
-
 /** 
  * Create a new style range.
  * <p>
@@ -58,7 +57,6 @@ public StyleRange(int start, int length, Color foreground, Color background, int
 	this.background = background;
 	this.fontStyle = fontStyle;
 }
-
 /**
  * Compares the argument to the receiver, and returns true
  * if they represent the <em>same</em> object using a class
@@ -70,13 +68,14 @@ public StyleRange(int start, int length, Color foreground, Color background, int
  * @see #hashCode()
  */
 public boolean equals(Object object) {
-	StyleRange style;
 	if (object == this) return true;
-	if (object instanceof StyleRange) style = (StyleRange)object;
-	else return false;
-	if (this.start != style.start) return false;
-	if (this.length != style.length) return false;
-	return similarTo(style);
+	if (object instanceof StyleRange) {
+		StyleRange style = (StyleRange)object;
+		if (this.start != style.start) return false;
+		if (this.length != style.length) return false;
+		return similarTo(style);
+	}
+	return false;
 }
 /**
  * Returns an integer hash code for the receiver. Any two 
@@ -90,11 +89,8 @@ public boolean equals(Object object) {
  */
 public int hashCode() {
 	int code = start + length;
-	
-	if (foreground != null)
-		code += foreground.hashCode();
-	if (background != null)
-		code += background.hashCode();
+	if (foreground != null) code += foreground.hashCode();
+	if (background != null) code += background.hashCode();
 	return code + fontStyle;
 }
 /**
@@ -105,11 +101,11 @@ public int hashCode() {
  * @return true if the receiver is unstyled, false otherwise.
  */
 public boolean isUnstyled() {
-	if (this.foreground != null) return false;
-	if (this.background != null) return false;
-	if (this.fontStyle != SWT.NORMAL) return false;
-	if (this.underline) return false;
-	if (this.strikeout) return false;
+	if (foreground != null) return false;
+	if (background != null) return false;
+	if (fontStyle != SWT.NORMAL) return false;
+	if (underline) return false;
+	if (strikeout) return false;
 	return true;
 }
 /**
@@ -124,10 +120,14 @@ public boolean isUnstyled() {
 public boolean similarTo(StyleRange style) {
 	if (this.foreground != null) {
 		if (!this.foreground.equals(style.foreground)) return false;
-	} else if (style.foreground != null) return false;
+	} else if (style.foreground != null) {
+		return false;
+	}
 	if (this.background != null) {
 		if (!this.background.equals(style.background)) return false;
-	} else if (style.background != null) return false; 
+	} else if (style.background != null) {
+		return false; 
+	}
 	if (this.fontStyle != style.fontStyle) return false;
 	if (this.underline != style.underline) return false;
 	if (this.strikeout != style.strikeout) return false;
@@ -152,23 +152,23 @@ public Object clone() {
  * @return a string representation of the event
  */
 public String toString() {
-	StringBuffer buf = new StringBuffer();
-	buf.append(start + "," + length + " fg:" + foreground + " bg:" + background + " fStyle:");
+	StringBuffer buffer = new StringBuffer();
+	buffer.append(start + "," + length + " fg:" + foreground + " bg:" + background + " fStyle:");
 	switch (fontStyle) {
 		case SWT.BOLD:
-			buf.append("bold");
+			buffer.append("bold");
 			break;
 		case SWT.ITALIC:
-			buf.append("italic");
+			buffer.append("italic");
 			break;
 		case SWT.BOLD | SWT.ITALIC:
-			buf.append("bold-italic");
+			buffer.append("bold-italic");
 			break;
 		default:
-			buf.append("normal");
+			buffer.append("normal");
 	}
-	if (underline) buf.append(" underline");
-	if (strikeout) buf.append(" strikeout");
-	return buf.toString();
+	if (underline) buffer.append(" underline");
+	if (strikeout) buffer.append(" strikeout");
+	return buffer.toString();
 }
 }
