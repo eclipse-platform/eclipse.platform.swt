@@ -68,6 +68,18 @@ public class ImageAnalyzer {
 	static final int ALPHA_CONSTANT = 0;
 	static final int ALPHA_X = 1;
 	static final int ALPHA_Y = 2;
+	static final String[] openFilterExtensions = new String[] {
+			"*.bmp; *.gif; *.ico; *.jfif; *.jpeg; *.jpg; *.png; *.tif; *.tiff",
+			"*.bmp", "*.gif", "*.ico", "*.jpg; *.jpeg; *.jfif", "*.png", "*.tif; *.tiff" };
+	static final String[] openFilterNames = new String[] {
+			bundle.getString("All_images") + " (bmp, gif, ico, jfif, jpeg, jpg, png, tif, tiff)",
+			"BMP (*.bmp)", "GIF (*.gif)", "ICO (*.ico)", "JPEG (*.jpg, *.jpeg, *.jfif)",
+			"PNG (*.png)", "TIFF (*.tif, *.tiff)" };
+	static final String[] saveFilterExtensions = new String[] {
+			"*.bmp", "*.gif", "*.ico", "*.jpg", "*.png", "*.tif" };
+	static final String[] saveFilterNames = new String[] {
+			"BMP (*.bmp)", "GIF (*.gif)", "ICO (*.ico)", "JPEG (*.jpg)",
+			"PNG (*.png)", "TIFF (*.tif)" };
 
 	class TextPrompter extends Dialog {
 		String message = "";
@@ -392,7 +404,7 @@ public class ImageAnalyzer {
 		typeLabel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
 
 		// Canvas to show the image.
-		imageCanvas = new Canvas(shell, SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_REDRAW_RESIZE);
+		imageCanvas = new Canvas(shell, SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND);
 		imageCanvas.setBackground(whiteColor);
 		imageCanvas.setCursor(crossCursor);
 		gridData = new GridData();
@@ -404,8 +416,12 @@ public class ImageAnalyzer {
 		imageCanvas.setLayoutData(gridData);
 		imageCanvas.addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent event) {
-				if (image != null)
+				if (image == null) {
+					Rectangle bounds = imageCanvas.getBounds();
+					event.gc.fillRectangle(0, 0, bounds.width, bounds.height);
+				} else {
 					paintImage(event);
+				}
 			}
 		});
 		imageCanvas.addMouseMoveListener(new MouseMoveListener() {
@@ -786,9 +802,8 @@ public class ImageAnalyzer {
 		FileDialog fileChooser = new FileDialog(shell, SWT.OPEN);
 		if (lastPath != null)
 			fileChooser.setFilterPath(lastPath);
-		fileChooser.setFilterExtensions(new String[] { "*.bmp; *.gif; *.ico; *.jpg; *.pcx; *.png; *.tif", "*.bmp", "*.gif", "*.ico", "*.jpg", "*.pcx", "*.png", "*.tif" });
-		fileChooser.setFilterNames(new String[] { bundle.getString("All_images") + " (bmp, gif, ico, jpg, pcx, png, tif)",
-		                                          "BMP (*.bmp)", "GIF (*.gif)", "ICO (*.ico)", "JPEG (*.jpg)", "PCX (*.pcx)", "PNG (*.png)", "TIFF (*.tif)" });
+		fileChooser.setFilterExtensions(openFilterExtensions);
+		fileChooser.setFilterNames(openFilterNames);
 		String filename = fileChooser.open();
 		lastPath = fileChooser.getFilterPath();
 		if (filename == null)
@@ -993,8 +1008,8 @@ public class ImageAnalyzer {
 			}
 			fileChooser.setFileName(name);
 		}
-		fileChooser.setFilterExtensions(new String[] { "*.bmp", "*.gif", "*.ico", "*.jpg", "*.png" });
-		fileChooser.setFilterNames(new String[] { "BMP (*.bmp)", "GIF (*.gif)", "ICO (*.ico)", "JPEG (*.jpg)", "PNG (*.png)" });
+		fileChooser.setFilterExtensions(saveFilterExtensions);
+		fileChooser.setFilterNames(saveFilterNames);
 		String filename = fileChooser.open();
 		lastPath = fileChooser.getFilterPath();
 		if (filename == null)
@@ -1024,9 +1039,29 @@ public class ImageAnalyzer {
 		imageCanvas.setCursor(waitCursor);
 		try {
 			// Save the current image to the specified file.
-			loader.data = new ImageData[] {imageData};
+			boolean multi = false;
+			if (loader.data.length > 1) {
+				MessageBox box = new MessageBox(shell, SWT.ICON_QUESTION | SWT.YES | SWT.NO | SWT.CANCEL);
+				box.setMessage(createMsg(bundle.getString("Save_all"), new Integer(loader.data.length)));
+				int result = box.open();
+				if (result == SWT.CANCEL) return;
+				if (result == SWT.YES) multi = true;
+			}
+			/* If the image has transparency but the user has transparency turned off,
+			 * turn it off in the saved image. */
+			int transparentPixel = imageData.transparentPixel;
+			if (!multi && transparentPixel != -1 && !transparent) {
+				imageData.transparentPixel = -1;
+			}
+			
+			if (!multi) loader.data = new ImageData[] {imageData};
 			loader.save(filename, filetype);
 			
+			/* Restore the previous transparency setting. */
+			if (!multi && transparentPixel != -1 && !transparent) {
+				imageData.transparentPixel = transparentPixel;
+			}
+
 			// Update the shell title and file type label,
 			// and use the new file.
 			fileName = filename;
@@ -1053,8 +1088,8 @@ public class ImageAnalyzer {
 		FileDialog fileChooser = new FileDialog(shell, SWT.SAVE);
 		fileChooser.setFilterPath(lastPath);
 		if (fileName != null) fileChooser.setFileName(fileName);
-		fileChooser.setFilterExtensions(new String[] { "*.bmp", "*.gif", "*.ico", "*.jpg", "*.png" });
-		fileChooser.setFilterNames(new String[] { "BMP (*.bmp)", "GIF (*.gif)", "ICO (*.ico)", "JPEG (*.jpg)", "PNG (*.png)" });
+		fileChooser.setFilterExtensions(saveFilterExtensions);
+		fileChooser.setFilterNames(saveFilterNames);
 		String filename = fileChooser.open();
 		lastPath = fileChooser.getFilterPath();
 		if (filename == null)
@@ -1679,15 +1714,35 @@ public class ImageAnalyzer {
 	}
 
 	void paintImage(PaintEvent event) {
+		GC gc = event.gc;
 		Image paintImage = image;
+		
+		/* If the user wants to see the transparent pixel in its actual color,
+		 * then temporarily turn off transparency.
+		 */
 		int transparentPixel = imageData.transparentPixel;
 		if (transparentPixel != -1 && !transparent) {
 			imageData.transparentPixel = -1;
 			paintImage = new Image(display, imageData);
 		}
+		
+		/* Scale the image when drawing, using the user's selected scaling factor. */
 		int w = Math.round(imageData.width * xscale);
 		int h = Math.round(imageData.height * yscale);
-		event.gc.drawImage(
+		
+		/* If any of the background is visible, fill it with the background color. */
+		Rectangle bounds = imageCanvas.getBounds();
+		if (imageData.getTransparencyType() != SWT.TRANSPARENCY_NONE) {
+			/* If there is any transparency at all, fill the whole background. */
+			gc.fillRectangle(0, 0, bounds.width, bounds.height);
+		} else {
+			/* Otherwise, just fill in the backwards L. */
+			if (ix + w < bounds.width) gc.fillRectangle(ix + w, 0, bounds.width - (ix + w), bounds.height);
+			if (iy + h < bounds.height) gc.fillRectangle(0, iy + h, ix + w, bounds.height - (iy + h));
+		}
+		
+		/* Draw the image */
+		gc.drawImage(
 			paintImage,
 			0,
 			0,
@@ -1697,10 +1752,12 @@ public class ImageAnalyzer {
 			iy + imageData.y,
 			w,
 			h);
+		
+		/* If there is a mask and the user wants to see it, draw it. */
 		if (showMask && (imageData.getTransparencyType() != SWT.TRANSPARENCY_NONE)) {
 			ImageData maskImageData = imageData.getTransparencyMask();
 			Image maskImage = new Image(display, maskImageData);
-			event.gc.drawImage(
+			gc.drawImage(
 				maskImage,
 				0,
 				0,
@@ -1712,6 +1769,8 @@ public class ImageAnalyzer {
 				h);
 			maskImage.dispose();
 		}
+		
+		/* If transparency was temporarily disabled, restore it. */
 		if (transparentPixel != -1 && !transparent) {
 			imageData.transparentPixel = transparentPixel;
 			paintImage.dispose();
@@ -1896,35 +1955,47 @@ public class ImageAnalyzer {
 	 */
 	String dataHexDump(String lineDelimiter) {
 		if (image == null) return "";
-		char[] dump = new char[imageData.height * (6 + 3 * imageData.bytesPerLine + lineDelimiter.length())];
-		int index = 0;
-		for (int i = 0; i < imageData.data.length; i++) {
-			if (i % imageData.bytesPerLine == 0) {
-				int line = i / imageData.bytesPerLine;
-				dump[index++] = Character.forDigit(line / 1000 % 10, 10);
-				dump[index++] = Character.forDigit(line / 100 % 10, 10);
-				dump[index++] = Character.forDigit(line / 10 % 10, 10);
-				dump[index++] = Character.forDigit(line % 10, 10);
-				dump[index++] = ':';
-				dump[index++] = ' ';
-			}
-			byte b = imageData.data[i];
-			dump[index++] = Character.forDigit((b & 0xF0) >> 4, 16);
-			dump[index++] = Character.forDigit(b & 0x0F, 16);
-			dump[index++] = ' ';
-			if ((i + 1) % imageData.bytesPerLine == 0) {
-				dump[index++] = lineDelimiter.charAt(0);
-				if (lineDelimiter.length() > 1)
-					dump[index++] = lineDelimiter.charAt(1);
-			}
+		boolean truncated = false;
+		char[] dump = null;
+		try {
+			dump = new char[imageData.height * (6 + 3 * imageData.bytesPerLine + lineDelimiter.length())];
+		} catch (OutOfMemoryError e) {
+			/* Too much data to dump - truncate at 4M. */
+			dump = new char[4 * 1024 * 1024];
+			truncated = true;
 		}
+		int index = 0;
+		try {
+			for (int i = 0; i < imageData.data.length; i++) {
+				if (i % imageData.bytesPerLine == 0) {
+					int line = i / imageData.bytesPerLine;
+					dump[index++] = Character.forDigit(line / 1000 % 10, 10);
+					dump[index++] = Character.forDigit(line / 100 % 10, 10);
+					dump[index++] = Character.forDigit(line / 10 % 10, 10);
+					dump[index++] = Character.forDigit(line % 10, 10);
+					dump[index++] = ':';
+					dump[index++] = ' ';
+				}
+				byte b = imageData.data[i];
+				dump[index++] = Character.forDigit((b & 0xF0) >> 4, 16);
+				dump[index++] = Character.forDigit(b & 0x0F, 16);
+				dump[index++] = ' ';
+				if ((i + 1) % imageData.bytesPerLine == 0) {
+					dump[index++] = lineDelimiter.charAt(0);
+					if (lineDelimiter.length() > 1)
+						dump[index++] = lineDelimiter.charAt(1);
+				}
+			}
+		} catch (IndexOutOfBoundsException e) {}
 		String result = "";
 		try {
 			result = new String(dump);
 		} catch (OutOfMemoryError e) {
 			/* Too much data to display in the text widget - truncate at 4M. */
-			result = new String(dump, 0, 4 * 1024 * 1024) + "\n ...data dump truncated at 4M...";
+			result = new String(dump, 0, 4 * 1024 * 1024);
+			truncated = true;
 		}
+		if (truncated) result += "\n ...data dump truncated at 4M...";
 		return result;
 	}
 	
@@ -2158,10 +2229,12 @@ public class ImageAnalyzer {
 			return SWT.IMAGE_GIF;
 		if (ext.equalsIgnoreCase("ico"))
 			return SWT.IMAGE_ICO;
-		if (ext.equalsIgnoreCase("jpg") || ext.equalsIgnoreCase("jpeg"))
+		if (ext.equalsIgnoreCase("jpg") || ext.equalsIgnoreCase("jpeg") || ext.equalsIgnoreCase("jfif"))
 			return SWT.IMAGE_JPEG;
 		if (ext.equalsIgnoreCase("png"))
 			return SWT.IMAGE_PNG;
+		if (ext.equalsIgnoreCase("tif") || ext.equalsIgnoreCase("tiff"))
+			return SWT.IMAGE_TIFF;
 		return SWT.IMAGE_UNDEFINED;
 	}
 	
