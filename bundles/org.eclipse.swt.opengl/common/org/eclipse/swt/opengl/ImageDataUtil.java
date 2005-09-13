@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.opengl;
 
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.PaletteData;
+
 
 public class ImageDataUtil {
 	/**
@@ -520,5 +523,44 @@ public class ImageDataUtil {
 			mask >>>= 1;
 		}
 		return i - shift;
+	}
+
+	public static ImageData convertImageData (ImageData source) {
+		PaletteData palette = new PaletteData (0xff0000, 0xff00, 0xff);
+		ImageData newSource = new ImageData (source.width, source.height, 24, palette);
+
+		ImageDataUtil.blit (
+			1,
+			source.data,
+			source.depth,
+			source.bytesPerLine,
+			(source.depth != 16) ? MSB_FIRST : LSB_FIRST,
+			0,
+			0,
+			source.width,
+			source.height,
+			source.palette.redMask,
+			source.palette.greenMask,
+			source.palette.blueMask,
+			255,
+			null,
+			0,
+			0,
+			0,
+			newSource.data,
+			newSource.depth,
+			newSource.bytesPerLine,
+			(newSource.depth != 16) ? MSB_FIRST : LSB_FIRST,
+			0,
+			0,
+			newSource.width,
+			newSource.height,
+			newSource.palette.redMask,
+			newSource.palette.greenMask,
+			newSource.palette.blueMask,
+			false,
+			true);
+
+		return newSource;
 	}
 }
