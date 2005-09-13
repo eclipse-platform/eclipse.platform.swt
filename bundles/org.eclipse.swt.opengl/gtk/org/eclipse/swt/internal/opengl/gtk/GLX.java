@@ -8,19 +8,15 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.opengl.internal.gtk;
+package org.eclipse.swt.internal.opengl.gtk;
 
 import org.eclipse.swt.opengl.Library;
 
-public class XGL {
+public class GLX {
 	
 static {
 	Library.loadLibrary("gl");
 }
-
-public static final int GLX_VERSION_1_1 = 1;
-public static final int GLX_VERSION_1_2 = 1;
-public static final int GLX_VERSION_1_3 = 1;
 
 /*
 ** Visual Config Attributes (glXGetConfig, glXGetFBConfigAttrib)
@@ -195,15 +191,14 @@ public static final int GLX_SHARE_CONTEXT_EXT	= 0x800A;	/* id of share context *
 public static final int GLX_VISUAL_ID_EXT	= 0x800B;	/* id of context's visual */
 public static final int GLX_SCREEN_EXT		= 0x800C;	/* screen number */
 
-/* GLX Extension Strings */
-public static final int GLX_EXT_import_context	= 1;
-public static final int GLX_EXT_visual_info	= 1;
-public static final int GLX_EXT_visual_rating	= 1;
-public static final int GLX_ARB_get_proc_address = 1;
+/*
+* GLX 1.4 
+*/
+public static final int GLX_SAMPLE_BUFFERS = 100000;
+public static final int GLX_SAMPLES = 100001;
 
 public static final native int glXChooseVisual(int dpy, int screen, int[] attribList);
 public static final native void glXCopyContext(int dpy, int src, int dst, int mask);
-//public static final native int glXCreateContext(int dpy, int vis, int shareList, boolean direct);
 public static final native int glXCreateContext(int dpy, XVisualInfo vis, int shareList, boolean direct);
 public static final native int glXCreateGLXPixmap(int dpy, XVisualInfo vis, int pixmap);
 public static final native void glXDestroyContext(int dpy, int ctx);

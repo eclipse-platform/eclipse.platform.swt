@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.opengl.internal.gtk;
+package org.eclipse.swt.internal.opengl.gtk;
 
  
 public class XVisualInfo {
