@@ -115,7 +115,7 @@ class StencilTab extends OpenGLTab {
 		GL.glClearDepth(1.0f);
 		int[] textureOut = new int[1];
 		GL.glGenTextures(1, textureOut);
-		loadTexture(getContext(), IMAGE, 0, textureOut);
+		loadTexture(getGlCanvas(), IMAGE, 0, textureOut);
 		this.texture = textureOut[0];
 		quadratic = GLU.gluNewQuadric();
 		GLU.gluQuadricNormals(quadratic, GLU.GLU_SMOOTH);

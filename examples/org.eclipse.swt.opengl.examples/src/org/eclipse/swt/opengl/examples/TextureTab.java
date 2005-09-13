@@ -98,7 +98,7 @@ class TextureTab extends OpenGLTab {
 		GL.glClearDepth(1.0f);
 		int[] textureOut = new int[1];
 		GL.glGenTextures(1, textureOut);
-		loadTexture(getContext(), IMAGE, 0, textureOut);
+		loadTexture(getGlCanvas(), IMAGE, 0, textureOut);
 		texture = textureOut[0];
 		GL.glDepthFunc(GL.GL_LEQUAL);
 		GL.glPolygonMode(GL.GL_BACK, GL.GL_FILL);

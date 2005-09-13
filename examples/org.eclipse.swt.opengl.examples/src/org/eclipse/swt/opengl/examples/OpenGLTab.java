@@ -26,9 +26,8 @@ import org.eclipse.swt.opengl.*;
  * with which to share code that is common to every page in the folder.
  */
 abstract class OpenGLTab {
-	private Canvas glCanvas;
+	private GLCanvas glCanvas;
 	private Composite tabFolderPage;
-	private GLContext context;
 	private boolean stencilSupport;
 	private final static int DEFAULT_SLEEP_LENGTH = 100;
 
@@ -38,15 +37,6 @@ abstract class OpenGLTab {
 	 * @param composite the parent composite
 	 */
 	abstract void createControls(Composite composite);
-
-	/**
-	 * Creates the OpenGL canvas on which all drawing is done.
-	 */
-	void createOpenGLContext() {
-		context = new GLContext(glCanvas);
-		setCurrent();
-		setupViewingArea();
-	}
 
 	/**
 	 * Creates the tab folder page.
@@ -62,7 +52,9 @@ abstract class OpenGLTab {
 		gridData.heightHint = 400;
 		gridData.widthHint = 400;
 		gridData.verticalAlignment = GridData.BEGINNING;
-		glCanvas = new Canvas(tabFolderPage, SWT.NONE);
+		GLFormatData data = new GLFormatData();
+		data.stencilSize = 8;
+		glCanvas = new GLCanvas(tabFolderPage, SWT.NONE, data);
 		glCanvas.setLayout(new GridLayout());
 		glCanvas.setLayoutData(gridData);
 		glCanvas.setSize(400, 400);		// needed for windows
@@ -74,7 +66,8 @@ abstract class OpenGLTab {
 		controlComposite.setLayoutData(gridData);
 
 		// create the OpenGL Screen and controls
-		createOpenGLContext();
+		setCurrent();
+		setupViewingArea();
 
 		// determine if native stencil support is available
 		int[] param = new int[1];
@@ -97,16 +90,6 @@ abstract class OpenGLTab {
 	 * Disposes all resources allocated by this tab.
 	 */
 	void dispose() {
-		context.dispose();
-	}
-
-	/**
-	 * Returns the context for this tab.
-	 * 
-	 * @return GLContext
-	 */
-	GLContext getContext() {
-		return context;
 	}
 
 	/**
@@ -114,7 +97,7 @@ abstract class OpenGLTab {
 	 * 
 	 * @return Canvas
 	 */
-	Canvas getGlCanvas() {
+	GLCanvas getGlCanvas() {
 		return glCanvas;
 	}
 
@@ -161,7 +144,7 @@ abstract class OpenGLTab {
 	 * @param index
 	 * @param texture[]
 	 */
-	static void loadTexture(GLContext context, String fileName, int index, int[] texture) {
+	static void loadTexture(GLCanvas context, String fileName, int index, int[] texture) {
 		GL.glBindTexture(GL.GL_TEXTURE_2D, texture[index]);
 		ImageData source =
 			new ImageData(OpenGLTab.class.getResourceAsStream(fileName));
@@ -171,7 +154,7 @@ abstract class OpenGLTab {
 		gc.drawImage(image, 0, 0, source.width, source.height, 0, 0, 256, 256);
 		source = newImage.getImageData();
 		gc.dispose();
-		source = context.convertImageData(source);
+		source = ImageDataUtil.convertImageData(source);
 		newImage.dispose();
 		image.dispose();
 		GL.glTexImage2D(
@@ -186,6 +169,7 @@ abstract class OpenGLTab {
 	 * Renders this tab.
 	 */
 	void render() {
+		setCurrent();
 		if (!isStencilSupportNeeded() || hasStencilSupport()) {
 			renderScene();
 		} else {
@@ -212,7 +196,7 @@ abstract class OpenGLTab {
 	 * Sets this rendering context to be current.
 	 */
 	void setCurrent() {
-		context.setCurrent();
+		glCanvas.setCurrent();
 	}
 	
 	/**
@@ -238,6 +222,6 @@ abstract class OpenGLTab {
 	 * Swaps the buffers.
 	 */
 	void swap() {
-		context.swapBuffers();
+		glCanvas.swapBuffers();
 	}
 }

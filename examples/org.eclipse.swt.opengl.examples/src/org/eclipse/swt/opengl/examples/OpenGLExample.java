@@ -53,18 +53,16 @@ public class OpenGLExample {
 			new OpenGLTab[] {
 				new AntialiasingTab(),
 				new AreaTab(),
-				new BezierTab(),
-				new BitmapTextTab(),
 				new FogTab(),
 				new GradientTab(),
 				new LightTab(),
 				new NurbTab(),
 				new ObjectsTab(),
-				new OutlineTextTab(),	/* outline tab is win32-only */
 				new ReflectionTab(),
 				new StencilTab(),
 				new TextureTab(),
-				new TransparencyTab()};
+				new TransparencyTab()
+				};
 				
 		for (int i = 0; i < tabs.length; i++) {
 			TabItem item = new TabItem(tabFolder, SWT.NONE);

@@ -18,7 +18,7 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.opengl.*;
 import org.eclipse.swt.widgets.*;
 
-class TransparencyTab extends SelectionTab {
+class TransparencyTab extends OpenGLTab {
 	private float[] alphas = { 0.3f, 0.5f, 1.0f };
 	private int quadratic;
 	private int currentSelection = 1;
@@ -61,20 +61,6 @@ class TransparencyTab extends SelectionTab {
 				currentSelection = objectCombo.getSelectionIndex() + 1;
 				transparencySlider.setSelection(
 					(int) ((1.0f - alphas[currentSelection - 1]) * 10));
-			}
-		});
-
-		final Canvas glCanvas = getGlCanvas();
-		glCanvas.addMouseListener(new MouseAdapter() {
-			public void mouseUp(MouseEvent e) {
-				Rectangle rect = glCanvas.getClientArea();
-				e.y = rect.height - e.y;
-				if (e.button == 1) {
-					processSelection(e.x, e.y, 2);
-					transparencySlider.setSelection(
-						(int) ((1.0f - alphas[currentSelection - 1]) * 10));
-					objectCombo.select(currentSelection - 1);
-				}
 			}
 		});
 	}

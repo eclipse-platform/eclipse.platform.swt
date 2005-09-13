@@ -454,7 +454,7 @@ class ReflectionTab extends OpenGLTab {
 		GL.glClearStencil(0);
 		GL.glGenTextures(IMAGES.length, textures);
 		for (int i = 0; i < IMAGES.length; i++) {
-			loadTexture(getContext(), IMAGES[i], i, textures);
+			loadTexture(getGlCanvas(), IMAGES[i], i, textures);
 		}
 
 		GL.glShadeModel(GL.GL_SMOOTH);
