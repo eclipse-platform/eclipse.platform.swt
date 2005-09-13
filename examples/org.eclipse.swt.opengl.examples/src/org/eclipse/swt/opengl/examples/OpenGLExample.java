@@ -62,7 +62,7 @@ public class OpenGLExample {
 				new StencilTab(),
 				new TextureTab(),
 				new TransparencyTab()
-				};
+			};
 				
 		for (int i = 0; i < tabs.length; i++) {
 			TabItem item = new TabItem(tabFolder, SWT.NONE);
