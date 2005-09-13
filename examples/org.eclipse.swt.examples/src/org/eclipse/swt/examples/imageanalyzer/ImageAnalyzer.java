@@ -1954,14 +1954,15 @@ public class ImageAnalyzer {
 	 * parameter must be a string of length 1 or 2.
 	 */
 	String dataHexDump(String lineDelimiter) {
+		final int MAX_DUMP = 1024 * 1024;
 		if (image == null) return "";
 		boolean truncated = false;
 		char[] dump = null;
 		try {
 			dump = new char[imageData.height * (6 + 3 * imageData.bytesPerLine + lineDelimiter.length())];
 		} catch (OutOfMemoryError e) {
-			/* Too much data to dump - truncate at 4M. */
-			dump = new char[4 * 1024 * 1024];
+			/* Too much data to dump - truncate. */
+			dump = new char[MAX_DUMP];
 			truncated = true;
 		}
 		int index = 0;
@@ -1991,11 +1992,11 @@ public class ImageAnalyzer {
 		try {
 			result = new String(dump);
 		} catch (OutOfMemoryError e) {
-			/* Too much data to display in the text widget - truncate at 4M. */
-			result = new String(dump, 0, 4 * 1024 * 1024);
+			/* Too much data to display in the text widget - truncate. */
+			result = new String(dump, 0, MAX_DUMP);
 			truncated = true;
 		}
-		if (truncated) result += "\n ...data dump truncated at 4M...";
+		if (truncated) result += "\n ...data dump truncated at " + MAX_DUMP + "bytes...";
 		return result;
 	}
 	
