@@ -2141,8 +2141,39 @@ int /*long*/ DoContent(int /*long*/ aContentType, int /*long*/ aIsContentPreferr
 }
 
 int /*long*/ IsPreferred(int /*long*/ aContentType, int /*long*/ aDesiredContentType, int /*long*/ retval) {
-	/* Note. boolean remains of size 4 on 64 bit machine */
-	XPCOM.memmove(retval, new int[] {1}, 4);
+	boolean preferred = false;
+	int size = XPCOM.strlen(aContentType);
+	if (size > 0) {
+		byte[] typeBytes = new byte[size + 1];
+		XPCOM.memmove(typeBytes, aContentType, size);
+		String contentType = new String(typeBytes);
+
+		/* do not attempt to handle known problematic content types */
+		if (!contentType.equals(XPCOM.CONTENT_MAYBETEXT) && !contentType.equals(XPCOM.CONTENT_MULTIPART)) {
+			/* determine whether browser can handle the content type */
+			int[] result = new int[1];
+			int rc = XPCOM.NS_GetServiceManager(result);
+			if (rc != XPCOM.NS_OK) error(rc);
+			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+			nsIServiceManager serviceManager = new nsIServiceManager(result[0]);
+			result[0] = 0;
+			rc = serviceManager.GetService(XPCOM.NS_CATEGORYMANAGER_CID, nsICategoryManager.NS_ICATEGORYMANAGER_IID, result);
+			serviceManager.Release();
+			if (rc != XPCOM.NS_OK) error(rc);
+			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+
+			nsICategoryManager categoryManager = new nsICategoryManager(result[0]);
+			result[0] = 0;
+			byte[] categoryBytes = Converter.wcsToMbcs(null, "Gecko-Content-Viewers", true);	//$NON-NLS-1$
+			rc = categoryManager.GetCategoryEntry(categoryBytes, typeBytes, result);
+			categoryManager.Release();
+			/* if no viewer for the content type is registered then rc == XPCOM.NS_ERROR_NOT_AVAILABLE */
+			preferred = rc == XPCOM.NS_OK;
+		}
+	}
+
+	/* note that boolean remains of size 4 on 64 bit machines */
+	XPCOM.memmove(retval, new int[] {preferred ? 1 : 0}, 4);
 	return XPCOM.NS_OK;
 }
 
