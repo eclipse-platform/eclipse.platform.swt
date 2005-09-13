@@ -78,7 +78,7 @@ private boolean isBidi() {
 	return BidiUtil.isBidiPlatform();
 }
 protected void setUp() {
-	if (isBidi()) XINSET = 3;
+	if (isBidi()) XINSET = 2;
 	else XINSET = 0;
 	shell = new Shell();
 	styledText = new StyledText(shell, SWT.NULL);
