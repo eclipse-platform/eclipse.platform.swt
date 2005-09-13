@@ -87,6 +87,65 @@ class PromptDialog extends Dialog {
 		}
 	}
 	
+	public void prompt(String title, String text, String check, final String[] value, final int[] checkValue, final int[] result) {
+		Shell parent = getParent();
+		final Shell shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
+		if (title != null) shell.setText(title);
+		GridLayout gridLayout = new GridLayout();
+		shell.setLayout(gridLayout);
+		Label label = new Label(shell, SWT.WRAP);
+		label.setText(text);
+		GridData data = new GridData();
+		data.horizontalAlignment = GridData.FILL;
+		data.grabExcessHorizontalSpace = true;
+		label.setLayoutData (data);
+
+		final Text valueText = new Text(shell, SWT.BORDER);
+		if (value[0] != null) valueText.setText(value[0]);
+		data = new GridData();
+		data.horizontalAlignment = GridData.FILL;
+		data.grabExcessHorizontalSpace = true;
+		valueText.setLayoutData(data);
+
+		final Button[] buttons = new Button[3];
+		Listener listener = new Listener() {
+			public void handleEvent(Event event) {
+				if (buttons[0] != null) checkValue[0] = buttons[0].getSelection() ? 1 : 0;
+				value[0] = valueText.getText();
+				result[0] = event.widget == buttons[1] ? 1 : 0;
+				shell.close();
+			}	
+		};
+		if (check != null) {
+			buttons[0] = new Button(shell, SWT.CHECK);
+			buttons[0].setText(check);
+			buttons[0].setSelection(checkValue[0] != 0);
+			data = new GridData ();
+			data.horizontalAlignment = GridData.END;
+			buttons[0].setLayoutData (data);
+		}
+		Composite composite = new Composite(shell, SWT.NONE);
+		data = new GridData();
+		data.horizontalAlignment = GridData.END;
+		composite.setLayoutData (data);
+		composite.setLayout(new GridLayout(2, true));
+		buttons[1] = new Button(composite, SWT.PUSH);
+		buttons[1].setText(SWT.getMessage("SWT_OK")); //$NON-NLS-1$
+		buttons[1].setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		buttons[1].addListener(SWT.Selection, listener);
+		buttons[2] = new Button(composite, SWT.PUSH);
+		buttons[2].setText(SWT.getMessage("SWT_Cancel")); //$NON-NLS-1$
+		buttons[2].setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		buttons[2].addListener(SWT.Selection, listener);
+
+		shell.pack();
+		shell.open();
+		Display display = parent.getDisplay();
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch()) display.sleep();
+		}	
+	}
+
 	public void promptUsernameAndPassword(String title, String text, String check, final String[] user, final String[] pass, final int[] checkValue, final int[] result) {
 		Shell parent = getParent();
 		final Shell shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);

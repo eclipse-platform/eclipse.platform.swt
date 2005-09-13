@@ -239,7 +239,87 @@ public int ConfirmEx(int parent, int dialogTitle, int text, int buttonFlags, int
 }
 
 public int Prompt(int parent, int dialogTitle, int text, int value, int checkMsg, int checkValue, int _retval) {
-	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
+	Browser browser = getBrowser(parent);
+	String titleLabel = null, textLabel, checkLabel = null;
+	String[] valueLabel = new String[1];
+	char[] dest;
+	int length;
+	if (dialogTitle != 0) {
+		length = XPCOM.strlen_PRUnichar(dialogTitle);
+		dest = new char[length];
+		XPCOM.memmove(dest, dialogTitle, length * 2);
+		titleLabel = new String(dest);
+	}
+	
+	length = XPCOM.strlen_PRUnichar(text);
+	dest = new char[length];
+	XPCOM.memmove(dest, text, length * 2);
+	textLabel = new String(dest);
+	
+	int [] valueAddr = new int [1];
+	XPCOM.memmove(valueAddr, value, 4);
+	if (valueAddr[0] != 0) {
+		length = XPCOM.strlen_PRUnichar(valueAddr[0]);
+		dest = new char[length];
+		XPCOM.memmove(dest, valueAddr[0], length * 2);
+		valueLabel[0] = new String(dest);		
+	}
+	
+	if (checkMsg != 0) {
+		length = XPCOM.strlen_PRUnichar(checkMsg);
+		dest = new char[length];
+		XPCOM.memmove(dest, checkMsg, length * 2);
+		checkLabel = new String(dest);
+	}
+	
+	PromptDialog dialog = new PromptDialog(browser.getShell());
+	int[] check = new int[1], result = new int[1];
+	if (checkValue != 0) XPCOM.memmove(check, checkValue, 4);
+	dialog.prompt(titleLabel, textLabel, checkLabel, valueLabel, check, result);
+
+	XPCOM.memmove(_retval, result, 4);
+	if (result[0] == 1) {
+		/* 
+		* User selected OK. User name and password are returned as PRUnichar values. Any default
+		* value that we override must be freed using the nsIMemory service.
+		*/
+		int cnt, size;
+		int ptr;
+		char[] buffer;
+		int [] result2 = new int [1];
+		if (valueLabel[0] != null) {
+			cnt = valueLabel[0].length();
+			buffer = new char[cnt + 1];
+			valueLabel[0].getChars(0, cnt, buffer, 0);
+			size = buffer.length * 2;
+			ptr = XPCOM.PR_Malloc(size);
+			XPCOM.memmove(ptr, buffer, size);
+			XPCOM.memmove(value, new int [] {ptr}, 4);
+
+			if (valueAddr[0] != 0) {
+				int rc = XPCOM.NS_GetServiceManager(result2);
+				if (rc != XPCOM.NS_OK) SWT.error(rc);
+				if (result2[0] == 0) SWT.error(XPCOM.NS_NOINTERFACE);
+			
+				nsIServiceManager serviceManager = new nsIServiceManager(result2[0]);
+				result2[0] = 0;
+				byte[] tmp = XPCOM.NS_MEMORY_CONTRACTID.getBytes();
+				byte[] aContractID = new byte[tmp.length + 1];
+				System.arraycopy(tmp, 0, aContractID, 0, tmp.length);
+				rc = serviceManager.GetServiceByContractID(aContractID, nsIMemory.NS_IMEMORY_IID, result2);
+				if (rc != XPCOM.NS_OK) SWT.error(rc);
+				if (result2[0] == 0) SWT.error(XPCOM.NS_NOINTERFACE);		
+				serviceManager.Release();
+				
+				nsIMemory memory = new nsIMemory(result2[0]);
+				result2[0] = 0;
+				memory.Free(valueAddr[0]);
+				memory.Release();
+			}
+		}
+	}
+	if (checkValue != 0) XPCOM.memmove(checkValue, check, 4);
+	return XPCOM.NS_OK;
 }
 
 public int PromptUsernameAndPassword(int parent, int dialogTitle, int text, int username, int password, int checkMsg, int checkValue, int _retval) {
