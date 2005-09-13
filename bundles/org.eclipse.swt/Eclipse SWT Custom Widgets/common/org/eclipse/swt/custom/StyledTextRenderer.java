@@ -178,14 +178,6 @@ protected abstract Rectangle getClientArea();
  * calculations.
  */
 protected abstract StyledTextContent getContent();
-/**
- * Returns the Device that is being rendered on.
- * </p>
- * @return the Device that is being rendered on.
- */
-Device getDevice() {
-	return device;
-}
 int getBaseline() {
 	return ascent;
 }
