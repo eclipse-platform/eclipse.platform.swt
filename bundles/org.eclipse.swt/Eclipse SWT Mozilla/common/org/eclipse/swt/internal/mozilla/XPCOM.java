@@ -45,8 +45,8 @@ public class XPCOM extends Platform {
 	public static final nsID NS_INPUTSTREAMCHANNEL_CID = new nsID("6ddb050c-0d04-11d4-986e-00c04fa0cf4a"); //$NON-NLS-1$
 	public static final nsID NS_LOADGROUP_CID = new nsID("e1c61582-2a84-11d3-8cce-0060b0fc14a3"); //$NON-NLS-1$
 	public static final nsID NS_PROMPTSERVICE_CID = new nsID("a2112d6a-0e28-421f-b46a-25c0b308cbd0"); //$NON-NLS-1$
+	public static final nsID NS_CATEGORYMANAGER_CID = new nsID("16d222a6-1dd2-11b2-b693-f38b02c021b2"); //$NON-NLS-1$
 	
-	public static final String NS_CATEGORYMANAGER_CONTRACTID = "@mozilla.org/categorymanager;1"; //$NON-NLS-1$
 	public static final String NS_DOWNLOAD_CONTRACTID = "@mozilla.org/download;1"; //$NON-NLS-1$
 	public static final String NS_FILEPICKER_CONTRACTID = "@mozilla.org/filepicker;1"; //$NON-NLS-1$
 	public static final String NS_PROFILE_CONTRACTID = "@mozilla.org/profile/manager;1"; //$NON-NLS-1$
@@ -207,4 +207,8 @@ static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, char[] arg1, char[] arg2, int /*long*/[] arg3, int /*long*/[] arg4, char[] arg5, boolean[] arg6, boolean[] arg7);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, char[] arg1, char[] arg2, int arg3, char[] arg4, char[] arg5, char[] arg6, char[] arg7, boolean[] arg8, int[] arg9);
 static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, int /*long*/ arg0, int /*long*/ arg1, int /*long*/ arg2, boolean arg3, char[] arg4, int /*long*/ arg5, int /*long*/ arg6, int arg7, int /*long*/ arg8, boolean arg9, int /*long*/[] arg10, int /*long*/[] arg11);
+static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, byte[] arg0);
+static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, byte[] arg0, byte[] arg1, boolean arg2);
+static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, byte[] arg0, byte[] arg1, int /*long*/[] arg2);
+static final native int VtblCall(int fnNumber, int /*long*/ ppVtbl, byte[] arg0, byte[] arg1, byte[] arg2, boolean arg3, boolean arg4, int /*long*/[] arg5);
 }
