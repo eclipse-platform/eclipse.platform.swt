@@ -318,6 +318,7 @@ public class OS extends Platform {
 	public static final int GTK_VISIBLE = 0x100;
 	public static final int GDK_WA_X = 1 << 2;
 	public static final int GDK_WA_Y = 1 << 3;
+	public static final int GDK_WA_VISUAL = 1 << 6;
 	public static final int GTK_WINDOW_POPUP = 0x1;
 	public static final int GTK_WINDOW_TOPLEVEL = 0x0;
 	public static final int GDK_WINDOW_TYPE_HINT_DIALOG = 1;
@@ -803,6 +804,15 @@ public static final int /*long*/ gdk_x11_drawable_get_xid(int /*long*/ drawable)
 	lock.lock();
 	try {
 		return _gdk_x11_drawable_get_xid(drawable);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _gdk_x11_screen_lookup_visual(int /*long*/ screen, int xvisualid);
+public static final int /*long*/ gdk_x11_screen_lookup_visual(int /*long*/ screen, int xvisualid) {
+	lock.lock();
+	try {
+		return _gdk_x11_screen_lookup_visual(screen, xvisualid);
 	} finally {
 		lock.unlock();
 	}

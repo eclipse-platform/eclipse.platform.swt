@@ -5144,6 +5144,35 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1x11_1screen_1get_1window_1manager_1name)
 }
 #endif
 
+#ifndef NO__1gdk_1x11_1screen_1lookup_1visual
+JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1x11_1screen_1lookup_1visual)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1x11_1screen_1lookup_1visual_FUNC);
+/*
+	rc = (jint)gdk_x11_screen_lookup_visual((GdkScreen *)arg0, (VisualID)arg1);
+*/
+	{
+		static int initialized = 0;
+		static void *handle = NULL;
+		typedef jint (*FPTR)(GdkScreen *, VisualID);
+		static FPTR fptr;
+		rc = 0;
+		if (!initialized) {
+			if (!handle) handle = dlopen(gdk_x11_screen_lookup_visual_LIB, RTLD_LAZY);
+			if (handle) fptr = (FPTR)dlsym(handle, "gdk_x11_screen_lookup_visual");
+			initialized = 1;
+		}
+		if (fptr) {
+			rc = (jint)(*fptr)((GdkScreen *)arg0, (VisualID)arg1);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, _1gdk_1x11_1screen_1lookup_1visual_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1x11_1visual_1get_1xvisual
 JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1x11_1visual_1get_1xvisual)
 	(JNIEnv *env, jclass that, jint arg0)
