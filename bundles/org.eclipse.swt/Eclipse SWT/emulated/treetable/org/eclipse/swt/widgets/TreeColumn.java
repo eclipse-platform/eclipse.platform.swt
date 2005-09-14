@@ -350,7 +350,7 @@ public boolean getResizable () {
 	return resizable;
 }
 public String getToolTipText () {
-	checkWidget();
+	checkWidget ();
 	return toolTipText;
 }
 /**
@@ -598,8 +598,13 @@ public void setText (String value) {
 	}
 }
 public void setToolTipText (String string) {
-	checkWidget();
+	checkWidget ();
+	if (toolTipText == string) return;
+	if (toolTipText != null && toolTipText.equals (string)) return;
 	toolTipText = string;
+	if (parent.toolTipShell == null) return; /* tooltip not currently showing */
+	if (((Integer) parent.toolTipShell.getData ()).intValue () != getIndex ()) return;	/* tooltip showing for different column */
+	parent.headerUpdateToolTip (getX () + (width / 2));	/* update the tooltip text */
 }
 /**
  * Sets the width of the receiver.

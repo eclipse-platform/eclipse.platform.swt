@@ -59,6 +59,11 @@ public class Table extends Composite {
 	TableColumn sortColumn;
 	int sortDirection = SWT.NONE;
 
+	/* column header tooltip */
+	Listener toolTipListener;
+	Shell toolTipShell;
+	Label toolTipLabel;
+
 	Rectangle arrowBounds, checkboxBounds;
 
 	static final int MARGIN_IMAGE = 3;
@@ -67,6 +72,7 @@ public class Table extends Composite {
 	static final int TOLLERANCE_COLUMNRESIZE = 2;
 	static final int WIDTH_HEADER_SHADOW = 2;
 	static final int WIDTH_CELL_HIGHLIGHT = 1;
+	static final int [] toolTipEvents = new int[] {SWT.MouseExit, SWT.MouseHover, SWT.MouseMove, SWT.MouseDown};
 	static final String ELLIPSIS = "...";						//$NON-NLS-1$
 	static final String ID_UNCHECKED = "UNCHECKED";			//$NON-NLS-1$
 	static final String ID_GRAYUNCHECKED = "GRAYUNCHECKED";	//$NON-NLS-1$
@@ -147,9 +153,25 @@ public Table (Composite parent, int style) {
 	header.addListener (SWT.Paint, listener);
 	header.addListener (SWT.MouseDown, listener);
 	header.addListener (SWT.MouseUp, listener);
+	header.addListener (SWT.MouseHover, listener);
 	header.addListener (SWT.MouseDoubleClick, listener);
 	header.addListener (SWT.MouseMove, listener);
 	header.addListener (SWT.MouseExit, listener);
+
+	toolTipListener = new Listener () {
+		public void handleEvent (Event event) {
+			switch (event.type) {
+				case SWT.MouseHover:
+				case SWT.MouseMove:
+					if (headerUpdateToolTip (event.x)) break;
+					// FALL THROUGH
+				case SWT.MouseExit:
+				case SWT.MouseDown:
+					headerHideToolTip ();
+					break;
+			}
+		}
+	};
 
 	ScrollBar vBar = getVerticalBar ();
 	ScrollBar hBar = getHorizontalBar ();
@@ -335,8 +357,8 @@ public void clearAll () {
 	clear (0, itemsCount - 1);
 }
 /*
- * Returns the index of the column that the specified x falls within, or
- * -1 if the x lies to the right of the last column.
+ * Returns the ORDERED index of the column that the specified x falls within,
+ * or -1 if the x lies to the right of the last column.
  */
 int computeColumnIntersect (int x, int startColumn) {
 	TableColumn[] orderedColumns = getOrderedColumns ();
@@ -344,7 +366,7 @@ int computeColumnIntersect (int x, int startColumn) {
 	int rightX = orderedColumns [startColumn].getX ();
 	for (int i = startColumn; i < orderedColumns.length; i++) {
 		rightX += orderedColumns [i].width;
-		if (x <= rightX) return i;
+		if (x < rightX) return i;
 	}
 	return -1;
 }
@@ -553,6 +575,7 @@ void deselectItem (TableItem item) {
 	selectedItems = newSelectedItems;
 }
 void destroyItem (TableColumn column) {
+	headerHideToolTip ();
 	int index = column.getIndex ();
 	int orderedIndex = column.getOrderIndex ();
 
@@ -1170,6 +1193,8 @@ void handleEvents (Event event) {
 				onMouseUp (event);
 			}
 			break;
+		case SWT.MouseHover:
+			headerOnMouseHover (event); break;
 		case SWT.MouseMove:
 			headerOnMouseMove (event); break;
 		case SWT.MouseDoubleClick:
@@ -1212,6 +1237,35 @@ void handleEvents (Event event) {
 			break;			
 	}
 }
+String headerGetToolTip (int x) {
+	int orderedIndex = computeColumnIntersect (x, 0);
+	if (orderedIndex == -1) return null;
+	TableColumn[] orderedColumns = getOrderedColumns ();
+	TableColumn column = orderedColumns [orderedIndex];
+	if (column.toolTipText == null) return null;
+
+	/* no tooltip should appear if the hover is at a column resize opportunity */
+	int columnX = column.getX ();
+	if (orderedIndex > 0 && orderedColumns [orderedIndex - 1].resizable) {
+		/* left column bound is resizable */
+		if (x - columnX <= TOLLERANCE_COLUMNRESIZE) return null;
+	}
+	if (column.resizable) {
+		/* right column bound is resizable */
+		int columnRightX = columnX + column.width;
+		if (columnRightX - x <= TOLLERANCE_COLUMNRESIZE) return null;
+	}
+	return column.toolTipText;
+}
+void headerHideToolTip() {
+	if (toolTipShell == null) return;
+	for (int i = 0; i < toolTipEvents.length; i++) {
+		header.removeListener (toolTipEvents [i], toolTipListener);
+	}
+	toolTipShell.dispose ();
+	toolTipShell = null;
+	toolTipLabel = null;
+}
 void headerOnMouseDoubleClick (Event event) {
 	if (!isFocusControl ()) setFocus ();
 	if (columns.length == 0) return;
@@ -1250,6 +1304,7 @@ void headerOnMouseDown (Event event) {
 				/* open tracker on the dragged column's header cell */
 				int columnX = column.getX ();
 				int pointerOffset = event.x - columnX;
+				headerHideToolTip ();
 				Tracker tracker = new Tracker (this, SWT.NONE);
 				tracker.setRectangles (new Rectangle[] {
 					new Rectangle (columnX, 0, column.width, getHeaderHeight ())
@@ -1307,6 +1362,9 @@ void headerOnMouseDown (Event event) {
 void headerOnMouseExit () {
 	if (resizeColumn != null) return;
 	setCursor (null);	/* ensure that a column resize cursor does not escape */
+}
+void headerOnMouseHover (Event event) {
+	headerShowToolTip (event.x);
 }
 void headerOnMouseMove (Event event) {
 	if (resizeColumn == null) {
@@ -1406,6 +1464,59 @@ void headerPaintVShadows (GC gc, int x, int y, int width, int height) {
 	gc.drawLine (endX - 2, y + 1, endX - 2, height - 2);	/* light inner shadow */
 	gc.setForeground (display.getSystemColor (SWT.COLOR_WIDGET_DARK_SHADOW));
 	gc.drawLine (endX - 1, y, endX - 1, height - 1);		/* dark outer shadow */
+}
+void headerShowToolTip (int x) {
+	String tooltip = headerGetToolTip (x);
+	if (tooltip == null || tooltip.length () == 0) return;
+
+	if (toolTipShell == null) {
+		toolTipShell = new Shell (getShell (), SWT.ON_TOP | SWT.TOOL);
+		toolTipLabel = new Label (toolTipShell, SWT.CENTER);
+		Display display = toolTipShell.getDisplay ();
+		toolTipLabel.setForeground (display.getSystemColor (SWT.COLOR_INFO_FOREGROUND));
+		toolTipLabel.setBackground (display.getSystemColor (SWT.COLOR_INFO_BACKGROUND));
+		for (int i = 0; i < toolTipEvents.length; i++) {
+			header.addListener (toolTipEvents [i], toolTipListener);
+		}
+	}
+	if (headerUpdateToolTip (x)) {
+		toolTipShell.setVisible (true);
+	} else {
+		headerHideToolTip ();
+	}
+}
+boolean headerUpdateToolTip (int x) {
+	String tooltip = headerGetToolTip (x);
+	if (tooltip == null || tooltip.length () == 0) return false;
+	if (tooltip.equals (toolTipLabel.getText ())) return true;
+
+	toolTipLabel.setText (tooltip);
+	TableColumn column = getOrderedColumns () [computeColumnIntersect (x, 0)];
+	toolTipShell.setData (new Integer (column.getIndex ()));
+	Point labelSize = toolTipLabel.computeSize (SWT.DEFAULT, SWT.DEFAULT, true);
+	labelSize.x += 2; labelSize.y += 2;
+	toolTipLabel.setSize (labelSize);
+	toolTipShell.pack ();
+	/*
+	 * On some platforms, there is a minimum size for a shell  
+	 * which may be greater than the label size.
+	 * To avoid having the background of the tip shell showing
+	 * around the label, force the label to fill the entire client area.
+	 */
+	Rectangle area = toolTipShell.getClientArea ();
+	toolTipLabel.setSize (area.width, area.height);
+
+	/* Position the tooltip and ensure it's not located off the screen */
+	Point cursorLocation = getDisplay ().getCursorLocation ();
+	int cursorHeight = 21;	/* assuming cursor is 21x21 */ 
+	Point size = toolTipShell.getSize ();
+	Rectangle rect = getMonitor ().getBounds ();
+	Point pt = new Point (cursorLocation.x, cursorLocation.y + cursorHeight + 2);
+	pt.x = Math.max (pt.x, rect.x);
+	if (pt.x + size.x > rect.x + rect.width) pt.x = rect.x + rect.width - size.x;
+	if (pt.y + size.y > rect.y + rect.height) pt.y = cursorLocation.y - 2 - size.y;
+	toolTipShell.setLocation (pt);
+	return true;
 }
 /**
  * Searches the receiver's list starting at the first column
@@ -1778,6 +1889,12 @@ void onDispose (Event event) {
 	for (int i = 0; i < columns.length; i++) {
 		columns [i].dispose (false);
 	}
+	if (toolTipShell != null) {
+		toolTipShell.dispose ();
+		toolTipShell = null;
+		toolTipLabel = null;
+	}
+	toolTipListener = null;
 	itemsCount = topIndex = horizontalOffset = 0;
 	items = selectedItems = null;
 	columns = orderedColumns = null;
@@ -2987,6 +3104,7 @@ public void setColumnOrder (int [] order) {
 	}
 	if (!reorder) return;
 
+	headerHideToolTip ();
 	int[] oldX = new int [columns.length];
 	for (int i = 0; i < columns.length; i++) {
 		oldX [i] = columns [i].getX ();
@@ -3084,6 +3202,7 @@ void setHeaderImageHeight (int value) {
 public void setHeaderVisible (boolean value) {
 	checkWidget ();
 	if (header.getVisible () == value) return;		/* no change */
+	headerHideToolTip ();
 	header.setVisible (value);
 	updateVerticalBar ();
 	redraw ();
@@ -3464,6 +3583,7 @@ public void showColumn (TableColumn column) {
 	Rectangle bounds = getClientArea ();
 	if (0 <= x && rightX <= bounds.width) return;	 /* column is fully visible */
 
+	headerHideToolTip ();
 	int absX = 0;	/* the X of the column irrespective of the horizontal scroll */
 	TableColumn[] orderedColumns = getOrderedColumns ();
 	for (int i = 0; i < column.getOrderIndex (); i++) {
@@ -3548,6 +3668,7 @@ void sort (int [] items) {
 	}
 }
 void updateColumnWidth (TableColumn column, int width) {
+	headerHideToolTip ();
 	column.width = width;
 	Rectangle bounds = getClientArea ();
 
