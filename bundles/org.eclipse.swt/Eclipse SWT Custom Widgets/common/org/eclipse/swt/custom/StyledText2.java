@@ -102,7 +102,7 @@ public class StyledText2 extends Canvas {
 	Color selectionForeground;	// selection foreground color
 	StyledTextContent logicalContent;	// native content (default or user specified)
 	StyledTextContent content;			// line wrapping content, same as logicalContent if word wrap is off
-	DisplayRenderer2 renderer;
+	StyledTextRenderer2 renderer;
 	Listener listener;
 	TextChangeListener textChangeListener;	// listener for TextChanging, TextChanged and TextSet events from StyledTextContent
 	DefaultLineStyler defaultLineStyler;	// used for setStyles API when no LineStyleListener is registered
@@ -179,7 +179,7 @@ public class StyledText2 extends Canvas {
 
 		StyledText2 parent;
 		Printer printer;
-		PrintRenderer renderer;
+		StyledTextRenderer2 renderer;
 		StyledTextPrintOptions printOptions;
 		StyledTextContent printerContent;				// copy of the widget content
 		Rectangle clientArea;							// client area to print on
@@ -193,7 +193,6 @@ public class StyledText2 extends Canvas {
 		int pageWidth;									// width of a printer page in pixels
 		int startPage;									// first page to print
 		int endPage;									// last page to print
-		int pageSize;									// number of lines on a page
 		int startLine;									// first (wrapped) line to print
 		int endLine;									// last (wrapped) line to print
 		boolean singleLine;								// widget single line mode
@@ -225,12 +224,13 @@ public class StyledText2 extends Canvas {
 				int temp = endPage;
 				endPage = startPage;
 				startPage = temp;
-			}			
+			}
 		} else if (data.scope == PrinterData.SELECTION) {
 			selection = parent.getSelectionRange();
 		}
 		displayFontData = parent.getFont().getFontData()[0];
 		copyContent(parent.getContent());
+		printerColors = new Hashtable();
 		cacheLineData(printerContent);
 	}
 	/**
@@ -255,8 +255,8 @@ public class StyledText2 extends Canvas {
 	 */
 	void cacheLineBackground(int lineOffset, String line) {
 		StyledTextEvent event = parent.getLineBackgroundData(lineOffset, line);
-		if (event != null) {
-			lineBackgrounds.put(new Integer(lineOffset), event);
+		if (event != null && event.lineBackground != null) {
+			lineBackgrounds.put(new Integer(lineOffset), getPrinterColor(event.lineBackground));
 		}
 	}
 	/**
@@ -265,7 +265,7 @@ public class StyledText2 extends Canvas {
 	 * @param printerContent <class>StyledTextContent</class> to request 
 	 * 	line data for.
 	 */
-	void cacheLineData(StyledTextContent printerContent) {	
+	void cacheLineData(StyledTextContent printerContent) {
 		for (int i = 0; i < printerContent.getLineCount(); i++) {
 			int lineOffset = printerContent.getOffsetAtLine(i);
 			String line = printerContent.getLine(i);
@@ -312,10 +312,18 @@ public class StyledText2 extends Canvas {
 					styleCopy.fontStyle = SWT.NORMAL;
 				}
 				if (styleCopy != null) {
+					if (styleCopy.foreground != null) {
+						styleCopy.foreground = getPrinterColor(styleCopy.foreground);
+					}
+					if (styleCopy.background != null) {
+						styleCopy.background = getPrinterColor(styleCopy.background);
+					}
 					styles[i] = styleCopy;
 				}
 			}
-			lineStyles.put(new Integer(lineOffset), event);
+			if (event.styles != null) {
+				lineStyles.put(new Integer(lineOffset), event.styles);
+			}
 		}
 	}
 	/**
@@ -335,33 +343,6 @@ public class StyledText2 extends Canvas {
 			}
 			printerContent.replaceTextRange(insertOffset, 0, original.getTextRange(insertOffset, insertEndOffset - insertOffset));
 			insertOffset = insertEndOffset;
-		}
-	}
-	/**
-	 * Replaces all display colors in the cached line backgrounds and 
-	 * line styles with printer colors.
-	 */
-	void createPrinterColors() {
-		printerColors = new Hashtable();
-		Enumeration values = lineBackgrounds.elements();
-		while (values.hasMoreElements()) {
-			StyledTextEvent event = (StyledTextEvent) values.nextElement();
-			event.lineBackground = getPrinterColor(event.lineBackground);
-		}
-		values = lineStyles.elements();
-		while (values.hasMoreElements()) {
-			StyledTextEvent event = (StyledTextEvent) values.nextElement();
-			for (int i = 0; i < event.styles.length; i++) {
-				StyleRange style = event.styles[i];
-				Color printerBackground = getPrinterColor(style.background);
-				Color printerForeground = getPrinterColor(style.foreground);
-				if (printerBackground != style.background || printerForeground != style.foreground) {
-					style = (StyleRange) style.clone();
-					style.background = printerBackground;
-					style.foreground = printerForeground;
-					event.styles[i] = style;
-				}
-			}
 		}
 	}
 	/**
@@ -394,7 +375,6 @@ public class StyledText2 extends Canvas {
 	 * to print.
 	 */
 	void initializeRenderer() {
-		createPrinterColors();
 		Rectangle trim = printer.computeTrim(0, 0, 0, 0);
 		Point dpi = printer.getDPI();
 		
@@ -411,24 +391,23 @@ public class StyledText2 extends Canvas {
 		int style = mirrored ? SWT.RIGHT_TO_LEFT : SWT.LEFT_TO_RIGHT;
 		gc = new GC(printer, style);
 		gc.setFont(printerFont);
-		renderer = new PrintRenderer(
-			printer, printerFont, gc, printerContent,
-			lineBackgrounds, lineStyles, bidiSegments, 
-			parent.tabLength, clientArea);
+		renderer = new StyledTextRenderer2(printer, printerFont, gc, parent.tabLength);
+		int lineHeight = renderer.getLineHeight();
 		if (printOptions.header != null) {
-			int lineHeight = renderer.getLineHeight();
 			clientArea.y += lineHeight * 2;
 			clientArea.height -= lineHeight * 2;
 		}
 		if (printOptions.footer != null) {
-			clientArea.height -= renderer.getLineHeight() * 2;
+			clientArea.height -= lineHeight * 2;
 		}
-		pageSize = clientArea.height / renderer.getLineHeight();
-		StyledTextContent content = renderer.getContent();
+		
+		// TODO not wrapped
+		StyledTextContent content = printerContent;
 		startLine = 0;
 		endLine = singleLine ? 0 : content.getLineCount() - 1;
 		PrinterData data = printer.getPrinterData();
 		if (data.scope == PrinterData.PAGE_RANGE) {
+			int pageSize = clientArea.height / lineHeight;//WRONG
 			startLine = (startPage - 1) * pageSize;
 		} else if (data.scope == PrinterData.SELECTION) {
 			startLine = content.getLineAtOffset(selection.x);
@@ -461,27 +440,70 @@ public class StyledText2 extends Canvas {
 	 * Prints the lines in the specified page range.
 	 */
 	void print() {
-		StyledTextContent content = renderer.getContent();
+		StyledTextContent content = printerContent;
 		Color background = gc.getBackground();
 		Color foreground = gc.getForeground();
-		int lineHeight = renderer.getLineHeight();
 		int paintY = clientArea.y;
+		int paintX = clientArea.x;
 		int page = startPage;
+		int pageBottom = clientArea.y + clientArea.height;
 		
-		for (int i = startLine; i <= endLine && page <= endPage; i++, paintY += lineHeight) {
-			String line = content.getLine(i);	
+		for (int i = startLine; i <= endLine && page <= endPage; i++) {
 			if (paintY == clientArea.y) {
 				printer.startPage();
 				printDecoration(page, true);
+			}	
+			String line = content.getLine(i);
+			Integer lineOffset = new Integer (content.getOffsetAtLine(i));
+			int[] segments = (int[])bidiSegments.get(lineOffset);
+			StyleRange[] styles = (StyleRange[])lineStyles.get(lineOffset);
+			TextLayout layout = renderer.getTextLayout(line, lineOffset.intValue(), segments, styles);
+			layout.setWidth(clientArea.width);
+			Color lineBackground = (Color)lineBackgrounds.get(lineOffset);
+			if (lineBackground == null) lineBackground = background;
+			int paragraphBottom = paintY + layout.getBounds().height; 
+			if (paragraphBottom <= pageBottom) {
+				//normal case, the whole paragraph fits in the current page
+				renderer.drawLine(paintX, paintY, gc, foreground, lineBackground, layout);
+				paintY = paragraphBottom;				
+			} else {
+				int lineCount = layout.getLineCount();
+				while (paragraphBottom > pageBottom && lineCount > 0) {
+					lineCount--;
+					paragraphBottom -= layout.getLineBounds(lineCount).height;
+				}
+				if (lineCount == 0) {
+					//the whole paragraph goes to the next page
+					printDecoration(page, false);
+					printer.endPage();					
+					page++;
+					if (page <= endPage) {
+						printer.startPage();
+						printDecoration(page, true);
+						paintY = clientArea.y;
+						renderer.drawLine(paintX, paintY, gc, foreground, lineBackground, layout);
+						paintY += layout.getBounds().height;
+					}
+				} else {
+					//draw paragraph top in the current page and paragraph bottom in the next
+					gc.setClipping(paintX, paintY, clientArea.width, paragraphBottom - paintY);
+					renderer.drawLine(paintX, paintY, gc, foreground, lineBackground, layout);
+					printDecoration(page, false);
+					printer.endPage();					
+					page++;
+					if (page <= endPage) {
+						printer.startPage();
+						printDecoration(page, true);
+						paintY = clientArea.y;
+						int height = layout.getBounds().height - paragraphBottom;
+						gc.setClipping(paintX, paintY, clientArea.width, height);
+						renderer.drawLine(paintX, paintY, gc, foreground, lineBackground, layout);
+						paintY += height;
+					}
+					gc.setClipping((Rectangle)null);
+				}
 			}
-			renderer.drawLine(line, i, paintY, gc, background, foreground, true);
-			if (paintY + lineHeight * 2 > clientArea.y + clientArea.height) {
-				// close full page
-				printDecoration(page, false);
-				printer.endPage();
-				paintY = clientArea.y - lineHeight;
-				page++;
-			}
+			renderer.disposeTextLayout(layout);
 		}
 		if (paintY > clientArea.y) {
 			// close partial page
@@ -537,7 +559,7 @@ public class StyledText2 extends Canvas {
 			TextLayout layout = new TextLayout(printer);
 			layout.setText(segment);
 			layout.setFont(printerFont);
-			int segmentWidth = layout.getLineBounds(0).width;
+			int segmentWidth = layout.getBounds().width;
 			int segmentHeight = renderer.getLineHeight();
 			int drawX = 0, drawY;
 			if (alignment == LEFT) {
@@ -765,12 +787,14 @@ public class StyledText2 extends Canvas {
 		if (isClosed()) {
 			SWT.error(SWT.ERROR_IO);
 		}
-		StyledTextEvent event = renderer.getLineStyleData(lineOffset, line);
+		//StyledTextEvent event = renderer.getLineStyleData(lineOffset, line);
+		StyledTextEvent event = getLineStyleData(lineOffset, line);
 		StyleRange[] styles = new StyleRange[0];
 		if (event != null) {
 			styles = event.styles;
 		}
-		event = renderer.getLineBackgroundData(lineOffset, line);
+		//event = renderer.getLineBackgroundData(lineOffset, line);
+		event = getLineBackgroundData(lineOffset, line);
 		Color lineBackground = null;
 		if (event != null) {
 			lineBackground = event.lineBackground;
@@ -1367,9 +1391,9 @@ public class StyledText2 extends Canvas {
 	 * is called, the line wrapping is recalculated immediately 
 	 * instead of in <code>calculate</code>.
 	 */
-	class WordWrapCache implements LineCache {
+	class WordWrapCache2 implements LineCache {
 		StyledText2 parent;
-		WrappedContent visualContent;
+		WrappedContent2 visualContent;
 				
 	/** 
 	 * Creates a new <code>WordWrapCache</code> and calculates an initial
@@ -1379,10 +1403,11 @@ public class StyledText2 extends Canvas {
 	 * @param parent the StyledText widget to wrap content in.
 	 * @param content the content provider that does the actual line wrapping.
 	 */
-	public WordWrapCache(StyledText2 parent, WrappedContent content) {
+	public WordWrapCache2(StyledText2 parent, WrappedContent2 content) {
 		this.parent = parent;
 		visualContent = content;
-		visualContent.wrapLines();
+		int width = parent.getClientArea().width - parent.leftMargin - parent.rightMargin;
+		visualContent.wrapLines(width);
 	}
 	/**
 	 * Do nothing. Lines are wrapped immediately after reset.
@@ -1416,11 +1441,12 @@ public class StyledText2 extends Canvas {
 	 * 	false=the width may be set to 0
 	 */
 	public void redrawReset(int startLine, int lineCount, boolean calculateMaxWidth) {
+		int width = parent.getClientArea().width - parent.leftMargin - parent.rightMargin;
 	    if (lineCount == visualContent.getLineCount()) {
 			// do a full rewrap if all lines are reset
-			visualContent.wrapLines();
+			visualContent.wrapLines(width);
 	    } else {
-		    visualContent.reset(startLine, lineCount);
+		    visualContent.reset(startLine, lineCount, width);
 	    }
 	}
 	/**
@@ -1467,7 +1493,8 @@ public class StyledText2 extends Canvas {
 	 */  
 	public void textChanged(int startOffset, int newLineCount, int replaceLineCount, int newCharCount, int replaceCharCount) {
 		int startLine = visualContent.getLineAtOffset(startOffset);
-		visualContent.textChanged(startOffset, newLineCount, replaceLineCount, newCharCount, replaceCharCount);
+		int width = parent.getClientArea().width - parent.leftMargin - parent.rightMargin;
+		visualContent.textChanged(startOffset, newLineCount, replaceLineCount, newCharCount, replaceCharCount, width);
 		// if we are wrapping then it is possible for a deletion on the last
 		// line of text to shorten the total text length by a line.  If this
 		// occurs then the startIndex must be adjusted such that a redraw will
@@ -1985,7 +2012,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	boolean singleLine = (getStyle() & SWT.SINGLE) != 0;
 	int count = singleLine ? 1 : content.getLineCount();
-	int width = DEFAULT_WIDTH;	
+	int width = wHint;	
 	if (wHint == SWT.DEFAULT) {
 		LineCache computeLineCache = lineCache;
 		if (wordWrap) {
@@ -2005,7 +2032,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	} else if (wordWrap && !singleLine) {
 		// calculate to wrap to width hint. Fixes bug 20377. 
 		// don't wrap live content. Fixes bug 38344.
-		WrappedContent wrappedContent = new WrappedContent(renderer, logicalContent);
+		WrappedContent2 wrappedContent = new WrappedContent2(renderer, logicalContent);
 		wrappedContent.wrapLines(width);
 		count = wrappedContent.getLineCount();
 	}
@@ -3100,13 +3127,14 @@ void draw(int x, int y, int width, int height, boolean clearBackground) {
 		int paintYFromTopLine = (startLine - topIndex) * lineHeight;
 		int topLineOffset = (topIndex * lineHeight - verticalScrollOffset);
 		int paintY = paintYFromTopLine + topLineOffset + topMargin;	// adjust y position for pixel based scrolling
+		int paintX = getClientArea().x + leftMargin - getHorizontalPixel();
 		int lineCount = isSingleLine() ? 1 : content.getLineCount();
 		GC gc = getGC();
 		Color background = getBackground();
 		Color foreground = getForeground();
 		for (int i = startLine; paintY < endY && i < lineCount; i++, paintY += lineHeight) {
 			String line = content.getLine(i);
-			renderer.drawLine(line, i, paintY, gc, background, foreground, clearBackground);
+			renderer.drawLine(line, i, paintX, paintY, gc, background, foreground, clearBackground);
 		}
 		gc.dispose();	
 	}
@@ -3563,7 +3591,7 @@ public int getLineHeight() {
  */
 LineCache getLineCache(StyledTextContent content) {
 	if (wordWrap) {
-		return new WordWrapCache(this, (WrappedContent) content);
+		return new WordWrapCache2(this, (WrappedContent2) content);
 	} else {
 		return new ContentWidthCache(this, content);
 	}
@@ -3942,7 +3970,8 @@ int [] getBidiSegmentsCompatibility(String line, int lineOffset) {
 	if (!bidiColoring) {
 		return new int[] {0, lineLength};
 	}
-	StyledTextEvent event = renderer.getLineStyleData(lineOffset, line);
+//	StyledTextEvent event = renderer.getLineStyleData(lineOffset, line);
+	StyledTextEvent event = getLineStyleData(lineOffset, line);
 	StyleRange [] styles = new StyleRange [0];
 	if (event != null) {
 		styles = event.styles;
@@ -5170,10 +5199,10 @@ void initializeRenderer() {
 	if (renderer != null) {
 		renderer.dispose();
 	}
-	renderer = new DisplayRenderer2(getDisplay(), getFont(), this, tabLength);
+	renderer = new StyledTextRenderer2(getDisplay(), getFont(), this, tabLength);
 	lineHeight = renderer.getLineHeight();
 	if (wordWrap) {
-		content = new WrappedContent(renderer, logicalContent);
+		content = new WrappedContent2(renderer, logicalContent);
 	}
 }
 /**
@@ -5528,10 +5557,11 @@ void performPaint(GC gc,int startLine,int startY, int renderHeight)	{
 			paintHeight = startY + renderHeight;
 			lineBuffer = null;
 			lineGC = gc;
-		}		
+		}
+		int paintX = getClientArea().x + leftMargin - getHorizontalPixel();
 		for (int i = startLine; paintY < paintHeight && i < lineCount; i++, paintY += lineHeight) {
 			String line = content.getLine(i);
-			renderer.drawLine(line, i, paintY, lineGC, background, foreground, true);
+			renderer.drawLine(line, i, paintX, paintY, lineGC, background, foreground, true);
 		}
 		if (paintY < paintHeight) {
 			lineGC.setBackground(background);
@@ -6286,7 +6316,7 @@ public void setWordWrap(boolean wrap) {
 		wordWrap = wrap;
 		if (wordWrap) {
 			logicalContent = content;
-			content = new WrappedContent(renderer, logicalContent);
+			content = new WrappedContent2(renderer, logicalContent);
 		} else {
 			content = logicalContent;
 		}
@@ -6485,7 +6515,7 @@ public void setContent(StyledTextContent newContent) {
 	}
 	logicalContent = newContent;
 	if (wordWrap) {
-		content = new WrappedContent(renderer, logicalContent);
+		content = new WrappedContent2(renderer, logicalContent);
 	} else {
 		content = logicalContent;
 	}
@@ -7510,7 +7540,7 @@ void updateSelection(int startOffset, int replacedLength, int newLength) {
  * 	occurred
  */
 void wordWrapResize(int oldClientAreaWidth) {
-	WrappedContent wrappedContent = (WrappedContent) content;
+	WrappedContent2 wrappedContent = (WrappedContent2) content;
 	// all lines are wrapped and no rewrap required if widget has already 
 	// been visible, client area is now wider and visual (wrapped) line 
 	// count equals logical line count.
@@ -7518,7 +7548,8 @@ void wordWrapResize(int oldClientAreaWidth) {
 		wrappedContent.getLineCount() == logicalContent.getLineCount()) {
 		return;
 	}
-	wrappedContent.wrapLines();
+	int width = getClientArea().width - leftMargin - rightMargin;
+	wrappedContent.wrapLines(width);
     
 	// adjust the top index so that top line remains the same
 	int newTopIndex = content.getLineAtOffset(topOffset);
