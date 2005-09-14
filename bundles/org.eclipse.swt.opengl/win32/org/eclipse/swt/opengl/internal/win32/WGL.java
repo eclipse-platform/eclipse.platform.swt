@@ -133,10 +133,4 @@ public static final native int wglSetLayerPaletteEntries(int hdc, int iLayerPlan
 public static final native int wglGetLayerPaletteEntries(int hdc, int iLayerPlane, int iStart, int cEntries, int[] pcr);
 public static final native boolean wglRealizeLayerPalette(int hdc, int iLayerPlane, boolean bRealize);
 public static final native boolean wglSwapLayerBuffers(int hdc, int fuPlanes);
-public static final void MoveMemory (GLYPHMETRICSFLOAT Destination, int Source, int Length) {
-	if (OS.IsUnicode) MoveMemoryW (Destination, Source, Length);
-	else MoveMemoryA(Destination, Source, Length);
-}
-public static final native void MoveMemoryA (GLYPHMETRICSFLOAT Destination, int Source, int Length);
-public static final native void MoveMemoryW (GLYPHMETRICSFLOAT Destination, int Source, int Length);
 }
