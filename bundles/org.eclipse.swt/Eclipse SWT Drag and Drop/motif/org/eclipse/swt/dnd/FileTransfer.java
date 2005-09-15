@@ -34,13 +34,13 @@ import org.eclipse.swt.internal.motif.*;
  */
 public class FileTransfer extends ByteArrayTransfer {
 	
-	private static FileTransfer _instance = new FileTransfer();
-	private static final String URI_LIST = "text/uri-list";
-	private static final int URI_LIST_ID = registerType(URI_LIST);
-	private static final String URI_LIST_PREFIX = "file:";
-	private static final String URI_LIST_SEPARATOR = "\r";
+	static FileTransfer _instance = new FileTransfer();
+	static final String URI_LIST = "text/uri-list"; //$NON-NLS-1$
+	static final int URI_LIST_ID = registerType(URI_LIST);
+	static final String URI_LIST_PREFIX = "file:"; //$NON-NLS-1$
+	static final String URI_LIST_SEPARATOR = "\r"; //$NON-NLS-1$
 
-private FileTransfer() {}
+FileTransfer() {/*empty*/}
 
 /**
  * Returns the singleton instance of the FileTransfer class.

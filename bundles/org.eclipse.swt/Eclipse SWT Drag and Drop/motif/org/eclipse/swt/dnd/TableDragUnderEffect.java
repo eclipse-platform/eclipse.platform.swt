@@ -17,15 +17,15 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.SWT;
 
 class TableDragUnderEffect extends DragUnderEffect {
-	private Table table;
-	private int currentEffect = DND.FEEDBACK_NONE;
+	Table table;
+	int currentEffect = DND.FEEDBACK_NONE;
 	
-	private TableItem dropSelection;
-	private PaintListener paintListener;
+	TableItem dropSelection;
+	PaintListener paintListener;
 	
-	private TableItem scrollItem;
-	private long scrollBeginTime;
-	private static final int SCROLL_HYSTERESIS = 150; // milli seconds
+	TableItem scrollItem;
+	long scrollBeginTime;
+	static final int SCROLL_HYSTERESIS = 150; // milli seconds
 
 TableDragUnderEffect(Table table) {
 	this.table = table;
@@ -56,7 +56,7 @@ void show(int effect, int x, int y) {
 	}
 	currentEffect = effect;
 }
-private TableItem findItem(int x, int y){
+TableItem findItem(int x, int y){
 	Point coordinates = new Point(x, y);
 	coordinates = table.toControl(coordinates);
 	Rectangle area = table.getClientArea();
@@ -73,7 +73,7 @@ private TableItem findItem(int x, int y){
 	}
 	return null;
 }
-private void setDragUnderEffect(int effect, TableItem item) {	
+void setDragUnderEffect(int effect, TableItem item) {	
 	if ((effect & DND.FEEDBACK_SELECT) != 0) {
 		setDropSelection(item);
 		return;
@@ -82,7 +82,7 @@ private void setDragUnderEffect(int effect, TableItem item) {
 		setDropSelection(null);
 	}
 }
-private void setDropSelection (TableItem item) {
+void setDropSelection (TableItem item) {
 	if (item == dropSelection) return;
 	Rectangle area = table.getClientArea();
 	if (dropSelection != null && !dropSelection.isDisposed()) {
@@ -95,7 +95,7 @@ private void setDropSelection (TableItem item) {
 		table.redraw(area.x, bounds.y, area.width, bounds.height, true);
 	}
 }
-private void scrollHover (int effect, TableItem item, int x, int y) {
+void scrollHover (int effect, TableItem item, int x, int y) {
 	if ((effect & DND.FEEDBACK_SCROLL) == 0) {
 		scrollBeginTime = 0;
 		scrollItem = null;
@@ -112,7 +112,7 @@ private void scrollHover (int effect, TableItem item, int x, int y) {
 	scrollBeginTime = System.currentTimeMillis() + SCROLL_HYSTERESIS;
 	scrollItem = item;
 }
-private void scroll(TableItem item, int x, int y) {
+void scroll(TableItem item, int x, int y) {
 	if (item == null) return;
 	Point coordinates = new Point(x, y);
 	coordinates = table.toControl(coordinates);

@@ -27,13 +27,13 @@ import org.eclipse.swt.internal.motif.*;
  */
 public class HTMLTransfer extends ByteArrayTransfer {
 
-	private static HTMLTransfer _instance = new HTMLTransfer();
-	private static final String TEXT_HTML = "text/html"; //$NON-NLS-1$
-	private static final int TEXT_HTML_ID = registerType(TEXT_HTML);
-	private static final String TEXT_HTML2 = "TEXT/HTML"; //$NON-NLS-1$
-	private static final int TEXT_HTML2_ID = registerType(TEXT_HTML2);
+	static HTMLTransfer _instance = new HTMLTransfer();
+	static final String TEXT_HTML = "text/html"; //$NON-NLS-1$
+	static final int TEXT_HTML_ID = registerType(TEXT_HTML);
+	static final String TEXT_HTML2 = "TEXT/HTML"; //$NON-NLS-1$
+	static final int TEXT_HTML2_ID = registerType(TEXT_HTML2);
 
-private HTMLTransfer() {}
+HTMLTransfer() {/*empty*/}
 
 /**
  * Returns the singleton instance of the HTMLTransfer class.

@@ -28,15 +28,15 @@ import org.eclipse.swt.internal.motif.*;
  */
 public class RTFTransfer extends ByteArrayTransfer {
 
-	private static RTFTransfer _instance = new RTFTransfer();
-	private static final String TEXT_RTF = "text/rtf";
-	private static final int TEXT_RTF_ID = registerType(TEXT_RTF);
-	private static final String TEXT_RTF2 = "TEXT/RTF";
-	private static final int TEXT_RTF2_ID = registerType(TEXT_RTF2);
-	private static final String APPLICATION_RTF = "application/rtf";
-	private static final int APPLICATION_RTF_ID = registerType(APPLICATION_RTF);
+	static RTFTransfer _instance = new RTFTransfer();
+	static final String TEXT_RTF = "text/rtf"; //$NON-NLS-1$
+	static final int TEXT_RTF_ID = registerType(TEXT_RTF);
+	static final String TEXT_RTF2 = "TEXT/RTF"; //$NON-NLS-1$
+	static final int TEXT_RTF2_ID = registerType(TEXT_RTF2);
+	static final String APPLICATION_RTF = "application/rtf"; //$NON-NLS-1$
+	static final int APPLICATION_RTF_ID = registerType(APPLICATION_RTF);
 
-private RTFTransfer() {}
+RTFTransfer() {/*empty*/}
 
 /**
  * Returns the singleton instance of the RTFTransfer class.

@@ -70,44 +70,44 @@ import org.eclipse.swt.internal.motif.*;
  */
 public class DropTarget extends Widget {
 	
-	private Control control;
-	private Listener controlListener;
-	private Transfer[] transferAgents = new Transfer[0];
-	private DragUnderEffect effect;
+	Control control;
+	Listener controlListener;
+	Transfer[] transferAgents = new Transfer[0];
+	DragUnderEffect effect;
 	
 	// Track application selections
-	private TransferData selectedDataType;
-	private int selectedOperation;
+	TransferData selectedDataType;
+	int selectedOperation;
 	
 	// workaround - Simulate events when the mouse is not moving
-	private long dragOverStart;
-	private Runnable dragOverHeartbeat;
-	private DNDEvent dragOverEvent;
+	long dragOverStart;
+	Runnable dragOverHeartbeat;
+	DNDEvent dragOverEvent;
 	
 	// workaround - The data required in the transferProc callback is not available 
 	// so store it from the dropProc callback 
-	private XmDropProcCallbackStruct droppedEventData;
-	private int dropTransferObject;
+	XmDropProcCallbackStruct droppedEventData;
+	int dropTransferObject;
 	
 	// workaround - The DND operation can time out so temporarily set the
 	// time out to be very long while the application processes the data and
 	// restore it to the previous value when done.
-	private int selectionTimeout;
+	int selectionTimeout;
 	
 	// workaround - A drop target is still active even when it is not visible.
 	// This causes problems when the widget is not visible but
 	// overlaps with a visible widget.  Deregister drop target when it is
 	// not visible.
-	private boolean registered = false;
+	boolean registered = false;
 	
-	private static int DELETE_TYPE = Transfer.registerType("DELETE\0"); //$NON-NLS-1$
-	private static int NULL_TYPE = Transfer.registerType("NULL\0"); //$NON-NLS-1$
-	private static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
-	private static final int DRAGOVER_HYSTERESIS = 50;
+	static int DELETE_TYPE = Transfer.registerType("DELETE\0"); //$NON-NLS-1$
+	static int NULL_TYPE = Transfer.registerType("NULL\0"); //$NON-NLS-1$
+	static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
+	static final int DRAGOVER_HYSTERESIS = 50;
 	
-	private static Callback DropProc;
-	private static Callback DragProc;
-	private static Callback TransferProc;
+	static Callback DropProc;
+	static Callback DragProc;
+	static Callback TransferProc;
 	
 	static {
 		DropProc = new Callback(DropTarget.class, "DropProcCallback", 3); //$NON-NLS-1$
@@ -271,7 +271,7 @@ static int checkStyle (int style) {
 	return style;
 }
 
-private static int DragProcCallback(int widget, int client_data, int call_data) {
+static int DragProcCallback(int widget, int client_data, int call_data) {
 	DropTarget target = FindDropTarget(widget);
 	if (target != null) {
 		target.dragProcCallback(widget, client_data, call_data);
@@ -279,7 +279,7 @@ private static int DragProcCallback(int widget, int client_data, int call_data) 
 	return 0;
 }
 
-private static int DropProcCallback(int widget, int client_data, int call_data) {
+static int DropProcCallback(int widget, int client_data, int call_data) {
 	DropTarget target = FindDropTarget(widget);
 	if (target != null) {
 		target.dropProcCallback(widget, client_data, call_data);
@@ -287,7 +287,7 @@ private static int DropProcCallback(int widget, int client_data, int call_data) 
 	return 0;
 }
 
-private static DropTarget FindDropTarget(int handle) {
+static DropTarget FindDropTarget(int handle) {
 	Display display = Display.findDisplay(Thread.currentThread());
 	if (display == null || display.isDisposed()) return null;
 	Widget widget = display.findWidget(handle);
@@ -295,7 +295,7 @@ private static DropTarget FindDropTarget(int handle) {
 	return (DropTarget)widget.getData(DROPTARGETID);
 }
 
-private static int TransferProcCallback(int widget, int client_data, int pSelection, int pType, int pValue, int pLength, int pFormat) {
+static int TransferProcCallback(int widget, int client_data, int pSelection, int pType, int pValue, int pLength, int pFormat) {
 	DropTarget target = FindDropTarget(client_data);
 	if (target != null) {
 		target.transferProcCallback(widget, client_data, pSelection, pType, pValue, pLength, pFormat);
@@ -353,7 +353,7 @@ protected void checkSubclass () {
 	}
 }
 
-private void dragProcCallback(int widget, int client_data, int call_data) {
+void dragProcCallback(int widget, int client_data, int call_data) {
 	if (call_data == 0) return;
 	XmDragProcCallbackStruct callbackData = new XmDragProcCallbackStruct();
 	OS.memmove(callbackData, call_data, XmDragProcCallbackStruct.sizeof);
@@ -439,7 +439,7 @@ private void dragProcCallback(int widget, int client_data, int call_data) {
 	}
 }
 
-private void dropProcCallback(int widget, int client_data, int call_data) {
+void dropProcCallback(int widget, int client_data, int call_data) {
 	if (call_data == 0) return;
 	droppedEventData = new XmDropProcCallbackStruct();
 	OS.memmove(droppedEventData, call_data, XmDropProcCallbackStruct.sizeof);	
@@ -562,7 +562,7 @@ public void notifyListeners (int eventType, Event event) {
 	super.notifyListeners(eventType, event);
 }
 
-private void onDispose() {
+void onDispose() {
 	if (control == null) return;
 	if (controlListener != null) {
 		Control c = control;
@@ -578,7 +578,7 @@ private void onDispose() {
 	control = null;
 	transferAgents = null;
 }
-private byte opToOsOp(int operation){
+byte opToOsOp(int operation){
 	byte osOperation = OS.XmDROP_NOOP;
 	
 	if ((operation & DND.DROP_COPY) == DND.DROP_COPY)
@@ -590,7 +590,7 @@ private byte opToOsOp(int operation){
 	
 	return osOperation;
 }
-private int osOpToOp(byte osOperation){
+int osOpToOp(byte osOperation){
 	int operation = DND.DROP_NONE;
 	
 	if ((osOperation & OS.XmDROP_COPY) == OS.XmDROP_COPY)
@@ -602,7 +602,7 @@ private int osOpToOp(byte osOperation){
 	
 	return operation;
 }
-private void registerDropTarget() {
+void registerDropTarget() {
 	if (control == null || control.isDisposed() || registered) return;
 
 	int[] args = new int[]{
@@ -645,6 +645,10 @@ private void registerDropTarget() {
 	}
 	
 	OS.XmDropSiteRegister(control.handle, args, args.length / 2);
+	//if (control instanceof Label) {
+	//	int formHandle = OS.XtParent (control.handle);
+	//	OS.XmDropSiteRegister(formHandle, args, args.length / 2);
+	//}
 	registered = true;
 }
 
@@ -676,7 +680,7 @@ public void removeDropListener(DropTargetListener listener) {
 	removeListener (DND.DropAccept, listener);
 }
 
-private boolean setEventData(byte ops, byte op, int dragContext, short x, short y, int timestamp, DNDEvent event) {
+boolean setEventData(byte ops, byte op, int dragContext, short x, short y, int timestamp, DNDEvent event) {
 	//get allowed operations
 	int style = getStyle();
 	int operations = osOpToOp(ops) & style;
@@ -737,7 +741,7 @@ private boolean setEventData(byte ops, byte op, int dragContext, short x, short 
 
 	short [] root_x = new short [1];
 	short [] root_y = new short [1];	
-	OS.XtTranslateCoords (this.control.handle, (short) x, (short) y, root_x, root_y);
+	OS.XtTranslateCoords (this.control.handle, x, y, root_x, root_y);
 	
 	event.widget = this;
 	event.x = root_x[0];
@@ -800,7 +804,7 @@ public void setTransfer(Transfer[] transferAgents){
 	OS.XtFree(pImportTargets);
 	
 }
-private void transferProcCallback(int widget, int client_data, int pSelection, int pType, int pValue, int pLength, int pFormat) {
+void transferProcCallback(int widget, int client_data, int pSelection, int pType, int pValue, int pLength, int pFormat) {
 	if (pType == 0 || pValue == 0 || pLength == 0 || pFormat == 0) return;
 	
 	int[] type = new int[1];
@@ -859,13 +863,13 @@ private void transferProcCallback(int widget, int client_data, int pSelection, i
 	}
 }
 
-private void unregisterDropTarget() {
+void unregisterDropTarget() {
 	if (control == null || control.isDisposed() || !registered) return;
 	OS.XmDropSiteUnregister(control.handle);
 	registered = false;
 }
 
-private void updateDragOverHover(long delay, DNDEvent event) {
+void updateDragOverHover(long delay, DNDEvent event) {
 	if (delay == 0) {
 		dragOverStart = 0;
 		dragOverEvent = null;

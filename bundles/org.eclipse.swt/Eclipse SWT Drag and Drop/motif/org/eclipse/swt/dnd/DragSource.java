@@ -95,24 +95,24 @@ import org.eclipse.swt.internal.motif.*;
 public class DragSource extends Widget {
 
 	// info for registering as a drag source
-	private Control control;
-	private Listener controlListener;
-	private Transfer[] transferAgents = new Transfer[0];
+	Control control;
+	Listener controlListener;
+	Transfer[] transferAgents = new Transfer[0];
 
-	private static final String DRAGSOURCEID = "DragSource"; //$NON-NLS-1$
+	static final String DRAGSOURCEID = "DragSource"; //$NON-NLS-1$
 		
-	static private Callback ConvertProc;
-	static private Callback DragDropFinish;
-	static private Callback DropFinish;
+	static Callback ConvertProc;
+	static Callback DragDropFinish;
+	static Callback DropFinish;
 	static {
-		ConvertProc = new Callback(DragSource.class, "ConvertProcCallback", 10);
+		ConvertProc = new Callback(DragSource.class, "ConvertProcCallback", 10); //$NON-NLS-1$
 		if (ConvertProc.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
-		DragDropFinish = new Callback(DragSource.class, "DragDropFinishCallback", 3);
+		DragDropFinish = new Callback(DragSource.class, "DragDropFinishCallback", 3); //$NON-NLS-1$
 		if (DragDropFinish.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
-		DropFinish = new Callback(DragSource.class, "DropFinishCallback", 3);
+		DropFinish = new Callback(DragSource.class, "DropFinishCallback", 3); //$NON-NLS-1$
 		if (DropFinish.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	}
-	private boolean moveRequested;
+	boolean moveRequested;
 
 	int dragContext;
 
@@ -182,17 +182,17 @@ static DragSource FindDragSource(int handle) {
 	if (display == null || display.isDisposed()) return null;
 	return (DragSource)display.getData(Integer.toString(handle));
 }
-private static int ConvertProcCallback(int widget, int pSelection, int pTarget, int pType_return, int ppValue_return, int pLength_return, int pFormat_return, int max_length, int client_data, int request_id) {
+static int ConvertProcCallback(int widget, int pSelection, int pTarget, int pType_return, int ppValue_return, int pLength_return, int pFormat_return, int max_length, int client_data, int request_id) {
 	DragSource source = FindDragSource(widget);
 	if (source == null) return 0;
 	return source.convertProcCallback(widget, pSelection, pTarget, pType_return, ppValue_return, pLength_return, pFormat_return, max_length, client_data, request_id);
 }
-private static int DragDropFinishCallback(int widget, int client_data, int call_data) {
+static int DragDropFinishCallback(int widget, int client_data, int call_data) {
 	DragSource source = FindDragSource(widget);
 	if (source == null) return 0;
 	return source.dragDropFinishCallback(widget, client_data, call_data);
 }
-private static int DropFinishCallback(int widget, int client_data, int call_data) {
+static int DropFinishCallback(int widget, int client_data, int call_data) {
 	DragSource source = FindDragSource(widget);
 	if (source == null) return 0;
 	return source.dropFinishCallback(widget, client_data, call_data);
@@ -247,14 +247,14 @@ protected void checkSubclass () {
 	}
 }
 
-private int convertProcCallback(int widget, int pSelection, int pTarget, int pType_return, int ppValue_return, int pLength_return, int pFormat_return, int max_length, int client_data, int request_id) {
+int convertProcCallback(int widget, int pSelection, int pTarget, int pType_return, int ppValue_return, int pLength_return, int pFormat_return, int max_length, int client_data, int request_id) {
 	if (pSelection == 0 ) return 0;
 		
 	// is this a drop?
 	int[] selection = new int[1];
 	OS.memmove(selection, pSelection, 4);
 	int xDisplay = getDisplay().xDisplay;
-	byte[] bName = Converter.wcsToMbcs (null, "_MOTIF_DROP", true);
+	byte[] bName = Converter.wcsToMbcs (null, "_MOTIF_DROP", true); //$NON-NLS-1$
 	int motifDropAtom = OS.XmInternAtom (xDisplay, bName, true);
 	if (selection[0] != motifDropAtom) return 0;
 
@@ -263,11 +263,11 @@ private int convertProcCallback(int widget, int pSelection, int pTarget, int pTy
 	OS.memmove(target, pTarget, 4);
 
 	//  handle the "Move" case
-	bName = Converter.wcsToMbcs (null, "DELETE", true); // DELETE corresponds to a Move request
+	bName = Converter.wcsToMbcs (null, "DELETE", true); // DELETE corresponds to a Move request //$NON-NLS-1$
 	int deleteAtom = OS.XmInternAtom (xDisplay, bName, true);
 	if (target[0] == deleteAtom) { 
 		moveRequested = true;
-		bName = Converter.wcsToMbcs (null, "NULL", true);
+		bName = Converter.wcsToMbcs (null, "NULL", true); //$NON-NLS-1$
 		int nullAtom = OS.XmInternAtom (xDisplay, bName, true);
 		OS.memmove(pType_return,new int[]{nullAtom}, 4);
 		OS.memmove(ppValue_return, new int[]{0}, 4);
@@ -310,14 +310,13 @@ private int convertProcCallback(int widget, int pSelection, int pTarget, int pTy
 		OS.memmove(pLength_return, new int[]{transferData.length}, 4);
 		OS.memmove(pFormat_return, new int[]{transferData.format}, 4);
 		return 1;
-	} else {
-		OS.memmove(ppValue_return, new int[]{0}, 4);
-		OS.memmove(pLength_return, new int[]{0}, 4);
-		OS.memmove(pFormat_return, new int[]{8}, 4);
-		return 0;
-	}
+	} 
+	OS.memmove(ppValue_return, new int[]{0}, 4);
+	OS.memmove(pLength_return, new int[]{0}, 4);
+	OS.memmove(pFormat_return, new int[]{8}, 4);
+	return 0;
 }
-private void drag() {
+void drag() {
 	moveRequested = false;
 	// Current event must be a Button Press event
 	Display display = control.getDisplay ();
@@ -394,7 +393,7 @@ private void drag() {
 	return;
 }
 
-private int dragDropFinishCallback(int widget, int client_data, int call_data) {
+int dragDropFinishCallback(int widget, int client_data, int call_data) {
 	
 	// uncomment the following code when we allow users to specify their own source icons
 	// release the pre set source icon 
@@ -411,7 +410,7 @@ private int dragDropFinishCallback(int widget, int client_data, int call_data) {
 	getDisplay().setData(Integer.toString(dragContext), null);
 	return 0;
 }
-private int dropFinishCallback(int widget, int client_data, int call_data) {
+int dropFinishCallback(int widget, int client_data, int call_data) {
 	XmDropFinishCallbackStruct data = new XmDropFinishCallbackStruct();
 	OS.memmove(data, call_data, XmDropFinishCallbackStruct.sizeof);
 	if (data.dropAction != OS.XmDROP || data.dropSiteStatus != OS.XmDROP_SITE_VALID) {
@@ -458,7 +457,7 @@ public Transfer[] getTransfer(){
 	return transferAgents;
 }
 
-private void onDispose() {
+void onDispose() {
 	if (control == null)
 		return;
 	if (controlListener != null) {
@@ -470,7 +469,7 @@ private void onDispose() {
 	control = null;
 	transferAgents = null;
 }
-private byte opToOsOp(int operation){
+byte opToOsOp(int operation){
 	byte osOperation = OS.XmDROP_NOOP;
 	
 	if ((operation & DND.DROP_COPY) == DND.DROP_COPY)
@@ -482,7 +481,7 @@ private byte opToOsOp(int operation){
 	
 	return osOperation;
 }
-private int osOpToOp(byte osOperation){
+int osOpToOp(byte osOperation){
 	int operation = DND.DROP_NONE;
 	
 	if ((osOperation & OS.XmDROP_COPY) == OS.XmDROP_COPY)

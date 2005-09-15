@@ -31,13 +31,13 @@ import org.eclipse.swt.internal.motif.XTextProperty;
  */
 public class TextTransfer extends ByteArrayTransfer {
 
-	private static TextTransfer _instance = new TextTransfer();
-	private static final String COMPOUND_TEXT = "COMPOUND_TEXT";
-	private static final String STRING = "STRING";
-	private static final int COMPOUND_TEXT_ID = registerType(COMPOUND_TEXT);
-	private static final int STRING_ID = registerType(STRING);
+	static TextTransfer _instance = new TextTransfer();
+	static final String COMPOUND_TEXT = "COMPOUND_TEXT"; //$NON-NLS-1$
+	static final String STRING = "STRING"; //$NON-NLS-1$
+	static final int COMPOUND_TEXT_ID = registerType(COMPOUND_TEXT);
+	static final int STRING_ID = registerType(STRING);
 
-private TextTransfer() {}
+TextTransfer() {/*empty*/}
 
 /**
  * Returns the singleton instance of the TextTransfer class.
