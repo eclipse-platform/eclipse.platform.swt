@@ -2167,7 +2167,7 @@ int /*long*/ IsPreferred(int /*long*/ aContentType, int /*long*/ aDesiredContent
 		/* do not attempt to handle known problematic content types */
 		if (!contentType.equals(XPCOM.CONTENT_MAYBETEXT) && !contentType.equals(XPCOM.CONTENT_MULTIPART)) {
 			/* determine whether browser can handle the content type */
-			int[] result = new int[1];
+			int /*long*/[] result = new int /*long*/[1];
 			int rc = XPCOM.NS_GetServiceManager(result);
 			if (rc != XPCOM.NS_OK) error(rc);
 			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
