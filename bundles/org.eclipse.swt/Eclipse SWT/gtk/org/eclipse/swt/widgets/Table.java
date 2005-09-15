@@ -169,11 +169,11 @@ protected void checkSubclass () {
  * @see SelectionEvent
  */
 public void addSelectionListener (SelectionListener listener) {
-	checkWidget();
+	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Selection,typedListener);
-	addListener (SWT.DefaultSelection,typedListener);
+	addListener (SWT.Selection, typedListener);
+	addListener (SWT.DefaultSelection, typedListener);
 }
 
 int calculateWidth (int /*long*/ column, int /*long*/ iter) {
@@ -207,17 +207,6 @@ int calculateWidth (int /*long*/ column, int /*long*/ iter) {
 	return width;
 }
 
-public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget ();
-	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
-	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
-	Point size = computeNativeSize (handle, wHint, hHint, changed);
-	Rectangle trim = computeTrim (0, 0, size.x, size.y);
-	size.x = trim.width;
-	size.y = trim.height;
-	return size;
-}
-
 /**
  * Clears the item at the given zero-relative index in the receiver.
  * The text, icon and other attributes of the item are set to the default
@@ -245,7 +234,7 @@ public void clear (int index) {
 		error(SWT.ERROR_INVALID_RANGE);
 	}
 	TableItem item = items [index];
-	if (item != null) item.clear();
+	if (item != null) item.clear ();
 }
 
 /**
@@ -346,6 +335,17 @@ public void clearAll () {
 		TableItem item = items [i];
 		if (item != null) item.clear();
 	}
+}
+
+public Point computeSize (int wHint, int hHint, boolean changed) {
+	checkWidget ();
+	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
+	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
+	Point size = computeNativeSize (handle, wHint, hHint, changed);
+	Rectangle trim = computeTrim (0, 0, size.x, size.y);
+	size.x = trim.width;
+	size.y = trim.height;
+	return size;
 }
 
 void createColumn (TableColumn column, int index) {
@@ -645,7 +645,7 @@ GdkColor defaultForeground () {
 	return display.COLOR_LIST_FOREGROUND;
 }
 
-void deregister() {
+void deregister () {
 	super.deregister ();
 	display.removeWidget (OS.gtk_tree_view_get_selection (handle));
 	if (checkRenderer != 0) display.removeWidget (checkRenderer);

@@ -32,8 +32,8 @@ import org.eclipse.swt.graphics.*;
 public class TableItem extends Item {
 	Table parent;
 	Font font;
-	boolean cached, grayed;
 	Font[] cellFont;
+	boolean cached, grayed;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -295,7 +295,7 @@ public boolean getChecked () {
 	if ((parent.style & SWT.CHECK) == 0) return false;
 	int /*long*/ [] ptr = new int /*long*/ [1];
 	OS.gtk_tree_model_get (parent.modelHandle, handle, Table.CHECKED_COLUMN, ptr, -1);
-	return ptr[0] != 0;
+	return ptr [0] != 0;
 }
 
 /**
@@ -508,7 +508,7 @@ public Rectangle getImageBounds (int index) {
 	int[] wx = new int[1];
 	OS.gtk_tree_view_tree_to_widget_coords(parentHandle, rect.x, 0, wx, null);
 	rect.x = wx[0];
-	
+
 	int border = parent.getBorderWidth ();
 	int headerHeight = parent.getHeaderHeight ();
 	return new Rectangle (rect.x + border, rect.y + (headerHeight == 0 ?  border : headerHeight), rect.width, rect.height + 1);
@@ -869,6 +869,7 @@ public void setForeground (int index, Color color){
 				} else {
 					column = OS.gtk_tree_view_get_column (parentHandle, index);
 				}
+				if (column == 0) return;
 				int /*long*/ textRenderer = parent.getTextRenderer (column);
 				int /*long*/ imageRenderer = parent.getPixbufRenderer (column);
 				OS.gtk_tree_view_column_set_cell_data_func (column, textRenderer, display.textCellDataProc, parentHandle, 0);
