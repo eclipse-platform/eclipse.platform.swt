@@ -68,12 +68,12 @@ import org.eclipse.swt.widgets.*;
 public class DropTarget extends Widget {
 
 	// info for registering as a droptarget	
-	private Control control;
-	private Listener controlListener;
-	private Transfer[] transferAgents = new Transfer[0];
-	private DragUnderEffect effect;
+	Control control;
+	Listener controlListener;
+	Transfer[] transferAgents = new Transfer[0];
+	DragUnderEffect effect;
 
-	private static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
+	static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
 
 /**
  * Creates a new <code>DropTarget</code> to allow data to be dropped on the specified 
@@ -212,7 +212,7 @@ public Transfer[] getTransfer() {
 	return transferAgents;
 }
 
-private void onDispose () {	
+void onDispose () {	
 	if (control == null)
 		return;
 	if (controlListener != null)
