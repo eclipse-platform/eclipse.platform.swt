@@ -100,8 +100,7 @@ public class StyledText2 extends Canvas {
 	
 	Color selectionBackground;	// selection background color
 	Color selectionForeground;	// selection foreground color
-	StyledTextContent logicalContent;	// native content (default or user specified)
-	StyledTextContent content;			// line wrapping content, same as logicalContent if word wrap is off
+	StyledTextContent content;			// native content (default or user specified)
 	StyledTextRenderer2 renderer;
 	Listener listener;
 	TextChangeListener textChangeListener;	// listener for TextChanging, TextChanged and TextSet events from StyledTextContent
@@ -1076,75 +1075,10 @@ public class StyledText2 extends Canvas {
 		write(lineDelimiter);
 	}
 	}
-	/**
-	 * LineCache provides an interface to calculate and invalidate 
-	 * line based data.
-	 * Implementors need to return a line width in <code>getWidth</code>.
-	 */
-	interface LineCache {
-	/**
-	 * Calculates the lines in the specified range.
-	 * <p>
-	 * 
-	 * @param startLine first line to calculate
-	 * @param lineCount number of lines to calculate
-	 */
-	public void calculate(int startLine, int lineCount);
-	/**
-	 * Returns a width that will be used by the <code>StyledText</code> 
-	 * widget to size a horizontal scroll bar.
-	 * <p>
-	 *
-	 * @return the line width
-	 */
-	public int getWidth();
-	/**
-	 * Resets the lines in the specified range.
-	 * This method is called in <code>StyledText.redraw()</code>
-	 * and allows implementors to call redraw themselves during reset.
-	 * <p>
-	 *
-	 * @param startLine the first line to reset
-	 * @param lineCount the number of lines to reset
-	 * @param calculateMaxWidth true=implementors should retain a 
-	 * 	valid width even if it is affected by the reset operation.
-	 * 	false=the width may be set to 0
-	 */
-	public void redrawReset(int startLine, int lineCount, boolean calculateMaxWidth);
-	/**
-	 * Resets the lines in the specified range.
-	 * <p>
-	 *
-	 * @param startLine the first line to reset
-	 * @param lineCount the number of lines to reset
-	 * @param calculateMaxWidth true=implementors should retain a 
-	 * 	valid width even if it is affected by the reset operation.
-	 * 	false=the width may be set to 0
-	 */
-	public void reset(int startLine, int lineCount, boolean calculateMaxWidth);
-	/** 
-	 * Called when a text change occurred.
-	 * <p>
-	 *
-	 * @param startOffset	the start offset of the text change
-	 * @param newLineCount the number of inserted lines
-	 * @param replaceLineCount the number of deleted lines
-	 * @param newCharCount the number of new characters
-	 * @param replaceCharCount the number of deleted characters
-	 */  
-	public void textChanged(int startOffset, int newLineCount, int replaceLineCount, int newCharCount, int replaceCharCount);
-	}
-	/**
-	 * Keeps track of line widths and the longest line in the 
-	 * StyledText document.
-	 * Line widths are calculated when requested by a call to 
-	 * <code>calculate</code> and cached until reset by a call 
-	 * to <code>redrawReset</code> or <code>reset</code>.
-	 */
-	class ContentWidthCache implements LineCache {
+	
+	static class LineCache {
 		StyledText2 parent;				// parent widget, used to create a GC for line measuring
 		int[] lineWidth;				// width in pixel of each line in the document, -1 for unknown width
-		StyledTextContent content;		// content to use for line width calculation
 		int lineCount;					// number of lines in lineWidth array
 		int maxWidth;					// maximum line width of all measured lines
 		int maxWidthLineIndex;			// index of the widest line
@@ -1159,10 +1093,9 @@ public class StyledText2 extends Canvas {
 	 * @param content a StyledTextContent containing the initial number
 	 *  of lines to allocate space for
 	 */
-	public ContentWidthCache(StyledText2 parent, StyledTextContent content) {
+	public LineCache (StyledText2 parent) {
 		this.parent = parent;
-		this.content = content;
-		this.lineCount = content.getLineCount();
+		this.lineCount = parent.content.getLineCount();
 		lineWidth = new int[lineCount];
 		reset(0, lineCount, false);
 	}
@@ -1181,11 +1114,11 @@ public class StyledText2 extends Canvas {
 		if (startLine < 0 || endLine > lineWidth.length) {
 			return;
 		}
-		int caretWidth = getCaretWidth();
+		int caretWidth = parent.getCaretWidth();
 		for (int i = startLine; i < endLine; i++) {
 			if (lineWidth[i] == -1) {
-				String line = content.getLine(i);
-				int lineOffset = content.getOffsetAtLine(i);
+				String line = parent.content.getLine(i);
+				int lineOffset = parent.content.getOffsetAtLine(i);
 				lineWidth[i] = contentWidth(line, lineOffset) + caretWidth;
 			}
 			if (lineWidth[i] > maxWidth) {
@@ -1204,7 +1137,7 @@ public class StyledText2 extends Canvas {
 	 */  
 	void calculateVisible(int startLine, int newLineCount) {
 		int topIndex = parent.getTopIndex();
-		int bottomLine = Math.min(getPartialBottomIndex(), startLine + newLineCount);
+		int bottomLine = Math.min(parent.getPartialBottomIndex(), startLine + newLineCount);
 		startLine = Math.max(startLine, topIndex);
 		calculate(startLine, bottomLine - startLine + 1);
 	}
@@ -1218,10 +1151,10 @@ public class StyledText2 extends Canvas {
 	 * @return the width of the given line
 	 */
 	int contentWidth(String line, int lineOffset) {
-		TextLayout layout = renderer.getTextLayout(line, lineOffset);
+		TextLayout layout = parent.renderer.getTextLayout(line, lineOffset);
 		Rectangle rect = layout.getLineBounds(0);
-		renderer.disposeTextLayout(layout);
-		return rect.x + rect.width + leftMargin + rightMargin;
+		parent.renderer.disposeTextLayout(layout);
+		return rect.x + rect.width + parent.leftMargin + parent.rightMargin;
 	}
 	/**
 	 * Grows the <code>lineWidth</code> array to accomodate new line width
@@ -1302,20 +1235,6 @@ public class StyledText2 extends Canvas {
 	 * 	calculated. false=the maximum width is set to 0 if the 
 	 * 	widest line is being reset.
 	 */
-	public void redrawReset(int startLine, int lineCount, boolean calculateMaxWidth) {
-		reset(startLine, lineCount, calculateMaxWidth);
-	}
-	/**
-	 * Resets the line width of the lines in the specified range.
-	 * <p>
-	 *
-	 * @param startLine	the first line to reset
-	 * @param lineCount the number of lines to reset
-	 * @param calculateMaxWidth true=if the widest line is being 
-	 * 	reset the maximum width of all remaining cached lines is 
-	 * 	calculated. false=the maximum width is set to 0 if the 
-	 * 	widest line is being reset.
-	 */
 	public void reset(int startLine, int lineCount, boolean calculateMaxWidth) {
 		int endLine = startLine + lineCount;
 		if (startLine < 0 || endLine > lineWidth.length) {
@@ -1384,133 +1303,6 @@ public class StyledText2 extends Canvas {
 		}
 	}
 	}
-	/**
-	 * Updates the line wrapping of the content.
-	 * The line wrapping must always be in a consistent state. 
-	 * Therefore, when <code>reset</code> or <code>redrawReset</code>
-	 * is called, the line wrapping is recalculated immediately 
-	 * instead of in <code>calculate</code>.
-	 */
-	class WordWrapCache2 implements LineCache {
-		StyledText2 parent;
-		WrappedContent2 visualContent;
-				
-	/** 
-	 * Creates a new <code>WordWrapCache</code> and calculates an initial
-	 * line wrapping.
-	 * <p>
-	 *
-	 * @param parent the StyledText widget to wrap content in.
-	 * @param content the content provider that does the actual line wrapping.
-	 */
-	public WordWrapCache2(StyledText2 parent, WrappedContent2 content) {
-		this.parent = parent;
-		visualContent = content;
-		int width = parent.getClientArea().width - parent.leftMargin - parent.rightMargin;
-		visualContent.wrapLines(width);
-	}
-	/**
-	 * Do nothing. Lines are wrapped immediately after reset.
-	 * <p>
-	 * 
-	 * @param startLine first line to calculate
-	 * @param lineCount number of lines to calculate
-	 */
-	public void calculate(int startLine, int lineCount) {
-	}
-	/**
-	 * Returns the client area width. Lines are wrapped so there
-	 * is no horizontal scroll bar.
-	 * <p>
-	 *
-	 * @return the line width
-	 */
-	public int getWidth() {
-		return parent.getClientArea().width;
-	}
-	/**
-	 * Wraps the lines in the specified range.
-	 * This method is called in <code>StyledText.redraw()</code>.
-	 * A redraw is therefore not necessary.
-	 * <p>
-	 *
-	 * @param startLine the first line to reset
-	 * @param lineCount the number of lines to reset
-	 * @param calculateMaxWidth true=implementors should retain a 
-	 * 	valid width even if it is affected by the reset operation.
-	 * 	false=the width may be set to 0
-	 */
-	public void redrawReset(int startLine, int lineCount, boolean calculateMaxWidth) {
-		int width = parent.getClientArea().width - parent.leftMargin - parent.rightMargin;
-	    if (lineCount == visualContent.getLineCount()) {
-			// do a full rewrap if all lines are reset
-			visualContent.wrapLines(width);
-	    } else {
-		    visualContent.reset(startLine, lineCount, width);
-	    }
-	}
-	/**
-	 * Rewraps the lines in the specified range and redraws
-	 * the widget if the line wrapping has changed.
-	 * <p>
-	 *
-	 * @param startLine the first line to reset
-	 * @param lineCount the number of lines to reset
-	 * @param calculateMaxWidth true=implementors should retain a 
-	 * 	valid width even if it is affected by the reset operation.
-	 * 	false=the width may be set to 0
-	 */
-	public void reset(int startLine, int lineCount, boolean calculateMaxWidth) {
-		int itemCount = getPartialBottomIndex() - topIndex + 1;
-	    int[] oldLineOffsets = new int[itemCount];
-	    for (int i = 0; i < itemCount; i++) {
-	    	oldLineOffsets[i] = visualContent.getOffsetAtLine(i + topIndex);
-	    }
-	    redrawReset(startLine, lineCount, calculateMaxWidth);
-		// check for cases which will require a full redraw
-	    if (getPartialBottomIndex() - topIndex + 1 != itemCount) {
-	    	// number of visible lines has changed
-	    	parent.internalRedraw();
-	    } else {
-		    for (int i = 0; i < itemCount; i++) {
-		    	if (visualContent.getOffsetAtLine(i + topIndex) != oldLineOffsets[i]) {
-		    		// wrapping of one of the visible lines has changed
-		    		parent.internalRedraw();
-		    		break;
-		    	}
-	    	}
-	    }
-	}
-	/** 
-	 * Passes the text change notification to the line wrap content.
-	 * <p>
-	 *
-	 * @param startOffset	the start offset of the text change
-	 * @param newLineCount the number of inserted lines
-	 * @param replaceLineCount the number of deleted lines
-	 * @param newCharCount the number of new characters
-	 * @param replaceCharCount the number of deleted characters
-	 */  
-	public void textChanged(int startOffset, int newLineCount, int replaceLineCount, int newCharCount, int replaceCharCount) {
-		int startLine = visualContent.getLineAtOffset(startOffset);
-		int width = parent.getClientArea().width - parent.leftMargin - parent.rightMargin;
-		visualContent.textChanged(startOffset, newLineCount, replaceLineCount, newCharCount, replaceCharCount, width);
-		// if we are wrapping then it is possible for a deletion on the last
-		// line of text to shorten the total text length by a line.  If this
-		// occurs then the startIndex must be adjusted such that a redraw will
-		// be performed if a visible region is affected.  fixes bug 42947.
-		if (wordWrap) {
-			int lineCount = content.getLineCount();
-			if (startLine >= lineCount) startLine = lineCount - 1;  
-		}
-		if (startLine <= getPartialBottomIndex()) {
-			// only redraw if the text change affects text inside or above 
-			// the visible lines. if it is below the visible lines it will
-			// not affect the word wrapping. fixes bug 14047.
-			parent.internalRedraw();
-		}
-	}
-	}
 
 /**
  * Constructs a new instance of this class given its parent
@@ -1560,11 +1352,7 @@ public StyledText2(Composite parent, int style) {
 	clipboard = new Clipboard(display);
 	installDefaultContent();
 	initializeRenderer();
-	if ((style & SWT.WRAP) != 0) {
-		setWordWrap(true);
-	} else {
-		lineCache = new ContentWidthCache(this, content);
-	}
+	lineCache = new LineCache(this);
 	defaultCaret = new Caret(this, SWT.NULL);
 	if (isBidiCaret()) {
 		createCaretBitmaps();
@@ -1713,9 +1501,9 @@ public void addLineBackgroundListener(LineBackgroundListener listener) {
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (!userLineBackground) {
 		removeLineBackgroundListener(defaultLineStyler);
-		defaultLineStyler.setLineBackground(0, logicalContent.getLineCount(), null);
+		defaultLineStyler.setLineBackground(0, content.getLineCount(), null);
 		userLineBackground = true;
-	}	
+	}
 	StyledTextListener typedListener = new StyledTextListener(listener);
 	addListener(LineGetBackground, typedListener);	
 }
@@ -1867,7 +1655,7 @@ public void append(String string) {
  * Calculates the width of the widest visible line.
  */
 void calculateContentWidth() {
-	lineCache = getLineCache(content);
+	lineCache = new LineCache (this);
 	lineCache.calculate(topIndex, getPartialBottomIndex() - topIndex + 1);
 }
 /**
@@ -2014,27 +1802,27 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int count = singleLine ? 1 : content.getLineCount();
 	int width = wHint;	
 	if (wHint == SWT.DEFAULT) {
-		LineCache computeLineCache = lineCache;
-		if (wordWrap) {
-			// set non-wrapping content width calculator. Ensures ideal line width 
-			// that does not required wrapping. Fixes bug 31195.
-			computeLineCache = new ContentWidthCache(this, logicalContent);
-			if (!singleLine) {
-				count = logicalContent.getLineCount();
-			}
-		}
-		// Only calculate what can actually be displayed.
-		// Do this because measuring each text line is a 
-		// time-consuming process.
-		int visibleCount = Math.min (count, getDisplay().getBounds().height / lineHeight);
-		computeLineCache.calculate(0, visibleCount);
-		width = computeLineCache.getWidth() + leftMargin + rightMargin;
-	} else if (wordWrap && !singleLine) {
-		// calculate to wrap to width hint. Fixes bug 20377. 
-		// don't wrap live content. Fixes bug 38344.
-		WrappedContent2 wrappedContent = new WrappedContent2(renderer, logicalContent);
-		wrappedContent.wrapLines(width);
-		count = wrappedContent.getLineCount();
+//		LineCache computeLineCache = lineCache;
+//		if (wordWrap) {
+//			// set non-wrapping content width calculator. Ensures ideal line width 
+//			// that does not required wrapping. Fixes bug 31195.
+//			computeLineCache = new ContentWidthCache(this, logicalContent);
+//			if (!singleLine) {
+//				count = logicalContent.getLineCount();
+//			}
+//		}
+//		// Only calculate what can actually be displayed.
+//		// Do this because measuring each text line is a 
+//		// time-consuming process.
+//		int visibleCount = Math.min (count, getDisplay().getBounds().height / lineHeight);
+//		computeLineCache.calculate(0, visibleCount);
+//		width = computeLineCache.getWidth() + leftMargin + rightMargin;
+//	} else if (wordWrap && !singleLine) {
+//		// calculate to wrap to width hint. Fixes bug 20377. 
+//		// don't wrap live content. Fixes bug 38344.
+//		WrappedContent2 wrappedContent = new WrappedContent2(renderer, logicalContent);
+//		wrappedContent.wrapLines(width);
+//		count = wrappedContent.getLineCount();
 	}
 	int height;
 	if (hHint != SWT.DEFAULT) {
@@ -3307,7 +3095,7 @@ int getClusterPrevious(int offset, int lineIndex) {
  */
 public StyledTextContent getContent() {
 	checkWidget();
-	return logicalContent;
+	return content;
 }
 /** 
  * Returns whether the widget implements double click mouse behavior.
@@ -3453,7 +3241,7 @@ public int getCharCount() {
  */
 public Color getLineBackground(int index) {
 	checkWidget();
-	if (index < 0 || index > logicalContent.getLineCount()) {
+	if (index < 0 || index > content.getLineCount()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	return !userLineBackground ? defaultLineStyler.getLineBackground(index) : null;
@@ -3516,7 +3304,7 @@ public int getLineAtOffset(int offset) {
 	if (offset < 0 || offset > getCharCount()) {
 		SWT.error(SWT.ERROR_INVALID_RANGE);		
 	}
-	return logicalContent.getLineAtOffset(offset);
+	return content.getLineAtOffset(offset);
 }
 /**
  * Returns the line delimiter used for entering new lines by key down
@@ -3552,16 +3340,9 @@ public String getLineDelimiter() {
 StyledTextEvent sendLineEvent(int eventType, int lineOffset, String line) {
 	StyledTextEvent event = null;
 	if (isListening(eventType)) {
-		event = new StyledTextEvent(logicalContent);		
-		if (wordWrap) {
-		    // if word wrap is on, the line offset and text may be visual (wrapped)
-		    int lineIndex = logicalContent.getLineAtOffset(lineOffset);
-		    event.detail = logicalContent.getOffsetAtLine(lineIndex);
-			event.text = logicalContent.getLine(lineIndex);
-		} else {
-			event.detail = lineOffset;
-			event.text = line;
-		}
+		event = new StyledTextEvent(content);		
+		event.detail = lineOffset;
+		event.text = line;
 		notifyListeners(eventType, event);
 	}
 	return event;	
@@ -3579,22 +3360,6 @@ StyledTextEvent sendLineEvent(int eventType, int lineOffset, String line) {
 public int getLineHeight() {
 	checkWidget();
 	return lineHeight;
-}
-/**
- * Returns a LineCache implementation. Depending on whether or not
- * word wrap is on this may be a line wrapping or line width 
- * calculating implementaiton.
- * <p>
- * 
- * @param content StyledTextContent to create the LineCache on.
- * @return a LineCache implementation
- */
-LineCache getLineCache(StyledTextContent content) {
-	if (wordWrap) {
-		return new WordWrapCache2(this, (WrappedContent2) content);
-	} else {
-		return new ContentWidthCache(this, content);
-	}
 }
 /**
  * Returns the line style data for the given line or null if there is 
@@ -3666,10 +3431,10 @@ public Point getLocationAtOffset(int offset) {
 public int getOffsetAtLine(int lineIndex) {
 	checkWidget();
 	if (lineIndex < 0 || 
-		(lineIndex > 0 && lineIndex >= logicalContent.getLineCount())) {
+		(lineIndex > 0 && lineIndex >= content.getLineCount())) {
 		SWT.error(SWT.ERROR_INVALID_RANGE);		
 	}
-	return logicalContent.getOffsetAtLine(lineIndex);
+	return content.getOffsetAtLine(lineIndex);
 }
 /**
  * Returns the offset of the character at the given location relative 
@@ -3775,13 +3540,13 @@ int getPartialBottomIndex() {
  */
 String getPlatformDelimitedText(TextWriter writer) {
 	int end = writer.getStart() + writer.getCharCount();
-	int startLine = logicalContent.getLineAtOffset(writer.getStart());
-	int endLine = logicalContent.getLineAtOffset(end);
-	String endLineText = logicalContent.getLine(endLine);
-	int endLineOffset = logicalContent.getOffsetAtLine(endLine);
+	int startLine = content.getLineAtOffset(writer.getStart());
+	int endLine = content.getLineAtOffset(end);
+	String endLineText = content.getLine(endLine);
+	int endLineOffset = content.getOffsetAtLine(endLine);
 	
 	for (int i = startLine; i <= endLine; i++) {
-		writer.writeLine(logicalContent.getLine(i), logicalContent.getOffsetAtLine(i));
+		writer.writeLine(content.getLine(i), content.getOffsetAtLine(i));
 		if (i < endLine) {
 			writer.writeLineDelimiter(PlatformLineDelimiter);
 		}
@@ -4288,10 +4053,6 @@ public int getTextLimit() {
  */
 public int getTopIndex() {
 	checkWidget();
-	if (wordWrap) {
-		int visualLineOffset = content.getOffsetAtLine(topIndex);
-		return logicalContent.getLineAtOffset(visualLineOffset);
-	}
 	return topIndex;
 }
 /**
@@ -4380,13 +4141,13 @@ int getWordEnd(int offset) {
 	if (offset >= getCharCount()) {
 		return offset;
 	}
-	int line = logicalContent.getLineAtOffset(offset);
-	int lineOffset = logicalContent.getOffsetAtLine(line);
-	String lineText = logicalContent.getLine(line);
+	int line = content.getLineAtOffset(offset);
+	int lineOffset = content.getOffsetAtLine(line);
+	String lineText = content.getLine(line);
 	int lineLength = lineText.length();
 	if (offset == lineOffset + lineLength) {
 		line++;
-		offset = logicalContent.getOffsetAtLine(line);
+		offset = content.getOffsetAtLine(line);
 	} else {
 		TextLayout layout = renderer.getTextLayout(lineText, lineOffset);
 		offset -= lineOffset;
@@ -4415,13 +4176,13 @@ int getWordEndNoSpaces(int offset) {
 	if (offset >= getCharCount()) {
 		return offset;
 	}
-	int line = logicalContent.getLineAtOffset(offset);
-	int lineOffset = logicalContent.getOffsetAtLine(line);
-	String lineText = logicalContent.getLine(line);
+	int line = content.getLineAtOffset(offset);
+	int lineOffset = content.getOffsetAtLine(line);
+	String lineText = content.getLine(line);
 	int lineLength = lineText.length();
 	if (offset == lineOffset + lineLength) {
 		line++;
-		offset = logicalContent.getOffsetAtLine(line);
+		offset = content.getOffsetAtLine(line);
 	} else {
 		offset -= lineOffset;
 		char ch = lineText.charAt(offset);
@@ -4456,13 +4217,13 @@ int getWordStart(int offset) {
 	if (offset <= 0) {
 		return offset;
 	}
-	int line = logicalContent.getLineAtOffset(offset);
-	int lineOffset = logicalContent.getOffsetAtLine(line);
-	String lineText = logicalContent.getLine(line);
+	int line = content.getLineAtOffset(offset);
+	int lineOffset = content.getOffsetAtLine(line);
+	String lineText = content.getLine(line);
 	if (offset == lineOffset) {
 		line--;
-		lineText = logicalContent.getLine(line);
-		offset = logicalContent.getOffsetAtLine(line) + lineText.length();
+		lineText = content.getLine(line);
+		offset = content.getOffsetAtLine(line) + lineText.length();
 	} else {
 		TextLayout layout = renderer.getTextLayout(lineText, lineOffset);
 		offset -= lineOffset;
@@ -4548,7 +4309,7 @@ void installDefaultContent() {
 			handleTextSet(event);
 		}
 	};
-	logicalContent = content = new DefaultContent();
+	content = new DefaultContent();
 	content.addTextChangeListener(textChangeListener);
 }
 /**
@@ -4560,7 +4321,7 @@ void installDefaultContent() {
  * @see #addLineStyleListener
  */
 void installDefaultLineStyler() {
-	defaultLineStyler = new DefaultLineStyler(logicalContent);
+	defaultLineStyler = new DefaultLineStyler(content);
 	StyledTextListener typedListener = new StyledTextListener(defaultLineStyler);
 	if (!userLineStyle) {
 		addListener(LineGetStyle, typedListener);
@@ -4725,7 +4486,6 @@ void handleDispose(Event event) {
 	}
 	selectionBackground = null;
 	selectionForeground = null;
-	logicalContent = null;
 	textChangeListener = null;
 	lineCache = null;
 	ibeamCursor = null;
@@ -5201,9 +4961,6 @@ void initializeRenderer() {
 	}
 	renderer = new StyledTextRenderer2(getDisplay(), getFont(), this, tabLength);
 	lineHeight = renderer.getLineHeight();
-	if (wordWrap) {
-		content = new WrappedContent2(renderer, logicalContent);
-	}
 }
 /**
  * Executes the action.
@@ -5449,7 +5206,7 @@ void modifyContent(Event event, boolean updateCaret) {
 		StyledTextEvent styledTextEvent = null;
 		int replacedLength = event.end - event.start;
 		if (isListening(ExtendedModify)) {
-			styledTextEvent = new StyledTextEvent(logicalContent);
+			styledTextEvent = new StyledTextEvent(content);
 			styledTextEvent.start = event.start;
 			styledTextEvent.end = event.start + event.text.length();
 			styledTextEvent.text = content.getTextRange(event.start, replacedLength);
@@ -5669,7 +5426,7 @@ public Runnable print(Printer printer, StyledTextPrintOptions options) {
 public void redraw() {
 	super.redraw();
 	int itemCount = getPartialBottomIndex() - topIndex + 1;
-	lineCache.redrawReset(topIndex, itemCount, true);
+	lineCache.reset(topIndex, itemCount, true);
 	lineCache.calculate(topIndex, itemCount);
 	setHorizontalScrollBar();
 }
@@ -6312,22 +6069,16 @@ public void setWordWrap(boolean wrap) {
 	checkWidget();
 	if ((getStyle() & SWT.SINGLE) != 0) return;
 	if (wrap != wordWrap) {
-		ScrollBar horizontalBar = getHorizontalBar();
 		wordWrap = wrap;
-		if (wordWrap) {
-			logicalContent = content;
-			content = new WrappedContent2(renderer, logicalContent);
-		} else {
-			content = logicalContent;
-		}
 		calculateContentWidth();
 		horizontalScrollOffset = 0;
+		ScrollBar horizontalBar = getHorizontalBar();
 		if (horizontalBar != null) {
 			horizontalBar.setVisible(!wordWrap);
 		}
 		setScrollBars();
 		setCaretLocation();
-		super.redraw();		
+		super.redraw();	
 	}
 }
 /**
@@ -6513,12 +6264,7 @@ public void setContent(StyledTextContent newContent) {
 	if (content != null) {
 		content.removeTextChangeListener(textChangeListener);
 	}
-	logicalContent = newContent;
-	if (wordWrap) {
-		content = new WrappedContent2(renderer, logicalContent);
-	} else {
-		content = logicalContent;
-	}
+	content = newContent;
 	content.addTextChangeListener(textChangeListener);
 	reset();
 }
@@ -6758,7 +6504,7 @@ public void setLineBackground(int startLine, int lineCount, Color background) {
 	if (userLineBackground) {
 		return;
 	}
-	if (startLine < 0 || startLine + lineCount > logicalContent.getLineCount()) {
+	if (startLine < 0 || startLine + lineCount > content.getLineCount()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	defaultLineStyler.setLineBackground(startLine, lineCount, background);
@@ -7222,7 +6968,7 @@ public void setText(String text) {
 	if (event.doit) {
 		StyledTextEvent styledTextEvent = null;
 		if (isListening(ExtendedModify)) {
-			styledTextEvent = new StyledTextEvent(logicalContent);
+			styledTextEvent = new StyledTextEvent(content);
 			styledTextEvent.start = event.start;
 			styledTextEvent.end = event.start + event.text.length();
 			styledTextEvent.text = content.getTextRange(event.start, event.end - event.start);
@@ -7280,7 +7026,7 @@ public void setTopIndex(int topIndex) {
 	if (getCharCount() == 0) {
 		return;
 	}
-	int lineCount = logicalContent.getLineCount();
+	int lineCount = content.getLineCount();
 	int pageSize = Math.max(1, Math.min(lineCount, getLineCountWhole()));
 	if (topIndex < 0) {
 		topIndex = 0;
@@ -7288,7 +7034,7 @@ public void setTopIndex(int topIndex) {
 		topIndex = lineCount - pageSize;
 	}
 	if (wordWrap) {
-		int logicalLineOffset = logicalContent.getOffsetAtLine(topIndex);
+		int logicalLineOffset = content.getOffsetAtLine(topIndex);
 		topIndex = content.getLineAtOffset(logicalLineOffset);
 	}
 	setVerticalScrollOffset(topIndex * getVerticalIncrement(), true);
@@ -7540,48 +7286,48 @@ void updateSelection(int startOffset, int replacedLength, int newLength) {
  * 	occurred
  */
 void wordWrapResize(int oldClientAreaWidth) {
-	WrappedContent2 wrappedContent = (WrappedContent2) content;
-	// all lines are wrapped and no rewrap required if widget has already 
-	// been visible, client area is now wider and visual (wrapped) line 
-	// count equals logical line count.
-	if (oldClientAreaWidth != 0 && clientAreaWidth > oldClientAreaWidth &&
-		wrappedContent.getLineCount() == logicalContent.getLineCount()) {
-		return;
-	}
-	int width = getClientArea().width - leftMargin - rightMargin;
-	wrappedContent.wrapLines(width);
-    
-	// adjust the top index so that top line remains the same
-	int newTopIndex = content.getLineAtOffset(topOffset);
-	// topOffset is the beginning of the top line. therefore it 
-	// needs to be adjusted because in a wrapped line this is also 
-	// the end of the preceeding line.  
-	if (newTopIndex < content.getLineCount() - 1 &&
-		topOffset == content.getOffsetAtLine(newTopIndex + 1)) {
-		newTopIndex++;
-	}
-	if (newTopIndex != topIndex) {
-		ScrollBar verticalBar = getVerticalBar();
-		// adjust index and pixel offset manually instead of calling
-		// setVerticalScrollOffset because the widget does not actually need
-		// to be scrolled. causes flash otherwise.
-		verticalScrollOffset += (newTopIndex - topIndex) * getVerticalIncrement();
-		// verticalScrollOffset may become negative if first line was 
-		// partially visible and second line was top line. prevent this from 
-		// happening to fix 8503.
-		if (verticalScrollOffset < 0) {
-			verticalScrollOffset = 0;
-		}
-		topIndex = newTopIndex;
-		topOffset = content.getOffsetAtLine(topIndex);
-		if (verticalBar != null) {
-			verticalBar.setSelection(verticalScrollOffset);
-		}
-	}
-	// caret may be on a different line after a rewrap.
-	// call setCaretLocation after fixing vertical scroll offset.
-	setCaretLocation();    
-	// word wrap may have changed on one of the visible lines
-	super.redraw();
+//	WrappedContent2 wrappedContent = (WrappedContent2) content;
+//	// all lines are wrapped and no rewrap required if widget has already 
+//	// been visible, client area is now wider and visual (wrapped) line 
+//	// count equals logical line count.
+//	if (oldClientAreaWidth != 0 && clientAreaWidth > oldClientAreaWidth &&
+//		wrappedContent.getLineCount() == logicalContent.getLineCount()) {
+//		return;
+//	}
+//	int width = getClientArea().width - leftMargin - rightMargin;
+//	wrappedContent.wrapLines(width);
+//    
+//	// adjust the top index so that top line remains the same
+//	int newTopIndex = content.getLineAtOffset(topOffset);
+//	// topOffset is the beginning of the top line. therefore it 
+//	// needs to be adjusted because in a wrapped line this is also 
+//	// the end of the preceeding line.  
+//	if (newTopIndex < content.getLineCount() - 1 &&
+//		topOffset == content.getOffsetAtLine(newTopIndex + 1)) {
+//		newTopIndex++;
+//	}
+//	if (newTopIndex != topIndex) {
+//		ScrollBar verticalBar = getVerticalBar();
+//		// adjust index and pixel offset manually instead of calling
+//		// setVerticalScrollOffset because the widget does not actually need
+//		// to be scrolled. causes flash otherwise.
+//		verticalScrollOffset += (newTopIndex - topIndex) * getVerticalIncrement();
+//		// verticalScrollOffset may become negative if first line was 
+//		// partially visible and second line was top line. prevent this from 
+//		// happening to fix 8503.
+//		if (verticalScrollOffset < 0) {
+//			verticalScrollOffset = 0;
+//		}
+//		topIndex = newTopIndex;
+//		topOffset = content.getOffsetAtLine(topIndex);
+//		if (verticalBar != null) {
+//			verticalBar.setSelection(verticalScrollOffset);
+//		}
+//	}
+//	// caret may be on a different line after a rewrap.
+//	// call setCaretLocation after fixing vertical scroll offset.
+//	setCaretLocation();    
+//	// word wrap may have changed on one of the visible lines
+//	super.redraw();
 }
 }
