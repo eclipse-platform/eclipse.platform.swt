@@ -15,10 +15,10 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 class TableDragUnderEffect extends DragUnderEffect {
-	private Table table;
-	private TableItem currentItem;
-	private TableItem[] selection = new TableItem[0];
-	private int currentEffect = DND.FEEDBACK_NONE;
+	Table table;
+	TableItem currentItem;
+	TableItem[] selection = new TableItem[0];
+	int currentEffect = DND.FEEDBACK_NONE;
 	
 TableDragUnderEffect(Table table) {
 	this.table = table;
@@ -38,13 +38,13 @@ void show(int effect, int x, int y) {
 		selection = new TableItem[0];
 	}
 }
-private TableItem findItem(int x, int y){
+TableItem findItem(int x, int y){
 	if (table == null) return null;
 	Point coordinates = new Point(x, y);
 	coordinates = table.toControl(coordinates);
 	return table.getItem(coordinates);
 }
-private void setDragUnderEffect(int effect, TableItem item) {	
+void setDragUnderEffect(int effect, TableItem item) {	
 	if (currentItem != item) {
 		if (item == null) {
 			table.setSelection(new TableItem[0]);

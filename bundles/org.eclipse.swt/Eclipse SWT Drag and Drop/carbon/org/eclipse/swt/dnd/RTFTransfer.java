@@ -28,11 +28,11 @@ import org.eclipse.swt.internal.carbon.CFRange;
  */
 public class RTFTransfer extends ByteArrayTransfer {
 
-	private static RTFTransfer _instance = new RTFTransfer();
-	private static final String RTF = "RTF ";
-	private static final int RTFID = registerType(RTF);
+	static RTFTransfer _instance = new RTFTransfer();
+	static final String RTF = "RTF "; //$NON-NLS-1$
+	static final int RTFID = registerType(RTF);
 
-private RTFTransfer() {}
+RTFTransfer() {}
 
 /**
  * Returns the singleton instance of the RTFTransfer class.

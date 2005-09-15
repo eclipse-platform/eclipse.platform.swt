@@ -35,13 +35,13 @@ import org.eclipse.swt.internal.carbon.*;
  */
 public class FileTransfer extends ByteArrayTransfer {
 	
-	private static FileTransfer _instance = new FileTransfer();
-	private static final String HFS = "hfs ";
-	private static final String FURL = "furl";
-	private static final int HFSID = registerType(HFS);
-	private static final int FURLID = registerType(FURL);
+	static FileTransfer _instance = new FileTransfer();
+	static final String HFS = "hfs "; //$NON-NLS-1$
+	static final String FURL = "furl"; //$NON-NLS-1$
+	static final int HFSID = registerType(HFS);
+	static final int FURLID = registerType(FURL);
 	
-private FileTransfer() {}
+FileTransfer() {}
 
 /**
  * Returns the singleton instance of the FileTransfer class.

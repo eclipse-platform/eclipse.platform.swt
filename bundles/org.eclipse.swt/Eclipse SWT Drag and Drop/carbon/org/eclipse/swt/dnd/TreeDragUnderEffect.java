@@ -16,10 +16,10 @@ import org.eclipse.swt.widgets.*;
 
 class TreeDragUnderEffect extends DragUnderEffect {
 
-	private Tree tree;
-	private TreeItem currentItem = null;
-	private int currentEffect = DND.FEEDBACK_NONE;
-	private TreeItem[] selection = new TreeItem[0];
+	Tree tree;
+	TreeItem currentItem = null;
+	int currentEffect = DND.FEEDBACK_NONE;
+	TreeItem[] selection = new TreeItem[0];
 
 TreeDragUnderEffect(Tree tree) {
 	this.tree = tree;
@@ -39,12 +39,12 @@ void show(int effect, int x, int y) {
 		selection = new TreeItem[0];
 	}
 }
-private TreeItem findItem(int x , int y){
+TreeItem findItem(int x , int y){
 	Point coordinates = new Point(x, y);
 	coordinates = tree.toControl(coordinates);
 	return tree.getItem(coordinates);
 }
-private void setDragUnderEffect(int effect, TreeItem item) {
+void setDragUnderEffect(int effect, TreeItem item) {
 	switch (effect) {				
 		case DND.FEEDBACK_SELECT:
 			if (currentEffect == DND.FEEDBACK_INSERT_AFTER ||
@@ -85,14 +85,14 @@ private void setDragUnderEffect(int effect, TreeItem item) {
 			break;
 	}
 }
-private void setDropSelection (TreeItem item) {
+void setDropSelection (TreeItem item) {
 	if (item == null) {
 		tree.setSelection(new TreeItem[0]);
 	} else {
 		tree.setSelection(new TreeItem[]{item});
 	}
 }
-private void setInsertMark (TreeItem item, boolean after) {
+void setInsertMark (TreeItem item, boolean after) {
 	// not currently implemented
 }
 }

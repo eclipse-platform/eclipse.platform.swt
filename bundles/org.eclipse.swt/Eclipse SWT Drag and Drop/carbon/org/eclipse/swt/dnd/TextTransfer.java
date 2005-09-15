@@ -29,13 +29,13 @@ import org.eclipse.swt.internal.carbon.OS;
  */
 public class TextTransfer extends ByteArrayTransfer {
 
-	private static TextTransfer _instance = new TextTransfer();
-	private static final String TEXT = "TEXT";
-	private static final String UTEXT = "utxt";
-	private static final int TEXTID = OS.kScrapFlavorTypeText;
-	private static final int UTEXTID = OS.kScrapFlavorTypeUnicode;
+	static TextTransfer _instance = new TextTransfer();
+	static final String TEXT = "TEXT"; //$NON-NLS-1$
+	static final String UTEXT = "utxt"; //$NON-NLS-1$
+	static final int TEXTID = OS.kScrapFlavorTypeText;
+	static final int UTEXTID = OS.kScrapFlavorTypeUnicode;
 
-private TextTransfer() {}
+TextTransfer() {}
 
 /**
  * Returns the singleton instance of the TextTransfer class.

@@ -27,11 +27,11 @@ import org.eclipse.swt.internal.carbon.OS;
  */
 public class HTMLTransfer extends ByteArrayTransfer {
 
-	private static HTMLTransfer _instance = new HTMLTransfer();
-	private static final String HTML = "HTML"; //$NON-NLS-1$
-	private static final int HTMLID = registerType(HTML);
+	static HTMLTransfer _instance = new HTMLTransfer();
+	static final String HTML = "HTML"; //$NON-NLS-1$
+	static final int HTMLID = registerType(HTML);
 
-private HTMLTransfer() {}
+HTMLTransfer() {}
 
 /**
  * Returns the singleton instance of the HTMLTransfer class.

@@ -23,8 +23,8 @@ import org.eclipse.swt.internal.carbon.OS;
  */
 public class Clipboard {
 
-	private Display display;
-	private int scrap = 0;
+	Display display;
+	int scrap = 0;
 
 /**
  * Constructs a new instance of this class.  Creating an instance of a Clipboard
@@ -550,7 +550,7 @@ public String[] getAvailableTypeNames() {
 	return names;
 }
 
-private int[] _getAvailableTypes() {
+int[] _getAvailableTypes() {
 	int[] types = new int[0];
 	int[] scrap = new int[1];
 	if (OS.GetCurrentScrap(scrap) != OS.noErr) return types;
