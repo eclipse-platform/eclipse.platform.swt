@@ -69,33 +69,33 @@ import org.eclipse.swt.internal.carbon.*;
  */
 public class DropTarget extends Widget {
 
-	private Control control;
-	private Listener controlListener;
-	private Transfer[] transferAgents = new Transfer[0];
-	private DragUnderEffect effect;
+	Control control;
+	Listener controlListener;
+	Transfer[] transferAgents = new Transfer[0];
+	DragUnderEffect effect;
 
 	// Track application selections
-	private TransferData selectedDataType;
-	private int selectedOperation;
+	TransferData selectedDataType;
+	int selectedOperation;
 	
 	// workaround - There is no event for "operation changed" so track operation based on key state
-	private int keyOperation = -1;
+	int keyOperation = -1;
 	
 	// workaround - Simulate events when mouse is not moving
-	private long dragOverStart;
-	private Runnable dragOverHeartbeat;
-	private DNDEvent dragOverEvent;
+	long dragOverStart;
+	Runnable dragOverHeartbeat;
+	DNDEvent dragOverEvent;
 	
 	// workaround - OS events are relative to the application, not the control.
 	// Track which control is the current target to determine when drag and
 	// drop enters or leaves a widget.
-	private static DropTarget CurrentDropTarget = null;
+	static DropTarget CurrentDropTarget = null;
 	
-	private static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
-	private static final int DRAGOVER_HYSTERESIS = 50;
+	static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
+	static final int DRAGOVER_HYSTERESIS = 50;
 	
-	private static Callback DragTrackingHandler;
-	private static Callback DragReceiveHandler;
+	static Callback DragTrackingHandler;
+	static Callback DragReceiveHandler;
 	
 	static {
 		DragTrackingHandler = new Callback(DropTarget.class, "DragTrackingHandler", 4); //$NON-NLS-1$
@@ -227,13 +227,13 @@ static int checkStyle (int style) {
 	return style;
 }
 
-private static int DragReceiveHandler(int theWindow, int handlerRefCon, int theDrag) {
+static int DragReceiveHandler(int theWindow, int handlerRefCon, int theDrag) {
 	DropTarget target = FindDropTarget(theWindow, theDrag);
 	if (target == null) return OS.noErr;
 	return target.dragReceiveHandler(theWindow, handlerRefCon, theDrag);   
 }
 
-private static int DragTrackingHandler(int message, int theWindow, int handlerRefCon, int theDrag) {
+static int DragTrackingHandler(int message, int theWindow, int handlerRefCon, int theDrag) {
 	if (message == OS.kDragTrackingLeaveHandler || message == OS.kDragTrackingEnterHandler) {
 		CurrentDropTarget = null;
 		return OS.noErr;
@@ -253,7 +253,7 @@ private static int DragTrackingHandler(int message, int theWindow, int handlerRe
 	return target.dragTrackingHandler(message, theWindow, handlerRefCon, theDrag);   
 }
 
-private static DropTarget FindDropTarget(int theWindow, int theDrag) {
+static DropTarget FindDropTarget(int theWindow, int theDrag) {
 	Display display = Display.findDisplay(Thread.currentThread());
 	if (display == null || display.isDisposed()) return null;
 	Point mouse = new Point();
@@ -323,7 +323,7 @@ protected void checkSubclass () {
 	}
 }
 
-private int dragReceiveHandler(int theWindow, int handlerRefCon, int theDrag) {
+int dragReceiveHandler(int theWindow, int handlerRefCon, int theDrag) {
 	updateDragOverHover(0, null);
 	effect.show(DND.FEEDBACK_NONE, 0, 0);
 
@@ -410,7 +410,7 @@ private int dragReceiveHandler(int theWindow, int handlerRefCon, int theDrag) {
 	return (selectedOperation == DND.DROP_NONE) ? OS.dragNotAcceptedErr : OS.noErr;
 }
 
-private int dragTrackingHandler(int message, int theWindow, int handlerRefCon, int theDrag) {
+int dragTrackingHandler(int message, int theWindow, int handlerRefCon, int theDrag) {
 	
 	if (message == OS.kDragTrackingLeaveWindow) {
 		updateDragOverHover(0, null);
@@ -517,7 +517,7 @@ public Control getControl () {
 	return control;
 }
 
-private int getOperationFromKeyState(int theDrag) {
+int getOperationFromKeyState(int theDrag) {
 	short[] modifiers = new short[1];
 	OS.GetDragModifiers(theDrag, modifiers, null, null);
 	boolean option = (modifiers[0] & OS.optionKey) == OS.optionKey;
@@ -549,7 +549,7 @@ public void notifyListeners (int eventType, Event event) {
 	super.notifyListeners(eventType, event);
 }
 
-private void onDispose () {	
+void onDispose () {	
 	if (control == null)
 		return;
 	if (controlListener != null)
@@ -560,7 +560,7 @@ private void onDispose () {
 	control = null;
 }
 
-private int opToOsOp(int operation) {
+int opToOsOp(int operation) {
 	int osOperation = 0;
 	if ((operation & DND.DROP_COPY) != 0){
 		osOperation |= OS.kDragActionCopy;
@@ -574,7 +574,7 @@ private int opToOsOp(int operation) {
 	return osOperation;
 }
 
-private int osOpToOp(int osOperation){
+int osOpToOp(int osOperation){
 	int operation = 0;
 	if ((osOperation & OS.kDragActionCopy) != 0){
 		operation |= DND.DROP_COPY;
@@ -618,7 +618,7 @@ public void removeDropListener(DropTargetListener listener) {
 	removeListener (DND.DropAccept, listener);
 }
 
-private boolean setEventData(int theDrag, DNDEvent event) {
+boolean setEventData(int theDrag, DNDEvent event) {
 	if (theDrag == 0) return false;
 	
 	// get allowed operations
@@ -730,7 +730,7 @@ public void setTransfer(Transfer[] transferAgents){
 	this.transferAgents = transferAgents;
 }
 
-private void updateDragOverHover(long delay, DNDEvent event) {
+void updateDragOverHover(long delay, DNDEvent event) {
 	if (delay == 0) {
 		dragOverStart = 0;
 		dragOverEvent = null;
