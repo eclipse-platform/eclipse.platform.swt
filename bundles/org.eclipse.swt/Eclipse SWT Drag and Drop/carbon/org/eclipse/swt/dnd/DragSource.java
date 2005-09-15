@@ -97,12 +97,12 @@ import org.eclipse.swt.internal.carbon.Point;
 public class DragSource extends Widget {
 
 	// info for registering as a drag source
-	private Control control;
-	private Listener controlListener;
-	private Transfer[] transferAgents = new Transfer[0];
+	Control control;
+	Listener controlListener;
+	Transfer[] transferAgents = new Transfer[0];
 
-	private static final String DRAGSOURCEID = "DragSource"; //$NON-NLS-1$
-	private static Callback DragSendDataProc;
+	static final String DRAGSOURCEID = "DragSource"; //$NON-NLS-1$
+	static Callback DragSendDataProc;
 	
 	static {
 		DragSendDataProc = new Callback(DragSource.class, "DragSendDataProc", 4); //$NON-NLS-1$
@@ -176,13 +176,13 @@ static int checkStyle (int style) {
 	return style;
 }
 
-private static int DragSendDataProc(int theType, int dragSendRefCon, int theItemRef, int theDrag) {
+static int DragSendDataProc(int theType, int dragSendRefCon, int theItemRef, int theDrag) {
 	DragSource source = FindDragSource(dragSendRefCon, theDrag);
 	if (source == null) return OS.cantGetFlavorErr;
 	return source.dragSendDataProc(theType, dragSendRefCon, theItemRef, theDrag);
 }
 
-private static DragSource FindDragSource(int dragSendRefCon, int theDrag) {
+static DragSource FindDragSource(int dragSendRefCon, int theDrag) {
 	if (dragSendRefCon == 0) return null;
 	Display display = Display.findDisplay(Thread.currentThread());
 	if (display == null || display.isDisposed()) return null;
@@ -236,7 +236,7 @@ protected void checkSubclass () {
 	}
 }
 
-private void drag(Event dragEvent) {
+void drag(Event dragEvent) {
 	DNDEvent event = new DNDEvent();
 	event.widget = this;	
 	event.time = dragEvent.time;
@@ -370,7 +370,7 @@ public Transfer[] getTransfer(){
 	return transferAgents;
 }
 
-private void onDispose() {
+void onDispose() {
 	if (control == null)
 		return;
 	if (controlListener != null) {
@@ -383,7 +383,7 @@ private void onDispose() {
 	transferAgents = null;
 }
 
-private int opToOsOp(int operation) {
+int opToOsOp(int operation) {
 	int osOperation = 0;
 	if ((operation & DND.DROP_COPY) != 0){
 		osOperation |= OS.kDragActionCopy;
@@ -400,7 +400,7 @@ private int opToOsOp(int operation) {
 	return osOperation;
 }
 
-private int osOpToOp(int osOperation){
+int osOpToOp(int osOperation){
 	int operation = 0;
 	if ((osOperation & OS.kDragActionCopy) != 0){
 		operation |= DND.DROP_COPY;
