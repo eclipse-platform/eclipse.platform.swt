@@ -47,6 +47,7 @@ public class Tree extends Composite {
 	TreeItem[] items;
 	TreeColumn [] columns;
 	TreeColumn sortColumn;
+	TreeItem currentItem;
 	ImageList imageList, headerImageList;
 	boolean firstCustomDraw;
 	boolean modelChanged;
@@ -65,7 +66,7 @@ public class Tree extends Composite {
 	static final int CELL_BACKGROUND = 3;
 	static final int CELL_FONT = 4;
 	static final int CELL_TYPES = CELL_FONT + 1;
-	
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -93,6 +94,7 @@ public class Tree extends Composite {
  * @see SWT#SINGLE
  * @see SWT#MULTI
  * @see SWT#CHECK
+ * @see SWT#VIRTUAL
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -100,14 +102,59 @@ public Tree (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
+TreeItem _getItem (int /*long*/ iter) {
+	int id = getId (iter, true);
+	if (items [id] != null) return items [id];
+	int /*long*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
+	int depth = OS.gtk_tree_path_get_depth (path);
+	int [] indices = new int [depth];
+	OS.memmove (indices, OS.gtk_tree_path_get_indices (path), 4*depth);
+	int /*long*/ parentIter = 0;
+	if (depth > 1) {
+		OS.gtk_tree_path_up (path);
+		parentIter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+		OS.gtk_tree_model_get_iter (modelHandle, parentIter, path);
+	}
+	items [id] = new TreeItem (this, parentIter, SWT.NONE, indices [indices.length -1], false);
+	OS.gtk_tree_path_free (path);
+	if (parentIter != 0) OS.g_free (parentIter);
+	return items [id];
+}
+
+TreeItem _getItem (int /*long*/ parentIter, int index) {
+	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	OS.gtk_tree_model_iter_nth_child(modelHandle, iter, parentIter, index);
+	int id = getId (iter, true);
+	OS.g_free (iter);
+	if (items [id] != null) return items [id];
+	return items [id] = new TreeItem (this, parentIter, SWT.NONE, index, false);
+}
+
+int getId (int /*long*/ iter, boolean queryModel) {
+	if (queryModel) {
+		int[] value = new int[1];
+		OS.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, value, -1);
+		if (value [0] != -1) return value [0];
+	}
+	// find next available id
+	int id = 0;
+	while (id < items.length && items [id] != null) id++;
+	if (id == items.length) {
+		TreeItem [] newItems = new TreeItem [items.length + 4];
+		System.arraycopy (items, 0, newItems, 0, items.length);
+		items = newItems;
+	}
+	OS.gtk_tree_store_set (modelHandle, iter, ID_COLUMN, id, -1);
+	return id;
+}
+
 static int checkStyle (int style) {
-/*
+	/*
 	* To be compatible with Windows, force the H_SCROLL
 	* and V_SCROLL style bits.  On Windows, it is not
 	* possible to create a tree without scroll bars.
 	*/
 	style |= SWT.H_SCROLL | SWT.V_SCROLL;
-	style &= ~SWT.VIRTUAL;
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
 }
 
@@ -120,7 +167,9 @@ boolean checkData (TreeItem item) {
 		int mask = OS.G_SIGNAL_MATCH_DATA | OS.G_SIGNAL_MATCH_ID;
 		int signal_id = OS.g_signal_lookup (OS.row_changed, OS.gtk_tree_model_get_type ());
 		OS.g_signal_handlers_block_matched (modelHandle, mask, signal_id, 0, 0, 0, handle);
+		currentItem = item;
 		sendEvent (SWT.SetData, event);
+		currentItem = null;
 		//widget could be disposed at this point
 		if (isDisposed ()) return false;
 		OS.g_signal_handlers_unblock_matched (modelHandle, mask, signal_id, 0, 0, 0, handle);
@@ -160,7 +209,7 @@ protected void checkSubclass () {
  * @see #removeSelectionListener
  * @see SelectionEvent
  */
-public void addSelectionListener(SelectionListener listener) {
+public void addSelectionListener (SelectionListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
@@ -198,7 +247,7 @@ public void addTreeListener(TreeListener listener) {
 int calculateWidth (int /*long*/ column, int /*long*/ iter) {
 	OS.gtk_tree_view_column_cell_set_cell_data (column, modelHandle, iter, false, false);
 	/*
-	* Bug in GTK.  The width calculated by gtk_tree_view_column_cell_get_size 
+	* Bug in GTK.  The width calculated by gtk_tree_view_column_cell_get_size()
 	* always grows in size regardless of the text or images in the table.
 	* The fix is to determine the column width from the cell renderers.
 	*/
@@ -230,6 +279,46 @@ int calculateWidth (int /*long*/ column, int /*long*/ iter) {
 	return width;
 }
 
+/*public*/ void clear(int index, boolean all) {
+	checkWidget ();
+	clear (0, index, all);
+}
+
+void clear (int parentIter, int index, boolean all) {
+	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	OS.gtk_tree_model_iter_nth_child(modelHandle, iter, parentIter, index);
+	int[] value = new int[1];
+	OS.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, value, -1);
+	if (value [0] != -1) {
+		TreeItem item = items [value [0]];
+		item.clear ();
+	}
+	if (all) clearAll (all, iter);
+	OS.g_free (iter);
+}
+
+/*public*/ void clearAll (boolean all) {
+	checkWidget ();
+	clearAll (all, 0);
+}
+void clearAll (boolean all, int /*long*/ parentIter) {
+	int length = OS.gtk_tree_model_iter_n_children (modelHandle, parentIter);
+	if (length == 0) return;
+	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	boolean valid = OS.gtk_tree_model_iter_children (modelHandle, iter, parentIter);
+	int[] value = new int[1];
+	while (valid) {
+		OS.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, value, -1);
+		if (value [0] != -1) {
+			TreeItem item = items [value [0]];
+			item.clear ();
+		}
+		if (all) clearAll (all, iter);
+		valid = OS.gtk_tree_model_iter_next (modelHandle, iter);
+	}
+	OS.g_free (iter);
+}
+
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (wHint != SWT.DEFAULT && wHint < 0) wHint = 0;
@@ -252,20 +341,23 @@ void copyModel (int /*long*/ oldModel, int oldStart, int /*long*/ newModel, int 
 			OS.gtk_tree_store_append (newModel, newItem, newParent);
 			int [] index = new int [1];
 			OS.gtk_tree_model_get (oldModel, iter, ID_COLUMN, index, -1);
-			TreeItem item = items [index [0]];
-			if (item != null) {
-				int /*long*/ oldItem = item.handle;
-				oldItems[oldIndex++] = oldItem;
-				int /*long*/ [] ptr = new int /*long*/ [1];
-				for (int j = 0; j < FIRST_COLUMN; j++) {
-					OS.gtk_tree_model_get (oldModel, oldItem, j, ptr, -1);
-					OS.gtk_tree_store_set (newModel, newItem, j, ptr [0], -1);
-					if (types [j] == OS.G_TYPE_STRING ()) OS.g_free ((ptr [0]));
-				}
-				for (int j= 0; j<modelLength - FIRST_COLUMN; j++) {
-					OS.gtk_tree_model_get (oldModel, oldItem, oldStart + j, ptr, -1);
-					OS.gtk_tree_store_set (newModel, newItem, newStart + j, ptr [0], -1);
-					if (types [j] == OS.G_TYPE_STRING ()) OS.g_free ((ptr [0]));
+			TreeItem item = null;
+			if (index [0] != -1) {
+				item = items [index [0]];
+				if (item != null) {
+					int /*long*/ oldItem = item.handle;
+					oldItems[oldIndex++] = oldItem;
+					int /*long*/ [] ptr = new int /*long*/ [1];
+					for (int j = 0; j < FIRST_COLUMN; j++) {
+						OS.gtk_tree_model_get (oldModel, oldItem, j, ptr, -1);
+						OS.gtk_tree_store_set (newModel, newItem, j, ptr [0], -1);
+						if (types [j] == OS.G_TYPE_STRING ()) OS.g_free ((ptr [0]));
+					}
+					for (int j= 0; j<modelLength - FIRST_COLUMN; j++) {
+						OS.gtk_tree_model_get (oldModel, oldItem, oldStart + j, ptr, -1);
+						OS.gtk_tree_store_set (newModel, newItem, newStart + j, ptr [0], -1);
+						if (types [j] == OS.G_TYPE_STRING ()) OS.g_free ((ptr [0]));
+					}
 				}
 			}
 			// recurse through children
@@ -287,6 +379,7 @@ void copyModel (int /*long*/ oldModel, int oldStart, int /*long*/ newModel, int 
 	}
 	OS.g_free (iter);
 }
+
 void createColumn (TreeColumn column, int index) {
 /*
 * Bug in ATK. For some reason, ATK segments fault if 
@@ -459,17 +552,10 @@ void createItem (TreeColumn column, int index) {
 	}
 }
 
-void createItem (TreeItem item, int /*long*/ iter, int index) {
-	int count = OS.gtk_tree_model_iter_n_children (modelHandle, iter);
+void createItem (TreeItem item, int /*long*/ parentIter, int index) {
+	int count = OS.gtk_tree_model_iter_n_children (modelHandle, parentIter);
 	if (index == -1) index = count;
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
-	int id = 0;
-	while (id < items.length && items [id] != null) id++;
-	if (id == items.length) {
-		TreeItem [] newItems = new TreeItem [items.length + 4];
-		System.arraycopy (items, 0, newItems, 0, items.length);
-		items = newItems;
-	}
 	item.handle = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	if (item.handle == 0) error(SWT.ERROR_NO_HANDLES);
 	/*
@@ -477,11 +563,11 @@ void createItem (TreeItem item, int /*long*/ iter, int index) {
 	* than to insert at the end using gtk_tree_store_insert(). 
 	*/
 	if (index == count) {
-		OS.gtk_tree_store_append (modelHandle, item.handle, iter);
+		OS.gtk_tree_store_append (modelHandle, item.handle, parentIter);
 	} else {
-		OS.gtk_tree_store_insert (modelHandle, item.handle, iter, index);
+		OS.gtk_tree_store_insert (modelHandle, item.handle, parentIter, index);
 	}
-	OS.gtk_tree_store_set (modelHandle, item.handle, ID_COLUMN, id, -1);
+	int id = getId (item.handle, false);
 	items [id] = item;
 	modelChanged = true;
 }
@@ -683,12 +769,18 @@ void destroyItem (TreeItem item) {
 	* when it is a root, before it is destroyed.
 	*/
 	if (OS.GTK_VERSION < OS.VERSION (2, 0, 6)) {
-		TreeItem [] roots = getItems (0);
-		for (int i = 0; i < roots.length; i++) {
-			if (item == roots [i]) {
-				item.setExpanded (false);
-				break;
+		int length = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
+		if (length > 0) {
+			int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+			boolean valid = OS.gtk_tree_model_iter_children (modelHandle, iter, 0);
+			while (valid) {
+				if (item.handle == iter) {
+					item.setExpanded (false);
+					break;
+				}
+				valid = OS.gtk_tree_model_iter_next (modelHandle, iter);
 			}
+			OS.g_free (iter);
 		}
 	}
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
@@ -872,7 +964,7 @@ TreeItem getFocusItem () {
 	if (OS.gtk_tree_model_get_iter (modelHandle, iter, path [0])) {
 		int [] index = new int [1];
 		OS.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, index, -1);
-		item = items [index [0]];
+		if (index [0] != -1) item = items [index [0]]; //TODO should we be creating this item when index is -1?
 	}
 	OS.g_free (iter);
 	OS.gtk_tree_path_free (path [0]);
@@ -980,15 +1072,7 @@ public boolean getHeaderVisible () {
  */
 public TreeItem getItem (int index) {
 	checkWidget();
-	int length = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
-	if (!(0 <= index && index < length)) error (SWT.ERROR_INVALID_RANGE);
-	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
-	OS.gtk_tree_model_iter_nth_child(modelHandle, iter, 0, index);
-	int[] value = new int[1];
-	OS.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, value, -1);
-	TreeItem item = items [value [0]];
-	OS.g_free (iter);
-	return item;
+	return _getItem (0, index);
 }
 
 /**
@@ -1033,9 +1117,7 @@ public TreeItem getItem (Point point) {
 			}
 		}
 		if (!overExpander) {
-			int [] index = new int [1];
-			OS.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, index, -1);
-			item = items [index [0]];
+			item = _getItem (iter);
 		}
 	}
 	OS.g_free (iter);
@@ -1120,13 +1202,14 @@ public TreeItem [] getItems () {
 }
 
 TreeItem [] getItems (int /*long*/ parent) {
+	int length = OS.gtk_tree_model_iter_n_children (modelHandle, parent);
+	TreeItem[] result = new TreeItem [length];
+	if (length == 0) return result;
 	if ((style & SWT.VIRTUAL) != 0) {
-		// TODO support for SWT.VIRTUAL
-		return new TreeItem [0];
+		for (int i=0; i<length; i++) {
+			result [i] = _getItem (0, i);
+		}
 	} else {
-		int length = OS.gtk_tree_model_iter_n_children (modelHandle, parent);
-		TreeItem[] result = new TreeItem [length];
-		if (length == 0) return result;
 		int i = 0;
 		int[] index = new int [1];
 		int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
@@ -1137,8 +1220,8 @@ TreeItem [] getItems (int /*long*/ parent) {
 			valid = OS.gtk_tree_model_iter_next (modelHandle, iter);
 		}
 		OS.g_free (iter);
-		return result;
 	}
+	return result;
 }
 
 /**
@@ -1236,23 +1319,24 @@ public TreeItem[] getSelection () {
 	int /*long*/ list = OS.gtk_tree_selection_get_selected_rows (selection, model);
 	if (list != 0) {
 		int count = OS.g_list_length (list);
-		int [] treeSelection = new int [count];
+		TreeItem [] treeSelection = new TreeItem [count];
 		int length = 0;
 		for (int i=0; i<count; i++) {
 			int /*long*/ data = OS.g_list_nth_data (list, i);
 			int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 			if (OS.gtk_tree_model_get_iter (modelHandle, iter, data)) {
-				int [] index = new int [1];
-				OS.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, index, -1);
-				treeSelection [length] = index [0];
+				treeSelection [length] = _getItem (iter);
 				length++;
 			}
 			OS.g_free (iter);
 		}
 		OS.g_list_free (list);
-		TreeItem [] result = new TreeItem [length];
-		for (int i=0; i<result.length; i++) result [i] = items [treeSelection [i]];
-		return result;
+		if (length < count) {
+			TreeItem [] temp = new TreeItem [length];
+			System.arraycopy(treeSelection, 0, temp, 0, length);
+			treeSelection = temp;
+		}
+		return treeSelection;
 	}
 	return new TreeItem [0];
 }
@@ -1362,9 +1446,7 @@ public TreeItem getTopItem () {
 	TreeItem item = null;
 	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof());
 	if (OS.gtk_tree_model_get_iter (modelHandle, iter, path [0])) {
-		int [] index = new int [1];
-		OS.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, index, -1);
-		item = items [index [0]];
+		item = _getItem (iter);
 	}
 	OS.g_free (iter);
 	OS.gtk_tree_path_free (path [0]);
@@ -1599,9 +1681,7 @@ int /*long*/ gtk_toggled (int /*long*/ renderer, int /*long*/ pathStr) {
 	TreeItem item = null;
 	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof());
 	if (OS.gtk_tree_model_get_iter (modelHandle, iter, path)) {
-		int [] index = new int [1];
-		OS.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, index, -1);
-		item = items [index [0]];
+		item = _getItem (iter);
 	}
 	OS.g_free (iter);
 	OS.gtk_tree_path_free (path);
@@ -1740,7 +1820,28 @@ int /*long*/ pixbufCellDataProc (int /*long*/ tree_column, int /*long*/ cell, in
 	if (modelIndex == -1) return 0;
 	boolean setData = false;
 	if ((style & SWT.VIRTUAL) != 0) {
-		// TODO support for SWT.VIRTUAL
+		/*
+		* Feature in GTK.  On GTK before 2.4, fixed_height_mode is not
+		* supported, and the tree asks for the data of all items.  The
+		* fix is to only provide the data if the row is visible.
+		*/
+		if (OS.GTK_VERSION < OS.VERSION (2, 3, 2)) {
+			int /*long*/ path = OS.gtk_tree_model_get_path (tree_model, iter);
+			OS.gtk_widget_realize (handle);
+			GdkRectangle visible = new GdkRectangle ();
+			OS.gtk_tree_view_get_visible_rect (handle, visible);
+			GdkRectangle area = new GdkRectangle ();
+			OS.gtk_tree_view_get_cell_area (handle, path, tree_column, area);
+			OS.gtk_tree_path_free (path);			
+			if (area.y + area.height < 0 || area.y + visible.y > visible.y + visible.height ) {
+				return 0;
+			}
+		}
+		TreeItem item = _getItem (iter);
+		if (!item.cached) {
+			//lastIndexOf = index [0];
+			setData = checkData (item);
+		}
 	}
 	int /*long*/ [] ptr = new int /*long*/ [1];
 	if (setData) {
@@ -1773,23 +1874,30 @@ void register () {
 	if (checkRenderer != 0) display.addWidget (checkRenderer, this);
 }
 
-void releaseItem (TreeItem item, int [] index, boolean release) {
+void releaseItem (TreeItem item, boolean release) {
+	int [] index = new int [1];
 	OS.gtk_tree_model_get (modelHandle, item.handle, ID_COLUMN, index, -1);
+	if (index [0] == -1) return;
 	if (release) item.release (false);
 	items [index [0]] = null;
 }
 
-void releaseItems (TreeItem [] nodes, int [] index) {
-	for (int i=0; i<nodes.length; i++) {
-		TreeItem item = nodes [i];
-		TreeItem [] sons = item.getItems ();
-		if (sons.length != 0) {
-			releaseItems (sons, index);
-		}
+void releaseItems (int /*long*/ parentIter) {
+	int[] index = new int [1];
+	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	boolean valid = OS.gtk_tree_model_iter_children (modelHandle, iter, parentIter);
+	while (valid) {
+		releaseItems (iter);
 		if (!isDisposed ()) {
-			releaseItem (item, index, true);
+			OS.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, index, -1);
+			if (index [0] != -1) {
+				TreeItem item = items [index [0]];
+				if (item != null) releaseItem (item, true);
+			}
 		}
+		valid = OS.gtk_tree_model_iter_next (modelHandle, iter);
 	}
+	OS.g_free (iter);
 }
 
 void releaseChildren (boolean destroy) {
@@ -1823,6 +1931,33 @@ void releaseWidget () {
 	if (imageList != null) imageList.dispose ();
 	if (headerImageList != null) headerImageList.dispose ();
 	imageList = headerImageList = null;
+	currentItem = null;
+}
+
+void remove (int /*long*/ parentIter, int start, int end) {
+	checkWidget();
+	if (start > end) return;
+	int itemCount = OS.gtk_tree_model_iter_n_children (modelHandle, parentIter);
+	if (!(0 <= start && start <= end && end < itemCount)) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
+	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
+	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	int index = start;
+	for (int i = start; i <= end; i++) {
+		OS.gtk_tree_model_iter_nth_child (modelHandle, iter, parentIter, index);
+		int[] value = new int[1];
+		OS.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, value, -1);
+		if (value [0] != -1) {
+			TreeItem item = items [value [0]];
+			if (item != null && !item.isDisposed ()) item.release (false);
+			items [value [0]] = null;
+		}
+		OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+		OS.gtk_tree_store_remove (modelHandle, iter);
+		OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	}
+	OS.g_free (iter);
 }
 
 /**
@@ -1967,6 +2102,34 @@ public void setInsertMark (TreeItem item, boolean before) {
 	OS.gtk_tree_path_free (path [0]);
 }
 
+void setItemCount (int parentIter, int count) {
+	int itemCount = OS.gtk_tree_model_iter_n_children (modelHandle, parentIter);
+	if (count == itemCount) return;
+	boolean isVirtual = (style & SWT.VIRTUAL) != 0;
+	if (!isVirtual) setRedraw (false);
+	remove (parentIter, count, itemCount - 1);
+	if (isVirtual) {
+		for (int i=itemCount; i<count; i++) {
+			int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+			if (iter == 0) error (SWT.ERROR_NO_HANDLES);
+			OS.gtk_tree_store_append (modelHandle, iter, parentIter);
+			OS.gtk_tree_store_set (modelHandle, iter, ID_COLUMN, -1, -1);
+			OS.g_free (iter);
+		}
+	} else {
+		for (int i=itemCount; i<count; i++) {
+			items [i] = new TreeItem (this, parentIter, SWT.NONE, i, true);
+		}
+	}
+	if (!isVirtual) setRedraw (true);
+	modelChanged = true;
+}
+
+/*public*/ void setItemCount (int count) {
+	checkWidget ();
+	count = Math.max (0, count);
+	setItemCount(0, count);
+}
 /**
  * Selects all of the items in the receiver.
  * <p>
@@ -2421,7 +2584,28 @@ int /*long*/ textCellDataProc (int /*long*/ tree_column, int /*long*/ cell, int 
 	if (modelIndex == -1) return 0;
 	boolean setData = false;
 	if ((style & SWT.VIRTUAL) != 0) {
-		// TODO support for SWT.VIRTUAL
+		/*
+		* Feature in GTK.  On GTK before 2.4, fixed_height_mode is not
+		* supported, and the tree asks for the data of all items.  The
+		* fix is to only provide the data if the row is visible.
+		*/
+		if (OS.GTK_VERSION < OS.VERSION (2, 3, 2)) {
+			int /*long*/ path = OS.gtk_tree_model_get_path (tree_model, iter);
+			OS.gtk_widget_realize (handle);
+			GdkRectangle visible = new GdkRectangle ();
+			OS.gtk_tree_view_get_visible_rect (handle, visible);
+			GdkRectangle area = new GdkRectangle ();
+			OS.gtk_tree_view_get_cell_area (handle, path, tree_column, area);
+			OS.gtk_tree_path_free (path);			
+			if (area.y + area.height < 0 || area.y + visible.y > visible.y + visible.height ) {
+				return 0;
+			}
+		}
+		TreeItem item = _getItem (iter);
+		if (!item.cached) {
+			//lastIndexOf = index [0];
+			setData = checkData (item);
+		}
 	}
 	int /*long*/ [] ptr = new int /*long*/ [1];
 	if (setData) {
