@@ -21,29 +21,29 @@ static {
 /*
 ** Visual Config Attributes (glXGetConfig, glXGetFBConfigAttrib)
 */
-public static final int GLX_USE_GL		= 1;	/* support GLX rendering */
-public static final int GLX_BUFFER_SIZE		= 2;	/* depth of the color buffer */
-public static final int GLX_LEVEL		= 3;	/* level in plane stacking */
-public static final int GLX_RGBA		= 4;	/* true if RGBA mode */
-public static final int GLX_DOUBLEBUFFER	= 5;	/* double buffering supported */
-public static final int GLX_STEREO		= 6;	/* stereo buffering supported */
-public static final int GLX_AUX_BUFFERS		= 7;	/* number of aux buffers */
-public static final int GLX_RED_SIZE		= 8;	/* number of red component bits */
-public static final int GLX_GREEN_SIZE		= 9;	/* number of green component bits */
-public static final int GLX_BLUE_SIZE		= 10;	/* number of blue component bits */
-public static final int GLX_ALPHA_SIZE		= 11;	/* number of alpha component bits */
-public static final int GLX_DEPTH_SIZE		= 12;	/* number of depth bits */
-public static final int GLX_STENCIL_SIZE	= 13;	/* number of stencil bits */
-public static final int GLX_ACCUM_RED_SIZE	= 14;	/* number of red accum bits */
+public static final int GLX_USE_GL				= 1;	/* support GLX rendering */
+public static final int GLX_BUFFER_SIZE			= 2;	/* depth of the color buffer */
+public static final int GLX_LEVEL				= 3;	/* level in plane stacking */
+public static final int GLX_RGBA				= 4;	/* true if RGBA mode */
+public static final int GLX_DOUBLEBUFFER		= 5;	/* double buffering supported */
+public static final int GLX_STEREO				= 6;	/* stereo buffering supported */
+public static final int GLX_AUX_BUFFERS			= 7;	/* number of aux buffers */
+public static final int GLX_RED_SIZE			= 8;	/* number of red component bits */
+public static final int GLX_GREEN_SIZE			= 9;	/* number of green component bits */
+public static final int GLX_BLUE_SIZE			= 10;	/* number of blue component bits */
+public static final int GLX_ALPHA_SIZE			= 11;	/* number of alpha component bits */
+public static final int GLX_DEPTH_SIZE			= 12;	/* number of depth bits */
+public static final int GLX_STENCIL_SIZE		= 13;	/* number of stencil bits */
+public static final int GLX_ACCUM_RED_SIZE		= 14;	/* number of red accum bits */
 public static final int GLX_ACCUM_GREEN_SIZE	= 15;	/* number of green accum bits */
-public static final int GLX_ACCUM_BLUE_SIZE	= 16;	/* number of blue accum bits */
+public static final int GLX_ACCUM_BLUE_SIZE		= 16;	/* number of blue accum bits */
 public static final int GLX_ACCUM_ALPHA_SIZE	= 17;	/* number of alpha accum bits */
 /*
 ** FBConfig-specific attributes
 */
 public static final int GLX_X_VISUAL_TYPE		= 0x22;
 public static final int GLX_CONFIG_CAVEAT		= 0x20;	/* Like visual_info VISUAL_CAVEAT_EXT */
-public static final int GLX_TRANSPARENT_TYPE		= 0x23;
+public static final int GLX_TRANSPARENT_TYPE	= 0x23;
 public static final int GLX_TRANSPARENT_INDEX_VALUE	= 0x24;
 public static final int GLX_TRANSPARENT_RED_VALUE	= 0x25;
 public static final int GLX_TRANSPARENT_GREEN_VALUE	= 0x26;
@@ -53,9 +53,9 @@ public static final int GLX_DRAWABLE_TYPE		= 0x8010;
 public static final int GLX_RENDER_TYPE			= 0x8011;
 public static final int GLX_X_RENDERABLE		= 0x8012;
 public static final int GLX_FBCONFIG_ID			= 0x8013;
-public static final int GLX_MAX_PBUFFER_WIDTH		= 0x8016;
-public static final int GLX_MAX_PBUFFER_HEIGHT		= 0x8017;
-public static final int GLX_MAX_PBUFFER_PIXELS		= 0x8018;
+public static final int GLX_MAX_PBUFFER_WIDTH	= 0x8016;
+public static final int GLX_MAX_PBUFFER_HEIGHT	= 0x8017;
+public static final int GLX_MAX_PBUFFER_PIXELS	= 0x8018;
 public static final int GLX_VISUAL_ID			= 0x800B;
 
 /*
@@ -88,7 +88,7 @@ public static final int GLX_PIXMAP_BIT			= 0x00000002;
 public static final int GLX_PBUFFER_BIT			= 0x00000004;
 
 /* GLX_CONFIG_CAVEAT attribute values */
-public static final int GLX_NONE			= 0x8000;
+public static final int GLX_NONE				= 0x8000;
 public static final int GLX_SLOW_CONFIG			= 0x8001;
 public static final int GLX_NON_CONFORMANT_CONFIG	= 0x800D;
 
@@ -103,22 +103,22 @@ public static final int GLX_STATIC_GRAY			= 0x8007;
 /* GLX_TRANSPARENT_TYPE attribute values */
 /* public static final int GLX_NONE			   0x8000 */
 public static final int GLX_TRANSPARENT_RGB		= 0x8008;
-public static final int GLX_TRANSPARENT_INDEX		= 0x8009;
+public static final int GLX_TRANSPARENT_INDEX	= 0x8009;
 
 /* glXCreateGLXPbuffer attributes */
-public static final int GLX_PRESERVED_CONTENTS		= 0x801B;
+public static final int GLX_PRESERVED_CONTENTS	= 0x801B;
 public static final int GLX_LARGEST_PBUFFER		= 0x801C;
 public static final int GLX_PBUFFER_HEIGHT		= 0x8040;	/* New for GLX 1.3 */
 public static final int GLX_PBUFFER_WIDTH		= 0x8041;	/* New for GLX 1.3 */
 
 /* glXQueryGLXPBuffer attributes */
-public static final int GLX_WIDTH			= 0x801D;
-public static final int GLX_HEIGHT			= 0x801E;
-public static final int GLX_EVENT_MASK			= 0x801F;
+public static final int GLX_WIDTH		= 0x801D;
+public static final int GLX_HEIGHT		= 0x801E;
+public static final int GLX_EVENT_MASK	= 0x801F;
 
 /* glXCreateNewContext render_type attribute values */
 public static final int GLX_RGBA_TYPE			= 0x8014;
-public static final int GLX_COLOR_INDEX_TYPE		= 0x8015;
+public static final int GLX_COLOR_INDEX_TYPE	= 0x8015;
 
 /* glXQueryContext attributes */
 /* public static final int GLX_FBCONFIG_ID		  0x8013 */
@@ -151,7 +151,7 @@ public static final int GLX_ACCUM_BUFFER_BIT		= 0x00000080;
 ** accepted as parameter values for glXChooseVisual.
 */
 
-public static final int GLX_X_VISUAL_TYPE_EXT	= 0x22;	/* visual_info extension type */
+public static final int GLX_X_VISUAL_TYPE_EXT = 0x22;	/* visual_info extension type */
 public static final int GLX_TRANSPARENT_TYPE_EXT = 0x23;	/* visual_info extension */
 public static final int GLX_TRANSPARENT_INDEX_VALUE_EXT = 0x24;	/* visual_info extension */
 public static final int GLX_TRANSPARENT_RED_VALUE_EXT	= 0x25;	/* visual_info extension */
@@ -182,14 +182,14 @@ public static final int GLX_NON_CONFORMANT_VISUAL_EXT	= 0x800D;
 */
 public static final int GLX_VENDOR		= 0x1;
 public static final int GLX_VERSION		= 0x2;
-public static final int GLX_EXTENSIONS		= 0x3;
+public static final int GLX_EXTENSIONS	= 0x3;
 
 /*
 ** Names for attributes to glXQueryContextInfoEXT.
 */
-public static final int GLX_SHARE_CONTEXT_EXT	= 0x800A;	/* id of share context */
-public static final int GLX_VISUAL_ID_EXT	= 0x800B;	/* id of context's visual */
-public static final int GLX_SCREEN_EXT		= 0x800C;	/* screen number */
+public static final int GLX_SHARE_CONTEXT_EXT = 0x800A;	/* id of share context */
+public static final int GLX_VISUAL_ID_EXT = 0x800B;	/* id of context's visual */
+public static final int GLX_SCREEN_EXT = 0x800C;	/* screen number */
 
 /*
 * GLX 1.4 
