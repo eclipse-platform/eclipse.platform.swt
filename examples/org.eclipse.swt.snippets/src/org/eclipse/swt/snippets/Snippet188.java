@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.*;
  * Scroll widgets into view when they get focus
  * 
  * For a list of all SWT example snippets see
- * http://dev.eclipse.org/viewcvs/index.cgi/%7Echeckout%7E/platform-swt-home/dev.html#snippets
+ * http://www.eclipse.org/swt/snippets/
  */
 
 public class Snippet188 {

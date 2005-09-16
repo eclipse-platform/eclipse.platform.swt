@@ -14,7 +14,7 @@ package org.eclipse.swt.snippets;
  * example snippet: Embed Word in an applet
  *
  * For a list of all SWT example snippets see
- * http://dev.eclipse.org/viewcvs/index.cgi/%7Echeckout%7E/platform-swt-home/dev.html#snippets
+ * http://www.eclipse.org/swt/snippets/
  */
 	
 import java.applet.*;

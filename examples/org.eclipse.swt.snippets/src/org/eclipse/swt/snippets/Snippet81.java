@@ -14,7 +14,7 @@ package org.eclipse.swt.snippets;
  * OLE and ActiveX example snippet: browse the typelibinfo for a program id
  *
  * For a list of all SWT example snippets see
- * http://dev.eclipse.org/viewcvs/index.cgi/%7Echeckout%7E/platform-swt-home/dev.html#snippets
+ * http://www.eclipse.org/swt/snippets/
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.ole.win32.*;
