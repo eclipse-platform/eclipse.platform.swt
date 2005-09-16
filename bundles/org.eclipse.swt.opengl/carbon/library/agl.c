@@ -119,18 +119,30 @@ JNIEXPORT jboolean JNICALL AGL_NATIVE(aglSetDrawable)
 }
 #endif
 
-#ifndef NO_aglSetInteger
-JNIEXPORT jboolean JNICALL AGL_NATIVE(aglSetInteger)
+#ifndef NO_aglSetInteger__III
+JNIEXPORT jboolean JNICALL AGL_NATIVE(aglSetInteger__III)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jboolean rc = 0;
+	AGL_NATIVE_ENTER(env, that, aglSetInteger__III_FUNC);
+	rc = (jboolean)aglSetInteger(arg0, arg1, arg2);
+	AGL_NATIVE_EXIT(env, that, aglSetInteger__III_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_aglSetInteger__II_3I
+JNIEXPORT jboolean JNICALL AGL_NATIVE(aglSetInteger__II_3I)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
 {
 	jint *lparg2=NULL;
 	jboolean rc = 0;
-	AGL_NATIVE_ENTER(env, that, aglSetInteger_FUNC);
+	AGL_NATIVE_ENTER(env, that, aglSetInteger__II_3I_FUNC);
 	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
 	rc = (jboolean)aglSetInteger(arg0, arg1, lparg2);
 fail:
 	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
-	AGL_NATIVE_EXIT(env, that, aglSetInteger_FUNC);
+	AGL_NATIVE_EXIT(env, that, aglSetInteger__II_3I_FUNC);
 	return rc;
 }
 #endif

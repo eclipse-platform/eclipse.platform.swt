@@ -51,6 +51,7 @@ public static final native int aglGetCurrentContext();
 public static final native boolean aglSetCurrentContext(int ctx);
 public static final native boolean aglSetDrawable(int ctx, int draw);
 public static final native boolean aglSetInteger(int ctx, int pname, int[] params);
+public static final native boolean aglSetInteger(int ctx, int pname, int param);
 public static final native void aglSwapBuffers(int ctx);
 public static final native boolean aglUpdateContext(int ctx);
 }
