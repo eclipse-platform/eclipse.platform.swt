@@ -1174,20 +1174,19 @@ public void drawRoundRectangle (int x, int y, int width, int height, int arcWidt
 		float naw2 = naw / 2f;
 		float nah2 = nah / 2f;
 		float fw = nw / naw2;
-//		float fh = nh / nah2;
-		Cairo.cairo_new_path(cairo);
+		float fh = nh / nah2;
 		Cairo.cairo_save(cairo);
 		float offset = data.lineWidth == 0 || (data.lineWidth % 2) == 1 ? 0.5f : 0f;
 		Cairo.cairo_translate(cairo, nx + offset, ny + offset);
 		Cairo.cairo_scale(cairo, naw2, nah2);
 		Cairo.cairo_move_to(cairo, fw - 1, 0);
-//		Cairo.cairo_arc_to(cairo, 0, 0, 0, 1, 1);
-//		Cairo.cairo_arc_to(cairo, 0, fh, 1, fh, 1);
-//		Cairo.cairo_arc_to(cairo, fw, fh, fw, fh - 1, 1);
-//		Cairo.cairo_arc_to(cairo, fw, 0, fw - 1, 0, 1);
+	    Cairo.cairo_arc(cairo, fw - 1, 1, 1, Compatibility.PI + Compatibility.PI/2.0, Compatibility.PI*2.0);
+	    Cairo.cairo_arc(cairo, fw - 1, fh - 1, 1, 0, Compatibility.PI/2.0);
+	    Cairo.cairo_arc(cairo, 1, fh - 1, 1, Compatibility.PI/2, Compatibility.PI);
+	    Cairo.cairo_arc(cairo, 1, 1, 1, Compatibility.PI, 270.0*Compatibility.PI/180.0);
 		Cairo.cairo_close_path(cairo);
-		Cairo.cairo_stroke(cairo);
 		Cairo.cairo_restore(cairo);
+		Cairo.cairo_stroke(cairo);
 		return;
 	}
 	int naw2 = naw / 2;
@@ -1919,25 +1918,28 @@ public void fillRoundRectangle (int x, int y, int width, int height, int arcWidt
 		float naw2 = naw / 2f;
 		float nah2 = nah / 2f;
 		float fw = nw / naw2;
-//		float fh = nh / nah2;
+		float fh = nh / nah2;
 		XColor color = new XColor();
 		color.pixel = values.background;
 		OS.XQueryColor(xDisplay, data.colormap, color);
 		Cairo.cairo_save(cairo);
+		Cairo.cairo_save(cairo);
+		Cairo.cairo_save(cairo);
+		Cairo.cairo_translate(cairo, nx, ny);
+		Cairo.cairo_scale(cairo, naw2, nah2);
+		Cairo.cairo_move_to(cairo, fw - 1, 0);
+	    Cairo.cairo_arc(cairo, fw - 1, 1, 1, Compatibility.PI + Compatibility.PI/2.0, Compatibility.PI*2.0);
+	    Cairo.cairo_arc(cairo, fw - 1, fh - 1, 1, 0, Compatibility.PI/2.0);
+	    Cairo.cairo_arc(cairo, 1, fh - 1, 1, Compatibility.PI/2, Compatibility.PI);
+	    Cairo.cairo_arc(cairo, 1, 1, 1, Compatibility.PI, 270.0*Compatibility.PI/180.0);		
+		Cairo.cairo_close_path(cairo);
+		Cairo.cairo_restore(cairo);
 		if (data.backgroundPattern != null) {
 			Cairo.cairo_set_source(cairo, data.backgroundPattern.handle);
 		} else {
 			Cairo.cairo_set_source_rgba(cairo, (color.red & 0xFFFF) / (float)0xFFFF, (color.green & 0xFFFF) / (float)0xFFFF, (color.blue & 0xFFFF) / (float)0xFFFF, data.alpha / (float)0xFF);
 		}
-		Cairo.cairo_translate(cairo, nx, ny);
-		Cairo.cairo_scale(cairo, naw2, nah2);
-		Cairo.cairo_move_to(cairo, fw - 1, 0);
-//		Cairo.cairo_arc_to(cairo, 0, 0, 0, 1, 1);
-//		Cairo.cairo_arc_to(cairo, 0, fh, 1, fh, 1);
-//		Cairo.cairo_arc_to(cairo, fw, fh, fw, fh - 1, 1);
-//		Cairo.cairo_arc_to(cairo, fw, 0, fw - 1, 0, 1);
-		Cairo.cairo_close_path(cairo);
-		Cairo.cairo_stroke(cairo);
+		Cairo.cairo_fill(cairo);
 		Cairo.cairo_restore(cairo);
 		return;
 	}
