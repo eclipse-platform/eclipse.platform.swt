@@ -10,10 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
- 
+
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
- 
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
@@ -257,7 +257,7 @@ public Rectangle getBounds (int index) {
  * </ul>
  */
 public boolean getChecked () {
-	checkWidget();
+	checkWidget ();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if ((parent.style & SWT.CHECK) == 0) return false;
 	return checked;
@@ -469,12 +469,12 @@ String getNameText () {
  * </ul>
  */
 public Table getParent () {
-	checkWidget();
+	checkWidget ();
 	return parent;
 }
 
 public String getText () {
-	checkWidget();
+	checkWidget ();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	return super.getText ();
 }
@@ -492,7 +492,7 @@ public String getText () {
  * </ul>
  */
 public String getText (int index) {
-	checkWidget();
+	checkWidget ();
 	if (!parent.checkData (this, true)) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (index == 0) return getText ();
 	if (strings != null) {
@@ -644,7 +644,7 @@ public void setChecked (boolean checked) {
  * 
  * @since 3.0
  */
-public void setFont (Font font){
+public void setFont (Font font) {
 	checkWidget ();
 	if (font != null && font.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
