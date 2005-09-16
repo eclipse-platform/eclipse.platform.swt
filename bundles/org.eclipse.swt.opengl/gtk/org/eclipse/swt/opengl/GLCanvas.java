@@ -20,6 +20,7 @@ public GLCanvas (Composite parent, int style, GLFormatData data) {
 	int glxAttrib [] = new int [MAX_ATTRIBUTES];
 	int pos = 0;
 
+	OS.gtk_widget_realize (handle);
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (handle);
 	xdisplay = OS.gdk_x11_drawable_get_xdisplay (window);
 	int xscreen = OS.XDefaultScreen (xdisplay);
@@ -86,26 +87,42 @@ public GLCanvas (Composite parent, int style, GLFormatData data) {
 	GdkWindowAttr attrs = new GdkWindowAttr ();
 	attrs.width = 1;
 	attrs.height = 1;
+	attrs.event_mask = OS.GDK_KEY_PRESS_MASK | OS.GDK_KEY_RELEASE_MASK |
+		OS.GDK_FOCUS_CHANGE_MASK | OS.GDK_POINTER_MOTION_MASK |
+		OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK |
+		OS.GDK_ENTER_NOTIFY_MASK | OS.GDK_LEAVE_NOTIFY_MASK |
+		OS.GDK_EXPOSURE_MASK | OS.GDK_VISIBILITY_NOTIFY_MASK;
 	attrs.window_type = OS.GDK_WINDOW_CHILD;
 	attrs.visual = gdkvisual;
 	glWindow = OS.gdk_window_new (window, attrs, OS.GDK_WA_VISUAL);
+	OS.gdk_window_set_user_data (glWindow, handle);
 	xid = OS.gdk_x11_drawable_get_xid (glWindow);
 	OS.gdk_window_show (glWindow);
 
 	Listener listener = new Listener () {
 		public void handleEvent (Event event) {
 			switch (event.type) {
-			case SWT.Resize: handleResize (event); break;
+			case SWT.Paint:
+				/**
+				* Bug in MESA.  MESA does some nasty sort of polling to try
+				* and ensure that their buffer sizes match the current X state.
+				* This state can be updated using glViewport().
+				* FIXME: There has to be a better way of doing this.
+				*/
+				int [] viewport = new int [4];
+				GL.glGetIntegerv (GL.GL_VIEWPORT, viewport);
+				GL.glViewport (viewport [0],viewport [1],viewport [2],viewport [3]);
+				break;
+			case SWT.Resize:
+				Rectangle clientArea = getClientArea();
+				OS.gdk_window_move (glWindow, clientArea.x, clientArea.y);
+				OS.gdk_window_resize (glWindow, clientArea.width, clientArea.height);
+				break;
 			}
 		}
 	};	
 	addListener (SWT.Resize, listener);
-}
-
-void handleResize (Event event) {
-	Rectangle bounds = getBounds ();
-	GL.glViewport (0, 0, bounds.width, bounds.height);
-	OS.gdk_window_resize (glWindow, bounds.width, bounds.height);
+	addListener (SWT.Paint, listener);
 }
 
 public boolean isCurrent () {
