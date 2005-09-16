@@ -14,7 +14,7 @@ package org.eclipse.swt.examples.graphics;
  * Drawing with transformations, paths and alpha blending
  *
  * For a list of all SWT example snippets see
- * http://dev.eclipse.org/viewcvs/index.cgi/%7Echeckout%7E/platform-swt-home/dev.html#snippets
+ * http://www.eclipse.org/swt/snippets/
  */
 import java.io.IOException;
 import java.io.InputStream;
