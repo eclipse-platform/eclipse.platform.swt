@@ -27,10 +27,13 @@ class StyledTextRenderer2 {
 	private int tabWidth;					// width in pixels of a tab character
 	private int ascent, descent;
 	private int lineEndSpaceWidth;			// width in pixels of the space used to represent line delimiters
+	private int averageCharWidth;
 	private StyledText2 styledText;			// used to get content and styles during rendering, can be null when on a printer
 	private int topIndex = -1;
 	private TextLayout[] layouts;
 	private GC printerGC;
+	
+	private static final int CACHE_SIZE = 128; //text layout cache size
 	
 /**
  * Creates an instance of <class>StyledTextRenderer</class> that renders 
@@ -75,18 +78,22 @@ private void calculateLineHeight() {
 	FontMetrics metrics = gc.getFontMetrics();
 	ascent = Math.max(ascent, metrics.getAscent() + metrics.getLeading());
 	descent = Math.max(descent, metrics.getDescent());
+	averageCharWidth = Math.max(averageCharWidth, metrics.getAverageCharWidth());
 	gc.setFont(getFont(SWT.BOLD));
 	metrics = gc.getFontMetrics();
 	ascent = Math.max(ascent, metrics.getAscent() + metrics.getLeading());
 	descent = Math.max(descent, metrics.getDescent());
+	averageCharWidth = Math.max(averageCharWidth, metrics.getAverageCharWidth());
 	gc.setFont(getFont(SWT.ITALIC));
 	metrics = gc.getFontMetrics();
 	ascent = Math.max(ascent, metrics.getAscent() + metrics.getLeading());
 	descent = Math.max(descent, metrics.getDescent());
+	averageCharWidth = Math.max(averageCharWidth, metrics.getAverageCharWidth());
 	gc.setFont(getFont(SWT.BOLD | SWT.ITALIC));
 	metrics = gc.getFontMetrics();
 	ascent = Math.max(ascent, metrics.getAscent() + metrics.getLeading());
 	descent = Math.max(descent, metrics.getDescent());
+	averageCharWidth = Math.max(averageCharWidth, metrics.getAverageCharWidth());
 	gc.setFont(originalFont);
 	disposeGC(gc);
 	
@@ -139,7 +146,7 @@ private void disposeGC(GC gc) {
  * @param clearBackground true if the line background should be drawn
  * explicitly.
  */
-void drawLine(String line, int lineIndex, int paintX, int paintY, GC gc, Color widgetBackground, Color widgetForeground, boolean clearBackground) {
+int drawLine(String line, int lineIndex, int paintX, int paintY, GC gc, Color widgetBackground, Color widgetForeground, boolean clearBackground) {
 	int lineOffset = getContent().getOffsetAtLine(lineIndex);
 	int lineLength = line.length();
 	Point selection = getSelection();
@@ -163,7 +170,7 @@ void drawLine(String line, int lineIndex, int paintX, int paintY, GC gc, Color w
 		// draw background if full selection is off or if line is not 
 		// completely selected
 		gc.setBackground(lineBackground);
-		gc.fillRectangle(client.x, paintY, client.width, ascent + descent);
+		gc.fillRectangle(client.x, paintY, client.width, layout.getBounds().height);
 	}
 	if (selectionStart != selectionEnd) {
 		Rectangle rect = layout.getLineBounds(0);
@@ -178,7 +185,9 @@ void drawLine(String line, int lineIndex, int paintX, int paintY, GC gc, Color w
 		int end = Math.min(lineLength, selectionEnd - lineOffset);
 		layout.draw(gc, paintX, paintY, start, end - 1, getSelectionForeground(), getSelectionBackground());
 	}
+	int height = layout.getBounds().height;
 	disposeTextLayout(layout);
+	return height;
 }
 /**
  * 	Draw a line using the printerGC
@@ -364,16 +373,7 @@ int getLineHeight() {
  * 	line start and end after line end
  */
 private StyledTextEvent getLineStyleData(int lineOffset, String line) {
-	if (styledText != null) {
-		StyledTextEvent event = styledText.getLineStyleData(lineOffset, line);
-		if (event != null) {
-			if (event.styles != null && getWordWrap()) {
-				event.styles = getVisualLineStyleData(event.styles, lineOffset, line.length());
-			}		
-		}
-		return event;
-	}
-	return null;
+	return styledText != null ? styledText.getLineStyleData(lineOffset, line) : null;
 }
 /**
  *
@@ -407,47 +407,8 @@ private Color getSelectionBackground() {
 private Point getSelection() {
 	return styledText != null ? styledText.internalGetSelection() : new Point (0, 0);
 }
-/**
- * Returns styles for the specified visual (wrapped) line.
- * </p>
- * 
- * @param logicalStyles the styles for a logical (unwrapped) line
- * @param lineOffset offset of the visual line
- * @param lineLength length of the visual line
- * @return styles in the logicalStyles array that are at least 
- * 	partially on the specified visual line.
- */
-private StyleRange[] getVisualLineStyleData(StyleRange[] logicalStyles, int lineOffset, int lineLength) {
-	int lineEnd = lineOffset + lineLength;
-	int oldStyleCount = logicalStyles.length;
-	int newStyleCount = 0;
-	
-	for (int i = 0; i < oldStyleCount; i++) {
-		StyleRange style = logicalStyles[i];
-		if (style.start < lineEnd && style.start + style.length > lineOffset) {
-			newStyleCount++;
-		}
-	}
-	if (newStyleCount != oldStyleCount) {
-		StyleRange[] newStyles = new StyleRange[newStyleCount];
-		for (int i = 0, j = 0; i < oldStyleCount; i++) {
-			StyleRange style = logicalStyles[i];
-			if (style.start < lineEnd && style.start + style.length > lineOffset) {
-				newStyles[j++] = logicalStyles[i];						
-			}
-		}
-		logicalStyles = newStyles;
-	}
-	return logicalStyles;
-}
-/**
- * Returns the word wrap state.
- * </p>
- * @return true=word wrap is on. false=no word wrap, lines may extend 
- * 	beyond the right side of the client area.
- */
-private boolean getWordWrap() {
-	return styledText != null ? styledText.getWordWrap () : true;
+int getAverageCharWidth () {
+	return averageCharWidth;
 }
 /**
  * Returns whether the widget was created with the SWT.FULL_SELECTION style.
@@ -473,6 +434,9 @@ void setTabLength(int tabLength) {
 	tabWidth = gc.stringExtent(tabBuffer.toString()).x;
 	disposeGC(gc);
 }
+int getWidth () {
+	return styledText != null ? styledText.getWrapWidth() : -1;
+}
 TextLayout getTextLayout(String line, int lineOffset) {
 	int[] bidiSegments = getBidiSegments(lineOffset, line);
 	StyledTextEvent event = getLineStyleData(lineOffset, line);
@@ -491,6 +455,7 @@ TextLayout getTextLayout(String line, int lineOffset, int[] bidiSegments, StyleR
 	layout.setOrientation(getOrientation());
 	layout.setSegments(bidiSegments);
 	layout.setTabs(new int[]{tabWidth});
+	layout.setWidth(getWidth());
 	int length = line.length();
 	int lastOffset = 0;
 	if (styles != null) {
@@ -543,11 +508,9 @@ void disposeTextLayout (TextLayout layout) {
 	layout.dispose();
 }
 private void updateTopIndex() {
-	int verticalIncrement = styledText.getVerticalIncrement();
-	int topIndex = verticalIncrement == 0 ? 0 : styledText.verticalScrollOffset / verticalIncrement;
-	int newLength = Math.max(1 , styledText.getPartialBottomIndex() - topIndex + 1);
-	if (layouts == null || topIndex != this.topIndex || newLength != layouts.length) {
-		TextLayout[] newLayouts = new TextLayout[newLength];
+	int topIndex = styledText.topIndex > 0 ? styledText.topIndex - 1 : 0;	
+	if (layouts == null || topIndex != this.topIndex) {
+		TextLayout[] newLayouts = new TextLayout[CACHE_SIZE];
 		if (layouts != null) {
 			for(int i = 0; i < layouts.length; i++) {
 				TextLayout layout = layouts[i];
