@@ -25,9 +25,7 @@ public GLCanvas (Composite parent, int style, GLFormatData data) {
 	xdisplay = OS.gdk_x11_drawable_get_xdisplay (window);
 	int xscreen = OS.XDefaultScreen (xdisplay);
 
-	glxAttrib [pos++] = GLX.GLX_LEVEL;
-	glxAttrib [pos++] = 0;
-	glxAttrib [pos++] = GLX.GLX_RGBA;		
+	glxAttrib [pos++] = GLX.GLX_RGBA;
 	if (data.doubleBuffer) glxAttrib [pos++] = GLX.GLX_DOUBLEBUFFER;
 	if (data.stereo) glxAttrib [pos++] = GLX.GLX_STEREO;
 	if (data.redSize > 0) {
@@ -41,6 +39,10 @@ public GLCanvas (Composite parent, int style, GLFormatData data) {
 	if (data.blueSize > 0) {
 		glxAttrib [pos++] = GLX.GLX_BLUE_SIZE;
 		glxAttrib [pos++] = data.blueSize;
+	}
+	if (data.alphaSize > 0) {
+		glxAttrib [pos++] = GLX.GLX_ALPHA_SIZE;
+		glxAttrib [pos++] = data.alphaSize;
 	}
 	if (data.depthSize > 0) {
 		glxAttrib [pos++] = GLX.GLX_DEPTH_SIZE;
@@ -74,7 +76,7 @@ public GLCanvas (Composite parent, int style, GLFormatData data) {
 		glxAttrib [pos++] = GLX.GLX_SAMPLES;
 		glxAttrib [pos++] = data.samples;
 	}
-	glxAttrib [pos++] = GLX.GLX_NONE;	
+	glxAttrib [pos++] = 0;
 	int infoPtr = GLX.glXChooseVisual (xdisplay, xscreen, glxAttrib);
 	if (infoPtr == 0) SWT.error (SWT.ERROR_UNSUPPORTED_DEPTH);
 	XVisualInfo info = new XVisualInfo ();
