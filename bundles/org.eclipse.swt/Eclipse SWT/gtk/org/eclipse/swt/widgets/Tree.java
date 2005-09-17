@@ -284,7 +284,7 @@ int calculateWidth (int /*long*/ column, int /*long*/ iter) {
 	clear (0, index, all);
 }
 
-void clear (int parentIter, int index, boolean all) {
+void clear (int /*long*/ parentIter, int index, boolean all) {
 	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	OS.gtk_tree_model_iter_nth_child(modelHandle, iter, parentIter, index);
 	int[] value = new int[1];
@@ -2102,7 +2102,7 @@ public void setInsertMark (TreeItem item, boolean before) {
 	OS.gtk_tree_path_free (path [0]);
 }
 
-void setItemCount (int parentIter, int count) {
+void setItemCount (int /*long*/ parentIter, int count) {
 	int itemCount = OS.gtk_tree_model_iter_n_children (modelHandle, parentIter);
 	if (count == itemCount) return;
 	boolean isVirtual = (style & SWT.VIRTUAL) != 0;
