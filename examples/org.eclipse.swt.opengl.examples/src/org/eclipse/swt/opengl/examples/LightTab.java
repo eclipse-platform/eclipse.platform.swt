@@ -31,10 +31,6 @@ class LightTab extends OpenGLTab {
 	};
 	private float yPos = 0.0f, xPos = 0.0f, zPos = -20.0f;
 	private int quadratic, sphere;
-	// sourceType values: 0 = light, 1 = material
-	private int sourceType;
-	// lightType values: 0 = diffuse, 1 = ambient, 2 = specular, 3 = main ambient 
-	private int lightType = 0;
 
 	/**
 	 * @see OpenGLTab#createControls(Composite)

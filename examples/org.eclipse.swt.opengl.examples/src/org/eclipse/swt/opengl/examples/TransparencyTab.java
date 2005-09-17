@@ -12,8 +12,6 @@ package org.eclipse.swt.opengl.examples;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.opengl.*;
 import org.eclipse.swt.widgets.*;
@@ -116,7 +114,7 @@ class TransparencyTab extends OpenGLTab {
 	 * @see SelectionTab.processPick (int[], int)
 	 */
 	void processPick(int[] pSelectBuff, int hits) {
-		int count, zDepth;
+		int zDepth;
 		int tempSelection = pSelectBuff[3];
 		zDepth = pSelectBuff[2];
 		// pick object with largest z value
