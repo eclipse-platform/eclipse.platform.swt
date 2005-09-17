@@ -10818,6 +10818,16 @@ fail:
 }
 #endif
 
+#ifndef NO__1gtk_1widget_1set_1parent_1window
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1set_1parent_1window)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1widget_1set_1parent_1window_FUNC);
+	gtk_widget_set_parent_window((GtkWidget *)arg0, (GdkWindow *)arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1widget_1set_1parent_1window_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1widget_1set_1redraw_1on_1allocate
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1widget_1set_1redraw_1on_1allocate)
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)

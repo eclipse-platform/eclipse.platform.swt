@@ -7657,6 +7657,15 @@ public static final void gtk_window_set_modal(int /*long*/ window, boolean modal
 		lock.unlock();
 	}
 }
+public static final native void _gtk_widget_set_parent_window(int /*long*/ widget, int /*long*/ parent_window);
+public static final void gtk_widget_set_parent_window(int /*long*/ widget, int /*long*/ parent_window) {	
+	lock.lock();
+	try {
+		_gtk_widget_set_parent_window(widget, parent_window);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gtk_window_set_resizable(int /*long*/ window, boolean resizable);
 public static final void gtk_window_set_resizable(int /*long*/ window, boolean resizable) {
 	lock.lock();

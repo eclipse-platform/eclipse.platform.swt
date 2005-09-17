@@ -853,6 +853,7 @@ typedef enum {
 	_1gtk_1widget_1set_1direction_FUNC,
 	_1gtk_1widget_1set_1double_1buffered_FUNC,
 	_1gtk_1widget_1set_1name_FUNC,
+	_1gtk_1widget_1set_1parent_1window_FUNC,
 	_1gtk_1widget_1set_1redraw_1on_1allocate_FUNC,
 	_1gtk_1widget_1set_1sensitive_FUNC,
 	_1gtk_1widget_1set_1size_1request_FUNC,
