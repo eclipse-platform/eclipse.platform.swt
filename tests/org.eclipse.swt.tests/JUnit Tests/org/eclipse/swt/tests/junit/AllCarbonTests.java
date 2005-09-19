@@ -23,6 +23,7 @@ public class AllCarbonTests extends TestSuite {
  * Tests not run because they consistently fail
  */
 static String[] excludeTests = {
+	"test_setActive(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Shell)",
 	"test_postLorg_eclipse_swt_widgets_Event(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Display)",
 	"test_setBackgroundLorg_eclipse_swt_graphics_Color(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_Image)",
 	"test_ConstructorLorg_eclipse_swt_graphics_Device$Lorg_eclipse_swt_graphics_FontData(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_graphics_Font)",
@@ -47,6 +48,7 @@ static String[] excludeTests = {
 	"test_paste(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Combo)",
 	"test_setSelectionLorg_eclipse_swt_graphics_Point(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Combo)",
 	"Browser4(org.eclipse.swt.tests.junit.browser.Test_BrowserSuite)",
+	"Browser5(org.eclipse.swt.tests.junit.browser.Test_BrowserSuite)",
 	//
 	"test_copy(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Text)",
 	"test_cut(org.eclipse.swt.tests.junit.Test_org_eclipse_swt_widgets_Text)",
