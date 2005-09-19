@@ -18,7 +18,6 @@ import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.*;
 
 class AccessibleFactory {
-	int /*long*/ handle;
 	int /*long*/ objectParentType;
 	int /*long*/ widgetTypeName;
 	Callback atkObjectFactoryCB_create_accessible;
@@ -182,10 +181,10 @@ class AccessibleFactory {
 			typeInfo.base_init = address;
 			typeInfo.class_size = (short)ATK.AtkObjectFactoryClass_sizeof ();
 			typeInfo.instance_size = (short)ATK.AtkObjectFactory_sizeof ();
-			handle = OS.g_malloc (GTypeInfo.sizeof); 
-			OS.memmove (handle, typeInfo, GTypeInfo.sizeof); 
-			int /*long*/ swtFactory = OS.g_type_register_static (factoryParentType, factoryName, handle, 0);
-			ATK.atk_registry_set_factory_type (registry, widgetType, swtFactory);
+			int /*long*/ info = OS.g_malloc (GTypeInfo.sizeof); 
+			OS.memmove (info, typeInfo, GTypeInfo.sizeof); 
+			int /*long*/ swtFactoryType = OS.g_type_register_static (factoryParentType, factoryName, info, 0);
+			ATK.atk_registry_set_factory_type (registry, widgetType, swtFactoryType);
 		}
 	}
 	
