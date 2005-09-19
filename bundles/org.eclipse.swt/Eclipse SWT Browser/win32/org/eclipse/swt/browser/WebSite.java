@@ -136,6 +136,11 @@ protected int QueryInterface(int riid, int ppvObject) {
 		AddRef();
 		return COM.S_OK;
 	}
+    if (COM.IsEqualGUID(guid, COM.IIDIInternetSecurityManager)) {
+        COM.MoveMemory(ppvObject, new int[] {iInternetSecurityManager.getAddress()}, 4);
+        AddRef();
+        return COM.S_OK;
+    }
 	if (COM.IsEqualGUID(guid, COM.IIDIOleCommandTarget)) {
 		COM.MoveMemory(ppvObject, new int[] {iOleCommandTarget.getAddress()}, 4);
 		AddRef();
