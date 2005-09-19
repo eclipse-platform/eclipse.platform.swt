@@ -185,17 +185,19 @@ TreeItem (Tree parent, int /*long*/ parentIter, int style, int index, boolean cr
 	}
 }
 
+static int checkIndex (int index) {
+	if (index < 0) SWT.error (SWT.ERROR_INVALID_RANGE);
+	return index;
+}
+
 static TreeItem checkNull (TreeItem item) {
 	if (item == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	return item;
 }
+
 static Tree checkNull (Tree control) {
 	if (control == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	return control;
-}
-static int checkIndex (int index) {
-	if (index < 0) SWT.error (SWT.ERROR_ITEM_NOT_ADDED);
-	return index;
 }
 
 protected void checkSubclass () {
