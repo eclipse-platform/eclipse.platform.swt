@@ -331,7 +331,7 @@ class TreeTab extends ScrollableTab {
 	 * that can be used to set/get values in the example control(s).
 	 */
 	String[] getMethodNames() {
-		return new String[] {"Selection", "SortDirection", "TopItem"};
+		return new String[] {"ColumnOrder", "Selection", "SortDirection", "TopItem"};
 	}
 
 	Object[] parameterForType(String typeName, String value, Control control) {

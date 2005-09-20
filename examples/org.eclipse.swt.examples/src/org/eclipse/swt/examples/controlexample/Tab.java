@@ -628,9 +628,12 @@ abstract class Tab {
 				if (result == null) {
 					getText.append("null");
 				} else if (result.getClass().isArray()) {
-					Object [] arrayResult = (Object[]) result;
-					for (int j = 0; j < arrayResult.length; j++) {
-						getText.append(arrayResult[j].toString() + "\n");
+					int length = java.lang.reflect.Array.getLength(result);
+					if (length == 0) {
+						getText.append(result.getClass().getComponentType() + "[0]");
+					}
+					for (int j = 0; j < length; j++) {
+						getText.append(java.lang.reflect.Array.get(result,j).toString() + "\n");
 					}
 				} else {
 					getText.append(result.toString());
@@ -681,6 +684,13 @@ abstract class Tab {
 				} else if (typeName.equals("org.eclipse.swt.graphics.Point")) {
 					String xy[] = value.split(",");
 					parameter = new Object[] {new Point(new Integer(xy[0]).intValue(),new Integer(xy[1]).intValue())};
+				} else if (typeName.equals("[I")) {
+					String strings[] = value.split(",");
+					int[] ints = new int[strings.length];
+					for (int j = 0; j < strings.length; j++) {
+						ints[j] = new Integer(strings[j]).intValue();
+					}
+					parameter = new Object[] {ints};
 				} else if (typeName.equals("[Ljava.lang.String;")) {
 					parameter = new Object[] {value.split(",")};
 				} else {

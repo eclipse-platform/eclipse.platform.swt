@@ -290,7 +290,7 @@ class TableTab extends ScrollableTab {
 	 * that can be used to set/get values in the example control(s).
 	 */
 	String[] getMethodNames() {
-		return new String[] {"ItemCount", "Selection", "SelectionIndex", "SortDirection", "TopIndex"};
+		return new String[] {"ColumnOrder", "ItemCount", "Selection", "SelectionIndex", "SortDirection", "TopIndex"};
 	}
 
 	String setMethodName(String methodRoot) {
