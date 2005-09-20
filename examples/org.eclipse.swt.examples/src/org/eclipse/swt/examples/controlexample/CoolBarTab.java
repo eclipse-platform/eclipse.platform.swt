@@ -24,6 +24,7 @@ class CoolBarTab extends Tab {
 	Group coolBarGroup;
 	
 	/* Style widgets added to the "Style" group */
+	Button horizontalButton, verticalButton;
 	Button dropDownButton, flatButton;
 
 	/* Other widgets added to the "Other" group */
@@ -75,8 +76,18 @@ class CoolBarTab extends Tab {
 	void createExampleWidgets () {
 		int style = getDefaultStyle(), itemStyle = 0;
 
-		/* Compute the widget style */
+		/* Compute the widget, item, and item toolBar styles */
 		int toolBarStyle = SWT.FLAT;
+		boolean vertical = false;
+		if (horizontalButton.getSelection ()) {
+			style |= SWT.HORIZONTAL;
+			toolBarStyle |= SWT.HORIZONTAL;
+		}
+		if (verticalButton.getSelection ()) {
+			style |= SWT.VERTICAL;
+			toolBarStyle |= SWT.VERTICAL;
+			vertical = true;
+		}
 		if (borderButton.getSelection()) style |= SWT.BORDER;
 		if (flatButton.getSelection()) style |= SWT.FLAT;
 		if (dropDownButton.getSelection()) itemStyle |= SWT.DROP_DOWN;
@@ -86,7 +97,7 @@ class CoolBarTab extends Tab {
 		*/
 		coolBar = new CoolBar (coolBarGroup, style);
 		
-		/* create the push button toolbar */
+		/* Create the push button toolbar cool item */
 		ToolBar toolBar = new ToolBar (coolBar, toolBarStyle);
 		ToolItem item = new ToolItem (toolBar, SWT.PUSH);
 		item.setImage (instance.images[ControlExample.ciClosedFolder]);
@@ -106,13 +117,16 @@ class CoolBarTab extends Tab {
 		item.setToolTipText ("SWT.PUSH");		
 		pushItem = new CoolItem (coolBar, itemStyle);
 		pushItem.setControl (toolBar);
-		Point pushSize = toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		pushSize = pushItem.computeSize(pushSize.x, pushSize.y);
-		pushItem.setSize(pushSize);
-		pushItem.setMinimumSize(item.getWidth(), pushSize.y);
 		pushItem.addSelectionListener (new CoolItemSelectionListener());
+		Point toolBarSize = toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		Point pushSize = pushItem.computeSize(toolBarSize.x, toolBarSize.y);
+		int minWidth = vertical ? toolBarSize.x : item.getWidth();
+		int minHeight = vertical ? item.getBounds().height : toolBarSize.y;
+		pushItem.setMinimumSize(minWidth, minHeight);
+		pushItem.setPreferredSize(pushSize);
+		pushItem.setSize(pushSize);
 				
-		/* create the dropdown toolbar */
+		/* Create the dropdown toolbar cool item */
 		toolBar = new ToolBar (coolBar, toolBarStyle);
 		item = new ToolItem (toolBar, SWT.DROP_DOWN);
 		item.setImage (instance.images[ControlExample.ciOpenFolder]);
@@ -124,13 +138,16 @@ class CoolBarTab extends Tab {
 		item.addSelectionListener (new DropDownSelectionListener());
 		dropDownItem = new CoolItem (coolBar, itemStyle);
 		dropDownItem.setControl (toolBar);
-		Point dropSize = toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		dropSize = dropDownItem.computeSize(dropSize.x, dropSize.y);
-		dropDownItem.setSize(dropSize);
-		dropDownItem.setMinimumSize(item.getWidth(), dropSize.y);
 		dropDownItem.addSelectionListener (new CoolItemSelectionListener());
-				
-		/* create the radio button toolbar */
+		toolBarSize = toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		Point dropSize = dropDownItem.computeSize(toolBarSize.x, toolBarSize.y);
+		minWidth = vertical ? toolBarSize.x : item.getWidth();
+		minHeight = vertical ? item.getBounds().height : toolBarSize.y;
+		dropDownItem.setMinimumSize(minWidth, minHeight);
+		dropDownItem.setPreferredSize(dropSize);
+		dropDownItem.setSize(dropSize);
+
+		/* Create the radio button toolbar cool item */
 		toolBar = new ToolBar (coolBar, toolBarStyle);
 		item = new ToolItem (toolBar, SWT.RADIO);
 		item.setImage (instance.images[ControlExample.ciClosedFolder]);
@@ -143,13 +160,16 @@ class CoolBarTab extends Tab {
 		item.setToolTipText ("SWT.RADIO");
 		radioItem = new CoolItem (coolBar, itemStyle);
 		radioItem.setControl (toolBar);
-		Point radioSize = toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		radioSize = radioItem.computeSize(radioSize.x, radioSize.y);
-		radioItem.setSize(radioSize);
-		radioItem.setMinimumSize(item.getWidth(), radioSize.y);
 		radioItem.addSelectionListener (new CoolItemSelectionListener());
+		toolBarSize = toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		Point radioSize = radioItem.computeSize(toolBarSize.x, toolBarSize.y);
+		minWidth = vertical ? toolBarSize.x : item.getWidth();
+		minHeight = vertical ? item.getBounds().height : toolBarSize.y;
+		radioItem.setMinimumSize(minWidth, minHeight);
+		radioItem.setPreferredSize(radioSize);
+		radioItem.setSize(radioSize);
 		
-		/* create the check button toolbar */
+		/* Create the check button toolbar cool item */
 		toolBar = new ToolBar (coolBar, toolBarStyle);
 		item = new ToolItem (toolBar, SWT.CHECK);
 		item.setImage (instance.images[ControlExample.ciClosedFolder]);
@@ -165,23 +185,27 @@ class CoolBarTab extends Tab {
 		item.setToolTipText ("SWT.CHECK");
 		checkItem = new CoolItem (coolBar, itemStyle);
 		checkItem.setControl (toolBar);
-		Point checkSize = toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		checkSize = checkItem.computeSize(checkSize.x, checkSize.y);
-		checkItem.setSize(checkSize);
-		checkItem.setMinimumSize(item.getWidth(), checkSize.y);
 		checkItem.addSelectionListener (new CoolItemSelectionListener());
+		toolBarSize = toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		Point checkSize = checkItem.computeSize(toolBarSize.x, toolBarSize.y);
+		minWidth = vertical ? toolBarSize.x : item.getWidth();
+		minHeight = vertical ? item.getBounds().height : toolBarSize.y;
+		checkItem.setMinimumSize(minWidth, minHeight);
+		checkItem.setPreferredSize(checkSize);
+		checkItem.setSize(checkSize);
 		
-		/* create the text */
+		/* Create the text cool item */
 		Text text = new Text (coolBar, SWT.BORDER | SWT.SINGLE);
 		textItem = new CoolItem (coolBar, itemStyle);
 		textItem.setControl (text);
+		textItem.addSelectionListener (new CoolItemSelectionListener());
 		Point textSize = text.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 		textSize = textItem.computeSize(textSize.x, textSize.y);
-		textItem.setSize(textSize);
 		textItem.setMinimumSize(textSize);
-		textItem.addSelectionListener (new CoolItemSelectionListener());
-
-		/* if we have saved state, restore it */
+		textItem.setPreferredSize(textSize);
+		textItem.setSize(textSize);
+				
+		/* If we have saved state, restore it */
 		if (order != null) {
 			coolBar.setItemLayout(order, wrapIndices, sizes);
 			/* 
@@ -200,7 +224,7 @@ class CoolBarTab extends Tab {
 			coolBar.setWrapIndices(new int[] {1, 3});
 		}
 		
-		/* add a listener to resize the group box to match the coolbar */
+		/* Add a listener to resize the group box to match the coolbar */
 		coolBar.addListener(SWT.Resize, new Listener() {
 			public void handleEvent(Event event) {
 				exampleGroup.layout();
@@ -214,7 +238,11 @@ class CoolBarTab extends Tab {
 	void createStyleGroup() {
 		super.createStyleGroup();
 	
-		/* Create the extra widget */
+		/* Create the extra widgets */
+		horizontalButton = new Button (styleGroup, SWT.RADIO);
+		horizontalButton.setText ("SWT.HORIZONTAL");
+		verticalButton = new Button (styleGroup, SWT.RADIO);
+		verticalButton.setText ("SWT.VERTICAL");
 		borderButton = new Button (styleGroup, SWT.CHECK);
 		borderButton.setText ("SWT.BORDER");
 		flatButton = new Button (styleGroup, SWT.CHECK);
@@ -273,6 +301,8 @@ class CoolBarTab extends Tab {
 	 */
 	void setExampleWidgetState () {
 		super.setExampleWidgetState ();
+		horizontalButton.setSelection ((coolBar.getStyle () & SWT.HORIZONTAL) != 0);
+		verticalButton.setSelection ((coolBar.getStyle () & SWT.VERTICAL) != 0);
 		borderButton.setSelection ((coolBar.getStyle () & SWT.BORDER) != 0);
 		flatButton.setSelection ((coolBar.getStyle () & SWT.FLAT) != 0);
 		dropDownButton.setSelection ((coolBar.getItem(0).getStyle () & SWT.DROP_DOWN) != 0);
