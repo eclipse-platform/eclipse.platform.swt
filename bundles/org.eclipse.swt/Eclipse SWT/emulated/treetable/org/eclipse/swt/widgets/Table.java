@@ -1238,6 +1238,7 @@ void handleEvents (Event event) {
 	}
 }
 String headerGetToolTip (int x) {
+	if (resizeColumn != null) return null;
 	int orderedIndex = computeColumnIntersect (x, 0);
 	if (orderedIndex == -1) return null;
 	TableColumn[] orderedColumns = getOrderedColumns ();
