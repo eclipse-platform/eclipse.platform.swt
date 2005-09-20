@@ -225,6 +225,7 @@ class TreeTab extends ScrollableTab {
 			for (int i = 0; i < columnTitles.length; i++) {
 				TreeColumn treeColumn = new TreeColumn(tree1, SWT.NONE);
 				treeColumn.setText(columnTitles[i]);
+				treeColumn.setToolTipText(ControlExample.getResourceString("Tooltip") + columnTitles[i]);
 			}
 			tree1.setSortColumn(tree1.getColumn(0));
 		}
@@ -251,6 +252,7 @@ class TreeTab extends ScrollableTab {
 			for (int i = 0; i < columnTitles.length; i++) {
 				TreeColumn treeColumn = new TreeColumn(tree2, SWT.NONE);
 				treeColumn.setText(columnTitles[i]);
+				treeColumn.setToolTipText(ControlExample.getResourceString("Tooltip") + columnTitles[i]);
 			}
 		}
 		for (int i = 0; i < 4; i++) {

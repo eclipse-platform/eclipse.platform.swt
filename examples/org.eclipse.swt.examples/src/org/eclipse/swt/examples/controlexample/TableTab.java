@@ -224,6 +224,7 @@ class TableTab extends ScrollableTab {
 			for (int i = 0; i < columnTitles.length; i++) {
 				TableColumn tableColumn = new TableColumn(table1, SWT.NONE);
 				tableColumn.setText(columnTitles[i]);
+				tableColumn.setToolTipText(ControlExample.getResourceString("Tooltip") + columnTitles[i]);
 			}
 		} else {
 			new TableColumn(table1, SWT.NONE);
