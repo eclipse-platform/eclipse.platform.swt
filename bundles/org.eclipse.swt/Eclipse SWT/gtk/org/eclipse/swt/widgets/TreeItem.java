@@ -209,7 +209,7 @@ void clear () {
 		for (int i=0; i<columnCount; i++) {
 			OS.gtk_tree_store_set (parent.modelHandle, handle, i, 0, -1);
 		}
-		OS.gtk_tree_store_set (parent.modelHandle, handle, parent.ID_COLUMN, -1, -1);
+		OS.gtk_tree_store_set (parent.modelHandle, handle, Tree.ID_COLUMN, -1, -1);
 		/*
 		* Bug in GTK.  When using fixed-height-mode on versions before 2.6.3,
 		* row changes do not cause the row to be repainted.  The fix is to
