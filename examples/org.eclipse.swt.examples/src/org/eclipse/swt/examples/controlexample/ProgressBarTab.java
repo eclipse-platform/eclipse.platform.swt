@@ -84,6 +84,14 @@ class ProgressBarTab extends RangeTab {
 	}
 
 	/**
+	 * Returns a list of set/get API method names (without the set/get prefix)
+	 * that can be used to set/get values in the example control(s).
+	 */
+	String[] getMethodNames() {
+		return new String[] {"ToolTipText"};
+	}
+
+	/**
 	 * Gets the text for the tab folder item.
 	 */
 	String getTabText () {

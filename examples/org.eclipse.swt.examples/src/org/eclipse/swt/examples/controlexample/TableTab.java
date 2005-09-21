@@ -224,12 +224,10 @@ class TableTab extends ScrollableTab {
 			for (int i = 0; i < columnTitles.length; i++) {
 				TableColumn tableColumn = new TableColumn(table1, SWT.NONE);
 				tableColumn.setText(columnTitles[i]);
-				tableColumn.setToolTipText(ControlExample.getResourceString("Tooltip") + columnTitles[i]);
+				tableColumn.setToolTipText(ControlExample.getResourceString("Tooltip", new String [] {columnTitles[i]}));
 			}
-		} else {
-			new TableColumn(table1, SWT.NONE);
+			table1.setSortColumn(table1.getColumn(0));
 		}
-		table1.setSortColumn(table1.getColumn(0));
 		for (int i=0; i<16; i++) {
 			TableItem item = new TableItem (table1, SWT.NONE);
 			item.setImage (instance.images [i % 3]);
@@ -290,7 +288,7 @@ class TableTab extends ScrollableTab {
 	 * that can be used to set/get values in the example control(s).
 	 */
 	String[] getMethodNames() {
-		return new String[] {"ColumnOrder", "ItemCount", "Selection", "SelectionIndex", "SortDirection", "TopIndex"};
+		return new String[] {"ColumnOrder", "ItemCount", "Selection", "SelectionIndex", "SortDirection", "ToolTipText", "TopIndex"};
 	}
 
 	String setMethodName(String methodRoot) {

@@ -158,7 +158,7 @@ class ButtonTab extends AlignableTab {
 	 * that can be used to set/get values in the example control(s).
 	 */
 	String[] getMethodNames() {
-		return new String[] {"Selection", "Text"};
+		return new String[] {"Selection", "Text", "ToolTipText"};
 	}
 
 	/**

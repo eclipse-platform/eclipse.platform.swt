@@ -85,7 +85,7 @@ class LinkTab extends Tab {
 	 * that can be used to set/get values in the example control(s).
 	 */
 	String[] getMethodNames() {
-		return new String[] {"Text"};
+		return new String[] {"Text", "ToolTipText"};
 	}
 	
 	/**

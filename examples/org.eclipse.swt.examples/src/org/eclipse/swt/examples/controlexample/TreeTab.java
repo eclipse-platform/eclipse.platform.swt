@@ -225,7 +225,7 @@ class TreeTab extends ScrollableTab {
 			for (int i = 0; i < columnTitles.length; i++) {
 				TreeColumn treeColumn = new TreeColumn(tree1, SWT.NONE);
 				treeColumn.setText(columnTitles[i]);
-				treeColumn.setToolTipText(ControlExample.getResourceString("Tooltip") + columnTitles[i]);
+				treeColumn.setToolTipText(ControlExample.getResourceString("Tooltip", new String [] {columnTitles[i]}));
 			}
 			tree1.setSortColumn(tree1.getColumn(0));
 		}
@@ -331,7 +331,7 @@ class TreeTab extends ScrollableTab {
 	 * that can be used to set/get values in the example control(s).
 	 */
 	String[] getMethodNames() {
-		return new String[] {"ColumnOrder", "Selection", "SortDirection", "TopItem"};
+		return new String[] {"ColumnOrder", "Selection", "SortDirection", "ToolTipText", "TopItem"};
 	}
 
 	Object[] parameterForType(String typeName, String value, Control control) {
