@@ -2,9 +2,13 @@ package org.eclipse.swt.opengl;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.opengl.gtk.*;
+
+/**
+ * GLCanvas is a widget capable of displaying OpenGL content.
+ */
 
 public class GLCanvas extends Canvas {
 	private int /*long*/ xdisplay;
@@ -14,6 +18,25 @@ public class GLCanvas extends Canvas {
 
 	private static final int MAX_ATTRIBUTES = 32;
 
+/**
+ * Create a GLCanvas widget using the attributes described in the GLData
+ * object provided.
+ *
+ * @param parent a composite widget
+ * @param style the bitwise OR'ing of widget styles
+ * @param data the requested attributes of the GLCanvas
+ *
+ * @exception IllegalArgumentException
+ * <ul><li>ERROR_NULL_ARGUMENT when the data is null
+ *     <li>ERROR_UNSUPPORTED_DEPTH when the requested attributes cannot be provided</ul> 
+ * @exception SWTException
+ * <ul><li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread
+ *     <li>ERROR_CANNOT_CREATE_OBJECT when failed to create OLE Object
+ *     <li>ERROR_CANNOT_OPEN_FILE when failed to open file
+ *     <li>ERROR_INTERFACE_NOT_FOUND when unable to create callbacks for OLE Interfaces
+ *     <li>ERROR_INVALID_CLASSID
+ * </ul>
+ */
 public GLCanvas (Composite parent, int style, GLData data) {
 	super (parent, style);	
 	if (data == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
@@ -139,17 +162,45 @@ public GLCanvas (Composite parent, int style, GLData data) {
 	addListener (SWT.Dispose, listener);
 }
 
+/**
+ * Returns a boolean indicating whether the receiver's OpenGL context
+ * is the current context.
+ *  
+ * @return true if the receiver holds the current OpenGL context,
+ * false otherwise
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean isCurrent () {
 	checkWidget ();
 	return GLX.glXGetCurrentContext () == context;
 }
 
+/**
+ * Sets the OpenGL context associated with this GLCanvas to be the
+ * current GL context.
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setCurrent () {
 	checkWidget ();
 	if (GLX.glXGetCurrentContext () == context) return;
 	GLX.glXMakeCurrent (xdisplay, xid, context);
 }
 
+/**
+ * Swaps the front and back color buffers.
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void swapBuffers () {
 	checkWidget ();
 	GLX.glXSwapBuffers (xdisplay, xid);
