@@ -616,7 +616,7 @@ void createItem (TreeItem item, int hParent, int hInsertAfter) {
 	* indicator.  The fix is to detect the case when the first
 	* child is added to a visible parent item and redraw the parent.
 	*/
-	if (OS.IsWindowVisible (handle) && drawCount == 0) {
+	if (drawCount == 0 && OS.IsWindowVisible (handle)) {
 		int hChild = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hParent);
 		if (hChild != 0 && OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hChild) == 0) {
 			RECT rect = new RECT ();
@@ -4131,16 +4131,25 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 								x += hdItem.cxy;
 							}
 						}
+						int height = 0;
 						RECT rect = new RECT ();
 						int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_LASTVISIBLE, 0);
-						rect.left = hItem;
-						if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect) != 0) {
-							int height = rect.bottom - rect.top;
-							while (rect.bottom < nmcd.bottom) {
-								int top = rect.top + height;
-								OS.SetRect (rect, rect.left, top, rect.right, top + height);
-								OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
+						if (hItem != 0) {
+							rect.left = hItem;
+							if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect) != 0) {
+								height = rect.bottom - rect.top;
 							}
+						}
+						if (height == 0) {
+							height = OS.SendMessage (handle, OS.TVM_GETITEMHEIGHT, 0, 0);
+							OS.GetClientRect (handle, rect);
+							OS.SetRect (rect, rect.left, rect.top, rect.right, rect.top + height);
+							OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
+						}
+						while (rect.bottom < nmcd.bottom) {
+							int top = rect.top + height;
+							OS.SetRect (rect, rect.left, top, rect.right, top + height);
+							OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
 						}
 					}
 					return new LRESULT (OS.CDRF_DODEFAULT);
