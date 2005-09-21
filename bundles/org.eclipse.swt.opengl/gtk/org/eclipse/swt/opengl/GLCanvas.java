@@ -14,7 +14,7 @@ public class GLCanvas extends Canvas {
 
 	private static final int MAX_ATTRIBUTES = 32;
 
-public GLCanvas (Composite parent, int style, GLFormatData data) {
+public GLCanvas (Composite parent, int style, GLData data) {
 	super (parent, style);	
 	if (data == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	int glxAttrib [] = new int [MAX_ATTRIBUTES];
@@ -84,6 +84,7 @@ public GLCanvas (Composite parent, int style, GLFormatData data) {
 	OS.XFree (infoPtr);
 	int /*long*/ screen = OS.gdk_screen_get_default ();
 	int /*long*/ gdkvisual = OS.gdk_x11_screen_lookup_visual (screen, info.visualid);
+	//context = GLX.glXCreateContext (xdisplay, info, share == null ? 0 : share.context, true);
 	context = GLX.glXCreateContext (xdisplay, info, 0, true);
 	if (context == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	GdkWindowAttr attrs = new GdkWindowAttr ();
@@ -120,23 +121,37 @@ public GLCanvas (Composite parent, int style, GLFormatData data) {
 				OS.gdk_window_move (glWindow, clientArea.x, clientArea.y);
 				OS.gdk_window_resize (glWindow, clientArea.width, clientArea.height);
 				break;
+			case SWT.Dispose:
+				if (context != 0) {
+					GLX.glXDestroyContext (xdisplay, context);
+					context = 0;
+				}
+				if (glWindow != 0) {
+					OS.gdk_window_destroy (glWindow);
+					glWindow = 0;
+				}
+				break;
 			}
 		}
-	};	
+	};
 	addListener (SWT.Resize, listener);
 	addListener (SWT.Paint, listener);
+	addListener (SWT.Dispose, listener);
 }
 
 public boolean isCurrent () {
+	checkWidget ();
 	return GLX.glXGetCurrentContext () == context;
 }
 
 public void setCurrent () {
+	checkWidget ();
 	if (GLX.glXGetCurrentContext () == context) return;
 	GLX.glXMakeCurrent (xdisplay, xid, context);
 }
 
 public void swapBuffers () {
+	checkWidget ();
 	GLX.glXSwapBuffers (xdisplay, xid);
 }
 }
