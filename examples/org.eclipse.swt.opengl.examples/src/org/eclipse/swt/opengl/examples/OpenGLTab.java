@@ -52,7 +52,7 @@ abstract class OpenGLTab {
 		gridData.heightHint = 400;
 		gridData.widthHint = 400;
 		gridData.verticalAlignment = GridData.BEGINNING;
-		GLFormatData data = new GLFormatData();
+		GLData data = new GLData();
 		data.doubleBuffer = true;
 		data.stencilSize = 8;
 		glCanvas = new GLCanvas(tabFolderPage, SWT.NONE, data);
