@@ -118,13 +118,6 @@ class CoolBarTab extends Tab {
 		pushItem = new CoolItem (coolBar, itemStyle);
 		pushItem.setControl (toolBar);
 		pushItem.addSelectionListener (new CoolItemSelectionListener());
-		Point toolBarSize = toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		Point pushSize = pushItem.computeSize(toolBarSize.x, toolBarSize.y);
-		int minWidth = vertical ? toolBarSize.x : item.getWidth();
-		int minHeight = vertical ? item.getBounds().height : toolBarSize.y;
-		pushItem.setMinimumSize(minWidth, minHeight);
-		pushItem.setPreferredSize(pushSize);
-		pushItem.setSize(pushSize);
 				
 		/* Create the dropdown toolbar cool item */
 		toolBar = new ToolBar (coolBar, toolBarStyle);
@@ -139,13 +132,6 @@ class CoolBarTab extends Tab {
 		dropDownItem = new CoolItem (coolBar, itemStyle);
 		dropDownItem.setControl (toolBar);
 		dropDownItem.addSelectionListener (new CoolItemSelectionListener());
-		toolBarSize = toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		Point dropSize = dropDownItem.computeSize(toolBarSize.x, toolBarSize.y);
-		minWidth = vertical ? toolBarSize.x : item.getWidth();
-		minHeight = vertical ? item.getBounds().height : toolBarSize.y;
-		dropDownItem.setMinimumSize(minWidth, minHeight);
-		dropDownItem.setPreferredSize(dropSize);
-		dropDownItem.setSize(dropSize);
 
 		/* Create the radio button toolbar cool item */
 		toolBar = new ToolBar (coolBar, toolBarStyle);
@@ -161,13 +147,6 @@ class CoolBarTab extends Tab {
 		radioItem = new CoolItem (coolBar, itemStyle);
 		radioItem.setControl (toolBar);
 		radioItem.addSelectionListener (new CoolItemSelectionListener());
-		toolBarSize = toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		Point radioSize = radioItem.computeSize(toolBarSize.x, toolBarSize.y);
-		minWidth = vertical ? toolBarSize.x : item.getWidth();
-		minHeight = vertical ? item.getBounds().height : toolBarSize.y;
-		radioItem.setMinimumSize(minWidth, minHeight);
-		radioItem.setPreferredSize(radioSize);
-		radioItem.setSize(radioSize);
 		
 		/* Create the check button toolbar cool item */
 		toolBar = new ToolBar (coolBar, toolBarStyle);
@@ -186,41 +165,46 @@ class CoolBarTab extends Tab {
 		checkItem = new CoolItem (coolBar, itemStyle);
 		checkItem.setControl (toolBar);
 		checkItem.addSelectionListener (new CoolItemSelectionListener());
-		toolBarSize = toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		Point checkSize = checkItem.computeSize(toolBarSize.x, toolBarSize.y);
-		minWidth = vertical ? toolBarSize.x : item.getWidth();
-		minHeight = vertical ? item.getBounds().height : toolBarSize.y;
-		checkItem.setMinimumSize(minWidth, minHeight);
-		checkItem.setPreferredSize(checkSize);
-		checkItem.setSize(checkSize);
 		
 		/* Create the text cool item */
-		Text text = new Text (coolBar, SWT.BORDER | SWT.SINGLE);
-		textItem = new CoolItem (coolBar, itemStyle);
-		textItem.setControl (text);
-		textItem.addSelectionListener (new CoolItemSelectionListener());
-		Point textSize = text.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		textSize = textItem.computeSize(textSize.x, textSize.y);
-		textItem.setMinimumSize(textSize);
-		textItem.setPreferredSize(textSize);
-		textItem.setSize(textSize);
-				
-		/* If we have saved state, restore it */
-		if (order != null) {
-			coolBar.setItemLayout(order, wrapIndices, sizes);
-			/* 
-			 * special case: because setItemLayout will restore the items
-			 * to the sizes the user left them at, the preferred size may not
-			 * be the same as the actual size. Thus we must explicitly set
-			 * the preferred sizes.
-			 */
-			pushItem.setPreferredSize(pushSize);
-			dropDownItem.setPreferredSize(dropSize);
-			radioItem.setPreferredSize(radioSize);
-			checkItem.setPreferredSize(checkSize);
+		if (!vertical) {
+			Text text = new Text (coolBar, SWT.BORDER | SWT.SINGLE);
+			textItem = new CoolItem (coolBar, itemStyle);
+			textItem.setControl (text);
+			textItem.addSelectionListener (new CoolItemSelectionListener());
+			Point textSize = text.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+			textSize = textItem.computeSize(textSize.x, textSize.y);
+			textItem.setMinimumSize(textSize);
 			textItem.setPreferredSize(textSize);
+			textItem.setSize(textSize);
 		}
-		else {
+
+		/* Set the sizes after adding all cool items */
+		CoolItem[] coolItems = coolBar.getItems();
+		for (int i = 0; i < coolItems.length; i++) {
+			CoolItem coolItem = coolItems[i];
+			Control control = coolItem.getControl();
+			Point size = control.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+			Point coolSize = coolItem.computeSize(size.x, size.y);
+			if (control instanceof ToolBar) {
+				ToolBar bar = (ToolBar)control;
+				if (bar.getItemCount() > 0) {
+					if (vertical) {
+						size.y = bar.getItem(0).getBounds().height;
+					} else {
+						size.x = bar.getItem(0).getWidth();
+					}
+				}
+			}
+			coolItem.setMinimumSize(size);
+			coolItem.setPreferredSize(coolSize);
+			coolItem.setSize(coolSize);
+		}
+		
+		/* If we have saved state, restore it */
+		if (order != null && order.length == coolBar.getItemCount()) {
+			coolBar.setItemLayout(order, wrapIndices, sizes);
+		} else {
 			coolBar.setWrapIndices(new int[] {1, 3});
 		}
 		
