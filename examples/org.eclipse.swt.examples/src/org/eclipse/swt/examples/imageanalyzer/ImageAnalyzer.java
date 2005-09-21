@@ -68,16 +68,16 @@ public class ImageAnalyzer {
 	static final int ALPHA_CONSTANT = 0;
 	static final int ALPHA_X = 1;
 	static final int ALPHA_Y = 2;
-	static final String[] openFilterExtensions = new String[] {
+	static final String[] OPEN_FILTER_EXTENSIONS = new String[] {
 			"*.bmp; *.gif; *.ico; *.jfif; *.jpeg; *.jpg; *.png; *.tif; *.tiff",
 			"*.bmp", "*.gif", "*.ico", "*.jpg; *.jpeg; *.jfif", "*.png", "*.tif; *.tiff" };
-	static final String[] openFilterNames = new String[] {
+	static final String[] OPEN_FILTER_NAMES = new String[] {
 			bundle.getString("All_images") + " (bmp, gif, ico, jfif, jpeg, jpg, png, tif, tiff)",
 			"BMP (*.bmp)", "GIF (*.gif)", "ICO (*.ico)", "JPEG (*.jpg, *.jpeg, *.jfif)",
 			"PNG (*.png)", "TIFF (*.tif, *.tiff)" };
-	static final String[] saveFilterExtensions = new String[] {
+	static final String[] SAVE_FILTER_EXTENSIONS = new String[] {
 			"*.bmp", "*.gif", "*.ico", "*.jpg", "*.png", "*.tif" };
-	static final String[] saveFilterNames = new String[] {
+	static final String[] SAVE_FILTER_NAMES = new String[] {
 			"BMP (*.bmp)", "GIF (*.gif)", "ICO (*.ico)", "JPEG (*.jpg)",
 			"PNG (*.png)", "TIFF (*.tif)" };
 
@@ -802,8 +802,8 @@ public class ImageAnalyzer {
 		FileDialog fileChooser = new FileDialog(shell, SWT.OPEN);
 		if (lastPath != null)
 			fileChooser.setFilterPath(lastPath);
-		fileChooser.setFilterExtensions(openFilterExtensions);
-		fileChooser.setFilterNames(openFilterNames);
+		fileChooser.setFilterExtensions(OPEN_FILTER_EXTENSIONS);
+		fileChooser.setFilterNames(OPEN_FILTER_NAMES);
 		String filename = fileChooser.open();
 		lastPath = fileChooser.getFilterPath();
 		if (filename == null)
@@ -1008,8 +1008,8 @@ public class ImageAnalyzer {
 			}
 			fileChooser.setFileName(name);
 		}
-		fileChooser.setFilterExtensions(saveFilterExtensions);
-		fileChooser.setFilterNames(saveFilterNames);
+		fileChooser.setFilterExtensions(SAVE_FILTER_EXTENSIONS);
+		fileChooser.setFilterNames(SAVE_FILTER_NAMES);
 		String filename = fileChooser.open();
 		lastPath = fileChooser.getFilterPath();
 		if (filename == null)
@@ -1088,8 +1088,8 @@ public class ImageAnalyzer {
 		FileDialog fileChooser = new FileDialog(shell, SWT.SAVE);
 		fileChooser.setFilterPath(lastPath);
 		if (fileName != null) fileChooser.setFileName(fileName);
-		fileChooser.setFilterExtensions(saveFilterExtensions);
-		fileChooser.setFilterNames(saveFilterNames);
+		fileChooser.setFilterExtensions(SAVE_FILTER_EXTENSIONS);
+		fileChooser.setFilterNames(SAVE_FILTER_NAMES);
 		String filename = fileChooser.open();
 		lastPath = fileChooser.getFilterPath();
 		if (filename == null)
