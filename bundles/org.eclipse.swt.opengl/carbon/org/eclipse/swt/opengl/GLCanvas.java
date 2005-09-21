@@ -21,7 +21,7 @@ public class GLCanvas extends Canvas {
 	int pixelFormat;
 	static final int MAX_ATTRIBUTES = 32;
 
-public GLCanvas (Composite parent, int style, GLFormatData data) {
+public GLCanvas (Composite parent, int style, GLData data) {
 	super (parent, style);
 	if (data == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	int aglAttrib [] = new int [MAX_ATTRIBUTES];
