@@ -16,10 +16,10 @@ import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.widgets.*;
 
 public class GLCanvas extends Canvas {
-	int glHandle;
+	int context;
 
-public GLCanvas (Composite parent, int style, GLFormatData data) {
-	super (parent, style);		
+public GLCanvas (Composite parent, int style, GLData data) {
+	super (parent, style);
 	if (data == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 
 	PIXELFORMATDESCRIPTOR pfd = new PIXELFORMATDESCRIPTOR ();
@@ -34,7 +34,8 @@ public GLCanvas (Composite parent, int style, GLFormatData data) {
 	pfd.cRedBits = (byte) data.redSize;
 	pfd.cGreenBits = (byte) data.greenSize;
 	pfd.cBlueBits = (byte) data.blueSize;
-	pfd.cAlphaBits = (byte) data.depthSize;
+	pfd.cAlphaBits = (byte) data.alphaSize;
+	pfd.cDepthBits = (byte) data.depthSize;
 	pfd.cStencilBits = (byte) data.stencilSize;
 	pfd.cAccumRedBits = (byte) data.accumRedSize;
 	pfd.cAccumGreenBits = (byte) data.accumGreenSize;
@@ -53,7 +54,7 @@ public GLCanvas (Composite parent, int style, GLFormatData data) {
 
 	int hDC = OS.GetDC (handle);
 	int pixelFormat = WGL.ChoosePixelFormat (hDC, pfd);
-	if (pixelFormat == 0) {		
+	if (pixelFormat == 0) {
 		OS.ReleaseDC (handle, hDC);
 		SWT.error (SWT.ERROR_UNSUPPORTED_DEPTH);
 	}
@@ -61,12 +62,26 @@ public GLCanvas (Composite parent, int style, GLFormatData data) {
 		OS.ReleaseDC (handle, hDC);
 		SWT.error (SWT.ERROR_UNSUPPORTED_DEPTH);
 	}
-	glHandle = WGL.wglCreateContext (hDC);
-	if (glHandle == 0) {
+	context = WGL.wglCreateContext (hDC);
+	if (context == 0) {
 		OS.ReleaseDC (handle, hDC);
 		SWT.error (SWT.ERROR_NO_HANDLES);
 	}
 	OS.ReleaseDC (handle, hDC);
+//	if (share != null) {
+//		WGL.wglShareLists (context, share.context);
+//	}
+	
+	Listener listener = new Listener () {
+		public void handleEvent (Event event) {
+			switch (event.type) {
+			case SWT.Dispose:
+				WGL.wglDeleteContext (context);
+				break;
+			}
+		}
+	};
+	addListener (SWT.Dispose, listener);
 }
 
 public boolean isCurrent () {
@@ -78,13 +93,13 @@ public void setCurrent () {
 	checkWidget ();
 	if (WGL.wglGetCurrentContext () == handle) return;
 	int hDC = OS.GetDC (handle);
-	WGL.wglMakeCurrent (hDC, glHandle);
+	WGL.wglMakeCurrent (hDC, context);
 	OS.ReleaseDC (handle, hDC);
 }
 
 public void swapBuffers () {
 	checkWidget ();
-	int hDC = OS.GetDC(handle);
+	int hDC = OS.GetDC (handle);
 	WGL.SwapBuffers (hDC);
 	OS.ReleaseDC (handle, hDC);
 }

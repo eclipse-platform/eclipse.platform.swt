@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.opengl;
 
-public class GLFormatData {
+public class GLData {
 	public int bufferSize;
 	public boolean doubleBuffer;
 	public boolean stereo;
