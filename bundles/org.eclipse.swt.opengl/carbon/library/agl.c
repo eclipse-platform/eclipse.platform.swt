@@ -95,6 +95,18 @@ JNIEXPORT jint JNICALL AGL_NATIVE(aglGetCurrentContext)
 }
 #endif
 
+#ifndef NO_aglGetDrawable
+JNIEXPORT jint JNICALL AGL_NATIVE(aglGetDrawable)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	AGL_NATIVE_ENTER(env, that, aglGetDrawable_FUNC);
+	rc = (jint)aglGetDrawable(arg0);
+	AGL_NATIVE_EXIT(env, that, aglGetDrawable_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_aglSetCurrentContext
 JNIEXPORT jboolean JNICALL AGL_NATIVE(aglSetCurrentContext)
 	(JNIEnv *env, jclass that, jint arg0)

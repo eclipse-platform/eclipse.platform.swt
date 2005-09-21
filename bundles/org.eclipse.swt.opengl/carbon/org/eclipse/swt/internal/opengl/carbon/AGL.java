@@ -18,6 +18,7 @@ static {
 	Library.loadLibrary("gl");
 }
 
+/* Attributes */
 public static final int AGL_NONE = 0;
 public static final int AGL_BUFFER_SIZE = 2;
 public static final int AGL_LEVEL = 3;
@@ -39,7 +40,10 @@ public static final int AGL_ACCUM_ALPHA_SIZE = 17;
 public static final int AGL_SAMPLE_BUFFERS_ARB = 55;
 public static final int AGL_SAMPLES_ARB = 56;
 
+/* Integer parameters */
 public static final int AGL_BUFFER_RECT = 202;
+public static final int AGL_SWAP_INTERVAL = 222;
+public static final int AGL_BUFFER_NAME = 231;
 public static final int AGL_CLIP_REGION = 254;
 
 public static final native int aglChoosePixelFormat(int gdevs, int ndev, int[] attribs);
@@ -48,6 +52,7 @@ public static final native boolean aglDescribePixelFormat(int pix, int attrib, i
 public static final native boolean aglDestroyContext(int ctx);
 public static final native boolean aglEnable(int ctx, int pname);
 public static final native int aglGetCurrentContext();
+public static final native int aglGetDrawable(int ctx);
 public static final native boolean aglSetCurrentContext(int ctx);
 public static final native boolean aglSetDrawable(int ctx, int draw);
 public static final native boolean aglSetInteger(int ctx, int pname, int[] params);

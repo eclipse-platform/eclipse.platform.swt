@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int AGL_nativeFunctionCount = 12;
-int AGL_nativeFunctionCallCount[12];
+int AGL_nativeFunctionCount = 13;
+int AGL_nativeFunctionCallCount[13];
 char * AGL_nativeFunctionNames[] = {
 	"aglChoosePixelFormat",
 	"aglCreateContext",
@@ -23,6 +23,7 @@ char * AGL_nativeFunctionNames[] = {
 	"aglDestroyContext",
 	"aglEnable",
 	"aglGetCurrentContext",
+	"aglGetDrawable",
 	"aglSetCurrentContext",
 	"aglSetDrawable",
 	"aglSetInteger__III",
