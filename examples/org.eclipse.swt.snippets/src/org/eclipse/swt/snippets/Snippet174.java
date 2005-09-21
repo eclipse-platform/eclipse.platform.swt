@@ -35,7 +35,7 @@ public static void main(String[] args) {
     Shell shell = new Shell(display);
     shell.setText("OpenGL in SWT");
     shell.setLayout(new FillLayout());
-    GLFormatData data = new GLFormatData();
+    GLData data = new GLData();
     data.doubleBuffer = true;
     final GLCanvas canvas = new GLCanvas(shell, SWT.NO_BACKGROUND, data);
     canvas.addControlListener(new ControlAdapter() {
