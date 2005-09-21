@@ -786,13 +786,14 @@ public class StyledText2 extends Canvas {
 		if (isClosed()) {
 			SWT.error(SWT.ERROR_IO);
 		}
-		//StyledTextEvent event = renderer.getLineStyleData(lineOffset, line);
 		StyledTextEvent event = getLineStyleData(lineOffset, line);
-		StyleRange[] styles = new StyleRange[0];
+		StyleRange[] styles = null;
 		if (event != null) {
 			styles = event.styles;
 		}
-		//event = renderer.getLineBackgroundData(lineOffset, line);
+		if (styles == null) {
+			styles = new StyleRange[0];
+		}
 		event = getLineBackgroundData(lineOffset, line);
 		Color lineBackground = null;
 		if (event != null) {
@@ -1202,21 +1203,21 @@ public class StyledText2 extends Canvas {
 		return lineHeight[lineIndex];
 	}
 	public int getTotalHeight () {
-		
-		//if fixedHeight return lineCount * lineHeight
-		
-		int totalHeight = 0;
-		int avgCharWidth = parent.renderer.getAverageCharWidth();
-		int width = parent.getWrapWidth();
 		StyledTextContent content = parent.getContent();
 		int lineCount = content.getLineCount();
 		int defaultLineHeight = parent.getLineHeight();
+		if (parent.isFixedLineHeight()) {
+			return lineCount * defaultLineHeight;
+		}
+		int totalHeight = 0;
+		int avgCharWidth = parent.renderer.getAverageCharWidth();
+		int width = parent.getWrapWidth();
 		for (int i = 0; i < lineCount; i++) {
 			int height = lineHeight[i];
 			if (height == -1) {
 				if (width > 0) {
 					int length = content.getLine(i).length();
-					height = (length * avgCharWidth / width) + 1;
+					height = ((length * avgCharWidth / width) + 1) * defaultLineHeight;
 				} else {
 					height = defaultLineHeight;
 				}
@@ -1742,7 +1743,7 @@ void calculateTopIndex() {
 		if (topIndex < lineCount - 1) {
 			int bottom = getLinePixel(topIndex + 1);
 			bottom = lineCache.getLineHeight(topIndex + 1);
-			if (clientArea.height > bottom) {
+			if (clientArea.height >= bottom) {
 				topIndex++;
 			}
 		}
@@ -1776,7 +1777,11 @@ void calculateTopIndex() {
 	if (topIndex != oldTopIndex) {
 		topOffset = content.getOffsetAtLine(topIndex);
 		lineCache.calculateClientArea();
-		setHorizontalScrollBar();
+		if (isFixedLineHeight()) {
+			setHorizontalScrollBar();
+		} else {
+			setScrollBars();
+		}
 	}
 }
 /**
@@ -1798,15 +1803,22 @@ static int checkStyle(int style) {
  * deleted lines.
  */
 void claimBottomFreeSpace() {
-	//TODO the function can be very expensive for variable line height
-	//     find alternative math for this problem, disable it till there.
-	if (true) return;
-	
-	int newVerticalOffset = Math.max(0, content.getLineCount() * lineHeight - getClientArea().height);
-	if (newVerticalOffset < verticalScrollOffset) {
-		// Scroll up so that empty lines below last text line are used.
-		// Fixes 1GEYJM0
-		setVerticalScrollOffset(newVerticalOffset, true);
+	if (isFixedLineHeight()) {
+		int newVerticalOffset = Math.max(0, content.getLineCount() * lineHeight - getClientArea().height);
+		if (newVerticalOffset < verticalScrollOffset) {
+			// Scroll up so that empty lines below last text line are used.
+			// Fixes 1GEYJM0
+			setVerticalScrollOffset(newVerticalOffset, true);
+		}
+	} else {	
+		int clientAreaHeight = getClientArea().height;
+		int bottomIndex = getLineIndex(clientAreaHeight);
+		int height = getLinePixel(bottomIndex) + lineCache.getLineHeight(bottomIndex);
+		if (clientAreaHeight > height) {
+			height = clientAreaHeight - height;
+			height = Math.min(verticalScrollOffset, height);
+			setVerticalScrollOffset(verticalScrollOffset - height, true);
+		}
 	}
 }
 /**
@@ -2345,7 +2357,7 @@ void doCursorPrevious() {
 	advancing = false;
 	if (selection.y - selection.x > 0) {
 		caretOffset = selection.x;
-		showCaret(getCaretLine());
+		showCaret();
 	} else {
 		doSelectionCursorPrevious();
 	}
@@ -2362,7 +2374,7 @@ void doCursorNext() {
 	advancing = true;
 	if (selection.y - selection.x > 0) {
 		caretOffset = selection.y;
-		showCaret(getCaretLine());
+		showCaret();
 	} else {
 		doSelectionCursorNext();
 	}
@@ -2430,10 +2442,7 @@ void doDeleteWordPrevious() {
  * 
  * @return index of the new line relative to the first line in the document
  */
-int doLineDown() {
-	if (isSingleLine()) {
-		return 0;
-	}
+void doLineDown(boolean select) {
 	int caretLine = getCaretLine();
 	boolean paragraphDown = true;
 	if (wordWrap) {
@@ -2442,7 +2451,7 @@ int doLineDown() {
 		TextLayout layout = renderer.getTextLayout(line, lineOffset);
 		if (layout.getLineCount() > 0) {
 			Point pos = getCaret().getLocation();
-			pos.x += horizontalScrollOffset - rightMargin;
+			pos.x += columnX; //horizontalScrollOffset - rightMargin;
 			pos.y -= getLinePixel(caretLine) + topMargin;
 			int offset = layout.getOffset(pos, null);
 			int lineInParagraph = layout.getLineIndex(offset);
@@ -2454,17 +2463,29 @@ int doLineDown() {
 		}
 		renderer.disposeTextLayout(layout);
 	}
+	if (select && caretLine == content.getLineCount() - 1) {
+		caretOffset = content.getCharCount();
+	}
 	if (paragraphDown && caretLine < content.getLineCount() - 1) {
 		caretLine++;
 		String line = content.getLine(caretLine);
 		int lineOffset = content.getOffsetAtLine(caretLine);
 		TextLayout layout = renderer.getTextLayout(line, lineOffset);
 		int x = columnX + horizontalScrollOffset - leftMargin;
-		int y = 1;
-		caretOffset = lineOffset + layout.getOffset(x, y, null);
+		caretOffset = lineOffset + layout.getOffset(x, 0, null);
 		renderer.disposeTextLayout(layout);
 	}
-	return caretLine;
+	int oldColumnX = columnX;
+	int oldHScrollOffset = horizontalScrollOffset;
+	if (select) {
+		setMouseWordSelectionAnchor();	
+		// select first and then scroll to reduce flash when key 
+		// repeat scrolls lots of lines
+		doSelection(ST.COLUMN_NEXT);
+	}
+	showCaret();
+	int hScrollChange = oldHScrollOffset - horizontalScrollOffset;
+	columnX = oldColumnX + hScrollChange;
 }
 /**
  * Moves the caret to the end of the line.
@@ -2487,7 +2508,7 @@ void doLineStart() {
 	int lineOffset = content.getOffsetAtLine(caretLine);
 	if (caretOffset > lineOffset) {
 		caretOffset = lineOffset;
-		showCaret(caretLine);
+		showCaret();
 	}
 }
 /**
@@ -2497,10 +2518,7 @@ void doLineStart() {
  * 
  * @return index of the new line relative to the first line in the document
  */
-int doLineUp() {
-	if (isSingleLine()) {
-		return 0;
-	}
+void doLineUp(boolean select) {
 	int caretLine = getCaretLine();
 	boolean paragraphUp = true;
 	if (wordWrap) {
@@ -2509,6 +2527,7 @@ int doLineUp() {
 		TextLayout layout = renderer.getTextLayout(line, lineOffset);
 		if (layout.getLineCount() > 0) {
 			Point pos = getCaret().getLocation();
+			pos.x = columnX;
 			pos.x += horizontalScrollOffset - rightMargin;
 			pos.y -= getLinePixel(caretLine) + topMargin;
 			int offset = layout.getOffset(pos, null);
@@ -2521,6 +2540,9 @@ int doLineUp() {
 		}
 		renderer.disposeTextLayout(layout);
 	}
+	if (select && caretLine == 0) {
+		caretOffset = 0;
+	}
 	if (paragraphUp && caretLine > 0) {
 		caretLine--;
 		String line = content.getLine(caretLine);
@@ -2531,7 +2553,13 @@ int doLineUp() {
 		caretOffset = lineOffset + layout.getOffset(x, y, null);
 		renderer.disposeTextLayout(layout);
 	}
-	return caretLine;
+	int oldColumnX = columnX;
+	int oldHScrollOffset = horizontalScrollOffset;
+	if (select) setMouseWordSelectionAnchor();
+	showCaret();
+	if (select) doSelection(ST.COLUMN_PREVIOUS);
+	int hScrollChange = oldHScrollOffset - horizontalScrollOffset;
+	columnX = oldColumnX + hScrollChange;
 }
 /**
  * Moves the caret to the specified location.
@@ -2643,39 +2671,53 @@ void doPageDown(boolean select, int height) {
 	// do nothing if in single line mode. fixes 5673
 	if (isSingleLine()) {
 		return;
-	}
-	Point point = getCaret().getLocation();
-	int lineCount = content.getLineCount();
-	//int index = getBottomIndex();
-	int clientAreaHeight = getClientArea().height;
-	int index = getLineIndex(clientAreaHeight);
-	int y = 0;
-	if (index > 0) {
-		int linePixel = getLinePixel(index);
-		int lineHeight = lineCache.getLineHeight(index);
-		y = Math.max(0, linePixel + lineHeight - clientAreaHeight);
-	}
-	while (index < lineCount - 1) {
-		int paragraphHeight = lineCache.getLineHeight(index);
-		if (y + paragraphHeight > height) {
-			if (wordWrap) {
-				String line = content.getLine(index);
-				int lineOffset = content.getOffsetAtLine(index);
-				TextLayout layout = renderer.getTextLayout(line, lineOffset);
-				int count = layout.getLineCount();
-				renderer.disposeTextLayout(layout);
-			} else {
-				y = height;
+	}	
+	int oldColumnX = columnX;
+	int oldHScrollOffset = horizontalScrollOffset;
+	if (isFixedLineHeight()) {
+		int lineCount = content.getLineCount();
+		int caretLine = getCaretLine();
+		if (caretLine < lineCount - 1) {
+			int lines = height / lineHeight;
+			int scrollLines = Math.min(lineCount - caretLine - 1, lines);
+			// ensure that scrollLines never gets negative and at leat one 
+			// line is scrolled. fixes bug 5602.
+			scrollLines = Math.max(1, scrollLines);
+			caretLine += scrollLines;
+			//caretOffset = getOffsetAtMouseLocation(columnX, caretLine); 
+			caretOffset = getOffsetAtPoint(columnX, getLinePixel(caretLine));
+			if (select) {
+				doSelection(ST.COLUMN_NEXT);
 			}
-			break;
+			// scroll one page down or to the bottom
+			int verticalMaximum = lineCount * getVerticalIncrement();
+			int pageSize = getClientArea().height;
+			int scrollOffset = verticalScrollOffset + scrollLines * getVerticalIncrement();
+			if (scrollOffset + pageSize > verticalMaximum) {
+				scrollOffset = verticalMaximum - pageSize;
+			}
+			if (scrollOffset > verticalScrollOffset) {
+				setVerticalScrollOffset(scrollOffset, true);
+			}
 		}
-		y += paragraphHeight;
-		index++;
-	}
-	if (y == 0) return;
-	setVerticalScrollOffset(verticalScrollOffset + y, true);
-	caretOffset = getOffsetAtPoint(point.x, point.y + 1);
-	setCaretLocation();
+	} else {
+		int oldVScrollOffset = verticalScrollOffset;
+		int caretY = getCaret().getLocation().y;
+		boolean scroll = getLineIndex(getClientArea().height) != content.getLineCount() - 1;
+		if (scroll) {
+			setVerticalScrollOffset(verticalScrollOffset + height, true);
+			claimBottomFreeSpace();
+		}
+		caretY += height - (verticalScrollOffset - oldVScrollOffset);
+		caretOffset = getOffsetAtPoint(columnX, caretY);
+		setCaretLocation();
+		if (select) {
+			doSelection(ST.COLUMN_NEXT);
+		}
+	}	
+	showCaret();
+	int hScrollChange = oldHScrollOffset - horizontalScrollOffset;
+	columnX = oldColumnX + hScrollChange;
 }
 /**
  * Moves the cursor to the end of the last fully visible line.
@@ -2700,9 +2742,7 @@ void doPageStart() {
 	int topCaretOffset = content.getOffsetAtLine(topIndex);
 	if (caretOffset > topCaretOffset) {
 		caretOffset = topCaretOffset;
-		// explicitly go to the calculated caret line. may be different 
-		// from content.getLineAtOffset(caretOffset) when in word wrap mode
-		showCaret(topIndex);
+		showCaret();
 	}
 }
 /**
@@ -2713,27 +2753,41 @@ void doPageStart() {
  * of the text where a full page scroll is not possible. In this case the
  * caret is moved in front of the first character.
  */
-void doPageUp(boolean select, int lines) {
-	int oldColumnX = columnX;
+void doPageUp(boolean select, int height) {
+	if (isSingleLine()) {
+		return;
+	}
 	int oldHScrollOffset = horizontalScrollOffset;
-	int caretLine = getCaretLine();
-	if (caretLine > 0) {	
-		int scrollLines = Math.max(1, Math.min(caretLine, lines));
-		caretLine -= scrollLines;
-		caretOffset = getOffsetAtPoint(columnX, caretLine);
+	int oldColumnX = columnX;	
+	if (isFixedLineHeight()) {
+		int caretLine = getCaretLine();	
+		if (caretLine > 0) {
+			int lines = height / lineHeight;
+			int scrollLines = Math.max(1, Math.min(caretLine, lines));
+			caretLine -= scrollLines;
+			caretOffset = getOffsetAtPoint(columnX, getLinePixel(caretLine));
+			if (select) {
+				doSelection(ST.COLUMN_PREVIOUS);
+			}
+			// scroll one page up or to the top
+			int scrollOffset = Math.max(0, verticalScrollOffset - scrollLines * getVerticalIncrement());
+			if (scrollOffset < verticalScrollOffset) {
+				setVerticalScrollOffset(scrollOffset, true);
+			}
+		}
+	} else {
+		int oldVScrollOffset = verticalScrollOffset;
+		int caretY = getCaret().getLocation().y;	
+		int vscroll = Math.min(verticalScrollOffset, height);
+		setVerticalScrollOffset(verticalScrollOffset - vscroll, true);
+		caretY -= height - (oldVScrollOffset - verticalScrollOffset);
+		caretOffset = getOffsetAtPoint(columnX, caretY);
+		setCaretLocation();
 		if (select) {
 			doSelection(ST.COLUMN_PREVIOUS);
 		}
-		// scroll one page up or to the top
-		int scrollOffset = Math.max(0, verticalScrollOffset - scrollLines * getVerticalIncrement());
-		if (scrollOffset < verticalScrollOffset) {
-			setVerticalScrollOffset(scrollOffset, true);
-		}
 	}
-	// explicitly go to the calculated caret line. may be different 
-	// from content.getLineAtOffset(caretOffset) when in word wrap mode
-	showCaret(caretLine);
-	// restore the original horizontal caret position
+	showCaret();
 	int hScrollChange = oldHScrollOffset - horizontalScrollOffset;
 	columnX = oldColumnX + hScrollChange;
 }
@@ -2742,8 +2796,7 @@ void doPageUp(boolean select, int lines) {
  */
 void doSelection(int direction) {
 	int redrawStart = -1;
-	int redrawEnd = -1;
-	
+	int redrawEnd = -1;	
 	if (selectionAnchor == -1) {
 		selectionAnchor = selection.x;
 	}	
@@ -2803,9 +2856,7 @@ void doSelectionCursorNext() {
 		// only go to next line if not in single line mode. fixes 5673
 		caretLine++;		
 		caretOffset = content.getOffsetAtLine(caretLine);
-		// explicitly go to the calculated caret line. may be different 
-		// from content.getLineAtOffset(caretOffset) when in word wrap mode
-		showCaret(caretLine);
+		showCaret();
 	}
 }
 /**
@@ -2819,7 +2870,7 @@ void doSelectionCursorPrevious() {
 	advancing = false;
 	if (offsetInLine > 0) {
 		caretOffset = getClusterPrevious(caretOffset, caretLine);
-		showCaret(caretLine);
+		showCaret();
 	} else if (caretLine > 0) {
 		caretLine--;
 		lineOffset = content.getOffsetAtLine(caretLine);
@@ -2838,27 +2889,12 @@ void doSelectionCursorPrevious() {
  * direction.
  */
 void doSelectionLineDown() {
-	if (isSingleLine()) {
-		return;
-	}
 	int caretLine = getCaretLine();	
-	int lineStartOffset = content.getOffsetAtLine(caretLine);
+	int lineOffset = content.getOffsetAtLine(caretLine);
 	String line = content.getLine(caretLine);
 	// reset columnX on selection
-	int oldColumnX = columnX = getPointAtOffset(line, caretLine, caretOffset - lineStartOffset).x;
-	if (caretLine == content.getLineCount() - 1) {
-		caretOffset = content.getCharCount();
-	} else {
-		caretLine = doLineDown();
-	}
-	setMouseWordSelectionAnchor();	
-	// select first and then scroll to reduce flash when key 
-	// repeat scrolls lots of lines
-	doSelection(ST.COLUMN_NEXT);
-	// explicitly go to the calculated caret line. may be different 
-	// from content.getLineAtOffset(caretOffset) when in word wrap mode
-	showCaret(caretLine);
-	// save the original horizontal caret position
+	int oldColumnX = columnX = getPointAtOffset(line, caretLine, caretOffset - lineOffset).x;
+	doLineDown(true);
 	columnX = oldColumnX;
 }
 /**
@@ -2873,21 +2909,11 @@ void doSelectionLineDown() {
  */
 void doSelectionLineUp() {
 	int caretLine = getCaretLine();	
-	int lineStartOffset = content.getOffsetAtLine(caretLine);
+	int lineOffset = content.getOffsetAtLine(caretLine);
 	String line = content.getLine(caretLine);
 	// reset columnX on selection
-	int oldColumnX = columnX = getPointAtOffset(line, caretLine, caretOffset - lineStartOffset).x;	
-	if (caretLine == 0) {
-		caretOffset = 0;
-	} else {
-		caretLine = doLineUp();
-	}
-	setMouseWordSelectionAnchor();
-	// explicitly go to the calculated caret line. may be different 
-	// from content.getLineAtOffset(caretOffset) when in word wrap mode
-	showCaret(caretLine);
-	doSelection(ST.COLUMN_PREVIOUS);
-	// save the original horizontal caret position	
+	int oldColumnX = columnX = getPointAtOffset(line, caretLine, caretOffset - lineOffset).x;	
+	doLineUp(true);	
 	columnX = oldColumnX;
 }
 /**
@@ -2905,10 +2931,10 @@ void doSelectionLineUp() {
  */
 void doSelectionPageDown(int pixels) {
 	int caretLine = getCaretLine();
-	int lineStartOffset = content.getOffsetAtLine(caretLine);
+	int lineOffset = content.getOffsetAtLine(caretLine);
 	String line = content.getLine(caretLine);
 	// reset columnX on selection
-	int oldColumnX = columnX = getPointAtOffset(line, caretLine, caretOffset - lineStartOffset).x;
+	int oldColumnX = columnX = getPointAtOffset(line, caretLine, caretOffset - lineOffset).x;
 	doPageDown(true, pixels);
 	columnX = oldColumnX;
 }
@@ -2927,10 +2953,10 @@ void doSelectionPageDown(int pixels) {
  */
 void doSelectionPageUp(int pixels) {
 	int caretLine = getCaretLine();
-	int lineStartOffset = content.getOffsetAtLine(caretLine);
+	int lineOffset = content.getOffsetAtLine(caretLine);
 	String line = content.getLine(caretLine);
 	// reset columnX on selection
-	int oldColumnX = columnX = getPointAtOffset(line, caretLine, caretOffset - lineStartOffset).x;
+	int oldColumnX = columnX = getPointAtOffset(line, caretLine, caretOffset - lineOffset).x;
 	doPageUp(true, pixels);
 	columnX = oldColumnX;
 }
@@ -2962,7 +2988,7 @@ void doSelectionWordPrevious() {
 		caretOffset == content.getOffsetAtLine(caretLine + 1)) {
 		caretLine++;
 	}
-	showCaret(caretLine);
+	showCaret();
 }
 /**
  * Moves the caret one character to the left.  Do not go to the previous line.
@@ -2992,7 +3018,7 @@ void doVisualNext() {
 void doWordNext() {
 	if (selection.y - selection.x > 0) {
 		caretOffset = selection.y;
-		showCaret(getCaretLine());
+		showCaret();
 	} else {
 		doSelectionWordNext();
 	}
@@ -3005,7 +3031,7 @@ void doWordNext() {
 void doWordPrevious() {
 	if (selection.y - selection.x > 0) {
 		caretOffset = selection.x;
-		showCaret(getCaretLine());
+		showCaret();
 	} else {
 		doSelectionWordPrevious();
 	}
@@ -3095,20 +3121,24 @@ public boolean getBidiColoring() {
  * @return index of the last fully visible line.
  */
 int getBottomIndex() {
-//	int lineCount = 1;
-//	if (lineHeight != 0) {
-//		// calculate the number of lines that are fully visible
-//		int partialTopLineHeight = topIndex * lineHeight - verticalScrollOffset;
-//		lineCount = (getClientArea().height - partialTopLineHeight) / lineHeight;
-//	}
-//	return Math.min(content.getLineCount() - 1, topIndex + Math.max(0, lineCount - 1));
-	int clientAreaHeight = getClientArea().height;
-	int bottomIndex = getLineIndex(clientAreaHeight);
-	if (bottomIndex > 0) {
-		int linePixel = getLinePixel(bottomIndex);
-		int lineHeight = lineCache.getLineHeight(bottomIndex);
-		if (linePixel + lineHeight > clientAreaHeight) {
-			bottomIndex--;
+	int bottomIndex;
+	if (isFixedLineHeight()) {
+		int lineCount = 1;
+		if (lineHeight != 0) {
+			// calculate the number of lines that are fully visible
+			int partialTopLineHeight = topIndex * lineHeight - verticalScrollOffset;
+			lineCount = (getClientArea().height - partialTopLineHeight) / lineHeight;
+		}
+		bottomIndex = Math.min(content.getLineCount() - 1, topIndex + Math.max(0, lineCount - 1));
+	} else {
+		int clientAreaHeight = getClientArea().height;
+		bottomIndex = getLineIndex(clientAreaHeight);
+		if (bottomIndex > 0) {
+			int linePixel = getLinePixel(bottomIndex);
+			int lineHeight = lineCache.getLineHeight(bottomIndex);
+			if (linePixel + lineHeight > clientAreaHeight) {
+				bottomIndex--;
+			}
 		}
 	}
 	return bottomIndex;
@@ -3468,7 +3498,7 @@ int getLinePixel(int lineIndex) {
 		System.out.println("Warning lineIndex of bounds!");
 		lineIndex = lineCount - 1;
 	}
-	if (!wordWrap && false) {
+	if (isFixedLineHeight()) {
 		return lineIndex * lineHeight - verticalScrollOffset;
 	}
 	int height = 0;
@@ -3481,7 +3511,7 @@ int getLinePixel(int lineIndex) {
  * Returns the line index for a y, relative to the client area.
  */
 int getLineIndex(int y) {
-	if (!wordWrap && false) {
+	if (isFixedLineHeight()) {
 		int lineIndex = (y + verticalScrollOffset) / lineHeight;
 		int lineCount = content.getLineCount();
 		if (lineIndex >= lineCount) {
@@ -3495,7 +3525,7 @@ int getLineIndex(int y) {
 	int lineCount = content.getLineCount();	
 	while (lineCount > lineIndex) {
 		height += lineCache.getLineHeight(lineIndex);
-		if (height >= y) break;
+		if (height > y) break;
 		lineIndex++;
 	}
 	return Math.min(lineCount - 1, lineIndex);
@@ -3588,28 +3618,27 @@ public int getOffsetAtLocation(Point point) {
 	if (point.y + verticalScrollOffset < 0 || point.x + horizontalScrollOffset < 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	//TODO BUG GETLINEINDEX NEVER RETURNS > LINECOUNT
-	int line = getLineIndex(point.y);
-	// does the referenced line exist?
-	if (line >= content.getLineCount()) {
-		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	}	
-	String lineText = content.getLine(line);
-	int lineOffset = content.getOffsetAtLine(line);	
-	
-	int x = point.x - leftMargin + horizontalScrollOffset;
-	TextLayout layout = renderer.getTextLayout(lineText, lineOffset);
-	Rectangle rect = layout.getLineBounds(0);
-	if (x > rect.x + rect.width) {
-		renderer.disposeTextLayout(layout);
-		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	int bottomIndex = getLineIndex(getClientArea().height);
+	int height = getLinePixel(bottomIndex) + lineCache.getLineHeight(bottomIndex);
+	if (point.y > height) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);		
 	}
+	int lineIndex = getLineIndex(point.y);
+	String line = content.getLine(lineIndex);
+	int lineOffset = content.getOffsetAtLine(lineIndex);
+	TextLayout layout = renderer.getTextLayout(line, lineOffset);	
 	int[] trailing = new int[1];
-	int offsetInLine = layout.getOffset(x, 0, trailing);
-	if (offsetInLine != lineText.length() - 1) {
-		offsetInLine = Math.min(lineText.length(), offsetInLine + trailing[0]);		
+	int x = point.x - leftMargin + horizontalScrollOffset;
+	int y = point.y - getLinePixel(lineIndex);
+	int offsetInLine = layout.getOffset(x, y, trailing);
+	if (offsetInLine != line.length() - 1) {
+		offsetInLine = Math.min(line.length(), offsetInLine + trailing[0]);		
 	}
+	Rectangle rect = layout.getLineBounds(layout.getLineIndex(offsetInLine));
 	renderer.disposeTextLayout(layout);
+	if (x > rect.x + rect.width) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
 	return lineOffset + offsetInLine;
 }
 /**
@@ -4541,21 +4570,8 @@ void installListeners() {
 StyledTextContent internalGetContent() {
 	return content;
 }
-int internalGetHorizontalPixel() {
-	return horizontalScrollOffset;
-}
 Point internalGetSelection() {
 	return selection;
-}
-boolean internalGetWordWrap() {
-	return wordWrap;
-}
-/**
- * Used by WordWrapCache to bypass StyledText.redraw which does
- * an unwanted cache reset.
- */
-void internalRedraw() {
-	super.redraw();
 }
 /** 
  * Redraws the specified text range.
@@ -4881,7 +4897,6 @@ void handlePaint(Event event) {
 void handleResize(Event event) {
 	int oldHeight = clientAreaHeight;
 	int oldWidth = clientAreaWidth;
-	
 	Rectangle clientArea = getClientArea();
 	clientAreaHeight = clientArea.height;
 	clientAreaWidth = clientArea.width;
@@ -4899,16 +4914,12 @@ void handleResize(Event event) {
 		}
 	}
 	if (wordWrap) {
-		if (oldWidth != clientAreaWidth) {	
-			wordWrapResize(oldWidth);
+		if (oldWidth != clientAreaWidth) {
+			lineCache.reset(0, content.getLineCount(), false);
+			lineCache.calculateClientArea();
+			super.redraw();
 		}
 	} else if (clientAreaHeight > oldHeight) {
-//		int lineCount = content.getLineCount();
-//		int oldBottomIndex = topIndex + oldHeight / lineHeight;
-//		int newItemCount = Compatibility.ceil(clientAreaHeight - oldHeight, lineHeight);
-//		oldBottomIndex = Math.min(oldBottomIndex, lineCount);
-//		newItemCount = Math.min(newItemCount, lineCount - oldBottomIndex);
-//		lineCache.calculate(oldBottomIndex, newItemCount);
 		lineCache.calculateClientArea();
 	}
 	setScrollBars();
@@ -5127,32 +5138,15 @@ void initializeRenderer() {
  */
 public void invokeAction(int action) {
 	checkWidget();
-	int oldColumnX, oldHScrollOffset, hScrollChange, caretLine;	
 	updateCaretDirection = true;
 	switch (action) {
 		// Navigation
 		case ST.LINE_UP:
-			caretLine = doLineUp();
-			oldColumnX = columnX;
-			oldHScrollOffset = horizontalScrollOffset;
-			// explicitly go to the calculated caret line. may be different 
-			// from content.getLineAtOffset(caretOffset) when in word wrap mode
-			showCaret(caretLine);
-			// restore the original horizontal caret position
-			hScrollChange = oldHScrollOffset - horizontalScrollOffset;
-			columnX = oldColumnX + hScrollChange;
+			doLineUp(false);
 			clearSelection(true);
 			break;
 		case ST.LINE_DOWN:
-			caretLine = doLineDown();
-			oldColumnX = columnX;
-			oldHScrollOffset = horizontalScrollOffset;
-			// explicitly go to the calculated caret line. may be different 
-			// from content.getLineAtOffset(caretOffset) when in word wrap mode
-			showCaret(caretLine);
-			// restore the original horizontal caret position
-			hScrollChange = oldHScrollOffset - horizontalScrollOffset;
-			columnX = oldColumnX + hScrollChange;
+			doLineDown(false);
 			clearSelection(true);
 			break;
 		case ST.LINE_START:
@@ -5176,8 +5170,7 @@ public void invokeAction(int action) {
 			clearSelection(true);
 			break;
 		case ST.PAGE_DOWN:
-			int page = getLinePixel(getBottomIndex());
-			doPageDown(false, page);
+			doPageDown(false, getClientArea().height);
 			clearSelection(true);
 			break;
 		case ST.WORD_PREVIOUS:
@@ -5645,21 +5638,23 @@ public void redraw(int x, int y, int width, int height, boolean all) {
  * 	redraw range.
  */
 void redrawLines(int firstLine, int offsetInFirstLine, int lastLine, int endOffset, boolean clearBackground) {
-	String line = content.getLine(firstLine);
 	int lineCount = lastLine - firstLine + 1;
+	String line = content.getLine(firstLine);
 	int lineOffset = content.getOffsetAtLine(firstLine);
 	boolean fullLineRedraw = ((getStyle() & SWT.FULL_SELECTION) != 0 && lastLine > firstLine);
-	// if redraw range includes last character on the first line, 
-	// clear background to right widget border. fixes bug 19595.
-	if (clearBackground && endOffset - lineOffset >= line.length()) {
-		fullLineRedraw = true;
-	}	
 	Rectangle clientArea = getClientArea();
 	TextLayout layout = renderer.getTextLayout(line, lineOffset);
 	Rectangle rect = layout.getBounds(offsetInFirstLine, Math.min(endOffset, line.length()) - 1);
+	// if redraw range includes last character on the first line, 
+	// clear background to right widget border. fixes bug 19595.
+	int lineLength = Math.max(0, layout.getLineOffsets()[layout.getLineIndex(offsetInFirstLine) + 1] - 1);
+	if (clearBackground && endOffset - lineOffset >= lineLength) {
+		fullLineRedraw = true;
+	}
 	renderer.disposeTextLayout(layout);
 	rect.x -= horizontalScrollOffset;
 	rect.intersect(clientArea);
+	fullLineRedraw = true;
 	int redrawY = getLinePixel(firstLine);
 	int redrawWidth = fullLineRedraw ? clientArea.width - leftMargin - rightMargin : rect.width;
 	int redrawHeight = lineCache.getLineHeight(firstLine);
@@ -7198,10 +7193,6 @@ public void setTopIndex(int topIndex) {
 	} else if (topIndex > lineCount - pageSize) {
 		topIndex = lineCount - pageSize;
 	}
-	if (wordWrap) {
-		int logicalLineOffset = content.getOffsetAtLine(topIndex);
-		topIndex = content.getLineAtOffset(logicalLineOffset);
-	}
 	int pixel = getLinePixel(topIndex) + verticalScrollOffset;
 	setVerticalScrollOffset(pixel, true);
 }
@@ -7304,8 +7295,7 @@ boolean showLocation(Point point) {
 	if (point.y < topMargin) {
 		scrolled = setVerticalScrollOffset(point.y + verticalScrollOffset, true);
 	} else if (point.y >= clientArea.height - bottomMargin) {
-		//TODO -lineHeight isn't right
-		int y = point.y + verticalScrollOffset - clientArea.height - lineHeight;
+		int y = point.y + verticalScrollOffset - clientArea.height;
 		scrolled = setVerticalScrollOffset(y, true);
 	}
 	return scrolled;
@@ -7315,37 +7305,26 @@ boolean showLocation(Point point) {
  */
 void showCaret() {
 	int caretLine = content.getLineAtOffset(caretOffset);
-	showCaret(caretLine);
-}
-/**
- * Sets the caret location and scrolls the caret offset into view.
- */
-void showCaret(int caretLine) {
 	int lineOffset = content.getOffsetAtLine(caretLine);
 	String line = content.getLine(caretLine);
 	int offsetInLine = caretOffset - lineOffset;
 	Point newCaretPos = getPointAtOffset(line, caretLine, offsetInLine);	
-	boolean scrolled = showLocation(newCaretPos);	
+	boolean scrolled = showLocation(newCaretPos);
+	
+	//TODO FIX ME - assure caret bottom is visible
+	if (!scrolled) {
+		Point point = new Point(newCaretPos.x, newCaretPos.y);
+		TextLayout layout = renderer.getTextLayout(line, lineOffset);
+		point.y += layout.getLineBounds(layout.getLineIndex(offsetInLine)).height;
+		renderer.disposeTextLayout(layout);
+		scrolled = showLocation(point);
+	}
+	
 	if (!scrolled) {
 		// set the caret location if a scroll operation did not set it
 		setCaretLocation(newCaretPos, caretLine, getCaretDirection());
 	}
 }
-/**
- * Scrolls the specified offset into view.
- * <p>
- *
- * @param offset offset that should be scolled into view
- */
-void showOffset(int offset) {
-	int line = content.getLineAtOffset(offset);
-	int lineOffset = content.getOffsetAtLine(line);
-	int offsetInLine = offset - lineOffset;
-	String lineText = content.getLine(line);
-	Point newCaretPos = getPointAtOffset(lineText, line, offsetInLine);
-	showLocation(newCaretPos);
-}
-/**
 /**
  * Scrolls the selection into view.  The end of the selection will be scrolled into
  * view.  Note that if a right-to-left selection exists, the end of the selection is the
@@ -7396,6 +7375,10 @@ public void showSelection() {
 boolean isBidiCaret() {
 	return BidiUtil.isBidiPlatform();
 }
+boolean isFixedLineHeight() {
+	if (true) return false;
+	return !wordWrap;
+}
 /**
  * Updates the selection and caret position depending on the text change.
  * If the selection intersects with the replaced text, the selection is 
@@ -7429,65 +7412,11 @@ void updateSelection(int startOffset, int replacedLength, int newLength) {
 	if (selection.y > startOffset && selection.x < startOffset + replacedLength) {
 		// selection intersects replaced text. set caret behind text change
 		internalSetSelection(startOffset + newLength, 0, true);
-		// always update the caret location. fixes 1G8FODP
-		setCaretLocation();
 	} else {
 		// move selection to keep same text selected
 		internalSetSelection(selection.x + newLength - replacedLength, selection.y - selection.x, true);
-		// always update the caret location. fixes 1G8FODP
-		setCaretLocation();
 	}
-}
-/**
- * Rewraps all lines
- * <p>
- * 
- * @param oldClientAreaWidth client area width before resize 
- * 	occurred
- */
-void wordWrapResize(int oldClientAreaWidth) {
-//	WrappedContent2 wrappedContent = (WrappedContent2) content;
-//	// all lines are wrapped and no rewrap required if widget has already 
-//	// been visible, client area is now wider and visual (wrapped) line 
-//	// count equals logical line count.
-//	if (oldClientAreaWidth != 0 && clientAreaWidth > oldClientAreaWidth &&
-//		wrappedContent.getLineCount() == logicalContent.getLineCount()) {
-//		return;
-//	}
-//	int width = getClientArea().width - leftMargin - rightMargin;
-//	wrappedContent.wrapLines(width);
-//    
-//	// adjust the top index so that top line remains the same
-//	int newTopIndex = content.getLineAtOffset(topOffset);
-//	// topOffset is the beginning of the top line. therefore it 
-//	// needs to be adjusted because in a wrapped line this is also 
-//	// the end of the preceeding line.  
-//	if (newTopIndex < content.getLineCount() - 1 &&
-//		topOffset == content.getOffsetAtLine(newTopIndex + 1)) {
-//		newTopIndex++;
-//	}
-//	if (newTopIndex != topIndex) {
-//		ScrollBar verticalBar = getVerticalBar();
-//		// adjust index and pixel offset manually instead of calling
-//		// setVerticalScrollOffset because the widget does not actually need
-//		// to be scrolled. causes flash otherwise.
-//		verticalScrollOffset += (newTopIndex - topIndex) * getVerticalIncrement();
-//		// verticalScrollOffset may become negative if first line was 
-//		// partially visible and second line was top line. prevent this from 
-//		// happening to fix 8503.
-//		if (verticalScrollOffset < 0) {
-//			verticalScrollOffset = 0;
-//		}
-//		topIndex = newTopIndex;
-//		topOffset = content.getOffsetAtLine(topIndex);
-//		if (verticalBar != null) {
-//			verticalBar.setSelection(verticalScrollOffset);
-//		}
-//	}
-//	// caret may be on a different line after a rewrap.
-//	// call setCaretLocation after fixing vertical scroll offset.
-//	setCaretLocation();    
-//	// word wrap may have changed on one of the visible lines
-//	super.redraw();
+	// always update the caret location. fixes 1G8FODP
+	setCaretLocation();
 }
 }
