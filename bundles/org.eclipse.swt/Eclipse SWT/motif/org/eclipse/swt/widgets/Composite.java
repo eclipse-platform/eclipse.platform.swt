@@ -812,21 +812,7 @@ void redrawWidget (int x, int y, int width, int height, boolean redrawAll, boole
 		child.redrawWidget (x - location.x, y - location.y, width, height, redrawAll, allChildren);
 	}
 }
-void releaseChildren (boolean destroy) {
-	Control [] children = _getChildren ();
-	for (int i=0; i<children.length; i++) {
-		Control child = children [i];
-		if (child != null && !child.isDisposed ()) {
-			child.release (false);
-		}
-	}
-	super.releaseChildren (destroy);
-}
-void releaseHandle () {
-	super.releaseHandle ();
-	focusHandle = 0;
-}
-void releaseWidget () {
+void release (boolean destroy) {
 	if ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0) {
 		Shell shell = getShell ();
 		int focusProc = display.focusProc;
@@ -842,6 +828,23 @@ void releaseWidget () {
 		}
 		setClientWindow (0);
 	}
+	super.release (destroy);
+}
+void releaseChildren (boolean destroy) {
+	Control [] children = _getChildren ();
+	for (int i=0; i<children.length; i++) {
+		Control child = children [i];
+		if (child != null && !child.isDisposed ()) {
+			child.release (false);
+		}
+	}
+	super.releaseChildren (destroy);
+}
+void releaseHandle () {
+	super.releaseHandle ();
+	focusHandle = 0;
+}
+void releaseWidget () {
 	super.releaseWidget ();
 	layout = null;
 	tabList = null;

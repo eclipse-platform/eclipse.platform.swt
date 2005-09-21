@@ -1195,11 +1195,11 @@ void destroyItem (TableItem item) {
 	ignoreSelect = ignoreShrink = true;
 	int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, index, 0);
 	ignoreSelect = ignoreShrink = false;
-	setDeferResize (false);
 	if (code == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	System.arraycopy (items, index + 1, items, index, --count - index);
 	items [count] = null;
 	if (count == 0) setTableEmpty ();
+	setDeferResize (false);
 }
 
 void fixCheckboxImageList () {
@@ -1961,17 +1961,16 @@ public void remove (int [] indices) {
 	if (!(0 <= start && start <= end && end < count)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
+	setDeferResize (true);
 	int last = -1;
 	for (int i=0; i<newIndices.length; i++) {
 		int index = newIndices [i];
 		if (index != last) {
 			TableItem item = items [index];
 			if (item != null && !item.isDisposed ()) item.release (false);
-			setDeferResize (true);
 			ignoreSelect = ignoreShrink = true;
 			int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, index, 0);
 			ignoreSelect = ignoreShrink = false;
-			setDeferResize (false);
 			if (code == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
 			System.arraycopy (items, index + 1, items, index, --count - index);
 			items [count] = null;
@@ -1979,6 +1978,7 @@ public void remove (int [] indices) {
 		}
 	}
 	if (count == 0) setTableEmpty ();
+	setDeferResize (false);
 }
 
 /**
@@ -2005,11 +2005,11 @@ public void remove (int index) {
 	ignoreSelect = ignoreShrink = true;
 	int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, index, 0);
 	ignoreSelect = ignoreShrink = false;
-	setDeferResize (false);
 	if (code == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	System.arraycopy (items, index + 1, items, index, --count - index);
 	items [count] = null;
 	if (count == 0) setTableEmpty ();
+	setDeferResize (false);
 }
 
 /**
@@ -2038,21 +2038,21 @@ public void remove (int start, int end) {
 	if (start == 0 && end == count - 1) {
 		removeAll ();
 	} else {
+		setDeferResize (true);
 		int index = start;
 		while (index <= end) {
 			TableItem item = items [index];
 			if (item != null && !item.isDisposed ()) item.release (false);
-			setDeferResize (true);
 			ignoreSelect = ignoreShrink = true;
 			int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, start, 0);
 			ignoreSelect = ignoreShrink = false;
-			setDeferResize (false);
 			if (code == 0) break;
 			index++;
 		}
 		System.arraycopy (items, index, items, start, count - index);
 		for (int i=count-(index-start); i<count; i++) items [i] = null;
 		if (index <= end) error (SWT.ERROR_ITEM_NOT_REMOVED);
+		setDeferResize (false);
 	}
 }
 
@@ -2089,16 +2089,15 @@ public void removeAll () {
 	* NOTE: LVM_DELETEALLITEMS is also sent by the table
 	* when the table is destroyed.
 	*/	
+	setDeferResize (true);
 	if (OS.IsWin95 && columnCount > 1) {
 		boolean redraw = drawCount == 0 && OS.IsWindowVisible (handle);
 		if (redraw) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 		int index = itemCount - 1;
 		while (index >= 0) {
-			setDeferResize (true);
 			ignoreSelect = ignoreShrink = true;
 			int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, index, 0);
 			ignoreSelect = ignoreShrink = false;
-			setDeferResize (false);
 			if (code == 0) break;
 			--index;
 		}
@@ -2115,14 +2114,13 @@ public void removeAll () {
 		}
 		if (index != -1) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	} else {
-		setDeferResize (true);
 		ignoreSelect = ignoreShrink = true;
 		int code = OS.SendMessage (handle, OS.LVM_DELETEALLITEMS, 0, 0);
 		ignoreSelect = ignoreShrink = false;
-		setDeferResize (false);
 		if (code == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	}
 	setTableEmpty ();
+	setDeferResize (false);
 }
 
 /**
@@ -2686,17 +2684,18 @@ public void setItemCount (int count) {
 	int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	if (count == itemCount) return;
 	boolean isVirtual = (style & SWT.VIRTUAL) != 0;
-	if (!isVirtual) setRedraw (false);
+	if (!isVirtual) {
+		setRedraw (false);
+		setDeferResize (true);
+	}	
 	int index = count;
 	while (index < itemCount) {
 		TableItem item = items [index];
 		if (item != null && !item.isDisposed ()) item.release (false);
 		if (!isVirtual) {
-			setDeferResize (true);
 			ignoreSelect = ignoreShrink = true;
 			int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, count, 0);
 			ignoreSelect = ignoreShrink = false;
-			setDeferResize (false);
 			if (code == 0) break;
 		}
 		index++;
@@ -2724,7 +2723,10 @@ public void setItemCount (int count) {
 			items [i] = new TableItem (this, SWT.NONE, i, true);
 		}
 	}
-	if (!isVirtual) setRedraw (true);
+	if (!isVirtual) {
+		setRedraw (true);
+		setDeferResize (false);
+	}
 }
 
 void setItemHeight () {

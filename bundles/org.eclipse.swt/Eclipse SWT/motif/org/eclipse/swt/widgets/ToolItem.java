@@ -287,7 +287,7 @@ Point computeSize (GC gc) {
 }
 void destroyWidget () {
 	parent.destroyItem (this);
-	releaseHandle ();
+	super.destroyWidget ();
 }
 public void dispose () {
 	if (isDisposed()) return;
