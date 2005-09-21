@@ -662,6 +662,30 @@ void createHandle () {
 	}
 }
 
+void createHeaderToolTips () {
+	if (OS.IsWinCE) return;
+	if (headerToolTipHandle != 0) return;
+	headerToolTipHandle = OS.CreateWindowEx (
+		0,
+		new TCHAR (0, OS.TOOLTIPS_CLASS, true),
+		null,
+		OS.TTS_ALWAYSTIP,
+		OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
+		0,
+		0,
+		OS.GetModuleHandle (null),
+		null);
+	if (headerToolTipHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	/*
+	* Feature in Windows.  Despite the fact that the
+	* tool tip text contains \r\n, the tooltip will
+	* not honour the new line unless TTM_SETMAXTIPWIDTH
+	* is set.  The fix is to set TTM_SETMAXTIPWIDTH to
+	* a large value.
+	*/
+	OS.SendMessage (headerToolTipHandle, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
+}
+
 void createItem (TableColumn column, int index) {
 	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
@@ -2664,6 +2688,7 @@ public void setHeaderVisible (boolean show) {
 		int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
 		if ((bits & OS.LVS_EX_GRIDLINES) != 0) setItemHeight ();
 	}
+	updateHeaderToolTips ();
 }
 
 /**
@@ -3402,30 +3427,7 @@ void unsubclass () {
 }
 
 void updateHeaderToolTips () {
-	if (OS.IsWinCE) return;
-	if (headerToolTipHandle != 0) return;
-	headerToolTipHandle = OS.CreateWindowEx (
-		0,
-		new TCHAR (0, OS.TOOLTIPS_CLASS, true),
-		null,
-		OS.TTS_ALWAYSTIP,
-		OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
-		0,
-		0,
-		OS.GetModuleHandle (null),
-		null);
-	if (headerToolTipHandle == 0) error (SWT.ERROR_NO_HANDLES);
-
-	/*
-	* Feature in Windows.  Despite the fact that the
-	* tool tip text contains \r\n, the tooltip will
-	* not honour the new line unless TTM_SETMAXTIPWIDTH
-	* is set.  The fix is to set TTM_SETMAXTIPWIDTH to
-	* a large value.
-	*/
-	OS.SendMessage (headerToolTipHandle, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
-	
-	/* Create the tool tip items for the header */
+	if (headerToolTipHandle == 0) return;
 	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	RECT rect = new RECT ();
 	TOOLINFO lpti = new TOOLINFO ();

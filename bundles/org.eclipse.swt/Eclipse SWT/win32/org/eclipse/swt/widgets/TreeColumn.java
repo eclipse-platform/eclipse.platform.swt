@@ -668,7 +668,11 @@ public void setText (String string) {
 public void setToolTipText (String string) {
 	checkWidget();
 	toolTipText = string;
-	parent.updateHeaderToolTips ();
+	int hwndHeaderToolTip = parent.headerToolTipHandle;
+	if (hwndHeaderToolTip == 0) {
+		parent.createHeaderToolTips ();
+		parent.updateHeaderToolTips ();
+	}
 }
 
 /**
