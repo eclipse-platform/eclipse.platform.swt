@@ -147,24 +147,26 @@ private void disposeGC(GC gc) {
  * explicitly.
  */
 int drawLine(String line, int lineIndex, int paintX, int paintY, GC gc, Color widgetBackground, Color widgetForeground, boolean clearBackground) {
-	int lineOffset = getContent().getOffsetAtLine(lineIndex);
+	if (styledText == null) return 0;
+	StyledTextContent content = getContent();
+	int lineOffset = content.getOffsetAtLine(lineIndex);
 	int lineLength = line.length();
-	Point selection = getSelection();
+	Point selection = styledText.internalGetSelection();
 	int selectionStart = selection.x;
 	int selectionEnd = selection.y;
-	Color lineBackground = null;
 	TextLayout layout = getTextLayout(line, lineOffset);
-	Rectangle client = getClientArea();
-	StyledTextEvent event = getLineBackgroundData(lineOffset, line);
+	Rectangle client = styledText.getClientArea();  
+	StyledTextEvent event = styledText.getLineBackgroundData(lineOffset, line);
+	Color lineBackground = null;
 	if (event != null) {
 		lineBackground = event.lineBackground;
 	}
 	if (lineBackground == null) {
 		lineBackground = widgetBackground;
-	}
-	
+	}	
+	boolean fullSelection = (styledText.getStyle() & SWT.FULL_SELECTION) != 0;
 	if (clearBackground &&
-		(!isFullLineSelection() || 
+		(!fullSelection || 
 		 selectionStart > lineOffset || 
 		 selectionEnd <= lineOffset + lineLength)) {
 		// draw background if full selection is off or if line is not 
@@ -173,8 +175,27 @@ int drawLine(String line, int lineIndex, int paintX, int paintY, GC gc, Color wi
 		gc.fillRectangle(client.x, paintY, client.width, layout.getBounds().height);
 	}
 	if (selectionStart != selectionEnd) {
-		Rectangle rect = layout.getLineBounds(0);
-		drawFullLineSelection(line, lineOffset, paintX + rect.x + rect.width, paintY, gc);
+		int y = paintY;
+		int[] offsets = layout.getLineOffsets();
+		int lineCount = layout.getLineCount();
+		gc.setBackground(styledText.getSelectionBackground());
+		for (int i = 0; i < lineCount; i++) {
+			int lineStart = offsets[i];
+			int lineEnd = Math.max(0, offsets[i + 1] - 1);
+			if (lineStart >= selectionEnd - lineOffset) break;
+			Rectangle lineBounds = layout.getLineBounds(i);
+			if (selectionStart - lineOffset <= lineEnd && lineEnd < selectionEnd - lineOffset - 1) {
+				int x = paintX + lineBounds.x + lineBounds.width;
+				if (fullSelection) {
+					gc.fillRectangle(x, y, client.width - x, lineBounds.height);
+				} else {
+					if (i == lineCount - 1) {
+						gc.fillRectangle(x, y, lineEndSpaceWidth, lineBounds.height);
+					}
+				}
+			}
+			y += lineBounds.height;
+		}
 	}
 	gc.setForeground(widgetForeground);
 	gc.setBackground(lineBackground);	
@@ -183,7 +204,9 @@ int drawLine(String line, int lineIndex, int paintX, int paintY, GC gc, Color wi
 	} else {
 		int start = Math.max(0, selectionStart - lineOffset);
 		int end = Math.min(lineLength, selectionEnd - lineOffset);
-		layout.draw(gc, paintX, paintY, start, end - 1, getSelectionForeground(), getSelectionBackground());
+		Color selectionFk = styledText.getSelectionForeground();
+		Color selectionBk = styledText.getSelectionBackground();
+		layout.draw(gc, paintX, paintY, start, end - 1, selectionFk, selectionBk);
 	}
 	int height = layout.getBounds().height;
 	disposeTextLayout(layout);
@@ -206,65 +229,6 @@ void drawLine(int paintX, int paintY, GC gc, Color foreground, Color background,
 	}
 	gc.setForeground(foreground);
 	layout.draw(gc, paintX, paintY);
-}
-/** 
- * Draws the background of the line selection.
- * Implemented by subclasses for optional selection rendering.
- * </p>
- *
- * @param line the line to draw
- * @param lineOffset offset of the first character in the line.
- * 	Relative to the start of the document.
- * @param styles line styles
- * @param paintY y location to draw at
- * @param gc GC to draw on
- * @param bidi the bidi object to use for measuring and rendering 	text in bidi
- * locales. null when not in bidi mode.
- */
-private void drawFullLineSelection(String line, int lineOffset, int paintX, int paintY, GC gc) {
-	if (styledText == null) return;//don't draw full selection on a printer
-	Point selection = styledText.internalGetSelection();
-	int lineLength = line.length();
-	int selectionStart = Math.max(0, selection.x - lineOffset);
-	int selectionEnd = selection.y - lineOffset;
-	
-	if (selectionEnd == selectionStart || selectionEnd < 0 || selectionStart > lineLength || selectionEnd <= lineLength) {
-		return;
-	}
-	
-	int lineHeight = getLineHeight();
-	gc.setBackground(styledText.getSelectionBackground());
-	if ((styledText.getStyle() & SWT.FULL_SELECTION) != 0) {
-		Rectangle rect = getClientArea();
-		gc.fillRectangle(paintX, paintY, rect.width - paintX, lineHeight);
-	} else {
-		boolean isWrappedLine = false;
-		if (styledText.internalGetWordWrap()) {
-			StyledTextContent content = getContent();
-			int lineEnd = lineOffset + lineLength;
-			int lineIndex = content.getLineAtOffset(lineEnd);
-
-			// is the start offset of the next line the same as the end 
-			// offset of this line?
-			if (lineIndex < content.getLineCount() - 1 &&
-				content.getOffsetAtLine(lineIndex + 1) == lineEnd) {
-				isWrappedLine = true;
-			}
-		}
-		if (!isWrappedLine) {
-			// render the line break selection
-			gc.fillRectangle(paintX, paintY, lineEndSpaceWidth, lineHeight);
-		}
-	}
-}
-
-/**
- * Returns the visible client area that can be used for rendering.
- * </p>
- * @return the visible client area that can be used for rendering.
- */
-private Rectangle getClientArea() {
-	return styledText != null ? styledText.getClientArea() : null;
 }
 /**
  * Returns the <class>StyledTextContent</class> to use for line offset
@@ -340,24 +304,15 @@ private GC getGC() {
 	return new GC(styledText);
 }
 /**
- * Returns the line background data for the given line or null if 
- * there is none. 
- * </p>
- * @param lineOffset offset of the line start relative to the start
- * 	of the content.
- * @param line line to get line background data for
- * @return line background data for the given line. may return null
- */
-private StyledTextEvent getLineBackgroundData(int lineOffset, String line) {
-	return styledText != null ? styledText.getLineBackgroundData(lineOffset, line) : null;
-}
-/**
  * Returns the height in pixels of a line.
  * </p>
  * @return the height in pixels of a line.
  */
 int getLineHeight() {
 	return ascent + descent;
+}
+int getAverageCharWidth () {
+	return averageCharWidth;
 }
 /**
  * Returns the line style data for the given line or null if there is 
@@ -387,40 +342,6 @@ private int getOrientation () {
 	}
 }
 /**
- *
- */
-private Color getSelectionForeground() {
-	return styledText != null ? styledText.getSelectionForeground() : null;
-}
-/**
- *
- */
-private Color getSelectionBackground() {
-	return styledText != null ? styledText.getSelectionBackground() : null;
-}
-/**
- * Returns the widget selection.
- * Implemented by subclasses for optional selection rendering.
- * </p>
- * @return the widget selection.
- */
-private Point getSelection() {
-	return styledText != null ? styledText.internalGetSelection() : new Point (0, 0);
-}
-int getAverageCharWidth () {
-	return averageCharWidth;
-}
-/**
- * Returns whether the widget was created with the SWT.FULL_SELECTION style.
- * Implemented by subclasses for optional selection rendering.
- * </p>
- * @return true=the widget is running in full line selection mode, 
- * 	false=otherwise
- */
-private boolean isFullLineSelection() {
-	return styledText != null ? (styledText.getStyle() & SWT.FULL_SELECTION) != 0 : false;
-}
-/**
  * Calculates the width in pixel of a tab character
  * </p>
  * @param tabLength number of space characters represented by a tab character.
@@ -444,7 +365,7 @@ TextLayout getTextLayout(String line, int lineOffset) {
 	return getTextLayout(line, lineOffset, bidiSegments, styles);
 }
 /**
- *  Returns TextLayout given a line offset, an array of styles, and the bidi segments 
+ *  Returns TextLayout given a line, a list of styles, and a list of bidi segments 
  */
 TextLayout getTextLayout(String line, int lineOffset, int[] bidiSegments, StyleRange[] styles) {
 	TextLayout layout = createTextLayout(lineOffset);
@@ -485,7 +406,7 @@ TextLayout getTextLayout(String line, int lineOffset, int[] bidiSegments, StyleR
 	return layout;
 }
 private TextLayout createTextLayout(int lineOffset) {
-	if (styledText != null && !styledText.internalGetWordWrap()) {
+	if (styledText != null) {
 		int lineIndex = getContent().getLineAtOffset(lineOffset);
 		updateTopIndex();
 		if (layouts != null) {
