@@ -776,7 +776,7 @@ public void setDigits (int value) {
 	} else {
 		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 	}
-	setSelection (pos, false);
+	setSelection (pos, false, true, false);
 }
 
 void setForegroundPixel (int pixel) {
@@ -843,7 +843,7 @@ public void setMaximum (int value) {
 		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 	}
 	OS.SendMessage (hwndUpDown , OS.UDM_SETRANGE32, min [0], value);	
-	if (pos > value) setSelection (value, false);
+	if (pos > value) setSelection (value, true, true, false);
 }
 
 /**
@@ -872,7 +872,7 @@ public void setMinimum (int value) {
 		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 	}
 	OS.SendMessage (hwndUpDown , OS.UDM_SETRANGE32, value, max [0]);
-	if (pos < value) setSelection (value, false);
+	if (pos < value) setSelection (value, true, true, false);
 }
 
 /**
@@ -911,35 +911,39 @@ public void setSelection (int value) {
 	int [] max = new int [1], min = new int [1];
 	OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, min, max);
 	value = Math.min (Math.max (min [0], value), max [0]);
-	setSelection (value, false);
+	setSelection (value, true, true, false);
 }
 
-void setSelection (int value, boolean notify) {
-	OS.SendMessage (hwndUpDown , OS.IsWinCE ? OS.UDM_SETPOS : OS.UDM_SETPOS32, 0, value);
-	String string = String.valueOf (value);
-	if (digits > 0) {
-		String decimalSeparator = getDecimalSeparator ();
-		int index = string.length () - digits;
-		StringBuffer buffer = new StringBuffer ();
-		if (index > 0) {
-			buffer.append (string.substring (0, index));
-			buffer.append (decimalSeparator);
-			buffer.append (string.substring (index));
-		} else {
-			buffer.append ("0");
-			buffer.append (decimalSeparator);
-			while (index++ < 0) buffer.append ("0");
-			buffer.append (string);
+void setSelection (int value, boolean setPos, boolean setText, boolean notify) {
+	if (setPos) {
+		OS.SendMessage (hwndUpDown , OS.IsWinCE ? OS.UDM_SETPOS : OS.UDM_SETPOS32, 0, value);
+	}
+	if (setText) {
+		String string = String.valueOf (value);
+		if (digits > 0) {
+			String decimalSeparator = getDecimalSeparator ();
+			int index = string.length () - digits;
+			StringBuffer buffer = new StringBuffer ();
+			if (index > 0) {
+				buffer.append (string.substring (0, index));
+				buffer.append (decimalSeparator);
+				buffer.append (string.substring (index));
+			} else {
+				buffer.append ("0");
+				buffer.append (decimalSeparator);
+				while (index++ < 0) buffer.append ("0");
+				buffer.append (string);
+			}
+			string = buffer.toString ();
 		}
-		string = buffer.toString ();
+		if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+			int length = OS.GetWindowTextLength (hwndText);
+			string = verifyText (string, 0, length, null);
+			if (string == null) return;
+		}
+		TCHAR buffer = new TCHAR (getCodePage (), string, true);
+		OS.SetWindowText (hwndText, buffer);
 	}
-	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
-		int length = OS.GetWindowTextLength (hwndText);
-		string = verifyText (string, 0, length, null);
-		if (string == null) return;
-	}
-	TCHAR buffer = new TCHAR (getCodePage (), string, true);
-	OS.SetWindowText (hwndText, buffer);
 	if (notify) postEvent (SWT.Selection);
 }
 
@@ -1104,8 +1108,6 @@ LRESULT wmChar (int hwnd, int wParam, int lParam) {
 	*/
 	switch (wParam) {
 		case SWT.CR:
-			int value = getSelectionText ();
-			setSelection (value, true);
 			postEvent (SWT.DefaultSelection);
 			// FALL THROUGH		
 		case SWT.TAB:
@@ -1183,6 +1185,16 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 	switch (code) {
 		case OS.EN_CHANGE:
 			if (ignoreModify) break;
+			int value = getSelectionText ();
+			int pos;
+			if (OS.IsWinCE) {
+				pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xFFFF;
+			} else {
+				pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
+			}
+			if (value != pos) {
+				setSelection (value, true, false, true);
+			}
 			sendEvent (SWT.Modify);
 			if (isDisposed ()) return LRESULT.ZERO;
 			break;
@@ -1214,7 +1226,7 @@ LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
 			if (newValue > max [0]) newValue = min [0];
 		}
 		newValue = Math.min (Math.max (min [0], newValue), max [0]);
-		if (value != newValue) setSelection (newValue, true);
+		if (value != newValue) setSelection (newValue, true, true, true);
 	}
 	
 	/*  Stop the edit control from moving the caret */
@@ -1228,16 +1240,8 @@ LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
 
 LRESULT wmKillFocus (int hwnd, int wParam, int lParam) {
 	int value = getSelectionText ();
-	setSelection (value, true);
+	setSelection (value, false, true, false);
 	return super.wmKillFocus (hwnd, wParam, lParam);
-}
-
-LRESULT wmLButtonDown (int hwnd,int wParam,int lParam) {
-	if (hwnd == hwndUpDown) {
-		int value = getSelectionText ();
-		OS.SendMessage (hwndUpDown , OS.IsWinCE ? OS.UDM_SETPOS : OS.UDM_SETPOS32, 0, value);
-	}
-	return super.wmLButtonDown (hwnd, wParam, lParam);
 }
 
 LRESULT wmNotifyChild(int wParam, int lParam) {
@@ -1263,7 +1267,9 @@ LRESULT wmNotifyChild(int wParam, int lParam) {
 			* from running.
 			*/
 			value = Math.min (Math.max (min [0], value), max [0]);
-			setSelection (value, true);
+			if (value != lpnmud.iPos) {
+				setSelection (value, true, true, true);
+			}
 			return LRESULT.ONE;
 	}
 	return super.wmNotifyChild (wParam, lParam);
