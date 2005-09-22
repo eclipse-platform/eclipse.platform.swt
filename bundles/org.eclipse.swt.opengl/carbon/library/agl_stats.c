@@ -14,13 +14,14 @@
 
 #ifdef NATIVE_STATS
 
-int AGL_nativeFunctionCount = 13;
-int AGL_nativeFunctionCallCount[13];
+int AGL_nativeFunctionCount = 14;
+int AGL_nativeFunctionCallCount[14];
 char * AGL_nativeFunctionNames[] = {
 	"aglChoosePixelFormat",
 	"aglCreateContext",
 	"aglDescribePixelFormat",
 	"aglDestroyContext",
+	"aglDestroyPixelFormat",
 	"aglEnable",
 	"aglGetCurrentContext",
 	"aglGetDrawable",

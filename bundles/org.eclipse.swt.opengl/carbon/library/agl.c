@@ -71,6 +71,16 @@ JNIEXPORT jboolean JNICALL AGL_NATIVE(aglDestroyContext)
 }
 #endif
 
+#ifndef NO_aglDestroyPixelFormat
+JNIEXPORT void JNICALL AGL_NATIVE(aglDestroyPixelFormat)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	AGL_NATIVE_ENTER(env, that, aglDestroyPixelFormat_FUNC);
+	aglDestroyPixelFormat(arg0);
+	AGL_NATIVE_EXIT(env, that, aglDestroyPixelFormat_FUNC);
+}
+#endif
+
 #ifndef NO_aglEnable
 JNIEXPORT jboolean JNICALL AGL_NATIVE(aglEnable)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)

@@ -50,6 +50,7 @@ public static final native int aglChoosePixelFormat(int gdevs, int ndev, int[] a
 public static final native int aglCreateContext(int pix, int share);
 public static final native boolean aglDescribePixelFormat(int pix, int attrib, int[] value);
 public static final native boolean aglDestroyContext(int ctx);
+public static final native void aglDestroyPixelFormat(int pix);
 public static final native boolean aglEnable(int ctx, int pname);
 public static final native int aglGetCurrentContext();
 public static final native int aglGetDrawable(int ctx);

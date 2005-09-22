@@ -113,7 +113,7 @@ public GLCanvas (Composite parent, int style, GLData data) {
 			switch (event.type) {
 			case SWT.Dispose:
 				AGL.aglDestroyContext (context);
-				//AGL.aglDestroyPixelFormat (pixelFormat);
+				AGL.aglDestroyPixelFormat (pixelFormat);
 				break;
 			case SWT.Resize:
 			case SWT.Hide:

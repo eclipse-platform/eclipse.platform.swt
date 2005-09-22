@@ -25,6 +25,7 @@ typedef enum {
 	aglCreateContext_FUNC,
 	aglDescribePixelFormat_FUNC,
 	aglDestroyContext_FUNC,
+	aglDestroyPixelFormat_FUNC,
 	aglEnable_FUNC,
 	aglGetCurrentContext_FUNC,
 	aglGetDrawable_FUNC,
