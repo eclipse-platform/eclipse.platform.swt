@@ -3930,18 +3930,20 @@ LRESULT WM_RBUTTONDOWN (int wParam, int lParam) {
 	lpht.x = (short) (lParam & 0xFFFF);
 	lpht.y = (short) (lParam >> 16);
 	OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
-	if (lpht.hItem != 0 && (lpht.flags & (OS.TVHT_ONITEMICON | OS.TVHT_ONITEMLABEL)) != 0) {
-		if ((wParam & (OS.MK_CONTROL | OS.MK_SHIFT)) == 0) {
-			TVITEM tvItem = new TVITEM ();
-			tvItem.mask = OS.TVIF_STATE;
-			tvItem.stateMask = OS.TVIS_SELECTED;
-			tvItem.hItem = lpht.hItem;
-			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-			if ((tvItem.state & OS.TVIS_SELECTED) == 0) {
-				ignoreSelect = true;
-				OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, 0);
-				ignoreSelect = false;
-				OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, lpht.hItem);
+	if (lpht.hItem != 0) {
+		if ((style & SWT.FULL_SELECTION) != 0 || (lpht.flags & (OS.TVHT_ONITEMICON | OS.TVHT_ONITEMLABEL)) != 0) {
+			if ((wParam & (OS.MK_CONTROL | OS.MK_SHIFT)) == 0) {
+				TVITEM tvItem = new TVITEM ();
+				tvItem.mask = OS.TVIF_STATE;
+				tvItem.stateMask = OS.TVIS_SELECTED;
+				tvItem.hItem = lpht.hItem;
+				OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+				if ((tvItem.state & OS.TVIS_SELECTED) == 0) {
+					ignoreSelect = true;
+					OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, 0);
+					ignoreSelect = false;
+					OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, lpht.hItem);
+				}
 			}
 		}
 	}
