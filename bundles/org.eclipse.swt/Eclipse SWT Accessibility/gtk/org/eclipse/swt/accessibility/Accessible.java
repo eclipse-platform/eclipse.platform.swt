@@ -153,8 +153,9 @@ public class Accessible {
 		if (!isValidThread ()) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
 		if (control.isDisposed ()) SWT.error (SWT.ERROR_WIDGET_DISPOSED);
 	}
-	
+
 	AccessibleListener[] getAccessibleListeners () {
+		if (accessibleListeners == null) return null;
 		AccessibleListener[] result = new AccessibleListener [accessibleListeners.size ()];
 		accessibleListeners.copyInto (result);
 		return result;
@@ -163,19 +164,21 @@ public class Accessible {
 	int /*long*/ getControlHandle () {
 		return control.handle;
 	}
-	
+
 	AccessibleControlListener[] getControlListeners () {
+		if (controlListeners == null) return null;
 		AccessibleControlListener[] result = new AccessibleControlListener [controlListeners.size ()];
 		controlListeners.copyInto (result);
 		return result;
 	}
 
 	AccessibleTextListener[] getTextListeners () {
+		if (textListeners == null) return null;
 		AccessibleTextListener[] result = new AccessibleTextListener [textListeners.size ()];
 		textListeners.copyInto (result);
 		return result;
 	}
-	
+
 	/**
 	 * Invokes platform specific functionality to allocate a new accessible object.
 	 * <p>

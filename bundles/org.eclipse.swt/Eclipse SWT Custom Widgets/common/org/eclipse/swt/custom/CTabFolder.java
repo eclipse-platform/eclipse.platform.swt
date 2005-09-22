@@ -3687,6 +3687,16 @@ void showToolTip (int x, int y) {
 	if (tooltip == null) return;
 	if (toolTipShell == null) {
 		toolTipShell = new Shell (getShell(), SWT.ON_TOP | SWT.TOOL);
+		toolTipShell.getAccessible().addAccessibleListener(new AccessibleAdapter() {
+			public void getName(AccessibleEvent e) {
+				e.result = toolTipLabel.getText();
+			}
+		});
+		toolTipShell.getAccessible().addAccessibleControlListener(new AccessibleControlAdapter() {
+			public void getRole(AccessibleControlEvent e) {
+				e.detail = ACC.ROLE_TOOLTIP;
+			}
+		});
 		toolTipLabel = new Label (toolTipShell, SWT.CENTER);
 		Display display = toolTipShell.getDisplay();
 		toolTipLabel.setForeground (display.getSystemColor (SWT.COLOR_INFO_FOREGROUND));

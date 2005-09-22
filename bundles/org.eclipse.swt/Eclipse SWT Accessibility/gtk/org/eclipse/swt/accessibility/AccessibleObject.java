@@ -1170,7 +1170,8 @@ class AccessibleObject {
 
 	AccessibleListener[] getAccessibleListeners () {
 		if (accessible == null) return new AccessibleListener [0];
-		return accessible.getAccessibleListeners ();
+		AccessibleListener[] result = accessible.getAccessibleListeners ();
+		return result != null ? result : new AccessibleListener [0];
 	}
 
 	static AccessibleObject getAccessibleObject (int /*long*/ atkObject) {
@@ -1202,7 +1203,8 @@ class AccessibleObject {
 	
 	AccessibleControlListener[] getControlListeners () {
 		if (accessible == null) return new AccessibleControlListener [0];
-		return accessible.getControlListeners ();
+		AccessibleControlListener[] result = accessible.getControlListeners (); 
+		return result != null ? result : new AccessibleControlListener [0];
 	}
 
 	String getText () {
@@ -1239,7 +1241,8 @@ class AccessibleObject {
 	
 	AccessibleTextListener[] getTextListeners () {
 		if (accessible == null) return new AccessibleTextListener [0];
-		return accessible.getTextListeners ();
+		AccessibleTextListener[] result = accessible.getTextListeners (); 
+		return result != null ? result : new AccessibleTextListener [0];
 	}
 
 	static int /*long*/ gObjectClass_finalize (int /*long*/ atkObject) {

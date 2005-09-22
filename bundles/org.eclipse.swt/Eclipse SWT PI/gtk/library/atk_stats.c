@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2000, 2004 IBM Corporation and others. All rights reserved.
+* Copyright (c) 2000, 2005 IBM Corporation and others. All rights reserved.
 * The contents of this file are made available under the terms
 * of the GNU Lesser General Public License (LGPL) Version 2.1 that
 * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int ATK_nativeFunctionCount = 37;
-int ATK_nativeFunctionCallCount[37];
+int ATK_nativeFunctionCount = 38;
+int ATK_nativeFunctionCallCount[38];
 char * ATK_nativeFunctionNames[] = {
 	"AtkObjectFactoryClass_1sizeof",
 	"AtkObjectFactory_1sizeof",
@@ -31,6 +31,7 @@ char * ATK_nativeFunctionNames[] = {
 	"_1GTK_1ACCESSIBLE",
 	"_1atk_1focus_1tracker_1notify",
 	"_1atk_1get_1default_1registry",
+	"_1atk_1object_1factory_1create_1accessible",
 	"_1atk_1object_1factory_1get_1accessible_1type",
 	"_1atk_1object_1initialize",
 	"_1atk_1registry_1get_1factory",

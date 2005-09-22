@@ -18,6 +18,7 @@ import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.*;
 
 class AccessibleFactory {
+	int /*long*/ handle;
 	int /*long*/ objectParentType;
 	int /*long*/ widgetTypeName;
 	Callback atkObjectFactoryCB_create_accessible;
@@ -185,12 +186,14 @@ class AccessibleFactory {
 			OS.memmove (info, typeInfo, GTypeInfo.sizeof); 
 			int /*long*/ swtFactoryType = OS.g_type_register_static (factoryParentType, factoryName, info, 0);
 			ATK.atk_registry_set_factory_type (registry, widgetType, swtFactoryType);
+			handle = ATK.atk_registry_get_factory (registry, widgetType);
 		}
 	}
 	
 	void addAccessible (Accessible accessible) {
 		int /*long*/ controlHandle = accessible.getControlHandle ();
 		accessibles.put (new LONG (controlHandle), accessible);
+		ATK.atk_object_factory_create_accessible (handle, controlHandle);
 	}
 
 	int /*long*/ atkObjectFactory_create_accessible (int /*long*/ widget) {
@@ -203,6 +206,10 @@ class AccessibleFactory {
 			int /*long*/ result = OS.g_object_new (objectParentType, 0);
 			ATK.atk_object_initialize (result, widget);
 			return result;
+		}
+		/* if an atk object has already been created for this widget then just return it */
+		if (accessible.accessibleObject != null) {
+			return accessible.accessibleObject.handle;
 		}
 		int typeNameLength = OS.strlen (widgetTypeName);
 		byte[] buffer = new byte [typeNameLength];

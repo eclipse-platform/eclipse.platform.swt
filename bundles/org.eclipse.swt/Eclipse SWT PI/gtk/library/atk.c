@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2000, 2004 IBM Corporation and others. All rights reserved.
+* Copyright (c) 2000, 2005 IBM Corporation and others. All rights reserved.
 * The contents of this file are made available under the terms
 * of the GNU Lesser General Public License (LGPL) Version 2.1 that
 * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -133,6 +133,18 @@ JNIEXPORT jint JNICALL ATK_NATIVE(_1atk_1get_1default_1registry)
 	ATK_NATIVE_ENTER(env, that, _1atk_1get_1default_1registry_FUNC);
 	rc = (jint)atk_get_default_registry();
 	ATK_NATIVE_EXIT(env, that, _1atk_1get_1default_1registry_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1atk_1object_1factory_1create_1accessible
+JNIEXPORT jint JNICALL ATK_NATIVE(_1atk_1object_1factory_1create_1accessible)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	ATK_NATIVE_ENTER(env, that, _1atk_1object_1factory_1create_1accessible_FUNC);
+	rc = (jint)atk_object_factory_create_accessible((AtkObjectFactory *)arg0, (GObject *)arg1);
+	ATK_NATIVE_EXIT(env, that, _1atk_1object_1factory_1create_1accessible_FUNC);
 	return rc;
 }
 #endif

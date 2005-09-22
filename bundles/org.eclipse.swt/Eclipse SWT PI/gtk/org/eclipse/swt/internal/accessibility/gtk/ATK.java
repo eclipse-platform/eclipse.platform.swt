@@ -158,6 +158,15 @@ public static final int /*long*/ atk_get_default_registry () {
 		lock.unlock();
 	}
 }
+public static final native int /*long*/ _atk_object_factory_create_accessible (int /*long*/ factory, int /*long*/ obj);
+public static final int /*long*/ atk_object_factory_create_accessible (int /*long*/ factory, int /*long*/ obj) {
+	lock.lock();
+	try {
+		return _atk_object_factory_create_accessible(factory, obj);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _atk_object_factory_get_accessible_type (int /*long*/ factory);
 public static final int /*long*/ atk_object_factory_get_accessible_type (int /*long*/ factory) {
 	lock.lock();
