@@ -178,6 +178,9 @@ public class CTabFolder extends Composite {
 	// when disposing CTabFolder, don't try to layout the items or 
 	// change the selection as each child is destroyed.
 	boolean inDispose = false;
+	// do not dispose the items until after the application has processed
+	// the Dispose event
+	boolean ignoreDispose = false;
 
 	// keep track of size changes in order to redraw only affected area
 	// on Resize
@@ -284,7 +287,7 @@ public CTabFolder(Composite parent, int style) {
 	Listener listener = new Listener() {
 		public void handleEvent(Event event) {
 			switch (event.type) {
-				case SWT.Dispose:          onDispose(); break;
+				case SWT.Dispose:          onDispose(event); break;
 				case SWT.DragDetect:       onDragDetect(event); break;
 				case SWT.FocusIn:          onFocus(event);	break;
 				case SWT.FocusOut:         onFocus(event);	break;
@@ -1791,7 +1794,11 @@ void onKeyDown (Event event) {
 			forceFocus();
 	}
 }
-void onDispose() {
+void onDispose(Event event) {
+	if (ignoreDispose) return;
+	ignoreDispose = true;
+	notifyListeners(SWT.Dispose, event);
+	event.type = SWT.None;
 	/*
 	 * Usually when an item is disposed, destroyItem will change the size of the items array, 
 	 * reset the bounds of all the tabs and manage the widget associated with the tab.
