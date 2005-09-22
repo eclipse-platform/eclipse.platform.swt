@@ -117,4 +117,19 @@ public class GLData {
 	 * are preferred.
 	 */
 	public int samples;
+	
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the data
+ */
+public String toString() {
+	return (doubleBuffer ? "doubleBuffer," : "") +
+		(stereo ? "stereo," : "") +
+		"r:" + redSize + " g:" + greenSize + " b:" + blueSize + " a:" + alphaSize + "," +
+		"depth:" + depthSize + ",stencil:" + stencilSize +
+		",accum r:" + accumRedSize + "g:" + accumGreenSize + "b:" + accumBlueSize + "a:" + accumAlphaSize +
+		",sampleBuffers:" + sampleBuffers + ",samples:" + samples;
+}
 }
