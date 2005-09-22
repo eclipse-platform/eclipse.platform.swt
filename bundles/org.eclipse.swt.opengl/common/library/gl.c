@@ -2,7 +2,7 @@
 #include "gl_structs.h"
 #include "gl_stats.h"
 
-#define GL_NATIVE(func) Java_org_eclipse_swt_opengl_GL_##func
+#define GL_NATIVE(func) Java_org_eclipse_opengl_GL_##func
 
 #ifndef NO_glAccum
 JNIEXPORT void JNICALL GL_NATIVE(glAccum)

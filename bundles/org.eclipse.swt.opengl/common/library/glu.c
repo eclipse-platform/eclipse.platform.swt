@@ -2,7 +2,7 @@
 #include "glu_structs.h"
 #include "glu_stats.h"
 
-#define GLU_NATIVE(func) Java_org_eclipse_swt_opengl_GLU_##func
+#define GLU_NATIVE(func) Java_org_eclipse_opengl_GLU_##func
 
 #ifndef NO_gluBeginCurve
 JNIEXPORT void JNICALL GLU_NATIVE(gluBeginCurve)

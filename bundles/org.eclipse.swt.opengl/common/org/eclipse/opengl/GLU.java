@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.opengl;
+package org.eclipse.opengl;
 
 
 public class GLU {

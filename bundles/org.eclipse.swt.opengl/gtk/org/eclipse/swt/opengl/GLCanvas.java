@@ -5,6 +5,7 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.opengl.gtk.*;
+import org.eclipse.opengl.*;
 
 /**
  * GLCanvas is a widget capable of displaying OpenGL content.
@@ -147,6 +148,9 @@ public GLCanvas (Composite parent, int style, GLData data) {
 				break;
 			case SWT.Dispose:
 				if (context != 0) {
+					if (GLX.glXGetCurrentContext () == context) {
+						GLX.glXMakeCurrent(xdisplay, 0, 0);
+					}
 					GLX.glXDestroyContext (xdisplay, context);
 					context = 0;
 				}
