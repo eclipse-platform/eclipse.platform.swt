@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.*;
 
 public class GLCanvas extends Canvas {
 	int context;
+	int pixelFormat;
 
 /**
  * Create a GLCanvas widget using the attributes described in the GLData
@@ -75,7 +76,7 @@ public GLCanvas (Composite parent, int style, GLData data) {
 //	}
 
 	int hDC = OS.GetDC (handle);
-	int pixelFormat = WGL.ChoosePixelFormat (hDC, pfd);
+	pixelFormat = WGL.ChoosePixelFormat (hDC, pfd);
 	if (pixelFormat == 0) {
 		OS.ReleaseDC (handle, hDC);
 		SWT.error (SWT.ERROR_UNSUPPORTED_DEPTH);
@@ -104,6 +105,38 @@ public GLCanvas (Composite parent, int style, GLData data) {
 		}
 	};
 	addListener (SWT.Dispose, listener);
+}
+
+/**
+ * Returns a GLData object describing the created context.
+ *  
+ * @return GLData description of the OpenGL context attributes
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public GLData getGLData () {
+	checkWidget ();
+	GLData data = new GLData ();
+	PIXELFORMATDESCRIPTOR pfd = new PIXELFORMATDESCRIPTOR ();
+	pfd.nSize = (short) PIXELFORMATDESCRIPTOR.sizeof;
+	int hDC = OS.GetDC (handle);
+	WGL.DescribePixelFormat(hDC, pixelFormat, PIXELFORMATDESCRIPTOR.sizeof, pfd);
+	OS.ReleaseDC (handle, hDC);
+	data.doubleBuffer = (pfd.dwFlags & WGL.PFD_DOUBLEBUFFER) != 0;
+	data.stereo = (pfd.dwFlags & WGL.PFD_STEREO) != 0;
+	data.redSize = pfd.cRedBits;
+	data.greenSize = pfd.cGreenBits;
+	data.blueSize = pfd.cBlueBits;
+	data.alphaSize = pfd.cAlphaBits;
+	data.depthSize = pfd.cDepthBits;
+	data.stencilSize = pfd.cStencilBits;
+	data.accumRedSize = pfd.cAccumRedBits;
+	data.accumGreenSize = pfd.cAccumGreenBits;
+	data.accumBlueSize = pfd.cAccumBlueBits;
+	data.accumAlphaSize = pfd.cAccumAlphaBits;
+	return data;
 }
 
 /**
