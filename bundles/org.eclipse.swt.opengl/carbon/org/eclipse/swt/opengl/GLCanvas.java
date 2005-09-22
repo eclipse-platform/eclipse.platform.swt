@@ -16,11 +16,34 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.internal.opengl.carbon.*;
 
+/**
+ * GLCanvas is a widget capable of displaying OpenGL content.
+ */
+
 public class GLCanvas extends Canvas {	
 	int context;
 	int pixelFormat;
 	static final int MAX_ATTRIBUTES = 32;
 
+/**
+ * Create a GLCanvas widget using the attributes described in the GLData
+ * object provided.
+ *
+ * @param parent a composite widget
+ * @param style the bitwise OR'ing of widget styles
+ * @param data the requested attributes of the GLCanvas
+ *
+ * @exception IllegalArgumentException
+ * <ul><li>ERROR_NULL_ARGUMENT when the data is null
+ *     <li>ERROR_UNSUPPORTED_DEPTH when the requested attributes cannot be provided</ul> 
+ * @exception SWTException
+ * <ul><li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread
+ *     <li>ERROR_CANNOT_CREATE_OBJECT when failed to create OLE Object
+ *     <li>ERROR_CANNOT_OPEN_FILE when failed to open file
+ *     <li>ERROR_INTERFACE_NOT_FOUND when unable to create callbacks for OLE Interfaces
+ *     <li>ERROR_INVALID_CLASSID
+ * </ul>
+ */
 public GLCanvas (Composite parent, int style, GLData data) {
 	super (parent, style);
 	if (data == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
@@ -90,6 +113,7 @@ public GLCanvas (Composite parent, int style, GLData data) {
 			switch (event.type) {
 			case SWT.Dispose:
 				AGL.aglDestroyContext (context);
+				//AGL.aglDestroyPixelFormat (pixelFormat);
 				break;
 			case SWT.Resize:
 			case SWT.Hide:
@@ -118,9 +142,9 @@ public GLCanvas (Composite parent, int style, GLData data) {
 }
 
 void fixBounds () {
-	GCData data = new GCData();
-	int gc = internal_new_GC(data);
-	Rect bounds = new Rect();
+	GCData data = new GCData ();
+	int gc = internal_new_GC (data);
+	Rect bounds = new Rect ();
 	OS.GetRegionBounds (data.visibleRgn, bounds);
 	int width = bounds.right - bounds.left;
 	int height = bounds.bottom - bounds.top;
@@ -137,24 +161,95 @@ void fixBounds () {
 	AGL.aglEnable (context, AGL.AGL_BUFFER_RECT);
 	AGL.aglSetInteger (context, AGL.AGL_CLIP_REGION, data.visibleRgn);
 	AGL.aglUpdateContext (context);
-
-	internal_dispose_GC(gc, data);
+	internal_dispose_GC (gc, data);
 }
 
-public void swapBuffers () {
+/**
+ * Returns a GLData object describing the created context.
+ *  
+ * @return GLData description of the OpenGL context attributes
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public GLData getGLData () {
 	checkWidget ();
-	AGL.aglSwapBuffers (context);
+	GLData data = new GLData ();
+	int [] value = new int [1];
+	AGL.aglDescribePixelFormat (pixelFormat, AGL.AGL_DOUBLEBUFFER, value);
+	data.doubleBuffer = value [0] != 0;
+	AGL.aglDescribePixelFormat (pixelFormat, AGL.AGL_STEREO, value);
+	data.stereo = value [0] != 0;
+	AGL.aglDescribePixelFormat (pixelFormat, AGL.AGL_RED_SIZE, value);
+	data.redSize = value [0];
+	AGL.aglDescribePixelFormat (pixelFormat, AGL.AGL_GREEN_SIZE, value);
+	data.greenSize = value [0];
+	AGL.aglDescribePixelFormat (pixelFormat, AGL.AGL_BLUE_SIZE, value);
+	data.blueSize = value [0];
+	AGL.aglDescribePixelFormat (pixelFormat, AGL.AGL_ALPHA_SIZE, value);
+	data.alphaSize = value [0];
+	AGL.aglDescribePixelFormat (pixelFormat, AGL.AGL_DEPTH_SIZE, value);
+	data.depthSize = value [0];
+	AGL.aglDescribePixelFormat (pixelFormat, AGL.AGL_STENCIL_SIZE, value);
+	data.stencilSize = value [0];
+	AGL.aglDescribePixelFormat (pixelFormat, AGL.AGL_ACCUM_RED_SIZE, value);
+	data.accumRedSize = value [0];
+	AGL.aglDescribePixelFormat (pixelFormat, AGL.AGL_ACCUM_GREEN_SIZE, value);
+	data.accumGreenSize = value [0];
+	AGL.aglDescribePixelFormat (pixelFormat, AGL.AGL_ACCUM_BLUE_SIZE, value);
+	data.accumBlueSize = value [0];
+	AGL.aglDescribePixelFormat (pixelFormat, AGL.AGL_ACCUM_ALPHA_SIZE, value);
+	data.accumAlphaSize = value [0];
+	AGL.aglDescribePixelFormat (pixelFormat, AGL.AGL_SAMPLE_BUFFERS_ARB, value);
+	data.sampleBuffers = value [0];
+	AGL.aglDescribePixelFormat (pixelFormat, AGL.AGL_SAMPLES_ARB, value);
+	data.samples = value [0];
+	return data;
 }
 
+/**
+ * Returns a boolean indicating whether the receiver's OpenGL context
+ * is the current context.
+ *  
+ * @return true if the receiver holds the current OpenGL context,
+ * false otherwise
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean isCurrent () {
 	checkWidget ();
 	return AGL.aglGetCurrentContext () == context;
 }
 
+/**
+ * Sets the OpenGL context associated with this GLCanvas to be the
+ * current GL context.
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setCurrent () {
 	checkWidget ();
 	if (AGL.aglGetCurrentContext () != context) {
 		AGL.aglSetCurrentContext (context);
 	}
+}
+
+/**
+ * Swaps the front and back color buffers.
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void swapBuffers () {
+	checkWidget ();
+	AGL.aglSwapBuffers (context);
 }
 }
