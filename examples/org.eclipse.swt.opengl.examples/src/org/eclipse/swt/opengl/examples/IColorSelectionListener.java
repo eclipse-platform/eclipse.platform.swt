@@ -12,7 +12,6 @@ package org.eclipse.swt.opengl.examples;
 
 import org.eclipse.swt.graphics.RGB;
 
- 
 public interface IColorSelectionListener {
 	public void handleColorSelection(RGB rgb);
 }

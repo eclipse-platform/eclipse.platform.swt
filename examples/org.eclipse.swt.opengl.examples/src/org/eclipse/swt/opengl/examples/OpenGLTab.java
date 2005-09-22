@@ -11,6 +11,7 @@
 package org.eclipse.swt.opengl.examples;
 
 
+import org.eclipse.opengl.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
