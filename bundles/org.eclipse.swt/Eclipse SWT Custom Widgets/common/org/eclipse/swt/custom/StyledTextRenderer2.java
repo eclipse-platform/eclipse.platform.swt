@@ -163,7 +163,7 @@ int drawLine(String line, int lineIndex, int paintX, int paintY, GC gc, Color wi
 	}
 	if (lineBackground == null) {
 		lineBackground = widgetBackground;
-	}	
+	}
 	boolean fullSelection = (styledText.getStyle() & SWT.FULL_SELECTION) != 0;
 	if (clearBackground &&
 		(!fullSelection || 
