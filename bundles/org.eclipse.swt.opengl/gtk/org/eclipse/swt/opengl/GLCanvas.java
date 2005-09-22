@@ -11,10 +11,11 @@ import org.eclipse.swt.internal.opengl.gtk.*;
  */
 
 public class GLCanvas extends Canvas {
-	private int /*long*/ xdisplay;
-	private int /*long*/ xid;
-	private int /*long*/ context;
-	private int /*long*/ glWindow;
+	int /*long*/ xdisplay;
+	int /*long*/ xid;
+	int /*long*/ context;
+	int /*long*/ glWindow;
+	XVisualInfo vinfo;
 
 	private static final int MAX_ATTRIBUTES = 32;
 
@@ -102,13 +103,13 @@ public GLCanvas (Composite parent, int style, GLData data) {
 	glxAttrib [pos++] = 0;
 	int infoPtr = GLX.glXChooseVisual (xdisplay, xscreen, glxAttrib);
 	if (infoPtr == 0) SWT.error (SWT.ERROR_UNSUPPORTED_DEPTH);
-	XVisualInfo info = new XVisualInfo ();
-	GLX.memmove (info, infoPtr, XVisualInfo.sizeof);
+	vinfo = new XVisualInfo ();
+	GLX.memmove (vinfo, infoPtr, XVisualInfo.sizeof);
 	OS.XFree (infoPtr);
 	int /*long*/ screen = OS.gdk_screen_get_default ();
-	int /*long*/ gdkvisual = OS.gdk_x11_screen_lookup_visual (screen, info.visualid);
+	int /*long*/ gdkvisual = OS.gdk_x11_screen_lookup_visual (screen, vinfo.visualid);
 	//context = GLX.glXCreateContext (xdisplay, info, share == null ? 0 : share.context, true);
-	context = GLX.glXCreateContext (xdisplay, info, 0, true);
+	context = GLX.glXCreateContext (xdisplay, vinfo, 0, true);
 	if (context == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	GdkWindowAttr attrs = new GdkWindowAttr ();
 	attrs.width = 1;
@@ -160,6 +161,50 @@ public GLCanvas (Composite parent, int style, GLData data) {
 	addListener (SWT.Resize, listener);
 	addListener (SWT.Paint, listener);
 	addListener (SWT.Dispose, listener);
+}
+
+/**
+ * Returns a GLData object describing the created context.
+ *  
+ * @return GLData description of the OpenGL context attributes
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public GLData getGLData () {
+	checkWidget ();
+	GLData data = new GLData ();
+	int [] value = new int [1];
+	GLX.glXGetConfig (xdisplay, vinfo, GLX.GLX_DOUBLEBUFFER, value);
+	data.doubleBuffer = value [0] != 0;
+	GLX.glXGetConfig (xdisplay, vinfo, GLX.GLX_STEREO, value);
+	data.stereo = value [0] != 0;
+	GLX.glXGetConfig (xdisplay, vinfo, GLX.GLX_RED_SIZE, value);
+	data.redSize = value [0];
+	GLX.glXGetConfig (xdisplay, vinfo, GLX.GLX_GREEN_SIZE, value);
+	data.greenSize = value [0];
+	GLX.glXGetConfig (xdisplay, vinfo, GLX.GLX_BLUE_SIZE, value);
+	data.blueSize = value [0];
+	GLX.glXGetConfig (xdisplay, vinfo, GLX.GLX_ALPHA_SIZE, value);
+	data.alphaSize = value [0];
+	GLX.glXGetConfig (xdisplay, vinfo, GLX.GLX_DEPTH_SIZE, value);
+	data.depthSize = value [0];
+	GLX.glXGetConfig (xdisplay, vinfo, GLX.GLX_STENCIL_SIZE, value);
+	data.stencilSize = value [0];
+	GLX.glXGetConfig (xdisplay, vinfo, GLX.GLX_ACCUM_RED_SIZE, value);
+	data.accumRedSize = value [0];
+	GLX.glXGetConfig (xdisplay, vinfo, GLX.GLX_ACCUM_GREEN_SIZE, value);
+	data.accumGreenSize = value [0];
+	GLX.glXGetConfig (xdisplay, vinfo, GLX.GLX_ACCUM_BLUE_SIZE, value);
+	data.accumBlueSize = value [0];
+	GLX.glXGetConfig (xdisplay, vinfo, GLX.GLX_ACCUM_ALPHA_SIZE, value);
+	data.accumAlphaSize = value [0];
+	GLX.glXGetConfig (xdisplay, vinfo, GLX.GLX_SAMPLE_BUFFERS, value);
+	data.sampleBuffers = value [0];
+	GLX.glXGetConfig (xdisplay, vinfo, GLX.GLX_SAMPLES, value);
+	data.samples = value [0];
+	return data;
 }
 
 /**
