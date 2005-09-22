@@ -154,6 +154,7 @@ public class StyledText2 extends Canvas {
 	boolean advancing = true;
 	Caret defaultCaret = null;
 	boolean updateCaretDirection = true;
+	int partialHeight;						// amount, in pixels, of the partial top index that is visible
 
 	final static boolean IS_CARBON, IS_GTK, IS_MOTIF;
 	final static boolean DOUBLE_BUFFER;
@@ -1130,7 +1131,6 @@ public class StyledText2 extends Canvas {
 				rect = layout.getBounds();
 				lineWidth[i] = rect.width + hTrim;
 				lineHeight[i] = rect.height;
-				renderer.disposeTextLayout(layout);
 			}
 			if (lineWidth[i] > maxWidth) {
 				maxWidth = lineWidth[i];
@@ -1731,7 +1731,7 @@ void calculateScrollBars() {
  * topmost partially visible line if no line is fully visible.
  * The top index starts at 0.
  */
-void calculateTopIndex() {
+void calculateTopIndex(int delta) {
 	int oldTopIndex = topIndex;	
 	if (isFixedLineHeight()) {
 		int verticalIncrement = getVerticalIncrement();
@@ -1759,20 +1759,60 @@ void calculateTopIndex() {
 			}
 		}
 	} else {
-		Rectangle clientArea = getClientArea();
-		topIndex = getLineIndex(clientArea.y);
-		int linePixel = getLinePixel(topIndex);
-		if (linePixel < 0) {
-			int lineCount = content.getLineCount();
-			if (topIndex < lineCount - 1) {
-				int bottom = getLinePixel(topIndex + 1);
-				bottom = lineCache.getLineHeight(topIndex + 1);
-				if (clientArea.height >= bottom) {
-					topIndex++;
-				}
+//		Rectangle clientArea = getClientArea();
+//		topIndex = getLineIndex(clientArea.y);
+//		int linePixel = getLinePixel(topIndex);
+//		if (linePixel < 0) {
+//			int lineCount = content.getLineCount();
+//			if (topIndex < lineCount - 1) {
+//				int bottom = getLinePixel(topIndex + 1);
+//				bottom = lineCache.getLineHeight(topIndex + 1);
+//				if (clientArea.height >= bottom) {
+//					topIndex++;
+//				}
+//			}
+//		}
+		if (delta > 0) {
+			if (partialHeight > delta) {
+				partialHeight -= delta;
+				return;
 			}
-		} 
-	}	
+			delta -= partialHeight;
+			partialHeight = 0;
+			
+			int lineCount = content.getLineCount();
+			while (delta > 0 && topIndex < lineCount -1) {
+				int lineHeight = lineCache.getLineHeight(topIndex);
+				topIndex++;
+				if (lineHeight > delta) {
+					partialHeight = lineHeight - delta;
+					break;
+				}
+				delta -= lineHeight;
+			}
+		} else {
+			if (topIndex > 0) {
+				int height = lineCache.getLineHeight(topIndex - 1) - partialHeight;
+				if (height > -delta) {
+					partialHeight -= delta;
+					return;
+				}
+				delta += height;
+				partialHeight = 0;
+				topIndex--;
+			}
+			//delta == zero, topIndex--, end
+			while (-delta > 0 && topIndex > 0) {
+				int lineHeight = lineCache.getLineHeight(topIndex - 1);
+				if (lineHeight > -delta) {
+					partialHeight = -delta;
+					break;
+				}
+				topIndex--;
+				delta += lineHeight;
+			}
+		}
+	}
 	if (topIndex != oldTopIndex) {
 		topOffset = content.getOffsetAtLine(topIndex);
 		lineCache.calculateClientArea();
@@ -3496,14 +3536,32 @@ int getLinePixel(int lineIndex) {
 	if (lineIndex > lineCount) {
 		lineIndex = lineCount;
 	}
+	if (lineIndex < 0) {
+		lineIndex = 0;
+	}
 	if (isFixedLineHeight()) {
 		return lineIndex * lineHeight - verticalScrollOffset;
 	}
-	int height = 0;
-	for (int i = 0; i < lineIndex; i++) {
-		height += lineCache.getLineHeight(i);
+//	if (true) {
+//	int height = 0;
+//	for (int i = 0; i < lineIndex; i++) {
+//		height += lineCache.getLineHeight(i);
+//	}
+//	return height - verticalScrollOffset;
+//	}
+	
+	if (lineIndex == topIndex) return partialHeight;
+	int height = partialHeight;
+	if (lineIndex > topIndex) {
+		for (int i = topIndex; i < lineIndex; i++) {
+			height += lineCache.getLineHeight(i);
+		}
+	} else {
+		for (int i = topIndex - 1; i >= lineIndex; i--) {
+			height -= lineCache.getLineHeight(i);
+		}
 	}
-	return height - verticalScrollOffset;
+	return height;
 }
 /*
  * Returns the line index for a y, relative to the client area.
@@ -3517,15 +3575,41 @@ int getLineIndex(int y) {
 		}
 		return lineIndex;
 	}
-	y += verticalScrollOffset;
-	int lineIndex = 0, height = 0;	
-	int lineCount = content.getLineCount();	
-	while (lineCount > lineIndex) {
-		height += lineCache.getLineHeight(lineIndex);
-		if (height > y) break;
-		lineIndex++;
+//	if (true) {
+//	y += verticalScrollOffset;
+//	int lineIndex = 0, height = 0;	
+//	int lineCount = content.getLineCount();	
+//	while (lineCount > lineIndex) {
+//		height += lineCache.getLineHeight(lineIndex);
+//		if (height > y) break;
+//		lineIndex++;
+//	}
+//	return Math.min(lineCount - 1, lineIndex);
+//	}
+	
+	if (y < 0) {
+		int line = topIndex;
+		if (topIndex > 0) {
+			line--;
+			y += lineCache.getLineHeight(line) - partialHeight;
+			while (y < 0 && line > 0) {
+				line--;
+				y += lineCache.getLineHeight(line);
+			}
+		}
+		return line;
 	}
-	return Math.min(lineCount - 1, lineIndex);
+	if (partialHeight > y) return topIndex - 1;
+	y -= partialHeight;
+	int line = topIndex;
+	int lineCount = content.getLineCount();
+	while (line < lineCount - 1) {
+		int lineHeight = lineCache.getLineHeight(line);
+		if (lineHeight > y) break;
+		y -= lineHeight;
+		line++;
+	}
+	return line;
 }
 /**
  * Returns the x, y location of the upper left corner of the character 
@@ -7256,11 +7340,11 @@ boolean setVerticalScrollOffset(int pixelOffset, boolean adjustScrollBar) {
 		0, pixelOffset - verticalScrollOffset,	// source x, y
 		clientArea.width, clientArea.height, true);
 
-	verticalScrollOffset = pixelOffset;
-	calculateTopIndex();
+	int delta = pixelOffset - verticalScrollOffset;
+	verticalScrollOffset = pixelOffset;	
+	calculateTopIndex(delta);
 	int oldColumnX = columnX;
 	setCaretLocation();
-	// restore the original horizontal caret index
 	columnX = oldColumnX;
 	return true;
 }
