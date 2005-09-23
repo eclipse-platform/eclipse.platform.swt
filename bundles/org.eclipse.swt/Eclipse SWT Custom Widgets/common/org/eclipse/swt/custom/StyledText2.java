@@ -1118,7 +1118,7 @@ public class StyledText2 extends Canvas {
 		if (startLine < 0 || endLine > lineWidth.length) {
 			return;
 		}
-		int hTrim = parent.leftMargin + parent.rightMargin + parent.getCaretWidth();
+		int hTrim = parent.leftMargin + parent.rightMargin;
 		StyledTextRenderer2 renderer = parent.renderer;
 		StyledTextContent content = parent.content;
 		TextLayout layout;
@@ -2470,8 +2470,8 @@ void doLineDown(boolean select) {
 		TextLayout layout = renderer.getTextLayout(line, lineOffset);
 		if (layout.getLineCount() > 0) {
 			Point pos = getCaret().getLocation();
-			pos.x += columnX; //horizontalScrollOffset - rightMargin;
-			pos.y -= getLinePixel(caretLine) + topMargin;
+			pos.x = columnX + horizontalScrollOffset;
+			pos.y -= getLinePixel(caretLine);
 			int offset = layout.getOffset(pos, null);
 			int lineInParagraph = layout.getLineIndex(offset);
 			if (lineInParagraph < layout.getLineCount() - 1) {
@@ -2546,9 +2546,8 @@ void doLineUp(boolean select) {
 		TextLayout layout = renderer.getTextLayout(line, lineOffset);
 		if (layout.getLineCount() > 0) {
 			Point pos = getCaret().getLocation();
-			pos.x = columnX;
-			pos.x += horizontalScrollOffset - rightMargin;
-			pos.y -= getLinePixel(caretLine) + topMargin;
+			pos.x = columnX + horizontalScrollOffset;
+			pos.y -= getLinePixel(caretLine);
 			int offset = layout.getOffset(pos, null);
 			int lineInParagraph = layout.getLineIndex(offset);
 			if (lineInParagraph > 0) {
@@ -3071,7 +3070,7 @@ void doWordPrevious() {
  */
 void draw(int x, int y, int width, int height, boolean clearBackground) {
 	if (clearBackground) {
-		redraw(x + leftMargin, y + topMargin, width, height, true);
+		redraw(x, y, width, height, true);
 	} else {
 		int startLine = getLineIndex(y);
 		int endY = y + height;
@@ -3524,7 +3523,7 @@ int getLinePixel(int lineIndex) {
 		lineIndex = 0;
 	}
 	if (isFixedLineHeight()) {
-		return lineIndex * lineHeight - verticalScrollOffset;
+		return lineIndex * lineHeight - verticalScrollOffset + topMargin;
 	}
 //	if (true) {
 //	int height = 0;
@@ -3534,7 +3533,7 @@ int getLinePixel(int lineIndex) {
 //	return height - verticalScrollOffset;
 //	}
 	
-	if (lineIndex == topIndex) return partialHeight;
+	if (lineIndex == topIndex) return partialHeight + topMargin;
 	int height = partialHeight;
 	if (lineIndex > topIndex) {
 		for (int i = topIndex; i < lineIndex; i++) {
@@ -3545,12 +3544,13 @@ int getLinePixel(int lineIndex) {
 			height -= lineCache.getLineHeight(i);
 		}
 	}
-	return height;
+	return height + topMargin;
 }
 /*
  * Returns the line index for a y, relative to the client area.
  */
 int getLineIndex(int y) {
+	y -= topMargin;
 	if (isFixedLineHeight()) {
 		int lineIndex = (y + verticalScrollOffset) / lineHeight;
 		int lineCount = content.getLineCount();
@@ -3720,8 +3720,8 @@ int getOffsetAtPoint(int x, int y) {
 	String line = content.getLine(lineIndex);
 	int lineOffset = content.getOffsetAtLine(lineIndex);
 	TextLayout layout = renderer.getTextLayout(line, lineOffset);
-	x = x - leftMargin + horizontalScrollOffset;
-	y = y - topMargin - getLinePixel(lineIndex);
+	x += horizontalScrollOffset - leftMargin;
+	y -= getLinePixel(lineIndex);
 	int[] trailing = new int[1];
 	int offsetInLine = layout.getOffset(x, y, trailing);
 	advancing = false;
@@ -4525,8 +4525,8 @@ Point getPointAtOffset(String line, int lineIndex, int offsetInLine) {
 		point = new Point(0, 0);
 	}
 	point.x += leftMargin - horizontalScrollOffset;
-	point.y += getLinePixel(lineIndex) + topMargin;
-	return point; 
+	point.y += getLinePixel(lineIndex);
+	return point;
 }
 /** 
  * Inserts a string.  The old selection is replaced with the new text.  
@@ -4867,7 +4867,6 @@ void handleMouseDoubleClick(Event event) {
 	if (event.button != 1 || !doubleClickEnabled) {
 		return;
 	}
-	event.y -= topMargin;
 	mouseDoubleClick = true;
 	caretOffset = getWordStart(caretOffset);
 	resetSelection();
@@ -4911,7 +4910,6 @@ void handleMouseMove(Event event) {
 	if ((event.stateMask & SWT.BUTTON1) == 0) {
 		return;
 	}
-	event.y -= topMargin;
 	doMouseLocationChange(event.x, event.y, true);
 	update();
 	doAutoScroll(event);
@@ -4922,7 +4920,6 @@ void handleMouseMove(Event event) {
 void handleMouseUp(Event event) {
 	mouseDown = false;
 	mouseDoubleClick = false;
-	event.y -= topMargin;
 	endAutoScroll();
 	if (event.button == 1) {
 		try {
@@ -4949,7 +4946,7 @@ void handleMouseUp(Event event) {
 void handlePaint(Event event) {
 	// Check if there is work to do
 	if (event.height == 0) return;
-	int startLine = getLineIndex(event.y - topMargin);
+	int startLine = getLineIndex(event.y);
 	int startY = getLinePixel(startLine);
 	int renderHeight = event.y + event.height - startY;
 	performPaint(event.gc, startLine, startY, renderHeight);
@@ -5035,7 +5032,7 @@ void handleTextChanged(TextChangedEvent event) {
 	// optimization and fixes bug 13999. see also handleTextChanging.
 	if (lastTextChangeNewLineCount == 0 && lastTextChangeReplaceLineCount == 0) {
 		int startLine = content.getLineAtOffset(lastTextChangeStart);
-		int startY = getLinePixel(startLine) + topMargin;
+		int startY = getLinePixel(startLine);
 		int height = lineCache.getLineHeight(startLine);
 		if (DOUBLE_BUFFER) {
 			GC gc = getGC();
@@ -5080,7 +5077,7 @@ void handleTextChanging(TextChangingEvent event) {
 	lastTextChangeReplaceLineCount = event.replaceLineCount;
 	lastTextChangeReplaceCharCount = event.replaceCharCount;
 	int firstLine = content.getLineAtOffset(event.start);
-	int textChangeY = getLinePixel(firstLine) + topMargin;
+	int textChangeY = getLinePixel(firstLine);
 	if (isMultiLineChange) {
 		redrawMultiLineChange(textChangeY, event.newLineCount, event.replaceLineCount);
 	}
@@ -5719,7 +5716,7 @@ void redrawLines(int firstLine, int offsetInFirstLine, int lastLine, int endOffs
 		fullLineRedraw = true;
 	}
 	renderer.disposeTextLayout(layout);
-	rect.x -= horizontalScrollOffset;
+	rect.x -= horizontalScrollOffset + leftMargin;
 	rect.intersect(clientArea);
 	fullLineRedraw = true;
 	int redrawY = getLinePixel(firstLine);
@@ -5743,7 +5740,7 @@ void redrawLines(int firstLine, int offsetInFirstLine, int lastLine, int endOffs
 			layout = renderer.getTextLayout(line, lineOffset);
 			rect = layout.getBounds(0, offsetInLastLine - 1);
 			renderer.disposeTextLayout(layout);
-			rect.x -= horizontalScrollOffset;
+			rect.x -= horizontalScrollOffset + leftMargin;
 			rect.intersect(clientArea);
 			redrawY = getLinePixel(lastLine);
 			redrawWidth = fullLineRedraw ? clientArea.width - leftMargin - rightMargin : rect.width;
@@ -6713,10 +6710,17 @@ public void setLineBackground(int startLine, int lineCount, Color background) {
 		lineCount = partialBottomIndex - startLine + 1;
 	}
 	startLine -= topIndex;
-	int redrawTop = getLinePixel(startLine) + topMargin;
-	int redrawBottom = getLinePixel(startLine + lineCount) + topMargin;
+	int redrawTop = getLinePixel(startLine);
+	int redrawBottom = getLinePixel(startLine + lineCount);
 	int redrawWidth = getClientArea().width - leftMargin - rightMargin; 
 	super.redraw(leftMargin, redrawTop, redrawWidth, redrawBottom - redrawTop, true);
+}
+public void setMargins (int leftMargin, int topMargin, int rightMargin, int bottomMargin) {
+	checkWidget();
+	this.leftMargin = leftMargin;
+	this.topMargin = topMargin;
+	this.rightMargin = rightMargin;
+	this.bottomMargin = bottomMargin;
 }
 /**
  * Flips selection anchor based on word selection direction.
@@ -7441,7 +7445,7 @@ boolean isBidiCaret() {
 	return BidiUtil.isBidiPlatform();
 }
 boolean isFixedLineHeight() {
-	if (true) return true;
+	if (true) return false;
 	return !wordWrap;
 }
 /**
