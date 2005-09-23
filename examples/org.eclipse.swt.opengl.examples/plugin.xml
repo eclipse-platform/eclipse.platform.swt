@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="org.eclipse.swt.opengl.examples"
+   name="%plugin.OpenGLExampleSet.name"
+   version="3.1.0"
+   provider-name="%providerName"
+   class="">
+
+<!-- Required plugins -->
+<requires>
+   <import plugin="org.eclipse.swt"/>
+   <import plugin="org.eclipse.swt.opengl"/>
+</requires>
+
+<!-- Runtime -->
+<runtime>
+   <library name="swtexamples.jar">
+      <export name="*"/>
+   </library>
+</runtime>
+
+<!-- Extensions -->
+<!-- Extension points -->
+<extension
+      point="org.eclipse.swt.examples.launcher.launchItems">
+   <category
+         name="%launchcategory.OpenGLExamples.name"
+         description="%launchcategory.OpenGLExamples.description"
+         id="org.eclipse.swt.examples.launchOpenGLCategory">
+   </category>
+   <item
+         name="%launchitem.OpenGLExample.name"
+         description="%launchitem.OpenGLExample.description"
+         category="org.eclipse.swt.examples.launchOpenGLCategory"
+         id="org.eclipse.swt.opengl.examples.OpenGLExample.standalonelauncher">
+      <program
+            pluginId="org.eclipse.swt.opengl.examples"
+            mainClass="org.eclipse.swt.opengl.examples.OpenGLExample">
+      </program>
+   </item>
+</extension>
+</plugin>
