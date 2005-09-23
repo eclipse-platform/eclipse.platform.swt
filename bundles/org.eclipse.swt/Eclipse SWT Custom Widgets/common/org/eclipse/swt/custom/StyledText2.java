@@ -1098,7 +1098,7 @@ public class StyledText2 extends Canvas {
 	 */
 	public LineCache (StyledText2 parent) {
 		this.parent = parent;
-		this.lineCount = parent.content.getLineCount();
+		lineCount = parent.content.getLineCount();
 		lineWidth = new int[lineCount];
 		lineHeight = new int[lineCount];
 		reset(0, lineCount, false);
@@ -1151,21 +1151,6 @@ public class StyledText2 extends Canvas {
 			calculate(index, 1);
 			y += lineHeight[index++];
 		}
-	}
-	/**
-	 * Measures the width of the given line.
-	 * <p>
-	 * 
-	 * @param line the line to measure
-	 * @param lineOffset start offset of the line to measure, relative 
-	 * 	to the start of the document
-	 * @return the width of the given line
-	 */
-	int contentWidth(String line, int lineOffset) {
-		TextLayout layout = parent.renderer.getTextLayout(line, lineOffset);
-		Rectangle rect = layout.getLineBounds(0);
-		parent.renderer.disposeTextLayout(layout);
-		return rect.x + rect.width + parent.leftMargin + parent.rightMargin;
 	}
 	/**
 	 * Grows the <code>lineWidth</code> array to accomodate new line width
@@ -1315,10 +1300,8 @@ public class StyledText2 extends Canvas {
 	 * @param startOffset	the start offset of the text change
 	 * @param newLineCount the number of inserted lines
 	 * @param replaceLineCount the number of deleted lines
-	 * @param newCharCount the number of new characters
-	 * @param replaceCharCount the number of deleted characters
 	 */  
-	public void textChanged(int startOffset, int newLineCount, int replaceLineCount, int newCharCount, int replaceCharCount) {
+	public void textChanged(int startOffset, int newLineCount, int replaceLineCount) {
 		int startLine = parent.getLineAtOffset(startOffset);
 		boolean removedMaxLine = (maxWidthLineIndex > startLine && maxWidthLineIndex <= startLine + replaceLineCount);
 		// entire text deleted?
@@ -5022,9 +5005,7 @@ void handleResize(Event event) {
 void handleTextChanged(TextChangedEvent event) {
 	lineCache.textChanged(lastTextChangeStart, 
 		lastTextChangeNewLineCount, 
-		lastTextChangeReplaceLineCount,
-		lastTextChangeNewCharCount,
-		lastTextChangeReplaceCharCount);
+		lastTextChangeReplaceLineCount);
 	setScrollBars(true);
 	// update selection/caret location after styles have been changed.
 	// otherwise any text measuring could be incorrect
@@ -7460,7 +7441,7 @@ boolean isBidiCaret() {
 	return BidiUtil.isBidiPlatform();
 }
 boolean isFixedLineHeight() {
-	if (true) return false;
+	if (true) return true;
 	return !wordWrap;
 }
 /**
