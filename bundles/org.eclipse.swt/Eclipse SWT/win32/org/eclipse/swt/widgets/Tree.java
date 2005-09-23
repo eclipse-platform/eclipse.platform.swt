@@ -3390,36 +3390,38 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 	lpht.x = (short) (lParam & 0xFFFF);
 	lpht.y = (short) (lParam >> 16);
 	OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
-	if ((style & SWT.CHECK) != 0) {
-		if ((lpht.flags & OS.TVHT_ONITEMSTATEICON) != 0) {
-			sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam);
-			sendMouseEvent (SWT.MouseDoubleClick, 1, handle, OS.WM_LBUTTONDBLCLK, wParam, lParam);
-			if (OS.GetCapture () != handle) OS.SetCapture (handle);
-			TVITEM tvItem = new TVITEM ();
-			tvItem.hItem = lpht.hItem;
-			tvItem.mask = OS.TVIF_PARAM | OS.TVIF_STATE;	
-			tvItem.stateMask = OS.TVIS_STATEIMAGEMASK;
-			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-			int state = tvItem.state >> 12;
-			if ((state & 0x1) != 0) {
-				state++;
-			} else  {
-				--state;
-			}
-			tvItem.state = state << 12;
-			OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
-			if (!OS.IsWinCE) {	
-				int id = tvItem.hItem;
-				if (OS.COMCTL32_MAJOR >= 6) {
-					id = OS.SendMessage (handle, OS.TVM_MAPHTREEITEMTOACCID, tvItem.hItem, 0);
+	if (lpht.hItem != 0) {
+		if ((style & SWT.CHECK) != 0) {
+			if ((lpht.flags & OS.TVHT_ONITEMSTATEICON) != 0) {
+				sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam);
+				sendMouseEvent (SWT.MouseDoubleClick, 1, handle, OS.WM_LBUTTONDBLCLK, wParam, lParam);
+				if (OS.GetCapture () != handle) OS.SetCapture (handle);
+				TVITEM tvItem = new TVITEM ();
+				tvItem.hItem = lpht.hItem;
+				tvItem.mask = OS.TVIF_PARAM | OS.TVIF_STATE;	
+				tvItem.stateMask = OS.TVIS_STATEIMAGEMASK;
+				OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+				int state = tvItem.state >> 12;
+				if ((state & 0x1) != 0) {
+					state++;
+				} else  {
+					--state;
 				}
-				OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, handle, OS.OBJID_CLIENT, id);	
+				tvItem.state = state << 12;
+				OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+				if (!OS.IsWinCE) {	
+					int id = tvItem.hItem;
+					if (OS.COMCTL32_MAJOR >= 6) {
+						id = OS.SendMessage (handle, OS.TVM_MAPHTREEITEMTOACCID, tvItem.hItem, 0);
+					}
+					OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, handle, OS.OBJID_CLIENT, id);	
+				}
+				Event event = new Event ();
+				event.item = items [tvItem.lParam];
+				event.detail = SWT.CHECK;
+				postEvent (SWT.Selection, event);
+				return LRESULT.ZERO;
 			}
-			Event event = new Event ();
-			event.item = items [tvItem.lParam];
-			event.detail = SWT.CHECK;
-			postEvent (SWT.Selection, event);
-			return LRESULT.ZERO;
 		}
 	}
 	LRESULT result = super.WM_LBUTTONDBLCLK (wParam, lParam);
