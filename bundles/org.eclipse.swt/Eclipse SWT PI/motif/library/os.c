@@ -315,6 +315,18 @@ fail:
 }
 #endif
 
+#ifndef NO__1XCreateColormap
+JNIEXPORT jint JNICALL OS_NATIVE(_1XCreateColormap)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1XCreateColormap_FUNC);
+	rc = (jint)XCreateColormap(arg0, arg1, arg2, arg3);
+	OS_NATIVE_EXIT(env, that, _1XCreateColormap_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1XCreateFontCursor
 JNIEXPORT jint JNICALL OS_NATIVE(_1XCreateFontCursor)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -763,6 +775,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1XFree)
 	OS_NATIVE_ENTER(env, that, _1XFree_FUNC);
 	rc = (jint)XFree((char *)arg0);
 	OS_NATIVE_EXIT(env, that, _1XFree_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1XFreeColormap
+JNIEXPORT jint JNICALL OS_NATIVE(_1XFreeColormap)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1XFreeColormap_FUNC);
+	rc = (jint)XFreeColormap(arg0, arg1);
+	OS_NATIVE_EXIT(env, that, _1XFreeColormap_FUNC);
 	return rc;
 }
 #endif

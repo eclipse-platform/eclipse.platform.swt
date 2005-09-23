@@ -52,6 +52,7 @@ public class OS extends Platform {
 	/** Constants */
 	public static final int Above = 0;
 	public static final int AllPlanes = 0xFFFFFFFF;
+	public static final int AllocNone = 0;
 	public static final int Below = 1;
 	public static final int Button1Mask = (1<<8);
 	public static final int Button2Mask = (1<<9);
@@ -68,6 +69,7 @@ public class OS extends Platform {
 	public static final int Button5MotionMask = 1 << 12;
 	public static final int CWBackPixmap = 0x1;
 	public static final int CWBitGravity = 0x10;
+	public static final int CWColormap = 1 << 13;
 	public static final int CWCursor = 0x4000;
 	public static final int CWDontPropagate = 0x1000;
 	public static final int CWEventMask = 0x800;
@@ -575,6 +577,7 @@ public class OS extends Platform {
 	public static final int XmNverifyBell = malloc ("verifyBell", 1);
 	public static final int XmNverticalScrollBar = malloc ("verticalScrollBar", 4);
 	public static final int XmNvisibleItemCount = malloc ("visibleItemCount", 4);
+	public static final int XmNvisual = malloc ("visual", 4);
 	public static final int XmNUMERIC = 0x3;
 	public static final int XmNwidth = malloc ("width", 2);
 	public static final int XmNwordWrap = malloc ("wordWrap", 1);
@@ -946,6 +949,15 @@ public static final int XCreateBitmapFromData(int display, int drawable, byte[] 
 		lock.unlock();
 	}
 }
+public static final native int _XCreateColormap(int display, int window, int visual, int alloc);
+public static final int XCreateColormap(int display, int window, int visual, int alloc) {
+	lock.lock();
+	try {
+		return _XCreateColormap(display, window, visual, alloc);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int _XCreateFontCursor(int display, int shape);
 public static final int XCreateFontCursor(int display, int shape) {
 	lock.lock();
@@ -1275,6 +1287,15 @@ public static final int XFree(int address) {
 	lock.lock();
 	try {
 		return _XFree(address);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int _XFreeColormap(int display, int colormap);
+public static final int XFreeColormap(int display, int colormap) {
+	lock.lock();
+	try {
+		return _XFreeColormap(display, colormap);
 	} finally {
 		lock.unlock();
 	}

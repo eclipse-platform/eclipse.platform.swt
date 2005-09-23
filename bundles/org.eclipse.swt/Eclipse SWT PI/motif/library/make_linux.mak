@@ -77,7 +77,13 @@ MOZILLACFLAGS = -O \
 	${SWT_PTR_CFLAGS}
 MOZILLALIBS = -shared -s -Wl,--version-script=mozilla_exports -Bsymbolic ${GECKO_LIBS}
 
-all: make_swt make_awt make_gnome make_gtk
+GLX_PREFIX = swt-glx
+GLX_LIB = lib$(GLX_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+GLX_OBJECTS = swt.o glx.o glx_structs.o glx_stats.o
+GLXCFLAGS = 
+GLXLIBS = -shared -fpic -fPIC -L/usr/X11R6/lib -lGL -lGLU -lm
+
+all: make_swt make_awt make_gnome make_gtk make_glx
 
 make_swt: $(SWT_LIB)
 
@@ -147,6 +153,21 @@ xpcom_custom.o: xpcom_custom.cpp
 	$(CXX) $(MOZILLACFLAGS) -c xpcom_custom.cpp
 xpcom_stats.o: xpcom_stats.cpp
 	$(CXX) $(MOZILLACFLAGS) -c xpcom_stats.cpp	
+
+make_glx: $(GLX_LIB)
+
+$(GLX_LIB): $(GLX_OBJECTS)
+	$(LD) $(LIBS) $(GLXLIBS) -o $(GLX_LIB) $(GLX_OBJECTS)
+
+glx.o: glx.c 
+	$(CC) $(CFLAGS) $(GLXCFLAGS) -c glx.c
+
+glx_structs.o: glx_structs.c 
+	$(CC) $(CFLAGS) $(GLXCFLAGS) -c glx_structs.c
+	
+glx_stats.o: glx_stats.c glx_stats.h
+	$(CC) $(CFLAGS) $(GLXCFLAGS) -c glx_stats.c
+
 
 install: all
 	cp *.so $(OUTPUT_DIR)

@@ -35,5 +35,8 @@
     <classpathentry kind="src" path="Eclipse SWT Browser/common"/>
     <classpathentry kind="src" path="Eclipse SWT Browser/motif"/>
     <classpathentry kind="src" path="Eclipse SWT Mozilla/common"/>
+    <classpathentry kind="src" path="Eclipse SWT OpenGL/emulated"/>
+    <classpathentry kind="src" path="Eclipse SWT OpenGL/glx"/>
+    <classpathentry kind="src" path="Eclipse SWT OpenGL/common"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>

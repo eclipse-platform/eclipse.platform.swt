@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 459;
-int OS_nativeFunctionCallCount[459];
+int OS_nativeFunctionCount = 461;
+int OS_nativeFunctionCallCount[461];
 char * OS_nativeFunctionNames[] = {
 	"CODESET",
 	"FD_1ISSET",
@@ -43,6 +43,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1XCopyArea",
 	"_1XCopyPlane",
 	"_1XCreateBitmapFromData",
+	"_1XCreateColormap",
 	"_1XCreateFontCursor",
 	"_1XCreateGC",
 	"_1XCreateImage",
@@ -80,6 +81,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1XFlush",
 	"_1XFontsOfFontSet",
 	"_1XFree",
+	"_1XFreeColormap",
 	"_1XFreeColors",
 	"_1XFreeCursor",
 	"_1XFreeFont",

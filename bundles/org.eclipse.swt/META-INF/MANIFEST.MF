@@ -15,6 +15,7 @@ Export-Package:
  org.eclipse.swt.events,
  org.eclipse.swt.graphics,
  org.eclipse.swt.layout,
+ org.eclipse.swt.opengl,
  org.eclipse.swt.printing,
  org.eclipse.swt.program,
  org.eclipse.swt.widgets,

@@ -24,6 +24,7 @@ CAIRO_PREFIX = swt-cairo
 ATK_PREFIX = swt-atk
 GNOME_PREFIX = swt-gnome
 MOZILLA_PREFIX = swt-mozilla
+GLX_PREFIX = swt-glx
 SWT_LIB = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 AWT_LIB = lib$(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 SWTPI_LIB = lib$(SWTPI_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
@@ -31,6 +32,7 @@ CAIRO_LIB = lib$(CAIRO_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 ATK_LIB = lib$(ATK_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 GNOME_LIB = lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 MOZILLA_LIB = lib$(MOZILLA_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+GLX_LIB = lib$(GLX_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 
 CAIROCFLAGS = `pkg-config --cflags cairo`
 CAIROLIBS = `pkg-config --libs-only-L cairo` -lcairo
@@ -46,6 +48,9 @@ ATKLIBS = `pkg-config --libs-only-L atk gtk+-2.0` -latk-1.0 -lgtk-x11-2.0
 
 GNOMECFLAGS = `pkg-config --cflags gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0`
 GNOMELIBS = `pkg-config --libs-only-L gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0` -lgnomevfs-2 -lgnome-2 -lgnomeui-2
+
+GLXCFLAGS = 
+GLXLIBS = -shared -fpic -fPIC -L/usr/X11R6/lib -lGL -lGLU -lm
 
 # Uncomment for Native Stats tool
 #NATIVE_STATS = -DNATIVE_STATS
@@ -74,6 +79,7 @@ CAIRO_OBJECTS = swt.o cairo.o cairo_structs.o cairo_stats.o
 ATK_OBJECTS = swt.o atk.o atk_structs.o atk_custom.o atk_stats.o
 GNOME_OBJECTS = swt.o gnome.o gnome_structs.o gnome_stats.o
 MOZILLA_OBJECTS = swt.o xpcom.o xpcom_custom.o xpcom_structs.o xpcom_stats.o
+GLX_OBJECTS = swt.o glx.o glx_structs.o glx_stats.o
  
 CFLAGS = -O -Wall \
 		-DSWT_VERSION=$(SWT_VERSION) \
@@ -86,7 +92,7 @@ CFLAGS = -O -Wall \
 LIBS = -shared -fpic -s
 
 
-all: make_swt make_atk make_gnome make_awt
+all: make_swt make_atk make_gnome make_awt make_glx
 
 #
 # SWT libs
@@ -189,6 +195,23 @@ xpcom_custom.o: xpcom_custom.cpp
 
 xpcom_stats.o: xpcom_stats.cpp
 	$(CXX) $(MOZILLACFLAGS) -c xpcom_stats.cpp	
+
+#
+# GLX lib
+#
+make_glx: $(GLX_LIB)
+
+$(GLX_LIB): $(GLX_OBJECTS)
+	$(LD) $(LIBS) $(GLXLIBS) -o $(GLX_LIB) $(GLX_OBJECTS)
+
+glx.o: glx.c 
+	$(CC) $(CFLAGS) $(GLXCFLAGS) -c glx.c
+
+glx_structs.o: glx_structs.c 
+	$(CC) $(CFLAGS) $(GLXCFLAGS) -c glx_structs.c
+	
+glx_stats.o: glx_stats.c glx_stats.h
+	$(CC) $(CFLAGS) $(GLXCFLAGS) -c glx_stats.c
 
 #
 # Install
