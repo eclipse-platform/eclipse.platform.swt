@@ -1131,6 +1131,7 @@ public class StyledText2 extends Canvas {
 				rect = layout.getBounds();
 				lineWidth[i] = rect.width + hTrim;
 				lineHeight[i] = rect.height;
+				renderer.disposeTextLayout(layout);
 			}
 			if (lineWidth[i] > maxWidth) {
 				maxWidth = lineWidth[i];
