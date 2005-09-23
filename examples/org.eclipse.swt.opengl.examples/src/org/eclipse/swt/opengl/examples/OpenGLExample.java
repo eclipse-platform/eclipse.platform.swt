@@ -12,6 +12,7 @@ package org.eclipse.swt.opengl.examples;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
@@ -24,13 +25,15 @@ public class OpenGLExample {
 	private OpenGLTab[] tabs;
 	private int sleep;
 	
+	public OpenGLExample() {}
+
 	/**
 	 * Creates an instance of an OpenGLExample embedded inside
 	 * the supplied parent Composite.
 	 * 
 	 * @param parent the container of the example
 	 */
-	OpenGLExample(Composite parent) {		
+	public OpenGLExample(Composite parent) {
 		tabFolder = new TabFolder(parent, SWT.NONE);
 		tabs =
 			new OpenGLTab[] {
@@ -118,7 +121,10 @@ public class OpenGLExample {
 	 * Invokes as a standalone program.
 	 */
 	public static void main(String[] args) {
-		Display display = new Display();
+		DeviceData data = new DeviceData();
+		data.debug = true;
+		System.out.println("huh");
+		Display display = new Display(data);
 		Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
 		OpenGLExample instance = new OpenGLExample(shell);
@@ -128,5 +134,14 @@ public class OpenGLExample {
 			if (! display.readAndDispatch()) display.sleep();
 		}
 		instance.dispose();
+	}
+
+	public Shell open (Display display) {
+		Shell shell = new Shell (display);
+		shell.setLayout(new FillLayout());
+		new OpenGLExample(shell);
+		shell.setText(getResourceString("window.title"));
+		shell.open();
+		return shell;
 	}
 }

@@ -10,7 +10,7 @@
 <!-- Required plugins -->
 <requires>
    <import plugin="org.eclipse.swt"/>
-   <import plugin="org.eclipse.swt.opengl"/>
+   <import plugin="org.eclipse.opengl"/>
 </requires>
 
 <!-- Runtime -->
@@ -24,15 +24,10 @@
 <!-- Extension points -->
 <extension
       point="org.eclipse.swt.examples.launcher.launchItems">
-   <category
-         name="%launchcategory.OpenGLExamples.name"
-         description="%launchcategory.OpenGLExamples.description"
-         id="org.eclipse.swt.examples.launchOpenGLCategory">
-   </category>
    <item
          name="%launchitem.OpenGLExample.name"
          description="%launchitem.OpenGLExample.description"
-         category="org.eclipse.swt.examples.launchOpenGLCategory"
+         category="org.eclipse.swt.examples.launchStandaloneCategory"
          id="org.eclipse.swt.opengl.examples.OpenGLExample.standalonelauncher">
       <program
             pluginId="org.eclipse.swt.opengl.examples"
