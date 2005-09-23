@@ -752,6 +752,7 @@ int handleCallback(int selector, int arg0, int arg1, int arg2, int arg3) {
 		case 25: webViewUnfocus(); break;
 		case 26: ret = webViewFirstResponder(); break;
 		case 27: makeFirstResponder(arg0); break;
+		case 28: runJavaScriptAlertPanelWithMessage(arg0); break;
 	}
 	return ret;
 }
@@ -1586,6 +1587,20 @@ int webViewFirstResponder() {
 }
 
 void makeFirstResponder(int responder) {
+}
+
+void runJavaScriptAlertPanelWithMessage(int message) {
+	int length = OS.CFStringGetLength(message);
+	char[] buffer = new char[length];
+	CFRange range = new CFRange();
+	range.length = length;
+	OS.CFStringGetCharacters(message, range, buffer);
+	String text = new String(buffer);
+
+	MessageBox messageBox = new MessageBox(getShell(), SWT.OK | SWT.ICON_WARNING);
+	messageBox.setText("Javascript");	//$NON-NLS-1$
+	messageBox.setMessage(text);
+	messageBox.open();
 }
 
 void webViewClose() {

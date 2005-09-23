@@ -167,7 +167,7 @@ public int Alert(int parent, int dialogTitle, int text) {
 	XPCOM.memmove(dest, text, length * 2);
 	String textLabel = new String(dest);
 
-	MessageBox messageBox = new MessageBox(browser.getShell(), SWT.OK);
+	MessageBox messageBox = new MessageBox(browser.getShell(), SWT.OK | SWT.ICON_WARNING);
 	messageBox.setText(titleLabel);
 	messageBox.setMessage(textLabel);
 	messageBox.open();

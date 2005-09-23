@@ -204,6 +204,11 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_browser_WebKit_sel_1registerName(JNI
 	proc((int)sender, user_data, 27, (int)responder, 0, 0, 0);
 }
 
+- (void)webView:(WebView *)sender runJavaScriptAlertPanelWithMessage:(NSString *)message
+{
+	proc((int)sender, user_data, 28, (int)message, 0, 0, 0);
+}
+
 /* WebPolicyDelegate */
 /*
 - (void)webView:(WebView *)sender decidePolicyForMIMEType:(NSString *)type request:(NSURLRequest *)request frame:(WebFrame*)frame decisionListener:(id<WebPolicyDecisionListener>)listener
