@@ -753,6 +753,7 @@ int handleCallback(int selector, int arg0, int arg1, int arg2, int arg3) {
 		case 26: ret = webViewFirstResponder(); break;
 		case 27: makeFirstResponder(arg0); break;
 		case 28: runJavaScriptAlertPanelWithMessage(arg0); break;
+		case 29: runOpenPanelForFileButtonWithResultListener(arg0); break;
 	}
 	return ret;
 }
@@ -1603,6 +1604,19 @@ void runJavaScriptAlertPanelWithMessage(int message) {
 	messageBox.open();
 }
 
+void runOpenPanelForFileButtonWithResultListener(int resultListener) {
+	FileDialog dialog = new FileDialog(getShell(), SWT.NONE);
+	String result = dialog.open();
+	if (result == null) {
+		WebKit.objc_msgSend(resultListener, WebKit.S_cancel);
+		return;
+	}
+	int length = result.length();
+	char[] buffer = new char[length];
+	result.getChars(0, length, buffer, 0);
+	int filename = OS.CFStringCreateWithCharacters(0, buffer, length);
+	WebKit.objc_msgSend(resultListener, WebKit.S_chooseFilename, filename);
+}
 void webViewClose() {
 	Shell parent = getShell();
 	WindowEvent newEvent = new WindowEvent(this);
