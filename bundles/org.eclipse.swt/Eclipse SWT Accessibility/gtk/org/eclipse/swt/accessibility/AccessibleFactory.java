@@ -156,11 +156,9 @@ class AccessibleFactory {
 		if (callback.getAddress () == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 		return callback;
 	}
-	
+
 	private AccessibleFactory (int /*long*/ widgetType) {
 		super ();
-		/* If DefaultParentType is 0 then OS accessibility is not active */
-		if (DefaultParentType == 0) return;
 		widgetTypeName = OS.g_type_name (widgetType);
 		int widgetTypeNameLength = OS.strlen (widgetTypeName) + 1;
 		byte[] buffer = new byte [widgetTypeNameLength];
@@ -189,7 +187,7 @@ class AccessibleFactory {
 			handle = ATK.atk_registry_get_factory (registry, widgetType);
 		}
 	}
-	
+
 	void addAccessible (Accessible accessible) {
 		int /*long*/ controlHandle = accessible.getControlHandle ();
 		accessibles.put (new LONG (controlHandle), accessible);
@@ -389,6 +387,8 @@ class AccessibleFactory {
 	}
 
 	static void registerAccessible (Accessible accessible) {
+		/* If DefaultParentType is 0 then OS accessibility is not active */
+		if (DefaultParentType == 0) return;
 		int /*long*/ controlHandle = accessible.getControlHandle ();
 		int /*long*/ widgetType = OS.G_OBJECT_TYPE (controlHandle);
 		AccessibleFactory factory = (AccessibleFactory) Factories.get (new LONG (widgetType));
