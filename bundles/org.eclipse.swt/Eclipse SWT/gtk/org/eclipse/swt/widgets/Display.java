@@ -1570,6 +1570,35 @@ int getMessageCount () {
 }
 
 /**
+ * Returns the work area, an EWMH property to store the size
+ * and position of the screen not covered by dock and panel
+ * windows.
+ * 
+ * http://freedesktop.org/Standards/wm-spec
+ */
+static Rectangle getWorkArea() {
+	byte[] name = Converter.wcsToMbcs (null, "_NET_WORKAREA", true);
+	int /*long*/ atom = OS.gdk_atom_intern (name, true);
+	if (atom == OS.GDK_NONE) return null;
+	int /*long*/[] actualType = new int /*long*/[1];
+	int[] actualFormat = new int[1];
+	int[] actualLength = new int[1];
+	int /*long*/[] data = new int /*long*/[1];
+	int values [] = new int [4];
+	if (!OS.gdk_property_get (OS.GDK_ROOT_PARENT (), atom, OS.GDK_NONE, 0, 16, 0, actualType, actualFormat, actualLength, data))
+		return null;
+
+	if (data [0] == 0) return null;
+	if (actualLength [0] < 16) {
+		OS.g_free (data [0]);
+		return null;
+	}
+	OS.memmove (values, data[0], 16);
+	OS.g_free (data[0]);
+	return new Rectangle (values [0],values [1],values [2],values [3]);
+}
+
+/**
  * Returns an array of monitors attached to the device.
  * 
  * @return the array of monitors
@@ -1579,6 +1608,7 @@ int getMessageCount () {
 public Monitor [] getMonitors () {
 	checkDevice ();
 	Monitor [] monitors = null;
+	Rectangle workArea = getWorkArea();
 	int /*long*/ screen = OS.gdk_screen_get_default ();
 	if (screen != 0) {
 		int monitorCount = OS.gdk_screen_get_n_monitors (screen);
@@ -1593,10 +1623,17 @@ public Monitor [] getMonitors () {
 				monitor.y = dest.y;
 				monitor.width = dest.width;
 				monitor.height = dest.height;
-				monitor.clientX = monitor.x;
-				monitor.clientY = monitor.y;
-				monitor.clientWidth = monitor.width;
-				monitor.clientHeight = monitor.height;
+				if (i == 0 && workArea != null) {
+					monitor.clientX = workArea.x;
+					monitor.clientY = workArea.y;
+					monitor.clientWidth = workArea.width;
+					monitor.clientHeight = workArea.height;
+				} else {
+					monitor.clientX = monitor.x;
+					monitor.clientY = monitor.y;
+					monitor.clientWidth = monitor.width;
+					monitor.clientHeight = monitor.height;
+				}
 				monitors [i] = monitor;
 			}
 		}
@@ -1609,10 +1646,17 @@ public Monitor [] getMonitors () {
 		monitor.y = bounds.y;
 		monitor.width = bounds.width;
 		monitor.height = bounds.height;
-		monitor.clientX = monitor.x;
-		monitor.clientY = monitor.y;
-		monitor.clientWidth = monitor.width;
-		monitor.clientHeight = monitor.height;
+		if (workArea != null) {
+			monitor.clientX = workArea.x;
+			monitor.clientY = workArea.y;
+			monitor.clientWidth = workArea.width;
+			monitor.clientHeight = workArea.height;
+		} else {
+			monitor.clientX = monitor.x;
+			monitor.clientY = monitor.y;
+			monitor.clientWidth = monitor.width;
+			monitor.clientHeight = monitor.height;
+		}
 		monitors = new Monitor [] { monitor };			
 	}
 	return monitors;
