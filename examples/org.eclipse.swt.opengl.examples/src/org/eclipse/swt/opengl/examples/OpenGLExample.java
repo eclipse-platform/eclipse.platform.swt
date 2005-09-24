@@ -121,10 +121,7 @@ public class OpenGLExample {
 	 * Invokes as a standalone program.
 	 */
 	public static void main(String[] args) {
-		DeviceData data = new DeviceData();
-		data.debug = true;
-		System.out.println("huh");
-		Display display = new Display(data);
+		Display display = new Display();
 		Shell shell = new Shell(display);
 		shell.setLayout(new FillLayout());
 		OpenGLExample instance = new OpenGLExample(shell);
