@@ -1576,7 +1576,7 @@ int getMessageCount () {
  * 
  * http://freedesktop.org/Standards/wm-spec
  */
-static Rectangle getWorkArea() {
+Rectangle getWorkArea() {
 	byte[] name = Converter.wcsToMbcs (null, "_NET_WORKAREA", true);
 	int /*long*/ atom = OS.gdk_atom_intern (name, true);
 	if (atom == OS.GDK_NONE) return null;
@@ -1587,7 +1587,6 @@ static Rectangle getWorkArea() {
 	int values [] = new int [4];
 	if (!OS.gdk_property_get (OS.GDK_ROOT_PARENT (), atom, OS.GDK_NONE, 0, 16, 0, actualType, actualFormat, actualLength, data))
 		return null;
-
 	if (data [0] == 0) return null;
 	if (actualLength [0] < 16) {
 		OS.g_free (data [0]);
