@@ -201,28 +201,26 @@ public class GLX {
 	*/
 	public static final int GL_VIEWPORT = 0x0BA2;
 
-public static final native void glGetIntegerv (int pname, int[] params);
-public static final native void glViewport (int x, int y, int width, int height);
-
-public static final native int glXChooseVisual(int dpy, int screen, int[] attribList);
-public static final native void glXCopyContext(int dpy, int src, int dst, int mask);
-public static final native int glXCreateContext(int dpy, XVisualInfo vis, int shareList, boolean direct);
-public static final native int glXCreateGLXPixmap(int dpy, XVisualInfo vis, int pixmap);
-public static final native void glXDestroyContext(int dpy, int ctx);
-public static final native void glXDestroyGLXPixmap(int dpy, int pix);
-public static final native int glXGetConfig(int dpy, XVisualInfo vis, int attrib, int[] value);
+public static final native void glGetIntegerv(int pname, int[] params);
+public static final native void glViewport(int x, int y, int width, int height);
+public static final native int glXChooseVisual(int /*long*/ dpy, int screen, int[] attribList);
+public static final native void glXCopyContext(int /*long*/ dpy, int src, int dst, int mask);
+public static final native int glXCreateContext(int /*long*/ dpy, XVisualInfo vis, int shareList, boolean direct);
+public static final native int glXCreateGLXPixmap(int /*long*/ dpy, XVisualInfo vis, int pixmap);
+public static final native void glXDestroyContext(int /*long*/ dpy, int /*long*/ ctx);
+public static final native void glXDestroyGLXPixmap(int /*long*/ dpy, int /*long*/ pix);
+public static final native int glXGetConfig(int /*long*/ dpy, XVisualInfo vis, int attrib, int[] value);
 public static final native int glXGetCurrentContext();
 public static final native int glXGetCurrentDrawable();
-public static final native boolean glXIsDirect(int dpy, int ctx);
-public static final native boolean glXMakeCurrent(int dpy, int drawable, int ctx);
-public static final native boolean glXQueryExtension(int dpy, int[] errorBase, int[] eventBase);
-public static final native boolean glXQueryVersion(int dpy, int[] major, int[] minor);
-public static final native void glXSwapBuffers(int dpy, int drawable);
-public static final native void glXUseXFont(int font, int first, int count, int listBase);
+public static final native boolean glXIsDirect(int /*long*/ dpy, int /*long*/ ctx);
+public static final native boolean glXMakeCurrent(int /*long*/ dpy, int /*long*/ drawable, int /*long*/ ctx);
+public static final native boolean glXQueryExtension(int /*long*/ dpy, int[] errorBase, int[] eventBase);
+public static final native boolean glXQueryVersion(int /*long*/ dpy, int[] major, int[] minor);
+public static final native void glXSwapBuffers(int /*long*/ dpy, int /*long*/ drawable);
 public static final native void glXWaitGL();
 public static final native void glXWaitX();
-public static final native int glXGetClientString(int dpy, int name);
-public static final native int glXQueryServerString(int dpy, int screen, int name);
-public static final native int glXQueryExtensionsString(int dpy, int screen);
-public static final native void memmove(XVisualInfo dest, int src, int size);
+public static final native int glXGetClientString(int /*long*/ dpy, int name);
+public static final native int glXQueryServerString(int /*long*/ dpy, int screen, int name);
+public static final native int glXQueryExtensionsString(int /*long*/ dpy, int screen);
+public static final native void memmove(XVisualInfo dest, int /*long*/ src, int size);
 }
