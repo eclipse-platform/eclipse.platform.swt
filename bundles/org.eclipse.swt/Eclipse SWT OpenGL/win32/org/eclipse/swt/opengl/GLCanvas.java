@@ -38,12 +38,6 @@ public class GLCanvas extends Canvas {
  * @exception IllegalArgumentException
  * <ul><li>ERROR_NULL_ARGUMENT when the data is null
  *     <li>ERROR_UNSUPPORTED_DEPTH when the requested attributes cannot be provided</ul> 
- * @exception SWTException
- * <ul><li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread
- *     <li>ERROR_CANNOT_CREATE_OBJECT when failed to create OLE Object
- *     <li>ERROR_CANNOT_OPEN_FILE when failed to open file
- *     <li>ERROR_INTERFACE_NOT_FOUND when unable to create callbacks for OLE Interfaces
- *     <li>ERROR_INVALID_CLASSID
  * </ul>
  * 
  * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
