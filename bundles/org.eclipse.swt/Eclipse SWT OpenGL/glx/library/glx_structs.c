@@ -41,11 +41,11 @@ void cacheXVisualInfoFields(JNIEnv *env, jobject lpObject)
 XVisualInfo *getXVisualInfoFields(JNIEnv *env, jobject lpObject, XVisualInfo *lpStruct)
 {
 	if (!XVisualInfoFc.cached) cacheXVisualInfoFields(env, lpObject);
-	lpStruct->visual = (*env)->GetIntField(env, lpObject, XVisualInfoFc.visual);
+	lpStruct->visual = (Visual *)(*env)->GetIntField(env, lpObject, XVisualInfoFc.visual);
 	lpStruct->visualid = (*env)->GetIntField(env, lpObject, XVisualInfoFc.visualid);
 	lpStruct->screen = (*env)->GetIntField(env, lpObject, XVisualInfoFc.screen);
 	lpStruct->depth = (*env)->GetIntField(env, lpObject, XVisualInfoFc.depth);
-	lpStruct->cclass = (*env)->GetIntField(env, lpObject, XVisualInfoFc.cclass);
+	lpStruct->class = (*env)->GetIntField(env, lpObject, XVisualInfoFc.cclass);
 	lpStruct->red_mask = (*env)->GetIntField(env, lpObject, XVisualInfoFc.red_mask);
 	lpStruct->green_mask = (*env)->GetIntField(env, lpObject, XVisualInfoFc.green_mask);
 	lpStruct->blue_mask = (*env)->GetIntField(env, lpObject, XVisualInfoFc.blue_mask);
@@ -61,7 +61,7 @@ void setXVisualInfoFields(JNIEnv *env, jobject lpObject, XVisualInfo *lpStruct)
 	(*env)->SetIntField(env, lpObject, XVisualInfoFc.visualid, (jint)lpStruct->visualid);
 	(*env)->SetIntField(env, lpObject, XVisualInfoFc.screen, (jint)lpStruct->screen);
 	(*env)->SetIntField(env, lpObject, XVisualInfoFc.depth, (jint)lpStruct->depth);
-	(*env)->SetIntField(env, lpObject, XVisualInfoFc.cclass, (jint)lpStruct->cclass);
+	(*env)->SetIntField(env, lpObject, XVisualInfoFc.cclass, (jint)lpStruct->class);
 	(*env)->SetIntField(env, lpObject, XVisualInfoFc.red_mask, (jint)lpStruct->red_mask);
 	(*env)->SetIntField(env, lpObject, XVisualInfoFc.green_mask, (jint)lpStruct->green_mask);
 	(*env)->SetIntField(env, lpObject, XVisualInfoFc.blue_mask, (jint)lpStruct->blue_mask);

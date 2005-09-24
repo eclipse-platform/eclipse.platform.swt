@@ -40,7 +40,6 @@ typedef enum {
 	glXQueryServerString_FUNC,
 	glXQueryVersion_FUNC,
 	glXSwapBuffers_FUNC,
-	glXUseXFont_FUNC,
 	glXWaitGL_FUNC,
 	glXWaitX_FUNC,
 	memmove_FUNC,

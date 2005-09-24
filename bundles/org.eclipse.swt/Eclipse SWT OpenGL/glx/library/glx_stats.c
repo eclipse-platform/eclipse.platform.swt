@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int GLX_nativeFunctionCount = 23;
-int GLX_nativeFunctionCallCount[23];
+int GLX_nativeFunctionCount = 22;
+int GLX_nativeFunctionCallCount[22];
 char * GLX_nativeFunctionNames[] = {
 	"glGetIntegerv",
 	"glViewport",
@@ -36,7 +36,6 @@ char * GLX_nativeFunctionNames[] = {
 	"glXQueryServerString",
 	"glXQueryVersion",
 	"glXSwapBuffers",
-	"glXUseXFont",
 	"glXWaitGL",
 	"glXWaitX",
 	"memmove",
