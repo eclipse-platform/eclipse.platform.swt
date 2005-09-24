@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.opengl.internal.win32;
+package org.eclipse.swt.internal.opengl.win32;
 
 
 public class PIXELFORMATDESCRIPTOR {

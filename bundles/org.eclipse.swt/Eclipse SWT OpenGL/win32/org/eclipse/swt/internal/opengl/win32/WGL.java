@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.opengl.internal.win32;
+package org.eclipse.swt.internal.opengl.win32;
 
 import org.eclipse.swt.internal.Library;
 
@@ -112,18 +112,6 @@ public static final native int wglGetCurrentDC();
 public static final native int wglGetProcAddress(byte[] lpszProc);
 public static final native boolean wglMakeCurrent(int hdc, int hglrc);
 public static final native boolean wglShareLists(int hglrc1, int hglrc2);
-public static final native boolean wglUseFontBitmapsA(int hdc, int first, int count, int listBase);
-public static final native boolean wglUseFontBitmapsW(int hdc, int first, int count, int listBase);
-public static final boolean wglUseFontBitmaps(int hdc, int first, int count, int listBase) {
-	if (OS.IsUnicode) return wglUseFontBitmapsW(hdc, first, count, listBase);
-	return wglUseFontBitmapsA(hdc, first, count, listBase);
-}
-public static final native boolean wglUseFontOutlinesA(int hdc, int first, int count, int listBase, float deviation, float extrusion, int format, int lpgmf);
-public static final native boolean wglUseFontOutlinesW(int hdc, int first, int count, int listBase, float deviation, float extrusion, int format, int lpgmf);
-public static final boolean wglUseFontOutlines(int hdc, int first, int count, int listBase, float deviation, float extrusion, int format, int lpgmf) {
-	if (OS.IsUnicode) return wglUseFontOutlinesW(hdc, first, count, listBase, deviation, extrusion, format, lpgmf);
-	return wglUseFontOutlinesA(hdc, first, count, listBase, deviation, extrusion, format, lpgmf);
-}
 public static final native boolean wglDescribeLayerPlane(int hdc, int iPixelFormat, int iLayerPlane, int nBytes, LAYERPLANEDESCRIPTOR plpd);
 public static final native int wglSetLayerPaletteEntries(int hdc, int iLayerPlane, int iStart, int cEntries, int[] pcr);
 public static final native int wglGetLayerPaletteEntries(int hdc, int iLayerPlane, int iStart, int cEntries, int[] pcr);
