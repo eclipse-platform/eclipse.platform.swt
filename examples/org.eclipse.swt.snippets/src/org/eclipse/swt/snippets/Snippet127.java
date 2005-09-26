@@ -25,7 +25,7 @@ public static void main (String [] args) {
 	Display display = new Display ();
 	Shell shell = new Shell (display);
 	Button button1 = new Button(shell, SWT.PUSH);
-	button1.setBounds(10,10,80,30);
+	button1.setBounds(10,10,180,30);
 	button1.setText("no traverse");
 	button1.addTraverseListener(new TraverseListener () {
 		public void keyTraversed(TraverseEvent e) {
@@ -38,7 +38,7 @@ public static void main (String [] args) {
 		}
 	});
 	Button button2 = new Button (shell, SWT.PUSH);
-	button2.setBounds(100,10,80,30);
+	button2.setBounds(200,10,180,30);
 	button2.setText("can traverse");
 	shell.pack ();
 	shell.open();
