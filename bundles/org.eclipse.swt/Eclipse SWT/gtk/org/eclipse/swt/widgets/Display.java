@@ -1590,7 +1590,6 @@ Rectangle getWorkArea() {
 	if (data [0] != 0) {
 		if (actualLength [0] >= 16) {
 			OS.memmove (values, data[0], 16);
-			OS.g_free (data[0]);
 			result = new Rectangle (values [0],values [1],values [2],values [3]);
 		}
 		OS.g_free (data [0]);
