@@ -1572,9 +1572,7 @@ int getMessageCount () {
 /**
  * Returns the work area, an EWMH property to store the size
  * and position of the screen not covered by dock and panel
- * windows.
- * 
- * http://freedesktop.org/Standards/wm-spec
+ * windows.  See http://freedesktop.org/Standards/wm-spec.
  */
 Rectangle getWorkArea() {
 	byte[] name = Converter.wcsToMbcs (null, "_NET_WORKAREA", true);
@@ -1585,16 +1583,19 @@ Rectangle getWorkArea() {
 	int[] actualLength = new int[1];
 	int /*long*/[] data = new int /*long*/[1];
 	int values [] = new int [4];
-	if (!OS.gdk_property_get (OS.GDK_ROOT_PARENT (), atom, OS.GDK_NONE, 0, 16, 0, actualType, actualFormat, actualLength, data))
-		return null;
-	if (data [0] == 0) return null;
-	if (actualLength [0] < 16) {
-		OS.g_free (data [0]);
+	if (!OS.gdk_property_get (OS.GDK_ROOT_PARENT (), atom, OS.GDK_NONE, 0, 16, 0, actualType, actualFormat, actualLength, data)) {
 		return null;
 	}
-	OS.memmove (values, data[0], 16);
-	OS.g_free (data[0]);
-	return new Rectangle (values [0],values [1],values [2],values [3]);
+	Rectangle result = null;
+	if (data [0] != 0) {
+		if (actualLength [0] >= 16) {
+			OS.memmove (values, data[0], 16);
+			OS.g_free (data[0]);
+			result = new Rectangle (values [0],values [1],values [2],values [3]);
+		}
+		OS.g_free (data [0]);
+	}
+	return result;
 }
 
 /**
