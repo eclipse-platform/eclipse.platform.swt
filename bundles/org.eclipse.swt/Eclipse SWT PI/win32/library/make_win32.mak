@@ -38,6 +38,11 @@ AWT_LIB    = $(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
 AWT_LIBS   = $(JAVA_HOME)\jre\bin\jawt.lib
 AWT_OBJS   = swt_awt.obj
 
+WGL_PREFIX = swt-wgl
+WGL_LIB    = $(WGL_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
+WGL_LIBS   = opengl32.lib gdi32.lib
+WGL_OBJS   = wgl.obj wgl_structs.obj wgl_stats.obj
+
 # Uncomment for Native Stats tool
 #NATIVE_STATS = -DNATIVE_STATS
 
@@ -51,7 +56,7 @@ CFLAGS = -c -W3 -G6 -GD -O1 $(SWT_CDEBUG) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_
 RCFLAGS = -DSWT_FILE_VERSION=\"$(maj_ver).$(min_ver)\" -DSWT_COMMA_VERSION=$(comma_ver)
 LFLAGS = /INCREMENTAL:NO /PDB:NONE /RELEASE /NOLOGO $(SWT_LDEBUG) -entry:_DllMainCRTStartup@12 -dll /BASE:0x10000000 /comment:$(pgm_ver_str) /comment:$(copyright) /DLL
 
-all: $(SWT_LIB) $(AWT_LIB) $(GDIP_LIB)
+all: $(SWT_LIB) $(AWT_LIB) $(GDIP_LIB) $(WGL_LIB)
 
 .c.obj:
 	cl $(CFLAGS) $*.c
@@ -91,6 +96,17 @@ $(AWT_LIB): $(AWT_OBJS) swt_awt.res
 	echo swt_awt.res >>templrf
 	link @templrf
 	del templrf
+
+$(WGL_LIB): $(WGL_OBJS) swt_wgl.res
+	echo $(LFLAGS) >templrf
+	echo $(WGL_LIBS) >>templrf
+	echo -machine:IX86 >>templrf
+	echo -subsystem:windows >>templrf
+	echo -out:$(WGL_LIB) >>templrf
+	echo $(WGL_OBJS) >>templrf
+	echo swt_wgl.res >>templrf
+	link @templrf
+	del templrf
 	
 swt.res:
 	rc $(RCFLAGS) -DSWT_ORG_FILENAME=\"$(SWT_LIB)\" -r -fo swt.res swt.rc
@@ -100,6 +116,9 @@ swt_gdip.res:
 
 swt_awt.res:
 	rc $(RCFLAGS) -DSWT_ORG_FILENAME=\"$(AWT_LIB)\" -r -fo swt_awt.res swt_awt.rc
+
+swt_wgl.res:
+	rc $(RCFLAGS) -DSWT_ORG_FILENAME=\"$(WGL_LIB)\" -r -fo swt_wgl.res swt_wgl.rc
 
 install: all
 	copy *.dll $(OUTPUT_DIR)
