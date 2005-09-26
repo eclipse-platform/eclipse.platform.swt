@@ -1118,7 +1118,7 @@ public class StyledText2 extends Canvas {
 		if (startLine < 0 || endLine > lineWidth.length) {
 			return;
 		}
-		int hTrim = parent.leftMargin + parent.rightMargin;
+		int hTrim = parent.leftMargin + parent.rightMargin + parent.getCaretWidth();
 		StyledTextRenderer2 renderer = parent.renderer;
 		StyledTextContent content = parent.content;
 		TextLayout layout;
@@ -1210,7 +1210,7 @@ public class StyledText2 extends Canvas {
 			}
 			totalHeight += height;
 		}
-		return totalHeight;
+		return totalHeight + parent.topMargin + parent.bottomMargin;
 	}
 	/**
 	 * Updates the line width array to reflect inserted or deleted lines.
@@ -1827,7 +1827,7 @@ void claimBottomFreeSpace() {
 		if (newVerticalOffset < verticalScrollOffset) {
 			// Scroll up so that empty lines below last text line are used.
 			// Fixes 1GEYJM0
-			setVerticalScrollOffset(newVerticalOffset, true);
+			scrollVertical(newVerticalOffset - verticalScrollOffset, true);
 		}
 	} else {	
 		int clientAreaHeight = getClientArea().height;
@@ -1836,7 +1836,7 @@ void claimBottomFreeSpace() {
 		if (clientAreaHeight > height) {
 			height = clientAreaHeight - height;
 			height = Math.min(verticalScrollOffset, height);
-			setVerticalScrollOffset(verticalScrollOffset - height, true);
+			scrollVertical(-height, true);
 		}
 	}
 }
@@ -1849,7 +1849,7 @@ void claimRightFreeSpace() {
 		// item is no longer drawn past the right border of the client area
 		// align the right end of the item with the right border of the 
 		// client area (window is scrolled right).
-		scrollHorizontalBar(newHorizontalOffset - horizontalScrollOffset);					
+		scrollHorizontal(newHorizontalOffset - horizontalScrollOffset, true);					
 	}
 }
 /**
@@ -2715,7 +2715,7 @@ void doPageDown(boolean select, int height) {
 				scrollOffset = verticalMaximum - pageSize;
 			}
 			if (scrollOffset > verticalScrollOffset) {
-				setVerticalScrollOffset(scrollOffset, true);
+				scrollVertical(scrollOffset - verticalScrollOffset, true);
 			}
 		}
 	} else {
@@ -2723,7 +2723,7 @@ void doPageDown(boolean select, int height) {
 		int caretY = getCaret().getLocation().y;
 		boolean scroll = getLineIndex(getClientArea().height) != content.getLineCount() - 1;
 		if (scroll) {
-			setVerticalScrollOffset(verticalScrollOffset + height, true);
+			scrollVertical(height, true);
 			claimBottomFreeSpace();
 		}
 		caretY += height - (verticalScrollOffset - oldVScrollOffset);
@@ -2790,14 +2790,14 @@ void doPageUp(boolean select, int height) {
 			// scroll one page up or to the top
 			int scrollOffset = Math.max(0, verticalScrollOffset - scrollLines * getVerticalIncrement());
 			if (scrollOffset < verticalScrollOffset) {
-				setVerticalScrollOffset(scrollOffset, true);
+				scrollVertical(scrollOffset - verticalScrollOffset, true);
 			}
 		}
 	} else {
 		int oldVScrollOffset = verticalScrollOffset;
 		int caretY = getCaret().getLocation().y;	
 		int vscroll = Math.min(verticalScrollOffset, height);
-		setVerticalScrollOffset(verticalScrollOffset - vscroll, true);
+		scrollVertical(-vscroll, true);
 		caretY -= height - (oldVScrollOffset - verticalScrollOffset);
 		caretOffset = getOffsetAtPoint(columnX, caretY);
 		setCaretLocation();
@@ -3075,7 +3075,7 @@ void draw(int x, int y, int width, int height, boolean clearBackground) {
 		int startLine = getLineIndex(y);
 		int endY = y + height;
 		int paintY = getLinePixel(startLine);
-		int paintX = getClientArea().x + leftMargin - getHorizontalPixel();
+		int paintX = getClientArea().x + leftMargin - horizontalScrollOffset;
 		int lineCount = isSingleLine() ? 1 : content.getLineCount();
 		GC gc = getGC();
 		Color background = getBackground();
@@ -3693,7 +3693,7 @@ public int getOffsetAtLocation(Point point) {
 	int lineOffset = content.getOffsetAtLine(lineIndex);
 	TextLayout layout = renderer.getTextLayout(line, lineOffset);	
 	int[] trailing = new int[1];
-	int x = point.x - leftMargin + horizontalScrollOffset;
+	int x = point.x + horizontalScrollOffset - leftMargin ;
 	int y = point.y - getLinePixel(lineIndex);
 	int offsetInLine = layout.getOffset(x, y, trailing);
 	if (offsetInLine != line.length() - 1) {
@@ -4634,12 +4634,6 @@ void installListeners() {
 		});
 	}
 }
-StyledTextContent internalGetContent() {
-	return content;
-}
-Point internalGetSelection() {
-	return selection;
-}
 /** 
  * Redraws the specified text range.
  * <p>
@@ -4745,7 +4739,7 @@ void handleDispose(Event event) {
  */
 void handleHorizontalScroll(Event event) {
 	int scrollPixel = getHorizontalBar().getSelection() - horizontalScrollOffset;
-	scrollHorizontal(scrollPixel);
+	scrollHorizontal(scrollPixel, false);
 }
 /**
  * If an action has been registered for the key stroke execute the action.
@@ -5138,7 +5132,8 @@ void handleTraverse(Event event) {
  * Scrolls the widget vertically.
  */
 void handleVerticalScroll(Event event) {
-	setVerticalScrollOffset(getVerticalBar().getSelection(), false);
+	int scrollPixel = getVerticalBar().getSelection() - verticalScrollOffset;
+	scrollVertical(scrollPixel, false);
 }
 /**
  * Add accessibility support for the widget.
@@ -5493,7 +5488,7 @@ public void paste(){
  * @param startY y pixel location to start rendering at
  * @param renderHeight renderHeight widget area that needs to be filled with lines
  */
-void performPaint(GC gc,int startLine,int startY, int renderHeight)	{
+void performPaint(GC gc, int startLine, int startY, int renderHeight)	{
 	Rectangle clientArea = getClientArea();
 	
 	// Check if there is work to do. We never want to try and create 
@@ -5529,7 +5524,7 @@ void performPaint(GC gc,int startLine,int startY, int renderHeight)	{
 			lineBuffer = null;
 			lineGC = gc;
 		}
-		int paintX = getClientArea().x + leftMargin - getHorizontalPixel();
+		int paintX = clientArea.x + leftMargin - horizontalScrollOffset;
 		for (int i = startLine; paintY < paintHeight && i < lineCount; i++) {
 			String line = content.getLine(i);
 			paintY += renderer.drawLine(line, i, paintX, paintY, lineGC, background, foreground, true);
@@ -5716,7 +5711,7 @@ void redrawLines(int firstLine, int offsetInFirstLine, int lastLine, int endOffs
 		fullLineRedraw = true;
 	}
 	renderer.disposeTextLayout(layout);
-	rect.x -= horizontalScrollOffset + leftMargin;
+	rect.x = rect.x + leftMargin - horizontalScrollOffset;
 	rect.intersect(clientArea);
 	fullLineRedraw = true;
 	int redrawY = getLinePixel(firstLine);
@@ -5740,7 +5735,7 @@ void redrawLines(int firstLine, int offsetInFirstLine, int lastLine, int endOffs
 			layout = renderer.getTextLayout(line, lineOffset);
 			rect = layout.getBounds(0, offsetInLastLine - 1);
 			renderer.disposeTextLayout(layout);
-			rect.x -= horizontalScrollOffset + leftMargin;
+			rect.x = rect.x + leftMargin - horizontalScrollOffset;
 			rect.intersect(clientArea);
 			redrawY = getLinePixel(lastLine);
 			redrawWidth = fullLineRedraw ? clientArea.width - leftMargin - rightMargin : rect.width;
@@ -6159,70 +6154,108 @@ void resetSelection() {
  *
  * @param pixels number of pixels to scroll, > 0 = scroll left,
  * 	< 0 scroll right
- */
-void scrollHorizontal(int pixels) {
-	if (pixels == 0) {
-		return;
-	}
-	Rectangle clientArea = getClientArea();
-	if (pixels > 0) {
-		int sourceX = leftMargin + pixels;
-		int scrollWidth = clientArea.width - sourceX - rightMargin;
-		int scrollHeight = clientArea.height - topMargin - bottomMargin;
-		scroll(
-			leftMargin, topMargin, 						// destination x, y
-			sourceX, topMargin,							// source x, y
-			scrollWidth, scrollHeight, true);
-		if (sourceX > scrollWidth) {
-			// redraw from end of scrolled area to beginning of scroll 
-			// invalidated area
-			super.redraw(
-				leftMargin + scrollWidth, topMargin, 
-				pixels - scrollWidth, scrollHeight, true);
-		}
-	} else {
-		int destinationX = leftMargin - pixels;
-		int scrollWidth = clientArea.width - destinationX - rightMargin;
-		int scrollHeight = clientArea.height - topMargin - bottomMargin;
-		scroll(
-			destinationX, topMargin,					// destination x, y
-			leftMargin, topMargin,						// source x, y
-			scrollWidth, scrollHeight, true);
-		if (destinationX > scrollWidth) {
-			// redraw from end of scroll invalidated area to scroll 
-			// destination
-			super.redraw(
-				leftMargin + scrollWidth, topMargin, 
-				-pixels - scrollWidth, scrollHeight, true);	
-		}
-	}
-	horizontalScrollOffset += pixels;
-	int oldColumnX = columnX - pixels;
-	setCaretLocation();
-	// restore the original horizontal caret index
-	columnX = oldColumnX;
-}
-/**
- * Scrolls the widget horizontally and adjust the horizontal scroll
- * bar to reflect the new horizontal offset..
- * <p>
- *
- * @param pixels number of pixels to scroll, > 0 = scroll left,
- * 	< 0 scroll right
- * @return
+ * @param adjustScrollBar 
+ * 	true= the scroll thumb will be moved to reflect the new scroll offset.
+ * 	false = the scroll thumb will not be moved
+ * @return 
  *	true=the widget was scrolled 
  *	false=the widget was not scrolled, the given offset is not valid.
  */
-boolean scrollHorizontalBar(int pixels) {
+boolean scrollHorizontal(int pixels, boolean adjustScrollBar) {
 	if (pixels == 0) {
 		return false;
 	}
 	ScrollBar horizontalBar = getHorizontalBar();
-	if (horizontalBar != null) {
+	if (horizontalBar != null && adjustScrollBar) {
 		horizontalBar.setSelection(horizontalScrollOffset + pixels);
 	}
-	scrollHorizontal(pixels);
+	scroll(pixels, 0);
 	return true;
+}
+/**
+ * Scrolls the widget vertically.
+ * <p>
+ *
+ * @param pixel the new vertical scroll offset
+ * @param adjustScrollBar 
+ * 	true= the scroll thumb will be moved to reflect the new scroll offset.
+ * 	false = the scroll thumb will not be moved
+ * @return 
+ *	true=the widget was scrolled 
+ *	false=the widget was not scrolled, the given offset is not valid.
+ */
+boolean scrollVertical(int pixels, boolean adjustScrollBar) {
+	if (pixels == 0) {
+		return false;
+	}
+	ScrollBar verticalBar = getVerticalBar();
+	if (verticalBar != null && adjustScrollBar) {
+		verticalBar.setSelection(verticalScrollOffset + pixels);
+	}
+	scroll(0, pixels);
+	return true;
+}
+/**
+ * Scrolls the widget horizontally or vertically.
+ * <p>
+ * NOTE: This fuction can not be used to scroll the widget
+ * horizontally and vertically at the same time.
+ */
+void scroll(int hscroll, int vscroll) {	
+	Rectangle clientArea = getClientArea();
+	if (hscroll > 0 || vscroll > 0) {
+		int sourceX = leftMargin + hscroll;
+		int sourceY = topMargin + vscroll;
+		int scrollWidth = clientArea.width - sourceX - rightMargin;
+		int scrollHeight = clientArea.height - sourceY - bottomMargin;
+		scroll(
+			leftMargin, topMargin, 						// destination x, y
+			sourceX, sourceY,							// source x, y
+			scrollWidth, scrollHeight, true);
+		
+		// redraw from end of scrolled area to beginning of scroll 
+		// invalidated area
+		if (sourceX > scrollWidth) {
+			super.redraw(
+				leftMargin + scrollWidth, topMargin, 
+				hscroll - scrollWidth, scrollHeight, true);
+		}
+		if (sourceY > scrollHeight) {
+			super.redraw(
+				leftMargin, topMargin + scrollHeight, 
+				scrollWidth, vscroll - scrollHeight, true);
+		}
+	} else {
+		int destinationX = leftMargin - hscroll;
+		int destinationY = topMargin - vscroll;
+		int scrollWidth = clientArea.width - destinationX - rightMargin;
+		int scrollHeight = clientArea.height - destinationY - bottomMargin;
+		scroll(
+			destinationX, destinationY,					// destination x, y
+			leftMargin, topMargin,						// source x, y
+			scrollWidth, scrollHeight, true);
+		
+		// redraw from end of scroll invalidated area to scroll 
+		// destination
+		if (destinationX > scrollWidth) {
+			super.redraw(
+				leftMargin + scrollWidth, topMargin, 
+				-hscroll - scrollWidth, scrollHeight, true);	
+		}
+		if (destinationY > scrollHeight) {
+			// redraw from end of scroll invalidated area to scroll 
+			// destination
+			super.redraw(
+				leftMargin, topMargin + scrollHeight, 
+				scrollWidth, -vscroll - scrollHeight, true);	
+		}
+	}
+	horizontalScrollOffset += hscroll;
+	verticalScrollOffset += vscroll;	
+	if (vscroll != 0) calculateTopIndex(vscroll);
+	int oldColumnX = columnX;
+	setCaretLocation();
+	columnX = oldColumnX;
 }
 /** 
  * Selects all the text.
@@ -6550,8 +6583,9 @@ public void setFont(Font font) {
 	super.setFont(font);	
 	initializeRenderer();
 	// keep the same top line visible. fixes 5815
-	if (lineHeight != oldLineHeight) {
-		setVerticalScrollOffset(verticalScrollOffset * lineHeight / oldLineHeight, true);
+	if (isFixedLineHeight() && lineHeight != oldLineHeight) {
+		int vscroll = (verticalScrollOffset * lineHeight / oldLineHeight) - verticalScrollOffset;
+		scrollVertical(vscroll, true);
 		claimBottomFreeSpace();
 	}
 	calculateContentWidth();
@@ -6610,7 +6644,7 @@ public void setHorizontalIndex(int offset) {
 			offset = Math.max(0, width - clientAreaWidth);
 		}
 	}
-	scrollHorizontalBar(offset - horizontalScrollOffset);
+	scrollHorizontal(offset - horizontalScrollOffset, true);
 }
 /** 
  * Sets the horizontal pixel offset relative to the start of the line.
@@ -6650,7 +6684,7 @@ public void setHorizontalPixel(int pixel) {
 			pixel = Math.max(0, width - clientAreaWidth);
 		}
 	}
-	scrollHorizontalBar(pixel - horizontalScrollOffset);
+	scrollHorizontal(pixel - horizontalScrollOffset, true);
 }
 /** 
  * Sets the background color of the specified lines.
@@ -6721,6 +6755,7 @@ public void setMargins (int leftMargin, int topMargin, int rightMargin, int bott
 	this.topMargin = topMargin;
 	this.rightMargin = rightMargin;
 	this.bottomMargin = bottomMargin;
+	setCaretLocation();
 }
 /**
  * Flips selection anchor based on word selection direction.
@@ -7256,8 +7291,8 @@ public void setTopIndex(int topIndex) {
 	} else if (topIndex > lineCount - pageSize) {
 		topIndex = lineCount - pageSize;
 	}
-	int pixel = getLinePixel(topIndex) + verticalScrollOffset;
-	setVerticalScrollOffset(pixel, true);
+	int pixel = getLinePixel(topIndex);
+	scrollVertical(pixel, true);
 }
 /**
  * Sets the top pixel offset. Do nothing if there is no text set.
@@ -7298,41 +7333,7 @@ public void setTopPixel(int pixel) {
 			if (pixel + height > bottomPixel) pixel = bottomPixel - height; 
 		}
 	}
-	setVerticalScrollOffset(pixel, true);
-}
-/**
- * Scrolls the widget vertically.
- * <p>
- *
- * @param pixelOffset the new vertical scroll offset
- * @param adjustScrollBar 
- * 	true= the scroll thumb will be moved to reflect the new scroll offset.
- * 	false = the scroll thumb will not be moved
- * @return 
- *	true=the widget was scrolled 
- *	false=the widget was not scrolled, the given offset is not valid.
- */
-boolean setVerticalScrollOffset(int pixelOffset, boolean adjustScrollBar) {
-	if (pixelOffset == verticalScrollOffset) {
-		return false;
-	}
-	ScrollBar verticalBar = getVerticalBar();
-	if (verticalBar != null && adjustScrollBar) {
-		verticalBar.setSelection(pixelOffset);
-	}
-	Rectangle clientArea = getClientArea();
-	scroll(
-		0, 0, 									// destination x, y
-		0, pixelOffset - verticalScrollOffset,	// source x, y
-		clientArea.width, clientArea.height, true);
-
-	int delta = pixelOffset - verticalScrollOffset;
-	verticalScrollOffset = pixelOffset;	
-	calculateTopIndex(delta);
-	int oldColumnX = columnX;
-	setCaretLocation();
-	columnX = oldColumnX;
-	return true;
+	scrollVertical(pixel - verticalScrollOffset, true);
 }
 /**
  * Scrolls the specified location into view.
@@ -7354,17 +7355,16 @@ boolean showLocation(Point point) {
 	if (point.x < leftMargin) {
 		// always make 1/4 of a page visible
 		point.x = Math.max(horizontalScrollOffset * -1, point.x - horizontalIncrement);	
-		scrolled = scrollHorizontalBar(point.x);
+		scrolled = scrollHorizontal(point.x, true);
 	} else if (point.x >= clientAreaWidth) {
 		// always make 1/4 of a page visible
 		point.x = Math.min(lineCache.getWidth() - horizontalScrollOffset, point.x + horizontalIncrement);
-		scrolled = scrollHorizontalBar(point.x - clientAreaWidth);
+		scrolled = scrollHorizontal(point.x - clientAreaWidth, true);
 	}
 	if (point.y < topMargin) {
-		scrolled = setVerticalScrollOffset(point.y + verticalScrollOffset, true);
+		scrolled = scrollVertical(point.y, true);
 	} else if (point.y >= clientArea.height - bottomMargin) {
-		int y = point.y + verticalScrollOffset - clientArea.height;
-		scrolled = setVerticalScrollOffset(y, true);
+		scrolled = scrollVertical(point.y - clientArea.height, true);
 	}
 	return scrolled;
 }

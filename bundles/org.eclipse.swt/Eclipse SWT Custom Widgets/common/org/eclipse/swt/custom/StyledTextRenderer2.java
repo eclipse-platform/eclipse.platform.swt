@@ -148,10 +148,10 @@ private void disposeGC(GC gc) {
  */
 int drawLine(String line, int lineIndex, int paintX, int paintY, GC gc, Color widgetBackground, Color widgetForeground, boolean clearBackground) {
 	if (styledText == null) return 0;
-	StyledTextContent content = getContent();
+	StyledTextContent content = styledText.getContent();
 	int lineOffset = content.getOffsetAtLine(lineIndex);
 	int lineLength = line.length();
-	Point selection = styledText.internalGetSelection();
+	Point selection = styledText.getSelection();
 	int selectionStart = selection.x;
 	int selectionEnd = selection.y;
 	TextLayout layout = getTextLayout(line, lineOffset);
@@ -229,16 +229,6 @@ void drawLine(int paintX, int paintY, GC gc, Color foreground, Color background,
 	}
 	gc.setForeground(foreground);
 	layout.draw(gc, paintX, paintY);
-}
-/**
- * Returns the <class>StyledTextContent</class> to use for line offset
- * calculations.
- * </p>
- * @return the <class>StyledTextContent</class> to use for line offset
- * calculations.
- */
-private StyledTextContent getContent() {
-	return styledText != null ? styledText.internalGetContent() : null;
 }
 /**
  * Returns the baseline of the receiver
@@ -407,7 +397,8 @@ TextLayout getTextLayout(String line, int lineOffset, int[] bidiSegments, StyleR
 }
 private TextLayout createTextLayout(int lineOffset) {
 	if (styledText != null) {
-		int lineIndex = getContent().getLineAtOffset(lineOffset);
+		StyledTextContent content = styledText.getContent();
+		int lineIndex = content.getLineAtOffset(lineOffset);
 		updateTopIndex();
 		if (layouts != null) {
 			int layoutIndex = lineIndex - topIndex;
