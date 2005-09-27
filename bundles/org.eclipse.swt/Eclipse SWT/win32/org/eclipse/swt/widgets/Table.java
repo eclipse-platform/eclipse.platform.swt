@@ -47,10 +47,9 @@ public class Table extends Composite {
 	ImageList imageList, headerImageList;
 	TableItem currentItem;
 	TableColumn sortColumn;
-	int headerToolTipHandle, lastIndexOf, lastWidth, sortDirection;
+	int headerToolTipHandle, lastIndexOf, lastWidth, sortDirection, resizeCount;
 	boolean customDraw, dragStarted, fixScrollWidth, tipRequested;
-	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreResize;
-	boolean ignoreColumnMove, ignoreColumnResize;
+	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreColumnMove, ignoreColumnResize;
 	boolean wasSelected, wasResized;
 	static /*final*/ int HeaderProc;
 	static final int INSET = 4;
@@ -1907,7 +1906,7 @@ void releaseChildren (boolean destroy) {
 		int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 		if (OS.IsWin95 && columnCount > 1) {
 			/* Turn off redraw and resize events and leave them off */
-			ignoreResize = true;
+			resizeCount = 1;
 			OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 			for (int i=itemCount-1; i>=0; --i) {
 				TableItem item = items [i];
@@ -2502,20 +2501,22 @@ public void setColumnOrder (int [] order) {
 
 void setDeferResize (boolean defer) {
 	if (defer) {
-		ignoreResize = true;
-		wasResized = false;
-	} else {
-		ignoreResize = false;
-		if (wasResized) {
+		if (resizeCount++ == 0) {
 			wasResized = false;
-			setResizeChildren (false);
-			sendEvent (SWT.Resize);
-			if (isDisposed ()) return;
-			if (layout != null) {
-				markLayout (false, false);
-				updateLayout (false, false);
+		}
+	} else {
+		if (--resizeCount == 0) {
+			if (wasResized) {
+				wasResized = false;
+				setResizeChildren (false);
+				sendEvent (SWT.Resize);
+				if (isDisposed ()) return;
+				if (layout != null) {
+					markLayout (false, false);
+					updateLayout (false, false);
+				}
+				setResizeChildren (true);
 			}
-			setResizeChildren (true);
 		}
 	}
 }
@@ -2845,6 +2846,15 @@ public void setRedraw (boolean redraw) {
 			/* Set the width of the horizontal scroll bar */
 			setScrollWidth (null, true);
 
+			/*
+			* Bug in Windows.  For some reason, when WM_SETREDRAW is used 
+			* to turn redraw back on this may result in a WM_SIZE.  If the
+			* table column widths are adjusted in WM_SIZE, blank lines may
+			* be inserted at the top of the widget.  A call to LVM_GETTOPINDEX
+			* will return a negative number (this is an impossible result).
+			* The fix is to def
+			*/
+			setDeferResize (true);
 			OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
 			int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);	
 			if (hwndHeader != 0) OS.SendMessage (hwndHeader, OS.WM_SETREDRAW, 1, 0);
@@ -2862,6 +2872,7 @@ public void setRedraw (boolean redraw) {
 					OS.RedrawWindow (handle, null, 0, flags);
 				}
 			}
+			setDeferResize (false);
 		}
 	} else {
 		if (drawCount++ == 0) {
@@ -3967,7 +3978,7 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 }
 
 LRESULT WM_SIZE (int wParam, int lParam) {
-	if (ignoreResize) {
+	if (resizeCount != 0) {
 		wasResized = true;
 		return null;
 	}
