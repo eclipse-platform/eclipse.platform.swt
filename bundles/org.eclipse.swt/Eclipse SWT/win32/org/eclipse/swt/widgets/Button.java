@@ -42,14 +42,15 @@ import org.eclipse.swt.events.*;
 
 public class Button extends Control {
 	String text = "";
-	Image image, image2;
+	Image image, image2, disabledImage;
 	ImageList imageList;
 	boolean ignoreMouse;
+	static final int MARGIN = 4;
+	static final int CHECK_WIDTH, CHECK_HEIGHT;
+	static final int ICON_WIDTH = 128, ICON_HEIGHT = 128;
 	static final int ButtonProc;
 	static final TCHAR ButtonClass = new TCHAR (0,"BUTTON", true);
 	static final char [] SCROLLBAR = new char [] {'S', 'C', 'R', 'O', 'L', 'L', 'B', 'A', 'R', 0};
-	static final int CHECK_WIDTH, CHECK_HEIGHT;
-	static final int ICON_WIDTH = 128, ICON_HEIGHT = 128;
 	static {
 		int hBitmap = OS.LoadBitmap (0, OS.OBM_CHECKBOXES);
 		if (hBitmap == 0) {
@@ -108,24 +109,53 @@ public Button (Composite parent, int style) {
 }
 
 void _setImage (Image image) {
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, 0);
+	if (OS.COMCTL32_MAJOR >= 6) {
 		if (imageList != null) imageList.dispose ();
 		imageList = null;
 		if (image != null) {
 			imageList = new ImageList (style & SWT.RIGHT_TO_LEFT);
-			imageList.add (image);
+			imageList.add (image); //PBS_NORMAL
+			/*
+			* Bug in Windows.  When BCM_SETIMAGELIST is used to assign
+			* an image list with each of the button states, and the button
+			* has the style BS_CHECKBOX or BS_RADIOBUTTON, when the user
+			* drags the mouse in and out of the button when the state is
+			* set, the button draws using a blank image.  The fix is to
+			* set the complete image list only when the button is disabled.
+			*/
+			if (!OS.IsWindowEnabled (handle)) {
+				imageList.add (image); //PBS_HOT
+				imageList.add (image); //PBS_PRESSED
+				if (disabledImage != null) disabledImage.dispose ();
+				disabledImage = new Image (display, image, SWT.IMAGE_DISABLE);
+				imageList.add (disabledImage); //PBS_DISABLED
+				imageList.add (image); //PBS_DEFAULTED
+				imageList.add (image); //PBS_STYLUSHOT
+			}
 			BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
 			buttonImageList.himl = imageList.getHandle ();
-			if ((style & SWT.LEFT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
-			if ((style & SWT.CENTER) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_CENTER;
-			if ((style & SWT.RIGHT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_RIGHT;
-			TCHAR buffer = new TCHAR (getCodePage (), "", true);
-			OS.SetWindowText (handle, buffer);
+			int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE), newBits = oldBits;
+			newBits &= ~(OS.BS_LEFT | OS.BS_CENTER | OS.BS_RIGHT);
+			if ((style & SWT.LEFT) != 0) newBits |= OS.BS_LEFT;
+			if ((style & SWT.CENTER) != 0) newBits |= OS.BS_CENTER;
+			if ((style & SWT.RIGHT) != 0) newBits |= OS.BS_RIGHT;
+			if (text.length () == 0) {
+				if ((style & SWT.LEFT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
+				if ((style & SWT.CENTER) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_CENTER;
+				if ((style & SWT.RIGHT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_RIGHT;
+			} else {
+				buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
+				buttonImageList.margin_left = computeLeftMargin ();
+				buttonImageList.margin_right = MARGIN;
+				newBits &= ~(OS.BS_CENTER | OS.BS_RIGHT);
+				newBits |= OS.BS_LEFT;
+			}
+			if (newBits != oldBits) {
+				OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
+				OS.InvalidateRect (handle, null, true);
+			}
 			OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, buttonImageList);
 		} else {
-			TCHAR buffer = new TCHAR (getCodePage (), text, true);
-			OS.SetWindowText (handle, buffer);
 			OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, 0);
 		}
 	} else {
@@ -173,7 +203,6 @@ void _setImage (Image image) {
 					break;
 				}
 			}
-			
 			/*
 			* Feature in Windows.  The button control mirrors its image when the
 			* flag WS_EX_LAYOUTRTL is set. This behaviour is not desirable in SWT.
@@ -213,13 +242,56 @@ void _setImage (Image image) {
 				}
 			}
 		}
-		int newBits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		int oldBits = newBits;
+		int newBits = OS.GetWindowLong (handle, OS.GWL_STYLE), oldBits = newBits;
 		newBits &= ~(OS.BS_BITMAP | OS.BS_ICON);
 		newBits |= imageBits;
 		if (newBits != oldBits) OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
 		OS.SendMessage (handle, OS.BM_SETIMAGE, fImageType, hImage);
 	}
+}
+
+void _setText (String text) {
+	int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE), newBits = oldBits;
+	if (OS.COMCTL32_MAJOR >= 6) {
+		newBits &= ~(OS.BS_LEFT | OS.BS_CENTER | OS.BS_RIGHT);
+		if ((style & SWT.LEFT) != 0) newBits |= OS.BS_LEFT;
+		if ((style & SWT.CENTER) != 0) newBits |= OS.BS_CENTER;
+		if ((style & SWT.RIGHT) != 0) newBits |= OS.BS_RIGHT;
+		if (imageList != null) {
+			BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
+			buttonImageList.himl = imageList.getHandle ();
+			if (text.length () == 0) {
+				if ((style & SWT.LEFT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
+				if ((style & SWT.CENTER) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_CENTER;
+				if ((style & SWT.RIGHT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_RIGHT;
+			} else {
+				buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
+				buttonImageList.margin_left = computeLeftMargin ();
+				buttonImageList.margin_right = MARGIN;
+				newBits &= ~(OS.BS_CENTER | OS.BS_RIGHT);
+				newBits |= OS.BS_LEFT;
+			}
+			OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, buttonImageList);
+		}
+	} else {
+		newBits &= ~(OS.BS_BITMAP | OS.BS_ICON);
+	}
+	if (newBits != oldBits) {
+		OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
+		OS.InvalidateRect (handle, null, true);
+	}
+	/*
+	* Bug in Windows.  When a Button control is right-to-left and
+	* is disabled, the first pixel of the text is clipped.  The fix
+	* is to append a space to the text.
+	*/
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
+			text = OS.IsWindowEnabled (handle) ? text : text + " ";
+		}
+	}
+	TCHAR buffer = new TCHAR (getCodePage (), text, true);
+	OS.SetWindowText (handle, buffer);
 }
 
 /**
@@ -286,10 +358,33 @@ void click () {
 	ignoreMouse = false;
 }
 
+int computeLeftMargin () {
+	if (OS.COMCTL32_MAJOR < 6) return MARGIN;
+	if ((style & (SWT.PUSH | SWT.TOGGLE)) == 0) return MARGIN;
+	int margin = 0;
+	if (image != null && text.length () != 0) {
+		Rectangle bounds = image.getBounds ();
+		margin += bounds.width + MARGIN * 2;
+		int oldFont = 0;
+		int hDC = OS.GetDC (handle);
+		int newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
+		TCHAR buffer = new TCHAR (getCodePage (), text, true);
+		RECT rect = new RECT ();
+		int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE;
+		OS.DrawText (hDC, buffer, -1, rect, flags);
+		margin += rect.right - rect.left;
+		if (newFont != 0) OS.SelectObject (hDC, oldFont);
+		OS.ReleaseDC (handle, hDC);
+		OS.GetClientRect (handle, rect);
+		margin = Math.max (MARGIN, (rect.right - rect.left - margin) / 2);
+	}
+	return margin;
+}
+
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	int border = getBorderWidth ();
-	int width = 0, height = 0;
+	int width = 0, height = 0, border = getBorderWidth ();
 	if ((style & SWT.ARROW) != 0) {
 		if ((style & (SWT.UP | SWT.DOWN)) != 0) {
 			width += OS.GetSystemMetrics (OS.SM_CXVSCROLL);
@@ -304,16 +399,22 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		return new Point (width, height);
 	}
 	int extra = 0;
-	boolean hasImage;
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST();
-		OS.SendMessage (handle, OS.BCM_GETIMAGELIST, 0, buttonImageList);
-		hasImage = buttonImageList.himl != 0;
-	} else {
+	boolean hasImage = image != null, hasText = text.length () != 0;
+	if (OS.COMCTL32_MAJOR < 6) {
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		hasImage = (bits & (OS.BS_BITMAP | OS.BS_ICON)) != 0;		
+		hasImage = (bits & (OS.BS_BITMAP | OS.BS_ICON)) != 0;
+		if (hasImage) hasText = false;
 	}
-	if (!hasImage) {
+	if (hasImage) {
+		if (image != null) {
+			Rectangle rect = image.getBounds ();
+			width += rect.width;
+			if (hasText) width += MARGIN * 2;
+			height += rect.height;
+			extra = MARGIN * 2;
+		}
+	}
+	if (hasText) {
 		int oldFont = 0;
 		int hDC = OS.GetDC (handle);
 		int newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
@@ -324,23 +425,16 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		if (length == 0) {
 			height += lptm.tmHeight;
 		} else {
-			extra = Math.max (8, lptm.tmAveCharWidth);
+			extra = Math.max (MARGIN * 2, lptm.tmAveCharWidth);
 			TCHAR buffer = new TCHAR (getCodePage (), text, true);
 			RECT rect = new RECT ();
 			int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE;
 			OS.DrawText (hDC, buffer, -1, rect, flags);
 			width += rect.right - rect.left;
-			height += rect.bottom - rect.top;
+			height = Math.max (height, rect.bottom - rect.top);
 		}
 		if (newFont != 0) OS.SelectObject (hDC, oldFont);
 		OS.ReleaseDC (handle, hDC);
-	} else {
-		if (image != null) {
-			Rectangle rect = image.getBounds ();
-			width = rect.width;
-			height = rect.height;
-			extra = 8;
-		}
 	}
 	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
 		width += CHECK_WIDTH + extra;
@@ -383,10 +477,40 @@ void enableWidget (boolean enabled) {
 			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 			boolean hasImage = (bits & (OS.BS_BITMAP | OS.BS_ICON)) != 0;
 			if (!hasImage) {
-					String string = enabled ? text : text + " ";
-					TCHAR buffer = new TCHAR (getCodePage (), string, true);
-					OS.SetWindowText (handle, buffer);
+				String string = enabled ? text : text + " ";
+				TCHAR buffer = new TCHAR (getCodePage (), string, true);
+				OS.SetWindowText (handle, buffer);
 			}
+		}
+	}
+	/*
+	* Bug in Windows.  When a button has the style BS_CHECKBOX
+	* or BS_RADIOBUTTON, is checked, and is displaying both an
+	* image and some text, when BCM_SETIMAGELIST is used to
+	* assign an image list for each of the button states, the
+	* button does not draw properly.  When the user drags the
+	* mouse in and out of the button, it draws using a blank
+	* image.  The fix is to set the complete image list only
+	* when the button is disabled.
+	*/
+	if (OS.COMCTL32_MAJOR >= 6) {
+		if (imageList != null) {
+			BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
+			OS.SendMessage (handle, OS.BCM_GETIMAGELIST, 0, buttonImageList);
+			if (imageList != null) imageList.dispose ();
+			imageList = new ImageList (style & SWT.RIGHT_TO_LEFT);
+			imageList.add (image); //PBS_NORMAL
+			if (!OS.IsWindowEnabled (handle)) {
+				imageList.add (image); //PBS_HOT
+				imageList.add (image); //PBS_PRESSED
+				if (disabledImage != null) disabledImage.dispose ();
+				disabledImage = new Image (display, image, SWT.IMAGE_DISABLE);
+				imageList.add (disabledImage); //PBS_DISABLED
+				imageList.add (image); //PBS_DEFAULTED
+				imageList.add (image); //PBS_STYLUSHOT
+			}
+			buttonImageList.himl = imageList.getHandle ();
+			OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, buttonImageList);
 		}
 	}
 }
@@ -517,6 +641,8 @@ void releaseWidget () {
 	super.releaseWidget ();
 	if (imageList != null) imageList.dispose ();
 	imageList = null;
+	if (disabledImage != null) disabledImage.dispose ();
+	disabledImage = null;
 	if (image2 != null) image2.dispose ();
 	image2 = null;
 	text = null;
@@ -601,23 +727,33 @@ public void setAlignment (int alignment) {
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	bits &= ~(OS.BS_LEFT | OS.BS_CENTER | OS.BS_RIGHT);
-	if ((style & SWT.LEFT) != 0) bits |= OS.BS_LEFT;
-	if ((style & SWT.CENTER) != 0) bits |= OS.BS_CENTER;
-	if ((style & SWT.RIGHT) != 0) bits |= OS.BS_RIGHT;
-	OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+	int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE), newBits = oldBits;
+	newBits &= ~(OS.BS_LEFT | OS.BS_CENTER | OS.BS_RIGHT);
+	if ((style & SWT.LEFT) != 0) newBits |= OS.BS_LEFT;
+	if ((style & SWT.CENTER) != 0) newBits |= OS.BS_CENTER;
+	if ((style & SWT.RIGHT) != 0) newBits |= OS.BS_RIGHT;
+	if (OS.COMCTL32_MAJOR >= 6) {
 		if (imageList != null) {
 			BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
 			buttonImageList.himl = imageList.getHandle ();
-			if ((style & SWT.LEFT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
-			if ((style & SWT.CENTER) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_CENTER;
-			if ((style & SWT.RIGHT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_RIGHT;
+			if (text.length () == 0) {
+				if ((style & SWT.LEFT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
+				if ((style & SWT.CENTER) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_CENTER;
+				if ((style & SWT.RIGHT) != 0) buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_RIGHT;
+			} else {
+				buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
+				buttonImageList.margin_left = computeLeftMargin ();
+				buttonImageList.margin_right = MARGIN;
+				newBits &= ~(OS.BS_CENTER | OS.BS_RIGHT);
+				newBits |= OS.BS_LEFT;
+			}
 			OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, buttonImageList);
 		}
 	}
-	OS.InvalidateRect (handle, null, true);
+	if (newBits != oldBits) {
+		OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
+		OS.InvalidateRect (handle, null, true);
+	}
 }
 
 void setDefault (boolean value) {
@@ -661,7 +797,16 @@ boolean setFixedFocus () {
 public void setImage (Image image) {
 	checkWidget ();
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-	_setImage (this.image = image);
+	if ((style & SWT.ARROW) != 0) return;
+	this.image = image;
+	/* This code is intentionally commented */
+//	if (OS.COMCTL32_MAJOR < 6) {
+//		if (image == null || text.length () != 0) {
+//			_setText (text);
+//			return;
+//		}
+//	}
+	_setImage (image);
 }
 
 boolean setRadioFocus () {
@@ -711,7 +856,6 @@ public void setSelection (boolean selected) {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
 	int flags = selected ? OS.BST_CHECKED : OS.BST_UNCHECKED;
-	
 	/*
 	* Feature in Windows. When BM_SETCHECK is used
 	* to set the checked state of a radio or check
@@ -755,31 +899,15 @@ public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.ARROW) != 0) return;
-	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
-		OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, 0);
-		if (imageList != null) imageList.dispose ();
-		imageList = null;
-	} else {
-		int newBits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		int oldBits = newBits;
-		newBits &= ~(OS.BS_BITMAP | OS.BS_ICON);
-		if (newBits != oldBits) {
-			OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
-		}
-	}
 	text = string;
-	/*
-	* Bug in Windows.  When a Button control is right-to-left and
-	* is disabled, the first pixel of the text is clipped.  The fix
-	* is to append a space to the text.
-	*/
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
-		if (OS.COMCTL32_MAJOR < 6 || !OS.IsAppThemed ()) {
-			string = OS.IsWindowEnabled (handle) ? text : text + " ";
-		}
-	}
-	TCHAR buffer = new TCHAR (getCodePage (), string, true);
-	OS.SetWindowText (handle, buffer);
+	/* This code is intentionally commented */
+//	if (OS.COMCTL32_MAJOR < 6) {
+//		if (text.length () == 0 && image != null) {
+//			_setImage (image);
+//			return;
+//		}
+//	}
+	_setText (string);
 }
 
 int widgetStyle () {
@@ -848,6 +976,24 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	}
 	if ((style & SWT.PUSH) != 0) {
 		menuShell ().setDefaultButton (this, false);
+	}
+	return result;
+}
+
+LRESULT WM_SIZE (int wParam, int lParam) {
+	LRESULT result = super.WM_SIZE (wParam, lParam);
+	if (result != null) return result;
+	if (OS.COMCTL32_MAJOR >= 6) {
+		if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
+			if (imageList != null && text.length () != 0) {
+				BUTTON_IMAGELIST buttonImageList = new BUTTON_IMAGELIST ();
+				OS.SendMessage (handle, OS.BCM_GETIMAGELIST, 0, buttonImageList);
+				buttonImageList.uAlign = OS.BUTTON_IMAGELIST_ALIGN_LEFT;
+				buttonImageList.margin_left = computeLeftMargin ();
+				buttonImageList.margin_right = MARGIN;
+				OS.SendMessage (handle, OS.BCM_SETIMAGELIST, 0, buttonImageList);
+			}
+		}
 	}
 	return result;
 }
