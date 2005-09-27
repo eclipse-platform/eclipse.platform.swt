@@ -94,6 +94,70 @@ public class Button extends Control {
 public Button (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
+void _setImage (Image image) {
+	int labelPixmap = OS.XmUNSPECIFIED_PIXMAP;
+	int labelInsensitivePixmap = OS.XmUNSPECIFIED_PIXMAP;
+	if (bitmap != null) bitmap.dispose ();
+	if (disabled != null) disabled.dispose ();
+	bitmap = disabled = null;
+	if (image != null) {
+		if (image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+		switch (image.type) {
+			case SWT.BITMAP:
+				ImageData data;
+				if (image.mask == 0	&& (data = image.getImageData ()).alpha == -1 && data.alphaData == null && data.transparentPixel == -1) {
+					labelPixmap = image.pixmap;
+					disabled = new Image (display, image, SWT.IMAGE_DISABLE);
+					labelInsensitivePixmap = disabled.pixmap;
+					break;
+				}
+				//FALL THROUGH
+			case SWT.ICON:
+				Rectangle rect = image.getBounds ();
+				bitmap = new Image (display, rect.width, rect.height);
+				GC gc = new GC (bitmap);
+				gc.setBackground (getBackground ());
+				gc.fillRectangle (rect);
+				gc.drawImage (image, 0, 0);
+				gc.dispose ();
+				labelPixmap = bitmap.pixmap;
+				disabled = new Image (display, bitmap, SWT.IMAGE_DISABLE);
+				labelInsensitivePixmap = disabled.pixmap;
+				break;
+			default:
+				error (SWT.ERROR_NOT_IMPLEMENTED);
+		}
+	}
+	int [] argList = {
+		OS.XmNlabelType, image == null ? OS.XmSTRING : OS.XmPIXMAP,
+		OS.XmNlabelPixmap, labelPixmap,
+		OS.XmNlabelInsensitivePixmap, labelInsensitivePixmap,
+	};
+	OS.XtSetValues (handle, argList, argList.length / 2);
+}
+void _setText (String string) {
+	char [] text = new char [string.length ()];
+	string.getChars (0, text.length, text, 0);
+	int mnemonic = fixMnemonic (text);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), text, true);
+	int xmString = OS.XmStringParseText (
+		buffer,
+		0,
+		OS.XmFONTLIST_DEFAULT_TAG, 
+		OS.XmCHARSET_TEXT, 
+		null,
+		0,
+		0);	
+	if (xmString == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+	if (mnemonic == 0) mnemonic = OS.XK_VoidSymbol;
+	int [] argList = {
+		OS.XmNlabelType, OS.XmSTRING,
+		OS.XmNlabelString, xmString,
+		OS.XmNmnemonic, mnemonic,
+	};
+	OS.XtSetValues (handle, argList, argList.length / 2);
+	if (xmString != 0) OS.XmStringFree (xmString);
+}
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the control is selected, by sending
@@ -555,49 +619,9 @@ void setBackgroundPixel (int pixel) {
 	}
 	int [] argList = {OS.XmNlabelType, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
-	if (argList [1] == OS.XmPIXMAP) setBitmap (image);
+	if (argList [1] == OS.XmPIXMAP) _setImage (image);
 }
-void setBitmap (Image image) {
-	int labelPixmap = OS.XmUNSPECIFIED_PIXMAP;
-	int labelInsensitivePixmap = OS.XmUNSPECIFIED_PIXMAP;
-	if (bitmap != null) bitmap.dispose ();
-	if (disabled != null) disabled.dispose ();
-	bitmap = disabled = null;
-	if (image != null) {
-		if (image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-		switch (image.type) {
-			case SWT.BITMAP:
-				ImageData data;
-				if (image.mask == 0	&& (data = image.getImageData ()).alpha == -1 && data.alphaData == null && data.transparentPixel == -1) {
-					labelPixmap = image.pixmap;
-					disabled = new Image (display, image, SWT.IMAGE_DISABLE);
-					labelInsensitivePixmap = disabled.pixmap;
-					break;
-				}
-				//FALL THROUGH
-			case SWT.ICON:
-				Rectangle rect = image.getBounds ();
-				bitmap = new Image (display, rect.width, rect.height);
-				GC gc = new GC (bitmap);
-				gc.setBackground (getBackground ());
-				gc.fillRectangle (rect);
-				gc.drawImage (image, 0, 0);
-				gc.dispose ();
-				labelPixmap = bitmap.pixmap;
-				disabled = new Image (display, bitmap, SWT.IMAGE_DISABLE);
-				labelInsensitivePixmap = disabled.pixmap;
-				break;
-			default:
-				error (SWT.ERROR_NOT_IMPLEMENTED);
-		}
-	}
-	int [] argList = {
-		OS.XmNlabelType, image == null ? OS.XmSTRING : OS.XmPIXMAP,
-		OS.XmNlabelPixmap, labelPixmap,
-		OS.XmNlabelInsensitivePixmap, labelInsensitivePixmap,
-	};
-	OS.XtSetValues (handle, argList, argList.length / 2);
-}
+
 void setDefault (boolean value) {
 	if ((style & SWT.PUSH) == 0) return;
 	if (getShell ().parent == null) return;
@@ -645,7 +669,15 @@ public void setFont (Font font) {
  */
 public void setImage (Image image) {
 	checkWidget();
-	setBitmap (this.image = image);
+	if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	if ((style & SWT.ARROW) != 0) return;
+	this.image = image;
+	/* This code is intentionally commented*/
+//	if (image == null || text.length () != 0) {
+//		_setText (text);
+//		return;
+//	}
+	_setImage (image);
 }
 boolean setRadioSelection (boolean value) {
 	if ((style & SWT.RADIO) == 0) return false;
@@ -717,27 +749,12 @@ public void setText (String string) {
 	*/
 	if (text.equals (string)) return;
 	text = string;
-	char [] text = new char [string.length ()];
-	string.getChars (0, text.length, text, 0);
-	int mnemonic = fixMnemonic (text);
-	byte [] buffer = Converter.wcsToMbcs (getCodePage (), text, true);
-	int xmString = OS.XmStringParseText (
-		buffer,
-		0,
-		OS.XmFONTLIST_DEFAULT_TAG, 
-		OS.XmCHARSET_TEXT, 
-		null,
-		0,
-		0);	
-	if (xmString == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
-	if (mnemonic == 0) mnemonic = OS.XK_VoidSymbol;
-	int [] argList = {
-		OS.XmNlabelType, OS.XmSTRING,
-		OS.XmNlabelString, xmString,
-		OS.XmNmnemonic, mnemonic,
-	};
-	OS.XtSetValues (handle, argList, argList.length / 2);
-	if (xmString != 0) OS.XmStringFree (xmString);
+	/* This code is intentionally commented*/
+//	if (text.length () == 0 && image != null) {
+//		_setImage (image);
+//		return;
+//	}
+	_setText (string);
 }
 int traversalCode (int key, XKeyEvent xEvent) {
 	return super.traversalCode (key, xEvent) | SWT.TRAVERSE_MNEMONIC;
