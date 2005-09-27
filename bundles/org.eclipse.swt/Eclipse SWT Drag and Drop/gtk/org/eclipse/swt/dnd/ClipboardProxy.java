@@ -104,7 +104,7 @@ void dispose () {
  * This function provides the data to the clipboard on request.
  * When this clipboard is disposed, the data will no longer be available.
  */
-int /*long*/ getFunc( int /*long*/ clipboard, int /*long*/ selection_data, int /*long*/ info, int /*long*/ user_data_or_owner){
+int /*long*/ getFunc(int /*long*/ clipboard, int /*long*/ selection_data, int /*long*/ info, int /*long*/ user_data_or_owner){
 	if (selection_data == 0) return 0;
 	GtkSelectionData selectionData = new GtkSelectionData();
 	OS.memmove(selectionData, selection_data, GtkSelectionData.sizeof);
