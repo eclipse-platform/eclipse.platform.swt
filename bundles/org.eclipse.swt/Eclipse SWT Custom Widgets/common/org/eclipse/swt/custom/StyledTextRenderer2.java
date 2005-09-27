@@ -259,6 +259,13 @@ private int[] getBidiSegments(int lineOffset, String lineText) {
 	return styledText.getBidiSegments(lineOffset, lineText);
 }
 /**
+ *  Returns the Font for a StyleRange
+ */
+Font getFont (StyleRange styleRange) {
+	if (styleRange.font != null) return styleRange.font;
+	return getFont(styleRange.fontStyle);
+}
+/**
  *  Returns the Font according with the given style
  */
 Font getFont(int style) {
@@ -385,7 +392,7 @@ TextLayout getTextLayout(String line, int lineOffset, int[] bidiSegments, StyleR
 			if (lastOffset < start) {
 				layout.setStyle(null, lastOffset, start - 1);	
 			}
-			TextStyle textStyle = new TextStyle(getFont(style.fontStyle), style.foreground, style.background);
+			TextStyle textStyle = new TextStyle(getFont(style), style.foreground, style.background);
 			textStyle.underline = style.underline;
 			textStyle.strikeout = style.strikeout;
 			layout.setStyle(textStyle, start, end - 1);

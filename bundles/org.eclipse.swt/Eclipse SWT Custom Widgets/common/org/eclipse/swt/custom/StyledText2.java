@@ -145,7 +145,8 @@ public class StyledText2 extends Canvas {
 	int lastTextChangeNewLineCount;		// last text changing 
 	int lastTextChangeNewCharCount;		// event for use in the 
 	int lastTextChangeReplaceLineCount;	// text changed handler
-	int lastTextChangeReplaceCharCount;	
+	int lastTextChangeReplaceCharCount;
+	int lastLineBottom;					// the bottom pixel of the last line been replaced
 	boolean isMirrored;
 	boolean bidiColoring = false;		// apply the BIDI algorithm on text segments of the same color
 	Image leftCaretBitmap = null;
@@ -155,6 +156,7 @@ public class StyledText2 extends Canvas {
 	Caret defaultCaret = null;
 	boolean updateCaretDirection = true;
 	int partialHeight;						// amount, in pixels, of the partial top index that is visible
+	boolean fixedLineHeight;
 
 	final static boolean IS_CARBON, IS_GTK, IS_MOTIF;
 	final static boolean DOUBLE_BUFFER;
@@ -1376,6 +1378,7 @@ public StyledText2(Composite parent, int style) {
 	super.setBackground(getBackground());
 	Display display = getDisplay();
 	isMirrored = (super.getStyle() & SWT.MIRRORED) != 0;
+	fixedLineHeight = true;
 	if ((style & SWT.READ_ONLY) != 0) {
 		setEditable(false);
 	}
@@ -1403,7 +1406,7 @@ public StyledText2(Composite parent, int style) {
 				int lineOffset = content.getOffsetAtLine(lineIndex);
 				int offsetInLine = caretOffset - lineOffset;
 				Point newCaretPos = getPointAtOffset(line, lineIndex, offsetInLine);
-				setCaretLocation(newCaretPos, lineIndex, direction);
+				setCaretLocation(newCaretPos, direction);
 			}
 		};
 		BidiUtil.addLanguageListener(handle, runnable);
@@ -4330,6 +4333,8 @@ int getVerticalIncrement() {
 }
 int getCaretDirection() {
 	if (!isBidiCaret()) return SWT.DEFAULT;
+	// don't use isFixedLineHeight() here cause wrapping should have bidi caret
+	if (!fixedLineHeight) return SWT.DEFAULT;
 	if (!updateCaretDirection && caretDirection != SWT.NULL) return caretDirection;
 	updateCaretDirection = false;
 	int caretLine = getCaretLine();
@@ -4974,7 +4979,15 @@ void handleResize(Event event) {
 	if (wordWrap) {
 		if (oldWidth != clientAreaWidth) {
 			lineCache.reset(0, content.getLineCount(), false);
-			lineCache.calculateClientArea();
+			//lineCache.calculateClientArea();
+			lineCache.calculate(0, content.getLineCount());
+			//TODO fix verticalScrollOffset
+			int height = 0;
+			for (int i = 0; i < topIndex; i++) {
+				height += lineCache.getLineHeight(i);
+			}
+			height -= partialHeight;
+			verticalScrollOffset = height;
 			super.redraw();
 		}
 	} else if (clientAreaHeight > oldHeight) {
@@ -5022,9 +5035,24 @@ void handleTextChanged(TextChangedEvent event) {
 		// fixes bug 8273
 		claimRightFreeSpace();
 	}
+	boolean directDraw;
+	if (isFixedLineHeight()) {
+		directDraw = lastTextChangeNewLineCount == 0 && lastTextChangeReplaceLineCount == 0;
+	} else {
+		int lastLine = content.getLineAtOffset(lastTextChangeStart) + lastTextChangeNewLineCount;
+		int newLineBottom = getLinePixel(lastLine + 1);
+		directDraw = lastLineBottom == newLineBottom;
+		if (!directDraw) {
+			//TODO use scroll() instead of redraw()
+			int firstLine = content.getLineAtOffset(lastTextChangeStart);
+			int firstLineTop = Math.max(getLinePixel(firstLine), topMargin);
+			Rectangle clientArea = getClientArea();
+			super.redraw(clientArea.x, firstLineTop, clientArea.width, clientArea.height - firstLineTop, true);
+		}
+	}
 	// do direct drawing if the text change is confined to a single line.
 	// optimization and fixes bug 13999. see also handleTextChanging.
-	if (lastTextChangeNewLineCount == 0 && lastTextChangeReplaceLineCount == 0) {
+	if (directDraw) {
 		int startLine = content.getLineAtOffset(lastTextChangeStart);
 		int startY = getLinePixel(startLine);
 		int height = lineCache.getLineHeight(startLine);
@@ -5060,7 +5088,6 @@ void handleTextChanged(TextChangedEvent event) {
  * @param event.newLineCount number of new lines that are going to be inserted
  */
 void handleTextChanging(TextChangingEvent event) {
-	boolean isMultiLineChange = event.replaceLineCount > 0 || event.newLineCount > 0;			
 	if (event.replaceCharCount < 0) {
 		event.start += event.replaceCharCount;
 		event.replaceCharCount *= -1;
@@ -5070,10 +5097,16 @@ void handleTextChanging(TextChangingEvent event) {
 	lastTextChangeNewCharCount = event.newCharCount;
 	lastTextChangeReplaceLineCount = event.replaceLineCount;
 	lastTextChangeReplaceCharCount = event.replaceCharCount;
-	int firstLine = content.getLineAtOffset(event.start);
-	int textChangeY = getLinePixel(firstLine);
-	if (isMultiLineChange) {
-		redrawMultiLineChange(textChangeY, event.newLineCount, event.replaceLineCount);
+	if (isFixedLineHeight()) {
+		boolean isMultiLineChange = event.replaceLineCount > 0 || event.newLineCount > 0;			
+		if (isMultiLineChange) {			
+			int firstLine = content.getLineAtOffset(event.start);
+			int textChangeY = getLinePixel(firstLine);
+			redrawMultiLineChange(textChangeY, event.newLineCount, event.replaceLineCount);
+		}
+	} else {
+		int lastLine = content.getLineAtOffset(event.start) + event.replaceLineCount;
+		lastLineBottom = getLinePixel(lastLine + 1);
 	}
 	// notify default line styler about text change
 	if (defaultLineStyler != null) {
@@ -5380,7 +5413,7 @@ boolean isMirrored() {
  * false if none of the lines is visible
  */
 boolean isAreaVisible(int firstLine, int lastLine) {
-	int partialTopIndex = getLineIndex(0);
+	int partialTopIndex = getLineIndex(topMargin);
 	int partialBottomIndex = getPartialBottomIndex();
 	return !(firstLine > partialBottomIndex || lastLine < partialTopIndex);
 }
@@ -5754,13 +5787,6 @@ void redrawLines(int firstLine, int offsetInFirstLine, int lastLine, int endOffs
  * @param replacedLineCount number of replaced lines.
  */
 void redrawMultiLineChange(int y, int newLineCount, int replacedLineCount) {
-	
-	//FIX ME
-	if (true) {
-		redraw();
-		return;
-	}
-	
 	Rectangle clientArea = getClientArea();
 	int lineCount = newLineCount - replacedLineCount;
 	int sourceY;
@@ -6380,7 +6406,7 @@ public void setBidiColoring(boolean mode) {
 	checkWidget();
 	bidiColoring = mode;
 }
-void setCaretLocation(Point location, int line, int direction) {
+void setCaretLocation(Point location, int direction) {
 	Caret caret = getCaret();
 	if (caret != null) {
 		boolean updateImage = caret == defaultCaret;
@@ -6396,6 +6422,25 @@ void setCaretLocation(Point location, int line, int direction) {
 			location.x -= (caret.getSize().x - 1);
 		}		
 		caret.setLocation(location);
+		if (direction != caretDirection || !fixedLineHeight) {
+			int height;
+			if (fixedLineHeight) {
+				height = lineHeight;
+			} else {
+				int caretLine = content.getLineAtOffset(caretOffset);
+				if (!wordWrap) {
+					height = lineCache.getLineHeight(caretLine);
+				} else {
+					int lineOffset = content.getOffsetAtLine(caretLine);
+					String text = content.getLine(caretLine);
+					TextLayout layout = renderer.getTextLayout(text, lineOffset);
+					int lineInParagraph = layout.getLineIndex(caretOffset - lineOffset);
+					height = layout.getLineBounds(lineInParagraph).height;
+					renderer.disposeTextLayout(layout);
+				}
+			}
+			caret.setSize(caret.getSize().x, height);
+		}
 		getAccessible().textCaretMoved(getCaretOffset());
 		if (direction != caretDirection) {
 			caretDirection = direction;
@@ -6408,7 +6453,6 @@ void setCaretLocation(Point location, int line, int direction) {
 					defaultCaret.setImage(rightCaretBitmap);
 				}
 			}
-			caret.setSize(caret.getSize().x, lineHeight);
 			if (caretDirection == SWT.LEFT) {
 				BidiUtil.setKeyboardLanguage(BidiUtil.KEYBOARD_NON_BIDI);
 			} else if (caretDirection == SWT.RIGHT) {
@@ -6427,7 +6471,7 @@ void setCaretLocation() {
 	int lineOffset = content.getOffsetAtLine(lineIndex);
 	int offsetInLine = caretOffset - lineOffset;
 	Point newCaretPos = getPointAtOffset(line, lineIndex, offsetInLine);
-	setCaretLocation(newCaretPos, lineIndex, getCaretDirection());
+	setCaretLocation(newCaretPos, getCaretDirection());
 }
 /**
  * Sets the caret offset.
@@ -6563,6 +6607,24 @@ public void setDoubleClickEnabled(boolean enable) {
 public void setEditable(boolean editable) {
 	checkWidget();
 	this.editable = editable;
+}
+void setFixedLineHeight (boolean fixedLineHeight) {
+	/*Once the flag is on it can't be turned off*/
+	if (!this.fixedLineHeight) return;
+	if (this.fixedLineHeight == fixedLineHeight) return;
+	this.fixedLineHeight = fixedLineHeight;
+	if (isBidiCaret()) {
+		Caret caret = getCaret();
+		if (caret != null) {
+			if (caret == defaultCaret) {
+				if (!fixedLineHeight) {
+					caret.setImage(null);
+					caret.setSize(1, caret.getSize().y);
+				}
+			}
+		}
+	}
+	//caller of this function is responsible by calling setCaretLocation()
 }
 /**
  * Sets a new font to render text with.
@@ -7097,11 +7159,27 @@ public void setStyleRange(StyleRange range) {
 		int lastLine = content.getLineAtOffset(range.start + range.length);
 		lineCache.reset(firstLine, lastLine - firstLine + 1, true);
 
-		// if the style is not visible, there is no need to redraw
-		if (isAreaVisible(firstLine, lastLine)) {
+		setFixedLineHeight(range.font == null);
+		
+		if (!isFixedLineHeight()) {
+			int partialTopIndex = getLineIndex(topMargin);
+			if (partialTopIndex >= firstLine) {
+				lineCache.calculate(firstLine, partialTopIndex - firstLine + 1);
+				//TODO fix verticalScrollOffset
+			}
+			// change the style can cause the line height to change forcing 
+			// all the lines bellow to redraw
+			Rectangle clientArea = getClientArea();
 			int redrawTop = getLinePixel(firstLine);
-			int redrawBottom = getLinePixel(lastLine + 1);
-			draw(0, redrawTop, getClientArea().width, redrawBottom - redrawTop, true);
+			int redrawBottom = clientArea.height;
+			draw(0, redrawTop, clientArea.width, redrawBottom - redrawTop, true);			
+		} else {			
+			// if the style is not visible, there is no need to redraw
+			if (isAreaVisible(firstLine, lastLine)) {
+				int redrawTop = getLinePixel(firstLine);
+				int redrawBottom = getLinePixel(lastLine + 1);
+				draw(0, redrawTop, getClientArea().width, redrawBottom - redrawTop, true);
+			}
 		}
 	} else {
 		// clearing all styles
@@ -7354,7 +7432,7 @@ boolean showLocation(Point point) {
 	boolean scrolled = false;
 	if (point.x < leftMargin) {
 		// always make 1/4 of a page visible
-		point.x = Math.max(horizontalScrollOffset * -1, point.x - horizontalIncrement);	
+		point.x = Math.max(-horizontalScrollOffset, point.x - horizontalIncrement);	
 		scrolled = scrollHorizontal(point.x, true);
 	} else if (point.x >= clientAreaWidth) {
 		// always make 1/4 of a page visible
@@ -7362,9 +7440,9 @@ boolean showLocation(Point point) {
 		scrolled = scrollHorizontal(point.x - clientAreaWidth, true);
 	}
 	if (point.y < topMargin) {
-		scrolled = scrollVertical(point.y, true);
+		scrolled = scrollVertical(point.y - topMargin, true);
 	} else if (point.y >= clientArea.height - bottomMargin) {
-		scrolled = scrollVertical(point.y - clientArea.height, true);
+		scrolled = scrollVertical(point.y - clientArea.height + bottomMargin, true);
 	}
 	return scrolled;
 }
@@ -7390,7 +7468,7 @@ void showCaret() {
 	
 	if (!scrolled) {
 		// set the caret location if a scroll operation did not set it
-		setCaretLocation(newCaretPos, caretLine, getCaretDirection());
+		setCaretLocation(newCaretPos, getCaretDirection());
 	}
 }
 /**
@@ -7445,8 +7523,7 @@ boolean isBidiCaret() {
 	return BidiUtil.isBidiPlatform();
 }
 boolean isFixedLineHeight() {
-	if (true) return false;
-	return !wordWrap;
+	return !wordWrap && fixedLineHeight;
 }
 /**
  * Updates the selection and caret position depending on the text change.
