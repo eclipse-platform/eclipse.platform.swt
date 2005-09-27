@@ -116,7 +116,8 @@ public class CTabFolder extends Composite {
 	int selectedIndex = -1;
 	int[] priority = new int[0];
 	boolean mru = false;
-
+	Listener listener;
+	
 	/* External Listener management */
 	CTabFolder2Listener[] folderListeners = new CTabFolder2Listener[0];
 	// support for deprecated listener mechanism
@@ -178,9 +179,6 @@ public class CTabFolder extends Composite {
 	// when disposing CTabFolder, don't try to layout the items or 
 	// change the selection as each child is destroyed.
 	boolean inDispose = false;
-	// do not dispose the items until after the application has processed
-	// the Dispose event
-	boolean ignoreDispose = false;
 
 	// keep track of size changes in order to redraw only affected area
 	// on Resize
@@ -284,7 +282,7 @@ public CTabFolder(Composite parent, int style) {
 	initAccessible();
 	
 	// Add all listeners
-	Listener listener = new Listener() {
+	listener = new Listener() {
 		public void handleEvent(Event event) {
 			switch (event.type) {
 				case SWT.Dispose:          onDispose(event); break;
@@ -1795,8 +1793,7 @@ void onKeyDown (Event event) {
 	}
 }
 void onDispose(Event event) {
-	if (ignoreDispose) return;
-	ignoreDispose = true;
+	removeListener(SWT.Dispose, listener);
 	notifyListeners(SWT.Dispose, event);
 	event.type = SWT.None;
 	/*
