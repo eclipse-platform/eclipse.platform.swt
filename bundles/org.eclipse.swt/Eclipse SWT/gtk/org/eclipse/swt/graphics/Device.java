@@ -780,7 +780,7 @@ public void setWarnings (boolean warnings) {
 	}
 }
 
-static int XErrorProc (int xDisplay, int xErrorEvent) {
+static int /*long*/ XErrorProc (int /*long*/ xDisplay, int /*long*/ xErrorEvent) {
 	Device device = findDevice (xDisplay);
 	if (device != null) {
 		if (device.warningLevel == 0) {
@@ -796,7 +796,7 @@ static int XErrorProc (int xDisplay, int xErrorEvent) {
 	return 0;
 }
 
-static int XIOErrorProc (int xDisplay) {
+static int /*long*/ XIOErrorProc (int /*long*/ xDisplay) {
 	Device device = findDevice (xDisplay);
 	if (device != null) {
 		if (DEBUG || device.debug) {
