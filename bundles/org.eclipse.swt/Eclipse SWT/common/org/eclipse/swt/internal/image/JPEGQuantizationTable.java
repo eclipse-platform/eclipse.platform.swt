@@ -61,8 +61,8 @@ public int[] getQuantizationTablesKeys() {
 	int totalLength = getSegmentLength() - 2;
 	int ofs = 4;
 	while (totalLength > 64) {
-		int tq = (reference[ofs] & 0xFF) % 16;
-		int pq = (reference[ofs] & 0xFF) / 16;
+		int tq = reference[ofs] & 0xF;
+		int pq = (reference[ofs] & 0xFF) >> 4;
 		if (pq == 0) {
 			ofs += 65;
 			totalLength -= 65;
@@ -90,7 +90,7 @@ public int[][] getQuantizationTablesValues() {
 	int ofs = 4;
 	while (totalLength > 64) {
 		int[] qk = new int[64];
-		int pq = (reference[ofs] & 0xFF) / 16;
+		int pq = (reference[ofs] & 0xFF) >> 4;
 		if (pq == 0) {
 			for (int i = 0; i < qk.length; i++) {
 				qk[i] = reference[ofs + i + 1];
@@ -134,8 +134,8 @@ public void scaleBy(int qualityFactor) {
 	int totalLength = getSegmentLength() - 2;
 	int ofs = 4;
 	while (totalLength > 64) {
-//		int tq = (reference[ofs] & 0xFF) % 16;
-		int pq = (reference[ofs] & 0xFF) / 16;
+//		int tq = reference[ofs] & 0xFF;
+		int pq = (reference[ofs] & 0xFF) >> 4;
 		if (pq == 0) {
 			for (int i = ofs + 1; i <= ofs + 64; i++) {
 				int temp = ((reference[i] & 0xFF) * qFactor + 50) / 100;
@@ -150,8 +150,8 @@ public void scaleBy(int qualityFactor) {
 				int temp = (((reference[i] & 0xFF) * 256 + (reference[i + 1] & 0xFF)) * qFactor + 50) / 100;
 				if (temp <= 0) temp = 1;
 				if (temp > 32767) temp = 32767;
-				reference[i] = (byte)(temp / 256);
-				reference[i + 1] = (byte)(temp % 256);
+				reference[i] = (byte)(temp >> 8);
+				reference[i + 1] = (byte)(temp & 0xFF);
 			}
 			ofs += 129;
 			totalLength -= 129;

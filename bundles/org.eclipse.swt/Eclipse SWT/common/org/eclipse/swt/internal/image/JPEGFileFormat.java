@@ -110,7 +110,24 @@ final class JPEGFileFormat extends FileFormat {
 	public static final int ID_Y		= 1 - 1;
 	public static final int ID_CB	= 2 - 1;
 	public static final int ID_CR	= 3 - 1;
-
+	public static final RGB[] RGB16 = new RGB[] {
+		new RGB(0,0,0),
+		new RGB(0x80,0,0),
+		new RGB(0,0x80,0),
+		new RGB(0x80,0x80,0),
+		new RGB(0,0,0x80),
+		new RGB(0x80,0,0x80),
+		new RGB(0,0x80,0x80),
+		new RGB(0xC0,0xC0,0xC0),
+		new RGB(0x80,0x80,0x80),
+		new RGB(0xFF,0,0),
+		new RGB(0,0xFF,0),
+		new RGB(0xFF,0xFF,0),
+		new RGB(0,0,0xFF),
+		new RGB(0xFF,0,0xFF),
+		new RGB(0,0xFF,0xFF),
+		new RGB(0xFF,0xFF,0xFF),
+	};
 	public static final int[] ExtendTest = {
 		0, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 
 		4096, 8192, 16384, 32768, 65536, 131072, 262144
@@ -129,6 +146,7 @@ final class JPEGFileFormat extends FileFormat {
 		58, 59, 52, 45, 38, 31, 39, 46,
 		53, 60, 61, 54, 47, 55, 62, 63
 	};
+
 	public static int[] CrRTable, CbBTable, CrGTable, CbGTable;
 	public static int[] RYTable, GYTable, BYTable,
 		RCbTable, GCbTable, BCbTable, RCrTable, GCrTable, BCrTable, NBitsTable;
@@ -221,14 +239,14 @@ void convert4BitRGBToYCbCr(ImageData image) {
 		int g = color.green;
 		int b = color.blue;
 		int n = RYTable[r] + GYTable[g] + BYTable[b];
-		yComp[i] = (byte)(n / 65536);
-		if ((n < 0) && (n % 65536 != 0)) yComp[i]--;
+		yComp[i] = (byte)(n >> 16);
+		if ((n < 0) && ((n & 0xFFFF) != 0)) yComp[i]--;
 		n = RCbTable[r] + GCbTable[g] + BCbTable[b];
-		cbComp[i] = (byte)(n / 65536);
-		if ((n < 0) && (n % 65536 != 0)) cbComp[i]--;
+		cbComp[i] = (byte)(n >> 16);
+		if ((n < 0) && ((n & 0xFFFF) != 0)) cbComp[i]--;
 		n = RCrTable[r] + GCrTable[g] + BCrTable[b];
-		crComp[i] = (byte)(n / 65536);
-		if ((n < 0) && (n % 65536 != 0)) crComp[i]--;
+		crComp[i] = (byte)(n >> 16);
+		if ((n < 0) && ((n & 0xFFFF) != 0)) crComp[i]--;
 	}
 	int bSize = srcWidth * srcHeight;
 	byte[] dataYComp = new byte[bSize];
@@ -236,14 +254,14 @@ void convert4BitRGBToYCbCr(ImageData image) {
 	byte[] dataCrComp = new byte[bSize];
 	byte[] origData = image.data;
 	int bytesPerLine = image.bytesPerLine;
-	int maxScanlineByte = srcWidth / 2;
+	int maxScanlineByte = srcWidth >> 1;
 	for (int yPos = 0; yPos < srcHeight; yPos++) {
 		for (int xPos = 0; xPos < maxScanlineByte; xPos++) {
 			int srcIndex = yPos * bytesPerLine + xPos;
 			int dstIndex = yPos * srcWidth + (xPos * 2);
 			int value2 = origData[srcIndex] & 0xFF;
-			int value1 = value2 / 16;
-			value2 = value2 % 16;
+			int value1 = value2 >> 4;
+			value2 &= 0x0F;
 			dataYComp[dstIndex] = yComp[value1];
 			dataCbComp[dstIndex] = cbComp[value1];
 			dataCrComp[dstIndex] = crComp[value1];
@@ -268,18 +286,18 @@ void convert8BitRGBToYCbCr(ImageData image) {
 		int g = color.green;
 		int b = color.blue;
 		int n = RYTable[r] + GYTable[g] + BYTable[b];
-		yComp[i] = (byte)(n / 65536);
-		if ((n < 0) && (n % 65536 != 0)) yComp[i]--;
+		yComp[i] = (byte)(n >> 16);
+		if ((n < 0) && ((n & 0xFFFF) != 0)) yComp[i]--;
 		n = RCbTable[r] + GCbTable[g] + BCbTable[b];
-		cbComp[i] = (byte)(n / 65536);
-		if ((n < 0) && (n % 65536 != 0)) cbComp[i]--;
+		cbComp[i] = (byte)(n >> 16);
+		if ((n < 0) && ((n & 0xFFFF) != 0)) cbComp[i]--;
 		n = RCrTable[r] + GCrTable[g] + BCrTable[b];
-		crComp[i] = (byte)(n / 65536);
-		if ((n < 0) && (n % 65536 != 0)) crComp[i]--;
+		crComp[i] = (byte)(n >> 16);
+		if ((n < 0) && ((n & 0xFFFF) != 0)) crComp[i]--;
 	}
 	int dstWidth = image.width;
 	int dstHeight = srcHeight;
-	int stride = (srcWidth + 3) / 4 * 4;
+	int stride = ((srcWidth + 3) >> 2) << 2;
 	int bSize = dstWidth * dstHeight;
 	byte[] dataYComp = new byte[bSize];
 	byte[] dataCbComp = new byte[bSize];
@@ -348,9 +366,9 @@ void convertMultiRGBToYCbCr(ImageData image) {
 				g = (greenShift < 0) ? g >>> -greenShift : g << greenShift;
 				int b = pixel & blueMask;
 				b = (blueShift < 0) ? b >>> -blueShift : b << blueShift;				
-				dataYComp[dstDataIndex] = (byte)((RYTable[r] + GYTable[g] + BYTable[b]) / 65536);
-				dataCbComp[dstDataIndex] = (byte)((RCbTable[r] + GCbTable[g] + BCbTable[b]) / 65536);
-				dataCrComp[dstDataIndex] = (byte)((RCrTable[r] + GCrTable[g] + BCrTable[b]) / 65536);
+				dataYComp[dstDataIndex] = (byte)((RYTable[r] + GYTable[g] + BYTable[b]) >> 16);
+				dataCbComp[dstDataIndex] = (byte)((RCbTable[r] + GCbTable[g] + BCbTable[b]) >> 16);
+				dataCrComp[dstDataIndex] = (byte)((RCrTable[r] + GCrTable[g] + BCrTable[b]) >> 16);
 			}
 		}
 	} else {
@@ -364,9 +382,9 @@ void convertMultiRGBToYCbCr(ImageData image) {
 				int r = rgb.red;
 				int g = rgb.green;
 				int b = rgb.blue;
-				dataYComp[dstDataIndex] = (byte)((RYTable[r] + GYTable[g] + BYTable[b]) / 65536);
-				dataCbComp[dstDataIndex] = (byte)((RCbTable[r] + GCbTable[g] + BCbTable[b]) / 65536);
-				dataCrComp[dstDataIndex] = (byte)((RCrTable[r] + GCrTable[g] + BCrTable[b]) / 65536);
+				dataYComp[dstDataIndex] = (byte)((RYTable[r] + GYTable[g] + BYTable[b]) >> 16);
+				dataCbComp[dstDataIndex] = (byte)((RCbTable[r] + GCbTable[g] + BCbTable[b]) >> 16);
+				dataCrComp[dstDataIndex] = (byte)((RCrTable[r] + GCrTable[g] + BCrTable[b]) >> 16);
 			}
 		}
 	}
@@ -440,7 +458,7 @@ byte[] convertYCbCrToRGB() {
 			int cb = cbComp[srcIndex] & 0xFF;
 			int cr = crComp[srcIndex] & 0xFF;
 			int r = y + CrRTable[cr];
-			int g = y + ((CbGTable[cb] + CrGTable[cr]) / 65536);
+			int g = y + ((CbGTable[cb] + CrGTable[cr]) >> 16);
 			int b = y + CbBTable[cb];
 			if (r < 0) {
 				r = 0;
@@ -465,10 +483,6 @@ byte[] convertYCbCrToRGB() {
 		}
 	}
 	return rgbData;
-}
-byte[] convertYIQToRGB() {
-	/* Unsupported CMYK format. Answer an empty byte array. */
-	return new byte[0];
 }
 void decodeACCoefficients(int[] dataUnit, int iComp) {
 	int[] sParams = scanHeader.componentParameters[componentIds[iComp]];
@@ -579,12 +593,12 @@ int refineAC(int ac, int approxBit) {
 	if (ac > 0) {
 		int bit = nextBit();
 		if (bit != 0) {
-			ac = ac + (1 << approxBit);
+			ac += 1 << approxBit;
 		}
 	} else if (ac < 0) {
 		int bit = nextBit();
 		if (bit != 0) {
-			ac = ac + (-1 << approxBit);
+			ac += -1 << approxBit;
 		}
 	}
 	return ac;
@@ -602,7 +616,7 @@ void decodeDCCoefficient(int[] dataUnit, int iComp, boolean first, int approxBit
 		if (nBits != 0) {
 			int bits = receive(nBits);
 			int diff = extendBy(bits, nBits);
-			lastDC = lastDC + diff;
+			lastDC += diff;
 			precedingDCs[iComp] = lastDC;
 		}
 		if (progressive) {
@@ -619,25 +633,14 @@ void dequantize(int[] dataUnit, int iComp) {
 	}
 }
 byte[] decodeImageComponents() {
-	int[] compIds = new int[nComponents];
-	int compIdsIndex = 0;
-	for (int i = 0; i < nComponents; i++) {
-		compIds[compIdsIndex] = i + 1;
-		compIdsIndex++;
+	if (nComponents == 3) { // compIds 1, 2, 3
+		return convertYCbCrToRGB();
 	}
-	if ((compIds.length == 3) &&
-		(compIds[0] == 1) &&
-		(compIds[1] == 2) &&
-		(compIds[2] == 3)) {
-			return convertYCbCrToRGB();
-	}
-	if ((compIds.length == 3) &&
-		(compIds[0] == 1) &&
-		(compIds[1] == 4) &&
-		(compIds[2] == 5)) {
-			return convertYIQToRGB();
-	}
-	if (compIds.length == 4) {
+//	if (nComponents == 3) { // compIds 1, 4, 5
+//		Unsupported CMYK format.
+//		return convertYIQToRGB();
+//	}
+	if (nComponents == 4) {
 		return convertCMYKToRGB();
 	}
 	return convertYToRGB();
@@ -752,8 +755,7 @@ int decodeUsingTable(JPEGHuffmanTable huffmanTable) {
 		code = code * 2 + nextBit();
 		i++;
 	}
-	int j = valPtrs[i];
-	j = j + code - minCodes[i];
+	int j = valPtrs[i] + code - minCodes[i];
 	return huffVals[j];
 }
 void emit(int huffCode, int nBits) {
@@ -766,13 +768,13 @@ void emit(int huffCode, int nBits) {
 	};
 	int code = (huffCode & power2m1[nBits - 1]) << (24 - nBits - currentBitCount);
 	byte[] codeBuffer = new byte[4];
-	codeBuffer[0] = (byte)(code % 256);
-	codeBuffer[1] = (byte)((code / 256) % 256);
-	codeBuffer[2] = (byte)((code / 65536) % 256);
-	codeBuffer[3] = (byte)((code / 16777216) % 256);
+	codeBuffer[0] = (byte)(code & 0xFF);
+	codeBuffer[1] = (byte)((code >> 8) & 0xFF);
+	codeBuffer[2] = (byte)((code >> 16) & 0xFF);
+	codeBuffer[3] = (byte)((code >> 24) & 0xFF);
 	int abs = nBits - (8 - currentBitCount);
 	if (abs < 0) abs = -abs;
-	if ((abs / 8) > 0) {
+	if ((abs >> 3) > 0) {
 		currentByte += codeBuffer[2];
 		emitByte((byte)currentByte);
 		emitByte(codeBuffer[1]);
@@ -900,25 +902,7 @@ void expandImageComponents() {
 			int compHeight = frameComponent[CH];
 			int upCompWidth = compWidth * upH;
 			int upCompHeight = compHeight * upV;
-			RGB[] rgbs = new RGB[] {
-				new RGB(0,0,0),
-				new RGB(0x80,0,0),
-				new RGB(0,0x80,0),
-				new RGB(0x80,0x80,0),
-				new RGB(0,0,0x80),
-				new RGB(0x80,0,0x80),
-				new RGB(0,0x80,0x80),
-				new RGB(0xC0,0xC0,0xC0),
-				new RGB(0x80,0x80,0x80),
-				new RGB(0xFF,0,0),
-				new RGB(0,0xFF,0),
-				new RGB(0xFF,0xFF,0),
-				new RGB(0,0,0xFF),
-				new RGB(0xFF,0,0xFF),
-				new RGB(0,0xFF,0xFF),
-				new RGB(0xFF,0xFF,0xFF),
-			};
-			ImageData src = new ImageData(compWidth, compHeight, 8, new PaletteData(rgbs), 4, component);
+			ImageData src = new ImageData(compWidth, compHeight, 8, new PaletteData(RGB16), 4, component);
 			ImageData dest = src.scaledTo(upCompWidth, upCompHeight);
 			imageComponents[iComp] = dest.data;
 		}
@@ -972,14 +956,12 @@ void forwardDCT(int[] dataUnit) {
 		dataUnit[rIndex + 4]  = (tmp10 - tmp11) * 4;
 
 		int z1 = (tmp12 + tmp13) * FIX_0_541196100;
-		int scaleFactor1 = ExtendTest[11];
-		int scaleFactor2 = ExtendTest[12];
-		int n = z1 + (tmp13 * FIX_0_765366865) + scaleFactor1;
-		dataUnit[rIndex + 2] = n / scaleFactor2;
-		if ((n < 0) && (n % scaleFactor2 != 0)) dataUnit[rIndex + 2]--;
-		n = z1 + (tmp12 * (0 - FIX_1_847759065)) + scaleFactor1;
- 		dataUnit[rIndex + 6] = n / scaleFactor2;
-		if ((n < 0) && (n % scaleFactor2 != 0)) dataUnit[rIndex + 6]--;
+		int n = z1 + (tmp13 * FIX_0_765366865) + 1024;
+		dataUnit[rIndex + 2] = n >> 11;
+		if ((n < 0) && ((n & 0x07FF) != 0)) dataUnit[rIndex + 2]--;
+		n = z1 + (tmp12 * (0 - FIX_1_847759065)) + 1024;
+ 		dataUnit[rIndex + 6] = n >> 11;
+		if ((n < 0) && ((n & 0x07FF) != 0)) dataUnit[rIndex + 6]--;
 
 		/**
 		 * Odd part per figure 8 --- note paper omits factor of sqrt(2).
@@ -992,30 +974,30 @@ void forwardDCT(int[] dataUnit) {
 		int z4 = tmp5 + tmp7;
 		int z5 = (z3 + z4) * FIX_1_175875602;	// sqrt(2) * c3
 
-		tmp4 = tmp4 * FIX_0_298631336;	// sqrt(2) * (-c1+c3+c5-c7)
-		tmp5 = tmp5 * FIX_2_053119869;	// sqrt(2) * ( c1+c3-c5+c7)
-		tmp6 = tmp6 * FIX_3_072711026;	// sqrt(2) * ( c1+c3+c5-c7)
-		tmp7 = tmp7 * FIX_1_501321110;	// sqrt(2) * ( c1+c3-c5-c7)
-		z1 = z1 * (0 - FIX_0_899976223);	// sqrt(2) * (c7-c3)
-		z2 = z2 * (0 - FIX_2_562915447);	// sqrt(2) * (-c1-c3)
-		z3 = z3 * (0 - FIX_1_961570560);	// sqrt(2) * (-c3-c5)
-		z4 = z4 * (0 - FIX_0_390180644);	// sqrt(2) * (c5-c3)
+		tmp4 *= FIX_0_298631336;	// sqrt(2) * (-c1+c3+c5-c7)
+		tmp5 *= FIX_2_053119869;	// sqrt(2) * ( c1+c3-c5+c7)
+		tmp6 *= FIX_3_072711026;	// sqrt(2) * ( c1+c3+c5-c7)
+		tmp7 *= FIX_1_501321110;	// sqrt(2) * ( c1+c3-c5-c7)
+		z1 *= 0 - FIX_0_899976223;	// sqrt(2) * (c7-c3)
+		z2 *= 0 - FIX_2_562915447;	// sqrt(2) * (-c1-c3)
+		z3 *= 0 - FIX_1_961570560;	// sqrt(2) * (-c3-c5)
+		z4 *= 0 - FIX_0_390180644;	// sqrt(2) * (c5-c3)
 
-		z3 = z3 + z5;
-		z4 = z4 + z5;
+		z3 += z5;
+		z4 += z5;
 
-		n = tmp4 + z1 + z3 + scaleFactor1;
-		dataUnit[rIndex + 7] = n / scaleFactor2;
-		if ((n < 0) && (n % scaleFactor2 != 0)) dataUnit[rIndex + 7]--;
-		n = tmp5 + z2 + z4 + scaleFactor1;
-		dataUnit[rIndex + 5] = n / scaleFactor2;
-		if ((n < 0) && (n % scaleFactor2 != 0)) dataUnit[rIndex + 5]--;
-		n = tmp6 + z2 + z3 + scaleFactor1;
-		dataUnit[rIndex + 3] = n / scaleFactor2;
-		if ((n < 0) && (n % scaleFactor2 != 0)) dataUnit[rIndex + 3]--;
-		n = tmp7 + z1 + z4 + scaleFactor1;
-		dataUnit[rIndex + 1] = n / scaleFactor2;
-		if ((n < 0) && (n % scaleFactor2 != 0)) dataUnit[rIndex + 1]--;
+		n = tmp4 + z1 + z3 + 1024;
+		dataUnit[rIndex + 7] = n >> 11;
+		if ((n < 0) && ((n & 0x07FF) != 0)) dataUnit[rIndex + 7]--;
+		n = tmp5 + z2 + z4 + 1024;
+		dataUnit[rIndex + 5] = n >> 11;
+		if ((n < 0) && ((n & 0x07FF) != 0)) dataUnit[rIndex + 5]--;
+		n = tmp6 + z2 + z3 + 1024;
+		dataUnit[rIndex + 3] = n >> 11;
+		if ((n < 0) && ((n & 0x07FF) != 0)) dataUnit[rIndex + 3]--;
+		n = tmp7 + z1 + z4 + 1024;
+		dataUnit[rIndex + 1] = n >> 11;
+		if ((n < 0) && ((n & 0x07FF) != 0)) dataUnit[rIndex + 1]--;
 	}
 
 	/**
@@ -1050,24 +1032,20 @@ void forwardDCT(int[] dataUnit) {
 		int tmp11 = tmp1 + tmp2;
 		int tmp12 = tmp1 - tmp2;
 
-		int scaleFactor1 = ExtendTest[5];
-		int scaleFactor2 = ExtendTest[6];
-		int n = tmp10 + tmp11 + scaleFactor1;
-		dataUnit[c0] = n / scaleFactor2;
-		if ((n < 0) && (n % scaleFactor2 != 0)) dataUnit[c0]--;
-		n = tmp10 - tmp11 + scaleFactor1;
-		dataUnit[c4] = n / scaleFactor2;
-		if ((n < 0) && (n % scaleFactor2 != 0)) dataUnit[c4]--;
+		int n = tmp10 + tmp11 + 16;
+		dataUnit[c0] = n >> 5;
+		if ((n < 0) && ((n & 0x1F) != 0)) dataUnit[c0]--;
+		n = tmp10 - tmp11 + 16;
+		dataUnit[c4] = n >> 5;
+		if ((n < 0) && ((n & 0x1F) != 0)) dataUnit[c4]--;
 
 		int z1 = (tmp12 + tmp13) * FIX_0_541196100;
-		scaleFactor1 = ExtendTest[18];
-		scaleFactor2 = ExtendTest[19];
-		n = z1 + (tmp13 * FIX_0_765366865) + scaleFactor1;
-		dataUnit[c2] = n / scaleFactor2;
-		if ((n < 0) && (n % scaleFactor2 != 0)) dataUnit[c2]--;
-		n = z1 + (tmp12 * (0 - FIX_1_847759065)) + scaleFactor1;
-		dataUnit[c6] = n / scaleFactor2;
-		if ((n < 0) && (n % scaleFactor2 != 0)) dataUnit[c6]--;
+		n = z1 + (tmp13 * FIX_0_765366865) + 131072;
+		dataUnit[c2] = n >> 18;
+		if ((n < 0) && ((n & 0x3FFFF) != 0)) dataUnit[c2]--;
+		n = z1 + (tmp12 * (0 - FIX_1_847759065)) + 131072;
+		dataUnit[c6] = n >> 18;
+		if ((n < 0) && ((n & 0x3FFFF) != 0)) dataUnit[c6]--;
 
 		/**
 		 * Odd part per figure 8 --- note paper omits factor of sqrt(2).
@@ -1080,30 +1058,30 @@ void forwardDCT(int[] dataUnit) {
 		int z4 = tmp5 + tmp7;
 		int z5 = (z3 + z4) * FIX_1_175875602;	// sqrt(2) * c3
 
-		tmp4 = tmp4 * FIX_0_298631336;	// sqrt(2) * (-c1+c3+c5-c7)
-		tmp5 = tmp5 * FIX_2_053119869;	// sqrt(2) * ( c1+c3-c5+c7)
-		tmp6 = tmp6 * FIX_3_072711026;	// sqrt(2) * ( c1+c3+c5-c7)
-		tmp7 = tmp7 * FIX_1_501321110;	// sqrt(2) * ( c1+c3-c5-c7)
-		z1 = z1 * (0 - FIX_0_899976223);	// sqrt(2) * (c7-c3)
-		z2 = z2 * (0 - FIX_2_562915447);	// sqrt(2) * (-c1-c3)
-		z3 = z3 * (0 - FIX_1_961570560);	// sqrt(2) * (-c3-c5)
-		z4 = z4 * (0 - FIX_0_390180644);	// sqrt(2) * (c5-c3)
+		tmp4 *= FIX_0_298631336;	// sqrt(2) * (-c1+c3+c5-c7)
+		tmp5 *= FIX_2_053119869;	// sqrt(2) * ( c1+c3-c5+c7)
+		tmp6 *= FIX_3_072711026;	// sqrt(2) * ( c1+c3+c5-c7)
+		tmp7 *= FIX_1_501321110;	// sqrt(2) * ( c1+c3-c5-c7)
+		z1 *= 0 - FIX_0_899976223;	// sqrt(2) * (c7-c3)
+		z2 *= 0 - FIX_2_562915447;	// sqrt(2) * (-c1-c3)
+		z3 *= 0 - FIX_1_961570560;	// sqrt(2) * (-c3-c5)
+		z4 *= 0 - FIX_0_390180644;	// sqrt(2) * (c5-c3)
 
-		z3 = z3 + z5;
-		z4 = z4 + z5;
+		z3 += z5;
+		z4 += z5;
 
-		n = tmp4 + z1 + z3 + scaleFactor1;
-		dataUnit[c7] = n / scaleFactor2;
-		if ((n < 0) && (n % scaleFactor2 != 0)) dataUnit[c7]--;
-		n = tmp5 + z2 + z4 + scaleFactor1;
-		dataUnit[c5] = n / scaleFactor2;
-		if ((n < 0) && (n % scaleFactor2 != 0)) dataUnit[c5]--;
-		n = tmp6 + z2 + z3 + scaleFactor1;
-		dataUnit[c3] = n / scaleFactor2;
-		if ((n < 0) && (n % scaleFactor2 != 0)) dataUnit[c3]--;
-		n = tmp7 + z1 + z4 + scaleFactor1;
-		dataUnit[c1] = n / scaleFactor2;
-		if ((n < 0) && (n % scaleFactor2 != 0)) dataUnit[c1]--;
+		n = tmp4 + z1 + z3 + 131072;
+		dataUnit[c7] = n >> 18;
+		if ((n < 0) && ((n & 0x3FFFF) != 0)) dataUnit[c7]--;
+		n = tmp5 + z2 + z4 + 131072;
+		dataUnit[c5] = n >> 18;
+		if ((n < 0) && ((n & 0x3FFFF) != 0)) dataUnit[c5]--;
+		n = tmp6 + z2 + z3 + 131072;
+		dataUnit[c3] = n >> 18;
+		if ((n < 0) && ((n & 0x3FFFF) != 0)) dataUnit[c3]--;
+		n = tmp7 + z1 + z4 + 131072;
+		dataUnit[c1] = n >> 18;
+		if ((n < 0) && ((n & 0x3FFFF) != 0)) dataUnit[c1]--;
 	}
 }
 void getAPP0() {
@@ -1209,8 +1187,8 @@ static void initializeYCbCrRGBTables() {
 	CbGTable = new int[256];
 	for (int i = 0; i < 256; i++) {
 		int x2 = 2 * i - 255;
-		CrRTable[i] = (45941 * x2 + 32768) / 65536;
-		CbBTable[i] = (58065 * x2 + 32768) / 65536;
+		CrRTable[i] = (45941 * x2 + 32768) >> 16;
+		CbBTable[i] = (58065 * x2 + 32768) >> 16;
 		CrGTable[i] = -23401 * x2;
 		CbGTable[i] = -11277 * x2 + 32768;
 	}
@@ -1228,8 +1206,8 @@ void inverseDCT(int[] dataUnit) {
 		 * row DCT calculations can be simplified this way.
 		 */
 		if (isZeroInRow(dataUnit, rIndex)) {
-			int dcVal = dataUnit[rIndex] * 4;
-			for (int i = rIndex; i < rIndex + 8; i++) {
+			int dcVal = dataUnit[rIndex] << 2;
+			for (int i = rIndex + 7; i >= rIndex; i--) {
 				dataUnit[i] = dcVal;
 			}
 		} else {
@@ -1242,8 +1220,8 @@ void inverseDCT(int[] dataUnit) {
 			int z1 = (z2 + z3) * FIX_0_541196100;
 			int tmp2 = z1 + (z3 * (0 - FIX_1_847759065));
 			int tmp3 = z1 + (z2 * FIX_0_765366865);
-			int tmp0 = (dataUnit[rIndex] + dataUnit[rIndex + 4]) * 8192;
-			int tmp1 = (dataUnit[rIndex] - dataUnit[rIndex + 4]) * 8192;
+			int tmp0 = (dataUnit[rIndex] + dataUnit[rIndex + 4]) << 13;
+			int tmp1 = (dataUnit[rIndex] - dataUnit[rIndex + 4]) << 13;
 			int tmp10 = tmp0 + tmp3;
 			int tmp13 = tmp0 - tmp3;
 			int tmp11 = tmp1 + tmp2;
@@ -1260,34 +1238,32 @@ void inverseDCT(int[] dataUnit) {
 			z2 = tmp1 + tmp2;
 			z3 = tmp0 + tmp2;
 			int z4 = tmp1 + tmp3;
-			int z5 = (z3 + z4)* FIX_1_175875602; /* sqrt(2) * c3 */
+			int z5 = (z3 + z4) * FIX_1_175875602; /* sqrt(2) * c3 */
 			  
-			tmp0 = tmp0 * FIX_0_298631336;		/* sqrt(2) * (-c1+c3+c5-c7) */
-			tmp1 = tmp1 * FIX_2_053119869;		/* sqrt(2) * ( c1+c3-c5+c7) */
-			tmp2 = tmp2 * FIX_3_072711026;		/* sqrt(2) * ( c1+c3+c5-c7) */
-			tmp3 = tmp3 * FIX_1_501321110;		/* sqrt(2) * ( c1+c3-c5-c7) */
-			z1 = z1 * (0 - FIX_0_899976223);	/* sqrt(2) * (c7-c3) */
-			z2 = z2 * (0 - FIX_2_562915447);	/* sqrt(2) * (-c1-c3) */
-			z3 = z3 * (0 - FIX_1_961570560);	/* sqrt(2) * (-c3-c5) */
-			z4 = z4 * (0 - FIX_0_390180644);	/* sqrt(2) * (c5-c3) */
+			tmp0 *= FIX_0_298631336;		/* sqrt(2) * (-c1+c3+c5-c7) */
+			tmp1 *= FIX_2_053119869;		/* sqrt(2) * ( c1+c3-c5+c7) */
+			tmp2 *= FIX_3_072711026;		/* sqrt(2) * ( c1+c3+c5-c7) */
+			tmp3 *= FIX_1_501321110;		/* sqrt(2) * ( c1+c3-c5-c7) */
+			z1 *= 0 - FIX_0_899976223;	/* sqrt(2) * (c7-c3) */
+			z2 *= 0 - FIX_2_562915447;	/* sqrt(2) * (-c1-c3) */
+			z3 *= 0 - FIX_1_961570560;	/* sqrt(2) * (-c3-c5) */
+			z4 *= 0 - FIX_0_390180644;	/* sqrt(2) * (c5-c3) */
 
-			z3 = z3 + z5;
-			z4 = z4 + z5;
-			tmp0 = tmp0 + z1 + z3;
-			tmp1 = tmp1 + z2 + z4;
-			tmp2 = tmp2 + z2 + z3;
-			tmp3 = tmp3 + z1 + z4;
+			z3 += z5;
+			z4 += z5;
+			tmp0 += z1 + z3;
+			tmp1 += z2 + z4;
+			tmp2 += z2 + z3;
+			tmp3 += z1 + z4;
 
-			int descaleFactor1 = ExtendTest[11];
-			int descaleFactor2 = ExtendTest[12];
-			dataUnit[rIndex] = (tmp10 + tmp3 + descaleFactor1) / descaleFactor2;
-			dataUnit[rIndex + 7] = (tmp10 - tmp3 + descaleFactor1) / descaleFactor2;
-			dataUnit[rIndex + 1] = (tmp11 + tmp2 + descaleFactor1) / descaleFactor2;
-			dataUnit[rIndex + 6] = (tmp11 - tmp2 + descaleFactor1) / descaleFactor2;
-			dataUnit[rIndex + 2] = (tmp12 + tmp1 + descaleFactor1) / descaleFactor2;
-			dataUnit[rIndex + 5] = (tmp12 - tmp1 + descaleFactor1) / descaleFactor2;
-			dataUnit[rIndex + 3] = (tmp13 + tmp0 + descaleFactor1) / descaleFactor2;
-			dataUnit[rIndex + 4] = (tmp13 - tmp0 + descaleFactor1) / descaleFactor2;
+			dataUnit[rIndex] = (tmp10 + tmp3 + 1024) >> 11;
+			dataUnit[rIndex + 7] = (tmp10 - tmp3 + 1024) >> 11;
+			dataUnit[rIndex + 1] = (tmp11 + tmp2 + 1024) >> 11;
+			dataUnit[rIndex + 6] = (tmp11 - tmp2 + 1024) >> 11;
+			dataUnit[rIndex + 2] = (tmp12 + tmp1 + 1024) >> 11;
+			dataUnit[rIndex + 5] = (tmp12 - tmp1 + 1024) >> 11;
+			dataUnit[rIndex + 3] = (tmp13 + tmp0 + 1024) >> 11;
+			dataUnit[rIndex + 4] = (tmp13 - tmp0 + 1024) >> 11;
 		 }
 	}
 	/**
@@ -1305,7 +1281,7 @@ void inverseDCT(int[] dataUnit) {
 		int c6 = col + 48;
 		int c7 = col + 56;
 		if (isZeroInColumn(dataUnit, col)) {
-			int dcVal = (dataUnit[c0] + 16) / 32;
+			int dcVal = (dataUnit[c0] + 16) >> 5;
 			dataUnit[c0] = dcVal;
 			dataUnit[c1] = dcVal;
 			dataUnit[c2] = dcVal;
@@ -1319,13 +1295,15 @@ void inverseDCT(int[] dataUnit) {
 			 * Even part: reverse the even part of the forward DCT.
 			 * The rotator is sqrt(2)*c(-6).
 			 */
+			int z0 = dataUnit[c0];
 			int z2 = dataUnit[c2];
 			int z3 = dataUnit[c6];
+			int z4 = dataUnit[c4];
 			int z1 = (z2 + z3) * FIX_0_541196100;
 			int tmp2 = z1 + (z3 * (0 - FIX_1_847759065));
 			int tmp3 = z1 + (z2 * FIX_0_765366865);
-			int tmp0 = (dataUnit[c0] + dataUnit[c4]) * 8192;
-			int tmp1 = (dataUnit[c0] - dataUnit[c4]) * 8192;
+			int tmp0 = (z0 + z4) << 13;
+			int tmp1 = (z0 - z4) << 13;
 			int tmp10 = tmp0 + tmp3;
 			int tmp13 = tmp0 - tmp3;
 			int tmp11 = tmp1 + tmp2;
@@ -1341,37 +1319,35 @@ void inverseDCT(int[] dataUnit) {
 			z1 = tmp0 + tmp3;
 			z2 = tmp1 + tmp2;
 			z3 = tmp0 + tmp2;
-			int z4 = tmp1 + tmp3;
-			int z5 = (z3 + z4) * FIX_1_175875602;	/* sqrt(2) * c3 */
+			z4 = tmp1 + tmp3;
+			z0 = (z3 + z4) * FIX_1_175875602;	/* sqrt(2) * c3 */
 			
-			tmp0 = tmp0 * FIX_0_298631336;		/* sqrt(2) * (-c1+c3+c5-c7) */
-			tmp1 = tmp1 * FIX_2_053119869;		/* sqrt(2) * ( c1+c3-c5+c7) */
-			tmp2 = tmp2 * FIX_3_072711026;		/* sqrt(2) * ( c1+c3+c5-c7) */
-			tmp3 = tmp3 * FIX_1_501321110;		/* sqrt(2) * ( c1+c3-c5-c7) */
-			z1 = z1 * (0 - FIX_0_899976223);	/* sqrt(2) * (c7-c3) */
-			z2 = z2 * (0 - FIX_2_562915447);	/* sqrt(2) * (-c1-c3) */
-			z3 = z3 * (0 - FIX_1_961570560);	/* sqrt(2) * (-c3-c5) */
-			z4 = z4 * (0 - FIX_0_390180644);	/* sqrt(2) * (c5-c3) */
+			tmp0 *= FIX_0_298631336;		/* sqrt(2) * (-c1+c3+c5-c7) */
+			tmp1 *= FIX_2_053119869;		/* sqrt(2) * ( c1+c3-c5+c7) */
+			tmp2 *= FIX_3_072711026;		/* sqrt(2) * ( c1+c3+c5-c7) */
+			tmp3 *= FIX_1_501321110;		/* sqrt(2) * ( c1+c3-c5-c7) */
+			z1 *= 0 - FIX_0_899976223;	/* sqrt(2) * (c7-c3) */
+			z2 *= 0 - FIX_2_562915447;	/* sqrt(2) * (-c1-c3) */
+			z3 *= 0 - FIX_1_961570560;	/* sqrt(2) * (-c3-c5) */
+			z4 *= 0 - FIX_0_390180644;	/* sqrt(2) * (c5-c3) */
 			
-			z3 = z3 + z5;
-			z4 = z4 + z5;
+			z3 += z0;
+			z4 += z0;
 			
-			tmp0 = tmp0 + z1 + z3;
-			tmp1 = tmp1 + z2 + z4;
-			tmp2 = tmp2 + z2 + z3;
-			tmp3 = tmp3 + z1 + z4;
+			tmp0 += z1 + z3;
+			tmp1 += z2 + z4;
+			tmp2 += z2 + z3;
+			tmp3 += z1 + z4;
 
 			/* Final output stage: inputs are tmp10..tmp13, tmp0..tmp3 */
-			int descaleFactor1 = ExtendTest[18];
-			int descaleFactor2 = ExtendTest[19];
-			dataUnit[c0] = (tmp10 + tmp3 + descaleFactor1) / descaleFactor2;
-			dataUnit[c7] = (tmp10 - tmp3 + descaleFactor1) / descaleFactor2;
-			dataUnit[c1] = (tmp11 + tmp2 + descaleFactor1) / descaleFactor2;
-			dataUnit[c6] = (tmp11 - tmp2 + descaleFactor1) / descaleFactor2;
-			dataUnit[c2] = (tmp12 + tmp1 + descaleFactor1) / descaleFactor2;
-			dataUnit[c5] = (tmp12 - tmp1 + descaleFactor1) / descaleFactor2;
-			dataUnit[c3] = (tmp13 + tmp0 + descaleFactor1) / descaleFactor2;
-			dataUnit[c4] = (tmp13 - tmp0 + descaleFactor1) / descaleFactor2;
+			dataUnit[c0] = (tmp10 + tmp3 + 131072) >> 18;
+			dataUnit[c7] = (tmp10 - tmp3 + 131072) >> 18;
+			dataUnit[c1] = (tmp11 + tmp2 + 131072) >> 18;
+			dataUnit[c6] = (tmp11 - tmp2 + 131072) >> 18;
+			dataUnit[c2] = (tmp12 + tmp1 + 131072) >> 18;
+			dataUnit[c5] = (tmp12 - tmp1 + 131072) >> 18;
+			dataUnit[c3] = (tmp13 + tmp0 + 131072) >> 18;
+			dataUnit[c4] = (tmp13 - tmp0 + 131072) >> 18;
 		}
 	}
 }
@@ -1385,16 +1361,16 @@ boolean isFileFormat(LEDataInputStream stream) {
 	}
 }
 boolean isZeroInColumn(int[] dataUnit, int col) {
-	return (dataUnit[col + 8] + dataUnit[col + 16] +
-		dataUnit[col + 24] + dataUnit[col + 32] +
-		dataUnit[col + 40] + dataUnit[col + 48] +
-		dataUnit[col + 56]) == 0;
+	return dataUnit[col + 8] == 0 && dataUnit[col + 16] == 0
+			&& dataUnit[col + 24] == 0 && dataUnit[col + 32] == 0
+			&& dataUnit[col + 40] == 0 && dataUnit[col + 48] == 0
+			&& dataUnit[col + 56] == 0;
 }
 boolean isZeroInRow(int[] dataUnit, int rIndex) {
-	return (dataUnit[rIndex + 1] + dataUnit[rIndex + 2] +
-		dataUnit[rIndex + 3] + dataUnit[rIndex + 4] +
-		dataUnit[rIndex + 5] + dataUnit[rIndex + 6] +
-		dataUnit[rIndex + 7]) == 0;
+	return dataUnit[rIndex + 1] == 0 && dataUnit[rIndex + 2] == 0
+			&& dataUnit[rIndex + 3] == 0 && dataUnit[rIndex + 4] == 0
+			&& dataUnit[rIndex + 5] == 0 && dataUnit[rIndex + 6] == 0
+			&& dataUnit[rIndex + 7] == 0;
 }
 ImageData[] loadFromByteStream() {
 	JPEGStartOfImage soi = new JPEGStartOfImage(inputStream);
@@ -1599,7 +1575,7 @@ void processRestartInterval() {
 		}
 		currentByte = dataBuffer[bufferCurrentPosition] & 0xFF;
 	}
-	if (currentByte != ((RST0 + nextRestartNumber) % 256)) {
+	if (currentByte != ((RST0 + nextRestartNumber) & 0xFF)) {
 		SWT.error(SWT.ERROR_INVALID_IMAGE);
 	}
 	bufferCurrentPosition++;
@@ -1610,7 +1586,7 @@ void processRestartInterval() {
 	currentByte = dataBuffer[bufferCurrentPosition] & 0xFF;
 	currentBitCount = 8;
 	restartsToGo = restartInterval;
-	nextRestartNumber = (nextRestartNumber + 1) % 8;
+	nextRestartNumber = (nextRestartNumber + 1) & 0x7;
 	precedingDCs = new int[4];
 	eobrun = 0;
 }
@@ -1661,7 +1637,7 @@ void quantizeData(int[] dataUnit, int iComp) {
 		int data = dataUnit[zzIndex];
 		int absData = data < 0 ? 0 - data : data;
 		int qValue = qTable[i];
-		int q2 = qValue / 2;
+		int q2 = qValue >> 1;
 		absData += q2;
 		if (absData < qValue) {
 			dataUnit[zzIndex] = 0;

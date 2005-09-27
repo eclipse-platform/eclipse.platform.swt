@@ -26,23 +26,23 @@ public JPEGScanHeader(LEDataInputStream byteStream) {
 }
 
 public int getApproxBitPositionHigh() {
-	return (reference[(2 * getNumberOfImageComponents()) + 7] & 0xFF) / 16;
+	return reference[(2 * getNumberOfImageComponents()) + 7] >> 4;
 }
 
 public int getApproxBitPositionLow() {
-	return (reference[(2 * getNumberOfImageComponents()) + 7] & 0xFF) % 16;
+	return reference[(2 * getNumberOfImageComponents()) + 7] & 0xF;
 }
 
 public int getEndOfSpectralSelection() {
-	return (reference[(2 * getNumberOfImageComponents()) + 6] & 0xFF);
+	return reference[(2 * getNumberOfImageComponents()) + 6];
 }
 
 public int getNumberOfImageComponents() {
-	return (reference[4] & 0xFF);
+	return reference[4];
 }
 
 public int getStartOfSpectralSelection() {
-	return (reference[(2 * getNumberOfImageComponents()) + 5] & 0xFF);
+	return reference[(2 * getNumberOfImageComponents()) + 5];
 }
 
 /* Used when decoding. */
@@ -52,8 +52,8 @@ void initializeComponentParameters() {
 	for (int i = 0; i < compCount; i++) {
 		int ofs = 5 + i * 2;
 		int cid = reference[ofs] & 0xFF;
-		int dc = (reference[ofs + 1] & 0xFF) / 16;
-		int ac = (reference[ofs + 1] & 0xFF) % 16;
+		int dc = (reference[ofs + 1] & 0xFF) >> 4;
+		int ac = reference[ofs + 1] & 0xF;
 		if (componentParameters.length <= cid) {
 			int[][] newParams = new int[cid + 1][];
 			System.arraycopy(componentParameters, 0, newParams, 0, componentParameters.length);

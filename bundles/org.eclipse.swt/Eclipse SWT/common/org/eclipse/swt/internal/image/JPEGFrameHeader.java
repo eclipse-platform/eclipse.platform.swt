@@ -89,8 +89,8 @@ final class JPEGFrameHeader extends JPEGVariableSizeSegment {
 			int ofs = i * 3 + 10;
 			int ci = reference[ofs] & 0xFF;
 			componentIdentifiers[i] = ci;
-			int hi = (reference[ofs + 1] & 0xFF) / 16;
-			int vi = (reference[ofs + 1] & 0xFF) % 16;
+			int hi = (reference[ofs + 1] & 0xFF) >> 4;
+			int vi = reference[ofs + 1] & 0xF;
 			int tqi = reference[ofs + 2] & 0xFF;
 			if (hi > hmax) {
 				hmax = hi;

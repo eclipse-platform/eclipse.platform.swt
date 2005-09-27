@@ -142,8 +142,8 @@ void initialize() {
 	JPEGHuffmanTable[] huffTables = new JPEGHuffmanTable[8]; // maximum is 4 AC + 4 DC
 	int huffTableCount = 0;
 	while (totalLength > 0) {
-		int tc = (reference[ofs] & 0xFF) / 16; // table class: AC (1) or DC (0)
-		int tid = (reference[ofs] & 0xFF) % 16; // table id: 0-1 baseline, 0-3 prog/ext
+		int tc = (reference[ofs] & 0xFF) >> 4; // table class: AC (1) or DC (0)
+		int tid = reference[ofs] & 0xF; // table id: 0-1 baseline, 0-3 prog/ext
 		ofs++;
 		
 		/* Read the 16 count bytes and add them together to get the table size. */
