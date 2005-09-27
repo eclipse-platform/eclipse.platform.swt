@@ -159,27 +159,29 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		Rectangle bounds = image.getBounds ();
 		width = bounds.width;
 		height = bounds.height;
-	} else {
-		int [] ptr = new int [1];
-		OS.CopyControlTitleAsCFString (handle, ptr);
-		if (ptr [0] != 0) {
-			org.eclipse.swt.internal.carbon.Point ioBounds = new org.eclipse.swt.internal.carbon.Point ();
-			if (font == null) {
-				OS.GetThemeTextDimensions (ptr [0], (short) defaultThemeFont (), OS.kThemeStateActive, false, ioBounds, null);
-			} else {
-				int [] currentPort = new int [1];
-				OS.GetPort (currentPort);
-				OS.SetPortWindowPort (OS.GetControlOwner (handle));
-				OS.TextFont (font.id);
-				OS.TextFace (font.style);
-				OS.TextSize (font.size);
-				OS.GetThemeTextDimensions (ptr [0], (short) OS.kThemeCurrentPortFont, OS.kThemeStateActive, false, ioBounds, null);
-				OS.SetPort (currentPort [0]);
-			}
-			width = ioBounds.h;
-			height = ioBounds.v;
-			OS.CFRelease (ptr [0]);
+	}
+	int [] ptr = new int [1];
+	OS.CopyControlTitleAsCFString (handle, ptr);
+	if (ptr [0] != 0) {
+		org.eclipse.swt.internal.carbon.Point ioBounds = new org.eclipse.swt.internal.carbon.Point ();
+		if (font == null) {
+			OS.GetThemeTextDimensions (ptr [0], (short) defaultThemeFont (), OS.kThemeStateActive, false, ioBounds, null);
 		} else {
+			int [] currentPort = new int [1];
+			OS.GetPort (currentPort);
+			OS.SetPortWindowPort (OS.GetControlOwner (handle));
+			OS.TextFont (font.id);
+			OS.TextFace (font.style);
+			OS.TextSize (font.size);
+			OS.GetThemeTextDimensions (ptr [0], (short) OS.kThemeCurrentPortFont, OS.kThemeStateActive, false, ioBounds, null);
+			OS.SetPort (currentPort [0]);
+		}
+		width += ioBounds.h;
+		height = Math.max (height, ioBounds.v);
+		OS.CFRelease (ptr [0]);
+		if (image != null && isImage) width += 3;
+	} else {
+		if (image == null) {
 			width = DEFAULT_WIDTH;
 			height = DEFAULT_HEIGHT;
 		}
@@ -193,8 +195,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		height = Math.max (outMetric [0], height);
 	} else {
 		if ((style & SWT.FLAT) != 0 || (style & SWT.TOGGLE) != 0) {
-			width += 10;
-			height += 10;
+			width += 8;
+			height += 8;
 		} else {
 			width += 28;
 			int [] outMetric = new int [1];
@@ -281,24 +283,8 @@ void createHandle () {
 	fontRec.font = (short) defaultThemeFont ();
 	OS.SetControlFontStyle (handle, fontRec);
 	
-	if ((style & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) != 0) {
-		int textAlignment = 0;
-		int graphicAlignment = 0;
-		if ((style & SWT.LEFT) != 0) {
-			textAlignment = OS.kControlBevelButtonAlignTextFlushLeft;
-			graphicAlignment = OS.kControlBevelButtonAlignLeft;
-		}
-		if ((style & SWT.CENTER) != 0) {
-			textAlignment = OS.kControlBevelButtonAlignTextCenter;
-			graphicAlignment = OS.kControlBevelButtonAlignCenter;
-		}
-		if ((style & SWT.RIGHT) != 0) {
-			textAlignment = OS.kControlBevelButtonAlignTextFlushRight;
-			graphicAlignment = OS.kControlBevelButtonAlignRight;
-		}
-		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonTextAlignTag, 2, new short [] {(short)textAlignment});
-		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonGraphicAlignTag, 2, new short [] {(short)graphicAlignment});
-	}
+	if ((style & SWT.ARROW) != 0) return;
+	_setAlignment (style & (SWT.LEFT | SWT.RIGHT | SWT.CENTER));
 }
 
 int defaultThemeFont () {
@@ -557,6 +543,12 @@ void selectRadio () {
  * </ul>
  */
 public void setAlignment (int alignment) {
+	checkWidget ();
+	_setAlignment (alignment);
+	redraw ();
+}
+	
+void _setAlignment (int alignment) {
 	if ((style & SWT.ARROW) != 0) {
 		if ((style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT)) == 0) return; 
 		style &= ~(SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
@@ -571,23 +563,31 @@ public void setAlignment (int alignment) {
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
+	/* Alignment not honoured when image and text is visible */
+	boolean bothVisible = text != null && text.length () > 0 && image != null;
+	if (bothVisible) {
+		if ((style & (SWT.RADIO | SWT.CHECK)) != 0) alignment = SWT.LEFT;
+		if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) alignment = SWT.CENTER;
+	}
 	int textAlignment = 0;
 	int graphicAlignment = 0;
-	if ((style & SWT.LEFT) != 0) {
+	if ((alignment & SWT.LEFT) != 0) {
 		textAlignment = OS.kControlBevelButtonAlignTextFlushLeft;
 		graphicAlignment = OS.kControlBevelButtonAlignLeft;
 	}
-	if ((style & SWT.CENTER) != 0) {
+	if ((alignment & SWT.CENTER) != 0) {
 		textAlignment = OS.kControlBevelButtonAlignTextCenter;
 		graphicAlignment = OS.kControlBevelButtonAlignCenter;
 	}
-	if ((style & SWT.RIGHT) != 0) {
+	if ((alignment & SWT.RIGHT) != 0) {
 		textAlignment = OS.kControlBevelButtonAlignTextFlushRight;
 		graphicAlignment = OS.kControlBevelButtonAlignRight;
 	}
 	OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonTextAlignTag, 2, new short [] {(short)textAlignment});
 	OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonGraphicAlignTag, 2, new short [] {(short)graphicAlignment});
-	redraw ();
+	if (bothVisible) {
+		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonTextPlaceTag, 2, new short [] {(short)OS.kControlBevelButtonPlaceToRightOfGraphic});
+	}
 }
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
@@ -634,19 +634,20 @@ public void setImage (Image image) {
 	}
 	this.image = image;
 	isImage = true;
-	
-	if (image == null) {
-		setText (text);
-		return;
+	if (OS.VERSION < 0x1040) {
+		if ((style & SWT.PUSH) != 0 && (style & SWT.FLAT) == 0) {			
+			if (image == null) {
+				setText (text);
+				return;
+			}		
+			if (text.length () > 0) {
+				int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, null, 0);
+				if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+				OS.SetControlTitleWithCFString (handle, ptr);
+				OS.CFRelease (ptr);
+			}
+		}
 	}
-
-	if (text.length () > 0) {
-		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, null, 0);
-		if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
-		OS.SetControlTitleWithCFString (handle, ptr);
-		OS.CFRelease (ptr);
-	}
-
 	ControlButtonContentInfo inContent = new ControlButtonContentInfo ();
 	if (OS.VERSION < 0x1040) {
 		cIcon = createCIcon (image);
@@ -657,6 +658,7 @@ public void setImage (Image image) {
 		inContent.iconRef = image.handle;
 	}
 	OS.SetBevelButtonContentInfo (handle, inContent);
+	setAlignment (style);
 	redraw ();
 }
 
@@ -723,12 +725,16 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.ARROW) != 0) return;
 	text = string;
-	if (isImage) {
-		ControlButtonContentInfo inContent = new ControlButtonContentInfo();
-		inContent.contentType = (short)OS.kControlContentTextOnly;
-		OS.SetBevelButtonContentInfo(handle, inContent);
+	if (OS.VERSION < 0x1040) {
+		if ((style & SWT.PUSH) != 0 && (style & SWT.FLAT) == 0) {
+			if (isImage) {
+				ControlButtonContentInfo inContent = new ControlButtonContentInfo();
+				inContent.contentType = (short)OS.kControlContentTextOnly;
+				OS.SetBevelButtonContentInfo(handle, inContent);
+			}
+			isImage = false;
+		}
 	}
-	isImage = false;
 	char [] buffer = new char [text.length ()];
 	text.getChars (0, buffer.length, buffer, 0);
 	int length = fixMnemonic (buffer);
@@ -736,6 +742,7 @@ public void setText (String string) {
 	if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 	OS.SetControlTitleWithCFString (handle, ptr);
 	OS.CFRelease (ptr);
+	setAlignment (style);
 	redraw ();
 }
 

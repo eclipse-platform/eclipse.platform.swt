@@ -229,37 +229,20 @@ void createHandle (int index) {
 	if ((style & SWT.ARROW) != 0) {
 		OS.gtk_container_add (handle, arrowHandle);
 	} else {
-		boxHandle = OS.gtk_hbox_new (false, 0);
+		boxHandle = OS.gtk_hbox_new (false, 4);
 		if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		labelHandle = OS.gtk_label_new_with_mnemonic (null);
 		if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		imageHandle = OS.gtk_image_new ();
 		if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		OS.gtk_container_add (handle, boxHandle);
-		OS.gtk_container_add (boxHandle, labelHandle);
 		OS.gtk_container_add (boxHandle, imageHandle);
+		OS.gtk_container_add (boxHandle, labelHandle);
 	}
 	OS.gtk_container_add (fixedHandle, handle);
 	
 	if ((style & SWT.ARROW) != 0) return;
-	if ((style & SWT.LEFT) != 0) {
-		OS.gtk_misc_set_alignment (labelHandle, 0.0f, 0.5f);
-		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_LEFT);
-		OS.gtk_misc_set_alignment (imageHandle, 0.0f, 0.5f);
-		return;
-	}
-	if ((style & SWT.CENTER) != 0) {
-		OS.gtk_misc_set_alignment (labelHandle, 0.5f, 0.5f);
-		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_CENTER);
-		OS.gtk_misc_set_alignment (imageHandle, 0.5f, 0.5f);
-		return;
-	}
-	if ((style & SWT.RIGHT) != 0) {
-		OS.gtk_misc_set_alignment (labelHandle, 1.0f, 0.5f);
-		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_RIGHT);
-		OS.gtk_misc_set_alignment (imageHandle, 1.0f, 0.5f);
-		return;
-	}
+	_setAlignment (style & (SWT.LEFT | SWT.CENTER | SWT.RIGHT));
 }
 
 void createWidget (int index) {
@@ -545,6 +528,10 @@ void selectRadio () {
  */
 public void setAlignment (int alignment) {
 	checkWidget ();
+	_setAlignment (alignment);
+}
+
+void _setAlignment (int alignment) {
 	if ((style & SWT.ARROW) != 0) {
 		if ((style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT)) == 0) return; 
 		style &= ~(SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
@@ -554,8 +541,8 @@ public void setAlignment (int alignment) {
 		switch (alignment) {
 			case SWT.UP: arrow_type = OS.GTK_ARROW_UP; break;
 			case SWT.DOWN: arrow_type = OS.GTK_ARROW_DOWN; break;
-			case SWT.LEFT: arrow_type = isRTL? OS.GTK_ARROW_RIGHT : OS.GTK_ARROW_LEFT; break;
-			case SWT.RIGHT: arrow_type = isRTL? OS.GTK_ARROW_LEFT : OS.GTK_ARROW_RIGHT; break;
+			case SWT.LEFT: arrow_type = isRTL ? OS.GTK_ARROW_RIGHT : OS.GTK_ARROW_LEFT; break;
+			case SWT.RIGHT: arrow_type = isRTL ? OS.GTK_ARROW_LEFT : OS.GTK_ARROW_RIGHT; break;
 		}
 		OS.gtk_arrow_set (arrowHandle, arrow_type, OS.GTK_SHADOW_OUT);
 		return;
@@ -563,19 +550,40 @@ public void setAlignment (int alignment) {
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-	if ((style & SWT.LEFT) != 0) {
+	/* Aligmennt not honoured when image and text are visbible */
+	boolean bothVisible = OS.GTK_WIDGET_VISIBLE (labelHandle) && OS.GTK_WIDGET_VISIBLE (imageHandle);
+	if (bothVisible) {
+		if ((style & (SWT.RADIO | SWT.CHECK)) != 0) alignment = SWT.LEFT;
+		if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) alignment = SWT.CENTER;
+	}
+	if ((alignment & SWT.LEFT) != 0) {
+		if (bothVisible) {
+			OS.gtk_box_set_child_packing (boxHandle, labelHandle, false, false, 0, OS.GTK_PACK_START);
+			OS.gtk_box_set_child_packing (boxHandle, imageHandle, false, false, 0, OS.GTK_PACK_START);
+		}
 		OS.gtk_misc_set_alignment (labelHandle, 0.0f, 0.5f);
 		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_LEFT);
 		OS.gtk_misc_set_alignment (imageHandle, 0.0f, 0.5f);
 		return;
 	}
-	if ((style & SWT.CENTER) != 0) {
-		OS.gtk_misc_set_alignment (labelHandle, 0.5f, 0.5f);
-		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_CENTER);
-		OS.gtk_misc_set_alignment (imageHandle, 0.5f, 0.5f);
+	if ((alignment & SWT.CENTER) != 0) {
+		if (bothVisible) {
+			OS.gtk_box_set_child_packing (boxHandle, labelHandle, true, true, 0, OS.GTK_PACK_END);
+			OS.gtk_box_set_child_packing (boxHandle, imageHandle, true, true, 0, OS.GTK_PACK_START);
+			OS.gtk_misc_set_alignment (labelHandle, 0f, 0.5f);
+			OS.gtk_misc_set_alignment (imageHandle, 1f, 0.5f);
+		} else {
+			OS.gtk_misc_set_alignment (labelHandle, 0.5f, 0.5f);
+			OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_CENTER);
+			OS.gtk_misc_set_alignment (imageHandle, 0.5f, 0.5f);
+		}
 		return;
 	}
-	if ((style & SWT.RIGHT) != 0) {
+	if ((alignment & SWT.RIGHT) != 0) {
+		if (bothVisible) {
+			OS.gtk_box_set_child_packing (boxHandle, labelHandle, false, false, 0, OS.GTK_PACK_END);
+			OS.gtk_box_set_child_packing (boxHandle, imageHandle, false, false, 0, OS.GTK_PACK_END);
+		}
 		OS.gtk_misc_set_alignment (labelHandle, 1.0f, 0.5f);
 		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_RIGHT);
 		OS.gtk_misc_set_alignment (imageHandle, 1.0f, 0.5f);
@@ -637,7 +645,7 @@ public void setImage (Image image) {
 		int imageIndex = imageList.add (image);
 		int /*long*/ pixbuf = imageList.getPixbuf (imageIndex);
 		OS.gtk_image_set_from_pixbuf (imageHandle, pixbuf);
-		OS.gtk_widget_hide (labelHandle);
+		if (text.length () == 0) OS.gtk_widget_hide (labelHandle);
 		OS.gtk_widget_show (imageHandle);
 	} else {
 		OS.gtk_image_set_from_pixbuf (imageHandle, 0);
@@ -645,6 +653,7 @@ public void setImage (Image image) {
 		OS.gtk_widget_hide (imageHandle);
 	}
 	this.image = image;
+	_setAlignment (style);
 }
 
 void setOrientation () {
@@ -721,8 +730,9 @@ public void setText (String string) {
 	char [] chars = fixMnemonic (string);
 	byte [] buffer = Converter.wcsToMbcs (null, chars, true);
 	OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
-	OS.gtk_widget_hide (imageHandle);
+	if (image == null) OS.gtk_widget_hide (imageHandle);
 	OS.gtk_widget_show (labelHandle);
+	_setAlignment (style);
 }
 
 void showWidget () {

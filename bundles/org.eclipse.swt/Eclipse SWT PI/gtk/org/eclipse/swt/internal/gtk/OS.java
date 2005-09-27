@@ -254,6 +254,7 @@ public class OS extends Platform {
 	public static final int GTK_NO_WINDOW = 1 << 5;
 	public static final int GTK_ORIENTATION_HORIZONTAL = 0x0;
 	public static final int GTK_ORIENTATION_VERTICAL = 0x1;
+	public static final int GTK_PACK_END = 1;
 	public static final int GTK_PACK_START = 0;
 	public static final int GTK_POLICY_ALWAYS = 0x0;
 	public static final int GTK_POLICY_AUTOMATIC = 0x1;
