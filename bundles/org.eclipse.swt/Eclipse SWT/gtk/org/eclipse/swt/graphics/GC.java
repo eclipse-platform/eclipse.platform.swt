@@ -737,6 +737,7 @@ void drawImageXRender(Image srcImage, int srcX, int srcY, int srcWidth, int srcH
 		if (clipping != data.clipRgn && clipping != data.damageRgn) {
 			OS.gdk_region_destroy(clipping);
 		}
+		if (rects[0] != 0) OS.g_free(rects[0]);
 	}
 	OS.XRenderComposite(xDisplay, maskPict != 0 ? OS.PictOpOver : OS.PictOpSrc, srcPict, maskPict, destPict, srcX, srcY, srcX, srcY, destX + translateX, destY + translateY, destWidth, destHeight);
 	OS.XRenderFreePicture(xDisplay, destPict);
@@ -3424,6 +3425,7 @@ public void setTransform(Transform transform) {
 			OS.gdk_region_union(newRgn, polyRgn);
 			OS.gdk_region_destroy(polyRgn);
 		}
+		if (rects[0] != 0) OS.g_free(rects[0]);
 		OS.gdk_region_destroy(clipRgn);
 		data.clipRgn = newRgn;
 	}
