@@ -2852,7 +2852,8 @@ public void setRedraw (boolean redraw) {
 			* table column widths are adjusted in WM_SIZE, blank lines may
 			* be inserted at the top of the widget.  A call to LVM_GETTOPINDEX
 			* will return a negative number (this is an impossible result).
-			* The fix is to def
+			* The fix is to send the resize notification after the size has
+			* been changed in the operating system.
 			*/
 			setDeferResize (true);
 			OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
