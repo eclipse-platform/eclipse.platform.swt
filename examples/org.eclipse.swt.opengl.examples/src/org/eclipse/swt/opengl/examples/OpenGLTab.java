@@ -56,7 +56,7 @@ abstract class OpenGLTab {
 		GLData data = new GLData();
 		data.doubleBuffer = true;
 		data.stencilSize = 8;
-		glCanvas = new GLCanvas(tabFolderPage, SWT.NONE, data);
+		glCanvas = new GLCanvas(tabFolderPage, SWT.NO_BACKGROUND, data);
 		glCanvas.setLayout(new GridLayout());
 		glCanvas.setLayoutData(gridData);
 		glCanvas.setSize(400, 400);		// needed for windows
