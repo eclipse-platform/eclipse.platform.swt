@@ -162,8 +162,6 @@ public GLCanvas (Composite parent, int style, GLData data) {
 				OS.XMoveResizeWindow (xDisplay, xWindow, clientArea.x, clientArea.y, clientArea.width, clientArea.height);
 				break;
 			case SWT.Dispose:
-				System.out.println("parent " + handle);
-				System.out.println("disposing " + context);
 				if (context != 0) {
 					if (GLX.glXGetCurrentContext () == context) {
 						GLX.glXMakeCurrent (xDisplay, 0, 0);
