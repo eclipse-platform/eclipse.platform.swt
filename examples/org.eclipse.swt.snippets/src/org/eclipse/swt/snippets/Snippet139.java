@@ -30,7 +30,7 @@ public class Snippet139 {
 static ImageData rotate(ImageData srcData, int direction) {
 	int bytesPerPixel = srcData.bytesPerLine / srcData.width;
 	int destBytesPerLine = (direction == SWT.DOWN)? srcData.width * bytesPerPixel : srcData.height * bytesPerPixel;
-	byte[] newData = new byte[srcData.data.length];
+	byte[] newData = new byte[(direction == SWT.DOWN)? srcData.height * destBytesPerLine : srcData.width * destBytesPerLine];
 	int width = 0, height = 0;
 	for (int srcY = 0; srcY < srcData.height; srcY++) {
 		for (int srcX = 0; srcX < srcData.width; srcX++) {
