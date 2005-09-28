@@ -842,7 +842,7 @@ void releaseChildren (boolean destroy) {
 }
 void releaseHandle () {
 	super.releaseHandle ();
-	focusHandle = 0;
+	focusHandle = embeddedHandle = 0;
 }
 void releaseWidget () {
 	super.releaseWidget ();
