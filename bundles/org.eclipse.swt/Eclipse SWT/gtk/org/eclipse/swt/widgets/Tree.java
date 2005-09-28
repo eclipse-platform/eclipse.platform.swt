@@ -1207,7 +1207,7 @@ TreeItem [] getItems (int /*long*/ parent) {
 	if (length == 0) return result;
 	if ((style & SWT.VIRTUAL) != 0) {
 		for (int i=0; i<length; i++) {
-			result [i] = _getItem (0, i);
+			result [i] = _getItem (parent, i);
 		}
 	} else {
 		int i = 0;
