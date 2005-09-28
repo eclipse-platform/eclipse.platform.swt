@@ -924,7 +924,7 @@ void init(Device device, ImageData image) {
 				false, false);
 		}
 	}
-	OS.memmove(data, buffer, buffer.length);
+	OS.memmove(data, buffer, stride * height);
 	int /*long*/ pixmap = OS.gdk_pixmap_new (OS.GDK_ROOT_PARENT(), width, height, -1);
 	if (pixmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int /*long*/ gdkGC = OS.gdk_gc_new(pixmap);
