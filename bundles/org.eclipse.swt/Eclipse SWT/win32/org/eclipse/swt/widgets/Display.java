@@ -2486,9 +2486,9 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 			return 0;
 		case SWT_SETTINGCHANGED:
 			settingsChanged = false;
-			updateFonts ();
-			updateImages ();
 			sendEvent (SWT.Settings, null);
+			updateImages ();
+			updateFonts ();
 			break;
 		case SWT_TRAYICONMSG:
 			if (tray != null) {
