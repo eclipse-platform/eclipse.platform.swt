@@ -950,6 +950,11 @@ void releaseChildren (boolean destroy) {
 	super.releaseChildren (destroy);
 }
 
+void releaseHandle () {
+	super.releaseHandle ();
+	socketHandle = embeddedHandle = 0;
+}
+
 void releaseWidget () {
 	super.releaseWidget ();
 	if (imHandle != 0) OS.g_object_unref (imHandle);
