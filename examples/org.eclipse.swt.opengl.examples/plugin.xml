@@ -3,19 +3,19 @@
 <plugin
    id="org.eclipse.swt.opengl.examples"
    name="%plugin.OpenGLExampleSet.name"
-   version="3.2.0"
+   version="0.5.0"
    provider-name="%providerName"
    class="">
 
 <!-- Required plugins -->
 <requires>
    <import plugin="org.eclipse.swt"/>
-   <import plugin="org.eclipse.opengl"/>
+   <import plugin="org.eclipse.opengl" version="0.5.0" match="greaterOrEqual"/>
 </requires>
 
 <!-- Runtime -->
 <runtime>
-   <library name="swtexamples.jar">
+   <library name="glexamples.jar">
       <export name="*"/>
    </library>
 </runtime>
