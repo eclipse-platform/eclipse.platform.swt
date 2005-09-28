@@ -56,6 +56,12 @@ public static void main(String[] args) {
 		for (int i = 0; i < 8; i++) {
 			MenuItem mi = new MenuItem (menu, SWT.PUSH);
 			mi.setText ("Item" + i);
+			mi.addListener (SWT.Selection, new Listener () {
+				public void handleEvent (Event event) {
+					System.out.println("selection " + event.widget);
+				}
+			});
+			if (i == 0) menu.setDefaultItem(mi);
 		}
 		item.addListener (SWT.MenuDetect, new Listener () {
 			public void handleEvent (Event event) {
