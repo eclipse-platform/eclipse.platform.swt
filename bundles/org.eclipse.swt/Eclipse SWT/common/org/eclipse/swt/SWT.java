@@ -559,6 +559,17 @@ public class SWT {
 
 	/**
 	 * The settings changed event type (value is 38).
+	 * <p>
+	 * The settings changed event is sent when an operating system
+	 * property, such as a system font or color, has been changed.
+	 * The event occurs after the property has been changed, but
+	 * before any widget is redrawn.  Applications that cache operating
+	 * system properties can use this event to update their caches.
+	 * A specific property change can be detected by querying the
+	 * new value of a property and comparing it with the equivalent
+	 * cached value.  The operating system automatically redraws and
+	 * lays out all widgets after this event is sent.
+	 * </p>
 	 * 
 	 * @see org.eclipse.swt.widgets.Display#addListener
 	 * @see org.eclipse.swt.widgets.Event

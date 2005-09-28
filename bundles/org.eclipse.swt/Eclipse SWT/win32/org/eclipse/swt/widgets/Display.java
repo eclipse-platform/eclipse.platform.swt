@@ -1955,8 +1955,7 @@ public Cursor getSystemCursor (int id) {
  */
 public Font getSystemFont () {
 	checkDevice ();
-	int hFont = systemFont ();
-	return Font.win32_new (this, hFont);	
+	return Font.win32_new (this, systemFont ());	
 }
 
 /**
@@ -2484,12 +2483,22 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 				OS.PostMessage (embeddedHwnd, SWT_KEYMSG, wParam, lParam);
 			}
 			return 0;
-		case SWT_SETTINGCHANGED:
+		case SWT_SETTINGCHANGED: {
 			settingsChanged = false;
-			sendEvent (SWT.Settings, null);
+			Font oldFont = getSystemFont ();
 			updateImages ();
 			updateFonts ();
+			sendEvent (SWT.Settings, null);
+			Font newFont = getSystemFont ();
+			Shell [] shells = getShells ();
+			for (int i=0; i<shells.length; i++) {
+				Shell shell = shells [i];
+				if (!shell.isDisposed ()) {
+					shell.updateFont (oldFont, newFont);
+				}
+			}
 			break;
+		}
 		case SWT_TRAYICONMSG:
 			if (tray != null) {
 				TrayItem [] items = tray.items;
@@ -3705,7 +3714,6 @@ public void update() {
 
 void updateFonts () {
 	if (OS.IsWinCE) return;
-	Font oldFont = getSystemFont ();
 	int systemFont = 0;
 	NONCLIENTMETRICS info = OS.IsUnicode ? (NONCLIENTMETRICS) new NONCLIENTMETRICSW () : new NONCLIENTMETRICSA ();
 	info.cbSize = NONCLIENTMETRICS.sizeof;
@@ -3722,14 +3730,6 @@ void updateFonts () {
 	}
 	newFonts [length] = systemFont;
 	systemFonts = newFonts;
-	Font newFont = getSystemFont ();
-	Shell [] shells = getShells ();
-	for (int i=0; i<shells.length; i++) {
-		Shell shell = shells [i];
-		if (!shell.isDisposed ()) {
-			shell.updateFont (oldFont, newFont);
-		}
-	}
 }
 
 void updateImages () {
