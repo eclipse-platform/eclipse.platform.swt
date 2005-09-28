@@ -639,7 +639,7 @@ public void setImage (Image image) {
 			if (image == null) {
 				setText (text);
 				return;
-			}		
+			}
 			if (text.length () > 0) {
 				int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, null, 0);
 				if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
@@ -649,13 +649,17 @@ public void setImage (Image image) {
 		}
 	}
 	ControlButtonContentInfo inContent = new ControlButtonContentInfo ();
-	if (OS.VERSION < 0x1040) {
-		cIcon = createCIcon (image);
-		inContent.contentType = (short)OS.kControlContentCIconHandle;
-		inContent.iconRef = cIcon;
+	if (image != null) {
+		if (OS.VERSION < 0x1040) {
+			cIcon = createCIcon (image);
+			inContent.contentType = (short)OS.kControlContentCIconHandle;
+			inContent.iconRef = cIcon;
+		} else {
+			inContent.contentType = (short)OS.kControlContentCGImageRef;
+			inContent.iconRef = image.handle;
+		}
 	} else {
-		inContent.contentType = (short)OS.kControlContentCGImageRef;
-		inContent.iconRef = image.handle;
+		inContent.contentType = (short)OS.kControlContentTextOnly;
 	}
 	OS.SetBevelButtonContentInfo (handle, inContent);
 	setAlignment (style);
