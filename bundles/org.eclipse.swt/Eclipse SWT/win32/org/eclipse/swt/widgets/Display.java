@@ -197,7 +197,6 @@ public class Display extends Device {
 	/* Message Only Window */
 	Callback messageCallback;
 	int hwndMessage, messageProc;
-	boolean settingsChanged;
 	int [] systemFonts;
 	
 	/* System Images Cache */
@@ -320,7 +319,6 @@ public class Display extends Device {
 	static final int SWT_DESTROY	 	= OS.WM_APP + 3;
 	static final int SWT_TRAYICONMSG	= OS.WM_APP + 4;
 	static final int SWT_NULL			= OS.WM_APP + 5;
-	static final int SWT_SETTINGCHANGED = OS.WM_APP + 6;
 	static int SWT_TASKBARCREATED;
 	
 	/* Workaround for Adobe Reader 7.0 */
@@ -2461,7 +2459,7 @@ static char mbcsToWcs (int ch, int codePage) {
 
 int messageProc (int hwnd, int msg, int wParam, int lParam) {
 	switch (msg) {
-		case SWT_KEYMSG:
+		case SWT_KEYMSG: {
 			boolean consumed = false;
 			MSG keyMsg = new MSG ();
 			OS.MoveMemory (keyMsg, lParam, MSG.sizeof);
@@ -2483,23 +2481,8 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 				OS.PostMessage (embeddedHwnd, SWT_KEYMSG, wParam, lParam);
 			}
 			return 0;
-		case SWT_SETTINGCHANGED: {
-			settingsChanged = false;
-			Font oldFont = getSystemFont ();
-			updateImages ();
-			updateFonts ();
-			sendEvent (SWT.Settings, null);
-			Font newFont = getSystemFont ();
-			Shell [] shells = getShells ();
-			for (int i=0; i<shells.length; i++) {
-				Shell shell = shells [i];
-				if (!shell.isDisposed ()) {
-					shell.updateFont (oldFont, newFont);
-				}
-			}
-			break;
 		}
-		case SWT_TRAYICONMSG:
+		case SWT_TRAYICONMSG: {
 			if (tray != null) {
 				TrayItem [] items = tray.items;
 				for (int i=0; i<items.length; i++) {
@@ -2510,7 +2493,8 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 				}
 			}
 			return 0;
-		case OS.WM_ACTIVATEAPP:
+		}
+		case OS.WM_ACTIVATEAPP: {
 			/*
 			* Feature in Windows.  When multiple shells are
 			* disabled and one of the shells has an enabled
@@ -2552,7 +2536,8 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 				}
 			}
 			break;
-		case OS.WM_ENDSESSION:
+		}
+		case OS.WM_ENDSESSION: {
 			if (wParam != 0) {
 				dispose ();
 				/*
@@ -2563,20 +2548,35 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 				System.exit (0);
 			}
 			break;
-		case OS.WM_QUERYENDSESSION:
+		}
+		case OS.WM_QUERYENDSESSION: {
 			Event event = new Event ();
 			sendEvent (SWT.Close, event);
 			if (!event.doit) return 0;
 			break;
-		case OS.WM_SETTINGCHANGE:
-			if (settingsChanged) break;
-			settingsChanged = true;
-			OS.PostMessage (hwnd, SWT_SETTINGCHANGED, 0 ,0);
+		}
+		case OS.WM_SETTINGCHANGE: {
+			if (wParam == 0 || wParam == 1) {
+				Font oldFont = getSystemFont ();
+				updateImages ();
+				updateFonts ();
+				sendEvent (SWT.Settings, null);
+				Font newFont = getSystemFont ();
+				Shell [] shells = getShells ();
+				for (int i=0; i<shells.length; i++) {
+					Shell shell = shells [i];
+					if (!shell.isDisposed ()) {
+						shell.updateFont (oldFont, newFont);
+					}
+				}
+			}
 			break;
-		case OS.WM_TIMER:
+		}
+		case OS.WM_TIMER: {
 			runTimer (wParam);
 			break;
-		default:
+		}
+		default: {
 			if (msg == SWT_TASKBARCREATED) {
 				if (tray != null) {
 					TrayItem [] items = tray.items;
@@ -2586,6 +2586,7 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 					}
 				}
 			}
+		}
 	}
 	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 }
