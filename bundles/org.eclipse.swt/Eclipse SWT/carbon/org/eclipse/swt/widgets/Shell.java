@@ -1438,21 +1438,6 @@ void setWindowVisible (boolean visible) {
 	if (visible) {
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
-		opened = true;
-		if (!moved) {
-			moved = true;
-			sendEvent (SWT.Move);
-			if (isDisposed ()) return;
-		}
-		if (!resized) {
-			resized = true;
-			sendEvent (SWT.Resize);
-			if (isDisposed ()) return;
-			if (layout != null) {
-				markLayout (false, false);
-				updateLayout (false);
-			}
-		}
 		int inModalKind = OS.kWindowModalityNone;
 		if ((style & SWT.PRIMARY_MODAL) != 0) inModalKind = OS.kWindowModalityWindowModal;
 		if ((style & SWT.APPLICATION_MODAL) != 0) inModalKind = OS.kWindowModalityAppModal;
@@ -1474,12 +1459,26 @@ void setWindowVisible (boolean visible) {
 		OS.RetainWindow (shellHandle);
 		OS.ShowWindow (shellHandle);
 		OS.ReleaseWindow (shellHandle);
-		if (!isDisposed()) {
-			if (minimized != OS.IsWindowCollapsed (shellHandle)) {
-				OS.CollapseWindow (shellHandle, minimized);
-			}
-			if ((style & SWT.ON_TOP) != 0) {
-				OS.SetWindowActivationScope (shellHandle, scope [0]);
+		if (isDisposed()) return;
+		if (minimized != OS.IsWindowCollapsed (shellHandle)) {
+			OS.CollapseWindow (shellHandle, minimized);
+		}
+		if ((style & SWT.ON_TOP) != 0) {
+			OS.SetWindowActivationScope (shellHandle, scope [0]);
+		}
+		opened = true;
+		if (!moved) {
+			moved = true;
+			sendEvent (SWT.Move);
+			if (isDisposed ()) return;
+		}
+		if (!resized) {
+			resized = true;
+			sendEvent (SWT.Resize);
+			if (isDisposed ()) return;
+			if (layout != null) {
+				markLayout (false, false);
+				updateLayout (false);
 			}
 		}
 	} else {
