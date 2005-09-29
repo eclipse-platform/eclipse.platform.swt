@@ -78,12 +78,9 @@ public GLCanvas (Composite parent, int style, GLData data) {
 
 	int hDC = OS.GetDC (handle);
 	pixelFormat = WGL.ChoosePixelFormat (hDC, pfd);
-	if (pixelFormat == 0) {
+	if (pixelFormat == 0 || !WGL.SetPixelFormat (hDC, pixelFormat, pfd)) {
 		OS.ReleaseDC (handle, hDC);
-		SWT.error (SWT.ERROR_UNSUPPORTED_DEPTH);
-	}
-	if (!WGL.SetPixelFormat (hDC, pixelFormat, pfd)) {
-		OS.ReleaseDC (handle, hDC);
+		dispose ();
 		SWT.error (SWT.ERROR_UNSUPPORTED_DEPTH);
 	}
 	context = WGL.wglCreateContext (hDC);

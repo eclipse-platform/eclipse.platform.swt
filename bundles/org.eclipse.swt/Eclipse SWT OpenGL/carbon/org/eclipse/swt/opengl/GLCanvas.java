@@ -104,6 +104,10 @@ public GLCanvas (Composite parent, int style, GLData data) {
 	}
 	aglAttrib [pos++] = AGL.AGL_NONE;
 	pixelFormat = AGL.aglChoosePixelFormat (0, 0, aglAttrib);
+	if (pixelFormat == 0) {		
+		dispose ();
+		SWT.error (SWT.ERROR_UNSUPPORTED_DEPTH);
+	}
 	//FIXME- share lists
 	//context = AGL.aglCreateContext (pixelFormat, share == null ? 0 : share.context);
 	context = AGL.aglCreateContext (pixelFormat, 0);

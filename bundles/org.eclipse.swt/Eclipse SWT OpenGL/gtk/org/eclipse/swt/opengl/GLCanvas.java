@@ -109,7 +109,10 @@ public GLCanvas (Composite parent, int style, GLData data) {
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (handle);
 	int /*long*/ xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
 	int /*long*/ infoPtr = GLX.glXChooseVisual (xDisplay, OS.XDefaultScreen (xDisplay), glxAttrib);
-	if (infoPtr == 0) SWT.error (SWT.ERROR_UNSUPPORTED_DEPTH);
+	if (infoPtr == 0) {
+		dispose ();
+		SWT.error (SWT.ERROR_UNSUPPORTED_DEPTH);
+	}
 	vinfo = new XVisualInfo ();
 	GLX.memmove (vinfo, infoPtr, XVisualInfo.sizeof);
 	OS.XFree (infoPtr);
