@@ -5036,6 +5036,18 @@ fail:
 }
 #endif
 
+#ifndef NO_InternetSetOption
+JNIEXPORT jboolean JNICALL OS_NATIVE(InternetSetOption)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, InternetSetOption_FUNC);
+	rc = (jboolean)InternetSetOption((HINTERNET)arg0, arg1, (LPVOID)arg2, arg3);
+	OS_NATIVE_EXIT(env, that, InternetSetOption_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_IntersectClipRect
 JNIEXPORT jint JNICALL OS_NATIVE(IntersectClipRect)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)

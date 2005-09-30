@@ -3459,23 +3459,23 @@ NONCLIENTMETRICSA *getNONCLIENTMETRICSAFields(JNIEnv *env, jobject lpObject, NON
 	lpStruct->iMenuHeight = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iMenuHeight);
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSAFc.lfCaptionFont);
-	getLOGFONTAFields(env, lpObject1, &lpStruct->lfCaptionFont);
+	if (lpObject1 != NULL) getLOGFONTAFields(env, lpObject1, &lpStruct->lfCaptionFont);
 	}
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSAFc.lfSmCaptionFont);
-	getLOGFONTAFields(env, lpObject1, &lpStruct->lfSmCaptionFont);
+	if (lpObject1 != NULL) getLOGFONTAFields(env, lpObject1, &lpStruct->lfSmCaptionFont);
 	}
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSAFc.lfMenuFont);
-	getLOGFONTAFields(env, lpObject1, &lpStruct->lfMenuFont);
+	if (lpObject1 != NULL) getLOGFONTAFields(env, lpObject1, &lpStruct->lfMenuFont);
 	}
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSAFc.lfStatusFont);
-	getLOGFONTAFields(env, lpObject1, &lpStruct->lfStatusFont);
+	if (lpObject1 != NULL) getLOGFONTAFields(env, lpObject1, &lpStruct->lfStatusFont);
 	}
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSAFc.lfMessageFont);
-	getLOGFONTAFields(env, lpObject1, &lpStruct->lfMessageFont);
+	if (lpObject1 != NULL) getLOGFONTAFields(env, lpObject1, &lpStruct->lfMessageFont);
 	}
 	return lpStruct;
 }
@@ -3495,23 +3495,23 @@ void setNONCLIENTMETRICSAFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICSA
 	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iMenuHeight, (jint)lpStruct->iMenuHeight);
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSAFc.lfCaptionFont);
-	setLOGFONTAFields(env, lpObject1, &lpStruct->lfCaptionFont);
+	if (lpObject1 != NULL) setLOGFONTAFields(env, lpObject1, &lpStruct->lfCaptionFont);
 	}
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSAFc.lfSmCaptionFont);
-	setLOGFONTAFields(env, lpObject1, &lpStruct->lfSmCaptionFont);
+	if (lpObject1 != NULL) setLOGFONTAFields(env, lpObject1, &lpStruct->lfSmCaptionFont);
 	}
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSAFc.lfMenuFont);
-	setLOGFONTAFields(env, lpObject1, &lpStruct->lfMenuFont);
+	if (lpObject1 != NULL) setLOGFONTAFields(env, lpObject1, &lpStruct->lfMenuFont);
 	}
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSAFc.lfStatusFont);
-	setLOGFONTAFields(env, lpObject1, &lpStruct->lfStatusFont);
+	if (lpObject1 != NULL) setLOGFONTAFields(env, lpObject1, &lpStruct->lfStatusFont);
 	}
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSAFc.lfMessageFont);
-	setLOGFONTAFields(env, lpObject1, &lpStruct->lfMessageFont);
+	if (lpObject1 != NULL) setLOGFONTAFields(env, lpObject1, &lpStruct->lfMessageFont);
 	}
 }
 #endif
@@ -3553,23 +3553,23 @@ NONCLIENTMETRICSW *getNONCLIENTMETRICSWFields(JNIEnv *env, jobject lpObject, NON
 	lpStruct->iMenuHeight = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iMenuHeight);
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSWFc.lfCaptionFont);
-	getLOGFONTWFields(env, lpObject1, &lpStruct->lfCaptionFont);
+	if (lpObject1 != NULL) getLOGFONTWFields(env, lpObject1, &lpStruct->lfCaptionFont);
 	}
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSWFc.lfSmCaptionFont);
-	getLOGFONTWFields(env, lpObject1, &lpStruct->lfSmCaptionFont);
+	if (lpObject1 != NULL) getLOGFONTWFields(env, lpObject1, &lpStruct->lfSmCaptionFont);
 	}
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSWFc.lfMenuFont);
-	getLOGFONTWFields(env, lpObject1, &lpStruct->lfMenuFont);
+	if (lpObject1 != NULL) getLOGFONTWFields(env, lpObject1, &lpStruct->lfMenuFont);
 	}
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSWFc.lfStatusFont);
-	getLOGFONTWFields(env, lpObject1, &lpStruct->lfStatusFont);
+	if (lpObject1 != NULL) getLOGFONTWFields(env, lpObject1, &lpStruct->lfStatusFont);
 	}
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSWFc.lfMessageFont);
-	getLOGFONTWFields(env, lpObject1, &lpStruct->lfMessageFont);
+	if (lpObject1 != NULL) getLOGFONTWFields(env, lpObject1, &lpStruct->lfMessageFont);
 	}
 	return lpStruct;
 }
@@ -3589,23 +3589,23 @@ void setNONCLIENTMETRICSWFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICSW
 	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iMenuHeight, (jint)lpStruct->iMenuHeight);
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSWFc.lfCaptionFont);
-	setLOGFONTWFields(env, lpObject1, &lpStruct->lfCaptionFont);
+	if (lpObject1 != NULL) setLOGFONTWFields(env, lpObject1, &lpStruct->lfCaptionFont);
 	}
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSWFc.lfSmCaptionFont);
-	setLOGFONTWFields(env, lpObject1, &lpStruct->lfSmCaptionFont);
+	if (lpObject1 != NULL) setLOGFONTWFields(env, lpObject1, &lpStruct->lfSmCaptionFont);
 	}
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSWFc.lfMenuFont);
-	setLOGFONTWFields(env, lpObject1, &lpStruct->lfMenuFont);
+	if (lpObject1 != NULL) setLOGFONTWFields(env, lpObject1, &lpStruct->lfMenuFont);
 	}
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSWFc.lfStatusFont);
-	setLOGFONTWFields(env, lpObject1, &lpStruct->lfStatusFont);
+	if (lpObject1 != NULL) setLOGFONTWFields(env, lpObject1, &lpStruct->lfStatusFont);
 	}
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSWFc.lfMessageFont);
-	setLOGFONTWFields(env, lpObject1, &lpStruct->lfMessageFont);
+	if (lpObject1 != NULL) setLOGFONTWFields(env, lpObject1, &lpStruct->lfMessageFont);
 	}
 }
 #endif
@@ -4459,7 +4459,7 @@ SCRIPT_ANALYSIS *getSCRIPT_ANALYSISFields(JNIEnv *env, jobject lpObject, SCRIPT_
 	lpStruct->fNoGlyphIndex = (*env)->GetBooleanField(env, lpObject, SCRIPT_ANALYSISFc.fNoGlyphIndex);
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, SCRIPT_ANALYSISFc.s);
-	getSCRIPT_STATEFields(env, lpObject1, &lpStruct->s);
+	if (lpObject1 != NULL) getSCRIPT_STATEFields(env, lpObject1, &lpStruct->s);
 	}
 	return lpStruct;
 }
@@ -4476,7 +4476,7 @@ void setSCRIPT_ANALYSISFields(JNIEnv *env, jobject lpObject, SCRIPT_ANALYSIS *lp
 	(*env)->SetBooleanField(env, lpObject, SCRIPT_ANALYSISFc.fNoGlyphIndex, (jboolean)lpStruct->fNoGlyphIndex);
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, SCRIPT_ANALYSISFc.s);
-	setSCRIPT_STATEFields(env, lpObject1, &lpStruct->s);
+	if (lpObject1 != NULL) setSCRIPT_STATEFields(env, lpObject1, &lpStruct->s);
 	}
 }
 #endif
@@ -4609,7 +4609,7 @@ SCRIPT_ITEM *getSCRIPT_ITEMFields(JNIEnv *env, jobject lpObject, SCRIPT_ITEM *lp
 	lpStruct->iCharPos = (*env)->GetIntField(env, lpObject, SCRIPT_ITEMFc.iCharPos);
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, SCRIPT_ITEMFc.a);
-	getSCRIPT_ANALYSISFields(env, lpObject1, &lpStruct->a);
+	if (lpObject1 != NULL) getSCRIPT_ANALYSISFields(env, lpObject1, &lpStruct->a);
 	}
 	return lpStruct;
 }
@@ -4620,7 +4620,7 @@ void setSCRIPT_ITEMFields(JNIEnv *env, jobject lpObject, SCRIPT_ITEM *lpStruct)
 	(*env)->SetIntField(env, lpObject, SCRIPT_ITEMFc.iCharPos, (jint)lpStruct->iCharPos);
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, SCRIPT_ITEMFc.a);
-	setSCRIPT_ANALYSISFields(env, lpObject1, &lpStruct->a);
+	if (lpObject1 != NULL) setSCRIPT_ANALYSISFields(env, lpObject1, &lpStruct->a);
 	}
 }
 #endif

@@ -336,6 +336,7 @@ typedef enum {
 	InsertMenuItemA_FUNC,
 	InsertMenuItemW_FUNC,
 	InsertMenuW_FUNC,
+	InternetSetOption_FUNC,
 	IntersectClipRect_FUNC,
 	IntersectRect_FUNC,
 	InvalidateRect_FUNC,

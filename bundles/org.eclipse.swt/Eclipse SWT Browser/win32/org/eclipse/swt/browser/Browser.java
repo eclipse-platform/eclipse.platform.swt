@@ -548,6 +548,15 @@ public Browser(Composite parent, int style) {
 	variant.dispose();
 }
 
+/**
+ * Clears all session cookies from all current Browser instances.
+ * 
+ * @since 3.2
+ */
+public static void clearSessions () {
+	OS.InternetSetOption (0, OS.INTERNET_OPTION_END_BROWSER_SESSION, 0, 0);
+}
+
 /**	 
  * Adds the listener to the collection of listeners who will be
  * notified when the window hosting the receiver should be closed.

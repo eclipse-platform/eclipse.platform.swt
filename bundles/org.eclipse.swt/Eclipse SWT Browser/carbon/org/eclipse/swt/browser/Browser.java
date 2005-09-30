@@ -338,6 +338,19 @@ public Browser(Composite parent, int style) {
 	WebKit.objc_msgSend(webView, WebKit.S_setPolicyDelegate, delegate);
 }
 
+public static void clearSessions () {
+	int storage = WebKit.objc_msgSend (WebKit.C_NSHTTPCookieStorage, WebKit.S_sharedHTTPCookieStorage);
+	int cookies = WebKit.objc_msgSend (storage, WebKit.S_cookies);
+	int count = WebKit.objc_msgSend (cookies, WebKit.S_count);
+	for (int i = 0; i < count; i++) {
+		int cookie = WebKit.objc_msgSend (cookies, WebKit.S_objectAtIndex, i);
+		boolean isSession = WebKit.objc_msgSend (cookie, WebKit.S_isSessionOnly) != 0;
+		if (isSession) {
+			WebKit.objc_msgSend (storage, WebKit.S_deleteCookie, cookie);
+		}
+	}
+}
+
 static int eventProc3(int nextHandler, int theEvent, int userData) {
 	Widget widget = Display.getCurrent().findWidget(userData);
 	if (widget instanceof Browser)

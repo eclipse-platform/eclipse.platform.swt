@@ -23,6 +23,7 @@
 #include <objbase.h>
 #include <shlwapi.h>
 #include <shellapi.h>
+#include <wininet.h>
 
 #ifndef _WIN32_WCE
 #include <initguid.h>
@@ -256,6 +257,7 @@
 #define NO_InsertMenuA
 #define NO_InsertMenuItemA
 #define NO_InsertMenuItemW
+#define NO_InternetSetOption
 #define NO_InvalidateRgn
 #define NO_IsAppThemed
 #define NO_IsHungAppWindow

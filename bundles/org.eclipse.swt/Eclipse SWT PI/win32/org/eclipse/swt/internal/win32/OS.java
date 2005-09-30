@@ -618,6 +618,7 @@ public class OS extends Platform {
 	public static final int INFINITE = 0xffffffff;
 	public static final int INPUT_KEYBOARD = 1;
 	public static final int INPUT_MOUSE = 0;
+	public static final int INTERNET_OPTION_END_BROWSER_SESSION = 42;
 	public static final int KEY_ENUMERATE_SUB_KEYS = 0x8;
 	public static final int KEY_NOTIFY = 0x10;
 	public static final int KEY_QUERY_VALUE = 0x1;
@@ -2766,6 +2767,7 @@ public static final native boolean InsertMenuW (int hMenu, int uPosition, int uF
 public static final native boolean InsertMenuA (int hMenu, int uPosition, int uFlags, int uIDNewItem, byte [] lpNewItem);
 public static final native boolean InsertMenuItemW (int hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii);
 public static final native boolean InsertMenuItemA (int hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii);
+public static final native boolean InternetSetOption (int hInternet, int dwOption, int lpBuffer, int dwBufferLength);
 public static final native int IntersectClipRect (int hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
 public static final native boolean IntersectRect (RECT lprcDst, RECT lprcSrc1, RECT lprcSrc2);
 public static final native boolean InvalidateRect(int hWnd, RECT lpRect, boolean bErase);

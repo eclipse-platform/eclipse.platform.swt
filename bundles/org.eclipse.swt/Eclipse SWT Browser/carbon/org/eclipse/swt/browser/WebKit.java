@@ -20,6 +20,7 @@ static {
 }
 	
 /* Objective-C class ids */
+static final int C_NSHTTPCookieStorage = WebKit.objc_getClass("NSHTTPCookieStorage"); //$NON-NLS-1$
 static final int C_NSNotificationCenter = WebKit.objc_getClass("NSNotificationCenter"); //$NON-NLS-1$
 static final int C_NSNumber = WebKit.objc_getClass("NSNumber"); //$NON-NLS-1$
 static final int C_NSURL = WebKit.objc_getClass("NSURL"); //$NON-NLS-1$
@@ -35,19 +36,24 @@ static final int S_cancel = WebKit.sel_registerName("cancel"); //$NON-NLS-1$
 static final int S_canGoBack = WebKit.sel_registerName("canGoBack"); //$NON-NLS-1$
 static final int S_canGoForward = WebKit.sel_registerName("canGoForward"); //$NON-NLS-1$
 static final int S_chooseFilename = WebKit.sel_registerName("chooseFilename:"); //$NON-NLS-1$
+static final int S_cookies = WebKit.sel_registerName("cookies"); //$NON-NLS-1$
+static final int S_count = WebKit.sel_registerName("count"); //$NON-NLS-1$
 static final int S_dataSource = WebKit.sel_registerName("dataSource"); //$NON-NLS-1$
 static final int S_defaultCenter = WebKit.sel_registerName("defaultCenter"); //$NON-NLS-1$
+static final int S_deleteCookie = WebKit.sel_registerName("deleteCookie:"); //$NON-NLS-1$
 static final int S_goBack = WebKit.sel_registerName("goBack:"); //$NON-NLS-1$
 static final int S_goForward = WebKit.sel_registerName("goForward:"); //$NON-NLS-1$
 static final int S_handleNotification = WebKit.sel_registerName("handleNotification:"); //$NON-NLS-1$
 static final int S_ignore = WebKit.sel_registerName("ignore"); //$NON-NLS-1$
 static final int S_initialRequest = WebKit.sel_registerName("initialRequest"); //$NON-NLS-1$
 static final int S_initWithProc = WebKit.sel_registerName("initWithProc:user_data:"); //$NON-NLS-1$
+static final int S_isSessionOnly = WebKit.sel_registerName("isSessionOnly"); //$NON-NLS-1$
 static final int S_loadHTMLStringbaseURL = WebKit.sel_registerName("loadHTMLString:baseURL:"); //$NON-NLS-1$
 static final int S_loadRequest = WebKit.sel_registerName("loadRequest:"); //$NON-NLS-1$
 static final int S_mainFrame = WebKit.sel_registerName("mainFrame"); //$NON-NLS-1$
 static final int S_name = WebKit.sel_registerName("name"); //$NON-NLS-1$
 static final int S_numberWithInt = WebKit.sel_registerName("numberWithInt:"); //$NON-NLS-1$
+static final int S_objectAtIndex = WebKit.sel_registerName("objectAtIndex:"); //$NON-NLS-1$
 static final int S_provisionalDataSource = WebKit.sel_registerName("provisionalDataSource"); //$NON-NLS-1$
 static final int S_release = WebKit.sel_registerName("release"); //$NON-NLS-1$
 static final int S_reload = WebKit.sel_registerName("reload:"); //$NON-NLS-1$
@@ -63,6 +69,7 @@ static final int S_setPolicyDelegate = WebKit.sel_registerName("setPolicyDelegat
 static final int S_setResourceLoadDelegate = WebKit.sel_registerName("setResourceLoadDelegate:"); //$NON-NLS-1$
 static final int S_setStatusText = WebKit.sel_registerName("setStatusText:"); //$NON-NLS-1$
 static final int S_setUIDelegate = WebKit.sel_registerName("setUIDelegate:"); //$NON-NLS-1$
+static final int S_sharedHTTPCookieStorage = WebKit.sel_registerName("sharedHTTPCookieStorage"); //$NON-NLS-1$
 static final int S_stopLoading = WebKit.sel_registerName("stopLoading:"); //$NON-NLS-1$
 static final int S_stringByEvaluatingJavaScriptFromString = WebKit.sel_registerName("stringByEvaluatingJavaScriptFromString:"); //$NON-NLS-1$
 static final int S_takeStringURLFrom = WebKit.sel_registerName("takeStringURLFrom:"); //$NON-NLS-1$
