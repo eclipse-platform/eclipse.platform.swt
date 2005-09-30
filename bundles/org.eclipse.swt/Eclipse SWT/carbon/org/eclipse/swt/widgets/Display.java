@@ -342,12 +342,7 @@ int actionProc (int theControl, int partCode) {
 }
 
 int appearanceProc (int theAppleEvent, int reply, int handlerRefcon) {
-	sendEvent (SWT.Settings, null);
-	Shell [] shells = getShells ();
-	for (int i=0; i<shells.length; i++) {
-		Shell shell = shells [i];
-		if (!shell.isDisposed ()) shell.redraw (true);
-	}
+	runSettings ();
 	return OS.eventNotHandledErr;
 }
 
@@ -3239,6 +3234,18 @@ boolean runPopups () {
 	}
 	popups = null;
 	return result;
+}
+
+void runSettings () {
+	sendEvent (SWT.Settings, null);
+	Shell [] shells = getShells ();
+	for (int i=0; i<shells.length; i++) {
+		Shell shell = shells [i];
+		if (!shell.isDisposed ()) {
+			shell.redraw (true);
+			shell.layout (true, true);
+		}
+	}
 }
 
 boolean runTimers () {
