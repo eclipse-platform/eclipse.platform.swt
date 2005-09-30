@@ -570,7 +570,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 					checkItem(hdc, run);
 					OS.SelectObject(hdc, getItemFont(run));
 					int drawRunY = drawY + (baseline - run.ascent);
-					OS.ScriptTextOut(hdc, run.psc, drawX, drawRunY, 0, null, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, null, run.goffsets);
+					OS.ScriptTextOut(hdc, run.psc, drawX, drawRunY, 0, null, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, 0, run.goffsets);
 					if ((run.style != null) && (run.style.underline || run.style.strikeout)) {
 						int newPen = hasSelection && fg == selectionForeground.handle ? selPen : OS.CreatePen(OS.BS_SOLID, 1, fg);
 						int oldPen = OS.SelectObject(hdc, newPen);
@@ -603,7 +603,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 						runX = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? run.width - piX[0] : piX[0];
 						rect.right = drawX + runX;
 						rect.bottom = drawY + lineHeight;
-						OS.ScriptTextOut(hdc, run.psc, drawX, drawRunY, OS.ETO_CLIPPED, rect, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, null, run.goffsets);
+						OS.ScriptTextOut(hdc, run.psc, drawX, drawRunY, OS.ETO_CLIPPED, rect, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, 0, run.goffsets);
 						if ((run.style != null) && (run.style.underline || run.style.strikeout)) {							
 							int oldPen = OS.SelectObject(hdc, selPen);
 							if (run.style.underline) {
