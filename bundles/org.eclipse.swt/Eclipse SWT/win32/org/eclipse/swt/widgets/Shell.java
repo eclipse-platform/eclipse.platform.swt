@@ -1652,4 +1652,37 @@ LRESULT WM_SHOWWINDOW (int wParam, int lParam) {
 	return result;
 }
 
+LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
+	LRESULT result = super.WM_SYSCOMMAND (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Feature in Windows.  When the last visible window in
+	* a process minimized, Windows swaps out the memory for
+	* the process.  The assumption is that the user can no
+	* longer interact with the window, so the memory can be
+	* released to other applications.  However, for programs
+	* that use a lot of memory, swapping the memory back in
+	* can take a long time, sometimes minutes.  The fix is
+	* to intercept WM_SYSCOMMAND looking for SC_MINIMIZE
+	* and use ShowWindow() with SW_SHOWMINIMIZED to minimize
+	* the window, rather than running the default window proc.
+	* 
+	* NOTE:  The default window proc activates the next
+	* top-level window in the Z-order while ShowWindow()
+	* with SW_SHOWMINIMIZED does not.  There is no fix for
+	* this at this time.
+	*/
+	if (OS.IsWinNT) {
+		int cmd = wParam & 0xFFF0;
+		switch (cmd) {
+			case OS.SC_MINIMIZE:
+				long memory = Runtime.getRuntime ().totalMemory ();
+				if (memory >= 32 * 1024 * 1024) {
+					OS.ShowWindow (handle, OS.SW_SHOWMINIMIZED);
+					return LRESULT.ZERO;
+				}
+		}
+	}
+	return result;
+}
 }
