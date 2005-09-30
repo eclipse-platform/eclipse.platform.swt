@@ -370,6 +370,59 @@ public Browser(Composite parent, int style) {
 	GTK.gtk_widget_show(gtkHandle);
 }
 
+public static void clearSessions () {
+	int[] result = new int [1];
+	int rc = XPCOM.NS_GetServiceManager (result);
+	if (rc != XPCOM.NS_OK) error (rc);
+	if (result [0] == 0) error (XPCOM.NS_NOINTERFACE);
+	nsIServiceManager serviceManager = new nsIServiceManager (result [0]);
+	result [0] = 0;
+	byte[] buffer = XPCOM.NS_COOKIEMANAGER_CONTRACTID.getBytes ();
+	byte[] aContractID = new byte [buffer.length + 1];
+	System.arraycopy (buffer, 0, aContractID, 0, buffer.length);
+	rc = serviceManager.GetServiceByContractID (aContractID, nsICookieManager.NS_ICOOKIEMANAGER_IID, result);
+	if (rc != XPCOM.NS_OK) error (rc);
+	if (result [0] == 0) error (XPCOM.NS_NOINTERFACE);
+	serviceManager.Release ();
+
+	nsICookieManager manager = new nsICookieManager (result [0]);
+	result [0] = 0;
+	rc = manager.GetEnumerator (result);
+	if (rc != XPCOM.NS_OK) error (rc);
+	manager.Release ();
+
+	nsISimpleEnumerator enumerator = new nsISimpleEnumerator (result [0]);
+	boolean[] moreElements = new boolean [1];
+	rc = enumerator.HasMoreElements (moreElements);
+	if (rc != XPCOM.NS_OK) error (rc);
+	while (moreElements [0]) {
+		result [0] = 0;
+		rc = enumerator.GetNext (result);
+		if (rc != XPCOM.NS_OK) error (rc);
+		nsICookie cookie = new nsICookie (result [0]);
+		long[] expires = new long [1];
+		rc = cookie.GetExpires (expires);
+		if (expires [0] == 0) {
+			/* indicates a session cookie */
+			int domain = XPCOM.nsEmbedCString_new ();
+			int name = XPCOM.nsEmbedCString_new ();
+			int path = XPCOM.nsEmbedCString_new ();
+			cookie.GetHost (domain);
+			cookie.GetName (name);
+			cookie.GetPath (path);
+			rc = manager.Remove (domain, name, path, false);
+			XPCOM.nsEmbedCString_delete (domain);
+			XPCOM.nsEmbedCString_delete (name);
+			XPCOM.nsEmbedCString_delete (path);
+			if (rc != XPCOM.NS_OK) error (rc);
+		}
+		cookie.Release ();
+		rc = enumerator.HasMoreElements (moreElements);
+		if (rc != XPCOM.NS_OK) error (rc);
+	}
+	enumerator.Release ();
+}
+
 /**	 
  * Adds the listener to the collection of listeners who will be
  * notified when the window hosting the receiver should be closed.
