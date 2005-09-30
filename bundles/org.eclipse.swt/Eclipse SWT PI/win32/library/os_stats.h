@@ -520,6 +520,7 @@ typedef enum {
 	ScriptGetLogicalWidths_FUNC,
 	ScriptGetProperties_FUNC,
 	ScriptItemize_FUNC,
+	ScriptJustify_FUNC,
 	ScriptLayout_FUNC,
 	ScriptPlace_FUNC,
 	ScriptShape_FUNC,

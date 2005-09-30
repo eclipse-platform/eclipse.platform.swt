@@ -8065,6 +8065,18 @@ fail:
 }
 #endif
 
+#ifndef NO_ScriptJustify
+JNIEXPORT jint JNICALL OS_NATIVE(ScriptJustify)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ScriptJustify_FUNC);
+	rc = (jint)ScriptJustify((SCRIPT_VISATTR *)arg0, (const int *)arg1, arg2, arg3, arg4, (int *)arg5);
+	OS_NATIVE_EXIT(env, that, ScriptJustify_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_ScriptLayout
 JNIEXPORT jint JNICALL OS_NATIVE(ScriptLayout)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jintArray arg3)
@@ -8130,19 +8142,16 @@ fail:
 
 #ifndef NO_ScriptTextOut
 JNIEXPORT jint JNICALL OS_NATIVE(ScriptTextOut)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jobject arg5, jobject arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11, jintArray arg12, jint arg13)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jobject arg5, jobject arg6, jint arg7, jint arg8, jint arg9, jint arg10, jint arg11, jint arg12, jint arg13)
 {
 	RECT _arg5, *lparg5=NULL;
 	SCRIPT_ANALYSIS _arg6, *lparg6=NULL;
-	jint *lparg12=NULL;
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, ScriptTextOut_FUNC);
 	if (arg5) if ((lparg5 = getRECTFields(env, arg5, &_arg5)) == NULL) goto fail;
 	if (arg6) if ((lparg6 = getSCRIPT_ANALYSISFields(env, arg6, &_arg6)) == NULL) goto fail;
-	if (arg12) if ((lparg12 = (*env)->GetIntArrayElements(env, arg12, NULL)) == NULL) goto fail;
-	rc = (jint)ScriptTextOut((const HDC)arg0, (SCRIPT_CACHE *)arg1, arg2, arg3, arg4, (const RECT *)lparg5, (const SCRIPT_ANALYSIS *)lparg6, (const WCHAR *)arg7, arg8, (const WORD *)arg9, arg10, (const int *)arg11, (const int *)lparg12, (const GOFFSET *)arg13);
+	rc = (jint)ScriptTextOut((const HDC)arg0, (SCRIPT_CACHE *)arg1, arg2, arg3, arg4, (const RECT *)lparg5, (const SCRIPT_ANALYSIS *)lparg6, (const WCHAR *)arg7, arg8, (const WORD *)arg9, arg10, (const int *)arg11, (const int *)arg12, (const GOFFSET *)arg13);
 fail:
-	if (arg12 && lparg12) (*env)->ReleaseIntArrayElements(env, arg12, lparg12, 0);
 	if (arg6 && lparg6) setSCRIPT_ANALYSISFields(env, arg6, lparg6);
 	if (arg5 && lparg5) setRECTFields(env, arg5, lparg5);
 	OS_NATIVE_EXIT(env, that, ScriptTextOut_FUNC);

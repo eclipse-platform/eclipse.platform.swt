@@ -394,6 +394,7 @@
 #define NO_ScriptGetFontProperties
 #define NO_ScriptGetProperties
 #define NO_ScriptItemize
+#define NO_ScriptJustify
 #define NO_ScriptLayout
 #define NO_ScriptPlace
 #define NO_ScriptShape

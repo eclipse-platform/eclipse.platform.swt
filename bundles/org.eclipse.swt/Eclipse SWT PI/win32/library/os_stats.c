@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 656;
-int OS_nativeFunctionCallCount[656];
+int OS_nativeFunctionCount = 657;
+int OS_nativeFunctionCallCount[657];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateKeyboardLayout",
@@ -516,6 +516,7 @@ char * OS_nativeFunctionNames[] = {
 	"ScriptGetLogicalWidths",
 	"ScriptGetProperties",
 	"ScriptItemize",
+	"ScriptJustify",
 	"ScriptLayout",
 	"ScriptPlace",
 	"ScriptShape",
