@@ -2990,8 +2990,8 @@ boolean runSettings () {
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
 		if (!shell.isDisposed ()) {
-			shell.layout (true, true);
 			shell.redraw (true);
+			shell.layout (true, true);
 		}
 	}
 	return true;
