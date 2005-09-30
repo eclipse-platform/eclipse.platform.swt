@@ -1276,6 +1276,27 @@ void headerOnMouseDoubleClick (Event event) {
 		TableColumn column = orderedColumns [i];
 		x += column.width;
 		if (event.x < x) {
+			/* found the clicked column */
+			TableColumn packColumn = null;
+			if (x - event.x <= TOLLERANCE_COLUMNRESIZE) {
+				/* clicked on column bound for this column */
+				packColumn = column;
+			} else {
+				if (i > 0 && event.x - column.getX () <= TOLLERANCE_COLUMNRESIZE) {
+					/* clicked on column bound that applies to previous column */
+					packColumn = orderedColumns [i - 1];
+				}
+			}
+			if (packColumn != null) {
+				packColumn.pack ();
+				resizeColumn = null;
+				if (Math.abs (packColumn.getX () + packColumn.width - event.x) > TOLLERANCE_COLUMNRESIZE) {
+					/* column separator has relocated away from pointer location */
+					setCursor (null);
+				}
+				return;
+			}
+			/* did not click on column separator, so just fire column event */
 			Event newEvent = new Event ();
 			newEvent.widget = column;
 			column.postEvent (SWT.DefaultSelection, newEvent);
