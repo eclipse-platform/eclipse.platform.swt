@@ -250,7 +250,7 @@ public String open () {
 	/*
 	* Feature in Windows.  For some reason, the WH_MSGFILTER filter
 	* does not run for GetSaveFileName() or GetOpenFileName().  The
-	* fix is to allow async messages to run the WH_FOREGROUNDIDLE
+	* fix is to allow async messages to run in the WH_FOREGROUNDIDLE
 	* hook instead.
 	*/
 	boolean oldRunMessagesInIdle = display.runMessagesInIdle;
