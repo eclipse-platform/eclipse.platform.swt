@@ -1538,7 +1538,7 @@ LRESULT WM_DESTROY (int wParam, int lParam) {
 LRESULT WM_ENTERIDLE (int wParam, int lParam) {
 	LRESULT result = super.WM_ENTERIDLE (wParam, lParam);
 	if (result != null) return result;
-	if (OS.IsWinCE) {
+	if (OS.IsWinCE && display.runMessages) {
 		if (display.runAsyncMessages (true)) display.wakeThread ();
 	}
 	return result;

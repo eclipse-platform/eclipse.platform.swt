@@ -241,13 +241,20 @@ public String open () {
 	
 	/* Make the parent shell be temporary modal */
 	Shell oldModal = null;
-	Display display = null;
+	Display display = parent.getDisplay ();
 	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
-		display = parent.getDisplay ();
 		oldModal = display.getModalDialogShell ();
 		display.setModalDialogShell (parent);
 	}
 	
+	/*
+	* Feature in Windows.  For some reason, the WH_MSGFILTER filter
+	* does not run for GetSaveFileName() or GetOpenFileName().  The
+	* fix is to allow async messages to run the WH_FOREGROUNDIDLE
+	* hook instead.
+	*/
+	boolean oldRunMessagesInIdle = display.runMessagesInIdle;
+	display.runMessagesInIdle = true;
 	/*
 	* Open the dialog.  If the open fails due to an invalid
 	* file name, use an empty file name and open it again.
@@ -257,7 +264,8 @@ public String open () {
 		OS.MoveMemory (lpstrFile, new TCHAR (0, "", true), TCHAR.sizeof);
 		success = (save) ? OS.GetSaveFileName (struct) : OS.GetOpenFileName (struct);
 	}
-
+	display.runMessagesInIdle = oldRunMessagesInIdle;
+	
 	/* Clear the temporary dialog modal parent */
 	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
 		display.setModalDialogShell (oldModal);

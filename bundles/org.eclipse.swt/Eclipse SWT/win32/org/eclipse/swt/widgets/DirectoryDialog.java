@@ -216,16 +216,16 @@ public String open () {
 	* during the message loop for SHBrowseForFolder(), running code
 	* in the hook can cause a GP.  Specifically, SetWindowText()
 	* for static controls seemed to make the problem happen.
-	* The fix is to ignore the hook while the directory dialog
-	* is open.
+	* The fix is to disable async messages while the directory
+	* dialog is open.
 	* 
 	* NOTE:  This only happens in versions of the comctl32.dll
 	* earlier than 6.0.
 	*/
-	boolean oldIgnore = display.ignoreMsgFilter;
-	if (OS.COMCTL32_MAJOR < 6) display.ignoreMsgFilter = true;
+	boolean oldRunMessages = display.runMessages;
+	if (OS.COMCTL32_MAJOR < 6) display.runMessages = false;
 	int lpItemIdList = OS.SHBrowseForFolder (lpbi);
-	if (OS.COMCTL32_MAJOR < 6) display.ignoreMsgFilter = oldIgnore;
+	if (OS.COMCTL32_MAJOR < 6) display.runMessages = oldRunMessages;
 	OS.SetErrorMode(oldErrorMode);
 	
 	/* Clear the temporary dialog modal parent */

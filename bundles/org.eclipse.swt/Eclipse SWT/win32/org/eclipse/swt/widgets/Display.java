@@ -152,7 +152,6 @@ public class Display extends Device {
 	Callback msgFilterCallback;
 	int msgFilterProc, filterHook;
 	MSG hookMsg = new MSG ();
-	boolean ignoreMsgFilter;
 	
 	/* Idle Hook */
 	Callback foregroundIdleCallback;
@@ -165,6 +164,7 @@ public class Display extends Device {
 
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer = new Synchronizer (this);
+	boolean runMessages = true, runMessagesInIdle = false;
 	Thread thread;
 
 	/* Display Shutdown */
@@ -1050,8 +1050,13 @@ public Widget findWidget (int handle, int id) {
 }
 
 int foregroundIdleProc (int code, int wParam, int lParam) {
-	if (code >= 0) {
-		if (getMessageCount () > 0) wakeThread ();
+	if (runMessages) {
+		if (code >= 0) {
+			if (getMessageCount () != 0) {
+				if (runMessagesInIdle) runAsyncMessages (false);
+				wakeThread ();
+			}
+		}
 	}
 	return OS.CallNextHookEx (idleHook, code, wParam, lParam);
 }
@@ -2615,14 +2620,30 @@ int monitorEnumProc (int hmonitor, int hdc, int lprcMonitor, int dwData) {
 }
 
 int msgFilterProc (int code, int wParam, int lParam) {
-	if (!ignoreMsgFilter) {
-		if (code >= 0) {
-			OS.MoveMemory (hookMsg, lParam, MSG.sizeof);
-			if (hookMsg.message == OS.WM_NULL) {
-				MSG msg = new MSG ();
-				int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD | OS.PM_QS_INPUT | OS.PM_QS_POSTMESSAGE;
-				if (!OS.PeekMessage (msg, 0, 0, 0, flags)) {
-					if (runAsyncMessages (false)) wakeThread ();
+	if (runMessages) {
+		/*
+		* Feature in Windows.  For some reason, when the user clicks
+		* a table or tree, the Windows hook WH_MSGFILTER is sent when
+		* an input event from a dialog box, message box, menu, or scroll
+		* bar did not occur, causing async messages to run at the wrong
+		* time.  The fix is to check the message filter code.
+		*/
+		switch (code) {
+			case OS.MSGF_DIALOGBOX:
+			case OS.MSGF_MAINLOOP:
+			case OS.MSGF_MENU:
+			case OS.MSGF_MOVE:
+			case OS.MSGF_MESSAGEBOX:
+			case OS.MSGF_NEXTWINDOW:
+			case OS.MSGF_SCROLLBAR:
+			case OS.MSGF_SIZE: {
+				OS.MoveMemory (hookMsg, lParam, MSG.sizeof);
+				if (hookMsg.message == OS.WM_NULL) {
+					MSG msg = new MSG ();
+					int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD | OS.PM_QS_INPUT | OS.PM_QS_POSTMESSAGE;
+					if (!OS.PeekMessage (msg, 0, 0, 0, flags)) {
+						if (runAsyncMessages (false)) wakeThread ();
+					}
 				}
 			}
 		}
@@ -2833,7 +2854,7 @@ public boolean readAndDispatch () {
 		runDeferredEvents ();
 		return true;
 	}
-	return runAsyncMessages (false);
+	return runMessages && runAsyncMessages (false);
 }
 
 static synchronized void register (Display display) {
@@ -3502,7 +3523,7 @@ int shiftedKey (int key) {
  */
 public boolean sleep () {
 	checkDevice ();
-	if (getMessageCount () != 0) return true;
+	if (runMessages && getMessageCount () != 0) return true;
 	if (OS.IsWinCE) {
 		OS.MsgWaitForMultipleObjectsEx (0, 0, OS.INFINITE, OS.QS_ALLINPUT, OS.MWMO_INPUTAVAILABLE);
 		return true;

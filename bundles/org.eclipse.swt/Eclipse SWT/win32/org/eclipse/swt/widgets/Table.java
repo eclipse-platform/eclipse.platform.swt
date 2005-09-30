@@ -155,7 +155,7 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam, boolean forceSele
 			return OS.CallWindowProc (HeaderProc, hwnd, msg, wParam, lParam);
 		}
 	}
-	boolean checkSelection = false, checkFilter = false, checkActivate = false;
+	boolean checkSelection = false, checkActivate = false;
 	switch (msg) {
 		case OS.WM_CHAR:
 		case OS.WM_IME_CHAR:
@@ -175,20 +175,11 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam, boolean forceSele
 		case OS.WM_RBUTTONUP:
 		case OS.WM_XBUTTONDBLCLK:
 		case OS.WM_XBUTTONUP:
-			checkSelection = true;
-			break;
-		/*
-		* Bug in Windows.  For some reason, when the user clicks
-		* on this control, the Windows hook WH_MSGFILTER is sent
-		* despite the fact that an input event from a dialog box,
-		* message box, menu, or scroll bar did not seem to occur.
-		* The fix is to ignore the hook.
-		*/
 		case OS.WM_LBUTTONDOWN:
 		case OS.WM_MBUTTONDOWN:
 		case OS.WM_RBUTTONDOWN:
 		case OS.WM_XBUTTONDOWN:
-			checkSelection = checkFilter = true;
+			checkSelection = true;
 			break;
 		/*
 		* Feature in Windows.  Windows sends LVN_ITEMACTIVATE from WM_KEYDOWN
@@ -204,9 +195,7 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam, boolean forceSele
 	boolean oldSelected = wasSelected;
 	if (checkSelection) wasSelected = false;
 	if (checkActivate) ignoreActivate = true;
-	if (checkFilter) display.ignoreMsgFilter = true;
 	int code = OS.CallWindowProc (TableProc, hwnd, msg, wParam, lParam);
-	if (checkFilter) display.ignoreMsgFilter = false;
 	if (checkActivate) ignoreActivate = false;
 	if (checkSelection) {
 		if (wasSelected || forceSelect) {
