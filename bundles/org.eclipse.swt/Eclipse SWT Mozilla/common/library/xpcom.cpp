@@ -309,6 +309,18 @@ fail:
 }
 #endif
 
+#ifndef NO_VtblCall__IIIIJZ
+JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIJZ)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jlong arg4, jboolean arg5)
+{
+	jint rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, VtblCall__IIIIJZ_FUNC);
+	rc = (jint)((jint (STDMETHODCALLTYPE *)(jint, jint, jint, jlong, jboolean))(*(jint **)arg1)[arg0])(arg1, arg2, arg3, arg4, arg5);
+	XPCOM_NATIVE_EXIT(env, that, VtblCall__IIIIJZ_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_VtblCall__IIIIZ
 JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__IIIIZ)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jboolean arg4)
