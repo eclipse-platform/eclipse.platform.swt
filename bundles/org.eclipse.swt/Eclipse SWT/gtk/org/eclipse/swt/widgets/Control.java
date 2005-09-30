@@ -2332,8 +2332,8 @@ public void redraw () {
 	redraw (false);
 }
 
-public void redraw (boolean all) {
-	checkWidget();
+void redraw (boolean all) {
+//	checkWidget();
 	if (!OS.GTK_WIDGET_VISIBLE (topHandle ())) return;
 	forceResize ();
 	int /*long*/ paintHandle = paintHandle ();
