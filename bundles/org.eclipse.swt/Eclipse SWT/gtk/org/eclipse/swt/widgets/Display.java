@@ -191,6 +191,7 @@ public class Display extends Device {
 	int /*long*/ styleSetProc;
 	Callback styleSetCallback;
 	int /*long*/ shellHandle;
+	boolean settingsChanged, runSettings;
 	
 	/* Entry focus behaviour */
 	boolean entrySelectOnFocus;
@@ -1890,22 +1891,19 @@ public Image getSystemImage (int id) {
 void initializeSystemResources () {
 	GdkColor gdkColor;
 	
-	/* Get tooltip resources */
+	/* Get Tooltip resources */
 	int /*long*/ tooltipShellHandle = OS.gtk_window_new (OS.GTK_WINDOW_POPUP);
 	if (tooltipShellHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	byte[] gtk_tooltips = Converter.wcsToMbcs (null, "gtk-tooltips", true);
 	OS.gtk_widget_set_name (tooltipShellHandle, gtk_tooltips);
 	OS.gtk_widget_realize (tooltipShellHandle);
 	int /*long*/ tooltipStyle = OS.gtk_widget_get_style (tooltipShellHandle);
-	
 	gdkColor = new GdkColor();
 	OS.gtk_style_get_fg (tooltipStyle, OS.GTK_STATE_NORMAL, gdkColor);
 	COLOR_INFO_FOREGROUND = gdkColor;
-	
 	gdkColor = new GdkColor();
 	OS.gtk_style_get_bg (tooltipStyle, OS.GTK_STATE_NORMAL, gdkColor);
 	COLOR_INFO_BACKGROUND = gdkColor;
-	
 	OS.gtk_widget_destroy (tooltipShellHandle);	
 	
 	/* Get Shell resources */
@@ -2642,7 +2640,8 @@ void putGdkEvents () {
  */
 public boolean readAndDispatch () {
 	checkDevice ();
-	boolean events = runPopups ();
+	boolean events = runSettings ();
+	events |= runPopups ();
 	events |= OS.g_main_context_iteration (0, false);
 	if (events) {
 		runDeferredEvents ();
@@ -2982,6 +2981,22 @@ boolean runPopups () {
 	return result;
 }
 
+boolean runSettings () {
+	if (!runSettings) return false;
+	runSettings = false;
+	initializeSystemResources ();
+	sendEvent (SWT.Settings, null);
+	Shell [] shells = getShells ();
+	for (int i=0; i<shells.length; i++) {
+		Shell shell = shells [i];
+		if (!shell.isDisposed ()) {
+			shell.layout (true, true);
+			shell.redraw (true);
+		}
+	}
+	return true;
+}
+
 /**
  * On platforms which support it, sets the application name
  * to be the argument. On Motif, for example, this can be used
@@ -3241,6 +3256,11 @@ public boolean sleep () {
 		gdkEvents = null;
 		gdkEventWidgets = null;
 	}
+	if (settingsChanged) {
+		settingsChanged = false;
+		runSettings = true;
+		return false;
+	}
 	if (getMessageCount () != 0) return true;
 	if (fds == 0) {
 		allocated_nfds = 2;
@@ -3425,8 +3445,7 @@ int /*long*/ shellMapProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ 
 }
 
 int /*long*/ styleSetProc (int /*long*/ gobject, int /*long*/ arg1, int /*long*/ user_data) {
-	initializeSystemResources ();
-	sendEvent (SWT.Settings, null);
+	settingsChanged = true;
 	return 0;
 }
 

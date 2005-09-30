@@ -2329,12 +2329,17 @@ void register () {
  */
 public void redraw () {
 	checkWidget();
+	redraw (false);
+}
+
+public void redraw (boolean all) {
+	checkWidget();
 	if (!OS.GTK_WIDGET_VISIBLE (topHandle ())) return;
 	forceResize ();
 	int /*long*/ paintHandle = paintHandle ();
 	int width = OS.GTK_WIDGET_WIDTH (paintHandle);
 	int height = OS.GTK_WIDGET_HEIGHT (paintHandle);
-	redrawWidget (0, 0, width, height, false);
+	redrawWidget (0, 0, width, height, all);
 }
 
 /**
