@@ -1745,6 +1745,7 @@ void decidePolicyForNavigationAction(int actionInformation, int request, int fra
 }
 
 void decidePolicyForNewWindowAction(int actionInformation, int request, int frameName, int listener) {
+	WebKit.objc_msgSend(listener, WebKit.S_use);
 }
 
 void unableToImplementPolicyWithError(int error, int frame) {
