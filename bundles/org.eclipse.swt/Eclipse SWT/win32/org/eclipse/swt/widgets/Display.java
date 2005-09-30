@@ -2561,20 +2561,7 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 			break;
 		}
 		case OS.WM_SETTINGCHANGE: {
-			if (wParam == 0 || wParam == 1) {
-				Font oldFont = getSystemFont ();
-				updateImages ();
-				updateFonts ();
-				sendEvent (SWT.Settings, null);
-				Font newFont = getSystemFont ();
-				Shell [] shells = getShells ();
-				for (int i=0; i<shells.length; i++) {
-					Shell shell = shells [i];
-					if (!shell.isDisposed ()) {
-						shell.updateFont (oldFont, newFont);
-					}
-				}
-			}
+			if (wParam == 0 || wParam == 1) runSettings ();
 			break;
 		}
 		case OS.WM_TIMER: {
@@ -3253,6 +3240,21 @@ boolean runPopups () {
 	}
 	popups = null;
 	return result;
+}
+
+void runSettings () {
+	Font oldFont = getSystemFont ();
+	updateImages ();
+	updateFonts ();
+	sendEvent (SWT.Settings, null);
+	Font newFont = getSystemFont ();
+	Shell [] shells = getShells ();
+	for (int i=0; i<shells.length; i++) {
+		Shell shell = shells [i];
+		if (!shell.isDisposed ()) {
+			shell.updateFont (oldFont, newFont);
+		}
+	}
 }
 
 boolean runTimer (int id) {
