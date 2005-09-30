@@ -2640,7 +2640,8 @@ void putGdkEvents () {
  */
 public boolean readAndDispatch () {
 	checkDevice ();
-	boolean events = runSettings ();
+	boolean events = false;
+	events |= runSettings ();
 	events |= runPopups ();
 	events |= OS.g_main_context_iteration (0, false);
 	if (events) {
