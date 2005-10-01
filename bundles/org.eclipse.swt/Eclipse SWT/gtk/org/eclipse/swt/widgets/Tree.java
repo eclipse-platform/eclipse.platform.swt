@@ -1616,7 +1616,13 @@ int /*long*/ gtk_test_collapse_row (int /*long*/ tree, int /*long*/ iter, int /*
 	boolean oldModelChanged = modelChanged;
 	modelChanged = false;
 	sendEvent (SWT.Collapse, event);
-	boolean changed = modelChanged;
+	/*
+	* Bug in GTK.  Collapsing the target row during the test_collapse_row
+	* handler will cause a segmentation fault if the animation code is allowed
+	* to run.  The fix is to block the animation if the row is already
+	* collapsed.
+	*/
+	boolean changed = modelChanged || !OS.gtk_tree_view_row_expanded (handle, path);
 	modelChanged = oldModelChanged;
 	if (isDisposed () || item.isDisposed ()) return 1;
 	/*
@@ -1648,7 +1654,13 @@ int /*long*/ gtk_test_expand_row (int /*long*/ tree, int /*long*/ iter, int /*lo
 	boolean oldModelChanged = modelChanged;
 	modelChanged = false;
 	sendEvent (SWT.Expand, event);
-	boolean changed = modelChanged;
+	/*
+	* Bug in GTK.  Expanding the target row during the test_expand_row
+	* handler will cause a segmentation fault if the animation code is allowed
+	* to run.  The fix is to block the animation if the row is already
+	* expanded.
+	*/
+	boolean changed = modelChanged || OS.gtk_tree_view_row_expanded (handle, path);
 	modelChanged = oldModelChanged;
 	if (isDisposed () || item.isDisposed ()) return 1;
 	/*
