@@ -18,6 +18,7 @@ SWT_VERSION=$(maj_ver)$(min_ver)
 # Define the various shared libraries to be build.
 WS_PREFIX = gtk
 SWT_PREFIX = swt
+CDE_PREFIX = swt-cde
 AWT_PREFIX = swt-awt
 SWTPI_PREFIX = swt-pi
 CAIRO_PREFIX = swt-cairo
@@ -25,7 +26,9 @@ ATK_PREFIX = swt-atk
 GNOME_PREFIX = swt-gnome
 MOZILLA_PREFIX = swt-mozilla
 GLX_PREFIX = swt-glx
+
 SWT_LIB = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+CDE_LIB = lib$(CDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 AWT_LIB = lib$(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 SWTPI_LIB = lib$(SWTPI_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 CAIRO_LIB = lib$(CAIRO_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
@@ -40,6 +43,8 @@ CAIROLIBS = `pkg-config --libs-only-L cairo` -lcairo
 # Do not use pkg-config to get libs because it includes unnecessary dependencies (i.e. pangoxft-1.0)
 GTKCFLAGS = `pkg-config --cflags gtk+-2.0`
 GTKLIBS = `pkg-config --libs-only-L gtk+-2.0 gthread-2.0` -lgtk-x11-2.0 -lgthread-2.0 -L/usr/X11R6/lib $(XLIB64) -lXtst
+
+CDE_LIBS = -L$(CDE_HOME)/lib -R$(CDE_HOME)/lib -lXt -lX11 -lDtSvc
 
 AWT_LIBS = -L$(AWT_LIB_PATH) -ljawt -shared -s
 
@@ -69,10 +74,11 @@ MOZILLACFLAGS = -O \
 	-I$(JAVA_HOME)/include/linux \
 	${GECKO_INCLUDES} \
 	${SWT_PTR_CFLAGS}
-	
-MOZILLALIBS = -shared -s -Wl,--version-script=mozilla_exports -Bsymbolic ${GECKO_LIBS}
+MOZILLALIBS = -shared -s -Wl,--version-script=mozilla_exports -Bsymbolic \
+	${GECKO_LIBS}
 	
 SWT_OBJECTS = swt.o callback.o
+CDE_OBJECTS = swt.o cde.o cde_structs.o cde_stats.o
 AWT_OBJECTS = swt_awt.o
 SWTPI_OBJECTS = swt.o os.o os_structs.o os_custom.o os_stats.o
 CAIRO_OBJECTS = swt.o cairo.o cairo_structs.o cairo_stats.o
@@ -80,16 +86,16 @@ ATK_OBJECTS = swt.o atk.o atk_structs.o atk_custom.o atk_stats.o
 GNOME_OBJECTS = swt.o gnome.o gnome_structs.o gnome_stats.o
 MOZILLA_OBJECTS = swt.o xpcom.o xpcom_custom.o xpcom_structs.o xpcom_stats.o
 GLX_OBJECTS = swt.o glx.o glx_structs.o glx_stats.o
- 
+
 CFLAGS = -O -Wall \
 		-DSWT_VERSION=$(SWT_VERSION) \
 		$(NATIVE_STATS) \
 		-DLINUX -DGTK \
 		-I$(JAVA_HOME)/include \
 		-I$(JAVA_HOME)/include/linux \
-		-fpic \
+		-fPIC \
 		${SWT_PTR_CFLAGS}
-LIBS = -shared -fpic -s
+LIBS = -shared -fPIC -s
 
 
 all: make_swt make_atk make_gnome make_awt make_glx
@@ -133,6 +139,15 @@ cairo_structs.o: cairo_structs.c cairo_structs.h cairo.h swt.h
 	$(CC) $(CFLAGS) $(CAIROCFLAGS) -c cairo_structs.c
 cairo_stats.o: cairo_stats.c cairo_structs.h cairo.h cairo_stats.h swt.h
 	$(CC) $(CFLAGS) $(CAIROCFLAGS) -c cairo_stats.c
+
+#
+# CDE lib
+#
+
+make_cde: $(CDE_LIB)
+
+$(CDE_LIB): $(CDE_OBJECTS)
+	$(CC) $(LIBS) $(CDE_LIBS) -o $(CDE_LIB) $(CDE_OBJECTS)
 
 #
 # AWT lib
