@@ -4036,7 +4036,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			* the items array.  The fix is to check for null.
 			* 
 			* NOTE: This only happens on XP with the version 6.00 of
-			* COMCTL32.DLL,
+			* COMCTL32.DLL.
 			*/
 			if (items == null) break;
 			TreeItem item = items [lptvdi.lParam];
