@@ -321,7 +321,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1XCreateColormap)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, _1XCreateColormap_FUNC);
-	rc = (jint)XCreateColormap(arg0, arg1, arg2, arg3);
+	rc = (jint)XCreateColormap((Display *)arg0, (Window)arg1, (Visual *)arg2, arg3);
 	OS_NATIVE_EXIT(env, that, _1XCreateColormap_FUNC);
 	return rc;
 }
@@ -785,7 +785,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1XFreeColormap)
 {
 	jint rc = 0;
 	OS_NATIVE_ENTER(env, that, _1XFreeColormap_FUNC);
-	rc = (jint)XFreeColormap(arg0, arg1);
+	rc = (jint)XFreeColormap((Display *)arg0, (Colormap)arg1);
 	OS_NATIVE_EXIT(env, that, _1XFreeColormap_FUNC);
 	return rc;
 }
