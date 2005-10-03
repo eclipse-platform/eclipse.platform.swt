@@ -4185,17 +4185,49 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 							return new LRESULT (OS.CDRF_DODEFAULT | OS.CDRF_NOTIFYPOSTPAINT);
 						}
 					}
-					int hFont = item.cellFont != null ? item.cellFont [0] : item.font;
+					int hFont = item.cellFont != null ? item.cellFont [0] : -1;
+					if (hFont == -1) hFont = item.font;
 					if (hFont != -1) OS.SelectObject (hDC, hFont);
 					if (OS.IsWindowEnabled (handle)) {
+						boolean useColor = true;
 						TVITEM tvItem = new TVITEM ();
 						tvItem.mask = OS.TVIF_STATE;
 						tvItem.hItem = item.handle;
 						OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-						if ((tvItem.state & (OS.TVIS_SELECTED | OS.TVIS_DROPHILITED)) == 0) {
-							int clrText = item.cellForeground != null ? item.cellForeground [0] : item.foreground;
+						if ((tvItem.state & (OS.TVIS_SELECTED | OS.TVIS_DROPHILITED)) != 0) {
+							useColor = false;
+							/*
+							* Feature in Windows.  When the mouse is pressed and the
+							* selection is first drawn for a tree, the previously
+							* selected item is redrawn but the the TVIS_SELECTED bits
+							* are not cleared.  When the user moves the mouse slightly
+							* and a drag and drop operation is not started, the item is
+							* drawn again and this time with TVIS_SELECTED is cleared.
+							* This means that an item that contains colored cells will
+							* not draw with the correct background until the mouse is
+							* moved.  The fix is to test for the selection colors and
+							* guess that the item is not selected.
+							* 
+							* NOTE: This code does not work when the foreground and
+							* background of the tree are set to the selection colors
+							* but this does not happen in a regular application.
+							*/
+							if (handle == OS.GetFocus ()) {
+								if (OS.GetTextColor (hDC) != OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT)) {
+									useColor = true;
+								} else {
+									if (OS.GetBkColor (hDC) != OS.GetSysColor (OS.COLOR_HIGHLIGHT)) {
+										useColor = true;
+									}
+								}
+							}
+						}
+						if (useColor) {
+							int clrText = item.cellForeground != null ? item.cellForeground [0] : -1;
+							if (clrText == -1) clrText = item.foreground;
 							nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
-							int clrTextBk = item.cellBackground != null ? item.cellBackground [0] : item.background;
+							int clrTextBk = item.cellBackground != null ? item.cellBackground [0] : -1;
+							if (clrTextBk == -1) clrTextBk = item.background;
 							nmcd.clrTextBk = clrTextBk == -1 ? getBackgroundPixel () : clrTextBk;
 							OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
 						}
@@ -4230,6 +4262,31 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 							OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 							if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
 								useColor = false;
+								/*
+								* Feature in Windows.  When the mouse is pressed and the
+								* selection is first drawn for a tree, the previously
+								* selected item is redrawn but the the TVIS_SELECTED bits
+								* are not cleared.  When the user moves the mouse slightly
+								* and a drag and drop operation is not started, the item is
+								* drawn again and this time with TVIS_SELECTED is cleared.
+								* This means that an item that contains colored cells will
+								* not draw with the correct background until the mouse is
+								* moved.  The fix is to test for the selection colors and
+								* guess that the item is not selected.
+								* 
+								* NOTE: This code does not work when the foreground and
+								* background of the tree are set to the selection colors
+								* but this does not happen in a regular application.
+								*/
+								if (handle == OS.GetFocus ()) {
+									if (OS.GetTextColor (hDC) != OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT)) {
+										useColor = true;
+									} else {
+										if (OS.GetBkColor (hDC) != OS.GetSysColor (OS.COLOR_HIGHLIGHT)) {
+											useColor = true;
+										}
+									}
+								}
 							} else {
 								/*
 								* Feature in Windows.  When the mouse is pressed and the
@@ -4244,14 +4301,12 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 								* moves the mouse.  The fix is to test for the selection
 								* colors and guess that the item is selected.
 								* 
-								* NOTE: This code doesn't work when the foreground and
+								* NOTE: This code does not work when the foreground and
 								* background of the tree are set to the selection colors
 								* but this does not happen in a regular application.
 								*/
-								int clrForeground = OS.GetTextColor (hDC);
-								if (clrForeground == OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT)) {
-									int clrBackground = OS.GetBkColor (hDC);
-									if (clrBackground == OS.GetSysColor (OS.COLOR_HIGHLIGHT)) {
+								if (OS.GetTextColor (hDC) == OS.GetSysColor (OS.COLOR_HIGHLIGHTTEXT)) {
+									if (OS.GetBkColor (hDC) == OS.GetSysColor (OS.COLOR_HIGHLIGHT)) {
 										useColor = false;
 									}
 								}
@@ -4277,11 +4332,13 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 							if (i > 0) {
 								int clrTextBk = -1;
 								OS.SetRect (rect, x, nmcd.top, x + hdItem.cxy, nmcd.bottom - gridWidth);
-								if (printClient || (style & SWT.FULL_SELECTION) != 0) {
-									clrTextBk = OS.GetBkColor (hDC);
-								} else {
-									if (useColor) {
-										clrTextBk = item.cellBackground != null ? item.cellBackground [index] : item.background;
+								if (useColor) {
+									clrTextBk = item.cellBackground != null ? item.cellBackground [index] : -1;
+									if (clrTextBk == -1) clrTextBk = item.background;
+								}
+								if (clrTextBk == -1) {
+									if (printClient || (style & SWT.FULL_SELECTION) != 0) {
+										clrTextBk = OS.GetBkColor (hDC);
 									}
 								}
 								if (clrTextBk != -1) drawBackground (hDC, clrTextBk, rect);
@@ -4315,11 +4372,13 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 										if (strings != null) string = strings [index];
 									}
 									if (string != null) {
-										int hFont = item.cellFont != null ? item.cellFont [index] : item.font;
+										int hFont = item.cellFont != null ? item.cellFont [index] : -1;
+										if (hFont == -1) hFont = item.font;
 										hFont = hFont != -1 ? OS.SelectObject (hDC, hFont) : -1;
 										int clrText = -1;
 										if (useColor) {
-											clrText = item.cellForeground != null ? item.cellForeground [index] : item.foreground;
+											clrText = item.cellForeground != null ? item.cellForeground [index] : -1;
+											if (clrText == -1) clrText = item.foreground;
 											clrText = clrText != -1 ? OS.SetTextColor (hDC, clrText) : -1;
 										}
 										int oldMode = clrTextBk != -1 ? OS.SetBkMode (hDC, OS.TRANSPARENT) : -1;
