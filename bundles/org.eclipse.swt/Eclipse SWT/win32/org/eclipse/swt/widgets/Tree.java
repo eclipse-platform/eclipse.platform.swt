@@ -1881,7 +1881,6 @@ public void removeAll () {
 			item.release (false);
 		}
 	}
-	items = new TreeItem [4];
 	ignoreDeselect = ignoreSelect = true;
 	boolean redraw = drawCount == 0 && OS.IsWindowVisible (handle);
 	if (redraw) {
@@ -1909,6 +1908,7 @@ public void removeAll () {
 	imageList = null;
 	if (hwndParent == 0 && !linesVisible) customDraw = false;
 	hAnchor = hInsert = hFirstIndexOf = hLastIndexOf = 0;
+	items = new TreeItem [4];
 	updateScrollBar ();
 }
 
@@ -4041,6 +4041,14 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			if (items == null) break;
 			TreeItem item = items [lptvdi.lParam];
 			if (item == null) break;
+			/* 
+			* Feature in Windows.  When TVM_DELETEITEM is called with
+			* TVI_ROOT to remove all items from a tree, under certain
+			* circumstances, the tree sends TVN_GETDISPINFO for items
+			* that are about to be disposed.  The fix is to check for
+			* disposed items.
+			*/
+			if (item.isDisposed ()) break;
 			if (!item.cached) {
 				if ((style & SWT.VIRTUAL) != 0) {
 					if (drawCount == 0 && OS.IsWindowVisible (handle)) {
