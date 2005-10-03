@@ -33,7 +33,7 @@ MOZILLA_LIB = lib$(MOZILLA_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 
 # Do not use pkg-config to get libs because it includes unnecessary dependencies (i.e. pangoxft-1.0)
 GTKCFLAGS = `pkg-config --cflags gtk+-2.0`
-GTKLIBS = `pkg-config --libs-only-L gtk+-2.0 gthread-2.0` -lgtk-x11-2.0 -lgthread-2.0 -L$(XTEST_LIB_PATH) -Wl,-R -Wl,$(XTEST_LIB_PATH) -lXtst
+GTKLIBS = `pkg-config --libs-only-L gtk+-2.0 gthread-2.0` -lgtk-x11-2.0 -lgthread-2.0 -L/usr/openwin/lib -Wl,-R -Wl,/usr/openwin/lib -lXtst
 
 CDE_LIBS = -L$(CDE_HOME)/lib -R$(CDE_HOME)/lib -lXt -lX11 -lDtSvc
 
@@ -95,13 +95,13 @@ all: make_swt make_atk make_awt make_cde
 make_swt: $(SWT_LIB) $(SWTPI_LIB)
 
 $(SWT_LIB): $(SWT_OBJECTS)
-	$(LD) $(LIBS) -o $(SWT_LIB) $(SWT_OBJECTS)
+	$(CC) $(LIBS) -o $(SWT_LIB) $(SWT_OBJECTS)
 
 callback.o: callback.c callback.h
 	$(CC) $(CFLAGS) -c callback.c
 
 $(SWTPI_LIB): $(SWTPI_OBJECTS)
-	$(LD) $(LIBS) $(GTKLIBS) -o $(SWTPI_LIB) $(SWTPI_OBJECTS)
+	$(CC) $(LIBS) $(GTKLIBS) -o $(SWTPI_LIB) $(SWTPI_OBJECTS)
 
 swt.o: swt.c swt.h
 	$(CC) $(CFLAGS) -c swt.c
@@ -121,7 +121,7 @@ os_stats.o: os_stats.c os_structs.h os.h os_stats.h swt.h
 make_cde: $(CDE_LIB)
 
 $(CDE_LIB): $(CDE_OBJECTS)
-	$(LD) $(LIBS) $(CDE_LIBS) -o $(CDE_LIB) $(CDE_OBJECTS)
+	$(CC) $(LIBS) $(CDE_LIBS) -o $(CDE_LIB) $(CDE_OBJECTS)
 	
 #
 # AWT lib
@@ -129,7 +129,7 @@ $(CDE_LIB): $(CDE_OBJECTS)
 make_awt:$(AWT_LIB)
 
 $(AWT_LIB): $(AWT_OBJECTS)
-	$(LD) $(AWT_LIBS) -o $(AWT_LIB) $(AWT_OBJECTS)
+	$(CC) $(AWT_LIBS) -o $(AWT_LIB) $(AWT_OBJECTS)
 
 #
 # Atk lib
@@ -137,7 +137,7 @@ $(AWT_LIB): $(AWT_OBJECTS)
 make_atk: $(ATK_LIB)
 
 $(ATK_LIB): $(ATK_OBJECTS)
-	$(LD) $(LIBS) $(ATKLIBS) -o $(ATK_LIB) $(ATK_OBJECTS)
+	$(CC) $(LIBS) $(ATKLIBS) -o $(ATK_LIB) $(ATK_OBJECTS)
 
 atk.o: atk.c atk.h
 	$(CC) $(CFLAGS) $(ATKCFLAGS) -c atk.c

@@ -39,7 +39,7 @@ CAIROLIBS = `pkg-config --libs-only-L cairo` -lcairo
 
 # Do not use pkg-config to get libs because it includes unnecessary dependencies (i.e. pangoxft-1.0)
 GTKCFLAGS = `pkg-config --cflags gtk+-2.0`
-GTKLIBS = `pkg-config --libs-only-L gtk+-2.0 gthread-2.0` -lgtk-x11-2.0 -lgthread-2.0 -L$(XTEST_LIB_PATH) -lXtst
+GTKLIBS = `pkg-config --libs-only-L gtk+-2.0 gthread-2.0` -lgtk-x11-2.0 -lgthread-2.0 -L/usr/X11R6/lib $(XLIB64) -lXtst
 
 AWT_LIBS = -L$(AWT_LIB_PATH) -ljawt -shared -s
 
@@ -64,7 +64,7 @@ MOZILLACFLAGS = -O \
 	-DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) \
 	-Wno-non-virtual-dtor \
 	-fPIC \
-	-I./ \
+	-I. \
 	-I$(JAVA_HOME)/include \
 	-I$(JAVA_HOME)/include/linux \
 	${GECKO_INCLUDES} \
@@ -100,13 +100,13 @@ all: make_swt make_atk make_gnome make_awt make_glx
 make_swt: $(SWT_LIB) $(SWTPI_LIB)
 
 $(SWT_LIB): $(SWT_OBJECTS)
-	$(LD) $(LIBS) -o $(SWT_LIB) $(SWT_OBJECTS)
+	$(CC) $(LIBS) -o $(SWT_LIB) $(SWT_OBJECTS)
 
 callback.o: callback.c callback.h
 	$(CC) $(CFLAGS) -c callback.c
 
 $(SWTPI_LIB): $(SWTPI_OBJECTS)
-	$(LD) $(LIBS) $(GTKLIBS) -o $(SWTPI_LIB) $(SWTPI_OBJECTS)
+	$(CC) $(LIBS) $(GTKLIBS) -o $(SWTPI_LIB) $(SWTPI_OBJECTS)
 
 swt.o: swt.c swt.h
 	$(CC) $(CFLAGS) -c swt.c
@@ -125,7 +125,7 @@ os_stats.o: os_stats.c os_structs.h os.h os_stats.h swt.h
 make_cairo: $(CAIRO_LIB)
 
 $(CAIRO_LIB): $(CAIRO_OBJECTS)
-	$(LD) $(LIBS) $(CAIROLIBS) -o $(CAIRO_LIB) $(CAIRO_OBJECTS)
+	$(CC) $(LIBS) $(CAIROLIBS) -o $(CAIRO_LIB) $(CAIRO_OBJECTS)
 
 cairo.o: cairo.c cairo.h swt.h
 	$(CC) $(CFLAGS) $(CAIROCFLAGS) -c cairo.c
@@ -140,7 +140,7 @@ cairo_stats.o: cairo_stats.c cairo_structs.h cairo.h cairo_stats.h swt.h
 make_awt:$(AWT_LIB)
 
 $(AWT_LIB): $(AWT_OBJECTS)
-	$(LD) $(AWT_LIBS) -o $(AWT_LIB) $(AWT_OBJECTS)
+	$(CC) $(AWT_LIBS) -o $(AWT_LIB) $(AWT_OBJECTS)
 
 #
 # Atk lib
@@ -148,7 +148,7 @@ $(AWT_LIB): $(AWT_OBJECTS)
 make_atk: $(ATK_LIB)
 
 $(ATK_LIB): $(ATK_OBJECTS)
-	$(LD) $(LIBS) $(ATKLIBS) -o $(ATK_LIB) $(ATK_OBJECTS)
+	$(CC) $(LIBS) $(ATKLIBS) -o $(ATK_LIB) $(ATK_OBJECTS)
 
 atk.o: atk.c atk.h
 	$(CC) $(CFLAGS) $(ATKCFLAGS) -c atk.c
@@ -165,7 +165,7 @@ atk_stats.o: atk_stats.c atk_structs.h atk_stats.h atk.h
 make_gnome: $(GNOME_LIB)
 
 $(GNOME_LIB): $(GNOME_OBJECTS)
-	$(LD) $(LIBS) $(GNOMELIBS) -o $(GNOME_LIB) $(GNOME_OBJECTS)
+	$(CC) $(LIBS) $(GNOMELIBS) -o $(GNOME_LIB) $(GNOME_OBJECTS)
 
 gnome.o: gnome.c 
 	$(CC) $(CFLAGS) $(GNOMECFLAGS) -c gnome.c
@@ -202,7 +202,7 @@ xpcom_stats.o: xpcom_stats.cpp
 make_glx: $(GLX_LIB)
 
 $(GLX_LIB): $(GLX_OBJECTS)
-	$(LD) $(LIBS) $(GLXLIBS) -o $(GLX_LIB) $(GLX_OBJECTS)
+	$(CC) $(LIBS) $(GLXLIBS) -o $(GLX_LIB) $(GLX_OBJECTS)
 
 glx.o: glx.c 
 	$(CC) $(CFLAGS) $(GLXCFLAGS) -c glx.c
