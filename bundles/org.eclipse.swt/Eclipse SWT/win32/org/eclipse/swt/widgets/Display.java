@@ -2110,7 +2110,7 @@ public int internal_new_GC (GCData data) {
 			data.style |= SWT.LEFT_TO_RIGHT;
 		}
 		data.device = this;
-		data.hFont = systemFont ();
+		data.hFont = getSystemFont ().handle;
 	}
 	return hDC;
 }
@@ -3630,10 +3630,6 @@ public boolean sleep () {
 public void syncExec (Runnable runnable) {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	synchronizer.syncExec (runnable);
-}
-
-int systemFont () {
-	return getSystemFont ().handle;
 }
 
 /**

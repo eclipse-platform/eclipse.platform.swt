@@ -509,7 +509,7 @@ int defaultBackground () {
 }
 
 int defaultFont () {
-	return display.systemFont ();
+	return display.getSystemFont ().handle;
 }
 
 int defaultForeground () {
@@ -2083,7 +2083,7 @@ public void setCursor (Cursor cursor) {
 }
 
 void setDefaultFont () {
-	int hFont = display.systemFont ();
+	int hFont = display.getSystemFont ().handle;
 	OS.SendMessage (handle, OS.WM_SETFONT, hFont, 0);
 }
 
