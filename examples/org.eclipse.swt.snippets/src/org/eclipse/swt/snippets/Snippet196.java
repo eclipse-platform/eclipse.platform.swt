@@ -11,7 +11,8 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Text example snippet: ise regular expression to verify input
+ * Text example snippet: use a regular expression to verify input
+ * In this case a phone number is used.
  * 
  * For a list of all SWT example snippets see
  * http://www.eclipse.org/swt/snippets/
