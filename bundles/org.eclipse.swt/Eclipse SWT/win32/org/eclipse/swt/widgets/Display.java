@@ -201,7 +201,7 @@ public class Display extends Device {
 	/* System Resources */
 	LOGFONT lfSystemFont;
 	Font systemFont;
-	Image errorIcon, infoIcon, questionIcon, warningIcon;
+	Image errorImage, infoImage, questionImage, warningIcon;
 	Cursor [] cursors = new Cursor [SWT.CURSOR_HAND + 1];
 	Resource [] resources;
 	static final int RESOURCE_SIZE = 1 + 4 + SWT.CURSOR_HAND + 1;
@@ -2022,20 +2022,20 @@ public Image getSystemImage (int id) {
 	checkDevice ();
 	switch (id) {
 		case SWT.ICON_ERROR: {
-			if (errorIcon != null) return errorIcon;
+			if (errorImage != null) return errorImage;
 			int hIcon = OS.LoadImage (0, OS.OIC_HAND, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
-			return errorIcon = Image.win32_new (this, SWT.ICON, hIcon);
+			return errorImage = Image.win32_new (this, SWT.ICON, hIcon);
 		}
 		case SWT.ICON_WORKING:
 		case SWT.ICON_INFORMATION: {
-			if (infoIcon != null) return infoIcon;
+			if (infoImage != null) return infoImage;
 			int hIcon = OS.LoadImage (0, OS.OIC_INFORMATION, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
-			return infoIcon = Image.win32_new (this, SWT.ICON, hIcon);
+			return infoImage = Image.win32_new (this, SWT.ICON, hIcon);
 		}
 		case SWT.ICON_QUESTION: {
-			if (questionIcon != null) return questionIcon;
+			if (questionImage != null) return questionImage;
 			int hIcon = OS.LoadImage (0, OS.OIC_QUES, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
-			return questionIcon = Image.win32_new (this, SWT.ICON, hIcon);
+			return questionImage = Image.win32_new (this, SWT.ICON, hIcon);
 		}
 		case SWT.ICON_WARNING: {
 			if (warningIcon != null) return warningIcon;
@@ -2974,11 +2974,11 @@ void releaseDisplay () {
 	lfSystemFont = null;
 	
 	/* Release the System Images */
-	if (errorIcon != null) errorIcon.dispose ();
-	if (infoIcon != null) infoIcon.dispose ();
-	if (questionIcon != null) questionIcon.dispose ();
+	if (errorImage != null) errorImage.dispose ();
+	if (infoImage != null) infoImage.dispose ();
+	if (questionImage != null) questionImage.dispose ();
 	if (warningIcon != null) warningIcon.dispose ();
-	errorIcon = infoIcon = questionIcon = warningIcon = null;
+	errorImage = infoImage = questionImage = warningIcon = null;
 	
 	/* Release Sort Indicators */
 	if (upArrow != null) upArrow.dispose ();
@@ -3293,7 +3293,6 @@ boolean runTimer (int id) {
 }
 
 void saveResources () {
-	if (OS.IsWinCE) return;
 	int resourceCount = 0;
 	if (resources == null) {
 		resources = new Resource [RESOURCE_SIZE];
@@ -3332,11 +3331,11 @@ void saveResources () {
 			}
 		}
 	}
-	if (errorIcon != null) resources [resourceCount++] = errorIcon;
-	if (infoIcon != null) resources [resourceCount++] = infoIcon;
-	if (questionIcon != null) resources [resourceCount++] = questionIcon;
+	if (errorImage != null) resources [resourceCount++] = errorImage;
+	if (infoImage != null) resources [resourceCount++] = infoImage;
+	if (questionImage != null) resources [resourceCount++] = questionImage;
 	if (warningIcon != null) resources [resourceCount++] = warningIcon;
-	errorIcon = infoIcon = questionIcon = warningIcon = null;
+	errorImage = infoImage = questionImage = warningIcon = null;
 	for (int i=0; i<cursors.length; i++) {
 		if (cursors [i] != null) resources [resourceCount++] = cursors [i];
 		cursors [i] = null;
