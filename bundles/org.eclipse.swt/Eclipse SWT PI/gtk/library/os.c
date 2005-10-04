@@ -11330,6 +11330,18 @@ JNIEXPORT void JNICALL OS_NATIVE(_1pango_1attr_1list_1unref)
 }
 #endif
 
+#ifndef NO__1pango_1attr_1rise_1new
+JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1attr_1rise_1new)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1pango_1attr_1rise_1new_FUNC);
+	rc = (jint)pango_attr_rise_new(arg0);
+	OS_NATIVE_EXIT(env, that, _1pango_1attr_1rise_1new_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1pango_1attr_1shape_1new
 JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1attr_1shape_1new)
 	(JNIEnv *env, jclass that, jobject arg0, jobject arg1)
@@ -11799,6 +11811,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1layout_1get_1attributes)
 }
 #endif
 
+#ifndef NO__1pango_1layout_1get_1indent
+JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1layout_1get_1indent)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1pango_1layout_1get_1indent_FUNC);
+	rc = (jint)pango_layout_get_indent((PangoLayout*)arg0);
+	OS_NATIVE_EXIT(env, that, _1pango_1layout_1get_1indent_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1pango_1layout_1get_1iter
 JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1layout_1get_1iter)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -11807,6 +11831,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1pango_1layout_1get_1iter)
 	OS_NATIVE_ENTER(env, that, _1pango_1layout_1get_1iter_FUNC);
 	rc = (jint)pango_layout_get_iter((PangoLayout*)arg0);
 	OS_NATIVE_EXIT(env, that, _1pango_1layout_1get_1iter_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1pango_1layout_1get_1justify
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1pango_1layout_1get_1justify)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1pango_1layout_1get_1justify_FUNC);
+	rc = (jboolean)pango_layout_get_justify((PangoLayout*)arg0);
+	OS_NATIVE_EXIT(env, that, _1pango_1layout_1get_1justify_FUNC);
 	return rc;
 }
 #endif
@@ -12081,6 +12117,26 @@ JNIEXPORT void JNICALL OS_NATIVE(_1pango_1layout_1set_1font_1description)
 	OS_NATIVE_ENTER(env, that, _1pango_1layout_1set_1font_1description_FUNC);
 	pango_layout_set_font_description((PangoLayout *)arg0, (PangoFontDescription *)arg1);
 	OS_NATIVE_EXIT(env, that, _1pango_1layout_1set_1font_1description_FUNC);
+}
+#endif
+
+#ifndef NO__1pango_1layout_1set_1indent
+JNIEXPORT void JNICALL OS_NATIVE(_1pango_1layout_1set_1indent)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1pango_1layout_1set_1indent_FUNC);
+	pango_layout_set_indent((PangoLayout*)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, _1pango_1layout_1set_1indent_FUNC);
+}
+#endif
+
+#ifndef NO__1pango_1layout_1set_1justify
+JNIEXPORT void JNICALL OS_NATIVE(_1pango_1layout_1set_1justify)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1pango_1layout_1set_1justify_FUNC);
+	pango_layout_set_justify((PangoLayout*)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, _1pango_1layout_1set_1justify_FUNC);
 }
 #endif
 

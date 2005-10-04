@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 1010;
-int OS_nativeFunctionCallCount[1010];
+int OS_nativeFunctionCount = 1015;
+int OS_nativeFunctionCallCount[1015];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1WINDOWING_1X11",
@@ -894,6 +894,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1pango_1attr_1list_1insert",
 	"_1pango_1attr_1list_1new",
 	"_1pango_1attr_1list_1unref",
+	"_1pango_1attr_1rise_1new",
 	"_1pango_1attr_1shape_1new",
 	"_1pango_1attr_1strikethrough_1new",
 	"_1pango_1attr_1underline_1new",
@@ -930,7 +931,9 @@ char * OS_nativeFunctionNames[] = {
 	"_1pango_1layout_1context_1changed",
 	"_1pango_1layout_1get_1alignment",
 	"_1pango_1layout_1get_1attributes",
+	"_1pango_1layout_1get_1indent",
 	"_1pango_1layout_1get_1iter",
+	"_1pango_1layout_1get_1justify",
 	"_1pango_1layout_1get_1line",
 	"_1pango_1layout_1get_1line_1count",
 	"_1pango_1layout_1get_1log_1attrs",
@@ -952,6 +955,8 @@ char * OS_nativeFunctionNames[] = {
 	"_1pango_1layout_1set_1alignment",
 	"_1pango_1layout_1set_1attributes",
 	"_1pango_1layout_1set_1font_1description",
+	"_1pango_1layout_1set_1indent",
+	"_1pango_1layout_1set_1justify",
 	"_1pango_1layout_1set_1single_1paragraph_1mode",
 	"_1pango_1layout_1set_1spacing",
 	"_1pango_1layout_1set_1tabs",

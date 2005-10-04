@@ -7792,6 +7792,15 @@ public static final int /*long*/ pango_attr_foreground_new (short red, short gre
 		lock.unlock();
 	}
 }
+public static final native int /*long*/ _pango_attr_rise_new(int rise);
+public static final int /*long*/ pango_attr_rise_new(int rise) {
+	lock.lock();
+	try {
+		return _pango_attr_rise_new(rise);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _pango_attr_shape_new(PangoRectangle ink_rect, PangoRectangle logical_rect);
 public static final int /*long*/ pango_attr_shape_new(PangoRectangle ink_rect, PangoRectangle logical_rect) {
 	lock.lock();
@@ -8152,11 +8161,29 @@ public static final int /*long*/ pango_layout_get_attributes(int /*long*/ layout
 		lock.unlock();
 	}
 }
+public static final native int _pango_layout_get_indent(int /*long*/ layout);
+public static final int pango_layout_get_indent(int /*long*/ layout) {
+	lock.lock();
+	try {
+		return _pango_layout_get_indent(layout);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _pango_layout_get_iter(int /*long*/ layout);
 public static final int /*long*/ pango_layout_get_iter(int /*long*/ layout) {
 	lock.lock();
 	try {
 		return _pango_layout_get_iter(layout);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _pango_layout_get_justify(int /*long*/ layout);
+public static final boolean pango_layout_get_justify(int /*long*/ layout) {
+	lock.lock();
+	try {
+		return _pango_layout_get_justify(layout);
 	} finally {
 		lock.unlock();
 	}
@@ -8346,6 +8373,24 @@ public static final void pango_layout_set_font_description(int /*long*/ context,
 	lock.lock();
 	try {
 		_pango_layout_set_font_description(context, descr);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _pango_layout_set_indent(int /*long*/ layout, int indent);
+public static final void pango_layout_set_indent(int /*long*/ layout, int indent) {
+	lock.lock();
+	try {
+		_pango_layout_set_indent(layout, indent);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _pango_layout_set_justify(int /*long*/ layout, boolean justify);
+public static final void pango_layout_set_justify(int /*long*/ layout, boolean justify) {
+	lock.lock();
+	try {
+		_pango_layout_set_justify(layout, justify);
 	} finally {
 		lock.unlock();
 	}
