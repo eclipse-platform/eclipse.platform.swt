@@ -16,6 +16,7 @@ import org.eclipse.swt.browser.*;
 import org.eclipse.swt.*;
 
 public class Browser9 {
+	public static boolean verbose = false;
 	public static boolean passed = false;	
 	
 	static String html[] = {"browser9.html"};
@@ -24,7 +25,7 @@ public class Browser9 {
 	static String status[] = {"new title"};
 	
 	public static boolean test(String url, final String script, final String status) {
-		System.out.println("Javascript - verify execute("+script+") works on a static HTML file "+url);
+		if (verbose) System.out.println("Javascript - verify execute("+script+") works on a static HTML file "+url);
 		passed = false;
 		final Display display = new Display();
 		final Shell shell = new Shell(display);
@@ -40,17 +41,17 @@ public class Browser9 {
 			public void completed(ProgressEvent event) {
 				boolean result = browser.execute(script);
 				if (!result) {
-					System.out.println("execute failed for "+script);
+					if (verbose) System.out.println("execute failed for "+script);
 					passed = false;
 					return;
 				}
 				/* Script may additionally set the Status value */
 				String value = (String)browser.getData("query");
-				System.out.println("window.status after script: "+value);
+				if (verbose) System.out.println("window.status after script: "+value);
 				if (status != null) {
 					passed = status.equals(value);
 				} else {
-					System.out.println("Failure - expected "+script+", not "+value);
+					if (verbose) System.out.println("Failure - expected "+script+", not "+value);
 				}
 			}
 		});
@@ -92,13 +93,13 @@ public class Browser9 {
 		int fail = 0;
 				
 		String pluginPath = System.getProperty("PLUGIN_PATH");
-		System.out.println("PLUGIN_PATH <"+pluginPath+">");
+		if (verbose) System.out.println("PLUGIN_PATH <"+pluginPath+">");
 		String url;
 		for (int i = 0; i < html.length; i++) {
 			if (pluginPath == null) url = Browser9.class.getClassLoader().getResource(html[i]).toString();
 			else url = pluginPath + "/data/"+html[i];
 			boolean result = test(url, script[i], status[i]); 
-			System.out.print(result ? "." : "E");
+			if (verbose) System.out.print(result ? "." : "E");
 			if (!result) fail++; 
 		}
 		return fail == 0;

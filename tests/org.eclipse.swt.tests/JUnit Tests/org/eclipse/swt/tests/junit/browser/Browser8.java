@@ -16,6 +16,7 @@ import org.eclipse.swt.browser.*;
 import org.eclipse.swt.*;
 
 public class Browser8 {
+	public static boolean verbose = false;
 	public static boolean passed = false;	
 	
 	static String html[] = {"<html><title>Snippet</title><body><p id='myid'>Best Friends</p><p id='myid2'>Cat and Dog</p></body></html>"};
@@ -28,7 +29,7 @@ public class Browser8 {
 		"document.bgColor='yellow';"};
 	
 	public static boolean test(final int index) {
-		System.out.println("Javascript - verify execute() works on HTML rendered from memory with getText - script index "+index);
+		if (verbose) System.out.println("Javascript - verify execute() works on HTML rendered from memory with getText - script index "+index);
 		passed = false;
 		
 		final Display display = new Display();
@@ -81,14 +82,14 @@ public class Browser8 {
 		int fail = 0;
 				
 		String pluginPath = System.getProperty("PLUGIN_PATH");
-		System.out.println("PLUGIN_PATH <"+pluginPath+">");
+		if (verbose) System.out.println("PLUGIN_PATH <"+pluginPath+">");
 		String url;
 		if (pluginPath == null) url = Browser8.class.getClassLoader().getResource("browser7.html").toString();
 		else url = pluginPath + "/data/browser7.html";
 		String[] urls = new String[] {url};
 		for (int i = 0; i < urls.length; i++) {
 			boolean result = test(i); 
-			System.out.print(result ? "." : "E");
+			if (verbose) System.out.print(result ? "." : "E");
 			if (!result) fail++; 
 		}
 		return fail == 0;

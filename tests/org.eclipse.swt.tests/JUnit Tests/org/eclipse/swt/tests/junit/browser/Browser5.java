@@ -17,6 +17,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
 public class Browser5 {
+	public static boolean verbose = false;
 	public static boolean passed = false;
 	static Point[][] regressionBounds = {
 				{new Point(10,200), new Point(300,100)},
@@ -28,7 +29,7 @@ public class Browser5 {
 	static int cntClosed = 0;
 	
 	public static boolean test1(String url) {
-		System.out.println("javascript window.open with location and size parameters - args: "+url+" Expected Event Sequence: Visibility.open");
+		if (verbose) System.out.println("javascript window.open with location and size parameters - args: "+url+" Expected Event Sequence: Visibility.open");
 		passed = false;
 				
 		final Display display = new Display();
@@ -37,7 +38,7 @@ public class Browser5 {
 		final Browser browser = new Browser(shell, SWT.NONE);
 		browser.addOpenWindowListener(new OpenWindowListener() {
 			public void open(WindowEvent event) {
-				System.out.println("OpenWindow "+index);
+				if (verbose) System.out.println("OpenWindow "+index);
 				Shell newShell = new Shell(display);
 				newShell.setLayout(new FillLayout());
 				Browser browser = new Browser(newShell, SWT.NONE);
@@ -58,15 +59,15 @@ public class Browser5 {
 							 * are considered 'legal' as long as they don't contain size and location information.
 							 */
 							if (event.location != null || event.size != null) {
-								System.out.println("Failure - Browser "+index+" is receiving multiple show events");
+								if (verbose) System.out.println("Failure - Browser "+index+" is receiving multiple show events");
 								passed = false;
 								shell.close();
 							} else {
-								System.out.println("Unnecessary (but harmless) visibility.show event Browser "+index);
+								if (verbose) System.out.println("Unnecessary (but harmless) visibility.show event Browser "+index);
 							}
 						} else {
 							browser.setData("index", new Integer(-100-index));
-							System.out.println("Visibility.show browser "+index+" location "+event.location+" size "+event.size);
+							if (verbose) System.out.println("Visibility.show browser "+index+" location "+event.location+" size "+event.size);
 							/* Certain browsers include decorations to the expected size. Accept size that are larger or equal than
 							 * expected. Certain browsers invent size or location when some parameters are missing. If we expect
 							 * null for one of size or location, also accept non null answers.
@@ -78,9 +79,9 @@ public class Browser5 {
 							(event.size != null && event.size.equals(regressionBounds[index][1])) ||
 							(event.size != null && regressionBounds[index][1] == null) ||
 							(event.size != null && event.size.x >= regressionBounds[index][1].x && event.size.y >= regressionBounds[index][1].y));
-							System.out.println("Expected location "+regressionBounds[index][0]+" size "+regressionBounds[index][1]);
+							if (verbose) System.out.println("Expected location "+regressionBounds[index][0]+" size "+regressionBounds[index][1]);
 							if (!checkSize || !checkLocation || ((event.size != null || event.location != null) && regressionBounds[index][0] == null && regressionBounds[index][1] == null)) {
-								System.out.println("	Failure ");
+								if (verbose) System.out.println("	Failure ");
 								passed = false;
 								shell.close();
 								return;
@@ -91,7 +92,7 @@ public class Browser5 {
 				browser.addCloseWindowListener(new CloseWindowListener() {
 					public void close(WindowEvent event) {
 						cntClosed++;
-						System.out.println("Close");
+						if (verbose) System.out.println("Close");
 						Browser browser = (Browser)event.widget;
 						browser.getShell().close();
 						if (cntPassed == regressionBounds.length) passed = true;
@@ -144,13 +145,13 @@ public class Browser5 {
 		int fail = 0;		
 		String url;
 		String pluginPath = System.getProperty("PLUGIN_PATH");
-		System.out.println("PLUGIN_PATH <"+pluginPath+">");
+		if (verbose) System.out.println("PLUGIN_PATH <"+pluginPath+">");
 		if (pluginPath == null) url = Browser5.class.getClassLoader().getResource("browser5.html").toString();
 		else url = pluginPath + "/data/browser5.html";
 		String[] urls = {url};
 		for (int i = 0; i < urls.length; i++) {
 			boolean result = test1(urls[i]); 
-			System.out.print(result ? "." : "E");
+			if (verbose) System.out.print(result ? "." : "E");
 			if (!result) fail++; 
 		}
 		return fail == 0;

@@ -21,6 +21,7 @@ import org.eclipse.swt.widgets.*;
  * @see org.eclipse.swt.browser.StatusTextListener
  */
 public class Test_BrowserSuite extends SwtTestCase {
+	public static boolean verbose = false;
 
 public Test_BrowserSuite(String name) {
 	super(name);
@@ -37,55 +38,55 @@ protected void tearDown() {
 }
 
 public void Browser1() {
-	System.out.println("** Browser1 **");
+	if (verbose) System.out.println("** Browser1 **");
 	boolean result = Browser1.test();
 	assertTrue(result);
 }
 
 public void Browser2() {
-	System.out.println("** Browser2 **");
+	if (verbose) System.out.println("** Browser2 **");
 	boolean result = Browser2.test();
 	assertTrue(result);
 }
 
 public void Browser3() {
-	System.out.println("** Browser3 **");
+	if (verbose) System.out.println("** Browser3 **");
 	boolean result = Browser3.test();
 	assertTrue(result);
 }
 
 public void Browser4() {
-	System.out.println("** Browser4 **");
+	if (verbose) System.out.println("** Browser4 **");
 	boolean result = Browser4.test();
 	assertTrue(result);
 }
 
 public void Browser5() {
-	System.out.println("** Browser5 **");
+	if (verbose) System.out.println("** Browser5 **");
 	boolean result = Browser5.test();
 	assertTrue(result);
 }
 
 public void Browser6() {
-	System.out.println("** Browser6 **");
+	if (verbose) System.out.println("** Browser6 **");
 	boolean result = Browser6.test();
 	assertTrue(result);
 }
 
 public void Browser7() {
-	System.out.println("** Browser7 **");
+	if (verbose) System.out.println("** Browser7 **");
 	boolean result = Browser7.test();
 	assertTrue(result);
 }
 
 public void Browser8() {
-	System.out.println("** Browser8 **");
+	if (verbose) System.out.println("** Browser8 **");
 	boolean result = Browser8.test();
 	assertTrue(result);
 }
 
 public void Browser9() {
-	System.out.println("** Browser9 **");
+	if (verbose) System.out.println("** Browser9 **");
 	boolean result = Browser9.test();
 	assertTrue(result);
 }

@@ -16,10 +16,11 @@ import org.eclipse.swt.browser.*;
 import org.eclipse.swt.*;
 
 public class Browser6 {
+	public static boolean verbose = false;
 	public static boolean passed = false;	
 	
 	public static boolean test1(String url) {
-		System.out.println("URL Loading, verify get title event - args: "+url+" Expected Event Sequence: Title.changed");
+		if (verbose) System.out.println("URL Loading, verify get title event - args: "+url+" Expected Event Sequence: Title.changed");
 		passed = false;
 				
 		final Display display = new Display();
@@ -30,7 +31,7 @@ public class Browser6 {
 			public void changed(TitleEvent event) {
 				Browser browser = (Browser)event.widget;
 				String url = browser.getUrl();
-				System.out.println("Title changed <"+event.title+"> for location <"+url+">");
+				if (verbose) System.out.println("Title changed <"+event.title+"> for location <"+url+">");
 				passed = true;
 				shell.close();
 			}
@@ -46,7 +47,7 @@ public class Browser6 {
 	}
 	
 	public static boolean test2(String url, final String expectedTitle) {
-		System.out.println("URL Loading, verify get title event - args: "+url+" Expected Event Sequence: Title.changed");
+		if (verbose) System.out.println("URL Loading, verify get title event - args: "+url+" Expected Event Sequence: Title.changed");
 		passed = false;
 		
 		final Display display = new Display();
@@ -57,7 +58,7 @@ public class Browser6 {
 			public void changed(TitleEvent event) {
 				Browser browser = (Browser)event.widget;
 				String url = browser.getUrl();
-				System.out.println("Title changed <"+event.title+"> for location <"+url+">");
+				if (verbose) System.out.println("Title changed <"+event.title+"> for location <"+url+">");
 				if (event.title.equals(expectedTitle)) {
 					passed = true;
 					shell.close();
@@ -112,12 +113,12 @@ public class Browser6 {
 		String[] urls = {"http://www.google.com"};
 		for (int i = 0; i < urls.length; i++) {
 			boolean result = test1(urls[i]); 
-			System.out.print(result ? "." : "E");
+			if (verbose) System.out.print(result ? "." : "E");
 			if (!result) fail++; 
 		}
 		
 		String pluginPath = System.getProperty("PLUGIN_PATH");
-		System.out.println("PLUGIN_PATH <"+pluginPath+">");
+		if (verbose) System.out.println("PLUGIN_PATH <"+pluginPath+">");
 		String url;
 		if (pluginPath == null) url = Browser6.class.getClassLoader().getResource("browser6.html").toString();
 		else url = pluginPath + "/data/browser6.html";
@@ -125,7 +126,7 @@ public class Browser6 {
 		String[] titles = {"This is a test title that must be carefully checked when that page is loaded"};
 		for (int i = 0; i < urls.length; i++) {
 			boolean result = test2(urls[i], titles[i]); 
-			System.out.print(result ? "." : "E");
+			if (verbose) System.out.print(result ? "." : "E");
 			if (!result) fail++; 
 		}
 		

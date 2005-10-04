@@ -17,13 +17,14 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
 public class Browser7 {
+	public static boolean verbose = false;
 	public static boolean passed = false;	
 	
 	static int cntOpen = 0;
 	static int cntShow = 0;
 	
 	public static boolean test(String url) {
-		System.out.println("window.open, verify get Window.open and Window.show events - args: "+url+" Expected Event Sequence: Window.open, Window.show multiple times");
+		if (verbose) System.out.println("window.open, verify get Window.open and Window.show events - args: "+url+" Expected Event Sequence: Window.open, Window.show multiple times");
 		passed = false;
 		
 		cntOpen = 0;
@@ -39,7 +40,7 @@ public class Browser7 {
 		browser.setUrl(url);
 		
 		boolean timeout = runLoopTimer(display, shell, 10);
-		System.out.println("Window opened: "+cntOpen+" Window shown: "+cntShow);
+		if (verbose) System.out.println("Window opened: "+cntOpen+" Window shown: "+cntShow);
 		/*
 		 * Bug in Mozilla. Multiple show events are fired by Mozilla.
 		 */
@@ -51,7 +52,7 @@ public class Browser7 {
 	static void initialize(final Display display, Browser browser) {
 		browser.addOpenWindowListener(new OpenWindowListener() {
 			public void open(WindowEvent event) {
-				System.out.println("VisibilityWindowListener.open");
+				if (verbose) System.out.println("VisibilityWindowListener.open");
 				Shell shell = new Shell(display);
 				shell.setText("New Window");
 				shell.setLayout(new FillLayout());
@@ -68,7 +69,7 @@ public class Browser7 {
 				shell.setVisible(false);
 			}
 			public void show(WindowEvent event) {
-				System.out.println("VisibilityWindowListener.show location="+event.location+" size="+event.size+" addressBar="+event.addressBar+" menuBar="+event.menuBar+" statusBar="+event.statusBar+" toolBar="+event.toolBar);
+				if (verbose) System.out.println("VisibilityWindowListener.show location="+event.location+" size="+event.size+" addressBar="+event.addressBar+" menuBar="+event.menuBar+" statusBar="+event.statusBar+" toolBar="+event.toolBar);
 				Browser browser = (Browser)event.widget;
 				Shell shell = browser.getShell();
 				if (event.location != null) shell.setLocation(event.location);
@@ -119,14 +120,14 @@ public class Browser7 {
 		int fail = 0;
 				
 		String pluginPath = System.getProperty("PLUGIN_PATH");
-		System.out.println("PLUGIN_PATH <"+pluginPath+">");
+		if (verbose) System.out.println("PLUGIN_PATH <"+pluginPath+">");
 		String url;
 		if (pluginPath == null) url = Browser7.class.getClassLoader().getResource("browser7.html").toString();
 		else url = pluginPath + "/data/browser7.html";
 		String[] urls = new String[] {url};
 		for (int i = 0; i < urls.length; i++) {
 			boolean result = test(urls[i]); 
-			System.out.print(result ? "." : "E");
+			if (verbose) System.out.print(result ? "." : "E");
 			if (!result) fail++; 
 		}
 		return fail == 0;

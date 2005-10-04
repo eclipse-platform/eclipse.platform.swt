@@ -16,11 +16,12 @@ import org.eclipse.swt.browser.*;
 import org.eclipse.swt.*;
 
 public class Browser3 {
+	public static boolean verbose = false;
 	public static boolean passed = false;	
 	public static boolean openWindow, locationChanging, locationChanged, visibilityShow, progressCompleted;
 	
 	public static boolean test1(String url) {
-		System.out.println("javascript window.open - args: "+url+" Expected Event Sequence: Browser1:OpenWindow.open > { Browser2:Location.changing, Browser2:Visibility.show, Browser2:Location.changed } > Browser2:Progress.completed");
+		if (verbose) System.out.println("javascript window.open - args: "+url+" Expected Event Sequence: Browser1:OpenWindow.open > { Browser2:Location.changing, Browser2:Visibility.show, Browser2:Location.changed } > Browser2:Progress.completed");
 		passed = false;
 		locationChanging = locationChanged = progressCompleted = false;
 				
@@ -36,13 +37,13 @@ public class Browser3 {
 				openWindow = true;
 				Browser src = (Browser)event.widget;
 				if (src != browser1) {
-					System.out.println("Failure - expected "+browser1+", got "+src);
+					if (verbose) System.out.println("Failure - expected "+browser1+", got "+src);
 					passed = false;
 					shell.close();
 					return;
 				}
 				if (event.browser != null) {
-					System.out.println("Failure - expected null, got "+event.browser);
+					if (verbose) System.out.println("Failure - expected null, got "+event.browser);
 					passed = false;
 					shell.close();
 					return;
@@ -53,7 +54,7 @@ public class Browser3 {
 		browser2.addLocationListener(new LocationListener() {
 			public void changed(LocationEvent event) {
 				if (!openWindow || !locationChanging) {
-					System.out.println("Failure - LocationEvent.changing received at wrong time");
+					if (verbose) System.out.println("Failure - LocationEvent.changing received at wrong time");
 					passed = false;
 					shell.close();
 					return;
@@ -62,7 +63,7 @@ public class Browser3 {
 			}
 			public void changing(LocationEvent event) {
 				if (!openWindow) {
-					System.out.println("Failure - LocationEvent.changing received at wrong time");
+					if (verbose) System.out.println("Failure - LocationEvent.changing received at wrong time");
 					passed = false;
 					shell.close();
 					return;
@@ -72,13 +73,13 @@ public class Browser3 {
 		});
 		browser2.addVisibilityWindowListener(new VisibilityWindowListener() {
 			public void hide(WindowEvent event) {
-				System.out.println("Failure - did not expect VisibilityEvent.hide");
+				if (verbose) System.out.println("Failure - did not expect VisibilityEvent.hide");
 				passed = false;
 				shell.close();
 			}
 			public void show(WindowEvent event) {
 				if (!openWindow) {
-					System.out.println("Failure - VisibilityEvent.show received at wrong time");
+					if (verbose) System.out.println("Failure - VisibilityEvent.show received at wrong time");
 					passed = false;
 					shell.close();
 					return;					
@@ -93,17 +94,17 @@ public class Browser3 {
 			public void completed(ProgressEvent event) {
 				new Thread() {
 					public void run() {
-						System.out.println("timer start");
+						if (verbose) System.out.println("timer start");
 						try { sleep(2000); } catch (Exception e) {};
 						passed = true;
 						if (!display.isDisposed())
 							display.asyncExec(new Runnable(){
 								public void run() {
-									System.out.println("timer asyncexec shell.close");
+									if (verbose) System.out.println("timer asyncexec shell.close");
 									if (!shell.isDisposed()) shell.close();							
 								}
 							});
-						System.out.println("timer over");
+						if (verbose) System.out.println("timer over");
 					};
 				}.start();
 			}
@@ -148,13 +149,13 @@ public class Browser3 {
 		int fail = 0;		
 		String url;
 		String pluginPath = System.getProperty("PLUGIN_PATH");
-		System.out.println("PLUGIN_PATH <"+pluginPath+">");
+		if (verbose) System.out.println("PLUGIN_PATH <"+pluginPath+">");
 		if (pluginPath == null) url = Browser3.class.getClassLoader().getResource("browser3.html").toString();
 		else url = pluginPath + "/data/browser3.html";
 		String[] urls = {url};
 		for (int i = 0; i < urls.length; i++) {
 			boolean result = test1(urls[i]); 
-			System.out.print(result ? "." : "E");
+			if (verbose) System.out.print(result ? "." : "E");
 			if (!result) fail++; 
 		}
 		return fail == 0;

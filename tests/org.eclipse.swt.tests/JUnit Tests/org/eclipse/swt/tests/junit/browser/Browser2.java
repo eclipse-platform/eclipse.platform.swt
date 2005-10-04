@@ -16,13 +16,14 @@ import org.eclipse.swt.browser.*;
 import org.eclipse.swt.*;
 
 public class Browser2 {
+	public static boolean verbose = false;
 	public static boolean passed = false;	
 	public static boolean locationChanging = false;
 	public static boolean locationChanged = false;
 	public static boolean progressCompleted = false;
 	
 	public static boolean test1(String html) {
-		System.out.println("setText - args: "+html+" Expected Event Sequence: Location.changing > Location.changed > Progress.completed");
+		if (verbose) System.out.println("setText - args: "+html+" Expected Event Sequence: Location.changing > Location.changed > Progress.completed");
 		passed = false;
 		locationChanging = locationChanged = progressCompleted = false;
 				
@@ -32,14 +33,14 @@ public class Browser2 {
 		Browser browser = new Browser(shell, SWT.NONE);
 		browser.addLocationListener(new LocationListener() {
 			public void changing(LocationEvent event) {
-				System.out.println("changing "+event.location);
+				if (verbose) System.out.println("changing "+event.location);
 				/* certain browsers do send multiple changing events. Safari does this. */
 				passed = !locationChanged && !progressCompleted;
 				locationChanging = true;
 				if (!passed) shell.close();
 			}
 			public void changed(LocationEvent event) {
-				System.out.println("changed "+event.location);
+				if (verbose) System.out.println("changed "+event.location);
 				passed = locationChanging && !locationChanged && !progressCompleted;
 				locationChanged = true;
 				if (!passed) shell.close();
@@ -49,7 +50,7 @@ public class Browser2 {
 			public void changed(ProgressEvent event) {
 			}
 			public void completed(ProgressEvent event) {
-				System.out.println("completed");
+				if (verbose) System.out.println("completed");
 				passed = locationChanging && locationChanged && !progressCompleted;
 				progressCompleted = true;
 				if (!passed) shell.close();
@@ -59,16 +60,16 @@ public class Browser2 {
 					 */
 					new Thread() {
 						public void run() {
-							System.out.println("timer start");
+							if (verbose) System.out.println("timer start");
 							try { sleep(2000); } catch (Exception e) {};
 							if (!display.isDisposed())
 								display.asyncExec(new Runnable(){
 									public void run() {
-										System.out.println("timer asyncexec shell.close");
+										if (verbose) System.out.println("timer asyncexec shell.close");
 										if (!shell.isDisposed()) shell.close();							
 									}
 								});
-							System.out.println("timer over");
+							if (verbose) System.out.println("timer over");
 						};
 					}.start();
 				}
@@ -85,7 +86,7 @@ public class Browser2 {
 	}
 	
 	public static boolean test2(String html) {
-		System.out.println("setText URL Loading Filtering - args: "+html+" Expected Event Sequence: Location.changing cancel true > no Location.changed, no Progress.completed");
+		if (verbose) System.out.println("setText URL Loading Filtering - args: "+html+" Expected Event Sequence: Location.changing cancel true > no Location.changed, no Progress.completed");
 		locationChanging = locationChanged = progressCompleted = false;
 		passed = false;
 		final String[] locationCancelled = new String[1];
@@ -95,7 +96,7 @@ public class Browser2 {
 		final Browser browser = new Browser(shell, SWT.NONE);
 		browser.addLocationListener(new LocationListener() {
 			public void changing(LocationEvent event) {
-				System.out.println("changing "+event.location);
+				if (verbose) System.out.println("changing "+event.location);
 				/*
 				* Feature on Internet Explorer.  When pending requests are stopped, IE
 				* emits a Location.changing with res://C:\WINDOWS\System32\shdoclc.dll/navcancl.htm.
@@ -113,16 +114,16 @@ public class Browser2 {
 				event.doit = false;
 				new Thread() {
 					public void run() {
-						System.out.println("timer start");
+						if (verbose) System.out.println("timer start");
 						try { sleep(2000); } catch (Exception e) {};
 						if (!display.isDisposed())
 							display.asyncExec(new Runnable(){
 								public void run() {
-									System.out.println("timer asyncexec shell.close");
+									if (verbose) System.out.println("timer asyncexec shell.close");
 									if (!shell.isDisposed()) shell.close();							
 								}
 							});
-						System.out.println("timer over");
+						if (verbose) System.out.println("timer over");
 					};
 				}.start();
 			}
@@ -136,7 +137,7 @@ public class Browser2 {
 				 * otherwise it is considered that the location was not successfully cancelled. 
 				 */
 				passed = event.location.length() == 0;
-				System.out.println("changed "+event.location+" "+passed);
+				if (verbose) System.out.println("changed "+event.location+" "+passed);
 				/* ignore LocationChanged that are empty */
 				locationChanged = !passed;
 			}
@@ -155,7 +156,7 @@ public class Browser2 {
 				 */
 				String location = browser.getUrl();
 				passed = location.length() == 0;
-				System.out.println("completed "+passed);
+				if (verbose) System.out.println("completed "+passed);
 				progressCompleted = true;
 			}
 		});
@@ -198,12 +199,12 @@ public class Browser2 {
 		String[] html = {file1};
 		for (int i = 0; i < html.length; i++) {
 			boolean result = test1(html[i]); 
-			System.out.print(result ? "." : "E");
+			if (verbose) System.out.print(result ? "." : "E");
 			if (!result) fail++; 
 		}
 		for (int i = 0; i < html.length; i++) {
 			boolean result = test2(html[i]); 
-			System.out.print(result ? "." : "E");
+			if (verbose) System.out.print(result ? "." : "E");
 			if (!result) fail++; 
 		}
 		return fail == 0;
