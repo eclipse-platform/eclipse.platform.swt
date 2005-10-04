@@ -71,9 +71,16 @@ public class OS extends Platform {
 	public static final int kAlertStdAlertOtherButton     = 3;
 	public static final int kAtSpecifiedOrigin = 0;
 	public static final int kATSDeletedGlyphcode = 0xFFFF;
+	public static final int kATSUAscentTag = 284;
+	public static final int kATSUBeforeWithStreamShiftTag = 267;
+	public static final int kATSUCrossStreamShiftTag = 269;
+	public static final int kATSUDescentTag = 285;
 	public static final int kATSUDirectDataBaselineDeltaFixedArray = 1;
 	public static final int kATSUDirectDataLayoutRecordATSLayoutRecordVersion1 = 100;
 	public static final int kATSUDirectDataLayoutRecordATSLayoutRecordCurrent = kATSUDirectDataLayoutRecordATSLayoutRecordVersion1;
+	public static final int kATSUFullJustification = 0x40000000;
+	public static final int kATSUNoJustification = 0x00000000;
+	public static final int kATSUImposeWidthTag = 266;
 	public static final int kATSULineAscentTag = 8;
 	public static final int kATSULineDescentTag = 9;
 	public static final int kATSULineDirectionTag = 3;
@@ -90,6 +97,7 @@ public class OS extends Platform {
 	public static final int kATSUFontTag = 261;
 	public static final int kATSULineFlushFactorTag = 5;
 	public static final int kATSULineHighlightCGColorTag = 17;
+	public static final int kATSULineJustificationFactorTag = 4;
 	public static final int kATSULineLayoutOptionsTag = 7;
 	public static final int kATSULineWidthTag = 1;
 	public static final int kATSULeftToRightBaseDirection = 0;
