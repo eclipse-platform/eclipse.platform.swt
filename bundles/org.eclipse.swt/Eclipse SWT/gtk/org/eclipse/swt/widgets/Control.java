@@ -87,7 +87,7 @@ public Control (Composite parent, int style) {
 }
 
 int /*long*/ defaultFont () {
-	return display.defaultFont;
+	return display.getSystemFont ().handle;
 }
 
 void deregister () {

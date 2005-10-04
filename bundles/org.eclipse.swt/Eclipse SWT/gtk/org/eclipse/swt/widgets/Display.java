@@ -210,14 +210,12 @@ public class Display extends Device {
 	int dragStartX,dragStartY;
 	boolean dragging;
 	
-	/* Fonts */
-	int /*long*/ defaultFont;
-
-	/* System Images */
+	/* System Resources */
+	Font systemFont;
 	Image errorImage, infoImage, questionImage, warningImage;
-
-	/* System Cursors */
 	Cursor [] cursors = new Cursor [SWT.CURSOR_HAND + 1];
+	Resource [] resources;
+	static final int RESOURCE_SIZE = 1 + 4 + SWT.CURSOR_HAND + 1;
 
 	/* Colors */
 	GdkColor COLOR_WIDGET_DARK_SHADOW, COLOR_WIDGET_NORMAL_SHADOW, COLOR_WIDGET_LIGHT_SHADOW;
@@ -1888,7 +1886,7 @@ public Image getSystemImage (int id) {
 	return null;
 }
 
-void initializeSystemResources () {
+void initializeSystemColors () {
 	GdkColor gdkColor;
 	
 	/* Get Tooltip resources */
@@ -1905,79 +1903,60 @@ void initializeSystemResources () {
 	OS.gtk_style_get_bg (tooltipStyle, OS.GTK_STATE_NORMAL, gdkColor);
 	COLOR_INFO_BACKGROUND = gdkColor;
 	OS.gtk_widget_destroy (tooltipShellHandle);	
-	
+
 	/* Get Shell resources */
 	int /*long*/ style = OS.gtk_widget_get_style (shellHandle);	
-	defaultFont = OS.pango_font_description_copy (OS.gtk_style_get_font_desc (style));
-
 	gdkColor = new GdkColor();
 	OS.gtk_style_get_black (style, gdkColor);
 	COLOR_WIDGET_DARK_SHADOW = gdkColor;
-	
 	gdkColor = new GdkColor();
 	OS.gtk_style_get_dark (style, OS.GTK_STATE_NORMAL, gdkColor);
 	COLOR_WIDGET_NORMAL_SHADOW = gdkColor;
-
 	gdkColor = new GdkColor();
 	OS.gtk_style_get_bg (style, OS.GTK_STATE_NORMAL, gdkColor);
 	COLOR_WIDGET_LIGHT_SHADOW = gdkColor;
-
 	gdkColor = new GdkColor();
 	OS.gtk_style_get_light (style, OS.GTK_STATE_NORMAL, gdkColor);
 	COLOR_WIDGET_HIGHLIGHT_SHADOW = gdkColor;
-
 	gdkColor = new GdkColor();
 	OS.gtk_style_get_fg (style, OS.GTK_STATE_NORMAL, gdkColor);
 	COLOR_WIDGET_FOREGROUND = gdkColor;
-
 	gdkColor = new GdkColor();
 	OS.gtk_style_get_bg (style, OS.GTK_STATE_NORMAL, gdkColor);
 	COLOR_WIDGET_BACKGROUND = gdkColor;
-
 	//gdkColor = new GdkColor();
 	//OS.gtk_style_get_text (style, OS.GTK_STATE_NORMAL, gdkColor);
 	//COLOR_TEXT_FOREGROUND = gdkColor;
-
 	//gdkColor = new GdkColor();
 	//OS.gtk_style_get_base (style, OS.GTK_STATE_NORMAL, gdkColor);
 	//COLOR_TEXT_BACKGROUND = gdkColor;
-
 	gdkColor = new GdkColor();
 	OS.gtk_style_get_text (style, OS.GTK_STATE_NORMAL, gdkColor);
 	COLOR_LIST_FOREGROUND = gdkColor;
-
 	gdkColor = new GdkColor();
 	OS.gtk_style_get_base (style, OS.GTK_STATE_NORMAL, gdkColor);
 	COLOR_LIST_BACKGROUND = gdkColor;
-
 	gdkColor = new GdkColor();
 	OS.gtk_style_get_text (style, OS.GTK_STATE_SELECTED, gdkColor);
 	COLOR_LIST_SELECTION_TEXT = gdkColor;
-
 	gdkColor = new GdkColor();
 	OS.gtk_style_get_base (style, OS.GTK_STATE_SELECTED, gdkColor);
 	COLOR_LIST_SELECTION = gdkColor;
-	
 	gdkColor = new GdkColor();
 	OS.gtk_style_get_bg (style, OS.GTK_STATE_SELECTED, gdkColor);
 	COLOR_TITLE_BACKGROUND = gdkColor;
-	
 	gdkColor = new GdkColor();
 	OS.gtk_style_get_fg (style, OS.GTK_STATE_SELECTED, gdkColor);
 	COLOR_TITLE_FOREGROUND = gdkColor;
-	
 	gdkColor = new GdkColor();
 	OS.gtk_style_get_light (style, OS.GTK_STATE_SELECTED, gdkColor);
 	COLOR_TITLE_BACKGROUND_GRADIENT = gdkColor;
-	
 	gdkColor = new GdkColor();
 	OS.gtk_style_get_bg (style, OS.GTK_STATE_INSENSITIVE, gdkColor);
 	COLOR_TITLE_INACTIVE_BACKGROUND = gdkColor;
-	
 	gdkColor = new GdkColor();
 	OS.gtk_style_get_fg (style, OS.GTK_STATE_INSENSITIVE, gdkColor);
 	COLOR_TITLE_INACTIVE_FOREGROUND = gdkColor;
-	
 	gdkColor = new GdkColor();
 	OS.gtk_style_get_light (style, OS.GTK_STATE_INSENSITIVE, gdkColor);
 	COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT = gdkColor;
@@ -2006,7 +1985,10 @@ void initializeSystemResources () {
  */
 public Font getSystemFont () {
 	checkDevice ();
-	return Font.gtk_new (this, defaultFont);
+	if (systemFont != null) return systemFont;
+	int /*long*/ style = OS.gtk_widget_get_style (shellHandle);	
+	int /*long*/ defaultFont = OS.pango_font_description_copy (OS.gtk_style_get_font_desc (style));
+	return systemFont = Font.gtk_new (this, defaultFont);
 }
 
 /**
@@ -2060,7 +2042,7 @@ Widget getWidget (int /*long*/ handle) {
 protected void init () {
 	super.init ();
 	initializeCallbacks ();
-	initializeSystemResources ();
+	initializeSystemColors ();
 	initializeSystemSettings ();
 	initializeWidgetTable ();
 	initializeWindowManager ();
@@ -2229,7 +2211,7 @@ public int /*long*/ internal_new_GC (GCData data) {
 		data.drawable = root;
 		data.background = getSystemColor (SWT.COLOR_WHITE).handle;
 		data.foreground = getSystemColor (SWT.COLOR_BLACK).handle;
-		data.font = defaultFont;
+		data.font = getSystemFont ().handle;
 	}
 	return gdkGC;
 }
@@ -2779,8 +2761,8 @@ void releaseDisplay () {
 	mouseHoverCallback = null;
 	
 	/* Dispose the default font */
-	if (defaultFont != 0) OS.pango_font_description_free (defaultFont);
-	defaultFont = 0;
+	if (systemFont != null) systemFont.dispose ();
+	systemFont = null;
 	
 	/* Dispose the System Images */
 	if (errorImage != null) errorImage.dispose();
@@ -2794,6 +2776,14 @@ void releaseDisplay () {
 		if (cursors [i] != null) cursors [i].dispose ();
 	}
 	cursors = null;
+
+	/* Release Acquired Resources */
+	if (resources != null) {
+		for (int i=0; i<resources.length; i++) {
+			if (resources [i] != null) resources [i].dispose ();
+		}
+		resources = null;
+	}
 
 	/* Release the System Colors */
 	COLOR_WIDGET_DARK_SHADOW = COLOR_WIDGET_NORMAL_SHADOW = COLOR_WIDGET_LIGHT_SHADOW =
@@ -2985,7 +2975,8 @@ boolean runPopups () {
 boolean runSettings () {
 	if (!runSettings) return false;
 	runSettings = false;
-	initializeSystemResources ();
+	saveResources ();
+	initializeSystemColors ();
 	sendEvent (SWT.Settings, null);
 	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) {
@@ -3415,6 +3406,36 @@ int /*long*/ treeSelectionProc (int /*long*/ model, int /*long*/ path, int /*lon
 	Widget widget = getWidget (data);
 	if (widget == null) return 0;
 	return widget.treeSelectionProc (model, path, iter, treeSelection, treeSelectionLength++);
+}
+
+void saveResources () {
+	int resourceCount = 0;
+	if (resources == null) {
+		resources = new Resource [RESOURCE_SIZE];
+	} else {
+		resourceCount = resources.length;
+		Resource [] newResources = new Resource [resourceCount + RESOURCE_SIZE];
+		System.arraycopy (resources, 0, newResources, 0, resourceCount);
+		resources = newResources;
+	}
+	if (systemFont != null) {
+		resources [resourceCount++] = systemFont;
+		systemFont = null;
+	}
+	if (errorImage != null) resources [resourceCount++] = errorImage;
+	if (infoImage != null) resources [resourceCount++] = infoImage;
+	if (questionImage != null) resources [resourceCount++] = questionImage;
+	if (warningImage != null) resources [resourceCount++] = warningImage;
+	errorImage = infoImage = questionImage = warningImage = null;
+	for (int i=0; i<cursors.length; i++) {
+		if (cursors [i] != null) resources [resourceCount++] = cursors [i];
+		cursors [i] = null;
+	}
+	if (resourceCount < RESOURCE_SIZE) {
+		Resource [] newResources = new Resource [resourceCount];
+		System.arraycopy (resources, 0, newResources, 0, resourceCount);
+		resources = newResources;
+	}
 }
 
 void sendEvent (int eventType, Event event) {
