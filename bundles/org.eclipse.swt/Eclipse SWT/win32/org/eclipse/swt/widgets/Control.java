@@ -1503,15 +1503,20 @@ public void pack (boolean changed) {
  */
 public void redraw () {
 	checkWidget ();
+	redraw (false);
+}
+
+void redraw (boolean all) {
+//	checkWidget ();
 	if (!OS.IsWindowVisible (handle)) return;
 	if (OS.IsWinCE) {
 		OS.InvalidateRect (handle, null, true);
 	} else {
 		int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE;
+		if (all) flags |= OS.RDW_ALLCHILDREN;
 		OS.RedrawWindow (handle, null, 0, flags);
 	}
 }
-
 /**
  * Causes the rectangular area of the receiver specified by
  * the arguments to be marked as needing to be redrawn. 
@@ -2937,15 +2942,8 @@ void update (boolean all) {
 	}
 }
 
-boolean updateFont (Font oldFont, Font newFont) {
-	boolean sameFont = getFont ().equals (oldFont);
-	/* 
-	* If the font that the control is using is the
-	* same one that was being used from the Control
-	* Panel, then use the new Control Panel font.
-	*/
-	if (sameFont) setFont (newFont);
-	return sameFont;
+void updateFont (Font oldFont, Font newFont) {
+	if (getFont ().equals (oldFont)) setFont (newFont);
 }
 
 void updateImages () {

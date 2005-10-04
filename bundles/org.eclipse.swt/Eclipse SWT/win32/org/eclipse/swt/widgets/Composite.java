@@ -869,7 +869,8 @@ boolean translateTraversal (MSG msg) {
 	return super.translateTraversal (msg);
 }
 
-boolean updateFont (Font oldFont, Font newFont) {
+void updateFont (Font oldFont, Font newFont) {
+	super.updateFont (oldFont, newFont);
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control control = children [i];
@@ -877,16 +878,6 @@ boolean updateFont (Font oldFont, Font newFont) {
 			control.updateFont (oldFont, newFont);
 		}
 	}
-	boolean changed = super.updateFont (oldFont, newFont);
-	if (changed) {
-		/*
-		* Call layout() directly so that subclasses that reimplement
-		* this method instead of using a Layout will set the size and
-		* location of their children when the font changes.
-		*/
-		layout (true);
-	}
-	return changed;
 }
 
 void updateLayout (boolean resize, boolean all) {

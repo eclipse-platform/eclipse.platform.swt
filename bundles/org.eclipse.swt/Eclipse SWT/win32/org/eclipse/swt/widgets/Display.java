@@ -3265,11 +3265,17 @@ void runSettings () {
 	updateImages ();
 	sendEvent (SWT.Settings, null);
 	Font newFont = getSystemFont ();
+	boolean sameFont = oldFont.equals (newFont);
 	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
 		if (!shell.isDisposed ()) {
-			shell.updateFont (oldFont, newFont);
+			if (!sameFont) {
+				shell.updateFont (oldFont, newFont);
+			}
+			/* This code is intentionally commented */
+			//shell.redraw (true);
+			shell.layout (true, true);
 		}
 	}
 }
