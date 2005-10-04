@@ -197,13 +197,14 @@ public class Display extends Device {
 	/* Message Only Window */
 	Callback messageCallback;
 	int hwndMessage, messageProc;
-	int [] systemFonts;
 	
-	/* System Images Cache */
-	int errorIcon, infoIcon, questionIcon, warningIcon;
-
-	/* System Cursors Cache */
+	/* System Resources */
+	LOGFONT lfSystemFont;
+	Font systemFont;
+	Image errorIcon, infoIcon, questionIcon, warningIcon;
 	Cursor [] cursors = new Cursor [SWT.CURSOR_HAND + 1];
+	Resource [] resources;
+	static final int RESOURCE_SIZE = 1 + 4 + SWT.CURSOR_HAND + 1;
 
 	/* ImageList Cache */	
 	ImageList[] imageList, toolImageList, toolHotImageList, toolDisabledImageList;
@@ -1385,6 +1386,23 @@ public Control getFocusControl () {
 	return _getFocusControl ();
 }
 
+String getFontName (LOGFONT logFont) {
+	char[] chars;
+	if (OS.IsUnicode) {
+		chars = ((LOGFONTW)logFont).lfFaceName;
+	} else {
+		chars = new char[OS.LF_FACESIZE];
+		byte[] bytes = ((LOGFONTA)logFont).lfFaceName;
+		OS.MultiByteToWideChar (OS.CP_ACP, OS.MB_PRECOMPOSED, bytes, bytes.length, chars, chars.length);
+	}
+	int index = 0;
+	while (index < chars.length) {
+		if (chars [index] == 0) break;
+		index++;
+	}
+	return new String (chars, 0, index);
+}
+
 /**
  * Returns true when the high contrast mode is enabled.
  * Otherwise, false is returned.
@@ -1958,7 +1976,20 @@ public Cursor getSystemCursor (int id) {
  */
 public Font getSystemFont () {
 	checkDevice ();
-	return Font.win32_new (this, systemFont ());	
+	if (systemFont != null) return systemFont;
+	int hFont = 0;
+	if (!OS.IsWinCE) {
+		NONCLIENTMETRICS info = OS.IsUnicode ? (NONCLIENTMETRICS) new NONCLIENTMETRICSW () : new NONCLIENTMETRICSA ();
+		info.cbSize = NONCLIENTMETRICS.sizeof;
+		if (OS.SystemParametersInfo (OS.SPI_GETNONCLIENTMETRICS, 0, info, 0)) {
+			LOGFONT logFont = OS.IsUnicode ? (LOGFONT) ((NONCLIENTMETRICSW)info).lfMessageFont : ((NONCLIENTMETRICSA)info).lfMessageFont;
+			hFont = OS.CreateFontIndirect (logFont);
+			lfSystemFont = hFont != 0 ? logFont : null;
+		}
+	}
+	if (hFont == 0) hFont = OS.GetStockObject (OS.DEFAULT_GUI_FONT);
+	if (hFont == 0) hFont = OS.GetStockObject (OS.SYSTEM_FONT);
+	return systemFont = Font.win32_new (this, hFont);
 }
 
 /**
@@ -1989,36 +2020,30 @@ public Font getSystemFont () {
  */
 public Image getSystemImage (int id) {
 	checkDevice ();
-	int hIcon = 0;
 	switch (id) {
-		case SWT.ICON_ERROR:
-			if (errorIcon == 0) {
-				errorIcon = OS.LoadImage (0, OS.OIC_HAND, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
-			}
-			hIcon = errorIcon;
-			break;
+		case SWT.ICON_ERROR: {
+			if (errorIcon != null) return errorIcon;
+			int hIcon = OS.LoadImage (0, OS.OIC_HAND, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
+			return errorIcon = Image.win32_new (this, SWT.ICON, hIcon);
+		}
 		case SWT.ICON_WORKING:
-		case SWT.ICON_INFORMATION:
-			if (infoIcon == 0) {
-				infoIcon = OS.LoadImage (0, OS.OIC_INFORMATION, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
-			}
-			hIcon = infoIcon;
-			break;
-		case SWT.ICON_QUESTION:
-			if (questionIcon == 0) {
-				questionIcon = OS.LoadImage (0, OS.OIC_QUES, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
-			}
-			hIcon = questionIcon;
-			break;
-		case SWT.ICON_WARNING:
-			if (warningIcon == 0) {
-				warningIcon = OS.LoadImage (0, OS.OIC_BANG, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
-			}
-			hIcon = warningIcon;
-			break;
+		case SWT.ICON_INFORMATION: {
+			if (infoIcon != null) return infoIcon;
+			int hIcon = OS.LoadImage (0, OS.OIC_INFORMATION, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
+			return infoIcon = Image.win32_new (this, SWT.ICON, hIcon);
+		}
+		case SWT.ICON_QUESTION: {
+			if (questionIcon != null) return questionIcon;
+			int hIcon = OS.LoadImage (0, OS.OIC_QUES, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
+			return questionIcon = Image.win32_new (this, SWT.ICON, hIcon);
+		}
+		case SWT.ICON_WARNING: {
+			if (warningIcon != null) return warningIcon;
+			int hIcon = OS.LoadImage (0, OS.OIC_BANG, OS.IMAGE_ICON, 0, 0, OS.LR_SHARED);
+			return warningIcon = Image.win32_new (this, SWT.ICON, hIcon);
+		}
 	}
-	if (hIcon == 0) return null;
-	return Image.win32_new (this, SWT.ICON, hIcon);
+	return null;
 }
 
 /**
@@ -2136,19 +2161,6 @@ protected void init () {
 	lpWndClass.lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	OS.MoveMemory (lpWndClass.lpszClassName, windowShadowClass, byteCount);
 	OS.RegisterClass (lpWndClass);
-	
-	/* Initialize the system font */
-	int systemFont = 0;
-	if (!OS.IsWinCE) {
-		NONCLIENTMETRICS info = OS.IsUnicode ? (NONCLIENTMETRICS) new NONCLIENTMETRICSW () : new NONCLIENTMETRICSA ();
-		info.cbSize = NONCLIENTMETRICS.sizeof;
-		if (OS.SystemParametersInfo (OS.SPI_GETNONCLIENTMETRICS, 0, info, 0)) {
-			systemFont = OS.CreateFontIndirect (OS.IsUnicode ? (LOGFONT) ((NONCLIENTMETRICSW)info).lfMessageFont : ((NONCLIENTMETRICSA)info).lfMessageFont);
-		}
-	}
-	if (systemFont == 0) systemFont = OS.GetStockObject (OS.DEFAULT_GUI_FONT);
-	if (systemFont == 0) systemFont = OS.GetStockObject (OS.SYSTEM_FONT);
-	if (systemFont != 0) systemFonts = new int [] {systemFont};
 	
 	/* Create the message only HWND */
 	hwndMessage = OS.CreateWindowEx (0,
@@ -2956,20 +2968,17 @@ void releaseDisplay () {
 	windowCallback = null;
 	windowProc = 0;
 	
-	/* Release the system fonts */
-	if (systemFonts != null) {
-		for (int i=0; i<systemFonts.length; i++) {
-			if (systemFonts [i] != 0) OS.DeleteObject (systemFonts [i]);
-		}
-	}
-	systemFonts = null;
+	/* Release the System fonts */
+	if (systemFont != null) systemFont.dispose ();
+	systemFont = null;
+	lfSystemFont = null;
 	
 	/* Release the System Images */
-	if (errorIcon != 0) OS.DestroyIcon (errorIcon);
-	if (infoIcon != 0) OS.DestroyIcon (infoIcon);
-	if (questionIcon != 0) OS.DestroyIcon (questionIcon);
-	if (warningIcon != 0) OS.DestroyIcon (warningIcon);
-	errorIcon = infoIcon = questionIcon = warningIcon = 0;
+	if (errorIcon != null) errorIcon.dispose ();
+	if (infoIcon != null) infoIcon.dispose ();
+	if (questionIcon != null) questionIcon.dispose ();
+	if (warningIcon != null) warningIcon.dispose ();
+	errorIcon = infoIcon = questionIcon = warningIcon = null;
 	
 	/* Release Sort Indicators */
 	if (upArrow != null) upArrow.dispose ();
@@ -2981,6 +2990,14 @@ void releaseDisplay () {
 		if (cursors [i] != null) cursors [i].dispose ();
 	}
 	cursors = null;
+
+	/* Release Acquired Resources */
+	if (resources != null) {
+		for (int i=0; i<resources.length; i++) {
+			if (resources [i] != null) resources [i].dispose ();
+		}
+		resources = null;
+	}
 
 	/* Release Custom Colors for ChooseColor */
 	if (lpCustColors != 0) OS.HeapFree (hHeap, 0, lpCustColors);
@@ -3244,8 +3261,8 @@ boolean runPopups () {
 
 void runSettings () {
 	Font oldFont = getSystemFont ();
+	saveResources ();
 	updateImages ();
-	updateFonts ();
 	sendEvent (SWT.Settings, null);
 	Font newFont = getSystemFont ();
 	Shell [] shells = getShells ();
@@ -3273,6 +3290,62 @@ boolean runTimer (int id) {
 		}
 	}
 	return false;
+}
+
+void saveResources () {
+	if (OS.IsWinCE) return;
+	int resourceCount = 0;
+	if (resources == null) {
+		resources = new Resource [RESOURCE_SIZE];
+	} else {
+		resourceCount = resources.length;
+		Resource [] newResources = new Resource [resourceCount + RESOURCE_SIZE];
+		System.arraycopy (resources, 0, newResources, 0, resourceCount);
+		resources = newResources;
+	}
+	if (systemFont != null) {
+		if (!OS.IsWinCE) {
+			NONCLIENTMETRICS info = OS.IsUnicode ? (NONCLIENTMETRICS) new NONCLIENTMETRICSW () : new NONCLIENTMETRICSA ();
+			info.cbSize = NONCLIENTMETRICS.sizeof;
+			if (OS.SystemParametersInfo (OS.SPI_GETNONCLIENTMETRICS, 0, info, 0)) {
+				LOGFONT logFont = OS.IsUnicode ? (LOGFONT) ((NONCLIENTMETRICSW)info).lfMessageFont : ((NONCLIENTMETRICSA)info).lfMessageFont;
+				if (lfSystemFont == null ||
+					logFont.lfCharSet != lfSystemFont.lfCharSet ||
+					logFont.lfHeight != lfSystemFont.lfHeight ||
+					logFont.lfWidth != lfSystemFont.lfWidth ||
+					logFont.lfEscapement != lfSystemFont.lfEscapement ||
+					logFont.lfOrientation != lfSystemFont.lfOrientation ||
+					logFont.lfWeight != lfSystemFont.lfWeight ||
+					logFont.lfItalic != lfSystemFont.lfItalic ||
+					logFont.lfUnderline != lfSystemFont.lfUnderline ||
+					logFont.lfStrikeOut != lfSystemFont.lfStrikeOut ||
+					logFont.lfCharSet != lfSystemFont.lfCharSet ||
+					logFont.lfOutPrecision != lfSystemFont.lfOutPrecision ||
+					logFont.lfClipPrecision != lfSystemFont.lfClipPrecision ||
+					logFont.lfQuality != lfSystemFont.lfQuality ||
+					logFont.lfPitchAndFamily != lfSystemFont.lfPitchAndFamily ||
+					!getFontName (logFont).equals (getFontName (lfSystemFont))) {
+						resources [resourceCount++] = systemFont;
+						lfSystemFont = logFont;
+						systemFont = null;
+				}
+			}
+		}
+	}
+	if (errorIcon != null) resources [resourceCount++] = errorIcon;
+	if (infoIcon != null) resources [resourceCount++] = infoIcon;
+	if (questionIcon != null) resources [resourceCount++] = questionIcon;
+	if (warningIcon != null) resources [resourceCount++] = warningIcon;
+	errorIcon = infoIcon = questionIcon = warningIcon = null;
+	for (int i=0; i<cursors.length; i++) {
+		if (cursors [i] != null) resources [resourceCount++] = cursors [i];
+		cursors [i] = null;
+	}
+	if (resourceCount < RESOURCE_SIZE) {
+		Resource [] newResources = new Resource [resourceCount];
+		System.arraycopy (resources, 0, newResources, 0, resourceCount);
+		resources = newResources;
+	}
 }
 
 void sendEvent (int eventType, Event event) {
@@ -3561,14 +3634,7 @@ public void syncExec (Runnable runnable) {
 }
 
 int systemFont () {
-	int hFont = 0;
-	if (systemFonts != null) {
-		int length = systemFonts.length;
-		if (length != 0) hFont = systemFonts [length - 1];
-	}
-	if (hFont == 0) hFont = OS.GetStockObject (OS.DEFAULT_GUI_FONT);
-	if (hFont == 0) hFont = OS.GetStockObject (OS.SYSTEM_FONT);
-	return hFont;
+	return getSystemFont ().handle;
 }
 
 /**
@@ -3734,26 +3800,6 @@ public void update() {
 		Shell shell = shells [i];
 		if (!shell.isDisposed ()) shell.update (true);
 	}
-}
-
-void updateFonts () {
-	if (OS.IsWinCE) return;
-	int systemFont = 0;
-	NONCLIENTMETRICS info = OS.IsUnicode ? (NONCLIENTMETRICS) new NONCLIENTMETRICSW () : new NONCLIENTMETRICSA ();
-	info.cbSize = NONCLIENTMETRICS.sizeof;
-	if (OS.SystemParametersInfo (OS.SPI_GETNONCLIENTMETRICS, 0, info, 0)) {
-		systemFont = OS.CreateFontIndirect (OS.IsUnicode ? (LOGFONT) ((NONCLIENTMETRICSW)info).lfMessageFont : ((NONCLIENTMETRICSA)info).lfMessageFont);
-	}
-	if (systemFont == 0) systemFont = OS.GetStockObject (OS.DEFAULT_GUI_FONT);
-	if (systemFont == 0) systemFont = OS.GetStockObject (OS.SYSTEM_FONT);
-	if (systemFont == 0) return;
-	int length = systemFonts == null ? 0 : systemFonts.length;
-	int [] newFonts = new int [length + 1];
-	if (systemFonts != null) {
-		System.arraycopy (systemFonts, 0, newFonts, 0, length);
-	}
-	newFonts [length] = systemFont;
-	systemFonts = newFonts;
 }
 
 void updateImages () {
