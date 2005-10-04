@@ -926,6 +926,12 @@ public String getUrl() {
 	return result;
 }
 
+public boolean isFocusControl () {
+	checkWidget();
+	if (site.isFocusControl() || frame.isFocusControl()) return true;
+	return super.isFocusControl();
+}
+
 /**
  * Refresh the current page.
  *
