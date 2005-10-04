@@ -186,9 +186,9 @@ public class Display extends Device {
 	int kchrPtr;
 	int [] kchrState = new int [1];
 
-	/* System Images */
-	int errorImage, infoImage, warningImage;
-	int errorImageData, infoImageData, warningImageData;
+	/* System Resources */
+	Image errorImage, infoImage, warningImage;
+	Cursor [] cursors = new Cursor [SWT.CURSOR_HAND + 1];
 	
 	/* System Settings */
 	boolean runSettings;
@@ -198,7 +198,6 @@ public class Display extends Device {
 	int dockImage, dockImageData;
 
 	/* System Cursors Cache */
-	Cursor [] cursors = new Cursor [SWT.CURSOR_HAND + 1];
 
 	/* Key Mappings. */
 	static int [] [] KeyTable = {
@@ -595,7 +594,7 @@ int[] createImage (int type) {
 	result = OS.IconRefToIconFamily (ref [0], OS.kSelectorAlLAvailableData, family);
 	OS.ReleaseIconRef (ref [0]);
 	if (result != OS.noErr) return null;
-	int[] image =  createImageFromFamily(family [0], OS.kLarge32BitData, OS.kLarge8BitMask, 32, 32);
+	int[] image = createImageFromFamily (family [0], OS.kLarge32BitData, OS.kLarge8BitMask, 32, 32);
 	OS.DisposeHandle (family [0]);
 	return image;
 }
@@ -1793,47 +1792,29 @@ public Cursor getSystemCursor (int id) {
  */
 public Image getSystemImage (int id) {
 	checkDevice ();
-	int cgImage = 0;
-	int imageData = 0;
 	switch (id) {
-		case SWT.ICON_ERROR:	
-			if (errorImage == 0) {
-				int[] image = createImage (OS.kAlertStopIcon);
-				if (image != null) {
-					errorImage = image [0];
-					errorImageData = image [1];
-				}
-			}
-			cgImage = errorImage;
-			imageData = errorImageData;
-			break;
+		case SWT.ICON_ERROR: {	
+			if (errorImage != null) return errorImage;
+			int [] image = createImage (OS.kAlertStopIcon);
+			if (image == null) break;
+			return errorImage = Image.carbon_new (this, SWT.ICON, image [0], image [1]);
+		}
 		case SWT.ICON_INFORMATION:
 		case SWT.ICON_QUESTION:
-		case SWT.ICON_WORKING:
-			if (infoImage == 0) {
-				int[] image = createImage (OS.kAlertNoteIcon);
-				if (image != null) {
-					infoImage = image [0];
-					infoImageData = image [1];
-				}
-			}
-			cgImage = infoImage;
-			imageData = infoImageData;
-			break;
-		case SWT.ICON_WARNING:
-			if (warningImage == 0) {
-				int[] image = createImage (OS.kAlertCautionIcon);
-				if (image != null) {
-					warningImage = image [0];
-					warningImageData = image [1];
-				}
-			}
-			cgImage = warningImage;
-			imageData = warningImageData;
-			break;
+		case SWT.ICON_WORKING: {
+			if (infoImage != null) return infoImage;
+			int [] image = createImage (OS.kAlertNoteIcon);
+			if (image == null) break;
+			return infoImage = Image.carbon_new (this, SWT.ICON, image [0], image [1]);
+		}
+		case SWT.ICON_WARNING: {
+			if (warningImage != null) return warningImage;
+			int [] image = createImage (OS.kAlertCautionIcon);
+			if (image == null) break;
+			return warningImage = Image.carbon_new (this, SWT.ICON, image [0], image [1]);
+		}
 	}
-	if (cgImage == 0) return null;
-	return Image.carbon_new (this, SWT.ICON, cgImage, imageData);
+	return null;
 }
 
 /**
@@ -2874,30 +2855,25 @@ void releaseDisplay () {
 	menuBar = null;
 
 	/* Release the System Images */
-	if (errorImage != 0) OS.CGImageRelease (errorImage);
-	if (infoImage != 0) OS.CGImageRelease (infoImage);
-	if (warningImage != 0) OS.CGImageRelease (warningImage);
-	if (errorImageData != 0) OS.DisposePtr (errorImageData);
-	if (infoImageData != 0) OS.DisposePtr (infoImageData);
-	if (warningImageData != 0) OS.DisposePtr (warningImageData);
-	errorImage = infoImage = warningImage = 0;
-	errorImageData = infoImageData = warningImageData = 0;
-
-	/* Release Dock image */
-	if (dockImage != 0) OS.CGImageRelease (dockImage);
-	if (dockImageData != 0) OS.DisposePtr (dockImageData);
-	dockImage = dockImageData = 0;
+	if (errorImage != null) errorImage.dispose ();
+	if (infoImage != null) infoImage.dispose ();
+	if (warningImage != null) warningImage.dispose ();
+	errorImage = infoImage = warningImage = null;
 
 	/* Release the System Cursors */
 	for (int i = 0; i < cursors.length; i++) {
 		if (cursors [i] != null) cursors [i].dispose ();
 	}
 	cursors = null;
+	
+	/* Release Dock image */
+	if (dockImage != 0) OS.CGImageRelease (dockImage);
+	if (dockImageData != 0) OS.DisposePtr (dockImageData);
+	dockImage = dockImageData = 0;
 
 	//NOT DONE - call terminate TXN if this is the last display 
 	//NOTE: - display create and dispose needs to be synchronized on all platforms
 //	 TXNTerminateTextension ();
-
 }
 
 /**
