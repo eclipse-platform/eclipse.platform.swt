@@ -1203,11 +1203,7 @@ TreeItem [] getItems (TreeItem item) {
 	TreeItem [] result = new TreeItem [count];
 	for (int i=0; i<items.length; i++) {
 		if (items [i] != null && items [i].parentItem == item) {
-			try {
-			result [items [i].index] = items [i];
-			} catch (Exception t) {
-				System.out.println("bad");
-			}
+			result [items [i].index] = items [i];			
 		}
 	}
 	return result;
